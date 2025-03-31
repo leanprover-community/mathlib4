@@ -26,8 +26,8 @@ variable {V : Type u} {G G' : SimpleGraph V} {u x v' w : V} [Fintype V]
 def IsTutteViolator (G : SimpleGraph V) (u : Set V) : Prop :=
   u.ncard < ((⊤ : G.Subgraph).deleteVerts u).coe.oddComponents.ncard
 
-/-- A graph in which the universal vertices do not violate the
-Tutte-condition, if the graph decomposes into cliques, there exists a matching that covers
+/-- Given a graph in which the universal vertices do not violate Tutte's condition,
+if the graph decomposes into cliques, there exists a matching that covers
 everything except some universal vertices.
 
 This lemma is marked private, because
@@ -79,8 +79,8 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     aesop
   exact ⟨M1 ⊔ M2, hM1.2.sup hM2 disjointM12, this⟩
 
-/-- A graph in which the universal vertices do not violate the
-Tutte-condition, if the graph decomposes into cliques, it has a perfect matching. -/
+/-- Given a graph in which the universal vertices do not violate Tutte's condition,
+if the graph decomposes into cliques, it has a perfect matching. -/
 theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
     (hveven : Even (Fintype.card V)) (h : ¬G.IsTutteViolator G.universalVerts)
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
@@ -99,13 +99,12 @@ theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
     exact (Set.disjoint_compl_left_iff_subset.mpr fun ⦃a⦄ a ↦ a).symm), hspan⟩
 
 theorem IsTutteViolator.empty (hodd : Odd (Fintype.card V)) : G.IsTutteViolator ∅ := by
-  classical
-  have ⟨c, hc⟩ :=
+  have c :=
     Finite.card_pos_iff.mp
-    (odd_ncard_oddComponents ((⊤ : Subgraph G).deleteVerts ∅).coe).mpr (by
-    simpa [Fintype.card_congr (Equiv.Set.univ V)] using hodd).pos
+    ((odd_ncard_oddComponents ((⊤ : Subgraph G).deleteVerts ∅).coe).mpr (by
+    simpa [Fintype.card_congr (Equiv.Set.univ V)] using hodd)).pos
   rw [IsTutteViolator, Set.ncard_empty, Set.ncard_pos]
-  use c
+  exact Set.Nonempty.of_subtype
 
 /-- Proves the necessity part of Tutte's theorem -/
 lemma not_isTutteViolator_of_isPerfectMatching {M : Subgraph G} (hM : M.IsPerfectMatching)
@@ -117,7 +116,7 @@ lemma not_isTutteViolator_of_isPerfectMatching {M : Subgraph G} (hM : M.IsPerfec
     intro x y hxy
     obtain ⟨v, hv⟩ := (ConnectedComponent.odd_matches_node_outside hM x).choose_spec.2
     obtain ⟨w, hw⟩ := (ConnectedComponent.odd_matches_node_outside hM y).choose_spec.2
-    obtain ⟨v', hv'⟩ := M.isPerfectMatching_iff.mp hM _
+    obtain ⟨v', hv'⟩ := Iff.mp M.isPerfectMatching_iff hM _
     rw [Subtype.mk_eq_mk.mp hxy,
       (Subtype.val_injective (hv'.2 _ hw.1.symm ▸ hv'.2 _ hv.1.symm) : v = w)] at hv
     exact Subtype.mk_eq_mk.mpr <| ConnectedComponent.eq_of_common_vertex hv.2 hw.2)
