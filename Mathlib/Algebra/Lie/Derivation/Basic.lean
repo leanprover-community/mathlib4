@@ -387,7 +387,7 @@ end Inner
 
 section ExpNilpotent
 
-variable {R L : Type*} [Field R] [LieRing L] [LieAlgebra R L] [LieAlgebra ℚ L]
+variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [LieAlgebra ℚ L]
   (D : LieDerivation R L L)
 
 /-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra
