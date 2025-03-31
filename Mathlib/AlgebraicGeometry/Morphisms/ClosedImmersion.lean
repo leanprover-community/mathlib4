@@ -361,8 +361,6 @@ nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme} [Subsingleton Y]
     · rw [Scheme.Cover.pullbackHom,
         ← (IsOpenImmersion.isPullback_lift_id _ _ hxU).flip.isoPullback_inv_snd,
         MorphismProperty.cancel_left_of_respectsIso @IsClosedImmersion]
-      have inst : Subsingleton ((X.affineCover.pullbackCover g).obj i) :=
-        ((X.affineCover.pullbackCover g).map i).isOpenEmbedding.injective.subsingleton
       refine this (X.affineCover.map i ≫ f) _ ?_ ⟨_, rfl⟩
       rw [IsOpenImmersion.lift_fac_assoc, hg]
     · have : IsEmpty ((X.affineCover.pullbackCover g).obj i) := by
