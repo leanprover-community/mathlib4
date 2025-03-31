@@ -270,13 +270,20 @@ theorem perm_insert {a} {b : β a} {s₁ s₂ : AList β} (p : s₁.entries ~ s�
   simp only [entries_insert]; exact p.kinsert s₁.nodupKeys
 
 @[simp]
-theorem lookup_insert {a} {b : β a} (s : AList β) : lookup a (insert a b s) = some b := by
+theorem lookup_insert_self {a} {b : β a} (s : AList β) : lookup a (insert a b s) = some b := by
   simp only [lookup, insert, dlookup_kinsert]
 
 @[simp]
 theorem lookup_insert_ne {a a'} {b' : β a'} {s : AList β} (h : a ≠ a') :
     lookup a (insert a' b' s) = lookup a s :=
   dlookup_kinsert_ne h
+
+theorem lookup_insert {a a' : α} {β} {b : β a} (s : AList β) :
+    (s.insert a b).lookup a' = if h : a' = a then some (h ▸ b) else s.lookup a' := by
+  split <;> rename_i h
+  · subst h
+    simp
+  · simp_all
 
 @[simp] theorem lookup_insert_eq_none {l : AList β} {k k' : α} {v : β k} :
     (l.insert k v).lookup k' = none ↔ (k' ≠ k) ∧ l.lookup k' = none := by
