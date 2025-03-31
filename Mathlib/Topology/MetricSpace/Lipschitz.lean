@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Order.Interval.Set.ProjIcc
-import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Bornology.Hom
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Maps.Proper.Basic
