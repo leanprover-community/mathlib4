@@ -345,8 +345,10 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
 @[simps!]
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
   { OrderDual.ofDual.trans (primeSpectrumEquiv A) with
-    map_rel_iff' :=
-      ⟨fun h => by
+    map_rel_iff' {a b} :=
+      ⟨a.rec <| fun a => b.rec <| fun b => fun h => by
+        simp only [OrderDual.toDual_le_toDual]
+        dsimp at h
         have := idealOfLE_le_of_le A _ _ ?_ ?_ h
         · rwa [idealOfLE_ofPrime, idealOfLE_ofPrime] at this
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),

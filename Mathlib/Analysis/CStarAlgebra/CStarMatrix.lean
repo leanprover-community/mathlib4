@@ -343,8 +343,8 @@ variable [Fintype m] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing
 
 
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. -/
-def toCLM : CStarMatrix m n A →ₗ[ℂ] (C⋆ᵐᵒᵈ (n → A)) →L[ℂ] (C⋆ᵐᵒᵈ (m → A)) where
-  toFun M := { toFun := (WithCStarModule.equivL ℂ).symm ∘ M.mulVec ∘ WithCStarModule.equivL ℂ
+def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A) →L[ℂ] C⋆ᵐᵒᵈ(A, n → A) where
+  toFun M := { toFun := (WithCStarModule.equivL ℂ).symm ∘ M.vecMul ∘ WithCStarModule.equivL ℂ
                map_add' := M.add_vecMul
                map_smul' := M.vecMul_smul
                cont := Continuous.comp (by fun_prop) (by fun_prop) }
