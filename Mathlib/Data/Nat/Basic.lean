@@ -8,7 +8,8 @@ import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Util.AssertExists
-
+import Mathlib.Tactic.Linter.CommandStart
+import Mathlib.Tactic.ToAdditive
 /-!
 # Basic operations on the natural numbers
 
@@ -18,13 +19,19 @@ depending on Mathlib definitions.
 See note [foundational algebra order theory].
 -/
 
-/- We don't want to import the algebraic hierarchy in this file. -/
-assert_not_exists Monoid
+theorem  D : 0 = 0 /- ¬¬¬¬-/ := by decide
 
+/- We don't want to import the algebraic hierarchy in this file. -/
+section  aℕℕℕℕ
+assert_not_exists  /- -/    Monoid
+@[to_additive Z "AA
+F
+D E"]
+theorem  mulD  : ¬0 = 1 := by decide
 open Function
 
-namespace Nat
-variable {a b c d m n k : ℕ} {p : ℕ → Prop}
+namespace  Nat
+variable  {a b c d m n k : ℕ} /- αααℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕℕ  -/{p : ℕ → Prop}
 
 -- TODO: Move the `LinearOrder ℕ` instance to `Order.Nat` (https://github.com/leanprover-community/mathlib4/pull/13092).
 instance instLinearOrder : LinearOrder ℕ where
