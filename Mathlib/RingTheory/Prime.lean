@@ -3,11 +3,11 @@ Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Prime.Defs
 import Mathlib.Algebra.Ring.Units
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Prime elements in rings
@@ -22,8 +22,8 @@ variable {R : Type*} [CancelCommMonoidWithZero R]
 open Finset
 
 /-- If `x * y = a * ∏ i ∈ s, p i` where `p i` is always prime, then
-  `x` and `y` can both be written as a divisor of `a` multiplied by
-  a product over a subset of `s`  -/
+`x` and `y` can both be written as a divisor of `a` multiplied by
+a product over a subset of `s` -/
 theorem mul_eq_mul_prime_prod {α : Type*} [DecidableEq α] {x y a : R} {s : Finset α} {p : α → R}
     (hp : ∀ i ∈ s, Prime (p i)) (hx : x * y = a * ∏ i ∈ s, p i) :
     ∃ (t u : Finset α) (b c : R),

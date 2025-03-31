@@ -7,9 +7,9 @@ import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.Prime.Defs
-import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.Monotone.Defs
 
 /-!
 # Associated, prime, and irreducible elements.
@@ -28,8 +28,7 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists Multiset
+assert_not_exists OrderedCommMonoid Multiset
 
 variable {M N : Type*}
 

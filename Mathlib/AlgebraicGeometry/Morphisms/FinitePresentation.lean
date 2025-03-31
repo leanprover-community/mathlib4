@@ -59,7 +59,7 @@ instance locallyOfFinitePresentation_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g 
     LocallyOfFinitePresentation (f ≫ g) :=
   MorphismProperty.comp_mem _ f g hf hg
 
-lemma locallyOfFinitePresentation_isStableUnderBaseChange :
+instance locallyOfFinitePresentation_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @LocallyOfFinitePresentation :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.finitePresentation_isStableUnderBaseChange
 

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
 import Batteries.Data.RBMap.Alter
-import Mathlib.Logic.Basic
 import Mathlib.Tactic.CC.Datatypes
 import Mathlib.Tactic.CC.Lemmas
 import Mathlib.Tactic.Relation.Rfl
@@ -73,7 +72,7 @@ partial def isCongruent (e₁ e₂ : Expr) : CCM Bool := do
     e₂.withApp fun f₂ args₂ => do
       if ha : args₁.size = args₂.size then
         for hi : i in [:args₁.size] do
-          if (← getRoot (args₁[i]'hi.2)) != (← getRoot (args₂[i]'(ha.symm ▸ hi.2))) then
+          if (← getRoot args₁[i]) != (← getRoot (args₂[i]'(ha.symm ▸ hi.2.1))) then
             return false
         if f₁ == f₂ then return true
         else if (← getRoot f₁) != (← getRoot f₂) then
@@ -282,20 +281,20 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
   guard (← isEqv lhsFn rhsFn <||> pureIsDefEq lhsFn rhsFn)
   guard (← pureIsDefEq (← inferType lhsFn) (← inferType rhsFn))
   /- Create `r`, a proof for
-        `lhsFn lhsArgs[0] ... lhsArgs[n-1] = lhsFn rhsArgs[0] ... rhsArgs[n-1]`
+  `lhsFn lhsArgs[0] ... lhsArgs[n-1] = lhsFn rhsArgs[0] ... rhsArgs[n-1]`
      where `n := lhsArgs.size` -/
   let some specLemma ← mkCCHCongrTheorem lhsFn lhsArgs.size | failure
   let mut kindsIt := specLemma.argKinds
   let mut lemmaArgs : Array Expr := #[]
   for hi : i in [:lhsArgs.size] do
     guard !kindsIt.isEmpty
-    lemmaArgs := lemmaArgs.push (lhsArgs[i]'hi.2) |>.push (rhsArgs[i]'(ha.symm ▸ hi.2))
+    lemmaArgs := lemmaArgs.push lhsArgs[i] |>.push (rhsArgs[i]'(ha.symm ▸ hi.2.1))
     if kindsIt[0]! matches CongrArgKind.heq then
-      let some p ← getHEqProof (lhsArgs[i]'hi.2) (rhsArgs[i]'(ha.symm ▸ hi.2)) | failure
+      let some p ← getHEqProof lhsArgs[i] (rhsArgs[i]'(ha.symm ▸ hi.2.1)) | failure
       lemmaArgs := lemmaArgs.push p
     else
       guard (kindsIt[0]! matches .eq)
-      let some p ← getEqProof (lhsArgs[i]'hi.2) (rhsArgs[i]'(ha.symm ▸ hi.2)) | failure
+      let some p ← getEqProof lhsArgs[i] (rhsArgs[i]'(ha.symm ▸ hi.2.1)) | failure
       lemmaArgs := lemmaArgs.push p
     kindsIt := kindsIt.eraseIdx! 0
   let mut r := mkAppN specLemma.proof lemmaArgs
@@ -474,9 +473,9 @@ partial def getEqProofCore (e₁ e₂ : Expr) (asHEq : Bool) : CCM (Option Expr)
   -- 4. Build transitivity proof
   let mut pr? : Option Expr := none
   let mut lhs := e₁
-  for i in [:path₁.size] do
-    pr? ← some <$> mkTransOpt pr? (← mkProof lhs path₁[i]! Hs₁[i]! heqProofs) heqProofs
-    lhs := path₁[i]!
+  for h : i in [:path₁.size] do
+    pr? ← some <$> mkTransOpt pr? (← mkProof lhs path₁[i] Hs₁[i]! heqProofs) heqProofs
+    lhs := path₁[i]
   let mut i := Hs₂.size
   while i > 0 do
     i := i - 1
@@ -606,8 +605,8 @@ expression. -/
 def simplifyACStep (e : ACApps) : CCM (Option (ACApps × DelayedExpr)) := do
   if let .apps _ args := e then
     for h : i in [:args.size] do
-      if i == 0 || (args[i]'h.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) h.2)) then
-        let some ae := (← get).acEntries.find? (args[i]'h.2) | failure
+      if i == 0 || args[i] != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) h.2.1)) then
+        let some ae := (← get).acEntries.find? args[i] | failure
         let occs := ae.RLHSOccs
         let mut Rlhs? : Option ACApps := none
         for Rlhs in occs do

@@ -13,7 +13,6 @@ import Plausible
 import ImportGraph.Imports
 
 -- Import common Batteries tactics and commands
-import Batteries.Tactic.Where
 import Batteries.Tactic.Basic
 import Batteries.Tactic.HelpCmd
 
@@ -47,7 +46,7 @@ import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.DeprecateTo
-import Mathlib.Tactic.DeriveToExpr
+import Mathlib.Tactic.ErwQuestion
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.ExtractGoal
@@ -75,9 +74,8 @@ import Mathlib.Tactic.Observe
 import Mathlib.Tactic.OfNat
 -- `positivity` imports `Data.Nat.Factorial.Basic`, but hopefully this can be rearranged.
 -- import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
-import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Push
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl
@@ -129,11 +127,13 @@ import hierarchy.
 -/
 
 /-!
-# Register tactics with `hint`.
+# Register tactics with `hint`. Tactics are tried in reverse registration order.
 -/
 
 section Hint
 
+register_hint trivial
+register_hint tauto
 register_hint split
 register_hint intro
 register_hint aesop

@@ -25,7 +25,7 @@ namespace Grp
 @[simps]
 def toAddGrp : Grp ⥤ AddGrp where
   obj X := AddGrp.of (Additive X)
-  map {_} {_} := MonoidHom.toAdditive
+  map {_} {_} f := AddGrp.ofHom f.hom.toAdditive
 
 end Grp
 
@@ -36,7 +36,7 @@ namespace CommGrp
 @[simps]
 def toAddCommGrp : CommGrp ⥤ AddCommGrp where
   obj X := AddCommGrp.of (Additive X)
-  map {_} {_} := MonoidHom.toAdditive
+  map {_} {_} f := AddCommGrp.ofHom f.hom.toAdditive
 
 end CommGrp
 
@@ -47,7 +47,7 @@ namespace AddGrp
 @[simps]
 def toGrp : AddGrp ⥤ Grp where
   obj X := Grp.of (Multiplicative X)
-  map {_} {_} := AddMonoidHom.toMultiplicative
+  map {_} {_} f := Grp.ofHom f.hom.toMultiplicative
 
 end AddGrp
 
@@ -58,7 +58,7 @@ namespace AddCommGrp
 @[simps]
 def toCommGrp : AddCommGrp ⥤ CommGrp where
   obj X := CommGrp.of (Multiplicative X)
-  map {_} {_} := AddMonoidHom.toMultiplicative
+  map {_} {_} f := CommGrp.ofHom f.hom.toMultiplicative
 
 end AddCommGrp
 

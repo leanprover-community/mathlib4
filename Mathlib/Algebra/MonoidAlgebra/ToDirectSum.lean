@@ -13,7 +13,7 @@ import Mathlib.Data.Finsupp.ToDFinsupp
 This module provides conversions between `AddMonoidAlgebra` and `DirectSum`.
 The latter is essentially a dependent version of the former.
 
-Note that since `direct_sum.has_mul` combines indices additively, there is no equivalent to
+Note that since `DirectSum.instMul` combines indices additively, there is no equivalent to
 `MonoidAlgebra`.
 
 ## Main definitions
@@ -96,7 +96,7 @@ theorem AddMonoidAlgebra.toDirectSum_toAddMonoidAlgebra (f : AddMonoidAlgebra M 
 @[simp]
 theorem DirectSum.toAddMonoidAlgebra_toDirectSum (f : ⨁ _ : ι, M) :
     f.toAddMonoidAlgebra.toDirectSum = f :=
-  (DFinsupp.toFinsupp_toDFinsupp (show Π₀ _ : ι, M from f) : _)
+  (DFinsupp.toFinsupp_toDFinsupp (show Π₀ _ : ι, M from f) :)
 
 end
 
@@ -119,6 +119,36 @@ theorem toDirectSum_add [Semiring M] (f g : AddMonoidAlgebra M ι) :
   Finsupp.toDFinsupp_add _ _
 
 @[simp]
+theorem toDirectSum_natCast [DecidableEq ι] [AddMonoid ι] [Semiring M] (n : ℕ) :
+    (n : AddMonoidAlgebra M ι).toDirectSum = n :=
+  Finsupp.toDFinsupp_single _ _
+
+@[simp]
+theorem toDirectSum_ofNat [DecidableEq ι] [AddMonoid ι] [Semiring M] (n : ℕ) [n.AtLeastTwo] :
+    (ofNat(n) : AddMonoidAlgebra M ι).toDirectSum = ofNat(n) :=
+  Finsupp.toDFinsupp_single _ _
+
+@[simp]
+theorem toDirectSum_sub [Ring M] (f g : AddMonoidAlgebra M ι) :
+    (f - g).toDirectSum = f.toDirectSum - g.toDirectSum :=
+  Finsupp.toDFinsupp_sub _ _
+
+@[simp]
+theorem toDirectSum_neg [Ring M] (f : AddMonoidAlgebra M ι) :
+    (- f).toDirectSum = - f.toDirectSum :=
+  Finsupp.toDFinsupp_neg _
+
+@[simp]
+theorem toDirectSum_intCast [DecidableEq ι] [AddMonoid ι] [Ring M] (z : ℤ) :
+    (Int.cast z : AddMonoidAlgebra M ι).toDirectSum = z :=
+  Finsupp.toDFinsupp_single _ _
+
+@[simp]
+theorem toDirectSum_one [DecidableEq ι] [Zero ι] [Semiring M] :
+    (1 : AddMonoidAlgebra M ι).toDirectSum = 1 :=
+  Finsupp.toDFinsupp_single _ _
+
+@[simp]
 theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddMonoidAlgebra M ι) :
     (f * g).toDirectSum = f.toDirectSum * g.toDirectSum := by
   let to_hom : AddMonoidAlgebra M ι →+ ⨁ _ : ι, M :=
@@ -126,31 +156,10 @@ theorem toDirectSum_mul [DecidableEq ι] [AddMonoid ι] [Semiring M] (f g : AddM
     map_zero' := toDirectSum_zero
     map_add' := toDirectSum_add }
   show to_hom (f * g) = to_hom f * to_hom g
-  let _ : NonUnitalNonAssocSemiring (ι →₀ M) := AddMonoidAlgebra.nonUnitalNonAssocSemiring
   revert f g
   rw [AddMonoidHom.map_mul_iff]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): does not find `addHom_ext'`, was `ext (xi xv yi yv) : 4`
-  refine Finsupp.addHom_ext' fun xi => AddMonoidHom.ext fun xv => ?_
-  refine Finsupp.addHom_ext' fun yi => AddMonoidHom.ext fun yv => ?_
-  dsimp only [AddMonoidHom.comp_apply, AddMonoidHom.compl₂_apply, AddMonoidHom.compr₂_apply,
-    AddMonoidHom.mul_apply, Finsupp.singleAddHom_apply]
-  -- This was not needed before https://github.com/leanprover/lean4/pull/2644
-  erw [AddMonoidHom.compl₂_apply]
-  -- If we remove the next `rw`, the `erw` after it will complain (when we get an `erw` linter)
-  -- that it could be a `rw`. But the `erw` and `rw` will rewrite different occurrences.
-  -- So first get rid of the `rw`-able occurrences to force `erw` to do the expensive rewrite only.
-  rw [AddMonoidHom.coe_mk, AddMonoidHom.coe_mk]
-  -- This was not needed before https://github.com/leanprover/lean4/pull/2644
-  erw [AddMonoidHom.coe_mk]
-  simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, toDirectSum_single]
-  -- This was not needed before https://github.com/leanprover/lean4/pull/2644
-  dsimp
-  rw [AddMonoidAlgebra.single_mul_single, AddMonoidHom.coe_mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
-    AddMonoidAlgebra.toDirectSum_single]
-  simp only [AddMonoidHom.coe_comp, AddMonoidHom.coe_mul, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
-    Function.comp_apply, toDirectSum_single, AddMonoidHom.id_apply, Finsupp.singleAddHom_apply,
-    AddMonoidHom.coe_mulLeft]
-  rw [DirectSum.of_mul_of, Mul.gMul_mul]
+  ext xi xv yi yv : 4
+  simp [to_hom, AddMonoidAlgebra.single_mul_single, DirectSum.of_mul_of]
 
 end AddMonoidAlgebra
 
@@ -167,6 +176,37 @@ theorem toAddMonoidAlgebra_zero [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :
 theorem toAddMonoidAlgebra_add [Semiring M] [∀ m : M, Decidable (m ≠ 0)] (f g : ⨁ _ : ι, M) :
     (f + g).toAddMonoidAlgebra = toAddMonoidAlgebra f + toAddMonoidAlgebra g :=
   DFinsupp.toFinsupp_add _ _
+
+@[simp]
+theorem toAddMonoidAlgebra_natCast [AddMonoid ι] [Semiring M] [∀ m : M, Decidable (m ≠ 0)] (n : ℕ) :
+    (n : ⨁ _ : ι, M).toAddMonoidAlgebra = n :=
+  DFinsupp.toFinsupp_single _ _
+
+@[simp]
+theorem toAddMonoidAlgebra_ofNat [AddMonoid ι] [Semiring M] [∀ m : M, Decidable (m ≠ 0)] (n : ℕ)
+    [n.AtLeastTwo] :
+    (ofNat(n) : ⨁ _ : ι, M).toAddMonoidAlgebra = ofNat(n) :=
+  DFinsupp.toFinsupp_single _ _
+
+@[simp]
+theorem toAddMonoidAlgebra_sub [Ring M] [∀ m : M, Decidable (m ≠ 0)] (f g : ⨁ _ : ι, M) :
+    (f - g).toAddMonoidAlgebra = toAddMonoidAlgebra f - toAddMonoidAlgebra g :=
+  DFinsupp.toFinsupp_sub _ _
+
+@[simp]
+theorem toAddMonoidAlgebra_neg [Ring M] [∀ m : M, Decidable (m ≠ 0)] (f : ⨁ _ : ι, M) :
+    (- f).toAddMonoidAlgebra = - toAddMonoidAlgebra f :=
+  DFinsupp.toFinsupp_neg _
+
+@[simp]
+theorem toAddMonoidAlgebra_intCast [AddMonoid ι] [Ring M] [∀ m : M, Decidable (m ≠ 0)] (z : ℤ) :
+    (z : ⨁ _ : ι, M).toAddMonoidAlgebra = z :=
+  DFinsupp.toFinsupp_single _ _
+
+@[simp]
+theorem toAddMonoidAlgebra_one [Zero ι] [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :
+    (1 : ⨁ _ : ι, M).toAddMonoidAlgebra = 1 :=
+  DFinsupp.toFinsupp_single _ _
 
 @[simp]
 theorem toAddMonoidAlgebra_mul [AddMonoid ι] [Semiring M]
@@ -188,7 +228,7 @@ section Equivs
 
 /-- `AddMonoidAlgebra.toDirectSum` and `DirectSum.toAddMonoidAlgebra` together form an
 equiv. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def addMonoidAlgebraEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :
     AddMonoidAlgebra M ι ≃ ⨁ _ : ι, M :=
   { finsuppEquivDFinsupp with
@@ -196,7 +236,7 @@ def addMonoidAlgebraEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, Dec
     invFun := DirectSum.toAddMonoidAlgebra }
 
 /-- The additive version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def addMonoidAlgebraAddEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :
     AddMonoidAlgebra M ι ≃+ ⨁ _ : ι, M :=
   { addMonoidAlgebraEquivDirectSum with
@@ -205,7 +245,7 @@ def addMonoidAlgebraAddEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, 
     map_add' := AddMonoidAlgebra.toDirectSum_add }
 
 /-- The ring version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def addMonoidAlgebraRingEquivDirectSum [DecidableEq ι] [AddMonoid ι] [Semiring M]
     [∀ m : M, Decidable (m ≠ 0)] : AddMonoidAlgebra M ι ≃+* ⨁ _ : ι, M :=
   { (addMonoidAlgebraAddEquivDirectSum : AddMonoidAlgebra M ι ≃+ ⨁ _ : ι, M) with
@@ -214,12 +254,24 @@ def addMonoidAlgebraRingEquivDirectSum [DecidableEq ι] [AddMonoid ι] [Semiring
     map_mul' := AddMonoidAlgebra.toDirectSum_mul }
 
 /-- The algebra version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def addMonoidAlgebraAlgEquivDirectSum [DecidableEq ι] [AddMonoid ι] [CommSemiring R] [Semiring A]
     [Algebra R A] [∀ m : A, Decidable (m ≠ 0)] : AddMonoidAlgebra A ι ≃ₐ[R] ⨁ _ : ι, A :=
   { (addMonoidAlgebraRingEquivDirectSum : AddMonoidAlgebra A ι ≃+* ⨁ _ : ι, A) with
     toFun := AddMonoidAlgebra.toDirectSum
     invFun := DirectSum.toAddMonoidAlgebra
     commutes' := fun _r => AddMonoidAlgebra.toDirectSum_single _ _ }
+
+@[simp]
+theorem AddMonoidAlgebra.toDirectSum_pow [DecidableEq ι] [AddMonoid ι] [Semiring M]
+    (f : AddMonoidAlgebra M ι) (n : ℕ) :
+    (f ^ n).toDirectSum = f.toDirectSum ^ n := by
+  classical exact map_pow addMonoidAlgebraRingEquivDirectSum f n
+
+@[simp]
+theorem DirectSum.toAddMonoidAlgebra_pow [DecidableEq ι] [AddMonoid ι] [Semiring M]
+    [∀ m : M, Decidable (m ≠ 0)] (f : ⨁ _ : ι, M) (n : ℕ):
+    (f ^ n).toAddMonoidAlgebra = toAddMonoidAlgebra f ^ n :=  by
+  classical exact map_pow addMonoidAlgebraRingEquivDirectSum.symm f n
 
 end Equivs

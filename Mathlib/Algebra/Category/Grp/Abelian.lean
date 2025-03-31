@@ -36,8 +36,7 @@ def normalEpi (_ : Epi f) : NormalEpi f :=
 
 /-- The category of abelian groups is abelian. -/
 instance : Abelian AddCommGrp.{u} where
-  has_finite_products := ⟨HasFiniteProducts.out⟩
-  normalMonoOfMono := normalMono
-  normalEpiOfEpi := normalEpi
+  normalMonoOfMono f hf := ⟨normalMono f hf⟩
+  normalEpiOfEpi f hf := ⟨normalEpi f hf⟩
 
 end AddCommGrp

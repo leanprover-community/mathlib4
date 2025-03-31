@@ -175,7 +175,7 @@ alias closedEmbedding := isClosedEmbedding
 theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
   AntilipschitzWith.id.restrict s
 
-@[nontriviality] -- Porting note: added `nontriviality`
+@[nontriviality]
 theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by
   simp only [Subsingleton.elim x y, edist_self, zero_le]
 
@@ -207,7 +207,7 @@ protected theorem properSpace {α : Type*} [MetricSpace α] {K : ℝ≥0} {f : �
     ProperSpace β := by
   refine ⟨fun x₀ r => ?_⟩
   let K := f ⁻¹' closedBall x₀ r
-  have A : IsClosed K := isClosed_ball.preimage f_cont
+  have A : IsClosed K := isClosed_closedBall.preimage f_cont
   have B : IsBounded K := hK.isBounded_preimage isBounded_closedBall
   have : IsCompact K := isCompact_iff_isClosed_bounded.2 ⟨A, B⟩
   convert this.image f_cont
@@ -235,8 +235,3 @@ end AntilipschitzWith
 theorem LipschitzWith.to_rightInverse [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0}
     {f : α → β} (hf : LipschitzWith K f) {g : β → α} (hg : Function.RightInverse g f) :
     AntilipschitzWith K g := fun x y => by simpa only [hg _] using hf (g x) (g y)
-
-/-- The preimage of a proper space under a Lipschitz homeomorphism is proper. -/
-protected theorem LipschitzWith.properSpace [PseudoMetricSpace α] [MetricSpace β] [ProperSpace β]
-    {K : ℝ≥0} {f : α ≃ₜ β} (hK : LipschitzWith K f) : ProperSpace α :=
-  (hK.to_rightInverse f.right_inv).properSpace f.symm.continuous f.symm.surjective

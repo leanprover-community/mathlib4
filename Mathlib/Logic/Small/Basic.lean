@@ -36,8 +36,8 @@ instance (priority := 100) small_subsingleton (α : Type v) [Subsingleton α] : 
   · apply small_map Equiv.punitOfNonemptyOfSubsingleton
 
 /-- This can be seen as a version of `small_of_surjective` in which the function `f` doesn't
-    actually land in `β` but in some larger type `γ` related to `β` via an injective function `g`.
-    -/
+actually land in `β` but in some larger type `γ` related to `β` via an injective function `g`.
+-/
 theorem small_of_injective_of_exists {α : Type v} {β : Type w} {γ : Type v'} [Small.{u} α]
     (f : α → γ) {g : β → γ} (hg : Function.Injective g) (h : ∀ b : β, ∃ a : α, f a = g b) :
     Small.{u} β := by

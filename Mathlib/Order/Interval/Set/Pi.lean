@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Order.Interval.Set.UnorderedInterval
-import Mathlib.Data.Set.Lattice
 
 /-!
 # Intervals in `pi`-space

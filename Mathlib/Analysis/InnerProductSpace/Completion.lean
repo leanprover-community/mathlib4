@@ -84,34 +84,26 @@ protected theorem continuous_inner :
         inner' p.1 p.2)
   exact (isDenseInducing_toCompl E).extend_Z_bilin (isDenseInducing_toCompl E) this
 
+@[fun_prop]
 protected theorem Continuous.inner {α : Type*} [TopologicalSpace α] {f g : α → Completion E}
     (hf : Continuous f) (hg : Continuous g) : Continuous (fun x : α => inner (f x) (g x) : α → 𝕜) :=
-  UniformSpace.Completion.continuous_inner.comp (hf.prod_mk hg : _)
+  UniformSpace.Completion.continuous_inner.comp (hf.prodMk hg :)
 
 instance innerProductSpace : InnerProductSpace 𝕜 (Completion E) where
   norm_sq_eq_inner x :=
-    Completion.induction_on x
-      (isClosed_eq (continuous_norm.pow 2)
-        (continuous_re.comp (Continuous.inner continuous_id' continuous_id')))
+    Completion.induction_on x (isClosed_eq (by fun_prop) (by fun_prop))
       fun a => by simp only [norm_coe, inner_coe, inner_self_eq_norm_sq]
   conj_symm x y :=
     Completion.induction_on₂ x y
-      (isClosed_eq (continuous_conj.comp (Continuous.inner continuous_snd continuous_fst))
-        (Continuous.inner continuous_fst continuous_snd))
+      (isClosed_eq (continuous_conj.comp (by fun_prop)) (by fun_prop))
       fun a b => by simp only [inner_coe, inner_conj_symm]
   add_left x y z :=
-    Completion.induction_on₃ x y z
-      (isClosed_eq
-        (Continuous.inner (continuous_fst.add (continuous_fst.comp continuous_snd))
-          (continuous_snd.comp continuous_snd))
-        ((Continuous.inner continuous_fst (continuous_snd.comp continuous_snd)).add
-          (Continuous.inner (continuous_fst.comp continuous_snd)
-            (continuous_snd.comp continuous_snd))))
+    Completion.induction_on₃ x y z (isClosed_eq (by fun_prop) (by fun_prop))
       fun a b c => by simp only [← coe_add, inner_coe, inner_add_left]
   smul_left x y c :=
     Completion.induction_on₂ x y
       (isClosed_eq (Continuous.inner (continuous_fst.const_smul c) continuous_snd)
-        ((continuous_mul_left _).comp (Continuous.inner continuous_fst continuous_snd)))
+        ((continuous_mul_left _).comp (by fun_prop)))
       fun a b => by simp only [← coe_smul c a, inner_coe, inner_smul_left]
 
 end UniformSpace.Completion

@@ -3,7 +3,6 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Parity
@@ -72,7 +71,6 @@ attribute [bound] pow_le_one₀ one_le_pow₀
 @[deprecated (since := "2024-09-28")] alias one_lt_pow := one_lt_pow₀
 @[deprecated (since := "2024-10-04")] alias pow_right_mono := pow_right_mono₀
 @[deprecated (since := "2024-10-04")] alias pow_le_pow_right := pow_le_pow_right₀
-@[deprecated (since := "2024-10-04")] alias le_self_pow := le_self_pow₀
 
 @[deprecated pow_le_pow_left₀ (since := "2024-11-13")]
 theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^ n :=
@@ -195,6 +193,10 @@ theorem sq_eq_sq {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 = b ^ 2 ↔ a =
 @[deprecated lt_of_mul_self_lt_mul_self₀ (since := "2024-11-12")]
 theorem lt_of_mul_self_lt_mul_self (hb : 0 ≤ b) : a * a < b * b → a < b :=
   lt_of_mul_self_lt_mul_self₀ hb
+
+/-- A function `f : α → R` is nonarchimedean if it satisfies the ultrametric inequality
+  `f (a + b) ≤ max (f a) (f b)` for all `a b : α`. -/
+def IsNonarchimedean {α : Type*} [Add α] (f : α → R) : Prop := ∀ a b : α, f (a + b) ≤ f a ⊔ f b
 
 /-!
 ### Lemmas for canonically linear ordered semirings or linear ordered rings

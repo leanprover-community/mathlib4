@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Tactic.GCongr
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.EMetricSpace.Basic
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # (Extended) metric spaces are paracompact
@@ -39,11 +39,11 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
   /- We start with trivial observations about `1 / 2 ^ k`. Here and below we use `1 / 2 ^ k` in
     the comments and `2⁻¹ ^ k` in the code. -/
   have pow_pos : ∀ k : ℕ, (0 : ℝ≥0∞) < 2⁻¹ ^ k := fun k =>
-    ENNReal.pow_pos (ENNReal.inv_pos.2 ENNReal.two_ne_top) _
+    ENNReal.pow_pos (ENNReal.inv_pos.2 ENNReal.ofNat_ne_top) _
   have hpow_le : ∀ {m n : ℕ}, m ≤ n → (2⁻¹ : ℝ≥0∞) ^ n ≤ 2⁻¹ ^ m := @fun m n h =>
     pow_le_pow_right_of_le_one' (ENNReal.inv_le_one.2 ENNReal.one_lt_two.le) h
   have h2pow : ∀ n : ℕ, 2 * (2⁻¹ : ℝ≥0∞) ^ (n + 1) = 2⁻¹ ^ n := fun n => by
-    simp [pow_succ', ← mul_assoc, ENNReal.mul_inv_cancel two_ne_zero two_ne_top]
+    simp [pow_succ', ← mul_assoc, ENNReal.mul_inv_cancel two_ne_zero ofNat_ne_top]
   -- Consider an open covering `S : Set (Set α)`
   refine ⟨fun ι s ho hcov => ?_⟩
   simp only [iUnion_eq_univ_iff] at hcov
@@ -159,7 +159,6 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     refine ⟨I.1, ?_, I.2, hI, rfl⟩
     exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
 
--- Porting note: no longer an instance because `inferInstance` can find it
 theorem t4Space [EMetricSpace α] : T4Space α := inferInstance
 
 end EMetric

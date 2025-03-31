@@ -8,7 +8,7 @@ import Mathlib.Algebra.CharP.LinearMaps
 import Mathlib.Algebra.CharP.Subring
 import Mathlib.Algebra.GroupWithZero.Conj
 import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.FieldTheory.PurelyInseparable
+import Mathlib.FieldTheory.PurelyInseparable.Basic
 
 /-!
 # The Jacobson-Noether theorem
@@ -164,7 +164,7 @@ theorem exists_separable_and_not_isCentral (H : k ≠ (⊤ : Subring D)) :
   apply_fun (· ^ (p ^ r)) at deq
   rw [add_pow_expChar_pow_of_commute p r (Commute.one_left _) , one_pow,
     GroupWithZero.conj_pow₀ ha₀, ← hr.comm, mul_assoc, inv_mul_cancel₀ ha₀, mul_one,
-    self_eq_add_left] at deq
+    right_eq_add] at deq
   exact one_ne_zero deq
 
 open Subring Algebra in

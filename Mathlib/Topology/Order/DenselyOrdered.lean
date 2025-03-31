@@ -48,7 +48,7 @@ theorem closure_Iio (a : α) [NoMinOrder α] : closure (Iio a) = Iic a :=
 theorem closure_Ioo {a b : α} (hab : a ≠ b) : closure (Ioo a b) = Icc a b := by
   apply Subset.antisymm
   · exact closure_minimal Ioo_subset_Icc_self isClosed_Icc
-  · cases' hab.lt_or_lt with hab hab
+  · rcases hab.lt_or_lt with hab | hab
     · rw [← diff_subset_closure_iff, Icc_diff_Ioo_same hab.le]
       have hab' : (Ioo a b).Nonempty := nonempty_Ioo.2 hab
       simp only [insert_subset_iff, singleton_subset_iff]
@@ -128,7 +128,8 @@ theorem Ioc_subset_closure_interior (a b : α) : Ioc a b ⊆ closure (interior (
         closure_mono (interior_maximal Ioo_subset_Ioc_self isOpen_Ioo)
 
 theorem Ico_subset_closure_interior (a b : α) : Ico a b ⊆ closure (interior (Ico a b)) := by
-  simpa only [dual_Ioc] using Ioc_subset_closure_interior (OrderDual.toDual b) (OrderDual.toDual a)
+  simpa only [Ioc_toDual] using
+    Ioc_subset_closure_interior (OrderDual.toDual b) (OrderDual.toDual a)
 
 @[simp]
 theorem frontier_Ici' {a : α} (ha : (Iio a).Nonempty) : frontier (Ici a) = {a} := by
@@ -239,11 +240,11 @@ theorem comap_coe_nhdsLT_of_Ioo_subset (hb : s ⊆ Iio b) (hs : s.Nonempty → �
 @[deprecated (since := "2024-12-22")]
 alias comap_coe_nhdsWithin_Iio_of_Ioo_subset := comap_coe_nhdsLT_of_Ioo_subset
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem comap_coe_nhdsGT_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : s.Nonempty → ∃ b > a, Ioo a b ⊆ s) :
-    comap ((↑) : s → α) (𝓝[>] a) = atBot :=
-  comap_coe_nhdsLT_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha) fun h => by
-    simpa only [OrderDual.exists, dual_Ioo] using hs h
+    comap ((↑) : s → α) (𝓝[>] a) = atBot := by
+  apply comap_coe_nhdsLT_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha)
+  simp only [OrderDual.exists, Ioo_toDual]
+  exact hs
 
 @[deprecated (since := "2024-12-22")]
 alias comap_coe_nhdsWithin_Ioi_of_Ioo_subset := comap_coe_nhdsGT_of_Ioo_subset
@@ -259,10 +260,10 @@ theorem map_coe_atTop_of_Ioo_subset (hb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a <
 
 theorem map_coe_atBot_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : ∀ b' > a, ∃ b > a, Ioo a b ⊆ s) :
     map ((↑) : s → α) atBot = 𝓝[>] a := by
-  -- the elaborator gets stuck without `(... : _)`
+  -- the elaborator gets stuck without `(... :)`
   refine (map_coe_atTop_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha)
-    fun b' hb' => ?_ : _)
-  simpa only [OrderDual.exists, dual_Ioo] using hs b' hb'
+    fun b' hb' => ?_ :)
+  simpa using hs b' hb'
 
 /-- The `atTop` filter for an open interval `Ioo a b` comes from the left-neighbourhoods filter at
 the right endpoint in the ambient order. -/
@@ -374,8 +375,7 @@ theorem Dense.exists_countable_dense_subset_no_bot_top [Nontrivial α] {s : Set 
   · simp [hx]
   · simp [hx]
 
-variable (α)
-
+variable (α) in
 /-- If `α` is a nontrivial separable dense linear order, then there exists a
 countable dense set `s : Set α` that contains neither top nor bottom elements of `α`.
 For a dense set containing both bot and top elements, see
@@ -383,5 +383,29 @@ For a dense set containing both bot and top elements, see
 theorem exists_countable_dense_no_bot_top [SeparableSpace α] [Nontrivial α] :
     ∃ s : Set α, s.Countable ∧ Dense s ∧ (∀ x, IsBot x → x ∉ s) ∧ ∀ x, IsTop x → x ∉ s := by
   simpa using dense_univ.exists_countable_dense_subset_no_bot_top
+
+/-- `Set.Ico a b` is only closed if it is empty. -/
+@[simp]
+theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
+  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  have := h.closure_eq
+  rw [closure_Ico hab.ne, Icc_eq_Ico_same_iff] at this
+  exact this hab.le
+
+/-- `Set.Ioc a b` is only closed if it is empty. -/
+@[simp]
+theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
+  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  have := h.closure_eq
+  rw [closure_Ioc hab.ne, Icc_eq_Ioc_same_iff] at this
+  exact this hab.le
+
+/-- `Set.Ioo a b` is only closed if it is empty. -/
+@[simp]
+theorem isClosed_Ioo_iff {a b : α} : IsClosed (Set.Ioo a b) ↔ b ≤ a := by
+  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  have := h.closure_eq
+  rw [closure_Ioo hab.ne, Icc_eq_Ioo_same_iff] at this
+  exact this hab.le
 
 end DenselyOrdered

@@ -55,7 +55,7 @@ namespace Functor
 -- "weigh more" than structural maps.
 -- (However by this argument `associativity` is currently stated backwards!)
 /-- A functor `F : C ⥤ D` between monoidal categories is lax monoidal if it is
-equipped with morphisms `ε : 𝟙 _D ⟶ F.obj (𝟙_ C)` and `μ X Y : F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y)`,
+equipped with morphisms `ε : 𝟙_ D ⟶ F.obj (𝟙_ C)` and `μ X Y : F.obj X ⊗ F.obj Y ⟶ F.obj (X ⊗ Y)`,
 satisfying the appropriate coherences. -/
 class LaxMonoidal where
   /-- unit morphism -/
@@ -90,7 +90,7 @@ section
 
 variable [F.LaxMonoidal]
 
-/-- the unit morphism of a lax monoidal functor-/
+/-- the unit morphism of a lax monoidal functor -/
 def ε : 𝟙_ D ⟶ F.obj (𝟙_ C) := ε'
 
 /-- the tensorator of a lax monoidal functor -/
@@ -273,7 +273,7 @@ section
 
 variable [F.OplaxMonoidal]
 
-/-- the counit morphism of a lax monoidal functor-/
+/-- the counit morphism of a lax monoidal functor -/
 def η : F.obj (𝟙_ C) ⟶ 𝟙_ D := η'
 
 /-- the cotensorator of an oplax monoidal functor -/
@@ -311,7 +311,7 @@ theorem δ_natural {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
   simp [tensorHom_def]
 
 @[reassoc (attr := simp)]
-theorem left_unitality_hom  (X : C) :
+theorem left_unitality_hom (X : C) :
     δ F (𝟙_ C) X ≫ η F ▷ F.obj X ≫ (λ_ (F.obj X)).hom = F.map (λ_ X).hom := by
   rw [← Category.assoc, ← Iso.eq_comp_inv, left_unitality, ← Category.assoc,
     ← F.map_comp, Iso.hom_inv_id, F.map_id, id_comp]

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.RingTheory.AlgebraTower
 import Mathlib.SetTheory.Cardinal.Finsupp
@@ -25,12 +24,12 @@ noncomputable section
 
 universe u v v' w
 
-open Cardinal Basis Submodule Function Set DirectSum Module
+open Cardinal Basis Submodule Function Set Module
 
 section Tower
 
 variable (F : Type u) (K : Type v) (A : Type w)
-variable [Ring F] [Ring K] [AddCommGroup A]
+variable [Semiring F] [Semiring K] [AddCommMonoid A]
 variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
 variable [StrongRankCondition F] [StrongRankCondition K] [Module.Free F K] [Module.Free K A]
 
@@ -67,10 +66,10 @@ theorem Module.finrank_mul_finrank : finrank F K * finrank K A = finrank F A := 
 end Tower
 
 variable {R : Type u} {M M₁ : Type v} {M' : Type v'}
-variable [Ring R] [StrongRankCondition R]
-variable [AddCommGroup M] [Module R M] [Module.Free R M]
-variable [AddCommGroup M'] [Module R M'] [Module.Free R M']
-variable [AddCommGroup M₁] [Module R M₁] [Module.Free R M₁]
+variable [Semiring R] [StrongRankCondition R]
+variable [AddCommMonoid M] [Module R M] [Module.Free R M]
+variable [AddCommMonoid M'] [Module R M'] [Module.Free R M']
+variable [AddCommMonoid M₁] [Module R M₁] [Module.Free R M₁]
 
 namespace Module.Free
 
@@ -164,6 +163,11 @@ noncomputable def LinearEquiv.ofFinrankEq [Module.Finite R M] [Module.Finite R M
 variable {M M'}
 
 namespace Module
+
+/-- A free module of rank zero is trivial. -/
+lemma subsingleton_of_rank_zero (h : Module.rank R M = 0) : Subsingleton M := by
+  rw [← Basis.mk_eq_rank'' (Module.Free.chooseBasis R M), Cardinal.mk_eq_zero_iff] at h
+  exact (Module.Free.repr R M).subsingleton
 
 /-- See `rank_lt_aleph0` for the inverse direction without `Module.Free R M`. -/
 lemma rank_lt_aleph0_iff : Module.rank R M < ℵ₀ ↔ Module.Finite R M := by

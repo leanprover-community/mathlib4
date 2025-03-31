@@ -6,7 +6,7 @@ Authors: Kim Morrison, Floris van Doorn
 import Mathlib.CategoryTheory.Limits.Filtered
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 
 /-!
 # Limits in `C` give colimits in `Cᵒᵖ`.
@@ -32,10 +32,6 @@ namespace CategoryTheory.Limits
 variable {C : Type u₁} [Category.{v₁} C]
 variable {J : Type u₂} [Category.{v₂} J]
 
-@[deprecated (since := "2024-03-26")] alias isLimitCoconeOp := IsColimit.op
-@[deprecated (since := "2024-03-26")] alias isColimitConeOp := IsLimit.op
-@[deprecated (since := "2024-03-26")] alias isLimitCoconeUnop := IsColimit.unop
-@[deprecated (since := "2024-03-26")] alias isColimitConeUnop := IsLimit.unop
 
 /-- Turn a colimit for `F : J ⥤ Cᵒᵖ` into a limit for `F.leftOp : Jᵒᵖ ⥤ C`. -/
 @[simps]
@@ -564,7 +560,7 @@ instance : HasLimit (Discrete.functor Z).op := hasLimit_op_of_hasColimit (Discre
 instance : HasLimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op) :=
   hasLimitEquivalenceComp (Discrete.opposite α).symm
 
-instance : HasProduct (op <| Z ·) := hasLimitOfIso
+instance : HasProduct (op <| Z ·) := hasLimit_of_iso
   ((Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl)) :
     (Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op ≅
     Discrete.functor (op <| Z ·))
@@ -581,9 +577,7 @@ noncomputable def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit 
   refine IsLimit.ofIsoLimit ((IsLimit.postcomposeInvEquiv e _).2
     (IsLimit.whiskerEquivalence hc.op (Discrete.opposite α).symm))
     (Cones.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
-  dsimp
-  erw [Category.id_comp, Category.comp_id]
-  rfl
+  simp [e, Cofan.inj]
 
 /--
 The canonical isomorphism from the opposite of an abstract coproduct to the corresponding product
@@ -661,7 +655,7 @@ instance : HasColimit (Discrete.functor Z).op := hasColimit_op_of_hasLimit (Disc
 instance : HasColimit ((Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op) :=
   hasColimit_equivalence_comp (Discrete.opposite α).symm
 
-instance : HasCoproduct (op <| Z ·) := hasColimitOfIso
+instance : HasCoproduct (op <| Z ·) := hasColimit_of_iso
   ((Discrete.natIsoFunctor ≪≫ Discrete.natIso (fun _ ↦ by rfl)) :
     (Discrete.opposite α).inverse ⋙ (Discrete.functor Z).op ≅
     Discrete.functor (op <| Z ·)).symm
@@ -875,7 +869,6 @@ def opSpan {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z) :
 
 namespace PushoutCocone
 
--- Porting note: it was originally @[simps (config := lemmasOnly)]
 /-- The obvious map `PushoutCocone f g → PullbackCone f.unop g.unop` -/
 @[simps!]
 def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
@@ -888,9 +881,8 @@ theorem unop_fst {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocon
     c.unop.fst = c.inl.unop := by simp
 
 theorem unop_snd {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
-    c.unop.snd = c.inr.unop := by aesop_cat
+    c.unop.snd = c.inr.unop := by simp
 
--- Porting note: it was originally @[simps (config := lemmasOnly)]
 /-- The obvious map `PushoutCocone f.op g.op → PullbackCone f g` -/
 @[simps!]
 def op {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : PullbackCone f.op g.op :=
@@ -898,16 +890,15 @@ def op {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : Pullbac
     (Cone.whisker walkingSpanOpEquiv.inverse (Cocone.op c))
 
 theorem op_fst {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
-    c.op.fst = c.inl.op := by aesop_cat
+    c.op.fst = c.inl.op := by simp
 
 theorem op_snd {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
-    c.op.snd = c.inr.op := by aesop_cat
+    c.op.snd = c.inr.op := by simp
 
 end PushoutCocone
 
 namespace PullbackCone
 
--- Porting note: it was originally @[simps (config := lemmasOnly)]
 /-- The obvious map `PullbackCone f g → PushoutCocone f.unop g.unop` -/
 @[simps!]
 def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
@@ -917,10 +908,10 @@ def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
       (Cone.whisker walkingSpanOpEquiv.functor c))
 
 theorem unop_inl {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
-    c.unop.inl = c.fst.unop := by aesop_cat
+    c.unop.inl = c.fst.unop := by simp
 
 theorem unop_inr {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
-    c.unop.inr = c.snd.unop := by aesop_cat
+    c.unop.inr = c.snd.unop := by simp
 
 /-- The obvious map `PullbackCone f g → PushoutCocone f.op g.op` -/
 @[simps!]
@@ -929,10 +920,10 @@ def op {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : PushoutC
     (Cocone.whisker walkingCospanOpEquiv.inverse (Cone.op c))
 
 theorem op_inl {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
-    c.op.inl = c.fst.op := by aesop_cat
+    c.op.inl = c.fst.op := by simp
 
 theorem op_inr {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
-    c.op.inr = c.snd.op := by aesop_cat
+    c.op.inr = c.snd.op := by simp
 
 /-- If `c` is a pullback cone, then `c.op.unop` is isomorphic to `c`. -/
 def opUnop {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.op.unop ≅ c :=

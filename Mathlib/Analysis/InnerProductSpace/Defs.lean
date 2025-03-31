@@ -141,7 +141,6 @@ attribute [class] PreInnerProductSpace.Core
 
 /-- A structure requiring that a scalar product is positive definite. Some theorems that
 require this assumptions are put under section `InnerProductSpace.Core`. -/
--- @[nolint HasNonemptyInstance] porting note: I don't think we have this linter anymore
 structure InnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
   [Module 𝕜 F] extends PreInnerProductSpace.Core 𝕜 F where
   /-- The inner product is positive definite. -/
@@ -193,12 +192,16 @@ variable [AddCommGroup F] [Module 𝕜 F] [c : PreInnerProductSpace.Core 𝕜 F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 F _ x y
 
+/-- Local notation for `RCLike.normSq 𝕜` -/
 local notation "normSqK" => @RCLike.normSq 𝕜 _
 
+/-- Local notation for `RCLike.re 𝕜` -/
 local notation "reK" => @RCLike.re 𝕜 _
 
+/-- Local notation for `RCLike.ext_iff 𝕜` -/
 local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
 
+/-- Local notation for `starRingEnd _` -/
 local postfix:90 "†" => starRingEnd _
 
 /-- Inner product defined by the `PreInnerProductSpace.Core` structure. We can't reuse
@@ -213,6 +216,7 @@ attribute [local instance] toPreInner'
 def normSq (x : F) :=
   reK ⟪x, x⟫
 
+/-- The norm squared function for `PreInnerProductSpace.Core` structure. -/
 local notation "normSqF" => @normSq 𝕜 F _ _ _ _
 
 theorem inner_conj_symm (x y : F) : ⟪y, x⟫† = ⟪x, y⟫ :=

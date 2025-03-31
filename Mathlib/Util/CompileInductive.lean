@@ -242,6 +242,7 @@ compile_inductive% False
 compile_inductive% Empty
 compile_inductive% Bool
 compile_inductive% Sigma
+compile_inductive% Option
 
 -- In addition to the manual implementation below, we also have to override the `Float.val` and
 -- `Float.mk` functions because these also have no implementation in core lean.

@@ -24,12 +24,12 @@ However, in the development of the API for Ext-groups, it is important
 to keep a larger degree of generality for universes, as `w < v`
 may happen in certain situations. Indeed, if `X : Scheme.{u}`,
 then the underlying category of the étale site of `X` shall be a large
-category. However, the category `Sheaf X.Etale AddCommGroupCat.{u}`
+category. However, the category `Sheaf X.Etale AddCommGrp.{u}`
 shall have good properties (because there is a small category of affine
 schemes with the same category of sheaves), and even though the type of
-morphisms in `Sheaf X.Etale AddCommGroupCat.{u}` shall be
+morphisms in `Sheaf X.Etale AddCommGrp.{u}` shall be
 in `Type (u + 1)`, these types are going to be `u`-small.
-Then, for `C := Sheaf X.etale AddCommGroupCat.{u}`, we will have
+Then, for `C := Sheaf X.etale AddCommGrp.{u}`, we will have
 `Category.{u + 1} C`, but `HasExt.{u} C` will hold
 (as `C` has enough injectives). Then, the `Ext` groups between étale
 sheaves over `X` shall be in `Type u`.
@@ -39,6 +39,8 @@ sheaves over `X` shall be in `Type u`.
 * construct the contravariant long exact sequences of `Ext`.
 
 -/
+
+assert_not_exists TwoSidedIdeal
 
 universe w'' w' w v u
 
@@ -74,6 +76,10 @@ lemma hasExt_iff [HasDerivedCategory.{w'} C] :
 lemma hasExt_of_hasDerivedCategory [HasDerivedCategory.{w} C] : HasExt.{w} C := by
   rw [hasExt_iff.{w}]
   infer_instance
+
+lemma HasExt.standard : HasExt.{max u v} C := by
+  letI := HasDerivedCategory.standard
+  exact hasExt_of_hasDerivedCategory _
 
 variable {C}
 
@@ -154,12 +160,12 @@ lemma mk₀_hom [HasDerivedCategory.{w'} C] (f : X ⟶ Y) :
     (mk₀ f).hom = ShiftedHom.mk₀ _ (by simp) ((singleFunctor C 0).map f) := by
   apply SmallShiftedHom.equiv_mk₀
 
-@[simp 1100]
+@[simp]
 lemma mk₀_comp_mk₀ (f : X ⟶ Y) (g : Y ⟶ Z) :
     (mk₀ f).comp (mk₀ g) (zero_add 0) = mk₀ (f ≫ g) := by
   letI := HasDerivedCategory.standard C; ext; simp
 
-@[simp 1100]
+@[simp]
 lemma mk₀_comp_mk₀_assoc (f : X ⟶ Y) (g : Y ⟶ Z) {n : ℕ} (α : Ext Z T n) :
     (mk₀ f).comp ((mk₀ g).comp α (zero_add n)) (zero_add n) =
       (mk₀ (f ≫ g)).comp α (zero_add n) := by
@@ -358,7 +364,7 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
         symm
         apply Ext.comp_assoc
         all_goals omega }
-  map_comp {X₁ X₂ X₃} f f'  := by
+  map_comp {X₁ X₂ X₃} f f' := by
     ext Y α
     dsimp
     rw [← Ext.mk₀_comp_mk₀]

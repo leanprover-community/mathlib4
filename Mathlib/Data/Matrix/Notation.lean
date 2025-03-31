@@ -190,21 +190,30 @@ section ColRow
 variable {ι : Type*}
 
 @[simp]
-theorem col_empty (v : Fin 0 → α) : col ι v = vecEmpty :=
+theorem replicateCol_empty (v : Fin 0 → α) : replicateCol ι v = vecEmpty :=
   empty_eq _
 
+@[deprecated (since := "2025-03-20")] alias col_empty := replicateCol_empty
+
 @[simp]
-theorem col_cons (x : α) (u : Fin m → α) :
-    col ι (vecCons x u) = of (vecCons (fun _ => x) (col ι u)) := by
+theorem replicateCol_cons (x : α) (u : Fin m → α) :
+    replicateCol ι (vecCons x u) = of (vecCons (fun _ => x) (replicateCol ι u)) := by
   ext i j
   refine Fin.cases ?_ ?_ i <;> simp [vecHead, vecTail]
 
-@[simp]
-theorem row_empty : row ι (vecEmpty : Fin 0 → α) = of fun _ => vecEmpty := rfl
+@[deprecated (since := "2025-03-20")] alias col_cons := replicateCol_cons
 
 @[simp]
-theorem row_cons (x : α) (u : Fin m → α) : row ι (vecCons x u) = of fun _ => vecCons x u :=
+theorem replicateRow_empty : replicateRow ι (vecEmpty : Fin 0 → α) = of fun _ => vecEmpty := rfl
+
+@[deprecated (since := "2025-03-20")] alias row_empty := replicateRow_empty
+
+@[simp]
+theorem replicateRow_cons (x : α) (u : Fin m → α) :
+    replicateRow ι (vecCons x u) = of fun _ => vecCons x u :=
   rfl
+
+@[deprecated (since := "2025-03-20")] alias row_cons := replicateRow_cons
 
 end ColRow
 
@@ -315,8 +324,8 @@ theorem cons_mulVec [Fintype n'] (v : n' → α) (A : Fin m → n' → α) (w : 
   refine Fin.cases ?_ ?_ i <;> simp [mulVec]
 
 @[simp]
-theorem mulVec_cons {α} [CommSemiring α] (A : m' → Fin n.succ → α) (x : α) (v : Fin n → α) :
-    (of A) *ᵥ (vecCons x v) = x • vecHead ∘ A + (of (vecTail ∘ A)) *ᵥ v := by
+theorem mulVec_cons {α} [NonUnitalCommSemiring α] (A : m' → Fin n.succ → α) (x : α)
+    (v : Fin n → α) : (of A) *ᵥ (vecCons x v) = x • vecHead ∘ A + (of (vecTail ∘ A)) *ᵥ v := by
   ext i
   simp [mulVec, mul_comm]
 
@@ -377,7 +386,7 @@ theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (
 @[simp]
 theorem submatrix_updateRow_succAbove (A : Matrix (Fin m.succ) n' α) (v : n' → α) (f : o' → n')
     (i : Fin m.succ) : (A.updateRow i v).submatrix i.succAbove f = A.submatrix i.succAbove f :=
-  ext fun r s => (congr_fun (updateRow_ne (Fin.succAbove_ne i r) : _ = A _) (f s) : _)
+  ext fun r s => (congr_fun (updateRow_ne (Fin.succAbove_ne i r) : _ = A _) (f s) :)
 
 /-- Updating a column then removing it is the same as removing it. -/
 @[simp]
@@ -418,16 +427,14 @@ theorem natCast_fin_three (n : ℕ) :
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 
--- See note [no_index around OfNat.ofNat]
 theorem ofNat_fin_two (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : Matrix (Fin 2) (Fin 2) α) =
-      !![OfNat.ofNat n, 0; 0, OfNat.ofNat n] :=
+    (ofNat(n) : Matrix (Fin 2) (Fin 2) α) =
+      !![ofNat(n), 0; 0, ofNat(n)] :=
   natCast_fin_two _
 
--- See note [no_index around OfNat.ofNat]
 theorem ofNat_fin_three (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : Matrix (Fin 3) (Fin 3) α) =
-      !![OfNat.ofNat n, 0, 0; 0, OfNat.ofNat n, 0; 0, 0, OfNat.ofNat n] :=
+    (ofNat(n) : Matrix (Fin 3) (Fin 3) α) =
+      !![ofNat(n), 0, 0; 0, ofNat(n), 0; 0, 0, ofNat(n)] :=
   natCast_fin_three _
 
 end AddMonoidWithOne
