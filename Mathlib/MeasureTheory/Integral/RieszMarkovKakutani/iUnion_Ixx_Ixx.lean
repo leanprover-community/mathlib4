@@ -32,7 +32,7 @@ lemma iUnion_Ioc_Ioc {X : Type*} [LinearOrderedSemiring X]
       Nat.cast_one, ih, Finset.range_succ]
     rw [union_comm, Ioc_union_Ioc_eq_Ioc]
     · simp [add_mul, add_assoc]
-    · simp [le_add_iff_nonneg_right, mul_nonneg (Nat.cast_nonneg' N) hδ]
+    · simpa [le_add_iff_nonneg_right] using mul_nonneg (Nat.cast_nonneg' N) hδ
     · simp [hδ]
 
 -- lemma Fin_to_Nat {X : Type*} (N : ℕ) (s : ℕ → Set X) :
