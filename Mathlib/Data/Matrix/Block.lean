@@ -6,6 +6,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Composition
 import Mathlib.Data.Matrix.ConjTranspose
+import Mathlib.Tactic.CC
 
 /-!
 # Block Matrices

@@ -49,59 +49,59 @@ example (a b c d : Nat) (f : Nat → Nat → Nat) :
     evalTactic <| ← `(tactic| have h := $spr; contradiction)
 
 example (a b : Nat) (f : Nat → Nat) : a = b → f a = f b := by
-  cc
+  grind
 
 example (a b : Nat) (f : Nat → Nat) : a = b → f a ≠ f b → False := by
-  cc
+  grind
 
 example (a b : Nat) (f : Nat → Nat) : a = b → f (f a) ≠ f (f b) → False := by
-  cc
+  grind
 
 example (a b c : Nat) (f : Nat → Nat) : a = b → c = b → f (f a) ≠ f (f c) → False := by
-  cc
+  grind
 
 example (a b c : Nat) (f : Nat → Nat → Nat) :
     a = b → c = b → f (f a b) a ≠ f (f c c) c → False := by
-  cc
+  grind
 
 example (a b c : Nat) (f : Nat → Nat → Nat) : a = b → c = b → f (f a b) a = f (f c c) c := by
-  cc
+  grind
 
 example (a b c d : Nat) : HEq a b → b = c → HEq c d → HEq a d := by
-  cc
+  grind
 
 example (a b c d : Nat) : a = b → b = c → HEq c d → HEq a d := by
-  cc
+  grind
 
 example (a b c d : Nat) : a = b → HEq b c → HEq c d → HEq a d := by
-  cc
+  grind
 
 example (a b c d : Nat) : HEq a b → HEq b c → c = d → HEq a d := by
-  cc
+  grind
 
 example (a b c d : Nat) : HEq a b → b = c → c = d → HEq a d := by
-  cc
+  grind
 
 example (a b c d : Nat) : a = b → b = c → c = d → HEq a d := by
-  cc
+  grind
 
 example (a b c d : Nat) : a = b → HEq b c → c = d → HEq a d := by
-  cc
+  grind
 
 axiom f₁ : {α : Type} → α → α → α
 axiom g₁ : Nat → Nat
 
 example (a b c : Nat) : a = b → HEq (g₁ a) (g₁ b) := by
-  cc
+  grind
 
 example (a b c : Nat) : a = b → c = b → f₁ (f₁ a b) (g₁ c) = f₁ (f₁ c a) (g₁ b) := by
-  cc
+  grind
 
 example (a b c d e x y : Nat) : a = b → a = x → b = y → c = d → c = e → c = b → a = e := by
-  cc
+  grind
 
 example (f : ℕ → ℕ) (x : ℕ) (H1 : f (f (f x)) = x) (H2 : f (f (f (f (f x)))) = x) : f x = x := by
-  cc
+  grind
 
 end CC1
 
@@ -116,49 +116,49 @@ example (a₁ a₂ b₁ b₂ c d : Nat)
         a₁ = c → a₂ = c →
         b₁ = d → d  = b₂ →
         g₂ (g₂ (f₂ a₁ b₁ H₁)) = g₂ (g₂ (f₂ a₂ b₂ H₂)) := by
-  cc
+  grind
 
 example (a₁ a₂ b₁ b₂ c d : Nat) :
         a₁ = c → a₂ = c →
         b₁ = d → d  = b₂ →
         a₁ + b₁ + a₁ = a₂ + b₂ + c := by
-  cc
+  grind
 
 example (a b c : Prop) : (a ↔ b) → ((a ∧ (c ∨ b)) ↔ (b ∧ (c ∨ a))) := by
-  cc
+  grind
 
 example (a b c d : Prop)
     [d₁ : Decidable a] [d₂ : Decidable b] [d₃ : Decidable c] [d₄ : Decidable d] :
     (a ↔ b) → (c ↔ d) →
       ((if (a ∧ c) then True else False) ↔ (if (b ∧ d) then True else False)) := by
-  cc
+  grind
 
 example (a b c d : Prop) (x y z : Nat)
     [d₁ : Decidable a] [d₂ : Decidable b] [d₃ : Decidable c] [d₄ : Decidable d] :
     (a ↔ b) → (c ↔ d) → x = y →
       ((if (a ∧ c ∧ a) then x else y) = (if (b ∧ d ∧ b) then y else x)) := by
-  cc
+  grind
 
 end CC2
 
 section CC3
 
 example (a b : Nat) : (a = b ↔ a = b) := by
-  cc
+  grind
 
 example (a b : Nat) : (a = b) = (b = a) := by
-  cc
+  grind
 
 example (a b : Nat) : HEq (a = b) (b = a) := by
-  cc
+  grind
 
 example (p : Nat → Nat → Prop) (f : Nat → Nat) (a b c d : Nat) :
     p (f a) (f b) → a = c → b = d → b = c → p (f c) (f c) := by
-  cc
+  grind
 
 example (p : Nat → Nat → Prop) (a b c d : Nat) :
     p a b → a = c → b = d → p c d := by
-  cc
+  grind
 
 example (p : Nat → Nat → Prop) (f : Nat → Nat) (a b c d : Nat) :
     p (f (f (f (f (f (f a))))))
@@ -166,51 +166,51 @@ example (p : Nat → Nat → Prop) (f : Nat → Nat) (a b c d : Nat) :
     a = c → b = d → b = c →
     p (f (f (f (f (f (f c))))))
       (f (f (f (f (f (f c)))))) := by
-  cc
+  grind
 
 axiom R : Nat → Nat → Prop
 
 example (a b c : Nat) : a = b → R a b → R a a := by
-  cc
+  grind
 
 example (a b c : Prop) : a = b → b = c → (a ↔ c) := by
-  cc
+  grind
 
 example (a b c : Prop) : a = b → HEq b c → (a ↔ c) := by
-  cc
+  grind
 
 example (a b c : Nat) : HEq a b → b = c → HEq a c := by
-  cc
+  grind
 
 example (a b c : Nat) : HEq a b → b = c → a = c := by
-  cc
+  grind
 
 example (a b c d : Nat) : HEq a b → HEq b c → HEq c d → a = d := by
-  cc
+  grind
 
 example (a b c d : Nat) : HEq a b → b = c → HEq c d → a = d := by
-  cc
+  grind
 
 example (a b c : Prop) : a = b → b = c → (a ↔ c) := by
-  cc
+  grind
 
 example (a b c : Prop) : HEq a b → b = c → (a ↔ c) := by
-  cc
+  grind
 
 example (a b c d : Prop) : HEq a b → HEq b c → HEq c d → (a ↔ d) := by
-  cc
+  grind
 
 def foo (a b c d : Prop) : HEq a b → b = c → HEq c d → (a ↔ d) := by
-  cc
+  grind
 
 example (a b c : Nat) (f : Nat → Nat) : HEq a b → b = c → HEq (f a) (f c) := by
-  cc
+  grind
 
 example (a b c : Nat) (f : Nat → Nat) : HEq a b → b = c → f a = f c := by
-  cc
+  grind
 
 example (a b c d : Nat) (f : Nat → Nat) : HEq a b → b = c → HEq c (f d) → f a = f (f d) := by
-  cc
+  grind
 
 end CC3
 
@@ -226,18 +226,18 @@ axiom app : {α : Type u} → {n m : Nat} →
 example (n1 n2 n3 : Nat)
     (v1 w1 : List.Vector Nat n1) (w1' : List.Vector Nat n3) (v2 w2 : List.Vector Nat n2) :
     n1 = n3 → v1 = w1 → HEq w1 w1' → v2 = w2 → HEq (app v1 v2) (app w1' w2) := by
-  cc
+  grind
 
 example (n1 n2 n3 : Nat)
     (v1 w1 : List.Vector Nat n1) (w1' : List.Vector Nat n3) (v2 w2 : List.Vector Nat n2) :
     HEq n1 n3 → v1 = w1 → HEq w1 w1' → HEq v2 w2 → HEq (app v1 v2) (app w1' w2) := by
-  cc
+  grind
 
 example (n1 n2 n3 : Nat)
     (v1 w1 v : List.Vector Nat n1) (w1' : List.Vector Nat n3) (v2 w2 w : List.Vector Nat n2) :
     HEq n1 n3 → v1 = w1 → HEq w1 w1' → HEq v2 w2 → HEq (app w1' w2) (app v w) →
       app v1 v2 = app v w := by
-  cc
+  grind
 
 end CC4
 
@@ -271,19 +271,19 @@ axiom h : {a : A} → {ba : B a} → {cba : C a ba} → {dcba : D a ba cba} →
 attribute [instance] C_ss
 
 example : ∀ (a a' : A), HEq a a' → HEq (mk_B1 a) (mk_B1 a') := by
-  cc
+  grind
 
 example : ∀ (a a' : A), HEq a a' → HEq (mk_B2 a) (mk_B2 a') := by
-  cc
+  grind
 
 example : ∀ (a a' : A) (h : a = a') (b : B a), HEq (h ▸ b) b := by
-  cc
+  grind
 
 example : HEq a1 (y a2) → HEq (mk_B1 a1) (mk_B1 (y a2)) := by
-  cc
+  grind
 
 example : HEq a1 (x a2) → HEq a2 (y a1) → HEq (mk_B1 (x (y a1))) (mk_B1 (x (y (x a2)))) := by
-  cc
+  grind
 
 example : HEq a1 (y a2) → HEq (mk_B1 a1) (mk_B2 (y a2)) →
     HEq (f (mk_C1 (mk_B2 a1))) (f (mk_C2 (mk_B1 (y a2)))) := by
@@ -325,22 +325,22 @@ end CC5
 section CC6
 
 example (a b c a' b' c' : Nat) : a = a' → b = b' → c = c' → a + b + c + a = a' + b' + c' + a' := by
-  cc
+  grind
 
 example (a b : Unit) : a = b := by
-  cc
+  grind
 
 example (a b : Nat) (h₁ : a = 0) (h₂ : b = 0) : a = b → HEq h₁ h₂ := by
-  cc
+  grind
 
 axiom inv' : (a : Nat) → a ≠ 0 → Nat
 
 example (a b : Nat) (h₁ : a ≠ 0) (h₂ : b ≠ 0) : a = b → inv' a h₁ = inv' b h₂ := by
-  cc
+  grind
 
 example (C : Nat → Type) (f : (n : _) → C n → C n) (n m : Nat) (c : C n) (d : C m) :
     HEq (f n) (f m) → HEq c d → HEq n m → HEq (f n c) (f m d) := by
-  cc
+  grind
 
 end CC6
 
@@ -368,7 +368,7 @@ end CC7
 section CCAC1
 
 example (a b c : Nat) (f : Nat → Nat) : f (a + b + c) = f (c + b + a) := by
-  cc
+  grind
 
 example (a b c : Nat) (f : Nat → Nat) : a + b = c → f (c + c) = f (a + b + c) := by
   cc
@@ -447,31 +447,31 @@ end CCAC5
 section CCConstructors
 
 example (a b : Nat) (s t : List Nat) : a :: s = b :: t → a ≠ b → False := by
-  cc
+  grind
 
 example (a b : Nat) (s t : List Nat) : a :: s = b :: t → t ≠ s → False := by
-  cc
+  grind
 
 example (a c b : Nat) (s t : List Nat) : a :: s = b :: t → a ≠ c → c = b → False := by
-  cc
+  grind
 
 example (a c b : Nat) (s t : List Nat) : a :: a :: s = a :: b :: t → a ≠ c → c = b → False := by
-  cc
+  grind
 
 example (a b : Nat) (s t r : List Nat) : a :: s = r → r = b :: t → a ≠ b → False := by
-  cc
+  grind
 
 example (a b : Nat) (s t r : List Nat) : a :: s = r → r = b :: t → a = b := by
-  cc
+  grind
 
 example (a b : Nat) (s t r : List Nat) : List.cons a = List.cons b → a = b := by
   intro h1
   /- In the current implementation, `cc` does not "complete" partially applied
      constructor applications. So, the following one should fail. -/
-  try cc
+  try grind
   /- Complete it manually. TODO(Leo): we can automate it for inhabited types. -/
   have h := congr_fun h1 []
-  cc
+  grind
 
 inductive Foo
 | mk1 : Nat → Nat → Foo
@@ -481,9 +481,9 @@ example (a b : Nat) : Foo.mk1 a = Foo.mk2 b → False := by
   intro h1
   /- In the current implementation, `cc` does not "complete" partially applied
      constructor applications. So, the following one should fail. -/
-  try cc
+  try grind
   have h := congr_fun h1 0
-  cc
+  grind
 
 universe u
 inductive Vec (α : Type u) : Nat → Type (max 1 u)
@@ -492,54 +492,54 @@ inductive Vec (α : Type u) : Nat → Type (max 1 u)
 
 example (α : Type u) (a b c d : α) (n : Nat) (s t : Vec α n) :
     Vec.cons a s = Vec.cons b t → a ≠ b → False := by
-  cc
+  grind
 
 example (α : Type u) (a b c d : α) (n : Nat) (s t : Vec α n) :
     Vec.cons a s = Vec.cons b t → t ≠ s → False := by
-  cc
+  grind
 
 example (α : Type u) (a b c d : α) (n : Nat) (s t : Vec α n) :
     Vec.cons a (Vec.cons a s) = Vec.cons a (Vec.cons b t) → b ≠ c → c = a → False := by
-  cc
+  grind
 
 end CCConstructors
 
 section CCProj
 
 example (a b c d : Nat) (f : Nat → Nat × Nat) : (f d).1 ≠ a → f d = (b, c) → b = a → False := by
-  cc
+  grind
 
 def ex₂ (a b c d : Nat) (f : Nat → Nat × Nat) : (f d).2 ≠ a → f d = (b, c) → c = a → False := by
-  cc
+  grind
 
 example (a b c : Nat) (f : Nat → Nat) : (f b, c).1 ≠ f a → f b = f c → a = c → False := by
-  cc
+  grind
 
 end CCProj
 
 section CCValue
 
 example (a b : Nat) : a = 1 → b = 2 → a = b → False := by
-  cc
+  grind
 
 example (a b c : Int) : a = 1 → c = -2 → a = b → c = b → False := by
-  cc
+  grind
 
 example (a b : Char) : a = 'h' → b = 'w' → a = b → False := by
-  cc
+  grind
 
 example (a b : String) : a = "hello" → b = "world" → a = b → False := by
-  cc
+  grind
 
 example (a b c : String) : a = c → a = "hello" → c = "world" → c = b → False := by
-  cc
+  grind
 
 local instance instOfNatNat' (n : ℕ) : OfNat ℕ n where
   ofNat := n
 
 example : @OfNat.ofNat ℕ (nat_lit 0) (instOfNatNat _) =
     @OfNat.ofNat ℕ (nat_lit 0) (instOfNatNat' _) := by
-  cc
+  grind
 
 end CCValue
 
@@ -576,20 +576,20 @@ end Lean3Issue1442
 section Lean3Issue1608
 
 example {α : Type} {a b : α} (h : ¬ (a = b)) : b ≠ a := by
-  cc
+  grind
 
 example {α : Type} {a b : α} (h : ¬ (a = b)) : ¬ (b = a) := by
-  cc
+  grind
 
 end Lean3Issue1608
 
 section lit
 
 example : nat_lit 0 = nat_lit 0 := by
-  cc
+  grind
 
 example : "Miyahara Kō" = "Miyahara Kō" := by
-  cc
+  grind
 
 end lit
 
