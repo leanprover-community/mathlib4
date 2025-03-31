@@ -174,7 +174,7 @@ theorem mulSingle_eq_one_iff {i : I} {x : f i} : mulSingle i x = 1 ↔ x = 1 := 
 
 @[to_additive]
 theorem mulSingle_ne_one_iff {i : I} {x : f i} : mulSingle i x ≠ 1 ↔ x ≠ 1 :=
-  (mulSingle_eq_one_iff i x).ne
+  mulSingle_eq_one_iff.ne
 
 -- Porting note:
 -- 1) Why do I have to specify the type of `mulSingle i x` explicitly?
