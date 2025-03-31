@@ -20,8 +20,18 @@ def PartialColoring.mk (color : α → β)
      G.PartialColoring s β :=
   ⟨color, by intro v w h h'; rw [induce_spanningCoe_adj] at h; exact valid h.2.1 h.2.2 h.1 h'⟩
 
-/-- Whether a graph can be colored by at most `n` colors. -/
-abbrev PartialColorable (s : Set α) (n : ℕ) : Prop := Nonempty (G.PartialColoring s (Fin n))
+def PartialColoring.of_subset {t : Set α} (C : G.PartialColoring s β) (h : t ⊆ s) :
+    G.PartialColoring t β :=
+  PartialColoring.mk (C) (fun hv hw hadj ↦ C.valid (h hv) (h hw) hadj)
+
+/-- Whether `(G.induce s).spanningCoe` can be colored by at most `n` colors. -/
+abbrev PartColorable (s : Set α) (n : ℕ) : Prop := Nonempty (G.PartialColoring s (Fin n))
+
+theorem PartColorable.mono {n m : ℕ} {s : Set α} (hc : G.PartColorable s n)  (h : n ≤ m) :
+    G.PartColorable s m := Colorable.mono h hc
+
+theorem PartColorable.of_subset {s t : Set α} {n : ℕ} (hc : G.PartColorable s n) (h : t ⊆ s)  :
+    G.PartColorable t n := ⟨hc.some.of_subset h⟩
 
 namespace PartialColoring
 
@@ -144,7 +154,7 @@ lemma join_eq (C₁ : G.PartialColoring s β) (C₂ : G.PartialColoring t β)
 /-- A PartialColoring of `univ` is a Coloring -/
 def toColoring (C : G.PartialColoring univ β) : G.Coloring β :=
     ⟨C, fun hab ↦ C.valid (mem_univ _) (mem_univ _) hab⟩
-    
+
 end PartialColoring
 namespace Coloring
 variable [DecidableEq β]
