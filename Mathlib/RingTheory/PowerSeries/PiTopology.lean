@@ -39,7 +39,7 @@ TODO: add the similar result for the series of homogeneous components.
 
 - If `R` is a topological (semi)ring, then so is `PowerSeries σ R`.
 - If the topology of `R` is T0 or T2, then so is that of `PowerSeries σ R`.
-- If `R` is a `UniformAddGroup`, then so is `PowerSeries σ R`.
+- If `R` is a `IsUniformAddGroup`, then so is `PowerSeries σ R`.
 - If `R` is complete, then so is `PowerSeries σ R`.
 
 -/
@@ -131,11 +131,13 @@ theorem instCompleteSpace [CompleteSpace R] :
     CompleteSpace (PowerSeries R) :=
   MvPowerSeries.WithPiTopology.instCompleteSpace
 
-/-- The `UniformAddGroup` structure on `PowerSeries` of a `UniformAddGroup` -/
+/-- The `IsUniformAddGroup` structure on `PowerSeries` of a `IsUniformAddGroup` -/
 @[scoped instance]
-theorem instUniformAddGroup [AddGroup R] [UniformAddGroup R] :
-    UniformAddGroup (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instUniformAddGroup
+theorem instIsUniformAddGroup [AddGroup R] [IsUniformAddGroup R] :
+    IsUniformAddGroup (PowerSeries R) :=
+  MvPowerSeries.WithPiTopology.instIsUniformAddGroup
+
+@[deprecated (since := "2025-03-27")] alias instUniformAddGroup := instIsUniformAddGroup
 
 end WithPiTopology
 
