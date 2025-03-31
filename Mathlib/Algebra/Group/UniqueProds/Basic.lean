@@ -48,7 +48,7 @@ about the grading type and then a generic statement of the form "look at the coe
 The file `Algebra/MonoidAlgebra/NoZeroDivisors` contains several examples of this use.
 -/
 
-assert_not_exists Cardinal Subsemiring Algebra Submodule StarModule FreeMonoid OrderedMonoid
+assert_not_exists Cardinal Subsemiring Algebra Submodule StarModule FreeMonoid OrderedCommMonoid
 
 open Finset
 
@@ -629,4 +629,3 @@ instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSu
 instance {ι G} [AddZeroClass G] [TwoUniqueSums G] : TwoUniqueSums (ι →₀ G) :=
   TwoUniqueSums.of_injective_addHom
     Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
-
