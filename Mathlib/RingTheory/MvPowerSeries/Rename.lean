@@ -54,10 +54,6 @@ variable [CommRing R] {f : σ → τ} (hf : Tendsto f cofinite cofinite)
 
 include hf
 
-lemma hasEval_X_comp [TopologicalSpace R] : HasEval (X ∘ f : σ → MvPowerSeries τ R) :=
-  ⟨fun i ↦ WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero (by simp),
-    variables_tendsto_zero.comp <| hf⟩
-
 variable [UniformSpace R] [IsTopologicalRing R] [IsUniformAddGroup R] [CompleteSpace R]
   [T2Space R] [IsLinearTopology R R]
 

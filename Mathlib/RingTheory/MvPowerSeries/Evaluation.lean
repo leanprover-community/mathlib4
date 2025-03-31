@@ -114,6 +114,11 @@ theorem _root_.MvPolynomial.toMvPowerSeries_denseRange :
     simp [coeff_trunc', hdn]
   exact mem_closure_of_tendsto this <| .of_forall fun _ ↦ mem_range_self _
 
+lemma hasEval_X_comp {τ : Type*} {f : σ → τ} (hf : Tendsto f cofinite cofinite) :
+    HasEval (X ∘ f : σ → MvPowerSeries τ R) :=
+  ⟨fun i ↦ WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero (by simp),
+    variables_tendsto_zero.comp <| hf⟩
+
 end
 
 /- ## Construction of an evaluation morphism for power series -/
