@@ -41,11 +41,23 @@ assert_not_exists CompleteLattice
 
 open Set OrderDual
 
-variable {α : Type*} {P Q : α → Prop} {a x y : α}
+variable {ι α : Type*}
 
 section LE
+variable [LE α] {f : ι → α} {i j : ι}
 
+@[simp] lemma minimalWrt_eq_iff : MinimalWrt (· = j) f i ↔ i = j := by simp +contextual [MinimalWrt]
+@[simp] lemma maximalWrt_eq_iff : MaximalWrt (· = j) f i ↔ i = j := by simp +contextual [MaximalWrt]
+
+end LE
+
+variable {P Q : α → Prop} {a x y : α}
+
+section LE
 variable [LE α]
+
+@[simp] lemma minimalWrt_id : MinimalWrt P id x ↔ Minimal P x := .rfl
+@[simp] lemma maximalWrt_id : MaximalWrt P id x ↔ Maximal P x := .rfl
 
 @[simp] theorem minimal_toDual : Minimal (fun x ↦ P (ofDual x)) (toDual x) ↔ Maximal P x :=
   Iff.rfl
