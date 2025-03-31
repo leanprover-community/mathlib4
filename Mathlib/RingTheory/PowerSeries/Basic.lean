@@ -777,6 +777,13 @@ theorem algebraMap_apply {r : R} : algebraMap R A⟦X⟧ r = C A (algebraMap R A
 instance [Nontrivial R] : Nontrivial (Subalgebra R R⟦X⟧) :=
   { inferInstanceAs <| Nontrivial <| Subalgebra R <| MvPowerSeries Unit R with }
 
+/-- Change of coefficients in power series, as an `AlgHom` -/
+def mapAlgHom {R : Type*} [CommSemiring R]
+    {S : Type*} [Semiring S] [Algebra R S] {T : Type*} [Semiring T] [Algebra R T]
+    (φ : S →ₐ[R] T) :
+    PowerSeries S →ₐ[R] PowerSeries T :=
+ MvPowerSeries.mapAlgHom φ
+
 end Algebra
 
 end PowerSeries
