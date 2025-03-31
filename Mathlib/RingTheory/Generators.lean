@@ -247,6 +247,23 @@ def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators 
     use (a + b)
     rw [map_add, ha, hb]
 
+/-- Given generators `P` and an equivalence `ι ≃ P.vars`, these
+are the induced generators indexed by `ι`. -/
+@[simps -isSimp vars]
+noncomputable def reindex (P : Generators.{w} R S) {ι : Type*} (e : ι ≃ P.vars) :
+    Generators R S where
+  vars := ι
+  val := P.val ∘ e
+  σ' := rename e.symm ∘ P.σ
+  aeval_val_σ' s := by
+    conv_rhs => rw [← P.aeval_val_σ s]
+    rw [← MvPolynomial.aeval_rename]
+    simp
+
+lemma reindex_val (P : Generators.{w} R S) {ι : Type*} (e : ι ≃ P.vars) :
+    (P.reindex e).val = P.val ∘ e :=
+  rfl
+
 end Construction
 
 variable {R' S'} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Generators R' S')
