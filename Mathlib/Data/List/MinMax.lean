@@ -530,6 +530,20 @@ theorem min_le_of_le (l : List α) (a : α) {x : α} (hx : x ∈ l) (h : x ≤ a
 
 end OrderTop
 
+/-- If `a ≤ x` for some `x` in the list `l`, and `b : α`, then `a ≤ l.foldr max b`. -/
+theorem le_max_of_le' {l : List α} {a x : α} (b : α) (hx : x ∈ l) (h : a ≤ x) :
+    a ≤ l.foldr max b := by
+  induction l with
+  | nil => exact absurd hx (List.not_mem_nil _)
+  | cons y l IH =>
+    simp only [List.foldr, List.foldr_cons]
+    obtain rfl | hl := mem_cons.mp hx
+    · exact le_max_of_le_left h
+    · exact le_max_of_le_right (IH hl)
+
+theorem min_le_of_le' {l : List α} {a x : α} (b : α) (hx : x ∈ l) (h : x ≤ a) : l.foldr min b ≤ a :=
+  @le_max_of_le' αᵒᵈ _ _ _ _ _ hx h
+
 end Fold
 
 end List
