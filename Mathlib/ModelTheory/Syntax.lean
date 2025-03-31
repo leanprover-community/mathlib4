@@ -168,6 +168,10 @@ def Functions.apply₁ (f : L.Functions 1) (t : L.Term α) : L.Term α :=
 def Functions.apply₂ (f : L.Functions 2) (t₁ t₂ : L.Term α) : L.Term α :=
   func f ![t₁, t₂]
 
+/-- The representation of a function symbol as a term, on fresh variables indexed by Fin. -/
+def Functions.term {n : ℕ} (f : L.Functions n) : L.Term (Fin n) :=
+  func f Term.var
+
 namespace Term
 
 /-- Sends a term with constants to a term with extra variables. -/

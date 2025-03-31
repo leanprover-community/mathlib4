@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Rel
 import Mathlib.ModelTheory.Syntax
 import Mathlib.Data.List.ProdSigma
 
@@ -77,6 +78,11 @@ theorem realize_var (v : α → M) (k) : realize v (var k : L.Term α) = v k := 
 @[simp]
 theorem realize_func (v : α → M) {n} (f : L.Functions n) (ts) :
     realize v (func f ts : L.Term α) = funMap f fun i => (ts i).realize v := rfl
+
+@[simp]
+theorem realize_function_term {n} (v : Fin n → M) (f : L.Functions n) :
+    f.term.realize v = funMap f v := by
+  rfl
 
 @[simp]
 theorem realize_relabel {t : L.Term α} {g : α → β} {v : β → M} :
@@ -265,6 +271,17 @@ theorem realize_foldr_inf (l : List (L.BoundedFormula α n)) (v : α → M) (xs 
 @[simp]
 theorem realize_imp : (φ.imp ψ).Realize v xs ↔ φ.Realize v xs → ψ.Realize v xs := by
   simp only [Realize]
+
+/-- List.foldr on BoundedFormula.imp gives a big "And" of input conditions. -/
+theorem realize_foldr_imp {k : ℕ} (l : List (L.BoundedFormula α k))
+    (f : L.BoundedFormula α k) :
+    ∀ (v : α → M) xs,
+      (l.foldr BoundedFormula.imp f).Realize v xs =
+      ((∀ i ∈ l, i.Realize v xs) → f.Realize v xs) := by
+  intro v xs
+  induction l
+  next => simp
+  next f' _ _ => by_cases f'.Realize v xs <;> simp [*]
 
 @[simp]
 theorem realize_rel {k : ℕ} {R : L.Relations k} {ts : Fin k → L.Term _} :
