@@ -23,18 +23,16 @@ Let `G` be a finite group acting on a commutative ring `B` satisfying `Algebra.I
 * `Algebra.IsInvariant.isIntegral`: `B/A` is an integral extension.
 * `Algebra.IsInvariant.exists_smul_of_under_eq`: `G` acts transitivity on the prime ideals of `B`
   lying above a given prime ideal of `A`.
-* `IsFractionRing.stabilizerHom_surjective`: if `Q` is a prime ideal of `B` lying over a prime
-  ideal `P` of `A`, then the stabilizer subgroup of `Q` surjects onto `Aut(Frac(B/Q)/Frac(A/P))`.
 
-Let `G` be a profinite group acting continuously on a commutative ring `B` satisfying
-  `Algebra.IsInvariant A B G`. Then the same result still holds:
+If `Q` is a prime ideal of `B` lying over a prime ideal `P` of `A`, then
 
-* `Algebra.IsInvariant.isIntegral_of_profinite`: `B/A` is an integral extension.
-* `Algebra.IsInvariant.exists_smul_of_under_eq_of_profinite`:
-  `G` acts transitivity on the prime ideals of `B` lying above a given prime ideal of `A`.
-* `Ideal.Quotient.stabilizerHom_surjective_of_profinite`: if `Q` is a prime ideal of `B` lying over
-  a prime ideal `P` of `A`, then the stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`.
-
+* `IsFractionRing.stabilizerHom_surjective`:
+  The stabilizer subgroup of `Q` surjects onto `Aut(Frac(B/Q)/Frac(A/P))`.
+* `Ideal.Quotient.stabilizerHom_surjective`:
+  The stabilizer subgroup of `Q` surjects onto `Aut((B/Q)/(A/P))`.
+* `Ideal.Quotient.exists_algEquiv_fixedPoint_quotient_under`:
+  If `k` is a domain containing `B/Q`, then any `A/P`-algebra automorphism of `k` restricts to
+  an automorphism of `B/Q`.
 -/
 
 open scoped Pointwise
