@@ -506,6 +506,9 @@ instance instUniformSpace : UniformSpace 𝓢(E, F) :=
 instance instIsUniformAddGroup : IsUniformAddGroup 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isUniformAddGroup
 
+@[deprecated (since := "2025-03-31")] alias instUniformAddGroup :=
+  SchwartzMap.instIsUniformAddGroup
+
 instance instLocallyConvexSpace : LocallyConvexSpace ℝ 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).toLocallyConvexSpace
 
