@@ -133,6 +133,18 @@ instance : HasStrictInitialObjects Scheme :=
 instance {X : Scheme} [IsEmpty X] (U : X.Opens) : Subsingleton Γ(X, U) := by
   obtain rfl : U = ⊥ := Subsingleton.elim _ _; infer_instance
 
+-- This is also true for schemes with two points.
+-- But there are non-affine schemes with three points.
+instance (priority := low) {X : Scheme} [Subsingleton X] : IsAffine X := by
+  cases isEmpty_or_nonempty X with
+  | inl h => infer_instance
+  | inr h =>
+  obtain ⟨x⟩ := h
+  obtain ⟨_, ⟨U, hU : IsAffine _, rfl⟩, hxU, -⟩ :=
+    (isBasis_affine_open X).exists_subset_of_mem_open (a := x) (by trivial) isOpen_univ
+  obtain rfl : U = ⊤ := by ext y; simpa [Subsingleton.elim y x]
+  exact isAffine_of_isIso (Scheme.topIso X).inv
+
 end Initial
 
 section Coproduct

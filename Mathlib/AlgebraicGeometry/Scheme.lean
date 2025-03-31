@@ -424,6 +424,12 @@ end
 
 namespace Scheme
 
+theorem isEmpty_of_commSq {W X Y S : Scheme.{u}} {f : X ⟶ S} {g : Y ⟶ S}
+    {i : W ⟶ X} {j : W ⟶ Y} (h : CommSq i j f g)
+    (H : Disjoint (Set.range f.base) (Set.range g.base)) : IsEmpty W :=
+  ⟨fun x ↦ (Set.disjoint_iff_inter_eq_empty.mp H).le
+    ⟨⟨i.base x, congr($(h.w).base x)⟩, ⟨j.base x, rfl⟩⟩⟩
+
 /-- The empty scheme. -/
 @[simps]
 def empty : Scheme where
