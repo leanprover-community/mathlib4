@@ -10,6 +10,7 @@ import Lean.Elab.Command
 The `directoryDependency` linter detects imports between directories that are supposed to be
 independent. By specifying that one directory does not import from another, we can improve the
 modularity of Mathlib.
+
 -/
 
 /-- Find the longest prefix of `n` such that `f` returns `some` (or return `none` otherwise). -/
