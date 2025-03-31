@@ -3,12 +3,13 @@ set_option linter.style.header false
 namespace SimpleGraph
 variable {α : Type*} (G : SimpleGraph α)
 
-
 lemma induce_spanningCoe_adj (G : SimpleGraph α) (s : Set α) {u v : α} :
     (G.induce s).spanningCoe.Adj u v ↔ G.Adj u v ∧ u ∈ s ∧ v ∈ s := by simp
 
 section degreeOn
-abbrev neighborOnSet (s : Set α) (a : α) : Set α := (G.induce s).spanningCoe.neighborSet a
+
+abbrev neighborOnSet (s : Set α) (a : α) : Set α :=
+    (G.induce s).spanningCoe.neighborSet a
 
 @[simp]
 lemma mem_neighborOnSet {s : Set α} {a v : α} :
@@ -28,15 +29,15 @@ lemma neighborOnSet_subset_neighborSet : G.neighborOnSet s a ⊆ G.neighborSet a
 
 /-- `G.degreeOn s a` is the number of neighbors of `a` in `s` -/
 abbrev neighborOnFinset (s : Set α) (a : α) [Fintype (G.neighborOnSet s a)]
-    : Finset α := (G.neighborOnSet s a).toFinset
+    : Finset α := (G.induce s).spanningCoe.neighborFinset a
 
 variable [Fintype (G.neighborOnSet s a)]
 
 @[simp]
 lemma mem_neighborOnFinset :
     v ∈ G.neighborOnFinset s a ↔ G.Adj a v ∧ a ∈ s ∧ v ∈ s := by
-  rw [Set.mem_toFinset, mem_neighborOnSet]
-
+  simp
+  
 lemma neighborOnFinset_subset_neighborFinset  [Fintype (G.neighborSet a)] :
     G.neighborOnFinset s a ⊆ G.neighborFinset a := by
   intro x hx

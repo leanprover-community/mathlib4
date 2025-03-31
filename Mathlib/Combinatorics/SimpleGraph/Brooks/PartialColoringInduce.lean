@@ -1,7 +1,7 @@
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Combinatorics.SimpleGraph.Path
-import Mathlib.Combinatorics.SimpleGraph.Brooks.DegreeOnInduce
+import Mathlib.Combinatorics.SimpleGraph.Brooks.DegreeIn
 set_option linter.style.header false
 namespace SimpleGraph
 section partialcol
@@ -144,6 +144,7 @@ lemma join_eq (C₁ : G.PartialColoring s β) (C₂ : G.PartialColoring t β)
 /-- A PartialColoring of `univ` is a Coloring -/
 def toColoring (C : G.PartialColoring univ β) : G.Coloring β :=
     ⟨C, fun hab ↦ C.valid (mem_univ _) (mem_univ _) hab⟩
+    
 end PartialColoring
 namespace Coloring
 variable [DecidableEq β]
@@ -176,20 +177,19 @@ lemma extend_def (C : G.Coloring β) (a : α) [Fintype (G.neighborSet a)]
     (h : G.degree a < ENat.card β) : (C.extend h) ∉ (G.neighborFinset a).image C :=
   Exists.choose_spec (C.unused h)
 
-
 @[simp]
 lemma copy_extend (C : G.PartialColoring s β) {t : Finset α} (a : α) (h : s = t) :
      (C.copy h).extend a = C.extend a := by
   simp_rw [extend_def]
   congr <;> exact h.symm
 
-lemma extend_le_degreeOn (C : G.PartialColoring s) (a : α) : C.extend a ≤ G.degreeOn s a := by
+lemma extend_le_degreeIn (C : G.PartialColoring s) (a : α) : C.extend a ≤ G.degreeIn s a := by
   have ⟨h1, _⟩ := mem_sdiff.1 <| min'_mem _ <| C.unused a
   simpa [Nat.lt_succ] using h1
 
 lemma extend_lt_degree (C : G.PartialColoring s) {a v : α} (h1 : G.Adj a v) (h2 : v ∉ s) :
     C.extend a < G.degree a :=
-  (extend_le_degreeOn _ _).trans_lt (degreeOn_lt_degree ⟨(mem_neighborFinset ..).2 h1, h2⟩)
+  (extend_le_degreeIn _ _).trans_lt (degreeIn_lt_degree ⟨(mem_neighborFinset ..).2 h1, h2⟩)
 
 lemma extend_not_mem_image (C : G.PartialColoring s) (a : α) :
     C.extend a ∉ ((G.neighborFinset a) ∩ s).image C := (mem_sdiff.1 <| min'_mem _ <| C.unused a).2
@@ -218,29 +218,29 @@ lemma insert_lt_of_lt (h : ∀ v,  C v < k) (hg : C.extend a < k) : ∀ w, (C.in
   · rwa [if_pos ha]
   · rw [if_neg ha]; exact h w
 
-lemma extend_eq_degreeOn (h : C.extend a = G.degreeOn s a) :
-    ((G.neighborFinset a ∩ s) : Set α).InjOn C := by
-  let t := range (G.degreeOn s a + 1)
+lemma extend_eq_degreeIn (h : C.extend a = G.degreeIn s a) :
+    ((G.neighborFinset a ∩ s) : Set α).InjIn C := by
+  let t := range (G.degreeIn s a + 1)
   let u := (G.neighborFinset a ∩ s).image C
   have hmax := max'_le _ (C.unused a) _ <| fun y hy ↦ mem_range_succ_iff.1 <| (mem_sdiff.1 hy).1
-  have hs : ∀ i, i ∈ t \ u → i = G.degreeOn s a :=
+  have hs : ∀ i, i ∈ t \ u → i = G.degreeIn s a :=
     fun i hi ↦ le_antisymm ((le_max' _ _ hi ).trans hmax)  (h ▸ min'_le _ _ hi)
   have h1 := card_eq_one.2 ⟨_, eq_singleton_iff_nonempty_unique_mem.2 ⟨C.unused a, hs⟩⟩
   have : #t - #u ≤ 1 :=  (h1 ▸ le_card_sdiff _ _)
   rw [card_range] at this
-  have h3 : G.degreeOn s a ≤ #u := by
+  have h3 : G.degreeIn s a ≤ #u := by
     rwa [Nat.sub_le_iff_le_add, add_comm 1, Nat.succ_le_succ_iff] at this
   rw [← coe_inter]
-  exact injOn_of_card_image_eq <| le_antisymm card_image_le h3
+  exact injIn_of_card_image_eq <| le_antisymm card_image_le h3
 
 /-- If two neighbors of `a` have the same color in `s` then greedily coloring `a` uses a color
-less-than the `degreeOn s` of `a` -/
-lemma extend_lt_of_not_injOn (hus : u ∈ s) (hvs : v ∈ s) (hu : G.Adj a u) (hv : G.Adj a v)
-    (hne : u ≠ v) (hc : C u = C v) : C.extend a < G.degreeOn s a := by
-    apply lt_of_le_of_ne (C.extend_le_degreeOn _)
+less-than the `degreeIn s` of `a` -/
+lemma extend_lt_of_not_injIn (hus : u ∈ s) (hvs : v ∈ s) (hu : G.Adj a u) (hv : G.Adj a v)
+    (hne : u ≠ v) (hc : C u = C v) : C.extend a < G.degreeIn s a := by
+    apply lt_of_le_of_ne (C.extend_le_degreeIn _)
     intro hf
     apply hne
-    apply extend_eq_degreeOn hf <;> simp_all
+    apply extend_eq_degreeIn hf <;> simp_all
 
 
 def Greedy (C : G.PartialColoring s) (l : List α) : G.PartialColoring (s ∪ l.toFinset) :=
@@ -315,8 +315,8 @@ theorem Greedy_of_path_notInj (C : G.PartialColoring s) {p : G.Walk u v}
     · rw [if_pos hu]
       have heq : (C.Greedy p.support.tail) x = (C.Greedy p.support.tail) y := by
         rwa [Greedy_not_mem hnx, Greedy_not_mem hny]
-      apply (extend_lt_of_not_injOn (mem_union_left _ hxs) (mem_union_left _ hys)
-        hux huy hne heq).trans_le <| (degreeOn_le_degree ..).trans (hbdd _)
+      apply (extend_lt_of_not_injIn (mem_union_left _ hxs) (mem_union_left _ hys)
+        hux huy hne heq).trans_le <| (degreeIn_le_degree ..).trans (hbdd _)
     ·  exact (if_neg hu) ▸ (this a)
   · rw [Greedy_not_mem ha]
     exact hlt a
