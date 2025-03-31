@@ -656,8 +656,9 @@ subclasses.
 The alternative would be to make `LinearOrder` extend `Lattice`, but then we would have to use
 the undesirable `min` and `max` names within the `Lattice` fields.
 
-This should be avoided in lemma statements, and specialized instances of it should not be defined;
-it exists only to be used in `extends`. -/
+This should be avoided in lemma statements, as it provides no results not provided by
+`LinearOrder`. However, it is fine to create `instances` of this, if the lattice fields are
+easier to populate than the `min_def` and `max_def` fields. -/
 class LinearOrderedLattice (α : Type*) extends Lattice α, LinearOrderBase α where
 
 instance (priority := 100) LinearOrderedLattice.toLinearOrder {α : Type u}

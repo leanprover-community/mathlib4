@@ -50,9 +50,8 @@ macro "compareOfLessAndEq_rfl" : tactic =>
 
 /-- Auxiliary typeclass to avoid diamonds.
 
-This is mathematically equivalent to `LinearOrder`, but without the `min` and `max` fields which
-cause trouble with duplicate `inf` and `sup` fields in later files.
-It should not be used except as a base class.
+This exists only to act as a common base class for `LinearOrder` and `LinearOrderedLattice`.
+It should contain all the fields of `LinearOrder` except `min` and `max`.
 -/
 class LinearOrderBase (α : Type*) extends PartialOrder α, Ord α where
   /-- A linear order is total. -/
