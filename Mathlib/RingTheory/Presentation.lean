@@ -296,6 +296,8 @@ def baseChange : Presentation T (T ⊗[R] S) where
   relation i := MvPolynomial.map (algebraMap R T) (P.relation i)
   span_range_relation_eq_ker := P.span_range_relation_eq_ker_baseChange T
 
+lemma baseChange_toGenerators : (P.baseChange T).toGenerators = P.toGenerators.baseChange := rfl
+
 instance baseChange_isFinite [P.IsFinite] : (P.baseChange T).IsFinite where
   finite_vars := inferInstanceAs <| Finite (P.vars)
   finite_rels := inferInstanceAs <| Finite (P.rels)
@@ -361,7 +363,7 @@ private lemma aux_X (i : Q.vars ⊕ P.vars) : (Q.aux P) (X i) = Sum.elim X (C �
 private lemma comp_relation_aux_map (r : Q.rels) :
     (Q.aux P) (Q.comp_relation_aux P r) = Q.relation r := by
   simp only [aux, comp_relation_aux, Generators.comp_vars, Sum.elim_inl, map_finsupp_sum]
-  simp only [_root_.map_mul, aeval_rename, aeval_monomial, Sum.elim_comp_inr]
+  simp only [map_mul, aeval_rename, aeval_monomial, Sum.elim_comp_inr]
   conv_rhs => rw [← Finsupp.sum_single (Q.relation r)]
   congr
   ext u s m
@@ -440,6 +442,8 @@ noncomputable def comp : Presentation R T where
   relation := Sum.elim (Q.comp_relation_aux P)
     (fun rp ↦ MvPolynomial.rename Sum.inr <| P.relation rp)
   span_range_relation_eq_ker := Q.span_range_relation_eq_ker_comp P
+
+lemma toGenerators_comp : (Q.comp P).toGenerators = Q.toGenerators.comp P.toGenerators := rfl
 
 @[simp]
 lemma comp_relation_inr (r : P.rels) :

@@ -84,22 +84,23 @@ lemma card_Iic : #(Iic b) = b + 1 := by rw [Iic_eq_Icc, card_Icc, Nat.bot_eq_zer
 @[simp]
 theorem card_Iio : #(Iio b) = b := by rw [Iio_eq_Ico, card_Ico, Nat.bot_eq_zero, Nat.sub_zero]
 
-theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by
-  rw [Fintype.card_ofFinset, card_Icc]
+@[deprecated Fintype.card_Icc (since := "2025-03-28")]
+theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by simp
 
-theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by
-  rw [Fintype.card_ofFinset, card_Ico]
+@[deprecated Fintype.card_Ico (since := "2025-03-28")]
+theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by simp
 
-theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by
-  rw [Fintype.card_ofFinset, card_Ioc]
+@[deprecated Fintype.card_Ioc (since := "2025-03-28")]
+theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by simp
 
-theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
-  rw [Fintype.card_ofFinset, card_Ioo]
+@[deprecated Fintype.card_Ioo (since := "2025-03-28")]
+theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by simp
 
-theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
-  rw [Fintype.card_ofFinset, card_Iic]
+@[deprecated Fintype.card_Iic (since := "2025-03-28")]
+theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by simp
 
-theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by rw [Fintype.card_ofFinset, card_Iio]
+@[deprecated Fintype.card_Iio (since := "2025-03-28")]
+theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by simp
 
 -- TODO@Yaël: Generalize all the following lemmas to `SuccOrder`
 theorem Icc_succ_left : Icc a.succ b = Ioc a b := by
