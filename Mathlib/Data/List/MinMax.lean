@@ -541,6 +541,9 @@ theorem le_max_of_le' {l : List α} {a x : α} (b : α) (hx : x ∈ l) (h : a �
     · exact le_max_of_le_left h
     · exact le_max_of_le_right (IH hl)
 
+theorem min_le_of_le' {l : List α} {a x : α} (b : α) (hx : x ∈ l) (h : x ≤ a) : l.foldr min b ≤ a :=
+  @le_max_of_le' αᵒᵈ _ _ _ _ _ hx h
+
 end Fold
 
 end List
