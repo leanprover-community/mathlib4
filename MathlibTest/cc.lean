@@ -122,22 +122,22 @@ example (a₁ a₂ b₁ b₂ c d : Nat) :
         a₁ = c → a₂ = c →
         b₁ = d → d  = b₂ →
         a₁ + b₁ + a₁ = a₂ + b₂ + c := by
-  cc
+  grind
 
 example (a b c : Prop) : (a ↔ b) → ((a ∧ (c ∨ b)) ↔ (b ∧ (c ∨ a))) := by
-  cc
+  grind
 
 example (a b c d : Prop)
     [d₁ : Decidable a] [d₂ : Decidable b] [d₃ : Decidable c] [d₄ : Decidable d] :
     (a ↔ b) → (c ↔ d) →
       ((if (a ∧ c) then True else False) ↔ (if (b ∧ d) then True else False)) := by
-  cc
+  grind
 
 example (a b c d : Prop) (x y z : Nat)
     [d₁ : Decidable a] [d₂ : Decidable b] [d₃ : Decidable c] [d₄ : Decidable d] :
     (a ↔ b) → (c ↔ d) → x = y →
       ((if (a ∧ c ∧ a) then x else y) = (if (b ∧ d ∧ b) then y else x)) := by
-  cc
+  grind
 
 end CC2
 
@@ -147,10 +147,10 @@ example (a b : Nat) : (a = b ↔ a = b) := by
   grind
 
 example (a b : Nat) : (a = b) = (b = a) := by
-  cc
+  grind
 
 example (a b : Nat) : HEq (a = b) (b = a) := by
-  cc
+  grind
 
 example (p : Nat → Nat → Prop) (f : Nat → Nat) (a b c d : Nat) :
     p (f a) (f b) → a = c → b = d → b = c → p (f c) (f c) := by
@@ -277,7 +277,7 @@ example : ∀ (a a' : A), HEq a a' → HEq (mk_B2 a) (mk_B2 a') := by
   grind
 
 example : ∀ (a a' : A) (h : a = a') (b : B a), HEq (h ▸ b) b := by
-  cc
+  grind
 
 example : HEq a1 (y a2) → HEq (mk_B1 a1) (mk_B1 (y a2)) := by
   grind
@@ -368,7 +368,7 @@ end CC7
 section CCAC1
 
 example (a b c : Nat) (f : Nat → Nat) : f (a + b + c) = f (c + b + a) := by
-  cc
+  grind
 
 example (a b c : Nat) (f : Nat → Nat) : a + b = c → f (c + c) = f (a + b + c) := by
   cc
