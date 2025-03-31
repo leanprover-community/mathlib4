@@ -482,7 +482,7 @@ lemma isColoop_tfae (M : Matroid α) (e : α) : List.TFAE [
     M.IsCocircuit {e},
     ∀ ⦃B⦄, M.IsBase B → e ∈ B,
     (∀ ⦃C⦄, M.IsCircuit C → e ∉ C) ∧ e ∈ M.E,
-    (∀ X, e ∈ M.closure X ↔ e ∈ X) ∧ e ∈ M.E,
+    ∀ X, e ∈ M.closure X ↔ e ∈ X,
     ¬ M.Spanning (M.E \ {e}) ] := by
   tfae_have 1 <-> 2 := Iff.rfl
   tfae_have 1 <-> 3 := singleton_isCocircuit.symm
@@ -499,11 +499,11 @@ lemma isColoop_tfae (M : Matroid α) (e : α) : List.TFAE [
     obtain ⟨C, -, hC, heC⟩ := (mem_closure_iff_exists_isCircuit heB).1 heE
     exact h hC heC
   tfae_have 5 <-> 6 := by
-    refine ⟨fun ⟨h, he⟩ ↦ ⟨fun X ↦ ⟨fun heX ↦ by_contra fun heX' ↦ ?_,
-      fun h' ↦ M.mem_closure_of_mem' h' he⟩, he⟩, fun ⟨h, he⟩ ↦ ⟨fun C hC heC ↦ ?_, he⟩⟩
+    refine ⟨fun h X ↦ ⟨fun heX ↦ by_contra fun heX' ↦ ?_, fun heX ↦ M.mem_closure_of_mem' heX h.2⟩,
+      fun h ↦ ⟨fun C hC heC ↦ ?_, M.closure_subset_ground _ <| (h {e}).2 rfl⟩⟩
     · obtain ⟨C, -, hC, heC⟩ := (mem_closure_iff_exists_isCircuit heX').1 heX
-      exact h hC heC
-    simpa [hC.mem_closure_diff_singleton_of_mem heC] using h (C \ {e})
+      exact h.1 hC heC
+    · simpa [hC.mem_closure_diff_singleton_of_mem heC] using h (C \ {e})
   tfae_have 1 <-> 7 := by
     wlog he : e ∈ M.E
     · exact iff_of_false (fun h ↦ he h.mem_ground) <| by simp [he, M.ground_spanning]
@@ -551,20 +551,19 @@ lemma isColoop_iff_forall_mem_compl_isCircuit [RankPos M✶] :
 lemma IsCircuit.not_isColoop_of_mem (hC : M.IsCircuit C) (heC : e ∈ C) : ¬ M.IsColoop e :=
   fun h ↦ h.not_mem_isCircuit hC heC
 
-lemma isColoop_iff_forall_mem_closure_iff_mem :
-    M.IsColoop e ↔ (∀ X, e ∈ M.closure X ↔ e ∈ X) ∧ e ∈ M.E :=
+lemma isColoop_iff_forall_mem_closure_iff_mem : M.IsColoop e ↔ (∀ X, e ∈ M.closure X ↔ e ∈ X) :=
   (M.isColoop_tfae e).out 0 5
 
 /-- A version of `Matroid.isColoop_iff_forall_mem_closure_iff_mem` where we only quantify
 over subsets of the ground set. -/
 lemma isColoop_iff_forall_mem_closure_iff_mem' :
     M.IsColoop e ↔ (∀ X, X ⊆ M.E → (e ∈ M.closure X ↔ e ∈ X)) ∧ e ∈ M.E := by
-  rw [isColoop_iff_forall_mem_closure_iff_mem, and_congr_left_iff]
-  refine fun he ↦ ⟨fun h X _ ↦ h X, fun h X ↦ ?_⟩
-  rw [← closure_inter_ground, h (X ∩ M.E) inter_subset_right, mem_inter_iff, and_iff_left he]
+  refine ⟨fun h ↦ ⟨fun X _ ↦ isColoop_iff_forall_mem_closure_iff_mem.1 h X, h.mem_ground⟩,
+    fun ⟨h, he⟩ ↦ isColoop_iff_forall_mem_closure_iff_mem.2 fun X ↦ ?_⟩
+  rw [← closure_inter_ground, h _ inter_subset_right, mem_inter_iff, and_iff_left he]
 
 lemma IsColoop.mem_closure_iff_mem (he : M.IsColoop e) : e ∈ M.closure X ↔ e ∈ X :=
-  (isColoop_iff_forall_mem_closure_iff_mem.1 he).1 X
+  (isColoop_iff_forall_mem_closure_iff_mem.1 he) X
 
 lemma IsColoop.mem_of_mem_closure (he : M.IsColoop e) (heX : e ∈ M.closure X) : e ∈ X :=
   he.mem_closure_iff_mem.1 heX
