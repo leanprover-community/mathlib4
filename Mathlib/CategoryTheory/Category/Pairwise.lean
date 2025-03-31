@@ -74,13 +74,22 @@ def comp : ∀ {o₁ o₂ o₃ : Pairwise ι} (_ : Hom o₁ o₂) (_ : Hom o₂ 
   | _, _, _, left i j, id_single _ => left i j
   | _, _, _, right i j, id_single _ => right i j
 
-instance : Category (Pairwise ι) where
+instance : CategoryStruct (Pairwise ι) where
   Hom := Hom
   id := id
   comp := @comp _
-  id_comp f := by cases f <;> rfl
-  comp_id f := by cases f <;> rfl
-  assoc f g _ := by cases f <;> cases g <;> rfl
+
+section
+
+open Lean Elab Tactic in
+/-- A helper tactic for `aesop_cat` and `Pairwise`. -/
+def pairwiseCases : TacticM Unit := do
+  evalTactic (← `(tactic| casesm* (_ : Pairwise _) ⟶ (_ : Pairwise _)))
+
+attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] pairwiseCases in
+instance : Category (Pairwise ι) where
+
+end
 
 variable {α : Type v} (U : ι → α)
 
