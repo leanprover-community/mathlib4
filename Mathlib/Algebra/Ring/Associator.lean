@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Tactic.Abel
 
 /-!
+## Associator in a ring
 If `R` is a non-associative ring, then  `(x * y) * z - x * (y * z)` is called the `associator` of
 ring elements `x y z : R`. We realize the associator as a map that is an `AddMonoidHom` in each
 argument. The associator vanishes exactly when `R` is associative. We prove a similar statement for
