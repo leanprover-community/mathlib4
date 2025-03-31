@@ -240,7 +240,7 @@ theorem CauchySeq.prodMk {γ} [UniformSpace β] [Preorder γ] {u : γ → α} {v
 @[deprecated (since := "2025-03-10")]
 alias CauchySeq.prod := CauchySeq.prodMk
 
-theorem CauchySeq.eventually_eventually [SemilatticeSup β] {u : β → α} (hu : CauchySeq u)
+theorem CauchySeq.eventually_eventually [Preorder β] {u : β → α} (hu : CauchySeq u)
     {V : Set (α × α)} (hV : V ∈ 𝓤 α) : ∀ᶠ k in atTop, ∀ᶠ l in atTop, (u k, u l) ∈ V :=
   eventually_atTop_curry <| hu.tendsto_uniformity hV
 

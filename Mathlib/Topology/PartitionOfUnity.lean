@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.ShrinkingLemma
@@ -206,7 +205,7 @@ theorem sum_finsupport' (hx₀ : x₀ ∈ s) {I : Finset ι} (hI : ρ.finsupport
   simp only [Finset.mem_sdiff, ρ.mem_finsupport, mem_support, Classical.not_not] at hx
   exact hx.2
 
-theorem sum_finsupport_smul_eq_finsum {M : Type*} [AddCommGroup M] [Module ℝ M] (φ : ι → X → M) :
+theorem sum_finsupport_smul_eq_finsum {M : Type*} [AddCommMonoid M] [Module ℝ M] (φ : ι → X → M) :
     ∑ i ∈ ρ.finsupport x₀, ρ i x₀ • φ i x₀ = ∑ᶠ i, ρ i x₀ • φ i x₀ := by
   apply (finsum_eq_sum_of_support_subset _ _).symm
   have : (fun i ↦ (ρ i) x₀ • φ i x₀) = (fun i ↦ (ρ i) x₀) • (fun i ↦ φ i x₀) :=
