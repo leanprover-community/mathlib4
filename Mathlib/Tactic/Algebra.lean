@@ -15,17 +15,17 @@ open Mathlib.Meta AtomM
 attribute [local instance] monadLiftOptionMetaM
 
 /-
-QUESTIONS:
 
-How does one normalize e.g. (3 + n : ℕ) • (4/3 : ℚ) • (x^2 : ℝ)
+Comments:
 
-what happens to the constants??
+To implement `smul` need `mul` to handle the case where the two scalar rings are equal
+To implement `mul` need `smul` to handle $(r₁ • s) * (r₂ • s') = (r₁ • r₂) • (s * s'), so is this
+one big mutually inductive family?
 
-options:
-don't do recursive normalization (you will run into performance problems, but maybe good enough)
+Also need `add` to implement `mul` properly, so some work to be done.
 
-expand out additions on the LHS too?
-
+There's a problem in `matchRingsSMul` when the two rings are defeq. I don't think there is a great
+way to cast one of the ExProds to the other.
 -/
 
 section ExSum
@@ -35,8 +35,6 @@ set_option linter.style.longLine false
 open Ring in
 /-- A polynomial expression, which is a sum of monomials. -/
 inductive ExSum : ∀ {v: Lean.Level} (A : Q(Type v)), (e : Q($A)) → Type
-  -- | ofNat {u v : Lean.Level} {R : Q(Type u)} {A : Q(Type v)} {sR : Q(CommSemiring $R)}
-  --   {sA : Q(CommSemiring $A)} (sAlg : Q(Algebra $R $A)) (n : ℕ) {e : Q($A)}: ExSum A q($e : $A)
   | zero {w : Lean.Level} {A : Q(Type w)} (sA : Q(CommSemiring $A)) : ExSum  A q(((nat_lit 0).rawCast:$A))
   | one : ExSum q(ℕ) q((1 : ℕ))
   /-- A sum `a + b` is a polynomial if `a` is a monomial and `b` is another polynomial. -/
@@ -49,13 +47,14 @@ inductive ExSum : ∀ {v: Lean.Level} (A : Q(Type v)), (e : Q($A)) → Type
 
 def sℕ : Q(CommSemiring ℕ) := q(Nat.instCommSemiring)
 
-def test {A : Type*} [CommSemiring A] : Algebra ℕ A := inferInstance
 
 def ofProd {u : Level}  {A : Q(Type u)} (sA : Q(CommSemiring $A))
   {e : Q($A)} (prod : Ring.ExProd sA e) :=
   ExSum.add (q(Semiring.toNatAlgebra) : Q(Algebra ℕ $A)) .one prod (.zero sA)
 
--- #check ofProd
+namespace ExSum
+
+end ExSum
 end ExSum
 
 
@@ -110,43 +109,66 @@ def evalAtom {v : Level}  {A : Q(Type v)} (sA : Q(CommSemiring $A)) (e : Q($A)) 
   | some (p : Q($e = $a')) => (q(atom_pf $p))⟩
 /- Implementation taken from Tactic.Module -/
 
-variable {u v : Level} {A : Q(Type v)} {R : Q(Type u)} in
-variable {iA : Q(Semiring $A)}
+mutual
+
+partial def evalMul {v : Level} {A : Q(Type v)} (sA : Q(CommSemiring $A)) {a₁ a₂ : Q($A)}
+    (va₁ : ExSum A a₁) (va₂ : ExSum A a₂) :
+    MetaM <| Result (ExSum A) q($a₁ * $a₂) := do
+  match va₂ with
+  | .zero sA => sorry
+  | .one =>
+    assumeInstancesCommute
+    return ⟨a₁, va₁, q(Nat.mul_one $a₁)⟩
+  | .add (R := R) (sR := sR) (sAlg := sRA) .. => sorry
+
+
+
+partial def matchRingsSMul {v : Level} {A : Q(Type v)}
+  {iA : Q(Semiring $A)}
   {u₁ : Level} {R₁ : Q(Type u₁)} (iR₁ : Q(CommSemiring $R₁)) (iRA₁ : Q(@Algebra $R₁ $A $iR₁ $iA))
-  {u₂ : Level} {R₂ : Q(Type u₂)} (iR₂ : Q(CommSemiring $R₂)) (iRA₂ : Q(@Algebra $R₂ $A $iR₂ $iA)) in
-def matchRingsSMul {r₁ : Q($R₁)} {r₂ : Q($R₂)} (vr₁ : ExSum R₁ r₁) (vr₂ : ExSum R₂ r₂) (a : Q($A)) :
+  {u₂ : Level} {R₂ : Q(Type u₂)} (iR₂ : Q(CommSemiring $R₂)) (iRA₂ : Q(@Algebra $R₂ $A $iR₂ $iA))
+ {r₁ : Q($R₁)} {r₂ : Q($R₂)} (vr₁ : ExSum R₁ r₁) (vr₂ : ExSum R₂ r₂) (a : Q($A)) :
     MetaM <|
       Σ u : Level, Σ R : Q(Type u), Σ iR : Q(CommSemiring $R),
-      -- Σ v : Level, Σ R₂ : Q(Type v), Σ iR₂ : Q(CommSemiring $R₂),
-      -- Σ _ : Q(@Algebra $R $R₂ $iR inferInstance),
       Σ _ : Q(@Algebra $R $A $iR $iA),
       Σ r' : Q($R),
         (ExSum R r' ×
         Q($r₁ • ($r₂ • $a) = $r' • $a)) := do
+  -- is isDefEqQ anything? Probably not, you need to know that both terms have the same type.
   if ← withReducible <| isDefEq R₁ R₂ then
-  -- the case when `R₁ = R₂` is handled separately, so as not to require commutativity of that ring
-    -- have : Type $u₁ =Q Type $u₂ := ⟨⟩
     -- have : $R₁ =Q $R₂ := ⟨⟩
-    pure ⟨u₁, R₁, iR₁, iRA₁, q(sorry /- Want `r₁ * r₂` but type issues -/), sorry, q(sorry)⟩
+    have r₁' : Q($R₂) := r₁
+    /- Question: what do I do here? I just want to view $r₁$ as having type $R₂$-/
+    have vr₁' : ExSum R₂ r₁' := sorry
+    IO.println s!"smul with defeq rings {R₁} and {R₂} not yet implemented."
+    -- throwError s!"smul with defeq rings {R₁} and {R₂} not yet implemented."
+    /- Is this safe and correct? -/
+    have : Q($r₁' • $r₂ • $a = $r₁ • $r₂ • $a) := ← Lean.Meta.mkEqRefl q($r₁ • $r₂ • $a)
+    let ⟨r, vr, pr⟩ ← evalMul R₂ vr₁' vr₂
+    pure ⟨u₂, R₂, iR₂, iRA₂, r, vr, q(sorry /- $this  @smul_smul $R₂ $A _ _ $r₁' $r₂ $a -/ )⟩
   -- otherwise the "smaller" of the two rings must be commutative
   else try
     -- first try to exhibit `R₂` as an `R₁`-algebra
     let _i₁ ← synthInstanceQ q(CommSemiring $R₁)
     let _i₃ ← synthInstanceQ q(Algebra $R₁ $R₂)
+    IO.println s!"synthed algebra instance {R₁} {R₂}"
     let _i₄ ← synthInstanceQ q(IsScalarTower $R₁ $R₂ $A)
+    IO.println s!"synthed IsScalarTower instance {R₁} {R₂} {A}"
     assumeInstancesCommute
-    pure ⟨u₂, R₂, iR₂, iRA₂, q($r₁ • $r₂), sorry, q((smul_assoc $r₁ $r₂ $a).symm)⟩
+    let ⟨r, vr, pr⟩ ← evalSMul iR₂ iR₁ _i₃ vr₁ vr₂
+    pure ⟨u₂, R₂, iR₂, iRA₂, r, vr, q($pr ▸ (smul_assoc $r₁ $r₂ $a).symm)⟩
   catch _ => try
     -- then if that fails, try to exhibit `R₁` as an `R₂`-algebra
     let _i₁ ← synthInstanceQ q(CommSemiring $R₂)
     let _i₃ ← synthInstanceQ q(Algebra $R₂ $R₁)
+    IO.println s!"synthed algebra instance {R₂} {R₁}"
     let _i₄ ← synthInstanceQ q(IsScalarTower $R₂ $R₁ $A)
     assumeInstancesCommute
-    pure ⟨u₁, R₁, iR₁, iRA₁, q($r₂ • $r₁), sorry,
-      q(smul_algebra_smul_comm $r₂ $r₁ $a ▸ (smul_assoc $r₂ $r₁ $a).symm)⟩
+    let ⟨r, vr, pr⟩ ← evalSMul iR₁ iR₂ _i₃ vr₂ vr₁
+    pure ⟨u₁, R₁, iR₁, iRA₁, r, vr,
+      q($pr ▸ smul_algebra_smul_comm $r₂ $r₁ $a ▸ (smul_assoc $r₂ $r₁ $a).symm)⟩
   catch _ =>
-    throwError "match_scalars failed: {R₁} is not an {R₂}-algebra and {R₂} is not an {R₁}-algebra"
-
+    throwError "algebra failed: {R₁} is not an {R₂}-algebra and {R₂} is not an {R₁}-algebra"
 
 partial def evalSMul {u v : Level} {R : Q(Type u)} {A : Q(Type v)} (sA : Q(CommSemiring $A))
   (sR : Q(CommSemiring $R)) (sRA : Q(Algebra $R $A)) {r : Q($R)} {a : Q($A)} (vr : ExSum R r)
@@ -160,14 +182,16 @@ partial def evalSMul {u v : Level} {R : Q(Type u)} {A : Q(Type v)} (sA : Q(CommS
     return ⟨_, .zero sA, q(smul_zero_rawCast (r := $r) (A := $A))⟩
   | .one =>
     return ⟨_, .add sRA vr (.const (e := q(1)) 1 .none) (.zero sA) , q(add_rawCast_zero.symm)⟩
-  | .add (R := S) (sR := sS) sSA vs va vt =>
+    /- Note: removing the (a := a) produces an inscrutable error during a pattern match-/
+  | .add (R := S) (sR := sS) sSA (r := s) (a := a) vs va vt =>
     assumeInstancesCommute
     let ⟨et, vt, pt⟩ ← evalSMul sA sR sRA vr vt
-    let x ← matchRingsSMul sS sSA sR sRA vs vr a
-    let ⟨u₁, R₁, iR₁, sR₁A, r₁, vr₁, pr₁⟩ := x
-    return ⟨_, .add sorry sorry va vt, sorry⟩
+    let ⟨u₁, R₁, iR₁, sR₁A, r₁, vr₁, pr₁⟩ ← matchRingsSMul sS sSA sR sRA vs vr a
+    -- sorry
+    return ⟨_, .add sR₁A vr₁ va vt, q(sorry)⟩
 
     -- throwError "smul add not implemented."
+end
 
 partial def eval {u : Lean.Level} {A : Q(Type u)} (sA : Q(CommSemiring $A))
     (e : Q($A)) : AtomM (Result (ExSum A) e) := Lean.withIncRecDepth do
@@ -242,10 +266,16 @@ elab (name := algebra) "algebra" : tactic =>
     Tactic.pushGoal g
 
 
+example {S R A : Type*} [CommSemiring S] [CommSemiring R] [CommSemiring A] [Algebra S R]
+    [Algebra R A] [Algebra S A] [IsScalarTower S R A] {r : R} {s : S} {a₁ a₂ : A} :
+    (s • a₁) * (r • a₂) = (s • r) • (a₁ * a₂) := by
+  simp only [Algebra.mul_smul_comm, Algebra.smul_mul_assoc, smul_assoc]
+  rw [smul_comm]
+
 
 end Mathlib.Tactic.Algebra
 
 example (x : ℚ) :  x = (1 : ℤ) • x := by
   simp_rw [← SMul.smul_eq_hSMul]
-  algebra
+  -- algebra
   sorry
