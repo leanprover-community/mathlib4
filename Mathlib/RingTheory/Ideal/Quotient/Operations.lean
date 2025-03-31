@@ -692,7 +692,7 @@ lemma RingEquiv.quotientBot_symm_mk [Ring R] (r : R) :
 
 variable (R S) in
 /-- `RingEquiv.quotientBot` as an algebra isomorphism. -/
-def AlgEquiv.quotientBot [CommSemiring R] [CommRing S] [Algebra R S] :
+def AlgEquiv.quotientBot [CommSemiring R] [Ring S] [Algebra R S] :
     (S ⧸ (⊥ : Ideal S)) ≃ₐ[R] S where
   __ := RingEquiv.quotientBot S
   commutes' x := by simp [← Ideal.Quotient.mk_algebraMap]
