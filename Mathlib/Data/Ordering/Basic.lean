@@ -56,5 +56,5 @@ def cmpUsing {α : Type u} (lt : α → α → Prop) [DecidableRel lt] (a b : α
 Construct an `Ordering` from a type with a decidable `LT` instance,
 assuming that incomparable terms are `Ordering.eq`.
 -/
-def cmp {α : Type u} [LT α] [DecidableRel ((· < ·) : α → α → Prop)] (a b : α) : Ordering :=
+def cmp {α : Type u} [LT α] [DecidableLT α] (a b : α) : Ordering :=
   cmpUsing (· < ·) a b

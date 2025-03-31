@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RepresentationTheory.Rep
 import Mathlib.RingTheory.TensorProduct.Free
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
 
 /-!
 # The structure of the `k[G]`-module `k[Gⁿ]`

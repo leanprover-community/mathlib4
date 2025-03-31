@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Data.Fin.Rev
-import Mathlib.Order.Hom.Set
+import Mathlib.Order.Hom.Basic
 
 /-!
 # `Fin n` forms a bounded linear order
@@ -317,6 +317,10 @@ def revOrderIso : (Fin n)ᵒᵈ ≃o Fin n := ⟨OrderDual.ofDual.trans revPerm,
 @[simp]
 lemma revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDual (rev i) := rfl
 
+lemma rev_strictAnti : StrictAnti (@rev n) := fun _ _ ↦ rev_lt_rev.mpr
+
+lemma rev_anti : Antitone (@rev n) := rev_strictAnti.antitone
+
 /-! #### Order embeddings -/
 
 /-- The inclusion map `Fin n → ℕ` is an order embedding. -/
@@ -386,17 +390,5 @@ map. In this lemma we state that for each `i : Fin n` we have `(e i : ℕ) = (i 
     convert this
     simpa using h _ this (e.symm _).is_lt
   · rwa [← h j hj (hj.trans hi), ← lt_iff_val_lt_val, e.lt_iff_lt]
-
-/-- Two strictly monotone functions from `Fin n` are equal provided that their ranges
-are equal. -/
-@[deprecated StrictMono.range_inj (since := "2024-09-17")]
-lemma strictMono_unique {f g : Fin n → α} (hf : StrictMono f) (hg : StrictMono g)
-    (h : range f = range g) : f = g :=
-  (hf.range_inj hg).1 h
-
-/-- Two order embeddings of `Fin n` are equal provided that their ranges are equal. -/
-@[deprecated OrderEmbedding.range_inj (since := "2024-09-17")]
-lemma orderEmbedding_eq {f g : Fin n ↪o α} (h : range f = range g) : f = g :=
-  OrderEmbedding.range_inj.1 h
 
 end Fin

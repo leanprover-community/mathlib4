@@ -32,6 +32,8 @@ for all `b`), or that it's order-cancellable (`a + b ≤ a + c → b ≤ c` for 
 similarly for multiplication.
 -/
 
+open Function
+
 assert_not_exists Field
 
 deriving instance Zero, OrderedCommSemiring, Nontrivial,
@@ -83,6 +85,12 @@ theorem coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
 
 @[simp] theorem mul_top (hm : m ≠ 0) : m * ⊤ = ⊤ := WithTop.mul_top hm
 @[simp] theorem top_mul (hm : m ≠ 0) : ⊤ * m = ⊤ := WithTop.top_mul hm
+
+/-- A version of `mul_top` where the RHS is stated as an `ite` -/
+theorem mul_top' : m * ⊤ = if m = 0 then 0 else ⊤ := WithTop.mul_top' m
+
+/-- A version of `top_mul` where the RHS is stated as an `ite` -/
+theorem top_mul' : ⊤ * m = if m = 0 then 0 else ⊤ := WithTop.top_mul' m
 
 theorem top_pow {n : ℕ} (n_pos : 0 < n) : (⊤ : ℕ∞) ^ n = ⊤ := WithTop.top_pow n_pos
 
@@ -214,6 +222,12 @@ theorem coe_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
 
 alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self
 
+@[simp] lemma toNat_eq_iff_eq_coe (n : ℕ∞) (m : ℕ) [NeZero m] :
+    n.toNat = m ↔ n = m := by
+  cases n
+  · simpa using NeZero.ne' m
+  · simp
+
 theorem coe_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=
   ENat.recTopCoe le_top (fun _ => le_rfl) n
 
@@ -227,6 +241,12 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
   induction m
   · rw [top_sub_coe, toNat_top, zero_tsub]
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
+
+theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
+  cases a <;> cases b <;> simp
+  · rename_i b; cases b <;> simp
+  · rename_i a; cases a <;> simp
+  · rw [← coe_mul, toNat_coe]
 
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
   induction m <;> simp [hn.symm]
@@ -301,15 +321,15 @@ lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m
 
 lemma ne_top_iff_exists : n ≠ ⊤ ↔ ∃ m : ℕ, ↑m = n := WithTop.ne_top_iff_exists
 
-lemma eq_top_iff_forall_ne : (∀ m : ℕ, ↑m ≠ n) ↔ n = ⊤ := WithTop.forall_ne_iff_eq_top
+lemma eq_top_iff_forall_ne : n = ⊤ ↔ ∀ m : ℕ, ↑m ≠ n := WithTop.eq_top_iff_forall_ne
+lemma eq_top_iff_forall_gt : n = ⊤ ↔ ∀ m : ℕ, m < n := WithTop.eq_top_iff_forall_gt
+lemma eq_top_iff_forall_ge : n = ⊤ ↔ ∀ m : ℕ, m ≤ n := WithTop.eq_top_iff_forall_ge
 
-lemma eq_top_iff_forall_lt : (∀ m : ℕ, m < n) ↔ n = ⊤ := WithTop.forall_gt_iff_eq_top
-
-lemma eq_top_iff_forall_le : (∀ m : ℕ, m ≤ n) ↔ n = ⊤ := WithTop.forall_ge_iff_eq_top
+lemma forall_natCast_le_iff_le : (∀ a : ℕ, a ≤ m → a ≤ n) ↔ m ≤ n := WithTop.forall_coe_le_iff_le
 
 protected lemma exists_nat_gt (hn : n ≠ ⊤) : ∃ m : ℕ, n < m := by
   simp_rw [lt_iff_not_ge n]
-  exact not_forall.mp <| eq_top_iff_forall_le.mp.mt hn
+  exact not_forall.mp <| eq_top_iff_forall_ge.2.mt hn
 
 @[simp] lemma sub_eq_top_iff : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := WithTop.sub_eq_top_iff
 lemma sub_ne_top_iff : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := WithTop.sub_ne_top_iff
@@ -333,6 +353,50 @@ lemma add_left_injective_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Inje
 lemma add_right_injective_of_ne_top {n : ℕ∞} (hn : n ≠ ⊤) : Function.Injective (n + ·) := by
   simp_rw [add_comm n _]
   exact add_left_injective_of_ne_top hn
+
+lemma mul_left_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (a * ·) := by
+  lift a to ℕ using h_top
+  intro x y hxy
+  induction x with
+  | top => simp at hxy
+  | coe x =>
+  induction y with
+  | top =>
+    simp only [mul_top ha, ← ENat.coe_mul]
+    exact coe_lt_top (a * x)
+  | coe y =>
+  simp only
+  rw [← ENat.coe_mul, ← ENat.coe_mul, ENat.coe_lt_coe]
+  rw [ENat.coe_lt_coe] at hxy
+  exact Nat.mul_lt_mul_of_pos_left hxy (Nat.pos_of_ne_zero (by simpa using ha))
+
+lemma mul_right_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (· * a) := by
+  simpa [show (· * a) = (a * ·) by simp [mul_comm]] using mul_left_strictMono ha h_top
+
+@[simp]
+lemma mul_le_mul_left_iff {x y : ℕ∞} (ha : a ≠ 0) (h_top : a ≠ ⊤) : a * x ≤ a * y ↔ x ≤ y :=
+  (ENat.mul_left_strictMono ha h_top).le_iff_le
+
+@[simp]
+lemma mul_le_mul_right_iff {x y : ℕ∞} (ha : a ≠ 0) (h_top : a ≠ ⊤) : x * a ≤ y * a ↔ x ≤ y :=
+  (ENat.mul_right_strictMono ha h_top).le_iff_le
+
+@[gcongr]
+lemma mul_le_mul_of_le_right {x y : ℕ∞} (hxy : x ≤ y) (ha : a ≠ 0) (h_top : a ≠ ⊤) :
+    x * a ≤ y * a := by
+  simpa [ha, h_top]
+
+lemma self_le_mul_right (a : ℕ∞) (hc : c ≠ 0) : a ≤ a * c := by
+  obtain rfl | hne := eq_or_ne a ⊤
+  · simp [top_mul hc]
+  obtain rfl | h0 := eq_or_ne a 0
+  · simp
+  nth_rewrite 1 [← mul_one a, ENat.mul_le_mul_left_iff h0 hne, ENat.one_le_iff_ne_zero]
+  assumption
+
+lemma self_le_mul_left (a : ℕ∞) (hc : c ≠ 0) : a ≤ c * a := by
+  rw [mul_comm]
+  exact ENat.self_le_mul_right a hc
 
 section withTop_enat
 
@@ -386,7 +450,7 @@ theorem map_coe (f : ℕ → α) (a : ℕ) : map f a = f a := rfl
 theorem map_zero (f : ℕ → α) : map f 0 = f 0 := rfl
 
 @[simp]
-theorem map_one (f : ℕ → α) : map f 1 = f 1 := rfl
+protected theorem map_one (f : ℕ → α) : map f 1 = f 1 := rfl
 
 @[simp]
 theorem map_ofNat (f : ℕ → α) (n : ℕ) [n.AtLeastTwo] : map f ofNat(n) = f n := rfl
@@ -395,17 +459,32 @@ theorem map_ofNat (f : ℕ → α) (n : ℕ) [n.AtLeastTwo] : map f ofNat(n) = f
 lemma map_eq_top_iff {f : ℕ → α} : map f n = ⊤ ↔ n = ⊤ := WithTop.map_eq_top_iff
 
 @[simp]
-theorem map_natCast_nonneg [AddMonoidWithOne α] [PartialOrder α]
-    [AddLeftMono α] [ZeroLEOneClass α] : 0 ≤ n.map (Nat.cast : ℕ → α) := by
-  cases n <;> simp
-
-@[simp]
 theorem strictMono_map_iff {f : ℕ → α} [Preorder α] : StrictMono (ENat.map f) ↔ StrictMono f :=
   WithTop.strictMono_map_iff
 
 @[simp]
 theorem monotone_map_iff {f : ℕ → α} [Preorder α] : Monotone (ENat.map f) ↔ Monotone f :=
   WithTop.monotone_map_iff
+
+section AddMonoidWithOne
+variable [AddMonoidWithOne α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α]
+
+@[simp] lemma map_natCast_nonneg : 0 ≤ n.map (Nat.cast : ℕ → α) := by cases n <;> simp
+
+variable [CharZero α]
+
+lemma map_natCast_strictMono : StrictMono (map (Nat.cast : ℕ → α)) :=
+  strictMono_map_iff.2 Nat.strictMono_cast
+
+lemma map_natCast_injective : Injective (map (Nat.cast : ℕ → α)) := map_natCast_strictMono.injective
+
+@[simp] lemma map_natCast_inj : m.map (Nat.cast : ℕ → α) = n.map Nat.cast ↔ m = n :=
+  map_natCast_injective.eq_iff
+
+@[simp] lemma map_natCast_eq_zero : n.map (Nat.cast : ℕ → α) = 0 ↔ n = 0 := by
+  simp [← map_natCast_inj (α := α)]
+
+end AddMonoidWithOne
 
 @[simp]
 protected theorem map_add {β F} [Add β] [FunLike F ℕ β] [AddHomClass F ℕ β]

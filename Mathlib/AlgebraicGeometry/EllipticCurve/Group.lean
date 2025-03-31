@@ -157,7 +157,7 @@ lemma exists_smul_basis_eq (x : W.CoordinateRing) :
 lemma smul_basis_mul_C (y : R[X]) (p q : R[X]) :
     (p • (1 : W.CoordinateRing) + q • mk W Y) * mk W (C y) =
       (p * y) • (1 : W.CoordinateRing) + (q * y) • mk W Y := by
-  simp only [smul, _root_.map_mul]
+  simp only [smul, map_mul]
   ring1
 
 lemma smul_basis_mul_Y (p q : R[X]) : (p • (1 : W.CoordinateRing) + q • mk W Y) * mk W Y =
@@ -166,7 +166,7 @@ lemma smul_basis_mul_Y (p q : R[X]) : (p • (1 : W.CoordinateRing) + q • mk W
   have Y_sq : mk W Y ^ 2 =
       mk W (C (X ^ 3 + C W.a₂ * X ^ 2 + C W.a₄ * X + C W.a₆) - C (C W.a₁ * X + C W.a₃) * Y) := by
     exact AdjoinRoot.mk_eq_mk.mpr ⟨1, by rw [polynomial]; ring1⟩
-  simp only [smul, add_mul, mul_assoc, ← sq, Y_sq, C_sub, map_sub, C_mul, _root_.map_mul]
+  simp only [smul, add_mul, mul_assoc, ← sq, Y_sq, C_sub, map_sub, C_mul, map_mul]
   ring1
 
 /-- The ring homomorphism `R[W] →+* S[W.map f]` induced by a ring homomorphism `f : R →+* S`. -/
@@ -182,7 +182,7 @@ lemma map_mk (x : R[X][Y]) : map W f (mk W x) = mk (W.map f) (x.map <| mapRingHo
 variable {W} in
 protected lemma map_smul (x : R[X]) (y : W.CoordinateRing) :
     map W f (x • y) = x.map f • map W f y := by
-  rw [smul, _root_.map_mul, map_mk, map_C, smul]
+  rw [smul, map_mul, map_mk, map_C, smul]
   rfl
 
 variable {f} in
@@ -239,7 +239,7 @@ noncomputable def XYIdeal (x : R) (y : R[X]) : Ideal W.CoordinateRing :=
 
 lemma XYIdeal_eq₁ (x y L : R) : XYIdeal W x (C y) = XYIdeal W x (linePolynomial x y L) := by
   simp only [XYIdeal, XClass, YClass, linePolynomial]
-  rw [← span_pair_add_mul_right <| mk W <| C <| C <| -L, ← _root_.map_mul, ← map_add]
+  rw [← span_pair_add_mul_right <| mk W <| C <| C <| -L, ← map_mul, ← map_add]
   apply congr_arg (_ ∘ _ ∘ _ ∘ _)
   C_simp
   ring1
@@ -248,7 +248,7 @@ lemma XYIdeal_add_eq (x₁ x₂ y₁ L : R) : XYIdeal W (W.addX x₁ x₂ L) (C 
     span {mk W <| W.negPolynomial - C (linePolynomial x₁ y₁ L)} ⊔ XIdeal W (W.addX x₁ x₂ L) := by
   simp only [XYIdeal, XIdeal, XClass, YClass, addY, negAddY, negY, negPolynomial, linePolynomial]
   rw [sub_sub <| -(Y : R[X][Y]), neg_sub_left (Y : R[X][Y]), map_neg, span_singleton_neg, sup_comm,
-    ← span_insert, ← span_pair_add_mul_right <| mk W <| C <| C <| W.a₁ + L, ← _root_.map_mul,
+    ← span_insert, ← span_pair_add_mul_right <| mk W <| C <| C <| W.a₁ + L, ← map_mul,
     ← map_add]
   apply congr_arg (_ ∘ _ ∘ _ ∘ _)
   C_simp
@@ -290,7 +290,7 @@ lemma XYIdeal_eq₂ {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁)
       ring1
   nth_rw 1 [hy₂]
   simp only [XYIdeal, XClass, YClass, linePolynomial]
-  rw [← span_pair_add_mul_right <| mk W <| C <| C <| -W.slope x₁ x₂ y₁ y₂, ← _root_.map_mul,
+  rw [← span_pair_add_mul_right <| mk W <| C <| C <| -W.slope x₁ x₂ y₁ y₂, ← map_mul,
     ← map_add]
   apply congr_arg (_ ∘ _ ∘ _ ∘ _)
   eval_simp
@@ -304,8 +304,8 @@ lemma XYIdeal_neg_mul {x y : F} (h : W.Nonsingular x y) :
         W.polynomial * 1 := by
     linear_combination (norm := (rw [negY, polynomial]; C_simp; ring1))
       congr_arg C (congr_arg C ((equation_iff ..).mp h.left).symm)
-  simp_rw [XYIdeal, XClass, YClass, span_pair_mul_span_pair, mul_comm, ← _root_.map_mul,
-    AdjoinRoot.mk_eq_mk.mpr ⟨1, Y_rw⟩, _root_.map_mul, span_insert,
+  simp_rw [XYIdeal, XClass, YClass, span_pair_mul_span_pair, mul_comm, ← map_mul,
+    AdjoinRoot.mk_eq_mk.mpr ⟨1, Y_rw⟩, map_mul, span_insert,
     ← span_singleton_mul_span_singleton, ← Ideal.mul_sup, ← span_insert]
   convert mul_top (_ : Ideal W.CoordinateRing) using 2
   on_goal 2 => infer_instance
@@ -346,7 +346,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     XYIdeal_eq₂ h₁ h₂ hxy, XYIdeal, span_pair_mul_span_pair]
   simp_rw [span_insert, sup_rw, Ideal.sup_mul, span_singleton_mul_span_singleton]
   rw [← neg_eq_iff_eq_neg.mpr <| C_addPolynomial_slope h₁ h₂ hxy, span_singleton_neg,
-    C_addPolynomial, _root_.map_mul, YClass]
+    C_addPolynomial, map_mul, YClass]
   simp_rw [mul_comm <| XClass W x₁, mul_assoc, ← span_singleton_mul_span_singleton, ← Ideal.mul_sup]
   rw [span_singleton_mul_span_singleton, ← span_insert,
     ← span_pair_add_mul_right <| -(XClass W <| W.addX x₁ x₂ <| W.slope x₁ x₂ y₁ y₂), mul_neg,
@@ -365,7 +365,7 @@ lemma XYIdeal_mul_XYIdeal {x₁ x₂ y₁ y₂ : F} (h₁ : W.Equation x₁ y₁
     refine ⟨1 + C (C <| y⁻¹ * 4) * W.polynomial,
       ⟨C <| C y⁻¹ * (C 4 * X ^ 2 + C (4 * x₁ + W.b₂) * X + C (4 * x₁ ^ 2 + W.b₂ * x₁ + 2 * W.b₄)),
         0, C (C y⁻¹) * (Y - W.negPolynomial), ?_⟩, by
-      rw [map_add, map_one, _root_.map_mul <| mk W, AdjoinRoot.mk_self, mul_zero, add_zero]⟩
+      rw [map_add, map_one, map_mul <| mk W, AdjoinRoot.mk_self, mul_zero, add_zero]⟩
     rw [polynomial, negPolynomial, ← mul_right_inj' <| C_ne_zero.mpr <| C_ne_zero.mpr hxy]
     simp only [y, mul_add, ← mul_assoc, ← C_mul, mul_inv_cancel₀ hxy]
     linear_combination (norm := (rw [b₂, b₄, negY]; C_simp; ring1))
@@ -388,7 +388,7 @@ lemma XYIdeal'_eq {x y : F} (h : W.Nonsingular x y) :
 
 lemma mk_XYIdeal'_neg_mul {x y : F} (h : W.Nonsingular x y) :
     ClassGroup.mk (XYIdeal' <| (nonsingular_neg ..).mpr h) * ClassGroup.mk (XYIdeal' h) = 1 := by
-  rw [← _root_.map_mul]
+  rw [← map_mul]
   exact (ClassGroup.mk_eq_one_of_coe_ideal <| (FractionalIdeal.coeIdeal_mul ..).symm.trans <|
     FractionalIdeal.coeIdeal_inj.mpr <| XYIdeal_neg_mul h).mpr ⟨_, XClass_ne_zero W _, rfl⟩
 
@@ -399,7 +399,7 @@ lemma mk_XYIdeal'_mul_mk_XYIdeal' {x₁ x₂ y₁ y₂ : F} (h₁ : W.Nonsingula
     (h₂ : W.Nonsingular x₂ y₂) (hxy : ¬(x₁ = x₂ ∧ y₁ = W.negY x₂ y₂)) :
     ClassGroup.mk (XYIdeal' h₁) * ClassGroup.mk (XYIdeal' h₂) =
       ClassGroup.mk (XYIdeal' <| nonsingular_add h₁ h₂ hxy) := by
-  rw [← _root_.map_mul]
+  rw [← map_mul]
   exact (ClassGroup.mk_eq_mk_of_coe_ideal (FractionalIdeal.coeIdeal_mul ..).symm <|
       XYIdeal'_eq _).mpr
     ⟨_, _, XClass_ne_zero W _, YClass_ne_zero W _, XYIdeal_mul_XYIdeal h₁.left h₂.left hxy⟩

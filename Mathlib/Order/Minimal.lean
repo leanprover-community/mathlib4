@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Peter Nelson
 -/
 import Mathlib.Order.Antichain
-import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Minimality and Maximality
