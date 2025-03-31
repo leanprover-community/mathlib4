@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin, Patrick Massot
 -/
 import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.AddGroupWithTop
+import Mathlib.Data.Set.Monotone
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Lemmas
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
@@ -27,6 +27,16 @@ The solutions is to use a typeclass, and that is exactly what we do in this file
 -/
 
 variable {α : Type*}
+
+section MultiplicativeNotation
+
+/-- Notation for `WithZero (Multiplicative ℕ)` -/
+scoped[Multiplicative] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
+
+/-- Notation for `WithZero (Multiplicative ℤ)` -/
+scoped[Multiplicative] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
+
+end MultiplicativeNotation
 
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type*) extends LinearOrderedCommMonoid α,
@@ -395,15 +405,21 @@ instance instLinearOrderedCommGroupWithZero [LinearOrderedCommGroup α] :
     LinearOrderedCommGroupWithZero (WithZero α) where
   __ := instLinearOrderedCommMonoidWithZero
   __ := commGroupWithZero
+section Int
+
+open Int Multiplicative
+
+theorem lt_succ_iff_le {x : ℤₘ₀} {m : Multiplicative ℤ} : x < m * ofAdd (1 : ℤ) ↔ x ≤ m := by
+  obtain rfl | hx := eq_or_ne x 0
+  · simp [← coe_mul, zero_lt_coe, WithZero.zero_le]
+  · obtain ⟨x, rfl⟩ := ne_zero_iff_exists.mp hx
+    simpa [← WithZero.coe_mul] using ⟨le_of_lt_add_one, lt_add_one_of_le⟩
+
+theorem Int.ofAdd_neg_natCast_lt_one {n : ℕ} (hn : n ≠ 0) :
+    (↑(Multiplicative.ofAdd (-n : ℤ)) : ℤₘ₀) < 1 := by
+  rw [← coe_one, coe_lt_coe, ← ofAdd_zero, ofAdd_lt]
+  omega
+
+end Int
 
 end WithZero
-
-section MultiplicativeNotation
-
-/-- Notation for `WithZero (Multiplicative ℕ)` -/
-scoped[Multiplicative] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
-
-/-- Notation for `WithZero (Multiplicative ℤ)` -/
-scoped[Multiplicative] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
-
-end MultiplicativeNotation

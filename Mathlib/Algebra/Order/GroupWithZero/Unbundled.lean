@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Notation.Pi
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
+-- import Mathlib.Data.Set.Monotone
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.GCongr.CoreAttrs
@@ -31,7 +32,7 @@ technical.
 
 ## Definitions
 
-In all that follows, `α` is an orders which has a `0` and a multiplication. Note however that we do
+In all that follows, `α` is an order which has a `0` and a multiplication. Note however that we do
 not use lawfulness of this action in most of the file. Hence `*` should be considered here as a
 mostly arbitrary function `α → α → α`.
 
@@ -1175,7 +1176,8 @@ variable [ZeroLEOneClass M₀] [PosMulStrictMono M₀]
 
 lemma sq_pos_of_pos (ha : 0 < a) : 0 < a ^ 2 := pow_pos ha _
 
-variable [MulPosStrictMono M₀]
+section MulPosMono
+variable [MulPosMono M₀]
 
 @[gcongr, bound]
 lemma pow_lt_pow_left₀ (hab : a < b)
@@ -1187,6 +1189,10 @@ lemma pow_lt_pow_left₀ (hab : a < b)
 /-- See also `pow_left_strictMono₀` and `Nat.pow_left_strictMono`. -/
 lemma pow_left_strictMonoOn₀ (hn : n ≠ 0) : StrictMonoOn (· ^ n : M₀ → M₀) {a | 0 ≤ a} :=
   fun _a ha _b _ hab ↦ pow_lt_pow_left₀ hab ha hn
+
+end MulPosMono
+
+variable [MulPosStrictMono M₀]
 
 /-- See also `pow_right_strictMono'`. -/
 lemma pow_right_strictMono₀ (h : 1 < a) : StrictMono (a ^ ·) :=
@@ -1379,7 +1385,17 @@ lemma div_self_le_one (a : G₀) : a / a ≤ 1 := by obtain rfl | ha := eq_or_ne
 end Preorder
 
 section PartialOrder
-variable [PartialOrder G₀] [ZeroLEOneClass G₀] [PosMulReflectLT G₀] {a b c : G₀}
+variable [PartialOrder G₀] [ZeroLEOneClass G₀]
+
+section misc
+variable [PosMulStrictMono G₀] [MulPosMono G₀] {n : ℤ}
+
+lemma zpow_left_strictMonoOn₀ (hn : 0 < n) : StrictMonoOn (fun a : G₀ ↦ a ^ n) {a | 0 ≤ a} := by
+  lift n to ℕ using hn.le; simpa using pow_left_strictMonoOn₀ (by omega)
+
+end misc
+
+variable [PosMulReflectLT G₀] {a b c : G₀}
 
 @[simp] lemma inv_pos : 0 < a⁻¹ ↔ 0 < a :=
   suffices ∀ a : G₀, 0 < a → 0 < a⁻¹ from ⟨fun h ↦ inv_inv a ▸ this _ h, this a⟩
@@ -1711,6 +1727,8 @@ lemma div_lt_iff₀ (hc : 0 < c) : b / c < a ↔ b < a * c := by
 lemma inv_lt_iff_one_lt_mul₀ (ha : 0 < a) : a⁻¹ < b ↔ 1 < b * a := by
   rw [← mul_inv_lt_iff₀ ha, one_mul]
 
+lemma one_lt_div₀ (hb : 0 < b) : 1 < a / b ↔ b < a := by rw [lt_div_iff₀ hb, one_mul]
+
 @[gcongr, bound]
 lemma div_lt_div_of_pos_right (h : a < b) (hc : 0 < c) : a / c < b / c := by
   rw [div_eq_mul_one_div a c, div_eq_mul_one_div b c]
@@ -1829,6 +1847,14 @@ lemma div_lt_div₀' (hac : a ≤ c) (hdb : d < b) (hc : 0 < c) (hd : 0 < d) : a
   rw [div_eq_mul_inv, div_eq_mul_inv]
   exact mul_lt_mul' hac ((inv_lt_inv₀ (hd.trans hdb) hd).2 hdb)
     (inv_nonneg.2 <| hd.le.trans hdb.le) hc
+
+-- lemma zpow_left_injOn₀ : ∀ {n : ℤ}, n ≠ 0 → {a | 0 ≤ a}.InjOn fun a : G₀ ↦ a ^ n
+--   | (n + 1 : ℕ), _ => by simpa using mod_cast (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
+--   | .negSucc n, _ => by
+--     simpa using inv_injective.comp_injOn (pow_left_strictMonoOn₀ n.succ_ne_zero).injOn
+--
+-- lemma zpow_left_inj₀ (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
+--   (zpow_left_injOn₀ hn).eq_iff ha hb
 
 end GroupWithZero.LinearOrder
 
