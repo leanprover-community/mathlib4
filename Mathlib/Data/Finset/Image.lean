@@ -10,6 +10,7 @@ import Mathlib.Data.Finset.Erase
 import Mathlib.Data.Finset.Filter
 import Mathlib.Data.Finset.Range
 import Mathlib.Data.Finset.SDiff
+import Mathlib.Order.Minimal
 
 /-! # Image and map operations on finite sets
 
@@ -655,6 +656,26 @@ theorem range_sdiff_zero {n : ℕ} : range (n + 1) \ {0} = (range n).image Nat.s
   conv_rhs => rw [range_succ]
   rw [range_succ, image_insert, ← hk, insert_sdiff_of_not_mem]
   simp
+
+variable {ι : Type*} [Preorder α] {s : Finset α}
+
+lemma exists_maximalFor (f : ι → α) (s : Finset ι) (hs : s.Nonempty) :
+    ∃ i, MaximalFor (· ∈ s) f i := by
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton i => exact ⟨i, by simp⟩
+  | @cons i s hi hs ih =>
+    obtain ⟨j, hj⟩ := ih
+    by_cases hji : f j ≤ f i
+    · refine ⟨i, mem_cons_self .., ?_⟩
+      simp only [mem_cons, forall_eq_or_imp, le_refl, imp_self, true_and]
+      exact fun k hk hik ↦ (hj.2 hk <| hji.trans hik).trans hji
+    · exact ⟨j, mem_cons_of_mem hj.1, by simpa [hji] using hj.2⟩
+
+lemma exists_minimalFor (f : ι → α) (s : Finset ι) (hs : s.Nonempty) :
+    ∃ i, MinimalFor (· ∈ s) f i := exists_maximalFor (α := αᵒᵈ) f s hs
+
+lemma exists_maximal (hs : s.Nonempty) : ∃ i, Maximal (· ∈ s) i := s.exists_maximalFor id hs
+lemma exists_minimal (hs : s.Nonempty) : ∃ i, Minimal (· ∈ s) i := s.exists_minimalFor id hs
 
 end Finset
 

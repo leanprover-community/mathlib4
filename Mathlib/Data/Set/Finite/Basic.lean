@@ -3,8 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kyle Miller
 -/
-import Mathlib.Data.Finite.Defs
-import Mathlib.Data.Finset.Image
 import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Tactic.Nontriviality
 
@@ -885,8 +883,39 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
 /-! ### Order properties -/
 
 section Preorder
+variable {ι : Type*} [Preorder α] {s : Set α}
 
-variable [Preorder α] [Nonempty α] {s : Set α}
+lemma Finite.exists_maximalFor (f : ι → α) (s : Set ι) (h : s.Finite) (hs : s.Nonempty) :
+    ∃ i, MaximalFor (· ∈ s) f i := by
+  lift s to Finset ι using h; simpa using s.exists_maximalFor f hs
+
+lemma Finite.exists_minimalFor (f : ι → α) (s : Set ι) (h : s.Finite) (hs : s.Nonempty) :
+    ∃ i, MinimalFor (· ∈ s) f i := Finite.exists_maximalFor (α := αᵒᵈ) f s h hs
+
+lemma Finite.exists_maximal (h : s.Finite) (hs : s.Nonempty) : ∃ i, Maximal (· ∈ s) i :=
+  h.exists_maximalFor id _ hs
+
+lemma Finite.exists_minimal (h : s.Finite) (hs : s.Nonempty) : ∃ i, Minimal (· ∈ s) i :=
+  h.exists_minimalFor id _ hs
+
+/-- A version of `Finite.exists_maximalFor` with the (weaker) hypothesis that the image of `s`
+is finite rather than `s` itself. -/
+lemma Finite.exists_maximalFor' (f : ι → α) (s : Set ι) (h : (f '' s).Finite) (hs : s.Nonempty) :
+    ∃ i, MaximalFor (· ∈ s) f i := by
+  obtain ⟨_, ⟨a, ha, rfl⟩, hmax⟩ := Finite.exists_maximalFor id (f '' s) h (hs.image f)
+  exact ⟨a, ha, fun a' ha' hf ↦ hmax (mem_image_of_mem f ha') hf⟩
+
+/-- A version of `Finite.exists_minimalFor` with the (weaker) hypothesis that the image of `s`
+is finite rather than `s` itself. -/
+lemma Finite.exists_minimalFor' (f : ι → α) (s : Set ι) (h : (f '' s).Finite) (hs : s.Nonempty) :
+    ∃ i, MinimalFor (· ∈ s) f i := h.exists_maximalFor' (α := αᵒᵈ) f s hs
+
+@[deprecated (since := "2025-05-04")] alias Finite.exists_maximal_wrt := Finite.exists_maximalFor
+@[deprecated (since := "2025-05-04")] alias Finite.exists_minimal_wrt := Finite.exists_minimalFor
+@[deprecated (since := "2025-05-04")] alias Finite.exists_maximal_wrt' := Finite.exists_maximalFor'
+@[deprecated (since := "2025-05-04")] alias Finite.exists_minimal_wrt' := Finite.exists_minimalFor'
+
+variable [Nonempty α]
 
 theorem infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinite := by
   inhabit α
@@ -920,42 +949,6 @@ theorem Finite.exists_lt_map_eq_of_forall_mem [LinearOrder α] [Infinite α] {t 
 theorem finite_range_findGreatest {P : α → ℕ → Prop} [∀ x, DecidablePred (P x)] {b : ℕ} :
     (range fun x => Nat.findGreatest (P x) b).Finite :=
   (finite_le_nat b).subset <| range_subset_iff.2 fun _ => Nat.findGreatest_le _
-
-theorem Finite.exists_maximal_wrt [PartialOrder β] (f : α → β) (s : Set α) (h : s.Finite)
-    (hs : s.Nonempty) : ∃ a ∈ s, ∀ a' ∈ s, f a ≤ f a' → f a = f a' := by
-  induction s, h using Set.Finite.induction_on with
-  | empty => exact absurd hs not_nonempty_empty
-  | @insert a s his _ ih =>
-    rcases s.eq_empty_or_nonempty with h | h
-    · use a
-      simp [h]
-    rcases ih h with ⟨b, hb, ih⟩
-    by_cases h : f b ≤ f a
-    · refine ⟨a, Set.mem_insert _ _, fun c hc hac => le_antisymm hac ?_⟩
-      rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
-      · rfl
-      · rwa [← ih c hcs (le_trans h hac)]
-    · refine ⟨b, Set.mem_insert_of_mem _ hb, fun c hc hbc => ?_⟩
-      rcases Set.mem_insert_iff.1 hc with (rfl | hcs)
-      · exact (h hbc).elim
-      · exact ih c hcs hbc
-
-/-- A version of `Finite.exists_maximal_wrt` with the (weaker) hypothesis that the image of `s`
-  is finite rather than `s` itself. -/
-theorem Finite.exists_maximal_wrt' [PartialOrder β] (f : α → β) (s : Set α) (h : (f '' s).Finite)
-    (hs : s.Nonempty) : (∃ a ∈ s, ∀ (a' : α), a' ∈ s → f a ≤ f a' → f a = f a') := by
-  obtain ⟨_, ⟨a, ha, rfl⟩, hmax⟩ := Finite.exists_maximal_wrt id (f '' s) h (hs.image f)
-  exact ⟨a, ha, fun a' ha' hf ↦ hmax _ (mem_image_of_mem f ha') hf⟩
-
-theorem Finite.exists_minimal_wrt [PartialOrder β] (f : α → β) (s : Set α) (h : s.Finite)
-    (hs : s.Nonempty) : ∃ a ∈ s, ∀ a' ∈ s, f a' ≤ f a → f a = f a' :=
-  Finite.exists_maximal_wrt (β := βᵒᵈ) f s h hs
-
-/-- A version of `Finite.exists_minimal_wrt` with the (weaker) hypothesis that the image of `s`
-  is finite rather than `s` itself. -/
-lemma Finite.exists_minimal_wrt' [PartialOrder β] (f : α → β) (s : Set α) (h : (f '' s).Finite)
-    (hs : s.Nonempty) : (∃ a ∈ s, ∀ (a' : α), a' ∈ s → f a' ≤ f a → f a = f a') :=
-  Set.Finite.exists_maximal_wrt' (β := βᵒᵈ) f s h hs
 
 end Set
 

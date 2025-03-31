@@ -161,16 +161,14 @@ end Nonempty
 
 end Fintype
 
-/-! ### Properties for PartialOrders -/
+/-! ### Minimal elements exist in a finite preorder -/
 
-section PartialOrder
+section Preorder
+variable {α : Type*} [Preorder α] {a : α} {p : α → Prop}
 
-variable {α : Type*} [PartialOrder α] {a : α} {p : α → Prop}
-
-lemma Finite.exists_minimal_le [Finite α] (h : p a) : ∃ b, b ≤ a ∧ Minimal p b := by
-  obtain ⟨b, ⟨hba, hb⟩, hbmin⟩ :=
-    Set.Finite.exists_minimal_wrt id {x | x ≤ a ∧ p x} (Set.toFinite _) ⟨a, rfl.le, h⟩
-  exact ⟨b, hba, hb, fun x hx hxb ↦ (hbmin x ⟨hxb.trans hba, hx⟩ hxb).le⟩
+lemma Finite.exists_minimal_le [Finite α] (h : p a) : ∃ b ≤ a, Minimal p b := by
+  obtain ⟨b, ⟨hba, hb⟩, hbmin⟩ := {x | x ≤ a ∧ p x}.toFinite.exists_minimal ⟨a, le_rfl, h⟩
+  exact ⟨b, hba, hb, fun x hx hxb ↦ hbmin ⟨hxb.trans hba, hx⟩ hxb⟩
 
 lemma Finite.exists_le_maximal [Finite α] (h : p a) : ∃ b, a ≤ b ∧ Maximal p b :=
   Finite.exists_minimal_le (α := αᵒᵈ) h
@@ -191,7 +189,7 @@ lemma Set.Finite.exists_le_maximal {s : Set α} (hs : s.Finite) (h : a ∈ s) :
     ∃ b, a ≤ b ∧ Maximal (· ∈ s) b :=
   hs.exists_minimal_le (α := αᵒᵈ) h
 
-end PartialOrder
+end Preorder
 
 /-! ### Concrete instances -/
 
