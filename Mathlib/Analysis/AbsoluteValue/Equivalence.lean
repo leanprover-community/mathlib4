@@ -3,6 +3,7 @@ Copyright (c) 2025 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.Normed.Ring.WithAbs
 
@@ -64,10 +65,11 @@ lemma eq_trivial_of_isEquiv_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroD
   · simp only [ne_eq, hx, not_false_eq_true, trivial_apply] at hc ⊢
     exact (Real.rpow_left_inj (f.nonneg x) zero_le_one hc₀.ne').mp <| (Real.one_rpow c).symm ▸ hc
 
-variable {F S : Type*} [Field F]
+variable {F S : Type*} [Field F] [LinearOrderedField S] {v w : AbsoluteValue F S}
 
 open Filter in
-theorem lt_one_iff_of_lt_one_imp [Archimedean S] [TopologicalSpace S] [OrderTopology S]
+theorem lt_one_iff_of_lt_one_imp [Archimedean S] [TopologicalSpace S]
+    [OrderTopology S]
     (hv : v.IsNontrivial) (h : ∀ x, v x < 1 → w x < 1) {a : F} :
     v a < 1 ↔ w a < 1:= by
   let ⟨x₀, hx₀⟩ := hv.exists_abv_lt_one
