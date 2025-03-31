@@ -221,9 +221,8 @@ theorem isCoskeletal (sx : StrictSegal X) :
   isRightKanExtension := sx.isRightKanExtension
 
 /-- When `X` satisfies `IsStrictSegal`, `X` is 2-coskeletal. -/
-instance isCoskeletal' [IsStrictSegal X] :
-    SimplicialObject.IsCoskeletal X 2 where
-  isRightKanExtension := isRightKanExtension <| ofIsStrictSegal X
+instance isCoskeletal' [IsStrictSegal X] : SimplicialObject.IsCoskeletal X 2 :=
+  isCoskeletal <| ofIsStrictSegal X
 
 end StrictSegal
 
