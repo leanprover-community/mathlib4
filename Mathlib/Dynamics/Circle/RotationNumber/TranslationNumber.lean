@@ -3,7 +3,6 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Iterate
 import Mathlib.Order.SemiconjSup
@@ -124,7 +123,7 @@ open Function hiding Commute
 -/
 
 /-- A lift of a monotone degree one map `S¹ → S¹`. -/
-structure CircleDeg1Lift extends ℝ →o ℝ : Type where
+structure CircleDeg1Lift : Type extends ℝ →o ℝ where
   map_add_one' : ∀ x, toFun (x + 1) = toFun x + 1
 
 namespace CircleDeg1Lift

@@ -1,6 +1,7 @@
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.ExistsI
 import Mathlib.Algebra.Ring.Nat
+import Mathlib.Data.Set.Defs
 
 set_option autoImplicit true
 /-- These next few are duplicated from `rcases/obtain` tests, with the goal order swapped. -/

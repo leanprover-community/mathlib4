@@ -297,13 +297,11 @@ theorem irreducible_of_coprime (hp : p.IsUnitTrinomial)
   rcases eq_or_eq_neg_of_sq_eq_sq (y : ℤ) (v : ℤ)
       ((Int.isUnit_sq y.isUnit).trans (Int.isUnit_sq v.isUnit).symm) with
     (h1 | h1)
-  · -- Porting note: `rw [h1] at *` rewrites at `h1`
-    rw [h1] at hq
+  · rw [h1] at hq
     rcases irreducible_aux3 hkm hmn hkm' hmn' u v w x z hp hq hpq with (h2 | h2)
     · exact Or.inl h2
     · exact Or.inr (Or.inr (Or.inl h2))
-  · -- Porting note: `rw [h1] at *` rewrites at `h1`
-    rw [h1] at hq
+  · rw [h1] at hq
     rw [trinomial_def] at hp
     rw [← neg_inj, neg_add, neg_add, ← neg_mul, ← neg_mul, ← neg_mul, ← C_neg, ← C_neg, ← C_neg]
       at hp

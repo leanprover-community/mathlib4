@@ -71,6 +71,13 @@ protected theorem Commute.inv_add_inv (hab : Commute a b) (ha : a ≠ 0) (hb : b
     a⁻¹ + b⁻¹ = (a + b) / (a * b) := by
   rw [inv_eq_one_div, inv_eq_one_div, hab.one_div_add_one_div ha hb]
 
+variable [NeZero (2 : K)]
+
+@[simp] lemma add_self_div_two (a : K) : (a + a) / 2 = a := by
+  rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
+
+@[simp] lemma add_halves (a : K) : a / 2 + a / 2 = a := by rw [← add_div, add_self_div_two]
+
 end DivisionSemiring
 
 section DivisionRing
@@ -120,6 +127,11 @@ protected theorem Commute.div_sub_div (hbc : Commute b c) (hbd : Commute b d) (h
 protected theorem Commute.inv_sub_inv (hab : Commute a b) (ha : a ≠ 0) (hb : b ≠ 0) :
     a⁻¹ - b⁻¹ = (b - a) / (a * b) := by
   simp only [inv_eq_one_div, (Commute.one_right a).div_sub_div hab ha hb, one_mul, mul_one]
+
+variable [NeZero (2 : K)]
+
+lemma sub_half (a : K) : a - a / 2 = a / 2 := by rw [sub_eq_iff_eq_add, add_halves]
+lemma half_sub (a : K) : a / 2 - a = -(a / 2) := by rw [← neg_sub, sub_half]
 
 end DivisionRing
 

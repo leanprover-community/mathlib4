@@ -59,7 +59,7 @@ attribute [instance] IsAffine.affine
 instance (X : Scheme.{u}) [IsAffine X] : IsIso (ΓSpec.adjunction.unit.app X) := @IsAffine.affine X _
 
 /-- The canonical isomorphism `X ≅ Spec Γ(X)` for an affine scheme. -/
-@[simps! (config := .lemmasOnly) hom]
+@[simps! -isSimp hom]
 def Scheme.isoSpec (X : Scheme) [IsAffine X] : X ≅ Spec Γ(X, ⊤) :=
   asIso X.toSpecΓ
 
@@ -100,7 +100,7 @@ def AffineScheme.ofHom {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     AffineScheme.of X ⟶ AffineScheme.of Y :=
   f
 
-theorem mem_Spec_essImage (X : Scheme) : X ∈ Scheme.Spec.essImage ↔ IsAffine X :=
+theorem mem_Spec_essImage (X : Scheme) : Scheme.Spec.essImage X ↔ IsAffine X :=
   ⟨fun h => ⟨Functor.essImage.unit_isIso h⟩,
     fun _ => ΓSpec.adjunction.mem_essImage_of_unit_isIso _⟩
 
@@ -152,13 +152,12 @@ namespace AffineScheme
 def Spec : CommRingCatᵒᵖ ⥤ AffineScheme :=
   Scheme.Spec.toEssImage
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11081): cannot automatically derive
+/-! We copy over instances from `Scheme.Spec.toEssImage`. -/
+
 instance Spec_full : Spec.Full := Functor.Full.toEssImage _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11081): cannot automatically derive
 instance Spec_faithful : Spec.Faithful := Functor.Faithful.toEssImage _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11081): cannot automatically derive
 instance Spec_essSurj : Spec.EssSurj := Functor.EssSurj.toEssImage (F := _)
 
 /-- The forgetful functor `AffineScheme ⥤ Scheme`. -/
@@ -166,13 +165,13 @@ instance Spec_essSurj : Spec.EssSurj := Functor.EssSurj.toEssImage (F := _)
 def forgetToScheme : AffineScheme ⥤ Scheme :=
   Scheme.Spec.essImageInclusion
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11081): cannot automatically derive
-instance forgetToScheme_full : forgetToScheme.Full :=
-show (Scheme.Spec.essImageInclusion).Full from inferInstance
+/-! We copy over instances from `Scheme.Spec.essImageInclusion`. -/
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11081): cannot automatically derive
+instance forgetToScheme_full : forgetToScheme.Full :=
+  inferInstanceAs Scheme.Spec.essImageInclusion.Full
+
 instance forgetToScheme_faithful : forgetToScheme.Faithful :=
-show (Scheme.Spec.essImageInclusion).Faithful from inferInstance
+  inferInstanceAs Scheme.Spec.essImageInclusion.Faithful
 
 /-- The global section functor of an affine scheme. -/
 def Γ : AffineSchemeᵒᵖ ⥤ CommRingCat :=
@@ -309,7 +308,7 @@ variable {X Y : Scheme.{u}} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U))
 
 attribute [-simp] eqToHom_op in
 /-- The isomorphism `U ≅ Spec Γ(X, U)` for an affine `U`. -/
-@[simps! (config := .lemmasOnly) inv]
+@[simps! -isSimp inv]
 def isoSpec :
     ↑U ≅ Spec Γ(X, U) :=
   haveI : IsAffine U := hU
@@ -335,11 +334,16 @@ lemma isoSpec_hom_base_apply (x : U) :
 
 lemma isoSpec_inv_appTop :
     hU.isoSpec.inv.appTop = U.topIso.hom ≫ (Scheme.ΓSpecIso Γ(X, U)).inv := by
-  simp only [Scheme.Opens.toScheme_presheaf_obj, isoSpec_inv, Scheme.isoSpec, asIso_inv,
-    Scheme.comp_coeBase, Opens.map_comp_obj, Opens.map_top, Scheme.comp_app, Scheme.inv_appTop,
-    Scheme.Opens.topIso_hom, Scheme.ΓSpecIso_inv_naturality, IsIso.inv_comp_eq]
+  simp_rw [Scheme.Opens.toScheme_presheaf_obj, isoSpec_inv, Scheme.isoSpec, asIso_inv,
+    Scheme.comp_app, Scheme.Opens.topIso_hom, Scheme.ΓSpecIso_inv_naturality,
+    Scheme.inv_appTop, -- `check_compositions` reports defeq problems starting after this step.
+    IsIso.inv_comp_eq]
   rw [Scheme.toSpecΓ_appTop]
+  -- We need `erw` here because the goal has
+  -- `Scheme.ΓSpecIso Γ(↑U, ⊤)).hom ≫ Scheme.ΓSpecIso Γ(X, U.ι ''ᵁ ⊤)).inv`
+  -- and `Γ(X, U.ι ''ᵁ ⊤)` is non-reducibly defeq to `Γ(↑U, ⊤)`.
   erw [Iso.hom_inv_id_assoc]
+  simp only [Opens.map_top]
 
 lemma isoSpec_hom_appTop :
     hU.isoSpec.hom.appTop = (Scheme.ΓSpecIso Γ(X, U)).hom ≫ U.topIso.inv := by
@@ -604,13 +608,10 @@ theorem isLocalization_basicOpen :
     (IsLocalization.isLocalization_iff_of_ringEquiv (Submonoid.powers f)
       (asIso <| basicOpenSectionsToAffine hU f).commRingCatIsoToRingEquiv).mpr
   convert StructureSheaf.IsLocalization.to_basicOpen _ f using 1
-  -- Porting note: more hand holding is required here, the next 4 lines were not necessary
-  delta StructureSheaf.openAlgebra
+  -- Porting note: more hand holding is required here, the next 3 lines were not necessary
   congr 1
-  rw [RingEquiv.toRingHom_eq_coe, CategoryTheory.Iso.commRingCatIsoToRingEquiv_toRingHom, asIso_hom]
-  dsimp [CommRingCat.ofHom, RingHom.algebraMap_toAlgebra]
-  change (X.presheaf.map _ ≫ basicOpenSectionsToAffine hU f).hom = _
-  delta basicOpenSectionsToAffine
+  dsimp [CommRingCat.ofHom, RingHom.algebraMap_toAlgebra, ← CommRingCat.hom_comp,
+    basicOpenSectionsToAffine]
   rw [hU.fromSpec.naturality_assoc, hU.fromSpec_app_self]
   simp only [Category.assoc, ← Functor.map_comp, ← op_comp]
   exact CommRingCat.hom_ext_iff.mp (StructureSheaf.toOpen_res _ _ _ _)
@@ -680,13 +681,10 @@ theorem basicOpen_basicOpen_is_basicOpen (g : Γ(X, X.basicOpen f)) :
   have := isLocalization_basicOpen hU f
   obtain ⟨x, ⟨_, n, rfl⟩, rfl⟩ := IsLocalization.surj'' (Submonoid.powers f) g
   use f * x
-  rw [Algebra.smul_def, Scheme.basicOpen_mul, Scheme.basicOpen_mul, RingHom.algebraMap_toAlgebra]
-  rw [Scheme.basicOpen_res]
-  refine (inf_eq_left.mpr ?_).symm
-  -- Porting note: a little help is needed here
-  convert inf_le_left (α := X.Opens) using 1
-  apply Scheme.basicOpen_of_isUnit
-  apply
+  rw [Algebra.smul_def, Scheme.basicOpen_mul, Scheme.basicOpen_mul, RingHom.algebraMap_toAlgebra,
+    Scheme.basicOpen_res]
+  refine (inf_eq_left.mpr (inf_le_left.trans_eq (Scheme.basicOpen_of_isUnit _ ?_).symm)).symm
+  exact
     Submonoid.leftInv_le_isUnit _
       (IsLocalization.toInvSubmonoid (Submonoid.powers f) (Γ(X, X.basicOpen f))
         _).prop
@@ -728,18 +726,13 @@ theorem isLocalization_stalk' (y : PrimeSpectrum Γ(X, U)) (hy : hU.fromSpec.bas
       (S := X.presheaf.stalk (hU.fromSpec.base y)) _ y.asIdeal.primeCompl _
       (TopCat.Presheaf.algebra_section_stalk X.presheaf ⟨hU.fromSpec.base y, hy⟩) _ _
       (asIso <| hU.fromSpec.stalkMap y).commRingCatIsoToRingEquiv).mpr
-  -- Porting note: need to know what the ring is and after convert, instead of equality
-  -- we get an `iff`.
   convert StructureSheaf.IsLocalization.to_stalk Γ(X, U) y using 1
   delta IsLocalization.AtPrime StructureSheaf.stalkAlgebra
-  rw [iff_iff_eq]
-  congr 2
   rw [RingHom.algebraMap_toAlgebra, RingEquiv.toRingHom_eq_coe,
     CategoryTheory.Iso.commRingCatIsoToRingEquiv_toRingHom, asIso_hom, ← CommRingCat.hom_comp,
     Scheme.stalkMap_germ, IsAffineOpen.fromSpec_app_self, Category.assoc, TopCat.Presheaf.germ_res]
   rfl
 
--- Porting note: I have split this into two lemmas
 theorem isLocalization_stalk (x : U) :
     IsLocalization.AtPrime (X.presheaf.stalk x) (hU.primeIdealOf x).asIdeal := by
   rcases x with ⟨x, hx⟩
@@ -974,7 +967,8 @@ is the zero locus in terms of the prime spectrum of `Γ(X, ⊤)`. -/
 lemma isoSpec_image_zeroLocus [IsAffine X]
     (s : Set Γ(X, ⊤)) :
     X.isoSpec.hom.base '' X.zeroLocus s = PrimeSpectrum.zeroLocus s := by
-  erw [← X.toSpecΓ_preimage_zeroLocus, Set.image_preimage_eq]
+  rw [← X.toSpecΓ_preimage_zeroLocus]
+  erw [Set.image_preimage_eq]
   exact (bijective_of_isIso X.isoSpec.hom.base).surjective
 
 lemma toSpecΓ_image_zeroLocus [IsAffine X] (s : Set Γ(X, ⊤)) :
@@ -1005,7 +999,8 @@ lemma eq_zeroLocus_of_isClosed_of_isAffine [IsAffine X] (s : Set X) :
     obtain ⟨I, (hI : Z = _)⟩ := (PrimeSpectrum.isClosed_iff_zeroLocus_ideal _).mp hZ
     use I
     simp only [← Scheme.toSpecΓ_preimage_zeroLocus, ← hI, Z]
-    erw [Set.preimage_image_eq _ (bijective_of_isIso X.isoSpec.hom.base).injective]
+    symm
+    exact Set.preimage_image_eq _ (bijective_of_isIso X.isoSpec.hom.base).injective
   · rintro ⟨I, rfl⟩
     exact zeroLocus_isClosed X I.carrier
 
@@ -1013,7 +1008,7 @@ open Set.Notation in
 lemma Opens.toSpecΓ_preimage_zeroLocus {X : Scheme.{u}} (U : X.Opens)
     (s : Set Γ(X, U)) :
     U.toSpecΓ.base ⁻¹' PrimeSpectrum.zeroLocus s = U.1 ↓∩ X.zeroLocus s := by
-  rw [toSpecΓ, Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp, Spec.map_base]
+  rw [toSpecΓ, Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp, Spec.map_base, hom_ofHom]
   erw [PrimeSpectrum.preimage_comap_zeroLocus]
   rw [Scheme.toSpecΓ_preimage_zeroLocus]
   show _ = U.ι.base ⁻¹' (X.zeroLocus s)

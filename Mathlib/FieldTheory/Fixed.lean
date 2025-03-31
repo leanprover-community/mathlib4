@@ -6,9 +6,10 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Polynomial.GroupRingAction
 import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.Algebra.Ring.Action.Invariant
+import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Normal.Defs
 import Mathlib.FieldTheory.Separable
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
@@ -111,14 +112,14 @@ theorem coe_algebraMap :
   rfl
 
 theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
-    (LinearIndependent (FixedPoints.subfield G F) fun i : (s : Set F) => (i : F)) →
-      LinearIndependent F fun i : (s : Set F) => MulAction.toFun G F i := by
+    (LinearIndepOn (FixedPoints.subfield G F) id (s : Set F)) →
+      LinearIndepOn F (MulAction.toFun G F) s := by
   classical
   have : IsEmpty ((∅ : Finset F) : Set F) := by simp
   refine Finset.induction_on s (fun _ => linearIndependent_empty_type) fun a s has ih hs => ?_
   rw [coe_insert] at hs ⊢
-  rw [linearIndependent_insert (mt mem_coe.1 has)] at hs
-  rw [linearIndependent_insert' (mt mem_coe.1 has)]; refine ⟨ih hs.1, fun ha => ?_⟩
+  rw [linearIndepOn_insert (mt mem_coe.1 has)] at hs
+  rw [linearIndepOn_insert (mt mem_coe.1 has)]; refine ⟨ih hs.1, fun ha => ?_⟩
   rw [Finsupp.mem_span_image_iff_linearCombination] at ha; rcases ha with ⟨l, hl, hla⟩
   rw [Finsupp.linearCombination_apply_of_mem_supported F hl] at hla
   suffices ∀ i ∈ s, l i ∈ FixedPoints.subfield G F by
@@ -126,7 +127,8 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     simp_rw [Pi.smul_apply, toFun_apply, one_smul] at hla
     refine hs.2 (hla ▸ Submodule.sum_mem _ fun c hcs => ?_)
     change (⟨l c, this c hcs⟩ : FixedPoints.subfield G F) • c ∈ _
-    exact Submodule.smul_mem _ _ (Submodule.subset_span <| mem_coe.2 hcs)
+    exact Submodule.smul_mem _ _ <| Submodule.subset_span <| by simpa
+
   intro i his g
   refine
     eq_of_sub_eq_zero
@@ -189,22 +191,17 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     (hf : Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x f = 0) :
     minpoly G F x ∣ f := by
   classical
--- Porting note: the two `have` below were not needed.
-  have : (subfield G F).subtype = (subfield G F).toSubring.subtype := rfl
-  have h : Polynomial.map (MulSemiringActionHom.toRingHom (IsInvariantSubring.subtypeHom G
-    (subfield G F).toSubring)) f = Polynomial.map
-    ((IsInvariantSubring.subtypeHom G (subfield G F).toSubring)) f := rfl
-  rw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
-    Polynomial.map_toSubring _ _, prodXSubSMul]
+  rw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly,
+    ← Subfield.toSubring_subtype_eq_subtype, Polynomial.map_toSubring _ _, prodXSubSMul]
   refine
     Fintype.prod_dvd_of_coprime
       (Polynomial.pairwise_coprime_X_sub_C <| MulAction.injective_ofQuotientStabilizer G x) fun y =>
       QuotientGroup.induction_on y fun g => ?_
   rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MulAction.ofQuotientStabilizer_mk,
-    Polynomial.eval_smul', ← this, ← Subfield.toSubring_subtype_eq_subtype, ←
-    IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring, h,
+    Polynomial.eval_smul',
+    ← IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring,
     ← MulSemiringActionHom.coe_polynomial, ← MulSemiringActionHom.map_smul, smul_polynomial,
-    MulSemiringActionHom.coe_polynomial, ← h, IsInvariantSubring.coe_subtypeHom',
+    MulSemiringActionHom.coe_polynomial, IsInvariantSubring.coe_subtypeHom',
     Polynomial.eval_map, Subfield.toSubring_subtype_eq_subtype, hf, smul_zero]
 
 -- Why is this so slow?
@@ -214,7 +211,7 @@ theorem irreducible_aux (f g : Polynomial (FixedPoints.subfield G F)) (hf : f.Mo
   have hg2 : g ∣ minpoly G F x := by rw [← hfg]; exact dvd_mul_left _ _
   have := eval₂ G F x
   rw [← hfg, Polynomial.eval₂_mul, mul_eq_zero] at this
-  cases' this with this this
+  rcases this with this | this
   · right
     have hf3 : f = minpoly G F x :=
       Polynomial.eq_of_monic_of_associated hf (monic G F x)
@@ -269,10 +266,9 @@ instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F := by
   classical
   exact ⟨fun x => by
     cases nonempty_fintype G
-    -- this was a plain rw when we were using unbundled subrings
-    erw [IsSeparable, ← minpoly_eq_minpoly,
+    rw [IsSeparable, ← minpoly_eq_minpoly,
       ← Polynomial.separable_map (FixedPoints.subfield G F).subtype, minpoly,
-      Polynomial.map_toSubring _ (subfield G F).toSubring]
+      ← Subfield.toSubring_subtype_eq_subtype, Polynomial.map_toSubring _ (subfield G F).toSubring]
     exact Polynomial.separable_prod_X_sub_C_iff.2 (injective_ofQuotientStabilizer G x)⟩
 
 instance : FiniteDimensional (subfield G F) F := by

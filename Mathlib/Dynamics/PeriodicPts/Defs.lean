@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Batteries.Data.Nat.Gcd
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Cycle
 import Mathlib.Data.PNat.Notation
 import Mathlib.Dynamics.FixedPoints.Basic
@@ -447,7 +449,7 @@ theorem periodicOrbit_chain (r : α → α → Prop) {f : α → α} {x : α} :
     rw [periodicOrbit, ← Cycle.map_coe, Cycle.chain_map, ← hM, Cycle.chain_range_succ]
     refine ⟨?_, fun H => ⟨?_, fun m hm => H _ (hm.trans (Nat.lt_succ_self _))⟩⟩
     · rintro ⟨hr, H⟩ n hn
-      cases' eq_or_lt_of_le (Nat.lt_succ_iff.1 hn) with hM' hM'
+      rcases eq_or_lt_of_le (Nat.lt_succ_iff.1 hn) with hM' | hM'
       · rwa [hM', hM, iterate_minimalPeriod]
       · exact H _ hM'
     · rw [iterate_zero_apply]

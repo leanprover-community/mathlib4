@@ -5,7 +5,7 @@ Authors: Fox Thomson, Chris Wong
 -/
 import Mathlib.Computability.Language
 import Mathlib.Data.Countable.Small
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Tactic.NormNum
 
 /-!

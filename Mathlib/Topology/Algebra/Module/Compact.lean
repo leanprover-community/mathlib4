@@ -19,15 +19,15 @@ variable [TopologicalSpace M] [ContinuousAdd M] [ContinuousSMul R M]
 lemma Submodule.isCompact_of_fg [CompactSpace R] {N : Submodule R M} (hN : N.FG) :
     IsCompact (X := M) N := by
   obtain ⟨s, hs⟩ := hN
-  have : LinearMap.range (Fintype.linearCombination R R (α := s) Subtype.val) = N := by
+  have : LinearMap.range (Fintype.linearCombination R (α := s) Subtype.val) = N := by
     simp [Finsupp.range_linearCombination, hs]
   rw [← this]
   refine isCompact_range ?_
   simp only [Fintype.linearCombination, Finset.univ_eq_attach, smul_eq_mul, LinearMap.coe_mk,
     AddHom.coe_mk]
-  continuity
+  fun_prop
 
-lemma Ideal.isCompact_of_fg [TopologicalSemiring R] [CompactSpace R]
+lemma Ideal.isCompact_of_fg [IsTopologicalSemiring R] [CompactSpace R]
     {I : Ideal R} (hI : I.FG) : IsCompact (X := R) I :=
   Submodule.isCompact_of_fg hI
 

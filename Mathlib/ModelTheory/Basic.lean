@@ -553,6 +553,9 @@ theorem symm_symm (f : M ≃[L] N) :
     f.symm.symm = f :=
   rfl
 
+theorem symm_bijective : Function.Bijective (symm : (M ≃[L] N) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
+
 @[simp]
 theorem apply_symm_apply (f : M ≃[L] N) (a : N) : f (f.symm a) = a :=
   f.toEquiv.apply_symm_apply a
@@ -739,24 +742,30 @@ instance sumStructure : (L₁.sum L₂).Structure S where
 variable {L₁ L₂ S}
 
 @[simp]
-theorem funMap_sum_inl {n : ℕ} (f : L₁.Functions n) :
+theorem funMap_sumInl {n : ℕ} (f : L₁.Functions n) :
     @funMap (L₁.sum L₂) S _ n (Sum.inl f) = funMap f :=
   rfl
 
 @[simp]
-theorem funMap_sum_inr {n : ℕ} (f : L₂.Functions n) :
+theorem funMap_sumInr {n : ℕ} (f : L₂.Functions n) :
     @funMap (L₁.sum L₂) S _ n (Sum.inr f) = funMap f :=
   rfl
 
 @[simp]
-theorem relMap_sum_inl {n : ℕ} (R : L₁.Relations n) :
+theorem relMap_sumInl {n : ℕ} (R : L₁.Relations n) :
     @RelMap (L₁.sum L₂) S _ n (Sum.inl R) = RelMap R :=
   rfl
 
 @[simp]
-theorem relMap_sum_inr {n : ℕ} (R : L₂.Relations n) :
+theorem relMap_sumInr {n : ℕ} (R : L₂.Relations n) :
     @RelMap (L₁.sum L₂) S _ n (Sum.inr R) = RelMap R :=
   rfl
+
+@[deprecated (since := "2025-02-21")] alias funMap_sum_inl := funMap_sumInl
+@[deprecated (since := "2025-02-21")] alias funMap_sum_inr := funMap_sumInr
+@[deprecated (since := "2025-02-21")] alias relMap_sum_inl := relMap_sumInl
+@[deprecated (since := "2025-02-21")] alias relMap_sum_inr := relMap_sumInr
+
 
 end SumStructure
 

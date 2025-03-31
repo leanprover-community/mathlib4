@@ -186,25 +186,21 @@ theorem one_rmatch_iff (x : List α) : rmatch 1 x ↔ x = [] := by
   induction x <;> simp [rmatch, matchEpsilon, *]
 
 theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] := by
-  cases' x with _ x
+  rcases x with - | ⟨_, x⟩
   · exact of_decide_eq_true rfl
-  cases' x with head tail
-  · rw [rmatch, deriv]
-    split_ifs
-    · tauto
-    · simp [List.singleton_inj]; tauto
-  · rw [rmatch, rmatch, deriv]
-    split_ifs with h
-    · simp only [deriv_one, zero_rmatch, cons.injEq, and_false, reduceCtorEq]
-    · simp only [deriv_zero, zero_rmatch, cons.injEq, and_false, reduceCtorEq]
+  · rcases x with - | ⟨head, tail⟩
+    · rw [rmatch, deriv, List.singleton_inj]
+      split <;> tauto
+    · rw [rmatch, rmatch, deriv, cons.injEq]
+      split
+      · simp_rw [deriv_one, zero_rmatch, reduceCtorEq, and_false]
+      · simp_rw [deriv_zero, zero_rmatch, reduceCtorEq, and_false]
 
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
-  induction x generalizing P Q with
-  | nil => simp only [rmatch, matchEpsilon, Bool.or_eq_true_iff]
-  | cons _ _ ih =>
-    repeat rw [rmatch]
-    rw [deriv_add]
+  induction' x with _ _ ih generalizing P Q
+  · simp only [rmatch, matchEpsilon, Bool.or_eq_true_iff]
+  · rw [rmatch, deriv_add]
     exact ih _ _
 
 theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
@@ -217,9 +213,8 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
       rw [rmatch, rmatch]
       rwa [Bool.and_eq_true_iff] at h
     · rintro ⟨t, u, h₁, h₂⟩
-      cases' List.append_eq_nil_iff.1 h₁.symm with ht hu
-      subst ht
-      subst hu
+      obtain ⟨ht, hu⟩ := List.append_eq_nil_iff.1 h₁.symm
+      subst ht hu
       repeat rw [rmatch] at h₂
       simp [h₂]
   · rw [rmatch]; simp only [deriv]
@@ -230,7 +225,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
         · exact ⟨a :: t, u, by tauto⟩
         · exact ⟨[], a :: x, rfl, hepsilon, h⟩
       · rintro ⟨t, u, h, hP, hQ⟩
-        cases' t with b t
+        rcases t with - | ⟨b, t⟩
         · right
           rw [List.nil_append] at h
           rw [← h] at hQ
@@ -244,7 +239,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     · rw [ih]
       constructor <;> rintro ⟨t, u, h, hP, hQ⟩
       · exact ⟨a :: t, u, by tauto⟩
-      · cases' t with b t
+      · rcases t with - | ⟨b, t⟩
         · contradiction
         · rw [List.cons_append, List.cons_eq_cons] at h
           refine ⟨t, u, h.2, ?_, hQ⟩
@@ -259,7 +254,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
     have IH := fun t (_h : List.length t < List.length x) => star_rmatch_iff P t
     clear star_rmatch_iff
     constructor
-    · cases' x with a x
+    · rcases x with - | ⟨a, x⟩
       · intro _h
         use []; dsimp; tauto
       · rw [rmatch, deriv, mul_rmatch_iff]
@@ -279,12 +274,12 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             exact ht
           | tail _ ht' => exact helem t' ht'
     · rintro ⟨S, hsum, helem⟩
-      cases' x with a x
+      rcases x with - | ⟨a, x⟩
       · rfl
       · rw [rmatch, deriv, mul_rmatch_iff]
-        cases' S with t' U
+        rcases S with - | ⟨t', U⟩
         · exact ⟨[], [], by tauto⟩
-        · cases' t' with b t
+        · obtain - | ⟨b, t⟩ := t'
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
             simp only [eq_self_iff_true, not_true, Ne, false_and] at helem
           simp only [List.flatten, List.cons_append, List.cons_eq_cons] at hsum

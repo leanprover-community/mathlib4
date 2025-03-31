@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
+import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.Order.Filter.AtTopBot
 
 /-!
 # Noetherian rings and modules
@@ -39,7 +39,7 @@ is proved in `RingTheory.Polynomial`.
 ## References
 
 * [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
-* [samuel1967]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
 
