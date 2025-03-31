@@ -13,8 +13,10 @@ import Mathlib.Tactic.Recall
 See `Statement.lean` for background.
 -/
 
-macro "◾" : tactic => `(tactic| aesop)
-macro "◾" : term => `(term| by aesop)
+macro "◾" : tactic => `(tactic| grind)
+macro "◾" : term => `(term| by grind)
+
+set_option grind.warning false
 
 namespace IfExpr
 
@@ -29,11 +31,17 @@ attribute [local simp] apply_ite ite_eq_iff'
 attribute [grind] Subtype
 grind_pattern Subtype.property => self.val
 
-attribute [grind] List.mem_cons List.not_mem_nil List.mem_append Option.elim_none Option.elim_some id
+attribute [grind] List.mem_cons List.not_mem_nil List.mem_append Option.elim_none Option.elim_some
+  id
 
 attribute [grind] List.disjoint
 
-attribute [grind] AList.lookup_insert_eq_none AList.lookup_insert_ne AList.lookup_insert List.cons_append List.nil_append
+theorem AList.lookup_insert' {α} [DecidableEq α] {a a' : α} {β} {b : β a} (s : AList β) :
+    (s.insert a b).lookup a' = if h : a = a' then some (h ▸ b) else s.lookup a' := by
+  sorry
+
+attribute [grind] AList.lookup_insert'
+attribute [grind] List.cons_append List.nil_append
 
 attribute [local grind] normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
 
@@ -50,8 +58,7 @@ We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we kno
 @[simp, grind] theorem eval_ite_var :
     (ite (.var i) t e).eval f = bif f i then t.eval f else e.eval f := rfl
 @[simp, grind] theorem eval_ite_ite {a b c d e : IfExpr} :
-    (ite (ite a b c) d e).eval f = (ite a (ite b d e) (ite c d e)).eval f := by
-  cases h : eval f a <;> simp_all [eval]
+    (ite (ite a b c) d e).eval f = (ite a (ite b d e) (ite c d e)).eval f := by grind [eval]
 
 /-- Custom size function for if-expressions, used for proving termination. -/
 @[simp] def normSize : IfExpr → Nat
@@ -66,14 +73,14 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
         (∀ f, e'.eval f = e.eval (fun w => (l.lookup w).elim (f w) id))
         ∧ e'.normalized
         ∧ ∀ (v : ℕ), v ∈ vars e' → l.lookup v = none }
-  | lit b => ⟨lit b, by grind⟩
+  | lit b => ⟨lit b, ◾⟩
   | var v =>
     match h : l.lookup v with
-    | none => ⟨var v, by grind⟩
+    | none => ⟨var v, ◾⟩
     | some b => ⟨lit b, ◾⟩
-  | .ite (lit true)   t e => have t' := normalize l t; ⟨t'.1, by grind⟩
-  | .ite (lit false)  t e => have e' := normalize l e; ⟨e'.1, by grind⟩
-  | .ite (.ite a b c) t e => have i' := normalize l (.ite a (.ite b t e) (.ite c t e)); ⟨i'.1, by grind⟩
+  | .ite (lit true)   t e => have t' := normalize l t; ⟨t'.1, ◾⟩
+  | .ite (lit false)  t e => have e' := normalize l e; ⟨e'.1, ◾⟩
+  | .ite (.ite a b c) t e => have i' := normalize l (.ite a (.ite b t e) (.ite c t e)); ⟨i'.1, ◾⟩
   | .ite (var v)      t e =>
     match h : l.lookup v with
     | none =>
@@ -82,25 +89,23 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
       ⟨if t' = e' then t' else .ite (var v) t' e', by
         refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
         · -- eval = eval
-          simp? says simp only [apply_ite, eval_ite_var, ite_eq_iff']
+          simp only [apply_ite, eval_ite_var, ite_eq_iff']
           cases hfv : f v
           · simp_all
             congr
-            ext w
-            by_cases w = v <;> grind
+            ◾
           · simp [h, ht₁]
             congr
-            ext w
-            by_cases w = v <;> grind
+            ◾
         · -- normalized
           split
-          · grind
+          · ◾
           · simp only [normalized, disjoint]
-            grind
+            ◾
         · -- lookup = none
-          by_cases w = v <;> grind⟩
+          ◾⟩
     | some b =>
-      have i' := normalize l (.ite (lit b) t e); ⟨i'.1, by grind⟩
+      have i' := normalize l (.ite (lit b) t e); ⟨i'.1, by ◾⟩
   termination_by e => e.normSize
 
 /-
