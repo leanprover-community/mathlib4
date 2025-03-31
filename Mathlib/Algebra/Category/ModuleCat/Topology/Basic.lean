@@ -34,6 +34,7 @@ open CategoryTheory ConcreteCategory
 
 /-- The category of topological modules. -/
 structure TopModuleCat extends ModuleCat.{v} R where
+  /-- The underlying topological space. -/
   [isTopologicalSpace : TopologicalSpace carrier]
   [isIsTopologicalAddGroup : IsTopologicalAddGroup carrier]
   [isContinuousSMul : ContinuousSMul R carrier]
@@ -62,8 +63,8 @@ variable {R} in
 structure Hom (X Y : TopModuleCat.{v} R) where
   -- use `ofHom` instead
   private ofHom' ::
-  -- ues `hom` instead
-  private hom' : X →L[R] Y
+  /-- The underlying continuous linear map. Use `hom` instead. -/
+  hom' : X →L[R] Y
 
 instance : Category (TopModuleCat R) where
   Hom := Hom
@@ -455,3 +456,4 @@ instance : (free.{max v u} R).IsLeftAdjoint := ⟨_, ⟨freeAdj R⟩⟩
 end Adjunction
 
 end TopModuleCat
+#lint
