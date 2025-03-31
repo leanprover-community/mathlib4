@@ -67,6 +67,7 @@ theorem tprod_eq_one_of_not_multipliable2 (h : ¬MultipliableUniformlyOn f s) :
   simp [tprodUniformlyOn_def, h]
 
 --check this a reasonable defn
+@[to_additive]
 lemma HasProdUniformlyOn_iff_TendstoUniformlyOn {f : ι → β → α} {g : β → α} {s : Set β} :
     HasProdUniformlyOn f g s ↔
     TendstoUniformlyOn (fun (s : Finset ι) b ↦ ∏ i ∈ s, f i b) g atTop s := by
