@@ -130,6 +130,7 @@ instance {F : Type*} [FunLike F A₁ A₂] [PositiveLinearMapClass F ℂ A₁ A�
   map_continuous f := by
     have hbound : ∃ C : ℝ, ∀ a, ‖f a‖ ≤ C * ‖a‖ := by
       obtain ⟨C, h⟩ := exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂)
+      -- TODO missing simps lemmas
       exact ⟨C, h⟩
     exact (LinearMap.mkContinuousOfExistsBound (f : A₁ →ₗ[ℂ] A₂) hbound).continuous
 
