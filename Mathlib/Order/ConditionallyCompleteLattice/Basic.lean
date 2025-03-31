@@ -885,12 +885,12 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type*}
     csInf_le := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).le_csSup
     le_csInf := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).csSup_le }
 
-open Classical in
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) :=
   { instInfSet, instSupSet, boundedOrder, lattice with
     le_sSup := fun _ a haS => (WithTop.isLUB_sSup' ⟨a, haS⟩).1 haS
     sSup_le := fun S a ha => by
+      classical
       rcases S.eq_empty_or_nonempty with h | h
       · show ite _ _ _ ≤ a
         split_ifs with h₁ h₂
@@ -907,26 +907,28 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
           rw [h]
           rintro b ⟨⟩
       · exact (WithTop.isLUB_sSup' h).2 ha
-    sInf_le := fun S a haS =>
-      show ite _ _ _ ≤ a by
-        simp only [OrderBot.bddBelow, not_true_eq_false, or_false]
-        split_ifs with h₁
-        · cases a
-          · exact le_rfl
-          cases h₁ haS
-        · cases a
-          · exact le_top
-          · apply WithTop.coe_le_coe.2
-            refine csInf_le ?_ haS
-            use ⊥
-            intro b _
-            exact bot_le
+    sInf_le := fun S a haS => by
+      classical
+      show ite _ _ _ ≤ a
+      simp only [OrderBot.bddBelow, not_true_eq_false, or_false]
+      split_ifs with h₁
+      · cases a
+        · exact le_rfl
+        cases h₁ haS
+      · cases a
+        · exact le_top
+        · apply WithTop.coe_le_coe.2
+          refine csInf_le ?_ haS
+          use ⊥
+          intro b _
+          exact bot_le
     le_sInf := fun _ a haS => (WithTop.isGLB_sInf' ⟨a, haS⟩).2 haS }
 
 noncomputable instance WithTop.WithBot.completeLinearOrder {α : Type*}
-    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithTop (WithBot α)) :=
-  -- FIXME: Spread notation doesn't work
-  { completeLattice, linearOrder, LinearOrder.toBiheytingAlgebra with }
+    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithTop (WithBot α)) where
+  __ := linearOrder
+  __ := LinearOrder.toBiheytingAlgebra
+  __ := completeLattice
 
 noncomputable instance WithBot.WithTop.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithBot (WithTop α)) :=
@@ -937,7 +939,9 @@ noncomputable instance WithBot.WithTop.completeLattice {α : Type*}
     le_sInf := (WithTop.WithBot.completeLattice (α := αᵒᵈ)).sSup_le }
 
 noncomputable instance WithBot.WithTop.completeLinearOrder {α : Type*}
-    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithBot (WithTop α)) :=
-  { completeLattice, linearOrder, LinearOrder.toBiheytingAlgebra with }
+    [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithBot (WithTop α)) where
+  __ := LinearOrder.toBiheytingAlgebra
+  __ := linearOrder
+  __ := completeLattice
 
 end WithTopBot
