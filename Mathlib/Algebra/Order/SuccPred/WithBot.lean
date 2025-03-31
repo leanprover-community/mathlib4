@@ -28,6 +28,6 @@ lemma succ_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 lemma one_le_iff_pos {α : Type*} [PartialOrder α] [AddMonoidWithOne α]
     [ZeroLEOneClass α] [NeZero (1 : α)] [SuccAddOrder α] (a : WithBot α) : 1 ≤ a ↔ 0 < a := by
-  cases' a with a <;> simp [Order.one_le_iff_pos]
+  cases a <;> simp [Order.one_le_iff_pos]
 
 end WithBot

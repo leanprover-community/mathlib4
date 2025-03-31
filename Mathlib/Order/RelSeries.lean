@@ -664,18 +664,22 @@ lemma Rel.finiteDimensional_or_infiniteDimensional [Nonempty α] :
   rw [← not_finiteDimensional_iff]
   exact em r.FiniteDimensional
 
+instance Rel.FiniteDimensional.swap [FiniteDimensional r] : FiniteDimensional (Function.swap r) :=
+  ⟨.reverse (.longestOf r), fun s ↦ s.reverse.length_le_length_longestOf⟩
+
 variable {r} in
 lemma Rel.finiteDimensional_swap_iff :
-    FiniteDimensional r ↔ FiniteDimensional (Function.swap r) where
-  mp _ := ⟨.reverse (.longestOf r), fun s ↦ s.reverse.length_le_length_longestOf⟩
-  mpr _ := ⟨.reverse (.longestOf (Function.swap r)), fun s ↦ s.reverse.length_le_length_longestOf⟩
+    FiniteDimensional (Function.swap r) ↔ FiniteDimensional r :=
+  ⟨fun _ ↦ .swap _, fun _ ↦ .swap _⟩
+
+instance Rel.InfiniteDimensional.swap [InfiniteDimensional r] :
+    InfiniteDimensional (Function.swap r) :=
+  ⟨fun n ↦ ⟨.reverse (.withLength r n), RelSeries.length_withLength r n⟩⟩
 
 variable {r} in
 lemma Rel.infiniteDimensional_swap_iff :
-    InfiniteDimensional r ↔ InfiniteDimensional (Function.swap r) where
-  mp _ := ⟨fun n ↦ ⟨.reverse (.withLength r n), RelSeries.length_withLength r n⟩⟩
-  mpr _ := ⟨fun n ↦ ⟨.reverse (.withLength (Function.swap r) n),
-    RelSeries.length_withLength (Function.swap r) n⟩⟩
+    InfiniteDimensional (Function.swap r) ↔ InfiniteDimensional r :=
+  ⟨fun _ ↦ .swap _, fun _ ↦ .swap _⟩
 
 lemma Rel.wellFounded_swap_of_finiteDimensional [Rel.FiniteDimensional r] :
     WellFounded (Function.swap r) := by
