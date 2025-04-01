@@ -72,7 +72,7 @@ lemma Walk.IsCycle.support_rotate_tail_tail_eq [DecidableEq α] {u : α} {c : G.
 variable {k : ℕ} [Fintype α] [DecidableRel G.Adj] [DecidableEq α]
 
 theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k)
-    (s : Finset α) : ∃ C : G.PartialColoring s, ∀ v, C v < k := by
+    (s : Finset α) : ∃ C : G.PartialColoring s, C.IsPartialKColoring k := by
   induction hn : #s using Nat.strong_induction_on generalizing s with
   | h n ih =>
   -- Case 0 : there is v ∈ s with d_s(v) < k, so we can extend a k-coloring of
@@ -279,10 +279,11 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         obtain ⟨C₂, hC₂⟩ := ih _ hsdcard _ rfl
         push_neg at hnbc
         use (C₁.join C₂ (by simpa using hnbc)).copy (union_sdiff_of_subset hsub.1)
-        simpa using C₁.join_lt_of_lt hC₁ hC₂
+        intro v
+        simp [C₁.join_lt_of_lt hC₁ hC₂]
   · -- `s` is empty so easy to `k`-color
     use G.partialColoringOfEmpty.copy (not_nonempty_iff_eq_empty.1 hem).symm
-    intros
+    intro v
     simpa using Nat.zero_lt_of_lt hk
 
 theorem Brooks_three_le (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k) :
