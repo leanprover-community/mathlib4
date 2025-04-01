@@ -12,7 +12,7 @@ import Mathlib
 #guard_msgs in
 #check max ({1} : Set Nat) {2}
 
-variable {α : Type} (a b : α)
+variable {α : Type*} (a b : α)
 
 variable [Lattice α] in
 /-- info: a ⊔ b : α -/
