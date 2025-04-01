@@ -394,7 +394,7 @@ theorem direction_shift : (s.shift p).direction = s := by
 The shift of the direction of an affine subspace to a point in that affine subspace is
 the same affine subspace.
 -/
-theorem shift_direction_eq_self {s : AffineSubspace k P} {p : P} (hp : p ∈ s) :
+@[simp] theorem shift_direction_eq_self {s : AffineSubspace k P} {p : P} (hp : p ∈ s) :
     s.direction.shift p = s :=
   AffineSubspace.ext_of_direction_eq (s.direction.direction_shift p)
     ⟨p, Set.mem_inter (self_mem_shift _ _) hp⟩
