@@ -639,11 +639,14 @@ theorem LinearMap.vecCons_apply {n} (f : M →ₗ[R] M₂) (g : M →ₗ[R] Fin 
 
 variable (R) in
 /--
-To show a property `P` of modules holds for arbitrary finite products of modules, it suffices
+To show a property `motive` of modules holds for arbitrary finite products of modules, it suffices
 to show
-1. `P` is stable under isomorphism.
-2. `P` holds for the zero module.
-3. `P` holds for `M × N` if it holds for both `M` and `N`.
+1. `motive` is stable under isomorphism.
+2. `motive` holds for the zero module.
+3. `motive` holds for `M × N` if it holds for both `M` and `N`.
+
+Since we need to apply `motive` to modules in `Type u` and in `Type (max u v)`, there is a second
+`motive'` argument which is required to be equivalent to `motive` up to universe lifting by `equiv`.
 
 See `Module.pi_induction'` for a version where `motive` assumes `AddCommGroup` instead.
 -/
