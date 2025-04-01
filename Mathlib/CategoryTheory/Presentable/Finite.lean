@@ -43,7 +43,7 @@ lemma Functor.isFinitelyAccessible_iff_preservesFilteredColimits {F : C ⥤ D} :
 
 /-- An object `X` is finitely presentable if `Hom(X, -)` preserves all filtered colimits. -/
 abbrev IsFinitelyPresentable (X : C) : Prop :=
-  IsCardinalPresentable.{v} X ℵ₀
+  IsCardinalPresentable.{w} X ℵ₀
 
 lemma isFinitelyPresentable_iff_preservesFilteredColimits {X : C} :
     IsFinitelyPresentable X ↔ PreservesFilteredColimits (coyoneda.obj (op X)) :=
