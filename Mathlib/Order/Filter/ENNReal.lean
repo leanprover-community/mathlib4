@@ -7,7 +7,7 @@ import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Metrizable.Real
 
 /-!
-# Limsup of reals
+# Limsup and liminf of reals
 
 This file compiles filter-related results about `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 -/
