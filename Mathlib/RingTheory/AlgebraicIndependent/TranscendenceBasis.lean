@@ -211,7 +211,7 @@ theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
 
 namespace AlgebraicIndependent
 
-variable (inj : Injective (algebraMap R A))
+variable (R A) [FaithfulSMul R A]
 
 section
 
@@ -220,7 +220,7 @@ variable [NoZeroDivisors A]
 private def indepMatroid : IndepMatroid A where
   E := univ
   Indep := AlgebraicIndepOn R id
-  indep_empty := (algebraicIndependent_empty_iff ..).mpr inj
+  indep_empty := (algebraicIndependent_empty_iff ..).mpr (FaithfulSMul.algebraMap_injective R A)
   indep_subset _ _ := (·.mono)
   indep_aug I B I_ind h B_base := by
     contrapose! h
@@ -242,27 +242,31 @@ private def indepMatroid : IndepMatroid A where
 
 /-- If `R` is a commutative ring and `A` is a commutative `R`-algebra with injective algebra map
 and no zero-divisors, then the `R`-algebraic independent subsets of `A` form a matroid. -/
-def matroid : Matroid A := (indepMatroid inj).matroid.copyBase univ
+def matroid : Matroid A := (indepMatroid R A).matroid.copyBase univ
   (fun s ↦ IsTranscendenceBasis R ((↑) : s → A)) rfl
   (fun B ↦ by simp_rw [Matroid.isBase_iff_maximal_indep, isTranscendenceBasis_iff_maximal]; rfl)
 
-instance : (matroid inj).Finitary where
+instance : (matroid R A).Finitary where
   indep_of_forall_finite := algebraicIndependent_of_finite
 
-@[simp] theorem matroid_e : (matroid inj).E = univ := rfl
+@[simp] theorem matroid_e : (matroid R A).E = univ := rfl
+
+theorem matroid_cRank_eq : (matroid R A).cRank = trdeg R A :=
+  (trdeg_eq_iSup_cardinalMk_isTranscendenceBasis _).symm
+
+variable {R A}
 
 theorem matroid_indep_iff {s : Set A} :
-    (matroid inj).Indep s ↔ AlgebraicIndepOn R id s := Iff.rfl
+    (matroid R A).Indep s ↔ AlgebraicIndepOn R id s := Iff.rfl
 
 theorem matroid_isBase_iff {s : Set A} :
-    (matroid inj).IsBase s ↔ IsTranscendenceBasis R ((↑) : s → A) := Iff.rfl
-
-theorem matroid_cRank_eq : (matroid inj).cRank = trdeg R A :=
-  (trdeg_eq_iSup_cardinalMk_isTranscendenceBasis _).symm
+    (matroid R A).IsBase s ↔ IsTranscendenceBasis R ((↑) : s → A) := Iff.rfl
 
 end
 
-theorem matroid_isBasis_iff [IsDomain A] {s t : Set A} : (matroid inj).IsBasis s t ↔
+variable {R A}
+
+theorem matroid_isBasis_iff [IsDomain A] {s t : Set A} : (matroid R A).IsBasis s t ↔
     AlgebraicIndepOn R id s ∧ s ⊆ t ∧ ∀ a ∈ t, IsAlgebraic (adjoin R s) a := by
   rw [Matroid.IsBasis, maximal_iff_forall_insert fun s t h hst ↦ ⟨h.1.subset hst, hst.trans h.2⟩]
   simp_rw [matroid_indep_iff, ← and_assoc, matroid_e, subset_univ, and_true]
@@ -273,30 +277,30 @@ theorem matroid_isBasis_iff [IsDomain A] {s t : Set A} : (matroid inj).IsBasis s
       rw [image_id]; exact alg _ <| h.2 <| mem_insert ..⟩
 
 theorem matroid_isBasis_iff_of_subsingleton [Subsingleton A] {s t : Set A} :
-    (matroid inj).IsBasis s t ↔ s = t := by
-  have := inj.subsingleton
-  simp_rw [Matroid.IsBasis, matroid_indep_iff, AlgebraicIndependent.of_subsingleton, true_and,
+    (matroid R A).IsBasis s t ↔ s = t := by
+  have := (FaithfulSMul.algebraMap_injective R A).subsingleton
+  simp_rw [Matroid.IsBasis, matroid_indep_iff, of_subsingleton, true_and,
     matroid_e, subset_univ, and_true, ← le_iff_subset, maximal_le_iff]
 
 theorem isAlgebraic_adjoin_iff_of_matroid_isBasis [NoZeroDivisors A] {s t : Set A} {a : A}
-    (h : (matroid inj).IsBasis s t) : IsAlgebraic (adjoin R s) a ↔ IsAlgebraic (adjoin R t) a := by
+    (h : (matroid R A).IsBasis s t) : IsAlgebraic (adjoin R s) a ↔ IsAlgebraic (adjoin R t) a := by
   cases subsingleton_or_nontrivial A
   · apply iff_of_false <;> apply is_transcendental_of_subsingleton
   have := (isDomain_iff_noZeroDivisors_and_nontrivial A).mpr ⟨inferInstance, inferInstance⟩
   exact ⟨(·.adjoin_of_forall_isAlgebraic fun x hx ↦ (hx.2 <| h.1.1.2 hx.1).elim),
-    (·.adjoin_of_forall_isAlgebraic fun x hx ↦ ((matroid_isBasis_iff inj).mp h).2.2 _ hx.1)⟩
+    (·.adjoin_of_forall_isAlgebraic fun x hx ↦ (matroid_isBasis_iff.mp h).2.2 _ hx.1)⟩
 
 theorem matroid_closure_eq [IsDomain A] {s : Set A} :
-    (matroid inj).closure s = algebraicClosure (adjoin R s) A := by
-  have ⟨B, hB⟩ := (matroid inj).exists_isBasis s
+    (matroid R A).closure s = algebraicClosure (adjoin R s) A := by
+  have ⟨B, hB⟩ := (matroid R A).exists_isBasis s
   simp_rw [← hB.closure_eq_closure, hB.1.1.1.closure_eq_setOf_isBasis_insert, Set.ext_iff,
-    mem_setOf, matroid_isBasis_iff, ← matroid_indep_iff inj, hB.1.1.1, subset_insert, true_and,
-    SetLike.mem_coe, mem_algebraicClosure, ← isAlgebraic_adjoin_iff_of_matroid_isBasis inj hB,
+    mem_setOf, matroid_isBasis_iff, ← matroid_indep_iff, hB.1.1.1, subset_insert, true_and,
+    SetLike.mem_coe, mem_algebraicClosure, ← isAlgebraic_adjoin_iff_of_matroid_isBasis hB,
     forall_mem_insert]
   exact fun _ ↦ and_iff_left fun x hx ↦ isAlgebraic_algebraMap (⟨x, subset_adjoin hx⟩ : adjoin R B)
 
 theorem matroid_isFlat_iff [IsDomain A] {s : Set A} :
-    (matroid inj).IsFlat s ↔ ∃ S : Subalgebra R A, S = s ∧ ∀ a : A, IsAlgebraic S a → a ∈ s := by
+    (matroid R A).IsFlat s ↔ ∃ S : Subalgebra R A, S = s ∧ ∀ a : A, IsAlgebraic S a → a ∈ s := by
   rw [Matroid.isFlat_iff_closure_eq, matroid_closure_eq]
   set S := algebraicClosure (adjoin R s) A
   refine ⟨fun eq ↦ ⟨S.restrictScalars R, eq, fun a (h : IsAlgebraic S _) ↦ ?_⟩, ?_⟩
@@ -306,22 +310,22 @@ theorem matroid_isFlat_iff [IsDomain A] {s : Set A} :
   exact isAlgebraic_algebraMap (A := A) (by exact (⟨a, subset_adjoin h⟩ : adjoin R s))
 
 theorem matroid_spanning_iff [IsDomain A] {s : Set A} :
-    (matroid inj).Spanning s ↔ Algebra.IsAlgebraic (adjoin R s) A := by
+    (matroid R A).Spanning s ↔ Algebra.IsAlgebraic (adjoin R s) A := by
   simp_rw [Matroid.spanning_iff, matroid_e, subset_univ, and_true, eq_univ_iff_forall,
     matroid_closure_eq, SetLike.mem_coe, mem_algebraicClosure, Algebra.isAlgebraic_def]
 
-theorem matroid_isFlat_of_subsingleton [Subsingleton A] (s : Set A) : (matroid inj).IsFlat s := by
+theorem matroid_isFlat_of_subsingleton [Subsingleton A] (s : Set A) : (matroid R A).IsFlat s := by
   simp_rw [Matroid.isFlat_iff, matroid_e, subset_univ,
     and_true, matroid_isBasis_iff_of_subsingleton]
   exact fun I X hIs hIX ↦ (hIX.symm.trans hIs).subset
 
 theorem matroid_closure_of_subsingleton [Subsingleton A] (s : Set A) :
-    (matroid inj).closure s = s := by
+    (matroid R A).closure s = s := by
   simp_rw [Matroid.closure, matroid_isFlat_of_subsingleton, true_and, matroid_e, inter_univ]
   exact subset_antisymm (sInter_subset_of_mem <| subset_refl s) (subset_sInter fun _ ↦ id)
 
 theorem matroid_spanning_iff_of_subsingleton [Subsingleton A] {s : Set A} :
-    (matroid inj).Spanning s ↔ s = univ := by
+    (matroid R A).Spanning s ↔ s = univ := by
   simp_rw [Matroid.spanning_iff, matroid_closure_of_subsingleton, matroid_e, subset_univ, and_true]
 
 end AlgebraicIndependent
@@ -338,24 +342,26 @@ See the docstring of `IsAlgebraic.restrictScalars_of_isIntegral` for an example.
 theorem exists_isTranscendenceBasis_between [NoZeroDivisors A] (s t : Set A) (hst : s ⊆ t)
     (hs : AlgebraicIndepOn R id s) [ht : Algebra.IsAlgebraic (adjoin R t) A] :
     ∃ u, s ⊆ u ∧ u ⊆ t ∧ IsTranscendenceBasis R ((↑) : u → A) := by
-  have := ht.nontrivial; have := Subtype.val_injective (p := (· ∈ adjoin R t)).nontrivial
+  have := ht.nontrivial
+  have := Subtype.val_injective (p := (· ∈ adjoin R t)).nontrivial
   have := (isDomain_iff_noZeroDivisors_and_nontrivial A).mpr ⟨inferInstance, inferInstance⟩
-  rw [← matroid_spanning_iff hs.algebraMap_injective] at ht
-  rw [← matroid_indep_iff hs.algebraMap_injective] at hs
+  have := (faithfulSMul_iff_algebraMap_injective R A).mpr hs.algebraMap_injective
+  rw [← matroid_spanning_iff] at ht
+  rw [← matroid_indep_iff] at hs
   have ⟨B, base, hsB, hBt⟩ := hs.exists_isBase_subset_spanning ht hst
   exact ⟨B, hsB, hBt, base⟩
 
-theorem exists_isTranscendenceBasis_subset [NoZeroDivisors A] (inj : Injective (algebraMap R A))
+theorem exists_isTranscendenceBasis_subset [NoZeroDivisors A] [FaithfulSMul R A]
     (s : Set A) [Algebra.IsAlgebraic (adjoin R s) A] :
     ∃ t, t ⊆ s ∧ IsTranscendenceBasis R ((↑) : t → A) := by
   have ⟨t, _, ht⟩ := exists_isTranscendenceBasis_between ∅ s (empty_subset _)
-    ((algebraicIndependent_empty_iff ..).mpr inj)
+    ((algebraicIndependent_empty_iff ..).mpr <| FaithfulSMul.algebraMap_injective R A)
   exact ⟨t, ht⟩
 
 theorem isAlgebraic_iff_exists_isTranscendenceBasis_subset
-    [IsDomain A] (inj : Injective (algebraMap R A)) {s : Set A} :
+    [IsDomain A] [FaithfulSMul R A] {s : Set A} :
     Algebra.IsAlgebraic (adjoin R s) A ↔ ∃ t, t ⊆ s ∧ IsTranscendenceBasis R ((↑) : t → A) := by
-  simp_rw [← matroid_spanning_iff inj, ← matroid_isBase_iff inj, and_comm (a := _ ⊆ _)]
+  simp_rw [← matroid_spanning_iff, ← matroid_isBase_iff, and_comm (a := _ ⊆ _)]
   exact Matroid.spanning_iff_exists_isBase_subset (subset_univ _)
 
 open Cardinal AlgebraicIndependent
@@ -366,8 +372,9 @@ variable [Nontrivial R] [NoZeroDivisors A]
 
 theorem lift_cardinalMk_eq_trdeg (hx : IsTranscendenceBasis R x) :
     lift.{w} #ι = lift.{u} (trdeg R A) := by
-  rw [← matroid_cRank_eq, ← (matroid_isBase_iff hx.1.algebraMap_injective).mpr hx.to_subtype_range
-    |>.cardinalMk_eq_cRank, lift_mk_eq'.mpr ⟨.ofInjective _ hx.1.injective⟩]
+  have := (faithfulSMul_iff_algebraMap_injective R A).mpr hx.1.algebraMap_injective
+  rw [← matroid_cRank_eq, ← ((matroid_isBase_iff).mpr hx.to_subtype_range).cardinalMk_eq_cRank,
+    lift_mk_eq'.mpr ⟨.ofInjective _ hx.1.injective⟩]
 
 theorem cardinalMk_eq_trdeg {ι : Type w} {x : ι → A} (hx : IsTranscendenceBasis R x) :
     #ι = trdeg R A := by
@@ -420,11 +427,11 @@ theorem trdeg_le_cardinalMk [alg : Algebra.IsAlgebraic (adjoin R s) A] : trdeg R
   by_cases h : Injective (algebraMap R A)
   on_goal 2 => simp [trdeg_eq_zero_of_not_injective h]
   have := isDomain_of_adjoin_range R s
-  rw [← matroid_spanning_iff h, ← matroid_cRank_eq h] at *
+  have := (faithfulSMul_iff_algebraMap_injective R A).mpr h
+  rw [← matroid_spanning_iff, ← matroid_cRank_eq] at *
   exact alg.cRank_le_cardinalMk
 
-variable (inj : Injective (algebraMap R A))
-include inj
+variable [FaithfulSMul R A]
 
 theorem isTranscendenceBasis_of_lift_le_trdeg_of_finite
     [Finite ι] [alg : Algebra.IsAlgebraic (adjoin R (range x)) A]
@@ -433,24 +440,24 @@ theorem isTranscendenceBasis_of_lift_le_trdeg_of_finite
   have := surjective_onto_range.bijective_of_nat_card_le (Nat.card_le_card_of_injective _ h)
   refine .of_subtype_range (fun _ _ ↦ (this.1 <| Subtype.ext ·)) ?_
   have := isDomain_of_adjoin_range R (range x)
-  rw [← matroid_spanning_iff inj, ← matroid_cRank_eq inj] at *
+  rw [← matroid_spanning_iff, ← matroid_cRank_eq] at *
   exact alg.isBase_of_le_cRank_of_finite (lift_le.mp <| mk_range_le_lift.trans le) (finite_range x)
 
 theorem isTranscendenceBasis_of_le_trdeg_of_finite {ι : Type w} [Finite ι] (x : ι → A)
     [Algebra.IsAlgebraic (adjoin R (range x)) A] (le : #ι ≤ trdeg R A) :
     IsTranscendenceBasis R x :=
-  isTranscendenceBasis_of_lift_le_trdeg_of_finite R x inj (by rwa [lift_id, lift_id])
+  isTranscendenceBasis_of_lift_le_trdeg_of_finite R x (by rwa [lift_id, lift_id])
 
 theorem isTranscendenceBasis_of_lift_le_trdeg [Algebra.IsAlgebraic (adjoin R (range x)) A]
     (fin : trdeg R A < ℵ₀) (le : lift.{w} #ι ≤ lift.{u} (trdeg R A)) :
     IsTranscendenceBasis R x :=
   have := mk_lt_aleph0_iff.mp (lift_lt.mp <| le.trans_lt <| (lift_lt.mpr fin).trans_eq <| by simp)
-  isTranscendenceBasis_of_lift_le_trdeg_of_finite R x inj le
+  isTranscendenceBasis_of_lift_le_trdeg_of_finite R x le
 
 theorem isTranscendenceBasis_of_le_trdeg {ι : Type w} (x : ι → A)
     [Algebra.IsAlgebraic (adjoin R (range x)) A] (fin : trdeg R A < ℵ₀)
     (le : #ι ≤ trdeg R A) : IsTranscendenceBasis R x :=
-  isTranscendenceBasis_of_lift_le_trdeg R x inj fin (by rwa [lift_id, lift_id])
+  isTranscendenceBasis_of_lift_le_trdeg R x fin (by rwa [lift_id, lift_id])
 
 end Algebra.IsAlgebraic
 
@@ -461,10 +468,10 @@ variable [Nontrivial R] [NoZeroDivisors A]
 theorem isTranscendenceBasis_of_lift_trdeg_le (hx : AlgebraicIndependent R x)
     (fin : trdeg R A < ℵ₀) (le : lift.{u} (trdeg R A) ≤ lift.{w} #ι) :
     IsTranscendenceBasis R x := by
-  have inj := hx.algebraMap_injective
-  rw [← matroid_cRank_eq inj, ← Matroid.rankFinite_iff_cRank_lt_aleph0] at fin
-  exact .of_subtype_range hx.injective <| (matroid_indep_iff inj).mpr hx.to_subtype_range
-    |>.isBase_of_cRank_le <| lift_le.mp <| (matroid_cRank_eq inj ▸ le).trans_eq
+  have := (faithfulSMul_iff_algebraMap_injective R A).mpr hx.algebraMap_injective
+  rw [← matroid_cRank_eq, ← Matroid.rankFinite_iff_cRank_lt_aleph0] at fin
+  exact .of_subtype_range hx.injective <| matroid_indep_iff.mpr hx.to_subtype_range
+    |>.isBase_of_cRank_le <| lift_le.mp <| (matroid_cRank_eq R A ▸ le).trans_eq
       (mk_range_eq_of_injective hx.injective).symm
 
 theorem isTranscendenceBasis_of_trdeg_le {ι : Type w} {x : ι → A} (hx : AlgebraicIndependent R x)
@@ -482,9 +489,12 @@ theorem isTranscendenceBasis_of_trdeg_le_of_finite {ι : Type w} [Finite ι] {x 
 
 end AlgebraicIndependent
 
-@[stacks 030H] theorem lift_trdeg_add_eq [Nontrivial R] [NoZeroDivisors A]
-    (hRS : Injective (algebraMap R S)) (hSA : Injective (algebraMap S A)) :
-    lift.{w} (trdeg R S) + lift.{v} (trdeg S A) = lift.{v} (trdeg R A) := by
+variable (R S A)
+
+@[stacks 030H] theorem lift_trdeg_add_eq [Nontrivial R] [NoZeroDivisors A] [FaithfulSMul R S]
+    [FaithfulSMul S A] : lift.{w} (trdeg R S) + lift.{v} (trdeg S A) = lift.{v} (trdeg R A) := by
+  have hRS := FaithfulSMul.algebraMap_injective R S
+  have hSA := FaithfulSMul.algebraMap_injective S A
   have ⟨s, hs⟩ := exists_isTranscendenceBasis _ hRS
   have ⟨t, ht⟩ := exists_isTranscendenceBasis _ hSA
   have := hSA.noZeroDivisors _ (map_zero _) (map_mul _)
@@ -493,18 +503,7 @@ end AlgebraicIndependent
     ← (hs.sumElim_comp ht).lift_cardinalMk_eq_trdeg, mk_sum, lift_add, lift_lift, lift_lift]
 
 @[stacks 030H] theorem trdeg_add_eq [Nontrivial R] {A : Type v} [CommRing A] [NoZeroDivisors A]
-    [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-    (hRS : Injective (algebraMap R S)) (hSA : Injective (algebraMap S A)) :
+    [Algebra R A] [Algebra S A] [FaithfulSMul R S] [FaithfulSMul S A] [IsScalarTower R S A] :
     trdeg R S + trdeg S A = trdeg R A := by
   rw [← (trdeg R S).lift_id, ← (trdeg S A).lift_id, ← (trdeg R A).lift_id]
-  exact lift_trdeg_add_eq hRS hSA
-
-@[stacks 030H] theorem lift_trdeg_add_eq_of_field {R : Type*} {S : Type v} [Field R] [Field S]
-    [IsDomain A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] :
-    lift.{w} (trdeg R S) + lift.{v} (trdeg S A) = lift.{v} (trdeg R A) :=
-  lift_trdeg_add_eq (RingHom.injective _) (RingHom.injective _)
-
-@[stacks 030H] theorem trdeg_add_eq_of_finite {R : Type*} {S : Type w} [Field R] [Field S]
-    [IsDomain A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] :
-    trdeg R S + trdeg S A = trdeg R A :=
-  trdeg_add_eq (RingHom.injective _) (RingHom.injective _)
+  exact lift_trdeg_add_eq R S A
