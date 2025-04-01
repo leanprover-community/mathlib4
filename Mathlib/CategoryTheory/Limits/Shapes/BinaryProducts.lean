@@ -1276,6 +1276,7 @@ protected def BinaryCofan.IsColimit.op {c : BinaryCofan X Y} (hc : IsColimit c) 
     (fun s m h₁ h₂ ↦ Quiver.Hom.unop_inj
       (BinaryCofan.IsColimit.hom_ext hc (by simp [← h₁]) (by simp [← h₂])))
 
+/-- If a `BinaryFan` in the opposite category is a limit, then its `unop` is a colimit. -/
 protected def BinaryFan.IsLimit.unop {c : BinaryFan (op X) (op Y)} (hc : IsLimit c) :
     IsColimit c.unop :=
   BinaryCofan.isColimitMk (fun s ↦ (hc.lift s.op).unop)
@@ -1283,6 +1284,7 @@ protected def BinaryFan.IsLimit.unop {c : BinaryFan (op X) (op Y)} (hc : IsLimit
     (fun s m h₁ h₂ ↦ Quiver.Hom.op_inj
       (BinaryFan.IsLimit.hom_ext hc (by simp [← h₁]) (by simp [← h₂])))
 
+/-- If a `BinaryCofan` in the opposite category is a colimit, then its `unop` is a limit. -/
 protected def BinaryCofan.IsColimit.unop {c : BinaryCofan (op X) (op Y)} (hc : IsColimit c) :
     IsLimit c.unop :=
   BinaryFan.isLimitMk (fun s ↦ (hc.desc s.op).unop)
