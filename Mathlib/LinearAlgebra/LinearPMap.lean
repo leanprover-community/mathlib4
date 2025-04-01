@@ -213,7 +213,7 @@ def eqLocus (f g : E →ₗ.[R] F) : Submodule R E where
   add_mem' {x y} := fun ⟨hfx, hgx, hx⟩ ⟨hfy, hgy, hy⟩ ↦
     ⟨add_mem hfx hfy, add_mem hgx hgy, by
       simp_all [← AddMemClass.mk_add_mk, f.map_add, g.map_add]⟩
-  smul_mem' c x := fun ⟨hfx, hgx, hx⟩ ↦ 
+  smul_mem' c x := fun ⟨hfx, hgx, hx⟩ ↦
     ⟨smul_mem _ c hfx, smul_mem _ c hgx, by
       have {f : E →ₗ.[R] F} (hfx) : (⟨c • x, smul_mem _ c hfx⟩ : f.domain) = c • ⟨x, hfx⟩ := by simp
       rw [this hfx, this hgx, f.map_smul, g.map_smul, hx]⟩
