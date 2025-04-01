@@ -607,28 +607,10 @@ theorem top_coe : ((⊤ : AffineSubspace k P) : Set P) = Set.univ :=
 theorem mem_top (p : P) : p ∈ (⊤ : AffineSubspace k P) :=
   Set.mem_univ p
 
-end AffineSubspace
-
-namespace Submodule
-
-variable (k : Type*) (V : Type*) {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
-  [AffineSpace V P]
-
 /-- The shift of the linear subspace `⊤` to a point is the affine subspace `⊤`. -/
-@[simp] lemma shift_top (p : P) : (⊤ : Submodule k V).shift p = ⊤ := by
+@[simp] theorem _root_.Submodule.shift_top (p : P) : (⊤ : Submodule k V).shift p = ⊤ := by
   ext x
   simp
-
-@[simp] lemma shift_ne_bot (s : Submodule k V) (p : P) : s.shift p ≠ ⊥ := by
-  intro h
-  exact Set.not_nonempty_empty (h ▸ s.shift_nonempty p)
-
-end Submodule
-
-namespace AffineSubspace
-
-variable (k : Type*) (V : Type*) {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
-  [S : AffineSpace V P]
 
 variable (P)
 
@@ -724,6 +706,9 @@ theorem nonempty_iff_ne_bot (Q : AffineSubspace k P) : (Q : Set P).Nonempty ↔ 
 theorem eq_bot_or_nonempty (Q : AffineSubspace k P) : Q = ⊥ ∨ (Q : Set P).Nonempty := by
   rw [nonempty_iff_ne_bot]
   apply eq_or_ne
+
+@[simp] lemma _root_.Submodule.shift_ne_bot (s : Submodule k V) (p : P) : s.shift p ≠ ⊥ :=
+  (nonempty_iff_ne_bot _).mp (s.shift_nonempty _)
 
 /-- A nonempty affine subspace is `⊤` if and only if its direction is `⊤`. -/
 @[simp]
