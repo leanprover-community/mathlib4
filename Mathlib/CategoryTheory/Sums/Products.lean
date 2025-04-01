@@ -135,7 +135,6 @@ def ofNatIsoWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
   hom := NatTrans.ofNatTransWhiskerLeftInlInr η₁.hom η₂.hom
   inv := NatTrans.ofNatTransWhiskerLeftInlInr η₁.inv η₂.inv
 
-@[simp]
 lemma ofNatIsoWhiskerLeftInlInr_eq {F G : A ⊕ A' ⥤ B}
     (η₁ : Sum.inl_ A A' ⋙ F ≅ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ≅ Sum.inr_ A A' ⋙ G) :
     (Sum.functorEquiv A A' B).unitIso.app _ ≪≫
