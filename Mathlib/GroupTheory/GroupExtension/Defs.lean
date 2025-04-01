@@ -323,7 +323,7 @@ def toGroupExtension : GroupExtension N (N ⋊[φ] G) G where
   inl
   inl_injective := inl_injective
   range_inl_eq_ker_rightHom := range_inl_eq_ker_rightHom
-  rightHom
+  rightHom := rightHom
   rightHom_surjective := rightHom_surjective
 
 theorem toGroupExtension_inl : (toGroupExtension φ).inl = SemidirectProduct.inl := rfl
