@@ -122,33 +122,26 @@ lemma coreComp {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) : (α ≪≫ β).
 @[simp]
 lemma coreId {F : C ⥤ D} : (Iso.refl F).core = Iso.refl F.core := rfl
 
--- Arguments order and simp normal forms here are chosen to mimic simp lemmas of pseudofunctors.
-
-@[simp]
 lemma coreWhiskerLeft {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) {G H : D ⥤ E} (η : G ≅ H) :
     (isoWhiskerLeft F η).core =
     F.coreComp G ≪≫ isoWhiskerLeft F.core η.core ≪≫ (F.coreComp H).symm := by
   aesop_cat
 
-@[simp]
 lemma coreWhiskerRight {E : Type u₃} [Category.{v₃} E] {F G : C ⥤ D} (η : F ≅ G) (H : D ⥤ E) :
     (isoWhiskerRight η H ).core =
     F.coreComp H ≪≫ isoWhiskerRight η.core H.core ≪≫ (G.coreComp H).symm := by
   aesop_cat
 
-@[simp]
 lemma coreLeftUnitor {F : C ⥤ D} :
     F.leftUnitor.core =
     (𝟭 C).coreComp F ≪≫ isoWhiskerRight (Functor.coreId C) _ ≪≫ F.core.leftUnitor := by
   aesop_cat
 
-@[simp]
 lemma coreRightUnitor {F : C ⥤ D} :
     F.rightUnitor.core =
     (F).coreComp (𝟭 D) ≪≫ isoWhiskerLeft _ (Functor.coreId D) ≪≫ F.core.rightUnitor := by
   aesop_cat
 
-@[simp]
 lemma coreAssociator {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
     (F : C ⥤ D) (G : D ⥤ E) (H : E ⥤ E') :
     (Functor.associator F G H).core =
