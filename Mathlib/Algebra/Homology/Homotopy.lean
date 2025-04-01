@@ -493,14 +493,13 @@ def mkInductiveAux₂ :
 
 @[simp] theorem mkInductiveAux₂_zero :
     mkInductiveAux₂ e zero comm_zero one comm_one succ 0 =
-      ⟨0, zero ≫ (Q.xPrevIso rfl).inv, mkInductiveAux₂.proof_3 e zero comm_zero⟩ :=
+      ⟨0, zero ≫ (Q.xPrevIso rfl).inv, by simpa using comm_zero⟩ :=
   rfl
 
 @[simp] theorem mkInductiveAux₂_add_one (n) :
     mkInductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
-      let I := mkInductiveAux₁ e zero one comm_one succ n
-      ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv,
-        mkInductiveAux₂.proof_6 e zero one comm_one succ n⟩ :=
+      letI I := mkInductiveAux₁ e zero one comm_one succ n
+      ⟨(P.xNextIso rfl).hom ≫ I.1, I.2.1 ≫ (Q.xPrevIso rfl).inv, by simpa using I.2.2⟩ :=
   rfl
 
 theorem mkInductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
@@ -622,14 +621,13 @@ def mkCoinductiveAux₂ :
 
 @[simp] theorem mkCoinductiveAux₂_zero :
     mkCoinductiveAux₂ e zero comm_zero one comm_one succ 0 =
-      ⟨0, (P.xNextIso rfl).hom ≫ zero, mkCoinductiveAux₂.proof_3 e zero comm_zero⟩ :=
+      ⟨0, (P.xNextIso rfl).hom ≫ zero, by simpa using comm_zero⟩ :=
   rfl
 
 @[simp] theorem mkCoinductiveAux₂_add_one (n) :
     mkCoinductiveAux₂ e zero comm_zero one comm_one succ (n + 1) =
-      let I := mkCoinductiveAux₁ e zero one comm_one succ n
-      ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1,
-        mkCoinductiveAux₂.proof_6 e zero one comm_one succ n⟩ :=
+      letI I := mkCoinductiveAux₁ e zero one comm_one succ n
+      ⟨I.1 ≫ (Q.xPrevIso rfl).inv, (P.xNextIso rfl).hom ≫ I.2.1, by simpa using I.2.2⟩ :=
   rfl
 
 theorem mkCoinductiveAux₃ (i j : ℕ) (h : i + 1 = j) :
