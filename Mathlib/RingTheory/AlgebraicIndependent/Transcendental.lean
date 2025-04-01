@@ -133,14 +133,14 @@ theorem algebraicIndependent_of_set_of_finite (s : Set ι)
   classical
   refine algebraicIndependent_of_finite_type fun t hfin ↦ ?_
   suffices AlgebraicIndependent R fun i : ↥(t ∩ s ∪ t \ s) ↦ x i from
-    this.comp (Equiv.Set.ofEq (t.inter_union_diff s).symm) (Equiv.injective _)
+    this.comp (Equiv.setCongr (t.inter_union_diff s).symm) (Equiv.injective _)
   refine hfin.diff.induction_on_subset _ (ind.comp (inclusion <| by simp) (inclusion_injective _))
     fun {a u} ha hu ha' h ↦ ?_
   have : a ∉ t ∩ s ∪ u := (·.elim (ha.2 ·.2) ha')
   convert (((image_eq_range .. ▸ h.option_iff_transcendental <| x a).2 <| H _ (hfin.subset
       (union_subset inter_subset_left <| hu.trans diff_subset)) h a ha.2 this).comp _
       (subtypeInsertEquivOption this).injective).comp
-    (Equiv.Set.ofEq union_insert) (Equiv.injective _) with x
+    (Equiv.setCongr union_insert) (Equiv.injective _) with x
   by_cases h : ↑x = a <;> simp [h, Set.subtypeInsertEquivOption]
 
 /-- Variant of `algebraicIndependent_of_finite_type` using `Transcendental`. -/
