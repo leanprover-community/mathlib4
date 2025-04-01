@@ -92,8 +92,6 @@ protected theorem piMap {ι} [Fintype ι] {α β : ι → Type*} [∀ i, PseudoE
     Isometry (Pi.map f) := fun x y => by
   simp only [edist_pi_def, (hf _).edist_eq, Pi.map_apply]
 
-@[deprecated (since := "2024-10-06")] alias _root_.isometry_dcomp := Isometry.piMap
-
 /-- The composition of isometries is an isometry. -/
 theorem comp {g : β → γ} {f : α → β} (hg : Isometry g) (hf : Isometry f) : Isometry (g ∘ f) :=
   fun _ _ => (hg _ _).trans (hf _ _)

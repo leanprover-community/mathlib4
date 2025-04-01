@@ -586,8 +586,6 @@ lemma Topology.IsEmbedding.prodMap {f : X → Y} {g : Z → W} (hf : IsEmbedding
   toIsInducing := hf.isInducing.prodMap hg.isInducing
   injective := hf.injective.prodMap hg.injective
 
-@[deprecated (since := "2024-10-08")] alias Embedding.prodMap := Topology.IsEmbedding.prodMap
-
 protected theorem IsOpenMap.prodMap {f : X → Y} {g : Z → W} (hf : IsOpenMap f) (hg : IsOpenMap g) :
     IsOpenMap (Prod.map f g) := by
   rw [isOpenMap_iff_nhds_le]

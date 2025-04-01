@@ -1411,8 +1411,6 @@ lemma zpow_pos [PosMulStrictMono G₀] (ha : 0 < a) : ∀ n : ℤ, 0 < a ^ n
   | (n : ℕ) => by rw [zpow_natCast]; exact pow_pos ha _
   |-(n + 1 : ℕ) => by rw [zpow_neg, inv_pos, zpow_natCast]; exact pow_pos ha _
 
-@[deprecated (since := "2024-10-08")] alias zpow_pos_of_pos := zpow_pos
-
 section PosMulMono
 variable [PosMulMono G₀] {m n : ℤ}
 

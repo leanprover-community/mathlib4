@@ -310,12 +310,6 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin
     exact A.comp _ (contMDiffWithinAt_proj (TangentSpace I)) (fun x h ↦ h)
   exact ContMDiffWithinAt.clm_apply_of_inCoordinates hϕ hv hb₂
 
-@[deprecated (since := "2024-10-07")]
-alias ContMDiffOn.contMDiffOn_tangentMapWithin_aux := ContMDiffOn.contMDiffOn_tangentMapWithin
-
-@[deprecated (since := "2024-10-07")]
-alias ContMDiffOn.continuousOn_tangentMapWithin_aux := ContMDiffOn.contMDiffOn_tangentMapWithin
-
 /-- If a function is `C^n` on a domain with unique derivatives, with `1 ≤ n`, then its bundled
 derivative is continuous there. -/
 theorem ContMDiffOn.continuousOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (hmn : 1 ≤ n)

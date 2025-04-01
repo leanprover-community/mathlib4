@@ -155,16 +155,6 @@ theorem mem_range_lift_of_le {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
     b ≤ lift.{v, u} a → b ∈ Set.range lift.{v, u} :=
   liftInitialSeg.mem_range_of_le
 
-@[deprecated mem_range_lift_of_le (since := "2024-10-07")]
-theorem lift_down {a : Cardinal.{u}} {b : Cardinal.{max u v}} :
-    b ≤ lift.{v, u} a → ∃ a', lift.{v, u} a' = b :=
-  mem_range_lift_of_le
-
-/-- `Cardinal.lift` as an `OrderEmbedding`. -/
-@[deprecated Cardinal.liftInitialSeg (since := "2024-10-07")]
-def liftOrderEmbedding : Cardinal.{v} ↪o Cardinal.{max v u} :=
-  liftInitialSeg.toOrderEmbedding
-
 theorem lift_injective : Injective lift.{u, v} :=
   liftInitialSeg.injective
 

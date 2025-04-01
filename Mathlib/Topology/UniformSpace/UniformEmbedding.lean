@@ -35,17 +35,12 @@ structure IsUniformInducing (f : α → β) : Prop where
   under `Prod.map f f`. -/
   comap_uniformity : comap (fun x : α × α => (f x.1, f x.2)) (𝓤 β) = 𝓤 α
 
-@[deprecated (since := "2024-10-08")] alias UniformInducing := IsUniformInducing
-
 lemma isUniformInducing_iff_uniformSpace {f : α → β} :
     IsUniformInducing f ↔ ‹UniformSpace β›.comap f = ‹UniformSpace α› := by
   rw [isUniformInducing_iff, UniformSpace.ext_iff, Filter.ext_iff]
   rfl
 
 protected alias ⟨IsUniformInducing.comap_uniformSpace, _⟩ := isUniformInducing_iff_uniformSpace
-
-@[deprecated (since := "2024-10-08")] alias UniformInducing.comap_uniformSpace :=
-  IsUniformInducing.comap_uniformSpace
 
 lemma isUniformInducing_iff' {f : α → β} :
     IsUniformInducing f ↔ UniformContinuous f ∧ comap (Prod.map f f) (𝓤 β) ≤ 𝓤 α := by
@@ -312,9 +307,6 @@ theorem completeSpace_iff_isComplete_range {f : α → β} (hf : IsUniformInduci
   rw [completeSpace_iff_isComplete_univ, ← isComplete_image_iff hf, image_univ]
 
 alias ⟨_, IsUniformInducing.completeSpace⟩ := completeSpace_iff_isComplete_range
-
-@[deprecated (since := "2024-10-08")] alias UniformInducing.completeSpace :=
-  IsUniformInducing.completeSpace
 
 lemma IsUniformInducing.isComplete_range [CompleteSpace α] (hf : IsUniformInducing f) :
     IsComplete (range f) :=
