@@ -40,7 +40,6 @@ theorem IsSymm.ext_iff {A : Matrix n n α} : A.IsSymm ↔ ∀ i j, A j i = A i j
   Matrix.ext_iff.symm
 
 /-- A version of `Matrix.ext` that unfolds the `Matrix.transpose`. -/
--- @[ext] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): incorrect `ext`, not a structure or a lemma proving `x = y`.
 theorem IsSymm.ext {A : Matrix n n α} : (∀ i j, A j i = A i j) → A.IsSymm :=
   Matrix.ext
 

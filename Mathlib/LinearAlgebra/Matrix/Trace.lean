@@ -239,10 +239,12 @@ variable [Fintype n] [AddCommMonoid α] (i j : n) (c : α)
 
 @[simp]
 theorem trace_zero (h : j ≠ i) : trace (stdBasisMatrix i j c) = 0 := by
+  -- Porting note: added `-diag_apply`
   simp [trace, -diag_apply, h]
 
 @[simp]
 theorem trace_eq : trace (stdBasisMatrix i i c) = c := by
+  -- Porting note: added `-diag_apply`
   simp [trace, -diag_apply]
 
 end StdBasisMatrix
