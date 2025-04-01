@@ -166,6 +166,9 @@ theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : 
 theorem single_eq_zero : single a b = 0 ↔ b = 0 := by
   simp [DFunLike.ext_iff, single_eq_set_indicator]
 
+theorem single_ne_zero : single a b ≠ 0 ↔ b ≠ 0 :=
+  single_eq_zero.not
+
 theorem single_swap (a₁ a₂ : α) (b : M) : single a₁ b a₂ = single a₂ b a₁ := by
   classical simp only [single_apply, eq_comm]
 
