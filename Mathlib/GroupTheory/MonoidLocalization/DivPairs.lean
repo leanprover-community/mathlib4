@@ -19,7 +19,7 @@ namespace Submonoid
 
 variable (f s) in
 /-- The submonoid of pairs whose quotient lies in a submonoid of the localization. -/
-@[to_additive "The submonoid of pairs whose difference lie in a submonoid of the localization."]
+@[to_additive "The submonoid of pairs whose difference lies in a submonoid of the localization."]
 def divPairs : Submonoid (M × M) := s.comap <| divMonoidHom.comp <| f.toMap.prodMap f.toMap
 
 @[to_additive (attr := simp)]
