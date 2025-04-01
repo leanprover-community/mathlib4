@@ -52,8 +52,7 @@ protected theorem singularPart [IsFiniteMeasure μ] [SigmaFinite ν] {f : α →
   · -- TODO: move to a lemma? What are the right assumptions?
     calc
       μ.singularPart ν = (μ.restrict s).singularPart ν := by
-        rw [singularPart_restrict _ _ hsm, restrict_eq_self_of_ae_mem]
-        simpa [measure_zero_iff_ae_nmem] using hμs
+        rwa [singularPart_restrict _ _ hsm, restrict_eq_self_of_ae_mem]
       _ = μ.restrict s := singularPart_eq_self.2 <| .symm ⟨s, hsm, hνs, by simp [hsm]⟩
 
 /-- The absolutely continuous part of a finite invariant measure of a self-map
