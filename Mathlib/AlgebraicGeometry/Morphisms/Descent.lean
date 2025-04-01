@@ -128,6 +128,25 @@ variable
   (H₁ : ∀ (X : Scheme.{u}) [CompactSpace X], ∃ (Y : Scheme.{u}) (p : Y ⟶ X), P' p ∧ IsAffine Y)
   (H₂ : ∀ {R S : CommRingCat.{u}} {f : R ⟶ S}, P' (Spec.map f) → Q' f.hom)
 
+include H₁ in
+lemma IsLocalAtTarget.descendsAlong_inf_quasiCompact [IsLocalAtTarget P]
+    (H : ∀ {R S : CommRingCat.{u}} {Y : Scheme.{u}} (φ : R ⟶ S) (g : Y ⟶ Spec R),
+      P' (Spec.map φ) → P (pullback.fst (Spec.map φ) g) → P g) :
+    P.DescendsAlong (P' ⊓ @QuasiCompact) := by
+  apply IsLocalAtTarget.descendsAlong
+  intro R X Y f g hf h
+  wlog hX : ∃ T, X = Spec T generalizing X
+  · have _ : CompactSpace X := by simpa [← quasiCompact_over_affine_iff f] using hf.2
+    obtain ⟨Y, p, hP', _⟩ := H₁ X
+    refine this (f := (Y.isoSpec.inv ≫ p) ≫ f) ?_ ?_ ⟨_, rfl⟩
+    · rw [Category.assoc, (P' ⊓ @QuasiCompact).cancel_left_of_respectsIso]
+      exact ⟨P'.comp_mem _ _ hP' hf.1, inferInstance⟩
+    · rw [← pullbackRightPullbackFstIso_inv_fst f g _, P.cancel_left_of_respectsIso]
+      exact P.pullback_fst _ _ h
+  obtain ⟨T, rfl⟩ := hX
+  obtain ⟨φ, rfl⟩ := Spec.map_surjective f
+  exact H φ g hf.1 h
+
 include H₁ H₂ in
 /--
 Let `P` be the morphism property associated to the ring hom property `Q` and
@@ -147,26 +166,17 @@ this is satisfied by faithfully flat morphisms.
 nonrec lemma HasRingHomProperty.descendsAlong [HasRingHomProperty P Q]
     (hQQ' : RingHom.CodescendsAlong Q Q') :
     P.DescendsAlong (P' ⊓ @QuasiCompact) := by
-  apply IsLocalAtTarget.descendsAlong
+  apply IsLocalAtTarget.descendsAlong_inf_quasiCompact _ _ H₁
   introv h hf
-  wlog hY : ∃ S, Y = Spec S generalizing X Y
+  wlog hY : ∃ S, Y = Spec S generalizing Y
   · rw [IsLocalAtSource.iff_of_openCover (P := P) Y.affineCover]
     intro i
-    have heq : pullback.fst f (Y.affineCover.map i ≫ g) =
-        pullback.map _ _ _ _ (𝟙 X) (Y.affineCover.map i) (𝟙 _) (by simp) (by simp) ≫
-          pullback.fst f g := (pullback.lift_fst _ _ _).symm
-    exact this (f := f) _ h (heq ▸ AlgebraicGeometry.IsLocalAtSource.comp hf _) ⟨_, rfl⟩
+    have heq : pullback.fst (Spec.map φ) (Y.affineCover.map i ≫ g) =
+        pullback.map _ _ _ _ (𝟙 _) (Y.affineCover.map i) (𝟙 _) (by simp) (by simp) ≫
+          pullback.fst (Spec.map φ) g := (pullback.lift_fst _ _ _).symm
+    exact this _ (heq ▸ AlgebraicGeometry.IsLocalAtSource.comp hf _) ⟨_, rfl⟩
   obtain ⟨S, rfl⟩ := hY
-  wlog hX : ∃ T, X = Spec T generalizing X
-  · have _ : CompactSpace X := by simpa [← quasiCompact_over_affine_iff f] using h.2
-    obtain ⟨Y, p, hP', _⟩ := H₁ X
-    refine this (f := (Y.isoSpec.inv ≫ p) ≫ f) ?_ ?_ ⟨_, rfl⟩
-    · rw [Category.assoc, (P' ⊓ @QuasiCompact).cancel_left_of_respectsIso]
-      exact ⟨P'.comp_mem _ _ hP' h.1, inferInstance⟩
-    · rw [← pullbackRightPullbackFstIso_inv_fst f g _, P.cancel_left_of_respectsIso]
-      exact P.pullback_fst _ _ hf
-  obtain ⟨T, rfl⟩ := hX
-  apply of_pullback_fst_Spec_of_codescendsAlong _ _ hQQ' H₂ _ h.1 hf
+  apply of_pullback_fst_Spec_of_codescendsAlong _ _ hQQ' H₂ _ h hf
   simp [HasRingHomProperty.Spec_iff (P := P)]
 
 include H₁ H₂ in
@@ -179,30 +189,21 @@ nonrec lemma HasAffineProperty.descendsAlong_of_affineAnd
     (hP : HasAffineProperty P (affineAnd Q)) [MorphismProperty.DescendsAlong @IsAffineHom P']
     (hQ : RingHom.RespectsIso Q) (hQQ' : RingHom.CodescendsAlong Q Q') :
     P.DescendsAlong (P' ⊓ @QuasiCompact) := by
-  apply IsLocalAtTarget.descendsAlong
+  apply IsLocalAtTarget.descendsAlong_inf_quasiCompact _ _ H₁
   introv h hf
-  wlog hX : ∃ T, X = Spec T generalizing X
-  · have _ : CompactSpace X := by simpa [← quasiCompact_over_affine_iff f] using h.2
-    obtain ⟨Y, p, hP', _⟩ := H₁ X
-    refine this (f := (Y.isoSpec.inv ≫ p) ≫ f) ?_ ?_ ⟨_, rfl⟩
-    · rw [Category.assoc, (P' ⊓ @QuasiCompact).cancel_left_of_respectsIso]
-      exact ⟨P'.comp_mem _ _ hP' h.1, inferInstance⟩
-    · rw [← pullbackRightPullbackFstIso_inv_fst f g _, P.cancel_left_of_respectsIso]
-      exact P.pullback_fst _ _ hf
-  obtain ⟨T, rfl⟩ := hX
   have : IsAffine Y := by
     convert isAffine_of_isAffineHom g
-    exact MorphismProperty.of_pullback_fst_of_descendsAlong h.1 <|
+    exact MorphismProperty.of_pullback_fst_of_descendsAlong h <|
       AlgebraicGeometry.HasAffineProperty.affineAnd_le_isAffineHom P inferInstance _ hf
   wlog hY : ∃ S, Y = Spec S generalizing Y
   · rw [← P.cancel_left_of_respectsIso Y.isoSpec.inv]
-    have heq : pullback.fst f (Y.isoSpec.inv ≫ g) =
+    have heq : pullback.fst (Spec.map φ) (Y.isoSpec.inv ≫ g) =
         pullback.map _ _ _ _ (𝟙 _) (Y.isoSpec.inv) (𝟙 _) (by simp) (by simp) ≫
-          pullback.fst f g := (pullback.lift_fst _ _ _).symm
+          pullback.fst (Spec.map φ) g := (pullback.lift_fst _ _ _).symm
     refine this _ ?_ inferInstance ⟨_, rfl⟩
     rwa [heq, P.cancel_left_of_respectsIso]
   obtain ⟨Y, rfl⟩ := hY
-  apply of_pullback_fst_Spec_of_codescendsAlong _ _ hQQ' H₂ _ h.1 hf
+  apply of_pullback_fst_Spec_of_codescendsAlong _ _ hQQ' H₂ _ h hf
   simp [SpecMap_iff_of_affineAnd _ hQ]
 
 end AlgebraicGeometry
