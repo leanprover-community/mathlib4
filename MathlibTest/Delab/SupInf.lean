@@ -12,14 +12,14 @@ import Mathlib
 #guard_msgs in
 #check max ({1} : Set Nat) {2}
 
-variable {α : Type} (a b : α) [Lattice α]
+variable {α : Type} (a b : α)
 
+variable [Lattice α] in
 /-- info: a ⊔ b : α -/
 #guard_msgs in
 #check max a b
 
-variable [LinearOrder α]
-
+variable [LinearOrder α] in
 /-- info: max a b : α -/
 #guard_msgs in
 #check max a b
