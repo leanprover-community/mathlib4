@@ -16,11 +16,11 @@ a (univariate) power series if and only if its constant coefficient is nilpotent
 This is a particularization of the substitution of multivariate power series
 to the case of univariate power series.
 
-## QUESTIONS :
+## TODO
 
-Should `rescale` be redefined using `subst` or with the elementary explicit formula?
+* Should `rescale` be redefined using `subst` or with the elementary explicit formula?
 
-It is more convenient to have `PowerSeries.HasSusbt`, for for evaluation,
+* It is more convenient to have `PowerSeries.HasSusbt`, for for evaluation,
 we just say `IsTopologicallyNilpotent`. Maybe it would be more consistent
 to define `PowerSeries.HasEval` as an abbrev for `IsTopologicallyNilpotent`.
 -/
