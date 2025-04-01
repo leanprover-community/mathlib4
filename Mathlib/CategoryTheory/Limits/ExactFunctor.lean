@@ -72,6 +72,10 @@ instance : (RightExactFunctor.forget C D).Full :=
 instance : (RightExactFunctor.forget C D).Faithful :=
   FullSubcategory.faithful _
 
+/-- The inclusion of right exact functors into functors is fully faithful. -/
+abbrev RightExactFunctor.fullyFaithful : (RightExactFunctor.forget C D).FullyFaithful :=
+  fullyFaithfulFullSubcategoryInclusion _
+
 /-- Bundled exact functors. -/
 def ExactFunctor :=
   FullSubcategory fun F : C ⥤ D =>
