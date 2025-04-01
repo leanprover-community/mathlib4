@@ -89,7 +89,7 @@ section CompleteSpace
 variable [ContinuousSMul 𝕜 E] [ContinuousConstSMul 𝕜 F] [CompleteSpace F]
 
 open UniformOnFun in
-theorem completeSpace (h : IsRestrictGen {s : Set (ι → E) | IsVonNBounded 𝕜 s}) :
+theorem completeSpace (h : IsCoherentWith {s : Set (ι → E) | IsVonNBounded 𝕜 s}) :
     CompleteSpace (E [⋀^ι]→L[𝕜] F) := by
   wlog hF : T2Space F generalizing F
   · rw [(isUniformInducing_postcomp (SeparationQuotient.mkCLM _ _)
