@@ -470,19 +470,19 @@ def powerBasis' (hg : g.Monic) : PowerBasis R (AdjoinRoot g) where
       have := Finset.mem_univ i
       contradiction
 
-lemma free_of_monic (hg : g.Monic) : Module.Free R (AdjoinRoot g) :=
+lemma _root_.Polynomial.Monic.free_adjoinRoot (hg : g.Monic) : Module.Free R (AdjoinRoot g) :=
   .of_basis (powerBasis' hg).basis
 
-lemma finite_of_monic (hg : g.Monic) : Module.Finite R (AdjoinRoot g) :=
+lemma _root_.Polynomial.Monic.finite_adjoinRoot (hg : g.Monic) : Module.Finite R (AdjoinRoot g) :=
   .of_basis (powerBasis' hg).basis
 
 /-- An unwrapped version of `AdjoinRoot.free_of_monic` for better discoverability. -/
-lemma _root_.Polynomial.free_quotient_of_monic (hg : g.Monic) :
+lemma _root_.Polynomial.Monic.free_quotient (hg : g.Monic) :
     Module.Free R (R[X] ⧸ Ideal.span {g}) :=
   free_of_monic hg
 
 /-- An unwrapped version of `AdjoinRoot.finite_of_monic` for better discoverability. -/
-lemma _root_.Polynomial.finite_quotient_of_monic (hg : g.Monic) :
+lemma _root_.Polynomial.Monic.finite_quotient (hg : g.Monic) :
     Module.Finite R (R[X] ⧸ Ideal.span {g}) :=
   finite_of_monic hg
 
