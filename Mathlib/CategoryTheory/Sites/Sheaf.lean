@@ -517,7 +517,7 @@ section MultiequalizerConditions
 /-- When `P` is a sheaf and `S` is a cover, the associated multifork is a limit. -/
 def isLimitOfIsSheaf {X : C} (S : J.Cover X) (hP : IsSheaf J P) : IsLimit (S.multifork P) where
   lift := fun E : Multifork _ => hP.amalgamate S (fun _ => E.ι _)
-    (fun _ _ r => E.condition ⟨_, _, r⟩)
+    (fun _ _ r => E.condition ⟨r⟩)
   fac := by
     rintro (E : Multifork _) (a | b)
     · apply hP.amalgamate_map

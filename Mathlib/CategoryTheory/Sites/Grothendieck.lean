@@ -543,9 +543,9 @@ theorem Arrow.middle_spec {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover 
 @[ext]
 structure Relation (S : J.Cover X) where
   /-- The first arrow. -/
-  fst : S.Arrow
+  {fst : S.Arrow}
   /-- The second arrow. -/
-  snd : S.Arrow
+  {snd : S.Arrow}
   /-- The relation between the two arrows. -/
   r : fst.Relation snd
 

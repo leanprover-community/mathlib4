@@ -14,6 +14,7 @@ import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.Rfl
 import Lean.Meta.Match.MatcherInfo
+import Lean.Meta.AbstractNestedProofs
 import Batteries.Lean.NameMapAttribute
 import Batteries.Tactic.Lint -- useful to lint this file and for DiscrTree.elements
 import Batteries.Tactic.Trans
@@ -692,22 +693,38 @@ def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
   lambdaTelescope src fun xs e => do
     mkLambdaFVars (xs.permute! reorder) e
 
+/-- Unfold auxlemmas in the type and value. -/
+def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
+  let mut decl := decl
+  decl := decl.updateType <| ← unfoldAuxLemmas decl.type
+  if let some v := decl.value? then
+    trace[to_additive] "value before unfold:{indentExpr v}"
+    decl := decl.updateValue <| ← unfoldAuxLemmas v
+    trace[to_additive] "value after unfold:{indentExpr decl.value!}"
+  else if let .opaqueInfo info := decl then -- not covered by `value?`
+    decl := .opaqueInfo { info with value := ← unfoldAuxLemmas info.value }
+  return decl
+
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
 def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) :
     MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall reorder <| ← expand
-    <| ← unfoldAuxLemmas decl.type
+  decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall reorder <| ← expand decl.type
   if let some v := decl.value? then
-    decl := decl.updateValue <| ← applyReplacementFun <| ← reorderLambda reorder <| ← expand
-      <| ← unfoldAuxLemmas v
+    decl := decl.updateValue <| ← applyReplacementFun <| ← reorderLambda reorder <| ← expand v
   else if let .opaqueInfo info := decl then -- not covered by `value?`
     decl := .opaqueInfo { info with
-      value := ← applyReplacementFun <| ← reorderLambda reorder <| ← expand
-        <| ← unfoldAuxLemmas info.value }
+      value := ← applyReplacementFun <| ← reorderLambda reorder <| ← expand info.value }
   return decl
+
+/-- Abstracts the nested proofs in the value of `decl` if it's not a theorem. -/
+def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
+  if decl.isTheorem || !decl.hasValue then
+    return decl
+  else
+    return decl.updateValue <| ← Meta.abstractNestedProofs decl.name decl.value!
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
 def findTargetName (env : Environment) (src pre tgt_pre : Name) : CoreM Name :=
@@ -781,7 +798,9 @@ partial def transformDeclAux
       trace[to_additive_detail] "Already visited {tgt} as translation of {src}."
     return
   let srcDecl ← getConstInfo src
-  -- we first transform all auxiliary declarations generated when elaborating `pre`
+  -- we first unfold all auxlemmas, since they are not always able to be additivized on their own
+  let srcDecl ← MetaM.run' do declUnfoldAuxLemmas srcDecl
+  -- we then transform all auxiliary declarations generated when elaborating `pre`
   for n in findAuxDecls srcDecl.type pre do
     transformDeclAux cfg pre tgt_pre n
   if let some value := srcDecl.value? then
@@ -804,13 +823,15 @@ partial def transformDeclAux
   try
     -- make sure that the type is correct,
     -- and emit a more helpful error message if it fails
-    discard <| MetaM.run' <| inferType value
+    MetaM.run' <| check value
   catch
     | Exception.error _ msg => throwError "@[to_additive] failed. \
       Type mismatch in additive declaration. For help, see the docstring \
       of `to_additive.attr`, section `Troubleshooting`. \
       Failed to add declaration\n{tgt}:\n{msg}"
     | _ => panic! "unreachable"
+  -- "Refold" all the aux lemmas that we unfolded.
+  let trgDecl ← MetaM.run' <| declAbstractNestedProofs trgDecl
   if isNoncomputable env src then
     addDecl trgDecl.toDeclaration!
     setEnv <| addNoncomputable (← getEnv) tgt
