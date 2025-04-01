@@ -144,20 +144,40 @@ theorem noncommProd_mem (S : Submonoid M) {ι : Type*} (t : Finset ι) (f : ι �
 end Monoid
 
 section CommMonoid
-variable [CommMonoid M] {s : Finset M} {x : M}
+variable [CommMonoid M] {x : M}
 
 @[to_additive]
-lemma mem_closure_finset : x ∈ closure s ↔ ∃ n : M → ℕ, x = ∏ a ∈ s, a ^ n a where
+lemma mem_closure_iff_exists_finset_subset {s : Set M} :
+    x ∈ closure s ↔
+      ∃ (n : M → ℕ) (t : Finset M), ↑t ⊆ s ∧ n.support ⊆ t ∧ x = ∏ a ∈ t, a ^ n a where
   mp hx := by
     classical
     induction' hx using closure_induction with x hx x y _ _ hx hy
     · simp only [Finset.mem_coe] at hx
-      exact ⟨Pi.single x 1, by simp [hx, Pi.single_apply]⟩
-    · exact ⟨0, by simp⟩
-    · obtain ⟨m, rfl⟩ := hx
-      obtain ⟨n, rfl⟩ := hy
-      exact ⟨m + n, by simp [pow_add, Finset.prod_mul_distrib]⟩
-  mpr := by rintro ⟨n, rfl⟩; exact prod_mem _ fun x hx ↦ pow_mem (subset_closure hx) _
+      exact ⟨Pi.single x 1, {x}, by simp [hx, Pi.single_apply]⟩
+    · exact ⟨0, ∅, by simp⟩
+    · obtain ⟨m, t, hts, hm, rfl⟩ := hx
+      obtain ⟨n, u, hus, hn, rfl⟩ := hy
+      refine ⟨m + n, t ∪ u, mod_cast Set.union_subset hts hus,
+        (Function.support_add _ _).trans <| mod_cast Set.union_subset_union hm hn, ?_⟩
+      simp [pow_add, Finset.prod_mul_distrib]
+      congr 1
+      · refine Finset.prod_subset Finset.subset_union_left ?_
+        simp +contextual [Function.support_subset_iff'.1 hm]
+      · refine Finset.prod_subset Finset.subset_union_right ?_
+        simp +contextual [Function.support_subset_iff'.1 hn]
+  mpr := by
+    rintro ⟨n, t, hts, -, rfl⟩; exact prod_mem _ fun x hx ↦ pow_mem (subset_closure <| hts hx) _
+
+@[to_additive]
+lemma mem_closure_finset {s : Finset M} :
+    x ∈ closure s ↔ ∃ n : M → ℕ, n.support ⊆ s ∧ x = ∏ a ∈ s, a ^ n a where
+  mp := by
+    rw [mem_closure_iff_exists_finset_subset]
+    rintro ⟨n, t, hts, hn, rfl⟩
+    refine ⟨n, hn.trans hts, Finset.prod_subset hts ?_⟩
+    simp +contextual [Function.support_subset_iff'.1 hn]
+  mpr := by rintro ⟨n, -, rfl⟩; exact prod_mem _ fun x hx ↦ pow_mem (subset_closure hx) _
 
 end CommMonoid
 end Submonoid
