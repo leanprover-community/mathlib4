@@ -175,4 +175,8 @@ def weylGroupRootRep : Representation R P.weylGroup M :=
 def weylGroupCorootRep : Representation R P.weylGroup.op N :=
   Representation.ofDistribMulAction R P.weylGroup.op N
 
+lemma weylGroup_apply_root (g : P.weylGroup) (i : ι) :
+    g • P.root i = P.root (P.weylGroupToPerm g i) :=
+  Hom.root_weightMap_apply _ _ _ _
+
 end RootPairing

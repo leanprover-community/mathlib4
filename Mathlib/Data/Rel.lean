@@ -3,8 +3,7 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.CompleteLattice
+import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Tactic.AdaptationNote
 
 /-!

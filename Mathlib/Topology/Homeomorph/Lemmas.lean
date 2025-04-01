@@ -117,9 +117,6 @@ protected lemma totallyDisconnectedSpace (h : X ≃ₜ Y) [tdc : TotallyDisconne
   (totallyDisconnectedSpace_iff Y).mpr
     (h.range_coe ▸ ((IsEmbedding.isTotallyDisconnected_range h.isEmbedding).mpr tdc))
 
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding := isDenseEmbedding
-
 protected theorem normalSpace [NormalSpace X] (h : X ≃ₜ Y) : NormalSpace Y :=
   h.symm.isClosedEmbedding.normalSpace
 
@@ -218,7 +215,7 @@ def sumPiEquivProdPi (S T : Type*) (A : S ⊕ T → Type*)
     [∀ st, TopologicalSpace (A st)] :
     (Π (st : S ⊕ T), A st) ≃ₜ (Π (s : S), A (.inl s)) × (Π (t : T), A (.inr t)) where
   __ := Equiv.sumPiEquivProdPi _
-  continuous_toFun := Continuous.prod_mk (by fun_prop) (by fun_prop)
+  continuous_toFun := .prodMk (by fun_prop) (by fun_prop)
   continuous_invFun := continuous_pi <| by rintro (s | t) <;> simp <;> fun_prop
 
 /-- The product `Π t : α, f t` of a family of topological spaces is homeomorphic to the
@@ -279,8 +276,8 @@ def ulift.{u, v} {X : Type v} [TopologicalSpace X] : ULift.{u, v} X ≃ₜ X whe
 def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)  where
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
   continuous_toFun := by
-    simp only [Equiv.sumArrowEquivProdArrow, Equiv.coe_fn_mk, continuous_prod_mk]
-    constructor <;> fun_prop
+    dsimp [Equiv.sumArrowEquivProdArrow]
+    fun_prop
   continuous_invFun := continuous_pi fun i ↦ match i with
     | .inl i => by apply (continuous_apply _).comp' continuous_fst
     | .inr i => by apply (continuous_apply _).comp' continuous_snd
@@ -325,7 +322,7 @@ variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 def sigmaProdDistrib : (Σ i, X i) × Y ≃ₜ Σ i, X i × Y :=
   Homeomorph.symm <|
     homeomorphOfContinuousOpen (Equiv.sigmaProdDistrib X Y).symm
-      (continuous_sigma fun _ => continuous_sigmaMk.fst'.prod_mk continuous_snd)
+      (continuous_sigma fun _ => continuous_sigmaMk.fst'.prodMk continuous_snd)
       (isOpenMap_sigma.2 fun _ => isOpenMap_sigmaMk.prodMap IsOpenMap.id)
 
 end Distrib
@@ -341,7 +338,7 @@ def funUnique (ι X : Type*) [Unique ι] [TopologicalSpace X] : (ι → X) ≃�
 @[simps! -fullyApplied]
 def piFinTwo.{u} (X : Fin 2 → Type u) [∀ i, TopologicalSpace (X i)] : (∀ i, X i) ≃ₜ X 0 × X 1 where
   toEquiv := piFinTwoEquiv X
-  continuous_toFun := (continuous_apply 0).prod_mk (continuous_apply 1)
+  continuous_toFun := (continuous_apply 0).prodMk (continuous_apply 1)
   continuous_invFun := continuous_pi <| Fin.forall_fin_two.2 ⟨continuous_fst, continuous_snd⟩
 
 /-- Homeomorphism between `X² = Fin 2 → X` and `X × X`. -/
@@ -370,9 +367,9 @@ def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
 def Set.prod (s : Set X) (t : Set Y) : ↥(s ×ˢ t) ≃ₜ s × t where
   toEquiv := Equiv.Set.prod s t
   continuous_toFun :=
-    (continuous_subtype_val.fst.subtype_mk _).prod_mk (continuous_subtype_val.snd.subtype_mk _)
+    (continuous_subtype_val.fst.subtype_mk _).prodMk (continuous_subtype_val.snd.subtype_mk _)
   continuous_invFun :=
-    (continuous_subtype_val.fst'.prod_mk continuous_subtype_val.snd').subtype_mk _
+    (continuous_subtype_val.fst'.prodMk continuous_subtype_val.snd').subtype_mk _
 
 section
 
@@ -385,7 +382,7 @@ def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, Topologica
     [DecidablePred p] : (∀ i, Y i) ≃ₜ (∀ i : { x // p x }, Y i) × ∀ i : { x // ¬p x }, Y i where
   toEquiv := Equiv.piEquivPiSubtypeProd p Y
   continuous_toFun := by
-    apply Continuous.prod_mk <;> exact continuous_pi fun j => continuous_apply j.1
+    apply Continuous.prodMk <;> exact continuous_pi fun j => continuous_apply j.1
   continuous_invFun :=
     continuous_pi fun j => by
       dsimp only [Equiv.piEquivPiSubtypeProd]; split_ifs
@@ -399,7 +396,7 @@ variable [DecidableEq ι] (i : ι)
 def piSplitAt (Y : ι → Type*) [∀ j, TopologicalSpace (Y j)] :
     (∀ j, Y j) ≃ₜ Y i × ∀ j : { j // j ≠ i }, Y j where
   toEquiv := Equiv.piSplitAt i Y
-  continuous_toFun := (continuous_apply i).prod_mk (continuous_pi fun j => continuous_apply j.1)
+  continuous_toFun := (continuous_apply i).prodMk (continuous_pi fun j => continuous_apply j.1)
   continuous_invFun :=
     continuous_pi fun j => by
       dsimp only [Equiv.piSplitAt]
@@ -499,9 +496,6 @@ alias quotientMap := isQuotientMap
 @[deprecated (since := "2024-10-20")] alias closedEmbedding := isClosedEmbedding
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding := isOpenEmbedding
-
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding := isDenseEmbedding
 
 end IsHomeomorph
 

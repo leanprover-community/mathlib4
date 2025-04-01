@@ -154,7 +154,7 @@ lemma toReal_klDiv_of_measure_eq (h : μ ≪ ν) (h_eq : μ univ = ν univ) :
     (klDiv μ ν).toReal = ∫ a, llr μ ν a ∂μ := by
   by_cases h_int : Integrable (llr μ ν) μ
   · simp [toReal_klDiv h h_int, h_eq]
-  · rw [klDiv_of_not_integrable h_int, integral_undef h_int, ENNReal.top_toReal]
+  · rw [klDiv_of_not_integrable h_int, integral_undef h_int, ENNReal.toReal_top]
 
 lemma toReal_klDiv_eq_integral_klFun (h : μ ≪ ν) :
     (klDiv μ ν).toReal = ∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν := by
@@ -162,7 +162,7 @@ lemma toReal_klDiv_eq_integral_klFun (h : μ ≪ ν) :
   · rw [klDiv_eq_integral_klFun, if_pos ⟨h, h_int⟩, ENNReal.toReal_ofReal]
     exact integral_nonneg fun _ ↦ klFun_nonneg ENNReal.toReal_nonneg
   · rw [integral_undef]
-    · rw [klDiv_of_not_integrable h_int, ENNReal.top_toReal]
+    · rw [klDiv_of_not_integrable h_int, ENNReal.toReal_top]
     · rwa [integrable_klFun_rnDeriv_iff h]
 
 end Real

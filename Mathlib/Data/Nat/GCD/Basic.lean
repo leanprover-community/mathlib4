@@ -109,7 +109,7 @@ theorem gcd_self_sub_right {m n : ℕ} (h : m ≤ n) : gcd n (n - m) = gcd n m :
 
 @[simp]
 theorem pow_sub_one_mod_pow_sub_one (a b c : ℕ) : (a ^ c - 1) % (a ^ b - 1) = a ^ (c % b) - 1 := by
-  rcases eq_zero_or_pos a with rfl| ha0
+  rcases eq_zero_or_pos a with rfl | ha0
   · simp [zero_pow_eq]; split_ifs <;> simp
   rcases Nat.eq_or_lt_of_le ha0 with rfl | ha1
   · simp
