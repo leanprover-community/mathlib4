@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Simps.NotationClass
-import Qq
 
 /-!
 # Notation classes for lattice operations
@@ -67,10 +66,10 @@ macro_rules
 
 section Delab
 
-open Lean Meta PrettyPrinter Delaborator SubExpr Qq
+open Lean Meta PrettyPrinter Delaborator SubExpr
 
 /-- Return `true` if `LinearOrder` is imported and there is an instance of `LinearOrder e`. -/
-private def hasLinearOrder (u : Level) (e : Q(Type $u)) : MetaM Bool := do
+private def hasLinearOrder (u : Level) (e : Expr) : MetaM Bool := do
   try
     _ ← synthInstance (.app (.const `LinearOrder [u]) e)
     return true
