@@ -5,7 +5,6 @@ Authors: Loic Simon
 -/
 import Mathlib.MeasureTheory.Decomposition.Jordan
 import Mathlib.MeasureTheory.Measure.Sub
-import Mathlib.Tactic.NoncommRing
 
 /-!
 # Jordan Decomposition from Signed Measure Subtraction
@@ -130,7 +129,8 @@ theorem toSignedMeasure_restrict_eq_restrict_toSigned (hs : MeasurableSet s) :
 theorem toSignedMeasure_le_iff : μ ≤ ν ↔ μ.toSignedMeasure ≤ ν.toSignedMeasure := by
   constructor
   · intro h A hA
-    simp [toSignedMeasure_apply, hA, measure_ne_top, ENNReal.toReal_le_toReal]
+    simp only [toSignedMeasure_apply, hA, ↓reduceIte, ne_eq, measure_ne_top, not_false_eq_true,
+      ENNReal.toReal_le_toReal]
     exact h A
   · intro h
     rw [Measure.le_iff]
@@ -144,7 +144,7 @@ theorem toSignedMeasure_le_iff : μ ≤ ν ↔ μ.toSignedMeasure ≤ ν.toSigne
 theorem sub_zero {μ : Measure α} : μ - 0 = μ := by
   rw [sub_def]
   apply le_antisymm
-  · simp [add_zero]; exact sInf_le (by simp)
+  · simp only [add_zero]; exact sInf_le (by simp)
   · simp [add_zero]
 
 lemma sub_eq_zero_of_ge_on {μ ν : Measure α} (hs : SetWhereGe μ ν s) : (ν - μ) s = 0 := by
@@ -236,7 +236,8 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
       ← VectorMeasure.restrict_add_restrict_compl ν.toSignedMeasure hs.measurable,
       ← partition₁, ← partition₂]
 
-  noncomm_ring
+  repeat rw [sub_eq_add_neg]
+  abel
 
 
 /-- The Jordan decomposition associated to the pair of mutually singular measures μ-ν and ν-μ . -/
