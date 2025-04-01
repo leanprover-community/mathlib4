@@ -1267,7 +1267,7 @@ def BinaryFan.IsLimit.op {c : BinaryFan X Y} (hc : IsLimit c) : IsColimit <| c.o
       · simpa using congr($(h₁).unop)
       simpa using congr($(h₂).unop)
 
-/-- If a `BinaryCoan` is a colimit, then its opposite is a limit. -/
+/-- If a `BinaryCofan` is a colimit, then its opposite is a limit. -/
 def BinaryCofan.IsColimit.op {c : BinaryCofan X Y} (hc : IsColimit c) : IsLimit <| c.op :=
   BinaryFan.isLimitMk (fun s ↦ .op <| hc.desc (BinaryFan.unop s))
     (by simp [← CategoryTheory.op_comp, hc.fac]) (by simp [← CategoryTheory.op_comp, hc.fac])
