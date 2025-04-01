@@ -548,7 +548,7 @@ Probability Theory:
     sigma-algebra: 'MeasurableSpace'
     independent sigma-algebra: 'ProbabilityTheory.iIndep'
     $0$-$1$ law: 'ProbabilityTheory.measure_zero_or_one_of_measurableSet_limsup_atTop'
-    Borel-Cantelli lemma (easy direction): 'MeasureTheory.measure_limsup_eq_zero'
+    Borel-Cantelli lemma (easy direction): 'MeasureTheory.measure_limsup_atTop_eq_zero'
     Borel-Cantelli lemma (difficult direction): 'ProbabilityTheory.measure_limsup_eq_one'
     conditional probability: 'ProbabilityTheory.cond'
     law of total probability: ''

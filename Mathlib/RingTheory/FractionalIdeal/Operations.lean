@@ -94,7 +94,7 @@ theorem map_coeIdeal (I : Ideal R) : (I : FractionalIdeal S P).map g = I := by
     exact ⟨_, ⟨y, hy, rfl⟩, g.commutes y⟩
 
 @[simp]
-theorem map_one : (1 : FractionalIdeal S P).map g = 1 :=
+protected theorem map_one : (1 : FractionalIdeal S P).map g = 1 :=
   map_coeIdeal g ⊤
 
 @[simp]
@@ -106,7 +106,7 @@ theorem map_add : (I + J).map g = I.map g + J.map g :=
   coeToSubmodule_injective (Submodule.map_sup _ _ _)
 
 @[simp]
-theorem map_mul : (I * J).map g = I.map g * J.map g := by
+protected theorem map_mul : (I * J).map g = I.map g * J.map g := by
   simp only [mul_def]
   exact coeToSubmodule_injective (Submodule.map_mul _ _ _)
 
@@ -132,7 +132,7 @@ def mapEquiv (g : P ≃ₐ[R] P') : FractionalIdeal S P ≃+* FractionalIdeal S 
   toFun := map g
   invFun := map g.symm
   map_add' I J := map_add I J _
-  map_mul' I J := map_mul I J _
+  map_mul' I J := FractionalIdeal.map_mul I J _
   left_inv I := by rw [← map_comp, AlgEquiv.symm_comp, map_id]
   right_inv I := by rw [← map_comp, AlgEquiv.comp_symm, map_id]
 
@@ -463,7 +463,7 @@ theorem mul_div_self_cancel_iff {I : FractionalIdeal R₁⁰ K} : I * (1 / I) = 
 variable {K' : Type*} [Field K'] [Algebra R₁ K'] [IsFractionRing R₁ K']
 
 @[simp]
-theorem map_div (I J : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
+protected theorem map_div (I J : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
     (I / J).map (h : K →ₐ[R₁] K') = I.map h / J.map h := by
   by_cases H : J = 0
   · rw [H, div_zero, map_zero, div_zero]
@@ -473,7 +473,8 @@ theorem map_div (I J : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
 
 -- Porting note: doesn't need to be @[simp] because this follows from `map_one` and `map_div`
 theorem map_one_div (I : FractionalIdeal R₁⁰ K) (h : K ≃ₐ[R₁] K') :
-    (1 / I).map (h : K →ₐ[R₁] K') = 1 / I.map h := by rw [map_div, map_one]
+    (1 / I).map (h : K →ₐ[R₁] K') = 1 / I.map h := by
+  rw [FractionalIdeal.map_div, FractionalIdeal.map_one]
 
 end Quotient
 

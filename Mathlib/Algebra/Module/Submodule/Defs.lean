@@ -185,6 +185,13 @@ theorem smul_mem_iff' [Group G] [MulAction G M] [SMul G R] [IsScalarTower G R M]
     g • x ∈ p ↔ x ∈ p :=
   p.toSubMulAction.smul_mem_iff' g
 
+@[simp]
+lemma smul_mem_iff'' [Invertible r] :
+    r • x ∈ p ↔ x ∈ p := by
+  refine ⟨fun h ↦ ?_, p.smul_mem r⟩
+  rw [← invOf_smul_smul r x]
+  exact p.smul_mem _ h
+
 instance add : Add p :=
   ⟨fun x y => ⟨x.1 + y.1, add_mem x.2 y.2⟩⟩
 

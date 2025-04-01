@@ -9,7 +9,7 @@ import Mathlib.Data.Finset.Disjoint
 import Mathlib.Data.Finset.Erase
 import Mathlib.Data.Finset.Filter
 import Mathlib.Data.Finset.Range
-import Mathlib.Data.Finset.SymmDiff
+import Mathlib.Data.Finset.SDiff
 
 /-! # Image and map operations on finite sets
 
@@ -453,11 +453,6 @@ theorem image_sdiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Inj
 lemma image_sdiff_of_injOn [DecidableEq α] {t : Finset α} (hf : Set.InjOn f s) (hts : t ⊆ s) :
     (s \ t).image f = s.image f \ t.image f :=
   mod_cast Set.image_diff_of_injOn hf <| coe_subset.2 hts
-
-open scoped symmDiff in
-theorem image_symmDiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
-    (s ∆ t).image f = s.image f ∆ t.image f :=
-  mod_cast Set.image_symmDiff hf s t
 
 theorem _root_.Disjoint.of_image_finset {s t : Finset α} {f : α → β}
     (h : Disjoint (s.image f) (t.image f)) : Disjoint s t :=

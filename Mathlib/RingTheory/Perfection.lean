@@ -121,7 +121,8 @@ theorem coeff_frobenius (f : Ring.Perfection R p) (n : ℕ) :
 -- `coeff_pow_p f n` also works but is slow!
 theorem coeff_iterate_frobenius (f : Ring.Perfection R p) (n m : ℕ) :
     coeff R p (n + m) ((frobenius _ p)^[m] f) = coeff R p n f :=
-  Nat.recOn m rfl fun m ih => by erw [Function.iterate_succ_apply', coeff_frobenius, ih]
+  Nat.recOn m rfl fun m ih => by
+    rw [Function.iterate_succ_apply', Nat.add_succ, coeff_frobenius, ih]
 
 theorem coeff_iterate_frobenius' (f : Ring.Perfection R p) (n m : ℕ) (hmn : m ≤ n) :
     coeff R p n ((frobenius _ p)^[m] f) = coeff R p (n - m) f :=
@@ -140,7 +141,8 @@ theorem frobenius_pthRoot : (frobenius _ p).comp (pthRoot R p) = RingHom.id _ :=
 theorem coeff_add_ne_zero {f : Ring.Perfection R p} {n : ℕ} (hfn : coeff R p n f ≠ 0) (k : ℕ) :
     coeff R p (n + k) f ≠ 0 :=
   Nat.recOn k hfn fun k ih h => ih <| by
-    erw [← coeff_pow_p, RingHom.map_pow, h, zero_pow hp.1.ne_zero]
+    rw [Nat.add_succ] at h
+    rw [← coeff_pow_p, RingHom.map_pow, h, zero_pow hp.1.ne_zero]
 
 theorem coeff_ne_zero_of_le {f : Ring.Perfection R p} {m n : ℕ} (hfm : coeff R p m f ≠ 0)
     (hmn : m ≤ n) : coeff R p n f ≠ 0 :=
@@ -162,7 +164,8 @@ noncomputable def lift (R : Type u₁) [CommSemiring R] [CharP R p] [PerfectRing
     (S : Type u₂) [CommSemiring S] [CharP S p] : (R →+* S) ≃ (R →+* Ring.Perfection S p) where
   toFun f :=
     { toFun := fun r => ⟨fun n => f (((frobeniusEquiv R p).symm : R →+* R)^[n] r),
-        fun n => by erw [← f.map_pow, Function.iterate_succ_apply', frobeniusEquiv_symm_pow_p]⟩
+        fun n => by rw [← f.map_pow, Function.iterate_succ_apply', RingHom.coe_coe,
+          frobeniusEquiv_symm_pow_p]⟩
       map_one' := ext fun _ => (congr_arg f <| iterate_map_one _ _).trans f.map_one
       map_mul' := fun _ _ =>
         ext fun _ => (congr_arg f <| iterate_map_mul _ _ _ _).trans <| f.map_mul _ _
@@ -366,10 +369,10 @@ include hv
 
 theorem preVal_mk {x : O} (hx : (Ideal.Quotient.mk _ x : ModP O p) ≠ 0) :
     preVal K v O p (Ideal.Quotient.mk _ x) = v (algebraMap O K x) := by
-  obtain ⟨r, hr⟩ : ∃ (a : O), a * (p : O) = (Quotient.mk'' x).out - x :=
+  obtain ⟨r, hr⟩ : ∃ (a : O), a * (p : O) = (Ideal.Quotient.mk _ x).out - x :=
     Ideal.mem_span_singleton'.1 <| Ideal.Quotient.eq.1 <| Quotient.sound' <| Quotient.mk_out' _
   refine (if_neg hx).trans (v.map_eq_of_sub_lt <| lt_of_not_le ?_)
-  erw [← RingHom.map_sub, ← hr, hv.le_iff_dvd]
+  rw [← RingHom.map_sub, ← hr, hv.le_iff_dvd]
   exact fun hprx =>
     hx (Ideal.Quotient.eq_zero_iff_mem.2 <| Ideal.mem_span_singleton.2 <| dvd_of_mul_left_dvd hprx)
 

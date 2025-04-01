@@ -50,6 +50,13 @@ if [[ "$branch_name" =~ ^$branch_prefix-([0-9]+)$ ]]; then
 
   echo "This is a '$branch_prefix-$pr_number' branch, so we need to adjust labels and write a comment."
 
+  # Check if the PR has an awaiting-mathlib label
+  has_awaiting_label=$(curl -L -s \
+    -H "Accept: application/vnd.github+json" \
+    -H "Authorization: Bearer $TOKEN" \
+    -H "X-GitHub-Api-Version: 2022-11-28" \
+    $repo_url/issues/$pr_number/labels | jq 'map(.name) | contains(["awaiting-mathlib"])')
+
   # Perform actions based on outcomes (same logic as before)
   if [ "$TEST_OUTCOME" == "success" ]; then
     echo "Removing label awaiting-mathlib"
@@ -92,14 +99,6 @@ if [[ "$branch_name" =~ ^$branch_prefix-([0-9]+)$ ]]; then
       -d '{"labels":["breaks-mathlib"]}'
   fi
 
-  # Use GitHub API to check if a comment already exists
-  existing_comment=$(curl -L -s -H "Authorization: token $TOKEN" \
-                          -H "Accept: application/vnd.github.v3+json" \
-                          "$repo_url/issues/$pr_number/comments" \
-                          | jq 'first(.[] | select(.body | test("^- . Mathlib") or startswith("Mathlib CI status")) | select(.user.login == "leanprover-community-bot"))')
-  existing_comment_id=$(echo "$existing_comment" | jq -r .id)
-  existing_comment_body=$(echo "$existing_comment" | jq -r .body)
-
   branch="[$branch_prefix-$pr_number](https://github.com/leanprover-community/mathlib4/compare/$base_branch...$branch_prefix-$pr_number)"
   # Depending on the success/failure, set the appropriate message
   if [ "$LINT_OUTCOME" == "cancelled" ] || [ "$TEST_OUTCOME" == "cancelled" ] || [ "$COUNTEREXAMPLES_OUTCOME" == "cancelled" ] || [ "$ARCHIVE_OUTCOME" == "cancelled" ] || [ "$NOISY_OUTCOME" == "cancelled" ] || [ "$BUILD_OUTCOME" == "cancelled" ]; then
@@ -124,25 +123,47 @@ if [[ "$branch_name" =~ ^$branch_prefix-([0-9]+)$ ]]; then
 
   echo "$message"
 
-  # Append new result to the existing comment or post a new comment
-  if [ -z "$existing_comment_id" ]; then
-    # Post new comment with a bullet point
+  # Check if we should post a new comment or append to the existing one
+  if [ "$has_awaiting_label" == "true" ]; then
+    # Always post as a new comment if awaiting-mathlib label is present
     intro="Mathlib CI status ([docs](https://leanprover-community.github.io/contribute/tags_and_branches.html)):"
-    echo "Posting as new comment at $repo_url/issues/$pr_number/comments"
+    echo "Posting as a separate comment due to awaiting-mathlib label at $repo_url/issues/$pr_number/comments"
     curl -L -s \
       -X POST \
       -H "Authorization: token $TOKEN" \
       -H "Accept: application/vnd.github.v3+json" \
-      -d "$(jq --null-input --arg intro "$intro" --arg val "$message" '{"body": ($intro + "\n" + $val)}')" \
+      -d "$(jq --null-input --arg val "$message" '{"body": $val}')" \
       "$repo_url/issues/$pr_number/comments"
   else
-    # Append new result to the existing comment
-    echo "Appending to existing comment at $repo_url/issues/$pr_number/comments"
-    curl -L -s \
-      -X PATCH \
-      -H "Authorization: token $TOKEN" \
-      -H "Accept: application/vnd.github.v3+json" \
-      -d "$(jq --null-input --arg existing "$existing_comment_body" --arg message "$message" '{"body":($existing + "\n" + $message)}')" \
-      "$repo_url/issues/comments/$existing_comment_id"
+    # Use existing behavior: append to existing comment or post a new one
+    # Use GitHub API to check if a comment already exists
+    existing_comment=$(curl -L -s -H "Authorization: token $TOKEN" \
+                            -H "Accept: application/vnd.github.v3+json" \
+                            "$repo_url/issues/$pr_number/comments" \
+                            | jq 'first(.[] | select(.body | test("^- . Mathlib") or startswith("Mathlib CI status")) | select(.user.login == "leanprover-community-bot"))')
+    existing_comment_id=$(echo "$existing_comment" | jq -r .id)
+    existing_comment_body=$(echo "$existing_comment" | jq -r .body)
+
+    # Append new result to the existing comment or post a new comment
+    if [ -z "$existing_comment_id" ]; then
+      # Post new comment with a bullet point
+      intro="Mathlib CI status ([docs](https://leanprover-community.github.io/contribute/tags_and_branches.html)):"
+      echo "Posting as new comment at $repo_url/issues/$pr_number/comments"
+      curl -L -s \
+        -X POST \
+        -H "Authorization: token $TOKEN" \
+        -H "Accept: application/vnd.github.v3+json" \
+        -d "$(jq --null-input --arg intro "$intro" --arg val "$message" '{"body": ($intro + "\n" + $val)}')" \
+        "$repo_url/issues/$pr_number/comments"
+    else
+      # Append new result to the existing comment
+      echo "Appending to existing comment at $repo_url/issues/$pr_number/comments"
+      curl -L -s \
+        -X PATCH \
+        -H "Authorization: token $TOKEN" \
+        -H "Accept: application/vnd.github.v3+json" \
+        -d "$(jq --null-input --arg existing "$existing_comment_body" --arg message "$message" '{"body":($existing + "\n" + $message)}')" \
+        "$repo_url/issues/comments/$existing_comment_id"
+    fi
   fi
 fi

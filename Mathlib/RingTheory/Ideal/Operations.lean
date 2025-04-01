@@ -1123,7 +1123,8 @@ In a Dedekind domain, to divide and contain are equivalent, see `Ideal.dvd_iff_l
 theorem le_of_dvd {I J : Ideal R} : I ∣ J → J ≤ I
   | ⟨_, h⟩ => h.symm ▸ le_trans mul_le_inf inf_le_left
 
-@[simp]
+/-- See also `isUnit_iff_eq_one`. -/
+@[simp high]
 theorem isUnit_iff {I : Ideal R} : IsUnit I ↔ I = ⊤ :=
   isUnit_iff_dvd_one.trans
     ((@one_eq_top R _).symm ▸

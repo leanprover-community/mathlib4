@@ -420,6 +420,11 @@ def affineSpan (s : Set P) : AffineSubspace k P where
 theorem coe_affineSpan (s : Set P) : (affineSpan k s : Set P) = spanPoints k s :=
   rfl
 
+/-- The condition for a point to be in the affine span, in terms of `vectorSpan`. -/
+lemma mem_affineSpan_iff_exists {p : P} {s : Set P} : p ∈ affineSpan k s ↔
+    ∃ p₁ ∈ s, ∃ v ∈ vectorSpan k s, p = v +ᵥ p₁ :=
+  Iff.rfl
+
 /-- A set is contained in its affine span. -/
 theorem subset_affineSpan (s : Set P) : s ⊆ affineSpan k s :=
   subset_spanPoints k s
@@ -444,6 +449,24 @@ lemma vectorSpan_add_self (s : Set V) : (vectorSpan k s : Set V) + s = affineSpa
   ext
   simp [mem_add, spanPoints]
   aesop
+
+variable {k}
+
+/-- Adding a point in the affine span and a vector in the spanning submodule produces a point in the
+affine span. -/
+theorem vadd_mem_affineSpan_of_mem_affineSpan_of_mem_vectorSpan {s : Set P} {p : P} {v : V}
+    (hp : p ∈ affineSpan k s) (hv : v ∈ vectorSpan k s) : v +ᵥ p ∈ affineSpan k s :=
+  vadd_mem_spanPoints_of_mem_spanPoints_of_mem_vectorSpan k hp hv
+
+/-- Subtracting two points in the affine span produces a vector in the spanning submodule. -/
+theorem vsub_mem_vectorSpan_of_mem_affineSpan_of_mem_affineSpan {s : Set P} {p₁ p₂ : P}
+    (hp₁ : p₁ ∈ affineSpan k s) (hp₂ : p₂ ∈ affineSpan k s) : p₁ -ᵥ p₂ ∈ vectorSpan k s :=
+  vsub_mem_vectorSpan_of_mem_spanPoints_of_mem_spanPoints k hp₁ hp₂
+
+/-- If an affine subspace contains a set of points, it contains the affine span of that set. -/
+theorem affineSpan_le_of_subset_coe {s : Set P} {s₁ : AffineSubspace k P} (h : s ⊆ s₁) :
+    affineSpan k s ≤ s₁ :=
+  AffineSubspace.spanPoints_subset_coe_of_subset_coe h
 
 end affineSpan
 
@@ -534,7 +557,7 @@ variable (k V)
 /-- The affine span is the `sInf` of subspaces containing the given points. -/
 theorem affineSpan_eq_sInf (s : Set P) :
     affineSpan k s = sInf { s' : AffineSubspace k P | s ⊆ s' } :=
-  le_antisymm (spanPoints_subset_coe_of_subset_coe <| Set.subset_iInter₂ fun _ => id)
+  le_antisymm (affineSpan_le_of_subset_coe <| Set.subset_iInter₂ fun _ => id)
     (sInf_le (subset_spanPoints k _))
 
 variable (P)
@@ -543,7 +566,7 @@ variable (P)
 protected def gi : GaloisInsertion (affineSpan k) ((↑) : AffineSubspace k P → Set P) where
   choice s _ := affineSpan k s
   gc s₁ _s₂ :=
-    ⟨fun h => Set.Subset.trans (subset_spanPoints k s₁) h, spanPoints_subset_coe_of_subset_coe⟩
+    ⟨fun h => Set.Subset.trans (subset_spanPoints k s₁) h, affineSpan_le_of_subset_coe⟩
   le_l_u _ := subset_spanPoints k _
   choice_eq _ _ := rfl
 
@@ -555,7 +578,7 @@ theorem span_empty : affineSpan k (∅ : Set P) = ⊥ :=
 /-- The span of `univ` is `⊤`. -/
 @[simp]
 theorem span_univ : affineSpan k (Set.univ : Set P) = ⊤ :=
-  eq_top_iff.2 <| subset_spanPoints k _
+  eq_top_iff.2 <| subset_affineSpan k _
 
 variable {k V P}
 
@@ -796,7 +819,7 @@ theorem inter_eq_singleton_of_nonempty_of_isCompl {s₁ s₂ : AffineSubspace k 
 /-- Coercing a subspace to a set then taking the affine span produces the original subspace. -/
 @[simp]
 theorem affineSpan_coe (s : AffineSubspace k P) : affineSpan k (s : Set P) = s := by
-  refine le_antisymm ?_ (subset_spanPoints _ _)
+  refine le_antisymm ?_ (subset_affineSpan _ _)
   rintro p ⟨p₁, hp₁, v, hv, rfl⟩
   exact vadd_mem_of_mem_direction hv hp₁
 
@@ -928,7 +951,7 @@ variable (k)
 /-- `affineSpan` is monotone. -/
 @[gcongr, mono]
 theorem affineSpan_mono {s₁ s₂ : Set P} (h : s₁ ⊆ s₂) : affineSpan k s₁ ≤ affineSpan k s₂ :=
-  spanPoints_subset_coe_of_subset_coe (Set.Subset.trans h (subset_affineSpan k _))
+  affineSpan_le_of_subset_coe (Set.Subset.trans h (subset_affineSpan k _))
 
 /-- Taking the affine span of a set, adding a point and taking the span again produces the same
 results as adding the point to the set and taking the span. -/

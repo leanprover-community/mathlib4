@@ -212,8 +212,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         · intro i
           rw [zero_mul]
         refine Ideal.add_mem _ ?_ ?_
-        · erw [Finset.sum_range_succ]
-          rw [Finset.range_one, Finset.sum_singleton,
+        · rw [← one_add_one_eq_two, Finset.sum_range_succ, Finset.range_one, Finset.sum_singleton,
             taylor_coeff_zero, taylor_coeff_one, pow_zero, pow_one, mul_one, mul_neg,
             mul_left_comm, Ring.mul_inverse_cancel _ (hf'c n), mul_one, add_neg_cancel]
           exact Ideal.zero_mem _

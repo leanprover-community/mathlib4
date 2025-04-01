@@ -441,9 +441,16 @@ theorem direction_sup {s₁ s₂ : AffineSubspace k P} {p₁ p₂ : P} (hp₁ : 
       sInf_le_sInf fun p hp =>
         Set.Subset.trans
           (Set.singleton_subset_iff.2
-            (vsub_mem_vsub (mem_spanPoints k p₂ _ (Set.mem_union_right _ hp₂))
-              (mem_spanPoints k p₁ _ (Set.mem_union_left _ hp₁))))
+            (vsub_mem_vsub (mem_affineSpan k (Set.mem_union_right _ hp₂))
+              (mem_affineSpan k (Set.mem_union_left _ hp₁))))
           hp
+
+/-- The direction of the sup of two affine subspaces with a common point is the sup of the two
+directions. -/
+lemma direction_sup_eq_sup_direction {s₁ s₂ : AffineSubspace k P} {p : P} (hp₁ : p ∈ s₁)
+    (hp₂ : p ∈ s₂) : (s₁ ⊔ s₂).direction = s₁.direction ⊔ s₂.direction := by
+  rw [direction_sup hp₁ hp₂]
+  simp
 
 /-- The direction of the span of the result of adding a point to a nonempty affine subspace is the
 sup of the direction of that subspace and of any one difference between that point and a point in
@@ -476,6 +483,13 @@ theorem mem_affineSpan_insert_iff {s : AffineSubspace k P} {p₁ : P} (hp₁ : p
     use r • (p₂ -ᵥ p₁), Submodule.mem_span_singleton.2 ⟨r, rfl⟩, p₃ -ᵥ p₁,
       vsub_mem_direction hp₃ hp₁
     rw [vadd_vsub_assoc]
+
+variable (k) in
+/-- The vector span of a union of sets with a common point is the sup of their vector spans. -/
+lemma vectorSpan_union_of_mem_of_mem {s₁ s₂ : Set P} {p : P} (hp₁ : p ∈ s₁) (hp₂ : p ∈ s₂) :
+    vectorSpan k (s₁ ∪ s₂) = vectorSpan k s₁ ⊔ vectorSpan k s₂ := by
+  simp_rw [← direction_affineSpan, span_union,
+    direction_sup_eq_sup_direction (mem_affineSpan k hp₁) (mem_affineSpan k hp₂)]
 
 end AffineSubspace
 

@@ -118,10 +118,6 @@ theorem copy_eq (f : C(X, Y)) (f' : X → Y) (h : f' = f) : f.copy f' h = f :=
 protected theorem continuous (f : C(X, Y)) : Continuous f :=
   f.continuous_toFun
 
-@[deprecated map_continuous (since := "2024-09-29")]
-theorem continuous_set_coe (s : Set C(X, Y)) (f : s) : Continuous (f : X → Y) :=
-  map_continuous _
-
 /-- Deprecated. Use `DFunLike.congr_fun` instead. -/
 protected theorem congr_fun {f g : C(X, Y)} (H : f = g) (x : X) : f x = g x :=
   H ▸ rfl

@@ -110,8 +110,8 @@ forms a quasi-inverse to `disjSum`, in that it recovers its left input.
 
 See also `List.partitionMap`.
 -/
-def toLeft (s : Finset (α ⊕ β)) : Finset α :=
-  s.filterMap (Sum.elim some fun _ => none) (by clear x; aesop)
+def toLeft (u : Finset (α ⊕ β)) : Finset α :=
+  u.filterMap (Sum.elim some fun _ => none) (by clear x; aesop)
 
 /--
 Given a finset of elements `α ⊕ β`, extract all the elements of the form `β`. This
@@ -119,16 +119,13 @@ forms a quasi-inverse to `disjSum`, in that it recovers its right input.
 
 See also `List.partitionMap`.
 -/
-def toRight (s : Finset (α ⊕ β)) : Finset β :=
-  s.filterMap (Sum.elim (fun _ => none) some) (by clear x; aesop)
+def toRight (u : Finset (α ⊕ β)) : Finset β :=
+  u.filterMap (Sum.elim (fun _ => none) some) (by clear x; aesop)
 
-variable {u v : Finset (α ⊕ β)}
+variable {u v : Finset (α ⊕ β)} {a : α} {b : β}
 
-@[simp] lemma mem_toLeft {x : α} : x ∈ u.toLeft ↔ inl x ∈ u := by
-  simp [toLeft]
-
-@[simp] lemma mem_toRight {x : β} : x ∈ u.toRight ↔ inr x ∈ u := by
-  simp [toRight]
+@[simp] lemma mem_toLeft : a ∈ u.toLeft ↔ .inl a ∈ u := by simp [toLeft]
+@[simp] lemma mem_toRight : b ∈ u.toRight ↔ .inr b ∈ u := by simp [toRight]
 
 @[gcongr]
 lemma toLeft_subset_toLeft : u ⊆ v → u.toLeft ⊆ v.toLeft :=
@@ -144,13 +141,13 @@ lemma toRight_monotone : Monotone (@toRight α β) := fun _ _ => toRight_subset_
 lemma toLeft_disjSum_toRight : u.toLeft.disjSum u.toRight = u := by
   ext (x | x) <;> simp
 
-lemma card_toLeft_add_card_toRight : u.toLeft.card + u.toRight.card = u.card := by
+lemma card_toLeft_add_card_toRight : #u.toLeft + #u.toRight = #u := by
   rw [← card_disjSum, toLeft_disjSum_toRight]
 
-lemma card_toLeft_le : u.toLeft.card ≤ u.card :=
+lemma card_toLeft_le : #u.toLeft ≤ #u :=
   (Nat.le_add_right _ _).trans_eq card_toLeft_add_card_toRight
 
-lemma card_toRight_le : u.toRight.card ≤ u.card :=
+lemma card_toRight_le : #u.toRight ≤ #u :=
   (Nat.le_add_left _ _).trans_eq card_toLeft_add_card_toRight
 
 @[simp] lemma toLeft_disjSum : (s.disjSum t).toLeft = s := by ext x; simp
@@ -162,6 +159,27 @@ lemma disjSum_eq_iff : s.disjSum t = u ↔ s = u.toLeft ∧ t = u.toRight :=
 
 lemma eq_disjSum_iff : u = s.disjSum t ↔ u.toLeft = s ∧ u.toRight = t :=
   ⟨fun h => by simp [h], fun h => by simp [← h, toLeft_disjSum_toRight]⟩
+
+lemma disjSum_subset : s.disjSum t ⊆ u ↔ s ⊆ u.toLeft ∧ t ⊆ u.toRight := by simp [subset_iff]
+lemma subset_disjSum : u ⊆ s.disjSum t ↔ u.toLeft ⊆ s ∧ u.toRight ⊆ t := by simp [subset_iff]
+
+lemma subset_map_inl : u ⊆ s.map .inl ↔ u.toLeft ⊆ s ∧ u.toRight = ∅ := by
+  simp [← disjSum_empty, subset_disjSum]
+
+lemma subset_map_inr : u ⊆ t.map .inr ↔ u.toLeft = ∅ ∧ u.toRight ⊆ t := by
+  simp [← empty_disjSum, subset_disjSum]
+
+lemma map_inl_subset_iff_subset_toLeft : s.map .inl ⊆ u ↔ s ⊆ u.toLeft := by
+  simp [← disjSum_empty, disjSum_subset]
+
+lemma map_inr_subset_iff_subset_toRight : t.map .inr ⊆ u ↔ t ⊆ u.toRight := by
+  simp [← empty_disjSum, disjSum_subset]
+
+lemma gc_map_inl_toLeft : GaloisConnection (·.map (.inl : α ↪ α ⊕ β)) toLeft :=
+  fun _ _ ↦ map_inl_subset_iff_subset_toLeft
+
+lemma gc_map_inr_toRight : GaloisConnection (·.map (.inr : β ↪ α ⊕ β)) toRight :=
+  fun _ _ ↦ map_inr_subset_iff_subset_toRight
 
 @[simp] lemma toLeft_map_sumComm : (u.map (Equiv.sumComm _ _).toEmbedding).toLeft = u.toRight := by
   ext x; simp

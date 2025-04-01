@@ -90,8 +90,11 @@ variable (C)
 When the monoidal category is preadditive, this is also sometimes called an "algebra object".
 -/
 structure Mon_ where
+  /-- The underlying object in the ambient monoidal category -/
   X : C
+  /-- The unit morphism of the monoid object -/
   one : 𝟙_ C ⟶ X
+  /-- The multiplication morphism of a monoid object -/
   mul : X ⊗ X ⟶ X
   one_mul : (one ▷ X) ≫ mul = (λ_ X).hom := by aesop_cat
   mul_one : (X ◁ one) ≫ mul = (ρ_ X).hom := by aesop_cat
@@ -158,6 +161,7 @@ theorem mul_assoc_flip :
 /-- A morphism of monoid objects. -/
 @[ext]
 structure Hom (M N : Mon_ C) where
+  /-- The underlying morphism -/
   hom : M.X ⟶ N.X
   one_hom : M.one ≫ hom = N.one := by aesop_cat
   mul_hom : M.mul ≫ hom = (hom ⊗ hom) ≫ N.mul := by aesop_cat

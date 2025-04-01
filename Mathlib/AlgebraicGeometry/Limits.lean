@@ -49,7 +49,7 @@ instance : HasTerminal Scheme :=
   hasTerminal_of_hasTerminal_of_preservesLimit Scheme.Spec
 
 instance : IsAffine (⊤_ Scheme.{u}) :=
-  isAffine_of_isIso (PreservesTerminal.iso Scheme.Spec).inv
+  .of_isIso (PreservesTerminal.iso Scheme.Spec).inv
 
 instance : HasFiniteLimits Scheme :=
   hasFiniteLimits_of_hasTerminal_and_pullbacks
@@ -116,7 +116,7 @@ noncomputable def specPunitIsInitial : IsInitial (Spec (.of PUnit.{u+1})) :=
   emptyIsInitial.ofIso (asIso <| emptyIsInitial.to _)
 
 instance (priority := 100) isAffine_of_isEmpty {X : Scheme} [IsEmpty X] : IsAffine X :=
-  isAffine_of_isIso (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Spec (.of PUnit)))
+  .of_isIso (inv (emptyIsInitial.to X) ≫ emptyIsInitial.to (Spec (.of PUnit)))
 
 instance : HasInitial Scheme.{u} :=
   hasInitial_of_unique ∅
@@ -627,10 +627,10 @@ instance [Finite ι] (R : ι → CommRingCat.{u}) : IsIso (sigmaSpec R) := by
   infer_instance
 
 instance [Finite ι] [∀ i, IsAffine (f i)] : IsAffine (∐ f) :=
-  isAffine_of_isIso ((Sigma.mapIso (fun i ↦ (f i).isoSpec)).hom ≫ sigmaSpec _)
+  .of_isIso ((Sigma.mapIso (fun i ↦ (f i).isoSpec)).hom ≫ sigmaSpec _)
 
 instance [IsAffine X] [IsAffine Y] : IsAffine (X ⨿ Y) :=
-  isAffine_of_isIso ((coprod.mapIso X.isoSpec Y.isoSpec).hom ≫ coprodSpec _ _)
+  .of_isIso ((coprod.mapIso X.isoSpec Y.isoSpec).hom ≫ coprodSpec _ _)
 
 end Coproduct
 

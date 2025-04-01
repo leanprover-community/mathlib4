@@ -269,11 +269,18 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
     rw [homotopyTo_apply, H.eq_fst, p.2]
     all_goals apply Cube.insertAt_boundary; right; exact ⟨i, iH⟩
   · fun_prop
-  iterate 2 intro; ext; erw [homotopyTo_apply, toLoop_apply]; swap
+  iterate 2
+    intro
+    ext
+    dsimp
+    rw [homotopyTo_apply, toLoop_apply]
+    swap
   · apply H.apply_zero
   · apply H.apply_one
   intro t y yH
-  ext; erw [homotopyTo_apply]
+  ext
+  dsimp
+  rw [homotopyTo_apply]
   apply H.eq_fst; use i
   rw [funSplitAt_symm_apply, dif_pos rfl]; exact yH
 

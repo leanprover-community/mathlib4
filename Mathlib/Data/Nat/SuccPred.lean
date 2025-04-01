@@ -73,13 +73,6 @@ lemma forall_ne_zero_iff (P : ℕ → Prop) :
     (∀ i, i ≠ 0 → P i) ↔ (∀ i, P (i + 1)) :=
   SuccOrder.forall_ne_bot_iff P
 
-/-! ### Covering relation -/
-
-
-@[deprecated Order.covBy_iff_add_one_eq (since := "2024-09-04")]
-protected theorem covBy_iff_succ_eq {m n : ℕ} : m ⋖ n ↔ m + 1 = n :=
-  covBy_iff_add_one_eq
-
 end Nat
 
 @[simp, norm_cast]

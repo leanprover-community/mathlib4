@@ -33,6 +33,11 @@ section equality
 
 variable {s s₁ s₂ : Set α} {f₁ f₂ f₃ : α → β} {g : β → γ} {a : α}
 
+/-- This lemma exists for use by `aesop` as a forward rule. -/
+@[aesop safe forward]
+lemma EqOn.eq_of_mem (h : s.EqOn f₁ f₂) (ha : a ∈ s) : f₁ a = f₂ a :=
+  h ha
+
 @[simp]
 theorem eqOn_empty (f₁ f₂ : α → β) : EqOn f₁ f₂ ∅ := fun _ => False.elim
 
@@ -295,6 +300,9 @@ lemma InjOn.of_comp (h : InjOn (g ∘ f) s) : InjOn f s :=
 lemma InjOn.image_of_comp (h : InjOn (g ∘ f) s) : InjOn g (f '' s) :=
   forall_mem_image.2 fun _x hx ↦ forall_mem_image.2 fun _y hy heq ↦ congr_arg f <| h hx hy heq
 
+lemma InjOn.comp_iff (hf : InjOn f s) : InjOn (g ∘ f) s ↔ InjOn g (f '' s) :=
+  ⟨image_of_comp, fun h ↦ InjOn.comp h hf <| mapsTo_image f s⟩
+
 lemma InjOn.iterate {f : α → α} {s : Set α} (h : InjOn f s) (hf : MapsTo f s s) :
     ∀ n, InjOn f^[n] s
   | 0 => injOn_id _
@@ -489,6 +497,9 @@ lemma SurjOn.of_comp (h : SurjOn (g ∘ f) s p) (hr : MapsTo f s t) : SurjOn g t
   obtain ⟨x, hx, rfl⟩ := h hz
   exact ⟨f x, hr hx, rfl⟩
 
+lemma surjOn_comp_iff : SurjOn (g ∘ f) s p ↔ SurjOn g (f '' s) p :=
+  ⟨fun h ↦ h.of_comp <| mapsTo_image f s, fun h ↦ h.comp <| surjOn_image _ _⟩
+
 lemma SurjOn.iterate {f : α → α} {s : Set α} (h : SurjOn f s s) : ∀ n, SurjOn f^[n] s s
   | 0 => surjOn_id _
   | (n + 1) => (h.iterate n).comp h
@@ -623,6 +634,38 @@ lemma bijOn_id (s : Set α) : BijOn id s s := ⟨s.mapsTo_id, s.injOn_id, s.surj
 
 theorem BijOn.comp (hg : BijOn g t p) (hf : BijOn f s t) : BijOn (g ∘ f) s p :=
   BijOn.mk (hg.mapsTo.comp hf.mapsTo) (hg.injOn.comp hf.injOn hf.mapsTo) (hg.surjOn.comp hf.surjOn)
+
+/-- If `f : α → β` and `g : β → γ` and if `f` is injective on `s`, then `f ∘ g` is a bijection
+on `s` iff  `g` is a bijection on `f '' s`. -/
+theorem bijOn_comp_iff (hf : InjOn f s) : BijOn (g ∘ f) s p ↔ BijOn g (f '' s) p := by
+  simp only [BijOn, InjOn.comp_iff, surjOn_comp_iff, mapsTo_image_iff, hf]
+
+/--
+If we have a commutative square
+
+```
+α --f--> β
+|        |
+p₁       p₂
+|        |
+\/       \/
+γ --g--> δ
+```
+
+and `f` induces a bijection from `s : Set α` to `t : Set β`, then `g`
+induces a bijection from the image of `s` to the image of `t`, as long as `g` is
+is injective on the image of `s`.
+-/
+theorem bijOn_image_image {p₁ : α → γ} {p₂ : β → δ} {g : γ → δ} (comm : ∀ a, p₂ (f a) = g (p₁ a))
+    (hbij : BijOn f s t) (hinj: InjOn g (p₁ '' s)) : BijOn g (p₁ '' s) (p₂ '' t) := by
+  obtain ⟨h1, h2, h3⟩ := hbij
+  refine ⟨?_, hinj, ?_⟩
+  · rintro _ ⟨a, ha, rfl⟩
+    exact ⟨f a, h1 ha, by rw [comm a]⟩
+  · rintro _ ⟨b, hb, rfl⟩
+    obtain ⟨a, ha, rfl⟩ := h3 hb
+    rw [← image_comp, comm]
+    exact ⟨a, ha, rfl⟩
 
 lemma BijOn.iterate {f : α → α} {s : Set α} (h : BijOn f s s) : ∀ n, BijOn f^[n] s s
   | 0 => s.bijOn_id

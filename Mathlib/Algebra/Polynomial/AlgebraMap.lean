@@ -615,7 +615,7 @@ lemma aeval_apply_smul_mem_of_le_comap'
     [Semiring A] [Algebra R A] [Module A M] [IsScalarTower R A M] (hm : m ∈ q) (p : R[X]) (a : A)
     (hq : q ≤ q.comap (Algebra.lsmul R R M a)) :
     aeval a p • m ∈ q := by
-  refine p.induction_on (M := fun f ↦ aeval a f • m ∈ q) (by simpa) (fun f₁ f₂ h₁ h₂ ↦ ?_)
+  refine p.induction_on (motive := fun f ↦ aeval a f • m ∈ q) (by simpa) (fun f₁ f₂ h₁ h₂ ↦ ?_)
     (fun n t hmq ↦ ?_)
   · simp_rw [map_add, add_smul]
     exact Submodule.add_mem q h₁ h₂

@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.NNReal.Defs
+import Mathlib.Data.EReal.Operations
 import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 import Mathlib.Topology.Bornology.Real
 import Mathlib.Topology.Instances.Int
 import Mathlib.Topology.Order.MonotoneContinuity
@@ -44,8 +44,8 @@ theorem Real.uniformContinuous_neg : UniformContinuous (@Neg.neg ℝ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
     ⟨_, ε0, fun _ _ h => by simpa only [abs_sub_comm, Real.dist_eq, neg_sub_neg] using h⟩
 
-instance : UniformAddGroup ℝ :=
-  UniformAddGroup.mk' Real.uniformContinuous_add Real.uniformContinuous_neg
+instance : IsUniformAddGroup ℝ :=
+  IsUniformAddGroup.mk' Real.uniformContinuous_add Real.uniformContinuous_neg
 
 theorem Real.uniformContinuous_const_mul {x : ℝ} : UniformContinuous (x * ·) :=
   uniformContinuous_of_continuousAt_zero (DistribMulAction.toAddMonoidHom ℝ x)

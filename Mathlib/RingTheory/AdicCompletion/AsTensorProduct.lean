@@ -333,6 +333,10 @@ def ofTensorProductEquivOfFiniteNoetherian [Module.Finite R M] :
   LinearEquiv.ofBijective (ofTensorProduct I M)
     (ofTensorProduct_bijective_of_finite_of_isNoetherian I M)
 
+lemma coe_ofTensorProductEquivOfFiniteNoetherian [Module.Finite R M] :
+    ofTensorProductEquivOfFiniteNoetherian I M = ofTensorProduct I M :=
+  rfl
+
 @[simp]
 lemma ofTensorProductEquivOfFiniteNoetherian_apply [Module.Finite R M]
     (x : AdicCompletion I R ⊗[R] M) :
@@ -358,7 +362,7 @@ lemma tensor_map_id_left_eq_map :
       (ofTensorProductEquivOfFiniteNoetherian I N).symm.toLinearMap ∘ₗ
       map I f ∘ₗ
       (ofTensorProductEquivOfFiniteNoetherian I M).toLinearMap := by
-  erw [ofTensorProduct_naturality I f]
+  rw [coe_ofTensorProductEquivOfFiniteNoetherian, ofTensorProduct_naturality I f]
   ext x
   simp
 

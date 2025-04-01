@@ -51,9 +51,9 @@ lemma affineAnd_respectsIso (hP : RingHom.RespectsIso Q) :
     (affineAnd Q).toProperty.RespectsIso := by
   refine RespectsIso.mk _ ?_ ?_
   · intro X Y Z e f ⟨hZ, ⟨hY, hf⟩⟩
-    simpa [hP.cancel_right_isIso, isAffine_of_isIso e.hom]
+    simpa [hP.cancel_right_isIso, IsAffine.of_isIso e.hom]
   · intro X Y Z e f ⟨hZ, hf⟩
-    simpa [AffineTargetMorphismProperty.toProperty, isAffine_of_isIso e.inv, hP.cancel_left_isIso]
+    simpa [AffineTargetMorphismProperty.toProperty, IsAffine.of_isIso e.inv, hP.cancel_left_isIso]
 
 /-- `affineAnd P` is local if `P` is local on the (algebraic) source. -/
 lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.LocalizationAwayPreserves Q)

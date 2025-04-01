@@ -362,18 +362,18 @@ theorem arrow_mk_iso_iff
     (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso]
     {X Y X' Y' : Scheme} {f : X ⟶ Y} {f' : X' ⟶ Y'}
     (e : Arrow.mk f ≅ Arrow.mk f') {h : IsAffine Y} :
-    letI : IsAffine Y' := isAffine_of_isIso (Y := Y) e.inv.right
+    letI : IsAffine Y' := .of_isIso (Y := Y) e.inv.right
     P f ↔ P f' := by
   rw [← P.toProperty_apply, ← P.toProperty_apply, P.toProperty.arrow_mk_iso_iff e]
 
 theorem respectsIso_mk {P : AffineTargetMorphismProperty}
     (h₁ : ∀ {X Y Z} (e : X ≅ Y) (f : Y ⟶ Z) [IsAffine Z], P f → P (e.hom ≫ f))
     (h₂ : ∀ {X Y Z} (e : Y ≅ Z) (f : X ⟶ Y) [IsAffine Y],
-      P f → @P _ _ (f ≫ e.hom) (isAffine_of_isIso e.inv)) :
+      P f → @P _ _ (f ≫ e.hom) (.of_isIso e.inv)) :
     P.toProperty.RespectsIso := by
   apply MorphismProperty.RespectsIso.mk
   · rintro X Y Z e f ⟨a, h⟩; exact ⟨a, h₁ e f h⟩
-  · rintro X Y Z e f ⟨a, h⟩; exact ⟨isAffine_of_isIso e.inv, h₂ e f h⟩
+  · rintro X Y Z e f ⟨a, h⟩; exact ⟨.of_isIso e.inv, h₂ e f h⟩
 
 instance respectsIso_of
     (P : MorphismProperty Scheme) [P.RespectsIso] :

@@ -474,8 +474,6 @@ theorem subset_set_image₂ {s : Set α} {t : Set β} (hu : ↑u ⊆ image2 f s 
     image_subset_iff]
   exact ⟨fun _ h ↦ (hu h).1, fun _ h ↦ (hu h).2, fun x hx ↦ mem_image₂_of_mem hx hx⟩
 
-@[deprecated (since := "2024-09-22")] alias subset_image₂ := subset_set_image₂
-
 end
 section UnionInter
 

@@ -781,8 +781,8 @@ theorem induction [MeasurableSpace α] [AddZeroClass β] [TopologicalSpace β]
   refine lim (fun n ↦ (s n).stronglyMeasurable) hf (fun n ↦ ?_) hf.tendsto_approx
   change P (s n) (s n).stronglyMeasurable
   induction s n using SimpleFunc.induction with
-  | h_ind c hs => exact ind c hs
-  | @h_add f g h_supp hf hg =>
+  | const c hs => exact ind c hs
+  | @add f g h_supp hf hg =>
     exact add f.stronglyMeasurable g.stronglyMeasurable (f + g).stronglyMeasurable h_supp hf hg
 
 open scoped Classical in

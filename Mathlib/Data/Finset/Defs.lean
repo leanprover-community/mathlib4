@@ -101,9 +101,10 @@ instance : Membership α (Finset α) :=
 theorem mem_def {a : α} {s : Finset α} : a ∈ s ↔ a ∈ s.1 :=
   Iff.rfl
 
+-- If https://github.com/leanprover/lean4/issues/2678 is resolved-
+-- this can be changed back to an `Iff`, but for now we would like `dsimp` to use it.
 @[simp]
-theorem mem_val {a : α} {s : Finset α} : a ∈ s.1 ↔ a ∈ s :=
-  Iff.rfl
+theorem mem_val {a : α} {s : Finset α} : (a ∈ s.1) = (a ∈ s) := rfl
 
 @[simp]
 theorem mem_mk {a : α} {s nd} : a ∈ @Finset.mk α s nd ↔ a ∈ s :=

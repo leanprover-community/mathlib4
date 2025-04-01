@@ -105,7 +105,7 @@ instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [Subsemiring
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
 @[simp, norm_cast]
-theorem coe_pow {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] (x : s) (n : ℕ) :
+theorem coe_pow {R} [Monoid R] [SetLike S R] [SubmonoidClass S R] (x : s) (n : ℕ) :
     ((x ^ n : s) : R) = (x : R) ^ n := by
   induction n with
   | zero => simp

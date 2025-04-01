@@ -126,7 +126,8 @@ theorem adjoin_toSubalgebra_of_isAlgebraic (L : IntermediateField F K)
   apply_fun _ using Subalgebra.restrictScalars_injective F
   rw [← restrictScalars_toSubalgebra, restrictScalars_adjoin_of_algEquiv i' hi,
     Algebra.restrictScalars_adjoin_of_algEquiv i' hi, restrictScalars_adjoin]
-  erw [Algebra.restrictScalars_adjoin]
+  dsimp only [← E'.coe_type_toSubalgebra]
+  rw [Algebra.restrictScalars_adjoin F E'.toSubalgebra]
   exact E'.sup_toSubalgebra_of_isAlgebraic L (halg.imp
     (fun (_ : Algebra.IsAlgebraic F E) ↦ i'.isAlgebraic) id)
 

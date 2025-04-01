@@ -48,7 +48,8 @@ lemma order_eq_top_iff (hf : AnalyticAt 𝕜 f z₀) : hf.order = ⊤ ↔ ∀ᶠ
 
 /-- The order of an analytic function `f` at `z₀` equals a natural number `n` iff `f` can locally
 be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
-lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n ↔
+lemma order_eq_nat_iff {n : ℕ} (hf : AnalyticAt 𝕜 f z₀) :
+    hf.order = ↑n ↔
     ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
   unfold order
   split_ifs with h
@@ -77,7 +78,7 @@ alias order_neq_top_iff := order_ne_top_iff
 /-- The order of an analytic function `f` at `z₀` is zero iff `f` does not vanish at `z₀`. -/
 lemma order_eq_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
     hf.order = 0 ↔ f z₀ ≠ 0 := by
-  rw [← ENat.coe_zero, order_eq_nat_iff hf 0]
+  rw [← ENat.coe_zero, hf.order_eq_nat_iff]
   constructor
   · intro ⟨g, _, _, hg⟩
     simpa [hg.self_of_nhds]

@@ -663,10 +663,6 @@ instance : IsFractionRing K[X] (RatFunc K) where
     simp only [← ofFractionRing_algebraMap, Function.comp_apply, ← ofFractionRing_mul,
       ofFractionRing.injEq]
 
-@[deprecated "Use FaithfulSMul.algebraMap_eq_zero_iff instead." (since := "2024-09-08")]
-theorem algebraMap_eq_zero_iff {x : K[X]} : algebraMap K[X] (RatFunc K) x = 0 ↔ x = 0 := by
-  simp
-
 variable {K}
 
 theorem algebraMap_ne_zero {x : K[X]} (hx : x ≠ 0) : algebraMap K[X] (RatFunc K) x ≠ 0 := by

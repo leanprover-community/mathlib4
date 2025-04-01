@@ -267,7 +267,7 @@ instance (priority := 100) isLocalRing : IsLocalRing A :=
 instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   constructor; intro α β
   by_cases h : α ≤ β; · exact Or.inl h
-  erw [not_forall] at h
+  rw [SetLike.le_def, not_forall] at h
   push_neg at h
   obtain ⟨a, h₁, h₂⟩ := h
   right

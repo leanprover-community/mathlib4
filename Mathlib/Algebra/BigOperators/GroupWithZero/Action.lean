@@ -45,14 +45,18 @@ end
 
 section
 
-variable [AddCommMonoid β] [DistribSMul α β]
+variable [AddCommMonoid β] [DistribSMul α β] {r : α}
 
-theorem Multiset.smul_sum {r : α} {s : Multiset β} : r • s.sum = (s.map (r • ·)).sum :=
+theorem Multiset.smul_sum {s : Multiset β} : r • s.sum = (s.map (r • ·)).sum :=
   (DistribSMul.toAddMonoidHom β r).map_multiset_sum s
 
-theorem Finset.smul_sum {r : α} {f : γ → β} {s : Finset γ} :
+theorem Finset.smul_sum {f : γ → β} {s : Finset γ} :
     (r • ∑ x ∈ s, f x) = ∑ x ∈ s, r • f x :=
   map_sum (DistribSMul.toAddMonoidHom β r) f s
+
+theorem smul_finsum_mem {f : γ → β} {s : Set γ} (hs : s.Finite) :
+    r • ∑ᶠ x ∈ s, f x = ∑ᶠ x ∈ s, r • f x :=
+  (DistribSMul.toAddMonoidHom β r).map_finsum_mem f hs
 
 end
 

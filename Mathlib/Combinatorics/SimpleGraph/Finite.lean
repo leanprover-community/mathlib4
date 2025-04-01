@@ -311,10 +311,11 @@ theorem neighborFinset_compl [DecidableEq V] [DecidableRel G.Adj] (v : V) :
 @[simp]
 theorem complete_graph_degree [DecidableEq V] (v : V) :
     (⊤ : SimpleGraph V).degree v = Fintype.card V - 1 := by
-  erw [degree, neighborFinset_eq_filter, filter_ne, card_erase_of_mem (mem_univ v), card_univ]
+  simp_rw [degree, neighborFinset_eq_filter, top_adj, filter_ne]
+  rw [card_erase_of_mem (mem_univ v), card_univ]
 
 theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
-  erw [degree, neighborFinset_eq_filter, filter_False]
+  simp_rw [degree, neighborFinset_eq_filter, bot_adj, filter_False]
   exact Finset.card_empty
 
 theorem IsRegularOfDegree.top [DecidableEq V] :

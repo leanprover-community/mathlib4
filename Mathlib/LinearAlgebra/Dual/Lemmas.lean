@@ -526,8 +526,7 @@ open Module
 
 theorem finrank_add_finrank_dualAnnihilator_eq (W : Subspace K V) :
     finrank K W + finrank K W.dualAnnihilator = finrank K V := by
-  rw [← W.quotEquivAnnihilator.finrank_eq (M₂ := dualAnnihilator W),
-    add_comm, Submodule.finrank_quotient_add_finrank]
+  rw [← W.quotEquivAnnihilator.finrank_eq, add_comm, Submodule.finrank_quotient_add_finrank]
 
 @[simp]
 theorem finrank_dualCoannihilator_eq {Φ : Subspace K (Module.Dual K V)} :

@@ -50,7 +50,7 @@ theorem Ideal.iUnion_minimalPrimes :
     obtain ⟨n, hn⟩ := this (Ideal.mem_map_of_mem _ hxp)
     rw [IsLocalization.mem_map_algebraMap_iff (M := p.primeCompl)] at hn
     obtain ⟨⟨a, b⟩, hn⟩ := hn
-    rw [← map_pow, ← _root_.map_mul, IsLocalization.eq_iff_exists p.primeCompl] at hn
+    rw [← map_pow, ← map_mul, IsLocalization.eq_iff_exists p.primeCompl] at hn
     obtain ⟨t, ht⟩ := hn
     refine ⟨t * b, fun h ↦ (t * b).2 (hp₁.radical_le_iff.mpr hp₂ h), n + 1, ?_⟩
     simp only at ht

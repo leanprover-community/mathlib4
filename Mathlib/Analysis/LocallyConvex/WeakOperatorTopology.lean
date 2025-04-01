@@ -230,7 +230,10 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup (E →WOT[𝕜] F) wh
 
 instance instUniformSpace : UniformSpace (E →WOT[𝕜] F) := .comap (inducingFn 𝕜 E F) inferInstance
 
-instance instUniformAddGroup : UniformAddGroup (E →WOT[𝕜] F) := .comap (inducingFn 𝕜 E F)
+instance instIsUniformAddGroup : IsUniformAddGroup (E →WOT[𝕜] F) := .comap (inducingFn 𝕜 E F)
+
+@[deprecated (since := "2025-03-31")] alias instUniformAddGroup :=
+  ContinuousLinearMapWOT.instIsUniformAddGroup
 
 end Topology
 

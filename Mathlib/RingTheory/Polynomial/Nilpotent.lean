@@ -141,7 +141,7 @@ theorem coeff_isUnit_isNilpotent_of_isUnit (hunit : IsUnit P) :
     intros I hI
     let f := mapRingHom (Ideal.Quotient.mk I)
     have hPQ : degree (f P) = 0 ∧ degree (f Q) = 0 := by
-      rw [← Nat.WithBot.add_eq_zero_iff, ← degree_mul, ← _root_.map_mul, hQ, map_one, degree_one]
+      rw [← Nat.WithBot.add_eq_zero_iff, ← degree_mul, ← map_mul, hQ, map_one, degree_one]
     have hcoeff : (f P).coeff n = 0 := by
       refine coeff_eq_zero_of_degree_lt ?_
       rw [hPQ.1]

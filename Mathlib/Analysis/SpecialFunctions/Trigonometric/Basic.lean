@@ -1190,6 +1190,22 @@ theorem exp_two_pi_mul_I : exp (2 * π * I) = 1 :=
   exp_periodic.eq.trans exp_zero
 
 @[simp]
+lemma exp_pi_div_two_mul_I : exp (π / 2 * I) = I := by
+  rw [← cos_add_sin_I, cos_pi_div_two, sin_pi_div_two, one_mul, zero_add]
+
+lemma circleMap_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (π / 2) = c + R * I := by
+  simp only [circleMap, ofReal_div, ofReal_ofNat, exp_pi_div_two_mul_I]
+
+@[simp]
+lemma exp_neg_pi_div_two_mul_I : exp (-π / 2 * I) = -I := by
+  rw [← cos_add_sin_I, neg_div, cos_neg, cos_pi_div_two, sin_neg, sin_pi_div_two, zero_add, neg_mul,
+    one_mul]
+
+lemma circleMap_neg_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (-π / 2) = c - R * I := by
+  simp only [circleMap, ofReal_div, ofReal_neg, ofReal_ofNat, exp_neg_pi_div_two_mul_I, mul_neg]
+  rfl
+
+@[simp]
 theorem exp_nat_mul_two_pi_mul_I (n : ℕ) : exp (n * (2 * π * I)) = 1 :=
   (exp_periodic.nat_mul_eq n).trans exp_zero
 

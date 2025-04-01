@@ -329,9 +329,8 @@ lemma rTensor_reflects_exact [fl : FaithfullyFlat R M]
       Module.Flat.rTensor_preserves_injective_linearMap (LinearMap.ker l23).subtype
       Subtype.val_injective ?_⟩
     simp only [LinearMap.comp_codRestrict, LinearMap.rTensor_tmul, Submodule.coe_subtype, ← hy]
-    rw [← LinearMap.comp_apply]
-    erw [← LinearMap.rTensor_comp]
-    rw [← LinearMap.comp_apply, ← LinearMap.rTensor_comp, LinearMap.comp_assoc,
+    rw [← LinearMap.comp_apply, ← LinearMap.rTensor_def, ← LinearMap.rTensor_comp,
+      ← LinearMap.comp_apply, ← LinearMap.rTensor_comp, LinearMap.comp_assoc,
       LinearMap.subtype_comp_codRestrict, ← LinearMap.comp_assoc, Submodule.subtype_comp_inclusion,
       LinearMap.subtype_comp_codRestrict]
   | add x y hx hy =>

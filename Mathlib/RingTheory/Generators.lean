@@ -247,6 +247,23 @@ def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators 
     use (a + b)
     rw [map_add, ha, hb]
 
+/-- Given generators `P` and an equivalence `ι ≃ P.vars`, these
+are the induced generators indexed by `ι`. -/
+@[simps -isSimp vars]
+noncomputable def reindex (P : Generators.{w} R S) {ι : Type*} (e : ι ≃ P.vars) :
+    Generators R S where
+  vars := ι
+  val := P.val ∘ e
+  σ' := rename e.symm ∘ P.σ
+  aeval_val_σ' s := by
+    conv_rhs => rw [← P.aeval_val_σ s]
+    rw [← MvPolynomial.aeval_rename]
+    simp
+
+lemma reindex_val (P : Generators.{w} R S) {ι : Type*} (e : ι ≃ P.vars) :
+    (P.reindex e).val = P.val ∘ e :=
+  rfl
+
 end Construction
 
 variable {R' S'} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Generators R' S')
@@ -395,8 +412,8 @@ def ofComp (Q : Generators S T) (P : Generators R S) : Hom (Q.comp P) Q where
 lemma ofComp_toAlgHom_monomial_sumElim (Q : Generators S T) (P : Generators R S) (v₁ v₂ a) :
     (Q.ofComp P).toAlgHom (monomial (Finsupp.sumElim v₁ v₂) a) =
       monomial v₁ (aeval P.val (monomial v₂ a)) := by
-  erw [Hom.toAlgHom_monomial]
-  rw [monomial_eq]
+  dsimp only [← comp_vars]
+  rw [Hom.toAlgHom_monomial, monomial_eq]
   simp only [MvPolynomial.algebraMap_apply, ofComp_val, aeval_monomial]
   rw [Finsupp.prod_sumElim]
   simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr, ← map_pow, ← map_finsupp_prod,
@@ -466,6 +483,10 @@ lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
     (f : P'.Hom P'') (g : P.Hom P') :
     toExtensionHom (f.comp g) = f.toExtensionHom.comp g.toExtensionHom := by ext; simp
 
+lemma Hom.toExtensionHom_toAlgHom_apply [Algebra R S'] [IsScalarTower R R' S']
+    [IsScalarTower R S S'] (f : P.Hom P') (x) :
+    f.toExtensionHom.toAlgHom x = f.toAlgHom x := rfl
+
 /-- The kernel of a presentation. -/
 noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
 
@@ -497,8 +518,7 @@ lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
     rw [← Finset.sum_fiberwise_of_maps_to (fun i ↦ Finset.mem_image_of_mem Prod.fst)]
     refine sum_mem fun i hi ↦ ?_
     convert_to monomial (e.symm (i, 0)) 1 * (Q.toComp P).toAlgHom.toRingHom
-      (∑ j ∈ ((support x).map e.toEmbedding).filter (fun x ↦ x.1 = i),
-        monomial j.2 (coeff (e.symm j) x)) ∈ _
+      (∑ j ∈ (support x).map e.toEmbedding with j.1 = i, monomial j.2 (coeff (e.symm j) x)) ∈ _
     · rw [map_sum, Finset.mul_sum]
       refine Finset.sum_congr rfl fun j hj ↦ ?_
       obtain rfl := (Finset.mem_filter.mp hj).2
@@ -526,7 +546,10 @@ lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
       | monomial v a =>
         rw [finsum_eq_sum_of_support_subset _ (this _), ← Finset.sum_filter]
         obtain ⟨v, rfl⟩ := e.symm.surjective v
-        erw [ofComp_toAlgHom_monomial_sumElim]
+        -- Rewrite `e` in the right hand side only.
+        conv_rhs => simp only [e, comp_vars, Finsupp.sumFinsuppAddEquivProdFinsupp,
+          Finsupp.sumFinsuppEquivProdFinsupp, AddEquiv.symm_mk, AddEquiv.coe_mk,
+          Equiv.coe_fn_symm_mk, ofComp_toAlgHom_monomial_sumElim]
         classical
         simp only [comp_vars, coeff_monomial, ← e.injective.eq_iff,
           map_zero, AddEquiv.apply_symm_apply, apply_ite]
@@ -570,7 +593,7 @@ lemma ofComp_kerCompPreimage (Q : Generators S T) (P : Generators R S) (x : Q.ke
   conv_rhs => rw [← x.1.support_sum_monomial_coeff]
   rw [kerCompPreimage, map_finsupp_sum, Finsupp.sum]
   refine Finset.sum_congr rfl fun j _ ↦ ?_
-  simp only [AlgHom.toLinearMap_apply, _root_.map_mul, Hom.toAlgHom_monomial]
+  simp only [AlgHom.toLinearMap_apply, map_mul, Hom.toAlgHom_monomial]
   rw [one_smul, Finsupp.prod_mapDomain_index_inj Sum.inl_injective]
   rw [rename, ← AlgHom.comp_apply, comp_aeval]
   simp only [ofComp_val, Sum.elim_inr, Function.comp_apply, self_val, id_eq,

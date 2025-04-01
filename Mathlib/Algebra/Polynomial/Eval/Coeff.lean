@@ -146,28 +146,22 @@ theorem eval_zero_map (f : R →+* S) (p : R[X]) : (p.map f).eval 0 = f (p.eval 
 @[simp]
 theorem eval_one_map (f : R →+* S) (p : R[X]) : (p.map f).eval 1 = f (p.eval 1) := by
   induction p using Polynomial.induction_on' with
-  | h_add p q hp hq =>
-    simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
-  | h_monomial n r =>
-    simp only [one_pow, mul_one, eval_monomial, map_monomial]
+  | add p q hp hq => simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
+  | monomial n r => simp only [one_pow, mul_one, eval_monomial, map_monomial]
 
 @[simp]
 theorem eval_natCast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
     (p.map f).eval (n : S) = f (p.eval n) := by
   induction p using Polynomial.induction_on' with
-  | h_add p q hp hq =>
-    simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
-  | h_monomial n r =>
-    simp only [map_natCast f, eval_monomial, map_monomial, f.map_pow, f.map_mul]
+  | add p q hp hq => simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
+  | monomial n r => simp only [map_natCast f, eval_monomial, map_monomial, f.map_pow, f.map_mul]
 
 @[simp]
 theorem eval_intCast_map {R S : Type*} [Ring R] [Ring S] (f : R →+* S) (p : R[X]) (i : ℤ) :
     (p.map f).eval (i : S) = f (p.eval i) := by
   induction p using Polynomial.induction_on' with
-  | h_add p q hp hq =>
-    simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
-  | h_monomial n r =>
-    simp only [map_intCast, eval_monomial, map_monomial, map_pow, map_mul]
+  | add p q hp hq => simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
+  | monomial n r => simp only [map_intCast, eval_monomial, map_monomial, map_pow, map_mul]
 
 end Map
 

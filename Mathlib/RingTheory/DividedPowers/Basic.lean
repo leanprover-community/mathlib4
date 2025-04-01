@@ -361,21 +361,21 @@ def ofRingEquiv (hI : DividedPowers I) : DividedPowers J where
     simp only [map_add]
     rw [hI.dpow_add (symm_apply_mem_of_equiv_iff.mpr (h ▸ hx))
         (symm_apply_mem_of_equiv_iff.mpr (h ▸ hy))]
-    simp only [map_sum, _root_.map_mul]
+    simp only [map_sum, map_mul]
   dpow_mul hx := by
-    simp only [_root_.map_mul]
+    simp only [map_mul]
     rw [hI.dpow_mul (symm_apply_mem_of_equiv_iff.mpr (h ▸ hx))]
-    rw [_root_.map_mul, map_pow]
+    rw [map_mul, map_pow]
     simp only [RingEquiv.apply_symm_apply]
   mul_dpow hx := by
     simp only
-    rw [← _root_.map_mul, hI.mul_dpow, _root_.map_mul]
+    rw [← map_mul, hI.mul_dpow, map_mul]
     · simp only [map_natCast]
     · rwa [symm_apply_mem_of_equiv_iff, h]
   dpow_comp hn hx := by
     simp only [RingEquiv.symm_apply_apply]
     rw [hI.dpow_comp hn]
-    · simp only [_root_.map_mul, map_natCast]
+    · simp only [map_mul, map_natCast]
     · rwa [symm_apply_mem_of_equiv_iff, h]
 
 @[simp]

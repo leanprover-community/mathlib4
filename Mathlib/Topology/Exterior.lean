@@ -46,8 +46,6 @@ lemma IsOpen.exterior_eq (h : IsOpen s) : exterior s = s :=
 lemma IsOpen.exterior_subset (ht : IsOpen t) : exterior s ⊆ t ↔ s ⊆ t :=
   ⟨subset_exterior.trans, fun h ↦ exterior_minimal h ht⟩
 
-@[deprecated (since := "2024-09-18")] alias IsOpen.exterior_subset_iff := IsOpen.exterior_subset
-
 @[simp]
 theorem exterior_iUnion (s : ι → Set X) : exterior (⋃ i, s i) = ⋃ i, exterior (s i) := by
   simp only [exterior, nhdsSet_iUnion, ker_iSup]

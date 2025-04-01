@@ -21,7 +21,7 @@ filtration.
 - `ProbabilityTheory.measure_limsup_eq_one`: the second Borel-Cantelli lemma.
 
 **Note**: for the *first Borel-Cantelli lemma*, which holds in general measure spaces (not only
-in probability spaces), see `MeasureTheory.measure_limsup_eq_zero`.
+in probability spaces), see `MeasureTheory.measure_limsup_atTop_eq_zero`.
 -/
 
 open scoped ENNReal Topology

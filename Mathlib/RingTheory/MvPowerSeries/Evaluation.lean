@@ -16,7 +16,7 @@ import Mathlib.Topology.Algebra.UniformRing
 /-! # Evaluation of multivariate power series
 
 Let `σ`, `R`, `S` be types, with `CommRing R`, `CommRing S`.
-One assumes that `IsTopologicalRing R` and `UniformAddGroup R`,
+One assumes that `IsTopologicalRing R` and `IsUniformAddGroup R`,
 and that `S` is a complete and separated topological `R`-algebra,
 with `IsLinearTopology S S`, which means there is a basis of neighborhoods of 0
 consisting of ideals.
@@ -132,8 +132,8 @@ private instance : UniformSpace (MvPolynomial σ R) :=
   comap toMvPowerSeries (Pi.uniformSpace _)
 
 /-- The induced uniform structure of MvPolynomial σ R is an add group uniform structure -/
-private instance [UniformAddGroup R] : UniformAddGroup (MvPolynomial σ R) :=
-  UniformAddGroup.comap coeToMvPowerSeries.ringHom
+private instance [IsUniformAddGroup R] : IsUniformAddGroup (MvPolynomial σ R) :=
+  IsUniformAddGroup.comap coeToMvPowerSeries.ringHom
 
 theorem _root_.MvPolynomial.toMvPowerSeries_isUniformInducing :
     IsUniformInducing (toMvPowerSeries (σ := σ) (R := R)) :=
@@ -148,7 +148,7 @@ variable {a : σ → S}
 /- The evaluation map on multivariate polynomials is uniformly continuous
 for the uniform structure induced by that on multivariate power series. -/
 theorem _root_.MvPolynomial.toMvPowerSeries_uniformContinuous
-    [UniformAddGroup R] [UniformAddGroup S] [IsLinearTopology S S]
+    [IsUniformAddGroup R] [IsUniformAddGroup S] [IsLinearTopology S S]
     (hφ : Continuous φ) (ha : HasEval a) :
     UniformContinuous (MvPolynomial.eval₂Hom φ a) := by
   apply uniformContinuous_of_continuousAt_zero
@@ -210,8 +210,8 @@ theorem eval₂_C (r : R) : eval₂ φ a (C σ R r) = φ r := by
 theorem eval₂_X (s : σ) : eval₂ φ a (X s) = a s := by
   rw [← coe_X, eval₂_coe, MvPolynomial.eval₂_X]
 
-variable [IsTopologicalSemiring R] [UniformAddGroup R]
-    [UniformAddGroup S] [CompleteSpace S] [T2Space S]
+variable [IsTopologicalSemiring R] [IsUniformAddGroup R]
+    [IsUniformAddGroup S] [CompleteSpace S] [T2Space S]
     [IsTopologicalRing S] [IsLinearTopology S S]
 
 variable {φ a}
@@ -279,7 +279,7 @@ theorem eval₂_unique (hφ : Continuous φ) (ha : HasEval a)
 
 theorem comp_eval₂ (hφ : Continuous φ) (ha : HasEval a)
     {T : Type*} [UniformSpace T] [CompleteSpace T] [T2Space T]
-    [CommRing T] [IsTopologicalRing T] [IsLinearTopology T T] [UniformAddGroup T]
+    [CommRing T] [IsTopologicalRing T] [IsLinearTopology T T] [IsUniformAddGroup T]
     {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε ∘ a) := by
   apply eval₂_unique _ (ha.map hε)
@@ -335,14 +335,15 @@ theorem aeval_eq_sum (ha : HasEval a) (f : MvPowerSeries σ R) :
   (hasSum_aeval ha f).tsum_eq.symm
 
 theorem comp_aeval (ha : HasEval a)
-    {T : Type*} [CommRing T] [UniformSpace T] [UniformAddGroup T]
+    {T : Type*} [CommRing T] [UniformSpace T] [IsUniformAddGroup T]
     [IsTopologicalRing T] [IsLinearTopology T T]
     [T2Space T] [Algebra R T] [ContinuousSMul R T] [CompleteSpace T]
     {ε : S →ₐ[R] T} (hε : Continuous ε) :
     ε.comp (aeval ha) = aeval (ha.map hε)  := by
   apply DFunLike.ext'
   simp only [AlgHom.coe_comp, coe_aeval ha]
-  erw [comp_eval₂ (continuous_algebraMap R S) ha hε, coe_aeval]
+  rw [← RingHom.coe_coe,
+    comp_eval₂ (continuous_algebraMap R S) ha (show Continuous (ε : S →+* T) from hε), coe_aeval]
   congr!
   simp only [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, RingHom.coe_coe]
 

@@ -26,6 +26,10 @@ namespace IsLocalRing
 
 variable [IsLocalRing R]
 
+@[simp]
+theorem mem_maximalIdeal (x) : x ∈ maximalIdeal R ↔ x ∈ nonunits R :=
+  Iff.rfl
+
 variable (R)
 
 instance maximalIdeal.isMaximal : (maximalIdeal R).IsMaximal := by
@@ -35,7 +39,7 @@ instance maximalIdeal.isMaximal : (maximalIdeal R).IsMaximal := by
     apply h
     exact isUnit_one
   · intro I x _ hx H
-    erw [Classical.not_not] at hx
+    rw [mem_maximalIdeal, mem_nonunits_iff, Classical.not_not] at hx
     rcases hx with ⟨u, rfl⟩
     simpa using I.mul_mem_left (↑u⁻¹) H
 
@@ -56,10 +60,6 @@ instance : Unique (MaximalSpectrum R) where
 theorem le_maximalIdeal {J : Ideal R} (hJ : J ≠ ⊤) : J ≤ maximalIdeal R := by
   rcases Ideal.exists_le_maximal J hJ with ⟨M, hM1, hM2⟩
   rwa [← eq_maximalIdeal hM1]
-
-@[simp]
-theorem mem_maximalIdeal (x) : x ∈ maximalIdeal R ↔ x ∈ nonunits R :=
-  Iff.rfl
 
 /--
 An element `x` of a commutative local semiring is not contained in the maximal ideal

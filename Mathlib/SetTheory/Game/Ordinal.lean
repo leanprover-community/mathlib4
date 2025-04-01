@@ -35,11 +35,6 @@ noncomputable def toPGame (o : Ordinal.{u}) : PGame.{u} :=
 termination_by o
 decreasing_by exact ((enumIsoToType o).symm x).prop
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-22")]
-theorem toPGame_def (o : Ordinal) : o.toPGame =
-    ⟨o.toType, PEmpty, fun x => ((enumIsoToType o).symm x).val.toPGame, PEmpty.elim⟩ := by
-  rw [toPGame]
-
 @[simp]
 theorem toPGame_leftMoves (o : Ordinal) : o.toPGame.LeftMoves = o.toType := by
   rw [toPGame, LeftMoves]

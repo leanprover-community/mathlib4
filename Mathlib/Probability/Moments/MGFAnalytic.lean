@@ -200,8 +200,7 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
       = μ[fun ω ↦ (X ω)^2 * exp (v * X ω)] / mgf X μ v - deriv (cgf X μ) v ^ 2 := by
   rw [iteratedDeriv_succ, iteratedDeriv_one]
   by_cases hμ : μ = 0
-  · have : deriv (0 : ℝ → ℝ) = 0 := by ext; exact deriv_const _ 0
-    simp [hμ, this]
+  · simp [hμ]
   have h_mem : ∀ᶠ y in 𝓝 v, y ∈ interior (integrableExpSet X μ) :=
     isOpen_interior.eventually_mem h
   have h_d_cgf : deriv (cgf X μ) =ᶠ[𝓝 v] fun u ↦ μ[fun ω ↦ X ω * exp (u * X ω)] / mgf X μ u := by
@@ -236,8 +235,7 @@ lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X 
     iteratedDeriv 2 (cgf X μ) v
       = μ[fun ω ↦ (X ω - deriv (cgf X μ) v)^2 * exp (v * X ω)] / mgf X μ v := by
   by_cases hμ : μ = 0
-  · have : deriv (0 : ℝ → ℝ) = 0 := by ext; exact deriv_const _ 0
-    simp [hμ, this, iteratedDeriv_succ]
+  · simp [hμ, iteratedDeriv_succ]
   rw [iteratedDeriv_two_cgf h]
   calc (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v - deriv (cgf X μ) v ^ 2
   _ = (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ - 2 * (∫ ω, X ω * exp (v * X ω) ∂μ) * deriv (cgf X μ) v
