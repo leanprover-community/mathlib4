@@ -18,6 +18,21 @@ and ease of application in the unbundled setting, we reprove them here.
 - `LinearMap.injective_of_surjective_of_injective_of_injective`: another four lemma
 - `LinearMap.bijective_of_surjective_of_bijective_of_bijective_of_injective`: the five lemma
 
+## Explanation of the variables
+
+In this file we always consider the following commutative diagram of additive groups (resp. modules)
+
+```
+M₁ --f₁--> M₂ --f₂--> M₃ --f₃--> M₄ --f₄--> M₅
+|          |          |          |          |
+i₁         i₂         i₃         i₄         i₅
+|          |          |          |          |
+v          v          v          v          v
+N₁ --g₁--> N₂ --g₂--> N₃ --g₃--> N₄ --g₄--> N₅
+```
+
+with exact rows.
+
 ## Implementation details
 
 In theory, we could prove these in the multiplicative version and let `to_additive` prove
@@ -39,7 +54,8 @@ variable (hf₁ : Function.Exact f₁ f₂) (hf₂ : Function.Exact f₂ f₃) (
 variable (hg₁ : Function.Exact g₁ g₂) (hg₂ : Function.Exact g₂ g₃) (hg₃ : Function.Exact g₃ g₄)
 
 include hf₂ hg₁ hg₂ hc₁ hc₂ hc₃ in
-/-- One four lemma in terms of modules. -/
+/-- One four lemma in terms of (additive) groups. For a diagram explaining the variables,
+see the module docstring. -/
 lemma surjective_of_surjective_of_surjective_of_injective (hi₁ : Function.Surjective i₁)
     (hi₃ : Function.Surjective i₃) (hi₄ : Function.Injective i₄) :
     Function.Surjective i₂ := by
@@ -54,7 +70,8 @@ lemma surjective_of_surjective_of_surjective_of_injective (hi₁ : Function.Surj
   simp [← show g₁ (i₁ o) = i₂ (f₁ o) by simpa using DFunLike.congr_fun hc₁ o, hb]
 
 include hf₁ hf₂ hg₁ hc₁ hc₂ hc₃ in
-/-- One four lemma in terms of modules. -/
+/-- One four lemma in terms of (additive) groups. For a diagram explaining the variables,
+see the module docstring. -/
 lemma injective_of_surjective_of_injective_of_injective (hi₁ : Function.Surjective i₁)
     (hi₂ : Function.Injective i₂) (hi₄ : Function.Injective i₄) : Function.Injective i₃ := by
   rw [injective_iff_map_eq_zero]
@@ -71,7 +88,8 @@ lemma injective_of_surjective_of_injective_of_injective (hi₁ : Function.Surjec
   rw [hf₁.apply_apply_eq_zero]
 
 include hf₁ hf₂ hf₃ hg₁ hg₂ hg₃ hc₁ hc₂ hc₃ hc₄ in
-/-- The five lemma in terms of modules. -/
+/-- The five lemma in terms of (additive) groups. For a diagram explaining the variables,
+see the module docstring. -/
 lemma bijective_of_surjective_of_bijective_of_bijective_of_injective (hi₁ : Function.Surjective i₁)
     (hi₂ : Function.Bijective i₂) (hi₄ : Function.Bijective i₄) (hi₅ : Function.Injective i₅) :
     Function.Bijective i₃ :=
@@ -100,7 +118,8 @@ variable (hf₁ : Function.Exact f₁ f₂) (hf₂ : Function.Exact f₂ f₃) (
 variable (hg₁ : Function.Exact g₁ g₂) (hg₂ : Function.Exact g₂ g₃) (hg₃ : Function.Exact g₃ g₄)
 
 include hf₂ hg₁ hg₂ hc₁ hc₂ hc₃ in
-/-- One four lemma in terms of modules. -/
+/-- One four lemma in terms of modules. For a diagram explaining the variables,
+see the module docstring. -/
 lemma surjective_of_surjective_of_surjective_of_injective (hi₁ : Function.Surjective i₁)
     (hi₃ : Function.Surjective i₃) (hi₄ : Function.Injective i₄) :
     Function.Surjective i₂ :=
@@ -112,7 +131,8 @@ lemma surjective_of_surjective_of_surjective_of_injective (hi₁ : Function.Surj
     (AddMonoidHom.ext fun x ↦ DFunLike.congr_fun hc₃ x) hf₂ hg₁ hg₂ hi₁ hi₃ hi₄
 
 include hf₁ hf₂ hg₁ hc₁ hc₂ hc₃ in
-/-- One four lemma in terms of modules. -/
+/-- One four lemma in terms of modules. For a diagram explaining the variables,
+see the module docstring. -/
 lemma injective_of_surjective_of_injective_of_injective (hi₁ : Function.Surjective i₁)
     (hi₂ : Function.Injective i₂) (hi₄ : Function.Injective i₄) :
     Function.Injective i₃ :=
@@ -124,7 +144,8 @@ lemma injective_of_surjective_of_injective_of_injective (hi₁ : Function.Surjec
     (AddMonoidHom.ext fun x ↦ DFunLike.congr_fun hc₃ x) hf₁ hf₂ hg₁ hi₁ hi₂ hi₄
 
 include hf₁ hf₂ hf₃ hg₁ hg₂ hg₃ hc₁ hc₂ hc₃ hc₄ in
-/-- The five lemma in terms of modules. -/
+/-- The five lemma in terms of modules. For a diagram explaining the variables,
+see the module docstring. -/
 lemma bijective_of_surjective_of_bijective_of_bijective_of_injective (hi₁ : Function.Surjective i₁)
     (hi₂ : Function.Bijective i₂) (hi₄ : Function.Bijective i₄) (hi₅ : Function.Injective i₅) :
     Function.Bijective i₃ :=
