@@ -190,10 +190,6 @@ def prodMap (f : A →ₜ* C) (g : B →ₜ* D) :
     (A × B) →ₜ* (C × D) :=
   ⟨f.toMonoidHom.prodMap g.toMonoidHom, f.continuous_toFun.prodMap g.continuous_toFun⟩
 
-@[deprecated (since := "2024-10-05")] alias prod_map := prodMap
-@[deprecated (since := "2024-10-05")]
-alias _root_.ContinuousAddMonoidHom.sum_map := ContinuousAddMonoidHom.prodMap
-
 set_option linter.existingAttributeWarning false in
 attribute [to_additive existing] prod_map
 

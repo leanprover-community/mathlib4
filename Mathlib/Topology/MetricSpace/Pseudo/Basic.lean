@@ -67,9 +67,6 @@ nonrec theorem isUniformInducing_iff [PseudoMetricSpace β] {f : α → β} :
     ((uniformity_basis_dist.comap _).le_basis_iff uniformity_basis_dist).trans <| by
       simp only [subset_def, Prod.forall, gt_iff_lt, preimage_setOf_eq, Prod.map_apply, mem_setOf]
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_iff := isUniformInducing_iff
-
 nonrec theorem isUniformEmbedding_iff [PseudoMetricSpace β] {f : α → β} :
     IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, dist (f a) (f b) < ε → dist a b < δ := by

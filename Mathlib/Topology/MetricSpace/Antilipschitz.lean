@@ -146,9 +146,6 @@ theorem isUniformInducing (hf : AntilipschitzWith K f) (hfc : UniformContinuous 
     IsUniformInducing f :=
   ⟨le_antisymm hf.comap_uniformity_le hfc.le_comap⟩
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing := isUniformInducing
-
 lemma isUniformEmbedding {α β : Type*} [EMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {f : α → β}
     (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) : IsUniformEmbedding f :=
   ⟨hf.isUniformInducing hfc, hf.injective⟩

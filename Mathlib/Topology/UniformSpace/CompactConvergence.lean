@@ -266,9 +266,6 @@ theorem isUniformInducing_comp (g : C(β, δ)) (hg : IsUniformInducing g) :
     UniformOnFun.postcomp_isUniformInducing hg |>.comp
       isUniformEmbedding_toUniformOnFunIsCompact.isUniformInducing
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_comp := isUniformInducing_comp
-
 theorem isUniformEmbedding_comp (g : C(β, δ)) (hg : IsUniformEmbedding g) :
     IsUniformEmbedding (ContinuousMap.comp g : C(α, β) → C(α, δ)) :=
   isUniformEmbedding_toUniformOnFunIsCompact.of_comp_iff.mp <|

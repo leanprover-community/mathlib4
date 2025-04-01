@@ -106,9 +106,6 @@ protected theorem uniformContinuous (hf : Isometry f) : UniformContinuous f :=
 theorem isUniformInducing (hf : Isometry f) : IsUniformInducing f :=
   hf.antilipschitz.isUniformInducing hf.uniformContinuous
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing := isUniformInducing
-
 theorem tendsto_nhds_iff {ι : Type*} {f : α → β} {g : ι → α} {a : Filter ι} {b : α}
     (hf : Isometry f) : Filter.Tendsto g a (𝓝 b) ↔ Filter.Tendsto (f ∘ g) a (𝓝 (f b)) :=
   hf.isUniformInducing.isInducing.tendsto_nhds_iff

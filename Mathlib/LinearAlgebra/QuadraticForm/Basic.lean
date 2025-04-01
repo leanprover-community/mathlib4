@@ -980,9 +980,6 @@ theorem exists_quadraticMap_ne_zero {Q : QuadraticMap R M N}
   apply hB₁
   rw [(QuadraticMap.ext h : Q = 0), LinearMap.map_zero]
 
-@[deprecated (since := "2024-10-05")] alias exists_quadraticForm_ne_zero :=
-  exists_quadraticMap_ne_zero
-
 end AssociatedHom
 
 section Associated

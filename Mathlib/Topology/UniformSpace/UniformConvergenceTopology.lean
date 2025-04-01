@@ -372,9 +372,6 @@ lemma postcomp_isUniformInducing [UniformSpace γ] {f : γ → β}
   ⟨((UniformFun.hasBasis_uniformity _ _).comap _).eq_of_same_basis <|
     UniformFun.hasBasis_uniformity_of_basis _ _ (hf.basis_uniformity (𝓤 β).basis_sets)⟩
 
-@[deprecated (since := "2024-10-05")]
-alias postcomp_uniformInducing := postcomp_isUniformInducing
-
 /-- Post-composition by a uniform embedding is
 a uniform embedding for the uniform structures of uniform convergence.
 
@@ -874,9 +871,6 @@ lemma postcomp_isUniformInducing [UniformSpace γ] {f : γ → β}
   congr
   rw [← UniformSpace.ext hf, UniformOnFun.comap_eq]
   rfl
-
-@[deprecated (since := "2024-10-05")]
-alias postcomp_uniformInducing := postcomp_isUniformInducing
 
 /-- Post-composition by a uniform embedding is a uniform embedding for the
 uniform structures of `𝔖`-convergence.

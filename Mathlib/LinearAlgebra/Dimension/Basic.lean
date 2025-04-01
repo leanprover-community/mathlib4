@@ -355,8 +355,6 @@ theorem Submodule.rank_le (s : Submodule R M) : Module.rank R s ≤ Module.rank 
   rw [← rank_top R M]
   exact rank_mono le_top
 
-@[deprecated (since := "2024-10-02")] alias rank_submodule_le := Submodule.rank_le
-
 theorem LinearMap.lift_rank_le_of_surjective (f : M →ₗ[R] M') (h : Surjective f) :
     lift.{v} (Module.rank R M') ≤ lift.{v'} (Module.rank R M) := by
   rw [← rank_range_of_surjective f h]

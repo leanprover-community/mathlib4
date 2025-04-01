@@ -64,9 +64,6 @@ theorem eventually_eventually_nhdsWithin {a : α} {s : Set α} {p : α → Prop}
   simp only [eventually_nhdsWithin_iff] at h ⊢
   exact h.mono fun x hx hxs => (hx hxs).self_of_nhds hxs
 
-@[deprecated (since := "2024-10-04")]
-alias eventually_nhdsWithin_nhdsWithin := eventually_eventually_nhdsWithin
-
 @[simp]
 theorem eventually_mem_nhdsWithin_iff {x : α} {s t : Set α} :
     (∀ᶠ x' in 𝓝[s] x, t ∈ 𝓝[s] x') ↔ t ∈ 𝓝[s] x :=

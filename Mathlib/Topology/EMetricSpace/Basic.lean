@@ -66,9 +66,6 @@ theorem isUniformInducing_iff [PseudoEMetricSpace β] {f : α → β} :
     ((uniformity_basis_edist.comap _).le_basis_iff uniformity_basis_edist).trans <| by
       simp only [subset_def, Prod.forall]; rfl
 
-@[deprecated (since := "2024-10-05")]
-alias uniformInducing_iff := isUniformInducing_iff
-
 /-- ε-δ characterization of uniform embeddings on pseudoemetric spaces -/
 nonrec theorem isUniformEmbedding_iff [PseudoEMetricSpace β] {f : α → β} :
     IsUniformEmbedding f ↔ Function.Injective f ∧ UniformContinuous f ∧
