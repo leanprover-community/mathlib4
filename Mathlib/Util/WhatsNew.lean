@@ -85,8 +85,12 @@ private def printIdCore (id : Name) : ConstantInfo → CoreM MessageData
 def diffExtension (old new : Environment)
     (ext : PersistentEnvExtension EnvExtensionEntry EnvExtensionEntry EnvExtensionState) :
     CoreM (Option MessageData) := unsafe do
-  let oldSt := ext.toEnvExtension.getState (asyncMode := .local) old
-  let newSt := ext.toEnvExtension.getState (asyncMode := .local) new
+  let mut asyncMode := ext.toEnvExtension.asyncMode
+  if asyncMode matches .async then
+    -- allow for diffing async extensions by bumping mode to sync
+    asyncMode := .sync
+  let oldSt := ext.toEnvExtension.getState (asyncMode := asyncMode) old
+  let newSt := ext.toEnvExtension.getState (asyncMode := asyncMode) new
   if ptrAddrUnsafe oldSt == ptrAddrUnsafe newSt then return none
   let oldEntries := ext.exportEntriesFn oldSt.state
   let newEntries := ext.exportEntriesFn newSt.state
@@ -117,6 +121,6 @@ elab "whatsnew " "in" ppLine cmd:command : command => do
     let newEnv ← getEnv
     logInfo (← liftCoreM <| whatsNew oldEnv newEnv)
 
-whatsnew in
+def f : Nat := 42
 
 end Mathlib.WhatsNew
