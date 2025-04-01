@@ -7,8 +7,7 @@ import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Data.Matrix.Rank
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Hermitian
-
-#align_import linear_algebra.matrix.spectrum from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 /-! # Spectral theory of hermitian matrices
 
@@ -17,150 +16,151 @@ the spectral theorem for linear maps (`LinearMap.IsSymmetric.eigenvectorBasis_ap
 
 ## Tags
 
-spectral theorem, diagonalization theorem
-
--/
-
+spectral theorem, diagonalization theorem -/
 
 namespace Matrix
 
-variable {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n] [DecidableEq n]
-
+variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 variable {A : Matrix n n 𝕜}
-
-open scoped Matrix
-
-open scoped BigOperators
 
 namespace IsHermitian
 
+section DecidableEq
+
+variable [DecidableEq n]
 variable (hA : A.IsHermitian)
 
 /-- The eigenvalues of a hermitian matrix, indexed by `Fin (Fintype.card n)` where `n` is the index
 type of the matrix. -/
 noncomputable def eigenvalues₀ : Fin (Fintype.card n) → ℝ :=
   (isHermitian_iff_isSymmetric.1 hA).eigenvalues finrank_euclideanSpace
-#align matrix.is_hermitian.eigenvalues₀ Matrix.IsHermitian.eigenvalues₀
 
 /-- The eigenvalues of a hermitian matrix, reusing the index `n` of the matrix entries. -/
 noncomputable def eigenvalues : n → ℝ := fun i =>
   hA.eigenvalues₀ <| (Fintype.equivOfCardEq (Fintype.card_fin _)).symm i
-#align matrix.is_hermitian.eigenvalues Matrix.IsHermitian.eigenvalues
 
 /-- A choice of an orthonormal basis of eigenvectors of a hermitian matrix. -/
 noncomputable def eigenvectorBasis : OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n) :=
   ((isHermitian_iff_isSymmetric.1 hA).eigenvectorBasis finrank_euclideanSpace).reindex
     (Fintype.equivOfCardEq (Fintype.card_fin _))
-#align matrix.is_hermitian.eigenvector_basis Matrix.IsHermitian.eigenvectorBasis
 
-/-- A matrix whose columns are an orthonormal basis of eigenvectors of a hermitian matrix. -/
-noncomputable def eigenvectorMatrix : Matrix n n 𝕜 :=
-  (PiLp.basisFun _ 𝕜 n).toMatrix (eigenvectorBasis hA).toBasis
-#align matrix.is_hermitian.eigenvector_matrix Matrix.IsHermitian.eigenvectorMatrix
+lemma mulVec_eigenvectorBasis (j : n) :
+    A *ᵥ ⇑(hA.eigenvectorBasis j) = (hA.eigenvalues j) • ⇑(hA.eigenvectorBasis j) := by
+  simpa only [eigenvectorBasis, OrthonormalBasis.reindex_apply, toEuclideanLin_apply,
+    RCLike.real_smul_eq_coe_smul (K := 𝕜)] using
+      congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
+        finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
-/-- The inverse of `eigenvectorMatrix` -/
-noncomputable def eigenvectorMatrixInv : Matrix n n 𝕜 :=
-  (eigenvectorBasis hA).toBasis.toMatrix (PiLp.basisFun _ 𝕜 n)
-#align matrix.is_hermitian.eigenvector_matrix_inv Matrix.IsHermitian.eigenvectorMatrixInv
+/-- The spectrum of a Hermitian matrix `A` coincides with the spectrum of `toEuclideanLin A`. -/
+theorem spectrum_toEuclideanLin : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
+  AlgEquiv.spectrum_eq (Matrix.toLinAlgEquiv (PiLp.basisFun 2 𝕜 n)) _
 
-theorem eigenvectorMatrix_mul_inv : hA.eigenvectorMatrix * hA.eigenvectorMatrixInv = 1 := by
-  apply Basis.toMatrix_mul_toMatrix_flip
-#align matrix.is_hermitian.eigenvector_matrix_mul_inv Matrix.IsHermitian.eigenvectorMatrix_mul_inv
+/-- Eigenvalues of a hermitian matrix A are in the ℝ spectrum of A. -/
+theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum ℝ A := by
+  apply spectrum.of_algebraMap_mem 𝕜
+  rw [← spectrum_toEuclideanLin]
+  exact LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
 
-noncomputable instance : Invertible hA.eigenvectorMatrixInv :=
-  invertibleOfLeftInverse _ _ hA.eigenvectorMatrix_mul_inv
+/-- Unitary matrix whose columns are `Matrix.IsHermitian.eigenvectorBasis`. -/
+noncomputable def eigenvectorUnitary {𝕜 : Type*} [RCLike 𝕜] {n : Type*}
+    [Fintype n]{A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
+    Matrix.unitaryGroup n 𝕜 :=
+  ⟨(EuclideanSpace.basisFun n 𝕜).toBasis.toMatrix (hA.eigenvectorBasis).toBasis,
+    (EuclideanSpace.basisFun n 𝕜).toMatrix_orthonormalBasis_mem_unitary (eigenvectorBasis hA)⟩
 
-noncomputable instance : Invertible hA.eigenvectorMatrix :=
-  invertibleOfRightInverse _ _ hA.eigenvectorMatrix_mul_inv
+lemma eigenvectorUnitary_coe {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
+    {A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
+    eigenvectorUnitary hA =
+      (EuclideanSpace.basisFun n 𝕜).toBasis.toMatrix (hA.eigenvectorBasis).toBasis :=
+  rfl
 
-theorem eigenvectorMatrix_apply (i j : n) : hA.eigenvectorMatrix i j = hA.eigenvectorBasis j i := by
-  simp_rw [eigenvectorMatrix, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis,
-    PiLp.basisFun_repr]
-#align matrix.is_hermitian.eigenvector_matrix_apply Matrix.IsHermitian.eigenvectorMatrix_apply
+@[simp]
+theorem eigenvectorUnitary_transpose_apply (j : n) :
+    (eigenvectorUnitary hA)ᵀ j = ⇑(hA.eigenvectorBasis j) :=
+  rfl
 
-/-- The columns of `Matrix.IsHermitian.eigenVectorMatrix` form the basis-/
-theorem transpose_eigenvectorMatrix_apply (i : n) :
-    hA.eigenvectorMatrixᵀ i = hA.eigenvectorBasis i :=
-  funext <| fun j => eigenvectorMatrix_apply hA j i
+@[simp]
+theorem eigenvectorUnitary_apply (i j : n) :
+    eigenvectorUnitary hA i j = ⇑(hA.eigenvectorBasis j) i :=
+  rfl
 
-theorem eigenvectorMatrixInv_apply (i j : n) :
-    hA.eigenvectorMatrixInv i j = star (hA.eigenvectorBasis i j) := by
-  rw [eigenvectorMatrixInv, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis_repr_apply,
-    OrthonormalBasis.repr_apply_apply, PiLp.basisFun_apply, WithLp.equiv_symm_single,
-    EuclideanSpace.inner_single_right, one_mul, IsROrC.star_def]
-#align matrix.is_hermitian.eigenvector_matrix_inv_apply Matrix.IsHermitian.eigenvectorMatrixInv_apply
+theorem eigenvectorUnitary_mulVec (j : n) :
+    eigenvectorUnitary hA *ᵥ Pi.single j 1 = ⇑(hA.eigenvectorBasis j) := by
+  simp_rw [mulVec_single_one, eigenvectorUnitary_transpose_apply]
 
-theorem conjTranspose_eigenvectorMatrixInv : hA.eigenvectorMatrixInvᴴ = hA.eigenvectorMatrix := by
-  ext i j
-  rw [conjTranspose_apply, eigenvectorMatrixInv_apply, eigenvectorMatrix_apply, star_star]
-#align matrix.is_hermitian.conj_transpose_eigenvector_matrix_inv Matrix.IsHermitian.conjTranspose_eigenvectorMatrixInv
+theorem star_eigenvectorUnitary_mulVec (j : n) :
+    (star (eigenvectorUnitary hA : Matrix n n 𝕜)) *ᵥ ⇑(hA.eigenvectorBasis j) = Pi.single j 1 := by
+  rw [← eigenvectorUnitary_mulVec, mulVec_mulVec, unitary.coe_star_mul_self, one_mulVec]
 
-theorem conjTranspose_eigenvectorMatrix : hA.eigenvectorMatrixᴴ = hA.eigenvectorMatrixInv := by
-  rw [← conjTranspose_eigenvectorMatrixInv, conjTranspose_conjTranspose]
-#align matrix.is_hermitian.conj_transpose_eigenvector_matrix Matrix.IsHermitian.conjTranspose_eigenvectorMatrix
+/-- Unitary diagonalization of a Hermitian matrix. -/
+theorem star_mul_self_mul_eq_diagonal :
+    (star (eigenvectorUnitary hA : Matrix n n 𝕜)) * A * (eigenvectorUnitary hA : Matrix n n 𝕜)
+      = diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
+  apply Matrix.toEuclideanLin.injective
+  apply Basis.ext (EuclideanSpace.basisFun n 𝕜).toBasis
+  intro i
+  simp only [toEuclideanLin_apply, OrthonormalBasis.coe_toBasis, EuclideanSpace.basisFun_apply,
+    WithLp.equiv_single, ← mulVec_mulVec, eigenvectorUnitary_mulVec, ← mulVec_mulVec,
+    mulVec_eigenvectorBasis, Matrix.diagonal_mulVec_single, mulVec_smul,
+    star_eigenvectorUnitary_mulVec, RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.equiv_symm_smul,
+    WithLp.equiv_symm_single, Function.comp_apply, mul_one, WithLp.equiv_symm_single]
+  apply PiLp.ext
+  intro j
+  simp only [PiLp.smul_apply, EuclideanSpace.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
 
-/-- *Diagonalization theorem*, *spectral theorem* for matrices; A hermitian matrix can be
-diagonalized by a change of basis.
 
-For the spectral theorem on linear maps, see
+/-- **Diagonalization theorem**, **spectral theorem** for matrices; A hermitian matrix can be
+diagonalized by a change of basis. For the spectral theorem on linear maps, see
 `LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`. -/
 theorem spectral_theorem :
-    hA.eigenvectorMatrixInv * A = diagonal ((↑) ∘ hA.eigenvalues) * hA.eigenvectorMatrixInv := by
-  rw [eigenvectorMatrixInv, PiLp.basis_toMatrix_basisFun_mul]
-  ext i j
-  have := isHermitian_iff_isSymmetric.1 hA
-  convert this.eigenvectorBasis_apply_self_apply finrank_euclideanSpace (EuclideanSpace.single j 1)
-    ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm i) using 1
-  · dsimp only [EuclideanSpace.single, toEuclideanLin_piLp_equiv_symm, toLin'_apply,
-      Matrix.of_apply, IsHermitian.eigenvectorBasis]
-    simp_rw [mulVec_single, mul_one, OrthonormalBasis.coe_toBasis_repr_apply,
-      OrthonormalBasis.repr_reindex]
-    rfl
-  · simp only [diagonal_mul, (· ∘ ·), eigenvalues]
-    rw [eigenvectorBasis, Basis.toMatrix_apply, OrthonormalBasis.coe_toBasis_repr_apply,
-      OrthonormalBasis.repr_reindex, eigenvalues₀, PiLp.basisFun_apply, WithLp.equiv_symm_single]
-#align matrix.is_hermitian.spectral_theorem Matrix.IsHermitian.spectral_theorem
+    A = (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ hA.eigenvalues)
+      * (star (eigenvectorUnitary hA : Matrix n n 𝕜)) := by
+  rw [← star_mul_self_mul_eq_diagonal, mul_assoc, mul_assoc,
+    (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, mul_one,
+    ← mul_assoc, (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, one_mul]
 
 theorem eigenvalues_eq (i : n) :
-    hA.eigenvalues i =
-      IsROrC.re (star (hA.eigenvectorMatrixᵀ i) ⬝ᵥ A.mulVec (hA.eigenvectorMatrixᵀ i)) := by
-  have := hA.spectral_theorem
-  rw [← @Matrix.mul_inv_eq_iff_eq_mul_of_invertible (A := hA.eigenvectorMatrixInv)] at this
-  have := congr_arg IsROrC.re (congr_fun (congr_fun this i) i)
-  rw [diagonal_apply_eq, Function.comp_apply, IsROrC.ofReal_re,
-    inv_eq_left_inv hA.eigenvectorMatrix_mul_inv, ← conjTranspose_eigenvectorMatrix, mul_mul_apply]
-    at this
-  exact this.symm
-#align matrix.is_hermitian.eigenvalues_eq Matrix.IsHermitian.eigenvalues_eq
+    (hA.eigenvalues i) = RCLike.re (dotProduct (star ⇑(hA.eigenvectorBasis i))
+    (A *ᵥ ⇑(hA.eigenvectorBasis i))) := by
+  rw [dotProduct_comm]
+  simp only [mulVec_eigenvectorBasis, smul_dotProduct, ← EuclideanSpace.inner_eq_star_dotProduct,
+    inner_self_eq_norm_sq_to_K, RCLike.smul_re, hA.eigenvectorBasis.orthonormal.1 i,
+    mul_one, algebraMap.coe_one, one_pow, RCLike.one_re]
 
 /-- The determinant of a hermitian matrix is the product of its eigenvalues. -/
 theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
-  apply mul_left_cancel₀ (det_ne_zero_of_left_inverse (eigenvectorMatrix_mul_inv hA))
-  rw [← det_mul, spectral_theorem, det_mul, mul_comm, det_diagonal]
-  simp_rw [Function.comp_apply]
-#align matrix.is_hermitian.det_eq_prod_eigenvalues Matrix.IsHermitian.det_eq_prod_eigenvalues
+  convert congr_arg det hA.spectral_theorem
+  rw [det_mul_right_comm]
+  simp
 
-/-- *spectral theorem* (Alternate form for convenience) A hermitian matrix can be can be
-replaced by a diagonal matrix sandwiched between the eigenvector matrices. This alternate form
-allows direct rewriting of A since: $ A = V D V⁻¹$ -/
-lemma spectral_theorem' :
-    A = hA.eigenvectorMatrix * diagonal ((↑) ∘ hA.eigenvalues) * hA.eigenvectorMatrixInv := by
-  simpa [ ← Matrix.mul_assoc, hA.eigenvectorMatrix_mul_inv, Matrix.one_mul] using
-    congr_arg (hA.eigenvectorMatrix * ·) hA.spectral_theorem
-
-/-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector matrix -/
+/-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
-  conv_lhs => rw [hA.spectral_theorem']
-  have hE := isUnit_det_of_invertible (hA.eigenvectorMatrix)
-  have hiE := isUnit_det_of_invertible (hA.eigenvectorMatrixInv)
-  simp only [rank_mul_eq_right_of_isUnit_det hA.eigenvectorMatrix _ hE,
-    rank_mul_eq_left_of_isUnit_det hA.eigenvectorMatrixInv _ hiE,
-    rank_diagonal, Function.comp_apply, ne_eq, algebraMap.lift_map_eq_zero_iff]
+  conv_lhs => rw [hA.spectral_theorem, ← unitary.coe_star]
+  simp [-isUnit_iff_ne_zero, -unitary.coe_star, rank_diagonal]
 
 /-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
   rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
 
+end DecidableEq
+
+/-- A nonzero Hermitian matrix has an eigenvector with nonzero eigenvalue. -/
+lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
+    ∃ (v : n → 𝕜) (t : ℝ), t ≠ 0 ∧ v ≠ 0 ∧ A *ᵥ v = t • v := by
+  classical
+  have : hA.eigenvalues ≠ 0 := by
+    contrapose! h_ne
+    have := hA.spectral_theorem
+    rwa [h_ne, Pi.comp_zero, RCLike.ofReal_zero, (by rfl : Function.const n (0 : 𝕜) = fun _ ↦ 0),
+      diagonal_zero, mul_zero, zero_mul] at this
+  obtain ⟨i, hi⟩ := Function.ne_iff.mp this
+  exact ⟨_, _, hi, hA.eigenvectorBasis.orthonormal.ne_zero i, hA.mulVec_eigenvectorBasis i⟩
+
 end IsHermitian
 
 end Matrix
+
+/-The following were removed as a result of the refactor, since they either were
+unused in the library, followed as immediate consequences of, or were replaced by
+above results (e.g. results about inverses don't need replacement because their unitary
+analogues have replaced them). -/

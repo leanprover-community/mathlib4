@@ -4,12 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Lean.Meta.ExprLens
-
-import Std.Data.Nat.Init.Lemmas
-
 import ProofWidgets.Component.MakeEditLink
 import ProofWidgets.Component.OfRpcMethod -- needed in all files using this one.
-
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
 
 /-! # Selection panel utilities
@@ -34,7 +30,7 @@ def getGoalLocations (locations : Array GoalsLocation) : Array SubExpr.Pos := Id
 
 /-- Replace the sub-expression at the given position by a fresh meta-variable. -/
 def insertMetaVar (e : Expr) (pos : SubExpr.Pos) : MetaM Expr :=
-replaceSubexpr (fun _ ↦  do mkFreshExprMVar none .synthetic) pos e
+  replaceSubexpr (fun _ ↦ do mkFreshExprMVar none .synthetic) pos e
 
 /-- Replace all meta-variable names by "?_". -/
 def String.renameMetaVar (s : String) : String :=
@@ -75,7 +71,7 @@ elaborator.
 Note that the `pos` and `goalType` arguments to `mkCmdStr` could be extracted for the `Params`
 argument but that extraction would happen in every example, hence it is factored out here.
 We also make sure `mkCmdStr` is executed in the right context.
- -/
+-/
 def mkSelectionPanelRPC {Params : Type} [SelectInsertParamsClass Params]
     (mkCmdStr : (pos : Array GoalsLocation) → (goalType : Expr) → Params →
    MetaM (String × String × Option (String.Pos × String.Pos)))

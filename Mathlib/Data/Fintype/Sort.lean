@@ -6,8 +6,6 @@ Authors: Mario Carneiro
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fintype.Basic
 
-#align_import data.fintype.sort from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
-
 /-!
 # Sorting a finite type
 
@@ -27,7 +25,6 @@ avoid casting issues in further uses of this function. -/
 def monoEquivOfFin (α : Type*) [Fintype α] [LinearOrder α] {k : ℕ} (h : Fintype.card α = k) :
     Fin k ≃o α :=
   (univ.orderIsoOfFin h).trans <| (OrderIso.setCongr _ _ coe_univ).trans OrderIso.Set.univ
-#align mono_equiv_of_fin monoEquivOfFin
 
 variable {α : Type*} [DecidableEq α] [Fintype α] [LinearOrder α] {m n : ℕ} {s : Finset α}
 
@@ -35,22 +32,19 @@ variable {α : Type*} [DecidableEq α] [Fintype α] [LinearOrder α] {m n : ℕ}
 cardinality `n`, then `Fin m ⊕ Fin n ≃ α`. The equivalence sends elements of `Fin m` to
 elements of `s` and elements of `Fin n` to elements of `sᶜ` while preserving order on each
 "half" of `Fin m ⊕ Fin n` (using `Set.orderIsoOfFin`). -/
-def finSumEquivOfFinset (hm : s.card = m) (hn : sᶜ.card = n) : Sum (Fin m) (Fin n) ≃ α :=
+def finSumEquivOfFinset (hm : #s = m) (hn : #sᶜ = n) : Fin m ⊕ Fin n ≃ α :=
   calc
-    Sum (Fin m) (Fin n) ≃ Sum (s : Set α) (sᶜ : Set α) :=
+    Fin m ⊕ Fin n ≃ (s : Set α) ⊕ (sᶜ : Set α) :=
       Equiv.sumCongr (s.orderIsoOfFin hm).toEquiv <|
-        (sᶜ.orderIsoOfFin hn).toEquiv.trans <| Equiv.Set.ofEq s.coe_compl
+        (sᶜ.orderIsoOfFin hn).toEquiv.trans <| Equiv.setCongr s.coe_compl
     _ ≃ α := Equiv.Set.sumCompl _
-#align fin_sum_equiv_of_finset finSumEquivOfFinset
 
 @[simp]
-theorem finSumEquivOfFinset_inl (hm : s.card = m) (hn : sᶜ.card = n) (i : Fin m) :
+theorem finSumEquivOfFinset_inl (hm : #s = m) (hn : #sᶜ = n) (i : Fin m) :
     finSumEquivOfFinset hm hn (Sum.inl i) = s.orderEmbOfFin hm i :=
   rfl
-#align fin_sum_equiv_of_finset_inl finSumEquivOfFinset_inl
 
 @[simp]
-theorem finSumEquivOfFinset_inr (hm : s.card = m) (hn : sᶜ.card = n) (i : Fin n) :
+theorem finSumEquivOfFinset_inr (hm : #s = m) (hn : #sᶜ = n) (i : Fin n) :
     finSumEquivOfFinset hm hn (Sum.inr i) = sᶜ.orderEmbOfFin hn i :=
   rfl
-#align fin_sum_equiv_of_finset_inr finSumEquivOfFinset_inr

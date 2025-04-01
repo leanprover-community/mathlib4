@@ -18,7 +18,7 @@ It also provides the expected value for specific probability mass functions.
 
 namespace PMF
 
-open MeasureTheory BigOperators ENNReal TopologicalSpace
+open MeasureTheory ENNReal TopologicalSpace
 
 section General
 
@@ -30,23 +30,25 @@ theorem integral_eq_tsum (p : PMF α) (f : α → E) (hf : Integrable f p.toMeas
   _ = ∫ a in p.support, f a ∂(p.toMeasure) := by rw [restrict_toMeasure_support p]
   _ = ∑' (a : support p), (p.toMeasure {a.val}).toReal • f a := by
     apply integral_countable f p.support_countable
-    rwa [restrict_toMeasure_support p]
+    rwa [IntegrableOn, restrict_toMeasure_support p]
   _ = ∑' (a : support p), (p a).toReal • f a := by
-    congr with x; congr
+    congr with x; congr 2
     apply PMF.toMeasure_apply_singleton p x (MeasurableSet.singleton _)
   _ = ∑' a, (p a).toReal • f a :=
-    tsum_subtype_eq_of_support_subset $ by calc
+    tsum_subtype_eq_of_support_subset <| calc
       (fun a ↦ (p a).toReal • f a).support ⊆ (fun a ↦ (p a).toReal).support :=
         Function.support_smul_subset_left _ _
       _ ⊆ support p := fun x h1 h2 => h1 (by simp [h2])
 
 theorem integral_eq_sum [Fintype α] (p : PMF α) (f : α → E) :
     ∫ a, f a ∂(p.toMeasure) = ∑ a, (p a).toReal • f a := by
-  rw [integral_fintype _ (integrable_of_fintype _ f)]
-  congr with x; congr
+  rw [integral_fintype _ .of_finite]
+  congr with x; congr 2
   exact PMF.toMeasure_apply_singleton p x (MeasurableSet.singleton _)
 
 end General
 
 theorem bernoulli_expectation {p : ℝ≥0∞} (h : p ≤ 1) :
     ∫ b, cond b 1 0 ∂((bernoulli p h).toMeasure) = p.toReal := by simp [integral_eq_sum]
+
+end PMF

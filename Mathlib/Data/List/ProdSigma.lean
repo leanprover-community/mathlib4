@@ -3,9 +3,8 @@ Copyright (c) 2015 Leonardo de Moura. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.List.BigOperators.Basic
-
-#align_import data.list.prod_sigma from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
+import Mathlib.Data.List.Basic
+import Mathlib.Data.Prod.Basic
 
 /-!
 # Lists in product and sigma types
@@ -26,34 +25,29 @@ namespace List
 @[simp]
 theorem nil_product (l : List β) : (@nil α) ×ˢ l = [] :=
   rfl
-#align list.nil_product List.nil_product
 
 @[simp]
 theorem product_cons (a : α) (l₁ : List α) (l₂ : List β) :
     (a :: l₁) ×ˢ l₂ = map (fun b => (a, b)) l₂ ++ (l₁ ×ˢ l₂) :=
   rfl
-#align list.product_cons List.product_cons
 
 @[simp]
 theorem product_nil : ∀ l : List α, l ×ˢ (@nil β) = []
   | [] => rfl
-  | _ :: l => by simp [product_cons, product_nil]
-#align list.product_nil List.product_nil
+  | _ :: l => by simp [product_cons, product_nil l]
 
 @[simp]
 theorem mem_product {l₁ : List α} {l₂ : List β} {a : α} {b : β} :
     (a, b) ∈ l₁ ×ˢ l₂ ↔ a ∈ l₁ ∧ b ∈ l₂ := by
-  simp_all [SProd.sprod, product, mem_bind, mem_map, Prod.ext_iff, exists_prop, and_left_comm,
+  simp_all [SProd.sprod, product, mem_flatMap, mem_map, Prod.ext_iff, exists_prop, and_left_comm,
     exists_and_left, exists_eq_left, exists_eq_right]
-#align list.mem_product List.mem_product
 
 theorem length_product (l₁ : List α) (l₂ : List β) :
     length (l₁ ×ˢ l₂) = length l₁ * length l₂ := by
   induction' l₁ with x l₁ IH
-  · exact (zero_mul _).symm
-  · simp only [length, product_cons, length_append, IH, right_distrib, one_mul, length_map,
-      add_comm]
-#align list.length_product List.length_product
+  · exact (Nat.zero_mul _).symm
+  · simp only [length, product_cons, length_append, IH, Nat.add_mul, Nat.one_mul, length_map,
+      Nat.add_comm]
 
 /-! ### sigma -/
 
@@ -63,32 +57,40 @@ variable {σ : α → Type*}
 @[simp]
 theorem nil_sigma (l : ∀ a, List (σ a)) : (@nil α).sigma l = [] :=
   rfl
-#align list.nil_sigma List.nil_sigma
 
 @[simp]
 theorem sigma_cons (a : α) (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
     (a :: l₁).sigma l₂ = map (Sigma.mk a) (l₂ a) ++ l₁.sigma l₂ :=
   rfl
-#align list.sigma_cons List.sigma_cons
 
 @[simp]
 theorem sigma_nil : ∀ l : List α, (l.sigma fun a => @nil (σ a)) = []
   | [] => rfl
-  | _ :: l => by simp [sigma_cons, sigma_nil]
-#align list.sigma_nil List.sigma_nil
+  | _ :: l => by simp [sigma_cons, sigma_nil l]
 
 @[simp]
 theorem mem_sigma {l₁ : List α} {l₂ : ∀ a, List (σ a)} {a : α} {b : σ a} :
     Sigma.mk a b ∈ l₁.sigma l₂ ↔ a ∈ l₁ ∧ b ∈ l₂ a := by
-  simp [List.sigma, mem_bind, mem_map, exists_prop, exists_and_left, and_left_comm,
+  simp [List.sigma, mem_flatMap, mem_map, exists_prop, exists_and_left, and_left_comm,
     exists_eq_left, heq_iff_eq, exists_eq_right]
-#align list.mem_sigma List.mem_sigma
 
-theorem length_sigma (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
-    length (l₁.sigma l₂) = (l₁.map fun a => length (l₂ a)).sum := by
+set_option linter.deprecated false in
+/-- See `List.length_sigma` for the corresponding statement using `List.sum`. -/
+@[deprecated "Use `List.length_sigma`." (since := "2024-10-17")]
+theorem length_sigma' (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
+    length (l₁.sigma l₂) = Nat.sum (l₁.map fun a ↦ length (l₂ a)) := by
   induction' l₁ with x l₁ IH
   · rfl
-  · simp only [map, sigma_cons, length_append, length_map, IH, sum_cons]
-#align list.length_sigma List.length_sigma
+  · simp only [map, sigma_cons, length_append, length_map, IH, Nat.sum_cons]
+
+/-! ### Miscellaneous lemmas -/
+
+@[simp 1100]
+theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
+    (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
+  induction' xs with x xs xs_ih
+  · simp only [not_mem_nil, map_nil]
+  · obtain ⟨a, b⟩ := x
+    simp only [mem_cons, Prod.mk_inj, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm]
 
 end List

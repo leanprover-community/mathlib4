@@ -26,7 +26,7 @@ In this file, the basic result is `epi_iff_surjective_up_to_refinements`
 which states that `f : X ⟶ Y` is a morphism in an abelian category,
 then it is an epimorphism if and only if for all `y : A ⟶ Y`,
 there exists an epimorphism `π : A' ⟶ A` and `x : A' ⟶ X` such
-that `π ≫ y = x ≫ f`. In order words, if we allow a precomposition
+that `π ≫ y = x ≫ f`. In other words, if we allow a precomposition
 with an epimorphism, we may lift a morphism to `Y` to a morphism to `X`.
 Following unpublished notes by George Bergman, we shall say that the
 precomposition by an epimorphism `π ≫ y` is a refinement of `y`. Then,
@@ -34,30 +34,27 @@ we get that an epimorphism is a morphism that is "surjective up to refinements".
 (This result is similar to the fact that a morphism of sheaves on
 a topological space or a site is epi iff sections can be lifted
 locally. Then, arguing "up to refinements" is very similar to
-arguing locally for a Grothendieck topology (TODO: show that it
-corresponds to arguing for the canonical topology on the abelian
-category `C` by showing that a morphism in `C` is an epi iff
-the corresponding morphisms of sheaves for the canonical
-topology is an epi, and that the criteria
-`epi_iff_surjective_up_to_refinements` could be deduced from
-this equivalence.)
+arguing locally for a Grothendieck topology (TODO: indeed,
+show that it corresponds to the "refinements" topology on an
+abelian category `C` that is defined by saying that
+a sieve is covering if it contains an epimorphism).
 
 Similarly, it is possible to show that a short complex in an abelian
 category is exact if and only if it is exact up to refinements
 (see `ShortComplex.exact_iff_exact_up_to_refinements`).
 
 As it is outlined in the documentation of the file
-`CategoryTheory.Abelian.Pseudoelements`, the Freyd-Mitchell
+`Mathlib.CategoryTheory.Abelian.Pseudoelements`, the Freyd-Mitchell
 embedding theorem implies the existence of a faithful and exact functor `ι`
 from an abelian category `C` to the category of abelian groups. If we
 define a pseudo-element of `X : C` to be an element in `ι.obj X`, one
 may do diagram chases in any abelian category using these pseudo-elements.
 However, using this approach would require proving this embedding theorem!
 Currently, mathlib contains a weaker notion of pseudo-elements
-`CategoryTheory.Abelian.Pseudoelements`. Some theorems can be obtained
+`Mathlib.CategoryTheory.Abelian.Pseudoelements`. Some theorems can be obtained
 using this notion, but there is the issue that for this notion
 of pseudo-elements a morphism `X ⟶ Y` in `C` is not determined by
-its action on pseudo-elements (see also `Counterexamples/Pseudoelement`).
+its action on pseudo-elements (see also `Counterexamples/Pseudoelement.lean`).
 On the contrary, the approach consisting of working up to refinements
 does not require the introduction of other types: we only need to work
 with morphisms `A ⟶ X` in `C` which we may consider as being
@@ -83,7 +80,7 @@ lemma epi_iff_surjective_up_to_refinements (f : X ⟶ Y) :
       ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x : A' ⟶ X), π ≫ y = x ≫ f := by
   constructor
   · intro _ A a
-    exact ⟨pullback a f, pullback.fst, inferInstance, pullback.snd, pullback.condition⟩
+    exact ⟨pullback a f, pullback.fst a f, inferInstance, pullback.snd a f, pullback.condition⟩
   · intro hf
     obtain ⟨A, π, hπ, a', fac⟩ := hf (𝟙 Y)
     rw [comp_id] at fac
@@ -112,5 +109,14 @@ lemma ShortComplex.Exact.exact_up_to_refinements
     ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (x₁ : A' ⟶ S.X₁), π ≫ x₂ = x₁ ≫ S.f := by
   rw [ShortComplex.exact_iff_exact_up_to_refinements] at hS
   exact hS x₂ hx₂
+
+lemma ShortComplex.eq_liftCycles_homologyπ_up_to_refinements {A : C} (γ : A ⟶ S.homology) :
+    ∃ (A' : C) (π : A' ⟶ A) (_ : Epi π) (z : A' ⟶ S.X₂) (hz : z ≫ S.g = 0),
+      π ≫ γ = S.liftCycles z hz ≫ S.homologyπ := by
+  obtain ⟨A', π, hπ, z, hz⟩ := surjective_up_to_refinements_of_epi S.homologyπ γ
+  refine ⟨A', π, hπ, z ≫ S.iCycles, by simp, ?_⟩
+  rw [hz]
+  congr 1
+  rw [← cancel_mono S.iCycles, liftCycles_i]
 
 end CategoryTheory

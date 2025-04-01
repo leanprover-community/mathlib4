@@ -3,10 +3,10 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Std.Lean.Parser
-import Std.Lean.Meta.DiscrTree
+import Mathlib.Lean.Expr.Rat
 import Mathlib.Tactic.NormNum.Result
 import Mathlib.Util.Qq
+import Lean.Elab.Tactic.Location
 
 /-!
 ## `norm_num` core functionality
@@ -17,10 +17,7 @@ The actual behavior is in `@[norm_num]`-tagged definitions in `Tactic.NormNum.Ba
 and elsewhere.
 -/
 
-
-set_option autoImplicit true
-
-open Lean hiding Rat mkRat
+open Lean
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `norm_num` extensions. -/
@@ -40,9 +37,11 @@ structure NormNumExt where
   /-- The extension should be run in the `post` phase when used as simp plugin. -/
   post := true
   /-- Attempts to prove an expression is equal to some explicit number of the relevant type. -/
-  eval {α : Q(Type u)} (e : Q($α)) : MetaM (Result e)
+  eval {u : Level} {α : Q(Type u)} (e : Q($α)) : MetaM (Result e)
   /-- The name of the `norm_num` extension. -/
   name : Name := by exact decl_name%
+
+variable {u : Level}
 
 /-- Read a `norm_num` extension from a declaration of the right type. -/
 def mkNormNumExt (n : Name) : ImportM NormNumExt := do
@@ -56,20 +55,17 @@ abbrev Entry := Array (Array DiscrTree.Key) × Name
 /-- The state of the `norm_num` extension environment -/
 structure NormNums where
   /-- The tree of `norm_num` extensions. -/
-  tree   : DiscrTree NormNumExt := {}
+  tree : DiscrTree NormNumExt := {}
   /-- Erased `norm_num`s. -/
-  erased  : PHashSet Name := {}
+  erased : PHashSet Name := {}
   deriving Inhabited
-
-/-- Configuration for `DiscrTree`. -/
-def discrTreeConfig : WhnfCoreConfig := {}
 
 /-- Environment extensions for `norm_num` declarations -/
 initialize normNumExt : ScopedEnvExtension Entry (Entry × NormNumExt) NormNums ←
   -- we only need this to deduplicate entries in the DiscrTree
   have : BEq NormNumExt := ⟨fun _ _ ↦ false⟩
   /- Insert `v : NormNumExt` into the tree `dt` on all key sequences given in `kss`. -/
-  let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v discrTreeConfig) dt
+  let insert kss v dt := kss.foldl (fun dt ks ↦ dt.insertCore ks v) dt
   registerScopedEnvExtension {
     mkInitial := pure {}
     ofOLeanEntry := fun _ e@(_, n) ↦ return (e, ← mkNormNumExt n)
@@ -80,14 +76,14 @@ initialize normNumExt : ScopedEnvExtension Entry (Entry × NormNumExt) NormNums 
 
 /-- Run each registered `norm_num` extension on an expression, returning a `NormNum.Result`. -/
 def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := do
-  if e.isNatLit then
+  if e.isRawNatLit then
     let lit : Q(ℕ) := e
     return .isNat (q(instAddMonoidWithOneNat) : Q(AddMonoidWithOne ℕ))
       lit (q(IsNat.raw_refl $lit) : Expr)
   profileitM Exception "norm_num" (← getOptions) do
     let s ← saveState
     let normNums := normNumExt.getState (← getEnv)
-    let arr ← normNums.tree.getMatch e discrTreeConfig
+    let arr ← normNums.tree.getMatch e
     for ext in arr do
       if (bif post then ext.post else ext.pre) && ! normNums.erased.contains ext.name then
         try
@@ -95,7 +91,7 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
           trace[Tactic.norm_num] "{ext.name}:\n{e} ==> {new}"
           return new
         catch err =>
-          trace[Tactic.norm_num] "{e} failed: {err.toMessageData}"
+          trace[Tactic.norm_num] "{ext.name} failed {e}: {err.toMessageData}"
           s.restore
     throwError "{e}: no norm_nums apply"
 
@@ -116,7 +112,7 @@ def deriveInt {α : Q(Type u)} (e : Q($α))
   pure ⟨lit, proof⟩
 
 /-- Run each registered `norm_num` extension on a typed expression `e : α`,
-returning a rational number, typed expressions `n : ℚ` and `d : ℚ` for the numerator and
+returning a rational number, typed expressions `n : ℤ` and `d : ℕ` for the numerator and
 denominator, and a proof of `IsRat e n d` in expression form. -/
 def deriveRat {α : Q(Type u)} (e : Q($α))
     (_inst : Q(DivisionRing $α) := by with_reducible assumption) :
@@ -152,12 +148,13 @@ def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
  { d with erased := d.erased.insert declName }
 
 /--
-  Erase a name marked as a `norm_num` attribute.
+Erase a name marked as a `norm_num` attribute.
 
-  Check that it does in fact have the `norm_num` attribute by making sure it names a `NormNumExt`
-  found somewhere in the state's tree, and is not erased.
+Check that it does in fact have the `norm_num` attribute by making sure it names a `NormNumExt`
+found somewhere in the state's tree, and is not erased.
 -/
-def NormNums.erase [Monad m] [MonadError m] (d : NormNums) (declName : Name) : m NormNums := do
+def NormNums.erase {m : Type → Type} [Monad m] [MonadError m] (d : NormNums) (declName : Name) :
+    m NormNums := do
   unless d.tree.values.any (·.name == declName) && ! d.erased.contains declName
   do
     throwError "'{declName}' does not have [norm_num] attribute"
@@ -180,7 +177,7 @@ initialize registerBuiltinAttribute {
             let e ← elabTerm stx none
             let (_, _, e) ← lambdaMetaTelescope (← mkLambdaFVars (← getLCtx).getFVars e)
             return e
-        DiscrTree.mkPath e discrTreeConfig
+        DiscrTree.mkPath e
       normNumExt.add ((keys, declName), ext) kind
     | _ => throwUnsupportedSyntax
   erase := fun declName => do
@@ -190,9 +187,11 @@ initialize registerBuiltinAttribute {
 }
 
 /-- A simp plugin which calls `NormNum.eval`. -/
-def tryNormNum? (post := false) (e : Expr) : SimpM (Option Simp.Step) := do
-  try return some (.done (← eval e post))
-  catch _ => return none
+def tryNormNum (post := false) (e : Expr) : SimpM Simp.Step := do
+  try
+    return .done (← eval e post)
+  catch _ =>
+    return .continue
 
 variable (ctx : Simp.Context) (useSimp := true) in
 mutual
@@ -202,14 +201,12 @@ mutual
   /-- A `Methods` implementation which calls `norm_num`. -/
   partial def methods : Simp.Methods :=
     if useSimp then {
-      pre := fun e ↦ do
-        Simp.andThen (← Simp.preDefault e discharge) tryNormNum?
-      post := fun e ↦ do
-        Simp.andThen (← Simp.postDefault e discharge) (tryNormNum? (post := true))
+      pre := Simp.preDefault #[] >> tryNormNum
+      post := Simp.postDefault #[] >> tryNormNum (post := true)
       discharge? := discharge
     } else {
-      pre := fun e ↦ Simp.andThen (.visit { expr := e }) tryNormNum?
-      post := fun e ↦ Simp.andThen (.visit { expr := e }) (tryNormNum? (post := true))
+      pre := tryNormNum
+      post := tryNormNum (post := true)
       discharge? := discharge
     }
 
@@ -239,7 +236,7 @@ def normNumAt (g : MVarId) (ctx : Simp.Context) (fvarIdsToSimp : Array FVarId)
   for fvarId in fvarIdsToSimp do
     let localDecl ← fvarId.getDecl
     let type ← instantiateMVars localDecl.type
-    let ctx := { ctx with simpTheorems := ctx.simpTheorems.eraseTheorem (.fvar localDecl.fvarId) }
+    let ctx := ctx.setSimpTheorems (ctx.simpTheorems.eraseTheorem (.fvar localDecl.fvarId))
     let r ← deriveSimp ctx useSimp type
     match r.proof? with
     | some _ =>
@@ -269,18 +266,20 @@ def normNumAt (g : MVarId) (ctx : Simp.Context) (fvarIdsToSimp : Array FVarId)
 
 open Tactic in
 /-- Constructs a simp context from the simp argument syntax. -/
-def getSimpContext (args : Syntax) (simpOnly := false) :
-    TacticM Simp.Context := do
+def getSimpContext (cfg args : Syntax) (simpOnly := false) : TacticM Simp.Context := do
+  let config ← elabSimpConfigCore cfg
   let simpTheorems ←
     if simpOnly then simpOnlyBuiltins.foldlM (·.addConst ·) {} else getSimpTheorems
-  let mut { ctx, starArg } ← elabSimpArgs args[0] (eraseLocal := false) (kind := .simp)
-    { simpTheorems := #[simpTheorems], congrTheorems := ← getSimpCongrTheorems }
+  let mut { ctx, simprocs := _, starArg } ←
+    elabSimpArgs args[0] (eraseLocal := false) (kind := .simp) (simprocs := {})
+      (← Simp.mkContext config (simpTheorems := #[simpTheorems])
+        (congrTheorems := ← getSimpCongrTheorems))
   unless starArg do return ctx
   let mut simpTheorems := ctx.simpTheorems
   for h in ← getPropHyps do
     unless simpTheorems.isErased (.fvar h) do
       simpTheorems ← simpTheorems.addTheorem (.fvar h) (← h.getDecl).toExpr
-  pure { ctx with simpTheorems }
+  return ctx.setSimpTheorems simpTheorems
 
 open Elab.Tactic in
 /--
@@ -292,10 +291,10 @@ Elaborates a call to `norm_num only? [args]` or `norm_num1`.
   of `simp` will be used, not any of the post-processing that `simp only` does without lemmas
 -/
 -- FIXME: had to inline a bunch of stuff from `mkSimpContext` and `simpLocation` here
-def elabNormNum (args : Syntax) (loc : Syntax)
-    (simpOnly := false) (useSimp := true) : TacticM Unit := do
-  let ctx ← getSimpContext args (!useSimp || simpOnly)
+def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) : TacticM Unit := do
   let g ← getMainGoal
+  g.withContext do
+  let ctx ← getSimpContext cfg args (!useSimp || simpOnly)
   let res ← match expandOptLocation loc with
   | .targets hyps simplifyTarget => normNumAt g ctx (← getFVarIds hyps) simplifyTarget useSimp
   | .wildcard => normNumAt g ctx (← g.getNondepPropHyps) (simplifyTarget := true) useSimp
@@ -314,12 +313,13 @@ over numerical types such as `ℕ`, `ℤ`, `ℚ`, `ℝ`, `ℂ` and some general 
 and can prove goals of the form `A = B`, `A ≠ B`, `A < B` and `A ≤ B`, where `A` and `B` are
 numerical expressions. It also has a relatively simple primality prover.
 -/
-elab (name := normNum) "norm_num" only:&" only"? args:(simpArgs ?) loc:(location ?) : tactic =>
-  elabNormNum args loc (simpOnly := only.isSome) (useSimp := true)
+elab (name := normNum)
+    "norm_num" cfg:optConfig only:&" only"? args:(simpArgs ?) loc:(location ?) : tactic =>
+  elabNormNum cfg args loc (simpOnly := only.isSome) (useSimp := true)
 
 /-- Basic version of `norm_num` that does not call `simp`. -/
 elab (name := normNum1) "norm_num1" loc:(location ?) : tactic =>
-  elabNormNum mkNullNode loc (simpOnly := true) (useSimp := false)
+  elabNormNum mkNullNode mkNullNode loc (simpOnly := true) (useSimp := false)
 
 open Lean Elab Tactic
 
@@ -327,14 +327,15 @@ open Lean Elab Tactic
 
 /-- Elaborator for `norm_num1` conv tactic. -/
 @[tactic normNum1Conv] def elabNormNum1Conv : Tactic := fun _ ↦ withMainContext do
-  let ctx ← getSimpContext mkNullNode true
+  let ctx ← getSimpContext mkNullNode mkNullNode true
   Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := false))
 
-@[inherit_doc normNum] syntax (name := normNumConv) "norm_num" &" only"? (simpArgs)? : conv
+@[inherit_doc normNum] syntax (name := normNumConv)
+    "norm_num" optConfig &" only"? (simpArgs)? : conv
 
 /-- Elaborator for `norm_num` conv tactic. -/
 @[tactic normNumConv] def elabNormNumConv : Tactic := fun stx ↦ withMainContext do
-  let ctx ← getSimpContext stx[2] !stx[1].isNone
+  let ctx ← getSimpContext stx[1] stx[3] !stx[2].isNone
   Conv.applySimpResult (← deriveSimp ctx (← instantiateMVars (← Conv.getLhs)) (useSimp := true))
 
 /--
@@ -353,6 +354,8 @@ Unlike `norm_num`, this command does not fail when no simplifications are made.
 
 `#norm_num` understands local variables, so you can use them to introduce parameters.
 -/
-macro (name := normNumCmd) "#norm_num" o:(&" only")?
+macro (name := normNumCmd) "#norm_num" cfg:optConfig o:(&" only")?
     args:(Parser.Tactic.simpArgs)? " :"? ppSpace e:term : command =>
-  `(command| #conv norm_num $[only%$o]? $(args)? => $e)
+  `(command| #conv norm_num $cfg:optConfig $[only%$o]? $(args)? => $e)
+
+end Mathlib.Tactic

@@ -5,9 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Combinatorics.Pigeonhole
-import Mathlib.Algebra.Order.EuclideanAbsoluteValue
-
-#align_import number_theory.class_number.admissible_absolute_value from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
+import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
 
 /-!
 # Admissible absolute values
@@ -34,24 +32,19 @@ local infixl:50 " ≺ " => EuclideanDomain.r
 namespace AbsoluteValue
 
 variable {R : Type*} [EuclideanDomain R]
-
 variable (abv : AbsoluteValue R ℤ)
 
 /-- An absolute value `R → ℤ` is admissible if it respects the Euclidean domain
 structure and a large enough set of elements in `R^n` will contain a pair of
 elements whose remainders are pointwise close together. -/
 structure IsAdmissible extends IsEuclidean abv where
+  /-- The cardinality required for a given `ε`. -/
   protected card : ℝ → ℕ
   /-- For all `ε > 0` and finite families `A`, we can partition the remainders of `A` mod `b`
   into `abv.card ε` sets, such that all elements in each part of remainders are close together. -/
   exists_partition' :
     ∀ (n : ℕ) {ε : ℝ} (_ : 0 < ε) {b : R} (_ : b ≠ 0) (A : Fin n → R),
       ∃ t : Fin n → Fin (card ε), ∀ i₀ i₁, t i₀ = t i₁ → (abv (A i₁ % b - A i₀ % b) : ℝ) < abv b • ε
-#align absolute_value.is_admissible AbsoluteValue.IsAdmissible
-
--- Porting note: no docstrings for IsAdmissible
-attribute [nolint docBlame] IsAdmissible.card
-
 
 namespace IsAdmissible
 
@@ -59,15 +52,14 @@ variable {abv}
 
 /-- For all `ε > 0` and finite families `A`, we can partition the remainders of `A` mod `b`
 into `abv.card ε` sets, such that all elements in each part of remainders are close together. -/
-theorem exists_partition {ι : Type*} [Fintype ι] {ε : ℝ} (hε : 0 < ε) {b : R} (hb : b ≠ 0)
+theorem exists_partition {ι : Type*} [Finite ι] {ε : ℝ} (hε : 0 < ε) {b : R} (hb : b ≠ 0)
     (A : ι → R) (h : abv.IsAdmissible) : ∃ t : ι → Fin (h.card ε),
       ∀ i₀ i₁, t i₀ = t i₁ → (abv (A i₁ % b - A i₀ % b) : ℝ) < abv b • ε := by
-  let e := Fintype.equivFin ι
-  obtain ⟨t, ht⟩ := h.exists_partition' (Fintype.card ι) hε hb (A ∘ e.symm)
-  refine' ⟨t ∘ e, fun i₀ i₁ h ↦ _⟩
+  rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
+  obtain ⟨t, ht⟩ := h.exists_partition' n hε hb (A ∘ e.symm)
+  refine ⟨t ∘ e, fun i₀ i₁ h ↦ ?_⟩
   convert (config := {transparency := .default})
     ht (e i₀) (e i₁) h <;> simp only [e.symm_apply_apply]
-#align absolute_value.is_admissible.exists_partition AbsoluteValue.IsAdmissible.exists_partition
 
 /-- Any large enough family of vectors in `R^n` has a pair of elements
 whose remainders are close together, pointwise. -/
@@ -75,11 +67,13 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     ∀ {ε : ℝ} (_hε : 0 < ε) {b : R} (_hb : b ≠ 0) (A : Fin (h.card ε ^ n).succ → Fin n → R),
       ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ k, (abv (A i₁ k % b - A i₀ k % b) : ℝ) < abv b • ε := by
   haveI := Classical.decEq R
-  induction' n with n ih
-  · intro ε _hε b _hb A
-    refine' ⟨0, 1, _, _⟩
+  induction n with
+  | zero =>
+    intro ε _hε b _hb A
+    refine ⟨0, 1, ?_, ?_⟩
     · simp
     rintro ⟨i, ⟨⟩⟩
+  | succ n ih =>
   intro ε hε b hb A
   let M := h.card ε
   -- By the "nicer" pigeonhole principle, we can find a collection `s`
@@ -96,29 +90,28 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     -- Since the `M` subsets contain more than `M * M^n` elements total,
     -- there must be a subset that contains more than `M^n` elements.
     obtain ⟨s, hs⟩ :=
-      @Fintype.exists_lt_card_fiber_of_mul_lt_card _ _ _ _ _ t (M ^ n)
-        (by simpa only [Fintype.card_fin, pow_succ] using Nat.lt_succ_self (M ^ n.succ))
-    refine'
-      ⟨fun i ↦ (Finset.univ.filter fun x ↦ t x = s).toList.nthLe i _, _, fun i₀ i₁ ↦ ht _ _ _⟩
-    · refine' i.2.trans_le _
-      rwa [Finset.length_toList]
-    · intro i j h
-      ext
-      exact Fin.mk.inj_iff.mp (List.nodup_iff_injective_get.mp (Finset.nodup_toList _) h)
-    have : ∀ i h, (Finset.univ.filter fun x ↦ t x = s).toList.nthLe i h ∈
-        Finset.univ.filter fun x ↦ t x = s := by
-      intro i h
-      exact Finset.mem_toList.mp (List.get_mem _ i h)
-    obtain ⟨_, h₀⟩ := Finset.mem_filter.mp (this i₀ _)
-    obtain ⟨_, h₁⟩ := Finset.mem_filter.mp (this i₁ _)
-    exact h₀.trans h₁.symm
+      Fintype.exists_lt_card_fiber_of_mul_lt_card (f := t)
+        (by simpa only [Fintype.card_fin, pow_succ'] using Nat.lt_succ_self (M ^ n.succ))
+    refine ⟨fun i ↦ (Finset.univ.filter fun x ↦ t x = s).toList.get <| i.castLE ?_, fun i j h ↦ ?_,
+      fun i₀ i₁ ↦ ht _ _ ?_⟩
+    · rwa [Finset.length_toList]
+    · ext
+      simpa [(Finset.nodup_toList _).getElem_inj_iff] using h
+    · #adaptation_note /-- https://github.com/leanprover/lean4/pull/4400
+      This proof was nicer before.
+      Please feel welcome to improve it, by avoiding use of `List.get` in favour of `GetElem`. -/
+      have : ∀ i h, t ((Finset.univ.filter fun x ↦ t x = s).toList.get ⟨i, h⟩) = s := fun i h ↦
+        (Finset.mem_filter.mp (Finset.mem_toList.mp (List.get_mem _ ⟨i, h⟩))).2
+      simp only [Nat.succ_eq_add_one, Finset.length_toList, List.get_eq_getElem] at this
+      simp only [Nat.succ_eq_add_one, List.get_eq_getElem, Fin.coe_castLE]
+      rw [this _ (Nat.lt_of_le_of_lt (Nat.le_of_lt_succ i₁.2) hs),
+        this _ (Nat.lt_of_le_of_lt (Nat.le_of_lt_succ i₀.2) hs)]
   -- Since `s` is large enough, there are two elements of `A ∘ s`
   -- where the second components lie close together.
   obtain ⟨k₀, k₁, hk, h⟩ := ih hε hb fun x ↦ Fin.tail (A (s x))
-  refine' ⟨s k₀, s k₁, fun h ↦ hk (s_inj h), fun i ↦ Fin.cases _ (fun i ↦ _) i⟩
+  refine ⟨s k₀, s k₁, fun h ↦ hk (s_inj h), fun i ↦ Fin.cases ?_ (fun i ↦ ?_) i⟩
   · exact hs k₀ k₁
   · exact h i
-#align absolute_value.is_admissible.exists_approx_aux AbsoluteValue.IsAdmissible.exists_approx_aux
 
 /-- Any large enough family of vectors in `R^ι` has a pair of elements
 whose remainders are close together, pointwise. -/
@@ -127,9 +120,8 @@ theorem exists_approx {ι : Type*} [Fintype ι] {ε : ℝ} (hε : 0 < ε) {b : R
     ∃ i₀ i₁, i₀ ≠ i₁ ∧ ∀ k, (abv (A i₁ k % b - A i₀ k % b) : ℝ) < abv b • ε := by
   let e := Fintype.equivFin ι
   obtain ⟨i₀, i₁, ne, h⟩ := h.exists_approx_aux (Fintype.card ι) hε hb fun x y ↦ A x (e.symm y)
-  refine' ⟨i₀, i₁, ne, fun k ↦ _⟩
+  refine ⟨i₀, i₁, ne, fun k ↦ ?_⟩
   convert h (e k) <;> simp only [e.symm_apply_apply]
-#align absolute_value.is_admissible.exists_approx AbsoluteValue.IsAdmissible.exists_approx
 
 end IsAdmissible
 

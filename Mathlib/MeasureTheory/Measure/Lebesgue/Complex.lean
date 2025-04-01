@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-
-#align_import measure_theory.measure.lebesgue.complex from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 /-!
 # Lebesgue measure on `ℂ`
@@ -27,7 +26,6 @@ namespace Complex
 /-- Measurable equivalence between `ℂ` and `ℝ² = Fin 2 → ℝ`. -/
 def measurableEquivPi : ℂ ≃ᵐ (Fin 2 → ℝ) :=
   basisOneI.equivFun.toContinuousLinearEquiv.toHomeomorph.toMeasurableEquiv
-#align complex.measurable_equiv_pi Complex.measurableEquivPi
 
 @[simp]
 theorem measurableEquivPi_apply (a : ℂ) :
@@ -39,8 +37,7 @@ theorem measurableEquivPi_symm_apply (p : (Fin 2) → ℝ) :
 
 /-- Measurable equivalence between `ℂ` and `ℝ × ℝ`. -/
 def measurableEquivRealProd : ℂ ≃ᵐ ℝ × ℝ :=
-  equivRealProdClm.toHomeomorph.toMeasurableEquiv
-#align complex.measurable_equiv_real_prod Complex.measurableEquivRealProd
+  equivRealProdCLM.toHomeomorph.toMeasurableEquiv
 
 @[simp]
 theorem measurableEquivRealProd_apply (a : ℂ) : measurableEquivRealProd a = (a.re, a.im) := rfl
@@ -56,28 +53,8 @@ theorem volume_preserving_equiv_pi : MeasurePreserving measurableEquivPi := by
     ContinuousLinearEquiv.symm_toHomeomorph, ContinuousLinearEquiv.coe_toHomeomorph,
     Basis.map_addHaar, eq_comm]
   exact (Basis.addHaar_eq_iff _ _).mpr Complex.orthonormalBasisOneI.volume_parallelepiped
-#align complex.volume_preserving_equiv_pi Complex.volume_preserving_equiv_pi
 
 theorem volume_preserving_equiv_real_prod : MeasurePreserving measurableEquivRealProd :=
   (volume_preserving_finTwoArrow ℝ).comp volume_preserving_equiv_pi
-#align complex.volume_preserving_equiv_real_prod Complex.volume_preserving_equiv_real_prod
-
-@[simp]
-theorem volume_ball (a : ℂ) (r : ℝ) :
-    volume (Metric.ball a r) = NNReal.pi * ENNReal.ofReal r ^ 2 := by
-  rw [Measure.addHaar_ball_center, ← EuclideanSpace.volume_ball 0,
-    ← (volume_preserving_equiv_pi.symm).measure_preimage measurableSet_ball,
-    ← ((EuclideanSpace.volume_preserving_measurableEquiv (Fin 2)).symm).measure_preimage
-    measurableSet_ball]
-  refine congrArg _ (Set.ext fun _ => ?_)
-  simp_rw [← MeasurableEquiv.coe_toEquiv_symm, Set.mem_preimage, MeasurableEquiv.coe_toEquiv_symm,
-    measurableEquivPi_symm_apply, mem_ball_zero_iff, norm_eq_abs, abs_def, normSq_add_mul_I,
-    EuclideanSpace.coe_measurableEquiv_symm, EuclideanSpace.norm_eq, WithLp.equiv_symm_pi_apply,
-    Fin.sum_univ_two, Real.norm_eq_abs, _root_.sq_abs]
-
-@[simp]
-theorem volume_closedBall (a : ℂ) (r : ℝ) :
-    volume (Metric.closedBall a r) = NNReal.pi * ENNReal.ofReal r ^ 2 := by
-  rw [MeasureTheory.Measure.addHaar_closedBall_eq_addHaar_ball, Complex.volume_ball]
 
 end Complex

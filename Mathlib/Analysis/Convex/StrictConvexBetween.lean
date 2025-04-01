@@ -5,8 +5,8 @@ Authors: Joseph Myers
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.StrictConvexSpace
-
-#align_import analysis.convex.strict_convex_between from "leanprover-community/mathlib"@"e1730698f86560a342271c0471e4cb72d021aabf"
+import Mathlib.Analysis.Normed.Affine.AddTorsor
+import Mathlib.Analysis.Normed.Affine.Isometry
 
 /-!
 # Betweenness in affine spaces for strictly convex spaces
@@ -20,7 +20,6 @@ open Metric
 open scoped Convex
 
 variable {V P : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
-
 variable [StrictConvexSpace ℝ V]
 
 section PseudoMetricSpace
@@ -41,7 +40,6 @@ theorem Sbtw.dist_lt_max_dist (p : P) {p₁ p₂ p₃ : P} (h : Sbtw ℝ p₁ p�
     simp_rw [@dist_eq_norm_vsub V, ← hr]
     exact
       norm_combo_lt_of_ne (le_max_left _ _) (le_max_right _ _) hp₁p₃ (sub_pos.2 hr1) hr0 (by abel)
-#align sbtw.dist_lt_max_dist Sbtw.dist_lt_max_dist
 
 theorem Wbtw.dist_le_max_dist (p : P) {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p₂ p₃) :
     dist p₂ p ≤ max (dist p₁ p) (dist p₃ p) := by
@@ -49,7 +47,6 @@ theorem Wbtw.dist_le_max_dist (p : P) {p₁ p₂ p₃ : P} (h : Wbtw ℝ p₁ p�
   by_cases hp₃ : p₂ = p₃; · simp [hp₃]
   have hs : Sbtw ℝ p₁ p₂ p₃ := ⟨h, hp₁, hp₃⟩
   exact (hs.dist_lt_max_dist _).le
-#align wbtw.dist_le_max_dist Wbtw.dist_le_max_dist
 
 /-- Given three collinear points, two (not equal) with distance `r` from `p` and one with
 distance at most `r` from `p`, the third point is weakly between the other two points. -/
@@ -62,27 +59,25 @@ theorem Collinear.wbtw_of_dist_eq_of_dist_le {p p₁ p₂ p₃ : P} {r : ℝ}
     · simp [hp₃p₂]
     have hs : Sbtw ℝ p₂ p₃ p₁ := ⟨hw, hp₃p₂, hp₁p₃.symm⟩
     have hs' := hs.dist_lt_max_dist p
-    rw [hp₁, hp₃, lt_max_iff, lt_self_iff_false, or_false_iff] at hs'
+    rw [hp₁, hp₃, lt_max_iff, lt_self_iff_false, or_false] at hs'
     exact False.elim (hp₂.not_lt hs')
   · by_cases hp₁p₂ : p₁ = p₂
     · simp [hp₁p₂]
     have hs : Sbtw ℝ p₃ p₁ p₂ := ⟨hw, hp₁p₃, hp₁p₂⟩
     have hs' := hs.dist_lt_max_dist p
-    rw [hp₁, hp₃, lt_max_iff, lt_self_iff_false, false_or_iff] at hs'
+    rw [hp₁, hp₃, lt_max_iff, lt_self_iff_false, false_or] at hs'
     exact False.elim (hp₂.not_lt hs')
-#align collinear.wbtw_of_dist_eq_of_dist_le Collinear.wbtw_of_dist_eq_of_dist_le
 
 /-- Given three collinear points, two (not equal) with distance `r` from `p` and one with
 distance less than `r` from `p`, the third point is strictly between the other two points. -/
 theorem Collinear.sbtw_of_dist_eq_of_dist_lt {p p₁ p₂ p₃ : P} {r : ℝ}
     (h : Collinear ℝ ({p₁, p₂, p₃} : Set P)) (hp₁ : dist p₁ p = r) (hp₂ : dist p₂ p < r)
     (hp₃ : dist p₃ p = r) (hp₁p₃ : p₁ ≠ p₃) : Sbtw ℝ p₁ p₂ p₃ := by
-  refine' ⟨h.wbtw_of_dist_eq_of_dist_le hp₁ hp₂.le hp₃ hp₁p₃, _, _⟩
+  refine ⟨h.wbtw_of_dist_eq_of_dist_le hp₁ hp₂.le hp₃ hp₁p₃, ?_, ?_⟩
   · rintro rfl
     exact hp₂.ne hp₁
   · rintro rfl
     exact hp₂.ne hp₃
-#align collinear.sbtw_of_dist_eq_of_dist_lt Collinear.sbtw_of_dist_eq_of_dist_lt
 
 end PseudoMetricSpace
 
@@ -100,7 +95,6 @@ lemma dist_add_dist_eq_iff : dist a b + dist b c = dist a c ↔ Wbtw ℝ a b c :
   simp_rw [dist_vsub_cancel_right, ← affineSegment_eq_segment, ← affineSegment_vsub_const_image]
     at this
   rwa [(vsub_left_injective _).mem_set_image] at this
-#align dist_add_dist_eq_iff dist_add_dist_eq_iff
 
 end MetricSpace
 
@@ -111,8 +105,8 @@ variable {E F PE PF : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F] [Norm
 lemma eq_lineMap_of_dist_eq_mul_of_dist_eq_mul (hxy : dist x y = r * dist x z)
     (hyz : dist y z = (1 - r) * dist x z) : y = AffineMap.lineMap x z r := by
   have : y -ᵥ x ∈ [(0 : E) -[ℝ] z -ᵥ x] := by
-    rw [mem_segment_iff_wbtw, ← dist_add_dist_eq_iff, dist_zero_left, dist_vsub_cancel_right,
-      ← dist_eq_norm_vsub', ← dist_eq_norm_vsub', hxy, hyz, ← add_mul, add_sub_cancel'_right,
+    rw [mem_segment_iff_wbtw, ← dist_add_dist_eq_iff, dist_zero, dist_vsub_cancel_right,
+      ← dist_eq_norm_vsub', ← dist_eq_norm_vsub', hxy, hyz, ← add_mul, add_sub_cancel,
       one_mul]
   obtain rfl | hne := eq_or_ne x z
   · obtain rfl : y = x := by simpa
@@ -124,14 +118,12 @@ lemma eq_lineMap_of_dist_eq_mul_of_dist_eq_mul (hxy : dist x y = r * dist x z)
     rw [norm_smul, Real.norm_of_nonneg hb, ← dist_eq_norm_vsub', ← dist_eq_norm_vsub', hxy,
       mul_left_inj' hne] at H'
     rw [AffineMap.lineMap_apply, ← H', H, vsub_vadd]
-#align eq_line_map_of_dist_eq_mul_of_dist_eq_mul eq_lineMap_of_dist_eq_mul_of_dist_eq_mul
 
 lemma eq_midpoint_of_dist_eq_half (hx : dist x y = dist x z / 2) (hy : dist y z = dist x z / 2) :
     y = midpoint ℝ x z := by
   apply eq_lineMap_of_dist_eq_mul_of_dist_eq_mul
   · rwa [invOf_eq_inv, ← div_eq_inv_mul]
   · rwa [invOf_eq_inv, ← one_div, sub_half, one_div, ← div_eq_inv_mul]
-#align eq_midpoint_of_dist_eq_half eq_midpoint_of_dist_eq_half
 
 namespace Isometry
 
@@ -148,14 +140,11 @@ noncomputable def affineIsometryOfStrictConvexSpace (hi : Isometry f) : PF →�
           simp only [dist_midpoint_right, Real.norm_of_nonneg zero_le_two, div_eq_inv_mul])
       hi.continuous with
     norm_map := fun x => by simp [AffineMap.ofMapMidpoint, ← dist_eq_norm_vsub E, hi.dist_eq] }
-#align isometry.affine_isometry_of_strict_convex_space Isometry.affineIsometryOfStrictConvexSpace
 
 @[simp] lemma coe_affineIsometryOfStrictConvexSpace (hi : Isometry f) :
     ⇑hi.affineIsometryOfStrictConvexSpace = f := rfl
-#align isometry.coe_affine_isometry_of_strict_convex_space Isometry.coe_affineIsometryOfStrictConvexSpace
 
 @[simp] lemma affineIsometryOfStrictConvexSpace_apply (hi : Isometry f) (p : PF) :
     hi.affineIsometryOfStrictConvexSpace p = f p := rfl
-#align isometry.affine_isometry_of_strict_convex_space_apply Isometry.affineIsometryOfStrictConvexSpace_apply
 
 end Isometry

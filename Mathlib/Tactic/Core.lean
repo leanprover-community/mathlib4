@@ -3,23 +3,23 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino, Aurélien Saue, Mario Carneiro
 -/
-import Std.Tactic.Simpa
-import Mathlib.Lean.Expr
+import Lean.Elab.PreDefinition.Basic
+import Lean.Elab.Tactic.ElabTerm
+import Lean.Util.Paths
+import Lean.Meta.Tactic.Intro
+import Mathlib.Lean.Expr.Basic
+import Batteries.Tactic.OpenPrivate
 
 /-!
-#
-
-Generally useful tactics.
+# Generally useful tactics.
 
 -/
-
-set_option autoImplicit true
 
 open Lean.Elab.Tactic
 
 namespace Lean
 
-open Elab
+open Elab Meta
 
 /--
 Return the modifiers of declaration `nm` with (optional) docstring `newDoc`.
@@ -38,7 +38,7 @@ def toModifiers (nm : Name) (newDoc : Option String := none) :
       Visibility.regular
     else
       Visibility.protected
-    isNoncomputable := if (env.find? $ nm.mkStr "_cstage1").isSome then false else true
+    isNoncomputable := if (env.find? <| nm.mkStr "_cstage1").isSome then false else true
     recKind := RecKind.default -- nonrec only matters for name resolution, so is irrelevant (?)
     isUnsafe := d.isUnsafe
     attrs := #[] }
@@ -61,14 +61,14 @@ def toPreDefinition (nm newNm : Name) (newType newValue : Expr) (newDoc : Option
     modifiers := mods
     declName := newNm
     type := newType
-    value := newValue }
+    value := newValue
+    termination := .none }
   return predef
 
 /-- Make `nm` protected. -/
 def setProtected {m : Type → Type} [MonadEnv m] (nm : Name) : m Unit :=
   modifyEnv (addProtected · nm)
 
-open private getIntrosSize from Lean.Meta.Tactic.Intro in
 /-- Introduce variables, giving them names from a specified list. -/
 def MVarId.introsWithBinderIdents
     (g : MVarId) (ids : List (TSyntax ``binderIdent)) :
@@ -190,13 +190,14 @@ def allGoals (tac : TacticM Unit) : TacticM Unit := do
           throw ex
   setGoals mvarIdsNew.toList
 
-/-- Simulates the `<;>` tactic combinator. First runs `tac1` and then runs
-    `tac2` on all newly-generated subgoals.
+/-- Simulates the `<;>` tactic combinator.
+First runs `tac1` and then runs `tac2` on all newly-generated subgoals.
 -/
 def andThenOnSubgoals (tac1 : TacticM Unit) (tac2 : TacticM Unit) : TacticM Unit :=
   focus do tac1; allGoals tac2
 
-variable [Monad m] [MonadExcept Exception m]
+universe u
+variable {m : Type → Type u} [Monad m] [MonadExcept Exception m]
 
 /-- Repeats a tactic at most `n` times, stopping sooner if the
 tactic fails. Always succeeds. -/
@@ -251,8 +252,10 @@ def getPackageDir (pkg : String) : IO System.FilePath := do
   let root? ← sp.findM? fun p =>
     (p / pkg).isDir <||> ((p / pkg).withExtension "lean").pathExists
   if let some root := root? then return root
-  throw <| IO.userError s!"Could not find {pkg} directory. {
-    ""}Make sure the LEAN_SRC_PATH environment variable is set correctly."
+  throw <| IO.userError s!"Could not find {pkg} directory. \
+    Make sure the LEAN_SRC_PATH environment variable is set correctly."
 
 /-- Returns the mathlib root directory. -/
 def getMathlibDir := getPackageDir "Mathlib"
+
+end Mathlib

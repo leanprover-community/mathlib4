@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.SpecialFunctions.Exp
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Analysis.Normed.Field.UnitBall
-
-#align_import analysis.complex.circle from "leanprover-community/mathlib"@"ad3dfaca9ea2465198bcf58aa114401c324e29d1"
 
 /-!
 # The circle
@@ -36,119 +34,128 @@ is the kernel of the homomorphism `Complex.normSq` from `ℂ` to `ℝ`.
 
 noncomputable section
 
-open Complex Metric
+open Complex Function Metric
 
 open ComplexConjugate
 
-/-- The unit circle in `ℂ`, here given the structure of a submonoid of `ℂ`. -/
-def circle : Submonoid ℂ :=
-  Submonoid.unitSphere ℂ
-#align circle circle
+/-- The unit circle in `ℂ`. -/
+def Circle : Type := Submonoid.unitSphere ℂ
+deriving TopologicalSpace
 
-@[simp]
-theorem mem_circle_iff_abs {z : ℂ} : z ∈ circle ↔ abs z = 1 :=
-  mem_sphere_zero_iff_norm
-#align mem_circle_iff_abs mem_circle_iff_abs
+namespace Circle
+variable {x y : Circle}
 
-theorem circle_def : ↑circle = { z : ℂ | abs z = 1 } :=
-  Set.ext fun _ => mem_circle_iff_abs
-#align circle_def circle_def
+instance instCoeOut : CoeOut Circle ℂ := subtypeCoe
 
-@[simp]
-theorem abs_coe_circle (z : circle) : abs z = 1 :=
-  mem_circle_iff_abs.mp z.2
-#align abs_coe_circle abs_coe_circle
+instance instCommGroup : CommGroup Circle := Metric.sphere.commGroup
+instance instMetricSpace : MetricSpace Circle := Subtype.metricSpace
 
-theorem mem_circle_iff_normSq {z : ℂ} : z ∈ circle ↔ normSq z = 1 := by simp [Complex.abs]
-#align mem_circle_iff_norm_sq mem_circle_iff_normSq
+@[ext] lemma ext : (x : ℂ) = y → x = y := Subtype.ext
 
-@[simp]
-theorem normSq_eq_of_mem_circle (z : circle) : normSq z = 1 := by simp [normSq_eq_abs]
-#align norm_sq_eq_of_mem_circle normSq_eq_of_mem_circle
+lemma coe_injective : Injective ((↑) : Circle → ℂ) := fun _ _ ↦ ext
 
-theorem ne_zero_of_mem_circle (z : circle) : (z : ℂ) ≠ 0 :=
-  ne_zero_of_mem_unit_sphere z
-#align ne_zero_of_mem_circle ne_zero_of_mem_circle
+-- Not simp because `SetLike.coe_eq_coe` already proves it
+lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
 
-instance commGroup : CommGroup circle :=
-  Metric.sphere.commGroup
+lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
 
-@[simp]
-theorem coe_inv_circle (z : circle) : ↑z⁻¹ = (z : ℂ)⁻¹ :=
-  rfl
-#align coe_inv_circle coe_inv_circle
+@[deprecated (since := "2025-02-16")] alias abs_coe := norm_coe
 
-theorem coe_inv_circle_eq_conj (z : circle) : ↑z⁻¹ = conj (z : ℂ) := by
-  rw [coe_inv_circle, inv_def, normSq_eq_of_mem_circle, inv_one, ofReal_one, mul_one]
-#align coe_inv_circle_eq_conj coe_inv_circle_eq_conj
+@[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_norm_sq]
+@[simp] lemma coe_ne_zero (z : Circle) : (z : ℂ) ≠ 0 := ne_zero_of_mem_unit_sphere z
+@[simp, norm_cast] lemma coe_one : ↑(1 : Circle) = (1 : ℂ) := rfl
+-- Not simp because `OneMemClass.coe_eq_one` already proves it
+@[norm_cast] lemma coe_eq_one : (x : ℂ) = 1 ↔ x = 1 := by rw [← coe_inj, coe_one]
+@[simp, norm_cast] lemma coe_mul (z w : Circle) : ↑(z * w) = (z : ℂ) * w := rfl
+@[simp, norm_cast] lemma coe_inv (z : Circle) : ↑z⁻¹ = (z : ℂ)⁻¹ := rfl
+lemma coe_inv_eq_conj (z : Circle) : ↑z⁻¹ = conj (z : ℂ) := by
+  rw [coe_inv, inv_def, normSq_coe, inv_one, ofReal_one, mul_one]
 
-@[simp]
-theorem coe_div_circle (z w : circle) : ↑(z / w) = (z : ℂ) / w :=
-  circle.subtype.map_div z w
-#align coe_div_circle coe_div_circle
+@[simp, norm_cast] lemma coe_div (z w : Circle) : ↑(z / w) = (z : ℂ) / w := rfl
+
+/-- The coercion `Circle → ℂ` as a monoid homomorphism. -/
+@[simps]
+def coeHom : Circle →* ℂ where
+  toFun := (↑)
+  map_one' := coe_one
+  map_mul' := coe_mul
 
 /-- The elements of the circle embed into the units. -/
-def circle.toUnits : circle →* Units ℂ :=
-  unitSphereToUnits ℂ
-#align circle.to_units circle.toUnits
+def toUnits : Circle →* Units ℂ := unitSphereToUnits ℂ
 
--- written manually because `@[simps]` was slow and generated the wrong lemma
-@[simp]
-theorem circle.toUnits_apply (z : circle) :
-    circle.toUnits z = Units.mk0 ↑z (ne_zero_of_mem_circle z) :=
-  rfl
-#align circle.to_units_apply circle.toUnits_apply
+-- written manually because `@[simps]` generated the wrong lemma
+@[simp] lemma toUnits_apply (z : Circle) : toUnits z = Units.mk0 ↑z z.coe_ne_zero := rfl
 
-instance : CompactSpace circle :=
-  Metric.sphere.compactSpace _ _
-
-instance : TopologicalGroup circle :=
-  Metric.sphere.topologicalGroup
+instance : CompactSpace Circle := Metric.sphere.compactSpace _ _
+instance : IsTopologicalGroup Circle := Metric.sphere.topologicalGroup
+instance instUniformSpace : UniformSpace Circle := instUniformSpaceSubtype
+instance : IsUniformGroup Circle := by
+  convert topologicalGroup_is_uniform_of_compactSpace Circle
+  exact unique_uniformity_of_compact rfl rfl
 
 /-- If `z` is a nonzero complex number, then `conj z / z` belongs to the unit circle. -/
 @[simps]
-def circle.ofConjDivSelf (z : ℂ) (hz : z ≠ 0) : circle :=
-  ⟨conj z / z,
-    mem_circle_iff_abs.2 <| by rw [map_div₀, abs_conj, div_self]; exact Complex.abs.ne_zero hz⟩
-#align circle.of_conj_div_self circle.ofConjDivSelf
+def ofConjDivSelf (z : ℂ) (hz : z ≠ 0) : Circle where
+  val := conj z / z
+  property := mem_sphere_zero_iff_norm.2 <| by
+    rw [norm_div, RCLike.norm_conj, div_self]; exact norm_ne_zero_iff.mpr hz
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`. -/
-def expMapCircle : C(ℝ, circle) where
-  toFun t := ⟨exp (t * I), by simp [exp_mul_I, abs_cos_add_sin_mul_I]⟩
-#align exp_map_circle expMapCircle
+def exp : C(ℝ, Circle) where
+  toFun t := ⟨(t * I).exp, by simp [Submonoid.unitSphere, exp_mul_I, norm_cos_add_sin_mul_I]⟩
+  continuous_toFun := Continuous.subtype_mk (by fun_prop)
+    (by simp [Submonoid.unitSphere, exp_mul_I, norm_cos_add_sin_mul_I])
+
+@[simp, norm_cast]
+theorem coe_exp (t : ℝ) : exp t = Complex.exp (t * Complex.I) := rfl
 
 @[simp]
-theorem expMapCircle_apply (t : ℝ) : ↑(expMapCircle t) = Complex.exp (t * Complex.I) :=
-  rfl
-#align exp_map_circle_apply expMapCircle_apply
+theorem exp_zero : exp 0 = 1 :=
+  Subtype.ext <| by rw [coe_exp, ofReal_zero, zero_mul, Complex.exp_zero, coe_one]
 
 @[simp]
-theorem expMapCircle_zero : expMapCircle 0 = 1 :=
+theorem exp_add (x y : ℝ) : exp (x + y) = exp x * exp y :=
   Subtype.ext <| by
-    rw [expMapCircle_apply, ofReal_zero, zero_mul, exp_zero, Submonoid.coe_one]
-#align exp_map_circle_zero expMapCircle_zero
-
-@[simp]
-theorem expMapCircle_add (x y : ℝ) : expMapCircle (x + y) = expMapCircle x * expMapCircle y :=
-  Subtype.ext <| by
-    simp only [expMapCircle_apply, Submonoid.coe_mul, ofReal_add, add_mul, Complex.exp_add]
-#align exp_map_circle_add expMapCircle_add
+    simp only [coe_exp, Submonoid.coe_mul, ofReal_add, add_mul, Complex.exp_add, coe_mul]
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`,
 considered as a homomorphism of groups. -/
 @[simps]
-def expMapCircleHom : ℝ →+ Additive circle where
-  toFun := Additive.ofMul ∘ expMapCircle
-  map_zero' := expMapCircle_zero
-  map_add' := expMapCircle_add
-#align exp_map_circle_hom expMapCircleHom
+def expHom : ℝ →+ Additive Circle where
+  toFun := Additive.ofMul ∘ exp
+  map_zero' := exp_zero
+  map_add' := exp_add
+
+@[simp] lemma exp_sub (x y : ℝ) : exp (x - y) = exp x / exp y := expHom.map_sub x y
+@[simp] lemma exp_neg (x : ℝ) : exp (-x) = (exp x)⁻¹ := expHom.map_neg x
+
+variable {α β M : Type*}
+
+instance instSMul [SMul ℂ α] : SMul Circle α := Submonoid.smul _
+
+instance instSMulCommClass_left [SMul ℂ β] [SMul α β] [SMulCommClass ℂ α β] :
+    SMulCommClass Circle α β := Submonoid.smulCommClass_left _
+
+instance instSMulCommClass_right [SMul ℂ β] [SMul α β] [SMulCommClass α ℂ β] :
+    SMulCommClass α Circle β := Submonoid.smulCommClass_right _
+
+instance instIsScalarTower [SMul ℂ α] [SMul ℂ β] [SMul α β] [IsScalarTower ℂ α β] :
+    IsScalarTower Circle α β := Submonoid.isScalarTower _
+
+instance instMulAction [MulAction ℂ α] : MulAction Circle α := Submonoid.mulAction _
+
+instance instDistribMulAction [AddMonoid M] [DistribMulAction ℂ M] :
+    DistribMulAction Circle M := Submonoid.distribMulAction _
+
+lemma smul_def [SMul ℂ α] (z : Circle) (a : α) : z • a = (z : ℂ) • a := rfl
+
+instance instContinuousSMul [TopologicalSpace α] [MulAction ℂ α] [ContinuousSMul ℂ α] :
+    ContinuousSMul Circle α := Submonoid.continuousSMul
 
 @[simp]
-theorem expMapCircle_sub (x y : ℝ) : expMapCircle (x - y) = expMapCircle x / expMapCircle y :=
-  expMapCircleHom.map_sub x y
-#align exp_map_circle_sub expMapCircle_sub
+protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace ℂ E]
+    (u : Circle) (v : E) :
+    ‖u • v‖ = ‖v‖ := by
+  rw [Submonoid.smul_def, norm_smul, norm_eq_of_mem_sphere, one_mul]
 
-@[simp]
-theorem expMapCircle_neg (x : ℝ) : expMapCircle (-x) = (expMapCircle x)⁻¹ :=
-  expMapCircleHom.map_neg x
-#align exp_map_circle_neg expMapCircle_neg
+end Circle

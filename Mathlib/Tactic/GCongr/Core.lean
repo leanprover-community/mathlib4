@@ -3,10 +3,12 @@ Copyright (c) 2023 Mario Carneiro, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Init.Order.Defs
-import Mathlib.Tactic.Backtrack
+import Lean
+import Batteries.Lean.Except
+import Batteries.Tactic.Exact
 import Mathlib.Tactic.Core
 import Mathlib.Tactic.GCongr.ForwardAttr
+import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # The `gcongr` ("generalized congruence") tactic
@@ -77,8 +79,8 @@ functions which have different theories when different typeclass assumptions app
 the following lemma is stored with the same `@[gcongr]` data as `mul_le_mul` above, and the two
 lemmas are simply tried in succession to determine which has the typeclasses relevant to the goal:
 ```
-theorem mul_le_mul' [Mul α] [Preorder α] [CovariantClass α α (· * ·) (· ≤ ·)]
-    [CovariantClass α α (Function.swap (· * ·)) (· ≤ ·)] {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
+theorem mul_le_mul' [Mul α] [Preorder α] [MulLeftMono α]
+    [MulRightMono α] {a b c d : α} (h₁ : a ≤ b) (h₂ : c ≤ d) :
     a * c ≤ b * d
 ```
 
@@ -133,9 +135,9 @@ structure GCongrLemma where
 
 /-- Environment extension for "generalized congruence" (`gcongr`) lemmas. -/
 initialize gcongrExt : SimpleScopedEnvExtension ((Name × Name × Array Bool) × GCongrLemma)
-    (HashMap (Name × Name × Array Bool) (Array GCongrLemma)) ←
+    (Std.HashMap (Name × Name × Array Bool) (Array GCongrLemma)) ←
   registerSimpleScopedEnvExtension {
-    addEntry := fun m (n, lem) => m.insert n ((m.findD n #[]).push lem)
+    addEntry := fun m (n, lem) => m.insert n ((m.getD n #[]).push lem)
     initial := {}
   }
 
@@ -148,32 +150,41 @@ The antecedents of such a lemma are classified as generating "main goals" if the
 `x₁ ≈ x₂` for some "varying argument" pair `x₁`/`x₂` (and a possibly different relation `≈` to `∼`),
 or more generally of the form `∀ i h h' j h'', f₁ i j ≈ f₂ i j` (say) for some "varying argument"
 pair `f₁`/`f₂`. (Other antecedents are considered to generate "side goals".) The index of the
-"varying argument" pair corresponding to each "main" antecedent is recorded. -/
+"varying argument" pair corresponding to each "main" antecedent is recorded.
+
+Lemmas involving `<` or `≤` can also be marked `@[bound]` for use in the related `bound` tactic. -/
 initialize registerBuiltinAttribute {
   name := `gcongr
   descr := "generalized congruence"
   add := fun decl _ kind ↦ MetaM.run' do
     let declTy := (← getConstInfo decl).type
     withReducible <| forallTelescopeReducing declTy fun xs targetTy => do
-    let fail := throwError
-      "@[gcongr] attribute only applies to lemmas proving {
-      ""}x₁ ~₁ x₁' → ... xₙ ~ₙ xₙ' → f x₁ ... xₙ ∼ f x₁' ... xₙ', got {declTy}"
-    -- verify that conclusion of the lemma is of the form `rel (head x₁ ... xₙ) (head y₁ ... yₙ)`
-    let .app (.app rel lhs) rhs ← whnf targetTy | fail
-    let some relName := rel.getAppFn.constName? | fail
-    let (some head, lhsArgs) := lhs.withApp fun e a => (e.constName?, a) | fail
-    let (some head', rhsArgs) := rhs.withApp fun e a => (e.constName?, a) | fail
-    unless head == head' && lhsArgs.size == rhsArgs.size do fail
+    let fail (m : MessageData) := throwError "\
+      @[gcongr] attribute only applies to lemmas proving f x₁ ... xₙ ∼ f x₁' ... xₙ'.\n \
+      {m} in the conclusion of {declTy}"
+    -- verify that conclusion of the lemma is of the form `f x₁ ... xₙ ∼ f x₁' ... xₙ'`
+    let .app (.app rel lhs) rhs ← whnf targetTy |
+      fail "No relation with at least two arguments found"
+    let some relName := rel.getAppFn.constName? | fail "No relation found"
+    let (some head, lhsArgs) := lhs.withApp fun e a => (e.constName?, a) |
+      fail "LHS is not a function"
+    let (some head', rhsArgs) := rhs.withApp fun e a => (e.constName?, a) |
+      fail "RHS is not a function"
+    unless head == head' && lhsArgs.size == rhsArgs.size do
+      fail "LHS and RHS do not have the same head function and arity"
     let mut varyingArgs := #[]
     let mut pairs := #[]
     -- iterate through each pair of corresponding (LHS/RHS) inputs to the head function `head` in
     -- the conclusion of the lemma
     for e1 in lhsArgs, e2 in rhsArgs do
       -- we call such a pair a "varying argument" pair if the LHS/RHS inputs are not defeq
-      let isEq ← isDefEq e1 e2
+      -- (and not proofs)
+      let isEq := (← isDefEq e1 e2) || ((← isProof e1) && (← isProof e2))
       if !isEq then
-        -- verify that the "varying argument" pairs are free variables
-        unless e1.isFVar && e2.isFVar do fail
+        let e1 := e1.eta
+        let e2 := e2.eta
+        -- verify that the "varying argument" pairs are free variables (after eta-reduction)
+        unless e1.isFVar && e2.isFVar do fail "Not all arguments are free variables"
         -- add such a pair to the `pairs` array
         pairs := pairs.push (varyingArgs.size, e1, e2)
       -- record in the `varyingArgs` array a boolean (true for varying, false if LHS/RHS are defeq)
@@ -208,146 +219,17 @@ initialize registerBuiltinAttribute {
 
 initialize registerTraceClass `Meta.gcongr
 
-/-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
-look up any relevant @[gcongr] lemmas, try to apply them, recursively run the tactic itself on
-"main" goals which are generated, and run the discharger on side goals which are generated. If there
-is a user-provided template, first check that the template asks us to descend this far into the
-match. -/
-partial def _root_.Lean.MVarId.gcongr
-    (g : MVarId) (template : Option Expr) (names : List (TSyntax ``binderIdent))
-    (side_goal_discharger : MVarId → MetaM Unit)
-    (main_goal_discharger : MVarId → MetaM Unit := fun g => g.assumption) :
-    MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
-  withTraceNode `Meta.gcongr (fun _ => return m!"gcongr: ⊢ {← g.getType}") do
-  match template with
-  | none =>
-    -- A. If there is no template, try to resolve the goal by the provided tactic
-    -- `main_goal_discharger`, and continue on if this fails.
-    try main_goal_discharger g; return (true, names, #[])
-    catch _ => pure ()
-  | some tpl =>
-    -- B. If there is a template:
-    -- (i) if the template is `?_` (or `?_ x1 x2`, created by entering binders)
-    -- then try to resolve the goal by the provided tactic `main_goal_discharger`;
-    -- if this fails, stop and report the existing goal.
-    if let .mvar mvarId := tpl.getAppFn then
-      if let .syntheticOpaque ← mvarId.getKind then
-        try main_goal_discharger g; return (true, names, #[])
-        catch _ => return (false, names, #[g])
-    -- (ii) if the template is *not* `?_` then continue on.
-  -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
-  let .app (.app rel lhs) rhs ← withReducible g.getType'
-    | throwError "gcongr failed, not a relation"
-  let some relName := rel.getAppFn.constName?
-    | throwError "gcongr failed, relation head {rel} is not a constant"
-  let (some lhsHead, lhsArgs) := lhs.withApp fun e a => (e.constName?, a)
-    | if template.isNone then return (false, names, #[g])
-      throwError "gcongr failed, {lhs} is not a constant"
-  let (some rhsHead, rhsArgs) := rhs.withApp fun e a => (e.constName?, a)
-    | if template.isNone then return (false, names, #[g])
-      throwError "gcongr failed, {rhs} is not a constant"
-  -- B. If there is a template, check that it is of the form `tplHead _ ... _` and that
-  -- `tplHead = lhsHead = rhsHead`
-  let tplArgs ← if let some tpl := template then
-    let (some tplHead, tplArgs) := tpl.withApp fun e a => (e.constName?, a)
-      | throwError "gcongr failed, {tpl} is not a constant"
-    unless tplHead == lhsHead && tplArgs.size == rhsArgs.size do
-      throwError "expected {tplHead}, got {lhsHead}\n{lhs}"
-    unless tplHead == rhsHead && tplArgs.size == rhsArgs.size do
-      throwError "expected {tplHead}, got {rhsHead}\n{rhs}"
-    -- and also build an array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in
-    -- the template (these will be used in recursive calls later), and an array of booleans
-    -- according to which of these contain `?_`
-    tplArgs.mapM fun tpl => do
-      let mctx ← getMCtx
-      let hasMVar := tpl.findMVar? fun mvarId =>
-        if let some mdecl := mctx.findDecl? mvarId then
-          mdecl.kind matches .syntheticOpaque
-        else
-          false
-      pure (some tpl, hasMVar.isSome)
-  -- A. If there is no template, check that `lhs = rhs`
-  else
-    unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
-      -- (if not, stop and report the existing goal)
-      return (false, names, #[g])
-    -- and also build an array of booleans according to which arguments `_ ... _` to the head
-    -- function differ between the LHS and RHS
-    (lhsArgs.zip rhsArgs).mapM fun (lhsArg, rhsArg) =>
-      return (none, !(← withReducibleAndInstances <| isDefEq lhsArg rhsArg))
-  -- Name the array of booleans `varyingArgs`: this records which arguments to the head function are
-  -- supposed to vary, according to the template (if there is one), and in the absence of a template
-  -- to record which arguments to the head function differ between the two sides of the goal.
-  let varyingArgs := tplArgs.map (·.2)
-  if varyingArgs.all not then
-    throwError "try rfl"
-  let s ← saveState
-  let mut ex? := none
-  -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
-  -- the goal and whether the boolean-array of varying/nonvarying arguments of such
-  -- a lemma matches `varyingArgs`.
-  for lem in (gcongrExt.getState (← getEnv)).findD (relName, lhsHead, varyingArgs) #[] do
-    let gs ← try
-      -- Try `apply`-ing such a lemma to the goal.
-      Except.ok <$> g.apply (← mkConstWithFreshMVarLevels lem.declName)
-    catch e => pure (Except.error e)
-    match gs with
-    | .error e =>
-      -- If the `apply` fails, go on to try to apply the next matching lemma.
-      -- If all the matching lemmas fail to `apply`, we will report (somewhat arbitrarily) the
-      -- error message on the first failure, so stash that.
-      ex? := ex? <|> (some (← saveState, e))
-      s.restore
-    | .ok gs =>
-      let some e ← getExprMVarAssignment? g | panic! "unassigned?"
-      let args := e.getAppArgs
-      let mut subgoals := #[]
-      let mut names := names
-      -- If the `apply` succeeds, iterate over `(i, j)` belonging to the lemma's `mainSubgoal`
-      -- list: here `i` is an index in the lemma's array of antecedents, and `j` is an index in
-      -- the array of arguments to the head function in the conclusion of the lemma (this should
-      -- be the same as the head function of the LHS and RHS of our goal), such that the `i`-th
-      -- antecedent to the lemma is a relation between the LHS and RHS `j`-th inputs to the head
-      -- function in the goal.
-      for (i, j) in lem.mainSubgoals do
-        -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
-        -- unification ...
-        let some (.mvar mvarId) := args[i]? | panic! "what kind of lemma is this?"
-        -- Introduce all variables and hypotheses in this subgoal.
-        let (names2, _vs, mvarId) ← mvarId.introsWithBinderIdents names
-        -- B. If there is a template, look up the part of the template corresponding to the `j`-th
-        -- input to the head function
-        let tpl ← tplArgs[j]!.1.mapM fun e => do
-          let (_vs, _, e) ← lambdaMetaTelescope e
-          pure e
-        -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
-        -- appropriate template
-        let (_, names2, subgoals2) :=
-          ← mvarId.gcongr tpl names2 side_goal_discharger main_goal_discharger
-        (names, subgoals) := (names2, subgoals ++ subgoals2)
-      let mut out := #[]
-      -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
-      -- by the `apply`.
-      for g in gs do
-        if !(← g.isAssigned) && !subgoals.contains g then
-          try side_goal_discharger g
-          catch _ => out := out.push g
-      -- Return all unresolved subgoals, "main" or "side"
-      return (true, names, out ++ subgoals)
-  -- A. If there is no template, and there was no `@[gcongr]` lemma which matched the goal,
-  -- report this goal back.
-  if template.isNone then
-    return (false, names, #[g])
-  let some (sErr, e) := ex?
-    -- B. If there is a template, and there was no `@[gcongr]` lemma which matched the template,
-    -- fail.
-    | throwError "gcongr failed, no @[gcongr] lemma applies for the template portion {""
-        }{template} and the relation {rel}"
-  -- B. If there is a template, and there was a `@[gcongr]` lemma which matched the template, but
-  -- it was not possible to `apply` that lemma, then report the error message from `apply`-ing that
-  -- lemma.
-  sErr.restore
-  throw e
+syntax "gcongr_discharger" : tactic
+
+/--
+This is used as the default side-goal discharger,
+it calls the `gcongr_discharger` extensible tactic.
+-/
+def gcongrDischarger (goal : MVarId) : MetaM Unit := Elab.Term.TermElabM.run' do
+  trace[Meta.gcongr] "Attempting to discharge side goal {goal}"
+  let [] ← Elab.Tactic.run goal <|
+      Elab.Tactic.evalTactic (Unhygienic.run `(tactic| gcongr_discharger))
+    | failure
 
 open Elab Tactic
 
@@ -387,7 +269,167 @@ def _root_.Lean.MVarId.gcongrForward (hs : Array Expr) (g : MVarId) : MetaM Unit
       catch _ => s.restore
     throwError "gcongr_forward failed"
 
-syntax "gcongr_discharger" : tactic
+/--
+This is used as the default main-goal discharger,
+consisting of running `Lean.MVarId.gcongrForward` (trying a term together with limited
+forward-reasoning on that term) on each nontrivial hypothesis.
+-/
+def gcongrForwardDischarger (goal : MVarId) : MetaM Unit := Elab.Term.TermElabM.run' do
+  let mut hs := #[]
+  -- collect the nontrivial hypotheses
+  for h in ← getLCtx do
+    if !h.isImplementationDetail then
+      hs := hs.push (.fvar h.fvarId)
+  -- run `Lean.MVarId.gcongrForward` on each one
+  goal.gcongrForward hs
+
+/-- The core of the `gcongr` tactic.  Parse a goal into the form `(f _ ... _) ∼ (f _ ... _)`,
+look up any relevant @[gcongr] lemmas, try to apply them, recursively run the tactic itself on
+"main" goals which are generated, and run the discharger on side goals which are generated. If there
+is a user-provided template, first check that the template asks us to descend this far into the
+match. -/
+partial def _root_.Lean.MVarId.gcongr
+    (g : MVarId) (template : Option Expr) (names : List (TSyntax ``binderIdent))
+    (mainGoalDischarger : MVarId → MetaM Unit := gcongrForwardDischarger)
+    (sideGoalDischarger : MVarId → MetaM Unit := gcongrDischarger) :
+    MetaM (Bool × List (TSyntax ``binderIdent) × Array MVarId) := g.withContext do
+  withTraceNode `Meta.gcongr (fun _ => return m!"gcongr: ⊢ {← g.getType}") do
+  match template with
+  | none =>
+    -- A. If there is no template, try to resolve the goal by the provided tactic
+    -- `mainGoalDischarger`, and continue on if this fails.
+    try mainGoalDischarger g; return (true, names, #[])
+    catch _ => pure ()
+  | some tpl =>
+    -- B. If there is a template:
+    -- (i) if the template is `?_` (or `?_ x1 x2`, created by entering binders)
+    -- then try to resolve the goal by the provided tactic `mainGoalDischarger`;
+    -- if this fails, stop and report the existing goal.
+    if let .mvar mvarId := tpl.getAppFn then
+      if let .syntheticOpaque ← mvarId.getKind then
+        try mainGoalDischarger g; return (true, names, #[])
+        catch _ => return (false, names, #[g])
+    -- (ii) if the template is *not* `?_` then continue on.
+  -- Check that the goal is of the form `rel (lhsHead _ ... _) (rhsHead _ ... _)`
+  let .app (.app rel lhs) rhs ← withReducible g.getType'
+    | throwError "gcongr failed, not a relation"
+  let some relName := rel.getAppFn.constName?
+    | throwError "gcongr failed, relation head {rel} is not a constant"
+  let (some lhsHead, lhsArgs) := lhs.withApp fun e a => (e.constName?, a)
+    | if template.isNone then return (false, names, #[g])
+      throwError "gcongr failed, {lhs} is not a constant"
+  let (some rhsHead, rhsArgs) := rhs.withApp fun e a => (e.constName?, a)
+    | if template.isNone then return (false, names, #[g])
+      throwError "gcongr failed, {rhs} is not a constant"
+  -- B. If there is a template, check that it is of the form `tplHead _ ... _` and that
+  -- `tplHead = lhsHead = rhsHead`
+  let tplArgs ← if let some tpl := template then
+    let (some tplHead, tplArgs) := tpl.withApp fun e a => (e.constName?, a)
+      | throwError "gcongr failed, {tpl} is not a constant"
+    unless tplHead == lhsHead && tplArgs.size == rhsArgs.size do
+      throwError "expected {tplHead}, got {lhsHead}\n{lhs}"
+    unless tplHead == rhsHead && tplArgs.size == rhsArgs.size do
+      throwError "expected {tplHead}, got {rhsHead}\n{rhs}"
+    -- and also build an array of `Expr` corresponding to the arguments `_ ... _` to `tplHead` in
+    -- the template (these will be used in recursive calls later), and an array of booleans
+    -- according to which of these contain `?_`
+    tplArgs.mapM fun tpl => do
+      let mctx ← getMCtx
+      let hasMVar := tpl.findMVar? fun mvarId =>
+        if let some mdecl := mctx.findDecl? mvarId then
+          mdecl.kind matches .syntheticOpaque
+        else
+          false
+      pure (some tpl, hasMVar.isSome)
+  -- A. If there is no template, check that `lhs = rhs`
+  else
+    unless lhsHead == rhsHead && lhsArgs.size == rhsArgs.size do
+      -- (if not, stop and report the existing goal)
+      return (false, names, #[g])
+    -- and also build an array of booleans according to which arguments `_ ... _` to the head
+    -- function differ between the LHS and RHS. We treat always treat proofs as being the same
+    -- (even if they have differing types).
+    (lhsArgs.zip rhsArgs).mapM fun (lhsArg, rhsArg) => do
+      let isSame ← withReducibleAndInstances <|
+        return (← isDefEq lhsArg rhsArg) || ((← isProof lhsArg) && (← isProof rhsArg))
+      return (none, !isSame)
+  -- Name the array of booleans `varyingArgs`: this records which arguments to the head function are
+  -- supposed to vary, according to the template (if there is one), and in the absence of a template
+  -- to record which arguments to the head function differ between the two sides of the goal.
+  let varyingArgs := tplArgs.map (·.2)
+  if varyingArgs.all not then
+    throwError "try rfl"
+  let s ← saveState
+  let mut ex? := none
+  -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
+  -- the goal and whether the boolean-array of varying/nonvarying arguments of such
+  -- a lemma matches `varyingArgs`.
+  for lem in (gcongrExt.getState (← getEnv)).getD (relName, lhsHead, varyingArgs) #[] do
+    let gs ← try
+      -- Try `apply`-ing such a lemma to the goal.
+      Except.ok <$> withReducibleAndInstances (g.apply (← mkConstWithFreshMVarLevels lem.declName))
+    catch e => pure (Except.error e)
+    match gs with
+    | .error e =>
+      -- If the `apply` fails, go on to try to apply the next matching lemma.
+      -- If all the matching lemmas fail to `apply`, we will report (somewhat arbitrarily) the
+      -- error message on the first failure, so stash that.
+      ex? := ex? <|> (some (← saveState, e))
+      s.restore
+    | .ok gs =>
+      let some e ← getExprMVarAssignment? g | panic! "unassigned?"
+      let args := e.getAppArgs
+      let mut subgoals := #[]
+      let mut names := names
+      -- If the `apply` succeeds, iterate over `(i, j)` belonging to the lemma's `mainSubgoal`
+      -- list: here `i` is an index in the lemma's array of antecedents, and `j` is an index in
+      -- the array of arguments to the head function in the conclusion of the lemma (this should
+      -- be the same as the head function of the LHS and RHS of our goal), such that the `i`-th
+      -- antecedent to the lemma is a relation between the LHS and RHS `j`-th inputs to the head
+      -- function in the goal.
+      for (i, j) in lem.mainSubgoals do
+        -- We anticipate that such a "main" subgoal should not have been solved by the `apply` by
+        -- unification ...
+        let some (.mvar mvarId) := args[i]? | panic! "what kind of lemma is this?"
+        -- Introduce all variables and hypotheses in this subgoal.
+        let (names2, _vs, mvarId) ← mvarId.introsWithBinderIdents names
+        -- B. If there is a template, look up the part of the template corresponding to the `j`-th
+        -- input to the head function
+        let tpl ← tplArgs[j]!.1.mapM fun e => do
+          let (_vs, _, e) ← lambdaMetaTelescope e
+          pure e
+        -- Recurse: call ourself (`Lean.MVarId.gcongr`) on the subgoal with (if available) the
+        -- appropriate template
+        let (_, names2, subgoals2) ← mvarId.gcongr tpl names2 mainGoalDischarger sideGoalDischarger
+        (names, subgoals) := (names2, subgoals ++ subgoals2)
+      let mut out := #[]
+      -- Also try the discharger on any "side" (i.e., non-"main") goals which were not resolved
+      -- by the `apply`.
+      for g in gs do
+        if !(← g.isAssigned) && !subgoals.contains g then
+          let s ← saveState
+          try
+            let (_, g') ← g.intros
+            sideGoalDischarger g'
+          catch _ =>
+            s.restore
+            out := out.push g
+      -- Return all unresolved subgoals, "main" or "side"
+      return (true, names, out ++ subgoals)
+  -- A. If there is no template, and there was no `@[gcongr]` lemma which matched the goal,
+  -- report this goal back.
+  if template.isNone then
+    return (false, names, #[g])
+  let some (sErr, e) := ex?
+    -- B. If there is a template, and there was no `@[gcongr]` lemma which matched the template,
+    -- fail.
+    | throwError "gcongr failed, no @[gcongr] lemma applies for the template portion \
+        {template} and the relation {rel}"
+  -- B. If there is a template, and there was a `@[gcongr]` lemma which matched the template, but
+  -- it was not possible to `apply` that lemma, then report the error message from `apply`-ing that
+  -- lemma.
+  sErr.restore
+  throw e
 
 /-- The `gcongr` tactic applies "generalized congruence" rules, reducing a relational goal
 between a LHS and RHS matching the same pattern to relational subgoals between the differing
@@ -436,24 +478,8 @@ elab "gcongr" template:(colGt term)?
     Term.elabTerm e (← inferType lhs)
   -- Get the names from the `with x y z` list
   let names := (withArg.raw[1].getArgs.map TSyntax.mk).toList
-  -- The core tactic `Lean.MVarId.gcongr` will be run with side-goal discharger being
-  -- `gcongr_discharger`
-  let disch g := Term.TermElabM.run' do
-    let [] ← Tactic.run g <| evalTactic (Unhygienic.run `(tactic| gcongr_discharger))
-      | failure
-  -- The core tactic `Lean.MVarId.gcongr` will be run with main-goal discharger being the tactic
-  -- consisting of running `Lean.MVarId.gcongrForward` (trying a term together with limited
-  -- forward-reasoning on that term) on each nontrivial hypothesis.
-  let assum g := do
-    let mut hs := #[]
-    -- collect the nontrivial hypotheses
-    for h in ← getLCtx do
-      if !h.isImplementationDetail then
-        hs := hs.push (.fvar h.fvarId)
-    -- run `Lean.MVarId.gcongrForward` on each one
-    g.gcongrForward hs
   -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-  let (progress, _, unsolvedGoalStates) ← g.gcongr template names disch assum
+  let (progress, _, unsolvedGoalStates) ← g.gcongr template names
   if progress then
     replaceMainGoal unsolvedGoalStates.toList
   else
@@ -492,17 +518,12 @@ elab_rules : tactic
       | throwError "rel failed, goal not a relation"
     unless ← isDefEq (← inferType lhs) (← inferType rhs) do
       throwError "rel failed, goal not a relation"
-    -- The core tactic `Lean.MVarId.gcongr` will be run with side-goal discharger being
-    -- `gcongr_discharger`
-    let disch g := Term.TermElabM.run' do
-      let [] ← Tactic.run g <| evalTactic (Unhygienic.run `(tactic| gcongr_discharger))
-        | failure
     -- The core tactic `Lean.MVarId.gcongr` will be run with main-goal discharger being the tactic
     -- consisting of running `Lean.MVarId.gcongrForward` (trying a term together with limited
     -- forward-reasoning on that term) on each of the listed terms.
     let assum g := g.gcongrForward hyps
     -- Time to actually run the core tactic `Lean.MVarId.gcongr`!
-    let (_, _, unsolvedGoalStates) ← g.gcongr none [] disch assum
+    let (_, _, unsolvedGoalStates) ← g.gcongr none [] (mainGoalDischarger := assum)
     match unsolvedGoalStates.toList with
     -- if all goals are solved, succeed!
     | [] => pure ()
@@ -510,5 +531,9 @@ elab_rules : tactic
     | unsolvedGoalStates => do
       let unsolvedGoals ← @List.mapM MetaM _ _ _ MVarId.getType unsolvedGoalStates
       let g := Lean.MessageData.joinSep (unsolvedGoals.map Lean.MessageData.ofExpr) Format.line
-      throwError "rel failed, cannot prove goal by 'substituting' the listed relationships. {""
-        }The steps which could not be automatically justified were: \n{g}"
+      throwError "rel failed, cannot prove goal by 'substituting' the listed relationships. \
+        The steps which could not be automatically justified were:\n{g}"
+
+end GCongr
+
+end Mathlib.Tactic

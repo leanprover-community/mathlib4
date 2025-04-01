@@ -4,9 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
-import Mathlib.LinearAlgebra.FreeModule.Basic
-import Mathlib.LinearAlgebra.FreeModule.Rank
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.FreeAlgebra
 
 /-!
@@ -27,8 +24,6 @@ import Mathlib.LinearAlgebra.FreeAlgebra
 -/
 namespace TensorAlgebra
 
-open scoped BigOperators
-
 universe uκ uR uM
 variable {κ : Type uκ} {R : Type uR} {M : Type uM}
 
@@ -40,10 +35,10 @@ with its index. -/
 noncomputable def equivFreeAlgebra (b : Basis κ R M) :
     TensorAlgebra R M ≃ₐ[R] FreeAlgebra R κ :=
   AlgEquiv.ofAlgHom
-    (TensorAlgebra.lift _ (Finsupp.total _ _ _ (FreeAlgebra.ι _) ∘ₗ b.repr.toLinearMap))
+    (TensorAlgebra.lift _ (Finsupp.linearCombination _ (FreeAlgebra.ι _) ∘ₗ b.repr.toLinearMap))
     (FreeAlgebra.lift _ (ι R ∘ b))
     (by ext; simp)
-    (hom_ext <| b.ext <| fun i => by simp)
+    (hom_ext <| b.ext fun i => by simp)
 
 @[simp]
 lemma equivFreeAlgebra_ι_apply (b : Basis κ R M) (i : κ) :
@@ -66,10 +61,21 @@ instance instModuleFree [Module.Free R M] : Module.Free R (TensorAlgebra R M) :=
   let ⟨⟨_κ, b⟩⟩ := Module.Free.exists_basis (R := R) (M := M)
   .of_basis b.tensorAlgebra
 
+/-- The `TensorAlgebra` of a free module over a commutative semiring with no zero-divisors has
+no zero-divisors. -/
+instance instNoZeroDivisors [NoZeroDivisors R] [Module.Free R M] :
+    NoZeroDivisors (TensorAlgebra R M) :=
+  have ⟨⟨_, b⟩⟩ := ‹Module.Free R M›
+  (equivFreeAlgebra b).toMulEquiv.noZeroDivisors
+
 end CommSemiring
 
 section CommRing
 variable [CommRing R] [AddCommGroup M] [Module R M]
+
+/-- The `TensorAlgebra` of a free module over an integral domain is a domain. -/
+instance instIsDomain [IsDomain R] [Module.Free R M] : IsDomain (TensorAlgebra R M) :=
+  NoZeroDivisors.to_isDomain _
 
 attribute [pp_with_univ] Cardinal.lift
 

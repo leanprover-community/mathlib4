@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Oliver Nash, Bhavik Mehta
+Authors: Oliver Nash, Bhavik Mehta, Daniel Weber, Stefan Kebekus
 -/
+import Mathlib.Tactic.TautoSet
 import Mathlib.Topology.Constructions
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Separation.Basic
 
 /-!
 # Discrete subsets of topological spaces
@@ -30,27 +31,30 @@ see `IsClosed.tendsto_coe_cofinite_iff`.
 
 ## Co-discrete open sets
 
-In a topological space the sets which are open with discrete complement form a filter. We
-formalise this as `Filter.codiscrete`.
+We define the filter `Filter.codiscreteWithin S`, which is the supremum of all `𝓝[S \ {x}] x`.
+This is the filter of all open codiscrete sets within S. We also define `Filter.codiscrete` as
+`Filter.codiscreteWithin univ`, which is the filter of all open codiscrete sets in the space.
 
 -/
 
 open Set Filter Function Topology
 
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
+variable {X Y : Type*} [TopologicalSpace Y] {f : X → Y}
 
 section cofinite_cocompact
 
 lemma tendsto_cofinite_cocompact_iff :
     Tendsto f cofinite (cocompact _) ↔ ∀ K, IsCompact K → Set.Finite (f ⁻¹' K) := by
   rw [hasBasis_cocompact.tendsto_right_iff]
-  refine' forall₂_congr (fun K _ ↦ _)
+  refine forall₂_congr (fun K _ ↦ ?_)
   simp only [mem_compl_iff, eventually_cofinite, not_not, preimage]
+
+variable [TopologicalSpace X]
 
 lemma Continuous.discrete_of_tendsto_cofinite_cocompact [T1Space X] [WeaklyLocallyCompactSpace Y]
     (hf' : Continuous f) (hf : Tendsto f cofinite (cocompact _)) :
     DiscreteTopology X := by
-  refine' singletons_open_iff_discrete.mp (fun x ↦ _)
+  refine singletons_open_iff_discrete.mp (fun x ↦ ?_)
   obtain ⟨K : Set Y, hK : IsCompact K, hK' : K ∈ 𝓝 (f x)⟩ := exists_compact_mem_nhds (f x)
   obtain ⟨U : Set Y, hU₁ : U ⊆ K, hU₂ : IsOpen U, hU₃ : f x ∈ U⟩ := mem_nhds_iff.mp hK'
   have hU₄ : Set.Finite (f⁻¹' U) :=
@@ -66,7 +70,7 @@ lemma tendsto_cofinite_cocompact_of_discrete [DiscreteTopology X]
 lemma IsClosed.tendsto_coe_cofinite_of_discreteTopology
     {s : Set X} (hs : IsClosed s) (_hs' : DiscreteTopology s) :
     Tendsto ((↑) : s → X) cofinite (cocompact _) :=
-  tendsto_cofinite_cocompact_of_discrete hs.closedEmbedding_subtype_val.tendsto_cocompact
+  tendsto_cofinite_cocompact_of_discrete hs.isClosedEmbedding_subtypeVal.tendsto_cocompact
 
 lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [WeaklyLocallyCompactSpace X]
     {s : Set X} (hs : IsClosed s) :
@@ -77,6 +81,8 @@ lemma IsClosed.tendsto_coe_cofinite_iff [T1Space X] [WeaklyLocallyCompactSpace X
 end cofinite_cocompact
 
 section codiscrete_filter
+
+variable [TopologicalSpace X]
 
 /-- Criterion for a subset `S ⊆ X` to be closed and discrete in terms of the punctured
 neighbourhood filter at an arbitrary point of `X`. (Compare `discreteTopology_subtype_iff`.) -/
@@ -91,17 +97,135 @@ theorem isClosed_and_discrete_iff {S : Set X} :
   · refine ⟨fun hx ↦ ?_, fun _ ↦ H⟩
     simpa [disjoint_iff, nhdsWithin, inf_assoc, hx] using H
 
-/-- In any topological space, the open sets with with discrete complement form a filter. -/
-def Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X where
-  sets := {U | IsOpen U ∧ DiscreteTopology ↑Uᶜ}
-  univ_sets := ⟨isOpen_univ, compl_univ.symm ▸ Subsingleton.discreteTopology⟩
-  sets_of_superset := by
-    intro U V hU hV
-    simp_rw [← isClosed_compl_iff, isClosed_and_discrete_iff] at hU ⊢
-    exact fun x ↦ (hU x).mono_right (principal_mono.mpr <| compl_subset_compl.mpr hV)
-  inter_sets := by
-    intro U V hU hV
-    simp_rw [← isClosed_compl_iff, isClosed_and_discrete_iff] at hU hV ⊢
-    exact fun x ↦ compl_inter U V ▸ sup_principal ▸ disjoint_sup_right.mpr ⟨hU x, hV x⟩
+/-- The filter of sets with no accumulation points inside a set `S : Set X`, implemented
+as the supremum over all punctured neighborhoods within `S`. -/
+def Filter.codiscreteWithin (S : Set X) : Filter X := ⨆ x ∈ S, 𝓝[S \ {x}] x
+
+lemma mem_codiscreteWithin {S T : Set X} :
+    S ∈ codiscreteWithin T ↔ ∀ x ∈ T, Disjoint (𝓝[≠] x) (𝓟 (T \ S)) := by
+  simp only [codiscreteWithin, mem_iSup, mem_nhdsWithin, disjoint_principal_right, subset_def,
+    mem_diff, mem_inter_iff, mem_compl_iff]
+  congr! 7 with x - u y
+  tauto
+
+lemma mem_codiscreteWithin_accPt {S T : Set X} :
+    S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
+  simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
+
+/-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
+lemma Filter.codiscreteWithin.mono {U₁ U : Set X} (hU : U₁ ⊆ U) :
+   codiscreteWithin U₁ ≤ codiscreteWithin U := by
+  intro s hs
+  simp_rw [mem_codiscreteWithin, disjoint_principal_right] at hs ⊢
+  intro x hx
+  specialize hs x (hU hx)
+  apply mem_of_superset hs
+  rw [Set.compl_subset_compl]
+  exact diff_subset_diff_left hU
+
+/-- If `s` is codiscrete within `U`, then `sᶜ ∩ U` has discrete topology. -/
+theorem discreteTopology_of_codiscreteWithin {U s : Set X} (h : s ∈ Filter.codiscreteWithin U) :
+    DiscreteTopology ((sᶜ ∩ U) : Set X) := by
+  rw [(by simp : ((sᶜ ∩ U) : Set X) = ((s ∪ Uᶜ)ᶜ : Set X)), discreteTopology_subtype_iff]
+  simp_rw [mem_codiscreteWithin, Filter.disjoint_principal_right] at h
+  intro x hx
+  rw [← Filter.mem_iff_inf_principal_compl, ← Set.compl_diff]
+  simp_all only [h x, Set.compl_union, compl_compl, Set.mem_inter_iff, Set.mem_compl_iff]
+
+/-- Helper lemma for `codiscreteWithin_iff_locallyFiniteComplementWithin`: A set `s` is
+`codiscreteWithin U` iff every point `z ∈ U` has a punctured neighborhood that does not intersect
+`U \ s`. -/
+lemma codiscreteWithin_iff_locallyEmptyComplementWithin {s U : Set X} :
+    s ∈ codiscreteWithin U ↔ ∀ z ∈ U, ∃ t ∈ 𝓝[≠] z, t ∩ (U \ s) = ∅ := by
+  simp only [mem_codiscreteWithin, disjoint_principal_right]
+  refine ⟨fun h z hz ↦ ⟨(U \ s)ᶜ, h z hz, by simp⟩, fun h z hz ↦ ?_⟩
+  rw [← exists_mem_subset_iff]
+  obtain ⟨t, h₁t, h₂t⟩ := h z hz
+  use t, h₁t, (disjoint_iff_inter_eq_empty.mpr h₂t).subset_compl_right
+
+/-- If `U` is closed and `s` is codiscrete within `U`, then `U \ s` is closed. -/
+theorem isClosed_sdiff_of_codiscreteWithin {s U : Set X} (hs : s ∈ codiscreteWithin U)
+    (hU : IsClosed U) :
+    IsClosed (U \ s) := by
+  rw [← isOpen_compl_iff, isOpen_iff_eventually]
+  intro x hx
+  by_cases h₁x : x ∈ U
+  · rw [mem_codiscreteWithin] at hs
+    filter_upwards [eventually_nhdsWithin_iff.1 (disjoint_principal_right.1 (hs x h₁x))]
+    intro a ha
+    by_cases h₂a : a = x
+    · tauto_set
+    · specialize ha h₂a
+      tauto_set
+  · rw [eventually_iff_exists_mem]
+    use Uᶜ, hU.compl_mem_nhds h₁x
+    intro y hy
+    tauto_set
+
+/-- In a T1Space, punctured neighborhoods are stable under removing finite sets of points. -/
+theorem nhdNE_of_nhdNE_sdiff_finite {X : Type*} [TopologicalSpace X] [T1Space X] {x : X}
+    {U s : Set X} (hU : U ∈ 𝓝[≠] x) (hs : Finite s) :
+    U \ s ∈ 𝓝[≠] x := by
+  rw [mem_nhdsWithin] at hU ⊢
+  obtain ⟨t, ht, h₁ts, h₂ts⟩ := hU
+  use t \ (s \ {x})
+  constructor
+  · rw [← isClosed_compl_iff, compl_diff]
+    exact hs.diff.isClosed.union (isClosed_compl_iff.2 ht)
+  · tauto_set
+
+/-- In a T1Space, a set `s` is codiscreteWithin `U` iff it has locally finite complement within `U`.
+More precisely: `s` is codiscreteWithin `U` iff every point `z ∈ U` has a punctured neighborhood
+intersect `U \ s` in only finitely many points. -/
+theorem codiscreteWithin_iff_locallyFiniteComplementWithin [T1Space X] {s U : Set X} :
+    s ∈ codiscreteWithin U ↔ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ (U \ s)) := by
+  rw [codiscreteWithin_iff_locallyEmptyComplementWithin]
+  constructor
+  · intro h z h₁z
+    obtain ⟨t, h₁t, h₂t⟩ := h z h₁z
+    use insert z t, insert_mem_nhds_iff.mpr h₁t
+    by_cases hz : z ∈ U \ s
+    · rw [inter_comm, inter_insert_of_mem hz, inter_comm, h₂t]
+      simp
+    · rw [inter_comm, inter_insert_of_not_mem hz, inter_comm, h₂t]
+      simp
+  · intro h z h₁z
+    obtain ⟨t, h₁t, h₂t⟩ := h z h₁z
+    use t \ (t ∩ (U \ s)), nhdNE_of_nhdNE_sdiff_finite (mem_nhdsWithin_of_mem_nhds h₁t) h₂t
+    simp
+
+/-- In any topological space, the open sets with discrete complement form a filter,
+defined as the supremum of all punctured neighborhoods.
+
+See `Filter.mem_codiscrete'` for the equivalence. -/
+def Filter.codiscrete (X : Type*) [TopologicalSpace X] : Filter X := codiscreteWithin Set.univ
+
+lemma mem_codiscrete {S : Set X} :
+    S ∈ codiscrete X ↔ ∀ x, Disjoint (𝓝[≠] x) (𝓟 Sᶜ) := by
+  simp [codiscrete, mem_codiscreteWithin, compl_eq_univ_diff]
+
+lemma mem_codiscrete_accPt {S : Set X} :
+    S ∈ codiscrete X ↔ ∀ x, ¬AccPt x (𝓟 Sᶜ) := by
+  simp only [mem_codiscrete, disjoint_iff, AccPt, not_neBot]
+
+lemma mem_codiscrete' {S : Set X} :
+    S ∈ codiscrete X ↔ IsOpen S ∧ DiscreteTopology ↑Sᶜ := by
+  rw [mem_codiscrete, ← isClosed_compl_iff, isClosed_and_discrete_iff]
+
+lemma mem_codiscrete_subtype_iff_mem_codiscreteWithin {S : Set X} {U : Set S} :
+    U ∈ codiscrete S ↔ (↑) '' U ∈ codiscreteWithin S := by
+  simp [mem_codiscrete, disjoint_principal_right, compl_compl, Subtype.forall,
+    mem_codiscreteWithin]
+  congr! with x hx
+  constructor
+  · rw [nhdsWithin_subtype, mem_comap]
+    rintro ⟨t, ht1, ht2⟩
+    rw [mem_nhdsWithin] at ht1 ⊢
+    obtain ⟨u, hu1, hu2, hu3⟩ := ht1
+    refine ⟨u, hu1, hu2, fun v hv ↦ ?_⟩
+    simpa using fun hv2 ↦ ⟨hv2, ht2 <| hu3 <| by simpa [hv2]⟩
+  · suffices Tendsto (↑) (𝓝[≠] (⟨x, hx⟩ : S)) (𝓝[≠] x) by convert tendsto_def.mp this _; ext; simp
+    exact tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _
+      continuous_subtype_val.continuousWithinAt <| eventually_mem_nhdsWithin.mono (by simp)
 
 end codiscrete_filter

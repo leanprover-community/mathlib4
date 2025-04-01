@@ -1,34 +1,35 @@
 - attributes:
     description: build
-    time: &time
-      runner: perf_stat
-      perf_stat:
-        properties: ['wall-clock', 'task-clock', 'instructions', 'branches', 'branch-misses']
-      rusage_properties: ['maxrss']
   run_config:
-    <<: *time
+    runner: perf_stat
+    perf_stat:
+      properties: ['wall-clock', 'task-clock', 'instructions:u', 'branches', 'branch-misses']
+    rusage_properties: ['maxrss']
     cmd: |
-      bash -c 'set -eo pipefail; lake clean && LEAN_PATH=$(lean --print-libdir) lake build -v --lean ./scripts/bench/fake-root/bin/lean | ./scripts/bench/accumulate_profile.py | grep -v took'
+      # use build cache for proofwidgets, but not for anything else
+      bash -c 'set -eo pipefail; lake clean 1>&2 && LEAN_PATH=$(lean --print-libdir) lake build proofwidgets 1>&2 && rm -f .lake/packages/batteries/.lake/build/bin/runLinter 1>&2 && LAKE_OVERRIDE_LEAN=true LEAN=$(readlink -m ./scripts/bench/fake-root/bin/lean) lake build --no-cache -v | ./scripts/bench/accumulate_profile.py | grep -v took'
     parse_output: true
+    runs: 1
 - attributes:
     description: lint
   run_config:
     runner: perf_stat
     perf_stat:
-      properties: ['wall-clock', 'instructions']
+      properties: ['wall-clock', 'instructions:u']
     cmd: |
       make lint
+    runs: 1
 - attributes:
     description: open Mathlib
   run_config:
     runner: perf_stat
     perf_stat:
-      properties: ['wall-clock', 'task-clock', 'instructions']
+      properties: ['wall-clock', 'task-clock', 'instructions:u']
     rusage_properties: ['maxrss']
     cmd: |
-      LEAN_PATH=$(lake print-paths --no-build Mathlib | jq -r '.oleanPath | join(":")') lean Mathlib.lean
-    discarded_runs: 1
-    min_runs: 5
+      # run lake+lean like the file worker would
+      LEAN_PATH=$(lake setup-file --no-build Mathlib Mathlib | jq -r '.paths.oleanPath | join(":")') lean Mathlib.lean
+    runs: 5
 - attributes:
     description: size
   run_config:
@@ -38,7 +39,9 @@
       echo -n '.lean|lines: ' &&
       find Mathlib -name '*.lean' -print0 | wc -l --files0-from=- | tail -1 | cut -d' ' -f 1
       echo -n '.olean|bytes: ' &&
-      find .lake/build -name '*.olean' -print0 | wc -c --files0-from=- | tail -1 | cut -d' ' -f 1
+      find .lake/build -name '*.olean' -print0 | wc -c --files0-from=- | tail -1 | cut -d' ' -f 1 &&
+      echo -n 'porting notes|lines: ' &&
+      grep --ignore-case 'porting note' -r Mathlib | wc -l
       "
-    max_runs: 1
+    runs: 1
     runner: output

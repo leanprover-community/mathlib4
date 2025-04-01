@@ -3,6 +3,7 @@ Copyright (c) 2023 Yaël Dillies, Chenyi Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chenyi Li, Ziyu Wang, Yaël Dillies
 -/
+import Mathlib.Analysis.Convex.Function
 import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
@@ -27,7 +28,7 @@ open Real
 variable {E : Type*} [NormedAddCommGroup E]
 
 section NormedSpace
-variable [NormedSpace ℝ E] {φ ψ : ℝ → ℝ} {s : Set E} {a b m : ℝ} {x y : E} {f g : E → ℝ}
+variable [NormedSpace ℝ E] {φ ψ : ℝ → ℝ} {s : Set E} {m : ℝ} {f g : E → ℝ}
 
 /-- A function `f` from a real normed space is uniformly convex with modulus `φ` if
 `f (t • x + (1 - t) • y) ≤ t • f x + (1 - t) • f y - t * (1 - t) * φ ‖x - y‖` for all `t ∈ [0, 1]`.
@@ -55,12 +56,10 @@ protected alias ⟨_, ConvexOn.uniformConvexOn_zero⟩ := uniformConvexOn_zero
 protected alias ⟨_, ConcaveOn.uniformConcaveOn_zero⟩ := uniformConcaveOn_zero
 
 lemma UniformConvexOn.mono (hψφ : ψ ≤ φ) (hf : UniformConvexOn s φ f) : UniformConvexOn s ψ f :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans $
-    sub_le_sub_left (mul_le_mul_of_nonneg_left (hψφ _) $ by positivity) _⟩
+  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans <| by gcongr; apply hψφ⟩
 
 lemma UniformConcaveOn.mono (hψφ : ψ ≤ φ) (hf : UniformConcaveOn s φ f) : UniformConcaveOn s ψ f :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans' $
-    add_le_add_left (mul_le_mul_of_nonneg_left (hψφ _) $ by positivity) _⟩
+  ⟨hf.1, fun x hx y hy a b ha hb hab ↦ (hf.2 hx hy ha hb hab).trans' <| by gcongr; apply hψφ⟩
 
 lemma UniformConvexOn.convexOn (hf : UniformConvexOn s φ f) (hφ : 0 ≤ φ) : ConvexOn ℝ s f := by
   simpa using hf.mono hφ
@@ -70,7 +69,7 @@ lemma UniformConcaveOn.concaveOn (hf : UniformConcaveOn s φ f) (hφ : 0 ≤ φ)
 
 lemma UniformConvexOn.strictConvexOn (hf : UniformConvexOn s φ f) (hφ : ∀ r, r ≠ 0 → 0 < φ r) :
     StrictConvexOn ℝ s f := by
-  refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt $
+  refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt <|
     sub_lt_self _ ?_⟩
   rw [← sub_ne_zero, ← norm_pos_iff] at hxy
   have := hφ _ hxy.ne'
@@ -78,7 +77,7 @@ lemma UniformConvexOn.strictConvexOn (hf : UniformConvexOn s φ f) (hφ : ∀ r,
 
 lemma UniformConcaveOn.strictConcaveOn (hf : UniformConcaveOn s φ f) (hφ : ∀ r, r ≠ 0 → 0 < φ r) :
     StrictConcaveOn ℝ s f := by
-  refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt' $
+  refine ⟨hf.1, fun x hx y hy hxy a b ha hb hab ↦ (hf.2 hx hy ha.le hb.le hab).trans_lt' <|
     lt_add_of_pos_right _ ?_⟩
   rw [← sub_ne_zero, ← norm_pos_iff] at hxy
   have := hφ _ hxy.ne'
@@ -127,11 +126,10 @@ def StrongConcaveOn (s : Set E) (m : ℝ) : (E → ℝ) → Prop :=
 variable {s : Set E} {f : E → ℝ} {m n : ℝ}
 
 nonrec lemma StrongConvexOn.mono (hmn : m ≤ n) (hf : StrongConvexOn s n f) : StrongConvexOn s m f :=
-  hf.mono fun r ↦ mul_le_mul_of_nonneg_right (div_le_div_of_le zero_le_two hmn) $ by positivity
+  hf.mono fun r ↦ by gcongr
 
 nonrec lemma StrongConcaveOn.mono (hmn : m ≤ n) (hf : StrongConcaveOn s n f) :
-    StrongConcaveOn s m f :=
-  hf.mono fun r ↦ mul_le_mul_of_nonneg_right (div_le_div_of_le zero_le_two hmn) $ by positivity
+    StrongConcaveOn s m f := hf.mono fun r ↦ by gcongr
 
 @[simp] lemma strongConvexOn_zero : StrongConvexOn s 0 f ↔ ConvexOn ℝ s f := by
   simp [StrongConvexOn, ← Pi.zero_def]
@@ -148,7 +146,7 @@ nonrec lemma StrongConcaveOn.strictConcaveOn (hf : StrongConcaveOn s m f) (hm : 
 end NormedSpace
 
 section InnerProductSpace
-variable [InnerProductSpace ℝ E] {φ ψ : ℝ → ℝ} {s : Set E} {a b m : ℝ} {x y : E} {f : E → ℝ}
+variable [InnerProductSpace ℝ E] {s : Set E} {a b m : ℝ} {x y : E} {f : E → ℝ}
 
 private lemma aux_sub (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) :
     a * (f x - m / (2 : ℝ) * ‖x‖ ^ 2) + b * (f y - m / (2 : ℝ) * ‖y‖ ^ 2) +

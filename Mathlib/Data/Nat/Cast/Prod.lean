@@ -3,15 +3,13 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.Group.Prod
-
-#align_import data.nat.cast.prod from "leanprover-community/mathlib"@"ee0c179cd3c8a45aa5bffbf1b41d8dbede452865"
 
 /-!
 # The product of two `AddMonoidWithOne`s.
 -/
 
+assert_not_exists MonoidWithZero
 
 variable {α β : Type*}
 
@@ -27,10 +25,18 @@ instance instAddMonoidWithOne : AddMonoidWithOne (α × β) :=
 
 @[simp]
 theorem fst_natCast (n : ℕ) : (n : α × β).fst = n := by induction n <;> simp [*]
-#align prod.fst_nat_cast Prod.fst_natCast
+
+@[simp]
+theorem fst_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (ofNat(n) : α × β).1 = (ofNat(n) : α) :=
+  rfl
 
 @[simp]
 theorem snd_natCast (n : ℕ) : (n : α × β).snd = n := by induction n <;> simp [*]
-#align prod.snd_nat_cast Prod.snd_natCast
+
+@[simp]
+theorem snd_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (ofNat(n) : α × β).2 = (ofNat(n) : β) :=
+  rfl
 
 end Prod

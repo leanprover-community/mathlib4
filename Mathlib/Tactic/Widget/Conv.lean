@@ -5,6 +5,8 @@ Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot
 -/
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Data.String.Defs
+import Batteries.Tactic.Lint
+import Batteries.Lean.Position
 
 /-! # Conv widget
 
@@ -30,7 +32,7 @@ private def solveLevel (expr : Expr) (path : List Nat) : MetaM SolveReturn := ma
     -- we go through the application until we reach the end, counting how many explicit arguments
     -- it has and noting whether they are explicit or implicit
     while descExp.isApp do
-      if (←Lean.Meta.inferType descExp.appFn!).bindingInfo!.isExplicit then
+      if (← Lean.Meta.inferType descExp.appFn!).bindingInfo!.isExplicit then
         explicitList := true::explicitList
         count := count + 1
       else
@@ -130,7 +132,8 @@ def ConvSelectionPanel : Component SelectInsertParams :=
 
 open scoped Json in
 /-- Display a widget panel allowing to generate a `conv` call zooming to the subexpression selected
-in the goal.-/
+in the goal. -/
 elab stx:"conv?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
-  savePanelWidgetInfo stx ``ConvSelectionPanel $ pure $ json% { replaceRange: $(replaceRange) }
+  Widget.savePanelWidgetInfo ConvSelectionPanel.javascriptHash
+   (pure <| json% { replaceRange: $(replaceRange) }) stx

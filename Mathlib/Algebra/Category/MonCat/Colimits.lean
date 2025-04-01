@@ -1,13 +1,11 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-
-#align_import algebra.category.Mon.colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The category of monoids has all colimits.
@@ -48,8 +46,9 @@ Monoid.mk : {M : Type u} →
 ```
 -/
 
+assert_not_exists MonoidWithZero
 
-universe v
+universe v u
 
 open CategoryTheory
 
@@ -65,7 +64,7 @@ and the identifications given by the morphisms in the diagram.
 -/
 
 
-variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCat.{v})
+variable {J : Type v} [Category.{u} J] (F : J ⥤ MonCat.{v})
 
 /-- An inductive type representing all monoid expressions (without relations)
 on a collection of types indexed by the objects of `J`.
@@ -76,8 +75,6 @@ inductive Prequotient
   -- Then one generator for each operation
   | one : Prequotient
   | mul : Prequotient → Prequotient → Prequotient
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.prequotient MonCat.Colimits.Prequotient
 
 instance : Inhabited (Prequotient F) :=
   ⟨Prequotient.one⟩
@@ -106,25 +103,19 @@ inductive Relation : Prequotient F → Prequotient F → Prop-- Make it an equiv
   | mul_assoc : ∀ x y z, Relation (mul (mul x y) z) (mul x (mul y z))
   | one_mul : ∀ x, Relation (mul one x) x
   | mul_one : ∀ x, Relation (mul x one) x
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.relation MonCat.Colimits.Relation
 
 /-- The setoid corresponding to monoid expressions modulo monoid relations and identifications.
 -/
 def colimitSetoid : Setoid (Prequotient F) where
   r := Relation F
   iseqv := ⟨Relation.refl, Relation.symm _ _, Relation.trans _ _ _⟩
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.colimit_setoid MonCat.Colimits.colimitSetoid
 
 attribute [instance] colimitSetoid
 
-/-- The underlying type of the colimit of a diagram in `Mon`.
+/-- The underlying type of the colimit of a diagram in `MonCat`.
 -/
 def ColimitType : Type v :=
   Quotient (colimitSetoid F)
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.colimit_type MonCat.Colimits.ColimitType
 
 instance : Inhabited (ColimitType F) := by
   dsimp [ColimitType]
@@ -132,48 +123,37 @@ instance : Inhabited (ColimitType F) := by
 
 instance monoidColimitType : Monoid (ColimitType F) where
   one := Quotient.mk _ one
-  mul := Quotient.map₂ mul <| fun x x' rx y y' ry =>
+  mul := Quotient.map₂ mul fun _ x' rx y _ ry =>
     Setoid.trans (Relation.mul_1 _ _ y rx) (Relation.mul_2 x' _ _ ry)
-  one_mul := Quotient.ind <| fun _ => Quotient.sound <| Relation.one_mul _
-  mul_one := Quotient.ind <| fun _ => Quotient.sound <| Relation.mul_one _
-  mul_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
+  one_mul := Quotient.ind fun _ => Quotient.sound <| Relation.one_mul _
+  mul_one := Quotient.ind fun _ => Quotient.sound <| Relation.mul_one _
+  mul_assoc := Quotient.ind fun _ => Quotient.ind₂ fun _ _ =>
     Quotient.sound <| Relation.mul_assoc _ _ _
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.monoid_colimit_type MonCat.Colimits.monoidColimitType
 
 @[simp]
 theorem quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.quot_one MonCat.Colimits.quot_one
 
 @[simp]
 theorem quot_mul (x y : Prequotient F) : Quot.mk Setoid.r (mul x y) =
     @HMul.hMul (ColimitType F) (ColimitType F) (ColimitType F) _
       (Quot.mk Setoid.r x) (Quot.mk Setoid.r y) :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.quot_mul MonCat.Colimits.quot_mul
 
 /-- The bundled monoid giving the colimit of a diagram. -/
 def colimit : MonCat :=
-  ⟨ColimitType F, by infer_instance⟩
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.colimit MonCat.Colimits.colimit
+  of (ColimitType F)
 
 /-- The function from a given monoid in the diagram to the colimit monoid. -/
 def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
   Quot.mk _ (Prequotient.of j x)
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.cocone_fun MonCat.Colimits.coconeFun
 
 /-- The monoid homomorphism from a given monoid in the diagram to the colimit monoid. -/
-def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
-  toFun := coconeFun F j
-  map_one' := Quot.sound (Relation.one _)
-  map_mul' _ _ := Quot.sound (Relation.mul _ _ _)
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.cocone_morphism MonCat.Colimits.coconeMorphism
+def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
+  ofHom
+  { toFun := coconeFun F j
+    map_one' := Quot.sound (Relation.one _)
+    map_mul' _ _ := Quot.sound (Relation.mul _ _ _) }
 
 @[simp]
 theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
@@ -181,23 +161,17 @@ theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
   ext
   apply Quot.sound
   apply Relation.map
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.cocone_naturality MonCat.Colimits.cocone_naturality
 
 @[simp]
 theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
   rw [← cocone_naturality F f]
   rfl
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.cocone_naturality_components MonCat.Colimits.cocone_naturality_components
 
 /-- The cocone over the proposed colimit monoid. -/
 def colimitCocone : Cocone F where
   pt := colimit F
   ι := { app := coconeMorphism F }
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.colimit_cocone MonCat.Colimits.colimitCocone
 
 /-- The function from the free monoid on the diagram to the cone point of any other cocone. -/
 @[simp]
@@ -205,8 +179,6 @@ def descFunLift (s : Cocone F) : Prequotient F → s.pt
   | Prequotient.of j x => (s.ι.app j) x
   | one => 1
   | mul x y => descFunLift _ x * descFunLift _ y
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.desc_fun_lift MonCat.Colimits.descFunLift
 
 /-- The function from the colimit monoid to the cone point of any other cocone. -/
 def descFun (s : Cocone F) : ColimitType F → s.pt := by
@@ -218,46 +190,44 @@ def descFun (s : Cocone F) : ColimitType F → s.pt := by
     | symm x y _ h => exact h.symm
     | trans x y z _ _ h₁ h₂ => exact h₁.trans h₂
     | map j j' f x => exact s.w_apply f x
-    | mul j x y => exact map_mul _ _ _
-    | one j => exact map_one _
+    | mul j x y => exact map_mul (s.ι.app j).hom x y
+    | one j => exact map_one (s.ι.app j).hom
     | mul_1 x x' y _ h => exact congr_arg (· * _) h
     | mul_2 x y y' _ h => exact congr_arg (_ * ·) h
     | mul_assoc x y z => exact mul_assoc _ _ _
     | one_mul x => exact one_mul _
     | mul_one x => exact mul_one _
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.desc_fun MonCat.Colimits.descFun
 
 /-- The monoid homomorphism from the colimit monoid to the cone point of any other cocone. -/
-def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
-  toFun := descFun F s
-  map_one' := rfl
-  map_mul' x y := by
-    induction x using Quot.inductionOn
-    induction y using Quot.inductionOn
-    dsimp [descFun]
-    rw [← quot_mul]
-    simp only [descFunLift]
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.desc_morphism MonCat.Colimits.descMorphism
+def descMorphism (s : Cocone F) : colimit F ⟶ s.pt :=
+  ofHom
+  { toFun := descFun F s
+    map_one' := rfl
+    map_mul' x y := by
+      induction x using Quot.inductionOn
+      induction y using Quot.inductionOn
+      dsimp [descFun]
+      rw [← quot_mul]
+      simp only [descFunLift] }
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitIsColimit : IsColimit (colimitCocone F) where
   desc s := descMorphism F s
   uniq s m w := by
     ext x
-    induction' x using Quot.inductionOn with x
-    induction' x with j x x y hx hy
-    · change _ = s.ι.app j _
+    induction x using Quot.inductionOn with | h x => ?_
+    induction x with
+    | of j =>
+      change _ = s.ι.app j _
       rw [← w j]
       rfl
-    · rw [quot_one, map_one]
+    | one =>
+      rw [quot_one, map_one]
       rfl
-    · rw [quot_mul, map_mul, hx, hy]
-      dsimp [descMorphism, FunLike.coe, descFun]
+    | mul x y hx hy =>
+      rw [quot_mul, map_mul, hx, hy]
+      dsimp [descMorphism, DFunLike.coe, descFun]
       simp only [← quot_mul, descFunLift]
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.colimit_is_colimit MonCat.Colimits.colimitIsColimit
 
 instance hasColimits_monCat : HasColimits MonCat where
   has_colimits_of_shape _ _ :=
@@ -265,7 +235,5 @@ instance hasColimits_monCat : HasColimits MonCat where
         HasColimit.mk
           { cocone := colimitCocone F
             isColimit := colimitIsColimit F } }
-set_option linter.uppercaseLean3 false in
-#align Mon.colimits.has_colimits_Mon MonCat.Colimits.hasColimits_monCat
 
 end MonCat.Colimits

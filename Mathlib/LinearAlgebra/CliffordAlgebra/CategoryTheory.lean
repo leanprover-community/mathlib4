@@ -5,8 +5,9 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat
+import Mathlib.Algebra.Category.AlgebraCat.Basic
 
-/-! # Category-theoretic interpretations of `clifford_algebra`
+/-! # Category-theoretic interpretations of `CliffordAlgebra`
 
 ## Main definitions
 
@@ -24,7 +25,7 @@ variable {R : Type u} [CommRing R]
 This is `CliffordAlgebra.map` through the lens of category theory. -/
 @[simps]
 def QuadraticModuleCat.cliffordAlgebra : QuadraticModuleCat.{u} R ⥤ AlgebraCat.{u} R where
-  obj M := { carrier := CliffordAlgebra M.form }
-  map {_M _N} f := CliffordAlgebra.map f.toIsometry
-  map_id _M := CliffordAlgebra.map_id _
-  map_comp {_M _N _P} f g := (CliffordAlgebra.map_comp_map g.toIsometry f.toIsometry).symm
+  obj M := AlgebraCat.of R (CliffordAlgebra M.form)
+  map {_M _N} f := AlgebraCat.ofHom <| CliffordAlgebra.map f.toIsometry
+  map_id _M := by simp
+  map_comp {_M _N _P} f g := by ext; simp

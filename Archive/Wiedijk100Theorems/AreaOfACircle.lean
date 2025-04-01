@@ -8,8 +8,6 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.InverseDeriv
 import Mathlib.MeasureTheory.Integral.FundThmCalculus
 import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 
-#align_import wiedijk_100_theorems.area_of_a_circle from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
-
 /-!
 # Freek № 9: The Area of a Circle
 
@@ -57,7 +55,6 @@ namespace Theorems100
   See the module docstring for an explanation of why we don't define the disc in Euclidean space. -/
 def disc (r : ℝ) :=
   {p : ℝ × ℝ | p.1 ^ 2 + p.2 ^ 2 < r ^ 2}
-#align theorems_100.disc Theorems100.disc
 
 variable (r : ℝ≥0)
 
@@ -76,18 +73,16 @@ theorem disc_eq_regionBetween :
       exact ⟨⟨left, right.le⟩, sq_lt.mp h⟩
   · rw [add_comm, ← lt_sub_iff_add_lt]
     exact sq_lt.mpr h.2
-#align theorems_100.disc_eq_region_between Theorems100.disc_eq_regionBetween
 
 /-- The disc is a `MeasurableSet`. -/
 theorem measurableSet_disc : MeasurableSet (disc r) := by
   apply measurableSet_lt <;> apply Continuous.measurable <;> continuity
-#align theorems_100.measurable_set_disc Theorems100.measurableSet_disc
 
 /-- **Area of a Circle**: The area of a disc with radius `r` is `π * r ^ 2`. -/
 theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
   let f x := sqrt (r ^ 2 - x ^ 2)
   let F x := (r : ℝ) ^ 2 * arcsin (r⁻¹ * x) + x * sqrt (r ^ 2 - x ^ 2)
-  have hf : Continuous f := by continuity
+  have hf : Continuous f := by fun_prop
   suffices ∫ x in -r..r, 2 * f x = NNReal.pi * r ^ 2 by
     have h : IntegrableOn f (Ioc (-r) r) := hf.integrableOn_Icc.mono_set Ioc_subset_Icc_self
     calc
@@ -112,26 +107,24 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
     · have h₁ : (r:ℝ) ^ 2 - x ^ 2 > 0 := sub_pos_of_lt (sq_lt_sq' hx1 hx2)
       have h : sqrt ((r:ℝ) ^ 2 - x ^ 2) ^ 3 = ((r:ℝ) ^ 2 - x ^ 2) * sqrt ((r: ℝ) ^ 2 - x ^ 2) := by
         rw [pow_three, ← mul_assoc, mul_self_sqrt (by positivity)]
-      field_simp
+      field_simp [f]
       ring_nf
       rw [h]
       ring
     · suffices -(1 : ℝ) < (r : ℝ)⁻¹ * x by exact this.ne'
       calc
-        -(1 : ℝ) = (r : ℝ)⁻¹ * -r := by simp [inv_mul_cancel hlt.ne']
+        -(1 : ℝ) = (r : ℝ)⁻¹ * -r := by simp [inv_mul_cancel₀ hlt.ne']
         _ < (r : ℝ)⁻¹ * x := by nlinarith [inv_pos.mpr hlt]
     · suffices (r : ℝ)⁻¹ * x < 1 by exact this.ne
       calc
         (r : ℝ)⁻¹ * x < (r : ℝ)⁻¹ * r := by nlinarith [inv_pos.mpr hlt]
-        _ = 1 := inv_mul_cancel hlt.ne'
+        _ = 1 := inv_mul_cancel₀ hlt.ne'
     · nlinarith
-  have hcont : ContinuousOn F (Icc (-r) r) := (by continuity : Continuous F).continuousOn
   calc
     ∫ x in -r..r, 2 * f x = F r - F (-r) :=
-      integral_eq_sub_of_hasDerivAt_of_le (neg_le_self r.2) hcont hderiv
+      integral_eq_sub_of_hasDerivAt_of_le (neg_le_self r.2) (by fun_prop) hderiv
         (continuous_const.mul hf).continuousOn.intervalIntegrable
     _ = NNReal.pi * (r : ℝ) ^ 2 := by
-      norm_num [inv_mul_cancel hlt.ne', ← mul_div_assoc, mul_comm π]
-#align theorems_100.area_disc Theorems100.area_disc
+      norm_num [F, inv_mul_cancel₀ hlt.ne', ← mul_div_assoc, mul_comm π]
 
 end Theorems100

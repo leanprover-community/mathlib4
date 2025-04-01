@@ -1,0 +1,127 @@
+name: Post PR summary comment
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    name: "post-or-update-summary-comment"
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        fetch-depth: 0
+
+    - name: Update the merge-conflict label
+      run: |
+        printf 'PR number: "%s"\n' "${{ github.event.pull_request.number }}"
+        if git merge origin/master --no-ff --no-commit
+        then
+          git merge --abort || true
+          echo "This PR does not have merge conflicts with master."
+          # we use curl rather than octokit/request-action so that the job won't fail
+          # (and send an annoying email) if the labels don't exist
+          curl --request DELETE \
+            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/merge-conflict \
+            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
+        else
+          echo "This PR has merge conflicts with main."
+          # we use curl rather than octokit/request-action so that the job won't fail
+          # (and send an annoying email) if the labels don't exist
+          curl --request POST \
+            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/merge-conflict \
+            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
+        fi
+
+    - name: Set up Python
+      uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+      with:
+        python-version: 3.12
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        sudo apt-get install -y jq
+        # If you have additional dependencies, install them here
+
+    - name: Get changed files
+      run: |
+        git fetch origin ${{ github.base_ref }}  # fetch the base branch
+        git diff --name-only origin/${{ github.base_ref }}... > changed_files.txt  # get the list of changed files
+
+    - name: Compute transitive imports
+      run: |
+        # the checkout dance, to avoid a detached head
+        git checkout master
+        git checkout -
+        currentHash="$(git rev-parse HEAD)"
+
+        # Compute the counts for the HEAD of the PR
+        python ./scripts/count-trans-deps.py "Mathlib/" > head.json
+
+        # Checkout the merge base
+        git checkout "$(git merge-base master ${{ github.sha }})"
+
+        # Compute the counts for the merge base
+        python ./scripts/count-trans-deps.py "Mathlib/" > base.json
+
+        # switch back to the current branch: the `declarations_diff` script should be here
+        git checkout "${currentHash}"
+    - name: Post or update the summary comment
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BRANCH_NAME: ${{ github.head_ref }}
+      run: |
+        PR="${{ github.event.pull_request.number }}"
+        title="### PR summary"
+
+        graphAndHighPercentReports=$(python ./scripts/import-graph-report.py base.json head.json changed_files.txt)
+
+        ## Import count comment
+        importCount=$(
+          printf '%s\n' "${graphAndHighPercentReports}" | sed '/^Import changes exceeding/Q'
+          ./scripts/import_trans_difference.sh
+        )
+
+        ## High percentage imports
+        high_percentages=$(
+          printf '%s\n' "${graphAndHighPercentReports}" | sed -n '/^Import changes exceeding/,$p'
+        )
+        # if there are files with large increase in transitive imports, then we add the `large-import` label
+        if [ -n "${high_percentages}" ]
+        then
+          high_percentages=$'\n\n'"${high_percentages}"
+          gh pr edit "${PR}" --add-label large-import
+        else # otherwise, we remove the label
+          gh pr edit "${PR}" --remove-label large-import
+        fi
+
+        if [ "$(printf '%s' "${importCount}" | wc -l)" -gt 12 ]
+        then
+          importCount="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Import changes for modified files" "${importCount}")"
+        else
+          importCount="$(printf '#### Import changes for modified files\n\n%s\n' "${importCount}")"
+        fi
+
+        ## Declarations' diff comment
+        declDiff=$(./scripts/declarations_diff.sh)
+        if [ "$(printf '%s' "${declDiff}" | wc -l)" -gt 15 ]
+        then
+          declDiff="$(printf '<details><summary>\n\n%s\n\n</summary>\n\n%s\n\n</details>\n' "#### Declarations diff" "${declDiff}")"
+        else
+          declDiff="$(printf '#### Declarations diff\n\n%s\n' "${declDiff}")"
+        fi
+        git checkout "${BRANCH_NAME}"
+        currentHash="$(git rev-parse HEAD)"
+        hashURL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/commits/${currentHash}"
+
+        ## Technical debt changes
+        techDebtVar="$(./scripts/technical-debt-metrics.sh pr_summary)"
+
+        # store in a file, to avoid "long arguments" error.
+        printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_master.md
+
+        cat please_merge_master.md
+        ./scripts/update_PR_comment.sh please_merge_master.md "${title}" "${PR}"

@@ -3,12 +3,13 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
-import Mathlib.Tactic.NormNum.Core
+import Mathlib.Algebra.GroupWithZero.Invertible
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Int.Basic
-import Mathlib.Algebra.Invertible.Basic
+import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
-import Mathlib.Tactic.Clear!
+import Mathlib.Tactic.ClearExclamation
 
 /-!
 ## `norm_num` basic plugins
@@ -22,10 +23,10 @@ This file adds `norm_num` plugins for
 See other files in this directory for many more plugins.
 -/
 
-set_option autoImplicit true
+universe u
 
 namespace Mathlib
-open Lean hiding Rat mkRat
+open Lean
 open Meta
 
 namespace Meta.NormNum
@@ -52,7 +53,7 @@ theorem isNat_one (α) [AddMonoidWithOne α] : IsNat (One.one : α) (nat_lit 1) 
   match e with
   | ~q(One.one) => return .isNat sα (mkRawNatLit 1) q(isNat_one $α)
 
-theorem isNat_ofNat (α : Type u_1) [AddMonoidWithOne α] {a : α} {n : ℕ}
+theorem isNat_ofNat (α : Type u) [AddMonoidWithOne α] {a : α} {n : ℕ}
     (h : n = a) : IsNat a n := ⟨h.symm⟩
 
 /-- The `norm_num` extension which identifies an expression `OfNat.ofNat n`, returning `n`. -/
@@ -61,7 +62,7 @@ theorem isNat_ofNat (α : Type u_1) [AddMonoidWithOne α] {a : α} {n : ℕ}
   match e with
   | ~q(@OfNat.ofNat _ $n $oα) =>
     let n : Q(ℕ) ← whnf n
-    guard n.isNatLit
+    guard n.isRawNatLit
     let ⟨a, (pa : Q($n = $e))⟩ ← mkOfNat α sα n
     guard <|← isDefEq a e
     return .isNat sα n q(isNat_ofNat $α $pa)
@@ -80,9 +81,27 @@ theorem isNat_intOfNat : {n n' : ℕ} → IsNat n n' → IsNat (Int.ofNat n) n'
   haveI' x : $e =Q Int.ofNat $n := ⟨⟩
   return .isNat sℤ n' q(isNat_intOfNat $p)
 
+theorem isNat_natAbs_pos : {n : ℤ} → {a : ℕ} → IsNat n a → IsNat n.natAbs a
+  | _, _, ⟨rfl⟩ => ⟨rfl⟩
+
+theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) → IsNat n.natAbs a
+  | _, _, ⟨rfl⟩ => ⟨by simp⟩
+
+/-- The `norm_num` extension which identifies the expression `Int.natAbs n` such that
+`norm_num` successfully recognizes `n`. -/
+@[norm_num Int.natAbs (_ : ℤ)] def evalIntNatAbs : NormNumExt where eval {u α} e := do
+  let .app (.const ``Int.natAbs _) (x : Q(ℤ)) ← whnfR e | failure
+  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
+  haveI' : $e =Q Int.natAbs $x := ⟨⟩
+  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
+  match ← derive (u := .zero) x with
+  | .isNat    _ a p => assumeInstancesCommute; return .isNat sℕ a q(isNat_natAbs_pos $p)
+  | .isNegNat _ a p => assumeInstancesCommute; return .isNat sℕ a q(isNat_natAbs_neg $p)
+  | _ => failure
+
 /-! # Casts -/
 
-theorem isNat_cast {R} [AddMonoidWithOne R] (n m : ℕ) :
+theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
 /-- The `norm_num` extension which identifies an expression `Nat.cast n`, returning `n`. -/
@@ -92,12 +111,12 @@ theorem isNat_cast {R} [AddMonoidWithOne R] (n m : ℕ) :
   guard <|← withNewMCtxDepth <| isDefEq n q(Nat.cast (R := $α))
   let ⟨na, pa⟩ ← deriveNat a q(instAddMonoidWithOneNat)
   haveI' : $e =Q $a := ⟨⟩
-  return .isNat sα na q(isNat_cast $a $na $pa)
+  return .isNat sα na q(isNat_natCast $a $na $pa)
 
-theorem isNat_int_cast {R} [Ring R] (n : ℤ) (m : ℕ) :
+theorem isNat_intCast {R} [Ring R] (n : ℤ) (m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem isInt_cast {R} [Ring R] (n m : ℤ) :
+theorem isintCast {R} [Ring R] (n m : ℤ) :
     IsInt n m → IsInt (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
 /-- The `norm_num` extension which identifies an expression `Int.cast n`, returning `n`. -/
@@ -109,11 +128,11 @@ theorem isInt_cast {R} [Ring R] (n m : ℤ) :
   | .isNat _ na pa =>
     assumeInstancesCommute
     haveI' : $e =Q Int.cast $a := ⟨⟩
-    return .isNat _ na q(isNat_int_cast $a $na $pa)
+    return .isNat _ na q(isNat_intCast $a $na $pa)
   | .isNegNat _ na pa =>
     assumeInstancesCommute
     haveI' : $e =Q Int.cast $a := ⟨⟩
-    return .isNegNat _ na q(isInt_cast $a (.negOfNat $na) $pa)
+    return .isNegNat _ na q(isintCast $a (.negOfNat $na) $pa)
   | _ => failure
 
 /-! # Arithmetic -/
@@ -125,7 +144,7 @@ below. The reason for this is that when this is applied, to prove e.g. `100 + 20
 by the `AddMonoidWithOne` instance, and rather than attempting to prove the instances equal lean
 will sometimes decide to evaluate `100 + 200` directly (into whatever `+` is defined to do in this
 ring), which is definitely not what we want; if the subterms are expensive to kernel-reduce then
-this could cause a `(kernel) deep recursion detected` error (see lean4#2171, mathlib4#4048).
+this could cause a `(kernel) deep recursion detected` error (see https://github.com/leanprover/lean4/issues/2171, https://github.com/leanprover-community/mathlib4/pull/4048).
 
 By using an equality for the unapplied `+` function and proving it by `rfl` we take away the
 opportunity for lean to unfold the numerals (and the instance defeq problem is usually comparatively
@@ -167,23 +186,25 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   use this
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
   have h₁ := congr_arg (↑· * (⅟↑da * ⅟↑db : α)) h₁
-  simp only [Int.cast_add, Int.cast_mul, Int.cast_ofNat, ← mul_assoc,
-    add_mul, mul_mul_invOf_self_cancel] at h₁
+  simp only [Int.cast_add, Int.cast_mul, Int.cast_natCast, ← mul_assoc,
+    add_mul, mul_invOf_cancel_right] at h₁
   have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
-  simp only [H, mul_mul_invOf_self_cancel', Nat.cast_mul, ← mul_assoc] at h₁ h₂
+  simp only [H, mul_invOf_cancel_right', Nat.cast_mul, ← mul_assoc] at h₁ h₂
   rw [h₁, h₂, Nat.cast_commute]
-  simp only [mul_mul_invOf_self_cancel,
+  simp only [mul_invOf_cancel_right,
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
-instance : MonadLift Option MetaM where
+/-- Consider an `Option` as an object in the `MetaM` monad, by throwing an error on `none`. -/
+def _root_.Mathlib.Meta.monadLiftOptionMetaM : MonadLift Option MetaM where
   monadLift
   | none => failure
   | some e => pure e
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a + b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num _ + _, Add.add _ _] def evalAdd : NormNumExt where eval {u α} e := do
+@[norm_num _ + _] def evalAdd : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let ra ← derive a; let rb ← derive b
   match ra, rb with
@@ -242,6 +263,7 @@ theorem isRat_neg {α} [Ring α] : ∀ {f : α → α} {a : α} {n n' : ℤ} {d 
     f = Neg.neg → IsRat a n d → Int.neg n = n' → IsRat (-a) n' d
   | _, _, _, _, _, rfl, ⟨h, rfl⟩, rfl => ⟨h, by rw [← neg_mul, ← Int.cast_neg]; rfl⟩
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `-a`,
 such that `norm_num` successfully recognises `a`. -/
 @[norm_num -_] def evalNeg : NormNumExt where eval {u α} e := do
@@ -289,9 +311,10 @@ theorem isRat_sub {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   refine isRat_add rfl ra (isRat_neg (n' := -nb) rfl rb rfl) (k := k) (nc := nc) ?_ h₂
   rw [show Int.mul (-nb) _ = _ from neg_mul ..]; exact h₁
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a - b` in a ring,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num _ - _, Sub.sub _ _] def evalSub : NormNumExt where eval {u α} e := do
+@[norm_num _ - _] def evalSub : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let rα ← inferRing α
   let ⟨(_f_eq : $f =Q HSub.hSub)⟩ ← withNewMCtxDepth <| assertDefEqQ _ _
@@ -350,18 +373,19 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   refine ⟨this, ?_⟩
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
   have h₁ := congr_arg (Int.cast (R := α)) h₁
-  simp only [Int.cast_mul, Int.cast_ofNat] at h₁
+  simp only [Int.cast_mul, Int.cast_natCast] at h₁
   simp only [← mul_assoc, (Nat.cast_commute (α := α) da nb).invOf_left.right_comm, h₁]
   have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
-  simp [← mul_assoc] at h₂; rw [H] at h₂
-  simp only [mul_mul_invOf_self_cancel'] at h₂; rw [h₂, Nat.cast_commute]
-  simp only [mul_mul_invOf_self_cancel,
+  simp only [Nat.cast_mul, ← mul_assoc] at h₂; rw [H] at h₂
+  simp only [mul_invOf_cancel_right'] at h₂; rw [h₂, Nat.cast_commute]
+  simp only [mul_invOf_cancel_right,
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a * b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num _ * _, Mul.mul _ _] def evalMul : NormNumExt where eval {u α} e := do
+@[norm_num _ * _] def evalMul : NormNumExt where eval {u α} e := do
   let .app (.app (f : Q($α → $α → $α)) (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let sα ← inferSemiring α
   let ra ← derive a; let rb ← derive b
@@ -404,17 +428,18 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
       return .isNat mα c q(isNat_mul (f := $f) (.refl $f) $pa $pb (.refl $c))
   core
 
-theorem isRat_div [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} → IsRat (a * b⁻¹) cn cd →
-    IsRat (a / b) cn cd
-  | _, _, _, _, h => by simp [div_eq_mul_inv]; exact h
+theorem isRat_div {α : Type u} [DivisionRing α] : {a b : α} → {cn : ℤ} → {cd : ℕ} →
+    IsRat (a * b⁻¹) cn cd → IsRat (a / b) cn cd
+  | _, _, _, _, h => by simpa [div_eq_mul_inv] using h
 
 /-- Helper function to synthesize a typed `DivisionRing α` expression. -/
-def inferDivisionRing (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
+def inferDivisionRing {u : Level} (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
   return ← synthInstanceQ (q(DivisionRing $α) : Q(Type u)) <|> throwError "not a division ring"
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a / b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num _ / _, Div.div _ _] def evalDiv : NormNumExt where eval {u α} e := do
+@[norm_num _ / _] def evalDiv : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q($α))) (b : Q($α)) ← whnfR e | failure
   let dα ← inferDivisionRing α
   haveI' : $e =Q $a / $b := ⟨⟩
@@ -439,17 +464,14 @@ such that `norm_num` successfully recognises `a`. -/
 @[norm_num ¬_] def evalNot : NormNumExt where eval {u α} e := do
   let .app (.const ``Not _) (a : Q(Prop)) ← whnfR e | failure
   guard <|← withNewMCtxDepth <| isDefEq α q(Prop)
-  let .isBool b p ← derive q($a) | failure
-  haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q Prop := ⟨⟩
-  haveI' : $e =Q ¬ $a := ⟨⟩
-  if b then
-    have p : Q($a) := p
-    return .isFalse q(not_not_intro $p)
-  else
-    have p : Q(¬ $a) := p
-    return .isTrue q($p)
+  let ⟨b, p⟩ ← deriveBool q($a)
+  match b with
+  | true => return .isFalse q(not_not_intro $p)
+  | false => return .isTrue q($p)
 
 /-! # (In)equalities -/
+
+variable {α : Type u}
 
 theorem isNat_eq_true [AddMonoidWithOne α] : {a b : α} → {c : ℕ} →
     IsNat a c → IsNat b c → a = b
@@ -466,9 +488,9 @@ theorem isRat_eq_true [Ring α] : {a b : α} → {n : ℤ} → {d : ℕ} →
   | _, _, _, _, ⟨_, rfl⟩, ⟨_, rfl⟩ => by congr; apply Subsingleton.elim
 
 theorem eq_of_true {a b : Prop} (ha : a) (hb : b) : a = b := propext (iff_of_true ha hb)
-theorem ne_of_false_of_true (ha : ¬a) (hb : b) : a ≠ b := mt (· ▸ hb) ha
-theorem ne_of_true_of_false (ha : a) (hb : ¬b) : a ≠ b := mt (· ▸ ha) hb
-theorem eq_of_false (ha : ¬a) (hb : ¬b) : a = b := propext (iff_of_false ha hb)
+theorem ne_of_false_of_true {a b : Prop} (ha : ¬a) (hb : b) : a ≠ b := mt (· ▸ hb) ha
+theorem ne_of_true_of_false {a b : Prop} (ha : a) (hb : ¬b) : a ≠ b := mt (· ▸ ha) hb
+theorem eq_of_false {a b : Prop} (ha : ¬a) (hb : ¬b) : a = b := propext (iff_of_false ha hb)
 
 /-! # Nat operations -/
 
@@ -495,7 +517,7 @@ theorem isNat_natSub : {a b : ℕ} → {a' b' c : ℕ} →
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.sub a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num (_ : ℕ) - _, Sub.sub (_ : ℕ) _, Nat.sub _ _] def evalNatSub :
+@[norm_num (_ : ℕ) - _] def evalNatSub :
     NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
   -- We assert that the default instance for `HSub` is `Nat.sub` when the first parameter is `ℕ`.
@@ -514,7 +536,7 @@ theorem isNat_natMod : {a b : ℕ} → {a' b' c : ℕ} →
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.mod a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num (_ : ℕ) % _, Mod.mod (_ : ℕ) _, Nat.mod _ _] def evalNatMod :
+@[norm_num (_ : ℕ) % _] def evalNatMod :
     NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
@@ -533,7 +555,7 @@ theorem isNat_natDiv : {a b : ℕ} → {a' b' c : ℕ} →
 
 /-- The `norm_num` extension which identifies expressions of the form `Nat.div a b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
-@[norm_num (_ : ℕ) / _, Div.div (_ : ℕ) _, Nat.div _ _]
+@[norm_num (_ : ℕ) / _]
 def evalNatDiv : NormNumExt where eval {u α} e := do
   let .app (.app f (a : Q(ℕ))) (b : Q(ℕ)) ← whnfR e | failure
   haveI' : u =QL 0 := ⟨⟩; haveI' : $α =Q ℕ := ⟨⟩
@@ -570,3 +592,9 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     have nc : Q(ℕ) := mkRawNatLit c
     have : Q(Nat.mod $nb $na = Nat.succ $nc) := (q(Eq.refl (Nat.succ $nc)) : Expr)
     return .isFalse q(isNat_dvd_false $pa $pb $this)
+
+end NormNum
+
+end Meta
+
+end Mathlib

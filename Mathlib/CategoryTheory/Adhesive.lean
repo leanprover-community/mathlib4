@@ -5,8 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
-
-#align_import category_theory.adhesive from "leanprover-community/mathlib"@"afff1f24a6b68d0077c9d63782a1d093e337758c"
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 /-!
 
@@ -26,7 +25,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
   monomorphisms are stable under pushouts.
 - `CategoryTheory.Adhesive.toRegularMonoCategory`: Monomorphisms in adhesive categories are
   regular (this implies that adhesive categories are balanced).
-- `CategoryTHeory.adhesive_functor`: The category `C ⥤ D` is adhesive if `D`
+- `CategoryTheory.adhesive_functor`: The category `C ⥤ D` is adhesive if `D`
   has all pullbacks and all pushouts and is adhesive
 
 ## References
@@ -43,7 +42,6 @@ open Limits
 universe v' u' v u
 
 variable {J : Type v'} [Category.{u'} J] {C : Type u} [Category.{v} C]
-
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 -- This only makes sense when the original diagram is a pushout.
@@ -55,30 +53,28 @@ def IsPushout.IsVanKampen (_ : IsPushout f g h i) : Prop :=
     (αX : X' ⟶ X) (αY : Y' ⟶ Y) (αZ : Z' ⟶ Z) (_ : IsPullback f' αW αX f)
     (_ : IsPullback g' αW αY g) (_ : CommSq h' αX αZ h) (_ : CommSq i' αY αZ i)
     (_ : CommSq f' g' h' i'), IsPushout f' g' h' i' ↔ IsPullback h' αX αZ h ∧ IsPullback i' αY αZ i
-#align category_theory.is_pushout.is_van_kampen CategoryTheory.IsPushout.IsVanKampen
 
 theorem IsPushout.IsVanKampen.flip {H : IsPushout f g h i} (H' : H.IsVanKampen) :
     H.flip.IsVanKampen := by
   introv W' hf hg hh hi w
   simpa only [IsPushout.flip_iff, IsPullback.flip_iff, and_comm] using
     H' g' f' i' h' αW αY αX αZ hg hf hi hh w.flip
-#align category_theory.is_pushout.is_van_kampen.flip CategoryTheory.IsPushout.IsVanKampen.flip
 
 theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
     H.IsVanKampen ↔ IsVanKampenColimit (PushoutCocone.mk h i H.w) := by
   constructor
   · intro H F' c' α fα eα hα
-    refine' Iff.trans _
+    refine Iff.trans ?_
         ((H (F'.map WalkingSpan.Hom.fst) (F'.map WalkingSpan.Hom.snd) (c'.ι.app _) (c'.ι.app _)
           (α.app _) (α.app _) (α.app _) fα (by convert hα WalkingSpan.Hom.fst)
-          (by convert hα WalkingSpan.Hom.snd) _ _ _).trans _)
+          (by convert hα WalkingSpan.Hom.snd) ?_ ?_ ?_).trans ?_)
     · have : F'.map WalkingSpan.Hom.fst ≫ c'.ι.app WalkingSpan.left =
           F'.map WalkingSpan.Hom.snd ≫ c'.ι.app WalkingSpan.right := by
         simp only [Cocone.w]
       rw [(IsColimit.equivOfNatIsoOfIso (diagramIsoSpan F') c' (PushoutCocone.mk _ _ this)
             _).nonempty_congr]
       · exact ⟨fun h => ⟨⟨this⟩, h⟩, fun h => h.2⟩
-      · refine' Cocones.ext (Iso.refl c'.pt) _
+      · refine Cocones.ext (Iso.refl c'.pt) ?_
         rintro (_ | _ | _) <;> dsimp <;>
           simp only [c'.w, Category.assoc, Category.id_comp, Category.comp_id]
     · exact ⟨NatTrans.congr_app eα.symm _⟩
@@ -90,14 +86,17 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       exacts [h₁, h₂]
     · intro h; exact ⟨h _, h _⟩
   · introv H W' hf hg hh hi w
-    refine'
-      Iff.trans _ ((H w.cocone ⟨by rintro (_ | _ | _); exacts [αW, αX, αY], _⟩ αZ _ _).trans _)
+    refine
+      Iff.trans ?_ ((H w.cocone ⟨by rintro (_ | _ | _); exacts [αW, αX, αY], ?_⟩ αZ ?_ ?_).trans ?_)
     rotate_left
     · rintro i _ (_ | _ | _)
       · dsimp; simp only [Functor.map_id, Category.comp_id, Category.id_comp]
       exacts [hf.w, hg.w]
     · ext (_ | _ | _)
-      · dsimp; rw [PushoutCocone.condition_zero]; erw [Category.assoc, hh.w, hf.w_assoc]
+      · dsimp
+        rw [PushoutCocone.condition_zero, Category.assoc]
+        erw [hh.w]
+        rw [hf.w_assoc]
       exacts [hh.w.symm, hi.w.symm]
     · rintro i _ (_ | _ | _)
       · dsimp; simp_rw [Functor.map_id]
@@ -109,17 +108,16 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
         · dsimp; rw [PushoutCocone.condition_zero]; exact hf.paste_horiz h₁
         exacts [h₁, h₂]
     · exact ⟨fun h => h.2, fun h => ⟨w, h⟩⟩
-#align category_theory.is_pushout.is_van_kampen_iff CategoryTheory.IsPushout.isVanKampen_iff
 
 theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsColimit c) {f : X ⟶ Y}
     {iY : Y ⟶ YE} {fE : c.pt ⟶ YE} (H : CommSq f c.inl iY fE) :
     Nonempty (IsColimit (BinaryCofan.mk (c.inr ≫ fE) iY)) ↔ IsPushout f c.inl iY fE := by
   constructor
   · rintro ⟨h⟩
-    refine' ⟨H, ⟨Limits.PushoutCocone.isColimitAux' _ _⟩⟩
+    refine ⟨H, ⟨Limits.PushoutCocone.isColimitAux' _ ?_⟩⟩
     intro s
     dsimp only [PushoutCocone.inr, PushoutCocone.mk] -- Porting note: Originally `dsimp`
-    refine' ⟨h.desc (BinaryCofan.mk (c.inr ≫ s.inr) s.inl), h.fac _ ⟨WalkingPair.right⟩, _, _⟩
+    refine ⟨h.desc (BinaryCofan.mk (c.inr ≫ s.inr) s.inl), h.fac _ ⟨WalkingPair.right⟩, ?_, ?_⟩
     · apply BinaryCofan.IsColimit.hom_ext hc
       · rw [← H.w_assoc]; erw [h.fac _ ⟨WalkingPair.right⟩]; exact s.condition
       · rw [← Category.assoc]; exact h.fac _ ⟨WalkingPair.left⟩
@@ -127,22 +125,27 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
       apply BinaryCofan.IsColimit.hom_ext h
       · dsimp only [BinaryCofan.mk, id] -- Porting note: Originally `dsimp`
         rw [Category.assoc, e₂, eq_comm]; exact h.fac _ ⟨WalkingPair.left⟩
-      · refine' e₁.trans (Eq.symm _); exact h.fac _ _
-  · refine' fun H => ⟨_⟩
+      · refine e₁.trans (Eq.symm ?_); exact h.fac _ _
+  · refine fun H => ⟨?_⟩
     fapply Limits.BinaryCofan.isColimitMk
     · exact fun s => H.isColimit.desc (PushoutCocone.mk s.inr _ <|
         (hc.fac (BinaryCofan.mk (f ≫ s.inr) s.inl) ⟨WalkingPair.left⟩).symm)
     · intro s
-      erw [Category.assoc, H.isColimit.fac _ WalkingSpan.right, hc.fac]; rfl
+      rw [Category.assoc]
+      erw [H.isColimit.fac _ WalkingSpan.right]
+      erw [hc.fac]
+      rfl
     · intro s; exact H.isColimit.fac _ WalkingSpan.left
     · intro s m e₁ e₂
       apply PushoutCocone.IsColimit.hom_ext H.isColimit
       · symm; exact (H.isColimit.fac _ WalkingSpan.left).trans e₂.symm
-      · erw [H.isColimit.fac _ WalkingSpan.right]
+      · rw [H.isColimit.fac _ WalkingSpan.right]
         apply BinaryCofan.IsColimit.hom_ext hc
-        · erw [hc.fac, ← H.w_assoc, e₂]; rfl
-        · refine' ((Category.assoc _ _ _).symm.trans e₁).trans _; symm; exact hc.fac _ _
-#align category_theory.is_coprod_iff_is_pushout CategoryTheory.is_coprod_iff_isPushout
+        · erw [hc.fac]
+          erw [← H.w_assoc]
+          rw [e₂]
+          rfl
+        · refine ((Category.assoc _ _ _).symm.trans e₁).trans ?_; symm; exact hc.fac _ _
 
 theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryExtensive C]
     [HasPullbacks C] (hc : IsColimit c) (f : W ⟶ X) (h : X ⟶ Z) (i : c.pt ⟶ Z)
@@ -150,21 +153,22 @@ theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryE
   obtain ⟨hc₁⟩ := (is_coprod_iff_isPushout c hc H.1).mpr H
   introv W' hf hg hh hi w
   obtain ⟨hc₂⟩ := ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen c hc)
-    (BinaryCofan.mk _ pullback.fst) _ _ _ hg.w.symm pullback.condition.symm).mpr
+    (BinaryCofan.mk _ (pullback.fst _ _)) _ _ _ hg.w.symm pullback.condition.symm).mpr
     ⟨hg, IsPullback.of_hasPullback αY c.inr⟩
-  refine' (is_coprod_iff_isPushout _ hc₂ w).symm.trans _
-  refine' ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen _ hc₁)
-    (BinaryCofan.mk _ _) pullback.snd _ _ _ hh.w.symm).trans _
+  refine (is_coprod_iff_isPushout _ hc₂ w).symm.trans ?_
+  refine ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen _ hc₁)
+    (BinaryCofan.mk _ _) (pullback.snd _ _) _ _ ?_ hh.w.symm).trans ?_
   · dsimp; rw [← pullback.condition_assoc, Category.assoc, hi.w]
   constructor
   · rintro ⟨hc₃, hc₄⟩
-    refine' ⟨hc₄, _⟩
+    refine ⟨hc₄, ?_⟩
     let Y'' := pullback αZ i
     let cmp : Y' ⟶ Y'' := pullback.lift i' αY hi.w
-    have e₁ : (g' ≫ cmp) ≫ pullback.snd = αW ≫ c.inl := by
+    have e₁ : (g' ≫ cmp) ≫ pullback.snd _ _ = αW ≫ c.inl := by
       rw [Category.assoc, pullback.lift_snd, hg.w]
-    have e₂ : (pullback.fst ≫ cmp : pullback αY c.inr ⟶ _) ≫ pullback.snd = pullback.snd ≫ c.inr :=
-      by rw [Category.assoc, pullback.lift_snd, pullback.condition]
+    have e₂ : (pullback.fst _ _ ≫ cmp : pullback αY c.inr ⟶ _) ≫ pullback.snd _ _ =
+        pullback.snd _ _ ≫ c.inr := by
+      rw [Category.assoc, pullback.lift_snd, pullback.condition]
     obtain ⟨hc₄⟩ := ((BinaryCofan.isVanKampen_iff _).mp (FinitaryExtensive.vanKampen c hc)
       (BinaryCofan.mk _ _) αW _ _ e₁.symm e₂.symm).mpr <| by
         constructor
@@ -172,31 +176,28 @@ theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryE
           rw [Category.assoc, pullback.lift_fst, ← H.w, ← w.w]; exact hf.paste_horiz hc₄
         · apply IsPullback.of_right _ e₂ (IsPullback.of_hasPullback _ _)
           rw [Category.assoc, pullback.lift_fst]; exact hc₃
-    · rw [← Category.id_comp αZ, ← show cmp ≫ pullback.snd = αY from pullback.lift_snd _ _ _]
-      apply IsPullback.paste_vert _ (IsPullback.of_hasPullback αZ i)
-      have : cmp = (hc₂.coconePointUniqueUpToIso hc₄).hom := by
-        apply BinaryCofan.IsColimit.hom_ext hc₂
-        exacts [(hc₂.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.left⟩).symm,
-          (hc₂.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.right⟩).symm]
-      rw [this]
-      exact IsPullback.of_vert_isIso ⟨by rw [← this, Category.comp_id, pullback.lift_fst]⟩
+    rw [← Category.id_comp αZ, ← show cmp ≫ pullback.snd _ _ = αY from pullback.lift_snd _ _ _]
+    apply IsPullback.paste_vert _ (IsPullback.of_hasPullback αZ i)
+    have : cmp = (hc₂.coconePointUniqueUpToIso hc₄).hom := by
+      apply BinaryCofan.IsColimit.hom_ext hc₂
+      exacts [(hc₂.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.left⟩).symm,
+        (hc₂.comp_coconePointUniqueUpToIso_hom hc₄ ⟨WalkingPair.right⟩).symm]
+    rw [this]
+    exact IsPullback.of_vert_isIso ⟨by rw [← this, Category.comp_id, pullback.lift_fst]⟩
   · rintro ⟨hc₃, hc₄⟩
     exact ⟨(IsPullback.of_hasPullback αY c.inr).paste_horiz hc₄, hc₃⟩
-#align category_theory.is_pushout.is_van_kampen_inl CategoryTheory.IsPushout.isVanKampen_inl
 
 theorem IsPushout.IsVanKampen.isPullback_of_mono_left [Mono f] {H : IsPushout f g h i}
     (H' : H.IsVanKampen) : IsPullback f g h i :=
   ((H' (𝟙 _) g g (𝟙 Y) (𝟙 _) f (𝟙 _) i (IsKernelPair.id_of_mono f)
       (IsPullback.of_vert_isIso ⟨by simp⟩) H.1.flip ⟨rfl⟩ ⟨by simp⟩).mp
     (IsPushout.of_horiz_isIso ⟨by simp⟩)).1.flip
-#align category_theory.is_pushout.is_van_kampen.is_pullback_of_mono_left CategoryTheory.IsPushout.IsVanKampen.isPullback_of_mono_left
 
 theorem IsPushout.IsVanKampen.isPullback_of_mono_right [Mono g] {H : IsPushout f g h i}
     (H' : H.IsVanKampen) : IsPullback f g h i :=
   ((H' f (𝟙 _) (𝟙 _) f (𝟙 _) (𝟙 _) g h (IsPullback.of_vert_isIso ⟨by simp⟩)
       (IsKernelPair.id_of_mono g) ⟨rfl⟩ H.1 ⟨by simp⟩).mp
     (IsPushout.of_vert_isIso ⟨by simp⟩)).2
-#align category_theory.is_pushout.is_van_kampen.is_pullback_of_mono_right CategoryTheory.IsPushout.IsVanKampen.isPullback_of_mono_right
 
 theorem IsPushout.IsVanKampen.mono_of_mono_left [Mono f] {H : IsPushout f g h i}
     (H' : H.IsVanKampen) : Mono i :=
@@ -204,7 +205,6 @@ theorem IsPushout.IsVanKampen.mono_of_mono_left [Mono f] {H : IsPushout f g h i}
     ((H' (𝟙 _) g g (𝟙 Y) (𝟙 _) f (𝟙 _) i (IsKernelPair.id_of_mono f)
         (IsPullback.of_vert_isIso ⟨by simp⟩) H.1.flip ⟨rfl⟩ ⟨by simp⟩).mp
       (IsPushout.of_horiz_isIso ⟨by simp⟩)).2
-#align category_theory.is_pushout.is_van_kampen.mono_of_mono_left CategoryTheory.IsPushout.IsVanKampen.mono_of_mono_left
 
 theorem IsPushout.IsVanKampen.mono_of_mono_right [Mono g] {H : IsPushout f g h i}
     (H' : H.IsVanKampen) : Mono h :=
@@ -212,7 +212,6 @@ theorem IsPushout.IsVanKampen.mono_of_mono_right [Mono g] {H : IsPushout f g h i
     ((H' f (𝟙 _) (𝟙 _) f (𝟙 _) (𝟙 _) g h (IsPullback.of_vert_isIso ⟨by simp⟩)
         (IsKernelPair.id_of_mono g) ⟨rfl⟩ H.1 ⟨by simp⟩).mp
       (IsPushout.of_vert_isIso ⟨by simp⟩)).1
-#align category_theory.is_pushout.is_van_kampen.mono_of_mono_right CategoryTheory.IsPushout.IsVanKampen.mono_of_mono_right
 
 /-- A category is adhesive if it has pushouts and pullbacks along monomorphisms,
 and such pushouts are van Kampen. -/
@@ -221,49 +220,41 @@ class Adhesive (C : Type u) [Category.{v} C] : Prop where
   [hasPushout_of_mono_left : ∀ {X Y S : C} (f : S ⟶ X) (g : S ⟶ Y) [Mono f], HasPushout f g]
   van_kampen : ∀ {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z} [Mono f]
     (H : IsPushout f g h i), H.IsVanKampen
-#align category_theory.adhesive CategoryTheory.Adhesive
 
 attribute [instance] Adhesive.hasPullback_of_mono_left Adhesive.hasPushout_of_mono_left
 
 theorem Adhesive.van_kampen' [Adhesive C] [Mono g] (H : IsPushout f g h i) : H.IsVanKampen :=
   (Adhesive.van_kampen H.flip).flip
-#align category_theory.adhesive.van_kampen' CategoryTheory.Adhesive.van_kampen'
 
 theorem Adhesive.isPullback_of_isPushout_of_mono_left [Adhesive C] (H : IsPushout f g h i)
     [Mono f] : IsPullback f g h i :=
   (Adhesive.van_kampen H).isPullback_of_mono_left
-#align category_theory.adhesive.is_pullback_of_is_pushout_of_mono_left CategoryTheory.Adhesive.isPullback_of_isPushout_of_mono_left
 
 theorem Adhesive.isPullback_of_isPushout_of_mono_right [Adhesive C] (H : IsPushout f g h i)
     [Mono g] : IsPullback f g h i :=
   (Adhesive.van_kampen' H).isPullback_of_mono_right
-#align category_theory.adhesive.is_pullback_of_is_pushout_of_mono_right CategoryTheory.Adhesive.isPullback_of_isPushout_of_mono_right
 
 theorem Adhesive.mono_of_isPushout_of_mono_left [Adhesive C] (H : IsPushout f g h i) [Mono f] :
     Mono i :=
   (Adhesive.van_kampen H).mono_of_mono_left
-#align category_theory.adhesive.mono_of_is_pushout_of_mono_left CategoryTheory.Adhesive.mono_of_isPushout_of_mono_left
 
 theorem Adhesive.mono_of_isPushout_of_mono_right [Adhesive C] (H : IsPushout f g h i) [Mono g] :
     Mono h :=
   (Adhesive.van_kampen' H).mono_of_mono_right
-#align category_theory.adhesive.mono_of_is_pushout_of_mono_right CategoryTheory.Adhesive.mono_of_isPushout_of_mono_right
 
 instance Type.adhesive : Adhesive (Type u) :=
   ⟨fun {_ _ _ _ f _ _ _ _} H =>
     (IsPushout.isVanKampen_inl _ (Types.isCoprodOfMono f) _ _ _ H.flip).flip⟩
-#align category_theory.type.adhesive CategoryTheory.Type.adhesive
 
 noncomputable instance (priority := 100) Adhesive.toRegularMonoCategory [Adhesive C] :
-    RegularMonoCategory C :=
-  ⟨fun f _ =>
-    { Z := pushout f f
-      left := pushout.inl
-      right := pushout.inr
+    IsRegularMonoCategory C :=
+  ⟨fun f _ => ⟨{
+      Z := pushout f f
+      left := pushout.inl _ _
+      right := pushout.inr _ _
       w := pushout.condition
       isLimit := (Adhesive.isPullback_of_isPushout_of_mono_left
-        (IsPushout.of_hasPushout f f)).isLimitFork }⟩
-#align category_theory.adhesive.to_regular_mono_category CategoryTheory.Adhesive.toRegularMonoCategory
+        (IsPushout.of_hasPushout f f)).isLimitFork }⟩⟩
 
 -- This then implies that adhesive categories are balanced
 example [Adhesive C] : Balanced C :=
@@ -308,21 +299,21 @@ theorem adhesive_of_preserves_and_reflects_isomorphism (F : C ⥤ D)
     [Adhesive D] [HasPullbacks C] [HasPushouts C]
     [PreservesLimitsOfShape WalkingCospan F]
     [PreservesColimitsOfShape WalkingSpan F]
-    [ReflectsIsomorphisms F] :
+    [F.ReflectsIsomorphisms] :
     Adhesive C := by
   haveI : ReflectsLimitsOfShape WalkingCospan F :=
-    reflectsLimitsOfShapeOfReflectsIsomorphisms
+    reflectsLimitsOfShape_of_reflectsIsomorphisms
   haveI : ReflectsColimitsOfShape WalkingSpan F :=
-    reflectsColimitsOfShapeOfReflectsIsomorphisms
+    reflectsColimitsOfShape_of_reflectsIsomorphisms
   exact adhesive_of_preserves_and_reflects F
 
 theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [HasPushouts C]
     [H₂ : ∀ {X Y S : D} (f : S ⟶ X) (g : S ⟶ Y) [Mono f], HasPushout f g]
-    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
+    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]
     [PreservesLimitsOfShape WalkingCospan Gl] :
     Adhesive D := by
-  have := adj.leftAdjointPreservesColimits
-  have := adj.rightAdjointPreservesLimits
+  have := adj.leftAdjoint_preservesColimits
+  have := adj.rightAdjoint_preservesLimits
   apply Adhesive.mk (hasPushout_of_mono_left := H₂)
   intro W X Y Z f g h i _ H
   have := Adhesive.van_kampen (IsPushout.of_hasPushout (Gr.map f) (Gr.map g))
@@ -331,7 +322,7 @@ theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [H
     (isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp ?_
   refine ((this.precompose_isIso (spanCompIso _ _ _).hom).map_reflective adj).of_iso
     (IsColimit.uniqueUpToIso ?_ ?_)
-  · exact isColimitOfPreserves Gl ((IsColimit.precomposeHomEquiv _ _).symm $ pushoutIsPushout _ _)
+  · exact isColimitOfPreserves Gl ((IsColimit.precomposeHomEquiv _ _).symm <| pushoutIsPushout _ _)
   · exact (IsColimit.precomposeHomEquiv _ _).symm H.isColimit
 
 end functor

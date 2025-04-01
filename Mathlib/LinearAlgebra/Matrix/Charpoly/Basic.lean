@@ -1,12 +1,11 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.LinearAlgebra.Matrix.Adjugate
-import Mathlib.RingTheory.PolynomialAlgebra
-
-#align_import linear_algebra.matrix.charpoly.basic from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
+import Mathlib.LinearAlgebra.Matrix.Block
+import Mathlib.RingTheory.MatrixPolynomialAlgebra
 
 /-!
 # Characteristic polynomials and the Cayley-Hamilton theorem
@@ -25,50 +24,41 @@ See the file `Mathlib/LinearAlgebra/Matrix/Charpoly/Coeff.lean` for corollaries 
 We follow a nice proof from http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 -/
 
--- porting note: these imports are no longer needed
---import Mathlib.Tactic.ApplyFun
---import Mathlib.Tactic.Squeeze
-
 noncomputable section
 
 universe u v w
 
-open Polynomial Matrix BigOperators Polynomial
+namespace Matrix
 
-variable {R : Type u} [CommRing R]
+open Finset Matrix Polynomial
 
-variable {n : Type w} [DecidableEq n] [Fintype n]
+variable {R S : Type*} [CommRing R] [CommRing S]
+variable {m n : Type*} [DecidableEq m] [DecidableEq n] [Fintype m] [Fintype n]
+variable (M₁₁ : Matrix m m R) (M₁₂ : Matrix m n R) (M₂₁ : Matrix n m R) (M₂₂ M : Matrix n n R)
+variable (i j : n)
 
-open Finset
 
 /-- The "characteristic matrix" of `M : Matrix n n R` is the matrix of polynomials $t I - M$.
 The determinant of this matrix is the characteristic polynomial.
 -/
 def charmatrix (M : Matrix n n R) : Matrix n n R[X] :=
   Matrix.scalar n (X : R[X]) - (C : R →+* R[X]).mapMatrix M
-#align charmatrix charmatrix
 
-theorem charmatrix_apply (M : Matrix n n R) (i j : n) :
+theorem charmatrix_apply :
     charmatrix M i j = (Matrix.diagonal fun _ : n => X) i j - C (M i j) :=
   rfl
-#align charmatrix_apply charmatrix_apply
 
 @[simp]
-theorem charmatrix_apply_eq (M : Matrix n n R) (i : n) :
-    charmatrix M i i = (X : R[X]) - C (M i i) := by
+theorem charmatrix_apply_eq : charmatrix M i i = (X : R[X]) - C (M i i) := by
   simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply, map_apply,
     diagonal_apply_eq]
 
-#align charmatrix_apply_eq charmatrix_apply_eq
-
 @[simp]
-theorem charmatrix_apply_ne (M : Matrix n n R) (i j : n) (h : i ≠ j) :
-    charmatrix M i j = -C (M i j) := by
+theorem charmatrix_apply_ne (h : i ≠ j) : charmatrix M i j = -C (M i j) := by
   simp only [charmatrix, RingHom.mapMatrix_apply, sub_apply, scalar_apply, diagonal_apply_ne _ h,
     map_apply, sub_eq_neg_self]
-#align charmatrix_apply_ne charmatrix_apply_ne
 
-theorem matPolyEquiv_charmatrix (M : Matrix n n R) : matPolyEquiv (charmatrix M) = X - C M := by
+theorem matPolyEquiv_charmatrix : matPolyEquiv (charmatrix M) = X - C M := by
   ext k i j
   simp only [matPolyEquiv_coeff_apply, coeff_sub, Pi.sub_apply]
   by_cases h : i = j
@@ -78,26 +68,73 @@ theorem matPolyEquiv_charmatrix (M : Matrix n n R) : matPolyEquiv (charmatrix M)
     split_ifs <;> simp
   · rw [charmatrix_apply_ne _ _ _ h, coeff_X, coeff_neg, coeff_C, coeff_C]
     split_ifs <;> simp [h]
-#align mat_poly_equiv_charmatrix matPolyEquiv_charmatrix
 
-theorem charmatrix_reindex {m : Type v} [DecidableEq m] [Fintype m] (e : n ≃ m) (M : Matrix n n R) :
+theorem charmatrix_reindex (e : n ≃ m) :
     charmatrix (reindex e e M) = reindex e e (charmatrix M) := by
   ext i j x
   by_cases h : i = j
   all_goals simp [h]
-#align charmatrix_reindex charmatrix_reindex
+
+lemma charmatrix_map (M : Matrix n n R) (f : R →+* S) :
+    charmatrix (M.map f) = (charmatrix M).map (Polynomial.map f) := by
+  ext i j
+  by_cases h : i = j <;> simp [h, charmatrix, diagonal]
+
+lemma charmatrix_fromBlocks :
+    charmatrix (fromBlocks M₁₁ M₁₂ M₂₁ M₂₂) =
+      fromBlocks (charmatrix M₁₁) (- M₁₂.map C) (- M₂₁.map C) (charmatrix M₂₂) := by
+  simp only [charmatrix]
+  ext (i|i) (j|j) : 2 <;> simp [diagonal]
+
+-- TODO: importing block triangular here is somewhat expensive, if more lemmas about it are added
+-- to this file, it may be worth extracting things out to Charpoly/Block.lean
+@[simp]
+lemma charmatrix_blockTriangular_iff {α : Type*} [Preorder α] {M : Matrix n n R} {b : n → α} :
+    M.charmatrix.BlockTriangular b ↔ M.BlockTriangular b := by
+  rw [charmatrix, scalar_apply, RingHom.mapMatrix_apply, (blockTriangular_diagonal _).sub_iff_right]
+  simp [BlockTriangular]
+
+alias ⟨BlockTriangular.of_charmatrix, BlockTriangular.charmatrix⟩ := charmatrix_blockTriangular_iff
 
 /-- The characteristic polynomial of a matrix `M` is given by $\det (t I - M)$.
 -/
-def Matrix.charpoly (M : Matrix n n R) : R[X] :=
+def charpoly (M : Matrix n n R) : R[X] :=
   (charmatrix M).det
-#align matrix.charpoly Matrix.charpoly
 
-theorem Matrix.charpoly_reindex {m : Type v} [DecidableEq m] [Fintype m] (e : n ≃ m)
+theorem charpoly_reindex (e : n ≃ m)
     (M : Matrix n n R) : (reindex e e M).charpoly = M.charpoly := by
   unfold Matrix.charpoly
   rw [charmatrix_reindex, Matrix.det_reindex_self]
-#align matrix.charpoly_reindex Matrix.charpoly_reindex
+
+lemma charpoly_map (M : Matrix n n R) (f : R →+* S) :
+    (M.map f).charpoly = M.charpoly.map f := by
+  rw [charpoly, charmatrix_map, ← Polynomial.coe_mapRingHom, charpoly, RingHom.map_det,
+    RingHom.mapMatrix_apply]
+
+@[simp]
+lemma charpoly_fromBlocks_zero₁₂ :
+    (fromBlocks M₁₁ 0 M₂₁ M₂₂).charpoly = (M₁₁.charpoly * M₂₂.charpoly) := by
+  simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
+    det_fromBlocks_zero₁₂]
+
+@[simp]
+lemma charpoly_fromBlocks_zero₂₁ :
+    (fromBlocks M₁₁ M₁₂ 0 M₂₂).charpoly = (M₁₁.charpoly * M₂₂.charpoly) := by
+  simp only [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero,
+    det_fromBlocks_zero₂₁]
+
+lemma charmatrix_toSquareBlock {α : Type*} [DecidableEq α] {b : n → α} {a : α} :
+    (M.toSquareBlock b a).charmatrix = M.charmatrix.toSquareBlock b a := by
+  ext i j : 1
+  simp [charmatrix_apply, toSquareBlock_def, diagonal_apply, Subtype.ext_iff]
+
+lemma BlockTriangular.charpoly {α : Type*} {b : n → α} [LinearOrder α] (h : M.BlockTriangular b) :
+    M.charpoly = ∏ a ∈ image b univ, (M.toSquareBlock b a).charpoly := by
+  simp only [Matrix.charpoly, h.charmatrix.det, charmatrix_toSquareBlock]
+
+lemma charpoly_of_upperTriangular [LinearOrder n] (M : Matrix n n R) (h : M.BlockTriangular id) :
+    M.charpoly = ∏ i : n, (X - C (M i i)) := by
+  simp [charpoly, det_of_upperTriangular h.charmatrix]
 
 -- This proof follows http://drorbn.net/AcademicPensieve/2015-12/CayleyHamilton.pdf
 /-- The **Cayley-Hamilton Theorem**, that the characteristic polynomial of a matrix,
@@ -107,7 +144,7 @@ This holds over any commutative ring.
 
 See `LinearMap.aeval_self_charpoly` for the equivalent statement about endomorphisms.
 -/
-theorem Matrix.aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
+theorem aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 := by
   -- We begin with the fact $χ_M(t) I = adjugate (t I - M) * (t I - M)$,
   -- as an identity in `Matrix n n R[X]`.
   have h : M.charpoly • (1 : Matrix n n R[X]) = adjugate (charmatrix M) * charmatrix M :=
@@ -115,7 +152,7 @@ theorem Matrix.aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 :
   -- Using the algebra isomorphism `Matrix n n R[X] ≃ₐ[R] Polynomial (Matrix n n R)`,
   -- we have the same identity in `Polynomial (Matrix n n R)`.
   apply_fun matPolyEquiv at h
-  simp only [matPolyEquiv.map_mul, matPolyEquiv_charmatrix] at h
+  simp only [map_mul, matPolyEquiv_charmatrix] at h
   -- Because the coefficient ring `Matrix n n R` is non-commutative,
   -- evaluation at `M` is not multiplicative.
   -- However, any polynomial which is a product of the form $N * (t I - M)$
@@ -128,4 +165,5 @@ theorem Matrix.aeval_self_charpoly (M : Matrix n n R) : aeval M M.charpoly = 0 :
   rw [matPolyEquiv_smul_one, eval_map] at h
   -- Thus we have $χ_M(M) = 0$, which is the desired result.
   exact h
-#align matrix.aeval_self_charpoly Matrix.aeval_self_charpoly
+
+end Matrix

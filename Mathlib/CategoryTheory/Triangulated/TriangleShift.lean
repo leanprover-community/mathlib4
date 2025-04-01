@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Triangulated.Rotate
-import Mathlib.Algebra.GroupPower.NegOnePow
+import Mathlib.Algebra.Ring.NegOnePow
 
 /-!
 # The shift on the category of triangles
@@ -19,6 +19,8 @@ The shift on the category of triangles was also obtained by Adam Topaz,
 Johan Commelin and Andrew Yang during the Liquid Tensor Experiment.
 
 -/
+
+assert_not_exists TwoSidedIdeal
 
 universe v u
 
@@ -65,7 +67,7 @@ noncomputable def Triangle.shiftFunctorZero : Triangle.shiftFunctor C 0 ≅ 𝟭
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ ((CategoryTheory.shiftFunctorZero C ℤ).app _)
       ((CategoryTheory.shiftFunctorZero C ℤ).app _) ((CategoryTheory.shiftFunctorZero C ℤ).app _)
-      (by aesop_cat) (by aesop_cat) (by
+      (by simp) (by simp) (by
         dsimp
         simp only [one_smul, assoc, shiftFunctorComm_zero_hom_app,
           ← Functor.map_comp, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id,
@@ -109,7 +111,7 @@ noncomputable def rotateRotateRotateIso :
     rotate C ⋙ rotate C ⋙ rotate C ≅ Triangle.shiftFunctor C 1 :=
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-      (by aesop_cat) (by aesop_cat) (by aesop_cat))
+      (by simp) (by simp) (by simp))
     (by aesop_cat)
 
 /-- Rotating triangles three times backwards identifies with the shift by `-1`. -/
@@ -117,11 +119,11 @@ noncomputable def invRotateInvRotateInvRotateIso :
     invRotate C ⋙ invRotate C ⋙ invRotate C ≅ Triangle.shiftFunctor C (-1) :=
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
-      (by aesop_cat)
-      (by aesop_cat)
+      (by simp)
+      (by simp)
       (by
         dsimp [shiftFunctorCompIsoId]
-        simp [shiftFunctorComm_eq C _ _ _ (add_neg_self (1 : ℤ))]))
+        simp [shiftFunctorComm_eq C _ _ _ (add_neg_cancel (1 : ℤ))]))
     (by aesop_cat)
 
 /-- The inverse of the rotation of triangles can be expressed using a double
@@ -133,7 +135,7 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
     _ ≅ invRotate C ⋙ Triangle.shiftFunctor C 0 :=
           isoWhiskerLeft _ (Triangle.shiftFunctorZero C).symm
     _ ≅ invRotate C ⋙ Triangle.shiftFunctor C 1 ⋙ Triangle.shiftFunctor C (-1) :=
-          isoWhiskerLeft _ (Triangle.shiftFunctorAdd' C 1 (-1) 0 (add_neg_self 1))
+          isoWhiskerLeft _ (Triangle.shiftFunctorAdd' C 1 (-1) 0 (add_neg_cancel 1))
     _ ≅ invRotate C ⋙ (rotate C ⋙ rotate C ⋙ rotate C) ⋙ Triangle.shiftFunctor C (-1) :=
           isoWhiskerLeft _ (isoWhiskerRight (rotateRotateRotateIso C).symm _)
     _ ≅ (invRotate C ⋙ rotate C) ⋙ rotate C ⋙ rotate C ⋙ Triangle.shiftFunctor C (-1) :=
@@ -142,6 +144,8 @@ noncomputable def invRotateIsoRotateRotateShiftFunctorNegOne :
     _ ≅ 𝟭 _ ⋙ rotate C ⋙ rotate C ⋙ Triangle.shiftFunctor C (-1) :=
           isoWhiskerRight (triangleRotation C).counitIso _
     _ ≅ _ := Functor.leftUnitor _
+
+namespace Triangle
 
 noncomputable instance : HasShift (Triangle C) ℤ :=
   hasShiftMk (Triangle C) ℤ
@@ -155,6 +159,31 @@ noncomputable instance : HasShift (Triangle C) ℤ :=
           rw [← shiftFunctorAdd'_assoc_hom_app a b c _ _ _ rfl rfl (add_assoc a b c)]
           dsimp only [CategoryTheory.shiftFunctorAdd']
           simp }
+
+@[simp]
+lemma shiftFunctor_eq (n : ℤ) :
+    CategoryTheory.shiftFunctor (Triangle C) n = Triangle.shiftFunctor C n := rfl
+
+@[simp]
+lemma shiftFunctorZero_eq :
+    CategoryTheory.shiftFunctorZero (Triangle C) ℤ = Triangle.shiftFunctorZero C :=
+  ShiftMkCore.shiftFunctorZero_eq _
+
+@[simp]
+lemma shiftFunctorAdd_eq (a b : ℤ) :
+    CategoryTheory.shiftFunctorAdd (Triangle C) a b =
+      Triangle.shiftFunctorAdd' C a b _ rfl :=
+  ShiftMkCore.shiftFunctorAdd_eq _ _ _
+
+@[simp]
+lemma shiftFunctorAdd'_eq (a b c : ℤ) (h : a + b = c) :
+    CategoryTheory.shiftFunctorAdd' (Triangle C) a b c h =
+      Triangle.shiftFunctorAdd' C a b c h := by
+  subst h
+  rw [shiftFunctorAdd'_eq_shiftFunctorAdd]
+  apply shiftFunctorAdd_eq
+
+end Triangle
 
 end Pretriangulated
 

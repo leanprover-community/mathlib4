@@ -1,132 +1,182 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison, Mario Carneiro
+Authors: Patrick Massot, Kim Morrison, Mario Carneiro
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.Topology.ContinuousFunction.Basic
-
-#align_import topology.category.Top.basic from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
+import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Category instance for topological spaces
 
 We introduce the bundled category `TopCat` of topological spaces together with the functors
-`discrete` and `trivial` from the category of types to `TopCat` which equip a type with the
-corresponding discrete, resp. trivial, topology. For a proof that these functors are left,
-resp. right adjoint to the forgetful functor, see `topology.category.TopCat.adjunctions`.
+`TopCat.discrete` and `TopCat.trivial` from the category of types to `TopCat` which equip a type
+with the corresponding discrete, resp. trivial, topology. For a proof that these functors are left,
+resp. right adjoint to the forgetful functor, see `Mathlib.Topology.Category.TopCat.Adjunctions`.
 -/
 
+assert_not_exists Module
 
-open CategoryTheory
-
-open TopologicalSpace
+open CategoryTheory TopologicalSpace Topology
 
 universe u
 
-/-- The category of topological spaces and continuous maps. -/
-@[to_additive existing TopCat]
-def TopCat : Type (u + 1) :=
-  Bundled TopologicalSpace
-set_option linter.uppercaseLean3 false in
-#align Top TopCat
+/-- The category of topological spaces. -/
+structure TopCat where
+  private mk ::
+  /-- The underlying type. -/
+  carrier : Type u
+  [str : TopologicalSpace carrier]
+
+attribute [instance] TopCat.str
+
+initialize_simps_projections TopCat (-str)
 
 namespace TopCat
 
--- porting note: had to add in the last two proofs
-instance bundledHom : BundledHom @ContinuousMap :=
-  ⟨@ContinuousMap.toFun, @ContinuousMap.id, @ContinuousMap.comp, @ContinuousMap.coe_injective,
-    fun _ => rfl, fun _ _ _ _ _ => rfl⟩
-set_option linter.uppercaseLean3 false in
-#align Top.bundled_hom TopCat.bundledHom
+instance : CoeSort (TopCat) (Type u) :=
+  ⟨TopCat.carrier⟩
 
-deriving instance LargeCategory for TopCat
+attribute [coe] TopCat.carrier
 
--- Porting note: currently no derive handler for ConcreteCategory
--- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance concreteCategory : ConcreteCategory TopCat := by
-  dsimp [TopCat]
-  infer_instance
+/-- The object in `TopCat` associated to a type equipped with the appropriate
+typeclasses. This is the preferred way to construct a term of `TopCat`. -/
+abbrev of (X : Type u) [TopologicalSpace X] : TopCat :=
+  ⟨X⟩
 
-@[to_additive existing TopCat.instCoeSortTopCatType]
-instance instCoeSortTopCatType : CoeSort TopCat (Type*) :=
-  Bundled.coeSort
+lemma coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X :=
+  rfl
 
-instance topologicalSpaceUnbundled (x : TopCat) : TopologicalSpace x :=
-  x.str
-set_option linter.uppercaseLean3 false in
-#align Top.topological_space_unbundled TopCat.topologicalSpaceUnbundled
+lemma of_carrier (X : TopCat.{u}) : of X = X := rfl
 
--- Porting note: cannot find a coercion to function otherwise
-attribute [instance] ConcreteCategory.funLike in
-instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
-  coe f := f
+variable {X} in
+/-- The type of morphisms in `TopCat`. -/
+@[ext]
+structure Hom (X Y : TopCat.{u}) where
+  private mk ::
+  /-- The underlying `ContinuousMap`. -/
+  hom' : C(X, Y)
 
--- Porting note: simp can prove this; removed simp
-theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
-set_option linter.uppercaseLean3 false in
-#align Top.id_app TopCat.id_app
+instance : Category TopCat where
+  Hom X Y := Hom X Y
+  id X := ⟨ContinuousMap.id X⟩
+  comp f g := ⟨g.hom'.comp f.hom'⟩
 
--- Porting note: simp can prove this; removed simp
-theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
-    (f ≫ g : X → Z) x = g (f x) := rfl
-set_option linter.uppercaseLean3 false in
-#align Top.comp_app TopCat.comp_app
+instance : ConcreteCategory.{u} TopCat (fun X Y => C(X, Y)) where
+  hom := Hom.hom'
+  ofHom f := ⟨f⟩
 
-/-- Construct a bundled `Top` from the underlying type and the typeclass. -/
-def of (X : Type u) [TopologicalSpace X] : TopCat :=
-  -- Porting note: needed to call inferInstance
-  ⟨X, inferInstance⟩
-set_option linter.uppercaseLean3 false in
-#align Top.of TopCat.of
+/-- Turn a morphism in `TopCat` back into a `ContinuousMap`. -/
+abbrev Hom.hom {X Y : TopCat.{u}} (f : Hom X Y) :=
+  ConcreteCategory.hom (C := TopCat) f
 
-instance topologicalSpace_coe (X : TopCat) : TopologicalSpace X :=
-  X.str
+/-- Typecheck a `ContinuousMap` as a morphism in `TopCat`. -/
+abbrev ofHom {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) : of X ⟶ of Y :=
+  ConcreteCategory.ofHom (C := TopCat) f
 
--- Porting note: cannot see through forget; made reducible to get closer to Lean 3 behavior
-@[reducible]
-instance topologicalSpace_forget (X : TopCat) : TopologicalSpace <| (forget TopCat).obj X :=
-  X.str
+/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
+def Hom.Simps.hom (X Y : TopCat) (f : Hom X Y) :=
+  f.hom
+
+initialize_simps_projections Hom (hom' → hom)
+
+/-!
+The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
+-/
 
 @[simp]
-theorem coe_of (X : Type u) [TopologicalSpace X] : (of X : Type u) = X := rfl
-set_option linter.uppercaseLean3 false in
-#align Top.coe_of TopCat.coe_of
+lemma hom_id {X : TopCat.{u}} : (𝟙 X : X ⟶ X).hom = ContinuousMap.id X := rfl
+
+@[simp]
+theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
+
+@[simp] theorem coe_id (X : TopCat.{u}) : (𝟙 X : X → X) = id := rfl
+
+@[simp]
+lemma hom_comp {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).hom = g.hom.comp f.hom := rfl
+
+@[simp]
+theorem comp_app {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
+    (f ≫ g : X → Z) x = g (f x) := rfl
+
+@[simp] theorem coe_comp {X Y Z : TopCat.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g : X → Z) = g ∘ f := rfl
+
+@[ext]
+lemma hom_ext {X Y : TopCat} {f g : X ⟶ Y} (hf : f.hom = g.hom) : f = g :=
+  Hom.ext hf
+
+@[ext]
+lemma ext {X Y : TopCat} {f g : X ⟶ Y} (w : ∀ x : X, f x = g x) : f = g :=
+  ConcreteCategory.hom_ext _ _ w
+
+@[simp]
+lemma hom_ofHom {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) :
+  (ofHom f).hom = f := rfl
+
+@[simp]
+lemma ofHom_hom {X Y : TopCat} (f : X ⟶ Y) :
+    ofHom (Hom.hom f) = f := rfl
+
+@[simp]
+lemma ofHom_id {X : Type u} [TopologicalSpace X] : ofHom (ContinuousMap.id X) = 𝟙 (of X) := rfl
+
+@[simp]
+lemma ofHom_comp {X Y Z : Type u} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+    (f : C(X, Y)) (g : C(Y, Z)) :
+    ofHom (g.comp f) = ofHom f ≫ ofHom g :=
+  rfl
+
+lemma ofHom_apply {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y] (f : C(X, Y)) (x : X) :
+    (ofHom f) x = f x := rfl
+
+lemma hom_inv_id_apply {X Y : TopCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x := by
+  simp
+
+lemma inv_hom_id_apply {X Y : TopCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y := by
+  simp
+
+/--
+Replace a function coercion for a morphism `TopCat.of X ⟶ TopCat.of Y` with the definitionally
+equal function coercion for a continuous map `C(X, Y)`.
+-/
+@[simp] theorem coe_of_of {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
+    {f : C(X, Y)} {x} :
+    @DFunLike.coe (TopCat.of X ⟶ TopCat.of Y) ((CategoryTheory.forget TopCat).obj (TopCat.of X))
+      (fun _ ↦ (CategoryTheory.forget TopCat).obj (TopCat.of Y)) HasForget.instFunLike
+      (ofHom f) x =
+    @DFunLike.coe C(X, Y) X
+      (fun _ ↦ Y) _
+      f x :=
+  rfl
 
 instance inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩
 
--- porting note: added to ease the port of `AlgebraicTopology.TopologicalSimplex`
-lemma hom_apply {X Y : TopCat} (f : X ⟶ Y) (x : X) : f x = ContinuousMap.toFun f x := rfl
+@[deprecated
+  "Simply remove this from the `simp`/`rw` set: the LHS and RHS are now identical."
+  (since := "2025-01-30")]
+lemma hom_apply {X Y : TopCat} (f : X ⟶ Y) (x : X) : f x = ContinuousMap.toFun f.hom x := rfl
 
 /-- The discrete topology on any type. -/
 def discrete : Type u ⥤ TopCat.{u} where
-  obj X := ⟨X , ⊥⟩
-  map f := @ContinuousMap.mk _ _ ⊥ ⊥ f continuous_bot
-set_option linter.uppercaseLean3 false in
-#align Top.discrete TopCat.discrete
+  obj X := @of X ⊥
+  map f := @ofHom _ _ ⊥ ⊥ <| @ContinuousMap.mk _ _ ⊥ ⊥ f continuous_bot
 
 instance {X : Type u} : DiscreteTopology (discrete.obj X) :=
   ⟨rfl⟩
 
 /-- The trivial topology on any type. -/
 def trivial : Type u ⥤ TopCat.{u} where
-  obj X := ⟨X, ⊤⟩
-  map f := @ContinuousMap.mk _ _ ⊤ ⊤ f continuous_top
-set_option linter.uppercaseLean3 false in
-#align Top.trivial TopCat.trivial
+  obj X := @of X ⊤
+  map f := @ofHom _ _ ⊤ ⊤ <| @ContinuousMap.mk _ _ ⊤ ⊤ f continuous_top
 
 /-- Any homeomorphisms induces an isomorphism in `Top`. -/
 @[simps]
 def isoOfHomeo {X Y : TopCat.{u}} (f : X ≃ₜ Y) : X ≅ Y where
-  -- Porting note: previously ⟨f⟩ for hom (inv) and tidy closed proofs
-  hom := f.toContinuousMap
-  inv := f.symm.toContinuousMap
-  hom_inv_id := by ext; exact f.symm_apply_apply _
-  inv_hom_id := by ext; exact f.apply_symm_apply _
-set_option linter.uppercaseLean3 false in
-#align Top.iso_of_homeo TopCat.isoOfHomeo
+  hom := ofHom f
+  inv := ofHom f.symm
 
 /-- Any isomorphism in `Top` induces a homeomorphism. -/
 @[simps]
@@ -135,57 +185,65 @@ def homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : X ≃ₜ Y where
   invFun := f.inv
   left_inv x := by simp
   right_inv x := by simp
-  continuous_toFun := f.hom.continuous
-  continuous_invFun := f.inv.continuous
-set_option linter.uppercaseLean3 false in
-#align Top.homeo_of_iso TopCat.homeoOfIso
+  continuous_toFun := f.hom.hom.continuous
+  continuous_invFun := f.inv.hom.continuous
 
 @[simp]
 theorem of_isoOfHomeo {X Y : TopCat.{u}} (f : X ≃ₜ Y) : homeoOfIso (isoOfHomeo f) = f := by
-  -- Porting note: unfold some defs now
-  dsimp [homeoOfIso, isoOfHomeo]
   ext
   rfl
-set_option linter.uppercaseLean3 false in
-#align Top.of_iso_of_homeo TopCat.of_isoOfHomeo
 
 @[simp]
 theorem of_homeoOfIso {X Y : TopCat.{u}} (f : X ≅ Y) : isoOfHomeo (homeoOfIso f) = f := by
-  -- Porting note: unfold some defs now
-  dsimp [homeoOfIso, isoOfHomeo]
   ext
   rfl
-set_option linter.uppercaseLean3 false in
-#align Top.of_homeo_of_iso TopCat.of_homeoOfIso
 
--- Porting note: simpNF requested partially simped version below
-theorem openEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
-    OpenEmbedding (f ≫ g) ↔ OpenEmbedding f :=
-  (TopCat.homeoOfIso (asIso g)).openEmbedding.of_comp_iff f
-set_option linter.uppercaseLean3 false in
-#align Top.open_embedding_iff_comp_is_iso TopCat.openEmbedding_iff_comp_isIso
+lemma isIso_of_bijective_of_isOpenMap {X Y : TopCat.{u}} (f : X ⟶ Y)
+    (hfbij : Function.Bijective f) (hfcl : IsOpenMap f) : IsIso f :=
+  let e : X ≃ₜ Y := Homeomorph.homeomorphOfContinuousOpen
+    (Equiv.ofBijective f hfbij) f.hom.continuous hfcl
+  inferInstanceAs <| IsIso (TopCat.isoOfHomeo e).hom
+
+lemma isIso_of_bijective_of_isClosedMap {X Y : TopCat.{u}} (f : X ⟶ Y)
+    (hfbij : Function.Bijective f) (hfcl : IsClosedMap f) : IsIso f :=
+  let e : X ≃ₜ Y := Homeomorph.homeomorphOfContinuousClosed
+    (Equiv.ofBijective f hfbij) f.hom.continuous hfcl
+  inferInstanceAs <| IsIso (TopCat.isoOfHomeo e).hom
+
+theorem isOpenEmbedding_iff_comp_isIso {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+    IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding f :=
+  (TopCat.homeoOfIso (asIso g)).isOpenEmbedding.of_comp_iff f
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_iff_comp_isIso := isOpenEmbedding_iff_comp_isIso
 
 @[simp]
-theorem openEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
-    OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding f := by
+theorem isOpenEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso g] :
+    IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding f := by
   simp only [← Functor.map_comp]
-  exact openEmbedding_iff_comp_isIso f g
+  exact isOpenEmbedding_iff_comp_isIso f g
 
--- Porting note: simpNF requested partially simped version below
-theorem openEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
-    OpenEmbedding (f ≫ g) ↔ OpenEmbedding g := by
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_iff_comp_isIso' := isOpenEmbedding_iff_comp_isIso'
+
+theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
+    IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding g := by
   constructor
   · intro h
-    convert h.comp (TopCat.homeoOfIso (asIso f).symm).openEmbedding
-    exact congrArg _ (IsIso.inv_hom_id_assoc f g).symm
-  · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).openEmbedding
-set_option linter.uppercaseLean3 false in
-#align Top.open_embedding_iff_is_iso_comp TopCat.openEmbedding_iff_isIso_comp
+    convert h.comp (TopCat.homeoOfIso (asIso f).symm).isOpenEmbedding
+    exact congr_arg (DFunLike.coe ∘ ConcreteCategory.hom) (IsIso.inv_hom_id_assoc f g).symm
+  · exact fun h => h.comp (TopCat.homeoOfIso (asIso f)).isOpenEmbedding
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_iff_isIso_comp := isOpenEmbedding_iff_isIso_comp
 
 @[simp]
-theorem openEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
-    OpenEmbedding ((forget TopCat).map f ≫ (forget TopCat).map g) ↔ OpenEmbedding g := by
+theorem isOpenEmbedding_iff_isIso_comp' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
+    IsOpenEmbedding (g ∘ f) ↔ IsOpenEmbedding g := by
   simp only [← Functor.map_comp]
-  exact openEmbedding_iff_isIso_comp f g
+  exact isOpenEmbedding_iff_isIso_comp f g
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_iff_isIso_comp' := isOpenEmbedding_iff_isIso_comp'
 
 end TopCat

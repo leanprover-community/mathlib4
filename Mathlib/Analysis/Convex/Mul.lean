@@ -3,8 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Analysis.Convex.Function
 import Mathlib.Algebra.Order.Monovary
+import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Analysis.Convex.Function
 import Mathlib.Tactic.FieldSimp
 
 /-!
@@ -25,14 +26,15 @@ variable {𝕜 E F : Type*}
 section LinearOrderedCommRing
 variable [LinearOrderedCommRing 𝕜] [LinearOrderedCommRing E] [LinearOrderedAddCommGroup F]
   [Module 𝕜 E] [Module 𝕜 F] [Module E F] [IsScalarTower 𝕜 E F] [SMulCommClass 𝕜 E F]
-  [OrderedSMul 𝕜 E] [OrderedSMul 𝕜 F] [OrderedSMul E F] {s : Set 𝕜} {f : 𝕜 → E} {g : 𝕜 → F}
+  [OrderedSMul 𝕜 F] [OrderedSMul E F] {s : Set 𝕜} {f : 𝕜 → E} {g : 𝕜 → F}
 
 lemma ConvexOn.smul' (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x)
     (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : MonovaryOn f g s) : ConvexOn 𝕜 s (f • g) := by
   refine ⟨hf.1, fun x hx y hy a b ha hb hab ↦ ?_⟩
   dsimp
-  refine (smul_le_smul (hf.2 hx hy ha hb hab) (hg.2 hx hy ha hb hab) (hg₀ $ hf.1 hx hy ha hb hab) $
-    add_nonneg (smul_nonneg ha $ hf₀ hx) $ smul_nonneg hb $ hf₀ hy).trans ?_
+  refine
+    (smul_le_smul (hf.2 hx hy ha hb hab) (hg.2 hx hy ha hb hab) (hf₀ <| hf.1 hx hy ha hb hab) <|
+      add_nonneg (smul_nonneg ha <| hg₀ hx) <| smul_nonneg hb <| hg₀ hy).trans ?_
   calc
       _ = (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g y + f y • g x) := ?_
     _ ≤ (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g x + f y • g y) := by
@@ -45,12 +47,14 @@ lemma ConvexOn.smul' (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) (hf₀ : 
     ← smul_smul_smul_comm b b, smul_eq_mul, smul_eq_mul, smul_eq_mul, smul_eq_mul, mul_comm b,
     add_comm _ ((b * b) • f y • g y), add_add_add_comm, add_comm ((a * b) • f y • g x)]
 
-lemma ConcaveOn.smul' (hf : ConcaveOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g) (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x)
-    (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : AntivaryOn f g s) : ConcaveOn 𝕜 s (f • g) := by
+lemma ConcaveOn.smul' [OrderedSMul 𝕜 E] (hf : ConcaveOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g)
+    (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x) (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : AntivaryOn f g s) :
+    ConcaveOn 𝕜 s (f • g) := by
   refine ⟨hf.1, fun x hx y hy a b ha hb hab ↦ ?_⟩
   dsimp
-  refine (smul_le_smul (hf.2 hx hy ha hb hab) (hg.2 hx hy ha hb hab) (add_nonneg
-    (smul_nonneg ha $ hg₀ hx) $ smul_nonneg hb $ hg₀ hy) $ hf₀ $ hf.1 hx hy ha hb hab).trans' ?_
+  refine (smul_le_smul (hf.2 hx hy ha hb hab) (hg.2 hx hy ha hb hab)
+    (add_nonneg (smul_nonneg ha <| hf₀ hx) <| smul_nonneg hb <| hf₀ hy)
+    (hg₀ <| hf.1 hx hy ha hb hab)).trans' ?_
   calc a • f x • g x + b • f y • g y
         = (a * (a + b)) • (f x • g x) + (b * (a + b)) • (f y • g y) := by simp_rw [hab, mul_one]
     _ = (a * a) • (f x • g x) + (b * b) • (f y • g y) + (a * b) • (f x • g x + f y • g y) := by
@@ -63,8 +67,9 @@ lemma ConcaveOn.smul' (hf : ConcaveOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g) (hf₀
     ← smul_smul_smul_comm b b, smul_eq_mul, smul_eq_mul, smul_eq_mul, smul_eq_mul, mul_comm b a,
     add_comm ((a * b) • f x • g y), add_comm ((a * b) • f x • g y), add_add_add_comm]
 
-lemma ConvexOn.smul'' (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) (hf₀ : ∀ ⦃x⦄, x ∈ s → f x ≤ 0)
-    (hg₀ : ∀ ⦃x⦄, x ∈ s → g x ≤ 0) (hfg : AntivaryOn f g s) : ConcaveOn 𝕜 s (f • g) := by
+lemma ConvexOn.smul'' [OrderedSMul 𝕜 E] (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g)
+    (hf₀ : ∀ ⦃x⦄, x ∈ s → f x ≤ 0) (hg₀ : ∀ ⦃x⦄, x ∈ s → g x ≤ 0) (hfg : AntivaryOn f g s) :
+    ConcaveOn 𝕜 s (f • g) := by
   rw [← neg_smul_neg]
   exact hf.neg.smul' hg.neg (fun x hx ↦ neg_nonneg.2 <| hf₀ hx) (fun x hx ↦ neg_nonneg.2 <| hg₀ hx)
     hfg.neg
@@ -81,25 +86,25 @@ lemma ConvexOn.smul_concaveOn (hf : ConvexOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g)
   rw [← neg_convexOn_iff, ← smul_neg]
   exact hf.smul' hg.neg hf₀ (fun x hx ↦ neg_nonneg.2 <| hg₀ hx) hfg.neg_right
 
-lemma ConcaveOn.smul_convexOn (hf : ConcaveOn 𝕜 s f) (hg : ConvexOn 𝕜 s g)
+lemma ConcaveOn.smul_convexOn [OrderedSMul 𝕜 E] (hf : ConcaveOn 𝕜 s f) (hg : ConvexOn 𝕜 s g)
     (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x) (hg₀ : ∀ ⦃x⦄, x ∈ s → g x ≤ 0) (hfg : MonovaryOn f g s) :
     ConvexOn 𝕜 s (f • g) := by
   rw [← neg_concaveOn_iff, ← smul_neg]
   exact hf.smul' hg.neg hf₀ (fun x hx ↦ neg_nonneg.2 <| hg₀ hx) hfg.neg_right
 
-lemma ConvexOn.smul_concaveOn' (hf : ConvexOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g)
+lemma ConvexOn.smul_concaveOn' [OrderedSMul 𝕜 E] (hf : ConvexOn 𝕜 s f) (hg : ConcaveOn 𝕜 s g)
     (hf₀ : ∀ ⦃x⦄, x ∈ s → f x ≤ 0) (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : MonovaryOn f g s) :
     ConvexOn 𝕜 s (f • g) := by
   rw [← neg_concaveOn_iff, ← smul_neg]
-  exact hf.smul'' hg.neg hf₀ (fun x hx ↦ neg_nonpos.2 $ hg₀ hx) hfg.neg_right
+  exact hf.smul'' hg.neg hf₀ (fun x hx ↦ neg_nonpos.2 <| hg₀ hx) hfg.neg_right
 
 lemma ConcaveOn.smul_convexOn' (hf : ConcaveOn 𝕜 s f) (hg : ConvexOn 𝕜 s g)
     (hf₀ : ∀ ⦃x⦄, x ∈ s → f x ≤ 0) (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : AntivaryOn f g s) :
     ConcaveOn 𝕜 s (f • g) := by
   rw [← neg_convexOn_iff, ← smul_neg]
-  exact hf.smul'' hg.neg hf₀ (fun x hx ↦ neg_nonpos.2 $ hg₀ hx) hfg.neg_right
+  exact hf.smul'' hg.neg hf₀ (fun x hx ↦ neg_nonpos.2 <| hg₀ hx) hfg.neg_right
 
-variable [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E] {f g : 𝕜 → E}
+variable [OrderedSMul 𝕜 E] [IsScalarTower 𝕜 E E] [SMulCommClass 𝕜 E E] {f g : 𝕜 → E}
 
 lemma ConvexOn.mul (hf : ConvexOn 𝕜 s f) (hg : ConvexOn 𝕜 s g) (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x)
     (hg₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ g x) (hfg : MonovaryOn f g s) :
@@ -136,7 +141,9 @@ lemma ConcaveOn.mul_convexOn' (hf : ConcaveOn 𝕜 s f) (hg : ConvexOn 𝕜 s g)
 lemma ConvexOn.pow (hf : ConvexOn 𝕜 s f) (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x) :
     ∀ n, ConvexOn 𝕜 s (f ^ n)
   | 0 => by simpa using convexOn_const 1 hf.1
-  | n + 1 => by rw [pow_succ]; exact hf.mul (hf.pow hf₀ _) hf₀ (fun x hx ↦ pow_nonneg (hf₀ hx) _) <|
+  | n + 1 => by
+    rw [pow_succ']
+    exact hf.mul (hf.pow hf₀ _) hf₀ (fun x hx ↦ pow_nonneg (hf₀ hx) _) <|
       (monovaryOn_self f s).pow_right₀ hf₀ n
 
 /-- `x^n`, `n : ℕ` is convex on `[0, +∞)` for all `n`. -/
@@ -162,15 +169,17 @@ open Int in
 /-- `x^m`, `m : ℤ` is convex on `(0, +∞)` for all `m`. -/
 lemma convexOn_zpow : ∀ n : ℤ, ConvexOn 𝕜 (Ioi 0) fun x : 𝕜 ↦ x ^ n
   | (n : ℕ) => by
-    simp_rw [zpow_ofNat]
+    simp_rw [zpow_natCast]
     exact (convexOn_pow n).subset Ioi_subset_Ici_self (convex_Ioi _)
   | -[n+1] => by
     simp_rw [zpow_negSucc, ← inv_pow]
     refine (convexOn_iff_forall_pos.2 ⟨convex_Ioi _, ?_⟩).pow (fun x (hx : 0 < x) ↦ by positivity) _
     rintro x (hx : 0 < x) y (hy : 0 < y) a b ha hb hab
     field_simp
-    rw [div_le_div_iff, ← sub_nonneg]
-    calc
-      0 ≤ a * b * (x - y) ^ 2 := by positivity
-      _ = _ := by obtain rfl := eq_sub_of_add_eq hab; ring
+    rw [div_le_div_iff₀, ← sub_nonneg]
+    · calc
+        0 ≤ a * b * (x - y) ^ 2 := by positivity
+        _ = _ := by obtain rfl := eq_sub_of_add_eq hab; ring
     all_goals positivity
+
+end LinearOrderedField

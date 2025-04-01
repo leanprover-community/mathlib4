@@ -1,11 +1,11 @@
 /-
-Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
-
-#align_import geometry.euclidean.inversion from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
+import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Tactic.AdaptationNote
 
 /-!
 # Inversion in an affine space
@@ -22,8 +22,6 @@ Currently, we prove only a few basic lemmas needed to prove Ptolemy's inequality
 `EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist`.
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
 open Metric Function AffineMap Set AffineSubspace
@@ -34,14 +32,17 @@ variable {V P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricS
 
 namespace EuclideanGeometry
 
-variable {a b c d x y z : P} {r R : ℝ}
+variable {c x y : P} {R : ℝ}
 
 /-- Inversion in a sphere in an affine space. This map sends each point `x` to the point `y` such
 that `y -ᵥ c = (R / dist x c) ^ 2 • (x -ᵥ c)`, where `c` and `R` are the center and the radius the
 sphere. -/
 def inversion (c : P) (R : ℝ) (x : P) : P :=
   (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c
-#align euclidean_geometry.inversion EuclideanGeometry.inversion
+
+theorem inversion_def :
+    inversion = fun (c : P) (R : ℝ) (x : P) => (R / dist x c) ^ 2 • (x -ᵥ c) +ᵥ c :=
+  rfl
 
 /-!
 ### Basic properties
@@ -58,11 +59,9 @@ theorem inversion_eq_lineMap (c : P) (R : ℝ) (x : P) :
 theorem inversion_vsub_center (c : P) (R : ℝ) (x : P) :
     inversion c R x -ᵥ c = (R / dist x c) ^ 2 • (x -ᵥ c) :=
   vadd_vsub _ _
-#align euclidean_geometry.inversion_vsub_center EuclideanGeometry.inversion_vsub_center
 
 @[simp]
 theorem inversion_self (c : P) (R : ℝ) : inversion c R c = c := by simp [inversion]
-#align euclidean_geometry.inversion_self EuclideanGeometry.inversion_self
 
 @[simp]
 theorem inversion_zero_radius (c x : P) : inversion c 0 x = c := by simp [inversion]
@@ -78,7 +77,6 @@ theorem inversion_dist_center (c x : P) : inversion c (dist x c) x = x := by
   · apply inversion_self
   · rw [inversion, div_self, one_pow, one_smul, vsub_vadd]
     rwa [dist_ne_zero]
-#align euclidean_geometry.inversion_dist_center EuclideanGeometry.inversion_dist_center
 
 @[simp]
 theorem inversion_dist_center' (c x : P) : inversion c (dist c x) x = x := by
@@ -86,7 +84,6 @@ theorem inversion_dist_center' (c x : P) : inversion c (dist c x) x = x := by
 
 theorem inversion_of_mem_sphere (h : x ∈ Metric.sphere c R) : inversion c R x = x :=
   h.out ▸ inversion_dist_center c x
-#align euclidean_geometry.inversion_of_mem_sphere EuclideanGeometry.inversion_of_mem_sphere
 
 /-- Distance from the image of a point under inversion to the center. This formula accidentally
 works for `x = c`. -/
@@ -94,14 +91,17 @@ theorem dist_inversion_center (c x : P) (R : ℝ) : dist (inversion c R x) c = R
   rcases eq_or_ne x c with (rfl | hx)
   · simp
   have : dist x c ≠ 0 := dist_ne_zero.2 hx
-  field_simp [inversion, norm_smul, abs_div, ← dist_eq_norm_vsub, sq, mul_assoc]
-#align euclidean_geometry.dist_inversion_center EuclideanGeometry.dist_inversion_center
+  -- was `field_simp [inversion, norm_smul, abs_div, ← dist_eq_norm_vsub, sq, mul_assoc]`,
+  -- but really slow. Replaced by `simp only ...` to speed up.
+  -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): reinstate `field_simp` once it is faster.
+  simp (disch := field_simp_discharge) only [inversion, sq, mul_div_assoc', div_mul_eq_mul_div,
+    div_div, dist_vadd_left, norm_smul, norm_div, norm_mul, Real.norm_eq_abs, abs_mul_abs_self,
+    abs_dist, ← dist_eq_norm_vsub, mul_assoc, eq_div_iff, div_eq_iff]
 
 /-- Distance from the center of an inversion to the image of a point under the inversion. This
 formula accidentally works for `x = c`. -/
 theorem dist_center_inversion (c x : P) (R : ℝ) : dist c (inversion c R x) = R ^ 2 / dist c x := by
   rw [dist_comm c, dist_comm c, dist_inversion_center]
-#align euclidean_geometry.dist_center_inversion EuclideanGeometry.dist_center_inversion
 
 @[simp]
 theorem inversion_inversion (c : P) {R : ℝ} (hR : R ≠ 0) (x : P) :
@@ -109,26 +109,21 @@ theorem inversion_inversion (c : P) {R : ℝ} (hR : R ≠ 0) (x : P) :
   rcases eq_or_ne x c with (rfl | hne)
   · rw [inversion_self, inversion_self]
   · rw [inversion, dist_inversion_center, inversion_vsub_center, smul_smul, ← mul_pow,
-      div_mul_div_comm, div_mul_cancel _ (dist_ne_zero.2 hne), ← sq, div_self, one_pow, one_smul,
+      div_mul_div_comm, div_mul_cancel₀ _ (dist_ne_zero.2 hne), ← sq, div_self, one_pow, one_smul,
       vsub_vadd]
     exact pow_ne_zero _ hR
-#align euclidean_geometry.inversion_inversion EuclideanGeometry.inversion_inversion
 
 theorem inversion_involutive (c : P) {R : ℝ} (hR : R ≠ 0) : Involutive (inversion c R) :=
   inversion_inversion c hR
-#align euclidean_geometry.inversion_involutive EuclideanGeometry.inversion_involutive
 
 theorem inversion_surjective (c : P) {R : ℝ} (hR : R ≠ 0) : Surjective (inversion c R) :=
   (inversion_involutive c hR).surjective
-#align euclidean_geometry.inversion_surjective EuclideanGeometry.inversion_surjective
 
 theorem inversion_injective (c : P) {R : ℝ} (hR : R ≠ 0) : Injective (inversion c R) :=
   (inversion_involutive c hR).injective
-#align euclidean_geometry.inversion_injective EuclideanGeometry.inversion_injective
 
 theorem inversion_bijective (c : P) {R : ℝ} (hR : R ≠ 0) : Bijective (inversion c R) :=
   (inversion_involutive c hR).bijective
-#align euclidean_geometry.inversion_bijective EuclideanGeometry.inversion_bijective
 
 theorem inversion_eq_center (hR : R ≠ 0) : inversion c R x = c ↔ x = c :=
   (inversion_injective c hR).eq_iff' <| inversion_self _ _
@@ -160,7 +155,6 @@ theorem dist_inversion_inversion (hx : x ≠ c) (hy : y ≠ c) (R : ℝ) :
   simp_rw [dist_vadd_cancel_right, dist_eq_norm_vsub V _ c]
   simpa only [dist_vsub_cancel_right] using
     dist_div_norm_sq_smul (vsub_ne_zero.2 hx) (vsub_ne_zero.2 hy) R
-#align euclidean_geometry.dist_inversion_inversion EuclideanGeometry.dist_inversion_inversion
 
 theorem dist_inversion_mul_dist_center_eq (hx : x ≠ c) (hy : y ≠ c) :
     dist (inversion c R x) y * dist x c = dist x (inversion c R y) * dist y c := by
@@ -169,12 +163,17 @@ theorem dist_inversion_mul_dist_center_eq (hx : x ≠ c) (hy : y ≠ c) :
   conv in dist _ y => rw [← inversion_inversion c hR y]
   rw [dist_inversion_inversion hx hy', dist_inversion_center]
   have : dist x c ≠ 0 := dist_ne_zero.2 hx
-  field_simp; ring
+  -- used to be `field_simp`, but was really slow; replaced by `simp only ...` to speed up
+  -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): reinstate `field_simp` once it is faster.
+  simp (disch := field_simp_discharge) only [mul_div_assoc', div_div_eq_mul_div, div_mul_eq_mul_div,
+    div_eq_iff]
+  ring
 
 /-!
 ### Ptolemy's inequality
 -/
 
+include V in
 /-- **Ptolemy's inequality**: in a quadrangle `ABCD`, `|AC| * |BD| ≤ |AB| * |CD| + |BC| * |AD|`. If
 `ABCD` is a convex cyclic polygon, then this inequality becomes an equality, see
 `EuclideanGeometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical`. -/
@@ -194,9 +193,8 @@ theorem mul_dist_le_mul_dist_add_mul_dist (a b c d : P) :
   rw [dist_inversion_inversion hb hd, dist_inversion_inversion hb hc,
     dist_inversion_inversion hc hd, one_pow] at H
   rw [← dist_pos] at hb hc hd
-  rw [← div_le_div_right (mul_pos hb (mul_pos hc hd))]
+  rw [← div_le_div_iff_of_pos_right (mul_pos hb (mul_pos hc hd))]
   convert H using 1 <;> (field_simp [hb.ne', hc.ne', hd.ne', dist_comm a]; ring)
-#align euclidean_geometry.mul_dist_le_mul_dist_add_mul_dist EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist
 
 end EuclideanGeometry
 
@@ -206,9 +204,9 @@ open EuclideanGeometry
 ### Continuity of inversion
 -/
 
-protected theorem Filter.Tendsto.inversion {l : Filter α} {fc fx : α → P} {fR : α → ℝ}
-    (hc : Tendsto fc l (𝓝 c)) (hR : Tendsto fR l (𝓝 R)) (hx : Tendsto fx l (𝓝 x))
-    (hne : x ≠ c) :
+protected theorem Filter.Tendsto.inversion {α : Type*} {x c : P} {R : ℝ} {l : Filter α}
+    {fc fx : α → P} {fR : α → ℝ} (hc : Tendsto fc l (𝓝 c)) (hR : Tendsto fR l (𝓝 R))
+    (hx : Tendsto fx l (𝓝 x)) (hne : x ≠ c) :
     Tendsto (fun a ↦ inversion (fc a) (fR a) (fx a)) l (𝓝 (inversion c R x)) :=
   (((hR.div (hx.dist hc) <| dist_ne_zero.2 hne).pow 2).smul (hx.vsub hc)).vadd hc
 

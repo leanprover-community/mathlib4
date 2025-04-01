@@ -1,11 +1,10 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Lucas Allen, Scott Morrison
+Authors: Lucas Allen, Kim Morrison
 -/
 
 import Mathlib.Tactic.Conv
-import Std.Tactic.OpenPrivate
 
 /-!
 ## Introduce the `apply_congr` conv mode tactic.
@@ -78,7 +77,7 @@ def Lean.Elab.Tactic.applyCongr (q : Option Expr) : TacticM Unit := do
   if congrTheoremExprs == [] then
     throwError "No matching congr lemmas found"
   -- For every lemma:
-  liftMetaTactic <| fun mainGoal => congrTheoremExprs.firstM (fun congrTheoremExpr => do
+  liftMetaTactic fun mainGoal => congrTheoremExprs.firstM (fun congrTheoremExpr => do
     let newGoals ← mainGoal.apply congrTheoremExpr { newGoals := .nonDependentOnly }
     newGoals.mapM fun newGoal => Prod.snd <$> newGoal.intros)
 

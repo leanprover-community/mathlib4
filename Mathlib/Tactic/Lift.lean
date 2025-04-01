@@ -3,8 +3,9 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Tactic.Cases
-import Mathlib.Init.Data.Int.Order
+import Mathlib.Tactic.Basic
+import Batteries.Lean.Expr
+import Batteries.Lean.Meta.UnusedNames
 
 /-!
 # lift tactic
@@ -22,9 +23,8 @@ lift, tactic
 class CanLift (α β : Sort*) (coe : outParam <| β → α) (cond : outParam <| α → Prop) : Prop where
   /-- An element of `α` that satisfies `cond` belongs to the range of `coe`. -/
   prf : ∀ x : α, cond x → ∃ y : β, coe y = x
-#align can_lift CanLift
 
-instance : CanLift ℤ ℕ (fun n : ℕ ↦ n) (0 ≤ ·) :=
+instance : CanLift Int Nat (fun n : Nat ↦ n) (0 ≤ ·) :=
   ⟨fun n hn ↦ ⟨n.natAbs, Int.natAbs_of_nonneg hn⟩⟩
 
 /-- Enable automatic handling of pi types in `CanLift`. -/
@@ -33,7 +33,6 @@ instance Pi.canLift (ι : Sort*) (α β : ι → Sort*) (coe : ∀ i, β i → �
     CanLift (∀ i, α i) (∀ i, β i) (fun f i ↦ coe i (f i)) fun f ↦ ∀ i, P i (f i) where
   prf f hf := ⟨fun i => Classical.choose (CanLift.prf (f i) (hf i)),
     funext fun i => Classical.choose_spec (CanLift.prf (f i) (hf i))⟩
-#align pi.can_lift Pi.canLift
 
 theorem Subtype.exists_pi_extension {ι : Sort*} {α : ι → Sort*} [ne : ∀ i, Nonempty (α i)]
     {p : ι → Prop} (f : ∀ i : Subtype p, α i) :
@@ -41,23 +40,19 @@ theorem Subtype.exists_pi_extension {ι : Sort*} {α : ι → Sort*} [ne : ∀ i
   haveI : DecidablePred p := fun i ↦ Classical.propDecidable (p i)
   exact ⟨fun i => if hi : p i then f ⟨i, hi⟩ else Classical.choice (ne i),
     funext fun i ↦ dif_pos i.2⟩
-#align subtype.exists_pi_extension Subtype.exists_pi_extension
 
 instance PiSubtype.canLift (ι : Sort*) (α : ι → Sort*) [∀ i, Nonempty (α i)] (p : ι → Prop) :
     CanLift (∀ i : Subtype p, α i) (∀ i, α i) (fun f i => f i) fun _ => True where
   prf f _ := Subtype.exists_pi_extension f
-#align pi_subtype.can_lift PiSubtype.canLift
 
 -- TODO: test if we need this instance in Lean 4
 instance PiSubtype.canLift' (ι : Sort*) (α : Sort*) [Nonempty α] (p : ι → Prop) :
     CanLift (Subtype p → α) (ι → α) (fun f i => f i) fun _ => True :=
   PiSubtype.canLift ι (fun _ => α) p
-#align pi_subtype.can_lift' PiSubtype.canLift'
 
 instance Subtype.canLift {α : Sort*} (p : α → Prop) :
     CanLift α { x // p x } Subtype.val p where prf a ha :=
   ⟨⟨a, ha⟩, rfl⟩
-#align subtype.can_lift Subtype.canLift
 
 namespace Mathlib.Tactic
 
@@ -106,8 +101,8 @@ syntax (name := lift) "lift " term " to " term (" using " term)?
 
 /-- Generate instance for the `lift` tactic. -/
 def Lift.getInst (old_tp new_tp : Expr) : MetaM (Expr × Expr × Expr) := do
-  let coe ← mkFreshExprMVar (some $ .forallE `a new_tp old_tp .default)
-  let p ← mkFreshExprMVar (some $ .forallE `a old_tp (.sort .zero) .default)
+  let coe ← mkFreshExprMVar (some <| .forallE `a new_tp old_tp .default)
+  let p ← mkFreshExprMVar (some <| .forallE `a old_tp (.sort .zero) .default)
   let inst_type ← mkAppM ``CanLift #[old_tp, new_tp, coe, p]
   let inst ← synthInstance inst_type -- TODO: catch error
   return (← instantiateMVars p, ← instantiateMVars coe, ← instantiateMVars inst)
@@ -145,16 +140,15 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
                else pure newEqName
   let newEqIdent := mkIdent newEqName
   -- Run rcases on the proof of the lift condition
-  replaceMainGoal (← Std.Tactic.RCases.rcases #[(none, prfSyn)]
+  replaceMainGoal (← Lean.Elab.Tactic.RCases.rcases #[(none, prfSyn)]
     (.tuple Syntax.missing <| [newVarName, newEqName].map (.one Syntax.missing)) goal)
   -- if we use a new variable, then substitute it everywhere
   if isNewVar then
-    for decl in ←getLCtx do
+    for decl in ← getLCtx do
       if decl.userName != newEqName then
         let declIdent := mkIdent decl.userName
-        -- The line below fails if $declIdent is there only once.
         evalTactic (← `(tactic| simp (config := {failIfUnchanged := false})
-          only [← $newEqIdent] at $declIdent $declIdent))
+          only [← $newEqIdent] at $declIdent:ident))
     evalTactic (← `(tactic| simp (config := {failIfUnchanged := false}) only [← $newEqIdent]))
   -- Clear the temporary hypothesis used for the new variable name if applicable
   if isNewVar && !isNewEq then
@@ -167,20 +161,20 @@ def Lift.main (e t : TSyntax `term) (hUsing : Option (TSyntax `term))
   if hUsing.isNone then withMainContext <| setGoals (prf.mvarId! :: (← getGoals))
 
 elab_rules : tactic
-  | `(tactic| lift $e to $t $[using $h]?) => withMainContext <| Lift.main e t h none none False
+  | `(tactic| lift $e to $t $[using $h]?) => withMainContext <| Lift.main e t h none none false
 
 elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName) => withMainContext <| Lift.main e t h newVarName none False
+    with $newVarName) => withMainContext <| Lift.main e t h newVarName none false
 
 elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
-    with $newVarName $newEqName) => withMainContext <| Lift.main e t h newVarName newEqName False
+    with $newVarName $newEqName) => withMainContext <| Lift.main e t h newVarName newEqName false
 
 elab_rules : tactic | `(tactic| lift $e to $t $[using $h]?
     with $newVarName $newEqName $newPrfName) => withMainContext do
-  if h.isNone then Lift.main e t h newVarName newEqName False
+  if h.isNone then Lift.main e t h newVarName newEqName false
   else
     let some h := h | unreachable!
-    if h.raw == newPrfName then Lift.main e t h newVarName newEqName True
-    else Lift.main e t h newVarName newEqName False
+    if h.raw == newPrfName then Lift.main e t h newVarName newEqName true
+    else Lift.main e t h newVarName newEqName false
 
 end Mathlib.Tactic

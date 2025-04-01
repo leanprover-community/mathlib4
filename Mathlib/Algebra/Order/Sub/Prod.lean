@@ -1,16 +1,19 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Algebra.Order.Sub.Defs
+import Mathlib.Algebra.Notation.Pi
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Products of `OrderedSub` types.
 -/
 
-set_option autoImplicit true
+assert_not_exists MonoidWithZero
+
+variable {α β : Type*}
 
 instance Prod.orderedSub
     [Preorder α] [Add α] [Sub α] [OrderedSub α] [Sub β] [Preorder β] [Add β] [OrderedSub β] :
