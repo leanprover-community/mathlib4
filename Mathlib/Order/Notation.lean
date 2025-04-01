@@ -54,11 +54,47 @@ class Inf (α : Type*) where
 
 attribute [ext] Min Max
 
-@[inherit_doc]
-infixl:68 " ⊔ " => Max.max
+@[inherit_doc Max.max]
+syntax:68 (name := sup) term:68 " ⊔ " term:69 : term
 
-@[inherit_doc]
-infixl:69 " ⊓ " => Min.min
+@[inherit_doc Min.min]
+syntax:69 (name := inf) term:69 " ⊓ " term:70 : term
+
+macro_rules
+| `($a ⊔ $b) => `(Max.max $a $b)
+| `($a ⊓ $b) => `(Min.min $a $b)
+
+section Delab
+
+open Lean Meta PrettyPrinter Delaborator SubExpr
+
+@[delab app.Max.max]
+def elabSup : Delab := do
+  let e ← getExpr
+  guard (e.isAppOfArity ``Max.max 4)
+  let α := e.appFn!.appFn!.appFn!.appArg!
+  try
+    discard <| synthInstance (← mkAppM `LinearOrder #[α])
+    failure -- use the default delaborator
+  catch _ =>
+    let x ← withNaryArg 2 delab
+    let y ← withNaryArg 3 delab
+    `($x ⊔ $y)
+
+@[delab app.Min.min]
+def elabInf : Delab := do
+  let e ← getExpr
+  guard (e.isAppOfArity ``Min.min 4)
+  let α := e.appFn!.appFn!.appFn!.appArg!
+  try
+    discard <| synthInstance (← mkAppM `LinearOrder #[α])
+    failure -- use the default delaborator
+  catch _ =>
+    let x ← withNaryArg 2 delab
+    let y ← withNaryArg 3 delab
+    `($x ⊓ $y)
+
+end Delab
 
 /-- Syntax typeclass for Heyting implication `⇨`. -/
 @[notation_class]
