@@ -38,9 +38,6 @@ alias uniformEmbedding_coe_real := isUniformEmbedding_coe_real
 theorem isDenseEmbedding_coe_real : IsDenseEmbedding ((↑) : ℚ → ℝ) :=
   isUniformEmbedding_coe_real.isDenseEmbedding Rat.denseRange_cast
 
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_coe_real := isDenseEmbedding_coe_real
-
 theorem isEmbedding_coe_real : IsEmbedding ((↑) : ℚ → ℝ) :=
   isDenseEmbedding_coe_real.isEmbedding
 
