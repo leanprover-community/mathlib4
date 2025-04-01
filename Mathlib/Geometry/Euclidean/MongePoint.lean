@@ -188,7 +188,7 @@ theorem sum_mongePointVSubFaceCentroidWeightsWithCircumcenter {n : ℕ} {i₁ i�
 n-dimensional face, in terms of `pointsWithCircumcenter`. -/
 theorem mongePoint_vsub_face_centroid_eq_weightedVSub_of_pointsWithCircumcenter {n : ℕ}
     (s : Simplex ℝ P (n + 2)) {i₁ i₂ : Fin (n + 3)} (h : i₁ ≠ i₂) :
-    s.mongePoint -ᵥ ({i₁, i₂}ᶜ : Finset (Fin (n + 3))).centroid ℝ s.points =
+    s.mongePoint -ᵥ ({i₁, i₂}ᶜ : Finset _).centroid ℝ s.points =
       (univ : Finset (PointsWithCircumcenterIndex (n + 2))).weightedVSub s.pointsWithCircumcenter
         (mongePointVSubFaceCentroidWeightsWithCircumcenter i₁ i₂) := by
   simp_rw [mongePoint_eq_affineCombination_of_pointsWithCircumcenter,
@@ -200,7 +200,7 @@ n-dimensional face, is orthogonal to the difference of the two
 vertices not in that face. -/
 theorem inner_mongePoint_vsub_face_centroid_vsub {n : ℕ} (s : Simplex ℝ P (n + 2))
     {i₁ i₂ : Fin (n + 3)} :
-    ⟪s.mongePoint -ᵥ ({i₁, i₂}ᶜ : Finset (Fin (n + 3))).centroid ℝ s.points,
+    ⟪s.mongePoint -ᵥ ({i₁, i₂}ᶜ : Finset _).centroid ℝ s.points,
         s.points i₁ -ᵥ s.points i₂⟫ =
       0 := by
   by_cases h : i₁ = i₂
@@ -236,14 +236,13 @@ the centroid of an n-dimensional face and is orthogonal to the
 opposite edge (in 2 dimensions, this is the same as an altitude).
 This definition is only intended to be used when `i₁ ≠ i₂`. -/
 def mongePlane {n : ℕ} (s : Simplex ℝ P (n + 2)) (i₁ i₂ : Fin (n + 3)) : AffineSubspace ℝ P :=
-  mk' (({i₁, i₂}ᶜ : Finset (Fin (n + 3))).centroid ℝ s.points) (ℝ ∙ s.points i₁ -ᵥ s.points i₂)ᗮ ⊓
+  (ℝ ∙ s.points i₁ -ᵥ s.points i₂)ᗮ.shift (({i₁, i₂}ᶜ : Finset _).centroid ℝ s.points) ⊓
     affineSpan ℝ (Set.range s.points)
 
 /-- The definition of a Monge plane. -/
 theorem mongePlane_def {n : ℕ} (s : Simplex ℝ P (n + 2)) (i₁ i₂ : Fin (n + 3)) :
     s.mongePlane i₁ i₂ =
-      mk' (({i₁, i₂}ᶜ : Finset (Fin (n + 3))).centroid ℝ s.points)
-          (ℝ ∙ s.points i₁ -ᵥ s.points i₂)ᗮ ⊓
+      (ℝ ∙ s.points i₁ -ᵥ s.points i₂)ᗮ.shift (({i₁, i₂}ᶜ : Finset _).centroid ℝ s.points) ⊓
         affineSpan ℝ (Set.range s.points) :=
   rfl
 
@@ -442,7 +441,7 @@ theorem orthocenter_eq_of_range_eq {t₁ t₂ : Triangle ℝ P}
 planes. -/
 theorem altitude_eq_mongePlane (t : Triangle ℝ P) {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂) (h₁₃ : i₁ ≠ i₃)
     (h₂₃ : i₂ ≠ i₃) : t.altitude i₁ = t.mongePlane i₂ i₃ := by
-  have hs : ({i₂, i₃}ᶜ : Finset (Fin 3)) = {i₁} := by decide +revert
+  have hs : ({i₂, i₃}ᶜ : Finset _) = {i₁} := by decide +revert
   have he : univ.erase i₁ = {i₂, i₃} := by decide +revert
   rw [mongePlane_def, altitude_def, direction_affineSpan, hs, he, centroid_singleton, coe_insert,
     coe_singleton, vectorSpan_image_eq_span_vsub_set_left_ne ℝ _ (Set.mem_insert i₂ _)]
