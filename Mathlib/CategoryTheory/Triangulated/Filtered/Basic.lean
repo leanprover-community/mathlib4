@@ -128,8 +128,6 @@ add := by
   simp only [Functor.CommShift.isoAdd_hom_app]
   rw [shift₁FunctorAdd_eq_shiftFunctorAdd]
 
-
-#exit
 /-
   rw [← shiftFunctorComm_eq, ← shiftFunctorComm_eq, ← shiftFunctorComm_eq]
   ext A
