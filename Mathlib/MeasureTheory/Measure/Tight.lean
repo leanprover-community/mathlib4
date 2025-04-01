@@ -116,7 +116,7 @@ protected lemma inter (hS : IsTightMeasureSet S) (T : Set (Measure α)) :
   hS.subset inter_subset_left
 
 lemma map [OpensMeasurableSpace β] [T2Space β]
-    (hS : IsTightMeasureSet S) (f : α → β) (hf : Continuous f) :
+    (hS : IsTightMeasureSet S) {f : α → β} (hf : Continuous f) :
     IsTightMeasureSet (Measure.map f '' S) := by
   rw [IsTightMeasureSet_iff_exists_isCompact_measure_compl_le] at hS ⊢
   simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
