@@ -99,6 +99,11 @@ def ColimitType : Type (max u w₀) := Quot F.ColimitTypeRel
 def ιColimitType (j : J) (x : F.obj j) : F.ColimitType :=
   Quot.mk _ ⟨j, x⟩
 
+lemma ιColimitType_eq_iff {j j' : J} (x : F.obj j) (y : F.obj j') :
+    F.ιColimitType j x = F.ιColimitType j' y ↔
+      Relation.EqvGen F.ColimitTypeRel ⟨j, x⟩ ⟨ j', y⟩ :=
+  Quot.eq
+
 lemma ιColimitType_jointly_surjective (t : F.ColimitType) :
     ∃ j x, F.ιColimitType j x = t := by
   obtain ⟨_, _⟩ := t
