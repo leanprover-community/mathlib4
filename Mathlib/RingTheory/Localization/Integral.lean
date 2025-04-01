@@ -213,10 +213,8 @@ theorem isIntegral_localization [Algebra.IsIntegral R S] :
   obtain ⟨v', hv'⟩ := isUnit_iff_exists_inv'.1 (map_units Rₘ ⟨v, hv.1⟩)
   refine @IsIntegral.of_mul_unit Rₘ _ _ _ (localizationAlgebra M S) x (algebraMap S Sₘ u) v' ?_ ?_
   · replace hv' := congr_arg (@algebraMap Rₘ Sₘ _ _ (localizationAlgebra M S)) hv'
-    rw [RingHom.map_mul, RingHom.map_one, ← RingHom.comp_apply _ (algebraMap R Rₘ)] at hv'
-    -- Porting note: added argument
-    erw [IsLocalization.map_comp
-      (show _ ≤ (Algebra.algebraMapSubmonoid S M).comap _ from M.le_comap_map)] at hv'
+    rw [RingHom.map_mul, RingHom.map_one, localizationAlgebraMap_def, IsLocalization.map_eq]
+      at hv'
     exact hv.2 ▸ hv'
   · obtain ⟨p, hp⟩ := Algebra.IsIntegral.isIntegral (R := R) s
     exact hx.symm ▸ is_integral_localization_at_leadingCoeff p hp.2 (hp.1.symm ▸ M.one_mem)
