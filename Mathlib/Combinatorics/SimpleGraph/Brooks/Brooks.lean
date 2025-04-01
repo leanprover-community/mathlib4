@@ -120,21 +120,16 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
       simpa using ⟨⟨h1.1.ne, h3.1.ne, hne.symm⟩, h34.symm.ne, h4, fun hf ↦ hnadj (hf ▸ h34.symm)⟩
     have v41sup : v41.support = [v₄, v₃, v₂, v₁] := by
       rw [support_cons, support_cons, support_cons, support_nil]
+    have mv41 : ∀ y, y ∈ v41.support → y = v₄ ∨ y = v₃ ∨ y = v₂ ∨ y = v₁ := by simp [v41sup]
     have v41s : ∀ y, y ∈ v41.support → y ∈ s := by
-      rw [v41sup]
-      intro x hx
-      cases hx with
-      | head as => exact hins _ h3.2 _ h34
-      | tail b hx =>
-        cases hx with
-        | head as => exact h3.2
-        | tail b hx =>
-          cases hx with
-          | head as => exact hv₂
-          | tail b hx =>
-            cases hx with
-            | head as => exact h1.2
-            | tail b _ => contradiction
+      intro y hy
+      cases mv41 y hy with
+      | inl h => exact h ▸ (hins _ h3.2 _ h34)
+      | inr h => cases h with
+                | inl h => exact h ▸ h3.2
+                | inr h => cases h with
+                           | inl h => exact h ▸ hv₂
+                           | inr h => exact h ▸ h1.2
     -- Now extend `v₁v₂v₃v₄` to a maximal path in `s` i.e. a path `v₁ ⋯ vᵣ`
     -- with all neighbors of `vᵣ` in the path
     obtain ⟨vᵣ, q, hq, hss, hmax⟩ : ∃ vᵣ, ∃ q : G.Walk vᵣ v₄, (q.append v41).IsPath ∧
@@ -142,7 +137,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         ∀ y, G.Adj vᵣ y → y ∈ ((q.append v41)).support := by
       obtain ⟨vᵣ, q, hq, hs, hnb⟩ := exists_maximal_path_subset s h41 v41s
       refine ⟨vᵣ, q, hq, hs,?_⟩
-      have vrs : vᵣ ∈ s := by apply hs; simp
+      have vrs : vᵣ ∈ s := by apply hs; exact start_mem_support ..
       intro x hx
       have := (G.degreeOn_erase s vᵣ) ▸ ((hbdd vᵣ).trans (hd vᵣ vrs).symm.le)
       rw [degree_le_degreeOn_iff] at this
@@ -163,7 +158,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
       have hv2q : v₂ ∉ q.support := fun hf ↦ hdisj2 hf (by simp)
       have h13q : Disjoint {v₁, v₃} q.support.toFinset := by
         rw [disjoint_insert_left, List.mem_toFinset, disjoint_singleton_left, List.mem_toFinset]
-        exact ⟨fun h ↦ hdisj2 h (by simp), fun h ↦ hdisj2 h (by simp)⟩
+        exact ⟨fun h ↦ hdisj2 h (by simp), fun h ↦ hdisj2 h (List.mem_cons_self ..)⟩
       have hj123: vⱼ ∉ ({v₃ , v₂, v₁} : Finset α) := by
         simp_rw [mem_insert, mem_singleton, not_or]
         exact ⟨hj.2.2.1, hj.1.symm.ne, hj.2.1⟩
@@ -278,13 +273,11 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         obtain ⟨C₁, hC₁⟩ := ih _ hccard  _ rfl
         obtain ⟨C₂, hC₂⟩ := ih _ hsdcard _ rfl
         push_neg at hnbc
-        use (C₁.join C₂ (by simpa using hnbc)).copy (union_sdiff_of_subset hsub.1)
-        intro v
-        simp [C₁.join_lt_of_lt hC₁ hC₂]
+        exact ⟨(C₁.join C₂ (by simpa using hnbc)).copy (union_sdiff_of_subset hsub.1),
+          copy_isK (C₁.join_lt_of_lt hC₁ hC₂)⟩
   · -- `s` is empty so easy to `k`-color
-    use G.partialColoringOfEmpty.copy (not_nonempty_iff_eq_empty.1 hem).symm
-    intro v
-    simpa using Nat.zero_lt_of_lt hk
+    exact ⟨G.partialColoringOfEmpty.copy (not_nonempty_iff_eq_empty.1 hem).symm,
+      fun v ↦ by simpa using Nat.zero_lt_of_lt hk⟩ 
 
 theorem Brooks_three_le (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k) :
     G.Colorable k :=

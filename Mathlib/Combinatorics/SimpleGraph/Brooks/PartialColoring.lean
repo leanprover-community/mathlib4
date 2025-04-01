@@ -73,6 +73,11 @@ theorem copy_copy {s t u} (C : G.PartialColoring s) (hs : s = t) (ht : t = u) :
 @[simp]
 lemma copy_eq {s t} (C : G.PartialColoring s) (hs : s = t) : ⇑(C.copy hs) = C  := rfl
 
+@[simp]
+lemma copy_isK {s t} {k : ℕ} {C : G.PartialColoring s} {hs : s = t} (h : C.IsPartialKColoring k) :
+   (C.copy hs).IsPartialKColoring k := by
+   intro v; rw [copy_eq]; exact h v
+
 variable [DecidableEq α] {s t : Finset α} {b : ℕ} {i : α}
 
 /-- If `C` is a PartialColoring of `s` and `b` is not adjacent to anything
@@ -142,6 +147,7 @@ lemma join_eq {v : α} (C₁ : G.PartialColoring s) (C₂ : G.PartialColoring t)
     (h : ∀ v, v ∈ s → ∀ w, w ∈ t → ¬ G.Adj v w) :
     (C₁.join C₂ h) v = ite (v ∈ s) (C₁ v) (C₂ v) := rfl
 
+@[simp]
 lemma join_lt_of_lt {k : ℕ} {C₁ : G.PartialColoring s} {C₂ : G.PartialColoring t}
     {h : ∀ v, v ∈ s → ∀ w, w ∈ t → ¬ G.Adj v w} (h1 : C₁.IsPartialKColoring k)
     (h2 : C₂.IsPartialKColoring k) : (C₁.join C₂ h).IsPartialKColoring k := by
@@ -151,13 +157,13 @@ lemma join_lt_of_lt {k : ℕ} {C₁ : G.PartialColoring s} {C₂ : G.PartialColo
   · exact h1 _
   · exact h2 _
 
-variable [Fintype α] [DecidableRel G.Adj]
+variable [LocallyFinite G]
 
 /-- A PartialColoring of `univ` is a Coloring -/
-def toColoring (C : G.PartialColoring univ) : G.Coloring ℕ :=
+def toColoring [Fintype α] (C : G.PartialColoring univ) : G.Coloring ℕ :=
     ⟨C, fun hab ↦ C.valid (mem_univ _) (mem_univ _) hab⟩
 
-def toKColoring {k : ℕ} {C : G.PartialColoring univ} (h : C.IsPartialKColoring k) :
+def toKColoring {k : ℕ} [Fintype α] {C : G.PartialColoring univ} (h : C.IsPartialKColoring k) :
   G.Coloring (Fin k) := ⟨fun v ↦ ⟨C v, h v⟩,
   fun hab heq ↦ C.valid (mem_univ _) (mem_univ _) hab (by simpa using heq)⟩
 
@@ -343,13 +349,12 @@ theorem Brooks1 {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} {p : G.Walk xᵣ x₄} (hk 
     (h2disjp : x₂ ∉ p.support) :
     (((G.partialColoringOfNotAdj heq).Greedy (p.dropUntil _ hj).support.tail).Greedy
         ((p.takeUntil _ hj).concat hc).reverse.support).IsPartialKColoring k := by
-  intro a
   have hx1p : x₁ ∉ p.support := fun hf ↦ (disjoint_left.1 hdisj hs1 (List.mem_toFinset.2 hf))
   have hx3p : x₃ ∉ p.support := fun hf ↦ (disjoint_left.1 hdisj hs3 (List.mem_toFinset.2 hf))
   have htp := (concat_isPath_iff _ hc).2 ⟨hp.takeUntil hj,
       fun a ↦ h2disjp ((support_takeUntil_subset p hj) a)⟩
   let C₁ := (G.partialColoringOfNotAdj heq).Greedy (p.dropUntil _ hj).support.tail
-  have (x) : C₁ x < k := by
+  have : C₁.IsPartialKColoring k := by
     have hd : ∀ y, y ∈ (p.dropUntil _ hj).support.toFinset → y ∈ p.support.toFinset := by
       intro y hy; rw [List.mem_toFinset] at *
       apply support_dropUntil_subset p hj hy
@@ -381,8 +386,6 @@ theorem Brooks1' {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} (p : G.Walk xᵣ x₄) (hk
     (h23 : G.Adj x₂ x₃) (hne : x₁ ≠ x₃) (heq : ¬ G.Adj x₁ x₃)
     (h1d : Disjoint {x₁, x₃} p.support.toFinset) (h2d : x₂ ∉ p.support) :
   ∃ (C : G.PartialColoring ({x₁, x₂, x₃} ∪ p.support.toFinset)), C.IsPartialKColoring k := by
-  let C := ((G.partialColoringOfNotAdj heq).Greedy (p.dropUntil _ hj).support.tail).Greedy
-        ((p.takeUntil _ hj).concat hc).reverse.support
   have st : {x₁, x₃} ∪ (p.dropUntil xⱼ hj).support.tail.toFinset ∪
   ((p.takeUntil xⱼ hj).concat hc).reverse.support.toFinset = {x₁, x₂, x₃} ∪ p.support.toFinset := by
     rw [support_reverse, List.toFinset_reverse, support_concat]
@@ -394,7 +397,8 @@ theorem Brooks1' {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} (p : G.Walk xᵣ x₄) (hk
     congr
     ext; simp_rw [mem_union, mem_singleton, mem_insert, mem_singleton]
     rw [or_comm]
-  use C.copy st
-  apply Brooks1 (Nat.zero_lt_of_lt hk) hc hbdd hp hj (by simp) (by simp) h21 h23 hne heq h1d h2d
+  use (((G.partialColoringOfNotAdj heq).Greedy (p.dropUntil _ hj).support.tail).Greedy
+        ((p.takeUntil _ hj).concat hc).reverse.support).copy st
+  exact Brooks1 (Nat.zero_lt_of_lt hk) hc hbdd hp hj (by simp) (by simp) h21 h23 hne heq h1d h2d
 
 end SimpleGraph
