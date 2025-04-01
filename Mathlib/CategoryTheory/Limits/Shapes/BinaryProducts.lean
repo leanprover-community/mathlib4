@@ -1258,23 +1258,23 @@ def BinaryCofan.unop (c : BinaryCofan (.op X : Cᵒᵖ) (.op Y)) : BinaryFan X Y
 @[simp] lemma BinaryCofan.op_mk (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : op (mk ι₁ ι₂) = .mk ι₁.op ι₂.op := rfl
 
 /-- If a `BinaryFan` is a limit, then its opposite is a colimit. -/
-def BinaryFan.IsLimit.op {c : BinaryFan X Y} (hc : IsLimit c) : IsColimit <| c.op where
-  desc s := .op <| hc.lift (BinaryCofan.unop s)
-  fac s := by rintro (_|_) <;> simp [← CategoryTheory.op_comp, hc.fac]
-  uniq s m h := by
-    replace h j : m.unop ≫ c.π.app j = (BinaryCofan.unop s).π.app j := by
-      specialize h j; obtain ⟨_ | _⟩ := j <;> simpa using Quiver.Hom.op_inj h
-    simpa using congr($(hc.uniq (BinaryCofan.unop s) m.unop h).op)
+def BinaryFan.IsLimit.op {c : BinaryFan X Y} (hc : IsLimit c) : IsColimit <| c.op :=
+  BinaryCofan.isColimitMk (fun s ↦ .op <| hc.lift (BinaryCofan.unop s))
+    (by simp [← CategoryTheory.op_comp, hc.fac]) (by simp [← CategoryTheory.op_comp, hc.fac])
+    fun s m h₁ h₂ ↦ by
+      refine congr($(hc.uniq (BinaryCofan.unop s) m.unop ?_).op)
+      rintro (_|_)
+      · simpa using congr($(h₁).unop)
+      simpa using congr($(h₂).unop)
 
 /-- If a `BinaryCoan` is a colimit, then its opposite is a limit. -/
-def BinaryCofan.IsColimit.op {c : BinaryCofan X Y} (hc : IsColimit c) : IsLimit <| c.op where
-  lift s := .op <| hc.desc (BinaryFan.unop s)
-  fac s := by rintro (_|_) <;> simp [← CategoryTheory.op_comp, hc.fac]
-  uniq s m h := by
-    replace h j : c.ι.app j ≫ m.unop = (BinaryFan.unop s).ι.app j := by
-      specialize h j; obtain ⟨_ | _⟩ := j <;> simpa using Quiver.Hom.op_inj h
-    simpa using congr($(hc.uniq (BinaryFan.unop s) m.unop h).op)
-
-
+def BinaryCofan.IsColimit.op {c : BinaryCofan X Y} (hc : IsColimit c) : IsLimit <| c.op :=
+  BinaryFan.isLimitMk (fun s ↦ .op <| hc.desc (BinaryFan.unop s))
+    (by simp [← CategoryTheory.op_comp, hc.fac]) (by simp [← CategoryTheory.op_comp, hc.fac])
+    fun s m h₁ h₂ ↦ by
+      refine congr($(hc.uniq (BinaryFan.unop s) m.unop ?_).op)
+      rintro (_|_)
+      · simpa using congr($(h₁).unop)
+      simpa using congr($(h₂).unop)
 
 end CategoryTheory.Limits
