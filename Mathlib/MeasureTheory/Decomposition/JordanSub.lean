@@ -109,11 +109,11 @@ theorem restrict_add_restrict_compl (μ : VectorMeasure α ℝ) {s : Set α} (hs
     apply disjoint_compl_right
 
 end VectorMeasure
-
 lemma exists_SetWhereGeSignedMeasure (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     ∃ s : Set α, SignedMeasure.SetWhereGe μ ν s := by
   obtain ⟨s, hs, h₂, h₃⟩ := (μ.toSignedMeasure - ν.toSignedMeasure).exists_compl_positive_negative
-  simp at h₂ h₃
+  simp only [VectorMeasure.restrict_zero, VectorMeasure.restrict_sub, sub_nonneg, tsub_le_iff_right,
+    zero_add] at h₂ h₃
   exact ⟨s, hs, h₂, h₃⟩
 
 namespace Measure
