@@ -218,9 +218,11 @@ noncomputable def quotKerEquivRange : (L ⧸ f.ker) ≃ₗ⁅R⁆ f.range :=
   { (f : L →ₗ[R] L').quotKerEquivRange with
     toFun := (f : L →ₗ[R] L').quotKerEquivRange
     map_lie' := by
-      rintro ⟨x⟩ ⟨y⟩
+      intro x y
+      induction x using Submodule.Quotient.induction_on
+      induction y using Submodule.Quotient.induction_on
       rw [← SetLike.coe_eq_coe, LieSubalgebra.coe_bracket f.range]
-      simp only [Submodule.Quotient.quot_mk_eq_mk, LinearMap.quotKerEquivRange_apply_mk, ←
-        LieSubmodule.Quotient.mk_bracket, coe_toLinearMap, map_lie] }
+      simp only [← LieSubmodule.Quotient.mk_bracket, LinearMap.quotKerEquivRange_apply_mk,
+        coe_toLinearMap, map_lie] }
 
 end LieHom

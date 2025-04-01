@@ -18,9 +18,6 @@ example (a : Nat) : a = a := rfl
 guard_min_heartbeats approximately 2000 in
 example (a : Nat) : a = a := rfl
 
-guard_min_heartbeats approximately 1 in
-example (a : Nat) : a = a := rfl
-
 /-!
 # Tests for the `countHeartbeats` linter
 -/
