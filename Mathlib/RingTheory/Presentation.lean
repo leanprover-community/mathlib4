@@ -490,6 +490,12 @@ lemma isFinite_reindex_iff {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rel
 
 alias ⟨_, IsFinite.reindex⟩ := isFinite_reindex_iff
 
+@[simp]
+lemma presentation_reindex (P : Presentation.{w, t} R S) {ι κ : Type*} (e : ι ≃ P.vars)
+    (f : κ ≃ P.rels) :
+    (P.reindex e f).dimension = P.dimension := by
+  simp [dimension, Generators.reindex_vars, reindex_rels, Nat.card_congr e, Nat.card_congr f]
+
 end Construction
 
 end Presentation
