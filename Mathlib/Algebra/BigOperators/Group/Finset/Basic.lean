@@ -162,10 +162,10 @@ theorem prod_filter_xor (p q : α → Prop) [DecidablePred p] [DecidablePred q] 
   classical rw [← prod_union (disjoint_filter_and_not_filter _ _), ← filter_or]
   simp only [Xor']
 
-/-- In a salient monoid (whose only unit is `1`), a product is equal to `1` iff all factors are `1`.
+/-- In a monoid whose only unit is `1`, a product is equal to `1` iff all factors are `1`.
 -/
 @[to_additive (attr := simp)
-"In a salient monoid (whose only unit is `0`), a sum is equal to `0` iff all terms are `0`."]
+"In a monoid whose only unit is `0`, a sum is equal to `0` iff all terms are `0`."]
 lemma prod_eq_one_iff [Subsingleton βˣ] : ∏ i ∈ s, f i = 1 ↔ ∀ i ∈ s, f i = 1 := by
   induction' s using Finset.cons_induction with i s hi ih <;> simp [*]
 
