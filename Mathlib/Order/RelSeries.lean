@@ -728,7 +728,7 @@ lemma head_le_last (x : LTSeries α) : x.head ≤ x.last :=
 @[simps]
 def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) :
     LTSeries α where
-  length
+  length := length
   toFun := toFun
   step i := strictMono <| lt_add_one i.1
 
