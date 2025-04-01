@@ -78,22 +78,18 @@ private def hasLinearOrder (u : Level) (e : Expr) : MetaM Bool := do
 @[delab app.Max.max]
 def elabSup : Delab := do
   let_expr f@Max.max α _ _ _ := ← getExpr | failure
-  if ← hasLinearOrder f.constLevels![0]! α then
-    failure -- use the default delaborator
-  else
-    let x ← withNaryArg 2 delab
-    let y ← withNaryArg 3 delab
-    `($x ⊔ $y)
+  if ← hasLinearOrder f.constLevels![0]! α then failure -- use the default delaborator
+  let x ← withNaryArg 2 delab
+  let y ← withNaryArg 3 delab
+  `($x ⊔ $y)
 
 @[delab app.Min.min]
 def elabInf : Delab := do
   let_expr f@Min.min α _ _ _ := ← getExpr | failure
-  if ← hasLinearOrder f.constLevels![0]! α then
-    failure -- use the default delaborator
-  else
-    let x ← withNaryArg 2 delab
-    let y ← withNaryArg 3 delab
-    `($x ⊓ $y)
+  if ← hasLinearOrder f.constLevels![0]! α then failure -- use the default delaborator
+  let x ← withNaryArg 2 delab
+  let y ← withNaryArg 3 delab
+  `($x ⊓ $y)
 
 end Delab
 
