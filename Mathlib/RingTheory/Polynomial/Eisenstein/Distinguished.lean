@@ -4,15 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
 
-import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
 import Mathlib.RingTheory.PowerSeries.Order
 /-!
 
 # Distiguished polynomial
 
-In this section we define the structure `IsDistinguishedAt`
-and develope the most basic lemmas about it.
+In this file we define the structure `IsDistinguishedAt`
+and develop the most basic lemmas about it.
 
 -/
 
@@ -21,11 +20,11 @@ open PowerSeries Ideal Quotient
 
 variable {R : Type*} [CommRing R]
 
-/-- Given an ideal `I` of a commutative semiring `R`, we say that a polynomial `f : R[X]`
+/-- Given an ideal `I` of a commutative ring `R`, we say that a polynomial `f : R[X]`
 is *Distinguished at `I`* if `f` is monic and `IsWeaklyEisensteinAt I`. -/
-structure Polynomial.IsDistinguishedAt (f : R[X]) (I : Ideal R) : Prop where
+structure Polynomial.IsDistinguishedAt (f : R[X]) (I : Ideal R) : Prop
+    extends f.IsWeaklyEisensteinAt I where
   monic : f.Monic
-  else_mem : f.IsWeaklyEisensteinAt I
 
 namespace IsDistinguishedAt
 
@@ -35,12 +34,14 @@ lemma map_eq_X_pow (f : R[X]) {I : Ideal R} (distinguish : f.IsDistinguishedAt I
   by_cases ne : i = f.natDegree
   · simp [ne, distinguish.monic]
   · rcases lt_or_gt_of_ne ne with lt|gt
-    · simpa [ne, eq_zero_iff_mem] using (distinguish.else_mem.mem lt)
+    · simpa [ne, eq_zero_iff_mem] using (distinguish.mem lt)
     · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
 
-lemma deg_eq_order_map [Nontrivial R] {I : Ideal R} (f : PowerSeries R)
-    (h : R⟦X⟧) (g : R[X]) (distinguish : g.IsDistinguishedAt I) (nmem : ¬ (constantCoeff R) h ∈ I)
+lemma deg_eq_order_map {I : Ideal R} (f : PowerSeries R)
+    (h : R⟦X⟧) (g : R[X]) (distinguish : g.IsDistinguishedAt I) (nmem : ¬ constantCoeff R h ∈ I)
     (eq : f = g * h) : g.degree = (f.map (Ideal.Quotient.mk I)).order := by
+  let _ : Nontrivial R := nontrivial_iff.mpr
+    ⟨0, constantCoeff R h, ne_of_mem_of_not_mem I.zero_mem nmem⟩
   rw [Polynomial.degree_eq_natDegree distinguish.monic.ne_zero, Eq.comm, PowerSeries.order_eq_nat]
   have mapf : f.map (Ideal.Quotient.mk I) = (Polynomial.X ^ g.natDegree : (R ⧸ I)[X]) *
     h.map (Ideal.Quotient.mk I) := by

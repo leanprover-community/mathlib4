@@ -5091,6 +5091,7 @@ import Mathlib.RingTheory.Polynomial.Cyclotomic.Expand
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.RingTheory.Polynomial.Dickson
 import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
+import Mathlib.RingTheory.Polynomial.Eisenstein.Distinguished
 import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
 import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.RingTheory.Polynomial.Hermite.Basic
@@ -5235,7 +5236,6 @@ import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.RingTheory.Valuation.ValExtension
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Valuation.ValuationSubring
-import Mathlib.RingTheory.WeierstrassPreparation
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.Compare
 import Mathlib.RingTheory.WittVector.Complete
