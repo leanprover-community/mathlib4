@@ -149,44 +149,18 @@ lemma mul {f g : PowerSeries R} (hf : IsRestricted R f c) (hg : IsRestricted R g
       omega
     simpa using (le_trans hn this)
   rcases this with this | this
-  · have FinalBound1 := mul_lt_mul_of_lt_of_le_of_nonneg_of_pos ((fBound2 i.1)
+  · have FinalBound := mul_lt_mul_of_lt_of_le_of_nonneg_of_pos ((fBound2 i.1)
       (le_of_max_le_left this)) (gBound1 i.2) (Left.mul_nonneg (norm_nonneg ((coeff R i.1) f))
       (pow_nonneg (abs_nonneg c) i.1)) hb
-    have FinalBound2 : ε / (max a b) * b ≤ ε := by
-      rcases (max_choice a b) with h | h
-      · rw [h]
-        ring_nf
-        rw [mul_assoc]
-        nth_rw 2 [mul_comm]
-        rw [← mul_assoc]
-        exact (mul_inv_le_iff₀ ha).mpr ((mul_le_mul_iff_of_pos_left hε).mpr (sup_eq_left.mp h))
-      · rw [h]
-        ring_nf
-        rw [mul_assoc]
-        simp_rw [CommGroupWithZero.mul_inv_cancel b (ne_of_gt hb), mul_one, le_refl]
-    exact lt_of_lt_of_le (lt_of_le_of_lt (le_trans InterimBound1 InterimBound2) FinalBound1)
-      FinalBound2
-  · have FinalBound1 := mul_lt_mul_of_le_of_lt_of_nonneg_of_pos (fBound1 i.1) ((gBound2 i.2)
+    exact lt_of_lt_of_le (lt_of_le_of_lt (le_trans InterimBound1 InterimBound2) FinalBound)
+      (by simpa only [div_mul_comm] using ((mul_le_iff_le_one_left hε).mpr
+      ((div_le_one₀ (lt_sup_of_lt_left ha)).mpr (le_max_right a b))))
+  · have FinalBound := mul_lt_mul_of_le_of_lt_of_nonneg_of_pos (fBound1 i.1) ((gBound2 i.2)
       (le_of_max_le_right this)) (Left.mul_nonneg (norm_nonneg ((coeff R i.2) g))
       (pow_nonneg (abs_nonneg c) i.2)) ha
-    apply lt_of_lt_of_le (lt_of_le_of_lt (le_trans InterimBound1 InterimBound2) FinalBound1)
-    rcases (max_choice a b) with h | h
-    · rw [h]
-      ring_nf
-      rw [mul_comm, ←mul_assoc]
-      have := CommGroupWithZero.mul_inv_cancel a (ne_of_gt ha)
-      rw [mul_comm] at this
-      simp_rw [this, one_mul, le_refl]
-    · rw [h]
-      ring_nf
-      rw [mul_assoc, mul_comm, mul_assoc]
-      nth_rw 2 [mul_comm]
-      rw [← mul_assoc]
-      have h : max b a = b := by
-        simp only [sup_eq_left]
-        simp only [sup_eq_right] at h
-        exact h
-      exact (mul_inv_le_iff₀ hb).mpr ((mul_le_mul_iff_of_pos_left hε).mpr (sup_eq_left.mp h))
+    exact lt_of_lt_of_le (lt_of_le_of_lt (le_trans InterimBound1 InterimBound2) FinalBound)
+      (by simpa only [mul_div_left_comm] using ((mul_le_iff_le_one_right hε).mpr
+      ((div_le_one₀ (lt_sup_of_lt_left ha)).mpr (le_max_left a b))))
 
 def subring: Subring (PowerSeries R) where
   carrier := SetOf R c
