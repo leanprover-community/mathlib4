@@ -76,23 +76,19 @@ section Delab
 open Lean Meta PrettyPrinter Delaborator SubExpr Qq
 
 /--
-Return `true` if `LinearOrder` is imported and there is an instance of `LinearOrder e`.
+Return `true` if `LinearOrder` is imported and `inst` comes from a `LinearOrder e` instance.
 
 We use a `try catch` block to make sure there are no surprising errors during delaboration.
 -/
-private def hasLinearOrder (u : Level) (e : Q(Type u)) (cls : Q(Type u → Type u))
-    (inst : Q($cls $e)) : MetaM Bool := do
+private def hasLinearOrder (u : Level) (α : Q(Type u)) (cls linearOrder : Q(Type u → Type u))
+    (toCls : Q((α : Type u) → $linearOrder α → $cls α))
+    (inst : Q($cls $α)) : MetaM Bool := do
   try
-    guard (← hasConst `LinearOrder) -- avoid a type class search when `LinearOrder` isn't defined.
-    let linearOrder : Q(Type u → Type u) := .const `LinearOrder [u]
-    let ofLinearOrder ←
-      withLocalDeclDQ `α q(Type $u) fun fvarType =>
-        withLocalDeclDQ `inst q($linearOrder $fvarType) fun fvarInst => do
-          let ofLinearOrder ← synthInstanceQ q($cls $fvarType)
-          return ofLinearOrder.abstract #[fvarType, fvarInst]
-    let mvarInst ← mkFreshExprMVarQ q($linearOrder $e)
-    let ofLinearOrder : Q($cls $e) := ofLinearOrder.instantiate #[e, mvarInst]
-    isDefEq ofLinearOrder inst
+    let mvar ← mkFreshExprMVarQ q($linearOrder $α)
+    let inst' : Q($cls $α) := q($toCls $α $mvar)
+    -- `isDefEq` may call type class syntesis, so we need to give it the local instances
+    withLocalInstances (← getLCtx).decls.toList.reduceOption do
+      isDefEq inst inst'
   catch _ =>
     return false
 
@@ -100,7 +96,10 @@ private def hasLinearOrder (u : Level) (e : Q(Type u)) (cls : Q(Type u → Type 
 def elabSup : Delab := do
   let_expr f@Max.max α inst _ _ := ← getExpr | failure
   have u := f.constLevels![0]!
-  if ← hasLinearOrder u α q(Max.{u}) inst then failure -- use the default delaborator
+  let linearOrder : Q(Type u → Type u) := .const `LinearOrder [u]
+  let linearOrderToMax : Q((a : Type u) → $linearOrder a → Max a) := .const `LinearOrder.toMax [u]
+  if ← hasLinearOrder u α q(Max.{u}) linearOrder linearOrderToMax inst then
+    failure -- use the default delaborator
   let x ← withNaryArg 2 delab
   let y ← withNaryArg 3 delab
   `($x ⊔ $y)
@@ -109,7 +108,10 @@ def elabSup : Delab := do
 def elabInf : Delab := do
   let_expr f@Min.min α inst _ _ := ← getExpr | failure
   have u := f.constLevels![0]!
-  if ← hasLinearOrder u α q(Min.{u}) inst then failure -- use the default delaborator
+  let linearOrder : Q(Type u → Type u) := .const `LinearOrder [u]
+  let linearOrderToMin : Q((a : Type u) → $linearOrder a → Min a) := .const `LinearOrder.toMin [u]
+  if ← hasLinearOrder u α q(Min.{u}) linearOrder linearOrderToMin inst then
+    failure -- use the default delaborator
   let x ← withNaryArg 2 delab
   let y ← withNaryArg 3 delab
   `($x ⊓ $y)
