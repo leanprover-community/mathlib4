@@ -23,13 +23,14 @@ FIXME
 structure KPositiveMap (k : ℕ) (A₁ : Type*) (A₂ : Type*) [NonUnitalCStarAlgebra A₁]
     [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
     [StarOrderedRing A₂] extends A₁ →ₗ[ℂ] A₂ where
-  map_nonneg' (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) : 0 ≤ CStarMatrix.mapₗ toLinearMap M
+  map_cstarMatrix_nonneg' (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) :
+    0 ≤ CStarMatrix.mapₗ toLinearMap M
 
 class KPositiveMapClass (F : Type*) (k : outParam ℕ) (A₁ : Type*) (A₂ : Type*)
     [FunLike F A₁ A₂] [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder A₁]
     [PartialOrder A₂] [StarOrderedRing A₁] [StarOrderedRing A₂]
     extends LinearMapClass F ℂ A₁ A₂ where
-  map_nonneg' (φ : F) (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) :
+  map_cstarMatrix_nonneg' (φ : F) (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) :
     0 ≤ CStarMatrix.mapₗ (φ : A₁ →ₗ[ℂ] A₂) M
 
 namespace KPositiveMapClass
@@ -42,7 +43,7 @@ variable {F A₁ A₂ : Type*} {k : ℕ}  [NonUnitalCStarAlgebra A₁]
 /-- Reinterpret an element of a type of k-positive linear maps as a positive linear map. -/
 def toKPositiveLinearMap (f : F) : KPositiveMap k A₁ A₂ :=
   { (f : A₁ →ₗ[ℂ] A₂) with
-    map_nonneg' M hM := KPositiveMapClass.map_nonneg' f M hM }
+    map_cstarMatrix_nonneg' M hM := KPositiveMapClass.map_cstarMatrix_nonneg' f M hM }
 
 /-- Reinterpret an element of a type of k-positive linear maps as a positive linear map. -/
 instance instCoeToKPositiveMap : CoeHead F (KPositiveMap k A₁ A₂) where
@@ -53,14 +54,14 @@ end KPositiveMapClass
 structure CompletelyPositiveMap (A₁ : Type*) (A₂ : Type*) [NonUnitalCStarAlgebra A₁]
     [NonUnitalCStarAlgebra A₂] [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁]
     [StarOrderedRing A₂] extends A₁ →ₗ[ℂ] A₂ where
-  map_nonneg' (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) :
+  map_cstarMatrix_nonneg' (k : ℕ) (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) :
       0 ≤ CStarMatrix.mapₗ toLinearMap M
 
 class CompletelyPositiveMapClass (F : Type*) (A₁ : Type*) (A₂ : Type*)
     [FunLike F A₁ A₂] [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder A₁]
     [PartialOrder A₂] [StarOrderedRing A₁] [StarOrderedRing A₂]
     extends LinearMapClass F ℂ A₁ A₂ where
-  map_nonneg' (k : ℕ) (φ : F) (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) :
+  map_cstarMatrix_nonneg' (k : ℕ) (φ : F) (M : CStarMatrix (Fin k) (Fin k) A₁) (hM : 0 ≤ M) :
     0 ≤ CStarMatrix.mapₗ (φ : A₁ →ₗ[ℂ] A₂) M
 
 
@@ -78,7 +79,7 @@ variable {F A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁]
   map. -/
 def toCompletelyPositiveLinearMap (f : F) : A₁ →CP A₂ :=
   { (f : A₁ →ₗ[ℂ] A₂) with
-    map_nonneg' k M hM := CompletelyPositiveMapClass.map_nonneg' k f M hM }
+    map_cstarMatrix_nonneg' k M hM := CompletelyPositiveMapClass.map_cstarMatrix_nonneg' k f M hM }
 
 /-- Reinterpret an element of a type of completely positive maps as a completely positive linear
   map. -/

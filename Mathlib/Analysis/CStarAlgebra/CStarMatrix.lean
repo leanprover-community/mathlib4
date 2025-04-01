@@ -346,6 +346,88 @@ lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [St
 
 end basic
 
+section blocks
+
+variable {l o p q α β : Type*}
+
+/-- We can form a single large matrix by flattening smaller 'block' matrices of compatible
+dimensions. -/
+@[pp_nodot]
+def fromBlocks (A : CStarMatrix n l α) (B : CStarMatrix n m α) (C : CStarMatrix o l α)
+    (D : CStarMatrix o m α) : CStarMatrix (n ⊕ o) (l ⊕ m) α :=
+  .ofMatrix <| .fromBlocks A B C D
+
+@[simp]
+theorem fromBlocks_apply₁₁ (A : CStarMatrix n l α) (B : CStarMatrix n m α) (C : CStarMatrix o l α)
+    (D : CStarMatrix o m α) (i : n) (j : l) : fromBlocks A B C D (Sum.inl i) (Sum.inl j) = A i j :=
+  rfl
+
+@[simp]
+theorem fromBlocks_apply₁₂ (A : CStarMatrix n l α) (B : CStarMatrix n m α) (C : CStarMatrix o l α)
+    (D : CStarMatrix o m α) (i : n) (j : m) : fromBlocks A B C D (Sum.inl i) (Sum.inr j) = B i j :=
+  rfl
+
+@[simp]
+theorem fromBlocks_apply₂₁ (A : CStarMatrix n l α) (B : CStarMatrix n m α) (C : CStarMatrix o l α)
+    (D : CStarMatrix o m α) (i : o) (j : l) : fromBlocks A B C D (Sum.inr i) (Sum.inl j) = C i j :=
+  rfl
+
+@[simp]
+theorem fromBlocks_apply₂₂ (A : CStarMatrix n l α) (B : CStarMatrix n m α) (C : CStarMatrix o l α)
+    (D : CStarMatrix o m α) (i : o) (j : m) : fromBlocks A B C D (Sum.inr i) (Sum.inr j) = D i j :=
+  rfl
+
+/-- Two block matrices are equal if their blocks are equal. -/
+theorem ext_iff_blocks {A B : CStarMatrix (n ⊕ o) (l ⊕ m) α} :
+    A = B ↔
+      A.toBlocks₁₁ = B.toBlocks₁₁ ∧
+        A.toBlocks₁₂ = B.toBlocks₁₂ ∧ A.toBlocks₂₁ = B.toBlocks₂₁ ∧ A.toBlocks₂₂ = B.toBlocks₂₂ :=
+  Matrix.ext_iff_blocks
+
+theorem fromBlocks_map (A : CStarMatrix n l α) (B : CStarMatrix n m α) (C : CStarMatrix o l α)
+    (D : CStarMatrix o m α) (f : α → β) :
+    (fromBlocks A B C D).map f = fromBlocks (A.map f) (B.map f) (C.map f) (D.map f) :=
+  Matrix.fromBlocks_map A B C D f
+
+theorem fromBlocks_transpose (A : CStarMatrix n l α) (B : CStarMatrix n m α) (C : CStarMatrix o l α)
+    (D : CStarMatrix o m α) : (fromBlocks A B C D)ᵀ = fromBlocks Aᵀ Cᵀ Bᵀ Dᵀ :=
+  Matrix.fromBlocks_transpose A B C D
+
+theorem fromBlocks_conjTranspose [Star α] (A : CStarMatrix n l α) (B : CStarMatrix n m α)
+    (C : CStarMatrix o l α)
+    (D : CStarMatrix o m α) : (fromBlocks A B C D)ᴴ = fromBlocks Aᴴ Cᴴ Bᴴ Dᴴ :=
+  Matrix.fromBlocks_conjTranspose A B C D
+
+theorem fromBlocks_smul [SMul R α] (x : R) (A : CStarMatrix n l α) (B : CStarMatrix n m α)
+    (C : CStarMatrix o l α) (D : CStarMatrix o m α) :
+    x • fromBlocks A B C D = fromBlocks (x • A) (x • B) (x • C) (x • D) :=
+  Matrix.fromBlocks_smul x A B C D
+
+theorem fromBlocks_neg [Neg R] (A : CStarMatrix n l R) (B : CStarMatrix n m R)
+    (C : CStarMatrix o l R) (D : CStarMatrix o m R) :
+    -fromBlocks A B C D = fromBlocks (-A) (-B) (-C) (-D) :=
+  Matrix.fromBlocks_neg A B C D
+
+@[simp]
+theorem fromBlocks_zero [Zero α] : fromBlocks (0 : CStarMatrix n l α) 0 0
+    (0 : CStarMatrix o m α) = 0 := Matrix.fromBlocks_zero
+
+theorem fromBlocks_add [Add α] (A : CStarMatrix n l α) (B : CStarMatrix n m α)
+    (C : CStarMatrix o l α) (D : CStarMatrix o m α) (A' : CStarMatrix n l α)
+    (B' : CStarMatrix n m α) (C' : CStarMatrix o l α) (D' : CStarMatrix o m α) :
+    fromBlocks A B C D + fromBlocks A' B' C' D' = fromBlocks (A + A') (B + B') (C + C') (D + D') :=
+  Matrix.fromBlocks_add  A B C D A' B' C' D'
+
+theorem fromBlocks_multiply [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α]
+    (A : CStarMatrix n l α) (B : CStarMatrix n m α) (C : CStarMatrix o l α) (D : CStarMatrix o m α)
+    (A' : CStarMatrix l p α) (B' : CStarMatrix l q α) (C' : CStarMatrix m p α)
+    (D' : CStarMatrix m q α) :
+    fromBlocks A B C D * fromBlocks A' B' C' D' =
+      fromBlocks (A * A' + B * C') (A * B' + B * D') (C * A' + D * C') (C * B' + D * D') :=
+  Matrix.fromBlocks_multiply A B C D A' B' C' D'
+
+end blocks
+
 variable [Fintype m] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 
