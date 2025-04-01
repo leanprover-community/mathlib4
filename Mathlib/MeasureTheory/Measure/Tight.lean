@@ -115,21 +115,6 @@ protected lemma inter (hS : IsTightMeasureSet S) (T : Set (Measure α)) :
     IsTightMeasureSet (S ∩ T) :=
   hS.subset inter_subset_left
 
-lemma map [OpensMeasurableSpace β] [T2Space β]
-    (hS : IsTightMeasureSet S) {f : α → β} (hf : Continuous f) :
-    IsTightMeasureSet (Measure.map f '' S) := by
-  rw [IsTightMeasureSet_iff_exists_isCompact_measure_compl_le] at hS ⊢
-  simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-  intro ε hε
-  obtain ⟨K, hK_compact, hKS⟩ := hS ε hε
-  refine ⟨f '' K, hK_compact.image hf, fun μ hμS ↦ ?_⟩
-  by_cases hf_meas : AEMeasurable f μ
-  swap; · simp [Measure.map_of_not_aemeasurable hf_meas]
-  rw [Measure.map_apply_of_aemeasurable hf_meas (hK_compact.image hf).measurableSet.compl]
-  refine (measure_mono ?_).trans (hKS μ hμS)
-  simp only [preimage_compl, compl_subset_compl]
-  exact subset_preimage_image f K
-
 end IsTightMeasureSet
 
 end MeasureTheory
