@@ -23,3 +23,13 @@ variable [LinearOrder α] in
 /-- info: max a b : α -/
 #guard_msgs in
 #check max a b
+
+variable [CompleteLinearOrder α] in
+/-- info: max a b : α -/
+#guard_msgs in
+#check max a b
+
+variable [ConditionallyCompleteLinearOrder α] in
+/-- info: max a b : α -/
+#guard_msgs in
+#check max a b
