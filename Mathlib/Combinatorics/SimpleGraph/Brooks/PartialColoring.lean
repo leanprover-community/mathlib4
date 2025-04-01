@@ -157,6 +157,10 @@ variable [Fintype α] [DecidableRel G.Adj]
 def toColoring (C : G.PartialColoring univ) : G.Coloring ℕ :=
     ⟨C, fun hab ↦ C.valid (mem_univ _) (mem_univ _) hab⟩
 
+def toKColoring {k : ℕ} {C : G.PartialColoring univ} (h : C.IsPartialKColoring k) :
+  G.Coloring (Fin k) := ⟨fun v ↦ ⟨C v, h v⟩,
+  fun hab heq ↦ C.valid (mem_univ _) (mem_univ _) hab (by simpa using heq)⟩
+
 lemma unused (C : G.PartialColoring s) (a : α) :
     (range (G.degreeOn s a + 1) \ (((G.neighborFinset a) ∩ s).image C)).Nonempty := by
   apply card_pos.1 <| (Nat.sub_pos_of_lt _).trans_le <| le_card_sdiff _ _

@@ -287,9 +287,8 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
     simpa using Nat.zero_lt_of_lt hk
 
 theorem Brooks_three_le (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k) :
-    G.Colorable k := by
-  rw [colorable_iff_exists_bdd_nat_coloring]
-  obtain ⟨C, heq⟩ := BrooksPartial hk hc hbdd (univ : Finset α)
-  exact ⟨C.toColoring, by simpa using heq⟩
+    G.Colorable k :=
+  let ⟨C, isK⟩ := BrooksPartial hk hc hbdd (univ : Finset α)
+  ⟨C.toKColoring isK⟩
 
 end SimpleGraph
