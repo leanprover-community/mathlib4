@@ -344,6 +344,17 @@ lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [St
     (ofMatrix : Matrix n n A → CStarMatrix n n A)
       = (ofMatrixStarAlgEquiv : Matrix n n A → CStarMatrix n n A) := rfl
 
+def reindexₐ [Fintype m] [Fintype n] [AddCommMonoid A] [Mul A] [SMul R A] [Star A] (e : n ≃ m) :
+    CStarMatrix n n A ≃⋆ₐ[R] CStarMatrix m m A where
+  toFun := sorry
+  invFun := sorry
+  left_inv := by sorry
+  right_inv := by sorry
+  map_mul' := by sorry
+  map_add' := by sorry
+  map_star' := by sorry
+  map_smul' := by sorry
+
 end basic
 
 section blocks
