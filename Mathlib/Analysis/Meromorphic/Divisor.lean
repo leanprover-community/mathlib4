@@ -127,7 +127,7 @@ theorem divisor_inv [CompleteSpace 𝕜] {f : 𝕜 → 𝕜} :
   · simp [divisor_def, h]
 
 /-- Adding an analytic function to a meromorphic one does not change the pole divisor. -/
-theorem divisor_add_analytic {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
+theorem negPart_divisor_add_of_analyticNhdOn_right {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
     (hf₂ : AnalyticOnNhd 𝕜 f₂ U) :
     (divisor f₁ U)⁻ = (divisor (f₁ + f₂) U)⁻ := by
   ext x
@@ -138,7 +138,7 @@ theorem divisor_add_analytic {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f�
         right_eq_sup]
       calc 0
       _ ≤ min (hf₁ x hx).order (hf₂.meromorphicOn x hx).order := by
-        exact le_inf_iff.2 ⟨h, (hf₂ x hx).meromorphicAt_order_nonneg⟩
+        exact le_inf h (hf₂ x hx).meromorphicAt_order_nonneg
       _ ≤ ((hf₁.add hf₂.meromorphicOn) x hx).order := by
         exact (hf₁ x hx).order_add (hf₂ x hx).meromorphicAt
     · simp at h
