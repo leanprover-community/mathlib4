@@ -19,6 +19,10 @@ a totally real number field.
 
 open NumberField InfinitePlace ComplexEmbedding
 
+/--
+An extension `K/F` of number fields is a `CM`-extension if `K` is totally complex, `F` is totally
+real and the extension `K/F` is of degree `2`.
+-/
 class IsCM (F K : Type*) [Field F] [NumberField F] [Field K] [NumberField K]
     [Algebra F K] : Prop
   extends IsTotallyReal F, IsTotallyComplex K where
