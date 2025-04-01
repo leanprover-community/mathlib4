@@ -270,11 +270,15 @@ lemma Module.finitePresentation_of_projective_of_exact
   have ⟨l, hl⟩ := Module.projective_lifting_property g .id hg
   Module.finitePresentation_of_split_exact f g l hl hf H
 
-namespace Module.FinitePresentation
-
-lemma of_equiv (e : M ≃ₗ[R] N) [Module.FinitePresentation R M] :
+lemma Module.FinitePresentation.of_equiv (e : M ≃ₗ[R] N) [Module.FinitePresentation R M] :
     Module.FinitePresentation R N := by
   simp [← Module.FinitePresentation.fg_ker_iff e.toLinearMap e.surjective, Submodule.fg_bot]
+
+lemma LinearEquiv.finitePresentation_iff (e : M ≃ₗ[R] N) :
+    Module.FinitePresentation R M ↔ Module.FinitePresentation R N :=
+  ⟨fun _ ↦ .of_equiv e, fun _ ↦ .of_equiv e.symm⟩
+
+namespace Module.FinitePresentation
 
 variable (M) in
 instance (priority := 900) of_subsingleton [Subsingleton M] :
@@ -290,23 +294,16 @@ instance prod [Module.FinitePresentation R M] [Module.FinitePresentation R N] :
     exact .of_equiv (LinearEquiv.ofInjective (LinearMap.inr R M N) LinearMap.inr_injective)
   apply Module.finitePresentation_of_ker (.fst R M N) hf
 
-private lemma pi_aux {ι : Type} [Finite ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)]
-    [∀ i, Module R (M i)] [∀ i, Module.FinitePresentation R (M i)] :
-    Module.FinitePresentation R (∀ i, M i) := by
-  refine Module.pi_induction' (motive := fun N _ _ ↦ Module.FinitePresentation R N) R ?_ ?_ ?_ M
-      inferInstance
-  · intro N N' _ _ _ _ e hN
-    exact Module.FinitePresentation.of_equiv e
-  · infer_instance
-  · introv hN hN'
-    infer_instance
-
 instance pi {ι : Type*} (M : ι → Type*)
     [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] [∀ i, Module.FinitePresentation R (M i)]
     [Finite ι] : Module.FinitePresentation R (∀ i, M i) := by
-  cases nonempty_fintype ι
-  convert Module.FinitePresentation.of_equiv (LinearEquiv.piCongrLeft R M (Fintype.equivFin ι).symm)
-  apply Module.FinitePresentation.pi_aux
+  refine Module.pi_induction' (motive := fun N _ _ ↦ Module.FinitePresentation R N)
+      (motive' := fun N _ _ ↦ Module.FinitePresentation R N) R ?_ ?_ ?_ ?_ M inferInstance
+  · exact fun e (hN : Module.FinitePresentation _ _) ↦ .of_equiv e
+  · exact fun e (hN : Module.FinitePresentation _ _) ↦ .of_equiv e
+  · infer_instance
+  · introv hN hN'
+    infer_instance
 
 end Module.FinitePresentation
 
