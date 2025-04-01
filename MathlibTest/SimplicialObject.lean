@@ -30,7 +30,7 @@ variable {x} (hx : x = X _⦋m⦌ₙ) (n : True)
 
 /- The delaborator should fail because `n` is now shadowed and `✝` cannot be
 subscripted. -/
-/-- info: hx : x = X.obj (Opposite.op { obj := SimplexCategory.mk m, property := ⋯ }) -/
+/-- info: hx : x = X.obj (Opposite.op { obj := SimplexCategory.mk m, property := h }) -/
 #guard_msgs in #check hx
 
 end no_subscript
@@ -93,7 +93,7 @@ variable {x} (hx : x = X ^⦋m⦌ₙ) (n : True)
 
 /- The delaborator should fail because `n` is now shadowed and `✝` cannot be
 subscripted. -/
-/-- info: hx : x = X.obj { obj := SimplexCategory.mk m, property := ⋯ } -/
+/-- info: hx : x = X.obj { obj := SimplexCategory.mk m, property := h } -/
 #guard_msgs in #check hx
 
 end no_subscript

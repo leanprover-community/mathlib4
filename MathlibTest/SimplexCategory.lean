@@ -39,7 +39,7 @@ variable {x} (hx : x = ⦋m⦌ₙ) (n : True)
 
 /- The delaborator should fail because `n` is now shadowed and `✝` cannot be
 subscripted. -/
-/-- info: hx : x = { obj := SimplexCategory.mk m, property := ⋯ } -/
+/-- info: hx : x = { obj := SimplexCategory.mk m, property := h } -/
 #guard_msgs in #check hx
 
 end no_subscript
