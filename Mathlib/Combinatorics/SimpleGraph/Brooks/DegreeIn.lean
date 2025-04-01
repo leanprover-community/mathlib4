@@ -40,7 +40,7 @@ instance (s : Set α) (a : α) [DecidableRel G.Adj] [Fintype (G.neighborSet a)]
 lemma mem_neighborInSet {s : Set α} {a v : α} :
     v ∈ G.neighborInSet s a ↔ G.Adj a v ∧ v ∈ s := by rfl
 
-variable {G} {s t : Set α} {a v : α}
+variable  {s t : Set α} {a v : α}
 lemma neighborInSet.mono (h : s ⊆ t) : G.neighborInSet s a ⊆ G.neighborInSet t a :=
   fun _ hx ↦ ⟨hx.1, h hx.2⟩
 
@@ -67,9 +67,19 @@ lemma neighborInFinset_subset_set :
   exact hx.2
 
 open Finset
-variable (G) in
+
 abbrev degreeIn (s : Set α) (a : α) [Fintype (G.neighborInSet s a)] : ℕ :=
     #(G.neighborInFinset s a)
+
+lemma neighborInFinset_eq_filter (s : Set α) (a : α) [Fintype (G.neighborSet a)]
+  [DecidablePred (· ∈ s)] [Fintype (G.neighborInSet s a)] :
+  G.neighborInFinset s a  = ((G.neighborFinset a).filter (· ∈ s)) := by
+  ext; simp
+
+lemma degreeIn_eq_card_filter (s : Set α) (a : α) [Fintype (G.neighborSet a)]
+  [DecidablePred (· ∈ s)] [Fintype (G.neighborInSet s a)] :
+  G.degreeIn s a  = #((G.neighborFinset a).filter (· ∈ s)) := by
+  rw [degreeIn, neighborInFinset_eq_filter]
 
 lemma degreeIn.mono (h : s ⊆ t) [Fintype (G.neighborInSet t a)] :
     G.degreeIn s a ≤ G.degreeIn t a := by
@@ -89,9 +99,9 @@ lemma degreeIn_le_degree : G.degreeIn s a ≤ G.degree a := by
 lemma degree_le_degreeIn_iff : G.degree a ≤ G.degreeIn s a ↔ ∀ v, G.Adj a v → v ∈ s:= by
   constructor <;> rw [degree, degreeIn]
   · intro heq _ hx
-    have := Finset.eq_of_subset_of_card_le neighborInFinset_subset_neighborFinset heq
+    have := Finset.eq_of_subset_of_card_le G.neighborInFinset_subset_neighborFinset heq
     rw [ ← mem_neighborFinset,← this] at hx
-    exact neighborInFinset_subset_set hx
+    exact G.neighborInFinset_subset_set hx
   · intro hs
     apply Finset.card_le_card
     intro x hx
@@ -100,7 +110,7 @@ lemma degree_le_degreeIn_iff : G.degree a ≤ G.degreeIn s a ↔ ∀ v, G.Adj a 
 
 lemma degreeIn_lt_degree (hv : v ∈ G.neighborFinset a ∧ v ∉ s) :
     G.degreeIn s a < G.degree a :=
-  lt_of_le_of_ne (degreeIn_le_degree s a) <| fun hf ↦ hv.2
+  lt_of_le_of_ne (G.degreeIn_le_degree s a) <| fun hf ↦ hv.2
     <| (degree_le_degreeIn_iff ..).1 hf.symm.le _ ((mem_neighborFinset ..).1 hv.1)
 
 end degreeIn

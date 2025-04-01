@@ -23,7 +23,7 @@ Proof: By strong induction on `#s`:
 Now suppose we have `#s = n`.
 
 If `∃ v ∈ s` such that `s ∩ Γ(v) < Δ` then apply `ih s.erase v` to obtain
-`C : G.PartialColoring s.erase v`then use `C.insert' a`
+`C : G.PartialColoring s.erase v`then use `C.insert a`
 (the coloring of `s` given by greedily extending `C`) to complete the proof.
 
 So wlog every vertex in `s` has exactly `Δ` neighbors in `s` (and hence no neighbors outside `s`).
@@ -79,9 +79,8 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
   -- s.erase v greedily
   by_cases hd : ∃ v ∈ s, G.degreeOn (s.erase v) v < k
   · obtain ⟨v, hv, hlt⟩ := hd
-    obtain ⟨C, hC⟩ := ih _ (Nat.lt_of_lt_of_le (card_erase_lt_of_mem hv) hn.le) _ rfl
-    have hvlt : C.extend v < k := (C.extend_le_degreeOn _).trans_lt hlt
-    exact ⟨(C.insert' v).copy (insert_erase hv), insert_lt_of_lt hC hvlt⟩
+    obtain ⟨C, hC⟩ := ih _ ((card_erase_lt_of_mem hv).trans_le hn.le) _ rfl
+    use (C.insert v).copy (insert_erase hv), insert_of_lt hC ((C.extend_le_degreeOn _).trans_lt hlt)
   -- So all vertices in `s` have d_s(v) = k (and hence have no neighbors outside `s`)
   push_neg at hd
   replace hd : ∀ v ∈ s, G.degreeOn (s.erase v) v = k := fun v hv ↦ le_antisymm
@@ -282,8 +281,8 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         use (C₁.join C₂ (by simpa using hnbc)).copy (union_sdiff_of_subset hsub.1)
         simpa using C₁.join_lt_of_lt hC₁ hC₂
   · -- `s` is empty so easy to `k`-color
-    use (ofEmpty G).copy (not_nonempty_iff_eq_empty.1 hem).symm
-    intros;
+    use G.partialColoringOfEmpty.copy (not_nonempty_iff_eq_empty.1 hem).symm
+    intros
     simpa using Nat.zero_lt_of_lt hk
 
 theorem Brooks_three_le (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k) :

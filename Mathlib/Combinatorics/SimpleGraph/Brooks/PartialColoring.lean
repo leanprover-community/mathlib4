@@ -3,10 +3,11 @@ import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Brooks.DegreeOn
 set_option linter.style.header false
 namespace SimpleGraph
-section partialcol
-variable {α : Type*} {G : SimpleGraph α}
+
 open Finset
-variable (G)
+
+variable {α : Type*} (G : SimpleGraph α)
+
 @[ext]
 structure PartialColoring (s : Finset α) where
 col : α → ℕ
@@ -16,11 +17,18 @@ instance (s : Finset α) : FunLike (G.PartialColoring s) α  ℕ where
   coe := PartialColoring.col
   coe_injective' := fun _ _ h ↦ PartialColoring.ext h
 
-def ofEmpty : G.PartialColoring ∅ where
+/-- If no two vertices in `s` are adjacent then we can color `s` with zero -/
+def partialColoringOfForAllNotAdj (s : Finset α) (h : ∀ ⦃u v⦄, u ∈ s → v ∈ s → ¬ G.Adj u v) :
+    G.PartialColoring s where
+  col := fun _ ↦ 0
+  valid := fun _ _ hx hy hadj _ ↦ h hx hy hadj
+
+def partialColoringOfEmpty : G.PartialColoring ∅ where
   col := fun _ ↦ 0
   valid := fun _ _ h  _ ↦ False.elim <| not_mem_empty _ h
 
-def ofNotAdj [DecidableEq α] {u v : α} (h : ¬ G.Adj u v) : G.PartialColoring {u, v} where
+def partialColoringOfNotAdj [DecidableEq α] {u v : α} (h : ¬ G.Adj u v) :
+    G.PartialColoring {u, v} where
   col := fun _ ↦ 0
   valid := fun x y hx hy hadj heq ↦ by
     simp only [mem_insert, mem_singleton] at hx hy
@@ -30,32 +38,40 @@ def ofNotAdj [DecidableEq α] {u v : α} (h : ¬ G.Adj u v) : G.PartialColoring 
     · exact h hadj.symm
     · exact G.loopless _ hadj
 
+
 namespace PartialColoring
+variable {G} in
+
+abbrev IsPartialKColoring {s : Finset α} (C : G.PartialColoring s) (k : ℕ) := ∀ v, C v < k
+
+lemma IsPartialKColoring_iff  {s : Finset α} (C : G.PartialColoring s) (k : ℕ) :
+  C.IsPartialKColoring k ↔ ∀ v, ⇑C v < k := by rfl
 
 @[simp]
-lemma ofEmpty_eq : ∀ v, G.ofEmpty v = 0 := fun _ ↦ rfl
+lemma ofEmpty_eq : ∀ v, G.partialColoringOfEmpty v = 0 := fun _ ↦ rfl
 
 variable {G}
 
 @[simp]
-lemma ofNotAdj_eq [DecidableEq α] {u v : α} (h : ¬ G.Adj u v) : ∀ w, (G.ofNotAdj h) w = 0 :=
+lemma ofNotAdj_eq [DecidableEq α] {u v : α} (h : ¬ G.Adj u v) :
+    ∀ w, (G.partialColoringOfNotAdj h) w = 0 :=
   fun _ ↦ rfl
 
-protected def copy {s t} (c : G.PartialColoring s) (h : s = t) : G.PartialColoring t where
-  col := c.col
-  valid := fun _ _ hv hw hadj => c.valid (h ▸ hv) (h ▸ hw) hadj
+protected def copy {s t} (C : G.PartialColoring s) (h : s = t) : G.PartialColoring t where
+  col := C.col
+  valid := fun _ _ hv hw hadj => C.valid (h ▸ hv) (h ▸ hw) hadj
 
 @[simp]
-theorem copy_rfl {s} (c : G.PartialColoring s)  : c.copy rfl = c := rfl
+theorem copy_rfl {s} (C : G.PartialColoring s)  : C.copy rfl = C := rfl
 
 @[simp]
-theorem copy_copy {s t u} (c : G.PartialColoring s) (hs : s = t) (ht : t = u) :
-    (c.copy hs).copy ht = c.copy (hs.trans ht) := by
+theorem copy_copy {s t u} (C : G.PartialColoring s) (hs : s = t) (ht : t = u) :
+    (C.copy hs).copy ht = C.copy (hs.trans ht) := by
   subst_vars
   rfl
 
 @[simp]
-lemma copy_eq {s t} (c : G.PartialColoring s) (hs : s = t) : ⇑(c.copy hs) = c  := rfl
+lemma copy_eq {s t} (C : G.PartialColoring s) (hs : s = t) : ⇑(C.copy hs) = C  := rfl
 
 variable [DecidableEq α] {s t : Finset α} {b : ℕ} {i : α}
 
@@ -96,9 +112,10 @@ lemma eq_ofinsertNotAdj  {a b : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ 
     (C.insertNotAdj h a) b = (C.insertNotAdj h a) a := by simp
 
 lemma lt_of_insertNotAdj_lt {b : α} {k : ℕ} (C : G.PartialColoring s) (h : ∀ v, v ∈ s → ¬ G.Adj b v)
-    (a : α) (hlt : ∀  v, C v < k) (v : α) : (C.insertNotAdj h a) v < k := by
+    (a : α) (h' : C.IsPartialKColoring k) : (C.insertNotAdj h a).IsPartialKColoring k := by
+  intro v
   rw [ofinsertNotAdj]
-  split_ifs <;> exact hlt _
+  split_ifs <;> exact h' _
 
 def join (C₁ : G.PartialColoring s) (C₂ : G.PartialColoring t)
     (h : ∀ v, v ∈ s → ∀ w, w ∈ t → ¬ G.Adj v w) : G.PartialColoring (s ∪ t) where
@@ -126,8 +143,8 @@ lemma join_eq {v : α} (C₁ : G.PartialColoring s) (C₂ : G.PartialColoring t)
     (C₁.join C₂ h) v = ite (v ∈ s) (C₁ v) (C₂ v) := rfl
 
 lemma join_lt_of_lt {k : ℕ} {C₁ : G.PartialColoring s} {C₂ : G.PartialColoring t}
-    {h : ∀ v, v ∈ s → ∀ w, w ∈ t → ¬ G.Adj v w} (h1 : ∀  v, C₁ v < k) (h2 : ∀  v, C₂ v < k) :
-   ∀ v, (C₁.join C₂ h) v < k := by
+    {h : ∀ v, v ∈ s → ∀ w, w ∈ t → ¬ G.Adj v w} (h1 : C₁.IsPartialKColoring k)
+    (h2 : C₂.IsPartialKColoring k) : (C₁.join C₂ h).IsPartialKColoring k := by
   intro v
   rw [join_eq]
   split_ifs
@@ -147,16 +164,11 @@ lemma unused (C : G.PartialColoring s) (a : α) :
   rw [card_range, degreeOn]
   apply Nat.lt_succ_of_le le_rfl
 
+/-- The color used by the greedy algorithm to extend `C` from `s` to `insert a s` -/
 def extend (C : G.PartialColoring s) (a : α) : ℕ := min' _ <| C.unused a
 
 lemma extend_def (C : G.PartialColoring s) (a : α) : C.extend a =
     (range (G.degreeOn s a + 1) \ (((G.neighborFinset a) ∩ s).image C)).min' (C.unused a) := rfl
-
-@[simp]
-lemma copy_extend (C : G.PartialColoring s) {t : Finset α} (a : α) (h : s = t) :
-     (C.copy h).extend a = C.extend a := by
-  simp_rw [extend_def]
-  congr <;> exact h.symm
 
 lemma extend_le_degreeOn (C : G.PartialColoring s) (a : α) : C.extend a ≤ G.degreeOn s a := by
   have ⟨h1, _⟩ := mem_sdiff.1 <| min'_mem _ <| C.unused a
@@ -169,7 +181,8 @@ lemma extend_lt_degree (C : G.PartialColoring s) {a v : α} (h1 : G.Adj a v) (h2
 lemma extend_not_mem_image (C : G.PartialColoring s) (a : α) :
     C.extend a ∉ ((G.neighborFinset a) ∩ s).image C := (mem_sdiff.1 <| min'_mem _ <| C.unused a).2
 
-def insert' (C : G.PartialColoring s) (a : α) : G.PartialColoring (insert a s) where
+/-- The greedy coloring of `insert a s` given a coloring of `s` -/
+protected def insert (C : G.PartialColoring s) (a : α) : G.PartialColoring (insert a s) where
   col   := fun v ↦ ite (v = a) (C.extend a) (C v)
   valid := by
     intro _ _ hx hy hadj
@@ -184,11 +197,16 @@ def insert' (C : G.PartialColoring s) (a : α) : G.PartialColoring (insert a s) 
       exact ⟨_, ⟨(hyi ▸ hadj.symm), mem_of_mem_insert_of_ne hx hxi⟩, hf⟩
     · exact C.valid (mem_of_mem_insert_of_ne hx hxi) (mem_of_mem_insert_of_ne hy hyi) hadj
 
+lemma insert_eq (C : G.PartialColoring s) (a : α) :
+    C.insert a = fun v ↦ ite (v = a) (C.extend a) (C v) := rfl
+
 variable {k : ℕ} {a u v w x y : α} {C : G.PartialColoring s}
 
-lemma insert_lt_of_lt (h : ∀ v,  C v < k) (hg : C.extend a < k) : ∀ w, (C.insert' a).col w < k := by
-  intro w
-  rw [insert']; dsimp
+/-- If `C` is a `k`-coloring of `s` and the greedy extend uses a color < k then -/
+lemma insert_of_lt (h : C.IsPartialKColoring k) (hg : C.extend a < k) :
+    (C.insert a).IsPartialKColoring k := by
+  rw [IsPartialKColoring_iff, insert_eq]
+  intro w; dsimp
   by_cases ha : w = a
   · rwa [if_pos ha]
   · rw [if_neg ha]; exact h w
@@ -201,7 +219,7 @@ lemma extend_eq_degreeOn (h : C.extend a = G.degreeOn s a) :
   have hs : ∀ i, i ∈ t \ u → i = G.degreeOn s a :=
     fun i hi ↦ le_antisymm ((le_max' _ _ hi ).trans hmax)  (h ▸ min'_le _ _ hi)
   have h1 := card_eq_one.2 ⟨_, eq_singleton_iff_nonempty_unique_mem.2 ⟨C.unused a, hs⟩⟩
-  have : #t - #u ≤ 1 :=  (h1 ▸ le_card_sdiff _ _)
+  have : #t - #u ≤ 1 :=  (h1 ▸ le_card_sdiff ..)
   rw [card_range] at this
   have h3 : G.degreeOn s a ≤ #u := by
     rwa [Nat.sub_le_iff_le_add, add_comm 1, Nat.succ_le_succ_iff] at this
@@ -212,32 +230,34 @@ lemma extend_eq_degreeOn (h : C.extend a = G.degreeOn s a) :
 less-than the `degreeOn s` of `a` -/
 lemma extend_lt_of_not_injOn (hus : u ∈ s) (hvs : v ∈ s) (hu : G.Adj a u) (hv : G.Adj a v)
     (hne : u ≠ v) (hc : C u = C v) : C.extend a < G.degreeOn s a := by
-    apply lt_of_le_of_ne (C.extend_le_degreeOn _)
+    apply (C.extend_le_degreeOn _).lt_of_ne
     intro hf
     apply hne
     apply extend_eq_degreeOn hf <;> simp_all
 
-
+/-- The greedy extension of a `PartialColoring s` to a list of vertices `l`. -/
 def Greedy (C : G.PartialColoring s) (l : List α) : G.PartialColoring (s ∪ l.toFinset) :=
 match l with
 | [] => C.copy (by simp)
-| a :: l => ((C.Greedy l).insert' a).copy (by simp)
+| a :: l => ((C.Greedy l).insert a).copy (by simp)
 
 @[simp]
 lemma Greedy_nil (C : G.PartialColoring s)  : C.Greedy []  = C.copy (by simp)  := rfl
 
-lemma Greedy_cons  (C : G.PartialColoring s)  (l : List α) (a : α) (v : α) :
+lemma Greedy_cons (C : G.PartialColoring s) (l : List α) (a : α) (v : α) :
     (C.Greedy (a :: l)) v = ite (v = a) ((C.Greedy l).extend a) ((C.Greedy l) v) := rfl
 
 @[simp]
 lemma Greedy_head (C : G.PartialColoring s) (l : List α) (a : α) :
-    (C.Greedy (a :: l)) a = extend (C.Greedy l) a := by
+    (C.Greedy (a :: l)) a = (C.Greedy l).extend a := by
   rw [Greedy_cons, if_pos rfl]
 
+@[simp]
 lemma Greedy_tail (C : G.PartialColoring s) (l : List α) (a : α) {v : α} (hv : v ≠ a) :
     (C.Greedy (a :: l)) v = (C.Greedy l) v := by
   rw [Greedy_cons, if_neg hv]
 
+@[simp]
 lemma Greedy_not_mem {C : G.PartialColoring s} {l : List α} {v : α} (hv : v ∉ l) :
     (C.Greedy l) v = C v := by
   induction l with
@@ -249,14 +269,15 @@ lemma Greedy_not_mem {C : G.PartialColoring s} {l : List α} {v : α} (hv : v �
     · exact ih <| fun hf ↦ hv (List.mem_cons_of_mem _ hf)
 
 open Walk
-
+variable {x y a : α} {C : G.PartialColoring s} {p : G.Walk u v}
 /-
 If `C` is a `k` coloring of `s`, all degrees are at most `k`, and  `p` is a path disjoint
 from `s` then we have `k`-coloring of `s ∪ p.support.tail` by extending `C` greedily
 -/
-theorem Greedy_of_tail_path (C : G.PartialColoring s) {p : G.Walk u v} (hbdd : ∀ v, G.degree v ≤ k)
-    (hp : p.IsPath) (hlt : ∀ y, C y < k) (hdisj : Disjoint s p.support.toFinset) (x : α) :
-    (C.Greedy p.support.tail) x < k := by
+theorem Greedy_of_tail_path (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath)
+    (hlt : C.IsPartialKColoring k) (hdisj : Disjoint s p.support.toFinset) :
+    (C.Greedy p.support.tail).IsPartialKColoring k := by
+  intro x
   induction p with
   | nil => simpa using hlt x
   | @cons _ v _ h p ih =>
@@ -276,14 +297,15 @@ theorem Greedy_of_tail_path (C : G.PartialColoring s) {p : G.Walk u v} (hbdd : �
       rw [support_cons]
       exact fun _ hy ↦ List.mem_toFinset.2 <| List.mem_cons_of_mem _ <| List.mem_toFinset.1 hy
 
-theorem Greedy_of_path_notInj (C : G.PartialColoring s) {p : G.Walk u v}
-    (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath) (hlt : ∀ y, C y < k) (hxs : x ∈ s) (hys : y ∈ s)
+theorem Greedy_of_path_notInj (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath)
+    (hlt : C.IsPartialKColoring k) (hxs : x ∈ s) (hys : y ∈ s)
     (hux : G.Adj u x) (huy : G.Adj u y) (hne : x ≠ y) (heq : C x = C y)
-    (hdisj : Disjoint s p.support.toFinset) (a : α) : (C.Greedy p.support) a < k := by
+    (hdisj : Disjoint s p.support.toFinset) : (C.Greedy p.support).IsPartialKColoring k := by
   have hnx := fun hf ↦ disjoint_left.1 hdisj hxs <| List.mem_toFinset.2 <| List.mem_of_mem_tail hf
   have hny := fun hf ↦ disjoint_left.1 hdisj hys <| List.mem_toFinset.2 <| List.mem_of_mem_tail hf
+  intro a
   by_cases ha : a ∈ p.support
-  · have := Greedy_of_tail_path C hbdd hp hlt hdisj
+  · have := Greedy_of_tail_path hbdd hp hlt hdisj
     rw [support_eq_cons]
     rw [Greedy_cons]
     by_cases hu : a = u
@@ -296,11 +318,11 @@ theorem Greedy_of_path_notInj (C : G.PartialColoring s) {p : G.Walk u v}
   · rw [Greedy_not_mem ha]
     exact hlt a
 
-theorem Greedy_of_path_concat_notInj {x y a : α} (C : G.PartialColoring s) {p : G.Walk u v}
-{h : G.Adj v w}(hbdd : ∀ v, G.degree v ≤ k) (hp : (p.concat h).IsPath) (hlt : ∀ y, C y < k)
+theorem Greedy_of_path_concat_notInj {h : G.Adj v w} (hbdd : ∀ v, G.degree v ≤ k)
+    (hp : (p.concat h).IsPath) (hlt : C.IsPartialKColoring k)
     (hxs : x ∈ s) (hys : y ∈ s) (hux : G.Adj w x) (huy : G.Adj w y) (hne : x ≠ y)
     (heq : C x = C y) (hdisj : Disjoint s (p.concat h).support.toFinset) :
-    (C.Greedy (p.concat h).reverse.support) a < k := by
+    (C.Greedy (p.concat h).reverse.support).IsPartialKColoring k := by
   apply C.Greedy_of_path_notInj hbdd hp.reverse hlt hxs hys hux huy hne heq
   rwa [support_reverse, List.toFinset_reverse]
 
@@ -314,14 +336,15 @@ theorem Brooks1 {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} {p : G.Walk xᵣ x₄} (hk 
     (hc : G.Adj xⱼ x₂) (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath) (hj : xⱼ ∈ p.support)
     (hs1 : x₁ ∈ s) (hs3 : x₃ ∈ s) (h21 : G.Adj x₂ x₁) (h23 : G.Adj x₂ x₃)
     (hne : x₁ ≠ x₃) (heq : ¬ G.Adj x₁ x₃) (hdisj : Disjoint s p.support.toFinset)
-    (h2disjp : x₂ ∉ p.support) (a : α) :
-    ((G.ofNotAdj heq).Greedy (p.dropUntil _ hj).support.tail).Greedy
-        ((p.takeUntil _ hj).concat hc).reverse.support a < k := by
+    (h2disjp : x₂ ∉ p.support) :
+    (((G.partialColoringOfNotAdj heq).Greedy (p.dropUntil _ hj).support.tail).Greedy
+        ((p.takeUntil _ hj).concat hc).reverse.support).IsPartialKColoring k := by
+  intro a
   have hx1p : x₁ ∉ p.support := fun hf ↦ (disjoint_left.1 hdisj hs1 (List.mem_toFinset.2 hf))
   have hx3p : x₃ ∉ p.support := fun hf ↦ (disjoint_left.1 hdisj hs3 (List.mem_toFinset.2 hf))
   have htp := (concat_isPath_iff _ hc).2 ⟨hp.takeUntil hj,
       fun a ↦ h2disjp ((support_takeUntil_subset p hj) a)⟩
-  let C₁ := (G.ofNotAdj heq).Greedy (p.dropUntil _ hj).support.tail
+  let C₁ := (G.partialColoringOfNotAdj heq).Greedy (p.dropUntil _ hj).support.tail
   have (x) : C₁ x < k := by
     have hd : ∀ y, y ∈ (p.dropUntil _ hj).support.toFinset → y ∈ p.support.toFinset := by
       intro y hy; rw [List.mem_toFinset] at *
@@ -329,7 +352,7 @@ theorem Brooks1 {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} {p : G.Walk xᵣ x₄} (hk 
     have hd' : ∀ y : α, y ∈ ({x₁, x₃} : Finset α) → y ∈ s := by
       intro y hy; simp only [mem_insert, mem_singleton] at hy
       cases hy <;> subst_vars <;> assumption
-    apply (G.ofNotAdj heq).Greedy_of_tail_path hbdd (hp.dropUntil hj)
+    apply (G.partialColoringOfNotAdj heq).Greedy_of_tail_path hbdd (hp.dropUntil hj)
       (fun y ↦ by rwa [ofNotAdj_eq heq])
     exact disjoint_of_subset_left hd' <| (disjoint_of_subset_right hd) hdisj
   let C₂ := C₁.Greedy ((p.takeUntil _ hj).concat hc).reverse.support
@@ -353,8 +376,8 @@ theorem Brooks1' {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} (p : G.Walk xᵣ x₄) (hk
     (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath) (hj : xⱼ ∈ p.support) (h21 : G.Adj x₂ x₁)
     (h23 : G.Adj x₂ x₃) (hne : x₁ ≠ x₃) (heq : ¬ G.Adj x₁ x₃)
     (h1d : Disjoint {x₁, x₃} p.support.toFinset) (h2d : x₂ ∉ p.support) :
-  ∃ (C : G.PartialColoring ({x₁, x₂, x₃} ∪ p.support.toFinset)), ∀ a, C a < k := by
-  let C := ((G.ofNotAdj heq).Greedy (p.dropUntil _ hj).support.tail).Greedy
+  ∃ (C : G.PartialColoring ({x₁, x₂, x₃} ∪ p.support.toFinset)), C.IsPartialKColoring k := by
+  let C := ((G.partialColoringOfNotAdj heq).Greedy (p.dropUntil _ hj).support.tail).Greedy
         ((p.takeUntil _ hj).concat hc).reverse.support
   have st : {x₁, x₃} ∪ (p.dropUntil xⱼ hj).support.tail.toFinset ∪
   ((p.takeUntil xⱼ hj).concat hc).reverse.support.toFinset = {x₁, x₂, x₃} ∪ p.support.toFinset := by
@@ -368,8 +391,6 @@ theorem Brooks1' {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} (p : G.Walk xᵣ x₄) (hk
     ext; simp_rw [mem_union, mem_singleton, mem_insert, mem_singleton]
     rw [or_comm]
   use C.copy st
-  rw [copy_eq]
-  exact Brooks1 (Nat.zero_lt_of_lt hk) hc hbdd hp hj (by simp) (by simp) h21 h23 hne heq h1d h2d
+  apply Brooks1 (Nat.zero_lt_of_lt hk) hc hbdd hp hj (by simp) (by simp) h21 h23 hne heq h1d h2d
 
-end partialcol
 end SimpleGraph

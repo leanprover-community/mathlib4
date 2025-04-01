@@ -11,6 +11,7 @@ variable [DecidableEq α] [LocallyFinite G]
 
 section withDecRel
 variable [DecidableRel G.Adj]
+
 /-- `G.degreeOn s a` is the number of neighbors of `a` in `s` -/
 abbrev degreeOn (s : Finset α) (a : α) : ℕ := #(G.neighborFinset a ∩ s)
 
