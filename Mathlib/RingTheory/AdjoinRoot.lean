@@ -479,12 +479,12 @@ lemma _root_.Polynomial.Monic.finite_adjoinRoot (hg : g.Monic) : Module.Finite R
 /-- An unwrapped version of `AdjoinRoot.free_of_monic` for better discoverability. -/
 lemma _root_.Polynomial.Monic.free_quotient (hg : g.Monic) :
     Module.Free R (R[X] ⧸ Ideal.span {g}) :=
-  free_of_monic hg
+  hg.free_adjoinRoot
 
 /-- An unwrapped version of `AdjoinRoot.finite_of_monic` for better discoverability. -/
 lemma _root_.Polynomial.Monic.finite_quotient (hg : g.Monic) :
     Module.Finite R (R[X] ⧸ Ideal.span {g}) :=
-  finite_of_monic hg
+  hg.finite_adjoinRoot
 
 variable [Field K] {f : K[X]}
 
