@@ -105,6 +105,13 @@ lemma IsIrreducible.mk' {K : Type*} [Field K] [Module K M] [Module K N] [Nontriv
     replace ne_bot : q.dualAnnihilator ≠ ⊤ := by simpa
     simpa using h ne_bot
 
+
+lemma jjj {K : Type*} [Field K] [Module K M] [Module K N] [Nontrivial M]
+    (P : RootPairing ι K M N) (q : Submodule K M) (i : ι) (j : ι)
+    (hq : q ∈ invtSubmodule (P.reflection i)) (B : P.InvariantForm) : P.root j ∈ q ∨ ∀ v ∈ q, B.form (P.root j) v = 0 := by
+  sorry
+
+
 variable [NeZero (2 : R)] [P.IsIrreducible]
 
 lemma span_orbit_eq_top (i : ι) :

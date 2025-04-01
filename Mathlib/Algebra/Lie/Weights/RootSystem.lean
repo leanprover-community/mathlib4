@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Lie.Weights.Killing
 import Mathlib.LinearAlgebra.RootSystem.Basic
+import Mathlib.LinearAlgebra.RootSystem.Irreducible
 import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.Algebra.Algebra.Rat
@@ -426,3 +427,35 @@ instance : (rootSystem H).IsReduced where
     · left; ext x; simpa using DFunLike.congr_fun h.symm x
 
 end LieAlgebra.IsKilling
+
+section jjj
+
+variable (K L : Type*) [Field K] [CharZero K]
+  [LieRing L] [LieAlgebra K L] [LieAlgebra.IsSimple K L] [FiniteDimensional K L]
+  [LieAlgebra.IsKilling K L] -- Follows from simplicity; will be redundant after #10068 done
+  (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [LieModule.IsTriangularizable K H L]
+  [Nontrivial L]
+
+#check (LieAlgebra.IsKilling.rootSystem H)
+
+instance : (LieAlgebra.IsKilling.rootSystem H).IsIrreducible where
+  nontrivial := by
+    have := LieSubalgebra.ne_bot_of_isCartanSubalgebra H
+    exact Module.instNontrivialDual K
+  nontrivial' := by
+    have := LieSubalgebra.ne_bot_of_isCartanSubalgebra H
+    exact LieSubalgebra.instNontrivialSubtypeMemOfIsCartanSubalgebra H
+  eq_top_of_invtSubmodule_reflection := by
+    by_contra!
+    obtain ⟨q, hq⟩ := this
+    simp at hq
+    dsimp [Module.End.invtSubmodule] at hq
+    --simp
+    simp at hq
+    dsimp [RootPairing.reflection] at hq
+
+
+
+  eq_top_of_invtSubmodule_coreflection := sorry
+
+end jjj
