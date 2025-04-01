@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Salvatore Mercuri
 -/
 import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.Algebra.UniformField
 import Mathlib.Topology.Algebra.Valued.ValuationTopology
+import Mathlib.Topology.Algebra.Valued.ValuedField
 import Mathlib.NumberTheory.NumberField.Basic
 
 /-!
@@ -91,10 +93,21 @@ open WithVal
 variable {R : Type*} [Ring R] (v : Valuation R Γ₀)
 
 /-- The completion of a field with respect to a valuation. -/
-abbrev Completion := UniformSpace.Completion (WithVal v)
+def Completion := UniformSpace.Completion (WithVal v)
+
+instance : Ring v.Completion := UniformSpace.Completion.ring
 
 instance : Coe R v.Completion :=
   inferInstanceAs <| Coe (WithVal v) (UniformSpace.Completion (WithVal v))
+
+instance {M : Type*} [SMul M (WithVal v)] : SMul M v.Completion :=
+  UniformSpace.Completion.instSMul _ _
+
+instance {K : Type*} [Field K] (v : Valuation K Γ₀) :
+    Valued v.Completion Γ₀ := Valued.valuedCompletion
+
+instance {K : Type*} [Field K] (v : Valuation K Γ₀) [CompletableTopField (WithVal v)]  :
+    Field v.Completion := UniformSpace.Completion.instField
 
 end Valuation
 
