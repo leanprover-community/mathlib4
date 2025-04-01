@@ -105,6 +105,7 @@ end CommShift
 commutation isomorphisms with the shifts by all `a : A`, and these isomorphisms
 satisfy coherence properties with respect to `0 : A` and the addition in `A`. -/
 class CommShift where
+  /-- The commutation isomorphisms for all `a`-shifts this functor is equipped with -/
   iso (a : A) : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a
   zero : iso 0 = CommShift.isoZero F A := by aesop_cat
   add (a b : A) : iso (a + b) = CommShift.isoAdd (iso a) (iso b) := by aesop_cat
