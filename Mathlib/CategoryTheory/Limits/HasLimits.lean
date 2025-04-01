@@ -6,6 +6,7 @@ Authors: Reid Barton, Mario Carneiro, Kim Morrison, Floris van Doorn
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.EssentiallySmall
+import Mathlib.CategoryTheory.Functor.EpiMono
 import Mathlib.Logic.Equiv.Basic
 
 /-!

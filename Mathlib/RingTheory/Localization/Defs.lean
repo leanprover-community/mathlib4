@@ -454,10 +454,11 @@ theorem mul_add_inv_left {g : R →+* P} (h : ∀ y : M, IsUnit (g y)) (y : M) (
   simp [RingHom.toMonoidHom_eq_coe, MonoidHom.restrict_apply]
 
 theorem lift_spec_mul_add {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) (z w w' v) :
-    ((toLocalizationWithZeroMap M S).lift g.toMonoidWithZeroHom hg) z * w + w' = v ↔
+    ((toLocalizationMap M S).lift hg) z * w + w' = v ↔
       g ((toLocalizationMap M S).sec z).1 * w + g ((toLocalizationMap M S).sec z).2 * w' =
         g ((toLocalizationMap M S).sec z).2 * v := by
-  erw [mul_comm, ← mul_assoc, mul_add_inv_left hg, mul_comm]
+  rw [mul_comm, Submonoid.LocalizationMap.lift_apply, ← mul_assoc, mul_add_inv_left hg,
+    mul_comm]
   rfl
 
 /-- Given a localization map `f : R →+* S` for a submonoid `M ⊆ R` and a map of `CommSemiring`s
@@ -469,8 +470,10 @@ noncomputable def lift {g : R →+* P} (hg : ∀ y : M, IsUnit (g y)) : S →+* 
       g.toMonoidWithZeroHom hg with
     map_add' := by
       intro x y
-      erw [(toLocalizationMap M S).lift_spec, mul_add, mul_comm, eq_comm, lift_spec_mul_add,
-        add_comm, mul_comm, mul_assoc, mul_comm, mul_assoc, lift_spec_mul_add]
+      dsimp
+      rw [(toLocalizationWithZeroMap M S).lift_def, (toLocalizationWithZeroMap M S).lift_spec,
+        mul_add, mul_comm, eq_comm, lift_spec_mul_add, add_comm, mul_comm, mul_assoc, mul_comm,
+        mul_assoc, lift_spec_mul_add]
       simp_rw [← mul_assoc]
       show g _ * g _ * g _ + g _ * g _ * g _ = g _ * g _ * g _
       simp_rw [← map_mul g, ← map_add g]
@@ -676,11 +679,11 @@ theorem ringEquivOfRingEquiv_mk' {j : R ≃+* P} (H : M.map j.toMonoidHom = T) (
   simp [map_mk']
 
 @[simp]
-theorem ringEquivOfRingEquiv_symm {j : R ≃+* P} (H : M.map j.toMonoidHom = T) :
+theorem ringEquivOfRingEquiv_symm {j : R ≃+* P} (H : M.map j = T) :
     (ringEquivOfRingEquiv S Q j H).symm =
-      ringEquivOfRingEquiv Q S j.symm (show T.map j.symm.toMonoidHom = M by
-        erw [← H, ← Submonoid.comap_equiv_eq_map_symm,
-          Submonoid.comap_map_eq_of_injective j.injective]) := rfl
+      ringEquivOfRingEquiv Q S j.symm (show T.map (j : R ≃* P).symm = M by
+        rw [← H, ← Submonoid.comap_equiv_eq_map_symm, ← Submonoid.map_coe_toMulEquiv,
+          Submonoid.comap_map_eq_of_injective (j : R ≃* P).injective]) := rfl
 
 end Map
 
@@ -717,7 +720,7 @@ variable (M)
 
 theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
     haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
-    IsLocalization (M.map h.toMonoidHom) S := by
+    IsLocalization (M.map h) S := by
   letI : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
   constructor
   · rintro ⟨_, ⟨y, hy, rfl⟩⟩
@@ -737,12 +740,13 @@ theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
 theorem isLocalization_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsLocalization M S ↔
       haveI := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
-      IsLocalization (M.map h.toMonoidHom) S := by
+      IsLocalization (M.map h) S := by
   letI : Algebra P S := ((algebraMap R S).comp h.symm.toRingHom).toAlgebra
   refine ⟨fun _ => isLocalization_of_base_ringEquiv M S h, ?_⟩
-  intro H
-  convert isLocalization_of_base_ringEquiv (Submonoid.map (RingEquiv.toMonoidHom h) M) S h.symm
-  · erw [Submonoid.map_equiv_eq_comap_symm, Submonoid.comap_map_eq_of_injective]
+  intro (H : IsLocalization (Submonoid.map (h : R ≃* P) M) S)
+  convert isLocalization_of_base_ringEquiv (Submonoid.map (h : R ≃* P) M) S h.symm
+  · rw [← Submonoid.map_coe_toMulEquiv, RingEquiv.coe_toMulEquiv_symm, ←
+      Submonoid.comap_equiv_eq_map_symm, Submonoid.comap_map_eq_of_injective]
     exact h.toEquiv.injective
   rw [RingHom.algebraMap_toAlgebra, RingHom.comp_assoc]
   simp only [RingHom.comp_id, RingEquiv.symm_symm, RingEquiv.symm_toRingHom_comp_toRingHom]
