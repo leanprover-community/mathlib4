@@ -577,16 +577,7 @@ theorem lt_div_iff_mul_lt_of_dvd (hc : c ≠ 0) (hcb : c ∣ b) : a < b / c ↔ 
 /-!
 ### `pow`
 
-#### TODO
-
-* Add `protected` to `Nat.pow_le_pow_left`
-* Add `protected` to `Nat.pow_le_pow_right`
 -/
-
-protected lemma pow_lt_pow_left (h : a < b) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < b ^ n
-  | 1, _ => by simpa
-  | n + 2, _ => Nat.mul_lt_mul_of_lt_of_le (Nat.pow_lt_pow_left h n.succ_ne_zero) (Nat.le_of_lt h)
-    (zero_lt_of_lt h)
 
 protected lemma pow_lt_pow_right (ha : 1 < a) (h : m < n) : a ^ m < a ^ n :=
   (Nat.pow_lt_pow_iff_right ha).2 h

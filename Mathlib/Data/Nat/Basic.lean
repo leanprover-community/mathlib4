@@ -81,7 +81,6 @@ lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := b
 protected lemma pow_right_injective (ha : 2 ≤ a) : Injective (a ^ ·) := by
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_right ha]
 
-protected lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injective hn).eq_iff
 protected lemma pow_right_inj (ha : 2 ≤ a) : a ^ m = a ^ n ↔ m = n :=
   (Nat.pow_right_injective ha).eq_iff
 

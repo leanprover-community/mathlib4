@@ -218,17 +218,6 @@ theorem Coprime.eq_of_mul_eq_zero {m n : ℕ} (h : m.Coprime n) (hmn : m * n = 0
 
 @[deprecated (since := "2025-04-01")] alias prodDvdAndDvdOfDvdProd := dvdProdDvdOfDvdProd
 
-theorem pow_dvd_pow_iff {a b n : ℕ} (n0 : n ≠ 0) : a ^ n ∣ b ^ n ↔ a ∣ b := by
-  refine ⟨fun h => ?_, fun h => pow_dvd_pow_of_dvd h _⟩
-  rcases Nat.eq_zero_or_pos (gcd a b) with g0 | g0
-  · simp [eq_zero_of_gcd_eq_zero_right g0]
-  rcases exists_coprime' g0 with ⟨g, a', b', g0', co, rfl, rfl⟩
-  rw [mul_pow, mul_pow] at h
-  replace h := Nat.dvd_of_mul_dvd_mul_right (Nat.pow_pos g0') h
-  have := pow_dvd_pow a' <| Nat.pos_of_ne_zero n0
-  rw [pow_one, (co.pow n n).eq_one_of_dvd h] at this
-  simp [eq_one_of_dvd_one this]
-
 theorem coprime_iff_isRelPrime {m n : ℕ} : m.Coprime n ↔ IsRelPrime m n := by
   simp_rw [coprime_iff_gcd_eq_one, IsRelPrime, ← and_imp, ← dvd_gcd_iff, isUnit_iff_dvd_one]
   exact ⟨fun h _ ↦ (h ▸ ·), (dvd_one.mp <| · dvd_rfl)⟩
@@ -254,17 +243,6 @@ theorem Coprime.mul_add_mul_ne_mul {m n a b : ℕ} (cop : Coprime m n) (ha : a �
   rw [← mul_assoc, ← h, Nat.add_mul, Nat.add_mul, mul_comm _ n, ← mul_assoc, mul_comm y]
 
 variable {x n m : ℕ}
-
-theorem dvd_gcd_mul_iff_dvd_mul : x ∣ gcd x n * m ↔ x ∣ n * m := by
-  refine ⟨(·.trans <| mul_dvd_mul_right (x.gcd_dvd_right n) m), fun ⟨y, hy⟩ ↦ ?_⟩
-  rw [← gcd_mul_right, hy, gcd_mul_left]
-  exact dvd_mul_right x (gcd m y)
-
-theorem dvd_mul_gcd_iff_dvd_mul : x ∣ n * gcd x m ↔ x ∣ n * m := by
-  rw [mul_comm, dvd_gcd_mul_iff_dvd_mul, mul_comm]
-
-theorem dvd_gcd_mul_gcd_iff_dvd_mul : x ∣ gcd x n * gcd x m ↔ x ∣ n * m := by
-  rw [dvd_gcd_mul_iff_dvd_mul, dvd_mul_gcd_iff_dvd_mul]
 
 theorem gcd_mul_gcd_eq_iff_dvd_mul_of_coprime (hcop : Coprime n m) :
     gcd x n * gcd x m = x ↔ x ∣ n * m := by
