@@ -485,21 +485,20 @@ theorem PartialOrder.toPreorder_injective :
   congr
 
 @[ext]
-theorem LinearOrder.toPartialOrder_injective :
-    Function.Injective (@LinearOrder.toPartialOrder α) :=
+theorem LinearOrder.toLinearOrderAux_injective :
+    Function.Injective (@LinearOrder.toLinearOrderAux α) :=
   fun A B h ↦ match A, B with
   | { le := A_le, lt := A_lt,
       decidableLE := A_decidableLE, decidableEq := A_decidableEq, decidableLT := A_decidableLT
-      min := A_min, max := A_max, min_def := A_min_def, max_def := A_max_def,
-      compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical, .. },
+      min := A_min, max := A_max,
+      compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical,
+      min_def := A_min_def, max_def := A_max_def, .. },
     { le := B_le, lt := B_lt,
       decidableLE := B_decidableLE, decidableEq := B_decidableEq, decidableLT := B_decidableLT
-      min := B_min, max := B_max, min_def := B_min_def, max_def := B_max_def,
-      compare := B_compare, compare_eq_compareOfLessAndEq := B_compare_canonical, .. } => by
+      min := B_min, max := B_max,
+      compare := B_compare, compare_eq_compareOfLessAndEq := B_compare_canonical,
+      min_def := B_min_def, max_def := B_max_def, .. } => by
     cases h
-    obtain rfl : A_decidableLE = B_decidableLE := Subsingleton.elim _ _
-    obtain rfl : A_decidableEq = B_decidableEq := Subsingleton.elim _ _
-    obtain rfl : A_decidableLT = B_decidableLT := Subsingleton.elim _ _
     have : A_min = B_min := by
       funext a b
       exact (A_min_def _ _).trans (B_min_def _ _).symm
@@ -508,6 +507,23 @@ theorem LinearOrder.toPartialOrder_injective :
       funext a b
       exact (A_max_def _ _).trans (B_max_def _ _).symm
     cases this
+    congr
+
+@[ext]
+theorem LinearOrder.toPartialOrder_injective :
+    Function.Injective (fun _ : LinearOrder α => @LinearOrderAux.toPartialOrder α _) :=
+  (.comp · LinearOrder.toLinearOrderAux_injective) <|
+  fun A B h ↦ match A, B with
+  | { le := A_le, lt := A_lt,
+      decidableLE := A_decidableLE, decidableEq := A_decidableEq, decidableLT := A_decidableLT
+      compare := A_compare, compare_eq_compareOfLessAndEq := A_compare_canonical, .. },
+    { le := B_le, lt := B_lt,
+      decidableLE := B_decidableLE, decidableEq := B_decidableEq, decidableLT := B_decidableLT
+      compare := B_compare, compare_eq_compareOfLessAndEq := B_compare_canonical, .. } => by
+    cases h
+    obtain rfl : A_decidableLE = B_decidableLE := Subsingleton.elim _ _
+    obtain rfl : A_decidableEq = B_decidableEq := Subsingleton.elim _ _
+    obtain rfl : A_decidableLT = B_decidableLT := Subsingleton.elim _ _
     have : A_compare = B_compare := by
       funext a b
       exact (A_compare_canonical _ _).trans (B_compare_canonical _ _).symm
@@ -722,7 +738,7 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
   decidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
   decidableEq := (inferInstance : DecidableEq α)
   compare_eq_compareOfLessAndEq a b := by
-    simp only [compare, LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
+    simp only [compare, LinearOrderAux.compare_eq_compareOfLessAndEq, compareOfLessAndEq, eq_comm]
     rfl
 
 /-- The opposite linear order to a given linear order -/
@@ -966,7 +982,7 @@ theorem compare_of_injective_eq_compareOfLessAndEq (a b : α) [LinearOrder β]
     [Decidable (LT.lt (self := PartialOrder.lift f inj |>.toLT) a b)] :
     compare (f a) (f b) =
       @compareOfLessAndEq _ a b (PartialOrder.lift f inj |>.toLT) _ _ := by
-  have h := LinearOrder.compare_eq_compareOfLessAndEq (f a) (f b)
+  have h := LinearOrderAux.compare_eq_compareOfLessAndEq (f a) (f b)
   simp only [h, compareOfLessAndEq]
   split_ifs <;> try (first | rfl | contradiction)
   · have : ¬ f a = f b := by rename_i h; exact inj.ne h

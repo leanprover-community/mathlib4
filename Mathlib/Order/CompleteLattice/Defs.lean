@@ -261,32 +261,12 @@ def completeLatticeOfCompleteSemilatticeSup (α : Type*) [CompleteSemilatticeSup
   completeLatticeOfSup α fun s => isLUB_sSup s
 
 /-- A complete linear order is a linear order whose lattice structure is complete. -/
--- Note that we do not use `extends LinearOrder α`,
--- and instead construct the forgetful instance manually.
-class CompleteLinearOrder (α : Type*) extends CompleteLattice α, BiheytingAlgebra α, Ord α where
-  /-- A linear order is total. -/
-  le_total (a b : α) : a ≤ b ∨ b ≤ a
-  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLE : DecidableLE α
-  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
-  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ decidableLE
-  compare a b := compareOfLessAndEq a b
-  /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
-  compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
-    compareOfLessAndEq_rfl
+-- Note that we do not use `extends LinearOrder α` as this would create duplicate fields.
+class CompleteLinearOrder (α : Type*)
+    extends CompleteLattice α, BiheytingAlgebra α, LinearOrderAux α where
 
-instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α where
-  __ := i
-  min_def a b := by
-    split_ifs with h
-    · simp [h]
-    · simp [(CompleteLinearOrder.le_total a b).resolve_left h]
-  max_def a b := by
-    split_ifs with h
-    · simp [h]
-    · simp [(CompleteLinearOrder.le_total a b).resolve_left h]
+instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α :=
+  Lattice.toLinearOrder _
 
 namespace OrderDual
 
