@@ -79,6 +79,12 @@ elab "#count_heartbeats! " n:(num)? "in" ppLine tac:tacticSeq : tactic => do
   logVariation counts
 
 /--
+Round down the number `n` to the nearest thousand, if `approx` is `true`.
+-/
+def roundDownIf (n : Nat) (approx : Bool) : String :=
+  if approx then s!"approximately {(n / 1000) * 1000}" else s!"{n}"
+
+/--
 `#count_heartbeats in cmd` counts the heartbeats used in the enclosed command `cmd`.
 Use `#count_heartbeats` to count the heartbeats in *all* the following declarations.
 
@@ -97,7 +103,7 @@ has granularity 1000 times finer that the limits set by `set_option maxHeartbeat
 As this is intended as a user command, we divide by 1000.
 
 The optional `approximately` keyword rounds down the heartbeats to the nearest thousand.
-This is helps make the tests more stable to small changes in heartbeats.
+This helps make the tests more stable to small changes in heartbeats.
 To use this functionality, use `#count_heartbeats approximately in cmd`.
 -/
 elab "#count_heartbeats " approx:(&"approximately ")? "in" ppLine cmd:command : command => do
@@ -107,8 +113,7 @@ elab "#count_heartbeats " approx:(&"approximately ")? "in" ppLine cmd:command : 
   finally
     let finish ← IO.getNumHeartbeats
     let elapsed := (finish - start) / 1000
-    let roundElapsed :=
-      if approx.isSome then s!"approximately {(elapsed / 1000) * 1000}" else s!"{elapsed}"
+    let roundElapsed := roundDownIf elapsed approx.isSome
     let max := (← Command.liftCoreM getMaxHeartbeats) / 1000
     if elapsed < max then
       logInfo
@@ -142,8 +147,13 @@ an error message will be generated if a minimization step makes the slow behavio
 The default number of minimal heartbeats is the value of `maxHeartbeats` (typically 200000).
 Alternatively, you can specify a number of heartbeats to guard against,
 using the syntax `guard_min_heartbeats n in cmd`.
+
+The optional `approximately` keyword rounds down the heartbeats to the nearest thousand.
+This helps make the tests more stable to small changes in heartbeats.
+To use this functionality, use `guard_min_heartbeats approximately (n)? in cmd`.
 -/
-elab "guard_min_heartbeats " n:(num)? "in" ppLine cmd:command : command => do
+elab "guard_min_heartbeats " approx:(&"approximately ")? n:(num)? "in" ppLine cmd:command :
+    command => do
   let max := (← Command.liftCoreM getMaxHeartbeats) / 1000
   let n := match n with
            | some j => j.getNat
@@ -155,7 +165,8 @@ elab "guard_min_heartbeats " n:(num)? "in" ppLine cmd:command : command => do
     let finish ← IO.getNumHeartbeats
     let elapsed := (finish - start) / 1000
     if elapsed < n then
-      logInfo m!"Used {elapsed} heartbeats, which is less than the minimum of {n}."
+      logInfo m!"Used {roundDownIf elapsed approx.isSome} heartbeats, \
+                which is less than the minimum of {n}."
 
 /--
 Run a command, optionally restoring the original state, and report just the number of heartbeats.
