@@ -33,7 +33,6 @@ theorem AffineSubspace.nonempty_map {E : AffineSubspace k P₁} [Ene : Nonempty 
   obtain ⟨x, hx⟩ := id Ene
   exact ⟨⟨φ x, AffineSubspace.mem_map.mpr ⟨x, hx, rfl⟩⟩⟩
 
--- Porting note: removed "local nolint fails_quickly" attribute
 attribute [local instance] AffineSubspace.nonempty_map AffineSubspace.toAddTorsor
 
 /-- Restrict domain and codomain of an affine map to the given subspaces. -/
