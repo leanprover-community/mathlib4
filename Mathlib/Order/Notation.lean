@@ -84,10 +84,10 @@ private def hasLinearOrder (u : Level) (α : Q(Type u)) (cls linearOrder : Q(Typ
     (toCls : Q((α : Type u) → $linearOrder α → $cls α))
     (inst : Q($cls $α)) : MetaM Bool := do
   try
-    let mvar ← mkFreshExprMVarQ q($linearOrder $α)
-    let inst' : Q($cls $α) := q($toCls $α $mvar)
-    -- `isDefEq` may call type class syntesis, so we need to give it the local instances
+    -- `isDefEq` may call type class syntesis to instantiate `mvar`, so we need the local instances
     withLocalInstances (← getLCtx).decls.toList.reduceOption do
+      let mvar ← mkFreshExprMVarQ q($linearOrder $α) (kind := .synthetic)
+      let inst' : Q($cls $α) := q($toCls $α $mvar)
       isDefEq inst inst'
   catch _ =>
     return false
