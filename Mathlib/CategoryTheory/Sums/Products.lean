@@ -51,6 +51,16 @@ lemma functorEquiv_unit_app_app_inr (X : A ⊕ A' ⥤ B) (a' : A') :
     ((functorEquiv A A' B).unit.app X).app (.inr a') = 𝟙 (X.obj (.inr a')) :=
   rfl
 
+@[simp]
+lemma functorEquiv_unitIso_inv_app_app_inl (X : A ⊕ A' ⥤ B) (a : A) :
+    ((functorEquiv A A' B).unitIso.inv.app X).app (.inl a) = 𝟙 (X.obj (.inl a)) :=
+  rfl
+
+@[simp]
+lemma functorEquiv_unitIso_inv_app_app_inr (X : A ⊕ A' ⥤ B) (a' : A') :
+    ((functorEquiv A A' B).unitIso.inv.app X).app (.inr a') = 𝟙 (X.obj (.inr a')) :=
+  rfl
+
 /-- Composing the forward direction of `functorEquiv` with the first projection is the same as
  precomposition with `inl_ A A'`. -/
 @[simps!]
@@ -70,7 +80,7 @@ def functorEquivFunctorCompSndIso :
 /-- Composing the backward direction of `functorEquiv` with precomposition with `inl_ A A'`.
  is naturally isomorphic to the first projection. -/
 @[simps!]
-def functorEquivInverseCompWhiskeringLeftInLIso :
+def functorEquivInverseCompWhiskeringLeftInlIso :
     (functorEquiv A A' B).inverse ⋙ (whiskeringLeft A (A ⊕ A') B).obj (inl_ A A') ≅
     Prod.fst (A ⥤ B) (A' ⥤ B) :=
   NatIso.ofComponents (fun _ ↦ Functor.inlCompSum' _ _)
@@ -78,7 +88,7 @@ def functorEquivInverseCompWhiskeringLeftInLIso :
 /-- Composing the backward direction of `functorEquiv` with the second projection is the same as
  precomposition with `inr_ A A'`. -/
 @[simps!]
-def functorEquivInverseCompWhiskeringLeftInRIso :
+def functorEquivInverseCompWhiskeringLeftInrIso :
     (functorEquiv A A' B).inverse ⋙ (whiskeringLeft A' (A ⊕ A') B).obj (inr_ A A') ≅
     Prod.snd (A ⥤ B) (A' ⥤ B) :=
   NatIso.ofComponents (fun _ ↦ Functor.inrCompSum' _ _)
