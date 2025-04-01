@@ -69,14 +69,14 @@ theorem Sphere.secondInter_eq_self_iff {s : Sphere P} {p : P} {v : V} :
   · rw [Sphere.secondInter, hp, mul_zero, zero_div, zero_smul, zero_vadd]
 
 /-- A point on a line through a point on a sphere equals that point or `secondInter`. -/
-theorem Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem {s : Sphere P} {p : P}
-    (hp : p ∈ s) {v : V} {p' : P} (hp' : p' ∈ AffineSubspace.mk' p (ℝ ∙ v)) :
+theorem Sphere.eq_or_eq_secondInter_iff_mem_of_mem_shift_span_singleton {s : Sphere P} {p : P}
+    (hp : p ∈ s) {v : V} {p' : P} (hp' : p' ∈ (ℝ ∙ v).shift p) :
     p' = p ∨ p' = s.secondInter p v ↔ p' ∈ s := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with (h | h)
     · rwa [h]
     · rwa [h, Sphere.secondInter_mem]
-  · rw [AffineSubspace.mem_mk'_iff_vsub_mem, Submodule.mem_span_singleton] at hp'
+  · rw [Submodule.mem_shift, Submodule.mem_span_singleton] at hp'
     rcases hp' with ⟨r, hr⟩
     rw [eq_comm, ← eq_vadd_iff_vsub_eq] at hr
     subst hr

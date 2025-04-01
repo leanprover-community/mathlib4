@@ -389,7 +389,7 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
     refine measure_mono_null this
       (measure_iUnion_null_iff.mpr fun i ↦ Measure.addHaar_affineSubspace μ _ ?_)
     refine (ne_of_mem_of_not_mem' (AffineSubspace.mem_top _ _ 0)
-      (AffineSubspace.mem_mk'_iff_vsub_mem.not.mpr ?_)).symm
+      (Submodule.mem_shift.not.mpr ?_)).symm
     simp_rw [vsub_eq_sub, zero_sub, neg_mem_iff]
     exact linearIndependent_iff_not_mem_span.mp b.linearIndependent i
   intro x hx
@@ -398,7 +398,7 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
   obtain ⟨i, hi⟩ := hx.2
   have : b.repr x i = 1 := le_antisymm (hx.1 i).2 (hi (hx.1 i).1)
   rw [← b.sum_repr x, ← Finset.sum_erase_add _ _ (Finset.mem_univ i), this, one_smul, ← vadd_eq_add]
-  refine Set.mem_iUnion.mpr ⟨i, AffineSubspace.vadd_mem_mk' _
+  refine Set.mem_iUnion.mpr ⟨i, Submodule.vadd_mem_shift _
     (sum_smul_mem _ _ (fun i hi ↦ Submodule.subset_span ?_))⟩
   exact ⟨i, Set.mem_diff_singleton.mpr ⟨trivial, Finset.ne_of_mem_erase hi⟩, rfl⟩
 

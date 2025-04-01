@@ -263,8 +263,9 @@ theorem mongePlane_comm {n : ℕ} (s : Simplex ℝ P (n + 2)) (i₁ i₂ : Fin (
 /-- The Monge point lies in the Monge planes. -/
 theorem mongePoint_mem_mongePlane {n : ℕ} (s : Simplex ℝ P (n + 2)) {i₁ i₂ : Fin (n + 3)} :
     s.mongePoint ∈ s.mongePlane i₁ i₂ := by
-  rw [mongePlane_def, mem_inf_iff, ← vsub_right_mem_direction_iff_mem (self_mem_mk' _ _),
-    direction_mk', Submodule.mem_orthogonal']
+  rw [mongePlane_def, mem_inf_iff,
+    ← vsub_right_mem_direction_iff_mem (Submodule.self_mem_shift _ _),
+    Submodule.direction_shift, Submodule.mem_orthogonal']
   refine ⟨?_, s.mongePoint_mem_affineSpan⟩
   intro v hv
   rcases Submodule.mem_span_singleton.mp hv with ⟨r, rfl⟩
@@ -274,8 +275,8 @@ theorem mongePoint_mem_mongePlane {n : ℕ} (s : Simplex ℝ P (n + 2)) {i₁ i�
 theorem direction_mongePlane {n : ℕ} (s : Simplex ℝ P (n + 2)) {i₁ i₂ : Fin (n + 3)} :
     (s.mongePlane i₁ i₂).direction =
       (ℝ ∙ s.points i₁ -ᵥ s.points i₂)ᗮ ⊓ vectorSpan ℝ (Set.range s.points) := by
-  rw [mongePlane_def, direction_inf_of_mem_inf s.mongePoint_mem_mongePlane, direction_mk',
-    direction_affineSpan]
+  rw [mongePlane_def, direction_inf_of_mem_inf s.mongePoint_mem_mongePlane,
+    Submodule.direction_shift, direction_affineSpan]
 
 /-- The Monge point is the only point in all the Monge planes from any
 one vertex. -/
@@ -313,28 +314,29 @@ theorem eq_mongePoint_of_forall_mem_mongePlane {n : ℕ} {s : Simplex ℝ P (n +
 /-- An altitude of a simplex is the line that passes through a vertex
 and is orthogonal to the opposite face. -/
 def altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) : AffineSubspace ℝ P :=
-  mk' (s.points i) (affineSpan ℝ (s.points '' ↑(univ.erase i))).directionᗮ ⊓
+  (affineSpan ℝ (s.points '' ↑(univ.erase i))).directionᗮ.shift (s.points i) ⊓
     affineSpan ℝ (Set.range s.points)
 
 /-- The definition of an altitude. -/
 theorem altitude_def {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     s.altitude i =
-      mk' (s.points i) (affineSpan ℝ (s.points '' ↑(univ.erase i))).directionᗮ ⊓
+      (affineSpan ℝ (s.points '' ↑(univ.erase i))).directionᗮ.shift (s.points i) ⊓
         affineSpan ℝ (Set.range s.points) :=
   rfl
 
 /-- A vertex lies in the corresponding altitude. -/
 theorem mem_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     s.points i ∈ s.altitude i :=
-  (mem_inf_iff _ _ _).2 ⟨self_mem_mk' _ _, mem_affineSpan ℝ (Set.mem_range_self _)⟩
+  (mem_inf_iff _ _ _).2 ⟨Submodule.self_mem_shift _ _, mem_affineSpan ℝ (Set.mem_range_self _)⟩
 
 /-- The direction of an altitude. -/
 theorem direction_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fin (n + 2)) :
     (s.altitude i).direction =
       (vectorSpan ℝ (s.points '' ↑(Finset.univ.erase i)))ᗮ ⊓ vectorSpan ℝ (Set.range s.points) := by
   rw [altitude_def,
-    direction_inf_of_mem (self_mem_mk' (s.points i) _) (mem_affineSpan ℝ (Set.mem_range_self _)),
-    direction_mk', direction_affineSpan, direction_affineSpan]
+    direction_inf_of_mem (Submodule.self_mem_shift (s.points i) _)
+      (mem_affineSpan ℝ (Set.mem_range_self _)),
+    Submodule.direction_shift, direction_affineSpan, direction_affineSpan]
 
 /-- The vector span of the opposite face lies in the direction
 orthogonal to an altitude. -/

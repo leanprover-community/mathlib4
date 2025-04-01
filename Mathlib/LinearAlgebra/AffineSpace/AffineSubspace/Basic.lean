@@ -826,3 +826,24 @@ theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
     not_nonempty_iff_eq_empty]
 
 end AffineSubspace
+
+namespace Submodule
+
+open AffineSubspace
+
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+variable [AffineSpace V P]
+
+theorem shift_parallel {s : Submodule k V} {p q : P} : s.shift p ∥ s.shift q := by
+  rw [parallel_iff_direction_eq_and_eq_bot_iff_eq_bot]
+  simp
+
+@[simp] theorem shift_parallel_iff_eq {s₁ s₂ : Submodule k V} {p q : P} :
+    s₁.shift p ∥ s₂.shift q ↔ s₁ = s₂ := by
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · apply Parallel.direction_eq at h
+    simpa using h
+  · rw [h]
+    exact shift_parallel
+
+end Submodule

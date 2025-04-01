@@ -318,58 +318,6 @@ theorem eq_iff_direction_eq_of_mem {s₁ s₂ : AffineSubspace k P} {p : P} (h�
     (h₂ : p ∈ s₂) : s₁ = s₂ ↔ s₁.direction = s₂.direction :=
   ⟨fun h => h ▸ rfl, fun h => ext_of_direction_eq h ⟨p, h₁, h₂⟩⟩
 
-/-- Construct an affine subspace from a point and a direction. -/
-def mk' (p : P) (direction : Submodule k V) : AffineSubspace k P where
-  carrier := { q | q -ᵥ p ∈ direction }
-  smul_vsub_vadd_mem c p₁ p₂ p₃ hp₁ hp₂ hp₃ := by
-    simpa [vadd_vsub_assoc] using
-      direction.add_mem (direction.smul_mem c (direction.sub_mem hp₁ hp₂)) hp₃
-
-@[simp]
-theorem mem_mk' (p q : P) (direction : Submodule k V) : q ∈ mk' p direction ↔ q -ᵥ p ∈ direction :=
-  Iff.rfl
-
-/-- An affine subspace constructed from a point and a direction contains that point. -/
-theorem self_mem_mk' (p : P) (direction : Submodule k V) : p ∈ mk' p direction := by
-  simp
-
-/-- An affine subspace constructed from a point and a direction contains the result of adding a
-vector in that direction to that point. -/
-theorem vadd_mem_mk' {v : V} (p : P) {direction : Submodule k V} (hv : v ∈ direction) :
-    v +ᵥ p ∈ mk' p direction := by
-  simpa
-
-/-- An affine subspace constructed from a point and a direction is nonempty. -/
-theorem mk'_nonempty (p : P) (direction : Submodule k V) : (mk' p direction : Set P).Nonempty :=
-  ⟨p, self_mem_mk' p direction⟩
-
-/-- The direction of an affine subspace constructed from a point and a direction. -/
-@[simp]
-theorem direction_mk' (p : P) (direction : Submodule k V) :
-    (mk' p direction).direction = direction := by
-  ext v
-  rw [mem_direction_iff_eq_vsub (mk'_nonempty _ _)]
-  constructor
-  · rintro ⟨p₁, hp₁, p₂, hp₂, rfl⟩
-    simpa using direction.sub_mem hp₁ hp₂
-  · exact fun hv => ⟨v +ᵥ p, vadd_mem_mk' _ hv, p, self_mem_mk' _ _, (vadd_vsub _ _).symm⟩
-
-/-- A point lies in an affine subspace constructed from another point and a direction if and only
-if their difference is in that direction. -/
-theorem mem_mk'_iff_vsub_mem {p₁ p₂ : P} {direction : Submodule k V} :
-    p₂ ∈ mk' p₁ direction ↔ p₂ -ᵥ p₁ ∈ direction := by
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · rw [← direction_mk' p₁ direction]
-    exact vsub_mem_direction h (self_mem_mk' _ _)
-  · rw [← vsub_vadd p₂ p₁]
-    exact vadd_mem_mk' p₁ h
-
-/-- Constructing an affine subspace from a point in a subspace and that subspace's direction
-yields the original subspace. -/
-@[simp]
-theorem mk'_eq {s : AffineSubspace k P} {p : P} (hp : p ∈ s) : mk' p s.direction = s :=
-  ext_of_direction_eq (direction_mk' p s.direction) ⟨p, Set.mem_inter (self_mem_mk' _ _) hp⟩
-
 /-- If an affine subspace contains a set of points, it contains the `spanPoints` of that set. -/
 theorem spanPoints_subset_coe_of_subset_coe {s : Set P} {s₁ : AffineSubspace k P} (h : s ⊆ s₁) :
     spanPoints k s ⊆ s₁ := by
@@ -396,6 +344,60 @@ theorem mem_toAffineSubspace {p : Submodule k V} {x : V} :
 @[simp]
 theorem toAffineSubspace_direction (s : Submodule k V) : s.toAffineSubspace.direction = s := by
   ext x; simp [← s.toAffineSubspace.vadd_mem_iff_mem_direction _ s.zero_mem]
+
+variable {k V P : Type*} [Ring k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+
+/-- Construct an affine subspace by shifting a linear subspace to a base point. -/
+def shift (p : P) (s : Submodule k V) : AffineSubspace k P where
+  carrier := { q | q -ᵥ p ∈ s }
+  smul_vsub_vadd_mem c p₁ p₂ p₃ hp₁ hp₂ hp₃ := by
+    simpa [vadd_vsub_assoc] using
+      add_mem (s.smul_mem c (s.sub_mem hp₁ hp₂)) hp₃
+
+variable (p q : P) (s : Submodule k V)
+
+/--
+A point lies in the shift of a linear subspace to a point if and only
+if the difference with that point is in that linear subspace.
+-/
+@[simp] theorem mem_shift : q ∈ s.shift p ↔ q -ᵥ p ∈ s :=
+  Iff.rfl
+
+/-- The shift of a linear subspace to a point contains that point. -/
+theorem self_mem_shift : p ∈ s.shift p := by
+  simp
+
+/--
+The shift of a linear subspace to a point contains the result of adding a
+vector in that linear subspace to that point.
+-/
+theorem vadd_mem_shift {v : V} {s : Submodule k V} (hv : v ∈ s) : v +ᵥ p ∈ s.shift p := by
+  simpa
+
+/-- The shift of a linear subspace to a point is nonempty. -/
+theorem shift_nonempty : (s.shift p : Set P).Nonempty :=
+  ⟨p, s.self_mem_shift p⟩
+
+instance : Nonempty (s.shift p) := (s.shift_nonempty p).to_subtype
+
+/-- The direction of the shift of a linear subspace to a point is that linear subspace. -/
+@[simp]
+theorem direction_shift : (s.shift p).direction = s := by
+  ext v
+  rw [AffineSubspace.mem_direction_iff_eq_vsub (shift_nonempty _ _)]
+  constructor
+  · rintro ⟨p₁, hp₁, p₂, hp₂, rfl⟩
+    simpa using s.sub_mem hp₁ hp₂
+  · exact fun hv => ⟨v +ᵥ p, vadd_mem_shift _ hv, p, self_mem_shift _ _, (vadd_vsub _ _).symm⟩
+
+/--
+The shift of the direction of an affine subspace to a point in that affine subspace is
+the same affine subspace.
+-/
+theorem shift_direction_eq_self {s : AffineSubspace k P} {p : P} (hp : p ∈ s) :
+    s.direction.shift p = s :=
+  AffineSubspace.ext_of_direction_eq (s.direction.direction_shift p)
+    ⟨p, Set.mem_inter (self_mem_shift _ _) hp⟩
 
 end Submodule
 
@@ -605,9 +607,28 @@ theorem top_coe : ((⊤ : AffineSubspace k P) : Set P) = Set.univ :=
 theorem mem_top (p : P) : p ∈ (⊤ : AffineSubspace k P) :=
   Set.mem_univ p
 
-@[simp] lemma mk'_top (p : P) : mk' p (⊤ : Submodule k V) = ⊤ := by
+end AffineSubspace
+
+namespace Submodule
+
+variable (k : Type*) (V : Type*) {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+  [AffineSpace V P]
+
+/-- The shift of the linear subspace `⊤` to a point is the affine subspace `⊤`. -/
+@[simp] lemma shift_top (p : P) : (⊤ : Submodule k V).shift p = ⊤ := by
   ext x
-  simp [mem_mk'_iff_vsub_mem]
+  simp
+
+@[simp] lemma shift_ne_bot (s : Submodule k V) (p : P) : s.shift p ≠ ⊥ := by
+  intro h
+  exact Set.not_nonempty_empty (h ▸ s.shift_nonempty p)
+
+end Submodule
+
+namespace AffineSubspace
+
+variable (k : Type*) (V : Type*) {P : Type*} [Ring k] [AddCommGroup V] [Module k V]
+  [S : AffineSpace V P]
 
 variable (P)
 
