@@ -222,8 +222,7 @@ lemma delete_delete_eq_delete_diff (M : Matroid α) (D₁ D₂ : Set α) :
   by simp
 
 instance delete_finitary (M : Matroid α) [Finitary M] (D : Set α) : Finitary (M ＼ D) := by
-  change Finitary (M ↾ (M.E \ D))
-  infer_instance
+  inferInstanceAs <| Finitary (M ↾ (M.E \ D))
 
 lemma Coindep.delete_isBase_iff (hD : M.Coindep D) :
     (M ＼ D).IsBase B ↔ M.IsBase B ∧ Disjoint B D := by
