@@ -233,6 +233,10 @@ lemma IsConj.symm (hσ : IsConj φ σ) :
 lemma isConj_symm : IsConj φ σ.symm ↔ IsConj φ σ :=
   ⟨IsConj.symm, IsConj.symm⟩
 
+lemma isConj_apply_apply (hσ : IsConj φ σ) (x : K) :
+    σ (σ x) = x := by
+  rw [← φ.injective.eq_iff, hσ.eq, hσ.eq, star_star]
+
 end NumberField.ComplexEmbedding
 
 section InfinitePlace
@@ -913,6 +917,15 @@ lemma not_isUnramified_iff_card_stabilizer_eq_two [IsGalois k K] :
     ¬ IsUnramified k w ↔ Nat.card (Stab w) = 2 := by
   rw [isUnramified_iff_card_stabilizer_eq_one]
   obtain (e|e) := nat_card_stabilizer_eq_one_or_two k w <;> rw [e] <;> decide
+
+lemma exists_isConj_of_not_isUnramified [IsGalois k K] {φ : K →+* ℂ} (h : ¬IsUnramified k (mk φ)) :
+    ∃ σ : K ≃ₐ[k] K, ComplexEmbedding.IsConj φ σ := by
+  rw [not_isUnramified_iff_card_stabilizer_eq_two, Nat.card_eq_two_iff] at h
+  obtain ⟨⟨x, hx⟩, ⟨y, hy⟩, h₁, -⟩ := h
+  rw [mem_stabilizer_mk_iff ] at hx hy
+  by_cases h : x = 1
+  · exact ⟨y, hy.resolve_left (by rwa [ne_eq, Subtype.mk_eq_mk.not, h, eq_comm] at h₁)⟩
+  · exact ⟨x, hx.resolve_left h⟩
 
 open scoped Classical in
 lemma card_stabilizer [IsGalois k K] :
