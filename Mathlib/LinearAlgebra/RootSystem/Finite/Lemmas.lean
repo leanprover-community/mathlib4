@@ -111,6 +111,25 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystallographic_of_isReduced
   have aux₂ : P.pairingIn ℤ i j * P.pairingIn ℤ j i ≠ 4 := P.coxeterWeightIn_ne_four ℤ h₁ h₂
   aesop
 
+variable {i j} in
+lemma pairingIn_pairingIn_mem_set_of_length_eq {B : P.InvariantForm}
+    (len_eq : B.form (P.root i) (P.root i) = B.form (P.root j) (P.root j)) :
+    (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
+      ({(0, 0), (1, 1), (-1, -1), (2, 2), (-2, -2)} : Set (ℤ × ℤ)) := by
+  replace len_eq : P.pairingIn ℤ i j = P.pairingIn ℤ j i := by
+    simp only [← (FaithfulSMul.algebraMap_injective ℤ R).eq_iff, algebraMap_pairingIn]
+    exact mul_right_cancel₀ (B.ne_zero j) (len_eq ▸ B.pairing_mul_eq_pairing_mul_swap j i)
+  have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
+  aesop
+
+variable {i j} in
+lemma pairingIn_pairingIn_mem_set_of_length_eq_of_ne [NoZeroSMulDivisors R M] {B : P.InvariantForm}
+    (len_eq : B.form (P.root i) (P.root i) = B.form (P.root j) (P.root j))
+    (ne : i ≠ j) (ne' : P.root i ≠ -P.root j) :
+    (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈ ({(0, 0), (1, 1), (-1, -1)} : Set (ℤ × ℤ)) := by
+  have := P.pairingIn_pairingIn_mem_set_of_length_eq len_eq
+  aesop
+
 lemma coxeterWeightIn_eq_zero_iff :
     P.coxeterWeightIn ℤ i j = 0 ↔ P.pairingIn ℤ i j = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ by rw [coxeterWeightIn, h, zero_mul]⟩
