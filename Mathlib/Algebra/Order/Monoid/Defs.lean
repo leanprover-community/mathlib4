@@ -82,11 +82,11 @@ instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCo
 end OrderedCancelCommMonoid
 
 /-- A linearly ordered additive commutative monoid. -/
-class LinearOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid α, LinearOrder α
+class LinearOrderedAddCommMonoid (α : Type*) extends OrderedAddCommMonoid α, LinearOrderedLattice α
 
 /-- A linearly ordered commutative monoid. -/
 @[to_additive]
-class LinearOrderedCommMonoid (α : Type*) extends OrderedCommMonoid α, LinearOrder α
+class LinearOrderedCommMonoid (α : Type*) extends OrderedCommMonoid α, LinearOrderedLattice α
 
 /-- A linearly ordered cancellative additive commutative monoid is an additive commutative monoid
 with a decidable linear order in which addition is cancellative and monotone. -/
