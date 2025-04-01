@@ -7,9 +7,9 @@ import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Metrizable.Real
 
 /-!
-# Order properties of extended non-negative reals
+# Limsup of reals
 
-This file compiles filter-related results about `ℝ≥0∞` (see Data/Real/ENNReal.lean).
+This file compiles filter-related results about `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 -/
 
 
@@ -61,7 +61,7 @@ variable {ι : Type*} {f : Filter ι} {u : ι → ℝ≥0}
 
 @[simp, norm_cast] lemma isBoundedUnder_le_toReal :
     IsBoundedUnder (· ≤ ·) f (fun i ↦ (u i : ℝ)) ↔ IsBoundedUnder (· ≤ ·) f u := by
-  simp [IsBoundedUnder, IsBounded, ← NNReal.coe_le_coe, NNReal.forall, NNReal.exists]
+  simp only [IsBoundedUnder, IsBounded, eventually_map, ← coe_le_coe, NNReal.exists, coe_mk]
   constructor
   · rintro ⟨b, hb⟩
     exact ⟨b.toNNReal, by simp, by filter_upwards [hb]; simp +contextual⟩
@@ -70,7 +70,7 @@ variable {ι : Type*} {f : Filter ι} {u : ι → ℝ≥0}
 
 @[simp, norm_cast] lemma isBoundedUnder_ge_toReal :
     IsBoundedUnder (· ≥ ·) f (fun i ↦ (u i : ℝ)) ↔ IsBoundedUnder (· ≥ ·) f u := by
-  simp [IsBoundedUnder, IsBounded, ← NNReal.coe_le_coe, NNReal.forall, NNReal.exists]
+  simp only [IsBoundedUnder, IsBounded, eventually_map, ← coe_le_coe, NNReal.exists, coe_mk]
   constructor
   · rintro ⟨b, hb⟩
     exact ⟨b.toNNReal, by simp, by simpa⟩
@@ -79,7 +79,8 @@ variable {ι : Type*} {f : Filter ι} {u : ι → ℝ≥0}
 
 @[simp, norm_cast] lemma isCoboundedUnder_le_toReal [f.NeBot] :
     IsCoboundedUnder (· ≤ ·) f (fun i ↦ (u i : ℝ)) ↔ IsCoboundedUnder (· ≤ ·) f u := by
-  simp [IsCoboundedUnder, IsCobounded, ← NNReal.coe_le_coe, NNReal.forall, NNReal.exists]
+  simp only [IsCoboundedUnder, IsCobounded, eventually_map, ← coe_le_coe, NNReal.forall,
+    NNReal.exists]
   constructor
   · rintro ⟨b, hb⟩
     exact ⟨b.toNNReal, by simp, fun x _ ↦ by simpa [*] using hb _⟩
@@ -88,7 +89,8 @@ variable {ι : Type*} {f : Filter ι} {u : ι → ℝ≥0}
 
 @[simp, norm_cast] lemma isCoboundedUnder_ge_toReal :
     IsCoboundedUnder (· ≥ ·) f (fun i ↦ (u i : ℝ)) ↔ IsCoboundedUnder (· ≥ ·) f u := by
-  simp [IsCoboundedUnder, IsCobounded, ← NNReal.coe_le_coe, NNReal.forall, NNReal.exists]
+  simp only [IsCoboundedUnder, IsCobounded, eventually_map, ← coe_le_coe, NNReal.forall,
+    NNReal.exists]
   constructor
   · rintro ⟨b, hb⟩
     exact ⟨b, hb _ (by simp), fun x _ ↦ hb _⟩
