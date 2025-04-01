@@ -280,8 +280,8 @@ A Quadratic extension is normal.
 -/
 theorem normal_of_rank_eq_two (F K : Type*) [Field F] [Field K] [Algebra F K]
     (h : Module.finrank F K = 2) :
-    Normal F K :=
-{ toIsAlgebraic := by
+    Normal F K where
+  toIsAlgebraic := by
     have : Module.Finite F K := Module.finite_of_finrank_eq_succ h
     exact Algebra.IsAlgebraic.of_finite F K
   splits' := by
@@ -289,4 +289,4 @@ theorem normal_of_rank_eq_two (F K : Type*) [Field F] [Field K] [Algebra F K]
     intro x
     obtain h | h := le_iff_lt_or_eq.mp (h ▸ minpoly.natDegree_le x)
     · exact splits_of_natDegree_le_one _ (by rwa [Nat.le_iff_lt_add_one])
-    · exact splits_of_degree_two _ h (minpoly.aeval F x) }
+    · exact splits_of_natDegree_eq_two _ h (minpoly.aeval F x)
