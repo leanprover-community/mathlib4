@@ -77,7 +77,7 @@ theorem trdeg_eq_zero [Algebra.IsAlgebraic R A] : trdeg R A = 0 :=
   bot_unique <| ciSup_le' fun s ↦ have := s.2.isEmpty_of_isAlgebraic; (Cardinal.mk_eq_zero _).le
 
 variable (R A) in
-theorem zero_lt_trdeg [Algebra.Transcendental R A] : 0 < trdeg R A :=
+theorem trdeg_pos [Algebra.Transcendental R A] : 0 < trdeg R A :=
   have ⟨x, hx⟩ := Algebra.Transcendental.transcendental (R := R) (A := A)
   zero_lt_one.trans_le <| le_ciSup_of_le (Cardinal.bddAbove_range _)
     ⟨{x}, algebraicIndependent_unique_type_iff.mpr hx⟩ (by simp)
@@ -87,7 +87,7 @@ theorem trdeg_eq_zero_iff : trdeg R A = 0 ↔ Algebra.IsAlgebraic R A := by
   · exact iff_of_true trdeg_eq_zero h
   rw [← not_iff_not]
   rw [← Algebra.transcendental_iff_not_isAlgebraic] at h ⊢
-  exact iff_of_true (zero_lt_trdeg R A).ne' h
+  exact iff_of_true (trdeg_pos R A).ne' h
 
 theorem trdeg_ne_zero_iff : trdeg R A ≠ 0 ↔ Algebra.Transcendental R A := by
   rw [Algebra.transcendental_iff_not_isAlgebraic, Ne, trdeg_eq_zero_iff]
@@ -175,7 +175,7 @@ theorem sumElim_iff {ι'} {y : ι' → A} : AlgebraicIndependent R (Sum.elim y x
 
 theorem iff_adjoin_image (s : Set ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun i : s ↦ x i) ∧
-      AlgebraicIndependent (adjoin R (x '' s)) fun i : ↥sᶜ ↦ x i := by
+      AlgebraicIndepOn (adjoin R (x '' s)) x sᶜ := by
   rw [show x '' s = range fun i : s ↦ x i by ext; simp]
   convert ← sumElim_iff
   classical apply algebraicIndependent_equiv' ((Equiv.sumComm ..).trans (Equiv.Set.sumCompl ..))
@@ -183,8 +183,8 @@ theorem iff_adjoin_image (s : Set ι) :
 
 theorem iff_adjoin_image_compl (s : Set ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun i : ↥sᶜ ↦ x i) ∧
-      AlgebraicIndependent (adjoin R (x '' sᶜ)) fun i : s ↦ x i := by
-  convert ← iff_adjoin_image _ <;> apply compl_compl
+      AlgebraicIndepOn (adjoin R (x '' sᶜ)) x s := by
+  convert ← iff_adjoin_image _; apply compl_compl
 
 theorem iff_transcendental_adjoin_image (i : ι) :
     AlgebraicIndependent R x ↔ AlgebraicIndependent R (fun j : {j // j ≠ i} ↦ x j) ∧
@@ -240,12 +240,9 @@ theorem transcendental_adjoin_iff [Nontrivial A] {s : Set ι} {i : ι} :
 end AlgebraicIndependent
 
 open Cardinal in
-theorem lift_trdeg_add_le [Nontrivial R]
-    (hRS : Injective (algebraMap R S)) (hSA : Injective (algebraMap S A)) :
+theorem lift_trdeg_add_le [Nontrivial R] [FaithfulSMul R S] [FaithfulSMul S A] :
     lift.{v} (trdeg R S) + lift.{u} (trdeg S A) ≤ lift.{u} (trdeg R A) := by
   simp_rw [trdeg, lift_iSup (bddAbove_range _)]
-  have := hRS.nonempty_algebraicIndependent
-  have := hSA.nonempty_algebraicIndependent
   simp_rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _),
     add_comm (lift.{v, u} _), ← mk_sum]
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
@@ -254,10 +251,10 @@ theorem lift_trdeg_add_le [Nontrivial R]
   rw [← lift_umax, mk_range_eq_of_injective this.injective, lift_id']
 
 theorem trdeg_add_le [Nontrivial R] {A : Type u} [CommRing A] [Algebra R A] [Algebra S A]
-    [IsScalarTower R S A] (hRS : Injective (algebraMap R S)) (hSA : Injective (algebraMap S A)) :
+    [FaithfulSMul R S] [FaithfulSMul S A] [IsScalarTower R S A] :
     trdeg R S + trdeg S A ≤ trdeg R A := by
   rw [← (trdeg R S).lift_id, ← (trdeg S A).lift_id, ← (trdeg R A).lift_id]
-  exact lift_trdeg_add_le hRS hSA
+  exact lift_trdeg_add_le
 
 /-- If for each `i : ι`, `f_i : R[X]` is transcendental over `R`, then `{f_i(X_i) | i : ι}`
 in `MvPolynomial ι R` is algebraically independent over `R`. -/

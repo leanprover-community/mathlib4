@@ -38,7 +38,7 @@ variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
 variable (R A) in
 /-- The transcendence degree of a commutative algebra `A` over a commutative ring `R` is
 defined to be the maximal cardinality of an `R`-algebraically independent set in `A`. -/
-@[stacks 030G] def Algebra.trdeg : Cardinal :=
+@[stacks 030G] def Algebra.trdeg : Cardinal.{v} :=
   ⨆ ι : { s : Set A // AlgebraicIndepOn R _root_.id s }, Cardinal.mk ι.1
 
 theorem algebraicIndependent_iff_ker_eq_bot :
@@ -51,9 +51,8 @@ theorem algebraicIndependent_empty_type_iff [IsEmpty ι] :
     AlgebraicIndependent R x ↔ Injective (algebraMap R A) := by
   rw [algebraicIndependent_iff_injective_aeval, MvPolynomial.aeval_injective_iff_of_isEmpty]
 
-theorem Function.Injective.nonempty_algebraicIndependent (inj : Injective (algebraMap R A)) :
-    Nonempty { s : Set A // AlgebraicIndepOn R id s } :=
-  ⟨∅, algebraicIndependent_empty_type_iff.mpr inj⟩
+instance [FaithfulSMul R A] : Nonempty { s : Set A // AlgebraicIndepOn R id s } :=
+  ⟨∅, algebraicIndependent_empty_type_iff.mpr <| FaithfulSMul.algebraMap_injective R A⟩
 
 namespace AlgebraicIndependent
 

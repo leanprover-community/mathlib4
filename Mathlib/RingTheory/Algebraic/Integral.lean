@@ -376,7 +376,8 @@ theorem IsAlgebraic.adjoin_of_forall_isAlgebraic [NoZeroDivisors S] {s t : Set S
     (T := Rts.restrictScalars R) <| adjoin_le <| by apply subset_adjoin).toAlgebra
   have : IsScalarTower Rs Rts A := .of_algebraMap_eq fun ⟨a, _⟩ ↦ rfl
   have : Algebra.IsAlgebraic Rt Rts := by
-    have := ha.nontrivial; have := Subtype.val_injective (p := (· ∈ Rs)).nontrivial
+    have := ha.nontrivial
+    have := Subtype.val_injective (p := (· ∈ Rs)).nontrivial
     have := (isDomain_iff_noZeroDivisors_and_nontrivial Rt).mpr ⟨inferInstance, inferInstance⟩
     rw [← Subalgebra.isAlgebraic_iff, isAlgebraic_adjoin_iff]
     intro x hs
