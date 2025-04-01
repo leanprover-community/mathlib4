@@ -48,12 +48,7 @@ variable {σ : Type*}
 
 open WithPiTopology
 
-/-- In this file, rings are given the discrete uniformity -/
-local instance localInstanceUniformSpace_bot : UniformSpace S := ⊥
-
-local instance : ContinuousSMul R S := DiscreteTopology.instContinuousSMul R S
-
-local instance : ContinuousSMul R (MvPowerSeries τ S) := IsScalarTower.continuousSMul S
+attribute [local instance] DiscreteTopology.instContinuousSMul
 
 /-- Families of power series which can be substituted -/
 structure HasSubst (a : σ → MvPowerSeries τ S) : Prop where
@@ -62,20 +57,19 @@ structure HasSubst (a : σ → MvPowerSeries τ S) : Prop where
 
 variable {a : σ → MvPowerSeries τ S}
 
-lemma coeff_zero_iff :
-    Filter.Tendsto a Filter.cofinite (@nhds _ (@instTopologicalSpace τ S ⊥) 0) ↔
+lemma coeff_zero_iff [TopologicalSpace S] [DiscreteTopology S] :
+    Filter.Tendsto a Filter.cofinite (nhds 0) ↔
       ∀ d : τ →₀ ℕ, {s | (a s).coeff S d ≠ 0}.Finite := by
   simp_rw [tendsto_iff_coeff_tendsto, coeff_zero]
   apply forall_congr'
-  intro d
   simp [nhds_discrete]
 
 /-- A multivariate power series can be substituted if and only if
 it can be evaluated when the topology on the coefficients of its coefficients
 is the discrete topology. -/
 /- We make the arguments of `HasEval` explicit to be sure that Lean infers the correct topology. -/
-lemma hasSubst_iff_hasEval_of_discreteTopology :
-    HasSubst a ↔ @HasEval σ _ _ (@instTopologicalSpace τ S ⊥) a :=
+lemma hasSubst_iff_hasEval_of_discreteTopology [TopologicalSpace S] [DiscreteTopology S] :
+    HasSubst a ↔ HasEval a :=
   ⟨fun ha ↦
     {
       hpow s := (tendsto_pow_of_constantCoeff_nilpotent_iff (a s)).mpr (ha.const_coeff s)
@@ -85,34 +79,32 @@ lemma hasSubst_iff_hasEval_of_discreteTopology :
       const_coeff s := (tendsto_pow_of_constantCoeff_nilpotent_iff (a s)).mp (ha.hpow s)
       coeff_zero d := (coeff_zero_iff.mp ha.tendsto_zero) d }⟩
 
-theorem HasSubst.hasEval (ha : HasSubst a) :
-    @HasEval σ (MvPowerSeries τ S) _ (@instTopologicalSpace τ S ⊥) a :=
+theorem HasSubst.hasEval [TopologicalSpace S] [DiscreteTopology S] (ha : HasSubst a) :
+    HasEval a :=
   hasSubst_iff_hasEval_of_discreteTopology.mp ha
 
 theorem hasSubst_X :
     HasSubst (fun (s : σ) ↦ (X s : MvPowerSeries σ S)) := by
+  letI : UniformSpace S := ⊥
   rw [hasSubst_iff_hasEval_of_discreteTopology]
   exact HasEval.X
 
 theorem hasSubst_zero :
     HasSubst (fun (_ : σ) ↦ (0 : MvPowerSeries τ S)) := by
+  letI : UniformSpace S := ⊥
   rw [hasSubst_iff_hasEval_of_discreteTopology]
   exact HasEval.zero
 
 theorem hasSubst_add {a b : σ → MvPowerSeries τ S}
     (ha : HasSubst a) (hb : HasSubst b) :
     HasSubst (a + b) := by
+  letI : UniformSpace S := ⊥
   rw [hasSubst_iff_hasEval_of_discreteTopology] at ha hb ⊢
   exact HasEval.add ha hb
 
-@[simp]
-theorem constantCoeff_smul {R : Type*} [Semiring R] {S : Type*} [Semiring S] [Module R S]
-    (φ : MvPowerSeries σ S) (a : R) :
-    constantCoeff σ S (a • φ) = a • constantCoeff σ S φ :=
-  rfl
-
 theorem hasSubst_mul (b : σ → MvPowerSeries τ S)
     {a : σ → MvPowerSeries τ S} (ha : HasSubst a) : HasSubst (b * a) := by
+  letI : UniformSpace S := ⊥
   rw [hasSubst_iff_hasEval_of_discreteTopology] at ha ⊢
   exact HasEval.mul_left b ha
 
@@ -142,52 +134,79 @@ theorem hasSubst_of_constantCoeff_zero [Finite σ]
 /-- Substitution of power series into a power series -/
 noncomputable def subst (a : σ → MvPowerSeries τ S) (f : MvPowerSeries σ R) :
     MvPowerSeries τ S :=
-  MvPowerSeries.eval₂ (algebraMap _ _) a f
+  letI : UniformSpace R := ⊥
+  letI : UniformSpace S := ⊥
+  eval₂ (algebraMap _ _) a f
+
+theorem subst_eq_eval₂
+    [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S] :
+    (subst : (σ → MvPowerSeries τ S) → (MvPowerSeries σ R) → _) = eval₂ (algebraMap _ _) := by
+  ext; simp only [subst, DiscreteUniformity.eq_bot]
+
+theorem subst_coe (p : MvPolynomial σ R) :
+    subst (R := R) a p = MvPolynomial.aeval a p := by
+  letI : UniformSpace R := ⊥
+  letI : UniformSpace S := ⊥
+  rw [subst_eq_eval₂, eval₂_coe, MvPolynomial.aeval_def]
 
 variable {a : σ → MvPowerSeries τ S}
 
 /-- Substitution of power series into a power series -/
-noncomputable def substAlgHom (ha : HasSubst a) :
-    MvPowerSeries σ R →ₐ[R] MvPowerSeries τ S :=
+noncomputable def substAlgHom (ha : HasSubst a) : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ S :=
+  letI : UniformSpace R := ⊥
+  letI : UniformSpace S := ⊥
   MvPowerSeries.aeval ha.hasEval
 
+theorem substAlgHom_eq_aeval
+    [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
+    (ha : HasSubst a) :
+    (substAlgHom ha : MvPowerSeries σ R → MvPowerSeries τ S) = MvPowerSeries.aeval ha.hasEval := by
+  simp only [substAlgHom, coe_aeval ha.hasEval, DiscreteUniformity.eq_bot]
+  convert coe_aeval _
+
 @[simp]
-theorem coe_substAlgHom (ha : HasSubst a) :
-    ⇑(substAlgHom ha) = subst (R := R) a :=
-  coe_aeval ha.hasEval
+theorem coe_substAlgHom (ha : HasSubst a) : ⇑(substAlgHom ha) = subst (R := R) a := by
+  letI : UniformSpace R := ⊥
+  letI : UniformSpace S := ⊥
+  rw [substAlgHom_eq_aeval, coe_aeval ha.hasEval]
+  rfl
 
 theorem subst_add (ha : HasSubst a) (f g : MvPowerSeries σ R) :
     subst a (f + g) = subst a f + subst a g := by
+  letI : UniformSpace R := ⊥
+  letI : UniformSpace S := ⊥
   rw [← coe_substAlgHom ha, map_add]
 
 theorem subst_mul (ha : HasSubst a) (f g : MvPowerSeries σ R) :
     subst a (f * g) = subst a f * subst a g := by
+  letI : UniformSpace R := ⊥
+  letI : UniformSpace S := ⊥
   rw [← coe_substAlgHom ha, map_mul]
 
 theorem subst_pow (ha : HasSubst a) (f : MvPowerSeries σ R) (n : ℕ) :
     subst a (f ^ n) = (subst a f ) ^ n := by
+  letI : UniformSpace R := ⊥
+  letI : UniformSpace S := ⊥
   rw [← coe_substAlgHom ha, map_pow]
 
 theorem subst_smul (ha : HasSubst a) (r : A) (f : MvPowerSeries σ R) :
     subst a (r • f) = r • (subst a f) := by
+  letI : UniformSpace R := ⊥
+  letI : UniformSpace S := ⊥
   rw [← coe_substAlgHom ha, AlgHom.map_smul_of_tower]
 
 theorem substAlgHom_coe (ha : HasSubst a) (p : MvPolynomial σ R) :
-    substAlgHom (R := R) ha p = MvPolynomial.aeval a p :=
-  aeval_coe ha.hasEval p
+    substAlgHom (R := R) ha p = MvPolynomial.aeval a p := by
+  simp only [substAlgHom, aeval_coe]
 
 theorem substAlgHom_X (ha : HasSubst a) (s : σ) :
     substAlgHom (R := R) ha (X s) = a s := by
-  rw [← MvPolynomial.coe_X, substAlgHom_coe, MvPolynomial.aeval_X]
+  rw [← MvPolynomial.coe_X, substAlgHom_coe ha, MvPolynomial.aeval_X]
 
 theorem substAlgHom_monomial (ha : HasSubst a) (e : σ →₀ ℕ) (r : R) :
     substAlgHom ha (monomial R e r) =
       (algebraMap R (MvPowerSeries τ S) r) * (e.prod (fun s n ↦ (a s) ^ n)) := by
   rw [← MvPolynomial.coe_monomial, substAlgHom_coe, MvPolynomial.aeval_monomial]
-
-theorem subst_coe (ha : HasSubst a) (p : MvPolynomial σ R) :
-    subst (R := R) a p = MvPolynomial.aeval a p := by
-  rw [← coe_substAlgHom ha, substAlgHom_coe]
 
 theorem subst_X (ha : HasSubst a) (s : σ) :
     subst (R := R) a (X s) = a s := by
@@ -198,18 +217,26 @@ theorem subst_monomial (ha : HasSubst a) (e : σ →₀ ℕ) (r : R) :
       (algebraMap R (MvPowerSeries τ S) r) * (e.prod (fun s n ↦ (a s) ^ n)) := by
   rw [← coe_substAlgHom ha, substAlgHom_monomial]
 
-theorem continuous_subst (ha : HasSubst a) :
-    @Continuous _ _ (@instTopologicalSpace σ R ⊥) (@instTopologicalSpace τ S ⊥) (subst a) :=
-  continuous_eval₂ (continuous_algebraMap _ _) ha.hasEval
+theorem continuous_subst
+    (ha : HasSubst a)
+    [UniformSpace R] [DiscreteUniformity R]
+    [UniformSpace S] [DiscreteUniformity S] :
+    Continuous (subst a : MvPowerSeries σ R → MvPowerSeries τ S) := by
+  rw [subst_eq_eval₂]
+  exact continuous_eval₂ (continuous_algebraMap _ _) ha.hasEval
 
 theorem coeff_subst_finite (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
     Set.Finite (fun d ↦ (coeff R d f) • (coeff S e (d.prod fun s e => (a s) ^ e))).support :=
+  letI : UniformSpace R := ⊥
+  letI : UniformSpace S := ⊥
   Summable.finite_support_of_discreteTopology _
     ((hasSum_aeval ha.hasEval f).map (coeff S e) (continuous_coeff S e)).summable
 
 theorem coeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
     coeff S e (subst a f) =
       finsum (fun d ↦ (coeff R d f) • (coeff S e (d.prod fun s e => (a s) ^ e))) := by
+  letI : UniformSpace R := ⊥
+  letI : UniformSpace S := ⊥
   have := ((hasSum_aeval ha.hasEval f).map (coeff S e) (continuous_coeff S e))
   erw [← coe_substAlgHom ha, ← this.tsum_eq, tsum_def]
   erw [dif_pos this.summable, if_pos (coeff_subst_finite ha f e)]
@@ -235,29 +262,34 @@ variable
     [IsUniformAddGroup T] [IsTopologicalRing T] [IsLinearTopology T T] [Algebra R T]
     {ε : MvPowerSeries τ S →ₐ[R] T}
 
-local instance : ContinuousSMul R T := DiscreteTopology.instContinuousSMul R T
+theorem comp_substAlgHom
+    [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
+    (ha : HasSubst a) (hε : Continuous ε) :
+    ε.comp (substAlgHom ha) = aeval (ha.hasEval.map hε) := by
+  ext f
+  simp only [AlgHom.coe_comp, substAlgHom_eq_aeval ha]
+  exact DFunLike.congr_fun (comp_aeval ha.hasEval hε) f
 
-theorem comp_substAlgHom (ha : HasSubst a)
-    (hε : @Continuous _ _ (@instTopologicalSpace _ _ ⊥) _ ε) :
-      ε.comp (substAlgHom ha) = aeval (ha.hasEval.map hε) :=
-  comp_aeval ha.hasEval hε
-
-theorem comp_subst (ha : HasSubst a) (hε : @Continuous _ _ (@instTopologicalSpace _ _ ⊥) _ ε) :
-    ε ∘ (subst a) = aeval (R := R) (HasEval.map hε ha.hasEval)) := by
+theorem comp_subst [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
+    (ha : HasSubst a) (hε : Continuous ε) :
+    ε ∘ (subst a) = aeval (R := R) (ha.hasEval.map hε) := by
   rw [← comp_substAlgHom ha hε, AlgHom.coe_comp, coe_substAlgHom]
 
-theorem comp_subst_apply (ha : HasSubst a) (hε : @Continuous _ _ (@instTopologicalSpace _ _ ⊥) _ ε)
-    (f : MvPowerSeries σ R) :
-    ε (subst a f) = aeval (R := R) (HasEval.map hε ha.hasEval) f :=
+theorem comp_subst_apply
+    [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
+    (ha : HasSubst a) (hε : Continuous ε) (f : MvPowerSeries σ R) :
+    ε (subst a f) = aeval (R := R) (ha.hasEval.map hε) f :=
   congr_fun (comp_subst ha hε) f
 
 variable [Algebra S T] [IsScalarTower R S T]
 
-theorem eval₂_subst (ha : HasSubst a) {b : τ → T} (hb : HasEval b) (f : MvPowerSeries σ R) :
+theorem eval₂_subst
+    [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
+    (ha : HasSubst a) {b : τ → T} (hb : HasEval b) (f : MvPowerSeries σ R) :
     eval₂ (algebraMap S T) b (subst a f) =
       eval₂ (algebraMap R T) (fun s ↦ eval₂ (algebraMap S T) b (a s)) f := by
   let ε : MvPowerSeries τ S →ₐ[R] T := (aeval hb).restrictScalars R
-  have hε : @Continuous _ _ (@instTopologicalSpace _ _ ⊥) _ ε := continuous_aeval hb
+  have hε : Continuous ε := continuous_aeval hb
   simpa only [AlgHom.coe_restrictScalars', AlgHom.toRingHom_eq_coe,
     AlgHom.coe_restrictScalars, RingHom.coe_coe, ε, coe_aeval]
     using comp_subst_apply ha hε f
@@ -296,6 +328,8 @@ theorem HasSubst.comp (ha : HasSubst a) (hb : HasSubst b) :
     HasSubst (fun s ↦ substAlgHom hb (a s)) where
   const_coeff s := IsNilpotent_subst hb (ha.const_coeff s)
   coeff_zero := by
+    letI : UniformSpace S := ⊥
+    letI : UniformSpace T := ⊥
     rw [← coeff_zero_iff]
     apply Filter.Tendsto.comp _ (ha.hasEval.tendsto_zero)
     simp only [← map_zero (substAlgHom (R := S) hb), coe_substAlgHom]
@@ -303,8 +337,10 @@ theorem HasSubst.comp (ha : HasSubst a) (hb : HasSubst b) :
 
 theorem substAlgHom_comp_substAlgHom (ha : HasSubst a) (hb : HasSubst b) :
     ((substAlgHom hb).restrictScalars R).comp (substAlgHom ha) = substAlgHom (ha.comp hb) := by
-  apply comp_aeval (R := R) (ε := (substAlgHom hb).restrictScalars R)
-    ha.hasEval
+  letI : UniformSpace R := ⊥
+  letI : UniformSpace S := ⊥
+  letI : UniformSpace T := ⊥
+  apply comp_aeval (R := R) (ε := (substAlgHom hb).restrictScalars R) ha.hasEval
   simp only [AlgHom.coe_restrictScalars', coe_substAlgHom]
   exact (continuous_subst (R := S) hb)
 

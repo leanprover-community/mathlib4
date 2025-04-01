@@ -128,7 +128,9 @@ theorem continuous_C [Semiring R] :
   · exact tendsto_const_nhds
 
 /-- Scalar multiplication on `MvPowerSeries` is continous -/
-instance [Semiring R] [IsTopologicalSemiring R] : ContinuousSMul R (MvPowerSeries σ R) :=
+instance {S : Type*} [Semiring S] [TopologicalSpace S]
+    [CommSemiring R] [Algebra R S] [ContinuousSMul R S] :
+    ContinuousSMul R (MvPowerSeries σ S) :=
   instContinuousSMulForall
 
 theorem variables_tendsto_zero [Semiring R] :
