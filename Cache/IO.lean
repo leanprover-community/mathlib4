@@ -373,10 +373,13 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
     /-
     TODO: The case distinction below could be avoided by making use of the `leantar` option `-C`
     (rsp the `"base"` field in JSON format, see below) here and in `packCache`.
+
     See also https://github.com/leanprover-community/mathlib4/pull/8767#discussion_r1422077498
+
     Doing this, one could avoid that the package directory path (for dependencies) appears
     inside the leantar files, but unless `cache` is upstreamed to work on upstream packages
     themselves (without `Mathlib`), this might not be too useful to change.
+
     NOTE: making changes to the generated .ltar files invalidates them while it *DOES NOT* change
     the file hash! This means any such change needs to be accompanied by a change
     to the root hash affecting *ALL* files
