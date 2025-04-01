@@ -215,7 +215,6 @@ theorem substAlgHom_coe (ha : HasSubst a) (p : MvPolynomial σ R) :
     substAlgHom (R := R) ha p = MvPolynomial.aeval a p := by
   simp [substAlgHom]
 
-@[simp]
 theorem substAlgHom_X (ha : HasSubst a) (s : σ) :
     substAlgHom (R := R) ha (X s) = a s := by
   rw [← MvPolynomial.coe_X, substAlgHom_coe ha, MvPolynomial.aeval_X]
