@@ -71,6 +71,14 @@ def rightOp {F : Cᵒᵖ ⥤ D} {G : Dᵒᵖ ⥤ C} (a : F.rightOp ⊣ G) : G.ri
   left_triangle_components X := congr($(a.right_triangle_components (.op X)).op)
   right_triangle_components X := congr($(a.left_triangle_components X.unop).unop)
 
+lemma leftOp_def {F : C ⥤ Dᵒᵖ} {G : D ⥤ Cᵒᵖ} (a : F ⊣ G.leftOp) :
+    a.leftOp = (opOpEquivalence D).symm.toAdjunction.comp a.op := by
+  ext X; simp [Equivalence.unit]
+
+lemma rightOp_def {F : Cᵒᵖ ⥤ D} {G : Dᵒᵖ ⥤ C} (a : F.rightOp ⊣ G) :
+    a.rightOp = (opOpEquivalence D).symm.toAdjunction.comp a.op := by
+  ext X; simp [Equivalence.unit]
+
 /-- If `F` and `F'` are both adjoint to `G`, there is a natural isomorphism
 `F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda`.
 We use this in combination with `fullyFaithfulCancelRight` to show left adjoints are unique.
