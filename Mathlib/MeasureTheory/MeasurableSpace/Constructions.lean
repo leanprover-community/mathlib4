@@ -18,6 +18,8 @@ This file provides several ways to construct new measurable spaces and functions
 `Quotient`, `Subtype`, `Prod`, `Pi`, etc.
 -/
 
+assert_not_exists Filter
+
 open Set Function
 
 universe uι
