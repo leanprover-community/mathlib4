@@ -614,10 +614,8 @@ lemma Hom.support_ker (f : X.Hom Y) [QuasiCompact f] :
 @[simps]
 def kerFunctor (Y : Scheme.{u}) : (Over Y)ᵒᵖ ⥤ IdealSheafData Y where
   obj f := f.unop.hom.ker
-  map {f g} hfg := homOfLE <| by
-      simp only [Functor.id_obj, Functor.const_obj_obj, OrderDual.toDual_le_toDual]
-      rw [← Over.w hfg.unop]
-      exact f.unop.hom.le_ker_comp _
+  map {f g} hfg := homOfLE <| by simpa only [Functor.id_obj, Functor.const_obj_obj,
+    OrderDual.toDual_le_toDual, ← Over.w hfg.unop] using f.unop.hom.le_ker_comp _
   map_id _ := Subsingleton.elim _ _
   map_comp _ _ := Subsingleton.elim _ _
 
@@ -1103,15 +1101,12 @@ lemma subschemeι_app (U : X.affineOpens) : I.subschemeι.app U =
   have := I.subschemeCover_map_subschemeι U
   simp only [glueDataObjι, Category.assoc, IsAffineOpen.isoSpec_inv_ι] at this
   replace this := Scheme.congr_app this U
-  simp only [comp_coeBase, TopologicalSpace.Opens.map_comp_obj, comp_app, eqToHom_op,
-    Category.assoc] at this
-  rw [IsAffineOpen.fromSpec_app_self] at this
-  simp only [Category.assoc, Hom.naturality_assoc, TopologicalSpace.Opens.map_top,
-    Quiver.Hom.unop_op, ← ΓSpecIso_inv_naturality_assoc] at this
+  simp only [comp_coeBase, TopologicalSpace.Opens.map_comp_obj, comp_app,
+    IsAffineOpen.fromSpec_app_self, eqToHom_op, Category.assoc, Hom.naturality_assoc,
+    TopologicalSpace.Opens.map_top, ← ΓSpecIso_inv_naturality_assoc] at this
   simp_rw [← Category.assoc, ← IsIso.comp_inv_eq] at this
-  rw [← this]
-  simp only [← Functor.map_inv, inv_eqToHom, Category.assoc, ← Functor.map_comp, IsIso.Iso.inv_inv,
-    eqToHom_op, Iso.hom_inv_id_assoc, Hom.appIso_inv_naturality_assoc, Functor.op_obj,
+  simp only [← this, ← Functor.map_inv, inv_eqToHom, Category.assoc, ← Functor.map_comp, eqToHom_op,
+    IsIso.Iso.inv_inv, Iso.hom_inv_id_assoc, Hom.appIso_inv_naturality_assoc, Functor.op_obj,
     Functor.op_map, unop_comp, unop_inv, Quiver.Hom.unop_op, eqToHom_unop, Hom.app_appIso_inv_assoc,
     TopologicalSpace.Opens.carrier_eq_coe, TopologicalSpace.Opens.map_coe, homOfLE_leOfHom]
   convert (Category.comp_id _).symm
@@ -1163,8 +1158,8 @@ def inclusion {I J : IdealSheafData X} (h : I ≤ J) :
   (by
     intro U V
     rw [← cancel_mono I.subschemeι]
-    simp only [AffineOpenCover.openCover_obj, AffineOpenCover.openCover_map, Category.assoc,
-      subschemeCover_map_subschemeι, glueDataObjHom_ι_assoc]
+    simp only [← cancel_mono I.subschemeι, AffineOpenCover.openCover_obj, glueDataObjHom_ι_assoc,
+      AffineOpenCover.openCover_map, Category.assoc, subschemeCover_map_subschemeι]
     rw [← subschemeCover_map_subschemeι, pullback.condition_assoc, subschemeCover_map_subschemeι])
 
 @[reassoc (attr := simp)]

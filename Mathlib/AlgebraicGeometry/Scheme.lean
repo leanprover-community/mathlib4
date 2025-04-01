@@ -359,10 +359,7 @@ def Hom.copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X
   prop x := by
     subst h
     convert f.prop x using 4
-    convert Category.comp_id f.c
-    ext
-    simp
-    rfl
+    aesop_cat
 
 lemma Hom.copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) :
     f.copyBase g h = f := by
@@ -370,10 +367,7 @@ lemma Hom.copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g
   obtain ⟨⟨⟨f₁, f₂⟩, f₃⟩, f₄⟩ := f
   simp only [Hom.copyBase, LocallyRingedSpace.Hom.toShHom_mk]
   congr
-  convert Category.comp_id _
-  ext
-  simp
-  rfl
+  aesop_cat
 
 end Scheme
 
