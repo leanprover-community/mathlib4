@@ -466,7 +466,7 @@ theorem dvd_mul_gcd_iff_dvd_mul [GCDMonoid α] {m n k : α} : k ∣ m * gcd k n 
 
 Note: In general, this representation is highly non-unique.
 
-See `Nat.prodDvdAndDvdOfDvdProd` for a constructive version on `ℕ`. -/
+See `Nat.dvdProdDvdOfDvdProd` for a constructive version on `ℕ`. -/
 instance [h : Nonempty (GCDMonoid α)] : DecompositionMonoid α where
   primal k m n H := by
     cases h
