@@ -766,7 +766,7 @@ end IsDomain
 
 section Algebra
 
-variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 theorem C_eq_algebraMap {r : R} : C R r = (algebraMap R R⟦X⟧) r :=
   rfl
@@ -778,11 +778,13 @@ instance [Nontrivial R] : Nontrivial (Subalgebra R R⟦X⟧) :=
   { inferInstanceAs <| Nontrivial <| Subalgebra R <| MvPowerSeries Unit R with }
 
 /-- Change of coefficients in power series, as an `AlgHom` -/
-def mapAlgHom {R : Type*} [CommSemiring R]
-    {S : Type*} [Semiring S] [Algebra R S] {T : Type*} [Semiring T] [Algebra R T]
-    (φ : S →ₐ[R] T) :
-    PowerSeries S →ₐ[R] PowerSeries T :=
+def mapAlgHom (φ : A →ₐ[R] B) :
+    PowerSeries A →ₐ[R] PowerSeries B :=
  MvPowerSeries.mapAlgHom φ
+
+theorem mapAlgHom_apply (φ : A →ₐ[R] B) (f : A⟦X⟧) :
+      mapAlgHom φ f = f.map φ :=
+  MvPowerSeries.mapAlgHom_apply φ f
 
 end Algebra
 
