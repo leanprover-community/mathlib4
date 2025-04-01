@@ -573,6 +573,8 @@ open Limits
 variable {P : C → Prop}
 
 -- TODO: Introduce `ClosedUnderFiniteProducts`?
+/-- The restriction of a cartesian-closed category along an object property that's closed under
+finite products is cartesian-closed. -/
 noncomputable def fullSubcategory (hP₀ : ClosedUnderLimitsOfShape (Discrete PEmpty) P)
     (hP₂ : ClosedUnderLimitsOfShape (Discrete WalkingPair) P) :
     ChosenFiniteProducts (FullSubcategory P) where
