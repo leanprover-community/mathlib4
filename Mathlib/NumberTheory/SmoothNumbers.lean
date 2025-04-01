@@ -431,11 +431,11 @@ def roughNumbersUpTo (N k : ℕ) : Finset ℕ :=
   {n ∈ Finset.range (N + 1) | n ≠ 0 ∧ n ∉ smoothNumbers k}
 
 lemma smoothNumbersUpTo_card_add_roughNumbersUpTo_card (N k : ℕ) :
-    (smoothNumbersUpTo N k).card + (roughNumbersUpTo N k).card = N := by
+    #(smoothNumbersUpTo N k) + #(roughNumbersUpTo N k) = N := by
   rw [smoothNumbersUpTo, roughNumbersUpTo,
     ← Finset.card_union_of_disjoint <| Finset.disjoint_filter.mpr fun n _ hn₂ h ↦ h.2 hn₂,
     Finset.filter_union_right]
-  suffices Finset.card {x ∈ Finset.range (N + 1) | x ≠ 0} = N by
+  suffices #{x ∈ Finset.range (N + 1) | x ≠ 0} = N by
     have hn' (n) : n ∈ smoothNumbers k ∨ n ≠ 0 ∧ n ∉ smoothNumbers k ↔ n ≠ 0 := by
       have : n ∈ smoothNumbers k → n ≠ 0 := ne_zero_of_mem_smoothNumbers
       refine ⟨fun H ↦ Or.elim H this fun H ↦ H.1, fun H ↦ ?_⟩
@@ -481,7 +481,7 @@ lemma smoothNumbersUpTo_subset_image (N k : ℕ) :
 
 /-- The cardinality of the set of `k`-smooth numbers `≤ N` is bounded by `2^π(k-1) * √N`. -/
 lemma smoothNumbersUpTo_card_le (N k : ℕ) :
-    (smoothNumbersUpTo N k).card ≤ 2 ^ k.primesBelow.card * N.sqrt := by
+    #(smoothNumbersUpTo N k) ≤ 2 ^ #k.primesBelow * N.sqrt := by
   convert (Finset.card_le_card <| smoothNumbersUpTo_subset_image N k).trans <|
     Finset.card_image_le
   simp only [Finset.card_product, Finset.card_powerset, Finset.mem_range, zero_lt_succ,
@@ -513,7 +513,7 @@ lemma roughNumbersUpTo_eq_biUnion (N k) :
 /-- The cardinality of the set of `k`-rough numbers `≤ N` is bounded by the sum of `⌊N/p⌋`
 over the primes `k ≤ p ≤ N`. -/
 lemma roughNumbersUpTo_card_le (N k : ℕ) :
-    (roughNumbersUpTo N k).card ≤ ((N + 1).primesBelow \ k.primesBelow).sum (fun p ↦ N / p) := by
+    #(roughNumbersUpTo N k) ≤ ((N + 1).primesBelow \ k.primesBelow).sum (fun p ↦ N / p) := by
   rw [roughNumbersUpTo_eq_biUnion]
   exact Finset.card_biUnion_le.trans <| Finset.sum_le_sum fun p _ ↦ (card_multiples' N p).le
 
