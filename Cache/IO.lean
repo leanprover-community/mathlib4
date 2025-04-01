@@ -446,21 +446,6 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
   let arg : FilePath := System.mkFilePath <|
     (argₛ : FilePath).normalize.components.filter (· != "")
 
-  if arg.extension == "lean" then
-    let mut mods := #[]
-
-    -- try if a file `Foo/Bar/lean.lean` exists
-    let mod := argₛ.toName
-    let sourceFile ← Lean.findLean sp mod
-    if ← sourceFile.pathExists then
-      mods := mods.append #[(mod, sourceFile)]
-
-    -- try if a file `./Foo.Bar.lean` exists
-    let mod₂ : Name := arg.withExtension "" |>.components.foldl .str .anonymous
-    if (← arg.pathExists) then
-      mods := mods.append #[(mod₂, arg)]
-    return .ok mods
-
   if arg.components.length > 1 || arg.extension == "lean" then
     -- provided file name of a Lean file
     let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
@@ -509,7 +494,6 @@ def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
     let sp := (← read).srcSearchPath
     match (← leanModulesFromSpec sp arg) with
     | .ok mods =>
-      dbg_trace mods
       pure <| acc.insertMany mods
     | .error msg =>
       IO.eprintln msg
