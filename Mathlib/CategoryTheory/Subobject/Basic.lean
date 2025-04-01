@@ -566,19 +566,19 @@ lemma isPullback_aux (f : X ⟶ Y) (y : Subobject Y) :
         (underlyingIso (pullback.snd (mk i).arrow f)).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
         (by simp) (by simp) (by simp) (by simp)
 
-/-- `pullbackπ f y` is the first projection in the following pullback square:
+/-- `Subobject.pullbackπ f y` is the first projection in the following pullback square:
 
     ```
-    (pullback f).obj y ----pullbackπ f y---> (y : C)
-             |                                  |
-    ((pullback f).obj y).arrow               y.arrow
-             |                                  |
-             v                                  v
-             X ----------------f--------------> Y
+    (Subobject.pullback f).obj y ----pullbackπ f y---> (y : C)
+             |                                            |
+    ((Subobject.pullback f).obj y).arrow               y.arrow
+             |                                            |
+             v                                            v
+             X ---------------------f-------------------> Y
     ```
 
-    For instance in the category of sets, `pullbackπ f y` is the restriction of `f` to elements of
-    `X` that are in the preimage of `y ⊆ Y`.
+    For instance in the category of sets, `Subobject.pullbackπ f y` is the restriction of `f` to
+    elements of `X` that are in the preimage of `y ⊆ Y`.
 -/
 noncomputable def pullbackπ (f : X ⟶ Y) (y : Subobject Y) :
     ((Subobject.pullback f).obj y : C) ⟶ (y : C) :=
