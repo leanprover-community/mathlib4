@@ -50,14 +50,12 @@ theorem HasSubst.of_constantCoeff_zero
     HasSubst a := by
   simp [HasSubst, ha]
 
-@[simp]
 protected theorem HasSubst.X {t : τ} : HasSubst (MvPowerSeries.X t : MvPowerSeries τ S) := by
   simp [HasSubst]
 
 /-- The univariate `X : R⟦X⟧` can be substituted in power series
 
 This lemma is added because `simp` doesn't find it from `HasSubst.X` -/
-@[simp]
 theorem HasSubst.X' : HasSubst (X : R⟦X⟧) :=
   HasSubst.X
 
@@ -66,7 +64,6 @@ theorem HasSubst.smul (a : A) {f : MvPowerSeries τ R} (hf : HasSubst f) :
   simp only [HasSubst, MvPowerSeries.constantCoeff_smul]
   exact IsNilpotent.smul hf _
 
-@[simp]
 theorem HasSubst.smul_X (a : A) : HasSubst (a • X : R⟦X⟧) :=
   HasSubst.X.smul _
 
