@@ -69,6 +69,7 @@ section Delab
 
 open Lean Meta PrettyPrinter Delaborator SubExpr Qq
 
+/-- Return `true` if `LinearOrder` is imported and there is an instance of `LinearOrder e`. -/
 private def hasLinearOrder (u : Level) (e : Q(Type $u)) : MetaM Bool := do
   try
     _ ← synthInstance (.app (.const `LinearOrder [u]) e)
