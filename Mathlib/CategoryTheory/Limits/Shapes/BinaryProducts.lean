@@ -1250,11 +1250,17 @@ protected abbrev BinaryFan.unop (c : BinaryFan (op X) (op Y)) : BinaryCofan X Y 
 protected abbrev BinaryCofan.unop (c : BinaryCofan (op X) (op Y)) : BinaryFan X Y :=
   .mk c.inl.unop c.inr.unop
 
-@[simp] lemma BinaryFan.unop_mk (ι₁ : op P ⟶ op X) (ι₂ : op P ⟶ op Y) :
-    BinaryFan.unop (mk ι₁ ι₂) = .mk ι₁.unop ι₂.unop := rfl
+@[simp] lemma BinaryFan.op_mk (π₁ : P ⟶ X) (π₂ : P ⟶ Y) :
+    BinaryFan.op (mk π₁ π₂) = .mk π₁.op π₂.op := rfl
+
+@[simp] lemma BinaryFan.unop_mk (π₁ : op P ⟶ op X) (π₂ : op P ⟶ op Y) :
+    BinaryFan.unop (mk π₁ π₂) = .mk π₁.unop π₂.unop := rfl
 
 @[simp] lemma BinaryCofan.op_mk (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) :
     BinaryCofan.op (mk ι₁ ι₂) = .mk ι₁.op ι₂.op := rfl
+
+@[simp] lemma BinaryCofan.unop_mk (ι₁ : op X ⟶ op P) (ι₂ : op Y ⟶ op P) :
+    BinaryCofan.unop (mk ι₁ ι₂) = .mk ι₁.unop ι₂.unop := rfl
 
 /-- If a `BinaryFan` is a limit, then its opposite is a colimit. -/
 protected def BinaryFan.IsLimit.op {c : BinaryFan X Y} (hc : IsLimit c) : IsColimit c.op :=
