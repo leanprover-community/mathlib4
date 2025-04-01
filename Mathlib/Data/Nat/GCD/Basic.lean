@@ -216,32 +216,7 @@ theorem Coprime.eq_of_mul_eq_zero {m n : ℕ} (h : m.Coprime n) (hmn : m * n = 0
     let eq := hn ▸ h.symm
     ⟨m.coprime_zero_left.mp <| eq, hn⟩
 
-/-- Represent a divisor of `m * n` as a product of a divisor of `m` and a divisor of `n`.
-
-See `exists_dvd_and_dvd_of_dvd_mul` for the more general but less constructive version for other
-`GCDMonoid`s. -/
-def prodDvdAndDvdOfDvdProd {m n k : ℕ} (H : k ∣ m * n) :
-    { d : { m' // m' ∣ m } × { n' // n' ∣ n } // k = d.1 * d.2 } := by
-  cases h0 : gcd k m with
-  | zero =>
-    obtain rfl : k = 0 := eq_zero_of_gcd_eq_zero_left h0
-    obtain rfl : m = 0 := eq_zero_of_gcd_eq_zero_right h0
-    exact ⟨⟨⟨0, dvd_refl 0⟩, ⟨n, dvd_refl n⟩⟩, (zero_mul n).symm⟩
-  | succ tmp =>
-    have hpos : 0 < gcd k m := h0.symm ▸ Nat.zero_lt_succ _; clear h0 tmp
-    have hd : gcd k m * (k / gcd k m) = k := Nat.mul_div_cancel' (gcd_dvd_left k m)
-    refine ⟨⟨⟨gcd k m, gcd_dvd_right k m⟩, ⟨k / gcd k m, ?_⟩⟩, hd.symm⟩
-    apply Nat.dvd_of_mul_dvd_mul_left hpos
-    rw [hd, ← gcd_mul_right]
-    exact dvd_gcd (dvd_mul_right _ _) H
-
-theorem dvd_mul {x m n : ℕ} : x ∣ m * n ↔ ∃ y z, y ∣ m ∧ z ∣ n ∧ y * z = x := by
-  constructor
-  · intro h
-    obtain ⟨⟨⟨y, hy⟩, ⟨z, hz⟩⟩, rfl⟩ := prod_dvd_and_dvd_of_dvd_prod h
-    exact ⟨y, z, hy, hz, rfl⟩
-  · rintro ⟨y, z, hy, hz, rfl⟩
-    exact mul_dvd_mul hy hz
+@[deprecated (since := "2025-04-01")] alias prodDvdAndDvdOfDvdProd := dvdProdDvdOfDvdProd
 
 theorem pow_dvd_pow_iff {a b n : ℕ} (n0 : n ≠ 0) : a ^ n ∣ b ^ n ↔ a ∣ b := by
   refine ⟨fun h => ?_, fun h => pow_dvd_pow_of_dvd h _⟩
