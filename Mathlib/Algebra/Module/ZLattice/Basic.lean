@@ -385,12 +385,11 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
   have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
   rw [← measure_symmDiff_eq_zero_iff, symmDiff_of_le (fundamentalDomain_subset_parallelepiped b)]
   suffices (parallelepiped b \ fundamentalDomain b) ⊆ ⋃ i,
-      AffineSubspace.mk' (b i) (span ℝ (b '' (Set.univ \ {i}))) by
+      (span ℝ (b '' (Set.univ \ {i}))).shift (b i) by
     refine measure_mono_null this
       (measure_iUnion_null_iff.mpr fun i ↦ Measure.addHaar_affineSubspace μ _ ?_)
-    refine (ne_of_mem_of_not_mem' (AffineSubspace.mem_top _ _ 0)
-      (Submodule.mem_shift.not.mpr ?_)).symm
-    simp_rw [vsub_eq_sub, zero_sub, neg_mem_iff]
+    refine (ne_of_mem_of_not_mem' (AffineSubspace.mem_top _ _ 0) ?_).symm
+    rw [mem_shift, vsub_eq_sub, zero_sub, neg_mem_iff]
     exact linearIndependent_iff_not_mem_span.mp b.linearIndependent i
   intro x hx
   simp_rw [parallelepiped_basis_eq, Set.mem_Icc, Set.mem_diff, Set.mem_setOf_eq,
