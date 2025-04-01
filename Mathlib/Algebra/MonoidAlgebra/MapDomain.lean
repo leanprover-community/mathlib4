@@ -28,12 +28,14 @@ variable {k R S G H M N : Type*}
 namespace MonoidAlgebra
 
 section Semiring
-variable [Semiring R] [Semiring S] {f : M → N}
+variable [Semiring R] [Semiring S] {f : M → N} {a : M} {r : R}
 
 abbrev mapDomain (f : M → N) (v : MonoidAlgebra R M) : MonoidAlgebra R N := Finsupp.mapDomain f v
 
 lemma mapDomain_sum (f : M → N) (s : MonoidAlgebra S M) (v : M → S → MonoidAlgebra R M) :
     mapDomain f (s.sum v) = s.sum fun a b ↦ mapDomain f (v a b) := Finsupp.mapDomain_sum
+
+lemma mapDomain_single : mapDomain f (single a r) = single (f a) r := Finsupp.mapDomain_single
 
 lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (R := R) f) :=
   Finsupp.mapDomain_injective hf
@@ -88,12 +90,14 @@ end MonoidAlgebra
 namespace AddMonoidAlgebra
 
 section Semiring
-variable [Semiring R] [Semiring S] {f : M → N}
+variable [Semiring R] [Semiring S] {f : M → N} {a : M} {r : R}
 
 abbrev mapDomain (f : M → N) (v : R[M]) : R[N] := Finsupp.mapDomain f v
 
 lemma mapDomain_sum (f : M → N) (s : S[M]) (v : M → S → R[M]) :
     mapDomain f (s.sum v) = s.sum fun a b ↦ mapDomain f (v a b) := Finsupp.mapDomain_sum
+
+lemma mapDomain_single : mapDomain f (single a r) = single (f a) r := Finsupp.mapDomain_single
 
 lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (R := R) f) :=
   Finsupp.mapDomain_injective hf
