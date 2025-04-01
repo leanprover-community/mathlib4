@@ -10,7 +10,7 @@ import Mathlib.RingTheory.PowerSeries.Order
 
 # Distiguished polynomial
 
-In this file we define the structure `IsDistinguishedAt`
+In this file we define the predicate `Polynomial.IsDistinguishedAt`
 and develop the most basic lemmas about it.
 
 -/
