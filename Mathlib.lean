@@ -4518,6 +4518,7 @@ import Mathlib.Order.Filter.FilterProduct
 import Mathlib.Order.Filter.Finite
 import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Order.Filter.Germ.OrderedMonoid
+import Mathlib.Order.Filter.Ideal
 import Mathlib.Order.Filter.IndicatorFunction
 import Mathlib.Order.Filter.Interval
 import Mathlib.Order.Filter.IsBounded
