@@ -14,6 +14,7 @@ import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.Rfl
 import Lean.Meta.Match.MatcherInfo
+import Lean.Meta.AbstractNestedProofs
 import Batteries.Lean.NameMapAttribute
 import Batteries.Tactic.Lint -- useful to lint this file and for DiscrTree.elements
 import Batteries.Tactic.Trans
@@ -718,6 +719,12 @@ def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) 
       value := ← applyReplacementFun <| ← reorderLambda reorder <| ← expand info.value }
   return decl
 
+def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
+  if decl.isTheorem || !decl.hasValue then
+    return decl
+  else
+    return decl.updateValue <| ← Meta.abstractNestedProofs decl.name decl.value!
+
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
 def findTargetName (env : Environment) (src pre tgt_pre : Name) : CoreM Name :=
   /- This covers auxiliary declarations like `match_i` and `proof_i`. -/
@@ -822,6 +829,8 @@ partial def transformDeclAux
       of `to_additive.attr`, section `Troubleshooting`. \
       Failed to add declaration\n{tgt}:\n{msg}"
     | _ => panic! "unreachable"
+  -- "Refold" all the aux lemmas that we unfolded.
+  let trgDecl ← MetaM.run' <| declAbstractNestedProofs trgDecl
   if isNoncomputable env src then
     addDecl trgDecl.toDeclaration!
     setEnv <| addNoncomputable (← getEnv) tgt
