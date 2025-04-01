@@ -168,7 +168,6 @@ protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
       Multiplicative.ofAdd with
     toFun := equivMapDomain Multiplicative.ofAdd
     map_mul' := fun x y => by
-      dsimp only
       repeat' rw [equivMapDomain_eq_mapDomain (M := k)]
       dsimp [Multiplicative.ofAdd]
       exact MonoidAlgebra.mapDomain_mul (α := Multiplicative G) (β := k)
@@ -180,7 +179,6 @@ protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
   { Finsupp.domCongr Additive.ofMul with
     toFun := equivMapDomain Additive.ofMul
     map_mul' := fun x y => by
-      dsimp only
       repeat' rw [equivMapDomain_eq_mapDomain (M := k)]
       dsimp [Additive.ofMul]
       convert MonoidAlgebra.mapDomain_mul (β := k) (MulHom.id G) x y }

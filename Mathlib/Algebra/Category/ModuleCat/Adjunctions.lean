@@ -237,7 +237,6 @@ instance categoryFree : Category (Free R C) where
   comp {X _ Z : C} f g :=
     (f.sum (fun f' s => g.sum (fun g' t => Finsupp.single (f' ≫ g') (s * t))) : (X ⟶ Z) →₀ R)
   assoc {W X Y Z} f g h := by
-    dsimp
     -- This imitates the proof of associativity for `MonoidAlgebra`.
     simp only [sum_sum_index, sum_single_index, single_zero, single_add, eq_self_iff_true,
       forall_true_iff, forall₃_true_iff, add_mul, mul_add, Category.assoc, mul_assoc,
@@ -304,7 +303,6 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
     · simp
     · intro f₁ f₂ w₁ w₂
       rw [add_comp]
-      dsimp at *
       rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
       · simp only [w₁, w₂, add_comp]
       · intros; rw [zero_smul]
@@ -316,7 +314,6 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
       · simp
       · intro f₁ f₂ w₁ w₂
         rw [comp_add]
-        dsimp at *
         rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
         · simp only [w₁, w₂, comp_add]
         · intros; rw [zero_smul]

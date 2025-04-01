@@ -184,7 +184,6 @@ def smul {R : Type*} [Semiring R] [Linear R V] (h : Homotopy f g) (a : R) :
     Homotopy (a • f) (a • g) where
   hom i j := a • h.hom i j
   zero i j hij := by
-    dsimp
     rw [h.zero i j hij, smul_zero]
   comm i := by
     dsimp
@@ -196,7 +195,7 @@ def smul {R : Type*} [Semiring R] [Linear R V] (h : Homotopy f g) (a : R) :
 @[simps]
 def compRight {e f : C ⟶ D} (h : Homotopy e f) (g : D ⟶ E) : Homotopy (e ≫ g) (f ≫ g) where
   hom i j := h.hom i j ≫ g.f j
-  zero i j w := by dsimp; rw [h.zero i j w, zero_comp]
+  zero i j w := by rw [h.zero i j w, zero_comp]
   comm i := by rw [comp_f, h.comm i, dNext_comp_right, prevD_comp_right, Preadditive.add_comp,
     comp_f, Preadditive.add_comp]
 
@@ -204,7 +203,7 @@ def compRight {e f : C ⟶ D} (h : Homotopy e f) (g : D ⟶ E) : Homotopy (e ≫
 @[simps]
 def compLeft {f g : D ⟶ E} (h : Homotopy f g) (e : C ⟶ D) : Homotopy (e ≫ f) (e ≫ g) where
   hom i j := e.f i ≫ h.hom i j
-  zero i j w := by dsimp; rw [h.zero i j w, comp_zero]
+  zero i j w := by rw [h.zero i j w, comp_zero]
   comm i := by rw [comp_f, h.comm i, dNext_comp_left, prevD_comp_left, comp_f,
     Preadditive.comp_add, Preadditive.comp_add]
 
@@ -243,7 +242,6 @@ def nullHomotopicMap (hom : ∀ i j, C.X i ⟶ D.X j) : C ⟶ D where
       simp only [prevD, AddMonoidHom.mk'_apply, assoc, d_comp_d, comp_zero]
     have eq2 : C.d i j ≫ dNext j hom = 0 := by
       simp only [dNext, AddMonoidHom.mk'_apply, d_comp_d_assoc, zero_comp]
-    dsimp only
     rw [dNext_eq hom hij, prevD_eq hom hij, Preadditive.comp_add, Preadditive.add_comp, eq1, eq2,
       add_zero, zero_add, assoc]
 
@@ -525,7 +523,7 @@ def mkInductive : Homotopy e 0 where
     if h : i + 1 = j then
       (mkInductiveAux₂ e zero comm_zero one comm_one succ i).2.1 ≫ (Q.xPrevIso h).hom
     else 0
-  zero i j w := by dsimp; rw [dif_neg]; exact w
+  zero i j w := by rw [dif_neg]; exact w
   comm i := by
     dsimp
     simp only [add_zero]
@@ -654,7 +652,7 @@ def mkCoinductive : Homotopy e 0 where
     if h : j + 1 = i then
       (P.xNextIso h).inv ≫ (mkCoinductiveAux₂ e zero comm_zero one comm_one succ j).2.1
     else 0
-  zero i j w := by dsimp; rw [dif_neg]; exact w
+  zero i j w := by rw [dif_neg]; exact w
   comm i := by
     dsimp
     simp only [add_zero]

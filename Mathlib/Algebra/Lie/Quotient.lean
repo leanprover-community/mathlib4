@@ -219,7 +219,7 @@ noncomputable def quotKerEquivRange : (L ⧸ f.ker) ≃ₗ⁅R⁆ f.range :=
     toFun := (f : L →ₗ[R] L').quotKerEquivRange
     map_lie' := by
       rintro ⟨x⟩ ⟨y⟩
-      rw [← SetLike.coe_eq_coe, LieSubalgebra.coe_bracket]
+      rw [← SetLike.coe_eq_coe, LieSubalgebra.coe_bracket f.range]
       simp only [Submodule.Quotient.quot_mk_eq_mk, LinearMap.quotKerEquivRange_apply_mk, ←
         LieSubmodule.Quotient.mk_bracket, coe_toLinearMap, map_lie] }
 
