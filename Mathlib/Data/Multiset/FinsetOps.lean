@@ -128,7 +128,7 @@ def ndunion (s t : Multiset α) : Multiset α :=
 theorem coe_ndunion (l₁ l₂ : List α) : @ndunion α _ l₁ l₂ = (l₁ ∪ l₂ : List α) :=
   rfl
 
--- Porting note: removed @[simp], original porting note incorrectly claimed that simp can prove it
+-- `simp` can prove this once we have `ndunion_eq_union`.
 theorem zero_ndunion (s : Multiset α) : ndunion 0 s = s :=
   Quot.inductionOn s fun _ => rfl
 

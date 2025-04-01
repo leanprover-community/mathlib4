@@ -316,9 +316,9 @@ lemma esymmAlgHom_fin_surjective (h : m ≤ n) :
   obtain ⟨q, rfl⟩ := (esymmAlgHom_fin_bijective R m).2 p
   rw [← AlgHom.mem_range]
   induction q using MvPolynomial.induction_on with
-  | h_C r => rw [← algebraMap_eq, AlgHom.commutes]; apply Subalgebra.algebraMap_mem
-  | h_add p q hp hq => rw [map_add]; exact Subalgebra.add_mem _ hp hq
-  | h_X p i hp =>
+  | C r => rw [← algebraMap_eq, AlgHom.commutes]; apply Subalgebra.algebraMap_mem
+  | add p q hp hq => rw [map_add]; exact Subalgebra.add_mem _ hp hq
+  | mul_X p i hp =>
     rw [map_mul]
     apply Subalgebra.mul_mem _ hp
     rw [AlgHom.mem_range]

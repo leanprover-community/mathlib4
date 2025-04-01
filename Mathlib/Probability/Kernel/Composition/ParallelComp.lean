@@ -52,7 +52,7 @@ irreducible_def parallelComp (κ : Kernel α β) (η : Kernel γ δ) : Kernel (�
       have : (fun y ↦ prodMkLeft α η y.1 (Prod.mk y.2 ⁻¹' s))
           = fun y ↦ prodMkRight β (prodMkLeft α η) y (Prod.mk y.2 ⁻¹' s) := rfl
       rw [this]
-      exact measurable_kernel_prod_mk_left (measurable_fst.snd.prod_mk measurable_snd hs) }
+      exact measurable_kernel_prodMk_left (measurable_fst.snd.prodMk measurable_snd hs) }
   else 0
 
 @[inherit_doc]

@@ -7,7 +7,7 @@ import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.Prime.Defs
 import Mathlib.Order.Monotone.Defs
 
@@ -267,9 +267,6 @@ theorem pow_injective_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : �
   refine injective_of_lt_imp_ne fun n m h => DvdNotUnit.ne ⟨pow_ne_zero n hq', q ^ (m - n), ?_, ?_⟩
   · exact not_isUnit_of_not_isUnit_dvd hq (dvd_pow (dvd_refl _) (Nat.sub_pos_of_lt h).ne')
   · exact (pow_mul_pow_sub q h.le).symm
-
-@[deprecated (since := "2024-09-22")]
-alias pow_injective_of_not_unit := pow_injective_of_not_isUnit
 
 theorem pow_inj_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : ¬IsUnit q)
     (hq' : q ≠ 0) {m n : ℕ} : q ^ m = q ^ n ↔ m = n :=

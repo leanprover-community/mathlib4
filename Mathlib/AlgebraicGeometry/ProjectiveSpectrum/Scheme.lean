@@ -192,7 +192,7 @@ variable (f)
 /-- The function between the basic open set `D(f)` in `Proj` to the corresponding basic open set in
 `Spec A⁰_f`. This is bundled into a continuous map in `TopComponent.forward`.
 -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def toFun (x : Proj.T| pbo f) : Spec.T A⁰_ f :=
   ⟨carrier x, isPrime_carrier x⟩
 
@@ -212,7 +212,7 @@ section
 
 /-- The continuous function from the basic open set `D(f)` in `Proj`
 to the corresponding basic open set in `Spec A⁰_f`. -/
-@[simps! (config := .lemmasOnly) hom_apply_asIdeal]
+@[simps! -isSimp hom_apply_asIdeal]
 def toSpec (f : A) : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f :=
   TopCat.ofHom
   { toFun := ToSpec.toFun f

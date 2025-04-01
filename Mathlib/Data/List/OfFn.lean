@@ -40,16 +40,6 @@ theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
     map g (ofFn f) = ofFn (g ∘ f) :=
   ext_get (by simp) fun i h h' => by simp
 
--- Porting note: we don't have Array' in mathlib4
--- /-- Arrays converted to lists are the same as `of_fn` on the indexing function of the array. -/
--- theorem array_eq_of_fn {n} (a : Array' n α) : a.toList = ofFn a.read :=
---   by
---   suffices ∀ {m h l}, DArray.revIterateAux a (fun i => cons) m h l =
---      ofFnAux (DArray.read a) m h l
---     from this
---   intros; induction' m with m IH generalizing l; · rfl
---   simp only [DArray.revIterateAux, of_fn_aux, IH]
-
 @[congr]
 theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
     ofFn f = ofFn fun i : Fin n => f (Fin.cast h.symm i) := by
