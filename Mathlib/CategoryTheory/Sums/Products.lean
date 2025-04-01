@@ -128,23 +128,20 @@ namespace NatIso
 
 /-- A consequence of `functorEquiv`: we can construct a natural isomorphism of functors
 `A ⊕ A' ⥤ B` from the data of natural isomorphisms of their whiskering with `inl_` and `inr_`. -/
+@[simps]
 def ofNatIsoWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
     (η₁ : Sum.inl_ A A' ⋙ F ≅ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ≅ Sum.inr_ A A' ⋙ G) :
-    F ≅ G :=
-  (Sum.functorEquiv A A' B).unitIso.app _ ≪≫
-  (Sum.functorEquiv A A' B).inverse.mapIso (Iso.prod η₁ η₂) ≪≫
-  (Sum.functorEquiv A A' B).unitIso.symm.app _
+    F ≅ G where
+  hom := NatTrans.ofNatTransWhiskerLeftInlInr η₁.hom η₂.hom
+  inv := NatTrans.ofNatTransWhiskerLeftInlInr η₁.inv η₂.inv
 
 @[simp]
-lemma ofNatIsoWhiskerLeftInlInr_hom {F G : A ⊕ A' ⥤ B}
+lemma ofNatIsoWhiskerLeftInlInr_eq {F G : A ⊕ A' ⥤ B}
     (η₁ : Sum.inl_ A A' ⋙ F ≅ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ≅ Sum.inr_ A A' ⋙ G) :
-    (ofNatIsoWhiskerLeftInlInr η₁ η₂).hom = NatTrans.ofNatTransWhiskerLeftInlInr η₁.hom η₂.hom := by
-  aesop_cat
-
-@[simp]
-lemma ofNatIsoWhiskerLeftInlInr_inv {F G : A ⊕ A' ⥤ B}
-    (η₁ : Sum.inl_ A A' ⋙ F ≅ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ≅ Sum.inr_ A A' ⋙ G) :
-    (ofNatIsoWhiskerLeftInlInr η₁ η₂).inv = NatTrans.ofNatTransWhiskerLeftInlInr η₁.inv η₂.inv := by
+    (Sum.functorEquiv A A' B).unitIso.app _ ≪≫
+      (Sum.functorEquiv A A' B).inverse.mapIso (Iso.prod η₁ η₂) ≪≫
+      (Sum.functorEquiv A A' B).unitIso.symm.app _ =
+    ofNatIsoWhiskerLeftInlInr η₁ η₂ := by
   aesop_cat
 
 end NatIso
