@@ -59,7 +59,6 @@ theorem comp_id (f : α → β) : f ∘ id = f := rfl
 
 theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
   rfl
-@[deprecated (since := "2024-09-24")] alias comp.assoc := comp_assoc
 
 /-- A function `f : α → β` is called injective if `f x = f y` implies `x = y`. -/
 def Injective (f : α → β) : Prop :=

@@ -706,9 +706,6 @@ def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0
 lemma isOrthogonal_symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
   simp only [IsOrthogonal, and_comm]
 
-lemma IsOrthogonal.symm (h : IsOrthogonal P i j) : IsOrthogonal P j i :=
-  ⟨h.2, h.1⟩
-
 lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
   rw [commute_iff_eq]
   ext v
@@ -717,5 +714,39 @@ lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.r
   simp only [LinearEquiv.coe_coe, reflection_apply, PerfectPairing.flip_apply_apply, map_sub,
     map_smul, root_coroot_eq_pairing, h, zero_smul, sub_zero]
   abel
+
+variable {P i j}
+
+lemma IsOrthogonal.flip (h : IsOrthogonal P i j) : IsOrthogonal P.flip i j := ⟨h.2, h.1⟩
+
+lemma IsOrthogonal.symm (h : IsOrthogonal P i j) : IsOrthogonal P j i := ⟨h.2, h.1⟩
+
+lemma IsOrthogonal.reflection_apply_left (h : IsOrthogonal P i j) :
+    P.reflection j (P.root i) = P.root i := by
+  simp [reflection_apply, h.1]
+
+lemma IsOrthogonal.reflection_apply_right (h : IsOrthogonal P j i) :
+    P.reflection j (P.root i) = P.root i :=
+  h.symm.reflection_apply_left
+
+lemma IsOrthogonal.coreflection_apply_left (h : IsOrthogonal P i j) :
+    P.coreflection j (P.coroot i) = P.coroot i :=
+  h.flip.reflection_apply_left
+
+lemma IsOrthogonal.coreflection_apply_right (h : IsOrthogonal P j i) :
+    P.coreflection j (P.coroot i) = P.coroot i :=
+  h.flip.reflection_apply_right
+
+lemma isFixedPt_reflection_of_isOrthogonal {s : Set ι} (hj : ∀ i ∈ s, P.IsOrthogonal j i)
+    {x : M} (hx : x ∈ span R (P.root '' s)) :
+    IsFixedPt (P.reflection j) x := by
+  rw [IsFixedPt]
+  induction hx using Submodule.span_induction with
+  | zero => rw [map_zero]
+  | add u v hu hv hu' hv' => rw [map_add, hu', hv']
+  | smul t u hu hu' => rw [map_smul, hu']
+  | mem u hu =>
+      obtain ⟨i, his, rfl⟩ := hu
+      exact IsOrthogonal.reflection_apply_right <| hj i his
 
 end RootPairing

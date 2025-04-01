@@ -5,10 +5,11 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise actions on sets
