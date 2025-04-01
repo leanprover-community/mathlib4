@@ -601,7 +601,7 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
       by_cases ne : i = g'.natDegree
       · simp [ne, distinguish'.monic]
       · rcases lt_or_gt_of_ne ne with lt|gt
-        · simpa [ne] using eq_zero_iff_mem.mpr (distinguish'.else_mem.mem lt)
+        · simpa [ne] using eq_zero_iff_mem.mpr (distinguish'.mem lt)
         · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
     have : Nat.find exist_nmem = k' + 1 := by
       apply (Nat.find_eq_iff exist_nmem).mpr
