@@ -112,6 +112,8 @@ def sequence' {m : Type → Type u} [Monad m] {α : Type} : List (m α) → m Un
 
 /--
 Executes `t` if `b` is `true`, doing nothing otherwise.
+
+See also `when` and `whenM`.
 -/
 def whenb {m : Type → Type} [Monad m] (b : Bool) (t : m Unit) : m Unit :=
   _root_.cond b t (return ())
