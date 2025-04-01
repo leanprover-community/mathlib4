@@ -37,7 +37,7 @@ lemma map_eq_X_pow (f : R[X]) {I : Ideal R} (distinguish : f.IsDistinguishedAt I
     · simpa [ne, eq_zero_iff_mem] using (distinguish.mem lt)
     · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
 
-lemma deg_eq_order_map {I : Ideal R} (f : PowerSeries R)
+lemma degree_eq_order_map {I : Ideal R} (f : PowerSeries R)
     (h : R⟦X⟧) (g : R[X]) (distinguish : g.IsDistinguishedAt I) (nmem : ¬ constantCoeff R h ∈ I)
     (eq : f = g * h) : g.degree = (f.map (Ideal.Quotient.mk I)).order := by
   let _ : Nontrivial R := nontrivial_iff.mpr
