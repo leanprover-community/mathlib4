@@ -191,6 +191,3 @@ theorem isLocalHom_equiv [Monoid M] [Monoid N] [EquivLike F M N]
     convert ha.map (f : M ≃* N).symm
     rw [MulEquiv.eq_symm_apply]
     rfl -- note to reviewers: ugly `rfl`
-
-@[deprecated (since := "2024-10-10")]
-alias isLocalRingHom_equiv := isLocalHom_equiv

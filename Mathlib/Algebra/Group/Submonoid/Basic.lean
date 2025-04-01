@@ -164,9 +164,6 @@ theorem closure_induction {s : Set M} {p : (x : M) → x ∈ closure s → Prop}
       mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩ }
   closure_le (S := S) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
-@[deprecated closure_induction (since := "2024-10-10")]
-alias closure_induction' := closure_induction
-
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[to_additive (attr := elab_as_elim)
       "An induction principle for additive closure membership for predicates with two arguments."]

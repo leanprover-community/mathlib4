@@ -128,9 +128,6 @@ theorem span_induction {p : (x : M) → x ∈ span R s → Prop}
       smul_mem' := fun r ↦ fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩ }
   exact span_le (p := p) |>.mpr (fun y hy ↦ ⟨subset_span hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
-@[deprecated span_induction (since := "2024-10-10")]
-alias span_induction' := span_induction
-
 /-- An induction principle for span membership. This is a version of `Submodule.span_induction`
 for binary predicates. -/
 theorem span_induction₂ {N : Type*} [AddCommMonoid N] [Module R N] {t : Set N}
@@ -188,9 +185,6 @@ theorem closure_induction {p : (x : M) → x ∈ span R s → Prop}
     ?_ zero (by simpa only [key] using add) (key.mp hx)
   rintro - ⟨r, -, x, hx, rfl⟩
   exact smul_mem r x hx
-
-@[deprecated closure_induction (since := "2024-10-10")]
-alias closure_induction' := closure_induction
 
 @[simp]
 theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = ⊤ :=
