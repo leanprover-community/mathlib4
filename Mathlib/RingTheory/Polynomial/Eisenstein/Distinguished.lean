@@ -20,8 +20,11 @@ open PowerSeries Ideal Quotient
 
 variable {R : Type*} [CommRing R]
 
-/-- Given an ideal `I` of a commutative ring `R`, we say that a polynomial `f : R[X]`
-is *Distinguished at `I`* if `f` is monic and `IsWeaklyEisensteinAt I`. -/
+/--
+Given an ideal `I` of a commutative ring `R`, we say that a polynomial `f : R[X]`
+is *Distinguished at `I`* if `f` is monic and `IsWeaklyEisensteinAt I`.
+i.e. `f` is of the form `xⁿ + a₁xⁿ⁻¹ + ⋯ + aₙ` with `aᵢ ∈ I` for all `i`.
+-/
 structure Polynomial.IsDistinguishedAt (f : R[X]) (I : Ideal R) : Prop
     extends f.IsWeaklyEisensteinAt I where
   monic : f.Monic
