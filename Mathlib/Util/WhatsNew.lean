@@ -121,6 +121,4 @@ elab "whatsnew " "in" ppLine cmd:command : command => do
     let newEnv ← getEnv
     logInfo (← liftCoreM <| whatsNew oldEnv newEnv)
 
-def f : Nat := 42
-
 end Mathlib.WhatsNew
