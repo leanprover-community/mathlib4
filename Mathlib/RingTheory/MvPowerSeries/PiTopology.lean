@@ -9,6 +9,7 @@ import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.UniformSpace.Pi
+import Mathlib.Topology.Algebra.TopologicallyNilpotent
 
 /-! # Product topology on multivariate power series
 
@@ -155,28 +156,20 @@ theorem tendsto_pow_zero_of_constantCoeff_zero [CommSemiring R]
   rw [hf]
   exact IsNilpotent.zero
 
-/-- The powers of a `MvPowerSeries` converge to 0 iff its constant coefficient is nilpotent.
-N. Bourbaki, *Algebra II*, [bourbaki1981] (chap. 4, §4, n°2, corollaire de la prop. 3) -/
-theorem tendsto_pow_of_constantCoeff_nilpotent_iff [CommRing R] [DiscreteTopology R] (f) :
+/-- Assuming the base ring has a discrete topology, the powers of a `MvPowerSeries` converge to 0
+iff its constant coefficient is nilpotent.
+N. Bourbaki, *Algebra II*, [bourbaki1981] (chap. 4, §4, n°2, corollaire de la prop. 3)
+
+TODO: When `R` is linearly topologized, this is the same as the constant coefficient being
+*topologically* nilpotent. -/
+theorem tendsto_pow_iff_constantCoeff_nilpotent [CommRing R] [DiscreteTopology R] (f) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
       IsNilpotent (constantCoeff σ R f) := by
-  refine ⟨?_, tendsto_pow_zero_of_constantCoeff_nilpotent⟩
-  intro h
-  suffices Tendsto (fun n : ℕ => constantCoeff σ R (f ^ n)) atTop (nhds 0) by
-    simp only [tendsto_def] at this
-    specialize this {0} _
-    suffices ∀ x : R, {x} ∈ nhds x by exact this 0
-    rw [← discreteTopology_iff_singleton_mem_nhds]; infer_instance
-    simp only [map_pow, mem_atTop_sets, ge_iff_le, Set.mem_preimage,
-      Set.mem_singleton_iff] at this
-    obtain ⟨m, hm⟩ := this
-    use m
-    apply hm m (le_refl m)
-  simp only [← @comp_apply _ R ℕ, ← tendsto_map'_iff]
-  simp only [Tendsto, map_le_iff_le_comap] at h ⊢
-  refine le_trans h (comap_mono ?_)
-  rw [← map_le_iff_le_comap]
-  exact Continuous.continuousAt (continuous_constantCoeff R)
+  refine ⟨fun H ↦ ?_, tendsto_pow_zero_of_constantCoeff_nilpotent⟩
+  replace H : Tendsto (fun n ↦ constantCoeff σ R (f ^ n)) atTop (nhds 0) :=
+    continuous_constantCoeff R |>.tendsto' 0 0 constantCoeff_zero |>.comp H
+  simp_rw [nhds_discrete, tendsto_pure, map_pow] at H
+  exact H.exists
 
 variable [Semiring R]
 
