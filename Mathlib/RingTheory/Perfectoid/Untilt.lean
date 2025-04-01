@@ -85,7 +85,7 @@ lemma pow_dvd_mul_untiltAux_sub_untiltAux_mul (x y : PreTilt O p) (m : ℕ) :
   cases m with
   | zero => simp [untiltAux]
   | succ m =>
-    simp only [untiltAux, _root_.map_mul, ← mul_pow]
+    simp only [untiltAux, map_mul, ← mul_pow]
     refine dvd_sub_pow_of_dvd_sub ?_ m
     rw [← mem_span_singleton, ← Ideal.Quotient.eq]
     simp

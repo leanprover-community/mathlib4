@@ -5,7 +5,7 @@ Authors: Joseph Myers, Sébastien Gouëzel, Heather Macbeth
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.Util.Superscript
 
@@ -380,6 +380,22 @@ protected theorem orthonormal (b : OrthonormalBasis ι 𝕜 E) : Orthonormal �
     intro i j
     rw [← b.repr.inner_map_map (b i) (b j), b.repr_self i, b.repr_self j,
       EuclideanSpace.inner_single_left, EuclideanSpace.single_apply, map_one, one_mul]
+
+@[simp]
+lemma norm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
+    ‖b i‖ = 1 := b.orthonormal.norm_eq_one i
+
+@[simp]
+lemma nnnorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
+    ‖b i‖₊ = 1 := b.orthonormal.nnnorm_eq_one i
+
+@[simp]
+lemma enorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
+    ‖b i‖ₑ = 1 := b.orthonormal.enorm_eq_one i
+
+@[simp]
+lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) :
+    ⟪b i, b j⟫ = 0 := b.orthonormal.inner_eq_zero hij
 
 /-- The `Basis ι 𝕜 E` underlying the `OrthonormalBasis` -/
 protected def toBasis (b : OrthonormalBasis ι 𝕜 E) : Basis ι 𝕜 E :=
@@ -963,7 +979,7 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
 theorem LinearIsometry.extend_apply (L : S →ₗᵢ[𝕜] V) (s : S) : L.extend s = L s := by
   haveI : CompleteSpace S := FiniteDimensional.complete 𝕜 S
   simp only [LinearIsometry.extend, ← LinearIsometry.coe_toLinearMap]
-  simp only [add_right_eq_self, LinearIsometry.coe_toLinearMap,
+  simp only [add_eq_left, LinearIsometry.coe_toLinearMap,
     LinearIsometryEquiv.coe_toLinearIsometry, LinearIsometry.coe_comp, Function.comp_apply,
     orthogonalProjection_mem_subspace_eq_self, LinearMap.coe_comp, ContinuousLinearMap.coe_coe,
     Submodule.coe_subtype, LinearMap.add_apply, Submodule.coe_eq_zero,

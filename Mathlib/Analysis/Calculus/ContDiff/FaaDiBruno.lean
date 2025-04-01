@@ -984,7 +984,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
     let B := c.compAlongOrderedFinpartitionL 𝕜 E F G
     change ContinuousOn
       ((fun p ↦ B p.1 p.2) ∘ (fun x ↦ (q (f x) c.length, fun i ↦ p x (c.partSize i)))) s
-    apply B.continuous_uncurry_of_multilinear.comp_continuousOn (ContinuousOn.prod ?_ ?_)
+    apply B.continuous_uncurry_of_multilinear.comp_continuousOn (ContinuousOn.prodMk ?_ ?_)
     · have : (c.length : WithTop ℕ∞) ≤ m := mod_cast OrderedFinpartition.length_le c
       exact (hg.cont c.length (this.trans hm)).comp hf.continuousOn h
     · apply continuousOn_pi.2 (fun i ↦ ?_)

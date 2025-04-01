@@ -254,9 +254,6 @@ theorem vecAppend_eq_ite {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → 
   simp only [eq_rec_constant]
   rfl
 
--- Porting note: proof was `rfl`, so this is no longer a `dsimp`-lemma
--- Could become one again with change to `Nat.ble`:
--- https://github.com/leanprover-community/mathlib4/pull/1741/files/#r1083902351
 @[simp]
 theorem vecAppend_apply_zero {α : Type*} {o : ℕ} (ho : o + 1 = m + 1 + n) (u : Fin (m + 1) → α)
     (v : Fin n → α) : vecAppend ho u v 0 = u 0 :=

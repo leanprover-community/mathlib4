@@ -3,7 +3,7 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Seq.WSeq
+import Mathlib.Data.WSeq.Relation
 
 /-!
 # Parallel computation
@@ -81,7 +81,7 @@ theorem terminates_parallel.aux :
       induction' l with c l IH' <;> intro l' e' <;> simp at m
       rcases m with e | m <;> simp [parallel.aux2] at e'
       · rw [← e] at e'
-        -- Porting note: `revert e'` & `intro e'` are required.
+        -- Porting note: `revert e'` is required.
         revert e'
         split
         · simp
@@ -217,7 +217,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
             obtain ⟨dm, ad⟩ := dm
             exact ⟨d, List.Mem.tail _ dm, ad⟩
   intro C aC
-  -- Porting note: `revert e'` & `intro e'` are required.
+  -- Porting note: `revert this e'` & `intro this e'` are required.
   apply memRecOn aC <;> [skip; intro C' IH] <;> intro l S e <;> have e' := congr_arg destruct e <;>
     have := lem1 l <;> simp only [parallel.aux1, corec_eq, destruct_pure, destruct_think] at e' <;>
     revert this e' <;> rcases parallel.aux2 l with a' | l' <;> intro this e' <;>
