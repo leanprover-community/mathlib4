@@ -486,8 +486,7 @@ theorem singularPart_eq_restrict' {s : Set α} [μ.HaveLebesgueDecomposition ν]
     (hμs : μ.singularPart ν sᶜ = 0) (hνs : ν.withDensity (μ.rnDeriv ν) s = 0) :
     μ.singularPart ν = μ.restrict s := by
   conv_rhs => rw [← singularPart_add_rnDeriv μ ν]
-  rw [restrict_add, restrict_eq_self_of_ae_mem, restrict_eq_zero.2 hνs, add_zero]
-  simpa [measure_zero_iff_ae_nmem] using hμs
+  rwa [restrict_add, restrict_eq_self_of_ae_mem, restrict_eq_zero.2 hνs, add_zero]
 
 /-- If a set `s` separates `ν` from the singular part of `μ` with respect to `ν`,
 then the singular part equals the restriction of `μ` to `s`. -/
