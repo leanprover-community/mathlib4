@@ -1016,11 +1016,6 @@ theorem MapClusterPt.of_comp {φ : β → α} {p : Filter β} (h : Tendsto φ p 
     (H : MapClusterPt x p (u ∘ φ)) : MapClusterPt x F u :=
   H.clusterPt.mono <| map_mono h
 
-@[deprecated MapClusterPt.of_comp (since := "2024-09-07")]
-theorem mapClusterPt_of_comp {φ : β → α} {p : Filter β} [NeBot p]
-    (h : Tendsto φ p F) (H : Tendsto (u ∘ φ) p (𝓝 x)) : MapClusterPt x F u :=
-  .of_comp h H.mapClusterPt
-
 end MapClusterPt
 
 theorem accPt_sup (x : X) (F G : Filter X) :
