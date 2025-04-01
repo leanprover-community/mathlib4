@@ -127,7 +127,6 @@ theorem divisor_inv [CompleteSpace 𝕜] {f : 𝕜 → 𝕜} :
   · simp [divisor_def, h]
 
 /-- Adding an analytic function to a meromorphic one does not change the pole divisor. -/
-@[simp]
 theorem divisor_add_analytic {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
     (hf₂ : AnalyticOnNhd 𝕜 f₂ U) :
     (divisor f₁ U)⁻ = (divisor (f₁ + f₂) U)⁻ := by
