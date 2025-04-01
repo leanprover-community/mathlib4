@@ -449,7 +449,7 @@ theorem map_div_atTop_eq_nat (k : ℕ) (hk : 0 < k) : map (fun a => a / k) atTop
     (fun a b _ => by rw [Nat.div_le_iff_le_mul_add_pred hk])
     fun b _ => by rw [Nat.mul_add_div hk, Nat.div_eq_of_lt, Nat.add_zero]; omega
 
-section IsDirected
+section NeBot
 variable [Preorder β] {l : Filter α} [NeBot l] {f : α → β}
 
 theorem unbounded_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto f l atTop) :
@@ -469,7 +469,7 @@ alias unbounded_of_tendsto_atTop' := unbounded_of_tendsto_atTop
 @[deprecated (since := "2025-04-01")]
 alias unbounded_of_tendsto_atBot' := unbounded_of_tendsto_atBot
 
-end IsDirected
+end NeBot
 
 theorem HasAntitoneBasis.eventually_subset [Preorder ι] {l : Filter α} {s : ι → Set α}
     (hl : l.HasAntitoneBasis s) {t : Set α} (ht : t ∈ l) : ∀ᶠ i in atTop, s i ⊆ t :=
