@@ -49,23 +49,23 @@ theorem prod_map_atBot_eq {α₁ α₂ β₁ β₂ : Type*} [Preorder β₁] [Pr
 
 theorem tendsto_atBot_diagonal [Preorder α] : Tendsto (fun a : α => (a, a)) atBot atBot := by
   rw [← prod_atBot_atBot_eq]
-  exact tendsto_id.prod_mk tendsto_id
+  exact tendsto_id.prodMk tendsto_id
 
 theorem tendsto_atTop_diagonal [Preorder α] : Tendsto (fun a : α => (a, a)) atTop atTop := by
   rw [← prod_atTop_atTop_eq]
-  exact tendsto_id.prod_mk tendsto_id
+  exact tendsto_id.prodMk tendsto_id
 
 theorem Tendsto.prod_map_prod_atBot [Preorder γ] {F : Filter α} {G : Filter β} {f : α → γ}
     {g : β → γ} (hf : Tendsto f F atBot) (hg : Tendsto g G atBot) :
     Tendsto (Prod.map f g) (F ×ˢ G) atBot := by
   rw [← prod_atBot_atBot_eq]
-  exact hf.prod_map hg
+  exact hf.prodMap hg
 
 theorem Tendsto.prod_map_prod_atTop [Preorder γ] {F : Filter α} {G : Filter β} {f : α → γ}
     {g : β → γ} (hf : Tendsto f F atTop) (hg : Tendsto g G atTop) :
     Tendsto (Prod.map f g) (F ×ˢ G) atTop := by
   rw [← prod_atTop_atTop_eq]
-  exact hf.prod_map hg
+  exact hf.prodMap hg
 
 theorem Tendsto.prod_atBot [Preorder α] [Preorder γ] {f g : α → γ}
     (hf : Tendsto f atBot atBot) (hg : Tendsto g atBot atBot) :

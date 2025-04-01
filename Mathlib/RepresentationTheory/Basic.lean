@@ -113,7 +113,8 @@ You should use `asModuleEquiv : ρ.asModule ≃+ V` to translate terms.
 def asModule (_ : Representation k G V) :=
   V
 
--- Porting note: no derive handler
+-- The `AddCommMonoid` and `Module` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : AddCommMonoid (ρ.asModule) := inferInstanceAs <| AddCommMonoid V
 
 instance : Inhabited ρ.asModule where
@@ -125,7 +126,6 @@ a module over `MonoidAlgebra k G`.
 noncomputable instance instModuleAsModule : Module (MonoidAlgebra k G) ρ.asModule :=
   Module.compHom V (asAlgebraHom ρ).toRingHom
 
--- Porting note: ρ.asModule doesn't unfold now
 instance : Module k ρ.asModule := inferInstanceAs <| Module k V
 
 /-- The additive equivalence from the `Module (MonoidAlgebra k G)` to the original vector space

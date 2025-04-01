@@ -50,8 +50,8 @@ def defaultfindArgs : findArgType := fun _ className args ↦ do
   let arity := classExpr.type.getNumHeadForalls
   if arity == args.size then
     return args.map some
-  else if args.size == 1 then
-    return mkArray arity args[0]!
+  else if h : args.size = 1 then
+    return mkArray arity args[0]
   else
     throwError "initialize_simps_projections cannot automatically find arguments for class \
       {className}"

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.Forall2
-import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
 # Lists with no duplicates
@@ -56,9 +55,10 @@ theorem not_nodup_pair (a : α) : ¬Nodup [a, a] :=
 theorem nodup_iff_sublist {l : List α} : Nodup l ↔ ∀ a, ¬[a, a] <+ l :=
   ⟨fun d a h => not_nodup_pair a (d.sublist h),
     by
-      induction' l with a l IH <;> intro h; · exact nodup_nil
-      exact (IH fun a s => h a <| sublist_cons_of_sublist _ s).cons fun al =>
-        h a <| (singleton_sublist.2 al).cons_cons _⟩
+      induction l <;> intro h; · exact nodup_nil
+      case cons a l IH =>
+        exact (IH fun a s => h a <| sublist_cons_of_sublist _ s).cons
+          fun al => h a <| (singleton_sublist.2 al).cons_cons _⟩
 
 @[simp]
 theorem nodup_mergeSort {l : List α} {le : α → α → Bool} : (l.mergeSort le).Nodup ↔ l.Nodup :=
@@ -77,7 +77,6 @@ theorem nodup_iff_injective_getElem {l : List α} :
       · exact (h j i hj hi hji hg.symm).elim,
       fun hinj i j hi hj hij h => Nat.ne_of_lt hij (Fin.val_eq_of_eq (@hinj ⟨i, hi⟩ ⟨j, hj⟩ h))⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new theorem
 theorem nodup_iff_injective_get {l : List α} :
     Nodup l ↔ Function.Injective l.get := by
   rw [nodup_iff_injective_getElem]
@@ -113,9 +112,10 @@ theorem nodup_iff_get?_ne_get? {l : List α} :
 
 theorem Nodup.ne_singleton_iff {l : List α} (h : Nodup l) (x : α) :
     l ≠ [x] ↔ l = [] ∨ ∃ y ∈ l, y ≠ x := by
-  induction' l with hd tl hl
-  · simp
-  · specialize hl h.of_cons
+  induction l with
+  | nil => simp
+  | cons hd tl hl =>
+    specialize hl h.of_cons
     by_cases hx : tl = [x]
     · simpa [hx, and_comm, and_or_left] using h
     · rw [← Ne, hl] at hx
@@ -201,9 +201,10 @@ theorem Nodup.map_on {f : α → β} (H : ∀ x ∈ l, ∀ y ∈ l, f x = f y �
 
 theorem inj_on_of_nodup_map {f : α → β} {l : List α} (d : Nodup (map f l)) :
     ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → f x = f y → x = y := by
-  induction' l with hd tl ih
-  · simp
-  · simp only [map, nodup_cons, mem_map, not_exists, not_and, ← Ne.eq_def] at d
+  induction l with
+  | nil => simp
+  | cons hd tl ih =>
+    simp only [map, nodup_cons, mem_map, not_exists, not_and, ← Ne.eq_def] at d
     simp only [mem_cons]
     rintro _ (rfl | h₁) _ (rfl | h₂) h₃
     · rfl
@@ -327,9 +328,9 @@ protected theorem Nodup.insert [DecidableEq α] (h : l.Nodup) : (l.insert a).Nod
   else by rw [insert_of_not_mem h', nodup_cons]; constructor <;> assumption
 
 theorem Nodup.union [DecidableEq α] (l₁ : List α) (h : Nodup l₂) : (l₁ ∪ l₂).Nodup := by
-  induction' l₁ with a l₁ ih generalizing l₂
-  · exact h
-  · exact (ih h).insert
+  induction l₁ generalizing l₂ with
+  | nil => exact h
+  | cons a l₁ ih => exact (ih h).insert
 
 theorem Nodup.inter [DecidableEq α] (l₂ : List α) : Nodup l₁ → Nodup (l₁ ∩ l₂) :=
   Nodup.filter _
@@ -357,7 +358,7 @@ protected theorem Nodup.set :
 theorem Nodup.map_update [DecidableEq α] {l : List α} (hl : l.Nodup) (f : α → β) (x : α) (y : β) :
     l.map (Function.update f x y) =
       if x ∈ l then (l.map f).set (l.idxOf x) y else l.map f := by
-  induction' l with hd tl ihl; · simp
+  induction l with | nil => simp | cons hd tl ihl => ?_
   rw [nodup_cons] at hl
   simp only [mem_cons, map, ihl hl.2]
   by_cases H : hd = x
@@ -374,21 +375,6 @@ theorem Nodup.pairwise_of_forall_ne {l : List α} {r : α → α → Prop} (hl :
   else
     apply h <;> try (apply hab.subset; simp)
     exact heq
-
-theorem Nodup.pairwise_of_set_pairwise {l : List α} {r : α → α → Prop} (hl : l.Nodup)
-    (h : {x | x ∈ l}.Pairwise r) : l.Pairwise r :=
-  hl.pairwise_of_forall_ne h
-
-@[simp]
-theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup) :
-    { a | a ∈ l }.Pairwise r ↔ l.Pairwise r := by
-  induction' l with a l ih
-  · simp
-  rw [List.nodup_cons] at hl
-  have : ∀ b ∈ l, ¬a = b → r a b ↔ r a b := fun b hb =>
-    imp_iff_right (ne_of_mem_of_not_mem hb hl.1).symm
-  simp [Set.setOf_or, Set.pairwise_insert_of_symmetric fun _ _ ↦ symm_of r, ih hl.2, and_comm,
-    forall₂_congr this]
 
 theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     ∀ {l : List α} {n : ℕ} (_ : l.Nodup), l.take n = l.filter (l.take n).elem

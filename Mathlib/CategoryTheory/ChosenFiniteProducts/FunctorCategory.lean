@@ -53,7 +53,7 @@ def snd : chosenProd F₁ F₂ ⟶ F₂ where
   app _ := ChosenFiniteProducts.snd _ _
 
 /-- `Functor.chosenProd F₁ F₂` is a binary product of `F₁` and `F₂`. -/
-noncomputable def isLimit : IsLimit (BinaryFan.mk (fst F₁ F₂) (snd F₁ F₂)) :=
+def isLimit : IsLimit (BinaryFan.mk (fst F₁ F₂) (snd F₁ F₂)) :=
   evaluationJointlyReflectsLimits _ (fun j =>
     (IsLimit.postcomposeHomEquiv (mapPairIso (by exact Iso.refl _) (by exact Iso.refl _)) _).1
       (IsLimit.ofIsoLimit (ChosenFiniteProducts.product (X := F₁.obj j) (Y := F₂.obj j)).2
@@ -63,7 +63,7 @@ end chosenProd
 
 end
 
-noncomputable instance chosenFiniteProducts :
+instance chosenFiniteProducts :
     ChosenFiniteProducts (J ⥤ C) where
   terminal := ⟨_, chosenTerminalIsTerminal J C⟩
   product F₁ F₂ := ⟨_, chosenProd.isLimit F₁ F₂⟩
@@ -151,7 +151,7 @@ lemma associator_inv_app (F₁ F₂ F₃ : J ⥤ C) (j : J) :
     (α_ F₁ F₂ F₃).inv.app j = (α_ _ _ _).inv := by
   rw [← cancel_mono ((α_ _ _ _).hom), Iso.inv_hom_id, ← associator_hom_app, Iso.inv_hom_id_app]
 
-noncomputable instance {K : Type*} [Category K] [HasColimitsOfShape K C]
+instance {K : Type*} [Category K] [HasColimitsOfShape K C]
     [∀ X : C, PreservesColimitsOfShape K (tensorLeft X)] {F : J ⥤ C} :
     PreservesColimitsOfShape K (tensorLeft F) := by
   apply preservesColimitsOfShape_of_evaluation

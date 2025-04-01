@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Monomorphisms over a fixed object
@@ -136,6 +137,13 @@ def isoMk {f g : MonoOver X} (h : f.obj.left ≅ g.obj.left)
 @[simps!]
 def mk'ArrowIso {X : C} (f : MonoOver X) : mk' f.arrow ≅ f :=
   isoMk (Iso.refl _)
+
+instance {A B : MonoOver X} (f : A ⟶ B) [IsIso f] : IsIso f.left :=
+  inferInstanceAs (IsIso ((MonoOver.forget _ ⋙ Over.forget _).map f))
+
+lemma isIso_iff_isIso_left {A B : MonoOver X} (f : A ⟶ B) :
+    IsIso f ↔ IsIso f.left :=
+  (isIso_iff_of_reflects_iso _ (MonoOver.forget X ⋙ Over.forget _)).symm
 
 /-- Lift a functor between over categories to a functor between `MonoOver` categories,
 given suitable evidence that morphisms are taken to monomorphisms.

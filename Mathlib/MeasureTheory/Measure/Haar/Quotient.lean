@@ -63,7 +63,7 @@ end
 
 section smulInvariantMeasure
 
-variable {G : Type*} [Group G] [MeasurableSpace G]  (ν : Measure G) {Γ : Subgroup G}
+variable {G : Type*} [Group G] [MeasurableSpace G] (ν : Measure G) {Γ : Subgroup G}
   {μ : Measure (G ⧸ Γ)}
   [QuotientMeasureEqMeasurePreimage ν μ]
 
