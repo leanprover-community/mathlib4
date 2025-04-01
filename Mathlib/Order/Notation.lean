@@ -54,11 +54,17 @@ class Inf (α : Type*) where
 
 attribute [ext] Min Max
 
-@[inherit_doc Max.max]
-syntax:68 (name := sup) term:68 " ⊔ " term:69 : term
+/--
+Least upper bound (`\lub` notation). `x ⊔ y` is the same as `max x y`
+and it is preferred when the type of `x` and `y` is not a linear order.
+-/
+syntax:68 term:68 " ⊔ " term:69 : term
 
-@[inherit_doc Min.min]
-syntax:69 (name := inf) term:69 " ⊓ " term:70 : term
+/--
+Greatest lower bound (`\glb` notation). `x ⊓ y` is the same as `min x y`
+and it is preferred when the type of `x` and `y` is not a linear order.
+-/
+syntax:69 term:69 " ⊓ " term:70 : term
 
 macro_rules
 | `($a ⊔ $b) => `(Max.max $a $b)
