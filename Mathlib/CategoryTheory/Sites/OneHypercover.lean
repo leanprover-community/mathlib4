@@ -46,7 +46,7 @@ structure PreOneHypercover (S : C) where
   f (i : I₀) : X i ⟶ S
   /-- the index type of the coverings of the fibre products -/
   I₁ (i₁ i₂ : I₀) : Type w
-  /-- the objects in the coverings of the fibre products  -/
+  /-- the objects in the coverings of the fibre products -/
   Y ⦃i₁ i₂ : I₀⦄ (j : I₁ i₁ i₂) : C
   /-- the first projection `Y j ⟶ X i₁` -/
   p₁ ⦃i₁ i₂ : I₀⦄ (j : I₁ i₁ i₂) : Y j ⟶ X i₁

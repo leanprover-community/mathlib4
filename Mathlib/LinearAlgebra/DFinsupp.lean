@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Kenny Lau
 import Mathlib.Data.DFinsupp.Submonoid
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # Properties of the module `Π₀ i, M i`
@@ -70,8 +70,6 @@ theorem lhom_ext' ⦃φ ψ : (Π₀ i, M i) →ₗ[R] N⦄ (h : ∀ i, φ.comp (
     φ = ψ :=
   lhom_ext fun i => LinearMap.congr_fun (h i)
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem lmk_apply (s : Finset ι) (x) : (lmk s : _ →ₗ[R] Π₀ i, M i) x = mk s x :=
   rfl
 

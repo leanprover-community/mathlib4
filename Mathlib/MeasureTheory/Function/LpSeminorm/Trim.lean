@@ -63,8 +63,11 @@ theorem eLpNorm_trim_ae (hm : m ≤ m0) {f : α → E} (hf : AEStronglyMeasurabl
   rw [eLpNorm_congr_ae hf.ae_eq_mk, eLpNorm_congr_ae (ae_eq_of_ae_eq_trim hf.ae_eq_mk)]
   exact eLpNorm_trim hm hf.stronglyMeasurable_mk
 
-theorem memℒp_of_memℒp_trim (hm : m ≤ m0) {f : α → E} (hf : Memℒp f p (μ.trim hm)) : Memℒp f p μ :=
+theorem memLp_of_memLp_trim (hm : m ≤ m0) {f : α → E} (hf : MemLp f p (μ.trim hm)) : MemLp f p μ :=
   ⟨aestronglyMeasurable_of_aestronglyMeasurable_trim hm hf.1,
     (le_of_eq (eLpNorm_trim_ae hm hf.1).symm).trans_lt hf.2⟩
+
+@[deprecated (since := "2025-02-21")]
+alias memℒp_of_memℒp_trim := memLp_of_memLp_trim
 
 end MeasureTheory

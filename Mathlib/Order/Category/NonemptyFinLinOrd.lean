@@ -58,13 +58,6 @@ abbrev ofHom {X Y : Type u} [Nonempty X] [LinearOrder X] [Fintype X]
     of X ⟶ of Y :=
   ConcreteCategory.ofHom (C := NonemptyFinLinOrd) f
 
-variable {R} in
-/-- Use the `ConcreteCategory.hom` projection for `@[simps]` lemmas. -/
-def Hom.Simps.hom (X Y : NonemptyFinLinOrd.{u}) (f : LinOrd.Hom X.toLinOrd Y.toLinOrd) :=
-  f.hom
-
-initialize_simps_projections PartOrd.Hom (hom' → hom)
-
 @[simp]
 lemma hom_id {X : NonemptyFinLinOrd} : (𝟙 X : X ⟶ X).hom = OrderHom.id := rfl
 
