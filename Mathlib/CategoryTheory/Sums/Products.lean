@@ -137,10 +137,10 @@ def ofNatIsoWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
 
 lemma ofNatIsoWhiskerLeftInlInr_eq {F G : A ⊕ A' ⥤ B}
     (η₁ : Sum.inl_ A A' ⋙ F ≅ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ≅ Sum.inr_ A A' ⋙ G) :
+    ofNatIsoWhiskerLeftInlInr η₁ η₂ =
     (Sum.functorEquiv A A' B).unitIso.app _ ≪≫
       (Sum.functorEquiv A A' B).inverse.mapIso (Iso.prod η₁ η₂) ≪≫
-      (Sum.functorEquiv A A' B).unitIso.symm.app _ =
-    ofNatIsoWhiskerLeftInlInr η₁ η₂ := by
+      (Sum.functorEquiv A A' B).unitIso.symm.app _ := by
   aesop_cat
 
 end NatIso
