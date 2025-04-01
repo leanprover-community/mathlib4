@@ -222,7 +222,8 @@ lemma delete_delete_eq_delete_diff (M : Matroid α) (D₁ D₂ : Set α) :
   by simp
 
 instance delete_finitary (M : Matroid α) [Finitary M] (D : Set α) : Finitary (M ＼ D) := by
-  change Finitary (M ↾ (M.E \ D)); infer_instance
+  change Finitary (M ↾ (M.E \ D))
+  infer_instance
 
 lemma Coindep.delete_isBase_iff (hD : M.Coindep D) :
     (M ＼ D).IsBase B ↔ M.IsBase B ∧ Disjoint B D := by
@@ -255,9 +256,8 @@ variable {C C₁ C₂ : Set α}
 
 /-- The contraction `M ／ C` is the matroid on `M.E \ C` in which a set `I ⊆ M.E \ C` is independent
 if and only if `I ∪ J` is independent, where `J` is an arbitrarily chosen basis for `C`.
-It is also equal to `(M✶ ＼ C)✶`, and is defined this way so we don't have to give
-a separate proof that it is actually a matroid.
-(Currently the proof it has the correct independent sets is TODO. ) -/
+It is also equal by definition to `(M✶ ＼ C)✶`; see `Matroid.IsBasis.contract_indep_iff` for
+a proof that its independent sets are the claimed ones. -/
 def contract (M : Matroid α) (C : Set α) : Matroid α := (M✶ ＼ C)✶
 
 /-- `M ／ C` refers to the contraction of a set `C` from the matroid `M`. -/
@@ -308,13 +308,12 @@ lemma contract_eq_self_iff : M ／ C = M ↔ Disjoint C M.E := by
 @[simp] lemma contract_empty (M : Matroid α) : M ／ ∅ = M := by
   rw [← dual_delete_dual, delete_empty, dual_dual]
 
-lemma contract_contract_diff (M : Matroid α) (C₁ C₂ : Set α) :
+lemma contract_contract_eq_contract_diff (M : Matroid α) (C₁ C₂ : Set α) :
     M ／ C₁ ／ C₂ = M ／ C₁ ／ (C₂ \ C₁) := by
   simp
 
 lemma contract_eq_contract_iff : M ／ C₁ = M ／ C₂ ↔ C₁ ∩ M.E = C₂ ∩ M.E := by
-  rw [← dual_delete_dual, ← dual_delete_dual, dual_inj,
-    delete_eq_delete_iff, dual_ground]
+  rw [← dual_delete_dual, ← dual_delete_dual, dual_inj, delete_eq_delete_iff, dual_ground]
 
 @[simp] lemma contract_inter_ground_eq (M : Matroid α) (C : Set α) : M ／ (C ∩ M.E) = M ／ C := by
   rw [← dual_delete_dual, (show M.E = M✶.E from rfl), delete_inter_ground_eq]
@@ -325,7 +324,7 @@ lemma coindep_contract_iff : (M ／ C).Coindep X ↔ M.Coindep X ∧ Disjoint X 
 
 lemma Coindep.coindep_contract_of_disjoint (hX : M.Coindep X) (hXC : Disjoint X C) :
     (M ／ C).Coindep X :=
-  coindep_contract_iff.mpr ⟨hX, hXC⟩
+  coindep_contract_iff.2 ⟨hX, hXC⟩
 
 @[simp] lemma contract_isCocircuit_iff :
     (M ／ C).IsCocircuit K ↔ M.IsCocircuit K ∧ Disjoint K C := by
@@ -495,9 +494,9 @@ lemma exists_eq_contract_indep_delete (M : Matroid α) (C : Set α) :
 lemma Indep.of_contract (hI : (M ／ C).Indep I) : M.Indep I :=
   ((M.exists_isBasis' C).choose_spec.contract_indep_iff.1 hI).1.subset subset_union_left
 
-instance contract_rankFinite [RankFinite M] : RankFinite (M ／ C) := by
-  obtain ⟨B, hB⟩ := (M ／ C).exists_isBase
-  refine ⟨B, hB, hB.indep.of_contract.finite⟩
+instance contract_rankFinite [RankFinite M] : RankFinite (M ／ C) :=
+  let ⟨B, hB⟩ := (M ／ C).exists_isBase
+  ⟨B, hB, hB.indep.of_contract.finite⟩
 
 instance contract_finitary [Finitary M] : Finitary (M ／ C) := by
   obtain ⟨J, hJ⟩ := M.exists_isBasis' C
@@ -666,7 +665,8 @@ lemma IsNonloop.of_contract (h : (M ／ C).IsNonloop e) : M.IsNonloop e := by
   rw [← indep_singleton] at h ⊢
   exact h.of_contract
 
-@[simp] lemma contract_isNonloop_iff : (M ／ C).IsNonloop e ↔ e ∈ M.E \ M.closure C := by
+@[simp]
+lemma contract_isNonloop_iff : (M ／ C).IsNonloop e ↔ e ∈ M.E \ M.closure C := by
   rw [isNonloop_iff_mem_compl_loops, contract_ground, contract_loops_eq]
   refine ⟨fun ⟨he,heC⟩ ↦ ⟨he.1, fun h ↦ heC ⟨h, he.2⟩⟩,
     fun h ↦ ⟨⟨h.1, fun heC ↦ h.2 ?_⟩, fun h' ↦ h.2 h'.1⟩⟩
