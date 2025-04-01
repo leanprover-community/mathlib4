@@ -248,6 +248,10 @@ lemma freeOn_not_isLoop (E : Set α) (e : α) : ¬ (freeOn E).IsLoop e := by
 lemma uniqueBaseOn_isLoop_iff {I E : Set α} : (uniqueBaseOn I E).IsLoop e ↔ e ∈ E \ I := by
   simp [isLoop_iff, loops]
 
+lemma eq_loopyOn_iff_loops_eq {E : Set α} : M = loopyOn E ↔ M.loops = E ∧ M.E = E :=
+  ⟨fun h ↦ by simp [h, loops],
+  fun ⟨h,h'⟩ ↦ by rw [← h', ← closure_empty_eq_ground_iff, ← loops, h, h']⟩
+
 section IsNonloop
 
 /-- `M.IsNonloop e` means that `e` is an element of `M.E` but not a loop of `M`. -/
