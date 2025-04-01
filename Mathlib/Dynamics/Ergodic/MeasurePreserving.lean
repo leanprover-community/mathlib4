@@ -132,6 +132,17 @@ theorem measure_preimage_equiv {f : α ≃ᵐ β} (hf : MeasurePreserving f μa 
     μa (f ⁻¹' s) = μb s :=
   measure_preimage_emb hf f.measurableEmbedding s
 
+theorem measure_preimage_le {f : α → β} (hf : MeasurePreserving f μa μb) (s : Set β) :
+    μa (f ⁻¹' s) ≤ μb s := by
+  rw [← hf.map_eq]
+  exact le_map_apply hf.aemeasurable _
+
+/-- The preimage of a null set under a measure preserving map is a null set.
+Note that this lemma doesn't require the set to be measurable. -/
+theorem measure_preimage_null {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : μb s = 0) : μa (f ⁻¹' s) = 0 :=
+  nonpos_iff_eq_zero.mp <| (hf.measure_preimage_le s).trans hs.le
+
 theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : MeasurePreserving f μa μb)
     {g : β → γ} (hg : NullMeasurable g μb) :
     Filter.EventuallyConst (g ∘ f) (ae μa) ↔ Filter.EventuallyConst g (ae μb) :=
