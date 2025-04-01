@@ -4,10 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Equiv.Opposite
+import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.ULift
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.DFinsupp.Defs
 import Mathlib.Data.Finsupp.Defs
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Unique products and related notions
@@ -76,9 +79,6 @@ theorem of_card_le_one (hA : A.Nonempty) (hB : B.Nonempty) (hA1 : #A ≤ 1) (hB1
   obtain ⟨a, ha⟩ := hA; obtain ⟨b, hb⟩ := hB
   exact ⟨a, ha, b, hb, fun _ _ ha' hb' _ ↦ ⟨hA1 ha' ha, hB1 hb' hb⟩⟩
 
-@[deprecated (since := "2024-09-23")]
-alias _root_.UniqueAdd.of_card_nonpos := UniqueAdd.of_card_le_one
-
 @[to_additive]
 theorem mt (h : UniqueMul A B a0 b0) :
     ∀ ⦃a b⦄, a ∈ A → b ∈ B → a ≠ a0 ∨ b ≠ b0 → a * b ≠ a0 * b0 := fun _ _ ha hb k ↦ by
@@ -123,9 +123,6 @@ theorem iff_card_le_one [DecidableEq G] (ha0 : a0 ∈ A) (hb0 : b0 ∈ B) :
     · rw [h1.1, h2.1]
     · rw [h1.2, h2.2]
   · exact Prod.ext_iff.1 (@h (a, b) (a0, b0) ⟨⟨ha, hb⟩, he⟩ ⟨⟨ha0, hb0⟩, rfl⟩)
-
-@[deprecated (since := "2024-09-23")]
-alias _root_.UniqueAdd.iff_card_nonpos := UniqueAdd.iff_card_le_one
 
 @[to_additive]
 theorem exists_iff_exists_existsUnique :
@@ -451,7 +448,8 @@ open UniqueMul in
     exact ⟨a0, ha0.1, b0, hb0.1, of_image_filter (Pi.evalMulHom G i) ha0.2 hb0.2 hi hu⟩
 
 open ULift in
-@[to_additive] instance [UniqueProds G] [UniqueProds H] : UniqueProds (G × H) := by
+@[to_additive] instance _root_.Prod.instUniqueProds [UniqueProds G] [UniqueProds H] :
+    UniqueProds (G × H) := by
   have : ∀ b, UniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he => Prod.ext ?_ ?_)
@@ -541,7 +539,9 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
       · exact ihA _ ((A.filter_subset _).ssubset_of_ne hA)
 
 open ULift in
-@[to_additive] instance [TwoUniqueProds G] [TwoUniqueProds H] : TwoUniqueProds (G × H) := by
+@[to_additive]
+instance _root_.Prod.instTwoUniqueProds [TwoUniqueProds G] [TwoUniqueProds H] :
+    TwoUniqueProds (G × H) := by
   have : ∀ b, TwoUniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he ↦ Prod.ext ?_ ?_)

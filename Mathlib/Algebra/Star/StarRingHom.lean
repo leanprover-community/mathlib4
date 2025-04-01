@@ -398,7 +398,7 @@ theorem symm_apply_apply (e : A ≃⋆+* B) : ∀ x, e.symm (e x) = x :=
   e.toRingEquiv.symm_apply_apply
 
 @[simp]
-theorem symm_trans_apply (e₁ : A ≃⋆+* B) (e₂ : B≃⋆+* C) (x : C) :
+theorem symm_trans_apply (e₁ : A ≃⋆+* B) (e₂ : B ≃⋆+* C) (x : C) :
     (e₁.trans e₂).symm x = e₁.symm (e₂.symm x) :=
   rfl
 

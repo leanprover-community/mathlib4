@@ -31,7 +31,7 @@ theorem EventuallyLE.mul_le_mul' [Mul β] [Preorder β] [MulLeftMono β]
 theorem EventuallyLE.mul_nonneg [OrderedSemiring β] {l : Filter α} {f g : α → β} (hf : 0 ≤ᶠ[l] f)
     (hg : 0 ≤ᶠ[l] g) : 0 ≤ᶠ[l] f * g := by filter_upwards [hf, hg] with x using _root_.mul_nonneg
 
-theorem eventually_sub_nonneg [OrderedRing β] {l : Filter α} {f g : α → β} :
+theorem eventually_sub_nonneg [OrderedAddCommGroup β] {l : Filter α} {f g : α → β} :
     0 ≤ᶠ[l] g - f ↔ f ≤ᶠ[l] g :=
   eventually_congr <| Eventually.of_forall fun _ => sub_nonneg
 

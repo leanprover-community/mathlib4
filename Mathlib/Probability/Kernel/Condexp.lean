@@ -45,14 +45,14 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_id [Topologi
     (hm : m ≤ mΩ) (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable[m.prod mΩ] (fun x : Ω × Ω => f x.2)
       (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω => (id ω, id ω)) μ) := by
-  rw [← aestronglyMeasurable_comp_snd_map_prod_mk_iff (measurable_id'' hm)] at hf
+  rw [← aestronglyMeasurable_comp_snd_map_prodMk_iff (measurable_id'' hm)] at hf
   simp_rw [id] at hf ⊢
   exact hf
 
 theorem _root_.MeasureTheory.Integrable.comp_snd_map_prod_id [NormedAddCommGroup F] (hm : m ≤ mΩ)
     (hf : Integrable f μ) : Integrable (fun x : Ω × Ω => f x.2)
       (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω => (id ω, id ω)) μ) := by
-  rw [← integrable_comp_snd_map_prod_mk_iff (measurable_id'' hm)] at hf
+  rw [← integrable_comp_snd_map_prodMk_iff (measurable_id'' hm)] at hf
   simp_rw [id] at hf ⊢
   exact hf
 
@@ -112,7 +112,7 @@ lemma compProd_trim_condExpKernel (hm : m ≤ mΩ) :
   congr
 
 lemma condExpKernel_comp_trim (hm : m ≤ mΩ) : condExpKernel μ m ∘ₘ μ.trim hm = μ := by
-  rw [← Measure.snd_compProd, compProd_trim_condExpKernel, @Measure.snd_map_prod_mk, Measure.map_id]
+  rw [← Measure.snd_compProd, compProd_trim_condExpKernel, @Measure.snd_map_prodMk, Measure.map_id]
   exact measurable_id'' hm
 
 section Measurability
@@ -361,7 +361,7 @@ lemma condExp_generateFrom_singleton (hs : MeasurableSet s) {f : Ω → F} (hf :
         exact ENNReal.toReal_ne_zero.2 ⟨hμs, measure_ne_top _ _⟩
       · simp only [h, integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
           ((Measure.restrict_apply_eq_zero hs.compl).2 <| compl_inter_self s ▸ measure_empty),
-          ENNReal.zero_toReal, zero_smul, setIntegral_zero_measure]
+          ENNReal.toReal_zero, zero_smul, setIntegral_zero_measure]
       · simp only [h, Measure.restrict_univ, cond, integral_smul_measure, ENNReal.toReal_inv,
           integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,
           smul_inv_smul₀ <| ENNReal.toReal_ne_zero.2 ⟨hμs, measure_ne_top _ _⟩]

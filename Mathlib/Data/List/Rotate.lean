@@ -5,6 +5,7 @@ Authors: Chris Hughes, Yakov Pechersky
 -/
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Infix
+import Mathlib.Data.Quot
 
 /-!
 # List rotation
@@ -217,7 +218,6 @@ theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
   simp only [get?_eq_getElem?, length_rotate, hml, getElem?_eq_getElem, getElem_rotate]
   rw [← getElem?_eq_getElem]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new lemma
 theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
     (l.rotate n).get k = l.get ⟨(k + n) % l.length, mod_lt _ (length_rotate l n ▸ k.pos)⟩ := by
   simp [getElem_rotate]
@@ -454,8 +454,6 @@ theorem isRotated_iff_mem_map_range : l ~r l' ↔ l' ∈ (List.range (l.length +
     ⟨fun ⟨n, hn, h⟩ => ⟨n, Nat.lt_succ_of_le hn, h⟩,
       fun ⟨n, hn, h⟩ => ⟨n, Nat.le_of_lt_succ hn, h⟩⟩
 
--- Porting note: @[congr] only works for equality.
--- @[congr]
 theorem IsRotated.map {β : Type*} {l₁ l₂ : List α} (h : l₁ ~r l₂) (f : α → β) :
     map f l₁ ~r map f l₂ := by
   obtain ⟨n, rfl⟩ := h

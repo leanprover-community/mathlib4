@@ -260,6 +260,9 @@ instance : CharZero (ℤ√d) where cast_injective m n := by simp [Zsqrtd.ext_if
 theorem ofInt_eq_intCast (n : ℤ) : (ofInt n : ℤ√d) = n := by ext <;> simp [ofInt_re, ofInt_im]
 
 @[simp]
+theorem nsmul_val (n : ℕ) (x y : ℤ) : (n : ℤ√d) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by ext <;> simp
+
+@[simp]
 theorem smul_val (n x y : ℤ) : (n : ℤ√d) * ⟨x, y⟩ = ⟨n * x, n * y⟩ := by ext <;> simp
 
 theorem smul_re (a : ℤ) (b : ℤ√d) : (↑a * b).re = a * b.re := by simp
@@ -456,15 +459,11 @@ theorem norm_eq_mul_conj (n : ℤ√d) : (norm n : ℤ√d) = n * star n := by
 
 @[simp]
 theorem norm_neg (x : ℤ√d) : (-x).norm = x.norm :=
-  -- Porting note: replaced `simp` with `rw`
-  -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  (Int.cast_inj (α := ℤ√d)).1 <| by rw [norm_eq_mul_conj, star_neg, neg_mul_neg, norm_eq_mul_conj]
+  (Int.cast_inj (α := ℤ√d)).1 <| by simp [norm_eq_mul_conj]
 
 @[simp]
 theorem norm_conj (x : ℤ√d) : (star x).norm = x.norm :=
-  -- Porting note: replaced `simp` with `rw`
-  -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  (Int.cast_inj (α := ℤ√d)).1 <| by rw [norm_eq_mul_conj, star_star, mul_comm, norm_eq_mul_conj]
+  (Int.cast_inj (α := ℤ√d)).1 <| by simp [norm_eq_mul_conj, mul_comm]
 
 theorem norm_nonneg (hd : d ≤ 0) (n : ℤ√d) : 0 ≤ n.norm :=
   add_nonneg (mul_self_nonneg _)
@@ -540,7 +539,7 @@ instance decidableNonnegg (c d a b) : Decidable (Nonnegg c d a b) := by
 instance decidableNonneg : ∀ a : ℤ√d, Decidable (Nonneg a)
   | ⟨_, _⟩ => Zsqrtd.decidableNonnegg _ _ _ _
 
-instance decidableLE : DecidableRel (α := ℤ√d) (· ≤ ·) := fun _ _ => decidableNonneg _
+instance decidableLE : DecidableLE (ℤ√d) := fun _ _ => decidableNonneg _
 
 open Int in
 theorem nonneg_cases : ∀ {a : ℤ√d}, Nonneg a → ∃ x y : ℕ, a = ⟨x, y⟩ ∨ a = ⟨x, -y⟩ ∨ a = ⟨-x, y⟩
@@ -591,9 +590,6 @@ theorem Nonneg.add {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a +
       nonnegg_pos_neg.2 (sqLe_add (nonnegg_pos_neg.1 ha) (nonnegg_pos_neg.1 hb))
     rw [Nat.cast_add, Nat.cast_add, neg_add] at this
     rwa [add_def]
-    -- Porting note: was
-    -- simpa [add_comm] using
-    --   nonnegg_pos_neg.2 (sqLe_add (nonnegg_pos_neg.1 ha) (nonnegg_pos_neg.1 hb))
   · exact nonneg_add_lem ha hb
   · refine nonnegg_cases_left fun i h => sqLe_of_le ?_ ?_ (nonnegg_neg_pos.1 ha)
     · dsimp only at h
@@ -606,9 +602,6 @@ theorem Nonneg.add {a b : ℤ√d} (ha : Nonneg a) (hb : Nonneg b) : Nonneg (a +
       nonnegg_neg_pos.2 (sqLe_add (nonnegg_neg_pos.1 ha) (nonnegg_neg_pos.1 hb))
     rw [Nat.cast_add, Nat.cast_add, neg_add] at this
     rwa [add_def]
-    -- Porting note: was
-    -- simpa [add_comm] using
-    --   nonnegg_neg_pos.2 (sqLe_add (nonnegg_neg_pos.1 ha) (nonnegg_neg_pos.1 hb))
 
 theorem nonneg_iff_zero_le {a : ℤ√d} : Nonneg a ↔ 0 ≤ a :=
   show _ ↔ Nonneg _ by simp

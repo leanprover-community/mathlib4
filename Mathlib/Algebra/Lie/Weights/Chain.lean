@@ -7,6 +7,7 @@ import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Data.Int.Interval
 import Mathlib.LinearAlgebra.Trace
+import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
 # Chains of roots and weights
@@ -365,3 +366,40 @@ lemma chainTop_isNonZero (α β : Weight R L M) (hα : α.IsNonZero) :
 end
 
 end LieModule
+
+section Field
+
+open LieAlgebra LieModule
+
+variable {K : Type*} [Field K] [CharZero K] [LieAlgebra K L]
+  (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
+  [Module K M] [LieModule K L M]
+  [IsTriangularizable K H M] [FiniteDimensional K M]
+
+lemma LieModule.isNilpotent_toEnd_of_mem_rootSpace
+    {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
+    _root_.IsNilpotent (toEnd K L M x) := by
+  refine Module.Finite.Module.End.isNilpotent_iff_of_finite.mpr fun m ↦ ?_
+  have hm : m ∈ ⨆ χ : LieModule.Weight K H M, genWeightSpace M χ := by
+    simp [iSup_genWeightSpace_eq_top' K H M]
+  induction hm using LieSubmodule.iSup_induction' with
+  | h0 => exact ⟨0, map_zero _⟩
+  | hN χ₂ m₂ hm₂ =>
+    obtain ⟨n, -, hn⟩ := exists_genWeightSpace_smul_add_eq_bot M χ χ₂ hχ
+    use n
+    have := toEnd_pow_apply_mem hx hm₂ n
+    rwa [hn, LieSubmodule.mem_bot] at this
+  | hadd m₁ m₂ hm₁ hm₂ hm₁' hm₂' =>
+    obtain ⟨n₁, hn₁⟩ := hm₁'
+    obtain ⟨n₂, hn₂⟩ := hm₂'
+    refine ⟨max n₁ n₂, ?_⟩
+    rw [map_add, LinearMap.pow_map_zero_of_le le_sup_left hn₁,
+      LinearMap.pow_map_zero_of_le le_sup_right hn₂, add_zero]
+
+lemma LieAlgebra.isNilpotent_ad_of_mem_rootSpace
+    [IsTriangularizable K H L] [FiniteDimensional K L]
+    {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
+    _root_.IsNilpotent (ad K L x) :=
+  isNilpotent_toEnd_of_mem_rootSpace (M := L) H hχ hx
+
+end Field

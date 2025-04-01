@@ -316,7 +316,7 @@ theorem ballot_problem' :
     simp
   · intro p
     rw [ballot_edge]
-    simp only [ENNReal.one_toReal, Nat.cast_add, Nat.cast_one, Nat.cast_zero, sub_zero, add_zero]
+    simp only [ENNReal.toReal_one, Nat.cast_add, Nat.cast_one, Nat.cast_zero, sub_zero, add_zero]
     rw [div_self]
     exact Nat.cast_add_one_ne_zero p
   · intro q p qp h₁ h₂
