@@ -44,7 +44,7 @@ infinity
 
 ## Main statements
 
-* `SchwartzMap.instUniformAddGroup` and `SchwartzMap.instLocallyConvexSpace`: The Schwartz space
+* `SchwartzMap.instIsUniformAddGroup` and `SchwartzMap.instLocallyConvexSpace`: The Schwartz space
 is a locally convex topological vector space.
 * `SchwartzMap.one_add_le_sup_seminorm_apply`: For a Schwartz function `f` there is a uniform bound
 on `(1 + ‖x‖) ^ k * ‖iteratedFDeriv ℝ n f x‖`.
@@ -85,9 +85,6 @@ scoped[SchwartzMap] notation "𝓢(" E ", " F ")" => SchwartzMap E F
 variable {E F}
 
 namespace SchwartzMap
-
--- Porting note: removed
--- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
 
 instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
@@ -506,8 +503,11 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup 𝓢(E, F) :=
 instance instUniformSpace : UniformSpace 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformSpace
 
-instance instUniformAddGroup : UniformAddGroup 𝓢(E, F) :=
-  (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformAddGroup
+instance instIsUniformAddGroup : IsUniformAddGroup 𝓢(E, F) :=
+  (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isUniformAddGroup
+
+@[deprecated (since := "2025-03-31")] alias instUniformAddGroup :=
+  SchwartzMap.instIsUniformAddGroup
 
 instance instLocallyConvexSpace : LocallyConvexSpace ℝ 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).toLocallyConvexSpace
@@ -808,7 +808,7 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
       simp only [smul_apply, map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
         RingHom.id_apply])
     (fun f => (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
-      (f.smooth'.prod hg.1)) ?_
+      (f.smooth'.prodMk hg.1)) ?_
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
   use

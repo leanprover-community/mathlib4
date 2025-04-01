@@ -67,7 +67,9 @@ def CliffordAlgebra :=
 
 namespace CliffordAlgebra
 
--- Porting note: Expanded `deriving Inhabited, Semiring, Algebra`
+-- The `Inhabited, Semiring, Algebra` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
 instance instInhabited : Inhabited (CliffordAlgebra Q) := RingQuot.instInhabited _
 instance instRing : Ring (CliffordAlgebra Q) := RingQuot.instRing _
 

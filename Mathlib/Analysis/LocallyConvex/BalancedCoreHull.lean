@@ -136,7 +136,7 @@ theorem balancedHull.balanced (s : Set E) : Balanced 𝕜 (balancedHull 𝕜 s) 
   simp_rw [balancedHull, smul_set_iUnion₂, subset_def, mem_iUnion₂]
   rintro x ⟨r, hr, hx⟩
   rw [← smul_assoc] at hx
-  exact ⟨a • r, (SeminormedRing.norm_mul _ _).trans (mul_le_one₀ ha (norm_nonneg r) hr), hx⟩
+  exact ⟨a • r, (norm_mul_le _ _).trans (mul_le_one₀ ha (norm_nonneg r) hr), hx⟩
 
 open Balanced in
 theorem balancedHull_add_subset [NormOneClass 𝕜] {t : Set E} :

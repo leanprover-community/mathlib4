@@ -142,7 +142,7 @@ theorem rel_equiv : Equivalence D.Rel :=
 open CategoryTheory.Limits.WalkingParallelPair
 
 theorem eqvGen_of_π_eq
-    -- Porting note: was `{x y : ∐ D.U} (h : 𝖣.π x = 𝖣.π y)`
+    -- Porting note: was `{x y : ∐ D.U}`
     {x y : sigmaObj (β := D.toGlueData.J) (C := TopCat) D.toGlueData.U}
     (h : 𝖣.π x = 𝖣.π y) :
     Relation.EqvGen
@@ -286,9 +286,13 @@ such that
 We can then glue the topological spaces `U i` together by identifying `V i j` with `V j i`.
 -/
 structure MkCore where
+  /-- The index type `J` -/
   {J : Type u}
+  /-- For each `i : J`, a bundled topological space `U i` -/
   U : J → TopCat.{u}
+  /-- For each `i j : J`, an open set `V i j ⊆ U i` -/
   V : ∀ i, J → Opens (U i)
+  /-- For each `i j : ι`, a transition map `t i j : V i j ⟶ V j i` -/
   t : ∀ i j, (Opens.toTopCat _).obj (V i j) ⟶ (Opens.toTopCat _).obj (V j i)
   V_id : ∀ i, V i i = ⊤
   t_id : ∀ i, ⇑(t i i) = id
@@ -350,7 +354,7 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
     ext1 ⟨⟨⟨x, hx⟩, ⟨x', hx'⟩⟩, rfl : x = x'⟩
     dsimp only [Opens.coe_inclusion', hom_comp, hom_ofHom, ContinuousMap.comp_assoc,
       ContinuousMap.comp_apply, ContinuousMap.coe_mk, hom_id, ContinuousMap.id_apply]
-    rw [Subtype.mk_eq_mk, Prod.mk.inj_iff, Subtype.mk_eq_mk, Subtype.ext_iff, and_self_iff]
+    rw [Subtype.mk_eq_mk, Prod.mk_inj, Subtype.mk_eq_mk, Subtype.ext_iff, and_self_iff]
     convert congr_arg Subtype.val (h.t_inv k i ⟨x, hx'⟩) using 3
     refine Subtype.ext ?_
     exact h.cocycle i j k ⟨x, hx⟩ hx'

@@ -70,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.14"
+  "0.1.15"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -146,6 +146,7 @@ the file should be located at `(← getSrcDir _) / "Mathlib" / "Init.lean`.
 Usually it is either `.` or something like `./.lake/packages/mathlib/`
 -/
 def getSrcDir (sp : SearchPath) (mod : Name) : IO FilePath := do
+
   let .some srcDir ← sp.findWithExtBase "lean" mod |
     throw <| IO.userError s!"Unknown package directory for {mod}\nsearch paths: {sp}"
 
@@ -363,16 +364,32 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
   if size > 0 then
     let now ← IO.monoMsNow
     IO.println s!"Decompressing {size} file(s)"
-    let isMathlibRoot ← isMathlibRoot
     let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
     let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
+    /-
+    TODO: The case distinction below could be avoided by making use of the `leantar` option `-C`
+    (rsp the `"base"` field in JSON format, see below) here and in `packCache`.
+
+    See also https://github.com/leanprover-community/mathlib4/pull/8767#discussion_r1422077498
+
+    Doing this, one could avoid that the package directory path (for dependencies) appears
+    inside the leantar files, but unless `cache` is upstreamed to work on upstream packages
+    themselves (without `Mathlib`), this might not be too useful to change.
+
+    NOTE: making changes to the generated .ltar files invalidates them while it *DOES NOT* change
+    the file hash! This means any such change needs to be accompanied by a change
+    to the root hash affecting *ALL* files
+    (e.g. any modification to lakefile, lean-toolchain or manifest)
+    -/
+    let isMathlibRoot ← isMathlibRoot
     let mathlibDepPath := (← read).mathlibDepPath.toString
     let config : Array Lean.Json := hashMap.fold (init := #[]) fun config mod hash =>
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
       if isMathlibRoot || !isFromMathlib mod then
         config.push <| .str pathStr
-      else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
+      else
+        -- only mathlib files, when not in the mathlib4 repo, need to be redirected
         config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath)]
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait

@@ -131,7 +131,7 @@ def skyscraperPresheafCoconeOfSpecializes {y : X} (h : p₀ ⤳ y) :
     { app := fun U => eqToHom <| if_pos <| h.mem_open U.unop.1.2 U.unop.2
       naturality := fun U V inc => by
         change dite _ _ _ ≫ _ = _; rw [dif_pos]
-        swap -- Porting note: swap goal to prevent proving same thing twice
+        swap
         · exact h.mem_open V.unop.1.2 V.unop.2
         · simp only [Functor.comp_obj, Functor.op_obj, skyscraperPresheaf_obj, unop_op,
             Functor.const_obj_obj, eqToHom_trans, Functor.const_obj_map, Category.comp_id] }
