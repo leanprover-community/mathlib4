@@ -68,28 +68,29 @@ section Delab
 
 open Lean Meta PrettyPrinter Delaborator SubExpr
 
+private def hasLinearOrder (e : Expr) : MetaM Bool := do
+  try
+    _ ← synthInstance (← mkAppM `LinearOrder #[e])
+    return true
+  catch _ =>
+    return false
+
 @[delab app.Max.max]
 def elabSup : Delab := do
-  let e ← getExpr
-  guard (e.isAppOfArity ``Max.max 4)
-  let α := e.appFn!.appFn!.appFn!.appArg!
-  try
-    discard <| synthInstance (← mkAppM `LinearOrder #[α])
+  let_expr Max.max α _ _ _ := ← getExpr | failure
+  if ← hasLinearOrder α then
     failure -- use the default delaborator
-  catch _ =>
+  else
     let x ← withNaryArg 2 delab
     let y ← withNaryArg 3 delab
     `($x ⊔ $y)
 
 @[delab app.Min.min]
 def elabInf : Delab := do
-  let e ← getExpr
-  guard (e.isAppOfArity ``Min.min 4)
-  let α := e.appFn!.appFn!.appFn!.appArg!
-  try
-    discard <| synthInstance (← mkAppM `LinearOrder #[α])
+  let_expr Min.min α _ _ _ := ← getExpr | failure
+  if ← hasLinearOrder α then
     failure -- use the default delaborator
-  catch _ =>
+  else
     let x ← withNaryArg 2 delab
     let y ← withNaryArg 3 delab
     `($x ⊓ $y)
