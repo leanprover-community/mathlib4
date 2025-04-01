@@ -62,12 +62,11 @@ lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤
   rw [← Compacts.coe_mk (tsupport f) f.hasCompactSupport, rieszMeasure, h, rieszContent,
     ENNReal.ofReal_eq_coe_nnreal (hΛ f fun x ↦ (hf x).1), ENNReal.coe_le_coe]
   apply le_iff_forall_pos_le_add.mpr
-  intro ε hε
+  intro _ hε
   obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos (toNNRealLinear Λ hΛ)
     ⟨tsupport f, f.hasCompactSupport⟩ (Real.toNNReal_pos.mpr hε)
   simp_rw [NNReal.val_eq_coe, Real.toNNReal_coe] at hg
-  apply le_of_lt (lt_of_le_of_lt _ hg.2)
-  apply monotone_of_nonneg hΛ
+  refine le_of_lt (lt_of_le_of_lt (monotone_of_nonneg hΛ ?_) hg.2)
   intro x
   by_cases hx : x ∈ tsupport f
   · simpa using le_trans (hf x).2 (hg.1 x hx)
@@ -188,11 +187,9 @@ private lemma exists_nat_large (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N 
 integral of `f` with respect to the `rieszMeasure` associated to `Λ`. -/
 private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rieszMeasure hΛ) := by
   by_cases hX : IsEmpty X
-  -- The case `IsEmpty X` is elementary.
   · have : Λ f = 0 := by rw [show f = 0 by ext x; refine isEmptyElim x, LinearMap.map_zero Λ]
     rw [integral_of_isEmpty, this]
-  -- Now assuming `Nonempty X`
-  · rw [not_isEmpty_iff] at hX
+  · -- Now assuming `Nonempty X`
     let μ := rieszMeasure hΛ
     let K := tsupport f
     -- Suffices to show that `Λ f ≤ ∫ x, f x ∂μ + ε` for arbitrary `ε`.
@@ -313,16 +310,14 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(ries
         calc
           _ ≤ ∑ n, ∫ (x : X) in E n, f x ∂μ := Finset.sum_le_sum fun i a ↦ h i
           _ = ∫ x in (⋃ n, E n), f x ∂μ := by
-            apply Eq.symm
-            apply integral_fintype_iUnion hE.2.2.2 (fun i j ↦ hE.2.1 trivial trivial)
-            refine fun _ ↦ Integrable.integrableOn ?_
+            refine Eq.symm <| integral_fintype_iUnion hE.2.2.2 (fun _ _ ↦ hE.2.1 trivial trivial) ?_
             dsimp [μ, rieszMeasure]
-            exact Continuous.integrable_of_hasCompactSupport f.1.2 f.2
+            exact fun _ ↦
+              Integrable.integrableOn <| Continuous.integrable_of_hasCompactSupport f.1.2 f.2
           _ = ∫ x in tsupport f, f x ∂μ := by simp_rw [hE.1]
           _ = _ := setIntegral_tsupport
       intro n
-      apply setIntegral_ge_of_const_le (hE.2.2.2 n)
-      · exact hE' n
+      apply setIntegral_ge_of_const_le (hE.2.2.2 n) (hE' n)
       · intro x hx
         dsimp [y]; linarith [(hE.2.2.1 n x hx).1]
       · apply Integrable.integrableOn
