@@ -60,7 +60,7 @@ def Lean.Name.isAuxLemma (n : Name) : Bool :=
   match n with
   -- After lean4#7762, aux lemmas are of the form `_proof_nnn`
   | .str _ s => "_proof_".isPrefixOf s
-  -- Before lean4#7762, aux lemmas are of teh form `_auxLema.nnn`.
+  -- Before lean4#7762, aux lemmas are of the form `_auxLema.nnn`.
   -- TODO(kmill): delete once there is a Lean release that has had a stage0 update
   | .num (.str _ "_auxLemma") _ => true
   | _ => false
