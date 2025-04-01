@@ -93,12 +93,6 @@ def functorEquivInverseCompWhiskeringLeftInrIso :
     Prod.snd (A ⥤ B) (A' ⥤ B) :=
   NatIso.ofComponents (fun _ ↦ Functor.inrCompSum' _ _)
 
-end Sum
-
-variable {A A' B}
-
-namespace NatTrans
-
 /-- A consequence of `functorEquiv`: we can construct a natural transformation of functors
 `A ⊕ A' ⥤ B` from the data of natural transformations of their whiskering with `inl_` and `inr_`. -/
 @[simps!]
@@ -122,18 +116,14 @@ lemma ofNatTransWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
       ofNatTransWhiskerLeftInlInr ν₁ ν₂ := by
   aesop_cat
 
-end NatTrans
-
-namespace NatIso
-
 /-- A consequence of `functorEquiv`: we can construct a natural isomorphism of functors
 `A ⊕ A' ⥤ B` from the data of natural isomorphisms of their whiskering with `inl_` and `inr_`. -/
 @[simps]
 def ofNatIsoWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
     (η₁ : Sum.inl_ A A' ⋙ F ≅ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ≅ Sum.inr_ A A' ⋙ G) :
     F ≅ G where
-  hom := NatTrans.ofNatTransWhiskerLeftInlInr η₁.hom η₂.hom
-  inv := NatTrans.ofNatTransWhiskerLeftInlInr η₁.inv η₂.inv
+  hom := ofNatTransWhiskerLeftInlInr η₁.hom η₂.hom
+  inv := ofNatTransWhiskerLeftInlInr η₁.inv η₂.inv
 
 lemma ofNatIsoWhiskerLeftInlInr_eq {F G : A ⊕ A' ⥤ B}
     (η₁ : Sum.inl_ A A' ⋙ F ≅ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ≅ Sum.inr_ A A' ⋙ G) :
@@ -143,6 +133,6 @@ lemma ofNatIsoWhiskerLeftInlInr_eq {F G : A ⊕ A' ⥤ B}
       (Sum.functorEquiv A A' B).unitIso.symm.app _ := by
   aesop_cat
 
-end NatIso
+end Sum
 
 end CategoryTheory
