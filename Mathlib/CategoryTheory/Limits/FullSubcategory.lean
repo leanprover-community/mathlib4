@@ -149,17 +149,17 @@ variable (F : C ⥤ D)
 /-- The essential image of a functor is closed under the limits it preserves. -/
 protected lemma ClosedUnderLimitsOfShape.essImage [HasLimitsOfShape J C]
     [PreservesLimitsOfShape J F] [F.Full] [F.Faithful] :
-    ClosedUnderLimitsOfShape J F.essImage := fun G c hc hG ↦
-  ⟨limit (essImage.liftFunctor G F hG),
+    ClosedUnderLimitsOfShape J F.essImage := fun G _c hc hG ↦
+  ⟨limit (Functor.essImage.liftFunctor G F hG),
     ⟨IsLimit.conePointsIsoOfNatIso (isLimitOfPreserves F (limit.isLimit _)) hc
-      (essImage.liftFunctorCompIso _ _ _)⟩⟩
+      (Functor.essImage.liftFunctorCompIso _ _ _)⟩⟩
 
 /-- The essential image of a functor is closed under the colimits it preserves. -/
 protected lemma ClosedUnderColimitsOfShape.essImage [HasColimitsOfShape J C]
     [PreservesColimitsOfShape J F] [F.Full] [F.Faithful] :
     ClosedUnderColimitsOfShape J F.essImage := fun G _c hc hG ↦
-  ⟨colimit (essImage.liftFunctor G F hG),
+  ⟨colimit (Functor.essImage.liftFunctor G F hG),
     ⟨IsColimit.coconePointsIsoOfNatIso (isColimitOfPreserves F (colimit.isColimit _)) hc
-      (essImage.liftFunctorCompIso _ _ _)⟩⟩
+      (Functor.essImage.liftFunctorCompIso _ _ _)⟩⟩
 
 end CategoryTheory.Limits
