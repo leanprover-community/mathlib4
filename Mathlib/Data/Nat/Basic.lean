@@ -142,14 +142,7 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 
 /-! ### `mod`, `dvd` -/
 
-attribute [simp] Nat.dvd_zero
-
--- TODO: update `Nat.dvd_sub` in core
-lemma dvd_sub' (h₁ : k ∣ m) (h₂ : k ∣ n) : k ∣ m - n := by
-  rcases le_total n m with H | H
-  · exact dvd_sub H h₁ h₂
-  · rw [Nat.sub_eq_zero_iff_le.mpr H]
-    exact Nat.dvd_zero k
+@[deprecated (since := "2025-04-01")] alias dvd_sub' := dvd_sub
 
 /-- `dvd` is injective in the left argument -/
 lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun _ _ h =>
