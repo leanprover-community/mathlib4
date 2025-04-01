@@ -154,6 +154,19 @@ end Iso
 
 variable (D : Type u₂) [Category.{v₂} D]
 
+namespace Equivalence
+
+variable {D} in
+/-- Equivalent categories have equivalent cores. -/
+@[simps!]
+def core (E : C ≌ D) : Core C ≌ Core D where
+  functor := E.functor.core
+  inverse := E.inverse.core
+  unitIso := E.unitIso.core
+  counitIso := E.counitIso.core
+
+end Equivalence
+
 variable (C) in
 /-- Taking the core of a functor is functorial if we discard non-invertible natural
 transformations. -/
