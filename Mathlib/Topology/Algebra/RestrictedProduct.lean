@@ -266,6 +266,10 @@ instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
   DFunLike.coe_injective.ring _ rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
+instance [Π i, CommRing (R i)] [∀ i, SubringClass (S i) (R i)] :
+    CommRing (Πʳ i, [R i, B i]_[𝓕]) where
+  mul_comm _ _ := Subtype.eq <| funext (fun _ ↦ mul_comm _ _)
+
 end Algebra
 
 section Topology
