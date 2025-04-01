@@ -520,8 +520,16 @@ lemma contract_isLoop_iff_mem_closure : (M ／ C).IsLoop e ↔ e ∈ M.closure C
   simp [heI, and_comm]
 
 @[simp]
-lemma contract_loops_eq : (M ／ C).loops = M.closure C \ C := by
+lemma contract_loops_eq (M : Matroid α) (C : Set α) : (M ／ C).loops = M.closure C \ C := by
   simp [Set.ext_iff, ← isLoop_iff, contract_isLoop_iff_mem_closure]
+
+@[simp]
+lemma contract_coloops_eq (M : Matroid α) (C : Set α) : (M ／ C).coloops = M.coloops \ C := by
+  rw [← dual_delete_dual, dual_coloops, delete_loops_eq, dual_loops]
+
+@[simp]
+lemma contract_isColoop_iff : (M ／ C).IsColoop e ↔ M.IsColoop e ∧ e ∉ C := by
+  simp [isColoop_iff_mem_coloops]
 
 @[simp]
 lemma contract_closure_eq (M : Matroid α) (C X : Set α) :
