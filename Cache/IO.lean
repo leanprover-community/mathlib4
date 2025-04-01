@@ -70,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.14"
+  "0.1.15"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -367,16 +367,17 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
   if size > 0 then
     let now ← IO.monoMsNow
     IO.println s!"Decompressing {size} file(s)"
-    let isMathlibRoot ← isMathlibRoot
     let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
     let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
+    let isMathlibRoot ← isMathlibRoot
     let mathlibDepPath := (← read).mathlibDepPath.toString
     let config : Array Lean.Json := hashMap.fold (init := #[]) fun config path hash =>
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
       if isMathlibRoot || !isPathFromMathlib path then
         config.push <| .str pathStr
-      else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
+      else
+        -- only mathlib files, when not in the mathlib4 repo, need to be redirected
         config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath)]
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait
