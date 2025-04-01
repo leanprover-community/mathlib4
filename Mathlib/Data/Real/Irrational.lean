@@ -213,43 +213,56 @@ theorem add_cases : Irrational (x + y) → Irrational x ∨ Irrational y := by
   rintro ⟨⟨rx, rfl⟩, ⟨ry, rfl⟩⟩
   exact ⟨rx + ry, cast_add rx ry⟩
 
-theorem of_rat_add (h : Irrational (q + x)) : Irrational x :=
+theorem of_ratCast_add (h : Irrational (q + x)) : Irrational x :=
   h.add_cases.resolve_left q.not_irrational
+@[deprecated (since := "2025-04-01")] alias of_rat_add := of_ratCast_add
 
-theorem rat_add (h : Irrational x) : Irrational (q + x) :=
-  of_rat_add (-q) <| by rwa [cast_neg, neg_add_cancel_left]
+theorem ratCast_add (h : Irrational x) : Irrational (q + x) :=
+  of_ratCast_add (-q) <| by rwa [cast_neg, neg_add_cancel_left]
+@[deprecated (since := "2025-04-01")] alias rat_add := ratCast_add
 
-theorem of_add_rat : Irrational (x + q) → Irrational x :=
-  add_comm (↑q) x ▸ of_rat_add q
+theorem of_add_ratCast : Irrational (x + q) → Irrational x :=
+  add_comm (↑q) x ▸ of_ratCast_add q
+@[deprecated (since := "2025-04-01")] alias of_add_rat := of_add_ratCast
 
-theorem add_rat (h : Irrational x) : Irrational (x + q) :=
-  add_comm (↑q) x ▸ h.rat_add q
+theorem add_ratCast (h : Irrational x) : Irrational (x + q) :=
+  add_comm (↑q) x ▸ h.ratCast_add q
+@[deprecated (since := "2025-04-01")] alias add_rat := add_ratCast
 
-theorem of_int_add (m : ℤ) (h : Irrational (m + x)) : Irrational x := by
+theorem of_intCast_add (m : ℤ) (h : Irrational (m + x)) : Irrational x := by
   rw [← cast_intCast] at h
-  exact h.of_rat_add m
+  exact h.of_ratCast_add m
+@[deprecated (since := "2025-04-01")] alias of_int_add := of_intCast_add
 
-theorem of_add_int (m : ℤ) (h : Irrational (x + m)) : Irrational x :=
-  of_int_add m <| add_comm x m ▸ h
+theorem of_add_intCast (m : ℤ) (h : Irrational (x + m)) : Irrational x :=
+  of_intCast_add m <| add_comm x m ▸ h
+@[deprecated (since := "2025-04-01")] alias of_add_int := of_add_intCast
 
-theorem int_add (h : Irrational x) (m : ℤ) : Irrational (m + x) := by
+theorem intCast_add (h : Irrational x) (m : ℤ) : Irrational (m + x) := by
   rw [← cast_intCast]
-  exact h.rat_add m
+  exact h.ratCast_add m
+@[deprecated (since := "2025-04-01")] alias int_add := intCast_add
 
-theorem add_int (h : Irrational x) (m : ℤ) : Irrational (x + m) :=
-  add_comm (↑m) x ▸ h.int_add m
 
-theorem of_nat_add (m : ℕ) (h : Irrational (m + x)) : Irrational x :=
-  h.of_int_add m
+theorem add_intCast (h : Irrational x) (m : ℤ) : Irrational (x + m) :=
+  add_comm (↑m) x ▸ h.intCast_add m
+@[deprecated (since := "2025-04-01")] alias add_int := add_intCast
 
-theorem of_add_nat (m : ℕ) (h : Irrational (x + m)) : Irrational x :=
-  h.of_add_int m
+theorem of_natCast_add (m : ℕ) (h : Irrational (m + x)) : Irrational x :=
+  h.of_intCast_add m
+@[deprecated (since := "2025-04-01")] alias of_nat_add := of_natCast_add
 
-theorem nat_add (h : Irrational x) (m : ℕ) : Irrational (m + x) :=
-  h.int_add m
+theorem of_add_natCast (m : ℕ) (h : Irrational (x + m)) : Irrational x :=
+  h.of_add_intCast m
+@[deprecated (since := "2025-04-01")] alias of_add_nat := of_add_natCast
 
-theorem add_nat (h : Irrational x) (m : ℕ) : Irrational (x + m) :=
-  h.add_int m
+theorem natCast_add (h : Irrational x) (m : ℕ) : Irrational (m + x) :=
+  h.intCast_add m
+@[deprecated (since := "2025-04-01")] alias nat_add := natCast_add
+
+theorem add_natCast (h : Irrational x) (m : ℕ) : Irrational (x + m) :=
+  h.add_intCast m
+@[deprecated (since := "2025-04-01")] alias add_nat := add_natCast
 
 /-!
 #### Negation
@@ -267,16 +280,16 @@ protected theorem neg (h : Irrational x) : Irrational (-x) :=
 
 
 theorem sub_rat (h : Irrational x) : Irrational (x - q) := by
-  simpa only [sub_eq_add_neg, cast_neg] using h.add_rat (-q)
+  simpa only [sub_eq_add_neg, cast_neg] using h.add_ratCast (-q)
 
 theorem rat_sub (h : Irrational x) : Irrational (q - x) := by
-  simpa only [sub_eq_add_neg] using h.neg.rat_add q
+  simpa only [sub_eq_add_neg] using h.neg.ratCast_add q
 
 theorem of_sub_rat (h : Irrational (x - q)) : Irrational x :=
-  of_add_rat (-q) <| by simpa only [cast_neg, sub_eq_add_neg] using h
+  of_add_ratCast (-q) <| by simpa only [cast_neg, sub_eq_add_neg] using h
 
 theorem of_rat_sub (h : Irrational (q - x)) : Irrational x :=
-  of_neg (of_rat_add q (by simpa only [sub_eq_add_neg] using h))
+  of_neg (of_ratCast_add q (by simpa only [sub_eq_add_neg] using h))
 
 theorem sub_int (h : Irrational x) (m : ℤ) : Irrational (x - m) := by
   simpa only [Rat.cast_intCast] using h.sub_rat m
@@ -472,52 +485,64 @@ open Irrational
 
 
 @[simp]
-theorem irrational_rat_add_iff : Irrational (q + x) ↔ Irrational x :=
-  ⟨of_rat_add q, rat_add q⟩
+theorem irrational_ratCast_add_iff : Irrational (q + x) ↔ Irrational x :=
+  ⟨of_ratCast_add q, ratCast_add q⟩
+@[deprecated (since := "2025-04-01")] alias irrational_rat_add_iff := irrational_ratCast_add_iff
 
 @[simp]
-theorem irrational_int_add_iff : Irrational (m + x) ↔ Irrational x :=
-  ⟨of_int_add m, fun h => h.int_add m⟩
+theorem irrational_intCast_add_iff : Irrational (m + x) ↔ Irrational x :=
+  ⟨of_intCast_add m, fun h => h.intCast_add m⟩
+@[deprecated (since := "2025-04-01")] alias irrational_int_add_iff := irrational_intCast_add_iff
 
 @[simp]
-theorem irrational_nat_add_iff : Irrational (n + x) ↔ Irrational x :=
-  ⟨of_nat_add n, fun h => h.nat_add n⟩
+theorem irrational_natCast_add_iff : Irrational (n + x) ↔ Irrational x :=
+  ⟨of_natCast_add n, fun h => h.natCast_add n⟩
+@[deprecated (since := "2025-04-01")] alias irrational_nat_add_iff := irrational_natCast_add_iff
 
 @[simp]
-theorem irrational_add_rat_iff : Irrational (x + q) ↔ Irrational x :=
-  ⟨of_add_rat q, add_rat q⟩
+theorem irrational_add_ratCast_iff : Irrational (x + q) ↔ Irrational x :=
+  ⟨of_add_ratCast q, add_ratCast q⟩
+@[deprecated (since := "2025-04-01")] alias irrational_add_rat_iff := irrational_add_ratCast_iff
 
 @[simp]
-theorem irrational_add_int_iff : Irrational (x + m) ↔ Irrational x :=
-  ⟨of_add_int m, fun h => h.add_int m⟩
+theorem irrational_add_intCast_iff : Irrational (x + m) ↔ Irrational x :=
+  ⟨of_add_intCast m, fun h => h.add_intCast m⟩
+@[deprecated (since := "2025-04-01")] alias irrational_add_int_iff := irrational_add_intCast_iff
 
 @[simp]
-theorem irrational_add_nat_iff : Irrational (x + n) ↔ Irrational x :=
-  ⟨of_add_nat n, fun h => h.add_nat n⟩
+theorem irrational_add_natCast_iff : Irrational (x + n) ↔ Irrational x :=
+  ⟨of_add_natCast n, fun h => h.add_natCast n⟩
+@[deprecated (since := "2025-04-01")] alias irrational_add_nat_iff := irrational_add_natCast_iff
 
 @[simp]
-theorem irrational_rat_sub_iff : Irrational (q - x) ↔ Irrational x :=
+theorem irrational_ratCast_sub_iff : Irrational (q - x) ↔ Irrational x :=
   ⟨of_rat_sub q, rat_sub q⟩
+@[deprecated (since := "2025-04-01")] alias irrational_rat_sub_iff := irrational_ratCast_sub_iff
 
 @[simp]
-theorem irrational_int_sub_iff : Irrational (m - x) ↔ Irrational x :=
+theorem irrational_intCast_sub_iff : Irrational (m - x) ↔ Irrational x :=
   ⟨of_int_sub m, fun h => h.int_sub m⟩
+@[deprecated (since := "2025-04-01")] alias irrational_int_sub_iff := irrational_intCast_sub_iff
 
 @[simp]
-theorem irrational_nat_sub_iff : Irrational (n - x) ↔ Irrational x :=
+theorem irrational_natCast_sub_iff : Irrational (n - x) ↔ Irrational x :=
   ⟨of_nat_sub n, fun h => h.nat_sub n⟩
+@[deprecated (since := "2025-04-01")] alias irrational_nat_sub_iff := irrational_natCast_sub_iff
 
 @[simp]
-theorem irrational_sub_rat_iff : Irrational (x - q) ↔ Irrational x :=
+theorem irrational_sub_ratCast_iff : Irrational (x - q) ↔ Irrational x :=
   ⟨of_sub_rat q, sub_rat q⟩
+@[deprecated (since := "2025-04-01")] alias irrational_sub_rat_iff := irrational_sub_ratCast_iff
 
 @[simp]
-theorem irrational_sub_int_iff : Irrational (x - m) ↔ Irrational x :=
+theorem irrational_sub_intCast_iff : Irrational (x - m) ↔ Irrational x :=
   ⟨of_sub_int m, fun h => h.sub_int m⟩
+@[deprecated (since := "2025-04-01")] alias irrational_sub_int_iff := irrational_sub_intCast_iff
 
 @[simp]
-theorem irrational_sub_nat_iff : Irrational (x - n) ↔ Irrational x :=
+theorem irrational_sub_natCast_iff : Irrational (x - n) ↔ Irrational x :=
   ⟨of_sub_nat n, fun h => h.sub_nat n⟩
+@[deprecated (since := "2025-04-01")] alias irrational_sub_nat_iff := irrational_sub_natCast_iff
 
 @[simp]
 theorem irrational_neg_iff : Irrational (-x) ↔ Irrational x :=
@@ -528,57 +553,69 @@ theorem irrational_inv_iff : Irrational x⁻¹ ↔ Irrational x :=
   ⟨of_inv, Irrational.inv⟩
 
 @[simp]
-theorem irrational_rat_mul_iff : Irrational (q * x) ↔ q ≠ 0 ∧ Irrational x :=
+theorem irrational_ratCast_mul_iff : Irrational (q * x) ↔ q ≠ 0 ∧ Irrational x :=
   ⟨fun h => ⟨Rat.cast_ne_zero.1 <| left_ne_zero_of_mul h.ne_zero, h.of_rat_mul q⟩, fun h =>
     h.2.rat_mul h.1⟩
+@[deprecated (since := "2025-04-01")] alias irrational_rat_mul_iff := irrational_ratCast_mul_iff
 
 @[simp]
-theorem irrational_mul_rat_iff : Irrational (x * q) ↔ q ≠ 0 ∧ Irrational x := by
-  rw [mul_comm, irrational_rat_mul_iff]
+theorem irrational_mul_ratCast_iff : Irrational (x * q) ↔ q ≠ 0 ∧ Irrational x := by
+  rw [mul_comm, irrational_ratCast_mul_iff]
+@[deprecated (since := "2025-04-01")] alias irrational_mul_rat_iff := irrational_mul_ratCast_iff
 
 @[simp]
-theorem irrational_int_mul_iff : Irrational (m * x) ↔ m ≠ 0 ∧ Irrational x := by
-  rw [← cast_intCast, irrational_rat_mul_iff, Int.cast_ne_zero]
+theorem irrational_intCast_mul_iff : Irrational (m * x) ↔ m ≠ 0 ∧ Irrational x := by
+  rw [← cast_intCast, irrational_ratCast_mul_iff, Int.cast_ne_zero]
+@[deprecated (since := "2025-04-01")] alias irrational_int_mul_iff := irrational_intCast_mul_iff
 
 @[simp]
-theorem irrational_mul_int_iff : Irrational (x * m) ↔ m ≠ 0 ∧ Irrational x := by
-  rw [← cast_intCast, irrational_mul_rat_iff, Int.cast_ne_zero]
+theorem irrational_mul_intCast_iff : Irrational (x * m) ↔ m ≠ 0 ∧ Irrational x := by
+  rw [← cast_intCast, irrational_mul_ratCast_iff, Int.cast_ne_zero]
+@[deprecated (since := "2025-04-01")] alias irrational_mul_int_iff := irrational_mul_intCast_iff
 
 @[simp]
-theorem irrational_nat_mul_iff : Irrational (n * x) ↔ n ≠ 0 ∧ Irrational x := by
-  rw [← cast_natCast, irrational_rat_mul_iff, Nat.cast_ne_zero]
+theorem irrational_natCast_mul_iff : Irrational (n * x) ↔ n ≠ 0 ∧ Irrational x := by
+  rw [← cast_natCast, irrational_ratCast_mul_iff, Nat.cast_ne_zero]
+@[deprecated (since := "2025-04-01")] alias irrational_nat_mul_iff := irrational_natCast_mul_iff
 
 @[simp]
-theorem irrational_mul_nat_iff : Irrational (x * n) ↔ n ≠ 0 ∧ Irrational x := by
-  rw [← cast_natCast, irrational_mul_rat_iff, Nat.cast_ne_zero]
+theorem irrational_mul_natCast_iff : Irrational (x * n) ↔ n ≠ 0 ∧ Irrational x := by
+  rw [← cast_natCast, irrational_mul_ratCast_iff, Nat.cast_ne_zero]
+@[deprecated (since := "2025-04-01")] alias irrational_mul_nat_iff := irrational_mul_natCast_iff
 
 @[simp]
-theorem irrational_rat_div_iff : Irrational (q / x) ↔ q ≠ 0 ∧ Irrational x := by
+theorem irrational_ratCast_div_iff : Irrational (q / x) ↔ q ≠ 0 ∧ Irrational x := by
   simp [div_eq_mul_inv]
+@[deprecated (since := "2025-04-01")] alias irrational_rat_div_iff := irrational_ratCast_div_iff
 
 @[simp]
-theorem irrational_div_rat_iff : Irrational (x / q) ↔ q ≠ 0 ∧ Irrational x := by
-  rw [div_eq_mul_inv, ← cast_inv, irrational_mul_rat_iff, Ne, inv_eq_zero]
+theorem irrational_div_ratCast_iff : Irrational (x / q) ↔ q ≠ 0 ∧ Irrational x := by
+  rw [div_eq_mul_inv, ← cast_inv, irrational_mul_ratCast_iff, Ne, inv_eq_zero]
+@[deprecated (since := "2025-04-01")] alias irrational_div_rat_iff := irrational_div_ratCast_iff
 
 @[simp]
-theorem irrational_int_div_iff : Irrational (m / x) ↔ m ≠ 0 ∧ Irrational x := by
+theorem irrational_intCast_div_iff : Irrational (m / x) ↔ m ≠ 0 ∧ Irrational x := by
   simp [div_eq_mul_inv]
+@[deprecated (since := "2025-04-01")] alias irrational_int_div_iff := irrational_intCast_div_iff
 
 @[simp]
-theorem irrational_div_int_iff : Irrational (x / m) ↔ m ≠ 0 ∧ Irrational x := by
-  rw [← cast_intCast, irrational_div_rat_iff, Int.cast_ne_zero]
+theorem irrational_div_intCast_iff : Irrational (x / m) ↔ m ≠ 0 ∧ Irrational x := by
+  rw [← cast_intCast, irrational_div_ratCast_iff, Int.cast_ne_zero]
+@[deprecated (since := "2025-04-01")] alias irrational_div_int_iff := irrational_div_intCast_iff
 
 @[simp]
-theorem irrational_nat_div_iff : Irrational (n / x) ↔ n ≠ 0 ∧ Irrational x := by
+theorem irrational_natCast_div_iff : Irrational (n / x) ↔ n ≠ 0 ∧ Irrational x := by
   simp [div_eq_mul_inv]
+@[deprecated (since := "2025-04-01")] alias irrational_nat_div_iff := irrational_natCast_div_iff
 
 @[simp]
-theorem irrational_div_nat_iff : Irrational (x / n) ↔ n ≠ 0 ∧ Irrational x := by
-  rw [← cast_natCast, irrational_div_rat_iff, Nat.cast_ne_zero]
+theorem irrational_div_natCast_iff : Irrational (x / n) ↔ n ≠ 0 ∧ Irrational x := by
+  rw [← cast_natCast, irrational_div_ratCast_iff, Nat.cast_ne_zero]
+@[deprecated (since := "2025-04-01")] alias irrational_div_nat_iff := irrational_div_natCast_iff
 
 /-- There is an irrational number `r` between any two reals `x < r < y`. -/
 theorem exists_irrational_btwn {x y : ℝ} (h : x < y) : ∃ r, Irrational r ∧ x < r ∧ r < y :=
   let ⟨q, ⟨hq1, hq2⟩⟩ := exists_rat_btwn ((sub_lt_sub_iff_right (√2)).mpr h)
-  ⟨q + √2, irrational_sqrt_two.rat_add _, sub_lt_iff_lt_add.mp hq1, lt_sub_iff_add_lt.mp hq2⟩
+  ⟨q + √2, irrational_sqrt_two.ratCast_add _, sub_lt_iff_lt_add.mp hq1, lt_sub_iff_add_lt.mp hq2⟩
 
 end

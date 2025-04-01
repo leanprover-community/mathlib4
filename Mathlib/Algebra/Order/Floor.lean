@@ -691,13 +691,15 @@ theorem floor_pos : 0 < ⌊a⌋ ↔ 1 ≤ a := by
   rw [Int.lt_iff_add_one_le, zero_add, le_floor, cast_one]
 
 @[simp]
-theorem floor_add_int (a : α) (z : ℤ) : ⌊a + z⌋ = ⌊a⌋ + z :=
+theorem floor_add_intCast (a : α) (z : ℤ) : ⌊a + z⌋ = ⌊a⌋ + z :=
   eq_of_forall_le_iff fun a => by
     rw [le_floor, ← sub_le_iff_le_add, ← sub_le_iff_le_add, le_floor, Int.cast_sub]
 
+@[deprecated (since := "2025-04-01")] alias floor_add_int := floor_add_intCast
+
 @[simp]
 theorem floor_add_one (a : α) : ⌊a + 1⌋ = ⌊a⌋ + 1 := by
-  rw [← cast_one, floor_add_int]
+  rw [← cast_one, floor_add_intCast]
 
 @[bound]
 theorem le_floor_add (a b : α) : ⌊a⌋ + ⌊b⌋ ≤ ⌊a + b⌋ := by
@@ -712,41 +714,51 @@ theorem le_floor_add_floor (a b : α) : ⌊a + b⌋ - 1 ≤ ⌊a⌋ + ⌊b⌋ :=
   exact floor_le _
 
 @[simp]
-theorem floor_int_add (z : ℤ) (a : α) : ⌊↑z + a⌋ = z + ⌊a⌋ := by
-  simpa only [add_comm] using floor_add_int a z
+theorem floor_intCast_add (z : ℤ) (a : α) : ⌊↑z + a⌋ = z + ⌊a⌋ := by
+  simpa only [add_comm] using floor_add_intCast a z
+
+@[deprecated (since := "2025-04-01")] alias floor_int_add := floor_intCast_add
 
 @[simp]
-theorem floor_add_nat (a : α) (n : ℕ) : ⌊a + n⌋ = ⌊a⌋ + n := by
-  rw [← Int.cast_natCast, floor_add_int]
+theorem floor_add_natCast (a : α) (n : ℕ) : ⌊a + n⌋ = ⌊a⌋ + n := by
+  rw [← Int.cast_natCast, floor_add_intCast]
+
+@[deprecated (since := "2025-04-01")] alias floor_add_nat := floor_add_natCast
 
 @[simp]
 theorem floor_add_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
     ⌊a + ofNat(n)⌋ = ⌊a⌋ + ofNat(n) :=
-  floor_add_nat a n
+  floor_add_natCast a n
 
 @[simp]
-theorem floor_nat_add (n : ℕ) (a : α) : ⌊↑n + a⌋ = n + ⌊a⌋ := by
-  rw [← Int.cast_natCast, floor_int_add]
+theorem floor_natCast_add (n : ℕ) (a : α) : ⌊↑n + a⌋ = n + ⌊a⌋ := by
+  rw [← Int.cast_natCast, floor_intCast_add]
+
+@[deprecated (since := "2025-04-01")] alias floor_nat_add := floor_natCast_add
 
 @[simp]
 theorem floor_ofNat_add (n : ℕ) [n.AtLeastTwo] (a : α) :
     ⌊ofNat(n) + a⌋ = ofNat(n) + ⌊a⌋ :=
-  floor_nat_add n a
+  floor_natCast_add n a
 
 @[simp]
-theorem floor_sub_int (a : α) (z : ℤ) : ⌊a - z⌋ = ⌊a⌋ - z :=
-  Eq.trans (by rw [Int.cast_neg, sub_eq_add_neg]) (floor_add_int _ _)
+theorem floor_sub_intCast (a : α) (z : ℤ) : ⌊a - z⌋ = ⌊a⌋ - z :=
+  Eq.trans (by rw [Int.cast_neg, sub_eq_add_neg]) (floor_add_intCast _ _)
+
+@[deprecated (since := "2025-04-01")] alias floor_sub_int := floor_sub_intCast
 
 @[simp]
-theorem floor_sub_nat (a : α) (n : ℕ) : ⌊a - n⌋ = ⌊a⌋ - n := by
-  rw [← Int.cast_natCast, floor_sub_int]
+theorem floor_sub_natCast (a : α) (n : ℕ) : ⌊a - n⌋ = ⌊a⌋ - n := by
+  rw [← Int.cast_natCast, floor_sub_intCast]
 
-@[simp] theorem floor_sub_one (a : α) : ⌊a - 1⌋ = ⌊a⌋ - 1 := mod_cast floor_sub_nat a 1
+@[deprecated (since := "2025-04-01")] alias floor_sub_nat := floor_sub_natCast
+
+@[simp] theorem floor_sub_one (a : α) : ⌊a - 1⌋ = ⌊a⌋ - 1 := mod_cast floor_sub_natCast a 1
 
 @[simp]
 theorem floor_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
     ⌊a - ofNat(n)⌋ = ⌊a⌋ - ofNat(n) :=
-  floor_sub_nat a n
+  floor_sub_natCast a n
 
 theorem abs_sub_lt_one_of_floor_eq_floor {α : Type*} [LinearOrderedCommRing α] [FloorRing α]
     {a b : α} (h : ⌊a⌋ = ⌊b⌋) : |a - b| < 1 := by
@@ -1098,29 +1110,38 @@ theorem ceil_mono : Monotone (ceil : α → ℤ) :=
 @[gcongr, bound] lemma ceil_le_ceil (hab : a ≤ b) : ⌈a⌉ ≤ ⌈b⌉ := ceil_mono hab
 
 @[simp]
-theorem ceil_add_int (a : α) (z : ℤ) : ⌈a + z⌉ = ⌈a⌉ + z := by
+theorem ceil_add_intCast (a : α) (z : ℤ) : ⌈a + z⌉ = ⌈a⌉ + z := by
   rw [← neg_inj, neg_add', ← floor_neg, ← floor_neg, neg_add', floor_sub_int]
 
+@[deprecated (since := "2025-04-01")] alias ceil_add_int := ceil_add_intCast
+
 @[simp]
-theorem ceil_add_nat (a : α) (n : ℕ) : ⌈a + n⌉ = ⌈a⌉ + n := by rw [← Int.cast_natCast, ceil_add_int]
+theorem ceil_add_natCast (a : α) (n : ℕ) : ⌈a + n⌉ = ⌈a⌉ + n := by
+  rw [← Int.cast_natCast, ceil_add_intCast]
+
+@[deprecated (since := "2025-04-01")] alias ceil_add_nat := ceil_add_natCast
 
 @[simp]
 theorem ceil_add_one (a : α) : ⌈a + 1⌉ = ⌈a⌉ + 1 := by
-  rw [← ceil_add_int a (1 : ℤ), cast_one]
+  rw [← ceil_add_intCast a (1 : ℤ), cast_one]
 
 @[simp]
 theorem ceil_add_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
     ⌈a + ofNat(n)⌉ = ⌈a⌉ + ofNat(n) :=
-  ceil_add_nat a n
+  ceil_add_natCast a n
 
 @[simp]
-theorem ceil_sub_int (a : α) (z : ℤ) : ⌈a - z⌉ = ⌈a⌉ - z :=
-  Eq.trans (by rw [Int.cast_neg, sub_eq_add_neg]) (ceil_add_int _ _)
+theorem ceil_sub_intCast (a : α) (z : ℤ) : ⌈a - z⌉ = ⌈a⌉ - z :=
+  Eq.trans (by rw [Int.cast_neg, sub_eq_add_neg]) (ceil_add_intCast _ _)
+
+@[deprecated (since := "2025-04-01")] alias ceil_sub_int := ceil_sub_intCast
 
 @[simp]
-theorem ceil_sub_nat (a : α) (n : ℕ) : ⌈a - n⌉ = ⌈a⌉ - n := by
-  convert ceil_sub_int a n using 1
+theorem ceil_sub_natCast (a : α) (n : ℕ) : ⌈a - n⌉ = ⌈a⌉ - n := by
+  convert ceil_sub_intCast a n using 1
   simp
+
+@[deprecated (since := "2025-04-01")] alias ceil_sub_nat := ceil_sub_natCast
 
 @[simp]
 theorem ceil_sub_one (a : α) : ⌈a - 1⌉ = ⌈a⌉ - 1 := by
@@ -1129,11 +1150,11 @@ theorem ceil_sub_one (a : α) : ⌈a - 1⌉ = ⌈a⌉ - 1 := by
 @[simp]
 theorem ceil_sub_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
     ⌈a - ofNat(n)⌉ = ⌈a⌉ - ofNat(n) :=
-  ceil_sub_nat a n
+  ceil_sub_natCast a n
 
 @[bound]
 theorem ceil_lt_add_one (a : α) : (⌈a⌉ : α) < a + 1 := by
-  rw [← lt_ceil, ← Int.cast_one, ceil_add_int]
+  rw [← lt_ceil, ← Int.cast_one, ceil_add_intCast]
   apply lt_add_one
 
 @[bound]
