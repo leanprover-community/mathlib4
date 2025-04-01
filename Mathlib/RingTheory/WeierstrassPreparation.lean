@@ -5,13 +5,8 @@ Authors: Nailin Guan
 -/
 
 import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Algebra.Polynomial.Lifts
-import Mathlib.Order.CompletePartialOrder
-import Mathlib.RingTheory.AdicCompletion.LocalRing
 import Mathlib.RingTheory.Polynomial.Eisenstein.Basic
-import Mathlib.RingTheory.PowerSeries.Inverse
-import Mathlib.RingTheory.PowerSeries.Trunc
+import Mathlib.RingTheory.PowerSeries.Order
 /-!
 
 # Distiguished polynomial
@@ -25,8 +20,6 @@ open scoped Polynomial
 open PowerSeries Ideal Quotient
 
 variable {R : Type*} [CommRing R]
-
-section
 
 /-- Given an ideal `I` of a commutative semiring `R`, we say that a polynomial `f : R[X]`
 is *Distinguished at `I`* if `f` is monic and `IsWeaklyEisensteinAt I`. -/
