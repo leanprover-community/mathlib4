@@ -38,7 +38,5 @@ lemma iUnion_Ioc_Ioc {X : Type*} [LinearOrderedSemiring X]
 --   ext x
 --   simp only [mem_iUnion, Finset.mem_range, exists_prop]
 --   constructor
---   · rintro ⟨i, hi⟩
---     exact ⟨i, i.2, hi⟩
---   · rintro ⟨i, hiN, hi⟩
---     exact ⟨⟨i, hiN⟩, hi⟩
+--   · exact fun ⟨i, hi⟩ ↦ ⟨i, i.2, hi⟩
+--   · exact fun ⟨i, hiN, hi⟩ ↦ ⟨⟨i, hiN⟩, hi⟩
