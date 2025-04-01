@@ -883,7 +883,7 @@ theorem coeToMvPowerSeries.algHom_apply :
   rfl
 
 theorem _root_.MvPowerSeries.prod_smul_X_eq_smul_monomial_one
-    {A : Type*} [CommSemiring A] [Algebra A R] (e : σ →₀ ℕ) (a : σ → A)  :
+    {A : Type*} [CommSemiring A] [Algebra A R] (e : σ →₀ ℕ) (a : σ → A) :
     e.prod (fun s n ↦ ((a s • MvPowerSeries.X s) ^ n))
       = (e.prod fun s n ↦ (a s) ^ n) • MvPowerSeries.monomial R e 1 := by
   rw [Finsupp.prod_congr

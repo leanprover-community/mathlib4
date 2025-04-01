@@ -783,7 +783,7 @@ def mapAlgHom (φ : A →ₐ[R] B) :
  MvPowerSeries.mapAlgHom φ
 
 theorem mapAlgHom_apply (φ : A →ₐ[R] B) (f : A⟦X⟧) :
-      mapAlgHom φ f = f.map φ :=
+    mapAlgHom φ f = f.map φ :=
   MvPowerSeries.mapAlgHom_apply φ f
 
 end Algebra
