@@ -28,7 +28,7 @@ which implies one is sent to zero and the completion ring is trivial.
 
 The main definition is `CompletableTopField` which packages the assumptions as a Prop-valued
 type class and the main results are the instances `UniformSpace.Completion.Field` and
-`UniformSpace.Completion.TopologicalDivisionRing`.
+`UniformSpace.Completion.IsTopologicalDivisionRing`.
 -/
 
 noncomputable section
@@ -97,7 +97,7 @@ Here we explicitly enforce the `inv_zero` axiom.
 instance instInvCompletion : Inv (hat K) :=
   ⟨fun x => if x = 0 then 0 else hatInv x⟩
 
-variable [TopologicalDivisionRing K]
+variable [IsTopologicalDivisionRing K]
 
 theorem hatInv_extends {x : K} (h : x ≠ 0) : hatInv (x : hat K) = ↑(x⁻¹ : K) :=
   isDenseInducing_coe.extend_eq_at ((continuous_coe K).continuousAt.comp (continuousAt_inv₀ h))
@@ -116,7 +116,7 @@ theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
     · exact hatInv_extends h
     · exact fun H => h (isDenseEmbedding_coe.injective H)
 
-variable [UniformAddGroup K]
+variable [IsUniformAddGroup K]
 
 theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   haveI : T1Space (hat K) := T2Space.t1Space
@@ -154,7 +154,7 @@ instance instField : Field (hat K) where
   qsmul := _
   qsmul_def := fun _ _ => rfl
 
-instance : TopologicalDivisionRing (hat K) :=
+instance : IsTopologicalDivisionRing (hat K) :=
   { Completion.topologicalRing with
     continuousAt_inv₀ := by
       intro x x_ne
@@ -183,7 +183,7 @@ instance Subfield.completableTopField (K : Subfield L) : CompletableTopField K w
     rw [← Filter.push_pull', ← map_zero i, ← hi.isInducing.nhds_eq_comap, inf_F, Filter.map_bot]
 
 instance (priority := 100) completableTopField_of_complete (L : Type*) [Field L] [UniformSpace L]
-    [TopologicalDivisionRing L] [T0Space L] [CompleteSpace L] : CompletableTopField L where
+    [IsTopologicalDivisionRing L] [T0Space L] [CompleteSpace L] : CompletableTopField L where
   nice F cau_F hF := by
     haveI : NeBot F := cau_F.1
     rcases CompleteSpace.complete cau_F with ⟨x, hx⟩
