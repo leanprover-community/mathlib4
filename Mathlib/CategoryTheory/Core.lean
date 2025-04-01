@@ -154,8 +154,7 @@ lemma coreAssociator {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Categ
     (Functor.associator F G H).core =
     (F ⋙ G).coreComp H ≪≫ isoWhiskerRight (F.coreComp G) H.core ≪≫
       Functor.associator F.core G.core H.core ≪≫ (isoWhiskerLeft F.core (G.coreComp H)).symm ≪≫
-      (F.coreComp (G ⋙ H)).symm
-      := by
+      (F.coreComp (G ⋙ H)).symm := by
   aesop_cat
 
 end Iso
