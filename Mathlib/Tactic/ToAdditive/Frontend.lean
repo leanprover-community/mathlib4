@@ -692,21 +692,30 @@ def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
   lambdaTelescope src fun xs e => do
     mkLambdaFVars (xs.permute! reorder) e
 
+/-- Unfold auxlemmas in the type and value. -/
+def declUnfoldAuxLemmas (decl : ConstantInfo) : MetaM ConstantInfo := do
+  let mut decl := decl
+  decl := decl.updateType <| ← unfoldAuxLemmas decl.type
+  if let some v := decl.value? then
+    trace[to_additive] "value before unfold:{indentExpr v}"
+    decl := decl.updateValue <| ← unfoldAuxLemmas v
+    trace[to_additive] "value after unfold:{indentExpr decl.value!}"
+  else if let .opaqueInfo info := decl then -- not covered by `value?`
+    decl := .opaqueInfo { info with value := ← unfoldAuxLemmas info.value }
+  return decl
+
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
 def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) :
     MetaM ConstantInfo := do
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall reorder <| ← expand
-    <| ← unfoldAuxLemmas decl.type
+  decl := decl.updateType <| ← applyReplacementFun <| ← reorderForall reorder <| ← expand decl.type
   if let some v := decl.value? then
-    decl := decl.updateValue <| ← applyReplacementFun <| ← reorderLambda reorder <| ← expand
-      <| ← unfoldAuxLemmas v
+    decl := decl.updateValue <| ← applyReplacementFun <| ← reorderLambda reorder <| ← expand v
   else if let .opaqueInfo info := decl then -- not covered by `value?`
     decl := .opaqueInfo { info with
-      value := ← applyReplacementFun <| ← reorderLambda reorder <| ← expand
-        <| ← unfoldAuxLemmas info.value }
+      value := ← applyReplacementFun <| ← reorderLambda reorder <| ← expand info.value }
   return decl
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
@@ -781,7 +790,9 @@ partial def transformDeclAux
       trace[to_additive_detail] "Already visited {tgt} as translation of {src}."
     return
   let srcDecl ← getConstInfo src
-  -- we first transform all auxiliary declarations generated when elaborating `pre`
+  -- we first unfold all auxlemmas, since they are not always able to be additivized on their own
+  let srcDecl ← MetaM.run' do declUnfoldAuxLemmas srcDecl
+  -- we then transform all auxiliary declarations generated when elaborating `pre`
   for n in findAuxDecls srcDecl.type pre do
     transformDeclAux cfg pre tgt_pre n
   if let some value := srcDecl.value? then
@@ -804,7 +815,7 @@ partial def transformDeclAux
   try
     -- make sure that the type is correct,
     -- and emit a more helpful error message if it fails
-    discard <| MetaM.run' <| inferType value
+    MetaM.run' <| check value
   catch
     | Exception.error _ msg => throwError "@[to_additive] failed. \
       Type mismatch in additive declaration. For help, see the docstring \
