@@ -719,6 +719,7 @@ def updateDecl (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) 
       value := ← applyReplacementFun <| ← reorderLambda reorder <| ← expand info.value }
   return decl
 
+/-- Abstracts the nested proofs in the value of `decl` if it's not a theorem. -/
 def declAbstractNestedProofs (decl : ConstantInfo) : MetaM ConstantInfo := do
   if decl.isTheorem || !decl.hasValue then
     return decl
