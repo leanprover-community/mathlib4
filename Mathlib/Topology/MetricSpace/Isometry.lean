@@ -173,8 +173,6 @@ protected theorem injective (h : Isometry f) : Injective f :=
 lemma isUniformEmbedding (hf : Isometry f) : IsUniformEmbedding f :=
   hf.antilipschitz.isUniformEmbedding hf.lipschitz.uniformContinuous
 
-@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
-
 /-- An isometry from an emetric space is an embedding -/
 theorem isEmbedding (hf : Isometry f) : IsEmbedding f := hf.isUniformEmbedding.isEmbedding
 
@@ -245,9 +243,6 @@ theorem IsUniformEmbedding.to_isometry {α β} [UniformSpace α] [MetricSpace β
     (h : IsUniformEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
-
-@[deprecated (since := "2024-10-01")]
-alias UniformEmbedding.to_isometry := IsUniformEmbedding.to_isometry
 
 /-- An embedding from a topological space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/

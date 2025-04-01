@@ -153,8 +153,6 @@ lemma isUniformEmbedding {α β : Type*} [EMetricSpace α] [PseudoEMetricSpace �
     (hf : AntilipschitzWith K f) (hfc : UniformContinuous f) : IsUniformEmbedding f :=
   ⟨hf.isUniformInducing hfc, hf.injective⟩
 
-@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
-
 theorem isComplete_range [CompleteSpace α] (hf : AntilipschitzWith K f)
     (hfc : UniformContinuous f) : IsComplete (range f) :=
   (hf.isUniformInducing hfc).isComplete_range

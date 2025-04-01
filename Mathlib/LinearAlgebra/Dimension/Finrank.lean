@@ -54,8 +54,6 @@ Note that it is possible to have `M` with `¬(Module.Finite R M)` but `finrank R
 noncomputable def finrank (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] : ℕ :=
   Cardinal.toNat (Module.rank R M)
 
-@[deprecated (since := "2024-10-01")] protected alias _root_.FiniteDimensional.finrank := finrank
-
 theorem finrank_eq_of_rank_eq {n : ℕ} (h : Module.rank R M = ↑n) : finrank R M = n := by
   simp [finrank, h]
 

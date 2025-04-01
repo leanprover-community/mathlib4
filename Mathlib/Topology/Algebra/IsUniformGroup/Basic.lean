@@ -52,9 +52,6 @@ theorem isUniformEmbedding_translate_mul (a : Î±) : IsUniformEmbedding fun x : Î
       simp only [Prod.mk.injEq, mul_left_inj, imp_self]
     injective := mul_left_injective a }
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_translate_mul := isUniformEmbedding_translate_mul
-
 section Cauchy
 
 namespace IsUniformGroup

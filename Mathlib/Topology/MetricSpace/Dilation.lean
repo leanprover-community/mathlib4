@@ -422,8 +422,6 @@ lemma isUniformEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F)
     IsUniformEmbedding f :=
   (antilipschitz f).isUniformEmbedding (lipschitz f).uniformContinuous
 
-@[deprecated (since := "2024-10-01")] alias uniformEmbedding := isUniformEmbedding
-
 /-- A dilation from a metric space is an embedding -/
 theorem isEmbedding [PseudoEMetricSpace β] [DilationClass F α β] (f : F) :
     IsEmbedding (f : α → β) :=

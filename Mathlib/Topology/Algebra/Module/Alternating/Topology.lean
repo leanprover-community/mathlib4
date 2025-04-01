@@ -52,9 +52,6 @@ lemma isUniformEmbedding_toContinuousMultilinearMap :
   injective := toContinuousMultilinearMap_injective
   comap_uniformity := rfl
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_toContinuousMultilinearMap := isUniformEmbedding_toContinuousMultilinearMap
-
 lemma uniformContinuous_toContinuousMultilinearMap :
     UniformContinuous (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F) → _) :=
   isUniformEmbedding_toContinuousMultilinearMap.uniformContinuous
@@ -120,9 +117,6 @@ theorem isUniformEmbedding_restrictScalars :
   rw [← isUniformEmbedding_toContinuousMultilinearMap.of_comp_iff]
   exact (ContinuousMultilinearMap.isUniformEmbedding_restrictScalars 𝕜').comp
     isUniformEmbedding_toContinuousMultilinearMap
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_restrictScalars := isUniformEmbedding_restrictScalars
 
 theorem uniformContinuous_restrictScalars :
     UniformContinuous (restrictScalars 𝕜' : E [⋀^ι]→L[𝕜] F → E [⋀^ι]→L[𝕜'] F) :=

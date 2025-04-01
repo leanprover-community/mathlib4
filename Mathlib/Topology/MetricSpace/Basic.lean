@@ -38,9 +38,6 @@ theorem isUniformEmbedding_iff' [MetricSpace β] {f : γ → β} :
         ∀ δ > 0, ∃ ε > 0, ∀ {a b : γ}, dist (f a) (f b) < ε → dist a b < δ := by
   rw [isUniformEmbedding_iff_isUniformInducing, isUniformInducing_iff, uniformContinuous_iff]
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_iff' := isUniformEmbedding_iff'
-
 /-- If a `PseudoMetricSpace` is a T₀ space, then it is a `MetricSpace`. -/
 abbrev _root_.MetricSpace.ofT0PseudoMetricSpace (α : Type*) [PseudoMetricSpace α] [T0Space α] :
     MetricSpace α where
@@ -70,9 +67,6 @@ theorem isUniformEmbedding_bot_of_pairwise_le_dist {β : Type*} {ε : ℝ} (hε 
     (hf : Pairwise fun x y => ε ≤ dist (f x) (f y)) :
     @IsUniformEmbedding _ _ ⊥ (by infer_instance) f :=
   isUniformEmbedding_of_spaced_out (dist_mem_uniformity hε) <| by simpa using hf
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_bot_of_pairwise_le_dist := isUniformEmbedding_bot_of_pairwise_le_dist
 
 end Metric
 

@@ -76,9 +76,6 @@ lemma isUniformEmbedding_toUniformOnFun :
     IsUniformEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F → _) :=
   ⟨isUniformInducing_toUniformOnFun, DFunLike.coe_injective⟩
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_toUniformOnFun := isUniformEmbedding_toUniformOnFun
-
 lemma isEmbedding_toUniformOnFun :
     IsEmbedding (toUniformOnFun : ContinuousMultilinearMap 𝕜 E F →
       ((Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F)) :=
@@ -162,9 +159,6 @@ theorem isUniformEmbedding_restrictScalars :
   rw [← isUniformEmbedding_toUniformOnFun.of_comp_iff]
   convert isUniformEmbedding_toUniformOnFun using 4 with s
   exact ⟨fun h ↦ h.extend_scalars _, fun h ↦ h.restrict_scalars _⟩
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_restrictScalars := isUniformEmbedding_restrictScalars
 
 theorem uniformContinuous_restrictScalars :
     UniformContinuous

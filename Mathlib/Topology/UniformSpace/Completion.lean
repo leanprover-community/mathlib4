@@ -161,9 +161,6 @@ theorem isUniformEmbedding_pureCauchy : IsUniformEmbedding (pureCauchy : α → 
   __ := isUniformInducing_pureCauchy
   injective _a₁ _a₂ h := pure_injective <| Subtype.ext_iff_val.1 h
 
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_pureCauchy := isUniformEmbedding_pureCauchy
-
 theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α) := fun f => by
   have h_ex : ∀ s ∈ 𝓤 (CauchyFilter α), ∃ y : α, (f, pureCauchy y) ∈ s := fun s hs =>
     let ⟨t'', ht''₁, (ht''₂ : gen t'' ⊆ s)⟩ := (mem_lift'_sets monotone_gen).mp hs
@@ -361,9 +358,6 @@ theorem continuous_coe : Continuous ((↑) : α → Completion α) :=
 theorem isUniformEmbedding_coe [T0Space α] : IsUniformEmbedding ((↑) : α → Completion α) :=
   { comap_uniformity := comap_coe_eq_uniformity α
     injective := separated_pureCauchy_injective }
-
-@[deprecated (since := "2024-10-01")]
-alias uniformEmbedding_coe := isUniformEmbedding_coe
 
 theorem coe_injective [T0Space α] : Function.Injective ((↑) : α → Completion α) :=
   IsUniformEmbedding.injective (isUniformEmbedding_coe _)
