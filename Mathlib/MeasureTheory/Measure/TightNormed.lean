@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.MeasureTheory.Measure.RegularityCompacts
 import Mathlib.MeasureTheory.Measure.Tight
 import Mathlib.Order.CompletePartialOrder
 
@@ -18,6 +16,9 @@ Criteria for tightness of sets of measures in normed and inner product spaces.
 
 * `isTightMeasureSet_iff_tendsto_measure_norm_gt`: in a proper normed group, a set of measures `S`
   is tight if and only if the function `r ↦ ⨆ μ ∈ S, μ {x | r < ‖x‖}` tends to `0` at infinity.
+* `isTightMeasureSet_iff_forall_basis_tendsto`: in a finite-dimensional inner product space,
+  a set of measures `S` is tight if and only if for every orthonormal basis `b`, the function
+  `r ↦ ⨆ μ ∈ S, μ {x | r < |⟪b i, x⟫|}` tends to `0` at infinity for all `i`.
 
 -/
 
