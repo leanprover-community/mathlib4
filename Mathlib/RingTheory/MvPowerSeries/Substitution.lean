@@ -199,7 +199,7 @@ theorem subst_monomial (ha : HasSubst a) (e : σ →₀ ℕ) (r : R) :
   rw [← coe_substAlgHom ha, substAlgHom_monomial]
 
 theorem continuous_subst (ha : HasSubst a) :
-    Continuous (subst a : MvPowerSeries σ R → MvPowerSeries τ S) :=
+    @Continuous _ _ (@instTopologicalSpace σ R ⊥) (@instTopologicalSpace τ S ⊥) (subst a) :=
   continuous_eval₂ (continuous_algebraMap _ _) ha.hasEval
 
 theorem coeff_subst_finite (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
@@ -237,15 +237,17 @@ variable
 
 local instance : ContinuousSMul R T := DiscreteTopology.instContinuousSMul R T
 
-theorem comp_substAlgHom (ha : HasSubst a) (hε : Continuous ε) :
-      ε.comp (substAlgHom ha) = aeval (HasEval.map hε ha.hasEval) :=
+theorem comp_substAlgHom (ha : HasSubst a)
+    (hε : @Continuous _ _ (@instTopologicalSpace _ _ ⊥) _ ε) :
+      ε.comp (substAlgHom ha) = aeval (ha.hasEval.map hε) :=
   comp_aeval ha.hasEval hε
 
-theorem comp_subst (ha : HasSubst a) (hε : Continuous ε) :
-    ⇑ε ∘ (subst a) = ⇑(aeval (R := R) (HasEval.map hε ha.hasEval)) := by
+theorem comp_subst (ha : HasSubst a) (hε : @Continuous _ _ (@instTopologicalSpace _ _ ⊥) _ ε) :
+    ε ∘ (subst a) = aeval (R := R) (HasEval.map hε ha.hasEval)) := by
   rw [← comp_substAlgHom ha hε, AlgHom.coe_comp, coe_substAlgHom]
 
-theorem comp_subst_apply (ha : HasSubst a) (hε : Continuous ε) (f : MvPowerSeries σ R) :
+theorem comp_subst_apply (ha : HasSubst a) (hε : @Continuous _ _ (@instTopologicalSpace _ _ ⊥) _ ε)
+    (f : MvPowerSeries σ R) :
     ε (subst a f) = aeval (R := R) (HasEval.map hε ha.hasEval) f :=
   congr_fun (comp_subst ha hε) f
 
@@ -255,7 +257,7 @@ theorem eval₂_subst (ha : HasSubst a) {b : τ → T} (hb : HasEval b) (f : MvP
     eval₂ (algebraMap S T) b (subst a f) =
       eval₂ (algebraMap R T) (fun s ↦ eval₂ (algebraMap S T) b (a s)) f := by
   let ε : MvPowerSeries τ S →ₐ[R] T := (aeval hb).restrictScalars R
-  have hε : Continuous ε := continuous_aeval hb
+  have hε : @Continuous _ _ (@instTopologicalSpace _ _ ⊥) _ ε := continuous_aeval hb
   simpa only [AlgHom.coe_restrictScalars', AlgHom.toRingHom_eq_coe,
     AlgHom.coe_restrictScalars, RingHom.coe_coe, ε, coe_aeval]
     using comp_subst_apply ha hε f
