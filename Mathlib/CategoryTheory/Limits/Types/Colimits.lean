@@ -92,17 +92,24 @@ noncomputable def colimitCoconeIsColimit (F : J ⥤ Type u) [Small.{u} F.Colimit
   Nonempty.some ((isColimit_iff_coconeTypesIsColimit _).2
     (F.isColimit_coconeTypes.of_equiv (equivShrink.{u} F.ColimitType) (by aesop)))
 
-theorem hasColimit_iff_small_quot (F : J ⥤ Type u) :
+theorem hasColimit_iff_small_colimitType (F : J ⥤ Type u) :
     HasColimit F ↔ Small.{u} F.ColimitType :=
   ⟨fun _ ↦ small_of_injective
       ((isColimit_iff_coconeTypesIsColimit _).1 ⟨colimit.isColimit F⟩).bijective.1,
     fun _ ↦ ⟨_, colimitCoconeIsColimit F⟩⟩
 
-theorem small_quot_of_hasColimit (F : J ⥤ Type u) [HasColimit F] : Small.{u} F.ColimitType :=
-  (hasColimit_iff_small_quot F).mp inferInstance
+@[deprecated (since := "2025-04-01")] alias hasColimit_iff_small_quot :=
+  hasColimit_iff_small_colimitType
+
+theorem small_colimitType_of_hasColimit (F : J ⥤ Type u) [HasColimit F] :
+    Small.{u} F.ColimitType :=
+  (hasColimit_iff_small_colimitType F).mp inferInstance
+
+@[deprecated (since := "2025-04-01")] alias small_quot_of_hasColimit :=
+  small_colimitType_of_hasColimit
 
 instance hasColimit [Small.{u} J] (F : J ⥤ Type u) : HasColimit F :=
-  (hasColimit_iff_small_quot F).mpr inferInstance
+  (hasColimit_iff_small_colimitType F).mpr inferInstance
 
 instance hasColimitsOfShape [Small.{u} J] : HasColimitsOfShape J (Type u) where
 
