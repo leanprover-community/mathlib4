@@ -53,12 +53,9 @@ theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) := by
 lemma count_finRange {n : ℕ} (a : Fin n) : count a (finRange n) = 1 := by
   simp [count_eq_of_nodup (nodup_finRange n)]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new theorem
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
   simp
-
-@[deprecated (since := "2024-08-19")] alias nthLe_finRange := get_finRange
 
 @[simp]
 theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
@@ -82,8 +79,6 @@ theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map
   rw [map_cons, map_coe_finRange, range_succ_eq_map, Fin.val_zero, ← map_coe_finRange, map_map,
     map_map]
   simp only [Function.comp_def, Fin.val_succ]
-
--- Porting note: `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
 
 theorem ofFn_eq_pmap {n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by

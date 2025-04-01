@@ -102,10 +102,6 @@ theorem _root_.integral_inner {f : α → E} (hf : Integrable f μ) (c : E) :
 
 variable (𝕜)
 
--- variable binder update doesn't work for lemmas which refer to `𝕜` only via the notation
--- Porting note: removed because it causes ambiguity in the lemma below
--- local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
-
 theorem _root_.integral_eq_zero_of_forall_integral_inner_eq_zero (f : α → E) (hf : Integrable f μ)
     (hf_int : ∀ c : E, ∫ x, ⟪c, f x⟫ ∂μ = 0) : ∫ x, f x ∂μ = 0 := by
   specialize hf_int (∫ x, f x ∂μ); rwa [integral_inner hf, inner_self_eq_zero] at hf_int
@@ -271,13 +267,12 @@ open scoped BoundedContinuousFunction ComplexConjugate
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 (α →₂[μ] 𝕜) _ x y
 
--- Porting note: added `(E := 𝕜)`
 /-- For bounded continuous functions `f`, `g` on a finite-measure topological space `α`, the L^2
 inner product is the integral of their pointwise inner product. -/
 theorem BoundedContinuousFunction.inner_toLp (f g : α →ᵇ 𝕜) :
-    ⟪BoundedContinuousFunction.toLp (E := 𝕜) 2 μ 𝕜 f,
-        BoundedContinuousFunction.toLp (E := 𝕜) 2 μ 𝕜 g⟫ =
-      ∫ x, conj (f x) * g x ∂μ := by
+    ⟪BoundedContinuousFunction.toLp 2 μ 𝕜 f,
+        BoundedContinuousFunction.toLp 2 μ 𝕜 g⟫ =
+      ∫ x, g x * conj (f x) ∂μ := by
   apply integral_congr_ae
   have hf_ae := f.coeFn_toLp 2 μ 𝕜
   have hg_ae := g.coeFn_toLp 2 μ 𝕜
@@ -291,9 +286,8 @@ variable [CompactSpace α]
 inner product is the integral of their pointwise inner product. -/
 theorem ContinuousMap.inner_toLp (f g : C(α, 𝕜)) :
     ⟪ContinuousMap.toLp (E := 𝕜) 2 μ 𝕜 f, ContinuousMap.toLp (E := 𝕜) 2 μ 𝕜 g⟫ =
-      ∫ x, conj (f x) * g x ∂μ := by
+      ∫ x, g x * conj (f x) ∂μ := by
   apply integral_congr_ae
-  -- Porting note: added explicitly passed arguments
   have hf_ae := f.coeFn_toLp (p := 2) (𝕜 := 𝕜) μ
   have hg_ae := g.coeFn_toLp (p := 2) (𝕜 := 𝕜) μ
   filter_upwards [hf_ae, hg_ae] with _ hf hg

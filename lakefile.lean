@@ -31,9 +31,10 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
   ⟨`linter.docPrime, false⟩,
   ⟨`linter.hashCommand, true⟩,
-  ⟨`linter.oldObtain, true,⟩,
-  ⟨`linter.refine, true⟩,
+  ⟨`linter.oldObtain, true⟩,
+  ⟨`linter.style.cases, true⟩,
   ⟨`linter.style.cdot, true⟩,
+  ⟨`linter.style.docString, true⟩,
   ⟨`linter.style.dollarSyntax, true⟩,
   ⟨`linter.style.header, true⟩,
   ⟨`linter.style.lambdaSyntax, true⟩,
@@ -42,6 +43,8 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   -- `latest_import.yml` uses this comment: if you edit it, make sure that the workflow still works
   ⟨`linter.style.missingEnd, true⟩,
   ⟨`linter.style.multiGoal, true⟩,
+  ⟨`linter.style.openClassical, true⟩,
+  ⟨`linter.style.refine, true⟩,
   ⟨`linter.style.setOption, true⟩
 ]
 

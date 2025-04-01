@@ -199,34 +199,6 @@ theorem commutes : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r :=
 
 end coe
 
-section map
-
-@[deprecated map_add (since := "2024-06-20")]
-protected theorem map_add : ∀ x y, e (x + y) = e x + e y :=
-  map_add e
-
-@[deprecated map_zero (since := "2024-06-20")]
-protected theorem map_zero : e 0 = 0 :=
-  map_zero e
-
-@[deprecated map_mul (since := "2024-06-20")]
-protected theorem map_mul : ∀ x y, e (x * y) = e x * e y :=
-  map_mul e
-
-@[deprecated map_one (since := "2024-06-20")]
-protected theorem map_one : e 1 = 1 :=
-  map_one e
-
-@[deprecated map_smul (since := "2024-06-20")]
-protected theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x :=
-  map_smul _ _ _
-
-@[deprecated map_pow (since := "2024-06-20")]
-protected theorem map_pow : ∀ (x : A₁) (n : ℕ), e (x ^ n) = e x ^ n :=
-  map_pow _
-
-end map
-
 section bijective
 
 protected theorem bijective : Function.Bijective e :=
@@ -324,6 +296,14 @@ theorem toRingEquiv_symm (f : A₁ ≃ₐ[R] A₁) : (f : A₁ ≃+* A₁).symm 
 
 @[simp]
 theorem symm_toRingEquiv : (e.symm : A₂ ≃+* A₁) = (e : A₁ ≃+* A₂).symm :=
+  rfl
+
+@[simp]
+theorem symm_toAddEquiv : (e.symm : A₂ ≃+ A₁) = (e : A₁ ≃+ A₂).symm :=
+  rfl
+
+@[simp]
+theorem symm_toMulEquiv : (e.symm : A₂ ≃* A₁) = (e : A₁ ≃* A₂).symm :=
   rfl
 
 @[simp]
@@ -605,7 +585,7 @@ def ofRingEquiv {f : A₁ ≃+* A₂} (hf : ∀ x, f (algebraMap R A₁ x) = alg
 
 end OfRingEquiv
 
-@[simps (config := .lemmasOnly) one mul, stacks 09HR]
+@[simps -isSimp one mul, stacks 09HR]
 instance aut : Group (A₁ ≃ₐ[R] A₁) where
   mul ϕ ψ := ψ.trans ϕ
   mul_assoc _ _ _ := rfl
@@ -624,6 +604,9 @@ theorem mul_apply (e₁ e₂ : A₁ ≃ₐ[R] A₁) (x : A₁) : (e₁ * e₂) x
   rfl
 
 lemma aut_inv (ϕ : A₁ ≃ₐ[R] A₁) : ϕ⁻¹ = ϕ.symm := rfl
+
+@[simp] theorem coe_pow (e : A₁ ≃ₐ[R] A₁) (n : ℕ) : ⇑(e ^ n) = e^[n] :=
+  n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
 
 /-- An algebra isomorphism induces a group isomorphism between automorphism groups.
 

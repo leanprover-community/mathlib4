@@ -322,6 +322,11 @@ theorem succ_eq_iff_isMax : succ a = a ↔ IsMax a :=
 
 alias ⟨_, _root_.IsMax.succ_eq⟩ := succ_eq_iff_isMax
 
+lemma le_iff_eq_or_succ_le : a ≤ b ↔ a = b ∨ succ a ≤ b := by
+  by_cases ha : IsMax a
+  · simpa [ha.succ_eq] using le_of_eq
+  · rw [succ_le_iff_of_not_isMax ha, le_iff_eq_or_lt]
+
 theorem le_le_succ_iff : a ≤ b ∧ b ≤ succ a ↔ b = a ∨ b = succ a := by
   refine
     ⟨fun h =>
@@ -701,6 +706,11 @@ theorem pred_eq_iff_isMin : pred a = a ↔ IsMin a :=
   ⟨fun h => min_of_le_pred h.ge, fun h => h.eq_of_le <| pred_le _⟩
 
 alias ⟨_, _root_.IsMin.pred_eq⟩ := pred_eq_iff_isMin
+
+lemma le_iff_eq_or_le_pred : a ≤ b ↔ a = b ∨ a ≤ pred b := by
+  by_cases hb : IsMin b
+  · simpa [hb.pred_eq] using le_of_eq
+  · rw [le_pred_iff_of_not_isMin hb, le_iff_eq_or_lt]
 
 theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = pred a := by
   refine

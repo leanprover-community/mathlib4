@@ -58,7 +58,7 @@ theorem diff_mul_diff : diff ϕ R S * diff ϕ S T = diff ϕ R T :=
 
 @[to_additive]
 theorem diff_self : diff ϕ T T = 1 :=
-  mul_right_eq_self.mp (diff_mul_diff ϕ T T T)
+  mul_eq_left.mp (diff_mul_diff ϕ T T T)
 
 @[to_additive]
 theorem diff_inv : (diff ϕ S T)⁻¹ = diff ϕ T S :=

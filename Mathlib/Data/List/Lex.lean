@@ -35,22 +35,28 @@ variable {α : Type u}
 
 /-! ### lexicographic ordering -/
 
-namespace Lex
-
-theorem cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
+theorem lex_cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
     Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
   ⟨fun h => by obtain - | h | h := h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
 
+@[deprecated (since := "2025-03-14")] alias Lex.cons_iff := lex_cons_iff
+
 @[deprecated (since := "2024-12-21")] alias not_nil_right := not_lex_nil
 
-theorem nil_left_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ l = [] :=
+theorem lex_nil_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ l = [] :=
   match l with
   | [] => Or.inr rfl
-  | (_ :: _) => Or.inl nil
+  | _ :: _ => .inl .nil
+
+@[deprecated (since := "2025-03-14")] alias Lex.nil_left_or_eq_nil := lex_nil_or_eq_nil
 
 @[simp]
-theorem singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b :=
-  ⟨fun | rel h => h, List.Lex.rel⟩
+theorem lex_singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b :=
+  ⟨fun | .rel h => h, .rel⟩
+
+@[deprecated (since := "2025-03-14")] alias Lex.singleton_iff := lex_singleton_iff
+
+namespace Lex
 
 instance isOrderConnected (r : α → α → Prop) [IsOrderConnected α r] [IsTrichotomous α r] :
     IsOrderConnected (List α) (Lex r) where
@@ -128,9 +134,8 @@ theorem _root_.Decidable.List.Lex.ne_iff [DecidableEq α] {l₁ l₂ : List α}
     · exact (not_lt_of_ge H).elim (succ_pos _)
     · by_cases ab : a = b
       · subst b
-        apply cons
-        exact IH (le_of_succ_le_succ H) (mt (congr_arg _) h)
-      · exact rel ab ⟩
+        exact .cons <| IH (le_of_succ_le_succ H) (mt (congr_arg _) h)
+      · exact .rel ab ⟩
 
 theorem ne_iff {l₁ l₂ : List α} (H : length l₁ ≤ length l₂) : Lex (· ≠ ·) l₁ l₂ ↔ l₁ ≠ l₂ := by
   classical
@@ -138,24 +143,16 @@ theorem ne_iff {l₁ l₂ : List α} (H : length l₁ ≤ length l₂) : Lex (·
 
 end Lex
 
---Note: this overrides an instance in core lean
-instance LT' [LT α] : LT (List α) :=
-  ⟨Lex (· < ·)⟩
-
--- TODO: This deprecated instance is still used (by the instance just below)
-@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
-instance isStrictTotalOrder (r : α → α → Prop) [IsStrictTotalOrder α r] :
-    IsStrictTotalOrder (List α) (Lex r) :=
-  { isStrictWeakOrder_of_isOrderConnected with }
-
 instance [LinearOrder α] : LinearOrder (List α) :=
+  have : ∀ {r} [IsStrictTotalOrder α r], IsStrictTotalOrder (List α) (Lex r) :=
+    { isStrictWeakOrder_of_isOrderConnected with }
   linearOrderOfSTO (Lex (· < ·))
 
 --Note: this overrides an instance in core lean
 instance LE' [LinearOrder α] : LE (List α) :=
   Preorder.toLE
 
-theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : List.lt l l' ↔ Lex (· < ·) l l' := by
+theorem lt_iff_lex_lt [LT α] (l l' : List α) : List.lt l l' ↔ Lex (· < ·) l l' := by
   rw [List.lt]
 
 theorem head_le_of_lt [Preorder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :
