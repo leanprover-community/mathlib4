@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2025 Nailin Guan. All rights reserved.
+Copyright (c) 2024 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
@@ -14,15 +14,10 @@ import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
 /-!
 
-# Weierstrass Preparation Theorem for Formal Power Series
+# Distiguished polynomial
 
-In this file we proved the Weierstrass prepation theorem for formal power series.
-
-# Main results
-
-* `CompleteLocalRing.weierstrass_preparation` : The Weierstrass preparation theorem for complete
-  local ring, stating that every formal power series with some coefficient not in the unique
-  maximal ideal can be uniquely written as the product of a distinguish polynomial and an unit.
+In this section we define the structure `IsDistinguishedAt`
+and develope the most basic lemmas about it.
 
 -/
 
