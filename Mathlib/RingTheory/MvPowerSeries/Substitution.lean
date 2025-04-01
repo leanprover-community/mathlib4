@@ -28,9 +28,10 @@ The goal here is to check the relevant hypotheses:
 * The main condition rewrites as having vanishing constant coefficient
 * Multivariate power series have a linear topology
 
-To this aim, we add a local instance
-  `localinstanceUniformSpace_bot : UniformSpace S = ⊥`
-and two associated `ContinuousSMul` local instances.
+The function `MvPowerSeries.subst` is defined using an explicit
+invocation of the discrete uniformity (`⊥`).
+If users need to enter the API, they can use `MvPowerSeries.subst_eq_eval₂`
+that holds for whatever uniformity on the space as soon as it is discrete.
 
 ## TODO
 
@@ -65,67 +66,56 @@ lemma coeff_zero_iff [TopologicalSpace S] [DiscreteTopology S] :
   simp [nhds_discrete]
 
 /-- A multivariate power series can be substituted if and only if
-it can be evaluated when the topology on the coefficients of its coefficients
-is the discrete topology. -/
-/- We make the arguments of `HasEval` explicit to be sure that Lean infers the correct topology. -/
+it can be evaluated when the topology on the coefficients ring is the discrete topology. -/
 lemma hasSubst_iff_hasEval_of_discreteTopology [TopologicalSpace S] [DiscreteTopology S] :
     HasSubst a ↔ HasEval a :=
-  ⟨fun ha ↦
-    {
-      hpow s := (tendsto_pow_of_constantCoeff_nilpotent_iff (a s)).mpr (ha.const_coeff s)
-      tendsto_zero := coeff_zero_iff.mpr ha.coeff_zero },
-    fun ha ↦
-    {
-      const_coeff s := (tendsto_pow_of_constantCoeff_nilpotent_iff (a s)).mp (ha.hpow s)
-      coeff_zero d := (coeff_zero_iff.mp ha.tendsto_zero) d }⟩
+  ⟨fun ha ↦ ⟨fun s ↦ (tendsto_pow_of_constantCoeff_nilpotent_iff (a s)).mpr (ha.const_coeff s),
+      coeff_zero_iff.mpr ha.coeff_zero⟩,
+    fun ha ↦ ⟨fun s ↦ (tendsto_pow_of_constantCoeff_nilpotent_iff (a s)).mp (ha.hpow s),
+      fun d ↦ (coeff_zero_iff.mp ha.tendsto_zero) d⟩⟩
 
 theorem HasSubst.hasEval [TopologicalSpace S] [DiscreteTopology S] (ha : HasSubst a) :
     HasEval a :=
   hasSubst_iff_hasEval_of_discreteTopology.mp ha
 
-theorem hasSubst_X :
-    HasSubst (fun (s : σ) ↦ (X s : MvPowerSeries σ S)) := by
+theorem hasSubst_X : HasSubst (fun (s : σ) ↦ (X s : MvPowerSeries σ S)) := by
   letI : UniformSpace S := ⊥
-  rw [hasSubst_iff_hasEval_of_discreteTopology]
-  exact HasEval.X
+  simpa [hasSubst_iff_hasEval_of_discreteTopology] using HasEval.X
 
-theorem hasSubst_zero :
-    HasSubst (fun (_ : σ) ↦ (0 : MvPowerSeries τ S)) := by
+theorem hasSubst_zero : HasSubst (fun (_ : σ) ↦ (0 : MvPowerSeries τ S)) := by
   letI : UniformSpace S := ⊥
-  rw [hasSubst_iff_hasEval_of_discreteTopology]
-  exact HasEval.zero
+  simpa [hasSubst_iff_hasEval_of_discreteTopology] using HasEval.zero
 
-theorem hasSubst_add {a b : σ → MvPowerSeries τ S}
-    (ha : HasSubst a) (hb : HasSubst b) :
+theorem hasSubst_add {a b : σ → MvPowerSeries τ S} (ha : HasSubst a) (hb : HasSubst b) :
     HasSubst (a + b) := by
   letI : UniformSpace S := ⊥
   rw [hasSubst_iff_hasEval_of_discreteTopology] at ha hb ⊢
   exact HasEval.add ha hb
 
-theorem hasSubst_mul (b : σ → MvPowerSeries τ S)
-    {a : σ → MvPowerSeries τ S} (ha : HasSubst a) : HasSubst (b * a) := by
+theorem hasSubst_mul (b : σ → MvPowerSeries τ S) {a : σ → MvPowerSeries τ S} (ha : HasSubst a) :
+    HasSubst (b * a) := by
   letI : UniformSpace S := ⊥
   rw [hasSubst_iff_hasEval_of_discreteTopology] at ha ⊢
   exact HasEval.mul_left b ha
 
 theorem hasSubst_smul (r : MvPowerSeries τ S) {a : σ → MvPowerSeries τ S} (ha : HasSubst a) :
-    HasSubst (r • a) := by convert hasSubst_mul _ ha
+    HasSubst (r • a) := hasSubst_mul _ ha
 
-/-- Families of mv power series that can be substituted, as an `Ideal` -/
+/-- Families of `MvPowerSeries` that can be substituted, as an `Ideal` -/
 noncomputable def hasSubst.ideal : Ideal (σ → MvPowerSeries τ S) :=
   { carrier := setOf HasSubst
     add_mem' := hasSubst_add
     zero_mem' := hasSubst_zero
     smul_mem' := hasSubst_mul }
 
-/-- If σ is finite, then the nilpotent condition is enough for HasSubst -/
+/-- If `σ` is finite, then the nilpotent condition is enough for `HasSubst` -/
 theorem hasSubst_of_constantCoeff_nilpotent [Finite σ]
     {a : σ → MvPowerSeries τ S} (ha : ∀ s, IsNilpotent (constantCoeff τ S (a s))) :
     HasSubst a where
   const_coeff := ha
   coeff_zero _ := Set.toFinite _
 
-/-- If σ is finite, then having zero constant coefficient is enough for HasSubst -/
+/-- If `σ` is finite, then having zero constant coefficient is enough for `HasSubst` -/
 theorem hasSubst_of_constantCoeff_zero [Finite σ]
     {a : σ → MvPowerSeries τ S} (ha : ∀ s, constantCoeff τ S (a s) = 0) :
     HasSubst a :=
@@ -152,7 +142,8 @@ theorem subst_coe (p : MvPolynomial σ R) :
 variable {a : σ → MvPowerSeries τ S}
 
 /-- Substitution of power series into a power series -/
-noncomputable def substAlgHom (ha : HasSubst a) : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ S :=
+noncomputable def substAlgHom (ha : HasSubst a) :
+    MvPowerSeries σ R →ₐ[R] MvPowerSeries τ S :=
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   MvPowerSeries.aeval ha.hasEval
@@ -171,29 +162,26 @@ theorem coe_substAlgHom (ha : HasSubst a) : ⇑(substAlgHom ha) = subst (R := R)
   rw [substAlgHom_eq_aeval, coe_aeval ha.hasEval]
   rfl
 
+@[simp]
+theorem substAlgHom_apply (ha : HasSubst a) (f : MvPowerSeries σ R) :
+    substAlgHom ha f = subst a f := by
+  rw [coe_substAlgHom]
+
 theorem subst_add (ha : HasSubst a) (f g : MvPowerSeries σ R) :
     subst a (f + g) = subst a f + subst a g := by
-  letI : UniformSpace R := ⊥
-  letI : UniformSpace S := ⊥
-  rw [← coe_substAlgHom ha, map_add]
+  simp only [← substAlgHom_apply ha, map_add]
 
 theorem subst_mul (ha : HasSubst a) (f g : MvPowerSeries σ R) :
     subst a (f * g) = subst a f * subst a g := by
-  letI : UniformSpace R := ⊥
-  letI : UniformSpace S := ⊥
-  rw [← coe_substAlgHom ha, map_mul]
+  simp only [← substAlgHom_apply ha, map_mul]
 
 theorem subst_pow (ha : HasSubst a) (f : MvPowerSeries σ R) (n : ℕ) :
     subst a (f ^ n) = (subst a f ) ^ n := by
-  letI : UniformSpace R := ⊥
-  letI : UniformSpace S := ⊥
-  rw [← coe_substAlgHom ha, map_pow]
+  simp only [← substAlgHom_apply ha, map_pow]
 
 theorem subst_smul (ha : HasSubst a) (r : A) (f : MvPowerSeries σ R) :
     subst a (r • f) = r • (subst a f) := by
-  letI : UniformSpace R := ⊥
-  letI : UniformSpace S := ⊥
-  rw [← coe_substAlgHom ha, AlgHom.map_smul_of_tower]
+  simp only [← substAlgHom_apply ha, AlgHom.map_smul_of_tower]
 
 theorem substAlgHom_coe (ha : HasSubst a) (p : MvPolynomial σ R) :
     substAlgHom (R := R) ha p = MvPolynomial.aeval a p := by
@@ -217,10 +205,8 @@ theorem subst_monomial (ha : HasSubst a) (e : σ →₀ ℕ) (r : R) :
       (algebraMap R (MvPowerSeries τ S) r) * (e.prod (fun s n ↦ (a s) ^ n)) := by
   rw [← coe_substAlgHom ha, substAlgHom_monomial]
 
-theorem continuous_subst
-    (ha : HasSubst a)
-    [UniformSpace R] [DiscreteUniformity R]
-    [UniformSpace S] [DiscreteUniformity S] :
+theorem continuous_subst (ha : HasSubst a)
+    [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S] :
     Continuous (subst a : MvPowerSeries σ R → MvPowerSeries τ S) := by
   rw [subst_eq_eval₂]
   exact continuous_eval₂ (continuous_algebraMap _ _) ha.hasEval
