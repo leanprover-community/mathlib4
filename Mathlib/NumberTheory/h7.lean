@@ -186,10 +186,10 @@ include hq0 in
 lemma c1c : IsIntegral ℤ ((c₁ K α' β' γ') ^ (m K*q) • (γ'^(  (t.2 + 1) * (u.1 + 1) : ℕ))) := by
   apply c₁ac K α' β' γ' γ' (m K) q (t.2 + 1) (u.1 + 1) ?_ ?_
   · rw [mul_comm]
-    have hu : (↑u.1 + 1) ≤ m K := by
-      refine Nat.add_le_of_le_sub (Nat.le_of_ble_eq_true rfl) (Nat.le_sub_one_of_lt u.1.isLt)
-    have ht : (↑t.2 + 1) ≤ q := by
-      refine Nat.add_le_of_le_sub hq0 (Nat.le_sub_one_of_lt t.2.isLt)
+    have hu : (↑u.1 + 1) ≤ m K :=
+      Nat.add_le_of_le_sub (Nat.le_of_ble_eq_true rfl) (Nat.le_sub_one_of_lt u.1.isLt)
+    have ht : (↑t.2 + 1) ≤ q :=
+      Nat.add_le_of_le_sub hq0 (Nat.le_sub_one_of_lt t.2.isLt)
     exact Nat.mul_le_mul hu ht
   · rw [← zsmul_eq_mul]; exact c₁_γ K α' β' γ'
 
@@ -552,12 +552,11 @@ def r : ℕ := by
 -- l0 is the index where the minimum is attained
 include α β σ hq0 h2mq hdec hirr htriv K σ α' β' γ' habc hkneq0 h2mq t in
 lemma iteratedDeriv_vanishes (k' : Fin (q * q)) (l : Fin (m K)) : l < n K q →
-  iteratedDeriv k' (R K α β σ α' β' γ' q u) (u.1) = 0 := by {
+  iteratedDeriv k' (R K α β σ α' β' γ' q u) (u.1) = 0 := by
   intros hl
   have := lemma82 K α β hirr htriv σ hdec α' β' γ' habc q h2mq u t hq0
   obtain ⟨η', ⟨htneq0, ⟨hMt0, hbound⟩⟩⟩ := this
   sorry
-}
 -- from lemma 8.2
 -- lemma l : FormalMultilinearSeries.order R l ≥ n
 -- from this you get r ≥ n
