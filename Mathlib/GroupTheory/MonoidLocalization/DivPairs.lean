@@ -27,7 +27,7 @@ lemma mem_divPairs : x ∈ divPairs f s ↔ f.toMap x.1 / f.toMap x.2 ∈ s := .
 
 --TODO(Yael): make simp once `LocalizationMap.toMonoidHom` is simp nf
 variable (f g s) in
-@[to_additive (attr := simp)]
+@[to_additive]
 lemma divPairs_comap :
     divPairs g (.comap (g.mulEquivOfLocalizations f).toMonoidHom s) = divPairs f s := by
   ext; simp
