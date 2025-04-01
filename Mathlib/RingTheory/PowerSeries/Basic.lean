@@ -766,7 +766,7 @@ end IsDomain
 
 section Algebra
 
-variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+variable {A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 theorem C_eq_algebraMap {r : R} : C R r = (algebraMap R R⟦X⟧) r :=
   rfl
@@ -778,11 +778,13 @@ instance [Nontrivial R] : Nontrivial (Subalgebra R R⟦X⟧) :=
   { inferInstanceAs <| Nontrivial <| Subalgebra R <| MvPowerSeries Unit R with }
 
 /-- Change of coefficients in power series, as an `AlgHom` -/
-def mapAlgHom {R : Type*} [CommSemiring R]
-    {S : Type*} [Semiring S] [Algebra R S] {T : Type*} [Semiring T] [Algebra R T]
-    (φ : S →ₐ[R] T) :
-    PowerSeries S →ₐ[R] PowerSeries T :=
+def mapAlgHom (φ : A →ₐ[R] B) :
+    PowerSeries A →ₐ[R] PowerSeries B :=
  MvPowerSeries.mapAlgHom φ
+
+theorem mapAlgHom_apply (φ : A →ₐ[R] B) (f : A⟦X⟧) :
+    mapAlgHom φ f = f.map φ :=
+  MvPowerSeries.mapAlgHom_apply φ f
 
 end Algebra
 
@@ -792,8 +794,8 @@ namespace Polynomial
 
 open Finsupp Polynomial
 
-section CommSemiring
-variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
+section Semiring
+variable {R : Type*} [Semiring R] (φ ψ : R[X])
 
 -- Porting note: added so we can add the `@[coe]` attribute
 /-- The natural inclusion from polynomials into formal power series. -/
@@ -876,26 +878,6 @@ theorem coe_eq_zero_iff : (φ : PowerSeries R) = 0 ↔ φ = 0 := by rw [← coe_
 @[simp]
 theorem coe_eq_one_iff : (φ : PowerSeries R) = 1 ↔ φ = 1 := by rw [← coe_one, coe_inj]
 
-variable (φ ψ)
-
-theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
-    (f.toMvPowerSeries : PowerSeries R) = (f.pUnitAlgEquiv R).toPowerSeries := by
-  induction f using MvPolynomial.induction_on' with
-  | monomial d r =>
-    --Note: this `have` should be a generic `simp` lemma for a `Unique` type with `()` replaced
-    --by any element.
-    have : single () (d ()) = d := by ext; simp
-    simp only [MvPolynomial.coe_monomial, MvPolynomial.pUnitAlgEquiv_monomial,
-      Polynomial.coe_monomial, PowerSeries.monomial, this]
-  | add f g hf hg => simp [hf, hg]
-
-theorem pUnitAlgEquiv_symm_toPowerSeries {f : Polynomial R} :
-    ((f.toPowerSeries) : MvPowerSeries PUnit R)
-      = ((MvPolynomial.pUnitAlgEquiv R).symm f).toMvPowerSeries := by
-  set g := (MvPolynomial.pUnitAlgEquiv R).symm f
-  have : f = MvPolynomial.pUnitAlgEquiv R g := by simp only [g, AlgEquiv.apply_symm_apply]
-  rw [this, MvPolynomial.toMvPowerSeries_pUnitAlgEquiv]
-
 /-- The coercion from polynomials to power series
 as a ring homomorphism.
 -/
@@ -921,6 +903,30 @@ theorem eval₂_C_X_eq_coe : φ.eval₂ (PowerSeries.C R) PowerSeries.X = ↑φ 
   intros
   rw [map_mul, map_pow, coeToPowerSeries.ringHom_apply,
     coeToPowerSeries.ringHom_apply, coe_C, coe_X]
+
+end Semiring
+
+section CommSemiring
+
+variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
+
+theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
+    (f.toMvPowerSeries : PowerSeries R) = (f.pUnitAlgEquiv R).toPowerSeries := by
+  induction f using MvPolynomial.induction_on' with
+  | monomial d r =>
+    --Note: this `have` should be a generic `simp` lemma for a `Unique` type with `()` replaced
+    --by any element.
+    have : single () (d ()) = d := by ext; simp
+    simp only [MvPolynomial.coe_monomial, MvPolynomial.pUnitAlgEquiv_monomial,
+      Polynomial.coe_monomial, PowerSeries.monomial, this]
+  | add f g hf hg => simp [hf, hg]
+
+theorem pUnitAlgEquiv_symm_toPowerSeries {f : Polynomial R} :
+    ((f.toPowerSeries) : MvPowerSeries PUnit R)
+      = ((MvPolynomial.pUnitAlgEquiv R).symm f).toMvPowerSeries := by
+  set g := (MvPolynomial.pUnitAlgEquiv R).symm f
+  have : f = MvPolynomial.pUnitAlgEquiv R g := by simp only [g, AlgEquiv.apply_symm_apply]
+  rw [this, MvPolynomial.toMvPowerSeries_pUnitAlgEquiv]
 
 variable (A : Type*) [Semiring A] [Algebra R A]
 
