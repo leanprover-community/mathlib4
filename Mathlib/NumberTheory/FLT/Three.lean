@@ -213,8 +213,6 @@ lemma Solution'.multiplicity_lambda_c_finite :
     FiniteMultiplicity (hζ.toInteger - 1) S'.c :=
   .of_not_isUnit hζ.zeta_sub_one_prime'.not_unit S'.hc
 
-section DecidableRel
-
 /-- Given `S' : Solution'`, `S'.multiplicity` is the multiplicity of `λ` in `S'.c`, as a natural
 number. -/
 noncomputable def Solution'.multiplicity :=
@@ -236,8 +234,6 @@ lemma Solution.exists_minimal : ∃ (S₁ : Solution hζ), S₁.isMinimal := by
   let T := {n | ∃ (S' : Solution hζ), S'.multiplicity = n}
   rcases Nat.find_spec (⟨S.multiplicity, ⟨S, rfl⟩⟩ : T.Nonempty) with ⟨S₁, hS₁⟩
   exact ⟨S₁, fun S'' ↦ hS₁ ▸ Nat.find_min' _ ⟨S'', rfl⟩⟩
-
-end DecidableRel
 
 /-- Given `S' : Solution'`, then `S'.a` and `S'.b` are both congruent to `1` modulo `λ ^ 4` or are
 both congruent to `-1`. -/
@@ -278,8 +274,6 @@ lemma lambda_pow_four_dvd_c_cube : λ ^ 4 ∣ S'.c ^ 3 := by
     _ = S'.u⁻¹ * (S'.u * S'.c ^ 3) := by rw [S'.H]
     _ = S'.c ^ 3 := by simp
 
-section DecidableRel
-
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides `S'.c`. -/
 lemma lambda_sq_dvd_c : λ ^ 2 ∣ S'.c := by
   have hm := S'.multiplicity_lambda_c_finite
@@ -304,8 +298,6 @@ lemma Solution'.two_le_multiplicity : 2 ≤ S'.multiplicity := by
 lemma Solution.two_le_multiplicity : 2 ≤ S.multiplicity :=
   S.toSolution'.two_le_multiplicity
 
-end DecidableRel
-
 end IsCyclotomicExtension
 
 /-- Given `S' : Solution'`, the key factorization of `S'.a ^ 3 + S'.b ^ 3`. -/
@@ -317,9 +309,8 @@ lemma a_cube_add_b_cube_eq_mul :
     simp [hζ.toInteger_cube_eq_one]
   _ = S'.a ^ 3 + S'.b ^ 3 := by rw [eta_sq]; ring
 
-section DecidableRel
-
-variable [NumberField K] [IsCyclotomicExtension {3} ℚ K] [DecidableRel fun (a b : 𝓞 K) ↦ a ∣ b]
+section IsCyclotomicExtension
+variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 
 /-- Given `S' : Solution'`, we have that `λ ^ 2` divides one amongst `S'.a + S'.b`,
 `S'.a + η * S'.b` and `S'.a + η ^ 2 * S'.b`. -/
@@ -385,7 +376,7 @@ lemma exists_Solution_of_Solution' : ∃ (S₁ : Solution hζ), S₁.multiplicit
     H := H
     hab := hab }, rfl⟩
 
-end DecidableRel
+end IsCyclotomicExtension
 
 namespace Solution
 
@@ -490,8 +481,6 @@ private lemma lambda_not_dvd_z : ¬ λ ∣ S.z := fun h ↦ by
   rw [coe_eta, ← z_spec, ← pow_two] at h
   exact lambda_sq_not_dvd_a_add_eta_sq_mul_b _ h
 
-section DecidableRel
-
 /-- We have that `λ ^ (3*S.multiplicity-2)` divides `S.a + S.b`. -/
 private lemma lambda_pow_dvd_a_add_b : λ ^ (3 * S.multiplicity - 2) ∣ S.a + S.b := by
   have h : λ ^ S.multiplicity ∣ S.c := pow_multiplicity_dvd _ _
@@ -538,8 +527,6 @@ private lemma lambda_not_dvd_x : ¬ λ ∣ S.x := fun h ↦ by
   · exact lambda_not_dvd_w _ <| hζ.zeta_sub_one_prime'.dvd_of_dvd_pow h
   · simp [hζ.zeta_sub_one_prime'.ne_zero]
 
-end DecidableRel
-
 attribute [local instance] IsCyclotomicExtension.Rat.three_pid
 
 private lemma isCoprime_helper {r s t w : 𝓞 K} (hr : ¬ λ ∣ r) (hs : ¬ λ ∣ s)
@@ -549,12 +536,12 @@ private lemma isCoprime_helper {r s t w : 𝓞 K} (hr : ¬ λ ∣ r) (hs : ¬ λ
     (fun p hp p_dvd_r p_dvd_s ↦ hr ?_)
   rwa [← Associated.dvd_iff_dvd_left <| Hp hp (H₁ p_dvd_r) (H₂ p_dvd_s)]
 
-private lemma isCoprime_x_y [DecidableRel fun (a b : 𝓞 K) ↦ a ∣ b] : IsCoprime S.x S.y :=
+private lemma isCoprime_x_y : IsCoprime S.x S.y :=
   isCoprime_helper (lambda_not_dvd_x S) (lambda_not_dvd_y S)
     (associated_of_dvd_a_add_b_of_dvd_a_add_eta_mul_b S) (fun hq ↦ x_spec S ▸ hq.mul_left _)
       (fun hq ↦ y_spec S ▸ hq.mul_left _)
 
-private lemma isCoprime_x_z [DecidableRel fun (a b : 𝓞 K) ↦ a ∣ b] : IsCoprime S.x S.z :=
+private lemma isCoprime_x_z : IsCoprime S.x S.z :=
   isCoprime_helper (lambda_not_dvd_x S) (lambda_not_dvd_z S)
     (associated_of_dvd_a_add_b_of_dvd_a_add_eta_sq_mul_b S) (fun hq ↦ x_spec S ▸ hq.mul_left _)
       (fun hq ↦ z_spec S ▸ hq.mul_left _)

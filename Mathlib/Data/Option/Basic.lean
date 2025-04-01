@@ -44,6 +44,7 @@ theorem mem_map {f : α → β} {y : β} {o : Option α} : y ∈ o.map f ↔ ∃
 
 -- The simpNF linter says that the LHS can be simplified via `Option.mem_def`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `H` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
 theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {o : Option α} :
@@ -318,8 +319,10 @@ lemma isNone_eq_false_iff (a : Option α) : Option.isNone a = false ↔ Option.i
 lemma eq_none_or_eq_some (a : Option α) : a = none ∨ ∃ x, a = some x :=
   Option.exists.mp exists_eq'
 
-lemma forall_some_ne_iff_eq_none {o : Option α} : (∀ (x : α), some x ≠ o) ↔ o = none := by
+lemma eq_none_iff_forall_some_ne {o : Option α} : o = none ↔ ∀ a : α, some a ≠ o := by
   apply not_iff_not.1
-  simpa only [not_forall, not_not] using Option.ne_none_iff_exists.symm
+  simpa only [not_forall, not_not] using Option.ne_none_iff_exists
+
+@[deprecated (since := "2025-03-19")] alias forall_some_ne_iff_eq_none := eq_none_iff_forall_some_ne
 
 end Option

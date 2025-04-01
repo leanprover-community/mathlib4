@@ -18,10 +18,6 @@ namespace SimplexCategory.Truncated
 
 open Mathlib.Tactic (subscriptTerm delabSubscript)
 
-/-- A quick attempt to prove that `⦋m⦌` is `n`-truncated (`⦋m⦌.len ≤ n`). -/
-scoped macro "trunc" : tactic =>
-  `(tactic| dsimp only [SimplexCategory.len_mk] <;> omega)
-
 /-- For `m ≤ n`, `⦋m⦌ₙ` is the `m`-dimensional simplex in `Truncated n`. The
 proof `p : m ≤ n` can also be provided using the syntax `⦋m, p⦌ₙ`. -/
 scoped syntax:max (name := mkNotation)

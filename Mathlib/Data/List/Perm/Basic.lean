@@ -191,8 +191,6 @@ theorem Perm.foldl_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : (l�
 theorem Perm.foldr_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : l₁.foldr op a = l₂.foldr op a :=
   h.foldr_eq _
 
-@[deprecated (since := "2024-09-28")] alias Perm.fold_op_eq := Perm.foldl_op_eq
-
 end
 
 theorem perm_option_toList {o₁ o₂ : Option α} : o₁.toList ~ o₂.toList ↔ o₁ = o₂ := by
@@ -236,8 +234,7 @@ protected theorem Perm.flatMap {l₁ l₂ : List α} {f g : α → List β} (h :
 
 theorem flatMap_append_perm (l : List α) (f g : α → List β) :
     l.flatMap f ++ l.flatMap g ~ l.flatMap fun x => f x ++ g x := by
-  induction' l with a l IH
-  · simp
+  induction l with | nil => simp | cons a l IH => ?_
   simp only [flatMap_cons, append_assoc]
   refine (Perm.trans ?_ (IH.append_left _)).append_left _
   rw [← append_assoc, ← append_assoc]

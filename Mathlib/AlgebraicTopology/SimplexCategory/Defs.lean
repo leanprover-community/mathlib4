@@ -176,6 +176,33 @@ noncomputable def inclusion.fullyFaithful (n : ℕ) :
 theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
 
+/-- A quick attempt to prove that `⦋m⦌` is `n`-truncated (`⦋m⦌.len ≤ n`). -/
+scoped macro "trunc" : tactic =>
+  `(tactic| first | assumption | dsimp only [SimplexCategory.len_mk] <;> omega)
+
+/-- Make a morphism in `Truncated n` from a morphism in `SimplexCategory`. This
+is equivalent to `@id (⦋a⦌ₙ ⟶ ⦋b⦌ₙ) f`. -/
+abbrev Hom.tr {n : ℕ} {a b : SimplexCategory} (f : a ⟶ b)
+    (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc) :
+    (⟨a, ha⟩ : Truncated n) ⟶ ⟨b, hb⟩ :=
+  f
+
+lemma Hom.tr_comp {n : ℕ} {a b c : SimplexCategory} (f : a ⟶ b) (g : b ⟶ c)
+    (ha : a.len ≤ n := by trunc) (hb : b.len ≤ n := by trunc)
+    (hc : c.len ≤ n := by trunc) :
+    tr (f ≫ g) = tr f ≫ tr g :=
+  rfl
+
+/-- The inclusion of `Truncated n` into `Truncated m` when `n ≤ m`. -/
+def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m where
+  obj a := ⟨a.1, a.2.trans h⟩
+  map := id
+
+/-- For all `n ≤ m`, `inclusion n` factors through `Truncated m`. -/
+def inclCompInclusion {n m : ℕ} (h : n ≤ m) :
+    incl n m ⋙ inclusion m ≅ inclusion n :=
+  Iso.refl _
+
 end Truncated
 
 end SimplexCategory
