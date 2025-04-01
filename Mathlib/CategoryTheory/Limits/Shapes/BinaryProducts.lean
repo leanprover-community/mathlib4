@@ -1228,3 +1228,50 @@ noncomputable def Over.coprod [HasBinaryCoproducts C] {A : C} : Over A ⥤ Over 
     dsimp; simp
 
 end CategoryTheory
+
+namespace CategoryTheory.Limits
+variable {C : Type*} [Category C] {X Y P : C}
+
+/-! A binary fan gives a binary cofan in the opposite category. -/
+@[simps!]
+def BinaryFan.op (c : BinaryFan X Y) : BinaryCofan (.op X : Cᵒᵖ) (.op Y) :=
+  .mk (.op c.fst) (.op c.snd)
+
+/-! A binary fan in the opposite category gives a binary cofan. -/
+@[simps!]
+def BinaryFan.unop (c : BinaryFan (.op X : Cᵒᵖ) (.op Y)) : BinaryCofan X Y :=
+  .mk c.fst.unop c.snd.unop
+
+/-! A binary cofan gives a binary fan in the opposite category. -/
+@[simps!]
+def BinaryCofan.op (c : BinaryCofan X Y) : BinaryFan (.op X : Cᵒᵖ) (.op Y) :=
+  .mk (.op c.inl) (.op c.inr)
+
+/-! A binary cofan in the opposite category gives a binary fan. -/
+@[simps!]
+def BinaryCofan.unop (c : BinaryCofan (.op X : Cᵒᵖ) (.op Y)) : BinaryFan X Y :=
+  .mk c.inl.unop c.inr.unop
+
+@[simp] lemma BinaryCofan.op_mk (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : op (mk ι₁ ι₂) = .mk ι₁.op ι₂.op := rfl
+
+
+@[simp] lemma BinaryFan.unop_mk (ι₁ : .op P ⟶ .op X) (ι₂ : .op P ⟶ .op Y) :
+    unop (mk ι₁ ι₂) = .mk ι₁.unop ι₂.unop := rfl
+
+def BinaryCofan.IsColimit.op {c : BinaryCofan X Y} (hc : IsColimit c) : IsLimit <| c.op where
+  lift s := .op <| hc.desc (BinaryFan.unop s)
+  fac s := by rintro (_|_) <;> simp [← CategoryTheory.op_comp, hc.fac]
+  uniq s m h := by
+    replace h j : c.ι.app j ≫ m.unop = (BinaryFan.unop s).ι.app j := by
+      specialize h j; obtain ⟨_ | _⟩ := j <;> simpa using Quiver.Hom.op_inj h
+    simpa using congr($(hc.uniq (BinaryFan.unop s) m.unop h).op)
+
+def BinaryFan.IsLimit.op {c : BinaryFan X Y} (hc : IsLimit c) : IsColimit <| c.op where
+  desc s := .op <| hc.lift (BinaryCofan.unop s)
+  fac s := by rintro (_|_) <;> simp [← CategoryTheory.op_comp, hc.fac]
+  uniq s m h := by
+    replace h j : m.unop ≫ c.π.app j = (BinaryCofan.unop s).π.app j := by
+      specialize h j; obtain ⟨_ | _⟩ := j <;> simpa using Quiver.Hom.op_inj h
+    simpa using congr($(hc.uniq (BinaryCofan.unop s) m.unop h).op)
+
+end CategoryTheory.Limits
