@@ -75,19 +75,4 @@ lemma norm_intCast_le_one (z : ℤ) :
 
 end NormOneClass
 
-section NormedRing
-
-open Metric NNReal
-
-variable {R : Type*} [NormedRing R] [IsUltrametricDist R]
-
-lemma exists_norm_finset_add_le {t : Type*} (s : Finset t) [Nonempty t] (f : t → R) :
-    ∃ i : t, (s.Nonempty → i ∈ s) ∧ ‖∑ i ∈ s, f i‖ ≤ ‖f i‖ := by
-  rcases s.eq_empty_or_nonempty with rfl | hs
-  · simp only [Finset.not_nonempty_empty, Finset.not_mem_empty, imp_self, Finset.sum_empty,
-    norm_zero, norm_nonneg, and_self, exists_const]
-  · exact exists_norm_finset_sum_le s f
-
-end NormedRing
-
 end IsUltrametricDist
