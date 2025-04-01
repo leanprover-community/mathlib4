@@ -16,8 +16,8 @@ Criteria for tightness of sets of measures in normed and inner product spaces.
 
 * `isTightMeasureSet_iff_tendsto_measure_norm_gt`: in a proper normed group, a set of measures `S`
   is tight if and only if the function `r ↦ ⨆ μ ∈ S, μ {x | r < ‖x‖}` tends to `0` at infinity.
-* `isTightMeasureSet_iff_forall_basis_tendsto`: in a finite-dimensional inner product space,
-  a set of measures `S` is tight if and only if for every orthonormal basis `b`, the function
+* `isTightMeasureSet_iff_forall_basis_tendsto`: in a finite-dimensional inner product space
+  with orthonormal basis `b`, a set of measures `S` is tight if and only if the function
   `r ↦ ⨆ μ ∈ S, μ {x | r < |⟪b i, x⟫|}` tends to `0` at infinity for all `i`.
 
 -/
@@ -126,6 +126,9 @@ lemma isTightMeasureSet_of_forall_basis_tendsto (b : OrthonormalBasis ι ℝ E)
   refine (h i).comp ?_
   exact Tendsto.atTop_div_const (by positivity) tendsto_id
 
+/-- In a finite-dimensional inner product space with orthonormal basis `b`,
+a set of measures `S` is tight if and only if the function `r ↦ ⨆ μ ∈ S, μ {x | r < |⟪b i, x⟫|}`
+tends to `0` at infinity for all `i`. -/
 lemma isTightMeasureSet_iff_forall_basis_tendsto (b : OrthonormalBasis ι ℝ E) :
     IsTightMeasureSet S
       ↔ ∀ i, Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < |⟪b i, x⟫|}) atTop (𝓝 0) := by
