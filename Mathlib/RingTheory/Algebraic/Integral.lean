@@ -324,7 +324,7 @@ def Subalgebra.algebraicClosure [IsDomain R] : Subalgebra R S where
   algebraMap_mem' := isAlgebraic_algebraMap
 
 theorem Subalgebra.mem_algebraicClosure [IsDomain R] {x : S} :
-    x ∈ algebraicClosure R S ↔ _root_.IsAlgebraic R x := Iff.rfl
+    x ∈ algebraicClosure R S ↔ IsAlgebraic R x := Iff.rfl
 
 theorem integralClosure_le_algebraicClosure [IsDomain R] :
     integralClosure R S ≤ Subalgebra.algebraicClosure R S :=
