@@ -361,11 +361,11 @@ theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofi
   · simpa using hs {x} (disjoint_singleton_left.2 hx)
 
 @[to_additive]
-theorem Multipliable.finite_mulSupport
+theorem Multipliable.finite_mulSupport_of_discreteTopology
     {α : Type*} [CommGroup α] [TopologicalSpace α] [DiscreteTopology α]
-    {β : Type*} (f : β → α) (h : Multipliable f) : Set.Finite f.mulSupport := by
+    {β : Type*} (f : β → α) (h : Multipliable f) : Set.Finite f.mulSupport :=
   haveI : IsTopologicalGroup α := ⟨⟩
-  exact h.tendsto_cofinite_one (discreteTopology_iff_singleton_mem_nhds.mp ‹_› 1)
+  h.tendsto_cofinite_one (discreteTopology_iff_singleton_mem_nhds.mp ‹_› 1)
 
 @[to_additive]
 theorem Multipliable.countable_mulSupport [FirstCountableTopology G] [T1Space G]

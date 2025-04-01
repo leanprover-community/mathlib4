@@ -4,13 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.LinearAlgebra.Finsupp.Pi
 import Mathlib.RingTheory.MvPowerSeries.Evaluation
 import Mathlib.RingTheory.MvPowerSeries.LinearTopology
-import Mathlib.RingTheory.MvPowerSeries.Trunc
+import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 /-! # Substitutions in multivariate power series
@@ -23,7 +20,8 @@ in `Mathlib.RingTheory.MvPowerSeries.Evaluation`.
 The goal here is to check the relevant hypotheses:
 * The ring of coefficients is endowed the discrete topology.
 * The main condition rewrites as having vanishing constant coefficient
-* Power series have a linear topology
+* Multivariate power series have a linear topology
+
 -/
 
 namespace MvPowerSeries
@@ -248,7 +246,7 @@ theorem coeff_subst_finite (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ �
   letI : UniformSpace R := ⊥
   haveI : ContinuousSMul R S := DiscreteTopology.instContinuousSMul R S
   haveI : ContinuousSMul R (MvPowerSeries τ S) := IsScalarTower.continuousSMul S
-  Summable.finite_support _
+  Summable.finite_support_of_discreteTopology _
     ((hasSum_aeval ha.hasEval f).map (coeff S e) (continuous_coeff S e)).summable
 
 theorem coeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :

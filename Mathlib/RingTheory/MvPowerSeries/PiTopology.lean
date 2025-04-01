@@ -128,17 +128,8 @@ theorem continuous_C [Semiring R] :
   · exact tendsto_const_nhds
 
 /-- Scalar multiplication on `MvPowerSeries` is continous -/
-instance [Ring R] [IsTopologicalRing R] :
-    ContinuousSMul R (MvPowerSeries σ R) := by
-  suffices (fun (u : R × MvPowerSeries σ R) ↦ (u.1 • u.2 : MvPowerSeries σ R)) =
-    (fun u : MvPowerSeries σ R × MvPowerSeries σ R ↦ u.1 * u.2) ∘ (fun u ↦ ⟨C σ R u.1, u.2⟩) by
-    apply ContinuousSMul.mk
-    rw [this]
-    apply Continuous.comp
-    · exact Continuous.mul continuous_fst continuous_snd
-    · simp only [continuous_prodMk]
-      exact ⟨Continuous.comp continuous_C continuous_fst, continuous_snd⟩
-  ext; simp
+instance [Semiring R] [IsTopologicalSemiring R] : ContinuousSMul R (MvPowerSeries σ R) :=
+  instContinuousSMulForall
 
 theorem variables_tendsto_zero [Semiring R] :
     Tendsto (X · : σ → MvPowerSeries σ R) cofinite (nhds 0) := by
