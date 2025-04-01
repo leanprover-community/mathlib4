@@ -32,9 +32,8 @@ open scoped ENNReal NNReal Topology
 
 namespace MeasureTheory
 
-variable {α β : Type*} [TopologicalSpace α] {mα : MeasurableSpace α}
-  [TopologicalSpace β] {mβ : MeasurableSpace β}
-  {μ ν : Measure α} {S T : Set (Measure α)}
+variable {α β : Type*} [TopologicalSpace α] {mα : MeasurableSpace α} {μ ν : Measure α}
+  {S T : Set (Measure α)}
 
 /-- A set of measures `S` is tight if for all `0 < ε`, there exists a compact set `K` such that
 for all `μ ∈ S`, `μ Kᶜ ≤ ε`.
