@@ -3141,6 +3141,7 @@ import Mathlib.Data.Option.Defs
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Data.Ordering.Lemmas
+import Mathlib.Data.Ordmap.Invariants
 import Mathlib.Data.Ordmap.Ordnode
 import Mathlib.Data.Ordmap.Ordset
 import Mathlib.Data.PEquiv
