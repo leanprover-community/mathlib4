@@ -71,6 +71,90 @@ open scoped Real NNReal Interval Pointwise Topology
 open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptotics
 
 /-!
+### Facts about `circleMap`
+-/
+
+/-- The range of `circleMap c R` is the circle with center `c` and radius `|R|`. -/
+@[simp]
+theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |R| :=
+  calc
+    range (circleMap c R) = c +ᵥ R • range fun θ : ℝ => exp (θ * I) := by
+      simp (config := { unfoldPartialApp := true }) only [← image_vadd, ← image_smul, ← range_comp,
+        vadd_eq_add, circleMap, comp_def, real_smul]
+    _ = sphere c |R| := by
+      rw [range_exp_mul_I, smul_sphere R 0 zero_le_one]
+      simp
+
+/-- The image of `(0, 2π]` under `circleMap c R` is the circle with center `c` and radius `|R|`. -/
+@[simp]
+theorem image_circleMap_Ioc (c : ℂ) (R : ℝ) : circleMap c R '' Ioc 0 (2 * π) = sphere c |R| := by
+  rw [← range_circleMap, ← (periodic_circleMap c R).image_Ioc Real.two_pi_pos 0, zero_add]
+
+theorem hasDerivAt_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) :
+    HasDerivAt (circleMap c R) (circleMap 0 R θ * I) θ := by
+  simpa only [mul_assoc, one_mul, ofRealCLM_apply, circleMap, ofReal_one, zero_add]
+    using (((ofRealCLM.hasDerivAt (x := θ)).mul_const I).cexp.const_mul (R : ℂ)).const_add c
+
+theorem differentiable_circleMap (c : ℂ) (R : ℝ) : Differentiable ℝ (circleMap c R) := fun θ =>
+  (hasDerivAt_circleMap c R θ).differentiableAt
+
+/-- The circleMap is real analytic. -/
+theorem analyticOnNhd_circleMap (c : ℂ) (R : ℝ) :
+    AnalyticOnNhd ℝ (circleMap c R) Set.univ := by
+  intro z hz
+  apply analyticAt_const.add
+  apply analyticAt_const.mul
+  rw [← Function.comp_def]
+  apply analyticAt_cexp.restrictScalars.comp ((ofRealCLM.analyticAt z).mul (by fun_prop))
+
+/-- The circleMap is continuously differentiable. -/
+theorem contDiff_circleMap (c : ℂ) (R : ℝ) {n : WithTop ℕ∞} :
+    ContDiff ℝ n (circleMap c R) :=
+  (analyticOnNhd_circleMap c R).contDiff
+
+@[continuity, fun_prop]
+theorem continuous_circleMap (c : ℂ) (R : ℝ) : Continuous (circleMap c R) :=
+  (differentiable_circleMap c R).continuous
+
+@[fun_prop, measurability]
+theorem measurable_circleMap (c : ℂ) (R : ℝ) : Measurable (circleMap c R) :=
+  (continuous_circleMap c R).measurable
+
+@[simp]
+theorem deriv_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) : deriv (circleMap c R) θ = circleMap 0 R θ * I :=
+  (hasDerivAt_circleMap _ _ _).deriv
+
+theorem deriv_circleMap_eq_zero_iff {c : ℂ} {R : ℝ} {θ : ℝ} :
+    deriv (circleMap c R) θ = 0 ↔ R = 0 := by simp [I_ne_zero]
+
+theorem deriv_circleMap_ne_zero {c : ℂ} {R : ℝ} {θ : ℝ} (hR : R ≠ 0) :
+    deriv (circleMap c R) θ ≠ 0 :=
+  mt deriv_circleMap_eq_zero_iff.1 hR
+
+theorem lipschitzWith_circleMap (c : ℂ) (R : ℝ) : LipschitzWith (Real.nnabs R) (circleMap c R) :=
+  lipschitzWith_of_nnnorm_deriv_le (differentiable_circleMap _ _) fun θ =>
+    NNReal.coe_le_coe.1 <| by simp
+
+theorem continuous_circleMap_inv {R : ℝ} {z w : ℂ} (hw : w ∈ ball z R) :
+    Continuous fun θ => (circleMap z R θ - w)⁻¹ := by
+  have : ∀ θ, circleMap z R θ - w ≠ 0 := by
+    simp_rw [sub_ne_zero]
+    exact fun θ => circleMap_ne_mem_ball hw θ
+  -- Porting note: was `continuity`
+  exact Continuous.inv₀ (by fun_prop) this
+
+theorem circleMap_preimage_codiscrete {c : ℂ} {R : ℝ} (hR : R ≠ 0) :
+    map (circleMap c R) (codiscrete ℝ) ≤ codiscreteWithin (Metric.sphere c |R|) := by
+  intro s hs
+  apply (analyticOnNhd_circleMap c R).preimage_mem_codiscreteWithin
+  · intro x hx
+    by_contra hCon
+    obtain ⟨a, ha⟩ := eventuallyConst_iff_exists_eventuallyEq.1 hCon
+    have := ha.deriv.eq_of_nhds
+    simp [hR] at this
+  · rwa [Set.image_univ, range_circleMap]
+
+/-!
 ### Integrability of a function on a circle
 -/
 
