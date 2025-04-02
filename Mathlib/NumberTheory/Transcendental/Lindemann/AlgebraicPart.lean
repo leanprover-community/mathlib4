@@ -17,7 +17,7 @@ import Mathlib.FieldTheory.Minpoly.ConjRootClass
 
 noncomputable section
 
-open scoped AddMonoidAlgebra BigOperators Classical Polynomial
+open scoped AddMonoidAlgebra BigOperators Polynomial
 
 open Finset Polynomial
 
@@ -25,6 +25,7 @@ variable {R A : Type*} [CommRing R] [IsDomain R] [CommRing A] [IsDomain A] [Alge
 
 namespace Quot
 
+open Classical in
 protected def liftFinsupp {α : Type*} {r : α → α → Prop} {β : Type*} [Zero β] (f : α →₀ β)
     (h : ∀ a b, r a b → f a = f b) : Quot r →₀ β := by
   refine ⟨image (mk r) f.support, Quot.lift f h, fun a => ⟨?_, ?_⟩⟩
@@ -89,6 +90,7 @@ def mapDomainFixedEquivSubtype :
 namespace mapDomainFixed
 variable [FiniteDimensional F K] [Normal F K]
 
+open Classical in
 variable (F R K) in
 def toFinsuppAux : mapDomainFixed F R K ≃ (ConjRootClass F K →₀ R) := by
   refine (mapDomainFixedEquivSubtype F R K).trans
@@ -181,6 +183,7 @@ theorem mk_apply_zero_eq (f : R[K]) (hf : f ∈ mapDomainFixed F R K) :
     (⟨f, hf⟩ : mapDomainFixed F R K) 0 = (f : R[K]) 0 :=
   rfl
 
+open Classical in
 def single (x : ConjRootClass F K) (a : R) :
     mapDomainFixed F R K :=
   ⟨Finsupp.indicator x.carrier.toFinset fun _ _ => a, by
@@ -193,9 +196,10 @@ def single (x : ConjRootClass F K) (a : R) :
 
 theorem coe_single (x : ConjRootClass F K) (a : R) :
     ↑(mapDomainFixed.single x a) = Finsupp.single x a := by
+  classical
   ext i; induction i with | h i => ?_
   rw [apply_mk]
-  change Finsupp.indicator x.carrier.toFinset (fun _ _ => a) i = Finsupp.single x a _
+  simp only [single]
   rw [Finsupp.single_apply, Finsupp.indicator_apply]; dsimp; congr 1
   rw [Set.mem_toFinset, ConjRootClass.mem_carrier, eq_comm (a := x)]
 
@@ -208,6 +212,7 @@ theorem sum_single (x : mapDomainFixed F R K) :
 theorem single_mul_single_apply_zero_ne_zero_iff [CharZero F] [NoZeroDivisors R]
     (x : ConjRootClass F K) {a : R} (ha : a ≠ 0) (y : ConjRootClass F K) {b : R} (hb : b ≠ 0) :
     (mapDomainFixed.single x a * mapDomainFixed.single y b) 0 ≠ 0 ↔ x = -y := by
+  classical
   simp_rw [mapDomainFixed.single, MulMemClass.mk_mul_mk]
   have := Nat.noZeroSMulDivisors F R
   simp_rw [Finsupp.indicator_eq_sum_single, sum_mul, mul_sum, AddMonoidAlgebra.single_mul_single,
@@ -222,6 +227,7 @@ theorem single_mul_single_apply_zero_eq_zero_iff [CharZero F] [NoZeroDivisors R]
     (mapDomainFixed.single x a * mapDomainFixed.single y b) 0 = 0 ↔ x ≠ -y :=
   (single_mul_single_apply_zero_ne_zero_iff x ha y hb).not_right
 
+open Classical in
 theorem lift_eq_sum_toFinsupp (A : Type*) [Semiring A] [Algebra R A]
     (φ : Multiplicative K →* A) (x : mapDomainFixed F R K) :
     AddMonoidAlgebra.lift R K A φ x =
@@ -246,6 +252,7 @@ theorem linearIndependent_range_aux (F : Type*) {K G S : Type*}
     (f : K[G] →+* S)
     (x : K[G]) (x0 : x ≠ 0) (hfx : f x = 0) :
     ∃ (y : F[G]), y ≠ 0 ∧ f (y.mapRangeAlgHom (algebraMap F K).toNatAlgHom) = 0 := by
+  classical
   let y := ∏ f : K ≃ₐ[F] K, x.mapRangeAlgAut f
   have hy : ∀ f : K ≃ₐ[F] K, y.mapRangeAlgAut f = y := by
     intro f; dsimp only [y]
@@ -283,6 +290,7 @@ theorem linearIndependent_exp_aux2_1 {F K S : Type*}
     (f : F[K] →ₐ[F] S)
     (x : F[K]) (x0 : x ≠ 0) (hfx : f x = 0) :
     ∃ (y : mapDomainFixed F F K) (_ : y ≠ 0), f y = 0 := by
+  classical
   refine ⟨⟨∏ f : K ≃ₐ[F] K, x.domCongrAut F _ (f : K ≃+ K), ?_⟩,
     fun h => absurd (Subtype.mk.inj h) ?_, ?_⟩
   · intro f
@@ -294,6 +302,7 @@ theorem linearIndependent_exp_aux2_1 {F K S : Type*}
     rw [← mul_prod_erase univ _ (mem_univ 1), show ((1 : K ≃ₐ[F] K) : K ≃+ K) = 1 from rfl,
       map_one, AlgEquiv.one_apply, map_mul, hfx, zero_mul]
 
+open Classical in
 theorem linearIndependent_exp_aux2_2 {F K S : Type*}
     [Field F] [Field K] [Algebra F K] [FiniteDimensional F K] [Normal F K] [CharZero F]
     [Semiring S] [Algebra F S]
@@ -341,6 +350,7 @@ theorem linearIndependent_exp_aux_rat {K S : Type*}
     (v' : ι → K) (v0 : v' ≠ 0)
     (h : ∑ i : ι, algebraMap K S (v' i) * φ (.ofAdd (u' i)) = 0) :
     ∃ (f : K[K]), f ≠ 0 ∧ AddMonoidAlgebra.lift _ _ _ φ f = 0 := by
+  classical
   let f : K[K] :=
     Finsupp.onFinset (image u' univ)
       (fun x =>
@@ -373,6 +383,7 @@ theorem linearIndependent_exp_aux_int (R : Type*) {F K S : Type*}
     (h : (algebraMap F S w + w'.sum fun c wc ↦ wc • f c) = 0) :
     ∃ (w : R) (_w0 : w ≠ 0) (w' : ConjRootClass F K →₀ R) (_hw' : w' 0 = 0),
       (algebraMap R S w + w'.sum fun c wc ↦ wc • f c) = 0 := by
+  classical
   obtain ⟨⟨N, N0⟩, hN⟩ :=
     IsLocalization.exist_integer_multiples_of_finset (nonZeroDivisors R) ({w} ∪ w'.frange)
   replace N0 := nonZeroDivisors.ne_zero N0
@@ -391,6 +402,7 @@ theorem linearIndependent_exp_aux_int (R : Type*) {F K S : Type*}
     map_mul, mul_assoc, ← mul_sum, ← mul_add, ← Algebra.smul_def,
     sum_attach _ fun x ↦ w' x • f x, h, smul_zero]
 
+open Classical in
 theorem linearIndependent_exp_aux_aroots_rat {F K S : Type*}
     [Field F] [Field K] [Algebra F K] [FiniteDimensional F K] [Normal F K] [CharZero F]
     [Field S] [Algebra K S] [Algebra F S] [IsScalarTower F K S]
@@ -462,6 +474,7 @@ theorem linearIndependent_exp_aux {S : Type*}
     ∃ (w : ℤ) (_w0 : w ≠ 0) (n : ℕ) (p : Fin n → ℤ[X]) (_p0 : ∀ j, (p j).eval 0 ≠ 0)
       (w' : Fin n → ℤ),
         (w + ∑ j, w' j • (((p j).aroots S).map (φ <| .ofAdd ·)).sum) = 0 := by
+  classical
   let s := univ.image u ∪ univ.image v
   have hs : ∀ x ∈ s, IsIntegral ℚ x := by simp [s, or_imp, forall_and, hu, hv]
   let poly : ℚ[X] := ∏ x ∈ s, minpoly ℚ x
