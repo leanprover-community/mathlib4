@@ -425,11 +425,6 @@ def Lean.MVarId.congrImplies?' (mvarId : MVarId) : MetaM (Option (List MVarId)) 
       | throwError "unexpected number of goals"
     return [mvarId₁, mvarId₂]
 
-protected theorem FastSubsingleton.helim {α β : Sort u} [FastSubsingleton α]
-    (h₂ : α = β) (a : α) (b : β) : HEq a b := by
-  have : Subsingleton α := FastSubsingleton.inst
-  exact Subsingleton.helim h₂ a b
-
 /--
 Try to apply `Subsingleton.helim` if the goal is a `HEq`. Tries synthesizing a `Subsingleton`
 instance for both the LHS and the RHS.

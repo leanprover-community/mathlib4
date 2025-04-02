@@ -1,0 +1,164 @@
+name: bot fix style
+
+# triggers the action when
+on:
+  issue_comment:
+    # the PR receives a comment, or a comment is edited
+    types: [created, edited]
+  pull_request_review:
+    # triggers on a review, whether or not it is accompanied by a comment
+    types: [submitted]
+  pull_request_review_comment:
+    # triggers on a review comment
+    types: [created, edited]
+
+jobs:
+  fix_style:
+    # we set some variables. The ones of the form `${{ X }}${{ Y }}` are typically not
+    # both set simultaneously: depending on the event that triggers the PR, usually only one is set
+    env:
+      AUTHOR: ${{ github.event.comment.user.login }}${{ github.event.review.user.login }}
+      COMMENT_EVENT: ${{ github.event.comment.body }}
+      COMMENT_REVIEW: ${{ github.event.review.body }}
+      COMMENT_REVIEW_COMMENT: ${{ github.event.pull_request_review_comment.body }}
+    name: Fix style issues from lint
+    # the `if` works with `comment`s, but not with `review`s or `review_comment`s
+    # if: github.event.issue.pull_request
+    # && (startsWith(github.event.comment.body, 'bot fix style') || contains(toJSON(github.event.comment.body), '\nbot fix style'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find bot fix style
+        id: bot_fix_style
+        run: |
+          COMMENT="${COMMENT_EVENT}${COMMENT_REVIEW}${COMMENT_REVIEW_COMMENT}"
+          # we strip `\r` since line endings from GitHub contain this character
+          COMMENT="${COMMENT//$'\r'/}"
+          # for debugging, we print some information
+          printf '%s' "${COMMENT}" | hexdump -cC
+          printf 'Comment:"%s"\n' "${COMMENT}"
+          bot_fix_style="$(printf '%s' "${COMMENT}" |
+            sed -n 's=^bot fix style$=bot-fix-style=p' | head -1)"
+
+          printf $'"bot fix style"? \'%s\'\n' "${bot_fix_style}"
+          printf $'AUTHOR: \'%s\'\n' "${AUTHOR}"
+          printf $'PR_NUMBER: \'%s\'\n' "${{ github.event.issue.number }}${{ github.event.pull_request.number }}"
+          printf $'%s' "${{ github.event.issue.number }}${{ github.event.pull_request.number }}" | hexdump -cC
+
+          printf $'bot_fix_style=%s\n' "${bot_fix_style}" >> "${GITHUB_OUTPUT}"
+          # these final variables are probably not relevant for the bot_fix_style action
+          if [ "${AUTHOR}" == 'leanprover-community-mathlib4-bot' ] ||
+             [ "${AUTHOR}" == 'leanprover-community-bot-assistant' ]
+          then
+            printf $'bot=true\n'
+            printf $'bot=true\n' >> "${GITHUB_OUTPUT}"
+          else
+            printf $'bot=false\n'
+            printf $'bot=false\n' >> "${GITHUB_OUTPUT}"
+          fi
+
+      - id: user_permission
+        if: steps.bot_fix_style.outputs.bot_fix_style == 'bot-fix-style'
+        uses: actions-cool/check-user-permission@7b90a27f92f3961b368376107661682c441f6103 # v2.3.0
+        with:
+          require: 'write'
+
+      # from now on, it is sufficient to just check `user_permission`:
+      # if the comment did not contain `bot fix style`,
+      # then `user_permission` would not have ran
+      - name: Add reaction (comment)
+        # reactions are only supported for `comment`s and `review_comment`s?
+        # This action only runs on `comment`s rather than `review`s or `review_comment`s
+        # Is the `id` check a good way to check that this is a `comment`?
+        if: ${{ steps.user_permission.outputs.require-result == 'true' &&
+                ! github.event.comment.id == '' }}
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4.0.0
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          reactions: rocket
+
+      - name: Add reaction (review comment)
+        # this action only runs on `review_comment`s
+        # is the `id` check a good way to check that this is a `review_comment`?
+        if: ${{ steps.user_permission.outputs.require-result == 'true' &&
+                ! github.event.pull_request_review_comment.id == '' }}
+        run: |
+            gh api --method POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              /repos/${{ github.repository_owner }}/${{ github.event.repository.name }}/pulls/comments/${{ github.event.comment.id }}/reactions \
+              -f "content=rocket"
+        env:
+            GH_TOKEN: ${{ secrets.BOT_FIX_STYLE_TOKEN }}
+
+      - name: cleanup
+        if: steps.user_permission.outputs.require-result == 'true'
+        run: |
+          find . -name . -o -prune -exec rm -rf -- {} +
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        if: steps.user_permission.outputs.require-result == 'true'
+        with:
+          token: ${{ secrets.BOT_FIX_STYLE_TOKEN }}
+
+      - name: Checkout PR branch
+        if: steps.user_permission.outputs.require-result == 'true'
+        run: |
+            # covers `comment`s
+            gh pr checkout ${{ github.event.issue.number }} ||
+            # covers `review`s and `review_comment`s
+            gh pr checkout ${{ github.event.pull_request.number }}
+        env:
+            GH_TOKEN: ${{ secrets.BOT_FIX_STYLE_TOKEN }}
+
+      - name: install Python
+        if: steps.user_permission.outputs.require-result == 'true'
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
+        with:
+          python-version: 3.8
+
+      - name: install elan
+        if: steps.user_permission.outputs.require-result == 'true'
+        run: |
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      # run the same linting steps as in lint_and_suggest_pr.yaml
+
+      - name: lint
+        if: steps.user_permission.outputs.require-result == 'true'
+        run: |
+          lake exe lint-style --fix
+
+      - name: Install bibtool
+        if: steps.user_permission.outputs.require-result == 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bibtool
+
+      - name: lint references.bib
+        if: steps.user_permission.outputs.require-result == 'true'
+        run: |
+          # ignoring the return code allows the following `reviewdog` step to add GitHub suggestions
+          ./scripts/lint-bib.sh || true
+
+      - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
+        if: steps.user_permission.outputs.require-result == 'true'
+        run: |
+          # ignoring the return code allows the following `reviewdog` step to add GitHub suggestions
+          lake exe mk_all || true
+
+      - name: Commit and push changes
+        if: steps.user_permission.outputs.require-result == 'true'
+        run: |
+          # cleanup junk from build
+          rm elan-init
+          rm docs/references.bib.old
+          # setup commit and push
+          git config user.name "leanprover-community-mathlib4-bot"
+          git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
+          git add .
+          # Don't fail if there's nothing to commit
+          git commit -m "commit changes from style linters" || true
+          git push origin HEAD

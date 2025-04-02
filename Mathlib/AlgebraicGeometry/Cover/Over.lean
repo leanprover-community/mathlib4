@@ -112,7 +112,7 @@ variable (hX : Q (X ↘ S)) (hW : Q (W ↘ S)) (hQ : ∀ j, Q (𝒰.obj j ↘ S)
 definitionally equal to `AlgebraicGeometry.Scheme.Cover.pullbackCover`, as here we take
 the pullback in `Q.Over ⊤ S`, whose underlying scheme is only isomorphic but not equal to the
 pullback in `Scheme`. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def Cover.pullbackCoverOverProp : W.Cover P where
   J := 𝒰.J
   obj x := (pullback (f.asOverProp (hX := hW) (hY := hX) S)
@@ -140,7 +140,7 @@ instance : (𝒰.pullbackCoverOverProp S f hX hW hQ).Over S where
 
 /-- A variant of `AlgebraicGeometry.Scheme.Cover.pullbackCoverOverProp` with the arguments in the
 fiber products flipped. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def Cover.pullbackCoverOverProp' : W.Cover P where
   J := 𝒰.J
   obj x := (pullback ((𝒰.map x).asOverProp (hX := hQ x) (hY := hX) S)

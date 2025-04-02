@@ -3,8 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Alex Kontorovich
 -/
-import Mathlib.Order.Filter.Bases
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Order.Filter.Tendsto
+import Mathlib.Order.Filter.Bases.Finite
 
 /-!
 # (Co)product of a family of filters
@@ -98,6 +99,28 @@ theorem hasBasis_pi {ι' : ι → Type*} {s : ∀ i, ι' i → Set (α i)} {p : 
     (pi f).HasBasis (fun If : Set ι × ∀ i, ι' i => If.1.Finite ∧ ∀ i ∈ If.1, p i (If.2 i))
       fun If : Set ι × ∀ i, ι' i => If.1.pi fun i => s i <| If.2 i := by
   simpa [Set.pi_def] using hasBasis_iInf' fun i => (h i).comap (eval i : (∀ j, α j) → α i)
+
+theorem hasBasis_pi_same_index {κ : Type*} {p : κ → Prop} {s : Π i : ι, κ → Set (α i)}
+    (h : ∀ i : ι, (f i).HasBasis p (s i))
+    (h_dir : ∀ I : Set ι, ∀ k : ι → κ, I.Finite → (∀ i ∈ I, p (k i)) →
+      ∃ k₀, p k₀ ∧ ∀ i ∈ I, s i k₀ ⊆ s i (k i)) :
+    (pi f).HasBasis (fun Ik : Set ι × κ ↦ Ik.1.Finite ∧ p Ik.2)
+      (fun Ik ↦ Ik.1.pi (fun i ↦ s i Ik.2)) := by
+  refine hasBasis_pi h |>.to_hasBasis ?_ ?_
+  · rintro ⟨I, k⟩ ⟨hI, hk⟩
+    rcases h_dir I k hI hk with ⟨k₀, hk₀, hk₀'⟩
+    exact ⟨⟨I, k₀⟩, ⟨hI, hk₀⟩, Set.pi_mono hk₀'⟩
+  · rintro ⟨I, k⟩ ⟨hI, hk⟩
+    exact ⟨⟨I, fun _ ↦ k⟩, ⟨hI, fun _ _ ↦ hk⟩, subset_rfl⟩
+
+theorem HasBasis.pi_self {α : Type*} {κ : Type*} {f : Filter α} {p : κ → Prop} {s : κ → Set α}
+    (h : f.HasBasis p s) :
+    (pi fun _ ↦ f).HasBasis (fun Ik : Set ι × κ ↦ Ik.1.Finite ∧ p Ik.2)
+      (fun Ik ↦ Ik.1.pi (fun _ ↦ s Ik.2)) := by
+  refine hasBasis_pi_same_index (fun _ ↦ h) (fun I k hI hk ↦ ?_)
+  rcases h.mem_iff.mp (biInter_mem hI |>.mpr fun i hi ↦ h.mem_of_mem (hk i hi))
+    with ⟨k₀, hk₀, hk₀'⟩
+  exact ⟨k₀, hk₀, fun i hi ↦ hk₀'.trans (biInter_subset_of_mem hi)⟩
 
 theorem le_pi_principal (s : (i : ι) → Set (α i)) :
     𝓟 (univ.pi s) ≤ pi fun i ↦ 𝓟 (s i) :=

@@ -53,7 +53,7 @@ theorem isSeparator_iff_faithful_preadditiveCoyoneda (G : C) :
     fun h => Functor.Faithful.comp _ _⟩
 
 theorem isSeparator_iff_faithful_preadditiveCoyonedaObj (G : C) :
-    IsSeparator G ↔ (preadditiveCoyonedaObj (op G)).Faithful := by
+    IsSeparator G ↔ (preadditiveCoyonedaObj G).Faithful := by
   rw [isSeparator_iff_faithful_preadditiveCoyoneda, preadditiveCoyoneda_obj]
   exact ⟨fun h => Functor.Faithful.of_comp _ (forget₂ _ AddCommGrp.{v}),
     fun h => Functor.Faithful.comp _ _⟩

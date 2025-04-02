@@ -131,6 +131,8 @@ lemma retractionOfSectionOfKerSqZero_tmul_D (s : S) (t : P) :
   haveI := isScalarTower_of_section_of_ker_sqZero g hf' hg
   simp only [retractionOfSectionOfKerSqZero, AlgHom.toRingHom_eq_coe, LinearMap.coe_restrictScalars,
     LinearMap.liftBaseChange_tmul, SetLike.val_smul_of_tower]
+  -- The issue is a mismatch between `RingHom.ker (algebraMap P S)` and
+  -- `RingHom.ker (IsScalarTower.toAlgHom R P S)`, but `rw` and `simp` can't rewrite it away...
   erw [Derivation.liftKaehlerDifferential_comp_D]
   exact mul_sub (g s) t (g (algebraMap P S t))
 
@@ -560,6 +562,24 @@ def H1Cotangent.equivOfFormallySmooth (P₁ P₂ : Extension R S)
   .ofBijective _ (H1Cotangent.map_toInfinitesimal_bijective P₁) ≪≫ₗ
     H1Cotangent.equiv (Extension.homInfinitesimal _ _) (Extension.homInfinitesimal _ _)
     ≪≫ₗ .symm (.ofBijective _ (H1Cotangent.map_toInfinitesimal_bijective P₂))
+
+lemma H1Cotangent.equivOfFormallySmooth_toLinearMap {P₁ P₂ : Extension R S} (f : P₁.Hom P₂)
+    [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] :
+    (H1Cotangent.equivOfFormallySmooth P₁ P₂).toLinearMap = map f := by
+  ext1 x
+  refine (LinearEquiv.symm_apply_eq _).mpr ?_
+  show ((map (P₁.homInfinitesimal P₂)).restrictScalars S ∘ₗ map P₁.toInfinitesimal) x =
+    ((map P₂.toInfinitesimal).restrictScalars S ∘ₗ map f) x
+  rw [← map_comp, ← map_comp, map_eq]
+
+lemma H1Cotangent.equivOfFormallySmooth_apply {P₁ P₂ : Extension R S} (f : P₁.Hom P₂)
+    [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] (x) :
+    H1Cotangent.equivOfFormallySmooth P₁ P₂ x = map f x := by
+  rw [← equivOfFormallySmooth_toLinearMap]; rfl
+
+lemma H1Cotangent.equivOfFormallySmooth_symm (P₁ P₂ : Extension R S)
+    [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] :
+    (equivOfFormallySmooth P₁ P₂).symm = equivOfFormallySmooth P₂ P₁ := rfl
 
 /-- Any formally smooth extension can be used to calculate `H¹(L_{S/R})`. -/
 noncomputable

@@ -5,8 +5,7 @@ Authors: Fox Thomson, Chris Wong
 -/
 import Mathlib.Computability.Language
 import Mathlib.Data.Countable.Small
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.List.Indexes
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Tactic.NormNum
 
 /-!
@@ -185,9 +184,9 @@ theorem comap_id : M.comap id = M := rfl
 @[simp]
 theorem evalFrom_comap (f : α' → α) (s : σ) (x : List α') :
     (M.comap f).evalFrom s x = M.evalFrom s (x.map f) := by
-  induction x using List.list_reverse_induction with
-  | base => simp
-  | ind x a ih => simp [ih]
+  induction x using List.reverseRecOn with
+  | nil => simp
+  | append_singleton x a ih => simp [ih]
 
 @[simp]
 theorem eval_comap (f : α' → α) (x : List α') : (M.comap f).eval x = M.eval (x.map f) := by
@@ -226,9 +225,9 @@ theorem symm_reindex (g : σ ≃ σ') : (reindex (α := α) g).symm = reindex g.
 @[simp]
 theorem evalFrom_reindex (g : σ ≃ σ') (s : σ') (x : List α) :
     (reindex g M).evalFrom s x = g (M.evalFrom (g.symm s) x) := by
-  induction x using List.list_reverse_induction with
-  | base => simp
-  | ind x a ih => simp [ih]
+  induction x using List.reverseRecOn with
+  | nil => simp
+  | append_singleton x a ih => simp [ih]
 
 @[simp]
 theorem eval_reindex (g : σ ≃ σ') (x : List α) : (reindex g M).eval x = g (M.eval x) := by

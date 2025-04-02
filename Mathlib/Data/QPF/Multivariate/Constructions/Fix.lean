@@ -174,7 +174,7 @@ variable {α : TypeVec.{u} n}
 def Fix.rec {β : Type u} (g : F (α ::: β) → β) : Fix F α → β :=
   Quot.lift (recF g) (recF_eq_of_wEquiv α g)
 
-/-- Access W-type underlying `Fix F`  -/
+/-- Access W-type underlying `Fix F` -/
 def fixToW : Fix F α → q.P.W α :=
   Quotient.lift wrepr (recF_eq_of_wEquiv α fun x => q.P.wMk' (repr x))
 
@@ -198,7 +198,7 @@ theorem Fix.rec_eq {β : Type u} (g : F (append1 α β) → β) (x : F (append1 
     lhs
     rw [Fix.rec, Fix.mk]
     dsimp
-  cases' h : repr x with a f
+  rcases h : repr x with ⟨a, f⟩
   rw [MvPFunctor.map_eq, recF_eq', ← MvPFunctor.map_eq, MvPFunctor.wDest'_wMk']
   rw [← MvPFunctor.comp_map, abs_map, ← h, abs_repr, ← appendFun_comp, id_comp, this]
 

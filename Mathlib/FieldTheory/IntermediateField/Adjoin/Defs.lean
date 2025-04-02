@@ -25,7 +25,6 @@ section AdjoinDef
 
 variable (F : Type*) [Field F] {E : Type*} [Field E] [Algebra F E] (S : Set E)
 
--- Porting note: not adding `neg_mem'` causes an error.
 /-- `adjoin F S` extends a field `F` by adjoining a set `S ⊆ E`. -/
 @[stacks 09FZ "first part"]
 def adjoin : IntermediateField F E :=
@@ -210,7 +209,6 @@ noncomputable def botEquiv : (⊥ : IntermediateField F E) ≃ₐ[F] F :=
 
 variable {F E}
 
--- Porting note: this was tagged `simp`.
 theorem botEquiv_def (x : F) : botEquiv F E (algebraMap F (⊥ : IntermediateField F E) x) = x := by
   simp
 
@@ -338,7 +336,7 @@ theorem adjoin.algebraMap_mem (x : F) : algebraMap F E x ∈ adjoin F S :=
 
 theorem adjoin.range_algebraMap_subset : Set.range (algebraMap F E) ⊆ adjoin F S := by
   intro x hx
-  cases' hx with f hf
+  obtain ⟨f, hf⟩ := hx
   rw [← hf]
   exact adjoin.algebraMap_mem F S f
 
@@ -526,10 +524,10 @@ open Lean in
 private partial def mkInsertTerm {m : Type → Type} [Monad m] [MonadQuotation m]
     (xs : TSyntaxArray `term) : m Term := run 0 where
   run (i : Nat) : m Term := do
-    if i + 1 == xs.size then
-      ``(singleton $(xs[i]!))
-    else if i < xs.size then
-      ``(insert $(xs[i]!) $(← run (i + 1)))
+    if h : i + 1 = xs.size then
+      ``(singleton $(xs[i]))
+    else if h : i < xs.size then
+      ``(insert $(xs[i]) $(← run (i + 1)))
     else
       ``(EmptyCollection.emptyCollection)
 
@@ -563,7 +561,6 @@ section AdjoinSimple
 
 variable (α : E)
 
--- Porting note: in all the theorems below, mathport translated `F⟮α⟯` into `F⟮⟯`.
 theorem mem_adjoin_simple_self : α ∈ F⟮α⟯ :=
   subset_adjoin F {α} (Set.mem_singleton α)
 
@@ -586,8 +583,6 @@ theorem adjoin_simple_comm (β : E) : F⟮α⟯⟮β⟯.restrictScalars F = F⟮
 
 variable {F} {α}
 
-/- Porting note: this was tagged `simp`, but the LHS can be simplified now that the notation
-has been improved. -/
 theorem adjoin_simple_le_iff {K : IntermediateField F E} : F⟮α⟯ ≤ K ↔ α ∈ K := by simp
 
 theorem biSup_adjoin_simple : ⨆ x ∈ S, F⟮x⟯ = adjoin F S := by
@@ -605,7 +600,6 @@ variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E] {α : E} {S :
 theorem adjoin_eq_bot_iff : adjoin F S = ⊥ ↔ S ⊆ (⊥ : IntermediateField F E) := by
   rw [eq_bot_iff, adjoin_le_iff]
 
-/- Porting note: this was tagged `simp`. -/
 theorem adjoin_simple_eq_bot_iff : F⟮α⟯ = ⊥ ↔ α ∈ (⊥ : IntermediateField F E) := by
   simp
 
@@ -624,9 +618,6 @@ theorem adjoin_intCast (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
 @[simp]
 theorem adjoin_natCast (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
   adjoin_simple_eq_bot_iff.mpr (natCast_mem ⊥ n)
-
-@[deprecated (since := "2024-04-05")] alias adjoin_int := adjoin_intCast
-@[deprecated (since := "2024-04-05")] alias adjoin_nat := adjoin_natCast
 
 end AdjoinIntermediateFieldLattice
 
@@ -650,7 +641,6 @@ theorem fg_adjoin_of_finite {t : Set E} (h : Set.Finite t) : (adjoin F t).FG :=
   fg_def.mpr ⟨t, h, rfl⟩
 
 theorem fg_bot : (⊥ : IntermediateField F E).FG :=
-  -- Porting note: was `⟨∅, adjoin_empty F E⟩`
   ⟨∅, by simp only [Finset.coe_empty, adjoin_empty]⟩
 
 theorem fg_sup {S T : IntermediateField F E} (hS : S.FG) (hT : T.FG) : (S ⊔ T).FG := by

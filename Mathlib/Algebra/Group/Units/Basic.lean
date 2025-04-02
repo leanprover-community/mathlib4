@@ -75,21 +75,17 @@ theorem eq_inv_mul_iff_mul_eq {a c : α} : a = ↑b⁻¹ * c ↔ ↑b * a = c :=
 theorem mul_inv_eq_iff_eq_mul {a c : α} : a * ↑b⁻¹ = c ↔ a = c * b :=
   ⟨fun h => by rw [← h, inv_mul_cancel_right], fun h => by rw [h, mul_inv_cancel_right]⟩
 
--- Porting note: have to explicitly type annotate the 1
 @[to_additive]
 protected theorem inv_eq_of_mul_eq_one_left {a : α} (h : a * u = 1) : ↑u⁻¹ = a :=
   calc
-    ↑u⁻¹ = (1 : α) * ↑u⁻¹ := by rw [one_mul]
+    ↑u⁻¹ = 1 * ↑u⁻¹ := by rw [one_mul]
     _ = a := by rw [← h, mul_inv_cancel_right]
 
-
--- Porting note: have to explicitly type annotate the 1
 @[to_additive]
 protected theorem inv_eq_of_mul_eq_one_right {a : α} (h : ↑u * a = 1) : ↑u⁻¹ = a :=
   calc
-    ↑u⁻¹ = ↑u⁻¹ * (1 : α) := by rw [mul_one]
+    ↑u⁻¹ = ↑u⁻¹ * 1 := by rw [mul_one]
     _ = a := by rw [← h, inv_mul_cancel_left]
-
 
 @[to_additive]
 protected theorem eq_inv_of_mul_eq_one_left {a : α} (h : ↑u * a = 1) : a = ↑u⁻¹ :=
@@ -129,8 +125,8 @@ variable [Monoid α]
 theorem divp_left_inj (u : αˣ) {a b : α} : a /ₚ u = b /ₚ u ↔ a = b :=
   Units.mul_left_inj _
 
-/- Porting note: to match the mathlib3 behavior, this needs to have higher simp
-priority than eq_divp_iff_mul_eq. -/
+-- to match the mathlib3 behavior,
+-- this needs to have higher simp priority than eq_divp_iff_mul_eq.
 @[field_simps 1010]
 theorem divp_eq_iff_mul_eq {x : α} {u : αˣ} {y : α} : x /ₚ u = y ↔ y * u = x :=
   u.mul_left_inj.symm.trans <| by rw [divp_mul_cancel]; exact ⟨Eq.symm, Eq.symm⟩
@@ -144,8 +140,7 @@ theorem divp_eq_one_iff_eq {a : α} {u : αˣ} : a /ₚ u = 1 ↔ a = u :=
 
 /-- Used for `field_simp` to deal with inverses of units. This form of the lemma
 is essential since `field_simp` likes to use `inv_eq_one_div` to rewrite
-`↑u⁻¹ = ↑(1 / u)`.
--/
+`↑u⁻¹ = ↑(1 / u)`. -/
 @[field_simps]
 theorem inv_eq_one_divp' (u : αˣ) : ((1 / u : αˣ) : α) = 1 /ₚ u := by
   rw [one_div, one_divp]
@@ -310,6 +305,16 @@ protected theorem mul_right_cancel (h : IsUnit b) : a * b = c * b → a = c :=
   h.mul_left_inj.1
 
 @[to_additive]
+theorem mul_eq_right (h : IsUnit b) : a * b = b ↔ a = 1 := calc
+  a * b = b ↔ a * b = 1 * b := by rw [one_mul]
+    _ ↔ a = 1 := by rw [h.mul_left_inj]
+
+@[to_additive]
+theorem mul_eq_left (h : IsUnit a) : a * b = a ↔ b = 1 := calc
+  a * b = a ↔ a * b = a * 1 := by rw [mul_one]
+    _ ↔ b = 1 := by rw [h.mul_right_inj]
+
+@[to_additive]
 protected theorem mul_right_injective (h : IsUnit a) : Injective (a * ·) :=
   fun _ _ => h.mul_left_cancel
 
@@ -463,12 +468,3 @@ end IsUnit
 
 -- namespace
 end IsUnit
-
-attribute [deprecated div_mul_cancel_right (since := "2024-03-20")] IsUnit.div_mul_left
-attribute [deprecated sub_add_cancel_right (since := "2024-03-20")] IsAddUnit.sub_add_left
-attribute [deprecated div_mul_cancel_left (since := "2024-03-20")] IsUnit.div_mul_right
-attribute [deprecated sub_add_cancel_left (since := "2024-03-20")] IsAddUnit.sub_add_right
--- The names `IsUnit.mul_div_cancel` and `IsAddUnit.add_sub_cancel` have been reused
--- @[deprecated (since := "2024-03-20")] alias IsUnit.mul_div_cancel := IsUnit.mul_div_cancel_right
--- @[deprecated (since := "2024-03-20")]
--- alias IsAddUnit.add_sub_cancel := IsAddUnit.add_sub_cancel_right
