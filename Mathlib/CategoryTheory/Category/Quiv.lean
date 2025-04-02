@@ -216,7 +216,7 @@ lemma freeMap_pathsOf_pathComposition (V : Type u) [Quiver.{v + 1} V] :
   Paths.ext_functor rfl (by simp)
 
 /-- An unbundled version of the right triangle equality. -/
-lemma pathsOf_pathComposition_toPrefunctor (C : Type u) [Category.{max u v} C] :
+lemma pathsOf_pathComposition_toPrefunctor (C : Type u) [Category.{v} C] :
     Paths.of (Quiv.of C) ⋙q (pathComposition C).toPrefunctor = 𝟭q (Quiv.of C) := by
   dsimp only [Prefunctor.comp]
   congr
