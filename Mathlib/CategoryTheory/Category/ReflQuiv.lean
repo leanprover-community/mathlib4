@@ -144,15 +144,12 @@ theorem FreeRefl.lift_unique' {V} [ReflQuiver V] {D} [Category D] (F₁ F₂ : F
 `freeMap` and the quotient functor. -/
 @[simps!]
 def freeReflMap {V W : Type*} [ReflQuiver.{v₁ + 1} V] [ReflQuiver.{v₂ + 1} W] (F : V ⥤rq W) :
-    FreeRefl V ⥤ FreeRefl W := by
-  refine Quotient.lift _ ?_ ?_
-  · show Paths V ⥤ _
-    exact freeMap F.toPrefunctor ⋙ FreeRefl.quotientFunctor _
-  · intro X Y f g hfg
+    FreeRefl V ⥤ FreeRefl W :=
+  Quotient.lift _ (freeMap F.toPrefunctor ⋙ FreeRefl.quotientFunctor W) (by
+    rintro _ _ _ _ ⟨hfg⟩
     apply Quotient.sound
-    cases hfg
     simp [ReflPrefunctor.map_id]
-    constructor
+    constructor)
 
 theorem freeReflMap_naturality
     {V W : Type*} [ReflQuiver.{v₁ + 1} V] [ReflQuiver.{v₂ + 1} W] (F : V ⥤rq W) :
