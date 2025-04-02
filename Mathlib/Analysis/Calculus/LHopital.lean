@@ -333,17 +333,17 @@ theorem _root_.HasDerivWithinAt.lhopital_zero_nhdsWithin_convex {s : Set ℝ} (h
       apply tendsto_bot
     have := interior_mono <| hs.closure.openSegment_subset (subset_closure hbs) has
     rw [openSegment_eq_Ioo hba, interior_Ioo, h'] at this
-    rw [nhdsWithin_inter_of_mem <| mem_nhdsWithin_Iio_iff_exists_Ioo_subset.2
+    rw [nhdsWithin_inter_of_mem <| mem_nhdsLT_iff_exists_Ioo_subset.2
       ⟨b, hba, this.trans interior_subset⟩] at *
-    exact lhopital_zero_nhds_left hff'.1 hgg'.1 hg'.1 hfa.1 hga.1 hdiv.1
+    exact lhopital_zero_nhdsLT hff'.1 hgg'.1 hg'.1 hfa.1 hga.1 hdiv.1
   · rcases eq_empty_or_nonempty (s ∩ Ioi a) with hs' | ⟨b, hbs, hab⟩
     · rw [hs', nhdsWithin_empty]
       apply tendsto_bot
     have := interior_mono <| hs.closure.openSegment_subset has (subset_closure hbs)
     rw [openSegment_eq_Ioo hab, interior_Ioo, h'] at this
-    rw [nhdsWithin_inter_of_mem <| mem_nhdsWithin_Ioi_iff_exists_Ioo_subset.2
+    rw [nhdsWithin_inter_of_mem <| mem_nhdsGT_iff_exists_Ioo_subset.2
       ⟨b, hab, this.trans interior_subset⟩] at *
-    exact lhopital_zero_nhds_right hff'.2 hgg'.2 hg'.2 hfa.2 hga.2 hdiv.2
+    exact lhopital_zero_nhdsGT hff'.2 hgg'.2 hg'.2 hfa.2 hga.2 hdiv.2
 
 /-- L'Hôpital's rule for approaching a real, `HasDerivAt` version. This
   does not require anything about the situation at `a` -/
