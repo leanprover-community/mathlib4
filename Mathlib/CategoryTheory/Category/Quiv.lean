@@ -77,9 +77,9 @@ namespace Cat
 /-- A prefunctor `V ⥤q W` induces a functor between the path categories defined by `F.mapPath`. -/
 @[simps]
 def freeMap {V W : Type*} [Quiver V] [Quiver W] (F : V ⥤q W) : Paths V ⥤ Paths W where
-    obj := F.obj
-    map := F.mapPath
-    map_comp f g := F.mapPath_comp f g
+  obj := F.obj
+  map := F.mapPath
+  map_comp f g := F.mapPath_comp f g
 
 /-- The functor `free : Quiv ⥤ Cat` preserves identities up to natural isomorphism and in fact up
 to equality. -/
