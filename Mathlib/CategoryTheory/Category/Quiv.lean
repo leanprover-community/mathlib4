@@ -194,8 +194,7 @@ def lift {V : Type u} [Quiver.{v + 1} V] {C : Type u₁} [Category.{v₁} C]
 
 /-- Naturality of `pathComposition`. -/
 def pathCompositionNaturality {C : Type u} {D : Type u₁}
-    [Category.{v} C] [Category.{v₁} D]
-    (F : C ⥤ D) :
+    [Category.{v} C] [Category.{v₁} D] (F : C ⥤ D) :
     Cat.freeMap (F.toPrefunctor) ⋙ pathComposition D ≅ pathComposition C ⋙ F :=
   Paths.liftNatIso (fun _ ↦ Iso.refl _) (by simp)
 
