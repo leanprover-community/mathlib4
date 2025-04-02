@@ -62,7 +62,11 @@ def atMin [Preorder α] : Filter α where
 theorem mem_atMax [Preorder α] (s : Set α) : s ∈ atMax ↔ ∀ x, ∃ y ≥ x, Ici y ⊆ s := Iff.rfl
 theorem mem_atMin [Preorder α] (s : Set α) : s ∈ atMin ↔ ∀ x, ∃ y ≤ x, Iic y ⊆ s := Iff.rfl
 
-instance [Preorder α] [Nonempty α] : NeBot (atMax : Filter α) where
+
+section Preorder
+variable [Preorder α] (x : α)
+
+instance [Nonempty α] : NeBot (atMax : Filter α) where
   ne' := by
     intro h
     rw [← empty_mem_iff_bot, mem_atMax] at h
@@ -70,7 +74,7 @@ instance [Preorder α] [Nonempty α] : NeBot (atMax : Filter α) where
     obtain ⟨y, _, hy⟩ := h x
     exact hy le_rfl
 
-instance [Preorder α] [Nonempty α] : NeBot (atMin : Filter α) where
+instance [Nonempty α] : NeBot (atMin : Filter α) where
   ne' := by
     intro h
     rw [← empty_mem_iff_bot, mem_atMin] at h
@@ -78,7 +82,7 @@ instance [Preorder α] [Nonempty α] : NeBot (atMin : Filter α) where
     obtain ⟨y, _, hy⟩ := h x
     exact hy le_rfl
 
-theorem atTop_le_atMax [Preorder α] : (atTop : Filter α) ≤ atMax := by
+theorem atTop_le_atMax : (atTop : Filter α) ≤ atMax := by
   intro s hs
   obtain h | ⟨⟨x⟩⟩ := isEmpty_or_nonempty α
   · rw [atTop.filter_eq_bot_of_isEmpty]
@@ -87,7 +91,7 @@ theorem atTop_le_atMax [Preorder α] : (atTop : Filter α) ≤ atMax := by
     obtain ⟨y, _, hy⟩ := hs x
     filter_upwards [Ici_mem_atTop y] using hy
 
-theorem atBot_le_atMin [Preorder α] : (atBot : Filter α) ≤ atMin := by
+theorem atBot_le_atMin : (atBot : Filter α) ≤ atMin := by
   intro s hs
   obtain h | ⟨⟨x⟩⟩ := isEmpty_or_nonempty α
   · rw [atBot.filter_eq_bot_of_isEmpty]
@@ -96,7 +100,7 @@ theorem atBot_le_atMin [Preorder α] : (atBot : Filter α) ≤ atMin := by
     obtain ⟨y, _, hy⟩ := hs x
     filter_upwards [Iic_mem_atBot y] using hy
 
-theorem atMax_eq_atTop [Preorder α] [IsDirected α (· ≤ ·)] : (atMax : Filter α) = atTop := by
+theorem atMax_eq_atTop [IsDirected α (· ≤ ·)] : (atMax : Filter α) = atTop := by
   apply atTop_le_atMax.antisymm'
   intro s hs x
   have : Nonempty α := ⟨x⟩
@@ -105,7 +109,7 @@ theorem atMax_eq_atTop [Preorder α] [IsDirected α (· ≤ ·)] : (atMax : Filt
   obtain ⟨z, hxz, hyz⟩ := exists_ge_ge x y
   exact ⟨z, hxz, fun u hzu => hy u (hyz.trans hzu)⟩
 
-theorem atMin_eq_atBot [Preorder α] [IsDirected α (· ≥ ·)] : (atMin : Filter α) = atBot := by
+theorem atMin_eq_atBot [IsDirected α (· ≥ ·)] : (atMin : Filter α) = atBot := by
   apply atBot_le_atMin.antisymm'
   intro s hs x
   have : Nonempty α := ⟨x⟩
@@ -114,7 +118,7 @@ theorem atMin_eq_atBot [Preorder α] [IsDirected α (· ≥ ·)] : (atMin : Filt
   obtain ⟨z, hzx, hzy⟩ := exists_le_le x y
   exact ⟨z, hzx, fun u huz => hy u (huz.trans hzy)⟩
 
-theorem pure_le_atMax [Preorder α] (x : α) : pure x ≤ atMax ↔ IsMax x := by
+theorem pure_le_atMax : pure x ≤ atMax ↔ IsMax x := by
   constructor
   · intro h
     by_contra hx
@@ -130,7 +134,7 @@ theorem pure_le_atMax [Preorder α] (x : α) : pure x ≤ atMax ↔ IsMax x := b
     obtain ⟨y, hxy, hy⟩ := hs x
     exact hy (hx hxy)
 
-theorem pure_le_atMin [Preorder α] (x : α) : pure x ≤ atMin ↔ IsMin x := by
+theorem pure_le_atMin : pure x ≤ atMin ↔ IsMin x := by
   constructor
   · intro h
     by_contra hx
@@ -145,5 +149,7 @@ theorem pure_le_atMin [Preorder α] (x : α) : pure x ≤ atMin ↔ IsMin x := b
     rw [mem_atMin] at hs
     obtain ⟨y, hyx, hy⟩ := hs x
     exact hy (hx hyx)
+
+end Preorder
 
 end Filter
