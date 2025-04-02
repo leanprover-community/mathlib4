@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
@@ -187,7 +187,7 @@ end tprod
 
 end IsTopologicalGroup
 
-section UniformGroup
+section IsUniformGroup
 
 variable [CommGroup α] [UniformSpace α]
 
@@ -198,7 +198,7 @@ theorem multipliable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
     Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b := by
   classical exact cauchy_map_iff_exists_tendsto.symm
 
-variable [UniformGroup α] {f g : β → α}
+variable [IsUniformGroup α] {f g : β → α}
 
 @[to_additive]
 theorem cauchySeq_finset_iff_prod_vanishing :
@@ -311,7 +311,7 @@ theorem prod_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Multipli
   simp only [Finset.tprod_subtype', mul_right_inj]
   rfl
 
-end UniformGroup
+end IsUniformGroup
 
 section IsTopologicalGroup
 
@@ -322,7 +322,7 @@ theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈
     ∃ s : Finset α, ∀ t, Disjoint t s → (∏ k ∈ t, f k) ∈ e := by
   classical
   letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
-  have : UniformGroup G := uniformGroup_of_commGroup
+  have : IsUniformGroup G := isUniformGroup_of_commGroup
   exact cauchySeq_finset_iff_prod_vanishing.1 hf.hasProd.cauchySeq e he
 
 @[to_additive]
@@ -330,7 +330,7 @@ theorem Multipliable.tprod_vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he :
     ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∏' b : t, f b) ∈ e := by
   classical
   letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
-  have : UniformGroup G := uniformGroup_of_commGroup
+  have : IsUniformGroup G := isUniformGroup_of_commGroup
   exact cauchySeq_finset_iff_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
 /-- The product over the complement of a finset tends to `1` when the finset grows to cover the
@@ -359,6 +359,13 @@ theorem Multipliable.tendsto_cofinite_one (hf : Multipliable f) : Tendsto f cofi
   rcases hf.vanishing he with ⟨s, hs⟩
   refine s.eventually_cofinite_nmem.mono fun x hx ↦ ?_
   · simpa using hs {x} (disjoint_singleton_left.2 hx)
+
+@[to_additive]
+theorem Multipliable.finite_mulSupport_of_discreteTopology
+    {α : Type*} [CommGroup α] [TopologicalSpace α] [DiscreteTopology α]
+    {β : Type*} (f : β → α) (h : Multipliable f) : Set.Finite f.mulSupport :=
+  haveI : IsTopologicalGroup α := ⟨⟩
+  h.tendsto_cofinite_one (discreteTopology_iff_singleton_mem_nhds.mp ‹_› 1)
 
 @[to_additive]
 theorem Multipliable.countable_mulSupport [FirstCountableTopology G] [T1Space G]

@@ -247,6 +247,23 @@ def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators 
     use (a + b)
     rw [map_add, ha, hb]
 
+/-- Given generators `P` and an equivalence `ι ≃ P.vars`, these
+are the induced generators indexed by `ι`. -/
+@[simps -isSimp vars]
+noncomputable def reindex (P : Generators.{w} R S) {ι : Type*} (e : ι ≃ P.vars) :
+    Generators R S where
+  vars := ι
+  val := P.val ∘ e
+  σ' := rename e.symm ∘ P.σ
+  aeval_val_σ' s := by
+    conv_rhs => rw [← P.aeval_val_σ s]
+    rw [← MvPolynomial.aeval_rename]
+    simp
+
+lemma reindex_val (P : Generators.{w} R S) {ι : Type*} (e : ι ≃ P.vars) :
+    (P.reindex e).val = P.val ∘ e :=
+  rfl
+
 end Construction
 
 variable {R' S'} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Generators R' S')
@@ -501,8 +518,7 @@ lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
     rw [← Finset.sum_fiberwise_of_maps_to (fun i ↦ Finset.mem_image_of_mem Prod.fst)]
     refine sum_mem fun i hi ↦ ?_
     convert_to monomial (e.symm (i, 0)) 1 * (Q.toComp P).toAlgHom.toRingHom
-      (∑ j ∈ ((support x).map e.toEmbedding).filter (fun x ↦ x.1 = i),
-        monomial j.2 (coeff (e.symm j) x)) ∈ _
+      (∑ j ∈ (support x).map e.toEmbedding with j.1 = i, monomial j.2 (coeff (e.symm j) x)) ∈ _
     · rw [map_sum, Finset.mul_sum]
       refine Finset.sum_congr rfl fun j hj ↦ ?_
       obtain rfl := (Finset.mem_filter.mp hj).2
@@ -577,7 +593,7 @@ lemma ofComp_kerCompPreimage (Q : Generators S T) (P : Generators R S) (x : Q.ke
   conv_rhs => rw [← x.1.support_sum_monomial_coeff]
   rw [kerCompPreimage, map_finsupp_sum, Finsupp.sum]
   refine Finset.sum_congr rfl fun j _ ↦ ?_
-  simp only [AlgHom.toLinearMap_apply, _root_.map_mul, Hom.toAlgHom_monomial]
+  simp only [AlgHom.toLinearMap_apply, map_mul, Hom.toAlgHom_monomial]
   rw [one_smul, Finsupp.prod_mapDomain_index_inj Sum.inl_injective]
   rw [rename, ← AlgHom.comp_apply, comp_aeval]
   simp only [ofComp_val, Sum.elim_inr, Function.comp_apply, self_val, id_eq,
