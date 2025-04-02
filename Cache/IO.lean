@@ -442,7 +442,6 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
   -- TODO: This could be just `FilePath.normalize` if the TODO there was addressed
   let arg : FilePath := System.mkFilePath <|
     (argₛ : FilePath).normalize.components.filter (· != "")
-
   if arg.components.length > 1 || arg.extension == "lean" then
     -- provided file name of a Lean file
     let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
