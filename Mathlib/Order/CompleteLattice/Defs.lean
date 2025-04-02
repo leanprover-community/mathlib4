@@ -164,9 +164,9 @@ class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α
   protected bot_le : ∀ x : α, ⊥ ≤ x
 
 -- see Note [lower instance priority]
-instance (priority := 100) CompleteLattice.toBoundedOrder [h : CompleteLattice α] :
+instance (priority := 100) CompleteLattice.toBoundedOrder [CompleteLattice α] :
     BoundedOrder α :=
-  { h with }
+  { ‹CompleteLattice α› with }
 
 /-- Create a `CompleteLattice` from a `PartialOrder` and `InfSet`
 that returns the greatest lower bound of a set. Usually this constructor provides
