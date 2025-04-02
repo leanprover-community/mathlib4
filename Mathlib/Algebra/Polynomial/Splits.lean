@@ -256,22 +256,12 @@ theorem degree_eq_card_roots' {p : K[X]} {i : K →+* L} (p_ne_zero : p.map i �
 
 end CommRing
 
-section CommSemiring
-
-variable [CommSemiring R] [CommRing L] [Algebra R L]
-
-theorem aeval_root (s : Multiset L) {x : L} (hx : x ∈ s) {p : R[X]}
+theorem aeval_root_of_mapAlg_eq_multiset_prod_X_sub_C [CommSemiring R] [CommRing L] [Algebra R L]
+    (s : Multiset L) {x : L} (hx : x ∈ s) {p : R[X]}
     (hp : mapAlg R L p = (Multiset.map (fun a : L ↦ X - C a) s).prod) : aeval x p = 0 := by
-  have : aeval x (mapAlg R L p) = aeval x p := by rw [mapAlg_eq_map, aeval_map_algebraMap]
-  rw [← this, hp, coe_aeval_eq_eval]
-  have hy : X - C x ∣ (Multiset.map (fun a : L ↦ X - C a) s).prod := by
-    apply Multiset.dvd_prod
-    simp [Multiset.mem_map, sub_right_inj, C_inj, exists_eq_right]
-    exact hx
-  rw [eval_eq_zero_of_dvd_of_eval_eq_zero hy]
-  simp [eval_sub, eval_X, eval_C, sub_self]
-
-end CommSemiring
+  rw [← aeval_map_algebraMap L, ← mapAlg_eq_map, hp, map_multiset_prod, Multiset.prod_eq_zero]
+  rw [Multiset.map_map, Multiset.mem_map]
+  exact ⟨x, hx, by simp⟩
 
 variable [CommRing R] [Field K] [Field L] [Field F]
 variable (i : K →+* L)

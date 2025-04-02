@@ -612,10 +612,19 @@ lemma exists_eval_ne_zero_of_natDegree_lt_card (f : R[X]) (hf : f ≠ 0) (hfR : 
 theorem monic_prod_multiset_X_sub_C : Monic (p.roots.map fun a => X - C a).prod :=
   monic_multiset_prod_of_monic _ _ fun a _ => monic_X_sub_C a
 
+theorem monic_finset_prod_X_sub_C [DecidableEq R] :
+    Monic (p.roots.toFinset.prod fun a => (X - C a)) :=
+  monic_prod_of_monic _ _ fun a _ => monic_X_sub_C a
+
 theorem prod_multiset_root_eq_finset_root [DecidableEq R] :
     (p.roots.map fun a => X - C a).prod =
       p.roots.toFinset.prod fun a => (X - C a) ^ rootMultiplicity a p := by
   simp only [count_roots, Finset.prod_multiset_map_count]
+
+omit [IsDomain R] in
+theorem monic_finprod_X_sub_C [DecidableEq R] {α : Type*} (b : α → R):
+    Monic (finprod fun k ↦ X - C (b k)) := by
+  apply monic_finprod_of_monic _ _ fun a _ => monic_X_sub_C (b a)
 
 /-- The product `∏ (X - a)` for `a` inside the multiset `p.roots` divides `p`. -/
 theorem prod_multiset_X_sub_C_dvd (p : R[X]) : (p.roots.map fun a => X - C a).prod ∣ p := by

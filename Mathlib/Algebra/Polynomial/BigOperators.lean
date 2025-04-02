@@ -272,7 +272,7 @@ theorem prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < #s
     (∏ i ∈ s, (X - C (f i))).coeff (#s - 1) = -∑ i ∈ s, f i := by
   simpa using multiset_prod_X_sub_C_coeff_card_pred (s.1.map f) (by simpa using hs)
 
-variable [IsDomain R]
+variable [Nontrivial R]
 
 @[simp]
 lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
@@ -281,6 +281,11 @@ lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
   · simp only [(· ∘ ·), natDegree_X_sub_C, Multiset.map_const', Multiset.sum_replicate, smul_eq_mul,
       mul_one]
   · exact Multiset.forall_mem_map_iff.2 fun a _ => monic_X_sub_C a
+
+@[simp] lemma natDegree_finset_prod_X_sub_C_eq_card {α} (s : Finset α) (f : α → R) :
+    (∏ a ∈ s, (X - C (f a))).natDegree = s.card := by
+  rw [Finset.prod, ← (X - C ·).comp_def f, ← Multiset.map_map,
+    natDegree_multiset_prod_X_sub_C_eq_card, Multiset.card_map, Finset.card]
 
 end CommRing
 
@@ -357,15 +362,6 @@ theorem leadingCoeff_prod : (∏ i ∈ s, f i).leadingCoeff = ∏ i ∈ s, (f i)
   simpa using leadingCoeff_multiset_prod (s.1.map f)
 
 end CommSemiring
-
-section CommRing
-
-theorem prod_X_sub_C_natDegree [CommRing R] [Nontrivial R] [NoZeroDivisors R] {n : ℕ}
-    (b : Fin n → R) : (Finset.univ.prod fun i : Fin n ↦ X - C (b i)).natDegree = n := by
-  rw [natDegree_prod _ _ fun m _ ↦ X_sub_C_ne_zero (b m)]
-  simp [natDegree_X_sub_C, Finset.sum_const, Finset.card_fin, mul_one]
-
-end CommRing
 
 end NoZeroDivisors
 
