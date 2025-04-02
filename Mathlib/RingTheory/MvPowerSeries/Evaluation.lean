@@ -64,6 +64,12 @@ structure HasEval (a : σ → S) : Prop where
   hpow : ∀ s, IsTopologicallyNilpotent (a s)
   tendsto_zero : Tendsto a cofinite (𝓝 0)
 
+theorem HasEval.mono {S : Type*} [CommRing S] {a : σ → S}
+    {t u : TopologicalSpace S} (h : t ≤ u) (ha : @HasEval _ _ _ t a) :
+    @HasEval _ _ _ u a :=
+  ⟨fun s ↦ Filter.Tendsto.mono_right (@HasEval.hpow _ _ _ t a ha s) (nhds_mono h),
+   Filter.Tendsto.mono_right (@HasEval.tendsto_zero σ _ _ t a ha) (nhds_mono h)⟩
+
 theorem HasEval.zero : HasEval (0 : σ → S) where
   hpow _ := .zero
   tendsto_zero := tendsto_const_nhds
