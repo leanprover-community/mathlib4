@@ -51,7 +51,7 @@ linear map
 -/
 
 
-assert_not_exists Star DomMulAct Pi.module WCovBy.image Field
+assert_not_exists Star DomAct Pi.module WCovBy.image Field
 
 open Function
 
