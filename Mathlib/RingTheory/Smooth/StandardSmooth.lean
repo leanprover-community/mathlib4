@@ -417,6 +417,46 @@ lemma baseChange_jacobian : (P.baseChange T).jacobian = 1 ⊗ₜ P.jacobian := b
 
 end BaseChange
 
+/-- Given a pre-submersive presentation `P` and equivalences `ι ≃ P.vars` and
+`κ ≃ P.rels`, this is the induced pre-sumbersive presentation with variables indexed
+by `ι` and relations indexed by `κ -/
+@[simps toPresentation, simps -isSimp map]
+noncomputable def reindex (P : PreSubmersivePresentation.{w, t} R S)
+    {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rels) :
+    PreSubmersivePresentation R S where
+  __ := P.toPresentation.reindex e f
+  map := e.symm ∘ P.map ∘ f
+  map_inj := by
+    rw [Function.Injective.of_comp_iff e.symm.injective, Function.Injective.of_comp_iff P.map_inj]
+    exact f.injective
+  relations_finite := f.finite_iff.mpr P.relations_finite
+
+lemma jacobiMatrix_reindex {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rels)
+    [Fintype P.rels] [DecidableEq P.rels] [Fintype (P.reindex e f).rels]
+    [DecidableEq (P.reindex e f).rels] :
+    (P.reindex e f).jacobiMatrix =
+      (P.jacobiMatrix.reindex f.symm f.symm).map (MvPolynomial.rename e.symm) := by
+  ext i j : 1
+  simp [jacobiMatrix_apply, PreSubmersivePresentation.reindex_map, Presentation.reindex_relation,
+    Generators.reindex_vars, MvPolynomial.pderiv_rename e.symm.injective]
+
+@[simp]
+lemma jacobian_reindex (P : PreSubmersivePresentation.{w, t} R S)
+    {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rels) :
+    (P.reindex e f).jacobian = P.jacobian := by
+  classical
+  cases nonempty_fintype P.rels
+  cases nonempty_fintype (P.reindex e f).rels
+  letI : Fintype κ := inferInstanceAs (Fintype ((P.reindex e f).rels))
+  simp_rw [PreSubmersivePresentation.jacobian_eq_jacobiMatrix_det]
+  simp only [reindex_toPresentation, Presentation.reindex_toGenerators, jacobiMatrix_reindex,
+    Matrix.reindex_apply, Equiv.symm_symm, Generators.algebraMap_apply, Generators.reindex_val]
+  simp_rw [← MvPolynomial.aeval_rename, Generators.reindex_vars, Presentation.reindex_rels,
+    ← AlgHom.mapMatrix_apply, ← Matrix.det_submatrix_equiv_self f, AlgHom.map_det,
+    AlgHom.mapMatrix_apply, Matrix.map_map]
+  simp [← AlgHom.coe_comp, rename_comp_rename, rename_id]
+
+
 end Constructions
 
 end PreSubmersivePresentation
@@ -496,6 +536,16 @@ noncomputable def baseChange : SubmersivePresentation T (T ⊗[R] S) where
   isFinite := Presentation.baseChange_isFinite T P.toPresentation
 
 end BaseChange
+
+/-- Given a submersive presentation `P` and equivalences `ι ≃ P.vars` and
+`κ ≃ P.rels`, this is the induced sumbersive presentation with variables indexed
+by `ι` and relations indexed by `κ -/
+@[simps toPreSubmersivePresentation]
+noncomputable def reindex (P : SubmersivePresentation.{w, t} R S)
+    {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rels) : SubmersivePresentation R S where
+  __ := P.toPreSubmersivePresentation.reindex e f
+  jacobian_isUnit := by simp [P.jacobian_isUnit]
+  isFinite := by simp [P.isFinite]
 
 end Constructions
 

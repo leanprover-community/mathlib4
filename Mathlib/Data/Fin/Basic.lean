@@ -881,6 +881,11 @@ theorem castPred_zero (h := Fin.ext_iff.not.2 last_pos.ne) :
     castPred (0 : Fin (n + 2)) h = 0 := rfl
 
 @[simp]
+theorem castPred_eq_zero [NeZero n] {i : Fin (n + 1)} (h : i ≠ last n) :
+    Fin.castPred i h = 0 ↔ i = 0 := by
+  rw [← castPred_zero', castPred_inj]
+
+@[simp]
 theorem castPred_one [NeZero n] (h := Fin.ext_iff.not.2 one_lt_last.ne) :
     castPred (1 : Fin (n + 2)) h = 1 := by
   cases n
@@ -1400,9 +1405,6 @@ protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
   rfl
 
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
-
-@[deprecated val_eq_zero (since := "2024-09-18")]
-theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]
 
 lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by
   fin_omega
