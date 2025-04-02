@@ -50,7 +50,7 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     have : NeZero n := ⟨fun hn ↦ hm.out (eq_zero_of_zero_dvd (hn ▸ h))⟩
     simp [unitsMap_def, - castHom_apply]
   intro x hx
-  let ps := m.primeFactors.filter (fun p ↦ ¬p ∣ x)
+  let ps : Finset ℕ := {p ∈ m.primeFactors | ¬p ∣ x}
   use ps.prod id
   apply Nat.coprime_of_dvd
   intro p pp hp hpn

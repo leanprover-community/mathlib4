@@ -333,8 +333,6 @@ alias getLast_filter' := getLast_filter_of_pos
 
 /-! ### getLast? -/
 
-@[deprecated (since := "2024-09-06")] alias getLast?_eq_none := getLast?_eq_none_iff
-
 theorem mem_getLast?_eq_getLast : ∀ {l : List α} {x : α}, x ∈ l.getLast? → ∃ h, x = getLast l h
   | [], x, hx => False.elim <| by simp at hx
   | [a], x, hx =>

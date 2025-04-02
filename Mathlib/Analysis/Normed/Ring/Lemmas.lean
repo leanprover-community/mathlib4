@@ -3,20 +3,21 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
+import Mathlib.Algebra.Group.AddChar
+import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.Algebra.Order.GroupWithZero.Finset
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.Int
 import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Analysis.Normed.Ring.Basic
+import Mathlib.GroupTheory.OrderOfElement
+import Mathlib.Topology.MetricSpace.Dilation
 
 /-!
 # Normed rings
 
 In this file we continue building the theory of (semi)normed rings.
 -/
-
--- Guard against import creep.
-assert_not_exists RestrictScalars
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
@@ -214,3 +215,58 @@ instance Int.instNormOneClass : NormOneClass ℤ :=
 
 instance Int.instNormMulClass : NormMulClass ℤ :=
   ⟨fun a b ↦ by simp [← Int.norm_cast_real, abs_mul]⟩
+
+section NonUnitalNormedRing
+variable [NonUnitalNormedRing α] [NormMulClass α] {a : α}
+
+lemma antilipschitzWith_mul_left {a : α} (ha : a ≠ 0) : AntilipschitzWith (‖a‖₊⁻¹) (a * ·) :=
+  AntilipschitzWith.of_le_mul_dist fun _ _ ↦ by simp [dist_eq_norm, ← mul_sub, ha]
+
+lemma antilipschitzWith_mul_right {a : α} (ha : a ≠ 0) : AntilipschitzWith (‖a‖₊⁻¹) (· * a) :=
+  AntilipschitzWith.of_le_mul_dist fun _ _ ↦ by simp [dist_eq_norm, ← sub_mul, mul_comm, ha]
+
+/-- Multiplication by a nonzero element `a` on the left, as a `Dilation` of a ring with a strictly
+multiplicative norm. -/
+@[simps!]
+def Dilation.mulLeft (a : α) (ha : a ≠ 0) : α →ᵈ α where
+  toFun b := a * b
+  edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
+    simp [edist_nndist, nndist_eq_nnnorm, ← mul_sub]⟩
+
+/-- Multiplication by a nonzero element `a` on the right, as a `Dilation` of a ring with a strictly
+multiplicative norm. -/
+@[simps!]
+def Dilation.mulRight (a : α) (ha : a ≠ 0) : α →ᵈ α where
+  toFun b := b * a
+  edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
+    simp [edist_nndist, nndist_eq_nnnorm, ← sub_mul, ← mul_comm (‖a‖₊)]⟩
+
+namespace Filter
+
+@[simp]
+lemma comap_mul_left_cobounded {a : α} (ha : a ≠ 0) :
+    comap (a * ·) (cobounded α) = cobounded α :=
+  Dilation.comap_cobounded (Dilation.mulLeft a ha)
+
+@[simp]
+lemma comap_mul_right_cobounded {a : α} (ha : a ≠ 0) :
+    comap (· * a) (cobounded α) = cobounded α :=
+  Dilation.comap_cobounded (Dilation.mulRight a ha)
+
+end Filter
+
+end NonUnitalNormedRing
+
+section NormedRing
+variable [NormedRing α] [NormMulClass α] [NormOneClass α] {a : α}
+
+protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
+  ((normHom : α →*₀ ℝ).toMonoidHom.isOfFinOrder ha).eq_one <| norm_nonneg _
+
+example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1) :
+    ‖φ x‖ = 1 := (φ.isOfFinOrder <| isOfFinOrder_iff_pow_eq_one.2 ⟨_, k.2, h⟩).norm_eq_one
+
+@[simp] lemma AddChar.norm_apply {G : Type*} [AddLeftCancelMonoid G] [Finite G] (ψ : AddChar G α)
+    (x : G) : ‖ψ x‖ = 1 := (ψ.toMonoidHom.isOfFinOrder <| isOfFinOrder_of_finite _).norm_eq_one
+
+end NormedRing
