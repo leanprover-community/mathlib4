@@ -12,6 +12,8 @@ import Mathlib.RingTheory.Spectrum.Prime.Polynomial
 /-!
 # Chevalley's theorem with complexity bound
 
+⚠ For general usage, see `Mathlib/RingTheory/Spectrum/Prime/Chevalley.lean`.
+
 Chevalley's theorem states that if `f : R → S` is a finitely presented ring hom between commutative
 rings, then the image of a constructible set in `Spec S` is a constructible set in `Spec R`.
 
@@ -54,9 +56,6 @@ two maps `C : R[Y₁, ..., Yₙ] → R[X₁, ..., Xₘ, Y₁, ..., Yₙ]` and
 The structure of the proof follows https://stacks.math.columbia.edu/tag/00FE, although they do
 not give an explicit bound on the complexity.
 
-## TODO
-
-More general complexity-less version of Chevalley's theorem. This will be PRed soon.
 -/
 
 variable {R₀ R S M A : Type*} [CommRing R₀] [CommRing R] [Algebra R₀ R] [CommRing S] [Algebra R₀ S]
@@ -356,8 +355,10 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
         simp_rw [← Finset.mem_coe, S₁, Finset.coe_image, Set.biUnion_image]
         congr! with x hxT₁
         apply Set.injOn_preimage subset_rfl (f := comap q₁.toRingHom)
-        · erw [localization_away_comap_range (S := Localization.Away c) (r := c)]
-          rw [BasicConstructibleSetData.toSet, sdiff_eq, ← basicOpen_eq_zeroLocus_compl,
+        · dsimp only [q₁, AlgHom.toRingHom_eq_coe]
+          rw [IsScalarTower.coe_toAlgHom,
+            localization_away_comap_range (S := Localization.Away c) (r := c),
+            BasicConstructibleSetData.toSet, sdiff_eq, ← basicOpen_eq_zeroLocus_compl,
             basicOpen_mul]
           exact Set.inter_subset_right.trans Set.inter_subset_left
         · exact Set.image_subset_range ..

@@ -436,7 +436,7 @@ theorem finprod_mem_eq_prod (f : α → M) {s : Set α} (hf : (s ∩ mulSupport 
 @[to_additive]
 theorem finprod_mem_eq_prod_filter (f : α → M) (s : Set α) [DecidablePred (· ∈ s)]
     (hf : (mulSupport f).Finite) :
-    ∏ᶠ i ∈ s, f i = ∏ i ∈ Finset.filter (· ∈ s) hf.toFinset, f i :=
+    ∏ᶠ i ∈ s, f i = ∏ i ∈ hf.toFinset with i ∈ s, f i :=
   finprod_mem_eq_prod_of_inter_mulSupport_eq _ <| by
     ext x
     simp [and_comm]
@@ -1044,10 +1044,10 @@ lemma finprod_apply {α ι : Type*} {f : ι → α → N} (hf : (mulSupport f).F
 
 @[to_additive]
 theorem Finset.mulSupport_of_fiberwise_prod_subset_image [DecidableEq β] (s : Finset α) (f : α → M)
-    (g : α → β) : (mulSupport fun b => (s.filter fun a => g a = b).prod f) ⊆ s.image g := by
+    (g : α → β) : (mulSupport fun b => ∏ a ∈ s with g a = b, f a) ⊆ s.image g := by
   simp only [Finset.coe_image, Set.mem_image, Finset.mem_coe, Function.support_subset_iff]
   intro b h
-  suffices (s.filter fun a : α => g a = b).Nonempty by
+  suffices {a ∈ s | g a = b}.Nonempty by
     simpa only [fiber_nonempty_iff_mem_image, Finset.mem_image, exists_prop]
   exact Finset.nonempty_of_prod_ne_one h
 

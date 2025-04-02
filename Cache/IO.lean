@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Arthur Paulino
+Authors: Arthur Paulino, Jon Eugster
 -/
 
 import Cache.Lean
@@ -70,7 +70,7 @@ def CURLBIN :=
 
 /-- leantar version at https://github.com/digama0/leangz -/
 def LEANTARVERSION :=
-  "0.1.14"
+  "0.1.15"
 
 def EXE := if System.Platform.isWindows then ".exe" else ""
 
@@ -146,9 +146,7 @@ the file should be located at `(← getSrcDir _) / "Mathlib" / "Init.lean`.
 
 Usually it is either `.` or something like `./.lake/packages/mathlib/`
 -/
-def getSrcDir (path : FilePath) : CacheM FilePath := do
-  let sp := (← read).srcSearchPath
-
+def getSrcDir (sp : SearchPath) (path : FilePath) : IO FilePath := do
   -- `path` is a unresolved file name like `Aesop/Build.lean`
   let mod : Name := .fromComponents <| path.withExtension "" |>.components.map Name.mkSimple
 
@@ -296,7 +294,8 @@ def mkBuildPaths (path : FilePath) : CacheM <| List (FilePath × Bool) := do
   If a dependency is added to mathlib which uses such a custom layout, `mkBuildPaths`
   needs to be adjusted!
   -/
-  let packageDir ← getSrcDir path
+  let sp := (← read).srcSearchPath
+  let packageDir ← getSrcDir sp path
   if !(← (packageDir / ".lake").isDir) then
     IO.eprintln <| s!"Warning: {packageDir / ".lake"} seems not to exist, most likely `cache` \
       will not work as expected!"
@@ -421,5 +420,82 @@ def lookup (hashMap : ModuleHashMap) (paths : List FilePath) : IO Unit := do
     for line in (← runCmd (← getLeanTar) #["-k", ltar.toString]).splitOn "\n" |>.dropLast do
       println! "  comment: {line}"
   if err then IO.Process.exit 1
+
+/--
+Parse a string as either a path or a Lean module name.
+TODO: If the argument describes a folder, use `walkDir` to find all `.lean` files within.
+
+Return tuples of the form ("module name", "path to .lean file").
+
+The input string `arg` takes one of the following forms:
+
+1. `Mathlib.Algebra.Fields.Basic`: there exists such a Lean file
+2. `Mathlib.Algebra.Fields`: no Lean file exists but a folder (TODO)
+3. `Mathlib/Algebra/Fields/Basic.lean`: the file exists (note potentially `\` on Windows)
+4. `Mathlib/Algebra/Fields/`: the folder exists (TODO)
+
+Not supported yet:
+
+5. `Aesop/Builder.lean`: the file does not exist, it's actually somewhere in `.lake`.
+
+Note: An argument like `Archive` is treated as module, not a path.
+-/
+def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
+    IO <| Except String <| Array (Name × FilePath) := do
+  -- TODO: This could be just `FilePath.normalize` if the TODO there was addressed
+  let arg : FilePath := System.mkFilePath <|
+    (argₛ : FilePath).normalize.components.filter (· != "")
+  if arg.components.length > 1 || arg.extension == "lean" then
+    -- provided file name of a Lean file
+    let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
+    if !(← arg.pathExists) then
+      -- TODO: (5.) We could use `getSrcDir` to allow arguments like `Aesop/Builder.lean` which
+      -- refer to a file located under `.lake/packages/...`
+      return .error s!"Invalid argument: non-existing path {arg}"
+    if arg.extension == "lean" then
+      -- (3.) provided existing `.lean` file
+      return .ok #[(mod, arg)]
+    else
+      -- (4.) provided existing directory: walk it
+      return .error "Searching lean files in a folder is not supported yet!"
+  else
+    -- provided a module
+    let mod := argₛ.toName
+    let sourceFile ← Lean.findLean sp mod
+    if ← sourceFile.pathExists then
+      -- (1.) provided valid module
+      return .ok #[(mod, sourceFile)]
+    else
+      -- provided "pseudo-module" (like `Mathlib.Data`) which
+      -- does not correspond to a Lean file, but to an existing folder
+      -- `Mathlib/Data/`
+      let folder := sourceFile.withExtension ""
+      IO.println s!"Searching directory {folder} for .lean files"
+      if ← folder.pathExists then
+        -- (2.) provided "module name" of an existing folder: walk dir
+        -- TODO: will be implemented in #21838
+        return .error "Entering a part of a module name \
+          (i.e. `Mathlib.Data` when only the folder `Mathlib/Data/` but no \
+          file `Mathlib/Data.lean` exists) is not supported yet!"
+      else
+        return .error "Invalid argument: non-existing module {mod}"
+
+/--
+Parse command line arguments.
+Position `0` (i.e. the command `get`, `clean`, etc.) is ignored.
+
+The remaining arguments are parsed as either module name or file path, see `leanModulesFromSpec`.
+-/
+def parseArgs (args : List String) : CacheM <| Std.HashMap Name FilePath := do
+  match args with
+  | [] => pure ∅
+  | _ :: args₀ => args₀.foldlM (init := ∅) fun acc (arg : String) => do
+    let sp := (← read).srcSearchPath
+    match (← leanModulesFromSpec sp arg) with
+    | .ok mods =>
+      pure <| acc.insertMany mods
+    | .error msg =>
+      IO.eprintln msg
+      IO.Process.exit 1
 
 end Cache.IO
