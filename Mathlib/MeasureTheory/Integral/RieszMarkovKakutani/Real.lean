@@ -105,12 +105,21 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
   -- Define `E n` as the inverse image of the interval `(y n - ε, y n]`.
   let E : Fin N → Set X := fun n ↦ (f ⁻¹' Ioc (y n - ε) (y n)) ∩ (tsupport f)
   use E
-  -- Upper and lower bound on `f x` follow from the definition of `E n` .
-  have bdd (n : Fin N) x (hx : x ∈ E n) : a + ε * n < f x ∧ f x ≤ a + ε * (n + 1) := by
-    simp only [mem_inter_iff, mem_preimage, mem_Ioc, E, y] at hx
-    constructor <;> linarith
-  -- The sets `E n` are pairwise disjoint.
-  have disjoint : PairwiseDisjoint univ E := by
+  refine ⟨?_, ?_, ?_, ?_⟩
+  · -- The sets `E n` are a partition of the support of `f`.
+    have partition_aux : range f ⊆ ⋃ n, Ioc (y n - ε) (y n) := calc
+      _ ⊆ Ioc (a + (0 : ℕ) * ε) (a + N * ε) := by
+        intro _ hz
+        simpa using (Ioo_subset_Ioc_self (hf hz))
+      _ ⊆ ⋃ i ∈ Finset.range N, Ioc (a + ↑i * ε) (a + ↑(i + 1) * ε) :=
+        iUnion_Ioc_subset_Ioc N (fun n ↦ a + n * ε)
+      _ ⊆ _ := by
+        intro z
+        simp only [Finset.mem_range, mem_iUnion, mem_Ioc, forall_exists_index, and_imp, y]
+        refine fun n hn _ _ ↦ ⟨⟨n, hn⟩, ⟨by linarith, by simp_all [mul_comm ε _]⟩⟩
+    simp only [E, ← iUnion_inter, ← preimage_iUnion, eq_comm (a := tsupport _), inter_eq_right]
+    exact fun x hx ↦ partition_aux (mem_range_self x)
+  · -- The sets `E n` are pairwise disjoint.
     intro m _ n _ hmn
     apply Disjoint.preimage
     simp_rw [mem_preimage, mem_Ioc, disjoint_left]
@@ -122,22 +131,11 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
       exact le_trans hx.2.1 (le_tsub_of_add_le_right (hy hc))
     · right; left
       exact lt_of_le_of_lt (le_tsub_of_add_le_right (hy hc)) hx.1
-  -- The sets `E n` are a partition of the support of `f`.
-  have partition_aux : range f ⊆ ⋃ n, Ioc (y n - ε) (y n) := calc
-    _ ⊆ Ioc (a + (0 : ℕ) * ε) (a + N * ε) := by
-      intro _ hz
-      simpa using (Ioo_subset_Ioc_self (hf hz))
-    _ ⊆ ⋃ i ∈ Finset.range N, Ioc (a + ↑i * ε) (a + ↑(i + 1) * ε) :=
-      iUnion_Ioc_subset_Ioc N (fun n ↦ a + n * ε)
-    _ ⊆ _ := by
-      intro z
-      simp only [Finset.mem_range, mem_iUnion, mem_Ioc, forall_exists_index, and_imp, y]
-      refine fun n hn _ _ ↦ ⟨⟨n, hn⟩, ⟨by linarith, by simp_all [mul_comm ε _]⟩⟩
-  have partition : tsupport f = ⋃ j, E j := by
-    simp only [E, ← iUnion_inter, ← preimage_iUnion, eq_comm (a := tsupport _), inter_eq_right]
-    exact fun x hx ↦ partition_aux (mem_range_self x)
-  exact ⟨partition, disjoint, fun n x a ↦ bdd n x a,
-    fun _ ↦ (f.1.measurable measurableSet_Ioc).inter measurableSet_closure⟩
+  · -- Upper and lower bound on `f x` follow from the definition of `E n` .
+    intro n x hx
+    simp only [mem_inter_iff, mem_preimage, mem_Ioc, E, y] at hx
+    constructor <;> linarith
+  · exact fun _ ↦ (f.1.measurable measurableSet_Ioc).inter measurableSet_closure
 
 omit [LocallyCompactSpace X] in
 /-- Given a set `E`, a function `f : C_c(X, ℝ)` and `0 < ε` and `∀ x ∈ E, f x < c`, there exists an
@@ -149,15 +147,15 @@ lemma open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : 
   obtain ⟨V₁ : Opens X, hV₁⟩ := Content.outerMeasure_exists_open μ hμ hε'
   let V₂ : Opens X := ⟨(f ⁻¹' Iio c), IsOpen.preimage f.1.2 isOpen_Iio⟩
   use V₁ ⊓ V₂
-  have h x (hx : x ∈ V₁ ⊓ V₂) : f x < c := by
+  refine ⟨subset_inter hV₁.1 hfE, ?_, ?_⟩
+  · intro x hx
     suffices ∀ x ∈ V₂.carrier, f x < c from this x (mem_of_mem_inter_right hx)
-    exact fun _ hx ↦ hx
-  have h' : μ.measure ↑(V₁ ⊓ V₂) ≤ μ.measure E + ENNReal.ofReal ε := calc
+    exact fun x a ↦ a
+  · calc
       _ ≤ μ.measure V₁ := by apply measure_mono; simp
       _ = μ.outerMeasure V₁ := by rw [Content.measure_apply μ ?_]; exact V₁.2.measurableSet
       _ ≤ μ.outerMeasure E + ε.toNNReal := by exact hV₁.2
-      _ = _ := by rw [Content.measure_apply μ ?_]; congr; exact hμ'
-  exact ⟨subset_inter hV₁.1 hfE, h, h'⟩
+      _ = _ := by rw [Content.measure_apply μ hμ']; congr;
 
 omit [LocallyCompactSpace X] in
 /- Define simultaneously sets which are each open approximations and obtain particular estimates. -/
@@ -289,10 +287,10 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(ries
       gcongr
       rw [Eq.symm (map_sum Λ g _)]
       have h x : 0 ≤ (∑ n, g n) x := by simpa using Fintype.sum_nonneg fun n ↦ (hg.2.2.1 n x).1
-      have h' x (hx : x ∈ K) : (∑ n, g n) x = 1 := by simp [hg.2.1 hx]
       apply ENNReal.toReal_le_of_le_ofReal
       · exact hΛ (∑ n, g n) (fun x ↦ h x)
-      · exact rieszMeasure_le_of_eq_one hΛ h f.2 h'
+      · have h' x (hx : x ∈ K) : (∑ n, g n) x = 1 := by simp [hg.2.1 hx]
+        refine rieszMeasure_le_of_eq_one hΛ h f.2 h'
     · -- Rearrange the sums
       have (n : Fin N) : (|a| + y n + ε') * (μ (E n)).toReal =
           (|a| + 2 * ε') * (μ (E n)).toReal + (y n - ε') * (μ (E n)).toReal := by linarith
