@@ -5,9 +5,9 @@ Authors: Yuyang Zhao
 -/
 import Mathlib.Analysis.Complex.IsIntegral
 import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AlgebraicPart
-import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AnalyticalPart
-import Mathlib.NumberTheory.Transcendental.Lindemann.Init.SumAEvalARoots
+import Mathlib.NumberTheory.Transcendental.Lindemann.AlgebraicPart
+import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
+import Mathlib.NumberTheory.Transcendental.Lindemann.SumAEvalARoots
 import Mathlib.RingTheory.AlgebraicIndependent.Basic
 import Mathlib.Topology.Algebra.Order.Floor
 
