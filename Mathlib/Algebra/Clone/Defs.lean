@@ -9,26 +9,26 @@ import Mathlib.Tactic.TypeStar
 /-!
 # Clones
 
-This file defines the notation typeclasse `Superposable` used for working with `Clone`.
-  There is a version with bare types `{n m : ℕ} : A n → (T n → A m) → A m`, and a version
-  for Sigma types `(x : Sigma A) (y : T x.fst → A m) : Sigma A`. In both of these,
-  `A : ι → Type*` is the carrier. A prototypical could have `ι := ℕ`, `T := Fin`, and `A i`
-  as some `i`-arity functions.
+This file defines the notation typeclass `Superposable` used for working with `Clone`.
+There is a version with bare types `{n m : ℕ} : A n → (T n → A m) → A m`, and a version
+for Sigma types `(x : Sigma A) (y : T x.fst → A m) : Sigma A`. In both of these,
+`A : ι → Type*` is the carrier. A prototypical could have `ι := ℕ`, `T := Fin`, and `A i`
+as some `i`-arity functions.
 
-  This also defines the `OneGradedOne` type class, which gives a graded `One (A 1)`.
+This also defines the `OneGradedOne` type class, which gives a graded `One (A 1)`.
 
-  Classes:
-  - `Superposable`: A `superpose` operation `A n → (T n → A m) → A m`. This is the type of
-    operation used in Clones.
-  - `OneGradedOne`: There is a distinguished `1` element at grade 1, a notion of identity.
+Classes:
+- `Superposable`: A `superpose` operation `A n → (T n → A m) → A m`. This is the type of
+  operation used in Clones.
+- `OneGradedOne`: There is a distinguished `1` element at grade 1, a notion of identity.
 
-  Definitions:.
-  - `superpose` bundles the action of `Superposable.superpose` into `Sigma A`.
+Definitions:.
+- `superpose` bundles the action of `Superposable.superpose` into `Sigma A`.
 
-  Notations:
-  - `x ∘⚟ y` for `Superposable.superpose x y`. The typography is meant to suggest
-    "many arguments into one".
-  - `x ∘∈ y` for `superpose x y`, the variant for Sigma types.
+Notations:
+- `x ∘⚟ y` for `Superposable.superpose x y`. The typography is meant to suggest
+  "many arguments into one".
+- `x ∘∈ y` for `superpose x y`, the variant for Sigma types.
 -/
 
 /-- A Superposable is a structure that allows "superposition": given an n-arity object
