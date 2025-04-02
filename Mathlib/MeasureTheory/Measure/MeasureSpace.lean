@@ -453,8 +453,6 @@ theorem _root_.Directed.measure_iUnion [Countable ι] {s : ι → Set α} (hd : 
         _ ≤ μ (t N) := measure_mono (iUnion₂_subset hN)
         _ ≤ ⨆ n, μ (t n) := le_iSup (μ ∘ t) N
 
-@[deprecated (since := "2024-09-01")] alias measure_iUnion_eq_iSup := Directed.measure_iUnion
-
 /-- Continuity from below:
 the measure of the union of a monotone family of sets is equal to the supremum of their measures.
 The theorem assumes that the `atTop` filter on the index set is countably generated,
@@ -482,9 +480,6 @@ theorem measure_iUnion_eq_iSup_accumulate [Preorder ι] [IsDirected ι (· ≤ �
   rw [← iUnion_accumulate]
   exact monotone_accumulate.measure_iUnion
 
-@[deprecated (since := "2024-09-01")]
-alias measure_iUnion_eq_iSup' := measure_iUnion_eq_iSup_accumulate
-
 theorem measure_biUnion_eq_iSup {s : ι → Set α} {t : Set ι} (ht : t.Countable)
     (hd : DirectedOn ((· ⊆ ·) on s) t) : μ (⋃ i ∈ t, s i) = ⨆ i ∈ t, μ (s i) := by
   haveI := ht.to_subtype
@@ -509,8 +504,6 @@ theorem _root_.Directed.measure_iInter [Countable ι] {s : ι → Set α}
     rw [← measure_diff hjk (h _) (this _ hjk)]
     gcongr
   · exact hd.mono_comp _ fun _ _ => diff_subset_diff_right
-
-@[deprecated (since := "2024-09-30")] alias measure_iInter_eq_iInf := Directed.measure_iInter
 
 /-- **Continuity from above**:
 the measure of the intersection of a monotone family of measurable sets
@@ -559,9 +552,6 @@ theorem measure_iInter_eq_iInf_measure_iInter_le {α ι : Type*} {_ : Measurable
   · refine hfin.imp fun k hk ↦ ne_top_of_le_ne_top hk <| measure_mono <| iInter₂_subset k ?_
     rfl
 
-@[deprecated (since := "2024-09-30")]
-alias measure_iInter_eq_iInf' := measure_iInter_eq_iInf_measure_iInter_le
-
 /-- Continuity from below: the measure of the union of an increasing sequence of (not necessarily
 measurable) sets is the limit of the measures. -/
 theorem tendsto_measure_iUnion_atTop [Preorder ι] [IsCountablyGenerated (atTop : Filter ι)]
@@ -570,8 +560,6 @@ theorem tendsto_measure_iUnion_atTop [Preorder ι] [IsCountablyGenerated (atTop 
   have := (atTop_neBot_iff.1 h).2
   rw [hm.measure_iUnion]
   exact tendsto_atTop_iSup fun n m hnm => measure_mono <| hm hnm
-
-@[deprecated (since := "2024-09-01")] alias tendsto_measure_iUnion := tendsto_measure_iUnion_atTop
 
 theorem tendsto_measure_iUnion_atBot [Preorder ι] [IsCountablyGenerated (atBot : Filter ι)]
     {s : ι → Set α} (hm : Antitone s) : Tendsto (μ ∘ s) atBot (𝓝 (μ (⋃ n, s n))) :=
@@ -588,9 +576,6 @@ theorem tendsto_measure_iUnion_accumulate {α ι : Type*}
   rw [measure_iUnion_eq_iSup_accumulate]
   exact tendsto_atTop_iSup fun i j hij ↦ by gcongr
 
-@[deprecated (since := "2024-09-01")]
-alias tendsto_measure_iUnion' := tendsto_measure_iUnion_accumulate
-
 /-- Continuity from above: the measure of the intersection of a decreasing sequence of measurable
 sets is the limit of the measures. -/
 theorem tendsto_measure_iInter_atTop [Preorder ι]
@@ -601,9 +586,6 @@ theorem tendsto_measure_iInter_atTop [Preorder ι]
   have := (atTop_neBot_iff.1 h).2
   rw [hm.measure_iInter hs hf]
   exact tendsto_atTop_iInf fun n m hnm => measure_mono <| hm hnm
-
-@[deprecated (since := "2024-09-30")]
-alias tendsto_measure_iInter := tendsto_measure_iInter_atTop
 
 /-- Continuity from above: the measure of the intersection of an increasing sequence of measurable
 sets is the limit of the measures. -/

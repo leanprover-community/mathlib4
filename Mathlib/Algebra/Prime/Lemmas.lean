@@ -268,9 +268,6 @@ theorem pow_injective_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : �
   · exact not_isUnit_of_not_isUnit_dvd hq (dvd_pow (dvd_refl _) (Nat.sub_pos_of_lt h).ne')
   · exact (pow_mul_pow_sub q h.le).symm
 
-@[deprecated (since := "2024-09-22")]
-alias pow_injective_of_not_unit := pow_injective_of_not_isUnit
-
 theorem pow_inj_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : ¬IsUnit q)
     (hq' : q ≠ 0) {m n : ℕ} : q ^ m = q ^ n ↔ m = n :=
   (pow_injective_of_not_isUnit hq hq').eq_iff
