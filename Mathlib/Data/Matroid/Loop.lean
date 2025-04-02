@@ -624,7 +624,7 @@ lemma exists_mem_isCircuit_of_not_isColoop (heE : e ∈ M.E) (he : ¬ M.IsColoop
 @[simp]
 lemma closure_inter_coloops_eq (M : Matroid α) (X : Set α) :
     M.closure X ∩ M.coloops = X ∩ M.coloops := by
-  simp_rw [Set.ext_iff, mem_inter_iff, ← isColoop_iff_mem_loops, and_congr_left_iff]
+  simp_rw [Set.ext_iff, mem_inter_iff, ← isColoop_iff_mem_coloops, and_congr_left_iff]
   intro e he
   rw [he.mem_closure_iff_mem]
 
