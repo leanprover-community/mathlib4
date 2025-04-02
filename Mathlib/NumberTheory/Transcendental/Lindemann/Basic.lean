@@ -168,7 +168,7 @@ private theorem linearIndependent_exp' [Fintype ι] (u : ι → ℂ) (hu : ∀ i
         refine (norm_multiset_sum_le _).trans ?_
         rw [Multiset.map_map]
         refine Multiset.sum_map_le_sum_map _ _ fun x hx => ?_
-        rw [Function.comp_apply, norm_sub_rev, norm_eq_abs]
+        rw [Function.comp_apply, norm_sub_rev]
         refine hc ?_
         rw [mem_aroots', Polynomial.map_ne_zero_iff (algebraMap ℤ ℂ).injective_int] at hx ⊢
         rw [map_prod]
