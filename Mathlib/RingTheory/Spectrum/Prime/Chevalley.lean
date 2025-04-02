@@ -59,7 +59,7 @@ lemma isOpenMap_comap_of_hasGoingDown_of_finitePresentation
   exact isOpen_of_stableUnderGeneralization_of_isConstructible
     ((basicOpen f).2.stableUnderGeneralization.image
       (Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap.mp ‹_›))
-    (isConstructible_comap_image (finitePresentation_algebraMap.mpr ‹_›)
+    (isConstructible_comap_image (RingHom.finitePresentation_algebraMap.mpr ‹_›)
       (isConstructible_basicOpen _))
 
 end PrimeSpectrum
