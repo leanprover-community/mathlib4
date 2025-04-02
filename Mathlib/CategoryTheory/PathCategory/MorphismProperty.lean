@@ -42,6 +42,7 @@ lemma morphismProperty_eq_top'
   ext; constructor
   · simp
   · exact fun _ ↦ induction' (fun f ↦ P f) id comp _
+
 lemma morphismProperty_eq_top_of_isMultiplicative (P : MorphismProperty (Paths V))
     [P.IsMultiplicative]
     (hP : ∀ {u v : V} (p : u ⟶ v), P ((of V).map p)) : P = ⊤ :=
