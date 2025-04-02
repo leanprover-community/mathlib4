@@ -393,21 +393,21 @@ for `a`. If so, replaces `a` with `a'` and removes quantifier.
 
 It looks through nested quantifiers and conjuctions searching for a `a = a'`
 or `a' = a` subexpression. -/
-simproc existsAndEqNested (Exists _) := .ofQ fun u α e => do
-  match u, α, e with
-  | 1, ~q(Prop), ~q(@Exists $α $p) =>
-    lambdaBoundedTelescope p 1 fun xs (body : Q(Prop)) => withNewMCtxDepth do
-      let #[(a : Q($α))] := xs | return .continue
-      let some path ← findEqPath a body | return .continue
-      let (fvars, lctx, newBody, a') ← findEq a body path
-      withLCtx' lctx do
-        let newBody := newBody.replaceFVar a a'
-        let P' : Q(Prop) ← mkNestedExists fvars newBody
-        let pfBeforeAfter : Q((∃ a, $p a) → $P') ← mkBeforeToAfter a' newBody fvars path
-        let pfAfterBefore : Q($P' → (∃ a, $p a)) ← mkAfterToBefore a' newBody fvars path
-        let pf := q(propext (Iff.intro $pfBeforeAfter $pfAfterBefore))
-        return .visit <| .mk _ <| some q($pf)
-  | _, _, _ => return .continue
+simproc existsAndEqNested (Exists _) := fun e => do
+  let_expr f@Exists α p := e | return .continue
+  lambdaBoundedTelescope p 1 fun xs (body : Q(Prop)) => withNewMCtxDepth do
+    let some u := f.constLevels![0]? | fail
+    have α : Q(Sort $u) := α; have p : Q($α → Prop) := p
+    let some (a : Q($α)) := xs[0]? | return .continue
+    let some path ← findEqPath a body | return .continue
+    let (fvars, lctx, newBody, a') ← findEq a body path
+    withLCtx' lctx do
+      let newBody := newBody.replaceFVar a a'
+      let P' : Q(Prop) ← mkNestedExists fvars newBody
+      let pfBeforeAfter : Q((∃ a, $p a) → $P') ← mkBeforeToAfter a' newBody fvars path
+      let pfAfterBefore : Q($P' → (∃ a, $p a)) ← mkAfterToBefore a' newBody fvars path
+      let pf := q(propext (Iff.intro $pfBeforeAfter $pfAfterBefore))
+      return .visit <| Simp.ResultQ.mk _ <| some q($pf)
 
 end existsAndEq
 
