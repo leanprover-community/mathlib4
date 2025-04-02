@@ -205,8 +205,27 @@ theorem component.of [DecidableEq ι] (i j : ι) (b : M j) :
 
 section map
 
-variable {R} {N : ι → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
-  (f : Π i, M i →ₗ[R] N i)
+variable {R} {N : ι → Type*}
+
+section AddCommMonoid
+variable [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+
+section
+variable (f : ∀ i, M i →+ N i)
+
+lemma mker_map : AddMonoidHom.mker (map f) =
+    (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mker (f i))).comap
+    (DirectSum.coeFnAddMonoidHom M) :=
+  DFinsupp.mker_mapRangeAddMonoidHom f
+
+lemma mrange_map : AddMonoidHom.mrange (map f) =
+    (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mrange (f i))).comap
+      (DirectSum.coeFnAddMonoidHom N) :=
+  DFinsupp.mrange_mapRangeAddMonoidHom f
+
+end
+
+variable (f : Π i, M i →ₗ[R] N i)
 
 /-- The linear map between direct sums induced by a family of linear maps. -/
 def lmap : (⨁ i, M i) →ₗ[R] ⨁ i, N i := DFinsupp.mapRange.linearMap f
@@ -250,17 +269,17 @@ lemma lmap_eq_map (x : ⨁ i, M i) : lmap f x = map (fun i => (f i).toAddMonoidH
 end AddCommMonoid
 
 section AddCommGroup
-variable [∀ i, AddCommGroup (M i)]
-variable [∀ i, AddCommMonoid (N i)] (f : ∀ i, M i →+ N i)
+variable {R : Type u} {ι : Type v} {M : ι → Type w} {N : ι → Type*}
 
-lemma ker_map : (map f).ker =
-    (AddSubgroup.pi Set.univ (f · |>.ker)).comap (DirectSum.coeFnAddMonoidHom M) :=
+lemma ker_map [∀ i, AddCommGroup (M i)] [∀ i, AddCommMonoid (N i)] (f : ∀ i, M i →+ N i) :
+    (map f).ker =
+      (AddSubgroup.pi Set.univ (f · |>.ker)).comap (DirectSum.coeFnAddMonoidHom M) :=
   DFinsupp.ker_mapRangeAddMonoidHom f
 
-lemma range_map : (map f).range =
-    (AddSubgroup.pi Set.univ (f · |>.range)).comap (DirectSum.coeFnAddMonoidHom N) := by
-  classical
-  exact DFinsupp.range_mapRangeAddMonoidHom f
+lemma range_map [∀ i, AddCommGroup (M i)] [∀ i, AddCommGroup (N i)] (f : ∀ i, M i →+ N i) :
+    (map f).range =
+      (AddSubgroup.pi Set.univ (f · |>.range)).comap (DirectSum.coeFnAddMonoidHom N) :=
+  DFinsupp.range_mapRangeAddMonoidHom f
 
 end AddCommGroup
 
