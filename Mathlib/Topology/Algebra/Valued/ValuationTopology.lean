@@ -153,7 +153,7 @@ theorem cauchy_iff {F : Filter R} : Cauchy F ↔
 
 variable (R)
 
-/-- A ball of a valued ring is open. -/
+/-- An open ball centred at the origin in a valued ring is open. -/
 theorem isOpen_ball (r : Γ₀) : IsOpen (X := R) {x | v x < r} := by
   rw [isOpen_iff_mem_nhds]
   rcases eq_or_ne r 0 with rfl|hr
@@ -164,7 +164,7 @@ theorem isOpen_ball (r : Γ₀) : IsOpen (X := R) {x | v x < r} := by
   exact ⟨Units.mk0 _ hr,
     fun y hy => (sub_add_cancel y x).symm ▸ (v.map_add _ x).trans_lt (max_lt hy hx)⟩
 
-/-- A closed ball of a valued ring is open. -/
+/-- A closed ball centred at the origin in a valued ring is open. -/
 theorem isOpen_closedball {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x ≤ r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
@@ -173,7 +173,7 @@ theorem isOpen_closedball {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x 
   exact ⟨Units.mk0 _ hr,
     fun y hy => (sub_add_cancel y x).symm ▸ le_trans (map_add _ _ _) (max_le (le_of_lt hy) hx)⟩
 
-/-- A sphere of a valued ring is open. -/
+/-- A sphere centred at the origin in a valued ring is open. -/
 theorem isOpen_sphere {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x = r} := by
   rw [isOpen_iff_mem_nhds]
   intro x hx
@@ -183,7 +183,7 @@ theorem isOpen_sphere {r : Γ₀} (hr : r ≠ 0) : IsOpen (X := R) {x | v x = r}
   rwa [v.map_add_eq_of_lt_right]
   simpa [hx] using hy
 
-/-- The unit closed ball of a valued ring is open. -/
+/-- The closed unit ball in a valued ring is open. -/
 theorem integer_isOpen : IsOpen (_i.v.integer : Set R) :=
   isOpen_closedball _ one_ne_zero
 

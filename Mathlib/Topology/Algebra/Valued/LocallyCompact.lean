@@ -191,7 +191,7 @@ lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F]
     obtain ⟨x, hx, hx'⟩ := h
     refine ⟨⟨x, hx'.le⟩, hx, hx'⟩
   -- the key result is that a valuation ring that maps into a `MulArchimedean` value group
-  -- must be a PIR iff the value group is not densely ordered.
+  -- is a PIR iff the value group is not densely ordered.
   have hi : Valuation.Integers (R := F) Valued.v 𝒪[F] := Valuation.integer.integers v
   rw [hi.isPrincipalIdealRing_iff_not_denselyOrdered]
   intro H
