@@ -165,7 +165,34 @@ lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Spl
       -- In general, the sum of closed subspaces need not be closed.
       -- In this case, however, this is true as F'.map G is a closed subspace of range g,
       -- and range g + hg.complement = G' is closed.
-      -- TODO: think about the best proof for formalising.
+      -- TODO: what's the best proof to formalise?
+
+      -- Here is an outline of a proof using sequential closedness.
+      rw [← isSeqClosed_iff_isClosed]
+      -- Let (u_n) be a converging sequence in g(F') + G'.
+      intro u u₀ hu hconv
+      simp_rw [Submodule.add_eq_sup, SetLike.mem_coe, Submodule.mem_sup] at hu
+      -- Write u_n = x_n + y_n, for x_n in g(F') and y_n in G'.
+      let x : ℕ → Submodule.map g F' := by
+        intro n
+        choose y hy z hz hyz using hu n
+        exact ⟨y, hy⟩
+      let y : ℕ → hg.complement := by
+        intro n
+        choose y hy z hz hyz using hu n
+        exact ⟨z, hz⟩
+      -- By construction, u_n = x_n + y_n.
+      have (n) : u n = x n + y n := by
+        simp [x, y]
+        sorry -- need more API lemmas
+      -- x equals the projection into g(F'); y equals the projection onto hg.complement.
+      -- Since the coordinate projections are continuous, x and y are both convergent sequences.
+
+      -- Since g is anti-Lipschitz, the sequence of preimages of x_n is also converging.
+      -- These preimages belong to F', which is closed, hence the limit also lies in F'.
+
+      -- Thus, by continuity, x_n converges to some point in g(F').
+      -- By linearity, u_n converges to a point in g(F')+G', qed.
       sorry
     · have : LinearMap.range (g.comp f) = Submodule.map g (LinearMap.range f) := by aesop
       -- some lemmas which could be useful for a manual proof:
