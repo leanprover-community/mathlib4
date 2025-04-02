@@ -32,7 +32,7 @@ The definition of the field structure on `ℚ` will be done in `Mathlib.Data.Rat
 
 -- TODO: If `Inv` was defined earlier than `Algebra.Group.Defs`, we could have
 -- assert_not_exists Monoid
-assert_not_exists MonoidWithZero Lattice PNat Nat.dvd_mul
+assert_not_exists MonoidWithZero Lattice PNat Nat.gcd_greatest
 
 open Function
 
