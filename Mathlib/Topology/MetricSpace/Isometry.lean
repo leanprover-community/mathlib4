@@ -6,7 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Topology.MetricSpace.Antilipschitz
-import Mathlib.Topology.Homeomorph.Defs
 
 /-!
 # Isometries
@@ -690,3 +689,25 @@ lemma Isometry.lipschitzWith_iff {α β γ : Type*} [PseudoEMetricSpace α] [Pse
     [PseudoEMetricSpace γ] {f : α → β} {g : β → γ} (K : ℝ≥0) (h : Isometry g) :
     LipschitzWith K (g ∘ f) ↔ LipschitzWith K f := by
   simp [LipschitzWith, h.edist_eq]
+
+namespace IsometryClass
+
+variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [EquivLike F α β] [IsometryClass F α β]
+
+/-- Turn an element of a type `F` satisfying `EquivLike F α β` and `IsometryClass F α β` into
+an actual `IsometryEquiv`. This is declared as the default coercion from `F` to `α ≃ᵢ β`. -/
+@[coe]
+def toIsometryEquiv (f : F) : α ≃ᵢ β :=
+  { (f : α ≃ β) with
+    isometry_toFun := IsometryClass.isometry f }
+
+@[simp]
+theorem coe_coe (f : F) : ⇑(toIsometryEquiv f) = ⇑f := rfl
+
+instance : CoeOut F (α ≃ᵢ β) :=
+  ⟨toIsometryEquiv⟩
+
+theorem toIsometryEquiv_injective : Function.Injective ((↑) : F → α ≃ᵢ β) :=
+  fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ DFunLike.congr_fun e a
+
+end IsometryClass
