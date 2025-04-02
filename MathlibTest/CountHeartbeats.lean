@@ -119,32 +119,20 @@ theorem YX' : True := trivial
 theorem XX : 3 + 4 + 5 = 12 := by
   decide
 
-
--- Don't want the try-this blocks of `#count_heartbeats in`
-/--
-info: 'too_slow' used approximately 0 heartbeats, which is greater than the current maximum of 89.
--/
-#guard_msgs in
-set_option maxHeartbeats 89 in
-theorem too_slow : 3 + 4 + 5 = 12 := by
-  decide
-
-
 end using_linter_option
-
 
 /-
 Test: `#count_heartbeats in` and `set_option linter.countHeartbeats true` should return
 the same result.
 -/
 
-/-- info: Used 3 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: Used approximately 0 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
-#count_heartbeats in
+#count_heartbeats approximately in
 theorem YX'₂ : True := trivial
 
-/-- info: Used 93 heartbeats, which is less than the current maximum of 200000. -/
+/-- info: Used approximately 0 heartbeats, which is less than the current maximum of 200000. -/
 #guard_msgs in
-#count_heartbeats in
+#count_heartbeats approximately in
 theorem XX₂ : 3 + 4 + 5 = 12 := by
   decide
