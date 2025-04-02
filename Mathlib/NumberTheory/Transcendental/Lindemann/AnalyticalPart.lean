@@ -195,7 +195,7 @@ theorem exp_polynomial_approx (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
     _ = ‖P (map (algebraMap ℤ ℂ) h) r‖ := ?_
     _ ≤ c' r ^ p := abs_P_le r p prime_p.ne_zero
     _ ≤ _ := pow_le_pow_left₀ (c'0 r) ?_ _
-  · rw [map_mul, abs_natCast]
+  · rw [norm_mul, norm_natCast]
   · rw [← Nat.mul_factorial_pred prime_p.ne_zero]
     push_cast
     ring_nf
