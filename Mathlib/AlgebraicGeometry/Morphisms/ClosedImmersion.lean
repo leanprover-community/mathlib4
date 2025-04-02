@@ -247,7 +247,7 @@ theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
   haveI := IsClosedImmersion.of_comp_isClosedImmersion (affineTargetImageFactorization f)
     (affineTargetImageInclusion f)
   haveI := isIso_of_injective_of_isAffine (affineTargetImageFactorization_app_injective f)
-  exact ⟨isAffine_of_isIso (affineTargetImageFactorization f),
+  exact ⟨.of_isIso (affineTargetImageFactorization f),
     (ConcreteCategory.bijective_of_isIso
       ((affineTargetImageFactorization f).appTop)).surjective.comp <|
       affineTargetImageInclusion_app_surjective f⟩
