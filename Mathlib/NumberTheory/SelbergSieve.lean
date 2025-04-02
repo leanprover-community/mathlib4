@@ -202,6 +202,7 @@ omit s in
 def IsUpperMoebius (muPlus : ℕ → ℝ) : Prop :=
   ∀ n : ℕ, (if n=1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d
 
+-- TODO rename *_of_isUpperMoebius
 theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoebius muPlus) :
     siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d := by
   have hμ : ∀ n, (if n = 1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d := h
@@ -223,6 +224,7 @@ theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoeb
     rw [sum_comm]
     simp_rw [multSum, ← sum_filter, mul_sum, mul_comm]
 
+-- TODO rename *_of_isUpperMoebius
 theorem siftedSum_le_mainSum_errSum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoebius muPlus) :
     siftedSum ≤ X * mainSum muPlus + errSum muPlus := by
   calc siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d := siftedSum_le_sum_of_upperMoebius _ h
