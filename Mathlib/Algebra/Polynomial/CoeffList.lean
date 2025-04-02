@@ -164,8 +164,8 @@ theorem coeffList_neg : (-P).coeffList = P.coeffList.map (-·) := by
   · simp [coeffList, hp]
 
 end Ring
-section DivisionSemiring
 
+section DivisionSemiring
 variable [DivisionSemiring R] (P : R[X])
 
 theorem coeffList_C_mul {x : R} (hx : x ≠ 0) : (C x * P).coeffList = P.coeffList.map (x * ·) := by
