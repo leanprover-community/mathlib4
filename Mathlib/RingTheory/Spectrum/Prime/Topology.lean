@@ -909,6 +909,7 @@ lemma isRetrocompact_basicOpen (f : R) :
 lemma isConstructible_basicOpen (f : R) :
     IsConstructible (basicOpen f : Set (PrimeSpectrum R)) :=
   (isRetrocompact_basicOpen f).isConstructible (basicOpen f).2
+
 section IsIntegral
 
 open Polynomial
