@@ -3,7 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.ZeroOne.Lemmas
+import Mathlib.Algebra.Notation.Lemmas
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Pi
@@ -42,10 +42,9 @@ instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ 
 @[to_additive
       "The product of a family of canonically ordered additive monoids is
 a canonically ordered additive monoid."]
-instance {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedCommMonoid (Z i)] :
-    CanonicallyOrderedCommMonoid (∀ i, Z i) where
-  __ := Pi.instOrderBot
-  __ := Pi.orderedCommMonoid
+instance {ι : Type*} {Z : ι → Type*} [∀ i, Monoid (Z i)] [∀ i, PartialOrder (Z i)]
+    [∀ i, CanonicallyOrderedMul (Z i)] :
+    CanonicallyOrderedMul (∀ i, Z i) where
   __ := Pi.existsMulOfLe
   le_self_mul _ _ := fun _ => le_self_mul
 

@@ -36,7 +36,7 @@ namespace Polynomial
 variable (P : K[X]) (hP : ∀ n : ℕ, P.coeff n ∈ R)
 
 @[simp]
-theorem int_coeff_eq  (n : ℕ) : ↑((P.int R hP).coeff n) = P.coeff n := rfl
+theorem int_coeff_eq (n : ℕ) : ↑((P.int R hP).coeff n) = P.coeff n := rfl
 
 @[simp]
 theorem int_leadingCoeff_eq : ↑(P.int R hP).leadingCoeff = P.leadingCoeff := rfl

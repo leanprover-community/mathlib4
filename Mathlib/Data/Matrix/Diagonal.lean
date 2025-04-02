@@ -138,17 +138,17 @@ theorem diagonal_map [Zero α] [Zero β] {f : α → β} (h : f 0 = 0) {d : n �
   simp only [diagonal_apply, map_apply]
   split_ifs <;> simp [h]
 
-protected theorem map_natCast [AddMonoidWithOne α] [AddMonoidWithOne β]
+protected theorem map_natCast [AddMonoidWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℕ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
 
-protected theorem map_ofNat [AddMonoidWithOne α] [AddMonoidWithOne β]
+protected theorem map_ofNat [AddMonoidWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℕ) [d.AtLeastTwo] :
     (ofNat(d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
   diagonal_map h
 
-protected theorem map_intCast [AddGroupWithOne α] [AddGroupWithOne β]
+protected theorem map_intCast [AddGroupWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
@@ -184,13 +184,12 @@ theorem one_apply_ne' {i j} : j ≠ i → (1 : Matrix n n α) i j = 0 :=
   diagonal_apply_ne' _
 
 @[simp]
-theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h₁ : f 1 = 1) :
+protected theorem map_one [Zero β] [One β] (f : α → β) (h₀ : f 0 = 0) (h₁ : f 1 = 1) :
     (1 : Matrix n n α).map f = (1 : Matrix n n β) := by
   ext
   simp only [one_apply, map_apply]
   split_ifs <;> simp [h₀, h₁]
 
--- Porting note: added implicit argument `(f := fun_ => α)`, why is that needed?
 theorem one_eq_pi_single {i j} : (1 : Matrix n n α) i j = Pi.single (f := fun _ => α) i 1 j := by
   simp only [one_apply, Pi.single_apply, eq_comm]
 
@@ -225,12 +224,9 @@ end Diagonal
 section Diag
 
 /-- The diagonal of a square matrix. -/
--- @[simp] -- Porting note: simpNF does not like this.
 def diag (A : Matrix n n α) (i : n) : α :=
   A i i
 
--- Porting note: new, because of removed `simp` above.
--- TODO: set as an equation lemma for `diag`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem diag_apply (A : Matrix n n α) (i) : diag A i = A i i :=
   rfl
@@ -337,8 +333,7 @@ theorem submatrix_diagonal [Zero α] [DecidableEq m] [DecidableEq l] (d : m → 
   ext fun i j => by
     rw [submatrix_apply]
     by_cases h : i = j
-    · rw [h, diagonal_apply_eq, diagonal_apply_eq]
-      simp only [Function.comp_apply] -- Porting note: (simp) added this
+    · rw [h, diagonal_apply_eq, diagonal_apply_eq, Function.comp_apply]
     · rw [diagonal_apply_ne _ h, diagonal_apply_ne _ (he.ne h)]
 
 theorem submatrix_one [Zero α] [One α] [DecidableEq m] [DecidableEq l] (e : l → m)

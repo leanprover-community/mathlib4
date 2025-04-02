@@ -78,7 +78,6 @@ theorem abundant_twelve : Abundant 12 := by
   rw [Abundant, show properDivisors 12 = {1,2,3,4,6} by rfl]
   norm_num
 
-set_option maxRecDepth 1730 in
 theorem weird_seventy : Weird 70 := by
   rw [Weird, Abundant, not_pseudoperfect_iff_forall]
   have h : properDivisors 70 = {1, 2, 5, 7, 10, 14, 35} := by rfl
@@ -152,7 +151,7 @@ theorem Prime.deficient_pow  (h : Prime n) : Deficient (n ^ m) := by
           exact ⟨x, Nat.le_of_succ_le hx, rfl⟩
         · rw [← hy]
           exact (Nat.pow_lt_pow_iff_right (Prime.two_le h)).mpr hx
-    have h2 : ∑ i in image (fun x => n ^ x) (range m), i = ∑ i in range m, n^i := by
+    have h2 : ∑ i ∈ image (fun x => n ^ x) (range m), i = ∑ i ∈ range m, n^i := by
       rw [Finset.sum_image]
       rintro x _ y _
       apply pow_injective_of_not_isUnit h.not_unit <| Prime.ne_zero h

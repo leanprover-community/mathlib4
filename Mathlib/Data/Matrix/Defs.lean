@@ -74,10 +74,6 @@ which performs elementwise multiplication, vs `Matrix.mul`).
 If you are defining a matrix, in terms of its entries, use `of (fun i j ↦ _)`. The
 purpose of this approach is to ensure that terms of the form `(fun i j ↦ _) * (fun i j ↦ _)` do not
 appear, as the type of `*` can be misleading.
-
-Porting note: In Lean 3, it is also safe to use pattern matching in a definition as `| i j := _`,
-which can only be unfolded when fully-applied. https://github.com/leanprover/lean4/issues/2042 means this does not
-(currently) work in Lean 4.
 -/
 def of : (m → n → α) ≃ Matrix m n α :=
   Equiv.refl _
@@ -212,12 +208,7 @@ instance module [Semiring R] [AddCommMonoid α] [Module R α] : Module R (Matrix
 
 section
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
--/
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_apply [Zero α] (i : m) (j : n) : (0 : Matrix m n α) i j = 0 := rfl
 
 @[simp]

@@ -3,7 +3,7 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Perfect pairings of modules
@@ -82,6 +82,11 @@ instance instFunLike : FunLike (PerfectPairing R M N) M (N →ₗ[R] R) where
 
 @[simp]
 lemma toLin_apply (p : PerfectPairing R M N) {x : M} : p.toLin x = p x := by
+  rfl
+
+@[simp]
+lemma mk_apply_apply {f : M →ₗ[R] N →ₗ[R] R} {hl} {hr} {x : M} :
+    (⟨f, hl, hr⟩ : PerfectPairing R M N) x = f x :=
   rfl
 
 variable (p : PerfectPairing R M N)
@@ -181,6 +186,46 @@ include p in
 theorem finrank_eq [Module.Finite R M] [Module.Free R M] :
     finrank R M = finrank R N :=
   ((Module.Free.chooseBasis R M).toDualEquiv.trans p.toDualRight.symm).finrank_eq
+
+/-- Given a perfect pairing `p` between `M` and `N`, we say a pair of submodules `U` in `M` and
+`V` in `N` are perfectly complementary wrt `p` if their dual annihilators are complementary, using
+`p` to identify `M` and `N` with dual spaces. -/
+structure IsPerfectCompl (U : Submodule R M) (V : Submodule R N) : Prop where
+  isCompl_left : IsCompl U (V.dualAnnihilator.map p.toDualLeft.symm)
+  isCompl_right : IsCompl V (U.dualAnnihilator.map p.toDualRight.symm)
+
+namespace IsPerfectCompl
+
+variable {p}
+variable {U : Submodule R M} {V : Submodule R N}
+
+protected lemma flip (h : p.IsPerfectCompl U V) :
+    p.flip.IsPerfectCompl V U where
+  isCompl_left := h.isCompl_right
+  isCompl_right := h.isCompl_left
+
+@[simp]
+protected lemma flip_iff :
+    p.flip.IsPerfectCompl V U ↔ p.IsPerfectCompl U V :=
+  ⟨fun h ↦ h.flip, fun h ↦ h.flip⟩
+
+@[simp]
+lemma left_top_iff :
+    p.IsPerfectCompl ⊤ V ↔ V = ⊤ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact eq_top_of_isCompl_bot <| by simpa using h.isCompl_right
+  · rw [h]
+    exact
+      { isCompl_left := by simpa using isCompl_top_bot
+        isCompl_right := by simpa using isCompl_top_bot }
+
+@[simp]
+lemma right_top_iff :
+    p.IsPerfectCompl U ⊤ ↔ U = ⊤ := by
+  rw [← IsPerfectCompl.flip_iff]
+  exact left_top_iff
+
+end IsPerfectCompl
 
 end PerfectPairing
 
