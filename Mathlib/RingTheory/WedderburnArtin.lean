@@ -1,5 +1,20 @@
-import Mathlib
+/-
+Copyright (c) 2025 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yunzhou Xie, Jujian Zhang
+-/
+import Mathlib.Algebra.Azumaya.Basic
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.Matrix.IsDiag
+import Mathlib.Order.CompletePartialOrder
+import Mathlib.RingTheory.FiniteLength
+import Mathlib.RingTheory.TwoSidedIdeal.SpanAsSum
 
+/-!
+# Wedderburn-Artin Theorem (for simple rings)
+
+
+-/
 variable (A : Type*) [Ring A]
 
 open BigOperators Matrix MulOpposite
@@ -319,20 +334,20 @@ lemma Wedderburn_Artin.aux.one_eq
   exact ⟨Fintype.card n, x ∘ (Fintype.equivFin _).symm, y ∘ (Fintype.equivFin _).symm, hy ▸
     Fintype.sum_bijective (Fintype.equivFin _).symm (Equiv.bijective _) _ _ fun k ↦ rfl⟩
 
-noncomputable abbrev Wedderburn_Artin.aux.n
+private noncomputable abbrev Wedderburn_Artin.aux.n
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) : ℕ := by
   classical
   exact Nat.find <| Wedderburn_Artin.aux.one_eq I I_nontrivial
 
-noncomputable abbrev Wedderburn_Artin.aux.x
+private noncomputable abbrev Wedderburn_Artin.aux.x
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) :
     Fin (Wedderburn_Artin.aux.n I I_nontrivial) → A  := by
   classical
   exact (Nat.find_spec <| Wedderburn_Artin.aux.one_eq I I_nontrivial).choose
 
-noncomputable abbrev Wedderburn_Artin.aux.i
+private noncomputable abbrev Wedderburn_Artin.aux.i
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) :
     Fin (Wedderburn_Artin.aux.n I I_nontrivial) → I := by
@@ -340,7 +355,7 @@ noncomputable abbrev Wedderburn_Artin.aux.i
   exact (Nat.find_spec <| Wedderburn_Artin.aux.one_eq I I_nontrivial).choose_spec.choose
 
 open Wedderburn_Artin.aux in
-noncomputable abbrev Wedderburn_Artin.aux.nxi_spec
+private noncomputable abbrev Wedderburn_Artin.aux.nxi_spec
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) :
     ∑ j : Fin (n I I_nontrivial), (i I I_nontrivial j) * (x I I_nontrivial j) = 1 := by
@@ -367,7 +382,7 @@ lemma Wedderburn_Artin.aux.n_ne_zero
     _ = 0 := by simp
 
 open Wedderburn_Artin.aux in
-noncomputable abbrev Wedderburn_Artin.aux.nxi_ne_zero
+private noncomputable abbrev Wedderburn_Artin.aux.nxi_ne_zero
     {A : Type u} [Ring A] [simple : IsSimpleRing A]
     (I : Ideal A) (I_nontrivial : I ≠ ⊥) :
     ∀ j, x I I_nontrivial j ≠ 0 ∧ i I I_nontrivial j ≠ 0 := by
@@ -464,7 +479,8 @@ lemma Wedderburn_Artin.aux.equivIdeal
       (show n - 1 < n by omega) ⟨_, _, one_eq'.symm⟩
   exact ⟨n, n_ne, ⟨LinearEquiv.ofBijective g ⟨g_inj, g_surj⟩⟩⟩
 
-def endPowEquivMatrix (A : Type*) [Ring A]
+/-- RingEquiv version of `endVecAlgEquivMatrixEnd` -/
+private def endPowEquivMatrix (A : Type*) [Ring A]
     (M : Type*) [AddCommGroup M] [Module A M] (n : ℕ):
     Module.End A (Fin n → M) ≃+* Matrix (Fin n) (Fin n) (Module.End A M) :=
   endVecAlgEquivMatrixEnd (Fin n) ℤ A M
