@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 
 import Mathlib.LinearAlgebra.Finsupp.Pi
 import Mathlib.RingTheory.MvPowerSeries.Substitution
+import Mathlib.RingTheory.PowerSeries.Evaluation
 import Mathlib.RingTheory.PowerSeries.Basic
 
 /-! # Substitutions in power series
@@ -39,22 +40,33 @@ open MvPowerSeries.WithPiTopology
 abbrev HasSubst (a : MvPowerSeries τ S) : Prop :=
   IsNilpotent (MvPowerSeries.constantCoeff τ S a)
 
-theorem hasSubst_iff (a : MvPowerSeries τ S) :
+theorem hasSubst_iff {a : MvPowerSeries τ S} :
   HasSubst a ↔ MvPowerSeries.HasSubst (Function.const Unit a) :=
   ⟨fun ha ↦ MvPowerSeries.hasSubst_of_constantCoeff_nilpotent (Function.const Unit ha),
    fun ha  ↦ (ha.const_coeff ())⟩
 
-theorem HasSubst.hasEval [TopologicalSpace S] {a : MvPowerSeries τ S} (ha : HasSubst a) :
-    HasEval a := MvPowerSeries.HasEval.mono (instTopologicalSpace_mono τ bot_le) <|
-  (@hasSubst_iff_hasEval_of_discreteTopology σ τ _ _ a ⊥ (@DiscreteTopology.mk S ⊥ rfl)).mp ha
+theorem HasSubst.const {a : MvPowerSeries τ S} (ha : HasSubst a) :
+    MvPowerSeries.HasSubst (fun () ↦ a) :=
+  hasSubst_iff.mp ha
 
-theorem HasSubst.of_constantCoeff_zero
-    {a : MvPowerSeries τ S}
-    (ha : MvPowerSeries.constantCoeff τ S a = 0) :
-    HasSubst a := by
+theorem hasSubst_iff_hasEval_of_discreteTopology
+    [TopologicalSpace S] [DiscreteTopology S] {a : MvPowerSeries τ S} :
+    HasSubst a ↔ PowerSeries.HasEval a := by
+  rw [hasSubst_iff, MvPowerSeries.hasSubst_iff_hasEval_of_discreteTopology, hasEval_iff]
+  rfl
+
+theorem HasSubst.hasEval [TopologicalSpace S] {a : MvPowerSeries τ S} (ha : HasSubst a) :
+    HasEval a := by
+  rw [hasEval_iff]
+  apply MvPowerSeries.HasSubst.hasEval
+  simpa [hasSubst_iff] using ha
+
+theorem HasSubst.of_constantCoeff_zero {a : MvPowerSeries τ S}
+    (ha : MvPowerSeries.constantCoeff τ S a = 0) : HasSubst a := by
   simp [HasSubst, ha]
 
-protected theorem HasSubst.X {t : τ} : HasSubst (MvPowerSeries.X t : MvPowerSeries τ S) := by
+protected theorem HasSubst.X {t : τ} :
+    HasSubst (MvPowerSeries.X t : MvPowerSeries τ S) := by
   simp [HasSubst]
 
 /-- The univariate `X : R⟦X⟧` can be substituted in power series
@@ -63,13 +75,9 @@ This lemma is added because `simp` doesn't find it from `HasSubst.X` -/
 theorem HasSubst.X' : HasSubst (X : R⟦X⟧) :=
   HasSubst.X
 
-theorem HasSubst.smul (a : A) {f : MvPowerSeries τ R} (hf : HasSubst f) :
-    HasSubst (a • f) := by
-  simp only [HasSubst, MvPowerSeries.constantCoeff_smul]
-  exact IsNilpotent.smul hf _
-
-theorem HasSubst.smul_X (a : A) : HasSubst (a • X : R⟦X⟧) :=
-  HasSubst.X.smul _
+theorem HasSubst.zero : HasSubst (0 : MvPowerSeries τ R) := by
+  rw [hasSubst_iff]
+  exact MvPowerSeries.HasSubst.zero
 
 theorem HasSubst.add {f g : MvPowerSeries τ R} (hf : HasSubst f) (hg : HasSubst g) :
     HasSubst (f + g) := by
@@ -86,27 +94,59 @@ theorem HasSubst.mul_right {f g : MvPowerSeries τ R} (hf : HasSubst f) :
   simp only [HasSubst, map_mul]
   apply Commute.isNilpotent_mul_right (Commute.all _ _) hf
 
-variable {υ : Type*} {T : Type*} [CommRing T] [Algebra R T] [Algebra S T]
+theorem HasSubst.smul (r : MvPowerSeries τ S) {a : MvPowerSeries τ S}
+    (ha : HasSubst a) :
+    HasSubst (r • a) := ha.mul_right
+
+/-- Families of `PowerSeries` that can be substituted, as an `Ideal` -/
+noncomputable def HasSubst.ideal : Ideal (MvPowerSeries τ S) :=
+  { carrier := setOf HasSubst
+    add_mem' := HasSubst.add
+    zero_mem' := HasSubst.zero
+    smul_mem' := HasSubst.smul }
+
+/-- A more general version of `HasSubst.smul` -/
+theorem HasSubst.smul' (a : A) {f : MvPowerSeries τ R} (hf : HasSubst f) :
+    HasSubst (a • f) := by
+  simp only [HasSubst, MvPowerSeries.constantCoeff_smul]
+  exact IsNilpotent.smul hf _
+
+theorem HasSubst.smul_X (a : A) : HasSubst (a • X : R⟦X⟧) :=
+  HasSubst.X.smul' _
+
+variable {υ : Type*} {T : Type*} [CommRing T] [Algebra R S] [Algebra R T] [Algebra S T]
 
 /-- Substitution of power series into a power series -/
-noncomputable def subst [Algebra R S] (a : MvPowerSeries τ S) (f : PowerSeries R) :
+noncomputable def subst (a : MvPowerSeries τ S) (f : PowerSeries R) :
     MvPowerSeries τ S :=
   MvPowerSeries.subst (fun _ ↦ a) f
 
 variable {a : MvPowerSeries τ S}
 
-theorem HasSubst.const (ha : HasSubst a) :
-    MvPowerSeries.HasSubst (fun () ↦ a) :=
-  MvPowerSeries.hasSubst_of_constantCoeff_nilpotent fun _ ↦ ha
-
 /-- Substitution of power series into a power series -/
-noncomputable def substAlgHom [Algebra R S] (ha : HasSubst a) :
+noncomputable def substAlgHom (ha : HasSubst a) :
     PowerSeries R →ₐ[R] MvPowerSeries τ S :=
   MvPowerSeries.substAlgHom ha.const
 
-theorem coe_substAlgHom [Algebra R S] (ha : HasSubst a) :
+theorem coe_substAlgHom (ha : HasSubst a) :
     ⇑(substAlgHom ha) = subst (R := R) a :=
   MvPowerSeries.coe_substAlgHom ha.const
+
+instance [TopologicalSpace R] [DiscreteTopology R] [TopologicalSpace S] :
+    ContinuousSMul R (MvPowerSeries τ S) := by
+  sorry
+
+/-- Rewrite `PowerSeries.substAlgHom` as `PowerSeries.aeval`.
+
+Its use is discouraged because it introduces a topology and might lead
+into awkward comparisons. -/
+theorem substAlgHom_eq_aeval
+    [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
+    (ha : HasSubst a) :
+    (substAlgHom ha : R⟦X⟧ →ₐ[R] MvPowerSeries τ S) = PowerSeries.aeval ha.hasEval := by
+  simp only [substAlgHom, coe_aeval ha.hasEval]
+  convert coe_aeval (R := R) (hasSubst_iff_hasEval_of_discreteTopology.mp ha) <;>
+  exact DiscreteUniformity.eq_bot.symm
 
 theorem subst_add [Algebra R S] (ha : HasSubst a) (f g : PowerSeries R) :
     subst a (f + g) = subst a f + subst a g := by

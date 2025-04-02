@@ -94,35 +94,41 @@ theorem HasSubst.hasEval [TopologicalSpace S] (ha : HasSubst a) :
     HasEval a := HasEval.mono (instTopologicalSpace_mono τ bot_le) <|
   (@hasSubst_iff_hasEval_of_discreteTopology σ τ _ _ a ⊥ (@DiscreteTopology.mk S ⊥ rfl)).mp ha
 
-theorem hasSubst_X : HasSubst (fun (s : σ) ↦ (X s : MvPowerSeries σ S)) := by
+protected theorem HasSubst.X : HasSubst (fun (s : σ) ↦ (X s : MvPowerSeries σ S)) := by
   letI : UniformSpace S := ⊥
   simpa [hasSubst_iff_hasEval_of_discreteTopology] using HasEval.X
 
-theorem hasSubst_zero : HasSubst (fun (_ : σ) ↦ (0 : MvPowerSeries τ S)) := by
+theorem HasSubst.zero : HasSubst (fun (_ : σ) ↦ (0 : MvPowerSeries τ S)) := by
   letI : UniformSpace S := ⊥
   simpa [hasSubst_iff_hasEval_of_discreteTopology] using HasEval.zero
 
-theorem hasSubst_add {a b : σ → MvPowerSeries τ S} (ha : HasSubst a) (hb : HasSubst b) :
+theorem HasSubst.add {a b : σ → MvPowerSeries τ S} (ha : HasSubst a) (hb : HasSubst b) :
     HasSubst (a + b) := by
   letI : UniformSpace S := ⊥
   rw [hasSubst_iff_hasEval_of_discreteTopology] at ha hb ⊢
   exact ha.add hb
 
-theorem hasSubst_mul (b : σ → MvPowerSeries τ S) {a : σ → MvPowerSeries τ S} (ha : HasSubst a) :
+theorem HasSubst.mul_left (b : σ → MvPowerSeries τ S)
+    {a : σ → MvPowerSeries τ S} (ha : HasSubst a) :
     HasSubst (b * a) := by
   letI : UniformSpace S := ⊥
   rw [hasSubst_iff_hasEval_of_discreteTopology] at ha ⊢
   exact ha.mul_left b
 
-theorem hasSubst_smul (r : MvPowerSeries τ S) {a : σ → MvPowerSeries τ S} (ha : HasSubst a) :
-    HasSubst (r • a) := hasSubst_mul _ ha
+theorem HasSubst.mul_right (b : σ → MvPowerSeries τ S)
+    {a : σ → MvPowerSeries τ S} (ha : HasSubst a) :
+    HasSubst (a * b) :=
+  mul_comm a b ▸ ha.mul_left b
+
+theorem HasSubst.smul (r : σ → MvPowerSeries τ S) {a : σ → MvPowerSeries τ S} (ha : HasSubst a) :
+    HasSubst (r • a) := ha.mul_left _
 
 /-- Families of `MvPowerSeries` that can be substituted, as an `Ideal` -/
-noncomputable def hasSubst.ideal : Ideal (σ → MvPowerSeries τ S) :=
+noncomputable def HasSubst.ideal : Ideal (σ → MvPowerSeries τ S) :=
   { carrier := setOf HasSubst
-    add_mem' := hasSubst_add
-    zero_mem' := hasSubst_zero
-    smul_mem' := hasSubst_mul }
+    add_mem' := HasSubst.add
+    zero_mem' := HasSubst.zero
+    smul_mem' := HasSubst.smul }
 
 /-- If `σ` is finite, then the nilpotent condition is enough for `HasSubst` -/
 theorem hasSubst_of_constantCoeff_nilpotent [Finite σ]
@@ -180,7 +186,8 @@ theorem substAlgHom_eq_aeval
   exact DiscreteUniformity.eq_bot.symm
 
 @[simp]
-theorem coe_substAlgHom (ha : HasSubst a) : ⇑(substAlgHom ha) = subst (R := R) a := by
+theorem coe_substAlgHom (ha : HasSubst a) :
+    ⇑(substAlgHom ha) = subst (R := R) a := by
   letI : UniformSpace R := ⊥
   letI : UniformSpace S := ⊥
   rw [substAlgHom_eq_aeval, coe_aeval ha.hasEval, subst_eq_eval₂]
@@ -259,7 +266,7 @@ theorem constantCoeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) :
 theorem map_algebraMap_eq_subst_X (f : MvPowerSeries σ R) :
     map σ (algebraMap R S) f = subst X f := by
   ext e
-  rw [coeff_map, coeff_subst hasSubst_X f e, finsum_eq_single _ e]
+  rw [coeff_map, coeff_subst HasSubst.X f e, finsum_eq_single _ e]
   · rw [← MvPowerSeries.monomial_one_eq, coeff_monomial_same,
       algebra_compatible_smul S, smul_eq_mul, mul_one]
   · intro d hd
@@ -373,7 +380,7 @@ theorem rescale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
 
 theorem hasSubst_rescale (a : σ → R) :
     HasSubst ((a • X) : σ → MvPowerSeries σ R) := by
-  convert hasSubst_mul (fun s ↦ algebraMap R (MvPowerSeries σ R) (a s)) hasSubst_X
+  convert HasSubst.X.mul_left (fun s ↦ algebraMap R (MvPowerSeries σ R) (a s))
   simp [funext_iff, algebra_compatible_smul (MvPowerSeries σ R)]
 
 /-- Rescale multivariate power series, as an `AlgHom` -/
