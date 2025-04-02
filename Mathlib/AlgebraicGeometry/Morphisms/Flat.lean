@@ -61,6 +61,12 @@ instance : MorphismProperty.IsMultiplicative @Flat where
 instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @Flat :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.Flat.isStableUnderBaseChange
 
+instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [Flat g] : Flat (pullback.fst f g) :=
+  MorphismProperty.pullback_fst _ _ inferInstance
+
+instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [Flat f] : Flat (pullback.snd f g) :=
+  MorphismProperty.pullback_snd _ _ inferInstance
+
 lemma of_stalkMap (H : ∀ x, (f.stalkMap x).hom.Flat) : Flat f :=
   HasRingHomProperty.of_stalkMap RingHom.Flat.ofLocalizationPrime H
 
