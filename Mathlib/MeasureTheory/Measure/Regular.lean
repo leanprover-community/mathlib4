@@ -3,8 +3,9 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Topology.MetricSpace.HausdorffDistance
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.MeasureTheory.Group.MeasurableEquiv
+import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
 # Regular measures
@@ -1035,6 +1036,13 @@ theorem restrict_of_measure_ne_top [R1Space α] [BorelSpace α] [Regular μ]
   exact MeasurableSet.exists_lt_isCompact_of_ne_top hV.measurableSet R hr
 
 end Regular
+
+instance {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [MeasurableSpace A]
+    -- We only need `MeasurableConstSMul G A` but we don't have this class. So we erroneously must
+    -- assume `MeasurableSpace G` + `MeasurableSMul G A`
+    [MeasurableSpace G] [MeasurableSMul G A] [TopologicalSpace A] [BorelSpace A]
+    [IsTopologicalAddGroup A] [LocallyCompactSpace A] [ContinuousConstSMul G A] {μ : Measure A}
+    (g : Gᵈᵐᵃ) [Regular μ] : Regular (g • μ) := .map <| .smul ((DomMulAct.mk.symm g : G)⁻¹)
 
 -- see Note [lower instance priority]
 /-- Any locally finite measure on a `σ`-compact pseudometrizable space is regular. -/
