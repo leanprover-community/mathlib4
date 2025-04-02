@@ -310,9 +310,7 @@ lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
     apply c
     simp_all only
   have yyy : span K (range  P.coroot') = ⊤ := by
-    exact l21 Pairwise
-
-
+    exact l21 P
     --search_proof
   have help (d : Module.Dual K M) : d v1 = 0 := by
     exact l25 P v1 xxx yyy d
