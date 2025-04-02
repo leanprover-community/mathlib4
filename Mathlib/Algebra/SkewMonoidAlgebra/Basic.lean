@@ -129,6 +129,9 @@ instance : Inhabited (SkewMonoidAlgebra k G) := ⟨0⟩
 instance [Nontrivial k] [Nonempty G] :
     Nontrivial (SkewMonoidAlgebra k G) := Function.Injective.nontrivial ofFinsupp_injective
 
+instance [Subsingleton k] : Unique (SkewMonoidAlgebra k G) :=
+  Function.Injective.unique toFinsupp_injective
+
 instance : AddCommMonoid (SkewMonoidAlgebra k G) where
   __ := toFinsupp_injective.addCommMonoid _ toFinsupp_zero toFinsupp_add
     (fun _ _ ↦ toFinsupp_smul _ _)
@@ -674,9 +677,6 @@ end Semiring
 /-! #### Derived instances -/
 
 section DerivedInstances
-
-instance instUnique [AddCommMonoid k] [Subsingleton k] : Unique (SkewMonoidAlgebra k G) :=
-  Function.Injective.unique toFinsupp_injective
 
 instance [AddCommGroup k] : AddCommGroup (SkewMonoidAlgebra k G) where
   __ := toFinsupp_injective.addCommGroup _ (toFinsupp_zero (k := k))
