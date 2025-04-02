@@ -75,7 +75,7 @@ lemma copy_eq {s t} (C : G.PartialColoring s) (hs : s = t) : ⇑(C.copy hs) = C 
 
 @[simp]
 lemma copy_isK {s t} {k : ℕ} {C : G.PartialColoring s} {hs : s = t} (h : C.IsPartialKColoring k) :
-   (C.copy hs).IsPartialKColoring k := by
+   (C.copy hs).IsPartialKColoring k := by 
    intro v; rw [copy_eq]; exact h v
 
 variable [DecidableEq α] {s t : Finset α} {b : ℕ} {i : α}
