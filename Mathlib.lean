@@ -4455,7 +4455,6 @@ import Mathlib.Order.Category.OmegaCompletePartialOrder
 import Mathlib.Order.Category.PartOrd
 import Mathlib.Order.Category.Preord
 import Mathlib.Order.Category.Semilat
-import Mathlib.Order.Chain
 import Mathlib.Order.Circular
 import Mathlib.Order.Closure
 import Mathlib.Order.Cofinal
@@ -4465,6 +4464,7 @@ import Mathlib.Order.Comparable
 import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice.Basic
+import Mathlib.Order.CompleteLattice.Chain
 import Mathlib.Order.CompleteLattice.Defs
 import Mathlib.Order.CompleteLattice.Finset
 import Mathlib.Order.CompleteLattice.Lemmas
@@ -4633,6 +4633,7 @@ import Mathlib.Order.Partition.Basic
 import Mathlib.Order.Partition.Equipartition
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Order.PiLex
+import Mathlib.Order.Preorder.Chain
 import Mathlib.Order.PrimeIdeal
 import Mathlib.Order.PrimeSeparator
 import Mathlib.Order.PropInstances
