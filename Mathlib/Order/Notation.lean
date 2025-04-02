@@ -76,7 +76,7 @@ macro_rules
 | `($a ⊔ $b) => `(Max.max $a $b)
 | `($a ⊓ $b) => `(Min.min $a $b)
 
-section Delab
+namespace Mathlib.Meta
 
 open Lean Meta PrettyPrinter Delaborator SubExpr Qq
 
@@ -86,10 +86,10 @@ Return `true` if `LinearOrder` is imported and `inst` comes from a `LinearOrder 
 We use a `try catch` block to make sure there are no surprising errors during delaboration.
 -/
 private def hasLinearOrder (u : Level) (α : Q(Type u)) (cls linearOrder : Q(Type u → Type u))
-    (toCls : Q((α : Type u) → $linearOrder α → $cls α))
-    (inst : Q($cls $α)) : MetaM Bool := do
+    (toCls : Q((α : Type u) → $linearOrder α → $cls α)) (inst : Q($cls $α)) :
+    MetaM Bool := do
   try
-    -- `isDefEq` may call type class syntesis to instantiate `mvar`, so we need the local instances
+    -- `isDefEq` may call type class search to instantiate `mvar`, so we need the local instances
     withLocalInstances (← getLCtx).decls.toList.reduceOption do
       let mvar ← mkFreshExprMVarQ q($linearOrder $α) (kind := .synthetic)
       let inst' : Q($cls $α) := q($toCls $α $mvar)
@@ -97,6 +97,7 @@ private def hasLinearOrder (u : Level) (α : Q(Type u)) (cls linearOrder : Q(Typ
   catch _ =>
     return false
 
+/-- Delaborate `max x y` into `x ⊔ y` if the type is not a linear order. -/
 @[delab app.Max.max]
 def elabSup : Delab := do
   let_expr f@Max.max α inst _ _ := ← getExpr | failure
@@ -109,6 +110,7 @@ def elabSup : Delab := do
   let y ← withNaryArg 3 delab
   `($x ⊔ $y)
 
+/-- Delaborate `min x y` into `x ⊓ y` if the type is not a linear order. -/
 @[delab app.Min.min]
 def elabInf : Delab := do
   let_expr f@Min.min α inst _ _ := ← getExpr | failure
@@ -121,7 +123,7 @@ def elabInf : Delab := do
   let y ← withNaryArg 3 delab
   `($x ⊓ $y)
 
-end Delab
+end Mathlib.Meta
 
 /-- Syntax typeclass for Heyting implication `⇨`. -/
 @[notation_class]
