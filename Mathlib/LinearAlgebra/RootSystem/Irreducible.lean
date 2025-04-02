@@ -247,37 +247,19 @@ lemma l21 {K : Type*} [Field K] [Module K M] [Module K M] [Module K N]
     PerfectPairing.toDualLeft_apply, Q]
   ext x : 1
   simp_all only [Submodule.mem_top, Q]
-  --have : Q.toDualLeft (span K (range Q.root)) = ⊤ := by
-  --  sorry
-  --rw [← Submodule.span_image Q.toDualLeft] at h2
-  --search_proof
-
-  --search_proof
-  --unfold RootSystem.flip
-  --search_proof
-  --have (i : ι) : (P.flip (P.coroot i)) = Q.root i := by
-  --  sorry
-  --  sorry
-  --simp at h2
-  --simp_all
-  --search_proof
-
-  --search_proof
 
 
-
-/-
 lemma l25 {K : Type*} [Field K] [Module K M] [Module K M] [Module K N]
     (P : RootSystem ι K M N) (v : M) (hx : ∀ (i : ι), v ∈ ker (P.coroot' i))
-      (hy : span K (P.coroot '' univ) = ⊤) (d : Module.Dual K M) : d v = 0 := by
-  have : d ∈ span K (range coroot) := by
-    sorry
-  refine Submodule.span_induction ?_ ?_ ?_ ?_ h
+      (hy : span K (range P.coroot') = ⊤) (d : Module.Dual K M) : d v = 0 := by
+  have : d ∈ span K (range P.coroot') := by
+    simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top]
+  refine Submodule.span_induction ?_ ?_ ?_ ?_ this
   · rintro y ⟨⟨z, hz⟩, ⟨⟨w, hw⟩, rfl⟩⟩; apply lieCharacter_apply_lie
   · exact χ.map_zero
   · intro y z _ _ hy hz; rw [LieHom.map_add, hy, hz, add_zero]
   · intro t y _ hy; rw [LieHom.map_smul, hy, smul_zero]
--/
+
 
 
 lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
@@ -327,13 +309,13 @@ lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
       LinearMap.mem_ker, PerfectPairing.flip_apply_apply]
     apply c
     simp_all only
-  have yyy : span K (P.coroot' '' univ) = ⊤ := by
-    simp
+  have yyy : span K (range  P.coroot') = ⊤ := by
+    exact l21 Pairwise
 
 
     --search_proof
   have help (d : Module.Dual K M) : d v1 = 0 := by
-    sorry --exact l25 P v1 xxx yyy d
+    exact l25 P v1 xxx yyy d
   have : q.dualAnnihilator ≠ ⊤ := by
     subst hn
     simp_all only [ne_eq, mem_empty_iff_false, not_false_eq_true, implies_true, LinearMap.mem_ker, image_univ,
