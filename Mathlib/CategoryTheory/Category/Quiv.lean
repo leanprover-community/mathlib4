@@ -192,15 +192,19 @@ def lift {V : Type u} [Quiver.{v + 1} V] {C : Type u₁} [Category.{v₁} C]
   obj X := F.obj X
   map f := composePath (F.mapPath f)
 
+/-- Naturality of `pathComposition`. -/
+def pathCompositionNaturality {C : Type u} {D : Type u₁}
+    [Category.{v} C] [Category.{v₁} D]
+    (F : C ⥤ D) :
+    Cat.freeMap (F.toPrefunctor) ⋙ pathComposition D ≅ pathComposition C ⋙ F :=
+  Paths.liftNatIso (fun _ ↦ Iso.refl _) (by simp)
+
 /-- Naturality of `pathComposition`, which defines a natural transformation
 `Quiv.forget ⋙ Cat.free ⟶ 𝟭 _`. -/
 theorem pathComposition_naturality {C : Type u} {D : Type u₁}
-    [Category.{max u v} C] [Category.{max u₁ v₁} D]
-    (F : C ⥤ D) : Cat.freeMap (F.toPrefunctor) ⋙ pathComposition D = pathComposition C ⋙ F := by
-  refine Paths.ext_functor rfl ?_
-  intro _ _ _
-  dsimp
-  rw [Category.comp_id, Category.id_comp, composePath_toPath, composePath_toPath]
+    [Category.{v} C] [Category.{v₁} D]
+    (F : C ⥤ D) : Cat.freeMap (F.toPrefunctor) ⋙ pathComposition D = pathComposition C ⋙ F :=
+  Paths.ext_functor rfl (by simp)
 
 /-- The left triangle identity of `Cat.free ⊣ Quiv.forget` as a natural isomorphism -/
 def freeMapPathsOfCompPathCompositionIso (V : Type u) [Quiver.{v + 1} V] :
