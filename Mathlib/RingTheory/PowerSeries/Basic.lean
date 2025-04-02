@@ -853,6 +853,7 @@ theorem coe_eq_one_iff : (φ : PowerSeries R) = 1 ↔ φ = 1 := by rw [← coe_o
 as a ring homomorphism.
 -/
 def coeToPowerSeries.ringHom : R[X] →+* PowerSeries R where
+  -- TODO drop Coe.coe
   toFun := (Coe.coe : R[X] → PowerSeries R)
   map_zero' := coe_zero
   map_one' := coe_one
