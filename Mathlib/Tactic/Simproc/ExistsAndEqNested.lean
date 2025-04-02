@@ -393,7 +393,7 @@ for `a`. If so, replaces `a` with `a'` and removes quantifier.
 
 It looks through nested quantifiers and conjuctions searching for a `a = a'`
 or `a' = a` subexpression. -/
-simproc existsAndEqNested (Exists _) := fun e => do
+simproc ↓ existsAndEqNested (Exists _) := fun e => do
   let_expr f@Exists α p := e | return .continue
   lambdaBoundedTelescope p 1 fun xs (body : Q(Prop)) => withNewMCtxDepth do
     let some u := f.constLevels![0]? | fail

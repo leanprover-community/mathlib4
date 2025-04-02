@@ -54,7 +54,8 @@ error: simp made no progress
 example {α : Type} : ∃ a : α, ∃ (b : α → α), b a = a := by
   simp only [existsAndEqNested]
 
--- TODO: Currently lemmas like `Subtype.exists` and `Prod.exists` prevent `existsAndEq` from working
+-- lemmas like `Subtype.exists` and `Prod.exists` prevent `existsAndEqNested`
+-- from working as a post simproc, so it is a pre simproc.
 /--
 error: unsolved goals
 α : Type u
@@ -67,4 +68,8 @@ a : X × Y
 #guard_msgs in
 example {X Y : Type} (P Q : X × Y → Prop) (a : X × Y) :
     (∃ b : (X × Y), (P b ∧ b = a) ∧ Q b) ↔ P a ∧ Q a := by
-  simp
+  simp [↑existsAndEqNested]
+
+example {X Y : Type} (P Q : X × Y → Prop) (a : X × Y) :
+    (∃ b : (X × Y), (P b ∧ b = a) ∧ Q b) ↔ P a ∧ Q a := by
+  simp [existsAndEqNested]
