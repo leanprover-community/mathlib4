@@ -108,13 +108,13 @@ instance mono (f : MonoOver X) : Mono f.arrow :=
 
 /-- The category of monomorphisms over X is a thin category,
 which makes defining its skeleton easy. -/
-instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
+instance isThin {X : C} : Quiver.IsThin (MonoOver X) := ⟨fun f g =>
   ⟨by
     intro h₁ h₂
     apply Over.OverMorphism.ext
     rw [← cancel_mono g.arrow]
     erw [Over.w h₁]
-    erw [Over.w h₂]⟩
+    erw [Over.w h₂]⟩⟩
 
 @[reassoc]
 theorem w {f g : MonoOver X} (k : f ⟶ g) : k.left ≫ g.arrow = f.arrow :=

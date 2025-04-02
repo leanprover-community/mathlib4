@@ -84,13 +84,13 @@ def evalCasesBash : TacticM Unit := do
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash
 
-instance subsingleton_hom : Quiver.IsThin (WidePullbackShape J) := fun _ _ => by
+instance subsingleton_hom : Quiver.IsThin (WidePullbackShape J) := ⟨fun _ _ => by
   constructor
   intro a b
   casesm* WidePullbackShape _, (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _)
   · rfl
   · rfl
-  · rfl
+  · rfl⟩
 
 instance category : SmallCategory (WidePullbackShape J) :=
   thin_category
@@ -184,11 +184,11 @@ def evalCasesBash' : TacticM Unit := do
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash'
 
-instance subsingleton_hom : Quiver.IsThin (WidePushoutShape J) := fun _ _ => by
+instance subsingleton_hom : Quiver.IsThin (WidePushoutShape J) := ⟨fun _ _ => by
   constructor
   intro a b
   casesm* WidePushoutShape _, (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _)
-  repeat rfl
+  repeat rfl⟩
 
 instance category : SmallCategory (WidePushoutShape J) :=
   thin_category
