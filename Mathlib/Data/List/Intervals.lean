@@ -32,7 +32,7 @@ namespace List
 See also `Mathlib/Order/Interval/Basic.lean` for modelling intervals in general preorders, as well
 as sibling definitions alongside it such as `Set.Ico`, `Multiset.Ico` and `Finset.Ico`
 for sets, multisets and finite sets respectively.
- -/
+-/
 def Ico (n m : ℕ) : List ℕ :=
   range' n (m - n)
 
@@ -81,7 +81,7 @@ theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
   dsimp only [Ico]
   convert range'_append n (m-n) (l-m) 1 using 2
   · rw [Nat.one_mul, Nat.add_sub_cancel' hnm]
-  · rw [Nat.sub_add_sub_cancel hml hnm]
+  · omega
 
 @[simp]
 theorem inter_consecutive (n m l : ℕ) : Ico n m ∩ Ico m l = [] := by

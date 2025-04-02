@@ -189,7 +189,6 @@ def consEquiv (α : Fin (n + 1) → Type*) : α 0 × (∀ i, α (succ i)) ≃ �
   right_inv f := by simp
 
 
--- Porting note: Mathport removes `_root_`?
 /-- Recurse on an `n+1`-tuple by splitting it into a single element and an `n`-tuple. -/
 @[elab_as_elim]
 def consCases {P : (∀ i : Fin n.succ, α i) → Sort v} (h : ∀ x₀ x, P (Fin.cons x₀ x))
@@ -418,11 +417,9 @@ section Repeat
 variable {α : Sort*}
 
 /-- Repeat `a` `m` times. For example `Fin.repeat 2 ![0, 3, 7] = ![0, 3, 7, 0, 3, 7]`. -/
--- Porting note: removed @[simp]
 def «repeat» (m : ℕ) (a : Fin n → α) : Fin (m * n) → α
   | i => a i.modNat
 
--- Porting note: added (https://github.com/leanprover/lean4/issues/2042)
 @[simp]
 theorem repeat_apply (a : Fin n → α) (i : Fin (m * n)) :
     Fin.repeat m a i = a i.modNat :=
@@ -539,11 +536,10 @@ theorem snoc_cast_add {α : Fin (n + m + 1) → Sort*} (f : ∀ i : Fin (n + m),
     (a : α (last (n + m))) (i : Fin n) : (snoc f a) (castAdd (m + 1) i) = f (castAdd m i) :=
   dif_pos _
 
--- Porting note: Had to `unfold comp`
 @[simp]
 theorem snoc_comp_cast_add {n m : ℕ} {α : Sort*} (f : Fin (n + m) → α) (a : α) :
     (snoc f a : Fin _ → α) ∘ castAdd (m + 1) = f ∘ castAdd m :=
-  funext (by unfold comp; exact snoc_cast_add _ _)
+  funext (snoc_cast_add _ _)
 
 /-- Updating a tuple and adding an element at the end commute. -/
 @[simp]
@@ -639,9 +635,7 @@ theorem cons_snoc_eq_snoc_cons {β : Sort*} (a : β) (q : Fin n → β) (b : β)
     @cons n.succ (fun _ ↦ β) a (snoc q b) = snoc (cons a q) b := by
   ext i
   by_cases h : i = 0
-  · rw [h]
-    -- Porting note: `refl` finished it here in Lean 3, but I had to add more.
-    simp [snoc, castLT]
+  · simp [h, snoc, castLT]
   set j := pred i h with ji
   have : i = j.succ := by rw [ji, succ_pred]
   rw [this, cons_succ]
@@ -694,7 +688,7 @@ theorem append_cons {α : Sort*} (a : α) (as : Fin n → α) (bs : Fin m → α
   funext i
   rcases i with ⟨i, -⟩
   simp only [append, addCases, cons, castLT, cast, comp_apply]
-  cases' i with i
+  rcases i with - | i
   · simp
   · split_ifs with h
     · have : i < n := Nat.lt_of_succ_lt_succ h
@@ -852,12 +846,10 @@ theorem succAbove_cases_eq_insertNth : @succAboveCases = @insertNth :=
 @[simp] lemma removeNth_last {α : Type*} (f : Fin (n + 1) → α) : removeNth (last n) f = init f := by
   ext; simp [init, removeNth]
 
-/- Porting note: Had to `unfold comp`. Sometimes, when I use a placeholder, if I try to insert
-what Lean says it synthesized, it gives me a type error anyway. In this case, it's `x` and `p`. -/
 @[simp]
 theorem insertNth_comp_succAbove (i : Fin (n + 1)) (x : β) (p : Fin n → β) :
     insertNth i x p ∘ i.succAbove = p :=
-  funext (by unfold comp; exact insertNth_apply_succAbove i _ _)
+  funext (insertNth_apply_succAbove i _ _)
 
 theorem insertNth_eq_iff {p : Fin (n + 1)} {a : α p} {f : ∀ i, α (p.succAbove i)} {g : ∀ j, α j} :
     insertNth p a f = g ↔ a = g p ∧ f = removeNth p g := by
@@ -1013,13 +1005,6 @@ not a definitional equality. -/
 @[simp] lemma insertNthEquiv_last (n : ℕ) (α : Type*) :
     insertNthEquiv (fun _ ↦ α) (last n) = snocEquiv (fun _ ↦ α) := by ext; simp
 
-/-- Separates an `n+1`-tuple, returning a selected index and then the rest of the tuple.
-Functional form of `Equiv.piFinSuccAbove`. -/
-@[deprecated removeNth (since := "2024-06-19")]
-def extractNth {α : Fin (n + 1) → Type*} (i : Fin (n + 1)) (f : (∀ j, α j)) :
-    α i × ∀ j, α (i.succAbove j) :=
-  (f i, removeNth i f)
-
 end InsertNth
 
 section Find
@@ -1040,7 +1025,7 @@ theorem find_spec :
   | 0, _, _, _, hi => Option.noConfusion hi
   | n + 1, p, I, i, hi => by
     rw [find] at hi
-    cases' h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with j
+    rcases h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with - | j
     · rw [h] at hi
       dsimp at hi
       split_ifs at hi with hl
@@ -1059,10 +1044,10 @@ theorem isSome_find_iff :
   | n + 1, p, _ =>
     ⟨fun h ↦ by
       rw [Option.isSome_iff_exists] at h
-      cases' h with i hi
+      obtain ⟨i, hi⟩ := h
       exact ⟨i, find_spec _ hi⟩, fun ⟨⟨i, hin⟩, hi⟩ ↦ by
       dsimp [find]
-      cases' h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with j
+      rcases h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with - | j
       · split_ifs with hl
         · exact Option.isSome_some
         · have := (@isSome_find_iff n (fun x ↦ p (x.castLT (Nat.lt_succ_of_lt x.2))) _).2
@@ -1083,7 +1068,7 @@ theorem find_min :
   | 0, _, _, _, hi, _, _, _ => Option.noConfusion hi
   | n + 1, p, _, i, hi, ⟨j, hjn⟩, hj, hpj => by
     rw [find] at hi
-    cases' h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with k
+    rcases h : find fun i : Fin n ↦ p (i.castLT (Nat.lt_succ_of_lt i.2)) with - | k
     · simp only [h] at hi
       split_ifs at hi with hl
       · cases hi
@@ -1102,7 +1087,7 @@ theorem nat_find_mem_find {p : Fin n → Prop} [DecidablePred p]
     (h : ∃ i, ∃ hin : i < n, p ⟨i, hin⟩) :
     (⟨Nat.find h, (Nat.find_spec h).fst⟩ : Fin n) ∈ find p := by
   let ⟨i, hin, hi⟩ := h
-  cases' hf : find p with f
+  rcases hf : find p with - | f
   · rw [find_eq_none_iff] at hf
     exact (hf ⟨i, hin⟩ hi).elim
   · refine Option.some_inj.2 (Fin.le_antisymm ?_ ?_)
@@ -1159,6 +1144,15 @@ theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : F
   · rwa [j.succAbove_of_le_castSucc, contractNth_apply_of_gt]
     · exact Fin.le_iff_val_le_val.2 (le_of_lt h)
 
+lemma comp_contractNth {β : Sort*} (opα : α → α → α) (opβ : β → β → β) {f : α → β}
+    (hf : ∀ x y, f (opα x y) = opβ (f x) (f y)) (j : Fin (n + 1)) (g : Fin (n + 1) → α) :
+    f ∘ contractNth j opα g = contractNth j opβ (f ∘ g) := by
+  ext x
+  rcases lt_trichotomy (x : ℕ) j with (h|h|h)
+  · simp only [Function.comp_apply, contractNth_apply_of_lt, h]
+  · simp only [Function.comp_apply, contractNth_apply_of_eq, h, hf]
+  · simp only [Function.comp_apply, contractNth_apply_of_gt, h]
+
 end ContractNth
 
 /-- To show two sigma pairs of tuples agree, it to show the second elements are related via
@@ -1180,7 +1174,7 @@ end Fin
 
 /-- `Π i : Fin 2, α i` is equivalent to `α 0 × α 1`. See also `finTwoArrowEquiv` for a
 non-dependent version and `prodEquivPiFinTwo` for a version with inputs `α β : Type u`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1 where
   toFun f := (f 0, f 1)
   invFun p := Fin.cons p.1 <| Fin.cons p.2 finZeroElim

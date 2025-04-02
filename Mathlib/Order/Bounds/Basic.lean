@@ -594,13 +594,13 @@ section
 variable [SemilatticeInf γ] [DenselyOrdered γ]
 
 theorem isLUB_Ioo {a b : γ} (hab : a < b) : IsLUB (Ioo a b) b := by
-  simpa only [dual_Ioo] using isGLB_Ioo hab.dual
+  simpa only [Ioo_toDual] using isGLB_Ioo hab.dual
 
 theorem upperBounds_Ioo {a b : γ} (hab : a < b) : upperBounds (Ioo a b) = Ici b :=
   (isLUB_Ioo hab).upperBounds_eq
 
 theorem isLUB_Ico {a b : γ} (hab : a < b) : IsLUB (Ico a b) b := by
-  simpa only [dual_Ioc] using isGLB_Ioc hab.dual
+  simpa only [Ioc_toDual] using isGLB_Ioc hab.dual
 
 theorem upperBounds_Ico {a b : γ} (hab : a < b) : upperBounds (Ico a b) = Ici b :=
   (isLUB_Ico hab).upperBounds_eq
@@ -911,3 +911,19 @@ theorem IsGLB.exists_between' (h : IsGLB s a) (h' : a ∉ s) (hb : a < b) : ∃ 
   ⟨c, hcs, hac.lt_of_ne fun hac => h' <| hac.symm ▸ hcs, hcb⟩
 
 end LinearOrder
+
+theorem isGreatest_himp [GeneralizedHeytingAlgebra α] (a b : α) :
+    IsGreatest {w | w ⊓ a ≤ b} (a ⇨ b) := by
+  simp [IsGreatest, mem_upperBounds]
+
+theorem isLeast_sdiff [GeneralizedCoheytingAlgebra α] (a b : α) :
+    IsLeast {w | a ≤ b ⊔ w} (a \ b) := by
+  simp [IsLeast, mem_lowerBounds]
+
+theorem isGreatest_compl [HeytingAlgebra α] (a : α) :
+    IsGreatest {w | Disjoint w a} (aᶜ) := by
+  simpa only [himp_bot, disjoint_iff_inf_le] using isGreatest_himp a ⊥
+
+theorem isLeast_hnot [CoheytingAlgebra α] (a : α) :
+    IsLeast {w | Codisjoint a w} (￢a) := by
+  simpa only [CoheytingAlgebra.top_sdiff, codisjoint_iff_le_sup] using isLeast_sdiff ⊤ a

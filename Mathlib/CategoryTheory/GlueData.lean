@@ -44,15 +44,22 @@ such that
 10. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 -/
 structure GlueData where
+  /-- The index type `J` of a gluing datum -/
   J : Type v
+  /-- For each `i : J`, an object `U i` -/
   U : J → C
+  /-- For each `i j : J`, an object `V i j` -/
   V : J × J → C
+  /-- For each `i j : J`, a monomorphism `f i j : V i j ⟶ U i` -/
   f : ∀ i j, V (i, j) ⟶ U i
   f_mono : ∀ i j, Mono (f i j) := by infer_instance
   f_hasPullback : ∀ i j k, HasPullback (f i j) (f i k) := by infer_instance
   f_id : ∀ i, IsIso (f i i) := by infer_instance
+  /-- For each `i j : J`, a transition map `t i j : V i j ⟶ V j i` -/
   t : ∀ i j, V (i, j) ⟶ V (j, i)
   t_id : ∀ i, t i i = 𝟙 _
+  /-- The morphism via which `V i j ×[U i] V i k ⟶ V i j ⟶ V j i` factors through
+  `V j k ×[U j] V j i ⟶ V j i` -/
   t' : ∀ i j k, pullback (f i j) (f i k) ⟶ pullback (f j k) (f j i)
   t_fac : ∀ i j k, t' i j k ≫ pullback.snd _ _ = pullback.fst _ _ ≫ t i j
   cocycle : ∀ i j k, t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _
@@ -122,31 +129,11 @@ def sigmaOpens [HasCoproduct D.U] : C :=
   ∐ D.U
 
 /-- (Implementation) The diagram to take colimit of. -/
-def diagram : MultispanIndex C where
-  L := D.J × D.J
-  R := D.J
-  fstFrom := _root_.Prod.fst
-  sndFrom := _root_.Prod.snd
+def diagram : MultispanIndex (.prod D.J) C where
   left := D.V
   right := D.U
   fst := fun ⟨i, j⟩ => D.f i j
   snd := fun ⟨i, j⟩ => D.t i j ≫ D.f j i
-
-@[simp]
-theorem diagram_l : D.diagram.L = (D.J × D.J) :=
-  rfl
-
-@[simp]
-theorem diagram_r : D.diagram.R = D.J :=
-  rfl
-
-@[simp]
-theorem diagram_fstFrom (i j : D.J) : D.diagram.fstFrom ⟨i, j⟩ = i :=
-  rfl
-
-@[simp]
-theorem diagram_sndFrom (i j : D.J) : D.diagram.sndFrom ⟨i, j⟩ = j :=
-  rfl
 
 @[simp]
 theorem diagram_fst (i j : D.J) : D.diagram.fst ⟨i, j⟩ = D.f i j :=
@@ -304,7 +291,7 @@ attribute [local instance] hasColimit_multispan_comp
 variable [∀ i j k, PreservesLimit (cospan (D.f i j) (D.f i k)) F]
 
 theorem hasColimit_mapGlueData_diagram : HasMulticoequalizer (D.mapGlueData F).diagram :=
-  hasColimitOfIso (D.diagramIso F).symm
+  hasColimit_of_iso (D.diagramIso F).symm
 
 attribute [local instance] hasColimit_mapGlueData_diagram
 

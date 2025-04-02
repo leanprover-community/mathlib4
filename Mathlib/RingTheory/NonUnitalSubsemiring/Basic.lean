@@ -12,6 +12,7 @@ import Mathlib.Algebra.Ring.Center
 import Mathlib.Algebra.Ring.Centralizer
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.Prod
+import Mathlib.Algebra.Ring.Submonoid
 import Mathlib.Data.Set.Finite.Range
 import Mathlib.GroupTheory.Submonoid.Center
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
@@ -478,8 +479,7 @@ theorem closure_induction₂ {s : Set R} {p : (x y : R) → x ∈ closure s → 
   | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
   | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
 
-variable (R)
-
+variable (R) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 protected def gi : GaloisInsertion (@closure R _) (↑) where
   choice s _ := closure s
@@ -487,7 +487,6 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
   le_l_u _ := subset_closure
   choice_eq _ _ := rfl
 
-variable {R}
 variable [NonUnitalNonAssocSemiring S]
 variable {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 
@@ -712,7 +711,7 @@ namespace RingEquiv
 open NonUnitalRingHom NonUnitalSubsemiringClass
 
 variable {s t : NonUnitalSubsemiring R}
-variable [NonUnitalNonAssocSemiring S]  {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
+variable [NonUnitalNonAssocSemiring S] {F : Type*} [FunLike F R S] [NonUnitalRingHomClass F R S]
 
 /-- Makes the identity isomorphism from a proof two non-unital subsemirings of a multiplicative
 monoid are equal. -/

@@ -3,9 +3,9 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
-import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 
 /-!
 # Integral closure of a subring.
@@ -195,7 +195,7 @@ nonrec theorem IsIntegral.mul {x y : A} (hx : IsIntegral R x) (hy : IsIntegral R
   hx.mul (algebraMap R A) hy
 
 theorem IsIntegral.smul {R} [CommSemiring R] [Algebra R B] [Algebra S B] [Algebra R S]
-    [IsScalarTower R S B] {x : B} (r : R)(hx : IsIntegral S x) : IsIntegral S (r • x) :=
+    [IsScalarTower R S B] {x : B} (r : R) (hx : IsIntegral S x) : IsIntegral S (r • x) :=
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ <| by
     rw [← algebraMap_smul S]; apply Subalgebra.smul_mem; exact Algebra.subset_adjoin rfl
 
@@ -210,8 +210,15 @@ def integralClosure : Subalgebra R A where
   mul_mem' := IsIntegral.mul
   algebraMap_mem' _ := isIntegral_algebraMap
 
-end
-
-theorem mem_integralClosure_iff (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] {a : A} :
-    a ∈ integralClosure R A ↔ IsIntegral R a :=
+theorem mem_integralClosure_iff {a : A} : a ∈ integralClosure R A ↔ IsIntegral R a :=
   Iff.rfl
+
+variable {R} {A B : Type*} [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+
+/-- Product of two integral algebras is an integral algebra. -/
+instance Algebra.IsIntegral.prod [Algebra.IsIntegral R A] [Algebra.IsIntegral R B] :
+    Algebra.IsIntegral R (A × B) :=
+  Algebra.isIntegral_def.mpr fun x ↦
+    (Algebra.isIntegral_def.mp ‹_› x.1).pair (Algebra.isIntegral_def.mp ‹_› x.2)
+
+end

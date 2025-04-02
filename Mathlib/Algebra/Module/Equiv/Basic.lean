@@ -321,8 +321,7 @@ The `R`-linear equivalence between additive morphisms `A →+ B` and `ℕ`-linea
 -/
 @[simps]
 def addMonoidHomLequivNat {A B : Type*} (R : Type*) [Semiring R] [AddCommMonoid A]
-    [AddCommMonoid B] [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℕ] B
-    where
+    [AddCommMonoid B] [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℕ] B where
   toFun := AddMonoidHom.toNatLinearMap
   invFun := LinearMap.toAddMonoidHom
   map_add' _ _ := rfl
@@ -335,8 +334,7 @@ The `R`-linear equivalence between additive morphisms `A →+ B` and `ℤ`-linea
 -/
 @[simps]
 def addMonoidHomLequivInt {A B : Type*} (R : Type*) [Semiring R] [AddCommGroup A] [AddCommGroup B]
-    [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℤ] B
-    where
+    [Module R B] : (A →+ B) ≃ₗ[R] A →ₗ[ℤ] B where
   toFun := AddMonoidHom.toIntLinearMap
   invFun := LinearMap.toAddMonoidHom
   map_add' _ _ := rfl
@@ -606,6 +604,9 @@ theorem conj_id (e : M ≃ₗ[R] M₂) : e.conj LinearMap.id = LinearMap.id := b
   ext
   simp [conj_apply]
 
+@[simp]
+theorem conj_refl (f : Module.End R M) : (refl R M).conj f = f := rfl
+
 variable (M) in
 /-- An `R`-linear isomorphism between two `R`-modules `M₂` and `M₃` induces an `S`-linear
 isomorphism between `M₂ →ₗ[R] M` and `M₃ →ₗ[R] M`, if `M` is both an `R`-module and an
@@ -670,23 +671,12 @@ theorem funLeft_comp (f₁ : n → p) (f₂ : m → n) :
   rfl
 
 theorem funLeft_surjective_of_injective (f : m → n) (hf : Injective f) :
-    Surjective (funLeft R M f) := by
-  classical
-    intro g
-    refine ⟨fun x ↦ if h : ∃ y, f y = x then g h.choose else 0, ?_⟩
-    ext
-    dsimp only [funLeft_apply]
-    split_ifs with w
-    · congr
-      exact hf w.choose_spec
-    · simp only [not_true, exists_apply_eq_apply] at w
+    Surjective (funLeft R M f) :=
+  hf.surjective_comp_right
 
 theorem funLeft_injective_of_surjective (f : m → n) (hf : Surjective f) :
-    Injective (funLeft R M f) := by
-  obtain ⟨g, hg⟩ := hf.hasRightInverse
-  suffices LeftInverse (funLeft R M g) (funLeft R M f) by exact this.injective
-  intro x
-  rw [← LinearMap.comp_apply, ← funLeft_comp, hg.id, funLeft_id]
+    Injective (funLeft R M f) :=
+  hf.injective_comp_right
 
 end LinearMap
 
@@ -734,6 +724,7 @@ namespace LinearEquiv
 
 This is `Equiv.sumPiEquivProdPi` as a `LinearEquiv`.
 -/
+@[simps -fullyApplied +simpRhs]
 def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*) (A : S ⊕ T → Type*)
     [∀ st, AddCommMonoid (A st)] [∀ st, Module R (A st)] :
     (Π (st : S ⊕ T), A st) ≃ₗ[R] (Π (s : S), A (.inl s)) × (Π (t : T), A (.inr t)) where
@@ -746,7 +737,7 @@ def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*) (A : S ⊕ T → Typ
 
 This is `Equiv.piUnique` as a `LinearEquiv`.
 -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def piUnique {α : Type*} [Unique α] (R : Type*) [Semiring R] (f : α → Type*)
     [∀ x, AddCommMonoid (f x)] [∀ x, Module R (f x)] : (Π t : α, f t) ≃ₗ[R] f default where
   __ := Equiv.piUnique _

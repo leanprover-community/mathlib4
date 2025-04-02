@@ -110,7 +110,6 @@ instance (i j : 𝖣.J) :
         i j) := by
   apply GlueData.f_open
 
--- Porting note: this was not needed.
 instance (i : 𝖣.J) :
     LocallyRingedSpace.IsOpenImmersion ((D.toLocallyRingedSpaceGlueData).toGlueData.ι i) := by
   apply LocallyRingedSpace.GlueData.ι_isOpenImmersion
@@ -125,7 +124,8 @@ def gluedScheme : Scheme := by
   refine ⟨_, ((D.U i).affineCover.map y).toLRSHom ≫
     D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   constructor
-  · erw [TopCat.coe_comp, Set.range_comp] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
+  · simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_base, TopCat.hom_comp,
+      ContinuousMap.coe_comp, Set.range_comp]
     refine Set.mem_image_of_mem _ ?_
     exact (D.U i).affineCover.covers y
   · infer_instance
@@ -166,7 +166,7 @@ theorem ι_jointly_surjective (x : 𝖣.glued.carrier) :
     ∃ (i : D.J) (y : (D.U i).carrier), (D.ι i).base y = x :=
   𝖣.ι_jointly_surjective (forgetToTop ⋙ forget TopCat) x
 
--- Porting note: promote to higher priority to short circuit simplifier
+/-- Promoted to higher priority to short circuit simplifier. -/
 @[simp (high), reassoc]
 theorem glue_condition (i j : D.J) : D.t i j ≫ D.f j i ≫ D.ι j = D.f i j ≫ D.ι i :=
   𝖣.glue_condition i j
@@ -177,17 +177,17 @@ def vPullbackCone (i j : D.J) : PullbackCone (D.ι i) (D.ι j) :=
   PullbackCone.mk (D.f i j) (D.t i j ≫ D.f j i) (by simp)
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.
-
+```
 Vᵢⱼ ⟶ Uᵢ
  |      |
  ↓      ↓
  Uⱼ ⟶ X
+```
 -/
 def vPullbackConeIsLimit (i j : D.J) : IsLimit (D.vPullbackCone i j) :=
   𝖣.vPullbackConeIsLimitOfMap forgetToLocallyRingedSpace i j
     (D.toLocallyRingedSpaceGlueData.vPullbackConeIsLimit _ _)
 
--- Porting note: new notation
 local notation "D_" => TopCat.GlueData.toGlueData <|
   D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
 
@@ -215,11 +215,10 @@ theorem ι_isoCarrier_inv (i : D.J) :
   change (_ ≫ D.isoLocallyRingedSpace.inv).base = _
   rw [D.ι_isoLocallyRingedSpace_inv i]
 
-/-- An equivalence relation on `Σ i, D.U i` that holds iff `𝖣 .ι i x = 𝖣 .ι j y`.
+/-- An equivalence relation on `Σ i, D.U i` that holds iff `𝖣.ι i x = 𝖣.ι j y`.
 See `AlgebraicGeometry.Scheme.GlueData.ι_eq_iff`. -/
 def Rel (a b : Σ i, ((D.U i).carrier : Type _)) : Prop :=
-  a = b ∨
-    ∃ x : (D.V (a.1, b.1)).carrier, (D.f _ _).base x = a.2 ∧ (D.t _ _ ≫ D.f _ _).base x = b.2
+  ∃ x : (D.V (a.1, b.1)).carrier, (D.f _ _).base x = a.2 ∧ (D.t _ _ ≫ D.f _ _).base x = b.2
 
 theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
     (𝖣.ι i).base x = (𝖣.ι j).base y ↔ D.Rel ⟨i, x⟩ ⟨j, y⟩ := by
@@ -227,7 +226,7 @@ theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
     (TopCat.GlueData.ι_eq_iff_rel
       D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
       i j x y)
-  rw [← ((TopCat.mono_iff_injective D.isoCarrier.inv).mp _).eq_iff, ← CategoryTheory.comp_apply]
+  rw [← ((TopCat.mono_iff_injective D.isoCarrier.inv).mp _).eq_iff, ← ConcreteCategory.comp_apply]
   · simp_rw [← D.ι_isoCarrier_inv]
     rfl -- `rfl` was not needed before https://github.com/leanprover-community/mathlib4/pull/13170
   · infer_instance
@@ -240,7 +239,7 @@ theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι
   rfl
 
 /-- The open cover of the glued space given by the glue data. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def openCover (D : Scheme.GlueData) : OpenCover D.glued where
   J := D.J
   obj := D.U
@@ -339,18 +338,19 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.base := by
   intro x y h
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
   obtain ⟨j, y, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective y
-  rw [← CategoryTheory.comp_apply, ← CategoryTheory.comp_apply] at h
+  rw [← ConcreteCategory.comp_apply, ← ConcreteCategory.comp_apply] at h
   simp_rw [← Scheme.comp_base] at h
   rw [ι_fromGlued, ι_fromGlued] at h
   let e :=
     (TopCat.pullbackConeIsLimit _ _).conePointUniqueUpToIso
       (isLimitOfHasPullbackOfPreservesLimit Scheme.forgetToTop (𝒰.map i) (𝒰.map j))
   rw [𝒰.gluedCover.ι_eq_iff]
-  right
   use e.hom ⟨⟨x, y⟩, h⟩
   constructor
-  · erw [← comp_apply e.hom, IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left]; rfl
-  · erw [← comp_apply e.hom, pullbackSymmetry_hom_comp_fst,
+  · erw [← ConcreteCategory.comp_apply e.hom,
+      IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left]
+    rfl
+  · erw [← ConcreteCategory.comp_apply e.hom, pullbackSymmetry_hom_comp_fst,
       IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right]
     rfl
 
@@ -373,7 +373,8 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.base := by
   · rw [← Set.image_preimage_eq_inter_range]
     apply (show IsOpenImmersion (𝒰.map (𝒰.f x)) from inferInstance).base_open.isOpenMap
     convert hU (𝒰.f x) using 1
-    rw [← ι_fromGlued]; erw [coe_comp]; rw [Set.preimage_comp]
+    simp only [← ι_fromGlued, gluedCover_U, comp_coeBase, TopCat.hom_comp, ContinuousMap.coe_comp,
+      Set.preimage_comp]
     congr! 1
     exact Set.preimage_image_eq _ 𝒰.fromGlued_injective
   · exact ⟨hx, 𝒰.covers x⟩
@@ -389,7 +390,7 @@ instance : Epi 𝒰.fromGlued.base := by
   intro x
   obtain ⟨y, h⟩ := 𝒰.covers x
   use (𝒰.gluedCover.ι (𝒰.f x)).base y
-  rw [← CategoryTheory.comp_apply]
+  rw [← ConcreteCategory.comp_apply]
   rw [← 𝒰.ι_fromGlued (𝒰.f x)] at h
   exact h
 
@@ -419,22 +420,21 @@ def glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
   · exact f
   rintro ⟨i, j⟩
   change pullback.fst _ _ ≫ f i = (_ ≫ _) ≫ f j
-  erw [pullbackSymmetry_hom_comp_fst]
+  simp [pullbackSymmetry_hom_comp_fst]
   exact hf i j
 
 @[simp, reassoc]
 theorem ι_glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
     (hf : ∀ x y, pullback.fst (𝒰.map x) (𝒰.map y) ≫ f x = pullback.snd _ _ ≫ f y)
     (x : 𝒰.J) : 𝒰.map x ≫ 𝒰.glueMorphisms f hf = f x := by
-  rw [← ι_fromGlued, Category.assoc]
-  erw [IsIso.hom_inv_id_assoc, Multicoequalizer.π_desc]
+  rw [← ι_fromGlued, Category.assoc, glueMorphisms, IsIso.hom_inv_id_assoc]
+  erw [Multicoequalizer.π_desc]
 
 theorem hom_ext {Y : Scheme} (f₁ f₂ : X ⟶ Y) (h : ∀ x, 𝒰.map x ≫ f₁ = 𝒰.map x ≫ f₂) : f₁ = f₂ := by
   rw [← cancel_epi 𝒰.fromGlued]
   apply Multicoequalizer.hom_ext
   intro x
-  erw [Multicoequalizer.π_desc_assoc]
-  erw [Multicoequalizer.π_desc_assoc]
+  rw [fromGlued, Multicoequalizer.π_desc_assoc, Multicoequalizer.π_desc_assoc]
   exact h x
 
 end Cover

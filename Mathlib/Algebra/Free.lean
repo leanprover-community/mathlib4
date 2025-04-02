@@ -61,9 +61,6 @@ instance [Inhabited α] : Inhabited (FreeMagma α) := ⟨of default⟩
 @[to_additive]
 instance : Mul (FreeMagma α) := ⟨FreeMagma.mul⟩
 
--- Porting note: invalid attribute 'match_pattern', declaration is in an imported module
--- attribute [match_pattern] Mul.mul
-
 @[to_additive (attr := simp)]
 theorem mul_eq (x y : FreeMagma α) : mul x y = x * y := rfl
 
@@ -80,12 +77,10 @@ theorem hom_ext {β : Type v} [Mul β] {f g : FreeMagma α →ₙ* β} (h : f �
 
 end FreeMagma
 
-#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
-instead of `x * y`. --/
 /-- Lifts a function `α → β` to a magma homomorphism `FreeMagma α → β` given a magma `β`. -/
 def FreeMagma.liftAux {α : Type u} {β : Type v} [Mul β] (f : α → β) : FreeMagma α → β
   | FreeMagma.of x => f x
-  | mul x y => liftAux f x * liftAux f y
+  | x * y => liftAux f x * liftAux f y
 
 /-- Lifts a function `α → β` to an additive magma homomorphism `FreeAddMagma α → β` given
 an additive magma `β`. -/
@@ -185,13 +180,11 @@ end Category
 
 end FreeMagma
 
-#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
-  instead of `x * y`. -/
 /-- `FreeMagma` is traversable. -/
 protected def FreeMagma.traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
     (F : α → m β) : FreeMagma α → m (FreeMagma β)
   | FreeMagma.of x => FreeMagma.of <$> F x
-  | mul x y => (· * ·) <$> x.traverse F <*> y.traverse F
+  | x * y => (· * ·) <$> x.traverse F <*> y.traverse F
 
 /-- `FreeAddMagma` is traversable. -/
 protected def FreeAddMagma.traverse {m : Type u → Type u} [Applicative m] {α β : Type u}
@@ -262,12 +255,10 @@ end Category
 
 end FreeMagma
 
-#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
-instead of `x * y`. -/
 /-- Representation of an element of a free magma. -/
 protected def FreeMagma.repr {α : Type u} [Repr α] : FreeMagma α → Lean.Format
   | FreeMagma.of x => repr x
-  | mul x y => "( " ++ x.repr ++ " * " ++ y.repr ++ " )"
+  | x * y => "( " ++ x.repr ++ " * " ++ y.repr ++ " )"
 
 /-- Representation of an element of a free additive magma. -/
 protected def FreeAddMagma.repr {α : Type u} [Repr α] : FreeAddMagma α → Lean.Format
@@ -279,12 +270,10 @@ attribute [to_additive existing] FreeMagma.repr
 @[to_additive]
 instance {α : Type u} [Repr α] : Repr (FreeMagma α) := ⟨fun o _ => FreeMagma.repr o⟩
 
-#adaptation_note /-- around nightly-2024-02-25, we need to write `mul x y` in the second pattern,
-instead of `x * y`. -/
 /-- Length of an element of a free magma. -/
 def FreeMagma.length {α : Type u} : FreeMagma α → ℕ
   | FreeMagma.of _x => 1
-  | mul x y => x.length + y.length
+  | x * y => x.length + y.length
 
 /-- Length of an element of a free additive magma. -/
 def FreeAddMagma.length {α : Type u} : FreeAddMagma α → ℕ

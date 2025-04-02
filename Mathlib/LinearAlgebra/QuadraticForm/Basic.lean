@@ -3,12 +3,12 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Kexing Ying, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.Data.Finset.Sym
+import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 import Mathlib.LinearAlgebra.Matrix.Symmetric
-import Mathlib.Data.Finset.Sym
-import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Quadratic maps
@@ -127,6 +127,13 @@ theorem polar_comp {F : Type*} [CommRing S] [FunLike F N S] [AddMonoidHomClass F
     (f : M → N) (g : F) (x y : M) :
     polar (g ∘ f) x y = g (polar f x y) := by
   simp only [polar, Pi.smul_apply, Function.comp_apply, map_sub]
+
+/-- `QuadraticMap.polar` as a function from `Sym2`. -/
+def polarSym2 (f : M → N) : Sym2 M → N :=
+  Sym2.lift ⟨polar f, polar_comm _⟩
+
+@[simp]
+lemma polarSym2_sym2Mk (f : M → N) (xy : M × M) : polarSym2 f (.mk xy) = polar f xy.1 xy.2 := rfl
 
 end QuadraticMap
 
@@ -328,32 +335,30 @@ theorem choose_exists_companion : Q.exists_companion.choose = polarBilin Q :=
       add_sub_cancel_left]
 
 protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
-    Q (∑ i ∈ s, f i) = ∑ i ∈ s, Q (f i) +
-      ∑ ij ∈ s.sym2 with ¬ ij.IsDiag,
-        Sym2.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩ ij := by
+    Q (∑ i ∈ s, f i) = ∑ i ∈ s, Q (f i)
+      + ∑ ij ∈ s.sym2 with ¬ ij.IsDiag, polarSym2 Q (ij.map f) := by
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a s ha ih =>
     simp_rw [Finset.sum_cons, QuadraticMap.map_add, ih, add_assoc, Finset.sym2_cons,
       Finset.sum_filter, Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons,
-      Sym2.mkEmbedding_apply, Sym2.isDiag_iff_proj_eq, not_true, if_false, zero_add, Sym2.lift_mk,
-      ← polarBilin_apply_apply, _root_.map_sum, polarBilin_apply_apply]
+      Sym2.mkEmbedding_apply, Sym2.isDiag_iff_proj_eq, not_true, if_false, zero_add,
+      Sym2.map_pair_eq, polarSym2_sym2Mk, ← polarBilin_apply_apply, _root_.map_sum,
+      polarBilin_apply_apply]
     congr 2
     rw [add_comm]
     congr! with i hi
     rw [if_pos (ne_of_mem_of_not_mem hi ha).symm]
 
 protected theorem map_sum' {ι} (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
-    Q (∑ i ∈ s, f i) =
-      ∑ ij in s.sym2,
-        Sym2.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩ ij
-      - ∑ i ∈ s, Q (f i) := by
+    Q (∑ i ∈ s, f i) = ∑ ij ∈ s.sym2, polarSym2 Q (ij.map f) - ∑ i ∈ s, Q (f i) := by
   induction s using Finset.cons_induction with
   | empty => simp
   | cons a s ha ih =>
     simp_rw [Finset.sum_cons, QuadraticMap.map_add Q, ih, add_assoc, Finset.sym2_cons,
-      Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons, Sym2.mkEmbedding_apply, Sym2.lift_mk,
-      ← polarBilin_apply_apply, _root_.map_sum, polarBilin_apply_apply, polar_self]
+      Finset.sum_disjUnion, Finset.sum_map, Finset.sum_cons, Sym2.mkEmbedding_apply,
+      Sym2.map_pair_eq, polarSym2_sym2Mk, ← polarBilin_apply_apply, _root_.map_sum,
+      polarBilin_apply_apply, polar_self]
     abel_nf
 
 end CommRing
@@ -608,7 +613,7 @@ def linMulLin (f g : M →ₗ[R] A) : QuadraticMap R M A where
   toFun := f * g
   toFun_smul a x := by
     rw [Pi.mul_apply, Pi.mul_apply, LinearMap.map_smulₛₗ, RingHom.id_apply, LinearMap.map_smulₛₗ,
-      RingHom.id_apply, smul_mul_assoc, mul_smul_comm, ← smul_assoc, (smul_eq_mul R)]
+      RingHom.id_apply, smul_mul_assoc, mul_smul_comm, ← smul_assoc, smul_eq_mul]
   exists_companion' :=
     ⟨(LinearMap.mul R A).compl₁₂ f g + (LinearMap.mul R A).flip.compl₁₂ g f, fun x y => by
       simp only [Pi.mul_apply, map_add, left_distrib, right_distrib, LinearMap.add_apply,
@@ -678,7 +683,7 @@ open LinearMap (BilinMap)
 section Semiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
-variable {N' : Type*}  [AddCommMonoid N'] [Module R N']
+variable {N' : Type*} [AddCommMonoid N'] [Module R N']
 
 /-- A bilinear map gives a quadratic map by applying the argument twice. -/
 def toQuadraticMap (B : BilinMap R M N) : QuadraticMap R M N where
@@ -1054,7 +1059,7 @@ theorem _root_.LinearMap.BilinForm.toQuadraticMap_isOrtho [IsCancelAdd R]
   letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstanceAs <| AddCommMonoid R) with }
   simp_rw [isOrtho_def, LinearMap.isOrtho_def, B.toQuadraticMap_apply, map_add,
     LinearMap.add_apply, add_comm _ (B y y), add_add_add_comm _ _ (B y y), add_comm (B y y)]
-  rw [add_right_eq_self (a := B x x + B y y), ← h, RingHom.id_apply, add_self_eq_zero]
+  rw [add_eq_left (a := B x x + B y y), ← h, RingHom.id_apply, add_self_eq_zero]
 
 end CommSemiring
 
@@ -1276,8 +1281,11 @@ variable [FiniteDimensional K V]
 in which `2` is invertible, there exists an orthogonal basis with respect to `B`. -/
 theorem exists_orthogonal_basis [hK : Invertible (2 : K)] {B : LinearMap.BilinForm K V}
     (hB₂ : B.IsSymm) : ∃ v : Basis (Fin (finrank K V)) K V, B.IsOrthoᵢ v := by
-  induction' hd : finrank K V with d ih generalizing V
-  · exact ⟨basisOfFinrankZero hd, fun _ _ _ => map_zero _⟩
+  suffices ∀ d, finrank K V = d → ∃ v : Basis (Fin d) K V, B.IsOrthoᵢ v by exact this _ rfl
+  intro d hd
+  induction d generalizing V with
+  | zero => exact ⟨basisOfFinrankZero hd, fun _ _ _ => map_zero _⟩
+  | succ d ih =>
   haveI := finrank_pos_iff.1 (hd.symm ▸ Nat.succ_pos d : 0 < finrank K V)
   -- either the bilinear form is trivial or we can pick a non-null `x`
   obtain rfl | hB₁ := eq_or_ne B 0

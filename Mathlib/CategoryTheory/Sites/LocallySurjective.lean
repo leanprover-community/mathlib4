@@ -33,47 +33,47 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
-attribute [local instance] HasForget.hasCoeToSort HasForget.instFunLike
-
-variable {A : Type u'} [Category.{v'} A] [HasForget.{w'} A]
+variable {A : Type u'} [Category.{v'} A] {FA : A → A → Type*} {CA : A → Type w'}
+variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w'} A FA]
 
 namespace Presheaf
 
 /-- Given `f : F ⟶ G`, a morphism between presieves, and `s : G.obj (op U)`, this is the sieve
 of `U` consisting of the `i : V ⟶ U` such that `s` restricted along `i` is in the image of `f`. -/
-@[simps (config := .lemmasOnly)]
-def imageSieve {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : G.obj (op U)) : Sieve U where
-  arrows V i := ∃ t : F.obj (op V), f.app _ t = G.map i.op s
+@[simps -isSimp]
+def imageSieve {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : ToType (G.obj (op U))) : Sieve U where
+  arrows V i := ∃ t : ToType (F.obj (op V)), f.app _ t = G.map i.op s
   downward_closed := by
     rintro V W i ⟨t, ht⟩ j
     refine ⟨F.map j.op t, ?_⟩
-    rw [op_comp, G.map_comp, comp_apply, ← ht, elementwise_of% f.naturality]
+    rw [op_comp, G.map_comp, ConcreteCategory.comp_apply, ← ht, NatTrans.naturality_apply f]
 
-theorem imageSieve_eq_sieveOfSection {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : G.obj (op U)) :
+theorem imageSieve_eq_sieveOfSection {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C}
+    (s : ToType (G.obj (op U))) :
     imageSieve f s = (Subpresheaf.range (whiskerRight f (forget A))).sieveOfSection s :=
   rfl
 
-theorem imageSieve_whisker_forget {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : G.obj (op U)) :
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
+theorem imageSieve_whisker_forget {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : ToType (G.obj (op U))) :
     imageSieve (whiskerRight f (forget A)) s = imageSieve f s :=
   rfl
 
-theorem imageSieve_app {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : F.obj (op U)) :
+theorem imageSieve_app {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : ToType (F.obj (op U))) :
     imageSieve f (f.app _ s) = ⊤ := by
   ext V i
   simp only [Sieve.top_apply, iff_true, imageSieve_apply]
-  have := elementwise_of% (f.naturality i.op)
-  exact ⟨F.map i.op s, this s⟩
+  exact ⟨F.map i.op s, NatTrans.naturality_apply f i.op s⟩
 
 /-- If a morphism `g : V ⟶ U.unop` belongs to the sieve `imageSieve f s g`, then
 this is choice of a preimage of `G.map g.op s` in `F.obj (op V)`, see
-`app_localPreimage`.-/
-noncomputable def localPreimage {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : G.obj U)
+`app_localPreimage`. -/
+noncomputable def localPreimage {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : ToType (G.obj U))
     {V : C} (g : V ⟶ U.unop) (hg : imageSieve f s g) :
-    F.obj (op V) :=
+    ToType (F.obj (op V)) :=
   hg.choose
 
 @[simp]
-lemma app_localPreimage {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : G.obj U)
+lemma app_localPreimage {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : ToType (G.obj U))
     {V : C} (g : V ⟶ U.unop) (hg : imageSieve f s g) :
     f.app _ (localPreimage f s g hg) = G.map g.op s :=
   hg.choose_spec
@@ -81,29 +81,40 @@ lemma app_localPreimage {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : G
 /-- A morphism of presheaves `f : F ⟶ G` is locally surjective with respect to a grothendieck
 topology if every section of `G` is locally in the image of `f`. -/
 class IsLocallySurjective {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) : Prop where
-  imageSieve_mem {U : C} (s : G.obj (op U)) : imageSieve f s ∈ J U
+  imageSieve_mem {U : C} (s : ToType (G.obj (op U))) : imageSieve f s ∈ J U
 
 lemma imageSieve_mem {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsLocallySurjective J f] {U : Cᵒᵖ}
-    (s : G.obj U) : imageSieve f s ∈ J U.unop :=
+    (s : ToType (G.obj U)) : imageSieve f s ∈ J U.unop :=
   IsLocallySurjective.imageSieve_mem _
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsLocallySurjective J f] :
     IsLocallySurjective J (whiskerRight f (forget A)) where
   imageSieve_mem s := imageSieve_mem J f s
 
-theorem isLocallySurjective_iff_imagePresheaf_sheafify_eq_top {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) :
+theorem isLocallySurjective_iff_range_sheafify_eq_top {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) :
     IsLocallySurjective J f ↔ (Subpresheaf.range (whiskerRight f (forget A))).sheafify J = ⊤ := by
-  simp only [Subpresheaf.ext_iff, funext_iff, Set.ext_iff, top_subpresheaf_obj,
+  simp only [Subpresheaf.ext_iff, funext_iff, Set.ext_iff, Subpresheaf.top_obj,
     Set.top_eq_univ, Set.mem_univ, iff_true]
   exact ⟨fun H _ => H.imageSieve_mem, fun H => ⟨H _⟩⟩
 
-theorem isLocallySurjective_iff_imagePresheaf_sheafify_eq_top' {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) :
-    IsLocallySurjective J f ↔ (Subpresheaf.range f).sheafify J = ⊤ := by
-  apply isLocallySurjective_iff_imagePresheaf_sheafify_eq_top
+@[deprecated (since := "2025-01-26")]
+alias isLocallySurjective_iff_imagePresheaf_sheafify_eq_top :=
+  isLocallySurjective_iff_range_sheafify_eq_top
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
+theorem isLocallySurjective_iff_range_sheafify_eq_top' {F G : Cᵒᵖ ⥤ Type w} (f : F ⟶ G) :
+    IsLocallySurjective J f ↔ (Subpresheaf.range f).sheafify J = ⊤ := by
+  apply isLocallySurjective_iff_range_sheafify_eq_top
+
+@[deprecated (since := "2025-01-26")]
+alias isLocallySurjective_iff_imagePresheaf_sheafify_eq_top' :=
+  isLocallySurjective_iff_range_sheafify_eq_top'
+
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem isLocallySurjective_iff_whisker_forget {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) :
     IsLocallySurjective J f ↔ IsLocallySurjective J (whiskerRight f (forget A)) := by
-  simp only [isLocallySurjective_iff_imagePresheaf_sheafify_eq_top]
+  simp only [isLocallySurjective_iff_range_sheafify_eq_top]
   rfl
 
 theorem isLocallySurjective_of_surjective {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G)
@@ -118,7 +129,7 @@ instance isLocallySurjective_of_iso {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsIso f
   apply isLocallySurjective_of_surjective
   intro U
   apply Function.Bijective.surjective
-  rw [← isIso_iff_bijective, ← forget_map_eq_coe]
+  rw [← isIso_iff_bijective, ← ConcreteCategory.forget_map_eq_coe]
   infer_instance
 
 instance isLocallySurjective_comp {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ ⟶ F₂) (f₂ : F₂ ⟶ F₃)
@@ -129,8 +140,8 @@ instance isLocallySurjective_comp {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ 
         imageSieve (f₁ ≫ f₂) s := by
       rintro V i ⟨W, i, j, H, ⟨t', ht'⟩, rfl⟩
       refine ⟨t', ?_⟩
-      rw [op_comp, F₃.map_comp, NatTrans.comp_app, comp_apply, comp_apply, ht',
-        elementwise_of% f₂.naturality, H.choose_spec]
+      rw [op_comp, F₃.map_comp, NatTrans.comp_app, ConcreteCategory.comp_apply,
+        ConcreteCategory.comp_apply, ht', NatTrans.naturality_apply, H.choose_spec]
     apply J.superset_covering this
     apply J.bind_covering
     · apply imageSieve_mem
@@ -192,8 +203,8 @@ lemma isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective
       apply J.superset_covering (Sieve.le_pullback_bind _ _ _ hf)
       apply equalizerSieve_mem J (f₁ ≫ f₂)
       dsimp
-      rw [comp_apply, comp_apply, app_localPreimage, app_localPreimage,
-        NatTrans.naturality_apply, NatTrans.naturality_apply, h]
+      rw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply, app_localPreimage,
+        app_localPreimage, NatTrans.naturality_apply, NatTrans.naturality_apply, h]
 
 lemma isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective_fac
     {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} {f₁ : F₁ ⟶ F₂} {f₂ : F₂ ⟶ F₃} (f₃ : F₁ ⟶ F₃) (fac : f₁ ≫ f₂ = f₃)
@@ -218,7 +229,7 @@ lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective
       apply J.superset_covering (Sieve.le_pullback_bind _ _ _ hf)
       apply equalizerSieve_mem J f₂
       rw [NatTrans.naturality_apply, ← app_localPreimage (f₁ ≫ f₂) _ _ hf,
-        NatTrans.comp_app, comp_apply]
+        NatTrans.comp_app, ConcreteCategory.comp_apply]
 
 lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective_fac
     {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} {f₁ : F₁ ⟶ F₂} {f₂ : F₂ ⟶ F₃} (f₃ : F₁ ⟶ F₃) (fac : f₁ ≫ f₂ = f₃)
@@ -247,6 +258,7 @@ lemma isLocallySurjective_comp_iff
   · intro
     infer_instance
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance {F₁ F₂ : Cᵒᵖ ⥤ Type w} (f : F₁ ⟶ F₂) :
     IsLocallySurjective J (Subpresheaf.toRangeSheafify J f) where
   imageSieve_mem {X} := by
@@ -255,6 +267,7 @@ instance {F₁ F₂ : Cᵒᵖ ⥤ Type w} (f : F₁ ⟶ F₂) :
     rintro Y g ⟨t, ht⟩
     exact ⟨t, Subtype.ext ht⟩
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- The image of `F` in `J.sheafify F` is isomorphic to the sheafification. -/
 noncomputable def sheafificationIsoImagePresheaf (F : Cᵒᵖ ⥤ Type max u v) :
     J.sheafify F ≅ ((Subpresheaf.range (J.toSheafify F)).sheafify J).toPresheaf where
@@ -276,6 +289,7 @@ section
 
 open GrothendieckTopology.Plus
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance isLocallySurjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
     IsLocallySurjective J (J.toPlus P) where
   imageSieve_mem x := by
@@ -288,14 +302,17 @@ instance isLocallySurjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
     simpa using x.2 (Cover.Relation.mk { hf := hf }
         { hf := S.1.downward_closed hf g } { g₁ := g, g₂ := 𝟙 Z })
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance isLocallySurjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
     IsLocallySurjective J (J.toSheafify P) := by
   dsimp [GrothendieckTopology.toSheafify]
   rw [GrothendieckTopology.plusMap_toPlus]
   infer_instance
 
-instance isLocallySurjective_toSheafify' {D : Type*} [Category D]
-    [HasForget.{max u v} D]
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
+instance isLocallySurjective_toSheafify' {D : Type*} [Category D] {FD : D → D → Type*}
+    {CD : D → Type (max u v)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
+    [ConcreteCategory.{max u v} D FD]
     (P : Cᵒᵖ ⥤ D) [HasWeakSheafify J D] [J.HasSheafCompose (forget D)]
     [J.PreservesSheafification (forget D)] :
     IsLocallySurjective J (toSheafify J P) := by
@@ -327,6 +344,7 @@ instance isLocallySurjective_of_iso [IsIso φ] : IsLocallySurjective φ := by
   have : IsIso φ.val := (inferInstance : IsIso ((sheafToPresheaf J A).map φ))
   infer_instance
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
     IsLocallySurjective (Sheaf.toImage f) := by
   dsimp [Sheaf.toImage]
@@ -334,17 +352,20 @@ instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
 
 variable [J.HasSheafCompose (forget A)]
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance [IsLocallySurjective φ] :
     IsLocallySurjective ((sheafCompose J (forget A)).map φ) :=
   (Presheaf.isLocallySurjective_iff_whisker_forget J φ.val).1 inferInstance
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 theorem isLocallySurjective_iff_isIso {F G : Sheaf J (Type w)} (f : F ⟶ G) :
     IsLocallySurjective f ↔ IsIso (Sheaf.imageι f) := by
   dsimp only [IsLocallySurjective]
-  rw [Sheaf.imageι, Presheaf.isLocallySurjective_iff_imagePresheaf_sheafify_eq_top',
+  rw [Sheaf.imageι, Presheaf.isLocallySurjective_iff_range_sheafify_eq_top',
     Subpresheaf.eq_top_iff_isIso]
   exact isIso_iff_of_reflects_iso (f := Sheaf.imageι f) (F := sheafToPresheaf J (Type w))
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 instance epi_of_isLocallySurjective' {F₁ F₂ : Sheaf J (Type w)} (φ : F₁ ⟶ F₂)
     [IsLocallySurjective φ] : Epi φ where
   left_cancellation {Z} f₁ f₂ h := by
@@ -362,6 +383,7 @@ instance epi_of_isLocallySurjective' {F₁ F₂ : Sheaf J (Type w)} (φ : F₁ �
 instance epi_of_isLocallySurjective [IsLocallySurjective φ] : Epi φ :=
   (sheafCompose J (forget A)).epi_of_epi_map inferInstance
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma isLocallySurjective_iff_epi {F G : Sheaf J (Type w)} (φ : F ⟶ G)
     [HasSheafify J (Type w)] :
     IsLocallySurjective φ ↔ Epi φ := by
@@ -379,6 +401,7 @@ namespace Presieve.FamilyOfElements
 
 variable {R R' : Cᵒᵖ ⥤ Type w} (φ : R ⟶ R') {X : Cᵒᵖ} (r' : R'.obj X)
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 /-- Given a morphism `φ : R ⟶ R'` of presheaves of types and `r' : R'.obj X`,
 this is the family of elements of `R` defined over the sieve `Presheaf.imageSieve φ r'`
 which sends a map in this sieve to an arbitrary choice of a preimage of the
@@ -387,6 +410,7 @@ noncomputable def localPreimage :
     FamilyOfElements R (Presheaf.imageSieve φ r').arrows :=
   fun _ f hf => Presheaf.localPreimage φ r' f hf
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma isAmalgamation_map_localPreimage :
     ((localPreimage φ r').map φ).IsAmalgamation r' :=
   fun _ f hf => (Presheaf.app_localPreimage φ r' f hf).symm

@@ -92,7 +92,7 @@ def equivTuple {R : Type*} (c₁ c₂ c₃: R) : ℍ[R,c₁,c₂,c₃] ≃ (Fin 
   right_inv f := by ext ⟨_, _ | _ | _ | _ | _ | ⟨⟩⟩ <;> rfl
 
 @[simp]
-theorem equivTuple_apply {R : Type*} (c₁ c₂ c₃: R) (x : ℍ[R,c₁,c₂,c₃]) :
+theorem equivTuple_apply {R : Type*} (c₁ c₂ c₃ : R) (x : ℍ[R,c₁,c₂,c₃]) :
     equivTuple c₁ c₂ c₃ x = ![x.re, x.imI, x.imJ, x.imK] :=
   rfl
 
@@ -162,15 +162,15 @@ theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂,c₃]) = y ↔ x = y :=
 -- Should adjust `simps` to name properly, i.e. as `zero_re` rather than `instZero_zero_re`.
 instance : Zero ℍ[R,c₁,c₂,c₃] := ⟨⟨0, 0, 0, 0⟩⟩
 
-@[simp] theorem zero_re : (0 : ℍ[R,c₁,c₂,c₃]).re = 0 := rfl
+@[scoped simp] theorem zero_re : (0 : ℍ[R,c₁,c₂,c₃]).re = 0 := rfl
 
-@[simp] theorem zero_imI : (0 : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
+@[scoped simp] theorem zero_imI : (0 : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
 
-@[simp] theorem zero_imJ : (0 : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
+@[scoped simp] theorem zero_imJ : (0 : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
 
-@[simp] theorem zero_imK : (0 : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
+@[scoped simp] theorem zero_imK : (0 : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
 
-@[simp] theorem zero_im : (0 : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
+@[scoped simp] theorem zero_im : (0 : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R) : ℍ[R,c₁,c₂,c₃]) = 0 := rfl
@@ -183,15 +183,15 @@ variable [One R]
 -- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
 instance : One ℍ[R,c₁,c₂,c₃] := ⟨⟨1, 0, 0, 0⟩⟩
 
-@[simp] theorem one_re : (1 : ℍ[R,c₁,c₂,c₃]).re = 1 := rfl
+@[scoped simp] theorem one_re : (1 : ℍ[R,c₁,c₂,c₃]).re = 1 := rfl
 
-@[simp] theorem one_imI : (1 : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
+@[scoped simp] theorem one_imI : (1 : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
 
-@[simp] theorem one_imJ : (1 : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
+@[scoped simp] theorem one_imJ : (1 : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
 
-@[simp] theorem one_imK : (1 : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
+@[scoped simp] theorem one_imK : (1 : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
 
-@[simp] theorem one_im : (1 : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
+@[scoped simp] theorem one_im : (1 : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
 
 @[simp, norm_cast]
 theorem coe_one : ((1 : R) : ℍ[R,c₁,c₂,c₃]) = 1 := rfl
@@ -401,100 +401,64 @@ instance : AddCommGroupWithOne ℍ[R,c₁,c₂,c₃] where
 theorem natCast_re (n : ℕ) : (n : ℍ[R,c₁,c₂,c₃]).re = n :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_re := natCast_re
-
 @[simp, norm_cast]
 theorem natCast_imI (n : ℕ) : (n : ℍ[R,c₁,c₂,c₃]).imI = 0 :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_imI := natCast_imI
 
 @[simp, norm_cast]
 theorem natCast_imJ (n : ℕ) : (n : ℍ[R,c₁,c₂,c₃]).imJ = 0 :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_imJ := natCast_imJ
-
 @[simp, norm_cast]
 theorem natCast_imK (n : ℕ) : (n : ℍ[R,c₁,c₂,c₃]).imK = 0 :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_imK := natCast_imK
 
 @[simp, norm_cast]
 theorem natCast_im (n : ℕ) : (n : ℍ[R,c₁,c₂,c₃]).im = 0 :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_im := natCast_im
-
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : ℍ[R,c₁,c₂,c₃]) :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := coe_natCast
 
 @[simp, norm_cast]
 theorem intCast_re (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).re = z :=
   rfl
 
-@[simp]
+@[scoped simp]
 theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).re = ofNat(n) := rfl
 
-@[simp]
+@[scoped simp]
 theorem ofNat_imI (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imI = 0 := rfl
 
-@[simp]
+@[scoped simp]
 theorem ofNat_imJ (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imJ = 0 := rfl
 
-@[simp]
+@[scoped simp]
 theorem ofNat_imK (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).imK = 0 := rfl
 
-@[simp]
+@[scoped simp]
 theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℍ[R,c₁,c₂,c₃]).im = 0 := rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_re := intCast_re
 
 @[simp, norm_cast]
 theorem intCast_imI (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).imI = 0 :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias int_cast_imI := intCast_imI
-
 @[simp, norm_cast]
 theorem intCast_imJ (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).imJ = 0 :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_imJ := intCast_imJ
 
 @[simp, norm_cast]
 theorem intCast_imK (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).imK = 0 :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias int_cast_imK := intCast_imK
-
 @[simp, norm_cast]
 theorem intCast_im (z : ℤ) : (z : ℍ[R,c₁,c₂,c₃]).im = 0 :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias int_cast_im := intCast_im
-
 @[norm_cast]
 theorem coe_intCast (z : ℤ) : ↑(z : R) = (z : ℍ[R,c₁,c₂,c₃]) :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias coe_int_cast := coe_intCast
 
 end AddCommGroupWithOne
 
@@ -548,28 +512,28 @@ section
 
 variable (c₁ c₂ c₃)
 
-/-- `QuaternionAlgebra.re` as a `LinearMap`-/
+/-- `QuaternionAlgebra.re` as a `LinearMap` -/
 @[simps]
 def reₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
   toFun := re
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- `QuaternionAlgebra.imI` as a `LinearMap`-/
+/-- `QuaternionAlgebra.imI` as a `LinearMap` -/
 @[simps]
 def imIₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
   toFun := imI
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- `QuaternionAlgebra.imJ` as a `LinearMap`-/
+/-- `QuaternionAlgebra.imJ` as a `LinearMap` -/
 @[simps]
 def imJₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
   toFun := imJ
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- `QuaternionAlgebra.imK` as a `LinearMap`-/
+/-- `QuaternionAlgebra.imK` as a `LinearMap` -/
 @[simps]
 def imKₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
   toFun := imK
@@ -815,7 +779,6 @@ instance [SMul S R] [SMul T R] [SMulCommClass S T R] : SMulCommClass S T ℍ[R] 
 protected instance algebra [CommSemiring S] [Algebra S R] : Algebra S ℍ[R] :=
   inferInstanceAs <| Algebra S ℍ[R,-1,0,-1]
 
--- Porting note: added shortcut
 instance : Star ℍ[R] := QuaternionAlgebra.instStarQuaternionAlgebra
 instance : StarRing ℍ[R] := QuaternionAlgebra.instStarRing
 instance : IsStarNormal a := inferInstanceAs <| IsStarNormal (R := ℍ[R,-1,0,-1]) a
@@ -858,28 +821,28 @@ theorem coe_imK : (x : ℍ[R]).imK = 0 := rfl
 @[simp, norm_cast]
 theorem coe_im : (x : ℍ[R]).im = 0 := rfl
 
-@[simp] theorem zero_re : (0 : ℍ[R]).re = 0 := rfl
+@[scoped simp] theorem zero_re : (0 : ℍ[R]).re = 0 := rfl
 
-@[simp] theorem zero_imI : (0 : ℍ[R]).imI = 0 := rfl
+@[scoped simp] theorem zero_imI : (0 : ℍ[R]).imI = 0 := rfl
 
-@[simp] theorem zero_imJ : (0 : ℍ[R]).imJ = 0 := rfl
+@[scoped simp] theorem zero_imJ : (0 : ℍ[R]).imJ = 0 := rfl
 
-@[simp] theorem zero_imK : (0 : ℍ[R]).imK = 0 := rfl
+@[scoped simp] theorem zero_imK : (0 : ℍ[R]).imK = 0 := rfl
 
-@[simp] theorem zero_im : (0 : ℍ[R]).im = 0 := rfl
+@[scoped simp] theorem zero_im : (0 : ℍ[R]).im = 0 := rfl
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : R) : ℍ[R]) = 0 := rfl
 
-@[simp] theorem one_re : (1 : ℍ[R]).re = 1 := rfl
+@[scoped simp] theorem one_re : (1 : ℍ[R]).re = 1 := rfl
 
-@[simp] theorem one_imI : (1 : ℍ[R]).imI = 0 := rfl
+@[scoped simp] theorem one_imI : (1 : ℍ[R]).imI = 0 := rfl
 
-@[simp] theorem one_imJ : (1 : ℍ[R]).imJ = 0 := rfl
+@[scoped simp] theorem one_imJ : (1 : ℍ[R]).imJ = 0 := rfl
 
-@[simp] theorem one_imK : (1 : ℍ[R]).imK = 0 := rfl
+@[scoped simp] theorem one_imK : (1 : ℍ[R]).imK = 0 := rfl
 
-@[simp] theorem one_im : (1 : ℍ[R]).im = 0 := rfl
+@[scoped simp] theorem one_im : (1 : ℍ[R]).im = 0 := rfl
 
 @[simp, norm_cast]
 theorem coe_one : ((1 : R) : ℍ[R]) = 1 := rfl
@@ -952,74 +915,38 @@ theorem coe_pow (n : ℕ) : (↑(x ^ n) : ℍ[R]) = (x : ℍ[R]) ^ n :=
 @[simp, norm_cast]
 theorem natCast_re (n : ℕ) : (n : ℍ[R]).re = n := rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_re := natCast_re
-
 @[simp, norm_cast]
 theorem natCast_imI (n : ℕ) : (n : ℍ[R]).imI = 0 := rfl
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_imI := natCast_imI
 
 @[simp, norm_cast]
 theorem natCast_imJ (n : ℕ) : (n : ℍ[R]).imJ = 0 := rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_imJ := natCast_imJ
-
 @[simp, norm_cast]
 theorem natCast_imK (n : ℕ) : (n : ℍ[R]).imK = 0 := rfl
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_imK := natCast_imK
 
 @[simp, norm_cast]
 theorem natCast_im (n : ℕ) : (n : ℍ[R]).im = 0 := rfl
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_im := natCast_im
-
 @[norm_cast]
 theorem coe_natCast (n : ℕ) : ↑(n : R) = (n : ℍ[R]) := rfl
-
-@[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := coe_natCast
 
 @[simp, norm_cast]
 theorem intCast_re (z : ℤ) : (z : ℍ[R]).re = z := rfl
 
-@[deprecated (since := "2024-04-17")]
-alias int_cast_re := intCast_re
-
 @[simp, norm_cast]
 theorem intCast_imI (z : ℤ) : (z : ℍ[R]).imI = 0 := rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_imI := intCast_imI
 
 @[simp, norm_cast]
 theorem intCast_imJ (z : ℤ) : (z : ℍ[R]).imJ = 0 := rfl
 
-@[deprecated (since := "2024-04-17")]
-alias int_cast_imJ := intCast_imJ
-
 @[simp, norm_cast]
 theorem intCast_imK (z : ℤ) : (z : ℍ[R]).imK = 0 := rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_imK := intCast_imK
 
 @[simp, norm_cast]
 theorem intCast_im (z : ℤ) : (z : ℍ[R]).im = 0 := rfl
 
-@[deprecated (since := "2024-04-17")]
-alias int_cast_im := intCast_im
-
 @[norm_cast]
 theorem coe_intCast (z : ℤ) : ↑(z : R) = (z : ℍ[R]) := rfl
-
-@[deprecated (since := "2024-04-17")]
-alias coe_int_cast := coe_intCast
 
 theorem coe_injective : Function.Injective (coe : R → ℍ[R]) :=
   QuaternionAlgebra.coe_injective
@@ -1175,15 +1102,9 @@ theorem normSq_star : normSq (star a) = normSq a := by simp [normSq_def']
 theorem normSq_natCast (n : ℕ) : normSq (n : ℍ[R]) = (n : R) ^ 2 := by
   rw [← coe_natCast, normSq_coe]
 
-@[deprecated (since := "2024-04-17")]
-alias normSq_nat_cast := normSq_natCast
-
 @[norm_cast]
 theorem normSq_intCast (z : ℤ) : normSq (z : ℍ[R]) = (z : R) ^ 2 := by
   rw [← coe_intCast, normSq_coe]
-
-@[deprecated (since := "2024-04-17")]
-alias normSq_int_cast := normSq_intCast
 
 @[simp]
 theorem normSq_neg : normSq (-a) = normSq a := by simp only [normSq_def, star_neg, neg_mul_neg]
@@ -1264,13 +1185,12 @@ section Field
 
 variable [LinearOrderedField R] (a b : ℍ[R])
 
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 instance instInv : Inv ℍ[R] :=
   ⟨fun a => (normSq a)⁻¹ • star a⟩
 
 instance instGroupWithZero : GroupWithZero ℍ[R] :=
-  { Quaternion.instNontrivial,
-    (by infer_instance : MonoidWithZero ℍ[R]) with
+  { Quaternion.instNontrivial with
     inv := Inv.inv
     inv_zero := by rw [instInv_inv, star_zero, smul_zero]
     mul_inv_cancel := fun a ha => by
@@ -1303,31 +1223,19 @@ instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
 @[simp, norm_cast] lemma ratCast_imJ (q : ℚ) : (q : ℍ[R]).imJ = 0 := rfl
 @[simp, norm_cast] lemma ratCast_imK (q : ℚ) : (q : ℍ[R]).imK = 0 := rfl
 
-@[deprecated (since := "2024-04-17")]
-alias rat_cast_imI := ratCast_imI
-
-@[deprecated (since := "2024-04-17")]
-alias rat_cast_imJ := ratCast_imJ
-
-@[deprecated (since := "2024-04-17")]
-alias rat_cast_imK := ratCast_imK
-
 @[norm_cast] lemma coe_nnratCast (q : ℚ≥0) : ↑(q : R) = (q : ℍ[R]) := rfl
 
 @[norm_cast] lemma coe_ratCast (q : ℚ) : ↑(q : R) = (q : ℍ[R]) := rfl
 
-@[deprecated (since := "2024-04-17")]
-alias coe_rat_cast := coe_ratCast
-
 instance instDivisionRing : DivisionRing ℍ[R] where
-  __ := Quaternion.instGroupWithZero
   __ := Quaternion.instRing
+  __ := Quaternion.instGroupWithZero
   nnqsmul := (· • ·)
   qsmul := (· • ·)
-  nnratCast_def q := by rw [← coe_nnratCast, NNRat.cast_def, coe_div, coe_natCast, coe_natCast]
-  ratCast_def q := by rw [← coe_ratCast, Rat.cast_def, coe_div, coe_intCast, coe_natCast]
-  nnqsmul_def q x := by rw [← coe_nnratCast, coe_mul_eq_smul]; ext <;> exact NNRat.smul_def _ _
-  qsmul_def q x := by rw [← coe_ratCast, coe_mul_eq_smul]; ext <;> exact Rat.smul_def _ _
+  nnratCast_def _ := by rw [← coe_nnratCast, NNRat.cast_def, coe_div, coe_natCast, coe_natCast]
+  ratCast_def _ := by rw [← coe_ratCast, Rat.cast_def, coe_div, coe_intCast, coe_natCast]
+  nnqsmul_def _ _ := by rw [← coe_nnratCast, coe_mul_eq_smul]; ext <;> exact NNRat.smul_def ..
+  qsmul_def _ _ := by rw [← coe_ratCast, coe_mul_eq_smul]; ext <;> exact Rat.smul_def ..
 
 theorem normSq_inv : normSq a⁻¹ = (normSq a)⁻¹ :=
   map_inv₀ normSq _
@@ -1341,9 +1249,6 @@ theorem normSq_zpow (z : ℤ) : normSq (a ^ z) = normSq a ^ z :=
 @[norm_cast]
 theorem normSq_ratCast (q : ℚ) : normSq (q : ℍ[R]) = (q : ℍ[R]) ^ 2 := by
   rw [← coe_ratCast, normSq_coe, coe_pow]
-
-@[deprecated (since := "2024-04-17")]
-alias normSq_rat_cast := normSq_ratCast
 
 end Field
 

@@ -36,11 +36,9 @@ In the following, `{α : Type*} [Fintype α] [DecidableEq α]`.
 ## Implementation details
 
 The forward direction of `Equiv.Perm.isoCycle'` uses `Fintype.choose` of the uniqueness
-result, relying on the `Fintype` instance of a `Cycle.nodup` subtype.
+result, relying on the `Fintype` instance of a `Cycle.Nodup` subtype.
 It is unclear if this works faster than the `Equiv.Perm.toCycle`, which relies
 on recursion over `Finset.univ`.
-Running `#eval` on even a simple noncyclic permutation `c[(1 : Fin 7), 2, 3] * c[0, 5]`
-to show it takes a long time. TODO: is this because computing the cycle factors is slow?
 
 -/
 
@@ -68,7 +66,7 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
     all_goals have := formPerm_eq_self_of_not_mem _ _ ‹_›; tauto
 
 theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPerm l) := by
-  cases' l with x l
+  rcases l with - | ⟨x, l⟩
   · norm_num at hn
   induction' l with y l generalizing x
   · norm_num at hn
@@ -111,8 +109,8 @@ theorem cycleType_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) :
 
 theorem formPerm_apply_mem_eq_next (hl : Nodup l) (x : α) (hx : x ∈ l) :
     formPerm l x = next l x hx := by
-  obtain ⟨k, rfl⟩ := get_of_mem hx
-  rw [next_get _ hl, get_eq_getElem, formPerm_apply_getElem _ hl]; rfl
+  obtain ⟨k, hk, rfl⟩ := getElem_of_mem hx
+  rw [next_getElem _ hl, formPerm_apply_getElem _ hl]
 
 end List
 
@@ -139,9 +137,9 @@ theorem formPerm_subsingleton (s : Cycle α) (h : Subsingleton s) : formPerm s h
   induction' s using Quot.inductionOn with s
   simp only [formPerm_coe, mk_eq_coe]
   simp only [length_subsingleton_iff, length_coe, mk_eq_coe] at h
-  cases' s with hd tl
+  obtain - | ⟨hd, tl⟩ := s
   · simp
-  · simp only [length_eq_zero, add_le_iff_nonpos_left, List.length, nonpos_iff_eq_zero] at h
+  · simp only [length_eq_zero_iff, add_le_iff_nonpos_left, List.length, nonpos_iff_eq_zero] at h
     simp [h]
 
 theorem isCycle_formPerm (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
@@ -214,9 +212,17 @@ theorem two_le_length_toList_iff_mem_support {p : Perm α} {x : α} :
 theorem length_toList_pos_of_mem_support (h : x ∈ p.support) : 0 < length (toList p x) :=
   zero_lt_two.trans_le (two_le_length_toList_iff_mem_support.mpr h)
 
+theorem getElem_toList (n : ℕ) (hn : n < length (toList p x)) :
+    (toList p x)[n] = (p ^ n) x := by simp [toList]
+
+@[deprecated getElem_toList (since := "2025-02-17")]
 theorem get_toList (n : ℕ) (hn : n < length (toList p x)) :
     (toList p x).get ⟨n, hn⟩ = (p ^ n) x := by simp [toList]
 
+theorem toList_getElem_zero (h : x ∈ p.support) :
+    (toList p x)[0]'(length_toList_pos_of_mem_support _ _ h) = x := by simp [toList]
+
+@[deprecated toList_getElem_zero (since := "2025-02-17")]
 theorem toList_get_zero (h : x ∈ p.support) :
     (toList p x).get ⟨0, (length_toList_pos_of_mem_support _ _ h)⟩ = x := by simp [toList]
 
@@ -238,13 +244,14 @@ theorem nodup_toList (p : Perm α) (x : α) : Nodup (toList p x) := by
   · rw [← not_mem_support, ← toList_eq_nil_iff] at hx
     simp [hx]
   have hc : IsCycle (cycleOf p x) := isCycle_cycleOf p hx
-  rw [nodup_iff_injective_get]
+  rw [nodup_iff_injective_getElem]
   intro ⟨n, hn⟩ ⟨m, hm⟩
   rw [length_toList, ← hc.orderOf] at hm hn
   rw [← cycleOf_apply_self, ← Ne, ← mem_support] at hx
-  rw [get_toList, get_toList, ← cycleOf_pow_apply_self p x n, ←
+  simp only [Fin.mk.injEq]
+  rw [getElem_toList, getElem_toList, ← cycleOf_pow_apply_self p x n, ←
     cycleOf_pow_apply_self p x m]
-  cases' n with n <;> cases' m with m
+  rcases n with - | n <;> rcases m with - | m
   · simp
   · rw [← hc.support_pow_of_pos_of_lt_orderOf m.zero_lt_succ hm, mem_support,
       cycleOf_pow_apply_self] at hx
@@ -256,7 +263,7 @@ theorem nodup_toList (p : Perm α) (x : α) : Nodup (toList p x) := by
   have hn' : ¬orderOf (p.cycleOf x) ∣ n.succ := Nat.not_dvd_of_pos_of_lt n.zero_lt_succ hn
   have hm' : ¬orderOf (p.cycleOf x) ∣ m.succ := Nat.not_dvd_of_pos_of_lt m.zero_lt_succ hm
   rw [← hc.support_pow_eq_iff] at hn' hm'
-  rw [Fin.mk_eq_mk, ← Nat.mod_eq_of_lt hn, ← Nat.mod_eq_of_lt hm, ← pow_inj_mod]
+  rw [← Nat.mod_eq_of_lt hn, ← Nat.mod_eq_of_lt hm, ← pow_inj_mod]
   refine support_congr ?_ ?_
   · rw [hm', hn']
   · rw [hm']
@@ -269,19 +276,19 @@ theorem next_toList_eq_apply (p : Perm α) (x y : α) (hy : y ∈ toList p x) :
     next (toList p x) y hy = p y := by
   rw [mem_toList_iff] at hy
   obtain ⟨k, hk, hk'⟩ := hy.left.exists_pow_eq_of_mem_support hy.right
-  rw [← get_toList p x k (by simpa using hk)] at hk'
+  rw [← getElem_toList p x k (by simpa using hk)] at hk'
   simp_rw [← hk']
-  rw [next_get _ (nodup_toList _ _), get_toList, get_toList, ← mul_apply, ← pow_succ']
+  rw [next_getElem _ (nodup_toList _ _), getElem_toList, getElem_toList, ← mul_apply, ← pow_succ']
   simp_rw [length_toList]
   rw [← pow_mod_orderOf_cycleOf_apply p (k + 1), IsCycle.orderOf]
   exact isCycle_cycleOf _ (mem_support.mp hy.right)
 
 theorem toList_pow_apply_eq_rotate (p : Perm α) (x : α) (k : ℕ) :
     p.toList ((p ^ k) x) = (p.toList x).rotate k := by
-  apply ext_get
+  apply ext_getElem
   · simp only [length_toList, cycleOf_self_apply_pow, length_rotate]
   · intro n hn hn'
-    rw [get_toList, get_rotate, get_toList, length_toList,
+    rw [getElem_toList, getElem_rotate, getElem_toList, length_toList,
       pow_mod_card_support_cycleOf_self_apply, pow_add, mul_apply]
 
 theorem SameCycle.toList_isRotated {f : Perm α} {x y : α} (h : SameCycle f x y) :
@@ -469,9 +476,35 @@ set_option linter.unusedTactic false in
 notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
-unsafe instance repr_perm [Repr α] : Repr (Perm α) :=
-  ⟨fun f _ => repr (Multiset.pmap (fun (g : Perm α) (hg : g.IsCycle) => isoCycle ⟨g, hg⟩)
-    (Perm.cycleFactorsFinset f).val -- toCycle is faster?
-    fun _ hg => (mem_cycleFactorsFinset_iff.mp (Finset.mem_def.mpr hg)).left)⟩
+/-- Represents a permutation as product of disjoint cycles:
+```
+#eval (c[0, 1, 2, 3] : Perm (Fin 4))
+-- c[0, 1, 2, 3]
+
+#eval (c[3, 1] * c[0, 2] : Perm (Fin 4))
+-- c[0, 2] * c[1, 3]
+
+#eval (c[1, 2, 3] * c[0, 1, 2] : Perm (Fin 4))
+-- c[0, 2] * c[1, 3]
+
+#eval (c[1, 2, 3] * c[0, 1, 2] * c[3, 1] * c[0, 2] : Perm (Fin 4))
+-- 1
+```
+-/
+unsafe instance instRepr [Repr α] : Repr (Perm α) where
+  reprPrec f prec :=
+    -- Obtain a list of formats which represents disjoint cycles.
+    letI l := Quot.unquot <| Multiset.map repr <| Multiset.pmap toCycle
+      (Perm.cycleFactorsFinset f).val
+      fun _ hg => (mem_cycleFactorsFinset_iff.mp (Finset.mem_def.mpr hg)).left
+    -- And intercalate `*`s.
+    match l with
+    | []  => "1"
+    | [f] => f
+    | l   =>
+      -- multiple terms, use `*` precedence
+      (if prec ≥ 70 then Lean.Format.paren else id)
+      (Lean.Format.fill
+        (Lean.Format.joinSep l (" *" ++ Lean.Format.line)))
 
 end Equiv.Perm

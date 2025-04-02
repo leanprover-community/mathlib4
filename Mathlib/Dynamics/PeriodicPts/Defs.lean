@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Batteries.Data.Nat.Gcd
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Cycle
 import Mathlib.Data.PNat.Notation
 import Mathlib.Dynamics.FixedPoints.Basic
@@ -197,12 +199,20 @@ theorem mk_mem_periodicPts (hn : 0 < n) (hx : IsPeriodicPt f n x) : x ∈ period
 theorem mem_periodicPts : x ∈ periodicPts f ↔ ∃ n > 0, IsPeriodicPt f n x :=
   Iff.rfl
 
+theorem periodicPts_subset_image : periodicPts f ⊆ range f := by
+  intro x h
+  rw [mem_periodicPts] at h
+  rcases h with ⟨n, _, h⟩
+  use f^[n - 1] x
+  nth_rw 1 [← iterate_one f]
+  rw [← iterate_add_apply, Nat.add_sub_cancel' (by omega)]
+  exact h
+
 theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ periodicPts f)
     (hm : IsPeriodicPt f m (f^[n] x)) : IsPeriodicPt f m x := by
   rcases hx with ⟨r, hr, hr'⟩
   suffices n ≤ (n / r + 1) * r by
-    -- Porting note: convert used to unfold IsPeriodicPt
-    change _ = _
+    unfold IsPeriodicPt IsFixedPt
     convert (hm.apply_iterate ((n / r + 1) * r - n)).eq <;>
       rw [← iterate_add_apply, Nat.sub_add_cancel this, iterate_mul, (hr'.iterate _).eq]
   rw [Nat.add_mul, one_mul]
@@ -333,7 +343,6 @@ theorem not_isPeriodicPt_of_pos_of_lt_minimalPeriod :
 
 theorem IsPeriodicPt.minimalPeriod_dvd (hx : IsPeriodicPt f n x) : minimalPeriod f x ∣ n :=
   (eq_or_lt_of_le <| n.zero_le).elim (fun hn0 => hn0 ▸ Nat.dvd_zero _) fun hn0 =>
-    -- Porting note: `Nat.dvd_iff_mod_eq_zero` gained explicit arguments
     Nat.dvd_iff_mod_eq_zero.2 <|
       (hx.mod <| isPeriodicPt_minimalPeriod f x).eq_zero_of_lt_minimalPeriod <|
         Nat.mod_lt _ <| hx.minimalPeriod_pos hn0
@@ -449,7 +458,7 @@ theorem periodicOrbit_chain (r : α → α → Prop) {f : α → α} {x : α} :
     rw [periodicOrbit, ← Cycle.map_coe, Cycle.chain_map, ← hM, Cycle.chain_range_succ]
     refine ⟨?_, fun H => ⟨?_, fun m hm => H _ (hm.trans (Nat.lt_succ_self _))⟩⟩
     · rintro ⟨hr, H⟩ n hn
-      cases' eq_or_lt_of_le (Nat.lt_succ_iff.1 hn) with hM' hM'
+      rcases eq_or_lt_of_le (Nat.lt_succ_iff.1 hn) with hM' | hM'
       · rwa [hM', hM, iterate_minimalPeriod]
       · exact H _ hM'
     · rw [iterate_zero_apply]

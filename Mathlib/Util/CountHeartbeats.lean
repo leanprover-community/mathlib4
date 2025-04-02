@@ -79,6 +79,12 @@ elab "#count_heartbeats! " n:(num)? "in" ppLine tac:tacticSeq : tactic => do
   logVariation counts
 
 /--
+Round down the number `n` to the nearest thousand, if `approx` is `true`.
+-/
+def roundDownIf (n : Nat) (approx : Bool) : String :=
+  if approx then s!"approximately {(n / 1000) * 1000}" else s!"{n}"
+
+/--
 `#count_heartbeats in cmd` counts the heartbeats used in the enclosed command `cmd`.
 Use `#count_heartbeats` to count the heartbeats in *all* the following declarations.
 
@@ -95,22 +101,29 @@ using the least number of the form `2^k * 200000` that suffices.
 Note that that internal heartbeat counter accessible via `IO.getNumHeartbeats`
 has granularity 1000 times finer that the limits set by `set_option maxHeartbeats`.
 As this is intended as a user command, we divide by 1000.
+
+The optional `approximately` keyword rounds down the heartbeats to the nearest thousand.
+This helps make the tests more stable to small changes in heartbeats.
+To use this functionality, use `#count_heartbeats approximately in cmd`.
 -/
-elab "#count_heartbeats " "in" ppLine cmd:command : command => do
+elab "#count_heartbeats " approx:(&"approximately ")? "in" ppLine cmd:command : command => do
   let start ← IO.getNumHeartbeats
   try
     elabCommand (← `(command| set_option maxHeartbeats 0 in $cmd))
   finally
     let finish ← IO.getNumHeartbeats
     let elapsed := (finish - start) / 1000
+    let roundElapsed := roundDownIf elapsed approx.isSome
     let max := (← Command.liftCoreM getMaxHeartbeats) / 1000
     if elapsed < max then
-      logInfo m!"Used {elapsed} heartbeats, which is less than the current maximum of {max}."
+      logInfo
+        m!"Used {roundElapsed} heartbeats, which is less than the current maximum of {max}."
     else
       let mut max' := max
       while max' < elapsed do
         max' := 2 * max'
-      logInfo m!"Used {elapsed} heartbeats, which is greater than the current maximum of {max}."
+      logInfo
+        m!"Used {roundElapsed} heartbeats, which is greater than the current maximum of {max}."
       let m : TSyntax `num := quote max'
       Command.liftCoreM <| MetaM.run' do
         Lean.Meta.Tactic.TryThis.addSuggestion (← getRef)
@@ -134,8 +147,13 @@ an error message will be generated if a minimization step makes the slow behavio
 The default number of minimal heartbeats is the value of `maxHeartbeats` (typically 200000).
 Alternatively, you can specify a number of heartbeats to guard against,
 using the syntax `guard_min_heartbeats n in cmd`.
+
+The optional `approximately` keyword rounds down the heartbeats to the nearest thousand.
+This helps make the tests more stable to small changes in heartbeats.
+To use this functionality, use `guard_min_heartbeats approximately (n)? in cmd`.
 -/
-elab "guard_min_heartbeats " n:(num)? "in" ppLine cmd:command : command => do
+elab "guard_min_heartbeats " approx:(&"approximately ")? n:(num)? "in" ppLine cmd:command :
+    command => do
   let max := (← Command.liftCoreM getMaxHeartbeats) / 1000
   let n := match n with
            | some j => j.getNat
@@ -147,7 +165,8 @@ elab "guard_min_heartbeats " n:(num)? "in" ppLine cmd:command : command => do
     let finish ← IO.getNumHeartbeats
     let elapsed := (finish - start) / 1000
     if elapsed < n then
-      logInfo m!"Used {elapsed} heartbeats, which is less than the minimum of {n}."
+      logInfo m!"Used {roundDownIf elapsed approx.isSome} heartbeats, \
+                which is less than the minimum of {n}."
 
 /--
 Run a command, optionally restoring the original state, and report just the number of heartbeats.
@@ -187,7 +206,7 @@ end Mathlib
 /-!
 #  The "countHeartbeats" linter
 
-The "countHeartbeats" linter counts the hearbeats of every declaration.
+The "countHeartbeats" linter counts the heartbeats of every declaration.
 -/
 
 open Lean Elab Command
@@ -210,12 +229,17 @@ register_option linter.countHeartbeats : Bool := {
   descr := "enable the countHeartbeats linter"
 }
 
-namespace CountHeartbeats
+/--
+An option used by the `countHeartbeats` linter: if set to `true`, then the countHeartbeats linter
+rounds down to the nearest 1000 the heartbeat count.
+-/
+register_option linter.countHeartbeatsApprox : Bool := {
+  defValue := false
+  descr := "if set to `true`, then the countHeartbeats linter rounds down \
+            to the nearest 1000 the heartbeat count"
+}
 
-partial def Syntax.findAndModify (modify : Syntax → Syntax) : Syntax → Syntax
-  | stx@(Syntax.node _ ``Parser.Command.declId _) => modify stx
-  | Syntax.node info kind args => Syntax.node info kind (args.map (Syntax.findAndModify modify))
-  | stx => stx
+namespace CountHeartbeats
 
 /-- Traverse the syntax and add a suffix "ₕₑₐᵣₜ" to any theorem name, i.e. to any
 `ident` of the corresponding `.declId` -/
@@ -236,8 +260,12 @@ def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
   let mut msgs := #[]
   if [``Lean.Parser.Command.declaration, `lemma, ``Lean.Parser.Command.in].contains stx.getKind then
     let s ← get
-    -- rename declarations to avoid "error: 'myDecl' has already been declared."
-    elabCommand (← `(command| #count_heartbeats in $(⟨renameDeclarations stx⟩)))
+    if Linter.getLinterValue linter.countHeartbeatsApprox (← getOptions) then
+      -- rename declarations to avoid "error: 'myDecl' has already been declared."
+      elabCommand (← `(command| #count_heartbeats approximately in $(⟨renameDeclarations stx⟩)))
+    else
+      -- rename declarations to avoid "error: 'myDecl' has already been declared."
+      elabCommand (← `(command| #count_heartbeats in $(⟨renameDeclarations stx⟩)))
     msgs := (← get).messages.unreported.toArray
     set s
   match stx.find? (·.isOfKind ``Parser.Command.declId) with
@@ -252,8 +280,15 @@ def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
 initialize addLinter countHeartbeatsLinter
 
 @[inherit_doc Mathlib.Linter.linter.countHeartbeats]
-macro "#count_heartbeats" : command =>
-  `(command| set_option linter.countHeartbeats true)
+macro "#count_heartbeats" approx:(&" approximately")? : command => do
+  let approx ←
+    if approx.isSome then
+      `(set_option linter.countHeartbeatsApprox true) else
+      `(set_option linter.countHeartbeatsApprox false)
+  return ⟨mkNullNode
+    #[← `(command| set_option linter.countHeartbeats true),
+      approx]⟩
+
 
 end CountHeartbeats
 

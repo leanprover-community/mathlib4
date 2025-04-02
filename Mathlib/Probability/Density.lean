@@ -163,9 +163,6 @@ theorem setLIntegral_pdf_le_map {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : M
   apply (withDensity_apply_le _ s).trans
   exact withDensity_pdf_le_map _ _ _ s
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_pdf_le_map := setLIntegral_pdf_le_map
-
 theorem map_eq_withDensity_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : Measure Ω)
     (μ : Measure E := by volume_tac) [hX : HasPDF X ℙ μ] :
     map X ℙ = μ.withDensity (pdf X ℙ μ) := by
@@ -175,9 +172,6 @@ theorem map_eq_setLIntegral_pdf {m : MeasurableSpace Ω} (X : Ω → E) (ℙ : M
     (μ : Measure E := by volume_tac) [hX : HasPDF X ℙ μ] {s : Set E}
     (hs : MeasurableSet s) : map X ℙ s = ∫⁻ x in s, pdf X ℙ μ x ∂μ := by
   rw [← withDensity_apply _ hs, map_eq_withDensity_pdf X ℙ μ]
-
-@[deprecated (since := "2024-06-29")]
-alias map_eq_set_lintegral_pdf := map_eq_setLIntegral_pdf
 
 namespace pdf
 
@@ -225,10 +219,8 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 theorem integrable_pdf_smul_iff [IsFiniteMeasure ℙ] {X : Ω → E} [HasPDF X ℙ μ] {f : E → F}
     (hf : AEStronglyMeasurable f μ) :
     Integrable (fun x => (pdf X ℙ μ x).toReal • f x) μ ↔ Integrable (fun x => f (X x)) ℙ := by
-  -- Porting note: using `erw` because `rw` doesn't recognize `(f <| X ·)` as `f ∘ X`
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
-  erw [← integrable_map_measure (hf.mono_ac HasPDF.absolutelyContinuous)
-    (HasPDF.aemeasurable X ℙ μ),
+  rw [← Function.comp_def,
+    ← integrable_map_measure (hf.mono_ac HasPDF.absolutelyContinuous) (HasPDF.aemeasurable X ℙ μ),
     map_eq_withDensity_pdf X ℙ μ, pdf_def, integrable_rnDeriv_smul_iff HasPDF.absolutelyContinuous]
   rw [withDensity_rnDeriv_eq _ _ HasPDF.absolutelyContinuous]
 
