@@ -245,19 +245,14 @@ lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F]
   let u := t.filter (fun a : 𝒪[F] ↦ hv.v a < 1)
   have hwu : w ∈ u := by simp [u, hwt, hw1] -- and it is nonempty.
   -- So the element that takes on the largest valuation in this partial cover is in the cover itself
-  obtain ⟨l, hl, hl'⟩ := u.sup'_mem ((hv.v ∘ ((↑) : 𝒪[F] → F)) '' u)
-    -- which is the case because this partial cover is closed under the max (`⊔`) operation:
-    -- if `‖x‖ ∈ u` and `‖y‖ ∈ u`, then `max ‖x‖ ‖y‖ ∈ u`, requiring a juggle since we're working
-    -- on the finset sup of an image.
-    -- TODO: should there be a helper lemma for images into linear orders?
-    (fun x hx y hy ↦ (max_cases x y).elim (fun h ↦ h.left.symm ▸ hx) (fun h ↦ h.left.symm ▸ hy))
-    ⟨w, hwu⟩ (fun x ↦ hv.v x) (fun _ ↦ Set.mem_image_of_mem _)
-  simp only [Function.comp_apply, u, U] at hl'
+  -- which is the case because this partial cover is closed under the max (`⊔`) operation:
+  -- if `‖x‖ ∈ u` and `‖y‖ ∈ u`, then `max ‖x‖ ‖y‖ ∈ u`
+  obtain hl' := (u.image (hv.v ∘ ((↑) : 𝒪[F] → F))).max'_mem <| by simpa using ⟨_, hwu⟩
+  simp only [Finset.mem_image, Finset.mem_filter, Function.comp_apply, u] at hl'
+  obtain ⟨l, ⟨hl, hl'⟩, hvl⟩ := hl'
   -- we know that this largest element must have valuation less than 1,
   -- since it is in the partial cover, and this is the property of the partial cover
-  have hm : (⟨hv.v l, l, rfl⟩ : Set.range hv.v) < (⟨1, y, hy'⟩) := by
-    simp only [Finset.coe_filter, Set.mem_setOf_eq, u] at hl
-    simp [hl.right]
+  have hm : (⟨hv.v l, l, rfl⟩ : Set.range hv.v) < (⟨1, y, hy'⟩) := by simpa using hl'
   -- Prepare the contradiction, pick an element that has a valuation between the max element and 1.
   obtain ⟨⟨_, m, rfl⟩, hm⟩ := exists_between hm
   simp only [Subtype.mk_lt_mk] at hm
@@ -266,15 +261,19 @@ lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F]
   -- `v x < v l < v m`.
   obtain ⟨n, hn, hn'⟩ : ∃ n ∈ t, hv.v n = hv.v m := by
     refine htm ⟨m, hm.right.le⟩ (hxw.trans (hm.left.trans_le' ?_))
-    rw [hl', Finset.le_sup'_iff]
-    exact ⟨w, hwu, le_rfl⟩
+    rw [hvl]
+    refine Finset.le_max' _ _ ?_
+    simp only [Finset.mem_image, Finset.mem_filter, Function.comp_apply]
+    exact ⟨w, ⟨hwt, hw1⟩, rfl⟩
   rw [← hn'] at hm -- clean up what valuations we refer to
   -- to supply the contradiction, we have `v l < v n`, now prove that also `v n ≤ v l`
   refine hm.left.not_le ?_
-  -- which is the case since `‖l‖ = u.sup' ..` and the property of `Finset.sup'`
-  rw [hl', Finset.le_sup'_iff]
-  refine ⟨n, ?_, le_rfl⟩
-  simp [u, hn, hm.right]
+  -- which is the case since `‖l‖ = u.max' ..` and the property of `Finset.max'`
+  rw [hvl]
+  refine Finset.le_max' _ _ ?_
+  simp only [Finset.mem_image, Finset.mem_filter, Function.comp_apply]
+  use n
+  simp [hn, hm.right]
 
 lemma isDiscreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
     IsDiscreteValuationRing 𝒪[K] := by
