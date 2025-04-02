@@ -8,7 +8,7 @@ import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.Analysis.Analytic.IteratedFDeriv
 
 set_option autoImplicit true
-set_option linter.style.multiGoal true
+set_option linter.style.multiGoal false
 set_option linter.style.cases false
 set_option linter.unusedVariables true
 set_option linter.unusedSectionVars true
@@ -183,7 +183,7 @@ lemma c1a : IsIntegral ℤ ((c₁ K α' β' γ')^(m K*q) • (α'^( (t.1 + 1) * 
   · rw [← zsmul_eq_mul]; exact c₁_α K α' β' γ'
 
 include hq0 in
-lemma c1c : IsIntegral ℤ ((c₁ K α' β' γ') ^ (m K*q) • (γ'^(  (t.2 + 1) * (u.1 + 1) : ℕ))) := by
+lemma c1c : IsIntegral ℤ ((c₁ K α' β' γ') ^ (m K*q) • (γ'^((t.2 + 1) * (u.1 + 1) : ℕ))) := by
   apply c₁ac K α' β' γ' γ' (m K) q (t.2 + 1) (u.1 + 1) ?_ ?_
   · rw [mul_comm]
     have hu : (↑u.1 + 1) ≤ m K :=
@@ -196,6 +196,9 @@ lemma c1c : IsIntegral ℤ ((c₁ K α' β' γ') ^ (m K*q) • (γ'^(  (t.2 + 1)
 def η : (Fin q × Fin q) → (Fin (m  K) × Fin (n K q)) → K := fun (a,b) (l,k) =>
   ((a+1 : ℕ) + (b+1 : ℕ) • β')^(k : ℕ) * α' ^((a+1) * (l+1 : ℕ)) * γ' ^((b+1) * (l+1 : ℕ))
 
+-- def η : (Fin q × Fin q) → (Fin (m  K) × Fin (n K q)) → K := fun (a,b) (l,k) =>
+--   ((a+1) + (b+1) * β')^(k : ℤ) * α' ^((a+1) * (l+1 : ℤ)) * γ' ^((b+1) * (l+1 : ℤ))
+
 include hq0 h2mq in
 lemma one_le_n : 1 ≤ n K q := by {
   simp only [n]
@@ -203,7 +206,8 @@ lemma one_le_n : 1 ≤ n K q := by {
   · apply Nat.le_of_dvd (Nat.pow_pos hq0) h2mq
   · exact Nat.zero_lt_succ (Nat.mul 2 (2 * h K + 1) + 1)}
 
-abbrev c_p := (c₁ K α' β' γ')^(n K q - 1) * (c₁ K α' β' γ')^(m K * q) * ((c₁ K α' β' γ')^(m K * q))
+abbrev c_p := (c₁ K α' β' γ')^(n K q - 1) *
+  (c₁ K α' β' γ')^(m K * q) * ((c₁ K α' β' γ')^(m K * q))
 
 include hq0 h2mq in
 lemma c₁IsInt : IsIntegral ℤ ((((c₁ K α' β' γ')^(n K q - 1) * (c₁ K α' β' γ')^(m K * q) *
@@ -324,79 +328,68 @@ def c₂ : ℝ := (c₁ K α' β' γ') ^ (1 + 2*(m K) * Nat.sqrt (2*(m K)))
 -- def c₃ : ℝ := ((c₂ K α' β' γ') * (q + q* house β')*
 --   (house α')^(Nat.sqrt (2*m K))*(house γ')^(Nat.sqrt (2*m K)))
 
-def c₃ := max 1 (|↑(c₁ K α' β' γ')| * house (( α' ^ (1 + (t.1 : ℕ)
-    + (t.1 : ℕ) * (u.1 : ℕ) + (u.1 : ℕ)))) *
-  house (γ' ^ (1 + (u.1 : ℕ) + (u.1 : ℕ) * (t.2 : ℕ) + (t.2 : ℕ))) *
-  house ((↑(1 + (t.1 : ℕ)) + (t.2 : ℕ) * β' + β') ^ (u.2 : ℕ)))
-
-#check house_mul_le
-
-#check house_intCast
+abbrev c₃ := max 1 (|↑(c_p K α' β' γ' q)| *
+       house ((((t.1 : ℕ) + 1) + ((t.2 : ℕ) + 1) • β') ^ (u.2 : ℕ)) *
+           house (α' ^ (((t.1 : ℕ)+1) * ((u.1 : ℕ) + 1))) *
+           house (γ' ^ (((t.2 : ℕ) + 1) * ((u.1 : ℕ) + 1))))
 
 include hq0 h2mq in
 lemma hMkl : ∀ (k : Fin (m K) × Fin (n K q)) (l : Fin q × Fin q),
   house ((algebraMap ((𝓞 K)) K)
   (M K α' β' γ' q u t (c_p K α' β' γ' q)
   (c₁IsInt K α' β' γ' q h2mq u t hq0) k l)) ≤
-  (c₃ K α' β' γ' q u t) ^ (n K q : ℝ) * ↑(n K q : ℝ)^(((n K q - 1)/2) : ℝ) := by sorry
-    -- simp (config := { unfoldPartialApp := true }) only [M, η]
-    -- simp only [RingOfIntegers.restrict, zpow_natCast, zsmul_eq_mul, RingOfIntegers.map_mk]
-    -- intros k_1 l
-    -- have f : (-1 / 2 + ↑(n K q : ℝ) * (1 / 2)) = (((n K q : ℝ) - 1)/2) := by ring
-    -- ring_nf
-    -- calc _ ≤ house (↑(c₁ K α' β' γ') * (α' ^ (1 + (t.1 : ℕ)
-    --+ (t.1 : ℕ) * (u.1 : ℕ) + (u.1 : ℕ)))) *
-    --   house (γ' ^ (1 + (u.1 : ℕ) + (u.1 : ℕ) * (t.2 : ℕ) + (t.2 : ℕ))) *
-    --   house ((↑(1 + (t.1 : ℕ)) + (t.2 : ℕ) * β' + β') ^ (u.2 : ℕ)) := by {
-    --   norm_cast
-    --   trans; apply house_mul_le
-    --   · apply mul_le_mul_of_nonneg_right
-    --     · apply house_mul_le
-    --     · apply house_nonneg
-    --     }
-    --     _ ≤ house ((c₁ K α' β' γ') : K) * house (( α' ^ (1 + (t.1 : ℕ)
-    --         + (t.1 : ℕ) * (u.1 : ℕ) + (u.1 : ℕ)))) *
-    --       house (γ' ^ (1 + (u.1 : ℕ) + (u.1 : ℕ) * (t.2 : ℕ) + (t.2 : ℕ))) *
-    --       house ((↑(1 + (t.1 : ℕ)) + (t.2 : ℕ) * β' + β') ^ (u.2 : ℕ)) := by {
-    --     rw [mul_assoc, mul_assoc]
-    --     apply mul_le_mul_of_nonneg_right
-    --     · apply house_mul_le
-    --     · rw [mul_nonneg_iff]
-    --       constructor; constructor
-    --       · apply house_nonneg
-    --       · apply house_nonneg}
-    --     _ ≤  (c₃ K α' β' γ' q t u) := by {
-    --       simp only [house_intCast, Int.cast_abs]
-    --       apply le_max_right
-    --     }
-    --     _ ≤ (c₃ K α' β' γ' q t u)^(n K q : ℝ) := by {
-    --       nth_rw 1 [← Real.rpow_one ((c₃ K α' β' γ' q t u))]
-    --       apply Real.rpow_le_rpow_of_exponent_le
-    --       · apply le_max_left
-    --       · simp only [Nat.one_le_cast]; exact one_le_n K q hq0 hq}
-    --     _ ≤ (c₃ K α' β' γ' q t u)^(n K q : ℝ) * ↑(n K q : ℝ)^(((n K q - 1)/2) : ℝ) := by {
-    --       nth_rw  1 [← mul_one (c₃ K α' β' γ' q t u ^ (n K q : ℝ))]
-    --       apply mul_le_mul_of_nonneg_left
-    --       · apply Real.one_le_rpow
-    --         · simp only [Nat.one_le_cast]; exact one_le_n K q hq0 hq
-    --         · apply div_nonneg
-    --           · simp only [sub_nonneg, Nat.one_le_cast]; exact one_le_n K q hq0 hq
-    --           · exact zero_le_two
-    --       · apply Real.rpow_nonneg
-    --         · simp only [c₃, Nat.cast_add, Nat.cast_one, le_max_iff, zero_le_one, true_or]}
-    --     _ = (c₃ K α' β' γ' q t u)^(n K q : ℝ) *
-    --(n K q : ℝ)^(-1 / 2 + n K q * (1 / 2) : ℝ) := by rw [f]
+  (c₃ K α' β' γ' q u t) ^ (n K q : ℝ) * ↑(n K q : ℝ)^(((n K q - 1)/2) : ℝ) := by {
+    simp (config := { unfoldPartialApp := true }) only [M, η]
+    simp only [RingOfIntegers.restrict, zsmul_eq_mul, RingOfIntegers.map_mk]
+    intros k_1 l
+    have f : (-1 / 2 + ↑(n K q : ℝ) * (1 / 2)) = (((n K q : ℝ) - 1)/2) := by ring
+    calc _ ≤ house (c_p K α' β' γ' q : K) *
+       house ((((t.1 : ℕ) + 1) + ((t.2 : ℕ) + 1) • β') ^ (u.2 : ℕ)) *
+           house (α' ^ (((t.1 : ℕ)+1) * ((u.1 : ℕ) + 1))) *
+           house (γ' ^ (((t.2 : ℕ) + 1) * ((u.1 : ℕ) + 1))) := ?_
+
+        _ ≤  (c₃ K α' β' γ' q u t) := ?_
+        _ ≤ (c₃ K α' β' γ' q u t)^(n K q : ℝ) := ?_
+        _ ≤ (c₃ K α' β' γ' q u t)^(n K q : ℝ) * ↑(n K q : ℝ)^(((n K q - 1)/2) : ℝ) := ?_
+
+    ·   trans
+        apply house_mul_le
+        simp only [Int.cast_mul, Int.cast_pow, Nat.cast_add, Nat.cast_one, nsmul_eq_mul, le_refl]
+        trans
+        apply mul_le_mul_of_nonneg_left
+        · rw [mul_assoc]
+        apply house_nonneg
+        trans
+        apply mul_le_mul_of_nonneg_left
+        apply house_mul_le
+        apply house_nonneg
+        trans
+        · apply mul_le_mul_of_nonneg_left
+          · apply mul_le_mul_of_nonneg_left
+            · apply house_mul_le
+            apply house_nonneg
+          · apply house_nonneg
+        rw [← mul_assoc]
+        rw [← mul_assoc]
+    ·     simp only [house_intCast, Int.cast_abs]
+          unfold c₃
+          apply le_max_right
+    ·   nth_rw 1 [← Real.rpow_one ((c₃ K α' β' γ' q u t))]
+        apply Real.rpow_le_rpow_of_exponent_le
+        · apply le_max_left
+        · simp only [Nat.one_le_cast]; exact one_le_n K q h2mq hq0
+    ·     nth_rw  1 [← mul_one (c₃ K α' β' γ' q u t ^ (n K q : ℝ))]
+          apply mul_le_mul_of_nonneg_left
+          · apply Real.one_le_rpow
+            · simp only [Nat.one_le_cast]; exact one_le_n K q h2mq hq0
+            · apply div_nonneg
+              · simp only [sub_nonneg, Nat.one_le_cast]; exact one_le_n K q h2mq hq0
+              · exact zero_le_two
+          · apply Real.rpow_nonneg
+            · simp only [c₃, Nat.cast_add, Nat.cast_one, le_max_iff, zero_le_one, true_or]}
 
 -- def c₄ : ℝ := ((c₂ K α' β' γ') * ((q : ℝ) + (q : ℝ) * house β')*
 --     (house α')^(Nat.sqrt (2*m K))*(house γ')^(Nat.sqrt (2*m K)))
-open NumberField.house in
-
-def c1 := c₁ K
-
-def c₄ := max 1 ((c1 K α' β' γ') *
-  (c1 K α' β' γ' * ↑(q * q : ℝ) *
-  (c₃ K α' β' γ' q u t ^ ↑(n K q : ℝ) * ↑(n K q : ℝ) ^ ((↑(n K q : ℝ) - 1) / 2))) ^
-  (↑(m K * n K q : ℝ) / (↑(q * q : ℝ) - ↑(m K * n K q : ℝ))))
 
 def lemma82 := NumberField.house.exists_ne_zero_int_vec_house_le K
   (M K α' β' γ' q u t (c_p K α' β' γ' q) (c₁IsInt K α' β' γ' q h2mq u t hq0))
@@ -409,20 +402,31 @@ def lemma82 := NumberField.house.exists_ne_zero_int_vec_house_le K
   (hMkl K α' β' γ' q h2mq u t hq0)
   (cardmn K q)
 
+open NumberField.house in
+def c1 := c₁ K
+
+def c₄ := max 1 ((c1 K α' β' γ') *
+  (c1 K α' β' γ' * ↑(q * q : ℝ) *
+  (c₃ K α' β' γ' q u t ^ ↑(n K q : ℝ) * ↑(n K q : ℝ) ^ ((↑(n K q : ℝ) - 1) / 2))) ^
+  (↑(m K * n K q : ℝ) / (↑(q * q : ℝ) - ↑(m K * n K q : ℝ))))
+
+open NumberField.house in
 include hq0 h2mq hdec hirr htriv habc in
 lemma fromLemma82_bound : ∃ (η' : Fin q × Fin q → 𝓞 K),
-  house ((η' l).1) ≤ (c₄ K α' β' γ' q u t) ^ (n K q : ℝ) * ((n K q)^((1/2)*((n K q)+1)) : ℝ) := by
+  house ((η' l).1) ≤ (c₄ K α' β' γ' q u t) ^
+    (n K q : ℝ) * ((n K q)^((1/2)*((n K q)+1)) : ℝ) := by
   obtain ⟨η', ⟨htneq0, ⟨hMt0,hbound⟩⟩⟩ :=
   lemma82 K α β hirr htriv σ hdec α' β' γ' habc q h2mq u t hq0
   use η'
   have := hbound l
   calc _ ≤ (c₄ K α' β' γ' q u t) := by {
-           unfold c₄
-           simp only [Real.rpow_natCast, le_max_iff]
-           right
-           simp only [c1] at *
-           unfold c₁
-           sorry
+      unfold c₄
+      simp only [Real.rpow_natCast, le_max_iff]
+      right
+      simp only [c1] at *
+      sorry
+      ---unfold c₁
+      -- sorry
   --exact mod_cast this
   --unfold c₁
   --exact mod_cast this
@@ -449,6 +453,7 @@ def R : (Fin (m K) × Fin (n K q)) → ℂ → ℂ := fun (l,k) x =>
 
 -- lemma i ≠ j → ρ ... i ≠ ρ ... j
 -- needs β irrat and α ≠ 1
+include hirr in
 lemma hdistinc : ∀ (i j : Fin (q * q)), i ≠ j →
   (ρ α β q (finProdFinEquiv.symm i)) ≠ (ρ α β q (finProdFinEquiv.symm j)) := by
   intros i j hij
@@ -461,13 +466,13 @@ lemma hdistinc : ∀ (i j : Fin (q * q)), i ≠ j →
 
 def V := vandermonde (fun (t : Fin (q*q)) => ρ α β q (finProdFinEquiv.symm t))
 
-include α β in
+include α β hirr in
 lemma vandermonde_det_ne_zero : det (V α β q) ≠ 0 := by
   unfold V
   by_contra H
   rw [Matrix.det_vandermonde_eq_zero_iff] at H
   rcases H with ⟨i, j, ⟨hij, hij'⟩⟩
-  have := hdistinc α β q i j
+  have := hdistinc α β hirr q i j
   simp only [ne_eq, Prod.mk.injEq, not_and] at this
   apply this
   intros H'
@@ -500,39 +505,95 @@ lemma V_mul_η_eq_zero : V * ηvec = 0 := sorry
 -- ηvec = 0
 -- linear algebra
 
-include α β in
+include α β hirr in
 lemma ρ_i_distinct_blah
   (hVecMulEq0 : (V α β q).vecMul
       (fun t => σ (η K α' β' γ' q (finProdFinEquiv.symm t) u)) = 0) :
       (fun t => σ (η K α' β' γ' q (finProdFinEquiv.symm t) u)) = 0 := by {
-  have M := vandermonde_det_ne_zero α β q
+  have M := vandermonde_det_ne_zero α β hirr q
   apply Matrix.eq_zero_of_vecMul_eq_zero M hVecMulEq0}
 
-include α β hirr htriv K σ hdec α' β' γ' habc q hq0 h2mq in
+include α β hirr htriv K σ hdec α' β' γ' habc q hq0 h2mq t in
 lemma R_nonzero (hdistinct : ∀ (i j : Fin q × Fin q), i ≠ j → (ρ α β q i) ≠ (ρ α β q j)) :
   (R K α β σ α' β' γ' q u) ≠ 0 := by {
   by_contra H
-  have distinct_ρ := ρ_i_distinct_blah K α β σ α' β' γ' q u
-  have det_eq_zero := vecMul_eq_zero_of_R_zero K α β hirr htriv σ hdec α' β' γ' habc q h2mq u hq0 H
+  have distinct_ρ := ρ_i_distinct_blah K α β hirr σ α' β' γ' q u
+  have det_eq_zero :=
+    vecMul_eq_zero_of_R_zero K α β hirr htriv σ hdec α' β' γ' habc q h2mq u hq0 H
   have contradiction := distinct_ρ det_eq_zero
   rw [funext_iff] at contradiction
   simp only [Pi.zero_apply, _root_.map_eq_zero] at contradiction
   have nonzero_eta := eta_ne_zero K α β hirr htriv σ α' β' γ' habc q
-  apply nonzero_eta
-  · sorry
-  · sorry
-  sorry}
+  apply nonzero_eta u t
+  specialize contradiction (finProdFinEquiv t)
+  rw [Equiv.symm_apply_apply] at contradiction
+  apply contradiction
+}
 
 open Differentiable Complex
 
-lemma isHolomorphicRFunction (_ : ℂ) : Differentiable ℂ (R K α β σ α' β' γ' q u) := by
+lemma isHolomorphicRFunction (_ : ℂ) :
+    Differentiable ℂ (R K α β σ α' β' γ' q u) := by
   apply Differentiable.sum
   intros t ht
   apply mul (differentiable_const _)
-  apply Differentiable.comp differentiable_exp (mul (differentiable_const _) (differentiable_id'))
+  apply Differentiable.comp differentiable_exp
+    (mul (differentiable_const _) (differentiable_id'))
 
 lemma RFunctionIsAnalyticAt : AnalyticAt ℂ (R K α β σ α' β' γ' q u) u.1 :=
   Differentiable.analyticAt (isHolomorphicRFunction K α β σ α' β' γ' q u α) _
+
+-- ∑ x, σ (η K α' β' γ' q (finProdFinEquiv.symm x) u)
+-- * ρ α β q (finProdFinEquiv.symm x) ^ ↑t = 0
+--induction with k
+
+lemma iteratedDeriv_of_R : iteratedDeriv k (R K α β σ α' β' γ' q u) =
+ fun x => ∑ t : Fin q × Fin q, ((σ (η K α' β' γ' q t u)) *
+  Complex.exp ((ρ α β q t) * x)) * (ρ α β q t)^k  := by {
+  induction' k with k hk
+  · simp only [iteratedDeriv_zero, pow_zero, mul_one]
+    rfl
+  · simp only [iteratedDeriv_succ]
+    simp only at hk
+    conv => enter [1]; rw [hk]
+    funext x
+    sorry
+
+
+    -- intros x
+    -- have := isHolomorphicRFunction K α β σ α' β' γ' q u x
+    -- unfold Differentiable at this
+    -- unfold DifferentiableAt at this
+    -- specialize this x
+    -- unfold R at this x
+    -- simp only [Prod.mk.eta] at this x
+
+
+
+
+
+
+    -- simp only [deriv, mul_assoc]
+    -- refine HasDerivAt.sum ?_
+    -- intros i hi
+    -- refine HasDerivAt.const_mul (σ (η K α' β' γ' q i u)) ?_
+    -- apply  HasDerivAt.comp
+
+
+
+
+
+
+  }
+
+lemma iteratedDeriv_of_R_is_zero : (∀ x, (R K α β σ α' β' γ' q u) x = 0) →
+   iteratedDeriv k (R K α β σ α' β' γ' q u) x = 0 := sorry
+
+#exit
+
+lemma iteratedDeriv_of_R_expansion (k : ℕ) :
+   (log α) ^(-k : ℤ) * iteratedDeriv k (R K α β σ α' β' γ' q u) l =
+   (((a) + (b) • β')^(k)) * α' ^ (a*l) * γ' ^ (b*l) := sorry
 
 def min_value_over_finset {γ : Type _} (f : Π _ : Finset.range ((m K + 1)), γ)
   [Fintype s] [Nonempty s] [LinearOrder γ] : γ := by
