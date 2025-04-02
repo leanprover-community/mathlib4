@@ -11,12 +11,9 @@ import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 This file provides tooling for manipulating constructible sets in the prime spectrum of a ring.
 
-## TODO
-
-Link to constructible sets in a topological space.
 -/
 
-open Finset
+open Finset Topology
 open scoped Polynomial
 
 namespace PrimeSpectrum
@@ -102,4 +99,72 @@ lemma toSet_map (f : R →+* S) (s : ConstructibleSetData R) :
 /-- The degree bound on a constructible set for Chevalley's theorem for the inclusion `R ↪ R[X]`. -/
 def degBound (S : ConstructibleSetData R[X]) : ℕ := S.sup fun C ↦ ∑ i, (C.g i).degree.succ
 
-end PrimeSpectrum.ConstructibleSetData
+lemma isConstructible_toSet (S : ConstructibleSetData R) :
+    IsConstructible S.toSet := by
+  refine IsConstructible.biUnion S.finite_toSet fun _ _ ↦ .sdiff ?_ ?_
+  · rw [← isConstructible_compl]
+    exact (isRetrocompact_zeroLocus_compl _ (Set.finite_range _)).isConstructible
+      (isClosed_zeroLocus _).isOpen_compl
+  · rw [← isConstructible_compl]
+    exact (isRetrocompact_zeroLocus_compl _ (Set.finite_singleton _)).isConstructible
+      (isClosed_zeroLocus _).isOpen_compl
+
+end ConstructibleSetData
+
+lemma exists_constructibleSetData_iff {s : Set (PrimeSpectrum R)} :
+    (∃ S : ConstructibleSetData R, S.toSet = s) ↔ IsConstructible s := by
+  refine ⟨fun ⟨S, H⟩ ↦ H ▸ S.isConstructible_toSet, fun H ↦ ?_⟩
+  induction s, H using IsConstructible.induction_of_isTopologicalBasis
+      _ (isTopologicalBasis_basic_opens (R := R)) with
+  | isCompact_basis i => exact isCompact_basicOpen _
+  | sdiff i s hs =>
+    have : Finite s := hs
+    refine ⟨{⟨i, Nat.card s, fun i ↦ ((Finite.equivFinOfCardEq rfl).symm i).1⟩}, ?_⟩
+    simp only [ConstructibleSetData.toSet, Finset.mem_singleton, BasicConstructibleSetData.toSet,
+      Set.iUnion_iUnion_eq_left, basicOpen_eq_zeroLocus_compl, ← Set.compl_iInter₂,
+        compl_sdiff_compl, ← zeroLocus_iUnion₂, Set.biUnion_of_singleton]
+    congr! 2
+    ext
+    simp [← (Finite.equivFinOfCardEq rfl).exists_congr_right]
+  | union s hs t ht Hs Ht =>
+    obtain ⟨S, rfl⟩ := Hs
+    obtain ⟨T, rfl⟩ := Ht
+    refine ⟨S ∪ T, ?_⟩
+    simp only [ConstructibleSetData.toSet, Set.biUnion_union, ← Finset.mem_coe, Finset.coe_union]
+
+universe u in
+@[stacks 00F8 "without the finite presentation part"]
+-- TODO: show that the constructed `f` is of finite presentation
+lemma exists_range_eq_of_isConstructible {R : Type u} [CommRing R]
+    {s : Set (PrimeSpectrum R)} (hs : IsConstructible s) :
+    ∃ (S : Type u) (_ : CommRing S) (f : R →+* S), Set.range (comap f) = s := by
+  obtain ⟨s, rfl⟩ := exists_constructibleSetData_iff.mpr hs
+  refine ⟨Π i : s, Localization.Away (Ideal.Quotient.mk (Ideal.span (Set.range i.1.g)) i.1.f),
+    inferInstance, algebraMap _ _, ?_⟩
+  rw [coe_comap, ← iUnion_range_specComap_comp_evalRingHom, ConstructibleSetData.toSet]
+  simp_rw [← Finset.mem_coe, Set.biUnion_eq_iUnion]
+  congr! with _ _ C
+  let I := Ideal.span (Set.range C.1.g)
+  let f := Ideal.Quotient.mk I C.1.f
+  trans comap (Ideal.Quotient.mk I) '' (Set.range (comap (algebraMap _ (Localization.Away f))))
+  · rw [← Set.range_comp]; rfl
+  · rw [localization_away_comap_range _ f, ← comap_basicOpen, TopologicalSpace.Opens.coe_comap,
+      Set.image_preimage_eq_inter_range, range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
+      BasicConstructibleSetData.toSet, Set.diff_eq_compl_inter, basicOpen_eq_zeroLocus_compl,
+      Ideal.mk_ker, zeroLocus_span]
+
+@[stacks 00I0 "(1)"]
+lemma isClosed_of_stableUnderSpecialization_of_isConstructible {R : Type*} [CommRing R]
+    {s : Set (PrimeSpectrum R)} (hs : StableUnderSpecialization s) (hs' : IsConstructible s) :
+    IsClosed s := by
+  obtain ⟨S, _, f, rfl⟩ := exists_range_eq_of_isConstructible hs'
+  exact isClosed_range_of_stableUnderSpecialization _ hs
+
+@[stacks 00I0 "(1)"]
+lemma isOpen_of_stableUnderGeneralization_of_isConstructible {R : Type*} [CommRing R]
+    {s : Set (PrimeSpectrum R)} (hs : StableUnderGeneralization s) (hs' : IsConstructible s) :
+    IsOpen s := by
+  rw [← isClosed_compl_iff]
+  exact isClosed_of_stableUnderSpecialization_of_isConstructible hs.compl hs'.compl
+
+end PrimeSpectrum

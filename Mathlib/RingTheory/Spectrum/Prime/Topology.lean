@@ -602,11 +602,6 @@ instance : QuasiSeparatedSpace (PrimeSpectrum R) :=
     simpa [← TopologicalSpace.Opens.coe_inf, ← basicOpen_mul, -basicOpen_eq_zeroLocus_compl]
       using isCompact_basicOpen _
 
--- TODO: Abstract out this lemma to spectral spaces
-lemma isRetrocompact_iff {U : Set (PrimeSpectrum R)} (hU : IsOpen U) :
-    IsRetrocompact U ↔ IsCompact U :=
-  isTopologicalBasis_basic_opens.isRetrocompact_iff_isCompact isCompact_basicOpen hU
-
 end BasicOpen
 
 section DiscreteTopology
@@ -891,6 +886,29 @@ lemma exists_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
 @[deprecated (since := "2024-11-11")]
 alias exists_idempotent_basicOpen_eq_of_is_clopen := exists_idempotent_basicOpen_eq_of_isClopen
 
+-- TODO: Abstract out this lemma to spectral spaces
+lemma isRetrocompact_iff {U : Set (PrimeSpectrum R)} (hU : IsOpen U) :
+    IsRetrocompact U ↔ IsCompact U :=
+  isTopologicalBasis_basic_opens.isRetrocompact_iff_isCompact isCompact_basicOpen hU
+
+lemma isRetrocompact_zeroLocus_compl (s : Set R) (hs : s.Finite) :
+    IsRetrocompact (zeroLocus s)ᶜ :=
+  (isRetrocompact_iff (isClosed_zeroLocus _).isOpen_compl).mpr
+    (isCompact_isOpen_iff.mpr ⟨hs.toFinset, by simp⟩).1
+
+lemma isRetrocompact_zeroLocus_compl_of_fg (I : Ideal R) (hI : I.FG) :
+    IsRetrocompact (zeroLocus (I : Set R))ᶜ := by
+  obtain ⟨s, rfl⟩ := hI
+  rw [zeroLocus_span]
+  exact isRetrocompact_zeroLocus_compl _ s.finite_toSet
+
+lemma isRetrocompact_basicOpen (f : R) :
+    IsRetrocompact (basicOpen f : Set (PrimeSpectrum R)) := by
+  simpa using isRetrocompact_zeroLocus_compl _ (Set.finite_singleton f)
+
+lemma isConstructible_basicOpen (f : R) :
+    IsConstructible (basicOpen f : Set (PrimeSpectrum R)) :=
+  (isRetrocompact_basicOpen f).isConstructible (basicOpen f).2
 section IsIntegral
 
 open Polynomial
