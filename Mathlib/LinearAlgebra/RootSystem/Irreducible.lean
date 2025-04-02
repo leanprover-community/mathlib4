@@ -255,10 +255,17 @@ lemma l25 {K : Type*} [Field K] [Module K M] [Module K M] [Module K N]
   have : d ∈ span K (range P.coroot') := by
     simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top]
   refine Submodule.span_induction ?_ ?_ ?_ ?_ this
-  · rintro y ⟨⟨z, hz⟩, ⟨⟨w, hw⟩, rfl⟩⟩; apply lieCharacter_apply_lie
-  · exact χ.map_zero
-  · intro y z _ _ hy hz; rw [LieHom.map_add, hy, hz, add_zero]
-  · intro t y _ hy; rw [LieHom.map_smul, hy, smul_zero]
+  · intro x h
+    simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top, mem_range]
+    obtain ⟨w, h⟩ := h
+    subst h
+    simp_all only [PerfectPairing.flip_apply_apply]
+  · simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top, LinearMap.zero_apply]
+  · intro x y hx_1 hy_1 a a_1
+    simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top, LinearMap.add_apply, add_zero]
+  · intro a x hx_1 a_1
+    simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top, LinearMap.smul_apply,
+      smul_eq_mul, mul_zero]
 
 
 
@@ -292,7 +299,7 @@ lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
     subst hu
     simp_all only [ne_eq, mem_univ, implies_true, image_univ, RootSystem.span_root_eq_top,
       top_le_iff]
-  contradiction
+  · contradiction
   by_contra hn
   have lll (i : ι) : q ≤ ker (P.coroot' i) := by
     subst hn
@@ -318,8 +325,6 @@ lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
     subst hn
     simp_all only [ne_eq, mem_empty_iff_false, not_false_eq_true, implies_true, LinearMap.mem_ker, image_univ,
       RootSystem.span_coroot_eq_top, IsEmpty.forall_iff, forall_const, Submodule.dualAnnihilator_eq_top_iff]
-
-
   have := (Module.forall_dual_apply_eq_zero_iff K v1).1 help
   contradiction
 
