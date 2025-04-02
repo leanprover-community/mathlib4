@@ -112,6 +112,7 @@ lemma antilipschitzWith (hf : f.Splits) : AntilipschitzWith hf.antilipschitzCons
 lemma isClosedMap (hf : f.Splits) : IsClosedMap f :=
   (hf.antilipschitzWith.isClosedEmbedding f.uniformContinuous).isClosedMap
 
+omit [CompleteSpace F] [CompleteSpace G] in
 lemma disjoint_aux  {g : F →L[𝕜] G} {F₁ F₂ : Submodule 𝕜 F} {G' : Submodule 𝕜 G}
     (hF : Disjoint F₁ F₂) (hG' : Disjoint (LinearMap.range g) G') (hg : Injective g) :
     Disjoint (Submodule.map g F₁) (Submodule.map g F₂ + G') := by
@@ -140,10 +141,6 @@ lemma disjoint_aux  {g : F →L[𝕜] G} {F₁ F₂ : Submodule 𝕜 F} {G' : Su
   -- Now, y₀ ∈ range f and y₀ ∈ F', hence y₀ = 0.
   have : y₀ = 0 := hF y₀ ((hg aux) ▸ hx₀) hy₀
   simp [hxy, ← hgy₀, this]
-
-lemma codisjoint_of_eq_top {F' F'' : Submodule 𝕜 F} (h : F' + F'' = ⊤) : Codisjoint F' F' := sorry
-
-lemma _root_.Submodule.codisjoint_add_eq_top {F' F'' : Submodule 𝕜 F} (h : Codisjoint F' F'') : F' + F'' = ⊤ := sorry
 
 /-- The composition of split continuous linear maps between real or complex Banach spaces splits. -/
 lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Splits := by
@@ -183,9 +180,12 @@ lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Spl
               sorry
             _ = Submodule.map g ⊤ + hg.complement := by
               congr
-              exact Submodule.codisjoint_add_eq_top hf.complement_isCompl.2
+              rw [Submodule.add_eq_sup, ← codisjoint_iff]
+              exact hf.complement_isCompl.2
             _ = LinearMap.range g + hg.complement := by rw [LinearMap.range_eq_map]
-            _ = ⊤ := Submodule.codisjoint_add_eq_top hg.complement_isCompl.2
+            _ = ⊤ := by
+              rw [Submodule.add_eq_sup, ← codisjoint_iff]
+              exact hg.complement_isCompl.2
         sorry
 
 lemma compCLE_left [CompleteSpace F'] {f₀ : F' ≃L[𝕜] E} (hf : f.Splits) :
