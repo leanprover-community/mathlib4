@@ -198,7 +198,7 @@ jobs:
             MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
             lake exe cache get || (sleep 1; lake exe cache get)
             lake build Plausible ProofWidgets
-            lake build --no-build Mathlib
+            lake build Mathlib  #--no-build Mathlib
           fi
 
       - name: build archive
