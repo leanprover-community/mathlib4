@@ -206,6 +206,12 @@ theorem pathComposition_naturality {C : Type u} {D : Type u₁}
     (F : C ⥤ D) : Cat.freeMap (F.toPrefunctor) ⋙ pathComposition D = pathComposition C ⋙ F :=
   Paths.ext_functor rfl (by simp)
 
+/-- Naturality of `Paths.of`, which defines a natural transformation
+` 𝟭 _⟶ Cat.free ⋙ Quiv.forget`. -/
+lemma pathsOf_freeMap_toPrefunctor
+    {V : Type u} {W : Type u₁} [Quiver.{v + 1} V] [Quiver.{v₁ + 1} W] (F : V ⥤q W) :
+  Paths.of V ⋙q (Cat.freeMap F).toPrefunctor = F ⋙q Paths.of W := rfl
+
 /-- The left triangle identity of `Cat.free ⊣ Quiv.forget` as a natural isomorphism -/
 def freeMapPathsOfCompPathCompositionIso (V : Type u) [Quiver.{v + 1} V] :
     Cat.freeMap (Paths.of V) ⋙ pathComposition (Paths V) ≅ 𝟭 (Paths V) :=
