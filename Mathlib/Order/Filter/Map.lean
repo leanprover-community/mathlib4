@@ -763,6 +763,16 @@ theorem inf_principal_eq_bot_iff_comap {F : Filter α} {s : Set α} :
     F ⊓ 𝓟 s = ⊥ ↔ comap ((↑) : s → α) F = ⊥ := by
   rw [principal_eq_map_coe_top s, ← Filter.push_pull', inf_top_eq, map_eq_bot_iff]
 
+lemma map_generate_le_generate_preimage_preimage (U : Set (Set β)) (f : β → α) :
+    map f (generate U) ≤ generate ((f ⁻¹' ·) ⁻¹' U) := by
+  rw [le_generate_iff]
+  exact fun u hu ↦ mem_generate_of_mem hu
+
+lemma generate_image_preimage_le_comap (U : Set (Set α)) (f : β → α) :
+    generate ((f ⁻¹' ·) '' U) ≤ comap f (generate U) := by
+  rw [← map_le_iff_le_comap, le_generate_iff]
+  exact fun u hu ↦ mem_generate_of_mem ⟨u, hu, rfl⟩
+
 section Applicative
 
 theorem singleton_mem_pure {a : α} : {a} ∈ (pure a : Filter α) :=

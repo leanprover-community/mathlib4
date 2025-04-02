@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
 -/
 import Mathlib.Logic.Function.Iterate
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 # Flows and invariant sets

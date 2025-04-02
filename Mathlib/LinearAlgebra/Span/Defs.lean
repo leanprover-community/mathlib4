@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
   Heather Macbeth
 -/
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # The span of a set of vectors, as a submodule
