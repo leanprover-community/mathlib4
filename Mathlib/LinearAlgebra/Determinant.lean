@@ -495,14 +495,13 @@ nonrec def Basis.det : M [⋀^ι]→ₗ[R] R where
     rename_i hι _
     intro inst v i x y
     cases Subsingleton.elim inst hι
-    simp only [e.toMatrix_update, LinearEquiv.map_add, Finsupp.coe_add]
-    exact det_updateCol_add (e.toMatrix v) i (e.repr x) (e.repr y)
+    simp only [e.toMatrix_update, LinearEquiv.map_add, Finsupp.coe_add, det_updateCol_add]
   map_update_smul' := by
     rename_i hι _
     intro inst u i c x
     cases Subsingleton.elim inst hι
     simp only [e.toMatrix_update, Algebra.id.smul_eq_mul, LinearEquiv.map_smul]
-    exact det_updateCol_smul (e.toMatrix u) i c (e.repr x)
+    apply det_updateCol_smul
   map_eq_zero_of_eq' := by
     intro v i j h hij
     dsimp only
