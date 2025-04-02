@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Normed.Module.Convex
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Data.Bundle
 import Mathlib.Geometry.Manifold.ChartedSpace
 
@@ -135,17 +136,27 @@ open scoped Manifold Topology ContDiff
 
 /-! ### Models with corners. -/
 
+/-- A normed space over an `RCLike` field is also a real normed space. -/
+instance (𝕜 E : Type*) [NontriviallyNormedField 𝕜] [RCLike 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : NormedSpace ℝ E := by
+  sorry
 
 /-- A structure containing information on the way a space `H` embeds in a
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a `C^n` manifold with model space `H`, and model vector space `E`.
 
-We require two conditions `uniqueDiffOn'` and `target_subset_closure_interior`, which
-are satisfied in the relevant cases (where `range I = univ` or a half space or a quadrant) and
-useful for technical reasons. The former makes sure that manifold derivatives are uniquely
-defined, the latter ensures that for `C^2` maps the second derivatives are symmetric even for points
-on the boundary, as these are limit points of interior points where symmetry holds. If further
-conditions turn out to be useful, they can be added here.
+We require three conditions `uniqueDiffOn'`, `target_subset_closure_interior` and
+`convex_interior_range`, which are satisfied in the relevant cases
+(where `range I = univ` or a half space or a quadrant) and useful for technical reasons.
+The former makes sure that manifold derivatives are uniquely defined,
+the second condition ensures that for `C^2` maps the second derivatives are symmetric even for
+points on the boundary, as these are limit points of interior points where symmetry holds.
+The last condition is required for a more subtle reason: a complex model with corners should also
+be a real model; since unique differentiability over `ℂ` is stronger than over `ℝ`, asking for just
+unique differentiability is too weak for this. At the same time, condition `convex_interior_range`
+is satisfied by all examples in practice, and also implies the other two conditions over `ℝ` or `ℂ`.
+  XXX is that actually true??? I think not!
+If further conditions turn out to be useful, they can be added here.
 -/
 @[ext]
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
@@ -154,6 +165,8 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
   source_eq : source = univ
   uniqueDiffOn' : UniqueDiffOn 𝕜 toPartialEquiv.target
   target_subset_closure_interior : toPartialEquiv.target ⊆ closure (interior toPartialEquiv.target)
+  convex_interior_range: ∀ h: IsRCLikeNormedField 𝕜,
+    letI := IsRCLikeNormedField.rclike 𝕜; Convex ℝ (interior (range toPartialEquiv))
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 
