@@ -53,21 +53,15 @@ variable {C : Type*} [Category C] {V : Type u₁} [Quiver.{v₁ + 1} V]
 
 /-- A natural transformation between `F G : Paths V ⥤ C` is defined by its components and
 its unary naturality squares. -/
-def liftNatTrans {C} [Category C] {F G : Paths V ⥤ C} (α_app : (v : V) → (F.obj v ⟶ G.obj v))
+@[simps]
+def liftNatTrans {F G : Paths V ⥤ C} (α_app : (v : V) → (F.obj v ⟶ G.obj v))
     (α_nat : {X Y : V} → (f : X ⟶ Y) →
       F.map (Quiver.Hom.toPath f) ≫ α_app Y = α_app X ≫ G.map (Quiver.Hom.toPath f)) : F ⟶ G where
-        app := α_app
-        naturality := by
-          apply MorphismProperty.of_eq_top
-            (P := MorphismProperty.naturalityProperty (F₁ := F) α_app)
-          exact morphismProperty_eq_top_of_isMultiplicative _ _ α_nat
-
-@[simp]
-theorem liftNatTrans_app {C} [Category C] {F G : Paths V ⥤ C}
-    (α_app : (v : V) → (F.obj v ⟶ G.obj v))
-    (α_nat : {X Y : V} → (f : X ⟶ Y) →
-      F.map (Quiver.Hom.toPath f) ≫ α_app Y = α_app X ≫ G.map (Quiver.Hom.toPath f)) (x : V) :
-    (liftNatTrans α_app α_nat).app x = α_app x := rfl
+  app := α_app
+  naturality := by
+    apply MorphismProperty.of_eq_top
+      (P := MorphismProperty.naturalityProperty (F₁ := F) α_app)
+    exact morphismProperty_eq_top_of_isMultiplicative _ _ α_nat
 
 /-- A natural isomorphism between `F G : Paths V ⥤ C` is defined by its components and
 its unary naturality squares. -/
