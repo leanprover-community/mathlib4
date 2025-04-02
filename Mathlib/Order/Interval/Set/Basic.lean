@@ -521,13 +521,16 @@ theorem _root_.IsTop.Iic_eq (h : IsTop a) : Iic a = univ :=
 theorem _root_.IsBot.Ici_eq (h : IsBot a) : Ici a = univ :=
   eq_univ_of_forall h
 
-theorem Ioi_eq_empty_iff : Ioi a = ∅ ↔ IsMax a := by
+@[simp] theorem Ioi_eq_empty_iff : Ioi a = ∅ ↔ IsMax a := by
   simp only [isMax_iff_forall_not_lt, eq_empty_iff_forall_not_mem, mem_Ioi]
 
-theorem Iio_eq_empty_iff : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty_iff (α := αᵒᵈ)
+@[simp] theorem Iio_eq_empty_iff : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty_iff (α := αᵒᵈ)
 
-alias ⟨_, _root_.IsMax.Ioi_eq⟩ := Ioi_eq_empty_iff
-alias ⟨_, _root_.IsMin.Iio_eq⟩ := Iio_eq_empty_iff
+@[simp] alias ⟨_, _root_.IsMax.Ioi_eq⟩ := Ioi_eq_empty_iff
+@[simp] alias ⟨_, _root_.IsMin.Iio_eq⟩ := Iio_eq_empty_iff
+
+@[simp] lemma Iio_nonempty : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [nonempty_iff_ne_empty]
+@[simp] lemma Ioi_nonempty : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [nonempty_iff_ne_empty]
 
 theorem Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=
   ext fun _ => ⟨fun H => ⟨H.2.1, H.1⟩, fun H => ⟨H.2, H.1, H.2.trans h⟩⟩
@@ -801,6 +804,11 @@ theorem Ici_inj : Ici a = Ici b ↔ a = b :=
 theorem Iic_inj : Iic a = Iic b ↔ a = b :=
   Iic_injective.eq_iff
 
+@[simp]
+theorem Icc_inter_Icc_eq_singleton (hab : a ≤ b) (hbc : b ≤ c) : Icc a b ∩ Icc b c = {b} := by
+  rw [← Ici_inter_Iic, ← Iic_inter_Ici, inter_inter_inter_comm, Iic_inter_Ici]
+  simp [hab, hbc]
+
 end PartialOrder
 
 section OrderTop
@@ -811,7 +819,6 @@ theorem Ici_top [PartialOrder α] [OrderTop α] : Ici (⊤ : α) = {⊤} :=
 
 variable [Preorder α] [OrderTop α] {a : α}
 
-@[simp]
 theorem Ioi_top : Ioi (⊤ : α) = ∅ :=
   isMax_top.Ioi_eq
 
@@ -835,7 +842,6 @@ theorem Iic_bot [PartialOrder α] [OrderBot α] : Iic (⊥ : α) = {⊥} :=
 
 variable [Preorder α] [OrderBot α] {a : α}
 
-@[simp]
 theorem Iio_bot : Iio (⊥ : α) = ∅ :=
   isMin_bot.Iio_eq
 
@@ -1467,10 +1473,6 @@ variable [Lattice α] {a b c a₁ a₂ b₁ b₂ : α}
 theorem Icc_inter_Icc : Icc a₁ b₁ ∩ Icc a₂ b₂ = Icc (a₁ ⊔ a₂) (b₁ ⊓ b₂) := by
   simp only [Ici_inter_Iic.symm, Ici_inter_Ici.symm, Iic_inter_Iic.symm]; ac_rfl
 
-@[simp]
-theorem Icc_inter_Icc_eq_singleton (hab : a ≤ b) (hbc : b ≤ c) : Icc a b ∩ Icc b c = {b} := by
-  rw [Icc_inter_Icc, sup_of_le_right hab, inf_of_le_left hbc, Icc_self]
-
 end Both
 
 end Lattice
@@ -1664,10 +1666,10 @@ namespace Set
 @[simp] lemma Iic_True : Iic True = univ := by aesop
 @[simp] lemma Ici_False : Ici False = univ := by aesop
 @[simp] lemma Ici_True : Ici True = {True} := by aesop
-@[simp] lemma Iio_False : Iio False = ∅ := by aesop
+lemma Iio_False : Iio False = ∅ := by aesop
 @[simp] lemma Iio_True : Iio True = {False} := by aesop (add simp [Ioi, lt_iff_le_not_le])
 @[simp] lemma Ioi_False : Ioi False = {True} := by aesop (add simp [Ioi, lt_iff_le_not_le])
-@[simp] lemma Ioi_True : Ioi True = ∅ := by aesop
+lemma Ioi_True : Ioi True = ∅ := by aesop
 
 end Set
 

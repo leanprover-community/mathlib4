@@ -454,6 +454,11 @@ theorem constantCoeff_one : constantCoeff σ R 1 = 1 :=
 theorem constantCoeff_X (s : σ) : constantCoeff σ R (X s) = 0 :=
   coeff_zero_X s
 
+@[simp]
+theorem constantCoeff_smul {S : Type*} [Semiring S] [Module R S]
+    (φ : MvPowerSeries σ S) (a : R) :
+    constantCoeff σ S (a • φ) = a • constantCoeff σ S φ := rfl
+
 /-- If a multivariate formal power series is invertible,
  then so is its constant coefficient. -/
 theorem isUnit_constantCoeff (φ : MvPowerSeries σ R) (h : IsUnit φ) :
@@ -501,8 +506,8 @@ def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
         classical
         rw [coeff_one, coeff_one]
         split_ifs with h
-        · simp only [RingHom.map_ite_one_zero, ite_true, map_one, h]
-        · simp only [RingHom.map_ite_one_zero, ite_false, map_zero, h]
+        · simp only [ite_true, map_one, h]
+        · simp only [ite_false, map_zero, h]
   map_add' φ ψ :=
     ext fun n => show f ((coeff R n) (φ + ψ)) = f ((coeff R n) φ) + f ((coeff R n) ψ) by simp
   map_mul' φ ψ :=
@@ -673,9 +678,9 @@ theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ �
 /-- Vanishing of coefficients of powers of multivariate power series
 when the constant coefficient is nilpotent
 [N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2, proposition 3][bourbaki1981] -/
-theorem coeff_eq_zero_of_constantCoeff_nilpotent
-    {f : MvPowerSeries σ R} {m : ℕ} (hf : constantCoeff σ R f ^ m = 0)
-    {d : σ →₀ ℕ} {n : ℕ} (hn : m + degree d ≤ n) : coeff R d (f ^ n) = 0 := by
+theorem coeff_eq_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ R} {m : ℕ}
+    (hf : constantCoeff σ R f ^ m = 0) {d : σ →₀ ℕ} {n : ℕ} (hn : m + degree d ≤ n) :
+    coeff R d (f ^ n) = 0 := by
   classical
   rw [coeff_pow]
   apply sum_eq_zero
@@ -714,6 +719,7 @@ end CommSemiring
 section Algebra
 
 variable {A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+  {B : Type*} [Semiring B] [Algebra R B]
 
 instance : Algebra R (MvPowerSeries σ A) where
   algebraMap := (MvPowerSeries.map σ (algebraMap R A)).comp (C σ R)
@@ -731,6 +737,17 @@ theorem algebraMap_apply {r : R} :
     algebraMap R (MvPowerSeries σ A) r = C σ A (algebraMap R A r) := by
   change (MvPowerSeries.map σ (algebraMap R A)).comp (C σ R) r = _
   simp
+
+/-- Change of coefficients in mv power series, as an `AlgHom` -/
+def mapAlgHom (φ : A →ₐ[R] B) :
+    MvPowerSeries σ A →ₐ[R] MvPowerSeries σ B where
+  toRingHom   := MvPowerSeries.map σ φ
+  commutes' r := by
+    simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
+      MonoidHom.coe_coe, MvPowerSeries.algebraMap_apply, map_C, RingHom.coe_coe, AlgHom.commutes]
+
+theorem mapAlgHom_apply (φ : A →ₐ[R] B) (f : MvPowerSeries σ A) :
+    mapAlgHom (σ := σ) φ f = MvPowerSeries.map σ φ f := rfl
 
 instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries σ R)) :=
   ⟨⟨⊥, ⊤, by
@@ -847,6 +864,13 @@ variable (φ ψ)
 theorem coeToMvPowerSeries.ringHom_apply : coeToMvPowerSeries.ringHom φ = φ :=
   rfl
 
+theorem _root_.MvPowerSeries.monomial_one_eq
+    (e : σ →₀ ℕ) :
+    MvPowerSeries.monomial R e (1 : R) =
+      e.prod fun s n ↦ (MvPowerSeries.X s) ^ n := by
+  simp only [← coe_X, ← coe_pow, ← coe_monomial, monomial_eq, map_one, one_mul]
+  simp only [← coeToMvPowerSeries.ringHom_apply, ← map_finsupp_prod]
+
 section Algebra
 
 variable (A : Type*) [CommSemiring A] [Algebra R A]
@@ -862,6 +886,33 @@ def coeToMvPowerSeries.algHom : MvPolynomial σ R →ₐ[R] MvPowerSeries σ A :
 theorem coeToMvPowerSeries.algHom_apply :
     coeToMvPowerSeries.algHom A φ = MvPowerSeries.map σ (algebraMap R A) ↑φ :=
   rfl
+
+theorem _root_.MvPowerSeries.prod_smul_X_eq_smul_monomial_one
+    {A : Type*} [CommSemiring A] [Algebra A R] (e : σ →₀ ℕ) (a : σ → A) :
+    e.prod (fun s n ↦ ((a s • MvPowerSeries.X s) ^ n))
+      = (e.prod fun s n ↦ (a s) ^ n) • MvPowerSeries.monomial R e 1 := by
+  rw [Finsupp.prod_congr
+    (g2 := fun s n ↦ ((MvPowerSeries.C σ R (algebraMap A R (a s)) * (MvPowerSeries.X s)) ^ n))]
+  · have (a : A) (f : MvPowerSeries σ R) : a • f =
+      (MvPowerSeries.C σ R) ((algebraMap A R) a) * f := by
+      rw [← MvPowerSeries.smul_eq_C_mul, IsScalarTower.algebraMap_smul]
+    simp only [mul_pow, Finsupp.prod_mul, ← map_pow , ← MvPowerSeries.monomial_one_eq, this]
+    simp only [map_finsupp_prod, map_pow]
+  · intro x _
+    rw [algebra_compatible_smul R, MvPowerSeries.smul_eq_C_mul]
+
+theorem _root_.MvPowerSeries.monomial_eq (e : σ →₀ ℕ) (r : σ → R) :
+    MvPowerSeries.monomial R e (e.prod (fun s n => r s ^  n))
+      = e.prod fun s e => (r s • MvPowerSeries.X s) ^ e := by
+  rw [MvPowerSeries.prod_smul_X_eq_smul_monomial_one, ← map_smul, smul_eq_mul, mul_one]
+
+theorem _root_.MvPowerSeries.monomial_smul_const
+    {σ : Type*} {R : Type*} [CommSemiring R]
+    (e : σ →₀ ℕ) (r : R) :
+    MvPowerSeries.monomial R e (r ^ (e.sum fun _ n => n))
+      = (e.prod fun s e => (r • MvPowerSeries.X s) ^ e) := by
+  rw [MvPowerSeries.prod_smul_X_eq_smul_monomial_one, ← map_smul, smul_eq_mul, mul_one]
+  simp only [Finsupp.sum, Finsupp.prod, Finset.prod_pow_eq_pow_sum]
 
 end Algebra
 

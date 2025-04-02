@@ -118,9 +118,11 @@ lemma isOpen_iff_of_cover {f : α → Set X} (ho : ∀ i, IsOpen (f i)) (hU : (�
 @[simp] theorem isOpen_empty : IsOpen (∅ : Set X) := by
   rw [← sUnion_empty]; exact isOpen_sUnion fun a => False.elim
 
-theorem Set.Finite.isOpen_sInter {s : Set (Set X)} (hs : s.Finite) :
-    (∀ t ∈ s, IsOpen t) → IsOpen (⋂₀ s) :=
-  Finite.induction_on _ hs (fun _ => by rw [sInter_empty]; exact isOpen_univ) fun _ _ ih h => by
+theorem Set.Finite.isOpen_sInter {s : Set (Set X)} (hs : s.Finite) (h : ∀ t ∈ s, IsOpen t) :
+    IsOpen (⋂₀ s) := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => rw [sInter_empty]; exact isOpen_univ
+  | insert _ _ ih =>
     simp only [sInter_insert, forall_mem_insert] at h ⊢
     exact h.1.inter (ih h.2)
 
@@ -280,8 +282,10 @@ theorem interior_inter : interior (s ∩ t) = interior s ∩ interior t :=
       isOpen_interior.inter isOpen_interior
 
 theorem Set.Finite.interior_biInter {ι : Type*} {s : Set ι} (hs : s.Finite) (f : ι → Set X) :
-    interior (⋂ i ∈ s, f i) = ⋂ i ∈ s, interior (f i) :=
-  hs.induction_on _ (by simp) <| by intros; simp [*]
+    interior (⋂ i ∈ s, f i) = ⋂ i ∈ s, interior (f i) := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp
+  | insert _ _ _ => simp [*]
 
 theorem Set.Finite.interior_sInter {S : Set (Set X)} (hS : S.Finite) :
     interior (⋂₀ S) = ⋂ s ∈ S, interior s := by
@@ -370,7 +374,7 @@ theorem Disjoint.closure_right (hd : Disjoint s t) (hs : IsOpen s) :
     Disjoint s (closure t) :=
   (hd.symm.closure_left hs).symm
 
-theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
+@[simp] theorem IsClosed.closure_eq (h : IsClosed s) : closure s = s :=
   Subset.antisymm (closure_minimal (Subset.refl s) h) subset_closure
 
 theorem IsClosed.closure_subset (hs : IsClosed s) : closure s ⊆ s :=
@@ -406,7 +410,6 @@ theorem closure_eq_iff_isClosed : closure s = s ↔ IsClosed s :=
 theorem closure_subset_iff_isClosed : closure s ⊆ s ↔ IsClosed s :=
   ⟨isClosed_of_closure_subset, IsClosed.closure_subset⟩
 
-@[simp]
 theorem closure_empty : closure (∅ : Set X) = ∅ :=
   isClosed_empty.closure_eq
 
@@ -420,11 +423,9 @@ theorem closure_nonempty_iff : (closure s).Nonempty ↔ s.Nonempty := by
 
 alias ⟨Set.Nonempty.of_closure, Set.Nonempty.closure⟩ := closure_nonempty_iff
 
-@[simp]
 theorem closure_univ : closure (univ : Set X) = univ :=
   isClosed_univ.closure_eq
 
-@[simp]
 theorem closure_closure : closure (closure s) = closure s :=
   isClosed_closure.closure_eq
 
@@ -1011,11 +1012,6 @@ theorem Filter.Tendsto.mapClusterPt [NeBot F] (h : Tendsto u F (𝓝 x)) : MapCl
 theorem MapClusterPt.of_comp {φ : β → α} {p : Filter β} (h : Tendsto φ p F)
     (H : MapClusterPt x p (u ∘ φ)) : MapClusterPt x F u :=
   H.clusterPt.mono <| map_mono h
-
-@[deprecated MapClusterPt.of_comp (since := "2024-09-07")]
-theorem mapClusterPt_of_comp {φ : β → α} {p : Filter β} [NeBot p]
-    (h : Tendsto φ p F) (H : Tendsto (u ∘ φ) p (𝓝 x)) : MapClusterPt x F u :=
-  .of_comp h H.mapClusterPt
 
 end MapClusterPt
 

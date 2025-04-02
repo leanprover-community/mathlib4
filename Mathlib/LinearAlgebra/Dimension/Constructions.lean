@@ -423,9 +423,6 @@ theorem Submodule.finrank_mono {s t : Submodule R M} [Module.Finite R t] (hst : 
     finrank R s ≤ finrank R t :=
   Cardinal.toNat_le_toNat (Submodule.rank_mono hst) (rank_lt_aleph0 R ↥t)
 
-@[deprecated (since := "2024-09-30")]
-alias Submodule.finrank_le_finrank_of_le := Submodule.finrank_mono
-
 end
 
 end SubmoduleRank

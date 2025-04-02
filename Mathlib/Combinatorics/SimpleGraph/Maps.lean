@@ -443,7 +443,7 @@ def induceHom : G.induce s →g G'.induce t where
 
 lemma induceHom_injective (hi : Set.InjOn φ s) :
     Function.Injective (induceHom φ φst) := by
-  erw [Set.MapsTo.restrict_inj] <;> assumption
+  simpa [Set.MapsTo.restrict_inj]
 
 end induceHom
 
