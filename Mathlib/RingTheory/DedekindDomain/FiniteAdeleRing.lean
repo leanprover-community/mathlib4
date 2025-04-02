@@ -111,24 +111,22 @@ def algebraMap.toFun (k : K) : FiniteAdeleRing R K :=
 /--
 The canonical ring homomorphism from `K` to the finite adeles of `K`.
 -/
-def algebraMap : K →+* FiniteAdeleRing R K where
+protected def algebraMap : K →+* FiniteAdeleRing R K where
   toFun := algebraMap.toFun R
   map_one' := rfl
-  map_mul' x y := Subtype.eq <| funext (fun v ↦ by
-    change WithVal (v.valuation K) at x y
-    exact UniformSpace.Completion.coe_mul x y)
+  map_mul' x y := Subtype.eq <| funext (fun v ↦
+    UniformSpace.Completion.coe_mul ((WithVal.equiv (valuation K v)).symm x) y)
   map_zero' := rfl
-  map_add' x y := Subtype.eq <| funext (fun v ↦ by
-    change WithVal (v.valuation K) at x y
-    exact UniformSpace.Completion.coe_add x y)
+  map_add' x y := Subtype.eq <| funext (fun v ↦
+    UniformSpace.Completion.coe_add ((WithVal.equiv (valuation K v)).symm x) y)
 
 instance : Algebra K (FiniteAdeleRing R K) where
-  algebraMap := algebraMap R K
+  algebraMap := DedekindDomain.FiniteAdeleRing.algebraMap R K
   commutes' _ _ := mul_comm _ _
   smul_def' _ _ := rfl
 
 instance : Algebra R (FiniteAdeleRing R K) :=
-  ((_root_.algebraMap K (FiniteAdeleRing R K)).comp (_root_.algebraMap R K)).toAlgebra
+  ((algebraMap K (FiniteAdeleRing R K)).comp (algebraMap R K)).toAlgebra
 
 instance : IsScalarTower R K (FiniteAdeleRing R K) :=
   IsScalarTower.of_algebraMap_eq' rfl
