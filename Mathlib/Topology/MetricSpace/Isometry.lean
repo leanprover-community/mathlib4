@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Topology.MetricSpace.Antilipschitz
+import Mathlib.Topology.Homeomorph.Defs
 
 /-!
 # Isometries
@@ -24,7 +25,7 @@ noncomputable section
 
 universe u v w
 
-variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w}
+variable {F ι : Type*} {α : Type u} {β : Type v} {γ : Type w}
 
 open Function Set
 
@@ -271,6 +272,67 @@ theorem EMetricSpace.isometry_induced (f : α → β) (hf : f.Injective) [m : EM
 theorem MetricSpace.isometry_induced (f : α → β) (hf : f.Injective) [m : MetricSpace β] :
     letI := m.induced f hf; Isometry f := fun _ _ ↦ rfl
 
+/-- `IsometryClass F α β` states that `F` is a type of isometries. -/
+class IsometryClass (F : Type*) (α β : outParam Type*)
+    [PseudoEMetricSpace α] [PseudoEMetricSpace β] [FunLike F α β] : Prop where
+  protected isometry (f : F) : Isometry f
+
+namespace IsometryClass
+
+section PseudoEMetricSpace
+variable [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+
+section
+variable [FunLike F α β] [IsometryClass F α β] (f : F)
+
+protected theorem edist_eq (x y : α) : edist (f x) (f y) = edist x y :=
+  (IsometryClass.isometry f).edist_eq x y
+
+protected theorem continuous : Continuous f :=
+  (IsometryClass.isometry f).continuous
+
+protected theorem lipschitz : LipschitzWith 1 f :=
+  (IsometryClass.isometry f).lipschitz
+
+protected theorem antilipschitz : AntilipschitzWith 1 f :=
+  (IsometryClass.isometry f).antilipschitz
+
+theorem ediam_image (s : Set α) : EMetric.diam (f '' s) = EMetric.diam s :=
+  (IsometryClass.isometry f).ediam_image s
+
+theorem ediam_range : EMetric.diam (range f) = EMetric.diam (univ : Set α) :=
+  (IsometryClass.isometry f).ediam_range
+
+instance toContinuousMapClass : ContinuousMapClass F α β where
+  map_continuous := IsometryClass.continuous
+
+end
+
+instance toHomeomorphClass [EquivLike F α β] [IsometryClass F α β] : HomeomorphClass F α β where
+  map_continuous := IsometryClass.continuous
+  inv_continuous f := ((IsometryClass.isometry f).right_inv (EquivLike.right_inv f)).continuous
+
+end PseudoEMetricSpace
+
+section PseudoMetricSpace
+variable [PseudoMetricSpace α] [PseudoMetricSpace β] [FunLike F α β] [IsometryClass F α β] (f : F)
+
+protected theorem dist_eq (x y : α) : dist (f x) (f y) = dist x y :=
+  (IsometryClass.isometry f).dist_eq x y
+
+protected theorem nndist_eq (x y : α) : nndist (f x) (f y) = nndist x y :=
+  (IsometryClass.isometry f).nndist_eq x y
+
+theorem diam_image (s : Set α) : Metric.diam (f '' s) = Metric.diam s :=
+  (IsometryClass.isometry f).diam_image s
+
+theorem diam_range : Metric.diam (range f) = Metric.diam (univ : Set α) :=
+  (IsometryClass.isometry f).diam_range
+
+end PseudoMetricSpace
+
+end IsometryClass
+
 -- such a bijection need not exist
 /-- `α` and `β` are isometric if there is an isometric bijection between them. -/
 structure IsometryEquiv (α : Type u) (β : Type v) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
@@ -286,8 +348,6 @@ section PseudoEMetricSpace
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 
--- TODO: add `IsometryEquivClass`
-
 theorem toEquiv_injective : Injective (toEquiv : (α ≃ᵢ β) → (α ≃ β))
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
@@ -300,6 +360,9 @@ instance : EquivLike (α ≃ᵢ β) α β where
   left_inv e := e.left_inv
   right_inv e := e.right_inv
   coe_injective' _ _ h _ := toEquiv_injective <| DFunLike.ext' h
+
+instance : IsometryClass (IsometryEquiv α β) α β where
+  isometry := isometry_toFun
 
 theorem coe_eq_toEquiv (h : α ≃ᵢ β) (a : α) : h a = h.toEquiv a := rfl
 
