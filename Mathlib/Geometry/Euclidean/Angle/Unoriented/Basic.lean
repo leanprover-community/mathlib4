@@ -3,7 +3,7 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.InnerProductSpace.Subspace
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 
 /-!
@@ -21,9 +21,7 @@ Prove the triangle inequality for the angle.
 -/
 
 
-assert_not_exists HasFDerivAt
-
-assert_not_exists ConformalAt
+assert_not_exists HasFDerivAt ConformalAt
 
 noncomputable section
 
@@ -44,11 +42,9 @@ def angle (x y : V) : ℝ :=
   Real.arccos (⟪x, y⟫ / (‖x‖ * ‖y‖))
 
 theorem continuousAt_angle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
-    ContinuousAt (fun y : V × V => angle y.1 y.2) x :=
-  Real.continuous_arccos.continuousAt.comp <|
-    continuous_inner.continuousAt.div
-      ((continuous_norm.comp continuous_fst).mul (continuous_norm.comp continuous_snd)).continuousAt
-      (by simp [hx1, hx2])
+    ContinuousAt (fun y : V × V => angle y.1 y.2) x := by
+  unfold angle
+  fun_prop (disch := simp [*])
 
 theorem angle_smul_smul {c : ℝ} (hc : c ≠ 0) (x y : V) : angle (c • x) (c • y) = angle x y := by
   have : c * c ≠ 0 := mul_ne_zero hc hc
@@ -89,6 +85,10 @@ theorem angle_nonneg (x y : V) : 0 ≤ angle x y :=
 /-- The angle between two vectors is at most π. -/
 theorem angle_le_pi (x y : V) : angle x y ≤ π :=
   Real.arccos_le_pi _
+
+/-- The sine of the angle between two vectors is nonnegative. -/
+theorem sin_angle_nonneg (x y : V) : 0 ≤ sin (angle x y) :=
+  sin_nonneg_of_nonneg_of_le_pi (angle_nonneg x y) (angle_le_pi x y)
 
 /-- The angle between a vector and the negation of another vector. -/
 theorem angle_neg_right (x y : V) : angle x (-y) = π - angle x y := by
@@ -173,7 +173,7 @@ theorem sin_angle_mul_norm_mul_norm (x y : V) :
   by_cases h : ‖x‖ * ‖y‖ = 0
   · rw [show ‖x‖ * ‖x‖ * (‖y‖ * ‖y‖) = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) by ring, h, mul_zero,
       mul_zero, zero_sub]
-    cases' eq_zero_or_eq_zero_of_mul_eq_zero h with hx hy
+    rcases eq_zero_or_eq_zero_of_mul_eq_zero h with hx | hy
     · rw [norm_eq_zero] at hx
       rw [hx, inner_zero_left, zero_mul, neg_zero]
     · rw [norm_eq_zero] at hy
@@ -237,7 +237,7 @@ theorem inner_eq_mul_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y ≠
 the sum of their norms. -/
 theorem norm_sub_eq_add_norm_of_angle_eq_pi {x y : V} (h : angle x y = π) :
     ‖x - y‖ = ‖x‖ + ‖y‖ := by
-  rw [← sq_eq_sq (norm_nonneg (x - y)) (add_nonneg (norm_nonneg x) (norm_nonneg y)),
+  rw [← sq_eq_sq₀ (norm_nonneg (x - y)) (add_nonneg (norm_nonneg x) (norm_nonneg y)),
     norm_sub_pow_two_real, inner_eq_neg_mul_norm_of_angle_eq_pi h]
   ring
 
@@ -245,7 +245,7 @@ theorem norm_sub_eq_add_norm_of_angle_eq_pi {x y : V} (h : angle x y = π) :
 the sum of their norms. -/
 theorem norm_add_eq_add_norm_of_angle_eq_zero {x y : V} (h : angle x y = 0) :
     ‖x + y‖ = ‖x‖ + ‖y‖ := by
-  rw [← sq_eq_sq (norm_nonneg (x + y)) (add_nonneg (norm_nonneg x) (norm_nonneg y)),
+  rw [← sq_eq_sq₀ (norm_nonneg (x + y)) (add_nonneg (norm_nonneg x) (norm_nonneg y)),
     norm_add_pow_two_real, inner_eq_mul_norm_of_angle_eq_zero h]
   ring
 
@@ -253,7 +253,7 @@ theorem norm_add_eq_add_norm_of_angle_eq_zero {x y : V} (h : angle x y = 0) :
 the absolute value of the difference of their norms. -/
 theorem norm_sub_eq_abs_sub_norm_of_angle_eq_zero {x y : V} (h : angle x y = 0) :
     ‖x - y‖ = |‖x‖ - ‖y‖| := by
-  rw [← sq_eq_sq (norm_nonneg (x - y)) (abs_nonneg (‖x‖ - ‖y‖)), norm_sub_pow_two_real,
+  rw [← sq_eq_sq₀ (norm_nonneg (x - y)) (abs_nonneg (‖x‖ - ‖y‖)), norm_sub_pow_two_real,
     inner_eq_mul_norm_of_angle_eq_zero h, sq_abs (‖x‖ - ‖y‖)]
   ring
 
@@ -264,7 +264,7 @@ theorem norm_sub_eq_add_norm_iff_angle_eq_pi {x y : V} (hx : x ≠ 0) (hy : y �
   refine ⟨fun h => ?_, norm_sub_eq_add_norm_of_angle_eq_pi⟩
   rw [← inner_eq_neg_mul_norm_iff_angle_eq_pi hx hy]
   obtain ⟨hxy₁, hxy₂⟩ := norm_nonneg (x - y), add_nonneg (norm_nonneg x) (norm_nonneg y)
-  rw [← sq_eq_sq hxy₁ hxy₂, norm_sub_pow_two_real] at h
+  rw [← sq_eq_sq₀ hxy₁ hxy₂, norm_sub_pow_two_real] at h
   calc
     ⟪x, y⟫ = (‖x‖ ^ 2 + ‖y‖ ^ 2 - (‖x‖ + ‖y‖) ^ 2) / 2 := by linarith
     _ = -(‖x‖ * ‖y‖) := by ring
@@ -276,7 +276,7 @@ theorem norm_add_eq_add_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy : y 
   refine ⟨fun h => ?_, norm_add_eq_add_norm_of_angle_eq_zero⟩
   rw [← inner_eq_mul_norm_iff_angle_eq_zero hx hy]
   obtain ⟨hxy₁, hxy₂⟩ := norm_nonneg (x + y), add_nonneg (norm_nonneg x) (norm_nonneg y)
-  rw [← sq_eq_sq hxy₁ hxy₂, norm_add_pow_two_real] at h
+  rw [← sq_eq_sq₀ hxy₁ hxy₂, norm_add_pow_two_real] at h
   calc
     ⟪x, y⟫ = ((‖x‖ + ‖y‖) ^ 2 - ‖x‖ ^ 2 - ‖y‖ ^ 2) / 2 := by linarith
     _ = ‖x‖ * ‖y‖ := by ring
@@ -299,7 +299,7 @@ theorem norm_sub_eq_abs_sub_norm_iff_angle_eq_zero {x y : V} (hx : x ≠ 0) (hy 
 the angle between them is π/2. -/
 theorem norm_add_eq_norm_sub_iff_angle_eq_pi_div_two (x y : V) :
     ‖x + y‖ = ‖x - y‖ ↔ angle x y = π / 2 := by
-  rw [← sq_eq_sq (norm_nonneg (x + y)) (norm_nonneg (x - y)),
+  rw [← sq_eq_sq₀ (norm_nonneg (x + y)) (norm_nonneg (x - y)),
     ← inner_eq_zero_iff_angle_eq_pi_div_two x y, norm_add_pow_two_real, norm_sub_pow_two_real]
   constructor <;> intro h <;> linarith
 

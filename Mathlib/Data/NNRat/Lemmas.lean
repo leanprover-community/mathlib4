@@ -19,7 +19,7 @@ open Function
 open scoped NNRat
 
 namespace NNRat
-variable {α : Type*} {p q : ℚ≥0}
+variable {α : Type*} {q : ℚ≥0}
 
 /-- A `MulAction` over `ℚ` restricts to a `MulAction` over `ℚ≥0`. -/
 instance [MulAction ℚ α] : MulAction ℚ≥0 α :=
@@ -60,7 +60,7 @@ end Rat
 
 namespace NNRat
 
-variable {p q : ℚ≥0}
+variable {q : ℚ≥0}
 
 /-- A recursor for nonnegative rationals in terms of numerators and denominators. -/
 protected def rec {α : ℚ≥0 → Sort*} (h : ∀ m n : ℕ, α (m / n)) (q : ℚ≥0) : α q := by

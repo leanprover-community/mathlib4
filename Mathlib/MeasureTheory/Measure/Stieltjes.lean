@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov, Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.Topology.Order.LeftRightLim
+import Mathlib.Topology.Algebra.UniformMulAction
 
 /-!
 # Stieltjes measures on the real line
@@ -129,6 +130,8 @@ instance : Module ℝ≥0 StieltjesFunction where
   add_smul _ _ _ := ext fun _ ↦ add_mul _ _ _
   zero_smul _ := ext fun _ ↦ zero_mul _
 
+@[simp] lemma zero_apply (x : ℝ) : (0 : StieltjesFunction) x = 0 := rfl
+
 @[simp] lemma add_apply (f g : StieltjesFunction) (x : ℝ) : (f + g) x = f x + g x := rfl
 
 /-- If a function `f : ℝ → ℝ` is monotone, then the function mapping `x` to the right limit of `f`
@@ -142,9 +145,9 @@ noncomputable def _root_.Monotone.stieltjesFunction {f : ℝ → ℝ} (hf : Mono
     obtain ⟨l, u, hlu, lus⟩ : ∃ l u : ℝ, rightLim f x ∈ Ioo l u ∧ Ioo l u ⊆ s :=
       mem_nhds_iff_exists_Ioo_subset.1 hs
     obtain ⟨y, xy, h'y⟩ : ∃ (y : ℝ), x < y ∧ Ioc x y ⊆ f ⁻¹' Ioo l u :=
-      mem_nhdsWithin_Ioi_iff_exists_Ioc_subset.1 (hf.tendsto_rightLim x (Ioo_mem_nhds hlu.1 hlu.2))
+      mem_nhdsGT_iff_exists_Ioc_subset.1 (hf.tendsto_rightLim x (Ioo_mem_nhds hlu.1 hlu.2))
     change ∀ᶠ y in 𝓝[≥] x, rightLim f y ∈ s
-    filter_upwards [Ico_mem_nhdsWithin_Ici ⟨le_refl x, xy⟩] with z hz
+    filter_upwards [Ico_mem_nhdsGE xy] with z hz
     apply lus
     refine ⟨hlu.1.trans_le (hf.rightLim hz.1), ?_⟩
     obtain ⟨a, za, ay⟩ : ∃ a : ℝ, z < a ∧ a < y := exists_between hz.2
@@ -182,7 +185,7 @@ theorem length_Ioc (a b : ℝ) : f.length (Ioc a b) = ofReal (f b - f a) := by
   rcases le_or_lt b a with ab | ab
   · rw [Real.toNNReal_of_nonpos (sub_nonpos.2 (f.mono ab))]
     apply zero_le
-  cases' (Ioc_subset_Ioc_iff ab).1 h with h₁ h₂
+  obtain ⟨h₁, h₂⟩ := (Ioc_subset_Ioc_iff ab).1 h
   exact Real.toNNReal_le_toNNReal (sub_le_sub (f.mono h₁) (f.mono h₂))
 
 theorem length_mono {s₁ s₂ : Set ℝ} (h : s₁ ⊆ s₂) : f.length s₁ ≤ f.length s₂ :=
@@ -373,7 +376,7 @@ theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a)
     simp [le_antisymm this (hx 0).2]
   have L1 : Tendsto (fun n => f.measure (Ioc (u n) a)) atTop (𝓝 (f.measure {a})) := by
     rw [A]
-    refine tendsto_measure_iInter (fun n => nullMeasurableSet_Ioc)
+    refine tendsto_measure_iInter_atTop (fun n => nullMeasurableSet_Ioc)
       (fun m n hmn => ?_) ?_
     · exact Ioc_subset_Ioc_left (u_mono.monotone hmn)
     · exact ⟨0, by simpa only [measure_Ioc] using ENNReal.ofReal_ne_top⟩
@@ -430,6 +433,12 @@ theorem measure_Iic {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : ℝ) :
   simp_rw [measure_Ioc]
   exact ENNReal.tendsto_ofReal (Tendsto.const_sub _ hf)
 
+lemma measure_Iio {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : ℝ) :
+    f.measure (Iio x) = ofReal (leftLim f x - l) := by
+  rw [← Iic_diff_right, measure_diff _ (nullMeasurableSet_singleton x), measure_singleton,
+    f.measure_Iic hf, ← ofReal_sub _ (sub_nonneg.mpr <| Monotone.leftLim_le f.mono' le_rfl)]
+    <;> simp
+
 theorem measure_Ici {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : ℝ) :
     f.measure (Ici x) = ofReal (l - leftLim f x) := by
   refine tendsto_nhds_unique (tendsto_measure_Ico_atTop _ _) ?_
@@ -441,11 +450,51 @@ theorem measure_Ici {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : ℝ) :
   rw [tendsto_atTop_atTop]
   exact fun y => ⟨y + 1, fun z hyz => by rwa [le_sub_iff_add_le]⟩
 
+lemma measure_Ioi {l : ℝ} (hf : Tendsto f atTop (𝓝 l)) (x : ℝ) :
+    f.measure (Ioi x) = ofReal (l - f x) := by
+  rw [← Ici_diff_left, measure_diff _ (nullMeasurableSet_singleton x), measure_singleton,
+    f.measure_Ici hf, ← ofReal_sub _ (sub_nonneg.mpr <| Monotone.leftLim_le f.mono' le_rfl)]
+    <;> simp
+
+lemma measure_Ioi_of_tendsto_atTop_atTop (hf : Tendsto f atTop atTop) (x : ℝ) :
+    f.measure (Ioi x) = ∞ := by
+  refine ENNReal.eq_top_of_forall_nnreal_le fun r ↦ ?_
+  obtain ⟨N, hN⟩ := eventually_atTop.mp (tendsto_atTop.mp hf (r + f x))
+  exact (f.measure_Ioc x (max x N) ▸ ENNReal.coe_nnreal_eq r ▸ (ENNReal.ofReal_le_ofReal <|
+    le_tsub_of_add_le_right <| hN _ (le_max_right x N))).trans (measure_mono Ioc_subset_Ioi_self)
+
+lemma measure_Ici_of_tendsto_atTop_atTop (hf : Tendsto f atTop atTop) (x : ℝ) :
+    f.measure (Ici x) = ∞ := by
+  rw [← top_le_iff, ← f.measure_Ioi_of_tendsto_atTop_atTop hf x]
+  exact measure_mono Ioi_subset_Ici_self
+
+lemma measure_Iic_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : ℝ) :
+    f.measure (Iic x) = ∞ := by
+  refine ENNReal.eq_top_of_forall_nnreal_le fun r ↦ ?_
+  obtain ⟨N, hN⟩ := eventually_atBot.mp (tendsto_atBot.mp hf (f x - r))
+  exact (f.measure_Ioc (min x N) x ▸ ENNReal.coe_nnreal_eq r ▸ (ENNReal.ofReal_le_ofReal <|
+    le_sub_comm.mp <| hN _ (min_le_right x N))).trans (measure_mono Ioc_subset_Iic_self)
+
+lemma measure_Iio_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) (x : ℝ) :
+    f.measure (Iio x) = ∞ := by
+  rw [← top_le_iff, ← f.measure_Iic_of_tendsto_atBot_atBot hf (x - 1)]
+  exact measure_mono <| Set.Iic_subset_Iio.mpr <| sub_one_lt x
+
 theorem measure_univ {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
     f.measure univ = ofReal (u - l) := by
   refine tendsto_nhds_unique (tendsto_measure_Iic_atTop _) ?_
   simp_rw [measure_Iic f hfl]
   exact ENNReal.tendsto_ofReal (Tendsto.sub_const hfu _)
+
+lemma measure_univ_of_tendsto_atTop_atTop (hf : Tendsto f atTop atTop) :
+    f.measure univ = ∞ := by
+  rw [← top_le_iff, ← f.measure_Ioi_of_tendsto_atTop_atTop hf 0]
+  exact measure_mono (subset_univ _)
+
+lemma measure_univ_of_tendsto_atBot_atBot (hf : Tendsto f atBot atBot) :
+    f.measure univ = ∞ := by
+  rw [← top_le_iff, ← f.measure_Iio_of_tendsto_atBot_atBot hf 0]
+  exact measure_mono (subset_univ _)
 
 lemma isFiniteMeasure {l u : ℝ} (hfl : Tendsto f atBot (𝓝 l)) (hfu : Tendsto f atTop (𝓝 u)) :
     IsFiniteMeasure f.measure := ⟨by simp [f.measure_univ hfl hfu]⟩
@@ -491,8 +540,12 @@ lemma eq_of_measure_of_eq (g : StieltjesFunction) {y : ℝ}
       exact f.mono hxy
 
 @[simp]
+lemma measure_zero : StieltjesFunction.measure 0 = 0 :=
+  Measure.ext_of_Ioc _ _ (by simp)
+
+@[simp]
 lemma measure_const (c : ℝ) : (StieltjesFunction.const c).measure = 0 :=
-  Measure.ext_of_Ioc _ _ (fun _ _ _ ↦ by simp)
+  Measure.ext_of_Ioc _ _ (by simp)
 
 @[simp]
 lemma measure_add (f g : StieltjesFunction) : (f + g).measure = f.measure + g.measure := by

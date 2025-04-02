@@ -1,12 +1,18 @@
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Pi
 import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Order.Interval.Finset.Nat
 
 private axiom test_sorry : ∀ {α}, α
 set_option linter.unusedVariables false
 set_option autoImplicit false
+
+open Lean.Elab.Tactic in
+def testSorryTac : TacticM Unit := do
+  let e ← getMainTarget
+  let t ← `(test_sorry)
+  closeMainGoalUsing `sorry fun _ _ => elabTerm t e
 
 example {α} [LinearOrderedCommRing α] {a b : α} (h : a < b) (w : b < a) : False := by
   linarith
@@ -91,6 +97,16 @@ example (x : Rat) (h : x < 0) : 0 < x/(-4/5) := by linarith
 example (x : Rat) (h : 0 < x) : 0 < x/2/3 := by linarith
 
 example (x : Rat) (h : 0 < x) : 0 < x/(2/3) := by linarith
+
+variable {K : Type*} [LinearOrderedField K]
+
+example (a : K) (ha : 10 / (8 + 2) ≤ a) : 1 ≤ a := by linarith
+
+example (a : K) (ha : 10 / 10 ^ 1 ≤ a) : 1 ≤ a := by linarith
+
+example (a : K) (ha : 10⁻¹ * 10 ≤ a) : 1 ≤ a := by linarith
+
+example (a : K) (ha : 1.0 ≤ a) : 1 ≤ a := by linarith
 
 end cancel_denoms
 
@@ -264,6 +280,20 @@ example (x y z : ℚ) (hx : x < 5) (hx2 : x > 5) (hy : y < 5000000000) (hz : z >
 
 example (x y z : ℚ) (hx : x < 5) (hy : y < 5000000000) (hz : z > 34*y) : x ≤ 5 := by
   linarith only [hx]
+
+/- The speed of `linarith` is very sensitive to how much typeclass inference is demanded by the
+lemmas it orchestrates.
+
+This example took 3318 heartbeats (and 110 ms on a good laptop) on an earlier implementation, which
+in several places used off-the-shelf library lemmas requiring low-level typeclasses, e.g.
+`Add{Left,Right}{Strict}Mono`.
+
+After a tweak to rely only on custom `linarith` clones of these lemmas taking high-level typeclasses,
+this now (November 2024) takes 1647 heartbeats (63 ms on a good laptop). -/
+set_option maxHeartbeats 2000 in
+example {K : Type*} [LinearOrderedField K] {x y : K}
+    (h : x + y = 10) (h' : x + 2 * y ≤ 18) (h : x < 2) : False := by
+  linarith (config := {discharger := testSorryTac})
 
 example (u v x y A B : ℚ)
     (a : 0 < A)
@@ -516,11 +546,11 @@ example (x y : ℚ) (h₁ : 0 ≤ y) (h₂ : y ≤ x) : y * x ≤ x ^ 2 := by nl
 axiom foo {x : Int} : 1 ≤ x → 1 ≤ x*x
 lemma bar (x y : Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith [foo h.2]
 
--- -- issue #9822
+-- -- issue https://github.com/leanprover-community/mathlib4/pull/9822
 -- lemma mytest (j : ℕ) (h : 0 < j) : j-1 < j := by linarith
 
 example {α} [LinearOrderedCommRing α] (h : ∃ x : α, 0 ≤ x) : True := by
-  cases' h with x h
+  obtain ⟨x, h⟩ := h
   have : 0 ≤ x := by linarith
   trivial
 

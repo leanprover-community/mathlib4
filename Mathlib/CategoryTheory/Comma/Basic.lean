@@ -62,8 +62,11 @@ variable {T' : Type u₆} [Category.{v₆} T']
 /-- The objects of the comma category are triples of an object `left : A`, an object
    `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`. -/
 structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
+  /-- The left subobject -/
   left : A
+  /-- The right subobject -/
   right : B
+  /-- A morphism from `L.obj left` to `R.obj right` -/
   hom : L.obj left ⟶ R.obj right
 
 -- Satisfying the inhabited linter
@@ -80,7 +83,9 @@ variable {L : A ⥤ T} {R : B ⥤ T}
 -/
 @[ext]
 structure CommaMorphism (X Y : Comma L R) where
+  /-- Morphism on left objects -/
   left : X.left ⟶ Y.left
+  /-- Morphism on right objects -/
   right : X.right ⟶ Y.right
   w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by aesop_cat
 
@@ -239,8 +244,8 @@ def map : Comma L R ⥤ Comma L' R' where
       right := F₂.map φ.right
       w := by
         dsimp
-        rw [assoc, assoc]
-        erw [α.naturality_assoc, ← β.naturality]
+        rw [assoc, assoc, ← Functor.comp_map, α.naturality_assoc, ← Functor.comp_map,
+          ← β.naturality]
         dsimp
         rw [← F.map_comp_assoc, ← F.map_comp_assoc, φ.w] }
 
@@ -289,7 +294,7 @@ theorem map_fst : map α β ⋙ fst L' R' = fst L R ⋙ F₁ :=
 where `α : F₁ ⋙ L' ⟶ L ⋙ F`. -/
 @[simps!]
 def mapFst : map α β ⋙ fst L' R' ≅ fst L R ⋙ F₁ :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
 
 /-- The equality between `map α β ⋙ snd L' R'` and `snd L R ⋙ F₂`,
 where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/
@@ -301,7 +306,7 @@ theorem map_snd : map α β ⋙ snd L' R' = snd L R ⋙ F₂ :=
 where `β : R ⋙ F ⟶ F₂ ⋙ R'`. -/
 @[simps!]
 def mapSnd : map α β ⋙ snd L' R' ≅ snd L R ⋙ F₂ :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
 
 end
 
@@ -464,6 +469,24 @@ def post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) : Comma L R ⥤ Comma (L ⋙ 
       right := f.right
       w := by simp only [Functor.comp_map, ← F.map_comp, f.w] }
 
+/-- `Comma.post` is a particular case of `Comma.map`, but with better definitional properties. -/
+def postIso (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) :
+    post L R F ≅ map (F₁ := 𝟭 _) (F₂ := 𝟭 _) (L ⋙ F).leftUnitor.hom (R ⋙ F).leftUnitor.inv :=
+  NatIso.ofComponents (fun X => isoMk (Iso.refl _) (Iso.refl _))
+
+instance (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) : (post L R F).Faithful :=
+  Functor.Faithful.of_iso (postIso L R F).symm
+
+instance (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) [F.Faithful] : (post L R F).Full :=
+  Functor.Full.of_iso (postIso L R F).symm
+
+instance (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) [F.Full] : (post L R F).EssSurj :=
+  Functor.essSurj_of_iso (postIso L R F).symm
+
+/-- If `F` is an equivalence, then so is `post L R F`. -/
+instance isEquivalence_post (L : A ⥤ T) (R : B ⥤ T) (F : T ⥤ C) [F.IsEquivalence] :
+    (post L R F).IsEquivalence where
+
 /-- The canonical functor from the product of two categories to the comma category of their
 respective functors into `Discrete PUnit`. -/
 @[simps]
@@ -514,6 +537,54 @@ theorem toIdPUnitEquiv_functor_iso {L : Discrete PUnit ⥤ Discrete PUnit}
   rfl
 
 end
+
+section Opposite
+
+open Opposite
+
+/-- The canonical functor from `Comma L R` to `(Comma R.op L.op)ᵒᵖ`. -/
+@[simps]
+def opFunctor : Comma L R ⥤ (Comma R.op L.op)ᵒᵖ where
+  obj X := ⟨op X.right, op X.left, op X.hom⟩
+  map f := ⟨op f.right, op f.left, Quiver.Hom.unop_inj (by simp)⟩
+
+/-- Composing the `leftOp` of `opFunctor L R` with `fst L.op R.op` is naturally isomorphic
+to `snd L R`. -/
+@[simps!]
+def opFunctorCompFst : (opFunctor L R).leftOp ⋙ fst _ _ ≅ (snd _ _).op :=
+  Iso.refl _
+
+/-- Composing the `leftOp` of `opFunctor L R` with `snd L.op R.op` is naturally isomorphic
+to `fst L R`. -/
+@[simps!]
+def opFunctorCompSnd : (opFunctor L R).leftOp ⋙ snd _ _ ≅ (fst _ _).op :=
+  Iso.refl _
+
+/-- The canonical functor from `Comma L.op R.op` to `(Comma R L)ᵒᵖ`. -/
+@[simps]
+def unopFunctor : Comma L.op R.op ⥤ (Comma R L)ᵒᵖ where
+  obj X := ⟨X.right.unop, X.left.unop, X.hom.unop⟩
+  map f := ⟨f.right.unop, f.left.unop, Quiver.Hom.op_inj (by simpa using f.w.symm)⟩
+
+/-- Composing `unopFunctor L R` with `(fst L R).op` is isomorphic to `snd L.op R.op`. -/
+@[simps!]
+def unopFunctorCompFst : unopFunctor L R ⋙ (fst _ _).op ≅ snd _ _ :=
+  Iso.refl _
+
+/-- Composing `unopFunctor L R` with `(snd L R).op` is isomorphic to `fst L.op R.op`. -/
+@[simps!]
+def unopFunctorCompSnd : unopFunctor L R ⋙ (snd _ _).op ≅ fst _ _ :=
+  Iso.refl _
+
+/-- The canonical equivalence between `Comma L R` and `(Comma R.op L.op)ᵒᵖ`. -/
+@[simps]
+def opEquiv : Comma L R ≌ (Comma R.op L.op)ᵒᵖ where
+  functor := opFunctor L R
+  inverse := (unopFunctor R L).leftOp
+  unitIso := NatIso.ofComponents (fun X => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun X => Iso.refl _)
+
+end Opposite
 
 end Comma
 

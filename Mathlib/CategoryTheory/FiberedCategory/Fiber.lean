@@ -30,7 +30,7 @@ namespace Functor
 
 variable {𝒮 : Type u₁} {𝒳 : Type u₂} [Category.{v₁} 𝒮] [Category.{v₂} 𝒳]
 
-/-- `Fiber p S` is the type of elements of `𝒳` mapping to `S` via `p`.  -/
+/-- `Fiber p S` is the type of elements of `𝒳` mapping to `S` via `p`. -/
 def Fiber (p : 𝒳 ⥤ 𝒮) (S : 𝒮) := { a : 𝒳 // p.obj a = S }
 
 namespace Fiber
@@ -102,10 +102,10 @@ variable {p : 𝒳 ⥤ 𝒮} {S : 𝒮} {C : Type u₃} [Category.{v₃} C] {F :
 
 /-- Given a functor `F : C ⥤ 𝒳` such that `F ⋙ p` is constant at some `S : 𝒮`, then
 we get an induced functor `C ⥤ Fiber p S` that `F` factors through. -/
-@[simps]
 def inducedFunctor : C ⥤ Fiber p S where
   obj x := ⟨F.obj x, by simp only [← comp_obj, hF, const_obj_obj]⟩
-  map φ := ⟨F.map φ, of_commsq _ _ _ _ _ <| by simpa using (eqToIso hF).hom.naturality φ⟩
+  map φ := ⟨F.map φ, of_commsq _ _ _ (congr_obj hF _) (congr_obj hF _) <|
+    by simpa using (eqToIso hF).hom.naturality φ⟩
 
 @[simp]
 lemma inducedFunctor_map {X Y : C} (f : X ⟶ Y) :

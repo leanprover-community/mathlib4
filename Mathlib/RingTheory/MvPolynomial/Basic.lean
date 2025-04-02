@@ -5,8 +5,9 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.MvPolynomial.Degrees
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.Data.DFinsupp.Small
+import Mathlib.Data.Fintype.Pi
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
@@ -39,13 +40,16 @@ noncomputable section
 
 open Set LinearMap Submodule
 
-open Polynomial
-
 universe u v
 
 variable (σ : Type u) (R : Type v) [CommSemiring R] (p m : ℕ)
 
 namespace MvPolynomial
+
+instance {σ : Type*} {R : Type*} [CommSemiring R]
+    [Small.{u} R] [Small.{u} σ] :
+    Small.{u} (MvPolynomial σ R) :=
+  inferInstanceAs (Small.{u} ((σ →₀ ℕ) →₀ R))
 
 section CharP
 
@@ -157,43 +161,4 @@ instance [Finite σ] (N : ℕ) : Module.Finite R (restrictTotalDegree σ R N) :=
 
 end Degree
 
-section Algebra
-
-variable {R S σ : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
-
-/--
-If `S` is an `R`-algebra, then `MvPolynomial σ S` is a `MvPolynomial σ R` algebra.
-
-Warning: This produces a diamond for
-`Algebra (MvPolynomial σ R) (MvPolynomial σ (MvPolynomial σ S))`. That's why it is not a
-global instance.
--/
-noncomputable def algebraMvPolynomial : Algebra (MvPolynomial σ R) (MvPolynomial σ S) :=
-  (MvPolynomial.map (algebraMap R S)).toAlgebra
-
-attribute [local instance] algebraMvPolynomial
-
-@[simp]
-lemma algebraMap_def :
-    algebraMap (MvPolynomial σ R) (MvPolynomial σ S) = MvPolynomial.map (algebraMap R S) :=
-  rfl
-
-instance : IsScalarTower R (MvPolynomial σ R) (MvPolynomial σ S) :=
-  IsScalarTower.of_algebraMap_eq' (by ext; simp)
-
-end Algebra
-
 end MvPolynomial
-
--- this is here to avoid import cycle issues
-namespace Polynomial
-
-/-- The monomials form a basis on `R[X]`. -/
-noncomputable def basisMonomials : Basis ℕ R R[X] :=
-  Basis.ofRepr (toFinsuppIsoAlg R).toLinearEquiv
-
-@[simp]
-theorem coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomial s 1 :=
-  funext fun _ => ofFinsupp_single _ _
-
-end Polynomial

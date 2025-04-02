@@ -3,6 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Order.Atoms
 

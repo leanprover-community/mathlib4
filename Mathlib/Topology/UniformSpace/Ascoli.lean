@@ -117,7 +117,7 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (F_eqcont : Equicont
     rcases mem_iUnion₂.mp (Acover.symm.subset <| mem_univ x) with ⟨a, ha, hax⟩
     -- Since `(i, j) ∈ 𝐒(V, a)` we also have `(F i a, F j a) ∈ V`, and finally we get
     -- `(F i x, F j x) ∈ V ○ V ○ V ⊆ U`.
-    exact hVU (prod_mk_mem_compRel (prod_mk_mem_compRel
+    exact hVU (prodMk_mem_compRel (prodMk_mem_compRel
       (Vsymm.mk_mem_comm.mp (hax i)) (hij a ha)) (hax j))
   -- This completes the proof.
   exact mem_of_superset
@@ -513,7 +513,7 @@ is compact in the compact open topology. -/
 theorem ArzelaAscoli.isCompact_of_equicontinuous
     (S : Set C(X, α)) (hS1 : IsCompact (ContinuousMap.toFun '' S))
     (hS2 : Equicontinuous ((↑) : S → X → α)) : IsCompact S := by
-  suffices h : IsInducing (Equiv.Set.image (↑) S DFunLike.coe_injective) by
+  suffices h : IsInducing (Equiv.Set.image _ S DFunLike.coe_injective) by
     rw [isCompact_iff_compactSpace] at hS1 ⊢
     exact (Equiv.toHomeomorphOfIsInducing _ h).symm.compactSpace
   rw [← IsInducing.subtypeVal.of_comp_iff, ← EquicontinuousOn.isInducing_uniformOnFun_iff_pi _ _ _]

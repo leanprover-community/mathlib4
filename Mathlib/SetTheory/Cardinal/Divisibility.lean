@@ -31,13 +31,11 @@ Note furthermore that no infinite cardinal is irreducible
 
 namespace Cardinal
 
-open Cardinal
-
 universe u
 
 variable {a b : Cardinal.{u}} {n m : ℕ}
 
-@[simp]
+/-- Alias of `isUnit_iff_eq_one` for discoverability. -/
 theorem isUnit_iff : IsUnit a ↔ a = 1 := by
   refine
     ⟨fun h => ?_, by
@@ -46,7 +44,7 @@ theorem isUnit_iff : IsUnit a ↔ a = 1 := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · exact (not_isUnit_zero h).elim
   rw [isUnit_iff_forall_dvd] at h
-  cases' h 1 with t ht
+  obtain ⟨t, ht⟩ := h 1
   rw [eq_comm, mul_eq_one_iff_of_one_le] at ht
   · exact ht.1
   · exact one_le_iff_ne_zero.mpr ha
@@ -107,7 +105,7 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
   · simp only [isUnit_iff, Nat.isUnit_iff]
     exact mod_cast Iff.rfl
   · exact mod_cast h b c (mod_cast hbc)
-  cases' lt_or_le (b * c) ℵ₀ with h' h'
+  rcases lt_or_le (b * c) ℵ₀ with h' | h'
   · rcases mul_lt_aleph0_iff.mp h' with (rfl | rfl | ⟨hb, hc⟩)
     · simp
     · simp

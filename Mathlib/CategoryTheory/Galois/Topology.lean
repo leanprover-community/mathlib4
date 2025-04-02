@@ -17,9 +17,12 @@ embedding of `Aut F` into `∀ X, Aut (F.obj X)` where
 
 ## References
 
-- Stacks Project: Tag 0BMQ
+- [Stacks 0BMQ](https://stacks.math.columbia.edu/tag/0BMQ)
 
 -/
+
+open Topology
+
 universe u₁ u₂ v₁ v₂ v w
 
 namespace CategoryTheory
@@ -81,7 +84,7 @@ lemma autEmbedding_range_isClosed : IsClosed (Set.range (autEmbedding F)) := by
 
 lemma autEmbedding_isClosedEmbedding : IsClosedEmbedding (autEmbedding F) where
   eq_induced := rfl
-  inj := autEmbedding_injective F
+  injective := autEmbedding_injective F
   isClosed_range := autEmbedding_range_isClosed F
 
 @[deprecated (since := "2024-10-20")]
@@ -102,7 +105,7 @@ instance : ContinuousMul (Aut F) :=
 instance : ContinuousInv (Aut F) :=
   (autEmbedding_isClosedEmbedding F).isInducing.continuousInv fun _ ↦ rfl
 
-instance : TopologicalGroup (Aut F) := ⟨⟩
+instance : IsTopologicalGroup (Aut F) := ⟨⟩
 
 instance (X : C) : SMul (Aut (F.obj X)) (F.obj X) := ⟨fun σ a => σ.hom a⟩
 

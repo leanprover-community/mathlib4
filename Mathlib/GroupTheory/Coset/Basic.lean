@@ -3,10 +3,10 @@ Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Quotient
 import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Coset.Defs
 
@@ -227,13 +227,16 @@ theorem leftRel_r_eq_leftCosetEquivalence :
   rw [leftRel_eq]
   exact (leftCoset_eq_iff s).symm
 
-@[to_additive]
+@[to_additive leftRel_prod]
 lemma leftRel_prod {β : Type*} [Group β] (s' : Subgroup β) :
     leftRel (s.prod s') = (leftRel s).prod (leftRel s') := by
   refine Setoid.ext fun x y ↦ ?_
   rw [Setoid.prod_apply]
   simp_rw [leftRel_apply]
   rfl
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.QuotientAddGroup.leftRel_sum := QuotientAddGroup.leftRel_prod
 
 @[to_additive]
 lemma leftRel_pi {ι : Type*} {β : ι → Type*} [∀ i, Group (β i)] (s' : ∀ i, Subgroup (β i)) :
@@ -247,13 +250,16 @@ theorem rightRel_r_eq_rightCosetEquivalence :
   rw [rightRel_eq]
   exact (rightCoset_eq_iff s).symm
 
-@[to_additive]
+@[to_additive rightRel_prod]
 lemma rightRel_prod {β : Type*} [Group β] (s' : Subgroup β) :
     rightRel (s.prod s') = (rightRel s).prod (rightRel s') := by
   refine Setoid.ext fun x y ↦ ?_
   rw [Setoid.prod_apply]
   simp_rw [rightRel_apply]
   rfl
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.QuotientAddGroup.rightRel_sum := QuotientAddGroup.rightRel_prod
 
 @[to_additive]
 lemma rightRel_pi {ι : Type*} {β : ι → Type*} [∀ i, Group (β i)] (s' : ∀ i, Subgroup (β i)) :
@@ -314,9 +320,18 @@ lemma orbit_mk_eq_smul (x : α) : MulAction.orbitRel.Quotient.orbit (x : α ⧸ 
   simpa [mem_smul_set_iff_inv_smul_mem, ← leftRel_apply, Quotient.eq''] using Setoid.comm' _
 
 @[to_additive]
-lemma orbit_eq_out'_smul (x : α ⧸ s) : MulAction.orbitRel.Quotient.orbit x = x.out' • s := by
+lemma orbit_eq_out_smul (x : α ⧸ s) : MulAction.orbitRel.Quotient.orbit x = x.out • s := by
   induction x using QuotientGroup.induction_on
   simp only [orbit_mk_eq_smul, ← eq_class_eq_leftCoset, Quotient.out_eq']
+
+@[to_additive]
+alias orbit_eq_out'_smul := orbit_eq_out_smul
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated orbit_eq_out_smul (since := "2024-10-19")] orbit_eq_out'_smul
+attribute [deprecated QuotientAddGroup.orbit_eq_out_vadd (since := "2024-10-19")]
+QuotientAddGroup.orbit_eq_out'_vadd
 
 end QuotientGroup
 
@@ -344,7 +359,7 @@ def rightCosetEquivSubgroup (g : α) : (op g • s : Set α) ≃ s :=
 noncomputable def groupEquivQuotientProdSubgroup : α ≃ (α ⧸ s) × s :=
   calc
     α ≃ ΣL : α ⧸ s, { x : α // (x : α ⧸ s) = L } := (Equiv.sigmaFiberEquiv QuotientGroup.mk).symm
-    _ ≃ ΣL : α ⧸ s, (Quotient.out' L • s : Set α) :=
+    _ ≃ ΣL : α ⧸ s, (Quotient.out L • s : Set α) :=
       Equiv.sigmaCongrRight fun L => by
         rw [← eq_class_eq_leftCoset]
         show
@@ -359,7 +374,7 @@ variable {t : Subgroup α}
 
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
 of the quotient map `G → G/K`. The classical version is `Subgroup.quotientEquivProdOfLE`. -/
-@[to_additive (attr := simps)
+@[to_additive (attr := simps) quotientEquivProdOfLE'
   "If `H ≤ K`, then `G/H ≃ G/K × K/H` constructively, using the provided right inverse
   of the quotient map `G → G/K`. The classical version is `AddSubgroup.quotientEquivSumOfLE`."]
 def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
@@ -389,12 +404,31 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
       (QuotientGroup.mk_mul_of_mem (f a) b.2).trans (hf a)
     simp_rw [Quotient.map'_mk'', id, key, inv_mul_cancel_left]
 
+@[deprecated (since := "2025-03-11")]
+alias AddSubgroup.quotientEquivSumOfLE' := AddSubgroup.quotientEquivProdOfLE'
+
+@[deprecated (since := "2025-03-11")]
+alias AddSubgroup.quotientEquivSumOfLE'_apply := AddSubgroup.quotientEquivProdOfLE'_apply
+
+@[deprecated (since := "2025-03-11")]
+alias AddSubgroup.quotientEquivSumOfLE'_symm_apply := AddSubgroup.quotientEquivProdOfLE'_symm_apply
+
 /-- If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively.
 The constructive version is `quotientEquivProdOfLE'`. -/
-@[to_additive (attr := simps!) "If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively. The
- constructive version is `quotientEquivProdOfLE'`."]
+@[to_additive (attr := simps!) quotientEquivProdOfLE
+  "If `H ≤ K`, then `G/H ≃ G/K × K/H` nonconstructively. The
+constructive version is `quotientEquivProdOfLE'`."]
 noncomputable def quotientEquivProdOfLE (h_le : s ≤ t) : α ⧸ s ≃ (α ⧸ t) × t ⧸ s.subgroupOf t :=
-  quotientEquivProdOfLE' h_le Quotient.out' Quotient.out_eq'
+  quotientEquivProdOfLE' h_le Quotient.out Quotient.out_eq'
+
+@[deprecated (since := "2025-03-11")]
+alias AddSubgroup.quotientEquivSumOfLE := AddSubgroup.quotientEquivProdOfLE
+
+@[deprecated (since := "2025-03-11")]
+alias AddSubgroup.quotientEquivSumOfLE_apply := AddSubgroup.quotientEquivProdOfLE_apply
+
+@[deprecated (since := "2025-03-11")]
+alias AddSubgroup.quotientEquivSumOfLE_symm_apply := AddSubgroup.quotientEquivProdOfLE_symm_apply
 
 /-- If `s ≤ t`, then there is an embedding `s ⧸ H.subgroupOf s ↪ t ⧸ H.subgroupOf t`. -/
 @[to_additive "If `s ≤ t`, then there is an embedding
@@ -410,11 +444,9 @@ def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
       intro a b h
       simpa only [Quotient.map'_mk'', QuotientGroup.eq] using h
 
--- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
 theorem quotientSubgroupOfEmbeddingOfLE_apply_mk (H : Subgroup α) (h : s ≤ t) (g : s) :
-    quotientSubgroupOfEmbeddingOfLE H h (QuotientGroup.mk g) =
-      (QuotientGroup.mk (inclusion h g) : (fun _ => { x // x ∈ t } ⧸ subgroupOf H t) ↑g) :=
+    quotientSubgroupOfEmbeddingOfLE H h (QuotientGroup.mk g) = QuotientGroup.mk (inclusion h g) :=
   rfl
 
 /-- If `s ≤ t`, then there is a map `H ⧸ s.subgroupOf H → H ⧸ t.subgroupOf H`. -/
@@ -425,11 +457,9 @@ def quotientSubgroupOfMapOfLE (H : Subgroup α) (h : s ≤ t) :
     simp_rw [leftRel_eq]
     apply h
 
--- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
 theorem quotientSubgroupOfMapOfLE_apply_mk (H : Subgroup α) (h : s ≤ t) (g : H) :
-    quotientSubgroupOfMapOfLE H h (QuotientGroup.mk g) =
-      (QuotientGroup.mk g : { x // x ∈ H } ⧸ subgroupOf t H) :=
+    quotientSubgroupOfMapOfLE H h (QuotientGroup.mk g) = QuotientGroup.mk g :=
   rfl
 
 /-- If `s ≤ t`, then there is a map `α ⧸ s → α ⧸ t`. -/
@@ -455,12 +485,10 @@ def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : S
       simp_rw [funext_iff, quotientSubgroupOfMapOfLE_apply_mk, QuotientGroup.eq, mem_subgroupOf,
         mem_iInf, imp_self, forall_const]
 
--- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
 theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type*} (f : ι → Subgroup α) (H : Subgroup α)
     (g : H) (i : ι) :
-    quotientiInfSubgroupOfEmbedding f H (QuotientGroup.mk g) i =
-      (QuotientGroup.mk g : { x // x ∈ H } ⧸ subgroupOf (f i) H) :=
+    quotientiInfSubgroupOfEmbedding f H (QuotientGroup.mk g) i = QuotientGroup.mk g :=
   rfl
 
 /-- The natural embedding `α ⧸ (⨅ i, f i) ↪ Π i, α ⧸ f i`. -/
@@ -543,11 +571,11 @@ variable [Group α]
 noncomputable def preimageMkEquivSubgroupProdSet (s : Subgroup α) (t : Set (α ⧸ s)) :
     QuotientGroup.mk ⁻¹' t ≃ s × t where
   toFun a :=
-    ⟨⟨((Quotient.out' (QuotientGroup.mk a)) : α)⁻¹ * a,
+    ⟨⟨((Quotient.out (QuotientGroup.mk a)) : α)⁻¹ * a,
         leftRel_apply.mp (@Quotient.exact' _ (leftRel s) _ _ <| Quotient.out_eq' _)⟩,
       ⟨QuotientGroup.mk a, a.2⟩⟩
   invFun a :=
-    ⟨Quotient.out' a.2.1 * a.1.1,
+    ⟨Quotient.out a.2.1 * a.1.1,
       show QuotientGroup.mk _ ∈ t by
         rw [mk_mul_of_mem _ a.1.2, out_eq']
         exact a.2.2⟩
@@ -559,8 +587,20 @@ open MulAction in
 @[to_additive "An additive group is made up of a disjoint union of cosets of an additive
 subgroup."]
 lemma univ_eq_iUnion_smul (H : Subgroup α) :
-    (Set.univ (α := α)) = ⋃ x : α ⧸ H, x.out' • (H : Set _) := by
-  simp_rw [univ_eq_iUnion_orbit H.op, orbit_eq_out'_smul]
+    (Set.univ (α := α)) = ⋃ x : α ⧸ H, x.out • (H : Set _) := by
+  simp_rw [univ_eq_iUnion_orbit H.op, orbit_eq_out_smul]
   rfl
+
+variable (α) in
+/-- `α ⧸ ⊥` is in bijection with `α`. See `QuotientGroup.quotientBot` for a multiplicative
+version. -/
+@[to_additive "`α ⧸ ⊥` is in bijection with `α`. See `QuotientAddGroup.quotientBot` for an additive
+version."]
+def quotientEquivSelf : α ⧸ (⊥ : Subgroup α) ≃ α where
+  toFun := Quotient.lift id <| fun x y (h : leftRel ⊥ x y) ↦
+    eq_of_inv_mul_eq_one <| by rwa [leftRel_apply, Subgroup.mem_bot] at h
+  invFun := QuotientGroup.mk
+  left_inv x := by induction x using Quotient.inductionOn; simp
+  right_inv x := by simp
 
 end QuotientGroup

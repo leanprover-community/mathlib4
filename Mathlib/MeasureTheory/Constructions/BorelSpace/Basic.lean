@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Group.Arithmetic
 import Mathlib.Topology.GDelta.UniformSpace
-import Mathlib.Topology.Instances.EReal
+import Mathlib.Topology.Instances.EReal.Lemmas
 import Mathlib.Topology.Instances.Rat
 
 /-!
@@ -35,9 +35,8 @@ import Mathlib.Topology.Instances.Rat
 
 noncomputable section
 
-open Set Filter MeasureTheory
-
-open scoped Topology NNReal ENNReal MeasureTheory
+open Filter MeasureTheory Set Topology
+open scoped NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
@@ -211,16 +210,6 @@ instance (priority := 100) BorelSpace.countablyGenerated {α : Type*} [Topologic
   borelize α
   exact hb.borel_eq_generateFrom
 
-theorem MeasurableSet.induction_on_open [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α]
-    {C : Set α → Prop} (h_open : ∀ U, IsOpen U → C U)
-    (h_compl : ∀ t, MeasurableSet t → C t → C tᶜ)
-    (h_union :
-      ∀ f : ℕ → Set α,
-        Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C (f i)) → C (⋃ i, f i)) :
-    ∀ ⦃t⦄, MeasurableSet t → C t :=
-  MeasurableSpace.induction_on_inter BorelSpace.measurable_eq isPiSystem_isOpen
-    (h_open _ isOpen_empty) h_open h_compl h_union
-
 section
 
 variable [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] [TopologicalSpace β]
@@ -232,6 +221,17 @@ theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
 
 theorem IsOpen.nullMeasurableSet {μ} (h : IsOpen s) : NullMeasurableSet s μ :=
   h.measurableSet.nullMeasurableSet
+
+open scoped Function in -- required for scoped `on` notation
+@[elab_as_elim]
+theorem MeasurableSet.induction_on_open {C : ∀ s : Set γ, MeasurableSet s → Prop}
+    (isOpen : ∀ U (hU : IsOpen U), C U hU.measurableSet)
+    (compl : ∀ t (ht : MeasurableSet t), C t ht → C tᶜ ht.compl)
+    (iUnion : ∀ f : ℕ → Set γ, Pairwise (Disjoint on f) → ∀ (hf : ∀ i, MeasurableSet (f i)),
+      (∀ i, C (f i) (hf i)) → C (⋃ i, f i) (.iUnion hf)) :
+    ∀ t (ht : MeasurableSet t), C t ht := fun t ht ↦
+  MeasurableSpace.induction_on_inter BorelSpace.measurable_eq isPiSystem_isOpen
+    (isOpen _ isOpen_empty) isOpen compl iUnion t ht
 
 instance (priority := 1000) {s : Set α} [h : HasCountableSeparatingOn α IsOpen s] :
     CountablySeparated s := by
@@ -266,8 +266,8 @@ theorem IsCompact.nullMeasurableSet [T2Space α] {μ} (h : IsCompact s) : NullMe
 then they can't be separated by a Borel measurable set. -/
 theorem Inseparable.mem_measurableSet_iff {x y : γ} (h : Inseparable x y) {s : Set γ}
     (hs : MeasurableSet s) : x ∈ s ↔ y ∈ s :=
-  hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun _ _ ↦ Iff.not)
-    fun _ _ _ h ↦ by simp [h]
+  MeasurableSet.induction_on_open (fun _ ↦ h.mem_open_iff) (fun _ _ ↦ Iff.not)
+    (fun _ _ _ h ↦ by simp [h]) s hs
 
 /-- If `K` is a compact set in an R₁ space and `s ⊇ K` is a Borel measurable superset,
 then `s` includes the closure of `K` as well. -/
@@ -331,7 +331,7 @@ instance (priority := 100) OpensMeasurableSpace.separatesPoints [T0Space α] :
   rw [separatesPoints_iff]
   intro x y hxy
   apply Inseparable.eq
-  rw [inseparable_iff_forall_open]
+  rw [inseparable_iff_forall_isOpen]
   exact fun s hs => hxy _ hs.measurableSet
 
 theorem borel_eq_top_of_countable {α : Type*} [TopologicalSpace α] [T0Space α] [Countable α] :
@@ -345,19 +345,19 @@ instance (priority := 100) OpensMeasurableSpace.toMeasurableSingletonClass [T1Sp
     MeasurableSingletonClass α :=
   ⟨fun _ => isClosed_singleton.measurableSet⟩
 
-instance Pi.opensMeasurableSpace {ι : Type*} {π : ι → Type*} [Countable ι]
-    [t' : ∀ i, TopologicalSpace (π i)] [∀ i, MeasurableSpace (π i)]
-    [∀ i, SecondCountableTopology (π i)] [∀ i, OpensMeasurableSpace (π i)] :
-    OpensMeasurableSpace (∀ i, π i) := by
+instance Pi.opensMeasurableSpace {ι : Type*} {X : ι → Type*} [Countable ι]
+    [t' : ∀ i, TopologicalSpace (X i)] [∀ i, MeasurableSpace (X i)]
+    [∀ i, SecondCountableTopology (X i)] [∀ i, OpensMeasurableSpace (X i)] :
+    OpensMeasurableSpace (∀ i, X i) := by
   constructor
-  have : Pi.topologicalSpace = .generateFrom { t | ∃ (s : ∀ a, Set (π a)) (i : Finset ι),
-      (∀ a ∈ i, s a ∈ countableBasis (π a)) ∧ t = pi (↑i) s } := by
-    simp only [funext fun a => @eq_generateFrom_countableBasis (π a) _ _, pi_generateFrom_eq]
+  have : Pi.topologicalSpace = .generateFrom { t | ∃ (s : ∀ a, Set (X a)) (i : Finset ι),
+      (∀ a ∈ i, s a ∈ countableBasis (X a)) ∧ t = pi (↑i) s } := by
+    simp only [funext fun a => @eq_generateFrom_countableBasis (X a) _ _, pi_generateFrom_eq]
   rw [borel_eq_generateFrom_of_subbasis this]
   apply generateFrom_le
   rintro _ ⟨s, i, hi, rfl⟩
   refine MeasurableSet.pi i.countable_toSet fun a ha => IsOpen.measurableSet ?_
-  rw [eq_generateFrom_countableBasis (π a)]
+  rw [eq_generateFrom_countableBasis (X a)]
   exact .basic _ (hi a ha)
 
 /-- The typeclass `SecondCountableTopologyEither α β` registers the fact that at least one of
@@ -554,13 +554,13 @@ theorem measurable_of_continuousOn_compl_singleton [T1Space α] {f : α → γ} 
 theorem Continuous.measurable2 [SecondCountableTopologyEither α β] {f : δ → α}
     {g : δ → β} {c : α → β → γ} (h : Continuous fun p : α × β => c p.1 p.2) (hf : Measurable f)
     (hg : Measurable g) : Measurable fun a => c (f a) (g a) :=
-  h.measurable.comp (hf.prod_mk hg)
+  h.measurable.comp (hf.prodMk hg)
 
 theorem Continuous.aemeasurable2 [SecondCountableTopologyEither α β]
     {f : δ → α} {g : δ → β} {c : α → β → γ} {μ : Measure δ}
     (h : Continuous fun p : α × β => c p.1 p.2) (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => c (f a) (g a)) μ :=
-  h.measurable.comp_aemeasurable (hf.prod_mk hg)
+  h.measurable.comp_aemeasurable (hf.prodMk hg)
 
 instance (priority := 100) HasContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
     [HasContinuousInv₀ γ] : MeasurableInv γ :=
@@ -589,10 +589,10 @@ variable [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α] [Topological
   [MeasurableSpace β] [BorelSpace β] [TopologicalSpace γ] [MeasurableSpace γ] [BorelSpace γ]
   [MeasurableSpace δ]
 
-theorem pi_le_borel_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    [∀ i, MeasurableSpace (π i)] [∀ i, BorelSpace (π i)] :
-      MeasurableSpace.pi ≤ borel (∀ i, π i) := by
-  have : ‹∀ i, MeasurableSpace (π i)› = fun i => borel (π i) :=
+theorem pi_le_borel_pi {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    [∀ i, MeasurableSpace (X i)] [∀ i, BorelSpace (X i)] :
+      MeasurableSpace.pi ≤ borel (∀ i, X i) := by
+  have : ‹∀ i, MeasurableSpace (X i)› = fun i => borel (X i) :=
     funext fun i => BorelSpace.measurable_eq
   rw [this]
   exact iSup_le fun i => comap_le_iff_le_map.2 <| (continuous_apply i).borel_measurable
@@ -603,9 +603,9 @@ theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
   · exact comap_le_iff_le_map.mpr continuous_fst.borel_measurable
   · exact comap_le_iff_le_map.mpr continuous_snd.borel_measurable
 
-instance Pi.borelSpace {ι : Type*} {π : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (π i)]
-    [∀ i, MeasurableSpace (π i)] [∀ i, SecondCountableTopology (π i)] [∀ i, BorelSpace (π i)] :
-    BorelSpace (∀ i, π i) :=
+instance Pi.borelSpace {ι : Type*} {X : ι → Type*} [Countable ι] [∀ i, TopologicalSpace (X i)]
+    [∀ i, MeasurableSpace (X i)] [∀ i, SecondCountableTopology (X i)] [∀ i, BorelSpace (X i)] :
+    BorelSpace (∀ i, X i) :=
   ⟨le_antisymm pi_le_borel_pi OpensMeasurableSpace.borel_le⟩
 
 instance Prod.borelSpace [SecondCountableTopologyEither α β] :
@@ -629,7 +629,7 @@ instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
   constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, MeasurableSet.of_discrete]
 
-protected theorem IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbedding f)
+protected theorem Topology.IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbedding f)
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=
   show MeasurableEmbedding
       (((↑) : range f → β) ∘ (Homeomorph.ofIsEmbedding f h₁).toMeasurableEquiv) from
@@ -638,14 +638,14 @@ protected theorem IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbe
 @[deprecated (since := "2024-10-26")]
 alias Embedding.measurableEmbedding := IsEmbedding.measurableEmbedding
 
-protected theorem IsClosedEmbedding.measurableEmbedding {f : α → β}
+protected theorem Topology.IsClosedEmbedding.measurableEmbedding {f : α → β}
     (h : IsClosedEmbedding f) : MeasurableEmbedding f :=
   h.isEmbedding.measurableEmbedding h.isClosed_range.measurableSet
 
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.measurableEmbedding := IsClosedEmbedding.measurableEmbedding
 
-protected theorem IsOpenEmbedding.measurableEmbedding {f : α → β} (h : IsOpenEmbedding f) :
+protected theorem Topology.IsOpenEmbedding.measurableEmbedding {f : α → β} (h : IsOpenEmbedding f) :
     MeasurableEmbedding f :=
   h.isEmbedding.measurableEmbedding h.isOpen_range.measurableSet
 

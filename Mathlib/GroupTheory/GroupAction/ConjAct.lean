@@ -1,14 +1,12 @@
 /-
-Copyright (c) 2021 . All rights reserved.
+Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Group.Subgroup.ZPowers
-import Mathlib.Algebra.GroupWithZero.Action.Basic
-import Mathlib.Algebra.Ring.Action.Basic
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Conjugation action of a group on itself
@@ -34,8 +32,9 @@ is that some theorems about the group actions will not apply when since this
 
 -/
 
+assert_not_exists MonoidWithZero
 
-variable (α M G G₀ R K : Type*)
+variable (α M G : Type*)
 
 /-- A type alias for a group `G`. `ConjAct G` acts on `G` by conjugation -/
 def ConjAct : Type _ :=
@@ -45,13 +44,11 @@ namespace ConjAct
 
 open MulAction Subgroup
 
-variable {M G G₀ R K}
+variable {M G}
 
 instance [Group G] : Group (ConjAct G) := ‹Group G›
 
 instance [DivInvMonoid G] : DivInvMonoid (ConjAct G) := ‹DivInvMonoid G›
-
-instance [GroupWithZero G] : GroupWithZero (ConjAct G) := ‹GroupWithZero G›
 
 instance [Fintype G] : Fintype (ConjAct G) := ‹Fintype G›
 
@@ -103,11 +100,11 @@ theorem toConjAct_ofConjAct (x : ConjAct G) : toConjAct (ofConjAct x) = x :=
 theorem ofConjAct_toConjAct (x : G) : ofConjAct (toConjAct x) = x :=
   rfl
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem ofConjAct_one : ofConjAct (1 : ConjAct G) = 1 :=
   rfl
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem toConjAct_one : toConjAct (1 : G) = 1 :=
   rfl
 
@@ -119,11 +116,11 @@ theorem ofConjAct_inv (x : ConjAct G) : ofConjAct x⁻¹ = (ofConjAct x)⁻¹ :=
 theorem toConjAct_inv (x : G) : toConjAct x⁻¹ = (toConjAct x)⁻¹ :=
   rfl
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem ofConjAct_mul (x y : ConjAct G) : ofConjAct (x * y) = ofConjAct x * ofConjAct y :=
   rfl
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem toConjAct_mul (x y : G) : toConjAct (x * y) = toConjAct x * toConjAct y :=
   rfl
 
@@ -166,56 +163,7 @@ instance unitsSMulCommClass' [SMul α M] [SMulCommClass M α M] [IsScalarTower �
 
 end Monoid
 
-section Semiring
-
-variable [Semiring R]
-
-instance unitsMulSemiringAction : MulSemiringAction (ConjAct Rˣ) R :=
-  { ConjAct.unitsMulDistribMulAction with
-    smul_zero := by simp [units_smul_def]
-    smul_add := by simp [units_smul_def, mul_add, add_mul] }
-
-end Semiring
-
 end Units
-
-section GroupWithZero
-
-variable [GroupWithZero G₀]
-
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
-theorem ofConjAct_zero : ofConjAct (0 : ConjAct G₀) = 0 :=
-  rfl
-
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
-theorem toConjAct_zero : toConjAct (0 : G₀) = 0 :=
-  rfl
-
-instance mulAction₀ : MulAction (ConjAct G₀) G₀ where
-  one_smul := by simp [smul_def]
-  mul_smul := by simp [smul_def, mul_assoc]
-
-instance smulCommClass₀ [SMul α G₀] [SMulCommClass α G₀ G₀] [IsScalarTower α G₀ G₀] :
-    SMulCommClass α (ConjAct G₀) G₀ where
-  smul_comm a ug g := by rw [smul_def, smul_def, mul_smul_comm, smul_mul_assoc]
-
-instance smulCommClass₀' [SMul α G₀] [SMulCommClass G₀ α G₀] [IsScalarTower α G₀ G₀] :
-    SMulCommClass (ConjAct G₀) α G₀ :=
-  haveI := SMulCommClass.symm G₀ α G₀
-  SMulCommClass.symm _ _ _
-
-end GroupWithZero
-
-section DivisionRing
-
-variable [DivisionRing K]
-
-instance distribMulAction₀ : DistribMulAction (ConjAct K) K :=
-  { ConjAct.mulAction₀ with
-    smul_zero := by simp [smul_def]
-    smul_add := by simp [smul_def, mul_add, add_mul] }
-
-end DivisionRing
 
 variable [Group G]
 

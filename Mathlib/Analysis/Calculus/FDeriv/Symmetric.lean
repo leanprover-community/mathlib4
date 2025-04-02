@@ -3,6 +3,7 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Analytic.IteratedFDeriv
 import Mathlib.Analysis.Calculus.Deriv.Pow
 import Mathlib.Analysis.Calculus.MeanValue
 import Mathlib.Analysis.Calculus.ContDiff.Basic
@@ -32,6 +33,11 @@ requiring that the point under consideration is accumulated by points in the int
 These are written using ad hoc predicates `IsSymmSndFDerivAt` and `IsSymmSndFDerivWithinAt`, which
 increase readability of statements in differential geometry where they show up a lot.
 
+We also deduce statements over an arbitrary field, requiring that the function is `C^2` if the field
+is `ℝ` or `ℂ`, and analytic otherwise. Formally, we assume that the function is `C^n`
+with `minSmoothness 𝕜 2 ≤ n`, where `minSmoothness 𝕜 i` is `i` if `𝕜` is `ℝ` or `ℂ`,
+and `ω` otherwise.
+
 ## Implementation note
 
 For the proof, we obtain an asymptotic expansion to order two of `f (x + v + w) - f (x + v)`, by
@@ -57,7 +63,7 @@ rectangle are contained in `s` by convexity. The general case follows by lineari
 
 open Asymptotics Set Filter
 
-open scoped Topology
+open scoped Topology ContDiff
 
 section General
 
@@ -95,7 +101,7 @@ lemma fderivWithin_fderivWithin_eq_of_mem_nhdsWithin (h : t ∈ 𝓝[s] x)
     fderivWithin 𝕜 (fderivWithin 𝕜 f s) s x = fderivWithin 𝕜 (fderivWithin 𝕜 f t) t x := by
   have A : ∀ᶠ y in 𝓝[s] x, fderivWithin 𝕜 f s y = fderivWithin 𝕜 f t y := by
     have : ∀ᶠ y in 𝓝[s] x, ContDiffWithinAt 𝕜 2 f t y :=
-      nhdsWithin_le_iff.2 h (nhdsWithin_mono _ (subset_insert x t) hf.eventually)
+      nhdsWithin_le_iff.2 h (nhdsWithin_mono _ (subset_insert x t) (hf.eventually (by simp)))
     filter_upwards [self_mem_nhdsWithin, this, eventually_eventually_nhdsWithin.2 h]
       with y hy h'y h''y
     exact fderivWithin_of_mem_nhdsWithin h''y (hs y hy) (h'y.differentiableWithinAt one_le_two)
@@ -149,6 +155,23 @@ theorem IsSymmSndFDerivAt.isSymmSndFDerivWithinAt (h : IsSymmSndFDerivAt 𝕜 f 
   simp only [← isSymmSndFDerivWithinAt_univ, ← contDiffWithinAt_univ] at h hf
   exact h.mono_of_mem_nhdsWithin univ_mem hf hs uniqueDiffOn_univ hx
 
+/-- If a function is analytic within a set at a point, then its second derivative is symmetric. -/
+theorem ContDiffWithinAt.isSymmSndFDerivWithinAt_of_omega (hf : ContDiffWithinAt 𝕜 ω f s x)
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    IsSymmSndFDerivWithinAt 𝕜 f s x := by
+  intro v w
+  rw [← iteratedFDerivWithin_two_apply' f hs hx, ← iteratedFDerivWithin_two_apply' f hs hx,
+    ← hf.iteratedFDerivWithin_comp_perm hs hx _ (Equiv.swap 0 1)]
+  congr
+  ext i
+  fin_cases i <;> rfl
+
+/-- If a function is analytic at a point, then its second derivative is symmetric. -/
+theorem ContDiffAt.isSymmSndFDerivAt_of_omega (hf : ContDiffAt 𝕜 ω f x) :
+    IsSymmSndFDerivAt 𝕜 f x := by
+  simp only [← isSymmSndFDerivWithinAt_univ, ← contDiffWithinAt_univ] at hf ⊢
+  exact hf.isSymmSndFDerivWithinAt_of_omega uniqueDiffOn_univ (mem_univ _)
+
 end General
 
 section Real
@@ -187,8 +210,7 @@ theorem Convex.taylor_approx_two_segment {v w : E} (hv : x + v ∈ interior s)
     apply (tendsto_order.1 this).2 δ
     simpa only [zero_mul] using δpos
   have E2 : ∀ᶠ h in 𝓝[>] (0 : ℝ), (h : ℝ) < 1 :=
-    mem_nhdsWithin_Ioi_iff_exists_Ioo_subset.2
-      ⟨(1 : ℝ), by simp only [mem_Ioi, zero_lt_one], fun x hx => hx.2⟩
+    mem_nhdsWithin_of_mem_nhds <| Iio_mem_nhds zero_lt_one
   filter_upwards [E1, E2, self_mem_nhdsWithin] with h hδ h_lt_1 hpos
   -- we consider `h` small enough that all points under consideration belong to this ball,
   -- and also with `0 < h < 1`.
@@ -407,16 +429,19 @@ end Real
 
 section IsRCLikeNormedField
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [IsRCLikeNormedField 𝕜]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] {s : Set E} {f : E → F} {x : E}
 
-theorem second_derivative_symmetric_of_eventually {f' : E → E →L[𝕜] F} {x : E}
-    {f'' : E →L[𝕜] E →L[𝕜] F} (hf : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x)
-    (v w : E) : f'' v w = f'' w v := by
-  letI := IsRCLikeNormedField.rclike 𝕜
-  letI : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
-  letI : NormedSpace ℝ F := NormedSpace.restrictScalars ℝ 𝕜 F
+theorem second_derivative_symmetric_of_eventually [IsRCLikeNormedField 𝕜]
+    {f' : E → E →L[𝕜] F} {x : E}
+    {f'' : E →L[𝕜] E →L[𝕜] F} (hf : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f' y) y)
+    (hx : HasFDerivAt f' f'' x) (v w : E) : f'' v w = f'' w v := by
+  let _ := IsRCLikeNormedField.rclike 𝕜
+  let _ : NormedSpace ℝ E := NormedSpace.restrictScalars ℝ 𝕜 E
+  let _ : NormedSpace ℝ F := NormedSpace.restrictScalars ℝ 𝕜 F
+  let _ : LinearMap.CompatibleSMul E F ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
+  let _ : LinearMap.CompatibleSMul E (E →L[𝕜] F) ℝ 𝕜 := LinearMap.IsScalarTower.compatibleSMul
   let f'R : E → E →L[ℝ] F := fun x ↦ (f' x).restrictScalars ℝ
   have hfR : ∀ᶠ y in 𝓝 x, HasFDerivAt f (f'R y) y := by
     filter_upwards [hf] with y hy using HasFDerivAt.restrictScalars ℝ hy
@@ -439,36 +464,92 @@ theorem second_derivative_symmetric_of_eventually {f' : E → E →L[𝕜] F} {x
 
 /-- If a function is differentiable, and has two derivatives at `x`, then the second
 derivative is symmetric. -/
-theorem second_derivative_symmetric {f' : E → E →L[𝕜] F} {f'' : E →L[𝕜] E →L[𝕜] F} {x : E}
+theorem second_derivative_symmetric [IsRCLikeNormedField 𝕜]
+    {f' : E → E →L[𝕜] F} {f'' : E →L[𝕜] E →L[𝕜] F} {x : E}
     (hf : ∀ y, HasFDerivAt f (f' y) y) (hx : HasFDerivAt f' f'' x) (v w : E) : f'' v w = f'' w v :=
   second_derivative_symmetric_of_eventually (Filter.Eventually.of_forall hf) hx v w
 
-/-- If a function is `C^2` at a point, then its second derivative there is symmetric. -/
-theorem ContDiffAt.isSymmSndFDerivAt {n : ℕ∞} (hf : ContDiffAt 𝕜 n f x) (hn : 2 ≤ n) :
-    IsSymmSndFDerivAt 𝕜 f x := by
-  intro v w
-  apply second_derivative_symmetric_of_eventually (f := f) (f' := fderiv 𝕜 f) (x := x)
-  · obtain ⟨u, hu, h'u⟩ : ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 2 f u := hf.contDiffOn (m := 2) hn
-    rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, xv⟩
-    filter_upwards [v_open.mem_nhds xv] with y hy
-    have : DifferentiableAt 𝕜 f y := by
-      have := (h'u.mono vu y hy).contDiffAt (v_open.mem_nhds hy)
-      exact this.differentiableAt one_le_two
-    exact DifferentiableAt.hasFDerivAt this
-  · have : DifferentiableAt 𝕜 (fderiv 𝕜 f) x := by
-      apply ContDiffAt.differentiableAt _ le_rfl
-      exact hf.fderiv_right hn
-    exact DifferentiableAt.hasFDerivAt this
+open scoped Classical in
+variable (𝕜) in
+/-- `minSmoothness 𝕜 n` is the minimal smoothness exponent larger than or equal to `n` for which
+one can do serious calculus in `𝕜`. If `𝕜` is `ℝ` or `ℂ`, this is just `n`. Otherwise,
+this is `ω` as only analytic functions are well behaved on `ℚₚ`, say. -/
+noncomputable irreducible_def minSmoothness (n : WithTop ℕ∞) :=
+  if IsRCLikeNormedField 𝕜 then n else ω
+
+@[simp] lemma minSmoothness_of_isRCLikeNormedField [h : IsRCLikeNormedField 𝕜] {n : WithTop ℕ∞} :
+    minSmoothness 𝕜 n = n := by
+  simp [minSmoothness, h]
+
+lemma le_minSmoothness {n : WithTop ℕ∞} : n ≤ minSmoothness 𝕜 n := by
+  simp only [minSmoothness]
+  split_ifs <;> simp
+
+lemma minSmoothness_add {n m : WithTop ℕ∞} : minSmoothness 𝕜 (n + m) = minSmoothness 𝕜 n + m := by
+  simp only [minSmoothness]
+  split_ifs <;> simp
+
+lemma minSmoothness_monotone : Monotone (minSmoothness 𝕜) := by
+  intro m n hmn
+  simp only [minSmoothness]
+  split_ifs <;> simp [hmn]
+
+@[simp] lemma minSmoothness_eq_infty {n : WithTop ℕ∞} :
+    minSmoothness 𝕜 n = ∞ ↔ (n = ∞ ∧ IsRCLikeNormedField 𝕜) := by
+  simp only [minSmoothness]
+  split_ifs with h <;> simp [h]
+
+/-- If `minSmoothness 𝕜 m ≤ n` for some (finite) integer `m`, then one can
+find `n' ∈ [minSmoothness 𝕜 m, n]` which is not `∞`: over `ℝ` or `ℂ`, just take `m`, and otherwise
+just take `ω`. The interest of this technical lemma is that, if a function is `C^{n'}` at a point
+for `n' ≠ ∞`, then it is `C^{n'}` on a neighborhood of the point (this property fails only
+in `C^∞` smoothness, see `ContDiffWithinAt.contDiffOn`). -/
+lemma exist_minSmoothness_le_ne_infty {n : WithTop ℕ∞} {m : ℕ} (hm : minSmoothness 𝕜 m ≤ n) :
+    ∃ n', minSmoothness 𝕜 m ≤ n' ∧ n' ≤ n ∧ n' ≠ ∞ := by
+  simp only [minSmoothness] at hm ⊢
+  split_ifs with h
+  · simp only [h, ↓reduceIte] at hm
+    exact ⟨m, le_rfl, hm, by simp⟩
+  · simp only [h, ↓reduceIte, top_le_iff] at hm
+    refine ⟨ω, le_rfl, by simp [hm], by simp⟩
+
+/-- If a function is `C^2` at a point, then its second derivative there is symmetric. Over a field
+different from `ℝ` or `ℂ`, we should require that the function is analytic. -/
+theorem ContDiffAt.isSymmSndFDerivAt {n : WithTop ℕ∞}
+    (hf : ContDiffAt 𝕜 n f x) (hn : minSmoothness 𝕜 2 ≤ n) : IsSymmSndFDerivAt 𝕜 f x := by
+  by_cases h : IsRCLikeNormedField 𝕜
+  -- First deal with the `ℝ` or `ℂ` case, where `C^2` is enough.
+  · intro v w
+    apply second_derivative_symmetric_of_eventually (f := f) (f' := fderiv 𝕜 f) (x := x)
+    · obtain ⟨u, hu, h'u⟩ : ∃ u ∈ 𝓝 x, ContDiffOn 𝕜 2 f u :=
+        (hf.of_le hn).contDiffOn (m := 2) le_minSmoothness (by simp)
+      rcases mem_nhds_iff.1 hu with ⟨v, vu, v_open, xv⟩
+      filter_upwards [v_open.mem_nhds xv] with y hy
+      have : DifferentiableAt 𝕜 f y := by
+        have := (h'u.mono vu y hy).contDiffAt (v_open.mem_nhds hy)
+        exact this.differentiableAt one_le_two
+      exact DifferentiableAt.hasFDerivAt this
+    · have : DifferentiableAt 𝕜 (fderiv 𝕜 f) x := by
+        apply ContDiffAt.differentiableAt _ le_rfl
+        exact hf.fderiv_right (le_minSmoothness.trans hn)
+      exact DifferentiableAt.hasFDerivAt this
+  -- then deal with the case of an arbitrary field, with analytic functions.
+  · simp only [minSmoothness, h, ↓reduceIte, top_le_iff] at hn
+    apply ContDiffAt.isSymmSndFDerivAt_of_omega
+    simpa [hn] using hf
 
 /-- If a function is `C^2` within a set at a point, and accumulated by points in the interior
-of the set, then its second derivative there is symmetric. -/
-theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞} (hf : ContDiffWithinAt 𝕜 n f s x)
-    (hn : 2 ≤ n) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ closure (interior s)) (h'x : x ∈ s) :
+of the set, then its second derivative there is symmetric. Over a field
+different from `ℝ` or `ℂ`, we should require that the function is analytic. -/
+theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : WithTop ℕ∞}
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hn : minSmoothness 𝕜 2 ≤ n)
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ closure (interior s)) (h'x : x ∈ s) :
     IsSymmSndFDerivWithinAt 𝕜 f s x := by
   /- We argue that, at interior points, the second derivative is symmetric, and moreover by
   continuity it converges to the second derivative at `x`. Therefore, the latter is also
   symmetric. -/
-  rcases hf.contDiffOn' hn with ⟨u, u_open, xu, hu⟩
+  obtain ⟨m, hm, hmn, m_ne⟩ := exist_minSmoothness_le_ne_infty hn
+  rcases (hf.of_le hmn).contDiffOn' le_rfl (by simp [m_ne]) with ⟨u, u_open, xu, hu⟩
   simp only [insert_eq_of_mem h'x] at hu
   have h'u : UniqueDiffOn 𝕜 (s ∩ u) := hs.inter u_open
   obtain ⟨y, hy, y_lim⟩ : ∃ y, (∀ (n : ℕ), y n ∈ interior s) ∧ Tendsto y atTop (𝓝 x) :=
@@ -480,7 +561,7 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞} (hf : ContDiffWith
       apply mem_of_superset (isOpen_interior.mem_nhds (hy k))
       exact interior_subset
     have : IsSymmSndFDerivAt 𝕜 f (y k) := by
-      apply ContDiffAt.isSymmSndFDerivAt _ le_rfl
+      apply ContDiffAt.isSymmSndFDerivAt _ (n := m) hm
       apply (hu (y k) ⟨(interior_subset (hy k)), hk⟩).contDiffAt
       exact inter_mem s_mem (u_open.mem_nhds hk)
     intro v w
@@ -488,7 +569,8 @@ theorem ContDiffWithinAt.isSymmSndFDerivWithinAt {n : ℕ∞} (hf : ContDiffWith
     exact this v w
   have A : ContinuousOn (fderivWithin 𝕜 (fderivWithin 𝕜 f s) s) (s ∩ u) := by
     have : ContinuousOn (fderivWithin 𝕜 (fderivWithin 𝕜 f (s ∩ u)) (s ∩ u)) (s ∩ u) :=
-      ((hu.fderivWithin h'u (m := 1) le_rfl).fderivWithin h'u (m := 0) le_rfl).continuousOn
+      ((hu.fderivWithin h'u (m := 1) (le_minSmoothness.trans hm)).fderivWithin h'u
+      (m := 0) le_rfl).continuousOn
     apply this.congr
     intro y hy
     apply fderivWithin_fderivWithin_eq_of_eventuallyEq

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Johannes Hölzl, Reid Barton, Kim Morrison, Patrick Massot, Kyle Miller,
 Minchao Wu, Yury Kudryashov, Floris van Doorn
 -/
+import Mathlib.Data.Set.CoeSort
 import Mathlib.Data.SProd
 import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
@@ -19,7 +20,6 @@ More advanced theorems about these definitions are located in other files in `Ma
 ## Main definitions
 
 - complement of a set and set difference;
-- `Set.Elem`: coercion of a set to a type; it is reducibly equal to `{x // x ∈ s}`;
 - `Set.preimage f s`, a.k.a. `f ⁻¹' s`: preimage of a set;
 - `Set.range f`: the range of a function;
   it is more general than `f '' univ` because it allows functions from `Sort*`;
@@ -29,7 +29,7 @@ More advanced theorems about these definitions are located in other files in `Ma
 - `Set.pi`: indexed product of a family of sets `∀ i, Set (α i)`,
   as a set in `∀ i, α i`;
 - `Set.EqOn f g s`: the predicate saying that two functions are equal on a set;
-- `Set.MapsTo f s t`: the predicate syaing that `f` sends all points of `s` to `t;
+- `Set.MapsTo f s t`: the predicate saying that `f` sends all points of `s` to `t`;
 - `Set.MapsTo.restrict`: restrict `f : α → β` to `f' : s → t` provided that `Set.MapsTo f s t`;
 - `Set.restrictPreimage`: restrict `f : α → β` to `f' : (f ⁻¹' t) → t`;
 - `Set.InjOn`: the predicate saying that `f` is injective on a set;
@@ -41,7 +41,7 @@ More advanced theorems about these definitions are located in other files in `Ma
 - `Set.image2`: the image of a pair of sets under a binary operation,
   mostly useful to define pointwise algebraic operations on sets;
 - `Set.seq`: monadic `seq` operation on sets;
-  we don't use monadic notation to ensure support for maps between different universes;
+  we don't use monadic notation to ensure support for maps between different universes.
 
 ## Notations
 
@@ -88,18 +88,6 @@ theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
 @[simp] theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
 
 theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t := ⟨h1, h2⟩
-
--- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
--- so that `norm_cast` has something to index on.
--- It is currently an abbreviation so that instance coming from `Subtype` are available.
--- If you're interested in making it a `def`, as it probably should be,
--- you'll then need to create additional instances (and possibly prove lemmas about them).
--- The first error should appear below at `monotoneOn_iff_monotone`.
-/-- Given the set `s`, `Elem s` is the `Type` of element of `s`. -/
-@[coe, reducible] def Elem (s : Set α) : Type u := {x // x ∈ s}
-
-/-- Coercion from a set to the corresponding subtype. -/
-instance : CoeSort (Set α) (Type u) := ⟨Elem⟩
 
 /-- The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`,
   is the set of `x : α` such that `f x ∈ s`. -/
@@ -184,7 +172,11 @@ theorem mem_prod_eq : (p ∈ s ×ˢ t) = (p.1 ∈ s ∧ p.2 ∈ t) := rfl
 theorem mem_prod : p ∈ s ×ˢ t ↔ p.1 ∈ s ∧ p.2 ∈ t := .rfl
 
 @[mfld_simps]
-theorem prod_mk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) := rfl
+theorem prodMk_mem_set_prod_eq : ((a, b) ∈ s ×ˢ t) = (a ∈ s ∧ b ∈ t) :=
+  rfl
+
+@[deprecated (since := "2025-02-21")]
+alias prod_mk_mem_set_prod_eq := prodMk_mem_set_prod_eq
 
 theorem mk_mem_prod (ha : a ∈ s) (hb : b ∈ t) : (a, b) ∈ s ×ˢ t := ⟨ha, hb⟩
 
@@ -213,8 +205,8 @@ section Pi
 variable {ι : Type*} {α : ι → Type*}
 
 /-- Given an index set `ι` and a family of sets `t : Π i, Set (α i)`, `pi s t`
-is the set of dependent functions `f : Πa, π a` such that `f a` belongs to `t a`
-whenever `a ∈ s`. -/
+is the set of dependent functions `f : Πa, π a` such that `f i` belongs to `t i`
+whenever `i ∈ s`. -/
 def pi (s : Set ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) := {f | ∀ i ∈ s, f i ∈ t i}
 
 variable {s : Set ι} {t : ∀ i, Set (α i)} {f : ∀ i, α i}
@@ -228,7 +220,7 @@ end Pi
 /-- Two functions `f₁ f₂ : α → β` are equal on `s` if `f₁ x = f₂ x` for all `x ∈ s`. -/
 def EqOn (f₁ f₂ : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → f₁ x = f₂ x
 
-/-- `MapsTo f a b` means that the image of `a` is contained in `b`. -/
+/-- `MapsTo f s t` means that the image of `s` is contained in `t`. -/
 def MapsTo (f : α → β) (s : Set α) (t : Set β) : Prop := ∀ ⦃x⦄, x ∈ s → f x ∈ t
 
 theorem mapsTo_image (f : α → β) (s : Set α) : MapsTo f s (f '' s) := fun _ ↦ mem_image_of_mem f
@@ -245,26 +237,26 @@ def MapsTo.restrict (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t)
 def restrictPreimage (t : Set β) (f : α → β) : f ⁻¹' t → t :=
   (Set.mapsTo_preimage f t).restrict _ _ _
 
-/-- `f` is injective on `a` if the restriction of `f` to `a` is injective. -/
+/-- `f` is injective on `s` if the restriction of `f` to `s` is injective. -/
 def InjOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃x₁ : α⦄, x₁ ∈ s → ∀ ⦃x₂ : α⦄, x₂ ∈ s → f x₁ = f x₂ → x₁ = x₂
 
 /-- The graph of a function `f : α → β` on a set `s`. -/
 def graphOn (f : α → β) (s : Set α) : Set (α × β) := (fun x ↦ (x, f x)) '' s
 
-/-- `f` is surjective from `a` to `b` if `b` is contained in the image of `a`. -/
+/-- `f` is surjective from `s` to `t` if `t` is contained in the image of `s`. -/
 def SurjOn (f : α → β) (s : Set α) (t : Set β) : Prop := t ⊆ f '' s
 
 /-- `f` is bijective from `s` to `t` if `f` is injective on `s` and `f '' s = t`. -/
 def BijOn (f : α → β) (s : Set α) (t : Set β) : Prop := MapsTo f s t ∧ InjOn f s ∧ SurjOn f s t
 
-/-- `g` is a left inverse to `f` on `a` means that `g (f x) = x` for all `x ∈ a`. -/
-def LeftInvOn (f' : β → α) (f : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → f' (f x) = x
+/-- `g` is a left inverse to `f` on `s` means that `g (f x) = x` for all `x ∈ s`. -/
+def LeftInvOn (g : β → α) (f : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → g (f x) = x
 
-/-- `g` is a right inverse to `f` on `b` if `f (g x) = x` for all `x ∈ b`. -/
-abbrev RightInvOn (f' : β → α) (f : α → β) (t : Set β) : Prop := LeftInvOn f f' t
+/-- `g` is a right inverse to `f` on `t` if `f (g x) = x` for all `x ∈ t`. -/
+abbrev RightInvOn (g : β → α) (f : α → β) (t : Set β) : Prop := LeftInvOn f g t
 
-/-- `g` is an inverse to `f` viewed as a map from `a` to `b` -/
+/-- `g` is an inverse to `f` viewed as a map from `s` to `t` -/
 def InvOn (g : β → α) (f : α → β) (s : Set α) (t : Set β) : Prop :=
   LeftInvOn g f s ∧ RightInvOn g f t
 

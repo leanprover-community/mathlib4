@@ -3,11 +3,13 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Order.AddGroupWithTop
+import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Algebra.SMulWithZero
-import Mathlib.Order.Hom.Basic
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.Order.Hom.Basic
 
 /-!
 
@@ -43,6 +45,7 @@ most references rely on `Semiring (Tropical R)` for building up the whole theory
 
 -/
 
+assert_not_exists Nat.instMulOneClass
 
 universe u v
 
@@ -88,7 +91,6 @@ theorem trop_untrop (x : Tropical R) : trop (untrop x) = x :=
 theorem untrop_trop (x : R) : untrop (trop x) = x :=
   rfl
 
--- Porting note: New attribute seems to fix things
 attribute [irreducible] Tropical
 
 theorem leftInverse_trop : Function.LeftInverse (trop : R → Tropical R) untrop :=
@@ -150,9 +152,8 @@ instance instLETropical [LE R] : LE (Tropical R) where le x y := untrop x ≤ un
 theorem untrop_le_iff [LE R] {x y : Tropical R} : untrop x ≤ untrop y ↔ x ≤ y :=
   Iff.rfl
 
-instance decidableLE [LE R] [DecidableRel ((· ≤ ·) : R → R → Prop)] :
-    DecidableRel ((· ≤ ·) : Tropical R → Tropical R → Prop) := fun x y =>
-  ‹DecidableRel (· ≤ ·)› (untrop x) (untrop y)
+instance decidableLE [LE R] [DecidableLE R] : DecidableLE (Tropical R) := fun x y =>
+  ‹DecidableLE R› (untrop x) (untrop y)
 
 instance instLTTropical [LT R] : LT (Tropical R) where lt x y := untrop x < untrop y
 
@@ -160,9 +161,8 @@ instance instLTTropical [LT R] : LT (Tropical R) where lt x y := untrop x < untr
 theorem untrop_lt_iff [LT R] {x y : Tropical R} : untrop x < untrop y ↔ x < y :=
   Iff.rfl
 
-instance decidableLT [LT R] [DecidableRel ((· < ·) : R → R → Prop)] :
-    DecidableRel ((· < ·) : Tropical R → Tropical R → Prop) := fun x y =>
-  ‹DecidableRel (· < ·)› (untrop x) (untrop y)
+instance decidableLT [LT R] [DecidableLT R] : DecidableLT (Tropical R) := fun x y =>
+  ‹DecidableLT R› (untrop x) (untrop y)
 
 instance instPreorderTropical [Preorder R] : Preorder (Tropical R) :=
   { instLETropical, instLTTropical with

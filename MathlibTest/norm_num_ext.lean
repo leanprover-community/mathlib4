@@ -7,11 +7,15 @@ import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.IsCoprime
 import Mathlib.Tactic.NormNum.DivMod
+import Mathlib.Tactic.NormNum.NatFactorial
 import Mathlib.Tactic.NormNum.NatFib
+import Mathlib.Tactic.NormNum.NatLog
 import Mathlib.Tactic.NormNum.NatSqrt
 import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.NormNum.RealSqrt
 
 /-!
 # Tests for `norm_num` extensions
@@ -305,6 +309,19 @@ example : @Squarefree ℕ Multiplicative.monoid 1 := by
     cases h
 -/
 
+example : Nat.log 0 0 = 0 := by norm_num1
+example : Nat.log 0 1 = 0 := by norm_num1
+example : Nat.log 0 100 = 0 := by norm_num1
+example : Nat.log 1 0 = 0 := by norm_num1
+example : Nat.log 1 1 = 0 := by norm_num1
+example : Nat.log 1 100 = 0 := by norm_num1
+example : Nat.log 10 0 = 0 := by norm_num1
+example : Nat.log 10 3 = 0 := by norm_num1
+example : Nat.log 2 2 = 1 := by norm_num1
+example : Nat.log 2 256 = 8 := by norm_num1
+example : Nat.log 10 10000000 = 7 := by norm_num1
+example : Nat.log 10 (10 ^ 7 + 2) + Nat.log 2 (2 ^ 30 + 3) = 7 + 30 := by norm_num1
+
 example : Nat.fib 0 = 0 := by norm_num1
 example : Nat.fib 1 = 1 := by norm_num1
 example : Nat.fib 2 = 1 := by norm_num1
@@ -400,6 +417,11 @@ example : ⌊(2 : R)⌋ = 2 := by norm_num
 example : ⌊(15 / 16 : K)⌋ + 1 = 1 := by norm_num
 example : ⌊(-15 / 16 : K)⌋ + 1 = 0 := by norm_num
 
+example : ⌈(-1 : R)⌉ = -1 := by norm_num
+example : ⌈(2 : R)⌉ = 2 := by norm_num
+example : ⌈(15 / 16 : K)⌉ + 1 = 2 := by norm_num
+example : ⌈(-15 / 16 : K)⌉ + 1 = 1 := by norm_num
+
 end floor
 
 section jacobi
@@ -449,3 +471,49 @@ example : (553105253 : ℤ) ∣ 553105253 * 776531401 := by norm_num1
 example : ¬ (553105253 : ℤ) ∣ 553105253 * 776531401 + 1 := by norm_num1
 
 end mod
+
+section num_den
+
+example : (6 / 15 : ℚ).num = 2 := by norm_num1
+example : (6 / 15 : ℚ).den = 5 := by norm_num1
+
+example : (-6 / 15 : ℚ).num = -2 := by norm_num1
+example : (-6 / 15 : ℚ).den = 5 := by norm_num1
+
+end num_den
+
+section real_sqrt
+
+example : Real.sqrt 25 = 5 := by norm_num
+example : Real.sqrt (25 / 16) = 5 / 4 := by norm_num
+example : Real.sqrt (0.25) = 1/2 := by norm_num
+example : NNReal.sqrt 25 = 5 := by norm_num
+example : Real.sqrt (-37) = 0 := by norm_num
+example : Real.sqrt (-5 / 3) = 0 := by norm_num
+example : Real.sqrt 0 = 0 := by norm_num
+example : NNReal.sqrt 0 = 0 := by norm_num
+
+end real_sqrt
+
+section Factorial
+
+open Nat
+
+example : 0! = 1 := by norm_num1
+example : 1! = 1 := by norm_num1
+example : 2! = 2 := by norm_num1
+example : 3! = 6 := by norm_num1
+example : 4! = 24 := by norm_num1
+
+example : 10! = 3628800 := by norm_num1
+example : 1000! / 999! = 1000 := by norm_num1
+example : (Nat.sqrt 1024)! = 32! := by norm_num1
+example : (1 : ℚ) / 0 ! + 1 / 1 ! + 1 / 2 ! + 1 / 3! + 1 / 4! = 65 / 24 := by norm_num1
+
+example : (4 + 2).ascFactorial 3 = 336 := by norm_num1
+example : (5 + 5).descFactorial 2 = 90 := by norm_num1
+example : (1000000).descFactorial 1000001 = 0 := by norm_num1
+
+example : (200 : ℕ) ! / (10 ^ 370) = 78865 := by norm_num1
+
+end Factorial

@@ -24,10 +24,9 @@ In decomposition monoids (e.g., `ℕ`, `ℤ`), this predicate is equivalent to `
  * `irreducible_iff_prime`: the two definitions are equivalent in a decomposition monoid.
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists Multiset
+assert_not_exists OrderedCommMonoid Multiset
 
-variable {M N : Type*}
+variable {M : Type*}
 
 section Prime
 
@@ -174,7 +173,7 @@ end CommMonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable [CancelCommMonoidWithZero M] {a p : M}
+variable [CancelCommMonoidWithZero M] {p : M}
 
 protected theorem Prime.irreducible (hp : Prime p) : Irreducible p :=
   ⟨hp.not_unit, fun a b ↦ by

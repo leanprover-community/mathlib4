@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 import Mathlib.Data.Set.Prod
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.ModelTheory.LanguageMap
+import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Basics on First-Order Syntax
@@ -98,7 +99,6 @@ def varFinset [DecidableEq α] : L.Term α → Finset α
   | var i => {i}
   | func _f ts => univ.biUnion fun i => (ts i).varFinset
 
--- Porting note: universes in different order
 /-- The `Finset` of variables from the left side of a sum used in a given term. -/
 @[simp]
 def varFinsetLeft [DecidableEq α] : L.Term (α ⊕ β) → Finset α
@@ -106,7 +106,6 @@ def varFinsetLeft [DecidableEq α] : L.Term (α ⊕ β) → Finset α
   | var (Sum.inr _i) => ∅
   | func _f ts => univ.biUnion fun i => (ts i).varFinsetLeft
 
--- Porting note: universes in different order
 @[simp]
 def relabel (g : α → β) : L.Term α → L.Term β
   | var i => var (g i)
@@ -138,7 +137,6 @@ theorem relabel_comp_relabel (f : α → β) (g : β → γ) :
 def relabelEquiv (g : α ≃ β) : L.Term α ≃ L.Term β :=
   ⟨relabel g, relabel g.symm, fun t => by simp, fun t => by simp⟩
 
--- Porting note: universes in different order
 /-- Restricts a term to use only a set of the given variables. -/
 def restrictVar [DecidableEq α] : ∀ (t : L.Term α) (_f : t.varFinset → β), L.Term β
   | var a, f => var (f ⟨a, mem_singleton_self a⟩)
@@ -146,7 +144,6 @@ def restrictVar [DecidableEq α] : ∀ (t : L.Term α) (_f : t.varFinset → β)
     func F fun i => (ts i).restrictVar (f ∘ Set.inclusion
       (subset_biUnion_of_mem (fun i => varFinset (ts i)) (mem_univ i)))
 
--- Porting note: universes in different order
 /-- Restricts a term to use only a set of the given variables on the left side of a sum. -/
 def restrictVarLeft [DecidableEq α] {γ : Type*} :
     ∀ (t : L.Term (α ⊕ γ)) (_f : t.varFinsetLeft → β), L.Term (β ⊕ γ)
@@ -173,7 +170,6 @@ def Functions.apply₂ (f : L.Functions 2) (t₁ t₂ : L.Term α) : L.Term α :
 
 namespace Term
 
--- Porting note: universes in different order
 /-- Sends a term with constants to a term with extra variables. -/
 @[simp]
 def constantsToVars : L[[γ]].Term α → L.Term (γ ⊕ α)
@@ -183,7 +179,6 @@ def constantsToVars : L[[γ]].Term α → L.Term (γ ⊕ α)
   | @func _ _ (_n + 1) f ts =>
     Sum.casesOn f (fun f => func f fun i => (ts i).constantsToVars) fun c => isEmptyElim c
 
--- Porting note: universes in different order
 /-- Sends a term with extra variables to a term with constants. -/
 @[simp]
 def varsToConstants : L.Term (γ ⊕ α) → L[[γ]].Term α
@@ -203,7 +198,7 @@ def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (γ ⊕ α) :=
       · cases f
         · simp [constantsToVars, varsToConstants, ih]
         · simp [constantsToVars, varsToConstants, Constants.term, eq_iff_true_of_subsingleton]
-      · cases' f with f f
+      · obtain - | f := f
         · simp [constantsToVars, varsToConstants, ih]
         · exact isEmptyElim f, by
     intro t
@@ -235,7 +230,6 @@ instance inhabitedOfConstant [Inhabited L.Constants] : Inhabited (L.Term α) :=
 def liftAt {n : ℕ} (n' m : ℕ) : L.Term (α ⊕ (Fin n)) → L.Term (α ⊕ (Fin (n + n'))) :=
   relabel (Sum.map id fun i => if ↑i < m then Fin.castAdd n' i else Fin.addNat i n')
 
--- Porting note: universes in different order
 /-- Substitutes the variables in a given term with terms. -/
 @[simp]
 def subst : L.Term α → (α → L.Term β) → L.Term β
@@ -250,7 +244,6 @@ namespace LHom
 
 open Term
 
--- Porting note: universes in different order
 /-- Maps a term's symbols along a language map. -/
 @[simp]
 def onTerm (φ : L →ᴸ L') : L.Term α → L'.Term α
@@ -377,7 +370,6 @@ protected def iff (φ ψ : L.BoundedFormula α n) :=
 
 open Finset
 
--- Porting note: universes in different order
 /-- The `Finset` of variables used in a given formula. -/
 @[simp]
 def freeVarFinset [DecidableEq α] : ∀ {n}, L.BoundedFormula α n → Finset α
@@ -387,7 +379,6 @@ def freeVarFinset [DecidableEq α] : ∀ {n}, L.BoundedFormula α n → Finset �
   | _n, imp f₁ f₂ => f₁.freeVarFinset ∪ f₂.freeVarFinset
   | _n, all f => f.freeVarFinset
 
--- Porting note: universes in different order
 /-- Casts `L.BoundedFormula α m` as `L.BoundedFormula α n`, where `m ≤ n`. -/
 @[simp]
 def castLE : ∀ {m n : ℕ} (_h : m ≤ n), L.BoundedFormula α m → L.BoundedFormula α n
@@ -429,7 +420,6 @@ theorem castLE_comp_castLE {k m n} (km : k ≤ m) (mn : m ≤ n) :
       BoundedFormula.castLE (km.trans mn) :=
   funext (castLE_castLE km mn)
 
--- Porting note: universes in different order
 /-- Restricts a bounded formula to only use a particular set of free variables. -/
 def restrictFreeVar [DecidableEq α] :
     ∀ {n : ℕ} (φ : L.BoundedFormula α n) (_f : φ.freeVarFinset → β), L.BoundedFormula β n
@@ -445,19 +435,16 @@ def restrictFreeVar [DecidableEq α] :
       (φ₂.restrictFreeVar (f ∘ Set.inclusion subset_union_right))
   | _n, all φ, f => (φ.restrictFreeVar f).all
 
--- Porting note: universes in different order
 /-- Places universal quantifiers on all extra variables of a bounded formula. -/
 def alls : ∀ {n}, L.BoundedFormula α n → L.Formula α
   | 0, φ => φ
   | _n + 1, φ => φ.all.alls
 
--- Porting note: universes in different order
 /-- Places existential quantifiers on all extra variables of a bounded formula. -/
 def exs : ∀ {n}, L.BoundedFormula α n → L.Formula α
   | 0, φ => φ
   | _n + 1, φ => φ.ex.exs
 
--- Porting note: universes in different order
 /-- Maps bounded formulas along a map of terms and a map of relations. -/
 def mapTermRel {g : ℕ → ℕ} (ft : ∀ n, L.Term (α ⊕ (Fin n)) → L'.Term (β ⊕ (Fin (g n))))
     (fr : ∀ n, L.Relations n → L'.Relations n)
@@ -514,20 +501,24 @@ def relabelAux (g : α → β ⊕ (Fin n)) (k : ℕ) : α ⊕ (Fin k) → β ⊕
   Sum.map id finSumFinEquiv ∘ Equiv.sumAssoc _ _ _ ∘ Sum.map g id
 
 @[simp]
-theorem sum_elim_comp_relabelAux {m : ℕ} {g : α → β ⊕ (Fin n)} {v : β → M}
+theorem sumElim_comp_relabelAux {m : ℕ} {g : α → β ⊕ (Fin n)} {v : β → M}
     {xs : Fin (n + m) → M} : Sum.elim v xs ∘ relabelAux g m =
     Sum.elim (Sum.elim v (xs ∘ castAdd m) ∘ g) (xs ∘ natAdd n) := by
   ext x
-  cases' x with x x
+  rcases x with x | x
   · simp only [BoundedFormula.relabelAux, Function.comp_apply, Sum.map_inl, Sum.elim_inl]
-    cases' g x with l r <;> simp
+    rcases g x with l | r <;> simp
   · simp [BoundedFormula.relabelAux]
 
+@[deprecated (since := "2025-02-21")] alias sum_elim_comp_relabelAux := sumElim_comp_relabelAux
+
 @[simp]
-theorem relabelAux_sum_inl (k : ℕ) :
+theorem relabelAux_sumInl (k : ℕ) :
     relabelAux (Sum.inl : α → α ⊕ (Fin n)) k = Sum.map id (natAdd n) := by
   ext x
   cases x <;> · simp [relabelAux]
+
+@[deprecated (since := "2025-02-21")] alias relabelAux_sum_inl := relabelAux_sumInl
 
 /-- Relabels a bounded formula's variables along a particular function. -/
 def relabel (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α k) : L.BoundedFormula β (n + k) :=
@@ -568,15 +559,17 @@ theorem relabel_ex (g : α → β ⊕ (Fin n)) {k} (φ : L.BoundedFormula α (k 
     φ.ex.relabel g = (φ.relabel g).ex := by simp [BoundedFormula.ex]
 
 @[simp]
-theorem relabel_sum_inl (φ : L.BoundedFormula α n) :
+theorem relabel_sumInl (φ : L.BoundedFormula α n) :
     (φ.relabel Sum.inl : L.BoundedFormula α (0 + n)) = φ.castLE (ge_of_eq (zero_add n)) := by
-  simp only [relabel, relabelAux_sum_inl]
+  simp only [relabel, relabelAux_sumInl]
   induction φ with
   | falsum => rfl
   | equal => simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]
   | rel => simp [Fin.natAdd_zero, castLE_of_eq, mapTermRel]; rfl
   | imp _ _ ih1 ih2 => simp_all [mapTermRel]
   | all _ ih3 => simp_all [mapTermRel]
+
+@[deprecated (since := "2025-02-21")] alias relabel_sum_inl := relabel_sumInl
 
 /-- Substitutes the variables in a given formula with terms. -/
 def subst {n : ℕ} (φ : L.BoundedFormula α n) (f : α → L.Term β) : L.BoundedFormula β n :=
@@ -587,7 +580,6 @@ def subst {n : ℕ} (φ : L.BoundedFormula α n) (f : α → L.Term β) : L.Boun
 def constantsVarsEquiv : L[[γ]].BoundedFormula α n ≃ L.BoundedFormula (γ ⊕ α) n :=
   mapTermRelEquiv (fun _ => Term.constantsVarsEquivLeft) fun _ => Equiv.sumEmpty _ _
 
--- Porting note: universes in different order
 /-- Turns the extra variables of a bounded formula into free variables. -/
 @[simp]
 def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (α ⊕ (Fin n))
@@ -599,13 +591,15 @@ def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (α ⊕ (Fin 
     (φ.toFormula.relabel
         (Sum.elim (Sum.inl ∘ Sum.inl) (Sum.map Sum.inr id ∘ finSumFinEquiv.symm))).all
 
-/-- take the disjunction of a finite set of formulas -/
-noncomputable def iSup (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
-  (s.toList.map f).foldr (· ⊔ ·) ⊥
+/-- Take the disjunction of a finite set of formulas -/
+noncomputable def iSup [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
+  let _ := Fintype.ofFinite β
+  ((Finset.univ : Finset β).toList.map f).foldr (· ⊔ ·) ⊥
 
-/-- take the conjunction of a finite set of formulas -/
-noncomputable def iInf (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
-  (s.toList.map f).foldr (· ⊓ ·) ⊤
+/-- Take the conjunction of a finite set of formulas -/
+noncomputable def iInf [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
+  let _ := Fintype.ofFinite β
+  ((Finset.univ : Finset β).toList.map f).foldr (· ⊓ ·) ⊤
 
 end BoundedFormula
 
@@ -613,7 +607,6 @@ namespace LHom
 
 open BoundedFormula
 
--- Porting note: universes in different order
 /-- Maps a bounded formula's symbols along a language map. -/
 @[simp]
 def onBoundedFormula (g : L →ᴸ L') : ∀ {k : ℕ}, L.BoundedFormula α k → L'.BoundedFormula α k
@@ -641,7 +634,7 @@ theorem comp_onBoundedFormula {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →�
   ext f
   induction f with
   | falsum => rfl
-  | equal => simp only [onBoundedFormula, comp_onTerm, Function.comp_apply]
+  | equal => simp [Term.bdEqual]
   | rel => simp only [onBoundedFormula, comp_onRelation, comp_onTerm, Function.comp_apply]; rfl
   | imp _ _ ih1 ih2 =>
     simp only [onBoundedFormula, Function.comp_apply, ih1, ih2, eq_self_iff_true, and_self_iff]
@@ -700,13 +693,13 @@ theorem onFormula_symm (φ : L ≃ᴸ L') :
   rfl
 
 /-- Maps a sentence's symbols along a language equivalence. -/
-@[simps!] -- Porting note: add `!` to `simps`
+@[simps!]
 def onSentence (φ : L ≃ᴸ L') : L.Sentence ≃ L'.Sentence :=
   φ.onFormula
 
 end LEquiv
 
-scoped[FirstOrder] infixl:88 " =' " => FirstOrder.Language.Term.bdEqual
+@[inherit_doc] scoped[FirstOrder] infixl:88 " =' " => FirstOrder.Language.Term.bdEqual
 -- input \~- or \simeq
 
 scoped[FirstOrder] infixr:62 " ⟹ " => FirstOrder.Language.BoundedFormula.imp
@@ -714,13 +707,13 @@ scoped[FirstOrder] infixr:62 " ⟹ " => FirstOrder.Language.BoundedFormula.imp
 
 scoped[FirstOrder] prefix:110 "∀'" => FirstOrder.Language.BoundedFormula.all
 
-scoped[FirstOrder] prefix:arg "∼" => FirstOrder.Language.BoundedFormula.not
+@[inherit_doc] scoped[FirstOrder] prefix:arg "∼" => FirstOrder.Language.BoundedFormula.not
 -- input \~, the ASCII character ~ has too low precedence
 
-scoped[FirstOrder] infixl:61 " ⇔ " => FirstOrder.Language.BoundedFormula.iff
+@[inherit_doc] scoped[FirstOrder] infixl:61 " ⇔ " => FirstOrder.Language.BoundedFormula.iff
 -- input \<=>
 
-scoped[FirstOrder] prefix:110 "∃'" => FirstOrder.Language.BoundedFormula.ex
+@[inherit_doc] scoped[FirstOrder] prefix:110 "∃'" => FirstOrder.Language.BoundedFormula.ex
 -- input \ex
 
 namespace Formula
@@ -741,21 +734,27 @@ protected nonrec abbrev not (φ : L.Formula α) : L.Formula α :=
 protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 
-/-- Given a map `f : α → β ⊕ γ`, `iAlls f φ` transforms a `L.Formula α`
-into a `L.Formula β` by renaming variables with the map `f` and then universally
+variable (β) in
+/-- `iAlls f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by universally
 quantifying over all variables `Sum.inr _`. -/
-noncomputable def iAlls [Finite γ] (f : α → β ⊕ γ)
-    (φ : L.Formula α) : L.Formula β :=
-  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
-  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).alls
+noncomputable def iAlls [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
+  (BoundedFormula.relabel (fun a => Sum.map id e a) φ).alls
 
-/-- Given a map `f : α → β ⊕ γ`, `iExs f φ` transforms a `L.Formula α`
-into a `L.Formula β` by renaming variables with the map `f` and then universally
+variable (β) in
+/-- `iExs f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by existentially
 quantifying over all variables `Sum.inr _`. -/
-noncomputable def iExs [Finite γ] (f : α → β ⊕ γ)
-    (φ : L.Formula α) : L.Formula β :=
-  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
-  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).exs
+noncomputable def iExs [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
+  (BoundedFormula.relabel (fun a => Sum.map id e a) φ).exs
+
+variable (β) in
+/-- `iExsUnique f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by existentially
+quantifying over all variables `Sum.inr _` and asserting that the solution should be unique -/
+noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
+  iExs β <| φ ⊓ iAlls β
+    ((φ.relabel (fun a => Sum.elim (.inl ∘ .inl) .inr a)).imp <|
+      .iInf fun g => Term.equal (var (.inr g)) (var (.inl (.inr g))))
 
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
@@ -852,7 +851,7 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
     rw [← image_iUnion, ← iUnion_inter]
     refine congr(_ '' ($(?_) ∩ _))
     ext ⟨i, j⟩
-    simp only [prod_mk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
+    simp only [prodMk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
       mem_image, Finset.mem_coe, Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]
     refine ⟨fun h => ⟨{⟨i, h.1⟩, ⟨j, h.2⟩}, ⟨h.1, ?_⟩, ⟨h.2, ?_⟩⟩, ?_⟩
     · simp

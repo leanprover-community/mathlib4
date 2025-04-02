@@ -3,10 +3,11 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Alexey Soloyev, Junyan Xu, Kamila Szewczyk
 -/
-import Mathlib.Data.Real.Irrational
-import Mathlib.Data.Nat.Fib.Basic
-import Mathlib.Data.Fin.VecNotation
+import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.LinearRecurrence
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Nat.Fib.Basic
+import Mathlib.Data.Real.Irrational
 import Mathlib.Tactic.NormNum.NatFib
 import Mathlib.Tactic.NormNum.Prime
 
@@ -189,8 +190,7 @@ theorem Real.coe_fib_eq' :
       ring_nf
       rw [mul_inv_cancel₀]; norm_num
   · exact fib_isSol_fibRec
-  · -- Porting note: Rewrote this proof
-    suffices LinearRecurrence.IsSolution fibRec
+  · suffices LinearRecurrence.IsSolution fibRec
         ((fun n ↦ (√5)⁻¹ * φ ^ n) - (fun n ↦ (√5)⁻¹ * ψ ^ n)) by
       convert this
       rw [Pi.sub_apply]
@@ -203,7 +203,7 @@ theorem Real.coe_fib_eq' :
 theorem Real.coe_fib_eq : ∀ n, (Nat.fib n : ℝ) = (φ ^ n - ψ ^ n) / √5 := by
   rw [← funext_iff, Real.coe_fib_eq']
 
-/-- Relationship between the Fibonacci Sequence, Golden Ratio and its conjugate's exponents --/
+/-- Relationship between the Fibonacci Sequence, Golden Ratio and its conjugate's exponents -/
 theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ n := by
   repeat rw [coe_fib_eq]
   rw [mul_div, div_sub_div_same, mul_sub, ← pow_succ']
@@ -211,7 +211,7 @@ theorem fib_golden_conj_exp (n : ℕ) : Nat.fib (n + 1) - φ * Nat.fib n = ψ ^ 
   have nz : sqrt 5 ≠ 0 := by norm_num
   rw [← (mul_inv_cancel₀ nz).symm, one_mul]
 
-/-- Relationship between the Fibonacci Sequence, Golden Ratio and its exponents --/
+/-- Relationship between the Fibonacci Sequence, Golden Ratio and its exponents -/
 theorem fib_golden_exp' (n : ℕ) : φ * Nat.fib (n + 1) + Nat.fib n = φ ^ (n + 1) := by
   induction n with
   | zero => norm_num

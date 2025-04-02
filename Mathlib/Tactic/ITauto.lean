@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Batteries.Tactic.Exact
 import Batteries.Tactic.Init
 import Mathlib.Logic.Basic
-import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Util.AtomM
 import Qq
 
@@ -158,7 +157,7 @@ def IProp.cmp (p q : IProp) : Ordering := by
 
 instance : LT IProp := ⟨fun p q => p.cmp q = .lt⟩
 
-instance : DecidableRel (@LT.lt IProp _) := fun _ _ => inferInstanceAs (Decidable (_ = _))
+instance : DecidableLT IProp := fun _ _ => inferInstanceAs (Decidable (_ = _))
 
 open Lean (Name)
 
@@ -486,7 +485,7 @@ partial def reify (e : Q(Prop)) : AtomM IProp :=
   | ~q(@Ne Prop $a $b) => return .not (.eq (← reify a) (← reify b))
   | e =>
     if e.isArrow then return .imp (← reify e.bindingDomain!) (← reify e.bindingBody!)
-    else return .var (← AtomM.addAtom e)
+    else return .var (← AtomM.addAtom e).1
 
 /-- Once we have a proof object, we have to apply it to the goal. -/
 partial def applyProof (g : MVarId) (Γ : NameMap Expr) (p : Proof) : MetaM Unit :=

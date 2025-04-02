@@ -84,8 +84,7 @@ instance {X : Scheme} (r : Γ(X, ⊤)) :
   rw [X.basicOpen_res]
   ext1
   refine Set.image_preimage_eq_inter_range.trans ?_
-  erw [Subtype.range_coe]
-  rfl
+  simp
 
 lemma isAffineOpen_of_isAffineOpen_basicOpen_aux (s : Set Γ(X, ⊤))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
@@ -139,7 +138,7 @@ lemma isAffineOpen_of_isAffineOpen_basicOpen (U) (s : Set Γ(X, U))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
     IsAffineOpen U := by
   apply isAffine_of_isAffineOpen_basicOpen (U.topIso.inv '' s)
-  · rw [← Ideal.map_span U.topIso.inv, hs, Ideal.map_top]
+  · rw [← Ideal.map_span U.topIso.inv.hom, hs, Ideal.map_top]
   · rintro _ ⟨j, hj, rfl⟩
     rw [← (Scheme.Opens.ι _).isAffineOpen_iff_of_isOpenImmersion, Scheme.image_basicOpen]
     simpa [Scheme.Opens.toScheme_presheaf_obj] using hs₂ j hj
@@ -150,7 +149,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
     · apply AffineTargetMorphismProperty.respectsIso_mk
       · rintro X Y Z e _ _ H
         have : IsAffine _ := H
-        exact isAffine_of_isIso e.hom
+        exact .of_isIso e.hom
       · exact fun _ _ _ ↦ id
     · intro X Y _ f r H
       have : IsAffine X := H
@@ -158,7 +157,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
       rw [Scheme.preimage_basicOpen]
       exact (isAffineOpen_top X).basicOpen _
     · intro X Y _ f S hS hS'
-      apply_fun Ideal.map (f.app ⊤) at hS
+      apply_fun Ideal.map (f.appTop).hom at hS
       rw [Ideal.map_span, Ideal.map_top] at hS
       apply isAffine_of_isAffineOpen_basicOpen _ hS
       have : ∀ i : S, IsAffineOpen (f⁻¹ᵁ Y.basicOpen i.1) := hS'
@@ -169,7 +168,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
       Subtype.forall, isAffineHom_iff]
     rfl
 
-lemma isAffineHom_isStableUnderBaseChange :
+instance isAffineHom_isStableUnderBaseChange :
     MorphismProperty.IsStableUnderBaseChange @IsAffineHom := by
   apply HasAffineProperty.isStableUnderBaseChange
   letI := HasAffineProperty.isLocal_affineProperty
@@ -182,5 +181,42 @@ instance (priority := 100) isAffineHom_of_isAffine [IsAffine X] [IsAffine Y] : I
 
 lemma isAffine_of_isAffineHom [IsAffineHom f] [IsAffine Y] : IsAffine X :=
   (HasAffineProperty.iff_of_isAffine (P := @IsAffineHom) (f := f)).mp inferInstance
+
+lemma isAffineHom_of_forall_exists_isAffineOpen
+    (H : ∀ x : Y, ∃ U : Y.Opens, x ∈ U ∧ IsAffineOpen U ∧ IsAffineOpen (f ⁻¹ᵁ U)) :
+    IsAffineHom f := by
+  choose U hxU hU hfU using H
+  rw [HasAffineProperty.iff_of_iSup_eq_top (P := @IsAffineHom) fun i ↦ ⟨U i, hU i⟩]
+  · exact hfU
+  · exact top_le_iff.mp (fun x _ ↦ by simpa using ⟨x, hxU x⟩)
+
+/-- If the underlying map of a morphism is inducing and has closed range, then it is affine. -/
+@[stacks 04DE]
+lemma isAffineHom_of_isInducing
+    (hf₁ : Topology.IsInducing f.base)
+    (hf₂ : IsClosed (Set.range f.base)) :
+    IsAffineHom f := by
+  apply isAffineHom_of_forall_exists_isAffineOpen
+  intro y
+  by_cases hy : y ∈ Set.range f.base
+  · obtain ⟨x, rfl⟩ := hy
+    obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
+      (isBasis_affine_open Y).exists_subset_of_mem_open (Set.mem_univ (f.base x)) isOpen_univ
+    obtain ⟨_, ⟨V, hV, rfl⟩, hxV, hVU⟩ :=
+      (isBasis_affine_open X).exists_subset_of_mem_open hxU (f ⁻¹ᵁ U).isOpen
+    obtain ⟨U', hU'U, rfl⟩ : ∃ U' : Y.Opens, U' ≤ U ∧ f ⁻¹ᵁ U' = V := by
+      obtain ⟨U', hU', e⟩ := hf₁.isOpen_iff.mp V.2
+      exact ⟨⟨U', hU'⟩ ⊓ U, inf_le_right, Opens.ext (by simpa [e] using hVU)⟩
+    obtain ⟨r, hrU', hxr⟩ := hU.exists_basicOpen_le ⟨f.base x, hxV⟩ hxU
+    refine ⟨_, hxr, hU.basicOpen r, ?_⟩
+    convert hV.basicOpen (f.app _ (Y.presheaf.map (homOfLE hU'U).op r)) using 1
+    simp only [Scheme.preimage_basicOpen, ← CommRingCat.comp_apply, f.naturality]
+    simpa using ((Opens.map f.base).map (homOfLE hrU')).le
+  · obtain ⟨_, ⟨U, hU, rfl⟩, hyU, hU'⟩ :=
+      (isBasis_affine_open Y).exists_subset_of_mem_open hy hf₂.isOpen_compl
+    rw [Set.subset_compl_iff_disjoint_right, ← Set.preimage_eq_empty_iff] at hU'
+    refine ⟨U, hyU, hU, ?_⟩
+    convert isAffineOpen_bot _
+    exact Opens.ext hU'
 
 end AlgebraicGeometry

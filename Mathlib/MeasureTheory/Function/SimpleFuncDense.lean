@@ -34,7 +34,6 @@ by a sequence of simple functions.
 
 open Set Function Filter TopologicalSpace ENNReal EMetric Finset
 
-open scoped Classical
 open Topology ENNReal MeasureTheory
 
 variable {α β ι E F 𝕜 : Type*}
@@ -133,6 +132,7 @@ theorem approxOn_mem {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α
   exacts [h₀, Subtype.mem _]
 
 @[simp, nolint simpNF] -- Porting note: LHS doesn't simplify.
+-- It seems the side conditions `hf` and `hg` are not applied by `simpNF`.
 theorem approxOn_comp {γ : Type*} [MeasurableSpace γ] {f : β → α} (hf : Measurable f) {g : γ → β}
     (hg : Measurable g) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s) [SeparableSpace s] (n : ℕ) :
     approxOn (f ∘ g) (hf.comp hg) s y₀ h₀ n = (approxOn f hf s y₀ h₀ n).comp g hg :=
@@ -212,8 +212,8 @@ lemma HasCompactSupport.exists_simpleFunc_approx_of_prod [PseudoMetricSpace α]
       refine ⟨u ×ˢ v, nhdsWithin_le_nhds <| (hu.prod hv).mem_nhds (mk_mem_prod xu yv), ?_⟩
       exact ⟨SimpleFunc.const _ (f (x, y)), u ×ˢ v, hu.measurableSet.prod hv.measurableSet,
         Subset.rfl, fun z hz ↦ huv hz⟩
-  obtain ⟨g, s, s_meas, fs, hg⟩ : ∃ g s, MeasurableSet s ∧ tsupport f ⊆ s ∧
-    ∀ (x : X × Y), x ∈ s → dist (f x) (g x) < ε := M _ h'f
+  obtain ⟨g, s, s_meas, fs, hg⟩ : ∃ (g : SimpleFunc (X × Y) α) (s : Set (X × Y)),
+    MeasurableSet s ∧ tsupport f ⊆ s ∧ ∀ (x : X × Y), x ∈ s → dist (f x) (g x) < ε := M _ h'f
   refine ⟨g.piecewise s s_meas 0, fun p ↦ ?_⟩
   by_cases H : p ∈ s
   · simpa [H, SimpleFunc.piecewise_apply] using hg p H

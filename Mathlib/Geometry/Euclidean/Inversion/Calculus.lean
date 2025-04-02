@@ -58,7 +58,7 @@ protected nonrec theorem ContDiff.inversion (hc : ContDiff ℝ n c) (hR : ContDi
 protected theorem DifferentiableWithinAt.inversion (hc : DifferentiableWithinAt ℝ c s a)
     (hR : DifferentiableWithinAt ℝ R s a) (hx : DifferentiableWithinAt ℝ x s a) (hne : x a ≠ c a) :
     DifferentiableWithinAt ℝ (fun a ↦ inversion (c a) (R a) (x a)) s a :=
-  -- TODO: Use `.div` #5870
+  -- TODO: Use `.div` https://github.com/leanprover-community/mathlib4/issues/5870
   (((hR.mul <| (hx.dist ℝ hc hne).inv (dist_ne_zero.2 hne)).pow _).smul (hx.sub hc)).add hc
 
 protected theorem DifferentiableOn.inversion (hc : DifferentiableOn ℝ c s)
@@ -89,9 +89,7 @@ theorem hasFDerivAt_inversion (hx : x ≠ c) :
       ((R / dist x c) ^ 2 • (reflection (ℝ ∙ (x - c))ᗮ : F →L[ℝ] F)) x := by
   rcases add_left_surjective c x with ⟨x, rfl⟩
   have : HasFDerivAt (inversion c R) (?_ : F →L[ℝ] F) (c + x) := by
-    #adaptation_note /-- nightly-2024-03-16: simp was
-    simp (config := { unfoldPartialApp := true }) only [inversion] -/
-    simp only [inversion_def]
+    simp +unfoldPartialApp only [inversion]
     simp_rw [dist_eq_norm, div_pow, div_eq_mul_inv]
     have A := (hasFDerivAt_id (𝕜 := ℝ) (c + x)).sub_const c
     have B := ((hasDerivAt_inv <| by simpa using hx).comp_hasFDerivAt _ A.norm_sq).const_mul

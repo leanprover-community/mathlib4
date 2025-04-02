@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
-import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Analysis.Convex.Gauge
 import Mathlib.Analysis.Convex.TotallyBounded
 
 /-!
@@ -18,18 +16,18 @@ topological vector space has a basis consisting of absolutely convex sets.
 ## Main definitions
 
 * `absConvexHull`: the absolutely convex hull of a set `s` is the smallest absolutely convex set
-  containing `s`.
-* `gaugeSeminormFamily`: the seminorm family induced by all open absolutely convex neighborhoods
-of zero.
+  containing `s`;
+* `closedAbsConvexHull`: the closed absolutely convex hull of a set `s` is the smallest absolutely
+  convex set containing `s`;
 
 ## Main statements
 
 * `absConvexHull_eq_convexHull_balancedHull`: when the locally convex space is a module, the
-  absolutely convex hull of a set `s` equals the convex hull of the balanced hull of `s`.
-* `convexHull_union_neg_eq_absConvexHull`: the convex hull of `s ∪ -s` is the absolute convex hull
-  of `s`.
-* `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
-`gaugeSeminormFamily`.
+  absolutely convex hull of a set `s` equals the convex hull of the balanced hull of `s`;
+* `convexHull_union_neg_eq_absConvexHull`: the convex hull of `s ∪ -s` is the absolutely convex hull
+  of `s`;
+* `closedAbsConvexHull_closure_eq_closedAbsConvexHull` : the closed absolutely convex hull of the
+  closure of `s` equals the closed absolutely convex hull of `s`;
 
 ## Implementation notes
 
@@ -43,7 +41,6 @@ over a `SeminormedRing` `𝕜` and convex over `ℝ`, assuming `IsScalarTower �
 
 disks, convex, balanced
 -/
-
 
 open NormedField Set
 
@@ -147,7 +144,64 @@ theorem absConvexHull_nonempty : (absConvexHull 𝕜 s).Nonempty ↔ s.Nonempty 
 
 protected alias ⟨_, Set.Nonempty.absConvexHull⟩ := absConvexHull_nonempty
 
+variable [TopologicalSpace E]
+
+theorem absConvex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex 𝕜 s ∧ IsClosed s) :
+    AbsConvex 𝕜 (⋂₀ S) ∧ IsClosed (⋂₀ S) :=
+  ⟨AbsConvex.sInter (fun s hs => (h s hs).1), isClosed_sInter fun _ hs => (h _ hs).2⟩
+
+variable (𝕜) in
+/-- The absolutely convex closed hull of a set `s` is the minimal absolutely convex closed set that
+includes `s`. -/
+@[simps! isClosed]
+def closedAbsConvexHull : ClosureOperator (Set E) :=
+  .ofCompletePred (fun s => AbsConvex 𝕜 s ∧ IsClosed s) fun _ ↦ absConvex_closed_sInter
+
+theorem absConvex_convexClosedHull {s : Set E} :
+    AbsConvex 𝕜 (closedAbsConvexHull 𝕜 s) := ((closedAbsConvexHull 𝕜).isClosed_closure s).1
+
+theorem isClosed_closedAbsConvexHull {s : Set E} :
+    IsClosed (closedAbsConvexHull 𝕜 s) := ((closedAbsConvexHull 𝕜).isClosed_closure s).2
+
+theorem subset_closedAbsConvexHull {s : Set E} : s ⊆ closedAbsConvexHull 𝕜 s :=
+  (closedAbsConvexHull 𝕜).le_closure s
+
+theorem closure_subset_closedAbsConvexHull {s : Set E} : closure s ⊆ closedAbsConvexHull 𝕜 s :=
+  closure_minimal subset_closedAbsConvexHull isClosed_closedAbsConvexHull
+
+theorem closedAbsConvexHull_min {s t : Set E} (hst : s ⊆ t) (h_conv : AbsConvex 𝕜 t)
+    (h_closed : IsClosed t) : closedAbsConvexHull 𝕜 s ⊆ t :=
+  (closedAbsConvexHull 𝕜).closure_min hst ⟨h_conv, h_closed⟩
+
+theorem absConvexHull_subset_closedAbsConvexHull {s : Set E} :
+    (absConvexHull 𝕜) s ⊆ (closedAbsConvexHull 𝕜) s :=
+  absConvexHull_min subset_closedAbsConvexHull absConvex_convexClosedHull
+
+@[simp]
+theorem closedAbsConvexHull_closure_eq_closedAbsConvexHull {s : Set E} :
+    closedAbsConvexHull 𝕜 (closure s) = closedAbsConvexHull 𝕜 s :=
+  subset_antisymm (by simpa using ((closedAbsConvexHull 𝕜).monotone
+      (closure_subset_closedAbsConvexHull (𝕜 := 𝕜) (E := E))))
+    ((closedAbsConvexHull 𝕜).monotone subset_closure)
+
 end AbsolutelyConvex
+
+section NormedField
+
+variable [NormedField 𝕜]
+  [AddCommGroup E] [Module ℝ E] [Module 𝕜 E] [TopologicalSpace E]
+  [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [ContinuousSMul 𝕜 E]
+
+theorem AbsConvex.closure {s : Set E} (hs : AbsConvex 𝕜 s) : AbsConvex 𝕜 (closure s) :=
+  ⟨Balanced.closure hs.1, Convex.closure hs.2⟩
+
+theorem closedAbsConvexHull_eq_closure_absConvexHull {s : Set E} :
+    closedAbsConvexHull 𝕜 s = closure (absConvexHull 𝕜 s) := subset_antisymm
+  (closedAbsConvexHull_min (subset_trans (subset_absConvexHull) subset_closure)
+    (AbsConvex.closure absConvex_absConvexHull) isClosed_closure)
+  (closure_minimal absConvexHull_subset_closedAbsConvexHull isClosed_closedAbsConvexHull)
+
+end NormedField
 
 section NontriviallyNormedField
 
@@ -166,7 +220,7 @@ theorem nhds_hasBasis_absConvex :
   refine ⟨(balancedCore_balanced s).convexHull, ?_⟩
   exact convex_convexHull ℝ (balancedCore 𝕜 s)
 
-variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
+variable [ContinuousSMul ℝ E] [IsTopologicalAddGroup E]
 
 theorem nhds_hasBasis_absConvex_open :
     (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
@@ -217,17 +271,12 @@ lemma balancedHull_subset_convexHull_union_neg {s : Set E} :
   intro a ha
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 ha
   apply segment_subset_convexHull (mem_union_left (-s) hy) (mem_union_right _ (neg_mem_neg.mpr hy))
-  refine ⟨(1 + r)/2, (1 - r)/2, ?_, ?_⟩
-  · rw [← zero_div 2]
-    exact (div_le_div_right zero_lt_two).mpr (neg_le_iff_add_nonneg'.mp (neg_le_of_abs_le hr))
-  · constructor
-    · rw [← zero_div 2]
-      exact (div_le_div_right zero_lt_two).mpr (sub_nonneg_of_le (le_of_max_le_left hr))
-    · constructor
-      · ring_nf
-      · rw [smul_neg, ← sub_eq_add_neg, ← sub_smul]
-        apply congrFun (congrArg HSMul.hSMul _) y
-        ring_nf
+  have : 0 ≤ 1 + r := neg_le_iff_add_nonneg'.mp (neg_le_of_abs_le hr)
+  have : 0 ≤ 1 - r := sub_nonneg.2 (le_of_abs_le hr)
+  refine ⟨(1 + r)/2, (1 - r)/2, by positivity, by positivity, by ring, ?_⟩
+  rw [smul_neg, ← sub_eq_add_neg, ← sub_smul]
+  apply congrFun (congrArg HSMul.hSMul _) y
+  ring_nf
 
 @[simp]
 theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
@@ -241,7 +290,7 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
 
 variable (E 𝕜) {s : Set E}
 variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-variable [UniformSpace E] [UniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
+variable [UniformSpace E] [IsUniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 
 -- TVS II.25 Prop3
 theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
@@ -252,90 +301,3 @@ theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
   exact ⟨hs, totallyBounded_neg hs⟩
 
 end
-
-section AbsolutelyConvexSets
-
-variable [TopologicalSpace E] [AddCommMonoid E] [Zero E] [SeminormedRing 𝕜]
-variable [SMul 𝕜 E] [SMul ℝ E]
-variable (𝕜 E)
-
-/-- The type of absolutely convex open sets. -/
-def AbsConvexOpenSets :=
-  { s : Set E // (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s }
-
-noncomputable instance AbsConvexOpenSets.instCoeTC : CoeTC (AbsConvexOpenSets 𝕜 E) (Set E) :=
-  ⟨Subtype.val⟩
-
-namespace AbsConvexOpenSets
-
-variable {𝕜 E}
-
-theorem coe_zero_mem (s : AbsConvexOpenSets 𝕜 E) : (0 : E) ∈ (s : Set E) :=
-  s.2.1
-
-theorem coe_isOpen (s : AbsConvexOpenSets 𝕜 E) : IsOpen (s : Set E) :=
-  s.2.2.1
-
-theorem coe_nhds (s : AbsConvexOpenSets 𝕜 E) : (s : Set E) ∈ 𝓝 (0 : E) :=
-  s.coe_isOpen.mem_nhds s.coe_zero_mem
-
-theorem coe_balanced (s : AbsConvexOpenSets 𝕜 E) : Balanced 𝕜 (s : Set E) :=
-  s.2.2.2.1
-
-theorem coe_convex (s : AbsConvexOpenSets 𝕜 E) : Convex ℝ (s : Set E) :=
-  s.2.2.2.2
-
-end AbsConvexOpenSets
-
-instance AbsConvexOpenSets.instNonempty : Nonempty (AbsConvexOpenSets 𝕜 E) := by
-  rw [← exists_true_iff_nonempty]
-  dsimp only [AbsConvexOpenSets]
-  rw [Subtype.exists]
-  exact ⟨Set.univ, ⟨mem_univ 0, isOpen_univ, balanced_univ, convex_univ⟩, trivial⟩
-
-end AbsolutelyConvexSets
-
-variable [RCLike 𝕜]
-variable [AddCommGroup E] [TopologicalSpace E]
-variable [Module 𝕜 E] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
-variable [ContinuousSMul ℝ E]
-variable (𝕜 E)
-
-/-- The family of seminorms defined by the gauges of absolute convex open sets. -/
-noncomputable def gaugeSeminormFamily : SeminormFamily 𝕜 E (AbsConvexOpenSets 𝕜 E) := fun s =>
-  gaugeSeminorm s.coe_balanced s.coe_convex (absorbent_nhds_zero s.coe_nhds)
-
-variable {𝕜 E}
-
-theorem gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
-    (gaugeSeminormFamily 𝕜 E s).ball 0 1 = (s : Set E) := by
-  dsimp only [gaugeSeminormFamily]
-  rw [Seminorm.ball_zero_eq]
-  simp_rw [gaugeSeminorm_toFun]
-  exact gauge_lt_one_eq_self_of_isOpen s.coe_convex s.coe_zero_mem s.coe_isOpen
-
-variable [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
-variable [SMulCommClass ℝ 𝕜 E] [LocallyConvexSpace ℝ E]
-
-/-- The topology of a locally convex space is induced by the gauge seminorm family. -/
-theorem with_gaugeSeminormFamily : WithSeminorms (gaugeSeminormFamily 𝕜 E) := by
-  refine SeminormFamily.withSeminorms_of_hasBasis _ ?_
-  refine (nhds_hasBasis_absConvex_open 𝕜 E).to_hasBasis (fun s hs => ?_) fun s hs => ?_
-  · refine ⟨s, ⟨?_, rfl.subset⟩⟩
-    convert (gaugeSeminormFamily _ _).basisSets_singleton_mem ⟨s, hs⟩ one_pos
-    rw [gaugeSeminormFamily_ball, Subtype.coe_mk]
-  refine ⟨s, ⟨?_, rfl.subset⟩⟩
-  rw [SeminormFamily.basisSets_iff] at hs
-  rcases hs with ⟨t, r, hr, rfl⟩
-  rw [Seminorm.ball_finset_sup_eq_iInter _ _ _ hr]
-  -- We have to show that the intersection contains zero, is open, balanced, and convex
-  refine
-    ⟨mem_iInter₂.mpr fun _ _ => by simp [Seminorm.mem_ball_zero, hr],
-      isOpen_biInter_finset fun S _ => ?_,
-      balanced_iInter₂ fun _ _ => Seminorm.balanced_ball_zero _ _,
-      convex_iInter₂ fun _ _ => Seminorm.convex_ball ..⟩
-  -- The only nontrivial part is to show that the ball is open
-  have hr' : r = ‖(r : 𝕜)‖ * 1 := by simp [abs_of_pos hr]
-  have hr'' : (r : 𝕜) ≠ 0 := by simp [hr.ne']
-  rw [hr', ← Seminorm.smul_ball_zero hr'', gaugeSeminormFamily_ball]
-  exact S.coe_isOpen.smul₀ hr''

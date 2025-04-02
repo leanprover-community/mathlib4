@@ -3,6 +3,7 @@ Copyright (c) 2024 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Sophie Morel
 -/
+import Mathlib.Data.Fintype.Quotient
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Multilinear.Basic
 
@@ -35,8 +36,8 @@ namespace MultilinearMap
 section Semiring
 variable {M : ∀ i, κ i → Type uM} {N : Type uN}
 
-variable [DecidableEq ι] [Fintype ι] [Semiring R]
-variable [∀ i k, AddCommMonoid (M i k)] [ AddCommMonoid N]
+variable [Finite ι] [Semiring R]
+variable [∀ i k, AddCommMonoid (M i k)] [AddCommMonoid N]
 variable [∀ i k, Module R (M i k)] [Module R N]
 
 /-- Two multilinear maps from finitely supported functions are equal if they agree on the
@@ -52,6 +53,7 @@ theorem dfinsupp_ext [∀ i, DecidableEq (κ i)]
   ext x
   show f (fun i ↦ x i) = g (fun i ↦ x i)
   classical
+  cases nonempty_fintype ι
   rw [funext (fun i ↦ Eq.symm (DFinsupp.sum_single (f := x i)))]
   simp_rw [DFinsupp.sum, MultilinearMap.map_sum_finset]
   congr! 1 with p
@@ -133,6 +135,23 @@ theorem dfinsuppFamily_single [∀ i, DecidableEq (κ i)]
     obtain ⟨i, hpqi⟩ := hpq
     apply (f q).map_coord_zero i
     simp_rw [DFinsupp.single_eq_of_ne hpqi]
+
+/-- When only one member of the family of multilinear maps is nonzero, the result consists only of
+the component from that member. -/
+@[simp]
+theorem dfinsuppFamily_single_left_apply [∀ i, DecidableEq (κ i)]
+    (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) (x : Π i, Π₀ j, M i j) :
+    dfinsuppFamily (Pi.single p f) x = DFinsupp.single p (f fun i => x _ (p i)) := by
+  ext p'
+  obtain rfl | hp := eq_or_ne p p'
+  · simp
+  · simp [hp]
+
+theorem dfinsuppFamily_single_left [∀ i, DecidableEq (κ i)]
+    (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
+    dfinsuppFamily (Pi.single p f) =
+      (DFinsupp.lsingle p).compMultilinearMap (f.compLinearMap fun i => DFinsupp.lapply (p i)) :=
+  ext <| dfinsuppFamily_single_left_apply _ _
 
 @[simp]
 theorem dfinsuppFamily_compLinearMap_lsingle [∀ i, DecidableEq (κ i)]

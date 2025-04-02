@@ -49,4 +49,4 @@ example [LinearOrderedField α] {a b : α} (hb : 0 ≤ b) (hab : a ≤ b) : a / 
   fail_if_success
     apply_rules (config := { transparency := .reducible }) [mul_le_mul]
   guard_target = a / 2 ≤ b / 2
-  exact div_le_div hb hab zero_lt_two le_rfl
+  exact div_le_div₀ hb hab zero_lt_two le_rfl

@@ -70,7 +70,6 @@ variable {R A : Type*}
 def inl [Zero A] (r : R) : Unitization R A :=
   (r, 0)
 
--- Porting note: we need a def to which we can attach `@[coe]`
 /-- The canonical inclusion `A → Unitization R A`. -/
 @[coe]
 def inr [Zero R] (a : A) : Unitization R A :=
@@ -182,7 +181,7 @@ instance instAddCommGroup [AddCommGroup R] [AddCommGroup A] : AddCommGroup (Unit
   Prod.instAddCommGroup
 
 instance instSMul [SMul S R] [SMul S A] : SMul S (Unitization R A) :=
-  Prod.smul
+  Prod.instSMul
 
 instance instIsScalarTower [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMul T S]
     [IsScalarTower T S R] [IsScalarTower T S A] : IsScalarTower T S (Unitization R A) :=
@@ -558,19 +557,19 @@ variable (S R A : Type*) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A]
   [IsScalarTower R A A] [SMulCommClass R A A] [Algebra S R] [DistribMulAction S A]
   [IsScalarTower S R A]
 
-instance instAlgebra : Algebra S (Unitization R A) :=
-  { (Unitization.inlRingHom R A).comp (algebraMap S R) with
-    commutes' := fun s x => by
-      induction x with
-      | inl_add_inr =>
-        show inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)
-        rw [mul_add, add_mul, inl_mul_inl, inl_mul_inl, inl_mul_inr, inr_mul_inl, mul_comm]
-    smul_def' := fun s x => by
-      induction x with
-      | inl_add_inr =>
-        show _ = inl (algebraMap S R s) * _
-        rw [mul_add, smul_add,Algebra.algebraMap_eq_smul_one, inl_mul_inl, inl_mul_inr,
-          smul_one_mul, inl_smul, inr_smul, smul_one_smul] }
+instance instAlgebra : Algebra S (Unitization R A) where
+  algebraMap := (Unitization.inlRingHom R A).comp (algebraMap S R)
+  commutes' := fun s x => by
+    induction x with
+    | inl_add_inr =>
+      show inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)
+      rw [mul_add, add_mul, inl_mul_inl, inl_mul_inl, inl_mul_inr, inr_mul_inl, mul_comm]
+  smul_def' := fun s x => by
+    induction x with
+    | inl_add_inr =>
+      show _ = inl (algebraMap S R s) * _
+      rw [mul_add, smul_add,Algebra.algebraMap_eq_smul_one, inl_mul_inl, inl_mul_inr,
+        smul_one_mul, inl_smul, inr_smul, smul_one_smul]
 
 theorem algebraMap_eq_inl_comp : ⇑(algebraMap S (Unitization R A)) = inl ∘ algebraMap S R :=
   rfl
@@ -658,9 +657,6 @@ theorem algHom_ext' {φ ψ : Unitization R A →ₐ[R] C}
     φ = ψ :=
   algHom_ext'' (NonUnitalAlgHom.congr_fun h)
 
-/- porting note: this was extracted from `Unitization.lift` below, where it had previously
-been inlined. Unfortunately, `Unitization.lift` was relatively slow in Lean 3, but in Lean 4 it
-just times out. -/
 /-- A non-unital algebra homomorphism from `A` into a unital `R`-algebra `C` lifts to a unital
 algebra homomorphism from the unitization into `C`. This is extended to an `Equiv` in
 `Unitization.lift` and that should be used instead. This declaration only exists for performance
@@ -743,8 +739,7 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
   right_inv := fun φ => Unitization.algHom_ext'' <| by
     simp }
 
--- Note (#6057) : tagging simpNF because linter complains
-@[simp high, nolint simpNF]
+@[simp high]
 theorem starLift_symm_apply_apply (φ : Unitization R A →⋆ₐ[R] C) (a : A) :
     Unitization.starLift.symm φ a = φ a :=
   rfl

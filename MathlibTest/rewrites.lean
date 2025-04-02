@@ -1,3 +1,4 @@
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.List.InsertIdx
@@ -32,12 +33,12 @@ example [Category C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : f ≫ 𝟙 _ ≫ 
   rw?
 
 /--
-info: Try this: rw [mul_left_eq_self]
+info: Try this: rw [mul_eq_right]
 -- "no goals"
 -/
 #guard_msgs in
 example [Group G] (h : G) : 1 * h = h := by
-  rw?
+  rw? [-mul_left_eq_self] -- exclude deprecated name for mul_eq_right, it is found first otherwise
 
 #adaptation_note /-- nightly-2024-03-27
 `rw?` upstream no longer uses `MVarId.applyRefl`, so it can't deal with `Iff` goals.

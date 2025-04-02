@@ -3,7 +3,8 @@ Copyright (c) 2024 Yaël Dillies, Kin Yau James Wong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kin Yau James Wong, Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.MeasureCompProd
+import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 
 /-!
 # Disintegration of measures and kernels
@@ -90,8 +91,8 @@ lemma IsCondKernel.apply_of_ne_zero [MeasurableSingletonClass α] {x : α}
   have : ρCond x s = ((ρ.fst {x})⁻¹ • ρ).comap (fun (y : Ω) ↦ (x, y)) s := by
     congr 2 with s hs
     simp [IsCondKernel.apply_of_ne_zero_of_measurableSet _ _ hx hs,
-      (measurableEmbedding_prod_mk_left x).comap_apply]
-  simp [this, (measurableEmbedding_prod_mk_left x).comap_apply, hx]
+      (measurableEmbedding_prodMk_left x).comap_apply, Set.singleton_prod]
+  simp [this, (measurableEmbedding_prodMk_left x).comap_apply, hx, Set.singleton_prod]
 
 lemma IsCondKernel.isProbabilityMeasure [MeasurableSingletonClass α] {a : α} (ha : ρ.fst {a} ≠ 0) :
     IsProbabilityMeasure (ρCond a) := by
@@ -126,9 +127,62 @@ class IsCondKernel : Prop where
 instance instIsCondKernel_zero (κCond : Kernel (α × β) Ω) : IsCondKernel 0 κCond where
   disintegrate := by simp
 
-variable [κ.IsCondKernel κCond]
+lemma disintegrate [κ.IsCondKernel κCond] : κ.fst ⊗ₖ κCond = κ := IsCondKernel.disintegrate
 
-lemma disintegrate : κ.fst ⊗ₖ κCond = κ := IsCondKernel.disintegrate
+/-- A conditional kernel is almost everywhere a probability measure. -/
+lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKernel κCond] (a : α) :
+    ∀ᵐ b ∂(κ.fst a), IsProbabilityMeasure (κCond (a, b)) := by
+  have h := disintegrate κ κCond
+  by_cases h_sfin : IsSFiniteKernel κCond
+  swap; · rw [Kernel.compProd_of_not_isSFiniteKernel_right _ _ h_sfin] at h; simp [h.symm]
+  suffices ∀ᵐ b ∂(κ.fst a), κCond (a, b) Set.univ = 1 by
+    convert this with b
+    exact ⟨fun _ ↦ measure_univ, fun h ↦ ⟨h⟩⟩
+  suffices (∀ᵐ b ∂(κ.fst a), κCond (a, b) Set.univ ≤ 1)
+      ∧ (∀ᵐ b ∂(κ.fst a), 1 ≤ κCond (a, b) Set.univ) by
+    filter_upwards [this.1, this.2] with b h1 h2 using le_antisymm h1 h2
+  have h_eq s (hs : MeasurableSet s) :
+      ∫⁻ b, s.indicator (fun b ↦ κCond (a, b) Set.univ) b ∂κ.fst a = κ.fst a s := by
+    conv_rhs => rw [← h]
+    rw [fst_compProd_apply _ _ _ hs]
+  have h_meas : Measurable fun b ↦ κCond (a, b) Set.univ :=
+    (κCond.measurable_coe MeasurableSet.univ).comp measurable_prodMk_left
+  constructor
+  · rw [ae_le_const_iff_forall_gt_measure_zero]
+    intro r hr
+    let s := {b | r ≤ κCond (a, b) Set.univ}
+    have hs : MeasurableSet s := h_meas measurableSet_Ici
+    have h_2_le : s.indicator (fun _ ↦ r) ≤ s.indicator (fun b ↦ (κCond (a, b)) Set.univ) := by
+      intro b
+      by_cases hbs : b ∈ s
+      · simpa [hbs]
+      · simp [hbs]
+    have : ∫⁻ b, s.indicator (fun _ ↦ r) b ∂(κ.fst a) ≤ κ.fst a s :=
+      (lintegral_mono h_2_le).trans_eq (h_eq s hs)
+    rw [lintegral_indicator_const hs] at this
+    by_contra h_ne_zero
+    rw [← not_lt] at this
+    refine this ?_
+    conv_lhs => rw [← one_mul (κ.fst a s)]
+    exact ENNReal.mul_lt_mul_right' h_ne_zero (measure_ne_top _ _) hr
+  · rw [ae_const_le_iff_forall_lt_measure_zero]
+    intro r hr
+    let s := {b | κCond (a, b) Set.univ ≤ r}
+    have hs : MeasurableSet s := h_meas measurableSet_Iic
+    have h_2_le : s.indicator (fun b ↦ (κCond (a, b)) Set.univ) ≤ s.indicator (fun _ ↦ r) := by
+      intro b
+      by_cases hbs : b ∈ s
+      · simpa [hbs]
+      · simp [hbs]
+    have : κ.fst a s ≤ ∫⁻ b, s.indicator (fun _ ↦ r) b ∂(κ.fst a) :=
+      (h_eq s hs).symm.trans_le (lintegral_mono h_2_le)
+    rw [lintegral_indicator_const hs] at this
+    by_contra h_ne_zero
+    rw [← not_lt] at this
+    refine this ?_
+    conv_rhs => rw [← one_mul (κ.fst a s)]
+    exact ENNReal.mul_lt_mul_right' h_ne_zero (measure_ne_top _ _) hr
+
 
 /-! #### Existence of a disintegrating kernel in a countable space -/
 

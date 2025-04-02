@@ -3,13 +3,13 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
 
 /-!
-# The derivative of functions between smooth manifolds
+# The derivative of functions between manifolds
 
-Let `M` and `M'` be two smooth manifolds with corners over a field `𝕜` (with respective models with
+Let `M` and `M'` be two manifolds over a field `𝕜` (with respective models with
 corners `I` on `(E, H)` and `I'` on `(E', H')`), and let `f : M → M'`. We define the
 derivative of the function at a point, within a set or along the whole space, mimicking the API
 for (Fréchet) derivatives. It is denoted by `mfderiv I I' f x`, where "m" stands for "manifold" and
@@ -23,7 +23,7 @@ for (Fréchet) derivatives. It is denoted by `mfderiv I I' f x`, where "m" stand
   and many properties will fail (for instance the chain rule). This is analogous to
   `UniqueDiffOn 𝕜 s` in a vector space.
 
-Let `f` be a map between smooth manifolds. The following definitions follow the `fderiv` API.
+Let `f` be a map between manifolds. The following definitions follow the `fderiv` API.
 
 * `mfderiv I I' f x` : the derivative of `f` at `x`, as a continuous linear map from the tangent
   space at `x` to the tangent space at `f x`. If the map is not differentiable, this is `0`.
@@ -99,7 +99,7 @@ derivative, manifold
 
 noncomputable section
 
-open scoped Topology
+open scoped Topology ContDiff
 open Set ChartedSpace
 
 section DerivativesDefinitions
@@ -107,7 +107,7 @@ section DerivativesDefinitions
 /-!
 ### Derivative of maps between manifolds
 
-The derivative of a smooth map `f` between smooth manifold `M` and `M'` at `x` is a bounded linear
+The derivative of a map `f` between manifolds `M` and `M'` at `x` is a bounded linear
 map from the tangent space to `M` at `x`, to the tangent space to `M'` at `f x`. Since we defined
 the tangent space using one specific chart, the formula for the derivative is written in terms of
 this specific chart.
@@ -147,7 +147,7 @@ theorem differentiableWithinAtProp_self_target {f : H → E'} {s : Set H} {x : H
 /-- Being differentiable in the model space is a local property, invariant under smooth maps.
 Therefore, it will lift nicely to manifolds. -/
 theorem differentiableWithinAt_localInvariantProp :
-    (contDiffGroupoid ⊤ I).LocalInvariantProp (contDiffGroupoid ⊤ I')
+    (contDiffGroupoid 1 I).LocalInvariantProp (contDiffGroupoid 1 I')
       (DifferentiableWithinAtProp I I') :=
   { is_local := by
       intro s x u f u_open xu
@@ -167,7 +167,8 @@ theorem differentiableWithinAt_localInvariantProp :
       rw [this] at h
       have : I (e x) ∈ I.symm ⁻¹' e.target ∩ Set.range I := by simp only [hx, mfld_simps]
       have := (mem_groupoid_of_pregroupoid.2 he).2.contDiffWithinAt this
-      convert (h.comp' _ (this.differentiableWithinAt le_top)).mono_of_mem_nhdsWithin _ using 1
+      convert (h.comp' _ (this.differentiableWithinAt le_rfl)).mono_of_mem_nhdsWithin _
+        using 1
       · ext y; simp only [mfld_simps]
       refine
         mem_nhdsWithin.mpr
@@ -187,7 +188,7 @@ theorem differentiableWithinAt_localInvariantProp :
       have A : (I' ∘ f ∘ I.symm) (I x) ∈ I'.symm ⁻¹' e'.source ∩ Set.range I' := by
         simp only [hx, mfld_simps]
       have := (mem_groupoid_of_pregroupoid.2 he').1.contDiffWithinAt A
-      convert (this.differentiableWithinAt le_top).comp _ h _
+      convert (this.differentiableWithinAt le_rfl).comp _ h _
       · ext y; simp only [mfld_simps]
       · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1 }
 
@@ -223,9 +224,6 @@ theorem mdifferentiableWithinAt_iff' (f : M → M') (s : Set M) (x : M) :
       ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x) := by
   rw [MDifferentiableWithinAt, liftPropWithinAt_iff']; rfl
 
-@[deprecated (since := "2024-04-30")]
-alias mdifferentiableWithinAt_iff_liftPropWithinAt := mdifferentiableWithinAt_iff'
-
 theorem MDifferentiableWithinAt.continuousWithinAt {f : M → M'} {s : Set M} {x : M}
     (hf : MDifferentiableWithinAt I I' f s x) :
     ContinuousWithinAt f s x :=
@@ -254,12 +252,7 @@ theorem mdifferentiableAt_iff (f : M → M') (x : M) :
     DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x) := by
   rw [MDifferentiableAt, liftPropAt_iff]
   congrm _ ∧ ?_
-  simp [DifferentiableWithinAtProp, Set.univ_inter]
-  -- Porting note: `rfl` wasn't needed
-  rfl
-
-@[deprecated (since := "2024-04-30")]
-alias mdifferentiableAt_iff_liftPropAt := mdifferentiableAt_iff
+  simp [DifferentiableWithinAtProp, Set.univ_inter, Function.comp_assoc]
 
 theorem MDifferentiableAt.continuousAt {f : M → M'} {x : M} (hf : MDifferentiableAt I I' f x) :
     ContinuousAt f x :=
@@ -322,7 +315,7 @@ def HasMFDerivAt (f : M → M') (x : M) (f' : TangentSpace I x →L[𝕜] Tangen
 
 open Classical in
 variable (I I') in
-/-- Let `f` be a function between two smooth manifolds. Then `mfderivWithin I I' f s x` is the
+/-- Let `f` be a function between two manifolds. Then `mfderivWithin I I' f s x` is the
 derivative of `f` at `x` within `s`, as a continuous linear map from the tangent space at `x` to the
 tangent space at `f x`. -/
 def mfderivWithin (f : M → M') (s : Set M) (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
@@ -334,12 +327,12 @@ def mfderivWithin (f : M → M') (s : Set M) (x : M) : TangentSpace I x →L[�
 
 open Classical in
 variable (I I') in
-/-- Let `f` be a function between two smooth manifolds. Then `mfderiv I I' f x` is the derivative of
+/-- Let `f` be a function between two manifolds. Then `mfderiv I I' f x` is the derivative of
 `f` at `x`, as a continuous linear map from the tangent space at `x` to the tangent space at
 `f x`. -/
 def mfderiv (f : M → M') (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
   if MDifferentiableAt I I' f x then
-    (fderivWithin 𝕜 (writtenInExtChartAt I I' x f : E → E') (range I) ((extChartAt I x) x) : _)
+    (fderivWithin 𝕜 (writtenInExtChartAt I I' x f : E → E') (range I) ((extChartAt I x) x) :)
   else 0
 
 variable (I I') in

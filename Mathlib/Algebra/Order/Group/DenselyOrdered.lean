@@ -29,10 +29,6 @@ theorem le_of_forall_one_lt_div_le (h : ∀ ε : α, 1 < ε → a / ε ≤ b) : 
     simpa only [div_eq_mul_inv, inv_inv] using h ε⁻¹ (Left.one_lt_inv_iff.2 ε1)
 
 @[to_additive]
-theorem le_iff_forall_one_lt_le_mul : a ≤ b ↔ ∀ ε, 1 < ε → a ≤ b * ε :=
-  ⟨fun h _ ε_pos => le_mul_of_le_of_one_le h ε_pos.le, le_of_forall_one_lt_le_mul⟩
-
-@[to_additive]
 theorem le_iff_forall_lt_one_mul_le : a ≤ b ↔ ∀ ε < 1, a * ε ≤ b :=
   le_iff_forall_one_lt_le_mul (α := αᵒᵈ)
 
@@ -72,7 +68,7 @@ private lemma exists_mul_right_lt [CommGroup α] [LT α] [DenselyOrdered α]
 lemma le_mul_of_forall_lt [CommGroup α] [LinearOrder α] [MulLeftMono α]
     [DenselyOrdered α] {a b c : α} (h : ∀ a' > a, ∀ b' > b, c ≤ a' * b') :
     c ≤ a * b := by
-  refine le_of_forall_le_of_dense fun d hd ↦ ?_
+  refine le_of_forall_gt_imp_ge_of_dense fun d hd ↦ ?_
   obtain ⟨a', ha', hd⟩ := exists_mul_left_lt hd
   obtain ⟨b', hb', hd⟩ := exists_mul_right_lt hd
   exact (h a' ha' b' hb').trans hd.le
@@ -81,7 +77,7 @@ lemma le_mul_of_forall_lt [CommGroup α] [LinearOrder α] [MulLeftMono α]
 lemma mul_le_of_forall_lt [CommGroup α] [LinearOrder α] [MulLeftMono α]
     [DenselyOrdered α] {a b c : α} (h : ∀ a' < a, ∀ b' < b, a' * b' ≤ c) :
     a * b ≤ c := by
-  refine le_of_forall_ge_of_dense fun d hd ↦ ?_
+  refine le_of_forall_lt_imp_le_of_dense fun d hd ↦ ?_
   obtain ⟨a', ha', hd⟩ := exists_lt_mul_left hd
   obtain ⟨b', hb', hd⟩ := exists_lt_mul_right hd
   exact hd.le.trans (h a' ha' b' hb')

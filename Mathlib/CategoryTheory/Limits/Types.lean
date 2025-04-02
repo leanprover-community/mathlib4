@@ -3,7 +3,6 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton
 -/
-import Mathlib.Data.TypeMax
 import Mathlib.Logic.UnivLE
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 
@@ -23,7 +22,7 @@ and the type `lim Hom(F·, X)`.
 
 open CategoryTheory CategoryTheory.Limits
 
-universe v u w
+universe u' v u w
 
 namespace CategoryTheory.Limits
 
@@ -91,7 +90,7 @@ The first, in the `CategoryTheory.Limits.Types.Small` namespace,
 assumes `Small.{u} J` and constructs `J`-indexed limits in `Type u`.
 
 The second, in the `CategoryTheory.Limits.Types.TypeMax` namespace
-constructs limits for functors `F : J ⥤ TypeMax.{v, u}`, for `J : Type v`.
+constructs limits for functors `F : J ⥤ Type max v u`, for `J : Type v`.
 This construction is slightly nicer, as the limit is definitionally just `F.sections`,
 rather than `Shrink F.sections`, which makes an arbitrary choice of `u`-small representative.
 
@@ -151,7 +150,7 @@ section TypeMax
 implemented as flat sections of a pi type
 -/
 @[simps]
-noncomputable def limitCone (F : J ⥤ TypeMax.{v, u}) : Cone F where
+noncomputable def limitCone (F : J ⥤ Type max v u) : Cone F where
   pt := F.sections
   π :=
     { app := fun j u => u.val j
@@ -161,7 +160,7 @@ noncomputable def limitCone (F : J ⥤ TypeMax.{v, u}) : Cone F where
 
 /-- (internal implementation) the fact that the proposed limit cone is the limit -/
 @[simps]
-noncomputable def limitConeIsLimit (F : J ⥤ TypeMax.{v, u}) : IsLimit (limitCone F) where
+noncomputable def limitConeIsLimit (F : J ⥤ Type max v u) : IsLimit (limitCone F) where
   lift s v :=
     { val := fun j => s.π.app j v
       property := fun f => congr_fun (Cone.w s f) _ }
@@ -192,16 +191,14 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J (Type u) where
 /--
 The category of types has all limits.
 
-More specifically, when `UnivLE.{v, u}`, the category `Type u` has all `v`-small limits.
-
-See <https://stacks.math.columbia.edu/tag/002U>.
--/
+More specifically, when `UnivLE.{v, u}`, the category `Type u` has all `v`-small limits. -/
+@[stacks 002U]
 instance (priority := 1300) hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} (Type u) where
   has_limits_of_shape _ := { }
 
 variable (F : J ⥤ Type u) [HasLimit F]
 
-/-- The equivalence between the abstract limit of `F` in `TypeMax.{v, u}`
+/-- The equivalence between the abstract limit of `F` in `Type max v u`
 and the "concrete" definition as the sections of `F`.
 -/
 noncomputable def limitEquivSections : limit F ≃ F.sections :=
@@ -217,14 +214,7 @@ theorem limitEquivSections_symm_apply (x : F.sections) (j : J) :
     limit.π F j ((limitEquivSections F).symm x) = (x : ∀ j, F.obj j) j :=
   isLimitEquivSections_symm_apply _ _ _
 
--- Porting note: `limitEquivSections_symm_apply'` was removed because the linter
---   complains it is unnecessary
---@[simp]
---theorem limitEquivSections_symm_apply' (F : J ⥤ Type v) (x : F.sections) (j : J) :
---    limit.π F j ((limitEquivSections.{v, v} F).symm x) = (x : ∀ j, F.obj j) j :=
---  isLimitEquivSections_symm_apply _ _ _
-
--- Porting note (#11182): removed @[ext]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11182): removed @[ext]
 /-- Construct a term of `limit F : Type u` from a family of terms `x : Π j, F.obj j`
 which are "coherent": `∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j'`.
 -/
@@ -237,14 +227,6 @@ theorem Limit.π_mk (x : ∀ j, F.obj j) (h : ∀ (j j') (f : j ⟶ j'), F.map f
     limit.π F j (Limit.mk F x h) = x j := by
   dsimp [Limit.mk]
   simp
-
--- Porting note: `Limit.π_mk'` was removed because the linter complains it is unnecessary
---@[simp]
---theorem Limit.π_mk' (F : J ⥤ Type v) (x : ∀ j, F.obj j)
---    (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') (j) :
---    limit.π F j (Limit.mk.{v, v} F x h) = x j := by
---  dsimp [Limit.mk]
---  simp
 
 -- PROJECT: prove this for concrete categories where the forgetful functor preserves limits
 @[ext]
@@ -265,19 +247,19 @@ theorem limit_ext_iff' (F : J ⥤ Type v) (x y : limit F) :
 -- TODO: are there other limits lemmas that should have `_apply` versions?
 -- Can we generate these like with `@[reassoc]`?
 -- PROJECT: prove these for any concrete category where the forgetful functor preserves limits?
--- Porting note (#11119): @[simp] was removed because the linter said it was useless
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] was removed because the linter said it was useless
 --@[simp]
 variable {F} in
 theorem Limit.w_apply {j j' : J} {x : limit F} (f : j ⟶ j') :
     F.map f (limit.π F j x) = limit.π F j' x :=
   congr_fun (limit.w F f) x
 
--- Porting note (#11119): @[simp] was removed because the linter said it was useless
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] was removed because the linter said it was useless
 theorem Limit.lift_π_apply (s : Cone F) (j : J) (x : s.pt) :
     limit.π F j (limit.lift F s x) = s.π.app j x :=
   congr_fun (limit.lift_π s j) x
 
--- Porting note (#11119): @[simp] was removed because the linter said it was useless
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] was removed because the linter said it was useless
 theorem Limit.map_π_apply {F G : J ⥤ Type u} [HasLimit F] [HasLimit G] (α : F ⟶ G) (j : J)
     (x : limit F) : limit.π G j (limMap α x) = α.app j (limit.π F j x) :=
   congr_fun (limMap_π α j) x
@@ -304,7 +286,7 @@ In this section we verify that instances are available as expected.
 -/
 section instances
 
-example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (TypeMax.{w, v}) := inferInstance
+example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max w v) := inferInstance
 example : HasLimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) := inferInstance
 
 example : HasLimitsOfSize.{0, 0, v, v+1} (Type v) := inferInstance
@@ -321,7 +303,6 @@ See `CategoryTheory.Limits.Types.Quot`.
 def Quot.Rel (F : J ⥤ Type u) : (Σ j, F.obj j) → (Σ j, F.obj j) → Prop := fun p p' =>
   ∃ f : p.1 ⟶ p'.1, p'.2 = F.map f p.2
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- A quotient type implementing the colimit of a functor `F : J ⥤ Type u`,
 as pairs `⟨j, x⟩` where `x : F.obj j`, modulo the equivalence relation generated by
 `⟨j, x⟩ ~ ⟨j', x'⟩` whenever there is a morphism `f : j ⟶ j'` so `F.map f x = x'`.
@@ -356,6 +337,56 @@ lemma Quot.ι_desc (j : J) (x : F.obj j) : Quot.desc c (Quot.ι F j x) = c.ι.ap
 @[simp]
 lemma Quot.map_ι {j j' : J} {f : j ⟶ j'} (x : F.obj j) : Quot.ι F j' (F.map f x) = Quot.ι F j x :=
   (Quot.sound ⟨f, rfl⟩).symm
+
+/--
+The obvious map from `Quot F` to `Quot (F ⋙ uliftFunctor.{u'})`.
+-/
+def quotToQuotUlift (F : J ⥤ Type u) : Quot F → Quot (F ⋙ uliftFunctor.{u'}) := by
+  refine Quot.lift (fun ⟨j, x⟩ ↦ Quot.ι _ j (ULift.up x)) ?_
+  intro ⟨j, x⟩ ⟨j', y⟩ ⟨(f : j ⟶ j'), (eq : y = F.map f x)⟩
+  dsimp
+  have eq : ULift.up y = (F ⋙ uliftFunctor.{u'}).map f (ULift.up x) := by
+    rw [eq]
+    dsimp
+  rw [eq, Quot.map_ι]
+
+@[simp]
+lemma quotToQuotUlift_ι (F : J ⥤ Type u) (j : J) (x : F.obj j) :
+    quotToQuotUlift F (Quot.ι F j x) = Quot.ι _ j (ULift.up x) := by
+  dsimp [quotToQuotUlift, Quot.ι]
+
+/--
+The obvious map from `Quot (F ⋙ uliftFunctor.{u'})` to `Quot F`.
+-/
+def quotUliftToQuot (F : J ⥤ Type u) : Quot (F ⋙ uliftFunctor.{u'}) → Quot F :=
+  Quot.lift (fun ⟨j, x⟩ ↦ Quot.ι _ j x.down)
+  (fun ⟨_, x⟩ ⟨_, y⟩ ⟨f, (eq : y = ULift.up (F.map f x.down))⟩ ↦ by simp [eq, Quot.map_ι])
+
+@[simp]
+lemma quotUliftToQuot_ι (F : J ⥤ Type u) (j : J) (x : (F ⋙ uliftFunctor.{u'}).obj j) :
+    quotUliftToQuot F (Quot.ι _ j x) = Quot.ι F j x.down := by
+  dsimp [quotUliftToQuot, Quot.ι]
+
+/--
+The equivalence between `Quot F` and `Quot (F ⋙ uliftFunctor.{u'})`.
+-/
+@[simp]
+def quotQuotUliftEquiv (F : J ⥤ Type u) : Quot F ≃ Quot (F ⋙ uliftFunctor.{u'}) where
+  toFun := quotToQuotUlift F
+  invFun := quotUliftToQuot F
+  left_inv x := by
+    obtain ⟨j, y, rfl⟩ := Quot.jointly_surjective x
+    rw [quotToQuotUlift_ι, quotUliftToQuot_ι]
+  right_inv x := by
+    obtain ⟨j, y, rfl⟩ := Quot.jointly_surjective x
+    rw [quotUliftToQuot_ι, quotToQuotUlift_ι]
+    rfl
+
+lemma Quot.desc_quotQuotUliftEquiv {F : J ⥤ Type u} (c : Cocone F) :
+    Quot.desc (uliftFunctor.{u'}.mapCocone c) ∘ quotQuotUliftEquiv F = ULift.up ∘ Quot.desc c := by
+  ext x
+  obtain ⟨_, _, rfl⟩ := Quot.jointly_surjective x
+  dsimp
 
 /-- (implementation detail) A function `Quot F → α` induces a cocone on `F` as long as the universes
     work out. -/
@@ -435,16 +466,14 @@ instance hasColimit [Small.{u} J] (F : J ⥤ Type u) : HasColimit F :=
 
 instance hasColimitsOfShape [Small.{u} J] : HasColimitsOfShape J (Type u) where
 
-/-- The category of types has all colimits.
-
-See <https://stacks.math.columbia.edu/tag/002U>.
--/
+/-- The category of types has all colimits. -/
+@[stacks 002U]
 instance (priority := 1300) hasColimitsOfSize [UnivLE.{v, u}] :
     HasColimitsOfSize.{w, v} (Type u) where
 
 section instances
 
-example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (TypeMax.{w, v}) := inferInstance
+example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max w v) := inferInstance
 example : HasColimitsOfSize.{w, w, max v w, max (v + 1) (w + 1)} (Type max v w) := inferInstance
 
 example : HasColimitsOfSize.{0, 0, v, v+1} (Type v) := inferInstance
@@ -460,14 +489,14 @@ namespace TypeMax
 implemented as a quotient of a sigma type
 -/
 @[simps]
-def colimitCocone (F : J ⥤ TypeMax.{v, u}) : Cocone F where
+def colimitCocone (F : J ⥤ Type max v u) : Cocone F where
   pt := Quot F
   ι :=
     { app := fun j x => Quot.mk (Quot.Rel F) ⟨j, x⟩
       naturality := fun _ _ f => funext fun _ => (Quot.sound ⟨f, rfl⟩).symm }
 
 /-- (internal implementation) the fact that the proposed colimit cocone is the colimit -/
-def colimitCoconeIsColimit (F : J ⥤ TypeMax.{v, u}) : IsColimit (colimitCocone F) where
+def colimitCoconeIsColimit (F : J ⥤ Type max v u) : IsColimit (colimitCocone F) where
   desc s :=
     Quot.lift (fun p : Σj, F.obj j => s.ι.app p.1 p.2) fun ⟨j, x⟩ ⟨j', x'⟩ ⟨f, hf⟩ => by
       dsimp at hf
@@ -502,18 +531,18 @@ theorem colimitEquivQuot_apply (j : J) (x : F.obj j) :
   apply (colimitEquivQuot F).symm.injective
   simp
 
--- Porting note (#11119): @[simp] was removed because the linter said it was useless
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] was removed because the linter said it was useless
 variable {F} in
 theorem Colimit.w_apply {j j' : J} {x : F.obj j} (f : j ⟶ j') :
     colimit.ι F j' (F.map f x) = colimit.ι F j x :=
   congr_fun (colimit.w F f) x
 
--- Porting note (#11119): @[simp] was removed because the linter said it was useless
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] was removed because the linter said it was useless
 theorem Colimit.ι_desc_apply (s : Cocone F) (j : J) (x : F.obj j) :
     colimit.desc F s (colimit.ι F j x) = s.ι.app j x :=
    congr_fun (colimit.ι_desc s j) x
 
--- Porting note (#11119): @[simp] was removed because the linter said it was useless
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] was removed because the linter said it was useless
 theorem Colimit.ι_map_apply {F G : J ⥤ Type u} [HasColimitsOfShape J (Type u)] (α : F ⟶ G) (j : J)
     (x : F.obj j) : colim.map α (colimit.ι F j x) = colimit.ι G j (α.app j x) :=
   congr_fun (colimit.ι_map α j) x

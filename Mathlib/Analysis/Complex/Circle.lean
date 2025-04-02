@@ -38,23 +38,6 @@ open Complex Function Metric
 
 open ComplexConjugate
 
-/-- The unit circle in `ℂ`, here given the structure of a submonoid of `ℂ`.
-
-Please use `Circle` when referring to the circle as a type. -/
-@[deprecated (since := "2024-07-24")]
-def circle : Submonoid ℂ :=
-  Submonoid.unitSphere ℂ
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-07-24")]
-theorem mem_circle_iff_abs {z : ℂ} : z ∈ circle ↔ abs z = 1 :=
-  mem_sphere_zero_iff_norm
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-07-24")]
-theorem mem_circle_iff_normSq {z : ℂ} : z ∈ circle ↔ normSq z = 1 := by
-  simp [Complex.abs, mem_circle_iff_abs]
-
 /-- The unit circle in `ℂ`. -/
 def Circle : Type := Submonoid.unitSphere ℂ
 deriving TopologicalSpace
@@ -74,8 +57,11 @@ lemma coe_injective : Injective ((↑) : Circle → ℂ) := fun _ _ ↦ ext
 -- Not simp because `SetLike.coe_eq_coe` already proves it
 lemma coe_inj : (x : ℂ) = y ↔ x = y := coe_injective.eq_iff
 
-@[simp] lemma abs_coe (z : Circle) : abs z = 1 := mem_sphere_zero_iff_norm.1 z.2
-@[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_abs]
+lemma norm_coe (z : Circle) : ‖(z : ℂ)‖ = 1 := mem_sphere_zero_iff_norm.1 z.2
+
+@[deprecated (since := "2025-02-16")] alias abs_coe := norm_coe
+
+@[simp] lemma normSq_coe (z : Circle) : normSq z = 1 := by simp [normSq_eq_norm_sq]
 @[simp] lemma coe_ne_zero (z : Circle) : (z : ℂ) ≠ 0 := ne_zero_of_mem_unit_sphere z
 @[simp, norm_cast] lemma coe_one : ↑(1 : Circle) = (1 : ℂ) := rfl
 -- Not simp because `OneMemClass.coe_eq_one` already proves it
@@ -94,13 +80,6 @@ def coeHom : Circle →* ℂ where
   map_one' := coe_one
   map_mul' := coe_mul
 
-@[deprecated (since := "2024-07-24")] alias _root_.abs_coe_circle := abs_coe
-@[deprecated (since := "2024-07-24")] alias _root_.normSq_eq_of_mem_circle := normSq_coe
-@[deprecated (since := "2024-07-24")] alias _root_.ne_zero_of_mem_circle := coe_ne_zero
-@[deprecated (since := "2024-07-24")] alias _root_.coe_inv_circle := coe_inv
-@[deprecated (since := "2024-07-24")] alias _root_.coe_inv_circle_eq_conj := coe_inv_eq_conj
-@[deprecated (since := "2024-07-24")] alias _root_.coe_div_circle := coe_div
-
 /-- The elements of the circle embed into the units. -/
 def toUnits : Circle →* Units ℂ := unitSphereToUnits ℂ
 
@@ -108,9 +87,9 @@ def toUnits : Circle →* Units ℂ := unitSphereToUnits ℂ
 @[simp] lemma toUnits_apply (z : Circle) : toUnits z = Units.mk0 ↑z z.coe_ne_zero := rfl
 
 instance : CompactSpace Circle := Metric.sphere.compactSpace _ _
-instance : TopologicalGroup Circle := Metric.sphere.topologicalGroup
+instance : IsTopologicalGroup Circle := Metric.sphere.topologicalGroup
 instance instUniformSpace : UniformSpace Circle := instUniformSpaceSubtype
-instance : UniformGroup Circle := by
+instance : IsUniformGroup Circle := by
   convert topologicalGroup_is_uniform_of_compactSpace Circle
   exact unique_uniformity_of_compact rfl rfl
 
@@ -119,13 +98,13 @@ instance : UniformGroup Circle := by
 def ofConjDivSelf (z : ℂ) (hz : z ≠ 0) : Circle where
   val := conj z / z
   property := mem_sphere_zero_iff_norm.2 <| by
-    rw [norm_div, RCLike.norm_conj, div_self]; exact Complex.abs.ne_zero hz
+    rw [norm_div, RCLike.norm_conj, div_self]; exact norm_ne_zero_iff.mpr hz
 
 /-- The map `fun t => exp (t * I)` from `ℝ` to the unit circle in `ℂ`. -/
 def exp : C(ℝ, Circle) where
-  toFun t := ⟨(t * I).exp, by simp [Submonoid.unitSphere, exp_mul_I, abs_cos_add_sin_mul_I]⟩
+  toFun t := ⟨(t * I).exp, by simp [Submonoid.unitSphere, exp_mul_I, norm_cos_add_sin_mul_I]⟩
   continuous_toFun := Continuous.subtype_mk (by fun_prop)
-    (by simp [Submonoid.unitSphere, exp_mul_I, abs_cos_add_sin_mul_I])
+    (by simp [Submonoid.unitSphere, exp_mul_I, norm_cos_add_sin_mul_I])
 
 @[simp, norm_cast]
 theorem coe_exp (t : ℝ) : exp t = Complex.exp (t * Complex.I) := rfl
@@ -178,12 +157,5 @@ protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace �
     (u : Circle) (v : E) :
     ‖u • v‖ = ‖v‖ := by
   rw [Submonoid.smul_def, norm_smul, norm_eq_of_mem_sphere, one_mul]
-
-@[deprecated (since := "2024-07-24")] noncomputable alias _root_.expMapCircle := exp
-@[deprecated (since := "2024-07-24")] noncomputable alias _root_.expMapCircle_apply := coe_exp
-@[deprecated (since := "2024-07-24")] noncomputable alias _root_.expMapCircle_zero := exp_zero
-@[deprecated (since := "2024-07-24")] noncomputable alias _root_.expMapCircle_sub := exp_sub
-@[deprecated (since := "2024-07-24")] noncomputable alias _root_.norm_circle_smul :=
-  Circle.norm_smul
 
 end Circle

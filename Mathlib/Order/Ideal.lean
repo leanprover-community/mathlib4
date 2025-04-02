@@ -5,9 +5,8 @@ Authors: David Wärn
 -/
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
-import Mathlib.Order.Chain
-import Mathlib.Order.UpperLower.Basic
-import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.Cofinal
+import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma
@@ -62,7 +61,7 @@ structure Ideal (P) [LE P] extends LowerSet P where
   /-- The ideal is upward directed. -/
   directed' : DirectedOn (· ≤ ·) carrier
 
--- Porting note (#11215): TODO: remove this configuration and use the default configuration.
+-- TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections Ideal (+toLowerSet, -carrier)
 
@@ -162,7 +161,7 @@ theorem isProper_of_not_mem {I : Ideal P} {p : P} (nmem : p ∉ I) : IsProper I 
 Note that `IsCoatom` is less general because ideals only have a top element when `P` is directed
 and nonempty. -/
 @[mk_iff]
-class IsMaximal (I : Ideal P) extends IsProper I : Prop where
+class IsMaximal (I : Ideal P) : Prop extends IsProper I where
   /-- This ideal is maximal in the collection of proper ideals. -/
   maximal_proper : ∀ ⦃J : Ideal P⦄, I < J → (J : Set P) = univ
 
@@ -331,7 +330,7 @@ instance : Max (Ideal P) :=
   ⟨fun I J ↦
     { carrier := { x | ∃ i ∈ I, ∃ j ∈ J, x ≤ i ⊔ j }
       nonempty' := by
-        cases' inter_nonempty I J with w h
+        obtain ⟨w, h⟩ := inter_nonempty I J
         exact ⟨w, w, h.1, w, h.2, le_sup_left⟩
       directed' := fun x ⟨xi, _, xj, _, _⟩ y ⟨yi, _, yj, _, _⟩ ↦
         ⟨x ⊔ y, ⟨xi ⊔ yi, sup_mem ‹_› ‹_›, xj ⊔ yj, sup_mem ‹_› ‹_›,
@@ -365,7 +364,6 @@ instance : Lattice (Ideal P) :=
 theorem coe_sup : ↑(s ⊔ t) = { x | ∃ a ∈ s, ∃ b ∈ t, x ≤ a ⊔ b } :=
   rfl
 
--- Porting note: Modified `s ∩ t` to `↑s ∩ ↑t`.
 @[simp]
 theorem coe_inf : (↑(s ⊓ t) : Set P) = ↑s ∩ ↑t :=
   rfl
@@ -463,15 +461,17 @@ structure Cofinal (P) [Preorder P] where
   /-- The carrier of a `Cofinal` is the underlying set. -/
   carrier : Set P
   /-- The `Cofinal` contains arbitrarily large elements. -/
-  mem_gt : ∀ x : P, ∃ y ∈ carrier, x ≤ y
+  isCofinal : IsCofinal carrier
+
+@[deprecated Cofinal.isCofinal (since := "2024-12-02")]
+alias Cofinal.mem_gt := Cofinal.isCofinal
 
 namespace Cofinal
 
 variable [Preorder P]
 
 instance : Inhabited (Cofinal P) :=
-  ⟨{  carrier := univ
-      mem_gt := fun x ↦ ⟨x, trivial, le_rfl⟩ }⟩
+  ⟨_, .univ⟩
 
 instance : Membership P (Cofinal P) :=
   ⟨fun D x ↦ x ∈ D.carrier⟩
@@ -480,13 +480,13 @@ variable (D : Cofinal P) (x : P)
 
 /-- A (noncomputable) element of a cofinal set lying above a given element. -/
 noncomputable def above : P :=
-  Classical.choose <| D.mem_gt x
+  Classical.choose <| D.isCofinal x
 
 theorem above_mem : D.above x ∈ D :=
-  (Classical.choose_spec <| D.mem_gt x).1
+  (Classical.choose_spec <| D.isCofinal x).1
 
 theorem le_above : x ≤ D.above x :=
-  (Classical.choose_spec <| D.mem_gt x).2
+  (Classical.choose_spec <| D.isCofinal x).2
 
 end Cofinal
 

@@ -80,7 +80,7 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
         { p : CauchyFilter α × CauchyFilter α | s ∈ (p.2.val ×ˢ p.1.val : Filter (α × α)) }
   have h₁ : map Prod.swap ((𝓤 α).lift' gen) = (𝓤 α).lift' f := by
     delta gen
-    simp [map_lift'_eq, monotone_setOf, Filter.monotone_mem, Function.comp_def,
+    simp [f, map_lift'_eq, monotone_setOf, Filter.monotone_mem, Function.comp_def,
       image_swap_eq_preimage_swap]
   have h₂ : (𝓤 α).lift' f ≤ (𝓤 α).lift' gen :=
     uniformity_lift_le_swap
@@ -157,9 +157,9 @@ theorem isUniformInducing_pureCauchy : IsUniformInducing (pureCauchy : α → Ca
 @[deprecated (since := "2024-10-05")]
 alias uniformInducing_pureCauchy := isUniformInducing_pureCauchy
 
-theorem isUniformEmbedding_pureCauchy : IsUniformEmbedding (pureCauchy : α → CauchyFilter α) :=
-  { isUniformInducing_pureCauchy with
-    inj := fun _a₁ _a₂ h => pure_injective <| Subtype.ext_iff_val.1 h }
+theorem isUniformEmbedding_pureCauchy : IsUniformEmbedding (pureCauchy : α → CauchyFilter α) where
+  __ := isUniformInducing_pureCauchy
+  injective _a₁ _a₂ h := pure_injective <| Subtype.ext_iff_val.1 h
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_pureCauchy := isUniformEmbedding_pureCauchy
@@ -175,7 +175,7 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α)
       mem_prod_iff.mpr
         ⟨t, ht, { y : α | (x, y) ∈ t' }, h <| mk_mem_prod hx hx,
           fun ⟨a, b⟩ ⟨(h₁ : a ∈ t), (h₂ : (x, b) ∈ t')⟩ =>
-          ht'₂ <| prod_mk_mem_compRel (@h (a, x) ⟨h₁, hx⟩) h₂⟩
+          ht'₂ <| prodMk_mem_compRel (@h (a, x) ⟨h₁, hx⟩) h₂⟩
     ⟨x, ht''₂ <| by dsimp [gen]; exact this⟩
   simp only [closure_eq_cluster_pts, ClusterPt, nhds_eq_uniformity, lift'_inf_principal_eq,
     Set.inter_comm _ (range pureCauchy), mem_setOf_eq]
@@ -192,9 +192,6 @@ theorem isDenseInducing_pureCauchy : IsDenseInducing (pureCauchy : α → Cauchy
 theorem isDenseEmbedding_pureCauchy : IsDenseEmbedding (pureCauchy : α → CauchyFilter α) :=
   isUniformEmbedding_pureCauchy.isDenseEmbedding denseRange_pureCauchy
 
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_pureCauchy := isDenseEmbedding_pureCauchy
-
 theorem nonempty_cauchyFilter_iff : Nonempty (CauchyFilter α) ↔ Nonempty α := by
   constructor <;> rintro ⟨c⟩
   · have := eq_univ_iff_forall.1 isDenseEmbedding_pureCauchy.isDenseInducing.closure_range c
@@ -203,9 +200,6 @@ theorem nonempty_cauchyFilter_iff : Nonempty (CauchyFilter α) ↔ Nonempty α :
   · exact ⟨pureCauchy c⟩
 
 section
-
--- Porting note: I commented this
--- set_option eqn_compiler.zeta true
 
 instance : CompleteSpace (CauchyFilter α) :=
   completeSpace_extension isUniformInducing_pureCauchy denseRange_pureCauchy fun f hf =>
@@ -313,14 +307,13 @@ instance completeSpace : CompleteSpace (Completion α) :=
 
 instance t0Space : T0Space (Completion α) := SeparationQuotient.instT0Space
 
-/-- The map from a uniform space to its completion.
-
-porting note: this was added to create a target for the `@[coe]` attribute. -/
+variable {α} in
+/-- The map from a uniform space to its completion. -/
 @[coe] def coe' : α → Completion α := SeparationQuotient.mk ∘ pureCauchy
 
 /-- Automatic coercion from `α` to its completion. Not always injective. -/
 instance : Coe α (Completion α) :=
-  ⟨coe' α⟩
+  ⟨coe'⟩
 
 -- note [use has_coe_t]
 protected theorem coe_eq : ((↑) : α → Completion α) = SeparationQuotient.mk ∘ pureCauchy := rfl
@@ -335,13 +328,10 @@ theorem comap_coe_eq_uniformity :
     ((𝓤 _).comap fun p : α × α => ((p.1 : Completion α), (p.2 : Completion α))) = 𝓤 α :=
   (isUniformInducing_coe _).1
 
-variable {α}
-
+variable {α} in
 theorem denseRange_coe : DenseRange ((↑) : α → Completion α) :=
   SeparationQuotient.surjective_mk.denseRange.comp denseRange_pureCauchy
     SeparationQuotient.continuous_mk
-
-variable (α)
 
 /-- The Haudorff completion as an abstract completion. -/
 def cPkg {α : Type*} [UniformSpace α] : AbstractCompletion α where
@@ -370,13 +360,13 @@ theorem continuous_coe : Continuous ((↑) : α → Completion α) :=
 
 theorem isUniformEmbedding_coe [T0Space α] : IsUniformEmbedding ((↑) : α → Completion α) :=
   { comap_uniformity := comap_coe_eq_uniformity α
-    inj := separated_pureCauchy_injective }
+    injective := separated_pureCauchy_injective }
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_coe := isUniformEmbedding_coe
 
 theorem coe_injective [T0Space α] : Function.Injective ((↑) : α → Completion α) :=
-  IsUniformEmbedding.inj (isUniformEmbedding_coe _)
+  IsUniformEmbedding.injective (isUniformEmbedding_coe _)
 
 variable {α}
 
@@ -393,10 +383,7 @@ instance separableSpace_completion [SeparableSpace α] : SeparableSpace (Complet
   Completion.isDenseInducing_coe.separableSpace
 
 theorem isDenseEmbedding_coe [T0Space α] : IsDenseEmbedding ((↑) : α → Completion α) :=
-  { isDenseInducing_coe with inj := separated_pureCauchy_injective }
-
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_coe := isDenseEmbedding_coe
+  { isDenseInducing_coe with injective := separated_pureCauchy_injective }
 
 theorem denseRange_coe₂ :
     DenseRange fun x : α × β => ((x.1 : Completion α), (x.2 : Completion β)) :=
@@ -460,8 +447,6 @@ theorem continuous_extension : Continuous (Completion.extension f) :=
 
 end CompleteSpace
 
-/- porting note: removed `@[simp]` because this lemma doesn't even trigger on itself in Lean 3 or
-Lean 4 unless the user manually supplies the `hf` argument, so it is useless as a `simp` lemma. -/
 theorem extension_coe [T0Space β] (hf : UniformContinuous f) (a : α) :
     (Completion.extension f) a = f a :=
   cPkg.extend_coe hf a
@@ -495,8 +480,6 @@ theorem uniformContinuous_map : UniformContinuous (Completion.map f) :=
 theorem continuous_map : Continuous (Completion.map f) :=
   cPkg.continuous_map cPkg f
 
-/- porting note: removed `@[simp]` because this lemma doesn't even trigger on itself in Lean 3 or
-Lean 4 unless the user manually supplies the `hf` argument, so it is useless as a `simp` lemma. -/
 theorem map_coe (hf : UniformContinuous f) (a : α) : (Completion.map f) a = f a :=
   cPkg.map_coe cPkg hf a
 
@@ -512,11 +495,7 @@ theorem extension_map [CompleteSpace γ] [T0Space γ] {f : β → γ} {g : α �
     (hf : UniformContinuous f) (hg : UniformContinuous g) :
     Completion.extension f ∘ Completion.map g = Completion.extension (f ∘ g) :=
   Completion.ext (continuous_extension.comp continuous_map) continuous_extension <| by
-    intro a
-    -- Porting note: this is not provable by simp [hf, hg, hf.comp hg, map_coe, extension_coe],
-    -- but should be?
-    rw [extension_coe (hf.comp hg), Function.comp_apply, map_coe hg, extension_coe hf,
-      Function.comp_apply]
+    simp [hf, hg, hf.comp hg, map_coe, extension_coe]
 
 theorem map_comp {g : β → γ} {f : α → β} (hg : UniformContinuous g) (hf : UniformContinuous f) :
     Completion.map g ∘ Completion.map f = Completion.map (g ∘ f) :=
@@ -568,8 +547,6 @@ section T0Space
 
 variable [T0Space γ] {f}
 
-/- porting note: removed `@[simp]` because this lemma doesn't even trigger on itself in Lean 3 or
-Lean 4 unless the user manually supplies the `hf` argument, so it is useless as a `simp` lemma. -/
 theorem extension₂_coe_coe (hf : UniformContinuous₂ f) (a : α) (b : β) :
     Completion.extension₂ f a b = f a b :=
   cPkg.extension₂_coe_coe cPkg hf a b

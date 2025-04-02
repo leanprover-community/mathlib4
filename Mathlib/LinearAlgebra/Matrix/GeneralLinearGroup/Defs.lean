@@ -5,6 +5,7 @@ Authors: Chris Birkbeck
 -/
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.Algebra.Ring.Subring.Units
 
 /-!
@@ -69,19 +70,20 @@ def det : GL n R →* Rˣ where
   map_one' := Units.ext det_one
   map_mul' _ _ := Units.ext <| det_mul _ _
 
-/-- The `GL n R` and `Matrix.GeneralLinearGroup R n` groups are multiplicatively equivalent -/
+/-- The groups `GL n R` (notation for `Matrix.GeneralLinearGroup n R`) and
+`LinearMap.GeneralLinearGroup R (n → R)` are multiplicatively equivalent -/
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
   Units.mapEquiv toLinAlgEquiv'.toMulEquiv
 
-/-- Given a matrix with invertible determinant we get an element of `GL n R`-/
+/-- Given a matrix with invertible determinant, we get an element of `GL n R`. -/
 def mk' (A : Matrix n n R) (_ : Invertible (Matrix.det A)) : GL n R :=
   unitOfDetInvertible A
 
-/-- Given a matrix with unit determinant we get an element of `GL n R`-/
+/-- Given a matrix with unit determinant, we get an element of `GL n R`. -/
 noncomputable def mk'' (A : Matrix n n R) (h : IsUnit (Matrix.det A)) : GL n R :=
   nonsingInvUnit A h
 
-/-- Given a matrix with non-zero determinant over a field, we get an element of `GL n K`-/
+/-- Given a matrix with non-zero determinant over a field, we get an element of `GL n K`. -/
 def mkOfDetNeZero {K : Type*} [Field K] (A : Matrix n n K) (h : Matrix.det A ≠ 0) : GL n K :=
   mk' A (invertibleOfNonzero h)
 
@@ -108,22 +110,19 @@ theorem coe_inv : ↑A⁻¹ = (↑A : Matrix n n R)⁻¹ :=
   letI := A.invertible
   invOf_eq_nonsing_inv (↑A : Matrix n n R)
 
-/-- An element of the matrix general linear group on `(n) [Fintype n]` can be considered as an
-element of the endomorphism general linear group on `n → R`. -/
-def toLinear : GeneralLinearGroup n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
-  Units.mapEquiv Matrix.toLinAlgEquiv'.toRingEquiv.toMulEquiv
+@[deprecated (since := "2024-11-26")] alias toLinear := toLin
 
 -- Note that without the `@` and `‹_›`, Lean infers `fun a b ↦ _inst a b` instead of `_inst` as the
 -- decidability argument, which prevents `simp` from obtaining the instance by unification.
 -- These `fun a b ↦ _inst a b` terms also appear in the type of `A`, but simp doesn't get confused
 -- by them so for now we do not care.
 @[simp]
-theorem coe_toLinear : (@toLinear n ‹_› ‹_› _ _ A : (n → R) →ₗ[R] n → R) = Matrix.mulVecLin A :=
+theorem coe_toLin : (@toLin n ‹_› ‹_› _ _ A : (n → R) →ₗ[R] n → R) = Matrix.mulVecLin A :=
   rfl
 
 -- Porting note: is inserting toLinearEquiv here correct?
 @[simp]
-theorem toLinear_apply (v : n → R) : (toLinear A).toLinearEquiv v = Matrix.mulVecLin (↑A) v :=
+theorem toLin_apply (v : n → R) : (toLin A).toLinearEquiv v = Matrix.mulVecLin (↑A) v :=
   rfl
 
 end CoeLemmas
@@ -131,6 +130,7 @@ end CoeLemmas
 variable {S T : Type*} [CommRing S] [CommRing T]
 
 /-- A ring homomorphism ``f : R →+* S`` induces a homomorphism ``GLₙ(f) : GLₙ(R) →* GLₙ(S)``. -/
+@[simps! apply_val]
 def map (f : R →+* S) : GL n R →* GL n S := Units.map <| (RingHom.mapMatrix f).toMonoidHom
 
 @[simp]
@@ -156,15 +156,15 @@ variable (f : R →+* S)
 @[simp]
 protected lemma map_one : map f (1 : GL n R) = 1 := by
   ext
-  simp only [_root_.map_one, Units.val_one]
+  simp only [map_one, Units.val_one]
 
 protected lemma map_mul (g h : GL n R) : map f (g * h) = map f g * map f h := by
   ext
-  simp only [_root_.map_mul, Units.val_mul]
+  simp only [map_mul, Units.val_mul]
 
 protected lemma map_inv (g : GL n R) : map f g⁻¹ = (map f g)⁻¹ := by
   ext
-  simp only [_root_.map_inv, coe_units_inv]
+  simp only [map_inv, coe_units_inv]
 
 protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
     Units.map f (Matrix.GeneralLinearGroup.det g) := by
@@ -182,12 +182,12 @@ lemma map_inv_mul_map (g : GL n R) : map f g⁻¹ * map f g = 1 := by
 @[simp]
 lemma coe_map_mul_map_inv (g : GL n R) : g.val.map f * g.val⁻¹.map f = 1 := by
   rw [← Matrix.map_mul]
-  simp only [isUnits_det_units, mul_nonsing_inv, map_zero, _root_.map_one, Matrix.map_one]
+  simp only [isUnits_det_units, mul_nonsing_inv, map_zero, map_one, Matrix.map_one]
 
 @[simp]
 lemma coe_map_inv_mul_map (g : GL n R) : g.val⁻¹.map f * g.val.map f = 1 := by
   rw [← Matrix.map_mul]
-  simp only [isUnits_det_units, nonsing_inv_mul, map_zero, _root_.map_one, Matrix.map_one]
+  simp only [isUnits_det_units, nonsing_inv_mul, map_zero, map_one, Matrix.map_one]
 
 end GeneralLinearGroup
 
@@ -195,17 +195,17 @@ namespace SpecialLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
--- Porting note: added implementation for the Coe
-/-- The map from SL(n) to GL(n) underlying the coercion, forgetting the value of the determinant.
--/
-@[coe]
-def coeToGL (A : SpecialLinearGroup n R) : GL n R :=
-  ⟨↑A, ↑A⁻¹,
-    congr_arg ((↑) : _ → Matrix n n R) (mul_inv_cancel A),
-    congr_arg ((↑) : _ → Matrix n n R) (inv_mul_cancel A)⟩
+
+/-- `toGL` is the map from the special linear group to the general linear group. -/
+def toGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n R where
+  toFun A := ⟨↑A, ↑A⁻¹, congr_arg (·.1) (mul_inv_cancel A), congr_arg (·.1) (inv_mul_cancel A)⟩
+  map_one' := Units.ext rfl
+  map_mul' _ _ := Units.ext rfl
+
+@[deprecated (since := "2024-11-26")] alias coeToGL := toGL
 
 instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) :=
-  ⟨coeToGL⟩
+  ⟨toGL⟩
 
 @[simp]
 theorem coeToGL_det (g : SpecialLinearGroup n R) :
@@ -290,8 +290,7 @@ theorem toGLPos_injective : Function.Injective (toGLPos : SpecialLinearGroup n R
   -- (It can't find the coercion GLPos n R → Matrix n n R)
   Function.Injective.of_comp
     (f := fun (A : GLPos n R) ↦ ((A : GL n R) : Matrix n n R))
-    (show Function.Injective (_ ∘ (toGLPos : SpecialLinearGroup n R → GLPos n R))
-      from Subtype.coe_injective)
+    Subtype.coe_injective
 
 /-- Coercing a `Matrix.SpecialLinearGroup` via `GL_pos` and `GL` is the same as coercing straight to
 a matrix. -/

@@ -3,12 +3,13 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
+import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.Prime.Defs
-import Mathlib.Order.Lattice
+import Mathlib.Order.Monotone.Defs
 
 /-!
 # Associated, prime, and irreducible elements.
@@ -27,8 +28,7 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists Multiset
+assert_not_exists OrderedCommMonoid Multiset
 
 variable {M N : Type*}
 
@@ -52,9 +52,11 @@ theorem comap_prime (hinv : ∀ a, g (f a : N) = a) (hp : Prime (f p)) : Prime p
       · intro h
         convert ← map_dvd g h <;> apply hinv⟩
 
-theorem MulEquiv.prime_iff (e : M ≃* N) : Prime p ↔ Prime (e p) :=
-  ⟨fun h => (comap_prime e.symm e fun a => by simp) <| (e.symm_apply_apply p).substr h,
-    comap_prime e e.symm fun a => by simp⟩
+theorem MulEquiv.prime_iff {E : Type*} [EquivLike E M N] [MulEquivClass E M N] (e : E) :
+    Prime (e p) ↔ Prime p := by
+  let e := MulEquivClass.toMulEquiv e
+  exact ⟨comap_prime e e.symm fun a => by simp,
+    fun h => (comap_prime e.symm e fun a => by simp) <| (e.symm_apply_apply p).substr h⟩
 
 end Map
 
@@ -265,9 +267,6 @@ theorem pow_injective_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : �
   refine injective_of_lt_imp_ne fun n m h => DvdNotUnit.ne ⟨pow_ne_zero n hq', q ^ (m - n), ?_, ?_⟩
   · exact not_isUnit_of_not_isUnit_dvd hq (dvd_pow (dvd_refl _) (Nat.sub_pos_of_lt h).ne')
   · exact (pow_mul_pow_sub q h.le).symm
-
-@[deprecated (since := "2024-09-22")]
-alias pow_injective_of_not_unit := pow_injective_of_not_isUnit
 
 theorem pow_inj_of_not_isUnit [CancelCommMonoidWithZero M] {q : M} (hq : ¬IsUnit q)
     (hq' : q ≠ 0) {m n : ℕ} : q ^ m = q ^ n ↔ m = n :=

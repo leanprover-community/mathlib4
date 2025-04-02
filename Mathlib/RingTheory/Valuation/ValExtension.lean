@@ -3,6 +3,7 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Bichang Lei
 -/
+import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.Algebra.Group.Units.Hom
 
@@ -75,13 +76,13 @@ theorem val_map_eq_iff (x y : R) : vA (algebraMap R A x) = vA (algebraMap R A y)
   (IsEquiv.val_eq val_isEquiv_comap).symm
 
 theorem val_map_le_one_iff (x : R) : vA (algebraMap R A x) ≤ 1 ↔ vR x ≤ 1 := by
-  simpa only [_root_.map_one] using val_map_le_iff vR vA x 1
+  simpa only [map_one] using val_map_le_iff vR vA x 1
 
 theorem val_map_lt_one_iff (x : R) : vA (algebraMap R A x) < 1 ↔ vR x < 1 := by
-  simpa only [_root_.map_one, not_le] using (val_map_le_iff vR vA 1 x).not
+  simpa only [map_one, not_le] using (val_map_le_iff vR vA 1 x).not
 
 theorem val_map_eq_one_iff (x : R) : vA (algebraMap R A x) = 1 ↔ vR x = 1 := by
-  simpa only [le_antisymm_iff, _root_.map_one] using
+  simpa only [le_antisymm_iff, map_one] using
     and_congr (val_map_le_iff vR vA x 1) (val_map_le_iff vR vA 1 x)
 
 end algebraMap
@@ -92,7 +93,7 @@ instance id : IsValExtension vR vR where
 
 section integer
 
-variable {K : Type*} [Field K] [Algebra K A] {ΓR ΓA ΓK: Type*}
+variable {K : Type*} [Field K] [Algebra K A] {ΓR ΓA ΓK : Type*}
     [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓK]
     [LinearOrderedCommGroupWithZero ΓA] {vR : Valuation R ΓR} {vK : Valuation K ΓK}
     {vA : Valuation A ΓA} [IsValExtension vR vA]
@@ -111,7 +112,7 @@ theorem ofComapInteger (h : vA.integer.comap (algebraMap K A) = vK.integer) :
 instance instAlgebraInteger : Algebra vR.integer vA.integer where
   smul r a := ⟨r • a,
     Algebra.smul_def r (a : A) ▸ mul_mem ((val_map_le_one_iff vR vA _).mpr r.2) a.2⟩
-  __ := (algebraMap R A).restrict vR.integer vA.integer
+  algebraMap := (algebraMap R A).restrict vR.integer vA.integer
     (by simp [Valuation.mem_integer_iff, val_map_le_one_iff vR vA])
   commutes' _ _ := Subtype.ext (Algebra.commutes _ _)
   smul_def' _ _ := Subtype.ext (Algebra.smul_def _ _)
@@ -144,7 +145,7 @@ theorem algebraMap_injective [IsValExtension vK vA] [Nontrivial A] :
   apply RingHom.injective (algebraMap K A) h
 
 @[instance]
-theorem instIsLocalHomValuationInteger {S ΓS: Type*} [CommRing S]
+theorem instIsLocalHomValuationInteger {S ΓS : Type*} [CommRing S]
     [LinearOrderedCommGroupWithZero ΓS]
     [Algebra R S] [IsLocalHom (algebraMap R S)] {vS : Valuation S ΓS}
     [IsValExtension vR vS] : IsLocalHom (algebraMap vR.integer vS.integer) where

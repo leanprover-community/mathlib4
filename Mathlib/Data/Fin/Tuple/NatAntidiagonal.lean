@@ -80,9 +80,9 @@ theorem mem_antidiagonalTuple {n : ℕ} {k : ℕ} {x : Fin k → ℕ} :
     · simp [eq_comm]
   | h x₀ x ih =>
     simp_rw [Fin.sum_cons, antidiagonalTuple, List.mem_flatMap, List.mem_map,
-      List.Nat.mem_antidiagonal, Fin.cons_eq_cons, exists_eq_right_right, ih,
+      List.Nat.mem_antidiagonal, Fin.cons_inj, exists_eq_right_right, ih,
       @eq_comm _ _ (Prod.snd _), and_comm (a := Prod.snd _ = _),
-      ← Prod.mk.inj_iff (a₁ := Prod.fst _), exists_eq_right]
+      ← Prod.mk_inj (a₁ := Prod.fst _), exists_eq_right]
 
 /-- The antidiagonal of `n` does not contain duplicate entries. -/
 theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n) := by
@@ -100,14 +100,14 @@ theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n)
     refine List.Pairwise.cons (fun a ha x hx₁ hx₂ => ?_) (n_ih.map _ fun a b h x hx₁ hx₂ => ?_)
     · rw [List.mem_map] at hx₁ hx₂ ha
       obtain ⟨⟨a, -, rfl⟩, ⟨x₁, -, rfl⟩, ⟨x₂, -, h⟩⟩ := ha, hx₁, hx₂
-      rw [Fin.cons_eq_cons] at h
+      rw [Fin.cons_inj] at h
       injection h.1
     · rw [List.mem_map] at hx₁ hx₂
       obtain ⟨⟨x₁, hx₁, rfl⟩, ⟨x₂, hx₂, h₁₂⟩⟩ := hx₁, hx₂
       dsimp at h₁₂
-      rw [Fin.cons_eq_cons, Nat.succ_inj'] at h₁₂
+      rw [Fin.cons_inj, Nat.succ_inj'] at h₁₂
       obtain ⟨h₁₂, rfl⟩ := h₁₂
-      rw [h₁₂] at h
+      rw [Function.onFun, h₁₂] at h
       exact h (List.mem_map_of_mem _ hx₁) (List.mem_map_of_mem _ hx₂)
 
 theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]

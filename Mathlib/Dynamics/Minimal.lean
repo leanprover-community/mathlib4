@@ -93,7 +93,7 @@ theorem eq_empty_or_univ_of_smul_invariant_closed [IsMinimal M α] {s : Set α} 
     hs.closure_eq ▸ (dense_of_nonempty_smul_invariant M hne hsmul).closure_eq
 
 @[to_additive]
-theorem isMinimal_iff_closed_smul_invariant [ContinuousConstSMul M α] :
+theorem isMinimal_iff_isClosed_smul_invariant [ContinuousConstSMul M α] :
     IsMinimal M α ↔ ∀ s : Set α, IsClosed s → (∀ c : M, c • s ⊆ s) → s = ∅ ∨ s = univ := by
   constructor
   · intro _ _
@@ -101,3 +101,5 @@ theorem isMinimal_iff_closed_smul_invariant [ContinuousConstSMul M α] :
   refine fun H ↦ ⟨fun _ ↦ dense_iff_closure_eq.2 <| (H _ ?_ ?_).resolve_left ?_⟩
   exacts [isClosed_closure, fun _ ↦ smul_closure_orbit_subset _ _,
     (orbit_nonempty _).closure.ne_empty]
+@[deprecated (since := "2024-11-19")] alias
+isMinimal_iff_closed_smul_invariant := isMinimal_iff_isClosed_smul_invariant

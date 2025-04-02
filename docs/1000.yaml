@@ -1,0 +1,4050 @@
+# This file tracks the formalisation status of theorems from the experimental
+# 1000+ theorems project (https://1000-plus.github.io/).
+# This file and associated infrastructure are work in progress.
+#
+# See yaml_check.py for documentation about the allowed fields in this file.
+# Note that the field names in this file should match the specification of the
+# upstream project, hence should not be changed without due consideration.
+# The structure of this file is checked by `scripts/yaml_check.py` in this repo
+# and by `make_site.py` in the leanprover-community.github.io repo.
+#
+# Current TODOs/unresolved questions:
+# - perhaps add a wikidata version of the stacks attribute, and generate this file automatically
+
+Q11518:
+  title: Pythagorean theorem
+  decl: EuclideanGeometry.dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two
+  authors: Joseph Myers
+
+Q12524:
+  title: Schwenk's theorem
+
+Q26708:
+  title: Binomial theorem
+  decl: add_pow
+  authors: Chris Hughes
+
+Q32182:
+  title: Balinski's theorem
+
+Q33481:
+  title: Arrow's impossibility theorem
+  authors: Benjamin Davidson, Andrew Souther
+  date: 2021
+  url: https://github.com/asouther4/lean-social-choice/blob/master/src/arrows_theorem.lean
+
+Q98831:
+  title: Multiplication theorem
+
+Q117553:
+  title: Modigliani–Miller theorem
+
+Q119450:
+  title: Brianchon's theorem
+
+Q132427:
+  title: Rademacher's theorem
+
+Q132469:
+  title: Fermat's Last Theorem
+  statement: FermatLastTheorem
+  comment: "Formalisation of the proof is on-going in https://imperialcollegelondon.github.io/FLT/."
+
+Q137164:
+  title: Besicovitch covering theorem
+  decl: Besicovitch.exists_disjoint_closedBall_covering_ae
+  authors: Sébastien Gouëzel
+  date: 2021
+
+Q154210:
+  title: CPCTC
+
+Q164262:
+  title: Lebesgue covering dimension
+
+Q172298:
+  title: Lasker–Noether theorem
+  decl: Ideal.isPrimary_decomposition_pairwise_ne_radical
+
+Q174955:
+  title: Mihăilescu's theorem
+
+Q179208:
+  title: Cayley's theorem
+  decl: Equiv.Perm.subgroupOfMulAction
+  authors: Eric Wieser
+  date: 2021
+
+Q179467:
+  title: Fourier theorem
+
+Q179692:
+  title: Independence of the axiom of choice
+
+Q180345X:
+  title: Integral root theorem
+  decl: isInteger_of_is_root_of_monic
+
+Q180345:
+  title: Rational root theorem
+  decls:
+   - num_dvd_of_is_root
+   - den_dvd_of_is_root
+
+Q182505:
+  title: Bayes' theorem
+  decl: ProbabilityTheory.cond_eq_inv_mul_cond_mul
+  authors: Rishikesh Vaishnav
+  date: 2022
+
+Q184410:
+  title: Four color theorem
+
+Q188295:
+  title: Fermat's little theorem
+  decl: ZMod.pow_card_sub_one_eq_one
+  authors: Aaron Anderson
+  date: 2020
+
+Q188745:
+  title: Classification of Platonic solids
+
+Q189136:
+  title: Mean value theorem
+  # two versions: Cauchy's vs Lagrange's mean value theorem; the wikipedia article mentions both
+  decls:
+    - exists_deriv_eq_slope
+    - exists_ratio_deriv_eq_ratio_slope
+  authors: Yury G. Kudryashov
+  date: 2019
+
+Q190026:
+  title: Ford's theorem
+
+Q190391X:
+  title: Lyapunov's central limit theorem
+
+Q190391:
+  title: Central limit theorem
+  # in 100.yaml also
+
+Q190556:
+  title: De Moivre's theorem
+  decl: Complex.cos_add_sin_mul_I_pow
+  authors: Abhimanyu Pallavi Sudhir
+  date: 2019
+
+Q191693:
+  title: Lebesgue's decomposition theorem
+  decl: MeasureTheory.Measure.haveLebesgueDecomposition_of_sigmaFinite
+  authors: Kexing Ying
+  date: 2021
+
+Q192760:
+  title: Fundamental theorem of algebra
+  decl: Complex.isAlgClosed
+  authors: Chris Hughes
+  date: 2019
+
+Q193286:
+  title: Rolle's theorem
+  decl: exists_deriv_eq_zero
+  authors: Yury G. Kudryashov
+  date: 2019
+
+Q193878:
+  title: Chinese remainder theorem
+  decl: Ideal.quotientInfRingEquivPiQuotient
+
+Q193882:
+  title: Menelaus's theorem
+
+Q193910:
+  title: Euler's theorem
+
+Q194919:
+  title: Inverse eigenvalues theorem
+  # i.e. eigenvalue decomposition of a matrix
+
+Q195133:
+  title: Wigner–Eckart theorem
+
+Q200787:
+  title: Gödel's incompleteness theorem
+  authors: Shogo Saito
+  # TODO: how to display this data nicely? want two URLs, right?
+  # results:
+  #   - First: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/First.lean
+  #   - Second: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/Second.lean
+  url: https://formalizedformallogic.github.io/Book/
+
+Q203565:
+  title: Solutions of a general cubic equation
+  decl: Theorems100.cubic_eq_zero_iff
+  authors: Jeoff Lee
+  date: 2022
+
+Q204884:
+  title: Löb's theorem
+
+Q205966:
+  title: Critical line theorem
+
+Q207014:
+  title: Independence of the parallel postulate
+
+Q207244:
+  title: Sela's theorem
+
+Q208416:
+  title: Independence of the continuum hypothesis
+  url: https://github.com/flypitch/flypitch/blob/d72904c17fbb874f01ffe168667ba12663a7b853/src/summary.lean#L90
+  authors: Floris van Doorn and Jesse Michael Han
+  date: 2019-09-17
+
+Q208756:
+  title: Castelnuovo theorem
+
+Q211981:
+  title: Hartman–Grobman theorem
+
+Q213603:
+  title: Ceva's theorem
+
+Q220680:
+  title: Banach fixed-point theorem
+  ## Contraction mapping theorem in mathlib
+  decl: ContractingWith.exists_fixedPoint
+
+Q225973:
+  title: Ore's theorem
+
+Q226014:
+  title: Poincaré recurrence theorem
+
+Q230848:
+  title: Lamé’s theorem
+
+Q240950:
+  title: Faltings's theorem
+
+Q241868:
+  title: Thévenin's theorem
+
+Q242045:
+  title: Monotone class theorem
+
+Q245098:
+  title: Intermediate value theorem
+  decl: intermediate_value_Icc
+  authors: Rob Lewis and Chris Hughes
+
+Q245098X:
+  title: Bolzano's theorem
+  # variant of the intermediate value theorem above, TODO should exist in mathlib, add decl
+
+Q245902:
+  title: Riesz–Thorin theorem
+
+Q248931:
+  title: Poincaré–Bendixson theorem
+
+Q253214:
+  title: Heine–Borel theorem
+  decls:
+    - Metric.isCompact_iff_isClosed_bounded
+    - FiniteDimensional.proper
+
+Q255996:
+  title: Equipartition theorem
+
+Q256303:
+  title: Lax&ndash;Richtmyer theorem
+
+Q257387:
+  title: Vitali theorem
+  # i.e. existence of the Vitali set
+  authors: Ching-Tsun Chou
+  url: https://github.com/ctchou/my_lean/blob/main/MyLean/NonMeasurable.lean
+  comment: "mathlib4 pull request at https://github.com/leanprover-community/mathlib4/pull/20722"
+
+Q258374:
+  title: Carathéodory's theorem (measure theory)
+  decl: MeasureTheory.OuterMeasure.caratheodory
+  comment: Hard to say what exactly is meant.
+
+Q260928:
+  title: Jordan curve theorem
+
+Q266291:
+  title: Bloch's theorem (complex variables)
+
+Q268031:
+  title: Abel's binomial theorem
+  # presumably not difficult
+
+Q268132:
+  title: Gauss–Wantzel theorem
+
+Q273037:
+  title: Bondy–Chvátal theorem
+
+Q276082:
+  title: Wilson's theorem
+  decl: ZMod.wilsons_lemma
+  authors: Chris Hughes
+
+Q280116:
+  title: Odd number theorem
+
+Q282331:
+  title: Addition theorem
+
+Q282649:
+  title: Pentagonal number theorem
+
+Q283690:
+  title: Arrival theorem
+
+Q284960:
+  title: Mordell–Weil theorem
+
+Q285719:
+  title: Thales's theorem
+
+Q287347:
+  title: Gradient theorem
+
+Q288465:
+  title: Orbit-stabilizer theorem
+  decl: MulAction.orbitEquivQuotientStabilizer
+
+Q303402:
+  title: Rank–nullity theorem
+  decl: LinearMap.rank_range_add_rank_ker
+
+Q318767:
+  title: Abel's theorem
+  decls:
+    - Complex.tendsto_tsum_powerSeries_nhdsWithin_stolzCone
+    - Real.tendsto_tsum_powerSeries_nhdsWithin_lt
+  authors: Jeremy Tan
+
+Q321237:
+  title: Green's theorem
+
+Q332465:
+  title: Absolute convergence theorem
+
+Q338886:
+  title: Divergence theorem
+
+Q339495:
+  title: Symphonic theorem
+
+Q356895:
+  title: Adiabatic theorem
+
+Q357192:
+  title: Holland's schema theorem
+
+Q357858:
+  title: Freyd's adjoint functor theorem
+
+Q371685:
+  title: Kraft–McMillan theorem
+
+Q372037:
+  title: Seifert–van Kampen theorem
+
+Q376166:
+  title: Cut-elimination theorem
+
+Q377047:
+  title: Butterfly theorem
+
+Q377276:
+  title: Cook's theorem
+
+Q379048:
+  title: Riemann–Roch theorem
+
+Q380576:
+  title: Measurable Riemann mapping theorem
+
+Q383238:
+  title: Hartogs's extension theorem
+
+Q384142:
+  title: Herbrand–Ribet theorem
+
+Q386292:
+  title: Prime number theorem
+  comment: "Ongoing formalisation of various versions in https://github.com/AlexKontorovich/PrimeNumberTheoremAnd"
+  # also in 100.yaml
+
+Q388525:
+  title: Bell's theorem
+
+Q401319:
+  title: Puiseux's theorem
+  # also in 100.yaml
+
+Q401905:
+  title: Skorokhod's representation theorem
+
+Q420714:
+  title: Akra–Bazzi theorem
+  decl: AkraBazziRecurrence.isBigO_asympBound
+
+Q422187:
+  title: Myhill–Nerode theorem
+  decl: Language.isRegular_iff_finite_range_leftQuotient
+  authors: Chris Wong
+  date: 2024-03-24
+
+Q425432:
+  title: Laurent expansion theorem
+
+Q428134:
+  title: Gauss–Markov theorem
+
+Q459547:
+  title: Ptolemy's theorem
+  decl: EuclideanGeometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical
+  authors: Manuel Candales
+
+Q467205:
+  title: Fundamental theorems of welfare economics
+
+Q467756:
+  title: Stokes's theorem
+
+Q468391:
+  title: Bolzano–Weierstrass theorem
+  decls:
+    - tendsto_subseq_of_frequently_bounded # less standard version
+    - tendsto_subseq_of_bounded
+
+Q470877:
+  title: Stirling's theorem
+  decl: Stirling.tendsto_stirlingSeq_sqrt_pi
+  authors: Moritz Firsching and Fabian Kruse and Nikolas Kuhn and Heather Macbeth
+
+Q472883:
+  title: Quadratic reciprocity theorem
+  decls:
+    - legendreSym.quadratic_reciprocity
+    - jacobiSym.quadratic_reciprocity
+  authors: Chris Hughes (first) and Michael Stoll (second)
+
+Q474881:
+  title: Cantor's theorem
+  # a.k.a. Cantor's diagonal argument
+  decl: Function.cantor_surjective
+  authors: Johannes Hölzl and Mario Carneiro
+
+Q476776:
+  title: Solutions of a general quartic equation
+  decl: Theorems100.quartic_eq_zero_iff
+  authors: Thomas Zhu
+
+Q487132:
+  title: Infinite monkey theorem
+
+Q488541:
+  title: Fisher separation theorem
+
+Q495412:
+  title: Jordan–Schönflies theorem
+
+Q504843:
+  title: Mycielski's theorem
+
+Q505798:
+  title: Lagrange's theorem (group theory)
+  # exist additive and multiplicative version
+  decl: Subgroup.card_subgroup_dvd_card
+
+Q510197:
+  title: Tutte theorem
+
+Q512897:
+  title: Brooks's theorem
+
+Q523832:
+  title: Carathéodory–Jacobi–Lie theorem
+
+Q523876:
+  title: Spin–statistics theorem
+
+Q528955:
+  title: Kochen–Specker theorem
+
+Q528987:
+  title: Von Neumann bicommutant theorem
+
+Q530152:
+  title: Picard&ndash;Lindelöf theorem
+  decl: IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq
+
+Q535366:
+  title: Montel's theorem
+
+Q536640:
+  title: Hall's marriage theorem
+  decl: Finset.all_card_le_biUnion_card_iff_exists_injective
+
+Q537618:
+  title: Banach–Alaoglu theorem
+  decl: WeakDual.isCompact_polar
+
+Q544292:
+  title: Lagrange inversion theorem
+
+Q544369:
+  title: Glivenko–Cantelli theorem
+
+Q550402:
+  title: Dirichlet's theorem on arithmetic progressions
+  decl: Nat.setOf_prime_and_eq_mod_infinite
+  authors: David Loeffler, Michael Stoll
+
+Q552367:
+  title: Berge's theorem
+
+Q567843:
+  title: Hahn–Mazurkiewicz theorem
+
+Q570779:
+  title: Vieta's formulas
+  decl: Multiset.prod_X_add_C_eq_sum_esymm
+
+Q574902:
+  title: Tarski's indefinability theorem
+
+Q576478:
+  title: Liouville's theorem (complex analysis)
+  decl: Differentiable.apply_eq_apply_of_bounded
+
+Q578555:
+  title: Noether's theorem
+
+Q579515:
+  title: Rao–Blackwell theorem
+
+Q583147:
+  title: Sard's theorem
+  # exists a statement in Lean, WIP formalisations in https://github.com/urkud/SardMoreira
+  # and https://github.com/fpvandoorn/sard (manifold version)
+
+Q586051:
+  title: Haag–Łopuszański–Sohnius theorem
+
+Q587081:
+  title: Kolmogorov–Arnold–Moser theorem
+
+Q588218:
+  title: Koebe 1/4 theorem
+
+Q594571:
+  title: Van Aubel's theorem
+
+Q595466:
+  title: Dini's theorem
+  decl: Monotone.tendstoLocallyUniformly_of_forall_tendsto
+  authors: Jireh Loreaux
+  date: 2024
+
+Q599876:
+  title: Cochran's theorem
+
+Q608294:
+  title: Max flow min cut theorem
+
+Q609612:
+  title: Knaster–Tarski theorem
+  decl: fixedPoints.completeLattice
+  authors: Kenny Lau
+  date: 2018
+
+Q612021:
+  title: Gibbard–Satterthwaite theorem
+
+Q617417:
+  title: Isoperimetric theorem
+
+Q619985:
+  title: Multinomial theorem
+  decl: Finset.sum_pow_eq_sum_piAntidiag_of_commute
+  # TODO: is Finset.sum_pow_of_commute better?
+
+Q620602:
+  title: Virial theorem
+
+Q631561:
+  title: Closed range theorem
+  # TODO: this surely exists in mathlib, add decl!
+
+Q632546X:
+  title: Sylvester's theorem
+
+Q632546:
+  title: Bertrand's postulate
+  decl: Nat.bertrand
+  authors: Bolton Bailey and Patrick Stevens
+
+Q637418:
+  title: Napoleon's theorem
+
+Q642620:
+  title: Krein–Milman theorem
+  decl: closure_convexHull_extremePoints
+  authors: Yaël Dillies
+  date: 2022
+
+Q643513:
+  title: Riesz–Fischer theorem
+
+Q643826:
+  title: Slutsky's theorem
+
+Q646523:
+  title: Pick's theorem
+  # in 100.yaml also
+
+Q649469:
+  title: Modularity theorem
+  comment: "https://imperialcollegelondon.github.io/FLT is proving a special case"
+
+Q649977:
+  title: Shirshov–Cohn theorem
+
+Q650738:
+  title: Folk theorem (game theory)
+
+Q651593:
+  title: Norton's theorem
+
+Q656176:
+  title: Schauder fixed-point theorem
+
+Q656198:
+  title: Maschke's theorem
+  # `RepresentationTheory/Maschke` comes very close, but doesn't prove the standard form yet...
+
+Q656645:
+  title: Hilbert's basis theorem
+  decl: Polynomial.isNoetherianRing
+  authors: Kenny Lau
+  date: 2019
+
+Q656772:
+  title: Cayley–Hamilton theorem
+  decl: Matrix.aeval_self_charpoly
+  authors: Kim Morrison
+
+Q657469:
+  title: Lefschetz fixed-point theorem
+
+Q657469X:
+  title: Lefschetz–Hopf theorem
+
+Q657482:
+  title: Abel–Ruffini theorem
+  authors: Thomas Browning
+  decl: AbelRuffini.exists_not_solvable_by_rad
+
+Q657903:
+  title: Hilbert–Waring theorem
+
+Q660799:
+  title: Darboux's theorem (analysis)
+  # "all derivatives have the intermediate value property"
+  # TODO should exist in mathlib, add decl!
+
+Q670235:
+  title: Fundamental theorem of arithmetic
+  decls:
+    - Nat.primeFactorsList_unique
+    - Int.euclideanDomain
+    - EuclideanDomain.to_principal_ideal_domain
+    - UniqueFactorizationMonoid
+    - UniqueFactorizationMonoid.factors_unique
+  authors: Chris Hughes
+  comment: "it also has a generalized version, by showing that every Euclidean domain is a unique factorization domain, and showing that the integers form a Euclidean domain."
+
+Q671663:
+  title: Coleman–Mandula theorem
+
+Q676413:
+  title: Dandelin's theorem
+
+Q679800:
+  title: Nyquist–Shannon sampling theorem
+
+Q681406:
+  title: Euler's rotation theorem
+
+Q685437:
+  title: Titchmarsh theorem
+
+Q693083:
+  title: Soundness theorem
+
+Q716171:
+  title: Erdős–Ginzburg–Ziv theorem
+  decl: ZMod.erdos_ginzburg_ziv
+  authors: Yaël Dillies
+  date: 2023
+
+Q718875:
+  title: Erdős–Ko–Rado theorem
+  decl: Finset.erdos_ko_rado
+  authors: Bhavik Mehta, Yaël Dillies
+  date: 2020
+
+Q719966:
+  title: Toda's theorem
+
+Q720469:
+  title: Chevalley–Warning theorem
+  decl: char_dvd_card_solutions_of_sum_lt
+  authors: Johan Commelin
+  date: 2019
+
+Q721695:
+  title: Szemerédi–Trotter theorem
+
+Q727102:
+  title: Fermat's theorem (stationary points)
+
+Q729359:
+  title: Hadamard three-circle theorem
+
+Q730222:
+  title: Ham sandwich theorem
+
+Q733081:
+  title: Impossibility of angle trisection
+  # first part of problem 8 in 100.yaml
+
+Q737851:
+  title: Banach–Tarski theorem
+  # WIP formalisation at https://github.com/Bergschaf/banach-tarski
+
+Q737892:
+  title: Bendixson–Dulac theorem
+
+Q739403:
+  title: Stewart's theorem
+
+Q740093:
+  title: Peano existence theorem
+
+Q742833:
+  title: Gauss–Bonnet theorem
+
+Q744440:
+  title: Immerman–Szelepcsényi theorem
+
+Q748233:
+  title: Sylvester–Gallai theorem
+  authors: Bhavik Mehta
+  url: https://github.com/YaelDillies/LeanCamCombi/blob/6a6a670f324b2af82ae17f21f9d51ac0bc859f6f/LeanCamCombi/SylvesterChvatal.lean#L610
+  date: 2022
+
+Q751120:
+  title: Thue–Siegel–Roth theorem
+
+Q752375:
+  title: Extreme value theorem
+  decl: IsCompact.exists_isMinOn
+  authors: Sébastien Gouëzel
+  date: 2018
+
+Q755986:
+  title: Atiyah–Bott fixed-point theorem
+
+Q755991:
+  title: Atiyah–Singer index theorem
+
+Q756946:
+  title: Lagrange's four-square theorem
+  decl: Nat.sum_four_squares
+  authors: Chris Hughes
+  date: 2019
+
+Q764287:
+  title: Van der Waerden's theorem
+  decl: Combinatorics.exists_mono_homothetic_copy
+  authors: David Wärn
+  # TODO: this is only some version; should this entry be modified accordingly?
+
+Q765987:
+  title: Heine–Cantor theorem
+  decl: CompactSpace.uniformContinuous_of_continuous
+
+Q766722:
+  title: Liouville's theorem
+  # theorem about Hamiltonian mechanics
+
+Q776578:
+  title: Artin–Wedderburn theorem
+  # using proof_wanted, in Mathlib/RingTheory/SimpleModule.lean
+  statement: isSemisimpleRing_iff_pi_matrix_divisionRing
+  # WIP formalisation, but not complete yet (January 1, 2025)
+
+Q777924:
+  title: Tijdeman's theorem
+
+Q779220:
+  title: Hilbert's syzygy theorem
+
+Q780763:
+  title: 15 and 290 theorems
+
+Q784049:
+  title: Blaschke selection theorem
+
+Q790236:
+  title: Baranyai's theorem
+
+Q791258:
+  title: Basu's theorem
+
+Q791663:
+  title: Beatty's theorem
+
+Q794269:
+  title: Betti's theorem
+
+Q810431:
+  title: Basel problem
+  decl: hasSum_zeta_two
+  authors: David Loeffler
+  date: 2022
+
+Q828284:
+  title: Parallel axis theorem
+
+Q830124:
+  title: Girsanov's theorem
+
+Q830513:
+  title: Residue theorem
+
+Q834025:
+  title: Cauchy integral theorem
+  decl: Complex.circleIntegral_div_sub_of_differentiable_on_off_countable
+  authors: Yury Kudryashov
+  date: 2021
+
+Q834211:
+  title: Wallace–Bolyai–Gerwien theorem
+
+Q837506:
+  title: Theorem on friends and strangers
+  authors: Bhavik Mehta
+  url: https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Small.20Ramsey.20numbers/near/490303695
+  comment: "will enter mathlib in 2024"
+
+Q837551:
+  title: Frobenius theorem (differential topology)
+
+Q841893:
+  title: Desargues's theorem
+  # in 100.yaml also
+
+Q842953:
+  title: Lebesgue's density theorem
+  decl: Besicovitch.ae_tendsto_measure_inter_div
+  authors: Oliver Nash
+  date: 2022
+
+Q844612:
+  title: Brun's theorem
+
+Q845088:
+  title: Pappus's centroid theorem
+
+Q846840:
+  title: Erdős–Kac theorem
+
+Q848092:
+  title: Borsuk–Ulam theorem
+
+Q848375:
+  title: Implicit function theorem
+  decl: ImplicitFunctionData.implicitFunction
+
+Q848810:
+  title: Kronecker's theorem
+
+Q850495:
+  title: Wick's theorem
+
+Q851166:
+  title: Pappus's hexagon theorem
+
+Q852183:
+  title: Viviani's theorem
+
+Q852973:
+  title: Euler's polyhedron theorem
+
+Q853067:
+  title: Solutions to Pell's equation
+  decls:
+    - Pell.eq_pell
+    - Pell.exists_of_not_isSquare
+  authors: Mario Carneiro (first), Michael Stoll (second)
+  comment: "In `pell.eq_pell`, `d` is defined to be `a*a - 1` for an arbitrary `a > 1`."
+
+Q856032:
+  title: CAP theorem
+
+Q856158:
+  title: Midy's theorem
+
+Q857089:
+  title: de Branges's theorem
+
+Q858978:
+  title: Castigliano's first and second theorems
+
+Q859122:
+  title: Cauchy–Hadamard theorem
+
+Q865665:
+  title: Birkhoff's theorem (relativity)
+
+Q866116:
+  title: Hahn–Banach theorem
+  decl: exists_extension_norm_eq
+
+Q867141:
+  title: Ehresmann's theorem
+
+Q867839:
+  title: Rosser's theorem
+
+Q869647:
+  title: Szpilrajn extension theorem
+
+Q872088:
+  title: Boolean prime ideal theorem
+
+Q877489:
+  title: Apollonius's theorem
+
+Q890875:
+  title: Bohr–van Leeuwen theorem
+
+Q897769:
+  title: Kőnig's theorem (graph theory)
+
+Q899002:
+  title: Pascal's theorem
+  # in 100.yaml also
+
+Q899853:
+  title: H-theorem
+
+Q900831:
+  title: Fluctuation theorem
+
+Q902052:
+  title: Gödel's completeness theorem
+
+Q902618:
+  title: Floquet's theorem
+
+Q906809:
+  title: Hellmann–Feynman theorem
+
+Q909517:
+  title: Feit–Thompson theorem
+
+Q913447:
+  title: Morley's trisector theorem
+
+Q913849:
+  title: Minimax theorem
+
+Q914517:
+  title: Fermat's theorem on sums of two squares
+  decl: Nat.Prime.sq_add_sq
+  authors: Chris Hughes
+
+Q915474:
+  title: Robin's theorem
+
+Q918099:
+  title: Ramsey's theorem
+  authors: Bhavik Mehta
+  url: https://github.com/b-mehta/combinatorics/blob/extras/src/inf_ramsey.lean
+
+Q922012:
+  title: Green–Tao theorem
+
+Q922367:
+  title: Master theorem (analysis of algorithms)
+
+Q925224:
+  title: Sonnenschein–Mantel–Debreu Theorem
+
+Q925854:
+  title: Angle bisector theorem
+
+Q927051:
+  title: Riemann mapping theorem
+
+Q928813:
+  title: Menger's theorem
+
+Q929547:
+  title: Myers theorem
+
+Q931001:
+  title: Inverse function theorem
+  decl: HasStrictFDerivAt.to_localInverse
+
+Q931001X:
+  title: Constant rank theorem
+
+Q931404:
+  title: Bertrand–Diquet–Puiseux theorem
+
+Q939927:
+  title: Stone–Weierstrass theorem
+  decl: ContinuousMap.subalgebra_topologicalClosure_eq_top_of_separatesPoints
+  authors: Scott Morrison and Heather Macbeth
+  date: 2021-05-01
+
+Q942046:
+  title: Schwarz–Ahlfors–Pick theorem
+
+Q943246:
+  title: Wedderburn's little theorem
+  decl: littleWedderburn
+
+Q944297:
+  title: Open mapping theorem (functional analysis)
+  decl: ContinuousLinearMap.isOpenMap
+  authors: Sébastien Gouëzel
+  date: 2019
+
+Q948664:
+  title: Kneser's addition theorem (combinatorics)
+  authors: Mantas Bakšys, Yaël Dillies
+  url: https://github.com/YaelDillies/LeanCamCombi/blob/master/LeanCamCombi/Kneser/Kneser.lean
+  date: 2022
+
+Q951327:
+  title: Pasch's theorem
+
+Q953062:
+  title: Reynolds transport theorem
+
+Q954210:
+  title: Savitch's theorem
+
+Q965294:
+  title: Thabit ibn Qurra's theorem
+
+Q966837:
+  title: Cramér–Wold theorem
+
+Q967972:
+  title: Open mapping theorem (complex analysis)
+  decl: AnalyticOnNhd.is_constant_or_isOpen
+
+Q973359:
+  title: Radó's theorem (harmonic functions)
+
+Q974405:
+  title: Hille–Yosida theorem
+
+Q976033:
+  title: Gelfond–Schneider theorem
+
+Q976607:
+  title: Erdős–Szekeres theorem
+  decl: Theorems100.erdos_szekeres
+  authors: Bhavik Mehta
+
+Q977912:
+  title: Stolper&ndash;Samuelson theorem
+
+Q978688:
+  title: Gershgorin circle theorem
+
+Q985009:
+  title: Helmholtz's theorems
+
+Q994401:
+  title: Four-vertex theorem
+
+Q995926:
+  title: Perpendicular axis theorem
+
+Q999783:
+  title: Buckingham π theorem
+
+Q1008566:
+  title: Gauss–Lucas theorem
+
+Q1032886:
+  title: Hales–Jewett theorem
+  decl: Combinatorics.Line.exists_mono_in_high_dimension
+  authors: David Wärn
+
+Q1033910:
+  title: Cantor–Bernstein–Schroeder theorem
+  decl: Function.Embedding.schroeder_bernstein
+  authors: Mario Carneiro
+
+Q1037559:
+  title: Pólya enumeration theorem
+
+Q1038716:
+  title: Identity theorem
+  decl: AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq
+
+Q1046232:
+  title: Szemerédi's theorem
+
+Q1047749:
+  title: Turán's theorem
+  decl: SimpleGraph.isTuranMaximal_iff_nonempty_iso_turanGraph
+  authors: Jeremy Tan
+
+Q1048589:
+  title: Hohenberg–Kohn theorems
+
+Q1048874:
+  title: Gauss's Theorema Egregium
+
+Q1050037:
+  title: Coase theorem
+
+Q1050203:
+  title: Cantor's intersection theorem
+  # many versions; are this (and friends, in the same file) all of the wikipedia article?
+  decl: IsCompact.nonempty_sInter_of_directed_nonempty_isCompact_isClosed
+
+Q1050932:
+  title: Hartogs's theorem
+  url: https://github.com/girving/ray/blob/main/Ray/Hartogs/Hartogs.lean
+  authors: Geoffrey Irving
+
+Q1051404:
+  title: Cesàro's theorem
+
+Q1052021:
+  title: Craig's interpolation theorem
+
+Q1052678:
+  title: Baire category theorem
+  decl: dense_sInter_of_isOpen
+
+Q1052752:
+  title: Stolz–Cesàro theorem
+
+Q1054106:
+  title: Cox's theorem
+
+Q1056283:
+  title: May's theorem
+
+Q1057919:
+  title: Sylow theorems
+  decls:
+   - Sylow.exists_subgroup_card_pow_prime
+   - Sylow.isPretransitive_of_finite
+   - Sylow.card_dvd_index
+   - card_sylow_modEq_one
+
+Q1058662:
+  title: Darboux's theorem
+  # symplectic geometry
+
+Q1059151:
+  title: FWL theorem
+
+Q1064471:
+  title: Earnshaw's theorem
+
+Q1065257:
+  title: Squeeze theorem
+  decl: tendsto_of_tendsto_of_tendsto_of_le_of_le'
+
+Q1065966:
+  title: Isomorphism theorem
+  # Three isomorphism theorems in abstract algebra
+  decls:
+    - QuotientGroup.quotientKerEquivRange
+    - QuotientGroup.quotientInfEquivProdNormalQuotient
+    - QuotientGroup.quotientQuotientEquivQuotient
+
+Q1067156:
+  title: Dominated convergence theorem
+  decl: MeasureTheory.tendsto_integral_of_dominated_convergence
+
+Q1067156X:
+  title: Bounded convergence theorem
+  decls:
+    - MeasureTheory.FiniteMeasure.tendsto_lintegral_nn_of_le_const
+    - MeasureTheory.tendsto_lintegral_nn_filter_of_le_const
+
+Q1068085:
+  title: Closed graph theorem
+  decl: LinearMap.continuous_of_isClosed_graph
+
+Q1068283:
+  title: Löwenheim–Skolem theorem
+  decl: FirstOrder.Language.exists_elementaryEmbedding_card_eq
+
+Q1068385:
+  title: Clairaut's theorem
+
+Q1068976:
+  title: Hilbert's Nullstellensatz
+  decl: MvPolynomial.vanishingIdeal_zeroLocus_eq_radical
+
+Q1075398:
+  title: Jung's theorem
+
+Q1076274:
+  title: Choquet–Bishop–de Leeuw theorem
+
+Q1077462:
+  title: König's theorem (set theory)
+
+Q1077741:
+  title: Hairy ball theorem
+
+Q1082910:
+  title: Euler's partition theorem
+  authors: Bhavik Mehta and Aaron Anderson
+  decl: Theorems100.partition_theorem
+
+Q1095330:
+  title: Apéry's theorem
+  url: https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/pi.20is.20irrational.3F/near/478674074
+  # TODO: insert a link to a repository, and perhaps get that into mathlib :-)
+
+Q1097021:
+  title: Minkowski's theorem
+  decl: MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
+  authors: Alex J. Best and Yaël Dillies
+  date: 2021
+
+Q1103054:
+  title: Lions–Lax–Milgram theorem
+
+Q1119094:
+  title: Paley&ndash;Wiener theorem
+
+Q1121027:
+  title: Krylov–Bogolyubov theorem
+
+Q1125462:
+  title: Dinostratus' theorem
+
+Q1129636:
+  title: Lehmann–Scheffé theorem
+
+Q1130846:
+  title: Ladner's theorem
+
+Q1131601:
+  title: Sklar's theorem
+
+Q1132952:
+  title: Euler's theorem on homogeneous functions
+
+Q1134296:
+  title: Supporting hyperplane theorem
+
+Q1134776:
+  title: Dilworth's theorem
+
+Q1135706:
+  title: Harnack's theorem
+
+Q1136043:
+  title: Hurwitz's theorem (complex analysis)
+
+Q1136262:
+  title: Optical theorem
+
+Q1137014:
+  title: Tychonoff's theorem
+  decl: isCompact_pi_infinite
+
+Q1137206:
+  title: Taylor's theorem
+  decls:
+    - taylor_mean_remainder_lagrange
+    - taylor_mean_remainder_cauchy
+  authors: Moritz Doll
+
+Q1139041:
+  title: Cauchy's theorem (group theory)
+  decl: exists_prime_orderOf_dvd_card
+
+Q1139430:
+  title: Hurwitz's theorem (normed division algebras)
+
+Q1139524:
+  title: Rationality theorem
+
+Q1140119:
+  title: Morera's theorem
+
+Q1140200:
+  title: PCP theorem
+
+Q1141747:
+  title: Carnot's theorem (inradius, circumradius)
+
+Q1143540:
+  title: Heckscher–Ohlin theorem
+
+Q1144897:
+  title: Brouwer fixed-point theorem
+  authors: Brendan Seamas Murphy
+  url: https://github.com/Shamrock-Frost/BrouwerFixedPoint/blob/master/src/brouwer_fixed_point.lean
+  comment: "in Lean 3"
+
+Q1146791:
+  title: Fermat polygonal number theorem
+
+Q1148215:
+  title: Mitchell's embedding theorem
+  decl: CategoryTheory.Abelian.freyd_mitchell
+  authors: Markus Himmel, Jakob von Raumer, Paul Reichert, Joël Riou
+
+Q1149022:
+  title: Fubini's theorem
+  decl: MeasureTheory.integral_prod
+
+Q1149185X:
+  title: Kirby–Paris theorem
+
+Q1149185:
+  title: Goodstein's theorem
+
+Q1149458:
+  title: Compactness theorem
+  decl: FirstOrder.Language.Theory.isSatisfiable_iff_isFinitelySatisfiable
+
+Q1149522:
+  title: Lami's theorem
+
+Q1152521:
+  title: Mohr–Mascheroni theorem
+
+Q1153441:
+  title: Goldstone's theorem
+
+Q1153584:
+  title: Monotone convergence theorem
+  decls:
+    - MeasureTheory.integral_tendsto_of_tendsto_of_antitone
+    - MeasureTheory.lintegral_tendsto_of_tendsto_of_monotone
+
+Q1166774:
+  title: Stone's representation theorem for Boolean algebras
+
+Q1177508:
+  title: Rédei's theorem
+
+Q1179446:
+  title: De Rham's theorem
+
+Q1182249:
+  title: Deduction theorem
+
+Q1186134:
+  title: Poncelet–Steiner theorem
+
+Q1186808:
+  title: Lucas's theorem
+  decl: Choose.lucas_theorem
+
+Q1187646:
+  title: Fundamental theorem on homomorphisms
+  # a.k.a. first isomorphism theorem
+  decl: QuotientGroup.quotientKerEquivRange
+
+Q1188048:
+  title: Barbier's theorem
+
+Q1188392:
+  title: Zeckendorf's theorem
+  decl: Nat.zeckendorfEquiv
+
+Q1188504:
+  title: Pitman&ndash;Koopman&ndash;Darmois theorem
+
+Q1191319:
+  title: Radon–Nikodym theorem
+  decl: MeasureTheory.Measure.absolutelyContinuous_iff_withDensity_rnDeriv_eq
+
+Q1191709:
+  title: Egorov's theorem
+  decl: MeasureTheory.tendstoUniformlyOn_of_ae_tendsto
+  authors: Kexing Ying
+
+Q1191862:
+  title: Rouché's theorem
+
+Q1194053:
+  title: Metrization theorems
+  decl: TopologicalSpace.metrizableSpace_of_t3_secondCountable
+  comment: "Urysohn's metrization theorem (only)"
+
+Q1196538:
+  title: Descartes's theorem
+
+Q1196729:
+  title: Mertens's theorems
+
+Q1202608:
+  title: De Gua's theorem
+
+Q1209546:
+  title: Kaplansky density theorem
+
+Q1217677:
+  title: Fundamental theorem of calculus
+  decls:
+    - intervalIntegral.integral_hasStrictDerivAt_of_tendsto_ae_right
+    - intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le
+  authors: Yury G. Kudryashov (first) and Benjamin Davidson (second)
+
+Q1227061:
+  title: Khinchin's theorem on Diophantine approximations
+
+Q1227702:
+  title: Dirichlet's unit theorem
+
+Q1227703:
+  title: Dirichlet's approximation theorem
+
+Q1242398:
+  title: Doob decomposition theorem
+
+Q1243340:
+  title: Birkhoff–Von Neumann theorem
+  decl: doublyStochastic_eq_convexHull_permMatrix
+  authors: Bhavik Mehta
+  date: 2024
+
+Q1249069:
+  title: Richardson's theorem
+
+Q1259814:
+  title: Nielsen–Schreier theorem
+  decl: subgroupIsFreeOfIsFree
+
+Q1276318:
+  title: Schwartz kernel theorem
+
+Q1305766:
+  title: Poincaré–Hopf theorem
+
+Q1306092:
+  title: Nash embedding theorem
+
+Q1306095:
+  title: Whitney embedding theorem
+  decl: exists_embedding_euclidean_of_compact
+  comment: "baby version: for compact manifolds; embedding into some *n*"
+
+Q1307676:
+  title: Künneth theorem
+
+Q1308502:
+  title: Church–Rosser theorem
+
+Q1315949:
+  title: Mittag-Leffler's theorem
+
+Q1317350:
+  title: Chen's theorem
+
+Q1317367:
+  title: Japanese theorem for concyclic polygons
+
+Q1322892:
+  title: Dirac's theorem on chordal graphs
+
+Q1330788:
+  title: Weierstrass factorization theorem
+
+Q1340623:
+  title: Classification of finite simple groups
+
+Q1346677:
+  title: Tietze extension theorem
+  decl: BoundedContinuousFunction.exists_extension_norm_eq_of_isClosedEmbedding
+
+Q1347094:
+  title: Alternate Interior Angles Theorem
+
+Q1348736:
+  title: Rybczynski theorem
+
+Q1349282:
+  title: Eilenberg–Zilber theorem
+
+Q1357684:
+  title: Riesz representation theorem
+
+Q1361031:
+  title: Frobenius theorem (real division algebras)
+
+Q1361393:
+  title: Luzin's theorem
+
+Q1366581:
+  title: Erdős–Rado theorem
+
+Q1369453:
+  title: Kronecker–Weber theorem
+
+Q1370316:
+  title: Casey's theorem
+
+Q1376515:
+  title: No-hair theorem
+
+Q1396592:
+  title: Franel–Landau theorem
+
+Q1420905:
+  title: Hilbert's theorem 90
+
+Q1422083:
+  title: Ryll-Nardzewski fixed-point theorem
+
+Q1423818:
+  title: Euler's theorem in geometry
+
+Q1424481:
+  title: Frucht's theorem
+
+Q1425077:
+  title: Spectral theorem
+
+Q1425308:
+  title: Brahmagupta theorem
+
+Q1425529:
+  title: Chebotarev's density theorem
+
+Q1426292:
+  title: Banach–Steinhaus theorem
+  decl: banach_steinhaus
+  authors: Jireh Loreaux
+  date: 2021
+
+Q1434158:
+  title: Fluctuation dissipation theorem
+
+Q1434805:
+  title: Max Noether's theorem
+
+Q1443036:
+  title: Parseval's theorem
+
+Q1452678:
+  title: Penrose–Hawking singularity theorems
+
+Q1455794:
+  title: Freudenthal suspension theorem
+
+Q1457052:
+  title: Well-ordering theorem
+  decl: exists_wellOrder
+  authors: Mario Carneiro, Chris Hughes, Violeta Hernández
+  date: 2017
+
+Q1471282:
+  title: Radon's theorem
+
+Q1472120:
+  title: Hellinger&ndash;Toeplitz theorem
+
+Q1477053:
+  title: Arzelà–Ascoli theorem
+  decl: BoundedContinuousFunction.arzela_ascoli
+
+Q1505529:
+  title: Runge's theorem
+
+Q1506253:
+  title: Euclid's theorem
+  decl: Nat.exists_infinite_primes
+  authors: Jeremy Avigad
+
+Q1529941:
+  title: Peter–Weyl theorem
+
+Q1530275:
+  title: Dunford–Pettis theorem
+
+Q1535225:
+  title: Łoś' theorem
+
+Q1542114:
+  title: Bézout's theorem
+
+Q1543149:
+  title: Sokhatsky–Weierstrass theorem
+
+Q1547975:
+  title: Mermin–Wagner theorem
+
+Q1551745:
+  title: Binomial inverse theorem
+
+Q1555342:
+  title: Reeh–Schlieder theorem
+
+Q1564541:
+  title: Perron–Frobenius theorem
+
+Q1566341:
+  title: Hindman's theorem
+  decl: Hindman.FP_partition_regular
+  authors: David Wärn
+
+Q1566372:
+  title: Haag's theorem
+
+Q1568612:
+  title: Marden's theorem
+
+Q1568811:
+  title: Hahn decomposition theorem
+  decl: MeasureTheory.SignedMeasure.exists_isCompl_positive_negative
+  authors: Kexing Ying
+  date: 2021
+
+Q1572474:
+  title: Lindemann–Weierstrass theorem
+  # WIP PR: https://github.com/leanprover-community/mathlib4/pull/6718
+
+Q1576235:
+  title: Lochs's theorem
+
+Q1602819:
+  title: Lumer–Phillips theorem
+
+Q1614464:
+  title: Cauchy–Kowalevski theorem
+
+Q1621180:
+  title: Orlicz–Pettis theorem
+
+Q1630588:
+  title: Hurwitz's theorem (number theory)
+
+Q1631749:
+  title: Lester's theorem
+
+Q1631992:
+  title: Steiner–Lehmus theorem
+
+Q1632301:
+  title: Sturm's theorem
+
+Q1632433:
+  title: Helly's theorem
+  authors: Vasily Nesterov
+  decl: Convex.helly_theorem
+  date: 2023
+
+Q1637085:
+  title: Poynting's theorem
+
+Q1660147:
+  title: Mazur–Ulam theorem
+
+Q1668861:
+  title: Picard theorem
+
+Q1683356:
+  title: Japanese theorem for concyclic quadrilaterals
+
+Q1687147:
+  title: Sprague–Grundy theorem
+  decl: SetTheory.PGame.equiv_nim_grundyValue
+  authors: Fox Thomson
+  date: 2020
+
+Q1694565:
+  title: Vinogradov's theorem
+
+Q1699024:
+  title: John ellipsoid
+
+Q1704878:
+  title: Appell–Humbert theorem
+
+Q1716166:
+  title: Mercer's theorem
+
+Q1720410:
+  title: Hjelmslev's theorem
+
+Q1724049:
+  title: Wolstenholme's theorem
+
+Q1727461:
+  title: Intersecting secants theorem
+
+Q1739994:
+  title: Brauer–Suzuki theorem
+
+Q1751105:
+  title: Blum's speedup theorem
+
+Q1751823:
+  title: No-cloning theorem
+
+Q1752516:
+  title: Riemann series theorem
+
+Q1752621:
+  title: Sylvester's law of inertia
+  decl: QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared
+
+Q1752988:
+  title: Kutta–Joukowski theorem
+
+Q1756194:
+  title: Shannon–Hartley theorem
+
+Q1765521:
+  title: Doob's martingale convergence theorems
+
+Q1766814:
+  title: Smn theorem
+  decl: Nat.Partrec.Code.smn
+  authors: Mario Carneiro
+  date: 2018
+
+Q1785610:
+  title: Poncelet's closure theorem
+
+Q1785872:
+  title: Berry–Esséen theorem
+
+Q1786292:
+  title: Schur's theorem
+
+Q1786419:
+  title: Kramers' theorem
+
+Q1789863:
+  title: Routh's theorem
+
+Q1809539:
+  title: Pizza theorem
+
+Q1816952:
+  title: Schur's lemma
+  decl: CategoryTheory.finrank_endomorphism_simple_eq_one
+
+Q1841237:
+  title: Fubini's theorem on differentiation
+  # XXX: does mathib have this already?
+
+Q1855610:
+  title: Theorem of de Moivre–Laplace
+  # special case of the central limit theorem: binomial converges to the normal distribution
+
+Q1888583:
+  title: Holditch's theorem
+
+Q1893717:
+  title: Rice's theorem
+  decl: ComputablePred.rice
+
+Q1896455:
+  title: Varignon's theorem
+
+Q1899432:
+  title: Grothendieck–Hirzebruch–Riemann–Roch theorem
+
+Q1914905:
+  title: Ramanujan–Skolem's theorem
+
+Q1930577:
+  title: Herbrand's theorem
+
+Q1933521:
+  title: Kleene's recursion theorem
+  decl: Nat.Partrec.Code.fixed_point₂
+  authors: Mario Carneiro
+  date: 2018
+
+Q1938251:
+  title: Hasse–Minkowski theorem
+
+Q1946642X:
+  title: S–cobordism theorem
+
+Q1946642:
+  title: H-cobordism theorem
+
+Q1964537:
+  title: Mergelyan's theorem
+
+Q1966978:
+  title: Lévy continuity theorem
+
+Q1974087:
+  title: Riemann's theorem on removable singularities
+
+Q1995468:
+  title: Hölder's theorem
+
+Q1996305:
+  title: Burnside's theorem
+  # an external project proved part of this: TODO mention in this comment
+
+Q2000090:
+  title: Art gallery theorem
+
+Q2008549:
+  title: Hilbert's theorem (differential geometry)
+
+Q2013213:
+  title: Reuschle's theorem
+
+Q2022775:
+  title: Hilbert–Schmidt theorem
+
+Q2027347:
+  title: Optional stopping theorem
+  decl: MeasureTheory.submartingale_iff_expected_stoppedValue_mono
+  authors: Kexing Ying, Rémy Degenne
+  date: 2022
+
+Q2028341:
+  title: Ado's theorem
+
+Q2046647:
+  title: Karhunen–Loève theorem
+
+Q2063099:
+  title: Poincaré duality theorem
+
+Q2068227:
+  title: Artin–Schreier theorem
+
+Q2071632:
+  title: Rouché–Capelli theorem
+
+Q2093886:
+  title: Primitive element theorem
+  decl: Field.exists_primitive_element
+
+Q2094241:
+  title: Hopf–Rinow theorem
+
+Q2096184:
+  title: Plancherel theorem
+  # also in undergrad.yml
+
+Q2109761:
+  title: Uniformization theorem
+
+Q2120067:
+  title: Diller–Dress theorem
+
+Q2190744:
+  title: Feuerbach's theorem
+  # in 100.yaml also
+
+Q2197859:
+  title: Nicomachus's theorem
+
+Q2222575:
+  title: Shell theorem
+
+Q2226602:
+  title: Bauer–Fike theorem
+
+Q2226606:
+  title: Beckman–Quarles theorem
+
+Q2226610:
+  title: Banach–Mazur theorem
+
+Q2226624:
+  title: Bruck–Chowla–Ryser theorem
+
+Q2226625:
+  title: Commandino's theorem
+
+Q2226640:
+  title: Cramér’s decomposition theorem
+
+Q2226644:
+  title: Easton's theorem
+
+Q2226650:
+  title: Eberlein–Šmulian theorem
+
+Q2226677:
+  title: Gelfand–Mazur theorem
+
+Q2226682:
+  title: Gelfand–Naimark theorem
+
+Q2226691:
+  title: Kirchhoff's theorem
+
+Q2226695:
+  title: Hurwitz's automorphisms theorem
+
+Q2226698:
+  title: Kantorovich theorem
+
+Q2226709:
+  title: Krull–Schmidt theorem
+
+Q2226750:
+  title: Malgrange–Ehrenpreis theorem
+
+Q2226774:
+  title: König's theorem
+
+Q2226786:
+  title: Sperner's theorem
+  decl: IsAntichain.sperner
+  authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
+  date: 2022
+
+Q2226800:
+  title: Schur–Zassenhaus theorem
+  decl: Subgroup.exists_left_complement'_of_coprime
+  authors: Thomas Browning
+  date: 2021
+
+Q2226803:
+  title: Tennenbaum's theorem
+
+Q2226807:
+  title: Vantieghems theorem
+
+Q2226855:
+  title: Sharkovskii's theorem
+  # TODO: Find the code
+  authors: Bhavik Mehta
+  date: 2022
+
+Q2226868:
+  title: Geometric mean theorem
+
+Q2226962:
+  title: Weierstrass–Casorati theorem
+
+Q2253746:
+  title: Bertrand's ballot theorem
+  authors: Bhavik Mehta and Kexing Ying
+  decl: Ballot.ballot_problem
+
+Q2266397:
+  title: Intersecting chords theorem
+
+Q2267175:
+  title: Tangent-secant theorem
+
+Q2269888:
+  title: Cohn's irreducibility criterion
+
+Q2270905:
+  title: Poincaré–Birkhoff–Witt theorem
+
+Q2275191:
+  title: Lebesgue differentiation theorem
+  decl: VitaliFamily.ae_tendsto_lintegral_div
+  authors: Sébastien Gouëzel
+  date: 2021
+
+Q2277040:
+  title: Shannon's expansion theorem
+
+Q2287393:
+  title: Caristi fixed-point theorem
+
+Q2309682:
+  title: Sphere theorem
+
+Q2309760:
+  title: Looman–Menchoff theorem
+
+Q2310718:
+  title: Pitot theorem
+
+Q2338929:
+  title: Exchange theorem
+  # aka Steinitz exchange lemma. This must definitely be in mathlib somewhere
+
+Q2345282:
+  title: Shannon's theorem
+
+Q2347139:
+  title: Carnot's theorem (thermodynamics)
+
+Q2360531:
+  title: Jordan–Schur theorem
+
+Q2374733:
+  title: Skolem–Mahler–Lech theorem
+
+Q2376918:
+  title: Abelian and Tauberian theorems
+
+Q2378270:
+  title: Thue's theorem
+
+Q2379128:
+  title: Lindström's theorem
+
+Q2379132:
+  title: Going-up and going-down theorems
+  # TODO: does mathlib have these?
+
+Q2394548:
+  title: Hurewicz theorem
+
+Q2411312:
+  title: Shannon's source coding theorem
+
+Q2428364:
+  title: Clausius theorem
+
+Q2449984:
+  title: Miquel's theorem
+
+Q2449984X:
+  title: Pivot theorem
+
+Q2471737:
+  title: Carathéodory's theorem (convex hull)
+  decl: convexHull_eq_union
+
+Q2473965:
+  title: Ugly duckling theorem
+
+Q2478371:
+  title: Envelope theorem
+
+Q2482753:
+  title: Mann's theorem
+  # Done in LeanCamCombi
+
+Q2495664:
+  title: Universal coefficient theorem
+
+Q2500406:
+  title: Liénard's theorem
+
+Q2500408:
+  title: Thébault's theorem
+
+Q2518048:
+  title: Kodaira vanishing theorem
+
+Q2524990:
+  title: Jackson's theorem (queueing theory)
+
+Q2525646:
+  title: Jordan–Hölder theorem
+  decl: CompositionSeries.jordan_holder
+
+Q2533936:
+  title: Descartes's theorem on total angular defect
+
+Q2540738:
+  title: Cartan–Dieudonné theorem
+
+Q2558669:
+  title: Artin–Zorn theorem
+
+Q2588432:
+  title: Wold's theorem
+
+Q2600653:
+  title: Taylor–Proudman theorem
+
+Q2607007:
+  title: Hinge theorem
+
+Q2621667:
+  title: Nagata–Smirnov metrization theorem
+
+Q2631152:
+  title: Carathéodory's extension theorem
+
+Q2635326:
+  title: Structured program theorem
+
+Q2638931:
+  title: Convolution theorem
+
+Q2703389:
+  title: Linnik's theorem
+
+Q2733672:
+  title: Price's theorem
+
+Q2734084:
+  title: Bohr–Mollerup theorem
+
+Q2793600:
+  title: Stark–Heegner theorem
+
+Q2799491:
+  title: Ringel–Youngs theorem
+
+Q2800071:
+  title: Perfect graph theorem
+
+Q2862403:
+  title: Schneider–Lang theorem
+
+Q2893695:
+  title: Unmixedness theorem
+
+Q2916568:
+  title: Gomory's theorem
+
+Q2919401:
+  title: Ostrowski's theorem
+  decl: Rat.AbsoluteValue.equiv_real_or_padic
+  authors: David Kurniadi Angdinata, Fabrizio Barroero, Laura Capuano, Nirvana Coppola, María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Turchet, Francesco Veneziano
+  date: 2024
+
+Q2981012:
+  title: Monge's theorem
+
+Q2984415:
+  title: Hajnal–Szemerédi theorem
+
+Q2993026:
+  title: Ankeny&ndash;Artin&ndash;Chowla theorem
+
+Q2993308:
+  title: Cameron–Erdős theorem
+
+Q2993319:
+  title: Mirsky–Newman theorem
+
+Q2995691:
+  title: Newlander–Niremberg theorem
+
+Q3001796:
+  title: Skolem–Noether theorem
+
+Q3007384:
+  title: Post's theorem
+
+Q3075250:
+  title: Hardy–Littlewood maximal theorem
+
+Q3077634:
+  title: Sahlqvist correspondence theorem
+
+Q3088644:
+  title: Goldstine theorem
+
+Q3154003:
+  title: Le Cam's theorem
+
+Q3180727:
+  title: Perlis theorem
+
+Q3229335:
+  title: Borel–Carathéodory theorem
+
+Q3229352:
+  title: Vitali covering theorem
+  decl: Vitali.exists_disjoint_covering_ae
+  authors: Sébastien Gouëzel
+  date: 2021
+
+Q3345678:
+  title: Moore–Aronszajn theorem
+
+Q3424029:
+  # TODO: refer to the individual entries instead
+  # The list in wikipedia has already been changed. This will will change automatically
+  # when the 1000+ theorem project synchronises its data with wikipedia and this file is
+  # synchronised with the 1000+ theorem's data.
+  title: Chasles's theorem (disambiguation)
+
+Q3443426:
+  title: Bondy's theorem
+
+Q3458641:
+  title: Szegő limit theorems
+
+Q3502015:
+  title: Hasse's theorem on elliptic curves
+
+Q3505260:
+  title: Cayley–Salmon theorem
+
+Q3526969:
+  title: AF+BG theorem
+
+Q3526976:
+  title: Ax–Kochen theorem
+
+Q3526982:
+  title: Erdős–Anning theorem
+
+Q3526990:
+  title: Euler's theorem
+
+Q3526993:
+  title: Takagi existence theorem
+
+Q3526996:
+  title: Kolmogorov extension theorem
+  authors: Rémy Degenne, Peter Pfaffelhuber
+  date: 2023
+  url: https://github.com/RemyDegenne/kolmogorov_extension4
+
+Q3526998:
+  title: Excision theorem
+
+Q3527004:
+  title: BEST theorem
+
+Q3527008:
+  title: Balian–Low theorem
+
+Q3527009:
+  title: Baker's theorem
+
+Q3527011:
+  title: Beck's theorem (geometry)
+
+Q3527015:
+  title: Bernstein's theorem on monotone functions
+
+Q3527017:
+  title: Beurling–Lax theorem
+
+Q3527019:
+  title: Birch's theorem
+
+Q3527034:
+  title: Cauchy's theorem (geometry)
+
+Q3527040:
+  title: Chomsky–Schützenberger representation theorem
+
+Q3527044:
+  title: Pappus's area theorem
+
+Q3527054:
+  title: De Bruijn–Erdős theorem (graph theory)
+
+Q3527056:
+  title: De Bruijn–Erdős theorem (incidence geometry)
+
+Q3527064:
+  title: Donsker's theorem
+
+Q3527067:
+  title: F. and M. Riesz theorem
+
+Q3527071:
+  title: Fáry–Milnor theorem
+
+Q3527079:
+  title: Freiman's theorem
+
+Q3527088:
+  title: Haboush's theorem
+
+Q3527091:
+  title: Gromov's theorem on groups of polynomial growth
+
+Q3527093:
+  title: Hilbert–Speiser theorem
+
+Q3527095:
+  title: Jacobi's four-square theorem
+
+Q3527100:
+  title: Kruskal's tree theorem
+
+Q3527102:
+  title: Kruskal–Katona theorem
+  decl: Finset.kruskal_katona
+  authors: Bhavik Mehta, Yaël Dillies
+  date: 2020
+
+Q3527110:
+  title: Lax–Wendroff theorem
+
+Q3527113:
+  title: Lie–Kolchin theorem
+
+Q3527118:
+  title: Mahler's theorem
+  decl: PadicInt.hasSum_mahler
+
+Q3527125:
+  title: Monsky's theorem
+
+Q3527129:
+  title: Müntz–Szász theorem
+
+Q3527132:
+  title: Nagell–Lutz theorem
+
+Q3527155:
+  title: Robertson–Seymour theorem
+
+Q3527162:
+  title: Sophie Germain's theorem
+  # special case of FLT, including all primes less than 100
+
+Q3527166:
+  title: Steinhaus theorem
+  # not difficult, but seemingly missing
+
+Q3527171:
+  title: Synge's theorem
+
+Q3527185:
+  title: Whitehead theorem
+
+Q3527189:
+  title: Lattice theorem
+  # a.k.a. third or fourth isomorphism theorem
+  decl: QuotientGroup.quotientQuotientEquivQuotient
+
+Q3527196:
+  title: Principal ideal theorem
+
+Q3527205:
+  title: Dimension theorem for vector spaces
+  decl: mk_eq_mk_of_basis
+
+Q3527209:
+  title: Hasse norm theorem
+
+Q3527214:
+  title: Non-squeezing theorem
+
+Q3527215:
+  title: Hilbert projection theorem
+  decl: exists_norm_eq_iInf_of_complete_convex
+  authors: Zhouhang Zhou
+  date: 2019
+
+Q3527217:
+  title: M. Riesz extension theorem
+
+Q3527219:
+  title: Weierstrass preparation theorem
+
+Q3527223:
+  title: Crystallographic restriction theorem
+
+Q3527226:
+  title: Linear speedup theorem
+
+Q3527230:
+  title: Von Staudt–Clausen theorem
+
+Q3527233:
+  title: Kolmogorov's three-series theorem
+
+Q3527241:
+  title: Krull's principal ideal theorem
+
+Q3527245:
+  title: Six exponentials theorem
+
+Q3527247:
+  title: Six circles theorem
+
+Q3527250:
+  title: Hadamard three-lines theorem
+  decl: Complex.HadamardThreeLines.norm_le_interpStrip_of_mem_verticalClosedStrip
+  authors: Xavier Généreux
+  date: 2023
+
+Q3527263:
+  title: Kleene fixed-point theorem
+  decl: fixedPoints.lfp_eq_sSup_iterate
+  authors: Ira Fesefeldt
+  date: 2024
+
+Q3527279:
+  title: Wiener's tauberian theorem
+
+Q3534036:
+  title: Pompeiu's theorem
+
+Q3613173:
+  title: Tits alternative
+
+Q3661294:
+  title: Kelvin's circulation theorem
+
+Q3699212:
+  title: Saint-Venant's theorem
+
+Q3711848:
+  title: Sobolev embedding theorem
+  # partial progress: Sobolev inequality MeasureTheory.eLpNorm_le_eLpNorm_fderiv_of_eq
+
+Q3757563:
+  title: Intercept theorem
+
+Q3771212:
+  title: Proth's theorem
+
+Q3889376:
+  title: Carmichael's theorem
+
+Q3893473:
+  title: Tameness theorem
+
+Q3915398:
+  title: Brunn–Minkowski theorem
+
+Q3983968:
+  title: Sturm–Picone comparison theorem
+
+Q3983972:
+  title: Simplicial approximation theorem
+
+Q3984011:
+  title: Duggan&ndash;Schwartz theorem
+
+Q3984017:
+  title: Helly's selection theorem
+
+Q3984020:
+  title: Holmström's theorem
+
+Q3984052:
+  title: Equidistribution theorem
+
+Q3984053:
+  title: Fourier inversion theorem
+  decl: Continuous.fourier_inversion
+  authors: Sébastien Gouëzel
+  date: 2024
+
+Q3984056:
+  title: No-communication theorem
+
+Q3984063:
+  title: Mostow rigidity theorem
+
+Q3984069:
+  title: Fredholm's theorem
+
+Q4054114:
+  title: ATS theorem
+
+Q4116459:
+  title: Niven's theorem
+
+Q4171386:
+  title: Soul theorem
+
+Q4179283:
+  title: Positive energy theorem
+
+Q4272300:
+  title: Initial value theorem
+
+Q4272645:
+  title: Final value theorem
+
+Q4378868:
+  title: Phragmén–Lindelöf theorem
+  decl: PhragmenLindelof.horizontal_strip
+  authors: Yury G. Kudryashov
+  date: 2022
+
+Q4378889:
+  title: Carathéodory's theorem (conformal mapping)
+
+Q4408070:
+  title: De Finetti's theorem
+
+Q4454910:
+  title: Ostrowski–Hadamard gap theorem
+
+Q4454919:
+  title: Aumann's agreement theorem
+
+Q4454925:
+  title: Edge-of-the-wedge theorem
+
+Q4454954:
+  title: Kirszbraun theorem
+
+Q4454958:
+  title: Min-max theorem
+
+Q4454973:
+  title: Lindelöf's theorem
+
+Q4454976:
+  title: Liouville's theorem (conformal mappings)
+
+Q4454989:
+  title: Meusnier's theorem
+
+Q4454996:
+  title: Novikov's compact leaf theorem
+
+Q4455003:
+  title: Pomeranchuk's theorem
+
+Q4455015:
+  title: Routh–Hurwitz theorem
+
+Q4455016:
+  title: Reeb sphere theorem
+
+Q4455023:
+  title: Sazonov's theorem
+
+Q4455025:
+  title: No wandering domain theorem
+
+Q4455030:
+  title: Stone's theorem on one-parameter unitary groups
+
+Q4455031:
+  title: Fáry's theorem
+
+Q4455033:
+  title: Fatou's theorem
+
+Q4455037:
+  title: Hardy's theorem
+
+Q4455043:
+  title: Cayley–Bacharach theorem
+
+Q4455046:
+  title: Monodromy theorem
+
+Q4634017:
+  title: 2π theorem
+
+Q4663326:
+  title: Hirzebruch–Riemann–Roch theorem
+
+Q4666729:
+  title: Abel–Jacobi theorem
+
+Q4666729X:
+  title: Abel's curve theorem
+
+Q4667501:
+  title: Abhyankar–Moh theorem
+
+Q4677985:
+  title: Acyclic models theorem
+
+Q4695203:
+  title: Four functions theorem
+  decl: four_functions_theorem
+  authors: Yaël Dillies
+  date: 2023
+
+Q4700718:
+  title: Akhiezer's theorem
+
+Q4712316:
+  title: Albert–Brauer–Hasse–Noether theorem
+
+Q4713046:
+  title: Alchian–Allen theorem
+
+Q4724004B:
+  title: Riemann's existence theorem
+
+Q4724004A:
+  title: Chow's theorem
+
+Q4734002:
+  title: Gromov–Ruh theorem
+
+Q4734844:
+  title: Alperin–Brauer–Gorenstein theorem
+
+Q4736422:
+  title: Denjoy–Luzin theorem
+
+Q4746948:
+  title: Amitsur–Levitzki theorem
+
+Q4751110:
+  title: Analyst's traveling salesman theorem
+
+Q4751118:
+  title: Analytic Fredholm theorem
+
+Q4753992:
+  title: Anderson's theorem
+
+Q4756099:
+  title: Andreotti–Frankel theorem
+
+Q4783822:
+  title: Arithmetic Riemann–Roch theorem
+
+Q4788680:
+  title: Area theorem (conformal mapping)
+
+Q4801169:
+  title: Artin approximation theorem
+
+Q4801183:
+  title: Artin–Verdier duality theorem
+
+Q4801563:
+  title: Artstein's theorem
+
+Q4815879:
+  title: Atiyah–Segal completion theorem
+
+Q4815899:
+  title: Atkinson's theorem
+
+Q4826848:
+  title: Autonomous convergence theorem
+
+Q4827308:
+  title: Auxiliary polynomial theorem
+
+Q4830725:
+  title: Ax–Grothendieck theorem
+  decl: ax_grothendieck_zeroLocus
+  authors: Chris Hughes
+  date: 2023
+
+Q4832965:
+  title: Aztec diamond theorem
+
+Q4838119:
+  title: Babuška–Lax–Milgram theorem
+
+Q4848497:
+  title: Baily–Borel theorem
+
+Q4853767:
+  title: Banach–Stone theorem
+
+Q4857506:
+  title: Bapat–Beg theorem
+
+Q4865980:
+  title: Barwise compactness theorem
+
+Q4866385:
+  title: Base change theorems
+
+Q4866385X:
+  title: Proper base change theorem
+
+Q4877965:
+  title: Beauville–Laszlo theorem
+
+Q4878586:
+  title: Beck's monadicity theorem
+  decl: CategoryTheory.Monad.monadicOfCreatesGSplitCoequalizers
+  authors: Bhavik Mehta
+  date: 2020
+
+Q4880958:
+  title: Behnke–Stein theorem
+
+Q4884789:
+  title: Beltrami's theorem
+
+Q4884950:
+  title: Belyi's theorem
+
+Q4891633:
+  title: Berger–Kazdan comparison theorem
+
+Q4894565:
+  title: Bernstein's theorem (approximation theory)
+
+Q4914101:
+  title: Bing's recognition theorem
+
+Q4916483:
+  title: Birkhoff–Grothendieck theorem
+
+Q4918128:
+  title: Bishop–Cannings theorem
+
+Q4927458:
+  title: Blondel's theorem
+
+Q4937691:
+  title: Bogoliubov–Parasyuk theorem
+
+Q4941364:
+  title: Bondareva–Shapley theorem
+
+Q4942215:
+  title: Bonnet theorem
+
+Q4944906:
+  title: Borel determinacy theorem
+
+Q4944908:
+  title: Borel fixed-point theorem
+
+Q4944923:
+  title: Borel–Bott–Weil theorem
+
+Q4944923X:
+  title: Borel–Weil theorem
+
+Q4948983:
+  title: Bott periodicity theorem
+
+Q4949984:
+  title: Bounded inverse theorem
+
+Q4950096:
+  title: Bourbaki–Witt theorem
+
+Q4956438:
+  title: Branching theorem
+
+Q4958218:
+  title: Brauer's theorem on induced characters
+
+Q4958221:
+  title: Brauer's three main theorems
+
+Q4958227:
+  title: Brauer–Nesbitt theorem
+
+Q4958230:
+  title: Brauer–Siegel theorem
+
+Q4958233:
+  title: Brauer–Suzuki–Wall theorem
+
+Q4971339:
+  title: British flag theorem
+
+Q4975963:
+  title: Brown's representability theorem
+
+Q4979609:
+  title: Brun–Titchmarsh theorem
+
+Q4991415:
+  title: Chowla–Mordell theorem
+
+Q4998912:
+  title: Burke's theorem
+
+Q5001327:
+  title: Busemann's theorem
+
+Q5005143:
+  title: Bôcher's theorem
+
+Q5005965:
+  title: C-theorem
+
+Q5026435:
+  title: Cameron–Martin theorem
+
+Q5037752:
+  title: Carathéodory's existence theorem
+
+Q5041175:
+  title: Carleson–Jacobs theorem
+
+Q5042898:
+  title: Carlson's theorem
+
+Q5047043:
+  title: Cartan's theorems A and B
+
+Q5047046:
+  title: Brauer–Cartan–Hua theorem
+
+Q5047048:
+  title: Cartan–Hadamard theorem
+
+Q5047051:
+  title: Cartan–Kuranishi prolongation theorem
+
+Q5047052:
+  title: Cartan–Kähler theorem
+
+Q5049717:
+  title: Castelnuovo–de Franchis theorem
+
+Q5091194:
+  title: Cheng's eigenvalue comparison theorem
+
+Q5094298:
+  title: Chevalley's structure theorem
+
+Q5094305:
+  title: Chevalley–Shephard–Todd theorem
+
+Q5103861:
+  title: Choi's theorem on completely positive maps
+
+Q5125859:
+  title: Clapeyron's theorem
+
+Q5127710:
+  title: Clark–Ocone theorem
+
+Q513028:
+  title: Bézout's identity
+  decl: Nat.gcd_eq_gcd_ab
+
+Q5132839:
+  title: Clifford's circle theorems
+
+Q5132840:
+  title: Clifford's theorem on special divisors
+
+Q5136698:
+  title: Cluster decomposition theorem
+
+Q5139948:
+  title: Codd's theorem
+
+Q5141331:
+  title: Cohen structure theorem
+
+Q5155090:
+  title: Commutation theorem
+
+Q5157054:
+  title: Compression theorem
+
+Q5161245:
+  title: Conley–Zehnder theorem
+
+Q5163116:
+  title: Conservativity theorem
+
+Q5165492:
+  title: Continuous mapping theorem
+
+Q5166389:
+  title: Van Vleck's theorem
+
+Q5171652:
+  title: Corners theorem
+  decl: corners_theorem_nat
+  authors: Yaël Dillies, Bhavik Mehta
+  date: 2022
+
+Q5172143:
+  title: Corona theorem
+
+Q5178114:
+  title: Courcelle's theorem
+
+Q5180651:
+  title: Craig's theorem
+
+Q5187911:
+  title: Crooks fluctuation theorem
+
+Q5188510:
+  title: Crossbar theorem
+
+Q5195996:
+  title: Curtis–Hedlund–Lyndon theorem
+
+Q5221089:
+  title: Danskin's theorem
+
+Q5242704:
+  title: Dawson–Gärtner theorem
+
+Q5244285:
+  title: de Bruijn's theorem
+
+Q5244361:
+  title: De Franchis theorem
+
+Q5251122:
+  title: Time hierarchy theorem
+
+Q5252320:
+  title: Lickorish twist theorem
+
+Q5278348:
+  title: Galvin's theorem
+
+Q5282059:
+  title: Harish–Chandra theorem
+
+Q5282247:
+  title: Disintegration theorem
+
+Q5295351:
+  title: Donaldson's theorem
+
+Q5296972:
+  title: Doob–Meyer decomposition theorem
+
+Q5299605:
+  title: Glivenko's theorem
+
+Q5311783:
+  title: Dudley's theorem
+
+Q5315060:
+  title: Dunford–Schwartz theorem
+
+Q5319505:
+  title: Zeilberger–Bressoud theorem
+
+Q5337931:
+  title: Edgeworth's limit theorem
+
+Q5362000:
+  title: Elitzur's theorem
+
+Q5384150:
+  title: Equal incircles theorem
+
+Q5385323:
+  title: Erdős–Gallai theorem
+
+Q5385324:
+  title: Erdős–Nagy theorem
+
+Q5385325:
+  title: Erdős–Pósa theorem
+
+Q5385326:
+  title: Erdős–Stone theorem
+
+Q5421989:
+  title: Exterior angle theorem
+
+Q5436274:
+  title: Farrell–Markushevich theorem
+
+Q5437947:
+  title: Fatou–Lebesgue theorem
+  # essentially Fatou's lemma in measure theory: let's count that as well
+  decl: MeasureTheory.lintegral_liminf_le
+
+Q5438320:
+  title: Faustman–Ohlin theorem
+
+Q5443003:
+  title: Fenchel's duality theorem
+
+Q5443004:
+  title: Fenchel's theorem
+
+Q5443005:
+  title: Fenchel–Moreau theorem
+
+Q5445112:
+  title: Fernique's theorem
+
+Q5445311:
+  title: Ferrero–Washington theorem
+
+Q5447238:
+  title: Fieller's theorem
+
+Q5454965:
+  title: Fisher–Tippett–Gnedenko theorem
+
+Q5455495:
+  title: Fitting's theorem
+
+Q5456213:
+  title: Five circles theorem
+
+Q5463860:
+  title: Focal subgroup theorem
+
+Q5473576:
+  title: Foster's theorem
+
+Q5494134:
+  title: Fraňková–Helly selection theorem
+
+Q5498822:
+  title: Birkhoff's ergodic theorem
+
+Q5499906:
+  title: Shirshov–Witt theorem
+
+Q5501344:
+  title: Freidlin–Wentzell theorem
+
+Q5503689:
+  title: Bombieri–Friedlander–Iwaniec theorem
+
+Q5504427:
+  title: Friendship theorem
+  decl: Theorems100.friendship_theorem
+  authors: Aaron Anderson and Jalex Stark and Kyle Miller
+
+Q5505098:
+  title: Frobenius determinant theorem
+
+Q5505114:
+  title: Froda's theorem
+
+Q5506929:
+  title: Fuchs's theorem
+
+Q5507285:
+  title: Fuglede's theorem
+
+Q5508180:
+  title: Full employment theorem
+
+Q5508482:
+  title: Fulton–Hansen connectedness theorem
+
+Q5508973:
+  title: Fundamental theorem of arbitrage-free pricing
+
+Q5530454:
+  title: Gell-Mann and Low theorem
+
+Q5552370:
+  title: Geroch's splitting theorem
+
+Q5566491:
+  title: Glaisher's theorem
+
+Q5567394:
+  title: Gleason's theorem
+
+Q5576268:
+  title: Goddard–Thorn theorem
+
+Q5579030:
+  title: Goldberg–Sachs theorem
+
+Q5580171:
+  title: Goldie's theorem
+
+Q5586067:
+  title: Gordon–Newell theorem
+
+Q5588002:
+  title: Gottesman–Knill theorem
+
+Q5597098:
+  title: Graph structure theorem
+
+Q5609384:
+  title: Grinberg's theorem
+
+Q5610188:
+  title: Gromov's compactness theorem (geometry)
+
+Q5610190:
+  title: Gromov's compactness theorem (topology)
+
+Q5610718:
+  title: Grothendieck's connectedness theorem
+
+Q5612131:
+  title: Grunsky's theorem
+
+Q5612159:
+  title: Grunwald–Wang theorem
+
+Q5612871:
+  title: Grötzsch's theorem
+
+Q5638112:
+  title: Hadwiger's theorem
+
+Q5638886:
+  title: Hahn embedding theorem
+
+Q5643485:
+  title: Halpern–Läuchli theorem
+
+Q5645731:
+  title: Hammersley–Clifford theorem
+
+Q5656673:
+  title: Hardy–Littlewood tauberian theorem
+
+Q5656674:
+  title: Hardy–Ramanujan theorem
+
+Q5657833:
+  title: Harish–Chandra's regularity theorem
+
+Q5659675:
+  title: Harnack's curve theorem
+
+Q5675112:
+  title: Hartogs–Rosenthal theorem
+
+Q5680041:
+  title: Hasse–Arf theorem
+
+Q5697916B:
+  title: Waldhausen's theorem
+
+Q5697916A:
+  title: Reidemeister–Singer Theorem
+
+Q5697927:
+  title: Gross–Zagier theorem
+
+Q5709171:
+  title: Helly–Bray theorem
+
+Q5709377:
+  title: Helmholtz theorem (classical mechanics)
+
+Q5761142:
+  title: Hilbert's irreducibility theorem
+
+Q5874979:
+  title: Hobby–Rice theorem
+
+Q5876058:
+  title: Hodge index theorem
+
+Q5988409:
+  title: Identity theorem for Riemann surfaces
+
+Q6015420:
+  title: Increment theorem
+
+Q6059532:
+  title: Aronszajn–Smith theorem
+
+Q6086104:
+  title: Isomorphism extension theorem
+
+Q6119825:
+  title: Jacobson–Bourbaki theorem
+
+Q6276298:
+  title: Jordan's theorem (multiply transitive groups)
+
+Q6344729:
+  title: Kachurovskii's theorem
+
+Q6360586:
+  title: Kanamori–McAloon theorem
+
+Q6373327:
+  title: Karp–Lipton theorem
+
+Q6378596:
+  title: Katz–Lang finiteness theorem
+
+Q6379606:
+  title: Kawamata–Viehweg vanishing theorem
+
+Q6379715:
+  title: Kawasaki's theorem
+
+Q6387087:
+  title: Kempf–Ness theorem
+
+Q6400676:
+  title: Kharitonov's theorem
+
+Q6402928:
+  title: Lagrange reversion theorem
+
+Q6403282:
+  title: Lagrange's theorem (number theory)
+
+Q6407842:
+  title: Killing–Hopf theorem
+
+Q6414200:
+  title: Kinoshita–Lee–Nauenberg theorem
+
+Q6421981:
+  title: Kneser's theorem
+
+Q6425088:
+  title: Kodaira embedding theorem
+
+Q6436753:
+  title: Krener's theorem
+  # differential equations
+
+Q6442276:
+  title: Kuiper's theorem
+
+Q6446396:
+  title: Kurosh subgroup theorem
+
+Q6455211:
+  title: Kōmura's theorem
+
+Q6456122:
+  title: L-balance theorem
+
+Q6471668:
+  title: Lafforgue's theorem
+
+Q6481192:
+  title: Lambek–Moser theorem
+
+Q6484331:
+  title: Landau prime ideal theorem
+
+Q6501470:
+  title: Lauricella's theorem
+
+Q6513990:
+  title: Lee Hwa Chung theorem
+
+Q6516611:
+  title: Lee–Yang theorem
+
+Q6516731:
+  title: Lefschetz hyperplane theorem
+
+Q6516736:
+  title: Lefschetz theorem on (1,1)-classes
+
+Q6528747:
+  title: Leray's theorem
+
+Q6528751:
+  title: Leray–Hirsch theorem
+
+Q6528849:
+  title: Lerner symmetry theorem
+
+Q6535568:
+  title: Levi's theorem
+
+Q6535741:
+  title: Levitzky's theorem
+
+Q6544508:
+  title: Lie–Palais theorem
+
+Q6701653:
+  title: Lukacs's proportion-sum independence theorem
+
+Q6707093:
+  title: Lyapunov&ndash;Malkin theorem
+
+Q6711207:
+  title: Lévy's modulus of continuity theorem
+
+Q6722024:
+  title: MacMahon Master theorem
+
+Q6733278:
+  title: Maharam's theorem
+
+Q6734194:
+  title: Mahler's compactness theorem
+
+Q6735549:
+  title: Maier's theorem
+
+Q6743217:
+  title: Malgrange preparation theorem
+
+Q6749789:
+  title: Manin–Drinfeld theorem
+
+Q6757284:
+  title: Marcinkiewicz theorem
+  authors: Jim Portegies
+  date: 2024-09-06
+  url: https://github.com/fpvandoorn/carleson/blob/master/Carleson/RealInterpolation.lean
+  # will become part of mathlib; update URL in this case!
+
+Q6760432:
+  title: Marginal value theorem
+
+Q6771536:
+  title: Markus−Yamabe theorem
+
+Q6777133:
+  title: Martingale representation theorem
+
+Q6783821:
+  title: Mason–Stothers theorem
+
+Q6795637:
+  title: Maximal ergodic theorem
+
+Q6795830:
+  title: Separating axis theorem
+
+Q6796056:
+  title: Maxwell's theorem
+
+Q6799039:
+  title: Mazur's control theorem
+
+Q6813106:
+  title: Mellin inversion theorem
+  decl: mellin_inversion
+
+Q6859627:
+  title: Milliken's tree theorem
+
+Q6859648:
+  title: Milliken–Taylor theorem
+
+Q6860180:
+  title: Milman–Pettis theorem
+
+Q6867853:
+  title: Minkowski's second theorem
+
+Q6867867:
+  title: Minkowski–Hlawka theorem
+
+Q6867878:
+  title: Minlos's theorem
+
+Q6911202:
+  title: Moreau's theorem
+
+Q6914794:
+  title: Morton's theorem
+
+Q6925496:
+  title: Mountain pass theorem
+
+Q6927135:
+  title: Moving equilibrium theorem
+
+Q6935007:
+  title: Multiplicity-one theorem
+
+Q6935403:
+  title: Mumford vanishing theorem
+
+Q6957141:
+  title: Nachbin's theorem
+
+Q6967039:
+  title: Nash–Moser theorem
+
+Q7020025:
+  title: Newton's theorem about ovals
+
+Q7031618:
+  title: Nielsen realization problem
+
+Q7031621:
+  title: Nielsen fixed-point theorem
+
+Q7042768:
+  title: No-broadcasting theorem
+
+Q7042801:
+  title: No-trade theorem
+
+Q7043732:
+  title: Kuhn's theorem
+
+Q7045226:
+  title: No free lunch theorem
+
+Q7047379:
+  title: Noether's theorem on rationality for surfaces
+
+Q7098850:
+  title: Optical equivalence theorem
+
+Q7100033A:
+  title: Orbit theorem (Nagano–Sussmann)
+
+Q7100033B:
+  title: Rashevsky–Chow theorem
+
+Q7103669:
+  title: Ornstein theorem
+
+Q7106480:
+  title: Oseledec theorem
+
+Q7127466:
+  title: Paley's theorem
+
+Q7130794:
+  title: Pandya theorem
+
+Q7137494:
+  title: Paris–Harrington theorem
+
+Q7139570:
+  title: Parovicenko's theorem
+
+Q7140218:
+  title: Parthasarathy's theorem
+
+Q7160302:
+  title: Peeling theorem
+
+Q7160489:
+  title: Peetre theorem
+
+Q7160983:
+  title: Peixoto's theorem
+
+Q7190748:
+  title: Pickands–Balkema–de Haan theorem
+
+Q7200963:
+  title: Planar separator theorem
+
+Q7208500:
+  title: Poisson limit theorem
+
+Q7239984:
+  title: Preimage theorem
+
+Q7245073:
+  title: Principal axis theorem
+
+Q7249519:
+  title: Prokhorov's theorem
+
+Q7255475:
+  title: Pseudorandom generator theorem
+
+Q7269076:
+  title: No-deleting theorem
+
+Q7269106:
+  title: Quantum threshold theorem
+
+Q7269437:
+  title: Denjoy–Carleman theorem
+
+Q7269559:
+  title: Sylvester pentahedral theorem
+
+Q7272004:
+  title: Quillen–Suslin theorem
+
+Q7272898:
+  title: Quotient of subspace theorem
+
+Q7283856:
+  title: Raikov's theorem
+
+Q7288988:
+  title: Ramanujam vanishing theorem
+
+Q7295875:
+  title: Ratner's theorems
+
+Q7296106:
+  title: Rauch comparison theorem
+
+Q7307252:
+  title: Reflection theorem
+
+Q7308146:
+  title: Regev's theorem
+
+Q7309601:
+  title: Whitney–Graustein Theorem
+  url: https://github.com/MetalCreator666/WhitneyGraustein/
+  comment: "assumes some basic topology statements as axioms; use the sphere eversion project"
+
+Q7310041:
+  title: Reider's theorem
+
+Q7312009:
+  title: Remmert–Stein theorem
+
+Q7318284:
+  title: Reversed compound agent theorem
+
+Q7322366:
+  title: Ribet's theorem
+  # part of the original proof of Fermat's Last Theorem
+
+Q7323144:
+  title: Rice–Shapiro theorem
+
+Q7333126:
+  title: Riemann–Roch theorem for surfaces
+
+Q7341043:
+  title: Robbins theorem
+
+Q7352955:
+  title: Robinson's joint consistency theorem
+
+Q7359997:
+  title: Rokhlin's theorem
+
+Q7396621:
+  title: Saccheri–Legendre theorem
+
+Q7430892:
+  title: Schaefer's dichotomy theorem
+
+Q7431298:
+  title: Schilder's theorem
+
+Q7431925:
+  title: Schnyder's theorem
+
+Q7432872:
+  title: Schreier refinement theorem
+
+Q7432915:
+  title: Schroeder–Bernstein theorem for measurable spaces
+  decl: MeasurableEmbedding.schroederBernstein
+
+Q7432918:
+  title: Schröder–Bernstein theorems for operator algebras
+
+Q7433034:
+  title: Great orthogonality theorem
+
+Q7433182:
+  title: Schwartz–Zippel theorem
+  decl: MvPolynomial.schwartz_zippel_sup_sum
+  authors: Bolton Bailey, Yaël Dillies
+  date: 2023
+
+Q7433295:
+  title: Osterwalder–Schrader theorem
+
+Q7437564:
+  title: Scott core theorem
+
+Q7455422:
+  title: Swan's theorem
+
+Q7496252:
+  title: Shift theorem
+
+Q7510574:
+  title: Siegel–Walfisz theorem
+
+Q7512855:
+  title: Hirzebruch signature theorem
+
+Q7516736:
+  title: Silverman–Toeplitz theorem
+
+Q7524563:
+  title: Sinkhorn's theorem
+
+Q7525341:
+  title: Sion's minimax theorem
+
+Q7525845:
+  title: Sipser–Lautemann theorem
+
+Q7532192:
+  title: Siu's semicontinuity theorem
+
+Q7536097:
+  title: Skoda–El Mir theorem
+
+Q7536350:
+  title: Skorokhod's embedding theorem
+
+Q7572588:
+  title: Space hierarchy theorem
+
+Q7574438:
+  title: Specht's theorem
+
+Q7597316:
+  title: Stallings theorem about ends of groups
+
+Q7597317:
+  title: Stallings–Zeeman theorem
+
+Q7599389:
+  title: Stanley's reciprocity theorem
+
+Q7601243:
+  title: Star of David theorem
+
+Q7606897:
+  title: Steinitz theorem
+
+Q7606940:
+  title: Stein–Strömberg theorem
+
+Q7617407:
+  title: Stinespring factorization theorem
+
+Q7619060:
+  title: The duality theorem
+
+Q7619449:
+  title: Stone–von Neumann theorem
+
+Q7621715:
+  title: Strassmann's theorem
+
+Q7625164:
+  title: Structure theorem for Gaussian measures
+
+Q7632041:
+  title: Subspace theorem
+
+Q7644264:
+  title: Supersymmetry nonrenormalization theorems
+
+Q7660749:
+  title: Sylvester's determinant theorem
+
+Q7661308:
+  title: Symmetric hypergraph theorem
+
+Q7664013:
+  title: Sz.-Nagy's dilation theorem
+
+Q7686760:
+  title: Bang's theorem
+
+Q7782345:
+  title: Bertini's theorem
+
+Q7782346:
+  title: Theorem of the cube
+
+Q7782348:
+  title: Theorem of three moments
+
+Q7795825:
+  title: Thompson transitivity theorem
+
+Q7795828:
+  title: Thompson uniqueness theorem
+
+Q7809920:
+  title: Titchmarsh convolution theorem
+
+Q7818977:
+  title: Tomita's theorem
+
+Q7820874:
+  title: Tonelli's theorem (functional analysis)
+
+Q7824894:
+  title: Topkis's theorem
+
+Q7825061:
+  title: Toponogov's theorem
+
+Q7825663:
+  title: Torelli theorem
+
+Q7827204:
+  title: Mazur's torsion theorem
+  comment: "This is used to prove Fermat's last theorem (but a non-trivial project on its own)."
+
+Q7841060:
+  title: Trichotomy theorem
+
+Q7845353:
+  title: Trombi–Varadarajan theorem
+
+Q7847268:
+  title: Trudinger's theorem
+
+Q7849521:
+  title: Tsen's theorem
+
+Q7853325:
+  title: Tunnell's theorem
+
+Q7856599:
+  title: Turán–Kubilius theorem
+
+Q7857350:
+  title: Tverberg's theorem
+
+Q7888360:
+  title: Structure theorem for finitely generated modules over a principal ideal domain
+  decl: Module.equiv_free_prod_directSum
+  authors: Pierre-Alexandre Bazin
+  date: 2022
+
+Q7894110:
+  title: Universal approximation theorem
+
+Q7911648:
+  title: Valiant–Vazirani theorem
+
+Q7928688:
+  title: Vietoris–Begle mapping theorem
+
+Q7936914:
+  title: Vitali–Hahn–Saks theorem
+
+Q7941491:
+  title: Von Neumann's theorem
+
+Q7959587:
+  title: Wagner's theorem
+
+Q7966545:
+  title: Walter theorem
+
+Q7978735:
+  title: Weber's theorem (Algebraic curves)
+
+Q7980241:
+  title: Weinberg–Witten theorem
+
+Q7996766:
+  title: Whitney extension theorem
+
+Q7996769:
+  title: Whitney immersion theorem
+
+Q7999144:
+  title: Wiener–Ikehara theorem
+
+Q7999797:
+  title: Beer's theorem
+
+Q8002487:
+  title: Wilkie's theorem
+
+Q8028529:
+  title: Witt's theorem
+
+Q8062800:
+  title: Z* theorem
+
+Q8063120:
+  title: ZJ theorem
+
+Q8064722:
+  title: Zahorski theorem
+
+Q8066611:
+  title: Kövari–Sós–Turán theorem
+
+Q8066795:
+  title: Zariski's main theorem
+
+Q8074796:
+  title: Zsigmondy's theorem
+  # TODO: Find the code
+  authors: Mantas Bakšys
+  date: 2022
+
+Q8081891:
+  title: Śleszyński–Pringsheim theorem
+
+Q9993851:
+  title: Lax–Milgram theorem
+  decl: IsCoercive.continuousLinearEquivOfBilin
+
+Q10369454:
+  title: Noether's second theorem
+
+Q10859514:
+  title: Vafa–Witten theorem
+
+Q10942247:
+  title: Hironaka theorem
+
+Q11352023:
+  title: Vitali convergence theorem
+  decl: MeasureTheory.tendstoInMeasure_iff_tendsto_Lp
+  authors: Igor Khavkine
+  date: 2024
+
+Q11573495:
+  title: Plancherel theorem for spherical functions
+
+Q11704319:
+  title: Chern–Gauss–Bonnet theorem
+
+Q11722674:
+  title: Takens's theorem
+
+Q11883897:
+  title: Nagata's compactification theorem
+
+Q15080987:
+  title: Lie's third theorem
+
+Q15813392:
+  title: Barban–Davenport–Halberstam theorem
+
+Q15830473:
+  title: Morley's categoricity theorem
+
+Q15844093:
+  title: Van Schooten's theorem
+
+Q15859323:
+  title: Anne's theorem
+
+Q15872491:
+  title: Newton's theorem (quadrilateral)
+
+Q15895894:
+  title: Finsler–Hadwiger theorem
+
+Q16251580:
+  title: Matiyasevich's theorem
+  decl: Pell.matiyasevic
+  authors: Mario Carneiro
+  date: 2017
+
+Q16680059:
+  title: Strong perfect graph theorem
+
+Q16978447:
+  title: Grauert–Riemenschneider vanishing theorem
+
+Q17001601:
+  title: 2-factor theorem
+
+Q17002391:
+  title: Arrow-Lind theorem
+
+Q17003552:
+  title: Alexandrov's uniqueness theorem
+
+Q17005116:
+  title: Birkhoff's representation theorem
+  decl: LatticeHom.birkhoffSet
+  authors: Yaël Dillies
+  date: 2022
+
+Q17008559:
+  title: Davenport–Schmidt theorem
+
+Q17017973:
+  title: Godunov's theorem
+
+Q17018210:
+  title: Golod–Shafarevich theorem
+
+Q17019684:
+  title: Grushko theorem
+
+Q17029787:
+  title: Higman's embedding theorem
+
+Q17080564:
+  title: Zariski's connectedness theorem
+
+Q17081508:
+  title: Bing metrization theorem
+
+Q17082552:
+  title: Mutual fund separation theorem
+
+Q17089994X:
+  title: Tikhonov fixed-point theorem
+
+Q17089994:
+  title: Fixed-point theorems in infinite-dimensional spaces
+
+Q17098075:
+  title: Jurkat–Richert theorem
+
+Q17098298:
+  title: Jacobson density theorem
+
+Q17098379:
+  title: Kaplansky's theorem on quadratic forms
+
+Q17101806:
+  title: Intersection theorem
+
+Q17102744:
+  title: Riemann–Roch theorem for smooth manifolds
+
+Q17103352:
+  title: Maximum power theorem
+
+Q17104025:
+  title: Riemann singularity theorem
+
+Q17104863:
+  title: Nielsen–Ninomiya theorem
+
+Q17125544:
+  title: Lickorish–Wallace theorem
+
+Q18205730:
+  title: Byers–Yang theorem
+
+Q18206032:
+  title: Closed subgroup theorem
+
+Q18206266:
+  title: Euclid–Euler theorem
+  # a.k.a. perfect number theorem
+  decl: Theorems100.Nat.eq_two_pow_mul_prime_mersenne_of_even_perfect
+  authors: Aaron Anderson
+
+Q18630480:
+  title: Euler's quadrilateral theorem
+
+Q19323571:
+  title: Chomsky–Schützenberger enumeration theorem
+
+Q19779530:
+  title: Thomsen's theorem
+
+Q20278711:
+  title: Cramer's theorem (algebraic curves)
+
+Q20971632:
+  title: Lie's theorem
+
+Q22952648:
+  title: Uncountability of the continuum
+  decl: Cardinal.not_countable_real
+  authors: Floris van Doorn
+
+Q25099402:
+  title: Kolmogorov–Arnold representation theorem
+
+Q25303622:
+  title: Browder–Minty theorem
+
+Q25304227:
+  title: Arakelyan's theorem
+
+Q25304301:
+  title: Bregman–Minc inequality
+
+Q25345219:
+  title: Decomposition theorem of Beilinson, Bernstein and Deligne
+
+Q25378690:
+  title: Ionescu-Tulcea theorem
+  decl: ProbabilityTheory.Kernel.traj
+  authors: Etienne Marion
+
+Q26877569:
+  title: Furry's theorem
+
+Q28194853:
+  title: Lovelock's theorem
+
+Q28458131:
+  title: Glivenko's theorem (probability theory)
+
+Q31838822:
+  title: Kirchberger's theorem
+
+Q48996535:
+  title: Solèr's theorem
+
+Q48998319:
+  title: Frobenius reciprocity theorem
+
+Q55647729:
+  title: Cramér's theorem (large deviations)
+
+Q56291669:
+  title: Alspach's theorem
+
+Q60681777:
+  title: Constant chord theorem
+
+Q61163749:
+  title: Theorem of the gnomon
+
+Q62051012:
+  title: Behrend's theorem
+
+Q96375449:
+  title: Conway circle theorem
+
+Q96377355:
+  title: Erdős–Dushnik–Miller theorem
+
+Q97359729:
+  title: Stahl's theorem
+
+Q104841721:
+  title: Jacobson–Morozov theorem
+
+Q104871594:
+  title: Joubert's theorem
+
+Q105222412:
+  title: Five color theorem
+
+Q107535899:
+  title: Bochner's tube theorem
+
+Q107547910:
+  title: Malgrange–Zerner theorem
+
+Q107709489:
+  title: Büchi-Elgot-Trakhtenbrot theorem
+
+Q107710112:
+  title: Cantor's isomorphism theorem
+
+Q110921617:
+  title: Feferman–Vaught theorem
+
+Q111982312:
+  title: Friedberg–Muchnik theorem
+
+Q112659261:
+  title: Gamas's Theorem
+
+Q112740521:
+  title: Netto's theorem

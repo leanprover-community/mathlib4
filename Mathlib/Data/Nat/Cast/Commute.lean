@@ -78,12 +78,4 @@ lemma natCast_mul_self : Commute (n * a) a := (Commute.refl a).natCast_mul_left 
 lemma self_natCast_mul_natCast_mul : Commute (m * a) (n * a) :=
   (Commute.refl a).natCast_mul_natCast_mul m n
 
-@[deprecated (since := "2024-05-27")] alias cast_nat_mul_right := natCast_mul_right
-@[deprecated (since := "2024-05-27")] alias cast_nat_mul_left := natCast_mul_left
-@[deprecated (since := "2024-05-27")] alias cast_nat_mul_cast_nat_mul := natCast_mul_natCast_mul
-@[deprecated (since := "2024-05-27")] alias self_cast_nat_mul := self_natCast_mul
-@[deprecated (since := "2024-05-27")] alias cast_nat_mul_self := natCast_mul_self
-@[deprecated (since := "2024-05-27")]
-alias self_cast_nat_mul_cast_nat_mul := self_natCast_mul_natCast_mul
-
 end Commute

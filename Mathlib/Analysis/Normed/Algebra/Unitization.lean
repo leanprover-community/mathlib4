@@ -211,7 +211,7 @@ instance instBornology : Bornology (Unitization 𝕜 A) :=
 theorem isUniformEmbedding_addEquiv {𝕜} [NontriviallyNormedField 𝕜] :
     IsUniformEmbedding (addEquiv 𝕜 A) where
   comap_uniformity := rfl
-  inj := (addEquiv 𝕜 A).injective
+  injective := (addEquiv 𝕜 A).injective
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_addEquiv := isUniformEmbedding_addEquiv
@@ -232,7 +232,7 @@ noncomputable instance instMetricSpace : MetricSpace (Unitization 𝕜 A) :=
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A) where
   dist_eq := normedRingAux.dist_eq
-  norm_mul := normedRingAux.norm_mul
+  norm_mul_le := normedRingAux.norm_mul_le
   norm := normedRingAux.norm
 
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the
@@ -240,7 +240,7 @@ algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 instance instNormedAlgebra : NormedAlgebra 𝕜 (Unitization 𝕜 A) where
   norm_smul_le k x := by
     rw [norm_def, map_smul]
-    -- Note: this used to be `rw [norm_smul, ← norm_def]` before #8386
+    -- Note: this used to be `rw [norm_smul, ← norm_def]` before https://github.com/leanprover-community/mathlib4/pull/8386
     exact (norm_smul k (splitMul 𝕜 A x)).le
 
 instance instNormOneClass : NormOneClass (Unitization 𝕜 A) where

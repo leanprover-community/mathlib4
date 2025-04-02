@@ -26,7 +26,7 @@ namespace Mathlib.Linter
 The "docPrime" linter emits a warning on declarations that have no doc-string and whose
 name ends with a `'`.
 
-The file `scripts/no_lints_prime_decls.txt` contains a list of temporary exceptions to this linter.
+The file `scripts/nolints_prime_decls.txt` contains a list of temporary exceptions to this linter.
 This list should not be appended to, and become emptied over time.
 -/
 register_option linter.docPrime : Bool := {
@@ -45,6 +45,8 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
   unless [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind do return
   -- ignore private declarations
   if (stx.find? (·.isOfKind ``Lean.Parser.Command.private)).isSome then return
+  -- ignore examples
+  if (stx.find? (·.isOfKind ``Lean.Parser.Command.example)).isSome then return
   let docstring := stx[0][0]
   -- The current declaration's id, possibly followed by a list of universe names.
   let declId :=
@@ -52,6 +54,7 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
       stx[1][3][0]
     else
       stx[1][1]
+  if let .missing := declId then return
   -- The name of the current declaration, with namespaces resolved.
   let declName : Name :=
     if let `_root_ :: rest := declId[0].getId.components then
@@ -63,8 +66,8 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
       relative to the unprimed version, or an explanation as to why no better naming scheme \
       is possible."
   if docstring[0][1].getAtomVal.isEmpty && declName.toString.back == '\'' then
-    if ← System.FilePath.pathExists "scripts/no_lints_prime_decls.txt" then
-      if (← IO.FS.lines "scripts/no_lints_prime_decls.txt").contains declName.toString then
+    if ← System.FilePath.pathExists "scripts/nolints_prime_decls.txt" then
+      if (← IO.FS.lines "scripts/nolints_prime_decls.txt").contains declName.toString then
         return
       else
         Linter.logLint linter.docPrime declId msg

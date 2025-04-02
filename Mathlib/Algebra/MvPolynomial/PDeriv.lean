@@ -72,6 +72,13 @@ theorem pderiv_monomial {i : σ} :
   · rw [Finsupp.not_mem_support_iff] at hi; simp [hi]
   · simp
 
+lemma X_mul_pderiv_monomial {i : σ} {m : σ →₀ ℕ} {r : R} :
+    X i * pderiv i (monomial m r) = m i • monomial m r := by
+  rw [pderiv_monomial, X, monomial_mul, smul_monomial]
+  by_cases h : m i = 0
+  · simp_rw [h, Nat.cast_zero, mul_zero, zero_smul, monomial_zero]
+  rw [one_mul, mul_comm, nsmul_eq_mul, add_comm, sub_add_single_one_cancel h]
+
 theorem pderiv_C {i : σ} : pderiv i (C a) = 0 :=
   derivation_C _ _
 
@@ -125,7 +132,7 @@ lemma pderiv_rename {τ : Type*} {f : σ → τ} (hf : Function.Injective f)
       Pi.single_apply, hf.eq_iff, smul_eq_mul, mul_ite, mul_one, mul_zero, h, map_add, add_left_inj]
     split_ifs <;> simp
 
-lemma aeval_sum_elim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
+lemma aeval_sumElim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
     (p : MvPolynomial (σ ⊕ τ) R) (f : τ → S) (j : σ) :
     aeval (Sum.elim X (C ∘ f)) ((pderiv (Sum.inl j)) p) =
       (pderiv j) ((aeval (Sum.elim X (C ∘ f))) p) := by
@@ -135,6 +142,8 @@ lemma aeval_sum_elim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
   · simp [hp, hq]
   · simp only [Derivation.leibniz, pderiv_X, smul_eq_mul, map_add, map_mul, aeval_X, h]
     cases q <;> simp [Pi.single_apply]
+
+@[deprecated (since := "2025-02-21")] alias aeval_sum_elim_pderiv_inl := aeval_sumElim_pderiv_inl
 
 end PDeriv
 

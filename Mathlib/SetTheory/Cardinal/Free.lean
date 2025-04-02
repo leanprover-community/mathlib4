@@ -5,6 +5,7 @@ Authors: Eric Wieser, Daniel Weber
 -/
 import Mathlib.Data.Finsupp.Fintype
 import Mathlib.GroupTheory.FreeAbelianGroupFinsupp
+import Mathlib.GroupTheory.FreeGroup.Reduce
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Cardinal.Finsupp
@@ -13,7 +14,7 @@ import Mathlib.SetTheory.Cardinal.Finsupp
 # Cardinalities of free constructions
 
 This file shows that all the free constructions over `α` have cardinality `max #α ℵ₀`,
-and are thus infinite.
+and are thus infinite, and specifically countable over countable generators.
 
 Combined with the ring `Fin n` for the finite cases, this lets us show that there is a `CommRing` of
 any cardinality.
@@ -40,6 +41,26 @@ instance : Infinite (FreeRing α) := by unfold FreeRing; infer_instance
 instance : Infinite (FreeCommRing α) := by unfold FreeCommRing; infer_instance
 
 end Infinite
+
+section Countable
+
+variable [Countable α]
+
+@[to_additive]
+instance : Countable (FreeMonoid α) := by unfold FreeMonoid; infer_instance
+
+@[to_additive]
+instance : Countable (FreeGroup α) := Quotient.countable
+
+instance : Countable (FreeAbelianGroup α) := Quotient.countable
+
+instance : Countable (FreeRing α) := Quotient.countable
+
+instance : Countable (FreeCommRing α) := by
+  unfold FreeCommRing Multiplicative
+  infer_instance
+
+end Countable
 
 namespace Cardinal
 

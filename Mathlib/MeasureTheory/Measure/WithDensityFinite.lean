@@ -117,7 +117,7 @@ noncomputable def Measure.densityToFinite (μ : Measure α) [SFinite μ] (a : α
   μ.rnDeriv μ.toFinite a
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-04")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-04")]
 lemma densityToFinite_def (μ : Measure α) [SFinite μ] :
     μ.densityToFinite = μ.rnDeriv μ.toFinite :=
   rfl

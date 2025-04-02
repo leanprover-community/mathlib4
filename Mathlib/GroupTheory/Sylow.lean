@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.NoncommPiCoprod
@@ -24,16 +25,16 @@ The Sylow theorems are the following results for every finite group `G` and ever
 
 ## Main statements
 
-* `exists_subgroup_card_pow_prime`: A generalization of Sylow's first theorem:
+* `Sylow.exists_subgroup_card_pow_prime`: A generalization of Sylow's first theorem:
   For every prime power `pⁿ` dividing the cardinality of `G`,
   there exists a subgroup of `G` of order `pⁿ`.
 * `IsPGroup.exists_le_sylow`: A generalization of Sylow's first theorem:
   Every `p`-subgroup is contained in a Sylow `p`-subgroup.
 * `Sylow.card_eq_multiplicity`: The cardinality of a Sylow subgroup is `p ^ n`
  where `n` is the multiplicity of `p` in the group order.
-* `sylow_conjugate`: A generalization of Sylow's second theorem:
+* `Sylow.isPretransitive_of_finite`: a generalization of Sylow's second theorem:
   If the number of Sylow `p`-subgroups is finite, then all Sylow `p`-subgroups are conjugate.
-* `card_sylow_modEq_one`: A generalization of Sylow's third theorem:
+* `card_sylow_modEq_one`: a generalization of Sylow's third theorem:
   If the number of Sylow `p`-subgroups is finite, then it is congruent to `1` modulo `p`.
 -/
 
@@ -55,14 +56,8 @@ namespace Sylow
 
 attribute [coe] toSubgroup
 
--- Porting note: Changed to `CoeOut`
 instance : CoeOut (Sylow p G) (Subgroup G) :=
   ⟨toSubgroup⟩
-
--- Porting note: syntactic tautology
--- @[simp]
--- theorem toSubgroup_eq_coe {P : Sylow p G} : P.toSubgroup = ↑P :=
---   rfl
 
 @[ext]
 theorem ext {P Q : Sylow p G} (h : (P : Subgroup G) = Q) : P = Q := by cases P; cases Q; congr
@@ -140,7 +135,7 @@ theorem coe_comapOfInjective (hϕ : Function.Injective ϕ) (h : P ≤ ϕ.range) 
 
 /-- A sylow subgroup of G is also a sylow subgroup of a subgroup of G. -/
 protected def subtype (h : P ≤ N) : Sylow p N :=
-  P.comapOfInjective N.subtype Subtype.coe_injective (by rwa [subtype_range])
+  P.comapOfInjective N.subtype Subtype.coe_injective (by rwa [range_subtype])
 
 @[simp]
 theorem coe_subtype (h : P ≤ N) : P.subtype h = subgroupOf P N :=
@@ -259,7 +254,7 @@ theorem smul_eq_iff_mem_normalizer {g : G} {P : Sylow p G} :
           fun hh => ⟨(MulAut.conj g)⁻¹ h, hh, MulAut.apply_inv_self G (MulAut.conj g) h⟩⟩
 
 theorem smul_eq_of_normal {g : G} {P : Sylow p G} [h : P.Normal] :
-    g • P = P := by simp only [smul_eq_iff_mem_normalizer, normalizer_eq_top.mpr h, mem_top]
+    g • P = P := by simp only [smul_eq_iff_mem_normalizer, P.normalizer_eq_top, mem_top]
 
 end Sylow
 
@@ -281,7 +276,8 @@ theorem IsPGroup.sylow_mem_fixedPoints_iff {P : Subgroup G} (hP : IsPGroup p P) 
 
 /-- A generalization of **Sylow's second theorem**.
   If the number of Sylow `p`-subgroups is finite, then all Sylow `p`-subgroups are conjugate. -/
-instance [hp : Fact p.Prime] [Finite (Sylow p G)] : IsPretransitive G (Sylow p G) :=
+instance Sylow.isPretransitive_of_finite [hp : Fact p.Prime] [Finite (Sylow p G)] :
+    IsPretransitive G (Sylow p G) :=
   ⟨fun P Q => by
     classical
       have H := fun {R : Sylow p G} {S : orbit G P} =>
@@ -407,7 +403,7 @@ theorem card_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
 @[deprecated (since := "2024-11-07")]
 alias _root_.card_sylow_dvd_index := card_dvd_index
 
-/-- Auxilliary lemma for `Sylow.not_dvd_index` which is strictly stronger. -/
+/-- Auxiliary lemma for `Sylow.not_dvd_index` which is strictly stronger. -/
 private theorem not_dvd_index_aux [hp : Fact p.Prime] (P : Sylow p G) [P.Normal]
     [P.FiniteIndex] : ¬ p ∣ P.index := by
   intro h
@@ -445,6 +441,37 @@ theorem not_dvd_index [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) [P.Fin
 
 @[deprecated (since := "2024-11-03")]
 alias _root_.not_dvd_index_sylow' := not_dvd_index
+
+section mapSurjective
+
+variable [Finite G] {G' : Type*} [Group G'] {f : G →* G'} (hf : Function.Surjective f)
+
+/-- Surjective group homomorphisms map Sylow subgroups to Sylow subgroups. -/
+def mapSurjective [Fact p.Prime] (P : Sylow p G) : Sylow p G' :=
+  { P.1.map f with
+    isPGroup' := P.2.map f
+    is_maximal' := fun hQ hPQ ↦ ((P.2.map f).toSylow
+      (fun h ↦ P.not_dvd_index (h.trans (P.index_map_dvd hf)))).3 hQ hPQ }
+
+@[simp] theorem coe_mapSurjective [Fact p.Prime] (P : Sylow p G) : P.mapSurjective hf = P.map f :=
+  rfl
+
+theorem mapSurjective_surjective (p : ℕ) [Fact p.Prime] :
+    Function.Surjective (Sylow.mapSurjective hf : Sylow p G → Sylow p G') := by
+  have : Finite G' := Finite.of_surjective f hf
+  intro P
+  let Q₀ : Sylow p (P.comap f) := Sylow.nonempty.some
+  let Q : Subgroup G := Q₀.map (P.comap f).subtype
+  have hPQ : Q.map f ≤ P := Subgroup.map_le_iff_le_comap.mpr (Subgroup.map_subtype_le Q₀.1)
+  have hpQ : IsPGroup p Q := Q₀.2.map (P.comap f).subtype
+  have hQ : ¬ p ∣ Q.index := by
+    rw [Subgroup.index_map_subtype Q₀.1, P.index_comap_of_surjective hf]
+    exact Nat.Prime.not_dvd_mul Fact.out Q₀.not_dvd_index P.not_dvd_index
+  use hpQ.toSylow hQ
+  rw [Sylow.ext_iff, Sylow.coe_mapSurjective, eq_comm]
+  exact ((hpQ.map f).toSylow (fun h ↦ hQ (h.trans (Q.index_map_dvd hf)))).3 P.2 hPQ
+
+end mapSurjective
 
 /-- **Frattini's Argument**: If `N` is a normal subgroup of `G`, and if `P` is a Sylow `p`-subgroup
   of `N`, then `N_G(P) ⊔ N = G`. -/
@@ -594,7 +621,7 @@ theorem exists_subgroup_card_pow_succ [Finite G] {p : ℕ} {n : ℕ} [hp : Fact 
     exact Nat.card_congr
       (preimageMkEquivSubgroupProdSet (H.subgroupOf H.normalizer) (zpowers x)), by
     intro y hy
-    simp only [exists_prop, Subgroup.coeSubtype, mk'_apply, Subgroup.mem_map, Subgroup.mem_comap]
+    simp only [exists_prop, Subgroup.coe_subtype, mk'_apply, Subgroup.mem_map, Subgroup.mem_comap]
     refine ⟨⟨y, le_normalizer hy⟩, ⟨0, ?_⟩, rfl⟩
     dsimp only
     rw [zpow_zero, eq_comm, QuotientGroup.eq_one_iff]
@@ -637,7 +664,7 @@ lemma exists_subgroup_card_pow_prime_of_le_card {n p : ℕ} (hp : p.Prime) (h : 
   obtain ⟨m, hm⟩ := h.exists_card_eq
   refine exists_subgroup_card_pow_prime _ ?_
   rw [hm] at hn ⊢
-  exact pow_dvd_pow _ <| (pow_le_pow_iff_right hp.one_lt).1 hn
+  exact pow_dvd_pow _ <| (Nat.pow_le_pow_iff_right hp.one_lt).1 hn
 
 /-- A special case of **Sylow's first theorem**. If `G` is a `p`-group and `H` a subgroup of size at
 least `p ^ n` then there is a subgroup of `H` of cardinality `p ^ n`. -/
@@ -717,22 +744,20 @@ end Pointwise
 
 theorem normal_of_normalizer_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (hn : P.normalizer.Normal) : P.Normal := by
-  rw [← normalizer_eq_top, ← normalizer_sup_eq_top' P le_normalizer, sup_idem]
+  rw [← normalizer_eq_top_iff, ← normalizer_sup_eq_top' P le_normalizer, sup_idem]
 
 @[simp]
 theorem normalizer_normalizer {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
     P.normalizer.normalizer = P.normalizer := by
   have := normal_of_normalizer_normal (P.subtype (le_normalizer.trans le_normalizer))
-  simp_rw [← normalizer_eq_top, coe_subtype, ← subgroupOf_normalizer_eq le_normalizer, ←
-    subgroupOf_normalizer_eq le_rfl, subgroupOf_self] at this
-  rw [← subtype_range P.normalizer.normalizer, MonoidHom.range_eq_map,
-    ← this trivial]
-  exact map_comap_eq_self (le_normalizer.trans (ge_of_eq (subtype_range _)))
+  rw [coe_subtype, normal_subgroupOf_iff_le_normalizer (le_normalizer.trans le_normalizer),
+    ← subgroupOf_normalizer_eq (le_normalizer.trans le_normalizer)] at this
+  exact le_antisymm (this normal_in_normalizer) le_normalizer
 
 theorem normal_of_all_max_subgroups_normal [Finite G]
     (hnc : ∀ H : Subgroup G, IsCoatom H → H.Normal) {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]
     (P : Sylow p G) : P.Normal :=
-  normalizer_eq_top.mp
+  normalizer_eq_top_iff.mp
     (by
       rcases eq_top_or_exists_le_coatom P.normalizer with (heq | ⟨K, hK, hNK⟩)
       · exact heq
@@ -743,7 +768,7 @@ theorem normal_of_all_max_subgroups_normal [Finite G]
 
 theorem normal_of_normalizerCondition (hnc : NormalizerCondition G) {p : ℕ} [Fact p.Prime]
     [Finite (Sylow p G)] (P : Sylow p G) : P.Normal :=
-  normalizer_eq_top.mp <|
+  normalizer_eq_top_iff.mp <|
     normalizerCondition_iff_only_full_group_self_normalizing.mp hnc _ <| normalizer_normalizer _
 
 /-- If all its Sylow subgroups are normal, then a finite group is isomorphic to the direct product
@@ -775,7 +800,7 @@ noncomputable def directProductOfNormal [Finite G]
   apply MulEquiv.ofBijective (Subgroup.noncommPiCoprod hcomm)
   apply (Fintype.bijective_iff_injective_and_card _).mpr
   constructor
-  · apply Subgroup.injective_noncommPiCoprod_of_independent
+  · apply Subgroup.injective_noncommPiCoprod_of_iSupIndep
     apply independent_of_coprime_order hcomm
     rintro ⟨p₁, hp₁⟩ ⟨p₂, hp₂⟩ hne
     haveI hp₁' := Fact.mk (Nat.prime_of_mem_primeFactors hp₁)

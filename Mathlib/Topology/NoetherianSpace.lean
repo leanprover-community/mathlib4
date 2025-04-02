@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Sets.Closeds
 
 /-!
@@ -37,6 +38,7 @@ of a noetherian scheme (e.g., the spectrum of a noetherian ring) is noetherian.
 
 -/
 
+open Topology
 
 variable (α β : Type*) [TopologicalSpace α] [TopologicalSpace β]
 
@@ -62,19 +64,18 @@ protected theorem NoetherianSpace.isCompact [NoetherianSpace α] (s : Set α) : 
     hUo Set.Subset.rfl with ⟨t, ht⟩
   exact ⟨t, hs.trans ht⟩
 
-protected theorem _root_.IsInducing.noetherianSpace [NoetherianSpace α] {i : β → α}
+protected theorem _root_.Topology.IsInducing.noetherianSpace [NoetherianSpace α] {i : β → α}
     (hi : IsInducing i) : NoetherianSpace β :=
   (noetherianSpace_iff_opens _).2 fun _ => hi.isCompact_iff.2 (NoetherianSpace.isCompact _)
 
 @[deprecated (since := "2024-10-28")]
-alias _root_.Inducing.noetherianSpace := _root_.IsInducing.noetherianSpace
+alias _root_.Inducing.noetherianSpace := IsInducing.noetherianSpace
 
-/-- [Stacks: Lemma 0052 (1)](https://stacks.math.columbia.edu/tag/0052)-/
+@[stacks 0052 "(1)"]
 instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace s :=
   IsInducing.subtypeVal.noetherianSpace
 
-variable (α)
-
+variable (α) in
 open List in
 theorem noetherianSpace_TFAE :
     TFAE [NoetherianSpace α,
@@ -89,15 +90,13 @@ theorem noetherianSpace_TFAE :
   tfae_have 3 → 4 := fun h s => h s
   tfae_finish
 
-variable {α}
-
 theorem noetherianSpace_iff_isCompact : NoetherianSpace α ↔ ∀ s : Set α, IsCompact s :=
   (noetherianSpace_TFAE α).out 0 2
 
 instance [NoetherianSpace α] : WellFoundedLT (Closeds α) :=
   Iff.mp ((noetherianSpace_TFAE α).out 0 1) ‹_›
 
-@[deprecated (since := "2024-10-07")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-07")]
 theorem NoetherianSpace.wellFounded_closeds [NoetherianSpace α] :
     WellFounded fun s t : Closeds α => s < t :=
   wellFounded_lt
@@ -164,7 +163,7 @@ theorem NoetherianSpace.exists_finite_set_closeds_irreducible [NoetherianSpace �
   · by_cases h₁ : IsPreirreducible (s : Set α)
     · replace h₁ : IsIrreducible (s : Set α) := ⟨Closeds.coe_nonempty.2 h₀, h₁⟩
       use {s}; simp [h₁]
-    · simp only [isPreirreducible_iff_closed_union_closed, not_forall, not_or] at h₁
+    · simp only [isPreirreducible_iff_isClosed_union_isClosed, not_forall, not_or] at h₁
       obtain ⟨z₁, z₂, hz₁, hz₂, h, hz₁', hz₂'⟩ := h₁
       lift z₁ to Closeds α using hz₁
       lift z₂ to Closeds α using hz₂
@@ -190,17 +189,17 @@ theorem NoetherianSpace.exists_finset_irreducible [NoetherianSpace α] (s : Clos
   simpa [Set.exists_finite_iff_finset, Finset.sup_id_eq_sSup]
     using NoetherianSpace.exists_finite_set_closeds_irreducible s
 
-/-- [Stacks: Lemma 0052 (2)](https://stacks.math.columbia.edu/tag/0052) -/
+@[stacks 0052 "(2)"]
 theorem NoetherianSpace.finite_irreducibleComponents [NoetherianSpace α] :
     (irreducibleComponents α).Finite := by
   obtain ⟨S : Set (Set α), hSf, hSc, hSi, hSU⟩ :=
     NoetherianSpace.exists_finite_set_isClosed_irreducible isClosed_univ (α := α)
   refine hSf.subset fun s hs => ?_
   lift S to Finset (Set α) using hSf
-  rcases isIrreducible_iff_sUnion_closed.1 hs.1 S hSc (hSU ▸ Set.subset_univ _) with ⟨t, htS, ht⟩
+  rcases isIrreducible_iff_sUnion_isClosed.1 hs.1 S hSc (hSU ▸ Set.subset_univ _) with ⟨t, htS, ht⟩
   rwa [ht.antisymm (hs.2 (hSi _ htS) ht)]
 
-/-- [Stacks: Lemma 0052 (3)](https://stacks.math.columbia.edu/tag/0052) -/
+@[stacks 0052 "(3)"]
 theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [NoetherianSpace α]
     (Z : Set α) (H : Z ∈ irreducibleComponents α) :
     ∃ o : Set α, IsOpen o ∧ o ≠ ∅ ∧ o ≤ Z := by
@@ -212,7 +211,7 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
 
   let U := Z \ ⋃ (x : ι), x
   have hU0 : U ≠ ∅ := fun r ↦ by
-    obtain ⟨Z', hZ'⟩ := isIrreducible_iff_sUnion_closed.mp H.1 hι.toFinset
+    obtain ⟨Z', hZ'⟩ := isIrreducible_iff_sUnion_isClosed.mp H.1 hι.toFinset
       (fun z hz ↦ by
         simp only [Set.Finite.mem_toFinset, Set.mem_diff, Set.mem_singleton_iff] at hz
         exact isClosed_of_mem_irreducibleComponents _ hz.1)

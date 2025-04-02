@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Preimmersion
-import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+import Mathlib.AlgebraicGeometry.Morphisms.Separated
 
 /-!
 
@@ -19,16 +19,11 @@ if and only if it can be factored into a closed immersion followed by an open im
   A morphism is a (locally-closed) immersion if and only if it can be factored into
   a closed immersion followed by a (dominant) open immersion.
 
-
-## TODO
-
-* Show that diagonal morphisms are immersions
-
 -/
 
 universe v u
 
-open CategoryTheory
+open CategoryTheory Limits
 
 namespace AlgebraicGeometry
 
@@ -39,7 +34,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 2. the range of the map is locally closed
 3. the induced morphisms of stalks are all surjective. -/
 @[mk_iff]
-class IsImmersion (f : X ⟶ Y) extends IsPreimmersion f : Prop where
+class IsImmersion (f : X ⟶ Y) : Prop extends IsPreimmersion f where
   isLocallyClosed_range : IsLocallyClosed (Set.range f.base)
 
 lemma Scheme.Hom.isLocallyClosed_range (f : X.Hom Y) [IsImmersion f] :
@@ -76,7 +71,7 @@ instance [IsImmersion f] : IsClosedImmersion f.liftCoborder := by
   have : IsPreimmersion f.liftCoborder := .of_comp f.liftCoborder f.coborderRange.ι
   refine .of_isPreimmersion _ ?_
   convert isClosed_preimage_val_coborder
-  apply Set.image_injective.mpr f.coborderRange.ι.isEmbedding.inj
+  apply Set.image_injective.mpr f.coborderRange.ι.isEmbedding.injective
   rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.comp_base, f.liftCoborder_ι]
   exact (Set.image_preimage_eq_of_subset (by simpa using subset_coborder)).symm
 
@@ -96,19 +91,19 @@ instance : IsLocalAtTarget @IsImmersion := by
   apply (config := { allowSynthFailures := true }) topologically_isLocalAtTarget'
   · refine { precomp := ?_, postcomp := ?_ }
     · intro X Y Z i hi f hf
-      replace hi : IsIso i := hi
+      change IsIso i at hi
       show IsLocallyClosed _
       simpa only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp,
-        Set.range_iff_surjective.mpr i.surjective, Set.image_univ]
+        Set.range_eq_univ.mpr i.surjective, Set.image_univ]
     · intro X Y Z i hi f hf
-      replace hi : IsIso i := hi
+      change IsIso i at hi
       show IsLocallyClosed _
       simp only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp]
       refine hf.image i.homeomorph.isInducing ?_
-      rw [Set.range_iff_surjective.mpr i.surjective]
+      rw [Set.range_eq_univ.mpr i.surjective]
       exact isOpen_univ.isLocallyClosed
   · simp_rw [Set.range_restrictPreimage]
-    exact fun _ _ _ e _ ↦ isLocallyClosed_iff_coe_preimage_of_iSup_eq_top e _
+    exact fun _ _ _ hU _ ↦ hU.isLocallyClosed_iff_coe_preimage
 
 instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f] : IsImmersion f where
   isLocallyClosed_range := f.isOpenEmbedding.2.isLocallyClosed
@@ -141,8 +136,8 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g]
     [IsImmersion (f ≫ g)] : IsImmersion f where
   __ := IsPreimmersion.of_comp f g
   isLocallyClosed_range := by
-    rw [← Set.preimage_image_eq (Set.range _) g.isEmbedding.inj]
-    have := (f ≫ g).isLocallyClosed_range.preimage g.base.2
+    rw [← Set.preimage_image_eq (Set.range _) g.isEmbedding.injective]
+    have := (f ≫ g).isLocallyClosed_range.preimage g.base.hom.2
     simpa only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp] using this
 
 theorem comp_iff {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g] :
@@ -162,6 +157,29 @@ instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsI
     rw [← Limits.pullback.lift_fst (f := f) (g := g.coborderRange.ι) g' (f' ≫ g.liftCoborder)
       (by simpa using H.w.symm)]
     infer_instance
+
+open Limits Scheme.Pullback in
+/-- The diagonal morphism is always an immersion. -/
+@[stacks 01KJ]
+instance : IsImmersion (pullback.diagonal f) := by
+  let 𝒰 := Y.affineCover
+  let 𝒱 (i) := (pullback f (𝒰.map i)).affineCover
+  have H : pullback.diagonal f ⁻¹ᵁ diagonalCoverDiagonalRange f 𝒰 𝒱 = ⊤ :=
+    top_le_iff.mp fun _ _ ↦ range_diagonal_subset_diagonalCoverDiagonalRange _ _ _ ⟨_, rfl⟩
+  have := isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange f 𝒰 𝒱
+  have : IsImmersion ((pullback.diagonal f ∣_
+    diagonalCoverDiagonalRange f 𝒰 𝒱) ≫ Scheme.Opens.ι _) := inferInstance
+  rwa [morphismRestrict_ι, H, ← Scheme.topIso_hom,
+    MorphismProperty.cancel_left_of_respectsIso (P := @IsImmersion)] at this
+
+instance : IsImmersion (prod.lift (𝟙 X) (𝟙 X)) := by
+  rw [← MorphismProperty.cancel_right_of_respectsIso @IsImmersion _ (prodIsoPullback X X).hom]
+  convert inferInstanceAs (IsImmersion (pullback.diagonal (terminal.from X)))
+  ext : 1 <;> simp
+
+instance (f g : X ⟶ Y) : IsImmersion (equalizer.ι f g) :=
+  MorphismProperty.of_isPullback (P := @IsImmersion)
+    (isPullback_equalizer_prod f g).flip inferInstance
 
 end IsImmersion
 

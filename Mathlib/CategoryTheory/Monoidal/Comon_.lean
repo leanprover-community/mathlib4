@@ -310,7 +310,7 @@ def Comon_EquivMon_OpOp : Comon_ C ≌ (Mon_ (Cᵒᵖ))ᵒᵖ :=
 /--
 Comonoid objects in a braided category form a monoidal category.
 
-This definition is via transporting back and forth to monoids in the opposite category,
+This definition is via transporting back and forth to monoids in the opposite category.
 -/
 @[simps!]
 instance monoidal [BraidedCategory C] : MonoidalCategory (Comon_ C) :=
@@ -333,7 +333,7 @@ the version provided in `tensorObj_comul` below.
 -/
 theorem tensorObj_comul' (A B : Comon_ C) :
     (A ⊗ B).comul =
-      (A.comul ⊗ B.comul) ≫ (tensor_μ (op A.X) (op B.X) (op A.X) (op B.X)).unop := by
+      (A.comul ⊗ B.comul) ≫ (tensorμ (op A.X) (op B.X) (op A.X) (op B.X)).unop := by
   rfl
 
 /--
@@ -342,60 +342,65 @@ the tensor product of the comultiplications followed by the tensor strength
 (to shuffle the factors back into order).
 -/
 theorem tensorObj_comul (A B : Comon_ C) :
-    (A ⊗ B).comul = (A.comul ⊗ B.comul) ≫ tensor_μ A.X A.X B.X B.X := by
+    (A ⊗ B).comul = (A.comul ⊗ B.comul) ≫ tensorμ A.X A.X B.X B.X := by
   rw [tensorObj_comul']
   congr
-  simp only [tensor_μ, unop_tensorObj, unop_op]
+  simp only [tensorμ, unop_tensorObj, unop_op]
   apply Quiver.Hom.unop_inj
   dsimp [op_tensorObj, op_associator]
   rw [Category.assoc, Category.assoc, Category.assoc]
 
-/-- The forgetful functor from `Comon_ C` to `C` is monoidal when `C` is braided monoidal. -/
-def forgetMonoidal : MonoidalFunctor (Comon_ C) C :=
-  { forget C with
-    «ε» := 𝟙 _
-    μ := fun _ _ => 𝟙 _ }
+/-- The forgetful functor from `Comon_ C` to `C` is monoidal when `C` is monoidal. -/
+instance : (forget C).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := Iso.refl _
+      μIso := fun _ _ ↦ Iso.refl _ }
 
-@[simp] theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl
-@[simp] theorem forgetMonoidal_ε : (forgetMonoidal C).ε = 𝟙 (𝟙_ C) := rfl
-@[simp] theorem forgetMonoidal_μ (X Y : Comon_ C) : (forgetMonoidal C).μ X Y = 𝟙 (X.X ⊗ Y.X) := rfl
+open Functor.LaxMonoidal Functor.OplaxMonoidal
+
+@[simp] theorem forget_ε : «ε» (forget C) = 𝟙 (𝟙_ C) := rfl
+@[simp] theorem forget_η : η (forget C) = 𝟙 (𝟙_ C) := rfl
+@[simp] theorem forget_μ (X Y : Comon_ C) : μ (forget C) X Y = 𝟙 (X.X ⊗ Y.X) := rfl
+@[simp] theorem forget_δ (X Y : Comon_ C) : δ (forget C) X Y = 𝟙 (X.X ⊗ Y.X) := rfl
 
 end Comon_
 
-namespace CategoryTheory.OplaxMonoidalFunctor
+namespace CategoryTheory.Functor
 
 variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
+
+open OplaxMonoidal
 
 /-- A oplax monoidal functor takes comonoid objects to comonoid objects.
 
 That is, a oplax monoidal functor `F : C ⥤ D` induces a functor `Comon_ C ⥤ Comon_ D`.
 -/
 @[simps]
-def mapComon (F : OplaxMonoidalFunctor C D) : Comon_ C ⥤ Comon_ D where
+def mapComon (F : C ⥤ D) [F.OplaxMonoidal] : Comon_ C ⥤ Comon_ D where
   obj A :=
     { X := F.obj A.X
-      counit := F.map A.counit ≫ F.η
-      comul := F.map A.comul ≫ F.δ _ _
+      counit := F.map A.counit ≫ η F
+      comul := F.map A.comul ≫ δ F _ _
       counit_comul := by
-        simp_rw [comp_whiskerRight, Category.assoc, F.δ_natural_left_assoc, F.left_unitality,
+        simp_rw [comp_whiskerRight, Category.assoc, δ_natural_left_assoc, left_unitality,
           ← F.map_comp_assoc, A.counit_comul]
       comul_counit := by
-        simp_rw [MonoidalCategory.whiskerLeft_comp, Category.assoc, F.δ_natural_right_assoc,
-          F.right_unitality, ← F.map_comp_assoc, A.comul_counit]
+        simp_rw [MonoidalCategory.whiskerLeft_comp, Category.assoc, δ_natural_right_assoc,
+          right_unitality, ← F.map_comp_assoc, A.comul_counit]
       comul_assoc := by
-        simp_rw [comp_whiskerRight, Category.assoc, F.δ_natural_left_assoc,
-          MonoidalCategory.whiskerLeft_comp, F.δ_natural_right_assoc,
-          ← F.map_comp_assoc, A.comul_assoc, F.map_comp, Category.assoc, F.associativity] }
+        simp_rw [comp_whiskerRight, Category.assoc, δ_natural_left_assoc,
+          MonoidalCategory.whiskerLeft_comp, δ_natural_right_assoc,
+          ← F.map_comp_assoc, A.comul_assoc, F.map_comp, Category.assoc, associativity] }
   map f :=
     { hom := F.map f.hom
       hom_counit := by dsimp; rw [← F.map_comp_assoc, f.hom_counit]
       hom_comul := by
         dsimp
-        rw [Category.assoc, F.δ_natural, ← F.map_comp_assoc, ← F.map_comp_assoc, f.hom_comul] }
+        rw [Category.assoc, δ_natural, ← F.map_comp_assoc, ← F.map_comp_assoc, f.hom_comul] }
   map_id A := by ext; simp
   map_comp f g := by ext; simp
 
 -- TODO We haven't yet set up the category structure on `OplaxMonoidalFunctor C D`
 -- and so can't state `mapComonFunctor : OplaxMonoidalFunctor C D ⥤ Comon_ C ⥤ Comon_ D`.
 
-end CategoryTheory.OplaxMonoidalFunctor
+end CategoryTheory.Functor

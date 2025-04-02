@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Analysis.Convex.Function
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
 import Mathlib.Topology.Order.OrderClosed
 
 /-!
@@ -39,11 +39,7 @@ See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 Prove lemmas relating exposed sets and points to the intrinsic frontier.
 -/
 
-
-open scoped Classical
-open Affine
-
-open Set
+open Affine Set
 
 section PreorderSemiring
 
@@ -62,7 +58,7 @@ section OrderedRing
 variable {𝕜 : Type*} {E : Type*} [TopologicalSpace 𝕜] [OrderedRing 𝕜] [AddCommMonoid E]
   [TopologicalSpace E] [Module 𝕜 E] {l : E →L[𝕜] 𝕜} {A B C : Set E} {x : E}
 
-/-- A useful way to build exposed sets from intersecting `A` with halfspaces (modelled by an
+/-- A useful way to build exposed sets from intersecting `A` with half-spaces (modelled by an
 inequality with a functional). -/
 def ContinuousLinearMap.toExposed (l : E →L[𝕜] 𝕜) (A : Set E) : Set E :=
   { x ∈ A | ∀ y ∈ A, l y ≤ l x }
@@ -98,19 +94,20 @@ protected theorem mono (hC : IsExposed 𝕜 A C) (hBA : B ⊆ A) (hCB : C ⊆ B)
     ⟨hBA hx.1, fun y hy => (hw.2 y hy).trans (hx.2 w (hCB hw))⟩⟩
 
 /-- If `B` is a nonempty exposed subset of `A`, then `B` is the intersection of `A` with some closed
-halfspace. The converse is *not* true. It would require that the corresponding open halfspace
+half-space. The converse is *not* true. It would require that the corresponding open half-space
 doesn't intersect `A`. -/
-theorem eq_inter_halfspace' {A B : Set E} (hAB : IsExposed 𝕜 A B) (hB : B.Nonempty) :
+theorem eq_inter_halfSpace' {A B : Set E} (hAB : IsExposed 𝕜 A B) (hB : B.Nonempty) :
     ∃ l : E →L[𝕜] 𝕜, ∃ a, B = { x ∈ A | a ≤ l x } := by
   obtain ⟨l, rfl⟩ := hAB hB
   obtain ⟨w, hw⟩ := hB
   exact ⟨l, l w, Subset.antisymm (fun x hx => ⟨hx.1, hx.2 w hw.1⟩) fun x hx =>
     ⟨hx.1, fun y hy => (hw.2 y hy).trans hx.2⟩⟩
+@[deprecated (since := "2024-11-12")] alias eq_inter_halfspace' := eq_inter_halfSpace'
 
 /-- For nontrivial `𝕜`, if `B` is an exposed subset of `A`, then `B` is the intersection of `A` with
-some closed halfspace. The converse is *not* true. It would require that the corresponding open
-halfspace doesn't intersect `A`. -/
-theorem eq_inter_halfspace [Nontrivial 𝕜] {A B : Set E} (hAB : IsExposed 𝕜 A B) :
+some closed half-space. The converse is *not* true. It would require that the corresponding open
+half-space doesn't intersect `A`. -/
+theorem eq_inter_halfSpace [Nontrivial 𝕜] {A B : Set E} (hAB : IsExposed 𝕜 A B) :
     ∃ l : E →L[𝕜] 𝕜, ∃ a, B = { x ∈ A | a ≤ l x } := by
   obtain rfl | hB := B.eq_empty_or_nonempty
   · refine ⟨0, 1, ?_⟩
@@ -119,7 +116,8 @@ theorem eq_inter_halfspace [Nontrivial 𝕜] {A B : Set E} (hAB : IsExposed 𝕜
     rw [ContinuousLinearMap.zero_apply] at h
     have : ¬(1 : 𝕜) ≤ 0 := not_le_of_lt zero_lt_one
     contradiction
-  exact hAB.eq_inter_halfspace' hB
+  exact hAB.eq_inter_halfSpace' hB
+@[deprecated (since := "2024-11-12")] alias eq_inter_halfspace := eq_inter_halfSpace
 
 protected theorem inter [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed 𝕜 A B)
     (hC : IsExposed 𝕜 A C) : IsExposed 𝕜 A (B ∩ C) := by
@@ -138,6 +136,7 @@ protected theorem inter [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed �
 
 theorem sInter [ContinuousAdd 𝕜] {F : Finset (Set E)} (hF : F.Nonempty)
     (hAF : ∀ B ∈ F, IsExposed 𝕜 A B) : IsExposed 𝕜 A (⋂₀ F) := by
+  classical
   induction F using Finset.induction with
   | empty => exfalso; exact Finset.not_nonempty_empty hF
   | @insert C F _ hF' =>
@@ -162,7 +161,7 @@ protected theorem isClosed [OrderClosedTopology 𝕜] {A B : Set E} (hAB : IsExp
     (hA : IsClosed A) : IsClosed B := by
   obtain rfl | hB := B.eq_empty_or_nonempty
   · simp
-  obtain ⟨l, a, rfl⟩ := hAB.eq_inter_halfspace' hB
+  obtain ⟨l, a, rfl⟩ := hAB.eq_inter_halfSpace' hB
   exact hA.isClosed_le continuousOn_const l.continuous.continuousOn
 
 protected theorem isCompact [OrderClosedTopology 𝕜] [T2Space E] {A B : Set E}
@@ -171,14 +170,11 @@ protected theorem isCompact [OrderClosedTopology 𝕜] [T2Space E] {A B : Set E}
 
 end IsExposed
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- A point is exposed with respect to `A` iff there exists a hyperplane whose intersection with
 `A` is exactly that point. -/
 def Set.exposedPoints (A : Set E) : Set E :=
   { x ∈ A | ∃ l : E →L[𝕜] 𝕜, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) }
-
-variable {𝕜}
 
 theorem exposed_point_def :
     x ∈ A.exposedPoints 𝕜 ↔ x ∈ A ∧ ∃ l : E →L[𝕜] 𝕜, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) :=

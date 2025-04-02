@@ -3,7 +3,9 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Field.Subfield
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
+import Mathlib.Algebra.Field.IsField
+import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.LocalRing.Basic
 
@@ -35,8 +37,6 @@ A `Subalgebra` is closed under all operations except `⁻¹`,
 intermediate field, field extension
 -/
 
-
-open Polynomial
 
 open Polynomial
 
@@ -77,7 +77,6 @@ instance : SubfieldClass (IntermediateField K L) L where
   one_mem {s} := s.one_mem'
   inv_mem {s} := s.inv_mem' _
 
---@[simp] Porting note (#10618): simp can prove it
 theorem mem_carrier {s : IntermediateField K L} {x : L} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -92,6 +91,14 @@ theorem coe_toSubalgebra : (S.toSubalgebra : Set L) = S :=
 
 @[simp]
 theorem coe_toSubfield : (S.toSubfield : Set L) = S :=
+  rfl
+
+@[simp]
+theorem coe_type_toSubalgebra : (S.toSubalgebra : Type _) = S :=
+  rfl
+
+@[simp]
+theorem coe_type_toSubfield : (S.toSubfield : Type _) = S :=
   rfl
 
 @[simp]
@@ -230,8 +237,8 @@ end InheritedLemmas
 
 theorem natCast_mem (n : ℕ) : (n : L) ∈ S := by simpa using intCast_mem S n
 
-@[deprecated _root_.natCast_mem (since := "2024-04-05")] alias coe_nat_mem := natCast_mem
-@[deprecated _root_.intCast_mem (since := "2024-04-05")] alias coe_int_mem := intCast_mem
+instance instSMulMemClass : SMulMemClass (IntermediateField K L) K L where
+  smul_mem := fun _ _ hx ↦ IntermediateField.smul_mem _ hx
 
 end IntermediateField
 
@@ -325,7 +332,7 @@ instance smulCommClass_right [SMul X Y] [SMul L Y] [SMulCommClass X L Y]
 
 -- note: giving this instance the default priority may trigger trouble with synthesizing instances
 -- for field extensions with more than one intermediate field. For example, in a field extension
--- `F/E`, and with `K₁ ≤ K₂` of type `IntermediateField F E`, this instance will cause a search
+-- `E/F`, and with `K₁ ≤ K₂` of type `IntermediateField F E`, this instance will cause a search
 -- for `IsScalarTower K₁ K₂ E` to trigger a search for `IsScalarTower E K₂ E` which may
 -- take a long time to fail.
 /-- Note that this provides `IsScalarTower F K K` which is needed by `smul_mul_assoc`. -/
@@ -389,8 +396,6 @@ theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
 @[simp] lemma algebraMap_apply (x : S) : algebraMap S L x = x := rfl
 
 @[simp] lemma coe_algebraMap_apply (x : K) : ↑(algebraMap K S x) = algebraMap K L x := rfl
-
-instance {R : Type*} [Semiring R] [Algebra L R] : SMul S R := S.instSMulSubtypeMem
 
 instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R :=
   IsScalarTower.subalgebra _ _ _ S.toSubalgebra
@@ -462,16 +467,10 @@ between `E` and `E.map e` -/
 def intermediateFieldMap (e : L ≃ₐ[K] L') (E : IntermediateField K L) : E ≃ₐ[K] E.map e.toAlgHom :=
   e.subalgebraMap E.toSubalgebra
 
-/- We manually add these two simp lemmas because `@[simps]` before `intermediate_field_map`
-  led to a timeout. -/
--- This lemma has always been bad, but the linter only noticed after lean4#2644.
-@[simp, nolint simpNF]
 theorem intermediateFieldMap_apply_coe (e : L ≃ₐ[K] L') (E : IntermediateField K L) (a : E) :
     ↑(intermediateFieldMap e E a) = e a :=
   rfl
 
--- This lemma has always been bad, but the linter only noticed after lean4#2644.
-@[simp, nolint simpNF]
 theorem intermediateFieldMap_symm_apply_coe (e : L ≃ₐ[K] L') (E : IntermediateField K L)
     (a : E.map e.toAlgHom) : ↑((intermediateFieldMap e E).symm a) = e.symm a :=
   rfl
@@ -567,10 +566,20 @@ theorem toSubfield_injective : Function.Injective (toSubfield : IntermediateFiel
   ext
   simp_rw [← mem_toSubfield, h]
 
+variable {F E : IntermediateField K L}
+
+@[simp]
+theorem toSubalgebra_inj : F.toSubalgebra = E.toSubalgebra ↔ F = E := toSubalgebra_injective.eq_iff
+
+@[deprecated (since := "2024-12-29")] alias toSubalgebra_eq_iff := toSubalgebra_inj
+
+@[simp]
+theorem toSubfield_inj : F.toSubfield = E.toSubfield ↔ F = E := toSubfield_injective.eq_iff
+
 theorem map_injective (f : L →ₐ[K] L') : Function.Injective (map f) := by
   intro _ _ h
   rwa [← toSubalgebra_injective.eq_iff, toSubalgebra_map, toSubalgebra_map,
-    (Subalgebra.map_injective f.injective).eq_iff, toSubalgebra_injective.eq_iff] at h
+    (Subalgebra.map_injective f.injective).eq_iff, toSubalgebra_inj] at h
 
 variable (S)
 
@@ -598,8 +607,7 @@ section Tower
 def lift {F : IntermediateField K L} (E : IntermediateField K F) : IntermediateField K L :=
   E.map (val F)
 
--- Porting note: change from `HasLiftT` to `CoeOut`
-instance hasLift {F : IntermediateField K L} :
+instance {F : IntermediateField K L} :
     CoeOut (IntermediateField K F) (IntermediateField K L) :=
   ⟨lift⟩
 
@@ -613,6 +621,19 @@ theorem lift_le {F : IntermediateField K L} (E : IntermediateField K F) : lift E
 theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F) :
     x.1 ∈ lift E ↔ x ∈ E :=
   Subtype.val_injective.mem_set_image
+
+/-- The algEquiv between an intermediate field and its lift -/
+def liftAlgEquiv {E : IntermediateField K L} (F : IntermediateField K E) : ↥F ≃ₐ[K] lift F where
+  toFun x := ⟨x.1.1, (mem_lift x.1).mpr x.2⟩
+  invFun x := ⟨⟨x.1, lift_le F x.2⟩, (mem_lift ⟨x.1, lift_le F x.2⟩).mp x.2⟩
+  left_inv := congrFun rfl
+  right_inv := congrFun rfl
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
+  commutes' _ := rfl
+
+lemma liftAlgEquiv_apply {E : IntermediateField K L} (F : IntermediateField K E) (x : F) :
+    (liftAlgEquiv F x).1 = x := rfl
 
 section RestrictScalars
 

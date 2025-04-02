@@ -4,16 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
 import Mathlib.Data.ENat.Basic
-import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Instances.Discrete
 import Mathlib.Order.Interval.Set.WithBotTop
+import Mathlib.Order.Filter.Pointwise
+import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Topology on extended natural numbers
 -/
 
-open Set Filter
-open scoped Topology
+open Filter Set Topology
 
 namespace ENat
 
@@ -106,7 +106,7 @@ end ENat
 theorem Filter.Tendsto.enatSub {α : Type*} {l : Filter α} {f g : α → ℕ∞} {a b : ℕ∞}
     (hf : Tendsto f l (𝓝 a)) (hg : Tendsto g l (𝓝 b)) (h : a ≠ ⊤ ∨ b ≠ ⊤) :
     Tendsto (fun x ↦ f x - g x) l (𝓝 (a - b)) :=
-  (ENat.continuousAt_sub h).tendsto.comp (hf.prod_mk_nhds hg)
+  (ENat.continuousAt_sub h).tendsto.comp (hf.prodMk_nhds hg)
 
 variable {X : Type*} [TopologicalSpace X] {f g : X → ℕ∞} {s : Set X} {x : X}
 

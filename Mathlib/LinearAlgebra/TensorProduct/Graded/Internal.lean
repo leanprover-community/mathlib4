@@ -156,7 +156,7 @@ instance : Mul (𝒜 ᵍ⊗[R] ℬ) where mul x y := mulHom 𝒜 ℬ x y
 
 theorem mul_def (x y : 𝒜 ᵍ⊗[R] ℬ) : x * y = mulHom 𝒜 ℬ x y := rfl
 
--- Before #8386 this was `@[simp]` but it times out when we try to apply it.
+-- Before https://github.com/leanprover-community/mathlib4/pull/8386 this was `@[simp]` but it times out when we try to apply it.
 theorem auxEquiv_mul (x y : 𝒜 ᵍ⊗[R] ℬ) :
     auxEquiv R 𝒜 ℬ (x * y) = gradedMul R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) (auxEquiv R 𝒜 ℬ y) :=
   LinearEquiv.eq_symm_apply _ |>.mp rfl
@@ -188,7 +188,7 @@ theorem tmul_coe_mul_coe_tmul {j₁ i₂ : ι} (a₁ : A) (b₁ : ℬ j₁) (a�
   simp_rw [← lof_eq_of R]
   rw [tmul_of_gradedMul_of_tmul]
   simp_rw [lof_eq_of R]
-  -- Note: #8386 had to specialize `map_smul` to `LinearEquiv.map_smul`
+  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_smul` to `LinearEquiv.map_smul`
   rw [@Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_zsmul R, LinearEquiv.map_smul, map_smul,
     Int.cast_smul_eq_zsmul R, ← @Units.smul_def _ _ (_) (_)]
   rw [congr_symm_tmul]
@@ -242,7 +242,7 @@ def includeLeftRingHom : A →+* 𝒜 ᵍ⊗[R] ℬ where
       SetLike.coe_gOne, one_mul]
 
 instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
-  toRingHom := (includeLeftRingHom 𝒜 ℬ).comp (algebraMap R A)
+  algebraMap := (includeLeftRingHom 𝒜 ℬ).comp (algebraMap R A)
   commutes' r x := by
     dsimp [mul_def, mulHom_apply, auxEquiv_tmul]
     simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul,
@@ -250,9 +250,9 @@ instance instAlgebra : Algebra R (𝒜 ᵍ⊗[R] ℬ) where
   smul_def' r x := by
     dsimp [mul_def, mulHom_apply, auxEquiv_tmul]
     simp_rw [DirectSum.decompose_algebraMap, DirectSum.decompose_one, algebraMap_gradedMul]
-    -- Qualified `map_smul` to avoid a TC timeout #8386
-    erw [LinearMap.map_smul]
-    erw [LinearEquiv.symm_apply_apply]
+    -- Qualified `map_smul` to avoid a TC timeout https://github.com/leanprover-community/mathlib4/pull/8386
+    rw [LinearEquiv.map_smul]
+    simp
 
 lemma algebraMap_def (r : R) : algebraMap R (𝒜 ᵍ⊗[R] ℬ) r = algebraMap R A r ᵍ⊗ₜ[R] 1 := rfl
 
@@ -324,7 +324,7 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
 
 @[simp]
 theorem lift_tmul (f : A →ₐ[R] C) (g : B →ₐ[R] C)
-    (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ)^(j * i) • (g b * f a))
+    (h_anti_commutes : ∀ ⦃i j⦄ (a : 𝒜 i) (b : ℬ j), f a * g b = (-1 : ℤˣ) ^ (j * i) • (g b * f a))
     (a : A) (b : B) :
     lift 𝒜 ℬ f g h_anti_commutes (a ᵍ⊗ₜ b) = f a * g b :=
   rfl
@@ -377,8 +377,8 @@ lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
   (auxEquiv R ℬ 𝒜).injective <| by
     simp_rw [auxEquiv_comm, auxEquiv_tmul, decompose_coe, ← lof_eq_of R, gradedComm_of_tmul_of,
       @Units.smul_def _ _ (_) (_), ← Int.cast_smul_eq_zsmul R]
-    -- Qualified `map_smul` to avoid a TC timeout #8386
-    erw [LinearMap.map_smul, auxEquiv_tmul]
+    -- Qualified `map_smul` to avoid a TC timeout https://github.com/leanprover-community/mathlib4/pull/8386
+    rw [LinearEquiv.map_smul, auxEquiv_tmul]
     simp_rw [decompose_coe, lof_eq_of]
 
 end GradedTensorProduct

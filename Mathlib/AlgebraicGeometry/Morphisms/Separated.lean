@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.ClosedImmersion
+import Mathlib.AlgebraicGeometry.PullbackCarrier
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Basic
 import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
@@ -78,7 +79,7 @@ instance : IsLocalAtTarget @IsSeparated := by
 
 instance (R S : CommRingCat.{u}) (f : R ⟶ S) : IsSeparated (Spec.map f) := by
   constructor
-  letI := f.toAlgebra
+  letI := f.hom.toAlgebra
   show IsClosedImmersion (Limits.pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R S))))
   rw [diagonal_Spec_map, MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion]
   exact .spec_of_surjective _ fun x ↦ ⟨.tmul R 1 x,
@@ -112,6 +113,84 @@ instance [IsSeparated g] :
   ext : 1 <;> simp [pullback.condition]
 
 end IsSeparated
+
+section of_injective
+
+open Scheme Pullback
+
+variable (𝒰 : Y.OpenCover) (𝒱 : ∀ i, (pullback f (𝒰.map i)).OpenCover)
+
+lemma Scheme.Pullback.diagonalCoverDiagonalRange_eq_top_of_injective
+    (hf : Function.Injective f.base) :
+    diagonalCoverDiagonalRange f 𝒰 𝒱 = ⊤ := by
+  rw [← top_le_iff]
+  rintro x -
+  simp only [diagonalCoverDiagonalRange, openCoverOfBase_J, openCoverOfBase_obj,
+    openCoverOfLeftRight_J, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
+    Set.mem_iUnion, Set.mem_range, Sigma.exists]
+  have H : (pullback.fst f f).base x = (pullback.snd f f).base x :=
+    hf (by rw [← Scheme.comp_base_apply, ← Scheme.comp_base_apply, pullback.condition])
+  let i := 𝒰.f (f.base ((pullback.fst f f).base x))
+  obtain ⟨y : 𝒰.obj i, hy : (𝒰.map i).base y = f.base _⟩ :=
+    𝒰.covers (f.base ((pullback.fst f f).base x))
+  obtain ⟨z, hz₁, hz₂⟩ := exists_preimage_pullback _ _ hy.symm
+  let j := (𝒱 i).f z
+  obtain ⟨w : (𝒱 i).obj j, hy : ((𝒱 i).map j).base w = z⟩ := (𝒱 i).covers z
+  refine ⟨i, j, ?_⟩
+  simp_rw [diagonalCover_map]
+  show x ∈ Set.range _
+  dsimp only [diagonalCover, Cover.bind_obj, openCoverOfLeftRight_obj]
+  rw [range_map]
+  simp [← H, ← hz₁, ← hy]
+
+lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
+    Set.range (pullback.diagonal f).base ⊆ diagonalCoverDiagonalRange f 𝒰 𝒱 := by
+  rintro _ ⟨x, rfl⟩
+  simp only [diagonalCoverDiagonalRange, openCoverOfBase_J, openCoverOfBase_obj,
+    openCoverOfLeftRight_J, Opens.iSup_mk, Opens.carrier_eq_coe, Hom.coe_opensRange, Opens.coe_mk,
+    Set.mem_iUnion, Set.mem_range, Sigma.exists]
+  let i := 𝒰.f (f.base x)
+  obtain ⟨y : 𝒰.obj i, hy : (𝒰.map i).base y = f.base x⟩ := 𝒰.covers (f.base x)
+  obtain ⟨z, hz₁, hz₂⟩ := exists_preimage_pullback _ _ hy.symm
+  let j := (𝒱 i).f z
+  obtain ⟨w : (𝒱 i).obj j, hy : ((𝒱 i).map j).base w = z⟩ := (𝒱 i).covers z
+  refine ⟨i, j, (pullback.diagonal ((𝒱 i).map j ≫ pullback.snd f (𝒰.map i))).base w, ?_⟩
+  rw [← hz₁, ← hy, ← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
+  dsimp only [diagonalCover, Cover.pullbackHom, Cover.bind_obj, openCoverOfLeftRight_obj]
+  rw [← Scheme.comp_base_apply]
+  congr 5
+  apply pullback.hom_ext <;> simp
+
+lemma isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange
+    [∀ i, IsAffine (𝒰.obj i)] [∀ i j, IsAffine ((𝒱 i).obj j)] :
+    IsClosedImmersion (pullback.diagonal f ∣_ diagonalCoverDiagonalRange f 𝒰 𝒱) := by
+  let U : (Σ i, (𝒱 i).J) → (diagonalCoverDiagonalRange f 𝒰 𝒱).toScheme.Opens := fun i ↦
+    (diagonalCoverDiagonalRange f 𝒰 𝒱).ι ⁻¹ᵁ ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange
+  have hU (i) : (diagonalCoverDiagonalRange f 𝒰 𝒱).ι ''ᵁ U i =
+      ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange := by
+    rw [TopologicalSpace.Opens.functor_obj_map_obj, inf_eq_right, Hom.image_top_eq_opensRange,
+      Opens.opensRange_ι]
+    exact le_iSup (fun i : Σ i, (𝒱 i).J ↦ ((diagonalCover f 𝒰 𝒱).map ⟨i.1, i.2, i.2⟩).opensRange) i
+  have hf : iSup U = ⊤ := (TopologicalSpace.Opens.map_iSup _ _).symm.trans
+    (diagonalCoverDiagonalRange f 𝒰 𝒱).ι_preimage_self
+  rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := @IsClosedImmersion) _ hf]
+  intro i
+  rw [MorphismProperty.arrow_mk_iso_iff (P := @IsClosedImmersion) (morphismRestrictRestrict _ _ _),
+    MorphismProperty.arrow_mk_iso_iff (P := @IsClosedImmersion) (morphismRestrictEq _ (hU i)),
+    MorphismProperty.arrow_mk_iso_iff (P := @IsClosedImmersion) (diagonalRestrictIsoDiagonal ..)]
+  infer_instance
+
+@[stacks 0DVA]
+lemma isSeparated_of_injective (hf : Function.Injective f.base) :
+    IsSeparated f := by
+  constructor
+  let 𝒰 := Y.affineCover
+  let 𝒱 (i) := (pullback f (𝒰.map i)).affineCover
+  refine IsLocalAtTarget.of_iSup_eq_top (fun i : PUnit.{0} ↦ ⊤) (by simp) fun _ ↦ ?_
+  rw [← diagonalCoverDiagonalRange_eq_top_of_injective f 𝒰 𝒱 hf]
+  exact isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange f 𝒰 𝒱
+
+end of_injective
 
 lemma IsClosedImmersion.of_comp [IsClosedImmersion (f ≫ g)] [IsSeparated g] :
     IsClosedImmersion f := by
@@ -160,6 +239,16 @@ lemma ext_of_isDominant_of_isSeparated [IsReduced X] {f g : X ⟶ Y}
   have := isIso_of_isClosedImmersion_of_surjective (Y := X) (equalizer.ι f' g').left
   rw [← cancel_epi (equalizer.ι f' g').left]
   exact congr($(equalizer.condition f' g').left)
+
+variable (S) in
+/--
+Suppose `X` is a reduced `S`-scheme and `Y` is a separated `S`-scheme.
+For any `S`-morphisms `f g : X ⟶ Y`, `f = g` if `ι ≫ f = ι ≫ g` for some dominant `ι`.
+-/
+lemma ext_of_isDominant_of_isSeparated' [X.Over S] [Y.Over S] [IsReduced X] [IsSeparated (Y ↘ S)]
+    {f g : X ⟶ Y} [f.IsOver S] [g.IsOver S] {W} (ι : W ⟶ X) [IsDominant ι]
+    (hU : ι ≫ f = ι ≫ g) : f = g :=
+  ext_of_isDominant_of_isSeparated (Y ↘ S) (by simp) ι hU
 
 namespace Scheme
 

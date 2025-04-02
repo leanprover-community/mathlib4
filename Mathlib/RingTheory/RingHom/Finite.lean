@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.RingTheory.Localization.Integer
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 
@@ -37,6 +38,8 @@ theorem finite_respectsIso : RespectsIso @Finite := by
   intros
   exact Finite.of_surjective _ (RingEquiv.toEquiv _).surjective
 
+lemma finite_containsIdentities : ContainsIdentities @Finite := Finite.id
+
 theorem finite_isStableUnderBaseChange : IsStableUnderBaseChange @Finite := by
   refine IsStableUnderBaseChange.mk _ finite_respectsIso ?_
   classical
@@ -49,7 +52,7 @@ theorem finite_isStableUnderBaseChange : IsStableUnderBaseChange @Finite := by
 
 end RingHom
 
-open scoped Pointwise Classical
+open scoped Pointwise
 
 universe u
 
@@ -81,7 +84,7 @@ lemma Module.Finite_of_isLocalization (R S Rₚ Sₚ) [CommSemiring R] [CommRing
   have hy : y ∈ Submodule.span R ↑T := by rw [hT]; trivial
   replace hy : algebraMap S Sₚ y ∈ Submodule.map (IsScalarTower.toAlgHom R S Sₚ).toLinearMap
     (Submodule.span R (T : Set S)) := Submodule.mem_map_of_mem
---     -- Note: #8386 had to specify the value of `f` below
+--     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify the value of `f` below
       (f := (IsScalarTower.toAlgHom R S Sₚ).toLinearMap) hy
   rw [Submodule.map_span (IsScalarTower.toAlgHom R S Sₚ).toLinearMap T] at hy
   have H : Submodule.span R (algebraMap S Sₚ '' T) ≤
@@ -109,8 +112,9 @@ theorem RingHom.finite_localizationPreserves : RingHom.LocalizationPreserves @Ri
 
 theorem RingHom.localization_away_map_finite (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.Finite) : (IsLocalization.Away.map R' S' f r).Finite :=
-  finite_localizationPreserves.away r hf
+  finite_localizationPreserves.away f r _ _ hf
 
+open scoped Classical in
 /-- Let `S` be an `R`-algebra, `M` a submonoid of `R`, and `S' = M⁻¹S`.
 If the image of some `x : S` falls in the span of some finite `s ⊆ S'` over `R`,
 then there exists some `m : M` such that `m • x` falls in the
@@ -124,6 +128,7 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
         (IsLocalization.finsetIntegerMultiple (M.map (algebraMap R S)) s : Set S) := by
   let g : S →ₐ[R] S' :=
     AlgHom.mk' (algebraMap S S') fun c x => by simp [Algebra.algebraMap_eq_smul_one]
+  have g_apply : ∀ x, g x = algebraMap S S' x := fun _ => rfl
   -- We first obtain the `y' ∈ M` such that `s' = y' • s` is falls in the image of `S` in `S'`.
   let y := IsLocalization.commonDenomOfFinset (M.map (algebraMap R S)) s
   have hx₁ : (y : S) • (s : Set S') = g '' _ :=
@@ -135,8 +140,8 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   replace hx₁ := congr_arg (Submodule.span R) hx₁
   rw [Submodule.span_smul] at hx₁
   replace hx : _ ∈ y' • Submodule.span R (s : Set S') := Set.smul_mem_smul_set hx
-  rw [hx₁] at hx
-  erw [← _root_.map_smul g, ← Submodule.map_span (g : S →ₗ[R] S')] at hx
+  rw [hx₁, ← g_apply, ← _root_.map_smul g, g_apply, ← Algebra.linearMap_apply, ← Submodule.map_span]
+    at hx
   -- Since `x` falls in the span of `s` in `S'`, `y' • x : S` falls in the span of `s'` in `S'`.
   -- That is, there exists some `x' : S` in the span of `s'` in `S` and `x' = y' • x` in `S'`.
   -- Thus `a • (y' • x) = a • x' ∈ span s'` in `S` for some `a ∈ M`.
@@ -191,6 +196,7 @@ theorem multiple_mem_adjoin_of_mem_localization_adjoin [Algebra R' S] [Algebra R
 /-- `S` is a finite `R`-algebra if there exists a set `{ r }` that
   spans `R` such that `Sᵣ` is a finite `Rᵣ`-algebra. -/
 theorem RingHom.finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Finite := by
+  classical
   rw [RingHom.ofLocalizationSpan_iff_finite]
   introv R hs H
   -- We first setup the instances

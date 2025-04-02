@@ -30,6 +30,8 @@ diameter of a subset, and its relation to boundedness
 metric, pseudo_metric, bounded, diameter, Heine-Borel theorem
 -/
 
+assert_not_exists Basis
+
 open Set Filter Bornology
 open scoped ENNReal Uniformity Topology Pointwise
 
@@ -100,9 +102,17 @@ theorem hasBasis_cobounded_compl_closedBall (c : α) :
     (cobounded α).HasBasis (fun _ ↦ True) (fun r ↦ (closedBall c r)ᶜ) :=
   ⟨compl_surjective.forall.2 fun _ ↦ (isBounded_iff_subset_closedBall c).trans <| by simp⟩
 
+theorem hasAntitoneBasis_cobounded_compl_closedBall (c : α) :
+    (cobounded α).HasAntitoneBasis (fun r ↦ (closedBall c r)ᶜ) :=
+  ⟨Metric.hasBasis_cobounded_compl_closedBall _, fun _ _ hr _ ↦ by simpa using hr.trans_lt⟩
+
 theorem hasBasis_cobounded_compl_ball (c : α) :
     (cobounded α).HasBasis (fun _ ↦ True) (fun r ↦ (ball c r)ᶜ) :=
   ⟨compl_surjective.forall.2 fun _ ↦ (isBounded_iff_subset_ball c).trans <| by simp⟩
+
+theorem hasAntitoneBasis_cobounded_compl_ball (c : α) :
+    (cobounded α).HasAntitoneBasis (fun r ↦ (ball c r)ᶜ) :=
+  ⟨Metric.hasBasis_cobounded_compl_ball _, fun _ _ hr _ ↦ by simpa using hr.trans⟩
 
 @[simp]
 theorem comap_dist_right_atTop (c : α) : comap (dist · c) atTop = cobounded α :=
@@ -195,7 +205,7 @@ theorem _root_.CauchySeq.isBounded_range {f : ℕ → α} (hf : CauchySeq f) : I
 theorem isBounded_range_of_tendsto_cofinite {f : β → α} {a : α} (hf : Tendsto f cofinite (𝓝 a)) :
     IsBounded (range f) :=
   isBounded_range_of_tendsto_cofinite_uniformity <|
-    (hf.prod_map hf).mono_right <| nhds_prod_eq.symm.trans_le (nhds_le_uniformity a)
+    (hf.prodMap hf).mono_right <| nhds_prod_eq.symm.trans_le (nhds_le_uniformity a)
 
 /-- In a compact space, all sets are bounded -/
 theorem isBounded_of_compactSpace [CompactSpace α] : IsBounded s :=
@@ -275,8 +285,7 @@ theorem _root_.Bornology.IsBounded.isCompact_closure [ProperSpace α] (h : IsBou
     IsCompact (closure s) :=
   isCompact_of_isClosed_isBounded isClosed_closure h.closure
 
--- Porting note (#11215): TODO: assume `[MetricSpace α]`
--- instead of `[PseudoMetricSpace α] [T2Space α]`
+-- TODO: assume `[MetricSpace α]` instead of `[PseudoMetricSpace α] [T2Space α]`
 /-- The **Heine–Borel theorem**:
 In a proper Hausdorff space, a set is compact if and only if it is closed and bounded. -/
 theorem isCompact_iff_isClosed_bounded [T2Space α] [ProperSpace α] :
@@ -341,7 +350,7 @@ theorem diam_nonneg : 0 ≤ diam s :=
   ENNReal.toReal_nonneg
 
 theorem diam_subsingleton (hs : s.Subsingleton) : diam s = 0 := by
-  simp only [diam, EMetric.diam_subsingleton hs, ENNReal.zero_toReal]
+  simp only [diam, EMetric.diam_subsingleton hs, ENNReal.toReal_zero]
 
 /-- The empty set has zero diameter -/
 @[simp]
@@ -392,8 +401,7 @@ theorem diam_le_of_forall_dist_le_of_nonempty (hs : s.Nonempty) {C : ℝ}
 theorem dist_le_diam_of_mem' (h : EMetric.diam s ≠ ⊤) (hx : x ∈ s) (hy : y ∈ s) :
     dist x y ≤ diam s := by
   rw [diam, dist_edist]
-  rw [ENNReal.toReal_le_toReal (edist_ne_top _ _) h]
-  exact EMetric.edist_le_diam_of_mem hx hy
+  exact ENNReal.toReal_mono h <| EMetric.edist_le_diam_of_mem hx hy
 
 /-- Characterize the boundedness of a set in terms of the finiteness of its emetric.diameter. -/
 theorem isBounded_iff_ediam_ne_top : IsBounded s ↔ EMetric.diam s ≠ ⊤ :=
@@ -429,7 +437,7 @@ theorem ediam_of_unbounded (h : ¬IsBounded s) : EMetric.diam s = ∞ := ediam_e
 /-- An unbounded set has zero diameter. If you would prefer to get the value ∞, use `EMetric.diam`.
 This lemma makes it possible to avoid side conditions in some situations -/
 theorem diam_eq_zero_of_unbounded (h : ¬IsBounded s) : diam s = 0 := by
-  rw [diam, ediam_of_unbounded h, ENNReal.top_toReal]
+  rw [diam, ediam_of_unbounded h, ENNReal.toReal_top]
 
 /-- If `s ⊆ t`, then the diameter of `s` is bounded by that of `t`, provided `t` is bounded. -/
 theorem diam_mono {s t : Set α} (h : s ⊆ t) (ht : IsBounded t) : diam s ≤ diam t :=

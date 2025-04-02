@@ -3,7 +3,7 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
@@ -50,7 +50,7 @@ theorem map₂_le {f : M →ₗ[R] N →ₗ[R] P} {p : Submodule R M} {q : Submo
   ⟨fun H _m hm _n hn => H <| apply_mem_map₂ _ hm hn, fun H =>
     iSup_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
 
-variable (R)
+variable (R) in
 theorem map₂_span_span (f : M →ₗ[R] N →ₗ[R] P) (s : Set M) (t : Set N) :
     map₂ f (span R s) (span R t) = span R (Set.image2 (fun m n => f m n) s t) := by
   apply le_antisymm
@@ -68,8 +68,6 @@ theorem map₂_span_span (f : M →ₗ[R] N →ₗ[R] P) (s : Set M) (t : Set N)
   · rw [span_le, image2_subset_iff]
     intro a ha b hb
     exact apply_mem_map₂ _ (subset_span ha) (subset_span hb)
-variable {R}
-
 @[simp]
 theorem map₂_bot_right (f : M →ₗ[R] N →ₗ[R] P) (p : Submodule R M) : map₂ f p ⊥ = ⊥ :=
   eq_bot_iff.2 <|
@@ -84,7 +82,7 @@ theorem map₂_bot_left (f : M →ₗ[R] N →ₗ[R] P) (q : Submodule R N) : ma
       rw [Submodule.mem_bot] at hm ⊢
       rw [hm, LinearMap.map_zero₂]
 
-@[mono]
+@[gcongr, mono]
 theorem map₂_le_map₂ {f : M →ₗ[R] N →ₗ[R] P} {p₁ p₂ : Submodule R M} {q₁ q₂ : Submodule R N}
     (hp : p₁ ≤ p₂) (hq : q₁ ≤ q₂) : map₂ f p₁ q₁ ≤ map₂ f p₂ q₂ :=
   map₂_le.2 fun _m hm _n hn => apply_mem_map₂ _ (hp hm) (hq hn)

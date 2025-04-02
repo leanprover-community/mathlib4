@@ -3,7 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.VectorMeasure
+import Mathlib.MeasureTheory.VectorMeasure.Basic
 import Mathlib.Order.SymmDiff
 
 /-!
@@ -37,7 +37,7 @@ Hahn decomposition theorem
 
 noncomputable section
 
-open scoped Classical NNReal ENNReal MeasureTheory
+open scoped NNReal ENNReal MeasureTheory
 
 variable {α β : Type*} [MeasurableSpace α]
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [OrderedAddCommMonoid M]
@@ -99,6 +99,7 @@ private theorem existsNatOneDivLTMeasure_of_not_negative (hi : ¬s ≤[i] 0) :
   let ⟨n, hn⟩ := exists_nat_one_div_lt hj
   ⟨n, k, hj₂, hj₁, hn⟩
 
+open scoped Classical in
 /-- Given the set `i`, if `i` is not negative, `findExistsOneDivLT s i` is the
 least natural number `n` such that `ExistsOneDivLT s i n`, otherwise, it returns 0. -/
 private def findExistsOneDivLT (s : SignedMeasure α) (i : Set α) : ℕ :=
@@ -111,9 +112,11 @@ private theorem findExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
 
 private theorem findExistsOneDivLT_min (hi : ¬s ≤[i] 0) {m : ℕ}
     (hm : m < findExistsOneDivLT s i) : ¬ExistsOneDivLT s i m := by
+  classical
   rw [findExistsOneDivLT, dif_pos hi] at hm
   exact Nat.find_min _ hm
 
+open scoped Classical in
 /-- Given the set `i`, if `i` is not negative, `someExistsOneDivLT` chooses the set
 `k` from `ExistsOneDivLT s i (findExistsOneDivLT s i)`, otherwise, it returns the
 empty set. -/
@@ -211,6 +214,7 @@ private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
       (someExistsOneDivLT_subset hx₂).2
         (Set.mem_iUnion.2 ⟨n, Set.mem_iUnion.2 ⟨Nat.lt_succ_iff.mp h, hx₁⟩⟩)
 
+open scoped Function in -- required for scoped `on` notation
 private theorem restrictNonposSeq_disjoint : Pairwise (Disjoint on restrictNonposSeq s i) := by
   intro n m h
   rw [Function.onFun, Set.disjoint_iff_inter_eq_empty]
@@ -221,6 +225,7 @@ private theorem restrictNonposSeq_disjoint : Pairwise (Disjoint on restrictNonpo
 private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ : s i < 0)
     (hn : ¬∀ n : ℕ, ¬s ≤[i \ ⋃ l < n, restrictNonposSeq s i l] 0) :
     ∃ j : Set α, MeasurableSet j ∧ j ⊆ i ∧ s ≤[j] 0 ∧ s j < 0 := by
+  classical
   by_cases h : s ≤[i] 0
   · exact ⟨i, hi₁, Set.Subset.refl _, h, hi₂⟩
   push_neg at hn

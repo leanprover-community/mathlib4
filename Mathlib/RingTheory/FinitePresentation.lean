@@ -3,7 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Data.Finite.Sum
 import Mathlib.RingTheory.FiniteType
+import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.MvPolynomial.Tower
 
@@ -155,20 +157,12 @@ theorem iff_quotient_mvPolynomial' :
     refine
       ⟨ULift (Fin n), inferInstance, f.comp ulift_var.toAlgHom, hfs.comp ulift_var.surjective,
         Ideal.fg_ker_comp _ _ ?_ hfk ulift_var.surjective⟩
-    erw [RingHom.ker_coe_equiv ulift_var.toRingEquiv]
-    exact Submodule.fg_bot
-    -- Porting note: was
-    -- convert Submodule.fg_bot
-    -- exact RingHom.ker_coe_equiv ulift_var.toRingEquiv
+    simpa using Submodule.fg_bot
   · rintro ⟨ι, hfintype, f, hf⟩
     have equiv := MvPolynomial.renameEquiv R (Fintype.equivFin ι)
     use Fintype.card ι, f.comp equiv.symm, hf.1.comp (AlgEquiv.symm equiv).surjective
     refine Ideal.fg_ker_comp (S := MvPolynomial ι R) (A := A) _ f ?_ hf.2 equiv.symm.surjective
-    erw [RingHom.ker_coe_equiv equiv.symm.toRingEquiv]
-    exact Submodule.fg_bot
-    -- Porting note: was
-    -- convert Submodule.fg_bot
-    -- exact RingHom.ker_coe_equiv equiv.symm.toRingEquiv
+    simpa using Submodule.fg_bot
 
 universe v in
 -- Porting note: make universe level explicit to ensure `ι, ι'` has the same universe level
@@ -188,11 +182,8 @@ theorem mvPolynomial_of_finitePresentation [FinitePresentation.{w₁, w₂} R A]
     ⟨ι ⊕ ι', by infer_instance, g,
       (MvPolynomial.map_surjective f.toRingHom hf_surj).comp (AlgEquiv.surjective _),
       Ideal.fg_ker_comp _ _ ?_ ?_ (AlgEquiv.surjective _)⟩
-  · erw [RingHom.ker_coe_equiv (MvPolynomial.sumAlgEquiv R ι ι').toRingEquiv]
+  · rw [AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, AlgHom.ker_coe_equiv]
     exact Submodule.fg_bot
-    -- Porting note: was
-    -- convert Submodule.fg_bot
-    -- exact RingHom.ker_coe_equiv (MvPolynomial.sumAlgEquiv R ι ι').toRingEquiv
   · rw [AlgHom.toRingHom_eq_coe, MvPolynomial.mapAlgHom_coe_ringHom, MvPolynomial.ker_map]
     exact hf_ker.map MvPolynomial.C
 
@@ -210,8 +201,8 @@ theorem trans [Algebra A B] [IsScalarTower R A B] [FinitePresentation R A]
 
 open MvPolynomial
 
--- We follow the proof of https://stacks.math.columbia.edu/tag/0561
 -- TODO: extract out helper lemmas and tidy proof.
+@[stacks 0561]
 theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A B]
     [FinitePresentation.{w₁, w₃} R B] [FiniteType R A] :
     FinitePresentation.{w₂, w₃} A B := by
@@ -220,9 +211,9 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
   letI RX := MvPolynomial (Fin n) R
   letI AX := MvPolynomial (Fin n) A
   refine ⟨n, MvPolynomial.aeval (f ∘ X), ?_, ?_⟩
-  · rw [← Algebra.range_top_iff_surjective, ← Algebra.adjoin_range_eq_range_aeval,
+  · rw [← AlgHom.range_eq_top, ← Algebra.adjoin_range_eq_range_aeval,
       Set.range_comp f MvPolynomial.X, eq_top_iff, ← @adjoin_adjoin_of_tower R A B,
-      adjoin_image, adjoin_range_X, Algebra.map_top, (Algebra.range_top_iff_surjective _).mpr hf]
+      adjoin_image, adjoin_range_X, Algebra.map_top, (AlgHom.range_eq_top _).mpr hf]
     exact fun {x} => subset_adjoin ⟨⟩
   · obtain ⟨t, ht⟩ := FiniteType.out (R := R) (A := A)
     have := fun i : t => hf (algebraMap A B i)
@@ -246,7 +237,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       RingHom.ker (MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X)) := by
       rw [Ideal.span_le]
       rintro _ (⟨x, hx, rfl⟩ | ⟨⟨x, hx⟩, rfl⟩) <;>
-      erw [RingHom.mem_ker]
+      rw [SetLike.mem_coe, RingHom.mem_ker]
       · rw [MvPolynomial.aeval_map_algebraMap (R := R) (A := A), ← aeval_unique]
         have := Ideal.subset_span hx
         rwa [hs] at this
@@ -362,7 +353,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
         · exact add_mem (Ideal.mul_mem_right _ _ hy₁) (Ideal.mul_mem_left _ _ hy₂)
     obtain ⟨_, ⟨x, rfl⟩, y, hy, rfl⟩ := AddSubmonoid.mem_sup.mp this
     refine add_mem ?_ hy
-    simp only [RingHom.mem_ker, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, map_add,
+    simp only [RXn, RingHom.mem_ker, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, map_add,
       show f y = 0 from leI hy, add_zero, hh'] at hx
     suffices Ideal.span (s : Set RXm) ≤ (Ideal.span s').comap aeval_h by
       apply this
@@ -407,12 +398,9 @@ end FiniteType
 
 namespace FinitePresentation
 
-variable (A)
-
+variable (A) in
 theorem id : FinitePresentation (RingHom.id A) :=
   Algebra.FinitePresentation.self A
-
-variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FinitePresentation) (hg : Surjective g)
     (hker : g.ker.FG) : (g.comp f).FinitePresentation := by
@@ -447,6 +435,63 @@ theorem of_comp_finiteType (f : A →+* B) {g : B →+* C} (hg : (g.comp f).Fini
 end FinitePresentation
 
 end RingHom
+
+namespace RingHom.FinitePresentation
+universe u v
+
+open Polynomial
+
+/-- Induction principle for finitely presented ring homomorphisms.
+
+For a property to hold for all finitely presented ring homs, it suffices for it to hold for
+`Polynomial.C : R → R[X]`, surjective ring homs with finitely generated kernels, and to be closed
+under composition.
+
+Note that to state this conveniently for ring homs between rings of different universes, we carry
+around two predicates `P` and `Q`, which should be "the same" apart from universes:
+* `P`, for ring homs `(R : Type u) → (S : Type u)`.
+* `Q`, for ring homs `(R : Type u) → (S : Type v)`.
+-/
+lemma polynomial_induction
+    (P : ∀ (R : Type u) [CommRing R] (S : Type u) [CommRing S], (R →+* S) → Prop)
+    (Q : ∀ (R : Type u) [CommRing R] (S : Type v) [CommRing S], (R →+* S) → Prop)
+    (polynomial : ∀ (R) [CommRing R], P R R[X] C)
+    (fg_ker : ∀ (R : Type u) [CommRing R] (S : Type v) [CommRing S] (f : R →+* S),
+      Surjective f → (ker f).FG → Q R S f)
+    (comp : ∀ (R) [CommRing R] (S) [CommRing S] (T) [CommRing T] (f : R →+* S) (g : S →+* T),
+      P R S f → Q S T g → Q R T (g.comp f))
+    {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) (hf : f.FinitePresentation) :
+    Q R S f := by
+  letI := f.toAlgebra
+  obtain ⟨n, g, hg, hg'⟩ := hf
+  let g' := g.toRingHom
+  change Surjective g' at hg
+  change (ker g').FG at hg'
+  have : g'.comp MvPolynomial.C = f := g.comp_algebraMap
+  clear_value g'
+  subst this
+  clear g
+  induction n generalizing R S with
+  | zero =>
+    refine fg_ker _ _ _ (hg.comp (MvPolynomial.C_surjective (Fin 0))) ?_
+    rw [← comap_ker]
+    convert hg'.map (MvPolynomial.isEmptyRingEquiv R (Fin 0)).toRingHom using 1
+    simp only [RingEquiv.toRingHom_eq_coe]
+    exact Ideal.comap_symm (MvPolynomial.isEmptyRingEquiv R (Fin 0))
+  | succ n IH =>
+    let e : MvPolynomial (Fin (n + 1)) R ≃ₐ[R] MvPolynomial (Fin n) R[X] :=
+      (MvPolynomial.renameEquiv R (finSuccEquiv n)).trans (MvPolynomial.optionEquivRight R (Fin n))
+    have he : (ker (g'.comp <| RingHomClass.toRingHom e.symm)).FG := by
+      rw [← RingHom.comap_ker]
+      convert hg'.map e.toAlgHom.toRingHom using 1
+      exact Ideal.comap_symm e.toRingEquiv
+    have := IH (R := R[X]) (S := S) (g'.comp e.symm) (hg.comp e.symm.surjective) he
+    convert comp _ _ _ _ _ (polynomial _) this using 1
+    rw [comp_assoc, comp_assoc]
+    congr 1 with r
+    simp [e]
+
+end RingHom.FinitePresentation
 
 namespace AlgHom
 

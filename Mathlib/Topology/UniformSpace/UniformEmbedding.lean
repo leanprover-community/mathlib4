@@ -199,9 +199,9 @@ alias UniformInducing.injective := IsUniformInducing.injective
 /-- A map `f : α → β` between uniform spaces is a *uniform embedding* if it is uniform inducing and
 injective. If `α` is a separated space, then the latter assumption follows from the former. -/
 @[mk_iff]
-structure IsUniformEmbedding (f : α → β) extends IsUniformInducing f : Prop where
+structure IsUniformEmbedding (f : α → β) : Prop extends IsUniformInducing f where
   /-- A uniform embedding is injective. -/
-  inj : Function.Injective f
+  injective : Function.Injective f
 
 lemma IsUniformEmbedding.isUniformInducing (hf : IsUniformEmbedding f) : IsUniformInducing f :=
   hf.toIsUniformInducing
@@ -238,7 +238,7 @@ alias Filter.HasBasis.uniformEmbedding_iff := Filter.HasBasis.isUniformEmbedding
 theorem isUniformEmbedding_subtype_val {p : α → Prop} :
     IsUniformEmbedding (Subtype.val : Subtype p → α) :=
   { comap_uniformity := rfl
-    inj := Subtype.val_injective }
+    injective := Subtype.val_injective }
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_subtype_val := isUniformEmbedding_subtype_val
@@ -246,21 +246,22 @@ alias uniformEmbedding_subtype_val := isUniformEmbedding_subtype_val
 theorem isUniformEmbedding_set_inclusion {s t : Set α} (hst : s ⊆ t) :
     IsUniformEmbedding (inclusion hst) where
   comap_uniformity := by rw [uniformity_subtype, uniformity_subtype, comap_comap]; rfl
-  inj := inclusion_injective hst
+  injective := inclusion_injective hst
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_set_inclusion := isUniformEmbedding_set_inclusion
 
 theorem IsUniformEmbedding.comp {g : β → γ} (hg : IsUniformEmbedding g) {f : α → β}
-    (hf : IsUniformEmbedding f) : IsUniformEmbedding (g ∘ f) :=
-  { hg.isUniformInducing.comp hf.isUniformInducing with inj := hg.inj.comp hf.inj }
+    (hf : IsUniformEmbedding f) : IsUniformEmbedding (g ∘ f) where
+  toIsUniformInducing := hg.isUniformInducing.comp hf.isUniformInducing
+  injective := hg.injective.comp hf.injective
 
 @[deprecated (since := "2024-10-01")]
 alias UniformEmbedding.comp := IsUniformEmbedding.comp
 
 theorem IsUniformEmbedding.of_comp_iff {g : β → γ} (hg : IsUniformEmbedding g) {f : α → β} :
     IsUniformEmbedding (g ∘ f) ↔ IsUniformEmbedding f := by
-  simp_rw [isUniformEmbedding_iff, hg.isUniformInducing.of_comp_iff, hg.inj.of_comp_iff f]
+  simp_rw [isUniformEmbedding_iff, hg.isUniformInducing.of_comp_iff, hg.injective.of_comp_iff f]
 
 @[deprecated (since := "2024-10-01")]
 alias UniformEmbedding.of_comp_iff := IsUniformEmbedding.of_comp_iff
@@ -338,7 +339,7 @@ alias uniformEmbedding_of_spaced_out := isUniformEmbedding_of_spaced_out
 protected lemma IsUniformEmbedding.isEmbedding {f : α → β} (h : IsUniformEmbedding f) :
     IsEmbedding f where
   toIsInducing := h.toIsUniformInducing.isInducing
-  inj := h.inj
+  injective := h.injective
 
 @[deprecated (since := "2024-10-26")]
 alias IsUniformEmbedding.embedding := IsUniformEmbedding.isEmbedding
@@ -352,9 +353,6 @@ theorem IsUniformEmbedding.isDenseEmbedding {f : α → β} (h : IsUniformEmbedd
 
 @[deprecated (since := "2024-10-01")]
 alias UniformEmbedding.isDenseEmbedding := IsUniformEmbedding.isDenseEmbedding
-
-@[deprecated (since := "2024-09-30")]
-alias IsUniformEmbedding.denseEmbedding := IsUniformEmbedding.isDenseEmbedding
 
 theorem isClosedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopology α]
     [T0Space β] {f : α → β} {s : Set (β × β)} (hs : s ∈ 𝓤 β)
@@ -371,7 +369,7 @@ theorem closure_image_mem_nhds_of_isUniformInducing {s : Set (α × α)} {e : α
     (he₁ : IsUniformInducing e) (he₂ : IsDenseInducing e) (hs : s ∈ 𝓤 α) :
     ∃ a, closure (e '' { a' | (a, a') ∈ s }) ∈ 𝓝 b := by
   obtain ⟨U, ⟨hU, hUo, hsymm⟩, hs⟩ :
-    ∃ U, (U ∈ 𝓤 β ∧ IsOpen U ∧ SymmetricRel U) ∧ Prod.map e e ⁻¹' U ⊆ s := by
+    ∃ U, (U ∈ 𝓤 β ∧ IsOpen U ∧ IsSymmetricRel U) ∧ Prod.map e e ⁻¹' U ⊆ s := by
       rwa [← he₁.comap_uniformity, (uniformity_hasBasis_open_symmetric.comap _).mem_iff] at hs
   rcases he₂.dense.mem_nhds (UniformSpace.ball_mem_nhds b hU) with ⟨a, ha⟩
   refine ⟨a, mem_of_superset ?_ (closure_mono <| image_subset _ <| UniformSpace.ball_mono hs a)⟩
@@ -389,15 +387,16 @@ theorem isUniformEmbedding_subtypeEmb (p : α → Prop) {e : α → β} (ue : Is
   { comap_uniformity := by
       simp [comap_comap, Function.comp_def, IsDenseEmbedding.subtypeEmb, uniformity_subtype,
         ue.comap_uniformity.symm]
-    inj := (de.subtype p).inj }
+    injective := (de.subtype p).injective }
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_subtypeEmb := isUniformEmbedding_subtypeEmb
 
 theorem IsUniformEmbedding.prod {α' : Type*} {β' : Type*} [UniformSpace α'] [UniformSpace β']
     {e₁ : α → α'} {e₂ : β → β'} (h₁ : IsUniformEmbedding e₁) (h₂ : IsUniformEmbedding e₂) :
-    IsUniformEmbedding fun p : α × β => (e₁ p.1, e₂ p.2) :=
-  { h₁.isUniformInducing.prod h₂.isUniformInducing with inj := h₁.inj.prodMap h₂.inj }
+    IsUniformEmbedding fun p : α × β => (e₁ p.1, e₂ p.2) where
+  toIsUniformInducing := h₁.isUniformInducing.prod h₂.isUniformInducing
+  injective := h₁.injective.prodMap h₂.injective
 
 @[deprecated (since := "2024-10-01")]
 alias UniformEmbedding.prod := IsUniformEmbedding.prod
@@ -524,7 +523,7 @@ theorem completeSpace_extension {m : β → α} (hm : IsUniformInducing m) (dens
         have hg : p (Prod.swap ⁻¹' s₁) t ×ˢ p s₂ t ∈ g ×ˢ g := @prod_mem_prod α α _ _ g g hg₁ hg₂
         (g ×ˢ g).sets_of_superset hg fun ⟨_, _⟩ ⟨⟨c₁, c₁t, hc₁⟩, ⟨c₂, c₂t, hc₂⟩⟩ =>
           have : (c₁, c₂) ∈ t ×ˢ t := ⟨c₁t, c₂t⟩
-          comp_s₁ <| prod_mk_mem_compRel hc₁ <| comp_s₂ <| prod_mk_mem_compRel (prod_t this) hc₂⟩
+          comp_s₁ <| prodMk_mem_compRel hc₁ <| comp_s₂ <| prodMk_mem_compRel (prod_t this) hc₂⟩
     have : Cauchy (Filter.comap m g) := ‹Cauchy g›.comap' (le_of_eq hm.comap_uniformity) ‹_›
     let ⟨x, (hx : map m (Filter.comap m g) ≤ 𝓝 x)⟩ := h _ this
     have : ClusterPt x (map m (Filter.comap m g)) :=
@@ -566,7 +565,7 @@ alias uniformEmbedding_comap := isUniformEmbedding_comap
 
 /-- Pull back a uniform space structure by an embedding, adjusting the new uniform structure to
 make sure that its topology is defeq to the original one. -/
-def IsEmbedding.comapUniformSpace {α β} [TopologicalSpace α] [u : UniformSpace β]
+def Topology.IsEmbedding.comapUniformSpace {α β} [TopologicalSpace α] [u : UniformSpace β]
     (f : α → β) (h : IsEmbedding f) : UniformSpace α :=
   (u.comap f).replaceTopology h.eq_induced
 
@@ -577,7 +576,7 @@ theorem Embedding.to_isUniformEmbedding {α β} [TopologicalSpace α] [u : Unifo
     (h : IsEmbedding f) : @IsUniformEmbedding α β (h.comapUniformSpace f) u f :=
   let _ := h.comapUniformSpace f
   { comap_uniformity := rfl
-    inj := h.inj }
+    injective := h.injective }
 
 @[deprecated (since := "2024-10-01")]
 alias Embedding.to_uniformEmbedding := Embedding.to_isUniformEmbedding
@@ -658,3 +657,36 @@ theorem uniformly_extend_unique {g : α → γ} (hg : ∀ b, g (e b) = f b) (hc 
   IsDenseInducing.extend_unique _ hg hc
 
 end UniformExtension
+
+section DenseExtension
+
+variable {α β : Type*} [UniformSpace α] [UniformSpace β]
+
+theorem isUniformInducing_val (s : Set α) :
+    IsUniformInducing (@Subtype.val α s) := ⟨uniformity_setCoe⟩
+
+namespace Dense
+
+variable {s : Set α} {f : s → β}
+
+theorem extend_exists [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) (a : α) :
+    ∃ b, Tendsto f (comap (↑) (𝓝 a)) (𝓝 b) :=
+  uniformly_extend_exists (isUniformInducing_val s) hs.denseRange_val hf a
+
+theorem extend_spec [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) (a : α) :
+    Tendsto f (comap (↑) (𝓝 a)) (𝓝 (hs.extend f a)) :=
+  uniformly_extend_spec (isUniformInducing_val s) hs.denseRange_val hf a
+
+theorem uniformContinuous_extend [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) :
+    UniformContinuous (hs.extend f) :=
+  uniformContinuous_uniformly_extend (isUniformInducing_val s) hs.denseRange_val hf
+
+variable [T0Space β]
+
+theorem extend_of_ind (hs : Dense s) (hf : UniformContinuous f) (x : s) :
+    hs.extend f x = f x :=
+  IsDenseInducing.extend_eq_at _ hf.continuous.continuousAt
+
+end Dense
+
+end DenseExtension

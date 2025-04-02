@@ -90,10 +90,9 @@ section Prod
 
 variable {A B : Type*}
 
-noncomputable instance [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] :
-  NonUnitalCStarAlgebra (A × B) where
+instance [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] : NonUnitalCStarAlgebra (A × B) where
 
-noncomputable instance [NonUnitalCommCStarAlgebra A] [NonUnitalCommCStarAlgebra B] :
+instance [NonUnitalCommCStarAlgebra A] [NonUnitalCommCStarAlgebra B] :
     NonUnitalCommCStarAlgebra (A × B) where
   mul_comm := mul_comm
 
@@ -103,3 +102,17 @@ noncomputable instance [CommCStarAlgebra A] [CommCStarAlgebra B] : CommCStarAlge
   mul_comm := mul_comm
 
 end Prod
+
+namespace MulOpposite
+
+variable {A : Type*}
+
+instance [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra Aᵐᵒᵖ where
+
+instance [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra Aᵐᵒᵖ where
+
+noncomputable instance [CStarAlgebra A] : CStarAlgebra Aᵐᵒᵖ where
+
+noncomputable instance [CommCStarAlgebra A] : CommCStarAlgebra Aᵐᵒᵖ where
+
+end MulOpposite

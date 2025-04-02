@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Group.End
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Group.Instances
-import Mathlib.Logic.Function.Iterate
 
 /-!
 # Maps (semi)conjugating a shift to a shift
@@ -28,9 +27,12 @@ We use parameters `a` and `b` instead of `1` to accommodate for two use cases:
   including orientation-reversing maps.
 -/
 
+assert_not_exists Finset
+
 open Function Set
 
-/-- A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`.
+/-- A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`,
+denoted as `f: G →+c[a, b] H`.
 
 One can think about `f` as a lift to `G` of a map between two `AddCircle`s. -/
 structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
@@ -85,7 +87,7 @@ theorem map_add_one [AddMonoidWithOne G] [Add H] [AddConstMapClass F G H 1 b]
 @[scoped simp]
 theorem map_add_ofNat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
-    f (x + no_index (OfNat.ofNat n)) = f x + (OfNat.ofNat n : ℕ) • b :=
+    f (x + ofNat(n)) = f x + (ofNat(n) : ℕ) • b :=
   map_add_nat' f x n
 
 theorem map_add_nat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
@@ -93,7 +95,7 @@ theorem map_add_nat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass 
 
 theorem map_add_ofNat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
-    f (x + OfNat.ofNat n) = f x + OfNat.ofNat n := map_add_nat f x n
+    f (x + ofNat(n)) = f x + ofNat(n) := map_add_nat f x n
 
 @[scoped simp]
 theorem map_const [AddZeroClass G] [Add H] [AddConstMapClass F G H a b] (f : F) :
@@ -116,7 +118,7 @@ theorem map_nat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
 
 theorem map_ofNat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
     (f : F) (n : ℕ) [n.AtLeastTwo] :
-    f (OfNat.ofNat n) = f 0 + (OfNat.ofNat n : ℕ) • b :=
+    f (ofNat(n)) = f 0 + (ofNat(n) : ℕ) • b :=
   map_nat' f n
 
 theorem map_nat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
@@ -124,7 +126,7 @@ theorem map_nat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G 
 
 theorem map_ofNat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (n : ℕ) [n.AtLeastTwo] :
-    f (OfNat.ofNat n) = f 0 + OfNat.ofNat n := map_nat f n
+    f ofNat(n) = f 0 + ofNat(n) := map_nat f n
 
 @[scoped simp]
 theorem map_const_add [AddCommSemigroup G] [Add H] [AddConstMapClass F G H a b]
@@ -146,7 +148,7 @@ theorem map_nat_add' [AddCommMonoidWithOne G] [AddMonoid H] [AddConstMapClass F 
 
 theorem map_ofNat_add' [AddCommMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
     (f : F) (n : ℕ) [n.AtLeastTwo] (x : G) :
-    f (OfNat.ofNat n + x) = f x + OfNat.ofNat n • b :=
+    f (ofNat(n) + x) = f x + ofNat(n) • b :=
   map_nat_add' f n x
 
 theorem map_nat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
@@ -154,7 +156,7 @@ theorem map_nat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapCl
 
 theorem map_ofNat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
     (f : F) (n : ℕ) [n.AtLeastTwo] (x : G) :
-    f (OfNat.ofNat n + x) = f x + OfNat.ofNat n :=
+    f (ofNat(n) + x) = f x + ofNat(n) :=
   map_nat_add f n x
 
 @[scoped simp]
@@ -179,7 +181,7 @@ theorem map_sub_nat' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 
 @[scoped simp]
 theorem map_sub_ofNat' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
-    f (x - no_index (OfNat.ofNat n)) = f x - OfNat.ofNat n • b :=
+    f (x - ofNat(n)) = f x - ofNat(n) • b :=
   map_sub_nat' f x n
 
 @[scoped simp]
@@ -232,6 +234,7 @@ theorem map_fract {R : Type*} [LinearOrderedRing R] [FloorRing R] [AddGroup H]
     f (Int.fract x) = f x - ⌊x⌋ • b :=
   map_sub_int' ..
 
+open scoped Relator in
 /-- Auxiliary lemmas for the "monotonicity on a fundamental interval implies monotonicity" lemmas.
 We formulate it for any relation so that the proof works both for `Monotone` and `StrictMono`. -/
 protected theorem rel_map_of_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [AddGroup H]
@@ -253,7 +256,7 @@ protected theorem rel_map_of_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [
       calc
         y ≤ l + a + n • a := sub_le_iff_le_add.1 hny.2
         _ = l + (n + 1) • a := by rw [add_comm n, add_smul, one_smul, add_assoc]
-        _ ≤ l + 0 • a := add_le_add_left (zsmul_le_zsmul ha.le (by omega)) _
+        _ ≤ l + 0 • a := add_le_add_left (zsmul_le_zsmul_left ha.le (by omega)) _
         _ ≤ x := by simpa using hx.1
     · -- If `n = 0`, then `l < y ≤ l + a`, hence we can apply the assumption
       exact hf x (Ico_subset_Icc_self hx) y (by simpa using Ioc_subset_Icc_self hny) hxy
@@ -330,13 +333,13 @@ initialize_simps_projections AddConstMap (toFun → coe, as_prefix coe)
 -/
 
 /-- The identity map as `G →+c[a, a] G`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def id : G →+c[a, a] G := ⟨id, fun _ ↦ rfl⟩
 
 instance : Inhabited (G →+c[a, a] G) := ⟨.id⟩
 
 /-- Composition of two `AddConstMap`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def comp {K : Type*} [Add K] {c : K} (g : H →+c[b, c] K) (f : G →+c[a, b] H) :
     G →+c[a, c] K :=
   ⟨g ∘ f, by simp⟩
@@ -345,7 +348,7 @@ def comp {K : Type*} [Add K] {c : K} (g : H →+c[b, c] K) (f : G →+c[a, b] H)
 @[simp] theorem id_comp (f : G →+c[a, b] H) : .comp .id f = f := rfl
 
 /-- Change constants `a` and `b` in `(f : G →+c[a, b] H)` to improve definitional equalities. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def replaceConsts (f : G →+c[a, b] H) (a' b') (ha : a = a') (hb : b = b') :
     G →+c[a', b'] H where
   toFun := f
@@ -392,7 +395,7 @@ theorem one_def : (1 : G →+c[a, a] G) = .id := rfl
 theorem pow_apply (f : G →+c[a, a] G) (n : ℕ) (x : G) : (f ^ n) x = f^[n] x := rfl
 
 /-- Coercion to functions as a monoid homomorphism to `Function.End G`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def toEnd : (G →+c[a, a] G) →* Function.End G where
   toFun := DFunLike.coe
   map_mul' _ _ := rfl
@@ -415,7 +418,7 @@ but we don't do this at the moment because we don't need this.
 -/
 
 /-- Pointwise scalar multiplication of `f : G →+c[a, b] H` as a map `G →+c[a, c • b] H`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def smul [DistribSMul K H] (c : K) (f : G →+c[a, b] H) : G →+c[a, c • b] H where
   toFun := c • ⇑f
   map_add_const' x := by simp [smul_add]
@@ -428,9 +431,9 @@ variable {G : Type*} [AddMonoid G] {a : G}
 
 /-- The map that sends `c` to a translation by `c`
 as a monoid homomorphism from `Multiplicative G` to `G →+c[a, a] G`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def addLeftHom : Multiplicative G →* (G →+c[a, a] G) where
-  toFun c := Multiplicative.toAdd c +ᵥ .id
+  toFun c := c.toAdd +ᵥ .id
   map_one' := by ext; apply zero_add
   map_mul' _ _ := by ext; apply add_assoc
 

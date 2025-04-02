@@ -5,6 +5,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
   Heather Macbeth
 -/
 import Mathlib.Algebra.Module.Submodule.Ker
+import Mathlib.Algebra.Module.Submodule.RestrictScalars
+import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Range of linear maps
@@ -84,8 +86,12 @@ theorem range_comp_le_range [RingHomSurjective τ₂₃] [RingHomSurjective τ�
     (g : M₂ →ₛₗ[τ₂₃] M₃) : range (g.comp f : M →ₛₗ[τ₁₃] M₃) ≤ range g :=
   SetLike.coe_mono (Set.range_comp_subset_range f g)
 
-theorem range_eq_top [RingHomSurjective τ₁₂] {f : F} : range f = ⊤ ↔ Surjective f := by
-  rw [SetLike.ext'_iff, range_coe, top_coe, Set.range_iff_surjective]
+theorem range_eq_top [RingHomSurjective τ₁₂] {f : F} :
+    range f = ⊤ ↔ Surjective f := by
+  rw [SetLike.ext'_iff, range_coe, top_coe, Set.range_eq_univ]
+
+theorem range_eq_top_of_surjective [RingHomSurjective τ₁₂] (f : F) (hf : Surjective f) :
+    range f = ⊤ := range_eq_top.2 hf
 
 theorem range_le_iff_comap [RingHomSurjective τ₁₂] {f : F} {p : Submodule R₂ M₂} :
     range f ≤ p ↔ comap f p = ⊤ := by rw [range_eq_map, map_le_iff_le_comap, eq_top_iff]
@@ -116,6 +122,10 @@ theorem _root_.AddMonoidHom.coe_toIntLinearMap_range {M M₂ : Type*} [AddCommGr
 lemma _root_.Submodule.map_comap_eq_of_le [RingHomSurjective τ₁₂] {f : F} {p : Submodule R₂ M₂}
     (h : p ≤ LinearMap.range f) : (p.comap f).map f = p :=
   SetLike.coe_injective <| Set.image_preimage_eq_of_subset h
+
+lemma range_restrictScalars [SMul R R₂] [Module R₂ M] [Module R M₂] [CompatibleSMul M M₂ R R₂]
+    [IsScalarTower R R₂ M₂] (f : M →ₗ[R₂] M₂) :
+  LinearMap.range (f.restrictScalars R) = f.range.restrictScalars R := rfl
 
 end
 
@@ -180,7 +190,7 @@ theorem range_le_ker_iff {f : M →ₛₗ[τ₁₂] M₂} {g : M₂ →ₛₗ[τ
     mem_ker.2 <| Exists.elim hx fun y hy => by rw [← hy, ← comp_apply, h, zero_apply]⟩
 
 theorem comap_le_comap_iff {f : F} (hf : range f = ⊤) {p p'} : comap f p ≤ comap f p' ↔ p ≤ p' :=
-  ⟨fun H x hx => by rcases range_eq_top.1 hf x with ⟨y, hy, rfl⟩; exact H hx, comap_mono⟩
+  ⟨fun H ↦ by rwa [SetLike.le_def, (range_eq_top.1 hf).forall], comap_mono⟩
 
 theorem comap_injective {f : F} (hf : range f = ⊤) : Injective (comap f) := fun _ _ h =>
   le_antisymm ((comap_le_comap_iff hf).1 (le_of_eq h)) ((comap_le_comap_iff hf).1 (ge_of_eq h))
@@ -296,6 +306,10 @@ theorem range_inclusion (p q : Submodule R M) (h : p ≤ q) :
 @[simp]
 theorem map_subtype_range_inclusion {p p' : Submodule R M} (h : p ≤ p') :
     map p'.subtype (range <| inclusion h) = p := by simp [range_inclusion, map_comap_eq, h]
+
+lemma restrictScalars_map [SMul R R₂] [Module R₂ M] [Module R M₂] [IsScalarTower R R₂ M]
+    [IsScalarTower R R₂ M₂] (f : M →ₗ[R₂] M₂) (M' : Submodule R₂ M) :
+  (M'.map f).restrictScalars R = (M'.restrictScalars R).map (f.restrictScalars R) := rfl
 
 /-- If `N ⊆ M` then submodules of `N` are the same as submodules of `M` contained in `N`.
 

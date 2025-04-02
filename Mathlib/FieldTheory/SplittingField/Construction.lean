@@ -5,6 +5,8 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.RingTheory.Algebraic.Basic
 
 /-!
 # Splitting fields
@@ -93,9 +95,7 @@ theorem X_sub_C_mul_removeFactor (f : K[X]) (hf : f.natDegree ≠ 0) :
   rw [IsRoot.def, eval_map, hg, eval₂_mul, ← hg, AdjoinRoot.eval₂_root, zero_mul]
 
 theorem natDegree_removeFactor (f : K[X]) : f.removeFactor.natDegree = f.natDegree - 1 := by
-  -- Porting note: `(map (AdjoinRoot.of f.factor) f)` was `_`
-  rw [removeFactor, natDegree_divByMonic (map (AdjoinRoot.of f.factor) f) (monic_X_sub_C _),
-    natDegree_map, natDegree_X_sub_C]
+  rw [removeFactor, natDegree_divByMonic _ (monic_X_sub_C _), natDegree_map, natDegree_X_sub_C]
 
 theorem natDegree_removeFactor' {f : K[X]} {n : ℕ} (hfn : f.natDegree = n + 1) :
     f.removeFactor.natDegree = n := by rw [natDegree_removeFactor, hfn, n.add_sub_cancel]
@@ -189,12 +189,12 @@ theorem adjoin_rootSet (n : ℕ) :
     classical
     rw [rootSet_def, aroots_def]
     rw [algebraMap_succ, ← map_map, ← X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+    rw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
       Finset.coe_union, Multiset.toFinset_singleton, Finset.coe_singleton,
-      Algebra.adjoin_union_eq_adjoin_adjoin, ← Set.image_singleton,
-      Algebra.adjoin_algebraMap K (SplittingFieldAux n f.removeFactor),
-      AdjoinRoot.adjoinRoot_eq_top, Algebra.map_top]
+      Algebra.adjoin_union_eq_adjoin_adjoin, ← Set.image_singleton]
+    erw [Algebra.adjoin_algebraMap K (SplittingFieldAux n f.removeFactor)]
+    rw [AdjoinRoot.adjoinRoot_eq_top, Algebra.map_top]
     /- Porting note: was `rw [IsScalarTower.adjoin_range_toAlgHom K (AdjoinRoot f.factor)
         (SplittingFieldAux n f.removeFactor)]` -/
     have := IsScalarTower.adjoin_range_toAlgHom K (AdjoinRoot f.factor)
@@ -209,6 +209,7 @@ instance (f : K[X]) : IsSplittingField K (SplittingFieldAux f.natDegree f) f :=
 end SplittingFieldAux
 
 /-- A splitting field of a polynomial. -/
+@[stacks 09HV "The construction of the splitting field."]
 def SplittingField (f : K[X]) :=
   MvPolynomial (SplittingFieldAux f.natDegree f) K ⧸
     RingHom.ker (MvPolynomial.aeval (R := K) id).toRingHom
@@ -245,7 +246,7 @@ instance instGroupWithZero : GroupWithZero (SplittingField f) :=
   let e := algEquivSplittingFieldAux f
   { inv := fun a ↦ e.symm (e a)⁻¹
     inv_zero := by simp
-    mul_inv_cancel := fun a ha ↦ e.injective <| by simp [(AddEquivClass.map_ne_zero_iff _).2 ha]
+    mul_inv_cancel := fun a ha ↦ e.injective <| by simp [EmbeddingLike.map_ne_zero_iff.2 ha]
     __ := e.surjective.nontrivial }
 
 instance instField : Field (SplittingField f) where
@@ -276,6 +277,7 @@ instance _root_.Polynomial.IsSplittingField.splittingField (f : K[X]) :
     IsSplittingField K (SplittingField f) f :=
   IsSplittingField.of_algEquiv _ f (algEquivSplittingFieldAux f).symm
 
+@[stacks 09HU "Splitting part"]
 protected theorem splits : Splits (algebraMap K (SplittingField f)) f :=
   IsSplittingField.splits f.SplittingField f
 
@@ -301,8 +303,8 @@ variable {K}
 instance (f : K[X]) : FiniteDimensional K f.SplittingField :=
   finiteDimensional f.SplittingField f
 
-instance [Fintype K] (f : K[X]) : Fintype f.SplittingField :=
-  FiniteDimensional.fintypeOfFintype K _
+instance [Finite K] (f : K[X]) : Finite f.SplittingField :=
+  Module.finite_of_finite K
 
 instance (f : K[X]) : NoZeroSMulDivisors K f.SplittingField :=
   inferInstance

@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Right-exactness properties of tensor product
@@ -107,7 +108,6 @@ lemma le_comap_range_rTensor (q : Q) :
 
 variable (Q) {g}
 
-
 /-- If `g` is surjective, then `lTensor Q g` is surjective -/
 theorem LinearMap.lTensor_surjective (hg : Function.Surjective g) :
     Function.Surjective (lTensor Q g) := by
@@ -165,6 +165,25 @@ lemma LinearMap.rTensor_exact_iff_lTensor_exact :
     (e₂ := TensorProduct.comm _ _ _) (e₃ := TensorProduct.comm _ _ _)
     (by ext; simp) (by ext; simp)
 
+variable (hg : Function.Surjective g)
+    {N' P' : Type*} [AddCommMonoid N'] [AddCommMonoid P'] [Module R N'] [Module R P']
+    {g' : N' →ₗ[R] P'} (hg' : Function.Surjective g')
+
+include hg hg' in
+theorem TensorProduct.map_surjective : Function.Surjective (TensorProduct.map g g') := by
+  rw [← lTensor_comp_rTensor, coe_comp]
+  exact Function.Surjective.comp (lTensor_surjective _ hg') (rTensor_surjective _ hg)
+
+variable (M R) in
+theorem TensorProduct.mk_surjective (S) [Semiring S] [Algebra R S]
+    (h : Function.Surjective (algebraMap R S)) :
+    Function.Surjective (TensorProduct.mk R S M 1) := by
+  rw [← LinearMap.range_eq_top, ← top_le_iff, ← span_tmul_eq_top, Submodule.span_le]
+  rintro _ ⟨x, y, rfl⟩
+  obtain ⟨x, rfl⟩ := h x
+  rw [Algebra.algebraMap_eq_smul_one, smul_tmul]
+  exact ⟨x • y, rfl⟩
+
 end Semiring
 
 variable {R M N P : Type*} [CommRing R]
@@ -184,7 +203,7 @@ noncomputable def lTensor.toFun (hfg : Exact f g) :
     rw [LinearMap.range_le_iff_comap, ← LinearMap.ker_comp,
       ← lTensor_comp, hfg.linearMap_comp_eq_zero, lTensor_zero, ker_zero]
 
-/-- The inverse map in `lTensor.equiv_of_rightInverse` (computably, given a right inverse)-/
+/-- The inverse map in `lTensor.equiv_of_rightInverse` (computably, given a right inverse) -/
 noncomputable def lTensor.inverse_of_rightInverse {h : P → N} (hfg : Exact f g)
     (hgh : Function.RightInverse h g) :
     Q ⊗[R] P →ₗ[R] Q ⊗[R] N ⧸ LinearMap.range (lTensor Q f) :=
@@ -383,20 +402,25 @@ theorem rTensor_exact : Exact (rTensor Q f) (rTensor Q g) := by
 
 /-- Right-exactness of tensor product (`rTensor`) -/
 lemma rTensor_mkQ (N : Submodule R M) :
-    ker (rTensor Q (N.mkQ)) = range (rTensor Q N.subtype) := by
+    ker (rTensor Q N.mkQ) = range (rTensor Q N.subtype) := by
   rw [← exact_iff]
   exact rTensor_exact Q (LinearMap.exact_subtype_mkQ N) (Submodule.mkQ_surjective N)
+
+open Submodule LinearEquiv in
+lemma LinearMap.ker_tensorProductMk {I : Ideal R} :
+    ker (TensorProduct.mk R (R ⧸ I) Q 1) = I • ⊤ := by
+  apply comap_injective_of_surjective (TensorProduct.lid R Q).surjective
+  rw [← comap_coe_toLinearMap, ← ker_comp]
+  convert rTensor_mkQ Q I
+  · ext; simp
+  rw [← comap_coe_toLinearMap, ← toLinearMap_eq_coe, comap_equiv_eq_map_symm, toLinearMap_eq_coe,
+    map_coe_toLinearMap, map_symm_eq_iff, map_range_rTensor_subtype_lid]
 
 variable {M' N' P' : Type*}
     [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup P']
     [Module R M'] [Module R N'] [Module R P']
     {f' : M' →ₗ[R] N'} {g' : N' →ₗ[R] P'}
     (hfg' : Exact f' g') (hg' : Function.Surjective g')
-
-include hg hg' in
-theorem TensorProduct.map_surjective : Function.Surjective (TensorProduct.map g g') := by
-  rw [← lTensor_comp_rTensor, coe_comp]
-  exact Function.Surjective.comp (lTensor_surjective _ hg') (rTensor_surjective _ hg)
 
 include hg hg' hfg hfg' in
 /-- Kernel of a product map (right-exactness of tensor product) -/
@@ -413,18 +437,6 @@ theorem TensorProduct.map_ker :
     Submodule.map_top]
   rw [range_eq_top.mpr (rTensor_surjective M' hg), Submodule.map_top]
   rw [Exact.linearMap_ker_eq (lTensor_exact P hfg' hg')]
-
-variable (M)
-
-variable (R) in
-theorem TensorProduct.mk_surjective (S) [Semiring S] [Algebra R S]
-    (h : Surjective (algebraMap R S)) :
-    Surjective (TensorProduct.mk R S M 1) := by
-  rw [← LinearMap.range_eq_top, ← top_le_iff, ← TensorProduct.span_tmul_eq_top, Submodule.span_le]
-  rintro _ ⟨x, y, rfl⟩
-  obtain ⟨x, rfl⟩ := h x
-  rw [Algebra.algebraMap_eq_smul_one, smul_tmul]
-  exact ⟨x • y, rfl⟩
 
 end Modules
 
@@ -497,7 +509,7 @@ lemma Ideal.map_includeLeft_eq (I : Ideal A) :
             Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem]
           rw [this]
           apply Ideal.mul_mem_left
-          -- Note: adding `includeLeft` as a hint fixes a timeout #8386
+          -- Note: adding `includeLeft` as a hint fixes a timeout https://github.com/leanprover-community/mathlib4/pull/8386
           apply Ideal.mem_map_of_mem includeLeft
           exact Submodule.coe_mem a
         simp only [Submodule.coe_restrictScalars, Algebra.TensorProduct.tmul_mul_tmul,
@@ -565,7 +577,7 @@ lemma Ideal.map_includeRight_eq (I : Ideal B) :
           simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
             Submodule.mem_toAddSubmonoid, Submodule.restrictScalars_mem]
           apply Ideal.mul_mem_left
-          -- Note: adding `includeRight` as a hint fixes a timeout #8386
+          -- Note: adding `includeRight` as a hint fixes a timeout https://github.com/leanprover-community/mathlib4/pull/8386
           apply Ideal.mem_map_of_mem includeRight
           exact Submodule.coe_mem b
         simp only [Submodule.coe_restrictScalars, Algebra.TensorProduct.tmul_mul_tmul,
@@ -614,9 +626,10 @@ theorem Algebra.TensorProduct.map_ker (hf : Function.Surjective f) (hg : Functio
   have : map f g = (map f (AlgHom.id R D)).comp (map (AlgHom.id R A) g) := ext rfl rfl
   rw [this]
   -- this needs some rewriting to RingHom
-  simp only [AlgHom.coe_ker, AlgHom.comp_toRingHom]
+  -- TODO: can `RingHom.comap_ker` take an arbitrary `RingHomClass`, rather than just `RingHom`?
+  simp only [AlgHom.ker_coe, AlgHom.comp_toRingHom]
   rw [← RingHom.comap_ker]
-  simp only [← AlgHom.coe_ker]
+  simp only [← AlgHom.ker_coe]
   -- apply one step of exactness
   rw [← Algebra.TensorProduct.lTensor_ker _ hg, RingHom.ker_eq_comap_bot (map (AlgHom.id R A) g)]
   rw [← Ideal.comap_map_of_surjective (map (AlgHom.id R A) g) (LinearMap.lTensor_surjective A hg)]

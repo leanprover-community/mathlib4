@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Ring.Subring.Defs
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.RingTheory.NonUnitalSubring.Defs
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Subrings
@@ -66,6 +67,7 @@ variable {R : Type u} {S : Type v} {T : Type w} [Ring R]
 variable [Ring S] [Ring T]
 
 namespace Subring
+variable {s t : Subring R}
 
 -- Porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
 -- projection `s.toSubmonoid`
@@ -78,6 +80,12 @@ theorem toSubsemiring_strictMono : StrictMono (toSubsemiring : Subring R → Sub
 theorem toSubsemiring_mono : Monotone (toSubsemiring : Subring R → Subsemiring R) :=
   toSubsemiring_strictMono.monotone
 
+@[gcongr]
+lemma toSubsemiring_lt_toSubsemiring (hst : s < t) : s.toSubsemiring < t.toSubsemiring := hst
+
+@[gcongr]
+lemma toSubsemiring_le_toSubsemiring (hst : s ≤ t) : s.toSubsemiring ≤ t.toSubsemiring := hst
+
 @[mono]
 theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → AddSubgroup R) :=
   fun _ _ => id
@@ -85,6 +93,12 @@ theorem toAddSubgroup_strictMono : StrictMono (toAddSubgroup : Subring R → Add
 @[mono]
 theorem toAddSubgroup_mono : Monotone (toAddSubgroup : Subring R → AddSubgroup R) :=
   toAddSubgroup_strictMono.monotone
+
+@[gcongr]
+lemma toAddSubgroup_lt_toAddSubgroup (hst : s < t) : s.toAddSubgroup < t.toAddSubgroup := hst
+
+@[gcongr]
+lemma toAddSubgroup_le_toAddSubgroup (hst : s ≤ t) : s.toAddSubgroup ≤ t.toAddSubgroup := hst
 
 @[mono]
 theorem toSubmonoid_strictMono : StrictMono (fun s : Subring R => s.toSubmonoid) := fun _ _ => id
@@ -371,6 +385,15 @@ theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
 instance : CommRing (center R) :=
   { inferInstanceAs (CommSemiring (Subsemiring.center R)), (center R).toRing with }
 
+/-- The center of isomorphic (not necessarily associative) rings are isomorphic. -/
+@[simps!] def centerCongr (e : R ≃+* S) : center R ≃+* center S :=
+  NonUnitalSubsemiring.centerCongr e
+
+/-- The center of a (not necessarily associative) ring
+is isomorphic to the center of its opposite. -/
+@[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
+  NonUnitalSubsemiring.centerToMulOpposite
+
 end
 
 section DivisionRing
@@ -460,6 +483,7 @@ theorem closure_le {s : Set R} {t : Subring R} : closure s ≤ t ↔ s ⊆ t :=
 
 /-- Subring closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
+@[gcongr]
 theorem closure_mono ⦃s t : Set R⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Set.Subset.trans h subset_closure
 
@@ -548,25 +572,17 @@ theorem mem_closure_iff {s : Set R} {x} :
       | mul _ _ _ _ h₁ h₂ => exact add_mem h₁ h₂
       | inv _ _ h => exact neg_mem h⟩
 
+lemma closure_le_centralizer_centralizer (s : Set R) :
+    closure s ≤ centralizer (centralizer s) :=
+  closure_le.mpr Set.subset_centralizer_centralizer
+
 /-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
-def closureCommRingOfComm {s : Set R} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+abbrev closureCommRingOfComm {s : Set R} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
     CommRing (closure s) :=
   { (closure s).toRing with
-    mul_comm := fun ⟨x, hx⟩ ⟨y, hy⟩ => by
-      ext
-      simp only [MulMemClass.mk_mul_mk]
-      induction hx, hy using closure_induction₂ with
-      | mem_mem x y hx hy => exact hcomm x hx y hy
-      | zero_left x _ => exact Commute.zero_left x
-      | zero_right x _ => exact Commute.zero_right x
-      | one_left x _ => exact Commute.one_left x
-      | one_right x _ => exact Commute.one_right x
-      | mul_left _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂
-      | mul_right _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_right h₁ h₂
-      | add_left _ _ _ _ _ _ h₁ h₂ => exact Commute.add_left h₁ h₂
-      | add_right _ _ _ _ _ _ h₁ h₂ => exact Commute.add_right h₁ h₂
-      | neg_left _ _ _ _ h => exact Commute.neg_left h
-      | neg_right _ _ _ _ h => exact Commute.neg_right h }
+    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
+      have := closure_le_centralizer_centralizer s
+      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
 
 theorem exists_list_of_mem_closure {s : Set R} {x : R} (hx : x ∈ closure s) :
     ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s ∨ y = (-1 : R)) ∧ (L.map List.prod).sum = x := by
@@ -588,8 +604,7 @@ theorem exists_list_of_mem_closure {s : Set R} {x : R} (hx : x ∈ closure s) :
         List.recOn L (by simp)
           (by simp +contextual [List.map_cons, add_comm])⟩
 
-variable (R)
-
+variable (R) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 protected def gi : GaloisInsertion (@closure R _) (↑) where
   choice s _ := closure s
@@ -597,9 +612,8 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
   le_l_u _s := subset_closure
   choice_eq _s _h := rfl
 
-variable {R}
-
 /-- Closure of a subring `S` equals `S`. -/
+@[simp]
 theorem closure_eq (s : Subring R) : closure (s : Set R) = s :=
   (Subring.gi R).l_u_eq s
 
@@ -619,6 +633,37 @@ theorem closure_iUnion {ι} (s : ι → Set R) : closure (⋃ i, s i) = ⨆ i, c
 
 theorem closure_sUnion (s : Set (Set R)) : closure (⋃₀ s) = ⨆ t ∈ s, closure t :=
   (Subring.gi R).gc.l_sSup
+
+@[simp]
+theorem closure_singleton_intCast (n : ℤ) : closure {(n : R)} = ⊥ :=
+  bot_unique <| closure_le.2 <| Set.singleton_subset_iff.mpr <| intCast_mem _ _
+
+@[simp]
+theorem closure_singleton_natCast (n : ℕ) : closure {(n : R)} = ⊥ :=
+  mod_cast closure_singleton_intCast n
+
+@[simp]
+theorem closure_singleton_zero : closure {(0 : R)} = ⊥ := mod_cast closure_singleton_natCast 0
+
+@[simp]
+theorem closure_singleton_one : closure {(1 : R)} = ⊥ := mod_cast closure_singleton_natCast 1
+
+@[simp]
+theorem closure_insert_intCast (n : ℤ) (s : Set R) : closure (insert (n : R) s) = closure s := by
+  rw [Set.insert_eq, closure_union]
+  simp
+
+@[simp]
+theorem closure_insert_natCast (n : ℕ) (s : Set R) : closure (insert (n : R) s) = closure s :=
+  mod_cast closure_insert_intCast n s
+
+@[simp]
+theorem closure_insert_zero (s : Set R) : closure (insert 0 s) = closure s :=
+  mod_cast closure_insert_natCast 0 s
+
+@[simp]
+theorem closure_insert_one (s : Set R) : closure (insert 1 s) = closure s :=
+  mod_cast closure_insert_natCast 1 s
 
 theorem map_sup (s t : Subring R) (f : R →+* S) : (s ⊔ t).map f = s.map f ⊔ t.map f :=
   (gc_map_comap f).l_sup
@@ -663,7 +708,7 @@ theorem coe_prod (s : Subring R) (t : Subring S) :
 theorem mem_prod {s : Subring R} {t : Subring S} {p : R × S} : p ∈ s.prod t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
   Iff.rfl
 
-@[mono]
+@[gcongr, mono]
 theorem prod_mono ⦃s₁ s₂ : Subring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : Subring S⦄ (ht : t₁ ≤ t₂) :
     s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
@@ -751,15 +796,19 @@ theorem rangeRestrict_surjective (f : R →+* S) : Function.Surjective f.rangeRe
   let ⟨x, hx⟩ := mem_range.mp hy
   ⟨x, Subtype.ext hx⟩
 
-theorem range_top_iff_surjective {f : R →+* S} :
+theorem range_eq_top {f : R →+* S} :
     f.range = (⊤ : Subring S) ↔ Function.Surjective f :=
-  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_range, coe_top]) Set.range_iff_surjective
+  SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_range, coe_top]) Set.range_eq_univ
+
+@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
 
 /-- The range of a surjective ring homomorphism is the whole of the codomain. -/
 @[simp]
-theorem range_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
+theorem range_eq_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
     f.range = (⊤ : Subring S) :=
-  range_top_iff_surjective.2 hf
+  range_eq_top.2 hf
+
+@[deprecated (since := "2024-11-11")] alias range_top_of_surjective := range_eq_top_of_surjective
 
 section eqLocus
 
@@ -794,10 +843,8 @@ theorem closure_preimage_le (f : R →+* S) (s : Set S) : closure (f ⁻¹' s) �
 /-- The image under a ring homomorphism of the subring generated by a set equals
 the subring generated by the image of the set. -/
 theorem map_closure (f : R →+* S) (s : Set R) : (closure s).map f = closure (f '' s) :=
-  le_antisymm
-    (map_le_iff_le_comap.2 <|
-      le_trans (closure_mono <| Set.subset_preimage_image _ _) (closure_preimage_le _ _))
-    (closure_le.2 <| Set.image_subset _ subset_closure)
+  Set.image_preimage.l_comm_of_u_comm (gc_map_comap f) (Subring.gi S).gc (Subring.gi R).gc
+    fun _ ↦ rfl
 
 end RingHom
 
@@ -864,13 +911,8 @@ theorem ofLeftInverse_symm_apply {g : S → R} {f : R →+* S} (h : Function.Lef
 
 /-- Given an equivalence `e : R ≃+* S` of rings and a subring `s` of `R`,
 `subringMap e s` is the induced equivalence between `s` and `s.map e` -/
-@[simps!]
 def subringMap (e : R ≃+* S) : s ≃+* s.map e.toRingHom :=
   e.subsemiringMap s.toSubsemiring
-
--- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] RingEquiv.subringMap_symm_apply_coe
-  RingEquiv.subringMap_apply_coe
 
 end RingEquiv
 
@@ -914,7 +956,7 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
   induction' hd with hd tl ih
   · exact ⟨[], List.forall_mem_nil _, Or.inl rfl⟩
   rw [List.forall_mem_cons] at HL
-  rcases ih HL.2 with ⟨L, HL', HP | HP⟩ <;> cases' HL.1 with hhd hhd
+  rcases ih HL.2 with ⟨L, HL', HP | HP⟩ <;> rcases HL.1 with hhd | hhd
   · exact
       ⟨hd::L, List.forall_mem_cons.2 ⟨hhd, HL'⟩,
         Or.inl <| by rw [List.prod_cons, List.prod_cons, HP]⟩
@@ -1058,3 +1100,8 @@ theorem comap_map_eq_self_of_injective
   SetLike.coe_injective (Set.preimage_image_eq _ hf)
 
 end Subring
+
+theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
+    (k : R) * g ∈ G := by
+  convert AddSubgroup.zsmul_mem G h k using 1
+  rw [zsmul_eq_mul]

@@ -103,7 +103,13 @@ theorem dZero_ker_eq_invariants : LinearMap.ker (dZero A) = invariants A.ρ := b
 
 @[simp] theorem dZero_eq_zero [A.IsTrivial] : dZero A = 0 := by
   ext
-  simp only [dZero_apply, apply_eq_self, sub_self, LinearMap.zero_apply, Pi.zero_apply]
+  simp only [dZero_apply, isTrivial_apply, sub_self, LinearMap.zero_apply, Pi.zero_apply]
+
+lemma dZero_comp_subtype : dZero A ∘ₗ A.ρ.invariants.subtype = 0 := by
+  ext ⟨x, hx⟩ g
+  replace hx := hx g
+  rw [← sub_eq_zero] at hx
+  exact hx
 
 /-- The 1st differential in the complex of inhomogeneous cochains of `A : Rep k G`, as a
 `k`-linear map `Fun(G, A) → Fun(G × G, A)`. It sends
@@ -142,7 +148,7 @@ square commutes:
 where the vertical arrows are `zeroCochainsLequiv` and `oneCochainsLequiv` respectively.
 -/
 theorem dZero_comp_eq : dZero A ∘ₗ (zeroCochainsLequiv A) =
-    oneCochainsLequiv A ∘ₗ (inhomogeneousCochains A).d 0 1 := by
+    oneCochainsLequiv A ∘ₗ ((inhomogeneousCochains A).d 0 1).hom := by
   ext x y
   show A.ρ y (x default) - x default = _ + ({0} : Finset _).sum _
   simp_rw [Fin.val_eq_zero, zero_add, pow_one, neg_smul, one_smul,
@@ -163,7 +169,7 @@ square commutes:
 where the vertical arrows are `oneCochainsLequiv` and `twoCochainsLequiv` respectively.
 -/
 theorem dOne_comp_eq : dOne A ∘ₗ oneCochainsLequiv A =
-    twoCochainsLequiv A ∘ₗ (inhomogeneousCochains A).d 1 2 := by
+    twoCochainsLequiv A ∘ₗ ((inhomogeneousCochains A).d 1 2).hom := by
   ext x y
   show A.ρ y.1 (x _) - x _ + x _ =  _ + _
   rw [Fin.sum_univ_two]
@@ -185,7 +191,8 @@ square commutes:
 where the vertical arrows are `twoCochainsLequiv` and `threeCochainsLequiv` respectively.
 -/
 theorem dTwo_comp_eq :
-    dTwo A ∘ₗ twoCochainsLequiv A = threeCochainsLequiv A ∘ₗ (inhomogeneousCochains A).d 2 3 := by
+    dTwo A ∘ₗ twoCochainsLequiv A =
+      threeCochainsLequiv A ∘ₗ ((inhomogeneousCochains A).d 2 3).hom := by
   ext x y
   show A.ρ y.1 (x _) - x _ + x _ - x _ = _ + _
   dsimp
@@ -201,12 +208,27 @@ theorem dOne_comp_dZero : dOne A ∘ₗ dZero A = 0 := by
   rfl
 
 theorem dTwo_comp_dOne : dTwo A ∘ₗ dOne A = 0 := by
-  show ModuleCat.asHom (dOne A) ≫ ModuleCat.asHom (dTwo A) = _
-  have h1 : _ ≫ ModuleCat.asHom (dOne A) = _ ≫ _ := congr_arg ModuleCat.asHom (dOne_comp_eq A)
-  have h2 : _ ≫ ModuleCat.asHom (dTwo A) = _ ≫ _ := congr_arg ModuleCat.asHom (dTwo_comp_eq A)
-  simp only [← LinearEquiv.toModuleIso_hom] at h1 h2
-  simp only [(Iso.eq_inv_comp _).2 h2, (Iso.eq_inv_comp _).2 h1,
-    Category.assoc, Iso.hom_inv_id_assoc, HomologicalComplex.d_comp_d_assoc, zero_comp, comp_zero]
+  show (ModuleCat.ofHom (dOne A) ≫ ModuleCat.ofHom (dTwo A)).hom = _
+  have h1 := congr_arg ModuleCat.ofHom (dOne_comp_eq A)
+  have h2 := congr_arg ModuleCat.ofHom (dTwo_comp_eq A)
+  simp only [ModuleCat.ofHom_comp, ModuleCat.ofHom_comp, ← LinearEquiv.toModuleIso_hom] at h1 h2
+  simp only [(Iso.eq_inv_comp _).2 h2, (Iso.eq_inv_comp _).2 h1, ModuleCat.ofHom_hom,
+    ModuleCat.hom_ofHom, Category.assoc, Iso.hom_inv_id_assoc, HomologicalComplex.d_comp_d_assoc,
+    zero_comp, comp_zero, ModuleCat.hom_zero]
+
+open ShortComplex
+
+/-- The (exact) short complex `A.ρ.invariants ⟶ A ⟶ (G → A)`. -/
+def shortComplexH0 : ShortComplex (ModuleCat k) :=
+  moduleCatMk _ _ (dZero_comp_subtype A)
+
+/-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)`. -/
+def shortComplexH1 : ShortComplex (ModuleCat k) :=
+  moduleCatMk (dZero A) (dOne A) (dOne_comp_dZero A)
+
+/-- The short complex `Fun(G, A) --dOne--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)`. -/
+def shortComplexH2 : ShortComplex (ModuleCat k) :=
+  moduleCatMk (dOne A) (dTwo A) (dTwo_comp_dOne A)
 
 end Differentials
 
@@ -254,19 +276,22 @@ theorem mem_oneCocycles_iff (f : G → A) :
   rw [← add_eq_zero_iff_eq_neg, ← oneCocycles_map_one f, ← mul_inv_cancel g,
     (mem_oneCocycles_iff f).1 f.2 g g⁻¹]
 
+theorem dZero_apply_mem_oneCocycles (x : A) :
+    dZero A x ∈ oneCocycles A :=
+  congr($(dOne_comp_dZero A) x)
+
 theorem oneCocycles_map_mul_of_isTrivial [A.IsTrivial] (f : oneCocycles A) (g h : G) :
     f (g * h) = f g + f h := by
-  rw [(mem_oneCocycles_iff f).1 f.2, apply_eq_self A.ρ g (f h), add_comm]
+  rw [(mem_oneCocycles_iff f).1 f.2, isTrivial_apply A.ρ g (f h), add_comm]
 
 theorem mem_oneCocycles_of_addMonoidHom [A.IsTrivial] (f : Additive G →+ A) :
     f ∘ Additive.ofMul ∈ oneCocycles A :=
   (mem_oneCocycles_iff _).2 fun g h => by
     simp only [Function.comp_apply, ofMul_mul, map_add,
-      oneCocycles_map_mul_of_isTrivial, apply_eq_self A.ρ g (f (Additive.ofMul h)),
+      oneCocycles_map_mul_of_isTrivial, isTrivial_apply A.ρ g (f (Additive.ofMul h)),
       add_comm (f (Additive.ofMul g))]
 
-variable (A)
-
+variable (A) in
 /-- When `A : Rep k G` is a trivial representation of `G`, `Z¹(G, A)` is isomorphic to the
 group homs `G → A`. -/
 @[simps] def oneCocyclesLequivOfIsTrivial [hA : A.IsTrivial] :
@@ -282,8 +307,6 @@ group homs `G → A`. -/
       property := mem_oneCocycles_of_addMonoidHom f }
   left_inv f := by ext; rfl
   right_inv f := by ext; rfl
-
-variable {A}
 
 instance : FunLike (twoCocycles A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
@@ -329,84 +352,85 @@ lemma twoCocycles_ρ_map_inv_sub_map_inv (f : twoCocycles A) (g : G) :
     at this
   exact sub_eq_sub_iff_add_eq_add.2 this.symm
 
+theorem dOne_apply_mem_twoCocycles (x : G → A) :
+    dOne A x ∈ twoCocycles A :=
+  congr($(dTwo_comp_dOne A) x)
+
 end Cocycles
 
 section Coboundaries
 
 /-- The 1-coboundaries `B¹(G, A)` of `A : Rep k G`, defined as the image of the map
 `A → Fun(G, A)` sending `(a, g) ↦ ρ_A(g)(a) - a.` -/
-def oneCoboundaries : Submodule k (oneCocycles A) :=
-  LinearMap.range ((dZero A).codRestrict (oneCocycles A) fun c =>
-    LinearMap.ext_iff.1 (dOne_comp_dZero A) c)
+def oneCoboundaries : Submodule k (G → A) :=
+  LinearMap.range (dZero A)
 
 /-- The 2-coboundaries `B²(G, A)` of `A : Rep k G`, defined as the image of the map
 `Fun(G, A) → Fun(G × G, A)` sending `(f, (g₁, g₂)) ↦ ρ_A(g₁)(f(g₂)) - f(g₁g₂) + f(g₁).` -/
-def twoCoboundaries : Submodule k (twoCocycles A) :=
-  LinearMap.range ((dOne A).codRestrict (twoCocycles A) fun c =>
-    LinearMap.ext_iff.1 (dTwo_comp_dOne.{u} A) c)
+def twoCoboundaries : Submodule k (G × G → A) :=
+  LinearMap.range (dOne A)
 
 variable {A}
 
-/-- Makes a 1-coboundary out of `f ∈ Im(d⁰)`. -/
-def oneCoboundariesOfMemRange {f : G → A} (h : f ∈ LinearMap.range (dZero A)) :
-    oneCoboundaries A :=
-  ⟨⟨f, LinearMap.range_le_ker_iff.2 (dOne_comp_dZero A) h⟩,
-    by rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩⟩
+instance : FunLike (oneCoboundaries A) G A := ⟨Subtype.val, Subtype.val_injective⟩
 
-theorem oneCoboundaries_of_mem_range_apply {f : G → A} (h : f ∈ LinearMap.range (dZero A)) :
-    (oneCoboundariesOfMemRange h).1.1 = f := rfl
+@[simp]
+theorem oneCoboundaries.coe_mk (f : G → A) (hf) :
+    ((⟨f, hf⟩ : oneCoboundaries A) : G → A) = f := rfl
 
-/-- Makes a 1-coboundary out of `f : G → A` and `x` such that
-`ρ(g)(x) - x = f(g)` for all `g : G`. -/
-def oneCoboundariesOfEq {f : G → A} {x : A} (hf : ∀ g, A.ρ g x - x = f g) :
-    oneCoboundaries A :=
-  oneCoboundariesOfMemRange ⟨x, funext hf⟩
+@[simp]
+theorem oneCoboundaries.val_eq_coe (f : oneCoboundaries A) : f.1 = f := rfl
 
-theorem oneCoboundariesOfEq_apply {f : G → A} {x : A} (hf : ∀ g, A.ρ g x - x = f g) :
-    (oneCoboundariesOfEq hf).1.1 = f := rfl
+@[ext]
+theorem oneCoboundaries_ext {f₁ f₂ : oneCoboundaries A} (h : ∀ g : G, f₁ g = f₂ g) : f₁ = f₂ :=
+  DFunLike.ext f₁ f₂ h
 
-theorem mem_range_of_mem_oneCoboundaries {f : oneCocycles A} (h : f ∈ oneCoboundaries A) :
-    f.1 ∈ LinearMap.range (dZero A) := by
-  rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩
+variable (A) in
+lemma oneCoboundaries_le_oneCocycles : oneCoboundaries A ≤ oneCocycles A := by
+  rintro _ ⟨x, rfl⟩
+  exact dZero_apply_mem_oneCocycles x
+
+variable (A) in
+/-- Natural inclusion `B¹(G, A) →ₗ[k] Z¹(G, A)`. -/
+abbrev oneCoboundariesToOneCocycles : oneCoboundaries A →ₗ[k] oneCocycles A :=
+  Submodule.inclusion (oneCoboundaries_le_oneCocycles A)
+
+@[simp]
+lemma oneCoboundariesToOneCocycles_apply (x : oneCoboundaries A) :
+    oneCoboundariesToOneCocycles A x = x.1 := rfl
 
 theorem oneCoboundaries_eq_bot_of_isTrivial (A : Rep k G) [A.IsTrivial] :
     oneCoboundaries A = ⊥ := by
   simp_rw [oneCoboundaries, dZero_eq_zero]
   exact LinearMap.range_eq_bot.2 rfl
 
-theorem mem_oneCoboundaries_iff (f : oneCocycles A) : f ∈ oneCoboundaries A ↔
-    ∃ x : A, ∀ g : G, A.ρ g x - x = f g := exists_congr fun x ↦ by
-  simpa only [LinearMap.codRestrict, dZero, LinearMap.coe_mk, AddHom.coe_mk] using
-    groupCohomology.oneCocycles_ext_iff
+instance : FunLike (twoCoboundaries A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
 
-/-- Makes a 2-coboundary out of `f ∈ Im(d¹)`. -/
-def twoCoboundariesOfMemRange {f : G × G → A} (h : f ∈ LinearMap.range (dOne A)) :
-    twoCoboundaries A :=
-  ⟨⟨f, LinearMap.range_le_ker_iff.2 (dTwo_comp_dOne A) h⟩,
-    by rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩⟩
+@[simp]
+theorem twoCoboundaries.coe_mk (f : G × G → A) (hf) :
+    ((⟨f, hf⟩ : twoCoboundaries A) : G × G → A) = f := rfl
 
-theorem twoCoboundariesOfMemRange_apply {f : G × G → A} (h : f ∈ LinearMap.range (dOne A)) :
-    (twoCoboundariesOfMemRange h).1.1 = f := rfl
+@[simp]
+theorem twoCoboundaries.val_eq_coe (f : twoCoboundaries A) : f.1 = f := rfl
 
-/-- Makes a 2-coboundary out of `f : G × G → A` and `x : G → A` such that
-`ρ(g)(x(h)) - x(gh) + x(g) = f(g, h)` for all `g, h : G`. -/
-def twoCoboundariesOfEq {f : G × G → A} {x : G → A}
-    (hf : ∀ g h, A.ρ g (x h) - x (g * h) + x g = f (g, h)) :
-    twoCoboundaries A :=
-  twoCoboundariesOfMemRange ⟨x, funext fun g ↦ hf g.1 g.2⟩
+@[ext]
+theorem twoCoboundaries_ext {f₁ f₂ : twoCoboundaries A} (h : ∀ g h : G, f₁ (g, h) = f₂ (g, h)) :
+    f₁ = f₂ :=
+  DFunLike.ext f₁ f₂ (Prod.forall.mpr h)
 
-theorem twoCoboundariesOfEq_apply {f : G × G → A} {x : G → A}
-    (hf : ∀ g h, A.ρ g (x h) - x (g * h) + x g = f (g, h)) :
-    (twoCoboundariesOfEq hf).1.1 = f := rfl
+variable (A) in
+lemma twoCoboundaries_le_twoCocycles : twoCoboundaries A ≤ twoCocycles A := by
+  rintro _ ⟨x, rfl⟩
+  exact dOne_apply_mem_twoCocycles x
 
-theorem mem_range_of_mem_twoCoboundaries {f : twoCocycles A} (h : f ∈ twoCoboundaries A) :
-    (twoCocycles A).subtype f ∈ LinearMap.range (dOne A) := by
-  rcases h with ⟨x, rfl⟩; exact ⟨x, rfl⟩
+variable (A) in
+/-- Natural inclusion `B²(G, A) →ₗ[k] Z²(G, A)`. -/
+abbrev twoCoboundariesToTwoCocycles : twoCoboundaries A →ₗ[k] twoCocycles A :=
+  Submodule.inclusion (twoCoboundaries_le_twoCocycles A)
 
-theorem mem_twoCoboundaries_iff (f : twoCocycles A) : f ∈ twoCoboundaries A ↔
-    ∃ x : G → A, ∀ g h : G, A.ρ g (x h) - x (g * h) + x g = f (g, h) := exists_congr fun x ↦ by
-  simpa only [LinearMap.codRestrict, dOne, LinearMap.coe_mk, AddHom.coe_mk] using
-    groupCohomology.twoCocycles_ext_iff
+@[simp]
+lemma twoCoboundariesToTwoCocycles_apply (x : twoCoboundaries A) :
+    twoCoboundariesToTwoCocycles A x = x.1 := rfl
 
 end Coboundaries
 
@@ -433,7 +457,7 @@ variable {G A : Type*} [Monoid G] [AddCommGroup A] [MulAction G A]
 
 theorem map_one_of_isOneCocycle {f : G → A} (hf : IsOneCocycle f) :
     f 1 = 0 := by
-  simpa only [mul_one, one_smul, self_eq_add_right] using hf 1 1
+  simpa only [mul_one, one_smul, left_eq_add] using hf 1 1
 
 theorem map_one_fst_of_isTwoCocycle {f : G × G → A} (hf : IsTwoCocycle f) (g : G) :
     f (1, g) = f (1, 1) := by
@@ -486,46 +510,55 @@ variable {k G A : Type u} [CommRing k] [Group G] [AddCommGroup A] [Module k A]
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G → A` satisfying the 1-cocycle condition, produces a 1-cocycle for the representation on
 `A` induced by the `DistribMulAction`. -/
+@[simps]
 def oneCocyclesOfIsOneCocycle {f : G → A} (hf : IsOneCocycle f) :
     oneCocycles (Rep.ofDistribMulAction k G A) :=
   ⟨f, (mem_oneCocycles_iff (A := Rep.ofDistribMulAction k G A) f).2 hf⟩
 
-theorem isOneCocycle_of_oneCocycles (f : oneCocycles (Rep.ofDistribMulAction k G A)) :
-    IsOneCocycle (A := A) f := (mem_oneCocycles_iff f).1 f.2
+theorem isOneCocycle_of_mem_oneCocycles
+    (f : G → A) (hf : f ∈ oneCocycles (Rep.ofDistribMulAction k G A)) :
+    IsOneCocycle f :=
+  fun _ _ => (mem_oneCocycles_iff (A := Rep.ofDistribMulAction k G A) f).1 hf _ _
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G → A` satisfying the 1-coboundary condition, produces a 1-coboundary for the representation
 on `A` induced by the `DistribMulAction`. -/
+@[simps]
 def oneCoboundariesOfIsOneCoboundary {f : G → A} (hf : IsOneCoboundary f) :
     oneCoboundaries (Rep.ofDistribMulAction k G A) :=
-  oneCoboundariesOfMemRange ⟨hf.choose, funext hf.choose_spec⟩
+  ⟨f, hf.choose, funext hf.choose_spec⟩
 
-theorem isOneCoboundary_of_oneCoboundaries (f : oneCoboundaries (Rep.ofDistribMulAction k G A)) :
-    IsOneCoboundary (A := A) f.1.1 := by
-  rcases mem_range_of_mem_oneCoboundaries f.2 with ⟨x, hx⟩
-  exact ⟨x, by rw [← hx]; intro g; rfl⟩
+theorem isOneCoboundary_of_mem_oneCoboundaries
+    (f : G → A) (hf : f ∈ oneCoboundaries (Rep.ofDistribMulAction k G A)) :
+    IsOneCoboundary f := by
+  rcases hf with ⟨a, rfl⟩
+  exact ⟨a, fun _ => rfl⟩
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G × G → A` satisfying the 2-cocycle condition, produces a 2-cocycle for the representation on
 `A` induced by the `DistribMulAction`. -/
+@[simps]
 def twoCocyclesOfIsTwoCocycle {f : G × G → A} (hf : IsTwoCocycle f) :
     twoCocycles (Rep.ofDistribMulAction k G A) :=
   ⟨f, (mem_twoCocycles_iff (A := Rep.ofDistribMulAction k G A) f).2 hf⟩
 
-theorem isTwoCocycle_of_twoCocycles (f : twoCocycles (Rep.ofDistribMulAction k G A)) :
-    IsTwoCocycle (A := A) f := (mem_twoCocycles_iff f).1 f.2
+theorem isTwoCocycle_of_mem_twoCocycles
+    (f : G × G → A) (hf : f ∈ twoCocycles (Rep.ofDistribMulAction k G A)) :
+    IsTwoCocycle f := (mem_twoCocycles_iff (A := Rep.ofDistribMulAction k G A) f).1 hf
 
 /-- Given a `k`-module `A` with a compatible `DistribMulAction` of `G`, and a function
 `f : G × G → A` satisfying the 2-coboundary condition, produces a 2-coboundary for the
 representation on `A` induced by the `DistribMulAction`. -/
+@[simps]
 def twoCoboundariesOfIsTwoCoboundary {f : G × G → A} (hf : IsTwoCoboundary f) :
     twoCoboundaries (Rep.ofDistribMulAction k G A) :=
-  twoCoboundariesOfMemRange (⟨hf.choose,funext fun g ↦ hf.choose_spec g.1 g.2⟩)
+  ⟨f, hf.choose,funext fun g ↦ hf.choose_spec g.1 g.2⟩
 
-theorem isTwoCoboundary_of_twoCoboundaries (f : twoCoboundaries (Rep.ofDistribMulAction k G A)) :
-    IsTwoCoboundary (A := A) f.1.1 := by
-  rcases mem_range_of_mem_twoCoboundaries f.2 with ⟨x, hx⟩
-  exact ⟨x, fun g h => funext_iff.1 hx (g, h)⟩
+theorem isTwoCoboundary_of_mem_twoCoboundaries
+    (f : G × G → A) (hf : f ∈ twoCoboundaries (Rep.ofDistribMulAction k G A)) :
+    IsTwoCoboundary f := by
+  rcases hf with ⟨a, rfl⟩
+  exact ⟨a, fun _ _ => rfl⟩
 
 end ofDistribMulAction
 
@@ -556,7 +589,7 @@ variable {G M : Type*} [Monoid G] [CommGroup M] [MulAction G M]
 
 theorem map_one_of_isMulOneCocycle {f : G → M} (hf : IsMulOneCocycle f) :
     f 1 = 1 := by
-  simpa only [mul_one, one_smul, self_eq_mul_right] using hf 1 1
+  simpa only [mul_one, one_smul, left_eq_mul] using hf 1 1
 
 theorem map_one_fst_of_isMulTwoCocycle {f : G × G → M} (hf : IsMulTwoCocycle f) (g : G) :
     f (1, g) = f (1, 1) := by
@@ -609,48 +642,55 @@ variable {G M : Type} [Group G] [CommGroup M] [MulDistribMulAction G M]
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G → M` satisfying the multiplicative 1-cocycle condition, produces a 1-cocycle for the
 representation on `Additive M` induced by the `MulDistribMulAction`. -/
+@[simps]
 def oneCocyclesOfIsMulOneCocycle {f : G → M} (hf : IsMulOneCocycle f) :
     oneCocycles (Rep.ofMulDistribMulAction G M) :=
   ⟨Additive.ofMul ∘ f, (mem_oneCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).2 hf⟩
 
-theorem isMulOneCocycle_of_oneCocycles (f : oneCocycles (Rep.ofMulDistribMulAction G M)) :
-    IsMulOneCocycle (M := M) (Additive.toMul ∘ f) := (mem_oneCocycles_iff f).1 f.2
+theorem isMulOneCocycle_of_mem_oneCocycles
+    (f : G → M) (hf : f ∈ oneCocycles (Rep.ofMulDistribMulAction G M)) :
+    IsMulOneCocycle (Additive.toMul ∘ f) :=
+  (mem_oneCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).1 hf
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G → M` satisfying the multiplicative 1-coboundary condition, produces a
 1-coboundary for the representation on `Additive M` induced by the `MulDistribMulAction`. -/
+@[simps]
 def oneCoboundariesOfIsMulOneCoboundary {f : G → M} (hf : IsMulOneCoboundary f) :
     oneCoboundaries (Rep.ofMulDistribMulAction G M) :=
-  oneCoboundariesOfMemRange (f := Additive.ofMul ∘ f) ⟨hf.choose, funext hf.choose_spec⟩
+  ⟨f, hf.choose, funext hf.choose_spec⟩
 
-theorem isMulOneCoboundary_of_oneCoboundaries
-    (f : oneCoboundaries (Rep.ofMulDistribMulAction G M)) :
-    IsMulOneCoboundary (M := M) (Additive.ofMul ∘ f.1.1) := by
-  rcases mem_range_of_mem_oneCoboundaries f.2 with ⟨x, hx⟩
-  exact ⟨x, by rw [← hx]; intro g; rfl⟩
+theorem isMulOneCoboundary_of_mem_oneCoboundaries
+    (f : G → M) (hf : f ∈ oneCoboundaries (Rep.ofMulDistribMulAction G M)) :
+    IsMulOneCoboundary (M := M) (Additive.ofMul ∘ f) := by
+  rcases hf with ⟨x, rfl⟩
+  exact ⟨x, fun _ =>  rfl⟩
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-cocycle condition, produces a 2-cocycle for the
 representation on `Additive M` induced by the `MulDistribMulAction`. -/
+@[simps]
 def twoCocyclesOfIsMulTwoCocycle {f : G × G → M} (hf : IsMulTwoCocycle f) :
     twoCocycles (Rep.ofMulDistribMulAction G M) :=
   ⟨Additive.ofMul ∘ f, (mem_twoCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).2 hf⟩
 
-theorem isMulTwoCocycle_of_twoCocycles (f : twoCocycles (Rep.ofMulDistribMulAction G M)) :
-    IsMulTwoCocycle (M := M) (Additive.toMul ∘ f) := (mem_twoCocycles_iff f).1 f.2
+theorem isMulTwoCocycle_of_mem_twoCocycles
+    (f : G × G → M) (hf : f ∈ twoCocycles (Rep.ofMulDistribMulAction G M)) :
+    IsMulTwoCocycle (Additive.toMul ∘ f) :=
+  (mem_twoCocycles_iff (A := Rep.ofMulDistribMulAction G M) f).1 hf
 
 /-- Given an abelian group `M` with a `MulDistribMulAction` of `G`, and a function
 `f : G × G → M` satisfying the multiplicative 2-coboundary condition, produces a
 2-coboundary for the representation on `M` induced by the `MulDistribMulAction`. -/
 def twoCoboundariesOfIsMulTwoCoboundary {f : G × G → M} (hf : IsMulTwoCoboundary f) :
     twoCoboundaries (Rep.ofMulDistribMulAction G M) :=
-  twoCoboundariesOfMemRange ⟨hf.choose, funext fun g ↦ hf.choose_spec g.1 g.2⟩
+  ⟨f, hf.choose, funext fun g ↦ hf.choose_spec g.1 g.2⟩
 
-theorem isMulTwoCoboundary_of_twoCoboundaries
-    (f : twoCoboundaries (Rep.ofMulDistribMulAction G M)) :
-    IsMulTwoCoboundary (M := M) (Additive.toMul ∘ f.1.1) := by
-  rcases mem_range_of_mem_twoCoboundaries f.2 with ⟨x, hx⟩
-  exact ⟨x, fun g h => funext_iff.1 hx (g, h)⟩
+theorem isMulTwoCoboundary_of_mem_twoCoboundaries
+    (f : G × G → M) (hf : f ∈ twoCoboundaries (Rep.ofMulDistribMulAction G M)) :
+    IsMulTwoCoboundary (M := M) (Additive.toMul ∘ f) := by
+  rcases hf with ⟨x, rfl⟩
+  exact ⟨x, fun _ _ => rfl⟩
 
 end ofMulDistribMulAction
 
@@ -658,23 +698,33 @@ section Cohomology
 
 /-- We define the 0th group cohomology of a `k`-linear `G`-representation `A`, `H⁰(G, A)`, to be
 the invariants of the representation, `Aᴳ`. -/
-abbrev H0 := A.ρ.invariants
+abbrev H0 := ModuleCat.of k A.ρ.invariants
 
 /-- We define the 1st group cohomology of a `k`-linear `G`-representation `A`, `H¹(G, A)`, to be
 1-cocycles (i.e. `Z¹(G, A) := Ker(d¹ : Fun(G, A) → Fun(G², A)`) modulo 1-coboundaries
 (i.e. `B¹(G, A) := Im(d⁰: A → Fun(G, A))`). -/
-abbrev H1 := oneCocycles A ⧸ oneCoboundaries A
+abbrev H1 := (shortComplexH1 A).moduleCatHomology
 
 /-- The quotient map `Z¹(G, A) → H¹(G, A).` -/
-def H1_π : oneCocycles A →ₗ[k] H1 A := (oneCoboundaries A).mkQ
+abbrev H1π : ModuleCat.of k (oneCocycles A) ⟶ H1 A := (shortComplexH1 A).moduleCatHomologyπ
+
+variable {A} in
+lemma H1π_eq_zero_iff (x : oneCocycles A) : H1π A x = 0 ↔ ⇑x ∈ oneCoboundaries A := by
+  show (LinearMap.range ((dZero A).codRestrict (oneCocycles A) _)).mkQ _ = 0 ↔ _
+  simp [LinearMap.range_codRestrict, oneCoboundaries]
 
 /-- We define the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`, to be
 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo 2-coboundaries
 (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`). -/
-abbrev H2 := twoCocycles A ⧸ twoCoboundaries A
+abbrev H2 := (shortComplexH2 A).moduleCatHomology
 
 /-- The quotient map `Z²(G, A) → H²(G, A).` -/
-def H2_π : twoCocycles A →ₗ[k] H2 A := (twoCoboundaries A).mkQ
+abbrev H2π : ModuleCat.of k (twoCocycles A) ⟶ H2 A := (shortComplexH2 A).moduleCatHomologyπ
+
+variable {A} in
+lemma H2π_eq_zero_iff (x : twoCocycles A) : H2π A x = 0 ↔ ⇑x ∈ twoCoboundaries A := by
+  show (LinearMap.range ((dOne A).codRestrict (twoCocycles A) _)).mkQ _ = 0 ↔ _
+  simp [LinearMap.range_codRestrict, twoCoboundaries]
 
 end Cohomology
 
@@ -701,19 +751,20 @@ section H1
 group homs `G → A`. -/
 def H1LequivOfIsTrivial [A.IsTrivial] :
     H1 A ≃ₗ[k] Additive G →+ A :=
-  (Submodule.quotEquivOfEqBot _ (oneCoboundaries_eq_bot_of_isTrivial A)).trans
-    (oneCocyclesLequivOfIsTrivial A)
+  (Submodule.quotEquivOfEqBot _
+    (by simp [shortComplexH1, ShortComplex.moduleCatToCycles, Submodule.eq_bot_iff])).trans
+  (oneCocyclesLequivOfIsTrivial A)
 
-theorem H1LequivOfIsTrivial_comp_H1_π [A.IsTrivial] :
-    (H1LequivOfIsTrivial A).comp (H1_π A) = oneCocyclesLequivOfIsTrivial A := by
+theorem H1LequivOfIsTrivial_comp_H1π [A.IsTrivial] :
+    (H1LequivOfIsTrivial A).comp (H1π A).hom = oneCocyclesLequivOfIsTrivial A := by
   ext; rfl
 
 @[simp] theorem H1LequivOfIsTrivial_H1_π_apply_apply
     [A.IsTrivial] (f : oneCocycles A) (x : Additive G) :
-    H1LequivOfIsTrivial A (H1_π A f) x = f (Additive.toMul x) := rfl
+    H1LequivOfIsTrivial A (Submodule.Quotient.mk f) x = f x.toMul := rfl
 
 @[simp] theorem H1LequivOfIsTrivial_symm_apply [A.IsTrivial] (f : Additive G →+ A) :
-    (H1LequivOfIsTrivial A).symm f = H1_π A ((oneCocyclesLequivOfIsTrivial A).symm f) :=
+    (H1LequivOfIsTrivial A).symm f = H1π A ((oneCocyclesLequivOfIsTrivial A).symm f) :=
   rfl
 
 end H1
@@ -723,16 +774,6 @@ section groupCohomologyIso
 open ShortComplex
 
 section H0
-
-lemma dZero_comp_H0_subtype : dZero A ∘ₗ (H0 A).subtype = 0 := by
-  ext ⟨x, hx⟩ g
-  replace hx := hx g
-  rw [← sub_eq_zero] at hx
-  exact hx
-
-/-- The (exact) short complex `A.ρ.invariants ⟶ A ⟶ (G → A)`. -/
-def shortComplexH0 : ShortComplex (ModuleCat k) :=
-  ShortComplex.moduleCatMk _ _ (dZero_comp_H0_subtype A)
 
 instance : Mono (shortComplexH0 A).f := by
   rw [ModuleCat.mono_iff_injective]
@@ -749,28 +790,36 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
 `(inhomogeneousCochains A).d 0 1` of the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom_left hom_right inv_left inv_right]
 def dZeroArrowIso : Arrow.mk ((inhomogeneousCochains A).d 0 1) ≅
-    Arrow.mk (ModuleCat.asHom (dZero A)) :=
+    Arrow.mk (ModuleCat.ofHom (dZero A)) :=
   Arrow.isoMk (zeroCochainsLequiv A).toModuleIso
-    (oneCochainsLequiv A).toModuleIso (dZero_comp_eq A)
+    (oneCochainsLequiv A).toModuleIso (ModuleCat.hom_ext (dZero_comp_eq A))
 
 /-- The 0-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `A.ρ.invariants`, which is a simpler type. -/
-def isoZeroCocycles : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
+def isoZeroCocycles : cocycles A 0 ≅ H0 A :=
   KernelFork.mapIsoOfIsLimit
     ((inhomogeneousCochains A).cyclesIsKernel 0 1 (by simp)) (shortComplexH0_exact A).fIsKernel
       (dZeroArrowIso A)
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoZeroCocycles_hom_comp_subtype :
-    (isoZeroCocycles A).hom ≫ A.ρ.invariants.subtype =
+    (isoZeroCocycles A).hom ≫ ModuleCat.ofHom A.ρ.invariants.subtype =
       iCocycles A 0 ≫ (zeroCochainsLequiv A).toModuleIso.hom := by
   dsimp [isoZeroCocycles]
   apply KernelFork.mapOfIsLimit_ι
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma isoZeroCocycles_inv_comp_iCocycles :
+    (isoZeroCocycles A).inv ≫ iCocycles A 0 =
+        ModuleCat.ofHom A.ρ.invariants.subtype ≫ (zeroCochainsLequiv A).toModuleIso.inv := by
+  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoZeroCocycles_hom_comp_subtype]
+
 /-- The 0th group cohomology of `A`, defined as the 0th cohomology of the complex of inhomogeneous
 cochains, is isomorphic to the invariants of the representation on `A`. -/
-def isoH0 : groupCohomology A 0 ≅ ModuleCat.of k (H0 A) :=
+def isoH0 : groupCohomology A 0 ≅ H0 A :=
   (CochainComplex.isoHomologyπ₀ _).symm ≪≫ isoZeroCocycles A
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma groupCohomologyπ_comp_isoH0_hom  :
     groupCohomologyπ A 0 ≫ (isoH0 A).hom = (isoZeroCocycles A).hom := by
   simp [isoH0]
@@ -779,56 +828,49 @@ end H0
 
 section H1
 
-/-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)`. -/
-def shortComplexH1 : ShortComplex (ModuleCat k) :=
-  moduleCatMk (dZero A) (dOne A) (dOne_comp_dZero A)
-
 /-- The short complex `A --dZero--> Fun(G, A) --dOne--> Fun(G × G, A)` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom inv]
 def shortComplexH1Iso : (inhomogeneousCochains A).sc' 0 1 2 ≅ shortComplexH1 A :=
     isoMk (zeroCochainsLequiv A).toModuleIso (oneCochainsLequiv A).toModuleIso
-      (twoCochainsLequiv A).toModuleIso (dZero_comp_eq A) (dOne_comp_eq A)
+      (twoCochainsLequiv A).toModuleIso
+        (ModuleCat.hom_ext (dZero_comp_eq A))
+        (ModuleCat.hom_ext (dOne_comp_eq A))
 
 /-- The 1-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `oneCocycles A`, which is a simpler type. -/
 def isoOneCocycles : cocycles A 1 ≅ ModuleCat.of k (oneCocycles A) :=
-  (inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
+  (inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by simp) (by simp) ≪≫
     cyclesMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatCyclesIso
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoOneCocycles_hom_comp_subtype :
-    (isoOneCocycles A).hom ≫ ModuleCat.asHom (oneCocycles A).subtype =
+    (isoOneCocycles A).hom ≫ ModuleCat.ofHom (oneCocycles A).subtype =
       iCocycles A 1 ≫ (oneCochainsLequiv A).toModuleIso.hom := by
-  dsimp [isoOneCocycles]
-  rw [Category.assoc, Category.assoc]
-  erw [(shortComplexH1 A).moduleCatCyclesIso_hom_subtype]
-  rw [cyclesMap_i, HomologicalComplex.cyclesIsoSc'_hom_iCycles_assoc]
+  have := (shortComplexH1 A).moduleCatCyclesIso_hom_subtype
+  simp_all [shortComplexH1, isoOneCocycles, oneCocycles]
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCocycles_comp_isoOneCocycles_hom :
     toCocycles A 0 1 ≫ (isoOneCocycles A).hom =
       (zeroCochainsLequiv A).toModuleIso.hom ≫
-        ModuleCat.asHom (shortComplexH1 A).moduleCatToCycles := by
+        ModuleCat.ofHom (shortComplexH1 A).moduleCatToCycles := by
   simp [isoOneCocycles]
-  rfl
 
 /-- The 1st group cohomology of `A`, defined as the 1st cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `oneCocycles A ⧸ oneCoboundaries A`, which is a simpler type. -/
-def isoH1 : groupCohomology A 1 ≅ ModuleCat.of k (H1 A) :=
-  (inhomogeneousCochains A).homologyIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
+def isoH1 : groupCohomology A 1 ≅ H1 A :=
+  (inhomogeneousCochains A).homologyIsoSc' _ _ _ (by simp) (by simp) ≪≫
     homologyMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatHomologyIso
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma groupCohomologyπ_comp_isoH1_hom  :
-    groupCohomologyπ A 1 ≫ (isoH1 A).hom =
-      (isoOneCocycles A).hom ≫ (shortComplexH1 A).moduleCatHomologyπ := by
+    groupCohomologyπ A 1 ≫ (isoH1 A).hom = (isoOneCocycles A).hom ≫ H1π A := by
   simp [isoH1, isoOneCocycles]
 
 end H1
 
 section H2
-
-/-- The short complex `Fun(G, A) --dOne--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)`. -/
-def shortComplexH2 : ShortComplex (ModuleCat k) :=
-  moduleCatMk (dOne A) (dTwo A) (dTwo_comp_dOne A)
 
 /-- The short complex `Fun(G, A) --dOne--> Fun(G × G, A) --dTwo--> Fun(G × G × G, A)` is
 isomorphic to the 2nd short complex associated to the complex of inhomogeneous cochains of `A`. -/
@@ -836,38 +878,39 @@ isomorphic to the 2nd short complex associated to the complex of inhomogeneous c
 def shortComplexH2Iso :
     (inhomogeneousCochains A).sc' 1 2 3 ≅ shortComplexH2 A :=
   isoMk (oneCochainsLequiv A).toModuleIso (twoCochainsLequiv A).toModuleIso
-    (threeCochainsLequiv A).toModuleIso (dOne_comp_eq A) (dTwo_comp_eq A)
+    (threeCochainsLequiv A).toModuleIso
+      (ModuleCat.hom_ext (dOne_comp_eq A))
+      (ModuleCat.hom_ext (dTwo_comp_eq A))
 
 /-- The 2-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `twoCocycles A`, which is a simpler type. -/
 def isoTwoCocycles : cocycles A 2 ≅ ModuleCat.of k (twoCocycles A) :=
-  (inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
+  (inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by simp) (by simp) ≪≫
     cyclesMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatCyclesIso
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma isoTwoCocycles_hom_comp_subtype :
-    (isoTwoCocycles A).hom ≫ ModuleCat.asHom (twoCocycles A).subtype =
+    (isoTwoCocycles A).hom ≫ ModuleCat.ofHom (twoCocycles A).subtype =
       iCocycles A 2 ≫ (twoCochainsLequiv A).toModuleIso.hom := by
-  dsimp [isoTwoCocycles]
-  rw [Category.assoc, Category.assoc]
-  erw [(shortComplexH2 A).moduleCatCyclesIso_hom_subtype]
-  rw [cyclesMap_i, HomologicalComplex.cyclesIsoSc'_hom_iCycles_assoc]
+  have := (shortComplexH2 A).moduleCatCyclesIso_hom_subtype
+  simp_all [shortComplexH2, isoTwoCocycles, twoCocycles]
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCocycles_comp_isoTwoCocycles_hom :
     toCocycles A 1 2 ≫ (isoTwoCocycles A).hom =
       (oneCochainsLequiv A).toModuleIso.hom ≫
-        ModuleCat.asHom (shortComplexH2 A).moduleCatToCycles := by
+        ModuleCat.ofHom (shortComplexH2 A).moduleCatToCycles := by
   simp [isoTwoCocycles]
-  rfl
 
 /-- The 2nd group cohomology of `A`, defined as the 2nd cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `twoCocycles A ⧸ twoCoboundaries A`, which is a simpler type. -/
-def isoH2 : groupCohomology A 2 ≅ ModuleCat.of k (H2 A) :=
-  (inhomogeneousCochains A).homologyIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
+def isoH2 : groupCohomology A 2 ≅ H2 A :=
+  (inhomogeneousCochains A).homologyIsoSc' _ _ _ (by simp) (by simp) ≪≫
     homologyMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatHomologyIso
 
+@[reassoc (attr := simp), elementwise (attr := simp)]
 lemma groupCohomologyπ_comp_isoH2_hom  :
-    groupCohomologyπ A 2 ≫ (isoH2 A).hom =
-      (isoTwoCocycles A).hom ≫ (shortComplexH2 A).moduleCatHomologyπ := by
+    groupCohomologyπ A 2 ≫ (isoH2 A).hom = (isoTwoCocycles A).hom ≫ H2π A := by
   simp [isoH2, isoTwoCocycles]
 
 end H2

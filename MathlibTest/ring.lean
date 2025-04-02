@@ -178,3 +178,46 @@ example {n : ℝ} (_hn : 0 ≤ n) : (n + 1 / 2) ^ 2 * (n + 1 + 1 / 3) ≤ (n + 1
   ring_nf
   trace_state
   exact test_sorry
+
+section
+abbrev myId (a : ℤ) : ℤ := a
+
+/-
+Test that when `ring_nf` normalizes multiple expressions which contain a particular atom, it uses a
+form for that atom which is consistent between expressions.
+
+We can't use `guard_hyp h :ₛ` here, as while it does tell apart `x` and `myId x`, it also complains
+about differing instance paths.
+-/
+/--
+info: x : ℤ
+R : ℤ → ℤ → Prop
+h : R (myId x * 2) (myId x * 2)
+⊢ True
+-/
+#guard_msgs (info) in
+example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
+  have h : R (myId x + x) (x + myId x) := test_sorry
+  ring_nf at h
+  trace_state
+  trivial
+
+end
+
+-- Test that `ring_nf` doesn't unfold local let expressions, and `ring_nf!` does
+set_option linter.unusedTactic false in
+example (x : ℝ) (f : ℝ → ℝ) : True := by
+  let y := x
+  have : x = y := by
+    ring_nf
+    ring_nf!
+  have : x - y = 0 := by
+    ring_nf
+    ring_nf!
+  have : f x = f y := by
+    ring_nf
+    ring_nf!
+  have : f x - f y = 0 := by
+    ring_nf
+    ring_nf!
+  trivial

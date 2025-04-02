@@ -7,6 +7,7 @@ import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Ring.Cast
+import Mathlib.Control.Basic
 import Mathlib.Data.Nat.Cast.Basic
 import Qq
 
@@ -19,7 +20,7 @@ The actual behavior is in `@[positivity]`-tagged definitions in `Tactic.Positivi
 and elsewhere.
 -/
 
-open Lean hiding Rat
+open Lean
 open Lean.Meta Qq Lean.Elab Term
 
 /-- Attribute for identifying `positivity` extensions. -/
@@ -62,16 +63,13 @@ def Strictness.toNonzero {e} : Strictness zα pα e → Option Q($e ≠ 0)
 /-- An extension for `positivity`. -/
 structure PositivityExt where
   /-- Attempts to prove an expression `e : α` is `>0`, `≥0`, or `≠0`. -/
-  eval {u} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α)) (e : Q($α)) :
+  eval {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α)) (e : Q($α)) :
     MetaM (Strictness zα pα e)
 
 /-- Read a `positivity` extension from a declaration of the right type. -/
 def mkPositivityExt (n : Name) : ImportM PositivityExt := do
   let { env, opts, .. } ← read
   IO.ofExcept <| unsafe env.evalConstCheck PositivityExt opts ``PositivityExt n
-
-/-- Configuration for `DiscrTree`. -/
-def discrTreeConfig : WhnfCoreConfig := {}
 
 /-- Each `positivity` extension is labelled with a collection of patterns
 which determine the expressions to which it should be applied. -/
@@ -112,7 +110,7 @@ initialize registerBuiltinAttribute {
             let e ← elabTerm stx none
             let (_, _, e) ← lambdaMetaTelescope (← mkLambdaFVars (← getLCtx).getFVars e)
             return e
-        DiscrTree.mkPath e discrTreeConfig
+        DiscrTree.mkPath e
       setEnv <| positivityExt.addEntry env ((keys, declName), ext)
     | _ => throwUnsupportedSyntax
 }
@@ -215,9 +213,11 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
       haveI' w : decide ($n < 0) =Q true := ⟨⟩
       pure (.nonzero q(nz_of_isRat $p $w))
 
-/-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAddCommMonoid`. -/
+/-- Attempts to prove that `e ≥ 0` using `zero_le` in a `CanonicallyOrderedAdd` monoid. -/
 def positivityCanon (e : Q($α)) : MetaM (Strictness zα pα e) := do
-  let _i ← synthInstanceQ (q(CanonicallyOrderedAddCommMonoid $α) : Q(Type u))
+  let _add ← synthInstanceQ (q(AddMonoid $α) : Q(Type u))
+  let _le ← synthInstanceQ (q(PartialOrder $α) : Q(Type u))
+  let _i ← synthInstanceQ (q(CanonicallyOrderedAdd $α) : Q(Prop))
   assumeInstancesCommute
   pure (.nonnegative q(zero_le $e))
 
@@ -317,7 +317,7 @@ def orElse {e : Q($α)} (t₁ : Strictness zα pα e) (t₂ : MetaM (Strictness 
 def core (e : Q($α)) : MetaM (Strictness zα pα e) := do
   let mut result := .none
   trace[Tactic.positivity] "trying to prove positivity of {e}"
-  for ext in ← (positivityExt.getState (← getEnv)).2.getMatch e discrTreeConfig do
+  for ext in ← (positivityExt.getState (← getEnv)).2.getMatch e do
     try
       result ← orElse result <| ext.eval zα pα e
     catch err =>
@@ -341,6 +341,24 @@ private inductive OrderRel : Type
 
 end Meta.Positivity
 namespace Meta.Positivity
+
+/-- Given an expression `e`, use the core method of the `positivity` tactic to prove it positive,
+or, failing that, nonnegative; return a boolean (signalling whether the strict or non-strict
+inequality was established) together with the proof as an expression. -/
+def bestResult (e : Expr) : MetaM (Bool × Expr) := do
+  let ⟨u, α, _⟩ ← inferTypeQ' e
+  let zα ← synthInstanceQ q(Zero $α)
+  let pα ← synthInstanceQ q(PartialOrder $α)
+  match ← try? (Meta.Positivity.core zα pα e) with
+  | some (.positive pf) => pure (true, pf)
+  | some (.nonnegative pf) => pure (false, pf)
+  | _ => throwError "could not establish the nonnegativity of {e}"
+
+/-- Given an expression `e`, use the core method of the `positivity` tactic to prove it nonnegative.
+-/
+def proveNonneg (e : Expr) : MetaM Expr := do
+  let (strict, pf) ← bestResult e
+  if strict then mkAppM ``le_of_lt #[pf] else pure pf
 
 /-- An auxiliary entry point to the `positivity` tactic. Given a proposition `t` of the form
 `0 [≤/</≠] e`, attempts to recurse on the structure of `t` to prove it. It returns a proof

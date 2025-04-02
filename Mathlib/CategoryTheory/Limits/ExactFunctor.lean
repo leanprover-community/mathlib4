@@ -28,10 +28,9 @@ section
 
 variable (C) (D)
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Bundled left-exact functors. -/
 def LeftExactFunctor :=
-  FullSubcategory fun F : C ⥤ D => Nonempty (PreservesFiniteLimits F)
+  FullSubcategory fun F : C ⥤ D => PreservesFiniteLimits F
 
 instance : Category (LeftExactFunctor C D) :=
   FullSubcategory.category _
@@ -49,10 +48,13 @@ instance : (LeftExactFunctor.forget C D).Full :=
 instance : (LeftExactFunctor.forget C D).Faithful :=
   FullSubcategory.faithful _
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+/-- The inclusion of left exact functors into functors is fully faithful. -/
+abbrev LeftExactFunctor.fullyFaithful : (LeftExactFunctor.forget C D).FullyFaithful :=
+  fullyFaithfulFullSubcategoryInclusion _
+
 /-- Bundled right-exact functors. -/
 def RightExactFunctor :=
-  FullSubcategory fun F : C ⥤ D => Nonempty (PreservesFiniteColimits F)
+  FullSubcategory fun F : C ⥤ D => PreservesFiniteColimits F
 
 instance : Category (RightExactFunctor C D) :=
   FullSubcategory.category _
@@ -70,11 +72,14 @@ instance : (RightExactFunctor.forget C D).Full :=
 instance : (RightExactFunctor.forget C D).Faithful :=
   FullSubcategory.faithful _
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+/-- The inclusion of right exact functors into functors is fully faithful. -/
+abbrev RightExactFunctor.fullyFaithful : (RightExactFunctor.forget C D).FullyFaithful :=
+  fullyFaithfulFullSubcategoryInclusion _
+
 /-- Bundled exact functors. -/
 def ExactFunctor :=
   FullSubcategory fun F : C ⥤ D =>
-    Nonempty (PreservesFiniteLimits F) ∧ Nonempty (PreservesFiniteColimits F)
+    PreservesFiniteLimits F ∧ PreservesFiniteColimits F
 
 instance : Category (ExactFunctor C D) :=
   FullSubcategory.category _
@@ -162,15 +167,15 @@ theorem ExactFunctor.forget_map {F G : C ⥤ₑ D} (α : F ⟶ G) : (ExactFuncto
 
 /-- Turn a left exact functor into an object of the category `LeftExactFunctor C D`. -/
 def LeftExactFunctor.of (F : C ⥤ D) [PreservesFiniteLimits F] : C ⥤ₗ D :=
-  ⟨F, ⟨inferInstance⟩⟩
+  ⟨F, inferInstance⟩
 
 /-- Turn a right exact functor into an object of the category `RightExactFunctor C D`. -/
 def RightExactFunctor.of (F : C ⥤ D) [PreservesFiniteColimits F] : C ⥤ᵣ D :=
-  ⟨F, ⟨inferInstance⟩⟩
+  ⟨F, inferInstance⟩
 
 /-- Turn an exact functor into an object of the category `ExactFunctor C D`. -/
 def ExactFunctor.of (F : C ⥤ D) [PreservesFiniteLimits F] [PreservesFiniteColimits F] : C ⥤ₑ D :=
-  ⟨F, ⟨⟨inferInstance⟩, ⟨inferInstance⟩⟩⟩
+  ⟨F, ⟨inferInstance, inferInstance⟩⟩
 
 @[simp]
 theorem LeftExactFunctor.of_fst (F : C ⥤ D) [PreservesFiniteLimits F] :
@@ -200,16 +205,16 @@ theorem ExactFunctor.forget_obj_of (F : C ⥤ D) [PreservesFiniteLimits F]
   rfl
 
 noncomputable instance (F : C ⥤ₗ D) : PreservesFiniteLimits F.obj :=
-  F.property.some
+  F.property
 
 noncomputable instance (F : C ⥤ᵣ D) : PreservesFiniteColimits F.obj :=
-  F.property.some
+  F.property
 
 noncomputable instance (F : C ⥤ₑ D) : PreservesFiniteLimits F.obj :=
-  F.property.1.some
+  F.property.1
 
 noncomputable instance (F : C ⥤ₑ D) : PreservesFiniteColimits F.obj :=
-  F.property.2.some
+  F.property.2
 
 variable {E : Type u₃} [Category.{v₃} E]
 
@@ -218,10 +223,10 @@ section
 variable (C D E)
 
 /-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
-@[simps!]
+@[simps! obj_obj obj_map map_app_app]
 def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤ₗ E) where
   obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringLeft C D E).obj F.obj)
-    (fun G => ⟨by dsimp; exact compPreservesFiniteLimits _ _⟩)
+    (fun G => by dsimp; exact comp_preservesFiniteLimits _ _)
   map {F G} η :=
     { app := fun H => ((CategoryTheory.whiskeringLeft C D E).map η).app H.obj
       naturality := fun _ _ f => ((CategoryTheory.whiskeringLeft C D E).map η).naturality f }
@@ -233,10 +238,10 @@ def LeftExactFunctor.whiskeringLeft : (C ⥤ₗ D) ⥤ (D ⥤ₗ E) ⥤ (C ⥤�
     aesop_cat
 
 /-- Whiskering a left exact functor by a left exact functor yields a left exact functor. -/
-@[simps!]
+@[simps! obj_obj obj_map map_app_app]
 def LeftExactFunctor.whiskeringRight : (D ⥤ₗ E) ⥤ (C ⥤ₗ D) ⥤ (C ⥤ₗ E) where
   obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringRight C D E).obj F.obj)
-    (fun G => ⟨by dsimp; exact compPreservesFiniteLimits _ _⟩)
+    (fun G => by dsimp; exact comp_preservesFiniteLimits _ _)
   map {F G} η :=
     { app := fun H => ((CategoryTheory.whiskeringRight C D E).map η).app H.obj
       naturality := fun _ _ f => ((CategoryTheory.whiskeringRight C D E).map η).naturality f }
@@ -248,10 +253,10 @@ def LeftExactFunctor.whiskeringRight : (D ⥤ₗ E) ⥤ (C ⥤ₗ D) ⥤ (C ⥤�
     aesop_cat
 
 /-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
-@[simps!]
+@[simps! obj_obj obj_map map_app_app]
 def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤ᵣ E) where
   obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringLeft C D E).obj F.obj)
-    (fun G => ⟨by dsimp; exact compPreservesFiniteColimits _ _⟩)
+    (fun G => by dsimp; exact comp_preservesFiniteColimits _ _)
   map {F G} η :=
     { app := fun H => ((CategoryTheory.whiskeringLeft C D E).map η).app H.obj
       naturality := fun _ _ f => ((CategoryTheory.whiskeringLeft C D E).map η).naturality f }
@@ -263,10 +268,10 @@ def RightExactFunctor.whiskeringLeft : (C ⥤ᵣ D) ⥤ (D ⥤ᵣ E) ⥤ (C ⥤�
     aesop_cat
 
 /-- Whiskering a right exact functor by a right exact functor yields a right exact functor. -/
-@[simps!]
+@[simps! obj_obj obj_map map_app_app]
 def RightExactFunctor.whiskeringRight : (D ⥤ᵣ E) ⥤ (C ⥤ᵣ D) ⥤ (C ⥤ᵣ E) where
   obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringRight C D E).obj F.obj)
-    (fun G => ⟨by dsimp; exact compPreservesFiniteColimits _ _⟩)
+    (fun G => by dsimp; exact comp_preservesFiniteColimits _ _)
   map {F G} η :=
     { app := fun H => ((CategoryTheory.whiskeringRight C D E).map η).app H.obj
       naturality := fun _ _ f => ((CategoryTheory.whiskeringRight C D E).map η).naturality f }
@@ -278,11 +283,11 @@ def RightExactFunctor.whiskeringRight : (D ⥤ᵣ E) ⥤ (C ⥤ᵣ D) ⥤ (C ⥤
     aesop_cat
 
 /-- Whiskering an exact functor by an exact functor yields an exact functor. -/
-@[simps!]
+@[simps! obj_obj obj_map map_app_app]
 def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E) where
   obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringLeft C D E).obj F.obj)
-    (fun G => ⟨⟨by dsimp; exact compPreservesFiniteLimits _ _⟩,
-      ⟨by dsimp; exact compPreservesFiniteColimits _ _⟩⟩)
+    (fun G => ⟨by dsimp; exact comp_preservesFiniteLimits _ _,
+      by dsimp; exact comp_preservesFiniteColimits _ _⟩)
   map {F G} η :=
     { app := fun H => ((CategoryTheory.whiskeringLeft C D E).map η).app H.obj
       naturality := fun _ _ f => ((CategoryTheory.whiskeringLeft C D E).map η).naturality f }
@@ -294,11 +299,11 @@ def ExactFunctor.whiskeringLeft : (C ⥤ₑ D) ⥤ (D ⥤ₑ E) ⥤ (C ⥤ₑ E)
     aesop_cat
 
 /-- Whiskering an exact functor by an exact functor yields an exact functor. -/
-@[simps!]
+@[simps! obj_obj obj_map map_app_app]
 def ExactFunctor.whiskeringRight : (D ⥤ₑ E) ⥤ (C ⥤ₑ D) ⥤ (C ⥤ₑ E) where
   obj F := FullSubcategory.lift _ (forget _ _ ⋙ (CategoryTheory.whiskeringRight C D E).obj F.obj)
-    (fun G => ⟨⟨by dsimp; exact compPreservesFiniteLimits _ _⟩,
-      ⟨by dsimp; exact compPreservesFiniteColimits _ _⟩⟩)
+    (fun G => ⟨by dsimp; exact comp_preservesFiniteLimits _ _,
+      by dsimp; exact comp_preservesFiniteColimits _ _⟩)
   map {F G} η :=
     { app := fun H => ((CategoryTheory.whiskeringRight C D E).map η).app H.obj
       naturality := fun _ _ f => ((CategoryTheory.whiskeringRight C D E).map η).naturality f }

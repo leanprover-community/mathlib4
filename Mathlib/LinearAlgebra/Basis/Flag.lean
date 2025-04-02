@@ -3,9 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.LinearAlgebra.Basis.Cardinality
-import Mathlib.LinearAlgebra.Dual
 import Mathlib.Data.Fin.FlagRange
+import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Dual.Basis
+import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Flag of submodules defined by a basis
@@ -22,7 +23,8 @@ namespace Basis
 
 section Semiring
 
-variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {n : ℕ}
+variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {n : ℕ} {b : Basis (Fin n) R M}
+  {i j : Fin (n + 1)}
 
 /-- The subspace spanned by the first `k` vectors of the basis `b`. -/
 def flag (b : Basis (Fin n) R M) (k : Fin (n + 1)) : Submodule R M :=
@@ -63,6 +65,11 @@ theorem isChain_range_flag (b : Basis (Fin n) R M) : IsChain (· ≤ ·) (range 
 @[mono]
 theorem flag_strictMono [Nontrivial R] (b : Basis (Fin n) R M) : StrictMono b.flag :=
   Fin.strictMono_iff_lt_succ.2 fun _ ↦ by simp [flag_succ]
+
+@[gcongr] lemma flag_le_flag (hij : i ≤ j) : b.flag i ≤ b.flag j := flag_mono _ hij
+
+@[gcongr]
+lemma flag_lt_flag [Nontrivial R] (hij : i < j) : b.flag i < b.flag j := flag_strictMono _ hij
 
 end Semiring
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 
 /-!
 
@@ -84,10 +84,10 @@ protected lemma lift_mk {α : Type*} (f : { v : V // v ≠ 0 } → α)
 
 /-- Choose a representative of `v : Projectivization K V` in `V`. -/
 protected noncomputable def rep (v : ℙ K V) : V :=
-  v.out'
+  v.out
 
 theorem rep_nonzero (v : ℙ K V) : v.rep ≠ 0 :=
-  v.out'.2
+  v.out.2
 
 @[simp]
 theorem mk_rep (v : ℙ K V) : mk K v.rep v.rep_nonzero = v := Quotient.out_eq' _
@@ -147,8 +147,8 @@ instance (v : ℙ K V) : FiniteDimensional K v.submodule := by
 
 theorem submodule_injective :
     Function.Injective (Projectivization.submodule : ℙ K V → Submodule K V) := fun u v h ↦ by
-  induction' u using ind with u hu
-  induction' v using ind with v hv
+  induction u using ind with | h u hu =>
+  induction v using ind with | h v hv =>
   rw [submodule_mk, submodule_mk, Submodule.span_singleton_eq_span_singleton] at h
   exact ((mk_eq_mk_iff K v u hv hu).2 h).symm
 
@@ -201,7 +201,7 @@ theorem map_mk {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective
 an injective map on projective spaces. -/
 theorem map_injective {σ : K →+* L} {τ : L →+* K} [RingHomInvPair σ τ] (f : V →ₛₗ[σ] W)
     (hf : Function.Injective f) : Function.Injective (map f hf) := fun u v h ↦ by
-  induction' u using ind with u hu; induction' v using ind with v hv
+  induction u using ind with | h u hu => induction v using ind with | h v hv =>
   simp only [map_mk, mk_eq_mk_iff'] at h ⊢
   rcases h with ⟨a, ha⟩
   refine ⟨τ a, hf ?_⟩

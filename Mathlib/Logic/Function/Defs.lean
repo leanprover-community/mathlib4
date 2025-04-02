@@ -18,7 +18,6 @@ universe u₁ u₂ u₃ u₄ u₅
 
 namespace Function
 
--- Porting note: fix the universe of `ζ`, it used to be `u₁`
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
@@ -36,13 +35,7 @@ and type of `f (g x)` depends on `x` and `g x`. -/
 def dcomp {β : α → Sort u₂} {φ : ∀ {x : α}, β x → Sort u₃} (f : ∀ {x : α} (y : β x), φ y)
     (g : ∀ x, β x) : ∀ x, φ (g x) := fun x => f (g x)
 
-infixr:80 " ∘' " => Function.dcomp
-
-@[reducible, deprecated (since := "2024-01-13")]
-def compRight (f : β → β → β) (g : α → β) : β → α → β := fun b a => f b (g a)
-
-@[reducible, deprecated (since := "2024-01-13")]
-def compLeft (f : β → β → β) (g : α → β) : α → β → β := fun a b => f (g a) b
+@[inherit_doc] infixr:80 " ∘' " => Function.dcomp
 
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
@@ -50,47 +43,22 @@ from `β` to `α`. -/
 abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
 
 @[inherit_doc onFun]
-infixl:2 " on " => onFun
+scoped infixl:2 " on " => onFun
 
-/-- Given functions `f : α → β → φ`, `g : α → β → δ` and a binary operator `op : φ → δ → ζ`,
-produce a function `α → β → ζ` that applies `f` and `g` on each argument and then applies
-`op` to the results.
--/
--- Porting note: the ζ variable was originally constrained to `Sort u₁`, but this seems to
--- have been an oversight.
-@[reducible, deprecated (since := "2024-01-13")]
-def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ) : α → β → ζ := fun x y =>
-  op (f x y) (g x y)
-
+/-- For a two-argument function `f`, `swap f` is the same function but taking the arguments
+in the reverse order. `swap f y x = f x y`. -/
 abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 
-#adaptation_note /-- nightly-2024-03-16: added to replace simp [Function.swap] -/
 theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
-
-@[reducible, deprecated (since := "2024-01-13")]
-def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
-  f x
-
--- Porting note: removed, it was never used
--- notation f " -[" op "]- " g => combine f op g
 
 @[simp, mfld_simps]
 theorem id_comp (f : α → β) : id ∘ f = f := rfl
 
-@[deprecated (since := "2024-01-14")] alias left_id := id_comp
-@[deprecated (since := "2024-01-14")] alias comp.left_id := id_comp
-
 @[simp, mfld_simps]
 theorem comp_id (f : α → β) : f ∘ id = f := rfl
 
-@[deprecated (since := "2024-01-14")] alias right_id := comp_id
-@[deprecated (since := "2024-01-14")] alias comp.right_id := comp_id
-
 theorem comp_assoc (f : φ → δ) (g : β → φ) (h : α → β) : (f ∘ g) ∘ h = f ∘ g ∘ h :=
   rfl
-@[deprecated (since := "2024-09-24")] alias comp.assoc := comp_assoc
-
-@[deprecated (since := "2024-01-14")] alias comp_const_right := comp_const
 
 /-- A function `f : α → β` is called injective if `f x = f y` implies `x = y`. -/
 def Injective (f : α → β) : Prop :=
@@ -117,7 +85,7 @@ def Bijective (f : α → β) :=
 theorem Bijective.comp {g : β → φ} {f : α → β} : Bijective g → Bijective f → Bijective (g ∘ f)
   | ⟨h_ginj, h_gsurj⟩, ⟨h_finj, h_fsurj⟩ => ⟨h_ginj.comp h_finj, h_gsurj.comp h_fsurj⟩
 
-/-- `LeftInverse g f` means that g is a left inverse to f. That is, `g ∘ f = id`. -/
+/-- `LeftInverse g f` means that `g` is a left inverse to `f`. That is, `g ∘ f = id`. -/
 def LeftInverse (g : β → α) (f : α → β) : Prop :=
   ∀ x, g (f x) = x
 
@@ -125,7 +93,7 @@ def LeftInverse (g : β → α) (f : α → β) : Prop :=
 def HasLeftInverse (f : α → β) : Prop :=
   ∃ finv : β → α, LeftInverse finv f
 
-/-- `RightInverse g f` means that g is a right inverse to f. That is, `f ∘ g = id`. -/
+/-- `RightInverse g f` means that `g` is a right inverse to `f`. That is, `f ∘ g = id`. -/
 def RightInverse (g : β → α) (f : α → β) : Prop :=
   LeftInverse f g
 
@@ -169,11 +137,32 @@ theorem surjective_id : Surjective (@id α) := fun a => ⟨a, rfl⟩
 theorem bijective_id : Bijective (@id α) :=
   ⟨injective_id, surjective_id⟩
 
+variable {f : α → β}
+
+theorem Injective.eq_iff (I : Injective f) {a b : α} : f a = f b ↔ a = b :=
+  ⟨@I _ _, congr_arg f⟩
+
+theorem Injective.beq_eq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {f : α → β}
+    (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
+  by_cases h : a == b <;> simp [h] <;> simpa [I.eq_iff] using h
+
+theorem Injective.eq_iff' (I : Injective f) {a b : α} {c : β} (h : f b = c) : f a = c ↔ a = b :=
+  h ▸ I.eq_iff
+
+theorem Injective.ne (hf : Injective f) {a₁ a₂ : α} : a₁ ≠ a₂ → f a₁ ≠ f a₂ :=
+  mt fun h ↦ hf h
+
+theorem Injective.ne_iff (hf : Injective f) {x y : α} : f x ≠ f y ↔ x ≠ y :=
+  ⟨mt <| congr_arg f, hf.ne⟩
+
+theorem Injective.ne_iff' (hf : Injective f) {x y : α} {z : β} (h : f y = z) : f x ≠ z ↔ x ≠ y :=
+  h ▸ hf.ne_iff
+
 end Function
 
 namespace Function
 
-variable {α : Type u₁} {β : Type u₂} {φ : Type u₃}
+variable {α : Type u₁} {β : Type u₂}
 
 protected theorem LeftInverse.id {g : β → α} {f : α → β} (h : LeftInverse g f) : g ∘ f = id :=
   funext h

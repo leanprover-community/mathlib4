@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Antoine Labelle
 -/
 import Mathlib.Algebra.Module.Defs
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
@@ -103,7 +104,7 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
     -/
   let φ : (P →₀ R) →ₗ[R] M := Finsupp.linearCombination _ fun p => Function.surjInv hf (g p)
   -- By projectivity we have a map `P →ₗ (P →₀ R)`;
-  cases' h.out with s hs
+  obtain ⟨s, hs⟩ := h.out
   -- Compose to get `P →ₗ M`. This works.
   use φ.comp s
   ext p
@@ -113,6 +114,12 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
 theorem _root_.LinearMap.exists_rightInverse_of_surjective [Projective R P]
     (f : M →ₗ[R] P) (hf_surj : range f = ⊤) : ∃ g : P →ₗ[R] M, f ∘ₗ g = LinearMap.id :=
   projective_lifting_property f (.id : P →ₗ[R] P) (LinearMap.range_eq_top.1 hf_surj)
+
+open Function in
+theorem _root_.Function.Surjective.surjective_linearMapComp_left [Projective R P]
+    {f : M →ₗ[R] P} (hf_surj : Surjective f) : Surjective (fun g : N →ₗ[R] M ↦ f.comp g) :=
+  surjective_comp_left_of_exists_rightInverse <|
+    f.exists_rightInverse_of_surjective <| range_eq_top_of_surjective f hf_surj
 
 /-- A module which satisfies the universal property is projective: If all surjections of
 `R`-modules `(P →₀ R) →ₗ[R] P` have `R`-linear left inverse maps, then `P` is
@@ -194,18 +201,17 @@ end Semiring
 
 section Ring
 
-variable {R : Type u} [Ring R] {P : Type v} [AddCommMonoid P] [Module R P]
-variable {R₀ M N} [CommRing R₀] [Algebra R₀ R] [AddCommGroup M] [Module R₀ M] [Module R M]
-variable [IsScalarTower R₀ R M] [AddCommGroup N] [Module R₀ N]
+variable {R : Type u} [Semiring R] {P : Type v} [AddCommMonoid P] [Module R P]
+variable {R₀ M N} [CommSemiring R₀] [Algebra R₀ R] [AddCommMonoid M] [Module R₀ M] [Module R M]
+variable [IsScalarTower R₀ R M] [AddCommMonoid N] [Module R₀ N]
 
 /-- A module is projective iff it is the direct summand of a free module. -/
 theorem Projective.iff_split : Module.Projective R P ↔
-    ∃ (M : Type max u v) (_ : AddCommGroup M) (_ : Module R M) (_ : Module.Free R M)
+    ∃ (M : Type max u v) (_ : AddCommMonoid M) (_ : Module R M) (_ : Module.Free R M)
       (i : P →ₗ[R] M) (s : M →ₗ[R] P), s.comp i = LinearMap.id :=
   ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ R, _, _, inferInstance, i, Finsupp.linearCombination R id, LinearMap.ext hi⟩,
     fun ⟨_, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩
 
-set_option maxSynthPendingDepth 2 in
 open TensorProduct in
 instance Projective.tensorProduct [hM : Module.Projective R M] [hN : Module.Projective R₀ N] :
     Module.Projective R (M ⊗[R₀] N) := by
@@ -227,7 +233,7 @@ end Ring
 --This is in a different section because special universe restrictions are required.
 section OfLiftingProperty
 
--- Porting note (#11215): TODO: generalize to `P : Type v`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `P : Type v`?
 /-- A module which satisfies the universal property is projective. Note that the universe variables
 in `huniv` are somewhat restricted. -/
 theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max u v}
@@ -240,7 +246,7 @@ theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max 
     Projective R P :=
   .of_lifting_property'' (huniv · _)
 
--- Porting note (#11215): TODO: generalize to `P : Type v`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `P : Type v`?
 /-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`,
 which only requires quantifying over modules with an `AddCommGroup` instance. -/
 theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]

@@ -5,7 +5,9 @@ Authors: Johan Commelin, Chris Hughes
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.Data.Fintype.Inv
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Integral domains
@@ -89,8 +91,8 @@ variable [Ring R] [IsDomain R] [Fintype R]
 `Mathlib.RingTheory.LittleWedderburn`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R where
+  __ := (‹Ring R›:) -- this also works without the `( :)`, but it's slightly slow
   __ := Fintype.groupWithZeroOfCancel R
-  __ := ‹Ring R›
   nnqsmul := _
   nnqsmul_def := fun _ _ => rfl
   qsmul := _
@@ -149,8 +151,6 @@ section EuclideanDivision
 
 namespace Polynomial
 
-open Polynomial
-
 variable (K : Type) [Field K] [Algebra R[X] K] [IsFractionRing R[X] K]
 
 theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
@@ -172,9 +172,6 @@ end EuclideanDivision
 
 variable [Fintype G]
 
-@[deprecated (since := "2024-06-10")]
-alias card_fiber_eq_of_mem_range := MonoidHom.card_fiber_eq_of_mem_range
-
 /-- In an integral domain, a sum indexed by a nontrivial homomorphism from a finite group is zero.
 -/
 theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0 := by
@@ -187,7 +184,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       apply hf
       ext g
       rw [MonoidHom.one_apply]
-      cases' hx ⟨f.toHomUnits g, g, rfl⟩ with n hn
+      obtain ⟨n, hn⟩ := hx ⟨f.toHomUnits g, g, rfl⟩
       rwa [Subtype.ext_iff, Units.ext_iff, Subtype.coe_mk, MonoidHom.coe_toHomUnits, one_pow,
         eq_comm] at hn
     replace hx1 : (x.val : R) - 1 ≠ 0 := -- Porting note: was `(x : R)`

@@ -39,21 +39,19 @@ namespace NumberField
 
 open InfinitePlace AbsoluteValue.Completion InfinitePlace.Completion DedekindDomain IsDedekindDomain
 
-open scoped Classical
-
-variable (K : Type*) [Field K]
-
 /-! ## The infinite adele ring
 
 The infinite adele ring is the finite product of completions of a number field over its
 infinite places. See `NumberField.InfinitePlace` for the definition of an infinite place and
-`NumberField.InfinitePlace.completion` for the associated completion.
+`NumberField.InfinitePlace.Completion` for the associated completion.
 -/
 
 /-- The infinite adele ring of a number field. -/
-def InfiniteAdeleRing := (v : InfinitePlace K) → v.completion
+def InfiniteAdeleRing (K : Type*) [Field K] := (v : InfinitePlace K) → v.Completion
 
 namespace InfiniteAdeleRing
+
+variable (K : Type*) [Field K]
 
 instance : CommRing (InfiniteAdeleRing K) := Pi.commRing
 
@@ -64,7 +62,7 @@ instance [NumberField K] : Nontrivial (InfiniteAdeleRing K) :=
 
 instance : TopologicalSpace (InfiniteAdeleRing K) := Pi.topologicalSpace
 
-instance : TopologicalRing (InfiniteAdeleRing K) := Pi.instTopologicalRing
+instance : IsTopologicalRing (InfiniteAdeleRing K) := Pi.instIsTopologicalRing
 
 instance : Algebra K (InfiniteAdeleRing K) := Pi.algebra _ _
 
@@ -76,17 +74,18 @@ theorem algebraMap_apply (x : K) (v : InfinitePlace K) :
 instance locallyCompactSpace [NumberField K] : LocallyCompactSpace (InfiniteAdeleRing K) :=
   Pi.locallyCompactSpace_of_finite
 
+open scoped Classical in
 /-- The ring isomorphism between the infinite adele ring of a number field and the
 space `ℝ ^ r₁ × ℂ ^ r₂`, where `(r₁, r₂)` is the signature of the number field. -/
 abbrev ringEquiv_mixedSpace :
     InfiniteAdeleRing K ≃+* mixedEmbedding.mixedSpace K :=
   RingEquiv.trans
     (RingEquiv.piEquivPiSubtypeProd (fun (v : InfinitePlace K) => IsReal v)
-      (fun (v : InfinitePlace K) => v.completion))
+      (fun (v : InfinitePlace K) => v.Completion))
     (RingEquiv.prodCongr
-      (RingEquiv.piCongrRight (fun ⟨_, hv⟩ => Completion.ringEquiv_real_of_isReal hv))
+      (RingEquiv.piCongrRight (fun ⟨_, hv⟩ => Completion.ringEquivRealOfIsReal hv))
       (RingEquiv.trans
-        (RingEquiv.piCongrRight (fun v => Completion.ringEquiv_complex_of_isComplex
+        (RingEquiv.piCongrRight (fun v => Completion.ringEquivComplexOfIsComplex
           ((not_isReal_iff_isComplex.1 v.2))))
         (RingEquiv.piCongrLeft (fun _ => ℂ) <|
           Equiv.subtypeEquivRight (fun _ => not_isReal_iff_isComplex))))
@@ -94,7 +93,7 @@ abbrev ringEquiv_mixedSpace :
 @[simp]
 theorem ringEquiv_mixedSpace_apply (x : InfiniteAdeleRing K) :
     ringEquiv_mixedSpace K x =
-      (fun (v : {w : InfinitePlace K // IsReal w}) => extensionEmbedding_of_isReal v.2 (x v),
+      (fun (v : {w : InfinitePlace K // IsReal w}) => extensionEmbeddingOfIsReal v.2 (x v),
        fun (v : {w : InfinitePlace K // IsComplex w}) => extensionEmbedding v.1 (x v)) := rfl
 
 /-- Transfers the embedding of `x ↦ (x)ᵥ` of the number field `K` into its infinite adele
@@ -103,50 +102,59 @@ ring to the mixed embedding `x ↦ (φᵢ(x))ᵢ` of `K` into the space `ℝ ^ r
 theorem mixedEmbedding_eq_algebraMap_comp {x : K} :
     mixedEmbedding K x = ringEquiv_mixedSpace K (algebraMap K _ x) := by
   ext v <;> simp only [ringEquiv_mixedSpace_apply, algebraMap_apply,
-    ringEquiv_real_of_isReal, ringEquiv_complex_of_isComplex, extensionEmbedding,
-    extensionEmbedding_of_isReal, extensionEmbedding_of_comp, RingEquiv.coe_ofBijective,
+    ringEquivRealOfIsReal, ringEquivComplexOfIsComplex, extensionEmbedding,
+    extensionEmbeddingOfIsReal, extensionEmbedding_of_comp, RingEquiv.coe_ofBijective,
     RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, UniformSpace.Completion.extensionHom]
   · rw [UniformSpace.Completion.extension_coe
       (WithAbs.isUniformInducing_of_comp <| v.1.norm_embedding_of_isReal v.2).uniformContinuous x]
-    exact mixedEmbedding.mixedEmbedding_apply_ofIsReal _ _ _
+    exact mixedEmbedding.mixedEmbedding_apply_isReal _ _ _
   · rw [UniformSpace.Completion.extension_coe
       (WithAbs.isUniformInducing_of_comp <| v.1.norm_embedding_eq).uniformContinuous x]
-    exact mixedEmbedding.mixedEmbedding_apply_ofIsComplex _ _ _
+    exact mixedEmbedding.mixedEmbedding_apply_isComplex _ _ _
 
 end InfiniteAdeleRing
 
-variable [NumberField K]
-
 /-! ## The adele ring  -/
 
-/-- The adele ring of a number field. -/
-def AdeleRing := InfiniteAdeleRing K × FiniteAdeleRing (𝓞 K) K
+/-- `AdeleRing (𝓞 K) K` is the adele ring of a number field `K`.
+
+More generally `AdeleRing R K` can be used if `K` is the field of fractions
+of the Dedekind domain `R`. This enables use of rings like `AdeleRing ℤ ℚ`, which
+in practice are easier to work with than `AdeleRing (𝓞 ℚ) ℚ`.
+
+Note that this definition does not give the correct answer in the function field case.
+-/
+def AdeleRing (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K]
+  [Algebra R K] [IsFractionRing R K] := InfiniteAdeleRing K × FiniteAdeleRing R K
 
 namespace AdeleRing
 
-instance : CommRing (AdeleRing K) := Prod.instCommRing
+variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K]
+  [Algebra R K] [IsFractionRing R K]
 
-instance : Inhabited (AdeleRing K) := ⟨0⟩
+instance : CommRing (AdeleRing R K) := Prod.instCommRing
 
-instance : TopologicalSpace (AdeleRing K) := instTopologicalSpaceProd
+instance : Inhabited (AdeleRing R K) := ⟨0⟩
 
-instance : TopologicalRing (AdeleRing K) := instTopologicalRingProd
+instance : TopologicalSpace (AdeleRing R K) := instTopologicalSpaceProd
 
-instance : Algebra K (AdeleRing K) := Prod.algebra _ _ _
+instance : IsTopologicalRing (AdeleRing R K) := instIsTopologicalRingProd
+
+instance : Algebra K (AdeleRing R K) := Prod.algebra _ _ _
 
 @[simp]
 theorem algebraMap_fst_apply (x : K) (v : InfinitePlace K) :
-    (algebraMap K (AdeleRing K) x).1 v = x := rfl
+    (algebraMap K (AdeleRing R K) x).1 v = x := rfl
 
 @[simp]
-theorem algebraMap_snd_apply (x : K) (v : HeightOneSpectrum (𝓞 K)) :
-    (algebraMap K (AdeleRing K) x).2 v = x := rfl
+theorem algebraMap_snd_apply (x : K) (v : HeightOneSpectrum R) :
+    (algebraMap K (AdeleRing R K) x).2 v = x := rfl
 
-theorem algebraMap_injective : Function.Injective (algebraMap K (AdeleRing K)) :=
+theorem algebraMap_injective [NumberField K] : Function.Injective (algebraMap K (AdeleRing R K)) :=
   fun _ _ hxy => (algebraMap K _).injective (Prod.ext_iff.1 hxy).1
 
 /-- The subgroup of principal adeles `(x)ᵥ` where `x ∈ K`. -/
-abbrev principalSubgroup : AddSubgroup (AdeleRing K) := (algebraMap K _).range.toAddSubgroup
+abbrev principalSubgroup : AddSubgroup (AdeleRing R K) := (algebraMap K _).range.toAddSubgroup
 
 end AdeleRing
 

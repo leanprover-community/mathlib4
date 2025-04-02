@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.Order.Field.Basic
 
 /-!
 # Casts of rational numbers into linear ordered fields.
@@ -147,7 +146,7 @@ namespace NNRat
 variable {K} [LinearOrderedSemifield K] {p q : ℚ≥0}
 
 theorem cast_strictMono : StrictMono ((↑) : ℚ≥0 → K) := fun p q h => by
-  rwa [NNRat.cast_def, NNRat.cast_def, div_lt_div_iff, ← Nat.cast_mul, ← Nat.cast_mul,
+  rwa [NNRat.cast_def, NNRat.cast_def, div_lt_div_iff₀, ← Nat.cast_mul, ← Nat.cast_mul,
     Nat.cast_lt (α := K), ← NNRat.lt_def]
   · simp
   · simp
@@ -175,16 +174,16 @@ def castOrderEmbedding : ℚ≥0 ↪o K :=
 section ofNat
 variable {n : ℕ} [n.AtLeastTwo]
 
-@[simp] lemma cast_le_ofNat : (p : K) ≤ no_index (OfNat.ofNat n) ↔ p ≤ OfNat.ofNat n := by
+@[simp] lemma cast_le_ofNat : (p : K) ≤ ofNat(n) ↔ p ≤ OfNat.ofNat n := by
   simp [← cast_le (K := K)]
 
-@[simp] lemma ofNat_le_cast : no_index (OfNat.ofNat n) ≤ (p : K) ↔ OfNat.ofNat n ≤ p := by
+@[simp] lemma ofNat_le_cast : ofNat(n) ≤ (p : K) ↔ OfNat.ofNat n ≤ p := by
   simp [← cast_le (K := K)]
 
-@[simp] lemma cast_lt_ofNat : (p : K) < no_index (OfNat.ofNat n) ↔ p < OfNat.ofNat n := by
+@[simp] lemma cast_lt_ofNat : (p : K) < ofNat(n) ↔ p < OfNat.ofNat n := by
   simp [← cast_lt (K := K)]
 
-@[simp] lemma ofNat_lt_cast : no_index (OfNat.ofNat n) < (p : K) ↔ OfNat.ofNat n < p := by
+@[simp] lemma ofNat_lt_cast : ofNat(n) < (p : K) ↔ OfNat.ofNat n < p := by
   simp [← cast_lt (K := K)]
 
 end ofNat

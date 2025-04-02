@@ -3,13 +3,15 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Fintype instances for pi types
 -/
+
+assert_not_exists OrderedRing MonoidWithZero
 
 open Finset Function
 
@@ -132,7 +134,7 @@ end Fintype
 /-! ### pi -/
 
 /-- A dependent product of fintypes, indexed by a fintype, is a fintype. -/
-instance Pi.fintype {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
+instance Pi.instFintype {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] : Fintype (∀ a, β a) :=
   ⟨Fintype.piFinset fun _ => univ, by simp⟩
 
@@ -143,12 +145,13 @@ theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] 
       (Finset.univ : Finset (∀ a, β a)) :=
   rfl
 
--- Porting note: this instance used to be computable in Lean3 and used `decidable_eq`, but
--- it makes things a lot harder to work with here. in some ways that was because in Lean3
--- we could make this instance irreducible when needed and in the worst case use `congr/convert`,
--- but those don't work with subsingletons in lean4 as-is so we cannot do this here.
+/-- There are finitely many embeddings between finite types.
+
+This instance used to be computable (using `DecidableEq` arguments), but
+it makes things a lot harder to work with here.
+-/
 noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β] :
-  Fintype (α ↪ β) := by
+    Fintype (α ↪ β) := by
   classical exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 
 instance RelHom.instFintype {α β} [Fintype α] [Fintype β] [DecidableEq α] {r : α → α → Prop}
@@ -178,3 +181,43 @@ lemma piDiag_subset_piFinset [DecidableEq ι] [Fintype ι] :
     s.piDiag ι ⊆ Fintype.piFinset fun _ ↦ s := by simp [← piFinset_filter_const]
 
 end Finset
+
+namespace Set
+
+/-! ### Constructors for `Set.Finite`
+
+Every constructor here should have a corresponding `Fintype` instance in the previous section
+(or in the `Fintype` module).
+
+The implementation of these constructors ideally should be no more than `Set.toFinite`,
+after possibly setting up some `Fintype` and classical `Decidable` instances.
+-/
+
+
+section SetFiniteConstructors
+
+section Pi
+variable {ι : Type*} [Finite ι] {κ : ι → Type*} {t : ∀ i, Set (κ i)}
+
+/-- Finite product of finite sets is finite -/
+theorem Finite.pi (ht : ∀ i, (t i).Finite) : (pi univ t).Finite := by
+  cases nonempty_fintype ι
+  lift t to ∀ d, Finset (κ d) using ht
+  classical
+    rw [← Fintype.coe_piFinset]
+    apply Finset.finite_toSet
+
+/-- Finite product of finite sets is finite. Note this is a variant of `Set.Finite.pi` without the
+extra `i ∈ univ` binder. -/
+lemma Finite.pi' (ht : ∀ i, (t i).Finite) : {f : ∀ i, κ i | ∀ i, f i ∈ t i}.Finite := by
+  simpa [Set.pi] using Finite.pi ht
+
+end Pi
+
+end SetFiniteConstructors
+
+theorem forall_finite_image_eval_iff {δ : Type*} [Finite δ] {κ : δ → Type*} {s : Set (∀ d, κ d)} :
+    (∀ d, (eval d '' s).Finite) ↔ s.Finite :=
+  ⟨fun h => (Finite.pi h).subset <| subset_pi_eval_image _ _, fun h _ => h.image _⟩
+
+end Set
