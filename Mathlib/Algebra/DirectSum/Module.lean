@@ -247,33 +247,22 @@ lemma toAddMonoidHom_lmap :
 lemma lmap_eq_map (x : ⨁ i, M i) : lmap f x = map (fun i => (f i).toAddMonoidHom) x :=
   rfl
 
-section
+end AddCommMonoid
 
-variable (f : ∀ i, M i →+ N i)
-
-lemma mker_map : AddMonoidHom.mker (map f) =
-    (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mker (f i))).comap
-    (DirectSum.coeFnAddMonoidHom M) :=
-  DFinsupp.mker_mapRangeAddMonoidHom f
-
-lemma mrange_map : AddMonoidHom.mrange (map f) =
-    (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mrange (f i))).comap
-    (DirectSum.coeFnAddMonoidHom N) :=
-  DFinsupp.mrange_mapRangeAddMonoidHom f
-
-variable {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommGroup (α i)]
-variable [∀ i, AddCommGroup (β i)] (f : ∀ i, α i →+ β i)
+section AddCommGroup
+variable [∀ i, AddCommGroup (M i)]
+variable [∀ i, AddCommMonoid (N i)] (f : ∀ i, M i →+ N i)
 
 lemma ker_map : (map f).ker =
-    (AddSubgroup.pi Set.univ (f · |>.ker)).comap (DirectSum.coeFnAddMonoidHom α) :=
+    (AddSubgroup.pi Set.univ (f · |>.ker)).comap (DirectSum.coeFnAddMonoidHom M) :=
   DFinsupp.ker_mapRangeAddMonoidHom f
 
 lemma range_map : (map f).range =
-    (AddSubgroup.pi Set.univ (f · |>.range)).comap (DirectSum.coeFnAddMonoidHom β) := by
+    (AddSubgroup.pi Set.univ (f · |>.range)).comap (DirectSum.coeFnAddMonoidHom N) := by
   classical
   exact DFinsupp.range_mapRangeAddMonoidHom f
 
-end
+end AddCommGroup
 
 end map
 

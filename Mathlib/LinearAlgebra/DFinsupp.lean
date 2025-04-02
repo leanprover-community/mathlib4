@@ -282,14 +282,15 @@ theorem mapRange.linearEquiv_symm (e : ∀ i, β₁ i ≃ₗ[R] β₂ i) :
 end AddCommMonoid
 
 section AddCommGroup
-variable [∀ i, AddCommGroup (β₁ i)] [∀ i, AddCommGroup (β₂ i)]
 
-lemma ker_mapRangeAddMonoidHom (f : ∀ i, β₁ i →+ β₂ i) :
+lemma ker_mapRangeAddMonoidHom
+    [∀ i, AddCommGroup (β₁ i)] [∀ i, AddCommMonoid (β₂ i)] (f : ∀ i, β₁ i →+ β₂ i) :
     (mapRange.addMonoidHom f).ker =
       (AddSubgroup.pi Set.univ (f · |>.ker)).comap coeFnAddMonoidHom :=
   AddSubgroup.toAddSubmonoid_injective <| mker_mapRangeAddMonoidHom f
 
-lemma range_mapRangeAddMonoidHom (f : ∀ i, β₁ i →+ β₂ i) :
+lemma range_mapRangeAddMonoidHom
+    [∀ i, AddCommGroup (β₁ i)] [∀ i, AddCommGroup (β₂ i)] (f : ∀ i, β₂ i →+ β₁ i) :
     (mapRange.addMonoidHom f).range =
       (AddSubgroup.pi Set.univ (f · |>.range)).comap coeFnAddMonoidHom :=
   AddSubgroup.toAddSubmonoid_injective <| mrange_mapRangeAddMonoidHom f
