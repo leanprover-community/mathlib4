@@ -490,6 +490,39 @@ lemma sigmaSigmaSubtypeEq_symm_apply {α β : Type*} {γ : α → β → Type*} 
 
 end
 
+/-- A sigma of a sigma whose second base does not depend on the first is equivalent
+to a sigma whose base is a product. -/
+@[simps!]
+def sigmaAssocProd {α β : Type*} {γ : α → β → Type*} :
+    (ab : α × β) × γ ab.1 ab.2 ≃ (a : α) × (b : β) × γ a b :=
+  sigmaCongrLeft' (sigmaEquivProd _ _).symm |>.trans <| sigmaAssoc γ
+
+
+/-- A subtype of a dependent triple which pins down both bases is equivalent to the
+respective fiber. -/
+@[simps! (config := {simpRhs := true})]
+def sigmaSigmaSubtype {α : Type*} {β : α → Type*} {γ : (a : α) → β a → Type*}
+    (p : (a : α) × β a → Prop) [uniq : Unique {ab // p ab}] (a : α) (b : β a) (h : p ⟨a, b⟩) :
+    {s : (a : α) × (b : β a) × γ a b // p ⟨s.1, s.2.1⟩} ≃ γ a b := by
+  calc {s : (a : α) × (b : β a) × γ a b // p ⟨s.1, s.2.1⟩}
+  _ ≃ _ := subtypeEquiv (p := fun ⟨a, b, c⟩ ↦ p ⟨a, b⟩) (q := (p ·.1))
+    (sigmaAssoc γ).symm fun s ↦ by simp [sigmaAssoc]
+  _ ≃ _ := subtypeSigmaEquiv _ _
+  _ ≃ _ := uniqueSigma (fun ab ↦ γ (Sigma.fst <| Subtype.val ab) (Sigma.snd <| Subtype.val ab))
+  _ ≃ γ a b := by rw [ ← show ⟨⟨a, b⟩, h⟩ = uniq.default from uniq.uniq _]
+
+/-- A specialization of `sigmaSigmaSubtype` to the case where the second base
+does not depend on the first, and the property being checked for is simple
+equality. Useful for e.g. hom-types. -/
+@[simps!]
+def sigmaSigmaSubtypeEq {α β : Type*} {γ : α → β → Type*} (a : α) (b : β) :
+    {s : (a : α) × (b : β) × γ a b // s.1 = a ∧ s.2.1 = b} ≃ γ a b :=
+  have : Unique (@Subtype ((_ : α) × β) (fun ⟨a', b'⟩ ↦ a' = a ∧ b' = b)) := {
+    default := ⟨⟨a, b⟩, ⟨rfl, rfl⟩⟩
+    uniq := by rintro ⟨⟨a', b'⟩, ⟨rfl, rfl⟩⟩; rfl
+  }
+  sigmaSigmaSubtype (fun ⟨a', b'⟩ ↦ a' = a ∧ b' = b) a b ⟨rfl, rfl⟩
+
 end
 
 section subtypeEquivCodomain
@@ -954,6 +987,12 @@ end
 lemma eq_conj {α α' β β' : Sort*} (ε₁ : α ≃ α') (ε₂ : β' ≃ β)
     (f : α → β) (f' : α' → β') : ε₂.symm ∘ f ∘ ε₁.symm = f' ↔ f = ε₂ ∘ f' ∘ ε₁ := by
   rw [Equiv.symm_comp_eq, Equiv.comp_symm_eq, Function.comp_assoc]
+
+lemma eq_conj {α α' β β' : Type*} (ε₁ : α ≃ α') (ε₂ : β' ≃ β)
+    (f : α → β) (f' : α' → β') : f = ε₂ ∘ f' ∘ ε₁ ↔ ε₂.symm ∘ f ∘ ε₁.symm = f' := by
+  constructor <;> (intro h; ext)
+  · simp [h]
+  · simp [← h]
 
 section BinaryOp
 
