@@ -4404,7 +4404,7 @@ import Mathlib.NumberTheory.SmoothNumbers
 import Mathlib.NumberTheory.SumFourSquares
 import Mathlib.NumberTheory.SumPrimeReciprocals
 import Mathlib.NumberTheory.SumTwoSquares
-import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AnalyticalPart
+import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
 import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
 import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
