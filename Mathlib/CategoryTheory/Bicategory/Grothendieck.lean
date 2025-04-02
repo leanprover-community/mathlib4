@@ -137,7 +137,7 @@ lemma isHomLift_cartesianLift :
 
 /-- Given some lift `g` of `f`, the canonical map from the domain of `g` to the domain of
 the cartesian lift of `f`. -/
-def homCartesianLift {a' : ∫ F} (g : a' ⟶ a) [inst : (forget F).IsHomLift f g] :
+def homCartesianLift {a' : ∫ F} (g : a' ⟶ a) [(forget F).IsHomLift f g] :
     a' ⟶ domainCartesianLift F f where
   base := eqToHom <| IsHomLift.domain_eq (forget F) f g
   fiber :=
