@@ -326,11 +326,8 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
   simp only [coe_map, Set.mem_image, coe_univ, Set.mem_univ, true_and] at hv hw
   obtain ⟨v', rfl⟩ := hv
   obtain ⟨w', rfl⟩ := hw
-  simp only [coe_sort_coe, RelEmbedding.coe_toEmbedding, comap_adj, Function.Embedding.coe_subtype,
-    f.map_adj_iff, top_adj, ne_eq, Subtype.mk.injEq, RelEmbedding.inj]
-  -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
-  erw [Function.Embedding.coe_subtype, f.map_adj_iff]
-  simp
+  simp_rw [RelEmbedding.coe_toEmbedding, comap_adj, Function.Embedding.coe_subtype, f.map_adj_iff,
+    top_adj, ne_eq, Subtype.mk.injEq, RelEmbedding.inj]
 
 /-- An embedding of a complete graph that witnesses the fact that the graph is not clique-free. -/
 noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :

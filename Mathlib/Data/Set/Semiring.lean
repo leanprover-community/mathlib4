@@ -3,10 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Sets as a semiring under union

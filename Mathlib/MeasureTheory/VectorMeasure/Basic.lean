@@ -131,12 +131,6 @@ theorem of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwise (Dis
     v (⋃ i, f i) = ∑' i, v (f i) :=
   (hasSum_of_disjoint_iUnion hm hd).tsum_eq.symm
 
-@[deprecated of_disjoint_iUnion (since := "2024-09-15")]
-theorem of_disjoint_iUnion_nat (v : VectorMeasure α M) {f : ℕ → Set α}
-    (hf₁ : ∀ i, MeasurableSet (f i)) (hf₂ : Pairwise (Disjoint on f)) :
-    v (⋃ i, f i) = ∑' i, v (f i) :=
-  of_disjoint_iUnion hf₁ hf₂
-
 theorem of_union {A B : Set α} (h : Disjoint A B) (hA : MeasurableSet A) (hB : MeasurableSet B) :
     v (A ∪ B) = v A + v B := by
   rw [Set.union_eq_iUnion, of_disjoint_iUnion, tsum_fintype, Fintype.sum_bool, cond, cond]

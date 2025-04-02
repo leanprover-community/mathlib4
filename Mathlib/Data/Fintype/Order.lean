@@ -168,8 +168,6 @@ lemma Finite.exists_minimal_le [Finite α] (h : p a) : ∃ b, b ≤ a ∧ Minima
     Set.Finite.exists_minimal_wrt id {x | x ≤ a ∧ p x} (Set.toFinite _) ⟨a, rfl.le, h⟩
   exact ⟨b, hba, hb, fun x hx hxb ↦ (hbmin x ⟨hxb.trans hba, hx⟩ hxb).le⟩
 
-@[deprecated (since := "2024-09-23")] alias Finite.exists_ge_minimal := Finite.exists_minimal_le
-
 lemma Finite.exists_le_maximal [Finite α] (h : p a) : ∃ b, a ≤ b ∧ Maximal p b :=
   Finite.exists_minimal_le (α := αᵒᵈ) h
 
