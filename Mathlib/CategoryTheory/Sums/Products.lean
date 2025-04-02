@@ -96,7 +96,7 @@ def functorEquivInverseCompWhiskeringLeftInrIso :
 /-- A consequence of `functorEquiv`: we can construct a natural transformation of functors
 `A ⊕ A' ⥤ B` from the data of natural transformations of their whiskering with `inl_` and `inr_`. -/
 @[simps!]
-def ofNatTransWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
+def natTransOfWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
     (η₁ : Sum.inl_ A A' ⋙ F ⟶ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ⟶ Sum.inr_ A A' ⋙ G) :
     F ⟶ G :=
   (Sum.functorEquiv A A' B).unit.app F ≫
@@ -104,30 +104,30 @@ def ofNatTransWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
       (Sum.functorEquiv A A' B).unitInv.app G
 
 @[simp]
-lemma ofNatTransWhiskerLeftInlInr_id {F : A ⊕ A' ⥤ B} :
-    ofNatTransWhiskerLeftInlInr (𝟙 (Sum.inl_ A A' ⋙ F)) (𝟙 (Sum.inr_ A A' ⋙ F)) = 𝟙 F := by
+lemma natTransOfWhiskerLeftInlInr_id {F : A ⊕ A' ⥤ B} :
+    natTransOfWhiskerLeftInlInr (𝟙 (Sum.inl_ A A' ⋙ F)) (𝟙 (Sum.inr_ A A' ⋙ F)) = 𝟙 F := by
   aesop_cat
 
 @[simp]
-lemma ofNatTransWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
+lemma natTransOfWhiskerLeftInlInr_comp {F G H : A ⊕ A' ⥤ B}
     (η₁ : Sum.inl_ A A' ⋙ F ⟶ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ⟶ Sum.inr_ A A' ⋙ G)
     (ν₁ : Sum.inl_ A A' ⋙ G ⟶ Sum.inl_ A A' ⋙ H) (ν₂ : Sum.inr_ A A' ⋙ G ⟶ Sum.inr_ A A' ⋙ H) :
-    ofNatTransWhiskerLeftInlInr (η₁ ≫ ν₁) (η₂ ≫ ν₂) = ofNatTransWhiskerLeftInlInr η₁ η₂ ≫
-      ofNatTransWhiskerLeftInlInr ν₁ ν₂ := by
+    natTransOfWhiskerLeftInlInr (η₁ ≫ ν₁) (η₂ ≫ ν₂) = natTransOfWhiskerLeftInlInr η₁ η₂ ≫
+      natTransOfWhiskerLeftInlInr ν₁ ν₂ := by
   aesop_cat
 
 /-- A consequence of `functorEquiv`: we can construct a natural isomorphism of functors
 `A ⊕ A' ⥤ B` from the data of natural isomorphisms of their whiskering with `inl_` and `inr_`. -/
 @[simps]
-def ofNatIsoWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
+def natIsoOfWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
     (η₁ : Sum.inl_ A A' ⋙ F ≅ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ≅ Sum.inr_ A A' ⋙ G) :
     F ≅ G where
-  hom := ofNatTransWhiskerLeftInlInr η₁.hom η₂.hom
-  inv := ofNatTransWhiskerLeftInlInr η₁.inv η₂.inv
+  hom := natTransOfWhiskerLeftInlInr η₁.hom η₂.hom
+  inv := natTransOfWhiskerLeftInlInr η₁.inv η₂.inv
 
-lemma ofNatIsoWhiskerLeftInlInr_eq {F G : A ⊕ A' ⥤ B}
+lemma natIsoOfWhiskerLeftInlInr_eq {F G : A ⊕ A' ⥤ B}
     (η₁ : Sum.inl_ A A' ⋙ F ≅ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ≅ Sum.inr_ A A' ⋙ G) :
-    ofNatIsoWhiskerLeftInlInr η₁ η₂ =
+    natIsoOfWhiskerLeftInlInr η₁ η₂ =
     (Sum.functorEquiv A A' B).unitIso.app _ ≪≫
       (Sum.functorEquiv A A' B).inverse.mapIso (Iso.prod η₁ η₂) ≪≫
       (Sum.functorEquiv A A' B).unitIso.symm.app _ := by
