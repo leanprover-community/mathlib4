@@ -66,6 +66,12 @@ variable (R) in
 scoped instance : TopologicalSpace (MvPowerSeries σ R) :=
   Pi.topologicalSpace
 
+theorem instTopologicalSpace_mono (σ : Type*) {R : Type*} [Semiring R]
+    {t u : TopologicalSpace R} (htu : t ≤ u) :
+    @instTopologicalSpace σ R t ≤ @instTopologicalSpace σ R u := by
+  simp only [instTopologicalSpace, Pi.topologicalSpace, ge_iff_le, le_iInf_iff]
+  exact fun i ↦ le_trans (iInf_le _ i) (induced_mono htu)
+
 /-- `MvPowerSeries` on a `T0Space` form a `T0Space` -/
 @[scoped instance]
 theorem instT0Space [T0Space R] : T0Space (MvPowerSeries σ R) := Pi.instT0Space

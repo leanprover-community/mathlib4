@@ -54,9 +54,6 @@ as it is discrete.
 * `MvPowerSeries.IsNilpotent_subst` asserts that the constant coefficient
 of a legit substitution is nilpotent; prove that the converse holds when
 the kernel of `algebraMap R S` is a nilideal.
-
-* Prove `MvPowerSeries.HasSubst.hasEval` under the more general assumption
-that the topology on S is linear (`IsLinearTopology S S`).
 -/
 
 namespace MvPowerSeries
@@ -94,10 +91,9 @@ lemma hasSubst_iff_hasEval_of_discreteTopology [TopologicalSpace S] [DiscreteTop
     fun ha ↦ ⟨fun s ↦ (tendsto_pow_of_constantCoeff_nilpotent_iff (a s)).mp (ha.hpow s),
       fun d ↦ (coeff_zero_iff.mp ha.tendsto_zero) d⟩⟩
 
--- This holds more generally for `IsLinearTopology S`
-theorem HasSubst.hasEval [TopologicalSpace S] [DiscreteTopology S] (ha : HasSubst a) :
-    HasEval a :=
-  hasSubst_iff_hasEval_of_discreteTopology.mp ha
+theorem HasSubst.hasEval [TopologicalSpace S] (ha : HasSubst a) :
+    HasEval a := HasEval.mono (instTopologicalSpace_mono τ bot_le) <|
+  (@hasSubst_iff_hasEval_of_discreteTopology σ τ _ _ a ⊥ (@DiscreteTopology.mk S ⊥ rfl)).mp ha
 
 theorem hasSubst_X : HasSubst (fun (s : σ) ↦ (X s : MvPowerSeries σ S)) := by
   letI : UniformSpace S := ⊥
