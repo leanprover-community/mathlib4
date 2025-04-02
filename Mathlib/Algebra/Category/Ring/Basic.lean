@@ -306,6 +306,17 @@ instance hasForgetToSemiRingCat : HasForget₂ RingCat SemiRingCat where
     { obj := fun R ↦ SemiRingCat.of R
       map := fun f ↦ SemiRingCat.ofHom f.hom }
 
+/-- The forget functor from `RingCat` to `SemiRingCat` is fully faithful. -/
+def fullyFaithfulForget₂ToSemiRingCat :
+    (forget₂ RingCat SemiRingCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+instance : (forget₂ RingCat SemiRingCat).Full :=
+  fullyFaithfulForget₂ToSemiRingCat.full
+
+instance : (forget₂ RingCat SemiRingCat).Faithful :=
+  fullyFaithfulForget₂ToSemiRingCat.faithful
+
 instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
   forget₂ :=
     { obj := fun R ↦ AddCommGrp.of R
@@ -456,6 +467,17 @@ instance hasForgetToSemiRingCat : HasForget₂ CommSemiRingCat SemiRingCat where
   forget₂ :=
     { obj := fun R ↦ ⟨R⟩
       map := fun f ↦ ⟨f.hom⟩ }
+
+/-- The forget functor from `CommSemiRingCat` to `SemiRingCat` is fully faithful. -/
+def fullyFaithfulForget₂ToSemiRingCat :
+    (forget₂ CommSemiRingCat SemiRingCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+instance : (forget₂ CommSemiRingCat SemiRingCat).Full :=
+  fullyFaithfulForget₂ToSemiRingCat.full
+
+instance : (forget₂ CommSemiRingCat SemiRingCat).Faithful :=
+  fullyFaithfulForget₂ToSemiRingCat.faithful
 
 /-- The forgetful functor from commutative rings to (multiplicative) commutative monoids. -/
 instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
@@ -612,6 +634,18 @@ instance hasForgetToRingCat : HasForget₂ CommRingCat RingCat where
   forget₂ :=
     { obj := fun R ↦ RingCat.of R
       map := fun f ↦ RingCat.ofHom f.hom }
+
+/-- The forget functor from `CommRingCat` to `RingCat` is fully faithful. -/
+def fullyFaithfulForget₂ToRingCat :
+    (forget₂ CommRingCat RingCat).FullyFaithful where
+  preimage f := ofHom f.hom
+
+instance : (forget₂ CommRingCat RingCat).Full :=
+  fullyFaithfulForget₂ToRingCat.full
+
+instance : (forget₂ CommRingCat RingCat).Faithful :=
+  fullyFaithfulForget₂ToRingCat.faithful
+
 
 @[simp] lemma forgetToRingCat_map_hom {R S : CommRingCat} (f : R ⟶ S) :
     ((forget₂ CommRingCat RingCat).map f).hom = f.hom :=

@@ -3,7 +3,7 @@ Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton
 -/
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Colimits
 import Mathlib.CategoryTheory.Filtered.Basic
 
 /-!
@@ -39,15 +39,20 @@ where their images are equal.
 protected def Rel (x y : Σ j, F.obj j) : Prop :=
   ∃ (k : _) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2
 
-theorem rel_of_quot_rel (x y : Σ j, F.obj j) :
-    Quot.Rel F x y → FilteredColimit.Rel.{v, u} F x y :=
+theorem rel_of_colimitTypeRel (x y : Σ j, F.obj j) :
+    F.ColimitTypeRel x y → FilteredColimit.Rel.{v, u} F x y :=
   fun ⟨f, h⟩ => ⟨y.1, f, 𝟙 y.1, by rw [← h, FunctorToTypes.map_id_apply]⟩
 
-theorem eqvGen_quot_rel_of_rel (x y : Σ j, F.obj j) :
-    FilteredColimit.Rel.{v, u} F x y → Relation.EqvGen (Quot.Rel F) x y := fun ⟨k, f, g, h⟩ => by
-  refine Relation.EqvGen.trans _ ⟨k, F.map f x.2⟩ _ ?_ ?_
-  · exact (Relation.EqvGen.rel _ _ ⟨f, rfl⟩)
-  · exact (Relation.EqvGen.symm _ _ (Relation.EqvGen.rel _ _ ⟨g, h⟩))
+@[deprecated (since := "2025-04-01")] alias rel_of_quot_rel := rel_of_colimitTypeRel
+
+theorem eqvGen_colimitTypeRel_of_rel (x y : Σ j, F.obj j) :
+    FilteredColimit.Rel.{v, u} F x y → Relation.EqvGen F.ColimitTypeRel x y :=
+  fun ⟨k, f, g, h⟩ => by
+    refine Relation.EqvGen.trans _ ⟨k, F.map f x.2⟩ _ ?_ ?_
+    · exact (Relation.EqvGen.rel _ _ ⟨f, rfl⟩)
+    · exact (Relation.EqvGen.symm _ _ (Relation.EqvGen.rel _ _ ⟨g, h⟩))
+
+@[deprecated (since := "2025-04-01")] alias eqvGen_quot_rel_of_rel := eqvGen_colimitTypeRel_of_rel
 
 /-- Recognizing filtered colimits of types. -/
 noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
@@ -101,20 +106,23 @@ protected theorem rel_equiv : _root_.Equivalence (FilteredColimit.Rel.{v, u} F) 
         _ = F.map (gl ≫ n) (F.map g' z.2) := by rw [h']
         _ = F.map (g' ≫ gl ≫ n) z.2 := by simp⟩
 
-protected theorem rel_eq_eqvGen_quot_rel :
-    FilteredColimit.Rel.{v, u} F = Relation.EqvGen (Quot.Rel F) := by
+protected theorem rel_eq_eqvGen_colimitTypeRel :
+    FilteredColimit.Rel.{v, u} F = Relation.EqvGen F.ColimitTypeRel := by
   ext ⟨j, x⟩ ⟨j', y⟩
   constructor
-  · apply eqvGen_quot_rel_of_rel
+  · apply eqvGen_colimitTypeRel_of_rel
   · rw [← (FilteredColimit.rel_equiv F).eqvGen_iff]
-    exact Relation.EqvGen.mono (rel_of_quot_rel F)
+    exact Relation.EqvGen.mono (rel_of_colimitTypeRel F)
+
+@[deprecated (since := "2025-04-01")] alias rel_eq_eqvGen_quot_rel :=
+  FilteredColimit.rel_eq_eqvGen_colimitTypeRel
 
 theorem colimit_eq_iff_aux [HasColimit F] {i j : J} {xi : F.obj i} {xj : F.obj j} :
     (colimitCocone F).ι.app i xi = (colimitCocone F).ι.app j xj ↔
       FilteredColimit.Rel.{v, u} F ⟨i, xi⟩ ⟨j, xj⟩ := by
   dsimp
   rw [← (equivShrink _).symm.injective.eq_iff, Equiv.symm_apply_apply, Equiv.symm_apply_apply,
-    Quot.eq, FilteredColimit.rel_eq_eqvGen_quot_rel]
+    Functor.ιColimitType_eq_iff, FilteredColimit.rel_eq_eqvGen_colimitTypeRel]
 
 theorem isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj i} {xj : F.obj j} :
     t.ι.app i xi = t.ι.app j xj ↔ ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj := by
