@@ -44,6 +44,10 @@ theorem hasSubst_iff (a : MvPowerSeries τ S) :
   ⟨fun ha ↦ MvPowerSeries.hasSubst_of_constantCoeff_nilpotent (Function.const Unit ha),
    fun ha  ↦ (ha.const_coeff ())⟩
 
+theorem HasSubst.hasEval [TopologicalSpace S] {a : MvPowerSeries τ S} (ha : HasSubst a) :
+    HasEval a := MvPowerSeries.HasEval.mono (instTopologicalSpace_mono τ bot_le) <|
+  (@hasSubst_iff_hasEval_of_discreteTopology σ τ _ _ a ⊥ (@DiscreteTopology.mk S ⊥ rfl)).mp ha
+
 theorem HasSubst.of_constantCoeff_zero
     {a : MvPowerSeries τ S}
     (ha : MvPowerSeries.constantCoeff τ S a = 0) :
@@ -171,25 +175,11 @@ theorem _root_.Polynomial.toPowerSeries_toMvPowerSeries (p : Polynomial R) :
     Algebra.id.map_eq_id, MvPowerSeries.map_id, MvPolynomial.coe_X, RingHom.id_apply]
   rfl
 
-/- example :(substAlgHom ha).comp
-    ((MvPolynomial.coeToMvPowerSeries.algHom R).comp
-      (Polynomial.aeval (MvPolynomial.X () : MvPolynomial Unit R)))
-    = (Polynomial.aeval a) := by
-  apply Polynomial.algHom_ext
-  simp only [AlgHom.coe_comp, Function.comp_apply, Polynomial.aeval_X]
-  erw [AlgHom.comp_apply]
-  simp only [Polynomial.aeval_X, MvPolynomial.coeToMvPowerSeries.algHom_apply, Algebra.id.map_eq_id,
-    MvPowerSeries.map_id, MvPolynomial.coe_X, RingHom.id_apply]
-  -- we need substAlgHom_coe
-  rw [← MvPolynomial.coe_X, substAlgHom]
-  erw [MvPowerSeries.substAlgHom_apply]
-  rw [MvPowerSeries.subst_coe, MvPolynomial.aeval_X] -/
-
 theorem substAlgHom_coe [Algebra R S] (ha : HasSubst a) (p : Polynomial R) :
     substAlgHom ha (p : PowerSeries R) = ↑(Polynomial.aeval a p) := by
   rw [p.toPowerSeries_toMvPowerSeries, substAlgHom]
   erw [MvPowerSeries.coe_substAlgHom]
-  rw [MvPowerSeries.subst_coe ha.const, ← AlgHom.comp_apply]
+  rw [MvPowerSeries.subst_coe, ← AlgHom.comp_apply]
   apply AlgHom.congr_fun
   apply Polynomial.algHom_ext
   simp only [AlgHom.coe_comp, Function.comp_apply, Polynomial.aeval_X, MvPolynomial.aeval_X]
