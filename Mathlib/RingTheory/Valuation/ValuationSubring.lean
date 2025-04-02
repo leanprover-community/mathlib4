@@ -800,6 +800,6 @@ theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=
 
 theorem mem_maximalIdeal_iff {a : v.valuationSubring} :
     a ∈ IsLocalRing.maximalIdeal (v.valuationSubring) ↔ v a < 1 :=
-  Integers.not_isUnit_iff_valuation_lt_one
+  Integer.not_isUnit_iff_valuation_lt_one
 
 end Valuation
