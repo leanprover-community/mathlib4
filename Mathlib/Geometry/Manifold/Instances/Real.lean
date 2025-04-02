@@ -164,6 +164,42 @@ theorem range_euclideanQuadrant (n : ℕ) :
     (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
 
+open ENNReal in
+theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
+    interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
+      { y | ∀ i : Fin n, a < y i } := by
+  let f : (Fin n) → (Π _ : Fin n, ℝ) →L[ℝ] ℝ := fun i ↦ ContinuousLinearMap.proj i
+  have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i )⁻¹' Ici a := by
+    ext; simp; rfl
+  have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i )⁻¹' Ioi a := by
+    ext; simp; rfl
+  rw [h, h', interior_iInter_of_finite]
+  apply iInter_congr fun i ↦ ?_
+  rw [(f i).interior_preimage, interior_Ici]
+  apply Function.surjective_eval
+
+open ENNReal in
+theorem closure_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
+    closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
+      { y | ∀ i : Fin n, a ≤ y i } := by
+  let f : (Fin n) → (Π _ : Fin n, ℝ) →L[ℝ] ℝ := fun i ↦ ContinuousLinearMap.proj i
+  have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i )⁻¹' Ici a := by
+    ext; simp; rfl
+  sorry /- TODO: closure_sInter and closure_iInter_of_finite are missing
+  rw [h, closure_iInter_of_finite]
+  apply iInter_congr fun i ↦ ?_
+  rw [f.closure_preimage, closure_Ioi]
+  apply Function.surjective_eval -/
+
+open ENNReal in
+theorem frontier_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
+    frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
+      { y | (∀ i : Fin n, a ≤ y i) ∧ ∃ i : Fin n, (a = y i) } := by
+  rw [frontier, closure_euclideanQuadrant, interior_euclideanQuadrant]
+  ext y
+  simp only [mem_diff, mem_setOf_eq, not_forall, not_lt, and_congr_right_iff]
+  exact fun aux ↦ ⟨fun ⟨i, hi⟩ ↦ ⟨i, by linarith [aux i]⟩, fun ⟨i, hi⟩ ↦ ⟨i, by linarith⟩⟩
+
 end
 
 /--
