@@ -131,7 +131,7 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotien
     μ.IsMulLeftInvariant where
   map_mul_left_eq_self x := by
     ext A hA
-    induction x using QuotientGroup.induction_on with | H x₁ => ?_
+    obtain ⟨x₁, h⟩ := @Quotient.exists_rep _ (QuotientGroup.leftRel Γ) x
     convert measure_preimage_smul μ x₁ A using 1
     · rw [← h, Measure.map_apply (measurable_const_mul _) hA]
       simp [← MulAction.Quotient.coe_smul_out, ← Quotient.mk''_eq_mk]

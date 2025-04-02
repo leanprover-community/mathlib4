@@ -263,7 +263,7 @@ lemma toNNReal_smul (r : ℝ≥0) (f : C(X, ℝ)₀) : (r • f).toNNReal = r �
 
 @[simp]
 lemma toNNReal_neg_smul (r : ℝ≥0) (f : C(X, ℝ)₀) : (-(r • f)).toNNReal = r • (-f).toNNReal := by
-  rw [NNReal.smul_def r f, ← smul_neg (r : ℝ) f, ← NNReal.smul_def, toNNReal_smul]
+  rw [NNReal.smul_def, ← smul_neg, ← NNReal.smul_def, toNNReal_smul]
 
 lemma toNNReal_mul_add_neg_mul_add_mul_neg_eq (f g : C(X, ℝ)₀) :
     ((f * g).toNNReal + (-f).toNNReal * g.toNNReal + f.toNNReal * (-g).toNNReal) =
