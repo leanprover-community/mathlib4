@@ -211,7 +211,7 @@ def freeMapPathsOfCompPathCompositionIso (V : Type u) [Quiver.{v + 1} V] :
     Cat.freeMap (Paths.of V) ⋙ pathComposition (Cat.of (Paths V)) ≅ 𝟭 (Paths V) :=
   Paths.liftNatIso (fun v ↦ Iso.refl _) (by simp)
 
-lemma freeMap_pathsOf_pathComposition (V : Type u) [Quiver.{max u v + 1} V] :
+lemma freeMap_pathsOf_pathComposition (V : Type u) [Quiver.{v + 1} V] :
     Cat.freeMap (Paths.of (V := V)) ⋙ pathComposition (Cat.of (Paths V)) = 𝟭 (Paths V) :=
   Paths.ext_functor rfl (by simp)
 
