@@ -28,7 +28,7 @@ We implement a delaborator that pretty prints `max x y`/`min x y` as `x ⊔ y`/`
 if and only if the order on `α` does not have a `LinearOrder α` instance (where `x y : α`).
 
 This is so that in a lattice we can use the same underlying constants `max`/`min`
-as in linear orders, while using the more iniomatic notation `x ⊔ y`/`x ⊓ y`.
+as in linear orders, while using the more idiomatic notation `x ⊔ y`/`x ⊓ y`.
 Lemmas about the operators `⊔` and `⊓` should use the names `sup` and `inf` respectively.
 
 -/
