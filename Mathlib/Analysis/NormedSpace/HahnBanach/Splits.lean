@@ -33,17 +33,26 @@ namespace LinearMap
 lemma range_prodMap {f : E →L[𝕜] F} {g : E' →L[𝕜] F'} :
     range (f.prodMap g) = (range f).prod (range g) := by
   ext x
-  rw [Submodule.mem_prod]
-  simp_rw [LinearMap.mem_range]
-  constructor <;> intro h
-  · have : x ∈ Set.range (Prod.map f g) := h
-    rcases h with ⟨⟨y1, y₂⟩, hy⟩
-    all_goals simp_all
-  · choose y₁ hy₁ using h.1
-    choose y₂ hy₂ using h.2
-    use (y₁, y₂), by simp [hy₁, hy₂]
+  simp [Prod.ext_iff]
+
+lemma _root_.Submodule.map_add {p q : Submodule 𝕜 E} {f : E →L[𝕜] F} :
+    Submodule.map f p + Submodule.map f q = Submodule.map f (p + q) := by
+  ext x
+  simp
 
 end LinearMap
+
+section
+
+variable {R M N : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+
+lemma Submodule.sum_assoc {p q r : Submodule R M} : p + (q + r) = (p + q) + r := by
+  ext x
+  simp only [add_eq_sup, mem_sup, exists_exists_and_exists_and_eq_and]
+  exact ⟨fun ⟨y, hy, a, ha, b, hb, hyab⟩ ↦ ⟨y, hy, a, ha, b, hb, by rw [← hyab]; module⟩,
+    fun ⟨a, ha, b, hb, z, hz, h⟩ ↦ ⟨a, ha, b, hb, z, hz, by rw [← h]; module⟩⟩
+
+end
 
 /-- A continuous linear map `f : E → F` **splits** iff it is injective, has closed range and
 its image has a closed complement. -/
@@ -158,36 +167,33 @@ lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Spl
       -- and range g + hg.complement = G' is closed.
       -- TODO: think about the best proof for formalising.
       sorry
-    · constructor
-      · have : LinearMap.range (g.comp f) = Submodule.map g (LinearMap.range f) := by aesop
-        -- some lemmas which could be useful for a manual proof:
+    · have : LinearMap.range (g.comp f) = Submodule.map g (LinearMap.range f) := by aesop
+      constructor
+      · -- some lemmas which could be useful for a manual proof:
         -- rw [LinearMap.range_comp]; rw [LinearMap.range_eq_map]; rw [Submodule.map_comp f g ⊤]
         -- rw [← LinearMap.range_eq_map f]
         rw [this]
         exact disjoint_aux hf.complement_isCompl.1 hg.complement_isCompl.1 hg.injective
-      · have : LinearMap.range (g.comp f) + (Submodule.map g F' + hg.complement) = ⊤ := by
-          calc LinearMap.range (g.comp f) + (Submodule.map g F' + hg.complement)
-            _ = Submodule.map g (LinearMap.range f) + (Submodule.map g F' + hg.complement) := by
-              sorry -- same sorry as above; `aesop` times out now
-            _ = (Submodule.map g (LinearMap.range f) + Submodule.map g F') + hg.complement := by
-              ext x
-              -- missing lemma, sum of submodules is associative
-              sorry
-            _ = Submodule.map g (LinearMap.range f + F') + hg.complement := by
-              congr
-              -- TODO: this step is not true in general, only ≤ holds in general
-              -- #check Submodule.map_add_le
-              sorry
-            _ = Submodule.map g ⊤ + hg.complement := by
-              congr
-              rw [Submodule.add_eq_sup, ← codisjoint_iff]
-              exact hf.complement_isCompl.2
-            _ = LinearMap.range g + hg.complement := by rw [LinearMap.range_eq_map]
-            _ = ⊤ := by
-              rw [Submodule.add_eq_sup, ← codisjoint_iff]
-              exact hg.complement_isCompl.2
-        sorry
+      · rw [codisjoint_iff_le_sup, this, ← Submodule.add_eq_sup, Submodule.sum_assoc]
+        calc ⊤
+          _ = Submodule.map g ⊤ + hg.complement := by
+            symm
+            rw [Submodule.add_eq_sup, ← codisjoint_iff]
+            rw [← LinearMap.range_eq_map]
+            exact hg.complement_isCompl.2
+          _ = Submodule.map g (LinearMap.range f + F') + hg.complement := by
+            congr
+            symm
+            rw [Submodule.add_eq_sup, ← codisjoint_iff]
+            exact hf.complement_isCompl.2
+          _ ≤ (Submodule.map g (LinearMap.range f) + Submodule.map g F') + hg.complement := by
+            gcongr
+            apply le_of_eq
+            symm
+            apply Submodule.map_add (f := g) (p := LinearMap.range f) (q := F')
+            -- apply Submodule.map_add_le -- I want g.map (s + t), which is sth else!
 
+#exit
 lemma compCLE_left [CompleteSpace F'] {f₀ : F' ≃L[𝕜] E} (hf : f.Splits) :
     (f.comp f₀.toContinuousLinearMap).Splits :=
   f₀.splits.comp hf
