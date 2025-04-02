@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Apurva Nakade, Yuyang Zhao
 -/
 import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.SetTheory.Game.PGame
+import Mathlib.SetTheory.PGame.Algebra
 import Mathlib.Tactic.Abel
 
 /-!
@@ -600,7 +600,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
         abel
   termination_by (x, y, z)
 
-/-- `x * (y + z)` is equivalent to `x * y + x * z.`-/
+/-- `x * (y + z)` is equivalent to `x * y + x * z`. -/
 theorem left_distrib_equiv (x y z : PGame) : x * (y + z) ≈ x * y + x * z :=
   Quotient.exact <| quot_left_distrib _ _ _
 
@@ -613,7 +613,7 @@ theorem quot_left_distrib_sub (x y z : PGame) : (⟦x * (y - z)⟧ : Game) = ⟦
 theorem quot_right_distrib (x y z : PGame) : (⟦(x + y) * z⟧ : Game) = ⟦x * z⟧ + ⟦y * z⟧ := by
   simp only [quot_mul_comm, quot_left_distrib]
 
-/-- `(x + y) * z` is equivalent to `x * z + y * z.`-/
+/-- `(x + y) * z` is equivalent to `x * z + y * z`. -/
 theorem right_distrib_equiv (x y z : PGame) : (x + y) * z ≈ x * z + y * z :=
   Quotient.exact <| quot_right_distrib _ _ _
 
@@ -821,7 +821,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
         abel
   termination_by (x, y, z)
 
-/-- `x * y * z` is equivalent to `x * (y * z).`-/
+/-- `x * y * z` is equivalent to `x * (y * z)`. -/
 theorem mul_assoc_equiv (x y z : PGame) : x * y * z ≈ x * (y * z) :=
   Quotient.exact <| quot_mul_assoc _ _ _
 
@@ -925,7 +925,7 @@ def invVal {l r} (L : l → PGame) (R : r → PGame) (IHl : l → PGame) (IHr : 
 @[simp]
 theorem invVal_isEmpty {l r : Type u} {b} (L R IHl IHr) (i : InvTy l r b) (x) [IsEmpty l]
     [IsEmpty r] : invVal L R IHl IHr x i = 0 := by
-  cases' i with a _ a _ a _ a
+  obtain - | a | a | a | a := i
   · rfl
   all_goals exact isEmptyElim a
 

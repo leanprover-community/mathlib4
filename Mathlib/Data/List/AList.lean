@@ -341,7 +341,7 @@ theorem insertRec_insert {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) {c : Sigma β}
     {l : AList β} (h : c.1 ∉ l) :
     @insertRec α β _ C H0 IH (l.insert c.1 c.2) = IH c.1 c.2 l h (@insertRec α β _ C H0 IH l) := by
-  cases' l with l hl
+  obtain ⟨l, hl⟩ := l
   suffices HEq (@insertRec α β _ C H0 IH ⟨c :: l, nodupKeys_cons.2 ⟨h, hl⟩⟩)
       (IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩)) by
     cases c
@@ -413,7 +413,7 @@ theorem lookup_union_left {a} {s₁ s₂ : AList β} : a ∈ s₁ → lookup a (
 theorem lookup_union_right {a} {s₁ s₂ : AList β} : a ∉ s₁ → lookup a (s₁ ∪ s₂) = lookup a s₂ :=
   dlookup_kunion_right
 
--- Porting note: removing simp, LHS not in SNF, new theorem added instead.
+-- The corresponding lemma in `simp`-normal form is `lookup_union_eq_some`.
 theorem mem_lookup_union {a} {b : β a} {s₁ s₂ : AList β} :
     b ∈ lookup a (s₁ ∪ s₂) ↔ b ∈ lookup a s₁ ∨ a ∉ s₁ ∧ b ∈ lookup a s₂ :=
   mem_dlookup_kunion

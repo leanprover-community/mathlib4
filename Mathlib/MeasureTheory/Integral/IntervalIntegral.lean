@@ -6,6 +6,8 @@ Authors: Yury Kudryashov, Patrick Massot, Sébastien Gouëzel
 import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+import Mathlib.MeasureTheory.Measure.Restrict
+import Mathlib.MeasureTheory.Topology
 import Mathlib.Algebra.EuclideanDomain.Basic
 
 /-!
@@ -89,6 +91,19 @@ theorem IntervalIntegrable.congr {g : ℝ → E} (hf : IntervalIntegrable f μ a
     (h : f =ᵐ[μ.restrict (Ι a b)] g) :
     IntervalIntegrable g μ a b := by
   rwa [intervalIntegrable_iff, ← integrableOn_congr_fun_ae h, ← intervalIntegrable_iff]
+
+/-- Interval integrability is invariant when functions change along discrete sets. -/
+theorem IntervalIntegrable.congr_codiscreteWithin {g : ℝ → E} [NoAtoms μ]
+    (h : f =ᶠ[codiscreteWithin (Ι a b)] g) (hf : IntervalIntegrable f μ a b) :
+    IntervalIntegrable g μ a b :=
+  hf.congr (ae_restrict_le_codiscreteWithin measurableSet_Ioc h)
+
+/-- Interval integrability is invariant when functions change along discrete sets. -/
+theorem intervalIntegrable_congr_codiscreteWithin {g : ℝ → E} [NoAtoms μ]
+    (h : f =ᶠ[codiscreteWithin (Ι a b)] g) :
+    IntervalIntegrable f μ a b ↔ IntervalIntegrable g μ a b :=
+  ⟨(IntervalIntegrable.congr_codiscreteWithin h ·),
+    (IntervalIntegrable.congr_codiscreteWithin h.symm ·)⟩
 
 theorem intervalIntegrable_iff_integrableOn_Ioc_of_le (hab : a ≤ b) :
     IntervalIntegrable f μ a b ↔ IntegrableOn f (Ioc a b) μ := by
@@ -383,7 +398,7 @@ variable {f : ℝ → E}
 of the form `0..x` if it is interval integrable (with respect to the volume measure) on every
 interval of the form `0..x`, for positive `x`.
 
-See `intervalIntegrable_of_even` for a stronger result.-/
+See `intervalIntegrable_of_even` for a stronger result. -/
 lemma intervalIntegrable_of_even₀ (h₁f : ∀ x, f x = f (-x))
     (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (t : ℝ) :
     IntervalIntegrable f volume 0 t := by
@@ -408,7 +423,7 @@ theorem intervalIntegrable_of_even
 of the form `0..x` if it is interval integrable (with respect to the volume measure) on every
 interval of the form `0..x`, for positive `x`.
 
-See `intervalIntegrable_of_odd` for a stronger result.-/
+See `intervalIntegrable_of_odd` for a stronger result. -/
 lemma intervalIntegrable_of_odd₀
     (h₁f : ∀ x, -f x = f (-x)) (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (t : ℝ) :
     IntervalIntegrable f volume 0 t := by
@@ -652,7 +667,8 @@ nonrec theorem integral_smul_measure (c : ℝ≥0∞) :
 
 end Basic
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
+-- TODO: add `Complex.ofReal` version of `_root_.integral_ofReal`
+
 nonrec theorem _root_.RCLike.intervalIntegral_ofReal {𝕜 : Type*} [RCLike 𝕜] {a b : ℝ}
     {μ : Measure ℝ} {f : ℝ → ℝ} : (∫ x in a..b, (f x : 𝕜) ∂μ) = ↑(∫ x in a..b, f x ∂μ) := by
   simp only [intervalIntegral, integral_ofReal, RCLike.ofReal_sub]
@@ -867,8 +883,7 @@ theorem integral_add_adjacent_intervals_cancel (hab : IntervalIntegrable f μ a 
     rw [Ioc_union_Ioc_union_Ioc_cycle, union_right_comm, Ioc_union_Ioc_union_Ioc_cycle,
       min_left_comm, max_left_comm]
   all_goals
-    simp [*, MeasurableSet.union, measurableSet_Ioc, Ioc_disjoint_Ioc_same,
-      Ioc_disjoint_Ioc_same.symm, hab.1, hab.2, hbc.1, hbc.2, hac.1, hac.2]
+    simp [*, hab.1, hab.2, hbc.1, hbc.2, hac.1, hac.2]
 
 theorem integral_add_adjacent_intervals (hab : IntervalIntegrable f μ a b)
     (hbc : IntervalIntegrable f μ b c) :
@@ -964,6 +979,18 @@ theorem integral_congr_ae' (h : ∀ᵐ x ∂μ, x ∈ Ioc a b → f x = g x)
 theorem integral_congr_ae (h : ∀ᵐ x ∂μ, x ∈ Ι a b → f x = g x) :
     ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ :=
   integral_congr_ae' (ae_uIoc_iff.mp h).1 (ae_uIoc_iff.mp h).2
+
+/-- Integrals are equal for functions that agree almost everywhere for the restricted measure. -/
+theorem integral_congr_ae_restrict {a b : ℝ} {f g : ℝ → E} {μ : Measure ℝ}
+    (h : f =ᵐ[μ.restrict (Ι a b)] g) :
+    ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ :=
+  integral_congr_ae (ae_imp_of_ae_restrict h)
+
+/-- Integrals are invariant when functions change along discrete sets. -/
+theorem integral_congr_codiscreteWithin {a b : ℝ} {f₁ f₂ : ℝ → ℝ}
+    (hf : f₁ =ᶠ[codiscreteWithin (Ι a b)] f₂) :
+    ∫ (x : ℝ) in a..b, f₁ x = ∫ (x : ℝ) in a..b, f₂ x :=
+  integral_congr_ae_restrict (ae_restrict_le_codiscreteWithin measurableSet_uIoc hf)
 
 theorem integral_zero_ae (h : ∀ᵐ x ∂μ, x ∈ Ι a b → f x = 0) : ∫ x in a..b, f x ∂μ = 0 :=
   calc

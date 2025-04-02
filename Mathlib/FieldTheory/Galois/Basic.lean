@@ -299,7 +299,7 @@ end IsGalois
 section
 
 /-In this section we prove that the normal subgroups correspond to the Galois subextensions
-in the Galois correspondence and its related results.-/
+in the Galois correspondence and its related results. -/
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 

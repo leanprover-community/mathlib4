@@ -59,7 +59,7 @@ protected theorem Subgroup.isCyclic_iff_exists_zpowers_eq_top [Group α] (H : Su
     IsCyclic H ↔ ∃ g : α, Subgroup.zpowers g = H := by
   rw [isCyclic_iff_exists_zpowers_eq_top]
   simp_rw [← (map_injective H.subtype_injective).eq_iff, ← MonoidHom.range_eq_map,
-    H.range_subtype, MonoidHom.map_zpowers, Subtype.exists, coeSubtype, exists_prop]
+    H.range_subtype, MonoidHom.map_zpowers, Subtype.exists, coe_subtype, exists_prop]
   exact exists_congr fun g ↦ and_iff_right_of_imp fun h ↦ h ▸ mem_zpowers g
 
 @[to_additive]
@@ -228,7 +228,7 @@ alias addOrderOf_generator_eq_natCard := addOrderOf_eq_card_of_forall_mem_zmulti
 @[to_additive]
 theorem exists_pow_ne_one_of_isCyclic [G_cyclic : IsCyclic G]
     {k : ℕ} (k_pos : k ≠ 0) (k_lt_card_G : k < Nat.card G) : ∃ a : G, a ^ k ≠ 1 := by
-  have : Finite G := Nat.finite_of_card_ne_zero (Nat.not_eq_zero_of_lt k_lt_card_G)
+  have : Finite G := Nat.finite_of_card_ne_zero (Nat.ne_zero_of_lt k_lt_card_G)
   rcases G_cyclic with ⟨a, ha⟩
   use a
   contrapose! k_lt_card_G

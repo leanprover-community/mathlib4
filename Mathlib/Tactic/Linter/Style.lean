@@ -31,6 +31,8 @@ the `|>` symbol
 instead of the `fun` keyword: mathlib prefers the latter for reasons of readability
 - the `longFile` linter checks for files which have more than 1500 lines
 - the `longLine` linter checks for lines which have more than 100 characters
+- the `openClassical` linter checks for `open (scoped) Classical` statements which are not
+scoped to a single declaration
 
 All of these linters are enabled in mathlib by default, but disabled globally
 since they enforce conventions which are inherently subjective.
@@ -167,7 +169,8 @@ def isCDot? : Syntax → Bool
   | _ => false
 
 /--
-`findCDot stx` extracts from `stx` the syntax nodes of `kind` `Lean.Parser.Term.cdot` or `cdotTk`. -/
+`findCDot stx` extracts from `stx` the syntax nodes of `kind` `Lean.Parser.Term.cdot` or `cdotTk`.
+-/
 partial
 def findCDot : Syntax → Array Syntax
   | stx@(.node _ kind args) =>
@@ -465,5 +468,55 @@ def doubleUnderscore: Linter where run := withSetOptionIn fun stx => do
 initialize addLinter doubleUnderscore
 
 end Style.nameCheck
+
+/-! # The "openClassical" linter -/
+
+/-- The "openClassical" linter emits a warning on `open Classical` statements which are not
+scoped to a single declaration. A non-scoped `open Classical` can hide that some theorem statements
+would be better stated with explicit decidability statements.
+-/
+register_option linter.style.openClassical : Bool := {
+  defValue := false
+  descr := "enable the openClassical linter"
+}
+
+namespace Style.openClassical
+
+/-- If `stx` is syntax describing an `open` command, `extractOpenNames stx`
+returns an array of the syntax corresponding to the opened names,
+omitting any renamed or hidden items.
+
+This only checks independent `open` commands: for `open ... in ...` commands,
+this linter returns an empty array.
+-/
+def extractOpenNames : Syntax → Array (TSyntax `ident)
+  | `(command|$_ in $_) => #[] -- redundant, for clarity
+  | `(command|open $decl:openDecl) => match decl with
+    | `(openDecl| $arg hiding $_*)    => #[arg]
+    | `(openDecl| $arg renaming $_,*) => #[arg]
+    | `(openDecl| $arg ($_*))         => #[arg]
+    | `(openDecl| $args*)             => args
+    | `(openDecl| scoped $args*)      => args
+    | _ => unreachable!
+  | _ => #[]
+
+@[inherit_doc Mathlib.Linter.linter.style.openClassical]
+def openClassicalLinter : Linter where run stx := do
+    unless Linter.getLinterValue linter.style.openClassical (← getOptions) do
+      return
+    if (← get).messages.hasErrors then
+      return
+    -- If `stx` describes an `open` command, extract the list of opened namespaces.
+    for stxN in (extractOpenNames stx).filter (·.getId == `Classical) do
+      Linter.logLint linter.style.openClassical stxN "\
+      please avoid 'open (scoped) Classical' statements: this can hide theorem statements \
+      which would be better stated with explicit decidability statements.\n\
+      Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
+      for proofs.\nFor theorem statements, \
+      either add missing decidability assumptions or use `open Classical in`."
+
+initialize addLinter openClassicalLinter
+
+end Style.openClassical
 
 end Mathlib.Linter

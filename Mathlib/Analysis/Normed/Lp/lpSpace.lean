@@ -233,9 +233,9 @@ theorem finset_sum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ 
     simp only [his, Finset.sum_insert, not_false_iff]
     exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
 
-section BoundedSMul
+section IsBoundedSMul
 
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
 
 theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c • f) p := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -262,7 +262,7 @@ theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c �
 theorem const_mul {f : α → 𝕜} (hf : Memℓp f p) (c : 𝕜) : Memℓp (fun x => c * f x) p :=
   hf.const_smul c
 
-end BoundedSMul
+end IsBoundedSMul
 
 end Memℓp
 
@@ -302,9 +302,8 @@ def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : A
 
 namespace lp
 
--- Porting note: was `Coe`
 instance : CoeOut (lp E p) (∀ i, E i) :=
-  ⟨Subtype.val (α := ∀ i, E i)⟩ -- Porting note: Originally `coeSubtype`
+  ⟨Subtype.val (α := ∀ i, E i)⟩
 
 instance coeFun : CoeFun (lp E p) fun _ => ∀ i, E i :=
   ⟨fun f => (f : ∀ i, E i)⟩
@@ -439,7 +438,6 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
 theorem eq_zero_iff_coeFn_eq_zero {f : lp E p} : f = 0 ↔ ⇑f = 0 := by
   rw [lp.ext_iff, coeFn_zero]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): this was very slow, so I squeezed the `simp` calls
 @[simp]
 theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -483,10 +481,10 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           apply norm_add_le
       eq_zero_of_map_eq_zero' := fun _ => norm_eq_zero_iff.1 }
 
--- TODO: define an `ENNReal` version of `IsConjExponent`, and then express this inequality
+-- TODO: define an `ENNReal` version of `HolderConjugate`, and then express this inequality
 -- in a better version which also covers the case `p = 1, q = ∞`.
 /-- Hölder inequality -/
-protected theorem tsum_mul_le_mul_norm {p q : ℝ≥0∞} (hpq : p.toReal.IsConjExponent q.toReal)
+protected theorem tsum_mul_le_mul_norm {p q : ℝ≥0∞} (hpq : p.toReal.HolderConjugate q.toReal)
     (f : lp E p) (g : lp E q) :
     (Summable fun i => ‖f i‖ * ‖g i‖) ∧ ∑' i, ‖f i‖ * ‖g i‖ ≤ ‖f‖ * ‖g‖ := by
   have hf₁ : ∀ i, 0 ≤ ‖f i‖ := fun i => norm_nonneg _
@@ -498,11 +496,11 @@ protected theorem tsum_mul_le_mul_norm {p q : ℝ≥0∞} (hpq : p.toReal.IsConj
   rw [← hC.tsum_eq] at hC'
   exact ⟨hC.summable, hC'⟩
 
-protected theorem summable_mul {p q : ℝ≥0∞} (hpq : p.toReal.IsConjExponent q.toReal)
+protected theorem summable_mul {p q : ℝ≥0∞} (hpq : p.toReal.HolderConjugate q.toReal)
     (f : lp E p) (g : lp E q) : Summable fun i => ‖f i‖ * ‖g i‖ :=
   (lp.tsum_mul_le_mul_norm hpq f g).1
 
-protected theorem tsum_mul_le_mul_norm' {p q : ℝ≥0∞} (hpq : p.toReal.IsConjExponent q.toReal)
+protected theorem tsum_mul_le_mul_norm' {p q : ℝ≥0∞} (hpq : p.toReal.HolderConjugate q.toReal)
     (f : lp E p) (g : lp E q) : ∑' i, ‖f i‖ * ‖g i‖ ≤ ‖f‖ * ‖g‖ :=
   (lp.tsum_mul_le_mul_norm hpq f g).2
 
@@ -547,7 +545,7 @@ theorem norm_le_of_forall_sum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f
 
 end ComparePointwise
 
-section BoundedSMul
+section IsBoundedSMul
 
 variable [NormedRing 𝕜] [NormedRing 𝕜']
 variable [∀ i, Module 𝕜 (E i)] [∀ i, Module 𝕜' (E i)]
@@ -564,7 +562,7 @@ instance [SMul 𝕜' 𝕜] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] : IsScalarTow
 instance [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)] : IsCentralScalar 𝕜 (PreLp E) :=
   Pi.isCentralScalar
 
-variable [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, BoundedSMul 𝕜' (E i)]
+variable [∀ i, IsBoundedSMul 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜' (E i)]
 
 theorem mem_lp_const_smul (c : 𝕜) (f : lp E p) : c • (f : PreLp E) ∈ lp E p :=
   (lp.memℓp f).const_smul c
@@ -630,14 +628,14 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     gcongr
     apply nnnorm_smul_le
 
-instance [Fact (1 ≤ p)] : BoundedSMul 𝕜 (lp E p) :=
-  BoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le <| Fact.out).ne'
+instance [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (lp E p) :=
+  IsBoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le <| Fact.out).ne'
 
-end BoundedSMul
+end IsBoundedSMul
 
 section DivisionRing
 
-variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
+variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
 
 theorem norm_const_smul (hp : p ≠ 0) {c : 𝕜} (f : lp E p) : ‖c • f‖ = ‖c‖ * ‖f‖ := by
   obtain rfl | hc := eq_or_ne c 0
@@ -692,7 +690,7 @@ instance instStarAddMonoid : StarAddMonoid (lp E p) where
   star_add _f _g := ext <| star_add (R := ∀ i, E i) _ _
 
 instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
-  norm_star f := by
+  norm_star_le f := le_of_eq <| by
     rcases p.trichotomy with (rfl | rfl | h)
     · exfalso
       have := ENNReal.toReal_mono ENNReal.zero_ne_top hp.elim
@@ -701,7 +699,7 @@ instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
     · simp only [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
 
 variable [Star 𝕜] [NormedRing 𝕜]
-variable [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
+variable [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
 
 instance : StarModule 𝕜 (lp E p) where
   star_smul _r _f := ext <| star_smul (A := ∀ i, E i) _ _
@@ -737,24 +735,21 @@ instance nonUnitalRing : NonUnitalRing (lp B ∞) :=
 
 instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
   { lp.normedAddCommGroup, lp.nonUnitalRing with
-    norm_mul := fun f g =>
-      lp.norm_le_of_forall_le (mul_nonneg (norm_nonneg f) (norm_nonneg g)) fun i =>
-        calc
-          ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le _ _
-          _ ≤ ‖f‖ * ‖g‖ :=
-            mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
-              (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _) }
+    norm_mul_le f g := lp.norm_le_of_forall_le (by positivity) fun i ↦ calc
+      ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le _ _
+      _ ≤ ‖f‖ * ‖g‖ := mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
+        (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _) }
 
 instance nonUnitalNormedCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRing (B i)] :
     NonUnitalNormedCommRing (lp B ∞) where
   mul_comm _ _ := ext <| mul_comm ..
 
 -- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for https://github.com/leanprover-community/mathlib3/pull/13719
-instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
+instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, IsBoundedSMul 𝕜 (B i)]
     [∀ i, IsScalarTower 𝕜 (B i) (B i)] : IsScalarTower 𝕜 (lp B ∞) (lp B ∞) :=
   ⟨fun r f g => lp.ext <| smul_assoc (N := ∀ i, B i) (α := ∀ i, B i) r (⇑f) (⇑g)⟩
 
-instance infty_smulCommClass {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
+instance infty_smulCommClass {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, IsBoundedSMul 𝕜 (B i)]
     [∀ i, SMulCommClass 𝕜 (B i) (B i)] : SMulCommClass 𝕜 (lp B ∞) (lp B ∞) :=
   ⟨fun r f g => lp.ext <| smul_comm (N := ∀ i, B i) (α := ∀ i, B i) r (⇑f) (⇑g)⟩
 
@@ -789,8 +784,7 @@ variable [∀ i, NormOneClass (B i)]
 theorem _root_.one_memℓp_infty : Memℓp (1 : ∀ i, B i) ∞ :=
   ⟨1, by rintro i ⟨i, rfl⟩; exact norm_one.le⟩
 
-variable (B)
-
+variable (B) in
 /-- The `𝕜`-subring of elements of `∀ i : α, B i` whose `lp` norm is finite. This is `lp E ∞`,
 with extra structure. -/
 def _root_.lpInftySubring : Subring (PreLp B) :=
@@ -798,8 +792,6 @@ def _root_.lpInftySubring : Subring (PreLp B) :=
     carrier := { f | Memℓp f ∞ }
     one_mem' := one_memℓp_infty
     mul_mem' := Memℓp.infty_mul }
-
-variable {B}
 
 instance inftyRing : Ring (lp B ∞) :=
   (lpInftySubring B).toRing
@@ -882,7 +874,7 @@ end Algebra
 
 section Single
 
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
 variable [DecidableEq α]
 
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
@@ -1006,7 +998,7 @@ def singleContinuousLinearMap [Fact (1 ≤ p)] (i : α) : E i →L[𝕜] lp E p 
   cont := isometry_single i |>.continuous
 
 @[simp]
-theorem singleContinuousLinearMap_apply [Fact (1 ≤ p)](i : α) (x : E i) :
+theorem singleContinuousLinearMap_apply [Fact (1 ≤ p)] (i : α) (x : E i) :
     singleContinuousLinearMap 𝕜 E p i x = lp.single p i x :=
   rfl
 

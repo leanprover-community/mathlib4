@@ -122,7 +122,7 @@ We'll show, for each `i` from 1 to 4, that if `en` follows by Rule `i` from `st`
 
 theorem goodm_of_rule1 (xs : Miustr) (h₁ : Derivable (xs ++ [I])) (h₂ : Goodm (xs ++ [I])) :
     Goodm (xs ++ [I, U]) := by
-  cases' h₂ with mhead nmtail
+  obtain ⟨mhead, nmtail⟩ := h₂
   constructor
   · cases xs <;> simp_all
   · change ¬M ∈ tail (xs ++ ([I] ++ [U]))
@@ -134,14 +134,14 @@ theorem goodm_of_rule2 (xs : Miustr) (_ : Derivable (M :: xs)) (h₂ : Goodm (M 
     Goodm ((M :: xs) ++ xs) := by
   constructor
   · rfl
-  · cases' h₂ with mhead mtail
+  · obtain ⟨mhead, mtail⟩ := h₂
     contrapose! mtail
     rw [cons_append] at mtail
     exact or_self_iff.mp (mem_append.mp mtail)
 
 theorem goodm_of_rule3 (as bs : Miustr) (h₁ : Derivable (as ++ [I, I, I] ++ bs))
     (h₂ : Goodm (as ++ [I, I, I] ++ bs)) : Goodm (as ++ (U :: bs)) := by
-  cases' h₂ with mhead nmtail
+  obtain ⟨mhead, nmtail⟩ := h₂
   have k : as ≠ nil := by rintro rfl; contradiction
   constructor
   · cases as
@@ -159,7 +159,7 @@ The proof of the next lemma is identical, on the tactic level, to the previous p
 
 theorem goodm_of_rule4 (as bs : Miustr) (h₁ : Derivable (as ++ [U, U] ++ bs))
     (h₂ : Goodm (as ++ [U, U] ++ bs)) : Goodm (as ++ bs) := by
-  cases' h₂ with mhead nmtail
+  obtain ⟨mhead, nmtail⟩ := h₂
   have k : as ≠ nil := by rintro rfl; contradiction
   constructor
   · cases as

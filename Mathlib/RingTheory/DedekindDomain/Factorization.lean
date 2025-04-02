@@ -432,7 +432,7 @@ theorem count_inv (I : FractionalIdeal R⁰ K) :
 /-- `val_v(Iⁿ) = n*val_v(I)` for every `n ∈ ℤ`. -/
 theorem count_zpow (n : ℤ) (I : FractionalIdeal R⁰ K) :
     count K v (I ^ n) = n * count K v I := by
-  cases' n with n
+  obtain n | n := n
   · rw [ofNat_eq_coe, zpow_natCast]
     exact count_pow K v n I
   · rw [negSucc_coe, count_neg_zpow, zpow_natCast, count_pow]
@@ -510,7 +510,7 @@ theorem count_coe {J : Ideal R} (hJ : J ≠ 0) :
     Nat.cast_eq_zero, ← Ideal.one_eq_top, Associates.mk_one, Associates.factors_one,
     Associates.count_zero v.associates_irreducible]
   · simpa only [ne_eq, coeIdeal_eq_zero]
-  · simp only [_root_.map_one, inv_one, spanSingleton_one, one_mul]
+  · simp only [map_one, inv_one, spanSingleton_one, one_mul]
 
 theorem count_coe_nonneg (J : Ideal R) : 0 ≤ count K v J := by
   by_cases hJ : J = 0

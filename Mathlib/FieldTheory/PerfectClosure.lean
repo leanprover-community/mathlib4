@@ -230,8 +230,6 @@ See `mk_zero_right` for the lemma used to be called `mk_zero`. -/
 theorem mk_zero : mk K p 0 = 0 :=
   rfl
 
-@[deprecated (since := "2024-08-16")] alias mk_zero_zero := mk_zero
-
 @[simp]
 theorem mk_zero_right (n : ℕ) : mk K p (n, 0) = 0 := by
   induction' n with n ih
@@ -319,10 +317,10 @@ theorem mk_eq_iff (x y : ℕ × K) :
     induction H with
     | rel x y H => obtain ⟨n, x⟩ := H; exact ⟨0, rfl⟩
     | refl H => exact ⟨0, rfl⟩
-    | symm x y H ih => cases' ih with w ih; exact ⟨w, ih.symm⟩
+    | symm x y H ih => obtain ⟨w, ih⟩ := ih; exact ⟨w, ih.symm⟩
     | trans x y z H1 H2 ih1 ih2 =>
-      cases' ih1 with z1 ih1
-      cases' ih2 with z2 ih2
+      obtain ⟨z1, ih1⟩ := ih1
+      obtain ⟨z2, ih2⟩ := ih2
       exists z2 + (y.1 + z1)
       rw [← add_assoc, iterate_add_apply, ih1]
       rw [← iterate_add_apply, add_comm, iterate_add_apply, ih2]

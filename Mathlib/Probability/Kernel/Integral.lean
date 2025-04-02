@@ -41,6 +41,10 @@ lemma integral_congr_ae₂ {f g : α → β → E} {μ : Measure α} (h : ∀ᵐ
   apply integral_congr_ae
   filter_upwards [ha] with _ hb using hb
 
+lemma integral_indicator₂ (f : α → β → E) (s : Set α) (a : α) :
+    ∫ y, s.indicator (f · y) a ∂κ a = s.indicator (fun x ↦ ∫ y, f x y ∂κ x) a := by
+  by_cases ha : a ∈ s <;> simp [ha]
+
 section Deterministic
 
 variable [CompleteSpace E] {g : α → β}

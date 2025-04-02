@@ -240,15 +240,13 @@ theorem eq_lift (h : IsAdjoinRoot S f) (g : S →+* T) (hmap : ∀ a, g (algebra
 end
 
 variable [Algebra R T] (hx' : aeval x f = 0)
-variable (x)
 
+variable (x) in
 -- To match `AdjoinRoot.liftHom`
 /-- Lift the algebra map `R → T` to `S →ₐ[R] T` by specifying a root `x` of `f` in `T`,
 where `S` is given by adjoining a root of `f` to `R`. -/
 def liftHom (h : IsAdjoinRoot S f) : S →ₐ[R] T :=
   { h.lift (algebraMap R T) x hx' with commutes' := fun a => h.lift_algebraMap hx' a }
-
-variable {x}
 
 @[simp]
 theorem coe_liftHom (h : IsAdjoinRoot S f) :

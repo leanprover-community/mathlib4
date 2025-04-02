@@ -382,7 +382,7 @@ theorem add_mod_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) :
 theorem add_mod_add_of_le_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) :
     (a + b) % c + c = a % c + b % c := by rw [← add_mod_add_ite, if_pos hc]
 
-theorem add_div {a b c : ℕ} (hc0 : 0 < c) :
+protected theorem add_div {a b c : ℕ} (hc0 : 0 < c) :
     (a + b) / c = a / c + b / c + if c ≤ a % c + b % c then 1 else 0 := by
   rw [← mul_right_inj' hc0.ne', ← @add_left_cancel_iff _ _ _ ((a + b) % c + a % c + b % c)]
   suffices
@@ -398,7 +398,7 @@ theorem add_div {a b c : ℕ} (hc0 : 0 < c) :
 theorem add_div_eq_of_add_mod_lt {a b c : ℕ} (hc : a % c + b % c < c) :
     (a + b) / c = a / c + b / c :=
   if hc0 : c = 0 then by simp [hc0]
-  else by rw [add_div (Nat.pos_of_ne_zero hc0), if_neg (not_le_of_lt hc), add_zero]
+  else by rw [Nat.add_div (Nat.pos_of_ne_zero hc0), if_neg (not_le_of_lt hc), add_zero]
 
 protected theorem add_div_of_dvd_right {a b c : ℕ} (hca : c ∣ a) : (a + b) / c = a / c + b / c :=
   if h : c = 0 then by simp [h]
@@ -412,7 +412,7 @@ protected theorem add_div_of_dvd_left {a b c : ℕ} (hca : c ∣ b) : (a + b) / 
   rwa [add_comm, Nat.add_div_of_dvd_right, add_comm]
 
 theorem add_div_eq_of_le_mod_add_mod {a b c : ℕ} (hc : c ≤ a % c + b % c) (hc0 : 0 < c) :
-    (a + b) / c = a / c + b / c + 1 := by rw [add_div hc0, if_pos hc]
+    (a + b) / c = a / c + b / c + 1 := by rw [Nat.add_div hc0, if_pos hc]
 
 theorem add_div_le_add_div (a b c : ℕ) : a / c + b / c ≤ (a + b) / c :=
   if hc0 : c = 0 then by simp [hc0]
@@ -442,7 +442,7 @@ theorem odd_of_mod_four_eq_one {n : ℕ} : n % 4 = 1 → n % 2 = 1 := by
 theorem odd_of_mod_four_eq_three {n : ℕ} : n % 4 = 3 → n % 2 = 1 := by
   simpa [ModEq] using @ModEq.of_mul_left 2 n 3 2
 
-/-- A natural number is odd iff it has residue `1` or `3` mod `4`-/
+/-- A natural number is odd iff it has residue `1` or `3` mod `4`. -/
 theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → m = 1 ∨ m = 3 := by decide
   ⟨fun hn =>

@@ -371,6 +371,10 @@ instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [M
     [IsScalarTower R S A] [NoZeroSMulDivisors R A] {I : Submodule S A} : NoZeroSMulDivisors R I :=
   Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
 
+theorem pow_eq_zero_of_mem {I : Ideal R} {n m : ℕ} (hnI : I ^ n = 0) (hmn : n ≤ m) {x : R}
+    (hx : x ∈ I) : x ^ m = 0 := by
+  simpa [hnI] using pow_le_pow_right hmn <| pow_mem_pow hx m
+
 end Semiring
 
 section MulAndRadical
@@ -580,7 +584,7 @@ theorem sup_prod_eq_top {s : Finset ι} {J : ι → Ideal R} (h : ∀ i, i ∈ s
     (fun _ _ hJ hK => (sup_mul_eq_of_coprime_left hJ).trans hK)
     (by simp_rw [one_eq_top, sup_top_eq]) h
 
-theorem sup_multiset_prod_eq_top {s : Multiset (Ideal R)} (h : ∀  p ∈ s, I ⊔ p = ⊤) :
+theorem sup_multiset_prod_eq_top {s : Multiset (Ideal R)} (h : ∀ p ∈ s, I ⊔ p = ⊤) :
     I ⊔ Multiset.prod s = ⊤ :=
   Multiset.prod_induction (I ⊔ · = ⊤) s (fun _ _ hp hq ↦ (sup_mul_eq_of_coprime_left hp).trans hq)
     (by simp only [one_eq_top, ge_iff_le, top_le_iff, le_top, sup_of_le_right]) h
@@ -719,12 +723,9 @@ theorem isRadical_iff_pow_one_lt (k : ℕ) (hk : 1 < k) : I.IsRadical ↔ ∀ r,
   ⟨fun h _r hr ↦ h ⟨k, hr⟩, fun h x ⟨n, hx⟩ ↦
     k.pow_imp_self_of_one_lt hk _ (fun _ _ ↦ .inr ∘ I.smul_mem _) h n x hx⟩
 
-variable (R)
-
+variable (R) in
 theorem radical_top : (radical ⊤ : Ideal R) = ⊤ :=
   (eq_top_iff_one _).2 ⟨0, Submodule.mem_top⟩
-
-variable {R}
 
 theorem radical_mono (H : I ≤ J) : radical I ≤ radical J := fun _ ⟨n, hrni⟩ => ⟨n, H hrni⟩
 
@@ -1102,7 +1103,7 @@ theorem subset_union_prime {R : Type u} [CommRing R] {s : Finset ι} {f : ι →
         rw [Finset.coe_empty, Set.biUnion_empty, Set.subset_empty_iff] at h
         have : (I : Set R) ≠ ∅ := Set.Nonempty.ne_empty (Set.nonempty_of_mem I.zero_mem)
         exact absurd h this
-      · cases' hsne with i his
+      · obtain ⟨i, his⟩ := hsne
         obtain ⟨t, _, rfl⟩ : ∃ t, i ∉ t ∧ insert i t = s :=
           ⟨s.erase i, Finset.not_mem_erase i s, Finset.insert_erase his⟩
         have hp' : ∀ j ∈ t, IsPrime (f j) := by
@@ -1122,7 +1123,8 @@ In a Dedekind domain, to divide and contain are equivalent, see `Ideal.dvd_iff_l
 theorem le_of_dvd {I J : Ideal R} : I ∣ J → J ≤ I
   | ⟨_, h⟩ => h.symm ▸ le_trans mul_le_inf inf_le_left
 
-@[simp]
+/-- See also `isUnit_iff_eq_one`. -/
+@[simp high]
 theorem isUnit_iff {I : Ideal R} : IsUnit I ↔ I = ⊤ :=
   isUnit_iff_dvd_one.trans
     ((@one_eq_top R _).symm ▸

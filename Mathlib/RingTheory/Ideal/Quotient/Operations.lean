@@ -83,12 +83,6 @@ theorem quotientKerEquivOfRightInverse.Symm.apply {g : S → R} (hf : Function.R
     (x : S) : (quotientKerEquivOfRightInverse hf).symm x = Ideal.Quotient.mk (ker f) (g x) :=
   rfl
 
-variable (R) in
-/-- The quotient of a ring by he zero ideal is isomorphic to the ring itself. -/
-def _root_.RingEquiv.quotientBot : R ⧸ (⊥ : Ideal R) ≃+* R :=
-  (Ideal.quotEquivOfEq (RingHom.ker_coe_equiv <| .refl _).symm).trans <|
-    quotientKerEquivOfRightInverse (f := .id R) (g := _root_.id) fun _ ↦ rfl
-
 /-- The **first isomorphism theorem** for commutative rings, surjective case. -/
 noncomputable def quotientKerEquivOfSurjective (hf : Function.Surjective f) : R ⧸ (ker f) ≃+* S :=
   quotientKerEquivOfRightInverse (Classical.choose_spec hf.hasRightInverse)
@@ -676,6 +670,45 @@ end QuotientAlgebra
 
 end Ideal
 
+section quotientBot
+
+variable {R S : Type*}
+
+variable (R) in
+/-- The quotient of a ring by he zero ideal is isomorphic to the ring itself. -/
+def RingEquiv.quotientBot [Ring R] : R ⧸ (⊥ : Ideal R) ≃+* R :=
+  (Ideal.quotEquivOfEq (RingHom.ker_coe_equiv <| .refl _).symm).trans <|
+    RingHom.quotientKerEquivOfRightInverse (f := .id R) (g := _root_.id) fun _ ↦ rfl
+
+@[simp]
+lemma RingEquiv.quotientBot_mk [Ring R] (r : R) :
+    RingEquiv.quotientBot R (Ideal.Quotient.mk ⊥ r) = r :=
+  rfl
+
+@[simp]
+lemma RingEquiv.quotientBot_symm_mk [Ring R] (r : R) :
+    (RingEquiv.quotientBot R).symm r = r :=
+  rfl
+
+variable (R S) in
+/-- `RingEquiv.quotientBot` as an algebra isomorphism. -/
+def AlgEquiv.quotientBot [CommSemiring R] [Ring S] [Algebra R S] :
+    (S ⧸ (⊥ : Ideal S)) ≃ₐ[R] S where
+  __ := RingEquiv.quotientBot S
+  commutes' x := by simp [← Ideal.Quotient.mk_algebraMap]
+
+@[simp]
+lemma AlgEquiv.quotientBot_mk [CommSemiring R] [CommRing S] [Algebra R S] (s : S) :
+    AlgEquiv.quotientBot R S (Ideal.Quotient.mk ⊥ s) = s :=
+  rfl
+
+@[simp]
+lemma AlgEquiv.quotientBot_symm_mk [CommSemiring R] [CommRing S] [Algebra R S]
+    (s : S) : (AlgEquiv.quotientBot R S).symm s = s :=
+  rfl
+
+end quotientBot
+
 namespace DoubleQuot
 
 open Ideal
@@ -697,7 +730,7 @@ theorem ker_quotLeftToQuotSup : RingHom.ker (quotLeftToQuotSup I J) =
     map_eq_iff_sup_ker_eq_of_surjective (Ideal.Quotient.mk I) Quotient.mk_surjective, ← sup_assoc]
 
 /-- The ring homomorphism `(R/I)/J' -> R/(I ⊔ J)` induced by `quotLeftToQuotSup` where `J'`
-  is the image of `J` in `R/I`-/
+  is the image of `J` in `R/I` -/
 def quotQuotToQuotSup : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) →+* R ⧸ I ⊔ J :=
   Ideal.Quotient.lift (J.map (Ideal.Quotient.mk I)) (quotLeftToQuotSup I J)
     (ker_quotLeftToQuotSup I J).symm.le
@@ -718,7 +751,7 @@ def liftSupQuotQuotMk (I J : Ideal R) : R ⧸ I ⊔ J →+* (R ⧸ I) ⧸ J.map 
   Ideal.Quotient.lift (I ⊔ J) (quotQuotMk I J) (ker_quotQuotMk I J).symm.le
 
 /-- `quotQuotToQuotSup` and `liftSupQuotQuotMk` are inverse isomorphisms. In the case where
-    `I ≤ J`, this is the Third Isomorphism Theorem (see `quotQuotEquivQuotOfLe`)-/
+`I ≤ J`, this is the Third Isomorphism Theorem (see `quotQuotEquivQuotOfLe`). -/
 def quotQuotEquivQuotSup : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) ≃+* R ⧸ I ⊔ J :=
   RingEquiv.ofHomInv (quotQuotToQuotSup I J) (liftSupQuotQuotMk I J)
     (by

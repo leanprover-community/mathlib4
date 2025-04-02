@@ -216,6 +216,10 @@ theorem integral_zero : ∫ _ : α, (0 : G) ∂μ = 0 := by
 theorem integral_zero' : integral μ (0 : α → G) = 0 :=
   integral_zero α G
 
+lemma integral_indicator₂ {β : Type*} (f : β → α → G) (s : Set β) (b : β) :
+    ∫ y, s.indicator (f · y) b ∂μ = s.indicator (fun x ↦ ∫ y, f x y ∂μ) b := by
+  by_cases hb : b ∈ s <;> simp [hb]
+
 variable {α G}
 
 theorem integrable_of_integral_eq_one {f : α → ℝ} (h : ∫ x, f x ∂μ = 1) : Integrable f μ :=
@@ -477,7 +481,7 @@ theorem integral_eq_lintegral_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f
         intro a h
         simp only [h, neg_nonpos, ofReal_eq_zero]
       · exact measurable_ofReal.comp_aemeasurable hfm.aemeasurable.neg
-    rw [h_min, zero_toReal, _root_.sub_zero]
+    rw [h_min, toReal_zero, _root_.sub_zero]
   · rw [integral_undef hfi]
     simp_rw [Integrable, hfm, hasFiniteIntegral_iff_norm, lt_top_iff_ne_top, Ne, true_and,
       Classical.not_not] at hfi
@@ -485,7 +489,7 @@ theorem integral_eq_lintegral_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f
       refine lintegral_congr_ae (hf.mono fun a h => ?_)
       dsimp only
       rw [Real.norm_eq_abs, abs_of_nonneg h]
-    rw [this, hfi, top_toReal]
+    rw [this, hfi, toReal_top]
 
 theorem integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
     (hf : AEStronglyMeasurable f μ) : ∫ x, ‖f x‖ ∂μ = (∫⁻ x, ‖f x‖ₑ ∂μ).toReal := by
@@ -738,7 +742,7 @@ section NormedAddCommGroup
 variable {H : Type*} [NormedAddCommGroup H]
 
 theorem L1.norm_eq_integral_norm (f : α →₁[μ] H) : ‖f‖ = ∫ a, ‖f a‖ ∂μ := by
-  simp only [eLpNorm, eLpNorm'_eq_lintegral_enorm, ENNReal.one_toReal, ENNReal.rpow_one,
+  simp only [eLpNorm, eLpNorm'_eq_lintegral_enorm, ENNReal.toReal_one, ENNReal.rpow_one,
     Lp.norm_def, if_false, ENNReal.one_ne_top, one_ne_zero, _root_.div_one]
   rw [integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall (by simp [norm_nonneg]))
       (Lp.aestronglyMeasurable f).norm]
@@ -753,8 +757,8 @@ theorem L1.norm_of_fun_eq_integral_norm {f : α → H} (hf : Integrable f μ) :
   rw [L1.norm_eq_integral_norm]
   exact integral_congr_ae <| hf.coeFn_toL1.fun_comp _
 
-theorem Memℒp.eLpNorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (hp1 : p ≠ 0) (hp2 : p ≠ ∞)
-    (hf : Memℒp f p μ) :
+theorem MemLp.eLpNorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (hp1 : p ≠ 0) (hp2 : p ≠ ∞)
+    (hf : MemLp f p μ) :
     eLpNorm f p μ = ENNReal.ofReal ((∫ a, ‖f a‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹) := by
   have A : ∫⁻ a : α, ENNReal.ofReal (‖f a‖ ^ p.toReal) ∂μ = ∫⁻ a : α, ‖f a‖ₑ ^ p.toReal ∂μ := by
     simp_rw [← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm_eq_enorm]
@@ -764,6 +768,9 @@ theorem Memℒp.eLpNorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (h
   · exact (hf.aestronglyMeasurable.norm.aemeasurable.pow_const _).aestronglyMeasurable
   rw [A, ← ofReal_rpow_of_nonneg toReal_nonneg (inv_nonneg.2 toReal_nonneg), ofReal_toReal]
   exact (lintegral_rpow_enorm_lt_top_of_eLpNorm_lt_top hp1 hp2 hf.2).ne
+
+@[deprecated (since := "2025-02-21")]
+alias Memℒp.eLpNorm_eq_integral_rpow_norm := MemLp.eLpNorm_eq_integral_rpow_norm
 
 end NormedAddCommGroup
 
@@ -834,6 +841,9 @@ theorem integral_const (c : E) : ∫ _ : α, c ∂μ = (μ univ).toReal • c :=
   · simp [hc, integral_zero]
   · simp [(integrable_const_iff_isFiniteMeasure hc).not.2 hμ,
       integral_undef, MeasureTheory.not_isFiniteMeasure_iff.mp hμ]
+
+lemma integral_eq_const [IsProbabilityMeasure μ] {f : α → E} {c : E} (hf : ∀ᵐ x ∂μ, f x = c) :
+    ∫ x, f x ∂μ = c := by simp [integral_congr_ae hf]
 
 theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure μ] {f : α → G} {C : ℝ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖∫ x, f x ∂μ‖ ≤ C * (μ univ).toReal :=
@@ -958,7 +968,7 @@ theorem integral_smul_measure (f : α → G) (c : ℝ≥0∞) :
   · simp [integral, hG]
   -- First we consider the “degenerate” case `c = ∞`
   rcases eq_or_ne c ∞ with (rfl | hc)
-  · rw [ENNReal.top_toReal, zero_smul, integral_eq_setToFun, setToFun_top_smul_measure]
+  · rw [ENNReal.toReal_top, zero_smul, integral_eq_setToFun, setToFun_top_smul_measure]
   -- Main case: `c ≠ ∞`
   simp_rw [integral_eq_setToFun, ← setToFun_smul_left]
   have hdfma : DominatedFinMeasAdditive μ (weightedSMul (c • μ) : Set α → G →L[ℝ] G) c.toReal :=
@@ -985,7 +995,7 @@ theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α �
     (tendsto_integral_approxOn_of_measurable_of_range_subset hfm.measurable hfi _ Subset.rfl) ?_
   convert tendsto_integral_approxOn_of_measurable_of_range_subset (hfm.measurable.comp hφ)
     ((integrable_map_measure hfm.aestronglyMeasurable hφ.aemeasurable).1 hfi) (range f ∪ {0})
-    (by simp [insert_subset_insert, Set.range_comp_subset_range]) using 1
+    (union_subset_union_left {0} (range_comp_subset_range φ f)) using 1
   ext1 i
   simp only [SimpleFunc.approxOn_comp, SimpleFunc.integral_eq, Measure.map_apply, hφ,
     SimpleFunc.measurableSet_preimage, ← preimage_comp, SimpleFunc.coe_comp]
@@ -1093,8 +1103,8 @@ theorem mul_meas_ge_le_integral_of_nonneg {f : α → ℝ} (hf_nonneg : 0 ≤ᵐ
 norms of functions is bounded by the product of their `ℒp` and `ℒq` seminorms when `p` and `q` are
 conjugate exponents. -/
 theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → E} {p q : ℝ}
-    (hpq : p.IsConjExponent q) (hf : Memℒp f (ENNReal.ofReal p) μ)
-    (hg : Memℒp g (ENNReal.ofReal q) μ) :
+    (hpq : p.HolderConjugate q) (hf : MemLp f (ENNReal.ofReal p) μ)
+    (hg : MemLp g (ENNReal.ofReal q) μ) :
     ∫ a, ‖f a‖ * ‖g a‖ ∂μ ≤ (∫ a, ‖f a‖ ^ p ∂μ) ^ (1 / p) * (∫ a, ‖g a‖ ^ q ∂μ) ^ (1 / q) := by
   -- translate the Bochner integrals into Lebesgue integrals.
   rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae,
@@ -1139,9 +1149,9 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
 /-- Hölder's inequality for functions `α → ℝ`. The integral of the product of two nonnegative
 functions is bounded by the product of their `ℒp` and `ℒq` seminorms when `p` and `q` are conjugate
 exponents. -/
-theorem integral_mul_le_Lp_mul_Lq_of_nonneg {p q : ℝ} (hpq : p.IsConjExponent q) {f g : α → ℝ}
-    (hf_nonneg : 0 ≤ᵐ[μ] f) (hg_nonneg : 0 ≤ᵐ[μ] g) (hf : Memℒp f (ENNReal.ofReal p) μ)
-    (hg : Memℒp g (ENNReal.ofReal q) μ) :
+theorem integral_mul_le_Lp_mul_Lq_of_nonneg {p q : ℝ} (hpq : p.HolderConjugate q) {f g : α → ℝ}
+    (hf_nonneg : 0 ≤ᵐ[μ] f) (hg_nonneg : 0 ≤ᵐ[μ] g) (hf : MemLp f (ENNReal.ofReal p) μ)
+    (hg : MemLp g (ENNReal.ofReal q) μ) :
     ∫ a, f a * g a ∂μ ≤ (∫ a, f a ^ p ∂μ) ^ (1 / p) * (∫ a, g a ^ q ∂μ) ^ (1 / q) := by
   have h_left : ∫ a, f a * g a ∂μ = ∫ a, ‖f a‖ * ‖g a‖ ∂μ := by
     refine integral_congr_ae ?_
@@ -1318,15 +1328,15 @@ theorem eLpNorm_one_le_of_le {r : ℝ≥0} (hfint : Integrable f μ) (hfint' : 0
     rw [← integral_const]
     refine integral_mono_ae hfint.real_toNNReal (integrable_const (r : ℝ)) ?_
     filter_upwards [hf] with ω hω using Real.toNNReal_le_iff_le_coe.2 hω
-  rw [Memℒp.eLpNorm_eq_integral_rpow_norm one_ne_zero ENNReal.one_ne_top
-      (memℒp_one_iff_integrable.2 hfint),
+  rw [MemLp.eLpNorm_eq_integral_rpow_norm one_ne_zero ENNReal.one_ne_top
+      (memLp_one_iff_integrable.2 hfint),
     ENNReal.ofReal_le_iff_le_toReal
       (ENNReal.mul_ne_top (ENNReal.mul_ne_top ENNReal.ofNat_ne_top <| @measure_ne_top _ _ _ hμ _)
         ENNReal.coe_ne_top)]
-  simp_rw [ENNReal.one_toReal, _root_.inv_one, Real.rpow_one, Real.norm_eq_abs, ←
+  simp_rw [ENNReal.toReal_one, _root_.inv_one, Real.rpow_one, Real.norm_eq_abs, ←
     max_zero_add_max_neg_zero_eq_abs_self, ← Real.coe_toNNReal']
   rw [integral_add hfint.real_toNNReal]
-  · simp only [Real.coe_toNNReal', ENNReal.toReal_mul, ENNReal.one_toReal, ENNReal.coe_toReal,
+  · simp only [Real.coe_toNNReal', ENNReal.toReal_mul, ENNReal.toReal_one, ENNReal.coe_toReal,
       Left.nonneg_neg_iff, Left.neg_nonpos_iff, toReal_ofNat] at hfint' ⊢
     refine (add_le_add_left hfint' _).trans ?_
     rwa [← two_mul, mul_assoc, mul_le_mul_left (two_pos : (0 : ℝ) < 2)]

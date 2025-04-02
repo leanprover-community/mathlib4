@@ -6,10 +6,10 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Order.Nat
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 # Casts for Rational Numbers
@@ -24,7 +24,7 @@ casting lemmas showing the well-behavedness of this injection.
 rat, rationals, field, ℚ, numerator, denominator, num, denom, cast, coercion, casting
 -/
 
-assert_not_exists OrderedAddCommMonoid
+assert_not_exists MulAction OrderedAddCommMonoid
 
 variable {F ι α β : Type*}
 
@@ -145,7 +145,7 @@ lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b
   have d0 : (d : α) ≠ 0 := by
     intro d0
     have dd := den_dvd a b
-    cases' show (d : ℤ) ∣ b by rwa [e] at dd with k ke
+    rcases show (d : ℤ) ∣ b by rwa [e] at dd with ⟨k, ke⟩
     have : (b : α) = (d : α) * (k : α) := by rw [ke, Int.cast_mul, Int.cast_natCast]
     rw [d0, zero_mul] at this
     contradiction
@@ -292,29 +292,3 @@ instance NNRat.subsingleton_ringHom {R : Type*} [Semiring R] : Subsingleton (ℚ
 
 instance Rat.subsingleton_ringHom {R : Type*} [Semiring R] : Subsingleton (ℚ →+* R) :=
   ⟨RingHom.ext_rat⟩
-
-/-! ### Scalar multiplication -/
-
-namespace NNRat
-variable [DivisionSemiring α]
-
-instance (priority := 100) instDistribSMul : DistribSMul ℚ≥0 α where
-  smul_zero a := by rw [smul_def, mul_zero]
-  smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
-
-instance instIsScalarTowerRight : IsScalarTower ℚ≥0 α α where
-  smul_assoc a x y := by simp only [smul_def, smul_eq_mul, mul_assoc]
-
-end NNRat
-
-namespace Rat
-variable [DivisionRing α]
-
-instance (priority := 100) instDistribSMul : DistribSMul ℚ α where
-  smul_zero a := by rw [smul_def, mul_zero]
-  smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
-
-instance instIsScalarTowerRight : IsScalarTower ℚ α α where
-  smul_assoc a x y := by simp only [smul_def, smul_eq_mul, mul_assoc]
-
-end Rat

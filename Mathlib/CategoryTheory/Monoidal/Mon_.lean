@@ -29,7 +29,6 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
 When the monoidal category is preadditive, this is also sometimes called an "algebra object".
 -/
-@[ext]
 class Mon_Class (X : C) where
   /-- The unit morphism of a monoid object. -/
   one : 𝟙_ C ⟶ X
@@ -64,6 +63,13 @@ theorem mul_one (X : C) [Mon_Class X] : X ◁ η ≫ μ = (ρ_ X).hom := mul_one
 @[reassoc (attr := simp)]
 theorem mul_assoc (X : C) [Mon_Class X] : μ ▷ X ≫ μ = (α_ X X X).hom ≫ X ◁ μ ≫ μ := mul_assoc'
 
+@[ext]
+theorem ext {X : C} (h₁ h₂ : Mon_Class X) (H : h₁.mul = h₂.mul) : h₁ = h₂ := by
+  suffices h₁.one = h₂.one by cases h₁; cases h₂; subst H this; rfl
+  trans (λ_ _).inv ≫ (h₁.one ⊗ h₂.one) ≫ h₁.mul
+  · simp [tensorHom_def, H, ← unitors_equal]
+  · simp [tensorHom_def']
+
 end Mon_Class
 
 open scoped Mon_Class
@@ -84,8 +90,11 @@ variable (C)
 When the monoidal category is preadditive, this is also sometimes called an "algebra object".
 -/
 structure Mon_ where
+  /-- The underlying object in the ambient monoidal category -/
   X : C
+  /-- The unit morphism of the monoid object -/
   one : 𝟙_ C ⟶ X
+  /-- The multiplication morphism of a monoid object -/
   mul : X ⊗ X ⟶ X
   one_mul : (one ▷ X) ≫ mul = (λ_ X).hom := by aesop_cat
   mul_one : (X ◁ one) ≫ mul = (ρ_ X).hom := by aesop_cat
@@ -152,6 +161,7 @@ theorem mul_assoc_flip :
 /-- A morphism of monoid objects. -/
 @[ext]
 structure Hom (M N : Mon_ C) where
+  /-- The underlying morphism -/
   hom : M.X ⟶ N.X
   one_hom : M.one ≫ hom = N.one := by aesop_cat
   mul_hom : M.mul ≫ hom = (hom ⊗ hom) ≫ N.mul := by aesop_cat
@@ -664,6 +674,25 @@ instance : SymmetricCategory (Mon_ C) where
 end SymmetricCategory
 
 end Mon_
+
+section
+
+variable {C} [BraidedCategory.{v₁} C]
+
+/-- Predicate for a monoid object to be commutative. -/
+class IsCommMon (X : C) [Mon_Class X] where
+  mul_comm' : (β_ X X).hom ≫ μ = μ := by aesop_cat
+
+open scoped Mon_Class
+
+namespace IsCommMon
+
+@[reassoc (attr := simp)]
+theorem mul_comm (X : C) [Mon_Class X] [IsCommMon X] : (β_ X X).hom ≫ μ = μ := mul_comm'
+
+end IsCommMon
+
+end
 
 /-!
 Projects:

@@ -172,7 +172,7 @@ def getDeclName (cmd : Syntax) : CommandElabM Name := do
     -- failing everything, use the current namespace followed by the visible name
     return ns ++ id1.getId)
 
-/--`getAllDependencies cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+/-- `getAllDependencies cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 declaration names that are implied by
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),
@@ -195,7 +195,7 @@ def getAllDependencies (cmd id : Syntax) :
               |>.append (getSyntaxNodeKinds cmd)
               |>.append (getAttrs env cmd)
 
-/--`getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+/-- `getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 module names that are implied by
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),

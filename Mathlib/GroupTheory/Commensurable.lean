@@ -55,7 +55,7 @@ theorem trans {H K L : Subgroup G} (hhk : Commensurable H K) (hkl : Commensurabl
 theorem equivalence : Equivalence (@Commensurable G _) :=
   ⟨Commensurable.refl, fun h => Commensurable.symm h, fun h₁ h₂ => Commensurable.trans h₁ h₂⟩
 
-/-- Equivalence of `K/H ⊓ K` with `gKg⁻¹/gHg⁻¹ ⊓ gKg⁻¹`-/
+/-- Equivalence of `K/H ⊓ K` with `gKg⁻¹/gHg⁻¹ ⊓ gKg⁻¹` -/
 def quotConjEquiv (H K : Subgroup G) (g : ConjAct G) :
     K ⧸ H.subgroupOf K ≃ (g • K : Subgroup G) ⧸ (g • H).subgroupOf (g • K) :=
   QuotientGroup.congr' _ _ (K.equivSMul g) <| by

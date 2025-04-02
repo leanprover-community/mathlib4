@@ -11,7 +11,7 @@ import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Topology.UniformSpace.DiscreteUniformity
 import Mathlib.Algebra.Group.Int.TypeTags
 
 
@@ -104,9 +104,7 @@ namespace LaurentSeries
 
 section
 
-/--
-`R⸨X⸩` is notation for `LaurentSeries R`,
--/
+/-- `R⸨X⸩` is notation for `LaurentSeries R`. -/
 scoped notation:9000 R "⸨X⸩" => LaurentSeries R
 
 end
@@ -514,7 +512,8 @@ open RatFunc IsDedekindDomain.HeightOneSpectrum
 
 variable {K}
 
-/- The `X`-adic valuation of a polynomial equals the `X`-adic valuation of its coercion to `K⟦X⟧`-/
+/- The `X`-adic valuation of a polynomial equals the `X`-adic valuation of
+its coercion to `K⟦X⟧`. -/
 theorem intValuation_eq_of_coe (P : K[X]) :
     (Polynomial.idealX K).intValuation P = (idealX K).intValuation (P : K⟦X⟧) := by
   by_cases hP : P = 0
@@ -540,7 +539,7 @@ theorem intValuation_eq_of_coe (P : K[X]) :
     count_span_normalizedFactors_eq_of_normUnit (coe_ne_zero hP) normUnit_X X_prime,
     span_ne_zero'.1, (idealX K).isPrime, span_ne_zero'.2]
 
-/-- The integral valuation of the power series `X : K⟦X⟧` equals `(ofAdd -1) : ℤₘ₀`-/
+/-- The integral valuation of the power series `X : K⟦X⟧` equals `(ofAdd -1) : ℤₘ₀`. -/
 @[simp]
 theorem intValuation_X : (idealX K).intValuationDef X = ↑(Multiplicative.ofAdd (-1 : ℤ)) := by
   rw [← Polynomial.coe_X, ← intValuation_apply, ← intValuation_eq_of_coe]
@@ -554,7 +553,7 @@ open IsDedekindDomain.HeightOneSpectrum PowerSeries
 open scoped LaurentSeries
 
 theorem valuation_eq_LaurentSeries_valuation (P : RatFunc K) :
-    (Polynomial.idealX K).valuation P = (PowerSeries.idealX K).valuation (P : K⸨X⸩) := by
+    (Polynomial.idealX K).valuation _ P = (PowerSeries.idealX K).valuation K⸨X⸩ P := by
   refine RatFunc.induction_on' P ?_
   intro f g h
   rw [Polynomial.valuation_of_mk K f h, RatFunc.mk_eq_mk' f h, Eq.comm]
@@ -571,13 +570,15 @@ namespace LaurentSeries
 
 open IsDedekindDomain.HeightOneSpectrum PowerSeries RatFunc
 
-instance : Valued K⸨X⸩ ℤₘ₀ := Valued.mk' (PowerSeries.idealX K).valuation
+instance : Valued K⸨X⸩ ℤₘ₀ := Valued.mk' ((PowerSeries.idealX K).valuation _)
+
+lemma valuation_def : (Valued.v : Valuation K⸨X⸩ ℤₘ₀) = (PowerSeries.idealX K).valuation _ := rfl
 
 theorem valuation_X_pow (s : ℕ) :
     Valued.v (((X : K⟦X⟧) : K⸨X⸩) ^ s) = Multiplicative.ofAdd (-(s : ℤ)) := by
-  erw [map_pow, ← one_mul (s : ℤ), ← neg_mul (1 : ℤ) s, Int.ofAdd_mul,
-    WithZero.coe_zpow, ofAdd_neg, WithZero.coe_inv, zpow_natCast, valuation_of_algebraMap,
-    intValuation_toFun, intValuation_X, ofAdd_neg, WithZero.coe_inv, inv_pow]
+  rw [map_pow, ← one_mul (s : ℤ), ← neg_mul (1 : ℤ) s, Int.ofAdd_mul, WithZero.coe_zpow,
+    ofAdd_neg, WithZero.coe_inv, zpow_natCast, valuation_def, ← LaurentSeries.coe_algebraMap,
+    valuation_of_algebraMap, intValuation_toFun, intValuation_X, ofAdd_neg, WithZero.coe_inv]
 
 theorem valuation_single_zpow (s : ℤ) :
     Valued.v (HahnSeries.single s (1 : K) : K⸨X⸩) =
@@ -586,7 +587,7 @@ theorem valuation_single_zpow (s : ℤ) :
   rw [← single_zero_one, ← add_neg_cancel s, ← mul_one 1, ← single_mul_single, map_mul,
     mul_eq_one_iff_eq_inv₀] at this
   · rw [this]
-    cases' s with s s
+    obtain s | s := s
     · rw [Int.ofNat_eq_coe, ← HahnSeries.ofPowerSeries_X_pow] at this
       rw [Int.ofNat_eq_coe, ← this, PowerSeries.coe_pow, valuation_X_pow]
     · simp only [Int.negSucc_coe, neg_neg, ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow,
@@ -599,10 +600,9 @@ theorem coeff_zero_of_lt_intValuation {n d : ℕ} {f : K⟦X⟧}
     n < d → coeff K n f = 0 := by
   intro hnd
   apply (PowerSeries.X_pow_dvd_iff).mp _ n hnd
-  erw [← span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow,
-    ← (intValuation_le_pow_iff_dvd (PowerSeries.idealX K) f d), ← intValuation_apply,
-    ← valuation_of_algebraMap (R := K⟦X⟧) (K := K⸨X⸩)]
-  exact H
+  rwa [← LaurentSeries.coe_algebraMap, valuation_def, valuation_of_algebraMap, intValuation_apply,
+    intValuation_le_pow_iff_dvd (PowerSeries.idealX K) f d, PowerSeries.idealX,
+    Ideal.span_singleton_pow, span_singleton_dvd_span_singleton_iff_dvd] at H
 
 /- The valuation of a power series is the order of the first non-zero coefficient. -/
 theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
@@ -610,8 +610,8 @@ theorem intValuation_le_iff_coeff_lt_eq_zero {d : ℕ} (f : K⟦X⟧) :
       ∀ n : ℕ, n < d → coeff K n f = 0 := by
   have : PowerSeries.X ^ d ∣ f ↔ ∀ n : ℕ, n < d → (PowerSeries.coeff K n) f = 0 :=
     ⟨PowerSeries.X_pow_dvd_iff.mp, PowerSeries.X_pow_dvd_iff.mpr⟩
-  erw [← this, valuation_of_algebraMap (PowerSeries.idealX K) f, ←
-    span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow]
+  rw [← this, ← LaurentSeries.coe_algebraMap, valuation_def, valuation_of_algebraMap,
+    ← span_singleton_dvd_span_singleton_iff_dvd, ← Ideal.span_singleton_pow]
   apply intValuation_le_pow_iff_dvd
 
 /- The coefficients of a Laurent series vanish in degree strictly less than its valuation. -/
@@ -739,12 +739,12 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
 in `K` converges to a principal filter -/
 def Cauchy.coeff {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) : ℤ → K :=
   let _ : UniformSpace K := ⊥
-  fun d ↦ UniformSpace.DiscreteUnif.cauchyConst rfl <| hℱ.map (uniformContinuous_coeff d)
+  fun d ↦ DiscreteUniformity.cauchyConst <| hℱ.map (uniformContinuous_coeff d)
 
 theorem Cauchy.coeff_tendsto {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) (D : ℤ) :
     Tendsto (fun f : K⸨X⸩ ↦ f.coeff D) ℱ (𝓟 {coeff hℱ D}) :=
   let _ : UniformSpace K := ⊥
-  le_of_eq <| UniformSpace.DiscreteUnif.eq_const_of_cauchy (by rfl)
+  le_of_eq <| DiscreteUniformity.eq_pure_cauchyConst
     (hℱ.map (uniformContinuous_coeff D)) ▸ (principal_singleton _).symm
 
 /- For every Cauchy filter of Laurent series, there is a `N` such that the `n`-th coefficient
@@ -755,7 +755,7 @@ The result is true also for more general Hahn Series indexed over a partially or
 beyond the special case `Γ = ℤ`, that corresponds to Laurent Series: nevertheless the proof below
 does not generalise, as it relies on the study of the `X`-adic valuation attached to the height-one
 prime `X`, and this is peculiar to the one-variable setting. In the future we should prove this
-result in full generality and deduce the case `Γ = ℤ` from that one.-/
+result in full generality and deduce the case `Γ = ℤ` from that one. -/
 lemma Cauchy.exists_lb_eventual_support {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
     ∃ N, ∀ᶠ f : K⸨X⸩ in ℱ, ∀ n < N, f.coeff n = (0 : K) := by
   let entourage : Set (K⸨X⸩ × K⸨X⸩) :=
@@ -818,7 +818,7 @@ theorem Cauchy.exists_lb_coeff_ne {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) :
   rw [hf d (lt_of_lt_of_le hd (min_le_left _ _)), hN₂ d (lt_of_lt_of_le hd (min_le_right _ _))]
 
 /- Given a Cauchy filter `ℱ` in the Laurent Series and a bound `D`, for almost all series in the
-filter the coefficients below `D` coincide with `Caucy.coeff hℱ`-/
+filter the coefficients below `D` coincide with `Caucy.coeff hℱ`. -/
 theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) {D : ℤ} :
     ∀ᶠ f : K⸨X⸩ in ℱ, ∀ d, d < D → coeff hℱ d = f.coeff d := by
   -- `φ` sends `d` to the set of Laurent Series having `d`th coefficient equal to `ℱ.coeff`.
@@ -855,7 +855,7 @@ theorem Cauchy.coeff_eventually_equal {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ
 
 open scoped Topology
 
-/- The main result showing that the Cauchy filter tends to the `Cauchy.limit`-/
+/- The main result showing that the Cauchy filter tends to the `Cauchy.limit` -/
 theorem Cauchy.eventually_mem_nhds {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ)
     {U : Set K⸨X⸩} (hU : U ∈ 𝓝 (Cauchy.limit hℱ)) : ∀ᶠ f in ℱ, f ∈ U := by
   obtain ⟨γ, hU₁⟩ := Valued.mem_nhds.mp hU
@@ -973,7 +973,7 @@ theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
     refine ⟨⟨d, by rfl⟩, subset_trans (fun _ _ ↦ pre_R ?_) pre_T⟩
     apply hd
     simp only [sub_zero, Set.mem_setOf_eq]
-    erw [← RatFunc.coe_sub, ← valuation_eq_LaurentSeries_valuation]
+    rw [← RatFunc.coe_sub, valuation_def, ← valuation_eq_LaurentSeries_valuation]
     assumption
   · rintro ⟨_, ⟨hT, pre_T⟩⟩
     obtain ⟨d, hd⟩ := Valued.mem_nhds.mp hT
@@ -984,20 +984,20 @@ theorem inducing_coe : IsUniformInducing ((↑) : RatFunc K → K⸨X⸩) := by
         use d
     · refine subset_trans (fun _ _ ↦ ?_) pre_T
       apply hd
-      erw [Set.mem_setOf_eq, sub_zero, valuation_eq_LaurentSeries_valuation,
+      rw [Set.mem_setOf_eq, sub_zero, WithZero.valued_def, valuation_eq_LaurentSeries_valuation,
         RatFunc.coe_sub]
       assumption
 
 theorem continuous_coe : Continuous ((↑) : RatFunc K → K⸨X⸩) :=
   (isUniformInducing_iff'.1 (inducing_coe)).1.continuous
 
-/-- The `X`-adic completion as an abstract completion of `RatFunc K`-/
+/-- The `X`-adic completion as an abstract completion of `RatFunc K` -/
 abbrev ratfuncAdicComplPkg : AbstractCompletion (RatFunc K) :=
   UniformSpace.Completion.cPkg
 
 variable (K)
 /-- Having established that the `K⸨X⸩` is complete and contains `RatFunc K` as a dense
-subspace, it gives rise to an abstract completion of `RatFunc K`.-/
+subspace, it gives rise to an abstract completion of `RatFunc K`. -/
 noncomputable def LaurentSeriesPkg : AbstractCompletion (RatFunc K) where
   space := K⸨X⸩
   coe := (↑)
@@ -1021,7 +1021,7 @@ abbrev extensionAsRingHom :=
 /-- An abbreviation for the `X`-adic completion of `RatFunc K` -/
 abbrev RatFuncAdicCompl := adicCompletion (RatFunc K) (idealX K)
 
-/- The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster-/
+/- The two instances below make `comparePkg` and `comparePkg_eq_extension` slightly faster. -/
 instance : UniformSpace (RatFuncAdicCompl K) := inferInstance
 instance : UniformSpace K⸨X⸩ := inferInstance
 
@@ -1033,7 +1033,7 @@ lemma comparePkg_eq_extension (x : UniformSpace.Completion (RatFunc K)) :
     (comparePkg K).toFun x = (extensionAsRingHom K (continuous_coe)).toFun x := rfl
 
 /-- The uniform space equivalence between two abstract completions of `ratfunc K` as a ring
-equivalence: this will be the *inverse* of the fundamental one.-/
+equivalence: this will be the *inverse* of the fundamental one. -/
 abbrev ratfuncAdicComplRingEquiv : RatFuncAdicCompl K ≃+* K⸨X⸩ :=
   {comparePkg K with
     map_mul' := by
@@ -1084,7 +1084,7 @@ theorem valuation_LaurentSeries_equal_extension :
     (LaurentSeriesPkg K).isDenseInducing.extend Valued.v = (Valued.v : K⸨X⸩ → ℤₘ₀) := by
   apply IsDenseInducing.extend_unique
   · intro x
-    erw [valuation_eq_LaurentSeries_valuation K x]
+    rw [valued_def, valuation_eq_LaurentSeries_valuation K x]
     rfl
   · exact Valued.continuous_valuation (K := K⸨X⸩)
 
@@ -1214,10 +1214,6 @@ instance : Algebra K ((idealX K).adicCompletionIntegers (RatFunc K)) :=
   RingHom.toAlgebra <|
     ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C).codRestrict _
       (algebraMap_C_mem_adicCompletionIntegers K)
-
-instance : IsScalarTower K ((idealX K).adicCompletionIntegers (RatFunc K))
-    ((idealX K).adicCompletion (RatFunc K)) :=
-  IsScalarTower.of_algebraMap_eq (fun _ ↦ by rfl)
 
 /-- The algebra isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
 `RatFunc K`. -/

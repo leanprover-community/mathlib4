@@ -5,11 +5,11 @@ Authors: Alexander Bentkamp
 -/
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.Tactic.Peel
 
 /-!
@@ -289,7 +289,7 @@ theorem genEigenspace_eq_genEigenspace_maxUnifEigenspaceIndex_of_le [IsNoetheria
     ((f.genEigenspace μ).monotone <| by simpa using hk)
 
 /-- A generalized eigenvalue for some exponent `k` is also
-    a generalized eigenvalue for exponents larger than `k`. -/
+a generalized eigenvalue for exponents larger than `k`. -/
 lemma HasUnifEigenvalue.le {f : End R M} {μ : R} {k m : ℕ∞}
     (hm : k ≤ m) (hk : f.HasUnifEigenvalue μ k) :
     f.HasUnifEigenvalue μ m := by
@@ -299,7 +299,7 @@ lemma HasUnifEigenvalue.le {f : End R M} {μ : R} {k m : ℕ∞}
   exact (f.genEigenspace _).monotone hm
 
 /-- A generalized eigenvalue for some exponent `k` is also
-    a generalized eigenvalue for positive exponents. -/
+a generalized eigenvalue for positive exponents. -/
 lemma HasUnifEigenvalue.lt {f : End R M} {μ : R} {k m : ℕ∞}
     (hm : 0 < m) (hk : f.HasUnifEigenvalue μ k) :
     f.HasUnifEigenvalue μ m := by
@@ -331,7 +331,7 @@ lemma maxUnifEigenspaceIndex_le_finrank [FiniteDimensional K V] (f : End K V) (�
     apply ker_pow_le_ker_pow_finrank
 
 /-- Every generalized eigenvector is a generalized eigenvector for exponent `finrank K V`.
-    (Lemma 8.11 of [axler2015]) -/
+(Lemma 8.11 of [axler2015]) -/
 lemma genEigenspace_le_genEigenspace_finrank [FiniteDimensional K V] (f : End K V)
     (μ : K) (k : ℕ∞) : f.genEigenspace μ k ≤ f.genEigenspace μ (finrank K V) := by
   calc f.genEigenspace μ k
@@ -384,7 +384,7 @@ lemma isNilpotent_restrict_genEigenspace_top [IsNoetherian R M] (f : End R M) (�
   rw [genEigenspace_top_eq_maxUnifEigenspaceIndex]
 
 /-- The submodule `eigenspace f μ` for a linear map `f` and a scalar `μ` consists of all vectors `x`
-    such that `f x = μ • x`. (Def 5.36 of [axler2015])-/
+such that `f x = μ • x`. (Def 5.36 of [axler2015]). -/
 abbrev eigenspace (f : End R M) (μ : R) : Submodule R M :=
   f.genEigenspace μ 1
 
@@ -404,7 +404,7 @@ lemma hasEigenvector_iff {f : End R M} {μ : R} {x : M} :
     f.HasEigenvector μ x ↔ x ∈ f.eigenspace μ ∧ x ≠ 0 := Iff.rfl
 
 /-- A scalar `μ` is an eigenvalue for a linear map `f` if there are nonzero vectors `x`
-    such that `f x = μ • x`. (Def 5.5 of [axler2015]) -/
+such that `f x = μ • x`. (Def 5.5 of [axler2015]). -/
 abbrev HasEigenvalue (f : End R M) (a : R) : Prop :=
   HasUnifEigenvalue f a 1
 
@@ -474,7 +474,7 @@ lemma genEigenspace_def (f : End R M) (μ : R) (k : ℕ) :
   genEigenspace_nat
 
 /-- A nonzero element of a generalized eigenspace is a generalized eigenvector.
-    (Def 8.9 of [axler2015])-/
+(Def 8.9 of [axler2015]) -/
 abbrev HasGenEigenvector (f : End R M) (μ : R) (k : ℕ) (x : M) : Prop :=
   HasUnifEigenvector f μ k x
 
@@ -482,7 +482,7 @@ lemma hasGenEigenvector_iff {f : End R M} {μ : R} {k : ℕ} {x : M} :
     f.HasGenEigenvector μ k x ↔ x ∈ f.genEigenspace μ k ∧ x ≠ 0 := Iff.rfl
 
 /-- A scalar `μ` is a generalized eigenvalue for a linear map `f` and an exponent `k ∈ ℕ` if there
-    are generalized eigenvectors for `f`, `k`, and `μ`. -/
+are generalized eigenvectors for `f`, `k`, and `μ`. -/
 abbrev HasGenEigenvalue (f : End R M) (μ : R) (k : ℕ) : Prop :=
   HasUnifEigenvalue f μ k
 

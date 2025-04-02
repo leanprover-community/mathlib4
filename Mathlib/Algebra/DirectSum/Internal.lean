@@ -134,11 +134,11 @@ section coe
 
 variable [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R] (A : ι → σ)
 
-/-- The canonical ring isomorphism between `⨁ i, A i` and `R`-/
+/-- The canonical ring isomorphism between `⨁ i, A i` and `R` -/
 def coeRingHom [AddMonoid ι] [SetLike.GradedMonoid A] : (⨁ i, A i) →+* R :=
   DirectSum.toSemiring (fun i => AddSubmonoidClass.subtype (A i)) rfl fun _ _ => rfl
 
-/-- The canonical ring isomorphism between `⨁ i, A i` and `R`-/
+/-- The canonical ring isomorphism between `⨁ i, A i` and `R` -/
 @[simp]
 theorem coeRingHom_of [AddMonoid ι] [SetLike.GradedMonoid A] (i : ι) (x : A i) :
     (coeRingHom A : _ →+* R) (of (fun i => A i) i x) = x :=
@@ -147,8 +147,7 @@ theorem coeRingHom_of [AddMonoid ι] [SetLike.GradedMonoid A] (i : ι) (x : A i)
 theorem coe_mul_apply [AddMonoid ι] [SetLike.GradedMonoid A]
     [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (r r' : ⨁ i, A i) (n : ι) :
     ((r * r') n : R) =
-      ∑ ij ∈ (r.support ×ˢ r'.support).filter (fun ij : ι × ι => ij.1 + ij.2 = n),
-        (r ij.1 * r' ij.2 : R) := by
+      ∑ ij ∈ r.support ×ˢ r'.support with ij.1 + ij.2 = n, (r ij.1 * r' ij.2 : R) := by
   rw [mul_eq_sum_support_ghas_mul, DFinsupp.finset_sum_apply, AddSubmonoidClass.coe_finset_sum]
   simp_rw [coe_of_apply, apply_ite, ZeroMemClass.coe_zero, ← Finset.sum_filter, SetLike.coe_gMul]
 
@@ -348,7 +347,8 @@ variable [CommSemiring R] [AddMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
 variable (A : ι → σ) [SetLike.GradedMonoid A]
 
 -- TODO: it might be expensive to unify `A` in this instance in practice
-/--The commutative semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`.-/
+/-- The commutative semiring `A 0` inherited from `R` in the presence of
+`SetLike.GradedMonoid A`. -/
 instance instCommSemiring : CommSemiring (A 0) := (subsemiring A).toCommSemiring
 
 end CommSemiring
