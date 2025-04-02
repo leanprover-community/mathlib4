@@ -90,7 +90,7 @@ variable {R Y : Type*} [TopologicalSpace Y] [CompactSpace Y]
 
 /-- A continuous function on `X × Y` can be uniformly approximated by sums of functions of the
 form `f x • g y`. -/
-lemma exists_sum_smul_approx [AddCommGroup V] [UniformAddGroup V] [MulActionWithZero R V]
+lemma exists_sum_smul_approx [AddCommGroup V] [IsUniformAddGroup V] [MulActionWithZero R V]
     (f : C(X × Y, V)) (hS : S ∈ 𝓤 V) :
     ∃ (n : ℕ) (g : Fin n → C(X, R)) (h : Fin n → C(Y, V)),
     ∀ x y, (f (x, y), ∑ i, g i x • h i y) ∈ S := by
@@ -107,7 +107,7 @@ lemma exists_sum_smul_approx [AddCommGroup V] [UniformAddGroup V] [MulActionWith
 
 /-- A continuous function on `X × Y` can be uniformly approximated by sums of functions of the form
 `f x * g y`. -/
-lemma exists_sum_mul_approx (f : C(X × Y, V)) (hS : S ∈ 𝓤 V) [Ring V] [UniformAddGroup V]:
+lemma exists_sum_mul_approx (f : C(X × Y, V)) (hS : S ∈ 𝓤 V) [Ring V] [IsUniformAddGroup V]:
     ∃ (n : ℕ) (g : Fin n → C(X, V)) (h : Fin n → C(Y, V)),
     ∀ x y, (f (x, y), ∑ i, g i x * h i y) ∈ S :=
   exists_sum_smul_approx f hS
