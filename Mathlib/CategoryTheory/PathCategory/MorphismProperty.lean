@@ -59,11 +59,8 @@ def liftNatTrans {C} [Category C] {F G : Paths V ⥤ C} (α_app : (v : V) → (F
         app := α_app
         naturality := by
           apply MorphismProperty.of_eq_top
-          apply morphismProperty_eq_top
-          · simp only [Functor.map_id, Category.id_comp, Category.comp_id, implies_true]
-          · simp only [of_obj, of_map, Functor.map_comp, Category.assoc]
-            intro _ _ _ _ q hyp
-            rw [α_nat q, ← Category.assoc, hyp, Category.assoc]
+            (P := MorphismProperty.naturalityProperty (F₁ := F) α_app)
+          exact morphismProperty_eq_top_of_isMultiplicative _ _ α_nat
 
 @[simp]
 theorem liftNatTrans_app {C} [Category C] {F G : Paths V ⥤ C}
