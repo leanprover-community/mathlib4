@@ -171,11 +171,13 @@ lemma l1 {K : Type*} [Field K] [Module K M] [Module K N]
   have : IsUnit ((P.coroot' i) v) := by
     simp_all only [ne_eq, PerfectPairing.flip_apply_apply, isUnit_iff_ne_zero, not_false_eq_true]
   have a_inv : ((P.coroot' i) v)⁻¹ * ((P.coroot' i) v) = 1 := by
-    simp_all only [ne_eq, PerfectPairing.flip_apply_apply, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel]
+    simp_all only [ne_eq, PerfectPairing.flip_apply_apply,
+      isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel]
   have : P.root i ∈ q := by
     have := Submodule.smul_mem (M := M) q (((P.coroot' i) v)⁻¹) rrr
     simp at this
-    simp_all only [ne_eq, PerfectPairing.flip_apply_apply, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel,
+    simp_all only [ne_eq, PerfectPairing.flip_apply_apply,
+      isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel,
       inv_smul_smul₀]
   contradiction
 
@@ -193,5 +195,156 @@ lemma l2 {K : Type*} [Field K] [Module K M] [Module K N]
       contradiction
     | inr h_kernel =>
       exact h_kernel
+
+lemma l21 {K : Type*} [Field K] [Module K M] [Module K M] [Module K N]
+    (P : RootSystem ι K M N) : span K (range P.coroot') = ⊤ := by
+  --simp
+  have h0 := P.span_root_eq_top
+  have h1 := P.span_coroot_eq_top
+  unfold RootPairing.coroot'
+  let Q := P.flip
+  have h2 := Q.span_root_eq_top
+  have h3 := Q.span_coroot_eq_top
+  --simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top, Q]
+  have (i : ι) : P.toPerfectPairing.flip (P.coroot i) = Q.toDualLeft (Q.root i) := by
+    simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top,
+        PerfectPairing.toDualLeft_apply, Q]
+    rfl
+  have h2 := Q.span_root_eq_top
+  have rrrr : span K (range fun i ↦ P.toPerfectPairing.flip (P.coroot i)) =
+      span K (range fun i ↦ Q.toDualLeft (Q.root i)) := by
+    simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top,
+      PerfectPairing.toDualLeft_apply, Q]
+  rw [rrrr]
+  let s := (range fun i ↦ (Q.root i))
+  let g := Q.toDualLeft '' s
+  let r := Q.toDualLeft
+  have needed : span K s = ⊤ := by
+    simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top,
+      PerfectPairing.toDualLeft_apply, Q, s]
+  have needed2 : (range fun i ↦ Q.toDualLeft (Q.root i)) = Q.toDualLeft '' s := by
+    simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top, PerfectPairing.toDualLeft_apply, Q, s]
+    ext x : 1
+    simp_all only [mem_range, mem_image, exists_exists_eq_and, Q, s]
+
+  have key (d : Module.Dual K M) : d ∈ span K (range fun i ↦ Q.toDualLeft (Q.root i)) := by
+    have rrrr5 := Submodule.apply_mem_span_image_iff_mem_span (s := s) (x := (Q.toDualLeft.invFun d)) Q.toDualLeft.injective
+    --simp at rrrr5
+    --simp at rrrr5
+    have mmm : Q.toDualLeft.symm d ∈ span K s := by
+      rw [needed]
+      simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top, PerfectPairing.toDualLeft_apply,
+        Submodule.mem_top, iff_true, Q, s]
+    have := rrrr5.2 mmm
+    --simp [s] at this
+    have helpme11 : Q.toDualLeft (Q.toDualLeft.invFun d) = d := by
+      simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top, PerfectPairing.toDualLeft_apply,
+        LinearEquiv.invFun_eq_symm, LinearEquiv.apply_symm_apply, Submodule.mem_top, iff_true, Q, s]
+    rw [helpme11] at this
+    rw [needed2]
+    exact this
+  simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top,
+    PerfectPairing.toDualLeft_apply, Q]
+  ext x : 1
+  simp_all only [Submodule.mem_top, Q]
+  --have : Q.toDualLeft (span K (range Q.root)) = ⊤ := by
+  --  sorry
+  --rw [← Submodule.span_image Q.toDualLeft] at h2
+  --search_proof
+
+  --search_proof
+  --unfold RootSystem.flip
+  --search_proof
+  --have (i : ι) : (P.flip (P.coroot i)) = Q.root i := by
+  --  sorry
+  --  sorry
+  --simp at h2
+  --simp_all
+  --search_proof
+
+  --search_proof
+
+
+
+/-
+lemma l25 {K : Type*} [Field K] [Module K M] [Module K M] [Module K N]
+    (P : RootSystem ι K M N) (v : M) (hx : ∀ (i : ι), v ∈ ker (P.coroot' i))
+      (hy : span K (P.coroot '' univ) = ⊤) (d : Module.Dual K M) : d v = 0 := by
+  have : d ∈ span K (range coroot) := by
+    sorry
+  refine Submodule.span_induction ?_ ?_ ?_ ?_ h
+  · rintro y ⟨⟨z, hz⟩, ⟨⟨w, hw⟩, rfl⟩⟩; apply lieCharacter_apply_lie
+  · exact χ.map_zero
+  · intro y z _ _ hy hz; rw [LieHom.map_add, hy, hz, add_zero]
+  · intro t y _ hy; rw [LieHom.map_smul, hy, smul_zero]
+-/
+
+
+lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
+    (P : RootSystem ι K M N) (q : Submodule K M) (ha : ∀ i, q ∈ invtSubmodule (P.reflection i))
+      (h_bot: q ≠ ⊥) (h_top: q ≠ ⊤):
+        ∃ (Φ : Set ι), (∀ i ∈ Φ, P.root i ∈ q) ∧ (∀ i ∉ Φ, q ≤ LinearMap.ker (P.coroot' i)) ∧
+          Φ ≠ univ ∧ Φ ≠ ∅ := by
+  obtain ⟨Φ, b, c⟩ := l2 P.toRootPairing q ha
+  use Φ
+  constructor
+  · exact b
+  constructor
+  · exact c
+  constructor
+  by_contra hu
+  have lll (i : ι) : P.root i ∈ q := by
+    subst hu
+    simp_all only [ne_eq, mem_univ, forall_const, not_true_eq_false, IsEmpty.forall_iff,
+      implies_true]
+  have : span K (P.root '' univ) ≤ q := by
+    subst hu
+    simp_all only [ne_eq, mem_univ, implies_true, forall_const, not_true_eq_false, IsEmpty.forall_iff, image_univ]
+    rw [span_le]
+    exact range_subset_iff.mpr b
+  have : span K (P.root '' univ) = ⊤ := by
+    subst hu
+    simp_all only [ne_eq, mem_univ, implies_true, image_univ, RootSystem.span_root_eq_top,
+      top_le_iff]
+  have : q = ⊤ := by
+    subst hu
+    simp_all only [ne_eq, mem_univ, implies_true, image_univ, RootSystem.span_root_eq_top,
+      top_le_iff]
+  contradiction
+  by_contra hn
+  have lll (i : ι) : q ≤ ker (P.coroot' i) := by
+    subst hn
+    simp_all only [ne_eq, mem_empty_iff_false, IsEmpty.forall_iff, implies_true, not_false_eq_true,
+      forall_const]
+  have : ∃ v ∈ q, v ≠ 0 := by
+    exact (Submodule.ne_bot_iff q).1 h_bot
+  obtain ⟨v1, ⟨v21, v22⟩⟩ := this
+  --have : ∃ d : Module.Dual K M, d v1 ≠ 0 := by
+    --search_proof
+  have xxx (i : ι) : v1 ∈ ker (P.coroot' i) := by
+    subst hn
+    simp_all only [ne_eq, mem_empty_iff_false, not_false_eq_true, implies_true, IsEmpty.forall_iff, forall_const,
+      LinearMap.mem_ker, PerfectPairing.flip_apply_apply]
+    apply c
+    simp_all only
+  have yyy : span K (P.coroot' '' univ) = ⊤ := by
+    simp
+
+
+    --search_proof
+  have help (d : Module.Dual K M) : d v1 = 0 := by
+    sorry --exact l25 P v1 xxx yyy d
+  have : q.dualAnnihilator ≠ ⊤ := by
+    subst hn
+    simp_all only [ne_eq, mem_empty_iff_false, not_false_eq_true, implies_true, LinearMap.mem_ker, image_univ,
+      RootSystem.span_coroot_eq_top, IsEmpty.forall_iff, forall_const, Submodule.dualAnnihilator_eq_top_iff]
+
+
+  have := (Module.forall_dual_apply_eq_zero_iff K v1).1 help
+  contradiction
+
+
+
+
 
 end RootPairing
