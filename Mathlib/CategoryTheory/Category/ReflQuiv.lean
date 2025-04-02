@@ -122,8 +122,7 @@ inductive FreeReflRel {V} [ReflQuiver V] : (X Y : Paths V) → (f g : X ⟶ Y) �
 /-- A reflexive quiver generates a free category, defined as as quotient of the free category
 on its underlying quiver (called the "path category") by the hom relation that uses the specified
 reflexivity arrows as the identity arrows. -/
-def FreeRefl (V) [ReflQuiver V] :=
-  Quotient (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V))
+def FreeRefl (V) [ReflQuiver V] := Quotient (C := Paths V) (FreeReflRel (V := V))
 
 instance (V) [ReflQuiver V] : Category (FreeRefl V) :=
   inferInstanceAs (Category (Quotient _))
@@ -131,7 +130,7 @@ instance (V) [ReflQuiver V] : Category (FreeRefl V) :=
 /-- The quotient functor associated to a quotient category defines a natural map from the free
 category on the underlying quiver of a refl quiver to the free category on the reflexive quiver. -/
 def FreeRefl.quotientFunctor (V) [ReflQuiver V] : Paths V ⥤ FreeRefl V :=
-  Quotient.functor (C := Cat.free.obj (Quiv.of V)) (FreeReflRel (V := V))
+  Quotient.functor (C := Paths V) (FreeReflRel (V := V))
 
 /-- This is a specialization of `Quotient.lift_unique'` rather than `Quotient.lift_unique`, hence
 the prime in the name. -/
