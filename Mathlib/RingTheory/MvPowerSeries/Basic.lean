@@ -454,6 +454,11 @@ theorem constantCoeff_one : constantCoeff σ R 1 = 1 :=
 theorem constantCoeff_X (s : σ) : constantCoeff σ R (X s) = 0 :=
   coeff_zero_X s
 
+@[simp]
+theorem constantCoeff_smul {S : Type*} [Semiring S] [Module R S]
+    (φ : MvPowerSeries σ S) (a : R) :
+    constantCoeff σ S (a • φ) = a • constantCoeff σ S φ := rfl
+
 /-- If a multivariate formal power series is invertible,
  then so is its constant coefficient. -/
 theorem isUnit_constantCoeff (φ : MvPowerSeries σ R) (h : IsUnit φ) :
