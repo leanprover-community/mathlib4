@@ -508,87 +508,54 @@ lemma eraseLast_last_rel_last (p : RelSeries r) (h : p.length ≠ 0) :
 Given two series of the form `a₀ -r→ ... -r→ X` and `X -r→ b ---> ...`,
 then `a₀ -r→ ... -r→ X -r→ b ...` is another series obtained by combining the given two.
 -/
-@[simps]
+@[simps length]
 def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
   length := p.length + q.length
-  toFun i :=
-    if H : i.1 < p.length
-    then p ⟨i.1, H.trans (lt_add_one _)⟩
-    else q ⟨i.1 - p.length,
-      Nat.sub_lt_left_of_lt_add (by rwa [not_lt] at H) (by rw [← add_assoc]; exact i.2)⟩
-  step i := by
-    dsimp only
-    by_cases h₂ : i.1 + 1 < p.length
-    · have h₁ : i.1 < p.length := lt_trans (lt_add_one _) h₂
-      simp only [Fin.coe_castSucc, Fin.val_succ]
-      rw [dif_pos h₁, dif_pos h₂]
-      convert p.step ⟨i, h₁⟩ using 1
-    · simp only [Fin.coe_castSucc, Fin.val_succ]
-      rw [dif_neg h₂]
-      by_cases h₁ : i.1 < p.length
-      · rw [dif_pos h₁]
-        have h₃ : p.length = i.1 + 1 := by omega
-        convert p.step ⟨i, h₁⟩ using 1
-        convert connect.symm
-        · aesop
-        · congr; aesop
-      · rw [dif_neg h₁]
-        convert q.step ⟨i.1 - p.length, _⟩ using 1
-        · congr
-          change (i.1 + 1) - _ = _
-          rw [Nat.sub_add_comm]
-          rwa [not_lt] at h₁
-        · refine Nat.sub_lt_left_of_lt_add ?_ i.2
-          rwa [not_lt] at h₁
+  toFun := Fin.addCases (m := p.length) (n := q.length + 1) (p ∘ Fin.castSucc) q
+  step := by
+    apply Fin.addCases <;> intro i
+    · simp_rw [Fin.castSucc_castAdd, Fin.addCases_left, Fin.succ_castAdd]
+      convert p.step i
+      split_ifs with h
+      · rw [Fin.addCases_right, h, ← last, connect, head]
+      · apply Fin.addCases_left
+    simpa only [Fin.castSucc_natAdd, Fin.succ_natAdd, Fin.addCases_right] using q.step i
 
-lemma smash_castAdd {p q : RelSeries r} (connect : p.last = q.head) (i : Fin p.length) :
-    p.smash q connect (Fin.castSucc <| i.castAdd q.length) = p (Fin.castSucc i) := by
-  unfold smash
-  dsimp
-  rw [dif_pos i.2]
-  rfl
+lemma smash_castLE {p q : RelSeries r} (h : p.last = q.head) (i : Fin (p.length + 1)) :
+    p.smash q h (i.castLE (by simp)) = p i := by
+  refine i.lastCases ?_ fun _ ↦ by dsimp only [smash]; apply Fin.addCases_left
+  show p.smash q h (Fin.natAdd p.length (0 : Fin (q.length + 1))) = _
+  simpa only [smash, Fin.addCases_right] using h.symm
+
+lemma smash_castAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin p.length) :
+    p.smash q h (i.castAdd q.length).castSucc = p i.castSucc :=
+  smash_castLE h i.castSucc
 
 lemma smash_succ_castAdd {p q : RelSeries r} (h : p.last = q.head)
-    (i : Fin p.length) : p.smash q h (i.castAdd q.length).succ = p i.succ := by
-  rw [smash_toFun]
-  split_ifs with H
-  · congr
-  · simp only [Fin.val_succ, Fin.coe_castAdd] at H
-    convert h.symm
-    · congr
-      simp only [Fin.val_succ, Fin.coe_castAdd, Nat.zero_mod, Nat.sub_eq_zero_iff_le]
-      omega
-    · congr
-      ext
-      change i.1 + 1 = p.length
-      omega
+    (i : Fin p.length) : p.smash q h (i.castAdd q.length).succ = p i.succ :=
+  smash_castLE h i.succ
 
 lemma smash_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
-    smash p q h (Fin.castSucc <| i.natAdd p.length) = q (Fin.castSucc i) := by
-  rw [smash_toFun, dif_neg (by simp)]
-  congr
-  exact Nat.add_sub_self_left _ _
+    smash p q h (i.natAdd p.length).castSucc = q i.castSucc := by
+  dsimp only [smash, Fin.castSucc_natAdd]
+  apply Fin.addCases_right
 
 lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
     smash p q h (i.natAdd p.length).succ = q i.succ := by
-  rw [smash_toFun]
-  split_ifs with H
-  · have H' : p.length < p.length + (i.1 + 1) := by omega
-    exact (lt_irrefl _ (H.trans H')).elim
-  · congr
-    simp only [Fin.val_succ, Fin.coe_natAdd]
-    rw [add_assoc, Nat.add_sub_cancel_left]
+  dsimp only [smash, Fin.succ_natAdd]
+  apply Fin.addCases_right
 
 @[simp] lemma head_smash {p q : RelSeries r} (h : p.last = q.head) :
     (smash p q h).head = p.head := by
-  delta head smash
-  simp only [Fin.val_zero, Fin.zero_eta, zero_le, Nat.sub_eq_zero_of_le, dite_eq_ite,
-    ite_eq_left_iff, not_lt, nonpos_iff_eq_zero]
-  intro H; convert h.symm; congr; aesop
+  obtain ⟨_ | _, _⟩ := p
+  · simpa [Fin.addCases] using h.symm
+  dsimp only [smash, head]
+  exact Fin.addCases_left 0
 
 @[simp] lemma last_smash {p q : RelSeries r} (h : p.last = q.head) :
     (smash p q h).last = q.last := by
-  delta smash last; aesop
+  dsimp only [smash, last]
+  rw [← Fin.natAdd_last, Fin.addCases_right]
 
 /-- Given the series `a₀ -r→ … -r→ aᵢ -r→ … -r→ aₙ`, the series `a₀ -r→ … -r→ aᵢ`. -/
 @[simps! length]
@@ -661,7 +628,7 @@ instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] 
     FiniteDimensionalOrder γ where
   exists_longest_relSeries := ⟨.singleton _ default, fun x ↦ by
     by_contra! r
-    exact (ne_of_lt <| x.step ⟨0, by omega⟩) <| Subsingleton.elim _ _⟩
+    exact (x.step ⟨0, by omega⟩).ne <| Subsingleton.elim _ _⟩
 
 /-- A type is infinite dimensional if it has `LTSeries` of at least arbitrary length -/
 abbrev InfiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
@@ -789,42 +756,24 @@ theorem exists_relSeries_covBy
   induction n with
   | zero => exact ⟨⟨0, s, nofun⟩, (Equiv.refl _).toEmbedding, rfl, rfl, rfl⟩
   | succ n IH =>
-    obtain ⟨t₁, i, ht, hi₁, hi₂⟩ := IH (s ∘ Fin.castSucc) (fun _ ↦ h _)
+    obtain ⟨t₁, i, ht, hi₁, hi₂⟩ := IH (s ∘ Fin.castSucc) fun _ ↦ h _
     obtain ⟨t₂, h₁, m, h₂, ht₂⟩ :=
       exists_covBy_seq_of_wellFoundedLT_wellFoundedGT_of_le (h (.last _)).le
     let t₃ : RelSeries (α := α) (· ⋖ ·) := ⟨m, (t₂ ·), fun i ↦ by simpa using ht₂ i⟩
     have H : t₁.last = t₂ 0 := (congr(t₁ $hi₂.symm).trans (congr_fun ht _)).trans h₁.symm
     refine ⟨t₁.smash t₃ H, ⟨Fin.snoc (Fin.castLE (by simp) ∘ i) (.last _), ?_⟩, ?_, ?_, ?_⟩
-    · intro j k eq
-      dsimp [Fin.snoc] at eq
-      split_ifs at eq with H₁ H₂ H₃
-      · exact Fin.ext (congr_arg Fin.val (by simpa using eq) :)
-      · have : ↑(i (j.castLT H₁)) = t₁.length + t₃.length := by simpa using congr_arg Fin.val eq
-        obtain rfl : m = 0 := by simpa [t₃] using this.symm.trans_lt (i (j.castLT H₁)).2
+    · refine Fin.lastCases (Fin.lastCases (fun _ ↦ rfl) fun j eq ↦ ?_) fun j ↦ Fin.lastCases
+        (fun eq ↦ ?_) fun k eq ↦ Fin.ext (congr_arg Fin.val (by simpa using eq) :)
+      on_goal 2 => rw [eq_comm] at eq
+      all_goals
+        rw [Fin.snoc_castSucc] at eq
+        obtain rfl : m = 0 := by simpa [t₃] using (congr_arg Fin.val eq).trans_lt (i j).2
         cases (h (.last _)).ne' (h₂.symm.trans h₁)
-      · have : ↑(i (k.castLT H₃)) = t₁.length + t₃.length := by simpa using congr($(eq).1).symm
-        obtain rfl : m = 0 := by simpa [t₃] using this.symm.trans_lt (i (k.castLT H₃)).2
-        cases (h (.last _)).ne' (h₂.symm.trans h₁)
-      · have : (Fin.last (n + 1)) = j := Fin.ext ((le_of_not_lt H₁).antisymm (Nat.lt_succ.mp j.2))
-        have : (Fin.last (n + 1)) = k := Fin.ext ((le_of_not_lt H₃).antisymm (Nat.lt_succ.mp k.2))
-        rwa [← this, eq_comm]
-    · ext j
-      dsimp [Fin.snoc]
-      split_ifs with hj₁ hj₂ hj₃
-      · exact congr_fun ht ⟨j, hj₁⟩
-      · have := (le_of_not_lt hj₂).antisymm (Nat.lt_succ.mp (i (j.castLT hj₁)).2)
-        have hj₃ : j.castLT hj₁ = .last _ :=
-          i.2 (Fin.ext (this.symm.trans (congr_arg Fin.val hi₂.symm)))
-        simp_rw [← this, Nat.sub_self, t₃, ← H, RelSeries.last, ← hi₂, ← hj₃]
-        exact congr_fun ht ⟨j, hj₁⟩
-      · simp at hj₃
-      · have : (Fin.last (n + 1)) = j := Fin.ext ((le_of_not_lt hj₁).antisymm (Nat.lt_succ.mp j.2))
-        simp [t₃, h₂, this]
-    · ext
-      convert congr_arg Fin.val hi₁ using 1
-      simp [Fin.snoc]
-      rfl
-    · simp [Fin.snoc]
+    · refine funext (Fin.lastCases ?_ fun j ↦ ?_)
+      · convert h₂; simpa using RelSeries.last_smash ..
+      convert congr_fun ht j using 1
+      simp [RelSeries.smash_castLE]
+    all_goals simp [Fin.snoc, Fin.castPred_zero, hi₁]
 
 /--
 In ℕ, two entries in an `LTSeries` differ by at least the difference of their indices.

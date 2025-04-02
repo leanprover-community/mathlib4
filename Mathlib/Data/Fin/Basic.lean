@@ -726,6 +726,18 @@ def natAddEmb (n) {m} : Fin m ↪ Fin (n + m) where
   toFun := natAdd n
   inj' a b := by simp [Fin.ext_iff]
 
+theorem castSucc_castAdd (i : Fin n) : castSucc (castAdd m i) = castAdd (m + 1) i := rfl
+
+theorem castSucc_natAdd (i : Fin m) : castSucc (natAdd n i) = natAdd n (castSucc i) := rfl
+
+theorem succ_castAdd (i : Fin n) : succ (castAdd m i) =
+    if h : i.succ = last _ then natAdd n (0 : Fin (m + 1))
+      else castAdd (m + 1) ⟨i.1 + 1, lt_of_le_of_ne i.2 (Fin.val_ne_iff.mpr h)⟩ := by
+  split_ifs with h
+  exacts [Fin.ext (congr_arg Fin.val h :), rfl]
+
+theorem succ_natAdd (i : Fin m) : succ (natAdd n i) = natAdd n (succ i) := rfl
+
 end Succ
 
 section Pred
