@@ -137,9 +137,13 @@ open scoped Manifold Topology ContDiff
 /-! ### Models with corners. -/
 
 /-- A normed space over an `RCLike` field is also a real normed space. -/
-instance (𝕜 E : Type*) [NontriviallyNormedField 𝕜] [RCLike 𝕜]
+instance foo (𝕜 E : Type*) [NontriviallyNormedField 𝕜] [RCLike 𝕜]
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : NormedSpace ℝ E := by
   sorry
+
+instance (𝕜 : Type*) [NontriviallyNormedField 𝕜] [RCLike 𝕜]
+    (E : Type*) [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SMul ℝ E := by
+  infer_instance
 
 /-- A structure containing information on the way a space `H` embeds in a
 model vector space `E` over the field `𝕜`. This is all what is needed to
@@ -169,6 +173,26 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
     letI := IsRCLikeNormedField.rclike 𝕜; Convex ℝ (interior (range toPartialEquiv))
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
+
+/-- If a model with corners has full range, all three technical conditions are satisfied. -/
+def ModelWithCorners.of_range_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+    {E : Type*} [NormedAddCommGroup E] [inst: NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
+    {φ : PartialEquiv H E} (hsource : φ.source = univ) (htarget : φ.target = univ)
+    (hcont : Continuous φ) (hcont_inv: Continuous φ.symm) : ModelWithCorners 𝕜 E H where
+  toPartialEquiv := φ
+  source_eq := hsource
+  uniqueDiffOn' := by rw [htarget]; exact uniqueDiffOn_univ
+  target_subset_closure_interior := by simp [htarget]
+  convex_interior_range := by
+    intro h
+    -- Should this be a separate lemma?
+    have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
+    simp [htarget, this]
+    have : NormedSpace ℝ E := by
+      have := h.rclike
+      have : NormedSpace 𝕜 E := by convert inst; sorry -- diamond here?
+      exact foo 𝕜 E
+    exact convex_univ
 
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
