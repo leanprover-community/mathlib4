@@ -14,17 +14,22 @@ In this file we introduce typeclasses and definitions for lattice operations.
 
 ## Main definitions
 
-* the `⊔` notation is used for `Max` since November 2024
-* the `⊓` notation is used for `Min` since November 2024
 * `HasCompl`: type class for the `ᶜ` notation
 * `Top`: type class for the `⊤` notation
 * `Bot`: type class for the `⊥` notation
 
 ## Notations
 
-* `x ⊔ y`: lattice join operation;
-* `x ⊓ y`: lattice meet operation;
 * `xᶜ`: complement in a lattice;
+* `x ⊔ y`: supremum/join, which is notation for `max x y`;
+* `x ⊓ y`: infimum/meet, which is notation for `min x y`;
+
+We implement a delaborator that pretty prints `max x y`/`min x y` as `x ⊔ y`/`x ⊓ y`
+if and only if the order on `α` does not have a `LinearOrder α` instance (where `x y : α`).
+
+This is so that in a lattice we can use the same underlying constants `max`/`min`
+as in linear orders, while using the more iniomatic notation `x ⊔ y`/`x ⊓ y`.
+Lemmas about the operators `⊔` and `⊓` should use the names `sup` and `inf` respectively.
 
 -/
 
@@ -56,14 +61,14 @@ class Inf (α : Type*) where
 attribute [ext] Min Max
 
 /--
-Least upper bound (`\lub` notation). `x ⊔ y` is the same as `max x y`
-and it is preferred when the type of `x` and `y` is not a linear order.
+The supremum/join operation: `x ⊔ y`. It is notation for `max x y`
+when the type is not a linear order.
 -/
 syntax:68 term:68 " ⊔ " term:69 : term
 
 /--
-Greatest lower bound (`\glb` notation). `x ⊓ y` is the same as `min x y`
-and it is preferred when the type of `x` and `y` is not a linear order.
+The infimum/meet operation: `x ⊓ y`. It is notation for `min x y`
+when the type is not a linear order.
 -/
 syntax:69 term:69 " ⊓ " term:70 : term
 
