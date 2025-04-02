@@ -863,12 +863,12 @@ instance (priority := 100) IsHaarMeasure.noAtoms [IsTopologicalGroup G] [BorelSp
     exact absurd (K_inf.meas_eq_top ⟨_, h, fun x _ ↦ (haar_singleton _ _).ge⟩)
       K_compact.measure_lt_top.ne
 
-instance {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [MeasurableSpace A]
+instance IsAddHaarMeasure.domSMul {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A]
     -- We only need `MeasurableConstSMul G A` but we don't have this class. So we erroneously must
     -- assume `MeasurableSpace G` + `MeasurableSMul G A`
-    [MeasurableSpace G] [MeasurableSMul G A] [TopologicalSpace A] [BorelSpace A]
-    [IsTopologicalAddGroup A] [LocallyCompactSpace A] [ContinuousConstSMul G A] {μ : Measure A}
-    [μ.IsAddHaarMeasure] (g : Gᵈᵐᵃ) : (g • μ).IsAddHaarMeasure :=
+    [MeasurableSpace A] [MeasurableSpace G] [MeasurableSMul G A] [TopologicalSpace A] [BorelSpace A]
+    [IsTopologicalAddGroup A] [ContinuousConstSMul G A] {μ : Measure A} [μ.IsAddHaarMeasure]
+    (g : Gᵈᵐᵃ) : (g • μ).IsAddHaarMeasure :=
   (DistribMulAction.toAddEquiv _ (DomMulAct.mk.symm g⁻¹)).isAddHaarMeasure_map _
     (continuous_const_smul _) (continuous_const_smul _)
 
