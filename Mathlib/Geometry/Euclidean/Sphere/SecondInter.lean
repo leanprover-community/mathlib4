@@ -87,6 +87,10 @@ theorem Sphere.eq_or_eq_secondInter_iff_mem_of_mem_shift_span_singleton {s : Sph
     rw [← hp, dist_smul_vadd_eq_dist _ _ hv] at h
     rcases h with (h | h) <;> simp [h]
 
+@[deprecated (since := "2025-04-02")]
+alias Sphere.eq_or_eq_secondInter_of_mem_mk'_span_singleton_iff_mem :=
+  Sphere.eq_or_eq_secondInter_iff_mem_of_mem_shift_span_singleton
+
 /-- `secondInter` is unchanged by multiplying the vector by a nonzero real. -/
 @[simp]
 theorem Sphere.secondInter_smul (s : Sphere P) (p : P) (v : V) {r : ℝ} (hr : r ≠ 0) :

@@ -354,6 +354,8 @@ def shift (p : P) (s : Submodule k V) : AffineSubspace k P where
     simpa [vadd_vsub_assoc] using
       add_mem (s.smul_mem c (s.sub_mem hp₁ hp₂)) hp₃
 
+@[deprecated (since := "2025-04-02")] alias mk' := shift
+
 variable (p q : P) (s : Submodule k V)
 
 /--
@@ -363,9 +365,14 @@ if the difference with that point is in that linear subspace.
 @[simp] theorem mem_shift : q ∈ s.shift p ↔ q -ᵥ p ∈ s :=
   Iff.rfl
 
+@[deprecated (since := "2025-04-02")] alias mem_mk' := mem_shift
+@[deprecated (since := "2025-04-02")] alias mem_mk'_iff_vsub_mem := mem_shift
+
 /-- The shift of a linear subspace to a point contains that point. -/
 theorem self_mem_shift : p ∈ s.shift p := by
   simp
+
+@[deprecated (since := "2025-04-02")] alias self_mem_mk' := self_mem_shift
 
 /--
 The shift of a linear subspace to a point contains the result of adding a
@@ -374,9 +381,13 @@ vector in that linear subspace to that point.
 theorem vadd_mem_shift {v : V} {s : Submodule k V} (hv : v ∈ s) : v +ᵥ p ∈ s.shift p := by
   simpa
 
+@[deprecated (since := "2025-04-02")] alias vadd_mem_mk' := vadd_mem_shift
+
 /-- The shift of a linear subspace to a point is nonempty. -/
 theorem shift_nonempty : (s.shift p : Set P).Nonempty :=
   ⟨p, s.self_mem_shift p⟩
+
+@[deprecated (since := "2025-04-02")] alias mk'_nonempty := shift_nonempty
 
 instance : Nonempty (s.shift p) := (s.shift_nonempty p).to_subtype
 
@@ -390,6 +401,8 @@ theorem direction_shift : (s.shift p).direction = s := by
     simpa using s.sub_mem hp₁ hp₂
   · exact fun hv => ⟨v +ᵥ p, vadd_mem_shift _ hv, p, self_mem_shift _ _, (vadd_vsub _ _).symm⟩
 
+@[deprecated (since := "2025-04-02")] alias direction_mk' := direction_shift
+
 /--
 The shift of the direction of an affine subspace to a point in that affine subspace is
 the same affine subspace.
@@ -398,6 +411,8 @@ the same affine subspace.
     s.direction.shift p = s :=
   AffineSubspace.ext_of_direction_eq (s.direction.direction_shift p)
     ⟨p, Set.mem_inter (self_mem_shift _ _) hp⟩
+
+@[deprecated (since := "2025-04-02")] alias mk'_eq := shift_direction_eq_self
 
 end Submodule
 
@@ -611,6 +626,8 @@ theorem mem_top (p : P) : p ∈ (⊤ : AffineSubspace k P) :=
 @[simp] theorem _root_.Submodule.shift_top (p : P) : (⊤ : Submodule k V).shift p = ⊤ := by
   ext x
   simp
+
+@[deprecated (since := "2025-04-02")] alias mk'_top := _root_.Submodule.shift_top
 
 variable (P)
 
