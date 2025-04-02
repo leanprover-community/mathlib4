@@ -55,7 +55,7 @@ and a unique non-unital `R`-algebra homomorphism
 A typical element of `FreeNonUnitalNonAssocAlgebra R α` is an `R`-linear combination of
 formal products of elements of `α`.
 For example if `x` and `y` are terms of type `α` and
-`a`, `b` are terms of type `R` then `3*a*a*(x*(y*x)) + 2*b*y*x + y*x` is a
+`a`, `b` are terms of type `R` then `(3*a*a)•(x*(y*x)) + (2*b + 1)•(y*x)` is a
 "typical" element of `FreeNonUnitalNonAssocAlgebra R α`.
 -/
 

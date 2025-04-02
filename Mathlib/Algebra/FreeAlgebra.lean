@@ -150,7 +150,7 @@ then this function is the composite of `FreeAlgebra.ι R` and a unique `R`-algeb
 A typical element of `FreeAlgebra R α` is an `R`-linear combination of
 formal products of elements of `α`.
 For example if `x` and `y` are terms of type `α` and
-`a`, `b` are terms of type `R` then `3*a*a*x*y*x + 2*b*y*x + y*x + a*b*b + 3` is a
+`a`, `b` are terms of type `R` then `(3*a*a)•(x*y*x) + (2*b + 1)•(y*x) + a*b*b + 3` is a
 "typical" element of `FreeAlgebra R α`. In particular if `α` is empty
 then `FreeAlgebra R α` is isomorphic to `R`, and if `α` has one term `t`
 then `FreeAlgebra R α` is isomorphic to the polynomial ring `R[t]`.
