@@ -139,46 +139,59 @@ lemma span_root_image_eq_top_of_forall_orthogonal [Invertible (2 : R)] (s : Set 
   apply IsIrreducible.eq_top_of_invtSubmodule_reflection _ hq
   simpa using ⟨hne.choose, hne.choose_spec, P.ne_zero _⟩
 
-lemma jjj {K : Type*} [Field K] [Module K M] [Module K N]
+lemma l1 {K : Type*} [Field K] [Module K M] [Module K N]
     (P : RootPairing ι K M N) (q : Submodule K M) (i : ι)
       (hq : q ∈ invtSubmodule (P.reflection i)) :
-        P.root i ∈ q ∨ ∀ (v : q), (P.coroot' i) v = 0 := by
+        P.root i ∈ q ∨ q ≤ LinearMap.ker (P.coroot' i) := by
   by_cases h₀ : P.root i ∈ q
   · simp_all only [PerfectPairing.flip_apply_apply, Subtype.forall, true_or]
   right
   intro v
+  intro v1
   by_cases h₁ : v = 0
   · subst h₁
-    simp_all only [ZeroMemClass.coe_zero, PerfectPairing.flip_apply_apply, map_zero, LinearMap.zero_apply]
-  simp_all only [ZeroMemClass.coe_zero, PerfectPairing.flip_apply_apply, map_zero, LinearMap.zero_apply]
+    simp_all only [Submodule.zero_mem]
+  simp_all
   have ttt : ((P.reflection i) v) ∈ q := by
     have xxx := (Module.End.mem_invtSubmodule (R := K) (M := M) (P.reflection i) (p := q)).1 hq
     simp at xxx
-    obtain ⟨val, property⟩ := v
-    simp_all only [Submodule.mk_eq_zero]
-    exact xxx property
+    exact xxx v1
   have x := (P.reflection_apply i) v
   rw [x] at ttt
-  obtain ⟨aa, bb⟩ := v
   simp_all
-  have rrr : (P.coroot' i) aa • P.root i ∈ q := by
-    have h3 : - (aa - (P.coroot' i) aa • P.root i) ∈ q := Submodule.neg_mem q ttt
-    have h4 : (P.coroot' i) aa • P.root i - aa ∈ q := by rwa [neg_sub] at h3
-    have h5 : ((P.coroot' i) aa • P.root i - aa) + aa ∈ q := Submodule.add_mem q h4 bb
+  have rrr : (P.coroot' i) v • P.root i ∈ q := by
+    have h3 : - (v - (P.coroot' i) v • P.root i) ∈ q := Submodule.neg_mem q ttt
+    have h4 : (P.coroot' i) v • P.root i - v ∈ q := by rwa [neg_sub] at h3
+    have h5 : ((P.coroot' i) v • P.root i - v) + v ∈ q := Submodule.add_mem q h4 v1
     simp at h5
     simp
     exact h5
   simp at rrr
   by_contra h_ne_zero
-  have : IsUnit ((P.coroot' i) aa) := by
+  have : IsUnit ((P.coroot' i) v) := by
     simp_all only [ne_eq, PerfectPairing.flip_apply_apply, isUnit_iff_ne_zero, not_false_eq_true]
-  have a_inv : ((P.coroot' i) aa)⁻¹ * ((P.coroot' i) aa) = 1 := by
+  have a_inv : ((P.coroot' i) v)⁻¹ * ((P.coroot' i) v) = 1 := by
     simp_all only [ne_eq, PerfectPairing.flip_apply_apply, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel]
   have : P.root i ∈ q := by
-    have := Submodule.smul_mem (M := M) q (((P.coroot' i) aa)⁻¹) rrr
+    have := Submodule.smul_mem (M := M) q (((P.coroot' i) v)⁻¹) rrr
     simp at this
     simp_all only [ne_eq, PerfectPairing.flip_apply_apply, isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel,
       inv_smul_smul₀]
   contradiction
+
+lemma l2 {K : Type*} [Field K] [Module K M] [Module K N]
+    (P : RootPairing ι K M N) (q : Submodule K M) (ha : ∀ i, q ∈ invtSubmodule (P.reflection i)):
+      ∃ (Φ : Set ι), (∀ i ∈ Φ, P.root i ∈ q) ∧ (∀ i ∉ Φ, q ≤ LinearMap.ker (P.coroot' i)) := by
+  let Φ := {i | P.root i ∈ q}
+  use Φ
+  constructor
+  · intro i hi
+    exact hi
+  · intro i hi
+    cases l1 P q i (ha i) with
+    | inl h_root_in_q =>
+      contradiction
+    | inr h_kernel =>
+      exact h_kernel
 
 end RootPairing
