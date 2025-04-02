@@ -425,14 +425,24 @@ theorem LinearMap.map_finsupp_linearCombination (f : M →ₗ[R] N) {ι : Type*}
     (l : ι →₀ R) : f (linearCombination R g l) = linearCombination R (f ∘ g) l :=
   apply_linearCombination _ _ _ _
 
-theorem Submodule.mem_span_finset {s : Finset M} {x : M} :
-    x ∈ span R (↑s : Set M) ↔ ∃ f : M → R, ∑ i ∈ s, f i • i = x :=
-  ⟨fun hx =>
-    let ⟨v, hvs, hvx⟩ :=
-      (Finsupp.mem_span_image_iff_linearCombination _).1
-        (show x ∈ span R (_root_.id '' (↑s : Set M)) by rwa [Set.image_id])
-    ⟨v, hvx ▸ (linearCombination_apply_of_mem_supported _ hvs).symm⟩,
-    fun ⟨_, hf⟩ => hf ▸ sum_mem fun _ hi => smul_mem _ _ <| subset_span hi⟩
+lemma Submodule.mem_span_iff_exists_finset_subset {s : Set M} {x : M} :
+    x ∈ span R s ↔
+      ∃ (f : M → R) (t : Finset M), ↑t ⊆ s ∧ f.support ⊆ t ∧ ∑ a ∈ t, f a • a = x where
+  mp := by
+    rw [← s.image_id, mem_span_image_iff_linearCombination]
+    rintro ⟨l, hl, rfl⟩
+    exact ⟨l, l.support, by simpa [linearCombination, Finsupp.sum] using hl⟩
+  mpr := by
+    rintro ⟨n, t, hts, -, rfl⟩; exact sum_mem fun x hx ↦ smul_mem _ _ <| subset_span <| hts hx
+
+lemma Submodule.mem_span_finset {s : Finset M} {x : M} :
+    x ∈ span R s ↔ ∃ f : M → R, f.support ⊆ s ∧ ∑ a ∈ s, f a • a = x where
+  mp := by
+    rw [mem_span_iff_exists_finset_subset]
+    rintro ⟨f, t, hts, hf, rfl⟩
+    refine ⟨f, hf.trans hts, .symm <| Finset.sum_subset hts ?_⟩
+    simp +contextual [Function.support_subset_iff'.1 hf]
+  mpr := by rintro ⟨f, -, rfl⟩; exact sum_mem fun x hx ↦ smul_mem _ _ <| subset_span <| hx
 
 /-- An element `m ∈ M` is contained in the `R`-submodule spanned by a set `s ⊆ M`, if and only if
 `m` can be written as a finite `R`-linear combination of elements of `s`.

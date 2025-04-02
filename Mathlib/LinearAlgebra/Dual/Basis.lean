@@ -16,7 +16,7 @@ This file concerns bases on dual vector spaces.
 
 * Bases:
   * `Basis.toDual` produces the map `M →ₗ[R] Dual R M` associated to a basis for an `R`-module `M`.
-  * `Basis.toDual_equiv` is the equivalence `M ≃ₗ[R] Dual R M` associated to a finite basis.
+  * `Basis.toDualEquiv` is the equivalence `M ≃ₗ[R] Dual R M` associated to a finite basis.
   * `Basis.dualBasis` is a basis for `Dual R M` given a finite basis for `M`.
   * `Module.DualBases e ε` is the proposition that the families `e` of vectors and `ε` of dual
     vectors have the characteristic properties of a basis and a dual.

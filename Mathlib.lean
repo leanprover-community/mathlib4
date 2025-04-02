@@ -193,7 +193,7 @@ import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.CharP.CharAndCard
 import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.CharP.ExpChar
+import Mathlib.Algebra.CharP.Frobenius
 import Mathlib.Algebra.CharP.IntermediateField
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.CharP.Lemmas
@@ -271,6 +271,7 @@ import Mathlib.Algebra.FreeAlgebra.Cardinality
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.FreeMonoid.Count
 import Mathlib.Algebra.FreeMonoid.Symbols
+import Mathlib.Algebra.FreeMonoid.UniqueProds
 import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.GCDMonoid.Finset
@@ -1531,7 +1532,7 @@ import Mathlib.Analysis.MellinInversion
 import Mathlib.Analysis.MellinTransform
 import Mathlib.Analysis.Meromorphic.Basic
 import Mathlib.Analysis.Meromorphic.Divisor
-import Mathlib.Analysis.Meromorphic.NormalFormAt
+import Mathlib.Analysis.Meromorphic.NormalForm
 import Mathlib.Analysis.Meromorphic.Order
 import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.Normed.Affine.AddTorsorBases
@@ -2460,6 +2461,7 @@ import Mathlib.CategoryTheory.Subpresheaf.Subobject
 import Mathlib.CategoryTheory.Subterminal
 import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
+import Mathlib.CategoryTheory.Sums.Products
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Topos.Classifier
 import Mathlib.CategoryTheory.Triangulated.Adjunction
@@ -4402,7 +4404,7 @@ import Mathlib.NumberTheory.SmoothNumbers
 import Mathlib.NumberTheory.SumFourSquares
 import Mathlib.NumberTheory.SumPrimeReciprocals
 import Mathlib.NumberTheory.SumTwoSquares
-import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AnalyticalPart
+import Mathlib.NumberTheory.Transcendental.Lindemann.AnalyticalPart
 import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
 import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
@@ -4586,6 +4588,7 @@ import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Order.Interval.Set.InitialSeg
 import Mathlib.Order.Interval.Set.IsoIoo
 import Mathlib.Order.Interval.Set.Limit
+import Mathlib.Order.Interval.Set.LinearOrder
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.OrdConnectedComponent
@@ -5053,6 +5056,7 @@ import Mathlib.RingTheory.MvPowerSeries.LinearTopology
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.MvPowerSeries.Order
 import Mathlib.RingTheory.MvPowerSeries.PiTopology
+import Mathlib.RingTheory.MvPowerSeries.Substitution
 import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.Nilpotent.Basic
@@ -5175,6 +5179,7 @@ import Mathlib.RingTheory.Spectrum.Maximal.Defs
 import Mathlib.RingTheory.Spectrum.Maximal.Localization
 import Mathlib.RingTheory.Spectrum.Maximal.Topology
 import Mathlib.RingTheory.Spectrum.Prime.Basic
+import Mathlib.RingTheory.Spectrum.Prime.Chevalley
 import Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity
 import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
 import Mathlib.RingTheory.Spectrum.Prime.Defs

@@ -5,6 +5,7 @@ Authors: Kim Morrison, Adam Topaz, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+import Mathlib.Algebra.FreeMonoid.UniqueProds
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 

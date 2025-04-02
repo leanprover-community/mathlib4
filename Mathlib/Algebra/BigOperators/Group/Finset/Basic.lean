@@ -152,7 +152,7 @@ theorem prod_filter_mul_prod_filter_not
 @[to_additive]
 lemma prod_filter_not_mul_prod_filter (s : Finset α) (p : α → Prop) [DecidablePred p]
     [∀ x, Decidable (¬p x)] (f : α → β) :
-    (∏ x ∈ s.filter fun x ↦ ¬p x, f x) * ∏ x ∈ s.filter p, f x = ∏ x ∈ s, f x := by
+    (∏ x ∈ s with ¬p x, f x) * ∏ x ∈ s with p x, f x = ∏ x ∈ s, f x := by
   rw [mul_comm, prod_filter_mul_prod_filter_not]
 
 @[to_additive]
@@ -1283,13 +1283,13 @@ variable {α β ι : Type*} [DecidableEq α]
 @[to_additive]
 lemma prod_filter_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α → β} {n : ι} {I : Finset ι}
     (hn : n ∈ I) (hf : (I : Set ι).Pairwise fun i j ↦ f i = f j → g (f i) = 1) :
-    ∏ j ∈ filter (fun j ↦ f j = f n) I, g (f j) = g (f n) := by
+    ∏ j ∈ I with f j = f n, g (f j) = g (f n) := by
   classical
-  have h j (hj : j ∈ (filter (fun i ↦ f i = f n) I).erase n) : g (f j) = 1 := by
+  have h j (hj : j ∈ {i ∈ I | f i = f n}.erase n) : g (f j) = 1 := by
     simp only [mem_erase, mem_filter] at hj
     exact hf hj.2.1 hn hj.1 hj.2.2
   rw [← mul_one (g (f n)), ← prod_eq_one h,
-    ← mul_prod_erase (filter (f · = f n) I) (fun i ↦ g (f i)) <| mem_filter.mpr ⟨hn, by rfl⟩]
+    ← mul_prod_erase {i ∈ I | f i = f n} (fun i ↦ g (f i)) <| mem_filter.mpr ⟨hn, by rfl⟩]
 
 /-- A version of `Finset.prod_map` and `Finset.prod_image`, but we do not assume that `f` is
 injective. Rather, we assume that the image of `f` on `I` only overlaps where `g (f i) = 1`.
