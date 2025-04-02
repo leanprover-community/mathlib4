@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Order.Filter.SmallSets
-import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.UniformSpace.Defs
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Basic results on uniform spaces
@@ -696,6 +696,11 @@ theorem entourageProd_mem_uniformity [t₁ : UniformSpace α] [t₂ : UniformSpa
 theorem ball_entourageProd (u : Set (α × α)) (v : Set (β × β)) (x : α × β) :
     ball x (entourageProd u v) = ball x.1 u ×ˢ ball x.2 v := by
   ext p; simp only [ball, entourageProd, Set.mem_setOf_eq, Set.mem_prod, Set.mem_preimage]
+
+lemma IsSymmetricRel.entourageProd {u : Set (α × α)} {v : Set (β × β)}
+    (hu : IsSymmetricRel u) (hv : IsSymmetricRel v) :
+    IsSymmetricRel (entourageProd u v) :=
+  Set.ext fun _ ↦ and_congr hu.mk_mem_comm hv.mk_mem_comm
 
 theorem Filter.HasBasis.uniformity_prod {ιa ιb : Type*} [UniformSpace α] [UniformSpace β]
     {pa : ιa → Prop} {pb : ιb → Prop} {sa : ιa → Set (α × α)} {sb : ιb → Set (β × β)}
