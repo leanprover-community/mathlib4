@@ -30,7 +30,7 @@ the following universal property: if `M` is any monoid, and `f : α → M` is an
 then this function is the composite of `FreeMonoid.of` and a unique monoid homomorphism
 `FreeMonoid.lift f : FreeMonoid α →* M`.
 
-A typical element of `FreeAddMonoid α` is a formal product of elements of `α`.
+A typical element of `FreeMonoid α` is a formal product of elements of `α`.
 For example if `x` and `y` are terms of type `α` then `x*y*y*x` is a
 "typical" element of `FreeMonoid α`. In particular if `α` is empty
 then `FreeMonoid α` is isomorphic to the trivial monoid, and if `α` has one term
