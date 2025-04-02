@@ -283,7 +283,7 @@ lemma isDiscreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
   -- We prove that it is not a field inline later.
   have hl : IsLocalRing 𝒪[K] := inferInstance
   obtain ⟨x, hx, hx'⟩ := exists_nnnorm_lt K
-  rw [← nnnorm_one (α := K)] at hx'
+  rw [← nnnorm_one (G := K)] at hx'
   have key : IsPrincipalIdealRing 𝒪[K] :=
     isPrincipalIdealRing_of_compactSpace (NormedField.exists_norm_lt_one K)
   exact {
