@@ -55,7 +55,7 @@ assert_not_exists Field TwoSidedIdeal
 open Function
 
 namespace SimpleGraph
-variable {V W : Type*} {G G' : SimpleGraph V} {M M' : Subgraph G} {v w : V}
+variable {V W : Type*} {G G' : SimpleGraph V} {M M' : Subgraph G} {u v w : V}
 
 namespace Subgraph
 
@@ -92,15 +92,17 @@ lemma IsMatching.map_ofLE (h : M.IsMatching) (hGG' : G ≤ G') :
   use w
   simpa using hv' ▸ hw
 
-lemma IsMatching.not_adj_left_of_ne {M : Subgraph G} {u v w : V} (hM : M.IsMatching) (huv : v ≠ w)
-    (hadj : M.Adj u v) : ¬M.Adj u w := by
-  intro hadj'
-  obtain ⟨x, hx⟩ := hM (M.edge_vert hadj)
-  exact huv (hx.2 _ hadj ▸ (hx.2 _ hadj').symm)
+lemma IsMatching.eq_of_adj_left (hM : M.IsMatching) (huv : M.Adj u v) (huw : M.Adj u w) : v = w :=
+  (hM <| M.edge_vert huv).unique huv huw
 
-lemma IsMatching.not_adj_right_of_ne {M : Subgraph G} {u v w : V} (hM : M.IsMatching) (huw : u ≠ w)
-    (hadj : M.Adj u v) : ¬M.Adj w v  :=
-  fun hadj' ↦ hM.not_adj_left_of_ne huw hadj.symm hadj'.symm
+lemma IsMatching.eq_of_adj_right (hM : M.IsMatching) (huw : M.Adj u w) (hvw : M.Adj v w) : u = v :=
+  hM.eq_of_adj_left huw.symm hvw.symm
+
+lemma IsMatching.not_adj_left_of_ne (hM : M.IsMatching) (hvw : v ≠ w) (huv : M.Adj u v) :
+    ¬M.Adj u w := fun huw ↦ hvw <| hM.eq_of_adj_left huv huw
+
+lemma IsMatching.not_adj_right_of_ne (hM : M.IsMatching) (huv : u ≠ v) (huw : M.Adj u w) :
+    ¬M.Adj v w := fun hvw ↦ huv <| hM.eq_of_adj_right huw hvw
 
 lemma IsMatching.sup (hM : M.IsMatching) (hM' : M'.IsMatching)
     (hd : Disjoint M.support M'.support) : (M ⊔ M').IsMatching := by

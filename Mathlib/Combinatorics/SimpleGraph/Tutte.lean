@@ -110,15 +110,11 @@ theorem IsTutteViolator.empty (hodd : Odd (Fintype.card V)) : G.IsTutteViolator 
 lemma not_isTutteViolator_of_isPerfectMatching {M : Subgraph G} (hM : M.IsPerfectMatching)
     (u : Set V) :
     ¬G.IsTutteViolator u := by
-  simpa [IsTutteViolator, Set.Nat.card_coe_set_eq] using Finite.card_le_of_injective
-      (fun c => ⟨(ConnectedComponent.odd_matches_node_outside hM c).choose,
-        (ConnectedComponent.odd_matches_node_outside hM c).choose_spec.1⟩) (by
-    intro x y hxy
-    obtain ⟨v, hv⟩ := (ConnectedComponent.odd_matches_node_outside hM x).choose_spec.2
-    obtain ⟨w, hw⟩ := (ConnectedComponent.odd_matches_node_outside hM y).choose_spec.2
-    obtain ⟨v', hv'⟩ := Iff.mp (M.isPerfectMatching_iff) hM _
-    rw [Subtype.mk_eq_mk.mp hxy,
-      (Subtype.val_injective (hv'.2 _ hw.1.symm ▸ hv'.2 _ hv.1.symm) : v = w)] at hv
-    exact Subtype.mk_eq_mk.mpr <| ConnectedComponent.eq_of_common_vertex hv.2 hw.2)
+  choose f hf g hgf hg using ConnectedComponent.odd_matches_node_outside hM (u := u)
+  have hfinj : f.Injective := fun c d hcd ↦ by
+    replace hcd : g c = g d := Subtype.val_injective <| hM.1.eq_of_adj_right (hgf c) (hcd ▸ hgf d)
+    exact Subtype.val_injective <| ConnectedComponent.eq_of_common_vertex (hg c) (hcd ▸ hg d)
+  simpa [IsTutteViolator] using 
+    Finite.card_le_of_injective (fun c ↦ ⟨f c, hf c⟩) (fun c d ↦ by simp [hfinj.eq_iff])
 
 end SimpleGraph
