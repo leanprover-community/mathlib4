@@ -116,7 +116,9 @@ noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder 
 -- See note [reducible non-instances]
 /-- A finite bounded linear order is complete.
 
-⚠ This has bad defeqs for the boolean algebra operators. Use carefully. -/
+If the `α` is already a `BiheytingAlgebra`, then prefer to constrct this instance manually using
+`Fintype.toCompleteLattice` instead, to avoid creating a diamond with
+`LinearOrder.toBiheytingAlgebra`. -/
 noncomputable abbrev toCompleteLinearOrder
     [LinearOrder α] [BoundedOrder α] : CompleteLinearOrder α :=
   { toCompleteLattice α, ‹LinearOrder α›, LinearOrder.toBiheytingAlgebra with }
@@ -200,9 +202,9 @@ noncomputable instance Bool.completeBooleanAlgebra : CompleteBooleanAlgebra Bool
   Fintype.toCompleteBooleanAlgebra _
 
 noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool where
-  -- We provide `BiheytingAlgebra Bool` explicitly to avoid a diamond with the Heyting operators
+  __ := Fintype.toCompleteLattice _
   __ : BiheytingAlgebra Bool := inferInstance
-  __ := Fintype.toCompleteLinearOrder _
+  __ : LinearOrder Bool := inferInstance
 
 noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Bool :=
   Fintype.toCompleteAtomicBooleanAlgebra _
