@@ -106,4 +106,36 @@ theorem atMin_eq_atBot [Preorder α] [IsDirected α (· ≥ ·)] : (atMin : Filt
   obtain ⟨z, hzx, hzy⟩ := exists_le_le x y
   exact ⟨z, hzx, fun u huz => hy u (huz.trans hzy)⟩
 
+theorem pure_le_atMax [Preorder α] (x : α) : pure x ≤ atMax ↔ IsMax x := by
+  constructor
+  · intro h
+    by_contra hx
+    rw [not_isMax_iff] at hx
+    obtain ⟨y, hxy⟩ := hx
+    suffices hy : (Iio y)ᶜ ∈ atMax from h hy hxy
+    intro z
+    by_cases hzy : z ≤ y
+    · exact ⟨y, hzy, fun u hyu huy => huy.not_le hyu⟩
+    · exact ⟨z, le_rfl, fun u hzu huy => hzy (hzu.trans huy.le)⟩
+  · intro hx s hs
+    rw [mem_atMax] at hs
+    obtain ⟨y, hxy, hy⟩ := hs x
+    exact hy (hx hxy)
+
+theorem pure_le_atMin [Preorder α] (x : α) : pure x ≤ atMin ↔ IsMin x := by
+  constructor
+  · intro h
+    by_contra hx
+    rw [not_isMin_iff] at hx
+    obtain ⟨y, hxy⟩ := hx
+    suffices hy : (Ioi y)ᶜ ∈ atMin from h hy hxy
+    intro z
+    by_cases hyz : y ≤ z
+    · exact ⟨y, hyz, fun u huy hyu => hyu.not_le huy⟩
+    · exact ⟨z, le_rfl, fun u huz hyu => hyz (hyu.le.trans huz)⟩
+  · intro hx s hs
+    rw [mem_atMin] at hs
+    obtain ⟨y, hyx, hy⟩ := hs x
+    exact hy (hx hyx)
+
 end Filter
