@@ -23,7 +23,7 @@ open scoped Uniformity Function
 
 namespace ContinuousMap
 
-variable {X Y V : Type*}
+variable {X V : Type*}
   [TopologicalSpace X] [TotallyDisconnectedSpace X] [T2Space X] [CompactSpace X]
   [UniformSpace V] (f : C(X, V)) {S : Set (V × V)}
 
@@ -85,12 +85,16 @@ lemma exists_sum_const_mulIndicator_approx [CommMonoid V] (hS : S ∈ 𝓤 V) :
   exact (Fintype.prod_eq_single _ fun i hi ↦ mulIndicator_of_not_mem hi.symm _).trans
     (mulIndicator_of_mem rfl _)
 
+/-!
+## Functions on product spaces
+-/
+section product
 variable {R Y : Type*} [TopologicalSpace Y] [CompactSpace Y]
-  [TopologicalSpace R] [MonoidWithZero R]
+  [AddCommGroup V] [IsUniformAddGroup V]
 
 /-- A continuous function on `X × Y` can be uniformly approximated by sums of functions of the
 form `f x • g y`. -/
-lemma exists_sum_smul_approx [AddCommGroup V] [IsUniformAddGroup V] [MulActionWithZero R V]
+lemma exists_sum_smul_approx [TopologicalSpace R] [MonoidWithZero R] [MulActionWithZero R V]
     (f : C(X × Y, V)) (hS : S ∈ 𝓤 V) :
     ∃ (n : ℕ) (g : Fin n → C(X, R)) (h : Fin n → C(Y, V)),
     ∀ x y, (f (x, y), ∑ i, g i x • h i y) ∈ S := by
@@ -107,9 +111,12 @@ lemma exists_sum_smul_approx [AddCommGroup V] [IsUniformAddGroup V] [MulActionWi
 
 /-- A continuous function on `X × Y` can be uniformly approximated by sums of functions of the form
 `f x * g y`. -/
-lemma exists_sum_mul_approx (f : C(X × Y, V)) (hS : S ∈ 𝓤 V) [Ring V] [IsUniformAddGroup V]:
-    ∃ (n : ℕ) (g : Fin n → C(X, V)) (h : Fin n → C(Y, V)),
+lemma exists_sum_mul_approx [Ring R] [UniformSpace R] [IsUniformAddGroup R]
+    (f : C(X × Y, R)) {S : Set (R × R)} (hS : S ∈ 𝓤 R) :
+    ∃ (n : ℕ) (g : Fin n → C(X, R)) (h : Fin n → C(Y, R)),
     ∀ x y, (f (x, y), ∑ i, g i x * h i y) ∈ S :=
   exists_sum_smul_approx f hS
+
+end product
 
 end ContinuousMap
