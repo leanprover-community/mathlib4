@@ -15,7 +15,7 @@ Order isomorphisms act on flags.
 
 open scoped Pointwise
 
-variable {𝕆 α : Type*}
+variable {α : Type*}
 
 namespace Flag
 variable [Preorder α]
