@@ -224,14 +224,12 @@ variable (f : ∀ i, M i →+ N i)
 
 lemma mker_map :
     AddMonoidHom.mker (map f) =
-      (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mker (f i))).comap
-        (DirectSum.coeFnAddMonoidHom M) :=
+      (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mker (f i))).comap (coeFnAddMonoidHom M) :=
   DFinsupp.mker_mapRangeAddMonoidHom f
 
 lemma mrange_map :
     AddMonoidHom.mrange (map f) =
-      (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mrange (f i))).comap
-        (DirectSum.coeFnAddMonoidHom N) :=
+      (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mrange (f i))).comap (coeFnAddMonoidHom N) :=
   DFinsupp.mrange_mapRangeAddMonoidHom f
 
 end
