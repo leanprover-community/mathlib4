@@ -579,47 +579,44 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
     simpa [pow_eq_zero_iff', pi_ne0, ne_eq]
   rcases CompleteLocalRing.weierstrass_preparation f' ntriv with ⟨h, ⟨g, distinguish, eq⟩, uniq⟩
   use (k, h, g)
-  constructor
-  · exact ⟨distinguish, by rw [← eq, f'_spec]⟩
-  · intro (k', h', g') h_khg'
-    rcases h_khg' with ⟨distinguish', eq'⟩
-    have mapg : g'.map (Ideal.Quotient.mk m) = Polynomial.X ^ g'.natDegree := by
-      ext i
-      by_cases ne : i = g'.natDegree
-      · simp [ne, distinguish'.monic]
-      · rcases lt_or_gt_of_ne ne with lt|gt
-        · simpa [ne] using eq_zero_iff_mem.mpr (distinguish'.mem lt)
-        · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
-    have : Nat.find exist_nmem = k' + 1 := by
-      apply (Nat.find_eq_iff exist_nmem).mpr
-      constructor
-      · use g'.natDegree
-        simp only [eq', map_smul, smul_eq_mul]
-        have nmem : (g' * h'.1).coeff R g'.natDegree ∉ m := by
-          apply Ideal.Quotient.eq_zero_iff_mem.not.mp
-          simp only [← coeff_map, _root_.map_mul, ← Polynomial.polynomial_map_coe, mapg,
-            Polynomial.coe_pow, Polynomial.coe_X, coeff_X_pow_mul', le_refl, ↓reduceIte]
-          simpa only [coeff_map, coeff_zero_eq_constantCoeff, tsub_self]
-            using ((Ideal.Quotient.mk m).isUnit_map (isUnit_constantCoeff h'.1 h'.isUnit)).ne_zero
-        by_contra h
-        rw [← prin, Ideal.span_singleton_pow] at h
-        rcases Ideal.mem_span_singleton.mp h with ⟨r, hr⟩
-        absurd nmem
-        rw [← prin, Ideal.mem_span_singleton]
-        use r
-        simpa [pow_add, mul_assoc, mul_eq_mul_left_iff, pow_eq_zero_iff', pi_ne0] using hr
-      · simp only [not_exists, Decidable.not_not]
-        intro k hk i
-        apply Ideal.pow_le_pow_right (Nat.le_of_lt_succ hk)
-        simp [← prin, Ideal.span_singleton_pow, eq', Ideal.mem_span_singleton]
-    have keq : k' = k := by simp [k, this]
-    rw [keq] at eq'
-    have heq : h' = h := uniq _ ⟨g', distinguish', (muleq eq'.symm).symm⟩
-    simp only [keq, heq, Prod.mk.injEq, true_and]
-    apply Polynomial.coe_inj.mp
-    calc
-      g' = f' * h'⁻¹ := by simp [← (muleq eq'.symm)]
-      _ = _ := by simp [heq, eq]
+  refine ⟨⟨distinguish, by rw [← eq, f'_spec]⟩, ?_⟩
+  intro (k', h', g') h_khg'
+  rcases h_khg' with ⟨distinguish', eq'⟩
+  have mapg : g'.map (Ideal.Quotient.mk m) = Polynomial.X ^ g'.natDegree := by
+    ext i
+    by_cases ne : i = g'.natDegree
+    · simp [ne, distinguish'.monic]
+    · rcases lt_or_gt_of_ne ne with lt|gt
+      · simpa [ne] using eq_zero_iff_mem.mpr (distinguish'.mem lt)
+      · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
+  have : Nat.find exist_nmem = k' + 1 := by
+    apply (Nat.find_eq_iff exist_nmem).mpr
+    constructor
+    · use g'.natDegree
+      simp only [eq', map_smul, smul_eq_mul]
+      have nmem : (g' * h'.1).coeff R g'.natDegree ∉ m := by
+        simpa [← eq_zero_iff_mem.not, ← coeff_map, map_mul, ← Polynomial.polynomial_map_coe,
+          mapg, Polynomial.coe_pow, Polynomial.coe_X, coeff_X_pow_mul'] using
+          ((Ideal.Quotient.mk m).isUnit_map (isUnit_constantCoeff h'.1 h'.isUnit)).ne_zero
+      by_contra h
+      rw [← prin, Ideal.span_singleton_pow, Ideal.mem_span_singleton] at h
+      absurd nmem
+      rw [← prin, Ideal.mem_span_singleton]
+      rcases h with ⟨r, hr⟩
+      use r
+      simpa [pow_add, mul_assoc, mul_eq_mul_left_iff, pow_eq_zero_iff', pi_ne0] using hr
+    · simp only [not_exists, Decidable.not_not]
+      intro k hk i
+      apply Ideal.pow_le_pow_right (Nat.le_of_lt_succ hk)
+      simp [← prin, Ideal.span_singleton_pow, eq', Ideal.mem_span_singleton]
+  have keq : k' = k := by simp [k, this]
+  rw [keq] at eq'
+  have heq : h' = h := uniq _ ⟨g', distinguish', (muleq eq'.symm).symm⟩
+  simp only [keq, heq, Prod.mk.injEq, true_and]
+  apply Polynomial.coe_inj.mp
+  calc
+    g' = f' * h'⁻¹ := by simp [← (muleq eq'.symm)]
+    _ = _ := by simp [heq, eq]
 
 --note : the conditions needed for `R` in `weierstrass_preparation_aux` actually implies DVR
 theorem IsDiscreteValuationRing.weierstrass_preparation [IsDomain R] [IsDiscreteValuationRing R]
