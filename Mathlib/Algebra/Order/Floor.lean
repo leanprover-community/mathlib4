@@ -805,14 +805,16 @@ theorem fract_add_floor (a : α) : fract a + ⌊a⌋ = a :=
   sub_add_cancel _ _
 
 @[simp]
-theorem fract_add_int (a : α) (m : ℤ) : fract (a + m) = fract a := by
+theorem fract_add_intCast (a : α) (m : ℤ) : fract (a + m) = fract a := by
   rw [fract]
   simp
+@[deprecated (since := "2025-04-01")] alias fract_add_int := fract_add_intCast
 
 @[simp]
-theorem fract_add_nat (a : α) (m : ℕ) : fract (a + m) = fract a := by
+theorem fract_add_natCast (a : α) (m : ℕ) : fract (a + m) = fract a := by
   rw [fract]
   simp
+@[deprecated (since := "2025-04-01")] alias fract_add_nat := fract_add_natCast
 
 @[simp]
 theorem fract_add_one (a : α) : fract (a + 1) = fract a := mod_cast fract_add_nat a 1
@@ -823,18 +825,22 @@ theorem fract_add_ofNat (a : α) (n : ℕ) [n.AtLeastTwo] :
   fract_add_nat a n
 
 @[simp]
-theorem fract_int_add (m : ℤ) (a : α) : fract (↑m + a) = fract a := by rw [add_comm, fract_add_int]
+theorem fract_intCast_add (m : ℤ) (a : α) : fract (↑m + a) = fract a := by
+  rw [add_comm, fract_add_int]
+@[deprecated (since := "2025-04-01")] alias fract_int_add := fract_intCast_add
 
 @[simp]
-theorem fract_nat_add (n : ℕ) (a : α) : fract (↑n + a) = fract a := by rw [add_comm, fract_add_nat]
+theorem fract_natCast_add (n : ℕ) (a : α) : fract (↑n + a) = fract a := by
+  rw [add_comm, fract_add_nat]
+@[deprecated (since := "2025-04-01")] alias fract_nat_add := fract_natCast_add
 
 @[simp]
-theorem fract_one_add (a : α) : fract (1 + a) = fract a := mod_cast fract_nat_add 1 a
+theorem fract_one_add (a : α) : fract (1 + a) = fract a := mod_cast fract_natCast_add 1 a
 
 @[simp]
 theorem fract_ofNat_add (n : ℕ) [n.AtLeastTwo] (a : α) :
     fract (ofNat(n) + a) = fract a :=
-  fract_nat_add n a
+  fract_natCast_add n a
 
 @[simp]
 theorem fract_sub_int (a : α) (m : ℤ) : fract (a - m) = fract a := by
@@ -1049,7 +1055,7 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     _ = fract ((m₁ : k) / n) := ?_
     _ = Int.cast (m₁ % (n : ℤ)) / Nat.cast n := this hm₁
     _ = Int.cast (-(↑m₀ : ℤ) % ↑n) / Nat.cast n := ?_
-  · rw [← fract_int_add q, ← mul_div_cancel_right₀ (q : k) hn.ne', ← add_div, ← sub_eq_add_neg]
+  · rw [← fract_intCast_add q, ← mul_div_cancel_right₀ (q : k) hn.ne', ← add_div, ← sub_eq_add_neg]
     simp [m₁]
   · congr 2
     simp only [m₁]
