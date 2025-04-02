@@ -193,11 +193,8 @@ end PartialOrder
 
 /-! ### Concrete instances -/
 
-noncomputable instance Fin.completeLinearOrder {n : ℕ} [NeZero n] :
-    CompleteLinearOrder (Fin n) where
-  -- We provide `Fin.instBiheytingAlgebra` explicitly to avoid a diamond with the Heyting operators
-  __ := Fin.instBiheytingAlgebra
-  __ := Fintype.toCompleteLinearOrder _
+noncomputable instance Fin.completeLinearOrder {n : ℕ} [NeZero n] : CompleteLinearOrder (Fin n) :=
+  Fintype.toCompleteLinearOrder _
 
 noncomputable instance Bool.completeBooleanAlgebra : CompleteBooleanAlgebra Bool :=
   Fintype.toCompleteBooleanAlgebra _
