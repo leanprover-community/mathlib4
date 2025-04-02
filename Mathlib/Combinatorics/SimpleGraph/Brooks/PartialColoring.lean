@@ -51,13 +51,8 @@ lemma degreeOn_lt_degree {a v : α} {s : Finset α} (hv : v ∈ G.neighborFinset
      hv.2 ((degree_le_degreeOn_iff ..).1 hf.symm.le hv.1)
 
 end degreeOn
-end SimpleGraph
-
-namespace SimpleGraph
 
 open Finset
-
-variable {α : Type*} (G : SimpleGraph α)
 
 @[ext]
 structure PartialColoring (s : Finset α) where
@@ -198,7 +193,7 @@ lemma join_eq {v : α} (C₁ : G.PartialColoring s) (C₂ : G.PartialColoring t)
     (C₁.join C₂ h) v = ite (v ∈ s) (C₁ v) (C₂ v) := rfl
 
 @[simp]
-lemma join_lt_of_lt {k : ℕ} {C₁ : G.PartialColoring s} {C₂ : G.PartialColoring t}
+lemma join_isK_of_isK {k : ℕ} {C₁ : G.PartialColoring s} {C₂ : G.PartialColoring t}
     {h : ∀ v, v ∈ s → ∀ w, w ∈ t → ¬ G.Adj v w} (h1 : C₁.IsPartialKColoring k)
     (h2 : C₂.IsPartialKColoring k) : (C₁.join C₂ h).IsPartialKColoring k := by
   intro v

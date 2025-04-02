@@ -257,15 +257,15 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         -- We know that when extending a coloring greedily along a path whose end point
         -- already has two neighbors colored with the same color we never need to use
         -- more that `k` colors along the path.
-        exact ⟨(C₂.Greedy p.reverse.support).copy heq, C₂.Greedy_of_path_notInj
-        hbdd hp.reverse hC₂ (mem_insert_self ..) (mem_insert_of_mem hy1) d.adj hd1 hne hc2eq hdisj2⟩
+        exact ⟨(C₂.Greedy p.reverse.support).copy heq, C₂.Greedy_of_path_notInj hbdd hp.reverse hC₂
+                  (mem_insert_self ..) (mem_insert_of_mem hy1) d.adj hd1 hne hc2eq hdisj2⟩
       · -- The cycle `c` has no edges into `s \ c` and so we can now color
         -- `c` and `s \ c` by induction
         obtain ⟨C₁, hC₁⟩ := ih _ hccard  _ rfl
         obtain ⟨C₂, hC₂⟩ := ih _ hsdcard _ rfl
         push_neg at hnbc
         exact ⟨(C₁.join C₂ (by simpa using hnbc)).copy (union_sdiff_of_subset hsub.1),
-          copy_isK (C₁.join_lt_of_lt hC₁ hC₂)⟩
+          copy_isK (C₁.join_isK_of_isK hC₁ hC₂)⟩
   · -- `s` is empty so easy to `k`-color
     exact ⟨G.partialColoringOfEmpty.copy (not_nonempty_iff_eq_empty.1 hem).symm,
       fun v ↦ by simpa using Nat.zero_lt_of_lt hk⟩
