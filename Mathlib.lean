@@ -4587,6 +4587,7 @@ import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Order.Interval.Set.InitialSeg
 import Mathlib.Order.Interval.Set.IsoIoo
 import Mathlib.Order.Interval.Set.Limit
+import Mathlib.Order.Interval.Set.LinearOrder
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.OrdConnectedComponent
