@@ -436,7 +436,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
   delta IsFractionRing
   convert isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
   ext x
-  erw [Submonoid.map_equiv_eq_comap_symm]
+  rw [← Submonoid.map_coe_toMulEquiv, Submonoid.map_equiv_eq_comap_symm]
   simp only [MulEquiv.coe_toMonoidHom, RingEquiv.toMulEquiv_eq_coe, Submonoid.mem_comap]
   constructor
   · rintro hx z (hz : z * h.symm x = 0)
