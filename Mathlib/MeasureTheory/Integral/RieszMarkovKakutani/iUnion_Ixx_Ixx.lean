@@ -8,10 +8,7 @@ import Mathlib.Data.Finset.Range
 
 /-!
 TO DO:
-- Improve proof of `iUnion_Ioc_subset_Ioc`
-- Improve lines 126-137 of `Real.lean` where this result is used
-- Add proof of `iUnion_Ico_subset_Ico`
-- Add proof of `iUnion_Icc_subset_Icc`
+- Find the correct location for these lemmas.
 -/
 
 open Set
@@ -20,35 +17,21 @@ lemma iUnion_Ioc_subset_Ioc {X : Type*} [LinearOrder X] (N : ℕ) (a : ℕ → X
     Ioc (a 0) (a N) ⊆ ⋃ i ∈ Finset.range N, Ioc (a i) (a (i + 1)) := by
   induction N with
   | zero => simp
-  | succ N ih =>
-    by_cases hc : a N ≤ a (N + 1)
-    · by_cases hc' : a 0 ≤ a N
-      · calc
-          _ = Ioc (a 0) (a N) ∪ Ioc (a N) (a (N + 1)) := Eq.symm <| Ioc_union_Ioc_eq_Ioc hc' hc
-          _ ⊆ (⋃ i ∈ Finset.range N, Ioc (a i) (a (i + 1))) ∪ Ioc (a N) (a (N + 1)) :=
-            union_subset_union ih (by rfl)
-          _ ⊆ _ := by simp [Finset.mem_insert, Finset.range_succ]
-      · calc
-          _ ⊆ Ioc (a N) (a (N + 1)) := Ioc_subset_Ioc (le_of_lt (not_le.mp hc')) (by rfl)
-          _ ⊆ _ := by simp [Finset.mem_insert, Finset.range_succ]
-    · by_cases hc' : a 0 ≤ a (N + 1)
-      · calc
-          _ ⊆ Ioc (a 0) (a N) := by simp [← Ioc_union_Ioc_eq_Ioc hc' (le_of_lt (not_le.mp hc))]
-          _ ⊆ ⋃ i ∈ Finset.range N, Ioc (a i) (a (i + 1)) := ih
-          _ ⊆ _ := by simp [Finset.mem_insert, Finset.range_succ]
-      · intro x hx
-        have := calc a (N + 1)
-          _ < a 0 := not_le.mp hc'
-          _ < x := hx.1
-          _ ≤ a (N + 1) := hx.2
-        exact False.elim <| (lt_self_iff_false _).mp this
+  | succ N ih => calc
+    _ ⊆ Ioc (a 0) (a N) ∪ Ioc (a N) (a (N + 1)) := Ioc_subset_Ioc_union_Ioc
+    _ ⊆ _ := by
+      simp_rw [Finset.range_succ, Finset.mem_insert, iUnion_iUnion_eq_or_left, union_comm]
+      exact union_subset_union_right (Ioc (a N) (a (N + 1))) ih
 
--- lemma iUnion_Ico_subset_Ico {X : Type*} [LinearOrder X] (N : ℕ) (a : ℕ → X) :
---     Ico (a 0) (a N) ⊆ ⋃ i ∈ Finset.range N, Ico (a i) (a (i + 1)) := by sorry
-
--- lemma iUnion_Icc_subset_Icc {X : Type*} [LinearOrder X] (N : ℕ) (a : ℕ → X) :
---     Icc (a 0) (a N) ⊆ ⋃ i ∈ Finset.range N, Icc (a i) (a (i + 1)) := by sorry
-
+lemma iUnion_Ico_subset_Ico {X : Type*} [LinearOrder X] (N : ℕ) (a : ℕ → X) :
+    Ico (a 0) (a N) ⊆ ⋃ i ∈ Finset.range N, Ico (a i) (a (i + 1)) := by
+  induction N with
+  | zero => simp
+  | succ N ih => calc
+    _ ⊆ Ico (a 0) (a N) ∪ Ico (a N) (a (N + 1)) := Ico_subset_Ico_union_Ico
+    _ ⊆ _ := by
+      simp_rw [Finset.range_succ, Finset.mem_insert, iUnion_iUnion_eq_or_left, union_comm]
+      exact union_subset_union_right (Ico (a N) (a (N + 1))) ih
 
 -- lemma iUnion_Ioc_Ioc {X : Type*} [LinearOrderedSemiring X]
 --     (N : ℕ) (c : X) {δ : X} (hδ : 0 ≤ δ) :
