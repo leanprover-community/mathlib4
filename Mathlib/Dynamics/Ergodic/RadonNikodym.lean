@@ -36,7 +36,7 @@ protected theorem singularPart [SigmaFinite ν] {f : X → X}
     MeasurePreserving f (μ.singularPart ν) (μ.singularPart ν) := by
   rcases (μ.mutuallySingular_singularPart ν).symm with ⟨s, hsm, hνs, hμs⟩
   convert hfμ.restrict_preimage hsm using 1
-  · refine singularPart_eq_restrict ?_ (hfν.quasiMeasurePreserving.preimage_null hνs)
+  · refine singularPart_eq_restrict ?_ (hfν.preimage_null hνs)
     rw [← mem_ae_iff, ← Filter.eventuallyEq_univ,
       ae_eq_univ_iff_measure_eq (hfμ.measurable hsm).nullMeasurableSet]
     calc
