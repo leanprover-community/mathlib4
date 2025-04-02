@@ -101,12 +101,12 @@ def degBound (S : ConstructibleSetData R[X]) : ℕ := S.sup fun C ↦ ∑ i, (C.
 
 lemma isConstructible_toSet (S : ConstructibleSetData R) :
     IsConstructible S.toSet := by
-  refine IsConstructible.biUnion S.finite_toSet fun _ _ ↦ .sdiff ?_ ?_
+  refine .biUnion S.finite_toSet fun _ _ ↦ .sdiff ?_ ?_
   · rw [← isConstructible_compl]
-    exact (isRetrocompact_zeroLocus_compl _ (Set.finite_range _)).isConstructible
+    exact (isRetrocompact_zeroLocus_compl (Set.finite_range _)).isConstructible
       (isClosed_zeroLocus _).isOpen_compl
   · rw [← isConstructible_compl]
-    exact (isRetrocompact_zeroLocus_compl _ (Set.finite_singleton _)).isConstructible
+    exact (isRetrocompact_zeroLocus_compl (Set.finite_singleton _)).isConstructible
       (isClosed_zeroLocus _).isOpen_compl
 
 end ConstructibleSetData

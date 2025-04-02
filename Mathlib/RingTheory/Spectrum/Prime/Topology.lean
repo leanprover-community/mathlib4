@@ -891,24 +891,24 @@ lemma isRetrocompact_iff {U : Set (PrimeSpectrum R)} (hU : IsOpen U) :
     IsRetrocompact U ↔ IsCompact U :=
   isTopologicalBasis_basic_opens.isRetrocompact_iff_isCompact isCompact_basicOpen hU
 
-lemma isRetrocompact_zeroLocus_compl (s : Set R) (hs : s.Finite) :
+lemma isRetrocompact_zeroLocus_compl {s : Set R} (hs : s.Finite) :
     IsRetrocompact (zeroLocus s)ᶜ :=
   (isRetrocompact_iff (isClosed_zeroLocus _).isOpen_compl).mpr
     (isCompact_isOpen_iff.mpr ⟨hs.toFinset, by simp⟩).1
 
-lemma isRetrocompact_zeroLocus_compl_of_fg (I : Ideal R) (hI : I.FG) :
+lemma isRetrocompact_zeroLocus_compl_of_fg {I : Ideal R} (hI : I.FG) :
     IsRetrocompact (zeroLocus (I : Set R))ᶜ := by
   obtain ⟨s, rfl⟩ := hI
   rw [zeroLocus_span]
-  exact isRetrocompact_zeroLocus_compl _ s.finite_toSet
+  exact isRetrocompact_zeroLocus_compl s.finite_toSet
 
-lemma isRetrocompact_basicOpen (f : R) :
+lemma isRetrocompact_basicOpen {f : R} :
     IsRetrocompact (basicOpen f : Set (PrimeSpectrum R)) := by
-  simpa using isRetrocompact_zeroLocus_compl _ (Set.finite_singleton f)
+  simpa using isRetrocompact_zeroLocus_compl (Set.finite_singleton f)
 
-lemma isConstructible_basicOpen (f : R) :
+lemma isConstructible_basicOpen {f : R} :
     IsConstructible (basicOpen f : Set (PrimeSpectrum R)) :=
-  (isRetrocompact_basicOpen f).isConstructible (basicOpen f).2
+  isRetrocompact_basicOpen.isConstructible (basicOpen f).2
 
 section IsIntegral
 

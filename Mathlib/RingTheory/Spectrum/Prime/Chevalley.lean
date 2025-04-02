@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity
 # Chevalley's theorem
 
 In this file we provide the usual (algebraic) version of Chevalley's theorem.
-For the proof see `Mathlib/RingTheory/Spectrum/Prime/ChevalleyComplex.lean`.
+For the proof see `Mathlib/RingTheory/Spectrum/Prime/ChevalleyComplexity.lean`.
 -/
 
 variable {R S : Type*} [CommRing R] [CommRing S]
@@ -41,7 +41,7 @@ lemma isConstructible_comap_image
   · intros R _ S _ f hf hf' s hs
     refine hs.image_of_isClosedEmbedding (isClosedEmbedding_comap_of_surjective _ f hf) ?_
     rw [range_comap_of_surjective _ f hf]
-    exact isRetrocompact_zeroLocus_compl_of_fg _ hf'
+    exact isRetrocompact_zeroLocus_compl_of_fg hf'
   · intros R _ S _ T _ f g H₁ H₂ s hs
     simp only [comap_comp, ContinuousMap.coe_comp, Set.image_comp]
     exact H₁ _ (H₂ _ hs)
@@ -60,6 +60,6 @@ lemma isOpenMap_comap_of_hasGoingDown_of_finitePresentation
     ((basicOpen f).2.stableUnderGeneralization.image
       (Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap.mp ‹_›))
     (isConstructible_comap_image (RingHom.finitePresentation_algebraMap.mpr ‹_›)
-      (isConstructible_basicOpen _))
+      isConstructible_basicOpen)
 
 end PrimeSpectrum
