@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
 
 import Mathlib.RingTheory.MvPowerSeries.Evaluation
 import Mathlib.RingTheory.MvPowerSeries.LinearTopology
-import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
