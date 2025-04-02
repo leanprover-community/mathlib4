@@ -245,6 +245,16 @@ theorem sum_mapRange_index.linearMap [DecidableEq ι] {f : ∀ i, β₁ i →ₗ
     DFinsupp.lsum ℕ h (mapRange.linearMap f l) = DFinsupp.lsum ℕ (fun i => (h i).comp (f i)) l := by
   classical simpa [DFinsupp.sumAddHom_apply] using sum_mapRange_index fun i => by simp
 
+lemma ker_mapRangeLinearMap (f : ∀ i, β₁ i →ₗ[R] β₂ i) :
+    LinearMap.ker (mapRange.linearMap f) =
+      (Submodule.pi Set.univ (fun i ↦ LinearMap.ker (f i))).comap (coeFnLinearMap R) :=
+  Submodule.toAddSubmonoid_injective <| mker_mapRangeAddMonoidHom (f · |>.toAddMonoidHom)
+
+lemma range_mapRangeLinearMap (f : ∀ i, β₁ i →ₗ[R] β₂ i) :
+    LinearMap.range (mapRange.linearMap f) =
+      (Submodule.pi Set.univ (LinearMap.range <| f ·)).comap (coeFnLinearMap R) :=
+  Submodule.toAddSubmonoid_injective <| mrange_mapRangeAddMonoidHom (f · |>.toAddMonoidHom)
+
 /-- `DFinsupp.mapRange.linearMap` as a `LinearEquiv`. -/
 @[simps apply]
 def mapRange.linearEquiv (e : ∀ i, β₁ i ≃ₗ[R] β₂ i) : (Π₀ i, β₁ i) ≃ₗ[R] Π₀ i, β₂ i :=
