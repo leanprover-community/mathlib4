@@ -673,7 +673,7 @@ lemma attachFin_ssubset_attachFin {s t : Finset ℕ} (hst : s ⊂ t) (ht : t ⊆
 `s.fin n` is the finset of all elements of `s` less than `n`.
 
 This definition was introduced to define a `LocallyFiniteOrder` instance on `Fin n`.
-Later, this instance was rewritten using a more efficient `finOfImageEq`.
+Later, this instance was rewritten using a more efficient `attachFin`.
 Since this definition had no other uses in the library, it was deprecated.
 -/
 @[deprecated attachFin (since := "2025-04-01")]
