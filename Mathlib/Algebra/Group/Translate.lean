@@ -20,9 +20,9 @@ This file defines the translation of a function from a group by an element of th
 ## See also
 
 Generally, translation is the same as acting on the domain by subtraction. This setting is
-abstracted by `DomAddAct` in such a way that `τ a f = DomAddAct.mk (-a) +ᵥ f` (see
-`translate_eq_domAddActMk_vadd`). Using `DomAddAct` is irritating in applications because of this
-negation appearing inside `DomAddAct.mk`. Although mathematically equivalent, the pen and paper
+abstracted by `DomAct` in such a way that `τ a f = DomAct.mk (-a) +ᵥ f` (see
+`translate_eq_DomActMk_vadd`). Using `DomAct` is irritating in applications because of this
+negation appearing inside `DomAct.mk`. Although mathematically equivalent, the pen and paper
 convention is that translating is an action by subtraction, not by addition.
 -/
 
@@ -57,8 +57,8 @@ lemma translate_comm (a b : G) (f : G → α) : τ a (τ b f) = τ b (τ a f) :=
 -- We make `simp` push the `τ` outside
 @[simp] lemma comp_translate (a : G) (f : G → α) (g : α → β) : g ∘ τ a f = τ a (g ∘ f) := rfl
 
-lemma translate_eq_domAddActMk_vadd (a : G) (f : G → α) : τ a f = DomAddAct.mk (-a) +ᵥ f := by
-  ext; simp [DomAddAct.vadd_apply, sub_eq_neg_add]
+lemma translate_eq_DomActMk_vadd (a : G) (f : G → α) : τ a f = DomAct.mk (-a) +ᵥ f := by
+  ext; simp [DomAct.vadd_apply, sub_eq_neg_add]
 
 @[simp]
 lemma translate_smul_right [SMul H α] (a : G) (f : G → α) (c : H) : τ a (c • f) = c • τ a f := rfl

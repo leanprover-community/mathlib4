@@ -63,15 +63,15 @@ instance instModule [Semiring R] [AddMonoid A] [AddCommMonoid B] [Module R B] : 
   { add_smul := fun _ _ _=> ext fun _ => add_smul _ _ _
     zero_smul := fun _ => ext fun _ => zero_smul _ _ }
 
-instance instDomMulActModule
+instance instDomActModule
     {S M M₂ : Type*} [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂] [Module S M] :
-    Module Sᵈᵐᵃ (M →+ M₂) where
+    Module Sᵈᵃ (M →+ M₂) where
   add_smul s s' f := AddMonoidHom.ext fun m ↦ by
-    simp_rw [AddMonoidHom.add_apply, DomMulAct.smul_addMonoidHom_apply, ← map_add, ← add_smul]; rfl
+    simp_rw [AddMonoidHom.add_apply, DomAct.smul_addMonoidHom_apply, ← map_add, ← add_smul]; rfl
   zero_smul _ := AddMonoidHom.ext fun _ ↦ by
-    rw [DomMulAct.smul_addMonoidHom_apply]
-    -- TODO there should be a simp lemma for `DomMulAct.mk.symm 0`
-    simp [DomMulAct.mk, MulOpposite.opEquiv]
+    rw [DomAct.smul_addMonoidHom_apply]
+    -- TODO there should be a simp lemma for `DomAct.mk.symm 0`
+    simp [DomAct.mk, MulOpposite.opEquiv]
 
 end AddMonoidHom
 

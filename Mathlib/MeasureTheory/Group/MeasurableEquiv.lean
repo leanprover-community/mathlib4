@@ -211,8 +211,8 @@ variable {G A : Type*} [Group G] [AddCommGroup A] [DistribMulAction G A] [Measur
   [MeasurableSpace G] [MeasurableSMul G A]
 variable {μ ν : Measure A} {g : G}
 
-noncomputable instance : DistribMulAction Gᵈᵐᵃ (Measure A) where
-  smul g μ := μ.map (DomMulAct.mk.symm g⁻¹ • ·)
+noncomputable instance : DistribMulAction Gᵈᵃ (Measure A) where
+  smul g μ := μ.map (DomAct.mk.symm g⁻¹ • ·)
   one_smul μ := show μ.map _ = _ by simp
   mul_smul g g' μ := show μ.map _ = ((μ.map _).map _) by
     rw [map_map]
@@ -223,10 +223,10 @@ noncomputable instance : DistribMulAction Gᵈᵐᵃ (Measure A) where
   smul_add g μ ν := show (μ + ν).map _ = μ.map _ + ν.map _ by
     rw [Measure.map_add]; exact measurable_const_smul ..
 
-lemma dmaSMul_apply (μ : Measure A) (g : Gᵈᵐᵃ) (s : Set A) :
-    (g • μ) s = μ (DomMulAct.mk.symm g • s) := by
-  refine ((MeasurableEquiv.smul ((DomMulAct.mk.symm g : G)⁻¹)).map_apply _).trans ?_
+lemma domSMul_apply (μ : Measure A) (g : Gᵈᵃ) (s : Set A) :
+    (g • μ) s = μ (DomAct.mk.symm g • s) := by
+  refine ((MeasurableEquiv.smul ((DomAct.mk.symm g : G)⁻¹)).map_apply _).trans ?_
   congr 1
-  exact Set.preimage_smul_inv (DomMulAct.mk.symm g) s
+  exact Set.preimage_smul_inv (DomAct.mk.symm g) s
 
 end MeasureTheory.Measure
