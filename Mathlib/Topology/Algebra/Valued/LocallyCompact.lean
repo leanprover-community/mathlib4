@@ -156,18 +156,18 @@ section CompactDVR
 open Valued
 
 variable (K) in
-lemma exists_norm_coe_lt : ∃ x : 𝒪[K], 0 < ‖(x : K)‖ ∧ ‖(x : K)‖ < 1 := by
+lemma exists_norm_coe_lt_one : ∃ x : 𝒪[K], 0 < ‖(x : K)‖ ∧ ‖(x : K)‖ < 1 := by
   obtain ⟨x, hx, hx'⟩ := NormedField.exists_norm_lt_one K
   refine ⟨⟨x, hx'.le⟩, ?_⟩
   simpa [hx', Subtype.ext_iff] using hx
 
 variable (K) in
-lemma exists_norm_lt : ∃ x : 𝒪[K], 0 < ‖x‖ ∧ ‖x‖ < 1 :=
-  exists_norm_coe_lt K
+lemma exists_norm_lt_one : ∃ x : 𝒪[K], 0 < ‖x‖ ∧ ‖x‖ < 1 :=
+  exists_norm_coe_lt_one K
 
 variable (K) in
-lemma exists_nnnorm_lt : ∃ x : 𝒪[K], 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 :=
-  exists_norm_coe_lt K
+lemma exists_nnnorm_lt_one : ∃ x : 𝒪[K], 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 :=
+  exists_norm_coe_lt_one K
 
 lemma isPrincipalIdealRing_of_compactSpace {F Γ₀} [Field F]
     [LinearOrderedCommGroupWithZero Γ₀] [MulArchimedean Γ₀] [hv : Valued F Γ₀] [CompactSpace 𝒪[F]]
@@ -282,7 +282,7 @@ lemma isDiscreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
   -- First, note that it is a local ring, which the TC knows about.
   -- We prove that it is not a field inline later.
   have hl : IsLocalRing 𝒪[K] := inferInstance
-  obtain ⟨x, hx, hx'⟩ := exists_nnnorm_lt K
+  obtain ⟨x, hx, hx'⟩ := exists_nnnorm_lt_one K
   rw [← nnnorm_one (G := K)] at hx'
   have key : IsPrincipalIdealRing 𝒪[K] :=
     isPrincipalIdealRing_of_compactSpace (NormedField.exists_norm_lt_one K)
