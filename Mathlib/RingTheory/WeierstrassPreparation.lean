@@ -81,23 +81,20 @@ lemma preparation_lift_triv {n : ℕ} (neq0 : n = 0) [hmax : m.IsMaximal] (f : (
     rw [muleq, this] at eq
     exact Units.eq_iff.mp ((mul_right_inj' (by simp)).mp eq.symm)
 
+lemma PowerSeries.order_eq_of_eq_zero_iff {R S : Type*} [Semiring R] [Semiring S]
+    {φ : PowerSeries R} {ψ : PowerSeries S} (h : ∀ i, coeff _ i φ = 0 ↔ coeff _ i ψ = 0) :
+    φ.order = ψ.order := by
+  rw [PowerSeries.order_eq]
+  refine ⟨fun i hi ↦ ?_, fun i hi ↦ by rw [h i, PowerSeries.coeff_of_lt_order i hi]⟩
+  have : ψ.order < ⊤ := by simp [← hi]
+  simpa [(h i).not, ← hi] using PowerSeries.coeff_order this
+
 lemma map_order_eq {n : ℕ} (npos : n > 0) (f : PowerSeries (R ⧸ m ^ (n + 1))) :
     (f.map (Ideal.Quotient.mk (m.map (Ideal.Quotient.mk (m ^ (n + 1)))))).order =
     ((f.map (factorPow m n.le_succ)).map
       (Ideal.Quotient.mk (m.map (Ideal.Quotient.mk (m ^ n))))).order := by
-  rw [Eq.comm, PowerSeries.order_eq]
-  refine ⟨fun i hi ↦ ?_, fun i hi ↦ ?_⟩
-  · have : (f.map (Ideal.Quotient.mk (m.map (Ideal.Quotient.mk (m ^ (n + 1)))))).order < ⊤ := by
-      simp [← hi]
-    by_contra h
-    absurd PowerSeries.coeff_order this
-    simp only [coeff_map, eq_zero_iff_mem, ← Ideal.map_mk_comap_factorPow m npos n.le_succ,
-      Nat.succ_eq_add_one, mem_comap]
-    simp [← eq_zero_iff_mem, ← coeff_map, ← hi, h]
-  · have := PowerSeries.coeff_of_lt_order i hi
-    simp only [coeff_map, eq_zero_iff_mem, ← Ideal.map_mk_comap_factorPow m npos n.le_succ,
-      Nat.succ_eq_add_one, mem_comap] at this
-    exact eq_zero_iff_mem.mpr this
+  apply PowerSeries.order_eq_of_eq_zero_iff (fun i ↦ ?_)
+  simp [eq_zero_iff_mem, ← Ideal.map_mk_comap_factorPow m npos n.le_succ]
 
 lemma ne_top {n : ℕ} (npos : n > 0) (mne : m ≠ ⊤): m.map (Ideal.Quotient.mk (m ^ n)) ≠ ⊤ := by
   apply (Ideal.ne_top_iff_one _).mpr
@@ -307,18 +304,8 @@ lemma map_order_eq' {n : ℕ} (npos : n > 0) {f : PowerSeries R} :
     ((f.map (Ideal.Quotient.mk (m ^ n))).map
       (Ideal.Quotient.mk (m.map (Ideal.Quotient.mk (m ^ n))))).order =
       (f.map (Ideal.Quotient.mk m)).order:= by
-  rw [Eq.comm, PowerSeries.order_eq]
-  refine ⟨fun i hi ↦ ?_, fun i hi ↦ ?_⟩
-  · have : ((f.map (Ideal.Quotient.mk (m ^ n))).map
-      (Ideal.Quotient.mk (m.map (Ideal.Quotient.mk (m ^ n))))).order < ⊤ := by simp [← hi]
-    by_contra h
-    absurd PowerSeries.coeff_order this
-    simp only [coeff_map, eq_zero_iff_mem] at h
-    simpa [eq_zero_iff_mem, pow_le_self (Nat.ne_zero_of_lt npos), ← hi] using h
-  · have := PowerSeries.coeff_of_lt_order i hi
-    simp only [coeff_map, eq_zero_iff_mem, mem_quotient_iff_mem_sup,
-      pow_le_self (Nat.ne_zero_of_lt npos), sup_of_le_left] at this
-    simpa [eq_zero_iff_mem] using this
+  apply PowerSeries.order_eq_of_eq_zero_iff (fun i ↦ ?_)
+  simp [eq_zero_iff_mem, pow_le_self (Nat.ne_zero_of_lt npos)]
 
 theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : IsAdicComplete m R]
     (f : PowerSeries R) (ntriv : f.map (Ideal.Quotient.mk m) ≠ 0) :
