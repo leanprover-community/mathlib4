@@ -97,6 +97,15 @@ private def hasLinearOrder (u : Level) (α : Q(Type u)) (cls linearOrder : Q(Typ
   catch _ =>
     return false
 
+/-- Annotate the syntax `stx` with the go-to-def information of `target`. -/
+def withGoToDef (stx : Term) (target : Name) : DelabM Term := do
+  let stx ← annotateCurPos stx
+  let module := (← findModuleOf? target).getD (← getEnv).mainModule
+  let some range ← findDeclarationRanges? target | failure
+  let location := { module, range := range.selectionRange }
+  addDelabTermInfo (← getPos) stx (← getExpr) (location? := some location)
+  return stx
+
 /-- Delaborate `max x y` into `x ⊔ y` if the type is not a linear order. -/
 @[delab app.Max.max]
 def elabSup : Delab := do
@@ -108,7 +117,8 @@ def elabSup : Delab := do
     failure -- use the default delaborator
   let x ← withNaryArg 2 delab
   let y ← withNaryArg 3 delab
-  `($x ⊔ $y)
+  let stx ← `($x ⊔ $y)
+  withGoToDef stx ``«term_⊔_»
 
 /-- Delaborate `min x y` into `x ⊓ y` if the type is not a linear order. -/
 @[delab app.Min.min]
@@ -121,7 +131,8 @@ def elabInf : Delab := do
     failure -- use the default delaborator
   let x ← withNaryArg 2 delab
   let y ← withNaryArg 3 delab
-  `($x ⊓ $y)
+  let stx ← `($x ⊓ $y)
+  withGoToDef stx ``«term_⊓_»
 
 end Mathlib.Meta
 
