@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Fabrizio Barroero, Christopher Hoskin
 -/
 import Mathlib.Analysis.SpecialFunctions.Complex.Log
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # circleMap
@@ -32,9 +33,16 @@ theorem circleMap_sub_center (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ -
 theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) := zero_add _
 
 @[simp]
-theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖= |R| := by simp [circleMap]
+theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖ = |R| := by simp [circleMap]
 
 @[deprecated (since := "2025-02-17")] alias abs_circleMap_zero := norm_circleMap_zero
+
+theorem circleMap_not_mem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
+  simp [Complex.dist_eq, le_abs_self]
+
+theorem circleMap_ne_mem_ball {c : ℂ} {R : ℝ} {w : ℂ} (hw : w ∈ ball c R) (θ : ℝ) :
+    circleMap c R θ ≠ w :=
+  (ne_of_mem_of_not_mem hw (circleMap_not_mem_ball _ _ _)).symm
 
 theorem circleMap_mem_sphere' (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∈ sphere c |R| := by simp
 
@@ -57,24 +65,28 @@ theorem circleMap_zero_radius (c : ℂ) : circleMap c 0 = const ℝ c :=
 theorem circleMap_ne_center {c : ℂ} {R : ℝ} (hR : R ≠ 0) {θ : ℝ} : circleMap c R θ ≠ c :=
   mt circleMap_eq_center_iff.1 hR
 
-lemma circleMap_mul (R₁ R₂ θ₁ θ₂ : ℝ) :
+lemma circleMap_zero_mul (R₁ R₂ θ₁ θ₂ : ℝ) :
     (circleMap 0 R₁ θ₁) * (circleMap 0 R₂ θ₂) = circleMap 0 (R₁ * R₂) (θ₁ + θ₂) := by
   simp only [circleMap_zero, ofReal_mul, ofReal_add, add_mul, Complex.exp_add]
   ring
 
-lemma circleMap_div (R₁ R₂ θ₁ θ₂ : ℝ) :
+lemma circleMap_zero_div (R₁ R₂ θ₁ θ₂ : ℝ) :
     (circleMap 0 R₁ θ₁) / (circleMap 0 R₂ θ₂) = circleMap 0 (R₁ / R₂) (θ₁ - θ₂) := by
   simp only [circleMap_zero, ofReal_div, ofReal_sub, sub_mul, Complex.exp_sub]
   ring
 
-lemma circleMap_inv (R θ : ℝ) : (circleMap 0 R θ)⁻¹ = circleMap 0 R⁻¹ (-θ) := by
+lemma circleMap_zero_inv (R θ : ℝ) : (circleMap 0 R θ)⁻¹ = circleMap 0 R⁻¹ (-θ) := by
   simp [circleMap_zero, Complex.exp_neg, mul_comm]
 
-lemma circleMap_pow (n : ℕ) (R θ : ℝ) : (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
+lemma circleMap_zero_pow (n : ℕ) (R θ : ℝ) :
+    (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
   simp [circleMap_zero, mul_pow, ← Complex.exp_nat_mul, ← mul_assoc]
 
-lemma circleMap_zpow (n : ℤ) (R θ : ℝ) : (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
+lemma circleMap_zero_zpow (n : ℤ) (R θ : ℝ) :
+    (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
   simp [circleMap_zero, mul_zpow, ← exp_int_mul, ← mul_assoc]
+
+@[deprecated (since := "2025-04-02")] alias circleMap_zero_int_mul := circleMap_zero_zpow
 
 lemma circleMap_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (π / 2) = c + R * I := by
   simp only [circleMap, ofReal_div, ofReal_ofNat, exp_pi_div_two_mul_I]
@@ -122,11 +134,12 @@ theorem injOn_circleMap_of_abs_sub_le {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (_
   rw [abs_lt]
   constructor <;> linarith [max_sub_min_eq_abs' a b]
 
-theorem circleMap_not_mem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
-  simp [Complex.dist_eq, le_abs_self]
-
-theorem circleMap_ne_mem_ball {c : ℂ} {R : ℝ} {w : ℂ} (hw : w ∈ ball c R) (θ : ℝ) :
-    circleMap c R θ ≠ w :=
-  (ne_of_mem_of_not_mem hw (circleMap_not_mem_ball _ _ _)).symm
+/-- `circleMap` is injective on `Ico a b` if the distance between `a` and `b` is at most `2π`. -/
+theorem injOn_circleMap_of_abs_sub_le' {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (_ : b - a ≤ 2 * π) :
+    (Set.Ico a b).InjOn (circleMap c R) := by
+  rintro _ ⟨_, _⟩ _ ⟨_, _⟩ h
+  apply eq_of_circleMap_eq h_R _ h
+  rw [abs_lt]
+  constructor <;> linarith
 
 end circleMap
