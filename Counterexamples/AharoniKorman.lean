@@ -8,7 +8,7 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Order.Chain
+import Mathlib.Order.CompleteLattice.Chain
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Data.Setoid.Partition
