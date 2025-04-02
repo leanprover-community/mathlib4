@@ -52,6 +52,15 @@ instance [∀ i, Module Rᵐᵒᵖ (M i)] [∀ i, IsCentralScalar R (M i)] : IsC
 theorem smul_apply (b : R) (v : ⨁ i, M i) (i : ι) : (b • v) i = b • v i :=
   DFinsupp.smul_apply _ _ _
 
+variable (R) in
+/-- Coercion from a `DirectSum` to a pi type is a `LinearMap`. -/
+def coeFnLinearMap : (⨁ i, M i) →ₗ[R] ∀ i, M i :=
+  DFinsupp.coeFnLinearMap R
+
+@[simp]
+lemma coeFnLinearMap_apply (v : ⨁ i, M i) : coeFnLinearMap R v = v :=
+  rfl
+
 variable (R ι M)
 
 section DecidableEq
@@ -213,14 +222,16 @@ variable [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
 section
 variable (f : ∀ i, M i →+ N i)
 
-lemma mker_map : AddMonoidHom.mker (map f) =
-    (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mker (f i))).comap
-    (DirectSum.coeFnAddMonoidHom M) :=
+lemma mker_map :
+    AddMonoidHom.mker (map f) =
+      (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mker (f i))).comap
+        (DirectSum.coeFnAddMonoidHom M) :=
   DFinsupp.mker_mapRangeAddMonoidHom f
 
-lemma mrange_map : AddMonoidHom.mrange (map f) =
-    (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mrange (f i))).comap
-      (DirectSum.coeFnAddMonoidHom N) :=
+lemma mrange_map :
+    AddMonoidHom.mrange (map f) =
+      (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mrange (f i))).comap
+        (DirectSum.coeFnAddMonoidHom N) :=
   DFinsupp.mrange_mapRangeAddMonoidHom f
 
 end
@@ -265,6 +276,16 @@ lemma toAddMonoidHom_lmap :
 
 lemma lmap_eq_map (x : ⨁ i, M i) : lmap f x = map (fun i => (f i).toAddMonoidHom) x :=
   rfl
+
+lemma ker_lmap :
+    LinearMap.ker (lmap f) =
+      (Submodule.pi Set.univ (fun i ↦ LinearMap.ker (f i))).comap (DirectSum.coeFnLinearMap R) :=
+  DFinsupp.ker_mapRangeLinearMap f
+
+lemma range_lmap :
+    LinearMap.range (lmap f) =
+      (Submodule.pi Set.univ (fun i ↦ LinearMap.range (f i))).comap (DirectSum.coeFnLinearMap R) :=
+  DFinsupp.range_mapRangeLinearMap f
 
 end AddCommMonoid
 
