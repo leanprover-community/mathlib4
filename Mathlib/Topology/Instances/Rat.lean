@@ -38,9 +38,6 @@ alias uniformEmbedding_coe_real := isUniformEmbedding_coe_real
 theorem isDenseEmbedding_coe_real : IsDenseEmbedding ((↑) : ℚ → ℝ) :=
   isUniformEmbedding_coe_real.isDenseEmbedding Rat.denseRange_cast
 
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_coe_real := isDenseEmbedding_coe_real
-
 theorem isEmbedding_coe_real : IsEmbedding ((↑) : ℚ → ℝ) :=
   isDenseEmbedding_coe_real.isEmbedding
 
@@ -98,8 +95,8 @@ theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
     ⟨_, ε0, fun _ _ h => by simpa only [abs_sub_comm, dist_eq, cast_neg, neg_sub_neg] using h⟩
 
-instance : UniformAddGroup ℚ :=
-  UniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
+instance : IsUniformAddGroup ℚ :=
+  IsUniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
 
 instance : IsTopologicalAddGroup ℚ := inferInstance
 
