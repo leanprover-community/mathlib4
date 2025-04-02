@@ -62,13 +62,13 @@ attribute [ext] Min Max
 
 /--
 The supremum/join operation: `x ⊔ y`. It is notation for `max x y`
-when the type is not a linear order.
+and should be used when the type is not a linear order.
 -/
 syntax:68 term:68 " ⊔ " term:69 : term
 
 /--
 The infimum/meet operation: `x ⊓ y`. It is notation for `min x y`
-when the type is not a linear order.
+and should be used when the type is not a linear order.
 -/
 syntax:69 term:69 " ⊓ " term:70 : term
 
