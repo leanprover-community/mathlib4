@@ -35,7 +35,7 @@ lemma range_prodMap {f : E →L[𝕜] F} {g : E' →L[𝕜] F'} :
   ext x
   simp [Prod.ext_iff]
 
-lemma _root_.Submodule.map_add {p q : Submodule 𝕜 E} {f : E →L[𝕜] F} :
+lemma _root_.Submodule.map_add {f : E →L[𝕜] F} {p q : Submodule 𝕜 E} :
     Submodule.map f p + Submodule.map f q = Submodule.map f (p + q) := by
   ext x
   simp
@@ -168,32 +168,20 @@ lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Spl
       -- TODO: think about the best proof for formalising.
       sorry
     · have : LinearMap.range (g.comp f) = Submodule.map g (LinearMap.range f) := by aesop
+      -- some lemmas which could be useful for a manual proof:
+      -- rw [LinearMap.range_comp]; rw [LinearMap.range_eq_map]; rw [Submodule.map_comp f g ⊤]
+      -- rw [← LinearMap.range_eq_map f]
       constructor
-      · -- some lemmas which could be useful for a manual proof:
-        -- rw [LinearMap.range_comp]; rw [LinearMap.range_eq_map]; rw [Submodule.map_comp f g ⊤]
-        -- rw [← LinearMap.range_eq_map f]
-        rw [this]
-        exact disjoint_aux hf.complement_isCompl.1 hg.complement_isCompl.1 hg.injective
-      · rw [codisjoint_iff_le_sup, this, ← Submodule.add_eq_sup, Submodule.sum_assoc]
-        calc ⊤
-          _ = Submodule.map g ⊤ + hg.complement := by
-            symm
-            rw [Submodule.add_eq_sup, ← codisjoint_iff]
-            rw [← LinearMap.range_eq_map]
-            exact hg.complement_isCompl.2
-          _ = Submodule.map g (LinearMap.range f + F') + hg.complement := by
-            congr
-            symm
-            rw [Submodule.add_eq_sup, ← codisjoint_iff]
-            exact hf.complement_isCompl.2
-          _ ≤ (Submodule.map g (LinearMap.range f) + Submodule.map g F') + hg.complement := by
-            gcongr
-            apply le_of_eq
-            symm
-            apply Submodule.map_add (f := g) (p := LinearMap.range f) (q := F')
-            -- apply Submodule.map_add_le -- I want g.map (s + t), which is sth else!
+      · exact this ▸ disjoint_aux hf.complement_isCompl.1 hg.complement_isCompl.1 hg.injective
+      · rw [codisjoint_iff, this, ← Submodule.add_eq_sup, Submodule.sum_assoc, Submodule.map_add]
+        rw [LinearMap.range_eq_map]
+        trans Submodule.map g ⊤ + hg.complement
+        · congr
+          rw [Submodule.add_eq_sup, ← codisjoint_iff]
+          simpa using hf.complement_isCompl.2
+        · rw [Submodule.add_eq_sup, ← codisjoint_iff, ← LinearMap.range_eq_map]
+          exact hg.complement_isCompl.2
 
-#exit
 lemma compCLE_left [CompleteSpace F'] {f₀ : F' ≃L[𝕜] E} (hf : f.Splits) :
     (f.comp f₀.toContinuousLinearMap).Splits :=
   f₀.splits.comp hf
