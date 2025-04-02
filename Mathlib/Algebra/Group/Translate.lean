@@ -21,7 +21,7 @@ This file defines the translation of a function from a group by an element of th
 
 Generally, translation is the same as acting on the domain by subtraction. This setting is
 abstracted by `DomAct` in such a way that `τ a f = DomAct.mk (-a) +ᵥ f` (see
-`translate_eq_DomActMk_vadd`). Using `DomAct` is irritating in applications because of this
+`translate_eq_domActMk_vadd`). Using `DomAct` is irritating in applications because of this
 negation appearing inside `DomAct.mk`. Although mathematically equivalent, the pen and paper
 convention is that translating is an action by subtraction, not by addition.
 -/
@@ -57,8 +57,11 @@ lemma translate_comm (a b : G) (f : G → α) : τ a (τ b f) = τ b (τ a f) :=
 -- We make `simp` push the `τ` outside
 @[simp] lemma comp_translate (a : G) (f : G → α) (g : α → β) : g ∘ τ a f = τ a (g ∘ f) := rfl
 
-lemma translate_eq_DomActMk_vadd (a : G) (f : G → α) : τ a f = DomAct.mk (-a) +ᵥ f := by
+lemma translate_eq_domActMk_vadd (a : G) (f : G → α) : τ a f = DomAct.mk (-a) +ᵥ f := by
   ext; simp [DomAct.vadd_apply, sub_eq_neg_add]
+
+@[deprecated (since := "2025-04-02")]
+alias translate_eq_domAddActMk_vadd := translate_eq_domActMk_vadd
 
 @[simp]
 lemma translate_smul_right [SMul H α] (a : G) (f : G → α) (c : H) : τ a (c • f) = c • τ a f := rfl

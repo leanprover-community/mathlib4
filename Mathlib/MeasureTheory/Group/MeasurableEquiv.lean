@@ -229,4 +229,6 @@ lemma domSMul_apply (μ : Measure A) (g : Gᵈᵃ) (s : Set A) :
   congr 1
   exact Set.preimage_smul_inv (DomAct.mk.symm g) s
 
+@[deprecated (since := "2025-04-02")] alias dmaSMul_apply := domSMul_apply
+
 end MeasureTheory.Measure

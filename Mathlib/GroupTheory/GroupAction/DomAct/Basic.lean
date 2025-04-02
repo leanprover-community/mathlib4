@@ -87,6 +87,8 @@ on `α → β` as well as some bundled maps from `α`. This is a type synonym fo
 so this corresponds to a right action of `M`. -/
 def DomAct (M : Type*) := PreOpposite M
 
+@[deprecated (since := "2025-04-02")] alias DomMulAct := DomAct
+
 @[inherit_doc] postfix:max "ᵈᵃ" => DomAct
 
 namespace DomAct
