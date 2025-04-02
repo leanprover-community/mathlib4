@@ -582,8 +582,9 @@ noncomputable def fullSubcategory (hP₀ : ClosedUnderLimitsOfShape (Discrete PE
     cone := BinaryFan.mk
       (P := ⟨X.1 ⊗ Y.1, hP₂ (product X.obj Y.obj).isLimit <| by rintro ⟨_ | _⟩ <;> simp [X.2, Y.2]⟩)
       (fst X.1 Y.1) (snd X.1 Y.1)
-    isLimit := isLimitOfReflectsOfMapIsLimit (fullSubcategoryInclusion _) _ _ <|
-      (product X.obj Y.obj).isLimit.ofIsoLimit <| isoBinaryFanMk _
+    isLimit := BinaryFan.IsLimit.mk _ (fun {T} f g ↦ lift (f : T.1 ⟶ X.1) g)
+      (fun f g ↦ lift_fst _ _) (fun f g ↦ lift_snd _ _)
+      (by rintro T f g m rfl rfl; symm; exact lift_comp_fst_snd _)
   }
   terminal.cone := asEmptyCone ⟨𝟙_ C, hP₀ terminal.isLimit <| by simp⟩
   terminal.isLimit := IsTerminal.isTerminalOfObj (fullSubcategoryInclusion _) _ <| .ofUnique (𝟙_ C)
@@ -744,51 +745,17 @@ lemma tensor_obj (X Y : F.EssImageSubcategory) : (X ⊗ Y).obj = X.obj ⊗ Y.obj
 
 lemma fst_def (X Y : F.EssImageSubcategory) : fst X Y = fst X.obj Y.obj := rfl
 lemma snd_def (X Y : F.EssImageSubcategory) : snd X Y = snd X.obj Y.obj := rfl
+lemma lift_def (f : T ⟶ X) (g : T ⟶ Y) : lift f g = lift (T := T.1) f g := rfl
 
-lemma whiskerLeft_def (X : F.EssImageSubcategory) (f : Y ⟶ Z) : X ◁ f = X.obj ◁ f := by
-  ext
-  · erw [whiskerLeft_fst, whiskerLeft_fst]
-    simp [fst_def]
-  · erw [whiskerLeft_snd, whiskerLeft_snd]
-    simp [snd_def]
-    rfl
-
+lemma whiskerLeft_def (X : F.EssImageSubcategory) (f : Y ⟶ Z) : X ◁ f = X.obj ◁ f := rfl
 lemma whiskerRight_def (f : Y ⟶ Z) (X : F.EssImageSubcategory) :
-    f ▷ X = MonoidalCategoryStruct.whiskerRight (C := D) f X.obj := by
-  ext
-  · erw [whiskerRight_fst, whiskerRight_fst]
-    rfl
-  · erw [whiskerRight_snd, whiskerRight_snd]
-    rfl
+    f ▷ X = MonoidalCategoryStruct.whiskerRight (C := D) f X.obj := rfl
 
 lemma associator_hom_def (X Y Z : F.EssImageSubcategory) :
-    (α_ X Y Z).hom = (α_ X.obj Y.obj Z.obj).hom := by
-  ext
-  · erw [associator_hom_fst, associator_hom_fst]
-    rfl
-  · simp only [Category.assoc, associator_hom_snd_fst]
-    erw [associator_hom_snd_fst]
-    rfl
-  · simp only [Category.assoc, associator_hom_snd_snd]
-    erw [associator_hom_snd_snd]
-    rfl
+    (α_ X Y Z).hom = (α_ X.obj Y.obj Z.obj).hom := rfl
 
 lemma associator_inv_def (X Y Z : F.EssImageSubcategory) :
-    (α_ X Y Z).inv = (α_ X.obj Y.obj Z.obj).inv := by
-  ext
-  · simp only [Category.assoc, associator_inv_fst_fst]
-    erw [associator_inv_fst_fst]
-    rfl
-  · simp only [Category.assoc, associator_inv_fst_snd]
-    erw [associator_inv_fst_snd]
-    rfl
-  · erw [associator_inv_snd, associator_inv_snd]
-    rfl
-
-lemma lift_def (f : T ⟶ X) (g : T ⟶ Y) : lift f g = lift (T := T.1) f g := by
-  ext
-  · erw [lift_fst, lift_fst]
-  · erw [lift_snd, lift_snd]
+    (α_ X Y Z).inv = (α_ X.obj Y.obj Z.obj).inv := rfl
 
 lemma toUnit_def (X : F.EssImageSubcategory) : toUnit X = toUnit X.obj := toUnit_unique ..
 
