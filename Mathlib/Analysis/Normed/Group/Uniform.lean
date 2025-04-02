@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Continuity
-import Mathlib.Topology.Algebra.UniformGroup.Basic
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.MetricSpace.Algebra
 import Mathlib.Topology.MetricSpace.IsometricSMul
 
@@ -351,7 +351,7 @@ instance (priority := 100) SeminormedCommGroup.to_lipschitzMul : LipschitzMul E 
 continuous. -/
 @[to_additive "A seminormed group is a uniform additive group, i.e., addition and subtraction are
 uniformly continuous."]
-instance (priority := 100) SeminormedCommGroup.to_uniformGroup : UniformGroup E :=
+instance (priority := 100) SeminormedCommGroup.to_isUniformGroup : IsUniformGroup E :=
   ⟨(LipschitzWith.prod_fst.div LipschitzWith.prod_snd).uniformContinuous⟩
 
 -- short-circuit type class inference

@@ -328,6 +328,8 @@
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.Tactic.Algebraize": ["Mathlib.Algebra.Algebra.Tower"],
   "Mathlib.RingTheory.SimpleModule.Basic": ["Mathlib.Data.Matrix.Mul"],
+  "Mathlib.RingTheory.PowerSeries.Evaluation":
+  ["Mathlib.RingTheory.PowerSeries.PiTopology"],
   "Mathlib.RingTheory.PowerSeries.Basic":
   ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
   "Mathlib.RingTheory.MvPowerSeries.Basic":
@@ -414,6 +416,8 @@
   "Mathlib.Data.Nat.Init": ["Batteries.Tactic.Init"],
   "Mathlib.Data.Nat.Find": ["Batteries.WF"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],
+  "Mathlib.Data.List.Sigma": ["Batteries.Tactic.Congr"],
+  "Mathlib.Data.List.Rotate": ["Mathlib.Data.Quot"],
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],
   "Mathlib.Data.List.ProdSigma":
   ["Batteries.Data.Nat.Lemmas", "Mathlib.Data.List.Basic"],
@@ -502,6 +506,10 @@
   "Mathlib.Algebra.GroupWithZero.Units.Basic": ["Mathlib.Data.Int.Basic"],
   "Mathlib.Algebra.Group.Units.Basic": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.Group.Units": ["Mathlib.Tactic.Subsingleton"],
+  "Mathlib.Algebra.Group.Pointwise.Set.Scalar":
+  ["Mathlib.Algebra.Group.Pointwise.Set.Basic"],
+  "Mathlib.Algebra.Group.Pointwise.Finset.Scalar":
+  ["Mathlib.Algebra.Group.Pointwise.Finset.Basic"],
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.Algebra.Group.Idempotent": ["Mathlib.Data.Subtype"],
   "Mathlib.Algebra.Group.Defs": ["Mathlib.Tactic.OfNat"],

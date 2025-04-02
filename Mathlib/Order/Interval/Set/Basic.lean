@@ -80,35 +80,91 @@ theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp [le_refl]
 theorem right_mem_Iic : a ∈ Iic a := by simp
 
 @[simp]
-theorem dual_Ici : Ici (toDual a) = ofDual ⁻¹' Iic a :=
+theorem Ici_toDual : Ici (toDual a) = ofDual ⁻¹' Iic a :=
+  rfl
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Ici := Ici_toDual
+
+@[simp]
+theorem Iic_toDual : Iic (toDual a) = ofDual ⁻¹' Ici a :=
+  rfl
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Iic := Iic_toDual
+
+@[simp]
+theorem Ioi_toDual : Ioi (toDual a) = ofDual ⁻¹' Iio a :=
+  rfl
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Ioi := Ioi_toDual
+
+@[simp]
+theorem Iio_toDual : Iio (toDual a) = ofDual ⁻¹' Ioi a :=
+  rfl
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Iio := Iio_toDual
+
+@[simp]
+theorem Icc_toDual : Icc (toDual a) (toDual b) = ofDual ⁻¹' Icc b a :=
+  Set.ext fun _ => and_comm
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Icc := Icc_toDual
+
+@[simp]
+theorem Ioc_toDual : Ioc (toDual a) (toDual b) = ofDual ⁻¹' Ico b a :=
+  Set.ext fun _ => and_comm
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Ioc := Ioc_toDual
+
+@[simp]
+theorem Ico_toDual : Ico (toDual a) (toDual b) = ofDual ⁻¹' Ioc b a :=
+  Set.ext fun _ => and_comm
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Ico := Ico_toDual
+
+@[simp]
+theorem Ioo_toDual : Ioo (toDual a) (toDual b) = ofDual ⁻¹' Ioo b a :=
+  Set.ext fun _ => and_comm
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Ioo := Ioo_toDual
+
+@[simp]
+theorem Ici_ofDual {x : αᵒᵈ} : Ici (ofDual x) = toDual ⁻¹' Iic x :=
   rfl
 
 @[simp]
-theorem dual_Iic : Iic (toDual a) = ofDual ⁻¹' Ici a :=
+theorem Iic_ofDual {x : αᵒᵈ} : Iic (ofDual x) = toDual ⁻¹' Ici x :=
   rfl
 
 @[simp]
-theorem dual_Ioi : Ioi (toDual a) = ofDual ⁻¹' Iio a :=
+theorem Ioi_ofDual {x : αᵒᵈ} : Ioi (ofDual x) = toDual ⁻¹' Iio x :=
   rfl
 
 @[simp]
-theorem dual_Iio : Iio (toDual a) = ofDual ⁻¹' Ioi a :=
+theorem Iio_ofDual {x : αᵒᵈ} : Iio (ofDual x) = toDual ⁻¹' Ioi x :=
   rfl
 
 @[simp]
-theorem dual_Icc : Icc (toDual a) (toDual b) = ofDual ⁻¹' Icc b a :=
+theorem Icc_ofDual {x y : αᵒᵈ} : Icc (ofDual y) (ofDual x) = toDual ⁻¹' Icc x y :=
   Set.ext fun _ => and_comm
 
 @[simp]
-theorem dual_Ioc : Ioc (toDual a) (toDual b) = ofDual ⁻¹' Ico b a :=
+theorem Ico_ofDual {x y : αᵒᵈ} : Ico (ofDual y) (ofDual x) = toDual ⁻¹' Ioc x y :=
   Set.ext fun _ => and_comm
 
 @[simp]
-theorem dual_Ico : Ico (toDual a) (toDual b) = ofDual ⁻¹' Ioc b a :=
+theorem Ioc_ofDual {x y : αᵒᵈ} : Ioc (ofDual y) (ofDual x) = toDual ⁻¹' Ico x y :=
   Set.ext fun _ => and_comm
 
 @[simp]
-theorem dual_Ioo : Ioo (toDual a) (toDual b) = ofDual ⁻¹' Ioo b a :=
+theorem Ioo_ofDual {x y : αᵒᵈ} : Ioo (ofDual y) (ofDual x) = toDual ⁻¹' Ioo x y :=
   Set.ext fun _ => and_comm
 
 @[simp]
@@ -465,13 +521,16 @@ theorem _root_.IsTop.Iic_eq (h : IsTop a) : Iic a = univ :=
 theorem _root_.IsBot.Ici_eq (h : IsBot a) : Ici a = univ :=
   eq_univ_of_forall h
 
-theorem Ioi_eq_empty_iff : Ioi a = ∅ ↔ IsMax a := by
+@[simp] theorem Ioi_eq_empty_iff : Ioi a = ∅ ↔ IsMax a := by
   simp only [isMax_iff_forall_not_lt, eq_empty_iff_forall_not_mem, mem_Ioi]
 
-theorem Iio_eq_empty_iff : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty_iff (α := αᵒᵈ)
+@[simp] theorem Iio_eq_empty_iff : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty_iff (α := αᵒᵈ)
 
-alias ⟨_, _root_.IsMax.Ioi_eq⟩ := Ioi_eq_empty_iff
-alias ⟨_, _root_.IsMin.Iio_eq⟩ := Iio_eq_empty_iff
+@[simp] alias ⟨_, _root_.IsMax.Ioi_eq⟩ := Ioi_eq_empty_iff
+@[simp] alias ⟨_, _root_.IsMin.Iio_eq⟩ := Iio_eq_empty_iff
+
+@[simp] lemma Iio_nonempty : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [nonempty_iff_ne_empty]
+@[simp] lemma Ioi_nonempty : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [nonempty_iff_ne_empty]
 
 theorem Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=
   ext fun _ => ⟨fun H => ⟨H.2.1, H.1⟩, fun H => ⟨H.2, H.1, H.2.trans h⟩⟩
@@ -647,7 +706,7 @@ theorem Ioo_union_left (hab : a < b) : Ioo a b ∪ {a} = Ico a b := by
     union_eq_self_of_subset_right (singleton_subset_iff.2 <| left_mem_Ico.2 hab)]
 
 theorem Ioo_union_right (hab : a < b) : Ioo a b ∪ {b} = Ioc a b := by
-  simpa only [dual_Ioo, dual_Ico] using Ioo_union_left hab.dual
+  simpa only [Ioo_toDual, Ico_toDual] using Ioo_union_left hab.dual
 
 theorem Ioo_union_both (h : a ≤ b) : Ioo a b ∪ {a, b} = Icc a b := by
   have : (Icc a b \ {a, b}) ∪ {a, b} = Icc a b := diff_union_of_subset fun
@@ -660,7 +719,7 @@ theorem Ioc_union_left (hab : a ≤ b) : Ioc a b ∪ {a} = Icc a b := by
     union_eq_self_of_subset_right (singleton_subset_iff.2 <| left_mem_Icc.2 hab)]
 
 theorem Ico_union_right (hab : a ≤ b) : Ico a b ∪ {b} = Icc a b := by
-  simpa only [dual_Ioc, dual_Icc] using Ioc_union_left hab.dual
+  simpa only [Ioc_toDual, Icc_toDual] using Ioc_union_left hab.dual
 
 @[simp]
 theorem Ico_insert_right (h : a ≤ b) : insert b (Ico a b) = Icc a b := by
@@ -745,6 +804,11 @@ theorem Ici_inj : Ici a = Ici b ↔ a = b :=
 theorem Iic_inj : Iic a = Iic b ↔ a = b :=
   Iic_injective.eq_iff
 
+@[simp]
+theorem Icc_inter_Icc_eq_singleton (hab : a ≤ b) (hbc : b ≤ c) : Icc a b ∩ Icc b c = {b} := by
+  rw [← Ici_inter_Iic, ← Iic_inter_Ici, inter_inter_inter_comm, Iic_inter_Ici]
+  simp [hab, hbc]
+
 end PartialOrder
 
 section OrderTop
@@ -755,7 +819,6 @@ theorem Ici_top [PartialOrder α] [OrderTop α] : Ici (⊤ : α) = {⊤} :=
 
 variable [Preorder α] [OrderTop α] {a : α}
 
-@[simp]
 theorem Ioi_top : Ioi (⊤ : α) = ∅ :=
   isMax_top.Ioi_eq
 
@@ -779,7 +842,6 @@ theorem Iic_bot [PartialOrder α] [OrderBot α] : Iic (⊥ : α) = {⊥} :=
 
 variable [Preorder α] [OrderBot α] {a : α}
 
-@[simp]
 theorem Iio_bot : Iio (⊥ : α) = ∅ :=
   isMin_bot.Iio_eq
 
@@ -876,7 +938,7 @@ theorem Ico_subset_Ico_iff (h₁ : a₁ < b₁) : Ico a₁ b₁ ⊆ Ico a₂ b�
     fun ⟨h₁, h₂⟩ => Ico_subset_Ico h₁ h₂⟩
 
 theorem Ioc_subset_Ioc_iff (h₁ : a₁ < b₁) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ b₁ ≤ b₂ ∧ a₂ ≤ a₁ := by
-  convert @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ using 2 <;> exact (@dual_Ico α _ _ _).symm
+  convert @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ using 2 <;> exact (@Ico_toDual α _ _ _).symm
 
 theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
     Ioo a₁ b₁ ⊆ Ioo a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ :=
@@ -1411,10 +1473,6 @@ variable [Lattice α] {a b c a₁ a₂ b₁ b₂ : α}
 theorem Icc_inter_Icc : Icc a₁ b₁ ∩ Icc a₂ b₂ = Icc (a₁ ⊔ a₂) (b₁ ⊓ b₂) := by
   simp only [Ici_inter_Iic.symm, Ici_inter_Ici.symm, Iic_inter_Iic.symm]; ac_rfl
 
-@[simp]
-theorem Icc_inter_Icc_eq_singleton (hab : a ≤ b) (hbc : b ≤ c) : Icc a b ∩ Icc b c = {b} := by
-  rw [Icc_inter_Icc, sup_of_le_right hab, inf_of_le_left hbc, Icc_self]
-
 end Both
 
 end Lattice
@@ -1608,10 +1666,10 @@ namespace Set
 @[simp] lemma Iic_True : Iic True = univ := by aesop
 @[simp] lemma Ici_False : Ici False = univ := by aesop
 @[simp] lemma Ici_True : Ici True = {True} := by aesop
-@[simp] lemma Iio_False : Iio False = ∅ := by aesop
+lemma Iio_False : Iio False = ∅ := by aesop
 @[simp] lemma Iio_True : Iio True = {False} := by aesop (add simp [Ioi, lt_iff_le_not_le])
 @[simp] lemma Ioi_False : Ioi False = {True} := by aesop (add simp [Ioi, lt_iff_le_not_le])
-@[simp] lemma Ioi_True : Ioi True = ∅ := by aesop
+lemma Ioi_True : Ioi True = ∅ := by aesop
 
 end Set
 

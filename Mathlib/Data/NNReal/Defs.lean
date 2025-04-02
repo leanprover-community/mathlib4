@@ -647,6 +647,9 @@ theorem toNNReal_pow {x : ℝ} (hx : 0 ≤ x) (n : ℕ) : (x ^ n).toNNReal = x.t
   rw [← coe_inj, NNReal.coe_pow, Real.coe_toNNReal _ (pow_nonneg hx _),
     Real.coe_toNNReal x hx]
 
+theorem toNNReal_zpow {x : ℝ} (hx : 0 ≤ x) (n : ℤ) : (x ^ n).toNNReal = x.toNNReal ^ n := by
+  rw [← coe_inj, NNReal.coe_zpow, Real.coe_toNNReal _ (zpow_nonneg hx _), Real.coe_toNNReal x hx]
+
 theorem toNNReal_mul {p q : ℝ} (hp : 0 ≤ p) :
     Real.toNNReal (p * q) = Real.toNNReal p * Real.toNNReal q :=
   NNReal.eq <| by simp [mul_max_of_nonneg, hp]
@@ -904,6 +907,36 @@ theorem coe_toNNReal_le (x : ℝ) : (toNNReal x : ℝ) ≤ |x| :=
 theorem cast_natAbs_eq_nnabs_cast (n : ℤ) : (n.natAbs : ℝ≥0) = nnabs n := by
   ext
   rw [NNReal.coe_natCast, Int.cast_natAbs, Real.coe_nnabs, Int.cast_abs]
+
+/-- Every real number nonnegative or nonpositive, phrased using `ℝ≥0`. -/
+lemma nnreal_dichotomy (r : ℝ) : ∃ x : ℝ≥0, r = x ∨ r = -x := by
+  obtain (hr | hr) : 0 ≤ r ∨ 0 ≤ -r := by simpa using le_total ..
+  all_goals
+    rw [← neg_neg r]
+    lift (_ : ℝ) to ℝ≥0 using hr with r
+    aesop
+
+/-- Every real number is either zero, positive or negative, phrased using `ℝ≥0`. -/
+lemma nnreal_trichotomy (r : ℝ) : r = 0 ∨ ∃ x : ℝ≥0, 0 < x ∧ (r = x ∨ r = -x) := by
+  obtain ⟨x, hx⟩ := nnreal_dichotomy r
+  rw [or_iff_not_imp_left]
+  aesop (add simp pos_iff_ne_zero)
+
+/-- To prove a property holds for real numbers it suffices to show that it holds for `x : ℝ≥0`,
+and if it holds for `x : ℝ≥0`, then it does also for `(-↑x : ℝ)`. -/
+@[elab_as_elim]
+lemma nnreal_induction_on {motive : ℝ → Prop} (nonneg : ∀ x : ℝ≥0, motive x)
+    (nonpos : ∀ x : ℝ≥0, motive x → motive (-x)) (r : ℝ) : motive r := by
+  obtain ⟨r, (rfl | rfl)⟩ := r.nnreal_dichotomy
+  all_goals simp_all
+
+/-- A version of `nnreal_induction_on` which splits into three cases (zero, positive and negative)
+instead of two. -/
+@[elab_as_elim]
+lemma nnreal_induction_on' {motive : ℝ → Prop} (zero : motive 0) (pos : ∀ x : ℝ≥0, 0 < x → motive x)
+    (neg : ∀ x : ℝ≥0, 0 < x → motive x → motive (-x)) (r : ℝ) : motive r := by
+  obtain rfl | ⟨r, hr, (rfl | rfl)⟩ := r.nnreal_trichotomy
+  all_goals simp_all
 
 end Real
 
