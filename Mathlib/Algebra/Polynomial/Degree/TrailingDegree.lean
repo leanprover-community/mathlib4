@@ -52,7 +52,7 @@ theorem trailingDegree_lt_wf : WellFounded fun p q : R[X] => trailingDegree p < 
 def natTrailingDegree (p : R[X]) : ℕ :=
   ENat.toNat (trailingDegree p)
 
-/-- `trailingCoeff p` gives the coefficient of the smallest power of `X` in `p`-/
+/-- `trailingCoeff p` gives the coefficient of the smallest power of `X` in `p`. -/
 def trailingCoeff (p : R[X]) : R :=
   coeff p (natTrailingDegree p)
 
@@ -285,16 +285,15 @@ theorem le_trailingDegree_mul : p.trailingDegree + q.trailingDegree ≤ (p * q).
   obtain ⟨⟨i, j⟩, hij, hpq⟩ := exists_ne_zero_of_sum_ne_zero hn
   refine
     (add_le_add (min_le (mem_support_iff.mpr (left_ne_zero_of_mul hpq)))
-          (min_le (mem_support_iff.mpr (right_ne_zero_of_mul hpq)))).trans
-      (le_of_eq ?_)
+          (min_le (mem_support_iff.mpr (right_ne_zero_of_mul hpq)))).trans_eq ?_
   rwa [← WithTop.coe_add, WithTop.coe_eq_coe, ← mem_antidiagonal]
 
 theorem le_natTrailingDegree_mul (h : p * q ≠ 0) :
     p.natTrailingDegree + q.natTrailingDegree ≤ (p * q).natTrailingDegree := by
   have hp : p ≠ 0 := fun hp => h (by rw [hp, zero_mul])
   have hq : q ≠ 0 := fun hq => h (by rw [hq, mul_zero])
-  have (p : R[X]) : WithTop.some (natTrailingDegree p) = Nat.cast (natTrailingDegree p) := rfl
-  rw [← WithTop.coe_le_coe, WithTop.coe_add, this p, this q, this (p * q),
+  rw [← WithTop.coe_le_coe, WithTop.coe_add, ← Nat.cast_withTop (natTrailingDegree p),
+    ← Nat.cast_withTop (natTrailingDegree q), ← Nat.cast_withTop (natTrailingDegree (p * q)),
     ← trailingDegree_eq_natTrailingDegree hp, ← trailingDegree_eq_natTrailingDegree hq,
     ← trailingDegree_eq_natTrailingDegree h]
   exact le_trailingDegree_mul
@@ -329,12 +328,10 @@ theorem natTrailingDegree_mul' (h : p.trailingCoeff * q.trailingCoeff ≠ 0) :
     (p * q).natTrailingDegree = p.natTrailingDegree + q.natTrailingDegree := by
   have hp : p ≠ 0 := fun hp => h (by rw [hp, trailingCoeff_zero, zero_mul])
   have hq : q ≠ 0 := fun hq => h (by rw [hq, trailingCoeff_zero, mul_zero])
-  have aux1 n : Nat.cast n = WithTop.some (n) := rfl
-  have aux2 (p : R[X]) : WithTop.some (natTrailingDegree p) = Nat.cast (natTrailingDegree p) := rfl
   apply natTrailingDegree_eq_of_trailingDegree_eq_some
-  rw [trailingDegree_mul' h, aux1 (natTrailingDegree p + natTrailingDegree q),
-    WithTop.coe_add, aux2 p, aux2 q, ← trailingDegree_eq_natTrailingDegree hp, ←
-    trailingDegree_eq_natTrailingDegree hq]
+  rw [trailingDegree_mul' h, Nat.cast_withTop (natTrailingDegree p + natTrailingDegree q),
+    WithTop.coe_add, ← Nat.cast_withTop, ← Nat.cast_withTop,
+    ← trailingDegree_eq_natTrailingDegree hp, ← trailingDegree_eq_natTrailingDegree hq]
 
 theorem natTrailingDegree_mul [NoZeroDivisors R] (hp : p ≠ 0) (hq : q ≠ 0) :
     (p * q).natTrailingDegree = p.natTrailingDegree + q.natTrailingDegree :=

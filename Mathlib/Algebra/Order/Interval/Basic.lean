@@ -3,12 +3,12 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Order.Interval.Basic
 import Mathlib.Tactic.Positivity.Core
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Interval arithmetic
@@ -54,7 +54,6 @@ theorem fst_one : (1 : NonemptyInterval α).fst = 1 :=
 theorem snd_one : (1 : NonemptyInterval α).snd = 1 :=
   rfl
 
--- Porting note: Originally `@[simp, norm_cast, to_additive]`
 @[to_additive (attr := push_cast, simp)]
 theorem coe_one_interval : ((1 : NonemptyInterval α) : Interval α) = 1 :=
   rfl

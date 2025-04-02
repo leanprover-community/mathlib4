@@ -135,8 +135,11 @@ theorem reduceOption_concat_of_some (l : List (Option α)) (x : α) :
 theorem reduceOption_mem_iff {l : List (Option α)} {x : α} : x ∈ l.reduceOption ↔ some x ∈ l := by
   simp only [reduceOption, id, mem_filterMap, exists_eq_right]
 
-theorem reduceOption_get?_iff {l : List (Option α)} {x : α} :
-    (∃ i, l.get? i = some (some x)) ↔ ∃ i, l.reduceOption.get? i = some x := by
-  rw [← mem_iff_get?, ← mem_iff_get?, reduceOption_mem_iff]
+theorem reduceOption_getElem?_iff {l : List (Option α)} {x : α} :
+    (∃ i : ℕ, l[i]? = some (some x)) ↔ ∃ i : ℕ, l.reduceOption[i]? = some x := by
+  rw [← mem_iff_getElem?, ← mem_iff_getElem?, reduceOption_mem_iff]
+
+@[deprecated (since := "2025-02-21")]
+alias reduceOption_get?_iff := reduceOption_getElem?_iff
 
 end List

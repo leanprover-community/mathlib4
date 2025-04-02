@@ -45,13 +45,13 @@ variable (i) [ChosenFiniteProducts C] [CartesianClosed C]
 `B ∈ D` implies `A ⟹ B ∈ D` for all `A`.
 -/
 class ExponentialIdeal : Prop where
-  exp_closed : ∀ {B}, B ∈ i.essImage → ∀ A, (A ⟹ B) ∈ i.essImage
+  exp_closed : ∀ {B}, i.essImage B → ∀ A, i.essImage (A ⟹ B)
 attribute [nolint docBlame] ExponentialIdeal.exp_closed
 
 /-- To show `i` is an exponential ideal it suffices to show that `A ⟹ iB` is "in" `D` for any `A` in
 `C` and `B` in `D`.
 -/
-theorem ExponentialIdeal.mk' (h : ∀ (B : D) (A : C), (A ⟹ i.obj B) ∈ i.essImage) :
+theorem ExponentialIdeal.mk' (h : ∀ (B : D) (A : C), i.essImage (A ⟹ i.obj B)) :
     ExponentialIdeal i :=
   ⟨fun hB A => by
     rcases hB with ⟨B', ⟨iB'⟩⟩
@@ -302,7 +302,7 @@ lemma preservesBinaryProducts_of_exponentialIdeal :
 /--
 If a reflective subcategory is an exponential ideal, then the reflector preserves finite products.
 -/
-lemma preservesFiniteProducts_of_exponentialIdeal (J : Type) [Fintype J] :
+lemma preservesFiniteProducts_of_exponentialIdeal (J : Type) [Finite J] :
     PreservesLimitsOfShape (Discrete J) (reflector i) := by
   letI := preservesBinaryProducts_of_exponentialIdeal i
   letI : PreservesLimitsOfShape _ (reflector i) := leftAdjoint_preservesTerminal_of_reflective.{0} i

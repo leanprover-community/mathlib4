@@ -74,7 +74,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
     (ha : ∀ i, i + 2 ≤ n → a (i + 1) ∣ a i + a (i + 2)) :
     ∃ b : ℕ, (b : α) = ∑ i ∈ Finset.range n, (a 0 : α) * a n / (a i * a (i + 1)) := by
   -- Treat separately `n = 0` and `n ≥ 1`
-  cases' n with n
+  rcases n with - | n
   /- Case `n = 0`
     The sum is trivially equal to `0` -/
   · exact ⟨0, by rw [Nat.cast_zero, Finset.sum_range_zero]⟩
@@ -91,7 +91,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
     `ih` will be the induction hypothesis -/
   induction' n with n ih
   /- Base case
-    Claim that the sum equals `1`-/
+    Claim that the sum equals `1` -/
   · refine ⟨1, ?_, ?_⟩
     -- Check that this indeed equals the sum
     · rw [Nat.cast_one, Finset.sum_range_one]

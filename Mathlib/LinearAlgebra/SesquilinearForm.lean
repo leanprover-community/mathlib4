@@ -3,8 +3,9 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
-import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # Sesquilinear maps
@@ -96,7 +97,7 @@ theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} 
   constructor <;> intro H
   · rw [map_smulₛₗ₂, H, smul_zero]
   · rw [map_smulₛₗ₂, smul_eq_zero] at H
-    cases' H with H H
+    rcases H with H | H
     · rw [map_eq_zero I₁] at H
       trivial
     · exact H
@@ -108,7 +109,7 @@ theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y}
   constructor <;> intro H
   · rw [map_smulₛₗ, H, smul_zero]
   · rw [map_smulₛₗ, smul_eq_zero] at H
-    cases' H with H H
+    rcases H with H | H
     · simp only [map_eq_zero] at H
       exfalso
       exact ha H
@@ -351,7 +352,7 @@ theorem span_singleton_inf_orthogonal_eq_bot (B : V₁ →ₛₗ[J₁] V₁ →�
     (hx : ¬B.IsOrtho x x) : (K₁ ∙ x) ⊓ Submodule.orthogonalBilin (K₁ ∙ x) B = ⊥ := by
   rw [← Finset.coe_singleton]
   refine eq_bot_iff.2 fun y h ↦ ?_
-  rcases mem_span_finset.1 h.1 with ⟨μ, rfl⟩
+  obtain ⟨μ, -, rfl⟩ := Submodule.mem_span_finset.1 h.1
   replace h := h.2 x (by simp [Submodule.mem_span] : x ∈ Submodule.span K₁ ({x} : Finset V₁))
   rw [Finset.sum_singleton] at h ⊢
   suffices hμzero : μ x = 0 by rw [hμzero, zero_smul, Submodule.mem_bot]

@@ -113,8 +113,8 @@ theorem stalkToFiber_injective (x : X) : Function.Injective (F.stalkToFiber x) :
   · intro w
     specialize wU ⟨w.1, w.2.2.1⟩
     specialize wV ⟨w.1, w.2.2.2⟩
-    dsimp at wU wV ⊢
-    rw [wU, ← F.germ_res iU' w w.2.1, wV, ← F.germ_res iV' w w.2.1,
+    refine wU.trans <| .trans ?_ wV.symm
+    rw [← F.germ_res iU' w w.2.1, ← F.germ_res iV' w w.2.1,
       CategoryTheory.types_comp_apply, CategoryTheory.types_comp_apply, e']
 
 /-- The isomorphism between a stalk of the sheafification and the original stalk.

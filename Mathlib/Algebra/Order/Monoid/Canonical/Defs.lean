@@ -22,8 +22,8 @@ variable {α : Type u}
   which is to say, `a ≤ b` iff there exists `c` with `b = a + c`.
   This is satisfied by the natural numbers, for example, but not
   the integers or other nontrivial `OrderedAddCommGroup`s. -/
-class CanonicallyOrderedAdd (α : Type*) [Add α] [LE α] extends
-  ExistsAddOfLE α : Prop where
+class CanonicallyOrderedAdd (α : Type*) [Add α] [LE α] : Prop
+    extends ExistsAddOfLE α where
   /-- For any `a` and `b`, `a ≤ a + b` -/
   protected le_self_add : ∀ a b : α, a ≤ a + b
 
@@ -38,8 +38,8 @@ attribute [instance 50] CanonicallyOrderedAdd.toExistsAddOfLE
   Dedekind domain satisfy this; collections of all things ≤ 1 seem to
   be more natural that collections of all things ≥ 1). -/
 @[to_additive]
-class CanonicallyOrderedMul (α : Type*) [Mul α] [LE α] extends
-  ExistsMulOfLE α : Prop where
+class CanonicallyOrderedMul (α : Type*) [Mul α] [LE α] : Prop
+    extends ExistsMulOfLE α where
   /-- For any `a` and `b`, `a ≤ a * b` -/
   protected le_self_mul : ∀ a b : α, a ≤ a * b
 
@@ -170,6 +170,8 @@ instance (priority := 10) CanonicallyOrderedMul.toOrderBot : OrderBot α where
   bot := 1
   bot_le := one_le
 
+@[to_additive] theorem bot_eq_one : (⊥ : α) = 1 := rfl
+
 end LE
 
 section Preorder
@@ -177,7 +179,7 @@ variable [Preorder α] [CanonicallyOrderedMul α] {a b : α}
 
 @[to_additive (attr := simp)]
 theorem one_lt_of_gt (h : a < b) : 1 < b :=
-  (one_le _).trans_lt h
+  h.bot_lt
 
 alias LT.lt.pos := pos_of_gt
 @[to_additive existing] alias LT.lt.one_lt := one_lt_of_gt
@@ -187,31 +189,14 @@ end Preorder
 section PartialOrder
 variable [PartialOrder α] [CanonicallyOrderedMul α] {a b c : α}
 
-@[to_additive]
-theorem bot_eq_one : (⊥ : α) = 1 :=
-  le_antisymm bot_le (one_le ⊥)
-
-@[to_additive (attr := simp)]
-theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 :=
-  (one_le a).le_iff_eq
-
-@[to_additive]
-theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 :=
-  (one_le a).lt_iff_ne.trans ne_comm
-
-@[to_additive]
-theorem one_lt_of_ne_one (h : a ≠ 1) : 1 < a :=
-  one_lt_iff_ne_one.2 h
+@[to_additive (attr := simp)] theorem le_one_iff_eq_one : a ≤ 1 ↔ a = 1 := le_bot_iff
+@[to_additive] theorem one_lt_iff_ne_one : 1 < a ↔ a ≠ 1 := bot_lt_iff_ne_bot
+@[to_additive] theorem one_lt_of_ne_one (h : a ≠ 1) : 1 < a := h.bot_lt
+@[to_additive] theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := eq_bot_or_bot_lt a
+@[to_additive] lemma one_not_mem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x := bot_not_mem_iff
 
 alias NE.ne.pos := pos_of_ne_zero
 @[to_additive existing] alias NE.ne.one_lt := one_lt_of_ne_one
-
-@[to_additive]
-theorem eq_one_or_one_lt (a : α) : a = 1 ∨ 1 < a := (one_le a).eq_or_lt.imp_left Eq.symm
-
-@[to_additive]
-lemma one_not_mem_iff {s : Set α} : 1 ∉ s ↔ ∀ x ∈ s, 1 < x :=
-  bot_eq_one (α := α) ▸ bot_not_mem_iff
 
 @[to_additive]
 theorem exists_one_lt_mul_of_lt (h : a < b) : ∃ (c : _) (_ : 1 < c), a * c = b := by
@@ -300,7 +285,6 @@ theorem of_gt {M} [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M]
 -- metavariable and it will hugely slow down typeclass inference.
 instance (priority := 10) of_gt' {M : Type*} [AddZeroClass M] [Preorder M] [CanonicallyOrderedAdd M]
     [One M] {y : M}
-    -- Porting note: Fact.out has different type signature from mathlib3
     [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
 
 end NeZero

@@ -40,13 +40,13 @@ namespace Presheaf
 
 /-- Given `f : F ⟶ G`, a morphism between presieves, and `s : G.obj (op U)`, this is the sieve
 of `U` consisting of the `i : V ⟶ U` such that `s` restricted along `i` is in the image of `f`. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def imageSieve {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : ToType (G.obj (op U))) : Sieve U where
   arrows V i := ∃ t : ToType (F.obj (op V)), f.app _ t = G.map i.op s
   downward_closed := by
     rintro V W i ⟨t, ht⟩ j
     refine ⟨F.map j.op t, ?_⟩
-    rw [op_comp, G.map_comp, ConcreteCategory.comp_apply, ← ht, elementwise_of% f.naturality]
+    rw [op_comp, G.map_comp, ConcreteCategory.comp_apply, ← ht, NatTrans.naturality_apply f]
 
 theorem imageSieve_eq_sieveOfSection {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C}
     (s : ToType (G.obj (op U))) :
@@ -62,12 +62,11 @@ theorem imageSieve_app {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : C} (s : ToType (
     imageSieve f (f.app _ s) = ⊤ := by
   ext V i
   simp only [Sieve.top_apply, iff_true, imageSieve_apply]
-  have := elementwise_of% (f.naturality i.op)
-  exact ⟨F.map i.op s, this s⟩
+  exact ⟨F.map i.op s, NatTrans.naturality_apply f i.op s⟩
 
 /-- If a morphism `g : V ⟶ U.unop` belongs to the sieve `imageSieve f s g`, then
 this is choice of a preimage of `G.map g.op s` in `F.obj (op V)`, see
-`app_localPreimage`.-/
+`app_localPreimage`. -/
 noncomputable def localPreimage {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) {U : Cᵒᵖ} (s : ToType (G.obj U))
     {V : C} (g : V ⟶ U.unop) (hg : imageSieve f s g) :
     ToType (F.obj (op V)) :=
@@ -142,7 +141,7 @@ instance isLocallySurjective_comp {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} (f₁ : F₁ 
       rintro V i ⟨W, i, j, H, ⟨t', ht'⟩, rfl⟩
       refine ⟨t', ?_⟩
       rw [op_comp, F₃.map_comp, NatTrans.comp_app, ConcreteCategory.comp_apply,
-        ConcreteCategory.comp_apply, ht', elementwise_of% f₂.naturality, H.choose_spec]
+        ConcreteCategory.comp_apply, ht', NatTrans.naturality_apply, H.choose_spec]
     apply J.superset_covering this
     apply J.bind_covering
     · apply imageSieve_mem
@@ -199,17 +198,13 @@ lemma isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective
       equalizerSieve (localPreimage f₁ x₁ f hf.1) (localPreimage f₁ x₂ f hf.2)
     refine J.superset_covering ?_ (J.transitive hS (Sieve.bind S.1 T) ?_)
     · rintro Y f ⟨Z, a, g, hg, ha, rfl⟩
-      -- Manually invoke `elementwise_of%` to obtain a `ConcreteCategory result
-      simpa [elementwise_of% NatTrans.naturality (D := A)] using congr_arg (f₁.app _) ha
+      simpa using congr_arg (f₁.app _) ha
     · intro Y f hf
       apply J.superset_covering (Sieve.le_pullback_bind _ _ _ hf)
       apply equalizerSieve_mem J (f₁ ≫ f₂)
       dsimp
       rw [ConcreteCategory.comp_apply, ConcreteCategory.comp_apply, app_localPreimage,
-        app_localPreimage,
-        -- Manually invoke `elementwise_of%` to obtain a `ConcreteCategory result
-        elementwise_of% NatTrans.naturality (D := A), elementwise_of% NatTrans.naturality (D := A),
-        h]
+        app_localPreimage, NatTrans.naturality_apply, NatTrans.naturality_apply, h]
 
 lemma isLocallyInjective_of_isLocallyInjective_of_isLocallySurjective_fac
     {F₁ F₂ F₃ : Cᵒᵖ ⥤ A} {f₁ : F₁ ⟶ F₂} {f₂ : F₂ ⟶ F₃} (f₃ : F₁ ⟶ F₃) (fac : f₁ ≫ f₂ = f₃)
@@ -229,13 +224,11 @@ lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective
     refine J.superset_covering ?_ (J.transitive (imageSieve_mem J (f₁ ≫ f₂) (f₂.app _ x))
       (Sieve.bind S.1 T) ?_)
     · rintro Y _ ⟨Z, a, g, hg, ha, rfl⟩
-      exact ⟨F₁.map a.op (localPreimage (f₁ ≫ f₂) _ _ hg), by
-        -- Manually invoke `elementwise_of%` to obtain a `ConcreteCategory result
-        simpa [elementwise_of% NatTrans.naturality (D := A)] using ha⟩
+      exact ⟨F₁.map a.op (localPreimage (f₁ ≫ f₂) _ _ hg), by simpa using ha⟩
     · intro Y f hf
       apply J.superset_covering (Sieve.le_pullback_bind _ _ _ hf)
       apply equalizerSieve_mem J f₂
-      rw [elementwise_of% NatTrans.naturality (D := A), ← app_localPreimage (f₁ ≫ f₂) _ _ hf,
+      rw [NatTrans.naturality_apply, ← app_localPreimage (f₁ ≫ f₂) _ _ hf,
         NatTrans.comp_app, ConcreteCategory.comp_apply]
 
 lemma isLocallySurjective_of_isLocallySurjective_of_isLocallyInjective_fac

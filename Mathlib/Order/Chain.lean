@@ -228,7 +228,7 @@ private theorem chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁)
     SuccChain r c₂ ⊆ c₁ ∨ c₁ ⊆ c₂ := by
   induction hc₁ with
   | @succ c₃ hc₃ ih =>
-    cases' ih with ih ih
+    obtain ih | ih := ih
     · exact Or.inl (ih.trans subset_succChain)
     · exact (h hc₃ ih).imp_left fun (h : c₂ = c₃) => h ▸ Subset.rfl
   | union _ ih =>
@@ -372,8 +372,7 @@ lemma mem_iff_forall_le_or_ge : a ∈ s ↔ ∀ ⦃b⦄, b ∈ s → a ≤ b ∨
         s.maxChain.2 (s.chain_le.insert fun c hc _ => hb hc) <| Set.subset_insert _ _⟩
 
 /-- Flags are preserved under order isomorphisms. -/
-def map (e : α ≃o β) : Flag α ≃ Flag β
-    where
+def map (e : α ≃o β) : Flag α ≃ Flag β where
   toFun s := ofIsMaxChain _ (s.maxChain.image e)
   invFun s := ofIsMaxChain _ (s.maxChain.image e.symm)
   left_inv s := ext <| e.symm_image_image s
@@ -391,8 +390,7 @@ variable [PartialOrder α]
 
 theorem chain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := s.chain_le.lt_of_le
 
-instance [DecidableRel (α := α) (· ≤ ·)] [DecidableRel (α := α) (· < ·)] (s : Flag α) :
-    LinearOrder s :=
+instance [DecidableLE α] [DecidableLT α] (s : Flag α) : LinearOrder s :=
   { Subtype.partialOrder _ with
     le_total := fun a b => s.le_or_le a.2 b.2
     decidableLE := Subtype.decidableLE

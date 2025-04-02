@@ -6,7 +6,12 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.ComposableArrows
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.Fin
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Filtered.Final
+import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Preorder
 import Mathlib.Data.Fin.SuccPred
+import Mathlib.Order.LatticeIntervals
+import Mathlib.Order.Interval.Set.Final
 
 /-!
 # A structure to describe transfinite compositions
@@ -20,19 +25,16 @@ which appear in the transfinite composition.
 See `MorphismProperty.TransfiniteCompositionOfShape` in the
 file `MorphismProperty.TransfiniteComposition`.
 
-## TODO (@joelriou)
-* define relative cell complexes by extending `TransfiniteCompositionOfShape`
-and refactor the definition of CW-complexes
-
 -/
 
-universe w w' v u
+universe w w' v v' u u'
 
 namespace CategoryTheory
 
 open Limits
 
-variable {C : Type u} [Category.{v} C] (J : Type w) [LinearOrder J] [OrderBot J]
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+  (J : Type w) [LinearOrder J] [OrderBot J]
   {X Y : C} (f : X ⟶ Y)
 
 /-- Given a well-ordered type `J`, a morphism `f : X ⟶ Y` in a category `C`
@@ -89,6 +91,47 @@ def ofOrderIso {J' : Type w'} [LinearOrder J'] [OrderBot J']
   isoBot := c.F.mapIso (eqToIso e.map_bot) ≪≫ c.isoBot
   incl := whiskerLeft e.equivalence.functor c.incl
   isColimit := IsColimit.whiskerEquivalence (c.isColimit) e.equivalence
+
+/-- If `f` is a transfinite composition of shape `J`, then `F.map f` also is
+provided `F` preserves suitable colimits. -/
+@[simps]
+noncomputable def map (F : C ⥤ D) [PreservesWellOrderContinuousOfShape J F]
+    [PreservesColimitsOfShape J F] :
+    TransfiniteCompositionOfShape J (F.map f) where
+  F := c.F ⋙ F
+  isoBot := F.mapIso c.isoBot
+  incl := whiskerRight c.incl F ≫ (Functor.constComp _ _ _).hom
+  isColimit :=
+    IsColimit.ofIsoColimit (isColimitOfPreserves F c.isColimit)
+      (Cocones.ext (Iso.refl _))
+  fac := by simp [← Functor.map_comp]
+
+/-- A transfinite composition of shape `J` induces a transfinite composition
+of shape `Set.Iic j` for any `j : J`. -/
+@[simps]
+def iic (j : J) :
+    TransfiniteCompositionOfShape (Set.Iic j) (c.F.map (homOfLE bot_le : ⊥ ⟶ j)) where
+  F := (Set.initialSegIic j).monotone.functor ⋙ c.F
+  isoBot := Iso.refl _
+  incl :=
+    { app i := c.F.map (homOfLE i.2)
+      naturality i i' φ := by
+        dsimp
+        rw [← Functor.map_comp, Category.comp_id]
+        rfl }
+  isColimit := colimitOfDiagramTerminal isTerminalTop _
+
+/-- A transfinite composition of shape `J` induces a transfinite composition
+of shape `Set.Ici j` for any `j : J`. -/
+@[simps]
+noncomputable def ici (j : J) :
+    TransfiniteCompositionOfShape (Set.Ici j) (c.incl.app j) where
+  F := (Subtype.mono_coe (Set.Ici j)).functor ⋙ c.F
+  isWellOrderContinuous := Functor.IsWellOrderContinuous.restriction_setIci _
+  isoBot := Iso.refl _
+  incl := whiskerLeft _ c.incl
+  isColimit := (Functor.Final.isColimitWhiskerEquiv
+    ((Subtype.mono_coe (Set.Ici j)).functor) _).2 c.isColimit
 
 end TransfiniteCompositionOfShape
 

@@ -35,7 +35,8 @@ open TopCat.Presheaf
 namespace AlgebraicGeometry
 
 /-- The type of Ringed spaces, as an abbreviation for `SheafedSpace CommRingCat`. -/
-abbrev RingedSpace : TypeMax.{u+1, v+1} :=
+@[nolint checkUnivs] -- The universes appear together in the type, but separately in the value.
+abbrev RingedSpace : Type max (u+1) (v+1) :=
   SheafedSpace.{v+1, v, u} CommRingCat.{v}
 
 namespace RingedSpace
@@ -44,8 +45,7 @@ open SheafedSpace
 
 @[simp]
 lemma res_zero {X : RingedSpace.{u}} {U V : TopologicalSpace.Opens X}
-    (hUV : U ≤ V) : (0 : X.presheaf.obj (op V)) |_ U =
-      (0 : (CategoryTheory.forget CommRingCat).obj (X.presheaf.obj (op U))) :=
+    (hUV : U ≤ V) : (0 : X.presheaf.obj (op V)) |_ U = (0 : X.presheaf.obj (op U)) :=
   RingHom.map_zero _
 
 variable (X : RingedSpace)

@@ -16,6 +16,7 @@ is equivalent to the category of "native" bundled monoids.
 Moreover, this equivalence is compatible with the forgetful functors to `Type`.
 -/
 
+assert_not_exists MonoidWithZero
 
 universe v u
 

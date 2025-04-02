@@ -6,9 +6,21 @@ run_cmd liftTermElabM do
   guard ([`A, `A.B.C_3, `A.B.C_2, `A.B.C_1, `A.B.C_0, `A.B.C].map previousInstName
       == [`A, `A.B.C_2, `A.B.C_1, `A.B.C,   `A.B.C,   `A.B.C])
 
+run_cmd
+  let stx ← `(variable (a : Nat) in theorem TestingAttributes : a = a := rfl)
+  let nm ← Mathlib.Command.MinImports.getDeclName stx
+  if `TestingAttributes != nm.eraseMacroScopes then
+    Lean.logWarning "Possible misparsing of declaration modifiers!"
+
 /-- info: import Mathlib.Tactic.FunProp.Attr -/
 #guard_msgs in
 #min_imports in (← `(declModifiers|@[fun_prop]))
+
+-- check that `scoped` attributes do not cause elaboration problems
+/-- info: import Lean.Parser.Command -/
+#guard_msgs in
+#min_imports in
+@[scoped simp] theorem XX.YY : 0 = 0 := rfl
 
 namespace X
 /-- info: import Mathlib.Algebra.Ring.Nat -/

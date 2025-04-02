@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Apurva Nakade, Yuyang Zhao
 -/
 import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.SetTheory.Game.PGame
+import Mathlib.SetTheory.PGame.Algebra
 import Mathlib.Tactic.Abel
 
 /-!
@@ -404,7 +404,7 @@ def mulCommRelabelling (x y : PGame.{u}) : x * y ≡r y * x :=
   termination_by (x, y)
 
 theorem quot_mul_comm (x y : PGame.{u}) : (⟦x * y⟧ : Game) = ⟦y * x⟧ :=
-  game_eq (mulCommRelabelling x y).equiv
+  game_eq (x.mul_comm y).equiv
 
 /-- `x * y` is equivalent to `y * x`. -/
 theorem mul_comm_equiv (x y : PGame) : x * y ≈ y * x :=
@@ -433,7 +433,7 @@ def mulZeroRelabelling (x : PGame) : x * 0 ≡r 0 :=
 
 /-- `x * 0` is equivalent to `0`. -/
 theorem mul_zero_equiv (x : PGame) : x * 0 ≈ 0 :=
-  (mulZeroRelabelling x).equiv
+  x.mul_zero.equiv
 
 @[simp]
 theorem quot_mul_zero (x : PGame) : (⟦x * 0⟧ : Game) = 0 :=
@@ -448,7 +448,7 @@ def zeroMulRelabelling (x : PGame) : 0 * x ≡r 0 :=
 
 /-- `0 * x` is equivalent to `0`. -/
 theorem zero_mul_equiv (x : PGame) : 0 * x ≈ 0 :=
-  (zeroMulRelabelling x).equiv
+  x.zero_mul.equiv
 
 @[simp]
 theorem quot_zero_mul (x : PGame) : (⟦0 * x⟧ : Game) = 0 :=
@@ -492,14 +492,14 @@ lemma neg_mul (x y : PGame) : -x * y ≡ -(x * y) :=
 
 @[simp]
 theorem quot_neg_mul (x y : PGame) : (⟦-x * y⟧ : Game) = -⟦x * y⟧ :=
-  game_eq (negMulRelabelling x y).equiv
+  game_eq (x.neg_mul y).equiv
 
 /-- `x * -y` and `-(x * y)` have the same moves. -/
 def mulNegRelabelling (x y : PGame) : x * -y ≡r -(x * y) :=
   (mulCommRelabelling x _).trans <| (negMulRelabelling _ x).trans (mulCommRelabelling y x).negCongr
 
 theorem quot_mul_neg (x y : PGame) : ⟦x * -y⟧ = (-⟦x * y⟧ : Game) :=
-  game_eq (mulNegRelabelling x y).equiv
+  game_eq (by rw [mul_neg])
 
 theorem quot_neg_mul_neg (x y : PGame) : ⟦-x * -y⟧ = (⟦x * y⟧ : Game) := by simp
 
@@ -600,7 +600,7 @@ theorem quot_left_distrib (x y z : PGame) : (⟦x * (y + z)⟧ : Game) = ⟦x * 
         abel
   termination_by (x, y, z)
 
-/-- `x * (y + z)` is equivalent to `x * y + x * z.`-/
+/-- `x * (y + z)` is equivalent to `x * y + x * z`. -/
 theorem left_distrib_equiv (x y z : PGame) : x * (y + z) ≈ x * y + x * z :=
   Quotient.exact <| quot_left_distrib _ _ _
 
@@ -613,7 +613,7 @@ theorem quot_left_distrib_sub (x y z : PGame) : (⟦x * (y - z)⟧ : Game) = ⟦
 theorem quot_right_distrib (x y z : PGame) : (⟦(x + y) * z⟧ : Game) = ⟦x * z⟧ + ⟦y * z⟧ := by
   simp only [quot_mul_comm, quot_left_distrib]
 
-/-- `(x + y) * z` is equivalent to `x * z + y * z.`-/
+/-- `(x + y) * z` is equivalent to `x * z + y * z`. -/
 theorem right_distrib_equiv (x y z : PGame) : (x + y) * z ≈ x * z + y * z :=
   Quotient.exact <| quot_right_distrib _ _ _
 
@@ -653,7 +653,7 @@ protected lemma mul_one (x : PGame) : x * 1 ≡ x := (x.mul_comm _).trans x.one_
 
 @[simp]
 theorem quot_mul_one (x : PGame) : (⟦x * 1⟧ : Game) = ⟦x⟧ :=
-  game_eq <| PGame.Relabelling.equiv <| mulOneRelabelling x
+  game_eq x.mul_one.equiv
 
 /-- `x * 1` is equivalent to `x`. -/
 theorem mul_one_equiv (x : PGame) : x * 1 ≈ x :=
@@ -665,7 +665,7 @@ def oneMulRelabelling (x : PGame) : 1 * x ≡r x :=
 
 @[simp]
 theorem quot_one_mul (x : PGame) : (⟦1 * x⟧ : Game) = ⟦x⟧ :=
-  game_eq <| PGame.Relabelling.equiv <| oneMulRelabelling x
+  game_eq x.one_mul.equiv
 
 /-- `1 * x` is equivalent to `x`. -/
 theorem one_mul_equiv (x : PGame) : 1 * x ≈ x :=
@@ -821,7 +821,7 @@ theorem quot_mul_assoc (x y z : PGame) : (⟦x * y * z⟧ : Game) = ⟦x * (y * 
         abel
   termination_by (x, y, z)
 
-/-- `x * y * z` is equivalent to `x * (y * z).`-/
+/-- `x * y * z` is equivalent to `x * (y * z)`. -/
 theorem mul_assoc_equiv (x y z : PGame) : x * y * z ≈ x * (y * z) :=
   Quotient.exact <| quot_mul_assoc _ _ _
 
@@ -925,7 +925,7 @@ def invVal {l r} (L : l → PGame) (R : r → PGame) (IHl : l → PGame) (IHr : 
 @[simp]
 theorem invVal_isEmpty {l r : Type u} {b} (L R IHl IHr) (i : InvTy l r b) (x) [IsEmpty l]
     [IsEmpty r] : invVal L R IHl IHr x i = 0 := by
-  cases' i with a _ a _ a _ a
+  obtain - | a | a | a | a := i
   · rfl
   all_goals exact isEmptyElim a
 
@@ -986,7 +986,7 @@ def inv'One : inv' 1 ≡r (1 : PGame.{u}) := by
   · infer_instance
 
 theorem inv'_one_equiv : inv' 1 ≈ 1 :=
-  inv'One.equiv
+  inv'_one.equiv
 
 /-- The inverse of a pre-game in terms of the inverse on positive pre-games. -/
 noncomputable instance : Inv PGame :=
@@ -1018,7 +1018,7 @@ def invOne : 1⁻¹ ≡r 1 := by
   exact inv'One
 
 theorem inv_one_equiv : (1⁻¹ : PGame) ≈ 1 :=
-  invOne.equiv
+  inv_one.equiv
 
 end PGame
 

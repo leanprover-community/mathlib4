@@ -5,7 +5,6 @@ Authors: Kexing Ying
 -/
 import Mathlib.MeasureTheory.Decomposition.UnsignedHahn
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
 import Mathlib.MeasureTheory.Measure.Sub
 
 /-!
@@ -371,11 +370,6 @@ theorem lintegral_rnDeriv_lt_top (μ ν : Measure α) [IsFiniteMeasure μ] :
   rw [← setLIntegral_univ]
   exact lintegral_rnDeriv_lt_top_of_measure_ne_top _ (measure_lt_top _ _).ne
 
-lemma integrable_toReal_rnDeriv [IsFiniteMeasure μ] :
-    Integrable (fun x ↦ (μ.rnDeriv ν x).toReal) ν :=
-  integrable_toReal_of_lintegral_ne_top (Measure.measurable_rnDeriv _ _).aemeasurable
-    (Measure.lintegral_rnDeriv_lt_top _ _).ne
-
 /-- The Radon-Nikodym derivative of a sigma-finite measure `μ` with respect to another
 measure `ν` is `ν`-almost everywhere finite. -/
 theorem rnDeriv_lt_top (μ ν : Measure α) [SigmaFinite μ] : ∀ᵐ x ∂ν, μ.rnDeriv ν x < ∞ := by
@@ -468,7 +462,7 @@ theorem singularPart_add (μ₁ μ₂ ν : Measure α) [HaveLebesgueDecompositio
     (μ₁ + μ₂).singularPart ν = μ₁.singularPart ν + μ₂.singularPart ν := by
   refine (eq_singularPart ((measurable_rnDeriv μ₁ ν).add (measurable_rnDeriv μ₂ ν))
     ((mutuallySingular_singularPart _ _).add_left (mutuallySingular_singularPart _ _)) ?_).symm
-  erw [withDensity_add_left (measurable_rnDeriv μ₁ ν)]
+  rw [← Pi.add_def, withDensity_add_left (measurable_rnDeriv μ₁ ν)]
   conv_rhs => rw [add_assoc, add_comm (μ₂.singularPart ν), ← add_assoc, ← add_assoc]
   rw [← haveLebesgueDecomposition_add μ₁ ν, add_assoc, add_comm (ν.withDensity (μ₂.rnDeriv ν)),
     ← haveLebesgueDecomposition_add μ₂ ν]

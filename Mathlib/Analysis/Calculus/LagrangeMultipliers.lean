@@ -5,7 +5,8 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.FDeriv.Prod
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.GroupTheory.MonoidLocalization.Basic
+import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Lagrange multipliers
@@ -46,7 +47,8 @@ theorem IsLocalExtrOn.range_ne_top_of_hasStrictFDerivAt
   set fφ := fun x => (f x, φ x)
   have A : map φ (𝓝[f ⁻¹' {f x₀}] x₀) = 𝓝 (φ x₀) := by
     change map (Prod.snd ∘ fφ) (𝓝[fφ ⁻¹' {p | p.1 = f x₀}] x₀) = 𝓝 (φ x₀)
-    rw [← map_map, nhdsWithin, map_inf_principal_preimage, (hf'.prod hφ').map_nhds_eq_of_surj htop]
+    rw [← map_map, nhdsWithin, map_inf_principal_preimage,
+      (hf'.prodMk hφ').map_nhds_eq_of_surj htop]
     exact map_snd_nhdsWithin _
   exact hextr.not_nhds_le_map A.ge
 

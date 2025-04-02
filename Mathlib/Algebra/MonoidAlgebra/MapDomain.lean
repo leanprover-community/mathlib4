@@ -3,12 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
-import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Finsupp.SMul
-import Mathlib.LinearAlgebra.Finsupp.LSum
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Data.Finsupp.SMul
+import Mathlib.LinearAlgebra.Finsupp.LSum
 
 /-!
 # MonoidAlgebra.mapDomain
@@ -17,33 +16,31 @@ import Mathlib.Algebra.MonoidAlgebra.Defs
 
 assert_not_exists NonUnitalAlgHom AlgEquiv
 
-noncomputable section
-
+open Function
 open Finsupp hiding single mapDomain
 
-universe u₁ u₂ u₃ u₄
+noncomputable section
 
-variable (k : Type u₁) (G : Type u₂) (H : Type*) {R : Type*}
+variable {k R S G H M N : Type*}
 
 /-! ### Multiplicative monoids -/
 
 namespace MonoidAlgebra
 
-variable {k G}
+section Semiring
+variable [Semiring R] [Semiring S] {f : M → N} {a : M} {r : R}
 
-section
+abbrev mapDomain (f : M → N) (v : MonoidAlgebra R M) : MonoidAlgebra R N := Finsupp.mapDomain f v
 
-variable [Semiring k] [NonUnitalNonAssocSemiring R]
+lemma mapDomain_sum (f : M → N) (s : MonoidAlgebra S M) (v : M → S → MonoidAlgebra R M) :
+    mapDomain f (s.sum v) = s.sum fun a b ↦ mapDomain f (v a b) := Finsupp.mapDomain_sum
 
-abbrev mapDomain {G' : Type*} (f : G → G') (v : MonoidAlgebra k G) : MonoidAlgebra k G' :=
-  Finsupp.mapDomain f v
+lemma mapDomain_single : mapDomain f (single a r) = single (f a) r := Finsupp.mapDomain_single
 
-theorem mapDomain_sum {k' G' : Type*} [Semiring k'] {f : G → G'} {s : MonoidAlgebra k' G}
-    {v : G → k' → MonoidAlgebra k G} :
-    mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
-  Finsupp.mapDomain_sum
+lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (R := R) f) :=
+  Finsupp.mapDomain_injective hf
 
-end
+end Semiring
 
 
 section MiscTheorems
@@ -92,25 +89,20 @@ end MonoidAlgebra
 
 namespace AddMonoidAlgebra
 
-variable {k G}
+section Semiring
+variable [Semiring R] [Semiring S] {f : M → N} {a : M} {r : R}
 
-section
+abbrev mapDomain (f : M → N) (v : R[M]) : R[N] := Finsupp.mapDomain f v
 
-variable [Semiring k] [NonUnitalNonAssocSemiring R]
+lemma mapDomain_sum (f : M → N) (s : S[M]) (v : M → S → R[M]) :
+    mapDomain f (s.sum v) = s.sum fun a b ↦ mapDomain f (v a b) := Finsupp.mapDomain_sum
 
-abbrev mapDomain {G' : Type*} (f : G → G') (v : k[G]) : k[G'] :=
-  Finsupp.mapDomain f v
+lemma mapDomain_single : mapDomain f (single a r) = single (f a) r := Finsupp.mapDomain_single
 
-theorem mapDomain_sum {k' G' : Type*} [Semiring k'] {f : G → G'} {s : AddMonoidAlgebra k' G}
-    {v : G → k' → k[G]} :
-    mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
-  Finsupp.mapDomain_sum
+lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (R := R) f) :=
+  Finsupp.mapDomain_injective hf
 
-theorem mapDomain_single {G' : Type*} {f : G → G'} {a : G} {b : k} :
-    mapDomain f (single a b) = single (f a) b :=
-  Finsupp.mapDomain_single
-
-end
+end Semiring
 
 section MiscTheorems
 
@@ -160,7 +152,7 @@ since the changes that have made `nsmul` definitional, this would be possible,
 but for now we just construct the ring isomorphisms using `RingEquiv.refl _`.
 -/
 
-
+variable (k G) in
 /-- The equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative` -/
 protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
@@ -169,20 +161,19 @@ protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
       Multiplicative.ofAdd with
     toFun := equivMapDomain Multiplicative.ofAdd
     map_mul' := fun x y => by
-      -- Porting note: added `dsimp only`; `beta_reduce` alone is not sufficient
       dsimp only
       repeat' rw [equivMapDomain_eq_mapDomain (M := k)]
       dsimp [Multiplicative.ofAdd]
       exact MonoidAlgebra.mapDomain_mul (α := Multiplicative G) (β := k)
         (MulHom.id (Multiplicative G)) x y }
 
+variable (k G) in
 /-- The equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of `Additive` -/
 protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
     MonoidAlgebra k G ≃+* AddMonoidAlgebra k (Additive G) :=
   { Finsupp.domCongr Additive.ofMul with
     toFun := equivMapDomain Additive.ofMul
     map_mul' := fun x y => by
-      -- Porting note: added `dsimp only`; `beta_reduce` alone is not sufficient
       dsimp only
       repeat' rw [equivMapDomain_eq_mapDomain (M := k)]
       dsimp [Additive.ofMul]
