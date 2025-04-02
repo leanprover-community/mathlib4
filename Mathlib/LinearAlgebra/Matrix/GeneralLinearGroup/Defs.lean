@@ -290,8 +290,7 @@ theorem toGLPos_injective : Function.Injective (toGLPos : SpecialLinearGroup n R
   -- (It can't find the coercion GLPos n R → Matrix n n R)
   Function.Injective.of_comp
     (f := fun (A : GLPos n R) ↦ ((A : GL n R) : Matrix n n R))
-    (show Function.Injective (_ ∘ (toGLPos : SpecialLinearGroup n R → GLPos n R))
-      from Subtype.coe_injective)
+    Subtype.coe_injective
 
 /-- Coercing a `Matrix.SpecialLinearGroup` via `GL_pos` and `GL` is the same as coercing straight to
 a matrix. -/
