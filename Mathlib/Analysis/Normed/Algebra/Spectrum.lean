@@ -184,10 +184,8 @@ theorem exists_nnnorm_eq_spectralRadius_of_nonempty [ProperSpace 𝕜] {a : A} (
 
 theorem spectralRadius_lt_of_forall_lt_of_nonempty [ProperSpace 𝕜] {a : A} (ha : (σ a).Nonempty)
     {r : ℝ≥0} (hr : ∀ k ∈ σ a, ‖k‖₊ < r) : spectralRadius 𝕜 a < r :=
-  sSup_image.symm.trans_lt <|
-    ((spectrum.isCompact a).sSup_lt_iff_of_continuous ha
-          (ENNReal.continuous_coe.comp continuous_nnnorm).continuousOn (r : ℝ≥0∞)).mpr
-      (by dsimp only [(· ∘ ·)]; exact mod_cast hr)
+  sSup_image.symm.trans_lt <| ((spectrum.isCompact a).sSup_lt_iff_of_continuous ha
+    continuous_enorm.continuousOn (r : ℝ≥0∞)).mpr (by simpa using hr)
 
 open ENNReal Polynomial
 
@@ -292,7 +290,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [HasSummableGeomSeries A] (a 
       refine le_of_forall_nnreal_lt fun r hr =>
         le_radius_of_bound_nnreal _ (max 1 ‖(1 : A)‖₊) fun n => ?_
       rw [← norm_toNNReal, norm_mkPiRing, norm_toNNReal]
-      cases' n with n
+      rcases n with - | n
       · simp only [le_refl, mul_one, or_true, le_max_iff, pow_zero]
       · refine
           le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) ?_)

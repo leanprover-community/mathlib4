@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.NormedSpace.Extr
 import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Topology.Order.ExtrClosure
@@ -380,7 +381,7 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
   obtain ⟨w, hwU, hle⟩ : ∃ w ∈ closure U, IsMaxOn (norm ∘ f) (closure U) w :=
     hc.exists_isMaxOn hne.closure hd.continuousOn.norm
   rw [closure_eq_interior_union_frontier, mem_union] at hwU
-  cases' hwU with hwU hwU; rotate_left; · exact ⟨w, hwU, hle⟩
+  rcases hwU with hwU | hwU; rotate_left; · exact ⟨w, hwU, hle⟩
   have : interior U ≠ univ := ne_top_of_le_ne_top hc.ne_univ interior_subset_closure
   rcases exists_mem_frontier_infDist_compl_eq_dist hwU this with ⟨z, hzU, hzw⟩
   refine ⟨z, frontier_interior_subset hzU, fun x hx => (hle hx).out.trans_eq ?_⟩
@@ -394,7 +395,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : I
     (hd : DiffContOnCl ℂ f U) {C : ℝ} (hC : ∀ z ∈ frontier U, ‖f z‖ ≤ C) {z : E}
     (hz : z ∈ closure U) : ‖f z‖ ≤ C := by
   rw [closure_eq_self_union_frontier, union_comm, mem_union] at hz
-  cases' hz with hz hz; · exact hC z hz
+  rcases hz with hz | hz; · exact hC z hz
   /- In case of a finite dimensional domain, one can just apply
     `Complex.exists_mem_frontier_isMaxOn_norm`. To make it work in any Banach space, we restrict
     the function to a line first. -/

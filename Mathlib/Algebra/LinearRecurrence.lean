@@ -92,11 +92,12 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → α} {init : Fin E.order → α} 
   rw [mkSol]
   split_ifs with h'
   · exact mod_cast heq ⟨n, h'⟩
-  rw [← tsub_add_cancel_of_le (le_of_not_lt h'), h (n - E.order)]
-  congr with k
-  have : n - E.order + k < n := by omega
-  rw [eq_mk_of_is_sol_of_eq_init h heq (n - E.order + k)]
-  simp
+  · dsimp only
+    rw [← tsub_add_cancel_of_le (le_of_not_lt h'), h (n - E.order)]
+    congr with k
+    have : n - E.order + k < n := by omega
+    rw [eq_mk_of_is_sol_of_eq_init h heq (n - E.order + k)]
+    simp
 
 /-- If `u` is a solution to `E` and `init` designates its first `E.order` values,
   then `u = E.mkSol init`. This proves that `E.mkSol init` is the only solution

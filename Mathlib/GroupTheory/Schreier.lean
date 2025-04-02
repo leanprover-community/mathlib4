@@ -3,7 +3,9 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.GroupTheory.Abelianization
+import Mathlib.GroupTheory.Commutator.Finite
 import Mathlib.GroupTheory.Transfer
 
 /-!
@@ -29,12 +31,11 @@ section CommGroup
 
 open Subgroup
 
-open scoped Classical
-
 variable (G : Type*) [CommGroup G] [Group.FG G]
 
 @[to_additive]
 theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.rank G := by
+  classical
   obtain ⟨S, hS1, hS2⟩ := Group.rank_spec G
   rw [← hS1, ← Fintype.card_coe, ← Finset.card_univ, ← Finset.prod_const]
   let f : (∀ g : S, zpowers (g : G)) →* G := noncommPiCoprod fun s t _ x y _ _ => mul_comm x _

@@ -3,10 +3,10 @@ Copyright (c) 2023 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Geißer, Michael Stoll
 -/
-import Mathlib.Tactic.Qify
 import Mathlib.Data.ZMod.Basic
 import Mathlib.NumberTheory.DiophantineApproximation.Basic
 import Mathlib.NumberTheory.Zsqrtd.Basic
+import Mathlib.Tactic.Qify
 
 /-!
 # Pell's Equation
@@ -253,19 +253,17 @@ theorem y_mul_pos {a b : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (hbx : 0
 /-- If `(x, y)` is a solution with `x` positive, then all its powers with natural exponents
 have positive `x`. -/
 theorem x_pow_pos {a : Solution₁ d} (hax : 0 < a.x) (n : ℕ) : 0 < (a ^ n).x := by
-  induction' n with n ih
-  · simp only [pow_zero, x_one, zero_lt_one]
-  · rw [pow_succ]
-    exact x_mul_pos ih hax
+  induction n with
+  | zero => simp only [pow_zero, x_one, zero_lt_one]
+  | succ n ih => rw [pow_succ]; exact x_mul_pos ih hax
 
 /-- If `(x, y)` is a solution with `x` and `y` positive, then all its powers with positive
 natural exponents have positive `y`. -/
 theorem y_pow_succ_pos {a : Solution₁ d} (hax : 0 < a.x) (hay : 0 < a.y) (n : ℕ) :
     0 < (a ^ n.succ).y := by
-  induction' n with n ih
-  · simp only [pow_one, hay]
-  · rw [pow_succ']
-    exact y_mul_pos hax hay (x_pow_pos hax _) ih
+  induction n with
+  | zero => simp only [pow_one, hay]
+  | succ n ih => rw [pow_succ']; exact y_mul_pos hax hay (x_pow_pos hax _) ih
 
 /-- If `(x, y)` is a solution with `x` and `y` positive, then all its powers with positive
 exponents have positive `y`. -/
@@ -604,7 +602,7 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
   lift a.x to ℕ using hax.le with ax hax'
   -- Porting note: added
   clear hax
-  induction' ax using Nat.strong_induction_on with x ih generalizing a
+  induction ax using Nat.strong_induction_on generalizing a with | h x ih =>
   rcases hay.eq_or_lt with hy | hy
   · -- case 1: `a = 1`
     refine ⟨0, ?_⟩
@@ -657,7 +655,7 @@ theorem existsUnique_pos_generator (h₀ : 0 < d) (hd : ¬IsSquare d) :
   rcases hn₂ with (rfl | rfl)
   · rw [← zpow_mul, eq_comm, @eq_comm _ a₁, ← mul_inv_eq_one, ← @mul_inv_eq_one _ _ _ a₁, ←
       zpow_neg_one, neg_mul, ← zpow_add, ← sub_eq_add_neg] at hn₁
-    cases' hn₁ with hn₁ hn₁
+    rcases hn₁ with hn₁ | hn₁
     · rcases Int.isUnit_iff.mp
           (isUnit_of_mul_eq_one _ _ <|
             sub_eq_zero.mp <| (ha₁.zpow_eq_one_iff (n₂ * n₁ - 1)).mp hn₁) with

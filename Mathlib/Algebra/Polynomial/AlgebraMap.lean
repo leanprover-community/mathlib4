@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Basic
@@ -135,16 +136,10 @@ theorem ringHom_eval₂_intCastRingHom {R S : Type*} [Ring R] [Ring S] (p : ℤ[
     (r : R) : f (eval₂ (Int.castRingHom R) r p) = eval₂ (Int.castRingHom S) (f r) p :=
   algHom_eval₂_algebraMap p f.toIntAlgHom r
 
-@[deprecated (since := "2024-05-27")]
-alias ringHom_eval₂_cast_int_ringHom := ringHom_eval₂_intCastRingHom
-
 @[simp]
 theorem eval₂_intCastRingHom_X {R : Type*} [Ring R] (p : ℤ[X]) (f : ℤ[X] →+* R) :
     eval₂ (Int.castRingHom R) (f X) p = f p :=
   eval₂_algebraMap_X p f.toIntAlgHom
-
-@[deprecated (since := "2024-04-17")]
-alias eval₂_int_castRingHom_X := eval₂_intCastRingHom_X
 
 /-- `Polynomial.eval₂` as an `AlgHom` for noncommutative algebras.
 
@@ -267,9 +262,6 @@ theorem aeval_one : aeval x (1 : R[X]) = 1 :=
 theorem aeval_natCast (n : ℕ) : aeval x (n : R[X]) = n :=
   map_natCast _ _
 
-@[deprecated (since := "2024-04-17")]
-alias aeval_nat_cast := aeval_natCast
-
 theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
   map_mul _ _ _
 
@@ -367,6 +359,38 @@ theorem aeval_algEquiv (f : A ≃ₐ[R] B) (x : A) : aeval (f x) = (f : A →ₐ
 theorem aeval_algebraMap_apply_eq_algebraMap_eval (x : R) (p : R[X]) :
     aeval (algebraMap R A x) p = algebraMap R A (p.eval x) :=
   aeval_algHom_apply (Algebra.ofId R A) x p
+
+/-- Polynomial evaluation on a pair is a product of the evaluations on the components. -/
+theorem aeval_prod (x : A × B) : aeval (R := R) x = (aeval x.1).prod (aeval x.2) :=
+  aeval_algHom (.fst R A B) x ▸ aeval_algHom (.snd R A B) x ▸
+    (aeval x).prod_comp (.fst R A B) (.snd R A B)
+
+/-- Polynomial evaluation on a pair is a pair of evaluations. -/
+theorem aeval_prod_apply (x : A × B) (p : Polynomial R) :
+    p.aeval x = (p.aeval x.1, p.aeval x.2) := by simp [aeval_prod]
+
+section Pi
+
+variable {I : Type*} {A : I → Type*} [∀ i, Semiring (A i)] [∀ i, Algebra R (A i)]
+variable (x : Π i, A i) (p : R[X])
+
+/-- Polynomial evaluation on an indexed tuple is the indexed product of the evaluations
+on the components.
+Generalizes `Polynomial.aeval_prod` to indexed products. -/
+theorem aeval_pi (x : Π i, A i) : aeval (R := R) x = Pi.algHom R A (fun i ↦ aeval (x i)) :=
+  (funext fun i ↦ aeval_algHom (Pi.evalAlgHom R A i) x) ▸
+    (Pi.algHom_comp R A (Pi.evalAlgHom R A) (aeval x))
+
+theorem aeval_pi_apply₂ (j : I) : p.aeval x j = p.aeval (x j) :=
+  aeval_pi (R := R) x ▸ Pi.algHom_apply R A (fun i ↦ aeval (x i)) p j
+
+/-- Polynomial evaluation on an indexed tuple is the indexed tuple of the evaluations
+on the components.
+Generalizes `Polynomial.aeval_prod_apply` to indexed products. -/
+theorem aeval_pi_apply : p.aeval x = fun j ↦ p.aeval (x j) :=
+  funext fun j ↦ aeval_pi_apply₂ x p j
+
+end Pi
 
 @[simp]
 theorem coe_aeval_eq_eval (r : R) : (aeval r : R[X] → R) = eval r :=
@@ -614,9 +638,8 @@ section CommSemiring
 
 variable [CommSemiring R] {a p : R[X]}
 
-theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 → r = 0) :
-    ∀ (Q : R[X]), P * Q = 0 → Q = 0 := by
-  intro Q hQ
+theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 → r = 0) (Q : R[X])
+    (hQ : P * Q = 0) : Q = 0 := by
   suffices ∀ i, P.coeff i • Q = 0 by
     rw [← leadingCoeff_eq_zero]
     apply h
@@ -642,7 +665,7 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
     rw [coeff_eq_zero_of_natDegree_lt hj, mul_zero]
   · omega
   · rw [← coeff_C_mul, ← smul_eq_C_mul, IH _ hi, coeff_zero]
-termination_by Q => Q.natDegree
+termination_by Q.natDegree
 
 open nonZeroDivisors in
 /-- *McCoy theorem*: a polynomial `P : R[X]` is a zerodivisor if and only if there is `a : R`

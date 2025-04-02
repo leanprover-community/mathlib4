@@ -54,13 +54,13 @@ open Spec (structureSheaf)
 def Spec.topObj (R : CommRingCat.{u}) : TopCat :=
   TopCat.of (PrimeSpectrum R)
 
-@[simp] theorem Spec.topObj_forget {R} : (forget TopCat).obj (Spec.topObj R) = PrimeSpectrum R :=
+@[simp] theorem Spec.topObj_forget {R} : ToType (Spec.topObj R) = PrimeSpectrum R :=
   rfl
 
 /-- The induced map of a ring homomorphism on the ring spectra, as a morphism of topological spaces.
 -/
 def Spec.topMap {R S : CommRingCat.{u}} (f : R ⟶ S) : Spec.topObj S ⟶ Spec.topObj R :=
-  PrimeSpectrum.comap f.hom
+  TopCat.ofHom (PrimeSpectrum.comap f.hom)
 
 @[simp]
 theorem Spec.topMap_id (R : CommRingCat.{u}) : Spec.topMap (𝟙 R) = 𝟙 (Spec.topObj R) :=
@@ -280,12 +280,8 @@ section SpecΓ
 open AlgebraicGeometry.LocallyRingedSpace
 
 /-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`. -/
-@[simps!]
 def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
   StructureSheaf.toOpen R ⊤
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] AlgebraicGeometry.toSpecΓ_hom_apply_coe
 
 instance isIso_toSpecΓ (R : CommRingCat.{u}) : IsIso (toSpecΓ R) := by
   cases R; apply StructureSheaf.isIso_to_global
@@ -412,19 +408,14 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
     rw [toPushforwardStalkAlgHom_apply,
       ← (toPushforwardStalk (CommRingCat.ofHom (algebraMap ↑R ↑S)) p).hom.map_zero,
       toPushforwardStalk] at hx
-    -- Porting note: this `change` is manually rewriting `comp_apply`
-    change _ = (TopCat.Presheaf.germ (Spec.topMap (CommRingCat.ofHom (algebraMap ↑R ↑S)) _*
-      (structureSheaf ↑S).val) ⊤ p trivial (toOpen S ⊤ 0)) at hx
-    rw [map_zero] at hx
-    change (forget CommRingCat).map _ _ = (forget _).map _ _ at hx
-    obtain ⟨U, hpU, i₁, i₂, e⟩ := TopCat.Presheaf.germ_eq _ _ _ _ _ _ hx
+    rw [CommRingCat.comp_apply, map_zero] at hx
+    obtain ⟨U, hpU, i₁, i₂, e⟩ := TopCat.Presheaf.germ_eq (C := CommRingCat) _ _ _ _ _ _ hx
     obtain ⟨_, ⟨r, rfl⟩, hpr, hrU⟩ :=
       PrimeSpectrum.isTopologicalBasis_basic_opens.exists_subset_of_mem_open (show p ∈ U.1 from hpU)
         U.2
-    change PrimeSpectrum.basicOpen r ≤ U at hrU
     apply_fun (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).1).map
         (homOfLE hrU).op at e
-    simp only [Functor.op_map, map_zero, ← comp_apply, toOpen_res] at e
+    simp only [Functor.op_map, map_zero, ← CategoryTheory.comp_apply, toOpen_res] at e
     have : toOpen S (PrimeSpectrum.basicOpen <| algebraMap R S r) x = 0 := by
       refine Eq.trans ?_ e; rfl
     have :=
@@ -433,10 +424,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
         this
     obtain ⟨⟨_, n, rfl⟩, e⟩ := (IsLocalization.mk'_eq_zero_iff _ _).mp this
     refine ⟨⟨r, hpr⟩ ^ n, ?_⟩
-    rw [Submonoid.smul_def, Algebra.smul_def]
-    -- Porting note: manually rewrite `Submonoid.coe_pow`
-    change (algebraMap R S) (r ^ n) * x = 0
-    rw [map_pow]
+    rw [Submonoid.smul_def, Algebra.smul_def, SubmonoidClass.coe_pow, map_pow]
     exact e
 
 end StructureSheaf

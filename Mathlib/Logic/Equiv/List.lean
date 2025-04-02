@@ -67,7 +67,7 @@ theorem decode_list_succ (v : ℕ) :
     decode (α := List α) (succ v) =
       (· :: ·) <$> decode (α := α) v.unpair.1 <*> decode (α := List α) v.unpair.2 :=
   show decodeList (succ v) = _ by
-    cases' e : unpair v with v₁ v₂
+    rcases e : unpair v with ⟨v₁, v₂⟩
     simp [decodeList, e]; rfl
 
 theorem length_le_encode : ∀ l : List α, length l ≤ encode l
@@ -112,7 +112,7 @@ end Finset
 
 /-- A listable type with decidable equality is encodable. -/
 def encodableOfList [DecidableEq α] (l : List α) (H : ∀ x, x ∈ l) : Encodable α :=
-  ⟨fun a => indexOf a l, l.get?, fun _ => indexOf_get? (H _)⟩
+  ⟨fun a => idxOf a l, l.get?, fun _ => idxOf_get? (H _)⟩
 
 /-- A finite type is encodable. Because the encoding is not unique, we wrap it in `Trunc` to
 preserve computability. -/
@@ -216,7 +216,7 @@ section List
 theorem denumerable_list_aux : ∀ n : ℕ, ∃ a ∈ @decodeList α _ n, encodeList a = n
   | 0 => by rw [decodeList]; exact ⟨_, rfl, rfl⟩
   | succ v => by
-    cases' e : unpair v with v₁ v₂
+    rcases e : unpair v with ⟨v₁, v₂⟩
     have h := unpair_right_le v
     rw [e] at h
     rcases have : v₂ < succ v := lt_succ_of_le h
@@ -238,7 +238,7 @@ theorem list_ofNat_succ (v : ℕ) :
     ofNat (List α) (succ v) = ofNat α v.unpair.1 :: ofNat (List α) v.unpair.2 :=
   ofNat_of_decode <|
     show decodeList (succ v) = _ by
-      cases' e : unpair v with v₁ v₂
+      rcases e : unpair v with ⟨v₁, v₂⟩
       simp [decodeList, e]
       rw [show decodeList v₂ = decode (α := List α) v₂ from rfl, decode_eq_ofNat, Option.seq_some]
 
@@ -289,7 +289,7 @@ instance multiset : Denumerable (Multiset α) :=
         raise_lower (List.sorted_cons.2 ⟨fun n _ => Nat.zero_le n, (s.map encode).sort_sorted _⟩)
       simp [-Multiset.map_coe, this],
      fun n => by
-      simp [-Multiset.map_coe, List.mergeSort_eq_self (raise_sorted _ _), lower_raise]⟩
+      simp [-Multiset.map_coe, List.mergeSort_eq_self _ (raise_sorted _ _), lower_raise]⟩
 
 end Multiset
 
@@ -344,7 +344,7 @@ instance finset : Denumerable (Finset α) :=
           raise_lower' (fun n _ => Nat.zero_le n) (Finset.sort_sorted_lt _)],
       fun n => by
       simp [-Multiset.map_coe, Finset.map, raise'Finset, Finset.sort,
-        List.mergeSort_eq_self ((raise'_sorted _ _).imp (@le_of_lt _ _)), lower_raise']⟩
+        List.mergeSort_eq_self _ (raise'_sorted _ _).le_of_lt, lower_raise']⟩
 
 end Finset
 
@@ -352,12 +352,18 @@ end Denumerable
 
 namespace Equiv
 
-/-- The type lists on unit is canonically equivalent to the natural numbers. -/
-def listUnitEquiv : List Unit ≃ ℕ where
+/-- A list on a unique type is equivalent to ℕ by sending each list to its length. -/
+@[simps!]
+def listUniqueEquiv (α : Type*) [Unique α] : List α ≃ ℕ where
   toFun := List.length
-  invFun n := List.replicate n ()
+  invFun n := List.replicate n default
   left_inv u := List.length_injective (by simp)
-  right_inv n := List.length_replicate n ()
+  right_inv n := List.length_replicate n _
+
+/-- The type lists on unit is canonically equivalent to the natural numbers. -/
+@[deprecated listUniqueEquiv (since := "2025-02-17")]
+def listUnitEquiv : List Unit ≃ ℕ :=
+  listUniqueEquiv _
 
 /-- `List ℕ` is equivalent to `ℕ`. -/
 def listNatEquivNat : List ℕ ≃ ℕ :=

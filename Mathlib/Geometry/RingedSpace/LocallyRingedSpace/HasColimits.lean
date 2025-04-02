@@ -189,7 +189,7 @@ theorem imageBasicOpen_image_preimage :
     (g.base : X.carrier.1 ⟶ Y.carrier.1)
   · ext
     simp_rw [types_comp_apply, ← TopCat.comp_app, ← PresheafedSpace.comp_base]
-    congr 2
+    congr 3
     exact coequalizer.condition f.toShHom g.toShHom
   · apply isColimitCoforkMapOfIsColimit (forget TopCat)
     apply isColimitCoforkMapOfIsColimit (SheafedSpace.forget _)
@@ -227,9 +227,9 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
   constructor
   rintro a ha
   rcases TopCat.Presheaf.germ_exist _ _ a with ⟨U, hU, s, rfl⟩
-  rw [← CommRingCat.forget_map_apply, PresheafedSpace.stalkMap_germ_apply
-    (coequalizer.π (C := SheafedSpace _) f.toShHom g.toShHom) U _ hU] at ha
-  rw [CommRingCat.forget_map_apply]
+  rw [-- Manually apply `elementwise_of%` to generate a `ConcreteCategory` lemma
+    elementwise_of% PresheafedSpace.stalkMap_germ
+      (coequalizer.π (C := SheafedSpace _) f.toShHom g.toShHom) U _ hU] at ha
   let V := imageBasicOpen f g U s
   have hV : (coequalizer.π f.toShHom g.toShHom).base ⁻¹'
       ((coequalizer.π f.toShHom g.toShHom).base '' V.1) = V.1 :=
@@ -242,7 +242,7 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
   have VleU : ⟨(coequalizer.π f.toShHom g.toShHom).base '' V.1, V_open⟩ ≤ U :=
     Set.image_subset_iff.mpr (Y.toRingedSpace.basicOpen_le _)
   have hxV : x ∈ V := ⟨hU, ha⟩
-  rw [← CommRingCat.germ_res_apply (coequalizer f.toShHom g.toShHom).presheaf (homOfLE VleU) _
+  rw [← (coequalizer f.toShHom g.toShHom).presheaf.germ_res_apply (homOfLE VleU) _
       (@Set.mem_image_of_mem _ _ (coequalizer.π f.toShHom g.toShHom).base x V.1 hxV) s]
   apply RingHom.isUnit_map
   rw [← isUnit_map_iff ((coequalizer.π f.toShHom g.toShHom :).c.app _).hom,

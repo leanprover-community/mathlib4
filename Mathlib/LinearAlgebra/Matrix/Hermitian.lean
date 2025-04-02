@@ -279,7 +279,7 @@ theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n 
   · intro h
     ext i j
     simpa only [(Pi.single_star i 1).symm, ← star_mulVec, mul_one, dotProduct_single,
-      single_vecMul, star_one, one_mul] using h (Pi.single i 1) (Pi.single j 1)
+      single_one_vecMul, star_one] using h (Pi.single i 1) (Pi.single j 1)
 
 end RCLike
 

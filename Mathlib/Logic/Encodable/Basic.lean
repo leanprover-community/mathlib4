@@ -35,6 +35,8 @@ The point of asking for an explicit partial inverse `decode : ℕ → Option α`
 to make the range of `encode` decidable even when the finiteness of `α` is not.
 -/
 
+assert_not_exists Monoid
+
 open Option List Nat Function
 
 /-- Constructively countable type. Made from an explicit injection `encode : α → ℕ` and a partial
@@ -43,8 +45,6 @@ wish to enforce infiniteness. -/
 class Encodable (α : Type*) where
   /-- Encoding from Type α to ℕ -/
   encode : α → ℕ
-  -- Porting note: was `decode [] : ℕ → Option α`. This means that `decode` does not take the type
-  --explicitly in Lean4
   /-- Decoding from ℕ to Option α-/
   decode : ℕ → Option α
   /-- Invariant relationship between encoding and decoding -/
@@ -94,12 +94,10 @@ def ofLeftInverse [Encodable α] (f : β → α) (finv : α → β) (linv : ∀ 
 def ofEquiv (α) [Encodable α] (e : β ≃ α) : Encodable β :=
   ofLeftInverse e e.symm e.left_inv
 
--- Porting note: removing @[simp], too powerful
 theorem encode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (b : β) :
     @encode _ (ofEquiv _ e) b = encode (e b) :=
   rfl
 
--- Porting note: removing @[simp], too powerful
 theorem decode_ofEquiv {α β} [Encodable α] (e : β ≃ α) (n : ℕ) :
     @decode _ (ofEquiv _ e) n = (decode n).map e.symm :=
   show Option.bind _ _ = Option.map _ _
@@ -206,7 +204,7 @@ def equivRangeEncode (α : Type*) [Encodable α] : α ≃ Set.range (@encode α 
   toFun := fun a : α => ⟨encode a, Set.mem_range_self _⟩
   invFun n :=
     Option.get _
-      (show isSome (decode₂ α n.1) by cases' n.2 with x hx; rw [← hx, encodek₂]; exact rfl)
+      (show isSome (decode₂ α n.1) by obtain ⟨x, hx⟩ := n.2; rw [← hx, encodek₂]; exact rfl)
   left_inv a := by dsimp; rw [← Option.some_inj, Option.some_get, encodek₂]
   right_inv := fun ⟨n, x, hx⟩ => by
     apply Subtype.eq
@@ -224,7 +222,6 @@ section Sum
 
 variable [Encodable α] [Encodable β]
 
--- Porting note: removing bit0 and bit1
 /-- Explicit encoding function for the sum of two encodable types. -/
 def encodeSum : α ⊕ β → ℕ
   | Sum.inl a => 2 * encode a
@@ -240,12 +237,10 @@ def decodeSum (n : ℕ) : Option (α ⊕ β) :=
 instance _root_.Sum.encodable : Encodable (α ⊕ β) :=
   ⟨encodeSum, decodeSum, fun s => by cases s <;> simp [encodeSum, div2_val, decodeSum, encodek]⟩
 
--- Porting note: removing bit0 and bit1 from statement
 @[simp]
 theorem encode_inl (a : α) : @encode (α ⊕ β) _ (Sum.inl a) = 2 * (encode a) :=
   rfl
 
--- Porting note: removing bit0 and bit1 from statement
 @[simp]
 theorem encode_inr (b : β) : @encode (α ⊕ β) _ (Sum.inr b) = 2 * (encode b) + 1 :=
   rfl
@@ -283,7 +278,7 @@ theorem decode_ge_two (n) (h : 2 ≤ n) : (decode n : Option Bool) = none := by
   have : 1 ≤ n / 2 := by
     rw [Nat.le_div_iff_mul_le]
     exacts [h, by decide]
-  cases' exists_eq_succ_of_ne_zero (_root_.ne_of_gt this) with m e
+  obtain ⟨m, e⟩ := exists_eq_succ_of_ne_zero (_root_.ne_of_gt this)
   simp only [decodeSum, boddDiv2_eq, div2_val]; cases bodd n <;> simp [e]
 
 noncomputable instance _root_.Prop.encodable : Encodable Prop :=
@@ -551,13 +546,13 @@ theorem sequence_mono_nat {r : β → β → Prop} {f : α → β} (hf : Directe
     r (f (hf.sequence f n)) (f (hf.sequence f (n + 1))) := by
   dsimp [Directed.sequence]
   generalize hf.sequence f n = p
-  cases' (decode n : Option α) with a
+  rcases (decode n : Option α) with - | a
   · exact (Classical.choose_spec (hf p p)).1
   · exact (Classical.choose_spec (hf p a)).1
 
 theorem rel_sequence {r : β → β → Prop} {f : α → β} (hf : Directed r f) (a : α) :
     r (f a) (f (hf.sequence f (encode a + 1))) := by
-  simp only [Directed.sequence, add_eq, add_zero, encodek, and_self]
+  simp only [Directed.sequence, add_eq, Nat.add_zero, encodek, and_self]
   exact (Classical.choose_spec (hf _ a)).2
 
 variable [Preorder β] {f : α → β}

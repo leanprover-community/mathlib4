@@ -1335,7 +1335,6 @@ theorem piecewise_univ [∀ i : α, Decidable (i ∈ (Set.univ : Set α))] :
   ext i
   simp [piecewise]
 
---@[simp] -- Porting note: simpNF linter complains
 theorem piecewise_insert_self {j : α} [∀ i, Decidable (i ∈ insert j s)] :
     (insert j s).piecewise f g j = f j := by simp [piecewise]
 
@@ -1509,6 +1508,10 @@ namespace Semiconj
 
 theorem mapsTo_image (h : Semiconj f fa fb) (ha : MapsTo fa s t) : MapsTo fb (f '' s) (f '' t) :=
   fun _y ⟨x, hx, hy⟩ => hy ▸ ⟨fa x, ha hx, h x⟩
+
+theorem mapsTo_image_right {t : Set β} (h : Semiconj f fa fb) (hst : MapsTo f s t) :
+    MapsTo f (fa '' s) (fb '' t) :=
+  mapsTo_image_iff.2 fun x hx ↦ ⟨f x, hst hx, (h x).symm⟩
 
 theorem mapsTo_range (h : Semiconj f fa fb) : MapsTo fb (range f) (range f) := fun _y ⟨x, hy⟩ =>
   hy ▸ ⟨fa x, h x⟩

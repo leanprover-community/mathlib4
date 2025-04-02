@@ -1219,12 +1219,6 @@ theorem Nonempty.one_mem_div (h : s.Nonempty) : (1 : α) ∈ s / s :=
 theorem isUnit_singleton (a : α) : IsUnit ({a} : Finset α) :=
   (Group.isUnit a).finset
 
-/- Porting note: not in simp nf; Added non-simpable part as `isUnit_iff_singleton_aux` below
-Left-hand side simplifies from
-  IsUnit s
-to
-  ∃ a, s = {a} ∧ IsUnit a -/
--- @[simp]
 theorem isUnit_iff_singleton : IsUnit s ↔ ∃ a, s = {a} := by
   simp only [isUnit_iff, Group.isUnit, and_true]
 
@@ -1689,13 +1683,13 @@ theorem smul_finset_subset_smul_finset_iff : a • s ⊆ a • t ↔ s ⊆ t :=
 theorem smul_finset_subset_iff : a • s ⊆ t ↔ s ⊆ a⁻¹ • t := by
   simp_rw [← coe_subset]
   push_cast
-  exact Set.set_smul_subset_iff
+  exact Set.smul_set_subset_iff_subset_inv_smul_set
 
 @[to_additive]
 theorem subset_smul_finset_iff : s ⊆ a • t ↔ a⁻¹ • s ⊆ t := by
   simp_rw [← coe_subset]
   push_cast
-  exact Set.subset_set_smul_iff
+  exact Set.subset_smul_set_iff
 
 @[to_additive]
 theorem smul_finset_inter : a • (s ∩ t) = a • s ∩ a • t :=
@@ -1834,7 +1828,7 @@ variable [One α]
 theorem toFinset_one : (1 : Set α).toFinset = 1 :=
   rfl
 
--- Porting note: should take priority over `Finite.toFinset_singleton`
+-- should take simp priority over `Finite.toFinset_singleton`
 @[to_additive (attr := simp high)]
 theorem Finite.toFinset_one (h : (1 : Set α).Finite := finite_one) : h.toFinset = 1 :=
   Finite.toFinset_singleton _

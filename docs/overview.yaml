@@ -63,7 +63,7 @@ General algebra:
 
   Ideals and quotients:
     ideal of a commutative ring: 'Ideal'
-    quotient ring: 'Ideal.instHasQuotient'
+    quotient ring: 'Ideal.Quotient.ring'
     prime ideal: 'Ideal.IsPrime'
     maximal ideal: 'Ideal.IsMaximal'
     Chinese remainder theorem: 'Ideal.quotientInfRingEquivPiQuotient'
@@ -236,10 +236,10 @@ Topology:
     intermediate value theorem: 'intermediate_value_Icc'
     extreme value theorem: 'IsCompact.exists_isMinOn'
     limit infimum and supremum: 'order/liminf_limsup.html'
-    topological group: 'TopologicalGroup'
+    topological group: 'IsTopologicalGroup'
     completion of an abelian topological group: 'UniformSpace.Completion.instAddCommGroup'
     infinite sum: 'HasSum'
-    topological ring: 'TopologicalRing'
+    topological ring: 'IsTopologicalRing'
     completion of a topological ring: 'UniformSpace.Completion.ring'
     topological module: 'ContinuousSMul'
     continuous linear map: 'ContinuousLinearMap'
@@ -377,7 +377,7 @@ Probability Theory:
     independent events: 'ProbabilityTheory.iIndepSet'
     independent sigma-algebras: 'ProbabilityTheory.iIndep'
     conditional probability: 'ProbabilityTheory.cond'
-    conditional expectation: 'MeasureTheory.condexp'
+    conditional expectation: 'MeasureTheory.condExp'
   Random variables and their laws:
     discrete law: 'PMF'
     probability density function: 'MeasureTheory.HasPDF'
@@ -427,17 +427,63 @@ Geometry:
     Nullstellensatz : 'MvPolynomial.vanishingIdeal_zeroLocus_eq_radical'
 
 Combinatorics:
-  Graph theory:
-    simple graph: 'SimpleGraph'
-    degree-sum formula: 'SimpleGraph.sum_degrees_eq_twice_card_edges'
-    matching: 'SimpleGraph.Subgraph.IsMatching'
-    adjacency matrix: 'SimpleGraph.adjMatrix'
   Pigeonhole principles:
     finite: 'Fintype.exists_ne_map_eq_of_card_lt'
     infinite: 'Finite.exists_infinite_fiber'
     strong pigeonhole principle: 'Fintype.exists_lt_card_fiber_of_mul_lt_card'
   Transversals:
     Hall's marriage theorem: 'Finset.all_card_le_biUnion_card_iff_exists_injective'
+  Enumerative combinatorics:
+    Catalan numbers: 'catalan'
+    Bell numbers: 'Multiset.bell'
+    Dyck words: 'DyckWord'
+  Set families:
+    # Correlation inequalities:
+    Four functions theorem: 'four_functions_theorem'
+    Harris-Kleitman inequality: 'IsLowerSet.le_card_inter_finset'
+    # Antichains:
+    Ahlswede-Zhang identity: 'AhlswedeZhang.infSum_eq_one'
+    LYM inequality: 'Finset.sum_card_slice_div_choose_le_one'
+    Sperner's theorem: 'IsAntichain.sperner'
+    # Intersecting families:
+    Maximum size of an intersecting family: 'Set.Intersecting.is_max_iff_card_eq'
+    Kleitman's theorem: 'Finset.card_biUnion_le_of_intersecting'
+    # VC dimension:
+    VC dimension: 'Finset.vcDim'
+    Sauer-Shelah lemma: 'Finset.card_shatterer_le_sum_vcDim'
+    Kruskal-Katona theorem: 'Finset.kruskal_katona'
+  Graph theory:
+    simple graph: 'SimpleGraph'
+    degree-sum formula: 'SimpleGraph.sum_degrees_eq_twice_card_edges'
+    matching: 'SimpleGraph.Subgraph.IsMatching'
+    adjacency matrix: 'SimpleGraph.adjMatrix'
+    Strongly regular graphs: 'SimpleGraph.IsSRGWith'
+    # Extremal graph theory:
+    Turán's theorem: 'SimpleGraph.isTuranMaximal_iff_nonempty_iso_turanGraph'
+    Regularity lemma: 'szemeredi_regularity'
+    Triangle counting lemma: 'SimpleGraph.triangle_counting'
+    Triangle removal lemma: 'SimpleGraph.triangle_removal'
+  Ramsey theory:
+    van der Waerden theorem: 'Combinatorics.exists_mono_homothetic_copy'
+    Hales-Jewett theorem: 'Combinatorics.Line.exists_mono_in_high_dimension'
+    Hindman's theorem: 'Hindman.FS_partition_regular'
+  Additive combinatorics:
+    # Avoiding patterns:
+    sets without arithmetic progressions: 'ThreeAPFree'
+    Roth's theorem: 'roth_3ap_theorem_nat'
+    Corners theorem: corners_theorem_nat
+    Behrend's construction: 'Behrend.roth_lower_bound'
+    # Growth:
+    doubling constant: 'Finset.addConst'
+    Ruzsa covering lemma: 'Finset.exists_subset_add_sub'
+    Ruzsa triangle inequality: 'Finset.ruzsa_triangle_inequality_sub_sub_sub'
+    Plünnecke-Petridis inequality: 'Finset.pluennecke_petridis_inequality_add'
+    Small tripling implies small powers: 'Finset.small_pow_of_small_tripling'
+    Dyson transform: 'Finset.addDysonETransform'
+    Cauchy-Davenport theorem: 'ZMod.cauchy_davenport'
+    Erdős–Ginzburg–Ziv theorem: 'ZMod.erdos_ginzburg_ziv'
+    Additive energy: 'Finset.addEnergy'
+    Freiman homomorphisms: 'IsAddFreimanHom'
 
 Dynamics:
   Circle dynamics:

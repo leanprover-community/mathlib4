@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
 import Mathlib.RingTheory.Localization.Away.Basic
-import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.Ideal.GoingUp
 import Mathlib.RingTheory.Jacobson.Polynomial
 import Mathlib.RingTheory.Artinian.Module
 
@@ -93,8 +93,7 @@ theorem Ideal.radical_eq_jacobson [H : IsJacobsonRing R] (I : Ideal R) : I.radic
     (H.out (radical_isRadical I) ▸ jacobson_mono le_radical)
 
 instance (priority := 100) [IsArtinianRing R] : IsJacobsonRing R :=
-  isJacobsonRing_iff_prime_eq.mpr fun P _ ↦
-    jacobson_eq_self_of_isMaximal (H := IsArtinianRing.isMaximal_of_isPrime P)
+  isJacobsonRing_iff_prime_eq.mpr fun _ _ ↦ jacobson_eq_self_of_isMaximal
 
 theorem isJacobsonRing_of_surjective [H : IsJacobsonRing R] :
     (∃ f : R →+* S, Function.Surjective ↑f) → IsJacobsonRing S := by
@@ -232,7 +231,7 @@ theorem isJacobsonRing_localization [H : IsJacobsonRing R] : IsJacobsonRing S :=
       · exact J.mul_mem_left x h
       · exact J.mul_mem_right y ((mem_sInf.1 hx) ⟨hJ.left, ⟨hJ.right, h⟩⟩)
     rw [hP] at hxy
-    cases' hP'.mem_or_mem hxy with hxy hxy
+    rcases hP'.mem_or_mem hxy with hxy | hxy
     · exact hxy
     · exact (hPM.le_bot ⟨Submonoid.mem_powers _, hxy⟩).elim
   refine le_trans ?_ this
@@ -314,7 +313,7 @@ theorem isIntegral_isLocalization_polynomial_quotient
     ((algebraMap (R[X] ⧸ P) Sₘ) p') ?_
   · rintro x ⟨p, hp, rfl⟩
     simp only [Set.mem_insert_iff] at hp
-    cases' hp with hy hy
+    rcases hp with hy | hy
     · rw [hy]
       refine φ.isIntegralElem_localization_at_leadingCoeff ((Ideal.Quotient.mk P) X)
         (pX.map (Ideal.Quotient.mk P')) ?_ M ?_
@@ -548,7 +547,8 @@ theorem quotient_mk_comp_C_isIntegral_of_isJacobsonRing :
     refine fun p hp =>
       polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Quotient.eq_zero_iff_mem.mp ?_
     simpa only [f, coeff_map, coe_mapRingHom] using (Polynomial.ext_iff.mp hp) n
-  refine RingHom.IsIntegral.tower_bot _ _ (injective_quotient_le_comap_map P) ?_
+  refine RingHom.IsIntegral.tower_bot
+    (T := (R ⧸ comap C P)[X] ⧸ _) _ _ (injective_quotient_le_comap_map P) ?_
   rw [← quotient_mk_maps_eq]
   refine ((Ideal.Quotient.mk P').isIntegral_of_surjective Quotient.mk_surjective).trans _ _ ?_
   have : IsMaximal (Ideal.map (mapRingHom (Ideal.Quotient.mk (comap C P))) P) :=
@@ -702,11 +702,8 @@ lemma finite_of_finite_type_of_isJacobsonRing (R S : Type*) [CommRing R] [Field 
   obtain ⟨ι, hι, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial'.mp ‹_›
   have : (algebraMap R S).IsIntegral := by
     rw [← f.comp_algebraMap]
-    #adaptation_note
-    /--
-    After https://github.com/leanprover/lean4/pull/6024
-    we needed to write `f.toRingHom` instead of just `f`, to avoid unification issues.
-    -/
+    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+    we needed to write `f.toRingHom` instead of just `f`, to avoid unification issues. -/
     exact MvPolynomial.comp_C_integral_of_surjective_of_isJacobsonRing f.toRingHom hf
   have : Algebra.IsIntegral R S := Algebra.isIntegral_def.mpr this
   exact Algebra.IsIntegral.finite
@@ -720,6 +717,30 @@ lemma RingHom.finite_iff_finiteType_of_isJacobsonRing
     {f : R →+* S} : f.Finite ↔ f.FiniteType :=
   ⟨RingHom.FiniteType.of_finite,
     by intro; algebraize [f]; exact finite_of_finite_type_of_isJacobsonRing R S⟩
+
+/-- If `K` is a jacobson noetherian ring, `A` a nontrivial `K`-algebra of finite type,
+then any `K`-subfield of `A` is finite over `K`. -/
+theorem finite_of_algHom_finiteType_of_isJacobsonRing
+    {K L A : Type*} [CommRing K] [Field L] [CommRing A]
+    [IsJacobsonRing K] [IsNoetherianRing K] [Nontrivial A]
+    [Algebra K L] [Algebra K A]
+    [Algebra.FiniteType K A] (f : L →ₐ[K] A) :
+    Module.Finite K L := by
+  obtain ⟨m, hm⟩ := Ideal.exists_maximal A
+  letI := Ideal.Quotient.field m
+  have := finite_of_finite_type_of_isJacobsonRing K (A ⧸ m)
+  exact Module.Finite.of_injective ((Ideal.Quotient.mkₐ K m).comp f).toLinearMap
+    (RingHom.injective _)
+
+/-- If `K` is a jacobson noetherian ring, `A` a nontrivial `K`-algebra of finite type,
+then any `K`-subfield of `A` is finite over `K`. -/
+nonrec theorem RingHom.finite_of_algHom_finiteType_of_isJacobsonRing
+    {K L A : Type*} [CommRing K] [Field L] [CommRing A]
+    [IsJacobsonRing K] [IsNoetherianRing K] [Nontrivial A]
+    (f : K →+* L) (g : L →+* A) (hfg : (g.comp f).FiniteType) :
+    f.Finite := by
+  algebraize [f, (g.comp f)]
+  exact finite_of_algHom_finiteType_of_isJacobsonRing ⟨g, fun _ ↦ rfl⟩
 
 namespace Ideal
 

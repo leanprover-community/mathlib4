@@ -81,6 +81,14 @@ theorem integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
     exact Real.rpow_le_rpow_of_exponent_le x_one h
   exact not_IntegrableOn_Ioi_inv this
 
+theorem integrableAtFilter_rpow_atTop_iff {s : ℝ} :
+    IntegrableAtFilter (fun x : ℝ ↦ x ^ s) atTop ↔ s < -1 := by
+  refine ⟨fun ⟨t, ht, hint⟩ ↦ ?_, fun h ↦
+    ⟨Set.Ioi 1, Ioi_mem_atTop 1, (integrableOn_Ioi_rpow_iff zero_lt_one).mpr h⟩⟩
+  obtain ⟨a, ha⟩ := mem_atTop_sets.mp ht
+  refine (integrableOn_Ioi_rpow_iff (zero_lt_one.trans_le (le_max_right a 1))).mp ?_
+  exact hint.mono_set <| fun x hx ↦ ha _ <| (le_max_left a 1).trans hx.le
+
 /-- The real power function with any exponent is not integrable on `(0, +∞)`. -/
 theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) (Ioi (0 : ℝ)) := by
   intro h
@@ -107,25 +115,44 @@ theorem integral_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
   convert integral_Ioi_of_hasDerivAt_of_tendsto' hd (integrableOn_Ioi_rpow_of_lt ha hc) ht using 1
   simp only [neg_div, zero_div, zero_sub]
 
+theorem integrableOn_Ioi_norm_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
+    IntegrableOn (fun t : ℝ ↦ ‖(t : ℂ) ^ a‖) (Ioi c) := by
+  refine (integrableOn_Ioi_rpow_of_lt ha hc).congr_fun (fun x hx => ?_) measurableSet_Ioi
+  rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos (hc.trans hx)]
+
 theorem integrableOn_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c) :
     IntegrableOn (fun t : ℝ => (t : ℂ) ^ a) (Ioi c) := by
-  rw [IntegrableOn, ← integrable_norm_iff, ← IntegrableOn]
-  · refine (integrableOn_Ioi_rpow_of_lt ha hc).congr_fun (fun x hx => ?_) measurableSet_Ioi
-    · dsimp only
-      rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos (hc.trans hx)]
-  · refine ContinuousOn.aestronglyMeasurable (fun t ht => ?_) measurableSet_Ioi
-    exact
-      (Complex.continuousAt_ofReal_cpow_const _ _ (Or.inr (hc.trans ht).ne')).continuousWithinAt
+  refine (integrable_norm_iff ?_).mp <| integrableOn_Ioi_norm_cpow_of_lt ha hc
+  refine ContinuousOn.aestronglyMeasurable (fun t ht ↦ ?_) measurableSet_Ioi
+  exact (Complex.continuousAt_ofReal_cpow_const _ _ (Or.inr (hc.trans ht).ne')).continuousWithinAt
+
+theorem integrableOn_Ioi_norm_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
+    IntegrableOn (fun x : ℝ ↦ ‖(x : ℂ) ^ s‖) (Ioi t) ↔ s.re < -1 := by
+  refine ⟨fun h ↦ ?_, fun h ↦ integrableOn_Ioi_norm_cpow_of_lt h ht⟩
+  refine (integrableOn_Ioi_rpow_iff ht).mp <| h.congr_fun (fun a ha ↦ ?_) measurableSet_Ioi
+  rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos (ht.trans ha)]
 
 theorem integrableOn_Ioi_cpow_iff {s : ℂ} {t : ℝ} (ht : 0 < t) :
-    IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioi t) ↔ s.re < -1 := by
-  refine ⟨fun h ↦ ?_, fun h ↦ integrableOn_Ioi_cpow_of_lt h ht⟩
-  have B : IntegrableOn (fun a ↦ a ^ s.re) (Ioi t) := by
-    apply (integrableOn_congr_fun _ measurableSet_Ioi).1 h.norm
-    intro a ha
-    have : 0 < a := ht.trans ha
-    simp [Complex.abs_cpow_eq_rpow_re_of_pos this]
-  rwa [integrableOn_Ioi_rpow_iff ht] at B
+    IntegrableOn (fun x : ℝ ↦ (x : ℂ) ^ s) (Ioi t) ↔ s.re < -1 :=
+  ⟨fun h ↦ (integrableOn_Ioi_norm_cpow_iff ht).mp h.norm, fun h ↦ integrableOn_Ioi_cpow_of_lt h ht⟩
+
+theorem integrableOn_Ioi_deriv_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs : s.re < 0) :
+    IntegrableOn (deriv fun x : ℝ ↦ (x : ℂ) ^ s) (Set.Ioi t) := by
+  have h : IntegrableOn (fun x : ℝ ↦ s * x ^ (s - 1)) (Set.Ioi t) := by
+    refine (integrableOn_Ioi_cpow_of_lt ?_ ht).const_mul _
+    rwa [Complex.sub_re, Complex.one_re, sub_lt_iff_lt_add, neg_add_cancel]
+  refine h.congr_fun (fun x hx ↦ ?_) measurableSet_Ioi
+  rw [Complex.deriv_ofReal_cpow_const (ht.trans hx).ne' (fun h ↦ (Complex.zero_re ▸ h ▸ hs).false)]
+
+theorem integrableOn_Ioi_deriv_norm_ofReal_cpow {s : ℂ} {t : ℝ} (ht : 0 < t) (hs : s.re ≤ 0):
+    IntegrableOn (deriv fun x : ℝ ↦ ‖(x : ℂ) ^ s‖) (Set.Ioi t) := by
+  rw [integrableOn_congr_fun (fun x hx ↦ by
+    rw [deriv_norm_ofReal_cpow _ (ht.trans hx)]) measurableSet_Ioi]
+  obtain hs | hs := eq_or_lt_of_le hs
+  · simp_rw [hs, zero_mul]
+    exact integrableOn_zero
+  · replace hs : s.re - 1 < - 1 := by rwa [sub_lt_iff_lt_add, neg_add_cancel]
+    exact (integrableOn_Ioi_rpow_of_lt hs ht).const_mul s.re
 
 /-- The complex power function with any exponent is not integrable on `(0, +∞)`. -/
 theorem not_integrableOn_Ioi_cpow (s : ℂ) :

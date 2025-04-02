@@ -85,8 +85,6 @@ def W :=
 /- inhabitants of W types is awkward to encode as an instance
 assumption because there needs to be a value `a : P.A`
 such that `P.B a` is empty to yield a finite tree -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- attribute [nolint has_nonempty_instance] W
 
 variable {P}
 

@@ -949,7 +949,7 @@ theorem pred_succ_iterate_of_not_isMax (i : α) (n : ℕ) (hin : ¬IsMax (succ^[
   · simp only [Nat.zero_eq, Function.iterate_zero, id]
   rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hin
   have h_not_max : ¬IsMax (succ^[n - 1] i) := by
-    cases' n with n
+    rcases n with - | n
     · simpa using hin
     rw [Nat.succ_sub_succ_eq_sub, Nat.sub_zero] at hn ⊢
     have h_sub_le : succ^[n] i ≤ succ^[n.succ] i := by

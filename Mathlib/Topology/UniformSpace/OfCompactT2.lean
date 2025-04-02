@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Topology.Separation.Regular
-import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.UniformSpace.Defs
 
 /-!
 # Compact separated uniform spaces

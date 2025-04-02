@@ -76,7 +76,6 @@ theorem Convex.combo_self {a b : R} (h : a + b = 1) (x : M) : a • x + b • x 
 
 variable (R)
 
--- Porting note: this is the letter of the mathlib3 version, but not really the spirit
 theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_smul, one_smul]
 
 /-- Pullback a `Module` structure along an injective additive monoid homomorphism.

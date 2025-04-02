@@ -210,13 +210,7 @@ as an object of `C`. -/
 @[simps]
 noncomputable def autGaloisSystem : PointedGaloisObject F ⥤ Grp.{u₂} where
   obj := fun A ↦ Grp.of <| Aut (A : C)
-  map := fun {A B} f ↦ (autMapHom f : Aut (A : C) →* Aut (B : C))
-  map_id := fun A ↦ by
-    ext (σ : Aut A.obj)
-    simp
-  map_comp {A B C} f g := by
-    ext (σ : Aut A.obj)
-    simp
+  map := fun {A B} f ↦ Grp.ofHom (autMapHom f)
 
 /-- The limit of `autGaloisSystem`. -/
 noncomputable def AutGalois : Type (max u₁ u₂) :=

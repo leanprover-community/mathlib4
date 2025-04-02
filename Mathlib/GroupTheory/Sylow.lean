@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.NoncommPiCoprod
@@ -55,14 +56,8 @@ namespace Sylow
 
 attribute [coe] toSubgroup
 
--- Porting note: Changed to `CoeOut`
 instance : CoeOut (Sylow p G) (Subgroup G) :=
   ⟨toSubgroup⟩
-
--- Porting note: syntactic tautology
--- @[simp]
--- theorem toSubgroup_eq_coe {P : Sylow p G} : P.toSubgroup = ↑P :=
---   rfl
 
 @[ext]
 theorem ext {P Q : Sylow p G} (h : (P : Subgroup G) = Q) : P = Q := by cases P; cases Q; congr

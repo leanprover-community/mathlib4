@@ -3,9 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.GroupTheory.FreeGroup.Basic
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.Dedup
+import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.List.Sublists
+import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
 # The maximal reduction of a word in a free group
@@ -97,7 +98,7 @@ theorem reduce.not {p : Prop} :
         simp only [List.length, zero_add, List.length_append] at this
       omega
     | cons hd tail =>
-      cases' hd with y c
+      obtain ⟨y, c⟩ := hd
       dsimp only
       split_ifs with h <;> intro H
       · rw [H] at r

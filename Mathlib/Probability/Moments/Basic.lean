@@ -88,11 +88,11 @@ theorem centralMoment_one [IsZeroOrProbabilityMeasure μ] : centralMoment X 1 μ
       refine fun h_sub => h_int ?_
       have h_add : X = (fun x => X x - integral μ X) + fun _ => integral μ X := by ext1 x; simp
       rw [h_add]
-      exact h_sub.add (integrable_const _)
+      fun_prop
     rw [integral_undef this]
 
-theorem centralMoment_two_eq_variance [IsFiniteMeasure μ] (hX : Memℒp X 2 μ) :
-    centralMoment X 2 μ = variance X μ := by rw [hX.variance_eq]; rfl
+lemma centralMoment_two_eq_variance (hX : AEMeasurable X μ) : centralMoment X 2 μ = variance X μ :=
+  (variance_eq_integral hX).symm
 
 section MomentGeneratingFunction
 
@@ -114,11 +114,10 @@ theorem mgf_zero_fun : mgf 0 μ t = (μ Set.univ).toReal := by
 theorem cgf_zero_fun : cgf 0 μ t = log (μ Set.univ).toReal := by simp only [cgf, mgf_zero_fun]
 
 @[simp]
-theorem mgf_zero_measure : mgf X (0 : Measure Ω) t = 0 := by simp only [mgf, integral_zero_measure]
+theorem mgf_zero_measure : mgf X (0 : Measure Ω) = 0 := by ext; simp [mgf]
 
 @[simp]
-theorem cgf_zero_measure : cgf X (0 : Measure Ω) t = 0 := by
-  simp only [cgf, log_zero, mgf_zero_measure]
+theorem cgf_zero_measure : cgf X (0 : Measure Ω) = 0 := by ext; simp [cgf]
 
 @[simp]
 theorem mgf_const' (c : ℝ) : mgf (fun _ => c) μ t = (μ Set.univ).toReal * exp (t * c) := by
@@ -184,6 +183,12 @@ theorem mgf_pos [IsProbabilityMeasure μ] (h_int_X : Integrable (fun ω => exp (
     0 < mgf X μ t :=
   mgf_pos' (IsProbabilityMeasure.ne_zero μ) h_int_X
 
+lemma mgf_pos_iff [hμ : NeZero μ] :
+    0 < mgf X μ t ↔ Integrable (fun ω ↦ exp (t * X ω)) μ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ mgf_pos' hμ.out h⟩
+  contrapose! h with h
+  simp [mgf_undef h]
+
 lemma exp_cgf_of_neZero [hμ : NeZero μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     exp (cgf X μ t) = mgf X μ t := by rw [cgf, exp_log (mgf_pos' hμ.out hX)]
 
@@ -195,6 +200,11 @@ lemma mgf_id_map (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
   rw [mgf, integral_map hX]
   · rfl
   · exact (measurable_const_mul _).exp.aestronglyMeasurable
+
+lemma mgf_congr_identDistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}
+    {Y : Ω' → ℝ} (h : IdentDistrib X Y μ μ') :
+    mgf X μ = mgf Y μ' := by
+  rw [← mgf_id_map h.aemeasurable_fst, ← mgf_id_map h.aemeasurable_snd, h.map_eq]
 
 theorem mgf_neg : mgf (-X) μ t = mgf X μ (-t) := by simp_rw [mgf, Pi.neg_apply, mul_neg, neg_mul]
 

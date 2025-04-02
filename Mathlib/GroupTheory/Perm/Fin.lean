@@ -76,7 +76,6 @@ Define the permutations `Fin.cycleRange i`, the cycle `(0 1 2 ... i)`.
 
 open Equiv.Perm
 
--- Porting note: renamed from finRotate_succ because there is already a theorem with that name
 theorem finRotate_succ_eq_decomposeFin {n : ℕ} :
     finRotate n.succ = decomposeFin.symm (1, finRotate n) := by
   ext i
@@ -142,13 +141,13 @@ def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
         ext
         simp))
 
-theorem cycleRange_of_gt {n : ℕ} {i j : Fin n.succ} (h : i < j) : cycleRange i j = j := by
+theorem cycleRange_of_gt {n : ℕ} {i j : Fin n} (h : i < j) : cycleRange i j = j := by
   rw [cycleRange, ofLeftInverse'_eq_ofInjective,
     ← Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
     viaFintypeEmbedding_apply_not_mem_range]
   simpa
 
-theorem cycleRange_of_le {n : ℕ} {i j : Fin n.succ} (h : j ≤ i) :
+theorem cycleRange_of_le {n : ℕ} [NeZero n] {i j : Fin n} (h : j ≤ i) :
     cycleRange i j = if j = i then 0 else j + 1 := by
   cases n
   · subsingleton
@@ -165,8 +164,10 @@ theorem cycleRange_of_le {n : ℕ} {i j : Fin n.succ} (h : j ≤ i) :
   · rw [Fin.val_add_one_of_lt]
     exact lt_of_lt_of_le (lt_of_le_of_ne h (mt (congr_arg _) heq)) (le_last i)
 
-theorem coe_cycleRange_of_le {n : ℕ} {i j : Fin n.succ} (h : j ≤ i) :
+theorem coe_cycleRange_of_le {n : ℕ} {i j : Fin n} (h : j ≤ i) :
     (cycleRange i j : ℕ) = if j = i then 0 else (j : ℕ) + 1 := by
+  rcases n with - | n
+  · exact absurd le_rfl i.pos.not_le
   rw [cycleRange_of_le h]
   split_ifs with h'
   · rfl
@@ -176,20 +177,20 @@ theorem coe_cycleRange_of_le {n : ℕ} {i j : Fin n.succ} (h : j ≤ i) :
         (j : ℕ) < i := Fin.lt_iff_val_lt_val.mp (lt_of_le_of_ne h h')
         _ ≤ n := Nat.lt_succ_iff.mp i.2)
 
-theorem cycleRange_of_lt {n : ℕ} {i j : Fin n.succ} (h : j < i) : cycleRange i j = j + 1 := by
+theorem cycleRange_of_lt {n : ℕ} [NeZero n] {i j : Fin n} (h : j < i) : cycleRange i j = j + 1 := by
   rw [cycleRange_of_le h.le, if_neg h.ne]
 
-theorem coe_cycleRange_of_lt {n : ℕ} {i j : Fin n.succ} (h : j < i) :
+theorem coe_cycleRange_of_lt {n : ℕ} {i j : Fin n} (h : j < i) :
     (cycleRange i j : ℕ) = j + 1 := by rw [coe_cycleRange_of_le h.le, if_neg h.ne]
 
-theorem cycleRange_of_eq {n : ℕ} {i j : Fin n.succ} (h : j = i) : cycleRange i j = 0 := by
+theorem cycleRange_of_eq {n : ℕ} [NeZero n] {i j : Fin n} (h : j = i) : cycleRange i j = 0 := by
   rw [cycleRange_of_le h.le, if_pos h]
 
 @[simp]
-theorem cycleRange_self {n : ℕ} (i : Fin n.succ) : cycleRange i i = 0 :=
+theorem cycleRange_self {n : ℕ} [NeZero n] (i : Fin n) : cycleRange i i = 0 :=
   cycleRange_of_eq rfl
 
-theorem cycleRange_apply {n : ℕ} (i j : Fin n.succ) :
+theorem cycleRange_apply {n : ℕ} [NeZero n] (i j : Fin n) :
     cycleRange i j = if j < i then j + 1 else if j = i then 0 else j := by
   split_ifs with h₁ h₂
   · exact cycleRange_of_lt h₁
@@ -197,11 +198,11 @@ theorem cycleRange_apply {n : ℕ} (i j : Fin n.succ) :
   · exact cycleRange_of_gt (lt_of_le_of_ne (le_of_not_gt h₁) (Ne.symm h₂))
 
 @[simp]
-theorem cycleRange_zero (n : ℕ) : cycleRange (0 : Fin n.succ) = 1 := by
+theorem cycleRange_zero (n : ℕ) [NeZero n] : cycleRange (0 : Fin n) = 1 := by
   ext j
-  refine Fin.cases ?_ (fun j => ?_) j
+  rcases (Fin.zero_le' j).eq_or_lt with rfl | hj
   · simp
-  · rw [cycleRange_of_gt (Fin.succ_pos j), one_apply]
+  · rw [cycleRange_of_gt hj, one_apply]
 
 @[simp]
 theorem cycleRange_last (n : ℕ) : cycleRange (last n) = finRotate (n + 1) := by
@@ -209,10 +210,12 @@ theorem cycleRange_last (n : ℕ) : cycleRange (last n) = finRotate (n + 1) := b
   rw [coe_cycleRange_of_le (le_last _), coe_finRotate]
 
 @[simp]
-theorem cycleRange_zero' {n : ℕ} (h : 0 < n) : cycleRange ⟨0, h⟩ = 1 := by
-  cases' n with n
-  · cases h
-  exact cycleRange_zero n
+theorem cycleRange_mk_zero {n : ℕ} (h : 0 < n) : cycleRange ⟨0, h⟩ = 1 :=
+  have : NeZero n := .of_pos h
+  cycleRange_zero n
+
+@[deprecated (since := "2025-01-28")]
+alias cycleRange_zero' := cycleRange_mk_zero
 
 @[simp]
 theorem sign_cycleRange {n : ℕ} (i : Fin n) : Perm.sign (cycleRange i) = (-1) ^ (i : ℕ) := by
@@ -243,12 +246,12 @@ theorem succAbove_cycleRange {n : ℕ} (i j : Fin n) :
 @[simp]
 theorem cycleRange_succAbove {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     i.cycleRange (i.succAbove j) = j.succ := by
-  cases' lt_or_ge (castSucc j) i with h h
+  rcases lt_or_ge (castSucc j) i with h | h
   · rw [Fin.succAbove_of_castSucc_lt _ _ h, Fin.cycleRange_of_lt h, Fin.coeSucc_eq_succ]
   · rw [Fin.succAbove_of_le_castSucc _ _ h, Fin.cycleRange_of_gt (Fin.le_castSucc_iff.mp h)]
 
 @[simp]
-theorem cycleRange_symm_zero {n : ℕ} (i : Fin (n + 1)) : i.cycleRange.symm 0 = i :=
+theorem cycleRange_symm_zero {n : ℕ} [NeZero n] (i : Fin n) : i.cycleRange.symm 0 = i :=
   i.cycleRange.injective (by simp)
 
 @[simp]
@@ -256,16 +259,17 @@ theorem cycleRange_symm_succ {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     i.cycleRange.symm j.succ = i.succAbove j :=
   i.cycleRange.injective (by simp)
 
-theorem isCycle_cycleRange {n : ℕ} {i : Fin (n + 1)} (h0 : i ≠ 0) : IsCycle (cycleRange i) := by
-  cases' i with i hi
+theorem isCycle_cycleRange {n : ℕ} [NeZero n] {i : Fin n} (h0 : i ≠ 0) :
+    IsCycle (cycleRange i) := by
+  obtain ⟨i, hi⟩ := i
   cases i
   · exact (h0 rfl).elim
   exact isCycle_finRotate.extendDomain _
 
 @[simp]
-theorem cycleType_cycleRange {n : ℕ} {i : Fin (n + 1)} (h0 : i ≠ 0) :
+theorem cycleType_cycleRange {n : ℕ} [NeZero n] {i : Fin n} (h0 : i ≠ 0) :
     cycleType (cycleRange i) = {(i + 1 : ℕ)} := by
-  cases' i with i hi
+  obtain ⟨i, hi⟩ := i
   cases i
   · exact (h0 rfl).elim
   rw [cycleRange, cycleType_extendDomain]

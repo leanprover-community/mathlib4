@@ -95,6 +95,20 @@ class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M�
 and right absorbing. -/
 class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
 
+section MonoidWithZero
+
+variable [MonoidWithZero M₀]
+
+/-- If `x` is multiplicative with respect to `f`, then so is any `x^n`. -/
+theorem pow_mul_apply_eq_pow_mul {M : Type*} [Monoid M] (f : M₀ → M) {x : M₀}
+    (hx : ∀ y : M₀, f (x * y) = f x * f y) (n : ℕ) :
+    ∀ (y : M₀), f (x ^ n * y) = f x ^ n * f y := by
+  induction n with
+  | zero => intro y; rw [pow_zero, pow_zero, one_mul, one_mul]
+  | succ n hn => intro y; rw [pow_succ', pow_succ', mul_assoc, mul_assoc, hx, hn]
+
+end MonoidWithZero
+
 /-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
 and right absorbing, and left/right multiplication by a non-zero element is injective. -/
 class CancelMonoidWithZero (M₀ : Type*) extends MonoidWithZero M₀, IsCancelMulZero M₀

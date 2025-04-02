@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
 import Mathlib.Data.ENNReal.Inv
+import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.UniformSpace.OfFun
-import Mathlib.Topology.Bases
 
 /-!
 # Extended metric spaces
@@ -89,8 +89,8 @@ namespace, while notions associated to metric spaces are mostly in the root name
 @[ext]
 protected theorem PseudoEMetricSpace.ext {α : Type*} {m m' : PseudoEMetricSpace α}
     (h : m.toEDist = m'.toEDist) : m = m' := by
-  cases' m with ed  _ _ _ U hU
-  cases' m' with ed' _ _ _ U' hU'
+  obtain ⟨_, _, _, U, hU⟩ := m; rename EDist α => ed
+  obtain ⟨_, _, _, U', hU'⟩ := m'; rename EDist α => ed'
   congr 1
   exact UniformSpace.ext (((show ed = ed' from h) ▸ hU).trans hU'.symm)
 
@@ -213,8 +213,8 @@ theorem uniformity_basis_edist_inv_nat :
 
 theorem uniformity_basis_edist_inv_two_pow :
     (𝓤 α).HasBasis (fun _ => True) fun n : ℕ => { p : α × α | edist p.1 p.2 < 2⁻¹ ^ n } :=
-  EMetric.mk_uniformity_basis (fun _ _ => ENNReal.pow_pos (ENNReal.inv_pos.2 ENNReal.two_ne_top) _)
-    fun _ε ε₀ =>
+  EMetric.mk_uniformity_basis (fun _ _ ↦ ENNReal.pow_pos (ENNReal.inv_pos.2 ENNReal.ofNat_ne_top) _)
+    fun _ε ε₀ ↦
     let ⟨n, hn⟩ := ENNReal.exists_inv_two_pow_lt (ne_of_gt ε₀)
     ⟨n, trivial, le_of_lt hn⟩
 
@@ -534,30 +534,6 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
     edist x (f n⁻¹ y) ≤ (n : ℝ≥0∞)⁻¹ * 2 := hf _ _ ⟨hyx, hx⟩
     _ < ε := ENNReal.mul_lt_of_lt_div hn
 
-open TopologicalSpace in
-/-- If a set `s` is separable in a (pseudo extended) metric space, then it admits a countable dense
-subset. This is not obvious, as the countable set whose closure covers `s` given by the definition
-of separability does not need in general to be contained in `s`. -/
-theorem _root_.TopologicalSpace.IsSeparable.exists_countable_dense_subset
-    {s : Set α} (hs : IsSeparable s) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ closure t := by
-  have : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ s ⊆ ⋃ x ∈ t, closedBall x ε := fun ε ε0 => by
-    rcases hs with ⟨t, htc, hst⟩
-    refine ⟨t, htc, hst.trans fun x hx => ?_⟩
-    rcases mem_closure_iff.1 hx ε ε0 with ⟨y, hyt, hxy⟩
-    exact mem_iUnion₂.2 ⟨y, hyt, mem_closedBall.2 hxy.le⟩
-  exact subset_countable_closure_of_almost_dense_set _ this
-
-open TopologicalSpace in
-/-- If a set `s` is separable, then the corresponding subtype is separable in a (pseudo extended)
-metric space.  This is not obvious, as the countable set whose closure covers `s` does not need in
-general to be contained in `s`. -/
-theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : IsSeparable s) :
-    SeparableSpace s := by
-  rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
-  lift t to Set s using hts
-  refine ⟨⟨t, countable_of_injective_of_countable_image Subtype.coe_injective.injOn htc, ?_⟩⟩
-  rwa [IsInducing.subtypeVal.dense_iff, Subtype.forall]
-
 end Compact
 
 end EMetric
@@ -596,7 +572,7 @@ theorem edist_pos {x y : γ} : 0 < edist x y ↔ x ≠ y := by simp [← not_le]
 
 /-- Two points coincide if their distance is `< ε` for all positive ε -/
 theorem eq_of_forall_edist_le {x y : γ} (h : ∀ ε > 0, edist x y ≤ ε) : x = y :=
-  eq_of_edist_eq_zero (eq_of_le_of_forall_le_of_dense bot_le h)
+  eq_of_edist_eq_zero (eq_of_le_of_forall_lt_imp_le_of_dense bot_le h)
 
 /-- Auxiliary function to replace the uniformity on an emetric space with
 a uniformity which is equal to the original one, but maybe not defeq.

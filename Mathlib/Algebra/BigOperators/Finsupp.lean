@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Data.Finsupp.Ext
@@ -17,6 +17,7 @@ import Mathlib.Data.Finsupp.Indicator
 This file contains theorems relevant to big operators in finitely supported functions.
 -/
 
+assert_not_exists Field
 
 noncomputable section
 

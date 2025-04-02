@@ -120,7 +120,7 @@ end PseudoMetricSpace
 section ContinuousConstSMul
 
 variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+  [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 /-- If `s` is a convex set, then `a • interior s + b • closure s ⊆ interior s` for all `0 < a`,
 `0 ≤ b`, `a + b = 1`. See also `Convex.combo_interior_self_subset_interior` for a weaker version. -/
@@ -271,7 +271,7 @@ end ContinuousConstSMul
 section ContinuousSMul
 
 variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [TopologicalAddGroup E] [TopologicalSpace 𝕜] [OrderTopology 𝕜] [ContinuousSMul 𝕜 E]
+  [IsTopologicalAddGroup E] [TopologicalSpace 𝕜] [OrderTopology 𝕜] [ContinuousSMul 𝕜 E]
 
 theorem Convex.closure_interior_eq_closure_of_nonempty_interior {s : Set E} (hs : Convex 𝕜 s)
     (hs' : (interior s).Nonempty) : closure (interior s) = closure s :=
@@ -343,7 +343,7 @@ end TopologicalSpace
 section ContinuousConstSMul
 
 variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+  [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 theorem closedConvexHull_eq_closure_convexHull {s : Set E} :
     closedConvexHull 𝕜 s = closure (convexHull 𝕜 s) := subset_antisymm
@@ -355,7 +355,7 @@ end ContinuousConstSMul
 
 section ContinuousSMul
 
-variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [TopologicalAddGroup E]
+variable [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [IsTopologicalAddGroup E]
   [ContinuousSMul ℝ E]
 
 /-- Convex hull of a finite set is compact. -/
@@ -436,18 +436,18 @@ protected theorem Convex.isPreconnected {s : Set E} (h : Convex ℝ s) : IsPreco
 
 Not an instance, because it creates enormous TC subproblems (turn on `pp.all`).
 -/
-protected theorem TopologicalAddGroup.pathConnectedSpace : PathConnectedSpace E :=
+protected theorem IsTopologicalAddGroup.pathConnectedSpace : PathConnectedSpace E :=
   pathConnectedSpace_iff_univ.mpr <| convex_univ.isPathConnected ⟨(0 : E), trivial⟩
 
 end ContinuousSMul
 
 section ComplementsConnected
 
-variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [TopologicalAddGroup E]
+variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [IsTopologicalAddGroup E]
 
 local notation "π" => Submodule.linearProjOfIsCompl _ _
 
-attribute [local instance 100] TopologicalAddGroup.pathConnectedSpace
+attribute [local instance 100] IsTopologicalAddGroup.pathConnectedSpace
 
 /-- Given two complementary subspaces `p` and `q` in `E`, if the complement of `{0}`
 is path connected in `p` then the complement of `q` is path connected in `E`. -/

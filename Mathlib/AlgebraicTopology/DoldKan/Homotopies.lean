@@ -87,7 +87,7 @@ theorem cs_down_0_not_rel_left (j : ℕ) : ¬c.Rel 0 j := by
 
 /-- The sequence of maps which gives the null homotopic maps `Hσ` that shall be in
 the inductive construction of the projections `P q : K[X] ⟶ K[X]` -/
-def hσ (q : ℕ) (n : ℕ) : X _[n] ⟶ X _[n + 1] :=
+def hσ (q : ℕ) (n : ℕ) : X _⦋n⦌ ⟶ X _⦋n + 1⦌ :=
   if n < q then 0 else (-1 : ℤ) ^ (n - q) • X.σ ⟨n - q, Nat.lt_succ_of_le (Nat.sub_le _ _)⟩
 
 /-- We can turn `hσ` into a datum that can be passed to `nullHomotopicMap'`. -/
@@ -95,13 +95,13 @@ def hσ' (q : ℕ) : ∀ n m, c.Rel m n → (K[X].X n ⟶ K[X].X m) := fun n m h
   hσ q n ≫ eqToHom (by congr)
 
 theorem hσ'_eq_zero {q n m : ℕ} (hnq : n < q) (hnm : c.Rel m n) :
-    (hσ' q n m hnm : X _[n] ⟶ X _[m]) = 0 := by
+    (hσ' q n m hnm : X _⦋n⦌ ⟶ X _⦋m⦌) = 0 := by
   simp only [hσ', hσ]
   split_ifs
   exact zero_comp
 
 theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
-    (hσ' q n m hnm : X _[n] ⟶ X _[m]) =
+    (hσ' q n m hnm : X _⦋n⦌ ⟶ X _⦋m⦌) =
       ((-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩) ≫
         eqToHom (by congr) := by
   simp only [hσ', hσ]
@@ -111,7 +111,7 @@ theorem hσ'_eq {q n a m : ℕ} (ha : n = a + q) (hnm : c.Rel m n) :
     congr
 
 theorem hσ'_eq' {q n a : ℕ} (ha : n = a + q) :
-    (hσ' q n (n + 1) rfl : X _[n] ⟶ X _[n + 1]) =
+    (hσ' q n (n + 1) rfl : X _⦋n⦌ ⟶ X _⦋n + 1⦌) =
       (-1 : ℤ) ^ a • X.σ ⟨a, Nat.lt_succ_iff.mpr (Nat.le.intro (Eq.symm ha))⟩ := by
   rw [hσ'_eq ha rfl, eqToHom_refl, comp_id]
 
@@ -138,7 +138,7 @@ theorem Hσ_eq_zero (q : ℕ) : (Hσ q : K[X] ⟶ K[X]).f 0 = 0 := by
 
 /-- The maps `hσ' q n m hnm` are natural on the simplicial object -/
 theorem hσ'_naturality (q : ℕ) (n m : ℕ) (hnm : c.Rel m n) {X Y : SimplicialObject C} (f : X ⟶ Y) :
-    f.app (op [n]) ≫ hσ' q n m hnm = hσ' q n m hnm ≫ f.app (op [m]) := by
+    f.app (op ⦋n⦌) ≫ hσ' q n m hnm = hσ' q n m hnm ≫ f.app (op ⦋m⦌) := by
   have h : n + 1 = m := hnm
   subst h
   simp only [hσ', eqToHom_refl, comp_id]

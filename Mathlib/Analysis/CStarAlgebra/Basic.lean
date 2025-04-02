@@ -177,9 +177,6 @@ section Unital
 
 variable [NormedRing E] [StarRing E] [CStarRing E]
 
--- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
--- simp cannot prove this
-@[simp, nolint simpNF]
 theorem norm_one [Nontrivial E] : ‖(1 : E)‖ = 1 := by
   have : 0 < ‖(1 : E)‖ := norm_pos_iff.mpr one_ne_zero
   rw [← mul_left_inj' this.ne', ← norm_star_mul_self, mul_one, star_one, one_mul]

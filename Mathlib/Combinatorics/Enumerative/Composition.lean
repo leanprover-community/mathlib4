@@ -86,6 +86,8 @@ Composition, partition
 <https://en.wikipedia.org/wiki/Composition_(combinatorics)>
 -/
 
+assert_not_exists Field
+
 open List
 
 variable {n : ℕ}
@@ -478,7 +480,7 @@ theorem eq_ones_iff_length {c : Composition n} : c = ones n ↔ c.length = n := 
       _ < ∑ i : Fin c.length, c.blocksFun i := by
         {
         obtain ⟨i, hi, i_blocks⟩ : ∃ i ∈ c.blocks, 1 < i := ne_ones_iff.1 H
-        rw [← ofFn_blocksFun, mem_ofFn c.blocksFun, Set.mem_range] at hi
+        rw [← ofFn_blocksFun, mem_ofFn' c.blocksFun, Set.mem_range] at hi
         obtain ⟨j : Fin c.length, hj : c.blocksFun j = i⟩ := hi
         rw [← hj] at i_blocks
         exact Finset.sum_lt_sum (fun i _ => one_le_blocksFun c i) ⟨j, Finset.mem_univ _, i_blocks⟩
@@ -595,13 +597,15 @@ theorem length_splitWrtComposition (l : List α) (c : Composition n) :
 
 theorem map_length_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum ≤ l.length → map length (l.splitWrtCompositionAux ns) = ns := by
-  induction' ns with n ns IH <;> intro l h <;> simp at h
-  · simp [splitWrtCompositionAux]
-  have := le_trans (Nat.le_add_right _ _) h
-  simp only [splitWrtCompositionAux_cons, this]; dsimp
-  rw [length_take, IH] <;> simp [length_drop]
-  · assumption
-  · exact le_tsub_of_add_le_left h
+  induction ns with
+  | nil => simp [splitWrtCompositionAux]
+  | cons n ns IH =>
+    intro l h; simp only [sum_cons] at h
+    have := le_trans (Nat.le_add_right _ _) h
+    simp only [splitWrtCompositionAux_cons, this]; dsimp
+    rw [length_take, IH] <;> simp [length_drop]
+    · assumption
+    · exact le_tsub_of_add_le_left h
 
 /-- When one splits a list along a composition `c`, the lengths of the sublists thus created are
 given by the block sizes in `c`. -/
@@ -625,14 +629,15 @@ theorem getElem_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ}
     (hi : i < (l.splitWrtCompositionAux ns).length) :
     (l.splitWrtCompositionAux ns)[i] =
       (l.take (ns.take (i + 1)).sum).drop (ns.take i).sum := by
-  induction' ns with n ns IH generalizing l i
-  · cases hi
-  cases' i with i
-  · rw [Nat.add_zero, List.take_zero, sum_nil]
-    simp
-  · simp only [splitWrtCompositionAux, getElem_cons_succ, IH, take,
-        sum_cons, Nat.add_eq, add_zero, splitAt_eq, drop_take, drop_drop]
-    rw [Nat.add_sub_add_left]
+  induction ns generalizing l i with
+  | nil => cases hi
+  | cons n ns IH =>
+    rcases i with - | i
+    · rw [Nat.add_zero, List.take_zero, sum_nil]
+      simp
+    · simp only [splitWrtCompositionAux, getElem_cons_succ, IH, take,
+          sum_cons, Nat.add_eq, add_zero, splitAt_eq, drop_take, drop_drop]
+      rw [Nat.add_sub_add_left]
 
 /-- The `i`-th sublist in the splitting of a list `l` along a composition `c`, is the slice of `l`
 between the indices `c.sizeUpTo i` and `c.sizeUpTo (i+1)`, i.e., the indices in the `i`-th
@@ -647,35 +652,16 @@ theorem getElem_splitWrtComposition (l : List α) (c : Composition n)
     (l.splitWrtComposition c)[i] = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) :=
   getElem_splitWrtComposition' _ _ h
 
-@[deprecated getElem_splitWrtCompositionAux (since := "2024-06-12")]
-theorem get_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ} (hi) :
-    (l.splitWrtCompositionAux ns).get ⟨i, hi⟩  =
-      (l.take (ns.take (i + 1)).sum).drop (ns.take i).sum := by
-  simp [getElem_splitWrtCompositionAux]
-
-/-- The `i`-th sublist in the splitting of a list `l` along a composition `c`, is the slice of `l`
-between the indices `c.sizeUpTo i` and `c.sizeUpTo (i+1)`, i.e., the indices in the `i`-th
-block of the composition. -/
-@[deprecated getElem_splitWrtComposition' (since := "2024-06-12")]
-theorem get_splitWrtComposition' (l : List α) (c : Composition n) {i : ℕ}
-    (hi : i < (l.splitWrtComposition c).length) :
-    (l.splitWrtComposition c).get ⟨i, hi⟩ = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) := by
-  simp [getElem_splitWrtComposition']
-
-@[deprecated getElem_splitWrtComposition (since := "2024-06-12")]
-theorem get_splitWrtComposition (l : List α) (c : Composition n)
-    (i : Fin (l.splitWrtComposition c).length) :
-    get (l.splitWrtComposition c) i = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) := by
-  simp [getElem_splitWrtComposition]
-
 theorem flatten_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum = l.length → (l.splitWrtCompositionAux ns).flatten = l := by
-  induction' ns with n ns IH <;> intro l h <;> simp at h
-  · exact (length_eq_zero.1 h.symm).symm
-  simp only [splitWrtCompositionAux_cons]; dsimp
-  rw [IH]
-  · simp
-  · rw [length_drop, ← h, add_tsub_cancel_left]
+  induction ns with
+  | nil => exact fun h ↦ (length_eq_zero.1 h.symm).symm
+  | cons n ns IH =>
+    intro l h; rw [sum_cons] at h
+    simp only [splitWrtCompositionAux_cons]; dsimp
+    rw [IH]
+    · simp
+    · rw [length_drop, ← h, add_tsub_cancel_left]
 
 @[deprecated (since := "2024-10-15")]
 alias join_splitWrtCompositionAux := flatten_splitWrtCompositionAux
@@ -747,9 +733,7 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
         exact Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr i_ne_zero)
       refine ⟨⟨i - 1, ?_⟩, ?_, ?_⟩
       · have : (i : ℕ) < n + 1 := i.2
-        simp? [Nat.lt_succ_iff_lt_or_eq, i_ne_last] at this says
-          simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, i_ne_last, or_false] at this
-        exact Nat.pred_lt_pred i_ne_zero this
+        omega
       · convert i_mem
         simp only
         rwa [add_comm]
@@ -772,10 +756,10 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
     simp only [Finset.mem_val]
     constructor
     · intro h
-      cases' h with n h
+      rcases h with n | h
       · rw [add_comm] at this
         contradiction
-      · cases' h with w h; cases' h with h₁ h₂
+      · obtain ⟨w, h₁, h₂⟩ := h
         rw [← Fin.ext_iff] at h₂
         rwa [h₂]
     · intro h
@@ -850,14 +834,15 @@ theorem blocks_length : c.blocks.length = c.length :=
 
 theorem blocks_partial_sum {i : ℕ} (h : i < c.boundaries.card) :
     (c.blocks.take i).sum = c.boundary ⟨i, h⟩ := by
-  induction' i with i IH
-  · simp
-  have A : i < c.blocks.length := by
-    rw [c.card_boundaries_eq_succ_length] at h
-    simp [blocks, Nat.lt_of_succ_lt_succ h]
-  have B : i < c.boundaries.card := lt_of_lt_of_le A (by simp [blocks, length, Nat.sub_le])
-  rw [sum_take_succ _ _ A, IH B]
-  simp [blocks, blocksFun, get_ofFn]
+  induction i with
+  | zero => simp
+  | succ i IH =>
+    have A : i < c.blocks.length := by
+      rw [c.card_boundaries_eq_succ_length] at h
+      simp [blocks, Nat.lt_of_succ_lt_succ h]
+    have B : i < c.boundaries.card := lt_of_lt_of_le A (by simp [blocks, length, Nat.sub_le])
+    rw [sum_take_succ _ _ A, IH B]
+    simp [blocks, blocksFun, get_ofFn]
 
 theorem mem_boundaries_iff_exists_blocks_sum_take_eq {j : Fin (n + 1)} :
     j ∈ c.boundaries ↔ ∃ i < c.boundaries.card, (c.blocks.take i).sum = j := by

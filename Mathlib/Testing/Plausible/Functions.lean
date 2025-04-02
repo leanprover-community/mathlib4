@@ -217,7 +217,7 @@ theorem applyId_mem_iff [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup xs
     induction xs generalizing ys with
     | nil => contradiction
     | cons x' xs xs_ih =>
-      cases' ys with y ys
+      rcases ys with - | ⟨y, ys⟩
       · cases h₃
       dsimp [List.dlookup] at h₃; split_ifs at h₃ with h
       · rw [Option.some_inj] at h₃
@@ -252,8 +252,8 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
   intro x y h
   by_cases hx : x ∈ xs <;> by_cases hy : y ∈ xs
   · rw [List.mem_iff_getElem?] at hx hy
-    cases' hx with i hx
-    cases' hy with j hy
+    obtain ⟨i, hx⟩ := hx
+    obtain ⟨j, hy⟩ := hy
     suffices some x = some y by injection this
     have h₂ := h₁.length_eq
     rw [List.applyId_zip_eq h₀ h₂ _ _ _ hx] at h
@@ -263,7 +263,7 @@ theorem applyId_injective [DecidableEq α] {xs ys : List α} (h₀ : List.Nodup 
       rw [← List.applyId_zip_eq] <;> assumption
     · rw [← h₁.length_eq]
       rw [List.getElem?_eq_some_iff] at hx
-      cases' hx with hx hx'
+      obtain ⟨hx, hx'⟩ := hx
       exact hx
   · rw [← applyId_mem_iff h₀ h₁] at hx hy
     rw [h] at hx
@@ -311,10 +311,6 @@ protected def shrinkPerm {α : Type} [DecidableEq α] :
     let i ← List.finRange <| k / n
     pure <| Perm.slice (i * n) n xs
 
-
--- Porting note: removed, there is no `sizeof` in the new `Sampleable`
--- instance [SizeOf α] : SizeOf (InjectiveFunction α) :=
---   ⟨fun ⟨xs, _, _⟩ => SizeOf.sizeOf (xs.map Sigma.fst)⟩
 
 /-- Shrink an injective function slicing a segment in the middle of the domain and removing
 the corresponding elements in the codomain, hence maintaining the property that

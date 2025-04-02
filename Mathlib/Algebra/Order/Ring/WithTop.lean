@@ -66,12 +66,16 @@ lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithTop α) = b.
   | ⊤ => by simp [top_mul, ha]; rfl
   | (b : α) => rfl
 
-@[simp] lemma untop'_zero_mul (a b : WithTop α) : (a * b).untop' 0 = a.untop' 0 * b.untop' 0 := by
-  by_cases ha : a = 0; · rw [ha, zero_mul, ← coe_zero, untop'_coe, zero_mul]
-  by_cases hb : b = 0; · rw [hb, mul_zero, ← coe_zero, untop'_coe, mul_zero]
-  induction a; · rw [top_mul hb, untop'_top, zero_mul]
-  induction b; · rw [mul_top ha, untop'_top, mul_zero]
-  rw [← coe_mul, untop'_coe, untop'_coe, untop'_coe]
+@[simp]
+lemma untopD_zero_mul (a b : WithTop α) : (a * b).untopD 0 = a.untopD 0 * b.untopD 0 := by
+  by_cases ha : a = 0; · rw [ha, zero_mul, ← coe_zero, untopD_coe, zero_mul]
+  by_cases hb : b = 0; · rw [hb, mul_zero, ← coe_zero, untopD_coe, mul_zero]
+  induction a; · rw [top_mul hb, untopD_top, zero_mul]
+  induction b; · rw [mul_top ha, untopD_top, mul_zero]
+  rw [← coe_mul, untopD_coe, untopD_coe, untopD_coe]
+
+@[deprecated (since := "2025-02-06")]
+alias untop'_zero_mul := untopD_zero_mul
 
 theorem mul_ne_top {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) : a * b ≠ ⊤ := by
   simp [mul_eq_top_iff, *]
@@ -119,8 +123,7 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
       induction' y with y
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, mul_top this]
-      · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simp [← coe_mul]` times out
-        simp only [map_coe, ← coe_mul, map_mul] }
+      · simp [← coe_mul] }
 
 instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
     SemigroupWithZero (WithTop α) where
@@ -129,7 +132,6 @@ instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
     rcases eq_or_ne a 0 with (rfl | ha); · simp only [zero_mul]
     rcases eq_or_ne b 0 with (rfl | hb); · simp only [zero_mul, mul_zero]
     rcases eq_or_ne c 0 with (rfl | hc); · simp only [mul_zero]
-  -- Porting note: below needed to be rewritten due to changed `simp` behaviour for `coe`
     induction' a with a; · simp [hb, hc]
     induction' b with b; · simp [mul_top ha, top_mul hc]
     induction' c with c
@@ -295,12 +297,15 @@ lemma coe_mul_eq_bind {a : α} (ha : a ≠ 0) : ∀ b, (a * b : WithBot α) = b.
   | (b : α) => rfl
 
 @[simp]
-lemma unbot'_zero_mul (a b : WithBot α) : (a * b).unbot' 0 = a.unbot' 0 * b.unbot' 0 := by
-  by_cases ha : a = 0; · rw [ha, zero_mul, ← coe_zero, unbot'_coe, zero_mul]
-  by_cases hb : b = 0; · rw [hb, mul_zero, ← coe_zero, unbot'_coe, mul_zero]
-  induction a; · rw [bot_mul hb, unbot'_bot, zero_mul]
-  induction b; · rw [mul_bot ha, unbot'_bot, mul_zero]
-  rw [← coe_mul, unbot'_coe, unbot'_coe, unbot'_coe]
+lemma unbotD_zero_mul (a b : WithBot α) : (a * b).unbotD 0 = a.unbotD 0 * b.unbotD 0 := by
+  by_cases ha : a = 0; · rw [ha, zero_mul, ← coe_zero, unbotD_coe, zero_mul]
+  by_cases hb : b = 0; · rw [hb, mul_zero, ← coe_zero, unbotD_coe, mul_zero]
+  induction a; · rw [bot_mul hb, unbotD_bot, zero_mul]
+  induction b; · rw [mul_bot ha, unbotD_bot, mul_zero]
+  rw [← coe_mul, unbotD_coe, unbotD_coe, unbotD_coe]
+
+@[deprecated (since := "2025-02-06")]
+alias unbot'_zero_mul := unbotD_zero_mul
 
 theorem mul_ne_bot {a b : WithBot α} (ha : a ≠ ⊥) (hb : b ≠ ⊥) : a * b ≠ ⊥ :=
   WithTop.mul_ne_top (α := αᵒᵈ) ha hb

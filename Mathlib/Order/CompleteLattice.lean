@@ -113,6 +113,7 @@ theorem sSup_le_sSup_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, x ≤ y)
       hac.trans (hb hct)
 
 -- We will generalize this to conditionally complete lattices in `csSup_singleton`.
+@[simp]
 theorem sSup_singleton {a : α} : sSup {a} = a :=
   isLUB_singleton.sSup_eq
 
@@ -168,6 +169,7 @@ theorem sInf_le_sInf_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x)
   le_sInf fun x hx ↦ let ⟨_y, hyt, hyx⟩ := h x hx; sInf_le_of_le hyt hyx
 
 -- We will generalize this to conditionally complete lattices in `csInf_singleton`.
+@[simp]
 theorem sInf_singleton {a : α} : sInf {a} = a :=
   isGLB_singleton.sInf_eq
 
@@ -1291,6 +1293,29 @@ theorem iInf_extend_top {e : ι → β} (he : Injective e) (f : ι → α) :
     ⨅ j, extend e f ⊤ j = iInf f :=
   @iSup_extend_bot αᵒᵈ _ _ _ _ he _
 
+section le
+
+variable {ι : Type*} [PartialOrder ι] (f : ι → α) (i : ι)
+
+theorem biSup_le_eq_sup : (⨆ j ≤ i, f j) = (⨆ j < i, f j) ⊔ f i := by
+  rw [iSup_split_single _ i]
+  -- Squeezed for a ~10x speedup, though it's still reasonably fast unsqueezed.
+  simp only [le_refl, iSup_pos, iSup_and', lt_iff_le_and_ne, and_comm, sup_comm]
+
+theorem biInf_le_eq_inf : (⨅ j ≤ i, f j) = (⨅ j < i, f j) ⊓ f i :=
+  biSup_le_eq_sup (α := αᵒᵈ) f i
+
+theorem biSup_ge_eq_sup : (⨆ j ≥ i, f j) = f i ⊔ (⨆ j > i, f j) := by
+  rw [iSup_split_single _ i]
+  -- Squeezed for a ~10x speedup, though it's still reasonably fast unsqueezed.
+  simp only [ge_iff_le, le_refl, iSup_pos, ne_comm, iSup_and', gt_iff_lt, lt_iff_le_and_ne,
+    and_comm]
+
+theorem biInf_ge_eq_inf : (⨅ j ≥ i, f j) = f i ⊓ (⨅ j > i, f j) :=
+  biSup_ge_eq_sup (α := αᵒᵈ) f i
+
+end le
+
 /-!
 ### `iSup` and `iInf` under `Type`
 -/
@@ -1610,9 +1635,6 @@ protected lemma Antitone.sSup (hs : ∀ f ∈ s, Antitone f) : Antitone (sSup s)
 protected lemma Antitone.sInf (hs : ∀ f ∈ s, Antitone f) : Antitone (sInf s) :=
   fun _ _ h ↦ iInf_mono fun f ↦ hs f f.2 h
 
-@[deprecated (since := "2024-05-29")] alias monotone_sSup_of_monotone := Monotone.sSup
-@[deprecated (since := "2024-05-29")] alias monotone_sInf_of_monotone := Monotone.sInf
-
 protected lemma Monotone.iSup (hf : ∀ i, Monotone (f i)) : Monotone (⨆ i, f i) :=
   Monotone.sSup (by simpa)
 protected lemma Monotone.iInf (hf : ∀ i, Monotone (f i)) : Monotone (⨅ i, f i) :=
@@ -1736,6 +1758,18 @@ theorem disjoint_sSup_left {a : Set α} {b : α} (d : Disjoint (sSup a) b) {i} (
 theorem disjoint_sSup_right {a : Set α} {b : α} (d : Disjoint b (sSup a)) {i} (hi : i ∈ a) :
     Disjoint b i :=
   disjoint_iff_inf_le.mpr (iSup₂_le_iff.mp (iSup_inf_le_inf_sSup.trans d.le_bot) i hi :)
+
+lemma disjoint_of_sSup_disjoint_of_le_of_le {a b : α} {c d : Set α} (hs : ∀ e ∈ c, e ≤ a)
+    (ht : ∀ e ∈ d, e ≤ b) (hd : Disjoint a b) (he : ⊥ ∉ c ∨ ⊥ ∉ d) : Disjoint c d := by
+  rw [disjoint_iff_forall_ne]
+  intros x hx y hy
+  rw [Disjoint.ne_iff]
+  · aesop
+  · exact Disjoint.mono (hs x hx) (ht y hy) hd
+
+lemma disjoint_of_sSup_disjoint {a b : Set α} (hd : Disjoint (sSup a) (sSup b))
+    (he : ⊥ ∉ a ∨ ⊥ ∉ b) : Disjoint a b :=
+  disjoint_of_sSup_disjoint_of_le_of_le (fun _ hc ↦ le_sSup hc) (fun _ hc ↦ le_sSup hc) hd he
 
 end CompleteLattice
 

@@ -11,6 +11,7 @@ import Mathlib.Algebra.Module.Submodule.Ker
 import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Logic.Equiv.Fin
+import Mathlib.LinearAlgebra.Prod
 
 /-!
 # Pi types of modules
@@ -87,6 +88,9 @@ theorem proj_apply (i : ι) (b : (i : ι) → φ i) : (proj i : ((i : ι) → φ
 
 theorem proj_pi (f : (i : ι) → M₂ →ₗ[R] φ i) (i : ι) : (proj i).comp (pi f) = f i :=
   ext fun _ => rfl
+
+theorem proj_surjective (i : ι) : Surjective (proj i : ((i : ι) → φ i) →ₗ[R] φ i) := by
+  classical exact fun x ↦ ⟨update 0 i x, update_self i x 0⟩
 
 theorem iInf_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
     Submodule R ((i : ι) → φ i)) = ⊥ :=
@@ -295,8 +299,7 @@ variable (R φ)
 
 theorem single_eq_pi_diag (i : ι) : single R φ i = pi (diag i) := by
   ext x j
-  -- Porting note: made types explicit
-  convert (update_apply (R := R) (φ := φ) (ι := ι) 0 x i j _).symm
+  convert (update_apply 0 x i j _).symm
   rfl
 
 theorem ker_single (i : ι) : ker (single R φ i) = ⊥ :=
@@ -346,8 +349,12 @@ theorem pi_empty (p : (i : ι) → Submodule R (φ i)) : pi ∅ p = ⊤ :=
   SetLike.coe_injective <| Set.empty_pi _
 
 @[simp]
-theorem pi_top (s : Set ι) : (pi s fun i : ι => (⊤ : Submodule R (φ i))) = ⊤ :=
+theorem pi_top (s : Set ι) : (pi s fun i : ι ↦ (⊤ : Submodule R (φ i))) = ⊤ :=
   SetLike.coe_injective <| Set.pi_univ _
+
+@[simp]
+theorem pi_univ_bot : (pi Set.univ fun i : ι ↦ (⊥ : Submodule R (φ i))) = ⊥ :=
+  le_bot_iff.mp fun _ h ↦ funext fun i ↦ h i trivial
 
 @[gcongr]
 theorem pi_mono {s : Set ι} (h : ∀ i ∈ s, p i ≤ q i) : pi s p ≤ pi s q :=
@@ -571,6 +578,17 @@ noncomputable def Function.ExtendByZero.linearMap : (ι → R) →ₗ[R] η → 
 
 end Extend
 
+variable (R) in
+/-- `Fin.consEquiv` as a continuous linear equivalence.  -/
+@[simps]
+def Fin.consLinearEquiv
+    {n : ℕ} (M : Fin n.succ → Type*) [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] :
+    (M 0 × Π i, M (Fin.succ i)) ≃ₗ[R] (Π i, M i) where
+  __ := Fin.consEquiv M
+  map_add' x y := funext <| Fin.cases rfl (by simp)
+  map_smul' c x := funext <| Fin.cases rfl (by simp)
+
+
 /-! ### Bundled versions of `Matrix.vecCons` and `Matrix.vecEmpty`
 
 The idea of these definitions is to be able to define a map as `x ↦ ![f₁ x, f₂ x, f₃ x]`, where
@@ -604,14 +622,8 @@ theorem LinearMap.vecEmpty_apply (m : M) : (LinearMap.vecEmpty : M →ₗ[R] Fin
 
 /-- A linear map into `Fin n.succ → M₃` can be built out of a map into `M₃` and a map into
 `Fin n → M₃`. -/
-def LinearMap.vecCons {n} (f : M →ₗ[R] M₂) (g : M →ₗ[R] Fin n → M₂) : M →ₗ[R] Fin n.succ → M₂ where
-  toFun m := Matrix.vecCons (f m) (g m)
-  map_add' x y := by
-    simp only []
-    rw [f.map_add, g.map_add, Matrix.cons_add_cons (f x)]
-  map_smul' c x := by
-    simp only []
-    rw [f.map_smul, g.map_smul, RingHom.id_apply, Matrix.smul_cons c (f x)]
+def LinearMap.vecCons {n} (f : M →ₗ[R] M₂) (g : M →ₗ[R] Fin n → M₂) : M →ₗ[R] Fin n.succ → M₂ :=
+  Fin.consLinearEquiv R (fun _ : Fin n.succ => M₂) ∘ₗ f.prod g
 
 @[simp]
 theorem LinearMap.vecCons_apply {n} (f : M →ₗ[R] M₂) (g : M →ₗ[R] Fin n → M₂) (m : M) :

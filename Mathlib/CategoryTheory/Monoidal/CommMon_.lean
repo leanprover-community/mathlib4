@@ -81,16 +81,30 @@ instance : (forget₂Mon_ C).Full := InducedCategory.full _
 instance : (forget₂Mon_ C).Faithful := InducedCategory.faithful _
 
 @[simp]
-theorem forget₂_Mon_obj_one (A : CommMon_ C) : ((forget₂Mon_ C).obj A).one = A.one :=
+theorem forget₂Mon_obj_one (A : CommMon_ C) : ((forget₂Mon_ C).obj A).one = A.one :=
   rfl
 
 @[simp]
-theorem forget₂_Mon_obj_mul (A : CommMon_ C) : ((forget₂Mon_ C).obj A).mul = A.mul :=
+theorem forget₂Mon_obj_mul (A : CommMon_ C) : ((forget₂Mon_ C).obj A).mul = A.mul :=
   rfl
 
 @[simp]
-theorem forget₂_Mon_map_hom {A B : CommMon_ C} (f : A ⟶ B) : ((forget₂Mon_ C).map f).hom = f.hom :=
+theorem forget₂Mon_map_hom {A B : CommMon_ C} (f : A ⟶ B) : ((forget₂Mon_ C).map f).hom = f.hom :=
   rfl
+
+@[deprecated (since := "2025-02-07")] alias forget₂_Mon_obj_one := forget₂Mon_obj_one
+@[deprecated (since := "2025-02-07")] alias forget₂_Mon_obj_mul := forget₂Mon_obj_mul
+@[deprecated (since := "2025-02-07")] alias forget₂_Mon_map_hom := forget₂Mon_map_hom
+
+/-- The forgetful functor from commutative monoid objects to the ambient category. -/
+@[simps!]
+def forget : CommMon_ C ⥤ C :=
+  forget₂Mon_ C ⋙ Mon_.forget C
+
+instance : (forget C).Faithful where
+
+@[simp]
+theorem forget₂Mon_comp_forget : forget₂Mon_ C ⋙ Mon_.forget C = forget C := rfl
 
 end
 

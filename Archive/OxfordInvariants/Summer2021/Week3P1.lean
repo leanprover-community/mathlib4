@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Data.Nat.Cast.Order.Field
@@ -74,7 +74,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
     (ha : ∀ i, i + 2 ≤ n → a (i + 1) ∣ a i + a (i + 2)) :
     ∃ b : ℕ, (b : α) = ∑ i ∈ Finset.range n, (a 0 : α) * a n / (a i * a (i + 1)) := by
   -- Treat separately `n = 0` and `n ≥ 1`
-  cases' n with n
+  rcases n with - | n
   /- Case `n = 0`
     The sum is trivially equal to `0` -/
   · exact ⟨0, by rw [Nat.cast_zero, Finset.sum_range_zero]⟩

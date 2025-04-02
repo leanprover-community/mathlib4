@@ -29,16 +29,10 @@ theorem squarefree_iff_nodup_primeFactorsList {n : ℕ} (h0 : n ≠ 0) :
   rw [UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors h0, Nat.factors_eq]
   simp
 
-@[deprecated (since := "2024-07-17")]
-alias squarefree_iff_nodup_factors := squarefree_iff_nodup_primeFactorsList
-
 end Nat
 
 theorem Squarefree.nodup_primeFactorsList {n : ℕ} (hn : Squarefree n) : n.primeFactorsList.Nodup :=
   (Nat.squarefree_iff_nodup_primeFactorsList hn.ne_zero).mp hn
-
-@[deprecated (since := "2024-07-17")]
-alias Squarefree.nodup_factors := Squarefree.nodup_primeFactorsList
 
 namespace Nat
 variable {s : Finset ℕ} {m n p : ℕ}
@@ -143,7 +137,7 @@ theorem minSqFacProp_div (n) {k} (pk : Prime k) (dk : k ∣ n) (dkk : ¬k * k �
         subst e
         contradiction
     (coprime_mul_iff_right.2 ⟨this, this⟩).mul_dvd_of_dvd_of_dvd dk dp
-  cases' o with d
+  rcases o with - | d
   · rw [MinSqFacProp, squarefree_iff_prime_squarefree] at H ⊢
     exact fun p pp dp => H p pp ((dvd_div_iff_mul_dvd dk).2 (this _ pp dp))
   · obtain ⟨H1, H2, H3⟩ := H
@@ -228,7 +222,7 @@ theorem minSqFac_le_of_dvd {n d : ℕ} (h : n.minSqFac = some d) {m} (m2 : 2 ≤
 theorem squarefree_iff_minSqFac {n : ℕ} : Squarefree n ↔ n.minSqFac = none := by
   have := minSqFac_has_prop n
   constructor <;> intro H
-  · cases' e : n.minSqFac with d
+  · rcases e : n.minSqFac with - | d
     · rfl
     rw [e] at this
     cases squarefree_iff_prime_squarefree.1 H _ this.1 this.2.1
@@ -339,7 +333,7 @@ theorem sq_mul_squarefree_of_pos' {n : ℕ} (h : 0 < n) :
   refine ⟨a₁.pred, b₁.pred, ?_, ?_⟩ <;> simpa only [add_one, succ_pred_eq_of_pos, ha₁, hb₁]
 
 theorem sq_mul_squarefree (n : ℕ) : ∃ a b : ℕ, b ^ 2 * a = n ∧ Squarefree a := by
-  cases' n with n
+  rcases n with - | n
   · exact ⟨1, 0, by simp, squarefree_one⟩
   · obtain ⟨a, b, -, -, h₁, h₂⟩ := sq_mul_squarefree_of_pos (succ_pos n)
     exact ⟨a, b, h₁, h₂⟩

@@ -3,8 +3,8 @@ Copyright (c) 2017 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
-import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
@@ -428,9 +428,6 @@ noncomputable instance instRatCast : RatCast ℂ where ratCast q := ofReal q
 @[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal q = q := rfl
 @[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal q = q := rfl
 
-@[deprecated (since := "2024-04-17")]
-alias ofReal_rat_cast := ofReal_ratCast
-
 @[simp]
 lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).re = ofNat(n) := rfl
 @[simp] lemma im_ofNat (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℂ).im = 0 := rfl
@@ -451,9 +448,6 @@ lemma im_zsmul (n : ℤ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
 @[simp] lemma im_nnqsmul (q : ℚ≥0) (z : ℂ) : (q • z).im = q • z.im := smul_im ..
 @[simp] lemma re_qsmul (q : ℚ) (z : ℂ) : (q • z).re = q • z.re := smul_re ..
 @[simp] lemma im_qsmul (q : ℚ) (z : ℂ) : (q • z).im = q • z.im := smul_im ..
-
-@[deprecated (since := "2024-04-17")]
-alias rat_cast_im := ratCast_im
 
 @[norm_cast] lemma ofReal_nsmul (n : ℕ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
 @[norm_cast] lemma ofReal_zsmul (n : ℤ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
@@ -487,9 +481,6 @@ theorem conj_I : conj I = -I :=
   Complex.ext_iff.2 <| by simp
 
 theorem conj_natCast (n : ℕ) : conj (n : ℂ) = n := map_natCast _ _
-
-@[deprecated (since := "2024-04-17")]
-alias conj_nat_cast := conj_natCast
 
 theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (ofNat(n) : ℂ) = ofNat(n) :=
   map_ofNat _ _
@@ -542,20 +533,11 @@ theorem normSq_ofReal (r : ℝ) : normSq r = r * r := by
 @[simp]
 theorem normSq_natCast (n : ℕ) : normSq n = n * n := normSq_ofReal _
 
-@[deprecated (since := "2024-04-17")]
-alias normSq_nat_cast := normSq_natCast
-
 @[simp]
 theorem normSq_intCast (z : ℤ) : normSq z = z * z := normSq_ofReal _
 
-@[deprecated (since := "2024-04-17")]
-alias normSq_int_cast := normSq_intCast
-
 @[simp]
 theorem normSq_ratCast (q : ℚ) : normSq q = q * q := normSq_ofReal _
-
-@[deprecated (since := "2024-04-17")]
-alias normSq_rat_cast := normSq_ratCast
 
 @[simp]
 theorem normSq_ofNat (n : ℕ) [n.AtLeastTwo] :
@@ -774,20 +756,11 @@ lemma div_ofReal (z : ℂ) (x : ℝ) : z / x = ⟨z.re / x, z.im / x⟩ := by
 lemma div_natCast (z : ℂ) (n : ℕ) : z / n = ⟨z.re / n, z.im / n⟩ :=
   mod_cast div_ofReal z n
 
-@[deprecated (since := "2024-04-17")]
-alias div_nat_cast := div_natCast
-
 lemma div_intCast (z : ℂ) (n : ℤ) : z / n = ⟨z.re / n, z.im / n⟩ :=
   mod_cast div_ofReal z n
 
-@[deprecated (since := "2024-04-17")]
-alias div_int_cast := div_intCast
-
 lemma div_ratCast (z : ℂ) (x : ℚ) : z / x = ⟨z.re / x, z.im / x⟩ :=
   mod_cast div_ofReal z x
-
-@[deprecated (since := "2024-04-17")]
-alias div_rat_cast := div_ratCast
 
 lemma div_ofNat (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
     z / ofNat(n) = ⟨z.re / ofNat(n), z.im / ofNat(n)⟩ :=
@@ -801,9 +774,6 @@ lemma div_ofNat (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
 @[simp] lemma div_intCast_im (z : ℂ) (n : ℤ) : (z / n).im = z.im / n := by rw [div_intCast]
 @[simp] lemma div_ratCast_re (z : ℂ) (x : ℚ) : (z / x).re = z.re / x := by rw [div_ratCast]
 @[simp] lemma div_ratCast_im (z : ℂ) (x : ℚ) : (z / x).im = z.im / x := by rw [div_ratCast]
-
-@[deprecated (since := "2024-04-17")]
-alias div_rat_cast_im := div_ratCast_im
 
 @[simp]
 lemma div_ofNat_re (z : ℂ) (n : ℕ) [n.AtLeastTwo] :

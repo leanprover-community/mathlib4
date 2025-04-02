@@ -33,17 +33,17 @@ variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x
 
 section
 
-variable [Ring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
+variable [Ring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
   [ContinuousConstSMul 𝕜 E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
-  [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] [AddCommGroup G] [Module 𝕜 G]
-  [TopologicalSpace G] [TopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
+  [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] [AddCommGroup G] [Module 𝕜 G]
+  [TopologicalSpace G] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
 
 /-- A formal multilinear series over a field `𝕜`, from `E` to `F`, is given by a family of
 multilinear maps from `E^n` to `F` for all `n`. -/
 @[nolint unusedArguments]
 def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Ring 𝕜] [AddCommGroup E]
-    [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
-    [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [TopologicalAddGroup F]
+    [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+    [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
     [ContinuousConstSMul 𝕜 F] :=
   ∀ n : ℕ, E[×n]→L[𝕜] F
 
@@ -64,11 +64,8 @@ end Module
 
 namespace FormalMultilinearSeries
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
--/
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/4481
+the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`. -/
 @[simp, nolint simpNF]
 theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
 
@@ -102,7 +99,7 @@ def prod (p : FormalMultilinearSeries 𝕜 E F) (q : FormalMultilinearSeries �
 space, but possibly different target spaces). -/
 @[simp] def pi {ι : Type*} {F : ι → Type*}
     [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
-    [∀ i, TopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
+    [∀ i, IsTopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
     (p : Π i, FormalMultilinearSeries 𝕜 E (F i)) :
     FormalMultilinearSeries 𝕜 E (Π i, F i)
   | n => ContinuousMultilinearMap.pi (fun i ↦ p i n)
@@ -193,10 +190,10 @@ end FormalMultilinearSeries
 
 section
 
-variable [Ring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
+variable [Ring 𝕜] [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [IsTopologicalAddGroup E]
   [ContinuousConstSMul 𝕜 E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
-  [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] [AddCommGroup G] [Module 𝕜 G]
-  [TopologicalSpace G] [TopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
+  [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F] [AddCommGroup G] [Module 𝕜 G]
+  [TopologicalSpace G] [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜 G]
 
 namespace ContinuousLinearMap
 
@@ -220,7 +217,7 @@ end ContinuousLinearMap
 namespace ContinuousMultilinearMap
 
 variable {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
-  [∀ i, TopologicalSpace (E i)] [∀ i, TopologicalAddGroup (E i)]
+  [∀ i, TopologicalSpace (E i)] [∀ i, IsTopologicalAddGroup (E i)]
   [∀ i, ContinuousConstSMul 𝕜 (E i)] [Fintype ι] (f : ContinuousMultilinearMap 𝕜 E F)
 
 /-- Realize a ContinuousMultilinearMap on `∀ i : ι, E i` as the evaluation of a
@@ -239,8 +236,8 @@ namespace FormalMultilinearSeries
 section Order
 
 variable [Ring 𝕜] {n : ℕ} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
-  [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
+  [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
+  [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul 𝕜 F]
   {p : FormalMultilinearSeries 𝕜 E F}
 
 /-- The index of the first non-zero coefficient in `p` (or `0` if all coefficients are zero). This
@@ -340,8 +337,8 @@ section Const
 of degree zero is `c`. It is the power series expansion of the constant function equal to `c`
 everywhere. -/
 def constFormalMultilinearSeries (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [ContinuousConstSMul 𝕜 E] [TopologicalAddGroup E]
-    {F : Type*} [NormedAddCommGroup F] [TopologicalAddGroup F] [NormedSpace 𝕜 F]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [ContinuousConstSMul 𝕜 E] [IsTopologicalAddGroup E]
+    {F : Type*} [NormedAddCommGroup F] [IsTopologicalAddGroup F] [NormedSpace 𝕜 F]
     [ContinuousConstSMul 𝕜 F] (c : F) : FormalMultilinearSeries 𝕜 E F
   | 0 => ContinuousMultilinearMap.uncurry0 _ _ c
   | _ => 0

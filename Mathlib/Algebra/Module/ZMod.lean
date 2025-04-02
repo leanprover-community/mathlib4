@@ -3,8 +3,9 @@ Copyright (c) 2023 Lawrence Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
-import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Data.ZMod.Basic
+import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Algebra.Module.Submodule.Defs
+import Mathlib.GroupTheory.Sylow
 
 /-!
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
@@ -114,3 +115,18 @@ theorem _root_.Submodule.toAddSubgroup_toZModSubmodule (S : Submodule (ZMod n) M
   rfl
 
 end AddSubgroup
+
+namespace ZModModule
+variable {p : ℕ} {G : Type*} [AddCommGroup G]
+
+/-- In an elementary abelian `p`-group, every finite subgroup `H` contains a further subgroup of
+cardinality between `k` and `p * k`, if `k ≤ |H|`. -/
+lemma exists_submodule_subset_card_le (hp : p.Prime) [Module (ZMod p) G]
+    (H : Submodule (ZMod p) G) {k : ℕ} (hk : k ≤ Nat.card H) (h'k : k ≠ 0) :
+    ∃ H' : Submodule (ZMod p) G, Nat.card H' ≤ k ∧ k < p * Nat.card H' ∧ H' ≤ H := by
+  obtain ⟨H'm, H'mHm, H'mk, kH'm⟩ := Sylow.exists_subgroup_le_card_le
+    (H := AddSubgroup.toSubgroup ((AddSubgroup.toZModSubmodule _).symm H)) hp
+      isPGroup_multiplicative hk h'k
+  exact ⟨AddSubgroup.toZModSubmodule _ (AddSubgroup.toSubgroup.symm H'm), H'mk, kH'm, H'mHm⟩
+
+end ZModModule

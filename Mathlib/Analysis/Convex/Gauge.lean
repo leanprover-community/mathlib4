@@ -411,7 +411,7 @@ section TopologicalVectorSpace
 
 open Filter
 
-variable [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul ℝ E]
+variable [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul ℝ E]
 
 /-- If `s` is a convex neighborhood of the origin in a topological real vector space, then `gauge s`
 is continuous. If the ambient space is a normed space, then `gauge s` is Lipschitz continuous, see

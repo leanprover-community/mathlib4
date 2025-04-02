@@ -191,6 +191,9 @@ theorem span_span_of_tower :
     span S (span R s : Set M) = span S s :=
   le_antisymm (span_le.2 <| span_subset_span R S s) (span_mono subset_span)
 
+theorem span_eq_top_of_span_eq_top (s : Set M) (hs : span R s = ⊤) : span S s = ⊤ :=
+  le_top.antisymm (hs.ge.trans (span_le_restrictScalars R S s))
+
 variable {R S} in
 lemma span_range_inclusion_eq_top (p : Submodule R M) (q : Submodule S M)
     (h₁ : p ≤ q.restrictScalars R) (h₂ : q ≤ span S p) :
@@ -434,6 +437,37 @@ theorem comap_map_eq (f : F) (p : Submodule R M) : comap f (map f p) = p ⊔ Lin
 theorem comap_map_eq_self {f : F} {p : Submodule R M} (h : LinearMap.ker f ≤ p) :
     comap f (map f p) = p := by rw [Submodule.comap_map_eq, sup_of_le_left h]
 
+theorem comap_map_sup_of_comap_le {f : F} {p : Submodule R M} {q : Submodule R₂ M₂}
+    (le : comap f q ≤ p) : comap f (map f p ⊔ q) = p := by
+  refine le_antisymm (fun x h ↦ ?_) (map_le_iff_le_comap.mp le_sup_left)
+  obtain ⟨_, ⟨y, hy, rfl⟩, z, hz, eq⟩ := mem_sup.mp h
+  rw [add_comm, ← eq_sub_iff_add_eq, ← map_sub] at eq; subst eq
+  simpa using p.add_mem (le hz) hy
+
+theorem isCoatom_comap_or_eq_top (f : F) {p : Submodule R₂ M₂} (hp : IsCoatom p) :
+    IsCoatom (comap f p) ∨ comap f p = ⊤ :=
+  or_iff_not_imp_right.mpr fun h ↦ ⟨h, fun q lt ↦ by
+    rw [← comap_map_sup_of_comap_le lt.le, hp.2 (map f q ⊔ p), comap_top]
+    simpa only [right_lt_sup, map_le_iff_le_comap] using lt.not_le⟩
+
+theorem isCoatom_comap_iff {f : F} (hf : Surjective f) {p : Submodule R₂ M₂} :
+    IsCoatom (comap f p) ↔ IsCoatom p := by
+  have := comap_injective_of_surjective hf
+  rw [IsCoatom, IsCoatom, ← comap_top f, this.ne_iff]
+  refine and_congr_right fun _ ↦
+    ⟨fun h m hm ↦ this (h _ <| comap_strictMono_of_surjective hf hm), fun h m hm ↦ ?_⟩
+  rw [← h _ (lt_map_of_comap_lt_of_surjective hf hm),
+    comap_map_eq_self ((comap_mono bot_le).trans hm.le)]
+
+theorem isCoatom_map_of_ker_le {f : F} (hf : Surjective f) {p : Submodule R M}
+    (le : LinearMap.ker f ≤ p) (hp : IsCoatom p) : IsCoatom (map f p) :=
+  (isCoatom_comap_iff hf).mp <| by rwa [comap_map_eq_self le]
+
+theorem map_iInf_of_ker_le {f : F} (hf : Surjective f) {ι} {p : ι → Submodule R M}
+    (h : LinearMap.ker f ≤ ⨅ i, p i) : map f (⨅ i, p i) = ⨅ i, map f (p i) := by
+  conv_rhs => rw [← map_comap_eq_of_surjective hf (⨅ _, _), comap_iInf]
+  simp_rw [fun i ↦ comap_map_eq_self (le_iInf_iff.mp h i)]
+
 lemma _root_.LinearMap.range_domRestrict_eq_range_iff {f : M →ₛₗ[τ₁₂] M₂} {S : Submodule R M} :
     LinearMap.range (f.domRestrict S) = LinearMap.range f ↔ S ⊔ (LinearMap.ker f) = ⊤ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
@@ -584,10 +618,16 @@ theorem span_singleton_eq_range (x : M) : (R ∙ x) = range (toSpanSingleton R M
 theorem toSpanSingleton_one (x : M) : toSpanSingleton R M x 1 = x :=
   one_smul _ _
 
+theorem toSpanSingleton_injective : Function.Injective (toSpanSingleton R M) :=
+  fun _ _ eq ↦ by simpa using congr($eq 1)
+
 @[simp]
 theorem toSpanSingleton_zero : toSpanSingleton R M 0 = 0 := by
   ext
   simp
+
+theorem toSpanSingleton_eq_zero_iff {x : M} : toSpanSingleton R M x = 0 ↔ x = 0 := by
+  rw [← toSpanSingleton_zero, (toSpanSingleton_injective R M).eq_iff]
 
 variable {R M}
 

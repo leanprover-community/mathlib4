@@ -171,9 +171,6 @@ theorem sqrt_eq_rpow (x : ℝ≥0) : sqrt x = x ^ (1 / (2 : ℝ)) := by
   push_cast
   exact Real.sqrt_eq_rpow x.1
 
-@[deprecated (since := "2024-04-17")]
-alias rpow_nat_cast := rpow_natCast
-
 @[simp]
 lemma rpow_ofNat (x : ℝ≥0) (n : ℕ) [n.AtLeastTwo] :
     x ^ (ofNat(n) : ℝ) = x ^ (OfNat.ofNat n : ℕ) :=
@@ -260,16 +257,8 @@ theorem rpow_le_rpow_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ^ z ≤ y ^ 
 theorem le_rpow_inv_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ≤ y ^ z⁻¹ ↔ x ^ z ≤ y := by
   rw [← rpow_le_rpow_iff hz, ← one_div, rpow_self_rpow_inv hz.ne']
 
-@[deprecated le_rpow_inv_iff (since := "2024-07-10")]
-theorem le_rpow_one_div_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ≤ y ^ (1 / z) ↔ x ^ z ≤ y := by
-  rw [← rpow_le_rpow_iff hz, rpow_self_rpow_inv hz.ne']
-
 theorem rpow_inv_le_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ ≤ y ↔ x ≤ y ^ z := by
   rw [← rpow_le_rpow_iff hz, ← one_div, rpow_self_rpow_inv hz.ne']
-
-@[deprecated rpow_inv_le_iff (since := "2024-07-10")]
-theorem rpow_one_div_le_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x ^ (1 / z) ≤ y ↔ x ≤ y ^ z := by
-  rw [← rpow_le_rpow_iff hz, rpow_self_rpow_inv hz.ne']
 
 theorem lt_rpow_inv_iff {x y : ℝ≥0} {z : ℝ} (hz : 0 < z) : x < y ^ z⁻¹ ↔ x ^z < y := by
   simp only [← not_le, rpow_inv_le_iff hz]
@@ -393,16 +382,8 @@ theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y 
 theorem eq_rpow_inv_iff {x y : ℝ≥0} {z : ℝ} (hz : z ≠ 0) : x = y ^ z⁻¹ ↔ x ^ z = y := by
   rw [← rpow_eq_rpow_iff hz, ← one_div, rpow_self_rpow_inv hz]
 
-@[deprecated eq_rpow_inv_iff (since := "2024-07-10")]
-theorem eq_rpow_one_div_iff {x y : ℝ≥0} {z : ℝ} (hz : z ≠ 0) : x = y ^ (1 / z) ↔ x ^ z = y := by
-  rw [← rpow_eq_rpow_iff hz, rpow_self_rpow_inv hz]
-
 theorem rpow_inv_eq_iff {x y : ℝ≥0} {z : ℝ} (hz : z ≠ 0) : x ^ z⁻¹ = y ↔ x = y ^ z := by
   rw [← rpow_eq_rpow_iff hz, ← one_div, rpow_self_rpow_inv hz]
-
-@[deprecated rpow_inv_eq_iff (since := "2024-07-10")]
-theorem rpow_one_div_eq_iff {x y : ℝ≥0} {z : ℝ} (hz : z ≠ 0) : x ^ (1 / z) = y ↔ x = y ^ z := by
-  rw [← rpow_eq_rpow_iff hz, rpow_self_rpow_inv hz]
 
 @[simp] lemma rpow_rpow_inv {y : ℝ} (hy : y ≠ 0) (x : ℝ≥0) : (x ^ y) ^ y⁻¹ = x := by
   rw [← rpow_mul, mul_inv_cancel₀ hy, rpow_one]
@@ -630,9 +611,6 @@ theorem rpow_natCast (x : ℝ≥0∞) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by
   · cases n <;> simp [top_rpow_of_pos (Nat.cast_add_one_pos _), top_pow (Nat.succ_pos _)]
   · simp [← coe_rpow_of_nonneg _ (Nat.cast_nonneg n)]
 
-@[deprecated (since := "2024-04-17")]
-alias rpow_nat_cast := rpow_natCast
-
 @[simp]
 lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
     x ^ (ofNat(n) : ℝ) = x ^ (OfNat.ofNat n) :=
@@ -643,9 +621,6 @@ lemma rpow_intCast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
   cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, rpow_natCast, zpow_natCast,
     Int.cast_negSucc, rpow_neg, zpow_negSucc]
 
-@[deprecated (since := "2024-04-17")]
-alias rpow_int_cast := rpow_intCast
-
 theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 
 theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
@@ -655,14 +630,14 @@ theorem mul_rpow_eq_ite (x y : ℝ≥0∞) (z : ℝ) :
   wlog hxy : x ≤ y
   · convert this y x z hz (le_of_not_le hxy) using 2 <;> simp only [mul_comm, and_comm, or_comm]
   rcases eq_or_ne x 0 with (rfl | hx0)
-  · induction y <;> cases' hz with hz hz <;> simp [*, hz.not_lt]
+  · induction y <;> rcases hz with hz | hz <;> simp [*, hz.not_lt]
   rcases eq_or_ne y 0 with (rfl | hy0)
   · exact (hx0 (bot_unique hxy)).elim
   induction x
-  · cases' hz with hz hz <;> simp [hz, top_unique hxy]
+  · rcases hz with hz | hz <;> simp [hz, top_unique hxy]
   induction y
   · rw [ne_eq, coe_eq_zero] at hx0
-    cases' hz with hz hz <;> simp [*]
+    rcases hz with hz | hz <;> simp [*]
   simp only [*, if_false]
   norm_cast at *
   rw [← coe_rpow_of_ne_zero (mul_ne_zero hx0 hy0), NNReal.mul_rpow]
@@ -760,12 +735,6 @@ theorem le_rpow_inv_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ≤ y ^ z�
   nth_rw 1 [← @mul_inv_cancel₀ _ _ z hz.ne']
   rw [rpow_mul, @rpow_le_rpow_iff _ _ z⁻¹ (by simp [hz])]
 
-@[deprecated le_rpow_inv_iff (since := "2024-07-10")]
-theorem le_rpow_one_div_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ≤ y ^ (1 / z) ↔ x ^ z ≤ y := by
-  nth_rw 1 [← rpow_one x]
-  nth_rw 1 [← @mul_inv_cancel₀ _ _ z hz.ne']
-  rw [rpow_mul, ← one_div, @rpow_le_rpow_iff _ _ (1 / z) (by simp [hz])]
-
 theorem rpow_inv_lt_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ < y ↔ x < y ^ z := by
   simp only [← not_le, le_rpow_inv_iff hz]
 
@@ -774,22 +743,10 @@ theorem lt_rpow_inv_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x < y ^ z⁻
   nth_rw 1 [← @mul_inv_cancel₀ _ _ z (ne_of_lt hz).symm]
   rw [rpow_mul, @rpow_lt_rpow_iff _ _ z⁻¹ (by simp [hz])]
 
-@[deprecated lt_rpow_inv_iff (since := "2024-07-10")]
-theorem lt_rpow_one_div_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x < y ^ (1 / z) ↔ x ^ z < y := by
-  nth_rw 1 [← rpow_one x]
-  nth_rw 1 [← @mul_inv_cancel₀ _ _ z (ne_of_lt hz).symm]
-  rw [rpow_mul, ← one_div, @rpow_lt_rpow_iff _ _ (1 / z) (by simp [hz])]
-
 theorem rpow_inv_le_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ z⁻¹ ≤ y ↔ x ≤ y ^ z := by
   nth_rw 1 [← ENNReal.rpow_one y]
   nth_rw 1 [← @mul_inv_cancel₀ _ _ z hz.ne.symm]
   rw [ENNReal.rpow_mul, ENNReal.rpow_le_rpow_iff (inv_pos.2 hz)]
-
-@[deprecated rpow_inv_le_iff (since := "2024-07-10")]
-theorem rpow_one_div_le_iff {x y : ℝ≥0∞} {z : ℝ} (hz : 0 < z) : x ^ (1 / z) ≤ y ↔ x ≤ y ^ z := by
-  nth_rw 1 [← ENNReal.rpow_one y]
-  nth_rw 2 [← @mul_inv_cancel₀ _ _ z hz.ne.symm]
-  rw [ENNReal.rpow_mul, ← one_div, ENNReal.rpow_le_rpow_iff (one_div_pos.2 hz)]
 
 theorem rpow_lt_rpow_of_exponent_lt {x : ℝ≥0∞} {y z : ℝ} (hx : 1 < x) (hx' : x ≠ ⊤) (hyz : y < z) :
     x ^ y < x ^ z := by
@@ -844,7 +801,7 @@ theorem rpow_pos_of_nonneg {p : ℝ} {x : ℝ≥0∞} (hx_pos : 0 < x) (hp_nonne
     exact rpow_lt_rpow hx_pos hp_pos
 
 theorem rpow_pos {p : ℝ} {x : ℝ≥0∞} (hx_pos : 0 < x) (hx_ne_top : x ≠ ⊤) : 0 < x ^ p := by
-  cases' lt_or_le 0 p with hp_pos hp_nonpos
+  rcases lt_or_le 0 p with hp_pos | hp_nonpos
   · exact rpow_pos_of_nonneg hx_pos (le_of_lt hp_pos)
   · rw [← neg_neg p, rpow_neg, ENNReal.inv_pos]
     exact rpow_ne_top_of_nonneg (Right.nonneg_neg_iff.mpr hp_nonpos) hx_ne_top
@@ -962,6 +919,9 @@ theorem rpow_left_surjective {x : ℝ} (hx : x ≠ 0) : Function.Surjective fun 
 
 theorem rpow_left_bijective {x : ℝ} (hx : x ≠ 0) : Function.Bijective fun y : ℝ≥0∞ => y ^ x :=
   ⟨rpow_left_injective hx, rpow_left_surjective hx⟩
+
+lemma _root_.Real.enorm_rpow_of_nonneg {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) :
+    ‖x ^ y‖ₑ = ‖x‖ₑ ^ y := by simp [enorm, nnnorm_rpow_of_nonneg hx, coe_rpow_of_nonneg _ hy]
 
 end ENNReal
 

@@ -42,7 +42,8 @@ variable {R R₂ R₃ R₄ E E₂ E₃ E₄ F 𝓕 : Type*} [Semiring R] [Semiri
   [SeminormedAddCommGroup E₄] [Module R E] [Module R₂ E₂] [Module R₃ E₃] [Module R₄ E₄]
   [NormedAddCommGroup F] [Module R F]
 
-/-- A `σ₁₂`-semilinear isometric embedding of a normed `R`-module into an `R₂`-module. -/
+/-- A `σ₁₂`-semilinear isometric embedding of a normed `R`-module into an `R₂`-module,
+denoted as `f : E →ₛₗᵢ[σ₁₂] E₂`. -/
 structure LinearIsometry (σ₁₂ : R →+* R₂) (E E₂ : Type*) [SeminormedAddCommGroup E]
   [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] extends E →ₛₗ[σ₁₂] E₂ where
   norm_map' : ∀ x, ‖toLinearMap x‖ = ‖x‖
@@ -402,7 +403,8 @@ theorem subtypeₗᵢ_toContinuousLinearMap : p.subtypeₗᵢ.toContinuousLinear
 
 end Submodule
 
-/-- A semilinear isometric equivalence between two normed vector spaces. -/
+/-- A semilinear isometric equivalence between two normed vector spaces,
+denoted as `f : E ≃ₛₗᵢ[σ₁₂] E₂`. -/
 structure LinearIsometryEquiv (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
   [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : Type*) [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂]
   [Module R E] [Module R₂ E₂] extends E ≃ₛₗ[σ₁₂] E₂ where
@@ -642,6 +644,9 @@ theorem map_eq_zero_iff {x : E} : e x = 0 ↔ x = 0 :=
 
 @[simp]
 theorem symm_symm : e.symm.symm = e := rfl
+
+theorem symm_bijective : Function.Bijective (symm : (E₂ ≃ₛₗᵢ[σ₂₁] E) → _) :=
+  Function.bijective_iff_has_inverse.mpr ⟨_, symm_symm, symm_symm⟩
 
 @[simp]
 theorem toLinearEquiv_symm : e.toLinearEquiv.symm = e.symm.toLinearEquiv :=

@@ -139,9 +139,9 @@ theorem ergodic_smul_of_denseRange_zpow {g : G} (hg : DenseRange (g ^ · : ℤ �
 
  end MulActionGroup
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable {G : Type*} [Group G] [TopologicalSpace G] [TopologicalGroup G] [MeasurableSpace G]
+variable {G : Type*} [Group G] [TopologicalSpace G] [IsTopologicalGroup G] [MeasurableSpace G]
 
 /-- If the left multiplication by `g` is ergodic
 with respect to a measure which is positive on nonempty open sets,
@@ -199,12 +199,12 @@ theorem ergodic_mul_left_iff_denseRange_zpow (μ : Measure G) [IsFiniteMeasure �
     Ergodic (g * ·) μ ↔ DenseRange (g ^ · : ℤ → G) :=
   ⟨.zpow_of_ergodic_mul_left, (ergodic_mul_left_of_denseRange_zpow · μ)⟩
 
-end TopologicalGroup
+end IsTopologicalGroup
 
 namespace MonoidHom
 
 variable {G : Type*} [Group G] [TopologicalSpace G]
-  [TopologicalGroup G] [SecondCountableTopology G] [MeasurableSpace G] [BorelSpace G]
+  [IsTopologicalGroup G] [SecondCountableTopology G] [MeasurableSpace G] [BorelSpace G]
 
 /-- Let `f : G →* G` be a group endomorphism of a topological group with second countable topology.
 If the preimages of `1` under the iterations of `f` are dense,

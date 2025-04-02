@@ -40,7 +40,7 @@ variable {I : Type u} (X : I → TopCat.{u})
 /-- The projection map Π i, X i → X i induces a map π(Π i, X i) ⟶ π(X i).
 -/
 def proj (i : I) : πₓ (TopCat.of (∀ i, X i)) ⥤ πₓ (X i) :=
-  πₘ ⟨_, continuous_apply i⟩
+  πₘ (TopCat.ofHom ⟨_, continuous_apply i⟩)
 
 /-- The projection map is precisely `Path.Homotopic.proj` interpreted as a functor -/
 @[simp]
@@ -125,11 +125,11 @@ variable (A B : TopCat.{u})
 
 /-- The induced map of the left projection map X × Y → X -/
 def projLeft : πₓ (TopCat.of (A × B)) ⥤ πₓ A :=
-  πₘ ⟨_, continuous_fst⟩
+  πₘ (TopCat.ofHom ⟨_, continuous_fst⟩)
 
 /-- The induced map of the right projection map X × Y → Y -/
 def projRight : πₓ (TopCat.of (A × B)) ⥤ πₓ B :=
-  πₘ ⟨_, continuous_snd⟩
+  πₘ (TopCat.ofHom ⟨_, continuous_snd⟩)
 
 @[simp]
 theorem projLeft_map (x₀ x₁ : πₓ (TopCat.of (A × B))) (p : x₀ ⟶ x₁) :
@@ -185,12 +185,7 @@ def prodIso : CategoryTheory.Grpd.of (πₓ A × πₓ B) ≅ πₓ (TopCat.of (
     apply CategoryTheory.Functor.hext
     · intros; apply FundamentalGroupoid.ext; apply Prod.ext <;> simp <;> rfl
     rintro ⟨x₀, x₁⟩ ⟨y₀, y₁⟩ f
-    have := Path.Homotopic.prod_projLeft_projRight f
-    -- Porting note: was simpa but TopSpace instances might be getting in the way
-    simp only [CategoryTheory.Functor.comp_obj, CategoryTheory.Functor.prod'_obj, prodToProdTop_obj,
-      CategoryTheory.Functor.comp_map, CategoryTheory.Functor.prod'_map, projLeft_map,
-      projRight_map, CategoryTheory.Functor.id_obj, CategoryTheory.Functor.id_map, heq_eq_eq]
-    apply this
+    simpa [-Path.Homotopic.prod_projLeft_projRight] using Path.Homotopic.prod_projLeft_projRight f
 
 end Prod
 

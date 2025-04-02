@@ -230,10 +230,12 @@ theorem Basis.toMatrix_reindex' [DecidableEq ι] [DecidableEq ι'] (b : Basis ι
     Matrix.reindex_apply, Matrix.submatrix_apply, Function.comp_apply, e.apply_symm_apply,
     Finsupp.mapDomain_equiv_apply]
 
+omit [Fintype ι'] in
 @[simp]
-lemma Basis.toMatrix_mulVec_repr (m : M) :
+lemma Basis.toMatrix_mulVec_repr [Finite ι'] (m : M) :
     b'.toMatrix b *ᵥ b.repr m = b'.repr m := by
   classical
+  cases nonempty_fintype ι'
   simp [← LinearMap.toMatrix_id_eq_basis_toMatrix, LinearMap.toMatrix_mulVec_repr]
 
 end Fintype

@@ -32,7 +32,7 @@ theorem ProbabilityTheory.measurableSet_kernel_integrable ⦃f : α → β → E
     (hf : StronglyMeasurable (uncurry f)) :
     MeasurableSet {x | Integrable (f x) (κ x)} := by
   simp_rw [Integrable, hf.of_uncurry_left.aestronglyMeasurable, true_and]
-  exact measurableSet_lt (Measurable.lintegral_kernel_prod_right hf.ennnorm) measurable_const
+  exact measurableSet_lt (Measurable.lintegral_kernel_prod_right hf.enorm) measurable_const
 
 open ProbabilityTheory.Kernel
 

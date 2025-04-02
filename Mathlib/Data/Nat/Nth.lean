@@ -253,9 +253,9 @@ lemma nth_ne_zero_anti (h₀ : ¬p 0) {a b : ℕ} (hab : a ≤ b) (hb : nth p b 
   mt (nth_eq_zero_mono h₀ hab) hb
 
 theorem le_nth_of_lt_nth_succ {k a : ℕ} (h : a < nth p (k + 1)) (ha : p a) : a ≤ nth p k := by
-  cases' (setOf p).finite_or_infinite with hf hf
+  rcases (setOf p).finite_or_infinite with hf | hf
   · rcases exists_lt_card_finite_nth_eq hf ha with ⟨n, hn, rfl⟩
-    cases' lt_or_le (k + 1) #hf.toFinset with hk hk
+    rcases lt_or_le (k + 1) #hf.toFinset with hk | hk
     · rwa [(nth_strictMonoOn hf).lt_iff_lt hn hk, Nat.lt_succ_iff,
         ← (nth_strictMonoOn hf).le_iff_le hn (k.lt_succ_self.trans hk)] at h
     · rw [nth_of_card_le _ hk] at h

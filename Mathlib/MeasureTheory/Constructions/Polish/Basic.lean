@@ -203,7 +203,7 @@ theorem analyticSet_iff_exists_polishSpace_range {s : Set α} :
   constructor
   · intro h
     rw [AnalyticSet] at h
-    cases' h with h h
+    rcases h with h | h
     · refine ⟨Empty, inferInstance, inferInstance, Empty.elim, continuous_bot, ?_⟩
       rw [h]
       exact range_eq_empty _
@@ -629,7 +629,7 @@ instance CosetSpace.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] 
 
 @[to_additive]
 instance QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
-    [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [N.Normal]
+    [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [N.Normal]
     [IsClosed (N : Set G)] : BorelSpace (G ⧸ N) :=
   ⟨continuous_mk.map_eq_borel mk_surjective⟩
 

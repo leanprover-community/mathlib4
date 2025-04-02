@@ -294,9 +294,9 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
     · rintro x ⟨⟨⟩, hx⟩; refine ⟨⟨⟨x, PUnit.unit⟩, hx.symm⟩, rfl⟩
   refine ((TopCat.binaryCofan_isColimit_iff _).mpr ⟨?_, ?_, ?_⟩).some
   · refine ⟨(Homeomorph.prodPUnit Z).isEmbedding.comp .subtypeVal, ?_⟩
-    convert f.2.1 _ isOpen_range_inl
+    convert f.hom.2.1 _ isOpen_range_inl
   · refine ⟨(Homeomorph.prodPUnit Z).isEmbedding.comp .subtypeVal, ?_⟩
-    convert f.2.1 _ isOpen_range_inr
+    convert f.hom.2.1 _ isOpen_range_inr
   · convert Set.isCompl_range_inl_range_inr.preimage f
 
 instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
@@ -317,11 +317,12 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
             (ConcreteCategory.congr_hom hαY val :).symm
       delta ExistsUnique at this
       choose l hl hl' using this
-      refine ⟨⟨l, ?_⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
-        fun {l'} h₁ _ => ContinuousMap.ext fun x =>
+      refine ⟨TopCat.ofHom ⟨l, ?_⟩, TopCat.ext fun a => (hl a).symm,
+        TopCat.isTerminalPUnit.hom_ext _ _,
+        fun {l'} h₁ _ => TopCat.ext fun x =>
           hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
       apply (IsEmbedding.inl (X := X') (Y := Y')).isInducing.continuous_iff.mpr
-      convert s.fst.2 using 1
+      convert s.fst.hom.2 using 1
       exact (funext hl).symm
     · refine ⟨⟨hαY.symm⟩, ⟨PullbackCone.isLimitAux' _ ?_⟩⟩
       intro s
@@ -334,11 +335,12 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
         · exact ⟨val, rfl, fun y h => Sum.inr_injective h.symm⟩
       delta ExistsUnique at this
       choose l hl hl' using this
-      refine ⟨⟨l, ?_⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
+      refine ⟨TopCat.ofHom ⟨l, ?_⟩, TopCat.ext fun a => (hl a).symm,
+        TopCat.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ =>
-          ContinuousMap.ext fun x => hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
+          TopCat.ext fun x => hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
       apply (IsEmbedding.inr (X := X') (Y := Y')).isInducing.continuous_iff.mpr
-      convert s.fst.2 using 1
+      convert s.fst.hom.2 using 1
       exact (funext hl).symm
   · intro Z f
     exact finitaryExtensiveTopCatAux Z f

@@ -345,7 +345,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
     (∫ x : ℝ in a..b, (x : ℂ) ^ r) = ((b : ℂ) ^ (r + 1) - (a : ℂ) ^ (r + 1)) / (r + 1) := by
   rw [sub_div]
   have hr : r + 1 ≠ 0 := by
-    cases' h with h h
+    rcases h with h | h
     · apply_fun Complex.re
       rw [Complex.add_re, Complex.one_re, Complex.zero_re, Ne, add_eq_zero_iff_eq_neg]
       exact h.ne'
@@ -388,7 +388,7 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
     rw [this, ← integral_re]
     · rfl
     refine intervalIntegrable_iff.mp ?_
-    cases' h' with h' h'
+    rcases h' with h' | h'
     · exact intervalIntegrable_cpow' h'
     · exact intervalIntegrable_cpow (Or.inr h'.2)
   · rw [(by push_cast; rfl : (r : ℂ) + 1 = ((r + 1 : ℝ) : ℂ))]
@@ -498,14 +498,14 @@ lemma integral_log_from_zero_of_pos (ht : 0 < b) : ∫ s in (0)..b, log s = b * 
 
 /-- Helper lemma for `integral_log`: case where `a = 0`. -/
 lemma integral_log_from_zero {b : ℝ} : ∫ s in (0)..b, log s = b * log b - b := by
-    rcases lt_trichotomy b 0 with h | h | h
-    · -- If t is negative, use that log is an even function to reduce to the positive case.
-      conv => arg 1; arg 1; intro t; rw [← log_neg_eq_log]
-      rw [intervalIntegral.integral_comp_neg, intervalIntegral.integral_symm, neg_zero,
-        integral_log_from_zero_of_pos (Left.neg_pos_iff.mpr h), log_neg_eq_log]
-      ring
-    · simp [h]
-    · exact integral_log_from_zero_of_pos h
+  rcases lt_trichotomy b 0 with h | h | h
+  · -- If t is negative, use that log is an even function to reduce to the positive case.
+    conv => arg 1; arg 1; intro t; rw [← log_neg_eq_log]
+    rw [intervalIntegral.integral_comp_neg, intervalIntegral.integral_symm, neg_zero,
+      integral_log_from_zero_of_pos (Left.neg_pos_iff.mpr h), log_neg_eq_log]
+    ring
+  · simp [h]
+  · exact integral_log_from_zero_of_pos h
 
 @[simp]
 theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := by

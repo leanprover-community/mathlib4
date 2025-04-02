@@ -84,10 +84,7 @@ way. -/
 def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
   { Encodable.ofEquiv _ e with
     decode_inv := fun n => by
-      -- Porting note: replaced `simp`
-      simp_rw [Option.mem_def, decode_ofEquiv e, encode_ofEquiv e, decode_eq_ofNat,
-        Option.map_some', Option.some_inj, exists_eq_left', Equiv.apply_symm_apply,
-        Denumerable.encode_ofNat] }
+      simp [decode_ofEquiv, encode_ofEquiv] }
 
 @[simp]
 theorem ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :

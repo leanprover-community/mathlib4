@@ -3,8 +3,9 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Fintype.Sum
+import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
 # Isometries
@@ -272,7 +273,6 @@ theorem MetricSpace.isometry_induced (f : α → β) (hf : f.Injective) [m : Met
 
 -- such a bijection need not exist
 /-- `α` and `β` are isometric if there is an isometric bijection between them. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure IsometryEquiv (α : Type u) (β : Type v) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     extends α ≃ β where
   isometry_toFun : Isometry toFun

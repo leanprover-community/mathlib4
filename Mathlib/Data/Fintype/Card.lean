@@ -3,8 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Group.TypeTags.Fintype
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Union
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.Set.Image
 import Mathlib.Order.WellFounded
@@ -346,6 +348,20 @@ theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fin
 
 @[simp] lemma Fintype.card_additive (α : Type*) [Fintype α] : card (Additive α) = card α :=
   Finset.card_map _
+
+-- Note: The extra hypothesis `h` is there so that the rewrite lemma applies,
+-- no matter what instance of `Fintype (Set.univ : Set α)` is used.
+@[simp]
+theorem Fintype.card_setUniv [Fintype α] {h : Fintype (Set.univ : Set α)} :
+    Fintype.card (Set.univ : Set α) = Fintype.card α := by
+  apply Fintype.card_of_finset'
+  simp
+
+@[simp]
+theorem Fintype.card_subtype_true [Fintype α] {h : Fintype {_a : α // True}} :
+    @Fintype.card {_a // True} h = Fintype.card α := by
+  apply Fintype.card_of_subtype
+  simp
 
 /-- Given that `α ⊕ β` is a fintype, `α` is also a fintype. This is non-computable as it uses
 that `Sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
@@ -1159,7 +1175,7 @@ theorem Fintype.induction_subsingleton_or_nontrivial {P : ∀ (α) [Fintype α],
     P α := by
   obtain ⟨n, hn⟩ : ∃ n, Fintype.card α = n := ⟨Fintype.card α, rfl⟩
   induction' n using Nat.strong_induction_on with n ih generalizing α
-  cases' subsingleton_or_nontrivial α with hsing hnontriv
+  rcases subsingleton_or_nontrivial α with hsing | hnontriv
   · apply hbase
   · apply hstep
     intro β _ hlt

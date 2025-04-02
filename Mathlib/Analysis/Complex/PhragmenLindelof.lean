@@ -113,10 +113,10 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
     (hzb : im z ≤ b) : ‖f z‖ ≤ C := by
   -- If `im z = a` or `im z = b`, then we apply `hle_a` or `hle_b`, otherwise `im z ∈ Ioo a b`.
   rw [le_iff_eq_or_lt] at hza hzb
-  cases' hza with hza hza; · exact hle_a _ hza.symm
-  cases' hzb with hzb hzb; · exact hle_b _ hzb
+  rcases hza with hza | hza; · exact hle_a _ hza.symm
+  rcases hzb with hzb | hzb; · exact hle_b _ hzb
   wlog hC₀ : 0 < C generalizing C
-  · refine le_of_forall_le_of_dense fun C' hC' => this (fun w hw => ?_) (fun w hw => ?_) ?_
+  · refine le_of_forall_gt_imp_ge_of_dense fun C' hC' => this (fun w hw => ?_) (fun w hw => ?_) ?_
     · exact (hle_a _ hw).trans hC'.le
     · exact (hle_b _ hw).trans hC'.le
     · refine ((norm_nonneg (f (a * I))).trans (hle_a _ ?_)).trans_lt hC'
@@ -382,7 +382,7 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
       simp only [EventuallyLE, eventually_inf_principal, eventually_comap, comp_apply, one_mul,
         Real.norm_of_nonneg (Real.exp_pos _).le, abs_exp, ← Real.exp_mul, Real.exp_le_exp]
       filter_upwards [eventually_ge_atTop 0] with x hx z hz _
-      rw [hz, _root_.abs_of_nonneg hx, mul_comm _ c]
+      rw [hz, abs_of_nonneg hx, mul_comm _ c]
       gcongr; apply le_max_left
   · -- If `ζ.im = 0`, then `Complex.exp ζ` is a positive real number
     intro ζ hζ; lift ζ to ℝ using hζ

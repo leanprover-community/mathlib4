@@ -3,7 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Lattice.Union
 import Mathlib.Data.Multiset.Powerset
 import Mathlib.Data.Set.Pairwise.Lattice
 
@@ -86,7 +87,7 @@ theorem powerset_insert [DecidableEq α] (s : Finset α) (a : α) :
   · constructor
     · exact fun H => Or.inr ⟨_, H, insert_erase h⟩
     · intro H
-      cases' H with H H
+      rcases H with H | H
       · exact Subset.trans (erase_subset a t) H
       · rcases H with ⟨u, hu⟩
         rw [← hu.2]

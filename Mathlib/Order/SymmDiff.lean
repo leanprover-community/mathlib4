@@ -372,7 +372,7 @@ theorem symmDiff_eq_sup : a ∆ b = a ⊔ b ↔ Disjoint a b := by
 theorem le_symmDiff_iff_left : a ≤ a ∆ b ↔ Disjoint a b := by
   refine ⟨fun h => ?_, fun h => h.symmDiff_eq_sup.symm ▸ le_sup_left⟩
   rw [symmDiff_eq_sup_sdiff_inf] at h
-  exact disjoint_iff_inf_le.mpr (le_sdiff_iff.1 <| inf_le_of_left_le h).le
+  exact disjoint_iff_inf_le.mpr (le_sdiff_right.1 <| inf_le_of_left_le h).le
 
 @[simp]
 theorem le_symmDiff_iff_right : b ≤ a ∆ b ↔ Disjoint a b := by

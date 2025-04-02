@@ -34,14 +34,19 @@ jobs:
           printf '%s' "${COMMENT}" | hexdump -cC
           printf 'Comment:"%s"\n' "${COMMENT}"
           m_or_d="$(printf '%s' "${COMMENT}" |
-            sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *d.*=delegated=p' | head -1)"
+            sed -n 's=^bors  *\(merge\|r+\) *$=ready-to-merge=p; s=^bors  *\(delegate\|d+\|d\=\).*=delegated=p' | head -1)"
+
+          remove_labels="$(printf '%s' "${COMMENT}" |
+            sed -n 's=^bors  *\(merge\|r\|d\)- *$=remove-labels=p' | head -1)"
 
           printf $'"bors delegate" or "bors merge" found? \'%s\'\n' "${m_or_d}"
+          printf $'"bors r-" or "bors d-" found? \'%s\'\n' "${remove_labels}"
           printf $'AUTHOR: \'%s\'\n' "${AUTHOR}"
           printf $'PR_NUMBER: \'%s\'\n' "${{ github.event.issue.number }}${{ github.event.pull_request.number }}"
           printf $'%s' "${{ github.event.issue.number }}${{ github.event.pull_request.number }}" | hexdump -cC
 
           printf $'mOrD=%s\n' "${m_or_d}" >> "${GITHUB_OUTPUT}"
+          printf $'removeLabels=%s\n' "${remove_labels}" >> "${GITHUB_OUTPUT}"
           if [ "${AUTHOR}" == 'leanprover-community-mathlib4-bot' ] ||
              [ "${AUTHOR}" == 'leanprover-community-bot-assistant' ]
           then
@@ -54,7 +59,7 @@ jobs:
 
       - name: Check whether user is a mathlib admin
         id: user_permission
-        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' }}
+        if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' || ! steps.merge_or_delegate.outputs.removeLabels == '' }}
         uses: actions-cool/check-user-permission@v2
         with:
           require: 'admin'
@@ -77,13 +82,27 @@ jobs:
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.merge_or_delegate.outputs.bot == 'true' ) }}
         id: remove_labels
-        name: Remove "awaiting-author"
+        name: Remove "awaiting-author" and "maintainer-merge"
         # we use curl rather than octokit/request-action so that the job won't fail
         # (and send an annoying email) if the labels don't exist
         run: |
-          curl --request DELETE \
-            --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}${{ github.event.pull_request.number }}/labels/awaiting-author" \
-            --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
+          for label in awaiting-author maintainer-merge; do
+            curl --request DELETE \
+              --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}${{ github.event.pull_request.number }}/labels/${label}" \
+              --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
+          done
+
+      - name: On bors r/d-, remove ready-to-merge or delegated label
+        if: ${{ ! steps.merge_or_delegate.outputs.removeLabels == '' &&
+          steps.user_permission.outputs.require-result == 'true' }}
+        # we use curl rather than octokit/request-action so that the job won't fail
+        # (and send an annoying email) if the labels don't exist
+        run: |
+          for label in ready-to-merge delegated; do
+            curl --request DELETE \
+              --url "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}${{ github.event.pull_request.number }}/labels/${label}" \
+              --header 'authorization: Bearer ${{ secrets.TRIAGE_TOKEN }}'
+          done
 
       - name: Set up Python
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' &&

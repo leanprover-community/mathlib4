@@ -339,7 +339,7 @@ theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
     log_mul A.ne' (Gamma_pos_of_pos A).ne', ← le_sub_iff_add_le',
     log_le_iff_le_exp (Gamma_pos_of_pos A)] at this
   refine this.trans_lt (exp_lt_one_iff.mpr ?_)
-  rw [mul_comm, ← mul_div_assoc, div_sub' _ _ (2 : ℝ) two_ne_zero]
+  rw [mul_comm, ← mul_div_assoc, div_sub' two_ne_zero]
   refine div_neg_of_neg_of_pos ?_ two_pos
   rw [sub_neg, mul_one, ← Nat.cast_two, ← log_pow, ← exp_lt_exp, Nat.cast_two, exp_log two_pos,
       exp_log] <;>

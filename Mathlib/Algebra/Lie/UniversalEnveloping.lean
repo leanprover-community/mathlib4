@@ -80,7 +80,7 @@ def mkAlgHom : TensorAlgebra R L →ₐ[R] UniversalEnvelopingAlgebra R L :=
 variable {L}
 
 /-- The natural Lie algebra morphism from a Lie algebra to its universal enveloping algebra. -/
-@[simps!] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): added
+@[simps!]
 def ι : L →ₗ⁅R⁆ UniversalEnvelopingAlgebra R L :=
   { (mkAlgHom R L).toLinearMap.comp ιₜ with
     map_lie' := fun {x y} => by

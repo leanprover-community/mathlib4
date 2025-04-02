@@ -310,6 +310,38 @@ theorem exists_mem_subalgebra_near_continuous_of_separatesPoints (A : Subalgebra
   use g
   rwa [norm_lt_iff _ pos] at b
 
+/-- A variant of the Stone-Weierstrass theorem where `X` need not be compact:
+If `A` is a subalgebra of `C(X, ℝ)` which separates points, then, for any compact set `K ⊆ X`,
+every real-valued continuous function on `X` is within any `ε > 0` of some element of `A` on `K`. -/
+theorem exists_mem_subalgebra_near_continuous_of_isCompact_of_separatesPoints
+    {X : Type*} [TopologicalSpace X] {A : Subalgebra ℝ C(X, ℝ)} (hA : A.SeparatesPoints)
+    (f : C(X, ℝ)) {K : Set X} (hK : IsCompact K) {ε : ℝ} (pos : 0 < ε) :
+    ∃ g ∈ A, ∀ x ∈ K, ‖(g : X → ℝ) x - f x‖ < ε := by
+  let restrict_on_K : C(X, ℝ) →⋆ₐ[ℝ] C(K, ℝ) :=
+    ContinuousMap.compStarAlgHom' ℝ ℝ ⟨(Subtype.val), continuous_subtype_val⟩
+  --consider the subalgebra AK of functions with domain K
+  let AK : Subalgebra ℝ C(K, ℝ) := Subalgebra.map (restrict_on_K) A
+  have hsep : AK.SeparatesPoints := by
+    intro x y hxy
+    obtain ⟨_, ⟨g, hg1, hg2⟩, hg_sep⟩ := hA (Subtype.coe_ne_coe.mpr hxy)
+    simp only [Set.mem_image, SetLike.mem_coe, exists_exists_and_eq_and]
+    use restrict_on_K g
+    refine ⟨Subalgebra.mem_map.mpr ?_,
+      by simpa only [compStarAlgHom'_apply, comp_apply, coe_mk, ne_eq, restrict_on_K, hg2]⟩
+    use g, hg1
+    simp [AlgHom.coe_coe]
+  obtain ⟨⟨gK, hgKAK⟩, hgapprox⟩ :=
+    @ContinuousMap.exists_mem_subalgebra_near_continuous_of_separatesPoints _ _
+    (isCompact_iff_compactSpace.mp hK) AK hsep (K.restrict f)
+    (ContinuousOn.restrict (Continuous.continuousOn f.continuous)) ε pos
+  obtain ⟨g, hgA, hgKAK⟩ := Subalgebra.mem_map.mp hgKAK
+  use g, hgA
+  intro x hxK
+  have eqg : g x = gK ⟨x, hxK⟩ := by
+    rw [← hgKAK]; rfl
+  rw [eqg]
+  exact hgapprox ⟨x, hxK⟩
+
 end ContinuousMap
 
 section RCLike
@@ -625,7 +657,7 @@ theorem ContinuousMapZero.induction_on_of_compact {s : Set 𝕜} [Zero s] (h0 : 
   exact mem_closure_iff_frequently.mp this |>.mp <| .of_forall h
 
 lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
-    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [TopologicalSemiring A]
+    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [IsTopologicalSemiring A]
     [T2Space A] [Module 𝕜 A] [IsScalarTower 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
     (h0 : (0 : s) = (0 : 𝕜)) (φ : C(s, 𝕜)₀ →⋆ₙₐ[𝕜] A) (a : A) (hmul_id : φ (.id h0) * a = 0)
     (hmul_star_id : φ (star (.id h0)) * a = 0) (hφ : Continuous φ) (f : C(s, 𝕜)₀) :
@@ -640,7 +672,7 @@ lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
   | frequently f h => exact h.mem_of_closed <| isClosed_eq (by fun_prop) continuous_zero
 
 lemma ContinuousMapZero.mul_nonUnitalStarAlgHom_apply_eq_zero {𝕜 A : Type*}
-    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [TopologicalSemiring A]
+    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [IsTopologicalSemiring A]
     [T2Space A] [Module 𝕜 A] [SMulCommClass 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
     (h0 : (0 : s) = (0 : 𝕜)) (φ : C(s, 𝕜)₀ →⋆ₙₐ[𝕜] A) (a : A) (hmul_id : a * φ (.id h0) = 0)
     (hmul_star_id : a * φ (star (.id h0)) = 0) (hφ : Continuous φ) (f : C(s, 𝕜)₀) :

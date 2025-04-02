@@ -5,7 +5,7 @@ Authors: Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Module.Pi
 
@@ -372,7 +372,7 @@ private def muFun (a : α) : α → 𝕜
   | b =>
     if a = b then 1
     else
-      -∑ x in (Ico a b).attach,
+      -∑ x ∈ (Ico a b).attach,
           let h := mem_Ico.1 x.2
           have : (Icc a x).card < (Icc a b).card :=
             card_lt_card (Icc_ssubset_Icc_right (h.1.trans h.2.le) le_rfl h.2)
@@ -380,7 +380,7 @@ private def muFun (a : α) : α → 𝕜
 termination_by b => (Icc a b).card
 
 private lemma muFun_apply (a b : α) :
-    muFun 𝕜 a b = if a = b then 1 else -∑ x in (Ico a b).attach, muFun 𝕜 a x := by rw [muFun]
+    muFun 𝕜 a b = if a = b then 1 else -∑ x ∈ (Ico a b).attach, muFun 𝕜 a x := by rw [muFun]
 
 /-- The Möbius function which inverts `zeta` as an element of the incidence algebra. -/
 def mu : IncidenceAlgebra 𝕜 α :=
@@ -401,6 +401,10 @@ lemma mu_apply (a b : α) : mu 𝕜 a b = if a = b then 1 else -∑ x ∈ Ico a 
 
 lemma mu_eq_neg_sum_Ico_of_ne (hab : a ≠ b) :
     mu 𝕜 a b = -∑ x ∈ Ico a b, mu 𝕜 a x := by rw [mu_apply, if_neg hab]
+
+variable (𝕜 α)
+/-- The Euler characteristic of a finite bounded order. -/
+def eulerChar [BoundedOrder α] : 𝕜 := mu 𝕜 (⊥ : α) ⊤
 
 end Mu
 
@@ -425,7 +429,7 @@ private def muFun' (b : α) : α → 𝕜
   | a =>
     if a = b then 1
     else
-      -∑ x in (Ioc a b).attach,
+      -∑ x ∈ (Ioc a b).attach,
           let h := mem_Ioc.1 x.2
           have : (Icc ↑x b).card < (Icc a b).card :=
             card_lt_card (Icc_ssubset_Icc_left (h.1.le.trans h.2) h.1 le_rfl)
@@ -433,7 +437,7 @@ private def muFun' (b : α) : α → 𝕜
 termination_by a => (Icc a b).card
 
 private lemma muFun'_apply (a b : α) :
-    muFun' 𝕜 b a = if a = b then 1 else -∑ x in (Ioc a b).attach, muFun' 𝕜 b x := by
+    muFun' 𝕜 b a = if a = b then 1 else -∑ x ∈ (Ioc a b).attach, muFun' 𝕜 b x := by
   rw [muFun']
 
 /-- This is the reversed definition of `mu`, which is equal to `mu` but easiest to prove equal by
@@ -536,6 +540,10 @@ lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
     _ = if a = b then 1 else 0 := by simp [eq_comm]
 
 @[simp] lemma mu_ofDual (a b : αᵒᵈ) : mu 𝕜 (ofDual a) (ofDual b) = mu 𝕜 b a := (mu_toDual ..).symm
+
+@[simp]
+lemma eulerChar_orderDual [BoundedOrder α] : eulerChar 𝕜 αᵒᵈ = eulerChar 𝕜 α := by
+  simp [eulerChar, ← mu_toDual 𝕜 (α := α)]
 
 end OrderDual
 
@@ -656,6 +664,10 @@ lemma mu_prod_mu : (mu 𝕜).prod (mu 𝕜) = (mu 𝕜 : IncidenceAlgebra 𝕜 (
   refine left_inv_eq_right_inv ?_ zeta_mul_mu
   rw [← zeta_prod_zeta, prod_mul_prod', mu_mul_zeta, mu_mul_zeta, one_prod_one]
   exact fun _ _ _ _ _ _ ↦ Commute.mul_mul_mul_comm (by simp : _ = _) _ _
+
+@[simp]
+lemma eulerChar_prod [BoundedOrder α] [BoundedOrder β] :
+    eulerChar 𝕜 (α × β) = eulerChar 𝕜 α * eulerChar 𝕜 β := by simp [eulerChar, ← mu_prod_mu]
 
 end PartialOrder
 end Prod

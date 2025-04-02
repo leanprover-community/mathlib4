@@ -40,7 +40,7 @@ then the command logs an info. Otherwise, it emits a warning.
 The variant `#check_assertions!` only prints declarations/imports that are not present in the
 environment.  In particular, it is silent if everything is imported, making it useful for testing.
 -/
-elab "#check_assertions" tk:("!")?: command => do
+elab "#check_assertions" tk:("!")? : command => do
   let env ← getEnv
   let entries := env.getSortedAssertExists
   if entries.isEmpty && tk.isNone then logInfo "No assertions made." else

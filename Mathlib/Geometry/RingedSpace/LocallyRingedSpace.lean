@@ -273,7 +273,7 @@ instance : EmptyCollection LocallyRingedSpace.{u} := ⟨LocallyRingedSpace.empty
 
 /-- The canonical map from the empty locally ringed space. -/
 def emptyTo (X : LocallyRingedSpace.{u}) : ∅ ⟶ X :=
-  ⟨⟨⟨fun x => PEmpty.elim x, by fun_prop⟩,
+  ⟨⟨ofHom ⟨fun x => PEmpty.elim x, by fun_prop⟩,
     { app := fun U => CommRingCat.ofHom <| by refine ⟨⟨⟨0, ?_⟩, ?_⟩, ?_, ?_⟩ <;> intros <;> rfl }⟩,
     fun x => PEmpty.elim x⟩
 
@@ -354,12 +354,12 @@ lemma stalkMap_comp (x : X) :
 
 @[reassoc]
 lemma stalkSpecializes_stalkMap (x x' : X) (h : x ⤳ x') :
-    Y.presheaf.stalkSpecializes (f.base.map_specializes h) ≫ f.stalkMap x =
+    Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) ≫ f.stalkMap x =
       f.stalkMap x' ≫ X.presheaf.stalkSpecializes h :=
   PresheafedSpace.stalkMap.stalkSpecializes_stalkMap f.toShHom h
 
 lemma stalkSpecializes_stalkMap_apply (x x' : X) (h : x ⤳ x') (y) :
-    f.stalkMap x (Y.presheaf.stalkSpecializes (f.base.map_specializes h) y) =
+    f.stalkMap x (Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) y) =
       (X.presheaf.stalkSpecializes h (f.stalkMap x' y)) :=
   DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkSpecializes_stalkMap f x x' h)) y
 

@@ -3,7 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.IsManifold
+import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
 
 /-!
@@ -163,7 +163,7 @@ read in the preferred chart at this point. -/
 def ContMDiffWithinAt (n : WithTop ℕ∞) (f : M → M') (s : Set M) (x : M) :=
   LiftPropWithinAt (ContDiffWithinAtProp I I' n) f s x
 
-@[deprecated (since := "024-11-21")] alias SmoothWithinAt := ContMDiffWithinAt
+@[deprecated (since := "2024-11-21")] alias SmoothWithinAt := ContMDiffWithinAt
 
 variable (I I') in
 /-- A function is `n` times continuously differentiable at a point in a manifold if
@@ -179,7 +179,7 @@ theorem contMDiffAt_iff {n : WithTop ℕ∞} {f : M → M'} {x : M} :
           (extChartAt I x x) :=
   liftPropAt_iff.trans <| by rw [ContDiffWithinAtProp, preimage_univ, univ_inter]; rfl
 
-@[deprecated (since := "024-11-21")] alias SmoothAt := ContMDiffAt
+@[deprecated (since := "2024-11-21")] alias SmoothAt := ContMDiffAt
 
 variable (I I') in
 /-- A function is `n` times continuously differentiable in a set of a manifold if it is continuous
@@ -188,7 +188,7 @@ around these points. -/
 def ContMDiffOn (n : WithTop ℕ∞) (f : M → M') (s : Set M) :=
   ∀ x ∈ s, ContMDiffWithinAt I I' n f s x
 
-@[deprecated (since := "024-11-21")] alias SmoothOn := ContMDiffOn
+@[deprecated (since := "2024-11-21")] alias SmoothOn := ContMDiffOn
 
 variable (I I') in
 /-- A function is `n` times continuously differentiable in a manifold if it is continuous
@@ -197,7 +197,7 @@ around these points. -/
 def ContMDiff (n : WithTop ℕ∞) (f : M → M') :=
   ∀ x, ContMDiffAt I I' n f x
 
-@[deprecated (since := "024-11-21")] alias Smooth := ContMDiff
+@[deprecated (since := "2024-11-21")] alias Smooth := ContMDiff
 
 
 /-! ### Deducing smoothness from higher smoothness -/

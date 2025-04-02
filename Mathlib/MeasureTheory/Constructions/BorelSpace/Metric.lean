@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Continuity
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 import Mathlib.Topology.MetricSpace.Thickening
 
@@ -44,7 +44,7 @@ theorem measurableSet_ball : MeasurableSet (Metric.ball x ε) :=
 
 @[measurability]
 theorem measurableSet_closedBall : MeasurableSet (Metric.closedBall x ε) :=
-  Metric.isClosed_ball.measurableSet
+  Metric.isClosed_closedBall.measurableSet
 
 @[measurability]
 theorem measurable_infDist {s : Set α} : Measurable fun x => infDist x s :=
@@ -232,25 +232,28 @@ theorem measurable_nnnorm : Measurable (nnnorm : α → ℝ≥0) :=
   continuous_nnnorm.measurable
 
 @[measurability, fun_prop]
-theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a => ‖f a‖₊ :=
+protected theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a => ‖f a‖₊ :=
   measurable_nnnorm.comp hf
 
 @[measurability, fun_prop]
-theorem AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
+protected lemma AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (fun a => ‖f a‖₊) μ :=
   measurable_nnnorm.comp_aemeasurable hf
 
 @[measurability]
-theorem measurable_ennnorm : Measurable fun x : α => (‖x‖₊ : ℝ≥0∞) :=
-  measurable_nnnorm.coe_nnreal_ennreal
+lemma measurable_enorm : Measurable (enorm : α → ℝ≥0∞) := continuous_enorm.measurable
 
 @[measurability, fun_prop]
-theorem Measurable.ennnorm {f : β → α} (hf : Measurable f) : Measurable fun a => (‖f a‖₊ : ℝ≥0∞) :=
+protected lemma Measurable.enorm {f : β → α} (hf : Measurable f) : Measurable (‖f ·‖ₑ) :=
   hf.nnnorm.coe_nnreal_ennreal
 
 @[measurability, fun_prop]
-theorem AEMeasurable.ennnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun a => (‖f a‖₊ : ℝ≥0∞)) μ :=
-  measurable_ennnorm.comp_aemeasurable hf
+protected lemma AEMeasurable.enorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
+    AEMeasurable (‖f ·‖ₑ) μ :=
+  measurable_enorm.comp_aemeasurable hf
+
+@[deprecated (since := "2025-01-21")] alias measurable_ennnorm := measurable_enorm
+@[deprecated (since := "2025-01-21")] alias Measurable.ennnorm := Measurable.enorm
+@[deprecated (since := "2025-01-21")] alias AEMeasurable.ennnorm := AEMeasurable.enorm
 
 end NormedAddCommGroup

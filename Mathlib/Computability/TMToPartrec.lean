@@ -122,10 +122,6 @@ def Code.eval : Code → List ℕ →. List ℕ
 
 namespace Code
 
-/- Porting note: The equation lemma of `eval` is too strong; it simplifies terms like the LHS of
-`pred_eval`. Even `eqns` can't fix this. We removed `simp` attr from `eval` and prepare new simp
-lemmas for `eval`. -/
-
 @[simp]
 theorem zero'_eval : zero'.eval = fun v => pure (0 :: v) := by simp [eval]
 
@@ -1217,11 +1213,11 @@ theorem splitAtPred_eq {α} (p : α → Bool) :
   | a :: L, l₁, o, l₂, h₁, h₂ => by
     rw [splitAtPred]
     have IH := splitAtPred_eq p L
-    cases' o with o
-    · cases' l₁ with a' l₁ <;> rcases h₂ with ⟨⟨⟩, rfl⟩
+    rcases o with - | o
+    · rcases l₁ with - | ⟨a', l₁⟩ <;> rcases h₂ with ⟨⟨⟩, rfl⟩
       rw [h₁ a (List.Mem.head _), cond, IH L none [] _ ⟨rfl, rfl⟩]
       exact fun x h => h₁ x (List.Mem.tail _ h)
-    · cases' l₁ with a' l₁ <;> rcases h₂ with ⟨h₂, ⟨⟩⟩
+    · rcases l₁ with - | ⟨a', l₁⟩ <;> rcases h₂ with ⟨h₂, ⟨⟩⟩
       · rw [h₂, cond]
       rw [h₁ a (List.Mem.head _), cond, IH l₁ (some o) l₂ _ ⟨h₂, _⟩] <;> try rfl
       exact fun x h => h₁ x (List.Mem.tail _ h)
@@ -1239,7 +1235,7 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     · rw [Function.update_of_ne h₁.symm, List.reverseAux_nil]
     refine TransGen.head' rfl ?_
     rw [tr]; simp only [pop', TM2.stepAux]
-    revert e; cases' S k₁ with a Sk <;> intro e
+    revert e; rcases S k₁ with - | ⟨a, Sk⟩ <;> intro e
     · cases e
       rfl
     simp only [splitAtPred, Option.elim, List.head?, List.tail_cons, Option.iget_some] at e ⊢
@@ -1249,7 +1245,7 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     rfl
   · refine TransGen.head rfl ?_
     rw [tr]; simp only [pop', Option.elim, TM2.stepAux, push']
-    cases' e₁ : S k₁ with a' Sk <;> rw [e₁, splitAtPred] at e
+    rcases e₁ : S k₁ with - | ⟨a', Sk⟩ <;> rw [e₁, splitAtPred] at e
     · cases e
     cases e₂ : p a' <;> simp only [e₂, cond] at e
     swap
@@ -1293,7 +1289,7 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
   induction' L₁ with a L₁ IH generalizing S s
   · refine TransGen.head' rfl ?_
     rw [tr]; simp only [pop', TM2.step, Option.mem_def, TM2.stepAux, Option.elim]
-    revert e; cases' S k with a Sk <;> intro e
+    revert e; rcases S k with - | ⟨a, Sk⟩ <;> intro e
     · cases e
       rfl
     simp only [splitAtPred, Option.elim, List.head?, List.tail_cons] at e ⊢
@@ -1303,7 +1299,7 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
     rw [e₁, e₂]
   · refine TransGen.head rfl ?_
     rw [tr]; simp only [pop', TM2.step, Option.mem_def, TM2.stepAux, Option.elim]
-    cases' e₁ : S k with a' Sk <;> rw [e₁, splitAtPred] at e
+    rcases e₁ : S k with - | ⟨a', Sk⟩ <;> rw [e₁, splitAtPred] at e
     · cases e
     cases e₂ : p a' <;> simp only [e₂, cond] at e
     swap
@@ -1370,7 +1366,7 @@ theorem head_stack_ok {q s L₁ L₂ L₃} :
     Reaches₁ (TM2.step tr)
       ⟨some (head stack q), s, K'.elim (trList L₁) [] [] (trList L₂ ++ Γ'.consₗ :: L₃)⟩
       ⟨some q, none, K'.elim (trList (L₂.headI :: L₁)) [] [] L₃⟩ := by
-  cases' L₂ with a L₂
+  rcases L₂ with - | ⟨a, L₂⟩
   · refine
       TransGen.trans
         (move_ok (by decide)
@@ -1506,7 +1502,7 @@ theorem trNormal_respects (c k v s) :
     rw [stepNormal]
     simp only
     obtain ⟨s', h⟩ := pred_ok _ _ s v _ _
-    revert h; cases' v.headI with n <;> intro h
+    revert h; rcases v.headI with - | n <;> intro h
     · obtain ⟨c, h₁, h₂⟩ := IHf k _ s'
       exact ⟨_, h₁, h.trans h₂⟩
     · obtain ⟨c, h₁, h₂⟩ := IHg k _ s'
@@ -1549,7 +1545,7 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
           (trList v).tail = (trNat v.headI).tail ++ Γ'.cons :: trList v.tail := by
       cases' v with n
       · exact ⟨rfl, rfl⟩
-      cases' n with n
+      rcases n with - | n
       · simp
       rw [trList, List.headI, trNat, Nat.cast_succ, Num.add_one, Num.succ, List.tail]
       cases (n : Num).succ' <;> exact ⟨rfl, rfl⟩
@@ -1626,7 +1622,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
       exact Or.inr (Or.inr <| q_ih h h')
   · refine ⟨fun h x h' => ?_, fun _ x h' => ?_, fun h x h' => ?_⟩ <;> simp
     · exact Or.inr (Or.inr <| Or.inl <| q₁_ih h h')
-    · cases' Finset.mem_insert.1 h' with h' h' <;> simp [h', unrev]
+    · rcases Finset.mem_insert.1 h' with h' | h' <;> simp [h', unrev]
     · exact Or.inr (Or.inr <| Or.inr <| q₂_ih h h')
 
 theorem trStmts₁_self (q) : q ∈ trStmts₁ q := by
@@ -1809,7 +1805,7 @@ theorem trStmts₁_supports {S q} (H₁ : (q : Λ').Supports S) (HS₁ : trStmts
   | read q q_ih => _ | succ q q_ih => _ | pred q₁ q₂ q₁_ih q₂_ih => _ | ret => _ <;>
     simp [trStmts₁, -Finset.singleton_subset_iff] at HS₁ ⊢
   any_goals
-    cases' Finset.insert_subset_iff.1 HS₁ with h₁ h₂
+    obtain ⟨h₁, h₂⟩ := Finset.insert_subset_iff.1 HS₁
     first | have h₃ := h₂ W | try simp [Finset.subset_iff] at h₂
   · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₁⟩, q_ih H₁ h₂⟩ -- move
   · exact supports_insert.2 ⟨⟨fun _ => h₃, fun _ => h₁⟩, q_ih H₁ h₂⟩ -- clear

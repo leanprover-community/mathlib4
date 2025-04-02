@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta
+Authors: Bhavik Mehta, Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
@@ -14,9 +14,11 @@ import Mathlib.CategoryTheory.Limits.Preserves.Basic
 
 A connected limit is a limit whose shape is a connected category.
 
-We give examples of connected categories, and prove that the functor given
-by `(X × -)` preserves any connected limit. That is, any limit of shape `J`
-where `J` is a connected category is preserved by the functor `(X × -)`.
+We show that constant functors from a connected category have a limit
+and a colimit, give examples of connected categories, and prove
+that the functor given by `(X × -)` preserves any connected limit.
+That is, any limit of shape `J` where `J` is a connected category is
+preserved by the functor `(X × -)`.
 -/
 
 
@@ -27,6 +29,52 @@ universe v₁ v₂ u₁ u₂
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 namespace CategoryTheory
+
+section Const
+
+namespace Limits
+
+variable (J : Type u₁) [Category.{v₁} J] {C : Type u₂} [Category.{v₂} C] (X : C)
+
+/-- The obvious cone of a constant functor. -/
+@[simps]
+def constCone : Cone ((Functor.const J).obj X) where
+  pt := X
+  π := 𝟙 _
+
+/-- The obvious cocone of a constant functor. -/
+@[simps]
+def constCocone : Cocone ((Functor.const J).obj X) where
+  pt := X
+  ι := 𝟙 _
+
+variable [IsConnected J]
+
+/-- When `J` is a connected category, the limit of a
+constant functor `J ⥤ C` with value `X : C` identifies to `X`. -/
+def isLimitConstCone : IsLimit (constCone J X) where
+  lift s := s.π.app (Classical.arbitrary _)
+  fac s j := by
+    dsimp
+    rw [comp_id]
+    exact constant_of_preserves_morphisms _
+      (fun _ _ f ↦ by simpa using s.w f) _ _
+  uniq s m hm := by simpa using hm (Classical.arbitrary _)
+
+/-- When `J` is a connected category, the colimit of a
+constant functor `J ⥤ C` with value `X : C` identifies to `X`. -/
+def isColimitConstCocone : IsColimit (constCocone J X) where
+  desc s := s.ι.app (Classical.arbitrary _)
+  fac s j := by
+    dsimp
+    rw [id_comp]
+    exact constant_of_preserves_morphisms _
+      (fun _ _ f ↦ by simpa using (s.w f).symm) _ _
+  uniq s m hm := by simpa using hm (Classical.arbitrary _)
+
+end Limits
+
+end Const
 
 section Examples
 

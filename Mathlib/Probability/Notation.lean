@@ -36,7 +36,7 @@ open scoped MeasureTheory
 
 -- We define notations `𝔼[f|m]` for the conditional expectation of `f` with respect to `m`.
 scoped[ProbabilityTheory] notation "𝔼[" X "|" m "]" =>
-  MeasureTheory.condexp m MeasureTheory.MeasureSpace.volume X
+  MeasureTheory.condExp m MeasureTheory.MeasureSpace.volume X
 
 -- `scoped[ProbabilityTheory]` isn't legal for `macro`s.
 namespace ProbabilityTheory
@@ -51,7 +51,7 @@ end ProbabilityTheory
 scoped[ProbabilityTheory] notation "𝔼[" X "]" => ∫ a, (X : _ → _) a
 
 scoped[ProbabilityTheory] notation P "⟦" s "|" m "⟧" =>
-  MeasureTheory.condexp m P (Set.indicator s fun ω => (1 : ℝ))
+  MeasureTheory.condExp m P (Set.indicator s fun ω => (1 : ℝ))
 
 scoped[ProbabilityTheory] notation:50 X " =ₐₛ " Y:50 => X =ᵐ[MeasureTheory.MeasureSpace.volume] Y
 

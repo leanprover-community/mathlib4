@@ -196,7 +196,7 @@ theorem subset_balancedCore (ht : (0 : E) ∈ t) (hst : ∀ a : 𝕜, ‖a‖ �
     s ⊆ balancedCore 𝕜 t := by
   rw [balancedCore_eq_iInter ht]
   refine subset_iInter₂ fun a ha ↦ ?_
-  rw [subset_set_smul_iff₀ (norm_pos_iff.mp <| zero_lt_one.trans_le ha)]
+  rw [subset_smul_set_iff₀ (norm_pos_iff.mp <| zero_lt_one.trans_le ha)]
   apply hst
   rw [norm_inv]
   exact inv_le_one_of_one_le₀ ha

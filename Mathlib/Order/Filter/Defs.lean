@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Order.SetNotation
 import Mathlib.Order.Bounds.Defs
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Insert
 
 /-!
 # Definitions about filters

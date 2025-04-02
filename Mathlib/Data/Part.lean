@@ -67,8 +67,6 @@ def toOption (o : Part α) [Decidable o.Dom] : Option α :=
 @[simp] lemma toOption_eq_none (o : Part α) [Decidable o.Dom] : o.toOption = none ↔ ¬o.Dom := by
   by_cases h : o.Dom <;> simp [h, toOption]
 
-@[deprecated (since := "2024-06-20")] alias toOption_isNone := toOption_eq_none
-
 /-- `Part` extensionality -/
 theorem ext' : ∀ {o p : Part α}, (o.Dom ↔ p.Dom) → (∀ h₁ h₂, o.get h₁ = p.get h₂) → o = p
   | ⟨od, o⟩, ⟨pd, p⟩, H1, H2 => by
@@ -436,7 +434,7 @@ theorem bind_some (a : α) (f : α → Part β) : (some a).bind f = f a :=
 theorem bind_of_mem {o : Part α} {a : α} (h : a ∈ o) (f : α → Part β) : o.bind f = f a := by
   rw [eq_some_iff.2 h, bind_some]
 
-theorem bind_some_eq_map (f : α → β) (x : Part α) : x.bind (some ∘ f) = map f x :=
+theorem bind_some_eq_map (f : α → β) (x : Part α) : x.bind (fun y => some (f y)) = map f x :=
   ext <| by simp [eq_comm]
 
 theorem bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ a, Decidable (f a).Dom]

@@ -95,7 +95,7 @@ theorem domCoprod.summand_eq_zero_of_smul_invariant (a : Mᵢ [⋀^ιa]→ₗ[R'
     MultilinearMap.domDomCongr_apply, MultilinearMap.domCoprod_apply, domCoprod.summand,
     QuotientGroup.toQuotient_mk]
   intro hσ
-  cases' hi : σ⁻¹ i with val val <;> cases' hj : σ⁻¹ j with val_1 val_1 <;>
+  rcases hi : σ⁻¹ i with val | val <;> rcases hj : σ⁻¹ j with val_1 | val_1 <;>
     rw [Perm.inv_eq_iff_eq] at hi hj <;> substs hi hj <;> revert val val_1
   -- Porting note: `on_goal` is not available in `case _ | _ =>`, so the proof gets tedious.
   -- the term pairs with and cancels another term

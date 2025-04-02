@@ -161,10 +161,11 @@ theorem remainder_lt (n : ℕ) {m : ℝ} (m2 : 2 ≤ m) : remainder m n < 1 / (m
 numbers where the denominator is `m ^ k!`. -/
 theorem partialSum_eq_rat {m : ℕ} (hm : 0 < m) (k : ℕ) :
     ∃ p : ℕ, partialSum m k = p / ((m ^ k ! :) : ℝ) := by
-  induction' k with k h
-  · exact ⟨1, by rw [partialSum, range_one, sum_singleton, Nat.cast_one, Nat.factorial,
+  induction k with
+  | zero => exact ⟨1, by rw [partialSum, range_one, sum_singleton, Nat.cast_one, Nat.factorial,
       pow_one, pow_one]⟩
-  · rcases h with ⟨p_k, h_k⟩
+  | succ k h =>
+    rcases h with ⟨p_k, h_k⟩
     use p_k * m ^ ((k + 1)! - k !) + 1
     rw [partialSum_succ, h_k, div_add_div, div_eq_div_iff, add_mul]
     · norm_cast

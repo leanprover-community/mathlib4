@@ -505,9 +505,13 @@ protected theorem IsWF.isPWO (hs : s.IsWF) : s.IsPWO := by
   simp only [forall_mem_range, not_lt] at hm
   exact ⟨m, m + 1, by omega, hm _⟩
 
-/-- In a linear order, the predicates `Set.IsWF` and `Set.IsPWO` are equivalent. -/
+/-- In a linear order, the predicates `Set.IsPWO` and `Set.IsWF` are equivalent. -/
+theorem isPWO_iff_isWF : s.IsPWO ↔ s.IsWF :=
+  ⟨IsPWO.isWF, IsWF.isPWO⟩
+
+@[deprecated isPWO_iff_isWF (since := "2025-01-21")]
 theorem isWF_iff_isPWO : s.IsWF ↔ s.IsPWO :=
-  ⟨IsWF.isPWO, IsPWO.isWF⟩
+  isPWO_iff_isWF.symm
 
 /--
 If `α` is a linear order with well-founded `<`, then any set in it is a partially well-ordered set.
@@ -668,6 +672,9 @@ theorem BddBelow.wellFoundedOn_lt : BddBelow s → s.WellFoundedOn (· < ·) := 
 theorem BddAbove.wellFoundedOn_gt : BddAbove s → s.WellFoundedOn (· > ·) :=
   fun h => h.dual.wellFoundedOn_lt
 
+theorem BddBelow.isWF : BddBelow s → IsWF s :=
+  BddBelow.wellFoundedOn_lt
+
 end LocallyFiniteOrder
 
 namespace Set.PartiallyWellOrderedOn
@@ -789,7 +796,7 @@ theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
     constructor
     · by_contra hx
       simp_all
-    · exact (Prod.Lex.le_iff (f (g 0)) _).mpr <| Or.inl hn
+    · exact Prod.Lex.toLex_le_toLex.mpr <| .inl hn
   · have hhc : ∀ n, (ofLex f (g 0)).1 = (ofLex f (g n)).1 := by
       intro n
       rw [not_exists] at hc
@@ -802,9 +809,7 @@ theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
       simpa using hf _
     use (g (g' 0)), (g (g' 1))
     suffices (f (g (g' 0))) ≤ (f (g (g' 1))) by simpa
-    · refine (Prod.Lex.le_iff (f (g (g' 0))) (f (g (g' 1)))).mpr ?_
-      right
-      constructor
+    · refine Prod.Lex.toLex_le_toLex.mpr <| .inr ⟨?_, ?_⟩
       · exact (hhc (g' 0)).symm.trans (hhc (g' 1))
       · exact hg' (Nat.zero_le 1)
 
@@ -823,7 +828,7 @@ theorem fiberProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
   rintro b ⟨-, hb⟩ c ⟨-, hc⟩ hbc
   simp only [mem_preimage, mem_singleton_iff] at hb hc
   have : (ofLex b).1 < (ofLex c).1 ∨ (ofLex b).1 = (ofLex c).1 ∧ f b ≤ f c :=
-    (Prod.Lex.le_iff b c).mp hbc
+    Prod.Lex.toLex_le_toLex.mp hbc
   simp_all only [lt_self_iff_false, true_and, false_or]
 
 theorem ProdLex_iff [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)} :

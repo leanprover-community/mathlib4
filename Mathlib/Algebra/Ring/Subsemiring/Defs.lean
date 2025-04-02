@@ -28,8 +28,6 @@ variable {S R : Type*} [AddMonoidWithOne R] [SetLike S R] (s : S)
 theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := by
   induction n <;> simp [zero_mem, add_mem, one_mem, *]
 
-@[deprecated (since := "2024-04-05")] alias coe_nat_mem := natCast_mem
-
 @[aesop safe apply (rule_sets := [SetLike])]
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
     ofNat(n) ∈ s := by
@@ -71,7 +69,7 @@ namespace SubsemiringClass
 
 -- Prefer subclasses of `NonAssocSemiring` over subclasses of `SubsemiringClass`.
 /-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
-instance (priority := 75) toNonAssocSemiring : NonAssocSemiring s :=
+instance (priority := 75) toNonAssocSemiring : NonAssocSemiring s := fast_instance%
   Subtype.coe_injective.nonAssocSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ => rfl
 
@@ -92,7 +90,7 @@ theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
 -- Prefer subclasses of `Semiring` over subclasses of `SubsemiringClass`.
 /-- A subsemiring of a `Semiring` is a `Semiring`. -/
 instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] :
-    Semiring s :=
+    Semiring s := fast_instance%
   Subtype.coe_injective.semiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
@@ -105,7 +103,7 @@ theorem coe_pow {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] (x : s) (n
 
 /-- A subsemiring of a `CommSemiring` is a `CommSemiring`. -/
 instance toCommSemiring {R} [CommSemiring R] [SetLike S R] [SubsemiringClass S R] :
-    CommSemiring s :=
+    CommSemiring s := fast_instance%
   Subtype.coe_injective.commSemiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
@@ -240,7 +238,6 @@ protected theorem add_mem {x y : R} : x ∈ s → y ∈ s → x + y ∈ s :=
 
 /-- A subsemiring of a `NonAssocSemiring` inherits a `NonAssocSemiring` structure -/
 instance toNonAssocSemiring : NonAssocSemiring s :=
-  -- Porting note: this used to be a specialized instance which needed to be expensively unified.
   SubsemiringClass.toNonAssocSemiring _
 
 @[simp, norm_cast]
@@ -293,6 +290,8 @@ def subtype : s →+* R :=
 theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
 
+theorem subtype_injective : Function.Injective s.subtype := Subtype.coe_injective
+
 protected theorem nsmul_mem {x : R} (hx : x ∈ s) (n : ℕ) : n • x ∈ s :=
   nsmul_mem hx n
 
@@ -300,16 +299,13 @@ protected theorem nsmul_mem {x : R} (hx : x ∈ s) (n : ℕ) : n • x ∈ s :=
 theorem coe_toSubmonoid (s : Subsemiring R) : (s.toSubmonoid : Set R) = s :=
   rfl
 
--- Porting note: adding this as `simp`-normal form for `coe_toAddSubmonoid`
 @[simp]
 theorem coe_carrier_toSubmonoid (s : Subsemiring R) : (s.toSubmonoid.carrier : Set R) = s :=
   rfl
 
--- Porting note: can be proven using `SetLike` so removing `@[simp]`
 theorem mem_toAddSubmonoid {s : Subsemiring R} {x : R} : x ∈ s.toAddSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
--- Porting note: new normal form is `coe_carrier_toSubmonoid` so removing `@[simp]`
 theorem coe_toAddSubmonoid (s : Subsemiring R) : (s.toAddSubmonoid : Set R) = s :=
   rfl
 

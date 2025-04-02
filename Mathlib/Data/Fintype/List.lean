@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.List.Permutation
 
 /-!

@@ -450,14 +450,10 @@ end Mul
 section MulOneClass
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): `simp` can prove this but it is a valid `dsimp` lemma.
--- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem coe_monoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): `simp` can prove this but it is a valid `dsimp` lemma.
--- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma coe_monoidHom_trans (e₁ : M ≃* N) (e₂ : N ≃* P) :
     (e₁.trans e₂ : M →* P) = (e₂ : N →* P).comp ↑e₁ := rfl
 
@@ -497,7 +493,6 @@ noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomCla
     (f : F) (hf : Bijective f) : M ≃* N :=
   { Equiv.ofBijective f hf with map_mul' := map_mul f }
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: simplify `symm_apply` to `surjInv`?
 @[to_additive (attr := simp)]
 theorem ofBijective_apply_symm_apply {n : N} (f : M →* N) (hf : Bijective f) :
     f ((ofBijective f hf).symm n) = n := (ofBijective f hf).apply_symm_apply n

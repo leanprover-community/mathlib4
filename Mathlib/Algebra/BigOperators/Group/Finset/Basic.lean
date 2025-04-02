@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.Even
 import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Pi
 
 /-!
@@ -285,10 +286,14 @@ theorem prod_biUnion [DecidableEq α] {s : Finset γ} {t : γ → Finset α}
     (hs : Set.PairwiseDisjoint (↑s) t) : ∏ x ∈ s.biUnion t, f x = ∏ x ∈ s, ∏ i ∈ t x, f i := by
   rw [← disjiUnion_eq_biUnion _ _ hs, prod_disjiUnion]
 
-/-- The product over a sigma type equals the product of the fiberwise products. For rewriting
-in the reverse direction, use `Finset.prod_sigma'`. -/
+/-- The product over a sigma type equals the product of the fiberwise products.
+For rewriting in the reverse direction, use `Finset.prod_sigma'`.
+
+See also `Fintype.prod_sigma` for the product over the whole type. -/
 @[to_additive "The sum over a sigma type equals the sum of the fiberwise sums. For rewriting
-in the reverse direction, use `Finset.sum_sigma'`"]
+in the reverse direction, use `Finset.sum_sigma'`.
+
+See also `Fintype.sum_sigma` for the sum over the whole type."]
 theorem prod_sigma {σ : α → Type*} (s : Finset α) (t : ∀ a, Finset (σ a)) (f : Sigma σ → β) :
     ∏ x ∈ s.sigma t, f x = ∏ a ∈ s, ∏ s ∈ t a, f ⟨a, s⟩ := by
   simp_rw [← disjiUnion_map_sigma_mk, prod_disjiUnion, prod_map, Function.Embedding.sigmaMk_apply]
@@ -734,6 +739,15 @@ theorem prod_ite_mem [DecidableEq α] (s t : Finset α) (f : α → β) :
     ∏ i ∈ s, (if i ∈ t then f i else 1) = ∏ i ∈ s ∩ t, f i := by
   rw [← Finset.prod_filter, Finset.filter_mem_eq_inter]
 
+@[to_additive]
+lemma prod_attach_eq_prod_dite [Fintype α] (s : Finset α) (f : s → β) [DecidablePred (· ∈ s)] :
+    ∏ i ∈ s.attach, f i = ∏ i, if h : i ∈ s then f ⟨i, h⟩ else 1 := by
+  rw [Finset.prod_dite, Finset.univ_eq_attach, Finset.prod_const_one, mul_one]
+  congr
+  · ext; simp
+  · ext; simp
+  · apply Function.hfunext <;> simp +contextual [Subtype.heq_iff_coe_eq]
+
 @[to_additive (attr := simp)]
 theorem prod_dite_eq [DecidableEq α] (s : Finset α) (a : α) (b : ∀ x : α, a = x → β) :
     ∏ x ∈ s, (if h : a = x then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
@@ -1156,7 +1170,8 @@ theorem prod_comp [DecidableEq γ] (f : γ → β) (g : α → γ) :
 @[to_additive]
 theorem prod_piecewise [DecidableEq α] (s t : Finset α) (f g : α → β) :
     (∏ x ∈ s, (t.piecewise f g) x) = (∏ x ∈ s ∩ t, f x) * ∏ x ∈ s \ t, g x := by
-  erw [prod_ite, filter_mem_eq_inter, ← sdiff_eq_filter]
+  simp only [piecewise]
+  rw [prod_ite, filter_mem_eq_inter, ← sdiff_eq_filter]
 
 @[to_additive]
 theorem prod_inter_mul_prod_diff [DecidableEq α] (s t : Finset α) (f : α → β) :
@@ -1434,6 +1449,51 @@ theorem prod_unique_nonempty {α β : Type*} [CommMonoid β] [Unique α] (s : Fi
     (h : s.Nonempty) : ∏ x ∈ s, f x = f default := by
   rw [h.eq_singleton_default, Finset.prod_singleton]
 
+section Image_Overlap
+
+variable {α β ι : Type*} [DecidableEq α]
+
+@[to_additive]
+lemma prod_filter_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α → β} {n : ι} {I : Finset ι}
+    (hn : n ∈ I) (hf : (I : Set ι).Pairwise fun i j ↦ f i = f j → g (f i) = 1) :
+    ∏ j ∈ filter (fun j ↦ f j = f n) I, g (f j) = g (f n) := by
+  classical
+  have h j (hj : j ∈ (filter (fun i ↦ f i = f n) I).erase n) : g (f j) = 1 := by
+    simp only [mem_erase, mem_filter] at hj
+    exact hf hj.2.1 hn hj.1 hj.2.2
+  rw [← mul_one (g (f n)), ← prod_eq_one h,
+    ← mul_prod_erase (filter (f · = f n) I) (fun i ↦ g (f i)) <| mem_filter.mpr ⟨hn, by rfl⟩]
+
+/-- A version of `Finset.prod_map` and `Finset.prod_image`, but we do not assume that `f` is
+injective. Rather, we assume that the image of `f` on `I` only overlaps where `g (f i) = 1`.
+The conclusion is the same as in `prod_image`.-/
+@[to_additive (attr := simp)
+"A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
+injective. Rather, we assume that the image of `f` on `I` only overlaps where `g (f i) = 0`.
+The conclusion is the same as in `sum_image`."]
+lemma prod_image_of_pairwise_eq_one [CommMonoid β] {f : ι → α} {g : α → β} {I : Finset ι}
+    (hf : (I : Set ι).Pairwise fun i j ↦ f i = f j → g (f i) = 1) :
+    ∏ s ∈ I.image f, g s = ∏ i ∈ I, g (f i) := by
+  rw [prod_image']
+  exact fun n hnI => (prod_filter_of_pairwise_eq_one hnI hf).symm
+
+/-- A version of `Finset.prod_map` and `Finset.prod_image`, but we do not assume that `f` is
+injective. Rather, we assume that the images of `f` are disjoint on `I`, and `g ⊥ = 1`. The
+conclusion is the same as in `prod_image`.-/
+@[to_additive (attr := simp)
+"A version of `Finset.sum_map` and `Finset.sum_image`, but we do not assume that `f` is
+injective. Rather, we assume that the images of `f` are disjoint on `I`, and `g ⊥ = 0`. The
+conclusion is the same as in `sum_image`."
+]
+lemma prod_image_of_disjoint [CommMonoid β] [PartialOrder α] [OrderBot α] {f : ι → α} {g : α → β}
+    (hg_bot : g ⊥ = 1) {I : Finset ι} (hf_disj : (I : Set ι).PairwiseDisjoint f) :
+    ∏ s ∈ I.image f, g s = ∏ i ∈ I, g (f i) := by
+  refine prod_image_of_pairwise_eq_one <| hf_disj.imp fun i j (hdisj : Disjoint _ _) hfij ↦ ?_
+  rw [← hfij, disjoint_self] at hdisj
+  rw [hdisj, hg_bot]
+
+end Image_Overlap
+
 end Finset
 
 namespace Fintype
@@ -1546,7 +1606,7 @@ theorem prod_toFinset {M : Type*} [DecidableEq α] [CommMonoid M] (f : α → M)
 
 @[simp]
 theorem sum_toFinset_count_eq_length [DecidableEq α] (l : List α) :
-    ∑ a in l.toFinset, l.count a = l.length := by
+    ∑ a ∈ l.toFinset, l.count a = l.length := by
   simpa [List.map_const'] using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
 
 end List
@@ -1559,7 +1619,7 @@ lemma mem_sum {s : Finset ι} {m : ι → Multiset α} : a ∈ ∑ i ∈ s, m i 
 
 variable [DecidableEq α]
 
-theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a in s.toFinset, s.count a = card s := by
+theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a ∈ s.toFinset, s.count a = card s := by
   simpa using (Finset.sum_multiset_map_count s (fun _ => (1 : ℕ))).symm
 
 @[simp] lemma sum_count_eq_card {s : Finset α} {m : Multiset α} (hms : ∀ a ∈ m, a ∈ s) :
@@ -1567,9 +1627,6 @@ theorem toFinset_sum_count_eq (s : Multiset α) : ∑ a in s.toFinset, s.count a
   rw [← toFinset_sum_count_eq, ← Finset.sum_filter_ne_zero]
   congr with a
   simpa using hms a
-
-@[deprecated sum_count_eq_card (since := "2024-07-21")]
-theorem sum_count_eq [Fintype α] (s : Multiset α) : ∑ a, s.count a = Multiset.card s := by simp
 
 @[simp]
 theorem toFinset_sum_count_nsmul_eq (s : Multiset α) :

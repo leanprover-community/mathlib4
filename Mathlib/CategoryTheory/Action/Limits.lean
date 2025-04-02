@@ -328,6 +328,6 @@ instance mapAction_preadditive [F.Additive] : (F.mapAction G).Additive where
 
 variable {R : Type*} [Semiring R] [CategoryTheory.Linear R V] [CategoryTheory.Linear R W]
 
-instance mapAction_linear [F.Additive] [F.Linear R] : (F.mapAction G).Linear R where
+instance mapAction_linear [F.Linear R] : (F.mapAction G).Linear R where
 
 end CategoryTheory.Functor

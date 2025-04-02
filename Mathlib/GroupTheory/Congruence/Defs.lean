@@ -6,6 +6,7 @@ Authors: Amelia Livingston
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Units.Defs
 import Mathlib.Data.Setoid.Basic
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Congruence relations
@@ -190,7 +191,6 @@ an addition."]
 protected def Quotient :=
   Quotient c.toSetoid
 
--- Porting note: made implicit
 variable {c}
 
 /-- The morphism into the quotient by a congruence relation -/
@@ -550,23 +550,17 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
     ⟨comap ((↑) : M → c.Quotient) (fun _ _ => rfl) d, fun x y h =>
       show d x y by rw [c.eq.2 h]; exact d.refl _⟩
   left_inv d :=
-    -- Porting note: by exact needed for unknown reason
-    by exact
-      Subtype.ext_iff_val.2 <|
-        ext fun x y =>
-          ⟨fun h =>
-            let ⟨a, b, hx, hy, H⟩ := h
-            d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
-            fun h => ⟨_, _, rfl, rfl, h⟩⟩
-  right_inv d :=
-    -- Porting note: by exact needed for unknown reason
-    by exact
+    Subtype.ext_iff_val.2 <|
       ext fun x y =>
-        ⟨fun h =>
-          let ⟨_, _, hx, hy, H⟩ := h
-          hx ▸ hy ▸ H,
-          Con.induction_on₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
-  map_rel_iff' := @fun s t => by
+        ⟨fun ⟨a, b, hx, hy, H⟩ =>
+          d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
+          fun h => ⟨_, _, rfl, rfl, h⟩⟩
+  right_inv d :=
+    ext fun x y =>
+      ⟨fun ⟨_, _, hx, hy, H⟩ =>
+        hx ▸ hy ▸ H,
+        Con.induction_on₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
+  map_rel_iff' {s t} := by
     constructor
     · intros h x y hs
       rcases h ⟨x, y, rfl, rfl, hs⟩ with ⟨a, b, hx, hy, ht⟩
@@ -638,48 +632,27 @@ instance {M : Type*} [Monoid M] (c : Con M) : Pow c.Quotient ℕ where
 /-- The quotient of a semigroup by a congruence relation is a semigroup. -/
 @[to_additive "The quotient of an `AddSemigroup` by an additive congruence relation is
 an `AddSemigroup`."]
-instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient :=
-  { (Function.Surjective.semigroup _
-      Quotient.mk''_surjective fun _ _ => rfl :
-      Semigroup c.Quotient) with
-    /- The `toMul` field is given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.semigroup` when the type checker is checking
-    that instance diagrams commute -/
-    toMul := Con.hasMul _ }
+instance semigroup {M : Type*} [Semigroup M] (c : Con M) : Semigroup c.Quotient := fast_instance%
+  Function.Surjective.semigroup _ Quotient.mk''_surjective fun _ _ => rfl
 
 /-- The quotient of a commutative semigroup by a congruence relation is a semigroup. -/
 @[to_additive "The quotient of an `AddCommSemigroup` by an additive congruence relation is
 an `AddCommSemigroup`."]
 instance commSemigroup {M : Type*} [CommSemigroup M] (c : Con M) : CommSemigroup c.Quotient :=
-  { (Function.Surjective.commSemigroup _ Quotient.mk''_surjective fun _ _ => rfl :
-      CommSemigroup c.Quotient) with
-    /- The `toSemigroup` field is given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.commSemigroup` when the type checker is
-    checking that instance diagrams commute -/
-    toSemigroup := Con.semigroup _ }
+  Function.Surjective.commSemigroup _ Quotient.mk''_surjective fun _ _ => rfl
 
 /-- The quotient of a monoid by a congruence relation is a monoid. -/
 @[to_additive "The quotient of an `AddMonoid` by an additive congruence relation is
 an `AddMonoid`."]
-instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient :=
-  { (Function.Surjective.monoid _ Quotient.mk''_surjective rfl
-      (fun _ _ => rfl) fun _ _ => rfl : Monoid c.Quotient) with
-    /- The `toSemigroup` and `toOne` fields are given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.monoid` when the type checker is
-    checking that instance diagrams commute -/
-    toSemigroup := Con.semigroup _
-    toOne := Con.one _ }
+instance monoid {M : Type*} [Monoid M] (c : Con M) : Monoid c.Quotient := fast_instance%
+  Function.Surjective.monoid _ Quotient.mk''_surjective rfl (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The quotient of a `CommMonoid` by a congruence relation is a `CommMonoid`. -/
 @[to_additive "The quotient of an `AddCommMonoid` by an additive congruence
 relation is an `AddCommMonoid`."]
-instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient :=
-  { (Function.Surjective.commMonoid _ Quotient.mk''_surjective rfl
-      (fun _ _ => rfl) fun _ _ => rfl : CommMonoid c.Quotient) with
-    /- The `toMonoid` field is given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.commMonoid` when the type checker is
-    checking that instance diagrams commute -/
-    toMonoid := Con.monoid _ }
+instance commMonoid {M : Type*} [CommMonoid M] (c : Con M) : CommMonoid c.Quotient := fast_instance%
+  fast_instance% Function.Surjective.commMonoid _ Quotient.mk''_surjective rfl
+    (fun _ _ => rfl) fun _ _ => rfl
 
 /-- Sometimes, a group is defined as a quotient of a monoid by a congruence relation.
 Usually, the inverse operation is defined as `Setoid.map f _` for some `f`.
@@ -754,24 +727,16 @@ instance zpowinst : Pow c.Quotient ℤ :=
 /-- The quotient of a group by a congruence relation is a group. -/
 @[to_additive "The quotient of an `AddGroup` by an additive congruence relation is
 an `AddGroup`."]
-instance group : Group c.Quotient :=
-  { (Function.Surjective.group Quotient.mk''
-      Quotient.mk''_surjective rfl (fun _ _ => rfl) (fun _ => rfl)
-        (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl : Group c.Quotient) with
-    toMonoid := Con.monoid _
-    toInv := Con.hasInv _
-    toDiv := Con.hasDiv _ }
+instance group : Group c.Quotient := fast_instance%
+  Function.Surjective.group Quotient.mk'' Quotient.mk''_surjective
+    rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
 /-- The quotient of a `CommGroup` by a congruence relation is a `CommGroup`. -/
 @[to_additive "The quotient of an `AddCommGroup` by an additive congruence
 relation is an `AddCommGroup`."]
-instance commGroup {M : Type*} [CommGroup M] (c : Con M) : CommGroup c.Quotient :=
-  { (Function.Surjective.commGroup _ Quotient.mk''_surjective rfl (fun _ _ => rfl) (fun _ => rfl)
-      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) : CommGroup c.Quotient) with
-    /- The `toGroup` field is given explicitly for performance reasons.
-    This avoids any need to unfold `Function.Surjective.commGroup` when the type checker is
-    checking that instance diagrams commute -/
-    toGroup := Con.group _ }
+instance commGroup {M : Type*} [CommGroup M] (c : Con M) : CommGroup c.Quotient := fast_instance%
+  Function.Surjective.commGroup _ Quotient.mk''_surjective rfl (fun _ _ => rfl) (fun _ => rfl)
+      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 end Groups
 

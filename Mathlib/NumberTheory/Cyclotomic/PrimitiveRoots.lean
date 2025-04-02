@@ -139,7 +139,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
   (hζ.powerBasis K).liftEquiv.trans
     { toFun := fun x => by
         haveI := IsCyclotomicExtension.neZero' n K L
-        haveI hn := NeZero.of_noZeroSMulDivisors K C n
+        haveI hn := NeZero.of_faithfulSMul K C n
         refine ⟨x.1, ?_⟩
         cases x
         rwa [mem_primitiveRoots n.pos, ← isRoot_cyclotomic_iff, IsRoot.def,
@@ -147,7 +147,7 @@ noncomputable def embeddingsEquivPrimitiveRoots (C : Type*) [CommRing C] [IsDoma
           ← eval₂_eq_eval_map, ← aeval_def]
       invFun := fun x => by
         haveI := IsCyclotomicExtension.neZero' n K L
-        haveI hn := NeZero.of_noZeroSMulDivisors K C n
+        haveI hn := NeZero.of_faithfulSMul K C n
         refine ⟨x.1, ?_⟩
         cases x
         rwa [aeval_def, eval₂_eq_eval_map, hζ.powerBasis_gen K, ←
@@ -347,7 +347,7 @@ theorem sub_one_norm_eq_eval_cyclotomic [IsCyclotomicExtension {n} K L] (h : 2 <
     rw [cyclotomic', eval_prod, ← @Finset.prod_attach E E, ← univ_eq_attach]
     refine Fintype.prod_equiv (hζ.embeddingsEquivPrimitiveRoots E hirr) _ _ fun σ => ?_
     simp
-  haveI : NeZero ((n : ℕ) : E) := NeZero.of_noZeroSMulDivisors K _ (n : ℕ)
+  haveI : NeZero ((n : ℕ) : E) := NeZero.of_faithfulSMul K _ (n : ℕ)
   rw [Hprod, cyclotomic', ← cyclotomic_eq_prod_X_sub_primitiveRoots (isRoot_cyclotomic_iff.1 hz),
     ← map_cyclotomic_int, _root_.map_intCast, ← Int.cast_one, eval_intCast_map, eq_intCast,
     Int.cast_id]
@@ -594,32 +594,4 @@ theorem norm_zeta_pow_sub_one_two {k : ℕ} (hk : 2 ≤ k)
   norm_sub_one_two (zeta_spec ((2 : ℕ+) ^ k) K L) hk hirr
 
 end IsCyclotomicExtension
-
-@[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.pow_sub_one_norm_prime_pow_ne_two :=
-  IsPrimitiveRoot.norm_pow_sub_one_of_prime_pow_ne_two
-@[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.pow_sub_one_norm_prime_ne_two :=
-  IsPrimitiveRoot.norm_pow_sub_one_of_prime_ne_two
-@[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.sub_one_norm_prime_ne_two :=
-  IsPrimitiveRoot.norm_sub_one_of_prime_ne_two
-@[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.sub_one_norm_prime :=
-  IsPrimitiveRoot.norm_sub_one_of_prime_ne_two'
-@[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.pow_sub_one_norm_two :=
-  IsPrimitiveRoot.norm_pow_sub_one_two
-@[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.sub_one_norm_two :=
-  IsPrimitiveRoot.norm_sub_one_two
-@[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.pow_sub_one_norm_prime_pow_of_ne_zero :=
-  IsPrimitiveRoot.norm_pow_sub_one_eq_prime_pow_of_ne_zero
-@[deprecated (since := "2024-04-02")] alias IsCyclotomicExtension.isPrimePow_norm_zeta_sub_one :=
-  IsCyclotomicExtension.norm_zeta_sub_one_of_isPrimePow
-@[deprecated (since := "2024-04-02")]
-  alias IsCyclotomicExtension.prime_ne_two_pow_norm_zeta_pow_sub_one :=
-    IsCyclotomicExtension.norm_zeta_pow_sub_one_of_prime_pow_ne_two
-@[deprecated (since := "2024-04-02")]
-  alias IsCyclotomicExtension.prime_ne_two_pow_norm_zeta_sub_one :=
-    IsCyclotomicExtension.norm_zeta_pow_sub_one_of_prime_ne_two
-@[deprecated (since := "2024-04-02")] alias IsCyclotomicExtension.prime_ne_two_norm_zeta_sub_one :=
-  IsCyclotomicExtension.norm_zeta_sub_one_of_prime_ne_two
-@[deprecated (since := "2024-04-02")] alias IsCyclotomicExtension.two_pow_norm_zeta_sub_one :=
-  IsCyclotomicExtension.norm_zeta_pow_sub_one_two
-
 end Norm

@@ -152,16 +152,6 @@ theorem pmap_map (g : γ → α) (x : Option γ) (H) :
     pmap f (x.map g) H = pmap (fun a h ↦ f (g a) h) x fun _ h ↦ H _ (mem_map_of_mem _ h) := by
   cases x <;> simp only [map_none', map_some', pmap]
 
-theorem map_pmap (g : β → γ) (f : ∀ a, p a → β) (x H) :
-    Option.map g (pmap f x H) = pmap (fun a h ↦ g (f a h)) x H := by
-  cases x <;> simp only [map_none', map_some', pmap]
-
--- Porting note: Can't simp tag this anymore because `pmap` simplifies
--- @[simp]
-theorem pmap_eq_map (p : α → Prop) (f : α → β) (x H) :
-    @pmap _ _ p (fun a _ ↦ f a) x H = Option.map f x := by
-  cases x <;> simp only [map_none', map_some', pmap]
-
 theorem pmap_bind {α β γ} {x : Option α} {g : α → Option β} {p : β → Prop} {f : ∀ b, p b → γ} (H)
     (H' : ∀ (a : α), ∀ b ∈ g a, b ∈ x >>= g) :
     pmap f (x >>= g) H = x >>= fun a ↦ pmap f (g a) fun _ h ↦ H _ (H' a _ h) := by
@@ -288,8 +278,6 @@ theorem orElse_eq_none' (o o' : Option α) : o.orElse (fun _ ↦ o') = none ↔ 
   Option.orElse_eq_none o o'
 
 section
-
-open scoped Classical
 
 theorem choice_eq_none (α : Type*) [IsEmpty α] : choice α = none :=
   dif_neg (not_nonempty_iff_imp_false.mpr isEmptyElim)

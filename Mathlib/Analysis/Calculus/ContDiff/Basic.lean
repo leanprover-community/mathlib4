@@ -1345,30 +1345,40 @@ variable {i : ℕ}
 /-- The iterated derivative of the sum of two functions is the sum of the iterated derivatives.
 See also `iteratedFDerivWithin_add_apply'`, which uses the spelling `(fun x ↦ f x + g x)`
 instead of `f + g`. -/
-theorem iteratedFDerivWithin_add_apply {f g : E → F} (hf : ContDiffOn 𝕜 i f s)
-    (hg : ContDiffOn 𝕜 i g s) (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+theorem iteratedFDerivWithin_add_apply {f g : E → F} (hf : ContDiffWithinAt 𝕜 i f s x)
+    (hg : ContDiffWithinAt 𝕜 i g s x) (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedFDerivWithin 𝕜 i (f + g) s x =
-      iteratedFDerivWithin 𝕜 i f s x + iteratedFDerivWithin 𝕜 i g s x :=
-  Eq.symm <| ((hf.ftaylorSeriesWithin hu).add
-    (hg.ftaylorSeriesWithin hu)).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl hu hx
+      iteratedFDerivWithin 𝕜 i f s x + iteratedFDerivWithin 𝕜 i g s x := by
+  have := (hf.eventually (by simp)).and (hg.eventually (by simp))
+  obtain ⟨t, ht, hxt, h⟩ := mem_nhdsWithin.mp this
+  have hft : ContDiffOn 𝕜 i f (s ∩ t) := fun a ha ↦ (h (by simp_all)).1.mono inter_subset_left
+  have hgt : ContDiffOn 𝕜 i g (s ∩ t) := fun a ha ↦ (h (by simp_all)).2.mono inter_subset_left
+  have hut : UniqueDiffOn 𝕜 (s ∩ t) := hu.inter ht
+  have H : ↑(s ∩ t) =ᶠ[𝓝 x] s :=
+    inter_eventuallyEq_left.mpr (eventually_of_mem (ht.mem_nhds hxt) (fun _ h _ ↦ h))
+  rw [← iteratedFDerivWithin_congr_set H, ← iteratedFDerivWithin_congr_set H,
+    ← iteratedFDerivWithin_congr_set H]
+  exact .symm (((hft.ftaylorSeriesWithin hut).add
+      (hgt.ftaylorSeriesWithin hut)).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl hut ⟨hx, hxt⟩)
 
 /-- The iterated derivative of the sum of two functions is the sum of the iterated derivatives.
 This is the same as `iteratedFDerivWithin_add_apply`, but using the spelling `(fun x ↦ f x + g x)`
 instead of `f + g`, which can be handy for some rewrites.
 TODO: use one form consistently. -/
-theorem iteratedFDerivWithin_add_apply' {f g : E → F} (hf : ContDiffOn 𝕜 i f s)
-    (hg : ContDiffOn 𝕜 i g s) (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+theorem iteratedFDerivWithin_add_apply' {f g : E → F} (hf : ContDiffWithinAt 𝕜 i f s x)
+    (hg : ContDiffWithinAt 𝕜 i g s x) (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedFDerivWithin 𝕜 i (fun x => f x + g x) s x =
       iteratedFDerivWithin 𝕜 i f s x + iteratedFDerivWithin 𝕜 i g s x :=
   iteratedFDerivWithin_add_apply hf hg hu hx
 
-theorem iteratedFDeriv_add_apply {i : ℕ} {f g : E → F} (hf : ContDiff 𝕜 i f) (hg : ContDiff 𝕜 i g) :
+theorem iteratedFDeriv_add_apply {i : ℕ} {f g : E → F}
+    (hf : ContDiffAt 𝕜 i f x) (hg : ContDiffAt 𝕜 i g x) :
     iteratedFDeriv 𝕜 i (f + g) x = iteratedFDeriv 𝕜 i f x + iteratedFDeriv 𝕜 i g x := by
-  simp_rw [← contDiffOn_univ, ← iteratedFDerivWithin_univ] at hf hg ⊢
+  simp_rw [← iteratedFDerivWithin_univ]
   exact iteratedFDerivWithin_add_apply hf hg uniqueDiffOn_univ (Set.mem_univ _)
 
-theorem iteratedFDeriv_add_apply' {i : ℕ} {f g : E → F} (hf : ContDiff 𝕜 i f)
-    (hg : ContDiff 𝕜 i g) :
+theorem iteratedFDeriv_add_apply' {i : ℕ} {f g : E → F} (hf : ContDiffAt 𝕜 i f x)
+    (hg : ContDiffAt 𝕜 i g x) :
     iteratedFDeriv 𝕜 i (fun x => f x + g x) x = iteratedFDeriv 𝕜 i f x + iteratedFDeriv 𝕜 i g x :=
   iteratedFDeriv_add_apply hf hg
 
@@ -1474,7 +1484,7 @@ theorem ContDiff.sum {ι : Type*} {f : ι → E → F} {s : Finset ι}
   simp only [← contDiffOn_univ] at *; exact ContDiffOn.sum h
 
 theorem iteratedFDerivWithin_sum_apply {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ} {x : E}
-    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : ∀ j ∈ u, ContDiffOn 𝕜 i (f j) s) :
+    (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) (h : ∀ j ∈ u, ContDiffWithinAt 𝕜 i (f j) s x) :
     iteratedFDerivWithin 𝕜 i (∑ j ∈ u, f j ·) s x =
       ∑ j ∈ u, iteratedFDerivWithin 𝕜 i (f j) s x := by
   induction u using Finset.cons_induction with
@@ -1482,13 +1492,13 @@ theorem iteratedFDerivWithin_sum_apply {ι : Type*} {f : ι → E → F} {u : Fi
   | cons a u ha IH =>
     simp only [Finset.mem_cons, forall_eq_or_imp] at h
     simp only [Finset.sum_cons]
-    rw [iteratedFDerivWithin_add_apply' h.1 (ContDiffOn.sum h.2) hs hx, IH h.2]
+    rw [iteratedFDerivWithin_add_apply' h.1 (ContDiffWithinAt.sum h.2) hs hx, IH h.2]
 
 theorem iteratedFDeriv_sum {ι : Type*} {f : ι → E → F} {u : Finset ι} {i : ℕ}
     (h : ∀ j ∈ u, ContDiff 𝕜 i (f j)) :
     iteratedFDeriv 𝕜 i (∑ j ∈ u, f j ·) = ∑ j ∈ u, iteratedFDeriv 𝕜 i (f j) :=
   funext fun x ↦ by simpa [iteratedFDerivWithin_univ] using
-    iteratedFDerivWithin_sum_apply uniqueDiffOn_univ (mem_univ x) fun j hj ↦ (h j hj).contDiffOn
+    iteratedFDerivWithin_sum_apply uniqueDiffOn_univ (mem_univ x) (h · · |>.contDiffWithinAt)
 
 /-! ### Product of two functions -/
 

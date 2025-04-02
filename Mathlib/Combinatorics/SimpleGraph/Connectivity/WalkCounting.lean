@@ -5,8 +5,8 @@ Authors: Kyle Miller
 -/
 import Mathlib.Algebra.BigOperators.Ring.Nat
 import Mathlib.Combinatorics.SimpleGraph.Path
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
-import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Data.Finite.Card
+import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Finite.Lattice
 
 /-!
@@ -50,13 +50,14 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
     {p : G.Walk u v | p.length = n.succ} =
       ⋃ (w : V) (h : G.Adj u w), Walk.cons h '' {p' : G.Walk w v | p'.length = n} := by
   ext p
-  cases' p with _ _ w _ huw pwv
-  · simp [eq_comm]
-  · simp only [Nat.succ_eq_add_one, Set.mem_setOf_eq, Walk.length_cons, add_left_inj,
+  cases p with
+  | nil => simp [eq_comm]
+  | cons huw pwv =>
+    simp only [Nat.succ_eq_add_one, Set.mem_setOf_eq, Walk.length_cons, add_left_inj,
       Set.mem_iUnion, Set.mem_image, exists_prop]
     constructor
     · rintro rfl
-      exact ⟨w, huw, pwv, rfl, rfl⟩
+      exact ⟨_, huw, pwv, rfl, rfl⟩
     · rintro ⟨w, huw, pwv, rfl, rfl, rfl⟩
       rfl
 
@@ -94,9 +95,11 @@ def finsetWalkLength (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
 
 theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLength n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length = n} := by
-  induction' n with n ih generalizing u v
-  · obtain rfl | huv := eq_or_ne u v <;> simp [finsetWalkLength, set_walk_length_zero_eq_of_ne, *]
-  · simp only [finsetWalkLength, set_walk_length_succ_eq, Finset.coe_biUnion, Finset.mem_coe,
+  induction n generalizing u v with
+  | zero =>
+    obtain rfl | huv := eq_or_ne u v <;> simp [finsetWalkLength, set_walk_length_zero_eq_of_ne, *]
+  | succ n ih =>
+    simp only [finsetWalkLength, set_walk_length_succ_eq, Finset.coe_biUnion, Finset.mem_coe,
       Finset.mem_univ, Set.iUnion_true]
     ext p
     simp only [mem_neighborSet, Finset.coe_map, Embedding.coeFn_mk, Set.iUnion_coe_set,
@@ -185,6 +188,8 @@ instance fintypeSubtypePathLengthLT (u v : V) (n : ℕ) :
 
 end LocallyFinite
 
+instance [Finite V] : Finite G.ConnectedComponent := Quot.finite _
+
 section Fintype
 
 variable [DecidableEq V] [Fintype V] [DecidableRel G.Adj]
@@ -237,8 +242,9 @@ end Fintype
 
 lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents [Finite V] {G'}
     (h : G ≤ G') (c' : ConnectedComponent G') :
-    Odd (Nat.card c'.supp) ↔ Odd (Nat.card
-    ({c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd (Nat.card c.supp) })) := by
+    Odd c'.supp.ncard ↔
+      Odd {c : ConnectedComponent G | c.supp ⊆ c'.supp ∧ Odd c.supp.ncard}.ncard := by
+  simp_rw [← Set.Nat.card_coe_set_eq]
   classical
   cases nonempty_fintype V
   rw [Nat.card_eq_card_toFinset, ← disjiUnion_supp_toFinset_eq_supp_toFinset h]
@@ -248,7 +254,7 @@ lemma ConnectedComponent.odd_card_supp_iff_odd_subcomponents [Finite V] {G'}
   rfl
 
 lemma odd_card_iff_odd_components [Finite V] : Odd (Nat.card V) ↔
-    Odd (Nat.card ({(c : ConnectedComponent G) | Odd (Nat.card c.supp)})) := by
+    Odd {c : ConnectedComponent G | Odd c.supp.ncard}.ncard := by
   classical
   cases nonempty_fintype V
   rw [Nat.card_eq_fintype_card]
@@ -257,9 +263,26 @@ lemma odd_card_iff_odd_components [Finite V] : Odd (Nat.card V) ↔
     ← Set.toFinset_card, Set.toFinset_iUnion ConnectedComponent.supp]
   rw [Finset.card_biUnion
     (fun x _ y _ hxy ↦ Set.disjoint_toFinset.mpr (pairwise_disjoint_supp_connectedComponent _ hxy))]
-  simp_rw [Set.toFinset_card, ← Nat.card_eq_fintype_card]
-  rw [Nat.card_eq_fintype_card, Fintype.card_ofFinset]
-  exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ Nat.card x.supp))
+  simp_rw [Set.toFinset_card, ← Nat.card_eq_fintype_card, ← Finset.coe_filter_univ,
+    Set.ncard_coe_Finset, Set.Nat.card_coe_set_eq]
+  exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ x.supp.ncard))
+
+lemma ncard_odd_components_mono [Finite V] {G' : SimpleGraph V} (h : G ≤ G') :
+     {c : ConnectedComponent G' | Odd c.supp.ncard}.ncard
+      ≤ {c : ConnectedComponent G | Odd c.supp.ncard}.ncard := by
+  have aux (c : G'.ConnectedComponent) (hc : Odd c.supp.ncard) :
+      {c' : G.ConnectedComponent | c'.supp ⊆ c.supp ∧ Odd c'.supp.ncard}.Nonempty := by
+    refine Set.nonempty_of_ncard_ne_zero fun h' ↦ ?_
+    simpa [-Nat.card_eq_fintype_card, -Set.coe_setOf, h']
+      using (c.odd_card_supp_iff_odd_subcomponents _ h).mp hc
+  let f : {c : ConnectedComponent G' | Odd (Nat.card c.supp)} →
+      {c : ConnectedComponent G | Odd (Nat.card c.supp)} :=
+    fun ⟨c, hc⟩ ↦ ⟨(aux c hc).choose, (aux c hc).choose_spec.2⟩
+  refine Finite.card_le_of_injective f fun c c' fcc' ↦ ?_
+  simp only [Subtype.mk.injEq, f] at fcc'
+  exact Subtype.val_injective (ConnectedComponent.eq_of_common_vertex
+    ((fcc' ▸ (aux c.1 c.2).choose_spec.1) (ConnectedComponent.nonempty_supp _).some_mem)
+      ((aux c'.1 c'.2).choose_spec.1 (ConnectedComponent.nonempty_supp _).some_mem))
 
 end WalkCounting
 

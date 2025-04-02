@@ -101,6 +101,10 @@ lemma W_iff_isIso {X Y : C} (f : X ⟶ Y) (hX : P X) (hY : P Y) :
     exact ⟨g, hg, (hf _ hY).1 (by simp only [reassoc_of% hg, comp_id])⟩
   · apply W_of_isIso
 
+instance : (W P).RespectsIso where
+  precomp f (_ : IsIso f) g hg := (W P).comp_mem f g (W_of_isIso _ f) hg
+  postcomp f (_ : IsIso f) g hg := (W P).comp_mem g f hg (W_of_isIso _ f)
+
 end
 
 section

@@ -6,8 +6,8 @@ Authors: Mario Carneiro
 import Mathlib.Order.RelIso.Set
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.List.NodupEquivFin
-import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Finset.Max
 
 /-!
 # Construct a sorted list from a finset.
@@ -170,7 +170,7 @@ theorem coe_orderIsoOfFin_apply (s : Finset α) {k : ℕ} (h : s.card = k) (i : 
   rfl
 
 theorem orderIsoOfFin_symm_apply (s : Finset α) {k : ℕ} (h : s.card = k) (x : s) :
-    ↑((s.orderIsoOfFin h).symm x) = (s.sort (· ≤ ·)).indexOf ↑x :=
+    ↑((s.orderIsoOfFin h).symm x) = (s.sort (· ≤ ·)).idxOf ↑x :=
   rfl
 
 theorem orderEmbOfFin_apply (s : Finset α) {k : ℕ} (h : s.card = k) (i : Fin k) :

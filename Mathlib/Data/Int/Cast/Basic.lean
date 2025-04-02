@@ -113,6 +113,12 @@ theorem cast_three : ((3 : ℤ) : R) = 3 := cast_ofNat _
 
 theorem cast_four : ((4 : ℤ) : R) = 4 := cast_ofNat _
 
+/-! ### `toNat` -/
+
+theorem toNat_of_nonpos : ∀ {z : ℤ}, z ≤ 0 → z.toNat = 0
+  | 0, _ => rfl
+  | -[_+1], _ => rfl
+
 end Int
 
 section zsmul

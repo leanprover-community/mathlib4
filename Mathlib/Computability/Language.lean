@@ -41,9 +41,6 @@ instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Langua
 
 variable {l m : Language α} {a b x : List α}
 
--- Porting note: `reducible` attribute cannot be local.
--- attribute [local reducible] Language
-
 /-- Zero language has no elements. -/
 instance : Zero (Language α) :=
   ⟨(∅ : Set _)⟩
@@ -82,8 +79,6 @@ instance : KStar (Language α) := ⟨fun l ↦ {x | ∃ L : List (List α), x = 
 lemma kstar_def (l : Language α) : l∗ = {x | ∃ L : List (List α), x = L.flatten ∧ ∀ y ∈ L, y ∈ l} :=
   rfl
 
--- Porting note: `reducible` attribute cannot be local,
---               so this new theorem is required in place of `Set.ext`.
 @[ext]
 theorem ext {l m : Language α} (h : ∀ (x : List α), x ∈ l ↔ x ∈ m) : l = m :=
   Set.ext h
@@ -162,9 +157,7 @@ lemma mem_kstar_iff_exists_nonempty {x : List α} :
   · rintro ⟨S, rfl, h⟩
     refine ⟨S.filter fun l ↦ !List.isEmpty l,
       by simp [List.flatten_filter_not_isEmpty], fun y hy ↦ ?_⟩
-    -- Porting note: The previous code was:
-    -- rw [mem_filter, empty_iff_eq_nil] at hy
-    rw [mem_filter, Bool.not_eq_true', ← Bool.bool_iff_false, List.isEmpty_iff] at hy
+    simp only [mem_filter, Bool.not_eq_eq_eq_not, Bool.not_true, isEmpty_eq_false, ne_eq] at hy
     exact ⟨h y hy.1, hy.2⟩
   · rintro ⟨S, hx, h⟩
     exact ⟨S, hx, fun y hy ↦ (h y hy).1⟩

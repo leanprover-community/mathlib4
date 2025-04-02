@@ -39,8 +39,6 @@ namespace NumberField
 
 open InfinitePlace AbsoluteValue.Completion InfinitePlace.Completion DedekindDomain IsDedekindDomain
 
-open scoped Classical
-
 /-! ## The infinite adele ring
 
 The infinite adele ring is the finite product of completions of a number field over its
@@ -64,7 +62,7 @@ instance [NumberField K] : Nontrivial (InfiniteAdeleRing K) :=
 
 instance : TopologicalSpace (InfiniteAdeleRing K) := Pi.topologicalSpace
 
-instance : TopologicalRing (InfiniteAdeleRing K) := Pi.instTopologicalRing
+instance : IsTopologicalRing (InfiniteAdeleRing K) := Pi.instIsTopologicalRing
 
 instance : Algebra K (InfiniteAdeleRing K) := Pi.algebra _ _
 
@@ -76,6 +74,7 @@ theorem algebraMap_apply (x : K) (v : InfinitePlace K) :
 instance locallyCompactSpace [NumberField K] : LocallyCompactSpace (InfiniteAdeleRing K) :=
   Pi.locallyCompactSpace_of_finite
 
+open scoped Classical in
 /-- The ring isomorphism between the infinite adele ring of a number field and the
 space `ℝ ^ r₁ × ℂ ^ r₂`, where `(r₁, r₂)` is the signature of the number field. -/
 abbrev ringEquiv_mixedSpace :
@@ -139,7 +138,7 @@ instance : Inhabited (AdeleRing R K) := ⟨0⟩
 
 instance : TopologicalSpace (AdeleRing R K) := instTopologicalSpaceProd
 
-instance : TopologicalRing (AdeleRing R K) := instTopologicalRingProd
+instance : IsTopologicalRing (AdeleRing R K) := instIsTopologicalRingProd
 
 instance : Algebra K (AdeleRing R K) := Prod.algebra _ _ _
 

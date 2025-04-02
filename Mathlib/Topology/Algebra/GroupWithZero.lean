@@ -23,7 +23,7 @@ and `Continuous`. As a special case, we provide `*.div_const` operations that re
 `DivInvMonoid` and `ContinuousMul` instances.
 
 All lemmas about `(⁻¹)` use `inv₀` in their names because lemmas without `₀` are used for
-`TopologicalGroup`s. We also use `'` in the typeclass name `HasContinuousInv₀` for the sake of
+`IsTopologicalGroup`s. We also use `'` in the typeclass name `HasContinuousInv₀` for the sake of
 consistency of notation.
 
 On a `GroupWithZero` with continuous multiplication, we also define left and right multiplication
@@ -314,7 +314,7 @@ variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀]
 
 theorem continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
     ContinuousAt (fun x => x ^ m) x := by
-  cases' m with m m
+  rcases m with m | m
   · simpa only [Int.ofNat_eq_coe, zpow_natCast] using continuousAt_pow x m
   · simp only [zpow_negSucc]
     have hx : x ≠ 0 := h.resolve_right (Int.negSucc_lt_zero m).not_le

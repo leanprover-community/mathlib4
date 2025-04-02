@@ -3,7 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplexCategory
+import Mathlib.AlgebraicTopology.SimplexCategory.Basic
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
@@ -14,11 +14,14 @@ import Mathlib.CategoryTheory.Opposites
 # Simplicial objects in a category.
 
 A simplicial object in a category `C` is a `C`-valued presheaf on `SimplexCategory`.
-(Similarly a cosimplicial object is functor `SimplexCategory ⥤ C`.)
+(Similarly, a cosimplicial object is a functor `SimplexCategory ⥤ C`.)
 
-Use the notation `X _[n]` in the `Simplicial` locale to obtain the `n`-th term of a
-(co)simplicial object `X`, where `n` is a natural number.
+## Notation
 
+The following notations can be enabled via `open Simplicial`.
+
+- `X _⦋n⦌` denotes the `n`-th term of a simplicial object `X`, where `n : ℕ`.
+- `X ^⦋n⦌` denotes the `n`-th term of a cosimplicial object `X`, where `n : ℕ`.
 -/
 
 open Opposite
@@ -33,7 +36,6 @@ namespace CategoryTheory
 
 variable (C : Type u) [Category.{v} C]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The category of simplicial objects valued in a category `C`.
 This is the category of contravariant functors from `SimplexCategory` to `C`. -/
 def SimplicialObject :=
@@ -47,9 +49,9 @@ instance : Category (SimplicialObject C) := by
 namespace SimplicialObject
 
 set_option quotPrecheck false in
-/-- `X _[n]` denotes the `n`th-term of the simplicial object X -/
+/-- `X _⦋n⦌` denotes the `n`th-term of the simplicial object X -/
 scoped[Simplicial]
-  notation3:1000 X " _[" n "]" =>
+  notation3:1000 X " _⦋" n "⦌" =>
       (X : CategoryTheory.SimplicialObject _).obj (Opposite.op (SimplexCategory.mk n))
 
 open Simplicial
@@ -81,18 +83,18 @@ lemma hom_ext {X Y : SimplicialObject C} (f g : X ⟶ Y)
 variable (X : SimplicialObject C)
 
 /-- Face maps for a simplicial object. -/
-def δ {n} (i : Fin (n + 2)) : X _[n + 1] ⟶ X _[n] :=
+def δ {n} (i : Fin (n + 2)) : X _⦋n + 1⦌ ⟶ X _⦋n⦌ :=
   X.map (SimplexCategory.δ i).op
 
 /-- Degeneracy maps for a simplicial object. -/
-def σ {n} (i : Fin (n + 1)) : X _[n] ⟶ X _[n + 1] :=
+def σ {n} (i : Fin (n + 1)) : X _⦋n⦌ ⟶ X _⦋n + 1⦌ :=
   X.map (SimplexCategory.σ i).op
 
 /-- The diagonal of a simplex is the long edge of the simplex.-/
-def diagonal {n : ℕ} : X _[n] ⟶ X _[1] := X.map ((SimplexCategory.diag n).op)
+def diagonal {n : ℕ} : X _⦋n⦌ ⟶ X _⦋1⦌ := X.map ((SimplexCategory.diag n).op)
 
 /-- Isomorphisms from identities in ℕ. -/
-def eqToIso {n m : ℕ} (h : n = m) : X _[n] ≅ X _[m] :=
+def eqToIso {n m : ℕ} (h : n = m) : X _⦋n⦌ ≅ X _⦋m⦌ :=
   X.mapIso (CategoryTheory.eqToIso (by congr))
 
 @[simp]
@@ -191,12 +193,12 @@ open Simplicial
 
 @[reassoc (attr := simp)]
 theorem δ_naturality {X' X : SimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : Fin (n + 2)) :
-    X.δ i ≫ f.app (op [n]) = f.app (op [n + 1]) ≫ X'.δ i :=
+    X.δ i ≫ f.app (op ⦋n⦌) = f.app (op ⦋n + 1⦌) ≫ X'.δ i :=
   f.naturality _
 
 @[reassoc (attr := simp)]
 theorem σ_naturality {X' X : SimplicialObject C} (f : X ⟶ X') {n : ℕ} (i : Fin (n + 1)) :
-    X.σ i ≫ f.app (op [n + 1]) = f.app (op [n]) ≫ X'.σ i :=
+    X.σ i ≫ f.app (op ⦋n + 1⦌) = f.app (op ⦋n⦌) ≫ X'.σ i :=
   f.naturality _
 
 variable (C)
@@ -206,7 +208,6 @@ variable (C)
 def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ SimplicialObject C ⥤ SimplicialObject D :=
   whiskeringRight _ _ _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Truncated simplicial objects. -/
 def Truncated (n : ℕ) :=
   (SimplexCategory.Truncated n)ᵒᵖ ⥤ C
@@ -360,7 +361,6 @@ variable (C)
 abbrev const : C ⥤ SimplicialObject C :=
   CategoryTheory.Functor.const _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The category of augmented simplicial objects, defined as a comma category. -/
 def Augmented :=
   Comma (𝟭 (SimplicialObject C)) (const C)
@@ -394,7 +394,7 @@ def point : Augmented C ⥤ C :=
 @[simps]
 def toArrow : Augmented C ⥤ Arrow C where
   obj X :=
-    { left := drop.obj X _[0]
+    { left := drop.obj X _⦋0⦌
       right := point.obj X
       hom := X.hom.app _ }
   map η :=
@@ -452,8 +452,8 @@ end Augmented
 
 /-- Augment a simplicial object with an object. -/
 @[simps]
-def augment (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀)
-    (w : ∀ (i : SimplexCategory) (g₁ g₂ : ([0] : SimplexCategory) ⟶ i),
+def augment (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀)
+    (w : ∀ (i : SimplexCategory) (g₁ g₂ : ⦋0⦌ ⟶ i),
       X.map g₁.op ≫ f = X.map g₂.op ≫ f) :
     SimplicialObject.Augmented C where
   left := X
@@ -467,12 +467,11 @@ def augment (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀)
         simpa only [← X.map_comp, ← Category.assoc, Category.comp_id, ← op_comp] using w _ _ _ }
 
 -- Porting note: removed @[simp] as the linter complains
-theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _[0] ⟶ X₀) (w) :
-    (X.augment X₀ f w).hom.app (op [0]) = f := by simp
+theorem augment_hom_zero (X : SimplicialObject C) (X₀ : C) (f : X _⦋0⦌ ⟶ X₀) (w) :
+    (X.augment X₀ f w).hom.app (op ⦋0⦌) = f := by simp
 
 end SimplicialObject
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Cosimplicial objects. -/
 def CosimplicialObject :=
   SimplexCategory ⥤ C
@@ -484,9 +483,9 @@ instance : Category (CosimplicialObject C) := by
 
 namespace CosimplicialObject
 
-/-- `X _[n]` denotes the `n`th-term of the cosimplicial object X -/
+/-- `X ^⦋n⦌` denotes the `n`th-term of the cosimplicial object X -/
 scoped[Simplicial]
-  notation3:1000 X " _[" n "]" =>
+  notation3:1000 X " ^⦋" n "⦌" =>
     (X : CategoryTheory.CosimplicialObject _).obj (SimplexCategory.mk n)
 
 instance {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
@@ -518,15 +517,15 @@ variable (X : CosimplicialObject C)
 open Simplicial
 
 /-- Coface maps for a cosimplicial object. -/
-def δ {n} (i : Fin (n + 2)) : X _[n] ⟶ X _[n + 1] :=
+def δ {n} (i : Fin (n + 2)) : X ^⦋n⦌ ⟶ X ^⦋n + 1⦌ :=
   X.map (SimplexCategory.δ i)
 
 /-- Codegeneracy maps for a cosimplicial object. -/
-def σ {n} (i : Fin (n + 1)) : X _[n + 1] ⟶ X _[n] :=
+def σ {n} (i : Fin (n + 1)) : X ^⦋n + 1⦌ ⟶ X ^⦋n⦌ :=
   X.map (SimplexCategory.σ i)
 
 /-- Isomorphisms from identities in ℕ. -/
-def eqToIso {n m : ℕ} (h : n = m) : X _[n] ≅ X _[m] :=
+def eqToIso {n m : ℕ} (h : n = m) : X ^⦋n⦌ ≅ X ^⦋m⦌ :=
   X.mapIso (CategoryTheory.eqToIso (by rw [h]))
 
 @[simp]
@@ -640,7 +639,6 @@ variable (C)
 def whiskering (D : Type*) [Category D] : (C ⥤ D) ⥤ CosimplicialObject C ⥤ CosimplicialObject D :=
   whiskeringRight _ _ _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Truncated cosimplicial objects. -/
 def Truncated (n : ℕ) :=
   SimplexCategory.Truncated n ⥤ C
@@ -694,7 +692,6 @@ variable (C)
 abbrev const : C ⥤ CosimplicialObject C :=
   CategoryTheory.Functor.const _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Augmented cosimplicial objects. -/
 def Augmented :=
   Comma (const C) (𝟭 (CosimplicialObject C))
@@ -729,7 +726,7 @@ def point : Augmented C ⥤ C :=
 def toArrow : Augmented C ⥤ Arrow C where
   obj X :=
     { left := point.obj X
-      right := drop.obj X _[0]
+      right := (drop.obj X) ^⦋0⦌
       hom := X.hom.app _ }
   map η :=
     { left := point.map η
@@ -781,8 +778,8 @@ open Simplicial
 
 /-- Augment a cosimplicial object with an object. -/
 @[simps]
-def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj [0])
-    (w : ∀ (i : SimplexCategory) (g₁ g₂ : ([0] : SimplexCategory) ⟶ i),
+def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌)
+    (w : ∀ (i : SimplexCategory) (g₁ g₂ : ⦋0⦌ ⟶ i),
       f ≫ X.map g₁ = f ≫ X.map g₂) : CosimplicialObject.Augmented C where
   left := X₀
   right := X
@@ -794,8 +791,8 @@ def augment (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj [0])
         rw [Category.id_comp, Category.assoc, ← X.map_comp, w] }
 
 -- Porting note: removed @[simp] as the linter complains
-theorem augment_hom_zero (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj [0]) (w) :
-    (X.augment X₀ f w).hom.app [0] = f := by simp
+theorem augment_hom_zero (X : CosimplicialObject C) (X₀ : C) (f : X₀ ⟶ X.obj ⦋0⦌) (w) :
+    (X.augment X₀ f w).hom.app ⦋0⦌ = f := by simp
 
 end CosimplicialObject
 

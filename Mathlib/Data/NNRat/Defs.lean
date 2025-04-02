@@ -158,8 +158,7 @@ theorem coe_le_coe : (p : ℚ) ≤ q ↔ p ≤ q :=
 theorem coe_lt_coe : (p : ℚ) < q ↔ p < q :=
   Iff.rfl
 
--- `cast_pos`, defined in a later file, makes this lemma redundant
-@[simp, norm_cast, nolint simpNF]
+@[norm_cast]
 theorem coe_pos : (0 : ℚ) < q ↔ 0 < q :=
   Iff.rfl
 
@@ -195,8 +194,6 @@ def coeHom : ℚ≥0 →+* ℚ where
 theorem mk_natCast (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), Nat.cast_nonneg' n⟩ : ℚ≥0) n :=
   rfl
 
-@[deprecated (since := "2024-04-05")] alias mk_coe_nat := mk_natCast
-
 @[simp]
 theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
   rfl
@@ -214,13 +211,11 @@ theorem bddAbove_coe {s : Set ℚ≥0} : BddAbove ((↑) '' s : Set ℚ) ↔ Bdd
 theorem bddBelow_coe (s : Set ℚ≥0) : BddBelow (((↑) : ℚ≥0 → ℚ) '' s) :=
   ⟨0, fun _ ⟨q, _, h⟩ ↦ h ▸ q.2⟩
 
--- `cast_max`, defined in a later file, makes this lemma redundant
-@[simp, norm_cast, nolint simpNF]
+@[norm_cast]
 theorem coe_max (x y : ℚ≥0) : ((max x y : ℚ≥0) : ℚ) = max (x : ℚ) (y : ℚ) :=
   coe_mono.map_max
 
--- `cast_max`, defined in a later file, makes this lemma redundant
-@[simp, norm_cast, nolint simpNF]
+@[norm_cast]
 theorem coe_min (x y : ℚ≥0) : ((min x y : ℚ≥0) : ℚ) = min (x : ℚ) (y : ℚ) :=
   coe_mono.map_min
 

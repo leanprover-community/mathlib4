@@ -181,7 +181,7 @@ theorem coe_mem (x : p) : (x : B) ∈ p :=
 @[aesop 5% apply (rule_sets := [SetLike])]
 lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p := hp hx
 
--- Porting note: removed `@[simp]` because `simpNF` linter complained
+@[simp]
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
 
 @[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
@@ -213,5 +213,15 @@ theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p :=
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_le, not_le_iff_exists]
+
+/-- membership is inherited from `Set X` -/
+abbrev instSubtypeSet {X} {p : Set X → Prop} : SetLike {s // p s} X where
+  coe := (↑)
+  coe_injective' := Subtype.val_injective
+
+/-- membership is inherited from `S` -/
+abbrev instSubtype {X S} [SetLike S X] {p : S → Prop} : SetLike {s // p s} X where
+  coe := (↑)
+  coe_injective' := SetLike.coe_injective.comp Subtype.val_injective
 
 end SetLike

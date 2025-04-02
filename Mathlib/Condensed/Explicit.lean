@@ -46,7 +46,7 @@ noncomputable def ofSheafStonean
     val := F
     cond := by
       rw [isSheaf_iff_preservesFiniteProducts_of_projective F]
-      exact ⟨fun _ _ ↦ inferInstance⟩ }
+      exact ⟨fun _ ↦ inferInstance⟩ }
 
 /--
 The condensed object associated to a presheaf on `Stonean` whose postcomposition with the
@@ -62,7 +62,7 @@ noncomputable def ofSheafForgetStonean
     cond := by
       apply isSheaf_coherent_of_projective_of_comp F (CategoryTheory.forget A)
       rw [isSheaf_iff_preservesFiniteProducts_of_projective]
-      exact ⟨fun _ _ ↦ inferInstance⟩ }
+      exact ⟨fun _ ↦ inferInstance⟩ }
 
 /--
 The condensed object associated to a presheaf on `Profinite` which preserves finite products and
@@ -76,7 +76,7 @@ noncomputable def ofSheafProfinite
     val := F
     cond := by
       rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition F]
-      exact ⟨⟨fun _ _ ↦ inferInstance⟩, hF⟩ }
+      exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩ }
 
 /--
 The condensed object associated to a presheaf on `Profinite` whose postcomposition with the
@@ -93,7 +93,7 @@ noncomputable def ofSheafForgetProfinite
     cond := by
       apply isSheaf_coherent_of_hasPullbacks_of_comp F (CategoryTheory.forget A)
       rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
-      exact ⟨⟨fun _ _ ↦ inferInstance⟩, hF⟩ }
+      exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩ }
 
 /--
 The condensed object associated to a presheaf on `CompHaus` which preserves finite products and
@@ -105,7 +105,7 @@ noncomputable def ofSheafCompHaus
   val := F
   cond := by
     rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition F]
-    exact ⟨⟨fun _ _ ↦ inferInstance⟩, hF⟩
+    exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩
 
 /--
 The condensed object associated to a presheaf on `CompHaus` whose postcomposition with the
@@ -119,7 +119,7 @@ noncomputable def ofSheafForgetCompHaus
   cond := by
     apply isSheaf_coherent_of_hasPullbacks_of_comp F (CategoryTheory.forget A)
     rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
-    exact ⟨⟨fun _ _ ↦ inferInstance⟩, hF⟩
+    exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩
 
 /-- A condensed object satisfies the equalizer condition. -/
 theorem equalizerCondition (X : Condensed A) : EqualizerCondition X.val :=

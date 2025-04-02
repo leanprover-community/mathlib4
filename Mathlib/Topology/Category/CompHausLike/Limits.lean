@@ -40,8 +40,6 @@ namespace CompHausLike
 
 universe w u
 
-attribute [local instance] HasForget.instFunLike
-
 section FiniteCoproducts
 
 variable {P : TopCat.{max u w} → Prop} {α : Type w} [Finite α] (X : α → CompHausLike P)
@@ -63,9 +61,10 @@ def finiteCoproduct : CompHausLike P := CompHausLike.of P (Σ (a : α), X a)
 /--
 The inclusion of one of the factors into the explicit finite coproduct.
 -/
-def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
-  toFun := fun x ↦ ⟨a, x⟩
-  continuous_toFun := continuous_sigmaMk (σ := fun a ↦ X a)
+def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X :=
+  ofHom _
+  { toFun := fun x ↦ ⟨a, x⟩
+    continuous_toFun := continuous_sigmaMk (σ := fun a ↦ X a) }
 
 /--
 To construct a morphism from the explicit finite coproduct, it suffices to
@@ -73,11 +72,12 @@ specify a morphism from each of its factors.
 This is essentially the universal property of the coproduct.
 -/
 def finiteCoproduct.desc {B : CompHausLike P} (e : (a : α) → (X a ⟶ B)) :
-    finiteCoproduct X ⟶ B where
-  toFun := fun ⟨a, x⟩ ↦ e a x
-  continuous_toFun := by
-    apply continuous_sigma
-    intro a; exact (e a).continuous
+    finiteCoproduct X ⟶ B :=
+  ofHom _
+  { toFun := fun ⟨a, x⟩ ↦ e a x
+    continuous_toFun := by
+      apply continuous_sigma
+      intro a; exact (e a).hom.continuous }
 
 @[reassoc (attr := simp)]
 lemma finiteCoproduct.ι_desc {B : CompHausLike P} (e : (a : α) → (X a ⟶ B)) (a : α) :
@@ -100,7 +100,7 @@ def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cofan X) :=
     (fun s ↦ desc _ fun a ↦ s.inj a)
     (fun _ _ ↦ ι_desc _ _ _)
     fun _ _ hm ↦ finiteCoproduct.hom_ext _ _ _ fun a ↦
-      (DFunLike.ext _ _ fun t ↦ congrFun (congrArg DFunLike.coe (hm a)) t)
+      (ConcreteCategory.hom_ext _ _ fun t ↦ congrFun (congrArg _ (hm a)) t)
 
 lemma finiteCoproduct.ι_injective (a : α) : Function.Injective (finiteCoproduct.ι X a) := by
   intro x y hxy
@@ -173,7 +173,7 @@ alias Sigma.openEmbedding_ι := Sigma.isOpenEmbedding_ι
 /-- The functor to `TopCat` preserves finite coproducts if they exist. -/
 instance (P) [HasExplicitFiniteCoproducts.{0} P] :
     PreservesFiniteCoproducts (compHausLikeToTop P) := by
-  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  refine ⟨fun _ ↦ ⟨fun {F} ↦ ?_⟩⟩
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) (compHausLikeToTop P) from
     preservesColimit_of_iso_diagram _ Discrete.natIsoFunctor.symm
   apply preservesColimit_of_preserves_colimit_cocone (CompHausLike.finiteCoproduct.isColimit _)
@@ -207,23 +207,25 @@ pairs `(x,y)` such that `f x = g y`, with the topology induced by the product.
 def pullback : CompHausLike P :=
   letI set := { xy : X × Y | f xy.fst = g xy.snd }
   haveI : CompactSpace set :=
-    isCompact_iff_compactSpace.mp (isClosed_eq (f.continuous.comp continuous_fst)
-      (g.continuous.comp continuous_snd)).isCompact
+    isCompact_iff_compactSpace.mp (isClosed_eq (f.hom.continuous.comp continuous_fst)
+      (g.hom.continuous.comp continuous_snd)).isCompact
   CompHausLike.of P set
 
 /--
 The projection from the pullback to the first component.
 -/
-def pullback.fst : pullback f g ⟶ X where
-  toFun := fun ⟨⟨x, _⟩, _⟩ ↦ x
-  continuous_toFun := Continuous.comp continuous_fst continuous_subtype_val
+def pullback.fst : pullback f g ⟶ X :=
+  TopCat.ofHom
+  { toFun := fun ⟨⟨x, _⟩, _⟩ ↦ x
+    continuous_toFun := Continuous.comp continuous_fst continuous_subtype_val }
 
 /--
 The projection from the pullback to the second component.
 -/
-def pullback.snd : pullback f g ⟶ Y where
-  toFun := fun ⟨⟨_,y⟩,_⟩ ↦ y
-  continuous_toFun := Continuous.comp continuous_snd continuous_subtype_val
+def pullback.snd : pullback f g ⟶ Y :=
+  TopCat.ofHom
+  { toFun := fun ⟨⟨_,y⟩,_⟩ ↦ y
+    continuous_toFun := Continuous.comp continuous_snd continuous_subtype_val }
 
 @[reassoc]
 lemma pullback.condition : pullback.fst f g ≫ f = pullback.snd f g ≫ g := by
@@ -235,12 +237,13 @@ which are compatible with the maps to the base.
 This is essentially the universal property of the pullback.
 -/
 def pullback.lift {Z : CompHausLike P} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
-    Z ⟶ pullback f g where
-  toFun := fun z ↦ ⟨⟨a z, b z⟩, by apply_fun (fun q ↦ q z) at w; exact w⟩
-  continuous_toFun := by
-    apply Continuous.subtype_mk
-    rw [continuous_prod_mk]
-    exact ⟨a.continuous, b.continuous⟩
+    Z ⟶ pullback f g :=
+  TopCat.ofHom
+  { toFun := fun z ↦ ⟨⟨a z, b z⟩, by apply_fun (fun q ↦ q z) at w; exact w⟩
+    continuous_toFun := by
+      apply Continuous.subtype_mk
+      rw [continuous_prod_mk]
+      exact ⟨a.hom.continuous, b.hom.continuous⟩ }
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_fst {Z : CompHausLike P} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
@@ -371,7 +374,7 @@ variable {P : TopCat.{u} → Prop}
 def isTerminalPUnit [HasProp P PUnit.{u+1}] :
     IsTerminal (CompHausLike.of P PUnit.{u + 1}) :=
   haveI : ∀ X, Unique (X ⟶ CompHausLike.of P PUnit.{u + 1}) := fun _ ↦
-    ⟨⟨⟨fun _ ↦ PUnit.unit, continuous_const⟩⟩, fun _ ↦ rfl⟩
+    ⟨⟨ofHom _ ⟨fun _ ↦ PUnit.unit, continuous_const⟩⟩, fun _ ↦ rfl⟩
   Limits.IsTerminal.ofUnique _
 
 end Terminal

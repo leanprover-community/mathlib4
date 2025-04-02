@@ -50,7 +50,7 @@ assert_not_exists Star
 open Function
 
 -- to ensure these instances are computable
-/-- Nonnegative real numbers. -/
+/-- Nonnegative real numbers, denoted as `ℝ≥0` withinin the NNReal namespace -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
   Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
   PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
@@ -58,7 +58,7 @@ def NNReal := { r : ℝ // 0 ≤ r } deriving
 
 namespace NNReal
 
-scoped notation "ℝ≥0" => NNReal
+@[inherit_doc] scoped notation "ℝ≥0" => NNReal
 
 instance : CanonicallyOrderedAdd ℝ≥0 := Nonneg.canonicallyOrderedAdd
 instance : NoZeroDivisors ℝ≥0 := Nonneg.noZeroDivisors
@@ -70,6 +70,9 @@ instance : Min ℝ≥0 := SemilatticeInf.toMin
 instance : Max ℝ≥0 := SemilatticeSup.toMax
 instance : Sub ℝ≥0 := Nonneg.sub
 instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
+
+-- a computable copy of `Nonneg.instNNRatCast`
+instance : NNRatCast ℝ≥0 where nnratCast r := ⟨r, r.cast_nonneg⟩
 
 noncomputable instance : LinearOrderedSemifield ℝ≥0 :=
   Nonneg.linearOrderedSemifield
@@ -264,9 +267,6 @@ variable {ι : Type*} {f : ι → ℝ}
 protected theorem coe_natCast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
   map_natCast toRealHom n
 
-@[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := NNReal.coe_natCast
-
 @[simp, norm_cast]
 protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℝ≥0) : ℝ) = ofNat(n) :=
   rfl
@@ -311,8 +311,6 @@ theorem _root_.Real.toNNReal_coe {r : ℝ≥0} : Real.toNNReal r = r :=
 @[simp]
 theorem mk_natCast (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ≥0) n :=
   NNReal.eq (NNReal.coe_natCast n).symm
-
-@[deprecated (since := "2024-04-05")] alias mk_coe_nat := mk_natCast
 
 -- Porting note: place this in the `Real` namespace
 @[simp]
@@ -521,9 +519,6 @@ lemma toNNReal_eq_one {r : ℝ} : r.toNNReal = 1 ↔ r = 1 := toNNReal_eq_iff_eq
 lemma toNNReal_eq_natCast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal = n ↔ r = n :=
   mod_cast toNNReal_eq_iff_eq_coe <| Nat.cast_ne_zero.2 hn
 
-@[deprecated (since := "2024-04-17")]
-alias toNNReal_eq_nat_cast := toNNReal_eq_natCast
-
 @[simp]
 lemma toNNReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
     r.toNNReal = ofNat(n) ↔ r = OfNat.ofNat n :=
@@ -545,15 +540,9 @@ lemma one_lt_toNNReal {r : ℝ} : 1 < r.toNNReal ↔ 1 < r := by
 lemma toNNReal_le_natCast {r : ℝ} {n : ℕ} : r.toNNReal ≤ n ↔ r ≤ n := by
   simpa using toNNReal_le_toNNReal_iff n.cast_nonneg
 
-@[deprecated (since := "2024-04-17")]
-alias toNNReal_le_nat_cast := toNNReal_le_natCast
-
 @[simp]
 lemma natCast_lt_toNNReal {r : ℝ} {n : ℕ} : n < r.toNNReal ↔ n < r := by
   simpa only [not_le] using toNNReal_le_natCast.not
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_lt_toNNReal := natCast_lt_toNNReal
 
 @[simp]
 lemma toNNReal_le_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
@@ -601,25 +590,13 @@ lemma toNNReal_lt_one {r : ℝ} : r.toNNReal < 1 ↔ r < 1 := by simp only [← 
 lemma natCastle_toNNReal' {n : ℕ} {r : ℝ} : ↑n ≤ r.toNNReal ↔ n ≤ r ∨ n = 0 := by
   simpa [n.cast_nonneg.le_iff_eq] using toNNReal_le_toNNReal_iff' (r := n)
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_le_toNNReal' := natCastle_toNNReal'
-
 @[simp]
 lemma toNNReal_lt_natCast' {n : ℕ} {r : ℝ} : r.toNNReal < n ↔ r < n ∧ n ≠ 0 := by
   simpa [pos_iff_ne_zero] using toNNReal_lt_toNNReal_iff' (r := r) (p := n)
 
-@[deprecated (since := "2024-04-17")]
-alias toNNReal_lt_nat_cast' := toNNReal_lt_natCast'
-
 lemma natCast_le_toNNReal {n : ℕ} {r : ℝ} (hn : n ≠ 0) : ↑n ≤ r.toNNReal ↔ n ≤ r := by simp [hn]
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_le_toNNReal := natCast_le_toNNReal
-
 lemma toNNReal_lt_natCast {r : ℝ} {n : ℕ} (hn : n ≠ 0) : r.toNNReal < n ↔ r < n := by simp [hn]
-
-@[deprecated (since := "2024-04-17")]
-alias toNNReal_lt_nat_cast := toNNReal_lt_natCast
 
 @[simp]
 lemma toNNReal_lt_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
@@ -797,7 +774,7 @@ nonrec theorem div_le_div_left {a b c : ℝ≥0} (a0 : 0 < a) (b0 : 0 < b) (c0 :
   div_le_div_iff_of_pos_left a0 b0 c0
 
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) : x ≤ y :=
-  le_of_forall_ge_of_dense fun a ha => by
+  le_of_forall_lt_imp_le_of_dense fun a ha => by
     have hx : x ≠ 0 := pos_iff_ne_zero.1 (lt_of_le_of_lt (zero_le _) ha)
     have hx' : x⁻¹ ≠ 0 := by rwa [Ne, inv_eq_zero]
     have : a * x⁻¹ < 1 := by rwa [← lt_inv_iff_mul_lt hx', inv_inv]
@@ -976,6 +953,10 @@ theorem Real.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*₀
   exact NNReal.exists_lt_of_strictMono hf hs
 
 end StrictMono
+
+/-- While not very useful, this instance uses the same representation as `Real.instRepr`. -/
+unsafe instance : Repr ℝ≥0 where
+  reprPrec r _ := f!"({repr r.val}).toNNReal"
 
 namespace Mathlib.Meta.Positivity
 

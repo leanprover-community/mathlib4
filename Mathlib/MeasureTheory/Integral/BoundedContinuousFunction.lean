@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!
 # Integration of bounded continuous functions
@@ -47,7 +48,7 @@ theorem lintegral_lt_top_of_nnreal (f : X →ᵇ ℝ≥0) : ∫⁻ x, f x ∂μ 
 theorem integrable_of_nnreal [OpensMeasurableSpace X] (f : X →ᵇ ℝ≥0) :
     Integrable (((↑) : ℝ≥0 → ℝ) ∘ ⇑f) μ := by
   refine ⟨(NNReal.continuous_coe.comp f.continuous).measurable.aestronglyMeasurable, ?_⟩
-  simp only [hasFiniteIntegral_iff_nnnorm, Function.comp_apply, NNReal.nnnorm_eq]
+  simp only [hasFiniteIntegral_iff_enorm, Function.comp_apply, NNReal.enorm_eq]
   exact lintegral_lt_top_of_nnreal _ f
 
 theorem integral_eq_integral_nnrealPart_sub [OpensMeasurableSpace X] (f : X →ᵇ ℝ) :

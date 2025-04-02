@@ -117,7 +117,7 @@ theorem Continuous.cexp (h : Continuous f) : Continuous fun y => exp (f y) :=
   continuous_iff_continuousAt.2 fun _ => h.continuousAt.cexp
 
 /-- The complex exponential function is uniformly continuous on left half planes. -/
-lemma UniformlyContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.re ≤ a} := by
+lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.re ≤ a} := by
   have : Continuous (cexp - 1) := Continuous.sub (Continuous.cexp continuous_id') continuous_one
   rw [Metric.uniformContinuousOn_iff, Metric.continuous_iff'] at *
   intro ε hε
@@ -146,6 +146,8 @@ lemma UniformlyContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | 
     field_simp [mul_assoc]
   rw [hrr]
   exact div_two_lt_of_pos hε
+
+@[deprecated (since := "2025-02-11")] alias UniformlyContinuousOn.cexp := UniformContinuousOn.cexp
 
 end ComplexContinuousExpComp
 
@@ -187,25 +189,17 @@ nonrec
 theorem ContinuousWithinAt.rexp (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun y ↦ exp (f y)) s x :=
   h.rexp
-@[deprecated (since := "2024-05-09")] alias ContinuousWithinAt.exp := ContinuousWithinAt.rexp
-
 @[fun_prop]
 nonrec
 theorem ContinuousAt.rexp (h : ContinuousAt f x) : ContinuousAt (fun y ↦ exp (f y)) x :=
   h.rexp
-@[deprecated (since := "2024-05-09")] alias ContinuousAt.exp := ContinuousAt.rexp
-
 @[fun_prop]
 theorem ContinuousOn.rexp (h : ContinuousOn f s) :
     ContinuousOn (fun y ↦ exp (f y)) s :=
   fun x hx ↦ (h x hx).rexp
-@[deprecated (since := "2024-05-09")] alias ContinuousOn.exp := ContinuousOn.rexp
-
 @[fun_prop]
 theorem Continuous.rexp (h : Continuous f) : Continuous fun y ↦ exp (f y) :=
   continuous_iff_continuousAt.2 fun _ ↦ h.continuousAt.rexp
-@[deprecated (since := "2024-05-09")] alias Continuous.exp := Continuous.rexp
-
 end RealContinuousExpComp
 
 namespace Real
@@ -299,7 +293,7 @@ theorem tendsto_div_pow_mul_exp_add_atTop (b c : ℝ) (n : ℕ) (hb : 0 ≠ b) :
     convert (tendsto_mul_exp_add_div_pow_atTop b' c' n h).inv_tendsto_atTop using 1
     ext x
     simp
-  cases' lt_or_gt_of_ne hb with h h
+  rcases lt_or_gt_of_ne hb with h | h
   · exact H b c h
   · convert (H (-b) (-c) (neg_pos.mpr h)).neg using 1
     · ext x

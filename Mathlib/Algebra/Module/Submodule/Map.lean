@@ -300,6 +300,15 @@ lemma comap_lt_comap_iff_of_surjective {p q : Submodule R₂ M₂} : p.comap f <
 theorem comap_strictMono_of_surjective : StrictMono (comap f) :=
   (giMapComap hf).strictMono_u
 
+variable {p q}
+
+theorem le_map_of_comap_le_of_surjective (h : q.comap f ≤ p) : q ≤ p.map f :=
+  map_comap_eq_of_surjective hf q ▸ map_mono h
+
+theorem lt_map_of_comap_lt_of_surjective (h : q.comap f < p) : q < p.map f := by
+  rw [lt_iff_le_not_le] at h ⊢; rw [map_le_iff_le_comap]
+  exact h.imp_left (le_map_of_comap_le_of_surjective hf)
+
 end GaloisInsertion
 
 section GaloisCoinsertion
@@ -488,7 +497,6 @@ variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
 variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
 variable (p : Submodule R M) (q : Submodule R₂ M₂)
 
--- Porting note: Was `@[simp]`.
 @[simp high]
 theorem mem_map_equiv {e : M ≃ₛₗ[τ₁₂] M₂} {x : M₂} :
     x ∈ p.map (e : M →ₛₗ[τ₁₂] M₂) ↔ e.symm x ∈ p := by

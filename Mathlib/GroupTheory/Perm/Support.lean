@@ -29,7 +29,7 @@ Assume `α` is a Fintype:
 -/
 
 
-open Equiv Finset
+open Equiv Finset Function
 
 namespace Equiv.Perm
 
@@ -78,7 +78,7 @@ theorem disjoint_iff_eq_or_eq : Disjoint f g ↔ ∀ x : α, f x = x ∨ g x = x
 theorem disjoint_refl_iff : Disjoint f f ↔ f = 1 := by
   refine ⟨fun h => ?_, fun h => h.symm ▸ disjoint_one_left 1⟩
   ext x
-  cases' h x with hx hx <;> simp [hx]
+  rcases h x with hx | hx <;> simp [hx]
 
 theorem Disjoint.inv_left (h : Disjoint f g) : Disjoint f⁻¹ g := by
   intro x
@@ -166,7 +166,7 @@ theorem zpow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
 theorem Disjoint.mul_apply_eq_iff {σ τ : Perm α} (hστ : Disjoint σ τ) {a : α} :
     (σ * τ) a = a ↔ σ a = a ∧ τ a = a := by
   refine ⟨fun h => ?_, fun h => by rw [mul_apply, h.2, h.1]⟩
-  cases' hστ a with hσ hτ
+  rcases hστ a with hσ | hτ
   · exact ⟨hσ, σ.injective (h.trans hσ.symm)⟩
   · exact ⟨(congr_arg σ hτ).symm.trans h, hτ⟩
 
@@ -376,6 +376,21 @@ theorem support_ofSubtype {p : α → Prop} [DecidablePred p] (u : Perm (Subtype
   by_cases hx : p x
   · simp only [forall_prop_of_true hx, ofSubtype_apply_of_mem u hx, ← Subtype.coe_inj]
   · simp only [forall_prop_of_false hx, true_iff, ofSubtype_apply_of_not_mem u hx]
+
+theorem mem_support_of_mem_noncommProd_support {α β : Type*} [DecidableEq β] [Fintype β]
+    {s : Finset α} {f : α → Perm β}
+    {comm : (s : Set α).Pairwise (Commute on f)} {x : β} (hx : x ∈ (s.noncommProd f comm).support) :
+    ∃ a ∈ s, x ∈ (f a).support := by
+  contrapose! hx
+  classical
+  revert hx comm s
+  apply Finset.induction
+  · simp
+  · intro a s ha ih comm hs
+    rw [Finset.noncommProd_insert_of_not_mem s a f comm ha]
+    apply mt (Finset.mem_of_subset (support_mul_le _ _))
+    rw [Finset.sup_eq_union, Finset.not_mem_union]
+    exact ⟨hs a (s.mem_insert_self a), ih (fun a ha ↦ hs a (Finset.mem_insert_of_mem ha))⟩
 
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
   simp only [mem_support, ne_eq, apply_pow_apply_eq_iff]

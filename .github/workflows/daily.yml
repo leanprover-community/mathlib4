@@ -37,6 +37,10 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
+      # Checkout repository, so that we can fetch tags to decide which branch we want.
+      - name: Checkout branch or tag
+        uses: actions/checkout@v4
+
       - name: Fetch latest tags (if nightly)
         if: matrix.branch_type == 'nightly'
         run: |
@@ -52,6 +56,7 @@ jobs:
             echo "BRANCH_REF=${{ env.LATEST_TAG }}" >> "$GITHUB_ENV"
           fi
 
+      # Checkout the branch or tag we want to test.
       - name: Checkout branch or tag
         uses: actions/checkout@v4
         with:

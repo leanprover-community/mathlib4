@@ -7,6 +7,7 @@ import Batteries.Data.List.Perm
 import Mathlib.Logic.Relation
 import Mathlib.Order.RelClasses
 import Mathlib.Data.List.Forall2
+import Mathlib.Data.List.InsertIdx
 
 /-!
 # List Permutations
@@ -26,9 +27,6 @@ open Nat
 namespace List
 variable {α β : Type*} {l : List α}
 
-instance : Trans (@List.Perm α) (@List.Perm α) List.Perm where
-  trans := @List.Perm.trans α
-
 open Perm (swap)
 
 lemma perm_rfl : l ~ l := Perm.refl _
@@ -36,11 +34,69 @@ lemma perm_rfl : l ~ l := Perm.refl _
 attribute [symm] Perm.symm
 attribute [trans] Perm.trans
 
+instance : IsSymm (List α) Perm := ⟨fun _ _ ↦ .symm⟩
+
 theorem Perm.subset_congr_left {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₁ ⊆ l₃ ↔ l₂ ⊆ l₃ :=
   ⟨h.symm.subset.trans, h.subset.trans⟩
 
 theorem Perm.subset_congr_right {l₁ l₂ l₃ : List α} (h : l₁ ~ l₂) : l₃ ⊆ l₁ ↔ l₃ ⊆ l₂ :=
   ⟨fun h' => h'.trans h.subset, fun h' => h'.trans h.symm.subset⟩
+
+theorem set_perm_cons_eraseIdx {n : ℕ} (h : n < l.length) (a : α) :
+    l.set n a ~ a :: l.eraseIdx n := by
+  rw [← insertIdx_eraseIdx h.ne]
+  apply perm_insertIdx
+  rw [length_eraseIdx_of_lt h]
+  exact Nat.le_sub_one_of_lt h
+
+theorem getElem_cons_eraseIdx_perm {n : ℕ} (h : n < l.length) :
+    l[n] :: l.eraseIdx n ~ l := by
+  simpa [h] using (set_perm_cons_eraseIdx h l[n]).symm
+
+theorem perm_insertIdx_iff_of_le {l₁ l₂ : List α} {m n : ℕ} (hm : m ≤ l₁.length)
+    (hn : n ≤ l₂.length) (a : α) : insertIdx m a l₁ ~ insertIdx n a l₂ ↔ l₁ ~ l₂ := by
+  rw [rel_congr_left (perm_insertIdx _ _ hm), rel_congr_right (perm_insertIdx _ _ hn), perm_cons]
+
+alias ⟨_, Perm.insertIdx_of_le⟩ := perm_insertIdx_iff_of_le
+
+@[simp]
+theorem perm_insertIdx_iff {l₁ l₂ : List α} {n : ℕ} {a : α} :
+    insertIdx n a l₁ ~ insertIdx n a l₂ ↔ l₁ ~ l₂ := by
+  wlog hle : length l₁ ≤ length l₂ generalizing l₁ l₂
+  · rw [perm_comm, this (le_of_not_le hle), perm_comm]
+  cases Nat.lt_or_ge (length l₁) n with
+  | inl hn₁ =>
+    rw [insertIdx_of_length_lt _ _ _ hn₁]
+    cases Nat.lt_or_ge (length l₂) n with
+    | inl hn₂ => rw [insertIdx_of_length_lt _ _ _ hn₂]
+    | inr hn₂ =>
+      apply iff_of_false
+      · intro h
+        rw [h.length_eq] at hn₁
+        exact (hn₁.trans_le hn₂).not_le (length_le_length_insertIdx ..)
+      · exact fun h ↦ (hn₁.trans_le hn₂).not_le h.length_eq.ge
+  | inr hn₁ =>
+    exact perm_insertIdx_iff_of_le hn₁ (le_trans hn₁ hle) _
+
+@[gcongr]
+protected theorem Perm.insertIdx {l₁ l₂ : List α} (h : l₁ ~ l₂) (n : ℕ) (a : α) :
+    insertIdx n a l₁ ~ insertIdx n a l₂ :=
+  perm_insertIdx_iff.mpr h
+
+theorem perm_eraseIdx_of_getElem?_eq {l₁ l₂ : List α} {m n : ℕ} (h : l₁[m]? = l₂[n]?) :
+    eraseIdx l₁ m ~ eraseIdx l₂ n ↔ l₁ ~ l₂ := by
+  cases Nat.lt_or_ge m l₁.length with
+  | inl hm =>
+    rw [getElem?_eq_getElem hm, eq_comm, getElem?_eq_some_iff] at h
+    cases h with
+    | intro hn hnm =>
+      rw [← perm_cons l₁[m], rel_congr_left (getElem_cons_eraseIdx_perm ..), ← hnm,
+        rel_congr_right (getElem_cons_eraseIdx_perm ..)]
+  | inr hm =>
+    rw [getElem?_eq_none hm, eq_comm, getElem?_eq_none_iff] at h
+    rw [eraseIdx_of_length_le h, eraseIdx_of_length_le hm]
+
+alias ⟨_, Perm.eraseIdx_of_getElem?_eq⟩ := perm_eraseIdx_of_getElem?_eq
 
 section Rel
 
@@ -137,7 +193,7 @@ end
 
 theorem perm_option_toList {o₁ o₂ : Option α} : o₁.toList ~ o₂.toList ↔ o₁ = o₂ := by
   refine ⟨fun p => ?_, fun e => e ▸ Perm.refl _⟩
-  cases' o₁ with a <;> cases' o₂ with b; · rfl
+  rcases o₁ with - | a <;> rcases o₂ with - | b; · rfl
   · cases p.length_eq
   · cases p.length_eq
   · exact Option.mem_toList.1 (p.symm.subset <| by simp)
@@ -189,23 +245,5 @@ theorem Perm.product_left (l : List α) {t₁ t₂ : List β} (p : t₁ ~ t₂) 
 theorem Perm.product {l₁ l₂ : List α} {t₁ t₂ : List β} (p₁ : l₁ ~ l₂) (p₂ : t₁ ~ t₂) :
     product l₁ t₁ ~ product l₂ t₂ :=
   (p₁.product_right t₁).trans (p₂.product_left l₂)
-
-theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
-    (H : Pairwise (fun a b => ∀ c ∈ f a, ∀ d ∈ f b, a = b ∧ c = d) l₁) (p : l₁ ~ l₂) :
-    lookmap f l₁ ~ lookmap f l₂ := by
-  induction' p with a l₁ l₂ p IH a b l l₁ l₂ l₃ p₁ _ IH₁ IH₂; · simp
-  · cases h : f a
-    · simpa [h] using IH (pairwise_cons.1 H).2
-    · simp [lookmap_cons_some _ _ h, p]
-  · cases' h₁ : f a with c <;> cases' h₂ : f b with d
-    · simpa [h₁, h₂] using swap _ _ _
-    · simpa [h₁, lookmap_cons_some _ _ h₂] using swap _ _ _
-    · simpa [lookmap_cons_some _ _ h₁, h₂] using swap _ _ _
-    · rcases (pairwise_cons.1 H).1 _ (mem_cons.2 (Or.inl rfl)) _ h₂ _ h₁ with ⟨rfl, rfl⟩
-      exact Perm.refl _
-  · refine (IH₁ H).trans (IH₂ ((p₁.pairwise_iff ?_).1 H))
-    intro x y h c hc d hd
-    rw [@eq_comm _ y, @eq_comm _ c]
-    apply h d hd c hc
 
 end List

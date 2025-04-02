@@ -733,8 +733,8 @@ def piCongr {ι₁ ι₂ : Type*} {Y₁ : ι₁ → Type*} {Y₂ : ι₂ → Typ
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: align the order of universes with `Equiv.ulift`
 /-- `ULift X` is homeomorphic to `X`. -/
 def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X where
-  continuous_toFun := continuous_uLift_down
-  continuous_invFun := continuous_uLift_up
+  continuous_toFun := continuous_uliftDown
+  continuous_invFun := continuous_uliftUp
   toEquiv := Equiv.ulift
 
 /-- The natural homeomorphism `(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)`.

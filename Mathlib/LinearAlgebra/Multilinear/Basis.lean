@@ -30,10 +30,12 @@ basis vectors. -/
 theorem Basis.ext_multilinear_fin {f g : MultilinearMap R M M₂} {ι₁ : Fin n → Type*}
     (e : ∀ i, Basis (ι₁ i) R (M i))
     (h : ∀ v : ∀ i, ι₁ i, (f fun i => e i (v i)) = g fun i => e i (v i)) : f = g := by
-  induction' n with m hm
-  · ext x
+  induction n with
+  | zero =>
+    ext x
     convert h finZeroElim
-  · apply Function.LeftInverse.injective uncurry_curryLeft
+  | succ m hm =>
+    apply Function.LeftInverse.injective uncurry_curryLeft
     refine Basis.ext (e 0) ?_
     intro i
     apply hm (Fin.tail e)

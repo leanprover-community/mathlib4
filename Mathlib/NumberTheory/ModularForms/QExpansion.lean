@@ -149,7 +149,7 @@ lemma qExpansionFormalMultilinearSeries_apply_norm (m : ℕ) :
 
 lemma qExpansionFormalMultilinearSeries_radius [NeZero n] [ModularFormClass F Γ(n) k] :
     1 ≤ (qExpansionFormalMultilinearSeries n f).radius := by
-  refine le_of_forall_ge_of_dense fun r hr ↦ ?_
+  refine le_of_forall_lt_imp_le_of_dense fun r hr ↦ ?_
   lift r to NNReal using hr.ne_top
   apply FormalMultilinearSeries.le_radius_of_summable
   simp only [qExpansionFormalMultilinearSeries_apply_norm]
@@ -161,8 +161,8 @@ lemma qExpansionFormalMultilinearSeries_radius [NeZero n] [ModularFormClass F Γ
 lemma hasFPowerSeries_cuspFunction [NeZero n] [ModularFormClass F Γ(n) k] :
     HasFPowerSeriesOnBall (cuspFunction n f) (qExpansionFormalMultilinearSeries n f) 0 1 := by
   refine ⟨qExpansionFormalMultilinearSeries_radius n f, zero_lt_one, fun hy ↦ ?_⟩
-  rw [EMetric.mem_ball, edist_zero_right, ENNReal.coe_lt_one_iff, ← NNReal.coe_lt_one,
-    coe_nnnorm, norm_eq_abs] at hy
+  rw [EMetric.mem_ball, edist_zero_right, enorm_eq_nnnorm, ENNReal.coe_lt_one_iff,
+    ← NNReal.coe_lt_one, coe_nnnorm, norm_eq_abs] at hy
   simpa [qExpansionFormalMultilinearSeries] using hasSum_qExpansion_of_abs_lt n f hy
 
 end ModularFormClass

@@ -75,7 +75,7 @@ theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R} [LinearOrderedCommRing R] (x :
     refine Finset.prod_nonneg fun i hi => ?_
     simp only [Finset.mem_erase, mem_properDivisors] at hi
     rw [geom_sum_pos_iff hn'.ne'] at h
-    cases' h with hk hx
+    rcases h with hk | hx
     · refine (ih _ hi.2.2 (Nat.two_lt_of_ne ?_ hi.1 ?_)).le <;> rintro rfl
       · exact hn'.ne' (zero_dvd_iff.mp hi.2.1)
       · exact not_odd_iff_even.2 (even_iff_two_dvd.mpr hi.2.1) hk

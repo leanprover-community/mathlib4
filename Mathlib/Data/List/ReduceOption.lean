@@ -43,8 +43,7 @@ theorem reduceOption_append (l l' : List (Option α)) :
 @[simp]
 theorem reduceOption_replicate_none {n : ℕ} : (replicate n (@none α)).reduceOption = [] := by
   dsimp [reduceOption]
-  rw [filterMap_replicate_of_none]
-  rfl
+  rw [filterMap_replicate_of_none (id_def _)]
 
 theorem reduceOption_eq_nil_iff (l : List (Option α)) :
     l.reduceOption = [] ↔ ∃ n, l = replicate n none := by
@@ -77,12 +76,7 @@ theorem reduceOption_eq_append_iff (l : List (Option α)) (l'₁ l'₂ : List α
     l.reduceOption = l'₁ ++ l'₂ ↔
       ∃ l₁ l₂, l = l₁ ++ l₂ ∧ l₁.reduceOption = l'₁ ∧ l₂.reduceOption = l'₂ := by
   dsimp [reduceOption]
-  constructor
-  · intro h
-    rw [filterMap_eq_append_iff] at h
-    trivial
-  · intro ⟨_, _, h, hl₁, hl₂⟩
-    rw [h, filterMap_append, hl₁, hl₂]
+  exact filterMap_eq_append_iff
 
 theorem reduceOption_eq_concat_iff (l : List (Option α)) (l' : List α) (a : α) :
     l.reduceOption = l'.concat a ↔
@@ -96,8 +90,7 @@ theorem reduceOption_eq_concat_iff (l : List (Option α)) (l' : List α) (a : α
     obtain ⟨m, n, hl₂⟩ := hl₂
     use l₁ ++ replicate m none, replicate n none
     simp_rw [h, reduceOption_append, reduceOption_replicate_none, append_assoc, append_nil, hl₁,
-      hl₂]
-    trivial
+      hl₂, and_self]
   · intro ⟨_, _, h, hl₁, hl₂⟩
     rw [h, reduceOption_append, reduceOption_cons_of_some, hl₁, hl₂]
 

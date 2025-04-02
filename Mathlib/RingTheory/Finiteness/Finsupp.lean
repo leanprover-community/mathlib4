@@ -52,7 +52,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
       apply hg1
     · simp only [dif_pos H]
       apply hg2
-  cases' this with g hg
+  obtain ⟨g, hg⟩ := this
   clear this
   exists t1.image g ∪ t2
   rw [Finset.coe_union, span_union, Finset.coe_image]

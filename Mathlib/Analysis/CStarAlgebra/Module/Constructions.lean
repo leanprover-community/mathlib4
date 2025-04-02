@@ -296,6 +296,13 @@ private lemma isBounded_pi_iff_aux (s : Set (C⋆ᵐᵒᵈ (Π i, E i))) :
 
 end Aux
 
+noncomputable instance : PseudoMetricSpace (C⋆ᵐᵒᵈ (Π i, E i)) :=
+  .ofSeminormedAddCommGroupCoreReplaceAll
+    normedSpaceCore.toCore uniformity_pi_eq_aux isBounded_pi_iff_aux
+
+noncomputable instance : SeminormedAddCommGroup (C⋆ᵐᵒᵈ (Π i, E i)) :=
+  .ofCoreReplaceAll normedSpaceCore.toCore uniformity_pi_eq_aux isBounded_pi_iff_aux
+
 noncomputable instance : NormedAddCommGroup (C⋆ᵐᵒᵈ (Π i, E i)) :=
   .ofCoreReplaceAll normedSpaceCore uniformity_pi_eq_aux isBounded_pi_iff_aux
 

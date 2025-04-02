@@ -42,15 +42,19 @@ theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A)
   rw [algebraMap_eq_smul_one']
   exact continuous_id.smul continuous_const
 
-theorem continuous_algebraMap_iff_smul [TopologicalSemiring A] :
+theorem continuous_algebraMap_iff_smul [IsTopologicalSemiring A] :
     Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
   refine ⟨fun h => ?_, fun h => have : ContinuousSMul R A := ⟨h⟩; continuous_algebraMap _ _⟩
   simp only [Algebra.smul_def]
   exact (h.comp continuous_fst).mul continuous_snd
 
-theorem continuousSMul_of_algebraMap [TopologicalSemiring A] (h : Continuous (algebraMap R A)) :
+theorem continuousSMul_of_algebraMap [IsTopologicalSemiring A] (h : Continuous (algebraMap R A)) :
     ContinuousSMul R A :=
   ⟨(continuous_algebraMap_iff_smul R A).1 h⟩
+
+instance Subalgebra.continuousSMul (S : Subalgebra R A) (X) [TopologicalSpace X] [MulAction A X]
+    [ContinuousSMul A X] : ContinuousSMul S X :=
+  Subsemiring.continuousSMul S.toSubsemiring X
 
 section
 variable [ContinuousSMul R A]
@@ -76,7 +80,7 @@ is also a topological `R`-algebra.
 NB: This could be an instance but the signature makes it very expensive in search.
 See https://github.com/leanprover-community/mathlib4/pull/15339
 for the regressions caused by making this an instance. -/
-theorem DiscreteTopology.instContinuousSMul [TopologicalSemiring A] [DiscreteTopology R] :
+theorem DiscreteTopology.instContinuousSMul [IsTopologicalSemiring A] [DiscreteTopology R] :
     ContinuousSMul R A := continuousSMul_of_algebraMap _ _ continuous_of_discreteTopology
 
 end TopologicalAlgebra
@@ -191,7 +195,7 @@ theorem map_smul_of_tower {R S : Type*} [CommSemiring S] [SMul R A] [Algebra S A
   map_smul f c x
 
 protected theorem map_sum {ι : Type*} (f : A →A[R] B) (s : Finset ι) (g : ι → A) :
-    f (∑ i in s, g i) = ∑ i in s, f (g i) :=
+    f (∑ i ∈ s, g i) = ∑ i ∈ s, f (g i) :=
   map_sum ..
 
 /-- Any two continuous `R`-algebra morphisms from `R` are equal -/
@@ -214,7 +218,7 @@ theorem ext_on [T2Space B] {s : Set A} (hs : Dense (Algebra.adjoin R s : Set A))
     {f g : A →A[R] B} (h : Set.EqOn f g s) : f = g :=
   ext fun x => eqOn_closure_adjoin h (hs x)
 
-variable [TopologicalSemiring A]
+variable [IsTopologicalSemiring A]
 
 /-- The topological closure of a subalgebra -/
 def _root_.Subalgebra.topologicalClosure (s : Subalgebra R A) : Subalgebra R A where
@@ -228,7 +232,7 @@ def _root_.Subalgebra.topologicalClosure (s : Subalgebra R A) : Subalgebra R A w
 /-- Under a continuous algebra map, the image of the `TopologicalClosure` of a subalgebra is
 contained in the `TopologicalClosure` of its image. -/
 theorem _root_.Subalgebra.topologicalClosure_map
-    [TopologicalSemiring B] (f : A →A[R] B) (s : Subalgebra R A) :
+    [IsTopologicalSemiring B] (f : A →A[R] B) (s : Subalgebra R A) :
     s.topologicalClosure.map f ≤ (s.map f.toAlgHom).topologicalClosure :=
   image_closure_subset_closure_image f.continuous
 
@@ -242,7 +246,7 @@ whose `TopologicalClosure` is `⊤` is sent to another such submodule.
 That is, the image of a dense subalgebra under a map with dense range is dense.
 -/
 theorem _root_.DenseRange.topologicalClosure_map_subalgebra
-    [TopologicalSemiring B] {f : A →A[R] B} (hf' : DenseRange f) {s : Subalgebra R A}
+    [IsTopologicalSemiring B] {f : A →A[R] B} (hf' : DenseRange f) {s : Subalgebra R A}
     (hs : s.topologicalClosure = ⊤) : (s.map (f : A →ₐ[R] B)).topologicalClosure = ⊤ := by
   rw [SetLike.ext'_iff] at hs ⊢
   simp only [Subalgebra.topologicalClosure_coe, coe_top, ← dense_iff_closure_eq, Subalgebra.coe_map,
@@ -541,9 +545,9 @@ end
 variable {R : Type*} [CommSemiring R]
 variable {A : Type u} [TopologicalSpace A]
 variable [Semiring A] [Algebra R A]
-variable [TopologicalSemiring A]
+variable [IsTopologicalSemiring A]
 
-instance (s : Subalgebra R A) : TopologicalSemiring s :=
+instance (s : Subalgebra R A) : IsTopologicalSemiring s :=
   s.toSubsemiring.topologicalSemiring
 
 theorem Subalgebra.le_topologicalClosure (s : Subalgebra R A) : s ≤ s.topologicalClosure :=
@@ -569,7 +573,7 @@ an algebra homomorphism, and a separate homeomorphism,
 along with a witness that as functions they are the same.
 -/
 theorem Subalgebra.topologicalClosure_comap_homeomorph (s : Subalgebra R A) {B : Type*}
-    [TopologicalSpace B] [Ring B] [TopologicalRing B] [Algebra R B] (f : B →ₐ[R] A) (f' : B ≃ₜ A)
+    [TopologicalSpace B] [Ring B] [IsTopologicalRing B] [Algebra R B] (f : B →ₐ[R] A) (f' : B ≃ₜ A)
     (w : (f : B → A) = f') : s.topologicalClosure.comap f = (s.comap f).topologicalClosure := by
   apply SetLike.ext'
   simp only [Subalgebra.topologicalClosure_coe]
@@ -617,7 +621,7 @@ instance [T2Space A] {x : A} : CommSemiring (elemental R x) :=
     fun _ _ => mul_comm _ _
 
 instance {A : Type*} [UniformSpace A] [CompleteSpace A] [Semiring A]
-    [TopologicalSemiring A] [Algebra R A] (x : A) :
+    [IsTopologicalSemiring A] [Algebra R A] (x : A) :
     CompleteSpace (elemental R x) :=
   isClosed_closure.completeSpace_coe
 
@@ -636,7 +640,7 @@ section Ring
 variable {R : Type*} [CommRing R]
 variable {A : Type u} [TopologicalSpace A]
 variable [Ring A]
-variable [Algebra R A] [TopologicalRing A]
+variable [Algebra R A] [IsTopologicalRing A]
 
 /-- If a subalgebra of a topological algebra is commutative, then so is its topological closure.
 See note [reducible non-instances]. -/

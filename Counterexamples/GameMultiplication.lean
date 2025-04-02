@@ -61,7 +61,7 @@ theorem star_sq : star * star ≈ star := by
   constructor
   case' right =>
     rw [← neg_le_neg_iff];
-    apply (negMulRelabelling _ _).symm.equiv.1.trans;
+    apply (neg_mul _ _).symm.equiv.1.trans;
     rw [neg_star]
   assumption'
 

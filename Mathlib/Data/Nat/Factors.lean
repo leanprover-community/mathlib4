@@ -39,8 +39,6 @@ def primeFactorsList : ℕ → List ℕ
     m :: primeFactorsList ((k + 2) / m)
 decreasing_by exact factors_lemma
 
-@[deprecated (since := "2024-06-14")] alias factors := primeFactorsList
-
 @[simp]
 theorem primeFactorsList_zero : primeFactorsList 0 = [] := by rw [primeFactorsList]
 
@@ -193,7 +191,7 @@ theorem perm_primeFactorsList_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
   · rw [List.prod_append, prod_primeFactorsList ha, prod_primeFactorsList hb]
   · intro p hp
     rw [List.mem_append] at hp
-    cases' hp with hp' hp' <;> exact prime_of_mem_primeFactorsList hp'
+    rcases hp with hp' | hp' <;> exact prime_of_mem_primeFactorsList hp'
 
 /-- For coprime `a` and `b`, the prime factors of `a * b` are the union of those of `a` and `b` -/
 theorem perm_primeFactorsList_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
@@ -206,7 +204,7 @@ theorem perm_primeFactorsList_mul_of_coprime {a b : ℕ} (hab : Coprime a b) :
 
 theorem primeFactorsList_sublist_right {n k : ℕ} (h : k ≠ 0) :
     n.primeFactorsList <+ (n * k).primeFactorsList := by
-  cases' n with hn
+  rcases n with - | hn
   · simp [zero_mul]
   apply sublist_of_subperm_of_sorted _ (primeFactorsList_sorted _) (primeFactorsList_sorted _)
   simp only [(perm_primeFactorsList_mul (Nat.succ_ne_zero _) h).subperm_left]

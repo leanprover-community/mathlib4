@@ -105,7 +105,7 @@ theorem nat_is_prime_iff : Prime (n : Cardinal) ↔ n.Prime := by
   · simp only [isUnit_iff, Nat.isUnit_iff]
     exact mod_cast Iff.rfl
   · exact mod_cast h b c (mod_cast hbc)
-  cases' lt_or_le (b * c) ℵ₀ with h' h'
+  rcases lt_or_le (b * c) ℵ₀ with h' | h'
   · rcases mul_lt_aleph0_iff.mp h' with (rfl | rfl | ⟨hb, hc⟩)
     · simp
     · simp

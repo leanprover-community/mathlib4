@@ -236,12 +236,12 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
       specialize H hy
       specialize h fun _ => hy
       rw [not_forall] at h
-      cases' h with hx' h
+      obtain ⟨hx', h⟩ := h
       rw [not_le] at h
       exact h
     · specialize h fun hx' => (hx hx').elim
       rw [not_forall] at h
-      cases' h with hx' h
+      obtain ⟨hx', h⟩ := h
       exact (hx hx').elim
   · rintro ⟨hx, H⟩
     exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_le (h _) (H _)⟩
@@ -640,8 +640,7 @@ theorem ofENat_lt {x y : ℕ∞} : ofENat x < ofENat y ↔ x < y := by
 
 section WithTopEquiv
 
-open scoped Classical
-
+open scoped Classical in
 @[simp]
 theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWithTop y := by
   refine PartENat.casesOn y ?_ ?_ <;> refine PartENat.casesOn x ?_ ?_
@@ -651,6 +650,7 @@ theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWit
   · simp only [top_add, toWithTop_top', toWithTop_natCast', _root_.top_add, forall_const]
   · simp_rw [toWithTop_natCast', ← Nat.cast_add, toWithTop_natCast', forall_const]
 
+open scoped Classical in
 /-- `Equiv` between `PartENat` and `ℕ∞` (for the order isomorphism see
 `withTopOrderIso`). -/
 @[simps]

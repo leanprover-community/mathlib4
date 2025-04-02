@@ -10,9 +10,11 @@ import Mathlib.Data.Prod.TProd
 import Mathlib.Data.Set.UnionLift
 import Mathlib.GroupTheory.Coset.Defs
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
+import Mathlib.Order.Disjointed
+import Mathlib.Order.Filter.AtTopBot.CompleteLattice
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.LiminfLimsup
-import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -51,7 +53,6 @@ defined in terms of the Galois connection induced by f.
 
 measurable space, σ-algebra, measurable function, dynkin system, π-λ theorem, π-system
 -/
-
 
 open Set Encodable Function Equiv Filter MeasureTheory
 
@@ -423,6 +424,11 @@ theorem measurable_findGreatest {p : α → ℕ → Prop} [∀ x, DecidablePred 
   simp only [Nat.findGreatest_eq_iff, setOf_and, setOf_forall, ← compl_setOf]
   repeat' apply_rules [MeasurableSet.inter, MeasurableSet.const, MeasurableSet.iInter,
     MeasurableSet.compl, hN] <;> try intros
+
+@[simp, measurability]
+protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, MeasurableSet (f i)) (n) :
+    MeasurableSet (disjointed f n) :=
+  disjointedRec (fun _ _ ht => MeasurableSet.diff ht <| h _) (h n)
 
 theorem measurable_find {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] (hp : ∀ x, ∃ N, p x N)
     (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x => Nat.find (hp x) := by
@@ -847,6 +853,7 @@ theorem measurable_pi_lambda (f : α → ∀ a, π a) (hf : ∀ a, Measurable fu
   measurable_pi_iff.mpr hf
 
 /-- The function `(f, x) ↦ update f a x : (Π a, π a) × π a → Π a, π a` is measurable. -/
+@[measurability, fun_prop]
 theorem measurable_update'  {a : δ} [DecidableEq δ] :
     Measurable (fun p : (∀ i, π i) × π a ↦ update p.1 a p.2) := by
   rw [measurable_pi_iff]
@@ -858,23 +865,36 @@ theorem measurable_update'  {a : δ} [DecidableEq δ] :
     exact measurable_snd
   · exact measurable_pi_iff.1 measurable_fst _
 
+@[measurability, fun_prop]
 theorem measurable_uniqueElim [Unique δ] :
     Measurable (uniqueElim : π (default : δ) → ∀ i, π i) := by
   simp_rw [measurable_pi_iff, Unique.forall_iff, uniqueElim_default]; exact measurable_id
 
-theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : ∀ i, π i} :
-    Measurable (updateFinset x s) := by
-  simp (config := { unfoldPartialApp := true }) only [updateFinset, measurable_pi_iff]
+@[measurability, fun_prop]
+theorem measurable_updateFinset' [DecidableEq δ] {s : Finset δ} :
+    Measurable (fun p : (Π i, π i) × (Π i : s, π i) ↦ updateFinset p.1 s p.2) := by
+  simp only [updateFinset, measurable_pi_iff]
   intro i
-  by_cases h : i ∈ s <;> simp [h, measurable_pi_apply]
+  by_cases h : i ∈ s <;> simp [h, Measurable.eval, measurable_fst, measurable_snd]
+
+@[measurability, fun_prop]
+theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : Π i, π i} :
+    Measurable (updateFinset x s) :=
+  measurable_updateFinset'.comp measurable_prod_mk_left
+
+@[measurability, fun_prop]
+theorem measurable_updateFinset_left [DecidableEq δ] {s : Finset δ} {x : Π i : s, π i} :
+    Measurable (updateFinset · s x) :=
+  measurable_updateFinset'.comp measurable_prod_mk_right
 
 /-- The function `update f a : π a → Π a, π a` is always measurable.
   This doesn't require `f` to be measurable.
   This should not be confused with the statement that `update f a x` is measurable. -/
-@[measurability]
+@[measurability, fun_prop]
 theorem measurable_update (f : ∀ a : δ, π a) {a : δ} [DecidableEq δ] : Measurable (update f a) :=
   measurable_update'.comp measurable_prod_mk_left
 
+@[measurability, fun_prop]
 theorem measurable_update_left {a : δ} [DecidableEq δ] {x : π a} :
     Measurable (update · a x) :=
   measurable_update'.comp measurable_prod_mk_right
@@ -1494,3 +1514,4 @@ theorem measurableSet_liminf {s : ℕ → Set α} (hs : ∀ n, MeasurableSet <| 
   simpa only [← bliminf_true] using measurableSet_bliminf fun n _ => hs n
 
 end MeasurableSet
+set_option linter.style.longFile 1700

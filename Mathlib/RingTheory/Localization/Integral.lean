@@ -261,7 +261,7 @@ theorem IsLocalization.scaleRoots_commonDenom_mem_lifts (p : Rₘ[X])
 
 theorem IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [IsScalarTower R Rₘ S]
     (x : S) (hx : IsIntegral Rₘ x) : ∃ m : M, IsIntegral R (m • x) := by
-  cases' subsingleton_or_nontrivial Rₘ with _ nontriv
+  rcases subsingleton_or_nontrivial Rₘ with _ | nontriv
   · haveI := (_root_.algebraMap Rₘ S).codomain_trivial
     exact ⟨1, Polynomial.X, Polynomial.monic_X, Subsingleton.elim _ _⟩
   obtain ⟨p, hp₁, hp₂⟩ := hx
@@ -301,7 +301,6 @@ theorem isFractionRing_of_algebraic [Algebra.IsAlgebraic A L]
             ((injective_iff_map_eq_zero (algebraMap C L)).mp (algebraMap_injective C A L) _ h))
     surj' := fun z =>
       let ⟨x, hx, int⟩ := (Algebra.IsAlgebraic.isAlgebraic z).exists_integral_multiple
-        ((injective_iff_map_eq_zero _).mpr inj)
       ⟨⟨mk' C _ int, algebraMap _ _ x, mem_nonZeroDivisors_of_ne_zero fun h ↦
         hx (inj _ <| by rw [IsScalarTower.algebraMap_apply A C L, h, RingHom.map_zero])⟩, by
         rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply A C L, Algebra.smul_def, mul_comm]⟩
@@ -364,14 +363,14 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
     refine IsIntegral.mul ?_ ?_
     · rw [← isAlgebraic_iff_isIntegral]
       refine .extendScalars
-        (NoZeroSMulDivisors.algebraMap_injective R (FractionRing R)) ?_
+        (FaithfulSMul.algebraMap_injective R (FractionRing R)) ?_
       exact .algebraMap (h a)
     · rw [← isAlgebraic_iff_isIntegral]
       use (f.map (algebraMap R (FractionRing R))).reverse
       constructor
       · rwa [Ne, Polynomial.reverse_eq_zero, ← Polynomial.degree_eq_bot,
           Polynomial.degree_map_eq_of_injective
-            (NoZeroSMulDivisors.algebraMap_injective R (FractionRing R)),
+            (FaithfulSMul.algebraMap_injective R (FractionRing R)),
           Polynomial.degree_eq_bot]
       · have : Invertible (algebraMap S K b) :=
           IsUnit.invertible
@@ -379,7 +378,7 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
               (mem_nonZeroDivisors_iff_ne_zero.2 fun h =>
                 nonZeroDivisors.ne_zero ha
                   ((injective_iff_map_eq_zero (algebraMap S K)).1
-                    (NoZeroSMulDivisors.algebraMap_injective _ _) b h)))
+                    (FaithfulSMul.algebraMap_injective _ _) b h)))
         rw [Polynomial.aeval_def, ← invOf_eq_inv, Polynomial.eval₂_reverse_eq_zero_iff,
           Polynomial.eval₂_map, ← IsScalarTower.algebraMap_eq, ← Polynomial.aeval_def,
           Polynomial.aeval_algebraMap_apply, hf₂, RingHom.map_zero]
@@ -388,7 +387,7 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
     use f, hf₁
     rw [Polynomial.aeval_algebraMap_apply] at hf₂
     exact
-      (injective_iff_map_eq_zero (algebraMap S K)).1 (NoZeroSMulDivisors.algebraMap_injective _ _) _
+      (injective_iff_map_eq_zero (algebraMap S K)).1 (FaithfulSMul.algebraMap_injective _ _) _
         hf₂
 
 open nonZeroDivisors

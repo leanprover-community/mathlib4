@@ -134,7 +134,6 @@ infixl:100 " ⊗ₜ " => tmul _
 /-- The canonical function `M → N → M ⊗ N`. -/
 notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 
--- Porting note: make the arguments of induction_on explicit
 @[elab_as_elim, induction_eliminator]
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
     (zero : motive 0)
@@ -247,8 +246,6 @@ theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m 
     (r • m) ⊗ₜ n = m ⊗ₜ[R] (r • n) :=
   CompatibleSMul.smul_tmul _ _ _
 
--- Porting note: This is added as a local instance for `SMul.aux`.
--- For some reason type-class inference in Lean 3 unfolded this definition.
 private def addMonoidWithWrongNSMul : AddMonoid (M ⊗[R] N) :=
   { (addConGen (TensorProduct.Eqv R M N)).addMonoid with }
 
@@ -446,16 +443,16 @@ section
 theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
     (∑ a ∈ s, m a) ⊗ₜ[R] n = ∑ a ∈ s, m a ⊗ₜ[R] n := by
   classical
-    induction' s using Finset.induction with a s has ih h
-    · simp
-    · simp [Finset.sum_insert has, add_tmul, ih]
+    induction s using Finset.induction with
+    | empty => simp
+    | insert has ih => simp [Finset.sum_insert has, add_tmul, ih]
 
 theorem tmul_sum (m : M) {α : Type*} (s : Finset α) (n : α → N) :
     (m ⊗ₜ[R] ∑ a ∈ s, n a) = ∑ a ∈ s, m ⊗ₜ[R] n a := by
   classical
-    induction' s using Finset.induction with a s has ih h
-    · simp
-    · simp [Finset.sum_insert has, tmul_add, ih]
+    induction s using Finset.induction with
+    | empty => simp
+    | insert has ih => simp [Finset.sum_insert has, tmul_add, ih]
 
 end
 
@@ -1033,7 +1030,7 @@ theorem congr_mul (f : M ≃ₗ[R] M) (g : N ≃ₗ[R] N) (f' : M ≃ₗ[R] M) (
 
 @[simp] theorem congr_zpow (f : M ≃ₗ[R] M) (g : N ≃ₗ[R] N) (n : ℤ) :
     congr f g ^ n = congr (f ^ n) (g ^ n) := by
-  induction n with
+  cases n with
   | ofNat n => exact congr_pow _ _ _
   | negSucc n => simp_rw [zpow_negSucc, congr_pow]; exact congr_symm _ _
 
@@ -1082,11 +1079,17 @@ theorem tensorTensorTensorComm_tmul (m : M) (n : N) (p : P) (q : Q) :
     tensorTensorTensorComm R M N P Q (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
   rfl
 
--- Porting note: the proof here was `rfl` but that caused a timeout.
 @[simp]
 theorem tensorTensorTensorComm_symm :
-    (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q := by
-  ext; rfl
+    (tensorTensorTensorComm R M N P Q).symm = tensorTensorTensorComm R M P N Q :=
+  rfl
+
+theorem tensorTensorTensorComm_comp_map {V W : Type*}
+    [AddCommMonoid V] [AddCommMonoid W] [Module R V] [Module R W]
+    (f : M →ₗ[R] S) (g : N →ₗ[R] T) (h : P →ₗ[R] V) (j : Q →ₗ[R] W) :
+    tensorTensorTensorComm R S T V W ∘ₗ map (map f g) (map h j) =
+      map (map f h) (map g j) ∘ₗ tensorTensorTensorComm R M N P Q :=
+  ext_fourfold' fun _ _ _ _ => rfl
 
 variable (M N P Q)
 
@@ -1135,6 +1138,10 @@ def rTensor (f : N →ₗ[R] P) : N ⊗[R] M →ₗ[R] P ⊗[R] M :=
   TensorProduct.map f id
 
 variable (g : P →ₗ[R] Q) (f : N →ₗ[R] P)
+
+theorem lTensor_def : f.lTensor M = TensorProduct.map LinearMap.id f := rfl
+
+theorem rTensor_def : f.rTensor M = TensorProduct.map f LinearMap.id := rfl
 
 @[simp]
 theorem lTensor_tmul (m : M) (n : N) : f.lTensor M (m ⊗ₜ n) = m ⊗ₜ f n :=

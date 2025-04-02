@@ -4,14 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
 import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.Group.Pointwise.Set.Finite
+import Mathlib.Algebra.Group.Semiconj.Basic
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.Action
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Dynamics.PeriodicPts.Lemmas
 import Mathlib.GroupTheory.Index
+import Mathlib.NumberTheory.Divisors
 import Mathlib.Order.Interval.Set.Infinite
-import Mathlib.Tactic.Positivity
 
 /-!
 # Order of an element
@@ -31,6 +33,8 @@ This file defines the order of an element of a finite group. For a finite group 
 ## Tags
 order of an element
 -/
+
+assert_not_exists Field
 
 open Function Fintype Nat Pointwise Subgroup Submonoid
 
@@ -71,7 +75,7 @@ lemma isOfFinOrder_iff_zpow_eq_one {G} [Group G] {x : G} :
   rw [isOfFinOrder_iff_pow_eq_one]
   refine ⟨fun ⟨n, hn, hn'⟩ ↦ ⟨n, Int.natCast_ne_zero_iff_pos.mpr hn, zpow_natCast x n ▸ hn'⟩,
     fun ⟨n, hn, hn'⟩ ↦ ⟨n.natAbs, Int.natAbs_pos.mpr hn, ?_⟩⟩
-  cases' (Int.natAbs_eq_iff (a := n)).mp rfl with h h
+  rcases (Int.natAbs_eq_iff (a := n)).mp rfl with h | h
   · rwa [h, zpow_natCast] at hn'
   · rwa [h, zpow_neg, inv_eq_one, zpow_natCast] at hn'
 
@@ -108,7 +112,7 @@ lemma IsOfFinOrder.pow {n : ℕ} : IsOfFinOrder a → IsOfFinOrder (a ^ n) := by
 lemma IsOfFinOrder.of_pow {n : ℕ} (h : IsOfFinOrder (a ^ n)) (hn : n ≠ 0) : IsOfFinOrder a := by
   rw [isOfFinOrder_iff_pow_eq_one] at *
   rcases h with ⟨m, hm, ha⟩
-  exact ⟨n * m, by positivity, by rwa [pow_mul]⟩
+  exact ⟨n * m, mul_pos hn.bot_lt hm, by rwa [pow_mul]⟩
 
 @[to_additive (attr := simp)]
 lemma isOfFinOrder_pow {n : ℕ} : IsOfFinOrder (a ^ n) ↔ IsOfFinOrder a ∨ n = 0 := by
@@ -213,10 +217,6 @@ theorem IsOfFinOrder.mono [Monoid β] {y : β} (hx : IsOfFinOrder x) (h : orderO
 @[to_additive]
 theorem pow_ne_one_of_lt_orderOf (n0 : n ≠ 0) (h : n < orderOf x) : x ^ n ≠ 1 := fun j =>
   not_isPeriodicPt_of_pos_of_lt_minimalPeriod n0 h ((isPeriodicPt_mul_iff_pow_eq_one x).mpr j)
-@[deprecated (since := "2024-07-20")] alias pow_ne_one_of_lt_orderOf' := pow_ne_one_of_lt_orderOf
-@[deprecated (since := "2024-07-20")] alias
-  nsmul_ne_zero_of_lt_addOrderOf' := nsmul_ne_zero_of_lt_addOrderOf
-
 @[to_additive]
 theorem orderOf_le_of_pow_eq_one (hn : 0 < n) (h : x ^ n = 1) : orderOf x ≤ n :=
   IsPeriodicPt.minimalPeriod_le hn (by rwa [isPeriodicPt_mul_iff_pow_eq_one])
@@ -293,7 +293,7 @@ all prime factors `p` of `n`, then `x` has order `n` in `G`."]
 theorem orderOf_eq_of_pow_and_pow_div_prime (hn : 0 < n) (hx : x ^ n = 1)
     (hd : ∀ p : ℕ, p.Prime → p ∣ n → x ^ (n / p) ≠ 1) : orderOf x = n := by
   -- Let `a` be `n/(orderOf x)`, and show `a = 1`
-  cases' exists_eq_mul_right_of_dvd (orderOf_dvd_of_pow_eq_one hx) with a ha
+  obtain ⟨a, ha⟩ := exists_eq_mul_right_of_dvd (orderOf_dvd_of_pow_eq_one hx)
   suffices a = 1 by simp [this, ha]
   -- Assume `a` is not one...
   by_contra h
@@ -660,13 +660,11 @@ noncomputable def finEquivZPowers (x : G) (hx : IsOfFinOrder x) :
     Fin (orderOf x) ≃ (zpowers x : Set G) :=
   (finEquivPowers x hx).trans <| Equiv.Set.ofEq hx.powers_eq_zpowers
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive]
 lemma finEquivZPowers_apply (hx) {n : Fin (orderOf x)} :
     finEquivZPowers x hx n = ⟨x ^ (n : ℕ), n, zpow_natCast x n⟩ := rfl
 
- -- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive]
 lemma finEquivZPowers_symm_apply (x : G) (hx) (n : ℕ) :
     (finEquivZPowers x hx).symm ⟨x ^ n, ⟨n, by simp⟩⟩ =
     ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
@@ -691,32 +689,21 @@ variable [Monoid G] {x : G} {n : ℕ}
 
 @[to_additive]
 theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n ≠ 0) :
-    (∑ m ∈ (Finset.range n.succ).filter (· ∣ n),
+    (∑ m ∈ divisors n,
         (Finset.univ.filter fun x : G => orderOf x = m).card) =
-      (Finset.univ.filter fun x : G => x ^ n = 1).card :=
-  calc
-    (∑ m ∈ (Finset.range n.succ).filter (· ∣ n),
-          (Finset.univ.filter fun x : G => orderOf x = m).card) = _ :=
-      (Finset.card_biUnion
-          (by
-            intros
-            apply Finset.disjoint_filter.2
-            rintro _ _ rfl; assumption)).symm
-    _ = _ :=
-      congr_arg Finset.card
-        (Finset.ext
-          (by
-            intro x
-            suffices orderOf x ≤ n ∧ orderOf x ∣ n ↔ x ^ n = 1 by simpa [Nat.lt_succ_iff]
-            exact
-              ⟨fun h => by
-                let ⟨m, hm⟩ := h.2
-                rw [hm, pow_mul, pow_orderOf_eq_one, one_pow], fun h =>
-                ⟨orderOf_le_of_pow_eq_one hn.bot_lt h, orderOf_dvd_of_pow_eq_one h⟩⟩))
+      (Finset.univ.filter fun x : G => x ^ n = 1).card := by
+  refine (Finset.card_biUnion ?_).symm.trans ?_
+  · simp +contextual [disjoint_iff, Finset.ext_iff]
+  · congr; ext; simp [hn, orderOf_dvd_iff_pow_eq_one]
 
 @[to_additive]
 theorem orderOf_le_card_univ [Fintype G] : orderOf x ≤ Fintype.card G :=
   Finset.le_card_of_inj_on_range (x ^ ·) (fun _ _ ↦ Finset.mem_univ _) pow_injOn_Iio_orderOf
+
+@[to_additive]
+theorem orderOf_le_card [Finite G] : orderOf x ≤ Nat.card G := by
+  obtain ⟨⟩ := nonempty_fintype G
+  simpa using orderOf_le_card_univ
 
 end FiniteMonoid
 
@@ -1067,16 +1054,16 @@ theorem orderOf_abs_ne_one (h : |x| ≠ 1) : orderOf x = 0 := by
   rw [orderOf_eq_zero_iff']
   intro n hn hx
   replace hx : |x| ^ n = 1 := by simpa only [abs_one, abs_pow] using congr_arg abs hx
-  cases' h.lt_or_lt with h h
+  rcases h.lt_or_lt with h | h
   · exact ((pow_lt_one₀ (abs_nonneg x) h hn.ne').ne hx).elim
   · exact ((one_lt_pow₀ h hn.ne').ne' hx).elim
 
 theorem LinearOrderedRing.orderOf_le_two : orderOf x ≤ 2 := by
-  cases' ne_or_eq |x| 1 with h h
+  rcases ne_or_eq |x| 1 with h | h
   · simp [orderOf_abs_ne_one h]
   rcases eq_or_eq_neg_of_abs_eq h with (rfl | rfl)
   · simp
-  apply orderOf_le_of_pow_eq_one <;> norm_num
+  exact orderOf_le_of_pow_eq_one zero_lt_two (by simp)
 
 end LinearOrderedRing
 

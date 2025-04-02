@@ -340,9 +340,9 @@ theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Q�
   constructor <;> intro h
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
     ext x y
-    cases' hₗ x with x' hx
+    obtain ⟨x', hx⟩ := hₗ x
     subst hx
-    cases' hᵣ y with y' hy
+    obtain ⟨y', hy⟩ := hᵣ y
     subst hy
     convert LinearMap.congr_fun₂ h x' y' using 0
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
@@ -428,6 +428,11 @@ noncomputable def restrictScalarsRange :
 @[simp] lemma restrictScalarsRange_apply (m : M') (n : N') :
     k (restrictScalarsRange i j k hk B hB m n) = B (i m) (j n) := by
   simp [restrictScalarsRange]
+
+@[simp]
+lemma eq_restrictScalarsRange_iff (m : M') (n : N') (p : P') :
+    p = restrictScalarsRange i j k hk B hB m n ↔ k p = B (i m) (j n) := by
+  rw [← restrictScalarsRange_apply i j k hk B hB m n, hk.eq_iff]
 
 @[simp]
 lemma restrictScalarsRange_apply_eq_zero_iff (m : M') (n : N') :

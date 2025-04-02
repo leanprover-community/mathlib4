@@ -524,6 +524,15 @@ theorem support_nonempty {u v : V} (p : G.Walk u v) : { w | w ∈ p.support }.No
 theorem mem_support_iff {u v w : V} (p : G.Walk u v) :
     w ∈ p.support ↔ w = u ∨ w ∈ p.support.tail := by cases p <;> simp
 
+@[simp]
+theorem getVert_mem_support {u v : V} (p : G.Walk u v) (i : ℕ) : p.getVert i ∈ p.support := by
+  induction p generalizing i with
+  | nil => simp
+  | cons _ _ hind =>
+    cases i
+    · simp
+    · simp [hind]
+
 theorem mem_support_nil_iff {u v : V} : u ∈ (nil : G.Walk v v).support ↔ u = v := by simp
 
 @[simp]
@@ -810,6 +819,9 @@ lemma not_nil_iff {p : G.Walk v w} :
 lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
   | .nil | .cons _ _ => by simp
 
+@[simp]
+lemma nil_reverse {p : G.Walk v w} : p.reverse.Nil ↔ p.Nil := by simp [nil_iff_length_eq]
+
 alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
 
 @[elab_as_elim]
@@ -831,7 +843,7 @@ def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
   match p, n with
   | .nil, _ => .nil
   | p, 0 => p.copy (getVert_zero p).symm rfl
-  | .cons h q, (n + 1) => (q.drop n).copy (getVert_cons_succ _ h).symm rfl
+  | .cons _ q, (n + 1) => q.drop n
 
 /-- The second vertex of a walk, or the only vertex in a nil walk. -/
 abbrev snd (p : G.Walk u v) : V := p.getVert 1
@@ -843,8 +855,18 @@ abbrev snd (p : G.Walk u v) : V := p.getVert 1
 lemma snd_cons {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
     (q.cons hadj).snd = v := by simp
 
+/-- The walk obtained by taking the first `n` darts of a walk. -/
+def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
+  match p, n with
+  | .nil, _ => .nil
+  | p, 0 => nil.copy rfl (getVert_zero p).symm
+  | .cons h q, (n + 1) => .cons h (q.take n)
+
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
+
+@[simp]
+lemma penultimate_nil : (@nil _ G v).penultimate = v := rfl
 
 @[simp]
 lemma penultimate_cons_nil (h : G.Adj u v) : (cons h nil).penultimate = u := rfl
@@ -868,8 +890,19 @@ lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) :
   rw [nil_iff_length_eq] at hp
   convert adj_getVert_succ _ _ <;> omega
 
+@[simp]
+lemma snd_reverse (p : G.Walk u v) : p.reverse.snd = p.penultimate := by
+  simpa using getVert_reverse p 1
+
+@[simp]
+lemma penultimate_reverse (p : G.Walk u v) : p.reverse.penultimate = p.snd := by
+  cases p <;> simp [snd, penultimate, getVert_append]
+
 /-- The walk obtained by removing the first dart of a walk. A nil walk stays nil. -/
 def tail (p : G.Walk u v) : G.Walk (p.snd) v := p.drop 1
+
+/-- The walk obtained by removing the last dart of a walk. A nil walk stays nil. -/
+def dropLast (p : G.Walk u v) : G.Walk u p.penultimate := p.take (p.length - 1)
 
 @[simp]
 lemma tail_nil : (@nil _ G v).tail = .nil := rfl
@@ -882,6 +915,30 @@ lemma tail_cons_eq (h : G.Adj u v) (p : G.Walk v w) :
   match p with
   | .nil => rfl
   | .cons h q => rfl
+
+@[simp]
+lemma dropLast_nil : (@nil _ G v).dropLast = nil := rfl
+
+@[simp]
+lemma dropLast_cons_nil (h : G.Adj u v) : (cons h nil).dropLast = nil := rfl
+
+@[simp]
+lemma dropLast_cons_cons {w'} (h : G.Adj u v) (h₂ : G.Adj v w) (p : G.Walk w w') :
+    (cons h (cons h₂ p)).dropLast = cons h (cons h₂ p).dropLast := rfl
+
+lemma dropLast_cons_of_not_nil (h : G.Adj u v) (p : G.Walk v w) (hp : ¬ p.Nil) :
+    (cons h p).dropLast = cons h (p.dropLast.copy rfl (penultimate_cons_of_not_nil _ _ hp).symm) :=
+  p.notNilRec (by simp) hp h
+
+@[simp]
+lemma dropLast_concat {t u v} (p : G.Walk u v) (h : G.Adj v t) :
+    (p.concat h).dropLast = p.copy rfl (by simp) := by
+  induction p
+  · rfl
+  · simp_rw [concat_cons]
+    rw [dropLast_cons_of_not_nil]
+    · simp [*]
+    · simp [concat, nil_iff_length_eq]
 
 /-- The first dart of a walk. -/
 @[simps]
@@ -908,9 +965,19 @@ variable {x y : V} -- TODO: rename to u, v, w instead?
 lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
     cons (p.adj_snd hp) p.tail = p := by
   cases p with
-  | nil => simp only [nil_nil, not_true_eq_false] at hp
+  | nil => simp at hp
   | cons h q =>
     simp only [getVert_cons_succ, tail_cons_eq, cons_copy, copy_rfl_rfl]
+
+@[simp]
+lemma concat_dropLast (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
+    p.dropLast.concat hp = p := by
+  induction p with
+  | nil => simp at hp
+  | cons hadj p hind =>
+    cases p with
+    | nil => rfl
+    | _ => simp [hind]
 
 @[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬p.Nil) :
     x :: p.tail.support = p.support := by
@@ -1014,11 +1081,13 @@ theorem count_support_takeUntil_eq_one {u v w : V} (p : G.Walk v w) (h : u ∈ p
 
 theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) (x : V) :
     (p.takeUntil u h).edges.count s(u, x) ≤ 1 := by
-  induction' p with u' u' v' w' ha p' ih
-  · rw [mem_support_nil_iff] at h
+  induction p with
+  | nil =>
+    rw [mem_support_nil_iff] at h
     subst u
     simp!
-  · cases h
+  | cons ha p' ih =>
+    cases h
     · simp!
     · simp! only
       split_ifs with h'
@@ -1113,22 +1182,19 @@ end WalkDecomp
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
 theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ S) (vS : v ∉ S) :
     ∃ d : G.Dart, d ∈ p.darts ∧ d.fst ∈ S ∧ d.snd ∉ S := by
-  induction' p with _ x y w a p' ih
-  · cases vS uS
-  · by_cases h : y ∈ S
+  induction p with
+  | nil => cases vS uS
+  | cons a p' ih =>
+    rename_i x y w
+    by_cases h : y ∈ S
     · obtain ⟨d, hd, hcd⟩ := ih h vS
       exact ⟨d, List.Mem.tail _ hd, hcd⟩
     · exact ⟨⟨(x, y), a⟩, List.Mem.head _, uS, h⟩
 
-@[simp] lemma getVert_copy  {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
+@[simp] lemma getVert_copy {u v w x : V} (p : G.Walk u v) (i : ℕ) (h : u = w) (h' : v = x) :
     (p.copy h h').getVert i = p.getVert i := by
   subst_vars
-  match p, i with
-  | .nil, _ =>
-    rw [getVert_of_length_le _ (by simp only [length_nil, Nat.zero_le] : nil.length ≤ _)]
-    rw [getVert_of_length_le _ (by simp only [length_copy, length_nil, Nat.zero_le])]
-  | .cons hadj q, 0 => simp only [copy_rfl_rfl, getVert_zero]
-  | .cons hadj q, (n + 1) => simp only [copy_cons, getVert_cons_succ]; rfl
+  rfl
 
 @[simp] lemma getVert_tail {u v n} (p : G.Walk u v) :
     p.tail.getVert n = p.getVert (n + 1) := by
@@ -1154,25 +1220,23 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
       Nat.le_add_right, and_self]
   · rintro ⟨n, hn⟩
     rw [SimpleGraph.Walk.mem_support_iff]
-    by_cases h0 : n = 0
-    · rw [h0, getVert_zero] at hn
+    cases n with
+    | zero =>
+      rw [getVert_zero] at hn
       left
       exact hn.1.symm
-    · right
+    | succ n =>
+      right
       have hnp : ¬ p.Nil := by
         rw [nil_iff_length_eq]
         omega
-      rw [← support_tail_of_not_nil _ hnp]
-      rw [mem_support_iff_exists_getVert]
-      use n - 1
-      simp only [Nat.sub_le_iff_le_add]
-      rw [getVert_tail, length_tail_add_one hnp]
-      have : (n - 1 + 1) = n := by omega
-      rwa [this]
+      rw [← support_tail_of_not_nil _ hnp, mem_support_iff_exists_getVert]
+      use n
+      rwa [getVert_tail, ← Nat.add_one_le_add_one_iff, length_tail_add_one hnp]
 termination_by p.length
 decreasing_by
 · simp_wf
-  rw [@Nat.lt_iff_add_one_le]
+  rw [Nat.lt_iff_add_one_le]
   rw [length_tail_add_one hnp]
 
 end Walk

@@ -483,7 +483,7 @@ variable (A)
 
 @[simp]
 theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
-  cases' subsingleton_or_nontrivial α with ht ht
+  rcases subsingleton_or_nontrivial α with ht | ht
   · simp [eq_iff_true_of_subsingleton]
   rcases (Fintype.card n).zero_le.eq_or_lt with hc | hc
   · rw [eq_comm, Fintype.card_eq_zero_iff] at hc
@@ -666,11 +666,9 @@ def invertibleOfSubmatrixEquivInvertible (A : Matrix m m α) (e₁ e₂ : n ≃ 
     [Invertible (A.submatrix e₁ e₂)] : Invertible A :=
   invertibleOfRightInverse _ ((⅟ (A.submatrix e₁ e₂)).submatrix e₂.symm e₁.symm) <| by
     have : A = (A.submatrix e₁ e₂).submatrix e₁.symm e₂.symm := by simp
-    -- Porting note: was
-    -- conv in _ * _ =>
-    --   congr
-    --   rw [this]
-    rw [congr_arg₂ (· * ·) this rfl]
+    conv in _ * _ =>
+      congr
+      rw [this]
     rw [Matrix.submatrix_mul_equiv, mul_invOf_self, submatrix_one_equiv]
 
 theorem invOf_submatrix_equiv_eq (A : Matrix m m α) (e₁ e₂ : n ≃ m) [Invertible A]

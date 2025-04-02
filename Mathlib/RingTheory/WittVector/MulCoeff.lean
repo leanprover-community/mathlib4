@@ -250,7 +250,7 @@ theorem nth_mul_coeff' (n : ℕ) :
       congr!
       simp
     refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
-    cases' ha' with ha ha <;> omega
+    obtain ⟨ha, ha⟩ := ha' <;> omega
   use f
   intro x y
   dsimp [f, peval]
@@ -258,7 +258,7 @@ theorem nth_mul_coeff' (n : ℕ) :
   congr
   ext a
   cases' a with a ha
-  cases' a with i m
+  obtain ⟨i, m⟩ := a
   fin_cases i <;> rfl -- surely this case split is not necessary
 
 theorem nth_mul_coeff (n : ℕ) :

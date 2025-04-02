@@ -121,7 +121,7 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
   · intro x hx
     have : φ x ∈ Z₁ ∪ Z₂ := (g x).2
     -- Porting note: Originally `simpa [hx, hφ₁] using this`
-    cases' this with hφ hφ
+    rcases this with hφ | hφ
     · exact ((hφ₁ x ▸ hφ.1) hx).elim
     · exact hφ
   · rw [← hφ₁ x]
@@ -278,10 +278,6 @@ protected theorem CompactT2.ExtremallyDisconnected.projective [ExtremallyDisconn
 protected theorem CompactT2.projective_iff_extremallyDisconnected [CompactSpace A] [T2Space A] :
     Projective A ↔ ExtremallyDisconnected A :=
   ⟨Projective.extremallyDisconnected, fun _ => ExtremallyDisconnected.projective⟩
-
-@[deprecated (since := "2024-05-26")]
-alias CompactT2.projective_iff_extremallyDisconnnected :=
-  CompactT2.projective_iff_extremallyDisconnected
 
 end
 

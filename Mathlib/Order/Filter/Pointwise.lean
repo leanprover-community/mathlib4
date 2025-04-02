@@ -6,8 +6,10 @@ Authors: Zhouhang Zhou, Yaël Dillies
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.OrderIso
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Order.Filter.AtTopBot.Map
+import Mathlib.Order.Filter.Finite
 import Mathlib.Order.Filter.NAry
-import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-!
 # Pointwise operations on filters

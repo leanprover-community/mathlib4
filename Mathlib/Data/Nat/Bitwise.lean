@@ -239,8 +239,8 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
   funext m n
   simp only [Function.swap]
   induction' m using Nat.strongRecOn with m ih generalizing n
-  cases' m with m
-  <;> cases' n with n
+  rcases m with - | m
+  <;> rcases n with - | n
   <;> try rw [bitwise_zero_left, bitwise_zero_right]
   · specialize ih ((m+1) / 2) (div_lt_self' ..)
     simp [bitwise_of_ne_zero, ih]
@@ -262,7 +262,7 @@ theorem land_comm (n m : ℕ) : n &&& m = m &&& n :=
 
 lemma and_two_pow (n i : ℕ) : n &&& 2 ^ i = (n.testBit i).toNat * 2 ^ i := by
   refine eq_of_testBit_eq fun j => ?_
-  obtain rfl | hij := Decidable.eq_or_ne i j <;> cases' h : n.testBit i
+  obtain rfl | hij := Decidable.eq_or_ne i j <;> cases h : n.testBit i
   · simp [h]
   · simp [h]
   · simp [h, testBit_two_pow_of_ne hij]

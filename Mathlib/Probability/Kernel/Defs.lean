@@ -59,8 +59,6 @@ structure Kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] where
   Do not use this lemma directly. Use `Kernel.measurable` instead. -/
   measurable' : Measurable toFun
 
-@[deprecated (since := "2024-07-22")] alias kernel := Kernel
-
 /-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain. -/
 scoped notation "Kernel[" mα "]" α:arg β:arg => @Kernel α β mα _
 
@@ -75,7 +73,9 @@ instance instFunLike : FunLike (Kernel α β) α (Measure β) where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
+@[fun_prop]
 lemma measurable (κ : Kernel α β) : Measurable κ := κ.measurable'
+
 @[simp, norm_cast] lemma coe_mk (f : α → Measure β) (hf) : mk f hf = f := rfl
 
 initialize_simps_projections Kernel (toFun → apply)
@@ -341,8 +341,8 @@ theorem isSFiniteKernel_sum_of_denumerable [Denumerable ι] {κs : ι → Kernel
   rw [e.tsum_eq (fun im : ι × ℕ => seq (κs im.fst) im.snd a s),
     tsum_prod' ENNReal.summable fun _ => ENNReal.summable]
 
-theorem isSFiniteKernel_sum [Countable ι] {κs : ι → Kernel α β}
-    (hκs : ∀ n, IsSFiniteKernel (κs n)) : IsSFiniteKernel (Kernel.sum κs) := by
+instance isSFiniteKernel_sum [Countable ι] {κs : ι → Kernel α β}
+    [hκs : ∀ n, IsSFiniteKernel (κs n)] : IsSFiniteKernel (Kernel.sum κs) := by
   cases fintypeOrInfinite ι
   · rw [sum_fintype]
     exact IsSFiniteKernel.finset_sum Finset.univ fun i _ => hκs i

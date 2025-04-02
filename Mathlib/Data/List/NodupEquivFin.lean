@@ -50,8 +50,8 @@ the set of elements of `l`. -/
 @[simps]
 def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l } where
   toFun i := ⟨get l i, get_mem _ _⟩
-  invFun x := ⟨indexOf (↑x) l, indexOf_lt_length.2 x.2⟩
-  left_inv i := by simp only [List.get_indexOf, eq_self_iff_true, Fin.eta, Subtype.coe_mk, H]
+  invFun x := ⟨idxOf (↑x) l, idxOf_lt_length_iff.2 x.2⟩
+  left_inv i := by simp only [List.get_idxOf, eq_self_iff_true, Fin.eta, Subtype.coe_mk, H]
   right_inv x := by simp
 
 /-- If `l` lists all the elements of `α` without duplicates, then `List.get` defines
@@ -63,8 +63,8 @@ decidable equality. -/
 def getEquivOfForallMemList (l : List α) (nd : l.Nodup) (h : ∀ x : α, x ∈ l) :
     Fin l.length ≃ α where
   toFun i := l.get i
-  invFun a := ⟨_, indexOf_lt_length.2 (h a)⟩
-  left_inv i := by simp [List.indexOf_getElem, nd]
+  invFun a := ⟨_, idxOf_lt_length_iff.2 (h a)⟩
+  left_inv i := by simp [List.idxOf_getElem, nd]
   right_inv a := by simp
 
 end Nodup
@@ -92,7 +92,7 @@ theorem coe_getIso_apply : (H.getIso l i : α) = get l i :=
   rfl
 
 @[simp]
-theorem coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = indexOf (↑x) l :=
+theorem coe_getIso_symm_apply : ((H.getIso l).symm x : ℕ) = idxOf (↑x) l :=
   rfl
 
 end Sorted
