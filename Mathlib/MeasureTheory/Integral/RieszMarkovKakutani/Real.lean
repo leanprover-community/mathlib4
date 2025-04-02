@@ -124,17 +124,15 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
       exact lt_of_le_of_lt (le_tsub_of_add_le_right (hy hc)) hx.1
   -- The sets `E n` are a partition of the support of `f`.
   have partition_aux : range f ⊆ ⋃ n, Ioc (y n - ε) (y n) := calc
-    _ ⊆ Ioc a (a + N * ε) := fun _ hz ↦ Ioo_subset_Ioc_self (hf hz)
-    _ ⊆ ⋃ n ∈ Finset.range N, Ioc (a + n * ε) (a + n * ε + ε) := by
-      have := iUnion_Ioc_subset_Ioc N (fun n ↦ a + n * ε)
-      simp only [CharP.cast_eq_zero, zero_mul, add_zero, Nat.cast_add, Nat.cast_one, add_mul,
-        one_mul, ← add_assoc] at this
-      exact this
-    _ ⊆ ⋃ n : Fin N, Ioc (a + n * ε) (a + n * ε + ε) := by
-      intro _
-      simp only [mem_iUnion, Finset.mem_range, exists_prop]
-      exact fun ⟨i, hi⟩ ↦ ⟨⟨i, hi.1⟩ , hi.2⟩
-    _ = ⋃ n, Ioc (y n - ε) (y n) := by simp [y, mul_add, ← add_assoc, mul_comm]
+    _ ⊆ Ioc (a + (0 : ℕ) * ε) (a + N * ε) := by
+      intro _ hz
+      simpa using (Ioo_subset_Ioc_self (hf hz))
+    _ ⊆ ⋃ i ∈ Finset.range N, Ioc (a + ↑i * ε) (a + ↑(i + 1) * ε) :=
+      iUnion_Ioc_subset_Ioc N (fun n ↦ a + n * ε)
+    _ ⊆ _ := by
+      intro z
+      simp only [Finset.mem_range, mem_iUnion, mem_Ioc, forall_exists_index, and_imp, y]
+      refine fun n hn _ _ ↦ ⟨⟨n, hn⟩, ⟨by linarith, by simp_all [mul_comm ε _]⟩⟩
   have partition : tsupport f = ⋃ j, E j := by
     simp only [E, ← iUnion_inter, ← preimage_iUnion, eq_comm (a := tsupport _), inter_eq_right]
     exact fun x hx ↦ partition_aux (mem_range_self x)
