@@ -387,7 +387,7 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
 
 lemma IsPath.not_mem_tail_support_of_not_nil {p : G.Walk u v} (hp : p.IsPath) (hn : ¬p.Nil) :
     u ∉ p.tail.support :=
-  fun h ↦ ((cons_isPath_iff _ _).1 ((cons_tail_eq _ hn) ▸ hp)).2 h
+  fun h ↦ ((cons_isPath_iff ..).1 ((cons_tail_eq _ hn) ▸ hp)).2 h
 
 lemma IsPath.not_mem_dropLast_support_of_not_nil {p : G.Walk u v} (hp : p.IsPath) (hn : ¬p.Nil) :
     v ∉ p.dropLast.support :=

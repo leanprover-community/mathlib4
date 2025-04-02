@@ -57,17 +57,16 @@ We consider two cases:
    `w` and `vₘ₊₁`.
 --------------------------------------------/
 
-open PartialColoring Walk
+open PartialColoring Walk List
 
 lemma Walk.IsCycle.support_rotate_tail_tail_eq [DecidableEq α] {u : α} {c : G.Walk u u} {d : G.Dart}
     (hc : c.IsCycle) (hd : d ∈ c.darts) :
     (c.rotate (c.dart_fst_mem_support_of_mem_darts hd)).tail.tail.support.toFinset =
       c.support.toFinset.erase d.toProd.2 := by
-  have hr := (c.dart_fst_mem_support_of_mem_darts hd)
   ext x
-  simp only [List.mem_toFinset, Finset.mem_erase]
-  rw [ hc.snd_eq_snd_of_rotate_fst_dart hd, (hc.rotate hr).mem_tail_tail_support_iff,
-      mem_support_rotate_iff]
+  have hr := (c.dart_fst_mem_support_of_mem_darts hd)
+  rw [Finset.mem_erase, mem_toFinset, mem_toFinset, hc.snd_eq_snd_of_rotate_fst_dart hd,
+      (hc.rotate hr).mem_tail_tail_support_iff, mem_support_rotate_iff]
 
 variable {k : ℕ} [Fintype α] [DecidableRel G.Adj] [DecidableEq α]
 
@@ -144,42 +143,39 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
     -- either this path is the whole of `s` or it is a proper subset
     by_cases hr : ((q.append v41)).support.toFinset = s
     · --Main Case 1 the path is all of s
-      simp_rw [support_append, v41sup, List.tail, List.toFinset_append, List.toFinset_cons,
-                List.toFinset_nil, insert_emptyc_eq] at hr
+      simp_rw [support_append, v41sup, List.tail, toFinset_append, toFinset_cons, toFinset_nil,
+                insert_emptyc_eq] at hr
       rw [v41sup, List.tail] at hdisj2
       obtain ⟨vⱼ, hj⟩ : ∃ vⱼ, G.Adj v₂ vⱼ ∧ vⱼ ≠ v₁ ∧ vⱼ ≠ v₃ ∧ vⱼ ∈ s := by
         obtain ⟨vⱼ, hj⟩ := G.exists_adj_ne_of_two_lt_degree v₂
           (hk.trans (hbdd' _ hv₂).symm.le) v₁ v₃
         exact ⟨vⱼ,hj.1,hj.2.1,hj.2.2,hins _ hv₂ _ hj.1⟩
-      have v13union : {v₁, v₂, v₃} ∪ q.support.toFinset = s := by
-        rw [← hr, union_comm, insert_comm, insert_comm v₃, pair_comm]
-      have hv2q : v₂ ∉ q.support := fun hf ↦ hdisj2 hf (by simp)
-      have h13q : Disjoint {v₁, v₃} q.support.toFinset := by
-        rw [disjoint_insert_left, List.mem_toFinset, disjoint_singleton_left, List.mem_toFinset]
-        exact ⟨fun h ↦ hdisj2 h (by simp), fun h ↦ hdisj2 h (List.mem_cons_self ..)⟩
+      have h1q := fun hf ↦ hdisj2 hf ((mem_cons_of_mem _ <|mem_cons_of_mem _ <| mem_cons_self ..))
+      have h2q := fun hf ↦ hdisj2 hf (mem_cons_of_mem _ <| mem_cons_self ..)
+      have h3q := fun hf ↦ hdisj2 hf (mem_cons_self ..)
       have hj123: vⱼ ∉ ({v₃ , v₂, v₁} : Finset α) := by
-        simp_rw [mem_insert, mem_singleton, not_or]
+        simp_rw [mem_insert, Finset.mem_singleton, not_or]
         exact ⟨hj.2.2.1, hj.1.symm.ne, hj.2.1⟩
       have hvjq : vⱼ ∈ q.support := by
         subst hr
-        apply List.mem_toFinset.1
+        apply mem_toFinset.1
         cases (mem_union.1 hj.2.2.2) with
         | inl h => exact h
         | inr h => exact (hj123 h).elim
-      obtain ⟨C, hC⟩ := Brooks1' q hk hj.1.symm hbdd hq.of_append_left hvjq
-                          h1.1 h3.1.symm hne hnadj h13q hv2q
-      exact ⟨C.copy v13union, hC⟩
+      obtain ⟨C, hC⟩ := Brooks1_exists hk hbdd hq.of_append_left hvjq hj.1.symm h1.1 h3.1.symm hne
+                             hnadj h1q h2q h3q
+      exact ⟨C.copy hr, hC⟩
     · -- Main case 2 the path is a proper subset of s
       -- in which case we can build a cycle `c` from `vᵣ` such that all the neighbors
       -- of `vᵣ` lie in `c`
-      have hssf := Finset.ssubset_iff_subset_ne.2 ⟨fun y hy ↦ hss _ <| List.mem_toFinset.1 hy, hr⟩
+      have hssf := Finset.ssubset_iff_subset_ne.2 ⟨fun y hy ↦ hss _ <| mem_toFinset.1 hy, hr⟩
       have h1 := Nat.lt_of_succ_lt <| hk.trans (hbdd' _ <| hss _ <| start_mem_support ..).symm.le
       let p := (q.append v41).reverse
       have hp : p.IsPath := hq.reverse
       let  S := {x | G.Adj vᵣ x ∧ x ≠ p.penultimate}
       obtain ⟨y, hy⟩ : ∃ y, y ∈ S := G.exists_adj_ne_of_one_lt_degree vᵣ h1 p.penultimate
       have hmaxp : ∀ x, G.Adj vᵣ x → x ∈ p.support := by
-        simp_rw [p, support_reverse, List.mem_reverse]; exact hmax
+        simp_rw [p, support_reverse, mem_reverse]; exact hmax
       obtain ⟨m, hm⟩ := exists_getVert_first p hy (fun x hx ↦ hmaxp x hx.1)
       let c := (p.drop m).cons (hm.1.1)
       have hcy := hp.cons_drop_isCycle hm.1.1 hm.1.2
@@ -189,19 +185,19 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
       have hcym : ∀ x, G.Adj vᵣ x → x ∈ c.support := by
         intro x hx; rw [support_cons]
         by_cases hxpen : x = p.penultimate
-        · exact hxpen ▸ List.mem_cons_of_mem _ (mem_support_drop _ (by omega))
-        · exact List.mem_cons_of_mem _ (hm.2 _ ⟨hx, hxpen⟩)
+        · exact hxpen ▸ mem_cons_of_mem _ (mem_support_drop _ (by omega))
+        · exact mem_cons_of_mem _ (hm.2 _ ⟨hx, hxpen⟩)
       have hsub : c.support.toFinset ⊂ s := by
         apply Finset.ssubset_of_subset_of_ssubset _ hssf
         intro y hy
-        rw [List.mem_toFinset, support_cons] at *
+        rw [mem_toFinset, support_cons] at *
         cases hy with
         | head as => exact start_mem_support ..
         | tail b hy =>
           have := (support_drop_subset _ _) hy
-          rwa [support_reverse, List.mem_reverse] at this
+          rwa [support_reverse, mem_reverse] at this
       -- `c` is not empty
-      have hnemp := card_pos.2 ⟨_, List.mem_toFinset.2 c.start_mem_support⟩
+      have hnemp := card_pos.2 ⟨_, mem_toFinset.2 c.start_mem_support⟩
       -- so we will be able to color `c` and `s \ c` by induction if needed
       have hccard := (card_lt_card hsub).trans_le hn.le
       have hsdcard : #(s \ c.support.toFinset) < n := by
@@ -217,7 +213,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         -- to something `s \ c` and `d₂` is not
         let S : Set α := {a | ∃ b ∈ s \ c.support.toFinset, G.Adj a b}
         have rS : vᵣ ∉ S := fun ⟨ _, hy , had⟩ ↦
-            (mem_sdiff.1 hy).2 <| List.mem_toFinset.2 <| hcym _ had
+            (mem_sdiff.1 hy).2 <| mem_toFinset.2 <| hcym _ had
         obtain ⟨d, hd, ⟨y, hy1, hd1⟩, hd2⟩ := exists_boundary_dart_of_closed c _
                       (Set.mem_setOf.2 ⟨_, hy, had⟩) rS hx (start_mem_support ..)
         replace hd2 : ∀ b ∈ s \ c.support.toFinset, ¬ G.Adj d.toProd.2 b := by
@@ -236,27 +232,27 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         have hp : p.IsPath := (hcy.rotate hr).isPath_tail.tail
         have hne : d.toProd.2 ≠ y := by
           intro hf; subst_vars
-          exact (mem_sdiff.1 hy1).2 <| List.mem_toFinset.2 (c.dart_snd_mem_support_of_mem_darts hd)
+          exact (mem_sdiff.1 hy1).2 <| mem_toFinset.2 (c.dart_snd_mem_support_of_mem_darts hd)
         have hc2eq : C₂ d.toProd.2 = C₂ y := C₁.eq_ofinsertNotAdj hd2
         -- We will color the vertices in `p` greedily in reverse order, so ending with `d₁`
-        have hd2 := List.mem_toFinset.2 (c.dart_snd_mem_support_of_mem_darts hd)
+        have hd2 := mem_toFinset.2 (c.dart_snd_mem_support_of_mem_darts hd)
         have hsdc := sdiff_union_of_subset hsub.1
         have heq : (insert d.toProd.2 (s \ c.support.toFinset)
                       ∪ p.reverse.support.toFinset) = s := by
-            rwa [support_reverse, List.toFinset_reverse, hcy.support_rotate_tail_tail_eq hd,
+            rwa [support_reverse, toFinset_reverse, hcy.support_rotate_tail_tail_eq hd,
                 insert_union, ← erase_eq_of_not_mem (not_mem_sdiff_of_mem_right hd2),
                 ← erase_union_distrib, insert_erase (hsdc.symm ▸ (hsub.1 hd2))]
         have hps : p.support.toFinset ⊆ c.support.toFinset := by
           intro x hx
-          rw [List.mem_toFinset] at *
+          rw [mem_toFinset] at *
           apply (c.mem_support_rotate_iff hr).1
           apply support_drop_subset _ _ (support_drop_subset _ _ hx)
         have hdisj2 : Disjoint (insert d.toProd.2 (s \ c.support.toFinset))
           p.reverse.support.toFinset := by
-          rw [support_reverse, List.toFinset_reverse]
+          rw [support_reverse, toFinset_reverse]
           apply disjoint_insert_left.2
           refine ⟨?_, disjoint_of_subset_right hps sdiff_disjoint⟩
-          rw [List.mem_toFinset, hcy.snd_eq_snd_of_rotate_fst_dart hd]
+          rw [mem_toFinset, hcy.snd_eq_snd_of_rotate_fst_dart hd]
           exact (hcy.rotate hr).snd_not_mem_tail_tail_support
         -- We know that when extending a coloring greedily along a path whose end point
         -- already has two neighbors colored with the same color we never need to use
