@@ -158,10 +158,6 @@ section IsOrderedRing
 variable [Semiring α] [PartialOrder α] [IsOrderedRing α]
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsOrderedRing.zeroLEOneClass : ZeroLEOneClass α :=
-  { ‹IsOrderedRing α› with }
-
--- see Note [lower instance priority]
 instance (priority := 200) IsOrderedRing.toPosMulMono : PosMulMono α where
   elim x _ _ h := IsOrderedRing.mul_le_mul_of_nonneg_left _ _ _ h x.2
 
