@@ -355,4 +355,3 @@ theorem Set.Subsingleton.isWeakAntichain (hs : s.Subsingleton) : IsWeakAntichain
   hs.isAntichain _
 
 end Pi
-#min_imports
