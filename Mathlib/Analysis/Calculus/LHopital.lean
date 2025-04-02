@@ -301,50 +301,6 @@ theorem lhopital_zero_nhdsLT (hff' : ∀ᶠ x in 𝓝[<] a, HasDerivAt f (f' x) 
 @[deprecated (since := "2025-03-02")]
 alias lhopital_zero_nhds_left := lhopital_zero_nhdsLT
 
-/-- L'Hôpital's rule for approaching a real from within a convex set, `HasDerivWithinAt` version.
-  This does not require anything about the situation at `a` -/
-theorem _root_.HasDerivWithinAt.lhopital_zero_nhdsWithin_convex {s : Set ℝ} (hs : Convex ℝ s)
-    (hff' : ∀ᶠ x in 𝓝[s \ {a}] a, HasDerivWithinAt f (f' x) (s \ {a}) x)
-    (hgg' : ∀ᶠ x in 𝓝[s \ {a}] a, HasDerivWithinAt g (g' x) (s \ {a}) x)
-    (hg' : ∀ᶠ x in 𝓝[s \ {a}] a, g' x ≠ 0)
-    (hfa : Tendsto f (𝓝[s \ {a}] a) (𝓝 0)) (hga : Tendsto g (𝓝[s \ {a}] a) (𝓝 0))
-    (hdiv : Tendsto (fun x => f' x / g' x) (𝓝[s \ {a}] a) l) :
-    Tendsto (fun x => f x / g x) (𝓝[s \ {a}] a) l := by
-  by_cases has : a ∈ closure s
-  swap
-  · rw [diff_singleton_eq_self (not_mem_subset subset_closure has),
-      not_mem_closure_iff_nhdsWithin_eq_bot.1 has]
-    apply tendsto_bot
-  rcases Nonempty.of_closure ⟨a, has⟩ with ⟨a', ha'⟩
-  rcases eq_singleton_or_nontrivial ha' with rfl | h'
-  · rw [closure_singleton, mem_singleton_iff] at has
-    rw [has, diff_self, nhdsWithin_empty]
-    apply tendsto_bot
-  replace h' := hs.interior_closure_eq_interior_of_nonempty_interior <|
-    hs.nontrivial_iff_nonempty_interior.1 h'
-  have h := hs.diff_singleton_eventually_mem_nhds a
-  replace hff' := h.mp <| hff'.mono fun _ h ↦ h.hasDerivAt
-  replace hgg' := h.mp <| hgg'.mono fun _ h ↦ h.hasDerivAt
-  rw [diff_eq, ← Iio_union_Ioi, inter_union_distrib_left,
-    nhdsWithin_union, tendsto_sup, eventually_sup] at *
-  constructor
-  · rcases eq_empty_or_nonempty (s ∩ Iio a) with hs' | ⟨b, hbs, hba⟩
-    · rw [hs', nhdsWithin_empty]
-      apply tendsto_bot
-    have := interior_mono <| hs.closure.openSegment_subset (subset_closure hbs) has
-    rw [openSegment_eq_Ioo hba, interior_Ioo, h'] at this
-    rw [nhdsWithin_inter_of_mem <| mem_nhdsLT_iff_exists_Ioo_subset.2
-      ⟨b, hba, this.trans interior_subset⟩] at *
-    exact lhopital_zero_nhdsLT hff'.1 hgg'.1 hg'.1 hfa.1 hga.1 hdiv.1
-  · rcases eq_empty_or_nonempty (s ∩ Ioi a) with hs' | ⟨b, hbs, hab⟩
-    · rw [hs', nhdsWithin_empty]
-      apply tendsto_bot
-    have := interior_mono <| hs.closure.openSegment_subset has (subset_closure hbs)
-    rw [openSegment_eq_Ioo hab, interior_Ioo, h'] at this
-    rw [nhdsWithin_inter_of_mem <| mem_nhdsGT_iff_exists_Ioo_subset.2
-      ⟨b, hab, this.trans interior_subset⟩] at *
-    exact lhopital_zero_nhdsGT hff'.2 hgg'.2 hg'.2 hfa.2 hga.2 hdiv.2
-
 /-- L'Hôpital's rule for approaching a real, `HasDerivAt` version. This
   does not require anything about the situation at `a` -/
 theorem lhopital_zero_nhdsNE (hff' : ∀ᶠ x in 𝓝[≠] a, HasDerivAt f (f' x) x)
@@ -352,13 +308,35 @@ theorem lhopital_zero_nhdsNE (hff' : ∀ᶠ x in 𝓝[≠] a, HasDerivAt f (f' x
     (hfa : Tendsto f (𝓝[≠] a) (𝓝 0)) (hga : Tendsto g (𝓝[≠] a) (𝓝 0))
     (hdiv : Tendsto (fun x => f' x / g' x) (𝓝[≠] a) l) :
     Tendsto (fun x => f x / g x) (𝓝[≠] a) l := by
-  rw [compl_eq_univ_diff] at *
-  exact HasDerivWithinAt.lhopital_zero_nhdsWithin_convex convex_univ
-    (hff'.mono fun _ h ↦ h.hasDerivWithinAt) (hgg'.mono fun _ h ↦ h.hasDerivWithinAt)
-    hg' hfa hga hdiv
+  simp only [← Iio_union_Ioi, nhdsWithin_union, tendsto_sup, eventually_sup] at *
+  exact ⟨lhopital_zero_nhdsLT hff'.1 hgg'.1 hg'.1 hfa.1 hga.1 hdiv.1,
+    lhopital_zero_nhdsGT hff'.2 hgg'.2 hg'.2 hfa.2 hga.2 hdiv.2⟩
 
 @[deprecated (since := "2025-03-02")]
 alias lhopital_zero_nhds' := lhopital_zero_nhdsNE
+
+/-- L'Hôpital's rule for approaching a real from within a convex set, `HasDerivWithinAt` version.
+  This does not require anything about the situation at `a` -/
+theorem _root_.HasDerivWithinAt.lhopital_zero_nhdsWithin_convex {s : Set ℝ} (hs : Convex ℝ s)
+    (hff' : ∀ᶠ x in 𝓝[s \ {a}] a, HasDerivWithinAt f (f' x) (s \ {a}) x)
+    (hgg' : ∀ᶠ x in 𝓝[s \ {a}] a, HasDerivWithinAt g (g' x) (s \ {a}) x)
+    (hg' : ∀ᶠ x in 𝓝[s \ {a}] a, g' x ≠ 0)
+    (hfa : Tendsto f (𝓝[s \ {a}] a) (𝓝 0)) (hga : Tendsto g (𝓝[s \ {a}] a) (𝓝 0))
+    (hdiv : Tendsto (fun x ↦ f' x / g' x) (𝓝[s \ {a}] a) l) :
+    Tendsto (fun x ↦ f x / g x) (𝓝[s \ {a}] a) l := by
+  refine tendsto_nhdsNE_of_closure a fun h' has ↦ ?_
+  have h := hs.diff_singleton_eventually_mem_nhds a
+  replace hff' := h.mp <| hff'.mono fun _ h ↦ h.hasDerivAt
+  replace hgg' := h.mp <| hgg'.mono fun _ h ↦ h.hasDerivAt
+  rcases eq_empty_or_nonempty (s ∩ Iio a) with hs_Iio | hs_Iio
+    <;> rcases eq_empty_or_nonempty (s ∩ Ioi a) with hs_Ioi | hs_Ioi
+  · simp [diff_eq, ← Iio_union_Ioi, inter_union_distrib_left, nhdsWithin_union, hs_Iio, hs_Ioi]
+  · simp_rw [hs.nhdsWithin_diff_eq_nhdsGT has hs_Iio hs_Ioi] at *
+    exact lhopital_zero_nhdsGT hff' hgg' hg' hfa hga hdiv
+  · simp_rw [hs.nhdsWithin_diff_eq_nhdsLT has hs_Iio hs_Ioi] at *
+    exact lhopital_zero_nhdsLT hff' hgg' hg' hfa hga hdiv
+  · simp_rw [hs.nhdsWithin_diff_eq_nhdsNE has hs_Iio hs_Ioi] at *
+    exact lhopital_zero_nhdsNE hff' hgg' hg' hfa hga hdiv
 
 /-- **L'Hôpital's rule** for approaching a real, `HasDerivAt` version -/
 theorem lhopital_zero_nhds (hff' : ∀ᶠ x in 𝓝 a, HasDerivAt f (f' x) x)
