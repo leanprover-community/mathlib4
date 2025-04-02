@@ -6,6 +6,7 @@ Authors: Joseph Myers, Manuel Candales
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Geometry.Euclidean.PerpBisector
 import Mathlib.Algebra.QuadraticDiscriminant
+import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
 # Euclidean spaces
@@ -360,6 +361,11 @@ theorem eq_orthogonalProjection_of_eq_subspace {s s' : AffineSubspace ℝ P} [No
     (h : s = s') (p : P) : (orthogonalProjection s p : P) = (orthogonalProjection s' p : P) := by
   subst h
   rfl
+
+@[simp] lemma orthogonalProjection_affineSpan_singleton (p₁ p₂ : P) :
+    orthogonalProjection (affineSpan ℝ {p₁}) p₂ = p₁ := by
+  have h := SetLike.coe_mem (orthogonalProjection (affineSpan ℝ {p₁}) p₂)
+  rwa [mem_affineSpan_singleton] at h
 
 /-- The distance to a point's orthogonal projection is 0 iff it lies in the subspace. -/
 theorem dist_orthogonalProjection_eq_zero_iff {s : AffineSubspace ℝ P} [Nonempty s]

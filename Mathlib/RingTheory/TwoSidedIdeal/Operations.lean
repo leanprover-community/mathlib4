@@ -9,6 +9,7 @@ import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Operations on two-sided ideals

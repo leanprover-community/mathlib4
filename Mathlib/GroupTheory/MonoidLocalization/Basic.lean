@@ -696,6 +696,11 @@ noncomputable def lift : N →* P where
     repeat rw [← g.map_mul]
     exact f.eq_of_eq hg (by simp_rw [f.toMap.map_mul, sec_spec']; ac_rfl)
 
+@[to_additive]
+lemma lift_apply (z) :
+    f.lift hg z = g (f.sec z).1 * (IsUnit.liftRight (g.restrict S) hg (f.sec z).2)⁻¹ :=
+  rfl
+
 /-- Given a Localization map `f : M →* N` for a Submonoid `S ⊆ M` and a map of `CommMonoid`s
 `g : M →* P` such that `g y` is invertible for all `y : S`, the homomorphism induced from
 `N` to `P` maps `f x * (f y)⁻¹` to `g x * (g y)⁻¹` for all `x : M, y ∈ S`. -/
@@ -740,7 +745,7 @@ theorem lift_spec (z v) : f.lift hg z = v ↔ g (f.sec z).1 = g (f.sec z).2 * v 
 `z : N, v w : P`, we have `f.lift hg z + w = v ↔ g x + w = g y + v`, where `x : M, y ∈ S` are such
 that `z + f y = f x`."]
 theorem lift_spec_mul (z w v) : f.lift hg z * w = v ↔ g (f.sec z).1 * w = g (f.sec z).2 * v := by
-  erw [mul_comm, ← mul_assoc, mul_inv_left hg, mul_comm]
+  rw [mul_comm, lift_apply, ← mul_assoc, mul_inv_left hg, mul_comm]
 
 @[to_additive]
 theorem lift_mk'_spec (x v) (y : S) : f.lift hg (f.mk' x y) = v ↔ g x = g y * v := by
@@ -754,7 +759,7 @@ theorem lift_mk'_spec (x v) (y : S) : f.lift hg (f.mk' x y) = v ↔ g x = g y * 
 map `g : M →+ P` induces a map `f.lift hg : N →+ P` then for all `z : N`, we have
 `f.lift hg z + g y = g x`, where `x : M, y ∈ S` are such that `z + f y = f x`."]
 theorem lift_mul_right (z) : f.lift hg z * g (f.sec z).2 = g (f.sec z).1 := by
-  erw [mul_assoc, IsUnit.liftRight_inv_mul, mul_one]
+  rw [lift_apply, mul_assoc, ← g.restrict_apply, IsUnit.liftRight_inv_mul, mul_one]
 
 /-- Given a Localization map `f : M →* N` for a Submonoid `S ⊆ M`, if a `CommMonoid` map
 `g : M →* P` induces a map `f.lift hg : N →* P` then for all `z : N`, we have
