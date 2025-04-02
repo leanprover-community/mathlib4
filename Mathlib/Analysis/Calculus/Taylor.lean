@@ -213,8 +213,7 @@ theorem hasDerivWithinAt_taylorWithinEval_at_Icc {f : ℝ → E} {a b t : ℝ} (
     self_mem_nhdsWithin ht rfl.subset hf (hf' t ht)
 
 /-- Calculate the derivative of the Taylor polynomial with respect to `x`. -/
-theorem hasDerivAt_taylorWithinEval_succ {x₀ x : ℝ} {s : Set ℝ}
-    (hs : UniqueDiffOn ℝ s) (hx₀ : x₀ ∈ s) (f : ℝ → E) (n : ℕ) :
+theorem hasDerivAt_taylorWithinEval_succ {x₀ x : ℝ} {s : Set ℝ} (f : ℝ → E) (n : ℕ) :
     HasDerivAt (taylorWithinEval f (n + 1) s x₀)
       (taylorWithinEval (derivWithin f s) n s x₀ x) x := by
   change HasDerivAt (fun x ↦ taylorWithinEval f _ s x₀ x) _ _
@@ -226,7 +225,7 @@ theorem hasDerivAt_taylorWithinEval_succ {x₀ x : ℝ} {s : Set ℝ}
   rw [Finset.sum_range_succ', Nat.cast_zero, zero_mul, zero_mul, mul_zero, zero_smul, add_zero]
   apply Finset.sum_congr rfl
   intro i _
-  rw [← iteratedDerivWithin_succ' hs hx₀]
+  rw [← iteratedDerivWithin_succ']
   congr 1
   field_simp [Nat.factorial_succ]
   ring
@@ -261,7 +260,7 @@ theorem taylor_tendsto {f : ℝ → ℝ} {x₀ : ℝ} {n : ℕ} {s : Set ℝ}
       rw [mem_diff_singleton] at hx
     · rw [Nat.cast_add, Nat.cast_one] at hf
       apply hf.differentiableOn le_add_self _ hx.1 |>.hasDerivWithinAt |>.sub
-        (hasDerivAt_taylorWithinEval_succ hs' hx₀s ..).hasDerivWithinAt |>.mono diff_subset
+        (hasDerivAt_taylorWithinEval_succ ..).hasDerivWithinAt |>.mono diff_subset
     · exact hasDerivWithinAt_id _ _ |>.sub_const _ |>.pow _
     · apply mul_ne_zero (mul_ne_zero ?_ <| pow_ne_zero _ <| sub_ne_zero_of_ne hx.2) one_ne_zero
       rw [Nat.cast_ne_zero]
