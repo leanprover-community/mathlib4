@@ -5053,6 +5053,7 @@ import Mathlib.RingTheory.MvPowerSeries.LinearTopology
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 import Mathlib.RingTheory.MvPowerSeries.Order
 import Mathlib.RingTheory.MvPowerSeries.PiTopology
+import Mathlib.RingTheory.MvPowerSeries.Rename
 import Mathlib.RingTheory.MvPowerSeries.Substitution
 import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.Nakayama
