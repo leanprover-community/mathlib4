@@ -136,15 +136,6 @@ open scoped Manifold Topology ContDiff
 
 /-! ### Models with corners. -/
 
-/-- A normed space over an `RCLike` field is also a real normed space. -/
-instance foo (𝕜 E : Type*) [NontriviallyNormedField 𝕜] [RCLike 𝕜]
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : NormedSpace ℝ E := by
-  sorry
-
-instance (𝕜 : Type*) [NontriviallyNormedField 𝕜] [RCLike 𝕜]
-    (E : Type*) [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SMul ℝ E := by
-  infer_instance
-
 /-- A structure containing information on the way a space `H` embeds in a
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a `C^n` manifold with model space `H`, and model vector space `E`.
@@ -170,7 +161,8 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
   uniqueDiffOn' : UniqueDiffOn 𝕜 toPartialEquiv.target
   target_subset_closure_interior : toPartialEquiv.target ⊆ closure (interior toPartialEquiv.target)
   convex_interior_range: ∀ h: IsRCLikeNormedField 𝕜,
-    letI := IsRCLikeNormedField.rclike 𝕜; Convex ℝ (interior (range toPartialEquiv))
+    letI := h.rclike 𝕜; letI : NormedSpace ℝ E := sorry;
+    Convex ℝ (interior (range toPartialEquiv))
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 
@@ -188,11 +180,12 @@ def ModelWithCorners.of_range_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     -- Should this be a separate lemma?
     have : range φ = φ.target := by rw [← φ.image_source_eq_target, hsource, image_univ.symm]
     simp [htarget, this]
-    have : NormedSpace ℝ E := by
-      have := h.rclike
-      have : NormedSpace 𝕜 E := by convert inst; sorry -- diamond here?
-      exact foo 𝕜 E
-    exact convex_univ
+    -- have : NormedSpace ℝ E := by
+    --   have := h.rclike
+    --   -- This instance fails to be inferred: something is wrong!
+    --   --have : NormedSpace 𝕜 E := by convert inst; sorry -- diamond here?
+    --   sorry -- exact foo 𝕜 E
+    sorry -- exact convex_univ: synthesized and inferred instances are not equal
 
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
