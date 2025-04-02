@@ -520,11 +520,13 @@ variable (H) in
   /-- The subgroup has finite index -/
   finiteIndex : H.index ≠ 0
 
+/-- Typeclass for a subgroup `H` to have finite index in a subgroup `K`. -/
 class _root_.AddSubgroup.IsFiniteRelIndex {G : Type*} [AddGroup G] (H K : AddSubgroup G) :
     Prop where
   protected relIndex_ne_zero : H.relindex K ≠ 0
 
 variable (H K) in
+/-- Typeclass for a subgroup `H` to have finite index in a subgroup `K`. -/
 @[to_additive] class IsFiniteRelIndex : Prop where
   protected relIndex_ne_zero : H.relindex K ≠ 0
 
