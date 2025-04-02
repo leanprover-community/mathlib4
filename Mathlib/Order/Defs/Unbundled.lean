@@ -64,27 +64,27 @@ class IsTotal (α : Sort*) (r : α → α → Prop) : Prop where
 
 /-- `IsPreorder X r` means that the binary relation `r` on `X` is a pre-order, that is, reflexive
 and transitive. -/
-class IsPreorder (α : Sort*) (r : α → α → Prop) extends IsRefl α r, IsTrans α r : Prop
+class IsPreorder (α : Sort*) (r : α → α → Prop) : Prop extends IsRefl α r, IsTrans α r
 
 /-- `IsPartialOrder X r` means that the binary relation `r` on `X` is a partial order, that is,
 `IsPreorder X r` and `IsAntisymm X r`. -/
-class IsPartialOrder (α : Sort*) (r : α → α → Prop) extends IsPreorder α r, IsAntisymm α r : Prop
+class IsPartialOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, IsAntisymm α r
 
 /-- `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is,
 `IsPartialOrder X r` and `IsTotal X r`. -/
-class IsLinearOrder (α : Sort*) (r : α → α → Prop) extends IsPartialOrder α r, IsTotal α r : Prop
+class IsLinearOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsPartialOrder α r, IsTotal α r
 
 /-- `IsEquiv X r` means that the binary relation `r` on `X` is an equivalence relation, that
 is, `IsPreorder X r` and `IsSymm X r`. -/
-class IsEquiv (α : Sort*) (r : α → α → Prop) extends IsPreorder α r, IsSymm α r : Prop
+class IsEquiv (α : Sort*) (r : α → α → Prop) : Prop extends IsPreorder α r, IsSymm α r
 
 /-- `IsStrictOrder X r` means that the binary relation `r` on `X` is a strict order, that is,
 `IsIrrefl X r` and `IsTrans X r`. -/
-class IsStrictOrder (α : Sort*) (r : α → α → Prop) extends IsIrrefl α r, IsTrans α r : Prop
+class IsStrictOrder (α : Sort*) (r : α → α → Prop) : Prop extends IsIrrefl α r, IsTrans α r
 
 /-- `IsStrictWeakOrder X lt` means that the binary relation `lt` on `X` is a strict weak order,
 that is, `IsStrictOrder X lt` and `¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a`. -/
-class IsStrictWeakOrder (α : Sort*) (lt : α → α → Prop) extends IsStrictOrder α lt : Prop where
+class IsStrictWeakOrder (α : Sort*) (lt : α → α → Prop) : Prop extends IsStrictOrder α lt where
   incomp_trans : ∀ a b c, ¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a
 
 /-- `IsTrichotomous X lt` means that the binary relation `lt` on `X` is trichotomous, that is,
@@ -94,8 +94,8 @@ class IsTrichotomous (α : Sort*) (lt : α → α → Prop) : Prop where
 
 /-- `IsStrictTotalOrder X lt` means that the binary relation `lt` on `X` is a strict total order,
 that is, `IsTrichotomous X lt` and `IsStrictOrder X lt`. -/
-class IsStrictTotalOrder (α : Sort*) (lt : α → α → Prop) extends IsTrichotomous α lt,
-    IsStrictOrder α lt : Prop
+class IsStrictTotalOrder (α : Sort*) (lt : α → α → Prop) : Prop
+    extends IsTrichotomous α lt, IsStrictOrder α lt
 
 /-- Equality is an equivalence relation. -/
 instance eq_isEquiv (α : Sort*) : IsEquiv α (· = ·) where
@@ -196,24 +196,19 @@ def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 /-- `IsTotal` as a definition, suitable for use in proofs. -/
 def Total := ∀ x y, x ≺ y ∨ y ≺ x
 
-@[deprecated Equivalence.refl (since := "2024-09-13")]
 theorem Equivalence.reflexive (h : Equivalence r) : Reflexive r := h.refl
 
-@[deprecated Equivalence.symm (since := "2024-09-13")]
 theorem Equivalence.symmetric (h : Equivalence r) : Symmetric r :=
   fun _ _ ↦ h.symm
 
-@[deprecated Equivalence.trans (since := "2024-09-13")]
 theorem Equivalence.transitive (h : Equivalence r) : Transitive r :=
   fun _ _ _ ↦ h.trans
 
 variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-13")]
 theorem InvImage.trans (h : Transitive r) : Transitive (InvImage r f) :=
   fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-13")]
 theorem InvImage.irreflexive (h : Irreflexive r) : Irreflexive (InvImage r f) :=
   fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
 

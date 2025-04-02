@@ -5,7 +5,7 @@ Authors: Kim Morrison, Joël Riou, Calle Sönne
 -/
 
 import Mathlib.CategoryTheory.Limits.Constructions.ZeroObjects
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Pasting
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Iso
 
@@ -126,8 +126,8 @@ end CommSq
 ```
 is a pullback square. (Also known as a fibered product or cartesian square.)
 -/
-structure IsPullback {P X Y Z : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z) (g : Y ⟶ Z) extends
-  CommSq fst snd f g : Prop where
+structure IsPullback {P X Y Z : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z) (g : Y ⟶ Z) : Prop
+    extends CommSq fst snd f g where
   /-- the pullback cone is a limit -/
   isLimit' : Nonempty (IsLimit (PullbackCone.mk _ _ w))
 
@@ -143,8 +143,8 @@ structure IsPullback {P X Y Z : C} (fst : P ⟶ X) (snd : P ⟶ Y) (f : X ⟶ Z)
 ```
 is a pushout square. (Also known as a fiber coproduct or cocartesian square.)
 -/
-structure IsPushout {Z X Y P : C} (f : Z ⟶ X) (g : Z ⟶ Y) (inl : X ⟶ P) (inr : Y ⟶ P) extends
-  CommSq f g inl inr : Prop where
+structure IsPushout {Z X Y P : C} (f : Z ⟶ X) (g : Z ⟶ Y) (inl : X ⟶ P) (inr : Y ⟶ P) : Prop
+    extends CommSq f g inl inr where
   /-- the pushout cocone is a colimit -/
   isColimit' : Nonempty (IsColimit (PushoutCocone.mk _ _ w))
 
@@ -162,8 +162,8 @@ section
 ```
 that is both a pullback square and a pushout square.
 -/
-structure BicartesianSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y ⟶ Z) extends
-  IsPullback f g h i, IsPushout f g h i : Prop
+structure BicartesianSq {W X Y Z : C} (f : W ⟶ X) (g : W ⟶ Y) (h : X ⟶ Z) (i : Y ⟶ Z) : Prop
+    extends IsPullback f g h i, IsPushout f g h i
 
 -- Lean should make these parent projections as `lemma`, not `def`.
 attribute [nolint defLemma docBlame] BicartesianSq.toIsPushout
@@ -502,7 +502,7 @@ theorem of_hasBinaryCoproduct [HasBinaryCoproduct X Y] [HasZeroObject C] [HasZer
 
 section
 
-variable {P': C} {inl' : X ⟶ P'} {inr' : Y ⟶ P'}
+variable {P' : C} {inl' : X ⟶ P'} {inr' : Y ⟶ P'}
 
 /-- Any object at the bottom right of a pushout square is isomorphic to the object at the bottom
 right of any other pushout square with the same span. -/

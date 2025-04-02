@@ -267,8 +267,7 @@ def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
   g₀ := 1
   hg_top r := by
     obtain ⟨p, hp, hp'⟩ := isBigO_atTop_cosKernel_sub a
-    rw [← isBigO_norm_left] at hp' ⊢
-    simpa [← abs_ofReal] using hp'.trans (isLittleO_exp_neg_mul_rpow_atTop hp _).isBigO
+    simpa using isBigO_ofReal_left.mpr <| hp'.trans (isLittleO_exp_neg_mul_rpow_atTop hp r).isBigO
   h_feq x hx := by simp [← ofReal_mul, evenKernel_functional_equation, inv_rpow (le_of_lt hx)]
 
 @[simp]

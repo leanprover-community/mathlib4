@@ -173,8 +173,6 @@ theorem mem_coe {x : B} : x ∈ (p : Set B) ↔ x ∈ p :=
 theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
   Subtype.ext_iff_val.symm
 
--- Porting note: this is not necessary anymore due to the way coercions work
-
 @[simp]
 theorem coe_mem (x : p) : (x : B) ∈ p :=
   x.2

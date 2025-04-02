@@ -74,7 +74,6 @@ theorem range_re : range re = univ :=
 theorem range_im : range im = univ :=
   im_surjective.range_eq
 
--- Porting note: refactored instance to allow `norm_cast` to work
 /-- The natural inclusion of the real numbers into the complex numbers. -/
 @[coe]
 def ofReal (r : ℝ) : ℂ :=
@@ -99,10 +98,8 @@ theorem ofReal_def (r : ℝ) : (r : ℂ) = ⟨r, 0⟩ :=
 theorem ofReal_inj {z w : ℝ} : (z : ℂ) = w ↔ z = w :=
   ⟨congrArg re, by apply congrArg⟩
 
--- Porting note: made coercion explicit
 theorem ofReal_injective : Function.Injective ((↑) : ℝ → ℂ) := fun _ _ => congrArg re
 
--- Porting note: made coercion explicit
 instance canLift : CanLift ℂ ℝ (↑) fun z => z.im = 0 where
   prf z hz := ⟨z.re, ext rfl hz.symm⟩
 
@@ -289,7 +286,6 @@ defined in `Data.Complex.Module`. -/
 instance : Nontrivial ℂ :=
   domain_nontrivial re rfl rfl
 
--- Porting note: moved from `Module/Data/Complex/Basic.lean`
 namespace SMul
 
 -- The useless `0` multiplication in `smul` is to make sure that
@@ -320,7 +316,6 @@ theorem real_smul {x : ℝ} {z : ℂ} : x • z = x * z :=
 
 end SMul
 
--- Porting note: proof needed modifications and rewritten fields
 instance addCommGroup : AddCommGroup ℂ :=
   { zero := (0 : ℂ)
     add := (· + ·)
@@ -330,17 +325,13 @@ instance addCommGroup : AddCommGroup ℂ :=
     zsmul := fun n z => n • z
     zsmul_zero' := by intros; ext <;> simp [smul_re, smul_im]
     nsmul_zero := by intros; ext <;> simp [smul_re, smul_im]
-    nsmul_succ := by
-      intros; ext <;> simp [AddMonoid.nsmul_succ, add_mul, add_comm,
-        smul_re, smul_im]
-    zsmul_succ' := by
-      intros; ext <;> simp [add_mul, smul_re, smul_im]
-    zsmul_neg' := by
-      intros; ext <;> simp [zsmul_neg', add_mul, smul_re, smul_im]
-    add_assoc := by intros; ext <;> simp [add_assoc]
+    nsmul_succ := by intros; ext <;> simp [smul_re, smul_im] <;> ring
+    zsmul_succ' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
+    zsmul_neg' := by intros; ext <;> simp [smul_re, smul_im] <;> ring
+    add_assoc := by intros; ext <;> simp <;> ring
     zero_add := by intros; ext <;> simp
     add_zero := by intros; ext <;> simp
-    add_comm := by intros; ext <;> simp [add_comm]
+    add_comm := by intros; ext <;> simp <;> ring
     neg_add_cancel := by intros; ext <;> simp }
 
 
@@ -362,22 +353,19 @@ instance addGroupWithOne : AddGroupWithOne ℂ :=
         rfl
     one := 1 }
 
--- Porting note: proof needed modifications and rewritten fields
 instance commRing : CommRing ℂ :=
   { addGroupWithOne with
     mul := (· * ·)
     npow := @npowRec _ ⟨(1 : ℂ)⟩ ⟨(· * ·)⟩
-    add_comm := by intros; ext <;> simp [add_comm]
-    left_distrib := by
-      intros; ext <;> simp [mul_re, mul_im] <;> ring
-    right_distrib := by
-      intros; ext <;> simp [mul_re, mul_im] <;> ring
-    zero_mul := by intros; ext <;> simp [zero_mul]
-    mul_zero := by intros; ext <;> simp [mul_zero]
-    mul_assoc := by intros; ext <;> simp [mul_assoc] <;> ring
-    one_mul := by intros; ext <;> simp [one_mul]
-    mul_one := by intros; ext <;> simp [mul_one]
-    mul_comm := by intros; ext <;> simp [mul_comm]; ring }
+    add_comm := by intros; ext <;> simp <;> ring
+    left_distrib := by intros; ext <;> simp [mul_re, mul_im] <;> ring
+    right_distrib := by intros; ext <;> simp [mul_re, mul_im] <;> ring
+    zero_mul := by intros; ext <;> simp
+    mul_zero := by intros; ext <;> simp
+    mul_assoc := by intros; ext <;> simp <;> ring
+    one_mul := by intros; ext <;> simp
+    mul_one := by intros; ext <;> simp
+    mul_comm := by intros; ext <;> simp <;> ring }
 
 /-- This shortcut instance ensures we do not find `Ring` via the noncomputable `Complex.field`
 instance. -/
@@ -388,7 +376,6 @@ instance : Ring ℂ := by infer_instance
 instance : CommSemiring ℂ :=
   inferInstance
 
--- Porting note: added due to changes in typeclass search order
 /-- This shortcut instance ensures we do not find `Semiring` via the noncomputable
 `Complex.field` instance. -/
 instance : Semiring ℂ :=
@@ -419,8 +406,8 @@ end
 
 /-! ### Cast lemmas -/
 
-noncomputable instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal q
-noncomputable instance instRatCast : RatCast ℂ where ratCast q := ofReal q
+instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal q
+instance instRatCast : RatCast ℂ where ratCast q := ofReal q
 
 @[simp, norm_cast] lemma ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ofReal ofNat(n) = ofNat(n) := rfl
 @[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ofReal n = n := rfl
@@ -485,12 +472,7 @@ theorem conj_natCast (n : ℕ) : conj (n : ℂ) = n := map_natCast _ _
 theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (ofNat(n) : ℂ) = ofNat(n) :=
   map_ofNat _ _
 
--- @[simp]
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as the result could be proved
-by `simp only [@map_neg, Complex.conj_i, @neg_neg]`
--/
-theorem conj_neg_I : conj (-I) = I :=
-  Complex.ext_iff.2 <| by simp
+theorem conj_neg_I : conj (-I) = I := by simp
 
 theorem conj_eq_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
   ⟨fun h => ⟨z.re, ext rfl <| eq_zero_of_neg_eq (congr_arg im h)⟩, fun ⟨h, e⟩ => by
@@ -503,9 +485,6 @@ theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
   ⟨fun h => add_self_eq_zero.mp (neg_eq_iff_add_eq_zero.mp (congr_arg im h)), fun h =>
     ext rfl (neg_eq_iff_add_eq_zero.mpr (add_self_eq_zero.mpr h))⟩
 
--- `simpNF` complains about this being provable by `RCLike.star_def` even
--- though it's not imported by this file.
--- Porting note: linter `simpNF` not found
 @[simp]
 theorem star_def : (Star.star : ℂ → ℂ) = conj :=
   rfl
@@ -554,17 +533,9 @@ theorem normSq_add_mul_I (x y : ℝ) : normSq (x + y * I) = x ^ 2 + y ^ 2 := by
 theorem normSq_eq_conj_mul_self {z : ℂ} : (normSq z : ℂ) = conj z * z := by
   ext <;> simp [normSq, mul_comm, ofReal]
 
--- @[simp]
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
-by `simp only [@map_zero]` -/
-theorem normSq_zero : normSq 0 = 0 :=
-  normSq.map_zero
+theorem normSq_zero : normSq 0 = 0 := by simp
 
--- @[simp]
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
-by `simp only [@map_one]` -/
-theorem normSq_one : normSq 1 = 1 :=
-  normSq.map_one
+theorem normSq_one : normSq 1 = 1 := by simp
 
 @[simp]
 theorem normSq_I : normSq I = 1 := by simp [normSq]
@@ -643,7 +614,14 @@ lemma ofReal_comp_zsmul (n : ℤ) (f : α → ℝ) : ofReal ∘ (n • f) = n �
 theorem I_sq : I ^ 2 = -1 := by rw [sq, I_mul_I]
 
 @[simp]
+lemma I_pow_three : I ^ 3 = -I := by rw [pow_succ, I_sq, neg_one_mul]
+
+@[simp]
 theorem I_pow_four : I ^ 4 = 1 := by rw [(by norm_num : 4 = 2 * 2), pow_mul, I_sq, neg_one_sq]
+
+lemma I_pow_eq_pow_mod (n : ℕ) : I ^ n = I ^ (n % 4) := by
+  conv_lhs => rw [← Nat.div_add_mod n 4]
+  simp [pow_add, pow_mul, I_pow_four]
 
 @[simp]
 theorem sub_re (z w : ℂ) : (z - w).re = z.re - w.re :=
@@ -738,17 +716,9 @@ theorem div_I (z : ℂ) : z / I = -(z * I) :=
 theorem inv_I : I⁻¹ = -I := by
   rw [inv_eq_one_div, div_I, one_mul]
 
--- @[simp]
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
-by `simp only [@map_inv₀]` -/
-theorem normSq_inv (z : ℂ) : normSq z⁻¹ = (normSq z)⁻¹ :=
-  map_inv₀ normSq z
+theorem normSq_inv (z : ℂ) : normSq z⁻¹ = (normSq z)⁻¹ := by simp
 
--- @[simp]
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
-by `simp only [@map_div₀]` -/
-theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
-  map_div₀ normSq z w
+theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w := by simp
 
 lemma div_ofReal (z : ℂ) (x : ℝ) : z / x = ⟨z.re / x, z.im / x⟩ := by
   simp_rw [div_eq_inv_mul, ← ofReal_inv, ofReal_mul']

@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Batteries.Data.Nat.Gcd
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.Int.Basic
 import Mathlib.Data.List.Cycle
 import Mathlib.Data.PNat.Notation
 import Mathlib.Dynamics.FixedPoints.Basic
-import Mathlib.Data.Int.Basic
 
 /-!
 # Periodic points
@@ -197,6 +198,15 @@ theorem mk_mem_periodicPts (hn : 0 < n) (hx : IsPeriodicPt f n x) : x ∈ period
 
 theorem mem_periodicPts : x ∈ periodicPts f ↔ ∃ n > 0, IsPeriodicPt f n x :=
   Iff.rfl
+
+theorem periodicPts_subset_image : periodicPts f ⊆ range f := by
+  intro x h
+  rw [mem_periodicPts] at h
+  rcases h with ⟨n, _, h⟩
+  use f^[n - 1] x
+  nth_rw 1 [← iterate_one f]
+  rw [← iterate_add_apply, Nat.add_sub_cancel' (by omega)]
+  exact h
 
 theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ periodicPts f)
     (hm : IsPeriodicPt f m (f^[n] x)) : IsPeriodicPt f m x := by

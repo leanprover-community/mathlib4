@@ -50,10 +50,10 @@ def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ Finite
     _ _ _ (.id _) (.id _) (leOfHom f) (leOfHom g)).symm
 
 /-- The `MonoidHom` from a profinite group `P` to the projective limit of its quotients by
-open normal subgroups ordered by inclusion.-/
+open normal subgroups ordered by inclusion -/
 def toLimit_fun (P : ProfiniteGrp.{u}) : P →*
     limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp) where
-  toFun p := ⟨fun _ => QuotientGroup.mk p, fun _ => rfl⟩
+  toFun p := ⟨fun _ => QuotientGroup.mk p, fun _ ↦ fun _ _ ↦ rfl⟩
   map_one' := Subtype.val_inj.mp rfl
   map_mul' _ _ := Subtype.val_inj.mp rfl
 
@@ -74,13 +74,13 @@ lemma toLimit_fun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimit_fun P)
   exact Iff.symm (Set.mem_smul_set_iff_inv_smul_mem)
 
 /-- The morphism in the category of `ProfiniteGrp` from a profinite group `P` to
-the projective limit of its quotients by open normal subgroups ordered by inclusion.-/
+the projective limit of its quotients by open normal subgroups ordered by inclusion -/
 def toLimit (P : ProfiniteGrp.{u}) : P ⟶
     limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp) :=
   ofHom { toLimit_fun P with
   continuous_toFun := toLimit_fun_continuous P }
 
-/--An auxiliary result, superceded by `toLimit_surjective`.-/
+/-- An auxiliary result, superseded by `toLimit_surjective` -/
 theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   apply dense_iff_inter_open.mpr
   rintro U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩

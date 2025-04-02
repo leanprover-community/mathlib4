@@ -96,33 +96,33 @@ variable
   (hB : pdf.IsUniform B ((Set.Icc (-d / 2) (d / 2)) ×ˢ (Set.Icc 0 π)) ℙ)
 
 /--
-  Projection of a needle onto the x-axis. The needle's center is at x-coordinate `x`, of length
-  `l` and angle `θ`. Note, `θ` is measured relative to the y-axis, that is, a vertical needle has
-  `θ = 0`.
+Projection of a needle onto the x-axis. The needle's center is at x-coordinate `x`, of length
+`l` and angle `θ`. Note, `θ` is measured relative to the y-axis, that is, a vertical needle has
+`θ = 0`.
 -/
 def needleProjX (x θ : ℝ) : Set ℝ := Set.Icc (x - θ.sin * l / 2) (x + θ.sin * l / 2)
 
 /--
-  The indicator function of whether a needle at position `⟨x, θ⟩ : ℝ × ℝ` crosses the line `x = 0`.
+The indicator function of whether a needle at position `⟨x, θ⟩ : ℝ × ℝ` crosses the line `x = 0`.
 
-  In order to faithfully model the problem, we compose `needleCrossesIndicator` with a random
-  variable `B : Ω → ℝ × ℝ` with uniform distribution on `[-d/2, d/2] × [0, π]`. Then, by symmetry,
-  the probability that the needle crosses `x = 0`, is the same as the probability of a needle
-  crossing any of the infinitely spaced vertical lines distance `d` apart.
+In order to faithfully model the problem, we compose `needleCrossesIndicator` with a random
+variable `B : Ω → ℝ × ℝ` with uniform distribution on `[-d/2, d/2] × [0, π]`. Then, by symmetry,
+the probability that the needle crosses `x = 0`, is the same as the probability of a needle
+crossing any of the infinitely spaced vertical lines distance `d` apart.
 -/
 noncomputable def needleCrossesIndicator (p : ℝ × ℝ) : ℝ :=
   Set.indicator (needleProjX l p.1 p.2) 1 0
 
 /--
-  A random variable representing whether the needle crosses a line.
+A random variable representing whether the needle crosses a line.
 
-  The line is at `x = 0`, and therefore a needle crosses the line if its projection onto the x-axis
-  contains `0`. This random variable is `1` if the needle crosses the line, and `0` otherwise.
+The line is at `x = 0`, and therefore a needle crosses the line if its projection onto the x-axis
+contains `0`. This random variable is `1` if the needle crosses the line, and `0` otherwise.
 -/
 noncomputable def N : Ω → ℝ := needleCrossesIndicator l ∘ B
 
 /--
-  The possible x-positions and angle relative to the y-axis of a needle.
+The possible x-positions and angle relative to the y-axis of a needle.
 -/
 abbrev needleSpace : Set (ℝ × ℝ) := Set.Icc (-d / 2) (d / 2) ×ˢ Set.Icc 0 π
 
@@ -189,14 +189,14 @@ lemma integrable_needleCrossesIndicator :
 
 include hd hB hBₘ in
 /--
-  This is a common step in both the short and the long case to simplify the expectation of the
-  needle crossing a line to a double integral.
-  ```lean
-  ∫ (θ : ℝ) in Set.Icc 0 π,
-    ∫ (x : ℝ) in Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2), 1
-  ```
-  The domain of the inner integral is simpler in the short case, where the intersection is
-  equal to `Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2)` by `short_needle_inter_eq`.
+This is a common step in both the short and the long case to simplify the expectation of the
+needle crossing a line to a double integral.
+```lean
+∫ (θ : ℝ) in Set.Icc 0 π,
+  ∫ (x : ℝ) in Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2), 1
+```
+The domain of the inner integral is simpler in the short case, where the intersection is
+equal to `Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2)` by `short_needle_inter_eq`.
 -/
 lemma buffon_integral :
     𝔼[N l B] = (d * π) ⁻¹ *
@@ -235,26 +235,26 @@ lemma buffon_integral :
 
 include hl in
 /--
-  From `buffon_integral`, in both the short and the long case, we have
-  ```lean
-  𝔼[N l B] = (d * π)⁻¹ *
-    ∫ (θ : ℝ) in Set.Icc 0 π,
-      ∫ (x : ℝ) in Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2), 1
-  ```
-  With this lemma, in the short case, the inner integral's domain simplifies to
-  `Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2)`.
+From `buffon_integral`, in both the short and the long case, we have
+```lean
+𝔼[N l B] = (d * π)⁻¹ *
+  ∫ (θ : ℝ) in Set.Icc 0 π,
+    ∫ (x : ℝ) in Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2), 1
+```
+With this lemma, in the short case, the inner integral's domain simplifies to
+`Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2)`.
 -/
 lemma short_needle_inter_eq (h : l ≤ d) (θ : ℝ) :
     Set.Icc (-d / 2) (d / 2) ∩ Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2) =
     Set.Icc (-θ.sin * l / 2) (θ.sin * l / 2) := by
   rw [Set.Icc_inter_Icc, max_div_div_right zero_le_two,
     min_div_div_right zero_le_two, neg_mul, max_neg_neg, mul_comm,
-    min_eq_right (mul_le_of_le_of_le_one_of_nonneg h θ.sin_le_one hl.le)]
+    min_eq_right ((mul_le_of_le_one_right hl.le θ.sin_le_one).trans h)]
 
 include hd hBₘ hB hl in
 /--
-  Buffon's Needle, the short case (`l ≤ d`). The probability of the needle crossing a line
-  equals `(2 * l) / (d * π)`.
+Buffon's Needle, the short case (`l ≤ d`). The probability of the needle crossing a line
+equals `(2 * l) / (d * π)`.
 -/
 theorem buffon_short (h : l ≤ d) : ℙ[N l B] = (2 * l) * (d * π)⁻¹ := by
   simp_rw [buffon_integral d l hd B hBₘ hB, short_needle_inter_eq d l hl h _,
@@ -272,8 +272,8 @@ theorem buffon_short (h : l ≤ d) : ℙ[N l B] = (2 * l) * (d * π)⁻¹ := by
     integral_sin, Real.cos_zero, Real.cos_pi, sub_neg_eq_add, one_add_one_eq_two, true_or]
 
 /--
-  The integrand in the long case is `min d (θ.sin * l)` and its integrability is necessary for
-  the integral lemmas below.
+The integrand in the long case is `min d (θ.sin * l)` and its integrability is necessary for
+the integral lemmas below.
 -/
 lemma intervalIntegrable_min_const_sin_mul (a b : ℝ) :
     IntervalIntegrable (fun (θ : ℝ) => min d (θ.sin * l)) ℙ a b := by
@@ -281,9 +281,9 @@ lemma intervalIntegrable_min_const_sin_mul (a b : ℝ) :
   exact Continuous.min continuous_const (Continuous.mul Real.continuous_sin continuous_const)
 
 /--
-  This equality is useful since `θ.sin` is increasing in `0..π / 2` (but not in `0..π`).
-  Then, `∫ θ in (0)..π / 2, min d (θ.sin * l)` can be split into two adjacent integrals, at the
-  point where `d = θ.sin * l`, which is `θ = (d / l).arcsin`.
+This equality is useful since `θ.sin` is increasing in `0..π / 2` (but not in `0..π`).
+Then, `∫ θ in (0)..π / 2, min d (θ.sin * l)` can be split into two adjacent integrals, at the
+point where `d = θ.sin * l`, which is `θ = (d / l).arcsin`.
 -/
 lemma integral_min_eq_two_mul :
     ∫ θ in (0)..π, min d (θ.sin * l) = 2 * ∫ θ in (0)..π / 2, min d (θ.sin * l) := by
@@ -296,8 +296,8 @@ lemma integral_min_eq_two_mul :
 
 include hd hl in
 /--
-  The first of two adjacent integrals in the long case. In the range `(0)..(d / l).arcsin`, we
-  have that `θ.sin * l ≤ d`, and thus the integral is `∫ θ in (0)..(d / l).arcsin, θ.sin * l`.
+The first of two adjacent integrals in the long case. In the range `(0)..(d / l).arcsin`, we
+have that `θ.sin * l ≤ d`, and thus the integral is `∫ θ in (0)..(d / l).arcsin, θ.sin * l`.
 -/
 lemma integral_zero_to_arcsin_min :
     ∫ θ in (0)..(d / l).arcsin, min d (θ.sin * l) = (1 - √(1 - (d / l) ^ 2)) * l := by
@@ -314,8 +314,8 @@ lemma integral_zero_to_arcsin_min :
 
 include hl in
 /--
-  The second of two adjacent integrals in the long case. In the range `(d / l).arcsin..(π / 2)`, we
-  have that `d ≤ θ.sin * l`, and thus the integral is `∫ θ in (d / l).arcsin..(π / 2), d`.
+The second of two adjacent integrals in the long case. In the range `(d / l).arcsin..(π / 2)`, we
+have that `d ≤ θ.sin * l`, and thus the integral is `∫ θ in (d / l).arcsin..(π / 2), d`.
 -/
 lemma integral_arcsin_to_pi_div_two_min (h : d ≤ l) :
     ∫ θ in (d / l).arcsin..(π / 2), min d (θ.sin * l) = (π / 2 - (d / l).arcsin) * d := by
@@ -332,9 +332,7 @@ lemma integral_arcsin_to_pi_div_two_min (h : d ≤ l) :
   rw [intervalIntegral.integral_congr this, intervalIntegral.integral_const, smul_eq_mul]
 
 include hd hBₘ hB hl in
-/--
-  Buffon's Needle, the long case (`d ≤ l`).
--/
+/-- Buffon's Needle, the long case (`d ≤ l`) -/
 theorem buffon_long (h : d ≤ l) :
     ℙ[N l B] = (2 * l) / (d * π) - 2 / (d * π) * (√(l^2 - d^2) + d * (d / l).arcsin) + 1 := by
   simp only [
