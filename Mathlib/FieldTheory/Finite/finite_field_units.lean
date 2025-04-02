@@ -28,7 +28,7 @@ def unitsToSet (u : Fˣ) : {x : F | ∃ u : Fˣ, u.val = x} := ⟨u.val, u, rfl�
 
 -- Prove that the mapping from units to their values is bijective
 lemma units_bijective : Function.Bijective
-  (λ u : Fˣ => ⟨u.val, u, rfl⟩ : Fˣ → {x : F | ∃ u : Fˣ, u.val = x}) := by {
+  (fun u : Fˣ => ⟨u.val, u, rfl⟩ : Fˣ → {x : F | ∃ u : Fˣ, u.val = x}) := by {
   constructor
   · -- Injectivity: If two units map to the same value, they are equal
     intros u v h
@@ -44,7 +44,7 @@ lemma units_bijective : Function.Bijective
 /-- The cardinality of Units F equals the cardinality of the corresponding set -/
 theorem units_F_set_card_eq : Nat.card Fˣ = Nat.card {x : F | ∃ u : Fˣ, u.val = x}:= by {
   -- Two sets have the same cardinality if there is a bijection between them
-  apply  Nat.card_eq_of_bijective  (λ u => ⟨u.val, u, rfl⟩)
+  apply  Nat.card_eq_of_bijective  (fun u => ⟨u.val, u, rfl⟩)
   exact units_bijective
 }
 
