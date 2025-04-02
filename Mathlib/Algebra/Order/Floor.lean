@@ -1111,7 +1111,7 @@ theorem ceil_mono : Monotone (ceil : α → ℤ) :=
 
 @[simp]
 theorem ceil_add_intCast (a : α) (z : ℤ) : ⌈a + z⌉ = ⌈a⌉ + z := by
-  rw [← neg_inj, neg_add', ← floor_neg, ← floor_neg, neg_add', floor_sub_int]
+  rw [← neg_inj, neg_add', ← floor_neg, ← floor_neg, neg_add', floor_sub_intCast]
 
 @[deprecated (since := "2025-04-01")] alias ceil_add_int := ceil_add_intCast
 
@@ -1504,3 +1504,6 @@ def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
   | _, _, _ => throwError "failed to match on Int.ceil application"
 
 end Mathlib.Meta.Positivity
+
+-- Pushed over the limit by deprecations
+set_option linter.style.longFile 1600
