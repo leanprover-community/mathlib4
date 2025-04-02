@@ -123,12 +123,10 @@ noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 �
       exact H _ h
     { toFun z := Classical.choose (mem_span_singleton.1 z.prop) • y
       map_add' y z := by
-        beta_reduce
         rw [← add_smul, H]
         have (w : R ∙ x) := Classical.choose_spec (mem_span_singleton.1 w.prop)
         simp only [add_smul, sub_smul, this, ← coe_add]
       map_smul' c z := by
-        beta_reduce
         rw [smul_smul, H]
         have (w : R ∙ x) := Classical.choose_spec (mem_span_singleton.1 w.prop)
         simp only [mul_smul, this]
