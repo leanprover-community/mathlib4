@@ -389,6 +389,7 @@ variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 def FinitePresentation (f : A →+* B) : Prop :=
   @Algebra.FinitePresentation A B _ _ f.toAlgebra
 
+@[simp]
 lemma finitePresentation_algebraMap [Algebra A B] :
     (algebraMap A B).FinitePresentation ↔ Algebra.FinitePresentation A B := by
   delta RingHom.FinitePresentation
