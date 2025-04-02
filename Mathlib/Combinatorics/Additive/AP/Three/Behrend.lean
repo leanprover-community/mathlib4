@@ -42,6 +42,9 @@ integer points on that sphere and map them onto `ℕ` in a way that preserves ar
 3AP-free, Salem-Spencer, Behrend construction, arithmetic progression, sphere, strictly convex
 -/
 
+-- instance shortcut hack
+instance : PosMulReflectLT ℝ := inferInstance
+
 assert_not_exists IsConformalMap
 assert_not_exists Conformal
 
