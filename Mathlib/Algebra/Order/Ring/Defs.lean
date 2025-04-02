@@ -162,12 +162,12 @@ instance (priority := 100) IsOrderedRing.zeroLEOneClass : ZeroLEOneClass α :=
   { ‹IsOrderedRing α› with }
 
 -- see Note [lower instance priority]
-instance (priority := 200) IsOrderedRing.toPosMulMono : PosMulMono α :=
-  ⟨fun x _ _ h => IsOrderedRing.mul_le_mul_of_nonneg_left _ _ _ h x.2⟩
+instance (priority := 200) IsOrderedRing.toPosMulMono : PosMulMono α where
+  elim x _ _ h := IsOrderedRing.mul_le_mul_of_nonneg_left _ _ _ h x.2
 
 -- see Note [lower instance priority]
-instance (priority := 200) IsOrderedRing.toMulPosMono : MulPosMono α :=
-  ⟨fun x _ _ h => IsOrderedRing.mul_le_mul_of_nonneg_right _ _ _ h x.2⟩
+instance (priority := 200) IsOrderedRing.toMulPosMono : MulPosMono α where
+  elim x _ _ h := IsOrderedRing.mul_le_mul_of_nonneg_right _ _ _ h x.2
 
 end IsOrderedRing
 
@@ -181,12 +181,12 @@ section IsStrictOrderedRing
 variable [Semiring α] [PartialOrder α] [IsStrictOrderedRing α]
 
 -- see Note [lower instance priority]
-instance (priority := 200) IsStrictOrderedRing.toPosMulStrictMono : PosMulStrictMono α :=
-  ⟨fun x _ _ h => IsStrictOrderedRing.mul_lt_mul_of_pos_left _ _ _ h x.prop⟩
+instance (priority := 200) IsStrictOrderedRing.toPosMulStrictMono : PosMulStrictMono α where
+  elim x _ _ h := IsStrictOrderedRing.mul_lt_mul_of_pos_left _ _ _ h x.prop
 
 -- see Note [lower instance priority]
-instance (priority := 200) IsStrictOrderedRing.toMulPosStrictMono : MulPosStrictMono α :=
-  ⟨fun x _ _ h => IsStrictOrderedRing.mul_lt_mul_of_pos_right _ _ _ h x.prop⟩
+instance (priority := 200) IsStrictOrderedRing.toMulPosStrictMono : MulPosStrictMono α where
+  elim x _ _ h := IsStrictOrderedRing.mul_lt_mul_of_pos_right _ _ _ h x.prop
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.toIsOrderedRing : IsOrderedRing α where
