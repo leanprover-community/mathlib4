@@ -125,8 +125,11 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
   -- The sets `E n` are a partition of the support of `f`.
   have partition_aux : range f ⊆ ⋃ n, Ioc (y n - ε) (y n) := calc
     _ ⊆ Ioc a (a + N * ε) := fun _ hz ↦ Ioo_subset_Ioc_self (hf hz)
-    _ = ⋃ n ∈ Finset.range N, Ioc (a + n * ε) (a + n * ε + ε) :=
-      Eq.symm <| iUnion_Ioc_Ioc N a (le_of_lt hε)
+    _ ⊆ ⋃ n ∈ Finset.range N, Ioc (a + n * ε) (a + n * ε + ε) := by
+      have := iUnion_Ioc_subset_Ioc N (fun n ↦ a + n * ε)
+      simp only [CharP.cast_eq_zero, zero_mul, add_zero, Nat.cast_add, Nat.cast_one, add_mul,
+        one_mul, ← add_assoc] at this
+      exact this
     _ ⊆ ⋃ n : Fin N, Ioc (a + n * ε) (a + n * ε + ε) := by
       intro _
       simp only [mem_iUnion, Finset.mem_range, exists_prop]
