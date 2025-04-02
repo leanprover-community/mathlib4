@@ -18,8 +18,12 @@ open Set
 namespace Filter
 
 /--
-`atMax` is the filter representing the limit `→ ∞` on an ordered set,
-and contains all maximal elements.
+`atMax` is the filter representing the limit `→ ∞` on an ordered set.
+It contains all maximal elements.
+
+While `atTop` and `atMax` both denote a limit at `∞`,
+`atTop` captures the idea of a process which increases past every element while
+`atMax` captures the idea of a process which increases as much as possible.
 -/
 def atMax [Preorder α] : Filter α where
   sets := {s | ∀ x, ∃ y ≥ x, Ici y ⊆ s}
@@ -35,8 +39,12 @@ def atMax [Preorder α] : Filter α where
     exact ⟨z, hxy.trans hyz, subset_inter ((Ici_subset_Ici.mpr hyz).trans hy) hz⟩
 
 /--
-`atMin` is the filter representing the limit `→ -∞` on an ordered set,
-and contains all minimal elements.
+`atMin` is the filter representing the limit `→ -∞` on an ordered set
+It contains all minimal elements.
+
+While `atBot` and `atMin` both denote a limit at `-∞`,
+`atBot` captures the idea of a process which decends past every element while
+`atMin` captures the idea of a process which decreases as much as possible.
 -/
 def atMin [Preorder α] : Filter α where
   sets := {s | ∀ x, ∃ y ≤ x, Iic y ⊆ s}
