@@ -621,49 +621,53 @@ theorem map_subtype_subset {t : Set α} (s : Finset t) : ↑(s.map (Embedding.su
 end Subtype
 
 section Fin
+
 /-! ### Fin -/
 
 variable {n : ℕ}
 
-/-- Lift a finite set `s : Finset ℕ` to `Finset (Fin n)`,
-given a set in `Fin n` whose image under `Fin.val` is equal to `s`.
-
-This is an auxiliary definition used in the definition of a locally finite order on `Fin n`,
-in order to avoid re-verifying `i < n` for each `i` in an interval. -/
-def finOfImageEq (s : Finset ℕ) (t : Set (Fin n)) (h : Fin.val '' t = s) : Finset (Fin n) := by
-  refine s.attach.map ⟨fun i ↦ ⟨i.1, ?_⟩, ?_⟩
-  · rcases i with ⟨i, hi⟩
-    rw [← mem_coe, ← h, Set.mem_image] at hi
-    rcases hi with ⟨i, -, rfl⟩
-    exact i.is_lt
-  · intro _ _ h
-    ext
-    simpa using h
+/-- Lift a subset of `Finset.range n` to `Finset (Fin n)`. -/
+def attachFin (s : Finset ℕ) (h : s ⊆ range n) : Finset (Fin n) :=
+  s.attach.map ⟨fun i ↦ ⟨i.1, mem_range.mp (h i.2)⟩, fun _ _ ↦ by simp [Subtype.coe_inj]⟩
 
 @[simp]
-theorem image_val_finOfImageEq {s : Finset ℕ} {t : Set (Fin n)} (h : Fin.val '' t = s) :
-    (finOfImageEq s t h).image Fin.val = s := by
-  simp [← coe_inj, finOfImageEq, ← Set.range_comp']
+lemma image_val_attachFin {s : Finset ℕ} (h : s ⊆ range n) :
+    image Fin.val (s.attachFin h) = s := by
+  apply coe_injective
+  simp [attachFin, ← Set.range_comp']
 
 @[simp]
-theorem map_valEmbedding_finOfImageEq {s : Finset ℕ} {t : Set (Fin n)} (h : Fin.val '' t = s) :
-    (finOfImageEq s t h).map Fin.valEmbedding = s := by
+lemma map_valEmbedding_attachFin {s : Finset ℕ} (h : s ⊆ range n) :
+    map Fin.valEmbedding (s.attachFin h) = s := by
   simp [map_eq_image]
 
 @[simp]
-theorem coe_finOfImageEq {s : Finset ℕ} {t : Set (Fin n)} (h : Fin.val '' t = s) :
-    ↑(finOfImageEq s t h) = t := by
-  apply Fin.val_injective.image_injective
-  rw [← coe_image, image_val_finOfImageEq, h]
+lemma mem_attachFin {s : Finset ℕ} {h : s ⊆ range n} {i : Fin n} :
+    i ∈ attachFin s h ↔ i.val ∈ s := by
+  simp [← mem_map' Fin.valEmbedding]
 
 @[simp]
-theorem mem_finOfImageEq {s : Finset ℕ} {t : Set (Fin n)} (h : Fin.val '' t = s) {i : Fin n} :
-    i ∈ finOfImageEq s t h ↔ i ∈ t := by
-  rw [← mem_coe, coe_finOfImageEq]
+lemma coe_attachFin {s : Finset ℕ} (h : s ⊆ range n) :
+    (attachFin s h : Set (Fin n)) = Fin.val ⁻¹' s := by
+  ext; simp
 
-theorem mem_finOfImageEq_iff_val_mem {s : Finset ℕ} {t : Set (Fin n)} (h : Fin.val '' t = s)
-    {i : Fin n} : i ∈ finOfImageEq s t h ↔ i.1 ∈ s := by
-  rw [mem_finOfImageEq, ← Fin.val_injective.mem_set_image, h, mem_coe]
+@[simp]
+lemma attachFin_subset_attachFin_iff {s t : Finset ℕ} (hs : s ⊆ range n) (ht : t ⊆ range n) :
+    s.attachFin hs ⊆ t.attachFin ht ↔ s ⊆ t := by
+  simp [← map_subset_map (f := Fin.valEmbedding)]
+
+@[mono, gcongr]
+lemma attachFin_subset_attachFin {s t : Finset ℕ} (hst : s ⊆ t) (ht : t ⊆ range n) :
+    s.attachFin (hst.trans ht) ⊆ t.attachFin ht := by simpa
+
+@[simp]
+lemma attachFin_ssubset_attachFin_iff {s t : Finset ℕ} (hs : s ⊆ range n) (ht : t ⊆ range n) :
+    s.attachFin hs ⊂ t.attachFin ht ↔ s ⊂ t := by
+  simp [← map_ssubset_map (f := Fin.valEmbedding)]
+
+@[mono, gcongr]
+lemma attachFin_ssubset_attachFin {s t : Finset ℕ} (hst : s ⊂ t) (ht : t ⊆ range n) :
+    s.attachFin (hst.subset.trans ht) ⊂ t.attachFin ht := by simpa
 
 /-- Given a finset `s` of natural numbers and a bound `n`,
 `s.fin n` is the finset of all elements of `s` less than `n`.
@@ -672,32 +676,32 @@ This definition was introduced to define a `LocallyFiniteOrder` instance on `Fin
 Later, this instance was rewritten using a more efficient `finOfImageEq`.
 Since this definition had no other uses in the library, it was deprecated.
 -/
-@[deprecated finOfImageEq (since := "2025-03-27")]
+@[deprecated attachFin (since := "2025-04-01")]
 protected def fin (n : ℕ) (s : Finset ℕ) : Finset (Fin n) :=
   (s.subtype _).map Fin.equivSubtype.symm.toEmbedding
 
 set_option linter.deprecated false
 
-@[simp, deprecated mem_finOfImageEq (since := "2025-03-27")]
+@[simp, deprecated mem_attachFin (since := "2025-04-01")]
 theorem mem_fin {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.fin n ↔ (a : ℕ) ∈ s
   | ⟨a, ha⟩ => by simp [Finset.fin, ha, and_comm]
 
-@[deprecated "No replacement" (since := "2025-03-27")]
-theorem finOfImageEq_eq_fin {s : Finset ℕ} {t : Set (Fin n)} (h : Fin.val '' t = s) :
-    finOfImageEq s t h = s.fin n := by
+@[deprecated "No replacement" (since := "2025-04-01")]
+theorem attachFin_eq_fin {s : Finset ℕ} (h : s ⊆ range n) :
+    attachFin s h = s.fin n := by
   ext
-  simp only [mem_finOfImageEq_iff_val_mem, mem_fin]
+  simp
 
-@[simp, deprecated coe_finOfImageEq (since := "2025-03-27")]
+@[simp, deprecated coe_attachFin (since := "2025-04-01")]
 theorem coe_fin (n : ℕ) (s : Finset ℕ) : (s.fin n : Set (Fin n)) = Fin.val ⁻¹' s := by ext; simp
 
-@[mono, deprecated "No replacement" (since := "2025-03-27")]
+@[mono, deprecated attachFin_subset_attachFin (since := "2025-04-01")]
 theorem fin_mono : Monotone (Finset.fin n) := fun s t h x => by simpa using @h x
 
-@[gcongr, deprecated "No replacement" (since := "2025-03-27")]
+@[gcongr, deprecated attachFin_subset_attachFin (since := "2025-04-01")]
 theorem fin_subset_fin (n : ℕ) {s t : Finset ℕ} (h : s ⊆ t) : s.fin n ⊆ t.fin n := fin_mono h
 
-@[simp, deprecated map_valEmbedding_finOfImageEq (since := "2025-03-27")]
+@[simp, deprecated map_valEmbedding_attachFin (since := "2025-04-01")]
 theorem fin_map {n} {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter (· < n) := by
   simp [Finset.fin, Finset.map_map]
 

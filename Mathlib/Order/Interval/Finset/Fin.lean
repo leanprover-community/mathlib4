@@ -26,13 +26,13 @@ variable (n : ℕ)
 -/
 
 instance instLocallyFiniteOrder (n : ℕ) : LocallyFiniteOrder (Fin n) where
-  finsetIcc a b := finOfImageEq (Finset.Icc (a : ℕ) b) (Set.Icc a b) (by simp)
+  finsetIcc a b := attachFin (Icc a b) fun x hx ↦ mem_range.2 <| (mem_Icc.mp hx).2.trans_lt b.2
   finset_mem_Icc a b := by simp
-  finsetIco a b := finOfImageEq (Finset.Ico (a : ℕ) b) (Set.Ico a b) (by simp)
+  finsetIco a b := attachFin (Ico a b) fun x hx ↦ mem_range.2 <| (mem_Ico.mp hx).2.trans b.2
   finset_mem_Ico a b := by simp
-  finsetIoc a b := finOfImageEq (Finset.Ioc (a : ℕ) b) (Set.Ioc a b) (by simp)
+  finsetIoc a b := attachFin (Ioc a b) fun x hx ↦ mem_range.2 <| (mem_Ioc.mp hx).2.trans_lt b.2
   finset_mem_Ioc a b := by simp
-  finsetIoo a b := finOfImageEq (Finset.Ioo (a : ℕ) b) (Set.Ioo a b) (by simp)
+  finsetIoo a b := attachFin (Ioo a b) fun x hx ↦ mem_range.2 <| (mem_Ioo.mp hx).2.trans b.2
   finset_mem_Ioo a b := by simp
 
 instance instLocallyFiniteOrderBot : ∀ n, LocallyFiniteOrderBot (Fin n)
