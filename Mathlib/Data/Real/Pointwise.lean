@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Eric Wieser
 import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Pointwise
-import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Real.Archimedean
 
 /-!
@@ -23,7 +22,7 @@ This is true more generally for conditionally complete linear order whose defaul
 don't have those yet.
 -/
 
---assert_not_exists Finset
+assert_not_exists Finset
 
 open Set
 
@@ -142,9 +141,11 @@ theorem Real.iSup_mul_iSup_le_of_nonneg [Nonempty ι] {f g : ι → ℝ}
   exact ciSup_le fun j ↦ H i j
 
 /-- If `f : ι → ℝ` and `g : ι → ℝ` are non-negative, then `iSup (f * g) ≤ iSup f * iSup g`. -/
-theorem Real.iSup_mul_le_mul_iSup_of_nonneg {ι : Type*} [Nonempty ι] [Finite ι] {f g : ι → ℝ}
-    (hf_nn : ∀ i, 0 ≤ f i) (hg_nn : ∀ i, 0 ≤ g i) : (⨆ i : ι, f i * g i) ≤ iSup f * iSup g :=
-  ciSup_le fun x ↦ mul_le_mul (le_ciSup (Finite.bddAbove_range f) x)
-    (le_ciSup (Finite.bddAbove_range g) x) (hg_nn x) (Real.iSup_nonneg hf_nn)
+theorem Real.iSup_mul_le_mul_iSup_of_nonneg' {ι : Type*} [Nonempty ι] {f g : ι → ℝ}
+    (hf_nn : ∀ i, 0 ≤ f i) (hg_nn : ∀ i, 0 ≤ g i)
+    (hf_bdd : BddAbove (range f)) (hg_bdd : BddAbove (range g)) :
+    ⨆ i, f i * g i ≤ (⨆ i, f i) * ⨆ i, g i :=
+  ciSup_le fun x ↦ mul_le_mul (le_ciSup hf_bdd x)
+    (le_ciSup hg_bdd x) (hg_nn x) (Real.iSup_nonneg hf_nn)
 
 end Mul
