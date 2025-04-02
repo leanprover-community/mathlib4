@@ -3,14 +3,12 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Equiv.Opposite
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.DFinsupp.Defs
 import Mathlib.Data.Finsupp.Defs
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Unique products and related notions
@@ -50,7 +48,7 @@ about the grading type and then a generic statement of the form "look at the coe
 The file `Algebra/MonoidAlgebra/NoZeroDivisors` contains several examples of this use.
 -/
 
-assert_not_exists Cardinal Subsemiring Algebra Submodule StarModule
+assert_not_exists Cardinal Subsemiring Algebra Submodule StarModule FreeMonoid OrderedCommMonoid
 
 open Finset
 
@@ -625,12 +623,3 @@ instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSu
 instance {ι G} [AddZeroClass G] [TwoUniqueSums G] : TwoUniqueSums (ι →₀ G) :=
   TwoUniqueSums.of_injective_addHom
     Finsupp.coeFnAddHom.toAddHom DFunLike.coe_injective inferInstance
-
-/-- Any `FreeMonoid` has the `TwoUniqueProds` property. -/
-instance FreeMonoid.instTwoUniqueProds {κ : Type*} : TwoUniqueProds (FreeMonoid κ) :=
-  .of_mulHom ⟨Multiplicative.ofAdd ∘ List.length, fun _ _ ↦ congr_arg _ List.length_append⟩
-    (fun _ _ _ _ h h' ↦ List.append_inj h <| Equiv.injective Multiplicative.ofAdd h'.1)
-
-/-- Any `FreeAddMonoid` has the `TwoUniqueSums` property. -/
-instance FreeAddMonoid.instTwoUniqueSums {κ : Type*} : TwoUniqueSums (FreeAddMonoid κ) :=
-  .of_addHom ⟨_, fun _ _ => List.length_append⟩ (fun _ _ _ _ h h' ↦ List.append_inj h h'.1)

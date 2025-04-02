@@ -1230,6 +1230,12 @@ theorem forall_cons (p : α → Prop) (x : α) : ∀ l : List α, Forall p (x ::
   | [] => (and_iff_left_of_imp fun _ ↦ trivial).symm
   | _ :: _ => Iff.rfl
 
+@[simp]
+theorem forall_append {p : α → Prop} : ∀ {xs ys : List α},
+    Forall p (xs ++ ys) ↔ Forall p xs ∧ Forall p ys
+  | [] => by simp
+  | _ :: _ => by simp [forall_append, and_assoc]
+
 theorem forall_iff_forall_mem : ∀ {l : List α}, Forall p l ↔ ∀ x ∈ l, p x
   | [] => (iff_true_intro <| forall_mem_nil _).symm
   | x :: l => by rw [forall_mem_cons, forall_cons, forall_iff_forall_mem]
