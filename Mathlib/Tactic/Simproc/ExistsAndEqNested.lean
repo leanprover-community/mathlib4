@@ -48,7 +48,8 @@ abbrev HypQ := (P : Q(Prop)) × Q($P)
 instance : Inhabited HypQ where
   default := ⟨default, default⟩
 
-def fail {α : Type} : MetaM α := throwError "existsAndEq simproc failed"
+/-- Failure function for the `existsAndEqNested` simproc. -/
+def fail {α : Type} : MetaM α := throwError "existsAndEqNested simproc failed"
 
 /-- Constructs `∃ f₁ f₂ ... fₙ, body`, where `[f₁, ..., fₙ] = fvars`. -/
 def mkNestedExists (fvars : List VarQ) (body : Q(Prop)) : MetaM Q(Prop) := do
