@@ -76,7 +76,7 @@ we can uniformly approximate `f` by finite products of indicator functions of cl
 @[to_additive "If `f` is a continuous map from a profinite space to a uniform space with an
 additive group structure, then we can uniformly approximate `f` by finite sums of indicator
 functions of clopen sets."]
-lemma exists_sum_const_mulIndicator_approx [CommGroup V] (hS : S ∈ 𝓤 V) :
+lemma exists_sum_const_mulIndicator_approx [CommMonoid V] (hS : S ∈ 𝓤 V) :
     ∃ (n : ℕ) (U : Fin n → Clopens X) (v : Fin n → V),
     ∀ x, (f x, ∏ n, mulIndicator (U n) (fun _ ↦ v n) x) ∈ S := by
   obtain ⟨n, g, h, hg, hgh⟩ := exists_fin_comp_of_mem_uniformity f hS
@@ -95,13 +95,13 @@ lemma exists_sum_smul_approx [AddCommGroup V] [UniformAddGroup V] [MulActionWith
     ∃ (n : ℕ) (g : Fin n → C(X, R)) (h : Fin n → C(Y, V)),
     ∀ x y, (f (x, y), ∑ i, g i x • h i y) ∈ S := by
   have hS' : {(f, g) | ∀ y, (f y, g y) ∈ S} ∈ 𝓤 C(Y, V) :=
-    (ContinuousMap.mem_compactConvergence_entourage_iff _).mpr
+    (mem_compactConvergence_entourage_iff _).mpr
       ⟨_, _, isCompact_univ, hS, by simp only [Set.mem_univ, true_implies, subset_refl]⟩
   obtain ⟨n, U, v, hv⟩ := exists_sum_const_indicator_approx f.curry hS'
   refine ⟨n, fun i ↦ ⟨_, (U i).isClopen.continuous_indicator <| continuous_const (y := 1)⟩,
     v, fun x y ↦ ?_⟩
   convert hv x y using 2
-  simp only [ContinuousMap.sum_apply]
+  simp only [sum_apply]
   congr 1 with i
   by_cases hi : x ∈ U i <;> simp [hi]
 
