@@ -804,6 +804,11 @@ theorem Ici_inj : Ici a = Ici b ↔ a = b :=
 theorem Iic_inj : Iic a = Iic b ↔ a = b :=
   Iic_injective.eq_iff
 
+@[simp]
+theorem Icc_inter_Icc_eq_singleton (hab : a ≤ b) (hbc : b ≤ c) : Icc a b ∩ Icc b c = {b} := by
+  rw [← Ici_inter_Iic, ← Iic_inter_Ici, inter_inter_inter_comm, Iic_inter_Ici]
+  simp [hab, hbc]
+
 end PartialOrder
 
 section OrderTop
@@ -1467,10 +1472,6 @@ variable [Lattice α] {a b c a₁ a₂ b₁ b₂ : α}
 
 theorem Icc_inter_Icc : Icc a₁ b₁ ∩ Icc a₂ b₂ = Icc (a₁ ⊔ a₂) (b₁ ⊓ b₂) := by
   simp only [Ici_inter_Iic.symm, Ici_inter_Ici.symm, Iic_inter_Iic.symm]; ac_rfl
-
-@[simp]
-theorem Icc_inter_Icc_eq_singleton (hab : a ≤ b) (hbc : b ≤ c) : Icc a b ∩ Icc b c = {b} := by
-  rw [Icc_inter_Icc, sup_of_le_right hab, inf_of_le_left hbc, Icc_self]
 
 end Both
 
