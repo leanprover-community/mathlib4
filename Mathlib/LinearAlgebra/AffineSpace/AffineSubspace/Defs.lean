@@ -354,7 +354,7 @@ def shift (p : P) (s : Submodule k V) : AffineSubspace k P where
     simpa [vadd_vsub_assoc] using
       add_mem (s.smul_mem c (s.sub_mem hp₁ hp₂)) hp₃
 
-@[deprecated (since := "2025-04-02")] alias mk' := shift
+@[deprecated (since := "2025-04-02")] alias _root_.AffineSubspace.mk' := shift
 
 variable (p q : P) (s : Submodule k V)
 
@@ -365,29 +365,30 @@ if the difference with that point is in that linear subspace.
 @[simp] theorem mem_shift : q ∈ s.shift p ↔ q -ᵥ p ∈ s :=
   Iff.rfl
 
-@[deprecated (since := "2025-04-02")] alias mem_mk' := mem_shift
-@[deprecated (since := "2025-04-02")] alias mem_mk'_iff_vsub_mem := mem_shift
+@[deprecated (since := "2025-04-02")] alias _root_.AffineSubspace.mem_mk' := mem_shift
+@[deprecated (since := "2025-04-02")] alias _root_.AffineSubspace.mem_mk'_iff_vsub_mem := mem_shift
 
 /-- The shift of a linear subspace to a point contains that point. -/
 theorem self_mem_shift : p ∈ s.shift p := by
   simp
 
-@[deprecated (since := "2025-04-02")] alias self_mem_mk' := self_mem_shift
+@[deprecated (since := "2025-04-02")] alias _root_.AffineSubspace.self_mem_mk' := self_mem_shift
 
+variable {v s} in
 /--
 The shift of a linear subspace to a point contains the result of adding a
 vector in that linear subspace to that point.
 -/
-theorem vadd_mem_shift {v : V} {s : Submodule k V} (hv : v ∈ s) : v +ᵥ p ∈ s.shift p := by
+theorem vadd_mem_shift (hv : v ∈ s) : v +ᵥ p ∈ s.shift p := by
   simpa
 
-@[deprecated (since := "2025-04-02")] alias vadd_mem_mk' := vadd_mem_shift
+@[deprecated (since := "2025-04-02")] alias _root_.AffineSubspace.vadd_mem_mk' := vadd_mem_shift
 
 /-- The shift of a linear subspace to a point is nonempty. -/
 theorem shift_nonempty : (s.shift p : Set P).Nonempty :=
   ⟨p, s.self_mem_shift p⟩
 
-@[deprecated (since := "2025-04-02")] alias mk'_nonempty := shift_nonempty
+@[deprecated (since := "2025-04-02")] alias _root_.AffineSubspace.mk'_nonempty := shift_nonempty
 
 instance : Nonempty (s.shift p) := (s.shift_nonempty p).to_subtype
 
@@ -401,18 +402,19 @@ theorem direction_shift : (s.shift p).direction = s := by
     simpa using s.sub_mem hp₁ hp₂
   · exact fun hv => ⟨v +ᵥ p, vadd_mem_shift _ hv, p, self_mem_shift _ _, (vadd_vsub _ _).symm⟩
 
-@[deprecated (since := "2025-04-02")] alias direction_mk' := direction_shift
+@[deprecated (since := "2025-04-02")] alias _root_.AffineSubspace.direction_mk' := direction_shift
 
 /--
 The shift of the direction of an affine subspace to a point in that affine subspace is
 the same affine subspace.
 -/
-@[simp] theorem shift_direction_eq_self {s : AffineSubspace k P} {p : P} (hp : p ∈ s) :
-    s.direction.shift p = s :=
+@[simp] theorem _root_.AffineSubspace.shift_direction_of_mem {s : AffineSubspace k P} {p : P}
+    (hp : p ∈ s) : s.direction.shift p = s :=
   AffineSubspace.ext_of_direction_eq (s.direction.direction_shift p)
     ⟨p, Set.mem_inter (self_mem_shift _ _) hp⟩
 
-@[deprecated (since := "2025-04-02")] alias mk'_eq := shift_direction_eq_self
+@[deprecated (since := "2025-04-02")]
+alias _root_.AffineSubspace.mk'_eq := AffineSubspace.shift_direction_of_mem
 
 end Submodule
 
