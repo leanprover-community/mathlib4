@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Group.Submonoid.Defs
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Bundled non-unital subsemirings
@@ -14,6 +15,7 @@ We define bundled non-unital subsemirings and some standard constructions:
 `subtype` and `inclusion` ring homomorphisms.
 -/
 
+assert_not_exists RelIso
 
 universe u v w
 
@@ -22,7 +24,8 @@ variable {R : Type u} {S : Type v} {T : Type w} [NonUnitalNonAssocSemiring R]
 /-- `NonUnitalSubsemiringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both an additive submonoid and also a multiplicative subsemigroup. -/
 class NonUnitalSubsemiringClass (S : Type*) (R : outParam (Type u)) [NonUnitalNonAssocSemiring R]
-  [SetLike S R] extends AddSubmonoidClass S R : Prop where
+    [SetLike S R] : Prop
+  extends AddSubmonoidClass S R where
   mul_mem : ∀ {s : S} {a b : R}, a ∈ s → b ∈ s → a * b ∈ s
 
 -- See note [lower instance priority]
@@ -41,7 +44,8 @@ open AddSubmonoidClass
 `NonUnitalSubsemiringClass`. -/
 /-- A non-unital subsemiring of a `NonUnitalNonAssocSemiring` inherits a
 `NonUnitalNonAssocSemiring` structure -/
-instance (priority := 75) toNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring s :=
+instance (priority := 75) toNonUnitalNonAssocSemiring :
+    NonUnitalNonAssocSemiring s := fast_instance%
   Subtype.coe_injective.nonUnitalNonAssocSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
     fun _ _ => rfl
 
@@ -53,18 +57,29 @@ instance noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors s :=
 def subtype : s →ₙ+* R :=
   { AddSubmonoidClass.subtype s, MulMemClass.subtype s with toFun := (↑) }
 
+variable {s} in
 @[simp]
-theorem coeSubtype : (subtype s : s → R) = ((↑) : s → R) :=
+theorem subtype_apply (x : s) : subtype s x = x :=
   rfl
+
+theorem subtype_injective : Function.Injective (subtype s) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
+  rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 /-- A non-unital subsemiring of a `NonUnitalSemiring` is a `NonUnitalSemiring`. -/
 instance toNonUnitalSemiring {R} [NonUnitalSemiring R] [SetLike S R]
-    [NonUnitalSubsemiringClass S R] : NonUnitalSemiring s :=
+    [NonUnitalSubsemiringClass S R] : NonUnitalSemiring s := fast_instance%
   Subtype.coe_injective.nonUnitalSemiring Subtype.val rfl (by simp) (fun _ _ => rfl) fun _ _ => rfl
 
 /-- A non-unital subsemiring of a `NonUnitalCommSemiring` is a `NonUnitalCommSemiring`. -/
 instance toNonUnitalCommSemiring {R} [NonUnitalCommSemiring R] [SetLike S R]
-    [NonUnitalSubsemiringClass S R] : NonUnitalCommSemiring s :=
+    [NonUnitalSubsemiringClass S R] : NonUnitalCommSemiring s := fast_instance%
   Subtype.coe_injective.nonUnitalCommSemiring Subtype.val rfl (by simp) (fun _ _ => rfl)
     fun _ _ => rfl
 
@@ -119,11 +134,11 @@ theorem copy_eq (S : NonUnitalSubsemiring R) (s : Set R) (hs : s = ↑S) : S.cop
 
 theorem toSubsemigroup_injective :
     Function.Injective (toSubsemigroup : NonUnitalSubsemiring R → Subsemigroup R)
-  | _, _, h => ext (SetLike.ext_iff.mp h : _)
+  | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 theorem toAddSubmonoid_injective :
     Function.Injective (toAddSubmonoid : NonUnitalSubsemiring R → AddSubmonoid R)
-  | _, _, h => ext (SetLike.ext_iff.mp h : _)
+  | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 /-- Construct a `NonUnitalSubsemiring R` from a set `s`, a subsemigroup `sg`, and an additive
 submonoid `sa` such that `x ∈ s ↔ x ∈ sg ↔ x ∈ sa`. -/

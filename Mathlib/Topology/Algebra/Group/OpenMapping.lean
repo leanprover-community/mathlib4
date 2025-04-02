@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.Baire.Lemmas
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-! # Open mapping theorem for morphisms of topological groups
 
@@ -24,7 +24,7 @@ open scoped Topology Pointwise
 open MulAction Set Function
 
 variable {G X : Type*} [TopologicalSpace G] [TopologicalSpace X]
-  [Group G] [TopologicalGroup G] [MulAction G X]
+  [Group G] [IsTopologicalGroup G] [MulAction G X]
   [SigmaCompactSpace G] [BaireSpace X] [T2Space X]
   [ContinuousSMul G X] [IsPretransitive G X]
 
@@ -114,6 +114,6 @@ theorem MonoidHom.isOpenMap_of_sigmaCompact
   let A : MulAction G H := MulAction.compHom _ f
   have : ContinuousSMul G H := continuousSMul_compHom h'f
   have : IsPretransitive G H := isPretransitive_compHom hf
-  have : f = (fun (g : G) ↦ g • (1 : H)) := by simp [MulAction.compHom_smul_def]
+  have : f = (fun (g : G) ↦ g • (1 : H)) := by simp [A, MulAction.compHom_smul_def]
   rw [this]
   exact isOpenMap_smul_of_sigmaCompact _

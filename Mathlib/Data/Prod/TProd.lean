@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Data.List.Nodup
+import Mathlib.Data.Set.Prod
+
 /-!
 # Finite products of types
 
@@ -39,13 +41,10 @@ variable {ι : Type u} {α : ι → Type v} {i j : ι} {l : List ι}
 
 namespace List
 
-variable (α)
-
+variable (α) in
 /-- The product of a family of types over a list. -/
 abbrev TProd (l : List ι) : Type v :=
   l.foldr (fun i β => α i × β) PUnit
-
-variable {α}
 
 namespace TProd
 
@@ -148,7 +147,7 @@ theorem mk_preimage_tprod :
       rw [mk_preimage_tprod l t]
 
     -- `simp [Set.TProd, TProd.mk, this]` can close this goal but is slow.
-    rw [Set.tprod, TProd.mk, mem_preimage, mem_pi, prod_mk_mem_set_prod_eq]
+    rw [Set.tprod, TProd.mk, mem_preimage, mem_pi, prodMk_mem_set_prod_eq]
     simp_rw [mem_setOf_eq, mem_cons]
     rw [forall_eq_or_imp, and_congr_right_iff]
     exact fun _ => h

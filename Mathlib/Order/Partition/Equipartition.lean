@@ -5,7 +5,7 @@ Authors: YaÃ«l Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Equitable
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Tactic.ApplyFun
 
@@ -147,7 +147,7 @@ theorem IsEquipartition.exists_partPreservingEquiv (hP : P.IsEquipartition) : âˆ
     exact Sigma.ext e.2 <| (Fin.heq_ext_iff (by rw [e.2])).mpr e.1
   use Equiv.ofBijective _ bij
   intro a b
-  simp_rw [Equiv.ofBijective_apply, z, hf a b, Nat.mul_add_mod,
+  simp_rw [z', z, Equiv.ofBijective_apply, hf a b, Nat.mul_add_mod,
     Nat.mod_eq_of_lt (gl a), Nat.mod_eq_of_lt (gl b), Fin.val_eq_val, g.apply_eq_iff_eq]
 
 /-! ### Discrete and indiscrete finpartitions -/

@@ -37,7 +37,6 @@ noncomputable section
 
 namespace Polynomial
 
-open scoped Classical
 open Polynomial
 
 section CommSemiring

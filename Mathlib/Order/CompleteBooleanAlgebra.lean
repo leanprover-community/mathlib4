@@ -3,9 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Order.CompleteLattice
-import Mathlib.Order.Directed
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Order.CompleteLattice.Lemmas
+import Mathlib.Order.Directed
+import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Frames, completely distributive lattices and complete Boolean algebras
@@ -72,14 +73,20 @@ class Order.Coframe.MinimalAxioms (α : Type u) extends CompleteLattice α where
 
 /-- A frame, aka complete Heyting algebra, is a complete lattice whose `⊓` distributes over `⨆`. -/
 class Order.Frame (α : Type*) extends CompleteLattice α, HeytingAlgebra α where
-  /-- `⊓` distributes over `⨆`. -/
-  inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b
+
+/-- `⊓` distributes over `⨆`. -/
+theorem inf_sSup_eq {α : Type*} [Order.Frame α] {s : Set α} {a : α} :
+    a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
+  gc_inf_himp.l_sSup
 
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
 class Order.Coframe (α : Type*) extends CompleteLattice α, CoheytingAlgebra α where
-  /-- `⊔` distributes over `⨅`. -/
-  iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
+
+/-- `⊔` distributes over `⨅`. -/
+theorem sup_sInf_eq {α : Type*} [Order.Coframe α] {s : Set α} {a : α} :
+    a ⊔ sInf s = ⨅ b ∈ s, a ⊔ b :=
+  gc_sdiff_sup.u_sInf
 
 open Order
 
@@ -90,18 +97,17 @@ distributive lattice. Do NOT use, except for implementing `CompleteDistribLattic
 This structure omits the `himp`, `compl`, `sdiff`, `hnot` fields, which can be recovered using
 `CompleteDistribLattice.ofMinimalAxioms`. -/
 structure CompleteDistribLattice.MinimalAxioms (α : Type u)
-    extends CompleteLattice α, Frame.MinimalAxioms α, Coframe.MinimalAxioms α where
+    extends CompleteLattice α,
+      toFrameMinimalAxioms : Frame.MinimalAxioms α,
+      toCoframeMinimalAxioms : Coframe.MinimalAxioms α where
 
 -- We give those projections better name further down
-attribute [nolint docBlame] CompleteDistribLattice.MinimalAxioms.toMinimalAxioms
-  CompleteDistribLattice.MinimalAxioms.toMinimalAxioms_1
+attribute [nolint docBlame] CompleteDistribLattice.MinimalAxioms.toFrameMinimalAxioms
+  CompleteDistribLattice.MinimalAxioms.toCoframeMinimalAxioms
 
 /-- A complete distributive lattice is a complete lattice whose `⊔` and `⊓` respectively
 distribute over `⨅` and `⨆`. -/
 class CompleteDistribLattice (α : Type*) extends Frame α, Coframe α, BiheytingAlgebra α
-
-/-- In a complete distributive lattice, `⊔` distributes over `⨅`. -/
-add_decl_doc CompleteDistribLattice.iInf_sup_le_sup_sInf
 
 /-- Structure containing the minimal axioms required to check that an order is a completely
 distributive. Do NOT use, except for implementing `CompletelyDistribLattice` via
@@ -146,7 +152,9 @@ lemma inf_iSup₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊓ ⨆ i, ⨆ j, f 
   simp only [inf_iSup_eq]
 
 /-- The `Order.Frame.MinimalAxioms` element corresponding to a frame. -/
-def of [Frame α] : MinimalAxioms α := { ‹Frame α› with }
+def of [Frame α] : MinimalAxioms α where
+  __ :=  ‹Frame α›
+  inf_sSup_le_iSup_inf a s := _root_.inf_sSup_eq.le
 
 end MinimalAxioms
 
@@ -182,7 +190,9 @@ lemma sup_iInf₂_eq {f : ∀ i, κ i → α} (a : α) : (a ⊔ ⨅ i, ⨅ j, f 
   simp only [sup_iInf_eq]
 
 /-- The `Order.Coframe.MinimalAxioms` element corresponding to a frame. -/
-def of [Coframe α] : MinimalAxioms α := { ‹Coframe α› with }
+def of [Coframe α] : MinimalAxioms α where
+  __ := ‹Coframe α›
+  iInf_sup_le_sup_sInf a s := _root_.sup_sInf_eq.ge
 
 end MinimalAxioms
 
@@ -204,10 +214,13 @@ variable (minAx : MinimalAxioms α)
 
 /-- The `CompleteDistribLattice.MinimalAxioms` element corresponding to a complete distrib lattice.
 -/
-def of [CompleteDistribLattice α] : MinimalAxioms α := { ‹CompleteDistribLattice α› with }
+def of [CompleteDistribLattice α] : MinimalAxioms α where
+  __ := ‹CompleteDistribLattice α›
+  inf_sSup_le_iSup_inf a s:= inf_sSup_eq.le
+  iInf_sup_le_sup_sInf a s:= sup_sInf_eq.ge
 
 /-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Frame`. -/
-abbrev toFrame : Frame.MinimalAxioms α := minAx.toMinimalAxioms
+abbrev toFrame : Frame.MinimalAxioms α := minAx.toFrameMinimalAxioms
 
 /-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Coframe`. -/
 abbrev toCoframe : Coframe.MinimalAxioms α where __ := minAx
@@ -269,7 +282,7 @@ abbrev toCompleteDistribLattice : CompleteDistribLattice.MinimalAxioms α where
       _ = ⨅ i : ULift.{u} Bool, ⨆ j : match i with | .up true => PUnit.{u + 1} | .up false => s,
           match i with
           | .up true => a
-          | .up false => j := by simp [le_antisymm_iff, sSup_eq_iSup', iSup_unique, iInf_bool_eq]
+          | .up false => j := by simp [sSup_eq_iSup', iSup_unique, iInf_bool_eq]
       _ ≤ _ := by
         simp only [minAx.iInf_iSup_eq, iInf_ulift, iInf_bool_eq, iSup_le_iff]
         exact fun x ↦ le_biSup _ (x (.up false)).2
@@ -282,7 +295,7 @@ abbrev toCompleteDistribLattice : CompleteDistribLattice.MinimalAxioms α where
           | .up false => j := by
         simp only [minAx.iSup_iInf_eq, iSup_ulift, iSup_bool_eq, le_iInf_iff]
         exact fun x ↦ biInf_le _ (x (.up false)).2
-      _ = _ := by simp [le_antisymm_iff, sInf_eq_iInf', iInf_unique, iSup_bool_eq]
+      _ = _ := by simp [sInf_eq_iInf', iInf_unique, iSup_bool_eq]
 
 /-- The `CompletelyDistribLattice.MinimalAxioms` element corresponding to a frame. -/
 def of [CompletelyDistribLattice α] : MinimalAxioms α := { ‹CompletelyDistribLattice α› with }
@@ -311,7 +324,6 @@ theorem iSup_iInf_eq [CompletelyDistribLattice α] {f : ∀ a, κ a → α} :
 instance (priority := 100) CompletelyDistribLattice.toCompleteDistribLattice
     [CompletelyDistribLattice α] : CompleteDistribLattice α where
   __ := ‹CompletelyDistribLattice α›
-  __ := CompleteDistribLattice.ofMinimalAxioms MinimalAxioms.of.toCompleteDistribLattice
 
 -- See note [lower instance priority]
 instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [CompleteLinearOrder α] :
@@ -344,15 +356,11 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
 
 section Frame
 
-variable [Frame α] {s t : Set α} {a b : α}
+variable [Frame α] {s t : Set α} {a b c d : α}
 
 instance OrderDual.instCoframe : Coframe αᵒᵈ where
   __ := instCompleteLattice
   __ := instCoheytingAlgebra
-  iInf_sup_le_sup_sInf := @Frame.inf_sSup_le_iSup_inf α _
-
-theorem inf_sSup_eq : a ⊓ sSup s = ⨆ b ∈ s, a ⊓ b :=
-  (Frame.inf_sSup_le_iSup_inf _ _).antisymm iSup_inf_le_inf_sSup
 
 theorem sSup_inf_eq : sSup s ⊓ b = ⨆ a ∈ s, a ⊓ b := by
   simpa only [inf_comm] using @inf_sSup_eq α _ s b
@@ -415,6 +423,14 @@ theorem iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (swap (·
     (hf : Antitone f) (hg : Antitone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i :=
   @iSup_inf_of_monotone α _ ιᵒᵈ _ _ f g hf.dual_left hg.dual_left
 
+theorem himp_eq_sSup : a ⇨ b = sSup {w | w ⊓ a ≤ b} :=
+  (isGreatest_himp a b).isLUB.sSup_eq.symm
+
+theorem compl_eq_sSup_disjoint : aᶜ = sSup {w | Disjoint w a} :=
+  (isGreatest_compl a).isLUB.sSup_eq.symm
+
+lemma himp_le_iff : a ⇨ b ≤ c ↔ ∀ d, d ⊓ a ≤ b → d ≤ c := by simp [himp_eq_sSup]
+
 -- see Note [lower instance priority]
 instance (priority := 100) Frame.toDistribLattice : DistribLattice α :=
   DistribLattice.ofInfSupLe fun a b c => by
@@ -423,28 +439,20 @@ instance (priority := 100) Frame.toDistribLattice : DistribLattice α :=
 instance Prod.instFrame [Frame α] [Frame β] : Frame (α × β) where
   __ := instCompleteLattice
   __ := instHeytingAlgebra
-  inf_sSup_le_iSup_inf a s := by
-    simp [Prod.le_def, sSup_eq_iSup, fst_iSup, snd_iSup, fst_iInf, snd_iInf, inf_iSup_eq]
 
 instance Pi.instFrame {ι : Type*} {π : ι → Type*} [∀ i, Frame (π i)] : Frame (∀ i, π i) where
   __ := instCompleteLattice
   __ := instHeytingAlgebra
-  inf_sSup_le_iSup_inf a s i := by
-    simp only [sSup_apply, iSup_apply, inf_apply, inf_iSup_eq, ← iSup_subtype'']; rfl
 
 end Frame
 
 section Coframe
 
-variable [Coframe α] {s t : Set α} {a b : α}
+variable [Coframe α] {s t : Set α} {a b c d : α}
 
 instance OrderDual.instFrame : Frame αᵒᵈ where
   __ := instCompleteLattice
   __ := instHeytingAlgebra
-  inf_sSup_le_iSup_inf := @Coframe.iInf_sup_le_sup_sInf α _
-
-theorem sup_sInf_eq : a ⊔ sInf s = ⨅ b ∈ s, a ⊔ b :=
-  @inf_sSup_eq αᵒᵈ _ _ _
 
 theorem sInf_sup_eq : sInf s ⊔ b = ⨅ a ∈ s, a ⊔ b :=
   @sSup_inf_eq αᵒᵈ _ _ _
@@ -480,6 +488,14 @@ theorem iInf_sup_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ �
     (hf : Antitone f) (hg : Antitone g) : ⨅ i, f i ⊔ g i = (⨅ i, f i) ⊔ ⨅ i, g i :=
   @iSup_inf_of_monotone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right
 
+theorem sdiff_eq_sInf : a \ b = sInf {w | a ≤ b ⊔ w} :=
+  (isLeast_sdiff a b).isGLB.sInf_eq.symm
+
+theorem hnot_eq_sInf_codisjoint : ￢a = sInf {w | Codisjoint a w} :=
+  (isLeast_hnot a).isGLB.sInf_eq.symm
+
+lemma le_sdiff_iff : a ≤ b \ c ↔ ∀ d, b ≤ c ⊔ d → a ≤ d := by simp [sdiff_eq_sInf]
+
 -- see Note [lower instance priority]
 instance (priority := 100) Coframe.toDistribLattice : DistribLattice α where
   __ := ‹Coframe α›
@@ -489,14 +505,10 @@ instance (priority := 100) Coframe.toDistribLattice : DistribLattice α where
 instance Prod.instCoframe [Coframe β] : Coframe (α × β) where
   __ := instCompleteLattice
   __ := instCoheytingAlgebra
-  iInf_sup_le_sup_sInf a s := by
-    simp [Prod.le_def, sInf_eq_iInf, fst_iSup, snd_iSup, fst_iInf, snd_iInf, sup_iInf_eq]
 
 instance Pi.instCoframe {ι : Type*} {π : ι → Type*} [∀ i, Coframe (π i)] : Coframe (∀ i, π i) where
   __ := instCompleteLattice
   __ := instCoheytingAlgebra
-  iInf_sup_le_sup_sInf a s i := by
-    simp only [sInf_apply, iInf_apply, sup_apply, sup_iInf_eq, ← iInf_subtype'']; rfl
 
 end Coframe
 
@@ -565,16 +577,22 @@ instance Prod.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] [CompleteBo
     CompleteBooleanAlgebra (α × β) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
+  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 instance Pi.instCompleteBooleanAlgebra {ι : Type*} {π : ι → Type*}
     [∀ i, CompleteBooleanAlgebra (π i)] : CompleteBooleanAlgebra (∀ i, π i) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
+  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 instance OrderDual.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] :
     CompleteBooleanAlgebra αᵒᵈ where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
+  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 section CompleteBooleanAlgebra
 
@@ -638,8 +656,10 @@ instance (priority := 100) CompleteAtomicBooleanAlgebra.toCompletelyDistribLatti
 -- See note [lower instance priority]
 instance (priority := 100) CompleteAtomicBooleanAlgebra.toCompleteBooleanAlgebra
     [CompleteAtomicBooleanAlgebra α] : CompleteBooleanAlgebra α where
-  __ := ‹CompleteAtomicBooleanAlgebra α›
   __ := CompletelyDistribLattice.toCompleteDistribLattice
+  __ := ‹CompleteAtomicBooleanAlgebra α›
+  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 instance Prod.instCompleteAtomicBooleanAlgebra [CompleteAtomicBooleanAlgebra α]
     [CompleteAtomicBooleanAlgebra β] : CompleteAtomicBooleanAlgebra (α × β) where

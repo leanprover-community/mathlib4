@@ -1,14 +1,13 @@
 /-
-Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos Fernández. All rights reserved.
+Copyright (c) 2024 Antoine Chambert-Loir, María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Antoine Chambert-Loir, María Inés de Frutos Fernández
+Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
-
-import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.MvPowerSeries.Basic
+import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.UniformGroup.Basic
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.UniformSpace.Pi
 
 /-! # Product topology on multivariate power series
@@ -45,7 +44,7 @@ TODO: add the similar result for the series of homogeneous components.
 
 - If `R` is a topological (semi)ring, then so is `MvPowerSeries σ R`.
 - If the topology of `R` is T0 or T2, then so is that of `MvPowerSeries σ R`.
-- If `R` is a `UniformAddGroup`, then so is `MvPowerSeries σ R`.
+- If `R` is a `IsUniformAddGroup`, then so is `MvPowerSeries σ R`.
 - If `R` is complete, then so is `MvPowerSeries σ R`.
 
 -/
@@ -99,19 +98,19 @@ variable (σ R)
 
 /-- The semiring topology on `MvPowerSeries` of a topological semiring -/
 @[scoped instance]
-theorem instTopologicalSemiring [Semiring R] [TopologicalSemiring R] :
-    TopologicalSemiring (MvPowerSeries σ R) where
-    continuous_add := continuous_pi fun d => continuous_add.comp
-      (((continuous_coeff R d).fst').prod_mk (continuous_coeff R d).snd')
-    continuous_mul := continuous_pi fun _ =>
-      continuous_finset_sum _ fun i _ => continuous_mul.comp
-        ((continuous_coeff R i.fst).fst'.prod_mk (continuous_coeff R i.snd).snd')
+theorem instIsTopologicalSemiring [Semiring R] [IsTopologicalSemiring R] :
+    IsTopologicalSemiring (MvPowerSeries σ R) where
+  continuous_add := continuous_pi fun d => continuous_add.comp
+    (((continuous_coeff R d).fst').prodMk (continuous_coeff R d).snd')
+  continuous_mul := continuous_pi fun _ =>
+    continuous_finset_sum _ fun i _ => continuous_mul.comp
+      ((continuous_coeff R i.fst).fst'.prodMk (continuous_coeff R i.snd).snd')
 
 /-- The ring topology on `MvPowerSeries` of a topological ring -/
 @[scoped instance]
-theorem instTopologicalRing [Ring R] [TopologicalRing R] :
-    TopologicalRing (MvPowerSeries σ R) :=
-  { instTopologicalSemiring σ R with
+theorem instIsTopologicalRing [Ring R] [IsTopologicalRing R] :
+    IsTopologicalRing (MvPowerSeries σ R) :=
+  { instIsTopologicalSemiring σ R with
     continuous_neg := continuous_pi fun d ↦ Continuous.comp continuous_neg
       (continuous_coeff R d) }
 
@@ -216,10 +215,12 @@ theorem uniformContinuous_coeff [Semiring R] (d : σ →₀ ℕ) :
 theorem instCompleteSpace [CompleteSpace R] :
     CompleteSpace (MvPowerSeries σ R) := Pi.complete _
 
-/-- The `UniformAddGroup` structure on `MvPowerSeries` of a `UniformAddGroup` -/
+/-- The `IsUniformAddGroup` structure on `MvPowerSeries` of a `IsUniformAddGroup` -/
 @[scoped instance]
-theorem instUniformAddGroup [AddGroup R] [UniformAddGroup R] :
-    UniformAddGroup (MvPowerSeries σ R) := Pi.instUniformAddGroup
+theorem instIsUniformAddGroup [AddGroup R] [IsUniformAddGroup R] :
+    IsUniformAddGroup (MvPowerSeries σ R) := Pi.instIsUniformAddGroup
+
+@[deprecated (since := "2025-03-27")] alias instUniformAddGroup := instIsUniformAddGroup
 
 end Uniformity
 

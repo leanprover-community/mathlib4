@@ -3,9 +3,10 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Topology.Algebra.Nonarchimedean.Basic
-import Mathlib.Topology.Algebra.FilterBasis
+import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Module.Submodule.Pointwise
+import Mathlib.Topology.Algebra.FilterBasis
+import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
 /-!
 # Neighborhood bases for non-archimedean rings and modules
@@ -67,7 +68,7 @@ def toRingFilterBasis [Nonempty ι] {B : ι → AddSubgroup A} (hB : RingSubgrou
     exact ⟨B default, default, rfl⟩
   inter_sets := by
     rintro _ _ ⟨i, rfl⟩ ⟨j, rfl⟩
-    cases' hB.inter i j with k hk
+    obtain ⟨k, hk⟩ := hB.inter i j
     use B k
     constructor
     · use k
@@ -97,21 +98,21 @@ def toRingFilterBasis [Nonempty ι] {B : ι → AddSubgroup A} (hB : RingSubgrou
     · simp
   mul' := by
     rintro _ ⟨i, rfl⟩
-    cases' hB.mul i with k hk
+    obtain ⟨k, hk⟩ := hB.mul i
     use B k
     constructor
     · use k
     · exact hk
   mul_left' := by
     rintro x₀ _ ⟨i, rfl⟩
-    cases' hB.leftMul x₀ i with k hk
+    obtain ⟨k, hk⟩ := hB.leftMul x₀ i
     use B k
     constructor
     · use k
     · exact hk
   mul_right' := by
     rintro x₀ _ ⟨i, rfl⟩
-    cases' hB.rightMul x₀ i with k hk
+    obtain ⟨k, hk⟩ := hB.rightMul x₀ i
     use B k
     constructor
     · use k
@@ -168,7 +169,6 @@ theorem hasBasis_nhds (a : A) :
 /-- Given a subgroups basis, the basis elements as open additive subgroups in the associated
 topology. -/
 def openAddSubgroup (i : ι) : @OpenAddSubgroup A _ hB.topology :=
-  -- Porting note: failed to synthesize instance `TopologicalSpace A`
   let _ := hB.topology
   { B i with
     isOpen' := by
@@ -247,7 +247,7 @@ def toModuleFilterBasis : ModuleFilterBasis R M where
     exact ⟨B default, default, rfl⟩
   inter_sets := by
     rintro _ _ ⟨i, rfl⟩ ⟨j, rfl⟩
-    cases' hB.inter i j with k hk
+    obtain ⟨k, hk⟩ := hB.inter i j
     use B k
     constructor
     · use k
@@ -303,7 +303,7 @@ def topology : TopologicalSpace M :=
 /-- Given a submodules basis, the basis elements as open additive subgroups in the associated
 topology. -/
 def openAddSubgroup (i : ι) : @OpenAddSubgroup M _ hB.topology :=
-  let _ := hB.topology -- Porting note: failed to synthesize instance `TopologicalSpace A`
+  let _ := hB.topology
   { (B i).toAddSubgroup with
     isOpen' := by
       letI := hB.topology
@@ -327,8 +327,8 @@ theorem nonarchimedean (hB : SubmodulesBasis B) : @NonarchimedeanAddGroup M _ hB
 
 library_note "nonarchimedean non instances"/--
 The non archimedean subgroup basis lemmas cannot be instances because some instances
-(such as `MeasureTheory.AEEqFun.instAddMonoid` or `TopologicalAddGroup.toContinuousAdd`)
-cause the search for `@TopologicalAddGroup β ?m1 ?m2`, i.e. a search for a topological group where
+(such as `MeasureTheory.AEEqFun.instAddMonoid` or `IsTopologicalAddGroup.toContinuousAdd`)
+cause the search for `@IsTopologicalAddGroup β ?m1 ?m2`, i.e. a search for a topological group where
 the topology/group structure are unknown. -/
 
 
@@ -368,7 +368,7 @@ structure RingFilterBasis.SubmodulesBasis (BR : RingFilterBasis R) (B : ι → S
 
 theorem RingFilterBasis.submodulesBasisIsBasis (BR : RingFilterBasis R) {B : ι → Submodule R M}
     (hB : BR.SubmodulesBasis B) : @_root_.SubmodulesBasis ι R _ M _ _ BR.topology B :=
-  let _ := BR.topology -- Porting note: failed to synthesize instance `TopologicalSpace R`
+  let _ := BR.topology
   { inter := hB.inter
     smul := by
       letI := BR.topology

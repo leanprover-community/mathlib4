@@ -9,7 +9,7 @@ PR_NUMBER=$1
 BRANCH_NAME="lean-pr-testing-$PR_NUMBER"
 
 git checkout nightly-testing
-git pull
+git pull --ff-only
 
 if ! git merge origin/$BRANCH_NAME; then
     echo "Merge conflicts detected. Resolving conflicts in favor of current version..."
@@ -17,7 +17,8 @@ if ! git merge origin/$BRANCH_NAME; then
     git add lean-toolchain lakefile.lean lake-manifest.json
 fi
 
-sed -i "s/$BRANCH_NAME/nightly-testing/g" lakefile.lean
+sed "s/$BRANCH_NAME/nightly-testing/g" < lakefile.lean > lakefile.lean.new
+mv lakefile.lean.new lakefile.lean
 git add lakefile.lean
 
 # Check for merge conflicts
@@ -33,12 +34,17 @@ if ! lake update; then
     exit 1
 fi
 
+# Add files touched by lake update
+git add lakefile.lean lake-manifest.json
+
 # Attempt to commit. This will fail if there are conflicts.
 if git commit -m "merge $BRANCH_NAME"; then
     echo "Merge successful."
+    git push
+    echo "Pushed to github."
     exit 0
 else
-    echo "Merge failed. Please resolve conflicts manually."
+    echo "Merge failed. Please resolve conflicts manually and push to github."
     git status
     exit 1
 fi

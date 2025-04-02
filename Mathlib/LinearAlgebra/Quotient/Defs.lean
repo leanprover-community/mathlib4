@@ -46,8 +46,6 @@ theorem quotientRel_def {x y : M} : p.quotientRel x y ↔ x - y ∈ p :=
       rfl)
     neg_mem_iff
 
-@[deprecated (since := "2024-08-29")] alias quotientRel_r_def := quotientRel_def
-
 /-- The quotient of a module `M` by a submodule `p ⊆ M`. -/
 instance hasQuotient : HasQuotient M (Submodule R M) :=
   ⟨fun p => Quotient (quotientRel p)⟩
@@ -107,6 +105,10 @@ theorem mk_sub : (mk (x - y) : M ⧸ p) = mk x - mk y :=
 
 protected nonrec lemma «forall» {P : M ⧸ p → Prop} : (∀ a, P a) ↔ ∀ a, P (mk a) := Quotient.forall
 
+theorem subsingleton_iff : Subsingleton (M ⧸ p) ↔ ∀ x : M, x ∈ p := by
+  rw [subsingleton_iff_forall_eq 0, Submodule.Quotient.forall]
+  simp_rw [Submodule.Quotient.mk_eq_zero]
+
 section SMul
 
 variable {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] (P : Submodule R M)
@@ -143,12 +145,9 @@ section Module
 
 variable {S : Type*}
 
--- Performance of `Function.Surjective.mulAction` is worse since it has to unify data to apply
--- TODO: https://github.com/leanprover-community/mathlib4/pull/7432
 instance mulAction' [Monoid S] [SMul S R] [MulAction S M] [IsScalarTower S R M]
-    (P : Submodule R M) : MulAction S (M ⧸ P) :=
-  { Function.Surjective.mulAction mk Quot.mk_surjective <| Submodule.Quotient.mk_smul P with
-    toSMul := instSMul' _ }
+    (P : Submodule R M) : MulAction S (M ⧸ P) := fast_instance%
+  Function.Surjective.mulAction mk Quot.mk_surjective <| Submodule.Quotient.mk_smul P
 
 -- Porting note: should this be marked as a `@[default_instance]`?
 instance mulAction (P : Submodule R M) : MulAction R (M ⧸ P) :=
@@ -162,37 +161,28 @@ instance smulZeroClass' [SMul S R] [SMulZeroClass S M] [IsScalarTower S R M] (P 
 instance smulZeroClass (P : Submodule R M) : SMulZeroClass R (M ⧸ P) :=
   Quotient.smulZeroClass' P
 
--- Performance of `Function.Surjective.distribSMul` is worse since it has to unify data to apply
--- TODO: https://github.com/leanprover-community/mathlib4/pull/7432
 instance distribSMul' [SMul S R] [DistribSMul S M] [IsScalarTower S R M] (P : Submodule R M) :
-    DistribSMul S (M ⧸ P) :=
-  { Function.Surjective.distribSMul {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
-    Quot.mk_surjective (Submodule.Quotient.mk_smul P) with
-    toSMulZeroClass := smulZeroClass' _ }
+    DistribSMul S (M ⧸ P) := fast_instance%
+  Function.Surjective.distribSMul {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
+    Quot.mk_surjective (Submodule.Quotient.mk_smul P)
 
 -- Porting note: should this be marked as a `@[default_instance]`?
 instance distribSMul (P : Submodule R M) : DistribSMul R (M ⧸ P) :=
   Quotient.distribSMul' P
 
--- Performance of `Function.Surjective.distribMulAction` is worse since it has to unify data
--- TODO: https://github.com/leanprover-community/mathlib4/pull/7432
 instance distribMulAction' [Monoid S] [SMul S R] [DistribMulAction S M] [IsScalarTower S R M]
-    (P : Submodule R M) : DistribMulAction S (M ⧸ P) :=
-  { Function.Surjective.distribMulAction {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
-    Quot.mk_surjective (Submodule.Quotient.mk_smul P) with
-    toMulAction := mulAction' _ }
+    (P : Submodule R M) : DistribMulAction S (M ⧸ P) := fast_instance%
+  Function.Surjective.distribMulAction {toFun := mk, map_zero' := rfl, map_add' := fun _ _ => rfl}
+    Quot.mk_surjective (Submodule.Quotient.mk_smul P)
 
 -- Porting note: should this be marked as a `@[default_instance]`?
 instance distribMulAction (P : Submodule R M) : DistribMulAction R (M ⧸ P) :=
   Quotient.distribMulAction' P
 
--- Performance of `Function.Surjective.module` is worse since it has to unify data to apply
--- TODO: https://github.com/leanprover-community/mathlib4/pull/7432
 instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] (P : Submodule R M) :
-    Module S (M ⧸ P) :=
-  { Function.Surjective.module _ {toFun := mk, map_zero' := by rfl, map_add' := fun _ _ => by rfl}
-    Quot.mk_surjective (Submodule.Quotient.mk_smul P) with
-    toDistribMulAction := distribMulAction' _ }
+    Module S (M ⧸ P) := fast_instance%
+  Function.Surjective.module _ {toFun := mk, map_zero' := by rfl, map_add' := fun _ _ => by rfl}
+    Quot.mk_surjective (Submodule.Quotient.mk_smul P)
 
 -- Porting note: should this be marked as a `@[default_instance]`?
 instance module (P : Submodule R M) : Module R (M ⧸ P) :=
@@ -241,7 +231,7 @@ variable {R₂ M₂ : Type*} [Ring R₂] [AddCommGroup M₂] [Module R₂ M₂] 
 See note [partially-applied ext lemmas]. -/
 @[ext 1100] -- Porting note: increase priority so this applies before `LinearMap.ext`
 theorem linearMap_qext ⦃f g : M ⧸ p →ₛₗ[τ₁₂] M₂⦄ (h : f.comp p.mkQ = g.comp p.mkQ) : f = g :=
-  LinearMap.ext fun x => Submodule.Quotient.induction_on _ x <| (LinearMap.congr_fun h : _)
+  LinearMap.ext fun x => Submodule.Quotient.induction_on _ x <| (LinearMap.congr_fun h :)
 
 /-- Quotienting by equal submodules gives linearly equivalent quotients. -/
 def quotEquivOfEq (h : p = p') : (M ⧸ p) ≃ₗ[R] M ⧸ p' :=

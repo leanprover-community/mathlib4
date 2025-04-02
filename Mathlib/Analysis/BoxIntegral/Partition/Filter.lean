@@ -164,7 +164,7 @@ integral, rectangular box, partition, filter
 -/
 
 open Set Function Filter Metric Finset Bool
-open scoped Classical Topology Filter NNReal
+open scoped Topology Filter NNReal
 
 noncomputable section
 
@@ -222,7 +222,7 @@ without additional integrability assumptions, see the module docstring for detai
 instance : Inhabited IntegrationParams :=
   ⟨⊥⟩
 
-instance : DecidableRel ((· ≤ ·) : IntegrationParams → IntegrationParams → Prop) :=
+instance : DecidableLE (IntegrationParams) :=
   fun _ _ => inferInstanceAs (Decidable (_ ∧ _))
 
 instance : DecidableEq IntegrationParams :=
@@ -366,6 +366,7 @@ variable {r : (ι → ℝ) → Ioi (0 : ℝ)}
 
 protected theorem MemBaseSet.filter (hπ : l.MemBaseSet I c r π) (p : Box ι → Prop) :
     l.MemBaseSet I c r (π.filter p) := by
+  classical
   refine ⟨fun J hJ => hπ.1 J (π.mem_filter.1 hJ).1, fun hH J hJ => hπ.2 hH J (π.mem_filter.1 hJ).1,
     fun hD => (distortion_filter_le _ _).trans (hπ.3 hD), fun hD => ?_⟩
   rcases hπ.4 hD with ⟨π₁, hπ₁U, hc⟩

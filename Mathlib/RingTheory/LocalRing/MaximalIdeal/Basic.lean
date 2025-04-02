@@ -7,6 +7,7 @@ import Mathlib.RingTheory.Jacobson.Ideal
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Defs
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
+import Mathlib.RingTheory.Spectrum.Maximal.Defs
 
 /-!
 
@@ -25,6 +26,10 @@ namespace IsLocalRing
 
 variable [IsLocalRing R]
 
+@[simp]
+theorem mem_maximalIdeal (x) : x ∈ maximalIdeal R ↔ x ∈ nonunits R :=
+  Iff.rfl
+
 variable (R)
 
 instance maximalIdeal.isMaximal : (maximalIdeal R).IsMaximal := by
@@ -34,7 +39,7 @@ instance maximalIdeal.isMaximal : (maximalIdeal R).IsMaximal := by
     apply h
     exact isUnit_one
   · intro I x _ hx H
-    erw [Classical.not_not] at hx
+    rw [mem_maximalIdeal, mem_nonunits_iff, Classical.not_not] at hx
     rcases hx with ⟨u, rfl⟩
     simpa using I.mul_mem_left (↑u⁻¹) H
 
@@ -47,13 +52,14 @@ variable {R}
 theorem eq_maximalIdeal {I : Ideal R} (hI : I.IsMaximal) : I = maximalIdeal R :=
   ExistsUnique.unique (maximal_ideal_unique R) hI <| maximalIdeal.isMaximal R
 
+/-- The maximal spectrum of a local ring is a singleton. -/
+instance : Unique (MaximalSpectrum R) where
+  default := ⟨maximalIdeal R, maximalIdeal.isMaximal R⟩
+  uniq := fun I ↦ MaximalSpectrum.ext_iff.mpr <| eq_maximalIdeal I.isMaximal
+
 theorem le_maximalIdeal {J : Ideal R} (hJ : J ≠ ⊤) : J ≤ maximalIdeal R := by
   rcases Ideal.exists_le_maximal J hJ with ⟨M, hM1, hM2⟩
   rwa [← eq_maximalIdeal hM1]
-
-@[simp]
-theorem mem_maximalIdeal (x) : x ∈ maximalIdeal R ↔ x ∈ nonunits R :=
-  Iff.rfl
 
 /--
 An element `x` of a commutative local semiring is not contained in the maximal ideal
