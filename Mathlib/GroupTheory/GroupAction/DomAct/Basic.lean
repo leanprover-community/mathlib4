@@ -108,10 +108,16 @@ run_cmd
     `RightCancelSemigroup, `MulOneClass, `Monoid, `CommMonoid, `LeftCancelMonoid,
     `RightCancelMonoid, `CancelMonoid, `CancelCommMonoid, `InvolutiveInv, `DivInvMonoid,
     `InvOneClass, `DivInvOneMonoid, `DivisionMonoid, `DivisionCommMonoid, `Group,
-    `CommGroup, `NonAssocSemiring, `NonUnitalSemiring, `Semiring,
-    `Ring, `CommRing].map Lean.mkIdent do
+    `CommGroup].map Lean.mkIdent do
   Lean.Elab.Command.elabCommand (← `(
     @[to_additive] instance [$n Mᵐᵒᵖ] : $n Mᵈᵃ := ‹_›
+  ))
+
+set_option hygiene false in
+run_cmd
+  for n in [`NonAssocSemiring, `NonUnitalSemiring, `Semiring, `Ring, `CommRing].map Lean.mkIdent do
+  Lean.Elab.Command.elabCommand (← `(
+    instance [$n Mᵐᵒᵖ] : $n Mᵈᵃ := ‹_›
   ))
 
 @[to_additive] instance [Mul Mᵐᵒᵖ] [IsLeftCancelMul Mᵐᵒᵖ] : IsLeftCancelMul Mᵈᵃ := ‹_›
