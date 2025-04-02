@@ -245,6 +245,7 @@ theorem single_add (a : G) (b₁ b₂ : k) : single a (b₁ + b₂) = single a b
   simp_rw [single, Finsupp.single_add]
   rw [← toFinsupp_add]
 
+@[simp]
 theorem single_zero (a : G) : (single a 0 : SkewMonoidAlgebra k G) = 0 := by
   rw [ofFinsupp_eq_zero, single, Finsupp.single_zero]
 
@@ -423,6 +424,19 @@ theorem sum_congr {f : SkewMonoidAlgebra k G} {M : Type*} [AddCommMonoid M] {g�
     (h : ∀ x ∈ f.support, g₁ x (f.coeff x) = g₂ x (f.coeff x)) :
     f.sum g₁ = f.sum g₂ := Finset.sum_congr rfl h
 
+theorem induction_on {p : SkewMonoidAlgebra k G → Prop} (f : SkewMonoidAlgebra k G)
+    (h0 : p 0) (hM : ∀ g a, p (single g a)) (hadd : ∀ f g :
+    SkewMonoidAlgebra k G, p f → p g → p (f + g)) : p f := by
+  rw [← sum_single f, sum_def']
+  exact Finset.sum_induction _ _ hadd h0 (by aesop)
+
+/--
+Slightly less general but more convenient version of `SkewMonoidAlgebra.induction_on`.-/
+theorem induction_on' [instNonempty : Nonempty G] {p : SkewMonoidAlgebra k G → Prop}
+    (f : SkewMonoidAlgebra k G) (hM : ∀ g a, p (single g a)) (hadd : ∀ f g :
+    SkewMonoidAlgebra k G, p f → p g → p (f + g)) : p f :=
+  induction_on _ (by simpa using hM (Classical.choice instNonempty) 0) hM hadd
+
 end sum
 
 section mapDomain
@@ -532,26 +546,25 @@ theorem toFinsupp_sub (a b : SkewMonoidAlgebra k G) :
 
 end AddCommGroup
 
-section Semiring
+section Mul
 
-variable [Semiring k]
-
-theorem sum_smul_index {N : Type*} [AddCommMonoid N]
+theorem sum_smul_index {N : Type*} [AddCommMonoid N] [NonUnitalNonAssocSemiring k]
     {g : SkewMonoidAlgebra k G} {b : k} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
     (b • g).sum h = g.sum (h · <| b * ·) := by
-  simp only [sum_def, toFinsupp_smul, Finsupp.sum_smul_index h0]
+  simp only [sum_def, toFinsupp_smul, Finsupp.sum_smul_index' h0, smul_eq_mul]
 
-theorem sum_smul_index' {N R : Type*} [DistribSMul R k] [AddCommMonoid N]
+theorem sum_smul_index' {N R : Type*} [Mul k] [AddCommMonoid k]
+    [DistribSMul R k] [AddCommMonoid N]
     {g : SkewMonoidAlgebra k G} {b : R} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
     (b • g).sum h = g.sum (h · <| b • ·) := by
   simp only [sum_def, toFinsupp_smul, Finsupp.sum_smul_index' h0]
 
 @[simp]
-theorem liftNC_one {g_hom R : Type*} [One G] [Semiring R] [FunLike g_hom G R]
+theorem liftNC_one {g_hom R : Type*} [NonAssocSemiring k] [One G] [Semiring R] [FunLike g_hom G R]
     [OneHomClass g_hom G R] (f : k →+* R) (g : g_hom) : liftNC (f : k →+ R) g 1 = 1 := by
   simp only [one_def, liftNC_single, AddMonoidHom.coe_coe, map_one, mul_one]
 
-end Semiring
+end Mul
 
 section Mul
 
@@ -559,7 +572,7 @@ variable [Mul G]
 
 section SMul
 
-variable [SMul G k] [NonAssocSemiring k]
+variable [SMul G k] [NonUnitalNonAssocSemiring k]
 
 /-- The product of `f g : SkewMonoidAlgebra k G` is the finitely supported function whose value
   at `a` is the sum of `f x * (x • g y)` over all pairs `x, y` such that `x * y = a`.
@@ -575,7 +588,7 @@ end SMul
 
 section DistribSMul
 
-instance instNonUnitalNonAssocSemiring [NonAssocSemiring k] [DistribSMul G k] :
+instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring k] [DistribSMul G k] :
     NonUnitalNonAssocSemiring (SkewMonoidAlgebra k G) where
   left_distrib f g h := by
     classical
@@ -591,7 +604,7 @@ instance instNonUnitalNonAssocSemiring [NonAssocSemiring k] [DistribSMul G k] :
   zero_mul f := sum_zero_index
   mul_zero f := Eq.trans (congr_arg (sum f) (funext₂ fun _ _ ↦ sum_zero_index)) sum_zero
 
-variable {R : Type*} [Semiring R] [Semiring k] [SMul G k]
+variable {R : Type*} [Semiring R] [NonAssocSemiring k] [SMul G k]
 
 theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R]
     [MulHomClass g_hom G R] (f : k →+* R) (g : g_hom) (a b : SkewMonoidAlgebra k G)
@@ -617,37 +630,31 @@ open MulSemiringAction
 
 instance : NonUnitalSemiring (SkewMonoidAlgebra k G) where
   mul_assoc f g h := by
-    simp only [mul_def]
-    rw [sum_sum_index (fun _ ↦ by simp [single_zero])
-      (fun _ _ _ ↦ by simp [add_mul, single_add])]
-    congr; ext a₁ b₁
-    rw [sum_sum_index (fun a ↦ by simp [single_zero])
-      (fun _ _ _ ↦ by simp [add_mul, single_add]),
-      sum_sum_index (fun a ↦ by simp [single_zero])
-      (fun _ _ _  ↦ by simp [mul_add, single_add])]
-    congr; ext a₂ b₂
-    rw [sum_sum_index (fun a ↦ by simp [single_zero])
-      (fun _ _ _ ↦ by simp [mul_add, single_add]),
-      sum_single_index (by simp [single_zero])]
-    congr; ext a₃ b₃
-    rw [sum_single_index (by simp [single_zero]), mul_assoc, mul_assoc,
-      mul_smul, smul_mul]
+    induction f using induction_on' with
+    | hM x a => induction g using induction_on' with
+      | hM y b => induction h using induction_on' with
+        | hM z c => simp [mul_assoc, mul_smul, mul_def]
+        | hadd => simp_all [add_mul, mul_add]
+      | hadd => simp_all [add_mul, mul_add]
+    | hadd => simp_all [add_mul]
 
 instance : NonAssocSemiring (SkewMonoidAlgebra k G) where
   natCast n := single 1 n
   natCast_zero := by simp only [Nat.cast_zero, single_zero]
   natCast_succ _ := by simp only [Nat.cast_add, Nat.cast_one, single_add]; rfl
   one_mul f := by
-    simp only [one_def, mul_def]
-    rw [sum_single_index]
-    · simp only [one_mul, one_smul, zero_mul, single_zero, sum_zero,
-        sum_single_index, sum_single]
-    simp only [one_mul, one_smul, zero_mul, single_zero, sum_zero]
+    induction f using induction_on' with
+    | hM g a => simp [one_def, mul_def]
+    | hadd f g _ _ => simp_all [mul_add]
   mul_one f := by
-    simp only [one_def, mul_def, mul_one, smul_zero, mul_zero, single_zero, sum_single_index,
-      MulDistribMulAction.smul_one, sum_single]
+    induction f using induction_on' with
+    | hM g a => simp [one_def, mul_def]
+    | hadd f g _ _ => simp_all [add_mul]
 
 theorem natCast_def (n : ℕ) : (n : SkewMonoidAlgebra k G) = single (1 : G) (n : k) := rfl
+
+@[simp]
+lemma single_nat (n : ℕ) : (single 1 n : SkewMonoidAlgebra k G) = n := rfl
 
 instance : Semiring (SkewMonoidAlgebra k G) where
   __ := instNonUnitalSemiring
@@ -692,7 +699,7 @@ instance instNonAssocRing [Ring k] [Monoid G] [MulSemiringAction G k] :
   __ := instAddCommGroup
   __ := instNonAssocSemiring
   intCast z := single 1 (z : k)
-  intCast_ofNat n := by simp; rfl
+  intCast_ofNat n := by simp
   intCast_negSucc n := by
     simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, single_add]
     rw [single]; rw [single];
