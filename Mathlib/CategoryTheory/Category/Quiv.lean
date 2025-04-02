@@ -241,9 +241,24 @@ def adj : Cat.free ⊣ Quiv.forget :=
       exact pathsOf_pathComposition_toPrefunctor C
   }
 
-/-- The `homEquiv` arising from `adj : Cat.free ⊣ Quiv.forget`. -/
-def pathsEquiv {V C : Type u} [Quiver.{max u v + 1} V] [Category.{max u v} C] :
-    (Paths V ⥤ C) ≃ (V ⥤q C) := adj.homEquiv (Quiv.of V) (Cat.of C)
+/-- The universal property of the path category of a quiver. -/
+def pathsEquiv {V : Type u} {C : Type u₁} [Quiver.{v + 1} V] [Category.{v₁} C] :
+    (Paths V ⥤ C) ≃ V ⥤q C where
+  toFun F := (Paths.of V).comp F.toPrefunctor
+  invFun G := Cat.freeMap G ⋙ pathComposition C
+  left_inv F := by
+    dsimp
+    rw [Cat.freeMap_comp, Functor.assoc, pathComposition_naturality, ← Functor.assoc,
+      freeMap_pathsOf_pathComposition, Functor.id_comp]
+  right_inv G := by
+    dsimp
+    rw [← Functor.toPrefunctor_comp, ← Prefunctor.comp_assoc,
+      pathsOf_freeMap_toPrefunctor, Prefunctor.comp_assoc,
+      pathsOf_pathComposition_toPrefunctor, Prefunctor.comp_id]
+
+@[simp]
+lemma adj_homEquiv {V C : Type u} [Quiver.{max u v + 1} V] [Category.{max u v} C] :
+    adj.homEquiv (Quiv.of V) (Cat.of C) = pathsEquiv (V := V) (C := C) := rfl
 
 end Quiv
 
