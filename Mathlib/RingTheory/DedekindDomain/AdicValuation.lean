@@ -406,7 +406,6 @@ instance adicValued.uniformContinuousConstSMul :
 
 open UniformSpace in
 instance : Algebra S (v.adicCompletion K) where
-  toSMul := Completion.instSMul _ _
   algebraMap := Completion.coeRingHom.comp (algebraMap _ _)
   commutes' r x := by
     induction x using Completion.induction_on with
@@ -423,8 +422,10 @@ instance : Algebra S (v.adicCompletion K) where
       exact isClosed_eq (continuous_const_smul _) (continuous_mul_left _)
     | ih x =>
       change _ = (↑(algebraMap S (WithVal <| v.valuation K) r) : v.adicCompletion K) * x
+      have := adicValued.uniformContinuousConstSMul R K (S := S)
       norm_cast
-      rw [← Algebra.smul_def]
+      simp_rw [← Algebra.smul_def]
+      rw [UniformSpace.Completion.coe_smul]
 
 theorem coe_smul_adicCompletion (r : S) (x : WithVal (v.valuation K)) :
     (↑(r • x) : v.adicCompletion K) = r • (↑x : v.adicCompletion K) :=
@@ -435,11 +436,9 @@ theorem algebraMap_adicCompletion : ⇑(algebraMap S <| v.adicCompletion K) = (�
 
 end Algebra
 
-theorem coe_algebraMap_mem (r : R) : ↑((algebraMap R K) r) ∈ adicCompletionIntegers K v := by
-  rw [mem_adicCompletionIntegers]
-  letI : Valued K ℤₘ₀ := adicValued v
-  dsimp only [adicCompletion]
-  rw [Valued.valuedCompletion_apply]
+theorem coe_algebraMap_mem (r : R) :
+    ↑((algebraMap R (WithVal (v.valuation K))) r) ∈ adicCompletionIntegers K v := by
+  rw [mem_adicCompletionIntegers, Valuation.valuedCompletion_apply]
   exact v.valuation_le_one _
 
 instance : Algebra R (v.adicCompletionIntegers K) where

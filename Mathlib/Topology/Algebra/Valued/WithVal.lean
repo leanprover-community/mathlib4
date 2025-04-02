@@ -82,6 +82,8 @@ def equiv : WithVal v ≃+* R := RingEquiv.refl _
 
 theorem apply_equiv (r : WithVal v) : v (WithVal.equiv v r) = v r := rfl
 
+theorem equiv_symm_apply (r : R) : v ((WithVal.equiv v).symm r) = v r := rfl
+
 end WithVal
 
 /-! The completion of a field with respect to a valuation. -/
@@ -97,14 +99,33 @@ def Completion := UniformSpace.Completion (WithVal v)
 
 instance : Ring v.Completion := UniformSpace.Completion.ring
 
+instance : Inhabited v.Completion := ⟨0⟩
+
 instance : Coe R v.Completion :=
   inferInstanceAs <| Coe (WithVal v) (UniformSpace.Completion (WithVal v))
 
 instance {M : Type*} [SMul M (WithVal v)] : SMul M v.Completion :=
   UniformSpace.Completion.instSMul _ _
 
-instance {K : Type*} [Field K] (v : Valuation K Γ₀) :
-    Valued v.Completion Γ₀ := Valued.valuedCompletion
+instance (M N : Type*) [SMul M (WithVal v)] [SMul N (WithVal v)] [SMul M N]
+    [UniformContinuousConstSMul M (WithVal v)] [UniformContinuousConstSMul N (WithVal v)]
+    [IsScalarTower M N (WithVal v)] :
+    IsScalarTower M N v.Completion :=
+  UniformSpace.Completion.instIsScalarTower M N (WithVal v)
+
+instance valuedCompletion {K : Type*} [Field K] (v : Valuation K Γ₀) :
+    Valued v.Completion Γ₀ := Valued.valuedCompletion --Valued.valuedCompletion
+
+theorem valuedCompletion_apply {K : Type*} [Field K] {v : Valuation K Γ₀}
+    (x : WithVal v) : v.valuedCompletion.v x = Valued.v x := Valued.valuedCompletion_apply _
+
+theorem valuedCompletion_apply' {K : Type*} [Field K] {v : Valuation K Γ₀}
+    (x : K) : v.valuedCompletion.v x = Valued.v (WithVal.equiv v |>.symm x) :=
+  Valued.valuedCompletion_apply _
+
+theorem valuedCompletion_eq_valuation {K : Type*} [Field K] {v : Valuation K Γ₀}
+    (x : WithVal v) : Valued.v (x : v.Completion) = v x :=
+  valuedCompletion_apply (x : K)
 
 instance {K : Type*} [Field K] (v : Valuation K Γ₀) [CompletableTopField (WithVal v)]  :
     Field v.Completion := UniformSpace.Completion.instField
