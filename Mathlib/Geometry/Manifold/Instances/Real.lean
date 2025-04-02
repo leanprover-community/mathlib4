@@ -188,6 +188,7 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
       UniqueDiffOn.pi (Fin n) (fun _ => ℝ) _ _ fun i (_ : i ∈ ({0} : Set (Fin n))) =>
         uniqueDiffOn_Ici 0
     simpa only [singleton_pi] using this
+  convex_interior_range := sorry
   target_subset_closure_interior := by simp
   continuous_toFun := continuous_subtype_val
   continuous_invFun := by
@@ -217,6 +218,7 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
     simp only [this, interior_pi_set finite_univ]
     rw [closure_pi_set]
     simp
+  convex_interior_range := sorry
   continuous_toFun := continuous_subtype_val
   continuous_invFun := Continuous.subtype_mk
     (continuous_pi fun i => (continuous_id.max continuous_const).comp (continuous_apply i)) _
