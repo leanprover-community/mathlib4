@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.Analysis.NormedSpace.IndicatorFunction
+import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
 /-! # Functions integrable on a set and at a filter
 

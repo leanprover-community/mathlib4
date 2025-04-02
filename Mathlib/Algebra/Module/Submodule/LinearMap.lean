@@ -97,8 +97,6 @@ lemma subtype_injective :
 theorem coe_subtype : (Submodule.subtype p : p → M) = Subtype.val :=
   rfl
 
-@[deprecated (since := "2024-09-27")] alias coeSubtype := coe_subtype
-
 theorem injective_subtype : Injective p.subtype :=
   Subtype.coe_injective
 

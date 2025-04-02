@@ -64,11 +64,6 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
 
 attribute [bound] pow_le_one₀ one_le_pow₀
 
-@[deprecated (since := "2024-09-28")] alias mul_le_one := mul_le_one₀
-@[deprecated (since := "2024-09-28")] alias pow_le_one := pow_le_one₀
-@[deprecated (since := "2024-09-28")] alias pow_lt_one := pow_lt_one₀
-@[deprecated (since := "2024-09-28")] alias one_le_pow_of_one_le := one_le_pow₀
-@[deprecated (since := "2024-09-28")] alias one_lt_pow := one_lt_pow₀
 @[deprecated (since := "2024-10-04")] alias pow_right_mono := pow_right_mono₀
 @[deprecated (since := "2024-10-04")] alias pow_le_pow_right := pow_le_pow_right₀
 

@@ -83,8 +83,6 @@ verbose, or `A.val` which is not the simp-normal form for subtypes, we create a 
 notation. -/
 local notation:1024 "↑ₘ" A:1024 => ((A : SpecialLinearGroup n R) : Matrix n n R)
 
--- Porting note: moved this section upwards because it used to be not simp-normal.
--- Now it is, since coercion arrows are unfolded.
 section CoeFnInstance
 
 /-- This instance is here for convenience, but is literally the same as the coercion from
@@ -136,7 +134,6 @@ section CoeLemmas
 
 variable (A B : SpecialLinearGroup n R)
 
--- Porting note: shouldn't be `@[simp]` because cast+mk gets reduced anyway
 theorem coe_mk (A : Matrix n n R) (h : det A = 1) : ↑(⟨A, h⟩ : SpecialLinearGroup n R) = A :=
   rfl
 

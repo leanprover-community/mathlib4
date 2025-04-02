@@ -119,6 +119,8 @@ theorem single_apply {a a' : G} {b : k} [Decidable (a = a')] :
 @[simp]
 theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := Finsupp.single_eq_zero
 
+theorem single_ne_zero {a : G} {b : k} : single a b ≠ 0 ↔ b ≠ 0 := Finsupp.single_ne_zero
+
 /-- A non-commutative version of `MonoidAlgebra.lift`: given an additive homomorphism `f : k →+ R`
 and a homomorphism `g : G → R`, returns the additive homomorphism from
 `MonoidAlgebra k G` such that `liftNC f g (single a b) = f b * g a`. If `f` is a ring homomorphism
@@ -865,6 +867,8 @@ theorem single_apply {a a' : G} {b : k} [Decidable (a = a')] :
 
 @[simp]
 theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := Finsupp.single_eq_zero
+
+theorem single_ne_zero {a : G} {b : k} : single a b ≠ 0 ↔ b ≠ 0 := Finsupp.single_ne_zero
 
 /-- A non-commutative version of `AddMonoidAlgebra.lift`: given an additive homomorphism
 `f : k →+ R` and a map `g : Multiplicative G → R`, returns the additive

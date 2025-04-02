@@ -117,10 +117,6 @@ local infixl:70 "⌋" => contractLeft (R := R) (M := M)
 
 local infixl:70 "⌊" => contractRight (R := R) (M := M) (Q := Q)
 
--- Porting note: Lean needs to be reminded of this instance otherwise the statement of the
--- next result times out
-instance : SMul R (CliffordAlgebra Q) := inferInstance
-
 /-- This is [grinberg_clifford_2016][] Theorem 6 -/
 theorem contractLeft_ι_mul (a : M) (b : CliffordAlgebra Q) :
     d⌋(ι Q a * b) = d a • b - ι Q a * (d⌋b) := by

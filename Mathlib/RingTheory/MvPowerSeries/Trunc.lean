@@ -190,7 +190,7 @@ theorem trunc'_C (n : σ →₀ ℕ) (a : R) :
     classical
     rw [coeff_trunc', coeff_C, MvPolynomial.coeff_C]
     split_ifs with H <;> first |rfl|try simp_all
-    exfalso; apply H; subst m; exact orderBot.proof_1 n
+    exfalso; apply H; subst m; exact zero_le n
 
 /-- Coefficients of the truncation of a product of two multivariate power series -/
 theorem coeff_mul_eq_coeff_trunc'_mul_trunc' (n : σ →₀ ℕ)

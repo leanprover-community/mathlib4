@@ -57,14 +57,25 @@ jobs:
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
         run: lake update
 
-      - name: Generate PR title
+      - name: Check if lean-toolchain was modified
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
+        id: check_toolchain
+        run: |
+          if git diff --name-only | grep -q "lean-toolchain"; then
+            echo "toolchain_modified=true" >> "$GITHUB_OUTPUT"
+            echo "Lean toolchain file was modified. Skipping PR creation."
+          else
+            echo "toolchain_modified=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate PR title
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') && steps.check_toolchain.outputs.toolchain_modified != 'true' }}
         run: |
           echo "timestamp=$(date -u +"%Y-%m-%d-%H-%M")" >> "$GITHUB_ENV"
           echo "pr_title=chore: update Mathlib dependencies $(date -u +"%Y-%m-%d")" >> "$GITHUB_ENV"
 
       - name: Create Pull Request
-        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
+        if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') && steps.check_toolchain.outputs.toolchain_modified != 'true' }}
         uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"

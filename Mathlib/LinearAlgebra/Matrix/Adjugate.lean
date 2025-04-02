@@ -227,12 +227,10 @@ theorem adjugate_transpose (A : Matrix n n α) : (adjugate A)ᵀ = adjugate Aᵀ
 theorem adjugate_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m α) :
     adjugate (A.submatrix e e) = (adjugate A).submatrix e e := by
   ext i j
+  have : (fun j ↦ Pi.single i 1 <| e.symm j) = Pi.single (e i) 1 :=
+    Function.update_comp_equiv (0 : n → α) e.symm i 1
   rw [adjugate_apply, submatrix_apply, adjugate_apply, ← det_submatrix_equiv_self e,
-    updateRow_submatrix_equiv]
-  -- Porting note: added
-  suffices (fun j => Pi.single i 1 (e.symm j)) = Pi.single (e i) 1 by
-    erw [this]
-  exact Function.update_comp_equiv _ e.symm _ _
+    updateRow_submatrix_equiv, this]
 
 theorem adjugate_reindex (e : m ≃ n) (A : Matrix m m α) :
     adjugate (reindex e e A) = reindex e e (adjugate A) :=
@@ -247,8 +245,7 @@ theorem cramer_eq_adjugate_mulVec (A : Matrix n n α) (b : n → α) :
   have : b = ∑ i, b i • (Pi.single i 1 : n → α) := by
     refine (pi_eq_sum_univ b).trans ?_
     congr with j
-    -- Porting note: needed to help `Pi.smul_apply`
-    simp [Pi.single_apply, eq_comm, Pi.smul_apply (b j)]
+    simp [Pi.single_apply, eq_comm]
   conv_lhs =>
     rw [this]
   ext k

@@ -310,8 +310,6 @@ lemma Submodule.rank_mono {s t : Submodule R M} (h : s ≤ t) : Module.rank R s 
   (Submodule.inclusion h).rank_le_of_injective fun ⟨x, _⟩ ⟨y, _⟩ eq =>
     Subtype.eq <| show x = y from Subtype.ext_iff_val.1 eq
 
-@[deprecated (since := "2024-09-30")] alias rank_le_of_submodule := Submodule.rank_mono
-
 /-- Two linearly equivalent vector spaces have the same dimension, a version with different
 universes. -/
 theorem LinearEquiv.lift_rank_eq (f : M ≃ₗ[R] M') :

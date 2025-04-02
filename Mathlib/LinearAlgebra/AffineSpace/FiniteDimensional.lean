@@ -502,9 +502,7 @@ theorem collinear_iff_not_affineIndependent_set {p₁ p₂ p₃ : P} :
 theorem affineIndependent_iff_not_collinear_of_ne {p : Fin 3 → P} {i₁ i₂ i₃ : Fin 3} (h₁₂ : i₁ ≠ i₂)
     (h₁₃ : i₁ ≠ i₃) (h₂₃ : i₂ ≠ i₃) :
     AffineIndependent k p ↔ ¬Collinear k ({p i₁, p i₂, p i₃} : Set P) := by
-  have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
-    -- Porting note: Originally `by decide!`
-    revert i₁ i₂ i₃; decide
+  have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by decide +revert
   rw [affineIndependent_iff_not_collinear, ← Set.image_univ, ← Finset.coe_univ, hu,
     Finset.coe_insert, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_pair]
 
@@ -560,9 +558,7 @@ theorem Collinear.collinear_insert_iff_of_ne {s : Set P} (h : Collinear k s) {p�
     (hp₂ : p₂ ∈ s) (hp₃ : p₃ ∈ s) (hp₂p₃ : p₂ ≠ p₃) :
     Collinear k (insert p₁ s) ↔ Collinear k ({p₁, p₂, p₃} : Set P) := by
   have hv : vectorSpan k (insert p₁ s) = vectorSpan k ({p₁, p₂, p₃} : Set P) := by
-    -- Porting note: Original proof used `conv_lhs` and `conv_rhs`, but these tactics timed out.
-    rw [← direction_affineSpan, ← affineSpan_insert_affineSpan]
-    symm
+    conv_rhs => rw [← direction_affineSpan, ← affineSpan_insert_affineSpan]
     rw [← direction_affineSpan, ← affineSpan_insert_affineSpan, h.affineSpan_eq_of_ne hp₂ hp₃ hp₂p₃]
   rw [Collinear, Collinear, hv]
 

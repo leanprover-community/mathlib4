@@ -429,11 +429,9 @@ theorem IsCompact.eventually_forall_of_forall_eventually {x₀ : X} {K : Set Y} 
   simp only [nhds_prod_eq, ← eventually_iSup, ← hK.prod_nhdsSet_eq_biSup] at hP
   exact hP.curry.mono fun _ h ↦ h.self_of_nhdsSet
 
-@[simp]
 theorem isCompact_empty : IsCompact (∅ : Set X) := fun _f hnf hsf =>
   Not.elim hnf.ne <| empty_mem_iff_bot.1 <| le_principal_iff.1 hsf
 
-@[simp]
 theorem isCompact_singleton {x : X} : IsCompact ({x} : Set X) := fun _ hf hfa =>
   ⟨x, rfl, ClusterPt.of_le_nhds'
     (hfa.trans <| by simpa only [principal_singleton] using pure_le_nhds x) hf⟩
@@ -465,7 +463,7 @@ theorem isCompact_iUnion {ι : Sort*} {f : ι → Set X} [Finite ι] (h : ∀ i,
     IsCompact (⋃ i, f i) :=
   (finite_range f).isCompact_sUnion <| forall_mem_range.2 h
 
-theorem Set.Finite.isCompact (hs : s.Finite) : IsCompact s :=
+@[simp] theorem Set.Finite.isCompact (hs : s.Finite) : IsCompact s :=
   biUnion_of_singleton s ▸ hs.isCompact_biUnion fun _ _ => isCompact_singleton
 
 theorem IsCompact.finite_of_discrete [DiscreteTopology X] (hs : IsCompact s) : s.Finite := by

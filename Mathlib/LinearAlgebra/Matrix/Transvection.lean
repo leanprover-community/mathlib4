@@ -605,7 +605,6 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction
       diagonal (Sum.elim D₀ fun _ => c) by
     simpa [M', c, Matrix.mul_assoc]
   have : M' = fromBlocks M'' 0 0 (diagonal fun _ => c) := by
-    -- Porting note: simplified proof, because `congr` didn't work anymore
     rw [← fromBlocks_toBlocks M', hM.1, hM.2]
     rfl
   rw [this]

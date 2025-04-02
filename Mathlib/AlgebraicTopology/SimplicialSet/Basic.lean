@@ -81,30 +81,44 @@ def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
 def Truncated (n : ℕ) :=
   SimplicialObject.Truncated (Type u) n
 
-instance Truncated.largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
+namespace Truncated
+
+instance largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
-instance Truncated.hasLimits {n : ℕ} : HasLimits (Truncated n) := by
+instance hasLimits {n : ℕ} : HasLimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
-instance Truncated.hasColimits {n : ℕ} : HasColimits (Truncated n) := by
+instance hasColimits {n : ℕ} : HasColimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
 /-- The ulift functor `SSet.Truncated.{u} ⥤ SSet.Truncated.{max u v}` on truncated
 simplicial sets. -/
-def Truncated.uliftFunctor (k : ℕ) : SSet.Truncated.{u} k ⥤ SSet.Truncated.{max u v} k :=
+def uliftFunctor (k : ℕ) : SSet.Truncated.{u} k ⥤ SSet.Truncated.{max u v} k :=
   (whiskeringRight _ _ _).obj CategoryTheory.uliftFunctor.{v, u}
 
 @[ext]
-lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :
+lemma hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :
     f = g :=
   NatTrans.ext (funext w)
 
+/-- Further truncation of truncated simplicial sets. -/
+abbrev trunc (n m : ℕ) (h : m ≤ n := by omega) :
+    SSet.Truncated n ⥤ SSet.Truncated m :=
+  SimplicialObject.Truncated.trunc (Type u) n m
+
+end Truncated
+
 /-- The truncation functor on simplicial sets. -/
 abbrev truncation (n : ℕ) : SSet ⥤ SSet.Truncated n := SimplicialObject.truncation n
+
+/-- For all `m ≤ n`, `truncation m` factors through `SSet.Truncated n`. -/
+def truncationCompTrunc {n m : ℕ} (h : m ≤ n) :
+    truncation n ⋙ Truncated.trunc n m ≅ truncation m :=
+  Iso.refl _
 
 open SimplexCategory
 

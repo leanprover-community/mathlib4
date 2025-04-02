@@ -125,8 +125,6 @@ def comap {A B : Mon_ C} (f : A ⟶ B) : Mod_ B ⥤ Mod_ A where
         slice_rhs 1 2 => rw [whisker_exchange]
         slice_rhs 2 3 => rw [← g.act_hom]
         rw [Category.assoc] }
-  map_id _ := rfl -- the `aesop_cat` autoparam solves this but it's slow
-  map_comp _ _ := rfl -- the `aesop_cat` autoparam solves this but it's slow
 
 -- Lots more could be said about `comap`, e.g. how it interacts with
 -- identities, compositions, and equalities of monoid object morphisms.
