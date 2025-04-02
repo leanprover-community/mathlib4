@@ -31,6 +31,7 @@ This file defines first-order terms, formulas, sentences, and theories in a styl
   above a particular index.
 - `FirstOrder.Language.Term.subst` and `FirstOrder.Language.BoundedFormula.subst` substitute
   variables with given terms.
+- `FirstOrder.Language.Term.substFunc` instead substitutes function definitions with given terms.
 - Language maps can act on syntactic objects with functions such as
   `FirstOrder.Language.LHom.onFormula`.
 - `FirstOrder.Language.Term.constantsVarsEquiv` and
@@ -168,6 +169,10 @@ def Functions.apply₁ (f : L.Functions 1) (t : L.Term α) : L.Term α :=
 def Functions.apply₂ (f : L.Functions 2) (t₁ t₂ : L.Term α) : L.Term α :=
   func f ![t₁, t₂]
 
+/-- The representation of a function symbol as a term, on fresh variables indexed by Fin. -/
+def Functions.term {n : ℕ} (f : L.Functions n) : L.Term (Fin n) :=
+  func f Term.var
+
 namespace Term
 
 /-- Sends a term with constants to a term with extra variables. -/
@@ -236,6 +241,18 @@ def subst : L.Term α → (α → L.Term β) → L.Term β
   | var a, tf => tf a
   | func f ts, tf => func f fun i => (ts i).subst tf
 
+/-- Substitutes the functions in a given term with expressions. -/
+@[simp]
+def substFunc : L.Term α → (∀ {n : ℕ}, L.Functions n → L'.Term (Fin n)) → L'.Term α
+  | var a, _ => var a
+  | func f ts, tf => (tf f).subst fun i ↦ (ts i).substFunc tf
+
+@[simp]
+theorem substFunc_term (t : L.Term α) : t.substFunc Functions.term = t := by
+  induction t
+  · rfl
+  · simp only [substFunc, Functions.term, subst, ‹∀_, _›]
+
 end Term
 
 scoped[FirstOrder] prefix:arg "&" => FirstOrder.Language.Term.var ∘ Sum.inr
@@ -269,13 +286,17 @@ end LHom
 
 /-- Maps a term's symbols along a language equivalence. -/
 @[simps]
-def Lequiv.onTerm (φ : L ≃ᴸ L') : L.Term α ≃ L'.Term α where
+def LEquiv.onTerm (φ : L ≃ᴸ L') : L.Term α ≃ L'.Term α where
   toFun := φ.toLHom.onTerm
   invFun := φ.invLHom.onTerm
   left_inv := by
     rw [Function.leftInverse_iff_comp, ← LHom.comp_onTerm, φ.left_inv, LHom.id_onTerm]
   right_inv := by
     rw [Function.rightInverse_iff_comp, ← LHom.comp_onTerm, φ.right_inv, LHom.id_onTerm]
+
+/-- Maps a term's symbols along a language equivalence. Deprecated in favor of `LEquiv.onTerm`. -/
+@[deprecated LEquiv.onTerm (since := "2025-31-03")]
+def Lequiv.onTerm := @LEquiv.onTerm
 
 variable (L) (α)
 
