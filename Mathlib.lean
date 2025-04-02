@@ -193,7 +193,7 @@ import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.CharP.CharAndCard
 import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.CharP.ExpChar
+import Mathlib.Algebra.CharP.Frobenius
 import Mathlib.Algebra.CharP.IntermediateField
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.CharP.Lemmas
@@ -2461,6 +2461,7 @@ import Mathlib.CategoryTheory.Subpresheaf.Subobject
 import Mathlib.CategoryTheory.Subterminal
 import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
+import Mathlib.CategoryTheory.Sums.Products
 import Mathlib.CategoryTheory.Thin
 import Mathlib.CategoryTheory.Topos.Classifier
 import Mathlib.CategoryTheory.Triangulated.Adjunction
@@ -4587,6 +4588,7 @@ import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Order.Interval.Set.InitialSeg
 import Mathlib.Order.Interval.Set.IsoIoo
 import Mathlib.Order.Interval.Set.Limit
+import Mathlib.Order.Interval.Set.LinearOrder
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.OrdConnectedComponent
@@ -5177,6 +5179,7 @@ import Mathlib.RingTheory.Spectrum.Maximal.Defs
 import Mathlib.RingTheory.Spectrum.Maximal.Localization
 import Mathlib.RingTheory.Spectrum.Maximal.Topology
 import Mathlib.RingTheory.Spectrum.Prime.Basic
+import Mathlib.RingTheory.Spectrum.Prime.Chevalley
 import Mathlib.RingTheory.Spectrum.Prime.ChevalleyComplexity
 import Mathlib.RingTheory.Spectrum.Prime.ConstructibleSet
 import Mathlib.RingTheory.Spectrum.Prime.Defs

@@ -12,6 +12,8 @@ import Mathlib.RingTheory.Spectrum.Prime.Polynomial
 /-!
 # Chevalley's theorem with complexity bound
 
+⚠ For general usage, see `Mathlib/RingTheory/Spectrum/Prime/Chevalley.lean`.
+
 Chevalley's theorem states that if `f : R → S` is a finitely presented ring hom between commutative
 rings, then the image of a constructible set in `Spec S` is a constructible set in `Spec R`.
 
@@ -54,9 +56,6 @@ two maps `C : R[Y₁, ..., Yₙ] → R[X₁, ..., Xₘ, Y₁, ..., Yₙ]` and
 The structure of the proof follows https://stacks.math.columbia.edu/tag/00FE, although they do
 not give an explicit bound on the complexity.
 
-## TODO
-
-More general complexity-less version of Chevalley's theorem. This will be PRed soon.
 -/
 
 variable {R₀ R S M A : Type*} [CommRing R₀] [CommRing R] [Algebra R₀ R] [CommRing S] [Algebra R₀ S]
