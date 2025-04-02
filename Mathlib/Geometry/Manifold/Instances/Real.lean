@@ -200,6 +200,32 @@ theorem frontier_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
   simp only [mem_diff, mem_setOf_eq, not_forall, not_lt, and_congr_right_iff]
   exact fun aux ↦ ⟨fun ⟨i, hi⟩ ↦ ⟨i, by linarith [aux i]⟩, fun ⟨i, hi⟩ ↦ ⟨i, by linarith⟩⟩
 
+-- Can this proof be golfed further?
+lemma aux {a b c d : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) (hc : 0 < c) (hd : 0 < d) :
+    0 < a * c + b * d := by
+  by_cases ha: 0 < a
+  · by_cases hb: 0 < b
+    · positivity
+    · have : b = 0 := by linarith
+      simp_all
+  · have : a = 0 := by linarith
+    simp_all
+
+theorem EuclideanHalfSpace.interior_convex [NeZero n] :
+    Convex ℝ (interior { x : EuclideanSpace ℝ (Fin n) | 0 ≤ x 0 }) := by
+  rw [interior_halfSpace]
+  intro x hx y hy a b ha hb hab
+  dsimp at hx hy ⊢
+  exact aux ha hb hab hx hy
+
+theorem EuclideanQuadrant.interior_convex :
+    Convex ℝ (interior { x : EuclideanSpace ℝ (Fin n) | ∀ i, 0 ≤ x i }) := by
+  rw [interior_euclideanQuadrant]
+  intro x hx y hy a b ha hb hab
+  dsimp at hx hy ⊢
+  intro i
+  apply aux ha hb hab (hx i) (hy i)
+
 end
 
 /--
@@ -224,7 +250,11 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
       UniqueDiffOn.pi (Fin n) (fun _ => ℝ) _ _ fun i (_ : i ∈ ({0} : Set (Fin n))) =>
         uniqueDiffOn_Ici 0
     simpa only [singleton_pi] using this
-  convex_interior_range := sorry
+  convex_interior_range h := by
+    dsimp
+    have : Convex ℝ (interior ({x : EuclideanSpace ℝ (Fin n) | 0 ≤ x 0})) :=
+      EuclideanHalfSpace.interior_convex
+    sorry -- argue why `this` proves what we want
   target_subset_closure_interior := by simp
   continuous_toFun := continuous_subtype_val
   continuous_invFun := by
@@ -249,12 +279,16 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
       UniqueDiffOn.univ_pi (Fin n) (fun _ => ℝ) _ fun _ => uniqueDiffOn_Ici 0
     simpa only [pi_univ_Ici] using this
   target_subset_closure_interior := by
+    dsimp
     have : {x : EuclideanSpace ℝ (Fin n) | ∀ (i : Fin n), 0 ≤ x i}
       = Set.pi univ (fun i ↦ Ici 0) := by aesop
     simp only [this, interior_pi_set finite_univ]
     rw [closure_pi_set]
     simp
-  convex_interior_range := sorry
+  convex_interior_range h := by
+    have : Convex ℝ (interior ({x : EuclideanSpace ℝ (Fin n) | ∀ (i : Fin n), 0 ≤ x i})) :=
+      EuclideanQuadrant.interior_convex
+    sorry -- argue why `this` is the statement we want
   continuous_toFun := continuous_subtype_val
   continuous_invFun := Continuous.subtype_mk
     (continuous_pi fun i => (continuous_id.max continuous_const).comp (continuous_apply i)) _
