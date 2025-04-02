@@ -103,7 +103,7 @@ variable [IsTopologicalRing S] [IsLinearTopology S S]
 
 /-- The domain of evaluation of `MvPowerSeries`, as an ideal -/
 @[simps]
-def hasEvalIdeal [IsTopologicalRing S] [IsLinearTopology S S] : Ideal (σ → S) where
+def hasEvalIdeal : Ideal (σ → S) where
   carrier := {a | HasEval a}
   add_mem' := HasEval.add
   zero_mem' := HasEval.zero
