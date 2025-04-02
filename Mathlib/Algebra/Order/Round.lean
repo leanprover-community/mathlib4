@@ -59,8 +59,8 @@ theorem round_intCast (n : ℤ) : round (n : α) = n := by simp [round]
 
 @[simp]
 theorem round_add_intCast (x : α) (y : ℤ) : round (x + y) = round x + y := by
-  rw [round, round, Int.fract_add_int, Int.floor_add_intCast, Int.ceil_add_intCast, ← apply_ite₂,
-    ite_self]
+  rw [round, round, Int.fract_add_intCast, Int.floor_add_intCast, Int.ceil_add_intCast,
+    ← apply_ite₂, ite_self]
 
 @[deprecated (since := "2025-03-23")]
 alias round_add_int := round_add_intCast
