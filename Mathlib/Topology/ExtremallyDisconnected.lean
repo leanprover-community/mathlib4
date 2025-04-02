@@ -3,7 +3,7 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.StoneCech
 
 /-!
@@ -300,6 +300,6 @@ instance instExtremallyDisconnected {ι : Type*} {X : ι → Type*} [∀ i, Topo
     · rwa [← ij, sigma_mk_preimage_image_eq_self]
     · rw [sigma_mk_preimage_image' ij]
       exact isOpen_empty
-  · continuity
+  · fun_prop
 
 end

@@ -328,7 +328,10 @@ variable [LocallyFiniteOrderTop α]
 theorem Ioi_eq_empty : Ioi a = ∅ ↔ IsMax a := by
   rw [← coe_eq_empty, coe_Ioi, Set.Ioi_eq_empty_iff]
 
-@[simp]
+@[simp] alias ⟨_, _root_.IsMax.finsetIoi_eq⟩ := Ioi_eq_empty
+
+@[simp] lemma Ioi_nonempty : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [nonempty_iff_ne_empty]
+
 theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ∅ := Ioi_eq_empty.mpr isMax_top
 
 @[simp]
@@ -337,7 +340,6 @@ theorem Ici_bot [OrderBot α] [Fintype α] : Ici (⊥ : α) = univ := by
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
-@[simp]
 lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
@@ -383,7 +385,10 @@ variable [LocallyFiniteOrderBot α]
 @[simp]
 theorem Iio_eq_empty : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty (α := αᵒᵈ)
 
-@[simp]
+@[simp] alias ⟨_, _root_.IsMin.finsetIio_eq⟩ := Iio_eq_empty
+
+@[simp] lemma Iio_nonempty : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [nonempty_iff_ne_empty]
+
 theorem Iio_bot [OrderBot α] : Iio (⊥ : α) = ∅ := Iio_eq_empty.mpr isMin_bot
 
 @[simp]
@@ -392,7 +397,6 @@ theorem Iic_top [OrderTop α] [Fintype α] : Iic (⊤ : α) = univ := by
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
-@[simp]
 lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty]
 
 @[aesop safe apply (rule_sets := [finsetNonempty])]
@@ -433,7 +437,7 @@ theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
   disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_lt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
 
 /-- An equivalence between `Finset.Iic a` and `Set.Iic a`. -/
-def _root_.Equiv.Iic_finset_set (a : α) : Iic a ≃ Set.Iic a where
+def _root_.Equiv.IicFinsetSet (a : α) : Iic a ≃ Set.Iic a where
   toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
   invFun b := ⟨b.1, by rw [← mem_coe, coe_Iic a]; exact b.2⟩
   left_inv := fun _ ↦ rfl
@@ -643,12 +647,12 @@ variable {β : Type*}
 section sectL
 
 lemma uIcc_map_sectL [Lattice α] [Lattice β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-    [DecidableRel (α := α × β) (· ≤ ·)] (a b : α) (c : β) :
+    [DecidableLE (α × β)] (a b : α) (c : β) :
     (uIcc a b).map (.sectL _ c) = uIcc (a, c) (b, c) := by
   aesop (add safe forward [le_antisymm])
 
 variable [Preorder α] [PartialOrder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [DecidableRel (α := α × β) (· ≤ ·)] (a b : α) (c : β)
+  [DecidableLE (α × β)] (a b : α) (c : β)
 
 lemma Icc_map_sectL : (Icc a b).map (.sectL _ c) = Icc (a, c) (b, c) := by
   aesop (add safe forward [le_antisymm])
@@ -667,12 +671,12 @@ end sectL
 section sectR
 
 lemma uIcc_map_sectR [Lattice α] [Lattice β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-    [DecidableRel (α := α × β) (· ≤ ·)] (c : α) (a b : β) :
+    [DecidableLE (α × β)] (c : α) (a b : β) :
     (uIcc a b).map (.sectR c _) = uIcc (c, a) (c, b) := by
   aesop (add safe forward [le_antisymm])
 
 variable [PartialOrder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [DecidableRel (α := α × β) (· ≤ ·)] (c : α) (a b : β)
+  [DecidableLE (α × β)] (c : α) (a b : β)
 
 lemma Icc_map_sectR : (Icc a b).map (.sectR c _) = Icc (c, a) (c, b) := by
   aesop (add safe forward [le_antisymm])

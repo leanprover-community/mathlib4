@@ -28,7 +28,6 @@ open Finset
 
 variable {X : β → Type*} [Fintype β]
 
--- Porting note: reordered instances
 instance [∀ b, EDist (X b)] : EDist (∀ b, X b) where
   edist f g := Finset.sup univ fun b => edist (f b) (g b)
 

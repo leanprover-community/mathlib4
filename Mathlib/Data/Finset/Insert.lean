@@ -76,7 +76,6 @@ theorem not_mem_singleton {a b : α} : a ∉ ({b} : Finset α) ↔ a ≠ b :=
   not_congr mem_singleton
 
 theorem mem_singleton_self (a : α) : a ∈ ({a} : Finset α) :=
-  -- Porting note: was `Or.inl rfl`
   mem_singleton.mpr rfl
 
 @[simp]
@@ -279,8 +278,6 @@ theorem cons_empty (a : α) : cons a ∅ (not_mem_empty _) = {a} := rfl
 theorem cons_nonempty (h : a ∉ s) : (cons a s h).Nonempty :=
   ⟨a, mem_cons.2 <| Or.inl rfl⟩
 
-@[deprecated (since := "2024-09-19")] alias nonempty_cons := cons_nonempty
-
 @[simp] theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (cons_nonempty _).ne_empty
 
 @[simp]
@@ -445,7 +442,6 @@ theorem insert_nonempty (a : α) (s : Finset α) : (insert a s).Nonempty :=
 theorem insert_ne_empty (a : α) (s : Finset α) : insert a s ≠ ∅ :=
   (insert_nonempty a s).ne_empty
 
--- Porting note: explicit universe annotation is no longer required.
 instance (i : α) (s : Finset α) : Nonempty ((insert i s : Finset α) : Set α) :=
   (Finset.coe_nonempty.mpr (s.insert_nonempty i)).to_subtype
 

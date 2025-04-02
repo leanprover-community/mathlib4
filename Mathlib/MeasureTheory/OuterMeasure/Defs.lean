@@ -33,7 +33,7 @@ We also define a typeclass `MeasureTheory.OuterMeasureClass`.
 outer measure
 -/
 
-assert_not_exists IsTopologicalRing
+assert_not_exists Basis IsTopologicalRing UniformSpace
 
 open scoped ENNReal
 

@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Sean Leather
 -/
+import Batteries.Tactic.Congr
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Lookmap
+import Mathlib.Data.Sigma.Basic
 
 /-!
 # Utilities for lists of sigmas
@@ -141,8 +143,6 @@ variable [DecidableEq α] [DecidableEq α']
 
 /-! ### `dlookup` -/
 
-
--- Porting note: renaming to `dlookup` since `lookup` already exists
 /-- `dlookup a l` is the first value in `l` corresponding to the key `a`,
   or `none` if no such element exists. -/
 def dlookup (a : α) : List (Sigma β) → Option (β a)

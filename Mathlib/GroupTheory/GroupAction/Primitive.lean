@@ -175,12 +175,15 @@ theorem IsPreprimitive.of_isTrivialBlock_of_not_mem_fixedPoints {a : X} (ha : a 
 @[to_additive
   "If the action is not trivial, then the trivial blocks condition implies preprimitivity
 (pretransitivity is automatic)"]
-theorem mk' (Hnt : fixedPoints G X ≠ ⊤)
+theorem IsPreprimitive.mk' (Hnt : fixedPoints G X ≠ ⊤)
     (H : ∀ {B : Set X} (_ : IsBlock G B), IsTrivialBlock B) :
     IsPreprimitive G X := by
   simp only [Set.top_eq_univ, Set.ne_univ_iff_exists_not_mem] at Hnt
   obtain ⟨_, ha⟩ := Hnt
   exact .of_isTrivialBlock_of_not_mem_fixedPoints ha fun {B} _ ↦ H
+
+@[deprecated (since := "2025-03-03")] alias _root_.AddAction.mk' := AddAction.IsPreprimitive.mk'
+@[to_additive existing, deprecated (since := "2025-03-03")] alias mk' := IsPreprimitive.mk'
 
 section EquivariantMap
 

@@ -131,7 +131,7 @@ lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one [NumberField K] [IsCyclotomicExte
   let _ : AddGroup (𝓞 K ⧸ Ideal.span {λ}) := AddGroupWithOne.toAddGroup -- ditto
   have := Finset.mem_univ (Ideal.Quotient.mk (Ideal.span {λ}) x)
   have h3 : Fintype.card (𝓞 K ⧸ Ideal.span {λ}) = 3 := by
-    rw [← Nat.card_eq_fintype_card, hζ.card_quotient_toInteger_sub_one (by decide),
+    rw [← Nat.card_eq_fintype_card, hζ.card_quotient_toInteger_sub_one,
       hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)]
     simp only [PNat.val_ofNat, Nat.cast_ofNat, Int.reduceAbs]
   rw [Finset.univ_of_card_le_three h3.le] at this
