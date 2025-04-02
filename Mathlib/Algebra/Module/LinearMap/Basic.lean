@@ -45,14 +45,23 @@ theorem _root_.DomAct.smul_linearMap_apply (a : S'ᵈᵃ) (f : M →ₛₗ[σ₁
     (a • f) x = f (DomAct.mk.symm a • x) :=
   rfl
 
+@[deprecated (since := "2025-04-02")]
+alias _root_.DomMulAct.smul_linearMap_apply := _root_.DomAct.smul_linearMap_apply
+
 @[simp]
 theorem _root_.DomAct.mk_smul_linearMap_apply (a : S') (f : M →ₛₗ[σ₁₂] M') (x : M) :
     (DomAct.mk a • f) x = f (a • x) :=
   rfl
 
+@[deprecated (since := "2025-04-02")]
+alias _root_.DomMulAct.mk_smul_linearMap_apply := _root_.DomAct.mk_smul_linearMap_apply
+
 theorem _root_.DomAct.coe_smul_linearMap (a : S'ᵈᵃ) (f : M →ₛₗ[σ₁₂] M') :
     (a • f : M →ₛₗ[σ₁₂] M') = a • (f : M → M') :=
   rfl
+
+@[deprecated (since := "2025-04-02")]
+alias _root_.DomMulAct.coe_smul_linearMap := _root_.DomAct.coe_smul_linearMap
 
 instance [SMulCommClass S' T' M] : SMulCommClass S'ᵈᵃ T'ᵈᵃ (M →ₛₗ[σ₁₂] M') :=
   ⟨fun s t f ↦ ext fun m ↦ by simp_rw [DomAct.smul_linearMap_apply, smul_comm]⟩
