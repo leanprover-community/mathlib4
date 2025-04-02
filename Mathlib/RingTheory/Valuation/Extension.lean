@@ -198,7 +198,7 @@ lemma coe_algebraMap_valuationSubring_eq (x : K₀) :
 
 protected theorem _root_.ValuationSubring.mem_maximalIdeal {a : L₀}  :
     a ∈ maximalIdeal L₀ ↔ vL a < 1 :=
-  Integer.not_isUnit_iff_valuation_lt_one a
+  Integer.not_isUnit_iff_valuation_lt_one (x := a)
 
 lemma mem_maximalIdeal_iff {x : K₀} :
     x ∈ maximalIdeal K₀ ↔ algebraMap K₀ L₀ x ∈ (maximalIdeal L₀) := by
