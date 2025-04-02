@@ -205,11 +205,6 @@ theorem as_tsum [T2Space R] (f : MvPowerSeries σ R) :
     f = tsum fun d : σ →₀ ℕ => monomial R d (coeff R d f) :=
   (HasSum.tsum_eq (hasSum_of_monomials_self _)).symm
 
-/-- The scalar multiplication on `MvPowerSeries σ R` is continuous. -/
-@[scoped instance]
-theorem instContinuousSMul [IsTopologicalSemiring R] : ContinuousSMul R (MvPowerSeries σ R) :=
-  instContinuousSMulForall
-
 variable (σ) in
 @[fun_prop]
 lemma continuous_map {S : Type*} [TopologicalSpace S] [Semiring S] {φ : R →+* S}
