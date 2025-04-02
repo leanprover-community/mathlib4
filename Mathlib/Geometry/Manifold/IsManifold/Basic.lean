@@ -435,7 +435,12 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     target_subset_closure_interior := by
       simp only [PartialEquiv.prod_target, target_eq, interior_prod_eq, closure_prod_eq]
       exact Set.prod_mono I.range_subset_closure_interior I'.range_subset_closure_interior
-    convex_interior_range h := sorry
+    convex_interior_range h := by
+      dsimp
+      -- the range of the inner function is the product of ranges
+      -- the interior of the product is the product of interiors
+      -- the product of convex sets is convex
+      sorry
     continuous_toFun := I.continuous_toFun.prodMap I'.continuous_toFun
     continuous_invFun := I.continuous_invFun.prodMap I'.continuous_invFun }
 
