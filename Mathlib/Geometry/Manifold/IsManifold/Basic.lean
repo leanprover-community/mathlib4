@@ -177,7 +177,7 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
 /-- If a model with corners has full range, all three technical conditions are satisfied. -/
 def ModelWithCorners.of_range_univ (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [inst: NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    {φ : PartialEquiv H E} (hsource : φ.source = univ) (htarget : φ.target = univ)
+    (φ : PartialEquiv H E) (hsource : φ.source = univ) (htarget : φ.target = univ)
     (hcont : Continuous φ) (hcont_inv: Continuous φ.symm) : ModelWithCorners 𝕜 E H where
   toPartialEquiv := φ
   source_eq := hsource
@@ -198,13 +198,8 @@ attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
 /-- A vector space is a model with corners, denoted as `𝓘(𝕜, E)` within the `Manifold` namespace. -/
 def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E where
-  toPartialEquiv := PartialEquiv.refl E
-  source_eq := rfl
-  uniqueDiffOn' := uniqueDiffOn_univ
-  target_subset_closure_interior := by simp
-  continuous_toFun := continuous_id
-  continuous_invFun := continuous_id
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E :=
+  ModelWithCorners.of_range_univ 𝕜 (PartialEquiv.refl E) rfl rfl continuous_id continuous_id
 
 @[inherit_doc] scoped[Manifold] notation "𝓘(" 𝕜 ", " E ")" => modelWithCornersSelf 𝕜 E
 
@@ -247,9 +242,10 @@ initialize_simps_projections ModelWithCorners (toFun → apply, invFun → symm_
 theorem toPartialEquiv_coe : (I.toPartialEquiv : H → E) = I :=
   rfl
 
+
 @[simp, mfld_simps]
-theorem mk_coe (e : PartialEquiv H E) (a b c d d') :
-    ((ModelWithCorners.mk e a b c d d' : ModelWithCorners 𝕜 E H) : H → E) = (e : H → E) :=
+theorem mk_coe (e : PartialEquiv H E) (a b c d f f') :
+    ((ModelWithCorners.mk e a b c d f f' : ModelWithCorners 𝕜 E H) : H → E) = (e : H → E) :=
   rfl
 
 @[simp, mfld_simps]
@@ -257,8 +253,8 @@ theorem toPartialEquiv_coe_symm : (I.toPartialEquiv.symm : E → H) = I.symm :=
   rfl
 
 @[simp, mfld_simps]
-theorem mk_symm (e : PartialEquiv H E) (a b c d d') :
-    (ModelWithCorners.mk e a b c d d' : ModelWithCorners 𝕜 E H).symm = e.symm :=
+theorem mk_symm (e : PartialEquiv H E) (a b c d f f') :
+    (ModelWithCorners.mk e a b c d f f' : ModelWithCorners 𝕜 E H).symm = e.symm :=
   rfl
 
 @[continuity]
@@ -439,6 +435,7 @@ def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Ty
     target_subset_closure_interior := by
       simp only [PartialEquiv.prod_target, target_eq, interior_prod_eq, closure_prod_eq]
       exact Set.prod_mono I.range_subset_closure_interior I'.range_subset_closure_interior
+    convex_interior_range h := sorry
     continuous_toFun := I.continuous_toFun.prodMap I'.continuous_toFun
     continuous_invFun := I.continuous_invFun.prodMap I'.continuous_invFun }
 
@@ -455,6 +452,7 @@ def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Typ
   target_subset_closure_interior := by
     simp only [PartialEquiv.pi_target, target_eq, finite_univ, interior_pi_set, closure_pi_set]
     exact Set.pi_mono (fun i _ ↦ (I i).range_subset_closure_interior)
+  convex_interior_range h := sorry
   continuous_toFun := continuous_pi fun i => (I i).continuous.comp (continuous_apply i)
   continuous_invFun := continuous_pi fun i => (I i).continuous_symm.comp (continuous_apply i)
 
