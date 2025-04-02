@@ -145,7 +145,7 @@ theorem coeffList_eraseLead (h : P ≠ 0) :
     omega
   by_cases hkn : k < n
   · simpa [List.getElem?_append, hkn] using coeff_eq_zero_of_natDegree_lt (by omega)
-  · rw [List.getElem?_append_right (List.length_replicate _ _ ▸ Nat.le_of_not_gt hkn),
+  · rw [List.getElem?_append_right (List.length_replicate ▸ Nat.le_of_not_gt hkn),
       List.length_replicate, List.getElem?_reverse, List.getElem?_map]
     · rw [List.length_map, List.length_range,
         List.getElem?_range (by omega), Option.map_some']
