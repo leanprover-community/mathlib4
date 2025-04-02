@@ -7,8 +7,6 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Eval.Subring
 import Mathlib.Algebra.Polynomial.Monic
 
-import Mathlib.Algebra.Polynomial.Roots --TODO: remove
-
 /-!
 # Polynomials that lift
 
@@ -228,52 +226,10 @@ theorem smul_mem_lifts {p : S[X]} (r : R) (hp : p ∈ lifts (algebraMap R S)) :
   rw [mem_lifts_iff_mem_alg] at hp ⊢
   exact Subalgebra.smul_mem (mapAlg R S).range hp r
 
+theorem monic_of_faithfulSMul [FaithfulSMul R S] {p : Polynomial R} (hp : (mapAlg R S p).Monic) :
+    p.Monic :=
+  monic_of_injective (FaithfulSMul.algebraMap_injective R S) hp
+
 end Algebra
-
-section IsSimpleRing
-
-variable {R S : Type*} [CommRing R] [IsSimpleRing R] [CommRing S] [Nontrivial S] [Algebra R S]
-
-/- theorem monic_finset_prod_X_sub_C [DecidableEq R] :
-    Monic (p.roots.toFinset.prod fun a => (X - C a)) :=
-  monic_prod_of_monic _ _ fun a _ => monic_X_sub_C a
-
-theorem prod_multiset_root_eq_finset_root [DecidableEq R] :
-    (p.roots.map fun a => X - C a).prod =
-      p.roots.toFinset.prod fun a => (X - C a) ^ rootMultiplicity a p := by
-  simp only [count_roots, Finset.prod_multiset_map_count]
-
-omit [IsDomain R] in
-theorem monic_finprod_X_sub_C [DecidableEq R] {α : Type*} (b : α → R):
-    Monic (finprod fun k ↦ X - C (b k)) := by
-  apply monic_finprod_of_monic _ _ fun a _ => monic_X_sub_C (b a) -/
-
-theorem monic_of_faithfulSMul {R : Type u} {S : Type v} [CommSemiring R]
-    [Semiring S] [Algebra R S] [FaithfulSMul R S] {p : Polynomial R}
-    (hp : (mapAlg R S p).Monic) :
-    p.Monic := sorry
-
-theorem monic_of_eq_finprod' {R : Type u} {S : Type v} [CommSemiring R]
-    [CommRing S] [Algebra R S] [FaithfulSMul R S] (p : R[X]) {n : ℕ} (b : Fin n → S)
-    (hp : mapAlg R S p = finprod fun k : Fin n ↦ X - C (b k)) : p.Monic := by
-  classical
-  exact monic_of_faithfulSMul (hp ▸ monic_finprod_X_sub_C b)
-
-theorem monic_of_eq_finprod (p : R[X]) {n : ℕ} (b : Fin n → S)
-    (hp : mapAlg R S p = finprod fun k : Fin n ↦ X - C (b k)) : p.Monic := by
-  have hprod : (finprod fun k : Fin n ↦ X - C (b k)).Monic := by
-    rw [finprod_eq_prod_of_fintype]
-    exact monic_prod_of_monic _ _ fun m _ ↦ monic_X_sub_C (b m)
-  rw [← hp, mapAlg_eq_map] at hprod
-  exact monic_of_injective (algebraMap R S).injective hprod
-
-theorem monic_of_eq_multiset_prod (p : R[X]) (s : Multiset S)
-    (hp : mapAlg R S p = (Multiset.map (fun a : S ↦ X - C a) s).prod) : p.Monic := by
-  have hprod : (Multiset.map (fun a : S ↦ X - C a) s).prod.Monic :=
-    monic_multiset_prod_of_monic _ _ fun m _ ↦ monic_X_sub_C m
-  rw [← hp, mapAlg_eq_map] at hprod
-  exact monic_of_injective (algebraMap R S).injective hprod
-
-end IsSimpleRing
 
 end Polynomial

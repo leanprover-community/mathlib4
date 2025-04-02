@@ -130,16 +130,11 @@ theorem mem_nonZeroDivisors_of_leadingCoeff {p : R[X]} (h : p.leadingCoeff ∈ R
 
 end nonZeroDivisors
 
-section IsSimpleRing
-
-variable [IsSimpleRing R] [CommRing S] [Nontrivial S] [Algebra R S]
-
-theorem natDegree_pos_of_monic_of_root {p : R[X]} (hp : p.Monic) {x : S} (hx : aeval x p = 0) :
+theorem natDegree_pos_of_monic_of_root [Nontrivial R] [Semiring S] [Algebra R S]
+    [FaithfulSMul R S] {p : R[X]} (hp : p.Monic) {x : S} (hx : aeval x p = 0) :
     0 < p.natDegree :=
-  natDegree_pos_of_aeval_root (ne_zero_of_ne_zero_of_monic one_ne_zero hp) hx
-    ((injective_iff_map_eq_zero (algebraMap R S)).mp (algebraMap R S).injective)
-
-end IsSimpleRing
+  natDegree_pos_of_aeval_root (Monic.ne_zero hp) hx
+    ((injective_iff_map_eq_zero (algebraMap R S)).mp (FaithfulSMul.algebraMap_injective R S))
 
 theorem rootMultiplicity_mul_X_sub_C_pow {p : R[X]} {a : R} {n : ℕ} (h : p ≠ 0) :
     (p * (X - C a) ^ n).rootMultiplicity a = p.rootMultiplicity a + n := by
