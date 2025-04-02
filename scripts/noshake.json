@@ -510,6 +510,7 @@
   "Mathlib.Algebra.Group.Pointwise.Finset.Scalar":
   ["Mathlib.Algebra.Group.Pointwise.Finset.Basic"],
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
+  "Mathlib.Algebra.Group.InjSurj": ["Mathlib.Util.TermReduce"],
   "Mathlib.Algebra.Group.Idempotent": ["Mathlib.Data.Subtype"],
   "Mathlib.Algebra.Group.Defs": ["Mathlib.Tactic.OfNat"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
