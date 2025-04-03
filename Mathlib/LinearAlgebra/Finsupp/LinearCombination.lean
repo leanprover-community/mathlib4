@@ -364,7 +364,7 @@ variable {v} {x : M}
 
 /-- An element `x` lies in the span of `v` iff it can be written as sum `∑ cᵢ • vᵢ = x`.
 -/
-theorem mem_span_range_iff_exists_fun :
+theorem Submodule.mem_span_range_iff_exists_fun :
     x ∈ span R (range v) ↔ ∃ c : α → R, ∑ i, c i • v i = x := by
   rw [Finsupp.equivFunOnFinite.surjective.exists]
   simp only [Finsupp.mem_span_range_iff_exists_finsupp, Finsupp.equivFunOnFinite_apply]
@@ -373,14 +373,14 @@ theorem mem_span_range_iff_exists_fun :
 /-- A family `v : α → V` is generating `V` iff every element `(x : V)`
 can be written as sum `∑ cᵢ • vᵢ = x`.
 -/
-theorem top_le_span_range_iff_forall_exists_fun :
+theorem Submodule.top_le_span_range_iff_forall_exists_fun :
     ⊤ ≤ span R (range v) ↔ ∀ x, ∃ c : α → R, ∑ i, c i • v i = x := by
   simp_rw [← mem_span_range_iff_exists_fun]
   exact ⟨fun h x => h trivial, fun h x _ => h x⟩
 
 omit [Fintype α]
 
-theorem mem_span_image_iff_exists_fun {s : Set α} :
+theorem Submodule.mem_span_image_iff_exists_fun {s : Set α} :
     x ∈ span R (v '' s) ↔ ∃ t : Finset α, ↑t ⊆ s ∧ ∃ c : t → R, ∑ i, c i • v i = x := by
   refine ⟨fun h ↦ ?_, fun ⟨t, ht, c, hx⟩ ↦ ?_⟩
   · obtain ⟨l, hl, hx⟩ := (Finsupp.mem_span_image_iff_linearCombination R).mp h
@@ -447,7 +447,7 @@ lemma Submodule.mem_span_finset {s : Finset M} {x : M} :
 /-- An element `m ∈ M` is contained in the `R`-submodule spanned by a set `s ⊆ M`, if and only if
 `m` can be written as a finite `R`-linear combination of elements of `s`.
 The implementation uses `Finsupp.sum`. -/
-theorem mem_span_set {m : M} {s : Set M} :
+theorem Submodule.mem_span_set {m : M} {s : Set M} :
     m ∈ Submodule.span R s ↔
       ∃ c : M →₀ R, (c.support : Set M) ⊆ s ∧ (c.sum fun mi r => r • mi) = m := by
   conv_lhs => rw [← Set.image_id s]
@@ -456,7 +456,7 @@ theorem mem_span_set {m : M} {s : Set M} :
 /-- An element `m ∈ M` is contained in the `R`-submodule spanned by a set `s ⊆ M`, if and only if
 `m` can be written as a finite `R`-linear combination of elements of `s`.
 The implementation uses a sum indexed by `Fin n` for some `n`. -/
-lemma mem_span_set' {m : M} {s : Set M} :
+lemma Submodule.mem_span_set' {m : M} {s : Set M} :
     m ∈ Submodule.span R s ↔ ∃ (n : ℕ) (f : Fin n → R) (g : Fin n → s),
       ∑ i, f i • (g i : M) = m := by
   refine ⟨fun h ↦ ?_, ?_⟩
@@ -470,7 +470,7 @@ lemma mem_span_set' {m : M} {s : Set M} :
 
 /-- The span of a subset `s` is the union over all `n` of the set of linear combinations of at most
 `n` terms belonging to `s`. -/
-lemma span_eq_iUnion_nat (s : Set M) :
+lemma Submodule.span_eq_iUnion_nat (s : Set M) :
     (Submodule.span R s : Set M) = ⋃ (n : ℕ),
       (fun (f : Fin n → (R × M)) ↦ ∑ i, (f i).1 • (f i).2) '' ({f | ∀ i, (f i).2 ∈ s}) := by
   ext m
