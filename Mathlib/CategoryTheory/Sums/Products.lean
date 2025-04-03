@@ -3,8 +3,8 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-import Mathlib.CategoryTheory.Sums.Basic
-import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.CategoryTheory.Sums.Associator
+import Mathlib.CategoryTheory.Products.Associator
 
 /-!
 # Functors out of sums of categories.
@@ -134,5 +134,28 @@ lemma natIsoOfWhiskerLeftInlInr_eq {F G : A ⊕ A' ⥤ B}
   aesop_cat
 
 end Sum
+
+section CompatibilityWithProductAssociator
+
+variable (T : Type*) [Category T]
+
+/-- The equivalence `Sum.functorEquiv` sends associativity of sums to associativity of products -/
+@[simps! hom_app_fst hom_app_snd_fst hom_app_snd_snd inv_app_fst inv_app_snd_fst inv_app_snd_snd]
+def associativityFunctorEquivNaturalityFunctorIso :
+    ((sum.associativity A A' T).congrLeft.trans <| (Sum.functorEquiv A (A' ⊕ T) B).trans <|
+      Equivalence.refl.prod <| Sum.functorEquiv _ _ B).functor ≅
+        (Sum.functorEquiv (A ⊕ A') T B).trans
+          ((Sum.functorEquiv A A' B).prod Equivalence.refl)|>.trans
+            (prod.associativity _ _ _)|>.functor :=
+  NatIso.ofComponents (fun E ↦ Iso.prod
+    ((Functor.associator _ _ _).symm ≪≫
+      isoWhiskerRight (sum.inlCompInverseAssociator A A' T) E ≪≫ Functor.associator _ _ _)
+    (Iso.prod
+      (isoWhiskerLeft _ (Functor.associator _ _ E).symm ≪≫ (Functor.associator _ _ E).symm ≪≫
+        isoWhiskerRight (sum.inlCompInrCompInverseAssociator A A' T) E ≪≫ Functor.associator _ _ E)
+      (isoWhiskerLeft _ (Functor.associator _ _ E).symm ≪≫ (Functor.associator _ _ E).symm ≪≫
+        isoWhiskerRight (sum.inrCompInrCompInverseAssociator A A' T) E)))
+
+end CompatibilityWithProductAssociator
 
 end CategoryTheory
