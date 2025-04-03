@@ -113,15 +113,6 @@ theorem mem_hasEvalIdeal_iff {a : σ → S} :
     a ∈ hasEvalIdeal ↔ HasEval a := by
   simp [hasEvalIdeal]
 
-/-- The inclusion of polynomials into power series has dense image -/
-theorem _root_.MvPolynomial.toMvPowerSeries_denseRange :
-    DenseRange (toMvPowerSeries (R := R) (σ := σ)) := fun f => by
-  have : Tendsto (fun d ↦ (trunc' R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
-    rw [tendsto_iff_coeff_tendsto]
-    refine fun d ↦ tendsto_atTop_of_eventually_const fun n (hdn : d ≤ n) ↦ ?_
-    simp [coeff_trunc', hdn]
-  exact mem_closure_of_tendsto this <| .of_forall fun _ ↦ mem_range_self _
-
 end
 
 /- ## Construction of an evaluation morphism for power series -/
