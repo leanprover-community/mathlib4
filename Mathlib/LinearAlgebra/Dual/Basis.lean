@@ -205,7 +205,7 @@ theorem eval_range {ι : Type*} [Finite ι] (b : Basis ι R M) :
 
 lemma dualBasis_coord_toDualEquiv_apply [Finite ι] (i : ι) (f : M) :
     b.dualBasis.coord i (b.toDualEquiv f) = b.coord i f := by
-  simp [-toDualEquiv_apply]
+  simp [-toDualEquiv_apply, Basis.dualBasis]
 
 lemma coord_toDualEquiv_symm_apply [Finite ι] (i : ι) (f : Module.Dual R M) :
     b.coord i (b.toDualEquiv.symm f) = b.dualBasis.coord i f := by
