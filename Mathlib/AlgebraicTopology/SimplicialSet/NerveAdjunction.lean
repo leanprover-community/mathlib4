@@ -450,7 +450,7 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
           ReflQuiv.comp_eq_comp, OneTruncation₂.nerveHomEquiv, Fk, uF, ComposableArrows.hom, Fh]
       replace lem1 : HEq (uF'.map (h ≫ k)) (Fhk.map' 0 2) := by
         refine HEq.trans (b := Fhk'.map' 0 1) ?_ lem1
-        simp only [Nat.reduceAdd, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int, Int.reduceSub,
+        simp only [Nat.reduceAdd, id_eq, Int.reduceNeg, Int.cast_ofNat_Int, Int.reduceSub,
           Int.reduceAdd, Nat.cast_ofNat, Fin.zero_eta, Fin.isValue, Fin.mk_one,
           ComposableArrows.map', homOfLE_leOfHom, Fk, uF, Fh, uF']
         dsimp

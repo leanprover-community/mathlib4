@@ -427,7 +427,6 @@ noncomputable def rescale_MonoidHom : (σ → R) →* MvPowerSeries σ R →ₐ[
   toFun := rescale_algHom
   map_one' := rescale_algHom_one
   map_mul' a b := by
-    dsimp only
     rw [← rescale_algHom_comp, AlgHom.End_toSemigroup_toMul_mul]
 
 theorem rescale_zero_apply (f : MvPowerSeries σ R) :
