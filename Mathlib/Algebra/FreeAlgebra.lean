@@ -147,10 +147,10 @@ the following universal property: if `A` is any `R`-algebra, and `f : α → A` 
 then this function is the composite of `FreeAlgebra.ι R` and a unique `R`-algebra homomorphism
 `FreeAlgebra.lift R f : FreeAlgebra R α →ₐ[R] A`.
 
-A typical element of `FreeAlgebra R α` is an `R`-linear combination of
-formal products of elements of `α`.
-For example if `x` and `y` are terms of type `α` and
-`a`, `b` are terms of type `R` then `(3*a*a)•(x*y*x) + (2*b + 1)•(y*x) + a*b*b + 3` is a
+A typical element of `FreeAlgebra R α` is an `R`-linear
+combination of formal products of elements of `α`.
+For example if `x` and `y` are terms of type `α` and `a`, `b` are terms of type `R` then
+`(3 * a * a) • (x * y * x) + (2 * b + 1) • (y * x) + (a * b * b + 3)` is a
 "typical" element of `FreeAlgebra R α`. In particular if `α` is empty
 then `FreeAlgebra R α` is isomorphic to `R`, and if `α` has one term `t`
 then `FreeAlgebra R α` is isomorphic to the polynomial ring `R[t]`.

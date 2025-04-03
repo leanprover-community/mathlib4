@@ -31,7 +31,7 @@ then this function is the composite of `FreeMonoid.of` and a unique monoid homom
 `FreeMonoid.lift f : FreeMonoid α →* M`.
 
 A typical element of `FreeMonoid α` is a formal product of elements of `α`.
-For example if `x` and `y` are terms of type `α` then `x*y*y*x` is a
+For example if `x` and `y` are terms of type `α` then `x * y * y * x` is a
 "typical" element of `FreeMonoid α`. In particular if `α` is empty
 then `FreeMonoid α` is isomorphic to the trivial monoid, and if `α` has one term
 then `FreeMonoid α` is isomorphic to `Multiplicative ℕ`.

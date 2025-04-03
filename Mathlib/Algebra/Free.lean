@@ -62,7 +62,7 @@ then this function is the composite of `FreeMagma.of` and a unique multiplicativ
 `FreeMagma.lift f : FreeMagma α →ₙ* M`.
 
 A typical element of `FreeMagma α` is a formal product of elements of `α`.
-For example if `x` and `y` are terms of type `α` then `x*((y*y)*x)` is a
+For example if `x` and `y` are terms of type `α` then `x * ((y * y) * x)` is a
 "typical" element of `FreeMagma α`.
 One can think of `FreeMagma α` as the type of binary trees with leaves labelled by `α`.
 -/
@@ -444,7 +444,7 @@ then this function is the composite of `FreeSemigroup.of` and a unique semigroup
 `FreeSemigroup.lift f : FreeSemigroup α →ₙ* M`.
 
 A typical element of `FreeSemigroup α` is a formal product of elements of `α`.
-For example if `x` and `y` are terms of type `α` then `x*y*y*x` is a
+For example if `x` and `y` are terms of type `α` then `x * y * y * x` is a
 "typical" element of `FreeSemigroup α`. In particular if `α` is empty
 then `FreeSemigroup α` is also empty, and if `α` has one term
 then `FreeSemigroup α` is isomorphic to `Multiplicative ℕ+`.

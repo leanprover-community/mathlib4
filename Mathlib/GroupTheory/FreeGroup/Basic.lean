@@ -387,7 +387,7 @@ then this function is the composite of `FreeGroup.of` and a unique group homomor
 
 A typical element of `FreeGroup α` is a formal product of
 elements of `α` and their formal inverses.
-For example if `x` and `y` are terms of type `α` then `x⁻¹*y*y*x*y⁻¹` is a
+For example if `x` and `y` are terms of type `α` then `x⁻¹ * y * y * x / y` is a
 "typical" element of `FreeGroup α`. In particular if `α` is empty
 then `FreeGroup α` is isomorphic to the trivial group, and if `α` has one term
 then `FreeGroup α` is isomorphic to `Multiplicative ℤ`.

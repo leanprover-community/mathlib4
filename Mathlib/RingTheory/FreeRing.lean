@@ -38,7 +38,7 @@ then this function is the composite of `FreeRing.of` and a unique ring homomorph
 
 A typical element of `FreeRing α` is a `ℤ`-linear combination of
 formal products of elements of `α`.
-For example if `x` and `y` are terms of type `α` then `3*x*y*x - 2*y*x + 1` is a
+For example if `x` and `y` are terms of type `α` then `3 * x * y * x - 2 * y * x + 1` is a
 "typical" element of `FreeRing α`. In particular if `α` is empty
 then `FreeRing α` is isomorphic to `ℤ`, and if `α` has one term `t`
 then `FreeRing α` is isomorphic to the polynomial ring `ℤ[t]`.

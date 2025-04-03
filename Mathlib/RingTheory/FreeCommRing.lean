@@ -65,7 +65,7 @@ then this function is the composite of `FreeCommRing.of` and a unique ring homom
 
 A typical element of `FreeCommRing α` is a `ℤ`-linear combination of
 formal products of elements of `α`.
-For example if `x` and `y` are terms of type `α` then `3*x*x*y - 2*x*y + 1` is a
+For example if `x` and `y` are terms of type `α` then `3 * x * x * y - 2 * x * y + 1` is a
 "typical" element of `FreeCommRing α`. In particular if `α` is empty
 then `FreeCommRing α` is isomorphic to `ℤ`, and if `α` has one term `t`
 then `FreeCommRing α` is isomorphic to the polynomial ring `ℤ[t]`.
