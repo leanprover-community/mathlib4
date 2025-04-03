@@ -12,7 +12,6 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 Basic properties, relationship with `exp`.
 -/
 
-
 noncomputable section
 
 namespace Complex
