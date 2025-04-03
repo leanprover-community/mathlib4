@@ -259,10 +259,7 @@ variable {x : V}
 lemma takeUntil_append_of_mem_left (p : G.Walk u v) (q : G.Walk v w) (hx : x ∈ p.support) :
     (p.append q).takeUntil x (subset_support_append_left _ _ hx) = p.takeUntil _ hx  := by
   induction p with
-  | nil =>
-    simp_rw [support_nil, List.mem_cons, List.not_mem_nil, or_false] at hx
-    subst_vars
-    simp
+  | nil => rw [mem_support_nil_iff] at hx; subst_vars; simp
   | @cons u _ _ _ p ih =>
     rw [support_cons] at hx
     by_cases hxu : u = x
@@ -293,8 +290,7 @@ lemma takeUntil_takeUntil (p : G.Walk u v) (hw : w ∈ p.support)
 lemma dropUntil_append_of_mem_left (p : G.Walk u v) (q : G.Walk v w) (hx : x ∈ p.support) :
     (p.append q).dropUntil x (subset_support_append_left _ _ hx) = (p.dropUntil x hx).append q := by
   induction p with
-  | nil =>
-    simp only [support_nil, List.mem_cons, List.not_mem_nil, or_false] at hx; subst_vars; simp
+  | nil => rw [mem_support_nil_iff] at hx; subst_vars; simp
   | @cons u _ _ _ p ih =>
     rw [support_cons] at hx
     simp_rw [cons_append, dropUntil]

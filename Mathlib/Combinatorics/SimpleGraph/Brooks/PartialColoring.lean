@@ -392,7 +392,7 @@ theorem Brooks1_copy_eq (hj : xⱼ ∈ p.support) (hj2 : G.Adj xⱼ x₂) :
     nth_rw 3 [← take_spec p hj]
     rw [support_append,union_right_comm , List.concat_eq_append, List.toFinset_append,
         union_comm _ ([x₂].toFinset), List.toFinset_append, ← union_assoc, ← union_assoc,
-        List.toFinset_cons, List.toFinset_nil, insert_emptyc_eq, insert_union]
+        List.toFinset_cons, List.toFinset_nil, insert_empty_eq, insert_union]
     congr
     ext; rw [pair_comm, mem_union, mem_singleton, mem_insert]
 

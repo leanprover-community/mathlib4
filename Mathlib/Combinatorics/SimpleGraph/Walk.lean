@@ -956,7 +956,8 @@ theorem length_drop {u v : V} {n : ℕ} (p : G.Walk u v) (hn : n ≤ p.length) :
 
 lemma getVert_eq_support_get {u v : V} {p : G.Walk u v} {n : ℕ} (hn : n ≤ p.length) :
 p.getVert n = p.support.get ⟨n, p.length_support ▸ (Nat.lt_add_one_of_le hn)⟩ :=
-  (List.get_eq_getElem ..) ▸ (List.getElem_eq_iff.mpr (getVert_eq_support_get? p hn).symm).symm
+  (List.get_eq_getElem ..) ▸ ((List.getElem_eq_iff (p.length_support ▸
+    (Nat.lt_add_one_of_le hn))).mpr (getVert_eq_support_get? p hn).symm).symm
 
 @[simp]
 lemma getVert_take_of_ge {u v : V} {m n : ℕ} (p : G.Walk u v) (h : m ≤ n)  :
@@ -1054,9 +1055,6 @@ lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) :
   conv => rhs; rw [← getVert_length p]
   rw [nil_iff_length_eq] at hp
   convert adj_getVert_succ _ _ <;> omega
-
--- @[simp]
--- lemma penultimate_mem_support (p : G.Walk u v) : p.penultimate ∈ p.support := getVert_mem_support ..
 
 @[simp]
 lemma snd_reverse (p : G.Walk u v) : p.reverse.snd = p.penultimate := by

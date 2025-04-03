@@ -167,7 +167,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
     by_cases hr : ((q.append v41)).support.toFinset = s
     · --Main Case 1 the path is all of s
       simp_rw [support_append, v41sup, List.tail, toFinset_append, toFinset_cons, toFinset_nil,
-                insert_emptyc_eq] at hr
+                insert_empty_eq] at hr
       obtain ⟨vⱼ, hj⟩ := G.exists_adj_ne_of_two_lt_degree v₂ (hk.trans (hbdd' _ hv₂).symm.le) v₁ v₃
       have hj : G.Adj v₂ vⱼ ∧ vⱼ ≠ v₁ ∧ vⱼ ≠ v₃ ∧ vⱼ ∈ s := ⟨hj.1, hj.2.1, hj.2.2, hin _ hv₂ _ hj.1⟩
       have h1q := fun hf ↦ hdisj2 hf ((mem_cons_of_mem _ <| mem_cons_of_mem _ <| mem_cons_self ..))
