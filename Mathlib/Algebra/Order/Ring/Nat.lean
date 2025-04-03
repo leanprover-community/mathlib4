@@ -29,9 +29,7 @@ instance instIsStrictOrderedRing : IsStrictOrderedRing ℕ where
   mul_lt_mul_of_pos_right := @Nat.mul_lt_mul_of_pos_right
   exists_pair_ne := ⟨0, 1, ne_of_lt Nat.zero_lt_one⟩
 
-instance instLinearOrderedCommMonoidWithZero : LinearOrderedCommMonoidWithZero ℕ where
-  __ := instIsStrictOrderedRing
-  __ : CommMonoidWithZero ℕ := inferInstance
+instance instIsOrderedMonoidWithZero : IsOrderedMonoidWithZero ℕ where
   mul_le_mul_left _ _ h c := Nat.mul_le_mul_left c h
 
 /-! ### Miscellaneous lemmas -/

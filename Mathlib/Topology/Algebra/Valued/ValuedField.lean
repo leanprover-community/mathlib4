@@ -34,7 +34,8 @@ open Topology
 
 section DivisionRing
 
-variable {K : Type*} [DivisionRing K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {K : Type*} [DivisionRing K] {Γ₀ : Type*}
+  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
 
 section ValuationTopologicalDivisionRing
 
@@ -131,7 +132,8 @@ namespace Valued
 
 open UniformSpace
 
-variable {K : Type*} [Field K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] [hv : Valued K Γ₀]
+variable {K : Type*} [Field K] {Γ₀ : Type*}
+  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀] [hv : Valued K Γ₀]
 
 local notation "hat " => Completion
 
@@ -354,7 +356,7 @@ section Notation
 namespace Valued
 
 variable (K : Type*) [Field K] {Γ₀ : outParam Type*}
-    [LinearOrderedCommGroupWithZero Γ₀] [vK : Valued K Γ₀]
+  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀] [vK : Valued K Γ₀]
 
 /-- A `Valued` version of `Valuation.integer`, enabling the notation `𝒪[K]` for the
 valuation integers of a valued field `K`. -/

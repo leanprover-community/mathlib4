@@ -149,7 +149,15 @@ def ValueGroup :=
 -- deriving LinearOrderedCommGroupWithZero
 
 -- Porting note: see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : LinearOrderedCommGroupWithZero (ValueGroup A) := by
+instance : CommGroupWithZero (ValueGroup A) := by
+  unfold ValueGroup
+  infer_instance
+
+instance : LinearOrder (ValueGroup A) := by
+  unfold ValueGroup
+  infer_instance
+
+instance : IsOrderedMonoidWithZero (ValueGroup A) := by
   unfold ValueGroup
   infer_instance
 
@@ -364,9 +372,11 @@ end ValuationSubring
 namespace Valuation
 
 variable {K}
-variable {Γ Γ₁ Γ₂ : Type*} [LinearOrderedCommGroupWithZero Γ]
-  [LinearOrderedCommGroupWithZero Γ₁] [LinearOrderedCommGroupWithZero Γ₂] (v : Valuation K Γ)
-  (v₁ : Valuation K Γ₁) (v₂ : Valuation K Γ₂)
+variable {Γ Γ₁ Γ₂ : Type*}
+  [CommGroupWithZero Γ] [LinearOrder Γ] [IsOrderedMonoidWithZero Γ]
+  [CommGroupWithZero Γ₁] [LinearOrder Γ₁] [IsOrderedMonoidWithZero Γ₁]
+  [CommGroupWithZero Γ₂] [LinearOrder Γ₂] [IsOrderedMonoidWithZero Γ₂]
+  (v : Valuation K Γ) (v₁ : Valuation K Γ₁) (v₂ : Valuation K Γ₂)
 
 /-- The valuation subring associated to a valuation. -/
 def valuationSubring : ValuationSubring K :=
@@ -788,7 +798,8 @@ end ValuationSubring
 
 namespace Valuation
 
-variable {Γ : Type*} [LinearOrderedCommGroupWithZero Γ] (v : Valuation K Γ) (x : Kˣ)
+variable {Γ : Type*} [CommGroupWithZero Γ] [LinearOrder Γ] [IsOrderedMonoidWithZero Γ]
+  (v : Valuation K Γ) (x : Kˣ)
 
 theorem mem_unitGroup_iff : x ∈ v.valuationSubring.unitGroup ↔ v x = 1 :=
   IsEquiv.eq_one_iff_eq_one (Valuation.isEquiv_valuation_valuationSubring _).symm

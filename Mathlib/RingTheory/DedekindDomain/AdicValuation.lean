@@ -372,10 +372,10 @@ instance : Inhabited (v.adicCompletion K) :=
   ⟨0⟩
 
 instance valuedAdicCompletion : Valued (v.adicCompletion K) ℤₘ₀ :=
-  @Valued.valuedCompletion _ _ _ _ v.adicValued
+  Valued.valuedCompletion (hv := v.adicValued)
 
 theorem valuedAdicCompletion_def {x : v.adicCompletion K} :
-    Valued.v x = @Valued.extension K _ _ _ (adicValued v) x :=
+    Valued.v x = Valued.extension (hv := adicValued v) x :=
   rfl
 
 instance adicCompletion_completeSpace : CompleteSpace (v.adicCompletion K) :=

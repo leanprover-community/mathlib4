@@ -158,10 +158,8 @@ instance mulLeftMono : MulLeftMono ℝ≥0∞ := inferInstance
 instance addLeftMono : AddLeftMono ℝ≥0∞ := inferInstance
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add a `WithTop` instance and use it here
-noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
-  { inferInstanceAs (LinearOrderedAddCommMonoidWithTop ℝ≥0∞),
-      inferInstanceAs (CommSemiring ℝ≥0∞) with
-    mul_le_mul_left := fun _ _ => mul_le_mul_left'
+instance : IsOrderedMonoidWithZero ℝ≥0∞ :=
+  { mul_le_mul_left := fun _ _ => mul_le_mul_left'
     zero_le_one := zero_le 1 }
 
 noncomputable instance : Unique (AddUnits ℝ≥0∞) where

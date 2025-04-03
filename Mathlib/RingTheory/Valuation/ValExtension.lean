@@ -48,7 +48,9 @@ Valuation, Extension of Valuations
 open Valuation
 
 variable {R A ΓR ΓA : Type*} [CommRing R] [Ring A]
-    [LinearOrderedCommMonoidWithZero ΓR] [LinearOrderedCommMonoidWithZero ΓA] [Algebra R A]
+    [CommMonoidWithZero ΓR] [LinearOrder ΓR] [IsOrderedMonoidWithZero ΓR]
+    [CommMonoidWithZero ΓA] [LinearOrder ΓA] [IsOrderedMonoidWithZero ΓA]
+    [Algebra R A]
     (vR : Valuation R ΓR) (vA : Valuation A ΓA)
 
 /--
@@ -94,8 +96,10 @@ instance id : IsValExtension vR vR where
 section integer
 
 variable {K : Type*} [Field K] [Algebra K A] {ΓR ΓA ΓK: Type*}
-    [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓK]
-    [LinearOrderedCommGroupWithZero ΓA] {vR : Valuation R ΓR} {vK : Valuation K ΓK}
+    [CommGroupWithZero ΓR] [LinearOrder ΓR] [IsOrderedMonoidWithZero ΓR]
+    [CommGroupWithZero ΓK] [LinearOrder ΓK] [IsOrderedMonoidWithZero ΓK]
+    [CommGroupWithZero ΓA] [LinearOrder ΓA] [IsOrderedMonoidWithZero ΓA]
+    {vR : Valuation R ΓR} {vK : Valuation K ΓK}
     {vA : Valuation A ΓA} [IsValExtension vR vA]
 
 /--
@@ -146,7 +150,7 @@ theorem algebraMap_injective [IsValExtension vK vA] [Nontrivial A] :
 
 @[instance]
 theorem instIsLocalHomValuationInteger {S ΓS: Type*} [CommRing S]
-    [LinearOrderedCommGroupWithZero ΓS]
+    [CommGroupWithZero ΓS] [LinearOrder ΓS] [IsOrderedMonoidWithZero ΓS]
     [Algebra R S] [IsLocalHom (algebraMap R S)] {vS : Valuation S ΓS}
     [IsValExtension vR vS] : IsLocalHom (algebraMap vR.integer vS.integer) where
   map_nonunit r hr := by

@@ -23,7 +23,8 @@ Let `K` be a field with a valuation `v` and let `L` be a field extension of `K`.
 
 open Module minpoly Polynomial
 
-variable {K : Type*} [Field K] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀]
+variable {K : Type*} [Field K] {Γ₀ : Type*}
+  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
   (v : Valuation K Γ₀) (L : Type*) [Field L] [Algebra K L]
 
 namespace Valuation

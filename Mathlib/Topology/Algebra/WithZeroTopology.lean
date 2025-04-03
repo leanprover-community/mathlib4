@@ -34,13 +34,15 @@ open Topology Filter TopologicalSpace Filter Set Function
 
 namespace WithZeroTopology
 
-variable {α Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ₀] {γ γ₁ γ₂ : Γ₀} {l : Filter α}
-  {f : α → Γ₀}
-
 /-- The topology on a linearly ordered commutative group with a zero element adjoined.
 A subset U is open if 0 ∉ U or if there is an invertible element γ₀ such that {γ | γ < γ₀} ⊆ U. -/
-scoped instance (priority := 100) topologicalSpace : TopologicalSpace Γ₀ :=
+scoped instance (priority := 100) topologicalSpace {Γ₀ : Type*}
+    [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀] : TopologicalSpace Γ₀ :=
   nhdsAdjoint 0 <| ⨅ γ ≠ 0, 𝓟 (Iio γ)
+
+variable {α Γ₀ : Type*} [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
+  {γ γ₁ γ₂ : Γ₀} {l : Filter α}
+  {f : α → Γ₀}
 
 theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ ≠ 0, 𝓟 (Iio γ)) := by
    rw [nhds_nhdsAdjoint, sup_of_le_right]

@@ -219,7 +219,7 @@ def inftyValuedFqt : Valued (RatFunc Fq) ℤₘ₀ :=
   Valued.mk' <| inftyValuation Fq
 
 theorem inftyValuedFqt.def {x : RatFunc Fq} :
-    @Valued.v (RatFunc Fq) _ _ _ (inftyValuedFqt Fq) x = inftyValuationDef Fq x :=
+    (inftyValuedFqt Fq).v x = inftyValuationDef Fq x :=
   rfl
 
 /-- The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the valuation at infinity. -/
@@ -235,10 +235,10 @@ instance : Inhabited (FqtInfty Fq) :=
 
 /-- The valuation at infinity on `k(t)` extends to a valuation on `FqtInfty`. -/
 instance valuedFqtInfty : Valued (FqtInfty Fq) ℤₘ₀ :=
-  @Valued.valuedCompletion _ _ _ _ (inftyValuedFqt Fq)
+  (inftyValuedFqt Fq).valuedCompletion
 
 theorem valuedFqtInfty.def {x : FqtInfty Fq} :
-    Valued.v x = @Valued.extension (RatFunc Fq) _ _ _ (inftyValuedFqt Fq) x :=
+    Valued.v x = (inftyValuedFqt Fq).extension x :=
   rfl
 
 end InftyValuation

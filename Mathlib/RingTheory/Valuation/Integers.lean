@@ -21,7 +21,8 @@ namespace Valuation
 
 section Ring
 
-variable {R : Type u} {Γ₀ : Type v} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
+variable {R : Type u} {Γ₀ : Type v} [Ring R]
+  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
 variable (v : Valuation R Γ₀)
 
 /-- The ring of integers under a given valuation is the subring of elements with valuation ≤ 1. -/
@@ -39,7 +40,8 @@ end Ring
 
 section CommRing
 
-variable {R : Type u} {Γ₀ : Type v} [CommRing R] [LinearOrderedCommGroupWithZero Γ₀]
+variable {R : Type u} {Γ₀ : Type v} [CommRing R]
+  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
 variable (v : Valuation R Γ₀)
 variable (O : Type w) [CommRing O] [Algebra O R]
 
@@ -102,7 +104,8 @@ end CommRing
 
 section Field
 
-variable {F : Type u} {Γ₀ : Type v} [Field F] [LinearOrderedCommGroupWithZero Γ₀]
+variable {F : Type u} {Γ₀ : Type v} [Field F]
+  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
 variable {v : Valuation F Γ₀} {O : Type w} [CommRing O] [Algebra O F]
 
 namespace Integers

@@ -23,7 +23,8 @@ noncomputable section
 
 universe v u
 
-variable {R : Type u} [Ring R] {Γ₀ : Type v} [LinearOrderedCommGroupWithZero Γ₀]
+variable {R : Type u} [Ring R] {Γ₀ : Type v}
+  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
 
 namespace Valuation
 
@@ -87,7 +88,8 @@ the same universe as the ring.
 
 See Note [forgetful inheritance] for why we extend `UniformSpace`, `UniformAddGroup`. -/
 class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
-  [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, UniformAddGroup R where
+    [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀] extends
+    UniformSpace R, UniformAddGroup R where
   v : Valuation R Γ₀
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x : R | v x < γ } ⊆ s
 

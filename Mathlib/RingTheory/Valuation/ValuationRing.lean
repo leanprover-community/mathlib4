@@ -179,18 +179,12 @@ instance commGroupWithZero :
       rw [ha]
       rfl }
 
-noncomputable instance linearOrderedCommGroupWithZero :
-    LinearOrderedCommGroupWithZero (ValueGroup A K) :=
-  { linearOrder .., commGroupWithZero .. with
-    mul_le_mul_left := by
+instance isOrderedMonoidWithZero :
+    IsOrderedMonoidWithZero (ValueGroup A K) :=
+  { mul_le_mul_left := by
       rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
       use c; simp only [Algebra.smul_def]; ring
-    zero_le_one := ⟨0, by rw [zero_smul]⟩
-    exists_pair_ne := by
-      use 0, 1
-      intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
-      apply_fun fun t => d⁻¹ • t at hd
-      simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd }
+    zero_le_one := ⟨0, by rw [zero_smul]⟩ }
 
 /-- Any valuation ring induces a valuation on its fraction field. -/
 def valuation : Valuation K (ValueGroup A K) where
@@ -430,7 +424,7 @@ theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsD
 section
 
 variable {𝒪 : Type u} {K : Type v} {Γ : Type w} [CommRing 𝒪] [IsDomain 𝒪] [Field K] [Algebra 𝒪 K]
-  [LinearOrderedCommGroupWithZero Γ]
+  [CommGroupWithZero Γ] [LinearOrder Γ] [IsOrderedMonoidWithZero Γ]
 
 /-- If `𝒪` satisfies `v.integers 𝒪` where `v` is a valuation on a field, then `𝒪`
 is a valuation ring. -/

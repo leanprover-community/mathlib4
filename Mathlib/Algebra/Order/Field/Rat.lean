@@ -20,4 +20,5 @@ See note [foundational algebra order theory].
 rat, rationals, field, ℚ, numerator, denominator, num, denom
 -/
 
-deriving instance LinearOrderedCommGroupWithZero for NNRat
+instance : IsOrderedMonoidWithZero NNRat :=
+  Nonneg.isOrderedMonoidWithZero

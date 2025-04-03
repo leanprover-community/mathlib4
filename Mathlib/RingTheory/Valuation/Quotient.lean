@@ -18,7 +18,8 @@ on `R / J` = `Ideal.Quotient J` is `onQuot v h`.
 
 namespace Valuation
 
-variable {R Γ₀ : Type*} [CommRing R] [LinearOrderedCommMonoidWithZero Γ₀]
+variable {R Γ₀ : Type*} [CommRing R]
+  [CommMonoidWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
 variable (v : Valuation R Γ₀)
 
 /-- If `hJ : J ⊆ supp v` then `onQuotVal hJ` is the induced function on `R / J` as a function.

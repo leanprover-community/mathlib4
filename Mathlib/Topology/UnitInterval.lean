@@ -223,9 +223,7 @@ protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → ℝ}
     (h : ∀ c ∈ t, f c ∈ unitInterval) :
     ∏ c ∈ t, f c ∈ unitInterval := _root_.prod_mem (S := unitInterval.submonoid) h
 
-instance : LinearOrderedCommMonoidWithZero I where
-  zero_mul i := zero_mul i
-  mul_zero i := mul_zero i
+instance : IsOrderedMonoidWithZero I where
   zero_le_one := nonneg'
   mul_le_mul_left i j h_ij k := by
     simp only [← Subtype.coe_le_coe, coe_mul]

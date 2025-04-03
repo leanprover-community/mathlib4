@@ -14,12 +14,10 @@ import Mathlib.Algebra.Order.Ring.Canonical
 
 variable {α : Type*} [Semifield α] [LinearOrder α] [CanonicallyOrderedAdd α]
 
--- See note [reducible non-instances]
-/-- Construct a `LinearOrderedCommGroupWithZero` from a canonically linear ordered semifield. -/
-abbrev CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero :
-    LinearOrderedCommGroupWithZero α :=
-  { __ := ‹Semifield α›
-    zero_le_one := zero_le_one
+/-- Construct a `IsOrderedMonoidWithZero` from a canonically linear ordered semifield. -/
+lemma CanonicallyOrderedAdd.toIsOrderedMonoidWithZero :
+    IsOrderedMonoidWithZero α :=
+  { zero_le_one := zero_le_one
     mul_le_mul_left := fun _ _ h _ ↦ mul_le_mul_of_nonneg_left h <| zero_le _ }
 
 variable [IsStrictOrderedRing α] [Sub α] [OrderedSub α]

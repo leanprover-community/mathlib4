@@ -101,8 +101,4 @@ instance semifield : Semifield { x : α // 0 ≤ x } :=
 
 end LinearOrderedSemifield
 
-instance linearOrderedCommGroupWithZero [Field α] [LinearOrder α] [IsStrictOrderedRing α] :
-    LinearOrderedCommGroupWithZero { x : α // 0 ≤ x } :=
-  CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero
-
 end Nonneg

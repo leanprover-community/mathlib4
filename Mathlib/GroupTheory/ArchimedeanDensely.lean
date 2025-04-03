@@ -233,7 +233,8 @@ lemma LinearOrderedCommGroup.discrete_iff_not_denselyOrdered :
   · exact ⟨MulEquiv.toAdditive' f, by simp⟩
   · exact ⟨MulEquiv.toAdditive'.symm f, by simp⟩
 
-lemma denselyOrdered_units_iff {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] :
+lemma denselyOrdered_units_iff {G₀ : Type*}
+    [CommGroupWithZero G₀] [LinearOrder G₀] [IsOrderedMonoidWithZero G₀] [Nontrivial G₀ˣ] :
     DenselyOrdered G₀ˣ ↔ DenselyOrdered G₀ := by
   constructor
   · intro H
@@ -260,7 +261,8 @@ lemma denselyOrdered_units_iff {G₀ : Type*} [LinearOrderedCommGroupWithZero G�
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered. -/
 lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
-    [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
+    [CommGroupWithZero G] [LinearOrder G] [IsOrderedMonoidWithZero G]
+    [Nontrivial Gˣ] [MulArchimedean G] :
     Nonempty (G ≃*o ℤₘ₀) ∨ DenselyOrdered G := by
   classical
   rw [← denselyOrdered_units_iff]
@@ -282,7 +284,8 @@ open WithZero in
 /-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
 either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered, exclusively -/
 lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
-    [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
+    [CommGroupWithZero G] [LinearOrder G] [IsOrderedMonoidWithZero G]
+    [Nontrivial Gˣ] [MulArchimedean G] :
     Nonempty (G ≃*o ℤₘ₀) ↔ ¬ DenselyOrdered G := by
   rw [← denselyOrdered_units_iff,
       ← LinearOrderedCommGroup.discrete_iff_not_denselyOrdered]
@@ -372,7 +375,8 @@ lemma LinearOrderedCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete
     simp [Function.onFun, inv_le']
 
 lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete_of_ne_zero
-    {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] {g : G₀} (hg : g ≠ 0) :
+    {G₀ : Type*} [CommGroupWithZero G₀] [LinearOrder G₀] [IsOrderedMonoidWithZero G₀]
+    [Nontrivial G₀ˣ] {g : G₀} (hg : g ≠ 0) :
     Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔ Nonempty (G₀ ≃*o ℤₘ₀) := by
   suffices Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔
     Set.WellFoundedOn {x : G₀ˣ | Units.mk0 g hg ≤ x} (· < ·) by
@@ -402,7 +406,8 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_disc
     simp [ha0, hb0, ← Units.val_lt_val, h]
 
 lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
-    {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] {g : G₀} (hg : g ≠ 0) :
+    {G₀ : Type*} [CommGroupWithZero G₀] [LinearOrder G₀] [IsOrderedMonoidWithZero G₀]
+    [Nontrivial G₀ˣ] {g : G₀} (hg : g ≠ 0) :
     Set.WellFoundedOn {x : G₀ | x ≤ g} (· > ·) ↔ Nonempty (G₀ ≃*o ℤₘ₀) := by
   have hg' : g⁻¹ ≠ 0 := by simp [hg]
   rw [← wellFoundedOn_setOf_le_lt_iff_nonempty_discrete_of_ne_zero hg',

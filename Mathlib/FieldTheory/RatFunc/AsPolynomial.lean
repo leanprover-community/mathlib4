@@ -221,7 +221,7 @@ instance : Valued (RatFunc K) ℤₘ₀ := Valued.mk' (idealX K).valuation
 
 @[simp]
 theorem WithZero.valued_def {x : RatFunc K} :
-    @Valued.v (RatFunc K) _ _ _ _ x = (idealX K).valuation x := rfl
+    Valued.v x = (idealX K).valuation x := rfl
 
 end RatFunc
 

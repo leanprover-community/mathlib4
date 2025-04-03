@@ -806,8 +806,9 @@ end Preorder
 
 section Mul
 
-variable [LinearOrderedCommMonoidWithZero α] [LinearOrderedCommMonoidWithZero β]
-  [LinearOrderedCommMonoidWithZero γ]
+variable [CommMonoidWithZero α] [LinearOrder α]
+  [CommMonoidWithZero β] [LinearOrder β] [IsOrderedMonoidWithZero β]
+  [CommMonoidWithZero γ] [LinearOrder γ] [IsOrderedMonoidWithZero γ]
 
 /-- For two ordered monoid morphisms `f` and `g`, their product is the ordered monoid morphism
 sending `a` to `f a * g a`. -/
@@ -822,6 +823,7 @@ theorem coe_mul (f g : α →*₀o β) : ⇑(f * g) = f * g :=
 theorem mul_apply (f g : α →*₀o β) (a : α) : (f * g) a = f a * g a :=
   rfl
 
+omit [IsOrderedMonoidWithZero β] in
 theorem mul_comp (g₁ g₂ : β →*₀o γ) (f : α →*₀o β) : (g₁ * g₂).comp f = g₁.comp f * g₂.comp f :=
   rfl
 
