@@ -91,7 +91,7 @@ theorem toENNReal_add (m n : ℕ∞) : ↑(m + n) = (m + n : ℝ≥0∞) :=
 
 @[simp, norm_cast]
 theorem toENNReal_one : ((1 : ℕ∞) : ℝ≥0∞) = 1 :=
-  _root_.map_one toENNRealRingHom
+  map_one toENNRealRingHom
 
 @[simp, norm_cast]
 theorem toENNReal_mul (m n : ℕ∞) : ↑(m * n) = (m * n : ℝ≥0∞) :=

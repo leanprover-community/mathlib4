@@ -3,10 +3,10 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Sets as a semiring under union
@@ -206,7 +206,6 @@ def imageHom [MulOneClass α] [MulOneClass β] (f : α →* β) : SetSemiring α
   toFun s := (image f s.down).up
   map_zero' := image_empty _
   map_one' := by
-    dsimp only
     rw [down_one, image_one, map_one, singleton_one, up_one]
   map_add' := image_union _
   map_mul' _ _ := image_mul f
