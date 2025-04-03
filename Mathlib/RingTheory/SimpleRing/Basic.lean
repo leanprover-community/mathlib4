@@ -5,8 +5,8 @@ Authors: Jujian Zhang, Yunzhou Xie
 -/
 
 import Mathlib.RingTheory.SimpleRing.Defs
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.RingTheory.TwoSidedIdeal.Kernel
-import Mathlib.RingTheory.TwoSidedIdeal.Opposite
 
 /-! # Basic Properties of Simple rings
 
