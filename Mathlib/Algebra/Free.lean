@@ -430,6 +430,8 @@ For example if `x` and `y` are terms of type `α` then `x + y + y + x` is a
 then `FreeAddSemigroup α` is also empty, and if `α` has one term
 then `FreeAddSemigroup α` is isomorphic to `ℕ+`.
 If `α` has two or more terms then `FreeAddSemigroup α` is not commutative.
+One can think of `FreeAddSemigroup α` as the type of nonempty lists of `α`, with addition
+given by concatination.
 -/
 structure FreeAddSemigroup (α : Type u) where
   /-- The head of the element -/
@@ -451,6 +453,8 @@ For example if `x` and `y` are terms of type `α` then `x * y * y * x` is a
 then `FreeSemigroup α` is also empty, and if `α` has one term
 then `FreeSemigroup α` is isomorphic to `Multiplicative ℕ+`.
 If `α` has two or more terms then `FreeSemigroup α` is not commutative.
+One can think of `FreeSemigroup α` as the type of nonempty lists of `α`, with multiplication
+given by concatination.
 -/
 @[to_additive (attr := ext)]
 structure FreeSemigroup (α : Type u) where
