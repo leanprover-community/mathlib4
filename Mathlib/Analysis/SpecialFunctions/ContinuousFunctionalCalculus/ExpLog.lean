@@ -85,7 +85,7 @@ lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
   Real.exp_eq_exp_ℝ ▸ exp_eq_normedSpace_exp ha
 
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
-lemma _root_.IsSelfAdjoint.exp_nonneg {𝕜 : Type*} [Field 𝕜] [Algebra 𝕜 A]
+lemma _root_.IsSelfAdjoint.exp_nonneg
     [PartialOrder A] [StarOrderedRing A] {a : A} (ha : IsSelfAdjoint a) :
     0 ≤ exp a := by
   rw [← real_exp_eq_normedSpace_exp]
