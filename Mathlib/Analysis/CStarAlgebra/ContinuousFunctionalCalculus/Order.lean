@@ -232,6 +232,30 @@ lemma nnnorm_le_natCast_iff_of_nonneg (a : A) (n : ℕ) (ha : 0 ≤ a := by cfc_
     ‖a‖₊ ≤ n ↔ a ≤ n := by
   simpa using nnnorm_le_iff_of_nonneg a n
 
+
+section Icc
+
+open Set
+
+lemma mem_Icc_algebraMap_iff_norm_le {x : A} {r : ℝ} (hr : 0 ≤ r) :
+    x ∈ Icc 0 (algebraMap ℝ A r) ↔ 0 ≤ x ∧ ‖x‖ ≤ r := by
+  rw [mem_Icc, and_congr_right_iff, iff_comm]
+  exact (norm_le_iff_le_algebraMap _ hr ·)
+
+lemma mem_Icc_algebraMap_iff_nnnorm_le {x : A} {r : ℝ≥0} :
+    x ∈ Icc 0 (algebraMap ℝ≥0 A r) ↔ 0 ≤ x ∧ ‖x‖₊ ≤ r :=
+  mem_Icc_algebraMap_iff_norm_le (hr := r.2)
+
+lemma mem_Icc_iff_norm_le_one {x : A} :
+    x ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖ ≤ 1 := by
+  simpa only [map_one] using mem_Icc_algebraMap_iff_norm_le zero_le_one
+
+lemma mem_Icc_iff_nnnorm_le_one {x : A} :
+    x ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖₊ ≤ 1 :=
+  mem_Icc_iff_norm_le_one
+
+end Icc
+
 end CStarAlgebra
 
 section Inv
@@ -268,7 +292,7 @@ lemma le_iff_norm_sqrt_mul_rpow {a b : A} (hbu : IsUnit b) (ha : 0 ≤ a) (hb : 
   have hbab : 0 ≤ (b : A) ^ (-(1 / 2) : ℝ) * a * (b : A) ^ (-(1 / 2) : ℝ) :=
     conjugate_nonneg_of_nonneg ha rpow_nonneg
   conv_rhs =>
-    rw [← sq_le_one_iff (norm_nonneg _), sq, ← CStarRing.norm_star_mul_self, star_mul,
+    rw [← sq_le_one_iff₀ (norm_nonneg _), sq, ← CStarRing.norm_star_mul_self, star_mul,
       IsSelfAdjoint.of_nonneg sqrt_nonneg, IsSelfAdjoint.of_nonneg rpow_nonneg,
       ← mul_assoc, mul_assoc _ _ (sqrt a), sqrt_mul_sqrt_self a,
       CStarAlgebra.norm_le_one_iff_of_nonneg _ hbab]
@@ -301,9 +325,9 @@ protected lemma inv_le_inv {a b : Aˣ} (ha : 0 ≤ (a : A))
   have hb := ha.trans hab
   have hb_inv : (0 : A) ≤ b⁻¹ := inv_nonneg_of_nonneg b hb
   have ha_inv : (0 : A) ≤ a⁻¹ := inv_nonneg_of_nonneg a ha
-  rw [le_iff_norm_sqrt_mul_sqrt_inv ha hb, ← sq_le_one_iff (norm_nonneg _), sq,
+  rw [le_iff_norm_sqrt_mul_sqrt_inv ha hb, ← sq_le_one_iff₀ (norm_nonneg _), sq,
     ← CStarRing.norm_star_mul_self] at hab
-  rw [le_iff_norm_sqrt_mul_sqrt_inv hb_inv ha_inv, inv_inv, ← sq_le_one_iff (norm_nonneg _), sq,
+  rw [le_iff_norm_sqrt_mul_sqrt_inv hb_inv ha_inv, inv_inv, ← sq_le_one_iff₀ (norm_nonneg _), sq,
     ← CStarRing.norm_self_mul_star]
   rwa [star_mul, IsSelfAdjoint.of_nonneg sqrt_nonneg,
     IsSelfAdjoint.of_nonneg sqrt_nonneg] at hab ⊢
@@ -411,7 +435,7 @@ lemma conjugate_le_norm_smul' {a b : A} (hb : IsSelfAdjoint b := by cfc_tac) :
 /-- The set of nonnegative elements in a C⋆-algebra is closed. -/
 lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
   suffices IsClosed {a : A⁺¹ | 0 ≤ a} by
-    rw [Unitization.isometry_inr (𝕜 := ℂ) |>.isClosedEmbedding.closed_iff_image_closed]
+    rw [Unitization.isometry_inr (𝕜 := ℂ) |>.isClosedEmbedding.isClosed_iff_image_isClosed]
     convert this.inter <| (Unitization.isometry_inr (𝕜 := ℂ)).isClosedEmbedding.isClosed_range
     ext a
     simp only [Set.mem_image, Set.mem_setOf_eq, Set.mem_inter_iff, Set.mem_range, ← exists_and_left]
@@ -421,6 +445,30 @@ lemma isClosed_nonneg : IsClosed {a : A | 0 ≤ a} := by
     and_congr_right (SpectrumRestricts.nnreal_iff_nnnorm · le_rfl), Set.setOf_and]
   refine isClosed_eq ?_ ?_ |>.inter <| isClosed_le ?_ ?_
   all_goals fun_prop
+
+instance : OrderClosedTopology A where
+  isClosed_le' := isClosed_le_of_isClosed_nonneg isClosed_nonneg
+
+section Icc
+
+open Unitization Set Metric
+
+lemma inr_mem_Icc_iff_norm_le {x : A} :
+    (x : A⁺¹) ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖ ≤ 1 := by
+  simp only [mem_Icc, inr_nonneg_iff, and_congr_right_iff]
+  rw [← norm_inr (𝕜 := ℂ), ← inr_nonneg_iff, iff_comm]
+  exact (norm_le_one_iff_of_nonneg _ ·)
+
+lemma inr_mem_Icc_iff_nnnorm_le {x : A} :
+    (x : A⁺¹) ∈ Icc 0 1 ↔ 0 ≤ x ∧ ‖x‖₊ ≤ 1 :=
+  inr_mem_Icc_iff_norm_le
+
+lemma preimage_inr_Icc_zero_one :
+    ((↑) : A → A⁺¹) ⁻¹' Icc 0 1 = {x : A | 0 ≤ x} ∩ closedBall 0 1 := by
+  ext
+  simp [- mem_Icc, inr_mem_Icc_iff_norm_le]
+
+end Icc
 
 end CStarAlgebra
 

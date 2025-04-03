@@ -3,14 +3,10 @@ Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.Algebra.NeZero
-import Mathlib.Algebra.Polynomial.BigOperators
-import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.RingTheory.RootsOfUnity.Complex
-import Mathlib.NumberTheory.ArithmeticFunction
-import Mathlib.RingTheory.RootsOfUnity.Basic
 import Mathlib.FieldTheory.RatFunc.AsPolynomial
+import Mathlib.NumberTheory.ArithmeticFunction
+import Mathlib.RingTheory.RootsOfUnity.Complex
 
 /-!
 # Cyclotomic polynomials.
@@ -586,12 +582,56 @@ end Order
 
 section miscellaneous
 
-lemma dvd_C_mul_X_sub_one_pow_add_one {R : Type*} [CommRing R] {p : ℕ} (hpri : p.Prime)
+open Finset
+
+variable {R : Type*} [CommRing R] {ζ : R} {n : ℕ} (x y : R)
+
+lemma dvd_C_mul_X_sub_one_pow_add_one {p : ℕ} (hpri : p.Prime)
     (hp : p ≠ 2) (a r : R) (h₁ : r ∣ a ^ p) (h₂ : r ∣ p * a) : C r ∣ (C a * X - 1) ^ p + 1 := by
   have := hpri.dvd_add_pow_sub_pow_of_dvd (C a * X) (-1) (r := C r) ?_ ?_
   · rwa [← sub_eq_add_neg, (hpri.odd_of_ne_two hp).neg_pow, one_pow, sub_neg_eq_add] at this
   · simp only [mul_pow, ← map_pow, dvd_mul_right, (_root_.map_dvd C h₁).trans]
   simp only [map_mul, map_natCast, ← mul_assoc, dvd_mul_right, (_root_.map_dvd C h₂).trans]
+
+private theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul_field {K : Type*}
+    [Field K] {ζ : K} (x y : K) (hpos : 0 < n) (h : IsPrimitiveRoot ζ n) :
+    x ^ n - y ^ n = ∏ ζ ∈ nthRootsFinset n K, (x - ζ * y) := by
+  by_cases hy : y = 0
+  · simp only [hy, zero_pow (Nat.not_eq_zero_of_lt hpos), sub_zero, mul_zero, prod_const]
+    congr
+    rw [h.card_nthRootsFinset]
+  convert congr_arg (eval (x/y) · * y ^ card (nthRootsFinset n K)) <| X_pow_sub_one_eq_prod hpos h
+    using 1
+  · simp [sub_mul, div_pow, hy, h.card_nthRootsFinset]
+  · simp [eval_prod, prod_mul_pow_card, sub_mul, hy]
+
+variable [IsDomain R]
+
+/-- If there is a primitive `n`th root of unity in `R`, then `X ^ n - Y ^ n = ∏ (X - μ Y)`,
+where `μ` varies over the `n`-th roots of unity. -/
+theorem _root_.IsPrimitiveRoot.pow_sub_pow_eq_prod_sub_mul (hpos : 0 < n)
+    (h : IsPrimitiveRoot ζ n) : x ^ n - y ^ n = ∏ ζ ∈ nthRootsFinset n R, (x - ζ * y) := by
+  let K := FractionRing R
+  apply NoZeroSMulDivisors.algebraMap_injective R K
+  rw [map_sub, map_pow, map_pow, map_prod]
+  simp_rw [map_sub, map_mul]
+  have h' : IsPrimitiveRoot (algebraMap R K ζ) n :=
+    h.map_of_injective <| NoZeroSMulDivisors.algebraMap_injective R K
+  rw [h'.pow_sub_pow_eq_prod_sub_mul_field _ _ hpos]
+  refine (prod_nbij (algebraMap R K) (fun a ha ↦ map_mem_nthRootsFinset ha _) (fun a _ b _ H ↦
+    NoZeroSMulDivisors.algebraMap_injective R K H) (fun a ha ↦ ?_) (fun _ _ ↦ rfl)).symm
+  have := Set.surj_on_of_inj_on_of_ncard_le (s := nthRootsFinset n R)
+    (t := nthRootsFinset n K) _ (fun _ hr ↦ map_mem_nthRootsFinset hr _)
+    (fun a _ b _ H ↦ NoZeroSMulDivisors.algebraMap_injective R K H)
+    (by simp [h.card_nthRootsFinset, h'.card_nthRootsFinset])
+  obtain ⟨x, hx, hx1⟩ := this _ ha
+  exact ⟨x, hx, hx1.symm⟩
+
+/-- If there is a primitive `n`th root of unity in `R` and `n` is odd, then
+`X ^ n + Y ^ n = ∏ (X + μ Y)`, where `μ` varies over the `n`-th roots of unity. -/
+theorem _root_.IsPrimitiveRoot.pow_add_pow_eq_prod_add_mul (hodd : Odd n)
+    (h : IsPrimitiveRoot ζ n) : x ^ n + y ^ n = ∏ ζ ∈ nthRootsFinset n R, (x + ζ * y) := by
+  simpa [hodd.neg_pow] using h.pow_sub_pow_eq_prod_sub_mul x (-y) hodd.pos
 
 end miscellaneous
 

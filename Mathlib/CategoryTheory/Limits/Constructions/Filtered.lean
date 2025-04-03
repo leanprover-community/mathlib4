@@ -46,8 +46,8 @@ def liftToFinsetObj (F : Discrete α ⥤ C) : Finset (Discrete α) ⥤ C where
     taking the colimit of the diagram formed by the coproducts of finite sets over the indexing
     type. -/
 @[simps!]
-def liftToFinsetColimitCocone [HasFilteredColimitsOfSize.{w, w} C] (F : Discrete α ⥤ C) :
-    ColimitCocone F where
+def liftToFinsetColimitCocone [HasColimitsOfShape (Finset (Discrete α)) C]
+    (F : Discrete α ⥤ C) : ColimitCocone F where
   cocone :=
     { pt := colimit (liftToFinsetObj F)
       ι :=
@@ -106,9 +106,8 @@ namespace CoproductsFromFiniteFiltered
 
 section
 
-variable [HasFiniteCoproducts C] [HasFilteredColimitsOfSize.{w, w} C]
-
-attribute [local instance] hasCoproducts_of_finite_and_filtered
+variable [HasFiniteCoproducts C] [HasColimitsOfShape (Finset (Discrete α)) C]
+    [HasColimitsOfShape (Discrete α) C]
 
 /-- Helper construction for `liftToFinsetColimIso`. -/
 @[reassoc]
@@ -143,5 +142,74 @@ def liftToFinsetEvaluationIso [HasFiniteCoproducts C] (I : Finset (Discrete α))
     fun _ => by dsimp; ext; simp
 
 end CoproductsFromFiniteFiltered
+
+namespace ProductsFromFiniteCofiltered
+
+variable [HasFiniteProducts C]
+
+/-- If `C` has finite coproducts, a functor `Discrete α ⥤ C` lifts to a functor
+    `Finset (Discrete α) ⥤ C` by taking coproducts. -/
+@[simps!]
+def liftToFinsetObj (F : Discrete α ⥤ C) : (Finset (Discrete α))ᵒᵖ ⥤ C where
+  obj s := ∏ᶜ (fun x : s.unop => F.obj x)
+  map {Y _} h := Pi.lift fun y =>
+    Pi.π (fun (x : { x // x ∈ Y.unop }) => F.obj x) ⟨y, h.unop.down.down y.2⟩
+
+
+/-- If `C` has finite coproducts and filtered colimits, we can construct arbitrary coproducts by
+    taking the colimit of the diagram formed by the coproducts of finite sets over the indexing
+    type. -/
+@[simps!]
+def liftToFinsetLimitCone [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
+    (F : Discrete α ⥤ C) : LimitCone F where
+  cone :=
+    { pt := limit (liftToFinsetObj F)
+      π := Discrete.natTrans fun j =>
+        limit.π (liftToFinsetObj F) ⟨{j}⟩ ≫ Pi.π _ (⟨j, by simp⟩ : ({j} : Finset (Discrete α))) }
+  isLimit :=
+    { lift := fun s =>
+        limit.lift (liftToFinsetObj F)
+          { pt := s.pt
+            π := { app := fun _ => Pi.lift fun x => s.π.app x } }
+      uniq := fun s m h => by
+        apply limit.hom_ext
+        rintro t
+        dsimp [liftToFinsetObj]
+        apply limit.hom_ext
+        rintro ⟨⟨j, hj⟩⟩
+        convert h j using 1
+        · simp [← limit.w (liftToFinsetObj F) ⟨⟨⟨Finset.singleton_subset_iff.2 hj⟩⟩⟩]
+          rfl
+        · aesop_cat }
+
+variable (C) (α)
+
+/-- The functor taking a functor `Discrete α ⥤ C` to a functor `Finset (Discrete α) ⥤ C` by taking
+coproducts. -/
+@[simps!]
+def liftToFinset : (Discrete α ⥤ C) ⥤ ((Finset (Discrete α))ᵒᵖ ⥤ C) where
+  obj := liftToFinsetObj
+  map := fun β => { app := fun _ => Pi.map (fun x => β.app x.val) }
+
+/-- The `liftToFinset` functor, precomposed with forming a colimit, is a coproduct on the original
+functor. -/
+def liftToFinsetLimIso [HasLimitsOfShape (Finset (Discrete α))ᵒᵖ C]
+    [HasLimitsOfShape (Discrete α) C] : liftToFinset C α ⋙ lim ≅ lim :=
+  NatIso.ofComponents
+    (fun F => Iso.symm <| limit.isoLimitCone (liftToFinsetLimitCone F))
+    (fun β => by
+      simp only [Functor.comp_obj, lim_obj, Functor.comp_map, lim_map, Iso.symm_hom]
+      ext J
+      simp [liftToFinset])
+
+/-- `liftToFinset`, when composed with the evaluation functor, results in the whiskering composed
+with `colim`. -/
+def liftToFinsetEvaluationIso (I : Finset (Discrete α)) :
+    liftToFinset C α ⋙ (evaluation _ _).obj ⟨I⟩ ≅
+    (whiskeringLeft _ _ _).obj (Discrete.functor (·.val)) ⋙ lim (J := Discrete I) :=
+  NatIso.ofComponents (fun _ => HasLimit.isoOfNatIso (Discrete.natIso fun _ => Iso.refl _))
+    fun _ => by dsimp; ext; simp
+
+end ProductsFromFiniteCofiltered
 
 end CategoryTheory.Limits

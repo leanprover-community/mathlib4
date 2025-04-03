@@ -174,7 +174,7 @@ theorem lift_unique (Φ : Quotient r ⥤ D) (hΦ : functor r ⋙ Φ = F) : Φ = 
   · rintro _ _ f
     dsimp [lift, Functor]
     refine Quot.inductionOn f (fun _ ↦ ?_) -- Porting note: this line was originally an `apply`
-    simp only [Quot.liftOn_mk, Functor.comp_map]
+    simp only [heq_eq_eq]
     congr
 
 lemma lift_unique' (F₁ F₂ : Quotient r ⥤ D) (h : functor r ⋙ F₁ = functor r ⋙ F₂) :

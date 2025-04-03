@@ -131,8 +131,8 @@ def previousInstName : Name → Name
     .str init newTail
   | nm => nm
 
-/--`getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
-module names that are implied by
+/--`getAllDependencies cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+declaration names that are implied by
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),
 * the identifiers contained in `cmd`,
@@ -140,8 +140,11 @@ module names that are implied by
 The argument `id` is expected to be an identifier.
 It is used either for the internally generated name of a "nameless" `instance` or when parsing
 an identifier representing the name of a declaration.
+
+Note that the return value does not contain dependencies of the dependencies;
+you can use `Lean.NameSet.transitivelyUsedConstants` to get those.
 -/
-def getAllImports (cmd id : Syntax) (dbg? : Bool := false) :
+def getAllDependencies (cmd id : Syntax) :
     CommandElabM NameSet := do
   let env ← getEnv
   let id1 ← getId cmd
@@ -155,22 +158,36 @@ def getAllImports (cmd id : Syntax) (dbg? : Bool := false) :
     -- failing everything, use the current namespace followed by the visible name
     return ns ++ id1.getId)
   -- We collect the implied declaration names, the `SyntaxNodeKinds` and the attributes.
-  let ts := getVisited env nm
+  return getVisited env nm
               |>.append (getVisited env id.getId)
               |>.append (getSyntaxNodeKinds cmd)
               |>.append (getAttrs env cmd)
+
+/--`getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+module names that are implied by
+* the `SyntaxNodeKinds`,
+* the attributes of `cmd` (if there are any),
+* the identifiers contained in `cmd`,
+* if `cmd` adds a declaration `d` to the environment, then also all the module names implied by `d`.
+The argument `id` is expected to be an identifier.
+It is used either for the internally generated name of a "nameless" `instance` or when parsing
+an identifier representing the name of a declaration.
+-/
+def getAllImports (cmd id : Syntax) (dbg? : Bool := false) :
+    CommandElabM NameSet := do
+  let env ← getEnv
+  -- We collect the implied declaration names, the `SyntaxNodeKinds` and the attributes.
+  let ts ← getAllDependencies cmd id
   if dbg? then dbg_trace "{ts.toArray.qsort Name.lt}"
   let mut hm : Std.HashMap Nat Name := {}
   for imp in env.header.moduleNames do
     hm := hm.insert ((env.getModuleIdx? imp).getD default) imp
   let mut fins : NameSet := {}
-  for t1 in ts do
-    let tns := t1::(← resolveGlobalName t1).map Prod.fst
-    for t in tns do
-      let new := match env.getModuleIdxFor? t with
-        | some t => (hm.get? t).get!
-        | none   => .anonymous -- instead of `getMainModule`, we omit the current module
-      if !fins.contains new then fins := fins.insert new
+  for t in ts do
+    let new := match env.getModuleIdxFor? t with
+      | some t => (hm.get? t).get!
+      | none   => .anonymous -- instead of `getMainModule`, we omit the current module
+    if !fins.contains new then fins := fins.insert new
   return fins.erase .anonymous
 
 /-- `getIrredundantImports env importNames` takes an `Environment` and a `NameSet` as inputs.

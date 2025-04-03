@@ -261,7 +261,7 @@ open Bornology
 
 theorem Filter.HasBasis.disjoint_cobounded_iff [Bornology α] {ι : Sort*} {p : ι → Prop}
     {s : ι → Set α} {l : Filter α} (h : l.HasBasis p s) :
-    Disjoint l (cobounded α) ↔ ∃ i, p i ∧ IsBounded (s i) :=
+    Disjoint l (cobounded α) ↔ ∃ i, p i ∧ Bornology.IsBounded (s i) :=
   h.disjoint_iff_left
 
 theorem Set.Finite.isBounded [Bornology α] {s : Set α} (hs : s.Finite) : IsBounded s :=

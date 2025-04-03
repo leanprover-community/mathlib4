@@ -3,7 +3,7 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
-import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.Group.Nat.Even
 import Mathlib.Algebra.NeZero
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.List.GetD
@@ -86,7 +86,7 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
   have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
   cases a <;> cases b <;> simp [h2, h4] <;> split_ifs
-    <;> simp_all (config := {decide := true}) [two_mul]
+    <;> simp_all +decide [two_mul]
 
 lemma bit_mod_two_eq_zero_iff (a x) :
     bit a x % 2 = 0 ↔ !a := by
@@ -282,7 +282,7 @@ macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   induction' m using Nat.binaryRec with b' m hm
   · simp
   induction' k using Nat.binaryRec with b'' k hk
-  -- porting note (#10745): was `simp [hn]`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [hn]`
   -- This is necessary because these are simp lemmas in mathlib
   <;> simp [hn, Bool.or_assoc, Bool.and_assoc, Bool.bne_eq_xor]))
 

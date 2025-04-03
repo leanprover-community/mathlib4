@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Data.Matrix.Notation
-import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
 
 /-!
@@ -214,7 +213,7 @@ example (A : Matrix (Fin 2) (Fin 2) α) :
 -/
 theorem etaExpand_eq {m n} (A : Matrix (Fin m) (Fin n) α) : etaExpand A = A := by
   simp_rw [etaExpand, FinVec.etaExpand_eq, Matrix.of]
-  -- This to be in the above `simp_rw` before leanprover/lean4#2644
+  -- This to be in the above `simp_rw` before https://github.com/leanprover/lean4/pull/2644
   erw [Equiv.refl_apply]
 
 example (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] :=

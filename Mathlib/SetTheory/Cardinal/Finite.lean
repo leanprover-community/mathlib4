@@ -14,8 +14,10 @@ import Mathlib.SetTheory.Cardinal.PartENat
 
 * `Nat.card α` is the cardinality of `α` as a natural number.
   If `α` is infinite, `Nat.card α = 0`.
+* `ENat.card α` is the cardinality of `α` as an  extended natural number.
+  If `α` is infinite, `ENat.card α = ⊤`.
 * `PartENat.card α` is the cardinality of `α` as an extended natural number
-  (using `Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
+  (using the legacy definition `PartENat := Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
 -/
 
 open Cardinal Function
@@ -224,6 +226,7 @@ theorem card_zmod (n : ℕ) : Nat.card (ZMod n) = n := by
 end Nat
 
 namespace Set
+variable {s : Set α}
 
 lemma card_singleton_prod (a : α) (t : Set β) : Nat.card ({a} ×ˢ t) = Nat.card t := by
   rw [singleton_prod, Nat.card_image_of_injective (Prod.mk.inj_left a)]
@@ -231,87 +234,186 @@ lemma card_singleton_prod (a : α) (t : Set β) : Nat.card ({a} ×ˢ t) = Nat.ca
 lemma card_prod_singleton (s : Set α) (b : β) : Nat.card (s ×ˢ {b}) = Nat.card s := by
   rw [prod_singleton, Nat.card_image_of_injective (Prod.mk.inj_right b)]
 
+theorem natCard_pos (hs : s.Finite) : 0 < Nat.card s ↔ s.Nonempty := by
+  simp [pos_iff_ne_zero, Nat.card_eq_zero, hs.to_subtype, Set.nonempty_def, nonempty_iff_ne_empty]
+
+protected alias ⟨_, Nonempty.natCard_pos⟩ := natCard_pos
+
+@[simp] lemma natCard_graphOn (s : Set α) (f : α → β) : Nat.card (s.graphOn f) = Nat.card s := by
+  rw [← Nat.card_image_of_injOn fst_injOn_graph, image_fst_graphOn]
+
 end Set
 
-namespace PartENat
 
-/-- `PartENat.card α` is the cardinality of `α` as an extended natural number.
-  If `α` is infinite, `PartENat.card α = ⊤`. -/
-def card (α : Type*) : PartENat :=
-  toPartENat (mk α)
+namespace ENat
 
-@[simp]
-theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α :=
-  mk_toPartENat_eq_coe_card
+/-- `ENat.card α` is the cardinality of `α` as an extended natural number.
+  If `α` is infinite, `ENat.card α = ⊤`. -/
+def card (α : Type*) : ℕ∞ :=
+  toENat (mk α)
 
 @[simp]
-theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ :=
-  mk_toPartENat_of_infinite
+theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α := by
+  simp [card]
+
+@[simp]
+theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ := by
+  simp [card]
 
 @[simp]
 theorem card_sum (α β : Type*) :
-    PartENat.card (α ⊕ β) = PartENat.card α + PartENat.card β := by
-  simp only [PartENat.card, Cardinal.mk_sum, map_add, Cardinal.toPartENat_lift]
+    card (α ⊕ β) = card α + card β := by
+  simp only [card, mk_sum, map_add, toENat_lift]
 
-theorem card_congr {α : Type*} {β : Type*} (f : α ≃ β) : PartENat.card α = PartENat.card β :=
-  Cardinal.toPartENat_congr f
+theorem card_congr {α β : Type*} (f : α ≃ β) : card α = card β :=
+  Cardinal.toENat_congr f
 
 @[simp] lemma card_ulift (α : Type*) : card (ULift α) = card α := card_congr Equiv.ulift
 
 @[simp] lemma card_plift (α : Type*) : card (PLift α) = card α := card_congr Equiv.plift
 
+theorem card_image_of_injOn {α β : Type*} {f : α → β} {s : Set α} (h : Set.InjOn f s) :
+    card (f '' s) = card s :=
+  card_congr (Equiv.Set.imageOfInjOn f s h).symm
+
+theorem card_image_of_injective {α β : Type*} (f : α → β) (s : Set α)
+    (h : Function.Injective f) : card (f '' s) = card s := card_image_of_injOn h.injOn
+
+@[simp]
+theorem _root_.Cardinal.natCast_le_toENat_iff {n : ℕ} {c : Cardinal} :
+    ↑n ≤ toENat c ↔ ↑n ≤ c := by
+  rw [← toENat_nat n, toENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
+
+theorem _root_.Cardinal.toENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
+    toENat c ≤ n ↔ c ≤ n := by simp
+
+@[simp]
+theorem _root_.Cardinal.natCast_eq_toENat_iff {n : ℕ} {c : Cardinal} :
+    ↑n = toENat c ↔ ↑n = c := by
+  rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toENat_le_natCast_iff,
+    Cardinal.natCast_le_toENat_iff]
+
+theorem _root_.Cardinal.toENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
+    Cardinal.toENat c = n ↔ c = n := by simp
+
+@[simp]
+theorem _root_.Cardinal.natCast_lt_toENat_iff {n : ℕ} {c : Cardinal} :
+    ↑n < toENat c ↔ ↑n < c := by
+  simp only [← not_le, Cardinal.toENat_le_natCast_iff]
+
+@[simp]
+theorem _root_.Cardinal.toENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
+    toENat c < ↑n ↔ c < ↑n := by
+  simp only [← not_le, Cardinal.natCast_le_toENat_iff]
+
+theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
+  rw [← Cardinal.mk_eq_zero_iff]
+  simp [card]
+
+theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
+  rw [← le_one_iff_subsingleton]
+  simp [card]
+
+theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
+  rw [← Cardinal.one_lt_iff_nontrivial]
+  conv_rhs => rw [← Nat.cast_one]
+  rw [← natCast_lt_toENat_iff]
+  simp only [ENat.card, Nat.cast_one]
+
+end ENat
+
+
+namespace PartENat
+
+/-- `PartENat.card α` is the cardinality of `α` as an extended natural number.
+  If `α` is infinite, `PartENat.card α = ⊤`. -/
+@[deprecated ENat.card (since := "2024-11-30")]
+def card (α : Type*) : PartENat :=
+  toPartENat (mk α)
+
+-- The remainder of this section is about the deprecated `PartENat.card`.
+set_option linter.deprecated false
+
+@[simp, deprecated ENat.card_eq_coe_fintype_card (since := "2024-11-30")]
+theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α :=
+  mk_toPartENat_eq_coe_card
+
+@[simp, deprecated ENat.card_eq_top_of_infinite (since := "2024-11-30")]
+theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ :=
+  mk_toPartENat_of_infinite
+
+@[simp, deprecated ENat.card_sum (since := "2024-11-30")]
+theorem card_sum (α β : Type*) :
+    PartENat.card (α ⊕ β) = PartENat.card α + PartENat.card β := by
+  simp only [PartENat.card, Cardinal.mk_sum, map_add, Cardinal.toPartENat_lift]
+
+@[deprecated ENat.card_congr (since := "2024-11-30")]
+theorem card_congr {α : Type*} {β : Type*} (f : α ≃ β) : PartENat.card α = PartENat.card β :=
+  Cardinal.toPartENat_congr f
+
+@[simp, deprecated ENat.card_ulift (since := "2024-11-30")]
+lemma card_ulift (α : Type*) : card (ULift α) = card α := card_congr Equiv.ulift
+
+@[simp, deprecated ENat.card_plift (since := "2024-11-30")]
+lemma card_plift (α : Type*) : card (PLift α) = card α := card_congr Equiv.plift
+
+@[deprecated ENat.card_image_of_injOn (since := "2024-11-30")]
 theorem card_image_of_injOn {α : Type u} {β : Type v} {f : α → β} {s : Set α} (h : Set.InjOn f s) :
     card (f '' s) = card s :=
   card_congr (Equiv.Set.imageOfInjOn f s h).symm
 
+@[deprecated ENat.card_image_of_injective (since := "2024-11-30")]
 theorem card_image_of_injective {α : Type u} {β : Type v} (f : α → β) (s : Set α)
     (h : Function.Injective f) : card (f '' s) = card s := card_image_of_injOn h.injOn
 
 -- Should I keep the 6 following lemmas ?
 -- TODO: Add ofNat, zero, and one versions for simp confluence
-@[simp]
+@[simp, deprecated Cardinal.natCast_le_toENat_iff (since := "2024-11-30")]
 theorem _root_.Cardinal.natCast_le_toPartENat_iff {n : ℕ} {c : Cardinal} :
     ↑n ≤ toPartENat c ↔ ↑n ≤ c := by
   rw [← toPartENat_natCast n, toPartENat_le_iff_of_le_aleph0 (le_of_lt (nat_lt_aleph0 n))]
 
-@[simp]
+@[simp, deprecated Cardinal.toENat_le_natCast_iff (since := "2024-11-30")]
 theorem _root_.Cardinal.toPartENat_le_natCast_iff {c : Cardinal} {n : ℕ} :
     toPartENat c ≤ n ↔ c ≤ n := by
   rw [← toPartENat_natCast n, toPartENat_le_iff_of_lt_aleph0 (nat_lt_aleph0 n)]
 
-@[simp]
+@[simp, deprecated Cardinal.natCast_eq_toENat_iff (since := "2024-11-30")]
 theorem _root_.Cardinal.natCast_eq_toPartENat_iff {n : ℕ} {c : Cardinal} :
     ↑n = toPartENat c ↔ ↑n = c := by
   rw [le_antisymm_iff, le_antisymm_iff, Cardinal.toPartENat_le_natCast_iff,
     Cardinal.natCast_le_toPartENat_iff]
 
-@[simp]
+@[simp, deprecated Cardinal.toENat_eq_natCast_iff (since := "2024-11-30")]
 theorem _root_.Cardinal.toPartENat_eq_natCast_iff {c : Cardinal} {n : ℕ} :
     Cardinal.toPartENat c = n ↔ c = n := by
 rw [eq_comm, Cardinal.natCast_eq_toPartENat_iff, eq_comm]
 
-@[simp]
+@[simp, deprecated Cardinal.natCast_lt_toENat_iff (since := "2024-11-30")]
 theorem _root_.Cardinal.natCast_lt_toPartENat_iff {n : ℕ} {c : Cardinal} :
     ↑n < toPartENat c ↔ ↑n < c := by
   simp only [← not_le, Cardinal.toPartENat_le_natCast_iff]
 
-@[simp]
+@[simp, deprecated Cardinal.toENat_lt_natCast_iff (since := "2024-11-30")]
 theorem _root_.Cardinal.toPartENat_lt_natCast_iff {n : ℕ} {c : Cardinal} :
     toPartENat c < ↑n ↔ c < ↑n := by
   simp only [← not_le, Cardinal.natCast_le_toPartENat_iff]
 
+@[deprecated ENat.card_eq_zero_iff_empty (since := "2024-11-30")]
 theorem card_eq_zero_iff_empty (α : Type*) : card α = 0 ↔ IsEmpty α := by
   rw [← Cardinal.mk_eq_zero_iff]
   conv_rhs => rw [← Nat.cast_zero]
   simp only [← Cardinal.toPartENat_eq_natCast_iff]
   simp only [PartENat.card, Nat.cast_zero]
 
+@[deprecated ENat.card_le_one_iff_subsingleton (since := "2024-11-30")]
 theorem card_le_one_iff_subsingleton (α : Type*) : card α ≤ 1 ↔ Subsingleton α := by
   rw [← le_one_iff_subsingleton]
   conv_rhs => rw [← Nat.cast_one]
   rw [← Cardinal.toPartENat_le_natCast_iff]
   simp only [PartENat.card, Nat.cast_one]
 
+@[deprecated ENat.one_lt_card_iff_nontrivial (since := "2024-11-30")]
 theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α := by
   rw [← Cardinal.one_lt_iff_nontrivial]
   conv_rhs => rw [← Nat.cast_one]

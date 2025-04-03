@@ -11,6 +11,9 @@ import Mathlib.Logic.Small.Defs
 A proposition expressing a universe inequality. `UnivLE.{u, v}` expresses that `u ≤ v`,
 in the form `∀ α : Type u, Small.{v} α`.
 
+This API indirectly provides an instance for `Small.{u, max u v}`, which could not be declared
+directly due to https://github.com/leanprover/lean4/issues/2297.
+
 See the doc-string for the comparison with an alternative stronger definition.
 -/
 

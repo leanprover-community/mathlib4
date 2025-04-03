@@ -103,20 +103,22 @@ variable {K}
 variable {A : Type*} [Category A] (G : C ⥤ D)
 
 theorem IsLocallyFull.ext [G.IsLocallyFull K]
-    (ℱ : SheafOfTypes K) {X Y : C} (i : G.obj X ⟶ G.obj Y)
+    (ℱ : Sheaf K (Type _)) {X Y : C} (i : G.obj X ⟶ G.obj Y)
     {s t : ℱ.val.obj (op (G.obj X))}
     (h : ∀ ⦃Z : C⦄ (j : Z ⟶ X) (f : Z ⟶ Y), G.map f = G.map j ≫ i →
       ℱ.1.map (G.map j).op s = ℱ.1.map (G.map j).op t) : s = t := by
-  apply (ℱ.cond _ (G.functorPushforward_imageSieve_mem K i)).isSeparatedFor.ext
+  apply (((isSheaf_iff_isSheaf_of_type _ _).1 ℱ.cond) _
+    (G.functorPushforward_imageSieve_mem K i)).isSeparatedFor.ext
   rintro Z _ ⟨W, iWX, iZW, ⟨iWY, e⟩, rfl⟩
   simp [h iWX iWY e]
 
-theorem IsLocallyFaithful.ext [G.IsLocallyFaithful K] (ℱ : SheafOfTypes K)
+theorem IsLocallyFaithful.ext [G.IsLocallyFaithful K] (ℱ : Sheaf K (Type _))
     {X Y : C} (i₁ i₂ : X ⟶ Y) (e : G.map i₁ = G.map i₂)
     {s t : ℱ.val.obj (op (G.obj X))}
     (h : ∀ ⦃Z : C⦄ (j : Z ⟶ X), j ≫ i₁ = j ≫ i₂ →
       ℱ.1.map (G.map j).op s = ℱ.1.map (G.map j).op t) : s = t := by
-  apply (ℱ.cond _ (G.functorPushforward_equalizer_mem K i₁ i₂ e)).isSeparatedFor.ext
+  apply (((isSheaf_iff_isSheaf_of_type _ _).1 ℱ.cond) _
+    (G.functorPushforward_equalizer_mem K i₁ i₂ e)).isSeparatedFor.ext
   rintro Z _ ⟨W, iWX, iZW, hiWX, rfl⟩
   simp [h iWX hiWX]
 

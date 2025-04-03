@@ -19,9 +19,9 @@ also preserves finite limits and finite colimits.
 
 Let `F : C ⥤ D` be an additive functor:
 
-- `Functor.preservesFiniteLimitsOfPreservesHomology`: if `F` preserves homology, then `F` preserves
-  finite limits.
-- `Functor.preservesFiniteColimitsOfPreservesHomology`: if `F` preserves homology, then `F`
+- `Functor.preservesFiniteLimits_of_preservesHomology`: if `F` preserves homology,
+  then `F` preserves finite limits.
+- `Functor.preservesFiniteColimits_of_preservesHomology`: if `F` preserves homology, then `F`
   preserves finite colimits.
 
 If we further assume that `C` and `D` are abelian categories, then we have:
@@ -63,24 +63,24 @@ variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
   (F : C ⥤ D) [F.Additive] [F.PreservesHomology] [HasZeroObject C]
 
 /-- An additive functor which preserves homology preserves finite limits. -/
-noncomputable def preservesFiniteLimitsOfPreservesHomology
+lemma preservesFiniteLimits_of_preservesHomology
     [HasFiniteProducts C] [HasKernels C] : PreservesFiniteLimits F := by
   have := fun {X Y : C} (f : X ⟶ Y) ↦ PreservesHomology.preservesKernel F f
   have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryProducts
   have : HasEqualizers C := Preadditive.hasEqualizers_of_hasKernels
   have : HasZeroObject D :=
     ⟨F.obj 0, by rw [IsZero.iff_id_eq_zero, ← F.map_id, id_zero, F.map_zero]⟩
-  exact preservesFiniteLimitsOfPreservesKernels F
+  exact preservesFiniteLimits_of_preservesKernels F
 
 /-- An additive which preserves homology preserves finite colimits. -/
-noncomputable def preservesFiniteColimitsOfPreservesHomology
+lemma preservesFiniteColimits_of_preservesHomology
     [HasFiniteCoproducts C] [HasCokernels C] : PreservesFiniteColimits F := by
   have := fun {X Y : C} (f : X ⟶ Y) ↦ PreservesHomology.preservesCokernel F f
   have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryCoproducts
   have : HasCoequalizers C := Preadditive.hasCoequalizers_of_hasCokernels
   have : HasZeroObject D :=
     ⟨F.obj 0, by rw [IsZero.iff_id_eq_zero, ← F.map_id, id_zero, F.map_zero]⟩
-  exact preservesFiniteColimitsOfPreservesCokernels F
+  exact preservesFiniteColimits_of_preservesCokernels F
 
 end
 
@@ -112,8 +112,8 @@ lemma preservesFiniteLimits_tfae : List.TFAE
     [
       ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Mono (F.map S.f),
       ∀ (S : ShortComplex C), S.Exact ∧ Mono S.f → (S.map F).Exact ∧ Mono (F.map S.f),
-      ∀ ⦃X Y : C⦄ (f : X ⟶ Y), Nonempty <| PreservesLimit (parallelPair f 0) F,
-      Nonempty <| PreservesFiniteLimits F
+      ∀ ⦃X Y : C⦄ (f : X ⟶ Y), PreservesLimit (parallelPair f 0) F,
+      PreservesFiniteLimits F
     ] := by
   tfae_have 1 → 2
   | hF, S, ⟨hS, hf⟩ => by
@@ -130,7 +130,7 @@ lemma preservesFiniteLimits_tfae : List.TFAE
 
   tfae_have 2 → 3
   | hF, X, Y, f => by
-    refine ⟨preservesLimitOfPreservesLimitCone (kernelIsKernel f) ?_⟩
+    refine preservesLimit_of_preserves_limit_cone (kernelIsKernel f) ?_
     apply (KernelFork.isLimitMapConeEquiv _ F).2
     let S := ShortComplex.mk _ _ (kernel.condition f)
     let hS := hF S ⟨exact_kernel f, inferInstance⟩
@@ -139,8 +139,7 @@ lemma preservesFiniteLimits_tfae : List.TFAE
 
   tfae_have 3 → 4
   | hF => by
-    have := fun X Y (f : X ⟶ Y) ↦ (hF f).some
-    exact ⟨preservesFiniteLimitsOfPreservesKernels F⟩
+    exact preservesFiniteLimits_of_preservesKernels F
 
   tfae_have 4 → 1
   | ⟨_⟩, S, hS =>
@@ -171,8 +170,8 @@ lemma preservesFiniteColimits_tfae : List.TFAE
     [
       ∀ (S : ShortComplex C), S.ShortExact → (S.map F).Exact ∧ Epi (F.map S.g),
       ∀ (S : ShortComplex C), S.Exact ∧ Epi S.g → (S.map F).Exact ∧ Epi (F.map S.g),
-      ∀ ⦃X Y : C⦄ (f : X ⟶ Y), Nonempty <| PreservesColimit (parallelPair f 0) F,
-      Nonempty <| PreservesFiniteColimits F
+      ∀ ⦃X Y : C⦄ (f : X ⟶ Y), PreservesColimit (parallelPair f 0) F,
+      PreservesFiniteColimits F
     ] := by
   tfae_have 1 → 2
   | hF, S, ⟨hS, hf⟩ => by
@@ -189,7 +188,7 @@ lemma preservesFiniteColimits_tfae : List.TFAE
 
   tfae_have 2 → 3
   | hF, X, Y, f => by
-    refine ⟨preservesColimitOfPreservesColimitCocone (cokernelIsCokernel f) ?_⟩
+    refine preservesColimit_of_preserves_colimit_cocone (cokernelIsCokernel f) ?_
     apply (CokernelCofork.isColimitMapCoconeEquiv _ F).2
     let S := ShortComplex.mk _ _ (cokernel.condition f)
     let hS := hF S ⟨exact_cokernel f, inferInstance⟩
@@ -198,8 +197,7 @@ lemma preservesFiniteColimits_tfae : List.TFAE
 
   tfae_have 3 → 4
   | hF => by
-    have := fun X Y (f : X ⟶ Y) ↦ (hF f).some
-    exact ⟨preservesFiniteColimitsOfPreservesCokernels F⟩
+    exact preservesFiniteColimits_of_preservesCokernels F
 
   tfae_have 4 → 1
   | ⟨_⟩, S, hS => (S.map F).exact_and_epi_g_iff_g_is_cokernel |>.2
@@ -219,18 +217,18 @@ lemma exact_tfae : List.TFAE
     [
       ∀ (S : ShortComplex C), S.ShortExact → (S.map F).ShortExact,
       ∀ (S : ShortComplex C), S.Exact → (S.map F).Exact,
-      Nonempty (PreservesHomology F),
-      Nonempty (PreservesFiniteLimits F) ∧ Nonempty (PreservesFiniteColimits F)
+      PreservesHomology F,
+      PreservesFiniteLimits F ∧ PreservesFiniteColimits F
     ] := by
   tfae_have 1 → 3
   | hF => by
     refine ⟨fun {X Y} f ↦ ?_, fun {X Y} f ↦ ?_⟩
     · have h := (preservesFiniteLimits_tfae F |>.out 0 2 |>.1 fun S hS ↦
         And.intro (hF S hS).exact (hF S hS).mono_f)
-      exact h f |>.some
+      exact h f
     · have h := (preservesFiniteColimits_tfae F |>.out 0 2 |>.1 fun S hS ↦
         And.intro (hF S hS).exact (hF S hS).epi_g)
-      exact h f |>.some
+      exact h f
 
   tfae_have 2 → 1
   | hF, S, hS => by
@@ -241,11 +239,11 @@ lemma exact_tfae : List.TFAE
     exact ⟨hF S hS.exact⟩
 
   tfae_have 3 → 4
-  | ⟨h⟩ => ⟨⟨preservesFiniteLimitsOfPreservesHomology F⟩,
-    ⟨preservesFiniteColimitsOfPreservesHomology F⟩⟩
+  | h => ⟨preservesFiniteLimits_of_preservesHomology F,
+      preservesFiniteColimits_of_preservesHomology F⟩
 
   tfae_have 4 → 2
-  | ⟨⟨h1⟩, ⟨h2⟩⟩, _, h => h.map F
+  | ⟨h1, h2⟩, _, h => h.map F
 
   tfae_finish
 

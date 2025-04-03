@@ -5,7 +5,7 @@ Authors: Eric Rodriguez
 -/
 import Mathlib.Logic.Basic
 import Mathlib.Algebra.Group.ZeroOne
-import Mathlib.Order.Defs
+import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # `NeZero` typeclass

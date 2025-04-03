@@ -5,6 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.RingTheory.Finiteness.Subalgebra
 import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
@@ -179,6 +180,7 @@ theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
   rcases hr with ⟨s, _, hsr⟩
   exact hsr.of_subring _
 
+@[stacks 09GH]
 theorem fg_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsIntegral R x) :
     (Algebra.adjoin R s).toSubmodule.FG :=
   Set.Finite.induction_on hfs

@@ -3,7 +3,7 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
-import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Pi

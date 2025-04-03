@@ -44,7 +44,7 @@ diffeomorphism, manifold
 -/
 
 
-open scoped Manifold Topology
+open scoped Manifold Topology ContDiff
 
 open Function Set
 
@@ -65,7 +65,7 @@ variable (I I' M M' n)
 
 /-- `n`-times continuously differentiable diffeomorphism between `M` and `M'` with respect to `I`
 and `I'`. -/
--- Porting note(#5171): was @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure Diffeomorph extends M ≃ M' where
   protected contMDiff_toFun : ContMDiff I I' n toEquiv
   protected contMDiff_invFun : ContMDiff I' I n toEquiv.symm
@@ -121,11 +121,11 @@ protected theorem contMDiffAt (h : M ≃ₘ^n⟮I, I'⟯ M') {x} : ContMDiffAt I
 protected theorem contMDiffWithinAt (h : M ≃ₘ^n⟮I, I'⟯ M') {s x} : ContMDiffWithinAt I I' n h s x :=
   h.contMDiffAt.contMDiffWithinAt
 
--- Porting note (#11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
 protected theorem contDiff (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E') : ContDiff 𝕜 n h :=
   h.contMDiff.contDiff
 
-protected theorem smooth (h : M ≃ₘ⟮I, I'⟯ M') : Smooth I I' h := h.contMDiff
+@[deprecated (since := "2024-11-21")] alias smooth := Diffeomorph.contDiff
 
 protected theorem mdifferentiable (h : M ≃ₘ^n⟮I, I'⟯ M') (hn : 1 ≤ n) : MDifferentiable I I' h :=
   h.contMDiff.mdifferentiable hn
@@ -399,14 +399,14 @@ theorem uniqueMDiffOn_preimage (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : 
     UniqueMDiffOn I (h ⁻¹' s) ↔ UniqueMDiffOn J s :=
   h.symm_image_eq_preimage s ▸ h.symm.uniqueMDiffOn_image hn
 
--- Porting note (#11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
 @[simp]
 theorem uniqueDiffOn_image (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : 1 ≤ n) {s : Set E} :
     UniqueDiffOn 𝕜 (h '' s) ↔ UniqueDiffOn 𝕜 s := by
   simp only [← uniqueMDiffOn_iff_uniqueDiffOn, uniqueMDiffOn_image, hn]
 
 @[simp]
--- Porting note (#11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
 theorem uniqueDiffOn_preimage (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : 1 ≤ n) {s : Set F} :
     UniqueDiffOn 𝕜 (h ⁻¹' s) ↔ UniqueDiffOn 𝕜 s :=
   h.symm_image_eq_preimage s ▸ h.symm.uniqueDiffOn_image hn
@@ -491,7 +491,7 @@ instance smoothManifoldWithCorners_transDiffeomorph [SmoothManifoldWithCorners I
     SmoothManifoldWithCorners (I.transDiffeomorph e) M := by
   refine smoothManifoldWithCorners_of_contDiffOn (I.transDiffeomorph e) M fun e₁ e₂ h₁ h₂ => ?_
   refine e.contDiff.comp_contDiffOn
-      (((contDiffGroupoid ⊤ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
+      (((contDiffGroupoid ∞ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
   simp only [mapsTo_iff_subset_preimage]
   mfld_set_tac
 
@@ -539,9 +539,8 @@ theorem contMDiff_transDiffeomorph_right {f : M' → M} :
     ContMDiff I' (I.transDiffeomorph e) n f ↔ ContMDiff I' I n f :=
   (toTransDiffeomorph I M e).contMDiff_diffeomorph_comp_iff le_top
 
-theorem smooth_transDiffeomorph_right {f : M' → M} :
-    Smooth I' (I.transDiffeomorph e) f ↔ Smooth I' I f :=
-  contMDiff_transDiffeomorph_right e
+@[deprecated (since := "2024-11-21")]
+alias smooth_transDiffeomorph_right := contMDiff_transDiffeomorph_right
 
 @[simp]
 theorem contMDiffWithinAt_transDiffeomorph_left {f : M → M'} {x s} :
@@ -563,8 +562,7 @@ theorem contMDiff_transDiffeomorph_left {f : M → M'} :
     ContMDiff (I.transDiffeomorph e) I' n f ↔ ContMDiff I I' n f :=
   ((toTransDiffeomorph I M e).contMDiff_comp_diffeomorph_iff le_top).symm
 
-theorem smooth_transDiffeomorph_left {f : M → M'} :
-    Smooth (I.transDiffeomorph e) I' f ↔ Smooth I I' f :=
-  e.contMDiff_transDiffeomorph_left
+@[deprecated (since := "2024-11-21")]
+alias smooth_transDiffeomorph_left := contMDiff_transDiffeomorph_left
 
 end Diffeomorph

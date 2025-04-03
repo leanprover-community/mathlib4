@@ -12,10 +12,10 @@ import Mathlib.Tactic.FinCases
 # Not all complementary decompositions of a module over a semiring make up a direct sum
 
 This shows that while `ℤ≤0` and `ℤ≥0` are complementary `ℕ`-submodules of `ℤ`, which in turn
-implies as a collection they are `CompleteLattice.Independent` and that they span all of `ℤ`, they
+implies as a collection they are `iSupIndep` and that they span all of `ℤ`, they
 do not form a decomposition into a direct sum.
 
-This file demonstrates why `DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top` must
+This file demonstrates why `DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top` must
 take `Ring R` and not `Semiring R`.
 -/
 
@@ -57,9 +57,9 @@ theorem withSign.isCompl : IsCompl ℤ≥0 ℤ≤0 := by
     · exact Submodule.mem_sup_left (mem_withSign_one.mpr hp)
     · exact Submodule.mem_sup_right (mem_withSign_neg_one.mpr hn)
 
-def withSign.independent : CompleteLattice.Independent withSign := by
+def withSign.independent : iSupIndep withSign := by
   apply
-    (CompleteLattice.independent_pair UnitsInt.one_ne_neg_one _).mpr withSign.isCompl.disjoint
+    (iSupIndep_pair UnitsInt.one_ne_neg_one _).mpr withSign.isCompl.disjoint
   intro i
   fin_cases i <;> simp
 
@@ -78,7 +78,7 @@ theorem withSign.not_injective :
   have : z ≠ 0 := by
     intro h
     replace h := DFunLike.congr_fun h 1
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [DFinsupp.zero_apply, DFinsupp.add_apply, DFinsupp.single_eq_same,
       DFinsupp.single_eq_of_ne UnitsInt.one_ne_neg_one.symm, add_zero, Subtype.ext_iff,
       Submodule.coe_zero] at h

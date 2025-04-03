@@ -154,12 +154,12 @@ theorem Disjoint.set_prod_right (ht : Disjoint t₁ t₂) (s₁ s₂ : Set α) :
 
 theorem insert_prod : insert a s ×ˢ t = Prod.mk a '' t ∪ s ×ˢ t := by
   ext ⟨x, y⟩
-  simp (config := { contextual := true }) [image, iff_def, or_imp]
+  simp +contextual [image, iff_def, or_imp]
 
 theorem prod_insert : s ×ˢ insert b t = (fun a => (a, b)) '' s ∪ s ×ˢ t := by
   ext ⟨x, y⟩
-  -- porting note (#10745):
-  -- was `simp (config := { contextual := true }) [image, iff_def, or_imp, Imp.swap]`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745):
+  -- was `simp +contextual [image, iff_def, or_imp, Imp.swap]`
   simp only [mem_prod, mem_insert_iff, image, mem_union, mem_setOf_eq, Prod.mk.injEq]
   refine ⟨fun h => ?_, fun h => ?_⟩
   · obtain ⟨hx, rfl|hy⟩ := h

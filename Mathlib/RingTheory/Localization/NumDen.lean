@@ -5,7 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
-import Mathlib.RingTheory.UniqueFactorizationDomain
+import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
 /-!
 # Numerator and denominator in a localization
@@ -19,9 +19,6 @@ localization, ring localization, commutative ring localization, characteristic p
 commutative ring, field of fractions
 -/
 
-
-variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
-variable [Algebra R S] {P : Type*} [CommRing P]
 
 namespace IsFractionRing
 
@@ -156,7 +153,5 @@ lemma associated_num_den_inv (x : K) (hx : x ≠ 0) : Associated (num A x : A) (
   exact this
 
 end NumDen
-
-variable (S)
 
 end IsFractionRing

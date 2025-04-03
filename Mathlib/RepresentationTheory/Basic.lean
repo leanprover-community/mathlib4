@@ -292,7 +292,7 @@ def ofMulDistribMulAction : Representation ℤ M (Additive G) :=
     ((monoidEndToAdditive G : _ →* _).comp (MulDistribMulAction.toMonoidEnd M G))
 
 @[simp] theorem ofMulDistribMulAction_apply_apply (g : M) (a : Additive G) :
-    ofMulDistribMulAction M G g a = Additive.ofMul (g • Additive.toMul a) := rfl
+    ofMulDistribMulAction M G g a = Additive.ofMul (g • a.toMul) := rfl
 
 end MulDistribMulAction
 section Group
@@ -413,11 +413,11 @@ def linHom : Representation k G (V →ₗ[k] W) where
       map_smul' := fun r f => by simp_rw [RingHom.id_apply, smul_comp, comp_smul] }
   map_one' :=
     LinearMap.ext fun x => by
-      dsimp -- Porting note (#11227):now needed
+      dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
       simp_rw [inv_one, map_one, one_eq_id, comp_id, id_comp]
   map_mul' g h :=
     LinearMap.ext fun x => by
-      dsimp -- Porting note (#11227):now needed
+      dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
       simp_rw [mul_inv_rev, map_mul, mul_eq_comp, comp_assoc]
 
 @[simp]
@@ -436,11 +436,11 @@ def dual : Representation k G (Module.Dual k V) where
         simp only [coe_comp, Function.comp_apply, smul_apply, RingHom.id_apply] }
   map_one' := by
     ext
-    dsimp -- Porting note (#11227):now needed
+    dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
     simp only [coe_comp, Function.comp_apply, map_one, inv_one, coe_mk, one_apply]
   map_mul' g h := by
     ext
-    dsimp -- Porting note (#11227):now needed
+    dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
     simp only [coe_comp, Function.comp_apply, mul_inv_rev, map_mul, coe_mk, mul_apply]
 
 @[simp]

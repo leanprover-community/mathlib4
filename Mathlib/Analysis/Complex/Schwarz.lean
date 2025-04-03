@@ -80,7 +80,7 @@ theorem schwarz_aux {f : ℂ → ℂ} (hd : DifferentiableOn ℂ f (ball c R₁)
     intro z hz
     have hz' : z ≠ c := ne_of_mem_sphere hz hr₀.ne'
     rw [dslope_of_ne _ hz', slope_def_module, norm_smul, norm_inv, mem_sphere_iff_norm.1 hz, ←
-      div_eq_inv_mul, div_le_div_right hr₀, ← dist_eq_norm]
+      div_eq_inv_mul, div_le_div_iff_of_pos_right hr₀, ← dist_eq_norm]
     exact le_of_lt (h_maps (mem_ball.2 (by rw [mem_sphere.1 hz]; exact hr.2)))
   · rw [closure_ball c hr₀.ne', mem_closedBall]
     exact hr.1.le

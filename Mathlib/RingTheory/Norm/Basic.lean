@@ -136,7 +136,7 @@ theorem norm_eq_norm_adjoin [FiniteDimensional K L] [Algebra.IsSeparable K L] (x
   letI := Algebra.isSeparable_tower_top_of_isSeparable K K⟮x⟯ L
   let pbL := Field.powerBasisOfFiniteOfSeparable K⟮x⟯ L
   let pbx := IntermediateField.adjoin.powerBasis (Algebra.IsSeparable.isIntegral K x)
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [← AdjoinSimple.algebraMap_gen K x, norm_eq_matrix_det (pbx.basis.smulTower pbL.basis) _,
     smulTower_leftMulMatrix_algebraMap, det_blockDiagonal, norm_eq_matrix_det pbx.basis]
   simp only [Finset.card_fin, Finset.prod_const]
@@ -289,6 +289,9 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
 variable {F} (L)
 
 -- TODO. Generalize this proof to rings
+/--Let $F / L / K$ be a tower of finite extensions of fields. Then
+$\text{Norm}_{F/K} = \text{Norm}_{L/K} \circ \text{Norm}_{F/L}$.-/
+@[stacks 0BIJ "This is a special case of 0BIJ norm, we require separability here. "]
 theorem norm_norm [Algebra L F] [IsScalarTower K L F] [Algebra.IsSeparable K F] (x : F) :
     norm K (norm L x) = norm K x := by
   by_cases hKF : FiniteDimensional K F

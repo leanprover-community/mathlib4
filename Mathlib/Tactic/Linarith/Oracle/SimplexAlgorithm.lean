@@ -15,6 +15,7 @@ See the file `PositiveVector.lean` for details of how the procedure works.
 -/
 
 namespace Linarith.SimplexAlgorithm
+open Mathlib
 
 /-- Preprocess the goal to pass it to `Linarith.SimplexAlgorithm.findPositiveVector`. -/
 def preprocess (matType : ℕ → ℕ → Type) [UsableInSimplexAlgorithm matType] (hyps : List Comp)

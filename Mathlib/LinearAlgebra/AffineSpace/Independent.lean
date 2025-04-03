@@ -77,14 +77,14 @@ theorem affineIndependent_iff_of_fintype [Fintype ι] (p : ι → P) :
 
 @[simp] lemma affineIndependent_vadd {p : ι → P} {v : V} :
     AffineIndependent k (v +ᵥ p) ↔ AffineIndependent k p := by
-  simp (config := { contextual := true }) [AffineIndependent, weightedVSub_vadd]
+  simp +contextual [AffineIndependent, weightedVSub_vadd]
 
 protected alias ⟨AffineIndependent.of_vadd, AffineIndependent.vadd⟩ := affineIndependent_vadd
 
 @[simp] lemma affineIndependent_smul {G : Type*} [Group G] [DistribMulAction G V]
     [SMulCommClass G k V] {p : ι → V} {a : G} :
     AffineIndependent k (a • p) ↔ AffineIndependent k p := by
-  simp (config := { contextual := true }) [AffineIndependent, weightedVSub_smul,
+  simp +contextual [AffineIndependent, weightedVSub_smul,
     ← smul_comm (α := V) a, ← smul_sum, smul_eq_zero_iff_eq]
 
 protected alias ⟨AffineIndependent.of_smul, AffineIndependent.smul⟩ := affineIndependent_smul
@@ -390,7 +390,7 @@ theorem AffineEquiv.affineIndependent_iff {p : ι → P} (e : P ≃ᵃ[k] P₂) 
 theorem AffineEquiv.affineIndependent_set_of_eq_iff {s : Set P} (e : P ≃ᵃ[k] P₂) :
     AffineIndependent k ((↑) : e '' s → P₂) ↔ AffineIndependent k ((↑) : s → P) := by
   have : e ∘ ((↑) : s → P) = ((↑) : e '' s → P₂) ∘ (e : P ≃ P₂).image s := rfl
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [← e.affineIndependent_iff, this, affineIndependent_equiv]
 
 end Composition
@@ -618,7 +618,7 @@ theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineInde
     ext
     fin_cases i
     · simp at hi
-    · simp only [Fin.val_one]
+    · simp
   haveI : Unique { x // x ≠ (0 : Fin 2) } := ⟨⟨i₁⟩, he'⟩
   apply linearIndependent_unique
   rw [he' default]
@@ -687,7 +687,7 @@ theorem affineIndependent_of_ne_of_mem_of_mem_of_not_mem {s : AffineSubspace k P
   refine hp₃ ((AffineSubspace.le_def' _ s).1 ?_ p₃ h)
   simp_rw [affineSpan_le, Set.image_subset_iff, Set.subset_def, Set.mem_preimage]
   intro x
-  fin_cases x <;> simp (config := {decide := true}) [hp₁, hp₂]
+  fin_cases x <;> simp +decide [hp₁, hp₂]
 
 /-- If distinct points `p₁` and `p₃` lie in `s` but `p₂` does not, the three points are affinely
 independent. -/

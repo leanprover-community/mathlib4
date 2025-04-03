@@ -218,7 +218,7 @@ def toSpec (f : A) : (Proj.T| pbo f) ⟶ Spec.T A⁰_ f where
   continuous_toFun := by
     rw [PrimeSpectrum.isTopologicalBasis_basic_opens.continuous_iff]
     rintro _ ⟨x, rfl⟩
-    obtain ⟨x, rfl⟩ := Quotient.surjective_Quotient_mk'' x
+    obtain ⟨x, rfl⟩ := Quotient.mk''_surjective x
     rw [ToSpec.preimage_basicOpen]
     exact (pbo x.num).2.preimage continuous_subtype_val
 
@@ -603,6 +603,16 @@ lemma awayToSection_germ (f x hx) :
   apply (Proj.stalkIso' 𝒜 x).eq_symm_apply.mpr
   apply Proj.stalkIso'_germ
 
+lemma awayToSection_apply (f : A) (x p) :
+    (((ProjectiveSpectrum.Proj.awayToSection 𝒜 f).1 x).val p).val =
+      IsLocalization.map (M := Submonoid.powers f) (T := p.1.1.toIdeal.primeCompl) _
+        (RingHom.id _) (Submonoid.powers_le.mpr p.2) x.val := by
+  obtain ⟨x, rfl⟩ := HomogeneousLocalization.mk_surjective x
+  show (HomogeneousLocalization.mapId 𝒜 _ _).val = _
+  dsimp [HomogeneousLocalization.mapId, HomogeneousLocalization.map]
+  rw [Localization.mk_eq_mk', Localization.mk_eq_mk', IsLocalization.map_mk']
+  rfl
+
 /--
 The ring map from `A⁰_ f` to the global sections of the structure sheaf of the projective spectrum
 of `A` restricted to the basic open set `D(f)`.
@@ -633,15 +643,15 @@ def toSpec (f) : (Proj| pbo f) ⟶ Spec (A⁰_ f) :=
   ΓSpec.locallyRingedSpaceAdjunction.homEquiv (Proj| pbo f) (op (CommRingCat.of <| A⁰_ f))
     (awayToΓ 𝒜 f).op
 
-open HomogeneousLocalization LocalRing
+open HomogeneousLocalization IsLocalRing
 
 lemma toSpec_base_apply_eq_comap {f} (x : Proj| pbo f) :
     (toSpec 𝒜 f).base x = PrimeSpectrum.comap (mapId 𝒜 (Submonoid.powers_le.mpr x.2))
       (closedPoint (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)) := by
   show PrimeSpectrum.comap (awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x)
-        (LocalRing.closedPoint ((Proj| pbo f).presheaf.stalk x)) = _
+        (IsLocalRing.closedPoint ((Proj| pbo f).presheaf.stalk x)) = _
   rw [awayToΓ_ΓToStalk, CommRingCat.comp_eq_ring_hom_comp, PrimeSpectrum.comap_comp]
-  exact congr(PrimeSpectrum.comap _ $(@LocalRing.comap_closedPoint
+  exact congr(PrimeSpectrum.comap _ $(@IsLocalRing.comap_closedPoint
     (HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) _ _
     ((Proj| pbo f).presheaf.stalk x) _ _ _ (isLocalHom_of_isIso _)))
 

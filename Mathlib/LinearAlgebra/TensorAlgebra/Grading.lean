@@ -54,7 +54,7 @@ instance gradedAlgebra :
     | algebraMap r =>
       rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
     | add x y i hx hy ihx ihy =>
-      -- Note: #8386 had to specialize `map_add` to avoid a timeout
+      -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specialize `map_add` to avoid a timeout
       -- (the extra typeclass search seems to have pushed this already slow proof over the edge)
       rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]
       rfl

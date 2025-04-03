@@ -29,15 +29,15 @@ def Angle : Type :=
 
 namespace Angle
 
--- Porting note (#10754): added due to missing instances due to no deriving
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
 instance : NormedAddCommGroup Angle :=
   inferInstanceAs (NormedAddCommGroup (AddCircle (2 * π)))
 
--- Porting note (#10754): added due to missing instances due to no deriving
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
 instance : Inhabited Angle :=
   inferInstanceAs (Inhabited (AddCircle (2 * π)))
 
--- Porting note (#10754): added due to missing instances due to no deriving
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
 -- also, without this, a plain `QuotientAddGroup.mk`
 -- causes coerced terms to be of type `ℝ ⧸ AddSubgroup.zmultiples (2 * π)`
 /-- The canonical map from `ℝ` to the quotient `Angle`. -/

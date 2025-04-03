@@ -53,7 +53,7 @@ instance [Finite P] : Finite (Dual P) :=
 instance [h : Fintype P] : Fintype (Dual P) :=
   h
 
--- Porting note (#11215): TODO: figure out if this is needed.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: figure out if this is needed.
 set_option synthInstance.checkSynthOrder false in
 instance : Membership (Dual L) (Dual P) :=
   ⟨Function.swap (Membership.mem : L → P → Prop)⟩

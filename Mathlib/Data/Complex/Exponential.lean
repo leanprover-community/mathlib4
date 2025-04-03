@@ -184,11 +184,11 @@ theorem exp_add : exp (x + y) = exp x * exp y := by
   simp only [hj]
   exact cauchy_product (isCauSeq_abs_exp x) (isCauSeq_exp y)
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℂ` to `ℂ` -/
 @[simps]
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℂ) ℂ :=
-  { toFun := fun z => exp (Multiplicative.toAdd z),
+  { toFun := fun z => exp z.toAdd,
     map_one' := by simp,
     map_mul' := by simp [exp_add] }
 
@@ -456,9 +456,6 @@ theorem cos_zero : cos 0 = 1 := by simp [cos]
 @[simp]
 theorem cos_neg : cos (-x) = cos x := by simp [cos, sub_eq_add_neg, exp_neg, add_comm]
 
-private theorem cos_add_aux {a b c d : ℂ} :
-    (a + b) * (c + d) - (b - a) * (d - c) * -1 = 2 * (a * c + b * d) := by ring
-
 theorem cos_add : cos (x + y) = cos x * cos y - sin x * sin y := by
   rw [← cosh_mul_I, add_mul, cosh_add, cosh_mul_I, cosh_mul_I, sinh_mul_I, sinh_mul_I,
     mul_mul_mul_comm, I_mul_I, mul_neg_one, sub_eq_add_neg]
@@ -688,11 +685,11 @@ theorem exp_zero : exp 0 = 1 := by simp [Real.exp]
 
 nonrec theorem exp_add : exp (x + y) = exp x * exp y := by simp [exp_add, exp]
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℝ` to `ℝ` -/
 @[simps]
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℝ) ℝ :=
-  { toFun := fun x => exp (Multiplicative.toAdd x),
+  { toFun := fun x => exp x.toAdd,
     map_one' := by simp,
     map_mul' := by simp [exp_add] }
 
@@ -758,6 +755,18 @@ nonrec theorem cos_sub_cos : cos x - cos y = -2 * sin ((x + y) / 2) * sin ((x - 
 
 nonrec theorem cos_add_cos : cos x + cos y = 2 * cos ((x + y) / 2) * cos ((x - y) / 2) :=
   ofReal_injective <| by simp [cos_add_cos]
+
+theorem two_mul_sin_mul_sin (x y : ℝ) : 2 * sin x * sin y = cos (x - y) - cos (x + y) := by
+  simp [cos_add, cos_sub]
+  ring
+
+theorem two_mul_cos_mul_cos (x y : ℝ) : 2 * cos x * cos y = cos (x - y) + cos (x + y) := by
+  simp [cos_add, cos_sub]
+  ring
+
+theorem two_mul_sin_mul_cos (x y : ℝ) : 2 * sin x * cos y = sin (x - y) + sin (x + y) := by
+  simp [sin_add, sin_sub]
+  ring
 
 nonrec theorem tan_eq_sin_div_cos : tan x = sin x / cos x :=
   ofReal_injective <| by simp only [ofReal_tan, tan_eq_sin_div_cos, ofReal_div, ofReal_sin,
@@ -1054,7 +1063,7 @@ theorem cosh_pos (x : ℝ) : 0 < Real.cosh x :=
   (cosh_eq x).symm ▸ half_pos (add_pos (exp_pos x) (exp_pos (-x)))
 
 theorem sinh_lt_cosh : sinh x < cosh x :=
-  lt_of_pow_lt_pow_left 2 (cosh_pos _).le <| (cosh_sq x).symm ▸ lt_add_one _
+  lt_of_pow_lt_pow_left₀ 2 (cosh_pos _).le <| (cosh_sq x).symm ▸ lt_add_one _
 
 end Real
 
@@ -1066,7 +1075,7 @@ theorem sum_div_factorial_le {α : Type*} [LinearOrderedField α] (n j : ℕ) (h
     (∑ m ∈ range j with n ≤ m, (1 / m.factorial : α)) =
         ∑ m ∈ range (j - n), (1 / ((m + n).factorial : α)) := by
         refine sum_nbij' (· - n) (· + n) ?_ ?_ ?_ ?_ ?_ <;>
-          simp (config := { contextual := true }) [lt_tsub_iff_right, tsub_add_cancel_of_le]
+          simp +contextual [lt_tsub_iff_right, tsub_add_cancel_of_le]
     _ ≤ ∑ m ∈ range (j - n), ((n.factorial : α) * (n.succ : α) ^ m)⁻¹ := by
       simp_rw [one_div]
       gcongr
@@ -1392,7 +1401,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
     _ ≤ 1 + x + x ^ 2 := by
       -- Porting note: was `norm_num [Finset.sum] <;> nlinarith`
       -- This proof should be restored after the norm_num plugin for big operators is ported.
-      -- (It may also need the positivity extensions in #3907.)
+      -- (It may also need the positivity extensions in https://github.com/leanprover-community/mathlib4/pull/3907.)
       erw [Finset.sum_range_succ]
       repeat rw [Finset.sum_range_succ]
       norm_num [Nat.factorial]
@@ -1429,13 +1438,12 @@ theorem one_sub_div_pow_le_exp_neg {n : ℕ} {t : ℝ} (ht' : t ≤ n) : (1 - t 
   rcases eq_or_ne n 0 with (rfl | hn)
   · simp
     rwa [Nat.cast_zero] at ht'
-  convert pow_le_pow_left ?_ (one_sub_le_exp_neg (t / n)) n using 2
-  · rw [← Real.exp_nat_mul]
-    congr 1
-    field_simp
-    ring_nf
-  · rwa [sub_nonneg, div_le_one]
-    positivity
+  calc
+    (1 - t / n) ^ n ≤ rexp (-(t / n)) ^ n := by
+      gcongr
+      · exact sub_nonneg.2 <| div_le_one_of_le₀ ht' n.cast_nonneg
+      · exact one_sub_le_exp_neg _
+    _ = rexp (-t) := by rw [← Real.exp_nat_mul, mul_neg, mul_comm, div_mul_cancel₀]; positivity
 
 end Real
 

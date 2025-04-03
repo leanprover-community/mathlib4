@@ -7,6 +7,7 @@ import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Ring.Cast
+import Mathlib.Control.Basic
 import Mathlib.Data.Nat.Cast.Basic
 import Qq
 
@@ -341,6 +342,24 @@ private inductive OrderRel : Type
 
 end Meta.Positivity
 namespace Meta.Positivity
+
+/-- Given an expression `e`, use the core method of the `positivity` tactic to prove it positive,
+or, failing that, nonnegative; return a boolean (signalling whether the strict or non-strict
+inequality was established) together with the proof as an expression. -/
+def bestResult (e : Expr) : MetaM (Bool × Expr) := do
+  let ⟨u, α, _⟩ ← inferTypeQ' e
+  let zα ← synthInstanceQ q(Zero $α)
+  let pα ← synthInstanceQ q(PartialOrder $α)
+  match ← try? (Meta.Positivity.core zα pα e) with
+  | some (.positive pf) => pure (true, pf)
+  | some (.nonnegative pf) => pure (false, pf)
+  | _ => throwError "could not establish the nonnegativity of {e}"
+
+/-- Given an expression `e`, use the core method of the `positivity` tactic to prove it nonnegative.
+-/
+def proveNonneg (e : Expr) : MetaM Expr := do
+  let (strict, pf) ← bestResult e
+  if strict then mkAppM ``le_of_lt #[pf] else pure pf
 
 /-- An auxiliary entry point to the `positivity` tactic. Given a proposition `t` of the form
 `0 [≤/</≠] e`, attempts to recurse on the structure of `t` to prove it. It returns a proof

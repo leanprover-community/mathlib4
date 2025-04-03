@@ -3,9 +3,9 @@ Copyright (c) 2020 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Algebra.Polynomial.Eval
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Polynomial.EraseLead
 
 /-!
 # Denominators of evaluation of polynomials at ratios

@@ -132,7 +132,7 @@ variable {N : Type*} [Monoid N]
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     FreeMonoid.hom_eq fun ⟨i, x⟩ => by
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [MonoidHom.comp_apply, MonoidHom.comp_apply, ← of_apply, ← MonoidHom.comp_apply, ←
         MonoidHom.comp_apply, h]; rfl
 
@@ -155,7 +155,7 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   left_inv := by
     intro fi
     ext i x
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidHom.comp_apply, of_apply, Con.lift_mk', FreeMonoid.lift_eval_of]
   right_inv := by
     intro f
@@ -621,7 +621,7 @@ variable (M)
 /-- A `NeWord M i j` is a representation of a non-empty reduced words where the first letter comes
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
 concatenation, and thus provides a useful induction principle. -/
---@[nolint has_nonempty_instance] Porting note(#5171): commented out
+--@[nolint has_nonempty_instance] Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): commented out
 inductive NeWord : ι → ι → Type _
   | singleton : ∀ {i : ι} (x : M i), x ≠ 1 → NeWord i i
   | append : ∀ {i j k l} (_w₁ : NeWord i j) (_hne : j ≠ k) (_w₂ : NeWord k l), NeWord i l
@@ -823,7 +823,7 @@ variable (hcard : 3 ≤ #ι ∨ ∃ i, 3 ≤ #(H i))
 variable {α : Type*} [MulAction G α]
 variable (X : ι → Set α)
 variable (hXnonempty : ∀ i, (X i).Nonempty)
-variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
+variable (hXdisj : Pairwise (Disjoint on X))
 variable (hpp : Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X j ⊆ X i)
 include hpp
 
@@ -973,8 +973,8 @@ variable {G : Type u_1} [Group G] (a : ι → G)
 variable {α : Type*} [MulAction G α]
 variable (X Y : ι → Set α)
 variable (hXnonempty : ∀ i, (X i).Nonempty)
-variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
-variable (hYdisj : Pairwise fun i j => Disjoint (Y i) (Y j))
+variable (hXdisj : Pairwise (Disjoint on X))
+variable (hYdisj : Pairwise (Disjoint on Y))
 variable (hXYdisj : ∀ i j, Disjoint (X i) (Y j))
 variable (hX : ∀ i, a i • (Y i)ᶜ ⊆ X i)
 variable (hY : ∀ i, a⁻¹ i • (X i)ᶜ ⊆ Y i)
@@ -1009,7 +1009,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   apply lift_injective_of_ping_pong f _ X'
   · show ∀ i, (X' i).Nonempty
     exact fun i => Set.Nonempty.inl (hXnonempty i)
-  · show Pairwise fun i j => Disjoint (X' i) (X' j)
+  · show Pairwise (Disjoint on X')
     intro i j hij
     simp only [X']
     apply Disjoint.union_left <;> apply Disjoint.union_right

@@ -615,7 +615,7 @@ theorem Continuous.map_borel_eq {X Y : Type*} [TopologicalSpace X] [PolishSpace 
 instance Quotient.borelSpace {X : Type*} [TopologicalSpace X] [PolishSpace X] [MeasurableSpace X]
     [BorelSpace X] {s : Setoid X} [T0Space (Quotient s)] [SecondCountableTopology (Quotient s)] :
     BorelSpace (Quotient s) :=
-  ⟨continuous_quotient_mk'.map_eq_borel (surjective_quotient_mk' _)⟩
+  ⟨continuous_quotient_mk'.map_eq_borel Quotient.mk'_surjective⟩
 
 /-- When the subgroup `N < G` is not necessarily `Normal`, we have a `CosetSpace` as opposed
 to `QuotientGroup` (the next `instance`).

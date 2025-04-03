@@ -67,13 +67,13 @@ def whiskerRight {M₁ M₂ : ModuleCat R} (f : M₁ ⟶ M₂) (N : ModuleCat R)
   f.rTensor N
 
 theorem tensor_id (M N : ModuleCat R) : tensorHom (𝟙 M) (𝟙 N) = 𝟙 (ModuleCat.of R (M ⊗ N)) := by
-  -- Porting note (#11041): even with high priority `ext` fails to find this.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): even with high priority `ext` fails to find this.
   apply TensorProduct.ext
   rfl
 
 theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : ModuleCat R} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁)
     (g₂ : Y₂ ⟶ Z₂) : tensorHom (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom f₁ f₂ ≫ tensorHom g₁ g₂ := by
-  -- Porting note (#11041): even with high priority `ext` fails to find this.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): even with high priority `ext` fails to find this.
   apply TensorProduct.ext
   rfl
 
@@ -148,11 +148,11 @@ theorem pentagon (W X Y Z : ModuleCat R) :
 
 theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom (𝟙 (ModuleCat.of R R)) f ≫ (leftUnitor N).hom = (leftUnitor M).hom ≫ f := by
-  -- Porting note (#11041): broken ext
+  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): broken ext
   apply TensorProduct.ext
   apply LinearMap.ext_ring
   apply LinearMap.ext; intro x
-  -- Porting note (#10934): used to be dsimp
+  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10934): used to be dsimp
   change ((leftUnitor N).hom) ((tensorHom (𝟙 (of R R)) f) ((1 : R) ⊗ₜ[R] x)) =
     f (((leftUnitor M).hom) (1 ⊗ₜ[R] x))
   erw [TensorProduct.lid_tmul, TensorProduct.lid_tmul]
@@ -161,11 +161,11 @@ theorem leftUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
 
 theorem rightUnitor_naturality {M N : ModuleCat R} (f : M ⟶ N) :
     tensorHom f (𝟙 (ModuleCat.of R R)) ≫ (rightUnitor N).hom = (rightUnitor M).hom ≫ f := by
-  -- Porting note (#11041): broken ext
+  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/11041): broken ext
   apply TensorProduct.ext
   apply LinearMap.ext; intro x
   apply LinearMap.ext_ring
-  -- Porting note (#10934): used to be dsimp
+  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10934): used to be dsimp
   change ((rightUnitor N).hom) ((tensorHom f (𝟙 (of R R))) (x ⊗ₜ[R] (1 : R))) =
     f (((rightUnitor M).hom) (x ⊗ₜ[R] 1))
   erw [TensorProduct.rid_tmul, TensorProduct.rid_tmul]
@@ -178,7 +178,7 @@ theorem triangle (M N : ModuleCat.{u} R) :
   apply TensorProduct.ext_threefold
   intro x y z
   change R at y
-  -- Porting note (#10934): used to be dsimp [tensorHom, associator]
+  -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10934): used to be dsimp [tensorHom, associator]
   change x ⊗ₜ[R] ((leftUnitor N).hom) (y ⊗ₜ[R] z) = ((rightUnitor M).hom) (x ⊗ₜ[R] y) ⊗ₜ[R] z
   erw [TensorProduct.lid_tmul, TensorProduct.rid_tmul]
   exact (TensorProduct.smul_tmul _ _ _).symm
@@ -299,21 +299,21 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
     rw [LinearMap.zero_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerLeft_apply]
     rw [LinearMap.zero_apply, TensorProduct.tmul_zero]
   · intros
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
     rw [LinearMap.zero_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerRight_apply]
     rw [LinearMap.zero_apply, TensorProduct.zero_tmul]
   · intros
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
     rw [LinearMap.add_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerLeft_apply, MonoidalCategory.whiskerLeft_apply]
     erw [MonoidalCategory.whiskerLeft_apply]
     rw [LinearMap.add_apply, TensorProduct.tmul_add]
@@ -321,7 +321,7 @@ instance : MonoidalPreadditive (ModuleCat.{u} R) := by
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
     rw [LinearMap.add_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerRight_apply, MonoidalCategory.whiskerRight_apply]
     erw [MonoidalCategory.whiskerRight_apply]
     rw [LinearMap.add_apply, TensorProduct.add_tmul]
@@ -333,14 +333,14 @@ instance : MonoidalLinear R (ModuleCat.{u} R) := by
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
     rw [LinearMap.smul_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerLeft_apply, MonoidalCategory.whiskerLeft_apply]
     rw [LinearMap.smul_apply, TensorProduct.tmul_smul]
   · intros
     refine TensorProduct.ext (LinearMap.ext fun x => LinearMap.ext fun y => ?_)
     simp only [LinearMap.compr₂_apply, TensorProduct.mk_apply]
     rw [LinearMap.smul_apply]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidalCategory.whiskerRight_apply, MonoidalCategory.whiskerRight_apply]
     rw [LinearMap.smul_apply, TensorProduct.smul_tmul, TensorProduct.tmul_smul]
 

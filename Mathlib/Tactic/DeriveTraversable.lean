@@ -250,9 +250,9 @@ def mkOneInstance (n cls : Name) (tac : MVarId → TermElabM Unit)
 
 /-- Make the new deriving handler depends on other deriving handlers. -/
 def higherOrderDeriveHandler (cls : Name) (tac : MVarId → TermElabM Unit)
-    (deps : List DerivingHandlerNoArgs := [])
+    (deps : List DerivingHandler := [])
     (mkInst : Name → Expr → TermElabM Expr := fun n arg => mkAppM n #[arg]) :
-    DerivingHandlerNoArgs := fun a => do
+    DerivingHandler := fun a => do
   let #[n] := a | return false -- mutually inductive types are not supported yet
   let ok ← deps.mapM fun f => f a
   unless ok.and do return false
@@ -260,7 +260,7 @@ def higherOrderDeriveHandler (cls : Name) (tac : MVarId → TermElabM Unit)
   return true
 
 /-- The deriving handler for `Functor`. -/
-def functorDeriveHandler : DerivingHandlerNoArgs :=
+def functorDeriveHandler : DerivingHandler :=
   higherOrderDeriveHandler ``Functor deriveFunctor []
 
 initialize registerDerivingHandler ``Functor functorDeriveHandler
@@ -298,7 +298,7 @@ def deriveLawfulFunctor (m : MVarId) : TermElabM Unit := do
         mcm.refl
 
 /-- The deriving handler for `LawfulFunctor`. -/
-def lawfulFunctorDeriveHandler : DerivingHandlerNoArgs :=
+def lawfulFunctorDeriveHandler : DerivingHandler :=
   higherOrderDeriveHandler ``LawfulFunctor deriveLawfulFunctor [functorDeriveHandler]
     (fun n arg => mkAppOptM n #[arg, none])
 
@@ -422,7 +422,7 @@ def deriveTraversable (m : MVarId) : TermElabM Unit := do
   m.assign (mkAppN (mkConst n' (levels.map Level.param)) vars.toArray)
 
 /-- The deriving handler for `Traversable`. -/
-def traversableDeriveHandler : DerivingHandlerNoArgs :=
+def traversableDeriveHandler : DerivingHandler :=
   higherOrderDeriveHandler ``Traversable deriveTraversable [functorDeriveHandler]
 
 initialize registerDerivingHandler ``Traversable traversableDeriveHandler
@@ -452,7 +452,7 @@ def traversableLawStarter (m : MVarId) (n : Name) (s : MetaM Simp.Context)
   let (fi, m) ← m.intros
   m.withContext do
     if let (some m, _) ← dsimpGoal m { simpTheorems := #[s'] } then
-      let ma ← m.induction fi.back (mkRecName n)
+      let ma ← m.induction fi.back! (mkRecName n)
       ma.forM fun is =>
         is.mvarId.withContext do
           if let (some (_, m), _) ← simpFunctorGoal is.mvarId (← s) then
@@ -489,7 +489,7 @@ def deriveLawfulTraversable (m : MVarId) : TermElabM Unit := do
     m.refl
 
 /-- The deriving handler for `LawfulTraversable`. -/
-def lawfulTraversableDeriveHandler : DerivingHandlerNoArgs :=
+def lawfulTraversableDeriveHandler : DerivingHandler :=
   higherOrderDeriveHandler ``LawfulTraversable deriveLawfulTraversable
     [traversableDeriveHandler, lawfulFunctorDeriveHandler] (fun n arg => mkAppOptM n #[arg, none])
 

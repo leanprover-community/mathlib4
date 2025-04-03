@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Ring.Rat
+import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Data.PNat.Defs
 
 /-!
@@ -14,8 +15,6 @@ import Mathlib.Data.PNat.Defs
 
 
 namespace Rat
-
-open Rat
 
 theorem num_dvd (a) {b : ℤ} (b0 : b ≠ 0) : (a /. b).num ∣ a := by
   cases' e : a /. b with n d h c

@@ -186,7 +186,7 @@ theorem nhds_nhds (x : X) :
 theorem isInducing_nhds : IsInducing (𝓝 : X → Filter X) :=
   isInducing_iff_nhds.2 fun x =>
     (nhds_def' _).trans <| by
-      simp (config := { contextual := true }) only [nhds_nhds, comap_iInf, comap_principal,
+      simp +contextual only [nhds_nhds, comap_iInf, comap_principal,
         Iic_principal, preimage_setOf_eq, ← mem_interior_iff_mem_nhds, setOf_mem_eq,
         IsOpen.interior_eq]
 

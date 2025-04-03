@@ -26,14 +26,31 @@ section SpecificFunctions
 
 /-! ### Differentiability of specific functions -/
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  -- declare a charted space `M` over the pair `(E, H)`.
+  {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
-  [TopologicalSpace M] [ChartedSpace H M] {E' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  [TopologicalSpace M] [ChartedSpace H M]
+  -- declare a charted space `M'` over the pair `(E', H')`.
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  -- declare a charted space `M''` over the pair `(E'', H'')`.
   {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
   {H'' : Type*} [TopologicalSpace H''] {I'' : ModelWithCorners 𝕜 E'' H''} {M'' : Type*}
   [TopologicalSpace M''] [ChartedSpace H'' M'']
+  -- declare a charted space `N` over the pair `(F, G)`.
+  {F : Type*}
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
+  {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
+  -- declare a charted space `N'` over the pair `(F', G')`.
+  {F' : Type*}
+  [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
+  {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
+  -- F₁, F₂, F₃, F₄ are normed spaces
+  {F₁ : Type*}
+  [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁] {F₂ : Type*} [NormedAddCommGroup F₂]
+  [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
+  [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
 
 namespace ContinuousLinearMap
 
@@ -301,6 +318,128 @@ theorem mfderivWithin_snd {s : Set (M × M')} {x : M × M'}
       ContinuousLinearMap.snd 𝕜 (TangentSpace I x.1) (TangentSpace I' x.2) := by
   rw [MDifferentiable.mfderivWithin mdifferentiableAt_snd hxs]; exact mfderiv_snd
 
+theorem MDifferentiableWithinAt.fst {f : N → M × M'} {s : Set N} {x : N}
+    (hf : MDifferentiableWithinAt J (I.prod I') f s x) :
+    MDifferentiableWithinAt J I (fun x => (f x).1) s x :=
+  mdifferentiableAt_fst.comp_mdifferentiableWithinAt x hf
+
+theorem MDifferentiableAt.fst {f : N → M × M'} {x : N} (hf : MDifferentiableAt J (I.prod I') f x) :
+    MDifferentiableAt J I (fun x => (f x).1) x :=
+  mdifferentiableAt_fst.comp x hf
+
+theorem MDifferentiable.fst {f : N → M × M'} (hf : MDifferentiable J (I.prod I') f) :
+    MDifferentiable J I fun x => (f x).1 :=
+  mdifferentiable_fst.comp hf
+
+theorem MDifferentiableWithinAt.snd {f : N → M × M'} {s : Set N} {x : N}
+    (hf : MDifferentiableWithinAt J (I.prod I') f s x) :
+    MDifferentiableWithinAt J I' (fun x => (f x).2) s x :=
+  mdifferentiableAt_snd.comp_mdifferentiableWithinAt x hf
+
+theorem MDifferentiableAt.snd {f : N → M × M'} {x : N} (hf : MDifferentiableAt J (I.prod I') f x) :
+    MDifferentiableAt J I' (fun x => (f x).2) x :=
+  mdifferentiableAt_snd.comp x hf
+
+theorem MDifferentiable.snd {f : N → M × M'} (hf : MDifferentiable J (I.prod I') f) :
+    MDifferentiable J I' fun x => (f x).2 :=
+  mdifferentiable_snd.comp hf
+
+theorem mdifferentiableWithinAt_prod_iff (f : M → M' × N') :
+    MDifferentiableWithinAt I (I'.prod J') f s x ↔
+      MDifferentiableWithinAt I I' (Prod.fst ∘ f) s x
+      ∧ MDifferentiableWithinAt I J' (Prod.snd ∘ f) s x :=
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prod_mk h.2⟩
+
+theorem mdifferentiableWithinAt_prod_module_iff (f : M → F₁ × F₂) :
+    MDifferentiableWithinAt I 𝓘(𝕜, F₁ × F₂) f s x ↔
+      MDifferentiableWithinAt I 𝓘(𝕜, F₁) (Prod.fst ∘ f) s x ∧
+      MDifferentiableWithinAt I 𝓘(𝕜, F₂) (Prod.snd ∘ f) s x := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact mdifferentiableWithinAt_prod_iff f
+
+theorem mdifferentiableAt_prod_iff (f : M → M' × N') :
+    MDifferentiableAt I (I'.prod J') f x ↔
+      MDifferentiableAt I I' (Prod.fst ∘ f) x ∧ MDifferentiableAt I J' (Prod.snd ∘ f) x := by
+  simp_rw [← mdifferentiableWithinAt_univ]; exact mdifferentiableWithinAt_prod_iff f
+
+theorem mdifferentiableAt_prod_module_iff (f : M → F₁ × F₂) :
+    MDifferentiableAt I 𝓘(𝕜, F₁ × F₂) f x ↔
+      MDifferentiableAt I 𝓘(𝕜, F₁) (Prod.fst ∘ f) x
+      ∧ MDifferentiableAt I 𝓘(𝕜, F₂) (Prod.snd ∘ f) x := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact mdifferentiableAt_prod_iff f
+
+theorem mdifferentiableOn_prod_iff (f : M → M' × N') :
+    MDifferentiableOn I (I'.prod J') f s ↔
+      MDifferentiableOn I I' (Prod.fst ∘ f) s ∧ MDifferentiableOn I J' (Prod.snd ∘ f) s :=
+  ⟨fun h ↦ ⟨fun x hx ↦ ((mdifferentiableWithinAt_prod_iff f).1 (h x hx)).1,
+      fun x hx ↦ ((mdifferentiableWithinAt_prod_iff f).1 (h x hx)).2⟩ ,
+    fun h x hx ↦ (mdifferentiableWithinAt_prod_iff f).2 ⟨h.1 x hx, h.2 x hx⟩⟩
+
+theorem mdifferentiableOn_prod_module_iff (f : M → F₁ × F₂) :
+    MDifferentiableOn I 𝓘(𝕜, F₁ × F₂) f s ↔
+      MDifferentiableOn I 𝓘(𝕜, F₁) (Prod.fst ∘ f) s
+      ∧ MDifferentiableOn I 𝓘(𝕜, F₂) (Prod.snd ∘ f) s := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact mdifferentiableOn_prod_iff f
+
+theorem mdifferentiable_prod_iff (f : M → M' × N') :
+    MDifferentiable I (I'.prod J') f ↔
+      MDifferentiable I I' (Prod.fst ∘ f) ∧ MDifferentiable I J' (Prod.snd ∘ f) :=
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prod_mk h.2⟩
+
+theorem mdifferentiable_prod_module_iff (f : M → F₁ × F₂) :
+    MDifferentiable I 𝓘(𝕜, F₁ × F₂) f ↔
+      MDifferentiable I 𝓘(𝕜, F₁) (Prod.fst ∘ f) ∧ MDifferentiable I 𝓘(𝕜, F₂) (Prod.snd ∘ f) := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact mdifferentiable_prod_iff f
+
+
+section prodMap
+
+variable {f : M → M'} {g : N → N'} {r : Set N} {y : N}
+
+/-- The product map of two `C^n` functions within a set at a point is `C^n`
+within the product set at the product point. -/
+theorem MDifferentiableWithinAt.prod_map' {p : M × N} (hf : MDifferentiableWithinAt I I' f s p.1)
+    (hg : MDifferentiableWithinAt J J' g r p.2) :
+    MDifferentiableWithinAt (I.prod J) (I'.prod J') (Prod.map f g) (s ×ˢ r) p :=
+  (hf.comp p mdifferentiableWithinAt_fst (prod_subset_preimage_fst _ _)).prod_mk <|
+    hg.comp p mdifferentiableWithinAt_snd (prod_subset_preimage_snd _ _)
+
+theorem MDifferentiableWithinAt.prod_map (hf : MDifferentiableWithinAt I I' f s x)
+    (hg : MDifferentiableWithinAt J J' g r y) :
+    MDifferentiableWithinAt (I.prod J) (I'.prod J') (Prod.map f g) (s ×ˢ r) (x, y) :=
+  MDifferentiableWithinAt.prod_map' hf hg
+
+theorem MDifferentiableAt.prod_map
+    (hf : MDifferentiableAt I I' f x) (hg : MDifferentiableAt J J' g y) :
+    MDifferentiableAt (I.prod J) (I'.prod J') (Prod.map f g) (x, y) := by
+  rw [← mdifferentiableWithinAt_univ] at *
+  convert hf.prod_map hg
+  exact univ_prod_univ.symm
+
+/-- Variant of `MDifferentiableAt.prod_map` in which the point in the product is given as `p`
+instead of a pair `(x, y)`. -/
+theorem MDifferentiableAt.prod_map' {p : M × N}
+    (hf : MDifferentiableAt I I' f p.1) (hg : MDifferentiableAt J J' g p.2) :
+    MDifferentiableAt (I.prod J) (I'.prod J') (Prod.map f g) p := by
+  rcases p with ⟨⟩
+  exact hf.prod_map hg
+
+theorem MDifferentiableOn.prod_map
+    (hf : MDifferentiableOn I I' f s) (hg : MDifferentiableOn J J' g r) :
+    MDifferentiableOn (I.prod J) (I'.prod J') (Prod.map f g) (s ×ˢ r) :=
+  (hf.comp mdifferentiableOn_fst (prod_subset_preimage_fst _ _)).prod_mk <|
+    hg.comp mdifferentiableOn_snd (prod_subset_preimage_snd _ _)
+
+theorem MDifferentiable.prod_map (hf : MDifferentiable I I' f) (hg : MDifferentiable J J' g) :
+    MDifferentiable (I.prod J) (I'.prod J') (Prod.map f g) := by
+  intro p
+  exact (hf p.1).prod_map' (hg p.2)
+
+end prodMap
+
 @[simp, mfld_simps]
 theorem tangentMap_prod_snd {p : TangentBundle (I.prod I') (M × M')} :
     tangentMap (I.prod I') I' Prod.snd p = ⟨p.proj.2, p.2.2⟩ := by
@@ -330,11 +469,21 @@ theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
   refine (mdifferentiableAt_id.mfderiv_prod mdifferentiableAt_const).trans ?_
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inl]
 
+theorem tangentMap_prod_left {p : TangentBundle I M} {y₀ : M'} :
+    tangentMap I (I.prod I') (fun x => (x, y₀)) p = ⟨(p.1, y₀), (p.2, 0)⟩ := by
+  simp only [tangentMap, mfderiv_prod_left, TotalSpace.mk_inj]
+  rfl
+
 theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
     mfderiv I' (I.prod I') (fun y => (x₀, y)) y₀ =
       ContinuousLinearMap.inr 𝕜 (TangentSpace I x₀) (TangentSpace I' y₀) := by
   refine (mdifferentiableAt_const.mfderiv_prod mdifferentiableAt_id).trans ?_
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inr]
+
+theorem tangentMap_prod_right {p : TangentBundle I' M'} {x₀ : M} :
+    tangentMap I' (I.prod I') (fun y => (x₀, y)) p = ⟨(x₀, p.1), (0, p.2)⟩ := by
+  simp only [tangentMap, mfderiv_prod_right, TotalSpace.mk_inj]
+  rfl
 
 /-- The total derivative of a function in two variables is the sum of the partial derivatives.
   Note that to state this (without casts) we need to be able to see through the definition of
@@ -342,10 +491,8 @@ theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
 theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
     (hf : MDifferentiableAt (I.prod I') I'' f p) :
     mfderiv (I.prod I') I'' f p =
-      show E × E' →L[𝕜] E'' from
         mfderiv (I.prod I') I'' (fun z : M × M' => f (z.1, p.2)) p +
           mfderiv (I.prod I') I'' (fun z : M × M' => f (p.1, z.2)) p := by
-  dsimp only
   erw [mfderiv_comp_of_eq hf (mdifferentiableAt_fst.prod_mk mdifferentiableAt_const) rfl,
     mfderiv_comp_of_eq hf (mdifferentiableAt_const.prod_mk mdifferentiableAt_snd) rfl,
     ← ContinuousLinearMap.comp_add,
@@ -355,6 +502,42 @@ theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
   symm
   convert ContinuousLinearMap.comp_id <| mfderiv (.prod I I') I'' f (p.1, p.2)
   exact ContinuousLinearMap.coprod_inl_inr
+
+/-- The total derivative of a function in two variables is the sum of the partial derivatives.
+  Note that to state this (without casts) we need to be able to see through the definition of
+  `TangentSpace`. Version in terms of the one-variable derivatives. -/
+theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'}
+    (hf : MDifferentiableAt (I.prod I') I'' f p) :
+    mfderiv (I.prod I') I'' f p =
+        (mfderiv I I'' (fun z : M => f (z, p.2)) p.1) ∘L (id (ContinuousLinearMap.fst 𝕜 E E') :
+          (TangentSpace (I.prod I') p) →L[𝕜] (TangentSpace I p.1)) +
+        (mfderiv I' I'' (fun z : M' => f (p.1, z)) p.2) ∘L (id (ContinuousLinearMap.snd 𝕜 E E') :
+          (TangentSpace (I.prod I') p) →L[𝕜] (TangentSpace I' p.2)) := by
+  rw [mfderiv_prod_eq_add hf]
+  congr
+  · have : (fun z : M × M' => f (z.1, p.2)) = (fun z : M => f (z, p.2)) ∘ Prod.fst := rfl
+    rw [this, mfderiv_comp (I' := I)]
+    · simp only [mfderiv_fst, id_eq]
+      rfl
+    · exact hf.comp _  (mdifferentiableAt_id.prod_mk mdifferentiableAt_const)
+    · exact mdifferentiableAt_fst
+  · have : (fun z : M × M' => f (p.1, z.2)) = (fun z : M' => f (p.1, z)) ∘ Prod.snd := rfl
+    rw [this, mfderiv_comp (I' := I')]
+    · simp only [mfderiv_snd, id_eq]
+      rfl
+    · exact hf.comp _ (mdifferentiableAt_const.prod_mk mdifferentiableAt_id)
+    · exact mdifferentiableAt_snd
+
+/-- The total derivative of a function in two variables is the sum of the partial derivatives.
+  Note that to state this (without casts) we need to be able to see through the definition of
+  `TangentSpace`. Version in terms of the one-variable derivatives. -/
+theorem mfderiv_prod_eq_add_apply {f : M × M' → M''} {p : M × M'} {v : TangentSpace (I.prod I') p}
+    (hf : MDifferentiableAt (I.prod I') I'' f p) :
+    mfderiv (I.prod I') I'' f p v =
+      mfderiv I I'' (fun z : M => f (z, p.2)) p.1 v.1 +
+      mfderiv I' I'' (fun z : M' => f (p.1, z)) p.2 v.2 := by
+  rw [mfderiv_prod_eq_add_comp hf]
+  rfl
 
 end Prod
 

@@ -29,10 +29,7 @@ variable (I I') in
 def ContMDiffMap :=
   { f : M → M' // ContMDiff I I' n f }
 
-variable (I I') in
-/-- Bundled smooth maps. -/
-abbrev SmoothMap :=
-  ContMDiffMap I I' M M' ⊤
+@[deprecated (since := "024-11-21")] alias SmoothMap := ContMDiffMap
 
 @[inherit_doc]
 scoped[Manifold] notation "C^" n "⟮" I ", " M "; " I' ", " M' "⟯" => ContMDiffMap I I' M M' n
@@ -42,6 +39,10 @@ scoped[Manifold]
   notation "C^" n "⟮" I ", " M "; " k "⟯" => ContMDiffMap I (modelWithCornersSelf k k) M k n
 
 open scoped Manifold
+/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
+Later, replace with `open scoped ContDiff`. -/
+local notation "∞" => (⊤ : ℕ∞)
+
 
 namespace ContMDiffMap
 
@@ -54,8 +55,7 @@ instance instFunLike : FunLike C^n⟮I, M; I', M'⟯ M M' where
 protected theorem contMDiff (f : C^n⟮I, M; I', M'⟯) : ContMDiff I I' n f :=
   f.prop
 
-protected theorem smooth (f : C^∞⟮I, M; I', M'⟯) : Smooth I I' f :=
-  f.prop
+@[deprecated (since := "2024-11-20")] alias smooth := ContMDiffMap.contMDiff
 
 -- Porting note: use generic instance instead
 -- instance : Coe C^n⟮I, M; I', M'⟯ C(M, M') :=

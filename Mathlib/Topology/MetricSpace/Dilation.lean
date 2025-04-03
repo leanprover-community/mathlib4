@@ -50,8 +50,8 @@ needed.
 
 noncomputable section
 
-open Function Set Bornology
-open scoped Topology ENNReal NNReal
+open Bornology Function Set Topology
+open scoped ENNReal NNReal
 
 section Defs
 
@@ -74,7 +74,7 @@ end Defs
 
 namespace Dilation
 
-variable {α : Type*} {β : Type*} {γ : Type*} {F : Type*} {G : Type*}
+variable {α : Type*} {β : Type*} {γ : Type*} {F : Type*}
 
 section Setup
 
@@ -229,8 +229,8 @@ end Setup
 section PseudoEmetricDilation
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-variable [FunLike F α β] [DilationClass F α β] [FunLike G β γ] [DilationClass G β γ]
-variable (f : F) (g : G) {x y z : α} {s : Set α}
+variable [FunLike F α β] [DilationClass F α β]
+variable (f : F)
 
 /-- Every isometry is a dilation of ratio `1`. -/
 @[simps]

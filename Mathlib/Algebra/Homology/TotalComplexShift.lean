@@ -137,6 +137,10 @@ noncomputable def totalShift₁XIso (n n' : ℤ) (h : n + x = n') :
     dsimp
     simp only [ι_totalDesc_assoc, CochainComplex.shiftFunctor_obj_X', ι_totalDesc, comp_id]
     exact ((shiftFunctor₁ C x).obj K).XXIsoOfEq_inv_ιTotal _ (by omega) rfl _ _
+  inv_hom_id := by
+    ext
+    dsimp
+    simp only [ι_totalDesc_assoc, Category.assoc, ι_totalDesc, XXIsoOfEq_inv_ιTotal, comp_id]
 
 @[reassoc]
 lemma D₁_totalShift₁XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + x = n₀') (h₁ : n₁ + x = n₁') :
@@ -199,7 +203,8 @@ lemma ι_totalShift₁Iso_hom_f (a b n : ℤ) (h : a + b = n) (a' : ℤ) (ha' : 
       (K.shiftFunctor₁XXIso a x a' ha' b).hom ≫ K.ιTotal (up ℤ) a' b n' (by dsimp; omega) ≫
         (CochainComplex.shiftFunctorObjXIso (K.total (up ℤ)) x n n' hn').inv := by
   subst ha' hn'
-  simp [totalShift₁Iso, totalShift₁XIso]
+  dsimp [totalShift₁Iso, totalShift₁XIso]
+  simp only [ι_totalDesc, comp_id, id_comp]
 
 @[reassoc]
 lemma ι_totalShift₁Iso_inv_f (a b n : ℤ) (h : a + b = n) (a' n' : ℤ)
@@ -220,14 +225,11 @@ lemma totalShift₁Iso_hom_naturality [L.HasTotal (up ℤ)] :
     total.map ((shiftFunctor₁ C x).map f) (up ℤ) ≫ (L.totalShift₁Iso x).hom =
       (K.totalShift₁Iso x).hom ≫ (total.map f (up ℤ))⟦x⟧' := by
   ext n i₁ i₂ h
-  dsimp at h
-  dsimp
+  dsimp at h ⊢
   rw [ιTotal_map_assoc, L.ι_totalShift₁Iso_hom_f x i₁ i₂ n h _ rfl _ rfl,
     K.ι_totalShift₁Iso_hom_f_assoc x i₁ i₂ n h _ rfl _ rfl]
   dsimp
   rw [id_comp, id_comp, id_comp, comp_id, ιTotal_map]
-
-attribute [local simp] smul_smul
 
 /-- Auxiliary definition for `totalShift₂Iso`. -/
 noncomputable def totalShift₂XIso (n n' : ℤ) (h : n + y = n') :
@@ -243,6 +245,12 @@ noncomputable def totalShift₂XIso (n n' : ℤ) (h : n + y = n') :
     simp only [ι_totalDesc_assoc, Linear.units_smul_comp, ι_totalDesc, smul_smul,
       Int.units_mul_self, one_smul, comp_id]
     exact ((shiftFunctor₂ C y).obj K).XXIsoOfEq_inv_ιTotal _ rfl (by omega) _ _
+  inv_hom_id := by
+    ext
+    dsimp
+    simp only [ι_totalDesc_assoc, Linear.units_smul_comp, Category.assoc, ι_totalDesc,
+      Linear.comp_units_smul, XXIsoOfEq_inv_ιTotal, smul_smul, Int.units_mul_self, one_smul,
+      comp_id]
 
 @[reassoc]
 lemma D₁_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y = n₀') (h₁ : n₁ + y = n₁') :
@@ -313,7 +321,8 @@ lemma ι_totalShift₂Iso_hom_f (a b n : ℤ) (h : a + b = n) (b' : ℤ) (hb' : 
         K.ιTotal (up ℤ) a b' n' (by dsimp; omega) ≫
           (CochainComplex.shiftFunctorObjXIso (K.total (up ℤ)) y n n' hn').inv := by
   subst hb' hn'
-  simp [totalShift₂Iso, totalShift₂XIso]
+  dsimp [totalShift₂Iso, totalShift₂XIso]
+  simp only [ι_totalDesc, comp_id, id_comp]
 
 @[reassoc]
 lemma ι_totalShift₂Iso_inv_f (a b n : ℤ) (h : a + b = n) (b' n' : ℤ)
@@ -334,8 +343,7 @@ lemma totalShift₂Iso_hom_naturality [L.HasTotal (up ℤ)] :
     total.map ((shiftFunctor₂ C y).map f) (up ℤ) ≫ (L.totalShift₂Iso y).hom =
       (K.totalShift₂Iso y).hom ≫ (total.map f (up ℤ))⟦y⟧' := by
   ext n i₁ i₂ h
-  dsimp at h
-  dsimp
+  dsimp at h ⊢
   rw [ιTotal_map_assoc, L.ι_totalShift₂Iso_hom_f y i₁ i₂ n h _ rfl _ rfl,
     K.ι_totalShift₂Iso_hom_f_assoc y i₁ i₂ n h _ rfl _ rfl]
   dsimp

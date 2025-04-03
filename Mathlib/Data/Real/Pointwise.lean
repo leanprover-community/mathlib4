@@ -22,6 +22,7 @@ This is true more generally for conditionally complete linear order whose defaul
 don't have those yet.
 -/
 
+assert_not_exists Finset
 
 open Set
 

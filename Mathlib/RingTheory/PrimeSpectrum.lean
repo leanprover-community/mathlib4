@@ -3,11 +3,11 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Prime spectrum of a commutative (semi)ring as a type
@@ -82,6 +82,14 @@ instance [Subsingleton R] : IsEmpty (PrimeSpectrum R) :=
   ⟨fun x ↦ x.isPrime.ne_top <| SetLike.ext' <| Subsingleton.eq_univ_of_nonempty x.asIdeal.nonempty⟩
 
 variable (R S)
+
+/-- The prime spectrum is in bijection with the set of prime ideals. -/
+@[simps]
+def equivSubtype : PrimeSpectrum R ≃ {I : Ideal R // I.IsPrime} where
+  toFun I := ⟨I.asIdeal, I.2⟩
+  invFun I := ⟨I, I.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- The map from the direct sum of prime spectra to the prime spectrum of a direct product. -/
 @[simp]

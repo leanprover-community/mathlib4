@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Data.Finset.Sort
 import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Data.Finset.Sort
+import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Theory of univariate polynomials
@@ -126,6 +128,9 @@ instance mul' : Mul R[X] :=
 @[simp] theorem add_eq_add : add p q = p + q := rfl
 @[simp] theorem mul_eq_mul : mul p q = p * q := rfl
 
+instance instNSMul : SMul ℕ R[X] where
+  smul r p := ⟨r • p.toFinsupp⟩
+
 instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
   smul_zero a := congr_arg ofFinsupp (smul_zero a)
@@ -157,6 +162,11 @@ theorem ofFinsupp_sub {R : Type u} [Ring R] {a b} : (⟨a - b⟩ : R[X]) = ⟨a�
 @[simp]
 theorem ofFinsupp_mul (a b) : (⟨a * b⟩ : R[X]) = ⟨a⟩ * ⟨b⟩ :=
   show _ = mul _ _ by rw [mul_def]
+
+@[simp]
+theorem ofFinsupp_nsmul (a : ℕ) (b) :
+    (⟨a • b⟩ : R[X]) = (a • ⟨b⟩ : R[X]) :=
+  rfl
 
 @[simp]
 theorem ofFinsupp_smul {S : Type*} [SMulZeroClass S R] (a : S) (b) :
@@ -200,6 +210,11 @@ theorem toFinsupp_mul (a b : R[X]) : (a * b).toFinsupp = a.toFinsupp * b.toFinsu
   cases a
   cases b
   rw [← ofFinsupp_mul]
+
+@[simp]
+theorem toFinsupp_nsmul (a : ℕ) (b : R[X]) :
+    (a • b).toFinsupp = a • b.toFinsupp :=
+  rfl
 
 @[simp]
 theorem toFinsupp_smul {S : Type*} [SMulZeroClass S R] (a : S) (b : R[X]) :
@@ -247,9 +262,9 @@ instance inhabited : Inhabited R[X] :=
 instance instNatCast : NatCast R[X] where natCast n := ofFinsupp n
 
 instance semiring : Semiring R[X] :=
-  --TODO: add reference to library note in PR #7432
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
   { Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
-      toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl with
+      toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_nsmul _ _) toFinsupp_pow fun _ => rfl with
     toAdd := Polynomial.add'
     toMul := Polynomial.mul'
     toZero := Polynomial.zero
@@ -258,13 +273,13 @@ instance semiring : Semiring R[X] :=
     npow := fun n x => (x ^ n) }
 
 instance distribSMul {S} [DistribSMul S R] : DistribSMul S R[X] :=
-  --TODO: add reference to library note in PR #7432
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
   { Function.Injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
       toFinsupp_smul with
     toSMulZeroClass := Polynomial.smulZeroClass }
 
 instance distribMulAction {S} [Monoid S] [DistribMulAction S R] : DistribMulAction S R[X] :=
-  --TODO: add reference to library note in PR #7432
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
   { Function.Injective.distribMulAction ⟨⟨toFinsupp, toFinsupp_zero (R := R)⟩, toFinsupp_add⟩
       toFinsupp_injective toFinsupp_smul with
     toSMul := Polynomial.smulZeroClass.toSMul }
@@ -274,7 +289,7 @@ instance faithfulSMul {S} [SMulZeroClass S R] [FaithfulSMul S R] : FaithfulSMul 
     eq_of_smul_eq_smul fun a : ℕ →₀ R => congr_arg toFinsupp (h ⟨a⟩)
 
 instance module {S} [Semiring S] [Module S R] : Module S R[X] :=
-  --TODO: add reference to library note in PR #7432
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
   { Function.Injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_injective
       toFinsupp_smul with
     toDistribMulAction := Polynomial.distribMulAction }
@@ -366,9 +381,9 @@ theorem card_support_eq_zero : #p.support = 0 ↔ p = 0 := by simp
 /-- `monomial s a` is the monomial `a * X^s` -/
 def monomial (n : ℕ) : R →ₗ[R] R[X] where
   toFun t := ⟨Finsupp.single n t⟩
-  -- porting note (#10745): was `simp`.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp`.
   map_add' x y := by simp; rw [ofFinsupp_add]
-  -- porting note (#10745): was `simp [← ofFinsupp_smul]`.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [← ofFinsupp_smul]`.
   map_smul' r x := by simp; rw [← ofFinsupp_smul, smul_single']
 
 @[simp]
@@ -698,7 +713,7 @@ theorem forall_eq_iff_forall_eq : (∀ f g : R[X], f = g) ↔ ∀ a b : R, a = b
 theorem ext_iff {p q : R[X]} : p = q ↔ ∀ n, coeff p n = coeff q n := by
   rcases p with ⟨f : ℕ →₀ R⟩
   rcases q with ⟨g : ℕ →₀ R⟩
-  -- porting note (#10745): was `simp [coeff, DFunLike.ext_iff]`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [coeff, DFunLike.ext_iff]`
   simpa [coeff] using DFunLike.ext_iff (f := f) (g := g)
 
 @[ext]
@@ -743,6 +758,12 @@ theorem support_monomial (n) {a : R} (H : a ≠ 0) : (monomial n a).support = si
 theorem support_monomial' (n) (a : R) : (monomial n a).support ⊆ singleton n := by
   rw [← ofFinsupp_single, support]
   exact Finsupp.support_single_subset
+
+theorem support_C {a : R} (h : a ≠ 0) : (C a).support = singleton 0 :=
+  support_monomial 0 h
+
+theorem support_C_subset (a : R) : (C a).support ⊆ singleton 0 :=
+  support_monomial' 0 a
 
 theorem support_C_mul_X {c : R} (h : c ≠ 0) : Polynomial.support (C c * X) = singleton 1 := by
   rw [C_mul_X_eq_monomial, support_monomial 1 h]
@@ -892,6 +913,35 @@ theorem sum_monomial_eq : ∀ p : R[X], (p.sum fun n a => monomial n a) = p
 theorem sum_C_mul_X_pow_eq (p : R[X]) : (p.sum fun n a => C a * X ^ n) = p := by
   simp_rw [C_mul_X_pow_eq_monomial, sum_monomial_eq]
 
+@[elab_as_elim]
+protected theorem induction_on {M : R[X] → Prop} (p : R[X]) (h_C : ∀ a, M (C a))
+    (h_add : ∀ p q, M p → M q → M (p + q))
+    (h_monomial : ∀ (n : ℕ) (a : R), M (C a * X ^ n) → M (C a * X ^ (n + 1))) : M p := by
+  have A : ∀ {n : ℕ} {a}, M (C a * X ^ n) := by
+    intro n a
+    induction n with
+    | zero => rw [pow_zero, mul_one]; exact h_C a
+    | succ n ih => exact h_monomial _ _ ih
+  have B : ∀ s : Finset ℕ, M (s.sum fun n : ℕ => C (p.coeff n) * X ^ n) := by
+    apply Finset.induction
+    · convert h_C 0
+      exact C_0.symm
+    · intro n s ns ih
+      rw [sum_insert ns]
+      exact h_add _ _ A ih
+  rw [← sum_C_mul_X_pow_eq p, Polynomial.sum]
+  exact B (support p)
+
+/-- To prove something about polynomials,
+it suffices to show the condition is closed under taking sums,
+and it holds for monomials.
+-/
+@[elab_as_elim]
+protected theorem induction_on' {M : R[X] → Prop} (p : R[X]) (h_add : ∀ p q, M p → M q → M (p + q))
+    (h_monomial : ∀ (n : ℕ) (a : R), M (monomial n a)) : M p :=
+  Polynomial.induction_on p (h_monomial 0) h_add fun n a _h =>
+    by rw [C_mul_X_pow_eq_monomial]; exact h_monomial _ _
+
 /-- `erase p n` is the polynomial `p` in which the `X^n` term has been erased. -/
 irreducible_def erase (n : ℕ) : R[X] → R[X]
   | ⟨p⟩ => ⟨p.erase n⟩
@@ -1001,14 +1051,27 @@ section Ring
 
 variable [Ring R]
 
+instance instZSMul : SMul ℤ R[X] where
+  smul r p := ⟨r • p.toFinsupp⟩
+
+@[simp]
+theorem ofFinsupp_zsmul (a : ℤ) (b) :
+    (⟨a • b⟩ : R[X]) = (a • ⟨b⟩ : R[X]) :=
+  rfl
+
+@[simp]
+theorem toFinsupp_zsmul (a : ℤ) (b : R[X]) :
+    (a • b).toFinsupp = a • b.toFinsupp :=
+  rfl
+
 instance instIntCast : IntCast R[X] where intCast n := ofFinsupp n
 
 instance ring : Ring R[X] :=
-  --TODO: add reference to library note in PR #7432
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
   { Function.Injective.ring toFinsupp toFinsupp_injective (toFinsupp_zero (R := R))
       toFinsupp_one toFinsupp_add
-      toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_smul _ _)
-      (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl with
+      toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_nsmul _ _)
+      (fun _ _ => toFinsupp_zsmul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl with
     toSemiring := Polynomial.semiring,
     toNeg := Polynomial.neg'
     toSub := Polynomial.sub
@@ -1017,29 +1080,25 @@ instance ring : Ring R[X] :=
 @[simp]
 theorem coeff_neg (p : R[X]) (n : ℕ) : coeff (-p) n = -coeff p n := by
   rcases p with ⟨⟩
-  -- Porting note: The last rule should be `apply`ed.
-  rw [← ofFinsupp_neg, coeff, coeff]; apply Finsupp.neg_apply
+  rw [← ofFinsupp_neg, coeff, coeff, Finsupp.neg_apply]
 
 @[simp]
 theorem coeff_sub (p q : R[X]) (n : ℕ) : coeff (p - q) n = coeff p n - coeff q n := by
   rcases p with ⟨⟩
   rcases q with ⟨⟩
-  -- Porting note: The last rule should be `apply`ed.
-  rw [← ofFinsupp_sub, coeff, coeff, coeff]; apply Finsupp.sub_apply
+  rw [← ofFinsupp_sub, coeff, coeff, coeff, Finsupp.sub_apply]
 
 @[simp]
 theorem monomial_neg (n : ℕ) (a : R) : monomial n (-a) = -monomial n a := by
   rw [eq_neg_iff_add_eq_zero, ← monomial_add, neg_add_cancel, monomial_zero_right]
 
 theorem monomial_sub (n : ℕ) : monomial n (a - b) = monomial n a - monomial n b := by
- rw [sub_eq_add_neg, monomial_add, monomial_neg]
- rfl
+  rw [sub_eq_add_neg, monomial_add, monomial_neg, sub_eq_add_neg]
 
 @[simp]
 theorem support_neg {p : R[X]} : (-p).support = p.support := by
   rcases p with ⟨⟩
-  -- Porting note: The last rule should be `apply`ed.
-  rw [← ofFinsupp_neg, support, support]; apply Finsupp.support_neg
+  rw [← ofFinsupp_neg, support, support, Finsupp.support_neg]
 
 theorem C_eq_intCast (n : ℤ) : C (n : R) = n := by simp
 
@@ -1055,7 +1114,7 @@ theorem C_sub : C (a - b) = C a - C b :=
 end Ring
 
 instance commRing [CommRing R] : CommRing R[X] :=
-  --TODO: add reference to library note in PR #7432
+  --TODO: add reference to library note in PR https://github.com/leanprover-community/mathlib4/pull/7432
   { toRing := Polynomial.ring
     mul_comm := mul_comm }
 

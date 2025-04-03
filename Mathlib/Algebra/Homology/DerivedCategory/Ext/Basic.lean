@@ -251,7 +251,7 @@ lemma mk₀_zero : mk₀ (0 : X ⟶ Y) = 0 := by
 
 section
 
-attribute [local instance] preservesBinaryBiproductsOfPreservesBiproducts in
+attribute [local instance] preservesBinaryBiproducts_of_preservesBiproducts in
 lemma biprod_ext {X₁ X₂ : C} {α β : Ext (X₁ ⊞ X₂) Y n}
     (h₁ : (mk₀ biprod.inl).comp α (zero_add n) = (mk₀ biprod.inl).comp β (zero_add n))
     (h₂ : (mk₀ biprod.inr).comp α (zero_add n) = (mk₀ biprod.inr).comp β (zero_add n)) :

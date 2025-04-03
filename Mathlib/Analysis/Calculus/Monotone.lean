@@ -108,7 +108,7 @@ theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
       filter_upwards [this]
       rintro y ⟨hy : x - 1 < y, h'y : y < x⟩
       rw [mem_Iio]
-      norm_num; nlinarith
+      nlinarith
   -- Deduce the correct limit on the left, by sandwiching.
   have L4 :
     Tendsto (fun y => (f y - f x) / (y - x)) (𝓝[<] x) (𝓝 (rnDeriv f.measure volume x).toReal) := by
@@ -118,7 +118,7 @@ theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
       refine div_le_div_of_nonpos_of_le (by linarith) ((sub_le_sub_iff_right _).2 ?_)
       apply f.mono.le_leftLim
       have : ↑0 < (x - y) ^ 2 := sq_pos_of_pos (sub_pos.2 hy)
-      norm_num; linarith
+      linarith
     · filter_upwards [self_mem_nhdsWithin]
       rintro y (hy : y < x)
       refine div_le_div_of_nonpos_of_le (by linarith) ?_
@@ -161,7 +161,7 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
         filter_upwards [this]
         rintro y ⟨hy : x < y, h'y : y < x + 1⟩
         rw [mem_Ioi]
-        norm_num; nlinarith
+        nlinarith
     -- apply the sandwiching argument, with the helper function and `g`
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' this hx.2
     · filter_upwards [self_mem_nhdsWithin] with y hy
@@ -190,7 +190,7 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
         rintro y hy
         rw [mem_Ioo] at hy
         rw [mem_Iio]
-        norm_num; nlinarith
+        nlinarith
     -- apply the sandwiching argument, with `g` and the helper function
     apply tendsto_of_tendsto_of_tendsto_of_le_of_le' hx.1 this
     · filter_upwards [self_mem_nhdsWithin]
@@ -203,7 +203,7 @@ theorem Monotone.ae_hasDerivAt {f : ℝ → ℝ} (hf : Monotone f) :
       rw [mem_Iio, ← sub_neg] at hy
       have : 0 < (y - x) ^ 2 := sq_pos_of_neg hy
       apply div_le_div_of_nonpos_of_le hy.le
-      exact (sub_le_sub_iff_right _).2 (hf.rightLim_le (by norm_num; linarith))
+      exact (sub_le_sub_iff_right _).2 (hf.rightLim_le (by linarith))
   -- conclude global differentiability
   rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, (nhds_left'_sup_nhds_right' x).symm,
     tendsto_sup]

@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.Order.DirectedInverseSystem
 import Mathlib.Tactic.SuppressCompilation
 
 /-!
@@ -43,24 +44,6 @@ variable {ι : Type v}
 variable [Preorder ι]
 variable (G : ι → Type w)
 
-/-- A directed system is a functor from a category (directed poset) to another category. -/
-class DirectedSystem (f : ∀ i j, i ≤ j → G i → G j) : Prop where
-  map_self' : ∀ i x h, f i i h x = x
-  map_map' : ∀ {i j k} (hij hjk x), f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x
-
-section
-
-variable {G}
-variable (f : ∀ i j, i ≤ j → G i → G j) [DirectedSystem G fun i j h => f i j h]
-
-theorem DirectedSystem.map_self i x h : f i i h x = x :=
-  DirectedSystem.map_self' i x h
-theorem DirectedSystem.map_map {i j k} (hij hjk x) :
-    f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
-  DirectedSystem.map_map' hij hjk x
-
-end
-
 namespace Module
 
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
@@ -71,13 +54,13 @@ variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 `fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem DirectedSystem.map_self [DirectedSystem G fun i j h => f i j h] (i x h) :
     f i i h x = x :=
-  DirectedSystem.map_self (fun i j h => f i j h) i x h
+  DirectedSystem.map_self (f := (f · · ·)) x
 
 /-- A copy of `DirectedSystem.map_map` specialized to linear maps, as otherwise the
 `fun i j h ↦ f i j h` can confuse the simplifier. -/
 nonrec theorem DirectedSystem.map_map [DirectedSystem G fun i j h => f i j h] {i j k} (hij hjk x) :
     f j k hjk (f i j hij x) = f i k (le_trans hij hjk) x :=
-  DirectedSystem.map_map (fun i j h => f i j h) hij hjk x
+  DirectedSystem.map_map (f := (f · · ·)) hij hjk x
 
 variable (G)
 
@@ -408,7 +391,7 @@ variable {G f}
 @[simp]
 theorem lift_of (i x) : lift G f P g Hg (of G f i x) = g i x :=
   Module.DirectLimit.lift_of
-    -- Note: had to make these arguments explicit #8386
+    -- Note: had to make these arguments explicit https://github.com/leanprover-community/mathlib4/pull/8386
     (f := (fun i j hij => (f i j hij).toIntLinearMap))
     (fun i => (g i).toIntLinearMap)
     Hg
@@ -649,7 +632,7 @@ theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} [DecidablePred (�
       restriction_of, dif_pos (hst hps), lift_of]
     dsimp only
     -- Porting note: Lean 3 could get away with far fewer hints for inputs in the line below
-    have := DirectedSystem.map_map (fun i j h => f' i j h) (hj p hps) hjk
+    have := DirectedSystem.map_map (f := (f' · · ·)) (hj p hps) hjk
     rw [this]
   · rintro x y ihx ihy
     rw [(restriction _).map_add, (FreeCommRing.lift _).map_add, (f' j k hjk).map_add, ihx, ihy,
@@ -678,7 +661,7 @@ theorem of.zero_exact_aux [Nonempty ι] [IsDirected ι (· ≤ ·)] {x : FreeCom
           restriction_of, dif_pos, lift_of, lift_of]
         on_goal 1 =>
           dsimp only
-          have := DirectedSystem.map_map (fun i j h => f' i j h) hij (le_refl j : j ≤ j)
+          have := DirectedSystem.map_map (f := (f' · · ·)) hij le_rfl
           rw [this]
           · exact sub_self _
         exacts [Or.inl rfl, Or.inr rfl]

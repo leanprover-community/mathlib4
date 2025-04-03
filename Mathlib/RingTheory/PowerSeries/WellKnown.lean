@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.RingTheory.PowerSeries.Basic
 

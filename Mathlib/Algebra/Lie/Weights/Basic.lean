@@ -33,7 +33,7 @@ Basic definitions and properties of the above ideas are provided in this file.
   * `LieModule.iSup_ucs_eq_genWeightSpace_zero`
   * `LieModule.iInf_lowerCentralSeries_eq_posFittingComp`
   * `LieModule.isCompl_genWeightSpace_zero_posFittingComp`
-  * `LieModule.independent_genWeightSpace`
+  * `LieModule.iSupIndep_genWeightSpace`
   * `LieModule.iSup_genWeightSpace_eq_top`
 
 ## References
@@ -51,6 +51,17 @@ variable {K R L M : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
 namespace LieModule
 
 open Set Function TensorProduct LieModule
+
+variable (M) in
+/-- If `M` is a representation of a Lie algebra `L` and `χ : L → R` is a family of scalars,
+then `weightSpace M χ` is the intersection of the `χ x`-eigenspaces
+of the action of `x` on `M` as `x` ranges over `L`. -/
+def weightSpace (χ : L → R) : LieSubmodule R L M where
+  __ := ⨅ x : L, (toEnd R L M x).eigenspace (χ x)
+  lie_mem {x m} hm := by simp_all [smul_comm (χ x)]
+
+lemma mem_weightSpace (χ : L → R) (m : M) : m ∈ weightSpace M χ ↔ ∀ x, ⁅x, m⁆ = χ x • m := by
+  simp [weightSpace]
 
 section notation_genWeightSpaceOf
 
@@ -183,6 +194,14 @@ theorem mem_genWeightSpace (χ : L → R) (m : M) :
 lemma genWeightSpace_le_genWeightSpaceOf (x : L) (χ : L → R) :
     genWeightSpace M χ ≤ genWeightSpaceOf M (χ x) x :=
   iInf_le _ x
+
+lemma weightSpace_le_genWeightSpace (χ : L → R) :
+    weightSpace M χ ≤ genWeightSpace M χ := by
+  apply le_iInf
+  intro x
+  rw [← (LieSubmodule.toSubmodule_orderEmbedding R L M).le_iff_le]
+  apply (iInf_le _ x).trans
+  exact ((toEnd R L M x).genEigenspace (χ x)).monotone le_top
 
 variable (R L) in
 /-- A weight of a Lie module is a map `L → R` such that the corresponding weight space is
@@ -647,32 +666,39 @@ lemma injOn_genWeightSpace [NoZeroSMulDivisors R M] :
 
 /-- Lie module weight spaces are independent.
 
-See also `LieModule.independent_genWeightSpace'`. -/
-lemma independent_genWeightSpace [NoZeroSMulDivisors R M] :
-    CompleteLattice.Independent fun χ : L → R ↦ genWeightSpace M χ := by
-  simp only [LieSubmodule.independent_iff_coe_toSubmodule, genWeightSpace,
+See also `LieModule.iSupIndep_genWeightSpace'`. -/
+lemma iSupIndep_genWeightSpace [NoZeroSMulDivisors R M] :
+    iSupIndep fun χ : L → R ↦ genWeightSpace M χ := by
+  simp only [LieSubmodule.iSupIndep_iff_coe_toSubmodule, genWeightSpace,
     LieSubmodule.iInf_coe_toSubmodule]
   exact Module.End.independent_iInf_maxGenEigenspace_of_forall_mapsTo (toEnd R L M)
     (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem)
 
-lemma independent_genWeightSpace' [NoZeroSMulDivisors R M] :
-    CompleteLattice.Independent fun χ : Weight R L M ↦ genWeightSpace M χ :=
-  (independent_genWeightSpace R L M).comp <|
+@[deprecated (since := "2024-11-24")] alias independent_genWeightSpace := iSupIndep_genWeightSpace
+
+lemma iSupIndep_genWeightSpace' [NoZeroSMulDivisors R M] :
+    iSupIndep fun χ : Weight R L M ↦ genWeightSpace M χ :=
+  (iSupIndep_genWeightSpace R L M).comp <|
     Subtype.val_injective.comp (Weight.equivSetOf R L M).injective
 
-lemma independent_genWeightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
-    CompleteLattice.Independent fun (χ : R) ↦ genWeightSpaceOf M χ x := by
-  rw [LieSubmodule.independent_iff_coe_toSubmodule]
+@[deprecated (since := "2024-11-24")] alias independent_genWeightSpace' := iSupIndep_genWeightSpace'
+
+lemma iSupIndep_genWeightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
+    iSupIndep fun (χ : R) ↦ genWeightSpaceOf M χ x := by
+  rw [LieSubmodule.iSupIndep_iff_coe_toSubmodule]
   dsimp [genWeightSpaceOf]
   exact (toEnd R L M x).independent_genEigenspace _
 
+@[deprecated (since := "2024-11-24")]
+alias independent_genWeightSpaceOf := iSupIndep_genWeightSpaceOf
+
 lemma finite_genWeightSpaceOf_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] (x : L) :
     {χ : R | genWeightSpaceOf M χ x ≠ ⊥}.Finite :=
-  CompleteLattice.WellFoundedGT.finite_ne_bot_of_independent (independent_genWeightSpaceOf R L M x)
+  WellFoundedGT.finite_ne_bot_of_iSupIndep (iSupIndep_genWeightSpaceOf R L M x)
 
 lemma finite_genWeightSpace_ne_bot [NoZeroSMulDivisors R M] [IsNoetherian R M] :
     {χ : L → R | genWeightSpace M χ ≠ ⊥}.Finite :=
-  CompleteLattice.WellFoundedGT.finite_ne_bot_of_independent (independent_genWeightSpace R L M)
+  WellFoundedGT.finite_ne_bot_of_iSupIndep (iSupIndep_genWeightSpace R L M)
 
 instance Weight.instFinite [NoZeroSMulDivisors R M] [IsNoetherian R M] :
     Finite (Weight R L M) := by

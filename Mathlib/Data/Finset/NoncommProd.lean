@@ -232,7 +232,7 @@ variable [Monoid β] [Monoid γ]
 /-- Proof used in definition of `Finset.noncommProd` -/
 @[to_additive]
 theorem noncommProd_lemma (s : Finset α) (f : α → β)
-    (comm : (s : Set α).Pairwise fun a b => Commute (f a) (f b)) :
+    (comm : (s : Set α).Pairwise (Commute on f)) :
     Set.Pairwise { x | x ∈ Multiset.map f s.val } Commute := by
   simp_rw [Multiset.mem_map]
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ _
@@ -244,7 +244,7 @@ given a proof that `*` commutes on all elements `f x` for `x ∈ s`. -/
       "Sum of a `s : Finset α` mapped with `f : α → β` with `[AddMonoid β]`,
 given a proof that `+` commutes on all elements `f x` for `x ∈ s`."]
 def noncommProd (s : Finset α) (f : α → β)
-    (comm : (s : Set α).Pairwise fun a b => Commute (f a) (f b)) : β :=
+    (comm : (s : Set α).Pairwise (Commute on f)) : β :=
   (s.1.map f).noncommProd <| noncommProd_lemma s f comm
 
 @[to_additive]
@@ -260,7 +260,7 @@ theorem noncommProd_congr {s₁ s₂ : Finset α} {f g : α → β} (h₁ : s₁
     (h₂ : ∀ x ∈ s₂, f x = g x) (comm) :
     noncommProd s₁ f comm =
       noncommProd s₂ g fun x hx y hy h => by
-        dsimp only
+        dsimp only [Function.onFun]
         rw [← h₂ _ hx, ← h₂ _ hy]
         subst h₁
         exact comm hx hy h := by
@@ -363,7 +363,7 @@ theorem noncommProd_eq_prod {β : Type*} [CommMonoid β] (s : Finset α) (f : α
 /-- The non-commutative version of `Finset.prod_union` -/
 @[to_additive "The non-commutative version of `Finset.sum_union`"]
 theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Disjoint s t)
-    (f : α → β) (comm : { x | x ∈ s ∪ t }.Pairwise fun a b => Commute (f a) (f b)) :
+    (f : α → β) (comm : { x | x ∈ s ∪ t }.Pairwise (Commute on f)) :
     noncommProd (s ∪ t) f comm =
       noncommProd s f (comm.mono <| coe_subset.2 subset_union_left) *
         noncommProd t f (comm.mono <| coe_subset.2 subset_union_right) := by
@@ -379,8 +379,8 @@ theorem noncommProd_union_of_disjoint [DecidableEq α] {s t : Finset α} (h : Di
 
 @[to_additive]
 theorem noncommProd_mul_distrib_aux {s : Finset α} {f : α → β} {g : α → β}
-    (comm_ff : (s : Set α).Pairwise fun x y => Commute (f x) (f y))
-    (comm_gg : (s : Set α).Pairwise fun x y => Commute (g x) (g y))
+    (comm_ff : (s : Set α).Pairwise (Commute on f))
+    (comm_gg : (s : Set α).Pairwise (Commute on g))
     (comm_gf : (s : Set α).Pairwise fun x y => Commute (g x) (f y)) :
     (s : Set α).Pairwise fun x y => Commute ((f * g) x) ((f * g) y) := by
   intro x hx y hy h

@@ -35,7 +35,7 @@ construction/theorem that is easier to define/prove on binary products than on f
 
 open List Function
 universe u v
-variable {ι : Type u} {α : ι → Type v} {i j : ι} {l : List ι} {f : ∀ i, α i}
+variable {ι : Type u} {α : ι → Type v} {i j : ι} {l : List ι}
 
 namespace List
 

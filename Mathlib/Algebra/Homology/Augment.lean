@@ -304,14 +304,16 @@ def augmentTruncate (C : CochainComplex V ℕ) :
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases i <;>
           · dsimp
-            -- Porting note (#10959): simp can't handle this now but aesop does
+            -- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
+            -- simp can't handle this now but aesop does
             aesop }
   inv :=
     { f := fun | 0 => 𝟙 _ | _+1 => 𝟙 _
       comm' := fun i j => by
         rcases j with (_ | _ | j) <;> cases' i with i <;>
           · dsimp
-            -- Porting note (#10959): simp can't handle this now but aesop does
+            -- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
+            -- simp can't handle this now but aesop does
             aesop }
   hom_inv_id := by
     ext i

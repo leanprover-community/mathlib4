@@ -295,7 +295,7 @@ def trunc : R[T;T⁻¹] →+ R[X] :=
 theorem trunc_C_mul_T (n : ℤ) (r : R) : trunc (C r * T n) = ite (0 ≤ n) (monomial n.toNat r) 0 := by
   apply (toFinsuppIso R).injective
   rw [← single_eq_C_mul_T, trunc, AddMonoidHom.coe_comp, Function.comp_apply]
-  -- Porting note (#11224): was `rw`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
   erw [comapDomain.addMonoidHom_apply Int.ofNat_injective]
   rw [toFinsuppIso_apply]
   -- Porting note: rewrote proof below relative to mathlib3.
@@ -332,8 +332,12 @@ theorem _root_.Polynomial.toLaurent_injective :
 theorem _root_.Polynomial.toLaurent_inj (f g : R[X]) : toLaurent f = toLaurent g ↔ f = g :=
   ⟨fun h => Polynomial.toLaurent_injective h, congr_arg _⟩
 
-theorem _root_.Polynomial.toLaurent_ne_zero {f : R[X]} : f ≠ 0 ↔ toLaurent f ≠ 0 :=
-  (map_ne_zero_iff _ Polynomial.toLaurent_injective).symm
+theorem _root_.Polynomial.toLaurent_ne_zero {f : R[X]} : toLaurent f ≠ 0 ↔ f ≠ 0 :=
+  map_ne_zero_iff _ Polynomial.toLaurent_injective
+
+@[simp]
+theorem _root_.Polynomial.toLaurent_eq_zero {f : R[X]} : toLaurent f = 0 ↔ f = 0 :=
+  map_eq_zero_iff _ Polynomial.toLaurent_injective
 
 theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ) (f' : R[X]), toLaurent f' = f * T n := by
   refine f.induction_on' ?_ fun n a => ?_ <;> clear f
@@ -387,9 +391,9 @@ theorem toLaurent_support (f : R[X]) : f.toLaurent.support = f.support.map Nat.c
   generalize hd : f.support = s
   revert f
   refine Finset.induction_on s ?_ ?_ <;> clear s
-  · simp (config := { contextual := true }) only [Polynomial.support_eq_empty, map_zero,
-      Finsupp.support_zero, eq_self_iff_true, imp_true_iff, Finset.map_empty,
-      Finsupp.support_eq_empty]
+  · intro f hf
+    rw [Finset.map_empty, Finsupp.support_eq_empty, toLaurent_eq_zero]
+    exact Polynomial.support_eq_empty.mp hf
   · intro a s as hf f fs
     have : (erase a f).toLaurent.support = s.map Nat.castEmbedding := by
       refine hf (f.erase a) ?_
@@ -421,21 +425,14 @@ theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
   refine ⟨fun h => ?_, fun h => by rw [h, degree_zero]⟩
   rw [degree, Finset.max_eq_sup_withBot] at h
   ext n
-  refine not_not.mp fun f0 => ?_
   simp_rw [Finset.sup_eq_bot_iff, Finsupp.mem_support_iff, Ne, WithBot.coe_ne_bot] at h
-  exact h n f0
+  exact not_not.mp (h n)
 
 section ExactDegrees
 
 @[simp]
 theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n := by
-  rw [degree]
-  -- Porting note: was `convert Finset.max_singleton`
-  have : Finsupp.support (C a * T n) = {n} := by
-    refine support_eq_singleton.mpr ?_
-    rw [← single_eq_C_mul_T]
-    simp only [single_eq_same, a0, Ne, not_false_iff, eq_self_iff_true, and_self_iff]
-  rw [this]
+  rw [degree, support_C_mul_T_of_ne_zero a0 n]
   exact Finset.max_singleton
 
 theorem degree_C_mul_T_ite [DecidableEq R] (n : ℤ) (a : R) :
@@ -499,17 +496,17 @@ theorem algebraMap_X_pow (n : ℕ) : algebraMap R[X] R[T;T⁻¹] (X ^ n) = T n :
 theorem algebraMap_eq_toLaurent (f : R[X]) : algebraMap R[X] R[T;T⁻¹] f = toLaurent f :=
   rfl
 
-theorem isLocalization : IsLocalization (Submonoid.closure ({X} : Set R[X])) R[T;T⁻¹] :=
-  { map_units' := fun t => by
-      cases' t with t ht
-      rcases Submonoid.mem_closure_singleton.mp ht with ⟨n, rfl⟩
-      simp only [isUnit_T n, algebraMap_eq_toLaurent, Polynomial.toLaurent_X_pow]
+theorem isLocalization : IsLocalization (Submonoid.powers (X : R[X])) R[T;T⁻¹] :=
+  { map_units' := fun ⟨t, ht⟩ => by
+      obtain ⟨n, rfl⟩ := ht
+      rw [algebraMap_eq_toLaurent, toLaurent_X_pow]
+      exact isUnit_T ↑n
     surj' := fun f => by
       induction' f using LaurentPolynomial.induction_on_mul_T with f n
-      have := (Submonoid.closure ({X} : Set R[X])).pow_mem Submonoid.mem_closure_singleton_self n
+      have : X ^ n ∈ Submonoid.powers (X : R[X]) := ⟨n, rfl⟩
       refine ⟨(f, ⟨_, this⟩), ?_⟩
-      simp only [algebraMap_eq_toLaurent, Polynomial.toLaurent_X_pow, mul_T_assoc,
-        neg_add_cancel, T_zero, mul_one]
+      simp only [algebraMap_eq_toLaurent, toLaurent_X_pow, mul_T_assoc, neg_add_cancel, T_zero,
+        mul_one]
     exists_of_eq := fun {f g} => by
       rw [algebraMap_eq_toLaurent, algebraMap_eq_toLaurent, Polynomial.toLaurent_inj]
       rintro rfl

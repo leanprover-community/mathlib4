@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Localization.Submodule
+import Mathlib.RingTheory.LocalProperties.Submodule
 import Mathlib.RingTheory.RingHomProperties
 
 /-!
@@ -44,11 +45,11 @@ open scoped Pointwise Classical
 
 universe u
 
+section Properties
+
 variable {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S)
 variable (R' S' : Type u) [CommRing R'] [CommRing S']
 variable [Algebra R R'] [Algebra S S']
-
-section Properties
 
 section CommRing
 
@@ -84,6 +85,14 @@ def RingHom.LocalizationPreserves :=
     [IsLocalization (M.map f) S'],
     P f → P (IsLocalization.map S' f (Submonoid.le_comap_map M) : R' →+* S')
 
+/-- A property `P` of ring homs is said to be preserved by localization away
+ if `P` holds for `Rᵣ →+* Sᵣ` whenever `P` holds for `R →+* S`. -/
+def RingHom.LocalizationAwayPreserves :=
+  ∀ ⦃R S : Type u⦄ [CommRing R] [CommRing S] (f : R →+* S) (r : R) (R' S' : Type u)
+    [CommRing R'] [CommRing S'] [Algebra R R'] [Algebra S S'] [IsLocalization.Away r R']
+    [IsLocalization.Away (f r) S'],
+    P f → P (IsLocalization.Away.map R' S' f r : R' →+* S')
+
 /-- A property `P` of ring homs satisfies `RingHom.OfLocalizationFiniteSpan`
 if `P` holds for `R →+* S` whenever there exists a finite set `{ r }` that spans `R` such that
 `P` holds for `Rᵣ →+* Sᵣ`.
@@ -110,14 +119,26 @@ def RingHom.HoldsForLocalizationAway : Prop :=
   ∀ ⦃R : Type u⦄ (S : Type u) [CommRing R] [CommRing S] [Algebra R S] (r : R)
     [IsLocalization.Away r S], P (algebraMap R S)
 
+/-- A property `P` of ring homs satisfies `RingHom.StableUnderCompositionWithLocalizationAwaySource`
+if whenever `P` holds for `f` it also holds for the composition with
+localization maps on the source. -/
+def RingHom.StableUnderCompositionWithLocalizationAwaySource : Prop :=
+  ∀ ⦃R : Type u⦄ (S : Type u) ⦃T : Type u⦄ [CommRing R] [CommRing S] [CommRing T] [Algebra R S]
+    (r : R) [IsLocalization.Away r S] (f : S →+* T), P f → P (f.comp (algebraMap R S))
+
+/-- A property `P` of ring homs satisfies `RingHom.StableUnderCompositionWithLocalizationAway`
+if whenever `P` holds for `f` it also holds for the composition with
+localization maps on the target. -/
+def RingHom.StableUnderCompositionWithLocalizationAwayTarget : Prop :=
+  ∀ ⦃R S : Type u⦄ (T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra S T] (s : S)
+    [IsLocalization.Away s T] (f : R →+* S), P f → P ((algebraMap S T).comp f)
+
 /-- A property `P` of ring homs satisfies `RingHom.StableUnderCompositionWithLocalizationAway`
 if whenever `P` holds for `f` it also holds for the composition with
 localization maps on the left and on the right. -/
 def RingHom.StableUnderCompositionWithLocalizationAway : Prop :=
-  (∀ ⦃R S : Type u⦄ (T : Type u) [CommRing R] [CommRing S] [CommRing T] [Algebra S T] (s : S)
-    [IsLocalization.Away s T] (f : R →+* S), P f → P ((algebraMap S T).comp f)) ∧
-    ∀ ⦃R : Type u⦄ (S : Type u) ⦃T : Type u⦄ [CommRing R] [CommRing S] [CommRing T] [Algebra R S]
-      (r : R) [IsLocalization.Away r S] (f : S →+* T), P f → P (f.comp (algebraMap R S))
+  StableUnderCompositionWithLocalizationAwaySource P ∧
+    StableUnderCompositionWithLocalizationAwayTarget P
 
 /-- A property `P` of ring homs satisfies `RingHom.OfLocalizationFiniteSpanTarget`
 if `P` holds for `R →+* S` whenever there exists a finite set `{ r }` that spans `S` such that
@@ -149,9 +170,11 @@ def RingHom.OfLocalizationPrime : Prop :=
 /-- A property of ring homs is local if it is preserved by localizations and compositions, and for
 each `{ r }` that spans `S`, we have `P (R →+* S) ↔ ∀ r, P (R →+* Sᵣ)`. -/
 structure RingHom.PropertyIsLocal : Prop where
-  LocalizationPreserves : RingHom.LocalizationPreserves @P
-  OfLocalizationSpanTarget : RingHom.OfLocalizationSpanTarget @P
-  StableUnderCompositionWithLocalizationAway : RingHom.StableUnderCompositionWithLocalizationAway @P
+  localizationAwayPreserves : RingHom.LocalizationAwayPreserves @P
+  ofLocalizationSpanTarget : RingHom.OfLocalizationSpanTarget @P
+  ofLocalizationSpan : RingHom.OfLocalizationSpan @P
+  StableUnderCompositionWithLocalizationAwayTarget :
+    RingHom.StableUnderCompositionWithLocalizationAwayTarget @P
 
 theorem RingHom.ofLocalizationSpan_iff_finite :
     RingHom.OfLocalizationSpan @P ↔ RingHom.OfLocalizationFiniteSpan @P := by
@@ -192,15 +215,40 @@ lemma RingHom.StableUnderComposition.stableUnderCompositionWithLocalizationAway
     (hPc : RingHom.StableUnderComposition P) (hPl : HoldsForLocalizationAway P) :
     StableUnderCompositionWithLocalizationAway P := by
   constructor
-  · introv _ hf
-    exact hPc _ _ hf (hPl T s)
-  · introv _ hf
+  · introv _ _ hf
     exact hPc _ _ (hPl S r) hf
+  · introv _ _ hf
+    exact hPc _ _ hf (hPl T s)
 
 lemma RingHom.HoldsForLocalizationAway.containsIdentities (hPl : HoldsForLocalizationAway P) :
     ContainsIdentities P := by
   introv R
   exact hPl.of_bijective _ _ Function.bijective_id
+
+lemma RingHom.LocalizationAwayPreserves.respectsIso
+    (hP : LocalizationAwayPreserves P) :
+    RespectsIso P where
+  left {R S T} _ _ _ f e hf := by
+    letI := e.toRingHom.toAlgebra
+    have : IsLocalization.Away (1 : R) R :=
+      IsLocalization.away_of_isUnit_of_bijective _ isUnit_one (Equiv.refl _).bijective
+    have : IsLocalization.Away (f 1) T :=
+      IsLocalization.away_of_isUnit_of_bijective _ (by simp) e.bijective
+    convert hP f 1 R T hf
+    trans (IsLocalization.Away.map R T f 1).comp (algebraMap R R)
+    · rw [IsLocalization.Away.map, IsLocalization.map_comp]; rfl
+    · rfl
+  right {R S T} _ _ _ f e hf := by
+    letI := e.symm.toRingHom.toAlgebra
+    have : IsLocalization.Away (1 : S) R :=
+      IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.symm.bijective
+    have : IsLocalization.Away (f 1) T :=
+      IsLocalization.away_of_isUnit_of_bijective _ (by simp) (Equiv.refl _).bijective
+    convert hP f 1 R T hf
+    have : (IsLocalization.Away.map R T f 1).comp e.symm.toRingHom = f :=
+      IsLocalization.map_comp ..
+    conv_lhs => rw [← this, RingHom.comp_assoc]
+    simp only [RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp, RingHomCompTriple.comp_eq]
 
 lemma RingHom.StableUnderCompositionWithLocalizationAway.respectsIso
     (hP : StableUnderCompositionWithLocalizationAway P) :
@@ -209,21 +257,21 @@ lemma RingHom.StableUnderCompositionWithLocalizationAway.respectsIso
     letI := e.toRingHom.toAlgebra
     have : IsLocalization.Away (1 : S) T :=
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.bijective
-    exact hP.left T (1 : S) f hf
+    exact hP.right T (1 : S) f hf
   right {R S T} _ _ _ f e hf := by
     letI := e.toRingHom.toAlgebra
     have : IsLocalization.Away (1 : R) S :=
       IsLocalization.away_of_isUnit_of_bijective _ isUnit_one e.bijective
-    exact hP.right S (1 : R) f hf
+    exact hP.left S (1 : R) f hf
 
 theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :
     RingHom.RespectsIso @P :=
-  hP.StableUnderCompositionWithLocalizationAway.respectsIso
+  hP.localizationAwayPreserves.respectsIso
 
 -- Almost all arguments are implicit since this is not intended to use mid-proof.
-theorem RingHom.LocalizationPreserves.away (H : RingHom.LocalizationPreserves @P) (r : R)
-    [IsLocalization.Away r R'] [IsLocalization.Away (f r) S'] (hf : P f) :
-    P (IsLocalization.Away.map R' S' f r) := by
+theorem RingHom.LocalizationPreserves.away (H : RingHom.LocalizationPreserves @P) :
+    RingHom.LocalizationAwayPreserves P := by
+  intros R S _ _ f r R' S' _ _ _ _ _ _ hf
   have : IsLocalization ((Submonoid.powers r).map f) S' := by rw [Submonoid.map_powers]; assumption
   exact H f (Submonoid.powers r) R' S' hf
 
@@ -233,19 +281,21 @@ lemma RingHom.PropertyIsLocal.HoldsForLocalizationAway (hP : RingHom.PropertyIsL
   introv R _
   have : algebraMap R S = (algebraMap R S).comp (RingHom.id R) := by simp
   rw [this]
-  apply (hP.StableUnderCompositionWithLocalizationAway).left S r
+  apply hP.StableUnderCompositionWithLocalizationAwayTarget S r
   apply hPi
 
-theorem RingHom.PropertyIsLocal.ofLocalizationSpan (hP : RingHom.PropertyIsLocal @P) :
+theorem RingHom.OfLocalizationSpanTarget.ofLocalizationSpan
+    (hP : RingHom.OfLocalizationSpanTarget @P)
+    (hP' : RingHom.StableUnderCompositionWithLocalizationAwaySource @P) :
     RingHom.OfLocalizationSpan @P := by
   introv R hs hs'
   apply_fun Ideal.map f at hs
   rw [Ideal.map_span, Ideal.map_top] at hs
-  apply hP.OfLocalizationSpanTarget _ _ hs
+  apply hP _ _ hs
   rintro ⟨_, r, hr, rfl⟩
   rw [← IsLocalization.map_comp (M := Submonoid.powers r) (S := Localization.Away r)
     (T := Submonoid.powers (f r))]
-  · apply hP.StableUnderCompositionWithLocalizationAway.right _ r
+  · apply hP' _ r
     exact hs' ⟨r, hr⟩
 
 lemma RingHom.OfLocalizationSpan.ofIsLocalization
@@ -305,7 +355,7 @@ lemma RingHom.OfLocalizationSpanTarget.ofIsLocalization
 
 section
 
-variable (hP : RingHom.StableUnderBaseChange @P)
+variable (hP : RingHom.IsStableUnderBaseChange @P)
 variable {R S Rᵣ Sᵣ : Type u} [CommRing R] [CommRing S] [CommRing Rᵣ] [CommRing Sᵣ] [Algebra R Rᵣ]
   [Algebra S Sᵣ]
 
@@ -314,7 +364,7 @@ include hP
 /-- Let `S` be an `R`-algebra and `Sᵣ` and `Rᵣ` be the respective localizations at a submonoid
 `M` of `R`. If `P` is stable under base change and `P` holds for `algebraMap R S`, then
 `P` holds for `algebraMap Rᵣ Sᵣ`. -/
-lemma RingHom.StableUnderBaseChange.of_isLocalization [Algebra R S] [Algebra R Sᵣ] [Algebra Rᵣ Sᵣ]
+lemma RingHom.IsStableUnderBaseChange.of_isLocalization [Algebra R S] [Algebra R Sᵣ] [Algebra Rᵣ Sᵣ]
     [IsScalarTower R S Sᵣ] [IsScalarTower R Rᵣ Sᵣ]
     (M : Submonoid R) [IsLocalization M Rᵣ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sᵣ]
     (h : P (algebraMap R S)) : P (algebraMap Rᵣ Sᵣ) :=
@@ -323,7 +373,7 @@ lemma RingHom.StableUnderBaseChange.of_isLocalization [Algebra R S] [Algebra R S
 
 /-- If `P` is stable under base change and holds for `f`, then `P` holds for `f` localized
 at any submonoid `M` of `R`. -/
-lemma RingHom.StableUnderBaseChange.isLocalization_map (M : Submonoid R) [IsLocalization M Rᵣ]
+lemma RingHom.IsStableUnderBaseChange.isLocalization_map (M : Submonoid R) [IsLocalization M Rᵣ]
     (f : R →+* S) [IsLocalization (M.map f) Sᵣ] (hf : P f) :
     P (IsLocalization.map Sᵣ f M.le_comap_map : Rᵣ →+* Sᵣ) := by
   algebraize [f, IsLocalization.map (S := Rᵣ) Sᵣ f M.le_comap_map,
@@ -334,7 +384,7 @@ lemma RingHom.StableUnderBaseChange.isLocalization_map (M : Submonoid R) [IsLoca
     inferInstanceAs <| IsLocalization (M.map f) Sᵣ
   apply hP.of_isLocalization M hf
 
-lemma RingHom.StableUnderBaseChange.localizationPreserves : LocalizationPreserves P := by
+lemma RingHom.IsStableUnderBaseChange.localizationPreserves : LocalizationPreserves P := by
   introv R hf
   exact hP.isLocalization_map _ _ hf
 
@@ -346,7 +396,35 @@ end Properties
 
 section Ideal
 
-open scoped nonZeroDivisors
+variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable (p : Submonoid R) [IsLocalization p S]
+
+theorem Ideal.localized'_eq_map (I : Ideal R) :
+    haveI := (isLocalizedModule_iff_isLocalization' p S).mpr inferInstance
+    Submodule.localized' S p (Algebra.linearMap R S) I = I.map (algebraMap R S) :=
+  SetLike.ext fun x ↦ by
+    simp_rw [Submodule.mem_localized', IsLocalization.mem_map_algebraMap_iff p,
+      IsLocalizedModule.mk'_eq_iff, mul_comm x, eq_comm (a := _ * x), ← Algebra.smul_def,
+      Prod.exists, Subtype.exists, ← exists_prop]
+    rfl
+
+theorem Ideal.localized₀_eq_restrictScalars_map (I : Ideal R) :
+    Submodule.localized₀ p (Algebra.linearMap R S) I = (I.map (algebraMap R S)).restrictScalars R :=
+  congr(Submodule.restrictScalars R $(localized'_eq_map S p I))
+
+theorem Algebra.idealMap_eq_ofEq_comp_toLocalized₀ (I : Ideal R) :
+    haveI := (isLocalizedModule_iff_isLocalization' p S).mpr inferInstance
+    Algebra.idealMap S I =
+      (LinearEquiv.ofEq _ _ <| Ideal.localized₀_eq_restrictScalars_map S p I).toLinearMap ∘ₗ
+      Submodule.toLocalized₀ p (Algebra.linearMap R S) I :=
+  rfl
+
+theorem Ideal.mem_of_localization_maximal {r : R} {J : Ideal R}
+    (h : ∀ (P : Ideal R) (_ : P.IsMaximal),
+      algebraMap R _ r ∈ Ideal.map (algebraMap R (Localization.AtPrime P)) J) :
+    r ∈ J :=
+  Submodule.mem_of_localization_maximal _ _ _ _ fun P hP ↦ by
+    apply (localized'_eq_map (Localization.AtPrime P) P.primeCompl J).symm ▸ h P hP
 
 /-- Let `I J : Ideal R`. If the localization of `I` at each maximal ideal `P` is included in
 the localization of `J` at `P`, then `I ≤ J`. -/
@@ -354,22 +432,8 @@ theorem Ideal.le_of_localization_maximal {I J : Ideal R}
     (h : ∀ (P : Ideal R) (_ : P.IsMaximal),
       Ideal.map (algebraMap R (Localization.AtPrime P)) I ≤
         Ideal.map (algebraMap R (Localization.AtPrime P)) J) :
-    I ≤ J := by
-  intro x hx
-  suffices J.colon (Ideal.span {x}) = ⊤ by
-    simpa using Submodule.mem_colon.mp
-      (show (1 : R) ∈ J.colon (Ideal.span {x}) from this.symm ▸ Submodule.mem_top) x
-      (Ideal.mem_span_singleton_self x)
-  refine Not.imp_symm (J.colon (Ideal.span {x})).exists_le_maximal ?_
-  push_neg
-  intro P hP le
-  obtain ⟨⟨⟨a, ha⟩, ⟨s, hs⟩⟩, eq⟩ :=
-    (IsLocalization.mem_map_algebraMap_iff P.primeCompl _).mp (h P hP (Ideal.mem_map_of_mem _ hx))
-  rw [← _root_.map_mul, ← sub_eq_zero, ← map_sub] at eq
-  obtain ⟨⟨m, hm⟩, eq⟩ := (IsLocalization.map_eq_zero_iff P.primeCompl _ _).mp eq
-  refine hs ((hP.isPrime.mem_or_mem (le (Ideal.mem_colon_singleton.mpr ?_))).resolve_right hm)
-  simp only [Subtype.coe_mk, mul_sub, sub_eq_zero, mul_comm x s, mul_left_comm] at eq
-  simpa only [mul_assoc, eq] using J.mul_mem_left m ha
+    I ≤ J :=
+  fun _ hm ↦ mem_of_localization_maximal fun P hP ↦ h P hP (mem_map_of_mem _ hm)
 
 /-- Let `I J : Ideal R`. If the localization of `I` at each maximal ideal `P` is equal to
 the localization of `J` at `P`, then `I = J`. -/
@@ -378,8 +442,8 @@ theorem Ideal.eq_of_localization_maximal {I J : Ideal R}
       Ideal.map (algebraMap R (Localization.AtPrime P)) I =
         Ideal.map (algebraMap R (Localization.AtPrime P)) J) :
     I = J :=
-  le_antisymm (Ideal.le_of_localization_maximal fun P hP => (h P hP).le)
-    (Ideal.le_of_localization_maximal fun P hP => (h P hP).ge)
+  le_antisymm (le_of_localization_maximal fun P hP ↦ (h P hP).le)
+    (le_of_localization_maximal fun P hP ↦ (h P hP).ge)
 
 /-- An ideal is trivial if its localization at every maximal ideal is trivial. -/
 theorem ideal_eq_bot_of_localization' (I : Ideal R)
@@ -388,28 +452,16 @@ theorem ideal_eq_bot_of_localization' (I : Ideal R)
     I = ⊥ :=
   Ideal.eq_of_localization_maximal fun P hP => by simpa using h P hP
 
--- TODO: This proof should work for all modules, once we have enough material on submodules of
--- localized modules.
+theorem eq_zero_of_localization (r : R)
+    (h : ∀ (J : Ideal R) (_ : J.IsMaximal), algebraMap R (Localization.AtPrime J) r = 0) :
+    r = 0 :=
+  Module.eq_zero_of_localization_maximal _ (fun _ _ ↦ Algebra.linearMap R _) r h
+
 /-- An ideal is trivial if its localization at every maximal ideal is trivial. -/
 theorem ideal_eq_bot_of_localization (I : Ideal R)
     (h : ∀ (J : Ideal R) (_ : J.IsMaximal),
       IsLocalization.coeSubmodule (Localization.AtPrime J) I = ⊥) :
     I = ⊥ :=
-  ideal_eq_bot_of_localization' _ fun P hP =>
-    (Ideal.map_eq_bot_iff_le_ker _).mpr fun x hx => by
-      rw [RingHom.mem_ker, ← Submodule.mem_bot R, ← h P hP, IsLocalization.mem_coeSubmodule]
-      exact ⟨x, hx, rfl⟩
-
-theorem eq_zero_of_localization (r : R)
-    (h : ∀ (J : Ideal R) (_ : J.IsMaximal), algebraMap R (Localization.AtPrime J) r = 0) :
-    r = 0 := by
-  rw [← Ideal.span_singleton_eq_bot]
-  apply ideal_eq_bot_of_localization
-  intro J hJ
-  delta IsLocalization.coeSubmodule
-  erw [Submodule.map_span, Submodule.span_eq_bot]
-  rintro _ ⟨_, h', rfl⟩
-  cases Set.mem_singleton_iff.mpr h'
-  exact h J hJ
+  bot_unique fun r hr ↦ eq_zero_of_localization r fun J hJ ↦ (h J hJ).le ⟨r, hr, rfl⟩
 
 end Ideal

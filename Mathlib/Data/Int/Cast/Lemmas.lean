@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Ring.Hom.Basic
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.Parity
 
 /-!
 # Cast of integers (additional theorems)
@@ -219,8 +220,6 @@ theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F
     ∀ n : ℤ, f n = n :=
   DFunLike.ext_iff.1 <| (f : ℤ →+ α).eq_intCastAddHom h₁
 
-@[simp] lemma zsmul_one [AddGroupWithOne α] (n : ℤ) : n • (1 : α) = n := by cases n <;> simp
-
 @[simp]
 theorem Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=
   ((AddMonoidHom.id ℤ).eq_intCastAddHom rfl).symm
@@ -296,14 +295,14 @@ lemma zmultiplesHom_apply (x : β) (n : ℤ) : zmultiplesHom β x n = n • x :=
 lemma zmultiplesHom_symm_apply (f : ℤ →+ β) : (zmultiplesHom β).symm f = f 1 := rfl
 
 @[to_additive existing (attr := simp)]
-lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) : zpowersHom α x n = x ^ toAdd n := rfl
+lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) : zpowersHom α x n = x ^ n.toAdd := rfl
 
 @[to_additive existing (attr := simp)]
 lemma zpowersHom_symm_apply (f : Multiplicative ℤ →* α) :
     (zpowersHom α).symm f = f (ofAdd 1) := rfl
 
 lemma MonoidHom.apply_mint (f : Multiplicative ℤ →* α) (n : Multiplicative ℤ) :
-    f n = f (ofAdd 1) ^ (toAdd n) := by
+    f n = f (ofAdd 1) ^ n.toAdd := by
   rw [← zpowersHom_symm_apply, ← zpowersHom_apply, Equiv.apply_symm_apply]
 
 lemma AddMonoidHom.apply_int (f : ℤ →+ β) (n : ℤ) : f n = n • f 1 := by
@@ -325,7 +324,7 @@ def zpowersMulHom : α ≃* (Multiplicative ℤ →* α) :=
 variable {α}
 
 @[simp]
-lemma zpowersMulHom_apply (x : α) (n : Multiplicative ℤ) : zpowersMulHom α x n = x ^ toAdd n := rfl
+lemma zpowersMulHom_apply (x : α) (n : Multiplicative ℤ) : zpowersMulHom α x n = x ^ n.toAdd := rfl
 
 @[simp]
 lemma zpowersMulHom_symm_apply (f : Multiplicative ℤ →* α) :

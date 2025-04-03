@@ -15,6 +15,7 @@ ring. We also define a `TopologicalSpace` structure on the quotient of a topolog
 ideal and prove that the quotient is a topological ring.
 -/
 
+open Topology
 
 section Ring
 

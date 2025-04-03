@@ -3,9 +3,10 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
+import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Matroid.Init
 import Mathlib.Data.Set.Card
 import Mathlib.Order.Minimal
-import Mathlib.Data.Matroid.Init
 
 /-!
 # Matroids

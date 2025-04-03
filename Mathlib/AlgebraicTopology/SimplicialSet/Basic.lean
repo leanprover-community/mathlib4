@@ -3,7 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
@@ -105,6 +105,13 @@ lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : Sim
 def _root_.SSet.yonedaEquiv (X : SSet.{u}) (n : SimplexCategory) :
     (standardSimplex.obj n ⟶ X) ≃ X.obj (op n) :=
   yonedaCompUliftFunctorEquiv X n
+
+/-- The unique non-degenerate `n`-simplex in `Δ[n]`. -/
+def id (n : ℕ) : Δ[n] _[n] := yonedaEquiv Δ[n] [n] (𝟙 Δ[n])
+
+lemma id_eq_objEquiv_symm (n : ℕ) : id n = (objEquiv _ _).symm (𝟙 _) := rfl
+
+lemma objEquiv_id (n : ℕ) : objEquiv _ _ (id n) = 𝟙 _ := rfl
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=
@@ -225,10 +232,10 @@ def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) : 
   refine ⟨standardSimplex.edge n a b hab, ?range⟩
   case range =>
     suffices ∃ x, ¬i = x ∧ ¬a = x ∧ ¬b = x by
-      simpa only [unop_op, SimplexCategory.len_mk, asOrderHom, SimplexCategory.Hom.toOrderHom_mk,
-        Set.union_singleton, ne_eq, ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ,
-        Set.mem_insert_iff, @eq_comm _ _ i, Set.mem_range, forall_true_left, not_forall, not_or,
-        not_exists, Fin.forall_fin_two]
+      simpa only [unop_op, len_mk, Nat.reduceAdd, asOrderHom, yoneda_obj_obj, Set.union_singleton,
+        ne_eq, ← Set.univ_subset_iff, Set.subset_def, Set.mem_univ, Set.mem_insert_iff,
+        @eq_comm _ _ i, Set.mem_range, forall_const, not_forall, not_or, not_exists,
+        Fin.forall_fin_two, Fin.isValue]
     contrapose! H
     replace H : univ ⊆ {i, a, b} :=
       fun x _ ↦ by simpa [or_iff_not_imp_left, eq_comm] using H x
@@ -454,5 +461,60 @@ noncomputable def standardSimplex : SimplexCategory ⥤ SSet.Augmented.{u} where
       right := terminal.from _ }
 
 end Augmented
+
+section applications
+variable {S : SSet}
+
+lemma δ_comp_δ_apply {n} {i j : Fin (n + 2)} (H : i ≤ j) (x : S _[n + 2]) :
+    S.δ i (S.δ j.succ x) = S.δ j (S.δ i.castSucc x) := congr_fun (S.δ_comp_δ H) x
+
+lemma δ_comp_δ'_apply {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : Fin.castSucc i < j)
+    (x : S _[n + 2]) : S.δ i (S.δ j x) =
+      S.δ (j.pred fun (hj : j = 0) => by simp [hj, Fin.not_lt_zero] at H) (S.δ i.castSucc x) :=
+  congr_fun (S.δ_comp_δ' H) x
+
+lemma δ_comp_δ''_apply {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : i ≤ Fin.castSucc j)
+    (x : S _[n + 2]) :
+    S.δ (i.castLT (Nat.lt_of_le_of_lt (Fin.le_iff_val_le_val.mp H) j.is_lt)) (S.δ j.succ x) =
+      S.δ j (S.δ i x) := congr_fun (S.δ_comp_δ'' H) x
+
+lemma δ_comp_δ_self_apply {n} {i : Fin (n + 2)} (x : S _[n + 2]) :
+    S.δ i (S.δ i.castSucc x) = S.δ i (S.δ i.succ x) := congr_fun S.δ_comp_δ_self x
+
+lemma δ_comp_δ_self'_apply {n} {i : Fin (n + 2)} {j : Fin (n + 3)} (H : j = Fin.castSucc i)
+    (x : S _[n + 2]) : S.δ i (S.δ j x) = S.δ i (S.δ i.succ x) := congr_fun (S.δ_comp_δ_self' H) x
+
+lemma δ_comp_σ_of_le_apply {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : i ≤ Fin.castSucc j)
+    (x : S _[n + 1]) :
+    S.δ (Fin.castSucc i) (S.σ j.succ x) = S.σ j (S.δ i x) := congr_fun (S.δ_comp_σ_of_le H) x
+
+@[simp]
+lemma δ_comp_σ_self_apply {n} (i : Fin (n + 1)) (x : S _[n]) : S.δ i.castSucc (S.σ i x) = x :=
+  congr_fun S.δ_comp_σ_self x
+
+lemma δ_comp_σ_self'_apply {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = Fin.castSucc i)
+    (x : S _[n]) : S.δ j (S.σ i x) = x := congr_fun (S.δ_comp_σ_self' H) x
+
+@[simp]
+lemma δ_comp_σ_succ_apply {n} (i : Fin (n + 1)) (x : S _[n]) : S.δ i.succ (S.σ i x) = x :=
+  congr_fun S.δ_comp_σ_succ x
+
+lemma δ_comp_σ_succ'_apply {n} {j : Fin (n + 2)} {i : Fin (n + 1)} (H : j = i.succ) (x : S _[n]) :
+    S.δ j (S.σ i x) = x := congr_fun (S.δ_comp_σ_succ' H) x
+
+lemma δ_comp_σ_of_gt_apply {n} {i : Fin (n + 2)} {j : Fin (n + 1)} (H : Fin.castSucc j < i)
+    (x : S _[n + 1]) : S.δ i.succ (S.σ (Fin.castSucc j) x) = S.σ j (S.δ i x) :=
+  congr_fun (S.δ_comp_σ_of_gt H) x
+
+lemma δ_comp_σ_of_gt'_apply {n} {i : Fin (n + 3)} {j : Fin (n + 2)} (H : j.succ < i)
+    (x : S _[n + 1]) : S.δ i (S.σ j x) =
+      S.σ (j.castLT ((add_lt_add_iff_right 1).mp (lt_of_lt_of_le H i.is_le)))
+        (S.δ (i.pred fun (hi : i = 0) => by simp only [Fin.not_lt_zero, hi] at H) x) :=
+  congr_fun (S.δ_comp_σ_of_gt' H) x
+
+lemma σ_comp_σ_apply {n} {i j : Fin (n + 1)} (H : i ≤ j) (x : S _[n]) :
+    S.σ i.castSucc (S.σ j x) = S.σ j.succ (S.σ i x) := congr_fun (S.σ_comp_σ H) x
+
+end applications
 
 end SSet

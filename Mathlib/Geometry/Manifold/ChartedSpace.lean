@@ -183,7 +183,7 @@ instance (H : Type u) [TopologicalSpace H] :
   coe s := s.members
   coe_injective' N O h := by cases N; cases O; congr
 
-instance : Inf (StructureGroupoid H) :=
+instance : Min (StructureGroupoid H) :=
   ⟨fun G G' => StructureGroupoid.mk
     (members := G.members ∩ G'.members)
     (trans' := fun e e' he he' =>
@@ -658,11 +658,14 @@ theorem ChartedSpace.secondCountable_of_countable_cover [SecondCountableTopology
 
 variable (M)
 
-theorem ChartedSpace.secondCountable_of_sigma_compact [SecondCountableTopology H]
+theorem ChartedSpace.secondCountable_of_sigmaCompact [SecondCountableTopology H]
     [SigmaCompactSpace M] : SecondCountableTopology M := by
   obtain ⟨s, hsc, hsU⟩ : ∃ s, Set.Countable s ∧ ⋃ (x) (_ : x ∈ s), (chartAt H x).source = univ :=
-    countable_cover_nhds_of_sigma_compact fun x : M ↦ chart_source_mem_nhds H x
+    countable_cover_nhds_of_sigmaCompact fun x : M ↦ chart_source_mem_nhds H x
   exact ChartedSpace.secondCountable_of_countable_cover H hsU hsc
+
+@[deprecated (since := "2024-11-13")] alias
+ChartedSpace.secondCountable_of_sigma_compact := ChartedSpace.secondCountable_of_sigmaCompact
 
 /-- If a topological space admits an atlas with locally compact charts, then the space itself
 is locally compact. -/
@@ -837,7 +840,7 @@ end ChartedSpace
 have a topological structure, where the topology would come from the charts. For this, one needs
 charts that are only partial equivalences, and continuity properties for their composition.
 This is formalised in `ChartedSpaceCore`. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure ChartedSpaceCore (H : Type*) [TopologicalSpace H] (M : Type*) where
   /-- An atlas of charts, which are only `PartialEquiv`s -/
@@ -1097,7 +1100,7 @@ theorem singleton_hasGroupoid (h : e.source = Set.univ) (G : StructureGroupoid H
 
 end PartialHomeomorph
 
-namespace IsOpenEmbedding
+namespace Topology.IsOpenEmbedding
 
 variable [Nonempty α]
 
@@ -1114,7 +1117,7 @@ theorem singleton_hasGroupoid {f : α → H} (h : IsOpenEmbedding f) (G : Struct
     [ClosedUnderRestriction G] : @HasGroupoid _ _ _ _ h.singletonChartedSpace G :=
   (h.toPartialHomeomorph f).singleton_hasGroupoid (toPartialHomeomorph_source _ _) G
 
-end IsOpenEmbedding
+end Topology.IsOpenEmbedding
 
 end Singleton
 
@@ -1205,7 +1208,7 @@ lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
 /-- A `G`-diffeomorphism between two charted spaces is a homeomorphism which, when read in the
 charts, belongs to `G`. We avoid the word diffeomorph as it is too related to the smooth category,
 and use structomorph instead. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure Structomorph (G : StructureGroupoid H) (M : Type*) (M' : Type*) [TopologicalSpace M]
   [TopologicalSpace M'] [ChartedSpace H M] [ChartedSpace H M'] extends Homeomorph M M' where

@@ -6,6 +6,7 @@ Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 import Mathlib.Data.List.Basic
 import Mathlib.Order.MinMax
 import Mathlib.Order.WithBot
+import Mathlib.Order.BoundedOrder.Lattice
 
 /-!
 # Minimum and maximum of lists
@@ -50,16 +51,16 @@ private theorem foldl_argAux_mem (l) : ∀ a m : α, m ∈ foldl (argAux r) (som
       intro tl hd ih a m
       simp only [foldl_append, foldl_cons, foldl_nil, argAux]
       cases hf : foldl (argAux r) (some a) tl
-      · simp (config := { contextual := true })
+      · simp +contextual
       · dsimp only
         split_ifs
-        · simp (config := { contextual := true })
+        · simp +contextual
         · -- `finish [ih _ _ hf]` closes this goal
           simp only [List.mem_cons] at ih
           rcases ih _ _ hf with rfl | H
-          · simp (config := { contextual := true }) only [Option.mem_def, Option.some.injEq,
+          · simp +contextual only [Option.mem_def, Option.some.injEq,
               find?, eq_comm, mem_cons, mem_append, mem_singleton, true_or, implies_true]
-          · simp (config := { contextual := true }) [@eq_comm _ _ m, H])
+          · simp +contextual [@eq_comm _ _ m, H])
 
 @[simp]
 theorem argAux_self (hr₀ : Irreflexive r) (a : α) : argAux r (some a) a = a :=
@@ -427,7 +428,7 @@ theorem minimum_of_length_pos_le_of_mem (h : a ∈ l) (w : 0 < l.length) :
 theorem getElem_le_maximum_of_length_pos {i : ℕ} (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
     l[i] ≤ l.maximum_of_length_pos h := by
   apply le_maximum_of_length_pos_of_mem
-  exact get_mem l i w
+  exact getElem_mem _
 
 theorem minimum_of_length_pos_le_getElem {i : ℕ} (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
     l.minimum_of_length_pos h ≤ l[i] :=
@@ -443,7 +444,7 @@ lemma getD_max?_eq_unbot'_maximum (l : List α) (d : α) :
     cases hz : l.max? with
     | none => simp [List.max?_eq_none_iff.mp hz] at hy
     | some z =>
-      have : Antisymm (α := α) (· ≤ ·) := ⟨_root_.le_antisymm⟩
+      have : Std.Antisymm (α := α) (· ≤ ·) := ⟨_root_.le_antisymm⟩
       rw [List.max?_eq_some_iff] at hz
       · rw [Option.getD_some]
         exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)

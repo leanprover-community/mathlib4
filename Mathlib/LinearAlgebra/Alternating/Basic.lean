@@ -153,23 +153,32 @@ These are expressed in terms of `⇑f` instead of `f.toFun`.
 
 
 @[simp]
-theorem map_add [DecidableEq ι] (i : ι) (x y : M) :
+theorem map_update_add [DecidableEq ι] (i : ι) (x y : M) :
     f (update v i (x + y)) = f (update v i x) + f (update v i y) :=
-  f.toMultilinearMap.map_add' v i x y
+  f.map_update_add' v i x y
+
+@[deprecated (since := "2024-11-03")] protected alias map_add := map_update_add
 
 @[simp]
-theorem map_sub [DecidableEq ι] (i : ι) (x y : M') :
+theorem map_update_sub [DecidableEq ι] (i : ι) (x y : M') :
     g' (update v' i (x - y)) = g' (update v' i x) - g' (update v' i y) :=
-  g'.toMultilinearMap.map_sub v' i x y
+  g'.toMultilinearMap.map_update_sub v' i x y
+
+@[deprecated (since := "2024-11-03")] protected alias map_sub := map_update_sub
 
 @[simp]
-theorem map_neg [DecidableEq ι] (i : ι) (x : M') : g' (update v' i (-x)) = -g' (update v' i x) :=
-  g'.toMultilinearMap.map_neg v' i x
+theorem map_update_neg [DecidableEq ι] (i : ι) (x : M') :
+    g' (update v' i (-x)) = -g' (update v' i x) :=
+  g'.toMultilinearMap.map_update_neg v' i x
+
+@[deprecated (since := "2024-11-03")] protected alias map_neg := map_update_neg
 
 @[simp]
-theorem map_smul [DecidableEq ι] (i : ι) (r : R) (x : M) :
+theorem map_update_smul [DecidableEq ι] (i : ι) (r : R) (x : M) :
     f (update v i (r • x)) = r • f (update v i x) :=
-  f.toMultilinearMap.map_smul' v i r x
+  f.map_update_smul' v i r x
+
+@[deprecated (since := "2024-11-03")] protected alias map_smul := map_update_smul
 
 @[simp]
 theorem map_eq_zero_of_eq (v : ι → M) {i j : ι} (h : v i = v j) (hij : i ≠ j) : f v = 0 :=
@@ -747,16 +756,16 @@ theorem map_linearDependent {K : Type*} [Ring K] {M : Type*} [AddCommGroup M] [M
   obtain ⟨s, g, h, i, hi, hz⟩ := not_linearIndependent_iff.mp h
   letI := Classical.decEq ι
   suffices f (update v i (g i • v i)) = 0 by
-    rw [f.map_smul, Function.update_eq_self, smul_eq_zero] at this
+    rw [f.map_update_smul, Function.update_eq_self, smul_eq_zero] at this
     exact Or.resolve_left this hz
   -- Porting note: Was `conv at h in .. => ..`.
   rw [← (funext fun x => ite_self (c := i = x) (d := Classical.decEq ι i x) (g x • v x))] at h
   rw [Finset.sum_ite, Finset.filter_eq, Finset.filter_ne, if_pos hi, Finset.sum_singleton,
     add_eq_zero_iff_eq_neg] at h
-  rw [h, f.map_neg, f.map_update_sum, neg_eq_zero]; apply Finset.sum_eq_zero
+  rw [h, f.map_update_neg, f.map_update_sum, neg_eq_zero]; apply Finset.sum_eq_zero
   intro j hj
   obtain ⟨hij, _⟩ := Finset.mem_erase.mp hj
-  rw [f.map_smul, f.map_update_self _ hij.symm, smul_zero]
+  rw [f.map_update_smul, f.map_update_self _ hij.symm, smul_zero]
 
 section Fin
 

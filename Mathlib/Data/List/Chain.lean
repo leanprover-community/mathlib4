@@ -307,17 +307,19 @@ theorem Chain'.append_overlap {l₁ l₂ l₃ : List α} (h₁ : Chain' R (l₁ 
   h₁.append h₂.right_of_append <| by
     simpa only [getLast?_append_of_ne_nil _ hn] using (chain'_append.1 h₂).2.2
 
-lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
-    (Chain' R L.join ↔ (∀ l ∈ L, Chain' R l) ∧
+lemma chain'_flatten : ∀ {L : List (List α)}, [] ∉ L →
+    (Chain' R L.flatten ↔ (∀ l ∈ L, Chain' R l) ∧
     L.Chain' (fun l₁ l₂ => ∀ᵉ (x ∈ l₁.getLast?) (y ∈ l₂.head?), R x y))
 | [], _ => by simp
-| [l], _ => by simp [join]
+| [l], _ => by simp [flatten]
 | (l₁ :: l₂ :: L), hL => by
     rw [mem_cons, not_or, ← Ne] at hL
-    rw [join, chain'_append, chain'_join hL.2, forall_mem_cons, chain'_cons]
+    rw [flatten, chain'_append, chain'_flatten hL.2, forall_mem_cons, chain'_cons]
     rw [mem_cons, not_or, ← Ne] at hL
-    simp only [forall_mem_cons, and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
+    simp only [forall_mem_cons, and_assoc, flatten, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
+
+@[deprecated (since := "2024-10-15")] alias chain'_join := chain'_flatten
 
 theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
     {r : {a // p a} → {a // p a} → Prop} :

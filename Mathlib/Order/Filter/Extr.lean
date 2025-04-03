@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Order.Filter.Tendsto
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Minimum and maximum w.r.t. a filter and on a set

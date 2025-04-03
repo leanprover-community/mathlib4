@@ -5,10 +5,10 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Field.Subfield
+import Mathlib.Algebra.Field.Subfield.Defs
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.Submodule
-import Mathlib.Data.Set.Pointwise.Interval
 
 /-!
 # Normed fields
@@ -955,7 +955,7 @@ theorem NormedAddCommGroup.tendsto_atTop' [Nonempty α] [Preorder α] [IsDirecte
 
 section RingHomIsometric
 
-variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {R₁ R₂ : Type*}
 
 /-- This class states that a ring homomorphism is isometric. This is a sufficient assumption
 for a continuous semilinear map to be bounded and this is the main use for this typeclass. -/
@@ -965,7 +965,7 @@ class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (
 
 attribute [simp] RingHomIsometric.is_iso
 
-variable [SeminormedRing R₁] [SeminormedRing R₂] [SeminormedRing R₃]
+variable [SeminormedRing R₁]
 
 instance RingHomIsometric.ids : RingHomIsometric (RingHom.id R₁) :=
   ⟨rfl⟩

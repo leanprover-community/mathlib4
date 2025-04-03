@@ -151,7 +151,7 @@ end
 namespace FormalMultilinearSeries
 
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [NormedSpace 𝕜 F]
 
 variable (p : FormalMultilinearSeries 𝕜 E F)
 
@@ -261,8 +261,8 @@ end Order
 
 section Coef
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {s : E}
-  {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜} {y : Fin n → 𝕜}
+variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {n : ℕ} {z : 𝕜} {y : Fin n → 𝕜}
 
 /-- The `n`th coefficient of `p` when seen as a power series. -/
 def coeff (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) : E :=

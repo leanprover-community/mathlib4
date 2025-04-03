@@ -15,7 +15,7 @@ of sets in the limit is, in fact, a topological basis.
 -/
 
 
-open TopologicalSpace
+open TopologicalSpace Topology
 
 open CategoryTheory
 

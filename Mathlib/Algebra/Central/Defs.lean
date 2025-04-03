@@ -19,7 +19,7 @@ is a (not necessarily commutative) `K`-algebra.
 ## Implementation notes
 
 We require the `K`-center of `D` to be smaller than or equal to the smallest subalgebra so that when
-we prove something is central, there we don't need to prove `⊥ ≤ center K D` even though this
+we prove something is central, we don't need to prove `⊥ ≤ center K D` even though this
 direction is trivial.
 
 ### Central Simple Algebras
@@ -34,11 +34,11 @@ but an instance of `[Algebra.IsCentralSimple K D]` would not imply `[IsSimpleRin
 synthesization orders (`K` cannot be inferred). Thus, to obtain a central simple `K`-algebra `D`,
 one should use `Algebra.IsCentral K D` and `IsSimpleRing D` separately.
 
-Note that the predicate `Albgera.IsCentral K D` and `IsSimpleRing D` makes sense just for `K` a
+Note that the predicate `Algebra.IsCentral K D` and `IsSimpleRing D` makes sense just for `K` a
 `CommRing` but it doesn't give the right definition for central simple algebra; for a commutative
 ring base, one should use the theory of Azumaya algebras. In fact ideals of `K` immediately give
 rise to nontrivial quotients of `D` so there are no central simple algebras in this case according
-to our definition, if K is not a field.
+to our definition, if `K` is not a field.
 The theory of central simple algebras really is a theory over fields.
 
 Thus to declare a central simple algebra, one should use the following:

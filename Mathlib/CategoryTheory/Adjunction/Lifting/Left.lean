@@ -166,11 +166,11 @@ noncomputable def constructLeftAdjoint [∀ X : B, RegularEpi (adj₁.counit.app
   rw [constructLeftAdjointEquiv_apply, constructLeftAdjointEquiv_apply,
     Equiv.symm_apply_eq, Subtype.ext_iff]
   dsimp
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [Cofork.IsColimit.homIso_natural, Cofork.IsColimit.homIso_natural]
   erw [adj₂.homEquiv_naturality_right]
   simp_rw [Functor.comp_map]
-  -- This used to be `simp`, but we need `aesop_cat` after leanprover/lean4#2644
+  -- This used to be `simp`, but we need `aesop_cat` after https://github.com/leanprover/lean4/pull/2644
   aesop_cat
 
 end LiftLeftAdjoint

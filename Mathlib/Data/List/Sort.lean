@@ -103,6 +103,10 @@ protected theorem Sorted.nodup {r : α → α → Prop} [IsIrrefl α r] {l : Lis
     Nodup l :=
   Pairwise.nodup h
 
+protected theorem Sorted.filter {l : List α} (f : α → Bool) (h : Sorted r l) :
+    Sorted r (filter f l) :=
+  h.sublist (filter_sublist l)
+
 theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ ~ l₂) (hs₁ : Sorted r l₁)
     (hs₂ : Sorted r l₂) : l₁ = l₂ := by
   induction' hs₁ with a l₁ h₁ hs₁ IH generalizing l₂
@@ -129,6 +133,13 @@ theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp
 @[simp 1100] -- Porting note: higher priority for linter
 theorem sorted_singleton (a : α) : Sorted r [a] :=
   pairwise_singleton _ _
+
+theorem sorted_lt_range (n : ℕ) : Sorted (· < ·) (range n) := by
+  rw [Sorted, pairwise_iff_get]
+  simp
+
+theorem sorted_le_range (n : ℕ) : Sorted (· ≤ ·) (range n) :=
+  (sorted_lt_range n).le_of_lt
 
 theorem Sorted.rel_get_of_lt {l : List α} (h : l.Sorted r) {a b : Fin l.length} (hab : a < b) :
     r (l.get a) (l.get b) :=

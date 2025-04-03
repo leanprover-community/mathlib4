@@ -5,18 +5,9 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Module.Rat
 import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Algebra.Periodic
-import Mathlib.Data.Real.Star
-import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Algebra.Order.Field
-import Mathlib.Topology.Algebra.Star
-import Mathlib.Topology.Algebra.UniformMulAction
-import Mathlib.Topology.Instances.Int
-import Mathlib.Topology.Metrizable.Basic
-import Mathlib.Topology.Order.Bornology
-import Mathlib.Topology.Algebra.UniformGroup.Defs
-import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.Algebra.UniformGroup.Basic
+import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Metrizable.Basic
 
 /-!
 The subgroup "multiples of `a`" (`zmultiples a`) is a discrete subgroup of `ℝ`, i.e. its

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.RingTheory.EuclideanDomain
 
@@ -166,6 +167,30 @@ theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative
     n < p.rootMultiplicity t ↔ ∀ m ≤ n, (derivative^[m] p).IsRoot t :=
   ⟨fun hn _ hm ↦ isRoot_iterate_derivative_of_lt_rootMultiplicity <| Nat.lt_of_le_of_lt hm hn,
     fun hr ↦ lt_rootMultiplicity_of_isRoot_iterate_derivative h hr⟩
+
+/-- A sufficient condition for the set of roots of a nonzero polynomial `f` to be a subset of the
+set of roots of `g` is that `f` divides `f.derivative * g`. Over an algebraically closed field of
+characteristic zero, this is also a necessary condition.
+See `isRoot_of_isRoot_iff_dvd_derivative_mul` -/
+theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : f ≠ 0)
+    (hfd : f ∣ f.derivative * g) {a : R} (haf : f.IsRoot a) : g.IsRoot a := by
+  rcases hfd with ⟨r, hr⟩
+  by_cases hdf0 : derivative f = 0
+  · rw [eq_C_of_derivative_eq_zero hdf0] at haf hf0
+    simp only [eval_C, derivative_C, zero_mul, dvd_zero, iff_true, IsRoot.def] at haf
+    rw [haf, map_zero] at hf0
+    exact (hf0 rfl).elim
+  by_contra hg
+  have hdfg0 : f.derivative * g ≠ 0 := mul_ne_zero hdf0 (by rintro rfl; simp at hg)
+  have hr' := congr_arg (rootMultiplicity a) hr
+  rw [rootMultiplicity_mul hdfg0, derivative_rootMultiplicity_of_root haf,
+    rootMultiplicity_eq_zero hg, add_zero, rootMultiplicity_mul (hr ▸ hdfg0), add_comm,
+    Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
+  refine lt_irrefl (rootMultiplicity a f) ?_
+  refine lt_of_lt_of_le (Nat.lt_succ_self _)
+    (le_trans (le_add_of_nonneg_left (Nat.zero_le (rootMultiplicity a r))) ?_)
+  conv_rhs => rw [hr']
+  simp [add_assoc]
 
 section NormalizationMonoid
 

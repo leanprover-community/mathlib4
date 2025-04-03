@@ -54,7 +54,7 @@ This is shown in `CategoryTheory.Limits.Filtered`.
 open Function
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-universe w v v₁ u u₁ u₂
+universe w v v₁ v₂ u u₁ u₂
 
 namespace CategoryTheory
 
@@ -616,6 +616,26 @@ theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) 
   let ⟨l, li, lk, e⟩ := cospan ij kj
   refine ⟨⟨l, lk ≫ kj⟩, e ▸ ?_, ?_⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
 
+/-- Given a "bowtie" of morphisms
+```
+ k₁   k₂
+ |\  /|
+ | \/ |
+ | /\ |
+ |/  \∣
+ vv  vv
+ j₁  j₂
+```
+in a cofiltered category, we can construct an object `s` and two morphisms
+from `s` to `k₁` and `k₂`, making the resulting squares commute.
+-/
+theorem bowtie {j₁ j₂ k₁ k₂ : C} (f₁ : k₁ ⟶ j₁) (g₁ : k₂ ⟶ j₁) (f₂ : k₁ ⟶ j₂) (g₂ : k₂ ⟶ j₂) :
+    ∃ (s : C) (α : s ⟶ k₁) (β : s ⟶ k₂), α ≫ f₁ = β ≫ g₁ ∧ α ≫ f₂ = β ≫ g₂ := by
+  obtain ⟨t, k₁t, k₂t, ht⟩ := cospan f₁ g₁
+  obtain ⟨s, ts, hs⟩ := IsCofilteredOrEmpty.cone_maps (k₁t ≫ f₂) (k₂t ≫ g₂)
+  exact ⟨s, ts ≫ k₁t, ts ≫ k₂t, by simp only [Category.assoc, ht],
+    by simp only [Category.assoc, hs]⟩
+
 end AllowEmpty
 
 end IsCofiltered
@@ -893,5 +913,57 @@ instance [IsCofiltered C] : IsCofiltered (AsSmall C) :=
   IsCofiltered.of_equivalence AsSmall.equiv
 
 end ULift
+
+section Pi
+
+variable {α : Type w} {I : α → Type u₁} [∀ i, Category.{v₁} (I i)]
+
+open IsFiltered in
+instance [∀ i, IsFilteredOrEmpty (I i)] : IsFilteredOrEmpty (∀ i, I i) where
+  cocone_objs k l := ⟨fun s => max (k s) (l s), fun s => leftToMax (k s) (l s),
+    fun s => rightToMax (k s) (l s), trivial⟩
+  cocone_maps k l f g := ⟨fun s => coeq (f s) (g s), fun s => coeqHom (f s) (g s),
+    funext fun s => by simp [coeq_condition (f s) (g s)]⟩
+
+attribute [local instance] IsFiltered.nonempty in
+instance [∀ i, IsFiltered (I i)] : IsFiltered (∀ i, I i) where
+
+open IsCofiltered in
+instance [∀ i, IsCofilteredOrEmpty (I i)] : IsCofilteredOrEmpty (∀ i, I i) where
+  cone_objs k l := ⟨fun s => min (k s) (l s), fun s => minToLeft (k s) (l s),
+    fun s => minToRight (k s) (l s), trivial⟩
+  cone_maps k l f g := ⟨fun s => eq (f s) (g s), fun s => eqHom (f s) (g s),
+    funext fun s => by simp [eq_condition (f s) (g s)]⟩
+
+attribute [local instance] IsCofiltered.nonempty in
+instance [∀ i, IsCofiltered (I i)] : IsCofiltered (∀ i, I i) where
+
+end Pi
+
+section Prod
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+
+open IsFiltered in
+instance [IsFilteredOrEmpty C] [IsFilteredOrEmpty D] : IsFilteredOrEmpty (C × D) where
+  cocone_objs k l := ⟨(max k.1 l.1, max k.2 l.2), (leftToMax k.1 l.1, leftToMax k.2 l.2),
+    (rightToMax k.1 l.1, rightToMax k.2 l.2), trivial⟩
+  cocone_maps k l f g := ⟨(coeq f.1 g.1, coeq f.2 g.2), (coeqHom f.1 g.1, coeqHom f.2 g.2),
+    by simp [coeq_condition]⟩
+
+attribute [local instance] IsFiltered.nonempty in
+instance [IsFiltered C] [IsFiltered D] : IsFiltered (C × D) where
+
+open IsCofiltered in
+instance [IsCofilteredOrEmpty C] [IsCofilteredOrEmpty D] : IsCofilteredOrEmpty (C × D) where
+  cone_objs k l := ⟨(min k.1 l.1, min k.2 l.2), (minToLeft k.1 l.1, minToLeft k.2 l.2),
+    (minToRight k.1 l.1, minToRight k.2 l.2), trivial⟩
+  cone_maps k l f g := ⟨(eq f.1 g.1, eq f.2 g.2), (eqHom f.1 g.1, eqHom f.2 g.2),
+    by simp [eq_condition]⟩
+
+attribute [local instance] IsCofiltered.nonempty in
+instance [IsCofiltered C] [IsCofiltered D] : IsCofiltered (C × D) where
+
+end Prod
 
 end CategoryTheory

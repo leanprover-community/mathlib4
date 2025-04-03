@@ -13,7 +13,7 @@ This file defines instances for binary product of modules
 -/
 
 
-variable {R : Type*} {S : Type*} {M : Type*} {N : Type*}
+variable {R : Type*} {M : Type*} {N : Type*}
 
 namespace Prod
 

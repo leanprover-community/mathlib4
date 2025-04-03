@@ -16,8 +16,8 @@ The structures are induced by those on `ContinuousMultilinearMap`s,
 and most of the lemmas follow from the corresponding lemmas about `ContinuousMultilinearMap`s.
 -/
 
-open Bornology Function Set
-open scoped Topology UniformConvergence Filter
+open Bornology Function Set Topology
+open scoped UniformConvergence Filter
 
 namespace ContinuousAlternatingMap
 
@@ -49,7 +49,7 @@ instance instUniformSpace : UniformSpace (E [⋀^ι]→L[𝕜] F) :=
 
 lemma isUniformEmbedding_toContinuousMultilinearMap :
     IsUniformEmbedding (toContinuousMultilinearMap : (E [⋀^ι]→L[𝕜] F) → _) where
-  inj := toContinuousMultilinearMap_injective
+  injective := toContinuousMultilinearMap_injective
   comap_uniformity := rfl
 
 @[deprecated (since := "2024-10-01")]

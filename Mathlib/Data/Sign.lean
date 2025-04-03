@@ -15,7 +15,7 @@ This file defines the sign function for types with zero and a decidable less-tha
 proves some basic theorems about it.
 -/
 
--- Porting note (#11081): cannot automatically derive Fintype, added manually
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11081): cannot automatically derive Fintype, added manually
 /-- The type of signs. -/
 inductive SignType
   | zero
@@ -392,7 +392,7 @@ end OrderedRing
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing α] {a b : α}
+variable [LinearOrderedRing α]
 
 theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
   rcases lt_trichotomy x 0 with (hx | hx | hx) <;> rcases lt_trichotomy y 0 with (hy | hy | hy) <;>

@@ -193,12 +193,12 @@ theorem ae_le_of_forall_setLIntegral_le_of_sigmaFinite₀ [SigmaFinite μ]
       have : Tendsto (fun n => g x + u n) atTop (𝓝 (g x + (0 : ℝ≥0))) :=
         tendsto_const_nhds.add (ENNReal.tendsto_coe.2 u_lim)
       simp only [ENNReal.coe_zero, add_zero] at this
-      exact eventually_le_of_tendsto_lt hx this
+      exact this.eventually_le_const hx
     have L2 : ∀ᶠ n : ℕ in (atTop : Filter ℕ), g x ≤ (n : ℝ≥0) :=
-      haveI : Tendsto (fun n : ℕ => ((n : ℝ≥0) : ℝ≥0∞)) atTop (𝓝 ∞) := by
+      have : Tendsto (fun n : ℕ => ((n : ℝ≥0) : ℝ≥0∞)) atTop (𝓝 ∞) := by
         simp only [ENNReal.coe_natCast]
         exact ENNReal.tendsto_nat_nhds_top
-      eventually_ge_of_tendsto_gt (hx.trans_le le_top) this
+      this.eventually_const_le (hx.trans_le le_top)
     apply Set.mem_iUnion.2
     exact ((L1.and L2).and (eventually_mem_spanningSets μ x)).exists
   refine le_antisymm ?_ bot_le

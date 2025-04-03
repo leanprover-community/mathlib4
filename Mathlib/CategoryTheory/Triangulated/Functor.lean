@@ -173,8 +173,8 @@ instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
 noncomputable instance [F.IsTriangulated] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₃ : C), IsIso (prodComparison F X₁ X₃) by
-    have := fun (X₁ X₃ : C) ↦ PreservesLimitPair.ofIsoProdComparison F X₁ X₃
-    exact ⟨fun {K} ↦ preservesLimitOfIsoDiagram F (diagramIsoPair K).symm⟩
+    have := fun (X₁ X₃ : C) ↦ PreservesLimitPair.of_iso_prod_comparison F X₁ X₃
+    exact ⟨fun {K} ↦ preservesLimit_of_iso_diagram F (diagramIsoPair K).symm⟩
   intro X₁ X₃
   let φ : F.mapTriangle.obj (binaryProductTriangle X₁ X₃) ⟶
       binaryProductTriangle (F.obj X₁) (F.obj X₃) :=

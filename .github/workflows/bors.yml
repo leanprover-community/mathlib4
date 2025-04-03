@@ -14,6 +14,14 @@ on:
 
 name: continuous integration (staging)
 
+env:
+  # Disable Lake's automatic fetching of cloud builds.
+  # Lake's cache is currently incompatible with Mathlib's `lake exe cache`.
+  # This is because Mathlib's Cache assumes all build aritfacts present in the build directory
+  # are valid by-products of the Mathlib build. Build artifacts fetched from Lake's cache do
+  # not necessarily satisfy this property.
+  LAKE_NO_CACHE: true
+
 jobs:
   # Cancels previous runs of jobs in this file
   cancel:
@@ -131,6 +139,7 @@ jobs:
 
       - name: prune ProofWidgets .lake
         run: |
+          lake build proofwidgets:release
           # The ProofWidgets release contains not just the `.js` (which we need in order to build)
           # but also `.oleans`, which may have been built with the wrong toolchain.
           # This removes them.
@@ -143,8 +152,8 @@ jobs:
         run: |
           rm -rf .lake/build/lib/Mathlib/
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
-          lake exe cache get #Mathlib.Init
-          #lake build --no-build Mathlib.Init && lake exe cache get || echo "No cache for 'Mathlib.Init' available"
+          lake exe cache get Mathlib.Init
+          lake build --no-build Mathlib.Init && lake exe cache get || echo "No cache for 'Mathlib.Init' available"
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
@@ -165,6 +174,10 @@ jobs:
           linters: gcc
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+
+      - name: print the sizes of the oleans
+        run: |
+          du .lake/build/lib/Mathlib || echo "This code should be unreachable"
 
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
@@ -250,10 +263,20 @@ jobs:
           python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
           lake exe check-yaml
 
-      - name: verify `lake exe graph` works
-        run: |
-          lake exe graph
-          rm import_graph.dot
+      - name: generate our import graph
+        run: lake exe graph
+
+      - name: upload the import graph
+        uses: actions/upload-artifact@v4
+        with:
+          name: import-graph
+          path: import_graph.dot
+          ## the default is 90, but we build often, so unless there's a reason
+          ## to care about old copies in the future, just say 7 days for now
+          retention-days: 7
+
+      - name: clean up the import graph file
+        run: rm import_graph.dot
 
       - name: build everything
         # make sure everything is available for test/import_all.lean
@@ -266,7 +289,7 @@ jobs:
         with:
           linters: gcc
           run:
-            lake test
+            lake --iofail test
 
       - name: check for unused imports
         id: shake
@@ -297,12 +320,29 @@ jobs:
           BUILD_OUTCOME: ${{ steps.build.outcome }}
           NOISY_OUTCOME: ${{ steps.noisy.outcome }}
           ARCHIVE_OUTCOME: ${{ steps.archive.outcome }}
-          COUNTEREXAMPLE_OUTCOME: ${{ steps.counterexamples.outcome }}
+          COUNTEREXAMPLES_OUTCOME: ${{ steps.counterexamples.outcome }}
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
         run: |
           scripts/lean-pr-testing-comments.sh lean
           scripts/lean-pr-testing-comments.sh batteries
+
+      - name: build lean4checker, but don't run it
+        if: ${{ (always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
+        run: |
+          git clone https://github.com/leanprover/lean4checker
+          cd lean4checker
+          # Read lean-toolchain file and checkout appropriate branch
+          TOOLCHAIN=$(cat ../lean-toolchain)
+          if [[ "$TOOLCHAIN" =~ ^leanprover/lean4:v ]]; then
+            VERSION=${TOOLCHAIN#leanprover/lean4:}
+            git checkout "$VERSION"
+          else
+            git checkout master
+          fi
+          # Build lean4checker using the same toolchain
+          cp ../lean-toolchain .
+          lake build
 
   final:
     name: Post-CI job

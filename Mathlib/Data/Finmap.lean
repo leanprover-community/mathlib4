@@ -296,7 +296,7 @@ def keysLookupEquiv :
     dsimp only at hf
     ext
     · simp [keys, Multiset.keys, ← hf, Option.isSome_iff_exists]
-    · simp (config := { contextual := true }) [lookup_eq_some_iff, ← hf]
+    · simp +contextual [lookup_eq_some_iff, ← hf]
 
 @[simp] lemma keysLookupEquiv_symm_apply_keys :
     ∀ f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1},

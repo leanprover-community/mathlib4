@@ -79,8 +79,7 @@ theorem diam_pair : diam ({x, y} : Set α) = edist x y := by
   simp only [iSup_singleton, diam_insert, diam_singleton, ENNReal.max_zero_right]
 
 theorem diam_triple : diam ({x, y, z} : Set α) = max (max (edist x y) (edist x z)) (edist y z) := by
-  simp only [diam_insert, iSup_insert, iSup_singleton, diam_singleton, ENNReal.max_zero_right,
-    ENNReal.sup_eq_max]
+  simp only [diam_insert, iSup_insert, iSup_singleton, diam_singleton, ENNReal.max_zero_right]
 
 /-- The diameter is monotonous with respect to inclusion -/
 @[gcongr]

@@ -91,6 +91,14 @@ lemma IsNilpotent.not_isUnit [Ring R] [Nontrivial R] {x : R} (hx : IsNilpotent x
     ¬ IsUnit x :=
   mt IsUnit.not_isNilpotent (by simpa only [not_not] using hx)
 
+lemma IsIdempotentElem.eq_zero_of_isNilpotent [MonoidWithZero R] {e : R}
+    (idem : IsIdempotentElem e) (nilp : IsNilpotent e) : e = 0 := by
+  obtain ⟨rfl | n, hn⟩ := nilp
+  · rw [pow_zero] at hn; rw [← one_mul e, hn, zero_mul]
+  · rw [← hn, idem.pow_succ_eq]
+
+alias IsNilpotent.eq_zero_of_isIdempotentElem := IsIdempotentElem.eq_zero_of_isNilpotent
+
 instance [Zero R] [Pow R ℕ] [Zero S] [Pow S ℕ] [IsReduced R] [IsReduced S] : IsReduced (R × S) where
   eq_zero _ := fun ⟨n, hn⟩ ↦ have hn := Prod.ext_iff.1 hn
     Prod.ext (IsReduced.eq_zero _ ⟨n, hn.1⟩) (IsReduced.eq_zero _ ⟨n, hn.2⟩)

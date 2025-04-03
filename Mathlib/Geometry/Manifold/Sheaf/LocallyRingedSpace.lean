@@ -31,7 +31,11 @@ smooth manifolds.
 noncomputable section
 universe u
 
-variable {𝕜 : Type u} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
+/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
+Later, replace with `open scoped ContDiff`. -/
+local notation "∞" => (⊤ : ℕ∞)
+
+variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
   {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
   {HM : Type*} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
   {M : Type u} [TopologicalSpace M] [ChartedSpace HM M]
@@ -80,22 +84,24 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
     · refine ⟨⟨S.germ _ x (hxV) (SmoothMap.restrictRingHom IM 𝓘(𝕜) 𝕜 hUV f), S.germ _ x hxV g,
         ?_, ?_⟩, S.germ_res_apply hUV.hom x hxV f⟩
       · rw [← map_mul]
-        -- Qualified the name to avoid Lean not finding a `OneHomClass` #8386
+        -- Qualified the name to avoid Lean not finding a `OneHomClass` https://github.com/leanprover-community/mathlib4/pull/8386
         convert RingHom.map_one _
         apply Subtype.ext
         ext y
         apply mul_inv_cancel₀
         exact hVf y
       · rw [← map_mul]
-        -- Qualified the name to avoid Lean not finding a `OneHomClass` #8386
+        -- Qualified the name to avoid Lean not finding a `OneHomClass` https://github.com/leanprover-community/mathlib4/pull/8386
         convert RingHom.map_one _
         apply Subtype.ext
         ext y
         apply inv_mul_cancel₀
         exact hVf y
     · intro y
-      exact ((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y
-        (f.smooth.comp (smooth_inclusion hUV)).smoothAt
+      #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+        was `exact`; somehow `convert` bypasess unification issues -/
+      convert ((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y
+        (f.contMDiff.comp (contMDiff_inclusion hUV)).contMDiffAt
 
 /-- The non-units of the stalk at `x` of the sheaf of smooth functions from `M` to `𝕜`, considered
 as a sheaf of commutative rings, are the functions whose values at `x` are zero. -/
@@ -108,8 +114,8 @@ theorem smoothSheafCommRing.nonunits_stalk (x : M) :
 
 /-- The stalks of the structure sheaf of a smooth manifold-with-corners are local rings. -/
 instance smoothSheafCommRing.instLocalRing_stalk (x : M) :
-    LocalRing ((smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.stalk x) := by
-  apply LocalRing.of_nonunits_add
+    IsLocalRing ((smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).presheaf.stalk x) := by
+  apply IsLocalRing.of_nonunits_add
   rw [smoothSheafCommRing.nonunits_stalk]
   intro f g
   exact Ideal.add_mem _
@@ -121,4 +127,4 @@ def SmoothManifoldWithCorners.locallyRingedSpace : LocallyRingedSpace where
   carrier := TopCat.of M
   presheaf := smoothPresheafCommRing IM 𝓘(𝕜) M 𝕜
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).cond
-  localRing x := smoothSheafCommRing.instLocalRing_stalk IM x
+  isLocalRing x := smoothSheafCommRing.instLocalRing_stalk IM x

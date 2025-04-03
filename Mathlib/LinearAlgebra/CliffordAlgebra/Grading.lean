@@ -75,7 +75,6 @@ nonrec theorem GradedAlgebra.ι_sq_scalar (m : M) :
   rw [GradedAlgebra.ι_apply Q, DirectSum.of_mul_of, DirectSum.algebraMap_apply]
   exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext rfl <| ι_sq_scalar _ _)
 
-set_option linter.deprecated false in
 theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
     -- Porting note: added a second `by apply`
     lift Q ⟨by apply GradedAlgebra.ι Q, by apply GradedAlgebra.ι_sq_scalar Q⟩ x' =
@@ -85,29 +84,27 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
   induction hx' using Submodule.iSup_induction' with
   | mem i x hx =>
     obtain ⟨i, rfl⟩ := i
-    -- Porting note: `dsimp only [Subtype.coe_mk] at hx` doesn't work, use `change` instead
-    change x ∈ LinearMap.range (ι Q) ^ i at hx
+    dsimp only [Subtype.coe_mk] at hx
     induction hx using Submodule.pow_induction_on_left' with
     | algebraMap r =>
       rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
     | add x y i hx hy ihx ihy =>
-      -- Note: in #8386 `map_add` had to be specialized to avoid a timeout
-      -- (the definition was already very slow)
-      rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]
+      rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]
       rfl
     | mem_mul m hm i x hx ih =>
       obtain ⟨_, rfl⟩ := hm
-      rw [AlgHom.map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.of_mul_of]
+      rw [map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply Q, DirectSum.of_mul_of]
       refine DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext ?_ ?_) <;>
         dsimp only [GradedMonoid.mk, Subtype.coe_mk]
       · rw [Nat.succ_eq_add_one, add_comm, Nat.cast_add, Nat.cast_one]
       rfl
   | zero =>
+    set_option linter.deprecated false in
     rw [AlgHom.map_zero]
     apply Eq.symm
     apply DFinsupp.single_eq_zero.mpr; rfl
   | add x y hx hy ihx ihy =>
-    rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
+    rw [map_add, ihx, ihy, ← AddMonoidHom.map_add]; rfl
 
 /-- The clifford algebra is graded by the even and odd parts. -/
 instance gradedAlgebra : GradedAlgebra (evenOdd Q) :=

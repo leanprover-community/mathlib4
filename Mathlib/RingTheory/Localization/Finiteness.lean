@@ -3,7 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Module.LocalizedModuleIntegers
+import Mathlib.Algebra.Module.LocalizedModule.Int
 import Mathlib.RingTheory.Localization.Algebra
 import Mathlib.RingTheory.RingHom.Finite
 

@@ -20,13 +20,13 @@ remaining theorems analogous to other lemmas in `AlgebraicGeometry/Morphisms/*`.
 
 noncomputable section
 
-open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
+open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace Topology
 
 universe u
 
 namespace AlgebraicGeometry
 
-variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
+variable {X Y : Scheme.{u}}
 
 theorem isOpenImmersion_iff_stalk {f : X ⟶ Y} : IsOpenImmersion f ↔
     IsOpenEmbedding f.base ∧ ∀ x, IsIso (f.stalkMap x) := by
@@ -41,30 +41,15 @@ theorem isOpenImmersion_eq_inf :
   exact isOpenImmersion_iff_stalk.trans
     (and_congr Iff.rfl (forall_congr' fun x ↦ ConcreteCategory.isIso_iff_bijective _))
 
-instance isOpenImmersion_isStableUnderComposition :
-    MorphismProperty.IsStableUnderComposition @IsOpenImmersion where
-  comp_mem f g _ _ := LocallyRingedSpace.IsOpenImmersion.comp f.toLRSHom g.toLRSHom
-
-instance isOpenImmersion_respectsIso : MorphismProperty.RespectsIso @IsOpenImmersion := by
-  apply MorphismProperty.respectsIso_of_isStableUnderComposition
-  intro _ _ f (hf : IsIso f)
-  have : IsIso f := hf
-  infer_instance
-
 instance : IsLocalAtTarget (stalkwise (fun f ↦ Function.Bijective f)) := by
   apply stalkwiseIsLocalAtTarget_of_respectsIso
   rw [RingHom.toMorphismProperty_respectsIso_iff]
   convert (inferInstanceAs (MorphismProperty.isomorphisms CommRingCat).RespectsIso)
   ext
-  -- Regression in #17583: have to specify C explicitly below.
+  -- Regression in https://github.com/leanprover-community/mathlib4/pull/17583: have to specify C explicitly below.
   exact (ConcreteCategory.isIso_iff_bijective (C := CommRingCat) _).symm
 
 instance isOpenImmersion_isLocalAtTarget : IsLocalAtTarget @IsOpenImmersion :=
   isOpenImmersion_eq_inf ▸ inferInstance
-
-theorem isOpenImmersion_stableUnderBaseChange :
-    MorphismProperty.StableUnderBaseChange @IsOpenImmersion :=
-  MorphismProperty.StableUnderBaseChange.mk <| by
-    intro X Y Z f g H; infer_instance
 
 end AlgebraicGeometry

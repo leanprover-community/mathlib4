@@ -501,7 +501,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       -- HACK: Lean 3 traditionally puts a space after the main binder atom, resulting in
       -- notation3 "∑ "(...)", "r:(scoped f => sum f) => r
       -- but extBinders already has a space before it so we strip the trailing space of "∑ "
-      if let `(stx| $lit:str) := syntaxArgs.back then
+      if let `(stx| $lit:str) := syntaxArgs.back! then
         syntaxArgs := syntaxArgs.pop.push (← `(stx| $(quote lit.getString.trimRight):str))
       (syntaxArgs, pattArgs) ← pushMacro syntaxArgs pattArgs (← `(macroArg| binders:extBinders))
     | `(notation3Item| ($id:ident $sep:str* $(prec?)? => $kind ($x $y => $scopedTerm) $init)) =>

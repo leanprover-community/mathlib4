@@ -3,12 +3,12 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
-import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Category.Pairwise
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
-import Mathlib.Algebra.Category.Ring.Constructions
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.Order.OmegaCompletePartialOrder
+import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
 # Equivalent formulations of the sheaf condition
@@ -35,6 +35,7 @@ We show that this sheaf condition is equivalent to the `OpensLeCover` sheaf cond
 thereby also equivalent to the default sheaf condition.
 -/
 
+assert_not_exists OrderedCommMonoid
 
 noncomputable section
 
@@ -272,10 +273,10 @@ theorem isSheaf_iff_isSheafPreservesLimitPairwiseIntersections :
   rw [isSheaf_iff_isSheafPairwiseIntersections]
   constructor
   · intro h ι U
-    exact ⟨preservesLimitOfPreservesLimitCone (Pairwise.coconeIsColimit U).op (h U).some⟩
+    exact ⟨preservesLimit_of_preserves_limit_cone (Pairwise.coconeIsColimit U).op (h U).some⟩
   · intro h ι U
     haveI := (h U).some
-    exact ⟨PreservesLimit.preserves (Pairwise.coconeIsColimit U).op⟩
+    exact ⟨isLimitOfPreserves _ (Pairwise.coconeIsColimit U).op⟩
 
 end TopCat.Presheaf
 
@@ -409,44 +410,5 @@ def isProductOfDisjoint (h : U ⊓ V = ⊥) :
       (BinaryFan.mk (F.1.map (homOfLE le_sup_left : _ ⟶ U ⊔ V).op)
         (F.1.map (homOfLE le_sup_right : _ ⟶ U ⊔ V).op)) :=
   isProductOfIsTerminalIsPullback _ _ _ _ (F.isTerminalOfEqEmpty h) (isLimitPullbackCone F U V)
-
-/-- `F(U ⊔ V)` is isomorphic to the `eq_locus` of the two maps `F(U) × F(V) ⟶ F(U ⊓ V)`. -/
-def objSupIsoProdEqLocus {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) :
-    F.1.obj (op <| U ⊔ V) ≅ CommRingCat.of <|
-    -- Porting note: Lean 3 is able to figure out the ring homomorphism automatically
-    RingHom.eqLocus
-      (RingHom.comp (F.val.map (homOfLE inf_le_left : U ⊓ V ⟶ U).op)
-        (RingHom.fst (F.val.obj <| op U) (F.val.obj <| op V)))
-      (RingHom.comp (F.val.map (homOfLE inf_le_right : U ⊓ V ⟶ V).op)
-        (RingHom.snd (F.val.obj <| op U) (F.val.obj <| op V))) :=
-  (F.isLimitPullbackCone U V).conePointUniqueUpToIso (CommRingCat.pullbackConeIsLimit _ _)
-
-theorem objSupIsoProdEqLocus_hom_fst {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
-    ((F.objSupIsoProdEqLocus U V).hom x).1.fst = F.1.map (homOfLE le_sup_left).op x :=
-  ConcreteCategory.congr_hom
-    ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_hom_comp
-      (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.left)
-    x
-
-theorem objSupIsoProdEqLocus_hom_snd {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
-    ((F.objSupIsoProdEqLocus U V).hom x).1.snd = F.1.map (homOfLE le_sup_right).op x :=
-  ConcreteCategory.congr_hom
-    ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_hom_comp
-      (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.right)
-    x
-
-theorem objSupIsoProdEqLocus_inv_fst {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
-    F.1.map (homOfLE le_sup_left).op ((F.objSupIsoProdEqLocus U V).inv x) = x.1.1 :=
-  ConcreteCategory.congr_hom
-    ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_inv_comp
-      (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.left)
-    x
-
-theorem objSupIsoProdEqLocus_inv_snd {X : TopCat} (F : X.Sheaf CommRingCat) (U V : Opens X) (x) :
-    F.1.map (homOfLE le_sup_right).op ((F.objSupIsoProdEqLocus U V).inv x) = x.1.2 :=
-  ConcreteCategory.congr_hom
-    ((F.isLimitPullbackCone U V).conePointUniqueUpToIso_inv_comp
-      (CommRingCat.pullbackConeIsLimit _ _) WalkingCospan.right)
-    x
 
 end TopCat.Sheaf

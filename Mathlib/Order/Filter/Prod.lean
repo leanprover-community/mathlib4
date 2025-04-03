@@ -51,7 +51,6 @@ theorem prod_mem_prod (hs : s ∈ f) (ht : t ∈ g) : s ×ˢ t ∈ f ×ˢ g :=
 
 theorem mem_prod_iff {s : Set (α × β)} {f : Filter α} {g : Filter β} :
     s ∈ f ×ˢ g ↔ ∃ t₁ ∈ f, ∃ t₂ ∈ g, t₁ ×ˢ t₂ ⊆ s := by
-  simp only [SProd.sprod, Filter.prod]
   constructor
   · rintro ⟨t₁, ⟨s₁, hs₁, hts₁⟩, t₂, ⟨s₂, hs₂, hts₂⟩, rfl⟩
     exact ⟨s₁, hs₁, s₂, hs₂, fun p ⟨h, h'⟩ => ⟨hts₁ h, hts₂ h'⟩⟩
@@ -100,20 +99,16 @@ theorem comap_prodMap_prod (f : α → β) (g : γ → δ) (lb : Filter β) (ld 
   simp [prod_eq_inf, comap_comap, Function.comp_def]
 
 theorem prod_top : f ×ˢ (⊤ : Filter β) = f.comap Prod.fst := by
-  dsimp only [SProd.sprod]
-  rw [Filter.prod, comap_top, inf_top_eq]
+  rw [prod_eq_inf, comap_top, inf_top_eq]
 
 theorem top_prod : (⊤ : Filter α) ×ˢ g = g.comap Prod.snd := by
-  dsimp only [SProd.sprod]
-  rw [Filter.prod, comap_top, top_inf_eq]
+  rw [prod_eq_inf, comap_top, top_inf_eq]
 
 theorem sup_prod (f₁ f₂ : Filter α) (g : Filter β) : (f₁ ⊔ f₂) ×ˢ g = (f₁ ×ˢ g) ⊔ (f₂ ×ˢ g) := by
-  dsimp only [SProd.sprod]
-  rw [Filter.prod, comap_sup, inf_sup_right, ← Filter.prod, ← Filter.prod]
+  simp only [prod_eq_inf, comap_sup, inf_sup_right]
 
 theorem prod_sup (f : Filter α) (g₁ g₂ : Filter β) : f ×ˢ (g₁ ⊔ g₂) = (f ×ˢ g₁) ⊔ (f ×ˢ g₂) := by
-  dsimp only [SProd.sprod]
-  rw [Filter.prod, comap_sup, inf_sup_left, ← Filter.prod, ← Filter.prod]
+  simp only [prod_eq_inf, comap_sup, inf_sup_left]
 
 theorem eventually_prod_iff {p : α × β → Prop} :
     (∀ᶠ x in f ×ˢ g, p x) ↔
@@ -203,15 +198,11 @@ theorem tendsto_diag : Tendsto (fun i => (i, i)) f (f ×ˢ f) :=
 
 theorem prod_iInf_left [Nonempty ι] {f : ι → Filter α} {g : Filter β} :
     (⨅ i, f i) ×ˢ g = ⨅ i, f i ×ˢ g := by
-  dsimp only [SProd.sprod]
-  rw [Filter.prod, comap_iInf, iInf_inf]
-  simp only [Filter.prod, eq_self_iff_true]
+  simp only [prod_eq_inf, comap_iInf, iInf_inf]
 
 theorem prod_iInf_right [Nonempty ι] {f : Filter α} {g : ι → Filter β} :
     (f ×ˢ ⨅ i, g i) = ⨅ i, f ×ˢ g i := by
-  dsimp only [SProd.sprod]
-  rw [Filter.prod, comap_iInf, inf_iInf]
-  simp only [Filter.prod, eq_self_iff_true]
+  simp only [prod_eq_inf, comap_iInf, inf_iInf]
 
 @[mono, gcongr]
 theorem prod_mono {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} (hf : f₁ ≤ f₂) (hg : g₁ ≤ g₂) :
@@ -229,11 +220,10 @@ theorem prod_mono_right (f : Filter α) {g₁ g₂ : Filter β} (hf : g₁ ≤ g
 theorem prod_comap_comap_eq.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β₁ : Type w} {β₂ : Type x}
     {f₁ : Filter α₁} {f₂ : Filter α₂} {m₁ : β₁ → α₁} {m₂ : β₂ → α₂} :
     comap m₁ f₁ ×ˢ comap m₂ f₂ = comap (fun p : β₁ × β₂ => (m₁ p.1, m₂ p.2)) (f₁ ×ˢ f₂) := by
-  simp only [SProd.sprod, Filter.prod, comap_comap, comap_inf, Function.comp_def]
+  simp only [prod_eq_inf, comap_comap, comap_inf, Function.comp_def]
 
 theorem prod_comm' : f ×ˢ g = comap Prod.swap (g ×ˢ f) := by
-  simp only [SProd.sprod, Filter.prod, comap_comap, Function.comp_def, inf_comm, Prod.swap,
-    comap_inf]
+  simp only [prod_eq_inf, comap_comap, Function.comp_def, inf_comm, Prod.swap, comap_inf]
 
 theorem prod_comm : f ×ˢ g = map (fun p : β × α => (p.2, p.1)) (g ×ˢ f) := by
   rw [prod_comm', ← map_swap_eq_comap_swap]
@@ -280,12 +270,12 @@ theorem eventually_swap_iff {p : α × β → Prop} :
 
 theorem prod_assoc (f : Filter α) (g : Filter β) (h : Filter γ) :
     map (Equiv.prodAssoc α β γ) ((f ×ˢ g) ×ˢ h) = f ×ˢ (g ×ˢ h) := by
-  simp_rw [← comap_equiv_symm, SProd.sprod, Filter.prod, comap_inf, comap_comap, inf_assoc,
+  simp_rw [← comap_equiv_symm, prod_eq_inf, comap_inf, comap_comap, inf_assoc,
     Function.comp_def, Equiv.prodAssoc_symm_apply]
 
 theorem prod_assoc_symm (f : Filter α) (g : Filter β) (h : Filter γ) :
     map (Equiv.prodAssoc α β γ).symm (f ×ˢ (g ×ˢ h)) = (f ×ˢ g) ×ˢ h := by
-  simp_rw [map_equiv_symm, SProd.sprod, Filter.prod, comap_inf, comap_comap, inf_assoc,
+  simp_rw [map_equiv_symm, prod_eq_inf, comap_inf, comap_comap, inf_assoc,
     Function.comp_def, Equiv.prodAssoc_apply]
 
 theorem tendsto_prodAssoc {h : Filter γ} :
@@ -300,7 +290,7 @@ theorem tendsto_prodAssoc_symm {h : Filter γ} :
 theorem map_swap4_prod {h : Filter γ} {k : Filter δ} :
     map (fun p : (α × β) × γ × δ => ((p.1.1, p.2.1), (p.1.2, p.2.2))) ((f ×ˢ g) ×ˢ (h ×ˢ k)) =
       (f ×ˢ h) ×ˢ (g ×ˢ k) := by
-  simp_rw [map_swap4_eq_comap, SProd.sprod, Filter.prod, comap_inf, comap_comap]; ac_rfl
+  simp_rw [map_swap4_eq_comap, prod_eq_inf, comap_inf, comap_comap]; ac_rfl
 
 theorem tendsto_swap4_prod {h : Filter γ} {k : Filter δ} :
     Tendsto (fun p : (α × β) × γ × δ => ((p.1.1, p.2.1), (p.1.2, p.2.2))) ((f ×ˢ g) ×ˢ (h ×ˢ k))
@@ -351,7 +341,7 @@ theorem prod_eq : f ×ˢ g = (f.map Prod.mk).seq g := f.map_prod id g
 
 theorem prod_inf_prod {f₁ f₂ : Filter α} {g₁ g₂ : Filter β} :
     (f₁ ×ˢ g₁) ⊓ (f₂ ×ˢ g₂) = (f₁ ⊓ f₂) ×ˢ (g₁ ⊓ g₂) := by
-  simp only [SProd.sprod, Filter.prod, comap_inf, inf_comm, inf_assoc, inf_left_comm]
+  simp only [prod_eq_inf, comap_inf, inf_comm, inf_assoc, inf_left_comm]
 
 theorem inf_prod {f₁ f₂ : Filter α} : (f₁ ⊓ f₂) ×ˢ g = (f₁ ×ˢ g) ⊓ (f₂ ×ˢ g) := by
   rw [prod_inf_prod, inf_idem]
@@ -361,8 +351,7 @@ theorem prod_inf {g₁ g₂ : Filter β} : f ×ˢ (g₁ ⊓ g₂) = (f ×ˢ g₁
 
 @[simp]
 theorem prod_principal_principal {s : Set α} {t : Set β} : 𝓟 s ×ˢ 𝓟 t = 𝓟 (s ×ˢ t) := by
-  simp only [SProd.sprod, Filter.prod, comap_principal, principal_eq_iff_eq, comap_principal,
-    inf_principal]; rfl
+  simp only [prod_eq_inf, comap_principal, principal_eq_iff_eq, comap_principal, inf_principal]; rfl
 
 @[simp]
 theorem pure_prod {a : α} {f : Filter β} : pure a ×ˢ f = map (Prod.mk a) f := by
@@ -413,9 +402,7 @@ theorem tendsto_prod_iff {f : α × β → γ} {x : Filter α} {y : Filter β} {
 
 theorem tendsto_prod_iff' {g' : Filter γ} {s : α → β × γ} :
     Tendsto s f (g ×ˢ g') ↔ Tendsto (fun n => (s n).1) f g ∧ Tendsto (fun n => (s n).2) f g' := by
-  dsimp only [SProd.sprod]
-  unfold Filter.prod
-  simp only [tendsto_inf, tendsto_comap_iff, Function.comp_def]
+  simp only [prod_eq_inf, tendsto_inf, tendsto_comap_iff, Function.comp_def]
 
 theorem le_prod {f : Filter (α × β)} {g : Filter α} {g' : Filter β} :
     (f ≤ g ×ˢ g') ↔ Tendsto Prod.fst f g ∧ Tendsto Prod.snd f g' :=

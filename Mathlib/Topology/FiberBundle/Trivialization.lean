@@ -33,7 +33,7 @@ We provide the following operations on `Trivialization`s.
 
 Previously, in mathlib, there was a structure `topological_vector_bundle.trivialization` which
 extended another structure `topological_fiber_bundle.trivialization` by a linearity hypothesis. As
-of PR leanprover-community/mathlib#17359, we have changed this to a single structure
+of PR https://github.com/leanprover-community/mathlib3/pull/17359, we have changed this to a single structure
 `Trivialization` (no namespace), together with a mixin class `Trivialization.IsLinear`.
 
 This permits all the *data* of a vector bundle to be held at the level of fiber bundles, so that the
@@ -84,7 +84,7 @@ lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toPartialEquiv = e'.toPar
     (h₂ : e.baseSet = e'.baseSet) : e = e' := by
   cases e; cases e'; congr
 
--- Porting note (#11215): TODO: move `ext` here?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move `ext` here?
 lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
     (h₂ : ∀ x, e.toPartialEquiv.symm x = e'.toPartialEquiv.symm x) (h₃ : e.baseSet = e'.baseSet) :
     e = e' := by
@@ -261,7 +261,7 @@ variable [TopologicalSpace Z] [TopologicalSpace (TotalSpace F E)]
 `proj : Z → B` with fiber `F`, as a partial homeomorphism between `Z` and `B × F` defined between
 two sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on the first coordinate.
 -/
--- Porting note (#5171): was @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure Trivialization (proj : Z → B) extends PartialHomeomorph Z (B × F) where
   baseSet : Set B
   open_baseSet : IsOpen baseSet

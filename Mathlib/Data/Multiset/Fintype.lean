@@ -63,7 +63,7 @@ instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
 
 -- Syntactic equality
 
--- @[simp] -- Porting note (#10685): dsimp can prove this
+-- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
 theorem Multiset.coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x :=
   rfl
 

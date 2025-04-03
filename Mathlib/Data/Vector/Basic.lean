@@ -74,6 +74,21 @@ theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n)
 @[simp] theorem length_val (v : Vector α n) : v.val.length = n := v.2
 
 @[simp]
+theorem pmap_cons {p : α → Prop} (f : (a : α) → p a → β) (a : α) (v : Vector α n)
+    (hp : ∀ x ∈ (cons a v).toList, p x) :
+    (cons a v).pmap f hp = cons (f a (by
+      simp only [Nat.succ_eq_add_one, toList_cons, List.mem_cons, forall_eq_or_imp] at hp
+      exact hp.1))
+      (v.pmap f (by
+        simp only [Nat.succ_eq_add_one, toList_cons, List.mem_cons, forall_eq_or_imp] at hp
+        exact hp.2)) := rfl
+
+/-- Opposite direction of `Vector.pmap_cons` -/
+theorem pmap_cons' {p : α → Prop} (f : (a : α) → p a → β) (a : α) (v : Vector α n)
+    (ha : p a) (hp : ∀ x ∈ v.toList, p x) :
+    cons (f a ha) (v.pmap f hp) = (cons a v).pmap f (by simpa [ha]) := rfl
+
+@[simp]
 theorem toList_map {β : Type*} (v : Vector α n) (f : α → β) :
     (v.map f).toList = v.toList.map f := by cases v; rfl
 
@@ -87,6 +102,38 @@ theorem tail_map {β : Type*} (v : Vector α (n + 1)) (f : α → β) :
     (v.map f).tail = v.tail.map f := by
   obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
   rw [h, map_cons, tail_cons, tail_cons]
+
+@[simp]
+theorem getElem_map {β : Type*} (v : Vector α n) (f : α → β) {i : ℕ} (hi : i < n) :
+    (v.map f)[i] = f v[i] := by
+  simp only [getElem_def, toList_map, List.getElem_map]
+
+@[simp]
+theorem toList_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α n)
+    (hp : ∀ x ∈ v.toList, p x) :
+    (v.pmap f hp).toList = v.toList.pmap f hp := by cases v; rfl
+
+@[simp]
+theorem head_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α (n + 1))
+    (hp : ∀ x ∈ v.toList, p x) :
+    (v.pmap f hp).head = f v.head (hp _ <| by
+      rw [← cons_head_tail v, toList_cons, head_cons, List.mem_cons]; exact .inl rfl) := by
+  obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
+  simp_rw [h, pmap_cons, head_cons]
+
+@[simp]
+theorem tail_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α (n + 1))
+    (hp : ∀ x ∈ v.toList, p x) :
+    (v.pmap f hp).tail = v.tail.pmap f (fun x hx ↦ hp _ <| by
+      rw [← cons_head_tail v, toList_cons, List.mem_cons]; exact .inr hx) := by
+  obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
+  simp_rw [h, pmap_cons, tail_cons]
+
+@[simp]
+theorem getElem_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α n)
+    (hp : ∀ x ∈ v.toList, p x) {i : ℕ} (hi : i < n) :
+    (v.pmap f hp)[i] = f v[i] (hp _ (by simp [getElem_def, List.getElem_mem])) := by
+  simp only [getElem_def, toList_pmap, List.getElem_pmap]
 
 theorem get_eq_get (v : Vector α n) (i : Fin n) :
     v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=

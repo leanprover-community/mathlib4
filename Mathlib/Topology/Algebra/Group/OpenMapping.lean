@@ -46,7 +46,7 @@ theorem smul_singleton_mem_nhds_of_sigmaCompact
   obtain ⟨V, V_mem, V_closed, V_symm, VU⟩ : ∃ V ∈ 𝓝 (1 : G), IsClosed V ∧ V⁻¹ = V ∧ V * V ⊆ U :=
     exists_closed_nhds_one_inv_eq_mul_subset hU
   obtain ⟨s, s_count, hs⟩ : ∃ (s : Set G), s.Countable ∧ ⋃ g ∈ s, g • V = univ :=
-    countable_cover_nhds_of_sigma_compact fun _ ↦ by simpa
+    countable_cover_nhds_of_sigmaCompact fun _ ↦ by simpa
   let K : ℕ → Set G := compactCovering G
   let F : ℕ × s → Set X := fun p ↦ (K p.1 ∩ (p.2 : G) • V) • ({x} : Set X)
   obtain ⟨⟨n, ⟨g, hg⟩⟩, hi⟩ : ∃ i, (interior (F i)).Nonempty := by

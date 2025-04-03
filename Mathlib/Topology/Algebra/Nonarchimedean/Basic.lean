@@ -25,8 +25,8 @@ group is nonarchimedean.
 
 -/
 
-
-open scoped Pointwise Topology
+open Topology
+open scoped Pointwise
 
 /-- A topological additive group is nonarchimedean if every neighborhood of 0
   contains an open subgroup. -/
@@ -104,8 +104,6 @@ instance : NonarchimedeanGroup (G × K) where
 end NonarchimedeanGroup
 
 namespace NonarchimedeanRing
-
-open NonarchimedeanRing
 
 open NonarchimedeanAddGroup
 

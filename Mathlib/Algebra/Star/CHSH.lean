@@ -82,7 +82,7 @@ the `Aᵢ` commute with the `Bⱼ`.
 The physical interpretation is that `A₀` and `A₁` are a pair of boolean observables which
 are spacelike separated from another pair `B₀` and `B₁` of boolean observables.
 -/
---@[nolint has_nonempty_instance] Porting note(#5171): linter not ported yet
+--@[nolint has_nonempty_instance] Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 structure IsCHSHTuple {R} [Monoid R] [StarMul R] (A₀ A₁ B₀ B₁ : R) : Prop where
   A₀_inv : A₀ ^ 2 = 1
   A₁_inv : A₁ ^ 2 = 1

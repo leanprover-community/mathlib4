@@ -145,7 +145,7 @@ inductive TheoremForm where
 
 /-- TheoremForm to string -/
 instance : ToString TheoremForm :=
-  ⟨fun x => match x with | .uncurried => "uncurried" | .comp => "compositional"⟩
+  ⟨fun x => match x with | .uncurried => "simple" | .comp => "compositional"⟩
 
 /-- theorem about specific function (either declared constant or free variable) -/
 structure FunctionTheorem where

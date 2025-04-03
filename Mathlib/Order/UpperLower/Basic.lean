@@ -4,23 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.OrderIso
-import Mathlib.Data.Set.Lattice
 
 /-!
 # Up-sets and down-sets
 
-This file defines upper and lower sets in an order.
+This file proves results on the upper and lower sets in an order.
 
 ## Main declarations
 
-* `IsUpperSet`: Predicate for a set to be an upper set. This means every element greater than a
-  member of the set is in the set itself.
-* `IsLowerSet`: Predicate for a set to be a lower set. This means every element less than a member
-  of the set is in the set itself.
-* `UpperSet`: The type of upper sets.
-* `LowerSet`: The type of lower sets.
 * `upperClosure`: The greatest upper set containing a set.
 * `lowerClosure`: The least lower set containing a set.
 * `UpperSet.Ici`: Principal upper set. `Set.Ici` as an upper set.
@@ -46,24 +40,14 @@ open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
+attribute [aesop norm unfold] IsUpperSet IsLowerSet
+
 /-! ### Unbundled upper/lower sets -/
 
 
 section LE
 
 variable [LE α] {s t : Set α} {a : α}
-
-/-- An upper set in an order `α` is a set such that any element greater than one of its members is
-also a member. Also called up-set, upward-closed set. -/
-@[aesop norm unfold]
-def IsUpperSet (s : Set α) : Prop :=
-  ∀ ⦃a b : α⦄, a ≤ b → a ∈ s → b ∈ s
-
-/-- A lower set in an order `α` is a set such that any element less than one of its members is also
-a member. Also called down-set, downward-closed set. -/
-@[aesop norm unfold]
-def IsLowerSet (s : Set α) : Prop :=
-  ∀ ⦃a b : α⦄, b ≤ a → a ∈ s → b ∈ s
 
 theorem isUpperSet_empty : IsUpperSet (∅ : Set α) := fun _ _ _ => id
 
@@ -432,28 +416,9 @@ end LinearOrder
 
 /-! ### Bundled upper/lower sets -/
 
-
 section LE
 
 variable [LE α]
-
-@[inherit_doc IsUpperSet]
-structure UpperSet (α : Type*) [LE α] where
-  /-- The carrier of an `UpperSet`. -/
-  carrier : Set α
-  /-- The carrier of an `UpperSet` is an upper set. -/
-  upper' : IsUpperSet carrier
-
-extend_docs UpperSet before "The type of upper sets of an order."
-
-@[inherit_doc IsLowerSet]
-structure LowerSet (α : Type*) [LE α] where
-  /-- The carrier of a `LowerSet`. -/
-  carrier : Set α
-  /-- The carrier of a `LowerSet` is a lower set. -/
-  lower' : IsLowerSet carrier
-
-extend_docs LowerSet before "The type of lower sets of an order."
 
 namespace UpperSet
 
@@ -513,10 +478,10 @@ namespace UpperSet
 
 variable {S : Set (UpperSet α)} {s t : UpperSet α} {a : α}
 
-instance : Sup (UpperSet α) :=
+instance : Max (UpperSet α) :=
   ⟨fun s t => ⟨s ∩ t, s.upper.inter t.upper⟩⟩
 
-instance : Inf (UpperSet α) :=
+instance : Min (UpperSet α) :=
   ⟨fun s t => ⟨s ∪ t, s.upper.union t.upper⟩⟩
 
 instance : Top (UpperSet α) :=
@@ -648,10 +613,10 @@ namespace LowerSet
 
 variable {S : Set (LowerSet α)} {s t : LowerSet α} {a : α}
 
-instance : Sup (LowerSet α) :=
+instance : Max (LowerSet α) :=
   ⟨fun s t => ⟨s ∪ t, fun _ _ h => Or.imp (s.lower h) (t.lower h)⟩⟩
 
-instance : Inf (LowerSet α) :=
+instance : Min (LowerSet α) :=
   ⟨fun s t => ⟨s ∩ t, fun _ _ h => And.imp (s.lower h) (t.lower h)⟩⟩
 
 instance : Top (LowerSet α) :=
@@ -1241,7 +1206,7 @@ def upperClosure (s : Set α) : UpperSet α :=
 def lowerClosure (s : Set α) : LowerSet α :=
   ⟨{ x | ∃ a ∈ s, x ≤ a }, fun _ _ hle h => h.imp fun _x hx => ⟨hx.1, hle.trans hx.2⟩⟩
 
--- Porting note (#11215): TODO: move `GaloisInsertion`s up, use them to prove lemmas
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move `GaloisInsertion`s up, use them to prove lemmas
 
 @[simp]
 theorem mem_upperClosure : x ∈ upperClosure s ↔ ∃ a ∈ s, a ≤ x :=

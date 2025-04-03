@@ -3,6 +3,7 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
+import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Integral.SetToL1
 
 /-!
@@ -146,9 +147,8 @@ assert_not_exists Differentiable
 
 noncomputable section
 
-open scoped Topology NNReal ENNReal MeasureTheory
-
-open Set Filter TopologicalSpace ENNReal EMetric
+open Filter ENNReal EMetric Set TopologicalSpace Topology
+open scoped NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 
@@ -638,7 +638,7 @@ theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - i
 theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c • integral f := by
   simp only [integral]
   show (integralCLM' (E := E) 𝕜) (c • f) = c • (integralCLM' (E := E) 𝕜) f
-  exact map_smul (integralCLM' (E := E) 𝕜) c f
+  exact _root_.map_smul (integralCLM' (E := E) 𝕜) c f
 
 local notation "Integral" => @integralCLM α E _ _ μ _ _
 
@@ -1221,13 +1221,13 @@ lemma tendsto_of_integral_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   let F' : α → ℝ≥0∞ := fun a ↦ ENNReal.ofReal (F a - f 0 a)
   have hf'_int_eq : ∀ i, ∫⁻ a, f' i a ∂μ = ENNReal.ofReal (∫ a, f i a ∂μ - ∫ a, f 0 a ∂μ) := by
     intro i
-    unfold_let f'
+    unfold f'
     rw [← ofReal_integral_eq_lintegral_ofReal, integral_sub (hf_int i) (hf_int 0)]
     · exact (hf_int i).sub (hf_int 0)
     · filter_upwards [hf_mono] with a h_mono
       simp [h_mono (zero_le i)]
   have hF'_int_eq : ∫⁻ a, F' a ∂μ = ENNReal.ofReal (∫ a, F a ∂μ - ∫ a, f 0 a ∂μ) := by
-    unfold_let F'
+    unfold F'
     rw [← ofReal_integral_eq_lintegral_ofReal, integral_sub hF_int (hf_int 0)]
     · exact hF_int.sub (hf_int 0)
     · filter_upwards [hf_bound] with a h_bound
@@ -1251,13 +1251,13 @@ lemma tendsto_of_integral_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
   · exact ((lintegral_ofReal_le_lintegral_nnnorm _).trans_lt (hF_int.sub (hf_int 0)).2).ne
   filter_upwards [h, hf_mono, hf_bound] with a ha ha_mono ha_bound
   have h1 : (fun i ↦ f i a) = fun i ↦ (f' i a).toReal + f 0 a := by
-    unfold_let f'
+    unfold f'
     ext i
     rw [ENNReal.toReal_ofReal]
     · abel
     · simp [ha_mono (zero_le i)]
   have h2 : F a = (F' a).toReal + f 0 a := by
-    unfold_let F'
+    unfold F'
     rw [ENNReal.toReal_ofReal]
     · abel
     · simp [ha_bound 0]
@@ -1352,10 +1352,9 @@ theorem integral_mono_measure {f : α → ℝ} {ν} (hle : μ ≤ ν) (hf : 0 �
     (hfi : Integrable f ν) : ∫ a, f a ∂μ ≤ ∫ a, f a ∂ν := by
   have hfi' : Integrable f μ := hfi.mono_measure hle
   have hf' : 0 ≤ᵐ[μ] f := hle.absolutelyContinuous hf
-  rw [integral_eq_lintegral_of_nonneg_ae hf' hfi'.1, integral_eq_lintegral_of_nonneg_ae hf hfi.1,
-    ENNReal.toReal_le_toReal]
-  exacts [lintegral_mono' hle le_rfl, ((hasFiniteIntegral_iff_ofReal hf').1 hfi'.2).ne,
-    ((hasFiniteIntegral_iff_ofReal hf).1 hfi.2).ne]
+  rw [integral_eq_lintegral_of_nonneg_ae hf' hfi'.1, integral_eq_lintegral_of_nonneg_ae hf hfi.1]
+  refine ENNReal.toReal_mono ?_ (lintegral_mono' hle le_rfl)
+  exact ((hasFiniteIntegral_iff_ofReal hf).1 hfi.2).ne
 
 theorem norm_integral_le_integral_norm (f : α → G) : ‖∫ a, f a ∂μ‖ ≤ ∫ a, ‖f a‖ ∂μ := by
   have le_ae : ∀ᵐ a ∂μ, 0 ≤ ‖f a‖ := Eventually.of_forall fun a => norm_nonneg _
@@ -1574,13 +1573,13 @@ theorem _root_.MeasurableEmbedding.integral_map {β} {_ : MeasurableSpace β} {f
   · rw [integral_non_aestronglyMeasurable hgm, integral_non_aestronglyMeasurable]
     exact fun hgf => hgm (hf.aestronglyMeasurable_map_iff.2 hgf)
 
-theorem _root_.IsClosedEmbedding.integral_map {β} [TopologicalSpace α] [BorelSpace α]
+theorem _root_.Topology.IsClosedEmbedding.integral_map {β} [TopologicalSpace α] [BorelSpace α]
     [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] {φ : α → β} (hφ : IsClosedEmbedding φ)
     (f : β → G) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ :=
   hφ.measurableEmbedding.integral_map _
 
 @[deprecated (since := "2024-10-20")]
-alias _root_.ClosedEmbedding.integral_map := _root_.IsClosedEmbedding.integral_map
+alias _root_.ClosedEmbedding.integral_map := IsClosedEmbedding.integral_map
 
 theorem integral_map_equiv {β} [MeasurableSpace β] (e : α ≃ᵐ β) (f : β → G) :
     ∫ y, f y ∂Measure.map e μ = ∫ x, f (e x) ∂μ :=
@@ -1744,11 +1743,11 @@ theorem integral_singleton [MeasurableSingletonClass α] {μ : Measure α} (f : 
     mul_comm]
 
 theorem integral_countable [MeasurableSingletonClass α] (f : α → E) {s : Set α} (hs : s.Countable)
-    (hf : Integrable f (μ.restrict s)) :
+    (hf : IntegrableOn f s μ) :
     ∫ a in s, f a ∂μ = ∑' a : s, (μ {(a : α)}).toReal • f a := by
   have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
   have hf' : Integrable (fun (x : s) => f x) (Measure.comap Subtype.val μ) := by
-    rw [← map_comap_subtype_coe, integrable_map_measure] at hf
+    rw [IntegrableOn, ← map_comap_subtype_coe, integrable_map_measure] at hf
     · apply hf
     · exact Integrable.aestronglyMeasurable hf
     · exact Measurable.aemeasurable measurable_subtype_coe
@@ -1761,7 +1760,7 @@ theorem integral_countable [MeasurableSingletonClass α] (f : α → E) {s : Set
   simp
 
 theorem integral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α → E)
-    (hf : Integrable f (μ.restrict s)) :
+    (hf : IntegrableOn f s μ) :
     ∫ x in s, f x ∂μ = ∑ x ∈ s, (μ {x}).toReal • f x := by
   rw [integral_countable _ s.countable_toSet hf, ← Finset.tsum_subtype']
 
@@ -1770,7 +1769,7 @@ theorem integral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α → 
     ∫ x, f x ∂μ = ∑ x, (μ {x}).toReal • f x := by
   -- NB: Integrable f does not follow from Fintype, because the measure itself could be non-finite
   rw [← integral_finset .univ, Finset.coe_univ, Measure.restrict_univ]
-  simp only [Finset.coe_univ, Measure.restrict_univ, hf]
+  simp [Finset.coe_univ, Measure.restrict_univ, hf]
 
 theorem integral_unique [Unique α] (f : α → E) : ∫ x, f x ∂μ = (μ univ).toReal • f default :=
   calc
@@ -1946,6 +1945,7 @@ namespace Mathlib.Meta.Positivity
 
 open Qq Lean Meta MeasureTheory
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- Positivity extension for integrals.
 
 This extension only proves non-negativity, strict positivity is more delicate for integration and

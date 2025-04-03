@@ -88,7 +88,7 @@ def preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{v} where
   map_id _ := by ext; dsimp; simp
   map_comp f g := by ext; dsimp; simp
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+-- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 attribute [nolint simpNF] CategoryTheory.preadditiveYoneda_map_app_apply
   CategoryTheory.preadditiveCoyoneda_map_app_apply
 

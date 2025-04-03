@@ -17,6 +17,7 @@ Since a lot of elementary properties don't require `eq_of_dist_eq_zero` we start
 theory for `PseudoMetricSpace` and we specialize to `MetricSpace` when needed.
 -/
 
+open Topology
 
 noncomputable section
 
@@ -61,7 +62,7 @@ namespace Isometry
 section PseudoEmetricIsometry
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-variable {f : α → β} {x y z : α} {s : Set α}
+variable {f : α → β} {x : α}
 
 /-- An isometry preserves edistances. -/
 theorem edist_eq (hf : Isometry f) (x y : α) : edist (f x) (f y) = edist x y :=
@@ -249,7 +250,7 @@ alias UniformEmbedding.to_isometry := IsUniformEmbedding.to_isometry
 
 /-- An embedding from a topological space to a metric space is an isometry with respect to the
 induced metric space structure on the source space. -/
-theorem IsEmbedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
+theorem Topology.IsEmbedding.to_isometry {α β} [TopologicalSpace α] [MetricSpace β] {f : α → β}
     (h : IsEmbedding f) : (letI := h.comapMetricSpace f; Isometry f) :=
   let _ := h.comapMetricSpace f
   Isometry.of_dist_eq fun _ _ => rfl
@@ -259,7 +260,7 @@ alias Embedding.to_isometry := IsEmbedding.to_isometry
 
 -- such a bijection need not exist
 /-- `α` and `β` are isometric if there is an isometric bijection between them. -/
--- Porting note(#5171): was @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure IsometryEquiv (α : Type u) (β : Type v) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     extends α ≃ β where
   isometry_toFun : Isometry toFun
@@ -273,7 +274,7 @@ section PseudoEMetricSpace
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 
--- Porting note (#11215): TODO: add `IsometryEquivClass`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add `IsometryEquivClass`
 
 theorem toEquiv_injective : Injective (toEquiv : (α ≃ᵢ β) → (α ≃ β))
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl

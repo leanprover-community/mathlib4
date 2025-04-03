@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain
+import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
 # Squarefree elements of monoids
@@ -67,22 +68,28 @@ theorem Irreducible.squarefree [CommMonoid R] {x : R} (h : Irreducible x) : Squa
 theorem Prime.squarefree [CancelCommMonoidWithZero R] {x : R} (h : Prime x) : Squarefree x :=
   h.irreducible.squarefree
 
-theorem Squarefree.of_mul_left [CommMonoid R] {m n : R} (hmn : Squarefree (m * n)) : Squarefree m :=
+theorem Squarefree.of_mul_left [Monoid R] {m n : R} (hmn : Squarefree (m * n)) : Squarefree m :=
   fun p hp => hmn p (dvd_mul_of_dvd_left hp n)
 
 theorem Squarefree.of_mul_right [CommMonoid R] {m n : R} (hmn : Squarefree (m * n)) :
     Squarefree n := fun p hp => hmn p (dvd_mul_of_dvd_right hp m)
 
-theorem Squarefree.squarefree_of_dvd [CommMonoid R] {x y : R} (hdvd : x ∣ y) (hsq : Squarefree y) :
+theorem Squarefree.squarefree_of_dvd [Monoid R] {x y : R} (hdvd : x ∣ y) (hsq : Squarefree y) :
     Squarefree x := fun _ h => hsq _ (h.trans hdvd)
 
-theorem Squarefree.eq_zero_or_one_of_pow_of_not_isUnit [CommMonoid R] {x : R} {n : ℕ}
+theorem Squarefree.eq_zero_or_one_of_pow_of_not_isUnit [Monoid R] {x : R} {n : ℕ}
     (h : Squarefree (x ^ n)) (h' : ¬ IsUnit x) :
     n = 0 ∨ n = 1 := by
   contrapose! h'
   replace h' : 2 ≤ n := by omega
   have : x * x ∣ x ^ n := by rw [← sq]; exact pow_dvd_pow x h'
   exact h.squarefree_of_dvd this x (refl _)
+
+theorem Squarefree.pow_dvd_of_pow_dvd [Monoid R] {x y : R} {n : ℕ}
+    (hx : Squarefree y) (h : x ^ n ∣ y) : x ^ n ∣ x := by
+  by_cases hu : IsUnit x
+  · exact (hu.pow n).dvd
+  · rcases (hx.squarefree_of_dvd h).eq_zero_or_one_of_pow_of_not_isUnit hu with rfl | rfl <;> simp
 
 section SquarefreeGcdOfSquarefree
 

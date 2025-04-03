@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Johan Commelin, Amelia Livingston, Sophie Morel, Jujian Zhang, Weihong Xu
 -/
 
-import Mathlib.Algebra.Module.LocalizedModule
+import Mathlib.Algebra.Module.LocalizedModule.Basic
 import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.AlgebraicGeometry.Modules.Sheaf
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
@@ -359,7 +359,10 @@ theorem localizationToStalk_mk (x : PrimeSpectrum.Top R) (f : M) (s : x.asIdeal.
   · exact homOfLE le_top
   · exact 𝟙 _
   refine Subtype.eq <| funext fun y => show LocalizedModule.mk f 1 = _ from ?_
-  show LocalizedModule.mk f 1 = s.1 • LocalizedModule.mk f _
+  #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+    added this refine hack to be able to add type hint in `change` -/
+  refine (?_ : @Eq ?ty _ _)
+  change LocalizedModule.mk f 1 = (s.1 • LocalizedModule.mk f _ : ?ty)
   rw [LocalizedModule.smul'_mk, LocalizedModule.mk_eq]
   exact ⟨1, by simp⟩
 

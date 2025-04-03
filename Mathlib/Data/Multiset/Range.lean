@@ -50,7 +50,8 @@ theorem range_add (a b : ℕ) : range (a + b) = range a + (range b).map (a + ·)
   congr_arg ((↑) : List ℕ → Multiset ℕ) (List.range_add _ _)
 
 theorem range_disjoint_map_add (a : ℕ) (m : Multiset ℕ) :
-    (range a).Disjoint (m.map (a + ·)) := by
+    Disjoint (range a) (m.map (a + ·)) := by
+  rw [disjoint_left]
   intro x hxa hxb
   rw [range, mem_coe, List.mem_range] at hxa
   obtain ⟨c, _, rfl⟩ := mem_map.1 hxb

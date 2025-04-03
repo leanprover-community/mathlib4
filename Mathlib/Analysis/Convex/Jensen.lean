@@ -221,9 +221,9 @@ lemma StrictConvexOn.map_sum_eq_iff' (hf : StrictConvexOn 𝕜 s f) (h₀ : ∀ 
   have hw' (i) (_ : i ∈ t) : w i • f (p i) ≠ 0 → w i ≠ 0 := by aesop
   rw [← sum_filter_of_ne hw, ← sum_filter_of_ne hw', hf.map_sum_eq_iff]
   · simp
-  · simp (config := { contextual := true }) [(h₀ _ _).gt_iff_ne]
+  · simp +contextual [(h₀ _ _).gt_iff_ne]
   · rwa [sum_filter_ne_zero]
-  · simp (config := { contextual := true }) [hmem _ _]
+  · simp +contextual [hmem _ _]
 
 /-- Canonical form of the **equality case of Jensen's equality**.
 

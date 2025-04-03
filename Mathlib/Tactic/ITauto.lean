@@ -486,7 +486,7 @@ partial def reify (e : Q(Prop)) : AtomM IProp :=
   | ~q(@Ne Prop $a $b) => return .not (.eq (← reify a) (← reify b))
   | e =>
     if e.isArrow then return .imp (← reify e.bindingDomain!) (← reify e.bindingBody!)
-    else return .var (← AtomM.addAtom e)
+    else return .var (← AtomM.addAtom e).1
 
 /-- Once we have a proof object, we have to apply it to the goal. -/
 partial def applyProof (g : MVarId) (Γ : NameMap Expr) (p : Proof) : MetaM Unit :=

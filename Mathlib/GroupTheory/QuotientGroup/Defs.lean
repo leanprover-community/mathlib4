@@ -5,6 +5,7 @@ Authors: Kevin Buzzard, Patrick Massot
 -/
 -- This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
 
+import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.Coset.Defs
 

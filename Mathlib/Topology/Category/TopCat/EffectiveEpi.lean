@@ -16,7 +16,7 @@ The effective epimorphisms in `TopCat` are precisely the quotient maps.
 
 universe u
 
-open CategoryTheory Limits
+open CategoryTheory Limits Topology
 
 namespace TopCat
 

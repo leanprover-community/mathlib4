@@ -241,11 +241,11 @@ tactic searches through the local context for `RingHom` properties that can be c
 `Algebra` properties. The macro `algebraize_only` calls
 `algebraize (config := {properties := false})`,
 so in other words it only adds `Algebra` and `IsScalarTower` instances. -/
-syntax "algebraize" (ppSpace config)? (ppSpace algebraizeTermSeq)? : tactic
+syntax "algebraize " optConfig (algebraizeTermSeq)? : tactic
 
 elab_rules : tactic
-  | `(tactic| algebraize $[$config]? $args) => withMainContext do
-    let cfg ← elabAlgebraizeConfig (mkOptionalNode config)
+  | `(tactic| algebraize $cfg:optConfig $args) => withMainContext do
+    let cfg ← elabAlgebraizeConfig cfg
     let t ← match args with
     | `(algebraizeTermSeq| [$rs,*]) => rs.getElems.mapM fun i => Term.elabTerm i none
     | _ =>
@@ -278,9 +278,7 @@ but does not try to add any instances about any properties tagged with
 syntax "algebraize_only" (ppSpace algebraizeTermSeq)? : tactic
 
 macro_rules
-  | `(tactic| algebraize_only $args) =>
-    `(tactic| algebraize (config := {properties := false}) $args)
-  | `(tactic| algebraize_only) =>
-    `(tactic| algebraize (config := {properties := false}))
+  | `(tactic| algebraize_only $[$args]?) =>
+    `(tactic| algebraize -properties $[$args]?)
 
 end Mathlib.Tactic

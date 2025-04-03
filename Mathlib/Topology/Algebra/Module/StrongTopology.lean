@@ -56,8 +56,8 @@ sets).
 uniform convergence, bounded convergence
 -/
 
-open scoped Topology UniformConvergence Uniformity
-open Filter Set Function Bornology
+open Bornology Filter Function Set Topology
+open scoped UniformConvergence Uniformity
 
 section General
 

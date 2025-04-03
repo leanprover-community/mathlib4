@@ -27,7 +27,7 @@ open Real
 namespace Imo2008Q4
 
 theorem abs_eq_one_of_pow_eq_one (x : ℝ) (n : ℕ) (hn : n ≠ 0) (h : x ^ n = 1) : |x| = 1 := by
-  rw [← pow_left_inj (abs_nonneg x) zero_le_one hn, one_pow, pow_abs, h, abs_one]
+  rw [← pow_left_inj₀ (abs_nonneg x) zero_le_one hn, one_pow, pow_abs, h, abs_one]
 
 end Imo2008Q4
 

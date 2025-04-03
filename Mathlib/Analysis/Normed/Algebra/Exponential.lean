@@ -7,6 +7,8 @@ import Mathlib.Analysis.Analytic.ChangeOrigin
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Nat.Choose.Cast
 
+import Mathlib.Analysis.Analytic.OfScalars
+import Mathlib.Analysis.SpecificLimits.RCLike
 
 /-!
 # Exponential in a Banach algebra
@@ -82,7 +84,7 @@ In the long term is may be possible to replace `Real.exp` and `Complex.exp` with
 
 namespace NormedSpace
 
-open Filter RCLike ContinuousMultilinearMap NormedField Asymptotics
+open Filter RCLike ContinuousMultilinearMap NormedField Asymptotics FormalMultilinearSeries
 
 open scoped Nat Topology ENNReal
 
@@ -95,14 +97,18 @@ variable (𝕂 𝔸 : Type*) [Field 𝕂] [Ring 𝔸] [Algebra 𝕂 𝔸] [Topol
 def expSeries : FormalMultilinearSeries 𝕂 𝔸 𝔸 := fun n =>
   (n !⁻¹ : 𝕂) • ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸
 
+/-- The exponential series as an `ofScalars` series. -/
+theorem expSeries_eq_ofScalars : expSeries 𝕂 𝔸 = ofScalars 𝔸 fun n ↦ (n !⁻¹ : 𝕂) := by
+  simp_rw [FormalMultilinearSeries.ext_iff, expSeries, ofScalars, implies_true]
+
 variable {𝔸}
 
 /-- `NormedSpace.exp : 𝔸 → 𝔸` is the exponential map determined by the action of `𝕂` on `𝔸`.
 It is defined as the sum of the `FormalMultilinearSeries` `expSeries 𝕂 𝔸`.
 
 Note that when `𝔸 = Matrix n n 𝕂`, this is the **Matrix Exponential**; see
-[`Analysis.Normed.Algebra.MatrixExponential`](./MatrixExponential) for lemmas specific to that
-case. -/
+[`MatrixExponential`](./Mathlib/Analysis/Normed/Algebra/MatrixExponential) for lemmas
+specific to that case. -/
 noncomputable def exp [Algebra ℚ 𝔸] (x : 𝔸) : 𝔸 :=
   (expSeries ℚ 𝔸).sum x
 
@@ -130,6 +136,10 @@ theorem expSeries_eq_expSeries_rat [Algebra ℚ 𝔸] (n : ℕ) :
 
 theorem exp_eq_tsum [Algebra ℚ 𝔸] : exp = fun x : 𝔸 => ∑' n : ℕ, (n !⁻¹ : ℚ) • x ^ n :=
   funext expSeries_sum_eq
+
+/-- The exponential sum as an `ofScalarsSum`. -/
+theorem exp_eq_ofScalarsSum : exp 𝕂 = ofScalarsSum (E := 𝔸) fun n ↦ (n !⁻¹ : 𝕂) := by
+  rw [exp_eq_tsum, ofScalarsSum_eq_tsum]
 
 theorem expSeries_apply_zero (n : ℕ) :
     (expSeries 𝕂 𝔸 n fun _ => (0 : 𝔸)) = Pi.single (f := fun _ => 𝔸) 0 1 n := by
@@ -388,16 +398,15 @@ variable [NormedRing 𝔹]
 /-- In a normed algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, the series defining the exponential map
 has an infinite radius of convergence. -/
 theorem expSeries_radius_eq_top : (expSeries 𝕂 𝔸).radius = ∞ := by
-  refine (expSeries 𝕂 𝔸).radius_eq_top_of_summable_norm fun r => ?_
-  refine .of_norm_bounded_eventually _ (Real.summable_pow_div_factorial r) ?_
-  filter_upwards [eventually_cofinite_ne 0] with n hn
-  rw [norm_mul, norm_norm (expSeries 𝕂 𝔸 n), expSeries]
-  rw [norm_smul (n ! : 𝕂)⁻¹ (ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸)]
-  -- Porting note: Lean needed this to be explicit for some reason
-  rw [norm_inv, norm_pow, NNReal.norm_eq, norm_natCast, mul_comm, ← mul_assoc, ← div_eq_mul_inv]
-  have : ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸‖ ≤ 1 :=
-    norm_mkPiAlgebraFin_le_of_pos (Nat.pos_of_ne_zero hn)
-  exact mul_le_of_le_one_right (div_nonneg (pow_nonneg r.coe_nonneg n) n !.cast_nonneg) this
+  have {n : ℕ} : (Nat.factorial n : 𝕂) ≠ 0 := Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero n)
+  apply expSeries_eq_ofScalars 𝕂 𝔸 ▸
+    ofScalars_radius_eq_top_of_tendsto 𝔸 _ (Eventually.of_forall fun n => ?_)
+  · simp_rw [← norm_div, Nat.factorial_succ, Nat.cast_mul, mul_inv_rev, mul_div_right_comm,
+      inv_div_inv, norm_mul, div_self this, norm_one, one_mul]
+    apply norm_zero (E := 𝕂) ▸ Filter.Tendsto.norm
+    apply (Filter.tendsto_add_atTop_iff_nat (f := fun n => (n : 𝕂)⁻¹) 1).mpr
+    exact RCLike.tendsto_inverse_atTop_nhds_zero_nat 𝕂
+  · simp [this]
 
 theorem expSeries_radius_pos : 0 < (expSeries 𝕂 𝔸).radius := by
   rw [expSeries_radius_eq_top]
@@ -495,7 +504,7 @@ end
 /-- In a Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, if a family of elements `f i` mutually
 commute then `NormedSpace.exp (∑ i, f i) = ∏ i, NormedSpace.exp (f i)`. -/
 theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
-    (h : (s : Set ι).Pairwise fun i j => Commute (f i) (f j)) :
+    (h : (s : Set ι).Pairwise (Commute on f)) :
     exp (∑ i ∈ s, f i) =
       s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp := by
   classical

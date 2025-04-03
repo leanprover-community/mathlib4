@@ -1097,5 +1097,3 @@ def evalRPow : NormNumExt where eval {u α} e := do
 end Mathlib.Meta.NormNum
 
 end Tactics
-
-@[deprecated (since := "2024-01-07")] alias rpow_nonneg_of_nonneg := rpow_nonneg

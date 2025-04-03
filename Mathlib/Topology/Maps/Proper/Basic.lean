@@ -273,8 +273,8 @@ protected lemma IsHomeomorph.isProperMap (hf : IsHomeomorph f) : IsProperMap f :
 @[simp] lemma isProperMap_id : IsProperMap (id : X → X) := IsHomeomorph.id.isProperMap
 
 /-- A closed embedding is proper. -/
-lemma IsClosedEmbedding.isProperMap (hf : IsClosedEmbedding f) : IsProperMap f :=
-  isProperMap_of_isClosedMap_of_inj hf.continuous hf.inj hf.isClosedMap
+lemma Topology.IsClosedEmbedding.isProperMap (hf : IsClosedEmbedding f) : IsProperMap f :=
+  isProperMap_of_isClosedMap_of_inj hf.continuous hf.injective hf.isClosedMap
 
 @[deprecated (since := "2024-10-20")]
 alias isProperMap_of_closedEmbedding := IsClosedEmbedding.isProperMap

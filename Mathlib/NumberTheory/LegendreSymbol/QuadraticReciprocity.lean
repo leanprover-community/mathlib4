@@ -74,7 +74,7 @@ theorem exists_sq_eq_two_iff (hp : p ≠ 2) : IsSquare (2 : ZMod p) ↔ p % 8 = 
   have h₂ := mod_lt p (by norm_num : 0 < 8)
   revert h₂ h₁
   generalize p % 8 = m; clear! p
-  intros; interval_cases m <;> simp_all -- Porting note (#11043): was `decide!`
+  intros; interval_cases m <;> simp_all -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11043): was `decide!`
 
 /-- `-2` is a square modulo an odd prime `p` iff `p` is congruent to `1` or `3` mod `8`. -/
 theorem exists_sq_eq_neg_two_iff (hp : p ≠ 2) : IsSquare (-2 : ZMod p) ↔ p % 8 = 1 ∨ p % 8 = 3 := by
@@ -84,7 +84,7 @@ theorem exists_sq_eq_neg_two_iff (hp : p ≠ 2) : IsSquare (-2 : ZMod p) ↔ p %
   have h₂ := mod_lt p (by norm_num : 0 < 8)
   revert h₂ h₁
   generalize p % 8 = m; clear! p
-  intros; interval_cases m <;> simp_all -- Porting note (#11043): was `decide!`
+  intros; interval_cases m <;> simp_all -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11043): was `decide!`
 
 end ZMod
 

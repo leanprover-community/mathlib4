@@ -268,14 +268,14 @@ theorem antipode_comul (A : Hopf_ C) :
     simp only [Bimon_.toComon__obj_X, Mon_.monMonoidalStruct_tensorObj_X, Bimon_.toComon__obj_comul,
       comp_whiskerRight, tensor_whiskerLeft, Mon_.tensorObj_mul, Category.assoc,
       Bimon_.toComon__obj_counit, Mon_.tensorObj_one]
-    simp only [tensor_μ]
+    simp only [tensorμ]
     simp only [Category.assoc, Iso.inv_hom_id_assoc]
     exact antipode_comul₁ A
   · erw [Conv.mul_eq, Conv.one_eq]
     simp only [Bimon_.toComon__obj_X, Mon_.monMonoidalStruct_tensorObj_X, Bimon_.toComon__obj_comul,
       MonoidalCategory.whiskerLeft_comp, tensor_whiskerLeft, Category.assoc, Iso.inv_hom_id_assoc,
       Mon_.tensorObj_mul, Bimon_.toComon__obj_counit, Mon_.tensorObj_one]
-    simp only [tensor_μ]
+    simp only [tensorμ]
     simp only [Category.assoc, Iso.inv_hom_id_assoc]
     exact antipode_comul₂ A
 
@@ -453,7 +453,7 @@ theorem mul_antipode (A : Hopf_ C) :
       unop_tensorHom, Quiver.Hom.unop_op, whiskerRight_tensor, comp_whiskerRight, Category.assoc,
       Comon_.Mon_OpOpToComon_obj'_counit, Mon_.tensorObj_one, Comon_.Comon_ToMon_OpOp_obj'_one,
       Bimon_.toComon__obj_counit, unop_tensorUnit, unop_inv_leftUnitor]
-    simp only [tensor_μ]
+    simp only [tensorμ]
     simp only [unop_comp, unop_tensorObj, unop_inv_associator, unop_whiskerLeft,
       unop_hom_associator, unop_whiskerRight, unop_hom_braiding, Category.assoc,
       pentagon_hom_inv_inv_inv_inv_assoc]
@@ -469,7 +469,7 @@ theorem mul_antipode (A : Hopf_ C) :
       BraidedCategory.braiding_naturality_assoc, MonoidalCategory.whiskerLeft_comp, Category.assoc,
       Comon_.Mon_OpOpToComon_obj'_counit, Mon_.tensorObj_one, Comon_.Comon_ToMon_OpOp_obj'_one,
       Bimon_.toComon__obj_counit, unop_tensorUnit, unop_inv_leftUnitor]
-    simp only [tensor_μ]
+    simp only [tensorμ]
     simp only [unop_comp, unop_tensorObj, unop_inv_associator, unop_whiskerLeft,
       unop_hom_associator, unop_whiskerRight, unop_hom_braiding, Category.assoc,
       pentagon_hom_inv_inv_inv_inv_assoc]

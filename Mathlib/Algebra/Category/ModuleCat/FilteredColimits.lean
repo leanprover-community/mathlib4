@@ -85,7 +85,7 @@ private theorem colimitModule.one_smul (x : (M F)) : (1 : R) • x = x := by
   simp
   rfl
 
--- Porting note (#11083): writing directly the `Module` instance makes things very slow.
+-- Porting note (https://github.com/leanprover-community/mathlib4/pull/11083): writing directly the `Module` instance makes things very slow.
 instance colimitMulAction : MulAction R (M F) where
   one_smul x := by
     refine Quot.inductionOn x ?_; clear x; intro x; obtain ⟨j, x⟩ := x
@@ -170,22 +170,22 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
       (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget (ModuleCat R))).uniq
         ((forget (ModuleCat R)).mapCocone t) _ fun j => funext fun x => LinearMap.congr_fun (h j) x
 
-instance forget₂AddCommGroupPreservesFilteredColimits :
+instance forget₂AddCommGroup_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGrp.{u}) where
   preserves_filtered_colimits J _ _ :=
   { -- Porting note: without the curly braces for `F`
     -- here we get a confusing error message about universes.
     preservesColimit := fun {F : J ⥤ ModuleCat.{u} R} =>
-      preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F)
+      preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F)
         (AddCommGrp.FilteredColimits.colimitCoconeIsColimit
           (F ⋙ forget₂ (ModuleCat.{u} R) AddCommGrp.{u})) }
 
-instance forgetPreservesFilteredColimits : PreservesFilteredColimits (forget (ModuleCat.{u} R)) :=
-  Limits.compPreservesFilteredColimits (forget₂ (ModuleCat R) AddCommGrp)
+instance forget_preservesFilteredColimits : PreservesFilteredColimits (forget (ModuleCat.{u} R)) :=
+  Limits.comp_preservesFilteredColimits (forget₂ (ModuleCat R) AddCommGrp)
     (forget AddCommGrp)
 
-instance forgetReflectsFilteredColimits : ReflectsFilteredColimits (forget (ModuleCat.{u} R)) where
-  reflects_filtered_colimits _ := { reflectsColimit := reflectsColimitOfReflectsIsomorphisms _ _ }
+instance forget_reflectsFilteredColimits : ReflectsFilteredColimits (forget (ModuleCat.{u} R)) where
+  reflects_filtered_colimits _ := { reflectsColimit := reflectsColimit_of_reflectsIsomorphisms _ _ }
 
 end
 

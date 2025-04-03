@@ -113,14 +113,15 @@ instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v, v} TopCat.{max v u} where
 instance topCat_hasLimits : HasLimits TopCat.{u} :=
   TopCat.topCat_hasLimitsOfSize.{u, u}
 
-instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize forget where
+instance forget_preservesLimitsOfSize :
+    PreservesLimitsOfSize.{v, v} (forget : TopCat.{max v u} ⥤ _) where
   preservesLimitsOfShape {_} :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v,u} F)
+      preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v,u} F)
           (Types.limitConeIsLimit.{v,u} (F ⋙ forget)) }
 
-instance forgetPreservesLimits : PreservesLimits forget :=
-  TopCat.forgetPreservesLimitsOfSize.{u,u}
+instance forget_preservesLimits : PreservesLimits (forget : TopCat.{u} ⥤ _) :=
+  TopCat.forget_preservesLimitsOfSize.{u, u}
 
 /-- A choice of colimit cocone for a functor `F : J ⥤ TopCat`.
 Generally you should just use `colimit.cocone F`, unless you need the actual definition
@@ -171,15 +172,15 @@ instance topCat_hasColimitsOfSize : HasColimitsOfSize.{v,v} TopCat.{max v u} whe
 instance topCat_hasColimits : HasColimits TopCat.{u} :=
   TopCat.topCat_hasColimitsOfSize.{u, u}
 
-instance forgetPreservesColimitsOfSize :
-    PreservesColimitsOfSize.{v, v} forget where
+instance forget_preservesColimitsOfSize :
+    PreservesColimitsOfSize.{v, v} (forget : TopCat.{max u v} ⥤ _) where
   preservesColimitsOfShape :=
     { preservesColimit := fun {F} =>
-        preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F)
+        preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F)
           (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget)) }
 
-instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) :=
-  TopCat.forgetPreservesColimitsOfSize.{u, u}
+instance forget_preservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) :=
+  TopCat.forget_preservesColimitsOfSize.{u, u}
 
 /-- The terminal object of `Top` is `PUnit`. -/
 def isTerminalPUnit : IsTerminal (TopCat.of PUnit.{u + 1}) :=

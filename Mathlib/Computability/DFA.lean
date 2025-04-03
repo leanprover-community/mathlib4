@@ -142,7 +142,7 @@ theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
   · rfl
   · have ha := hS a (List.mem_cons_self _ _)
     rw [Set.mem_singleton_iff] at ha
-    rw [List.join, evalFrom_of_append, ha, hx]
+    rw [List.flatten, evalFrom_of_append, ha, hx]
     apply ih
     intro z hz
     exact hS z (List.mem_cons_of_mem a hz)

@@ -102,31 +102,35 @@ In a moment we will equip this with the `W`-enriched category structure
 obtained by applying the functor `F : LaxMonoidalFunctor V W` to each hom object.
 -/
 @[nolint unusedArguments]
-def TransportEnrichment (_ : LaxMonoidalFunctor V W) (C : Type u₁) :=
+def TransportEnrichment (F : V ⥤ W) [F.LaxMonoidal] (C : Type u₁) :=
   C
 
-instance (F : LaxMonoidalFunctor V W) : EnrichedCategory W (TransportEnrichment F C) where
+variable (F : V ⥤ W) [F.LaxMonoidal]
+
+open Functor.LaxMonoidal
+
+instance : EnrichedCategory W (TransportEnrichment F C) where
   Hom := fun X Y : C => F.obj (X ⟶[V] Y)
-  id := fun X : C => F.ε ≫ F.map (eId V X)
-  comp := fun X Y Z : C => F.μ _ _ ≫ F.map (eComp V X Y Z)
+  id := fun X : C => ε F ≫ F.map (eId V X)
+  comp := fun X Y Z : C => μ F _ _ ≫ F.map (eComp V X Y Z)
   id_comp X Y := by
-    simp only [comp_whiskerRight, Category.assoc, LaxMonoidalFunctor.μ_natural_left_assoc,
-      LaxMonoidalFunctor.left_unitality_inv_assoc]
+    simp only [comp_whiskerRight, Category.assoc, Functor.LaxMonoidal.μ_natural_left_assoc,
+      Functor.LaxMonoidal.left_unitality_inv_assoc]
     simp_rw [← F.map_comp]
     convert F.map_id _
     simp
   comp_id X Y := by
     simp only [MonoidalCategory.whiskerLeft_comp, Category.assoc,
-      LaxMonoidalFunctor.μ_natural_right_assoc,
-      LaxMonoidalFunctor.right_unitality_inv_assoc]
+      Functor.LaxMonoidal.μ_natural_right_assoc,
+      Functor.LaxMonoidal.right_unitality_inv_assoc]
     simp_rw [← F.map_comp]
     convert F.map_id _
     simp
   assoc P Q R S := by
-    rw [comp_whiskerRight, Category.assoc, F.μ_natural_left_assoc,
-      ← F.associativity_inv_assoc, ← F.map_comp, ← F.map_comp, e_assoc,
+    rw [comp_whiskerRight, Category.assoc, μ_natural_left_assoc,
+      ← associativity_inv_assoc, ← F.map_comp, ← F.map_comp, e_assoc,
       F.map_comp, MonoidalCategory.whiskerLeft_comp, Category.assoc,
-      LaxMonoidalFunctor.μ_natural_right_assoc]
+      Functor.LaxMonoidal.μ_natural_right_assoc]
 
 end
 
@@ -165,7 +169,7 @@ section
 
 variable {W : Type v} [Category.{w} W] [MonoidalCategory W] [EnrichedCategory W C]
 
--- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
 In a moment we will equip this with the (honest) category structure
 so that `X ⟶ Y` is `(𝟙_ W) ⟶ (X ⟶[W] Y)`.
@@ -207,10 +211,9 @@ theorem ForgetEnrichment.of_to (X : ForgetEnrichment W C) :
     ForgetEnrichment.of W (ForgetEnrichment.to W X) = X :=
   rfl
 
-instance categoryForgetEnrichment : Category (ForgetEnrichment W C) := by
-  let I : EnrichedCategory (Type w) (TransportEnrichment (coyonedaTensorUnit W) C) :=
-    inferInstance
-  exact enrichedCategoryTypeEquivCategory C I
+instance categoryForgetEnrichment : Category (ForgetEnrichment W C) :=
+  enrichedCategoryTypeEquivCategory C (inferInstanceAs (EnrichedCategory (Type w)
+      (TransportEnrichment (coyoneda.obj (op (𝟙_ W))) C)))
 
 /-- We verify that the morphism types in `ForgetEnrichment W C` are `(𝟙_ W) ⟶ (X ⟶[W] Y)`.
 -/
@@ -367,7 +370,7 @@ coming from the ambient braiding on `V`.)
 -/
 
 
--- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 /-- The type of `A`-graded natural transformations between `V`-functors `F` and `G`.
 This is the type of morphisms in `V` from `A` to the `V`-object of natural transformations.
 -/

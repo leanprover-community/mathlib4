@@ -38,7 +38,7 @@ A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and 
   all linear maps `f : N → N'`, `f = 0` iff `f ⊗ M = 0`.
 
 - `Module.FaithfullyFlat.of_linearEquiv`: modules linearly equivalent to a flat modules are flat
-- `Module.FaithfullyFlat.comp`: if `S` is `R`-faithfully flat and `M` is `S`-faithfully flat, then
+- `Module.FaithfullyFlat.trans`: if `S` is `R`-faithfully flat and `M` is `S`-faithfully flat, then
   `M` is `R`-faithfully flat.
 
 - `Module.FaithfullyFlat.self`: the `R`-module `R` is faithfully flat.
@@ -47,7 +47,7 @@ A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and 
 
 universe u v
 
-open TensorProduct
+open TensorProduct DirectSum
 
 namespace Module
 
@@ -177,6 +177,39 @@ lemma iff_flat_and_lTensor_reflects_triviality :
       simp only [← not_subsingleton_iff_nontrivial]; tauto
 
 end faithful
+
+/-- If `M` is a faithfully flat `R`-module and `N` is `R`-linearly isomorphic to `M`, then
+`N` is faithfully flat. -/
+lemma of_linearEquiv {N : Type*} [AddCommGroup N] [Module R N] [FaithfullyFlat R M]
+    (e : N ≃ₗ[R] M) : FaithfullyFlat R N := by
+  rw [iff_flat_and_lTensor_faithful]
+  exact ⟨Flat.of_linearEquiv R M N e,
+    fun P _ _ hP ↦ (TensorProduct.congr e (LinearEquiv.refl R P)).toEquiv.nontrivial⟩
+
+section
+
+open Classical
+
+/-- A direct sum of faithfully flat `R`-modules is faithfully flat. -/
+instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)]
+    [∀ i, Module R (M i)] [∀ i, FaithfullyFlat R (M i)] : FaithfullyFlat R (⨁ i, M i) := by
+  rw [iff_flat_and_lTensor_faithful]
+  refine ⟨inferInstance, fun N _ _ hN ↦ ?_⟩
+  obtain ⟨i⟩ := ‹Nonempty ι›
+  obtain ⟨x, y, hxy⟩ := Nontrivial.exists_pair_ne (α := M i ⊗[R] N)
+  haveI : Nontrivial (⨁ (i : ι), M i ⊗[R] N) :=
+    ⟨DirectSum.of _ i x, DirectSum.of _ i y, fun h ↦ hxy (DirectSum.of_injective i h)⟩
+  apply (TensorProduct.directSumLeft R M N).toEquiv.nontrivial
+
+/-- Free `R`-modules over discrete types are flat. -/
+instance finsupp (ι : Type v) [Nonempty ι] : FaithfullyFlat R (ι →₀ R) :=
+  of_linearEquiv _ _ (finsuppLEquivDirectSum R R ι)
+
+end
+
+/-- Any free, nontrivial `R`-module is flat. -/
+instance [Nontrivial M] [Module.Free R M] : FaithfullyFlat R M :=
+  of_linearEquiv _ _ (Free.repr R M)
 
 section exact
 
@@ -432,24 +465,7 @@ end fixed_universe
 
 end linearMap
 
-/-- An `R`-module linearly equivalent to a faithfully flat `R`-module is faithfully flat. -/
-lemma of_linearEquiv [fl : FaithfullyFlat R M]
-    (M' : Type*) [AddCommGroup M'] [Module R M'] (e : M' ≃ₗ[R] M) :
-    FaithfullyFlat R M' := by
-  classical
-  haveI : Module.Flat R M' := Module.Flat.of_linearEquiv _ _ _ e
-  refine ⟨fun m hm rid => fl.2 hm ?_⟩
-  rw [eq_top_iff] at rid ⊢
-  rintro x -
-  specialize @rid (e.symm x) ⟨⟩
-  rw [← Submodule.coe_set_smul, Submodule.mem_set_smul] at rid
-  obtain ⟨c, hc, eq⟩ := rid
-  apply_fun e at eq
-  simp only [LinearEquiv.apply_symm_apply, Finsupp.sum, AddSubmonoidClass.coe_finset_sum,
-    SetLike.val_smul, map_sum, map_smul] at eq
-  exact eq ▸ Submodule.sum_mem _ fun i hi => Submodule.apply_mem_map₂ (hm := hc hi) (hn := ⟨⟩) _
-
-section comp
+section trans
 
 open TensorProduct LinearMap
 
@@ -461,10 +477,9 @@ variable [FaithfullyFlat R S] [FaithfullyFlat S M]
 include S in
 /-- If `S` is a faithfully flat `R`-algebra, then any faithfully flat `S`-Module is faithfully flat
 as an `R`-module. -/
-theorem comp  :
-    FaithfullyFlat R M := by
+theorem trans : FaithfullyFlat R M := by
   rw [iff_zero_iff_lTensor_zero]
-  refine ⟨Module.Flat.comp R S M, @fun N _ _ N' _ _ f => ⟨fun aux => ?_, fun eq => eq ▸ by simp⟩⟩
+  refine ⟨Module.Flat.trans R S M, @fun N _ _ N' _ _ f => ⟨fun aux => ?_, fun eq => eq ▸ by simp⟩⟩
   rw [zero_iff_lTensor_zero (R:= R) (M := S) f,
     show f.lTensor S = (AlgebraTensorModule.map (A:= S) LinearMap.id f).restrictScalars R by aesop,
     show (0 :  S ⊗[R] N →ₗ[R] S ⊗[R] N') = (0 : S ⊗[R] N →ₗ[S] S ⊗[R] N').restrictScalars R by rfl,
@@ -473,7 +488,9 @@ theorem comp  :
   apply_fun AlgebraTensorModule.cancelBaseChange R S S M N' using LinearEquiv.injective _
   simpa using congr($aux (m ⊗ₜ[R] n))
 
-end comp
+@[deprecated (since := "2024-11-08")] alias comp := trans
+
+end trans
 
 end FaithfullyFlat
 

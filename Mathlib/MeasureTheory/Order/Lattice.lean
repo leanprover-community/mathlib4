@@ -32,13 +32,13 @@ open MeasureTheory
 
 /-- We say that a type has `MeasurableSup` if `(c ⊔ ·)` and `(· ⊔ c)` are measurable functions.
 For a typeclass assuming measurability of `uncurry (· ⊔ ·)` see `MeasurableSup₂`. -/
-class MeasurableSup (M : Type*) [MeasurableSpace M] [Sup M] : Prop where
+class MeasurableSup (M : Type*) [MeasurableSpace M] [Max M] : Prop where
   measurable_const_sup : ∀ c : M, Measurable (c ⊔ ·)
   measurable_sup_const : ∀ c : M, Measurable (· ⊔ c)
 
 /-- We say that a type has `MeasurableSup₂` if `uncurry (· ⊔ ·)` is a measurable functions.
 For a typeclass assuming measurability of `(c ⊔ ·)` and `(· ⊔ c)` see `MeasurableSup`. -/
-class MeasurableSup₂ (M : Type*) [MeasurableSpace M] [Sup M] : Prop where
+class MeasurableSup₂ (M : Type*) [MeasurableSpace M] [Max M] : Prop where
   measurable_sup : Measurable fun p : M × M => p.1 ⊔ p.2
 
 export MeasurableSup₂ (measurable_sup)
@@ -47,13 +47,13 @@ export MeasurableSup (measurable_const_sup measurable_sup_const)
 
 /-- We say that a type has `MeasurableInf` if `(c ⊓ ·)` and `(· ⊓ c)` are measurable functions.
 For a typeclass assuming measurability of `uncurry (· ⊓ ·)` see `MeasurableInf₂`. -/
-class MeasurableInf (M : Type*) [MeasurableSpace M] [Inf M] : Prop where
+class MeasurableInf (M : Type*) [MeasurableSpace M] [Min M] : Prop where
   measurable_const_inf : ∀ c : M, Measurable (c ⊓ ·)
   measurable_inf_const : ∀ c : M, Measurable (· ⊓ c)
 
 /-- We say that a type has `MeasurableInf₂` if `uncurry (· ⊓ ·)` is a measurable functions.
 For a typeclass assuming measurability of `(c ⊓ ·)` and `(· ⊓ c)` see `MeasurableInf`. -/
-class MeasurableInf₂ (M : Type*) [MeasurableSpace M] [Inf M] : Prop where
+class MeasurableInf₂ (M : Type*) [MeasurableSpace M] [Min M] : Prop where
   measurable_inf : Measurable fun p : M × M => p.1 ⊓ p.2
 
 export MeasurableInf₂ (measurable_inf)
@@ -64,19 +64,19 @@ variable {M : Type*} [MeasurableSpace M]
 
 section OrderDual
 
-instance (priority := 100) OrderDual.instMeasurableSup [Inf M] [MeasurableInf M] :
+instance (priority := 100) OrderDual.instMeasurableSup [Min M] [MeasurableInf M] :
     MeasurableSup Mᵒᵈ :=
   ⟨@measurable_const_inf M _ _ _, @measurable_inf_const M _ _ _⟩
 
-instance (priority := 100) OrderDual.instMeasurableInf [Sup M] [MeasurableSup M] :
+instance (priority := 100) OrderDual.instMeasurableInf [Max M] [MeasurableSup M] :
     MeasurableInf Mᵒᵈ :=
   ⟨@measurable_const_sup M _ _ _, @measurable_sup_const M _ _ _⟩
 
-instance (priority := 100) OrderDual.instMeasurableSup₂ [Inf M] [MeasurableInf₂ M] :
+instance (priority := 100) OrderDual.instMeasurableSup₂ [Min M] [MeasurableInf₂ M] :
     MeasurableSup₂ Mᵒᵈ :=
   ⟨@measurable_inf M _ _ _⟩
 
-instance (priority := 100) OrderDual.instMeasurableInf₂ [Sup M] [MeasurableSup₂ M] :
+instance (priority := 100) OrderDual.instMeasurableInf₂ [Max M] [MeasurableSup₂ M] :
     MeasurableInf₂ Mᵒᵈ :=
   ⟨@measurable_sup M _ _ _⟩
 
@@ -86,7 +86,7 @@ variable {α : Type*} {m : MeasurableSpace α} {μ : Measure α} {f g : α → M
 
 section Sup
 
-variable [Sup M]
+variable [Max M]
 
 section MeasurableSup
 
@@ -143,7 +143,7 @@ end Sup
 
 section Inf
 
-variable [Inf M]
+variable [Min M]
 
 section MeasurableInf
 

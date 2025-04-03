@@ -173,7 +173,7 @@ theorem Function.Surjective.isEngelian {f : L →ₗ⁅R⁆ L₂} (hf : Function
   have surj_id : Function.Surjective (LinearMap.id : M →ₗ[R] M) := Function.surjective_id
   haveI : LieModule.IsNilpotent R L M := h M hnp
   apply hf.lieModuleIsNilpotent surj_id
-  -- porting note (#10745): was `simp`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp`
   intros; simp only [LinearMap.id_coe, id_eq]; rfl
 
 theorem LieEquiv.isEngelian_iff (e : L ≃ₗ⁅R⁆ L₂) :
@@ -260,7 +260,8 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
     -- isNoetherian_of_surjective L _ (LinearMap.range_rangeRestrict (toEnd R L M))
     -- abusing the relation between `LieHom.rangeRestrict` and `LinearMap.rangeRestrict`
     refine isNoetherian_of_surjective L (LieHom.rangeRestrict (toEnd R L M)) ?_
-    simp only [LieHom.range_coeSubmodule, LieHom.coe_toLinearMap, LinearMap.range_eq_top]
+    simp only [LieHom.range_coeSubmodule, LieHom.coe_toLinearMap,
+      LinearMap.range_eq_top]
     exact LieHom.surjective_rangeRestrict (toEnd R L M)
   obtain ⟨K, hK₁, hK₂⟩ := (LieSubalgebra.wellFoundedGT_of_noetherian R L').wf.has_min s hs
   have hK₃ : K = ⊤ := by

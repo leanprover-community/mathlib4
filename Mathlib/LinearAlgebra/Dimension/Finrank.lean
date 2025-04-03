@@ -50,8 +50,7 @@ For a vector space `M` over a field `R`, this is the same as the finite dimensio
 of `M` over `R`.
 
 Note that it is possible to have `M` with `¬(Module.Finite R M)` but `finrank R M ≠ 0`, for example
-`ℤ × ℚ/ℤ` has `finrank` equal to `1`.
--/
+`ℤ × ℚ/ℤ` has `finrank` equal to `1`. -/
 noncomputable def finrank (R M : Type*) [Semiring R] [AddCommGroup M] [Module R M] : ℕ :=
   Cardinal.toNat (Module.rank R M)
 

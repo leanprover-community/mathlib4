@@ -153,6 +153,7 @@ noncomputable def ofVectorSpaceIndex : Set V :=
 noncomputable def ofVectorSpace : Basis (ofVectorSpaceIndex K V) K V :=
   Basis.extend (linearIndependent_empty K V)
 
+@[stacks 09FN "Generalized from fields to division rings."]
 instance (priority := 100) _root_.Module.Free.of_divisionRing : Module.Free K V :=
   Module.Free.of_basis (ofVectorSpace K V)
 

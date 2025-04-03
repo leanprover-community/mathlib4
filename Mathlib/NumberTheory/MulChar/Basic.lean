@@ -391,13 +391,13 @@ lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := b
   simp only [Ne, eq_one_iff, not_forall]
 
 /-- A multiplicative character is *nontrivial* if it takes a value `≠ 1` on a unit. -/
-@[deprecated (since := "2024-06-16")]
+@[deprecated "No deprecation message was provided." (since := "2024-06-16")]
 def IsNontrivial (χ : MulChar R R') : Prop :=
   ∃ a : Rˣ, χ a ≠ 1
 
 set_option linter.deprecated false in
 /-- A multiplicative character is nontrivial iff it is not the trivial character. -/
-@[deprecated (since := "2024-06-16")]
+@[deprecated "No deprecation message was provided." (since := "2024-06-16")]
 theorem isNontrivial_iff (χ : MulChar R R') : χ.IsNontrivial ↔ χ ≠ 1 := by
   simp only [IsNontrivial, Ne, MulChar.ext_iff, not_forall, one_apply_coe]
 
@@ -573,7 +573,7 @@ theorem sum_eq_zero_of_ne_one [IsDomain R'] {χ : MulChar R R'} (hχ : χ ≠ 1)
   simpa only [Finset.mul_sum, ← map_mul] using b.mulLeft_bijective.sum_comp _
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-06-16")]
+@[deprecated "No deprecation message was provided." (since := "2024-06-16")]
 lemma IsNontrivial.sum_eq_zero [IsDomain R'] {χ : MulChar R R'} (hχ : χ.IsNontrivial) :
     ∑ a, χ a = 0 :=
   sum_eq_zero_of_ne_one ((isNontrivial_iff _).mp hχ)

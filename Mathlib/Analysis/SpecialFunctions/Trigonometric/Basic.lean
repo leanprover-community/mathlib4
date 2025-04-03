@@ -137,11 +137,11 @@ theorem pi_div_two_le_two : π / 2 ≤ 2 := by
   exact (Classical.choose_spec exists_cos_eq_zero).1.2
 
 theorem two_le_pi : (2 : ℝ) ≤ π :=
-  (div_le_div_right (show (0 : ℝ) < 2 by norm_num)).1
+  (div_le_div_iff_of_pos_right (show (0 : ℝ) < 2 by norm_num)).1
     (by rw [div_self (two_ne_zero' ℝ)]; exact one_le_pi_div_two)
 
 theorem pi_le_four : π ≤ 4 :=
-  (div_le_div_right (show (0 : ℝ) < 2 by norm_num)).1
+  (div_le_div_iff_of_pos_right (show (0 : ℝ) < 2 by norm_num)).1
     (calc
       π / 2 ≤ 2 := pi_div_two_le_two
       _ = 4 / 2 := by norm_num)
@@ -200,8 +200,6 @@ theorem pi_ne_zero : pi ≠ 0 :=
 end NNReal
 
 namespace Real
-
-open Real
 
 @[simp]
 theorem sin_pi : sin π = 0 := by
@@ -887,7 +885,7 @@ theorem tan_nonpos_of_nonpos_of_neg_pi_div_two_le {x : ℝ} (hx0 : x ≤ 0) (hpx
 theorem strictMonoOn_tan : StrictMonoOn tan (Ioo (-(π / 2)) (π / 2)) := by
   rintro x hx y hy hlt
   rw [tan_eq_sin_div_cos, tan_eq_sin_div_cos,
-    div_lt_div_iff (cos_pos_of_mem_Ioo hx) (cos_pos_of_mem_Ioo hy), mul_comm, ← sub_pos, ← sin_sub]
+    div_lt_div_iff₀ (cos_pos_of_mem_Ioo hx) (cos_pos_of_mem_Ioo hy), mul_comm, ← sub_pos, ← sin_sub]
   exact sin_pos_of_pos_of_lt_pi (sub_pos.2 hlt) <| by linarith [hx.1, hy.2]
 
 theorem tan_lt_tan_of_lt_of_lt_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) < x) (hy₂ : y < π / 2)

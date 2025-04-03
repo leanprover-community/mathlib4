@@ -3,8 +3,10 @@ Copyright (c) 2024 Daniel Weber. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Daniel Weber
 -/
-import Mathlib.RingTheory.Derivation.Basic
+import Mathlib.RingTheory.Derivation.DifferentialRing
 import Mathlib.Algebra.Polynomial.Module.Basic
+import Mathlib.Algebra.Polynomial.Derivation
+import Mathlib.FieldTheory.Separable
 
 /-!
 # Coefficient-wise derivation on polynomials
@@ -12,7 +14,7 @@ import Mathlib.Algebra.Polynomial.Module.Basic
 In this file we define applying a derivation on the coefficients of a polynomial,
 show this forms a derivation, and prove `apply_eval_eq`, which shows that for a derivation `D`,
 `D(p(x)) = (D.mapCoeffs p)(x) + D(x) * p'(x)`. `apply_aeval_eq` and `apply_aeval_eq'`
-are generalizations of that for algebras.
+are generalizations of that for algebras. We also have a special case for `DifferentialAlgebra`s.
 -/
 
 noncomputable section
@@ -99,3 +101,102 @@ theorem apply_eval_eq (x : A) (p : A[X]) :
   apply_aeval_eq d x p
 
 end Derivation
+
+namespace Differential
+
+variable {A : Type*} [CommRing A] [Differential A]
+
+/--
+A specialization of `Derivation.mapCoeffs` for the case of a differential ring.
+-/
+def mapCoeffs : Derivation ℤ A[X] A[X] :=
+  PolynomialModule.equivPolynomialSelf.compDer Differential.deriv.mapCoeffs
+
+@[simp]
+lemma coeff_mapCoeffs (p : A[X]) (i) :
+    coeff (mapCoeffs p) i = (coeff p i)′ := rfl
+
+@[simp]
+lemma mapCoeffs_monomial (n : ℕ) (x : A) :
+    mapCoeffs (monomial n x) = monomial n x′ := by
+  simp [mapCoeffs]
+
+@[simp]
+lemma mapCoeffs_X :
+    mapCoeffs (X : A[X]) = 0 := by simp [← monomial_one_one_eq_X]
+
+@[simp]
+lemma mapCoeffs_C (x : A) :
+    mapCoeffs (C x) = C x′ := by simp [← monomial_zero_left]
+
+variable {R : Type*} [CommRing R] [Differential R] [Algebra A R] [DifferentialAlgebra A R]
+
+theorem deriv_aeval_eq (x : R) (p : A[X]) :
+    (aeval x p)′ = aeval x (mapCoeffs p) + aeval x (derivative p) * x′ := by
+  convert Derivation.apply_aeval_eq' Differential.deriv _ (Algebra.linearMap A R) ..
+  · simp [mapCoeffs]
+  · simp [deriv_algebraMap]
+
+/--
+The unique derivation which can be made to a `DifferentialAlgebra` on `A[X]` with
+`X′ = v`.
+-/
+def implicitDeriv (v : A[X]) :
+    Derivation ℤ A[X] A[X] :=
+  mapCoeffs + v • derivative'.restrictScalars ℤ
+
+@[simp]
+lemma implicitDeriv_C (v : A[X]) (b : A) :
+    implicitDeriv v (C b) = C b′ := by
+  simp [implicitDeriv]
+
+@[simp]
+lemma implicitDeriv_X (v : A[X]) :
+    implicitDeriv v X = v := by
+  simp [implicitDeriv]
+
+lemma deriv_aeval_eq_implicitDeriv (x : R) (v : A[X]) (h : x′ = aeval x v) (p : A[X]) :
+    (aeval x p)′ = aeval x (implicitDeriv v p) := by
+  simp [deriv_aeval_eq, implicitDeriv, h, mul_comm]
+
+variable {R' : Type*} [CommRing R'] [Differential R'] [Algebra A R'] [DifferentialAlgebra A R']
+variable [IsDomain R'] [Nontrivial R]
+
+lemma algHom_deriv (f : R →ₐ[A] R') (hf : Function.Injective f) (x : R) (h : IsSeparable A x) :
+    f (x′) = (f x)′ := by
+  let p := minpoly A x
+  apply mul_left_cancel₀ (a := aeval (f x) (derivative p))
+  · rw [Polynomial.aeval_algHom]
+    simp only [AlgHom.coe_comp, Function.comp_apply, ne_eq, map_eq_zero_iff f hf]
+    apply Separable.aeval_derivative_ne_zero h (minpoly.aeval A x)
+  conv => lhs; rw [Polynomial.aeval_algHom]
+  simp [← map_mul]
+  apply add_left_cancel (a := aeval (f x) (mapCoeffs p))
+  rw [← deriv_aeval_eq]
+  simp only [aeval_algHom, AlgHom.coe_comp, Function.comp_apply, ← map_add, ← deriv_aeval_eq,
+    minpoly.aeval, map_zero, p]
+
+omit [Nontrivial R] in
+lemma algEquiv_deriv (f : R ≃ₐ[A] R') (x : R) (h : IsSeparable A x) :
+    f (x′) = (f x)′ :=
+  haveI := f.nontrivial
+  algHom_deriv f.toAlgHom f.injective x h
+
+variable [Algebra.IsSeparable A R]
+
+/--
+`algHom_deriv` in a separable algebra
+-/
+lemma algHom_deriv' (f : R →ₐ[A] R') (hf : Function.Injective f) (x : R) :
+    f (x′) = (f x)′ := algHom_deriv f hf x (Algebra.IsSeparable.isSeparable' x)
+
+omit [Nontrivial R] in
+/--
+`algEquiv_deriv` in a separable algebra
+-/
+lemma algEquiv_deriv' (f : R ≃ₐ[A] R') (x : R) :
+    f (x′) = (f x)′ :=
+  haveI := f.nontrivial
+  algHom_deriv' f.toAlgHom f.injective x
+
+end Differential

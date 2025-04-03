@@ -106,8 +106,7 @@ alias snorm_condexpL2_le := eLpNorm_condexpL2_le
 theorem norm_condexpL2_coe_le (hm : m ≤ m0) (f : α →₂[μ] E) :
     ‖(condexpL2 E 𝕜 hm f : α →₂[μ] E)‖ ≤ ‖f‖ := by
   rw [Lp.norm_def, Lp.norm_def, ← lpMeas_coe]
-  refine (ENNReal.toReal_le_toReal ?_ (Lp.eLpNorm_ne_top _)).mpr (eLpNorm_condexpL2_le hm f)
-  exact Lp.eLpNorm_ne_top _
+  exact ENNReal.toReal_mono (Lp.eLpNorm_ne_top _) (eLpNorm_condexpL2_le hm f)
 
 theorem inner_condexpL2_left_eq_right (hm : m ≤ m0) {f g : α →₂[μ] E} :
     ⟪(condexpL2 E 𝕜 hm f : α →₂[μ] E), g⟫₂ = ⟪f, (condexpL2 E 𝕜 hm g : α →₂[μ] E)⟫₂ :=

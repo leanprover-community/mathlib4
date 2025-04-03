@@ -298,7 +298,7 @@ lemma SuccOrder.forall_ne_bot_iff
 
 section IsLeast
 
--- TODO: generalize to PartialOrder and `DirectedOn` after #16272
+-- TODO: generalize to PartialOrder and `DirectedOn` after https://github.com/leanprover-community/mathlib4/pull/16272
 lemma BddAbove.exists_isGreatest_of_nonempty {X : Type*} [LinearOrder X] [SuccOrder X]
     [IsSuccArchimedean X] {S : Set X} (hS : BddAbove S) (hS' : S.Nonempty) :
     ∃ x, IsGreatest S x := by

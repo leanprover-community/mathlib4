@@ -21,7 +21,7 @@ noncomputable section
 universe v u v' u'
 
 open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor CategoryTheory.Limits
-  AlgebraicGeometry TopologicalSpace
+  AlgebraicGeometry TopologicalSpace Topology
 
 variable {C : Type u} [Category.{v} C] [HasColimits C]
 
@@ -64,7 +64,7 @@ def restrictStalkIso {U : TopCat} (X : PresheafedSpace.{_, _, v} C) {f : U ⟶ (
   -- Typeclass resolution knows that the opposite of an initial functor is final. The result
   -- follows from the general fact that postcomposing with a final functor doesn't change colimits.
 
--- Porting note (#11119): removed `simp` attribute, for left hand side is not in simple normal form.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute, for left hand side is not in simple normal form.
 @[elementwise, reassoc]
 theorem restrictStalkIso_hom_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : IsOpenEmbedding f) (V : Opens U) (x : U) (hx : x ∈ V) :
@@ -184,7 +184,8 @@ def stalkIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ≅ Y) (x : X) :
     Y.presheaf.stalk (α.hom.base x) ≅ X.presheaf.stalk x :=
   asIso (α.hom.stalkMap x)
 
-@[reassoc, elementwise, simp, nolint simpNF] -- see std4#365 for the simpNF issue
+-- See https://github.com/leanprover-community/batteries/issues/365 for the simpNF issue.
+@[reassoc, elementwise, simp, nolint simpNF]
 theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
     (f : X ⟶ Y) {x y : X} (h : x ⤳ y) :
     Y.presheaf.stalkSpecializes (f.base.map_specializes h) ≫ f.stalkMap x =

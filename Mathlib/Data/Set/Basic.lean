@@ -436,8 +436,9 @@ instance univ.nonempty [Nonempty α] : Nonempty (↥(Set.univ : Set α)) :=
 instance instNonemptyTop [Nonempty α] : Nonempty (⊤ : Set α) :=
   inferInstanceAs (Nonempty (univ : Set α))
 
-theorem nonempty_of_nonempty_subtype [Nonempty (↥s)] : s.Nonempty :=
-  nonempty_subtype.mp ‹_›
+theorem Nonempty.of_subtype [Nonempty (↥s)] : s.Nonempty := nonempty_subtype.mp ‹_›
+
+@[deprecated (since := "2024-11-23")] alias nonempty_of_nonempty_subtype := Nonempty.of_subtype
 
 /-! ### Lemmas about the empty set -/
 
@@ -1031,7 +1032,7 @@ theorem setOf_eq_eq_singleton' {a : α} : { x | a = x } = {a} :=
   ext fun _ => eq_comm
 
 -- TODO: again, annotation needed
---Porting note (#11119): removed `simp` attribute
+--Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute
 theorem mem_singleton (a : α) : a ∈ ({a} : Set α) :=
   @rfl _ _
 
@@ -1204,7 +1205,7 @@ theorem eq_empty_of_ssubset_singleton {s : Set α} {x : α} (hs : s ⊂ {x}) : s
 
 theorem eq_of_nonempty_of_subsingleton {α} [Subsingleton α] (s t : Set α) [Nonempty s]
     [Nonempty t] : s = t :=
-  nonempty_of_nonempty_subtype.eq_univ.trans nonempty_of_nonempty_subtype.eq_univ.symm
+  Nonempty.of_subtype.eq_univ.trans Nonempty.of_subtype.eq_univ.symm
 
 theorem eq_of_nonempty_of_subsingleton' {α} [Subsingleton α] {s : Set α} (t : Set α)
     (hs : s.Nonempty) [Nonempty t] : s = t :=
@@ -1299,6 +1300,10 @@ theorem inter_diff_distrib_left (s t u : Set α) : s ∩ (t \ u) = (s ∩ t) \ (
 
 theorem inter_diff_distrib_right (s t u : Set α) : s \ t ∩ u = (s ∩ u) \ (t ∩ u) :=
   inf_sdiff_distrib_right _ _ _
+
+theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
+    Disjoint s t ↔ s = ∅ := by
+  simp only [disjoint_iff, inf_eq_left.mpr h, bot_eq_empty]
 
 /-! ### Lemmas about complement -/
 
@@ -1577,7 +1582,7 @@ theorem diff_insert_of_not_mem {x : α} (h : x ∉ s) : s \ insert x t = s \ t :
 @[simp]
 theorem insert_diff_of_mem (s) (h : a ∈ t) : insert a s \ t = s \ t := by
   ext
-  constructor <;> simp (config := { contextual := true }) [or_imp, h]
+  constructor <;> simp +contextual [or_imp, h]
 
 theorem insert_diff_of_not_mem (s) (h : a ∉ t) : insert a s \ t = insert a (s \ t) := by
   classical
@@ -1947,6 +1952,17 @@ end Function
 open Function
 
 namespace Set
+
+section
+variable {α β : Type*} {a : α} {b : β}
+
+lemma preimage_fst_singleton_eq_range : (Prod.fst ⁻¹' {a} : Set (α × β)) = range (a, ·) := by
+  aesop
+
+lemma preimage_snd_singleton_eq_range : (Prod.snd ⁻¹' {b} : Set (α × β)) = range (·, b) := by
+  aesop
+
+end
 
 /-! ### Lemmas about `inclusion`, the injection of subtypes induced by `⊆` -/
 

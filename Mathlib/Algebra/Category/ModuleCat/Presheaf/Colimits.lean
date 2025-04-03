@@ -106,16 +106,16 @@ noncomputable def isColimitColimitCocone : IsColimit (colimitCocone F) :=
 
 instance hasColimit : HasColimit F := ⟨_, isColimitColimitCocone F⟩
 
-noncomputable instance evaluationPreservesColimit (X : Cᵒᵖ) :
+instance evaluation_preservesColimit (X : Cᵒᵖ) :
     PreservesColimit F (evaluation R X) :=
-  preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F) (colimit.isColimit _)
+  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F) (colimit.isColimit _)
 
 variable [∀ X, PreservesColimit F
   (evaluation R X ⋙ forget₂ (ModuleCat (R.obj X)) AddCommGrp)]
 
-noncomputable instance toPresheafPreservesColimit :
+instance toPresheaf_preservesColimit :
     PreservesColimit F (toPresheaf R) :=
-  preservesColimitOfPreservesColimitCocone (isColimitColimitCocone F)
+  preservesColimit_of_preserves_colimit_cocone (isColimitColimitCocone F)
     (Limits.evaluationJointlyReflectsColimits _
       (fun X => isColimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGrp)
         (isColimitColimitCocone F)))
@@ -130,10 +130,10 @@ variable [HasColimitsOfShape J AddCommGrp.{v}]
 
 instance hasColimitsOfShape : HasColimitsOfShape J (PresheafOfModules.{v} R) where
 
-noncomputable instance evaluationPreservesColimitsOfShape (X : Cᵒᵖ) :
+noncomputable instance evaluation_preservesColimitsOfShape (X : Cᵒᵖ) :
     PreservesColimitsOfShape J (evaluation R X : PresheafOfModules.{v} R ⥤ _) where
 
-noncomputable instance toPresheafPreservesColimitsOfShape :
+noncomputable instance toPresheaf_preservesColimitsOfShape :
     PreservesColimitsOfShape J (toPresheaf.{v} R) where
 
 end HasColimitsOfShape
@@ -143,10 +143,10 @@ namespace Finite
 instance hasFiniteColimits : HasFiniteColimits (PresheafOfModules.{v} R) :=
   ⟨fun _ => inferInstance⟩
 
-noncomputable instance evaluationPreservesFiniteColimits (X : Cᵒᵖ) :
+noncomputable instance evaluation_preservesFiniteColimits (X : Cᵒᵖ) :
     PreservesFiniteColimits (evaluation.{v} R X) where
 
-noncomputable instance toPresheafPreservesFiniteColimits :
+noncomputable instance toPresheaf_preservesFiniteColimits :
     PreservesFiniteColimits (toPresheaf R) where
 
 end Finite

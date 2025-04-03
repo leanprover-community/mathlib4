@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
 import Mathlib.RingTheory.Jacobson
+import Mathlib.Topology.JacobsonSpace
 
 /-!
 # The prime spectrum of a jacobson ring
@@ -22,11 +23,11 @@ import Mathlib.RingTheory.Jacobson
 
 open Ideal
 
-variable {R : Type*} [CommRing R] [IsJacobsonRing R]
+variable {R : Type*} [CommRing R]
 
 namespace PrimeSpectrum
 
-lemma exists_isClosed_singleton_of_isJacobsonRing
+lemma exists_isClosed_singleton_of_isJacobsonRing [IsJacobsonRing R]
     (s : (Set (PrimeSpectrum R))) (hs : IsOpen s) (hs' : s.Nonempty) :
     ∃ x ∈ s, IsClosed {x} := by
   simp_rw [isClosed_singleton_iff_isMaximal]
@@ -41,6 +42,30 @@ lemma exists_isClosed_singleton_of_isJacobsonRing
   rintro x ⟨-, hx⟩
   exact sInf_le ⟨this ⟨x, hx.isPrime⟩ hx, hx⟩
 
+instance [IsJacobsonRing R] : JacobsonSpace (PrimeSpectrum R) := by
+  rw [jacobsonSpace_iff_locallyClosed]
+  rintro S hS ⟨U, Z, hU, hZ, rfl⟩
+  simp only [← isClosed_compl_iff, isClosed_iff_zeroLocus_ideal, @compl_eq_comm _ U] at hU hZ
+  obtain ⟨⟨I, rfl⟩, ⟨J, rfl⟩⟩ := And.intro hU hZ
+  simp only [Set.nonempty_iff_ne_empty, ne_eq, Set.inter_assoc,
+    ← Set.disjoint_iff_inter_eq_empty, Set.disjoint_compl_left_iff_subset,
+    zeroLocus_subset_zeroLocus_iff, Ideal.radical_eq_jacobson, Ideal.jacobson, le_sInf_iff] at hS ⊢
+  contrapose! hS
+  rintro x ⟨hJx, hx⟩
+  exact @hS ⟨x, hx.isPrime⟩ ⟨hJx, (isClosed_singleton_iff_isMaximal _).mpr hx⟩
+
+lemma isJacobsonRing_iff_jacobsonSpace :
+    IsJacobsonRing R ↔ JacobsonSpace (PrimeSpectrum R) := by
+  refine ⟨fun _ ↦ inferInstance, fun H ↦ ⟨fun I hI ↦ le_antisymm ?_ Ideal.le_jacobson⟩⟩
+  rw [← I.isRadical_jacobson.radical]
+  conv_rhs => rw [← hI.radical]
+  simp_rw [← vanishingIdeal_zeroLocus_eq_radical]
+  apply vanishingIdeal_anti_mono
+  rw [← H.1 (isClosed_zeroLocus I), (isClosed_zeroLocus _).closure_subset_iff]
+  rintro x ⟨hx : I ≤ x.asIdeal, hx'⟩
+  show jacobson I ≤ x.asIdeal
+  exact sInf_le ⟨hx, (isClosed_singleton_iff_isMaximal _).mp hx'⟩
+
 /--
 If `R` is both noetherian and jacobson, then the following are equivalent for `x : Spec R`:
 1. `{x}` is open (i.e. `x` is an isolated point)
@@ -49,7 +74,7 @@ If `R` is both noetherian and jacobson, then the following are equivalent for `x
   (i.e. `x` is both a minimal prime and a maximal ideal)
 -/
 lemma isOpen_singleton_tfae_of_isNoetherian_of_isJacobsonRing
-    [IsNoetherianRing R] (x : PrimeSpectrum R) :
+    [IsNoetherianRing R] [IsJacobsonRing R] (x : PrimeSpectrum R) :
     List.TFAE [IsOpen {x}, IsClopen {x}, IsClosed {x} ∧ StableUnderGeneralization {x}] := by
   tfae_have 1 → 2
   | h => by

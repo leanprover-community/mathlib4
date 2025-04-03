@@ -81,7 +81,7 @@ theorem HasAffineProperty.diagonal_of_openCover (P) {Q} [HasAffineProperty P Q]
   · simp only [Category.assoc, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       Functor.const_obj_obj, cospan_one, cospan_left, cospan_right, Category.comp_id]
     convert h𝒰' i j k
-    ext1 <;> simp [Scheme.OpenCover.pullbackHom]
+    ext1 <;> simp [Scheme.Cover.pullbackHom]
 
 theorem HasAffineProperty.diagonal_of_openCover_diagonal
     (P) {Q} [HasAffineProperty P Q]
@@ -116,7 +116,7 @@ theorem HasAffineProperty.diagonal_iff
     (pullback.fst (f := f) (g := 𝟙 Y)), pullback.condition, Category.comp_id] at hf
   let 𝒰 := X.affineCover.pushforwardIso (inv (pullback.fst (f := f) (g := 𝟙 Y)))
   have (i) : IsAffine (𝒰.obj i) := by dsimp [𝒰]; infer_instance
-  exact HasAffineProperty.diagonal_of_openCover P f (Scheme.openCoverOfIsIso (𝟙 _))
+  exact HasAffineProperty.diagonal_of_openCover P f (Scheme.coverOfIsIso (𝟙 _))
     (fun _ ↦ 𝒰) (fun _ _ _ ↦ hf _ _)
 
 instance HasAffineProperty.diagonal_affineProperty_isLocal
@@ -159,7 +159,7 @@ theorem universally_isLocalAtTarget (P : MorphismProperty Scheme)
     (hP₂ : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) {ι : Type u} (U : ι → Y.Opens)
       (_ : iSup U = ⊤), (∀ i, P (f ∣_ U i)) → P f) : IsLocalAtTarget P.universally := by
   apply IsLocalAtTarget.mk'
-  · exact fun {X Y} f U => P.universally_stableUnderBaseChange
+  · exact fun {X Y} f U => P.universally.of_isPullback
       (isPullback_morphismRestrict f U).flip
   · intros X Y f ι U hU H X' Y' i₁ i₂ f' h
     apply hP₂ _ (fun i ↦ i₂ ⁻¹ᵁ U i)
@@ -245,9 +245,10 @@ lemma topologically_isLocalAtTarget'
     IsLocalAtTarget (topologically P) := by
   refine topologically_isLocalAtTarget P ?_ (fun f _ U hU hU' ↦ (hP f U hU hU').mpr)
   introv hf hs H
-  refine by simpa using (hP f (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ?_ hf).mp H ⟨1⟩
-  rw [← top_le_iff]
-  exact le_iSup (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ⟨0⟩
+  have := (hP f (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ?_ hf).mp H ⟨1⟩
+  · simpa using this
+  · rw [← top_le_iff]
+    exact le_iSup (![⊤, Opens.mk s hs] ∘ Equiv.ulift) ⟨0⟩
 
 end Topologically
 
@@ -290,18 +291,42 @@ lemma stalkwiseIsLocalAtTarget_of_respectsIso (hP : RingHom.RespectsIso P) :
     exact ((RingHom.toMorphismProperty P).arrow_mk_iso_iff <|
       morphismRestrictStalkMap f (U i) ⟨x, hi⟩).mp <| hf i ⟨x, hi⟩
 
+/-- If `P` respects isos, then `stalkwise P` is local at the source. -/
+lemma stalkwise_isLocalAtSource_of_respectsIso (hP : RingHom.RespectsIso P) :
+    IsLocalAtSource (stalkwise P) := by
+  letI := stalkwise_respectsIso hP
+  apply IsLocalAtSource.mk'
+  · intro X Y f U hf x
+    rw [Scheme.stalkMap_comp, hP.cancel_right_isIso]
+    exact hf _
+  · intro X Y f ι U hU hf x
+    have hy : x ∈ iSup U := by rw [hU]; trivial
+    obtain ⟨i, hi⟩ := Opens.mem_iSup.mp hy
+    rw [← hP.cancel_right_isIso _ ((U i).ι.stalkMap ⟨x, hi⟩)]
+    simpa [Scheme.stalkMap_comp] using hf i ⟨x, hi⟩
+
+lemma stalkwise_Spec_map_iff (hP : RingHom.RespectsIso P) {R S : CommRingCat} (φ : R ⟶ S) :
+    stalkwise P (Spec.map φ) ↔ ∀ (p : Ideal S) (_ : p.IsPrime),
+      P (Localization.localRingHom _ p φ rfl) := by
+  have hP' : (RingHom.toMorphismProperty P).RespectsIso :=
+    RingHom.toMorphismProperty_respectsIso_iff.mp hP
+  trans ∀ (p : PrimeSpectrum S), P (Localization.localRingHom _ p.asIdeal φ rfl)
+  · exact forall_congr' fun p ↦
+      (RingHom.toMorphismProperty P).arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso _ _)
+  · exact ⟨fun H p hp ↦ H ⟨p, hp⟩, fun H p ↦ H p.1 p.2⟩
+
 end Stalkwise
 
 namespace AffineTargetMorphismProperty
 
 /-- If `P` is local at the target, to show that `P` is stable under base change, it suffices to
 check this for base change along a morphism of affine schemes. -/
-lemma stableUnderBaseChange_of_stableUnderBaseChangeOnAffine_of_isLocalAtTarget
+lemma isStableUnderBaseChange_of_isStableUnderBaseChangeOnAffine_of_isLocalAtTarget
     (P : MorphismProperty Scheme) [IsLocalAtTarget P]
-    (hP₂ : (of P).StableUnderBaseChange) :
-    P.StableUnderBaseChange :=
+    (hP₂ : (of P).IsStableUnderBaseChange) :
+    P.IsStableUnderBaseChange :=
   letI := HasAffineProperty.of_isLocalAtTarget P
-  HasAffineProperty.stableUnderBaseChange hP₂
+  HasAffineProperty.isStableUnderBaseChange hP₂
 
 end AffineTargetMorphismProperty
 

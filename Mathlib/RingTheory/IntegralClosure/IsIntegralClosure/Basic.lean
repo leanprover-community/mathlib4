@@ -3,11 +3,13 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Defs
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.FiniteType
+import Mathlib.RingTheory.Polynomial.IntegralNormalization
 import Mathlib.RingTheory.Polynomial.ScaleRoots
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 /-!
 # # Integral closure as a characteristic predicate
@@ -261,81 +263,39 @@ section
 variable (p : R[X]) (x : S)
 
 /-- The monic polynomial whose roots are `p.leadingCoeff * x` for roots `x` of `p`. -/
-noncomputable def normalizeScaleRoots (p : R[X]) : R[X] :=
-  ∑ i ∈ p.support,
-    monomial i (if i = p.natDegree then 1 else p.coeff i * p.leadingCoeff ^ (p.natDegree - 1 - i))
+@[deprecated (since := "2024-11-30")]
+alias normalizeScaleRoots := integralNormalization
 
-theorem normalizeScaleRoots_coeff_mul_leadingCoeff_pow (i : ℕ) (hp : 1 ≤ natDegree p) :
-    (normalizeScaleRoots p).coeff i * p.leadingCoeff ^ i =
-      p.coeff i * p.leadingCoeff ^ (p.natDegree - 1) := by
-  simp only [normalizeScaleRoots, finset_sum_coeff, coeff_monomial, Finset.sum_ite_eq', one_mul,
-    zero_mul, mem_support_iff, ite_mul, Ne, ite_not]
-  split_ifs with h₁ h₂
-  · simp [h₁]
-  · rw [h₂, leadingCoeff, ← pow_succ', tsub_add_cancel_of_le hp]
-  · rw [mul_assoc, ← pow_add, tsub_add_cancel_of_le]
-    apply Nat.le_sub_one_of_lt
-    rw [lt_iff_le_and_ne]
-    exact ⟨le_natDegree_of_ne_zero h₁, h₂⟩
+@[deprecated (since := "2024-11-30")]
+alias normalizeScaleRoots_coeff_mul_leadingCoeff_pow :=
+  integralNormalization_coeff_mul_leadingCoeff_pow
 
-theorem leadingCoeff_smul_normalizeScaleRoots (p : R[X]) :
-    p.leadingCoeff • normalizeScaleRoots p = scaleRoots p p.leadingCoeff := by
-  ext
-  simp only [coeff_scaleRoots, normalizeScaleRoots, coeff_monomial, coeff_smul, Finset.smul_sum,
-    Ne, Finset.sum_ite_eq', finset_sum_coeff, smul_ite, smul_zero, mem_support_iff]
-  -- Porting note: added the following `simp only`
-  simp only [tsub_le_iff_right, smul_eq_mul, mul_ite, mul_one, mul_zero,
-    Finset.sum_ite_eq', mem_support_iff, ne_eq, ite_not]
-  split_ifs with h₁ h₂
-  · simp [*]
-  · simp [*]
-  · rw [mul_comm, mul_assoc, ← pow_succ, tsub_right_comm,
-      tsub_add_cancel_of_le]
-    rw [Nat.succ_le_iff]
-    exact tsub_pos_of_lt (lt_of_le_of_ne (le_natDegree_of_ne_zero h₁) h₂)
+@[deprecated (since := "2024-11-30")]
+alias leadingCoeff_smul_normalizeScaleRoots := leadingCoeff_smul_integralNormalization
 
-theorem normalizeScaleRoots_support : (normalizeScaleRoots p).support ≤ p.support := by
-  intro x
-  contrapose
-  simp only [not_mem_support_iff, normalizeScaleRoots, finset_sum_coeff, coeff_monomial,
-    Finset.sum_ite_eq', mem_support_iff, Ne, Classical.not_not, ite_eq_right_iff]
-  intro h₁ h₂
-  exact (h₂ h₁).elim
+@[deprecated (since := "2024-11-30")]
+alias normalizeScaleRoots_support := support_integralNormalization_subset
 
-theorem normalizeScaleRoots_degree : (normalizeScaleRoots p).degree = p.degree := by
-  apply le_antisymm
-  · exact Finset.sup_mono (normalizeScaleRoots_support p)
-  · rw [← degree_scaleRoots, ← leadingCoeff_smul_normalizeScaleRoots]
-    exact degree_smul_le _ _
+@[deprecated (since := "2024-11-30")]
+alias normalizeScaleRoots_degree := integralNormalization_degree
 
-theorem normalizeScaleRoots_eval₂_leadingCoeff_mul (h : 1 ≤ p.natDegree) (f : R →+* S) (x : S) :
-    (normalizeScaleRoots p).eval₂ f (f p.leadingCoeff * x) =
-      f p.leadingCoeff ^ (p.natDegree - 1) * p.eval₂ f x := by
-  rw [eval₂_eq_sum_range, eval₂_eq_sum_range, Finset.mul_sum]
-  apply Finset.sum_congr
-  · rw [natDegree_eq_of_degree_eq (normalizeScaleRoots_degree p)]
-  intro n _hn
-  rw [mul_pow, ← mul_assoc, ← f.map_pow, ← f.map_mul,
-    normalizeScaleRoots_coeff_mul_leadingCoeff_pow _ _ h, f.map_mul, f.map_pow]
-  ring
+@[deprecated (since := "2024-11-30")]
+alias normalizeScaleRoots_eval₂_leadingCoeff_mul := integralNormalization_eval₂_leadingCoeff_mul
 
-theorem normalizeScaleRoots_monic (h : p ≠ 0) : (normalizeScaleRoots p).Monic := by
-  delta Monic leadingCoeff
-  rw [natDegree_eq_of_degree_eq (normalizeScaleRoots_degree p)]
-  suffices p = 0 → (0 : R) = 1 by simpa [normalizeScaleRoots, coeff_monomial]
-  exact fun h' => (h h').elim
+@[deprecated (since := "2024-11-30")]
+alias normalizeScaleRoots_monic := monic_integralNormalization
 
 /-- Given a `p : R[X]` and a `x : S` such that `p.eval₂ f x = 0`,
 `f p.leadingCoeff * x` is integral. -/
 theorem RingHom.isIntegralElem_leadingCoeff_mul (h : p.eval₂ f x = 0) :
     f.IsIntegralElem (f p.leadingCoeff * x) := by
   by_cases h' : 1 ≤ p.natDegree
-  · use normalizeScaleRoots p
+  · use integralNormalization p
     have : p ≠ 0 := fun h'' => by
       rw [h'', natDegree_zero] at h'
       exact Nat.not_succ_le_zero 0 h'
-    use normalizeScaleRoots_monic p this
-    rw [normalizeScaleRoots_eval₂_leadingCoeff_mul p h' f x, h, mul_zero]
+    use monic_integralNormalization this
+    rw [integralNormalization_eval₂_leadingCoeff_mul h' f x, h, mul_zero]
   · by_cases hp : p.map f = 0
     · apply_fun fun q => coeff q p.natDegree at hp
       rw [coeff_map, coeff_zero, coeff_natDegree] at hp
@@ -355,6 +315,33 @@ theorem isIntegral_leadingCoeff_smul [Algebra R S] (h : aeval x p = 0) :
   exact (algebraMap R S).isIntegralElem_leadingCoeff_mul p x h
 
 end
+
+lemma Polynomial.Monic.quotient_isIntegralElem {g : S[X]} (mon : g.Monic) {I : Ideal S[X]}
+    (h : g ∈ I) :
+    ((Ideal.Quotient.mk I).comp (algebraMap S S[X])).IsIntegralElem (Ideal.Quotient.mk I X) := by
+  exact ⟨g, mon, by
+  rw [← (Ideal.Quotient.eq_zero_iff_mem.mpr h), eval₂_eq_sum_range]
+  nth_rw 3 [(as_sum_range_C_mul_X_pow g)]
+  simp only [map_sum, algebraMap_eq, RingHom.coe_comp, Function.comp_apply, map_mul, map_pow]⟩
+
+/- If `I` is an ideal of the polynomial ring `S[X]` and contains a monic polynomial `f`,
+then `S[X]/I` is integral over `S`. -/
+lemma Polynomial.Monic.quotient_isIntegral {g : S[X]} (mon : g.Monic) {I : Ideal S[X]}
+    (h : g ∈ I) :
+      ((Ideal.Quotient.mkₐ S I).comp (Algebra.ofId S S[X])).IsIntegral := by
+  have eq_top : Algebra.adjoin S {(Ideal.Quotient.mkₐ S I) X} = ⊤ := by
+    ext g
+    constructor
+    · simp only [Algebra.mem_top, implies_true]
+    · intro _
+      obtain ⟨g', hg⟩ := Ideal.Quotient.mkₐ_surjective S I g
+      have : g = (Polynomial.aeval ((Ideal.Quotient.mkₐ S I) X)) g' := by
+        nth_rw 1 [← hg, aeval_eq_sum_range' (lt_add_one _),
+          as_sum_range_C_mul_X_pow g', map_sum]
+        simp only [Polynomial.C_mul', ← map_pow, map_smul]
+      exact this ▸ (aeval_mem_adjoin_singleton S ((Ideal.Quotient.mk I) Polynomial.X))
+  exact fun a ↦ (eq_top ▸ (adjoin_le_integralClosure ( mon.quotient_isIntegralElem h)))
+    Algebra.mem_top
 
 end
 

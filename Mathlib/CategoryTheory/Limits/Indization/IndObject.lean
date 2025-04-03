@@ -6,6 +6,7 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Limits.FinallySmall
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Filtered.Small
+import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
 
 /-!
 # Ind-objects
@@ -37,7 +38,7 @@ The recommended alternative is to consider ind-objects over `ULiftHom.{w} C` ins
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory.Limits
 
@@ -136,6 +137,9 @@ theorem map {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A
 theorem iff_of_iso {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A ↔ IsIndObject B :=
   ⟨.map η, .map (inv η)⟩
 
+instance : ClosedUnderIsomorphisms (IsIndObject (C := C)) where
+  of_iso i h := h.map i.hom
+
 /-- Pick a presentation for an ind-object using choice. -/
 noncomputable def presentation : IsIndObject A → IndObjectPresentation A
   | ⟨P⟩ => P.some
@@ -174,5 +178,11 @@ theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) : IsIndObject A ↔
     (IsFiltered (CostructuredArrow yoneda A) ∧ FinallySmall.{v} (CostructuredArrow yoneda A)) :=
   ⟨fun h => ⟨h.isFiltered, h.finallySmall⟩,
    fun ⟨_, _⟩ => isIndObject_of_isFiltered_of_finallySmall A⟩
+
+/-- If a limit already exists in `C`, then the limit of the image of the diagram under the Yoneda
+embedding is an ind-object. -/
+theorem isIndObject_limit_comp_yoneda {J : Type u'} [Category.{v'} J] (F : J ⥤ C) [HasLimit F] :
+    IsIndObject (limit (F ⋙ yoneda)) :=
+  IsIndObject.map (preservesLimitIso yoneda F).hom (isIndObject_yoneda (limit F))
 
 end CategoryTheory.Limits

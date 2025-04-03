@@ -7,7 +7,6 @@ import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Data.Fintype.Lattice
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.NonUnitalSubring.Basic
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 
 /-!
@@ -15,7 +14,7 @@ import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 -/
 
 assert_not_exists Basis -- See `RingTheory.Ideal.Basis`
-assert_not_exists Submodule.hasQuotient -- See `RingTheory.Ideal.QuotientOperations`
+assert_not_exists Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
 
 universe u v w x
 
@@ -25,14 +24,16 @@ namespace Submodule
 
 variable {R : Type u} {M : Type v} {M' F G : Type*}
 
-section CommSemiring
+section Semiring
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+variable [Semiring R] [AddCommMonoid M] [Module R M]
 
-open Pointwise
-
-instance hasSMul' : SMul (Ideal R) (Submodule R M) :=
-  ⟨Submodule.map₂ (LinearMap.lsmul R M)⟩
+instance : SMul (Ideal R) (Submodule R M) where
+  smul I N :=
+  { __ := I.toAddSubmonoid • N.toAddSubmonoid
+    smul_mem' := fun r m hm ↦ AddSubmonoid.smul_induction_on hm
+      (fun m hm n ↦ by rw [smul_smul]; exact AddSubmonoid.smul_mem_smul <| I.smul_mem _ hm)
+      fun m₁ m₂ h₁ h₂ ↦ by rw [smul_add]; exact (I.1 • N.1).add_mem h₁ h₂ }
 
 /-- This duplicates the global `smul_eq_mul`, but doesn't have to unfold anywhere near as much to
 apply. -/
@@ -41,59 +42,45 @@ protected theorem _root_.Ideal.smul_eq_mul (I J : Ideal R) : I • J = I * J :=
 
 variable {I J : Ideal R} {N P : Submodule R M}
 
-theorem smul_mem_smul {r} {n} (hr : r ∈ I) (hn : n ∈ N) : r • n ∈ I • N :=
-  apply_mem_map₂ _ hr hn
+theorem smul_toAddSubmonoid : (I • N).toAddSubmonoid = I.toAddSubmonoid • N.toAddSubmonoid := rfl
 
-theorem smul_le {P : Submodule R M} : I • N ≤ P ↔ ∀ r ∈ I, ∀ n ∈ N, r • n ∈ P :=
-  map₂_le
+theorem smul_mem_smul {r} {n} (hr : r ∈ I) (hn : n ∈ N) : r • n ∈ I • N :=
+  AddSubmonoid.smul_mem_smul hr hn
+
+theorem smul_le : I • N ≤ P ↔ ∀ r ∈ I, ∀ n ∈ N, r • n ∈ P :=
+  AddSubmonoid.smul_le
 
 @[simp, norm_cast]
 lemma coe_set_smul : (I : Set R) • N = I • N :=
-  Submodule.set_smul_eq_of_le _ _ _
-    (fun _ _ hr hx => smul_mem_smul hr hx)
-    (smul_le.mpr fun _ hr _ hx => mem_set_smul_of_mem_mem hr hx)
+  set_smul_eq_of_le _ _ _
+    (fun _ _ hr hx ↦ smul_mem_smul hr hx)
+    (smul_le.mpr fun _ hr _ hx ↦ mem_set_smul_of_mem_mem hr hx)
 
 @[elab_as_elim]
 theorem smul_induction_on {p : M → Prop} {x} (H : x ∈ I • N) (smul : ∀ r ∈ I, ∀ n ∈ N, p (r • n))
-    (add : ∀ x y, p x → p y → p (x + y)) : p x := by
-  have H0 : p 0 := by simpa only [zero_smul] using smul 0 I.zero_mem 0 N.zero_mem
-  refine Submodule.iSup_induction (x := x) _ H ?_ H0 add
-  rintro ⟨i, hi⟩ m ⟨j, hj, hj'⟩
-  rw [← hj']
-  exact smul _ hi _ hj
+    (add : ∀ x y, p x → p y → p (x + y)) : p x :=
+  AddSubmonoid.smul_induction_on H smul add
 
 /-- Dependent version of `Submodule.smul_induction_on`. -/
 @[elab_as_elim]
 theorem smul_induction_on' {x : M} (hx : x ∈ I • N) {p : ∀ x, x ∈ I • N → Prop}
     (smul : ∀ (r : R) (hr : r ∈ I) (n : M) (hn : n ∈ N), p (r • n) (smul_mem_smul hr hn))
-    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›)) : p x hx := by
-  refine Exists.elim ?_ fun (h : x ∈ I • N) (H : p x h) => H
-  exact
-    smul_induction_on hx (fun a ha x hx => ⟨_, smul _ ha _ hx⟩) fun x y ⟨_, hx⟩ ⟨_, hy⟩ =>
-      ⟨_, add _ _ _ _ hx hy⟩
-
-theorem mem_smul_span_singleton {I : Ideal R} {m : M} {x : M} :
-    x ∈ I • span R ({m} : Set M) ↔ ∃ y ∈ I, y • m = x :=
-  ⟨fun hx =>
-    smul_induction_on hx
-      (fun r hri _ hnm =>
-        let ⟨s, hs⟩ := mem_span_singleton.1 hnm
-        ⟨r * s, I.mul_mem_right _ hri, hs ▸ mul_smul r s m⟩)
-      fun m1 m2 ⟨y1, hyi1, hy1⟩ ⟨y2, hyi2, hy2⟩ =>
-      ⟨y1 + y2, I.add_mem hyi1 hyi2, by rw [add_smul, hy1, hy2]⟩,
-    fun ⟨_, hyi, hy⟩ => hy ▸ smul_mem_smul hyi (subset_span <| Set.mem_singleton m)⟩
+    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem ‹_› ‹_›)) : p x hx := by
+  refine Exists.elim ?_ fun (h : x ∈ I • N) (H : p x h) ↦ H
+  exact smul_induction_on hx (fun a ha x hx ↦ ⟨_, smul _ ha _ hx⟩)
+    fun x y ⟨_, hx⟩ ⟨_, hy⟩ ↦ ⟨_, add _ _ _ _ hx hy⟩
 
 theorem smul_le_right : I • N ≤ N :=
-  smul_le.2 fun r _ _ => N.smul_mem r
+  smul_le.2 fun r _ _ ↦ N.smul_mem r
 
 theorem smul_mono (hij : I ≤ J) (hnp : N ≤ P) : I • N ≤ J • P :=
-  map₂_le_map₂ hij hnp
+  AddSubmonoid.smul_le_smul hij hnp
 
 theorem smul_mono_left (h : I ≤ J) : I • N ≤ J • N :=
-  map₂_le_map₂_left h
+  smul_mono h le_rfl
 
 instance : CovariantClass (Ideal R) (Submodule R M) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => map₂_le_map₂_right⟩
+  ⟨fun _ _ => smul_mono le_rfl⟩
 
 @[deprecated smul_mono_right (since := "2024-03-31")]
 protected theorem smul_mono_right (h : N ≤ P) : I • N ≤ I • P :=
@@ -109,50 +96,114 @@ variable (I J N P)
 
 @[simp]
 theorem smul_bot : I • (⊥ : Submodule R M) = ⊥ :=
-  map₂_bot_right _ _
+  toAddSubmonoid_injective <| AddSubmonoid.addSubmonoid_smul_bot _
 
 @[simp]
 theorem bot_smul : (⊥ : Ideal R) • N = ⊥ :=
-  map₂_bot_left _ _
+  le_bot_iff.mp <| smul_le.mpr <| by rintro _ rfl _ _; rw [zero_smul]; exact zero_mem _
 
 @[simp]
 theorem top_smul : (⊤ : Ideal R) • N = N :=
   le_antisymm smul_le_right fun r hri => one_smul R r ▸ smul_mem_smul mem_top hri
 
 theorem smul_sup : I • (N ⊔ P) = I • N ⊔ I • P :=
-  map₂_sup_right _ _ _ _
+  toAddSubmonoid_injective <| by
+    simp only [smul_toAddSubmonoid, sup_toAddSubmonoid, AddSubmonoid.addSubmonoid_smul_sup]
 
 theorem sup_smul : (I ⊔ J) • N = I • N ⊔ J • N :=
-  map₂_sup_left _ _ _ _
+  le_antisymm (smul_le.mpr fun mn hmn p hp ↦ by
+    obtain ⟨m, hm, n, hn, rfl⟩ := mem_sup.mp hmn
+    rw [add_smul]; exact add_mem_sup (smul_mem_smul hm hp) <| smul_mem_smul hn hp)
+    (sup_le (smul_mono_left le_sup_left) <| smul_mono_left le_sup_right)
 
 protected theorem smul_assoc : (I • J) • N = I • J • N :=
   le_antisymm
-    (smul_le.2 fun _ hrsij t htn =>
-      smul_induction_on hrsij
-        (fun r hr s hs =>
-          (@smul_eq_mul R _ r s).symm ▸ smul_smul r s t ▸ smul_mem_smul hr (smul_mem_smul hs htn))
-        fun x y => (add_smul x y t).symm ▸ Submodule.add_mem _)
-    (smul_le.2 fun r hr _ hsn =>
-      suffices J • N ≤ Submodule.comap (r • (LinearMap.id : M →ₗ[R] M)) ((I • J) • N) from this hsn
-      smul_le.2 fun s hs n hn =>
-        show r • s • n ∈ (I • J) • N from mul_smul r s n ▸ smul_mem_smul (smul_mem_smul hr hs) hn)
+    (smul_le.2 fun _ hrsij t htn ↦ smul_induction_on hrsij
+      (fun r hr s hs ↦ smul_assoc r s t ▸ smul_mem_smul hr (smul_mem_smul hs htn))
+      fun x y ↦ (add_smul x y t).symm ▸ add_mem)
+    (smul_le.2 fun r hr _ hsn ↦ smul_induction_on hsn
+      (fun j hj n hn ↦ (smul_assoc r j n).symm ▸ smul_mem_smul (smul_mem_smul hr hj) hn)
+      fun m₁ m₂ ↦ (smul_add r m₁ m₂) ▸ add_mem)
 
 @[deprecated smul_inf_le (since := "2024-03-31")]
 protected theorem smul_inf_le (M₁ M₂ : Submodule R M) :
     I • (M₁ ⊓ M₂) ≤ I • M₁ ⊓ I • M₂ := smul_inf_le _ _ _
 
 theorem smul_iSup {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} : I • iSup t = ⨆ i, I • t i :=
-  map₂_iSup_right _ _ _
+  toAddSubmonoid_injective <| by
+    simp only [smul_toAddSubmonoid, iSup_toAddSubmonoid, AddSubmonoid.smul_iSup]
 
 @[deprecated smul_iInf_le (since := "2024-03-31")]
 protected theorem smul_iInf_le {ι : Sort*} {I : Ideal R} {t : ι → Submodule R M} :
     I • iInf t ≤ ⨅ i, I • t i :=
   smul_iInf_le
 
+theorem mem_of_span_top_of_smul_mem (M' : Submodule R M) (s : Set R) (hs : Ideal.span s = ⊤) (x : M)
+    (H : ∀ r : s, (r : R) • x ∈ M') : x ∈ M' := by
+  suffices LinearMap.range (LinearMap.toSpanSingleton R M x) ≤ M' by
+    rw [← LinearMap.toSpanSingleton_one R M x]
+    exact this (LinearMap.mem_range_self _ 1)
+  rw [LinearMap.range_eq_map, ← hs, map_le_iff_le_comap, Ideal.span, span_le]
+  exact fun r hr ↦ H ⟨r, hr⟩
+
+variable {M' : Type w} [AddCommMonoid M'] [Module R M']
+
+@[simp]
+theorem map_smul'' (f : M →ₗ[R] M') : (I • N).map f = I • N.map f :=
+  le_antisymm
+    (map_le_iff_le_comap.2 <|
+      smul_le.2 fun r hr n hn =>
+        show f (r • n) ∈ I • N.map f from
+          (f.map_smul r n).symm ▸ smul_mem_smul hr (mem_map_of_mem hn)) <|
+    smul_le.2 fun r hr _ hn =>
+      let ⟨p, hp, hfp⟩ := mem_map.1 hn
+      hfp ▸ f.map_smul r p ▸ mem_map_of_mem (smul_mem_smul hr hp)
+
+theorem mem_smul_top_iff (N : Submodule R M) (x : N) :
+    x ∈ I • (⊤ : Submodule R N) ↔ (x : M) ∈ I • N := by
+  change _ ↔ N.subtype x ∈ I • N
+  have : Submodule.map N.subtype (I • ⊤) = I • N := by
+    rw [Submodule.map_smul'', Submodule.map_top, Submodule.range_subtype]
+  rw [← this]
+  exact (Function.Injective.mem_set_image N.injective_subtype).symm
+
+@[simp]
+theorem smul_comap_le_comap_smul (f : M →ₗ[R] M') (S : Submodule R M') (I : Ideal R) :
+    I • S.comap f ≤ (I • S).comap f := by
+  refine Submodule.smul_le.mpr fun r hr x hx => ?_
+  rw [Submodule.mem_comap] at hx ⊢
+  rw [f.map_smul]
+  exact Submodule.smul_mem_smul hr hx
+
+end Semiring
+
+section CommSemiring
+
+variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
+
+open Pointwise
+
+theorem mem_smul_span_singleton {I : Ideal R} {m : M} {x : M} :
+    x ∈ I • span R ({m} : Set M) ↔ ∃ y ∈ I, y • m = x :=
+  ⟨fun hx =>
+    smul_induction_on hx
+      (fun r hri _ hnm =>
+        let ⟨s, hs⟩ := mem_span_singleton.1 hnm
+        ⟨r * s, I.mul_mem_right _ hri, hs ▸ mul_smul r s m⟩)
+      fun m1 m2 ⟨y1, hyi1, hy1⟩ ⟨y2, hyi2, hy2⟩ =>
+      ⟨y1 + y2, I.add_mem hyi1 hyi2, by rw [add_smul, hy1, hy2]⟩,
+    fun ⟨_, hyi, hy⟩ => hy ▸ smul_mem_smul hyi (subset_span <| Set.mem_singleton m)⟩
+
+variable {I J : Ideal R} {N P : Submodule R M}
 variable (S : Set R) (T : Set M)
 
-theorem span_smul_span : Ideal.span S • span R T = span R (⋃ (s ∈ S) (t ∈ T), {s • t}) :=
-  (map₂_span_span _ _ _ _).trans <| congr_arg _ <| Set.image2_eq_iUnion _ _ _
+theorem smul_eq_map₂ : I • N = Submodule.map₂ (LinearMap.lsmul R M) I N :=
+  le_antisymm (smul_le.mpr fun _m hm _n ↦ Submodule.apply_mem_map₂ _ hm)
+    (map₂_le.mpr fun _m hm _n ↦ smul_mem_smul hm)
+
+theorem span_smul_span : Ideal.span S • span R T = span R (⋃ (s ∈ S) (t ∈ T), {s • t}) := by
+  rw [smul_eq_map₂]
+  exact (map₂_span_span _ _ _ _).trans <| congr_arg _ <| Set.image2_eq_iUnion _ _ _
 
 theorem ideal_span_singleton_smul (r : R) (N : Submodule R M) :
     (Ideal.span {r} : Ideal R) • N = r • N := by
@@ -161,14 +212,6 @@ theorem ideal_span_singleton_smul (r : R) (N : Submodule R M) :
     exact (Set.image_eq_iUnion _ (N : Set M)).symm
   conv_lhs => rw [← span_eq N, span_smul_span]
   simpa
-
-theorem mem_of_span_top_of_smul_mem (M' : Submodule R M) (s : Set R) (hs : Ideal.span s = ⊤) (x : M)
-    (H : ∀ r : s, (r : R) • x ∈ M') : x ∈ M' := by
-  suffices (⊤ : Ideal R) • span R ({x} : Set M) ≤ M' by
-    rw [top_smul] at this
-    exact this (subset_span (Set.mem_singleton x))
-  rw [← hs, span_smul_span, span_le]
-  simpa using H
 
 /-- Given `s`, a generating set of `R`, to check that an `x : M` falls in a
 submodule `M'` of `x`, we only need to show that `r ^ n • x ∈ M'` for some `n` for each `r : s`. -/
@@ -185,26 +228,11 @@ theorem mem_of_span_eq_top_of_smul_pow_mem (M' : Submodule R M) (s : Set R) (hs 
   simp only [Subtype.coe_mk, smul_smul, ← pow_add]
   rw [tsub_add_cancel_of_le (Finset.le_sup (s'.mem_attach _) : n₁ ⟨r, hr⟩ ≤ N)]
 
-variable {M' : Type w} [AddCommMonoid M'] [Module R M']
-
-@[simp]
-theorem map_smul'' (f : M →ₗ[R] M') : (I • N).map f = I • N.map f :=
-  le_antisymm
-      (map_le_iff_le_comap.2 <|
-        smul_le.2 fun r hr n hn =>
-          show f (r • n) ∈ I • N.map f from
-            (f.map_smul r n).symm ▸ smul_mem_smul hr (mem_map_of_mem hn)) <|
-    smul_le.2 fun r hr _ hn =>
-      let ⟨p, hp, hfp⟩ := mem_map.1 hn
-      hfp ▸ f.map_smul r p ▸ mem_map_of_mem (smul_mem_smul hr hp)
-
 open Pointwise in
 @[simp]
 theorem map_pointwise_smul (r : R) (N : Submodule R M) (f : M →ₗ[R] M') :
     (r • N).map f = r • N.map f := by
   simp_rw [← ideal_span_singleton_smul, map_smul'']
-
-variable {I}
 
 theorem mem_smul_span {s : Set M} {x : M} :
     x ∈ I • Submodule.span R s ↔ x ∈ Submodule.span R (⋃ (a ∈ I) (b ∈ s), ({a • b} : Set M)) := by
@@ -245,22 +273,6 @@ theorem mem_ideal_smul_span_iff_exists_sum' {ι : Type*} (s : Set ι) (f : ι �
     ∃ (a : s →₀ R) (_ : ∀ i, a i ∈ I), (a.sum fun i c => c • f i) = x := by
   rw [← Submodule.mem_ideal_smul_span_iff_exists_sum, ← Set.image_eq_range]
 
-theorem mem_smul_top_iff (N : Submodule R M) (x : N) :
-    x ∈ I • (⊤ : Submodule R N) ↔ (x : M) ∈ I • N := by
-  change _ ↔ N.subtype x ∈ I • N
-  have : Submodule.map N.subtype (I • ⊤) = I • N := by
-    rw [Submodule.map_smul'', Submodule.map_top, Submodule.range_subtype]
-  rw [← this]
-  exact (Function.Injective.mem_set_image N.injective_subtype).symm
-
-@[simp]
-theorem smul_comap_le_comap_smul (f : M →ₗ[R] M') (S : Submodule R M') (I : Ideal R) :
-    I • S.comap f ≤ (I • S).comap f := by
-  refine Submodule.smul_le.mpr fun r hr x hx => ?_
-  rw [Submodule.mem_comap] at hx ⊢
-  rw [f.map_smul]
-  exact Submodule.smul_mem_smul hr hx
-
 end CommSemiring
 
 end Submodule
@@ -275,9 +287,7 @@ variable {R : Type u} [Semiring R]
 theorem add_eq_sup {I J : Ideal R} : I + J = I ⊔ J :=
   rfl
 
--- dsimp loops when applying this lemma to its LHS,
--- probably https://github.com/leanprover/lean4/pull/2867
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_eq_bot : (0 : Ideal R) = ⊥ :=
   rfl
 
@@ -287,16 +297,13 @@ theorem sum_eq_sup {ι : Type*} (s : Finset ι) (f : ι → Ideal R) : s.sum f =
 
 end Add
 
-section MulAndRadical
+section Semiring
 
-variable {R : Type u} {ι : Type*} [CommSemiring R]
-variable {I J K L : Ideal R}
-
-instance : Mul (Ideal R) :=
-  ⟨(· • ·)⟩
+variable {R : Type u} [Semiring R] {I J K L : Ideal R}
 
 @[simp]
-theorem one_eq_top : (1 : Ideal R) = ⊤ := by erw [Submodule.one_eq_range, LinearMap.range_id]
+theorem one_eq_top : (1 : Ideal R) = ⊤ := by
+  rw [Submodule.one_eq_span, ← Ideal.span, Ideal.span_singleton_one]
 
 theorem add_eq_one_iff : I + J = 1 ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = 1 := by
   rw [one_eq_top, eq_top_iff_one, add_eq_sup, Submodule.mem_sup]
@@ -304,11 +311,100 @@ theorem add_eq_one_iff : I + J = 1 ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = 1 := by
 theorem mul_mem_mul {r s} (hr : r ∈ I) (hs : s ∈ J) : r * s ∈ I * J :=
   Submodule.smul_mem_smul hr hs
 
-theorem mul_mem_mul_rev {r s} (hr : r ∈ I) (hs : s ∈ J) : s * r ∈ I * J :=
-  mul_comm r s ▸ mul_mem_mul hr hs
-
 theorem pow_mem_pow {x : R} (hx : x ∈ I) (n : ℕ) : x ^ n ∈ I ^ n :=
   Submodule.pow_mem_pow _ hx _
+
+theorem mul_le : I * J ≤ K ↔ ∀ r ∈ I, ∀ s ∈ J, r * s ∈ K :=
+  Submodule.smul_le
+
+theorem mul_le_left : I * J ≤ J :=
+  Ideal.mul_le.2 fun _ _ _ => J.mul_mem_left _
+
+@[simp]
+theorem sup_mul_left_self : I ⊔ J * I = I :=
+  sup_eq_left.2 Ideal.mul_le_left
+
+@[simp]
+theorem mul_left_self_sup : J * I ⊔ I = I :=
+  sup_eq_right.2 Ideal.mul_le_left
+
+protected theorem mul_assoc : I * J * K = I * (J * K) :=
+  Submodule.smul_assoc I J K
+
+variable (I)
+
+theorem mul_bot : I * ⊥ = ⊥ := by simp
+
+theorem bot_mul : ⊥ * I = ⊥ := by simp
+
+@[simp]
+theorem top_mul : ⊤ * I = I :=
+  Submodule.top_smul I
+
+variable {I}
+
+theorem mul_mono (hik : I ≤ K) (hjl : J ≤ L) : I * J ≤ K * L :=
+  Submodule.smul_mono hik hjl
+
+theorem mul_mono_left (h : I ≤ J) : I * K ≤ J * K :=
+  Submodule.smul_mono_left h
+
+theorem mul_mono_right (h : J ≤ K) : I * J ≤ I * K :=
+  smul_mono_right I h
+
+variable (I J K)
+
+theorem mul_sup : I * (J ⊔ K) = I * J ⊔ I * K :=
+  Submodule.smul_sup I J K
+
+theorem sup_mul : (I ⊔ J) * K = I * K ⊔ J * K :=
+  Submodule.sup_smul I J K
+
+variable {I J K}
+
+theorem pow_le_pow_right {m n : ℕ} (h : m ≤ n) : I ^ n ≤ I ^ m := by
+  obtain _ | m := m
+  · rw [Submodule.pow_zero, one_eq_top]; exact le_top
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_add_of_le h
+  simp_rw [add_comm, (· ^ ·), Pow.pow, npowRec_add _ _ m.succ_ne_zero _ I.one_mul]
+  exact mul_le_left
+
+theorem pow_le_self {n : ℕ} (hn : n ≠ 0) : I ^ n ≤ I :=
+  calc
+    I ^ n ≤ I ^ 1 := pow_le_pow_right (Nat.pos_of_ne_zero hn)
+    _ = I := Submodule.pow_one _
+
+theorem pow_right_mono (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
+  induction' n with _ hn
+  · rw [Submodule.pow_zero, Submodule.pow_zero]
+  · rw [Submodule.pow_succ, Submodule.pow_succ]
+    exact Ideal.mul_mono hn e
+
+@[simp]
+theorem mul_eq_bot [NoZeroDivisors R] : I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
+  ⟨fun hij =>
+    or_iff_not_imp_left.mpr fun I_ne_bot =>
+      J.eq_bot_iff.mpr fun j hj =>
+        let ⟨i, hi, ne0⟩ := I.ne_bot_iff.mp I_ne_bot
+        Or.resolve_left (mul_eq_zero.mp ((I * J).eq_bot_iff.mp hij _ (mul_mem_mul hi hj))) ne0,
+    fun h => by obtain rfl | rfl := h; exacts [bot_mul _, mul_bot _]⟩
+
+instance [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
+  eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
+
+instance {S A : Type*} [Semiring S] [SMul R S] [AddCommMonoid A] [Module R A] [Module S A]
+    [IsScalarTower R S A] [NoZeroSMulDivisors R A] {I : Submodule S A} : NoZeroSMulDivisors R I :=
+  Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
+
+end Semiring
+
+section MulAndRadical
+
+variable {R : Type u} {ι : Type*} [CommSemiring R]
+variable {I J K L : Ideal R}
+
+theorem mul_mem_mul_rev {r s} (hr : r ∈ I) (hs : s ∈ J) : s * r ∈ I * J :=
+  mul_comm r s ▸ mul_mem_mul hr hs
 
 theorem prod_mem_prod {ι : Type*} {s : Finset ι} {I : ι → Ideal R} {x : ι → R} :
     (∀ i ∈ s, x i ∈ I i) → (∏ i ∈ s, x i) ∈ ∏ i ∈ s, I i := by
@@ -323,12 +419,6 @@ theorem prod_mem_prod {ι : Type*} {s : Finset ι} {I : ι → Ideal R} {x : ι 
         mul_mem_mul (h a <| Finset.mem_insert_self a s)
           (IH fun i hi => h i <| Finset.mem_insert_of_mem hi)
 
-theorem mul_le : I * J ≤ K ↔ ∀ r ∈ I, ∀ s ∈ J, r * s ∈ K :=
-  Submodule.smul_le
-
-theorem mul_le_left : I * J ≤ J :=
-  Ideal.mul_le.2 fun _ _ _ => J.mul_mem_left _
-
 theorem mul_le_right : I * J ≤ I :=
   Ideal.mul_le.2 fun _ hr _ _ => I.mul_mem_right _ hr
 
@@ -337,25 +427,25 @@ theorem sup_mul_right_self : I ⊔ I * J = I :=
   sup_eq_left.2 Ideal.mul_le_right
 
 @[simp]
-theorem sup_mul_left_self : I ⊔ J * I = I :=
-  sup_eq_left.2 Ideal.mul_le_left
-
-@[simp]
 theorem mul_right_self_sup : I * J ⊔ I = I :=
   sup_eq_right.2 Ideal.mul_le_right
 
-@[simp]
-theorem mul_left_self_sup : J * I ⊔ I = I :=
-  sup_eq_right.2 Ideal.mul_le_left
+lemma sup_pow_add_le_pow_sup_pow {n m : ℕ} : (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔ J ^ m := by
+  rw [← Ideal.add_eq_sup, ← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup]
+  apply Finset.sup_le
+  intros i hi
+  by_cases hn : n ≤ i
+  · exact (Ideal.mul_le_right.trans (Ideal.mul_le_right.trans
+      ((Ideal.pow_le_pow_right hn).trans le_sup_left)))
+  · refine (Ideal.mul_le_right.trans (Ideal.mul_le_left.trans
+      ((Ideal.pow_le_pow_right ?_).trans le_sup_right)))
+    omega
 
 variable (I J K)
 
 protected theorem mul_comm : I * J = J * I :=
   le_antisymm (mul_le.2 fun _ hrI _ hsJ => mul_mem_mul_rev hsJ hrI)
     (mul_le.2 fun _ hrJ _ hsI => mul_mem_mul_rev hsI hrJ)
-
-protected theorem mul_assoc : I * J * K = I * (J * K) :=
-  Submodule.smul_assoc I J K
 
 theorem span_mul_span (S T : Set R) : span S * span T = span (⋃ (s ∈ S) (t ∈ T), {s * t}) :=
   Submodule.span_smul_span S T
@@ -553,99 +643,16 @@ theorem pow_sup_eq_top {n : ℕ} (h : I ⊔ J = ⊤) : I ^ n ⊔ J = ⊤ := by
 theorem pow_sup_pow_eq_top {m n : ℕ} (h : I ⊔ J = ⊤) : I ^ m ⊔ J ^ n = ⊤ :=
   sup_pow_eq_top (pow_sup_eq_top h)
 
-variable (I)
-
-theorem mul_bot : I * ⊥ = ⊥ := by simp
-
-theorem bot_mul : ⊥ * I = ⊥ := by simp
-
+variable (I) in
 @[simp]
 theorem mul_top : I * ⊤ = I :=
   Ideal.mul_comm ⊤ I ▸ Submodule.top_smul I
-
-@[simp]
-theorem top_mul : ⊤ * I = I :=
-  Submodule.top_smul I
-
-variable {I}
-
-theorem mul_mono (hik : I ≤ K) (hjl : J ≤ L) : I * J ≤ K * L :=
-  Submodule.smul_mono hik hjl
-
-theorem mul_mono_left (h : I ≤ J) : I * K ≤ J * K :=
-  Submodule.smul_mono_left h
-
-theorem mul_mono_right (h : J ≤ K) : I * J ≤ I * K :=
-  smul_mono_right _ h
-
-variable (I J K)
-
-theorem mul_sup : I * (J ⊔ K) = I * J ⊔ I * K :=
-  Submodule.smul_sup I J K
-
-theorem sup_mul : (I ⊔ J) * K = I * K ⊔ J * K :=
-  Submodule.sup_smul I J K
-
-variable {I J K}
-
-theorem pow_le_pow_right {m n : ℕ} (h : m ≤ n) : I ^ n ≤ I ^ m := by
-  cases' Nat.exists_eq_add_of_le h with k hk
-  rw [hk, pow_add]
-  exact le_trans mul_le_inf inf_le_left
-
-theorem pow_le_self {n : ℕ} (hn : n ≠ 0) : I ^ n ≤ I :=
-  calc
-    I ^ n ≤ I ^ 1 := pow_le_pow_right (Nat.pos_of_ne_zero hn)
-    _ = I := pow_one _
-
-theorem pow_right_mono {I J : Ideal R} (e : I ≤ J) (n : ℕ) : I ^ n ≤ J ^ n := by
-  induction' n with _ hn
-  · rw [pow_zero, pow_zero]
-  · rw [pow_succ, pow_succ]
-    exact Ideal.mul_mono hn e
-
-lemma sup_pow_add_le_pow_sup_pow {R} [CommSemiring R] {I J : Ideal R} {n m : ℕ} :
-    (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔ J ^ m := by
-  rw [← Ideal.add_eq_sup, ← Ideal.add_eq_sup, add_pow, Ideal.sum_eq_sup]
-  apply Finset.sup_le
-  intros i hi
-  by_cases hn : n ≤ i
-  · exact (Ideal.mul_le_right.trans (Ideal.mul_le_right.trans
-      ((Ideal.pow_le_pow_right hn).trans le_sup_left)))
-  · refine (Ideal.mul_le_right.trans (Ideal.mul_le_left.trans
-      ((Ideal.pow_le_pow_right ?_).trans le_sup_right)))
-    simp only [Finset.mem_range, Nat.lt_succ] at hi
-    rw [Nat.le_sub_iff_add_le hi]
-    nlinarith
-
-@[simp]
-theorem mul_eq_bot {R : Type*} [CommSemiring R] [NoZeroDivisors R] {I J : Ideal R} :
-    I * J = ⊥ ↔ I = ⊥ ∨ J = ⊥ :=
-  ⟨fun hij =>
-    or_iff_not_imp_left.mpr fun I_ne_bot =>
-      J.eq_bot_iff.mpr fun _ hj =>
-        let ⟨_, hi, ne0⟩ := I.ne_bot_iff.mp I_ne_bot
-        Or.resolve_left (mul_eq_zero.mp ((I * J).eq_bot_iff.mp hij _ (mul_mem_mul hi hj))) ne0,
-    fun h => by cases' h with h h <;> rw [← Ideal.mul_bot, h, Ideal.mul_comm]⟩
-
-instance {R : Type*} [CommSemiring R] [NoZeroDivisors R] : NoZeroDivisors (Ideal R) where
-  eq_zero_or_eq_zero_of_mul_eq_zero := mul_eq_bot.1
-
-instance {R : Type*} [CommSemiring R] {S : Type*} [CommRing S] [Algebra R S]
-    [NoZeroSMulDivisors R S] {I : Ideal S} : NoZeroSMulDivisors R I :=
-  Submodule.noZeroSMulDivisors (Submodule.restrictScalars R I)
 
 /-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
 @[simp]
 lemma multiset_prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
     s.prod = ⊥ ↔ ⊥ ∈ s :=
   Multiset.prod_eq_zero_iff
-
-/-- A product of ideals in an integral domain is zero if and only if one of the terms is zero. -/
-@[deprecated multiset_prod_eq_bot (since := "2023-12-26")]
-theorem prod_eq_bot {R : Type*} [CommRing R] [IsDomain R] {s : Multiset (Ideal R)} :
-    s.prod = ⊥ ↔ ∃ I ∈ s, I = ⊥ := by
-  simp
 
 theorem span_pair_mul_span_pair (w x y z : R) :
     (span {w, x} : Ideal R) * span {y, z} = span {w * y, w * z, x * y, x * z} := by
@@ -894,12 +901,10 @@ theorem radical_bot_of_noZeroDivisors {R : Type u} [CommSemiring R] [NoZeroDivis
 instance : IdemCommSemiring (Ideal R) :=
   inferInstance
 
-variable (R)
-
+variable (R) in
 theorem top_pow (n : ℕ) : (⊤ ^ n : Ideal R) = ⊤ :=
   Nat.recOn n one_eq_top fun n ih => by rw [pow_succ, ih, top_mul]
 
-variable {R}
 variable (I)
 
 lemma radical_pow : ∀ {n}, n ≠ 0 → radical (I ^ n) = radical I
@@ -1232,7 +1237,6 @@ namespace Submodule
 variable {R : Type u} {M : Type v}
 variable [CommSemiring R] [AddCommMonoid M] [Module R M]
 
--- TODO: show `[Algebra R A] : Algebra (Ideal R) A` too
 instance moduleSubmodule : Module (Ideal R) (Submodule R M) where
   smul_add := smul_sup
   add_smul := sup_smul
@@ -1249,8 +1253,40 @@ lemma span_smul_eq
 @[simp]
 theorem set_smul_top_eq_span (s : Set R) :
     s • ⊤ = Ideal.span s :=
-  Eq.trans (span_smul_eq s ⊤).symm <|
-    Eq.trans (smul_eq_mul (Ideal R)) (Ideal.mul_top (.span s))
+  (span_smul_eq s ⊤).symm.trans (Ideal.span s).mul_top
+
+variable {A B} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
+
+open Submodule
+
+instance algebraIdeal : Algebra (Ideal R) (Submodule R A) where
+  __ := moduleSubmodule
+  toFun := map (Algebra.linearMap R A)
+  map_one' := by
+    rw [one_eq_span, map_span, Set.image_singleton, Algebra.linearMap_apply, map_one, one_eq_span]
+  map_mul' := (Submodule.map_mul · · <| Algebra.ofId R A)
+  map_zero' := map_bot _
+  map_add' := (map_sup · · _)
+  commutes' I M := mul_comm_of_commute <| by rintro _ ⟨r, _, rfl⟩ a _; apply Algebra.commutes
+  smul_def' I M := le_antisymm (smul_le.mpr fun r hr a ha ↦ by
+    rw [Algebra.smul_def]; exact Submodule.mul_mem_mul ⟨r, hr, rfl⟩ ha) (Submodule.mul_le.mpr <| by
+    rintro _ ⟨r, hr, rfl⟩ a ha; rw [Algebra.linearMap_apply, ← Algebra.smul_def]
+    exact Submodule.smul_mem_smul hr ha)
+
+/-- `Submonoid.map` as an `AlgHom`, when applied to an `AlgHom`. -/
+@[simps!] def mapAlgHom (f : A →ₐ[R] B) : Submodule R A →ₐ[Ideal R] Submodule R B where
+  __ := mapHom f
+  commutes' I := (map_comp _ _ I).symm.trans (congr_arg (map · I) <| LinearMap.ext f.commutes)
+
+/-- `Submonoid.map` as an `AlgEquiv`, when applied to an `AlgEquiv`. -/
+-- TODO: when A, B noncommutative, still has `MulEquiv`.
+@[simps!] def mapAlgEquiv (f : A ≃ₐ[R] B) : Submodule R A ≃ₐ[Ideal R] Submodule R B where
+  __ := mapAlgHom f
+  invFun := mapAlgHom f.symm
+  left_inv I := (map_comp _ _ I).symm.trans <|
+    (congr_arg (map · I) <| LinearMap.ext (f.left_inv ·)).trans (map_id I)
+  right_inv I := (map_comp _ _ I).symm.trans <|
+    (congr_arg (map · I) <| LinearMap.ext (f.right_inv ·)).trans (map_id I)
 
 end Submodule
 

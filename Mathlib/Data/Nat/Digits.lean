@@ -8,7 +8,6 @@ import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Log
-import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.Linarith
@@ -97,7 +96,7 @@ theorem digits_zero_succ' : ∀ {n : ℕ}, n ≠ 0 → digits 0 n = [n]
 theorem digits_one (n : ℕ) : digits 1 n = List.replicate n 1 :=
   rfl
 
--- @[simp] -- Porting note (#10685): dsimp can prove this
+-- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
 theorem digits_one_succ (n : ℕ) : digits 1 (n + 1) = 1 :: digits 1 n :=
   rfl
 
@@ -407,6 +406,19 @@ theorem lt_base_pow_length_digits {b m : ℕ} (hb : 1 < b) : m < b ^ (digits b m
   rcases b with (_ | _ | b) <;> try simp_all
   exact lt_base_pow_length_digits'
 
+theorem digits_base_pow_mul {b k m : ℕ} (hb : 1 < b) (hm : 0 < m) :
+    digits b (b ^ k * m) = List.replicate k 0 ++ digits b m := by
+  induction k generalizing m with
+  | zero => simp
+  | succ k ih =>
+    have hmb : 0 < m * b := lt_mul_of_lt_of_one_lt' hm hb
+    let h1 := digits_def' hb hmb
+    have h2 : m = m * b / b :=
+      Nat.eq_div_of_mul_eq_left (not_eq_zero_of_lt hb) rfl
+    simp only [mul_mod_left, ← h2] at h1
+    rw [List.replicate_succ', List.append_assoc, List.singleton_append, ← h1, ← ih hmb]
+    ring_nf
+
 theorem ofDigits_digits_append_digits {b m n : ℕ} :
     ofDigits b (digits b n ++ digits b m) = n + b ^ (digits b n).length * m := by
   rw [ofDigits_append, ofDigits_digits, ofDigits_digits]
@@ -423,6 +435,13 @@ theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
       exact getLast_digit_ne_zero b <| digits_ne_nil_iff_ne_zero.mp h_append
     · exact (List.getLast_append' _ _ h) ▸
           (getLast_digit_ne_zero _ <| digits_ne_nil_iff_ne_zero.mp h)
+
+theorem digits_append_zeroes_append_digits {b k m n : ℕ} (hb : 1 < b) (hm : 0 < m) :
+    digits b n ++ List.replicate k 0 ++ digits b m =
+    digits b (n + b ^ ((digits b n).length + k) * m) := by
+  rw [List.append_assoc, ← digits_base_pow_mul hb hm]
+  simp only [digits_append_digits (zero_lt_of_lt hb), digits_inj_iff, add_right_inj]
+  ring
 
 theorem digits_len_le_digits_len_succ (b n : ℕ) :
     (digits b n).length ≤ (digits b (n + 1)).length := by

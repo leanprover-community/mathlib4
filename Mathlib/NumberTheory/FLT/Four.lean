@@ -3,6 +3,7 @@ Copyright (c) 2020 Paul van Wamelen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 -/
+import Mathlib.Data.Nat.Factors
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.RingTheory.Coprime.Lemmas

@@ -15,7 +15,7 @@ universe u v w x
 
 namespace Function
 
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 /-- `α ↪ β` is a bundled injective function. -/
 structure Embedding (α : Sort*) (β : Sort*) where
@@ -132,6 +132,11 @@ protected def trans {α β γ} (f : α ↪ β) (g : β ↪ γ) : α ↪ γ :=
 
 instance : Trans Embedding Embedding Embedding := ⟨Embedding.trans⟩
 
+@[simp] lemma mk_id {α} : mk id injective_id = .refl α := rfl
+
+@[simp] lemma mk_trans_mk {α β γ} (f : α → β) (g : β → γ) (hf hg) :
+    (mk f hf).trans (mk g hg) = mk (g ∘ f) (hg.comp hf) := rfl
+
 @[simp]
 theorem equiv_toEmbedding_trans_symm_toEmbedding {α β : Sort*} (e : α ≃ β) :
     e.toEmbedding.trans e.symm.toEmbedding = Embedding.refl _ := by
@@ -226,13 +231,18 @@ def punit {β : Sort*} (b : β) : PUnit ↪ β :=
 
 /-- Fixing an element `b : β` gives an embedding `α ↪ α × β`. -/
 @[simps]
-def sectl (α : Sort _) {β : Sort _} (b : β) : α ↪ α × β :=
+def sectL (α : Sort _) {β : Sort _} (b : β) : α ↪ α × β :=
   ⟨fun a => (a, b), fun _ _ h => congr_arg Prod.fst h⟩
 
 /-- Fixing an element `a : α` gives an embedding `β ↪ α × β`. -/
 @[simps]
-def sectr {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
+def sectR {α : Sort _} (a : α) (β : Sort _) : β ↪ α × β :=
   ⟨fun b => (a, b), fun _ _ h => congr_arg Prod.snd h⟩
+
+@[deprecated (since := "2024-11-12")] alias sectl := sectL
+@[deprecated (since := "2024-11-12")] alias sectr := sectR
+@[deprecated (since := "2024-11-12")] alias sectl_apply := sectL_apply
+@[deprecated (since := "2024-11-12")] alias sectr_apply := sectR_apply
 
 /-- If `e₁` and `e₂` are embeddings, then so is `Prod.map e₁ e₂ : (a, b) ↦ (e₁ a, e₂ b)`. -/
 def prodMap {α β γ δ : Type*} (e₁ : α ↪ β) (e₂ : γ ↪ δ) : α × γ ↪ β × δ :=

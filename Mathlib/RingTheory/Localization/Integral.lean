@@ -6,7 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.GroupTheory.MonoidLocalization.Basic
-import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Integral
 import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
@@ -16,7 +16,7 @@ import Mathlib.RingTheory.Localization.Integer
 
 ## Implementation notes
 
-See `RingTheory/Localization/Basic.lean` for a design overview.
+See `Mathlib/RingTheory/Localization/Basic.lean` for a design overview.
 
 ## Tags
 localization, ring localization, commutative ring localization, characteristic predicate,
@@ -25,7 +25,7 @@ commutative ring, field of fractions
 
 
 variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
-variable [Algebra R S] {P : Type*} [CommRing P]
+variable [Algebra R S]
 
 open Polynomial
 
@@ -66,7 +66,7 @@ noncomputable def integerNormalization (p : S[X]) : R[X] :=
 @[simp]
 theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
     (integerNormalization M p).coeff i = coeffIntegerNormalization M p i := by
-  simp (config := { contextual := true }) [integerNormalization, coeff_monomial,
+  simp +contextual [integerNormalization, coeff_monomial,
     coeffIntegerNormalization_of_not_mem_support]
 
 theorem integerNormalization_spec (p : S[X]) :
@@ -279,7 +279,7 @@ theorem IsIntegral.exists_multiple_integral_of_isLocalization [Algebra Rₘ S] [
 
 end IsIntegral
 
-variable {A K : Type*} [CommRing A] [IsDomain A]
+variable {A K : Type*} [CommRing A]
 
 namespace IsIntegralClosure
 
@@ -306,14 +306,14 @@ theorem isFractionRing_of_algebraic [Algebra.IsAlgebraic A L]
             hy (inj _ (by rw [IsScalarTower.algebraMap_apply A C L, h, RingHom.map_zero]))⟩,
         by
           simp only
-          rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply A C L, hxy]⟩
+          rw [algebraMap_mk', ← IsScalarTower.algebraMap_apply A C L, mul_comm, hxy]⟩
     exists_of_eq := fun {x y} h => ⟨1, by simpa using algebraMap_injective C A L h⟩ }
 
 variable (K L)
 
 /-- If the field `L` is a finite extension of the fraction field of the integral domain `A`,
 the integral closure `C` of `A` in `L` has fraction field `L`. -/
-theorem isFractionRing_of_finite_extension [Algebra K L] [IsScalarTower A K L]
+theorem isFractionRing_of_finite_extension [IsDomain A] [Algebra K L] [IsScalarTower A K L]
     [FiniteDimensional K L] : IsFractionRing C L :=
   have : Algebra.IsAlgebraic A L := IsFractionRing.comap_isAlgebraic_iff.mpr
     (inferInstanceAs (Algebra.IsAlgebraic K L))
@@ -341,8 +341,8 @@ variable (K L)
 
 /-- If the field `L` is a finite extension of the fraction field of the integral domain `A`,
 the integral closure of `A` in `L` has fraction field `L`. -/
-theorem isFractionRing_of_finite_extension [Algebra A L] [Algebra K L] [IsScalarTower A K L]
-    [FiniteDimensional K L] : IsFractionRing (integralClosure A L) L :=
+theorem isFractionRing_of_finite_extension [IsDomain A] [Algebra A L] [Algebra K L]
+    [IsScalarTower A K L] [FiniteDimensional K L] : IsFractionRing (integralClosure A L) L :=
   IsIntegralClosure.isFractionRing_of_finite_extension A K L (integralClosure A L)
 
 end integralClosure
@@ -361,12 +361,12 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
     letI := FractionRing.liftAlgebra R K
     have := FractionRing.isScalarTower_liftAlgebra R K
     rw [IsFractionRing.isAlgebraic_iff R (FractionRing R) K, isAlgebraic_iff_isIntegral]
-    obtain ⟨a : S, b, ha, rfl⟩ := @div_surjective S _ _ _ _ _ _ x
+    obtain ⟨a : S, b, ha, rfl⟩ := div_surjective (A := S) x
     obtain ⟨f, hf₁, hf₂⟩ := h b
     rw [div_eq_mul_inv]
     refine IsIntegral.mul ?_ ?_
     · rw [← isAlgebraic_iff_isIntegral]
-      refine .tower_top_of_injective
+      refine .extendScalars
         (NoZeroSMulDivisors.algebraMap_injective R (FractionRing R)) ?_
       exact .algebraMap (h a)
     · rw [← isAlgebraic_iff_isIntegral]
@@ -401,16 +401,16 @@ variable {S K}
 /-- If the `S`-multiples of `a` are contained in some `R`-span, then `Frac(S)`-multiples of `a`
 are contained in the equivalent `Frac(R)`-span. -/
 theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [Field K] [Field L]
-    [Algebra R K] [Algebra R L] [Algebra S L] [IsIntegralClosure S R L] [IsFractionRing S L]
+    [Algebra R K] [Algebra R L] [Algebra S L] [Algebra.IsAlgebraic R S] [IsFractionRing S L]
     [Algebra K L] [IsScalarTower R S L] [IsScalarTower R K L] {a : S} {b : Set S}
-    [Algebra.IsAlgebraic R L] (inj : Function.Injective (algebraMap R L))
+    (inj : Function.Injective (algebraMap R L))
     (h : (Ideal.span ({a} : Set S) : Set S) ⊆ Submodule.span R b) :
     (Ideal.span ({algebraMap S L a} : Set L) : Set L) ⊆ Submodule.span K (algebraMap S L '' b) := by
   intro x hx
   obtain ⟨x', rfl⟩ := Ideal.mem_span_singleton.mp hx
   obtain ⟨y', z', rfl⟩ := IsLocalization.mk'_surjective S⁰ x'
   obtain ⟨y, z, hz0, yz_eq⟩ :=
-    IsIntegralClosure.exists_smul_eq_mul inj y' (nonZeroDivisors.coe_ne_zero z')
+    Algebra.IsAlgebraic.exists_smul_eq_mul R y' (nonZeroDivisors.coe_ne_zero z')
   have injRS : Function.Injective (algebraMap R S) := by
     refine
       Function.Injective.of_comp (show Function.Injective (algebraMap S L ∘ algebraMap R S) from ?_)
@@ -427,7 +427,7 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
     exact (Submodule.span K _).smul_mem _ hy
   refine Submodule.span_subset_span R K _ ?_
   rw [Submodule.span_algebraMap_image_of_tower]
-  -- Note: #8386 had to specify the value of `f` here:
+  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify the value of `f` here:
   exact Submodule.mem_map_of_mem (f := LinearMap.restrictScalars _ _)
     (h (Ideal.mem_span_singleton.mpr ⟨y, rfl⟩))
 

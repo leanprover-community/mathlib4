@@ -162,8 +162,20 @@ theorem card_subtype_lt [Finite α] {p : α → Prop} {x : α} (hx : ¬p x) :
 
 end Finite
 
+namespace ENat
+
+theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := by
+  unfold ENat.card
+  apply symm
+  rw [Cardinal.natCast_eq_toENat_iff]
+  exact Finite.cast_card_eq_mk
+
+end ENat
+
 namespace PartENat
 
+set_option linter.deprecated false in
+@[deprecated ENat.card_eq_coe_natCard (since := "2024-11-30")]
 theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := by
   unfold PartENat.card
   apply symm

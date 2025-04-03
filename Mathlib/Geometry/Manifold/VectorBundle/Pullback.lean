@@ -28,14 +28,14 @@ variable [NontriviallyNormedField 𝕜] [∀ x, AddCommMonoid (E x)] [∀ x, Mod
   [ChartedSpace HB B] {EB' : Type*} [NormedAddCommGroup EB']
   [NormedSpace 𝕜 EB'] {HB' : Type*} [TopologicalSpace HB'] (IB' : ModelWithCorners 𝕜 EB' HB')
   [TopologicalSpace B'] [ChartedSpace HB' B'] [FiberBundle F E]
-  [VectorBundle 𝕜 F E] [SmoothVectorBundle F E IB] (f : SmoothMap IB' IB B' B)
+  [VectorBundle 𝕜 F E] [SmoothVectorBundle F E IB] (f : ContMDiffMap IB' IB B' B ⊤)
 
 /-- For a smooth vector bundle `E` over a manifold `B` and a smooth map `f : B' → B`, the pullback
 vector bundle `f *ᵖ E` is a smooth vector bundle. -/
 instance SmoothVectorBundle.pullback : SmoothVectorBundle F (f *ᵖ E) IB' where
-  smoothOn_coordChangeL := by
+  contMDiffOn_coordChangeL := by
     rintro _ _ ⟨e, he, rfl⟩ ⟨e', he', rfl⟩
-    refine ((smoothOn_coordChangeL e e').comp f.smooth.smoothOn fun b hb => hb).congr ?_
+    refine ((contMDiffOn_coordChangeL e e').comp f.contMDiff.contMDiffOn fun b hb => hb).congr ?_
     rintro b (hb : f b ∈ e.baseSet ∩ e'.baseSet); ext v
     show ((e.pullback f).coordChangeL 𝕜 (e'.pullback f) b) v = (e.coordChangeL 𝕜 e' (f b)) v
     rw [e.coordChangeL_apply e' hb, (e.pullback f).coordChangeL_apply' _]

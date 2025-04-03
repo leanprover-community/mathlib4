@@ -66,7 +66,7 @@ section LMarginal
 
 variable {δ δ' : Type*} {π : δ → Type*} [∀ x, MeasurableSpace (π x)]
 variable {μ : ∀ i, Measure (π i)} [DecidableEq δ]
-variable {s t : Finset δ} {f g : (∀ i, π i) → ℝ≥0∞} {x y : ∀ i, π i} {i : δ}
+variable {s t : Finset δ} {f : (∀ i, π i) → ℝ≥0∞} {x : ∀ i, π i}
 
 /-- Integrate `f(x₁,…,xₙ)` over all variables `xᵢ` where `i ∈ s`. Return a function in the
   remaining variables (it will be constant in the `xᵢ` for `i ∈ s`).

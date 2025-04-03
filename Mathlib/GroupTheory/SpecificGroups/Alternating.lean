@@ -51,7 +51,7 @@ variable (α : Type*) [Fintype α] [DecidableEq α]
 def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
 
--- Porting note (#10754): manually added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): manually added instance
 instance alternatingGroup.instFintype : Fintype (alternatingGroup α) :=
   @Subtype.fintype _ _ sign.decidableMemKer _
 
@@ -78,7 +78,6 @@ theorem IsThreeCycle.mem_alternatingGroup {f : Perm α} (h : IsThreeCycle f) :
     f ∈ alternatingGroup α :=
   Perm.mem_alternatingGroup.mpr h.sign
 
-set_option linter.deprecated false in
 theorem finRotate_bit1_mem_alternatingGroup {n : ℕ} :
     finRotate (2 * n + 1) ∈ alternatingGroup (Fin (2 * n + 1)) := by
   rw [mem_alternatingGroup, sign_finRotate, pow_mul, pow_two, Int.units_mul_self, one_pow]
@@ -169,7 +168,7 @@ theorem IsThreeCycle.alternating_normalClosure (h5 : 5 ≤ Fintype.card α) {f :
     (by
       have hi : Function.Injective (alternatingGroup α).subtype := Subtype.coe_injective
       refine eq_top_iff.1 (map_injective hi (le_antisymm (map_mono le_top) ?_))
-      rw [← MonoidHom.range_eq_map, subtype_range, normalClosure, MonoidHom.map_closure]
+      rw [← MonoidHom.range_eq_map, range_subtype, normalClosure, MonoidHom.map_closure]
       refine (le_of_eq closure_three_cycles_eq_alternating.symm).trans (closure_mono ?_)
       intro g h
       obtain ⟨c, rfl⟩ := isConj_iff.1 (isConj_iff_cycleType_eq.2 (hf.trans h.symm))

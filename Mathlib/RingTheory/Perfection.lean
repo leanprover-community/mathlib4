@@ -7,11 +7,8 @@ import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.CharP.Pi
 import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Algebra.CharP.Subring
-import Mathlib.Algebra.Ring.Pi
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.FieldTheory.Perfect
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.RingTheory.Valuation.Integers
 
 /-!
@@ -202,7 +199,7 @@ end Perfection
 
 /-- A perfection map to a ring of characteristic `p` is a map that is isomorphic
 to its perfection. -/
--- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): This linter does not exist yet.
 structure PerfectionMap (p : ℕ) [Fact p.Prime] {R : Type u₁} [CommSemiring R] [CharP R p]
     {P : Type u₂} [CommSemiring P] [CharP P p] [PerfectRing P p] (π : P →+* R) : Prop where
   injective : ∀ ⦃x y : P⦄,
@@ -329,7 +326,7 @@ variable (p : ℕ)
 
 -- Porting note: Specified all arguments explicitly
 /-- `O/(p)` for `O`, ring of integers of `K`. -/
-@[nolint unusedArguments] -- Porting note(#5171): removed `nolint has_nonempty_instance`
+@[nolint unusedArguments] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `nolint has_nonempty_instance`
 def ModP (K : Type u₁) [Field K] (v : Valuation K ℝ≥0) (O : Type u₂) [CommRing O] [Algebra O K]
     (_ : v.Integers O) (p : ℕ) :=
   O ⧸ (Ideal.span {(p : O)} : Ideal O)
@@ -352,13 +349,13 @@ attribute [local instance] Classical.dec
 /-- For a field `K` with valuation `v : K → ℝ≥0` and ring of integers `O`,
 a function `O/(p) → ℝ≥0` that sends `0` to `0` and `x + (p)` to `v(x)` as long as `x ∉ (p)`. -/
 noncomputable def preVal (x : ModP K v O hv p) : ℝ≥0 :=
-  if x = 0 then 0 else v (algebraMap O K x.out')
+  if x = 0 then 0 else v (algebraMap O K x.out)
 
 variable {K v O hv p}
 
 theorem preVal_mk {x : O} (hx : (Ideal.Quotient.mk _ x : ModP K v O hv p) ≠ 0) :
     preVal K v O hv p (Ideal.Quotient.mk _ x) = v (algebraMap O K x) := by
-  obtain ⟨r, hr⟩ : ∃ (a : O), a * (p : O) = (Quotient.mk'' x).out' - x :=
+  obtain ⟨r, hr⟩ : ∃ (a : O), a * (p : O) = (Quotient.mk'' x).out - x :=
     Ideal.mem_span_singleton'.1 <| Ideal.Quotient.eq.1 <| Quotient.sound' <| Quotient.mk_out' _
   refine (if_neg hx).trans (v.map_eq_of_sub_lt <| lt_of_not_le ?_)
   erw [← RingHom.map_sub, ← hr, hv.le_iff_dvd]
@@ -427,7 +424,7 @@ theorem mul_ne_zero_of_pow_p_ne_zero {x y : ModP K v O hv p} (hx : x ^ p ≠ 0) 
   rw [← v_p_lt_val hv] at hx hy ⊢
   rw [RingHom.map_pow, v.map_pow, ← rpow_lt_rpow_iff h1p, ← rpow_natCast, ← rpow_mul,
     mul_one_div_cancel (Nat.cast_ne_zero.2 hp.1.ne_zero : (p : ℝ) ≠ 0), rpow_one] at hx hy
-  rw [RingHom.map_mul, v.map_mul]; refine lt_of_le_of_lt ?_ (mul_lt_mul₀ hx hy)
+  rw [RingHom.map_mul, v.map_mul]; refine lt_of_le_of_lt ?_ (mul_lt_mul'' hx hy zero_le' zero_le')
   by_cases hvp : v p = 0
   · rw [hvp]; exact zero_le _
   replace hvp := zero_lt_iff.2 hvp
@@ -441,7 +438,7 @@ end Classical
 end ModP
 
 /-- Perfection of `O/(p)` where `O` is the ring of integers of `K`. -/
--- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): This linter does not exist yet.
 def PreTilt :=
   Ring.Perfection (ModP K v O hv p) p
 
@@ -577,7 +574,7 @@ end PreTilt
 /-- The tilt of a field, as defined in Perfectoid Spaces by Peter Scholze, as in
 [scholze2011perfectoid]. Given a field `K` with valuation `K → ℝ≥0` and ring of integers `O`,
 this is implemented as the fraction field of the perfection of `O/(p)`. -/
--- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): This linter does not exist yet.
 def Tilt [Fact p.Prime] [Fact (v p ≠ 1)] :=
   FractionRing (PreTilt K v O hv p)
 

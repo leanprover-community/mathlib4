@@ -167,7 +167,7 @@ theorem bernoulli'_odd_eq_zero {n : ℕ} (h_odd : Odd n) (hlt : 1 < n) : bernoul
     · apply eq_zero_of_neg_eq
       specialize h n
       split_ifs at h <;> simp_all [B, h_odd.neg_one_pow, factorial_ne_zero]
-    · simpa (config := {decide := true}) [Nat.factorial] using h 1
+    · simpa +decide [Nat.factorial] using h 1
   have h : B * (exp ℚ - 1) = X * exp ℚ := by
     simpa [bernoulli'PowerSeries] using bernoulli'PowerSeries_mul_exp_sub_one ℚ
   rw [sub_mul, h, mul_sub X, sub_right_inj, ← neg_sub, mul_neg, neg_eq_iff_eq_neg]

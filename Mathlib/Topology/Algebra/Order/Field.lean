@@ -3,7 +3,7 @@ Copyright (c) 2022 Benjamin Davidson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Benjamin Davidson, Devon Tuma, Eric Rodriguez, Oliver Nash
 -/
-import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.Order.Filter.AtTopBot.Field
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.Order.Group
@@ -114,7 +114,7 @@ theorem Filter.Tendsto.neg_mul_atBot {C : 𝕜} (hC : C < 0) (hf : Tendsto f l (
 @[simp]
 lemma inv_atTop₀ : (atTop : Filter 𝕜)⁻¹ = 𝓝[>] 0 :=
   (((atTop_basis_Ioi' (0 : 𝕜)).map _).comp_surjective inv_surjective).eq_of_same_basis <|
-    (nhdsWithin_Ioi_basis _).congr (by simp) fun a ha ↦ by simp [inv_Ioi (inv_pos.2 ha)]
+    (nhdsWithin_Ioi_basis _).congr (by simp) fun a ha ↦ by simp [inv_Ioi₀ (inv_pos.2 ha)]
 
 @[simp] lemma inv_nhdsWithin_Ioi_zero : (𝓝[>] (0 : 𝕜))⁻¹ = atTop := by
   rw [← inv_atTop₀, inv_inv]
@@ -134,6 +134,10 @@ theorem Filter.Tendsto.div_atTop {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Ten
     Tendsto (fun x => f x / g x) l (𝓝 0) := by
   simp only [div_eq_mul_inv]
   exact mul_zero a ▸ h.mul (tendsto_inv_atTop_zero.comp hg)
+
+lemma Filter.Tendsto.const_div_atTop (hg : Tendsto g l atTop) (r : 𝕜)  :
+    Tendsto (fun n ↦ r / g n) l (𝓝 0) :=
+  tendsto_const_nhds.div_atTop hg
 
 theorem Filter.Tendsto.inv_tendsto_atTop (h : Tendsto f l atTop) : Tendsto f⁻¹ l (𝓝 0) :=
   tendsto_inv_atTop_zero.comp h
@@ -237,7 +241,7 @@ instance (priority := 100) LinearOrderedSemifield.toHasContinuousInv₀ {𝕜}
 instance (priority := 100) LinearOrderedField.toTopologicalDivisionRing :
     TopologicalDivisionRing 𝕜 := ⟨⟩
 
--- Porting note (#11215): TODO: generalize to a `GroupWithZero`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to a `GroupWithZero`
 theorem nhdsWithin_pos_comap_mul_left {x : 𝕜} (hx : 0 < x) :
     comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
   rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]

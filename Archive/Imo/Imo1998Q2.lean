@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Data.Finite.Prod
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Tactic.NoncommRing
 import Mathlib.Tactic.Ring
@@ -130,7 +131,7 @@ theorem A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :
       ((A r).filter fun a : AgreedTriple C J => a.judgePair = p).card := by
   rw [A_fibre_over_judgePair r h]
   apply Finset.card_image_of_injOn
-  -- Porting note (#10936): used to be `tidy`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10936): used to be `tidy`
   unfold Set.InjOn; intros; ext; all_goals aesop
 
 theorem A_card_upper_bound {k : ℕ}
@@ -179,9 +180,9 @@ theorem distinct_judge_pairs_card_lower_bound {z : ℕ} (hJ : Fintype.card J = 2
   have hs : 2 * z * z + 2 * z + 1 ≤ s.card := judge_pairs_card_lower_bound r hJ c
   have hst : s \ t = Finset.univ.diag := by
     ext p; constructor <;> intros hp
-    · unfold_let s t at hp
+    · unfold s t at hp
       aesop
-    · unfold_let s t
+    · unfold s t
       suffices p.judge₁ = p.judge₂ by simp [this]
       aesop
   have hst' : (s \ t).card = 2 * z + 1 := by rw [hst, Finset.diag_card, ← hJ]; rfl
@@ -201,7 +202,7 @@ end
 
 theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ ((b : ℕ) - 1) * a ≤ k * (2 * b) := by
-  rw [div_le_div_iff]
+  rw [div_le_div_iff₀]
   -- Porting note: proof used to finish with `<;> norm_cast <;> simp [ha, hb]`
   · convert Nat.cast_le (α := ℚ)
     · aesop

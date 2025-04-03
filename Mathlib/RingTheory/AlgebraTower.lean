@@ -180,7 +180,7 @@ section AlgHomTower
 variable {A} {C D : Type*} [CommSemiring A] [CommSemiring C] [CommSemiring D] [Algebra A C]
   [Algebra A D]
 
-variable (f : C →ₐ[A] D) [CommSemiring B] [Algebra A B] [Algebra B C] [IsScalarTower A B C]
+variable [CommSemiring B] [Algebra A B] [Algebra B C] [IsScalarTower A B C] (f : C →ₐ[A] D)
 
 
 /-- Restrict the domain of an `AlgHom`. -/

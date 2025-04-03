@@ -235,22 +235,38 @@ protected theorem intCast (z : ℤ) : IsSelfAdjoint (z : R) :=
 
 end Ring
 
-section DivisionSemiring
+section Group
 
-variable [DivisionSemiring R] [StarRing R]
+variable [Group R] [StarMul R]
 
 @[aesop safe apply]
 theorem inv {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint x⁻¹ := by
-  simp only [isSelfAdjoint_iff, star_inv', hx.star_eq]
+  simp only [isSelfAdjoint_iff, star_inv, hx.star_eq]
 
 @[aesop safe apply]
 theorem zpow {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) := by
+  simp only [isSelfAdjoint_iff, star_zpow, hx.star_eq]
+
+end Group
+
+section GroupWithZero
+
+variable [GroupWithZero R] [StarMul R]
+
+@[aesop safe apply]
+theorem inv₀ {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint x⁻¹ := by
+  simp only [isSelfAdjoint_iff, star_inv₀, hx.star_eq]
+
+@[aesop safe apply]
+theorem zpow₀ {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) := by
   simp only [isSelfAdjoint_iff, star_zpow₀, hx.star_eq]
 
-@[simp]
-protected lemma nnratCast (q : ℚ≥0) : IsSelfAdjoint (q : R) := star_nnratCast _
+end GroupWithZero
 
-end DivisionSemiring
+@[simp]
+protected lemma nnratCast [DivisionSemiring R] [StarRing R] (q : ℚ≥0) :
+    IsSelfAdjoint (q : R) :=
+  star_nnratCast _
 
 section DivisionRing
 
@@ -267,17 +283,26 @@ section Semifield
 variable [Semifield R] [StarRing R]
 
 theorem div {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x / y) := by
-  simp only [isSelfAdjoint_iff, star_div', hx.star_eq, hy.star_eq]
+  simp only [isSelfAdjoint_iff, star_div₀, hx.star_eq, hy.star_eq]
 
 end Semifield
 
 section SMul
 
-variable [Star R] [AddMonoid A] [StarAddMonoid A] [SMul R A] [StarModule R A]
-
 @[aesop safe apply]
-theorem smul {r : R} (hr : IsSelfAdjoint r) {x : A} (hx : IsSelfAdjoint x) :
-    IsSelfAdjoint (r • x) := by simp only [isSelfAdjoint_iff, star_smul, hr.star_eq, hx.star_eq]
+theorem smul [Star R] [AddMonoid A] [StarAddMonoid A] [SMul R A] [StarModule R A]
+    {r : R} (hr : IsSelfAdjoint r) {x : A} (hx : IsSelfAdjoint x) :
+    IsSelfAdjoint (r • x) := by
+  simp only [isSelfAdjoint_iff, star_smul, hr.star_eq, hx.star_eq]
+
+theorem smul_iff [Monoid R] [StarMul R] [AddMonoid A] [StarAddMonoid A]
+    [MulAction R A] [StarModule R A] {r : R} (hr : IsSelfAdjoint r) (hu : IsUnit r) {x : A} :
+    IsSelfAdjoint (r • x) ↔ IsSelfAdjoint x := by
+  refine ⟨fun hrx ↦ ?_, .smul hr⟩
+  lift r to Rˣ using hu
+  rw [← inv_smul_smul r x]
+  replace hr : IsSelfAdjoint r := Units.ext hr.star_eq
+  exact hr.inv.smul hrx
 
 end SMul
 
@@ -384,7 +409,7 @@ section Field
 variable [Field R] [StarRing R]
 
 instance : Inv (selfAdjoint R) where
-  inv x := ⟨x.val⁻¹, x.prop.inv⟩
+  inv x := ⟨x.val⁻¹, x.prop.inv₀⟩
 
 @[simp, norm_cast]
 theorem val_inv (x : selfAdjoint R) : ↑x⁻¹ = (x : R)⁻¹ :=
@@ -398,7 +423,7 @@ theorem val_div (x y : selfAdjoint R) : ↑(x / y) = (x / y : R) :=
   rfl
 
 instance : Pow (selfAdjoint R) ℤ where
-  pow x z := ⟨(x : R) ^ z, x.prop.zpow z⟩
+  pow x z := ⟨(x : R) ^ z, x.prop.zpow₀ z⟩
 
 @[simp, norm_cast]
 theorem val_zpow (x : selfAdjoint R) (z : ℤ) : ↑(x ^ z) = (x : R) ^ z :=
@@ -442,7 +467,7 @@ theorem val_smul [SMul R A] [StarModule R A] (r : R) (x : selfAdjoint A) : ↑(r
   rfl
 
 instance [Monoid R] [MulAction R A] [StarModule R A] : MulAction R (selfAdjoint A) :=
-  Function.Injective.mulAction (↑) Subtype.coe_injective val_smul
+  Function.Injective.mulAction Subtype.val Subtype.coe_injective val_smul
 
 instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (selfAdjoint A) :=
   Function.Injective.distribMulAction (selfAdjoint A).subtype Subtype.coe_injective val_smul

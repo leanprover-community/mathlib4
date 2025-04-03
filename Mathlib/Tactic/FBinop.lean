@@ -100,12 +100,12 @@ private partial def extractS (e : Expr) : TermElabM (Option (SRec × Expr)) :=
     let mut args := e.getAppArgs
     let mut info := (← getFunInfoNArgs f args.size).paramInfo
     for _ in [0 : args.size - 1] do
-      if info.back.isInstImplicit then
+      if info.back!.isInstImplicit then
         args := args.pop
         info := info.pop
       else
         break
-    let x := args.back
+    let x := args.back!
     unless ← Meta.isType x do return none
     return some ({name := n, args := args.pop}, x)
   | _ => return none

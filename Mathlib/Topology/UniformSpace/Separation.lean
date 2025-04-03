@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Yury Kudryashov
 -/
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 # Hausdorff properties of uniform spaces. Separation quotient.
@@ -78,7 +78,7 @@ These definitions were equal (but not definitionally equal)
 to `{x : α × α | Inseparable x.1 x.2}` and `SeparationQuotient α`, respectively,
 and were added to the library before their geneeralizations to topological spaces.
 
-In #10644, we migrated from these definitions
+In https://github.com/leanprover-community/mathlib4/pull/10644, we migrated from these definitions
 to more general `Inseparable` and `SeparationQuotient`.
 
 ## TODO
@@ -88,7 +88,7 @@ rely on `UniformSpace` structures in the domain and in the codomain.
 We should generalize them to topological spaces.
 This generalization will drop `UniformContinuous` assumptions in some lemmas,
 and add these assumptions in other lemmas,
-so it was not done in #10644 to keep it reasonably sized.
+so it was not done in https://github.com/leanprover-community/mathlib4/pull/10644 to keep it reasonably sized.
 
 ## Keywords
 
@@ -253,7 +253,7 @@ open Classical in
 TODO: unify with `SeparationQuotient.lift`. -/
 def lift' [T0Space β] (f : α → β) : SeparationQuotient α → β :=
   if hc : UniformContinuous f then lift f fun _ _ h => (h.map hc.continuous).eq
-  else fun x => f (Nonempty.some ⟨x.out'⟩)
+  else fun x => f (Nonempty.some ⟨x.out⟩)
 
 theorem lift'_mk [T0Space β] {f : α → β} (h : UniformContinuous f) (a : α) :
     lift' f (mk a) = f a := by rw [lift', dif_pos h, lift_mk]

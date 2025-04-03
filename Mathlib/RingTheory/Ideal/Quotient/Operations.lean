@@ -198,7 +198,7 @@ lemma quotientInfToPiQuotient_inj (I : ι → Ideal R) : Injective (quotientInfT
   rw [quotientInfToPiQuotient, injective_lift_iff, ker_Pi_Quotient_mk]
 
 lemma quotientInfToPiQuotient_surj [Finite ι] {I : ι → Ideal R}
-    (hI : Pairwise fun i j => IsCoprime (I i) (I j)) : Surjective (quotientInfToPiQuotient I) := by
+    (hI : Pairwise (IsCoprime on I)) : Surjective (quotientInfToPiQuotient I) := by
   classical
   cases nonempty_fintype ι
   intro g
@@ -224,7 +224,7 @@ lemma quotientInfToPiQuotient_surj [Finite ι] {I : ι → Ideal R}
 /-- **Chinese Remainder Theorem**. Eisenbud Ex.2.6.
 Similar to Atiyah-Macdonald 1.10 and Stacks 00DT -/
 noncomputable def quotientInfRingEquivPiQuotient [Finite ι] (f : ι → Ideal R)
-    (hf : Pairwise fun i j => IsCoprime (f i) (f j)) : (R ⧸ ⨅ i, f i) ≃+* ∀ i, R ⧸ f i :=
+    (hf : Pairwise (IsCoprime on f)) : (R ⧸ ⨅ i, f i) ≃+* ∀ i, R ⧸ f i :=
   { Equiv.ofBijective _ ⟨quotientInfToPiQuotient_inj f, quotientInfToPiQuotient_surj hf⟩,
     quotientInfToPiQuotient f with }
 
@@ -250,7 +250,7 @@ lemma exists_forall_sub_mem_ideal {R : Type*} [CommRing R] {ι : Type*} [Finite 
 noncomputable def quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
     R ⧸ I ⊓ J ≃+* (R ⧸ I) × R ⧸ J :=
   let f : Fin 2 → Ideal R := ![I, J]
-  have hf : Pairwise fun i j => IsCoprime (f i) (f j) := by
+  have hf : Pairwise (IsCoprime on f) := by
     intro i j h
     fin_cases i <;> fin_cases j <;> try contradiction
     · assumption
@@ -375,7 +375,7 @@ theorem Quotient.mk_algebraMap (I : Ideal A) (x : R₁) :
 
 /-- The canonical morphism `A →ₐ[R₁] I.quotient` is surjective. -/
 theorem Quotient.mkₐ_surjective (I : Ideal A) : Function.Surjective (Quotient.mkₐ R₁ I) :=
-  surjective_quot_mk _
+  Quot.mk_surjective
 
 /-- The kernel of `A →ₐ[R₁] I.quotient` is `I`. -/
 @[simp]
@@ -529,7 +529,7 @@ theorem quotientMap_injective' {J : Ideal R} {I : Ideal S} {f : R →+* S} {H : 
   rw [quotientMap_mk, Quotient.eq_zero_iff_mem] at ha
   exact Quotient.eq_zero_iff_mem.mpr (h ha)
 
-/-- If we take `J = I.comap f` then `QuotientMap` is injective automatically. -/
+/-- If we take `J = I.comap f` then `quotientMap` is injective automatically. -/
 theorem quotientMap_injective {I : Ideal S} {f : R →+* S} :
     Function.Injective (quotientMap I f le_rfl) :=
   quotientMap_injective' le_rfl
@@ -668,8 +668,8 @@ def quotQuotMk : R →+* (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) :=
 /-- The kernel of `quotQuotMk` -/
 theorem ker_quotQuotMk : RingHom.ker (quotQuotMk I J) = I ⊔ J := by
   rw [RingHom.ker_eq_comap_bot, quotQuotMk, ← comap_comap, ← RingHom.ker, mk_ker,
-    comap_map_of_surjective (Ideal.Quotient.mk I) Quotient.mk_surjective, ← RingHom.ker, mk_ker,
-    sup_comm]
+    comap_map_of_surjective (Ideal.Quotient.mk I) Ideal.Quotient.mk_surjective, ← RingHom.ker,
+    mk_ker, sup_comm]
 
 /-- The ring homomorphism `R/(I ⊔ J) → (R/I)/J' `induced by `quotQuotMk` -/
 def liftSupQuotQuotMk (I J : Ideal R) : R ⧸ I ⊔ J →+* (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) :=

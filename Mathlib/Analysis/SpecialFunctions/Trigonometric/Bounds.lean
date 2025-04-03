@@ -98,10 +98,10 @@ lemma sin_sq_lt_sq (hx : x ≠ 0) : sin x ^ 2 < x ^ 2 := by
     simpa using this (neg_ne_zero.2 hx) <| neg_pos_of_neg <| hx.lt_of_le <| le_of_not_lt hx₀
   rcases le_or_lt x 1 with hxπ | hxπ
   case inl =>
-    exact pow_lt_pow_left (sin_lt hx₀)
+    exact pow_lt_pow_left₀ (sin_lt hx₀)
       (sin_nonneg_of_nonneg_of_le_pi hx₀.le (by linarith [two_le_pi])) (by simp)
   case inr =>
-    exact (sin_sq_le_one _).trans_lt (by rwa [one_lt_sq_iff hx₀.le])
+    exact (sin_sq_le_one _).trans_lt (by rwa [one_lt_sq_iff₀ hx₀.le])
 
 lemma sin_sq_le_sq : sin x ^ 2 ≤ x ^ 2 := by
   rcases eq_or_ne x 0 with rfl | hx
@@ -135,7 +135,7 @@ lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x
   case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_le hx₀
   rw [abs_of_nonneg hx₀] at hx
   have : x / π ≤ sin (x / 2) := by simpa using mul_le_sin (x := x / 2) (by positivity) (by linarith)
-  have := (pow_le_pow_left (by positivity) this 2).trans_eq (sin_sq_eq_half_sub _)
+  have := (pow_le_pow_left₀ (by positivity) this 2).trans_eq (sin_sq_eq_half_sub _)
   ring_nf at this ⊢
   linarith
 

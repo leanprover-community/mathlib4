@@ -30,7 +30,7 @@ variable {α : Type u} {β : Type*} {γ : Type*} {δ : Type*}
 
 -- not all spaces are homeomorphic to each other
 /-- Uniform isomorphism between `α` and `β` -/
---@[nolint has_nonempty_instance] -- Porting note(#5171): linter not yet ported
+--@[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not yet ported
 structure UniformEquiv (α : Type*) (β : Type*) [UniformSpace α] [UniformSpace β] extends
   α ≃ β where
   /-- Uniform continuity of the function -/
@@ -221,7 +221,7 @@ noncomputable def ofIsUniformEmbedding (f : α → β) (hf : IsUniformEmbedding 
     rw [hf.isUniformInducing.uniformContinuous_iff, Equiv.invFun_as_coe,
       Equiv.self_comp_ofInjective_symm]
     exact uniformContinuous_subtype_val
-  toEquiv := Equiv.ofInjective f hf.inj
+  toEquiv := Equiv.ofInjective f hf.injective
 
 @[deprecated (since := "2024-10-03")] alias ofUniformEmbedding := ofIsUniformEmbedding
 

@@ -3,6 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 
@@ -289,7 +290,7 @@ theorem Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Module.rank 
   apply le_antisymm
   · trans
     swap
-    · apply le_ciSup (Cardinal.bddAbove_range.{v, v} _)
+    · apply le_ciSup (Cardinal.bddAbove_range _)
       exact
         ⟨Set.range v, by
           convert v.reindexRange.linearIndependent
@@ -463,5 +464,16 @@ theorem LinearMap.finrank_le_finrank_of_injective [Module.Finite R M'] {f : M �
 theorem LinearMap.finrank_range_le [Module.Finite R M] (f : M →ₗ[R] M') :
     finrank R (LinearMap.range f) ≤ finrank R M :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_range_le f) (rank_lt_aleph0 _ _)
+
+theorem LinearMap.finrank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R]
+    [Module S M] [IsScalarTower S R M] (L L' : Submodule R M) [Module.Finite R L'] {s : S}
+    (hr : IsSMulRegular M s) (h : ∀ x ∈ L, s • x ∈ L') :
+    Module.finrank R L ≤ Module.finrank R L' := by
+  refine finrank_le_finrank_of_rank_le_rank (lift_le.mpr <| rank_le_of_isSMulRegular L L' hr h) ?_
+  rw [← Module.finrank_eq_rank R L']
+  exact nat_lt_aleph0 (finrank R ↥L')
+
+@[deprecated (since := "2024-11-21")]
+alias LinearMap.finrank_le_of_smul_regular := LinearMap.finrank_le_of_isSMulRegular
 
 end StrongRankCondition

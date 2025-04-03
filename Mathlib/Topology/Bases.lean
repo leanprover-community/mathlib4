@@ -302,7 +302,7 @@ latter should be used as a typeclass argument in theorems because Lean can autom
 `TopologicalSpace.SeparableSpace` from `SecondCountableTopology` but it can't
 deduce `SecondCountableTopology` from `TopologicalSpace.SeparableSpace`.
 
-Porting note (#11215): TODO: the previous paragraph describes the state of the art in Lean 3.
+Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: the previous paragraph describes the state of the art in Lean 3.
 We can have instance cycles in Lean 4 but we might want to
 postpone adding them till after the port. -/
 @[mk_iff] class SeparableSpace : Prop where
@@ -355,12 +355,12 @@ protected theorem _root_.DenseRange.separableSpace [SeparableSpace α] [Topologi
   let ⟨s, s_cnt, s_dense⟩ := exists_countable_dense α
   ⟨⟨f '' s, Countable.image s_cnt f, h.dense_image h' s_dense⟩⟩
 
-theorem _root_.IsQuotientMap.separableSpace [SeparableSpace α] [TopologicalSpace β] {f : α → β}
-    (hf : IsQuotientMap f) : SeparableSpace β :=
+theorem _root_.Topology.IsQuotientMap.separableSpace [SeparableSpace α] [TopologicalSpace β]
+    {f : α → β} (hf : IsQuotientMap f) : SeparableSpace β :=
   hf.surjective.denseRange.separableSpace hf.continuous
 
 @[deprecated (since := "2024-10-22")]
-alias _root_.QuotientMap.separableSpace := _root_.IsQuotientMap.separableSpace
+alias _root_.QuotientMap.separableSpace := Topology.IsQuotientMap.separableSpace
 
 /-- The product of two separable spaces is a separable space. -/
 instance [TopologicalSpace β] [SeparableSpace α] [SeparableSpace β] : SeparableSpace (α × β) := by
@@ -383,7 +383,7 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
       (htd i).exists_mem_open (huo i i.2).1 ⟨_, (huo i i.2).2⟩
     choose y hyt hyu using this
     lift y to ∀ i : I, t i using hyt
-    refine ⟨f ⟨I, y⟩, huU fun i (hi : i ∈ I) ↦ ?_, mem_range_self ⟨I, y⟩⟩
+    refine ⟨f ⟨I, y⟩, huU fun i (hi : i ∈ I) ↦ ?_, mem_range_self (f := f) ⟨I, y⟩⟩
     simp only [f, dif_pos hi]
     exact hyu ⟨i, _⟩
 
@@ -477,7 +477,7 @@ theorem IsSeparable.univ_pi {ι : Type*} [Countable ι] {X : ι → Type*} {s : 
     refine ⟨range g, countable_range g, fun f hf ↦ mem_closure_iff.2 fun o ho hfo ↦ ?_⟩
     rcases isOpen_pi_iff.1 ho f hfo with ⟨I, u, huo, hI⟩
     rsuffices ⟨f, hf⟩ : ∃ f : (i : I) → c i, g ⟨I, f⟩ ∈ Set.pi I u
-    · exact ⟨g ⟨I, f⟩, hI hf, mem_range_self ⟨I, f⟩⟩
+    · exact ⟨g ⟨I, f⟩, hI hf, mem_range_self (f := g) ⟨I, f⟩⟩
     suffices H : ∀ i ∈ I, (u i ∩ c i).Nonempty by
       choose f hfu hfc using H
       refine ⟨fun i ↦ ⟨f i i.2, hfc i i.2⟩, fun i (hi : i ∈ I) ↦ ?_⟩
@@ -662,16 +662,16 @@ instance Subtype.firstCountableTopology (s : Set α) [FirstCountableTopology α]
     FirstCountableTopology s :=
   firstCountableTopology_induced s α (↑)
 
-protected theorem _root_.IsInducing.firstCountableTopology {β : Type*}
+protected theorem _root_.Topology.IsInducing.firstCountableTopology {β : Type*}
     [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : IsInducing f) :
     FirstCountableTopology α := by
   rw [hf.1]
   exact firstCountableTopology_induced α β f
 
 @[deprecated (since := "2024-10-28")]
-alias _root_.Inducing.firstCountableTopology := _root_.IsInducing.firstCountableTopology
+alias _root_.Inducing.firstCountableTopology := IsInducing.firstCountableTopology
 
-protected theorem _root_.IsEmbedding.firstCountableTopology {β : Type*}
+protected theorem _root_.Topology.IsEmbedding.firstCountableTopology {β : Type*}
     [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : IsEmbedding f) :
     FirstCountableTopology α :=
   hf.1.firstCountableTopology
@@ -899,8 +899,8 @@ theorem IsTopologicalBasis.sum {s : Set (Set α)} (hs : IsTopologicalBasis s) {t
     IsTopologicalBasis ((fun u => Sum.inl '' u) '' s ∪ (fun u => Sum.inr '' u) '' t) := by
   apply isTopologicalBasis_of_isOpen_of_nhds
   · rintro u (⟨w, hw, rfl⟩ | ⟨w, hw, rfl⟩)
-    · exact isOpenEmbedding_inl.isOpenMap w (hs.isOpen hw)
-    · exact isOpenEmbedding_inr.isOpenMap w (ht.isOpen hw)
+    · exact IsOpenEmbedding.inl.isOpenMap w (hs.isOpen hw)
+    · exact IsOpenEmbedding.inr.isOpenMap w (ht.isOpen hw)
   · rintro (x | x) u hxu u_open
     · obtain ⟨v, vs, xv, vu⟩ : ∃ v ∈ s, x ∈ v ∧ v ⊆ Sum.inl ⁻¹' u :=
         hs.exists_subset_of_mem_open hxu (isOpen_sum_iff.1 u_open).1
@@ -947,7 +947,7 @@ theorem IsTopologicalBasis.isQuotientMap {V : Set (Set X)} (hV : IsTopologicalBa
 alias IsTopologicalBasis.quotientMap := IsTopologicalBasis.isQuotientMap
 
 /-- A second countable space is mapped by an open quotient map to a second countable space. -/
-theorem _root_.IsQuotientMap.secondCountableTopology [SecondCountableTopology X]
+theorem _root_.Topology.IsQuotientMap.secondCountableTopology [SecondCountableTopology X]
     (h' : IsQuotientMap π) (h : IsOpenMap π) : SecondCountableTopology Y where
   is_open_generated_countable := by
     obtain ⟨V, V_countable, -, V_generates⟩ := exists_countable_basis X
@@ -955,7 +955,7 @@ theorem _root_.IsQuotientMap.secondCountableTopology [SecondCountableTopology X]
       (V_generates.isQuotientMap h' h).eq_generateFrom⟩
 
 @[deprecated (since := "2024-10-22")]
-alias _root_.QuotientMap.secondCountableTopology := _root_.IsQuotientMap.secondCountableTopology
+alias _root_.QuotientMap.secondCountableTopology := IsQuotientMap.secondCountableTopology
 
 variable {S : Setoid X}
 
@@ -978,7 +978,7 @@ open TopologicalSpace
 
 variable {α β : Type*} [TopologicalSpace α] {f : α → β}
 
-protected theorem IsInducing.secondCountableTopology [TopologicalSpace β]
+protected theorem Topology.IsInducing.secondCountableTopology [TopologicalSpace β]
     [SecondCountableTopology β] (hf : IsInducing f) : SecondCountableTopology α := by
   rw [hf.1]
   exact secondCountableTopology_induced α β f
@@ -986,12 +986,12 @@ protected theorem IsInducing.secondCountableTopology [TopologicalSpace β]
 @[deprecated (since := "2024-10-28")]
 alias Inducing.secondCountableTopology := IsInducing.secondCountableTopology
 
-protected theorem IsEmbedding.secondCountableTopology
+protected theorem Topology.IsEmbedding.secondCountableTopology
     [TopologicalSpace β] [SecondCountableTopology β]
     (hf : IsEmbedding f) : SecondCountableTopology α :=
   hf.1.secondCountableTopology
 
-protected theorem IsEmbedding.separableSpace
+protected theorem Topology.IsEmbedding.separableSpace
     [TopologicalSpace β] [SecondCountableTopology β] {f : α → β} (hf : IsEmbedding f) :
     TopologicalSpace.SeparableSpace α := by
   have := hf.secondCountableTopology

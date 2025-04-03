@@ -85,6 +85,14 @@ abbrev HasFilteredColimits := HasFilteredColimitsOfSize.{v, v} C
 
 end
 
+instance (priority := 100) hasFilteredColimitsOfSize_of_hasColimitsOfSize
+    [HasColimitsOfSize.{w', w} C] : HasFilteredColimitsOfSize.{w', w} C where
+  HasColimitsOfShape _ _ _ := inferInstance
+
+instance (priority := 100) hasCofilteredLimitsOfSize_of_hasLimitsOfSize
+    [HasLimitsOfSize.{w', w} C] : HasCofilteredLimitsOfSize.{w', w} C where
+  HasLimitsOfShape _ _ _ := inferInstance
+
 instance (priority := 100) hasLimitsOfShape_of_has_cofiltered_limits
     [HasCofilteredLimitsOfSize.{w', w} C] (I : Type w) [Category.{w'} I] [IsCofiltered I] :
     HasLimitsOfShape I C :=

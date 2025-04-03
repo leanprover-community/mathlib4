@@ -213,8 +213,8 @@ section Pi
 variable {ι : Type*} {α : ι → Type*}
 
 /-- Given an index set `ι` and a family of sets `t : Π i, Set (α i)`, `pi s t`
-is the set of dependent functions `f : Πa, π a` such that `f a` belongs to `t a`
-whenever `a ∈ s`. -/
+is the set of dependent functions `f : Πa, π a` such that `f i` belongs to `t i`
+whenever `i ∈ s`. -/
 def pi (s : Set ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) := {f | ∀ i ∈ s, f i ∈ t i}
 
 variable {s : Set ι} {t : ∀ i, Set (α i)} {f : ∀ i, α i}
@@ -228,7 +228,7 @@ end Pi
 /-- Two functions `f₁ f₂ : α → β` are equal on `s` if `f₁ x = f₂ x` for all `x ∈ s`. -/
 def EqOn (f₁ f₂ : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → f₁ x = f₂ x
 
-/-- `MapsTo f a b` means that the image of `a` is contained in `b`. -/
+/-- `MapsTo f s t` means that the image of `s` is contained in `t`. -/
 def MapsTo (f : α → β) (s : Set α) (t : Set β) : Prop := ∀ ⦃x⦄, x ∈ s → f x ∈ t
 
 theorem mapsTo_image (f : α → β) (s : Set α) : MapsTo f s (f '' s) := fun _ ↦ mem_image_of_mem f
@@ -245,26 +245,26 @@ def MapsTo.restrict (f : α → β) (s : Set α) (t : Set β) (h : MapsTo f s t)
 def restrictPreimage (t : Set β) (f : α → β) : f ⁻¹' t → t :=
   (Set.mapsTo_preimage f t).restrict _ _ _
 
-/-- `f` is injective on `a` if the restriction of `f` to `a` is injective. -/
+/-- `f` is injective on `s` if the restriction of `f` to `s` is injective. -/
 def InjOn (f : α → β) (s : Set α) : Prop :=
   ∀ ⦃x₁ : α⦄, x₁ ∈ s → ∀ ⦃x₂ : α⦄, x₂ ∈ s → f x₁ = f x₂ → x₁ = x₂
 
 /-- The graph of a function `f : α → β` on a set `s`. -/
 def graphOn (f : α → β) (s : Set α) : Set (α × β) := (fun x ↦ (x, f x)) '' s
 
-/-- `f` is surjective from `a` to `b` if `b` is contained in the image of `a`. -/
+/-- `f` is surjective from `s` to `t` if `t` is contained in the image of `s`. -/
 def SurjOn (f : α → β) (s : Set α) (t : Set β) : Prop := t ⊆ f '' s
 
 /-- `f` is bijective from `s` to `t` if `f` is injective on `s` and `f '' s = t`. -/
 def BijOn (f : α → β) (s : Set α) (t : Set β) : Prop := MapsTo f s t ∧ InjOn f s ∧ SurjOn f s t
 
-/-- `g` is a left inverse to `f` on `a` means that `g (f x) = x` for all `x ∈ a`. -/
+/-- `g` is a left inverse to `f` on `s` means that `g (f x) = x` for all `x ∈ s`. -/
 def LeftInvOn (f' : β → α) (f : α → β) (s : Set α) : Prop := ∀ ⦃x⦄, x ∈ s → f' (f x) = x
 
-/-- `g` is a right inverse to `f` on `b` if `f (g x) = x` for all `x ∈ b`. -/
+/-- `g` is a right inverse to `f` on `t` if `f (g x) = x` for all `x ∈ t`. -/
 abbrev RightInvOn (f' : β → α) (f : α → β) (t : Set β) : Prop := LeftInvOn f f' t
 
-/-- `g` is an inverse to `f` viewed as a map from `a` to `b` -/
+/-- `g` is an inverse to `f` viewed as a map from `s` to `t` -/
 def InvOn (g : β → α) (f : α → β) (s : Set α) (t : Set β) : Prop :=
   LeftInvOn g f s ∧ RightInvOn g f t
 

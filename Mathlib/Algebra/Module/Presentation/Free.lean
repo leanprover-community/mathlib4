@@ -75,8 +75,7 @@ lemma free_iff_exists_presentation :
   constructor
   · rw [free_def.{_, _, v}]
     rintro ⟨G, ⟨⟨e⟩⟩⟩
-    exact ⟨Presentation.ofIsPresentation
-      ((presentationFinsupp A G).ofLinearEquiv e.symm),
+    exact ⟨(presentationFinsupp A G).ofLinearEquiv e.symm,
       by dsimp; infer_instance⟩
   · rintro ⟨p, h⟩
     exact p.toIsPresentation.free

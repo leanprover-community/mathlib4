@@ -4,16 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Nicolò Cavalleri
 -/
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Order.Group.Lattice
-import Mathlib.Algebra.Periodic
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.Star
-import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
 /-!
@@ -356,20 +351,20 @@ instance [CommGroup β] [TopologicalGroup β] : TopologicalGroup C(α, β) where
     have : UniformGroup β := comm_topologicalGroup_is_uniform
     rw [continuous_iff_continuousAt]
     rintro ⟨f, g⟩
-    rw [ContinuousAt, tendsto_iff_forall_compact_tendstoUniformlyOn, nhds_prod_eq]
+    rw [ContinuousAt, tendsto_iff_forall_isCompact_tendstoUniformlyOn, nhds_prod_eq]
     exact fun K hK =>
       uniformContinuous_mul.comp_tendstoUniformlyOn
-        ((tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prod
-          (tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
+        ((tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK).prod
+          (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
     letI : UniformSpace β := TopologicalGroup.toUniformSpace β
     have : UniformGroup β := comm_topologicalGroup_is_uniform
     rw [continuous_iff_continuousAt]
     intro f
-    rw [ContinuousAt, tendsto_iff_forall_compact_tendstoUniformlyOn]
+    rw [ContinuousAt, tendsto_iff_forall_isCompact_tendstoUniformlyOn]
     exact fun K hK =>
       uniformContinuous_inv.comp_tendstoUniformlyOn
-        (tendsto_iff_forall_compact_tendstoUniformlyOn.mp Filter.tendsto_id K hK)
+        (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK)
 
 /-- If an infinite product of functions in `C(α, β)` converges to `g`
 (for the compact-open topology), then the pointwise product converges to `g x` for all `x ∈ α`. -/
@@ -797,17 +792,31 @@ section ModuleOverContinuousFunctions
 If `M` is a module over `R`, then we show that the space of continuous functions from `α` to `M`
 is naturally a module over the ring of continuous functions from `α` to `R`. -/
 
-
 namespace ContinuousMap
 
-instance instSMul' {α : Type*} [TopologicalSpace α] {R : Type*} [Semiring R] [TopologicalSpace R]
-    {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousSMul R M] :
-    SMul C(α, R) C(α, M) :=
+variable
+  {α : Type*} [TopologicalSpace α]
+  {R : Type*} [Semiring R] [TopologicalSpace R]
+  {M : Type*} [TopologicalSpace M] [AddCommMonoid M] [Module R M] [ContinuousSMul R M]
+
+instance instSMul' : SMul C(α, R) C(α, M) :=
   ⟨fun f g => ⟨fun x => f x • g x, Continuous.smul f.2 g.2⟩⟩
 
-instance module' {α : Type*} [TopologicalSpace α] (R : Type*) [Semiring R] [TopologicalSpace R]
-    [TopologicalSemiring R] (M : Type*) [TopologicalSpace M] [AddCommMonoid M] [ContinuousAdd M]
-    [Module R M] [ContinuousSMul R M] : Module C(α, R) C(α, M) where
+/-- Coercion to a function for a scalar-valued continuous map multiplying a vector-valued one
+(as opposed to `ContinuousMap.coe_smul` which is multiplication by a constant scalar). -/
+@[simp] lemma coe_smul' (f : C(α, R)) (g : C(α, M)) :
+    ⇑(f • g) = ⇑f • ⇑g :=
+  rfl
+
+/-- Evaluation of a scalar-valued continuous map multiplying a vector-valued one
+(as opposed to `ContinuousMap.smul_apply` which is multiplication by a constant scalar). -/
+-- (this doesn't need to be @[simp] since it can be derived from `coe_smul'` and `Pi.smul_apply'`)
+lemma smul_apply' (f : C(α, R)) (g : C(α, M)) (x : α) :
+    (f • g) x = f x • g x :=
+  rfl
+
+instance module' [TopologicalSemiring R] [ContinuousAdd M] :
+    Module C(α, R) C(α, M) where
   smul := (· • ·)
   smul_add c f g := by ext x; exact smul_add (c x) (f x) (g x)
   add_smul c₁ c₂ f := by ext x; exact add_smul (c₁ x) (c₂ x) (f x)
@@ -819,222 +828,6 @@ instance module' {α : Type*} [TopologicalSpace α] (R : Type*) [Semiring R] [To
 end ContinuousMap
 
 end ModuleOverContinuousFunctions
-
-/-!
-We now provide formulas for `f ⊓ g` and `f ⊔ g`, where `f g : C(α, β)`,
-in terms of `ContinuousMap.abs`.
--/
-
-namespace ContinuousMap
-
-section Lattice
-
-variable {α : Type*} [TopologicalSpace α]
-variable {β : Type*} [TopologicalSpace β]
-
-/-! `C(α, β)`is a lattice ordered group -/
-
-@[to_additive]
-instance instMulLeftMono [PartialOrder β] [Mul β] [ContinuousMul β] [MulLeftMono β] :
-    MulLeftMono C(α, β) :=
-  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_left' (hg₁₂ x) _⟩
-
-@[to_additive]
-instance instMulRightMono [PartialOrder β] [Mul β] [ContinuousMul β] [MulRightMono β] :
-    MulRightMono C(α, β) :=
-  ⟨fun _ _ _ hg₁₂ x => mul_le_mul_right' (hg₁₂ x) _⟩
-
-variable [Group β] [TopologicalGroup β] [Lattice β] [TopologicalLattice β]
-
-@[to_additive (attr := simp, norm_cast)]
-lemma coe_mabs (f : C(α, β)) : ⇑|f|ₘ = |⇑f|ₘ := rfl
-
-@[to_additive (attr := simp)]
-lemma mabs_apply (f : C(α, β)) (x : α) : |f|ₘ x = |f x|ₘ := rfl
-
-end Lattice
-
-/-!
-### Star structure
-
-If `β` has a continuous star operation, we put a star structure on `C(α, β)` by using the
-star operation pointwise.
-
-If `β` is a ⋆-ring, then `C(α, β)` inherits a ⋆-ring structure.
-
-If `β` is a ⋆-ring and a ⋆-module over `R`, then the space of continuous functions from `α` to `β`
-is a ⋆-module over `R`.
-
--/
-
-
-section StarStructure
-
-variable {R α β : Type*}
-variable [TopologicalSpace α] [TopologicalSpace β]
-
-section Star
-
-variable [Star β] [ContinuousStar β]
-
-instance : Star C(α, β) where star f := starContinuousMap.comp f
-
-@[simp]
-theorem coe_star (f : C(α, β)) : ⇑(star f) = star (⇑f) :=
-  rfl
-
-@[simp]
-theorem star_apply (f : C(α, β)) (x : α) : star f x = star (f x) :=
-  rfl
-
-instance instTrivialStar [TrivialStar β] : TrivialStar C(α, β) where
-  star_trivial _ := ext fun _ => star_trivial _
-
-end Star
-
-instance [InvolutiveStar β] [ContinuousStar β] : InvolutiveStar C(α, β) where
-  star_involutive _ := ext fun _ => star_star _
-
-instance starAddMonoid [AddMonoid β] [ContinuousAdd β] [StarAddMonoid β] [ContinuousStar β] :
-    StarAddMonoid C(α, β) where
-  star_add _ _ := ext fun _ => star_add _ _
-
-instance starMul [Mul β] [ContinuousMul β] [StarMul β] [ContinuousStar β] :
-    StarMul C(α, β) where
-  star_mul _ _ := ext fun _ => star_mul _ _
-
-instance [NonUnitalNonAssocSemiring β] [TopologicalSemiring β] [StarRing β] [ContinuousStar β] :
-    StarRing C(α, β) :=
-  { ContinuousMap.starAddMonoid, ContinuousMap.starMul with }
-
-instance [Star R] [Star β] [SMul R β] [StarModule R β] [ContinuousStar β]
-    [ContinuousConstSMul R β] : StarModule R C(α, β) where
-  star_smul _ _ := ext fun _ => star_smul _ _
-
-end StarStructure
-
-section Precomposition
-
-variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-variable (𝕜 : Type*) [CommSemiring 𝕜]
-variable (A : Type*) [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [Star A]
-variable [ContinuousStar A] [Algebra 𝕜 A]
-
-/-- The functorial map taking `f : C(X, Y)` to `C(Y, A) →⋆ₐ[𝕜] C(X, A)` given by pre-composition
-with the continuous function `f`. See `ContinuousMap.compMonoidHom'` and
-`ContinuousMap.compAddMonoidHom'`, `ContinuousMap.compRightAlgHom` for bundlings of
-pre-composition into a `MonoidHom`, an `AddMonoidHom` and an `AlgHom`, respectively, under
-suitable assumptions on `A`. -/
-@[simps]
-def compStarAlgHom' (f : C(X, Y)) : C(Y, A) →⋆ₐ[𝕜] C(X, A) where
-  toFun g := g.comp f
-  map_one' := one_comp _
-  map_mul' _ _ := rfl
-  map_zero' := zero_comp f
-  map_add' _ _ := rfl
-  commutes' _ := rfl
-  map_star' _ := rfl
-
-/-- `ContinuousMap.compStarAlgHom'` sends the identity continuous map to the identity
-`StarAlgHom` -/
-theorem compStarAlgHom'_id : compStarAlgHom' 𝕜 A (ContinuousMap.id X) = StarAlgHom.id 𝕜 C(X, A) :=
-  StarAlgHom.ext fun _ => ContinuousMap.ext fun _ => rfl
-
-/-- `ContinuousMap.compStarAlgHom'` is functorial. -/
-theorem compStarAlgHom'_comp (g : C(Y, Z)) (f : C(X, Y)) :
-    compStarAlgHom' 𝕜 A (g.comp f) = (compStarAlgHom' 𝕜 A f).comp (compStarAlgHom' 𝕜 A g) :=
-  StarAlgHom.ext fun _ => ContinuousMap.ext fun _ => rfl
-
-end Precomposition
-
-section Postcomposition
-
-variable (X : Type*) {𝕜 A B C : Type*} [TopologicalSpace X] [CommSemiring 𝕜]
-variable [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [Star A]
-variable [ContinuousStar A] [Algebra 𝕜 A]
-variable [TopologicalSpace B] [Semiring B] [TopologicalSemiring B] [Star B]
-variable [ContinuousStar B] [Algebra 𝕜 B]
-variable [TopologicalSpace C] [Semiring C] [TopologicalSemiring C] [Star C]
-variable [ContinuousStar C] [Algebra 𝕜 C]
-
-/-- Post-composition with a continuous star algebra homomorphism is a star algebra homomorphism
-between spaces of continuous maps. -/
-@[simps]
-def compStarAlgHom (φ : A →⋆ₐ[𝕜] B) (hφ : Continuous φ) :
-    C(X, A) →⋆ₐ[𝕜] C(X, B) where
-  toFun f := (⟨φ, hφ⟩ : C(A, B)).comp f
-  map_one' := ext fun _ => map_one φ
-  map_mul' f g := ext fun x => map_mul φ (f x) (g x)
-  map_zero' := ext fun _ => map_zero φ
-  map_add' f g := ext fun x => map_add φ (f x) (g x)
-  commutes' r := ext fun _x => AlgHomClass.commutes φ r
-  map_star' f := ext fun x => map_star φ (f x)
-
-/-- `ContinuousMap.compStarAlgHom` sends the identity `StarAlgHom` on `A` to the identity
-`StarAlgHom` on `C(X, A)`. -/
-lemma compStarAlgHom_id : compStarAlgHom X (.id 𝕜 A) continuous_id = .id 𝕜 C(X, A) := rfl
-
-/-- `ContinuousMap.compStarAlgHom` is functorial. -/
-lemma compStarAlgHom_comp (φ : A →⋆ₐ[𝕜] B) (ψ : B →⋆ₐ[𝕜] C) (hφ : Continuous φ)
-    (hψ : Continuous ψ) : compStarAlgHom X (ψ.comp φ) (hψ.comp hφ) =
-      (compStarAlgHom X ψ hψ).comp (compStarAlgHom X φ hφ) :=
-  rfl
-
-end Postcomposition
-
-section Periodicity
-
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-
-/-! ### Summing translates of a function -/
-
-/-- Summing the translates of `f` by `ℤ • p` gives a map which is periodic with period `p`.
-(This is true without any convergence conditions, since if the sum doesn't converge it is taken to
-be the zero map, which is periodic.) -/
-theorem periodic_tsum_comp_add_zsmul [AddCommGroup X] [TopologicalAddGroup X] [AddCommMonoid Y]
-    [ContinuousAdd Y] [T2Space Y] (f : C(X, Y)) (p : X) :
-    Function.Periodic (⇑(∑' n : ℤ, f.comp (ContinuousMap.addRight (n • p)))) p := by
-  intro x
-  by_cases h : Summable fun n : ℤ => f.comp (ContinuousMap.addRight (n • p))
-  · convert congr_arg (fun f : C(X, Y) => f x) ((Equiv.addRight (1 : ℤ)).tsum_eq _) using 1
-    -- Porting note: in mathlib3 the proof from here was:
-    -- simp_rw [← tsum_apply h, ← tsum_apply ((equiv.add_right (1 : ℤ)).summable_iff.mpr h),
-    --   equiv.coe_add_right, comp_apply, coe_add_right, add_one_zsmul, add_comm (_ • p) p,
-    --   ← add_assoc]
-    -- However now the second `← tsum_apply` doesn't fire unless we use `erw`.
-    simp_rw [← tsum_apply h]
-    erw [← tsum_apply ((Equiv.addRight (1 : ℤ)).summable_iff.mpr h)]
-    simp [coe_addRight, add_one_zsmul, add_comm (_ • p) p, ← add_assoc]
-  · rw [tsum_eq_zero_of_not_summable h]
-    simp only [coe_zero, Pi.zero_apply]
-
-end Periodicity
-
-end ContinuousMap
-
-namespace Homeomorph
-
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-variable (𝕜 : Type*) [CommSemiring 𝕜]
-variable (A : Type*) [TopologicalSpace A] [Semiring A] [TopologicalSemiring A] [StarRing A]
-variable [ContinuousStar A] [Algebra 𝕜 A]
-
-/-- `ContinuousMap.compStarAlgHom'` as a `StarAlgEquiv` when the continuous map `f` is
-actually a homeomorphism. -/
-@[simps]
-def compStarAlgEquiv' (f : X ≃ₜ Y) : C(Y, A) ≃⋆ₐ[𝕜] C(X, A) :=
-  { (f : C(X, Y)).compStarAlgHom' 𝕜 A with
-    toFun := (f : C(X, Y)).compStarAlgHom' 𝕜 A
-    invFun := (f.symm : C(Y, X)).compStarAlgHom' 𝕜 A
-    left_inv := fun g => by
-      simp only [ContinuousMap.compStarAlgHom'_apply, ContinuousMap.comp_assoc,
-        toContinuousMap_comp_symm, ContinuousMap.comp_id]
-    right_inv := fun g => by
-      simp only [ContinuousMap.compStarAlgHom'_apply, ContinuousMap.comp_assoc,
-        symm_comp_toContinuousMap, ContinuousMap.comp_id]
-    map_smul' := fun k a => map_smul ((f : C(X, Y)).compStarAlgHom' 𝕜 A) k a }
-
-end Homeomorph
 
 /-! ### Evaluation as a bundled map -/
 
@@ -1050,10 +843,3 @@ def ContinuousMap.evalAlgHom (x : X) : C(X, R) →ₐ[S] R where
   map_add' _ _ := rfl
   map_mul' _ _ := rfl
   commutes' _ := rfl
-
-/-- Evaluation of continuous maps at a point, bundled as a star algebra homomorphism. -/
-@[simps!]
-def ContinuousMap.evalStarAlgHom [StarRing R] [ContinuousStar R] (x : X) :
-    C(X, R) →⋆ₐ[S] R :=
-  { ContinuousMap.evalAlgHom S R x with
-    map_star' := fun _ => rfl }

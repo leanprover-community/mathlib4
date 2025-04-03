@@ -125,7 +125,7 @@ nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
   exact exp_add_of_commute 𝕂 h
 
 nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
-    (h : (s : Set ι).Pairwise fun i j => Commute (f i) (f j)) :
+    (h : (s : Set ι).Pairwise (Commute on f)) :
     exp (∑ i ∈ s, f i) =
       s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing

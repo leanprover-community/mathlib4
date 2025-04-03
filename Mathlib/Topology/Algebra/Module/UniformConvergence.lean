@@ -38,9 +38,8 @@ uniform convergence, strong dual
 
 -/
 
-open Filter
-
-open scoped Topology Pointwise UniformConvergence Uniformity
+open Filter Topology
+open scoped Pointwise UniformConvergence Uniformity
 
 section Module
 

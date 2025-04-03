@@ -446,7 +446,7 @@ protected theorem FiniteSpanningSetsIn.outerRegular
 
 namespace InnerRegularWRT
 
-variable {p q : Set α → Prop} {U s : Set α} {ε r : ℝ≥0∞}
+variable {p : Set α → Prop}
 
 /-- If the restrictions of a measure to a monotone sequence of sets covering the space are
 inner regular for some property `p` and all measurable sets, then the measure itself is
@@ -637,7 +637,7 @@ end InnerRegularWRT
 
 namespace InnerRegular
 
-variable {U : Set α} {ε : ℝ≥0∞} [TopologicalSpace α]
+variable [TopologicalSpace α]
 
 /-- The measure of a measurable set is the supremum of the measures of compact sets it contains. -/
 theorem _root_.MeasurableSet.measure_eq_iSup_isCompact ⦃U : Set α⦄ (hU : MeasurableSet U)
@@ -663,9 +663,10 @@ lemma innerRegularWRT_isClosed_isOpen [R1Space α] [OpensMeasurableSpace α] [h 
   exact ⟨closure K, K_comp.closure_subset_of_isOpen hU KU, isClosed_closure,
     hK.trans_le (measure_mono subset_closure)⟩
 
-theorem exists_compact_not_null [InnerRegular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
+theorem exists_isCompact_not_null [InnerRegular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
   simp_rw [Ne, ← measure_univ_eq_zero, MeasurableSet.univ.measure_eq_iSup_isCompact,
     ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and]
+@[deprecated (since := "2024-11-19")] alias exists_compact_not_null := exists_isCompact_not_null
 
 /-- If `μ` is inner regular, then any measurable set can be approximated by a compact subset.
 See also `MeasurableSet.exists_isCompact_lt_add_of_ne_top`. -/
@@ -801,9 +802,6 @@ protected lemma _root_.IsCompact.measure_eq_iInf_isOpen [InnerRegularCompactLTTo
     exact fun U KU _ ↦ measure_mono KU
   · apply le_of_forall_lt'
     simpa only [iInf_lt_iff, exists_prop, exists_and_left] using hK.exists_isOpen_lt_of_lt
-
-@[deprecated (since := "2024-01-28")]
-alias _root_.IsCompact.measure_eq_infi_isOpen := IsCompact.measure_eq_iInf_isOpen
 
 protected theorem _root_.IsCompact.exists_isOpen_lt_add [InnerRegularCompactLTTop μ]
     [IsLocallyFiniteMeasure μ] [R1Space α] [BorelSpace α]
@@ -989,9 +987,10 @@ theorem _root_.IsOpen.measure_eq_iSup_isCompact ⦃U : Set α⦄ (hU : IsOpen U)
     [Regular μ] : μ U = ⨆ (K : Set α) (_ : K ⊆ U) (_ : IsCompact K), μ K :=
   Regular.innerRegular.measure_eq_iSup hU
 
-theorem exists_compact_not_null [Regular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
+theorem exists_isCompact_not_null [Regular μ] : (∃ K, IsCompact K ∧ μ K ≠ 0) ↔ μ ≠ 0 := by
   simp_rw [Ne, ← measure_univ_eq_zero, isOpen_univ.measure_eq_iSup_isCompact,
     ENNReal.iSup_eq_zero, not_forall, exists_prop, subset_univ, true_and]
+@[deprecated (since := "2024-11-19")] alias exists_compact_not_null := exists_isCompact_not_null
 
 /-- If `μ` is a regular measure, then any measurable set of finite measure can be approximated by a
 compact subset. See also `MeasurableSet.exists_isCompact_lt_add` and

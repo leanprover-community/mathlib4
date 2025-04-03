@@ -161,7 +161,7 @@ theorem coe_top : ((⊤ : L.Substructure M) : Set M) = Set.univ :=
   rfl
 
 /-- The inf of two substructures is their intersection. -/
-instance instInf : Inf (L.Substructure M) :=
+instance instInf : Min (L.Substructure M) :=
   ⟨fun S₁ S₂ =>
     { carrier := (S₁ : Set M) ∩ (S₂ : Set M)
       fun_mem := fun {_} f => (S₁.fun_mem f).inf (S₂.fun_mem f) }⟩
@@ -251,6 +251,7 @@ theorem closure_le : closure L s ≤ S ↔ s ⊆ S :=
 
 /-- Substructure closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure L s ≤ closure L t`. -/
+@[gcongr]
 theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure L s ≤ closure L t :=
   (closure L).monotone h
 
@@ -799,7 +800,7 @@ theorem range_comp_le_range (f : M →[L] N) (g : N →[L] P) : range (g.comp f 
   SetLike.coe_mono (Set.range_comp_subset_range f g)
 
 theorem range_eq_top {f : M →[L] N} : range f = ⊤ ↔ Function.Surjective f := by
-  rw [SetLike.ext'_iff, range_coe, coe_top, Set.range_iff_surjective]
+  rw [SetLike.ext'_iff, range_coe, coe_top, Set.range_eq_univ]
 
 theorem range_le_iff_comap {f : M →[L] N} {p : L.Substructure N} : range f ≤ p ↔ comap f p = ⊤ := by
   rw [range_eq_map, map_le_iff_le_comap, eq_top_iff]

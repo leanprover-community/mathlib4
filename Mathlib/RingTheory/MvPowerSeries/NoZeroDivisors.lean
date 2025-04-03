@@ -15,7 +15,7 @@ is itself not a zero divisor
 
 ## TODO
 
-* A subsequent PR #14571 proves that if `R` has no zero divisors,
+* A subsequent PR https://github.com/leanprover-community/mathlib4/pull/14571 proves that if `R` has no zero divisors,
 then so does `MvPowerSeries σ R`.
 
 * Transfer/adapt these results to `HahnSeries`.

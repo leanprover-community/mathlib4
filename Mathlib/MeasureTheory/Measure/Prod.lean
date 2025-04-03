@@ -874,6 +874,17 @@ theorem fst_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α}
     (hY : Measurable Y) : (μ.map fun a => (X a, Y a)).fst = μ.map X :=
   fst_map_prod_mk₀ hY.aemeasurable
 
+@[simp]
+lemma fst_add {μ ν : Measure (α × β)} : (μ + ν).fst = μ.fst + ν.fst := by
+  ext s hs
+  simp_rw [coe_add, Pi.add_apply, fst_apply hs, coe_add, Pi.add_apply]
+
+lemma fst_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).fst = sum (fun n ↦ (μ n).fst) := by
+  ext s hs
+  rw [fst_apply hs, sum_apply, sum_apply _ hs]
+  · simp_rw [fst_apply hs]
+  · exact measurable_fst hs
+
 @[gcongr]
 theorem fst_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.fst ≤ μ.fst := map_mono h measurable_fst
 
@@ -921,6 +932,17 @@ theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : 
     (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
   snd_map_prod_mk₀ hX.aemeasurable
 
+@[simp]
+lemma snd_add {μ ν : Measure (α × β)} : (μ + ν).snd = μ.snd + ν.snd := by
+  ext s hs
+  simp_rw [coe_add, Pi.add_apply, snd_apply hs, coe_add, Pi.add_apply]
+
+lemma snd_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).snd = sum (fun n ↦ (μ n).snd) := by
+  ext s hs
+  rw [snd_apply hs, sum_apply, sum_apply _ hs]
+  · simp_rw [snd_apply hs]
+  · exact measurable_snd hs
+
 @[gcongr]
 theorem snd_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.snd ≤ μ.snd := map_mono h measurable_snd
 
@@ -933,5 +955,33 @@ theorem snd_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.snd ≤ μ.snd :
   rfl
 
 end Measure
+
+section MeasurePreserving
+
+-- Note that these results cannot be put in the previous `measurePreserving` section since
+-- they use `lintegral_prod`.
+
+/-- The measurable equiv induced by the equiv `(α × β) × γ ≃ α × (β × γ)` is measure preserving. -/
+theorem _root_.MeasureTheory.measurePreserving_prodAssoc (μa : Measure α) (μb : Measure β)
+    (μc : Measure γ) [SFinite μb] [SFinite μc] :
+    MeasurePreserving (MeasurableEquiv.prodAssoc : (α × β) × γ ≃ᵐ α × β × γ)
+      ((μa.prod μb).prod μc) (μa.prod (μb.prod μc)) where
+  measurable := MeasurableEquiv.prodAssoc.measurable
+  map_eq := by
+    ext s hs
+    have A (x : α) : MeasurableSet (Prod.mk x ⁻¹' s) := measurable_prod_mk_left hs
+    have B : MeasurableSet (MeasurableEquiv.prodAssoc ⁻¹' s) :=
+      MeasurableEquiv.prodAssoc.measurable hs
+    simp_rw [map_apply MeasurableEquiv.prodAssoc.measurable hs, prod_apply hs, prod_apply (A _),
+      prod_apply B, lintegral_prod _ (measurable_measure_prod_mk_left B).aemeasurable]
+    rfl
+
+theorem _root_.MeasureTheory.volume_preserving_prodAssoc {α₁ β₁ γ₁ : Type*} [MeasureSpace α₁]
+    [MeasureSpace β₁] [MeasureSpace γ₁] [SFinite (volume : Measure β₁)]
+    [SFinite (volume : Measure γ₁)] :
+    MeasurePreserving (MeasurableEquiv.prodAssoc : (α₁ × β₁) × γ₁ ≃ᵐ α₁ × β₁ × γ₁) :=
+  MeasureTheory.measurePreserving_prodAssoc volume volume volume
+
+end MeasurePreserving
 
 end MeasureTheory

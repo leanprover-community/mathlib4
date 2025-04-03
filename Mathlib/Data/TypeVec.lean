@@ -604,9 +604,7 @@ theorem dropFun_of_subtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
 
 @[simp]
 theorem lastFun_of_subtype {α} (p : α ⟹ «repeat» (n + 1) Prop) :
-    lastFun (ofSubtype p) = _root_.id := by
-  ext i : 2
-  induction i; simp [dropFun, *]; rfl
+    lastFun (ofSubtype p) = _root_.id := rfl
 
 @[simp]
 theorem dropFun_RelLast' {α : TypeVec n} {β} (R : β → β → Prop) :

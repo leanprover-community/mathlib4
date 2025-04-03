@@ -13,8 +13,7 @@ import Mathlib.Topology.Instances.Real
 The structure of a metric space on `ℚ` is introduced in this file, induced from `ℝ`.
 -/
 
-
-open Metric Set Filter
+open Filter Metric Set Topology
 
 namespace Rat
 
@@ -97,7 +96,7 @@ theorem uniformContinuous_add : UniformContinuous fun p : ℚ × ℚ => p.1 + p.
 
 theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
-    ⟨_, ε0, fun h => by rw [dist_comm] at h; simpa only [dist_eq, cast_neg, neg_sub_neg] using h⟩
+    ⟨_, ε0, fun _ _ h => by simpa only [abs_sub_comm, dist_eq, cast_neg, neg_sub_neg] using h⟩
 
 instance : UniformAddGroup ℚ :=
   UniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
@@ -108,7 +107,7 @@ instance : OrderTopology ℚ := induced_orderTopology _ Rat.cast_lt exists_rat_b
 
 theorem uniformContinuous_abs : UniformContinuous (abs : ℚ → ℚ) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
-    ⟨ε, ε0, fun h =>
+    ⟨ε, ε0, fun _ _ h =>
       lt_of_le_of_lt (by simpa [Rat.dist_eq] using abs_abs_sub_abs_le_abs_sub _ _) h⟩
 
 instance : TopologicalRing ℚ := inferInstance

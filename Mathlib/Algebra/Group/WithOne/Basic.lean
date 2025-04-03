@@ -73,8 +73,7 @@ variable (f : α →ₙ* β)
 theorem lift_coe (x : α) : lift f x = f x :=
   rfl
 
--- Porting note (#11119): removed `simp` attribute to appease `simpNF` linter.
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem lift_one : lift f 1 = 1 :=
   rfl
 

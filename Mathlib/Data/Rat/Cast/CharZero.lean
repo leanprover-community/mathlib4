@@ -17,6 +17,7 @@ variable {F ι α β : Type*}
 namespace Rat
 variable [DivisionRing α] [CharZero α] {p q : ℚ}
 
+@[stacks 09FR "Characteristic zero case."]
 lemma cast_injective : Injective ((↑) : ℚ → α)
   | ⟨n₁, d₁, d₁0, c₁⟩, ⟨n₂, d₂, d₂0, c₂⟩, h => by
     have d₁a : (d₁ : α) ≠ 0 := Nat.cast_ne_zero.2 d₁0

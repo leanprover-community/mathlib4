@@ -210,11 +210,9 @@ variable {C₁ : Type u₁} [Category.{v₁} C₁] {W₁ : MorphismProperty C₁
   (Φ : LocalizerMorphism W₁ W₂) (L₁ : C₁ ⥤ D₁) [L₁.IsLocalization W₁]
   (L₂ : C₂ ⥤ D₂) [L₂.IsLocalization W₂]
 
-variable {W}
-
 section
 
-variable {X Y Z : C₁}
+variable {X Y : C₁}
 
 variable [HasSmallLocalizedHom.{w} W₁ X Y]
   [HasSmallLocalizedHom.{w'} W₂ (Φ.functor.obj X) (Φ.functor.obj Y)]

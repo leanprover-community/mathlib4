@@ -60,7 +60,7 @@ instance categoryStruct : CategoryStruct.{max u v} (FreeBicategory B) where
   comp := @fun _ _ _ => Hom.comp
 
 /-- Representatives of 2-morphisms in the free bicategory. -/
--- Porting note(#5171): linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
 inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Type max u v
   | id {a b} (f : a ⟶ b) : Hom₂ f f

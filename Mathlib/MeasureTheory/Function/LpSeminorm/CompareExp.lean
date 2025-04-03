@@ -84,7 +84,7 @@ theorem eLpNorm_le_eLpNorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤
   have hp_lt_top : p < ∞ := hpq.trans_lt (lt_top_iff_ne_top.mpr hq_top)
   have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp0_lt.ne' hp_lt_top.ne
   rw [eLpNorm_eq_eLpNorm' hp0_lt.ne.symm hp_lt_top.ne, eLpNorm_eq_eLpNorm' hq0_lt.ne.symm hq_top]
-  have hpq_real : p.toReal ≤ q.toReal := by rwa [ENNReal.toReal_le_toReal hp_lt_top.ne hq_top]
+  have hpq_real : p.toReal ≤ q.toReal := ENNReal.toReal_mono hq_top hpq
   exact eLpNorm'_le_eLpNorm'_mul_rpow_measure_univ hp_pos hpq_real hf
 
 @[deprecated (since := "2024-07-27")]
@@ -155,7 +155,7 @@ theorem Memℒp.memℒp_of_exponent_le {p q : ℝ≥0∞} [IsFiniteMeasure μ] {
     have hp_eq_zero : p = 0 := le_antisymm (by rwa [hq_eq_zero] at hpq) (zero_le _)
     rw [hp_eq_zero, ENNReal.zero_toReal] at hp_pos
     exact (lt_irrefl _) hp_pos
-  have hpq_real : p.toReal ≤ q.toReal := by rwa [ENNReal.toReal_le_toReal hp_top hq_top]
+  have hpq_real : p.toReal ≤ q.toReal := ENNReal.toReal_mono hq_top hpq
   rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
   rw [eLpNorm_eq_eLpNorm' hq0 hq_top] at hfq_lt_top
   exact eLpNorm'_lt_top_of_eLpNorm'_lt_top_of_exponent_le hfq_m hfq_lt_top hp_pos.le hpq_real

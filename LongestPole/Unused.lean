@@ -78,7 +78,7 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
   IO.println s!"Writing table to {output}."
   IO.FS.writeFile output (formatTable headings rows.toArray)
 
-  let data := unused.bind fun (m, u) => u.map fun n => (modules.indexOf m, modules.indexOf n)
+  let data := unused.flatMap fun (m, u) => u.map fun n => (modules.indexOf m, modules.indexOf n)
   let rectangles := maximalRectangles data
     |>.map (fun r => (r, r.area))
     -- Prefer rectangles with larger areas.

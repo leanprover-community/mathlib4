@@ -73,7 +73,7 @@ theorem of_surjective {H : Type*} [Group H] (ϕ : G →* H) (hϕ : Function.Surj
   rw [← hg, ← ϕ.map_pow, hk, ϕ.map_one]
 
 theorem to_quotient (H : Subgroup G) [H.Normal] : IsPGroup p (G ⧸ H) :=
-  hG.of_surjective (QuotientGroup.mk' H) Quotient.surjective_Quotient_mk''
+  hG.of_surjective (QuotientGroup.mk' H) Quotient.mk''_surjective
 
 theorem of_equiv {H : Type*} [Group H] (ϕ : G ≃* H) : IsPGroup p H :=
   hG.of_surjective ϕ.toMonoidHom ϕ.surjective
@@ -189,7 +189,7 @@ theorem card_modEq_card_fixedPoints : Nat.card α ≡ Nat.card (fixedPoints G α
 theorem nonempty_fixed_point_of_prime_not_dvd_card (α) [MulAction G α] (hpα : ¬p ∣ Nat.card α) :
     (fixedPoints G α).Nonempty :=
   have : Finite α := Nat.finite_of_card_ne_zero (fun h ↦ (h ▸ hpα) (dvd_zero p))
-  @Set.nonempty_of_nonempty_subtype _ _
+  @Set.Nonempty.of_subtype _ _
     (by
       rw [← Finite.card_pos_iff, pos_iff_ne_zero]
       contrapose! hpα
@@ -240,7 +240,7 @@ theorem to_inf_right {H K : Subgroup G} (hK : IsPGroup p K) : IsPGroup p (H ⊓ 
 
 theorem map {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K] (ϕ : G →* K) :
     IsPGroup p (H.map ϕ) := by
-  rw [← H.subtype_range, MonoidHom.map_range]
+  rw [← H.range_subtype, MonoidHom.map_range]
   exact hH.of_surjective (ϕ.restrict H).rangeRestrict (ϕ.restrict H).rangeRestrict_surjective
 
 theorem comap_of_ker_isPGroup {H : Subgroup G} (hH : IsPGroup p H) {K : Type*} [Group K]
@@ -348,3 +348,12 @@ theorem commutative_of_card_eq_prime_sq (hG : Nat.card G = p ^ 2) : ∀ a b : G,
 end P2comm
 
 end IsPGroup
+
+namespace ZModModule
+variable {n : ℕ} {G : Type*} [AddCommGroup G] [Module (ZMod n) G]
+
+lemma isPGroup_multiplicative : IsPGroup n (Multiplicative G) := by
+  simpa [IsPGroup, Multiplicative.forall] using
+    fun _ ↦ ⟨1, by simp [← ofAdd_nsmul, ZModModule.char_nsmul_eq_zero]⟩
+
+end ZModModule

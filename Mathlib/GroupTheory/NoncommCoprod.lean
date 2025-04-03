@@ -46,6 +46,14 @@ def noncommCoprod (comm : ∀ m n, Commute (f m) (g n)) : M × N →ₙ* P where
   toFun mn := f mn.fst * g mn.snd
   map_mul' mn mn' := by simpa using (comm _ _).mul_mul_mul_comm _ _
 
+/-- Variant of `MulHom.noncommCoprod_apply` with the product written in the other direction` -/
+@[to_additive
+  "Variant of `AddHom.noncommCoprod_apply`, with the sum written in the other direction"]
+theorem noncommCoprod_apply' (comm) (mn : M × N) :
+    (f.noncommCoprod g comm) mn = g mn.2 * f mn.1 := by
+  rw [← comm, noncommCoprod_apply]
+
+
 @[to_additive]
 theorem comp_noncommCoprod {Q : Type*} [Semigroup Q] (h : P →ₙ* Q)
     (comm : ∀ m n, Commute (f m) (g n)) :
@@ -73,6 +81,13 @@ def noncommCoprod : M × N →* P where
   toFun := fun mn ↦ (f mn.fst) * (g mn.snd)
   map_one' := by simp only [Prod.fst_one, Prod.snd_one, map_one, mul_one]
   __ := f.toMulHom.noncommCoprod g.toMulHom comm
+
+/-- Variant of `MonoidHom.noncomCoprod_apply` with the product written in the other direction` -/
+@[to_additive
+  "Variant of `AddMonoidHom.noncomCoprod_apply` with the sum written in the other direction"]
+theorem noncommCoprod_apply' (comm) (mn : M × N) :
+    (f.noncommCoprod g comm) mn = g mn.2 * f mn.1 := by
+  rw [← comm, MonoidHom.noncommCoprod_apply]
 
 @[to_additive (attr := simp)]
 theorem noncommCoprod_comp_inl : (f.noncommCoprod g comm).comp (inl M N) = f :=

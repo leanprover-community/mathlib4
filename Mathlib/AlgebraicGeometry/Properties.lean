@@ -19,11 +19,11 @@ We provide some basic properties of schemes
 -/
 
 
--- Explicit universe annotations were used in this file to improve performance #12737
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 universe u
 
-open TopologicalSpace Opposite CategoryTheory CategoryTheory.Limits TopCat
+open TopologicalSpace Opposite CategoryTheory CategoryTheory.Limits TopCat Topology
 
 namespace AlgebraicGeometry
 
@@ -37,16 +37,17 @@ instance : T0Space X :=
 instance : QuasiSober X := by
   apply (config := { allowSynthFailures := true })
     quasiSober_of_open_cover (Set.range fun x => Set.range <| (X.affineCover.map x).base)
-  · rintro ⟨_, i, rfl⟩; exact (X.affineCover.IsOpen i).base_open.isOpen_range
+  · rintro ⟨_, i, rfl⟩; exact (X.affineCover.map_prop i).base_open.isOpen_range
   · rintro ⟨_, i, rfl⟩
     exact @IsOpenEmbedding.quasiSober _ _ _ _ _ (Homeomorph.ofIsEmbedding _
-      (X.affineCover.IsOpen i).base_open.isEmbedding).symm.isOpenEmbedding PrimeSpectrum.quasiSober
+      (X.affineCover.map_prop i).base_open.isEmbedding).symm.isOpenEmbedding
+        PrimeSpectrum.quasiSober
   · rw [Set.top_eq_univ, Set.sUnion_range, Set.eq_univ_iff_forall]
     intro x; exact ⟨_, ⟨_, rfl⟩, X.affineCover.covers x⟩
 
 /-- A scheme `X` is reduced if all `𝒪ₓ(U)` are reduced. -/
 class IsReduced : Prop where
-  component_reduced : ∀ U, IsReduced Γ(X, U) := by infer_instance
+  component_reduced : ∀ U, _root_.IsReduced Γ(X, U) := by infer_instance
 
 attribute [instance] IsReduced.component_reduced
 
@@ -75,7 +76,7 @@ theorem isReduced_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImm
   constructor
   intro U
   have : U = f ⁻¹ᵁ f ''ᵁ U := by
-    ext1; exact (Set.preimage_image_eq _ H.base_open.inj).symm
+    ext1; exact (Set.preimage_image_eq _ H.base_open.injective).symm
   rw [this]
   exact isReduced_of_injective (inv <| f.app (f ''ᵁ U))
     (asIso <| f.app (f ''ᵁ U) : Γ(Y, f ''ᵁ U) ≅ _).symm.commRingCatIsoToRingEquiv.injective
@@ -110,14 +111,14 @@ theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : X.Opens), Prop)
     {X : Scheme} (U : X.Opens)
     (h₁ : ∀ (X : Scheme) (U : X.Opens),
       (∀ x : U, ∃ (V : _) (_ : x.1 ∈ V) (_ : V ⟶ U), P V) → P U)
-    (h₂ : ∀ (X Y) (f : X ⟶ Y) [hf : IsOpenImmersion f],
+    (h₂ : ∀ (X Y) (f : X ⟶ Y) [IsOpenImmersion f],
       ∃ (U : X.Opens) (V : Y.Opens), U = ⊤ ∧ V = f.opensRange ∧ (P U → P V))
     (h₃ : ∀ R : CommRingCat, P (X := Spec R) ⊤) : P U := by
   apply h₁
   intro x
   obtain ⟨_, ⟨j, rfl⟩, hx, i⟩ :=
     X.affineBasisCover_is_basis.exists_subset_of_mem_open (SetLike.mem_coe.2 x.prop) U.isOpen
-  let U' : Opens _ := ⟨_, (X.affineBasisCover.IsOpen j).base_open.isOpen_range⟩
+  let U' : Opens _ := ⟨_, (X.affineBasisCover.map_prop j).base_open.isOpen_range⟩
   let i' : U' ⟶ U := homOfLE i
   refine ⟨U', hx, i', ?_⟩
   obtain ⟨_, _, rfl, rfl, h₂'⟩ := h₂ _ _ (X.affineBasisCover.map j)
@@ -202,7 +203,7 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
   replace H : ¬IsPreirreducible (⊤ : Set X) := fun h =>
     H { toPreirreducibleSpace := ⟨h⟩
         toNonempty := inferInstance }
-  simp_rw [isPreirreducible_iff_closed_union_closed, not_forall, not_or] at H
+  simp_rw [isPreirreducible_iff_isClosed_union_isClosed, not_forall, not_or] at H
   rcases H with ⟨S, T, hS, hT, h₁, h₂, h₃⟩
   erw [not_forall] at h₂ h₃
   simp_rw [not_forall] at h₂ h₃
@@ -251,7 +252,7 @@ theorem isIntegral_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenIm
     [IsIntegral Y] [Nonempty X] : IsIntegral X := by
   constructor; · infer_instance
   intro U hU
-  have : U = f ⁻¹ᵁ f ''ᵁ U := by ext1; exact (Set.preimage_image_eq _ H.base_open.inj).symm
+  have : U = f ⁻¹ᵁ f ''ᵁ U := by ext1; exact (Set.preimage_image_eq _ H.base_open.injective).symm
   rw [this]
   have : IsDomain Γ(Y, f ''ᵁ U) := by
     apply (config := { allowSynthFailures := true }) IsIntegral.component_integral

@@ -235,6 +235,9 @@ lemma of_isLimit_cone {D : WalkingCospan ⥤ C} {c : Cone D} (hc : IsLimit c) :
   w := by simp_rw [Cone.w]
   isLimit' := ⟨IsLimit.equivOfNatIsoOfIso _ _ _ (PullbackCone.isoMk c) hc⟩
 
+lemma hasPullback (h : IsPullback fst snd f g) : HasPullback f g where
+  exists_limit := ⟨⟨h.cone, h.isLimit⟩⟩
+
 /-- The pullback provided by `HasPullback f g` fits into an `IsPullback`. -/
 theorem of_hasPullback (f : X ⟶ Z) (g : Y ⟶ Z) [HasPullback f g] :
     IsPullback (pullback.fst f g) (pullback.snd f g) f g :=
@@ -441,6 +444,9 @@ lemma of_isColimit_cocone {D : WalkingSpan ⥤ C} {c : Cocone D} (hc : IsColimit
       (c.ι.app .left) (c.ι.app .right) where
   w := by simp_rw [Cocone.w]
   isColimit' := ⟨IsColimit.equivOfNatIsoOfIso _ _ _ (PushoutCocone.isoMk c) hc⟩
+
+lemma hasPushout (h : IsPushout f g inl inr) : HasPushout f g where
+  exists_colimit := ⟨⟨h.cocone, h.isColimit⟩⟩
 
 /-- The pushout provided by `HasPushout f g` fits into an `IsPushout`. -/
 theorem of_hasPushout (f : Z ⟶ X) (g : Z ⟶ Y) [HasPushout f g] :

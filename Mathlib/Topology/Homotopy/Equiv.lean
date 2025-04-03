@@ -49,7 +49,7 @@ namespace HomotopyEquiv
 /-- Coercion of a `HomotopyEquiv` to function. While the Lean 4 way is to unfold coercions, this
 auxiliary definition will make porting of Lean 3 code easier.
 
-Porting note (#11215): TODO: drop this definition. -/
+Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: drop this definition. -/
 @[coe] def toFun' (e : X ≃ₕ Y) : X → Y := e.toFun
 
 instance : CoeFun (X ≃ₕ Y) fun _ => X → Y := ⟨toFun'⟩

@@ -112,9 +112,9 @@ corresponds to each other. -/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} where
   toFun x := ⟨_, x.toList_ne_nil, x.toList_chain'⟩
   invFun x := fromListChain' _ x.2.1 x.2.2
-  left_inv x := ext (by simp [toList]) <| by ext; apply List.get_ofFn
+  left_inv x := ext (by simp [toList]) <| by ext; dsimp; apply List.get_ofFn
   right_inv x := by
-    refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => List.get_ofFn _ _)
+    refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => by dsimp; apply List.get_ofFn)
     have := Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1
     simp_all [toList]
 

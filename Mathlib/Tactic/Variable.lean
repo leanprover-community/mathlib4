@@ -192,7 +192,7 @@ partial def completeBinders' (maxSteps : Nat) (gas : Nat)
           match binder with
           | `(bracketedBinderF|[$[$ident? :]? $ty]) =>
             -- Check if it's an alias
-            let type ← instantiateMVars (← inferType bindersElab.back)
+            let type ← instantiateMVars (← inferType bindersElab.back!)
             if ← isVariableAlias type then
               if ident?.isSome then
                 throwErrorAt binder "`variable_alias` binders can't have an explicit name"

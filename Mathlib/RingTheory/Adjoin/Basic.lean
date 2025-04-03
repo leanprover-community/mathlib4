@@ -6,10 +6,10 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Prod
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
-import Mathlib.LinearAlgebra.Prod
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.LinearAlgebra.Prod
 /-!
 # Adjoining elements to form subalgebras
 
@@ -255,23 +255,17 @@ theorem adjoin_inl_union_inr_eq_prod (s) (t) :
     replace Hb : ((0 : A), b) ∈ P := adjoin_mono Set.subset_union_right Hb
     simpa [P] using Subalgebra.add_mem _ Ha Hb
 
-/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
-semiring. -/
-def adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+lemma adjoin_le_centralizer_centralizer (s : Set A) :
+    adjoin R s ≤ Subalgebra.centralizer R (Subalgebra.centralizer R s) :=
+  adjoin_le Set.subset_centralizer_centralizer
+
+/-- If all elements of `s : Set A` commute pairwise, then `adjoin s` is a commutative semiring. -/
+abbrev adjoinCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommSemiring (adjoin R s) :=
   { (adjoin R s).toSemiring with
-    mul_comm := fun ⟨x, hx⟩ ⟨y, hy⟩ => by
-      ext
-      simp only [MulMemClass.mk_mul_mk]
-      induction hx, hy using adjoin_induction₂ with
-      | mem_mem x y hx hy => exact hcomm x hx y hy
-      | algebraMap_both r₁ r₂ => exact commutes r₁ <| algebraMap R A r₂
-      | algebraMap_left r x _ => exact commutes r x
-      | algebraMap_right r x _ => exact commutes r x |>.symm
-      | mul_left _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂
-      | mul_right _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_right h₁ h₂
-      | add_left _ _ _ _ _ _ h₁ h₂ => exact Commute.add_left h₁ h₂
-      | add_right _ _ _ _ _ _ h₁ h₂ => exact Commute.add_right h₁ h₂ }
+    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
+      have := adjoin_le_centralizer_centralizer R s
+      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
 
 variable {R}
 
@@ -415,7 +409,7 @@ variable (R)
 
 /-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a commutative
 ring. -/
-def adjoinCommRingOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+abbrev adjoinCommRingOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommRing (adjoin R s) :=
   { (adjoin R s).toRing, adjoinCommSemiringOfComm R hcomm with }
 
@@ -450,6 +444,17 @@ theorem eqOn_adjoin_iff {φ ψ : A →ₐ[R] B} {s : Set A}  :
     Set.EqOn φ ψ (adjoin R s) ↔ Set.EqOn φ ψ s := by
   have (S : Set A) : S ≤ equalizer φ ψ ↔ Set.EqOn φ ψ S := Iff.rfl
   simp only [← this, Set.le_eq_subset, SetLike.coe_subset_coe, adjoin_le_iff]
+
+theorem adjoin_ext {s : Set A} ⦃φ₁ φ₂ : adjoin R s →ₐ[R] B⦄
+    (h : ∀ x hx, φ₁ ⟨x, subset_adjoin hx⟩ = φ₂ ⟨x, subset_adjoin hx⟩) : φ₁ = φ₂ :=
+  ext fun ⟨x, hx⟩ ↦ adjoin_induction h (fun _ ↦ φ₂.commutes _ ▸ φ₁.commutes _)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· + ·) h₁ h₂ <;> rw [← map_add] <;> rfl)
+    (fun _ _ _ _ h₁ h₂ ↦ by convert congr_arg₂ (· * ·) h₁ h₂ <;> rw [← map_mul] <;> rfl) hx
+
+theorem ext_of_eq_adjoin {S : Subalgebra R A} {s : Set A} (hS : S = adjoin R s) ⦃φ₁ φ₂ : S →ₐ[R] B⦄
+    (h : ∀ x hx, φ₁ ⟨x, hS.ge (subset_adjoin hx)⟩ = φ₂ ⟨x, hS.ge (subset_adjoin hx)⟩) :
+    φ₁ = φ₂ := by
+  subst hS; exact adjoin_ext h
 
 end AlgHom
 

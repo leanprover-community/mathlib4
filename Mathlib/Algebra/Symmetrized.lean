@@ -48,7 +48,7 @@ def sym : α ≃ αˢʸᵐ :=
 
 /-- The element of `α` represented by `x : αˢʸᵐ`. -/
 -- Porting note (kmill): `pp_nodot` has no affect here
--- unless RFC lean4#1910 leads to dot notation for CoeFun
+-- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
 @[pp_nodot]
 def unsym : αˢʸᵐ ≃ α :=
   Equiv.refl _

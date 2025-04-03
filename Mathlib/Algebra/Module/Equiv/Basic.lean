@@ -18,11 +18,8 @@ import Mathlib.Algebra.Module.Pi
 
 open Function
 
-universe u u' v w x y z
-
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {k : Type*} {K : Type*} {S : Type*} {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
-variable {N₁ : Type*} {N₂ : Type*} {N₃ : Type*} {N₄ : Type*} {ι : Type*}
+variable {R : Type*} {R₂ : Type*}
+variable {K : Type*} {S : Type*} {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
 
 section AddCommMonoid
 
@@ -593,8 +590,7 @@ end CommSemiring
 
 section Field
 
-variable [Field K] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
-variable [Module K M] [Module K M₂] [Module K M₃]
+variable [Field K] [AddCommGroup M] [Module K M]
 variable (K) (M)
 
 open LinearMap

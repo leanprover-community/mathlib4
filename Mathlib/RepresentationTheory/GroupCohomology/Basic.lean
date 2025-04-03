@@ -125,7 +125,7 @@ and the homogeneous `linearYonedaObjResolution`. -/
         (linearYonedaObjResolution A).d n (n + 1) ≫
           (diagonalHomEquiv (n + 1) A).toModuleIso.hom := by
   ext f g
-/- Porting note (#11039): broken proof was
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
   simp only [ModuleCat.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.toModuleIso_inv, linearYonedaObjResolution_d_apply, LinearEquiv.toModuleIso_hom,
     diagonalHomEquiv_apply, Action.comp_hom, Resolution.d_eq k G n,
@@ -150,7 +150,7 @@ and the homogeneous `linearYonedaObjResolution`. -/
     resolution.d_eq]
   erw [resolution.d_of (Fin.partialProd g)]
   simp only [map_sum, ← Finsupp.smul_single_one _ ((-1 : k) ^ _)]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [d_apply, @Fin.sum_univ_succ _ _ (n + 1), Fin.val_zero, pow_zero, one_smul,
     Fin.succAbove_zero, diagonalHomEquiv_symm_apply f (Fin.partialProd g ∘ @Fin.succ (n + 1))]
   simp_rw [Function.comp_apply, Fin.partialProd_succ, Fin.castSucc_zero,
@@ -159,7 +159,7 @@ and the homogeneous `linearYonedaObjResolution`. -/
   · have := Fin.partialProd_right_inv g (Fin.castSucc x)
     simp only [mul_inv_rev, Fin.castSucc_fin_succ] at this ⊢
     rw [mul_assoc, ← mul_assoc _ _ (g x.succ), this, inv_mul_cancel_left]
-  · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  · -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [map_smul, diagonalHomEquiv_symm_partialProd_succ, Fin.val_succ]
 
 end inhomogeneousCochains
@@ -176,7 +176,7 @@ which calculates the group cohomology of `A`. -/
 noncomputable abbrev inhomogeneousCochains : CochainComplex (ModuleCat k) ℕ :=
   CochainComplex.of (fun n => ModuleCat.of k ((Fin n → G) → A))
     (fun n => inhomogeneousCochains.d n A) fun n => by
-/- Porting note (#11039): broken proof was
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11039): broken proof was
     ext x y
     have := LinearMap.ext_iff.1 ((linearYonedaObjResolution A).d_comp_d n (n + 1) (n + 2))
     simp only [ModuleCat.coe_comp, Function.comp_apply] at this

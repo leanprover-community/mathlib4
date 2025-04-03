@@ -70,7 +70,7 @@ theorem IsTheta.trans {f : α → E} {g : α → F'} {k : α → G} (h₁ : f =�
     f =Θ[l] k :=
   ⟨h₁.1.trans h₂.1, h₂.2.trans h₁.2⟩
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsTheta l) (IsTheta l) (IsTheta l) :=
   ⟨IsTheta.trans⟩
 
@@ -79,7 +79,7 @@ theorem IsBigO.trans_isTheta {f : α → E} {g : α → F'} {k : α → G} (h₁
     (h₂ : g =Θ[l] k) : f =O[l] k :=
   h₁.trans h₂.1
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsBigO l) (IsTheta l) (IsBigO l) :=
   ⟨IsBigO.trans_isTheta⟩
 
@@ -88,7 +88,7 @@ theorem IsTheta.trans_isBigO {f : α → E} {g : α → F'} {k : α → G} (h₁
     (h₂ : g =O[l] k) : f =O[l] k :=
   h₁.1.trans h₂
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsTheta l) (IsBigO l) (IsBigO l) :=
   ⟨IsTheta.trans_isBigO⟩
 
@@ -97,7 +97,7 @@ theorem IsLittleO.trans_isTheta {f : α → E} {g : α → F} {k : α → G'} (h
     (h₂ : g =Θ[l] k) : f =o[l] k :=
   h₁.trans_isBigO h₂.1
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G') (IsLittleO l) (IsTheta l) (IsLittleO l) :=
   ⟨IsLittleO.trans_isTheta⟩
 
@@ -106,7 +106,7 @@ theorem IsTheta.trans_isLittleO {f : α → E} {g : α → F'} {k : α → G} (h
     (h₂ : g =o[l] k) : f =o[l] k :=
   h₁.1.trans_isLittleO h₂
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance : Trans (α := α → E) (β := α → F') (γ := α → G) (IsTheta l) (IsLittleO l) (IsLittleO l) :=
   ⟨IsTheta.trans_isLittleO⟩
 
@@ -115,7 +115,7 @@ theorem IsTheta.trans_eventuallyEq {f : α → E} {g₁ g₂ : α → F} (h : f 
     f =Θ[l] g₂ :=
   ⟨h.1.trans_eventuallyEq hg, hg.symm.trans_isBigO h.2⟩
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance : Trans (α := α → E) (β := α → F) (γ := α → F) (IsTheta l) (EventuallyEq l) (IsTheta l) :=
   ⟨IsTheta.trans_eventuallyEq⟩
 
@@ -124,7 +124,7 @@ theorem _root_.Filter.EventuallyEq.trans_isTheta {f₁ f₂ : α → E} {g : α 
     (h : f₂ =Θ[l] g) : f₁ =Θ[l] g :=
   ⟨hf.trans_isBigO h.1, h.2.trans_eventuallyEq hf.symm⟩
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance : Trans (α := α → E) (β := α → E) (γ := α → F) (EventuallyEq l) (IsTheta l) (IsTheta l) :=
   ⟨EventuallyEq.trans_isTheta⟩
 

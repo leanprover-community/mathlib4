@@ -169,7 +169,7 @@ private theorem sum_filter_pairs_eq_sum_filter_antidiagonal_powersetCard_sum (k 
       ∑ a ∈ antidiagonal k with a.fst < k, ∑ A ∈ powersetCard a.fst univ, ∑ j, f (A, j) := by
   rw [filter_pairs_lt, sum_product, sum_disjiUnion]
   refine sum_nbij' (fun n ↦ (n, k - n)) Prod.fst ?_ ?_ ?_ ?_ ?_ <;>
-    simp (config := { contextual := true }) [@eq_comm _ _ k, Nat.add_sub_cancel', le_of_lt]
+    simp +contextual [@eq_comm _ _ k, Nat.add_sub_cancel', le_of_lt]
 
 private theorem disjoint_filter_pairs_lt_filter_pairs_eq (k : ℕ) :
     Disjoint {t ∈ pairs σ k | #t.1 < k} {t ∈ pairs σ k | #t.1 = k} := by

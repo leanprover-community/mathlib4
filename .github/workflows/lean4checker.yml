@@ -70,9 +70,14 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
-          # This should be changed back to a version tag when
-          # anything subsequent to `v4.13.0-rc3` is released.
-          git checkout master
+          # Read lean-toolchain file and checkout appropriate branch
+          TOOLCHAIN=$(cat ../lean-toolchain)
+          if [[ "$TOOLCHAIN" =~ ^leanprover/lean4:v ]]; then
+            VERSION=${TOOLCHAIN#leanprover/lean4:}
+            git checkout "$VERSION"
+          else
+            git checkout master
+          fi
           # Now that the git hash is embedded in each olean,
           # we need to compile lean4checker on the same toolchain
           cp ../lean-toolchain .

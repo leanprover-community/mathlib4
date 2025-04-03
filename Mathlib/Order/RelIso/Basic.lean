@@ -363,12 +363,16 @@ noncomputable def Quotient.outRelEmbedding {_ : Setoid α} {r : α → α → Pr
     refine @fun x y => Quotient.inductionOn₂ x y fun a b => ?_
     apply iff_iff_eq.2 (H _ _ _ _ _ _) <;> apply Quotient.mk_out⟩
 
+set_option linter.deprecated false in
 /-- `Quotient.out'` as a relation embedding between the lift of a relation and the relation. -/
-@[simps]
+@[deprecated Quotient.outRelEmbedding (since := "2024-10-19"), simps]
 noncomputable def Quotient.out'RelEmbedding {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) :
     (fun a b => Quotient.liftOn₂' a b r H) ↪r r :=
   { Quotient.outRelEmbedding H with toFun := Quotient.out' }
+
+attribute [deprecated Quotient.outRelEmbedding_apply (since := "2024-10-19")]
+  Quotient.out'RelEmbedding_apply
 
 @[simp]
 theorem acc_lift₂_iff {_ : Setoid α} {r : α → α → Prop}
@@ -635,9 +639,14 @@ protected theorem cast_trans {α β γ : Type u} {r : α → α → Prop} {s : �
     (RelIso.cast h₁ h₂).trans (RelIso.cast h₁' h₂') = RelIso.cast (h₁.trans h₁') (h₂.trans h₂') :=
   ext fun x => by subst h₁; rfl
 
-/-- a relation isomorphism is also a relation isomorphism between dual relations. -/
+/-- A relation isomorphism is also a relation isomorphism between dual relations. -/
 protected def swap (f : r ≃r s) : swap r ≃r swap s :=
-  ⟨f.toEquiv, f.map_rel_iff⟩
+  ⟨f, f.map_rel_iff⟩
+
+/-- A relation isomorphism is also a relation isomorphism between complemented relations. -/
+@[simps!]
+protected def compl (f : r ≃r s) : rᶜ ≃r sᶜ :=
+  ⟨f, f.map_rel_iff.not⟩
 
 @[simp]
 theorem coe_fn_symm_mk (f o) : ((@RelIso.mk _ _ r s f @o).symm : β → α) = f.symm :=

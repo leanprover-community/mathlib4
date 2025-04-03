@@ -24,7 +24,7 @@ of the underlying map of topological spaces, including
 
 -/
 
-open CategoryTheory
+open CategoryTheory Topology
 
 namespace AlgebraicGeometry
 
@@ -83,7 +83,27 @@ instance surjective_isLocalAtTarget : IsLocalAtTarget @Surjective := by
   obtain ⟨⟨y, _⟩, hy⟩ := hf i ⟨x, hxi⟩
   exact ⟨y, congr(($hy).1)⟩
 
+@[simp]
+lemma range_eq_univ [Surjective f] : Set.range f.base = Set.univ := by
+  simpa [Set.range_eq_univ] using f.surjective
+
+lemma range_eq_range_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (e : X ⟶ Y)
+    [Surjective e] (hge : e ≫ g = f) : Set.range f.base = Set.range g.base := by
+  rw [← hge]
+  simp [Set.range_comp]
+
+lemma mem_range_iff_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (e : X ⟶ Y)
+    [Surjective e] (hge : e ≫ g = f) (s : S) : s ∈ Set.range f.base ↔ s ∈ Set.range g.base := by
+  rw [range_eq_range_of_surjective f g e hge]
 end Surjective
+
+section Injective
+
+instance injective_isStableUnderComposition :
+    MorphismProperty.IsStableUnderComposition (topologically (Function.Injective ·)) where
+  comp_mem _ _ hf hg := hg.comp hf
+
+end Injective
 
 section IsOpenMap
 
@@ -179,7 +199,7 @@ instance IsDominant.isLocalAtTarget : IsLocalAtTarget @IsDominant :=
 lemma surjective_of_isDominant_of_isClosed_range (f : X ⟶ Y) [IsDominant f]
     (hf : IsClosed (Set.range f.base)) :
     Surjective f :=
-  ⟨by rw [← Set.range_iff_surjective, ← hf.closure_eq, f.denseRange.closure_range]⟩
+  ⟨by rw [← Set.range_eq_univ, ← hf.closure_eq, f.denseRange.closure_range]⟩
 
 lemma IsDominant.of_comp_of_isOpenImmersion
     (f : X ⟶ Y) (g : Y ⟶ Z) [H : IsDominant (f ≫ g)] [IsOpenImmersion g] :
@@ -187,8 +207,47 @@ lemma IsDominant.of_comp_of_isOpenImmersion
   rw [isDominant_iff, DenseRange] at H ⊢
   simp only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp] at H
   convert H.preimage g.isOpenEmbedding.isOpenMap using 1
-  rw [Set.preimage_image_eq _ g.isOpenEmbedding.inj]
+  rw [Set.preimage_image_eq _ g.isOpenEmbedding.injective]
 
 end IsDominant
+
+section SpecializingMap
+
+open TopologicalSpace
+
+instance specializingMap_respectsIso : (topologically @SpecializingMap).RespectsIso := by
+  apply topologically_respectsIso
+  · introv
+    exact f.isClosedMap.specializingMap
+  · introv hf hg
+    exact hf.comp hg
+
+instance specializingMap_isLocalAtTarget : IsLocalAtTarget (topologically @SpecializingMap) := by
+  apply topologically_isLocalAtTarget
+  · introv _ _ hf
+    rw [specializingMap_iff_closure_singleton_subset] at hf ⊢
+    intro ⟨x, hx⟩ ⟨y, hy⟩ hcl
+    simp only [closure_subtype, Set.restrictPreimage_mk, Set.image_singleton] at hcl
+    obtain ⟨a, ha, hay⟩ := hf x hcl
+    rw [← specializes_iff_mem_closure] at hcl
+    exact ⟨⟨a, by simp [hay, hy]⟩, by simpa [closure_subtype], by simpa⟩
+  · introv hU _ hsp
+    simp_rw [specializingMap_iff_closure_singleton_subset] at hsp ⊢
+    intro x y hy
+    have : ∃ i, y ∈ U i := Opens.mem_iSup.mp (hU ▸ trivial)
+    obtain ⟨i, hi⟩ := this
+    rw [← specializes_iff_mem_closure] at hy
+    have hfx : f x ∈ U i := (U i).2.stableUnderGeneralization hy hi
+    have hy : (⟨y, hi⟩ : U i) ∈ closure {⟨f x, hfx⟩} := by
+      simp only [closure_subtype, Set.image_singleton]
+      rwa [← specializes_iff_mem_closure]
+    obtain ⟨a, ha, hay⟩ := hsp i ⟨x, hfx⟩ hy
+    rw [closure_subtype] at ha
+    simp only [Opens.carrier_eq_coe, Set.image_singleton] at ha
+    apply_fun Subtype.val at hay
+    simp only [Opens.carrier_eq_coe, Set.restrictPreimage_coe] at hay
+    use a.val, ha, hay
+
+end SpecializingMap
 
 end AlgebraicGeometry

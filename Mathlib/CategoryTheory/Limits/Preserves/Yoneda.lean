@@ -70,7 +70,7 @@ theorem yonedaYonedaColimit_app_inv {X : C} : ((yonedaYonedaColimit F).app (op X
 
 noncomputable instance {X : C} : PreservesColimit F (coyoneda.obj (op (yoneda.obj X))) := by
   suffices IsIso (colimit.post F (coyoneda.obj (op (yoneda.obj X)))) from
-    preservesColimitOfIsIsoPost _ _
+    preservesColimit_of_isIso_post _ _
   suffices colimit.post F (coyoneda.obj (op (yoneda.obj X))) =
       (colimitObjIsoColimitCompEvaluation _ _).inv ≫ ((yonedaYonedaColimit F).app (op X)).inv from
     this ▸ inferInstance

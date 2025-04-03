@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Set.Image
+import Mathlib.Data.Finset.Max
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Order.Monotone.Monovary
 import Mathlib.Tactic.Abel

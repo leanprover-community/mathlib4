@@ -46,7 +46,7 @@ open Matrix
 def circulant [Sub n] (v : n → α) : Matrix n n α :=
   of fun i j => v (i - j)
 
--- TODO: set as an equation lemma for `circulant`, see mathlib4#3024
+-- TODO: set as an equation lemma for `circulant`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem circulant_apply [Sub n] (v : n → α) (i j) : circulant v i j = v (i - j) := rfl
 

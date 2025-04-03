@@ -5,7 +5,7 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.RingTheory.Ideal.Lattice
 import Mathlib.Tactic.Ring
 
@@ -237,3 +237,22 @@ theorem span_singleton_neg (x : α) : (span {-x} : Ideal α) = span {x} := by
 end Ideal
 
 end Ring
+
+namespace IsIdempotentElem
+
+variable {R} [CommRing R] {e : R} (he : IsIdempotentElem e)
+include he
+
+theorem ker_toSpanSingleton_eq_span :
+    LinearMap.ker (LinearMap.toSpanSingleton R R e) = Ideal.span {1 - e} := SetLike.ext fun x ↦ by
+  rw [Ideal.mem_span_singleton']
+  refine ⟨fun h ↦ ⟨x, by rw [mul_sub, show x * e = 0 from h, mul_one, sub_zero]⟩, fun h ↦ ?_⟩
+  obtain ⟨x, rfl⟩ := h
+  show x * (1 - e) * e = 0
+  rw [mul_assoc, sub_mul, one_mul, he, sub_self, mul_zero]
+
+theorem ker_toSpanSingleton_one_sub_eq_span :
+    LinearMap.ker (LinearMap.toSpanSingleton R R (1 - e)) = Ideal.span {e} := by
+  rw [ker_toSpanSingleton_eq_span he.one_sub, sub_sub_cancel]
+
+end IsIdempotentElem

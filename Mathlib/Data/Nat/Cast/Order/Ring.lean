@@ -37,11 +37,11 @@ theorem ofNat_nonneg {α} [OrderedSemiring α] (n : ℕ) [n.AtLeastTwo] :
   ofNat_nonneg' n
 
 @[simp, norm_cast]
-theorem cast_min {α} [LinearOrderedSemiring α] {a b : ℕ} : ((min a b : ℕ) : α) = min (a : α) b :=
+theorem cast_min {α} [LinearOrderedSemiring α] (m n : ℕ) : (↑(min m n : ℕ) : α) = min (m : α) n :=
   (@mono_cast α _).map_min
 
 @[simp, norm_cast]
-theorem cast_max {α} [LinearOrderedSemiring α] {a b : ℕ} : ((max a b : ℕ) : α) = max (a : α) b :=
+theorem cast_max {α} [LinearOrderedSemiring α] (m n : ℕ) : (↑(max m n : ℕ) : α) = max (m : α) n :=
   (@mono_cast α _).map_max
 
 section Nontrivial

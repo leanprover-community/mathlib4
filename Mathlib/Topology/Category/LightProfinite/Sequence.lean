@@ -13,7 +13,7 @@ This files defines the light profinite set `ℕ∪{∞}`, defined as the one poi
 `ℕ`.
 -/
 
-open CategoryTheory TopologicalSpace OnePoint
+open CategoryTheory OnePoint TopologicalSpace Topology
 
 namespace LightProfinite
 

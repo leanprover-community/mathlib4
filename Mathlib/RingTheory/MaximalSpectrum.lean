@@ -3,8 +3,9 @@ Copyright (c) 2022 David Kurniadi Angdinata. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
-import Mathlib.RingTheory.PrimeSpectrum
+import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Localization.AsSubring
+import Mathlib.RingTheory.PrimeSpectrum
 
 /-!
 # Maximal spectrum of a commutative ring

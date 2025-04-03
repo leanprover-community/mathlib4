@@ -62,7 +62,7 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
   rw [← div_le_one (rpow_pos_of_pos four_pos x), ← div_div_eq_mul_div, ← rpow_sub four_pos, ←
     mul_div 2 x, mul_div_left_comm, ← mul_one_sub, (by norm_num1 : (1 : ℝ) - 2 / 3 = 1 / 3),
     mul_one_div, ← log_nonpos_iff (hf' x h5), ← hf x h5]
-  -- porting note (#11083): the proof was rewritten, because it was too slow
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): the proof was rewritten, because it was too slow
   have h : ConcaveOn ℝ (Set.Ioi 0.5) f := by
     apply ConcaveOn.sub
     · apply ConcaveOn.add
@@ -132,7 +132,7 @@ theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
   · exact Finset.range_subset.2 (add_le_add_right (Nat.div_le_self _ _) _)
   intro x hx h2x
   rw [Finset.mem_range, Nat.lt_succ_iff] at hx h2x
-  rw [not_le, div_lt_iff_lt_mul' three_pos, mul_comm x] at h2x
+  rw [not_le, div_lt_iff_lt_mul three_pos, mul_comm x] at h2x
   replace no_prime := not_exists.mp no_prime x
   rw [← and_assoc, not_and', not_and_or, not_lt] at no_prime
   cases' no_prime hx with h h

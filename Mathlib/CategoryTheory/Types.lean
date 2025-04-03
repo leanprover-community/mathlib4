@@ -5,8 +5,8 @@ Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.Tactic.PPWithUniv
 import Mathlib.Data.Set.Operations
+import Mathlib.Tactic.PPWithUniv
 
 /-!
 # The category `Type`.
@@ -47,7 +47,7 @@ instance types : LargeCategory (Type u) where
 theorem types_hom {α β : Type u} : (α ⟶ β) = (α → β) :=
   rfl
 
--- porting note (#10688): this lemma was not here in Lean 3. Lean 3 `ext` would solve this goal
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): this lemma was not here in Lean 3. Lean 3 `ext` would solve this goal
 -- because of its "if all else fails, apply all `ext` lemmas" policy,
 -- which apparently we want to move away from.
 @[ext] theorem types_ext {α β : Type u} (f g : α ⟶ β) (h : ∀ a : α, f a = g a) : f = g := by

@@ -24,6 +24,8 @@ This is the reason the `UniqueContinuousFunctionalCalculus` class exists in the 
 opposed to simply appealing directly to Stone-Weierstrass to prove `StarAlgHom.ext_continuousMap`.
 -/
 
+open Topology
+
 section UniqueUnital
 
 section RCLike

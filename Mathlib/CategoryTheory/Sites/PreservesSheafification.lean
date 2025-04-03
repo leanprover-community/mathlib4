@@ -43,7 +43,7 @@ universe v u
 
 namespace CategoryTheory
 
-open CategoryTheory Category Limits
+open Category Limits
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
   {A B : Type*} [Category A] [Category B] (F : A ⥤ B)
@@ -140,10 +140,10 @@ lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions
     intro P₁ P₂ f hf
     rw [J.W_iff_isIso_map_of_adjunction adj₁] at hf
     dsimp [MorphismProperty.inverseImage]
-    rw [← MorphismProperty.postcomp_iff _ _ _ (h P₂), ← whiskerRight_comp]
+    rw [← (W _).postcomp_iff _ _ (h P₂), ← whiskerRight_comp]
     erw [adj₁.unit.naturality f]
     dsimp only [Functor.comp_map]
-    rw [whiskerRight_comp, MorphismProperty.precomp_iff _ _ _ (h P₁)]
+    rw [whiskerRight_comp, (W _).precomp_iff _ _ (h P₁)]
     apply Localization.LeftBousfield.W_of_isIso
 
 section HasSheafCompose
@@ -192,7 +192,7 @@ lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions_of_hasShea
   intro P
   rw [← J.W_iff_isIso_map_of_adjunction adj₂, ← J.W_sheafToPreheaf_map_iff_isIso,
     ← sheafComposeNatTrans_fac J F adj₁ adj₂,
-    MorphismProperty.precomp_iff _ _ _ (J.W_adj_unit_app adj₂ (P ⋙ F))]
+    (W _).precomp_iff _ _ (J.W_adj_unit_app adj₂ (P ⋙ F))]
 
 variable [J.PreservesSheafification F]
 

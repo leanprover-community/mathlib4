@@ -12,13 +12,13 @@ import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 ## Main definitions
 
-* `LocalRing.ResidueField`: The quotient of a local ring by its maximal ideal.
-* `LocalRing.residue`: The quotient map from a local ring to its residue field.
+* `IsLocalRing.ResidueField`: The quotient of a local ring by its maximal ideal.
+* `IsLocalRing.residue`: The quotient map from a local ring to its residue field.
 -/
 
-namespace LocalRing
+namespace IsLocalRing
 
-variable (R : Type*) [CommRing R] [LocalRing R]
+variable (R : Type*) [CommRing R] [IsLocalRing R]
 
 /-- The residue field of a local ring is the quotient of the ring by its maximal ideal. -/
 def ResidueField :=
@@ -38,4 +38,7 @@ noncomputable instance ResidueField.field : Field (ResidueField R) :=
 def residue : R →+* ResidueField R :=
   Ideal.Quotient.mk _
 
-end LocalRing
+end IsLocalRing
+
+@[deprecated (since := "2024-11-11")] alias LocalRing.ResidueField := IsLocalRing.ResidueField
+@[deprecated (since := "2024-11-11")] alias LocalRing.residue := IsLocalRing.residue

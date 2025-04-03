@@ -5,7 +5,7 @@ Authors: Tian Chen, Mantas Bakšys
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Prime.Int
 import Mathlib.NumberTheory.Padics.PadicVal.Defs
@@ -369,7 +369,7 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   · exact hn.bot_lt
   · exact Nat.sub_pos_of_lt hyx
   · omega
-  · simp only [tsub_pos_iff_lt, pow_lt_pow_left hyx zero_le' hn]
+  · simp only [tsub_pos_iff_lt, Nat.pow_lt_pow_left hyx hn]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
 include hp hp1

@@ -135,10 +135,10 @@ theorem Prefunctor.symmetrifyStar (u : U) :
     φ.symmetrify.star u =
       (Quiver.symmetrifyStar _).symm ∘ Sum.map (φ.star u) (φ.costar u) ∘
         Quiver.symmetrifyStar u := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;>
-    -- porting note (#10745): was `simp [Quiver.symmetrifyStar]`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [Quiver.symmetrifyStar]`
     simp only [Quiver.symmetrifyStar, Function.comp_apply] <;>
     erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
     simp
@@ -147,10 +147,10 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
     φ.symmetrify.costar u =
       (Quiver.symmetrifyCostar _).symm ∘
         Sum.map (φ.costar u) (φ.star u) ∘ Quiver.symmetrifyCostar u := by
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;>
-    -- porting note (#10745): was `simp [Quiver.symmetrifyCostar]`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [Quiver.symmetrifyCostar]`
     simp only [Quiver.symmetrifyCostar, Function.comp_apply] <;>
     erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
     simp

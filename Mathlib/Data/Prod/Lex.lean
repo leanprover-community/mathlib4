@@ -3,7 +3,9 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Minchao Wu
 -/
-import Mathlib.Order.BoundedOrder
+import Mathlib.Data.Prod.Basic
+import Mathlib.Order.Lattice
+import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Lexicographic order
@@ -50,7 +52,11 @@ theorem lt_iff [LT α] [LT β] (a b : α × β) :
     toLex a < toLex b ↔ a.1 < b.1 ∨ a.1 = b.1 ∧ a.2 < b.2 :=
   Prod.lex_def
 
-example (x : α) (y : β) : toLex (x, y) = toLex (x, y) := rfl
+instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α ×ₗ β) :=
+  ⟨WellFounded.prod_lex wellFounded_lt wellFounded_lt⟩
+
+instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedRelation (α ×ₗ β) :=
+  ⟨(· < ·), wellFounded_lt⟩
 
 /-- Dictionary / lexicographic preorder for pairs. -/
 instance preorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×ₗ β) :=

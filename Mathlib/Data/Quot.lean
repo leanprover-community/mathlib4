@@ -319,15 +319,32 @@ theorem Quotient.liftOn₂_mk {α : Sort*} {β : Sort*} {_ : Setoid α} (f : α 
   rfl
 
 /-- `Quot.mk r` is a surjective function. -/
+theorem Quot.mk_surjective {r : α → α → Prop} : Function.Surjective (Quot.mk r) :=
+  Quot.exists_rep
+
+/-- `Quotient.mk` is a surjective function. -/
+theorem Quotient.mk_surjective {s : Setoid α} :
+    Function.Surjective (Quotient.mk s) :=
+  Quot.exists_rep
+
+/-- `Quotient.mk'` is a surjective function. -/
+theorem Quotient.mk'_surjective [s : Setoid α] :
+    Function.Surjective (Quotient.mk' : α → Quotient s) :=
+  Quot.exists_rep
+
+/-- `Quot.mk r` is a surjective function. -/
+@[deprecated Quot.mk_surjective (since := "2024-09-02")]
 theorem surjective_quot_mk (r : α → α → Prop) : Function.Surjective (Quot.mk r) :=
   Quot.exists_rep
 
 /-- `Quotient.mk` is a surjective function. -/
+@[deprecated Quotient.mk_surjective (since := "2024-09-02")]
 theorem surjective_quotient_mk {α : Sort*} (s : Setoid α) :
     Function.Surjective (Quotient.mk s) :=
   Quot.exists_rep
 
 /-- `Quotient.mk'` is a surjective function. -/
+@[deprecated Quotient.mk'_surjective (since := "2024-09-02")]
 theorem surjective_quotient_mk' (α : Sort*) [s : Setoid α] :
     Function.Surjective (Quotient.mk' : α → Quotient s) :=
   Quot.exists_rep
@@ -386,6 +403,17 @@ instance piSetoid {ι : Sort*} {α : ι → Sort*} [∀ i, Setoid (α i)] : Seto
   iseqv := ⟨fun _ _ ↦ Setoid.refl _,
             fun h _ ↦ Setoid.symm (h _),
             fun h₁ h₂ _ ↦ Setoid.trans (h₁ _) (h₂ _)⟩
+
+/-- Given a class of functions `q : @Quotient (∀ i, α i) _`, returns the class of `i`-th projection
+`Quotient (S i)`. -/
+def Quotient.eval {ι : Type*} {α : ι → Sort*} {S : ∀ i, Setoid (α i)}
+    (q : @Quotient (∀ i, α i) (by infer_instance)) (i : ι) : Quotient (S i) :=
+  q.map (· i) fun _ _ h ↦ by exact h i
+
+@[simp]
+theorem Quotient.eval_mk {ι : Type*} {α : ι → Type*} {S : ∀ i, Setoid (α i)} (f : ∀ i, α i) :
+    Quotient.eval (S := S) ⟦f⟧ = fun i ↦ ⟦f i⟧ :=
+  rfl
 
 /-- Given a function `f : Π i, Quotient (S i)`, returns the class of functions `Π i, α i` sending
 each `i` to an element of the class `f i`. -/
@@ -550,8 +578,11 @@ protected abbrev mk'' (a : α) : Quotient s₁ :=
   ⟦a⟧
 
 /-- `Quotient.mk''` is a surjective function. -/
-theorem surjective_Quotient_mk'' : Function.Surjective (Quotient.mk'' : α → Quotient s₁) :=
+theorem mk''_surjective : Function.Surjective (Quotient.mk'' : α → Quotient s₁) :=
   Quot.exists_rep
+
+@[deprecated (since := "2024-09-02")]
+alias surjective_Quotient_mk'' := mk''_surjective
 
 /-- A version of `Quotient.liftOn` taking `{s : Setoid α}` as an implicit argument instead of an
 instance argument. -/
@@ -696,16 +727,12 @@ protected theorem eq' {s₁ : Setoid α} {a b : α} :
 protected theorem eq'' {a b : α} : @Quotient.mk'' α s₁ a = Quotient.mk'' b ↔ s₁ a b :=
   Quotient.eq
 
-/-- A version of `Quotient.out` taking `{s₁ : Setoid α}` as an implicit argument instead of an
-instance argument. -/
-noncomputable def out' (a : Quotient s₁) : α :=
-  Quotient.out a
+@[deprecated (since := "2024-10-19")] alias out' := out
 
-@[simp]
-theorem out_eq' (q : Quotient s₁) : Quotient.mk'' q.out' = q :=
+theorem out_eq' (q : Quotient s₁) : Quotient.mk'' q.out = q :=
   q.out_eq
 
-theorem mk_out' (a : α) : s₁ (Quotient.mk'' a : Quotient s₁).out' a :=
+theorem mk_out' (a : α) : s₁ (Quotient.mk'' a : Quotient s₁).out a :=
   Quotient.exact (Quotient.out_eq _)
 
 section

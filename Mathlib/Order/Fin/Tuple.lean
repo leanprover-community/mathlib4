@@ -6,8 +6,8 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Order.Fin.Basic
-import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Order.PiLex
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Order properties on tuples

@@ -59,7 +59,7 @@ open Function
 namespace Nat
 variable {a b c d m n k : ℕ} {p : ℕ → Prop}
 
--- TODO: Move the `LinearOrder ℕ` instance to `Order.Nat` (#13092).
+-- TODO: Move the `LinearOrder ℕ` instance to `Order.Nat` (https://github.com/leanprover-community/mathlib4/pull/13092).
 instance instLinearOrder : LinearOrder ℕ where
   le := Nat.le
   le_refl := @Nat.le_refl
@@ -71,6 +71,13 @@ instance instLinearOrder : LinearOrder ℕ where
   decidableLT := inferInstance
   decidableLE := inferInstance
   decidableEq := inferInstance
+
+-- Shortcut instances
+instance : Preorder ℕ := inferInstance
+instance : PartialOrder ℕ := inferInstance
+instance : Min ℕ := inferInstance
+instance : Max ℕ := inferInstance
+instance : Ord ℕ := inferInstance
 
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
@@ -412,10 +419,11 @@ lemma div_le_iff_le_mul_add_pred (hb : 0 < b) : a / b ≤ c ↔ a ≤ b * c + (b
 lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
   Nat.div_lt_self (Nat.succ_pos _) (Nat.succ_lt_succ (Nat.succ_pos _))
 
+@[deprecated le_div_iff_mul_le (since := "2024-11-06")]
 lemma le_div_iff_mul_le' (hb : 0 < b) : a ≤ c / b ↔ a * b ≤ c := le_div_iff_mul_le hb
 
-lemma div_lt_iff_lt_mul' (hb : 0 < b) : a / b < c ↔ a < c * b := by
-  simp only [← Nat.not_le, le_div_iff_mul_le' hb]
+@[deprecated div_lt_iff_lt_mul (since := "2024-11-06")]
+lemma div_lt_iff_lt_mul' (hb : 0 < b) : a / b < c ↔ a < c * b := div_lt_iff_lt_mul hb
 
 lemma one_le_div_iff (hb : 0 < b) : 1 ≤ a / b ↔ b ≤ a := by rw [le_div_iff_mul_le hb, Nat.one_mul]
 
@@ -425,7 +433,7 @@ lemma div_lt_one_iff (hb : 0 < b) : a / b < 1 ↔ a < b := by
 @[gcongr]
 protected lemma div_le_div_right (h : a ≤ b) : a / c ≤ b / c :=
   (c.eq_zero_or_pos.elim fun hc ↦ by simp [hc]) fun hc ↦
-    (le_div_iff_mul_le' hc).2 <| Nat.le_trans (Nat.div_mul_le_self _ _) h
+    (le_div_iff_mul_le hc).2 <| Nat.le_trans (Nat.div_mul_le_self _ _) h
 
 lemma lt_of_div_lt_div (h : a / c < b / c) : a < b :=
   Nat.lt_of_not_le fun hab ↦ Nat.not_le_of_lt h <| Nat.div_le_div_right hab
@@ -475,7 +483,7 @@ protected lemma mul_div_mul_comm (hba : b ∣ a) (hdc : d ∣ c) : a * c / (b * 
 
 lemma eq_zero_of_le_div (hn : 2 ≤ n) (h : m ≤ m / n) : m = 0 :=
   eq_zero_of_mul_le hn <| by
-    rw [Nat.mul_comm]; exact (Nat.le_div_iff_mul_le' (Nat.lt_of_lt_of_le (by decide) hn)).1 h
+    rw [Nat.mul_comm]; exact (Nat.le_div_iff_mul_le (Nat.lt_of_lt_of_le (by decide) hn)).1 h
 
 lemma div_mul_div_le_div (a b c : ℕ) : a / c * b / a ≤ b / c := by
   obtain rfl | ha := Nat.eq_zero_or_pos a
@@ -960,11 +968,14 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 
 attribute [simp] Nat.dvd_zero
 
-@[simp] lemma mod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
+@[simp] lemma mod_two_not_eq_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
   cases mod_two_eq_zero_or_one n <;> simp [*]
 
-@[simp] lemma mod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
+@[simp] lemma mod_two_not_eq_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
   cases mod_two_eq_zero_or_one n <;> simp [*]
+
+lemma mod_two_ne_one : n % 2 ≠ 1 ↔ n % 2 = 0 := mod_two_not_eq_one
+lemma mod_two_ne_zero : n % 2 ≠ 0 ↔ n % 2 = 1 := mod_two_not_eq_zero
 
 @[deprecated mod_mul_right_div_self (since := "2024-05-29")]
 lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
@@ -1084,7 +1095,7 @@ lemma sub_mod_eq_zero_of_mod_eq (h : m % k = n % k) : (m - n) % k = 0 := by
 lemma one_mod_eq_one : ∀ {n : ℕ}, 1 % n = 1 ↔ n ≠ 1
   | 0 | 1 | n + 2 => by simp
 
-@[deprecated (since := "2024-08-28")]
+@[deprecated "No deprecation message was provided." (since := "2024-08-28")]
 lemma one_mod_of_ne_one  : ∀ {n : ℕ}, n ≠ 1 → 1 % n = 1 := one_mod_eq_one.mpr
 
 lemma dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
@@ -1151,7 +1162,7 @@ protected theorem div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (h3 :
 -- Moved to Batteries
 
 lemma lt_mul_div_succ (a : ℕ) (hb : 0 < b) : a < b * (a / b + 1) := by
-  rw [Nat.mul_comm, ← Nat.div_lt_iff_lt_mul' hb]
+  rw [Nat.mul_comm, ← Nat.div_lt_iff_lt_mul hb]
   exact lt_succ_self _
 
 -- TODO: Batteries claimed this name but flipped the order of multiplication
@@ -1160,7 +1171,6 @@ lemma mul_add_mod' (a b c : ℕ) : (a * b + c) % b = c % b := by rw [Nat.mul_com
 lemma mul_add_mod_of_lt (h : c < b) : (a * b + c) % b = c := by
   rw [Nat.mul_add_mod', Nat.mod_eq_of_lt h]
 
-set_option linter.deprecated false in
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
   omega

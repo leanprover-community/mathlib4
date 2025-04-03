@@ -224,18 +224,29 @@ theorem hasFiniteIntegral_norm_iff (f : α → β) :
     HasFiniteIntegral (fun a => ‖f a‖) μ ↔ HasFiniteIntegral f μ :=
   hasFiniteIntegral_congr' <| Eventually.of_forall fun x => norm_norm (f x)
 
-theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf : (∫⁻ x, f x ∂μ) ≠ ∞) :
-    HasFiniteIntegral (fun x => (f x).toReal) μ := by
-  have :
-      ∀ x, (‖(f x).toReal‖₊ : ℝ≥0∞) = ENNReal.ofNNReal ⟨(f x).toReal, ENNReal.toReal_nonneg⟩ := by
-    intro x
+theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf : ∫⁻ x, f x ∂μ ≠ ∞) :
+    HasFiniteIntegral (fun x ↦ (f x).toReal) μ := by
+  have h x : (‖(f x).toReal‖₊ : ℝ≥0∞) = ENNReal.ofNNReal ⟨(f x).toReal, ENNReal.toReal_nonneg⟩ := by
     rw [Real.nnnorm_of_nonneg]
-  simp_rw [HasFiniteIntegral, this]
+  simp_rw [HasFiniteIntegral, h]
   refine lt_of_le_of_lt (lintegral_mono fun x => ?_) (lt_top_iff_ne_top.2 hf)
   by_cases hfx : f x = ∞
   · simp [hfx]
   · lift f x to ℝ≥0 using hfx with fx h
     simp [← h, ← NNReal.coe_le_coe]
+
+lemma hasFiniteIntegral_toReal_iff {f : α → ℝ≥0∞} (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
+    HasFiniteIntegral (fun x ↦ (f x).toReal) μ ↔ ∫⁻ x, f x ∂μ ≠ ∞ := by
+  have h_eq x : (‖(f x).toReal‖₊ : ℝ≥0∞)
+      = ENNReal.ofNNReal ⟨(f x).toReal, ENNReal.toReal_nonneg⟩ := by
+    rw [Real.nnnorm_of_nonneg]
+  simp_rw [HasFiniteIntegral, h_eq, lt_top_iff_ne_top]
+  convert Iff.rfl using 2
+  refine lintegral_congr_ae ?_
+  filter_upwards [hf_ne_top] with x hfx
+  lift f x to ℝ≥0 using hfx with fx h
+  simp only [coe_toReal, ENNReal.coe_inj]
+  rfl
 
 theorem isFiniteMeasure_withDensity_ofReal {f : α → ℝ} (hfi : HasFiniteIntegral f μ) :
     IsFiniteMeasure (μ.withDensity fun x => ENNReal.ofReal <| f x) := by
@@ -355,7 +366,7 @@ theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
     (∫⁻ a : α, ‖c • f a‖₊ ∂μ) ≤ ∫⁻ a : α, ‖c‖₊ * ‖f a‖₊ ∂μ := by
       refine lintegral_mono ?_
       intro i
-      -- After leanprover/lean4#2734, we need to do beta reduction `exact mod_cast`
+      -- After https://github.com/leanprover/lean4/pull/2734, we need to do beta reduction `exact mod_cast`
       beta_reduce
       exact mod_cast (nnnorm_smul_le c (f i))
     _ < ∞ := by
@@ -443,7 +454,7 @@ lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMe
 
 /-- This lemma is a special case of `Integrable.of_finite`. -/
 -- Eternal deprecation for discoverability, don't remove
-@[deprecated Integrable.of_finite, nolint deprecatedNoSince]
+@[deprecated Integrable.of_finite (since := "2024-10-05"), nolint deprecatedNoSince]
 lemma Integrable.of_isEmpty [IsEmpty α] {f : α → β} : Integrable f μ := .of_finite
 
 @[deprecated (since := "2024-02-05")] alias integrable_of_fintype := Integrable.of_finite
@@ -586,7 +597,7 @@ theorem Integrable.add' {f g : α → β} (hf : Integrable f μ) (hg : Integrabl
   calc
     (∫⁻ a, ‖f a + g a‖₊ ∂μ) ≤ ∫⁻ a, ‖f a‖₊ + ‖g a‖₊ ∂μ :=
       lintegral_mono fun a => by
-        -- After leanprover/lean4#2734, we need to do beta reduction before `exact mod_cast`
+        -- After https://github.com/leanprover/lean4/pull/2734, we need to do beta reduction before `exact mod_cast`
         beta_reduce
         exact mod_cast nnnorm_add_le _ _
     _ = _ := lintegral_nnnorm_add_left hf.aestronglyMeasurable _
@@ -605,23 +616,52 @@ theorem integrable_finset_sum {ι} (s : Finset ι) {f : ι → α → β}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : Integrable (fun a => ∑ i ∈ s, f i a) μ := by
   simpa only [← Finset.sum_apply] using integrable_finset_sum' s hf
 
+/-- If `f` is integrable, then so is `-f`.
+See `Integrable.neg'` for the same statement, but formulated with `x ↦ - f x` instead of `-f`. -/
 theorem Integrable.neg {f : α → β} (hf : Integrable f μ) : Integrable (-f) μ :=
+  ⟨hf.aestronglyMeasurable.neg, hf.hasFiniteIntegral.neg⟩
+
+/-- If `f` is integrable, then so is `fun x ↦ - f x`.
+See `Integrable.neg` for the same statement, but formulated with `-f` instead of `fun x ↦ - f x`. -/
+theorem Integrable.neg' {f : α → β} (hf : Integrable f μ) : Integrable (fun x ↦ - f x) μ :=
   ⟨hf.aestronglyMeasurable.neg, hf.hasFiniteIntegral.neg⟩
 
 @[simp]
 theorem integrable_neg_iff {f : α → β} : Integrable (-f) μ ↔ Integrable f μ :=
   ⟨fun h => neg_neg f ▸ h.neg, Integrable.neg⟩
 
+/-- if `f` is integrable, then `f + g` is integrable iff `g` is.
+See `integrable_add_iff_integrable_right'` for the same statement with `fun x ↦ f x + g x` instead
+of `f + g`. -/
 @[simp]
 lemma integrable_add_iff_integrable_right {f g : α → β} (hf : Integrable f μ) :
     Integrable (f + g) μ ↔ Integrable g μ :=
   ⟨fun h ↦ show g = f + g + (-f) by simp only [add_neg_cancel_comm] ▸ h.add hf.neg,
     fun h ↦ hf.add h⟩
 
+/-- if `f` is integrable, then `fun x ↦ f x + g x` is integrable iff `g` is.
+See `integrable_add_iff_integrable_right` for the same statement with `f + g` instead
+of `fun x ↦ f x + g x`. -/
+@[simp]
+lemma integrable_add_iff_integrable_right' {f g : α → β} (hf : Integrable f μ) :
+    Integrable (fun x ↦ f x + g x) μ ↔ Integrable g μ :=
+  integrable_add_iff_integrable_right hf
+
+/-- if `f` is integrable, then `g + f` is integrable iff `g` is.
+See `integrable_add_iff_integrable_left'` for the same statement with `fun x ↦ g x + f x` instead
+of `g + f`. -/
 @[simp]
 lemma integrable_add_iff_integrable_left {f g : α → β} (hf : Integrable f μ) :
     Integrable (g + f) μ ↔ Integrable g μ := by
   rw [add_comm, integrable_add_iff_integrable_right hf]
+
+/-- if `f` is integrable, then `fun x ↦ g x + f x` is integrable iff `g` is.
+See `integrable_add_iff_integrable_left'` for the same statement with `g + f` instead
+of `fun x ↦ g x + f x`. -/
+@[simp]
+lemma integrable_add_iff_integrable_left' {f g : α → β} (hf : Integrable f μ) :
+    Integrable (fun x ↦ g x + f x) μ ↔ Integrable g μ :=
+  integrable_add_iff_integrable_left hf
 
 lemma integrable_left_of_integrable_add_of_nonneg {f g : α → ℝ}
     (h_meas : AEStronglyMeasurable f μ) (hf : 0 ≤ᵐ[μ] f) (hg : 0 ≤ᵐ[μ] g)
@@ -650,12 +690,10 @@ lemma integrable_add_iff_of_nonpos {f g : α → ℝ} (h_meas : AEStronglyMeasur
   exact integrable_add_iff_of_nonneg h_meas.neg (hf.mono (fun _ ↦ neg_nonneg_of_nonpos))
     (hg.mono (fun _ ↦ neg_nonneg_of_nonpos))
 
-@[simp]
 lemma integrable_add_const_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :
     Integrable (fun x ↦ f x + c) μ ↔ Integrable f μ :=
   integrable_add_iff_integrable_left (integrable_const _)
 
-@[simp]
 lemma integrable_const_add_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :
     Integrable (fun x ↦ c + f x) μ ↔ Integrable f μ :=
   integrable_add_iff_integrable_right (integrable_const _)
@@ -744,6 +782,21 @@ theorem integrable_of_norm_sub_le {f₀ f₁ : α → β} {g : α → ℝ} (hf�
       ‖f₁ a‖ ≤ ‖f₀ a‖ + ‖f₀ a - f₁ a‖ := norm_le_insert _ _
       _ ≤ ‖f₀ a‖ + g a := add_le_add_left ha _
   Integrable.mono' (hf₀_i.norm.add hg_i) hf₁_m this
+
+lemma integrable_of_le_of_le {f g₁ g₂ : α → ℝ} (hf : AEStronglyMeasurable f μ)
+    (h_le₁ : g₁ ≤ᵐ[μ] f) (h_le₂ : f ≤ᵐ[μ] g₂)
+    (h_int₁ : Integrable g₁ μ) (h_int₂ : Integrable g₂ μ) :
+    Integrable f μ := by
+  have : ∀ᵐ x ∂μ, ‖f x‖ ≤ max ‖g₁ x‖ ‖g₂ x‖ := by
+    filter_upwards [h_le₁, h_le₂] with x hx1 hx2
+    simp only [Real.norm_eq_abs]
+    exact abs_le_max_abs_abs hx1 hx2
+  have h_le_add : ∀ᵐ x ∂μ, ‖f x‖ ≤ ‖‖g₁ x‖ + ‖g₂ x‖‖ := by
+    filter_upwards [this] with x hx
+    refine hx.trans ?_
+    conv_rhs => rw [Real.norm_of_nonneg (by positivity)]
+    exact max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _)
+  exact Integrable.mono (h_int₁.norm.add h_int₂.norm) hf h_le_add
 
 theorem Integrable.prod_mk {f : α → β} {g : α → γ} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (fun x => (f x, g x)) μ :=
@@ -1003,16 +1056,30 @@ theorem withDensitySMulLI_apply {f : α → ℝ≥0} (f_meas : Measurable f)
 
 end
 
+section ENNReal
+
 theorem mem_ℒ1_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ)
-    (hfi : (∫⁻ x, f x ∂μ) ≠ ∞) : Memℒp (fun x => (f x).toReal) 1 μ := by
+    (hfi : ∫⁻ x, f x ∂μ ≠ ∞) : Memℒp (fun x ↦ (f x).toReal) 1 μ := by
   rw [Memℒp, eLpNorm_one_eq_lintegral_nnnorm]
-  exact
-    ⟨(AEMeasurable.ennreal_toReal hfm).aestronglyMeasurable,
-      hasFiniteIntegral_toReal_of_lintegral_ne_top hfi⟩
+  exact ⟨(AEMeasurable.ennreal_toReal hfm).aestronglyMeasurable,
+    hasFiniteIntegral_toReal_of_lintegral_ne_top hfi⟩
 
 theorem integrable_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ)
-    (hfi : (∫⁻ x, f x ∂μ) ≠ ∞) : Integrable (fun x => (f x).toReal) μ :=
+    (hfi : ∫⁻ x, f x ∂μ ≠ ∞) : Integrable (fun x ↦ (f x).toReal) μ :=
   memℒp_one_iff_integrable.1 <| mem_ℒ1_toReal_of_lintegral_ne_top hfm hfi
+
+lemma integrable_toReal_iff {f : α → ℝ≥0∞} (hf : AEMeasurable f μ) (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) :
+    Integrable (fun x ↦ (f x).toReal) μ ↔ ∫⁻ x, f x ∂μ ≠ ∞ := by
+  rw [Integrable, hasFiniteIntegral_toReal_iff hf_ne_top]
+  simp only [hf.ennreal_toReal.aestronglyMeasurable, ne_eq, true_and]
+
+lemma lintegral_ofReal_ne_top_iff_integrable {f : α → ℝ}
+    (hfm : AEStronglyMeasurable f μ) (hf : 0 ≤ᵐ[μ] f) :
+    ∫⁻ a, ENNReal.ofReal (f a) ∂μ ≠ ∞ ↔ Integrable f μ := by
+  rw [Integrable, hasFiniteIntegral_iff_ofReal hf]
+  simp [hfm]
+
+end ENNReal
 
 section PosPart
 
@@ -1402,9 +1469,9 @@ lemma HasFiniteIntegral.restrict (h : HasFiniteIntegral f μ) {s : Set α} :
   convert lintegral_mono_set (μ := μ) (s := s) (t := univ) (f := fun x ↦ ↑‖f x‖₊) (subset_univ s)
   exact Measure.restrict_univ.symm
 
-lemma Integrable.restrict (f_intble : Integrable f μ) {s : Set α} :
-    Integrable f (μ.restrict s) :=
-  ⟨f_intble.aestronglyMeasurable.restrict, f_intble.hasFiniteIntegral.restrict⟩
+/-- One should usually use `MeasureTheory.Integrable.IntegrableOn` instead. -/
+lemma Integrable.restrict (hf : Integrable f μ) {s : Set α} : Integrable f (μ.restrict s) :=
+  hf.mono_measure Measure.restrict_le_self
 
 end restrict
 
@@ -1456,3 +1523,5 @@ lemma integrable_prod {f : α → E × F} :
   ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.1.prod_mk h.2⟩
 
 end MeasureTheory
+
+set_option linter.style.longFile 1700

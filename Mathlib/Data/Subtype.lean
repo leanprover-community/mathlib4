@@ -87,7 +87,7 @@ theorem coe_eq_iff {a : { a // p a }} {b : α} : ↑a = b ↔ ∃ h, a = ⟨b, h
 
 theorem coe_injective : Injective (fun (a : Subtype p) ↦ (a : α)) := fun _ _ ↦ Subtype.ext
 
-theorem val_injective : Injective (@val _ p) :=
+@[simp] theorem val_injective : Injective (@val _ p) :=
   coe_injective
 
 theorem coe_inj {a b : Subtype p} : (a : α) = b ↔ a = b :=

@@ -412,6 +412,15 @@ protected theorem ciSup_mul_ciSup (g : ι' → Cardinal.{v}) :
     (⨆ i, f i) * (⨆ j, g j) = ⨆ (i) (j), f i * g j := by
   simp_rw [Cardinal.ciSup_mul f, Cardinal.mul_ciSup g]
 
+theorem sum_eq_iSup_lift {f : ι → Cardinal.{max u v}} (hι : ℵ₀ ≤ #ι)
+    (h : lift.{v} #ι ≤ iSup f) : sum f = iSup f := by
+  apply (iSup_le_sum f).antisymm'
+  convert sum_le_iSup_lift f
+  rw [mul_eq_max (aleph0_le_lift.mpr hι) ((aleph0_le_lift.mpr hι).trans h), max_eq_right h]
+
+theorem sum_eq_iSup {f : ι → Cardinal.{u}} (hι : ℵ₀ ≤ #ι) (h : #ι ≤ iSup f) : sum f = iSup f :=
+  sum_eq_iSup_lift hι ((lift_id #ι).symm ▸ h)
+
 end ciSup
 
 /-! ### Properties of `aleph` -/
@@ -815,30 +824,61 @@ theorem extend_function_of_lt {α β : Type*} {s : Set α} (f : s ↪ β) (hs : 
 
 end extend
 
-end Cardinal
+/-! ### Cardinal operations with ordinal indices -/
 
-/-!
-### Cardinal operations with ordinal indices
+/-- Bounds the cardinal of an ordinal-indexed union of sets. -/
+lemma mk_iUnion_Ordinal_lift_le_of_le {β : Type v} {o : Ordinal.{u}} {c : Cardinal.{v}}
+    (ho : lift.{v} o.card ≤ lift.{u} c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
+    (hA : ∀ j < o, #(A j) ≤ c) : #(⋃ j < o, A j) ≤ c := by
+  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← o.enumIsoToType.symm.surjective.range_comp]
+  rw [← lift_le.{u}]
+  apply ((mk_iUnion_le_lift _).trans _).trans_eq (mul_eq_self (aleph0_le_lift.2 hc))
+  rw [mk_toType]
+  refine mul_le_mul' ho (ciSup_le' ?_)
+  intro i
+  simpa using hA _ (o.enumIsoToType.symm i).2
 
-Results on cardinality of ordinal-indexed families of sets.
--/
-
-namespace Ordinal
-namespace Cardinal
-
-open scoped Cardinal
-
-/--
-Bounding the cardinal of an ordinal-indexed union of sets.
--/
 lemma mk_iUnion_Ordinal_le_of_le {β : Type*} {o : Ordinal} {c : Cardinal}
     (ho : o.card ≤ c) (hc : ℵ₀ ≤ c) (A : Ordinal → Set β)
-    (hA : ∀ j < o, #(A j) ≤ c) :
-    #(⋃ j < o, A j) ≤ c := by
-  simp_rw [← mem_Iio, biUnion_eq_iUnion, iUnion, iSup, ← o.enumIsoToType.symm.surjective.range_comp]
-  apply ((mk_iUnion_le _).trans _).trans_eq (mul_eq_self hc)
-  rw [mk_toType]
-  exact mul_le_mul' ho <| ciSup_le' <| (hA _ <| typein_lt_self ·)
+    (hA : ∀ j < o, #(A j) ≤ c) : #(⋃ j < o, A j) ≤ c := by
+  apply mk_iUnion_Ordinal_lift_le_of_le _ hc A hA
+  rwa [Cardinal.lift_le]
 
 end Cardinal
+
+@[deprecated mk_iUnion_Ordinal_le_of_le (since := "2024-11-02")]
+alias Ordinal.Cardinal.mk_iUnion_Ordinal_le_of_le := mk_iUnion_Ordinal_le_of_le
+
+/-! ### Cardinality of ordinals -/
+
+namespace Ordinal
+
+theorem lift_card_iSup_le_sum_card {ι : Type u} [Small.{v} ι] (f : ι → Ordinal.{v}) :
+    Cardinal.lift.{u} (⨆ i, f i).card ≤ Cardinal.sum fun i ↦ (f i).card := by
+  simp_rw [← mk_toType]
+  rw [← mk_sigma, ← Cardinal.lift_id'.{v} #(Σ _, _), ← Cardinal.lift_umax.{v, u}]
+  apply lift_mk_le_lift_mk_of_surjective (f := enumIsoToType _ ∘ (⟨(enumIsoToType _).symm ·.2,
+    (mem_Iio.mp ((enumIsoToType _).symm _).2).trans_le (Ordinal.le_iSup _ _)⟩))
+  rw [EquivLike.comp_surjective]
+  rintro ⟨x, hx⟩
+  obtain ⟨i, hi⟩ := Ordinal.lt_iSup_iff.mp hx
+  exact ⟨⟨i, enumIsoToType _ ⟨x, hi⟩⟩, by simp⟩
+
+theorem card_iSup_le_sum_card {ι : Type u} (f : ι → Ordinal.{max u v}) :
+    (⨆ i, f i).card ≤ Cardinal.sum (fun i ↦ (f i).card) := by
+  have := lift_card_iSup_le_sum_card f
+  rwa [Cardinal.lift_id'] at this
+
+theorem card_iSup_Iio_le_sum_card {o : Ordinal.{u}} (f : Ordinal.{u} → Ordinal.{max u v}) :
+    (⨆ a : Iio o, f a).card ≤ Cardinal.sum fun i ↦ (f ((enumIsoToType o).symm i)).card := by
+  apply le_of_eq_of_le (congr_arg _ _).symm (card_iSup_le_sum_card _)
+  simpa using (enumIsoToType o).symm.iSup_comp (g := fun x ↦ f x.1)
+
+theorem card_iSup_Iio_le_card_mul_iSup {o : Ordinal.{u}} (f : Ordinal.{u} → Ordinal.{max u v}) :
+    (⨆ a : Iio o, f a).card ≤ Cardinal.lift.{v} o.card * ⨆ a : Iio o, (f a).card := by
+  apply (card_iSup_Iio_le_sum_card f).trans
+  convert ← sum_le_iSup_lift _
+  · exact mk_toType o
+  · exact (enumIsoToType o).symm.iSup_comp (g := fun x ↦ (f x.1).card)
+
 end Ordinal

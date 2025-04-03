@@ -7,7 +7,7 @@ import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Quotient.Defs
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
@@ -49,7 +49,7 @@ def restrictScalarsEquiv [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
     (P : Submodule R M) : (M ⧸ P.restrictScalars S) ≃ₗ[S] M ⧸ P :=
   { Quotient.congrRight fun _ _ => Iff.rfl with
     map_add' := fun x y => Quotient.inductionOn₂' x y fun _x' _y' => rfl
-    map_smul' := fun _c x => Quotient.inductionOn' x fun _x' => rfl }
+    map_smul' := fun _c x => Submodule.Quotient.induction_on _ x fun _x' => rfl }
 
 @[simp]
 theorem restrictScalarsEquiv_mk [Ring S] [SMul S R] [Module S M] [IsScalarTower S R M]
@@ -78,7 +78,8 @@ instance QuotientBot.infinite [Infinite M] : Infinite (M ⧸ (⊥ : Submodule R 
 
 instance QuotientTop.unique : Unique (M ⧸ (⊤ : Submodule R M)) where
   default := 0
-  uniq x := Quotient.inductionOn' x fun _x => (Submodule.Quotient.eq ⊤).mpr Submodule.mem_top
+  uniq x := Submodule.Quotient.induction_on _ x fun _x =>
+    (Submodule.Quotient.eq ⊤).mpr Submodule.mem_top
 
 instance QuotientTop.fintype : Fintype (M ⧸ (⊤ : Submodule R M)) :=
   Fintype.ofSubsingleton 0
@@ -293,8 +294,8 @@ def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
         rw [← hf, Submodule.mem_map] at hx
         obtain ⟨y, hy, rfl⟩ := hx
         simpa
-    left_inv := fun x => Quotient.inductionOn' x (by simp [mk''_eq_mk])
-    right_inv := fun x => Quotient.inductionOn' x (by simp [mk''_eq_mk]) }
+    left_inv := fun x => Submodule.Quotient.induction_on _ x (by simp)
+    right_inv := fun x => Submodule.Quotient.induction_on _ x (by simp) }
 
 @[simp]
 theorem Quotient.equiv_symm {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]

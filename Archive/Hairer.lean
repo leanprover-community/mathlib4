@@ -26,6 +26,7 @@ noncomputable section
 open Metric Set MeasureTheory
 open MvPolynomial hiding support
 open Function hiding eval
+open scoped ContDiff
 
 variable {ι : Type*} [Fintype ι]
 
@@ -110,7 +111,7 @@ lemma inj_L : Injective (L ι) :=
     apply subset_closure
 
 lemma hairer (N : ℕ) (ι : Type*) [Fintype ι] :
-    ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ⊤ ρ ∧
+    ∃ (ρ : EuclideanSpace ℝ ι → ℝ), tsupport ρ ⊆ closedBall 0 1 ∧ ContDiff ℝ ∞ ρ ∧
     ∀ (p : MvPolynomial ι ℝ), p.totalDegree ≤ N →
     ∫ x : EuclideanSpace ℝ ι, eval x p • ρ x = eval 0 p := by
   have := (inj_L ι).comp (restrictTotalDegree ι ℝ N).injective_subtype

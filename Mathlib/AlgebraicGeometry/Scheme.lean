@@ -18,7 +18,7 @@ A morphism of schemes is just a morphism of the underlying locally ringed spaces
 
 -/
 
--- Explicit universe annotations were used in this file to improve performance #12737
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 
 universe u
@@ -93,7 +93,7 @@ instance {X : Scheme.{u}} : Subsingleton Γ(X, ⊥) :=
   CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
 
 @[continuity, fun_prop]
-lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f.base := f.base.2
+lemma Hom.continuous {X Y : Scheme} (f : X.Hom Y) : Continuous f.base := f.base.2
 
 /-- The structure sheaf of a scheme. -/
 protected abbrev sheaf (X : Scheme) :=
@@ -107,6 +107,11 @@ variable {X Y : Scheme.{u}} (f : Hom X Y) {U U' : Y.Opens} {V V' : X.Opens}
 this is the induced map `Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U)`. -/
 abbrev app (U : Y.Opens) : Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) :=
   f.c.app (op U)
+
+/-- Given a morphism of schemes `f : X ⟶ Y`,
+this is the induced map `Γ(Y, ⊤) ⟶ Γ(X, ⊤)`. -/
+abbrev appTop : Γ(Y, ⊤) ⟶ Γ(X, ⊤) :=
+  f.app ⊤
 
 @[reassoc]
 lemma naturality (i : op U' ⟶ op U) :
@@ -214,12 +219,24 @@ def forgetToTop : Scheme ⥤ TopCat :=
 noncomputable def homeoOfIso {X Y : Scheme.{u}} (e : X ≅ Y) : X ≃ₜ Y :=
   TopCat.homeoOfIso (forgetToTop.mapIso e)
 
+@[simp]
+lemma homeoOfIso_symm {X Y : Scheme} (e : X ≅ Y) :
+    (homeoOfIso e).symm = homeoOfIso e.symm := rfl
+
+@[simp]
+lemma homeoOfIso_apply {X Y : Scheme} (e : X ≅ Y) (x : X) :
+    homeoOfIso e x = e.hom.base x := rfl
+
 alias _root_.CategoryTheory.Iso.schemeIsoToHomeo := homeoOfIso
 
 /-- An isomorphism of schemes induces a homeomorphism of the underlying topological spaces. -/
 noncomputable def Hom.homeomorph {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C := Scheme) f] :
     X ≃ₜ Y :=
   (asIso f).schemeIsoToHomeo
+
+@[simp]
+lemma Hom.homeomorph_apply {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C := Scheme) f] (x) :
+    f.homeomorph x = f.base x := rfl
 
 -- Porting note: Lean seems not able to find this coercion any more
 instance hasCoeToTopCat : CoeOut Scheme TopCat where
@@ -237,6 +254,11 @@ theorem id.base (X : Scheme) : (𝟙 X : _).base = 𝟙 _ :=
 @[simp]
 theorem id_app {X : Scheme} (U : X.Opens) :
     (𝟙 X : _).app U = 𝟙 _ := rfl
+
+@[simp]
+theorem id_appTop {X : Scheme} :
+    (𝟙 X : _).appTop = 𝟙 _ :=
+  rfl
 
 @[reassoc]
 theorem comp_toLRSHom {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
@@ -261,6 +283,11 @@ theorem comp_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 @[simp, reassoc] -- reassoc lemma does not need `simp`
 theorem comp_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g).app U = g.app U ≫ f.app _ :=
+  rfl
+
+@[simp, reassoc] -- reassoc lemma does not need `simp`
+theorem comp_appTop {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).appTop = g.appTop ≫ f.appTop :=
   rfl
 
 @[deprecated (since := "2024-06-23")] alias comp_val_c_app := comp_app
@@ -323,8 +350,10 @@ theorem inv_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : X.Opens) :
   rw [IsIso.eq_comp_inv, ← Scheme.comp_app, Scheme.congr_app (IsIso.hom_inv_id f),
     Scheme.id_app, Category.id_comp]
 
-theorem inv_app_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
-    (inv f).app ⊤ = inv (f.app ⊤) := by simp
+theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
+    (inv f).appTop = inv (f.appTop) := by simp
+
+@[deprecated (since := "2024-11-23")] alias inv_app_top := inv_appTop
 
 end Scheme
 
@@ -382,12 +411,16 @@ lemma Spec_carrier (R : CommRingCat.{u}) : (Spec R).carrier = PrimeSpectrum R :=
 lemma Spec_sheaf (R : CommRingCat.{u}) : (Spec R).sheaf = Spec.structureSheaf R := rfl
 lemma Spec_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).1 := rfl
 lemma Spec.map_base : (Spec.map f).base = PrimeSpectrum.comap f := rfl
+lemma Spec.map_base_apply (x : Spec S) : (Spec.map f).base x = PrimeSpectrum.comap f x := rfl
 
 lemma Spec.map_app (U) :
     (Spec.map f).app U = StructureSheaf.comap f U (Spec.map f ⁻¹ᵁ U) le_rfl := rfl
 
 lemma Spec.map_appLE {U V} (e : U ≤ Spec.map f ⁻¹ᵁ V) :
     (Spec.map f).appLE V U e = StructureSheaf.comap f V U e := rfl
+
+instance {A : CommRingCat} [Nontrivial A] : Nonempty (Spec A) :=
+  inferInstanceAs <| Nonempty (PrimeSpectrum A)
 
 end
 
@@ -399,7 +432,7 @@ def empty : Scheme where
   carrier := TopCat.of PEmpty
   presheaf := (CategoryTheory.Functor.const _).obj (CommRingCat.of PUnit)
   IsSheaf := Presheaf.isSheaf_of_isTerminal _ CommRingCat.punitIsTerminal
-  localRing x := PEmpty.elim x
+  isLocalRing x := PEmpty.elim x
   local_affine x := PEmpty.elim x
 
 instance : EmptyCollection Scheme :=
@@ -424,10 +457,10 @@ theorem Γ_obj_op (X : Scheme) : Γ.obj (op X) = Γ(X, ⊤) :=
   rfl
 
 @[simp]
-theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.app ⊤ :=
+theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.appTop :=
   rfl
 
-theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.app ⊤ :=
+theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.appTop :=
   rfl
 
 /--
@@ -450,13 +483,13 @@ def ΓSpecIso : Γ(Spec R, ⊤) ≅ R := SpecΓIdentity.app R
 
 @[reassoc (attr := simp)]
 lemma ΓSpecIso_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    (Spec.map f).app ⊤ ≫ (ΓSpecIso S).hom = (ΓSpecIso R).hom ≫ f := SpecΓIdentity.hom.naturality f
+    (Spec.map f).appTop ≫ (ΓSpecIso S).hom = (ΓSpecIso R).hom ≫ f := SpecΓIdentity.hom.naturality f
 
 -- The RHS is not necessarily simpler than the LHS, but this direction coincides with the simp
 -- direction of `NatTrans.naturality`.
 @[reassoc (attr := simp)]
 lemma ΓSpecIso_inv_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    f ≫ (ΓSpecIso S).inv = (ΓSpecIso R).inv ≫ (Spec.map f).app ⊤ := SpecΓIdentity.inv.naturality f
+    f ≫ (ΓSpecIso S).inv = (ΓSpecIso R).inv ≫ (Spec.map f).appTop := SpecΓIdentity.inv.naturality f
 
 -- This is not marked simp to respect the abstraction
 lemma ΓSpecIso_inv : (ΓSpecIso R).inv = StructureSheaf.toOpen R ⊤ := rfl
@@ -464,6 +497,12 @@ lemma ΓSpecIso_inv : (ΓSpecIso R).inv = StructureSheaf.toOpen R ⊤ := rfl
 lemma toOpen_eq (U) :
     (by exact StructureSheaf.toOpen R U) =
     (ΓSpecIso R).inv ≫ (Spec R).presheaf.map (homOfLE le_top).op := rfl
+
+instance {K} [Field K] : Unique (Spec (.of K)) :=
+  inferInstanceAs <| Unique (PrimeSpectrum K)
+
+@[simp]
+lemma default_asIdeal {K} [Field K] : (default : Spec (.of K)).asIdeal = ⊥ := rfl
 
 section BasicOpen
 
@@ -515,6 +554,10 @@ lemma basicOpen_restrict (i : V ⟶ U) (f : Γ(X, U)) :
 theorem preimage_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (r : Γ(Y, U)) :
     f ⁻¹ᵁ (Y.basicOpen r) = X.basicOpen (f.app U r) :=
   LocallyRingedSpace.preimage_basicOpen f.toLRSHom r
+
+theorem preimage_basicOpen_top {X Y : Scheme.{u}} (f : X ⟶ Y) (r : Γ(Y, ⊤)) :
+    f ⁻¹ᵁ (Y.basicOpen r) = X.basicOpen (f.appTop r) :=
+  preimage_basicOpen ..
 
 lemma basicOpen_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e : U ≤ f ⁻¹ᵁ V)
     (s : Γ(Y, V)) : X.basicOpen (f.appLE V U e s) = U ⊓ f ⁻¹ᵁ (Y.basicOpen s) := by
@@ -720,15 +763,15 @@ end Scheme
 
 end Stalks
 
-section LocalRing
+section IsLocalRing
 
-open LocalRing
+open IsLocalRing
 
 @[simp]
-lemma Spec_closedPoint {R S : CommRingCat} [LocalRing R] [LocalRing S]
+lemma Spec_closedPoint {R S : CommRingCat} [IsLocalRing R] [IsLocalRing S]
     {f : R ⟶ S} [IsLocalHom f] : (Spec.map f).base (closedPoint S) = closedPoint R :=
-  LocalRing.comap_closedPoint f
+  IsLocalRing.comap_closedPoint f
 
-end LocalRing
+end IsLocalRing
 
 end AlgebraicGeometry

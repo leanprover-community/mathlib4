@@ -55,6 +55,14 @@ def grothendieckPrecompFunctorToComma : Grothendieck (R ⋙ functor L) ⥤ Comma
   obj P := ⟨P.fiber.left, P.base, P.fiber.hom⟩
   map f := ⟨f.fiber.left, f.base, by simp⟩
 
+/-- Fibers of `grothendieckPrecompFunctorToComma L R`, composed with `Comma.fst L R`, are isomorphic
+to the projection `proj L (R.obj X)`. -/
+@[simps!]
+def ιCompGrothendieckPrecompFunctorToCommaCompFst (X : E) :
+    Grothendieck.ι (R ⋙ functor L) X ⋙ grothendieckPrecompFunctorToComma L R ⋙ Comma.fst _ _ ≅
+    proj L (R.obj X) :=
+  NatIso.ofComponents (fun X => Iso.refl _) (fun _ => by simp)
+
 /-- The inverse functor used to establish the equivalence `grothendieckPrecompFunctorEquivalence`
 between the Grothendieck construction on `CostructuredArrow.functor` and the comma category. -/
 @[simps]
@@ -73,6 +81,25 @@ def grothendieckPrecompFunctorEquivalence : Grothendieck (R ⋙ functor L) ≌ C
   inverse := commaToGrothendieckPrecompFunctor _ _
   unitIso := NatIso.ofComponents (fun _ => Iso.refl _)
   counitIso := NatIso.ofComponents (fun _ => Iso.refl _)
+
+/-- The functor projecting out the domain of arrows from the Grothendieck construction on
+costructured arrows. -/
+@[simps!]
+def grothendieckProj : Grothendieck (functor L) ⥤ C :=
+  grothendieckPrecompFunctorToComma L (𝟭 _) ⋙ Comma.fst _ _
+
+/-- Fibers of `grothendieckProj L` are isomorphic to the projection `proj L X`. -/
+@[simps!]
+def ιCompGrothendieckProj (X : D) :
+    Grothendieck.ι (functor L) X ⋙ grothendieckProj L ≅ proj L X :=
+  ιCompGrothendieckPrecompFunctorToCommaCompFst L (𝟭 _) X
+
+/-- Functors between costructured arrow categories induced by morphisms in the base category
+composed with fibers of `grothendieckProj L` are isomorphic to the projection `proj L X`. -/
+@[simps!]
+def mapCompιCompGrothendieckProj {X Y : D} (f : X ⟶ Y) :
+    CostructuredArrow.map f ⋙ Grothendieck.ι (functor L) Y ⋙ grothendieckProj L ≅ proj L X :=
+  isoWhiskerLeft (CostructuredArrow.map f) (ιCompGrothendieckPrecompFunctorToCommaCompFst L (𝟭 _) Y)
 
 end CostructuredArrow
 

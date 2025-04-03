@@ -353,7 +353,7 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_nth_roots [IsDomain B] {ζ : B} {n : �
     rw [IsRoot.def, ← map_cyclotomic n (algebraMap A B), eval_map, ← aeval_def]
     exact hx.2
   · simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq] at hx
-    obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx n.pos
+    obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx
     refine SetLike.mem_coe.2 (Subalgebra.pow_mem _ (subset_adjoin ?_) _)
     rw [mem_rootSet', map_cyclotomic, aeval_def, ← eval_map, map_cyclotomic, ← IsRoot]
     exact ⟨cyclotomic_ne_zero n B, hζ.isRoot_cyclotomic n.pos⟩
@@ -362,7 +362,7 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_root_cyclotomic {n : ℕ+} [IsDomain B
     (hζ : IsPrimitiveRoot ζ n) : adjoin A ((cyclotomic n A).rootSet B) = adjoin A {ζ} := by
   refine le_antisymm (adjoin_le fun x hx => ?_) (adjoin_mono fun x hx => ?_)
   · suffices hx : x ^ n.1 = 1 by
-      obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx n.pos
+      obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx
       exact SetLike.mem_coe.2 (Subalgebra.pow_mem _ (subset_adjoin <| mem_singleton ζ) _)
     refine (isRoot_of_unity_iff n.pos B).2 ?_
     refine ⟨n, Nat.mem_divisors_self n n.ne_zero, ?_⟩
@@ -532,7 +532,7 @@ section CyclotomicRing
 instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
   SplittingField.algebra' (cyclotomic n K)
 
-/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` #10906 -/
+/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
 example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.algebraBase _ _ _ := rfl
 
 instance CyclotomicField.algebra' {R : Type*} [CommRing R] [Algebra R K] :
@@ -577,7 +577,7 @@ instance algebraBase : Algebra A (CyclotomicRing n A K) :=
   (adjoin A _).algebra
 
 -- Ensure that there is no diamonds with ℤ.
--- but there is at `reducible_and_instances` #10906
+-- but there is at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example {n : ℕ+} : CyclotomicRing.algebraBase n ℤ ℚ = Ring.toIntAlgebra _ := rfl
 
 instance [IsFractionRing A K] :

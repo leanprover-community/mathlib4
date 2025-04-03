@@ -39,7 +39,7 @@ namespace PartialFun
 instance : CoeSort PartialFun Type* :=
   ⟨id⟩
 
--- Porting note(#5171): removed `@[nolint has_nonempty_instance]`; linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`; linter not ported yet
 /-- Turns a type into a `PartialFun`. -/
 def of : Type* → PartialFun :=
   id

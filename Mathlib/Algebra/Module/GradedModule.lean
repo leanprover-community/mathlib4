@@ -93,11 +93,9 @@ theorem smulAddMonoidHom_apply_of_of [DecidableEq ιA] [DecidableEq ιB] [GMonoi
     smulAddMonoidHom A M (DirectSum.of A i x) (of M j y) = of M (i +ᵥ j) (GSMul.smul x y) := by
   simp [smulAddMonoidHom]
 
--- @[simp] -- Porting note: simpNF lint
 theorem of_smul_of [DecidableEq ιA] [DecidableEq ιB] [GMonoid A] [Gmodule A M]
     {i j} (x : A i) (y : M j) :
-    DirectSum.of A i x • of M j y = of M (i +ᵥ j) (GSMul.smul x y) :=
-  smulAddMonoidHom_apply_of_of _ _ _ _
+    DirectSum.of A i x • of M j y = of M (i +ᵥ j) (GSMul.smul x y) := by simp
 
 open AddMonoidHom
 

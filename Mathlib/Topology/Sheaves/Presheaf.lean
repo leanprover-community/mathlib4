@@ -38,7 +38,7 @@ variable (C : Type u) [Category.{v} C]
 namespace TopCat
 
 /-- The category of `C`-valued presheaves on a (bundled) topological space `X`. -/
--- Porting note(#5171): was @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 def Presheaf (X : TopCat.{w}) : Type max u v w :=
   (Opens X)ᵒᵖ ⥤ C
 
@@ -303,7 +303,7 @@ def pullbackObjObjOfImageOpen {X Y : TopCat.{v}} (f : X ⟶ Y) (ℱ : Y.Presheaf
           exact Set.image_preimage.l_u_le (SetLike.coe s.pt.left.unop)
         · simp [eq_iff_true_of_subsingleton] }
   exact IsColimit.coconePointUniqueUpToIso
-    ((Opens.map f).op.isPointwiseLeftKanExtensionLanUnit ℱ (op U))
+    ((Opens.map f).op.isPointwiseLeftKanExtensionLeftKanExtensionUnit ℱ (op U))
     (colimitOfDiagramTerminal hx _)
 
 end

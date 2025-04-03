@@ -194,11 +194,6 @@ theorem iUnion_null_iff {ι : Sort*} [Countable ι] (m : OuterMeasure α) {s : �
 @[deprecated measure_iUnion_null (since := "2024-05-14")]
 alias ⟨_, iUnion_null⟩ := iUnion_null_iff
 
-@[deprecated (since := "2024-01-14")]
-theorem iUnion_null_iff' (m : OuterMeasure α) {ι : Prop} {s : ι → Set α} :
-    m (⋃ i, s i) = 0 ↔ ∀ i, m (s i) = 0 :=
-  measure_iUnion_null_iff
-
 @[deprecated measure_biUnion_finset_le (since := "2024-05-14")]
 protected theorem iUnion_finset (m : OuterMeasure α) (s : β → Set α) (t : Finset β) :
     m (⋃ i ∈ t, s i) ≤ ∑ i ∈ t, m (s i) :=

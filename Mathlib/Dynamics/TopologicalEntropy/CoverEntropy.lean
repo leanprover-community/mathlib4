@@ -483,7 +483,7 @@ lemma coverEntropyEntourage_le_log_coverMincard_div {T : X → X} {F : Set X} (F
     eventually_atTop.2 ⟨1, fun m m_pos ↦ log_coverMincard_le_add F_inv U_symm n_pos m_pos⟩
   apply ((limsup_le_limsup) key).trans
   suffices h : atTop.limsup v = 0 by
-    have := @limsup_add_le_add_limsup ℕ atTop u v
+    have := @limsup_add_le ℕ atTop u v
     rw [h, add_zero] at this
     specialize this (Or.inr EReal.zero_ne_top) (Or.inr EReal.zero_ne_bot)
     exact this.trans_eq (limsup_const (log (coverMincard T F U n) / n))

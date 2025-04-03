@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Data.Ordering.Basic
-import Mathlib.Order.Defs
+import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Some `Ordering` lemmas

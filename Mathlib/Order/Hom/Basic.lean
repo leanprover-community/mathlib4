@@ -233,7 +233,7 @@ protected theorem mono (f : α →o β) : Monotone f :=
 projection directly instead. -/
 def Simps.coe (f : α →o β) : α → β := f
 
-/- Porting note (#11215): TODO: all other DFunLike classes use `apply` instead of `coe`
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: all other DFunLike classes use `apply` instead of `coe`
 for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
@@ -488,16 +488,13 @@ protected def dual : (α →o β) ≃ (αᵒᵈ →o βᵒᵈ) where
   left_inv _ := rfl
   right_inv _ := rfl
 
--- Porting note: We used to be able to write `(OrderHom.id : α →o α).dual` here rather than
--- `OrderHom.dual (OrderHom.id : α →o α)`.
--- See https://github.com/leanprover/lean4/issues/1910
 @[simp]
-theorem dual_id : OrderHom.dual (OrderHom.id : α →o α) = OrderHom.id :=
+theorem dual_id : (OrderHom.id : α →o α).dual = OrderHom.id :=
   rfl
 
 @[simp]
 theorem dual_comp (g : β →o γ) (f : α →o β) :
-    OrderHom.dual (g.comp f) = (OrderHom.dual g).comp (OrderHom.dual f) :=
+    (g.comp f).dual = g.dual.comp f.dual :=
   rfl
 
 @[simp]

@@ -207,7 +207,7 @@ theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m 
   have h_succ_diff : SuccDiffBounded 2 (2 ^ ·) := by
     intro n
     simp [pow_succ, mul_two, two_mul]
-  convert summable_schlomilch_iff hf (pow_pos zero_lt_two) (pow_right_strictMono _root_.one_lt_two)
+  convert summable_schlomilch_iff hf (pow_pos zero_lt_two) (pow_right_strictMono₀ _root_.one_lt_two)
     two_ne_zero h_succ_diff
   simp [pow_succ, mul_two, two_mul]
 
@@ -235,7 +235,7 @@ theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 
     intro n
     simp [pow_succ, mul_two, two_mul]
   convert summable_schlomilch_iff_of_nonneg h_nonneg h_mono (pow_pos zero_lt_two)
-    (pow_right_strictMono one_lt_two) two_ne_zero h_succ_diff
+    (pow_right_strictMono₀ one_lt_two) two_ne_zero h_succ_diff
   simp [pow_succ, mul_two, two_mul]
 
 section p_series
@@ -386,14 +386,10 @@ theorem sum_Ioc_inv_sq_le_sub {k n : ℕ} (hk : k ≠ 0) (h : k ≤ n) :
   simp only [sub_eq_add_neg, add_assoc, Nat.cast_add, Nat.cast_one, le_add_neg_iff_add_le,
     add_le_iff_nonpos_right, neg_add_le_iff_le_add, add_zero]
   have A : 0 < (n : α) := by simpa using hk.bot_lt.trans_le hn
-  have B : 0 < (n : α) + 1 := by linarith
   field_simp
-  rw [div_le_div_iff _ A, ← sub_nonneg]
-  · ring_nf
-    rw [add_comm]
-    exact B.le
-  · -- Porting note: was `nlinarith`
-    positivity
+  rw [div_le_div_iff₀ _ A]
+  · linarith
+  · positivity
 
 theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i ∈ Ioo k n, (i ^ 2 : α)⁻¹) ≤ 2 / (k + 1) :=
   calc
@@ -470,5 +466,13 @@ lemma Real.summable_one_div_int_add_rpow (a : ℝ) (s : ℝ) :
     Summable (fun n : ℤ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by
   simp_rw [summable_int_iff_summable_nat_and_neg, ← abs_neg (↑(-_ : ℤ) + a), neg_add,
     Int.cast_neg, neg_neg, Int.cast_natCast, summable_one_div_nat_add_rpow, and_self]
+
+theorem summable_pow_div_add {α : Type*} (x : α) [RCLike α] (q k : ℕ) (hq : 1 < q) :
+    Summable fun n : ℕ => ‖(x / (↑n + k) ^ q)‖ := by
+  simp_rw [norm_div]
+  apply Summable.const_div
+  simpa [hq, Nat.cast_add, one_div, norm_inv, norm_pow, Complex.norm_eq_abs,
+    RCLike.norm_natCast, Real.summable_nat_pow_inv, iff_true]
+    using summable_nat_add_iff (f := fun x => ‖1 / (x ^ q : α)‖) k
 
 end shifted

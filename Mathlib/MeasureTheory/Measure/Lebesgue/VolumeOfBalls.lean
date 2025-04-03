@@ -3,10 +3,11 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
+import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
+import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Integral.Gamma
 import Mathlib.MeasureTheory.Integral.Pi
-import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 
 /-!
 # Volume of balls
@@ -96,7 +97,7 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
     (LinearEquiv.refl ℝ E : E ≃ₗ[ℝ] F)
   -- The measure `ν` is the measure on `F` defined by `μ`
   -- Since we have two different topologies, it is necessary to specify the topology of E
-  let ν : Measure F := @Measure.map E F _ mE φ μ
+  let ν : Measure F := @Measure.map E F mE _ φ μ
   have : IsAddHaarMeasure ν :=
     @ContinuousLinearEquiv.isAddHaarMeasure_map E F ℝ ℝ _ _ _ _ _ _ tE _ _ _ _ _ _ _ mE _ _ _ φ μ _
   convert (measure_unitBall_eq_integral_div_gamma ν hp) using 1
@@ -139,7 +140,7 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
     (LinearEquiv.refl ℝ E : E ≃ₗ[ℝ] F)
   -- The measure `ν` is the measure on `F` defined by `μ`
   -- Since we have two different topologies, it is necessary to specify the topology of E
-  let ν : Measure F := @Measure.map E F _ mE φ μ
+  let ν : Measure F := @Measure.map E F mE _ φ μ
   have : IsAddHaarMeasure ν :=
     @ContinuousLinearEquiv.isAddHaarMeasure_map E F ℝ ℝ _ _ _ _ _ _ tE _ _ _ _ _ _ _ mE _ _ _ φ μ _
   convert addHaar_closedBall_eq_addHaar_ball ν 0 r using 1

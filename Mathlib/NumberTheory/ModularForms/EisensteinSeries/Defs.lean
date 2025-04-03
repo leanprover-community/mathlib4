@@ -109,10 +109,10 @@ def _root_.eisensteinSeries (k : ℤ) (z : ℍ) : ℂ := ∑' x : gammaSet N a, 
 lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
     eisensteinSeries a k ∣[k] γ = eisensteinSeries (a ᵥ* γ) k := by
   ext1 z
-  simp_rw [SL_slash, slash_def, slash, ModularGroup.det_coe', ofReal_one, one_zpow, mul_one,
+  simp_rw [SL_slash, slash_def, slash, ModularGroup.det_coe, ofReal_one, one_zpow, mul_one,
     zpow_neg, mul_inv_eq_iff_eq_mul₀ (zpow_ne_zero _ <| z.denom_ne_zero _), mul_comm,
     eisensteinSeries, ← ModularGroup.sl_moeb, eisSummand_SL2_apply, tsum_mul_left]
-  erw [(gammaSetEquiv a γ).tsum_eq (eisSummand k · z)]
+  exact congr_arg (_ * ·) <| (gammaSetEquiv a γ).tsum_eq (eisSummand k · z)
 
 /-- The SlashInvariantForm defined by an Eisenstein series of weight `k : ℤ`, level `Γ(N)`,
   and congruence condition given by `a : Fin 2 → ZMod N`. -/

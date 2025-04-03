@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Group.TypeTags.Hom
 
 /-!
 # Additive and multiplicative equivalences associated to `Multiplicative` and `Additive`.
@@ -118,8 +118,8 @@ and multiplicative endomorphisms of `Multiplicative A`. -/
 @[simps]
 def MulEquiv.piMultiplicative (K : ι → Type*) [∀ i, Add (K i)] :
     Multiplicative (∀ i : ι, K i) ≃* (∀ i : ι, Multiplicative (K i)) where
-  toFun x := fun i ↦ Multiplicative.ofAdd <| Multiplicative.toAdd x i
-  invFun x := Multiplicative.ofAdd fun i ↦ Multiplicative.toAdd (x i)
+  toFun x := fun i ↦ Multiplicative.ofAdd <| x.toAdd i
+  invFun x := Multiplicative.ofAdd fun i ↦ (x i).toAdd
   left_inv _ := rfl
   right_inv _ := rfl
   map_mul' _ _ := rfl
@@ -134,8 +134,8 @@ abbrev MulEquiv.funMultiplicative [Add G] :
 @[simps]
 def AddEquiv.piAdditive (K : ι → Type*) [∀ i, Mul (K i)] :
     Additive (∀ i : ι, K i) ≃+ (∀ i : ι, Additive (K i)) where
-  toFun x := fun i ↦ Additive.ofMul <| Additive.toMul x i
-  invFun x := Additive.ofMul fun i ↦ Additive.toMul (x i)
+  toFun x := fun i ↦ Additive.ofMul <| x.toMul i
+  invFun x := Additive.ofMul fun i ↦ (x i).toMul
   left_inv _ := rfl
   right_inv _ := rfl
   map_add' _ _ := rfl
@@ -164,9 +164,9 @@ def MulEquiv.multiplicativeAdditive [MulOneClass H] : Multiplicative (Additive H
 @[simps]
 def MulEquiv.prodMultiplicative [Add G] [Add H] :
     Multiplicative (G × H) ≃* Multiplicative G × Multiplicative H where
-  toFun x := (Multiplicative.ofAdd (Multiplicative.toAdd x).1,
-    Multiplicative.ofAdd (Multiplicative.toAdd x).2)
-  invFun := fun (x, y) ↦ Multiplicative.ofAdd (Multiplicative.toAdd x, Multiplicative.toAdd y)
+  toFun x := (Multiplicative.ofAdd x.toAdd.1,
+    Multiplicative.ofAdd x.toAdd.2)
+  invFun := fun (x, y) ↦ Multiplicative.ofAdd (x.toAdd, y.toAdd)
   left_inv _ := rfl
   right_inv _ := rfl
   map_mul' _ _ := rfl
@@ -175,9 +175,9 @@ def MulEquiv.prodMultiplicative [Add G] [Add H] :
 @[simps]
 def AddEquiv.prodAdditive [Mul G] [Mul H] :
     Additive (G × H) ≃+ Additive G × Additive H where
-  toFun x := (Additive.ofMul (Additive.toMul x).1,
-    Additive.ofMul (Additive.toMul x).2)
-  invFun := fun (x, y) ↦ Additive.ofMul (Additive.toMul x, Additive.toMul y)
+  toFun x := (Additive.ofMul x.toMul.1,
+    Additive.ofMul x.toMul.2)
+  invFun := fun (x, y) ↦ Additive.ofMul (x.toMul, y.toMul)
   left_inv _ := rfl
   right_inv _ := rfl
   map_add' _ _ := rfl

@@ -72,7 +72,7 @@ class IsSemisimple : Prop where
   /-- In a semisimple Lie algebra, the supremum of the atoms is the whole Lie algebra. -/
   sSup_atoms_eq_top : sSup {I : LieIdeal R L | IsAtom I} = ⊤
   /-- In a semisimple Lie algebra, the atoms are independent. -/
-  setIndependent_isAtom : CompleteLattice.SetIndependent {I : LieIdeal R L | IsAtom I}
+  sSupIndep_isAtom : sSupIndep {I : LieIdeal R L | IsAtom I}
   /-- In a semisimple Lie algebra, the atoms are non-abelian. -/
   non_abelian_of_isAtom : ∀ I : LieIdeal R L, IsAtom I → ¬ IsLieAbelian I
 

@@ -3,10 +3,13 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Conj
+import Mathlib.Algebra.Group.Subgroup.Lattice
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Sort
+import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
@@ -97,7 +100,7 @@ theorem swap_induction_on [Finite α] {P : Perm α → Prop} (f : Perm α) :
   cases nonempty_fintype α
   cases' (truncSwapFactors f).out with l hl
   induction' l with g l ih generalizing f
-  · simp (config := { contextual := true }) only [hl.left.symm, List.prod_nil, forall_true_iff]
+  · simp +contextual only [hl.left.symm, List.prod_nil, forall_true_iff]
   · intro h1 hmul_swap
     rcases hl.2 g (by simp) with ⟨x, y, hxy⟩
     rw [← hl.1, List.prod_cons, hxy.2]
@@ -249,7 +252,7 @@ private theorem signAux_swap_zero_one' (n : ℕ) : signAux (swap (0 : Fin (n + 2
   show _ = ∏ x ∈ {(⟨1, 0⟩ : Σ _ : Fin (n + 2), Fin (n + 2))},
       if (Equiv.swap 0 1) x.1 ≤ swap 0 1 x.2 then (-1 : ℤˣ) else 1 by
     refine Eq.symm (prod_subset (fun ⟨x₁, x₂⟩ => by
-      simp (config := { contextual := true }) [mem_finPairsLT, Fin.one_pos]) fun a ha₁ ha₂ => ?_)
+      simp +contextual [mem_finPairsLT, Fin.one_pos]) fun a ha₁ ha₂ => ?_)
     rcases a with ⟨a₁, a₂⟩
     replace ha₁ : a₂ < a₁ := mem_finPairsLT.1 ha₁
     dsimp only

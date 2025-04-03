@@ -130,6 +130,8 @@ instance [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (f : R[X]) :
     DistribMulAction S (AdjoinRoot f) :=
   Submodule.Quotient.distribMulAction' _
 
+/-- `R[x]/(f)` is `R`-algebra -/
+@[stacks 09FX "second part"]
 instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
   Ideal.Quotient.algebra S
 
@@ -342,6 +344,8 @@ instance span_maximal_of_irreducible [Fact (Irreducible f)] : (span {f}).IsMaxim
 noncomputable instance instGroupWithZero [Fact (Irreducible f)] : GroupWithZero (AdjoinRoot f) :=
   Quotient.groupWithZero (span {f} : Ideal K[X])
 
+/-- If `R` is a field and `f` is irreducible, then `AdjoinRoot f` is a field -/
+@[stacks 09FX "first part, see also 09FI"]
 noncomputable instance instField [Fact (Irreducible f)] : Field (AdjoinRoot f) where
   __ := instCommRing _
   __ := instGroupWithZero
@@ -563,7 +567,7 @@ theorem Minpoly.toAdjoin.apply_X :
 variable (R x)
 
 theorem Minpoly.toAdjoin.surjective : Function.Surjective (Minpoly.toAdjoin R x) := by
-  rw [← range_top_iff_surjective, _root_.eq_top_iff, ← adjoin_adjoin_coe_preimage]
+  rw [← AlgHom.range_eq_top, _root_.eq_top_iff, ← adjoin_adjoin_coe_preimage]
   exact adjoin_le fun ⟨y₁, y₂⟩ h ↦ ⟨mk (minpoly R x) X, by simpa [toAdjoin] using h.symm⟩
 
 end minpoly

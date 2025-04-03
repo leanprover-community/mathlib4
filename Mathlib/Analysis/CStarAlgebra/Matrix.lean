@@ -56,7 +56,7 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
       apply sq_nonneg
     · rw [Multiset.mem_map]
       use j
-      simp only [eq_self_iff_true, Finset.mem_univ_val, and_self_iff, sq_eq_sq]
+      simp only [eq_self_iff_true, Finset.mem_univ_val, and_self_iff, sq_eq_sq₀]
   -- The L2 norm of a row is a diagonal entry of U * Uᴴ
   have diag_eq_norm_sum : (U * Uᴴ) i i = (∑ x : n, ‖U i x‖ ^ 2 : ℝ) := by
     simp only [Matrix.mul_apply, Matrix.conjTranspose_apply, ← starRingEnd_apply, RCLike.mul_conj,
@@ -71,7 +71,7 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
   have diag_eq_one : RCLike.re ((U * Uᴴ) i i) = 1 := by
     simp only [mul_eq_one, eq_self_iff_true, Matrix.one_apply_eq, RCLike.one_re]
   -- Putting it all together
-  rw [← sq_le_one_iff (norm_nonneg (U i j)), ← diag_eq_one, re_diag_eq_norm_sum]
+  rw [← sq_le_one_iff₀ (norm_nonneg (U i j)), ← diag_eq_one, re_diag_eq_norm_sum]
   exact norm_sum
 
 attribute [local instance] Matrix.normedAddCommGroup
