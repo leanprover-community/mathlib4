@@ -5,7 +5,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz, Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 import Mathlib.CategoryTheory.Subpresheaf.OfSection
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Order.Fin.SuccAboveOrderIso
 

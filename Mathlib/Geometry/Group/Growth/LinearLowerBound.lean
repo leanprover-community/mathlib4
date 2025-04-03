@@ -46,7 +46,6 @@ lemma pow_ssubset_pow_succ_of_pow_ne_closure (hX₁ : (1 : G) ∈ X) (hX : X.Non
       simpa [← hXn, ← sq] using mul_mem_mul hx hy
     one_mem' := hX₁
     inv_mem' := fun {x} hx ↦ by
-      dsimp at *
       norm_cast at *
       have : x • X ⊆ X := by
         simpa [← hXn, add_assoc, ← sq] using smul_finset_subset_mul (t := X) hx

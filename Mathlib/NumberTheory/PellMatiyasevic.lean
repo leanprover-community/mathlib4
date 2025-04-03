@@ -344,7 +344,7 @@ theorem xy_coprime (n) : (xn a1 n).Coprime (yn a1 n) :=
   Nat.coprime_of_dvd' fun k _ kx ky => by
     let p := pell_eq a1 n
     rw [← p]
-    exact Nat.dvd_sub (le_of_lt <| Nat.lt_of_sub_eq_succ p) (kx.mul_left _) (ky.mul_left _)
+    exact Nat.dvd_sub (kx.mul_left _) (ky.mul_left _)
 
 theorem strictMono_y : StrictMono (yn a1)
   | _, 0, h => absurd h <| Nat.not_lt_zero _
@@ -458,7 +458,7 @@ theorem xy_succ_succ (n) :
     xn a1 (n + 2) + xn a1 n =
       2 * a * xn a1 (n + 1) ∧ yn a1 (n + 2) + yn a1 n = 2 * a * yn a1 (n + 1) := by
   have := pellZd_succ_succ a1 n; unfold pellZd at this
-  erw [Zsqrtd.smul_val (2 * a : ℕ)] at this
+  rw [Zsqrtd.nsmul_val (2 * a : ℕ)] at this
   injection this with h₁ h₂
   constructor <;> apply Int.ofNat.inj <;> [simpa using h₁; simpa using h₂]
 

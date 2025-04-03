@@ -52,6 +52,9 @@ instance instBoundedOrder [NeZero n] : BoundedOrder (Fin n) where
   bot := 0
   bot_le := Fin.zero_le'
 
+instance instBiheytingAlgebra [NeZero n] : BiheytingAlgebra (Fin n) :=
+  LinearOrder.toBiheytingAlgebra
+
 @[simp, norm_cast]
 theorem coe_max (a b : Fin n) : ↑(max a b) = (max a b : ℕ) := rfl
 
@@ -75,6 +78,8 @@ These also prevent non-computable instances being used to construct these instan
 
 instance instPartialOrder : PartialOrder (Fin n) := inferInstance
 instance instLattice : Lattice (Fin n) := inferInstance
+instance instHeytingAlgebra [NeZero n] : HeytingAlgebra (Fin n) := inferInstance
+instance instCoheytingAlgebra [NeZero n] : CoheytingAlgebra (Fin n) := inferInstance
 
 /-! ### Miscellaneous lemmas -/
 
@@ -316,6 +321,10 @@ def revOrderIso : (Fin n)ᵒᵈ ≃o Fin n := ⟨OrderDual.ofDual.trans revPerm,
 
 @[simp]
 lemma revOrderIso_symm_apply (i : Fin n) : revOrderIso.symm i = OrderDual.toDual (rev i) := rfl
+
+lemma rev_strictAnti : StrictAnti (@rev n) := fun _ _ ↦ rev_lt_rev.mpr
+
+lemma rev_anti : Antitone (@rev n) := rev_strictAnti.antitone
 
 /-! #### Order embeddings -/
 
