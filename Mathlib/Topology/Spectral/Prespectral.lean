@@ -21,7 +21,7 @@ open TopologicalSpace Topology
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-- A space is prespectral if the lattice of compact opens forms a basis. -/
-@[mk_iff]
+@[08YG "The last condition for spectral spaces", mk_iff]
 class PrespectralSpace (X : Type*) [TopologicalSpace X] : Prop where
   isTopologicalBasis : IsTopologicalBasis { U : Set X | IsOpen U ∧ IsCompact U }
 
