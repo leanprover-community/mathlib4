@@ -253,6 +253,95 @@ theorem nextCoeff_eq_zero_of_eraseLead_eq_zero (h : f.eraseLead = 0) : f.nextCoe
   by_contra h₂
   exact leadingCoeff_ne_zero.mp (leadingCoeff_eraseLead_eq_nextCoeff h₂ ▸ h₂) h
 
+/-- If we erase the leading coefficient of a `Polynomial.coeffList` like [+,0,...], and then
+multiply by a linear term, it's equivalent to erasing the first two coefficients of the product. -/
+lemma eraseLead_mul_eq_mul_eraseLead_of_nextCoeff_zero {R : Type*} [Ring R] [NoZeroDivisors R]
+  [Nontrivial R] {x : R} {P : R[X]} (hx : x ≠ 0) (h : P.nextCoeff = 0) :
+  ((X - C x) * P).eraseLead.eraseLead = (X - C x) * P.eraseLead := by
+  -- can assume P ≠ 0
+  by_cases hpz : P = 0
+  · simp_all
+  -- can assume eraseLead P > 0, otherwise...
+  by_cases hez : eraseLead P = 0
+  · rw [hez, mul_zero]
+    by_cases hez2 : eraseLead ((X - C x) * P) = 0
+    · simp [hez2]
+    apply card_support_eq_zero.mp
+    suffices Finset.card (support ((X - C x) * P)) ≤ 2 by
+      linarith [eraseLead_support_card_lt hez2,
+        eraseLead_support_card_lt (mul_ne_zero (X_sub_C_ne_zero x) hpz)]
+    have h₂ : (X - C x).support.card = 2 := by
+      simpa [← sub_eq_add_neg] using
+        card_support_binomial one_ne_zero one_ne_zero (neg_ne_zero.mpr hx)
+    have hmul := @card_support_mul_le _ _ (X - C x) P
+    rw [h₂] at hmul
+    linarith [card_support_le_one_of_eraseLead_eq_zero hez]
+  -- degree of (X - C η) * P is one more than degree of P
+  have h₁ : natDegree ((X - C x) * P) = P.natDegree + 1 := by
+    rw [natDegree_mul (X_sub_C_ne_zero x) hpz, natDegree_X_sub_C, add_comm]
+  -- 2 ≤ P.natDegree
+  obtain ⟨dP, hdP⟩ := Nat.exists_eq_add_of_le' (two_le_natDegree_of_nextCoeff_eraseLead hez h)
+  -- turn "P.nextCoeff = 0" into "coeff P dP = 0"
+  have h₂ := h
+  simp only [nextCoeff, hdP, Nat.succ_ne_zero, one_ne_zero,
+    add_tsub_cancel_right, ite_false, Nat.succ_sub_succ_eq_sub, tsub_zero] at h₂
+  -- the subleading term of (X - C η) * P is nonzero
+  have h₂ : nextCoeff ((X - C x) * P) ≠ 0 := by
+    rw [nextCoeff, h₁, hdP]
+    simp only [Nat.succ_ne_zero, one_ne_zero, add_tsub_cancel_right, ite_false]
+    rw [coeff_X_sub_C_mul, h₂]
+    simp only [ne_eq, zero_sub, neg_eq_zero, mul_eq_zero, not_or]
+    use hx
+    rw [← Nat.succ_eq_add_one, ← Nat.add_succ, ← hdP, ← leadingCoeff]
+    exact mt leadingCoeff_eq_zero.mp hpz
+  -- the product is one degree higher than P
+  -- prove equality by showing all the coefficients are equal
+  refine Polynomial.ext (fun n ↦ ?_)
+  -- divide into three cases: low degree, degree equal to P, or higher than P
+  rcases Nat.lt_or_ge n (natDegree P) with hn | hn
+  · --n < P.natDegree
+    rw [← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial]
+    have hd₁ : n < natDegree (eraseLead ((X - C x) * P)) := by
+      linarith [natDegree_eraseLead_add_one h₂]
+    rw [if_neg hd₁.ne', ← self_sub_monomial_natDegree_leadingCoeff, coeff_sub, coeff_monomial]
+    have hd₂ : n < natDegree ((X - C x) * P) := by
+      linarith
+    rw [if_neg hd₂.ne', ← self_sub_monomial_natDegree_leadingCoeff, mul_sub, coeff_sub]
+    simp only [sub_zero]
+    rw [eq_comm, sub_eq_self]
+    rcases hn2 : n with _ | n2
+    · rw [mul_coeff_zero]
+      apply mul_eq_zero_of_right
+      rw [coeff_monomial]
+      split
+      · linarith
+      · rfl
+    · have : (natDegree P) ≠ n2 + 1 := hn2 ▸ hn.ne'
+      rw [coeff_X_sub_C_mul, coeff_monomial, coeff_monomial, if_neg this, mul_zero]
+      split
+      · linarith
+      · exact sub_zero 0
+  · --n ≥ P.natDegree
+    trans 0 <;> rw [coeff_eq_zero_of_natDegree_lt]
+    · calc
+        _ ≤ natDegree _ - 1 := eraseLead_natDegree_le _
+        _ ≤ (natDegree _ - 1) - 1 :=
+          Nat.sub_le_sub_right (eraseLead_natDegree_le _) 1
+        _ = (natDegree P + 1) - 2 := by
+          rw [h₁]
+          rfl
+        _ < P.natDegree :=
+          hdP ▸ Nat.lt_add_one _
+        _ ≤ n := hn
+    · calc
+      _ = 1 + P.eraseLead.natDegree := by
+        rw [natDegree_mul (X_sub_C_ne_zero x) ‹_›, natDegree_X_sub_C]
+      _ ≤ 1 + (natDegree P - 2) :=
+        (add_le_add_iff_left 1).mpr (natDegree_eraseLead_le_of_nextCoeff_eq_zero h)
+      _ < P.natDegree := by
+        simp [hdP, add_comm]
+      _ ≤ n := hn
+
 end EraseLead
 
 /-- An induction lemma for polynomials. It takes a natural number `N` as a parameter, that is
