@@ -82,6 +82,8 @@ For example if `x` and `y` are terms of type `α` then `x + x + x - y` is a
 "typical" element of `FreeAbelianGroup α`. In particular if `α` is empty
 then `FreeAbelianGroup α` is isomorphic to the trivial group, and if `α` has one term
 then `FreeAbelianGroup α` is isomorphic to `ℤ`.
+One can think of `FreeAbelianGroup α` as the functions `α →₀ ℤ` with finite support,
+and addition given pointwise.
 
 TODO: rename to `FreeAddCommGroup` and introduce a multiplicative version
 -/
