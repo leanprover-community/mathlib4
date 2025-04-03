@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Wojciech Nawrocki
 -/
 import Mathlib.Data.Matrix.Basis
+import Mathlib.GroupTheory.Congruence.BigOperators
 import Mathlib.RingTheory.Ideal.Lattice
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 import Mathlib.RingTheory.Jacobson.Ideal
@@ -113,33 +114,121 @@ end Ideal
 
 /-! ### Two-sided ideals in a matrix ring -/
 
+namespace RingCon
+variable {R n : Type*}
+
+section NonUnitalNonAssocSemiring
+variable [NonUnitalNonAssocSemiring R] [Fintype n]
+variable (n)
+
+/-- The ring congruence of matrices with entries related by `c`. -/
+def matricesOver (c : RingCon R) : RingCon (Matrix n n R) where
+  r M N := ∀ i j, c (M i j) (N i j)
+  iseqv.refl _ := fun _ _ => c.refl _
+  iseqv.symm h := fun _ _ => c.symm <| h _ _
+  iseqv.trans h₁ h₂ := fun _ _ => c.trans (h₁ _ _) (h₂ _ _)
+  add' h₁ h₂ := fun _ _ => c.add (h₁ _ _) (h₂ _ _)
+  mul' h₁ h₂ := fun _ _ => c.toAddCon.finset_sum _ fun _ _ => c.mul (h₁ _ _) (h₂ _ _)
+
+@[simp]
+theorem matricesOver_apply (c : RingCon R) (M N : Matrix n n R) :
+    c.matricesOver n M N ↔ ∀ i j, c (M i j) (N i j) :=
+  Iff.rfl
+
+theorem matricesOver_monotone : Monotone (matricesOver (R := R) n) :=
+  fun _ _ hc _ _ h _ _ => hc (h _ _)
+
+theorem matricesOver_strictMono_of_nonempty [Nonempty n] :
+    StrictMono (matricesOver (R := R) n) :=
+  matricesOver_monotone n |>.strictMono_of_injective <| fun I J eq => RingCon.ext fun r s => by
+    have := congr_fun (DFunLike.congr_fun eq (Matrix.of fun _ _ => r)) (Matrix.of fun _ _ => s)
+    simpa using this
+
+@[simp]
+theorem matricesOver_bot : (⊥ : RingCon R).matricesOver n = ⊥ :=
+  eq_bot_iff.2 fun _ _ h => Matrix.ext h
+
+@[simp]
+theorem matricesOver_top : (⊤ : RingCon R).matricesOver n = ⊤ :=
+  eq_top_iff.2 fun _ _ _ _ _ => trivial
+
+open Matrix
+
+variable {n}
+
+/-- The congruence relation induced by `c` on `stdBasisMatrix i j`. -/
+def ofMatricesOver (c : RingCon (Matrix n n R)) (i j : n) : RingCon R where
+  r x y := c (by classical exact stdBasisMatrix i j x) (by classical exact stdBasisMatrix i j y)
+  __ := c.toAddCon.comap
+    (by classical exact stdBasisMatrix i j) (by classical exact stdBasisMatrix_add _ _)
+  mul' {x₁ x₂ y₁ y₂} hx hy := by
+    classical
+    replace hx := c.mul hx (c.refl <| diagonal fun _ => y₁)
+    replace hy := c.mul (c.refl <| diagonal fun _ => x₂) hy
+    simp_rw [← op_smul_eq_mul_diagonal, smul_stdBasisMatrix, op_smul_eq_mul] at hx
+    simp_rw [← smul_eq_diagonal_mul, smul_stdBasisMatrix, smul_eq_mul] at hy
+    exact c.trans hx hy
+
+@[simp]
+theorem ofMatricesOver_rel [DecidableEq n] {c : RingCon (Matrix n n R)} {i j : n} {x y : R} :
+    ofMatricesOver c i j x y ↔ c (stdBasisMatrix i j x) (stdBasisMatrix i j y) := by
+  simp [ofMatricesOver]
+  congr!
+
+@[simp] theorem ofMatricesOver_matricesOver (c : RingCon R) (i j : n) :
+    ofMatricesOver (matricesOver n c) i j = c := by
+  refine RingCon.ext fun x y => ?_
+  classical
+  constructor
+  · intro h
+    simpa using h i j
+  · intro h i' j'
+    obtain hi | rfl := ne_or_eq i i'
+    · simpa [hi] using c.refl _
+    obtain hj | rfl := ne_or_eq j j'
+    · simpa [hj] using c.refl _
+    simpa using h
+
+end NonUnitalNonAssocSemiring
+
+section NonAssocSemiring
+variable [NonAssocSemiring R] [Fintype n]
+open Matrix
+
+@[simp]
+theorem matricesOver_ofMatricesOver (c : RingCon (Matrix n n R)) (i j : n) :
+    matricesOver n (ofMatricesOver c i j) = c := by
+  refine RingCon.ext fun x y => ?_
+  classical
+  constructor
+  · intro h
+    rw [matrix_eq_sum_stdBasisMatrix x, matrix_eq_sum_stdBasisMatrix y]
+    refine c.finset_sum _ fun i' _ => c.finset_sum _ fun j' _ => ?_
+    simpa using
+      c.mul (c.mul (c.refl <| stdBasisMatrix i' i 1) (h i' j')) (c.refl <| stdBasisMatrix j j' 1)
+  · intro h i' j'
+    simpa using c.mul (c.mul (c.refl <| stdBasisMatrix i i' 1) h) (c.refl <| stdBasisMatrix j' j 1)
+
+end NonAssocSemiring
+
+end RingCon
+
 namespace TwoSidedIdeal
 open Matrix
 
-variable {R : Type*} [Ring R]
-         (n : Type*) [Fintype n]
+variable {R : Type*} (n : Type*)
+
+section NonUnitalNonAssocRing
+variable [NonUnitalNonAssocRing R] [Fintype n]
 
 /-- The two-sided ideal of matrices with entries in `I ≤ R`. -/
-def matricesOver (I : TwoSidedIdeal R) : TwoSidedIdeal (Matrix n n R) :=
-  TwoSidedIdeal.mk' { M | ∀ i j, M i j ∈ I }
-    (fun _ _ => I.zero_mem)
-    (fun ha hb i j => I.add_mem (ha i j) (hb i j))
-    (fun ha i j => I.neg_mem (ha i j))
-    (fun ha i j => by
-      rw [mul_apply]
-      apply sum_mem
-      intro k _
-      apply I.mul_mem_left _ _ (ha k j))
-    (fun ha i j => by
-      rw [mul_apply]
-      apply sum_mem
-      intro k _
-      apply I.mul_mem_right _ _ (ha i k))
+@[simps]
+def matricesOver (I : TwoSidedIdeal R) : TwoSidedIdeal (Matrix n n R) where
+  ringCon := I.ringCon.matricesOver n
 
 @[simp]
 lemma mem_matricesOver (I : TwoSidedIdeal R) (M : Matrix n n R) :
-    M ∈ I.matricesOver n ↔ ∀ i j, M i j ∈ I := by
-  simp [matricesOver]
+    M ∈ I.matricesOver n ↔ ∀ i j, M i j ∈ I := Iff.rfl
 
 theorem matricesOver_monotone : Monotone (matricesOver (R := R) n) :=
   fun _ _ IJ _ MI i j => IJ (MI i j)
@@ -152,22 +241,19 @@ theorem matricesOver_strictMono_of_nonempty [h : Nonempty n] :
     simpa only [mem_matricesOver, of_apply, forall_const] using this
 
 @[simp]
-theorem matricesOver_bot : (⊥ : TwoSidedIdeal R).matricesOver n = ⊥ := by
-  ext M
-  simp only [mem_matricesOver, mem_bot]
-  constructor
-  · intro H; ext; apply H
-  · intro H; simp [H]
+theorem matricesOver_bot : (⊥ : TwoSidedIdeal R).matricesOver n = ⊥ :=
+  ringCon_injective <| RingCon.matricesOver_bot _
 
 @[simp]
-theorem matricesOver_top : (⊤ : TwoSidedIdeal R).matricesOver n = ⊤ := by
-  ext; simp
+theorem matricesOver_top : (⊤ : TwoSidedIdeal R).matricesOver n = ⊤ :=
+  ringCon_injective <| RingCon.matricesOver_top _
 
-theorem asIdeal_matricesOver [DecidableEq n] (I : TwoSidedIdeal R) :
-    asIdeal (I.matricesOver n) = (asIdeal I).matricesOver n := by
-  ext; simp
+end NonUnitalNonAssocRing
 
-variable {n : Type*} [Fintype n]
+section NonAssocRing
+variable [NonAssocRing R] [Fintype n]
+
+variable {n}
 
 /--
 Two-sided ideals in $R$ correspond bijectively to those in $Mₙ(R)$.
@@ -177,59 +263,9 @@ Given an ideal $J ≤ Mₙ(R)$, we send it to $\{Nᵢⱼ ∣ ∃ N ∈ J\}$.
 @[simps]
 def equivMatricesOver (i j : n) : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n R) where
   toFun I := I.matricesOver n
-  invFun J := TwoSidedIdeal.mk'
-    { N i j | N ∈ J }
-    ⟨0, J.zero_mem, rfl⟩
-    (by rintro _ _ ⟨x, hx, rfl⟩ ⟨y, hy, rfl⟩; exact ⟨x + y, J.add_mem hx hy, rfl⟩)
-    (by rintro _ ⟨x, hx, rfl⟩; exact ⟨-x, J.neg_mem hx, rfl⟩)
-    (by
-      classical
-      rintro x _ ⟨y, hy, rfl⟩
-      exact ⟨diagonal (fun _ ↦ x) * y, J.mul_mem_left _ _ hy, by simp⟩)
-    (by
-      classical
-      rintro _ y ⟨x, hx, rfl⟩
-      exact ⟨x * diagonal (fun _ ↦ y), J.mul_mem_right _ _ hx, by simp⟩)
-  right_inv J := SetLike.ext fun x ↦ by
-    classical
-    simp only [mem_mk', Set.mem_image, SetLike.mem_coe, mem_matricesOver]
-    constructor
-    · intro h
-      choose y hy1 hy2 using h
-      rw [matrix_eq_sum_stdBasisMatrix x]
-      refine sum_mem fun k _ ↦ sum_mem fun l _ ↦ ?_
-      suffices
-          stdBasisMatrix k l (x k l) =
-          stdBasisMatrix k i 1 * y k l * stdBasisMatrix j l 1 by
-        rw [this]
-        exact J.mul_mem_right _ _ (J.mul_mem_left _ _ <| hy1 _ _)
-      ext a b
-      by_cases hab : a = k ∧ b = l
-      · rcases hab with ⟨ha, hb⟩
-        subst ha hb
-        simp only [StdBasisMatrix.apply_same, StdBasisMatrix.mul_right_apply_same,
-          StdBasisMatrix.mul_left_apply_same, one_mul, mul_one]
-        rw [hy2 a b]
-      · conv_lhs =>
-          dsimp [stdBasisMatrix]
-          rw [if_neg (by tauto)]
-        rw [not_and_or] at hab
-        rcases hab with ha | hb
-        · rw [mul_assoc, StdBasisMatrix.mul_left_apply_of_ne (h := ha)]
-        · rw [StdBasisMatrix.mul_right_apply_of_ne (hbj := hb)]
-    · intro hx k l
-      refine ⟨stdBasisMatrix i k 1 * x * stdBasisMatrix l j 1,
-        J.mul_mem_right _ _ (J.mul_mem_left _ _ hx), ?_⟩
-      rw [StdBasisMatrix.mul_right_apply_same, StdBasisMatrix.mul_left_apply_same,
-        mul_one, one_mul]
-  left_inv I := SetLike.ext fun x ↦ by
-    simp only [mem_mk', Set.mem_image, SetLike.mem_coe, mem_matricesOver]
-    constructor
-    · intro h
-      choose y hy1 hy2 using h
-      exact hy2 ▸ hy1 _ _
-    · intro h
-      exact ⟨of fun _ _ => x, by simp [h], rfl⟩
+  invFun J := { ringCon := J.ringCon.ofMatricesOver i j}
+  right_inv _ := ringCon_injective <| RingCon.matricesOver_ofMatricesOver _ _ _
+  left_inv _ := ringCon_injective <| RingCon.ofMatricesOver_matricesOver _ _ _
 
 /--
 Two-sided ideals in $R$ are order-isomorphic with those in $Mₙ(R)$.
@@ -248,6 +284,17 @@ def orderIsoMatricesOver (i j : n) : TwoSidedIdeal R ≃o TwoSidedIdeal (Matrix 
     · intro IJ M MI i j
       exact IJ <| MI i j
 
+end NonAssocRing
+
+section Ring
+variable [Ring R] [Fintype n]
+
+theorem asIdeal_matricesOver [DecidableEq n] (I : TwoSidedIdeal R) :
+    asIdeal (I.matricesOver n) = (asIdeal I).matricesOver n := by
+  ext; simp
+
+end Ring
+
 end TwoSidedIdeal
 
 /-! ### Jacobson radicals of two-sided ideals in a matrix ring -/
@@ -262,7 +309,8 @@ private lemma jacobson_matricesOver_le (I : TwoSidedIdeal R) :
   -- Proof generalized from example 8 in
   -- https://ysharifi.wordpress.com/2022/08/16/the-jacobson-radical-basic-examples/
   intro M Mmem p q
-  rw [sub_zero, mem_jacobson_iff]
+  simp only [zero_apply, ← mem_iff]
+  rw [mem_jacobson_iff]
   replace Mmem := mul_mem_right _ _ (stdBasisMatrix q p 1) Mmem
   rw [mem_jacobson_iff] at Mmem
   intro y
