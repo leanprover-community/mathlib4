@@ -6,6 +6,8 @@ Authors: Yakov Pechersky
 
 import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
+import Mathlib.RingTheory.PowerSeries.Evaluation
+import Mathlib.RingTheory.PowerSeries.Trunc
 
 
 /-!
@@ -18,7 +20,7 @@ determined as an expansion in terms of a fixed uniformizer.
 ## Main definitions
 
 * `AdicExpansion.Digits`: a preimage of the residue field which is used in the expansion.
-* `AdicExpansion`: the expansion itself, implemented as a type synonym of functions from `ℕ`.
+* `AdicExpansion`: the expansion itself, implemented as a power series with `Digits` coefficients.
 
 ## TODO
 * `AdicExpansion.evalAt`: the evaluation of the expansion at a given point.
@@ -99,35 +101,54 @@ open AdicExpansion
 
 /-- A formal expansion of an element in the local ring, at the digits specified. Meant to
 be evaluated using `AdicExpansion.evalAtUpto` and related definitions. -/
-def AdicExpansion [IsLocalRing R] (d : Digits R) := ℕ → d
+structure AdicExpansion [IsLocalRing R] (d : Digits R) where
+  carrier : PowerSeries R
+  isDigits i : carrier.coeff R i ∈ d
 
 namespace AdicExpansion
 
 variable [IsLocalRing R] {D : Digits R}
 
+noncomputable
+instance : FunLike (AdicExpansion D) ℕ D where
+  coe f n := ⟨f.carrier.coeff R n, f.isDigits n⟩
+  coe_injective' := by
+    rintro ⟨⟩ ⟨⟩
+    simp [funext_iff, PowerSeries.ext_iff]
+
 protected lemma ext_iff {f g : AdicExpansion D} :
     f = g ↔ ∀ n, f n = g n :=
-  funext_iff
+  DFunLike.ext_iff
 
 @[ext]
 protected lemma ext {f g : AdicExpansion D} (h : ∀ n, f n = g n) : f = g :=
-  funext h
+  DFunLike.ext _ _ h
+
+@[simp]
+lemma coeff_carrier_eq_apply (f : AdicExpansion D) (n : ℕ) :
+    f.carrier.coeff R n = f n := rfl
+
+@[simp]
+lemma apply_mk_eq_apply (f) (hf) (n : ℕ) :
+    (⟨f, hf⟩ : AdicExpansion D) n = f.coeff _ n := rfl
 
 noncomputable
-instance : Zero (AdicExpansion D) := inferInstanceAs (Zero (ℕ → D))
+instance : Zero (AdicExpansion D) := ⟨⟨0, fun _ ↦ D.zero⟩⟩
 
+@[simp]
+lemma carrier_zero : (0 : AdicExpansion D).carrier = 0 := rfl
 @[simp]
 lemma zero_apply (n : ℕ) : (0 : AdicExpansion D) n = 0 := rfl
 
 /-- Evaluation of an `AdicExpansion` up to the indicated power, using the provided "base". -/
 noncomputable
 def evalAtUpto (ϖ : R) (f : AdicExpansion D) (n : ℕ) : R :=
-  ∑ i ∈ Finset.range n, f i * ϖ ^ i
+  (PowerSeries.trunc n f.carrier).eval ϖ
 
 @[simp]
 lemma evalAtUpto_zero (ϖ : R) (f : AdicExpansion D) :
     evalAtUpto ϖ f 0 = 0 := by
-  simp only [evalAtUpto, Finset.sum_range_zero, zero_mul]
+  simp [evalAtUpto]
 
 @[simp]
 lemma evalAtUpto_one (ϖ : R) (f : AdicExpansion D) :
@@ -136,14 +157,12 @@ lemma evalAtUpto_one (ϖ : R) (f : AdicExpansion D) :
 
 lemma evalAtUpto_add_one (ϖ : R) (f : AdicExpansion D) (n : ℕ) :
     evalAtUpto ϖ f (n + 1) = evalAtUpto ϖ f n + f n * ϖ ^ n := by
-  simp only [evalAtUpto, Finset.sum_range_succ]
+  simp [evalAtUpto, PowerSeries.trunc_succ]
 
 @[simp]
 lemma zero_evalAtUpto (ϖ : R) (n : ℕ) :
-    evalAtUpto ϖ (0 : ℕ → D) n = 0 := by
-  induction n with
-  | zero => simp
-  | succ n ih => simp [evalAtUpto_add_one, ih]
+    evalAtUpto ϖ (0 : AdicExpansion D) n = 0 := by
+  simp [evalAtUpto]
 
 @[simp]
 lemma evalAtUpto_at_zero (f : AdicExpansion D) (n : ℕ) :
@@ -163,17 +182,28 @@ lemma congr_of_eqOn (ϖ : R) {f g : AdicExpansion D} {n : ℕ}
     simp only [evalAtUpto_add_one]
     rw [ih (fun i hi ↦ h i (Nat.lt_succ_of_lt hi)), h _ (by simp)]
 
-lemma mul_evalAtUpto_of_add_one (ϖ : R) (f : AdicExpansion D) (n : ℕ) :
-    ϖ * evalAtUpto ϖ (f ∘ (· + 1)) n = evalAtUpto ϖ f (n + 1) - f 0 := by
+noncomputable
+def shiftLeft (f : AdicExpansion D) : AdicExpansion D :=
+  ⟨.mk fun n ↦ f (n + 1), fun _ ↦ by simp⟩
+
+@[simp]
+lemma shiftLeft_apply (f : AdicExpansion D) (n : ℕ) :
+    f.shiftLeft n = f (n + 1) := by
+  dsimp only [shiftLeft]
+  ext
+  simp
+
+lemma mul_evalAtUpto_shiftLeft (ϖ : R) (f : AdicExpansion D) (n : ℕ) :
+    ϖ * evalAtUpto ϖ f.shiftLeft n = evalAtUpto ϖ f (n + 1) - f 0 := by
   induction n with
   | zero => simp
   | succ n ih =>
-    simp only [evalAtUpto_add_one, Function.comp_apply, mul_add, ih]
+    simp only [evalAtUpto_add_one, shiftLeft_apply, mul_add, ih]
     ring
 
 lemma evalAtUpto_add_one' (ϖ : R) (f : AdicExpansion D) (n : ℕ) :
-    evalAtUpto ϖ f (n + 1) = f 0 + ϖ * evalAtUpto ϖ (f ∘ (· + 1)) n := by
-  rw [mul_evalAtUpto_of_add_one]
+    evalAtUpto ϖ f (n + 1) = f 0 + ϖ * evalAtUpto ϖ f.shiftLeft n := by
+  rw [mul_evalAtUpto_shiftLeft]
   ring
 
 lemma dvd_evalAtUpto_iff_apply_zero {ϖ : R} (hϖ : ¬ IsUnit ϖ)
@@ -189,8 +219,8 @@ lemma dvd_evalAtUpto_iff_apply_zero {ϖ : R} (hϖ : ¬ IsUnit ϖ)
         ← mul_sub] at h
       exact ih ⟨_, h.symm⟩
   · intro h
-    refine ⟨evalAtUpto ϖ (f ∘ (· + 1)) n, ?_⟩
-    simp [mul_evalAtUpto_of_add_one, h]
+    refine ⟨evalAtUpto ϖ f.shiftLeft n, ?_⟩
+    simp [mul_evalAtUpto_shiftLeft, h]
 
 lemma evalAtUpto_eq_zero_iff [IsDomain R] {ϖ : R} (hϖ : ¬ IsUnit ϖ) (hn : ϖ ≠ 0)
     {f : AdicExpansion D} {n : ℕ} :
@@ -207,7 +237,7 @@ lemma evalAtUpto_eq_zero_iff [IsDomain R] {ϖ : R} (hϖ : ¬ IsUnit ϖ) (hn : ϖ
         exact ⟨_, rfl⟩
       replace h' : ϖ ∣ evalAtUpto ϖ f (n + 1) := dvd_trans (dvd_pow_self _ (by simp)) h'
       rw [dvd_evalAtUpto_iff_apply_zero hϖ, Digits.ext_iff, Digits.coe_zero] at h'
-      rw [← sub_zero (evalAtUpto _ _ _), ← h', ← mul_evalAtUpto_of_add_one, h'] at h
+      rw [← sub_zero (evalAtUpto _ _ _), ← h', ← mul_evalAtUpto_shiftLeft, h'] at h
       simp only [mul_eq_zero, hn, false_or] at h
       specialize ih h
       simp only [Function.comp_apply, Digits.ext_iff, Digits.coe_zero] at ih
@@ -254,14 +284,14 @@ lemma evalAtUpto_injOn [IsDomain R]
     simp only [ge_iff_le, Set.mem_setOf_eq] at hf hg h
     apply_fun (· - (f 0 : R)) at h
     apply_fun (· - (g 0 : R)) at h
-    rw [← mul_evalAtUpto_of_add_one, sub_sub, add_comm (f 0 : R), ← sub_sub,
-      ← mul_evalAtUpto_of_add_one, sub_eq_sub_iff_sub_eq_sub, ← mul_sub] at h
+    rw [← mul_evalAtUpto_shiftLeft, sub_sub, add_comm (f 0 : R), ← sub_sub,
+      ← mul_evalAtUpto_shiftLeft, sub_eq_sub_iff_sub_eq_sub, ← mul_sub] at h
     have h0 : g 0 = f 0 := by simp [← Digits.not_isUnit_dvd_sub_iff hϖ, ← h]
     simp only [h0, sub_self, mul_eq_zero, hϖ0, false_or, sub_eq_zero] at h
-    specialize ih z (fun i hi ↦ hf (i + 1) (by simpa using hi))
-      (fun i hi ↦ hg (i + 1) (by simpa using hi)) h
+    specialize ih z (fun i hi ↦ by simpa using hf (i + 1) (by simpa using hi))
+      (fun i hi ↦ by simpa using hg (i + 1) (by simpa using hi)) h
     ext (_|n)
     · simp [h0]
-    · simp [congr_fun ih n]
+    · simpa using congr_fun (congr_arg (⇑) ih) n
 
 end AdicExpansion
