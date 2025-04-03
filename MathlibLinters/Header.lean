@@ -213,6 +213,7 @@ otherwise.
 This is used by the `Header` linter as a heuristic of whether it should inspect the file or not.
 -/
 def isInMathlib (modName : Name) : IO Bool := do
+  if (modName.findPrefix (guard <| · == `MathlibLinters)).isSome then return true
   let mlPath := ("Mathlib" : System.FilePath).addExtension "lean"
   if ← mlPath.pathExists then
     let ml ← parseImports' (← IO.FS.readFile mlPath) ""
@@ -341,7 +342,7 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
     | .original lead .. => lead.toString
     | _ => ""
   -- Report any errors about the copyright line.
-  if mainModule != `Mathlib.Init then
+  if mainModule != `MathlibLinters.Init && mainModule != `Mathlib.Init then
     for (stx, m) in copyrightHeaderChecks copyright do
       Linter.logLint linter.style.header stx m!"* '{stx.getAtomVal}':\n{m}\n"
   -- Report a missing module doc-string.

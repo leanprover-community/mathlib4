@@ -5,7 +5,7 @@ Authors: Michael Rothgang
 -/
 
 import Batteries.Data.String.Matcher
-import Mathlib.Data.Nat.Notation
+import MathlibLinters.Init
 
 /-!
 ## Text-based linters
@@ -90,7 +90,7 @@ structure ErrorContext where
   /-- The underlying `StyleError` -/
   error : StyleError
   /-- The line number of the error (1-based) -/
-  lineNumber : ℕ
+  lineNumber : Nat
   /-- The path to the file which was linted -/
   path : FilePath
 
@@ -190,7 +190,7 @@ return an array of all style errors with line numbers. If possible,
 also return the collection of all lines, changed as needed to fix the linter errors.
 (Such automatic fixes are only possible for some kinds of `StyleError`s.)
 -/
-abbrev TextbasedLinter := Array String → Array (StyleError × ℕ) × (Option (Array String))
+abbrev TextbasedLinter := Array String → Array (StyleError × Nat) × (Option (Array String))
 
 /-! Definitions of the actual text-based linters. -/
 section

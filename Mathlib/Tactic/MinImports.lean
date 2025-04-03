@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 import Lean.Elab.DefView
 import Lean.Util.CollectAxioms
-import Mathlib.Init
+import MathlibLinters.Init
 import ImportGraph.Imports
 
 /-! # `#min_imports in` a command to find minimal imports

@@ -8,7 +8,7 @@ import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
 import MathlibLinters.Header
-import Mathlib.Tactic.DeclarationNames
+import MathlibLinters.DeclarationNames
 
 /-!
 ## Style linters

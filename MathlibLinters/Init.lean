@@ -1,5 +1,18 @@
--- Import all syntax linters:
-import MathlibLinters.Init
+import MathlibLinters.DeprecatedSyntaxLinter
+import MathlibLinters.DirectoryDependency
+import MathlibLinters.DocPrime
+import MathlibLinters.DocString
+import MathlibLinters.GlobalAttributeIn
+import MathlibLinters.HashCommandLinter
+import MathlibLinters.Header
+-- This file imports Batteries.Tactic.Lint, where the `env_linter` attribute is defined.
+import MathlibLinters.Lint
+import MathlibLinters.Multigoal
+import MathlibLinters.OldObtain
+-- The following import contains the environment extension for the unused tactic linter.
+import MathlibLinters.UnusedTacticExtension
+import MathlibLinters.UnusedTactic
+import MathlibLinters.Style
 
 /-!
 This is the root file in Mathlib: it is imported by virtually *all* Mathlib files.

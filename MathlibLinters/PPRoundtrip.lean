@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
-import Mathlib.Init
+import MathlibLinters.Init
 
 /-!
 #  The "ppRoundtrip" linter
