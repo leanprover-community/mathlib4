@@ -45,8 +45,6 @@ lemma degreeOn_lt_degree {a v : α} {s : Finset α} (hv : v ∈ G.neighborFinset
 
 end degreeOn
 
-open Finset
-
 @[ext]
 structure PartialColoring (s : Finset α) where
 col : α → ℕ
@@ -55,12 +53,6 @@ valid : ∀ ⦃v w⦄, v ∈ s → w ∈ s → G.Adj v w → col v ≠ col w
 instance (s : Finset α) : FunLike (G.PartialColoring s) α  ℕ where
   coe := PartialColoring.col
   coe_injective' := fun _ _ h ↦ PartialColoring.ext h
-
-/-- If no two vertices in `s` are adjacent then we can color `s` with zero -/
-def partialColoringOfForAllNotAdj (s : Finset α) (h : ∀ ⦃u v⦄, u ∈ s → v ∈ s → ¬ G.Adj u v) :
-    G.PartialColoring s where
-  col := fun _ ↦ 0
-  valid := fun _ _ hx hy hadj _ ↦ h hx hy hadj
 
 def partialColoringOfEmpty : G.PartialColoring ∅ where
   col := fun _ ↦ 0
@@ -247,7 +239,7 @@ lemma insert_eq (C : G.PartialColoring s) (a : α) :
 
 variable {k : ℕ} {a u v w x y : α} {C : G.PartialColoring s}
 
-/-- If `C` is a `k`-coloring of `s` and the greedy extend uses a color < k then -/
+/-- If `C` is a `k`-coloring of `s` and the greedy extension to `a` uses a color < k then -/
 lemma insert_isK (h : C.IsPartialKColoring k) (hg : C.extend a < k) :
     (C.insert a).IsPartialKColoring k := by
   rw [IsPartialKColoring, insert_eq]
@@ -272,7 +264,7 @@ lemma extend_eq_degreeOn (h : C.extend a = G.degreeOn s a) :
   exact injOn_of_card_image_eq <| le_antisymm card_image_le h3
 
 /-- If two neighbors of `a` have the same color in `s` then greedily coloring `a` uses a color
-less-than the `degreeOn s` of `a` -/
+` < G.degreeOn s a` -/
 lemma extend_lt_of_not_injOn (hus : u ∈ s) (hvs : v ∈ s) (hu : G.Adj a u) (hv : G.Adj a v)
     (hne : u ≠ v) (hj2 : C u = C v) : C.extend a < G.degreeOn s a := by
     apply (C.extend_le_degreeOn _).lt_of_ne
@@ -280,13 +272,12 @@ lemma extend_lt_of_not_injOn (hus : u ∈ s) (hvs : v ∈ s) (hu : G.Adj a u) (h
     apply hne
     apply extend_eq_degreeOn hf <;> simp_all
 
-
 open Walk List
 /-- The greedy extension of a `PartialColoring s` to a list of vertices `l`. -/
 def Greedy (C : G.PartialColoring s) (l : List α) : G.PartialColoring (s ∪ l.toFinset) :=
-match l with
-| [] => C.copy (by simp)
-| a :: l => ((C.Greedy l).insert a).copy (by simp)
+  match l with
+  | [] => C.copy (by simp)
+  | a :: l => ((C.Greedy l).insert a).copy (by simp)
 
 @[simp]
 lemma Greedy_nil (C : G.PartialColoring s)  : C.Greedy []  = C.copy (by simp)  := rfl
@@ -318,7 +309,7 @@ lemma Greedy_not_mem {C : G.PartialColoring s} {l : List α} {v : α} (hv : v �
 variable {x y a : α} {C : G.PartialColoring s} {p : G.Walk u v}
 /-
 If `C` is a `k` coloring of `s`, all degrees are at most `k`, and  `p` is a path disjoint
-from `s` then we have `k`-coloring of `s ∪ p.support.tail` by extending `C` greedily
+from `s` then we can `k`-color `s ∪ p.support.tail` by extending `C` greedily.
 -/
 theorem Greedy_of_tail_path (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath)
     (hlt : C.IsPartialKColoring k) (hdisj : Disjoint s p.support.toFinset) :
@@ -350,8 +341,7 @@ theorem Greedy_of_path_notInj (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath)
   intro a
   by_cases ha : a ∈ p.support
   · have := Greedy_of_tail_path hbdd hp hlt hdisj
-    rw [support_eq_cons]
-    rw [Greedy_cons]
+    rw [support_eq_cons, Greedy_cons]
     by_cases hu : a = u
     · rw [if_pos hu]
       have heq : (C.Greedy p.support.tail) x = (C.Greedy p.support.tail) y := by

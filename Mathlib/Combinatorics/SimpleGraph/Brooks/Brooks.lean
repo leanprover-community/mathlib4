@@ -255,8 +255,8 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
            ← erase_eq_of_not_mem (not_mem_sdiff_of_mem_right hd2), ← erase_union_distrib,
             insert_erase (hsdc.symm ▸ (hsub.1 hd2))]
         have hps : p.support.toFinset ⊆ c.support.toFinset := by
+          rw [List.toFinset_subset]
           intro x hx
-          rw [mem_toFinset] at *
           exact (mem_support_rotate_iff hr).1 (support_drop_subset _ _ (support_drop_subset _ _ hx))
         have hdisj : Disjoint (insert d.toProd.2 (s \ c.support.toFinset))
           p.reverse.support.toFinset := by
