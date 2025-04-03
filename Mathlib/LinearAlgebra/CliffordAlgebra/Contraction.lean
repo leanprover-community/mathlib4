@@ -3,10 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
-import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
 import Mathlib.LinearAlgebra.CliffordAlgebra.Conjugation
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.CliffordAlgebra.Fold
+import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
+import Mathlib.LinearAlgebra.Dual.Defs
 
 /-!
 # Contraction in Clifford Algebras
@@ -79,7 +79,6 @@ def contractLeft : Module.Dual R M →ₗ[R] CliffordAlgebra Q →ₗ[R] Cliffor
   toFun d := foldr' Q (contractLeftAux Q d) (contractLeftAux_contractLeftAux Q d) 0
   map_add' d₁ d₂ :=
     LinearMap.ext fun x => by
-      dsimp only
       rw [LinearMap.add_apply]
       induction x using CliffordAlgebra.left_induction with
       | algebraMap => simp_rw [foldr'_algebraMap, smul_zero, zero_add]
@@ -90,7 +89,6 @@ def contractLeft : Module.Dual R M →ₗ[R] CliffordAlgebra Q →ₗ[R] Cliffor
         rw [sub_add_sub_comm, mul_add, LinearMap.add_apply, add_smul]
   map_smul' c d :=
     LinearMap.ext fun x => by
-      dsimp only
       rw [LinearMap.smul_apply, RingHom.id_apply]
       induction x using CliffordAlgebra.left_induction with
       | algebraMap => simp_rw [foldr'_algebraMap, smul_zero]
@@ -116,10 +114,6 @@ theorem contractRight_eq (x : CliffordAlgebra Q) :
 local infixl:70 "⌋" => contractLeft (R := R) (M := M)
 
 local infixl:70 "⌊" => contractRight (R := R) (M := M) (Q := Q)
-
--- Porting note: Lean needs to be reminded of this instance otherwise the statement of the
--- next result times out
-instance : SMul R (CliffordAlgebra Q) := inferInstance
 
 /-- This is [grinberg_clifford_2016][] Theorem 6 -/
 theorem contractLeft_ι_mul (a : M) (b : CliffordAlgebra Q) :
@@ -339,11 +333,9 @@ def changeFormEquiv : CliffordAlgebra Q ≃ₗ[R] CliffordAlgebra Q' :=
     toFun := changeForm h
     invFun := changeForm (changeForm.neg_proof h)
     left_inv := fun x => by
-      dsimp only
       exact (changeForm_changeForm _ _ x).trans <|
         by simp_rw [(add_neg_cancel B), changeForm_self_apply]
     right_inv := fun x => by
-      dsimp only
       exact (changeForm_changeForm _ _ x).trans <|
         by simp_rw [(neg_add_cancel B), changeForm_self_apply] }
 

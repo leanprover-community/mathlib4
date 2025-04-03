@@ -953,9 +953,10 @@ theorem fract_neg_eq_zero {x : α} : fract (-x) = 0 ↔ fract x = 0 := by
   constructor <;> rintro ⟨z, hz⟩ <;> use -z <;> simp [← hz]
 
 theorem fract_mul_nat (a : α) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (a * b) = z := by
-  induction' b with c hc
-  · use 0; simp
-  · rcases hc with ⟨z, hz⟩
+  induction b with
+  | zero => use 0; simp
+  | succ c hc =>
+    rcases hc with ⟨z, hz⟩
     rw [Nat.cast_add, mul_add, mul_add, Nat.cast_one, mul_one, mul_one]
     rcases fract_add (a * c) a with ⟨y, hy⟩
     use z - y
@@ -1008,7 +1009,10 @@ theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) =
   refine fract_eq_iff.mpr ⟨?_, ?_, m / n, ?_⟩
   · positivity
   · simpa only [div_lt_one hn', Nat.cast_lt] using m.mod_lt hn
-  · rw [sub_eq_iff_eq_add', ← mul_right_inj' hn'.ne', mul_div_cancel₀ _ hn'.ne', mul_add,
+  · #adaptation_note
+    /-- `_root_` can be removed again after
+    https://github.com/leanprover/lean4/pull/7359 lands in nightly-2025-03-06. -/
+    rw [_root_.sub_eq_iff_eq_add', ← mul_right_inj' hn'.ne', mul_div_cancel₀ _ hn'.ne', mul_add,
       mul_div_cancel₀ _ hn'.ne']
     norm_cast
     rw [← Nat.cast_add, Nat.mod_add_div m n]
@@ -1158,6 +1162,9 @@ theorem ceil_one : ⌈(1 : α)⌉ = 1 := by rw [← cast_one, ceil_intCast]
 
 @[bound]
 theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := mod_cast ha.trans (le_ceil a)
+
+theorem ceil_nonneg_of_neg_one_lt (ha : -1 < a) : 0 ≤ ⌈a⌉ := by
+  rwa [Int.le_ceil_iff, Int.cast_zero, zero_sub]
 
 theorem ceil_eq_iff : ⌈a⌉ = z ↔ ↑z - 1 < a ∧ a ≤ z := by
   rw [← ceil_le, ← Int.cast_one, ← Int.cast_sub, ← lt_ceil, Int.sub_one_lt_iff, le_antisymm_iff,
@@ -1393,11 +1400,17 @@ theorem Int.natCast_floor_eq_floor (ha : 0 ≤ a) : (⌊a⌋₊ : ℤ) = ⌊a⌋
 theorem Int.natCast_ceil_eq_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
   rw [← Int.ceil_toNat, Int.toNat_of_nonneg (Int.ceil_nonneg ha)]
 
+theorem Int.natCast_ceil_eq_ceil_of_neg_one_lt (ha : -1 < a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
+  rw [← Int.ceil_toNat, Int.toNat_of_nonneg (Int.ceil_nonneg_of_neg_one_lt ha)]
+
 theorem natCast_floor_eq_intCast_floor (ha : 0 ≤ a) : (⌊a⌋₊ : α) = ⌊a⌋ := by
   rw [← Int.natCast_floor_eq_floor ha, Int.cast_natCast]
 
 theorem natCast_ceil_eq_intCast_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
   rw [← Int.natCast_ceil_eq_ceil ha, Int.cast_natCast]
+
+theorem natCast_ceil_eq_intCast_ceil_of_neg_one_lt (ha : -1 < a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
+  rw [← Int.natCast_ceil_eq_ceil_of_neg_one_lt ha, Int.cast_natCast]
 
 end FloorRingToSemiring
 

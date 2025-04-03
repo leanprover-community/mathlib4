@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.Category.PartOrd
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Hom.BoundedLattice
 
 /-!
 # The categories of semilattices

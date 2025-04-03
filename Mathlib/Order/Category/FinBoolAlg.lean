@@ -97,10 +97,6 @@ def dual : FinBoolAlg ⥤ FinBoolAlg where
   obj X := of Xᵒᵈ
   map f := BoolAlg.ofHom f.hom.dual
 
-#adaptation_note /--
-sThis apparently became slower in nightly-2025-02-12. (Possibly due to changes in `simp +arith`?)
--/
-set_option maxHeartbeats 400000 in
 /-- The equivalence between `FinBoolAlg` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]
 def dualEquiv : FinBoolAlg ≌ FinBoolAlg where

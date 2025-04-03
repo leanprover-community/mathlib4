@@ -3,8 +3,8 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yuyang Zhao
 -/
-import Mathlib.Algebra.Group.Pi.Notation
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.Notation.Pi
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Order.Monotone.Basic
@@ -1153,8 +1153,7 @@ lemma strictMonoOn_mul_self [PosMulStrictMono M₀] [MulPosMono M₀] :
 
 -- See Note [decidable namespace]
 protected lemma Decidable.mul_lt_mul'' [PosMulMono M₀] [PosMulStrictMono M₀] [MulPosStrictMono M₀]
-    [DecidableRel (α := M₀) (· ≤ ·)] (h1 : a < c) (h2 : b < d)
-    (h3 : 0 ≤ a) (h4 : 0 ≤ b) : a * b < c * d :=
+    [DecidableLE M₀] (h1 : a < c) (h2 : b < d) (h3 : 0 ≤ a) (h4 : 0 ≤ b) : a * b < c * d :=
   h4.lt_or_eq_dec.elim (fun b0 ↦ mul_lt_mul h1 h2.le b0 <| h3.trans h1.le) fun b0 ↦ by
     rw [← b0, mul_zero]; exact mul_pos (h3.trans_lt h1) (h4.trans_lt h2)
 

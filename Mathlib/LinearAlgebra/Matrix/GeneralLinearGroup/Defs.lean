@@ -156,15 +156,15 @@ variable (f : R →+* S)
 @[simp]
 protected lemma map_one : map f (1 : GL n R) = 1 := by
   ext
-  simp only [_root_.map_one, Units.val_one]
+  simp only [map_one, Units.val_one]
 
 protected lemma map_mul (g h : GL n R) : map f (g * h) = map f g * map f h := by
   ext
-  simp only [_root_.map_mul, Units.val_mul]
+  simp only [map_mul, Units.val_mul]
 
 protected lemma map_inv (g : GL n R) : map f g⁻¹ = (map f g)⁻¹ := by
   ext
-  simp only [_root_.map_inv, coe_units_inv]
+  simp only [map_inv, coe_units_inv]
 
 protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
     Units.map f (Matrix.GeneralLinearGroup.det g) := by
@@ -182,12 +182,12 @@ lemma map_inv_mul_map (g : GL n R) : map f g⁻¹ * map f g = 1 := by
 @[simp]
 lemma coe_map_mul_map_inv (g : GL n R) : g.val.map f * g.val⁻¹.map f = 1 := by
   rw [← Matrix.map_mul]
-  simp only [isUnits_det_units, mul_nonsing_inv, map_zero, _root_.map_one, Matrix.map_one]
+  simp only [isUnits_det_units, mul_nonsing_inv, map_zero, map_one, Matrix.map_one]
 
 @[simp]
 lemma coe_map_inv_mul_map (g : GL n R) : g.val⁻¹.map f * g.val.map f = 1 := by
   rw [← Matrix.map_mul]
-  simp only [isUnits_det_units, nonsing_inv_mul, map_zero, _root_.map_one, Matrix.map_one]
+  simp only [isUnits_det_units, nonsing_inv_mul, map_zero, map_one, Matrix.map_one]
 
 end GeneralLinearGroup
 
@@ -290,8 +290,7 @@ theorem toGLPos_injective : Function.Injective (toGLPos : SpecialLinearGroup n R
   -- (It can't find the coercion GLPos n R → Matrix n n R)
   Function.Injective.of_comp
     (f := fun (A : GLPos n R) ↦ ((A : GL n R) : Matrix n n R))
-    (show Function.Injective (_ ∘ (toGLPos : SpecialLinearGroup n R → GLPos n R))
-      from Subtype.coe_injective)
+    Subtype.coe_injective
 
 /-- Coercing a `Matrix.SpecialLinearGroup` via `GL_pos` and `GL` is the same as coercing straight to
 a matrix. -/

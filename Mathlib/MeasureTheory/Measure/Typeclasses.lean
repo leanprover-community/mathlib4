@@ -232,6 +232,10 @@ lemma prob_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α}
   apply (measure_mono (subset_univ _)).trans
   rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with h | h <;> simp [h]
 
+lemma toReal_prob_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α} :
+    (μ s).toReal ≤ 1 :=
+  ENNReal.toReal_le_of_le_ofReal zero_le_one (ENNReal.ofReal_one.symm ▸ prob_le_one)
+
 @[simp]
 theorem one_le_prob_iff {μ : Measure α} [IsZeroOrProbabilityMeasure μ] : 1 ≤ μ s ↔ μ s = 1 :=
   ⟨fun h => le_antisymm prob_le_one h, fun h => h ▸ le_refl _⟩
@@ -378,6 +382,10 @@ lemma prob_compl_le_one_sub_of_le_prob {p : ℝ≥0∞} (hμs : p ≤ μ s) (s_m
   rcases eq_zero_or_isProbabilityMeasure μ with rfl | h
   · simp
   · simpa [prob_compl_eq_one_sub s_mble] using tsub_le_tsub_left hμs 1
+
+@[simp]
+lemma inv_measure_univ_smul_eq_self : (μ univ)⁻¹ • μ = μ := by
+  rcases eq_zero_or_isProbabilityMeasure μ with h | h <;> simp [h]
 
 end IsZeroOrProbabilityMeasure
 

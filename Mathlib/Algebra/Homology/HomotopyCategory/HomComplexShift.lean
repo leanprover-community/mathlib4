@@ -175,9 +175,9 @@ def rightShiftAddEquiv (n a n' : ℤ) (hn' : n' + a = n) :
     Cochain K L n ≃+ Cochain K (L⟦a⟧) n' where
   toFun γ := γ.rightShift a n' hn'
   invFun γ := γ.rightUnshift n hn'
-  left_inv γ := by dsimp; simp only [rightUnshift_rightShift]
-  right_inv γ := by dsimp; simp only [rightShift_rightUnshift]
-  map_add' γ γ' := by dsimp; simp only [rightShift_add]
+  left_inv γ := by simp only [rightUnshift_rightShift]
+  right_inv γ := by simp only [rightShift_rightUnshift]
+  map_add' γ γ' := by simp only [rightShift_add]
 
 /-- The additive equivalence `Cochain K L n ≃+ Cochain (K⟦a⟧) L n'` when `n + a = n'`. -/
 @[simps]
@@ -185,9 +185,9 @@ def leftShiftAddEquiv (n a n' : ℤ) (hn' : n + a = n') :
     Cochain K L n ≃+ Cochain (K⟦a⟧) L n' where
   toFun γ := γ.leftShift a n' hn'
   invFun γ := γ.leftUnshift n hn'
-  left_inv γ := by dsimp; simp only [leftUnshift_leftShift]
-  right_inv γ := by dsimp; simp only [leftShift_leftUnshift]
-  map_add' γ γ' := by dsimp; simp only [leftShift_add]
+  left_inv γ := by simp only [leftUnshift_leftShift]
+  right_inv γ := by simp only [leftShift_leftUnshift]
+  map_add' γ γ' := by simp only [leftShift_add]
 
 /-- The additive map `Cochain K L n →+ Cochain (K⟦a⟧) (L⟦a⟧) n`. -/
 @[simps!]
