@@ -105,8 +105,8 @@ lemma hneq0 : α' ≠ 0 ∧ β' ≠ 0 ∧ γ' ≠ 0 := by
   constructor
   · intros H; apply htriv.1; rwa [habc.1, _root_.map_eq_zero]
   · constructor
-    · intros H; apply βneq0 β hirr; rwa [habc.2.1, _root_.map_eq_zero]
-    · intros H; apply γneq0 α β htriv (by rwa [habc.2.2, _root_.map_eq_zero])
+    · intros H; apply βneq0 β hirr ; rwa [habc.2.1, _root_.map_eq_zero]
+    · intros H; apply γneq0 α β htriv  (by rwa [habc.2.2, _root_.map_eq_zero])
 
 variable [NumberField K]
 
@@ -402,58 +402,67 @@ def lemma82 := NumberField.house.exists_ne_zero_int_vec_house_le K
   (hMkl K α' β' γ' q h2mq u t hq0)
   (cardmn K q)
 
-open NumberField.house in
-def c1 := c₁ K
+def η' : Fin q × Fin q → 𝓞 K :=
+  (lemma82 K α β hirr htriv σ hdec α' β' γ' habc q h2mq u t hq0).choose
 
-def c₄ := max 1 ((c1 K α' β' γ') *
-  (c1 K α' β' γ' * ↑(q * q : ℝ) *
+def lemma82_props := (lemma82 K α β hirr htriv σ hdec α' β' γ' habc q h2mq u t hq0).choose_spec
+
+def bound : η' K α β hirr htriv σ hdec α' β' γ' habc q h2mq u t hq0 ≠ 0 :=
+  (lemma82_props K α β hirr htriv σ hdec α' β' γ' habc q h2mq u t hq0).1
+
+def lemma82_Matrix :
+    M K α' β' γ' q u t (c_p K α' β' γ' q) (c₁IsInt K α' β' γ' q h2mq u t hq0) *ᵥ
+ (η' K α β hirr htriv σ hdec α' β' γ' habc q h2mq u t hq0) = 0 :=
+  (lemma82_props K α β hirr htriv σ hdec α' β' γ' habc q h2mq u t hq0).2.1
+
+def lemma82_bound :=
+  ((lemma82 K α β hirr htriv σ hdec α' β' γ' habc q h2mq u t hq0).choose_spec).2.2
+
+--def c1 := house.c₁ K
+
+def c₄ := max 1 (house.c₁ K *
+  ((house.c₁ K) * ↑(q * q : ℝ) *
   (c₃ K α' β' γ' q u t ^ ↑(n K q : ℝ) * ↑(n K q : ℝ) ^ ((↑(n K q : ℝ) - 1) / 2))) ^
   (↑(m K * n K q : ℝ) / (↑(q * q : ℝ) - ↑(m K * n K q : ℝ))))
 
 open NumberField.house in
 include hq0 h2mq hdec hirr htriv habc in
 lemma fromLemma82_bound : ∃ (η' : Fin q × Fin q → 𝓞 K),
-  house ((η' l).1) ≤ (c₄ K α' β' γ' q u t) ^
+  house ((η' l).1) ≤ (c₄ K hdec α' β' γ' q u t) ^
     (n K q : ℝ) * ((n K q)^((1/2)*((n K q)+1)) : ℝ) := by
   obtain ⟨η', ⟨htneq0, ⟨hMt0,hbound⟩⟩⟩ :=
   lemma82 K α β hirr htriv σ hdec α' β' γ' habc q h2mq u t hq0
   use η'
-  have := hbound l
-  calc _ ≤ (c₄ K α' β' γ' q u t) := by {
-      unfold c₄
-      simp only [Real.rpow_natCast, le_max_iff]
-      right
-      simp only [c1] at *
-      sorry
-      ---unfold c₁
-      -- sorry
-  --exact mod_cast this
-  --unfold c₁
-  --exact mod_cast this
+  specialize hbound l
+  calc _ ≤ (c₄ K hdec α' β' γ' q u t) := by {
+    unfold c₄
+    simp only [Real.rpow_natCast, le_max_iff]
+    right
+    exact mod_cast hbound
     }
-       _ ≤ (c₄ K α' β' γ' q u t)^(n K q : ℝ) := by {
-           nth_rw  1 [← Real.rpow_one (c₄ K α' β' γ' q u t)]
+       _ ≤ (c₄ K hdec α' β' γ' q u t)^(n K q : ℝ) := by {
+           nth_rw  1 [← Real.rpow_one (c₄ K hdec α' β' γ' q u t)]
            apply Real.rpow_le_rpow_of_exponent_le
            · apply le_max_left
            simp only [Nat.one_le_cast]
            exact one_le_n K q h2mq hq0}
-       _ ≤ (c₄ K α' β' γ' q u t)^(n K q : ℝ) *
+       _ ≤ (c₄ K hdec α' β' γ' q u t)^(n K q : ℝ) *
             ((n K q)^((1/2)*((n K q) + 1)) : ℝ) := by {
-           nth_rw  1 [← mul_one (c₄ K α' β' γ' q u t ^ (n K q : ℝ))]
+           nth_rw  1 [← mul_one (c₄ K hdec α' β' γ' q u t ^ (n K q : ℝ))]
            apply mul_le_mul_of_nonneg_left
            · simp only [Nat.reduceDiv, zero_mul, pow_zero, le_refl]
            apply Real.rpow_nonneg
            unfold c₄
            simp only [Real.rpow_natCast, le_max_iff, zero_le_one, true_or]}
 
-def ρ : (Fin q × Fin q) → ℂ := fun (a, b) => ((a+1) + (b+1) * β) * Complex.log α
+def ρ : (Fin q × Fin q) → ℂ := fun (a, b) => ((a+1) + (b+1 : ℕ) • β) * Complex.log α
 
 def R : (Fin (m K) × Fin (n K q)) → ℂ → ℂ := fun (l,k) x =>
   ∑ t, σ (((η K α' β' γ' q t)) (l,k)) * Complex.exp ((ρ α β q t) * x)
 
 -- lemma i ≠ j → ρ ... i ≠ ρ ... j
 -- needs β irrat and α ≠ 1
-include hirr in
+include hirr htriv in
 lemma hdistinc : ∀ (i j : Fin (q * q)), i ≠ j →
   (ρ α β q (finProdFinEquiv.symm i)) ≠ (ρ α β q (finProdFinEquiv.symm j)) := by
   intros i j hij
@@ -461,25 +470,42 @@ lemma hdistinc : ∀ (i j : Fin (q * q)), i ≠ j →
   simp only [not_or]
   simp only [ne_eq, mul_eq_mul_right_iff, not_or]
   constructor
+  · simp only [Equiv.toFun_as_coe, finProdFinEquiv_symm_apply, Fin.coe_divNat, Fin.coe_modNat]
+    sorry
+
   · sorry
-  · sorry
+    -- · simp [Complex.log] at H
+    --   have hlog := congr_arg Complex.log H
+    --   simp only [Complex.log_zero] at hlog
+    --   have := congr_arg Complex.log H1
+    --   simp only [Complex.log_one] at this
+    --   rw [H1] at hlog
+    --   simp only [norm_one, Real.log_one,
+    -- Complex.ofReal_zero, Complex.arg_one, zero_mul, add_zero,
+    --     Complex.log_zero] at hlog
+    --   subst H1
+    --   simp_all only [ne_eq, one_ne_zero, not_false_eq_true, not_true_eq_false, and_false]
+    -- ·
+
+
+
+
 
 def V := vandermonde (fun (t : Fin (q*q)) => ρ α β q (finProdFinEquiv.symm t))
 
-include α β hirr in
+include α β hirr htriv in
 lemma vandermonde_det_ne_zero : det (V α β q) ≠ 0 := by
   unfold V
   by_contra H
   rw [Matrix.det_vandermonde_eq_zero_iff] at H
   rcases H with ⟨i, j, ⟨hij, hij'⟩⟩
-  have := hdistinc α β hirr q i j
+  have := hdistinc α β hirr htriv q i j
   simp only [ne_eq, Prod.mk.injEq, not_and] at this
   apply this
   intros H'
   · apply hij' H'
   · exact hij
 
-include α β hirr htriv K σ hdec α' β' γ' habc q hq0 h2mq in
 lemma vecMul_eq_zero_of_R_zero (hR : R K α β σ α' β' γ' q u = 0) :
   (V α β q).vecMul (fun t => σ (η K α' β' γ' q (finProdFinEquiv.symm t) u)) = 0 := by
   unfold R at hR
@@ -505,21 +531,21 @@ lemma V_mul_η_eq_zero : V * ηvec = 0 := sorry
 -- ηvec = 0
 -- linear algebra
 
-include α β hirr in
+include α β hirr htriv in
 lemma ρ_i_distinct_blah
   (hVecMulEq0 : (V α β q).vecMul
       (fun t => σ (η K α' β' γ' q (finProdFinEquiv.symm t) u)) = 0) :
       (fun t => σ (η K α' β' γ' q (finProdFinEquiv.symm t) u)) = 0 := by {
-  have M := vandermonde_det_ne_zero α β hirr q
+  have M := vandermonde_det_ne_zero α β hirr htriv q
   apply Matrix.eq_zero_of_vecMul_eq_zero M hVecMulEq0}
 
-include α β hirr htriv K σ hdec α' β' γ' habc q hq0 h2mq t in
+include α β hirr htriv K σ α' β' γ' habc q t in
 lemma R_nonzero (hdistinct : ∀ (i j : Fin q × Fin q), i ≠ j → (ρ α β q i) ≠ (ρ α β q j)) :
   (R K α β σ α' β' γ' q u) ≠ 0 := by {
   by_contra H
-  have distinct_ρ := ρ_i_distinct_blah K α β hirr σ α' β' γ' q u
+  have distinct_ρ := ρ_i_distinct_blah K α β hirr htriv σ α' β' γ' q u
   have det_eq_zero :=
-    vecMul_eq_zero_of_R_zero K α β hirr htriv σ hdec α' β' γ' habc q h2mq u hq0 H
+    vecMul_eq_zero_of_R_zero K α β σ α' β' γ' q u H
   have contradiction := distinct_ρ det_eq_zero
   rw [funext_iff] at contradiction
   simp only [Pi.zero_apply, _root_.map_eq_zero] at contradiction
@@ -541,59 +567,41 @@ lemma isHolomorphicRFunction (_ : ℂ) :
     (mul (differentiable_const _) (differentiable_id'))
 
 lemma RFunctionIsAnalyticAt : AnalyticAt ℂ (R K α β σ α' β' γ' q u) u.1 :=
-  Differentiable.analyticAt (isHolomorphicRFunction K α β σ α' β' γ' q u α) _
+  Differentiable.analyticAt (isHolomorphicRFunction K α β σ α' β' γ' q u u.1) _
 
 -- ∑ x, σ (η K α' β' γ' q (finProdFinEquiv.symm x) u)
 -- * ρ α β q (finProdFinEquiv.symm x) ^ ↑t = 0
 --induction with k
 
-lemma iteratedDeriv_of_R : iteratedDeriv k (R K α β σ α' β' γ' q u) =
+lemma iteratedDeriv_of_R : iteratedDeriv k (fun x => R K α β σ α' β' γ' q u x) =
  fun x => ∑ t : Fin q × Fin q, ((σ (η K α' β' γ' q t u)) *
-  Complex.exp ((ρ α β q t) * x)) * (ρ α β q t)^k  := by {
+  Complex.exp ((ρ α β  q t) * x)) * (ρ α β q t)^k  := by {
   induction' k with k hk
   · simp only [iteratedDeriv_zero, pow_zero, mul_one]
     rfl
   · simp only [iteratedDeriv_succ]
     simp only at hk
     conv => enter [1]; rw [hk]
-    funext x
+    ext x
+    apply?
+
     sorry
-
-
-    -- intros x
-    -- have := isHolomorphicRFunction K α β σ α' β' γ' q u x
-    -- unfold Differentiable at this
-    -- unfold DifferentiableAt at this
-    -- specialize this x
-    -- unfold R at this x
-    -- simp only [Prod.mk.eta] at this x
-
-
-
-
-
-
-    -- simp only [deriv, mul_assoc]
-    -- refine HasDerivAt.sum ?_
-    -- intros i hi
-    -- refine HasDerivAt.const_mul (σ (η K α' β' γ' q i u)) ?_
-    -- apply  HasDerivAt.comp
-
-
-
-
-
-
   }
 
 lemma iteratedDeriv_of_R_is_zero : (∀ x, (R K α β σ α' β' γ' q u) x = 0) →
-   iteratedDeriv k (R K α β σ α' β' γ' q u) x = 0 := sorry
-
-#exit
+   iteratedDeriv k (fun x => R K α β σ α' β' γ' q u x) x = 0 := by {
+    intros hR
+    simp_all only
+    specialize hR x
+    simp [iteratedDeriv]}
 
 lemma iteratedDeriv_of_R_expansion (k : ℕ) :
    (log α) ^(-k : ℤ) * iteratedDeriv k (R K α β σ α' β' γ' q u) l =
-   (((a) + (b) • β')^(k)) * α' ^ (a*l) * γ' ^ (b*l) := sorry
+   σ ((((t.1 +1 : ℕ)) + ((t.2 +1 : ℕ)) • β') ^ (u.2 : ℕ) *
+   (α' ^ (((t.1 + 1: ℕ)) * ((u.1 + 1 : ℕ)))) *
+   (γ' ^ (((t.2 + 1 : ℕ)) * ((u.1 +1 : ℕ))))) := by {
+    sorry
+   }
 
 def min_value_over_finset {γ : Type _} (f : Π _ : Finset.range ((m K + 1)), γ)
   [Fintype s] [Nonempty s] [LinearOrder γ] : γ := by
