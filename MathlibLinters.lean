@@ -1,3 +1,4 @@
+import MathlibLinters.DeclarationNames
 import MathlibLinters.DeprecatedSyntaxLinter
 import MathlibLinters.DirectoryDependency
 import MathlibLinters.DocPrime
@@ -7,8 +8,8 @@ import MathlibLinters.GlobalAttributeIn
 import MathlibLinters.HashCommandLinter
 import MathlibLinters.HaveLetLinter
 import MathlibLinters.Header
+import MathlibLinters.Init
 import MathlibLinters.Lint
-import MathlibLinters.MinImports
 import MathlibLinters.Multigoal
 import MathlibLinters.OldObtain
 import MathlibLinters.PPRoundtrip
@@ -16,4 +17,3 @@ import MathlibLinters.Style
 import MathlibLinters.TextBased
 import MathlibLinters.UnusedTactic
 import MathlibLinters.UnusedTacticExtension
-import MathlibLinters.UpstreamableDecl

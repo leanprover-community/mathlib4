@@ -5401,7 +5401,6 @@ import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Core
-import Mathlib.Tactic.DeclarationNames
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.DeriveCountable
@@ -5478,6 +5477,8 @@ import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.LinearCombination'
 import Mathlib.Tactic.LinearCombination.Lemmas
+import Mathlib.Tactic.Linter.MinImports
+import Mathlib.Tactic.Linter.UpstreamableDecl
 import Mathlib.Tactic.Measurability
 import Mathlib.Tactic.Measurability.Init
 import Mathlib.Tactic.MinImports
