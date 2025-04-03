@@ -37,7 +37,7 @@ then `FreeMonoid α` is isomorphic to the trivial monoid, and if `α` has one te
 then `FreeMonoid α` is isomorphic to `Multiplicative ℕ`.
 If `α` has two or more terms then `FreeMonoid α` is not commutative.
 One can think of `FreeMonoid α` as the type of lists of `α`, with multiplication
-given by concatination.
+given by concatenation.
 -/
 @[to_additive
 "
@@ -54,7 +54,7 @@ then `FreeAddMonoid α` is isomorphic to the trivial monoid, and if `α` has one
 then `FreeAddMonoid α` is isomorphic to `ℕ`.
 If `α` has two or more terms then `FreeAddMonoid α` is not commutative.
 One can think of `FreeAddMonoid α` as the type of lists of `α`, with addition
-given by concatination.
+given by concatenation.
 "]
 def FreeMonoid (α) := List α
 
