@@ -50,7 +50,7 @@ instance : (LeftExactFunctor.forget C D).Faithful :=
 
 /-- The inclusion of left exact functors into functors is fully faithful. -/
 abbrev LeftExactFunctor.fullyFaithful : (LeftExactFunctor.forget C D).FullyFaithful :=
-  fullyFaithfulFullSubcategoryInclusion _
+  ObjectProperty.fullyFaithfulι _
 
 /-- Bundled right-exact functors. -/
 def RightExactFunctor :=
@@ -74,7 +74,7 @@ instance : (RightExactFunctor.forget C D).Faithful :=
 
 /-- The inclusion of right exact functors into functors is fully faithful. -/
 abbrev RightExactFunctor.fullyFaithful : (RightExactFunctor.forget C D).FullyFaithful :=
-  fullyFaithfulFullSubcategoryInclusion _
+  ObjectProperty.fullyFaithfulι _
 
 /-- Bundled exact functors. -/
 def ExactFunctor :=
