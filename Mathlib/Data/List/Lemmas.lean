@@ -28,7 +28,7 @@ lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
 @[deprecated (since := "2024-12-10")] alias tail_reverse_eq_reverse_dropLast := tail_reverse
 
 theorem injOn_insertIdx_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
-    Set.InjOn (fun k => insertIdx k x l) { n | n ≤ l.length } := by
+    Set.InjOn (fun k => l.insertIdx k x) { n | n ≤ l.length } := by
   induction' l with hd tl IH
   · intro n hn m hm _
     simp_all [Set.mem_singleton_iff, Set.setOf_eq_eq_singleton, length]

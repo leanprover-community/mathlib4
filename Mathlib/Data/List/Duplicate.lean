@@ -40,7 +40,7 @@ theorem Duplicate.duplicate_cons (h : x ∈+ l) (y : α) : x ∈+ y :: l :=
 
 theorem Duplicate.mem (h : x ∈+ l) : x ∈ l := by
   induction h with
-  | cons_mem => exact mem_cons_self _ _
+  | cons_mem => exact mem_cons_self
   | cons_duplicate _ hm => exact mem_cons_of_mem _ hm
 
 theorem Duplicate.mem_cons_self (h : x ∈+ x :: l) : x ∈ l := by
