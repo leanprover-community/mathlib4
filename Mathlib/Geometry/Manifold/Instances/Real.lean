@@ -197,26 +197,21 @@ theorem frontier_quadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
   simp only [mem_diff, mem_setOf_eq, not_forall, not_lt, and_congr_right_iff]
   exact fun aux ↦ exists_congr fun i ↦ ⟨fun h ↦ by linarith [aux i], fun h ↦ by linarith⟩
 
-lemma aux {a b c d : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) (hc : 0 < c) (hd : 0 < d) :
-    0 < a * c + b * d := by
-  have : 0 < a ∨ 0 < b := by
-    by_contra!
-    linarith
-  cases this <;> positivity
-
 theorem EuclideanHalfSpace.convex_interior [NeZero n] :
     Convex ℝ (interior { x : EuclideanSpace ℝ (Fin n) | 0 ≤ x 0 }) := by
   rw [interior_halfSpace]
   intro x hx y hy a b ha hb hab
   dsimp at hx hy ⊢
-  exact aux ha hb hab hx hy
+  exact (by positivity : 0 < min (x 0) (y 0)).trans_le (Convex.min_le_combo (x 0) (y 0) ha hb hab)
 
 theorem EuclideanQuadrant.convex_interior :
     Convex ℝ (interior { x : EuclideanSpace ℝ (Fin n) | ∀ i, 0 ≤ x i }) := by
   rw [interior_quadrant]
   intro x hx y hy a b ha hb hab
   dsimp at hx hy ⊢
-  exact fun i ↦ aux ha hb hab (hx i) (hy i)
+  intro i
+  have : 0 < min (x i) (y i) := by specialize hx i; specialize hy i; positivity
+  exact this.trans_le (Convex.min_le_combo (x i) (y i) ha hb hab)
 
 end
 
