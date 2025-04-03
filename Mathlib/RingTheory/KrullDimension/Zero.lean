@@ -10,7 +10,8 @@ import Mathlib.RingTheory.Spectrum.Prime.Topology
 
 # Zero-dimensional rings
 
-We provide basic API for zero-dimensional rings.
+We provide further API for zero-dimensional rings.
+Basic definitions and lemmas are provided in `Mathlib/RingTheory/KrullDimension/Basic.lean`.
 
 -/
 
@@ -18,16 +19,11 @@ section CommSemiring
 
 variable {R : Type*} [CommSemiring R] [Ring.KrullDimLE 0 R] (I : Ideal R)
 
-variable {I} in
-/-- Also see `Ideal.IsPrime.isMaximal` for the analogous statement for dedekind domains. -/
-lemma Ideal.IsPrime.isMaximal' (hI : I.IsPrime) : I.IsMaximal :=
-  I.isMaximal_of_isPrime
-
 lemma Ring.KrullDimLE.mem_minimalPrimes_iff {I J : Ideal R} :
     I ∈ J.minimalPrimes ↔ I.IsPrime ∧ J ≤ I :=
   ⟨fun H ↦ H.1, fun H ↦ ⟨H, fun _ h e ↦ (h.1.isMaximal'.eq_of_le H.1.ne_top e).ge⟩⟩
 
-lemma Ring.KrullDimLE.mem_minimalPrimes_iff_le {I J : Ideal R} [I.IsPrime] :
+lemma Ring.KrullDimLE.mem_minimalPrimes_iff_le_of_isPrime {I J : Ideal R} [I.IsPrime] :
     I ∈ J.minimalPrimes ↔ J ≤ I := by
   rwa [mem_minimalPrimes_iff, and_iff_right]
 
@@ -204,9 +200,10 @@ alias nilpotent_iff_not_unit_of_minimal := Ring.KrullDimLE.isNilpotent_iff_mem_n
 
 end Localization.AtPrime
 
-@[deprecated "Use `PrimeSpectrum.unique_of_ringKrullDimZero` with `Ring.KrullDimLE.of_isLocalization`" (since := "2024-12-20")]
+@[deprecated "Use `PrimeSpectrum.unique_of_ringKrullDimLE_zero` with
+  `Ring.KrullDimLE.of_isLocalization`" (since := "2024-12-20")]
 alias PrimeSpectrum.primeSpectrum_unique_of_localization_at_minimal :=
-  PrimeSpectrum.unique_of_ringKrullDimZero
+  PrimeSpectrum.unique_of_ringKrullDimLE_zero
 
 section Nilrad_max_localization
 
