@@ -45,13 +45,12 @@ is dominated by an affine scheme `Y` via `p : Y ⟶ X` such that `p` satisfies `
 Typical applications are `P` is surjective + flat (smooth, étale, unramified, etc.).
 -/
 lemma Scheme.exists_hom_isAffine_of_isLocalAtSource (X : Scheme.{u}) [CompactSpace X]
-    [IsLocalAtSource P'] [P'.ContainsIdentities]
-    (hle : (@Surjective ⊓ P' : MorphismProperty Scheme.{u}) ≤ P) :
-    ∃ (Y : Scheme.{u}) (p : Y ⟶ X), P p ∧ IsAffine Y := by
+    [IsLocalAtSource P'] [P'.ContainsIdentities] :
+    ∃ (Y : Scheme.{u}) (p : Y ⟶ X), Surjective p ∧ P' p ∧ IsAffine Y := by
   let 𝒰 := X.affineCover.finiteSubcover
   let p : ∐ (fun i : 𝒰.J ↦ 𝒰.obj i) ⟶ X := Sigma.desc (fun i ↦ 𝒰.map i)
   have (i : 𝒰.J) : IsAffine (𝒰.obj i) := inferInstanceAs <| IsAffine (X.affineCover.obj _)
-  refine ⟨_, p, hle _ ⟨⟨fun x ↦ ?_⟩, ?_⟩, inferInstance⟩
+  refine ⟨_, p, ⟨fun x ↦ ?_⟩, ?_, inferInstance⟩
   · obtain ⟨i, x, rfl⟩ := X.affineCover.finiteSubcover.exists_eq x
     use (Sigma.ι (fun i ↦ X.affineCover.finiteSubcover.obj i) i).base x
     rw [← Scheme.comp_base_apply, Sigma.ι_desc]
