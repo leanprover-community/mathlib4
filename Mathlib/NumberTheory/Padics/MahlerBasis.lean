@@ -94,6 +94,7 @@ The `k`-th Mahler basis function, i.e. the unique continuous function `ℤ_[p] �
 agreeing with `n ↦ n.choose k` for `n ∈ ℕ`. See [colmez2010], §1.2.1.
 -/
 noncomputable def mahler (k : ℕ) : C(ℤ_[p], ℤ_[p]) where
+  toFun x := Ring.choose x k
   continuous_toFun := PadicInt.continuous_choose k
 
 lemma mahler_apply (k : ℕ) (x : ℤ_[p]) : mahler k x = Ring.choose x k := rfl
