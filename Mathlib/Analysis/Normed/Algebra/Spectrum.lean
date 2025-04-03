@@ -491,7 +491,7 @@ theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [Algebra ℚ A] [NormedAlgebra 
     · simp only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul]
     · convert h₀.symm
       ext a
-      exact inv_nat_cast_smul_eq ℚ 𝕜 _ a
+      exact inv_natCast_smul_eq ℚ 𝕜 _ a
   rw [spectrum.mem_iff, IsUnit.sub_iff, ← one_mul (↑ₐ (exp z)), hexpmul, ← _root_.sub_mul,
     Commute.isUnit_mul_iff (Algebra.commutes (exp z) (exp (a - ↑ₐ z) - 1)).symm,
     sub_eq_iff_eq_add'.mpr h₃, Commute.isUnit_mul_iff (h₀ ▸ h₁ : (a - ↑ₐ z) * b = b * (a - ↑ₐ z))]
