@@ -185,11 +185,8 @@ theorem closure_quadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
   let f : (Fin n) → (Π _ : Fin n, ℝ) →L[ℝ] ℝ := fun i ↦ ContinuousLinearMap.proj i
   have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i )⁻¹' Ici a := by
     ext; simp; rfl
-  sorry /- TODO: closure_sInter and closure_iInter_of_finite are missing
-  rw [h, closure_iInter_of_finite]
-  apply iInter_congr fun i ↦ ?_
-  rw [f.closure_preimage, closure_Ioi]
-  apply Function.surjective_eval -/
+  rw [h]
+  exact (isClosed_iInter fun i ↦ isClosed_Ici.preimage (f i).continuous).closure_eq
 
 open ENNReal in
 theorem frontier_quadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
