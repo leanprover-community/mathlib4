@@ -208,9 +208,35 @@ variable {R : Type*} [NonAssocSemiring R]
 def Subsemiring.toNonUnitalSubsemiring (S : Subsemiring R) : NonUnitalSubsemiring R :=
   { S with }
 
+theorem Subsemiring.toNonUnitalSubsemiring_injective :
+    Function.Injective (toNonUnitalSubsemiring : Subsemiring R → _) :=
+  fun S₁ S₂ h => SetLike.ext'_iff.2 (
+    show (S₁.toNonUnitalSubsemiring : Set R) = S₂ from SetLike.ext'_iff.1 h)
+
+@[simp]
+theorem Subsemiring.toNonUnitalSubsemiring_inj {S₁ S₂ : Subsemiring R} :
+    S₁.toNonUnitalSubsemiring = S₂.toNonUnitalSubsemiring ↔ S₁ = S₂ :=
+  toNonUnitalSubsemiring_injective.eq_iff
+
+@[simp]
+theorem Subsemiring.mem_toNonUnitalSubsemiring {S : Subsemiring R}
+    {x : R} : x ∈ S.toNonUnitalSubsemiring ↔ x ∈ S := Iff.rfl
+
+@[simp]
+theorem Subsemiring.coe_toNonUnitalSubsemiring (S : Subsemiring R) :
+  (S.toNonUnitalSubsemiring : Set R) = S := rfl
+
 theorem Subsemiring.one_mem_toNonUnitalSubsemiring (S : Subsemiring R) :
     (1 : R) ∈ S.toNonUnitalSubsemiring :=
   S.one_mem
+
+@[simp]
+theorem Submonoid.subsemiringClosure_toNonUnitalSubsemiring {M : Submonoid R} :
+    M.subsemiringClosure.toNonUnitalSubsemiring = .closure M := by
+  refine Eq.symm (NonUnitalSubsemiring.closure_eq_of_le ?_ (fun _ hx => ?_))
+  · simp [Submonoid.subsemiringClosure_coe]
+  · simp [Submonoid.subsemiringClosure_mem] at hx
+    induction hx using AddSubmonoid.closure_induction <;> aesop
 
 /-- Turn a non-unital subsemiring containing `1` into a subsemiring. -/
 def NonUnitalSubsemiring.toSubsemiring (S : NonUnitalSubsemiring R) (h1 : (1 : R) ∈ S) :
@@ -241,7 +267,7 @@ theorem unitization_apply (x : Unitization ℕ s) : unitization s x = x.fst + x.
   rfl
 
 theorem unitization_range :
-    (unitization s).range = subalgebraOfSubsemiring (Subsemiring.closure s) := by
+    (unitization s).range = subalgebraOfSubsemiring (.closure s) := by
   have := AddSubmonoidClass.nsmulMemClass (S := S)
   rw [unitization, NonUnitalSubalgebra.unitization_range (hSRA := this), Algebra.adjoin_nat]
 
@@ -288,7 +314,7 @@ theorem unitization_apply (x : Unitization ℤ s) : unitization s x = x.fst + x.
   rfl
 
 theorem unitization_range :
-    (unitization s).range = subalgebraOfSubring (Subring.closure s) := by
+    (unitization s).range = subalgebraOfSubring (.closure s) := by
   have := AddSubgroupClass.zsmulMemClass (S := S)
   rw [unitization, NonUnitalSubalgebra.unitization_range (hSRA := this), Algebra.adjoin_int]
 

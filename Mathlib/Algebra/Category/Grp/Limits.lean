@@ -3,13 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
 import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.CategoryTheory.Comma.Over
-import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
+import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 
 /-!
 # The category of (commutative) (additive) groups has all limits
@@ -87,16 +85,21 @@ noncomputable instance Forget₂.createsLimit :
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   createsLimitOfReflectsIso (K := F) (F := (forget₂ Grp.{u} MonCat.{u}))
     fun c' t =>
-    { liftedCone :=
-        { pt := Grp.of (Types.Small.limitCone (F ⋙ forget Grp)).pt
-          π :=
-            { app := MonCat.limitπMonoidHom (F ⋙ forget₂ Grp MonCat)
-              naturality :=
-                (MonCat.HasLimits.limitCone
-                      (F ⋙ forget₂ Grp MonCat.{u})).π.naturality } }
-      validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
-      makesLimit :=
-        IsLimit.ofFaithful (forget₂ Grp MonCat.{u}) (MonCat.HasLimits.limitConeIsLimit _)
+      have : Small.{u} (Functor.sections ((F ⋙ forget₂ Grp MonCat) ⋙ forget MonCat)) := by
+        have : HasLimit (F ⋙ forget₂ Grp MonCat) := ⟨_, t⟩
+        apply Concrete.small_sections_of_hasLimit (F ⋙ forget₂ Grp MonCat)
+      have : Small.{u} (Functor.sections (F ⋙ forget Grp)) := inferInstanceAs <| Small.{u}
+        (Functor.sections ((F ⋙ forget₂ Grp MonCat) ⋙ forget MonCat))
+      { liftedCone :=
+          { pt := Grp.of (Types.Small.limitCone (F ⋙ forget Grp)).pt
+            π :=
+              { app := MonCat.limitπMonoidHom (F ⋙ forget₂ Grp MonCat)
+                naturality :=
+                  (MonCat.HasLimits.limitCone
+                        (F ⋙ forget₂ Grp MonCat.{u})).π.naturality } }
+        validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
+        makesLimit :=
+         IsLimit.ofFaithful (forget₂ Grp MonCat.{u}) (MonCat.HasLimits.limitConeIsLimit _)
           (fun _ => _) fun _ => rfl }
 
 /-- A choice of limit cone for a functor into `Grp`.
@@ -193,6 +196,25 @@ instance forget_preservesLimitsOfSize :
 instance forget_preservesLimits : PreservesLimits (forget Grp.{u}) :=
   Grp.forget_preservesLimitsOfSize.{u, u}
 
+@[to_additive]
+noncomputable instance forget_createsLimit :
+    CreatesLimit F (forget Grp.{u}) := by
+  set e : forget₂ Grp.{u} MonCat.{u} ⋙ forget MonCat.{u} ≅ forget Grp.{u} := Iso.refl _
+  exact createsLimitOfNatIso e
+
+@[to_additive]
+noncomputable instance forget_createsLimitsOfShape :
+    CreatesLimitsOfShape J (forget Grp.{u}) where
+  CreatesLimit := inferInstance
+
+/-- The forgetful functor from groups to types creates all limits.
+-/
+@[to_additive
+  "The forgetful functor from additive groups to types creates all limits.",
+  to_additive_relevant_arg 2]
+noncomputable instance forget_createsLimitsOfSize :
+    CreatesLimitsOfSize.{w, v} (forget Grp.{u}) where
+  CreatesLimitsOfShape := inferInstance
 end Grp
 
 namespace CommGrp
@@ -398,6 +420,25 @@ noncomputable instance _root_.AddCommGrp.forget_preservesLimits :
 noncomputable instance forget_preservesLimits : PreservesLimits (forget CommGrp.{u}) :=
   CommGrp.forget_preservesLimitsOfSize.{u, u}
 
+@[to_additive]
+noncomputable instance forget_createsLimit :
+    CreatesLimit F (forget CommGrp.{u}) := by
+  set e : forget₂ CommGrp.{u} Grp.{u} ⋙ forget Grp.{u} ≅ forget CommGrp.{u} := Iso.refl _
+  exact createsLimitOfNatIso e
+
+@[to_additive]
+noncomputable instance forget_createsLimitsOfShape (J : Type v) [Category.{w} J] :
+    CreatesLimitsOfShape J (forget CommGrp.{u}) where
+  CreatesLimit := inferInstance
+
+/-- The forgetful functor from commutative groups to types creates all limits.
+-/
+@[to_additive
+  "The forgetful functor from additive commutative groups to types creates all limits.",
+  to_additive_relevant_arg 2]
+noncomputable instance forget_createsLimitsOfSize :
+    CreatesLimitsOfSize.{w, v} (forget CommGrp.{u}) where
+  CreatesLimitsOfShape := inferInstance
 -- Verify we can form limits indexed over smaller categories.
 example (f : ℕ → AddCommGrp) : HasProduct f := by infer_instance
 

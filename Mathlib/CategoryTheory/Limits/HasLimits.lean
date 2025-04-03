@@ -238,7 +238,7 @@ theorem limit.hom_ext {F : J ⥤ C} [HasLimit F] {X : C} {f f' : X ⟶ limit F}
     (w : ∀ j, f ≫ limit.π F j = f' ≫ limit.π F j) : f = f' :=
   (limit.isLimit F).hom_ext w
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem limit.lift_map {F G : J ⥤ C} [HasLimit F] [HasLimit G] (c : Cone F) (α : F ⟶ G) :
     limit.lift F c ≫ limMap α = limit.lift G ((Cones.postcompose α).obj c) := by
   ext
@@ -992,11 +992,10 @@ end
 
 variable {G : J ⥤ C} (α : F ⟶ G)
 
--- @[reassoc (attr := simp)] Porting note: now simp can prove these
 @[reassoc]
 theorem colimit.ι_map (j : J) : colimit.ι F j ≫ colim.map α = α.app j ≫ colimit.ι G j := by simp
 
-@[simp] -- Porting note: proof adjusted to account for @[simps] on all fields of colim
+@[reassoc (attr := simp)]
 theorem colimit.map_desc (c : Cocone G) :
     colimMap α ≫ colimit.desc G c = colimit.desc F ((Cocones.precompose α).obj c) := by
   ext j
@@ -1125,8 +1124,7 @@ def IsColimit.op {t : Cocone F} (P : IsColimit t) : IsLimit t.op where
 -/
 def IsLimit.unop {t : Cone F.op} (P : IsLimit t) : IsColimit t.unop where
   desc s := (P.lift s.op).unop
-  fac s j := congrArg Quiver.Hom.unop (P.fac s.op (Opposite.op j))
-  -- Porting note: thinks `op j` is `IsLimit.op j`
+  fac s j := congrArg Quiver.Hom.unop (P.fac s.op (.op j))
   uniq s m w := by
     dsimp
     rw [← P.uniq s.op m.op]
@@ -1140,8 +1138,7 @@ def IsLimit.unop {t : Cone F.op} (P : IsLimit t) : IsColimit t.unop where
 -/
 def IsColimit.unop {t : Cocone F.op} (P : IsColimit t) : IsLimit t.unop where
   lift s := (P.desc s.op).unop
-  fac s j := congrArg Quiver.Hom.unop (P.fac s.op (Opposite.op j))
-  -- Porting note: thinks `op j` is `IsLimit.op j`
+  fac s j := congrArg Quiver.Hom.unop (P.fac s.op (.op j))
   uniq s m w := by
     dsimp
     rw [← P.uniq s.op m.op]

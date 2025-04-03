@@ -53,7 +53,7 @@ open Function
 /-- Nonnegative real numbers. -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
   Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
-  SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
+  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
   CanonicallyOrderedCommSemiring, Inhabited
 
 namespace NNReal
@@ -263,10 +263,8 @@ protected theorem coe_natCast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
 @[deprecated (since := "2024-04-17")]
 alias coe_nat_cast := NNReal.coe_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
-protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : ℝ≥0) : ℝ) = OfNat.ofNat n :=
+protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℝ≥0) : ℝ) = ofNat(n) :=
   rfl
 
 @[simp, norm_cast]

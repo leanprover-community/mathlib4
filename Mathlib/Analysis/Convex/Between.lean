@@ -153,14 +153,16 @@ theorem Function.Injective.sbtw_map_iff {x y z : P} {f : P →ᵃ[R] P'} (hf : F
 @[simp]
 theorem AffineEquiv.wbtw_map_iff {x y z : P} (f : P ≃ᵃ[R] P') :
     Wbtw R (f x) (f y) (f z) ↔ Wbtw R x y z := by
-  refine Function.Injective.wbtw_map_iff (?_ : Function.Injective f.toAffineMap)
-  exact f.injective
+  have : Function.Injective f.toAffineMap := f.injective
+  -- `refine` or `exact` are very slow, `apply` is fast. Please check before golfing.
+  apply this.wbtw_map_iff
 
 @[simp]
 theorem AffineEquiv.sbtw_map_iff {x y z : P} (f : P ≃ᵃ[R] P') :
     Sbtw R (f x) (f y) (f z) ↔ Sbtw R x y z := by
-  refine Function.Injective.sbtw_map_iff (?_ : Function.Injective f.toAffineMap)
-  exact f.injective
+  have : Function.Injective f.toAffineMap := f.injective
+  -- `refine` or `exact` are very slow, `apply` is fast. Please check before golfing.
+  apply this.sbtw_map_iff
 
 @[simp]
 theorem wbtw_const_vadd_iff {x y z : P} (v : V) :
@@ -517,10 +519,7 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   have h₂₃ : i₂ ≠ i₃ := by
     rintro rfl
     simp at h₁
-  have h3 : ∀ i : Fin 3, i = i₁ ∨ i = i₂ ∨ i = i₃ := by
-    clear h₁ h₂ h₁' h₂'
-    -- Porting note: Originally `decide!`
-    revert i₁ i₂ i₃; decide
+  have h3 : ∀ i : Fin 3, i = i₁ ∨ i = i₂ ∨ i = i₃ := by omega
   have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
     clear h₁ h₂ h₁' h₂'
     -- Porting note: Originally `decide!`

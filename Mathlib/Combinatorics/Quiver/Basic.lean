@@ -81,4 +81,32 @@ theorem empty_arrow {V : Type u} (a b : Empty V) : (a ⟶ b) = PEmpty := rfl
 /-- A quiver is thin if it has no parallel arrows. -/
 abbrev IsThin (V : Type u) [Quiver V] : Prop := ∀ a b : V, Subsingleton (a ⟶ b)
 
+
+section
+
+variable {V : Type*} [Quiver V]
+
+/-- An arrow in a quiver can be transported across equalities between the source and target
+objects. -/
+def homOfEq {X Y : V} (f : X ⟶ Y) {X' Y' : V} (hX : X = X') (hY : Y = Y') : X' ⟶ Y' := by
+  subst hX hY
+  exact f
+
+@[simp]
+lemma homOfEq_trans {X Y : V} (f : X ⟶ Y) {X' Y' : V} (hX : X = X') (hY : Y = Y')
+    {X'' Y'' : V} (hX' : X' = X'') (hY' : Y' = Y'') :
+    homOfEq (homOfEq f hX hY) hX' hY' = homOfEq f (hX.trans hX') (hY.trans hY') := by
+  subst hX hY hX' hY'
+  rfl
+
+lemma homOfEq_injective {X X' Y Y' : V} (hX : X = X') (hY : Y = Y')
+    {f g : X ⟶ Y} (h : Quiver.homOfEq f hX hY = Quiver.homOfEq g hX hY) : f = g := by
+  subst hX hY
+  exact h
+
+@[simp]
+lemma homOfEq_rfl {X Y : V} (f : X ⟶ Y) : Quiver.homOfEq f rfl rfl = f := rfl
+
+end
+
 end Quiver

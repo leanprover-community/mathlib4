@@ -262,7 +262,7 @@ theorem norm_image_sub_le_of_bound (f : MultilinearMap 𝕜 E G)
         · intro j _
           by_cases h : j = i
           · rw [h]
-            simp only [ite_true, Function.update_same]
+            simp only [ite_true, Function.update_self]
             exact norm_le_pi_norm (m₁ - m₂) i
           · simp [h, - le_sup_iff, - sup_le_iff, sup_le_sup, norm_le_pi_norm]
       _ = ‖m₁ - m₂‖ * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) := by
@@ -541,7 +541,7 @@ search. -/
 instance normedSpace' : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 (fun _ : ι => G') G) :=
   ContinuousMultilinearMap.normedSpace
 
-@[deprecated (since := "2024-11-24")]
+@[deprecated norm_neg (since := "2024-11-24")]
 theorem opNorm_neg (f : ContinuousMultilinearMap 𝕜 E G) : ‖-f‖ = ‖f‖ := norm_neg f
 
 @[deprecated (since := "2024-02-02")] alias op_norm_neg := norm_neg
@@ -867,16 +867,6 @@ def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] Co
 @[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
   smulRightL 𝕜 E G f z = f.smulRight z := rfl
 
-#adaptation_note
-/--
-Before https://github.com/leanprover/lean4/pull/4119 we had to create a local instance:
-```
-letI : SeminormedAddCommGroup
-  (ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
-  ContinuousLinearMap.toSeminormedAddCommGroup
-    (F := G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) (σ₁₂ := RingHom.id 𝕜)
-```
--/
 set_option maxSynthPendingDepth 2 in
 lemma norm_smulRightL_le : ‖smulRightL 𝕜 E G‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _

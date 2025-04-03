@@ -62,7 +62,7 @@ open Finset
 
 namespace Prod
 variable {α β : Type*} [OrderedRing α] [OrderedRing β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [DecidableEq α] [DecidableEq β] [@DecidableRel (α × β) (· ≤ ·)]
+  [DecidableEq α] [DecidableEq β] [DecidableRel (α := α × β) (· ≤ ·)]
 
 @[simp] lemma card_box_succ (n : ℕ) :
     #(box (n + 1) : Finset (α × β)) =
@@ -93,11 +93,6 @@ lemma card_box : ∀ {n}, n ≠ 0 → #(box n : Finset (ℤ × ℤ)) = 8 * n
   | 0 => by simp [Prod.ext_iff]
   | n + 1 => by
     simp [box_succ_eq_sdiff, Prod.le_def]
-    #adaptation_note /-- v4.7.0-rc1: `omega` no longer identifies atoms up to defeq.
-    (This had become a performance bottleneck.)
-    We need a tactic for normalising instances, to avoid the `have`/`simp` dance below: -/
-    have : @Nat.cast ℤ instNatCastInt n = @Nat.cast ℤ AddMonoidWithOne.toNatCast n := rfl
-    simp only [this]
     omega
 
 -- TODO: Can this be generalised to locally finite archimedean ordered rings?

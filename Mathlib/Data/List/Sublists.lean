@@ -45,7 +45,7 @@ theorem sublists'Aux_eq_array_foldl (a : α) : ∀ (r₁ r₂ : List (List α)),
     sublists'Aux a r₁ r₂ = ((r₁.toArray).foldl (init := r₂.toArray)
       (fun r l => r.push (a :: l))).toList := by
   intro r₁ r₂
-  rw [sublists'Aux, Array.foldl_eq_foldl_toList]
+  rw [sublists'Aux, Array.foldl_toList]
   have := List.foldl_hom Array.toList (fun r l => r.push (a :: l))
     (fun r l => r ++ [a :: l]) r₁ r₂.toArray (by simp)
   simpa using this
@@ -107,7 +107,7 @@ theorem sublistsAux_eq_array_foldl :
       (r.toArray.foldl (init := #[])
         fun r l => (r.push l).push (a :: l)).toList := by
   funext a r
-  simp only [sublistsAux, Array.foldl_eq_foldl_toList, Array.mkEmpty]
+  simp only [sublistsAux, Array.foldl_toList, Array.mkEmpty]
   have := foldl_hom Array.toList (fun r l => (r.push l).push (a :: l))
     (fun (r : List (List α)) l => r ++ [l, a :: l]) r #[]
     (by simp)
@@ -128,7 +128,7 @@ theorem sublistsAux_eq_flatMap :
   ext α l : 2
   trans l.foldr sublistsAux [[]]
   · rw [sublistsAux_eq_flatMap, sublists]
-  · simp only [sublistsFast, sublistsAux_eq_array_foldl, Array.foldr_eq_foldr_toList]
+  · simp only [sublistsFast, sublistsAux_eq_array_foldl, Array.foldr_toList]
     rw [← foldr_hom Array.toList]
     · intros _ _; congr
 

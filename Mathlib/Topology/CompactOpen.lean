@@ -72,7 +72,7 @@ lemma tendsto_nhds_compactOpen {l : Filter α} {f : α → C(Y, Z)} {g : C(Y, Z)
 
 lemma continuous_compactOpen {f : X → C(Y, Z)} :
     Continuous f ↔ ∀ K, IsCompact K → ∀ U, IsOpen U → IsOpen {x | MapsTo (f x) K U} :=
-  continuous_generateFrom_iff.trans forall_image2_iff
+  continuous_generateFrom_iff.trans forall_mem_image2
 
 section Functorial
 
@@ -274,7 +274,7 @@ theorem compactOpen_eq_iInf_induced :
     (ContinuousMap.compactOpen : TopologicalSpace C(X, Y)) =
       ⨅ (K : Set X) (_ : IsCompact K), .induced (.restrict K) ContinuousMap.compactOpen := by
   refine le_antisymm (le_iInf₂ fun s _ ↦ compactOpen_le_induced s) ?_
-  refine le_generateFrom <| forall_image2_iff.2 fun K (hK : IsCompact K) U hU ↦ ?_
+  refine le_generateFrom <| forall_mem_image2.2 fun K (hK : IsCompact K) U hU ↦ ?_
   refine TopologicalSpace.le_def.1 (iInf₂_le K hK) _ ?_
   convert isOpen_induced (isOpen_setOf_mapsTo (isCompact_iff_isCompact_univ.1 hK) hU)
   simp [mapsTo_univ_iff, Subtype.forall, MapsTo]

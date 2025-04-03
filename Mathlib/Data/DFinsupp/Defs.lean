@@ -622,7 +622,7 @@ def update : Π₀ i, β i :=
         · simp
         · obtain hj | (hj : f j = 0) := s.prop j
           · exact Or.inl (Multiset.mem_cons_of_mem hj)
-          · exact Or.inr ((Function.update_noteq hi.symm b _).trans hj)⟩⟩
+          · exact Or.inr ((Function.update_of_ne hi.symm b _).trans hj)⟩⟩
 
 variable (j : ι)
 
@@ -645,14 +645,14 @@ theorem update_eq_single_add_erase {β : ι → Type*} [∀ i, AddZeroClass (β 
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
-  · simp [Function.update_noteq h.symm, h, erase_ne, h.symm]
+  · simp [Function.update_of_ne h.symm, h, erase_ne, h.symm]
 
 theorem update_eq_erase_add_single {β : ι → Type*} [∀ i, AddZeroClass (β i)] (f : Π₀ i, β i)
     (i : ι) (b : β i) : f.update i b = f.erase i + single i b := by
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
-  · simp [Function.update_noteq h.symm, h, erase_ne, h.symm]
+  · simp [Function.update_of_ne h.symm, h, erase_ne, h.symm]
 
 theorem update_eq_sub_add_single {β : ι → Type*} [∀ i, AddGroup (β i)] (f : Π₀ i, β i) (i : ι)
     (b : β i) : f.update i b = f - single i (f i) + single i b := by
@@ -921,6 +921,11 @@ theorem mapRange_single {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0}
     · subst i'
       simp
     · simp [h, hf]
+
+theorem mapRange_injective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
+    Function.Injective (mapRange f hf) ↔ ∀ i, Function.Injective (f i) :=
+  ⟨fun h i x y eq ↦ single_injective (@h (single i x) (single i y) <| by
+    simpa using congr_arg _ eq), fun h _ _ eq ↦ DFinsupp.ext fun i ↦ h i congr($eq i)⟩
 
 variable [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i) (x : β₂ i), Decidable (x ≠ 0)]
 

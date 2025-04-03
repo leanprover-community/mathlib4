@@ -28,11 +28,11 @@ namespace CommRingCat
 instance : CoeSort (Under R) (Type u) where
   coe A := A.right
 
-instance (A : Under R) : Algebra R A := RingHom.toAlgebra A.hom
+instance (A : Under R) : Algebra R A := RingHom.toAlgebra A.hom.hom
 
 /-- Turn a morphism in `Under R` into an algebra homomorphism. -/
 def toAlgHom {A B : Under R} (f : A ⟶ B) : A →ₐ[R] B where
-  __ := f.right
+  __ := f.right.hom
   commutes' a := by
     have : (A.hom ≫ f.right) a = B.hom a := by simp
     simpa only [Functor.const_obj_obj, Functor.id_obj, CommRingCat.comp_apply] using this
@@ -69,7 +69,7 @@ namespace AlgHom
 /-- Make a morphism in `Under R` from an algebra map. -/
 def toUnder {A B : Type u} [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
     (f : A →ₐ[R] B) : CommRingCat.mkUnder R A ⟶ CommRingCat.mkUnder R B :=
-  Under.homMk f.toRingHom <| by
+  Under.homMk (CommRingCat.ofHom f.toRingHom) <| by
     ext a
     exact f.commutes' a
 
@@ -135,7 +135,7 @@ def tensorProd : Under R ⥤ Under S where
 variable (S) in
 /-- The natural isomorphism `S ⊗[R] A ≅ pushout A.hom (algebraMap R S)` in `Under S`. -/
 def tensorProdObjIsoPushoutObj (A : Under R) :
-    mkUnder S (S ⊗[R] A) ≅ (Under.pushout (algebraMap R S)).obj A :=
+    mkUnder S (S ⊗[R] A) ≅ (Under.pushout (ofHom <| algebraMap R S)).obj A :=
   Under.isoMk (CommRingCat.isPushout_tensorProduct R S A).flip.isoPushout <| by
     simp only [Functor.const_obj_obj, Under.pushout_obj, Functor.id_obj, Under.mk_right,
       mkUnder_hom, AlgHom.toRingHom_eq_coe, IsPushout.inr_isoPushout_hom, Under.mk_hom]
@@ -143,20 +143,20 @@ def tensorProdObjIsoPushoutObj (A : Under R) :
 
 @[reassoc (attr := simp)]
 lemma pushout_inl_tensorProdObjIsoPushoutObj_inv_right (A : Under R) :
-    pushout.inl A.hom (algebraMap R S) ≫ (tensorProdObjIsoPushoutObj S A).inv.right =
-      (CommRingCat.ofHom <| Algebra.TensorProduct.includeRight.toRingHom) := by
+    pushout.inl A.hom (ofHom <| algebraMap R S) ≫ (tensorProdObjIsoPushoutObj S A).inv.right =
+      (ofHom <| Algebra.TensorProduct.includeRight.toRingHom) := by
   simp [tensorProdObjIsoPushoutObj]
 
 @[reassoc (attr := simp)]
 lemma pushout_inr_tensorProdObjIsoPushoutObj_inv_right (A : Under R) :
-    pushout.inr A.hom (algebraMap R S) ≫
+    pushout.inr A.hom (ofHom <| algebraMap R S) ≫
       (tensorProdObjIsoPushoutObj S A).inv.right =
       (CommRingCat.ofHom <| Algebra.TensorProduct.includeLeftRingHom) := by
   simp [tensorProdObjIsoPushoutObj]
 
 variable (R S) in
 /-- `A ↦ S ⊗[R] A` is naturally isomorphic to `A ↦ pushout A.hom (algebraMap R S)`. -/
-def tensorProdIsoPushout : tensorProd R S ≅ Under.pushout (algebraMap R S) :=
+def tensorProdIsoPushout : tensorProd R S ≅ Under.pushout (ofHom <| algebraMap R S) :=
   NatIso.ofComponents (fun A ↦ tensorProdObjIsoPushoutObj S A) <| by
     intro A B f
     dsimp

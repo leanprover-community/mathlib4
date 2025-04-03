@@ -94,7 +94,7 @@ theorem of_ne_one (x : α) : of x ≠ 1 :=
 theorem one_ne_of (x : α) : 1 ≠ of x :=
   FreeAbelianGroup.of_injective.ne <| Multiset.zero_ne_singleton _
 
--- Porting note: added to ease a proof in `Algebra.DirectLimit`
+-- Porting note: added to ease a proof in `Mathlib.Algebra.Colimit.Ring`
 lemma of_cons (a : α) (m : Multiset α) : (FreeAbelianGroup.of (Multiplicative.ofAdd (a ::ₘ m))) =
     @HMul.hMul _ (FreeCommRing α) (FreeCommRing α) _ (of a)
     (FreeAbelianGroup.of (Multiplicative.ofAdd m)) := by

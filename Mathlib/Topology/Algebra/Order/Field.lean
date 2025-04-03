@@ -114,21 +114,29 @@ theorem Filter.Tendsto.neg_mul_atBot {C : 𝕜} (hC : C < 0) (hf : Tendsto f l (
 @[simp]
 lemma inv_atTop₀ : (atTop : Filter 𝕜)⁻¹ = 𝓝[>] 0 :=
   (((atTop_basis_Ioi' (0 : 𝕜)).map _).comp_surjective inv_surjective).eq_of_same_basis <|
-    (nhdsWithin_Ioi_basis _).congr (by simp) fun a ha ↦ by simp [inv_Ioi₀ (inv_pos.2 ha)]
+    (nhdsGT_basis _).congr (by simp) fun a ha ↦ by simp [inv_Ioi₀ (inv_pos.2 ha)]
 
-@[simp] lemma inv_nhdsWithin_Ioi_zero : (𝓝[>] (0 : 𝕜))⁻¹ = atTop := by
-  rw [← inv_atTop₀, inv_inv]
+@[simp]
+lemma inv_nhdsGT_zero : (𝓝[>] (0 : 𝕜))⁻¹ = atTop := by rw [← inv_atTop₀, inv_inv]
+
+@[deprecated (since := "2024-12-22")] alias inv_nhdsWithin_Ioi_zero := inv_nhdsGT_zero
 
 /-- The function `x ↦ x⁻¹` tends to `+∞` on the right of `0`. -/
-theorem tendsto_inv_zero_atTop : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 : 𝕜)) atTop :=
-  inv_nhdsWithin_Ioi_zero.le
+theorem tendsto_inv_nhdsGT_zero : Tendsto (fun x : 𝕜 => x⁻¹) (𝓝[>] (0 : 𝕜)) atTop :=
+  inv_nhdsGT_zero.le
+
+@[deprecated (since := "2024-12-22")]
+alias tendsto_inv_zero_atTop := tendsto_inv_nhdsGT_zero
 
 /-- The function `r ↦ r⁻¹` tends to `0` on the right as `r → +∞`. -/
-theorem tendsto_inv_atTop_zero' : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>] (0 : 𝕜)) :=
+theorem tendsto_inv_atTop_nhdsGT_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝[>] (0 : 𝕜)) :=
   inv_atTop₀.le
 
+@[deprecated (since := "2024-12-22")]
+alias tendsto_inv_atTop_zero' := tendsto_inv_atTop_nhdsGT_zero
+
 theorem tendsto_inv_atTop_zero : Tendsto (fun r : 𝕜 => r⁻¹) atTop (𝓝 0) :=
-  tendsto_inv_atTop_zero'.mono_right inf_le_left
+  tendsto_inv_atTop_nhdsGT_zero.mono_right inf_le_left
 
 theorem Filter.Tendsto.div_atTop {a : 𝕜} (h : Tendsto f l (𝓝 a)) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x / g x) l (𝓝 0) := by
@@ -142,8 +150,11 @@ lemma Filter.Tendsto.const_div_atTop (hg : Tendsto g l atTop) (r : 𝕜)  :
 theorem Filter.Tendsto.inv_tendsto_atTop (h : Tendsto f l atTop) : Tendsto f⁻¹ l (𝓝 0) :=
   tendsto_inv_atTop_zero.comp h
 
-theorem Filter.Tendsto.inv_tendsto_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
-  tendsto_inv_zero_atTop.comp h
+theorem Filter.Tendsto.inv_tendsto_nhdsGT_zero (h : Tendsto f l (𝓝[>] 0)) : Tendsto f⁻¹ l atTop :=
+  tendsto_inv_nhdsGT_zero.comp h
+
+@[deprecated (since := "2024-12-22")]
+alias Filter.Tendsto.inv_tendsto_zero := Filter.Tendsto.inv_tendsto_nhdsGT_zero
 
 /-- If `g` tends to zero and there exists a constant `C : 𝕜` such that eventually `|f x| ≤ C`,
   then the product `f * g` tends to zero. -/
@@ -242,14 +253,19 @@ instance (priority := 100) LinearOrderedField.toTopologicalDivisionRing :
     TopologicalDivisionRing 𝕜 := ⟨⟩
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to a `GroupWithZero`
-theorem nhdsWithin_pos_comap_mul_left {x : 𝕜} (hx : 0 < x) :
-    comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
+theorem comap_mulLeft_nhdsGT_zero {x : 𝕜} (hx : 0 < x) : comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
   rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]
   congr 1
   refine ((Homeomorph.mulLeft₀ x hx.ne').comap_nhds_eq _).trans ?_
   simp
 
-theorem eventually_nhdsWithin_pos_mul_left {x : 𝕜} (hx : 0 < x) {p : 𝕜 → Prop}
+@[deprecated (since := "2024-12-22")]
+alias nhdsWithin_pos_comap_mul_left := comap_mulLeft_nhdsGT_zero
+
+theorem eventually_nhdsGT_zero_mul_left {x : 𝕜} (hx : 0 < x) {p : 𝕜 → Prop}
     (h : ∀ᶠ ε in 𝓝[>] 0, p ε) : ∀ᶠ ε in 𝓝[>] 0, p (x * ε) := by
-  rw [← nhdsWithin_pos_comap_mul_left hx]
+  rw [← comap_mulLeft_nhdsGT_zero hx]
   exact h.comap fun ε => x * ε
+
+@[deprecated (since := "2024-12-22")]
+alias eventually_nhdsWithin_pos_mul_left := eventually_nhdsGT_zero_mul_left

@@ -30,7 +30,7 @@ namespace Linarith
 
 /-! ### Preprocessing -/
 
-open Lean hiding Rat
+open Lean
 open Elab Tactic Meta
 open Qq
 open Mathlib
@@ -287,6 +287,50 @@ partial def findSquares (s : RBSet (Nat × Bool) lexOrd.compare) (e : Expr) :
       e.foldlM findSquares s
   | _ => e.foldlM findSquares s
 
+/-- Get proofs of `-x^2 ≤ 0` and `-(x*x) ≤ 0`, when those terms appear in `ls` -/
+private def nlinarithGetSquareProofs (ls : List Expr) : MetaM (List Expr) := do
+  -- find the squares in `AtomM` to ensure deterministic behavior
+  let s ← AtomM.run .reducible do
+    let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
+      RBSet.empty
+    si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
+  let new_es ← s.filterMapM fun (e, is_sq) =>
+    observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
+  let new_es ← compWithZero.globalize.transform new_es
+  trace[linarith] "nlinarith preprocessing found squares"
+  trace[linarith] "{s}"
+  linarithTraceProofs "so we added proofs" new_es
+  return new_es
+
+/--
+Get proofs for products of inequalities from `ls`.
+
+Note that the length of the resulting list is proportional to `ls.length^2`, which can make a large
+amount of work for the linarith oracle.
+-/
+private def nlinarithGetProductsProofs (ls : List Expr) : MetaM (List Expr) := do
+  let with_comps ← ls.mapM (fun e => do
+    let tp ← inferType e
+    try
+      let ⟨ine, _⟩ ← parseCompAndExpr tp
+      pure (ine, e)
+    catch _ => pure (Ineq.lt, e))
+  let products ← with_comps.mapDiagM fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
+    try
+      (some <$> match posa, posb with
+        | Ineq.eq, _ => mkAppM ``zero_mul_eq #[a, b]
+        | _, Ineq.eq => mkAppM ``mul_zero_eq #[a, b]
+        | Ineq.lt, Ineq.lt => mkAppM ``mul_pos_of_neg_of_neg #[a, b]
+        | Ineq.lt, Ineq.le => do
+            let a ← mkAppM ``le_of_lt #[a]
+            mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
+        | Ineq.le, Ineq.lt => do
+            let b ← mkAppM ``le_of_lt #[b]
+            mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
+        | Ineq.le, Ineq.le => mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b])
+    catch _ => pure none
+  compWithZero.globalize.transform products.reduceOption
+
 /--
 `nlinarithExtras` is the preprocessor corresponding to the `nlinarith` tactic.
 
@@ -299,38 +343,8 @@ This preprocessor is typically run last, after all inputs have been canonized.
 def nlinarithExtras : GlobalPreprocessor where
   name := "nonlinear arithmetic extras"
   transform ls := do
-    -- find the squares in `AtomM` to ensure deterministic behavior
-    let s ← AtomM.run .reducible do
-      let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
-        RBSet.empty
-      si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
-    let new_es ← s.filterMapM fun (e, is_sq) =>
-      observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
-    let new_es ← compWithZero.globalize.transform new_es
-    trace[linarith] "nlinarith preprocessing found squares"
-    trace[linarith] "{s}"
-    linarithTraceProofs "so we added proofs" new_es
-    let with_comps ← (new_es ++ ls).mapM (fun e => do
-      let tp ← inferType e
-      try
-        let ⟨ine, _⟩ ← parseCompAndExpr tp
-        pure (ine, e)
-      catch _ => pure (Ineq.lt, e))
-    let products ← with_comps.mapDiagM fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
-      try
-        (some <$> match posa, posb with
-          | Ineq.eq, _ => mkAppM ``zero_mul_eq #[a, b]
-          | _, Ineq.eq => mkAppM ``mul_zero_eq #[a, b]
-          | Ineq.lt, Ineq.lt => mkAppM ``mul_pos_of_neg_of_neg #[a, b]
-          | Ineq.lt, Ineq.le => do
-              let a ← mkAppM ``le_of_lt #[a]
-              mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
-          | Ineq.le, Ineq.lt => do
-              let b ← mkAppM ``le_of_lt #[b]
-              mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
-          | Ineq.le, Ineq.le => mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b])
-      catch _ => pure none
-    let products ← compWithZero.globalize.transform products.reduceOption
+    let new_es ← nlinarithGetSquareProofs ls
+    let products ← nlinarithGetProductsProofs (new_es ++ ls)
     return (new_es ++ ls ++ products)
 
 end nlinarith

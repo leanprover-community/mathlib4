@@ -24,17 +24,17 @@ We fix a type `σ` and an `AddCommMonoid M`, as well as a function `w : σ → M
 with respect to `w`: it is the sum `∑ (f i) • (w i)`.
 It is an `AddMonoidHom` map defined using `Finsupp.linearCombination`.
 
-- `Finsupp.le_weight`says that `f s ≤ f.weight w` when `M = ℕ``
+- `Finsupp.le_weight` says that `f s ≤ f.weight w` when `M = ℕ`
 
-- `Finsupp.le_weight_of_nonneg'` says that `w s ≤ f.weight w`
+- `Finsupp.le_weight_of_ne_zero` says that `w s ≤ f.weight w`
 for `OrderedAddCommMonoid M`, when `f s ≠ 0` and all `w i` are nonnegative.
 
-- `Finsupp.le_weight'` is the same statement for `CanonicallyOrderedAddCommMonoid M`.
+- `Finsupp.le_weight_of_ne_zero'` is the same statement for `CanonicallyOrderedAddCommMonoid M`.
 
 - `NonTorsionWeight`: all values `w s` are non torsion in `M`.
 
 - `Finsupp.weight_eq_zero_iff_eq_zero` says that `f.weight w = 0` iff
-`f = 0` for `NonTorsion Weight w` and `CanonicallyOrderedAddCommMonoid M`.
+`f = 0` for `NonTorsionWeight w` and `CanonicallyOrderedAddCommMonoid M`.
 
 - For `w : σ → ℕ` and `Finite σ`, `Finsupp.finite_of_nat_weight_le` proves that
 there are finitely many `f : σ →₀ ℕ` of bounded weight.
@@ -75,7 +75,7 @@ section AddCommMonoid
 
 variable [AddCommMonoid M]
 /-- The `weight` of the finitely supported function `f : σ →₀ ℕ`
-with respect to `w : σ → M` is the sum `∑(f i)•(w i)`. -/
+with respect to `w : σ → M` is the sum `∑ i, f i • w i`. -/
 noncomputable def weight : (σ →₀ ℕ) →+ M :=
   (Finsupp.linearCombination ℕ w).toAddMonoidHom
 
@@ -104,6 +104,13 @@ theorem NonTorsionWeight.ne_zero [NonTorsionWeight w] (s : σ) :
   rw [← one_smul ℕ (w s)] at h
   apply Nat.zero_ne_one.symm
   exact NonTorsionWeight.eq_zero_of_smul_eq_zero h
+
+variable {w} in
+lemma weight_sub_single_add {f : σ →₀ ℕ} {i : σ} (hi : f i ≠ 0) :
+    (f - single i 1).weight w + w i = f.weight w := by
+  conv_rhs => rw [← sub_add_single_one_cancel hi, weight_apply]
+  rw [sum_add_index', sum_single_index, one_smul, weight_apply]
+  exacts [zero_smul .., fun _ ↦ zero_smul .., fun _ _ _ ↦ add_smul ..]
 
 end AddCommMonoid
 
@@ -194,6 +201,20 @@ def degree (d : σ →₀ ℕ) := ∑ i ∈ d.support, d i
 
 @[deprecated degree (since := "2024-07-20")]
 alias _root_.MvPolynomial.degree := degree
+
+@[simp]
+theorem degree_add (a b : σ →₀ ℕ) : (a + b).degree = a.degree + b.degree :=
+  sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
+
+@[simp]
+theorem degree_single (a : σ) (m : ℕ) : (Finsupp.single a m).degree = m := by
+  rw [degree, Finset.sum_eq_single a]
+  · simp only [single_eq_same]
+  · intro b _ hba
+    exact single_eq_of_ne hba.symm
+  · intro ha
+    simp only [mem_support_iff, single_eq_same, ne_eq, Decidable.not_not] at ha
+    rw [single_eq_same, ha]
 
 lemma degree_eq_zero_iff (d : σ →₀ ℕ) : degree d = 0 ↔ d = 0 := by
   simp only [degree, Finset.sum_eq_zero_iff, Finsupp.mem_support_iff, ne_eq, Decidable.not_imp_self,

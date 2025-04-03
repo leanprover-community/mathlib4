@@ -40,7 +40,7 @@ to learn about it as well!
 - `lint-bib.sh`
   normalize the BibTeX file `docs/references.bib` using `bibtool`.
 - `yaml_check.py`, `check-yaml.lean`
-  Sanity checks for `undergrad.yaml`, `overview.yaml`, and `100.yaml`.
+  Sanity checks for `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`.
 - `lean-pr-testing-comments.sh`
   Generate comments and labels on a Lean or Batteries PR after CI has finished on a
   `*-pr-testing-NNNN` branch.
@@ -67,6 +67,10 @@ to learn about it as well!
   - finally, merge the new branch back into `nightly-testing`, if conflict resolution was required.
 
   If there are merge conflicts, it pauses and asks for help from the human driver.
+- `merge-lean-testing-pr.sh` takes a PR number `NNNN` as argument,
+  and attempts to merge the branch `lean-pr-testing-NNNN` into `master`.
+  It will resolve conflicts in `lean-toolchain`, `lakefile.lean`, and `lake-manifest.json`.
+  If there are more conflicts, it will bail.
 
 **Managing and tracking technical debt**
 - `technical-debt-metrics.sh`

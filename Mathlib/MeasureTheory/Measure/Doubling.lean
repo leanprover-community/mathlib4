@@ -70,7 +70,7 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
     intro n
     induction' n with n ih
     · simp
-    replace ih := eventually_nhdsWithin_pos_mul_left (two_pos : 0 < (2 : ℝ)) ih
+    replace ih := eventually_nhdsGT_zero_mul_left (two_pos : 0 < (2 : ℝ)) ih
     refine (ih.and (exists_measure_closedBall_le_mul' μ)).mono fun ε hε x => ?_
     calc
       μ (closedBall x ((2 : ℝ) ^ (n + 1) * ε)) = μ (closedBall x ((2 : ℝ) ^ n * (2 * ε))) := by
@@ -108,7 +108,7 @@ theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
         ∀ x t r, t ∈ Ioc 0 K → r ≤ R →
           μ (closedBall x (t * r)) ≤ scalingConstantOf μ K * μ (closedBall x r) := by
   have h := Classical.choose_spec (exists_eventually_forall_measure_closedBall_le_mul μ K)
-  rcases mem_nhdsWithin_Ioi_iff_exists_Ioc_subset.1 h with ⟨R, Rpos, hR⟩
+  rcases mem_nhdsGT_iff_exists_Ioc_subset.1 h with ⟨R, Rpos, hR⟩
   refine ⟨R, Rpos, fun x t r ht hr => ?_⟩
   rcases lt_trichotomy r 0 with (rneg | rfl | rpos)
   · have : t * r < 0 := mul_neg_of_pos_of_neg ht.1 rneg
@@ -129,7 +129,7 @@ theorem eventually_measure_le_scaling_constant_mul (K : ℝ) :
 theorem eventually_measure_le_scaling_constant_mul' (K : ℝ) (hK : 0 < K) :
     ∀ᶠ r in 𝓝[>] 0, ∀ x,
       μ (closedBall x r) ≤ scalingConstantOf μ K⁻¹ * μ (closedBall x (K * r)) := by
-  convert eventually_nhdsWithin_pos_mul_left hK (eventually_measure_le_scaling_constant_mul μ K⁻¹)
+  convert eventually_nhdsGT_zero_mul_left hK (eventually_measure_le_scaling_constant_mul μ K⁻¹)
   simp [inv_mul_cancel_left₀ hK.ne']
 
 /-- A scale below which the doubling measure `μ` satisfies good rescaling properties when one

@@ -34,7 +34,7 @@ Note that this theory only applies in measurable groups, i.e., when multiplicati
 are measurable. This is not the case in general in locally compact groups, or even in compact
 groups, when the topology is not second-countable. For arguments along the same line, but using
 continuous functions instead of measurable sets and working in the general locally compact
-setting, see the file `MeasureTheory.Measure.Haar.Unique.lean`.
+setting, see the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 -/
 
 
@@ -305,7 +305,7 @@ theorem measure_lintegral_div_measure (sm : MeasurableSet s) (h2s : ν' s ≠ 0)
   simp_rw [measure_mul_lintegral_eq μ' ν' sm g hg, g, inv_inv]
   refine lintegral_congr_ae ?_
   refine (ae_measure_preimage_mul_right_lt_top_of_ne_zero μ' ν' h2s h3s).mono fun x hx => ?_
-  simp_rw [ENNReal.mul_div_cancel' (measure_mul_right_ne_zero ν' h2s _) hx.ne]
+  simp_rw [ENNReal.mul_div_cancel (measure_mul_right_ne_zero ν' h2s _) hx.ne]
 
 @[to_additive]
 theorem measure_mul_measure_eq (s t : Set G) (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞) :
@@ -330,7 +330,7 @@ theorem measure_eq_div_smul (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞) :
     μ' = (μ' s / ν' s) • ν' := by
   ext1 t -
   rw [smul_apply, smul_eq_mul, mul_comm, ← mul_div_assoc, mul_comm,
-    measure_mul_measure_eq μ' ν' s t h2s h3s, mul_div_assoc, ENNReal.mul_div_cancel' h2s h3s]
+    measure_mul_measure_eq μ' ν' s t h2s h3s, mul_div_assoc, ENNReal.mul_div_cancel h2s h3s]
 
 end SigmaFinite
 

@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 -/
 import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
-import Mathlib.Probability.Notation
-import Mathlib.MeasureTheory.Decomposition.Lebesgue
+import Mathlib.Probability.Moments
 
 /-!
 # Gaussian distributions over ℝ
@@ -346,6 +345,35 @@ lemma gaussianReal_mul_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussian
   exact gaussianReal_const_mul hX c
 
 end Transformations
+
+open Measurable Real
+
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
+
+theorem mgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
+    mgf X p t = exp (μ * t + v * t ^ 2 / 2) := by
+  by_cases hv : v = 0
+  · simp only [gaussianReal, hv, ↓reduceIte] at hX
+    simp [mgf_dirac hX, hv]
+  calc
+  mgf X p t = (p.map X)[fun x => exp (t * x)] := by
+    rw [← mgf_id_map, mgf]
+    all_goals simp [AEMeasurable.of_map_ne_zero, hX, IsProbabilityMeasure.ne_zero]
+  _ = ∫ x, exp (t * x) * gaussianPDFReal μ v x := by
+    simp [hX, gaussianReal_of_var_ne_zero μ hv, gaussianPDF_def, ENNReal.ofReal,
+      integral_withDensity_eq_integral_smul (measurable_gaussianPDFReal μ v).real_toNNReal,
+      NNReal.smul_def, gaussianPDFReal_nonneg, mul_comm]
+  _ = ∫ x, exp (μ * t + v * t ^ 2 / 2) * gaussianPDFReal (μ + v * t) v x := by
+    simp only [gaussianPDFReal_def, mul_left_comm (exp _), mul_assoc, ← exp_add]
+    congr with x
+    field_simp only [mul_left_comm, ← exp_sub, ← exp_add]
+    ring_nf
+  _ = exp (μ * t + v * t ^ 2 / 2) := by
+    rw [integral_mul_left, integral_gaussianPDFReal_eq_one (μ + v * t) hv, mul_one]
+
+theorem cgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
+    cgf X p t = μ * t + v * t ^ 2 / 2 := by
+  rw [cgf, mgf_gaussianReal hX t, log_exp]
 
 end GaussianReal
 

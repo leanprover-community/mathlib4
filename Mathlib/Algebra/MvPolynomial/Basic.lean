@@ -922,9 +922,8 @@ theorem eval₂_one : (1 : MvPolynomial σ R).eval₂ f g = 1 :=
 @[simp] theorem eval₂_natCast (n : Nat) : (n : MvPolynomial σ R).eval₂ f g = n :=
   (eval₂_C _ _ _).trans (map_natCast f n)
 
--- See note [no_index around OfNat.ofNat]
 @[simp] theorem eval₂_ofNat (n : Nat) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : MvPolynomial σ R).eval₂ f g = OfNat.ofNat n :=
+    (ofNat(n) : MvPolynomial σ R).eval₂ f g = ofNat(n) :=
   eval₂_natCast f g n
 
 @[simp]
@@ -1077,9 +1076,8 @@ theorem eval_C : ∀ a, eval f (C a) = a :=
 theorem eval_X : ∀ n, eval f (X n) = f n :=
   eval₂_X _ _
 
--- See note [no_index around OfNat.ofNat]
 @[simp] theorem eval_ofNat (n : Nat) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : MvPolynomial σ R).eval f = OfNat.ofNat n :=
+    (ofNat(n) : MvPolynomial σ R).eval f = ofNat(n) :=
   map_ofNat _ n
 
 @[simp]
@@ -1142,9 +1140,8 @@ theorem map_monomial (s : σ →₀ ℕ) (a : R) : map f (monomial s a) = monomi
 theorem map_C : ∀ a : R, map f (C a : MvPolynomial σ R) = C (f a) :=
   map_monomial _ _
 
--- See note [no_index around OfNat.ofNat]
 @[simp] protected theorem map_ofNat (n : Nat) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : MvPolynomial σ R).map f = OfNat.ofNat n :=
+    (ofNat(n) : MvPolynomial σ R).map f = ofNat(n) :=
   _root_.map_ofNat _ _
 
 @[simp]
@@ -1248,6 +1245,10 @@ theorem map_rightInverse {f : R →+* S₁} {g : S₁ →+* R} (hf : Function.Ri
 theorem eval_map (f : R →+* S₁) (g : σ → S₁) (p : MvPolynomial σ R) :
     eval g (map f p) = eval₂ f g p := by
   apply MvPolynomial.induction_on p <;> · simp +contextual
+
+theorem eval₂_comp (f : R →+* S₁) (g : σ → R) (p : MvPolynomial σ R) :
+    f (eval g p) = eval₂ f (f ∘ g) p := by
+  rw [← p.map_id, eval_map, eval₂_comp_right]
 
 @[simp]
 theorem eval₂_map [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₂) (φ : S₁ →+* S₂)
@@ -1362,9 +1363,8 @@ theorem aeval_X (s : σ) : aeval f (X s : MvPolynomial _ R) = f s :=
 theorem aeval_C (r : R) : aeval f (C r) = algebraMap R S₁ r :=
   eval₂_C _ _ _
 
--- See note [no_index around OfNat.ofNat]
 @[simp] theorem aeval_ofNat (n : Nat) [n.AtLeastTwo] :
-    aeval f (no_index (OfNat.ofNat n) : MvPolynomial σ R) = OfNat.ofNat n :=
+    aeval f (ofNat(n) : MvPolynomial σ R) = ofNat(n) :=
   map_ofNat _ _
 
 theorem aeval_unique (φ : MvPolynomial σ R →ₐ[R] S₁) : φ = aeval (φ ∘ X) := by
@@ -1498,10 +1498,9 @@ theorem aevalTower_X (i : σ) : aevalTower g y (X i) = y i :=
 theorem aevalTower_C (x : R) : aevalTower g y (C x) = g x :=
   eval₂_C _ _ _
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem aevalTower_ofNat (n : Nat) [n.AtLeastTwo] :
-    aevalTower g y (no_index (OfNat.ofNat n) : MvPolynomial σ R) = OfNat.ofNat n :=
+    aevalTower g y (ofNat(n) : MvPolynomial σ R) = ofNat(n) :=
   _root_.map_ofNat _ _
 
 @[simp]

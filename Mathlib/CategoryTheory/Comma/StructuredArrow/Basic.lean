@@ -329,6 +329,11 @@ noncomputable instance isEquivalenceMap₂
 
 end
 
+/-- `StructuredArrow.post` is a special case of `StructuredArrow.map₂` up to natural isomorphism. -/
+def postIsoMap₂ (S : C) (F : B ⥤ C) (G : C ⥤ D) :
+    post S F G ≅ map₂ (F := 𝟭 _) (𝟙 _) (𝟙 (F ⋙ G)) :=
+  NatIso.ofComponents fun _ => isoMk <| Iso.refl _
+
 /-- A structured arrow is called universal if it is initial. -/
 abbrev IsUniversal (f : StructuredArrow S T) := IsInitial f
 
@@ -665,6 +670,12 @@ noncomputable instance isEquivalenceMap₂
 
 end
 
+/-- `CostructuredArrow.post` is a special case of `CostructuredArrow.map₂` up to natural
+isomorphism. -/
+def postIsoMap₂ (S : C) (F : B ⥤ C) (G : C ⥤ D) :
+    post F G S ≅ map₂ (F := 𝟭 _) (𝟙 (F ⋙ G)) (𝟙 _) :=
+  NatIso.ofComponents fun _ => isoMk <| Iso.refl _
+
 /-- A costructured arrow is called universal if it is terminal. -/
 abbrev IsUniversal (f : CostructuredArrow S T) := IsTerminal f
 
@@ -875,7 +886,7 @@ variable {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) {G : D ⥤ E} {e : E}
 
 /-- The functor establishing the equivalence `StructuredArrow.preEquivalence`. -/
 @[simps!]
-def StructuredArrow.preEquivalence.functor (f : StructuredArrow e G) :
+def StructuredArrow.preEquivalenceFunctor (f : StructuredArrow e G) :
     StructuredArrow f (pre e F G) ⥤ StructuredArrow f.right F where
   obj g := mk g.hom.right
   map φ := homMk φ.right.right <| by
@@ -886,7 +897,7 @@ def StructuredArrow.preEquivalence.functor (f : StructuredArrow e G) :
 
 /-- The inverse functor establishing the equivalence `StructuredArrow.preEquivalence`. -/
 @[simps!]
-def StructuredArrow.preEquivalence.inverse (f : StructuredArrow e G) :
+def StructuredArrow.preEquivalenceInverse (f : StructuredArrow e G) :
     StructuredArrow f.right F ⥤ StructuredArrow f (pre e F G) where
   obj g := mk
             (Y := mk (Y := g.right)
@@ -898,12 +909,22 @@ def StructuredArrow.preEquivalence.inverse (f : StructuredArrow e G) :
 
 /-- A structured arrow category on a `StructuredArrow.pre e F G` functor is equivalent to the
 structured arrow category on F -/
+@[simps]
 def StructuredArrow.preEquivalence (f : StructuredArrow e G) :
     StructuredArrow f (pre e F G) ≌ StructuredArrow f.right F where
-  functor := StructuredArrow.preEquivalence.functor F f
-  inverse := StructuredArrow.preEquivalence.inverse F f
+  functor := preEquivalenceFunctor F f
+  inverse := preEquivalenceInverse F f
   unitIso := NatIso.ofComponents (fun _ => isoMk (isoMk (Iso.refl _)))
   counitIso := NatIso.ofComponents (fun _ => isoMk (Iso.refl _))
+
+/-- The functor `StructuredArrow d T ⥤ StructuredArrow e (T ⋙ S)` that `u : e ⟶ S.obj d`
+induces via `StructuredArrow.map₂` can be expressed up to isomorphism by
+`StructuredArrow.preEquivalence` and `StructuredArrow.proj`. -/
+def StructuredArrow.map₂IsoPreEquivalenceInverseCompProj (T : C ⥤ D) (S : D ⥤ E) (d : D) (e : E)
+    (u : e ⟶ S.obj d) :
+    map₂ (F := 𝟭 _) u (𝟙 (T ⋙ S)) ≅
+      (preEquivalence T (mk u)).inverse ⋙ proj (mk u) (pre _ T S) :=
+  NatIso.ofComponents fun _ => isoMk (Iso.refl _)
 
 /-- The functor establishing the equivalence `CostructuredArrow.preEquivalence`. -/
 @[simps!]
@@ -929,10 +950,19 @@ def CostructuredArrow.preEquivalence.inverse (f : CostructuredArrow G e) :
 costructured arrow category on F -/
 def CostructuredArrow.preEquivalence (f : CostructuredArrow G e) :
     CostructuredArrow (pre F G e) f ≌ CostructuredArrow F f.left where
-  functor := CostructuredArrow.preEquivalence.functor F f
-  inverse := CostructuredArrow.preEquivalence.inverse F f
+  functor := preEquivalence.functor F f
+  inverse := preEquivalence.inverse F f
   unitIso := NatIso.ofComponents (fun _ => isoMk (isoMk (Iso.refl _)))
   counitIso := NatIso.ofComponents (fun _ => isoMk (Iso.refl _))
+
+/-- The functor `CostructuredArrow T d ⥤ CostructuredArrow (T ⋙ S) e` that `u : S.obj d ⟶ e`
+induces via `CostructuredArrow.map₂` can be expressed up to isomorphism by
+`CostructuredArrow.preEquivalence` and `CostructuredArrow.proj`. -/
+def CostructuredArrow.map₂IsoPreEquivalenceInverseCompProj (T : C ⥤ D) (S : D ⥤ E) (d : D) (e : E)
+    (u : S.obj d ⟶ e) :
+    map₂ (F := 𝟭 _) (U := T ⋙ S) (𝟙 (T ⋙ S)) u ≅
+      (preEquivalence T (mk u)).inverse ⋙ proj (pre T S _) (mk u) :=
+  NatIso.ofComponents fun _ => isoMk (Iso.refl _)
 
 end Pre
 

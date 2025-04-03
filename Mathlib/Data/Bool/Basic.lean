@@ -103,9 +103,9 @@ theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
 
 end
 
-@[deprecated (since := "2024-06-07")] alias decide_True := decide_true_eq_true
+@[deprecated (since := "2024-06-07")] alias decide_True := decide_true
 
-@[deprecated (since := "2024-06-07")] alias decide_False := decide_false_eq_false
+@[deprecated (since := "2024-06-07")] alias decide_False := decide_false
 
 @[deprecated (since := "2024-06-07")] alias coe_decide := decide_eq_true_iff
 

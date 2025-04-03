@@ -645,7 +645,7 @@ theorem aemeasurable_restrict_of_antitoneOn [LinearOrder β] [OrderClosedTopolog
     AEMeasurable f (μ.restrict s) :=
   @aemeasurable_restrict_of_monotoneOn αᵒᵈ β _ _ ‹_› _ _ _ _ _ ‹_› _ _ _ _ hs _ hf
 
-theorem measurableSet_of_mem_nhdsWithin_Ioi_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
+theorem MeasurableSet.of_mem_nhdsGT_aux {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x)
     (h' : ∀ x ∈ s, ∃ y, x < y) : MeasurableSet s := by
   choose! M hM using h'
   suffices H : (s \ interior s).Countable by
@@ -653,7 +653,7 @@ theorem measurableSet_of_mem_nhdsWithin_Ioi_aux {s : Set α} (h : ∀ x ∈ s, s
     rw [this]
     exact isOpen_interior.measurableSet.union H.measurableSet
   have A : ∀ x ∈ s, ∃ y ∈ Ioi x, Ioo x y ⊆ s := fun x hx =>
-    (mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' (hM x hx)).1 (h x hx)
+    (mem_nhdsGT_iff_exists_Ioo_subset' (hM x hx)).1 (h x hx)
   choose! y hy h'y using A
   have B : Set.PairwiseDisjoint (s \ interior s) fun x => Ioo x (y x) := by
     intro x hx x' hx' hxx'
@@ -668,24 +668,29 @@ theorem measurableSet_of_mem_nhdsWithin_Ioi_aux {s : Set α} (h : ∀ x ∈ s, s
       exact False.elim (hx.2 this)
   exact B.countable_of_Ioo fun x hx => hy x hx.1
 
+@[deprecated (since := "2024-12-22")]
+alias measurableSet_of_mem_nhdsWithin_Ioi_aux := MeasurableSet.of_mem_nhdsGT_aux
+
 /-- If a set is a right-neighborhood of all of its points, then it is measurable. -/
-theorem measurableSet_of_mem_nhdsWithin_Ioi {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x) :
-    MeasurableSet s := by
+theorem MeasurableSet.of_mem_nhdsGT {s : Set α} (h : ∀ x ∈ s, s ∈ 𝓝[>] x) : MeasurableSet s := by
   by_cases H : ∃ x ∈ s, IsTop x
   · rcases H with ⟨x₀, x₀s, h₀⟩
-    have : s = {x₀} ∪ s \ {x₀} := by rw [union_diff_cancel (singleton_subset_iff.2 x₀s)]
+    have : s = { x₀ } ∪ s \ { x₀ } := by rw [union_diff_cancel (singleton_subset_iff.2 x₀s)]
     rw [this]
     refine (measurableSet_singleton _).union ?_
-    have A : ∀ x ∈ s \ {x₀}, x < x₀ := fun x hx => lt_of_le_of_ne (h₀ _) (by simpa using hx.2)
-    refine measurableSet_of_mem_nhdsWithin_Ioi_aux (fun x hx => ?_) fun x hx => ⟨x₀, A x hx⟩
+    have A : ∀ x ∈ s \ { x₀ }, x < x₀ := fun x hx => lt_of_le_of_ne (h₀ _) (by simpa using hx.2)
+    refine .of_mem_nhdsGT_aux (fun x hx => ?_) fun x hx => ⟨x₀, A x hx⟩
     obtain ⟨u, hu, us⟩ : ∃ (u : α), u ∈ Ioi x ∧ Ioo x u ⊆ s :=
-      (mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' (A x hx)).1 (h x hx.1)
-    refine (mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' (A x hx)).2 ⟨u, hu, fun y hy => ⟨us hy, ?_⟩⟩
+      (mem_nhdsGT_iff_exists_Ioo_subset' (A x hx)).1 (h x hx.1)
+    refine (mem_nhdsGT_iff_exists_Ioo_subset' (A x hx)).2 ⟨u, hu, fun y hy => ⟨us hy, ?_⟩⟩
     exact ne_of_lt (hy.2.trans_le (h₀ _))
-  · apply measurableSet_of_mem_nhdsWithin_Ioi_aux h
+  · refine .of_mem_nhdsGT_aux h ?_
     simp only [IsTop] at H
     push_neg at H
     exact H
+
+@[deprecated (since := "2024-12-22")]
+alias measurableSet_of_mem_nhdsWithin_Ioi := MeasurableSet.of_mem_nhdsGT
 
 lemma measurableSet_bddAbove_range {ι} [Countable ι] {f : ι → δ → α} (hf : ∀ i, Measurable (f i)) :
     MeasurableSet {b | BddAbove (range (fun i ↦ f i b))} := by

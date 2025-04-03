@@ -52,16 +52,24 @@ namespace Style.setOption
 
 /-- Whether a syntax element is a `set_option` command, tactic or term:
 Return the name of the option being set, if any. -/
-def parse_set_option : Syntax → Option Name
+def parseSetOption : Syntax → Option Name
   -- This handles all four possibilities of `_val`: a string, number, `true` and `false`.
   | `(command|set_option $name:ident $_val) => some name.getId
   | `(set_option $name:ident $_val in $_x) => some name.getId
   | `(tactic|set_option $name:ident $_val in $_x) => some name.getId
   | _ => none
 
+/-- Deprecated alias for `Mathlib.Linter.Style.setOption.parseSetOption`. -/
+@[deprecated parseSetOption (since := "2024-12-07")]
+def parse_set_option := @parseSetOption
+
 /-- Whether a given piece of syntax is a `set_option` command, tactic or term. -/
-def is_set_option : Syntax → Bool :=
-  fun stx ↦ parse_set_option stx matches some _name
+def isSetOption : Syntax → Bool :=
+  fun stx ↦ parseSetOption stx matches some _name
+
+/-- Deprecated alias for `Mathlib.Linter.Style.setOption.isSetOption`. -/
+@[deprecated isSetOption (since := "2024-12-07")]
+def is_set_option := @isSetOption
 
 /-- The `setOption` linter: this lints any `set_option` command, term or tactic
 which sets a `pp`, `profiler` or `trace` option.
@@ -76,8 +84,8 @@ def setOptionLinter : Linter where run := withSetOptionIn fun stx => do
       return
     if (← MonadState.get).messages.hasErrors then
       return
-    if let some head := stx.find? is_set_option then
-      if let some name := parse_set_option head then
+    if let some head := stx.find? isSetOption then
+      if let some name := parseSetOption head then
         let forbidden := [`debug, `pp, `profiler, `trace]
         if forbidden.contains name.getRoot then
           Linter.logLint linter.style.setOption head

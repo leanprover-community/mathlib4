@@ -122,7 +122,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     apply le_sup_of_le_left
     rw [Submodule.map_le_iff_le_comap]
     intro y hy
-    simp only [Submodule.mem_comap, mem_engel_iff, mem_coe_submodule]
+    simp only [Submodule.mem_comap, mem_engel_iff, mem_toSubmodule]
     use k+1
     clear hk; revert hy
     generalize k+1 = k
@@ -135,7 +135,7 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     apply le_sup_of_le_right
     rw [Submodule.map_le_iff_le_comap]
     rintro _ ⟨y, rfl⟩
-    simp only [pow_succ', LinearMap.mul_apply, Submodule.mem_comap, mem_coe_submodule]
+    simp only [pow_succ', LinearMap.mul_apply, Submodule.mem_comap, mem_toSubmodule]
     apply aux₁
     simp only [Submodule.coe_subtype, SetLike.coe_mem]
 

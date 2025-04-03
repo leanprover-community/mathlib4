@@ -526,6 +526,41 @@ theorem Int.ModEq.pow_card_sub_one_eq_one {p : ℕ} (hp : Nat.Prime p) {n : ℤ}
     · exact hpn.symm
   simpa [← ZMod.intCast_eq_intCast_iff] using ZMod.pow_card_sub_one_eq_one this
 
+theorem pow_pow_modEq_one (p m a : ℕ) : (1 + p * a) ^ (p ^ m) ≡ 1 [MOD p ^ m] := by
+  induction' m with m hm
+  · exact Nat.modEq_one
+  · rw [Nat.ModEq.comm, add_comm, Nat.modEq_iff_dvd' (Nat.one_le_pow' _ _)] at hm
+    obtain ⟨d, hd⟩ := hm
+    rw [tsub_eq_iff_eq_add_of_le (Nat.one_le_pow' _ _), add_comm] at hd
+    rw [pow_succ, pow_mul, hd, add_pow, Finset.sum_range_succ', pow_zero, one_mul, one_pow,
+      one_mul, Nat.choose_zero_right, Nat.cast_one]
+    refine Nat.ModEq.add_right 1 (Nat.modEq_zero_iff_dvd.mpr ?_)
+    simp_rw [one_pow, mul_one, pow_succ', mul_assoc, ← Finset.mul_sum]
+    refine mul_dvd_mul_left (p ^ m) (dvd_mul_of_dvd_right (Finset.dvd_sum fun k hk ↦ ?_) d)
+    cases m
+    · rw [pow_zero, pow_one, one_mul, add_comm, add_left_inj] at hd
+      cases k <;> simp [← hd, mul_assoc, pow_succ']
+    · cases k <;> simp [mul_assoc, pow_succ']
+
+theorem ZMod.eq_one_or_isUnit_sub_one {n p k : ℕ} [Fact p.Prime] (hn : n = p ^ k) (a : ZMod n)
+    (ha : (orderOf a).Coprime n) : a = 1 ∨ IsUnit (a - 1) := by
+  rcases eq_or_ne n 0 with rfl | hn0
+  · exact Or.inl (orderOf_eq_one_iff.mp ((orderOf a).coprime_zero_right.mp ha))
+  rcases eq_or_ne a 0 with rfl | ha0
+  · exact Or.inr (zero_sub (1 : ZMod n) ▸ isUnit_neg_one)
+  have : NeZero n := ⟨hn0⟩
+  obtain ⟨a, rfl⟩ := ZMod.natCast_zmod_surjective a
+  rw [← orderOf_eq_one_iff, or_iff_not_imp_right]
+  refine fun h ↦ ha.eq_one_of_dvd ?_
+  rw [orderOf_dvd_iff_pow_eq_one, ← Nat.cast_pow, ← Nat.cast_one, ZMod.eq_iff_modEq_nat, hn]
+  replace ha0 : 1 ≤ a := by
+    contrapose! ha0
+    rw [Nat.lt_one_iff.mp ha0, Nat.cast_zero]
+  rw [← Nat.cast_one, ← Nat.cast_sub ha0, ZMod.isUnit_iff_coprime, hn] at h
+  obtain ⟨b, hb⟩ := not_imp_comm.mp (Nat.Prime.coprime_pow_of_not_dvd Fact.out) h
+  rw [tsub_eq_iff_eq_add_of_le ha0, add_comm] at hb
+  exact hb ▸ pow_pow_modEq_one p k b
+
 section
 
 namespace FiniteField

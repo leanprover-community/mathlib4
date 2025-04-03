@@ -3,8 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.Module.ULift
+import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.Tactic.Ring
 
 /-!
 # The characteristic predicate of tensor product
@@ -114,6 +115,13 @@ theorem IsTensorProduct.inductionOn (h : IsTensorProduct f) {C : M → Prop} (m 
   | add _ _ _ _ =>
     rw [map_add]
     apply hadd <;> assumption
+
+lemma IsTensorProduct.of_equiv (e : M₁ ⊗[R] M₂ ≃ₗ[R] M) (he : ∀ x y, e (x ⊗ₜ y) = f x y) :
+    IsTensorProduct f := by
+  have : TensorProduct.lift f = e := by
+    ext x y
+    simp [he]
+  simpa [IsTensorProduct, this] using e.bijective
 
 end IsTensorProduct
 
@@ -225,6 +233,34 @@ theorem IsBaseChange.equiv_tmul (s : S) (m : M) : h.equiv (s ⊗ₜ m) = s • f
 theorem IsBaseChange.equiv_symm_apply (m : M) : h.equiv.symm (f m) = 1 ⊗ₜ m := by
   rw [h.equiv.symm_apply_eq, h.equiv_tmul, one_smul]
 
+lemma IsBaseChange.of_equiv (e : S ⊗[R] M ≃ₗ[S] N) (he : ∀ x, e (1 ⊗ₜ x) = f x) :
+    IsBaseChange S f := by
+  apply IsTensorProduct.of_equiv (e.restrictScalars R)
+  intro x y
+  simp [show x ⊗ₜ[R] y = x • (1 ⊗ₜ[R] y) by simp [smul_tmul'], he]
+
+section
+
+variable (A : Type*) [CommSemiring A]
+variable [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+variable [Module S M] [IsScalarTower R S M]
+variable [Module A N] [IsScalarTower S A N] [IsScalarTower R A N]
+
+/-- If `N` is the base change of `M` to `A`, then `N ⊗[R] P` is the base change
+of `M ⊗[R] P` to `A`. This is simply the isomorphism
+`A ⊗[S] (M ⊗[R] P) ≃ₗ[A] (A ⊗[S] M) ⊗[R] P`. -/
+lemma isBaseChange_tensorProduct_map {f : M →ₗ[S] N} (hf : IsBaseChange A f) :
+    IsBaseChange A (AlgebraTensorModule.map f (LinearMap.id (R := R) (M := P))) := by
+  let e : A ⊗[S] M ⊗[R] P ≃ₗ[A] N ⊗[R] P := (AlgebraTensorModule.assoc R S A A M P).symm.trans
+    (AlgebraTensorModule.congr hf.equiv (LinearEquiv.refl R P))
+  refine IsBaseChange.of_equiv e (fun x ↦ ?_)
+  induction' x with m p _ _ h1 h2
+  · simp
+  · simp [e, IsBaseChange.equiv_tmul]
+  · simp [tmul_add, h1, h2]
+
+end
+
 variable (f)
 
 theorem IsBaseChange.of_lift_unique
@@ -333,7 +369,7 @@ lemma IsBaseChange.of_comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N �
   let q : O →ₗ[T] Q := hc.lift r'
   refine ⟨q, ?_, ?_⟩
   · apply hf.algHom_ext'
-    simp [LinearMap.comp_assoc, hc.lift_comp]
+    simp [r', q, LinearMap.comp_assoc, hc.lift_comp]
   · intro q' hq'
     apply hc.algHom_ext'
     apply_fun LinearMap.restrictScalars R at hq'
@@ -389,7 +425,7 @@ theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPus
     (toAlgHom R S S').toLinearMap =
       (e.toLinearMap.restrictScalars R).comp (TensorProduct.mk R R' S 1) := by
     ext
-    simp [h.1.equiv_tmul, Algebra.smul_def]
+    simp [e, h.1.equiv_tmul, Algebra.smul_def]
   constructor
   rw [this]
   exact (TensorProduct.isBaseChange R S R').comp (IsBaseChange.ofEquiv e)

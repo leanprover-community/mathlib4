@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.GroupTheory.Subsemigroup.Center
 import Mathlib.RingTheory.NonUnitalSubring.Defs
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic

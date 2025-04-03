@@ -24,10 +24,7 @@ lemmas unconditional on the sum of the weights being `1`.
 -/
 
 
-open Set Function
-
-open scoped Classical
-open Pointwise
+open Set Function Pointwise
 
 universe u u'
 
@@ -48,6 +45,7 @@ open Finset
 theorem Finset.centerMass_empty : (∅ : Finset ι).centerMass w z = 0 := by
   simp only [centerMass, sum_empty, smul_zero]
 
+open scoped Classical in
 theorem Finset.centerMass_pair (hne : i ≠ j) :
     ({i, j} : Finset ι).centerMass w z = (w i / (w i + w j)) • z i + (w j / (w i + w j)) • z j := by
   simp only [centerMass, sum_pair hne]
@@ -55,6 +53,7 @@ theorem Finset.centerMass_pair (hne : i ≠ j) :
 
 variable {w}
 
+open scoped Classical in
 theorem Finset.centerMass_insert (ha : i ∉ t) (hw : ∑ j ∈ t, w j ≠ 0) :
     (insert i t).centerMass w z =
       (w i / (w i + ∑ j ∈ t, w j)) • z i +
@@ -105,6 +104,7 @@ theorem Finset.centerMass_segment (s : Finset ι) (w₁ w₂ : ι → R) (z : ι
   simp only [Finset.centerMass_eq_of_sum_1, Finset.centerMass_eq_of_sum_1 _ _ hw,
     smul_sum, sum_add_distrib, add_smul, mul_smul, *]
 
+open scoped Classical in
 theorem Finset.centerMass_ite_eq (hi : i ∈ t) :
     t.centerMass (fun j => if i = j then (1 : R) else 0) z = z i := by
   rw [Finset.centerMass_eq_of_sum_1]
@@ -154,6 +154,7 @@ lemma Finset.centerMass_of_sum_add_sum_eq_zero {s t : Finset ι}
 provided that all weights are non-negative, and the total weight is positive. -/
 theorem Convex.centerMass_mem (hs : Convex R s) :
     (∀ i ∈ t, 0 ≤ w i) → (0 < ∑ i ∈ t, w i) → (∀ i ∈ t, z i ∈ s) → t.centerMass w z ∈ s := by
+  classical
   induction' t using Finset.induction with i t hi ht
   · simp [lt_irrefl]
   intro h₀ hpos hmem
@@ -199,6 +200,7 @@ theorem Convex.finsum_mem {ι : Sort*} {w : ι → R} {z : ι → E} {s : Set E}
 
 theorem convex_iff_sum_mem : Convex R s ↔ ∀ (t : Finset E) (w : E → R),
     (∀ i ∈ t, 0 ≤ w i) → ∑ i ∈ t, w i = 1 → (∀ x ∈ t, x ∈ s) → (∑ x ∈ t, w x • x) ∈ s := by
+  classical
   refine ⟨fun hs t w hw₀ hw₁ hts => hs.sum_mem hw₀ hw₁ hts, ?_⟩
   intro h x hx y hy a b ha hb hab
   by_cases h_cases : x = y
@@ -270,6 +272,7 @@ theorem Finset.centroid_mem_convexHull (s : Finset E) (hs : s.Nonempty) :
 theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull R (range v) =
     { x | ∃ (s : Finset ι) (w : ι → R), (∀ i ∈ s, 0 ≤ w i) ∧ s.sum w = 1 ∧
       s.affineCombination R v w = x } := by
+  classical
   refine Subset.antisymm (convexHull_min ?_ ?_) ?_
   · intro x hx
     obtain ⟨i, hi⟩ := Set.mem_range.mp hx
@@ -285,7 +288,7 @@ theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull
     · rintro i -
       by_cases hi : i ∈ s <;> by_cases hi' : i ∈ s' <;>
         simp [W, hi, hi', add_nonneg, mul_nonneg ha (hw₀ i _), mul_nonneg hb (hw₀' i _)]
-    · simp_rw [affineCombination_eq_linear_combination (s ∪ s') v _ hW₁,
+    · simp_rw [W, affineCombination_eq_linear_combination (s ∪ s') v _ hW₁,
         affineCombination_eq_linear_combination s v w hw₁,
         affineCombination_eq_linear_combination s' v w' hw₁', add_smul, sum_add_distrib]
       rw [← sum_subset subset_union_left, ← sum_subset subset_union_right]
@@ -351,6 +354,7 @@ lemma mem_convexHull_iff_exists_fintype {s : Set E} {x : E} :
 
 theorem Finset.convexHull_eq (s : Finset E) : convexHull R ↑s =
     { x : E | ∃ w : E → R, (∀ y ∈ s, 0 ≤ w y) ∧ ∑ y ∈ s, w y = 1 ∧ s.centerMass w id = x } := by
+  classical
   refine Set.Subset.antisymm (convexHull_min ?_ ?_) ?_
   · intro x hx
     rw [Finset.mem_coe] at hx
@@ -390,6 +394,7 @@ theorem Set.Finite.convexHull_eq {s : Set E} (hs : s.Finite) : convexHull R s =
 /-- A weak version of Carathéodory's theorem. -/
 theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
     convexHull R s = ⋃ (t : Finset E) (_ : ↑t ⊆ s), convexHull R ↑t := by
+  classical
   refine Subset.antisymm ?_ ?_
   · rw [_root_.convexHull_eq]
     rintro x ⟨ι, t, w, z, hw₀, hw₁, hz, rfl⟩
@@ -458,6 +463,7 @@ theorem convexHull_sum {ι} (s : Finset ι) (t : ι → Set E) :
 
 variable (ι) [Fintype ι] {f : ι → R}
 
+open scoped Classical in
 /-- `stdSimplex 𝕜 ι` is the convex hull of the canonical basis in `ι → 𝕜`. -/
 theorem convexHull_basis_eq_stdSimplex :
     convexHull R (range fun i j : ι => if i = j then (1 : R) else 0) = stdSimplex R ι := by
@@ -480,6 +486,7 @@ to prove that this map is linear. -/
 theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) : convexHull R s =
     haveI := hs.fintype
     (⇑(∑ x : s, (@LinearMap.proj R s _ (fun _ => R) _ _ x).smulRight x.1)) '' stdSimplex R s := by
+  classical
   letI := hs.fintype
   rw [← convexHull_basis_eq_stdSimplex, LinearMap.image_convexHull, ← Set.range_comp]
   apply congr_arg
@@ -519,6 +526,7 @@ variable {s t t₁ t₂ : Finset E}
 lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s → E))
     (ht₁ : t₁ ⊆ s) (ht₂ : t₂ ⊆ s) :
     convexHull R (t₁ ∩ t₂ : Set E) = convexHull R t₁ ∩ convexHull R t₂ := by
+  classical
   refine (Set.subset_inter (convexHull_mono inf_le_left) <|
     convexHull_mono inf_le_right).antisymm ?_
   simp_rw [Set.subset_def, mem_inter_iff, Set.inf_eq_inter, ← coe_inter, mem_convexHull']
@@ -540,6 +548,7 @@ lemma AffineIndependent.convexHull_inter (hs : AffineIndependent R ((↑) : s �
     simp_intro hx₁ hx₂
     simp [ht x hx₁ hx₂]
 
+open scoped Classical in
 /-- Two simplices glue nicely if the union of their vertices is affine independent.
 
 Note that `AffineIndependent.convexHull_inter` should be more versatile in most use cases. -/
@@ -556,6 +565,7 @@ variable {𝕜 ι : Type*} {E : ι → Type*} [Finite ι] [LinearOrderedField �
 open Finset Fintype
 
 lemma mem_convexHull_pi (h : ∀ i ∈ s, x i ∈ convexHull 𝕜 (t i)) : x ∈ convexHull 𝕜 (s.pi t) := by
+  classical
   cases nonempty_fintype ι
   wlog hs : s = Set.univ generalizing s t
   · rw [← pi_univ_ite]

@@ -41,7 +41,7 @@ In this file, we define local properties in general.
 
 -/
 
-open scoped Pointwise Classical
+open scoped Pointwise
 
 universe u
 

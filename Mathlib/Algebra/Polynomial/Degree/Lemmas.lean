@@ -88,17 +88,13 @@ theorem natDegree_add_le_iff_right {n : ℕ} (p q : R[X]) (pn : p.natDegree ≤ 
   rw [add_comm]
   exact natDegree_add_le_iff_left _ _ pn
 
-theorem natDegree_C_mul_le (a : R) (f : R[X]) : (C a * f).natDegree ≤ f.natDegree :=
-  calc
-    (C a * f).natDegree ≤ (C a).natDegree + f.natDegree := natDegree_mul_le
-    _ = 0 + f.natDegree := by rw [natDegree_C a]
-    _ = f.natDegree := zero_add _
+-- TODO: Do we really want the following two lemmas? They are straightforward consequences of a
+-- more atomic lemma
+theorem natDegree_C_mul_le (a : R) (f : R[X]) : (C a * f).natDegree ≤ f.natDegree := by
+  simpa using natDegree_mul_le (p := C a)
 
-theorem natDegree_mul_C_le (f : R[X]) (a : R) : (f * C a).natDegree ≤ f.natDegree :=
-  calc
-    (f * C a).natDegree ≤ f.natDegree + (C a).natDegree := natDegree_mul_le
-    _ = f.natDegree + 0 := by rw [natDegree_C a]
-    _ = f.natDegree := add_zero _
+theorem natDegree_mul_C_le (f : R[X]) (a : R) : (f * C a).natDegree ≤ f.natDegree := by
+  simpa using natDegree_mul_le (q := C a)
 
 theorem eq_natDegree_of_le_mem_support (pn : p.natDegree ≤ n) (ns : n ∈ p.support) :
     p.natDegree = n :=
@@ -132,11 +128,17 @@ theorem natDegree_mul_C_eq_of_mul_ne_zero (h : p.leadingCoeff * a ≠ 0) :
 /-- Although not explicitly stated, the assumptions of lemma `nat_degree_C_mul_eq_of_mul_ne_zero`
 force the polynomial `p` to be non-zero, via `p.leading_coeff ≠ 0`.
 -/
-theorem natDegree_C_mul_eq_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
+theorem natDegree_C_mul_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
     (C a * p).natDegree = p.natDegree := by
   refine eq_natDegree_of_le_mem_support (natDegree_C_mul_le a p) ?_
   refine mem_support_iff.mpr ?_
   rwa [coeff_C_mul]
+
+@[deprecated (since := "2025-01-03")]
+alias natDegree_C_mul_eq_of_mul_ne_zero := natDegree_C_mul_of_mul_ne_zero
+
+lemma degree_C_mul_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) : (C a * p).degree = p.degree := by
+  rw [degree_mul' (by simpa)]; simp [left_ne_zero_of_mul h]
 
 theorem natDegree_add_coeff_mul (f g : R[X]) :
     (f * g).coeff (f.natDegree + g.natDegree) = f.coeff f.natDegree * g.coeff g.natDegree := by
@@ -369,20 +371,16 @@ theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
 
 end NoZeroDivisors
 
-section CommRing
-variable [CommRing R] {p q : R[X]}
-
-@[simp] lemma comp_neg_X_leadingCoeff_eq (p : R[X]) :
+@[simp] lemma comp_neg_X_leadingCoeff_eq [Ring R] (p : R[X]) :
     (p.comp (-X)).leadingCoeff = (-1) ^ p.natDegree * p.leadingCoeff := by
   nontriviality R
   by_cases h : p = 0
   · simp [h]
   rw [Polynomial.leadingCoeff, natDegree_comp_eq_of_mul_ne_zero, coeff_comp_degree_mul_degree] <;>
-  simp [mul_comm, h]
+  simp [((Commute.neg_one_left _).pow_left _).eq, h]
 
-variable [IsDomain R]
-
-lemma comp_eq_zero_iff : p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧ q = C (q.coeff 0) := by
+lemma comp_eq_zero_iff [Semiring R] [NoZeroDivisors R] {p q : R[X]} :
+    p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧ q = C (q.coeff 0) := by
   refine ⟨fun h ↦ ?_, Or.rec (fun h ↦ by simp [h]) fun h ↦ by rw [h.2, comp_C, h.1, C_0]⟩
   have key : p.natDegree = 0 ∨ q.natDegree = 0 := by
     rw [← mul_eq_zero, ← natDegree_comp, h, natDegree_zero]
@@ -391,8 +389,6 @@ lemma comp_eq_zero_iff : p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧ q
     exact Or.inl (key.trans h)
   · rw [key, comp_C, C_eq_zero] at h
     exact Or.inr ⟨h, key⟩
-
-end CommRing
 
 section DivisionRing
 

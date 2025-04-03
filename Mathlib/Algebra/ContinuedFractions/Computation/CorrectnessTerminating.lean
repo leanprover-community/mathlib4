@@ -199,7 +199,7 @@ theorem compExactValue_correctness_of_stream_eq_some :
         nextConts, nextNum, nextDen]
       have hfr : (IntFractPair.of (1 / ifp_n.fr)).fr = f := rfl
       rw [one_div, if_neg _, ← one_div, hfr]
-      · field_simp [hA, hB]
+      · field_simp [pA, pB, ppA, ppB, pconts, ppconts, hA, hB]
         ac_rfl
       · rwa [inv_eq_one_div, hfr]
 

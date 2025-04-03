@@ -88,7 +88,7 @@ theorem update_inl_comp_inr [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i 
 
 theorem update_inl_apply_inr [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α} {j : β} {x : γ} :
     update f (inl i) x (inr j) = f (inr j) :=
-  Function.update_noteq inr_ne_inl _ _
+  Function.update_of_ne inr_ne_inl ..
 
 @[simp]
 theorem update_inr_comp_inl [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : β} {x : γ} :
@@ -97,7 +97,7 @@ theorem update_inr_comp_inl [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i 
 
 theorem update_inr_apply_inl [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : α} {j : β} {x : γ} :
     update f (inr j) x (inl i) = f (inl i) :=
-  Function.update_noteq inl_ne_inr _ _
+  Function.update_of_ne inl_ne_inr ..
 
 @[simp]
 theorem update_inr_comp_inr [DecidableEq β] [DecidableEq (α ⊕ β)] {f : α ⊕ β → γ} {i : β}

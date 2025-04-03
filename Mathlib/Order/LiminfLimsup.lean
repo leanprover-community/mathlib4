@@ -1430,7 +1430,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
     apply Subset.antisymm
     · apply iUnion_subset (fun j ↦ ?_)
       by_cases hj : j ∈ m
-      · have : j = liminf_reparam f s p j := by simp only [liminf_reparam, hj, ite_true]
+      · have : j = liminf_reparam f s p j := by simp only [m, liminf_reparam, hj, ite_true]
         conv_lhs => rw [this]
         apply subset_iUnion _ j
       · simp only [m, mem_setOf_eq, ← nonempty_iInter_Iic_iff, not_nonempty_iff_eq_empty] at hj
@@ -1443,8 +1443,8 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
     apply (Iic_ciInf _).symm
     change liminf_reparam f s p j ∈ m
     by_cases Hj : j ∈ m
-    · simpa only [liminf_reparam, if_pos Hj] using Hj
-    · simp only [liminf_reparam, if_neg Hj]
+    · simpa only [m, liminf_reparam, if_pos Hj] using Hj
+    · simp only [m, liminf_reparam, if_neg Hj]
       have Z : ∃ n, (exists_surjective_nat (Subtype p)).choose n ∈ m ∨ ∀ j, j ∉ m := by
         rcases (exists_surjective_nat (Subtype p)).choose_spec j0 with ⟨n, rfl⟩
         exact ⟨n, Or.inl hj0⟩

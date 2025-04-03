@@ -32,12 +32,12 @@ variable (A : Matrix m n α)
 open Matrix
 
 /-- `A.HasOrthogonalRows` means matrix `A` has orthogonal rows (with respect to
-`Matrix.dotProduct`). -/
+`dotProduct`). -/
 def HasOrthogonalRows [Fintype n] : Prop :=
   ∀ ⦃i₁ i₂⦄, i₁ ≠ i₂ → dotProduct (A i₁) (A i₂) = 0
 
 /-- `A.HasOrthogonalCols` means matrix `A` has orthogonal columns (with respect to
-`Matrix.dotProduct`). -/
+`dotProduct`). -/
 def HasOrthogonalCols [Fintype m] : Prop :=
   HasOrthogonalRows Aᵀ
 

@@ -184,7 +184,7 @@ section AlgHomFintype
 /-- A technical finiteness result. -/
 noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L : Type*}
     (F : E → Multiset L) : Fintype (∀ x : X, { l : L // l ∈ F x }) :=
-  @Pi.fintype _ _ _ (Finite.fintype hX) _
+  @Pi.instFintype _ _ _ (Finite.fintype hX) _
 
 variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
   [FiniteDimensional F E]

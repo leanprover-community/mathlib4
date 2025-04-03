@@ -218,7 +218,7 @@ open scoped Batteries.ExtendedBinder
 
 /-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
-@[delab app.Finset.prod] def delabFinsetProd : Delab :=
+@[app_delab Finset.prod] def delabFinsetProd : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
@@ -239,7 +239,7 @@ to show the domain type when the product is over `Finset.univ`. -/
 
 /-- Delaborator for `Finset.sum`. The `pp.piBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
-@[delab app.Finset.sum] def delabFinsetSum : Delab :=
+@[app_delab Finset.sum] def delabFinsetSum : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
@@ -425,6 +425,13 @@ lemma prod_filter_not_mul_prod_filter (s : Finset α) (p : α → Prop) [Decidab
     [∀ x, Decidable (¬p x)] (f : α → β) :
     (∏ x ∈ s.filter fun x ↦ ¬p x, f x) * ∏ x ∈ s.filter p, f x = ∏ x ∈ s, f x := by
   rw [mul_comm, prod_filter_mul_prod_filter_not]
+
+@[to_additive]
+theorem prod_filter_xor (p q : α → Prop) [DecidablePred p] [DecidablePred q] :
+    (∏ x ∈ s with (Xor' (p x) (q x)), f x) =
+      (∏ x ∈ s with (p x ∧ ¬ q x), f x) * (∏ x ∈ s with (q x ∧ ¬ p x), f x) := by
+  classical rw [← prod_union (disjoint_filter_and_not_filter _ _), ← filter_or]
+  simp only [Xor']
 
 section ToList
 
@@ -1159,6 +1166,17 @@ theorem prod_ite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : α → β) :
   prod_dite_eq' s a fun x _ => b x
 
 @[to_additive]
+theorem prod_ite_eq_of_mem [DecidableEq α] (s : Finset α) (a : α) (b : α → β) (h : a ∈ s) :
+    (∏ x ∈ s, if a = x then b x else 1) = b a := by
+  simp only [prod_ite_eq, if_pos h]
+
+/-- The difference with `Finset.prod_ite_eq_of_mem` is that the arguments to `Eq` are swapped. -/
+@[to_additive]
+theorem prod_ite_eq_of_mem' [DecidableEq α] (s : Finset α) (a : α) (b : α → β) (h : a ∈ s) :
+    (∏ x ∈ s, if x = a then b x else 1) = b a := by
+  simp only [prod_ite_eq', if_pos h]
+
+@[to_additive]
 theorem prod_ite_index (p : Prop) [Decidable p] (s t : Finset α) (f : α → β) :
     ∏ x ∈ if p then s else t, f x = if p then ∏ x ∈ s, f x else ∏ x ∈ t, f x :=
   apply_ite (fun s => ∏ x ∈ s, f x) _ _ _
@@ -1209,8 +1227,7 @@ lemma prod_mulIndicator_subset_of_eq_one [One α] (f : ι → α) (g : ι → α
     ∏ i ∈ t, g i (mulIndicator ↑s f i) = ∏ i ∈ s, g i (f i) := by
   calc
     _ = ∏ i ∈ s, g i (mulIndicator ↑s f i) := by rw [prod_subset h fun i _ hn ↦ by simp [hn, hg]]
-    -- Porting note: This did not use to need the implicit argument
-    _ = _ := prod_congr rfl fun i hi ↦ congr_arg _ <| mulIndicator_of_mem (α := ι) hi f
+    _ = _ := prod_congr rfl fun i hi ↦ congr_arg _ <| mulIndicator_of_mem hi f
 
 /-- Taking the product of an indicator function over a possibly larger finset is the same as
 taking the original function over the original finset. -/
@@ -1989,6 +2006,9 @@ theorem prod_subsingleton {α β : Type*} [CommMonoid β] [Subsingleton α] [Fin
   have : Unique α := uniqueOfSubsingleton a
   rw [prod_unique f, Subsingleton.elim default a]
 
+@[to_additive] theorem prod_Prop {β} [CommMonoid β] (f : Prop → β) :
+    ∏ p, f p = f True * f False := by simp
+
 @[to_additive]
 theorem prod_subtype_mul_prod_subtype {α β : Type*} [Fintype α] [CommMonoid β] (p : α → Prop)
     (f : α → β) [DecidablePred p] :
@@ -2082,6 +2102,10 @@ end List
 
 namespace Multiset
 
+@[simp]
+lemma card_sum (s : Finset ι) (f : ι → Multiset α) : card (∑ i ∈ s, f i) = ∑ i ∈ s, card (f i) :=
+  map_sum cardHom ..
+
 theorem disjoint_list_sum_left {a : Multiset α} {l : List (Multiset α)} :
     Disjoint l.sum a ↔ ∀ b ∈ l, Disjoint b a := by
   induction l with
@@ -2171,6 +2195,16 @@ end Multiset
 theorem Units.coe_prod {M : Type*} [CommMonoid M] (f : α → Mˣ) (s : Finset α) :
     (↑(∏ i ∈ s, f i) : M) = ∏ i ∈ s, (f i : M) :=
   map_prod (Units.coeHom M) _ _
+
+@[to_additive (attr := simp)]
+lemma IsUnit.prod_iff [CommMonoid β] : IsUnit (∏ a ∈ s, f a) ↔ ∀ a ∈ s, IsUnit (f a) := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha hs => rw [Finset.prod_cons, IsUnit.mul_iff, hs, Finset.forall_mem_cons]
+
+@[to_additive]
+lemma IsUnit.prod_univ_iff [Fintype α] [CommMonoid β] : IsUnit (∏ a, f a) ↔ ∀ a, IsUnit (f a) := by
+  simp
 
 theorem nat_abs_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by

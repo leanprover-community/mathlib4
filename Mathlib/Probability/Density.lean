@@ -291,7 +291,7 @@ theorem integral_mul_eq_integral [HasPDF X ℙ] : ∫ x, x * (pdf X ℙ volume x
 theorem hasFiniteIntegral_mul {f : ℝ → ℝ} {g : ℝ → ℝ≥0∞} (hg : pdf X ℙ =ᵐ[volume] g)
     (hgi : ∫⁻ x, ‖f x‖₊ * g x ≠ ∞) :
     HasFiniteIntegral fun x => f x * (pdf X ℙ volume x).toReal := by
-  rw [HasFiniteIntegral]
+  rw [hasFiniteIntegral_iff_nnnorm]
   have : (fun x => ↑‖f x‖₊ * g x) =ᵐ[volume] fun x => ‖f x * (pdf X ℙ volume x).toReal‖₊ := by
     refine ae_eq_trans (Filter.EventuallyEq.mul (ae_eq_refl fun x => (‖f x‖₊ : ℝ≥0∞))
       (ae_eq_trans hg.symm ofReal_toReal_ae_eq.symm)) ?_

@@ -63,6 +63,18 @@ protected def relEmbedding (r : α → α → Prop) (p : Set α) : Subrel r p �
 theorem relEmbedding_apply (r : α → α → Prop) (p a) : Subrel.relEmbedding r p a = a.1 :=
   rfl
 
+/-- A set inclusion as a relation embedding. -/
+protected def inclusionEmbedding (r : α → α → Prop) {p q : Set α} (h : p ⊆ q) :
+    Subrel r p ↪r Subrel r q where
+  toFun := Set.inclusion h
+  inj' _ _ h := (Set.inclusion_inj _).mp h
+  map_rel_iff' := Iff.rfl
+
+@[simp]
+theorem coe_inclusionEmbedding (r : α → α → Prop) {p q : Set α} (h : p ⊆ q) :
+    (Subrel.inclusionEmbedding r h : p → q) = Set.inclusion h :=
+  rfl
+
 instance (r : α → α → Prop) [IsWellOrder α r] (p : Set α) : IsWellOrder p (Subrel r p) :=
   RelEmbedding.isWellOrder (Subrel.relEmbedding r p)
 
@@ -79,6 +91,9 @@ instance (r : α → α → Prop) [IsRefl α r] (p : Set α) : IsRefl p (Subrel 
 
 instance (r : α → α → Prop) [IsSymm α r] (p : Set α) : IsSymm p (Subrel r p) :=
   ⟨fun x y => @IsSymm.symm α r _ x y⟩
+
+instance (r : α → α → Prop) [IsAsymm α r] (p : Set α) : IsAsymm p (Subrel r p) :=
+  ⟨fun x y => @IsAsymm.asymm α r _ x y⟩
 
 instance (r : α → α → Prop) [IsTrans α r] (p : Set α) : IsTrans p (Subrel r p) :=
   ⟨fun x y z => @IsTrans.trans α r _ x y z⟩

@@ -491,7 +491,7 @@ lemma δ_comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochai
   dsimp
   rw [z₁.comp_v _ (add_assoc n₁ n₂ 1).symm p _ q rfl (by omega),
     Cochain.comp_v _ _ (show n₁ + 1 + n₂ = n₁ + n₂ + 1 by omega) p (p+n₁+1) q
-      (by linarith) (by omega),
+      (by omega) (by omega),
     δ_v (n₁ + n₂) _ rfl (z₁.comp z₂ rfl) p q hpq (p + n₁ + n₂) _ (by omega) rfl,
     z₁.comp_v z₂ rfl p _ _ rfl rfl,
     z₁.comp_v z₂ rfl (p+1) (p+n₁+1) q (by omega) (by omega),
@@ -529,8 +529,7 @@ lemma δ_ofHom {p : ℤ} (φ : F ⟶ G) : δ 0 p (Cochain.ofHom φ) = 0 := by
     ext
     simp
   · rw [δ_shape]
-    intro
-    exact h (by omega)
+    omega
 
 @[simp]
 lemma δ_ofHomotopy {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :

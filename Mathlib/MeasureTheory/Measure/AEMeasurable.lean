@@ -194,7 +194,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
       exact H.ae_eq_mk.and ht
     filter_upwards [compl_mem_ae_iff.2 A] with x hx
     rw [mem_compl_iff] at hx
-    simp only [g, hx, piecewise_eq_of_not_mem, not_false_iff]
+    simp only [s, g, hx, piecewise_eq_of_not_mem, not_false_iff]
     contrapose! hx
     apply subset_toMeasurable
     simp only [hx, mem_compl_iff, mem_setOf_eq, false_and, not_false_iff]

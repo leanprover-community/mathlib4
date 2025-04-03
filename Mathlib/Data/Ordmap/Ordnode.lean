@@ -366,7 +366,7 @@ and should always be used instead of `Amem`. -/
 def Amem [LE α] (x : α) : Ordnode α → Prop :=
   Any fun y => x ≤ y ∧ y ≤ x
 
-instance Amem.decidable [LE α] [@DecidableRel α (· ≤ ·)] (x : α) :
+instance Amem.decidable [LE α] [DecidableRel (α := α) (· ≤ ·)] (x : α) :
     ∀ t, Decidable (Amem x t) := by
   dsimp [Amem]; infer_instance
 
@@ -807,7 +807,7 @@ def ofAscList : List α → Ordnode α
 
 section
 
-variable [LE α] [@DecidableRel α (· ≤ ·)]
+variable [LE α] [DecidableRel (α := α) (· ≤ ·)]
 
 /-- O(log n). Does the set (approximately) contain the element `x`? That is,
 is there an element that is equivalent to `x` in the order?
@@ -1220,7 +1220,7 @@ Equivalent elements are selected with a preference for smaller source elements.
 
     image (fun x ↦ x + 2) {1, 2, 4} = {3, 4, 6}
     image (fun x : ℕ ↦ x - 2) {1, 2, 4} = {0, 2} -/
-def image {α β} [LE β] [@DecidableRel β (· ≤ ·)] (f : α → β) (t : Ordnode α) : Ordnode β :=
+def image {α β} [LE β] [DecidableRel (α := β) (· ≤ ·)] (f : α → β) (t : Ordnode α) : Ordnode β :=
   ofList (t.toList.map f)
 
 end

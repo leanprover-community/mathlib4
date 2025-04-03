@@ -160,9 +160,7 @@ def unitCofork (A : adj.toMonad.Algebra)
     [HasCoequalizer (F.map A.a) (adj.counit.app (F.obj A.A))] :
     Cofork (G.map (F.map A.a)) (G.map (adj.counit.app (F.obj A.A))) :=
   Cofork.ofπ (G.map (coequalizer.π (F.map A.a) (adj.counit.app (F.obj A.A))))
-    (by
-      change _ = G.map _ ≫ _
-      rw [← G.map_comp, coequalizer.condition, G.map_comp])
+    (by rw [← G.map_comp, coequalizer.condition, G.map_comp])
 
 @[simp]
 theorem unitCofork_π (A : adj.toMonad.Algebra)

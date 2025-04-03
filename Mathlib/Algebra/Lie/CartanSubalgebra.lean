@@ -53,7 +53,7 @@ instance [H.IsCartanSubalgebra] : LieAlgebra.IsNilpotent R H :=
 @[simp]
 theorem normalizer_eq_self_of_isCartanSubalgebra (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
     H.toLieSubmodule.normalizer = H.toLieSubmodule := by
-  rw [← LieSubmodule.coe_toSubmodule_eq_iff, coe_normalizer_eq_normalizer,
+  rw [← LieSubmodule.toSubmodule_inj, coe_normalizer_eq_normalizer,
     IsCartanSubalgebra.self_normalizing, coe_toLieSubmodule]
 
 @[simp]
@@ -84,7 +84,7 @@ theorem isCartanSubalgebra_iff_isUcsLimit : H.IsCartanSubalgebra ↔ H.toLieSubm
         self_normalizing := by
           have hk' := hk (k + 1) k.le_succ
           rw [LieSubmodule.ucs_succ, hk k (le_refl k)] at hk'
-          rw [← LieSubalgebra.coe_to_submodule_eq_iff, ← LieSubalgebra.coe_normalizer_eq_normalizer,
+          rw [← LieSubalgebra.toSubmodule_inj, ← LieSubalgebra.coe_normalizer_eq_normalizer,
             hk', LieSubalgebra.coe_toLieSubmodule] }
 
 lemma ne_bot_of_isCartanSubalgebra [Nontrivial L] (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
@@ -116,4 +116,4 @@ open LieIdeal
 instance LieAlgebra.top_isCartanSubalgebra_of_nilpotent [LieAlgebra.IsNilpotent R L] :
     LieSubalgebra.IsCartanSubalgebra (⊤ : LieSubalgebra R L) where
   nilpotent := inferInstance
-  self_normalizing := by rw [← top_coe_lieSubalgebra, normalizer_eq_top, top_coe_lieSubalgebra]
+  self_normalizing := by rw [← top_toLieSubalgebra, normalizer_eq_top, top_toLieSubalgebra]

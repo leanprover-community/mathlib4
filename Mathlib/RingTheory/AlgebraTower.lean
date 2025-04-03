@@ -94,6 +94,8 @@ open scoped Classical
 universe v₁ w₁
 
 variable {R S A}
+
+section
 variable [Ring R] [Ring S] [AddCommGroup A]
 variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
@@ -111,8 +113,11 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
     simp_rw [← smul_assoc, ← Finset.sum_smul] at h1
     exact hb _ _ (hc _ _ h1 k (Finset.mem_image_of_mem _ hik)) i (Finset.mem_image_of_mem _ hik)
   exact hg _ hik
+end
 
 variable (R)
+variable [Semiring R] [Semiring S] [AddCommMonoid A]
+variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 -- LinearIndependent is enough if S is a ring rather than semiring.
 theorem Basis.isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : IsScalarTower R S S :=
@@ -122,13 +127,12 @@ theorem Basis.isScalarTower_of_nonempty {ι} [Nonempty ι] (b : Basis ι S A) : 
 theorem Basis.isScalarTower_finsupp {ι} (b : Basis ι S A) : IsScalarTower R S (ι →₀ S) :=
   b.repr.symm.isScalarTower_of_injective R b.repr.symm.injective
 
-variable {R}
+variable {R} {ι ι' : Type*} (b : Basis ι R S) (c : Basis ι' S A)
 
 /-- `Basis.smulTower (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
 where the `(i, j)`th basis vector is `b i • c j`. -/
 noncomputable
-def Basis.smulTower {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) :
-    Basis (ι × ι') R A :=
+def Basis.smulTower : Basis (ι × ι') R A :=
   haveI := c.isScalarTower_finsupp R
   .ofRepr
     (c.repr.restrictScalars R ≪≫ₗ
@@ -137,19 +141,15 @@ def Basis.smulTower {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : B
           Finsupp.lcongr (Equiv.prodComm ι' ι) (LinearEquiv.refl _ _))))
 
 @[simp]
-theorem Basis.smulTower_repr {ι : Type v₁} {ι' : Type w₁}
-    (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
+theorem Basis.smulTower_repr (x ij) :
     (b.smulTower c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by
   simp [smulTower]
 
-theorem Basis.smulTower_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A)
-    (x i j) : (b.smulTower c).repr x (i, j) = b.repr (c.repr x j) i :=
+theorem Basis.smulTower_repr_mk (x i j) : (b.smulTower c).repr x (i, j) = b.repr (c.repr x j) i :=
   b.smulTower_repr c x (i, j)
 
 @[simp]
-theorem Basis.smulTower_apply {ι : Type v₁} {ι' : Type w₁}
-    (b : Basis ι R S) (c : Basis ι' S A) (ij) :
-    (b.smulTower c) ij = b ij.1 • c ij.2 := by
+theorem Basis.smulTower_apply (ij) : (b.smulTower c) ij = b ij.1 • c ij.2 := by
   obtain ⟨i, j⟩ := ij
   rw [Basis.apply_eq_iff]
   ext ⟨i', j'⟩
@@ -159,6 +159,21 @@ theorem Basis.smulTower_apply {ι : Type v₁} {ι' : Type w₁}
   split_ifs with hi
   · simp [hi, Finsupp.single_apply]
   · simp [hi]
+
+/-- `Basis.smulTower (b : Basis ι R S) (c : Basis ι S A)` is the `R`-basis on `A`
+where the `(i, j)`th basis vector is `b j • c i`. -/
+noncomputable def Basis.smulTower' : Basis (ι' × ι) R A :=
+  (b.smulTower c).reindex (.prodComm ..)
+
+theorem Basis.smulTower'_repr (x ij) :
+    (b.smulTower' c).repr x ij = b.repr (c.repr x ij.1) ij.2 := by
+  rw [smulTower', repr_reindex_apply, smulTower_repr]; rfl
+
+theorem Basis.smulTower'_repr_mk (x i j) : (b.smulTower' c).repr x (i, j) = b.repr (c.repr x i) j :=
+  b.smulTower'_repr c x (i, j)
+
+theorem Basis.smulTower'_apply (ij) : b.smulTower' c ij = b ij.2 • c ij.1 := by
+  rw [smulTower', reindex_apply, smulTower_apply]; rfl
 
 end Semiring
 

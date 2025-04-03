@@ -724,14 +724,18 @@ def relIsoOfIsEmpty (r : α → α → Prop) (s : β → β → Prop) [IsEmpty �
   ⟨Equiv.equivOfIsEmpty α β, @fun a => isEmptyElim a⟩
 
 /-- Two irreflexive relations on a unique type are isomorphic. -/
-def relIsoOfUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [IsIrrefl α r]
+def ofUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [IsIrrefl α r]
     [IsIrrefl β s] [Unique α] [Unique β] : r ≃r s :=
-  ⟨Equiv.equivOfUnique α β, iff_of_false (not_rel_of_subsingleton s _ _)
+  ⟨Equiv.ofUnique α β, iff_of_false (not_rel_of_subsingleton s _ _)
       (not_rel_of_subsingleton r _ _) ⟩
 
+@[deprecated (since := "2024-12-26")] alias relIsoOfUniqueOfIrrefl := ofUniqueOfIrrefl
+
 /-- Two reflexive relations on a unique type are isomorphic. -/
-def relIsoOfUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] [IsRefl β s]
+def ofUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] [IsRefl β s]
     [Unique α] [Unique β] : r ≃r s :=
-  ⟨Equiv.equivOfUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
+  ⟨Equiv.ofUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
+
+@[deprecated (since := "2024-12-26")] alias relIsoOfUniqueOfRefl := ofUniqueOfRefl
 
 end RelIso

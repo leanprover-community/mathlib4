@@ -187,7 +187,6 @@ theorem prod_induction (p : α → Prop) (s : Multiset α) (p_mul : ∀ a b, p a
 @[to_additive]
 theorem prod_induction_nonempty (p : α → Prop) (p_mul : ∀ a b, p a → p b → p (a * b)) (hs : s ≠ ∅)
     (p_s : ∀ a ∈ s, p a) : p s.prod := by
-  -- Porting note: used to be `refine' Multiset.induction _ _`
   induction s using Multiset.induction_on with
   | empty => simp at hs
   | cons a s hsa =>
@@ -263,8 +262,7 @@ theorem prod_map_inv' (m : Multiset α) : (m.map Inv.inv).prod = m.prod⁻¹ :=
 
 @[to_additive (attr := simp)]
 theorem prod_map_inv : (m.map fun i => (f i)⁻¹).prod = (m.map f).prod⁻¹ := by
-  -- Porting note: used `convert`
-  simp_rw [← (m.map f).prod_map_inv', map_map, Function.comp_apply]
+  rw [← (m.map f).prod_map_inv', map_map, Function.comp_def]
 
 @[to_additive (attr := simp)]
 theorem prod_map_div : (m.map fun i => f i / g i).prod = (m.map f).prod / (m.map g).prod :=

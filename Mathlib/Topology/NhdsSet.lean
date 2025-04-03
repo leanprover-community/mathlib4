@@ -122,7 +122,7 @@ theorem mem_nhdsSet_empty : s ∈ 𝓝ˢ (∅ : Set X) := by simp
 @[simp]
 theorem nhdsSet_univ : 𝓝ˢ (univ : Set X) = ⊤ := by rw [isOpen_univ.nhdsSet_eq, principal_univ]
 
-@[mono]
+@[gcongr, mono]
 theorem nhdsSet_mono (h : s ⊆ t) : 𝓝ˢ s ≤ 𝓝ˢ t :=
   sSup_le_sSup <| image_subset _ h
 

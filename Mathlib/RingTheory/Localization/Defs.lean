@@ -8,6 +8,7 @@ import Mathlib.GroupTheory.MonoidLocalization.MonoidWithZero
 import Mathlib.RingTheory.OreLocalization.Ring
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.Ring
+import Mathlib.Algebra.BigOperators.Group.Finset
 
 /-!
 # Localizations of commutative rings

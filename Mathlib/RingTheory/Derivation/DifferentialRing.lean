@@ -27,7 +27,7 @@ open Lean PrettyPrinter Delaborator SubExpr in
 A delaborator for the x′ notation. This is required because it's not direct function application,
 so the default delaborator doesn't work.
 -/
-@[delab app.DFunLike.coe]
+@[app_delab DFunLike.coe]
 def delabDeriv : Delab := do
   let e ← getExpr
   guard <| e.isAppOfArity' ``DFunLike.coe 6

@@ -750,37 +750,6 @@ theorem is_fg_degreeLE [IsNoetherianRing R] (I : Ideal R[X]) (n : ℕ) :
   isNoetherian_submodule_left.1
     (isNoetherian_of_fg_of_noetherian _ ⟨_, degreeLE_eq_span_X_pow.symm⟩) _
 
-open Algebra in
-lemma _root_.Algebra.mem_ideal_map_adjoin {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-    (x : S) (I : Ideal R) {y : adjoin R ({x} : Set S)} :
-    y ∈ I.map (algebraMap R (adjoin R ({x} : Set S))) ↔
-      ∃ p : R[X], (∀ i, p.coeff i ∈ I) ∧ Polynomial.aeval x p = y := by
-  constructor
-  · intro H
-    induction' H using Submodule.span_induction with a ha a b ha hb ha' hb' a b hb hb'
-    · obtain ⟨a, ha, rfl⟩ := ha
-      exact ⟨C a, fun i ↦ by rw [coeff_C]; aesop, aeval_C _ _⟩
-    · exact ⟨0, by simp, aeval_zero _⟩
-    · obtain ⟨a, ha, ha'⟩ := ha'
-      obtain ⟨b, hb, hb'⟩ := hb'
-      exact ⟨a + b, fun i ↦ by simpa using add_mem (ha i) (hb i), by simp [ha', hb']⟩
-    · obtain ⟨b', hb, hb'⟩ := hb'
-      obtain ⟨a, ha⟩ := a
-      rw [Algebra.adjoin_singleton_eq_range_aeval] at ha
-      obtain ⟨p, hp : aeval x p = a⟩ := ha
-      refine ⟨p * b', fun i ↦ ?_, by simp [hp, hb']⟩
-      rw [coeff_mul]
-      exact sum_mem fun i hi ↦ Ideal.mul_mem_left _ _ (hb _)
-  · rintro ⟨p, hp, hp'⟩
-    have : y = ∑ i in p.support, p.coeff i • ⟨_, (X ^ i).aeval_mem_adjoin_singleton _ x⟩ := by
-      trans ∑ i in p.support, ⟨_, (C (p.coeff i) * X ^ i).aeval_mem_adjoin_singleton _ x⟩
-      · ext1
-        simp only [AddSubmonoidClass.coe_finset_sum, ← map_sum, ← hp', ← as_sum_support_C_mul_X_pow]
-      · congr with i
-        simp [Algebra.smul_def]
-    simp_rw [this, Algebra.smul_def]
-    exact sum_mem fun i _ ↦ Ideal.mul_mem_right _ _ (Ideal.mem_map_of_mem _ (hp i))
-
 end CommRing
 
 end Ideal
@@ -841,18 +810,15 @@ namespace MvPolynomial
 
 private theorem prime_C_iff_of_fintype {R : Type u} (σ : Type v) {r : R} [CommRing R] [Fintype σ] :
     Prime (C r : MvPolynomial σ R) ↔ Prime r := by
-  rw [(renameEquiv R (Fintype.equivFin σ)).toMulEquiv.prime_iff]
+  rw [← MulEquiv.prime_iff (renameEquiv R (Fintype.equivFin σ))]
   convert_to Prime (C r) ↔ _
   · congr!
-    apply rename_C
-  · symm
-    induction' Fintype.card σ with d hd
-    · exact (isEmptyAlgEquiv R (Fin 0)).toMulEquiv.symm.prime_iff
-    · rw [hd, ← Polynomial.prime_C_iff]
-      convert (finSuccEquiv R d).toMulEquiv.symm.prime_iff (p := Polynomial.C (C r))
-      rw [← finSuccEquiv_comp_C_eq_C]
-      simp_rw [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, MulEquiv.symm_mk,
-        AlgEquiv.toEquiv_eq_coe, AlgEquiv.symm_toEquiv_eq_symm, MulEquiv.coe_mk, EquivLike.coe_coe]
+    simp only [renameEquiv_apply, algHom_C, algebraMap_eq]
+  · induction' Fintype.card σ with d hd
+    · exact MulEquiv.prime_iff (isEmptyAlgEquiv R (Fin 0)).symm (p := r)
+    · convert MulEquiv.prime_iff (finSuccEquiv R d).symm (p := Polynomial.C (C r))
+      · simp [← finSuccEquiv_comp_C_eq_C]
+      · simp [← hd, Polynomial.prime_C_iff]
 
 theorem prime_C_iff : Prime (C r : MvPolynomial σ R) ↔ Prime r :=
   ⟨comap_prime C constantCoeff (constantCoeff_C _), fun hr =>
@@ -895,12 +861,9 @@ theorem prime_rename_iff (s : Set σ) {p : MvPolynomial s R} :
           iterToSum_C_X, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply, Sum.swap_inr,
           Equiv.Set.sumCompl_apply_inl]
     apply_fun (· p) at this
-    simp_rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe] at this
-    rw [← prime_C_iff, eqv.toMulEquiv.prime_iff, this]
-    simp only [MulEquiv.coe_mk, AlgEquiv.toEquiv_eq_coe, EquivLike.coe_coe, AlgEquiv.trans_apply,
-      MvPolynomial.sumAlgEquiv_symm_apply, renameEquiv_apply, Equiv.coe_trans, Equiv.sumComm_apply,
-      AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, RingHom.coe_coe,
-      AlgEquiv.coe_trans, Function.comp_apply]
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgEquiv.toAlgHom_eq_coe,
+      AlgEquiv.toAlgHom_toRingHom, RingHom.coe_comp, Function.comp_apply] at this
+    rw [this, MulEquiv.prime_iff, prime_C_iff]
 
 end MvPolynomial
 

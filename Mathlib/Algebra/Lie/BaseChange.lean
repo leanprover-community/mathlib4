@@ -200,13 +200,13 @@ lemma mem_baseChange_iff {m : A ⊗[R] M} :
 
 @[simp]
 lemma baseChange_bot : (⊥ : LieSubmodule R L M).baseChange A = ⊥ := by
-  simp only [baseChange, bot_coeSubmodule, Submodule.baseChange_bot,
+  simp only [baseChange, bot_toSubmodule, Submodule.baseChange_bot,
     Submodule.bot_toAddSubmonoid]
   rfl
 
 @[simp]
 lemma baseChange_top : (⊤ : LieSubmodule R L M).baseChange A = ⊤ := by
-  simp only [baseChange, top_coeSubmodule, Submodule.baseChange_top,
+  simp only [baseChange, top_toSubmodule, Submodule.baseChange_top,
     Submodule.bot_toAddSubmonoid]
   rfl
 
@@ -214,7 +214,7 @@ lemma lie_baseChange {I : LieIdeal R L} {N : LieSubmodule R L M} :
     ⁅I, N⁆.baseChange A = ⁅I.baseChange A, N.baseChange A⁆ := by
   set s : Set (A ⊗[R] M) := { m | ∃ x ∈ I, ∃ n ∈ N, 1 ⊗ₜ ⁅x, n⁆ = m}
   have : (TensorProduct.mk R A M 1) '' {m | ∃ x ∈ I, ∃ n ∈ N, ⁅x, n⁆ = m} = s := by ext; simp [s]
-  rw [← coe_toSubmodule_eq_iff, coe_baseChange, lieIdeal_oper_eq_linear_span',
+  rw [← toSubmodule_inj, coe_baseChange, lieIdeal_oper_eq_linear_span',
     Submodule.baseChange_span, this, lieIdeal_oper_eq_linear_span']
   refine le_antisymm (Submodule.span_mono ?_) (Submodule.span_le.mpr ?_)
   · rintro - ⟨x, hx, m, hm, rfl⟩

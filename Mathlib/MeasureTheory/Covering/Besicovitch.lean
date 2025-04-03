@@ -566,7 +566,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     intro x hx
     obtain ⟨i, y, hxy, h'⟩ :
         ∃ (i : Fin N) (i_1 : ↥s), i_1 ∈ u i ∧ x ∈ ball (↑i_1) (r ↑i_1) := by
-      have : x ∈ range a.c := by simpa only [Subtype.range_coe_subtype, setOf_mem_eq]
+      have : x ∈ range a.c := by simpa only [a, Subtype.range_coe_subtype, setOf_mem_eq]
       simpa only [mem_iUnion, bex_def] using hu' this
     refine mem_iUnion.2 ⟨i, ⟨hx, ?_⟩⟩
     simp only [v, exists_prop, mem_iUnion, SetCoe.exists, exists_and_right, Subtype.coe_mk]
@@ -575,7 +575,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     calc
       ∑ _i : Fin N, μ s / N = μ s := by
         simp only [Finset.card_fin, Finset.sum_const, nsmul_eq_mul]
-        rw [ENNReal.mul_div_cancel']
+        rw [ENNReal.mul_div_cancel]
         · simp only [Npos, Ne, Nat.cast_eq_zero, not_false_iff]
         · exact ENNReal.natCast_ne_top _
       _ ≤ ∑ i, μ (s ∩ v i) := by
@@ -939,8 +939,8 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SFinite μ
     by_cases h'x : x ∈ s'
     · obtain ⟨i, y, ySi, xy⟩ : ∃ (i : Fin N) (y : ↥s'), y ∈ S i ∧ x ∈ ball (y : α) (r1 y) := by
         have A : x ∈ range q.c := by
-          simpa only [not_exists, exists_prop, mem_iUnion, mem_closedBall, not_and, not_le,
-            mem_setOf_eq, Subtype.range_coe_subtype, mem_diff] using h'x
+          simpa only [q, not_exists, exists_prop, mem_iUnion, mem_closedBall, not_and,
+            not_le, mem_setOf_eq, Subtype.range_coe_subtype, mem_diff] using h'x
         simpa only [mem_iUnion, mem_image, bex_def] using hS A
       refine mem_iUnion₂.2 ⟨y, Or.inr ?_, ?_⟩
       · simp only [mem_iUnion, mem_image]
@@ -1061,8 +1061,7 @@ theorem tendsto_filterAt (μ : Measure α) [SFinite μ] (x : α) :
     ∃ (ε : ℝ), ε > 0 ∧
       ∀ a : Set α, a ∈ (Besicovitch.vitaliFamily μ).setsAt x → a ⊆ closedBall x ε → a ∈ s :=
     (VitaliFamily.mem_filterAt_iff _).1 hs
-  have : Ioc (0 : ℝ) ε ∈ 𝓝[>] (0 : ℝ) := Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, εpos⟩
-  filter_upwards [this] with _ hr
+  filter_upwards [Ioc_mem_nhdsGT εpos] with _r hr
   apply hε
   · exact mem_image_of_mem _ hr.1
   · exact closedBall_subset_closedBall hr.2

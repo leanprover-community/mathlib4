@@ -65,7 +65,6 @@ combinatorial line, Ramsey theory, arithmetic progression
 -/
 
 open Function
-open scoped Classical
 
 universe u v
 variable {η α ι κ : Type*}
@@ -107,6 +106,7 @@ lemma coe_apply (l : Subspace η α ι) (x : η → α) (i : ι) : l x i = (l.id
 
 -- Note: This is not made a `FunLike` instance to avoid having two syntactically different coercions
 lemma coe_injective [Nontrivial α] : Injective ((⇑) : Subspace η α ι → (η → α) → ι → α) := by
+  classical
   rintro l m hlm
   ext i
   simp only [funext_iff] at hlm
@@ -453,6 +453,7 @@ end Line
 monoid, and `S` is a finite subset, then there exists a monochromatic homothetic copy of `S`. -/
 theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset M) [Finite κ]
     (C : M → κ) : ∃ a > 0, ∃ (b : M) (c : κ), ∀ s ∈ S, C (a • s + b) = c := by
+  classical
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι

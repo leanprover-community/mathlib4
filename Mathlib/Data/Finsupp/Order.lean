@@ -322,6 +322,10 @@ theorem add_sub_single_one {a : ι} {u u' : ι →₀ ℕ} (h : u' a ≠ 0) :
     u + (u' - single a 1) = u + u' - single a 1 :=
   (add_tsub_assoc_of_le (single_le_iff.mpr <| Nat.one_le_iff_ne_zero.mpr h) _).symm
 
+lemma sub_add_single_one_cancel {u : ι →₀ ℕ} {i : ι} (h : u i ≠ 0) :
+    u - single i 1 + single i 1 = u := by
+  rw [sub_single_one_add h, add_tsub_cancel_right]
+
 end Nat
 
 end Finsupp

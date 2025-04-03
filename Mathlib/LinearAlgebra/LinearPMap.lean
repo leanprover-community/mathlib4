@@ -867,7 +867,7 @@ section SubmoduleToLinearPMap
 theorem existsUnique_from_graph {g : Submodule R (E × F)}
     (hg : ∀ {x : E × F} (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0) {a : E}
     (ha : a ∈ g.map (LinearMap.fst R E F)) : ∃! b : F, (a, b) ∈ g := by
-  refine exists_unique_of_exists_of_unique ?_ ?_
+  refine existsUnique_of_exists_of_unique ?_ ?_
   · convert ha
     simp
   intro y₁ y₂ hy₁ hy₂

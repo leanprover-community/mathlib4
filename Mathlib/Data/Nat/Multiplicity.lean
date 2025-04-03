@@ -46,7 +46,7 @@ Legendre, p-adic
 -/
 
 
-open Finset Nat multiplicity
+open Finset Nat
 
 open Nat
 
@@ -57,7 +57,7 @@ divides `n`. This set is expressed by filtering `Ico 1 b` where `b` is any bound
 `log m n`. -/
 theorem emultiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) (hb : log m n < b) :
     emultiplicity m n = #{i ∈ Ico 1 b | m ^ i ∣ n} :=
-  have fin := Nat.multiplicity_finite_iff.2 ⟨hm, hn⟩
+  have fin := Nat.finiteMultiplicity_iff.2 ⟨hm, hn⟩
   calc
     emultiplicity m n = #(Ico 1 <| multiplicity m n + 1) := by
       simp [fin.emultiplicity_eq_multiplicity]
@@ -91,7 +91,7 @@ theorem emultiplicity_pow {p m n : ℕ} (hp : p.Prime) :
   _root_.emultiplicity_pow hp.prime
 
 theorem emultiplicity_self {p : ℕ} (hp : p.Prime) : emultiplicity p p = 1 :=
-  (Nat.multiplicity_finite_iff.2 ⟨hp.ne_one, hp.pos⟩).emultiplicity_self
+  (Nat.finiteMultiplicity_iff.2 ⟨hp.ne_one, hp.pos⟩).emultiplicity_self
 
 theorem emultiplicity_pow_self {p n : ℕ} (hp : p.Prime) : emultiplicity p (p ^ n) = n :=
   _root_.emultiplicity_pow_self hp.ne_zero hp.prime.not_unit n
@@ -136,7 +136,7 @@ theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   have h2 : p * n + 1 ≤ p * (n + 1) := by linarith
   have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by omega
   have hm : emultiplicity p (p * n)! ≠ ⊤ := by
-    rw [Ne, emultiplicity_eq_top, Classical.not_not, Nat.multiplicity_finite_iff]
+    rw [Ne, emultiplicity_eq_top, Classical.not_not, Nat.finiteMultiplicity_iff]
     exact ⟨hp.ne_one, factorial_pos _⟩
   revert hm
   have h4 : ∀ m ∈ Ico (p * n + 1) (p * (n + 1)), emultiplicity p m = 0 := by
@@ -201,8 +201,8 @@ theorem emultiplicity_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k
       (add_comm n k ▸ hnb)), multiplicity_choose_aux hp (le_add_left k n)]
     simp [add_comm]
   refine (WithTop.add_right_cancel_iff ?_).1 h₁
-  apply finite_iff_emultiplicity_ne_top.1
-  exact Nat.multiplicity_finite_iff.2 ⟨hp.ne_one, mul_pos (factorial_pos k) (factorial_pos n)⟩
+  apply finiteMultiplicity_iff_emultiplicity_ne_top.1
+  exact Nat.finiteMultiplicity_iff.2 ⟨hp.ne_one, mul_pos (factorial_pos k) (factorial_pos n)⟩
 
 /-- The multiplicity of `p` in `choose n k` is the number of carries when `k` and `n - k`
   are added in base `p`. The set is expressed by filtering `Ico 1 b` where `b`
@@ -251,8 +251,8 @@ theorem emultiplicity_choose_prime_pow {p n k : ℕ} (hp : p.Prime) (hkn : k ≤
     emultiplicity p (choose (p ^ n) k) = ↑(n - multiplicity p k) := by
   push_cast
   rw [← emultiplicity_choose_prime_pow_add_emultiplicity hp hkn hk0,
-    (multiplicity_finite_iff.2 ⟨hp.ne_one, Nat.pos_of_ne_zero hk0⟩).emultiplicity_eq_multiplicity,
-    (multiplicity_finite_iff.2 ⟨hp.ne_one, choose_pos hkn⟩).emultiplicity_eq_multiplicity]
+    (finiteMultiplicity_iff.2 ⟨hp.ne_one, Nat.pos_of_ne_zero hk0⟩).emultiplicity_eq_multiplicity,
+    (finiteMultiplicity_iff.2 ⟨hp.ne_one, choose_pos hkn⟩).emultiplicity_eq_multiplicity]
   norm_cast
   rw [Nat.add_sub_cancel_right]
 
@@ -278,7 +278,7 @@ theorem emultiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), emultiplic
     by_cases hn : n = 0
     · subst hn
       simp only [ne_eq, bit_eq_zero_iff, true_and, Bool.not_eq_false] at h
-      simp only [h, factorial, mul_one, Nat.isUnit_iff, cast_one]
+      simp only [bit, h, cond_true, mul_zero, zero_add, factorial_one]
       rw [Prime.emultiplicity_one]
       · exact zero_lt_one
       · decide

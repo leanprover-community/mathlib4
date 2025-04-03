@@ -251,6 +251,12 @@ theorem mul {w : σ → M} (hφ : IsWeightedHomogeneous w φ m) (hψ : IsWeighte
     IsWeightedHomogeneous w (φ * ψ) (m + n) :=
   weightedHomogeneousSubmodule_mul w m n <| Submodule.mul_mem_mul hφ hψ
 
+theorem pow {w : σ → M} (hφ : IsWeightedHomogeneous w φ m) (n : ℕ) :
+    IsWeightedHomogeneous w (φ ^ n) (n • m) := by
+  induction n with
+  | zero => rw [pow_zero, zero_smul]; exact isWeightedHomogeneous_one R w
+  | succ n ih => rw [pow_succ, succ_nsmul]; exact ih.mul hφ
+
 /-- A product of weighted homogeneous polynomials is weighted homogeneous, with weighted degree
   equal to the sum of the weighted degrees. -/
 theorem prod {ι : Type*} (s : Finset ι) (φ : ι → MvPolynomial σ R) (n : ι → M) {w : σ → M} :

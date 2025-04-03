@@ -159,9 +159,9 @@ structure LiftStruct (sq : CommSq f i p g) where
   /-- The lift. -/
   l : B ⟶ X
   /-- The upper left triangle commutes. -/
-  fac_left : i ≫ l = f
+  fac_left : i ≫ l = f := by aesop_cat
   /-- The lower right triangle commutes. -/
-  fac_right : l ≫ p = g
+  fac_right : l ≫ p = g := by aesop_cat
 
 namespace LiftStruct
 

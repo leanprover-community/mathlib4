@@ -234,32 +234,22 @@ def ofNat (s : Set ℕ) [DecidablePred (· ∈ s)] [Infinite s] : ℕ → s
   | 0 => ⊥
   | n + 1 => succ (ofNat s n)
 
-theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = ⟨x, hx⟩
-  | x => fun hx => by
+theorem ofNat_surjective : Surjective (ofNat s)
+  | ⟨x, hx⟩ => by
     set t : List s :=
       ((List.range x).filter fun y => y ∈ s).pmap
         (fun (y : ℕ) (hy : y ∈ s) => ⟨y, hy⟩)
         (by intros a ha; simpa using (List.mem_filter.mp ha).2) with ht
     have hmt : ∀ {y : s}, y ∈ t ↔ y < ⟨x, hx⟩ := by
       simp [List.mem_filter, Subtype.ext_iff_val, ht]
-    have wf : ∀ m : s, List.maximum t = m → ↑m < x := fun m hmax => by
-      simpa using hmt.mp (List.maximum_mem hmax)
     cases' hmax : List.maximum t with m
     · refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (⊥ : s) ?_)⟩
       rwa [← List.maximum_eq_bot.1 hmax, hmt]
-    cases' ofNat_surjective_aux m.2 with a ha
-    refine ⟨a + 1, le_antisymm ?_ ?_⟩ <;> rw [ofNat]
-    · refine succ_le_of_lt ?_
-      rw [ha]
-      exact wf _ hmax
-    · refine le_succ_of_forall_lt_le fun z hz => ?_
-      rw [ha]
-      cases m
-      exact List.le_maximum_of_mem (hmt.2 hz) hmax
-decreasing_by
-  tauto
-
-theorem ofNat_surjective : Surjective (ofNat s) := fun ⟨_, hx⟩ => ofNat_surjective_aux hx
+    have wf : ↑m < x := by simpa using hmt.mp (List.maximum_mem hmax)
+    rcases ofNat_surjective m with ⟨a, rfl⟩
+    refine ⟨a + 1, le_antisymm (succ_le_of_lt wf) ?_⟩
+    exact le_succ_of_forall_lt_le fun z hz => List.le_maximum_of_mem (hmt.2 hz) hmax
+  termination_by n => n.val
 
 @[simp]
 theorem ofNat_range : Set.range (ofNat s) = Set.univ :=

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Algebra.Polynomial.Div
+import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -13,6 +13,8 @@ import Mathlib.Algebra.Polynomial.Div
 We prove basic results about univariate polynomials.
 
 -/
+
+assert_not_exists Ideal.map
 
 noncomputable section
 
@@ -64,11 +66,6 @@ def modByMonicHom (q : R[X]) : R[X] →ₗ[R] R[X] where
 theorem mem_ker_modByMonic (hq : q.Monic) {p : R[X]} :
     p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
   LinearMap.mem_ker.trans (modByMonic_eq_zero_iff_dvd hq)
-
-@[simp]
-theorem ker_modByMonicHom (hq : q.Monic) :
-    LinearMap.ker (Polynomial.modByMonicHom q) = (Ideal.span {q}).restrictScalars R :=
-  Submodule.ext fun _ => (mem_ker_modByMonic hq).trans Ideal.mem_span_singleton.symm
 
 section
 
@@ -233,7 +230,7 @@ theorem rootMultiplicity_mul {p q : R[X]} {x : R} (hpq : p * q ≠ 0) :
   have hq : q ≠ 0 := right_ne_zero_of_mul hpq
   rw [rootMultiplicity_eq_multiplicity (p * q), if_neg hpq, rootMultiplicity_eq_multiplicity p,
     if_neg hp, rootMultiplicity_eq_multiplicity q, if_neg hq,
-    multiplicity_mul (prime_X_sub_C x) (multiplicity_X_sub_C_finite _ hpq)]
+    multiplicity_mul (prime_X_sub_C x) (finiteMultiplicity_X_sub_C _ hpq)]
 
 open Multiset in
 set_option linter.unusedVariables false in
@@ -270,7 +267,6 @@ theorem exists_multiset_roots [DecidableEq R] :
             rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm]
             exact add_le_add (le_refl (1 : WithBot ℕ)) htd,
         by
-          change ∀ (a : R), count a (x ::ₘ t) = rootMultiplicity a p
           intro a
           conv_rhs => rw [← mul_divByMonic_eq_iff_isRoot.mpr hx]
           rw [rootMultiplicity_mul (mul_ne_zero (X_sub_C_ne_zero x) hdiv0),

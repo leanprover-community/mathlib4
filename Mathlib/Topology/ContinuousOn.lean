@@ -3,7 +3,6 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Algebra.Group.Indicator
 import Mathlib.Topology.Constructions
 
 /-!
@@ -1202,17 +1201,61 @@ protected theorem ContinuousOn.iterate {f : α → α} {s : Set α} (hcont : Con
   | 0 => continuousOn_id
   | (n + 1) => (hcont.iterate hmaps n).comp hcont hmaps
 
-theorem ContinuousWithinAt.fin_insertNth {n} {π : Fin (n + 1) → Type*}
-    [∀ i, TopologicalSpace (π i)] (i : Fin (n + 1)) {f : α → π i} {a : α} {s : Set α}
-    (hf : ContinuousWithinAt f s a) {g : α → ∀ j : Fin n, π (i.succAbove j)}
-    (hg : ContinuousWithinAt g s a) : ContinuousWithinAt (fun a => i.insertNth (f a) (g a)) s a :=
-  hf.tendsto.fin_insertNth i hg
+section Fin
+variable {n : ℕ} {π : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (π i)]
 
-nonrec theorem ContinuousOn.fin_insertNth {n} {π : Fin (n + 1) → Type*}
-    [∀ i, TopologicalSpace (π i)] (i : Fin (n + 1)) {f : α → π i} {s : Set α}
-    (hf : ContinuousOn f s) {g : α → ∀ j : Fin n, π (i.succAbove j)} (hg : ContinuousOn g s) :
+theorem ContinuousWithinAt.finCons
+    {f : α → π 0} {g : α → ∀ j : Fin n, π (Fin.succ j)} {a : α} {s : Set α}
+    (hf : ContinuousWithinAt f s a) (hg : ContinuousWithinAt g s a) :
+    ContinuousWithinAt (fun a => Fin.cons (f a) (g a)) s a :=
+  hf.tendsto.finCons hg
+
+theorem ContinuousOn.finCons {f : α → π 0} {s : Set α} {g : α → ∀ j : Fin n, π (Fin.succ j)}
+    (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
+    ContinuousOn (fun a => Fin.cons (f a) (g a)) s := fun a ha =>
+  (hf a ha).finCons (hg a ha)
+
+theorem ContinuousWithinAt.matrixVecCons {f : α → β} {g : α → Fin n → β} {a : α} {s : Set α}
+    (hf : ContinuousWithinAt f s a) (hg : ContinuousWithinAt g s a) :
+    ContinuousWithinAt (fun a => Matrix.vecCons (f a) (g a)) s a :=
+  hf.tendsto.matrixVecCons hg
+
+theorem ContinuousOn.matrixVecCons {f : α → β} {g : α → Fin n → β} {s : Set α}
+    (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
+    ContinuousOn (fun a => Matrix.vecCons (f a) (g a)) s := fun a ha =>
+  (hf a ha).matrixVecCons (hg a ha)
+
+theorem ContinuousWithinAt.finSnoc
+    {f : α → ∀ j : Fin n, π (Fin.castSucc j)} {g : α → π (Fin.last _)} {a : α} {s : Set α}
+    (hf : ContinuousWithinAt f s a) (hg : ContinuousWithinAt g s a) :
+    ContinuousWithinAt (fun a => Fin.snoc (f a) (g a)) s a :=
+  hf.tendsto.finSnoc hg
+
+theorem ContinuousOn.finSnoc
+    {f : α → ∀ j : Fin n, π (Fin.castSucc j)} {g : α → π (Fin.last _)} {s : Set α}
+    (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
+    ContinuousOn (fun a => Fin.snoc (f a) (g a)) s := fun a ha =>
+  (hf a ha).finSnoc (hg a ha)
+
+theorem ContinuousWithinAt.finInsertNth
+    (i : Fin (n + 1)) {f : α → π i} {g : α → ∀ j : Fin n, π (i.succAbove j)} {a : α} {s : Set α}
+    (hf : ContinuousWithinAt f s a) (hg : ContinuousWithinAt g s a) :
+    ContinuousWithinAt (fun a => i.insertNth (f a) (g a)) s a :=
+  hf.tendsto.finInsertNth i hg
+
+@[deprecated (since := "2025-01-02")]
+alias ContinuousWithinAt.fin_insertNth := ContinuousWithinAt.finInsertNth
+
+theorem ContinuousOn.finInsertNth
+    (i : Fin (n + 1)) {f : α → π i} {g : α → ∀ j : Fin n, π (i.succAbove j)} {s : Set α}
+    (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun a => i.insertNth (f a) (g a)) s := fun a ha =>
-  (hf a ha).fin_insertNth i (hg a ha)
+  (hf a ha).finInsertNth i (hg a ha)
+
+@[deprecated (since := "2025-01-02")]
+alias ContinuousOn.fin_insertNth := ContinuousOn.finInsertNth
+
+end Fin
 
 theorem Set.LeftInvOn.map_nhdsWithin_eq {f : α → β} {g : β → α} {x : β} {s : Set β}
     (h : LeftInvOn f g s) (hx : f (g x) = x) (hf : ContinuousWithinAt f (g '' s) (g x))
@@ -1297,10 +1340,10 @@ theorem continuousWithinAt_update_same [DecidableEq α] {y : β} :
     ContinuousWithinAt (update f x y) s x ↔ Tendsto f (𝓝[s \ {x}] x) (𝓝 y) :=
   calc
     ContinuousWithinAt (update f x y) s x ↔ Tendsto (update f x y) (𝓝[s \ {x}] x) (𝓝 y) := by
-    { rw [← continuousWithinAt_diff_self, ContinuousWithinAt, update_same] }
+    { rw [← continuousWithinAt_diff_self, ContinuousWithinAt, update_self] }
     _ ↔ Tendsto f (𝓝[s \ {x}] x) (𝓝 y) :=
       tendsto_congr' <| eventually_nhdsWithin_iff.2 <| Eventually.of_forall
-        fun _ hz => update_noteq hz.2 _ _
+        fun _ hz => update_of_ne hz.2 ..
 
 @[simp]
 theorem continuousAt_update_same [DecidableEq α] {y : β} :
@@ -1402,21 +1445,6 @@ theorem Continuous.piecewise [∀ a, Decidable (a ∈ s)]
     (hs : ∀ a ∈ frontier s, f a = g a) (hf : Continuous f) (hg : Continuous g) :
     Continuous (piecewise s f g) :=
   hf.if hs hg
-
-section Indicator
-variable [One β]
-
-@[to_additive]
-lemma continuous_mulIndicator (hs : ∀ a ∈ frontier s, f a = 1) (hf : ContinuousOn f (closure s)) :
-    Continuous (mulIndicator s f) := by
-  classical exact continuous_piecewise hs hf continuousOn_const
-
-@[to_additive]
-protected lemma Continuous.mulIndicator (hs : ∀ a ∈ frontier s, f a = 1) (hf : Continuous f) :
-    Continuous (mulIndicator s f) := by
-  classical exact hf.piecewise hs continuous_const
-
-end Indicator
 
 theorem IsOpen.ite' (hs : IsOpen s) (hs' : IsOpen s')
     (ht : ∀ x ∈ frontier t, x ∈ s ↔ x ∈ s') : IsOpen (t.ite s s') := by

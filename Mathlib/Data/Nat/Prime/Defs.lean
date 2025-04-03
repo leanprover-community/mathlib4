@@ -135,17 +135,17 @@ theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.Co
     exact mlt.ne' mdvd
   exact (h m mlt hm).symm.eq_one_of_dvd mdvd
 
-section
+/--
+This instance is set up to work in the kernel (`by decide`) for small values.
 
-/-- This instance is slower than the instance `decidablePrime` defined below,
-  but has the advantage that it works in the kernel for small values.
+Below (`decidablePrime'`) we will define a faster variant to be used by the compiler
+(e.g. in `#eval` or `by native_decide`).
 
-  If you need to prove that a particular number is prime, in any case
-  you should not use `by decide`, but rather `by norm_num`, which is
-  much faster.
-  -/
-@[local instance]
-def decidablePrime1 (p : ℕ) : Decidable (Prime p) :=
+If you need to prove that a particular number is prime, in any case
+you should not use `by decide`, but rather `by norm_num`, which is
+much faster.
+-/
+instance decidablePrime (p : ℕ) : Decidable (Prime p) :=
   decidable_of_iff' _ prime_def_lt'
 
 theorem prime_two : Prime 2 := by decide
@@ -153,8 +153,6 @@ theorem prime_two : Prime 2 := by decide
 theorem prime_three : Prime 3 := by decide
 
 theorem prime_five : Prime 5 := by decide
-
-end
 
 theorem dvd_prime {p m : ℕ} (pp : Prime p) : m ∣ p ↔ m = 1 ∨ m = p :=
   ⟨fun d => pp.eq_one_or_self_of_dvd m d, fun h =>
@@ -225,12 +223,13 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     · have pp : Prime n :=
         prime_def_le_sqrt.2
           ⟨n2, fun m m2 l d => not_lt_of_ge l <| lt_of_lt_of_le (sqrt_lt.2 h) (a m m2 d)⟩
-      simpa [h] using ⟨n2, dvd_rfl, fun m m2 d => le_of_eq ((dvd_prime_two_le pp m2).1 d).symm⟩
+      simpa only [k, h] using
+        ⟨n2, dvd_rfl, fun m m2 d => le_of_eq ((dvd_prime_two_le pp m2).1 d).symm⟩
     have k2 : 2 ≤ k := by
       subst e
       apply Nat.le_add_left
-    simp only [h, ↓reduceIte]
-    by_cases dk : k ∣ n <;> simp only [dk, ↓reduceIte]
+    simp only [k, h, ↓reduceIte]
+    by_cases dk : k ∣ n <;> simp only [k, dk, ↓reduceIte]
     · exact ⟨k2, dk, a⟩
     · refine
         have := minFac_lemma n k h
@@ -304,15 +303,16 @@ theorem prime_def_minFac {p : ℕ} : Prime p ↔ 2 ≤ p ∧ minFac p = p :=
 theorem Prime.minFac_eq {p : ℕ} (hp : Prime p) : minFac p = p :=
   (prime_def_minFac.1 hp).2
 
-/-- This instance is faster in the virtual machine than `decidablePrime1`,
+/--
+This definition is faster in the virtual machine than `decidablePrime`,
 but slower in the kernel.
-
-If you need to prove that a particular number is prime, in any case
-you should not use `by decide`, but rather `by norm_num`, which is
-much faster.
 -/
-instance decidablePrime (p : ℕ) : Decidable (Prime p) :=
+def decidablePrime' (p : ℕ) : Decidable (Prime p) :=
   decidable_of_iff' _ prime_def_minFac
+
+@[csimp] theorem decidablePrime_csimp :
+    @decidablePrime = @decidablePrime' := by
+  funext; apply Subsingleton.elim
 
 theorem not_prime_iff_minFac_lt {n : ℕ} (n2 : 2 ≤ n) : ¬Prime n ↔ minFac n < n :=
   (not_congr <| prime_def_minFac.trans <| and_iff_right n2).trans <|

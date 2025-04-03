@@ -144,7 +144,7 @@ theorem prime_factors_irreducible [CancelCommMonoidWithZero α] {a : α} {f : Mu
     simp only [mul_one, Multiset.prod_cons, Multiset.prod_zero, hs0] at *
     exact ⟨Associated.symm ⟨u, hu⟩, rfl⟩
 
-theorem irreducible_iff_prime_of_exists_unique_irreducible_factors [CancelCommMonoidWithZero α]
+theorem irreducible_iff_prime_of_existsUnique_irreducible_factors [CancelCommMonoidWithZero α]
     (eif : ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Irreducible b) ∧ f.prod ~ᵤ a)
     (uif :
       ∀ f g : Multiset α,
@@ -182,6 +182,10 @@ theorem irreducible_iff_prime_of_exists_unique_irreducible_factors [CancelCommMo
             fun hqb =>
             Or.inr <| hq.dvd_iff_dvd_left.2 <| hfb.2.dvd_iff_dvd_right.1 (Multiset.dvd_prod hqb)⟩,
     Prime.irreducible⟩
+
+@[deprecated (since := "2024-12-17")]
+alias irreducible_iff_prime_of_exists_unique_irreducible_factors :=
+  irreducible_iff_prime_of_existsUnique_irreducible_factors
 
 namespace UniqueFactorizationMonoid
 
@@ -387,7 +391,7 @@ theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactori
   exact
     ⟨w.map e, fun b hb =>
         let ⟨c, hc, he⟩ := Multiset.mem_map.1 hb
-        he ▸ e.prime_iff.1 (hp c hc),
+        he ▸ e.prime_iff.2 (hp c hc),
         Units.map e.toMonoidHom u,
       by
         rw [Multiset.prod_hom, toMonoidHom_eq_coe, Units.coe_map, MonoidHom.coe_coe, ← map_mul e, h,
@@ -401,7 +405,7 @@ end
 
 namespace UniqueFactorizationMonoid
 
-theorem of_exists_unique_irreducible_factors [CancelCommMonoidWithZero α]
+theorem of_existsUnique_irreducible_factors [CancelCommMonoidWithZero α]
     (eif : ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Irreducible b) ∧ f.prod ~ᵤ a)
     (uif :
       ∀ f g : Multiset α,
@@ -411,7 +415,10 @@ theorem of_exists_unique_irreducible_factors [CancelCommMonoidWithZero α]
   UniqueFactorizationMonoid.of_exists_prime_factors
     (by
       convert eif using 7
-      simp_rw [irreducible_iff_prime_of_exists_unique_irreducible_factors eif uif])
+      simp_rw [irreducible_iff_prime_of_existsUnique_irreducible_factors eif uif])
+
+@[deprecated (since := "2024-12-17")]
+alias of_exists_unique_irreducible_factors := of_existsUnique_irreducible_factors
 
 variable {R : Type*} [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
 

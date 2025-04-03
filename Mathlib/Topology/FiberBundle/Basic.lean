@@ -342,7 +342,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
     obtain ⟨ec, hc⟩ : ∃ ec : Trivialization F (π F E), c ∈ ec.baseSet :=
       ⟨trivializationAt F E c, mem_baseSet_trivializationAt F E c⟩
     obtain ⟨c', hc', hc'e⟩ : ∃ c' ∈ Ico a c, Ioc c' c ⊆ ec.baseSet :=
-      (mem_nhdsWithin_Iic_iff_exists_mem_Ico_Ioc_subset hlt).1
+      (mem_nhdsLE_iff_exists_mem_Ico_Ioc_subset hlt).1
         (mem_nhdsWithin_of_mem_nhds <| IsOpen.mem_nhds ec.open_baseSet hc)
     /- Since `c' < c = Sup s`, there exists `d ∈ s ∩ (c', c]`. Let `ead` be a trivialization of
       `proj` over `[a, d]`. Then we can glue `ead` and `ec` into a trivialization over `[a, c]`. -/
@@ -359,7 +359,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   /- Since the base set of `ec` is open, it includes `[c, d)` (hence, `[a, d)`) for some
     `d ∈ (c, b]`. -/
   obtain ⟨d, hdcb, hd⟩ : ∃ d ∈ Ioc c b, Ico c d ⊆ ec.baseSet :=
-    (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
+    (mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset hlt).1
       (mem_nhdsWithin_of_mem_nhds <| IsOpen.mem_nhds ec.open_baseSet (hec ⟨hc.1, le_rfl⟩))
   have had : Ico a d ⊆ ec.baseSet := Ico_subset_Icc_union_Ico.trans (union_subset hec hd)
   by_cases he : Disjoint (Iio d) (Ioi c)

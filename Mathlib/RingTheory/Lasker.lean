@@ -15,9 +15,9 @@ import Mathlib.RingTheory.Noetherian.Defs
 
 - `IsLasker`: A ring `R` satisfies `IsLasker R` when any `I : Ideal R` can be decomposed into
   finitely many primary ideals.
-- `IsLasker.minimal`: Any `I : Ideal R` in a ring `R` satisifying `IsLasker R` can be
+- `IsLasker.minimal`: Any `I : Ideal R` in a ring `R` satisfying `IsLasker R` can be
   decomposed into primary ideals, such that the decomposition is minimal:
-  each primary ideal is necessary, and each primary ideal has an indepedent radical.
+  each primary ideal is necessary, and each primary ideal has an independent radical.
 - `Ideal.isLasker`: Every Noetherian commutative ring is a Lasker ring.
 
 ## Implementation details

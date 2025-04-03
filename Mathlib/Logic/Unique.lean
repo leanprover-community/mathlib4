@@ -54,16 +54,21 @@ attribute [class] Unique
 -- The simplifier can already prove this using `eq_iff_true_of_subsingleton`
 attribute [nolint simpNF] Unique.mk.injEq
 
-theorem unique_iff_exists_unique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ : α, True :=
+theorem unique_iff_existsUnique (α : Sort u) : Nonempty (Unique α) ↔ ∃! _ : α, True :=
   ⟨fun ⟨u⟩ ↦ ⟨u.default, trivial, fun a _ ↦ u.uniq a⟩,
    fun ⟨a, _, h⟩ ↦ ⟨⟨⟨a⟩, fun _ ↦ h _ trivial⟩⟩⟩
 
-theorem unique_subtype_iff_exists_unique {α} (p : α → Prop) :
+@[deprecated (since := "2024-12-17")] alias unique_iff_exists_unique := unique_iff_existsUnique
+
+theorem unique_subtype_iff_existsUnique {α} (p : α → Prop) :
     Nonempty (Unique (Subtype p)) ↔ ∃! a, p a :=
   ⟨fun ⟨u⟩ ↦ ⟨u.default.1, u.default.2, fun a h ↦ congr_arg Subtype.val (u.uniq ⟨a, h⟩)⟩,
    fun ⟨a, ha, he⟩ ↦ ⟨⟨⟨⟨a, ha⟩⟩, fun ⟨b, hb⟩ ↦ by
       congr
       exact he b hb⟩⟩⟩
+
+@[deprecated (since := "2024-12-17")]
+alias unique_subtype_iff_exists_unique := unique_subtype_iff_existsUnique
 
 /-- Given an explicit `a : α` with `Subsingleton α`, we can construct
 a `Unique α` instance. This is a def because the typeclass search cannot
@@ -75,7 +80,7 @@ abbrev uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α 
   default := a
   uniq _ := Subsingleton.elim _ _
 
-instance PUnit.unique : Unique PUnit.{u} where
+instance PUnit.instUnique : Unique PUnit.{u} where
   default := PUnit.unit
   uniq x := subsingleton x _
 

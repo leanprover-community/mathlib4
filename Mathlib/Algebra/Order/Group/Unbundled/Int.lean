@@ -46,6 +46,9 @@ theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; r
 theorem sign_mul_abs (a : ℤ) : sign a * |a| = a := by
   rw [abs_eq_natAbs, sign_mul_natAbs a]
 
+theorem sign_mul_self_eq_abs (a : ℤ) : sign a * a = |a| := by
+  rw [abs_eq_natAbs, sign_mul_self_eq_natAbs]
+
 lemma natAbs_le_self_sq (a : ℤ) : (Int.natAbs a : ℤ) ≤ a ^ 2 := by
   rw [← Int.natAbs_sq a, sq]
   norm_cast
@@ -128,6 +131,10 @@ theorem abs_sign_of_nonzero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
 protected theorem sign_eq_ediv_abs (a : ℤ) : sign a = a / |a| :=
   if az : a = 0 then by simp [az]
   else (Int.ediv_eq_of_eq_mul_left (mt abs_eq_zero.1 az) (sign_mul_abs _).symm).symm
+
+protected theorem sign_eq_abs_ediv (a : ℤ) : sign a = |a| / a :=
+  if az : a = 0 then by simp [az]
+  else (Int.ediv_eq_of_eq_mul_left az (sign_mul_self_eq_abs _).symm).symm
 
 end Int
 

@@ -261,16 +261,16 @@ lemma hasDerivAt_qaryEntropy (hp₀ : p ≠ 0) (hp₁ : p ≠ 1) :
 
 open Filter Topology Set
 
-private lemma tendsto_log_one_sub_sub_log_nhdsWithin_atAtop :
+private lemma tendsto_log_one_sub_sub_log_nhdsGT_atAtop :
     Tendsto (fun p ↦ log (1 - p) - log p) (𝓝[>] 0) atTop := by
   apply Filter.tendsto_atTop_add_left_of_le' (𝓝[>] 0) (log (1/2) : ℝ)
   · have h₁ : (0 : ℝ) < 1 / 2 := by norm_num
-    filter_upwards [Ioc_mem_nhdsWithin_Ioi' h₁] with p hx
+    filter_upwards [Ioc_mem_nhdsGT h₁] with p hx
     gcongr
     linarith [hx.2]
   · apply tendsto_neg_atTop_iff.mpr tendsto_log_nhdsWithin_zero_right
 
-private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
+private lemma tendsto_log_one_sub_sub_log_nhdsLT_one_atBot :
     Tendsto (fun p ↦ log (1 - p) - log p) (𝓝[<] 1) atBot := by
   apply Filter.tendsto_atBot_add_right_of_ge' (𝓝[<] 1) (-log (1 - 2⁻¹))
   · have : Tendsto log (𝓝[>] 0) atBot := Real.tendsto_log_nhdsWithin_zero_right
@@ -282,7 +282,7 @@ private lemma tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot :
     convert ContinuousWithinAt.tendsto_nhdsWithin (x :=(1 : ℝ)) contF.continuousWithinAt this
     exact Eq.symm (sub_eq_zero_of_eq rfl)
   · have h₁ : (1 : ℝ) - (2 : ℝ)⁻¹ < 1 := by norm_num
-    filter_upwards [Ico_mem_nhdsWithin_Iio' h₁] with p hx
+    filter_upwards [Ico_mem_nhdsLT h₁] with p hx
     gcongr
     exact hx.1
 
@@ -295,10 +295,10 @@ lemma not_continuousAt_deriv_qaryEntropy_one :
       ring
     rw [this]
     apply tendsto_atBot_add_const_left
-    exact tendsto_log_one_sub_sub_log_nhdsWithin_one_atBot
+    exact tendsto_log_one_sub_sub_log_nhdsLT_one_atBot
   apply not_continuousAt_of_tendsto (Filter.Tendsto.congr' _ tendstoBot) nhdsWithin_le_nhds
   · simp only [disjoint_nhds_atBot_iff, not_isBot, not_false_eq_true]
-  filter_upwards [Ioo_mem_nhdsWithin_Iio' (show 1 - 2⁻¹ < (1 : ℝ) by norm_num)]
+  filter_upwards [Ioo_mem_nhdsLT (show 1 - 2⁻¹ < (1 : ℝ) by norm_num)]
   intros
   apply (deriv_qaryEntropy _ _).symm
   · simp_all only [mem_Ioo, ne_eq]
@@ -312,10 +312,10 @@ lemma not_continuousAt_deriv_qaryEntropy_zero :
     have : (fun p ↦ log (q - 1) + log (1 - p) - log p)
         = (fun p ↦ log (q - 1) + (log (1 - p) - log p)) := by ext; ring
     rw [this]
-    exact tendsto_atTop_add_const_left _ _ tendsto_log_one_sub_sub_log_nhdsWithin_atAtop
+    exact tendsto_atTop_add_const_left _ _ tendsto_log_one_sub_sub_log_nhdsGT_atAtop
   apply not_continuousAt_of_tendsto (Filter.Tendsto.congr' _ tendstoTop) nhdsWithin_le_nhds
   · simp only [disjoint_nhds_atTop_iff, not_isTop, not_false_eq_true]
-  filter_upwards [Ioo_mem_nhdsWithin_Ioi' (show (0 : ℝ) < 2⁻¹ by norm_num)]
+  filter_upwards [Ioo_mem_nhdsGT (show (0 : ℝ) < 2⁻¹ by norm_num)]
   intros
   apply (deriv_qaryEntropy _ _).symm
   · simp_all only [zero_add, mem_Ioo, ne_eq]

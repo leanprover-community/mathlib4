@@ -31,7 +31,7 @@ The main new notation is `![a, b]`, which gets expanded to `vecCons a (vecCons b
 
 ## Examples
 
-Examples of usage can be found in the `test/matrix.lean` file.
+Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 -/
 
 
@@ -167,7 +167,6 @@ theorem range_cons_cons_empty (x y : α) (u : Fin 0 → α) :
     Set.range (vecCons x <| vecCons y u) = {x, y} := by
   rw [range_cons, range_cons_empty, Set.singleton_union]
 
-@[simp]
 theorem vecCons_const (a : α) : (vecCons a fun _ : Fin n => a) = fun _ => a :=
   funext <| Fin.forall_iff_succ.2 ⟨rfl, cons_val_succ _ _⟩
 

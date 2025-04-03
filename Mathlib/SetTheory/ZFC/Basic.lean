@@ -57,6 +57,7 @@ open Function (OfArity)
   is a family of pre-sets indexed by a type in `Type u`.
   The ZFC universe is defined as a quotient of this
   to ensure extensionality. -/
+@[pp_with_univ]
 inductive PSet : Type (u + 1)
   | mk (α : Type u) (A : α → PSet) : PSet
 
@@ -253,6 +254,12 @@ theorem mem_asymm {x y : PSet} : x ∈ y → y ∉ x :=
 theorem mem_irrefl (x : PSet) : x ∉ x :=
   irrefl_of (· ∈ ·) x
 
+theorem not_subset_of_mem {x y : PSet} (h : x ∈ y) : ¬ y ⊆ x :=
+  fun h' ↦ mem_irrefl _ <| mem_of_subset h' h
+
+theorem not_mem_of_subset {x y : PSet} (h : x ⊆ y) : y ∉ x :=
+  imp_not_comm.2 not_subset_of_mem h
+
 /-- Convert a pre-set to a `Set` of pre-sets. -/
 def toSet (u : PSet.{u}) : Set PSet.{u} :=
   { x | x ∈ u }
@@ -300,6 +307,9 @@ instance : Inhabited PSet :=
 
 instance : IsEmpty («Type» ∅) :=
   ⟨PEmpty.elim⟩
+
+theorem empty_def : (∅ : PSet) = ⟨_, PEmpty.elim⟩ := by
+  simp [EmptyCollection.emptyCollection, PSet.empty]
 
 @[simp]
 theorem not_mem_empty (x : PSet.{u}) : x ∉ (∅ : PSet.{u}) :=
@@ -443,8 +453,6 @@ def embed : PSet.{max (u + 1) v} :=
 theorem lift_mem_embed : ∀ x : PSet.{u}, PSet.Lift.{u, max (u + 1) v} x ∈ embed.{u, v} := fun x =>
   ⟨⟨x⟩, Equiv.rfl⟩
 
-set_option linter.deprecated false
-
 /-- Function equivalence is defined so that `f ~ g` iff `∀ x y, x ~ y → f x ~ g y`. This extends to
 equivalence of `n`-ary functions. -/
 @[deprecated "No deprecation message was provided." (since := "2024-09-02")]
@@ -452,37 +460,44 @@ def Arity.Equiv : ∀ {n}, OfArity PSet.{u} PSet.{u} n → OfArity PSet.{u} PSet
   | 0, a, b => PSet.Equiv a b
   | _ + 1, a, b => ∀ x y : PSet, PSet.Equiv x y → Arity.Equiv (a x) (b y)
 
+set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided." (since := "2024-09-02")]
 theorem Arity.equiv_const {a : PSet.{u}} :
     ∀ n, Arity.Equiv (OfArity.const PSet.{u} a n) (OfArity.const PSet.{u} a n)
   | 0 => Equiv.rfl
   | _ + 1 => fun _ _ _ => Arity.equiv_const _
 
+set_option linter.deprecated false in
 /-- `resp n` is the collection of n-ary functions on `PSet` that respect
   equivalence, i.e. when the inputs are equivalent the output is as well. -/
 @[deprecated "No deprecation message was provided." (since := "2024-09-02")]
 def Resp (n) :=
   { x : OfArity PSet.{u} PSet.{u} n // Arity.Equiv x x }
 
+set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided." (since := "2024-09-02")]
 instance Resp.inhabited {n} : Inhabited (Resp n) :=
   ⟨⟨OfArity.const _ default _, Arity.equiv_const _⟩⟩
 
+set_option linter.deprecated false in
 /-- The `n`-ary image of a `(n + 1)`-ary function respecting equivalence as a function respecting
 equivalence. -/
 @[deprecated "No deprecation message was provided." (since := "2024-09-02")]
 def Resp.f {n} (f : Resp (n + 1)) (x : PSet) : Resp n :=
   ⟨f.1 x, f.2 _ _ <| Equiv.refl x⟩
 
+set_option linter.deprecated false in
 /-- Function equivalence for functions respecting equivalence. See `PSet.Arity.Equiv`. -/
 @[deprecated "No deprecation message was provided." (since := "2024-09-02")]
 def Resp.Equiv {n} (a b : Resp n) : Prop :=
   Arity.Equiv a.1 b.1
 
+set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided." (since := "2024-09-02"), refl]
 protected theorem Resp.Equiv.refl {n} (a : Resp n) : Resp.Equiv a a :=
   a.2
 
+set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided." (since := "2024-09-02")]
 protected theorem Resp.Equiv.euc :
     ∀ {n} {a b c : Resp n}, Resp.Equiv a b → Resp.Equiv c b → Resp.Equiv a c
@@ -490,15 +505,18 @@ protected theorem Resp.Equiv.euc :
   | n + 1, a, b, c, hab, hcb => fun x y h =>
     @Resp.Equiv.euc n (a.f x) (b.f y) (c.f y) (hab _ _ h) (hcb _ _ <| PSet.Equiv.refl y)
 
+set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided." (since := "2024-09-02"), symm]
 protected theorem Resp.Equiv.symm {n} {a b : Resp n} : Resp.Equiv a b → Resp.Equiv b a :=
   (Resp.Equiv.refl b).euc
 
+set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided." (since := "2024-09-02"), trans]
 protected theorem Resp.Equiv.trans {n} {x y z : Resp n} (h1 : Resp.Equiv x y)
     (h2 : Resp.Equiv y z) : Resp.Equiv x z :=
   h1.euc h2.symm
 
+set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided." (since := "2024-09-02")]
 instance Resp.setoid {n} : Setoid (Resp n) :=
   ⟨Resp.Equiv, Resp.Equiv.refl, Resp.Equiv.symm, Resp.Equiv.trans⟩
@@ -507,6 +525,7 @@ end PSet
 
 /-- The ZFC universe of sets consists of the type of pre-sets,
   quotiented by extensional equivalence. -/
+@[pp_with_univ]
 def ZFSet : Type (u + 1) :=
   Quotient PSet.setoid.{u}
 
@@ -606,10 +625,9 @@ end ZFSet
 
 namespace PSet
 
-set_option linter.deprecated false
-
 namespace Resp
 
+set_option linter.deprecated false in
 /-- Helper function for `PSet.eval`. -/
 @[deprecated "No deprecation message was provided." (since := "2024-09-02")]
 def evalAux :
@@ -625,11 +643,13 @@ def evalAux :
         (@Quotient.ind _ _ fun q => F b q = F c q) fun z =>
           evalAux.2 (Resp.f b z) (Resp.f c z) (h _ _ (PSet.Equiv.refl z))⟩
 
+set_option linter.deprecated false in
 /-- An equivalence-respecting function yields an n-ary ZFC set function. -/
 @[deprecated "No deprecation message was provided." (since := "2024-09-02")]
 def eval (n) : Resp n → OfArity ZFSet.{u} ZFSet.{u} n :=
   evalAux.1
 
+set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided." (since := "2024-09-02")]
 theorem eval_val {n f x} :
     (@eval (n + 1) f : ZFSet → OfArity ZFSet ZFSet n) ⟦x⟧ = eval n (Resp.f f x) :=
@@ -637,6 +657,7 @@ theorem eval_val {n f x} :
 
 end Resp
 
+set_option linter.deprecated false in
 /-- A set function is "definable" if it is the image of some n-ary pre-set
   function. This isn't exactly definability, but is useful as a sufficient
   condition for functions that have a computable image. -/
@@ -647,17 +668,20 @@ class inductive Definable (n) : OfArity ZFSet.{u} ZFSet.{u} n → Type (u + 1)
 attribute [deprecated "No deprecation message was provided." (since := "2024-09-02"), instance]
   Definable.mk
 
+set_option linter.deprecated false in
 /-- The evaluation of a function respecting equivalence is definable, by that same function. -/
 @[deprecated "No deprecation message was provided." (since := "2024-09-02")]
 def Definable.EqMk {n} (f) :
     ∀ {s : OfArity ZFSet.{u} ZFSet.{u} n} (_ : Resp.eval _ f = s), Definable n s
   | _, rfl => ⟨f⟩
 
+set_option linter.deprecated false in
 /-- Turns a definable function into a function that respects equivalence. -/
 @[deprecated "No deprecation message was provided." (since := "2024-09-02")]
 def Definable.Resp {n} : ∀ (s : OfArity ZFSet.{u} ZFSet.{u} n) [Definable n s], Resp n
   | _, ⟨f⟩ => f
 
+set_option linter.deprecated false in
 @[deprecated "No deprecation message was provided." (since := "2024-09-02")]
 theorem Definable.eq {n} :
     ∀ (s : OfArity ZFSet.{u} ZFSet.{u} n) [H : Definable n s], (@Definable.Resp n s H).eval _ = s
@@ -1144,6 +1168,12 @@ theorem mem_asymm {x y : ZFSet} : x ∈ y → y ∉ x :=
 theorem mem_irrefl (x : ZFSet) : x ∉ x :=
   irrefl_of (· ∈ ·) x
 
+theorem not_subset_of_mem {x y : ZFSet} (h : x ∈ y) : ¬ y ⊆ x :=
+  fun h' ↦ mem_irrefl _ (h' h)
+
+theorem not_mem_of_subset {x y : ZFSet} (h : x ⊆ y) : y ∉ x :=
+  imp_not_comm.2 not_subset_of_mem h
+
 theorem regularity (x : ZFSet.{u}) (h : x ≠ ∅) : ∃ y ∈ x, x ∩ y = ∅ :=
   by_contradiction fun ne =>
     h <| (eq_empty x).2 fun y =>
@@ -1182,25 +1212,24 @@ theorem toSet_image (f : ZFSet → ZFSet) [Definable₁ f] (x : ZFSet) :
   ext
   simp
 
-/-- The range of an indexed family of sets. The universes allow for a more general index type
-  without manual use of `ULift`. -/
-noncomputable def range {α : Type u} (f : α → ZFSet.{max u v}) : ZFSet.{max u v} :=
-  ⟦⟨ULift.{v} α, Quotient.out ∘ f ∘ ULift.down⟩⟧
+/-- The range of a type-indexed family of sets. -/
+noncomputable def range {α} [Small.{u} α] (f : α → ZFSet.{u}) : ZFSet.{u} :=
+  ⟦⟨_, Quotient.out ∘ f ∘ (equivShrink α).symm⟩⟧
 
 @[simp]
-theorem mem_range {α : Type u} {f : α → ZFSet.{max u v}} {x : ZFSet.{max u v}} :
-    x ∈ range.{u, v} f ↔ x ∈ Set.range f :=
+theorem mem_range {α} [Small.{u} α] {f : α → ZFSet.{u}} {x : ZFSet.{u}} :
+    x ∈ range f ↔ x ∈ Set.range f :=
   Quotient.inductionOn x fun y => by
     constructor
     · rintro ⟨z, hz⟩
-      exact ⟨z.down, Quotient.eq_mk_iff_out.2 hz.symm⟩
+      exact ⟨(equivShrink α).symm z, Quotient.eq_mk_iff_out.2 hz.symm⟩
     · rintro ⟨z, hz⟩
-      use ULift.up z
+      use equivShrink α z
       simpa [hz] using PSet.Equiv.symm (Quotient.mk_out y)
 
 @[simp]
-theorem toSet_range {α : Type u} (f : α → ZFSet.{max u v}) :
-    (range.{u, v} f).toSet = Set.range f := by
+theorem toSet_range {α} [Small.{u} α] (f : α → ZFSet.{u}) :
+    (range f).toSet = Set.range f := by
   ext
   simp
 
@@ -1333,6 +1362,7 @@ end ZFSet
 We define `Class` as `Set ZFSet`, as this allows us to get many instances automatically. However, in
 practice, we treat it as (the definitionally equal) `ZFSet → Prop`. This means, the preferred way to
 state that `x : ZFSet` belongs to `A : Class` is to write `A x`. -/
+@[pp_with_univ]
 def Class :=
   Set ZFSet deriving HasSubset, EmptyCollection, Nonempty, Union, Inter, HasCompl, SDiff
 

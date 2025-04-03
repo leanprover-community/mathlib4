@@ -49,7 +49,7 @@ variable [DecidableEq α]
 the set of elements of `l`. -/
 @[simps]
 def getEquiv (l : List α) (H : Nodup l) : Fin (length l) ≃ { x // x ∈ l } where
-  toFun i := ⟨get l i, get_mem l i i.2⟩
+  toFun i := ⟨get l i, get_mem _ _⟩
   invFun x := ⟨indexOf (↑x) l, indexOf_lt_length.2 x.2⟩
   left_inv i := by simp only [List.get_indexOf, eq_self_iff_true, Fin.eta, Subtype.coe_mk, H]
   right_inv x := by simp
@@ -108,7 +108,7 @@ theorem sublist_of_orderEmbedding_get?_eq {l l' : List α} (f : ℕ ↪o ℕ)
   induction' l with hd tl IH generalizing l' f
   · simp
   have : some hd = _ := hf 0
-  rw [eq_comm, List.get?_eq_some] at this
+  rw [eq_comm, List.get?_eq_some_iff] at this
   obtain ⟨w, h⟩ := this
   let f' : ℕ ↪o ℕ :=
     OrderEmbedding.ofMapLEIff (fun i => f (i + 1) - (f 0 + 1)) fun a b => by
@@ -168,7 +168,7 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
     have h : ∀ {i : ℕ}, i < l.length → f i < l'.length := by
       intro i hi
       specialize hf i
-      rw [get?_eq_get hi, eq_comm, get?_eq_some] at hf
+      rw [get?_eq_get hi, eq_comm, get?_eq_some_iff] at hf
       obtain ⟨h, -⟩ := hf
       exact h
     refine ⟨OrderEmbedding.ofMapLEIff (fun ix => ⟨f ix, h ix.is_lt⟩) ?_, ?_⟩
@@ -185,15 +185,14 @@ theorem sublist_iff_exists_fin_orderEmbedding_get_eq {l l' : List α} :
       dsimp only
       split_ifs with hi hj hj
       · rwa [Fin.val_fin_lt, f.lt_iff_lt]
-      · have := (f ⟨i, hi⟩).is_lt
-        omega
+      · omega
       · exact absurd (h.trans hj) hi
       · simpa using h
     · intro i
       simp only [OrderEmbedding.coe_ofStrictMono]
       split_ifs with hi
       · rw [get?_eq_get hi, get?_eq_get, ← hf]
-      · rw [get?_eq_none.mpr, get?_eq_none.mpr]
+      · rw [get?_eq_none_iff.mpr, get?_eq_none_iff.mpr]
         · simp
         · simpa using hi
 

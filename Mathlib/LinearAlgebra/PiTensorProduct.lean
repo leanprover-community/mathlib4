@@ -279,7 +279,7 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
   toFun := tprodCoeff R 1
   map_update_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
   map_update_smul' {_ f} i r x := by
-    rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_same]
+    rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_self]
 
 variable {R}
 
@@ -831,7 +831,7 @@ def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[
     dsimp only
     have : ∀ (f : ι → M) (z : M), (fun _ : ι ↦ z) = update f i₀ z := fun f z ↦ by
       ext i
-      rw [Subsingleton.elim i i₀, Function.update_same]
+      rw [Subsingleton.elim i i₀, Function.update_self]
     refine x.induction_on ?_ ?_
     · intro r f
       simp only [LinearMap.map_smul, LinearMap.id_apply, lift.tprod, ofSubsingleton_apply_apply,

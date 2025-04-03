@@ -409,7 +409,7 @@ lemma set_range_inclusion' {X : TopCat} (U : Opens X) :
 theorem functor_map_eq_inf {X : TopCat} (U V : Opens X) :
     U.isOpenEmbedding.isOpenMap.functor.obj ((Opens.map U.inclusion').obj V) = V ⊓ U := by
   ext1
-  simp only [IsOpenMap.functor_obj_coe, map_coe, coe_inf,
+  simp only [IsOpenMap.coe_functor_obj, map_coe, coe_inf,
     Set.image_preimage_eq_inter_range, set_range_inclusion' U]
 
 theorem map_functor_eq' {X U : TopCat} (f : U ⟶ X) (hf : IsOpenEmbedding f) (V) :

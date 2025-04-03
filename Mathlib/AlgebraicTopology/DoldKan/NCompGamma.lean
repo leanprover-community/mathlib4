@@ -73,7 +73,7 @@ theorem PInfty_comp_map_mono_eq_zero (X : SimplicialObject C) {n : ℕ} {Δ' : S
     · simp only [op_comp, X.map_comp, assoc, PInfty_f]
       erw [(HigherFacesVanish.of_P _ _).comp_δ_eq_zero_assoc _ hj₁, zero_comp]
       by_contra
-      exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; linarith)
+      exact hj₁ (by simp only [Fin.ext_iff, Fin.val_zero]; omega)
 
 @[reassoc]
 theorem Γ₀_obj_termwise_mapMono_comp_PInfty (X : SimplicialObject C) {Δ Δ' : SimplexCategory}

@@ -44,8 +44,9 @@ open SheafedSpace
 
 @[simp]
 lemma res_zero {X : RingedSpace.{u}} {U V : TopologicalSpace.Opens X}
-    (hUV : U ≤ V) : (0 : X.presheaf.obj (op V)) |_ U = 0 :=
-  map_zero _
+    (hUV : U ≤ V) : (0 : X.presheaf.obj (op V)) |_ U =
+      (0 : (CategoryTheory.forget CommRingCat).obj (X.presheaf.obj (op U))) :=
+  RingHom.map_zero _
 
 variable (X : RingedSpace)
 
@@ -58,7 +59,8 @@ lemma exists_res_eq_zero_of_germ_eq_zero (U : Opens X) (f : X.presheaf.obj (op U
     (h : X.presheaf.germ U x.val x.property f = 0) :
     ∃ (V : Opens X) (i : V ⟶ U) (_ : x.1 ∈ V), X.presheaf.map i.op f = 0 := by
   have h1 : X.presheaf.germ U x.val x.property f = X.presheaf.germ U x.val x.property 0 := by simpa
-  obtain ⟨V, hv, i, _, hv4⟩ := TopCat.Presheaf.germ_eq X.presheaf x.1 x.2 x.2 f 0 h1
+  obtain ⟨V, hv, i, _, (hv4 : (X.presheaf.map i.op) f = (X.presheaf.map _) 0)⟩ :=
+    TopCat.Presheaf.germ_eq X.presheaf x.1 x.2 x.2 f 0 h1
   use V, i, hv
   simpa using hv4
 
@@ -83,11 +85,36 @@ theorem isUnit_res_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U)) (x :
       show X.presheaf.germ _ x hxW (X.presheaf.map (U.infLERight V).op g) =
       X.presheaf.germ _ x hxV g from X.presheaf.germ_res_apply (Opens.infLERight U V) x hxW g]
     exact heq
-  obtain ⟨W', hxW', i₁, i₂, heq'⟩ := X.presheaf.germ_eq x hxW hxW _ _ heq
+  -- note: we have to force lean to resynthesize this as <...>.hom _ = <...>.hom _
+  obtain ⟨W', hxW', i₁, i₂, (heq' : (X.presheaf.map i₁.op) _ = (X.presheaf.map i₂.op) 1)⟩ :=
+    X.presheaf.germ_eq x hxW hxW _ _ heq
   use W', i₁ ≫ Opens.infLELeft U V, hxW'
-  rw [(X.presheaf.map i₂.op).map_one, (X.presheaf.map i₁.op).map_mul] at heq'
-  rw [← comp_apply, ← X.presheaf.map_comp, ← comp_apply, ← X.presheaf.map_comp, ← op_comp] at heq'
-  exact isUnit_of_mul_eq_one _ _ heq'
+  simp only [map_mul, map_one] at heq'
+  simpa using isUnit_of_mul_eq_one _ _ heq'
+
+/-- Specialize `TopCat.Presheaf.germ_res_apply` to sheaves of rings.
+
+This is unfortunately needed because the results on presheaves are stated using the
+`ConcreteCategory.instFunLike` instance, which is not reducibly equal to the actual coercion of
+morphisms in `CommRingCat` to functions.
+-/
+lemma _root_.CommRingCat.germ_res_apply
+    {X : TopCat} (F : Presheaf CommRingCat X)
+    {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U) (s) :
+    F.germ U x hx (F.map i.op s) = F.germ V x (i.le hx) s :=
+  F.germ_res_apply _ _ _ _
+
+/-- Specialize `TopCat.Presheaf.germ_res_apply'` to sheaves of rings.
+
+This is unfortunately needed because the results on presheaves are stated using the
+`ConcreteCategory.instFunLike` instance, which is not reducibly equal to the actual coercion of
+morphisms in `CommRingCat` to functions.
+-/
+lemma _root_.CommRingCat.germ_res_apply'
+    {X : TopCat} (F : Presheaf CommRingCat X)
+    {U V : Opens X} (i : op V ⟶ op U) (x : X) (hx : x ∈ U) (s) :
+    F.germ U x hx (F.map i s) = F.germ V x (i.unop.le hx) s :=
+  F.germ_res_apply' _ _ _ _
 
 /-- If a section `f` is a unit in each stalk, `f` must be a unit. -/
 theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
@@ -108,21 +135,28 @@ theorem isUnit_of_isUnit_germ (U : Opens X) (f : X.presheaf.obj (op U))
     rw [germ_res_apply, germ_res_apply]
     apply (h z ((iVU x).le hzVx)).mul_right_inj.mp
     -- Porting note: now need explicitly typing the rewrites
-    rw [← X.presheaf.germ_res_apply (iVU x) z hzVx f]
+    -- note: this is bad, I think we should replace the `FunLike` on
+    -- concrete category with `CoeFun`
+    rw [← CommRingCat.germ_res_apply X.presheaf (iVU x) z hzVx f]
     -- Porting note: change was not necessary in Lean3
     change X.presheaf.germ _ z hzVx _ * (X.presheaf.germ _ z hzVx _) =
       X.presheaf.germ _ z hzVx _ * X.presheaf.germ _ z hzVy (g y)
     rw [← RingHom.map_mul,
       congr_arg (X.presheaf.germ (V x) z hzVx) (hg x),
-      X.presheaf.germ_res_apply _ _ _ f,
-      ← X.presheaf.germ_res_apply (iVU y) z hzVy f,
+      CommRingCat.germ_res_apply X.presheaf _ _ _ f,
+      ← CommRingCat.germ_res_apply X.presheaf (iVU y) z hzVy f,
       ← RingHom.map_mul,
       congr_arg (X.presheaf.germ (V y) z hzVy) (hg y), RingHom.map_one, RingHom.map_one]
   -- We claim that these local inverses glue together to a global inverse of `f`.
-  obtain ⟨gl, gl_spec, -⟩ := X.sheaf.existsUnique_gluing' V U iVU hcover g ic
+  obtain ⟨gl, gl_spec, -⟩ :
+    -- We need to rephrase the result from `ConcreteCategory` to `CommRingCat`.
+    ∃ gl : X.presheaf.obj (op U), (∀ i, ((sheaf X).val.map (iVU i).op) gl = g i) ∧ _ :=
+    X.sheaf.existsUnique_gluing' V U iVU hcover g ic
   apply isUnit_of_mul_eq_one f gl
   apply X.sheaf.eq_of_locally_eq' V U iVU hcover
   intro i
+  -- We need to rephrase the goal from `ConcreteCategory` to `CommRingCat`.
+  show ((sheaf X).val.map (iVU i).op).hom (f * gl) = ((sheaf X).val.map (iVU i).op) 1
   rw [RingHom.map_one, RingHom.map_mul, gl_spec]
   exact hg i
 
@@ -139,7 +173,7 @@ def basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) : Opens X where
     refine ⟨?_, V.2, hxV⟩
     intro y hy
     use i.le hy
-    convert RingHom.isUnit_map (X.presheaf.germ _ y hy) hf
+    convert RingHom.isUnit_map (X.presheaf.germ _ y hy).hom hf
     exact (X.presheaf.germ_res_apply i y hy f).symm
 
 theorem mem_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) (x : X) (hx : x ∈ U) :
@@ -166,18 +200,18 @@ theorem isUnit_res_basicOpen {U : Opens X} (f : X.presheaf.obj (op U)) :
   apply isUnit_of_isUnit_germ
   rintro x ⟨hxU, hx⟩
   convert hx
-  convert X.presheaf.germ_res_apply _ _ _ _
+  exact X.presheaf.germ_res_apply _ _ _ _
 
 @[simp]
 theorem basicOpen_res {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) (f : X.presheaf.obj U) :
     @basicOpen X (unop V) (X.presheaf.map i f) = unop V ⊓ @basicOpen X (unop U) f := by
   ext x; constructor
   · rintro ⟨hxV, hx⟩
-    rw [X.presheaf.germ_res_apply'] at hx
+    rw [CommRingCat.germ_res_apply' X.presheaf] at hx
     exact ⟨hxV, i.unop.le hxV, hx⟩
   · rintro ⟨hxV, _, hx⟩
     refine ⟨hxV, ?_⟩
-    rw [X.presheaf.germ_res_apply']
+    rw [CommRingCat.germ_res_apply' X.presheaf]
     exact hx
 
 -- This should fire before `basicOpen_res`.
@@ -190,7 +224,8 @@ theorem basicOpen_res_eq {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) [IsIso i] (f : X.
   apply le_antisymm
   · rw [X.basicOpen_res i f]; exact inf_le_right
   · have := X.basicOpen_res (inv i) (X.presheaf.map i f)
-    rw [← comp_apply, ← X.presheaf.map_comp, IsIso.hom_inv_id, X.presheaf.map_id, id_apply] at this
+    rw [← CommRingCat.comp_apply, ← X.presheaf.map_comp, IsIso.hom_inv_id, X.presheaf.map_id,
+        CommRingCat.id_apply] at this
     rw [this]
     exact inf_le_right
 

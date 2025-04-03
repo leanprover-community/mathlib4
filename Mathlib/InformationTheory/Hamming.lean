@@ -215,7 +215,7 @@ instance [∀ i, Inhabited (β i)] : Inhabited (Hamming β) :=
   ⟨fun _ => default⟩
 
 instance [DecidableEq ι] [Fintype ι] [∀ i, Fintype (β i)] : Fintype (Hamming β) :=
-  Pi.fintype
+  Pi.instFintype
 
 instance [Inhabited ι] [∀ i, Nonempty (β i)] [Nontrivial (β default)] : Nontrivial (Hamming β) :=
   Pi.nontrivial

@@ -275,6 +275,53 @@ lemma nth_mem_anti {a b : ℕ} (hab : a ≤ b) (h : p (nth p b)) : p (nth p a) :
     rw [ha0]
     rwa [hb0] at h
 
+lemma nth_comp_of_strictMono {n : ℕ} {f : ℕ → ℕ} (hf : StrictMono f)
+    (h0 : ∀ k, p k → k ∈ Set.range f) (h : ∀ hfi : (setOf p).Finite, n < hfi.toFinset.card) :
+    f (nth (fun i ↦ p (f i)) n) = nth p n := by
+  have hs {p' : ℕ → Prop} (h0p' : ∀ k, p' k → k ∈ Set.range f) :
+      f '' {i | p' (f i)} = setOf p' := by
+    ext i
+    refine ⟨fun ⟨_, hi, h⟩ ↦ h ▸ hi, fun he ↦ ?_⟩
+    rcases h0p' _ he with ⟨t, rfl⟩
+    exact ⟨t, he, rfl⟩
+  induction n using Nat.case_strong_induction_on
+  case _ =>
+    simp_rw [nth_zero]
+    replace h := nth_mem _ h
+    rw [← hs h0, ← hf.monotone.map_csInf]
+    rcases h0 _ h with ⟨t, ht⟩
+    exact ⟨t, Set.mem_setOf_eq ▸ ht ▸ h⟩
+  case _ n ih =>
+    repeat nth_rw 1 [nth_eq_sInf]
+    have h0' : ∀ k', (p k' ∧ ∀ k < n + 1, nth p k < k') → k' ∈ Set.range f := fun _ h ↦ h0 _ h.1
+    rw [← hs h0', ← hf.monotone.map_csInf]
+    · convert rfl using 8 with k m' hm
+      nth_rw 2 [← hf.lt_iff_lt]
+      convert Iff.rfl using 2
+      exact ih m' (Nat.lt_add_one_iff.mp hm) fun hfi ↦ hm.trans (h hfi)
+    · rcases h0 _ (nth_mem _ h) with ⟨t, ht⟩
+      exact ⟨t, ht ▸ (nth_mem _ h), fun _ hk ↦ ht ▸ nth_lt_nth' hk h⟩
+
+lemma nth_add {m n : ℕ} (h0 : ∀ k < m, ¬p k) (h : nth p n ≠ 0) :
+    nth (fun i ↦ p (i + m)) n + m = nth p n := by
+  refine nth_comp_of_strictMono (strictMono_id.add_const m) (fun k hk ↦ ?_)
+    (fun hf ↦ lt_card_toFinset_of_nth_ne_zero h hf)
+  by_contra hn
+  simp_rw [id_eq, Set.mem_range, eq_comm] at hn
+  exact h0 _ (not_le.mp fun h ↦ hn (le_iff_exists_add'.mp h)) hk
+
+lemma nth_add_eq_sub {m n : ℕ} (h0 : ∀ k < m, ¬p k) (h : nth p n ≠ 0) :
+    nth (fun i ↦ p (i + m)) n = nth p n - m := by
+  rw [← nth_add h0 h, Nat.add_sub_cancel]
+
+lemma nth_add_one {n : ℕ} (h0 : ¬p 0) (h : nth p n ≠ 0) :
+    nth (fun i ↦ p (i + 1)) n + 1 = nth p n :=
+  nth_add (fun _ hk ↦ (lt_one_iff.1 hk ▸ h0)) h
+
+lemma nth_add_one_eq_sub {n : ℕ} (h0 : ¬p 0) (h : nth p n ≠ 0) :
+    nth (fun i ↦ p (i + 1)) n = nth p n - 1 :=
+  nth_add_eq_sub (fun _ hk ↦ (lt_one_iff.1 hk ▸ h0)) h
+
 section Count
 
 variable (p) [DecidablePred p]

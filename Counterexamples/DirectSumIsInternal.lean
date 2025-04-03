@@ -85,7 +85,7 @@ theorem withSign.not_injective :
     apply zero_ne_one h.symm
   apply hinj.ne this
   rw [LinearMap.map_zero, LinearMap.map_add, DirectSum.toModule_lof, DirectSum.toModule_lof]
-  simp
+  simp [p1, n1]
 
 /-- And so they do not represent an internal direct sum. -/
 theorem withSign.not_internal : ¬DirectSum.IsInternal withSign :=

@@ -95,6 +95,15 @@ lemma monotone_map (F : C ⥤ D) :
   intro P Q h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
   exact ⟨X', Y', f', h _ hf', ⟨e⟩⟩
 
+lemma of_eq (P : MorphismProperty C) {X Y : C} {f : X ⟶ Y} (hf : P f)
+    {X' Y' : C} {f' : X' ⟶ Y'}
+    (hX : X = X') (hY : Y = Y') (h : f' = eqToHom hX.symm ≫ f ≫ eqToHom hY) :
+    P f' := by
+  obtain rfl := hX
+  obtain rfl := hY
+  obtain rfl : f' = f := by simpa using h
+  exact hf
+
 /-- A morphism property `P` satisfies `P.RespectsRight Q` if it is stable under post-composition
 with morphisms satisfying `Q`, i.e. whenever `P` holds for `f` and `Q` holds for `i` then `P`
 holds for `f ≫ i`. -/

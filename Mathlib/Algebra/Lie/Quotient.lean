@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Lie.Submodule
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Quotients of Lie algebras and Lie modules
@@ -43,7 +44,7 @@ instance : HasQuotient M (LieSubmodule R L M) :=
 
 namespace Quotient
 
-variable {N I}
+variable {N}
 
 instance addCommGroup : AddCommGroup (M ⧸ N) :=
   Submodule.Quotient.addCommGroup _

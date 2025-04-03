@@ -436,7 +436,7 @@ theorem Finite.exists_injOn_of_encard_le [Nonempty β] {s : Set α} {t : Set β}
   · rintro x hx; split_ifs with h
     · assumption
     · exact (hf₀s x hx h).1
-  exact InjOn.congr hinj (fun x ⟨_, hxa⟩ ↦ by rwa [Function.update_noteq])
+  exact InjOn.congr hinj (fun x ⟨_, hxa⟩ ↦ by rwa [Function.update_of_ne])
 termination_by encard s
 
 theorem Finite.exists_bijOn_of_encard_eq [Nonempty β] (hs : s.Finite) (h : s.encard = t.encard) :
@@ -491,6 +491,9 @@ theorem ncard_eq_toFinset_card (s : Set α) (hs : s.Finite := by toFinite_tac) :
 theorem ncard_eq_toFinset_card' (s : Set α) [Fintype s] :
     s.ncard = s.toFinset.card := by
   simp [← Nat.card_coe_set_eq, Nat.card_eq_fintype_card]
+
+lemma cast_ncard {s : Set α} (hs : s.Finite) :
+    (s.ncard : Cardinal) = Cardinal.mk s := @Nat.cast_card _ hs
 
 theorem encard_le_coe_iff_finite_ncard_le {k : ℕ} : s.encard ≤ k ↔ s.Finite ∧ s.ncard ≤ k := by
   rw [encard_le_coe_iff, and_congr_right_iff]
@@ -762,8 +765,8 @@ theorem surj_on_of_inj_on_of_ncard_le {t : Set β} (f : ∀ a ∈ s, β) (hf : �
   have hft' := Fintype.ofInjective f' finj
   set f'' : ∀ a, a ∈ s.toFinset → β := fun a h ↦ f a (by simpa using h)
   convert @Finset.surj_on_of_inj_on_of_card_le _ _ _ t.toFinset f'' _ _ _ _ (by simpa) using 1
-  · simp
-  · simp [hf]
+  · simp [f'']
+  · simp [f'', hf]
   · intros a₁ a₂ ha₁ ha₂ h
     rw [mem_toFinset] at ha₁ ha₂
     exact hinj _ _ ha₁ ha₂ h

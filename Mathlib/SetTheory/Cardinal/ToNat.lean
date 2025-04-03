@@ -64,9 +64,11 @@ theorem toNat_injOn : InjOn toNat (Iio ℵ₀) := toNat_strictMonoOn.injOn
 
 /-- Two finite cardinals are equal
 iff they are equal their `Cardinal.toNat` projections are equal. -/
-theorem toNat_eq_iff_eq_of_lt_aleph0 (hc : c < ℵ₀) (hd : d < ℵ₀) :
+theorem toNat_inj_of_lt_aleph0 (hc : c < ℵ₀) (hd : d < ℵ₀) :
     toNat c = toNat d ↔ c = d :=
   toNat_injOn.eq_iff hc hd
+
+@[deprecated (since := "2024-12-29")] alias toNat_eq_iff_eq_of_lt_aleph0 := toNat_inj_of_lt_aleph0
 
 theorem toNat_le_iff_le_of_lt_aleph0 (hc : c < ℵ₀) (hd : d < ℵ₀) :
     toNat c ≤ toNat d ↔ c ≤ d :=

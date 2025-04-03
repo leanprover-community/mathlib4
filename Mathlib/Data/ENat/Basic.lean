@@ -313,6 +313,8 @@ protected lemma exists_nat_gt {n : ℕ∞} (hn : n ≠ ⊤) : ∃ m : ℕ, n < m
   obtain ⟨m, hm⟩ := exists_gt n
   exact ⟨m, Nat.cast_lt.2 hm⟩
 
+lemma ne_top_iff_exists {x : ℕ∞} : x ≠ ⊤ ↔ ∃ a : ℕ, ↑a = x := WithTop.ne_top_iff_exists
+
 @[simp] lemma sub_eq_top_iff : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := WithTop.sub_eq_top_iff
 lemma sub_ne_top_iff : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := WithTop.sub_ne_top_iff
 
@@ -339,7 +341,9 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
   match n with
   | ⊤ => exact Iff.rfl
   | (⊤ : ℕ∞) => simp
-  | (n : ℕ) => norm_cast; simp only [coe_ne_top, iff_false, ne_eq]
+  | (n : ℕ) =>
+    norm_cast
+    simp only [coe_ne_top, iff_false, ne_eq]
 
 @[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
 
@@ -358,4 +362,116 @@ lemma natCast_lt_of_coe_top_le_withTop {N : WithTop ℕ∞} (hN : (⊤ : ℕ∞)
 
 end withTop_enat
 
+variable {α : Type*}
+
+/--
+Specialization of `WithTop.map` to `ENat`.
+-/
+def map (f : ℕ → α) (k : ℕ∞) : WithTop α := WithTop.map f k
+
+@[simp]
+theorem map_top (f : ℕ → α) : map f ⊤ = ⊤ := rfl
+
+@[simp]
+theorem map_coe (f : ℕ → α) (a : ℕ) : map f a = f a := rfl
+
+@[simp]
+theorem map_zero (f : ℕ → α) : map f 0 = f 0 := rfl
+
+@[simp]
+theorem map_one (f : ℕ → α) : map f 1 = f 1 := rfl
+
+@[simp]
+theorem map_ofNat (f : ℕ → α) (n : ℕ) [n.AtLeastTwo] : map f (no_index (OfNat.ofNat n)) = f n := rfl
+
+@[simp]
+lemma map_eq_top_iff {f : ℕ → α} : map f n = ⊤ ↔ n = ⊤ := WithTop.map_eq_top_iff
+
+@[simp]
+theorem map_natCast_nonneg [AddMonoidWithOne α] [PartialOrder α]
+    [AddLeftMono α] [ZeroLEOneClass α] : 0 ≤ n.map (Nat.cast : ℕ → α) := by
+  cases n <;> simp
+
+@[simp]
+theorem strictMono_map_iff {f : ℕ → α} [Preorder α] : StrictMono (ENat.map f) ↔ StrictMono f :=
+  WithTop.strictMono_map_iff
+
+@[simp]
+theorem monotone_map_iff {f : ℕ → α} [Preorder α] : Monotone (ENat.map f) ↔ Monotone f :=
+  WithTop.monotone_map_iff
+
+@[simp]
+protected theorem map_add {β F} [Add β] [FunLike F ℕ β] [AddHomClass F ℕ β]
+    (f : F) (a b : ℕ∞) : (a + b).map f = a.map f + b.map f :=
+  WithTop.map_add f a b
+
+/-- A version of `ENat.map` for `OneHom`s. -/
+-- @[to_additive (attr := simps (config := .asFn))
+--   "A version of `ENat.map` for `ZeroHom`s"]
+protected def _root_.OneHom.ENatMap {N : Type*} [One N] (f : OneHom ℕ N) :
+    OneHom ℕ∞ (WithTop N) where
+  toFun := ENat.map f
+  map_one' := by simp
+
+/-- A version of `ENat.map` for `ZeroHom`s. -/
+protected def _root_.ZeroHom.ENatMap {N : Type*} [Zero N] (f : ZeroHom ℕ N) :
+    ZeroHom ℕ∞ (WithTop N) where
+  toFun := ENat.map f
+  map_zero' := by simp
+
+/-- A version of `WithTop.map` for `AddHom`s. -/
+@[simps (config := .asFn)]
+protected def _root_.AddHom.ENatMap {N : Type*} [Add N] (f : AddHom ℕ N) :
+    AddHom ℕ∞ (WithTop N) where
+  toFun := ENat.map f
+  map_add' := ENat.map_add f
+
+/-- A version of `WithTop.map` for `AddMonoidHom`s. -/
+@[simps (config := .asFn)]
+protected def _root_.AddMonoidHom.ENatMap {N : Type*} [AddZeroClass N]
+    (f : ℕ →+ N) : ℕ∞ →+ WithTop N :=
+  { ZeroHom.ENatMap f.toZeroHom, AddHom.ENatMap f.toAddHom with toFun := ENat.map f }
+
+/-- A version of `ENat.map` for `MonoidWithZeroHom`s. -/
+@[simps (config := .asFn)]
+protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [DecidableEq S]
+    [Nontrivial S] (f : ℕ →*₀ S)
+    (hf : Function.Injective f) : ℕ∞ →*₀ WithTop S :=
+  { f.toZeroHom.ENatMap, f.toMonoidHom.toOneHom.ENatMap with
+    toFun := ENat.map f
+    map_mul' := fun x y => by
+      have : ∀ z, map f z = 0 ↔ z = 0 := fun z =>
+        (Option.map_injective hf).eq_iff' f.toZeroHom.ENatMap.map_zero
+      rcases Decidable.eq_or_ne x 0 with (rfl | hx)
+      · simp
+      rcases Decidable.eq_or_ne y 0 with (rfl | hy)
+      · simp
+      induction' x with x
+      · simp [hy, this]
+      induction' y with y
+      · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (_root_.map_zero f)] using hx
+        simp [mul_top hx, WithTop.mul_top this]
+      · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simp [← coe_mul]` times out
+        simp only [map_coe, ← coe_mul, map_mul, WithTop.coe_mul] }
+
+/-- A version of `ENat.map` for `RingHom`s. -/
+@[simps (config := .asFn)]
+protected def _root_.RingHom.ENatMap {S : Type*} [CanonicallyOrderedCommSemiring S] [DecidableEq S]
+    [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
+  {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
+
 end ENat
+
+lemma WithBot.lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
+  rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
+  cases n
+  · simp only [bot_le, iff_true, WithBot.bot_lt_coe]
+  · rw [WithBot.coe_lt_coe, Nat.cast_add, ENat.coe_one, ENat.lt_add_one_iff (ENat.coe_ne_top _),
+      ← WithBot.coe_le_coe, WithBot.coe_natCast]
+
+lemma WithBot.add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n < m := by
+  rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
+  cases m
+  · simp
+  · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
+      ← WithBot.coe_lt_coe, WithBot.coe_natCast]

@@ -110,8 +110,6 @@ theorem not_isUniform_iff :
   unfold IsUniform
   simp only [not_forall, not_lt, exists_prop, exists_and_left, Rat.cast_abs, Rat.cast_sub]
 
-open scoped Classical
-
 variable (G)
 
 /-- An arbitrary pair of subsets witnessing the non-uniformity of `(s, t)`. If `(s, t)` is uniform,
@@ -149,6 +147,7 @@ theorem nonuniformWitnesses_spec (h : ¬G.IsUniform ε s t) :
   rw [nonuniformWitnesses, dif_pos h]
   exact (not_isUniform_iff.1 h).choose_spec.2.choose_spec.2.2.2
 
+open scoped Classical in
 /-- Arbitrary witness of non-uniformity. `G.nonuniformWitness ε s t` and
 `G.nonuniformWitness ε t s` form a pair of subsets witnessing the non-uniformity of `(s, t)`. If
 `(s, t)` is uniform, returns `s`. -/

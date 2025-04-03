@@ -174,26 +174,16 @@ theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f
 theorem definable_iff_finitely_definable :
     A.Definable L s ↔ ∃ (A0 : Finset M), (A0 : Set M) ⊆ A ∧
       (A0 : Set M).Definable L s := by
-  letI := Classical.decEq M
-  letI := Classical.decEq α
+  classical
   constructor
   · simp only [definable_iff_exists_formula_sum]
     rintro ⟨φ, rfl⟩
-    let A0 := (φ.freeVarFinset.preimage Sum.inl
-      (Function.Injective.injOn Sum.inl_injective)).image Subtype.val
-    have hA0 : (A0 : Set M) ⊆ A := by simp [A0]
-    refine ⟨A0, hA0, (φ.restrictFreeVar
-      (Set.inclusion (Set.Subset.refl _))).relabel ?_, ?_⟩
-    · rintro ⟨a | a, ha⟩
-      · exact Sum.inl (Sum.inl ⟨a, by simpa [A0] using ha⟩)
-      · exact Sum.inl (Sum.inr a)
-    · ext v
-      simp only [Formula.Realize, BoundedFormula.realize_relabel,
-        Set.mem_setOf_eq]
-      apply Iff.symm
-      convert BoundedFormula.realize_restrictFreeVar _
-      ext a
-      rcases a with ⟨_ | _, _⟩ <;> simp
+    let A0 := (φ.freeVarFinset.toLeft).image Subtype.val
+    refine ⟨A0, by simp [A0], (φ.restrictFreeVar <| fun x => Sum.casesOn x.1
+        (fun x hx => Sum.inl ⟨x, by simp [A0, hx]⟩) (fun x _ => Sum.inr x) x.2), ?_⟩
+    ext
+    simp only [Formula.Realize, mem_setOf_eq, Finset.coe_sort_coe]
+    exact iff_comm.1 <| BoundedFormula.realize_restrictFreeVar _ (by simp)
   · rintro ⟨A0, hA0, hd⟩
     exact Definable.mono hd hA0
 

@@ -80,7 +80,7 @@ private theorem symm_gen : map Prod.swap ((𝓤 α).lift' gen) ≤ (𝓤 α).lif
         { p : CauchyFilter α × CauchyFilter α | s ∈ (p.2.val ×ˢ p.1.val : Filter (α × α)) }
   have h₁ : map Prod.swap ((𝓤 α).lift' gen) = (𝓤 α).lift' f := by
     delta gen
-    simp [map_lift'_eq, monotone_setOf, Filter.monotone_mem, Function.comp_def,
+    simp [f, map_lift'_eq, monotone_setOf, Filter.monotone_mem, Function.comp_def,
       image_swap_eq_preimage_swap]
   have h₂ : (𝓤 α).lift' f ≤ (𝓤 α).lift' gen :=
     uniformity_lift_le_swap
@@ -204,9 +204,6 @@ theorem nonempty_cauchyFilter_iff : Nonempty (CauchyFilter α) ↔ Nonempty α :
 
 section
 
--- Porting note: I commented this
--- set_option eqn_compiler.zeta true
-
 instance : CompleteSpace (CauchyFilter α) :=
   completeSpace_extension isUniformInducing_pureCauchy denseRange_pureCauchy fun f hf =>
     let f' : CauchyFilter α := ⟨f, hf⟩
@@ -313,9 +310,7 @@ instance completeSpace : CompleteSpace (Completion α) :=
 
 instance t0Space : T0Space (Completion α) := SeparationQuotient.instT0Space
 
-/-- The map from a uniform space to its completion.
-
-porting note: this was added to create a target for the `@[coe]` attribute. -/
+/-- The map from a uniform space to its completion. -/
 @[coe] def coe' : α → Completion α := SeparationQuotient.mk ∘ pureCauchy
 
 /-- Automatic coercion from `α` to its completion. Not always injective. -/
@@ -460,8 +455,6 @@ theorem continuous_extension : Continuous (Completion.extension f) :=
 
 end CompleteSpace
 
-/- porting note: removed `@[simp]` because this lemma doesn't even trigger on itself in Lean 3 or
-Lean 4 unless the user manually supplies the `hf` argument, so it is useless as a `simp` lemma. -/
 theorem extension_coe [T0Space β] (hf : UniformContinuous f) (a : α) :
     (Completion.extension f) a = f a :=
   cPkg.extend_coe hf a
@@ -495,8 +488,6 @@ theorem uniformContinuous_map : UniformContinuous (Completion.map f) :=
 theorem continuous_map : Continuous (Completion.map f) :=
   cPkg.continuous_map cPkg f
 
-/- porting note: removed `@[simp]` because this lemma doesn't even trigger on itself in Lean 3 or
-Lean 4 unless the user manually supplies the `hf` argument, so it is useless as a `simp` lemma. -/
 theorem map_coe (hf : UniformContinuous f) (a : α) : (Completion.map f) a = f a :=
   cPkg.map_coe cPkg hf a
 
@@ -512,11 +503,7 @@ theorem extension_map [CompleteSpace γ] [T0Space γ] {f : β → γ} {g : α �
     (hf : UniformContinuous f) (hg : UniformContinuous g) :
     Completion.extension f ∘ Completion.map g = Completion.extension (f ∘ g) :=
   Completion.ext (continuous_extension.comp continuous_map) continuous_extension <| by
-    intro a
-    -- Porting note: this is not provable by simp [hf, hg, hf.comp hg, map_coe, extension_coe],
-    -- but should be?
-    rw [extension_coe (hf.comp hg), Function.comp_apply, map_coe hg, extension_coe hf,
-      Function.comp_apply]
+    simp [hf, hg, hf.comp hg, map_coe, extension_coe]
 
 theorem map_comp {g : β → γ} {f : α → β} (hg : UniformContinuous g) (hf : UniformContinuous f) :
     Completion.map g ∘ Completion.map f = Completion.map (g ∘ f) :=
@@ -568,8 +555,6 @@ section T0Space
 
 variable [T0Space γ] {f}
 
-/- porting note: removed `@[simp]` because this lemma doesn't even trigger on itself in Lean 3 or
-Lean 4 unless the user manually supplies the `hf` argument, so it is useless as a `simp` lemma. -/
 theorem extension₂_coe_coe (hf : UniformContinuous₂ f) (a : α) (b : β) :
     Completion.extension₂ f a b = f a b :=
   cPkg.extension₂_coe_coe cPkg hf a b

@@ -162,8 +162,9 @@ theorem principal_add_of_le_one (ho : o ≤ 1) : Principal (· + ·) o := by
   · exact principal_zero
   · exact principal_add_one
 
-theorem isLimit_of_principal_add (ho₁ : 1 < o) (ho : Principal (· + ·) o) : o.IsLimit :=
-  ⟨ho₁.ne_bot, fun _ ha ↦ ho ha ho₁⟩
+theorem isLimit_of_principal_add (ho₁ : 1 < o) (ho : Principal (· + ·) o) : o.IsLimit := by
+  rw [isLimit_iff, isSuccPrelimit_iff_succ_lt]
+  exact ⟨ho₁.ne_bot, fun _ ha ↦ ho ha ho₁⟩
 
 @[deprecated (since := "2024-10-16")]
 alias principal_add_isLimit := isLimit_of_principal_add
@@ -193,19 +194,6 @@ theorem principal_add_iff_add_lt_ne_self : Principal (· + ·) a ↔ ∀ b < a, 
     by_contra! ha
     rcases exists_lt_add_of_not_principal_add ha with ⟨b, hb, c, hc, rfl⟩
     exact (H b hb c hc).irrefl⟩
-
-theorem add_omega0 (h : a < ω) : a + ω = ω := by
-  rcases lt_omega0.1 h with ⟨n, rfl⟩
-  clear h; induction' n with n IH
-  · rw [Nat.cast_zero, zero_add]
-  · rwa [Nat.cast_succ, add_assoc, one_add_of_omega0_le (le_refl _)]
-
-@[deprecated (since := "2024-09-30")]
-alias add_omega := add_omega0
-
-@[simp]
-theorem natCast_add_omega0 (n : ℕ) : n + ω = ω :=
-  add_omega0 (nat_lt_omega0 n)
 
 theorem principal_add_omega0 : Principal (· + ·) ω :=
   principal_add_iff_add_left_eq_self.2 fun _ => add_omega0
@@ -388,7 +376,7 @@ theorem mul_lt_omega0_opow (c0 : 0 < c) (ha : a < ω ^ c) (hb : b < ω) : a * b 
   · rcases ((isNormal_opow one_lt_omega0).limit_lt l).1 ha with ⟨x, hx, ax⟩
     refine (mul_le_mul' (le_of_lt ax) (le_of_lt hb)).trans_lt ?_
     rw [← opow_succ, opow_lt_opow_iff_right one_lt_omega0]
-    exact l.2 _ hx
+    exact l.succ_lt hx
 
 @[deprecated (since := "2024-09-30")]
 alias mul_lt_omega_opow := mul_lt_omega0_opow
@@ -457,7 +445,7 @@ theorem mul_eq_opow_log_succ (ha : a ≠ 0) (hb : Principal (· * ·) b) (hb₂ 
     have hbo₀ : b ^ log b a ≠ 0 := Ordinal.pos_iff_ne_zero.1 (opow_pos _ (zero_lt_one.trans hb₁))
     apply (mul_le_mul_right' (le_of_lt (lt_mul_succ_div a hbo₀)) c).trans
     rw [mul_assoc, opow_succ]
-    refine mul_le_mul_left' (hb (hbl.2 _ ?_) hcb).le _
+    refine mul_le_mul_left' (hb (hbl.succ_lt ?_) hcb).le _
     rw [div_lt hbo₀, ← opow_succ]
     exact lt_opow_succ_log_self hb₁ _
   · rw [opow_succ]
@@ -470,9 +458,6 @@ theorem principal_opow_omega0 : Principal (· ^ ·) ω := fun a b ha hb =>
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
     simp_rw [← natCast_opow]
     apply nat_lt_omega0
-
-@[deprecated (since := "2024-09-30")]
-alias principal_opow_omega := principal_opow_omega0
 
 theorem opow_omega0 (a1 : 1 < a) (h : a < ω) : a ^ ω = ω :=
   ((opow_le_of_limit (one_le_iff_ne_zero.1 <| le_of_lt a1) isLimit_omega0).2 fun _ hb =>

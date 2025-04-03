@@ -55,7 +55,7 @@ def crossProduct : (Fin 3 → R) →ₗ[R] (Fin 3 → R) →ₗ[R] Fin 3 → R :
   · intros
     simp_rw [smul_vec3, Pi.smul_apply, smul_sub, mul_smul_comm]
 
-scoped[Matrix] infixl:74 " ×₃ " => crossProduct
+@[inherit_doc] scoped[Matrix] infixl:74 " ×₃ " => crossProduct
 
 theorem cross_apply (a b : Fin 3 → R) :
     a ×₃ b = ![a 1 * b 2 - a 2 * b 1, a 2 * b 0 - a 0 * b 2, a 0 * b 1 - a 1 * b 0] := rfl
@@ -86,7 +86,7 @@ theorem dot_self_cross (v w : Fin 3 → R) : v ⬝ᵥ v ×₃ w = 0 := by
 /-- The cross product of two vectors is perpendicular to the second vector. -/
 @[simp 1100] -- Porting note: increase priority so that the LHS doesn't simplify
 theorem dot_cross_self (v w : Fin 3 → R) : w ⬝ᵥ v ×₃ w = 0 := by
-  rw [← cross_anticomm, Matrix.dotProduct_neg, dot_self_cross, neg_zero]
+  rw [← cross_anticomm, dotProduct_neg, dot_self_cross, neg_zero]
 
 /-- Cyclic permutations preserve the triple product. See also `triple_product_eq_det`. -/
 theorem triple_product_permutation (u v w : Fin 3 → R) : u ⬝ᵥ v ×₃ w = v ⬝ᵥ w ×₃ u := by
@@ -140,7 +140,7 @@ theorem jacobi_cross (u v w : Fin 3 → R) : u ×₃ (v ×₃ w) + v ×₃ (w ×
 
 end LeibnizProperties
 
--- this can also be proved via `Matrix.dotProduct_eq_zero_iff` and `triple_product_eq_det`, but
+-- this can also be proved via `dotProduct_eq_zero_iff` and `triple_product_eq_det`, but
 -- that would require much heavier imports.
 lemma crossProduct_ne_zero_iff_linearIndependent {F : Type*} [Field F] {v w : Fin 3 → F} :
     crossProduct v w ≠ 0 ↔ LinearIndependent F ![v, w] := by

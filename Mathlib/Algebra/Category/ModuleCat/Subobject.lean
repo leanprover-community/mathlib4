@@ -35,58 +35,56 @@ variable {R : Type u} [Ring R] (M : ModuleCat.{v} R)
     submodules. -/
 noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
   OrderIso.symm
-    { invFun := fun S => LinearMap.range S.arrow
-      toFun := fun N => Subobject.mk (↾N.subtype)
+    { invFun := fun S => LinearMap.range S.arrow.hom
+      toFun := fun N => Subobject.mk (ofHom N.subtype)
       right_inv := fun S => Eq.symm (by
         fapply eq_mk_of_comm
-        · apply LinearEquiv.toModuleIso'Left
-          apply LinearEquiv.ofBijective (LinearMap.codRestrict (LinearMap.range S.arrow) S.arrow _)
+        · apply LinearEquiv.toModuleIso
+          apply LinearEquiv.ofBijective (LinearMap.codRestrict
+            (LinearMap.range S.arrow.hom) S.arrow.hom _)
           constructor
           · simp [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
             rw [ker_eq_bot_of_mono]
           · rw [← LinearMap.range_eq_top, LinearMap.range_codRestrict,
               Submodule.comap_subtype_self]
             exact LinearMap.mem_range_self _
-        · apply LinearMap.ext
-          intro x
+        · ext x
           rfl)
       left_inv := fun N => by
-        -- Porting note: The type of `↾N.subtype` was ambiguous. Not entirely sure, I made the right
-        -- choice here
-        convert congr_arg LinearMap.range
-            (underlyingIso_arrow (↾N.subtype : of R { x // x ∈ N } ⟶ M)) using 1
+        convert congr_arg LinearMap.range (ModuleCat.hom_ext_iff.mp
+            (underlyingIso_arrow (ofHom N.subtype))) using 1
         · have :
             -- Porting note: added the `.toLinearEquiv.toLinearMap`
-            (underlyingIso (↾N.subtype : of R _ ⟶ M)).inv =
-              (underlyingIso (↾N.subtype : of R _ ⟶ M)).symm.toLinearEquiv.toLinearMap := by
-              apply LinearMap.ext
-              intro x
+            (underlyingIso (ofHom N.subtype)).inv =
+              ofHom (underlyingIso (ofHom N.subtype)).symm.toLinearEquiv.toLinearMap := by
+              ext x
               rfl
-          rw [this, comp_def, LinearEquiv.range_comp]
+          rw [this, hom_comp, LinearEquiv.range_comp]
         · exact (Submodule.range_subtype _).symm
       map_rel_iff' := fun {S T} => by
         refine ⟨fun h => ?_, fun h => mk_le_mk_of_comm (↟(Submodule.inclusion h)) rfl⟩
-        convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h) (↾T.subtype)
-        · simpa only [← comp_def, ofMkLEMk_comp] using (Submodule.range_subtype _).symm
+        convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h).hom (ofHom T.subtype).hom
+        · rw [← hom_comp, ofMkLEMk_comp]
+          exact (Submodule.range_subtype _).symm
         · exact (Submodule.range_subtype _).symm }
 
-instance wellPowered_moduleCat : WellPowered (ModuleCat.{v} R) :=
+instance wellPowered_moduleCat : WellPowered.{v} (ModuleCat.{v} R) :=
   ⟨fun M => ⟨⟨_, ⟨(subobjectModule M).toEquiv⟩⟩⟩⟩
 
 attribute [local instance] hasKernels_moduleCat
 
 /-- Bundle an element `m : M` such that `f m = 0` as a term of `kernelSubobject f`. -/
 noncomputable def toKernelSubobject {M N : ModuleCat.{v} R} {f : M ⟶ N} :
-    LinearMap.ker f →ₗ[R] kernelSubobject f :=
-  (kernelSubobjectIso f ≪≫ ModuleCat.kernelIsoKer f).inv
+    LinearMap.ker f.hom →ₗ[R] kernelSubobject f :=
+  (kernelSubobjectIso f ≪≫ ModuleCat.kernelIsoKer f).inv.hom
 
 @[simp]
-theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f) :
+theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f.hom) :
     (kernelSubobject f).arrow (toKernelSubobject x) = x.1 := by
   -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10959): the whole proof was just `simp [toKernelSubobject]`.
   suffices ((arrow ((kernelSubobject f))) ∘ (kernelSubobjectIso f ≪≫ kernelIsoKer f).inv) x = x by
     convert this
-  rw [Iso.trans_inv, ← coe_comp, Category.assoc]
+  rw [Iso.trans_inv, ← LinearMap.coe_comp, ← hom_comp, Category.assoc]
   simp only [Category.assoc, kernelSubobject_arrow', kernelIsoKer_inv_kernel_ι]
   aesop_cat
 
@@ -108,9 +106,13 @@ theorem cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [
   subst w
   -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10959): The proof from here used to just be `simp`.
   simp only [map_add, add_right_eq_self]
-  change ((cokernel.π g) ∘ (g) ∘ (factorThruImageSubobject f)) l = 0
-  rw [← coe_comp, ← coe_comp, Category.assoc]
-  simp only [cokernel.condition, comp_zero]
-  rfl
+  -- TODO: add a `@[simp]` lemma along the lines of:
+  -- ```
+  -- lemma ModuleCat.Hom.cokernel_condition : (cokernel.π g).hom (g.hom x) = 0
+  -- ```
+  -- ideally generated for all concrete categories (using a metaprogram like `@[elementwise]`?).
+  -- See also: https://github.com/leanprover-community/mathlib4/pull/19511#discussion_r1867083077
+  change ((factorThruImageSubobject f) ≫ g ≫ (cokernel.π g)).hom l = 0
+  simp
 
 end ModuleCat

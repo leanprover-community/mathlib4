@@ -287,15 +287,15 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
     convert hF (s n) u using 2
     · dsimp
       ext x
-      simp only [not_exists, mem_iUnion, mem_diff]
+      simp only [u, not_exists, mem_iUnion, mem_diff]
       tauto
     · congr 1
-      simp only [s, Function.iterate_succ', Subtype.coe_mk, union_diff_left, Function.comp]
+      simp only [G, s, Function.iterate_succ', Subtype.coe_mk, union_diff_left, Function.comp]
   have I2 : ∀ n : ℕ, (n : ℝ) * (ε / 2) ≤ f ↑(s n) := by
     intro n
     induction n with
     | zero =>
-      simp only [s, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
+      simp only [s, empty, BoundedAdditiveMeasure.empty, id, Nat.cast_zero, zero_mul,
         Function.iterate_zero, Subtype.coe_mk, le_rfl]
     | succ n IH =>
       have : (s (n + 1)).1 = (s (n + 1)).1 \ (s n).1 ∪ (s n).1 := by
@@ -415,21 +415,17 @@ theorem continuousPart_evalCLM_eq_zero [TopologicalSpace α] [DiscreteTopology �
   calc
     f.continuousPart s = f.continuousPart (s \ {x}) :=
       (continuousPart_apply_diff _ _ _ (countable_singleton x)).symm
-    _ = f (univ \ f.discreteSupport ∩ (s \ {x})) := rfl
+    _ = f (univ \ f.discreteSupport ∩ (s \ {x})) := by simp [continuousPart]
     _ = indicator (univ \ f.discreteSupport ∩ (s \ {x})) 1 x := rfl
     _ = 0 := by simp
 
 theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] (s : Set α)
     (hs : MeasurableSet s) :
     μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure s = (μ s).toReal := by
-  change
-    μ.extensionToBoundedFunctions
-        (ofNormedAddCommGroupDiscrete (indicator s 1) 1 (norm_indicator_le_one s)) =
-      (μ s).toReal
+  simp only [ContinuousLinearMap.toBoundedAdditiveMeasure]
   rw [extensionToBoundedFunctions_apply]
-  · change ∫ x, s.indicator (fun _ => (1 : ℝ)) x ∂μ = _
-    simp [integral_indicator hs]
-  · change Integrable (indicator s 1) μ
+  · simp [integral_indicator hs]
+  · simp only [coe_ofNormedAddCommGroupDiscrete]
     have : Integrable (fun _ => (1 : ℝ)) μ := integrable_const (1 : ℝ)
     apply
       this.mono' (Measurable.indicator (@measurable_const _ _ _ _ (1 : ℝ)) hs).aestronglyMeasurable

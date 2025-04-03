@@ -461,7 +461,7 @@ theorem addHaar_closedBall' (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ (closedBall x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (closedBall 0 1) := by
   rw [← addHaar_closedBall_mul μ x hr zero_le_one, mul_one]
 
-theorem addHaar_closed_unit_ball_eq_addHaar_unit_ball :
+theorem addHaar_unitClosedBall_eq_addHaar_unitBall :
     μ (closedBall (0 : E) 1) = μ (ball 0 1) := by
   apply le_antisymm _ (measure_mono ball_subset_closedBall)
   have A : Tendsto
@@ -471,14 +471,16 @@ theorem addHaar_closed_unit_ball_eq_addHaar_unit_ball :
     exact ENNReal.tendsto_ofReal ((tendsto_id'.2 nhdsWithin_le_nhds).pow _)
   simp only [one_pow, one_mul, ENNReal.ofReal_one] at A
   refine le_of_tendsto A ?_
-  refine mem_nhdsWithin_Iio_iff_exists_Ioo_subset.2 ⟨(0 : ℝ), by simp, fun r hr => ?_⟩
-  dsimp
+  filter_upwards [Ioo_mem_nhdsLT zero_lt_one] with r hr
   rw [← addHaar_closedBall' μ (0 : E) hr.1.le]
   exact measure_mono (closedBall_subset_ball hr.2)
 
+@[deprecated (since := "2024-12-01")]
+alias addHaar_closed_unit_ball_eq_addHaar_unit_ball := addHaar_unitClosedBall_eq_addHaar_unitBall
+
 theorem addHaar_closedBall (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ (closedBall x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 1) := by
-  rw [addHaar_closedBall' μ x hr, addHaar_closed_unit_ball_eq_addHaar_unit_ball]
+  rw [addHaar_closedBall' μ x hr, addHaar_unitClosedBall_eq_addHaar_unitBall]
 
 theorem addHaar_closedBall_eq_addHaar_ball [Nontrivial E] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (ball x r) := by

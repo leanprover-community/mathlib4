@@ -75,7 +75,7 @@ instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : 
 /-- Isomorphisms are closed immersions. -/
 instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsClosedImmersion f where
   base_closed := Homeomorph.isClosedEmbedding <| TopCat.homeoOfIso (asIso f.base)
-  surj_on_stalks := fun _ ↦ (ConcreteCategory.bijective_of_isIso _).2
+  surj_on_stalks := fun _ ↦ (ConcreteCategory.bijective_of_isIso (C := CommRingCat) _).2
 
 instance : MorphismProperty.IsMultiplicative @IsClosedImmersion where
   id_mem _ := inferInstance
@@ -106,7 +106,7 @@ theorem spec_of_surjective {R S : CommRingCat} (f : R ⟶ S) (h : Function.Surje
     apply (MorphismProperty.arrow_mk_iso_iff
       (RingHom.toMorphismProperty (fun f ↦ Function.Surjective f))
       (Scheme.arrowStalkMapSpecIso f x)).mpr
-    exact RingHom.surjective_localRingHom_of_surjective f h x.asIdeal
+    exact RingHom.surjective_localRingHom_of_surjective f.hom h x.asIdeal
 
 /-- For any ideal `I` in a commutative ring `R`, the quotient map `specObj R ⟶ specObj (R ⧸ I)`
 is a closed immersion. -/
@@ -207,7 +207,7 @@ lemma stalkMap_injective_of_isOpenMap_of_injective [CompactSpace X]
     simp [Set.preimage_image_eq _ hfinj₁]
   have h0 (i : 𝒰.J) : (𝒰.map i).appLE _ (W i) (by simp) (φ g) = 0 := by
     rw [← Scheme.Hom.appLE_map _ _ (homOfLE <| hwle i).op, ← Scheme.Hom.map_appLE _ le_rfl w.op]
-    simp only [CommRingCat.coe_comp_of, RingHom.coe_comp, Function.comp_apply]
+    simp only [CommRingCat.comp_apply]
     erw [hg]
     simp only [map_zero]
   have h1 (i : 𝒰.J) : ∃ n, (res i) (φ (s ^ n * g)) = 0 := by
@@ -304,7 +304,7 @@ instance (priority := 900) {X Y : Scheme.{u}} (f : X ⟶ Y) [h : IsClosedImmersi
     exact this _ U.2
   obtain ⟨_, hf⟩ := h.isAffine_surjective_of_isAffine
   rw [HasRingHomProperty.iff_of_isAffine (P := @LocallyOfFiniteType)]
-  exact RingHom.FiniteType.of_surjective (Scheme.Hom.app f ⊤) hf
+  exact RingHom.FiniteType.of_surjective (Scheme.Hom.app f ⊤).hom hf
 
 /-- A surjective closed immersion is an isomorphism when the target is reduced. -/
 lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
@@ -321,7 +321,7 @@ lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
   apply IsClosedImmersion.isIso_of_injective_of_isAffine
   obtain ⟨hX, hf⟩ := HasAffineProperty.iff_of_isAffine.mp ‹IsClosedImmersion f›
   let φ := f.appTop
-  suffices RingHom.ker φ ≤ nilradical _ by
+  suffices RingHom.ker φ.hom ≤ nilradical _ by
     rwa [nilradical_eq_zero, Submodule.zero_eq_bot, le_bot_iff,
       ← RingHom.injective_iff_ker_eq_bot] at this
   refine (PrimeSpectrum.zeroLocus_eq_top_iff _).mp ?_

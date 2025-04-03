@@ -103,13 +103,7 @@ theorem Squarefree.gcd_left {a : α} (b : α) (ha : Squarefree a) : Squarefree (
 
 end SquarefreeGcdOfSquarefree
 
-namespace multiplicity
-
-section CommMonoid
-
-variable [CommMonoid R]
-
-theorem squarefree_iff_emultiplicity_le_one (r : R) :
+theorem squarefree_iff_emultiplicity_le_one [CommMonoid R] (r : R) :
     Squarefree r ↔ ∀ x : R, emultiplicity x r ≤ 1 ∨ IsUnit x := by
   refine forall_congr' fun a => ?_
   rw [← sq, pow_dvd_iff_le_emultiplicity, or_iff_not_imp_left, not_le, imp_congr _ Iff.rfl]
@@ -117,18 +111,8 @@ theorem squarefree_iff_emultiplicity_le_one (r : R) :
   rw [← one_add_one_eq_two]
   exact Order.add_one_le_iff_of_not_isMax (by simp)
 
-end CommMonoid
-
-section CancelCommMonoidWithZero
-
-variable [CancelCommMonoidWithZero R] [WfDvdMonoid R]
-
-theorem finite_prime_left {a b : R} (ha : Prime a) (hb : b ≠ 0) : multiplicity.Finite a b :=
-  finite_of_not_isUnit ha.not_unit hb
-
-end CancelCommMonoidWithZero
-
-end multiplicity
+@[deprecated (since := "2024-11-30")]
+alias multiplicity.squarefree_iff_emultiplicity_le_one := squarefree_iff_emultiplicity_le_one
 
 section Irreducible
 
@@ -266,7 +250,7 @@ lemma _root_.exists_squarefree_dvd_pow_of_ne_zero {x : R} (hx : x ≠ 0) :
 theorem squarefree_iff_nodup_normalizedFactors [NormalizationMonoid R] {x : R}
     (x0 : x ≠ 0) : Squarefree x ↔ Multiset.Nodup (normalizedFactors x) := by
   classical
-  rw [multiplicity.squarefree_iff_emultiplicity_le_one, Multiset.nodup_iff_count_le_one]
+  rw [squarefree_iff_emultiplicity_le_one, Multiset.nodup_iff_count_le_one]
   haveI := nontrivial_of_ne x 0 x0
   constructor <;> intro h a
   · by_cases hmem : a ∈ normalizedFactors x

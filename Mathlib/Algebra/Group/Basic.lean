@@ -378,7 +378,10 @@ theorem eq_one_div_of_mul_eq_one_right (h : a * b = 1) : b = 1 / a := by
 theorem eq_of_div_eq_one (h : a / b = 1) : a = b :=
   inv_injective <| inv_eq_of_mul_eq_one_right <| by rwa [← div_eq_mul_inv]
 
+@[to_additive]
 lemma eq_of_inv_mul_eq_one (h : a⁻¹ * b = 1) : a = b := by simpa using eq_inv_of_mul_eq_one_left h
+
+@[to_additive]
 lemma eq_of_mul_inv_eq_one (h : a * b⁻¹ = 1) : a = b := by simpa using eq_inv_of_mul_eq_one_left h
 
 @[to_additive]

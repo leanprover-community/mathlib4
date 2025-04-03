@@ -41,7 +41,9 @@ namespace DirichletCharacter
 
 lemma toUnitHom_eq_char' {a : ZMod n} (ha : IsUnit a) : χ a = χ.toUnitHom ha.unit := by simp
 
-lemma toUnitHom_eq_iff (ψ : DirichletCharacter R n) : toUnitHom χ = toUnitHom ψ ↔ χ = ψ := by simp
+lemma toUnitHom_inj (ψ : DirichletCharacter R n) : toUnitHom χ = toUnitHom ψ ↔ χ = ψ := by simp
+
+@[deprecated (since := "2024-12-29")] alias toUnitHom_eq_iff := toUnitHom_inj
 
 lemma eval_modulus_sub (x : ZMod n) : χ (n - x) = χ (-x) := by simp
 
@@ -93,7 +95,7 @@ lemma changeLevel_eq_cast_of_dvd {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
     (changeLevel hm χ) a = χ (ZMod.cast (a : ZMod m)) := by
   set_option tactic.skipAssignedInstances false in
   simpa [changeLevel_def, Function.comp_apply, MonoidHom.coe_comp] using
-      toUnitHom_eq_char' _ <| ZMod.IsUnit_cast_of_dvd hm a
+      toUnitHom_eq_char' _ <| ZMod.isUnit_cast_of_dvd hm a
 
 /-- `χ` of level `n` factors through a Dirichlet character `χ₀` of level `d` if `d ∣ n` and
 `χ₀ = χ ∘ (ZMod n → ZMod d)`. -/

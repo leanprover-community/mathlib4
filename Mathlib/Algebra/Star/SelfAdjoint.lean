@@ -199,10 +199,8 @@ variable [Semiring R] [StarRing R]
 protected theorem natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
   star_natCast _
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-protected theorem ofNat (n : ℕ) [n.AtLeastTwo] :
-    IsSelfAdjoint (no_index (OfNat.ofNat n : R)) :=
+protected theorem ofNat (n : ℕ) [n.AtLeastTwo] : IsSelfAdjoint (ofNat(n) : R) :=
   .natCast n
 
 end Semiring

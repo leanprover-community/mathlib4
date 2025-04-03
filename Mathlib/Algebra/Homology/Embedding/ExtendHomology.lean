@@ -44,6 +44,18 @@ lemma comp_d_eq_zero_iff ⦃W : C⦄ (φ : W ⟶ K.X j) :
     rw [hk]
     exact hjk
 
+include hi hi' in
+lemma d_comp_eq_zero_iff ⦃W : C⦄ (φ : K.X j ⟶ W) :
+    K.d i j ≫ φ = 0 ↔ (K.extend e).d i' j' ≫ (K.extendXIso e hj').hom ≫ φ = 0 := by
+  by_cases hij : c.Rel i j
+  · have hi' : e.f i = i' := by rw [← hi', ← hj', c'.prev_eq' (e.rel hij)]
+    rw [K.extend_d_eq e hi' hj', assoc, assoc, Iso.inv_hom_id_assoc,
+      ← cancel_epi (K.extendXIso e hi').hom, comp_zero]
+  · simp only [K.shape _ _ hij, zero_comp, true_iff]
+    rw [K.extend_d_to_eq_zero e i' j' j hj', zero_comp]
+    rw [hi]
+    exact hij
+
 namespace leftHomologyData
 
 variable (cone : KernelFork (K.d j k)) (hcone : IsLimit cone)
@@ -136,7 +148,130 @@ noncomputable def leftHomologyData (h : (K.sc' i j k).LeftHomologyData) :
     exact h.wπ
   hπ := isColimitCokernelCofork K e hj' hi hi' hk hk' _ h.hi _ h.hπ
 
+namespace rightHomologyData
+
+variable (cocone : CokernelCofork (K.d i j)) (hcocone : IsColimit cocone)
+
+/-- The cokernel cofork of `(K.extend e).d i' j'` that is deduced from a cokernel
+cofork of `K.d i j`. -/
+@[simp]
+noncomputable def cokernelCofork : CokernelCofork ((K.extend e).d i' j') :=
+  CokernelCofork.ofπ ((extendXIso K e hj').hom ≫ cocone.π) (by
+    rw [← d_comp_eq_zero_iff K e hj' hi hi' cocone.π, cocone.condition])
+
+/-- The colimit cokernel cofork of `(K.extend e).d i' j'` that is deduced from a
+colimit cokernel cofork of `K.d i j`. -/
+noncomputable def isColimitCokernelCofork : IsColimit (cokernelCofork K e hj' hi hi' cocone) :=
+  CokernelCofork.isColimitOfIsColimitOfIff hcocone ((K.extend e).d i' j')
+    (extendXIso K e hj') (d_comp_eq_zero_iff K e hj' hi hi')
+
+variable (cone : KernelFork (hcocone.desc (CokernelCofork.ofπ (K.d j k) (K.d_comp_d i j k))))
+  (hcone : IsLimit cone)
+
+include hk hk' hcocone in
+lemma d_comp_desc_eq_zero_iff' ⦃W : C⦄ (f' : cocone.pt ⟶ K.X k)
+    (hf' : cocone.π ≫ f' = K.d j k)
+    (f'' : cocone.pt ⟶ (K.extend e).X k')
+    (hf'' : (extendXIso K e hj').hom ≫ cocone.π ≫ f'' = (K.extend e).d j' k')
+    (φ : W ⟶ cocone.pt) :
+    φ ≫ f' = 0 ↔ φ ≫ f'' = 0 := by
+  by_cases hjk : c.Rel j k
+  · have hk'' : e.f k = k' := by rw [← hk', ← hj', c'.next_eq' (e.rel hjk)]
+    have : f' ≫ (K.extendXIso e hk'').inv = f'' := by
+      apply Cofork.IsColimit.hom_ext hcocone
+      rw [reassoc_of% hf', ← cancel_epi (extendXIso K e hj').hom, hf'',
+        K.extend_d_eq e hj' hk'']
+    rw [← cancel_mono (K.extendXIso e hk'').inv, zero_comp, assoc, this]
+  · have h₁ : f' = 0 := by
+      apply Cofork.IsColimit.hom_ext hcocone
+      simp only [hf', comp_zero, K.shape _ _ hjk]
+    have h₂ : f'' = 0 := by
+      apply Cofork.IsColimit.hom_ext hcocone
+      rw [← cancel_epi (extendXIso K e hj').hom, hf'', comp_zero, comp_zero,
+        K.extend_d_from_eq_zero e j' k' j hj']
+      rw [hk]
+      exact hjk
+    simp [h₁, h₂]
+
+include hk hk' in
+lemma d_comp_desc_eq_zero_iff ⦃W : C⦄ (φ : W ⟶ cocone.pt) :
+    φ ≫ hcocone.desc (CokernelCofork.ofπ (K.d j k) (K.d_comp_d i j k)) = 0 ↔
+      φ ≫ ((isColimitCokernelCofork K e hj' hi hi' cocone hcocone).desc
+      (CokernelCofork.ofπ ((K.extend e).d j' k') (d_comp_d _ _ _ _))) = 0 :=
+  d_comp_desc_eq_zero_iff' K e hj' hk hk' cocone hcocone _ (hcocone.fac _ _) _ (by
+    simpa using (isColimitCokernelCofork K e hj' hi hi' cocone hcocone).fac _
+      WalkingParallelPair.one) _
+
+/-- Auxiliary definition for `extend.rightHomologyData`. -/
+noncomputable def kernelFork :
+    KernelFork ((isColimitCokernelCofork K e hj' hi hi' cocone hcocone).desc
+      (CokernelCofork.ofπ ((K.extend e).d j' k') (d_comp_d _ _ _ _))) :=
+  KernelFork.ofι cone.ι (by
+    rw [← d_comp_desc_eq_zero_iff K e hj' hi hi' hk hk' cocone hcocone]
+    exact cone.condition)
+
+/-- Auxiliary definition for `extend.rightHomologyData`. -/
+noncomputable def isLimitKernelFork :
+    IsLimit (kernelFork K e hj' hi hi' hk hk' cocone hcocone cone) :=
+  KernelFork.isLimitOfIsLimitOfIff' hcone _
+    (d_comp_desc_eq_zero_iff K e hj' hi hi' hk hk' cocone hcocone)
+
+end rightHomologyData
+
+open rightHomologyData in
+/-- The right homology data of `(K.extend e).sc' i' j' k'` that is deduced
+from a right homology data of `K.sc' i j k`. -/
+@[simps]
+noncomputable def rightHomologyData (h : (K.sc' i j k).RightHomologyData) :
+    ((K.extend e).sc' i' j' k').RightHomologyData where
+  Q := h.Q
+  H := h.H
+  p := (extendXIso K e hj').hom ≫ h.p
+  ι := h.ι
+  wp := by
+    dsimp
+    rw [← d_comp_eq_zero_iff K e hj' hi hi']
+    exact h.wp
+  hp := isColimitCokernelCofork K e hj' hi hi' _ h.hp
+  wι := by
+    dsimp
+    rw [← d_comp_desc_eq_zero_iff K e hj' hi hi' hk hk' _ h.hp]
+    exact h.wι
+  hι := isLimitKernelFork K e hj' hi hi' hk hk' _ h.hp _ h.hι
+
+/-- The homology data of `(K.extend e).sc' i' j' k'` that is deduced
+from a homology data of `K.sc' i j k`. -/
+@[simps]
+noncomputable def homologyData (h : (K.sc' i j k).HomologyData) :
+    ((K.extend e).sc' i' j' k').HomologyData where
+  left := leftHomologyData K e hj' hi hi' hk hk' h.left
+  right := rightHomologyData K e hj' hi hi' hk hk' h.right
+  iso := h.iso
+
+/-- The homology data of `(K.extend e).sc j'` that is deduced
+from a homology data of `K.sc' i j k`. -/
+@[simps!]
+noncomputable def homologyData' (h : (K.sc' i j k).HomologyData) :
+    ((K.extend e).sc j').HomologyData :=
+  homologyData K e hj' hi rfl hk rfl h
+
 end HomologyData
+
+lemma hasHomology {j : ι} {j' : ι'} (hj' : e.f j = j') [K.HasHomology j] :
+    (K.extend e).HasHomology j' :=
+  ShortComplex.HasHomology.mk'
+    (homologyData' K e hj' rfl rfl ((K.sc j).homologyData))
+
+instance (j : ι) [K.HasHomology j] : (K.extend e).HasHomology (e.f j) :=
+  hasHomology K e rfl
+
+instance [∀ j, K.HasHomology j] (j' : ι') : (K.extend e).HasHomology j' := by
+  by_cases h : ∃ j, e.f j = j'
+  · obtain ⟨j, rfl⟩ := h
+    infer_instance
+  · have hj := isZero_extend_X K e j' (by tauto)
+    exact ShortComplex.HasHomology.mk'
+      (ShortComplex.HomologyData.ofZeros _ (hj.eq_of_tgt _ _) (hj.eq_of_src _ _))
 
 end extend
 

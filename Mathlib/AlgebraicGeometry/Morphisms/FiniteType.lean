@@ -35,7 +35,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 @[mk_iff]
 class LocallyOfFiniteType (f : X ⟶ Y) : Prop where
   finiteType_of_affine_subset :
-    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), (f.appLE U V e).FiniteType
+    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), (f.appLE U V e).hom.FiniteType
 
 instance : HasRingHomProperty @LocallyOfFiniteType RingHom.FiniteType where
   isLocal_ringHomProperty := RingHom.finiteType_is_local

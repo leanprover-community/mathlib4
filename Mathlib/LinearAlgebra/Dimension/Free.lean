@@ -207,7 +207,7 @@ noncomputable def basisUnique (ι : Type*) [Unique ι]
     Basis ι R M :=
   haveI : Module.Finite R M :=
     Module.finite_of_finrank_pos (_root_.zero_lt_one.trans_le h.symm.le)
-  (finBasisOfFinrankEq R M h).reindex (Equiv.equivOfUnique _ _)
+  (finBasisOfFinrankEq R M h).reindex (Equiv.ofUnique _ _)
 
 @[simp]
 theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]

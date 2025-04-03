@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.TangentCone
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Asymptotics
+import Mathlib.Analysis.Asymptotics.TVS
 
 /-!
 # The Fréchet derivative
@@ -70,7 +71,7 @@ example (x : ℝ) (h : 1 + sin x ≠ 0) : DifferentiableAt ℝ (fun x ↦ exp x 
   simp [h]
 ```
 Of course, these examples only work once `exp`, `cos` and `sin` have been shown to be
-differentiable, in `Analysis.SpecialFunctions.Trigonometric`.
+differentiable, in `Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv`.
 
 The simplifier is not set up to compute the Fréchet derivative of maps (as these are in general
 complicated multidimensional linear maps), but it will compute one-dimensional derivatives,
@@ -78,8 +79,10 @@ see `Deriv.lean`.
 
 ## Implementation details
 
-The derivative is defined in terms of the `isLittleO` relation, but also
-characterized in terms of the `Tendsto` relation.
+The derivative is defined in terms of the `IsLittleOTVS` relation to ensure the definition does not
+ingrain a choice of norm, and is then quickly translated to the more convenient `IsLittleO` in the
+subsequent theorems.
+It is also characterized in terms of the `Tendsto` relation.
 
 We also introduce predicates `DifferentiableWithinAt 𝕜 f s x` (where `𝕜` is the base field,
 `f` the function to be differentiated, `x` the point at which the derivative is asserted to exist,
@@ -107,33 +110,34 @@ some boilerplate lemmas, but these can also be useful in their own right.
 Tests for this ability of the simplifier (with more examples) are provided in
 `Tests/Differentiable.lean`.
 
+## TODO
+
+Generalize more results to topological vector spaces.
+
 ## Tags
 
 derivative, differentiable, Fréchet, calculus
 
 -/
 
-open Filter Asymptotics ContinuousLinearMap Set Metric
-
-open scoped Classical
-open Topology NNReal Filter Asymptotics ENNReal
+open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 
 noncomputable section
 
-section
-
+section TVS
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {F : Type*} [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F]
 
 /-- A function `f` has the continuous linear map `f'` as derivative along the filter `L` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` converges along the filter `L`. This definition
 is designed to be specialized for `L = 𝓝 x` (in `HasFDerivAt`), giving rise to the usual notion
 of Fréchet derivative, and for `L = 𝓝[s] x` (in `HasFDerivWithinAt`), giving rise to
 the notion of Fréchet derivative along the set `s`. -/
-@[mk_iff hasFDerivAtFilter_iff_isLittleO]
+@[mk_iff hasFDerivAtFilter_iff_isLittleOTVS]
 structure HasFDerivAtFilter (f : E → F) (f' : E →L[𝕜] F) (x : E) (L : Filter E) : Prop where
-  of_isLittleO :: isLittleO : (fun x' => f x' - f x - f' (x' - x)) =o[L] fun x' => x' - x
+  of_isLittleOTVS ::
+    isLittleOTVS : (fun x' => f x' - f x - f' (x' - x)) =o[𝕜;L] (fun x' => x' - x)
 
 /-- A function `f` has the continuous linear map `f'` as derivative at `x` within a set `s` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` tends to `x` inside `s`. -/
@@ -151,10 +155,12 @@ def HasFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) :=
 if `f x - f y - f' (x - y) = o(x - y)` as `x, y → a`. This form of differentiability is required,
 e.g., by the inverse function theorem. Any `C^1` function on a vector space over `ℝ` is strictly
 differentiable but this definition works, e.g., for vector spaces over `p`-adic numbers. -/
-@[fun_prop, mk_iff hasStrictFDerivAt_iff_isLittleO]
+@[fun_prop, mk_iff hasStrictFDerivAt_iff_isLittleOTVS]
 structure HasStrictFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) where
-  of_isLittleO :: isLittleO :
-      (fun p : E × E => f p.1 - f p.2 - f' (p.1 - p.2)) =o[𝓝 (x, x)] fun p : E × E => p.1 - p.2
+  of_isLittleOTVS ::
+    isLittleOTVS :
+      (fun p : E × E => f p.1 - f p.2 - f' (p.1 - p.2))
+        =o[𝕜;𝓝 (x, x)] (fun p : E × E => p.1 - p.2)
 
 variable (𝕜)
 
@@ -170,17 +176,20 @@ non-unique). -/
 def DifferentiableAt (f : E → F) (x : E) :=
   ∃ f' : E →L[𝕜] F, HasFDerivAt f f' x
 
+open scoped Classical in
 /-- If `f` has a derivative at `x` within `s`, then `fderivWithin 𝕜 f s x` is such a derivative.
-Otherwise, it is set to `0`. If `x` is isolated in `s`, we take the derivative within `s` to
-be zero for convenience. -/
+Otherwise, it is set to `0`. We also set it to be zero, if zero is one of possible derivatives. -/
 irreducible_def fderivWithin (f : E → F) (s : Set E) (x : E) : E →L[𝕜] F :=
-  if 𝓝[s \ {x}] x = ⊥ then 0 else
-  if h : ∃ f', HasFDerivWithinAt f f' s x then Classical.choose h else 0
+  if HasFDerivWithinAt f (0 : E →L[𝕜] F) s x
+    then 0
+  else if h : DifferentiableWithinAt 𝕜 f s x
+    then Classical.choose h
+  else 0
 
 /-- If `f` has a derivative at `x`, then `fderiv 𝕜 f x` is such a derivative. Otherwise, it is
 set to `0`. -/
 irreducible_def fderiv (f : E → F) (x : E) : E →L[𝕜] F :=
-  if h : ∃ f', HasFDerivAt f f' x then Classical.choose h else 0
+  fderivWithin 𝕜 f univ x
 
 /-- `DifferentiableOn 𝕜 f s` means that `f` is differentiable within `s` at any point of `s`. -/
 @[fun_prop]
@@ -199,23 +208,42 @@ variable {x : E}
 variable {s t : Set E}
 variable {L L₁ L₂ : Filter E}
 
-theorem fderivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : fderivWithin 𝕜 f s x = 0 := by
-  rw [fderivWithin, if_pos h]
-
-theorem fderivWithin_zero_of_nmem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 := by
-  apply fderivWithin_zero_of_isolated
-  simp only [mem_closure_iff_nhdsWithin_neBot, neBot_iff, Ne, Classical.not_not] at h
-  rw [eq_bot_iff, ← h]
-  exact nhdsWithin_mono _ diff_subset
-
 theorem fderivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWithinAt 𝕜 f s x) :
     fderivWithin 𝕜 f s x = 0 := by
-  have : ¬∃ f', HasFDerivWithinAt f f' s x := h
-  simp [fderivWithin, this]
+  simp [fderivWithin, h]
 
-theorem fderiv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : fderiv 𝕜 f x = 0 := by
-  have : ¬∃ f', HasFDerivAt f f' x := h
-  simp [fderiv, this]
+@[simp]
+theorem fderivWithin_univ : fderivWithin 𝕜 f univ = fderiv 𝕜 f := by
+  ext
+  rw [fderiv]
+
+end TVS
+
+section
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+variable {f f₀ f₁ g : E → F}
+variable {f' f₀' f₁' g' : E →L[𝕜] F}
+variable {x : E}
+variable {s t : Set E}
+variable {L L₁ L₂ : Filter E}
+
+theorem hasFDerivAtFilter_iff_isLittleO :
+    HasFDerivAtFilter f f' x L ↔ (fun x' => f x' - f x - f' (x' - x)) =o[L] fun x' => x' - x :=
+  (hasFDerivAtFilter_iff_isLittleOTVS ..).trans isLittleOTVS_iff_isLittleO
+
+alias ⟨HasFDerivAtFilter.isLittleO, HasFDerivAtFilter.of_isLittleO⟩ :=
+  hasFDerivAtFilter_iff_isLittleO
+
+theorem hasStrictFDerivAt_iff_isLittleO :
+    HasStrictFDerivAt f f' x ↔
+      (fun p : E × E => f p.1 - f p.2 - f' (p.1 - p.2)) =o[𝓝 (x, x)] fun p : E × E => p.1 - p.2 :=
+  (hasStrictFDerivAt_iff_isLittleOTVS ..).trans isLittleOTVS_iff_isLittleO
+
+alias ⟨HasStrictFDerivAt.isLittleO, HasStrictFDerivAt.of_isLittleO⟩ :=
+  hasStrictFDerivAt_iff_isLittleO
 
 section DerivativeUniqueness
 
@@ -306,35 +334,6 @@ theorem hasFDerivAt_iff_isLittleO_nhds_zero :
   rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, ← map_add_left_nhds_zero x, isLittleO_map]
   simp [Function.comp_def]
 
-/-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
-on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. This version
-only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a neighborhood of `x`. -/
-theorem HasFDerivAt.le_of_lip' {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
-    {C : ℝ} (hC₀ : 0 ≤ C) (hlip : ∀ᶠ x in 𝓝 x₀, ‖f x - f x₀‖ ≤ C * ‖x - x₀‖) : ‖f'‖ ≤ C := by
-  refine le_of_forall_pos_le_add fun ε ε0 => opNorm_le_of_nhds_zero ?_ ?_
-  · exact add_nonneg hC₀ ε0.le
-  rw [← map_add_left_nhds_zero x₀, eventually_map] at hlip
-  filter_upwards [isLittleO_iff.1 (hasFDerivAt_iff_isLittleO_nhds_zero.1 hf) ε0, hlip] with y hy hyC
-  rw [add_sub_cancel_left] at hyC
-  calc
-    ‖f' y‖ ≤ ‖f (x₀ + y) - f x₀‖ + ‖f (x₀ + y) - f x₀ - f' y‖ := norm_le_insert _ _
-    _ ≤ C * ‖y‖ + ε * ‖y‖ := add_le_add hyC hy
-    _ = (C + ε) * ‖y‖ := (add_mul _ _ _).symm
-
-/-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
-on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. -/
-theorem HasFDerivAt.le_of_lipschitzOn
-    {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
-    {s : Set E} (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖f'‖ ≤ C := by
-  refine hf.le_of_lip' C.coe_nonneg ?_
-  filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
-
-/-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
-then its derivative at `x₀` has norm bounded by `C`. -/
-theorem HasFDerivAt.le_of_lipschitz {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
-    {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖f'‖ ≤ C :=
-  hf.le_of_lipschitzOn univ_mem (lipschitzOnWith_univ.2 hlip)
-
 nonrec theorem HasFDerivAtFilter.mono (h : HasFDerivAtFilter f f' x L₂) (hst : L₁ ≤ L₂) :
     HasFDerivAtFilter f f' x L₁ :=
   .of_isLittleO <| h.isLittleO.mono hst
@@ -370,10 +369,17 @@ theorem HasFDerivAt.differentiableAt (h : HasFDerivAt f f' x) : DifferentiableAt
 
 @[simp]
 theorem hasFDerivWithinAt_univ : HasFDerivWithinAt f f' univ x ↔ HasFDerivAt f f' x := by
-  simp only [HasFDerivWithinAt, nhdsWithin_univ]
-  rfl
+  simp only [HasFDerivWithinAt, nhdsWithin_univ, HasFDerivAt]
 
 alias ⟨HasFDerivWithinAt.hasFDerivAt_of_univ, _⟩ := hasFDerivWithinAt_univ
+
+theorem differentiableWithinAt_univ :
+    DifferentiableWithinAt 𝕜 f univ x ↔ DifferentiableAt 𝕜 f x := by
+  simp only [DifferentiableWithinAt, hasFDerivWithinAt_univ, DifferentiableAt]
+
+theorem fderiv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : fderiv 𝕜 f x = 0 := by
+  rw [fderiv, fderivWithin_zero_of_not_differentiableWithinAt]
+  rwa [differentiableWithinAt_univ]
 
 theorem hasFDerivWithinAt_of_mem_nhds (h : s ∈ 𝓝 x) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivAt f f' x := by
@@ -486,19 +492,23 @@ theorem hasFDerivWithinAt_of_nmem_closure (h : x ∉ closure s) : HasFDerivWithi
   .of_nhdsWithin_eq_bot <| eq_bot_mono (nhdsWithin_mono _ diff_subset) <| by
     rwa [mem_closure_iff_nhdsWithin_neBot, not_neBot] at h
 
+theorem fderivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : fderivWithin 𝕜 f s x = 0 := by
+  rw [fderivWithin, if_pos (.of_nhdsWithin_eq_bot h)]
+
+theorem fderivWithin_zero_of_nmem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 := by
+  rw [fderivWithin, if_pos (hasFDerivWithinAt_of_nmem_closure h)]
+
 theorem DifferentiableWithinAt.hasFDerivWithinAt (h : DifferentiableWithinAt 𝕜 f s x) :
     HasFDerivWithinAt f (fderivWithin 𝕜 f s x) s x := by
-  by_cases H : 𝓝[s \ {x}] x = ⊥
-  · exact .of_nhdsWithin_eq_bot H
-  · unfold DifferentiableWithinAt at h
-    rw [fderivWithin, if_neg H, dif_pos h]
-    exact Classical.choose_spec h
+  simp only [fderivWithin, dif_pos h]
+  split_ifs with h₀
+  exacts [h₀, Classical.choose_spec h]
 
 theorem DifferentiableAt.hasFDerivAt (h : DifferentiableAt 𝕜 f x) :
     HasFDerivAt f (fderiv 𝕜 f x) x := by
-  dsimp only [DifferentiableAt] at h
-  rw [fderiv, dif_pos h]
-  exact Classical.choose_spec h
+  rw [fderiv, ← hasFDerivWithinAt_univ]
+  rw [← differentiableWithinAt_univ] at h
+  exact h.hasFDerivWithinAt
 
 theorem DifferentiableOn.hasFDerivAt (h : DifferentiableOn 𝕜 f s) (hs : s ∈ 𝓝 x) :
     HasFDerivAt f (fderiv 𝕜 f x) x :=
@@ -518,37 +528,6 @@ protected theorem HasFDerivAt.fderiv (h : HasFDerivAt f f' x) : fderiv 𝕜 f x 
 
 theorem fderiv_eq {f' : E → E →L[𝕜] F} (h : ∀ x, HasFDerivAt f (f' x) x) : fderiv 𝕜 f = f' :=
   funext fun x => (h x).fderiv
-
-variable (𝕜)
-
-/-- Converse to the mean value inequality: if `f` is `C`-lipschitz
-on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. This version
-only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a neighborhood of `x`. -/
-theorem norm_fderiv_le_of_lip' {f : E → F} {x₀ : E}
-    {C : ℝ} (hC₀ : 0 ≤ C) (hlip : ∀ᶠ x in 𝓝 x₀, ‖f x - f x₀‖ ≤ C * ‖x - x₀‖) :
-    ‖fderiv 𝕜 f x₀‖ ≤ C := by
-  by_cases hf : DifferentiableAt 𝕜 f x₀
-  · exact hf.hasFDerivAt.le_of_lip' hC₀ hlip
-  · rw [fderiv_zero_of_not_differentiableAt hf]
-    simp [hC₀]
-
-/-- Converse to the mean value inequality: if `f` is `C`-lipschitz
-on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`.
-Version using `fderiv`. -/
--- Porting note: renamed so that dot-notation makes sense
-theorem norm_fderiv_le_of_lipschitzOn {f : E → F} {x₀ : E} {s : Set E} (hs : s ∈ 𝓝 x₀)
-    {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖fderiv 𝕜 f x₀‖ ≤ C := by
-  refine norm_fderiv_le_of_lip' 𝕜 C.coe_nonneg ?_
-  filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
-
-/-- Converse to the mean value inequality: if `f` is `C`-lipschitz then
-its derivative at `x₀` has norm bounded by `C`.
-Version using `fderiv`. -/
-theorem norm_fderiv_le_of_lipschitz {f : E → F} {x₀ : E}
-    {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖fderiv 𝕜 f x₀‖ ≤ C :=
-  norm_fderiv_le_of_lipschitzOn 𝕜 univ_mem (lipschitzOnWith_univ.2 hlip)
-
-variable {𝕜}
 
 protected theorem HasFDerivWithinAt.fderivWithin (h : HasFDerivWithinAt f f' s x)
     (hxs : UniqueDiffWithinAt 𝕜 s x) : fderivWithin 𝕜 f s x = f' :=
@@ -574,10 +553,6 @@ theorem DifferentiableWithinAt.congr_nhds (h : DifferentiableWithinAt 𝕜 f s x
 theorem differentiableWithinAt_congr_nhds {t : Set E} (hst : 𝓝[s] x = 𝓝[t] x) :
     DifferentiableWithinAt 𝕜 f s x ↔ DifferentiableWithinAt 𝕜 f t x :=
   ⟨fun h => h.congr_nhds hst, fun h => h.congr_nhds hst.symm⟩
-
-theorem differentiableWithinAt_univ :
-    DifferentiableWithinAt 𝕜 f univ x ↔ DifferentiableAt 𝕜 f x := by
-  simp only [DifferentiableWithinAt, hasFDerivWithinAt_univ, DifferentiableAt]
 
 theorem differentiableWithinAt_inter (ht : t ∈ 𝓝 x) :
     DifferentiableWithinAt 𝕜 f (s ∩ t) x ↔ DifferentiableWithinAt 𝕜 f s x := by
@@ -647,19 +622,8 @@ theorem fderivWithin_subset (st : s ⊆ t) (ht : UniqueDiffWithinAt 𝕜 s x)
   fderivWithin_of_mem_nhdsWithin (nhdsWithin_mono _ st self_mem_nhdsWithin) ht h
 
 theorem fderivWithin_inter (ht : t ∈ 𝓝 x) : fderivWithin 𝕜 f (s ∩ t) x = fderivWithin 𝕜 f s x := by
-  have A : 𝓝[(s ∩ t) \ {x}] x = 𝓝[s \ {x}] x := by
-    have : (s ∩ t) \ {x} = (s \ {x}) ∩ t := by rw [inter_comm, inter_diff_assoc, inter_comm]
-    rw [this, ← nhdsWithin_restrict' _ ht]
-  simp [fderivWithin, A, hasFDerivWithinAt_inter ht]
-
-@[simp]
-theorem fderivWithin_univ : fderivWithin 𝕜 f univ = fderiv 𝕜 f := by
-  ext1 x
-  nontriviality E
-  have H : 𝓝[univ \ {x}] x ≠ ⊥ := by
-    rw [← compl_eq_univ_diff, ← neBot_iff]
-    exact Module.punctured_nhds_neBot 𝕜 E x
-  simp [fderivWithin, fderiv, H]
+  classical
+  simp [fderivWithin, hasFDerivWithinAt_inter ht, DifferentiableWithinAt]
 
 theorem fderivWithin_of_mem_nhds (h : s ∈ 𝓝 x) : fderivWithin 𝕜 f s x = fderiv 𝕜 f x := by
   rw [← fderivWithin_univ, ← univ_inter s, fderivWithin_inter h]
@@ -803,11 +767,8 @@ theorem differentiableWithinAt_congr_set (h : s =ᶠ[𝓝 x] t) :
 
 theorem fderivWithin_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) :
     fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x := by
-  have : s =ᶠ[𝓝[{x}ᶜ] x] t := nhdsWithin_compl_singleton_le x y h
-  have : 𝓝[s \ {x}] x = 𝓝[t \ {x}] x := by
-    simpa only [set_eventuallyEq_iff_inf_principal, ← nhdsWithin_inter', diff_eq,
-      inter_comm] using this
-  simp only [fderivWithin, hasFDerivWithinAt_congr_set' y h, this]
+  classical
+  simp only [fderivWithin, differentiableWithinAt_congr_set' _ h, hasFDerivWithinAt_congr_set' _ h]
 
 theorem fderivWithin_congr_set (h : s =ᶠ[𝓝 x] t) : fderivWithin 𝕜 f s x = fderivWithin 𝕜 f t x :=
   fderivWithin_congr_set' x <| h.filter_mono inf_le_left
@@ -937,7 +898,8 @@ theorem DifferentiableWithinAt.fderivWithin_congr_mono (h : DifferentiableWithin
 
 theorem Filter.EventuallyEq.fderivWithin_eq (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : f₁ x = f x) :
     fderivWithin 𝕜 f₁ s x = fderivWithin 𝕜 f s x := by
-  simp only [fderivWithin, hs.hasFDerivWithinAt_iff hx]
+  classical
+  simp only [fderivWithin, DifferentiableWithinAt, hs.hasFDerivWithinAt_iff hx]
 
 theorem Filter.EventuallyEq.fderivWithin_eq_of_mem (hs : f₁ =ᶠ[𝓝[s] x] f) (hx : x ∈ s) :
     fderivWithin 𝕜 f₁ s x = fderivWithin 𝕜 f s x :=
@@ -1002,6 +964,7 @@ theorem hasFDerivAt_id (x : E) : HasFDerivAt id (id 𝕜 E) x :=
 theorem differentiableAt_id : DifferentiableAt 𝕜 id x :=
   (hasFDerivAt_id x).differentiableAt
 
+/-- Variant with `fun x => x` rather than `id` -/
 @[simp]
 theorem differentiableAt_id' : DifferentiableAt 𝕜 (fun x => x) x :=
   (hasFDerivAt_id x).differentiableAt
@@ -1010,9 +973,15 @@ theorem differentiableAt_id' : DifferentiableAt 𝕜 (fun x => x) x :=
 theorem differentiableWithinAt_id : DifferentiableWithinAt 𝕜 id s x :=
   differentiableAt_id.differentiableWithinAt
 
+/-- Variant with `fun x => x` rather than `id` -/
+@[fun_prop]
+theorem differentiableWithinAt_id' : DifferentiableWithinAt 𝕜 (fun x => x) s x :=
+  differentiableWithinAt_id
+
 @[simp, fun_prop]
 theorem differentiable_id : Differentiable 𝕜 (id : E → E) := fun _ => differentiableAt_id
 
+/-- Variant with `fun x => x` rather than `id` -/
 @[simp]
 theorem differentiable_id' : Differentiable 𝕜 fun x : E => x := fun _ => differentiableAt_id
 
@@ -1068,19 +1037,21 @@ theorem differentiableAt_const (c : F) : DifferentiableAt 𝕜 (fun _ => c) x :=
 theorem differentiableWithinAt_const (c : F) : DifferentiableWithinAt 𝕜 (fun _ => c) s x :=
   DifferentiableAt.differentiableWithinAt (differentiableAt_const _)
 
+theorem fderivWithin_const_apply (c : F) : fderivWithin 𝕜 (fun _ => c) s x = 0 := by
+  rw [fderivWithin, if_pos]
+  apply hasFDerivWithinAt_const
+
+@[simp]
+theorem fderivWithin_const (c : F) : fderivWithin 𝕜 (fun _ ↦ c) s = 0 := by
+  ext
+  rw [fderivWithin_const_apply, Pi.zero_apply]
+
 theorem fderiv_const_apply (c : F) : fderiv 𝕜 (fun _ => c) x = 0 :=
-  HasFDerivAt.fderiv (hasFDerivAt_const c x)
+  (hasFDerivAt_const c x).fderiv
 
 @[simp]
 theorem fderiv_const (c : F) : (fderiv 𝕜 fun _ : E => c) = 0 := by
-  ext m
-  rw [fderiv_const_apply]
-  rfl
-
-theorem fderivWithin_const_apply (c : F) (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun _ => c) s x = 0 := by
-  rw [DifferentiableAt.fderivWithin (differentiableAt_const _) hxs]
-  exact fderiv_const_apply _
+  rw [← fderivWithin_univ, fderivWithin_const]
 
 @[simp, fun_prop]
 theorem differentiable_const (c : F) : Differentiable 𝕜 fun _ : E => c := fun _ =>
@@ -1118,6 +1089,68 @@ theorem hasFDerivAt_zero_of_eventually_const (c : F) (hf : f =ᶠ[𝓝 x] fun _ 
   (hasFDerivAt_const _ _).congr_of_eventuallyEq hf
 
 end Const
+
+section MeanValue
+
+/-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
+on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. This version
+only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a neighborhood of `x`. -/
+theorem HasFDerivAt.le_of_lip' {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
+    {C : ℝ} (hC₀ : 0 ≤ C) (hlip : ∀ᶠ x in 𝓝 x₀, ‖f x - f x₀‖ ≤ C * ‖x - x₀‖) : ‖f'‖ ≤ C := by
+  refine le_of_forall_pos_le_add fun ε ε0 => opNorm_le_of_nhds_zero ?_ ?_
+  · exact add_nonneg hC₀ ε0.le
+  rw [← map_add_left_nhds_zero x₀, eventually_map] at hlip
+  filter_upwards [isLittleO_iff.1 (hasFDerivAt_iff_isLittleO_nhds_zero.1 hf) ε0, hlip] with y hy hyC
+  rw [add_sub_cancel_left] at hyC
+  calc
+    ‖f' y‖ ≤ ‖f (x₀ + y) - f x₀‖ + ‖f (x₀ + y) - f x₀ - f' y‖ := norm_le_insert _ _
+    _ ≤ C * ‖y‖ + ε * ‖y‖ := add_le_add hyC hy
+    _ = (C + ε) * ‖y‖ := (add_mul _ _ _).symm
+
+/-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
+on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. -/
+theorem HasFDerivAt.le_of_lipschitzOn
+    {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
+    {s : Set E} (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖f'‖ ≤ C := by
+  refine hf.le_of_lip' C.coe_nonneg ?_
+  filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
+
+/-- Converse to the mean value inequality: if `f` is differentiable at `x₀` and `C`-lipschitz
+then its derivative at `x₀` has norm bounded by `C`. -/
+theorem HasFDerivAt.le_of_lipschitz {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
+    {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖f'‖ ≤ C :=
+  hf.le_of_lipschitzOn univ_mem (lipschitzOnWith_univ.2 hlip)
+
+variable (𝕜)
+
+/-- Converse to the mean value inequality: if `f` is `C`-lipschitz
+on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`. This version
+only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a neighborhood of `x`. -/
+theorem norm_fderiv_le_of_lip' {f : E → F} {x₀ : E}
+    {C : ℝ} (hC₀ : 0 ≤ C) (hlip : ∀ᶠ x in 𝓝 x₀, ‖f x - f x₀‖ ≤ C * ‖x - x₀‖) :
+    ‖fderiv 𝕜 f x₀‖ ≤ C := by
+  by_cases hf : DifferentiableAt 𝕜 f x₀
+  · exact hf.hasFDerivAt.le_of_lip' hC₀ hlip
+  · rw [fderiv_zero_of_not_differentiableAt hf]
+    simp [hC₀]
+
+/-- Converse to the mean value inequality: if `f` is `C`-lipschitz
+on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`.
+Version using `fderiv`. -/
+-- Porting note: renamed so that dot-notation makes sense
+theorem norm_fderiv_le_of_lipschitzOn {f : E → F} {x₀ : E} {s : Set E} (hs : s ∈ 𝓝 x₀)
+    {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖fderiv 𝕜 f x₀‖ ≤ C := by
+  refine norm_fderiv_le_of_lip' 𝕜 C.coe_nonneg ?_
+  filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
+
+/-- Converse to the mean value inequality: if `f` is `C`-lipschitz then
+its derivative at `x₀` has norm bounded by `C`.
+Version using `fderiv`. -/
+theorem norm_fderiv_le_of_lipschitz {f : E → F} {x₀ : E}
+    {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖fderiv 𝕜 f x₀‖ ≤ C :=
+  norm_fderiv_le_of_lipschitzOn 𝕜 univ_mem (lipschitzOnWith_univ.2 hlip)
+
+end MeanValue
 
 end
 

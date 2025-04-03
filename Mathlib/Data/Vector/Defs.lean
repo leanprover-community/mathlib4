@@ -7,18 +7,17 @@ import Mathlib.Data.List.Defs
 import Mathlib.Tactic.Common
 
 /-!
-The type `Vector` represents lists with fixed length.
+The type `List.Vector` represents lists with fixed length.
 -/
 
 assert_not_exists Monoid
-namespace Mathlib
 
 universe u v w
 /-- `Vector α n` is the type of lists of length `n` with elements of type `α`. -/
-def Vector (α : Type u) (n : ℕ) :=
+def List.Vector (α : Type u) (n : ℕ) :=
   { l : List α // l.length = n }
 
-namespace Vector
+namespace List.Vector
 
 variable {α β σ φ : Type*} {n : ℕ} {p : α → Prop}
 
@@ -240,6 +239,4 @@ lemma getElem_def (v : Vector α n) (i : ℕ) {hi : i < n} :
 lemma toList_getElem (v : Vector α n) (i : ℕ) {hi : i < v.toList.length} :
     v.toList[i] = v[i]'(by simp_all) := rfl
 
-end Vector
-
-end Mathlib
+end List.Vector

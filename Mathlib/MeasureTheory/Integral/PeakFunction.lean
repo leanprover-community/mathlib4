@@ -107,7 +107,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
       apply Tendsto.mono_left _ nhdsWithin_le_nhds
       exact (tendsto_id.mul tendsto_const_nhds).add (tendsto_id.const_mul _)
     rw [zero_mul, zero_add, mul_zero] at A
-    have : Ioo (0 : ℝ) 1 ∈ 𝓝[>] 0 := Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, zero_lt_one⟩
+    have : Ioo (0 : ℝ) 1 ∈ 𝓝[>] 0 := Ioo_mem_nhdsGT zero_lt_one
     rcases (((tendsto_order.1 A).2 ε εpos).and this).exists with ⟨δ, hδ, h'δ⟩
     exact ⟨δ, hδ, h'δ.1, h'δ.2⟩
   suffices ∀ᶠ i in l, ‖∫ x in s, φ i x • g x ∂μ‖ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ by

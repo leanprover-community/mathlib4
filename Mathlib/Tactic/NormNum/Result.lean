@@ -26,7 +26,7 @@ or is either `true` or `false`.
 universe u
 variable {α : Type u}
 
-open Lean hiding Rat mkRat
+open Lean
 open Lean.Meta Qq Lean.Elab Term
 
 namespace Mathlib

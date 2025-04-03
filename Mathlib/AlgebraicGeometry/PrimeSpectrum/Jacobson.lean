@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
-import Mathlib.RingTheory.Jacobson
+import Mathlib.RingTheory.Jacobson.Ring
 import Mathlib.Topology.JacobsonSpace
 
 /-!

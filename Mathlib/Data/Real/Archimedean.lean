@@ -16,7 +16,6 @@ import Mathlib.Order.Interval.Set.Disjoint
 
 assert_not_exists Finset
 
-open scoped Classical
 open Pointwise CauSeq
 
 namespace Real
@@ -111,9 +110,11 @@ theorem exists_isGLB (hne : s.Nonempty) (hbdd : BddBelow s) : ∃ x, IsGLB s x :
   rw [← isLUB_neg]
   exact Classical.choose_spec (Real.exists_isLUB hne' hbdd')
 
+open scoped Classical in
 noncomputable instance : SupSet ℝ :=
   ⟨fun s => if h : s.Nonempty ∧ BddAbove s then Classical.choose (exists_isLUB h.1 h.2) else 0⟩
 
+open scoped Classical in
 theorem sSup_def (s : Set ℝ) :
     sSup s = if h : s.Nonempty ∧ BddAbove s then Classical.choose (exists_isLUB h.1 h.2) else 0 :=
   rfl
@@ -253,6 +254,7 @@ lemma iInf_nonneg (hf : ∀ i, 0 ≤ f i) : 0 ≤ iInf f := Real.le_iInf hf le_r
 /-- As `sSup s = 0` when `s` is a set of reals that's unbounded above, it suffices to show that `s`
 contains a nonnegative element to show that `0 ≤ sSup s`. -/
 lemma sSup_nonneg' (hs : ∃ x ∈ s, 0 ≤ x) : 0 ≤ sSup s := by
+  classical
   obtain ⟨x, hxs, hx⟩ := hs
   exact dite _ (fun h ↦ le_csSup_of_le h hxs hx) fun h ↦ (sSup_of_not_bddAbove h).ge
 
@@ -263,6 +265,7 @@ lemma iSup_nonneg' (hf : ∃ i, 0 ≤ f i) : 0 ≤ ⨆ i, f i := sSup_nonneg' <|
 /-- As `sInf s = 0` when `s` is a set of reals that's unbounded below, it suffices to show that `s`
 contains a nonpositive element to show that `sInf s ≤ 0`. -/
 lemma sInf_nonpos' (hs : ∃ x ∈ s, x ≤ 0) : sInf s ≤ 0 := by
+  classical
   obtain ⟨x, hxs, hx⟩ := hs
   exact dite _ (fun h ↦ csInf_le_of_le h hxs hx) fun h ↦ (sInf_of_not_bddBelow h).le
 
@@ -373,8 +376,7 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     rw [← q.num_div_den, one_lt_div (by positivity)] at hq
     rw [q.mul_den_eq_num]
     norm_cast at hq ⊢
-    rw [le_tsub_iff_left hq.le]
-    exact hq
+    omega
   use 2 * k ^ 2
   calc
     ((2 * k ^ 2 : ℕ) + 1 : ℝ) ≤ 2 ^ (2 * k) := mod_cast Nat.two_mul_sq_add_one_le_two_pow_two_mul _

@@ -47,8 +47,13 @@ section Cyclic
 open Subgroup
 
 @[to_additive]
-theorem IsCyclic.exists_generator [Group α] [IsCyclic α] : ∃ g : α, ∀ x, x ∈ Subgroup.zpowers g :=
+theorem IsCyclic.exists_generator [Group α] [IsCyclic α] : ∃ g : α, ∀ x, x ∈ zpowers g :=
   exists_zpow_surjective α
+
+@[to_additive]
+theorem isCyclic_iff_exists_zpowers_eq_top [Group α] : IsCyclic α ↔ ∃ g : α, zpowers g = ⊤ := by
+  simp only [eq_top_iff', mem_zpowers_iff]
+  exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 @[to_additive]
 instance (priority := 100) isCyclic_of_subsingleton [Group α] [Subsingleton α] : IsCyclic α :=
@@ -81,6 +86,9 @@ def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
       let ⟨_, hm⟩ := hg y
       hm ▸ hn ▸ zpow_mul_comm _ _ _ }
 
+instance [Group G] (H : Subgroup G) [IsCyclic H] : H.IsCommutative :=
+  ⟨⟨IsCyclic.commGroup.mul_comm⟩⟩
+
 variable [Group α] [Group G] [Group G']
 
 /-- A non-cyclic multiplicative group is non-trivial. -/
@@ -101,13 +109,29 @@ theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
 MonoidAddHom.map_add_cyclic := AddMonoidHom.map_addCyclic
 
 @[to_additive]
+lemma isCyclic_iff_exists_orderOf_eq_natCard [Finite α] :
+    IsCyclic α ↔ ∃ g : α, orderOf g = Nat.card α := by
+  simp_rw [isCyclic_iff_exists_zpowers_eq_top, ← card_eq_iff_eq_top, Nat.card_zpowers]
+
+@[deprecated (since := "2024-12-20")]
+alias isCyclic_iff_exists_ofOrder_eq_natCard := isCyclic_iff_exists_orderOf_eq_natCard
+
+@[deprecated (since := "2024-12-20")]
+alias isAddCyclic_iff_exists_ofOrder_eq_natCard := isAddCyclic_iff_exists_addOrderOf_eq_natCard
+
+@[deprecated (since := "2024-12-20")]
+alias IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype :=
+  isCyclic_iff_exists_orderOf_eq_natCard
+
+@[deprecated (since := "2024-12-20")]
+alias IsAddCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype :=
+  isAddCyclic_iff_exists_addOrderOf_eq_natCard
+
+@[to_additive]
 theorem isCyclic_of_orderOf_eq_card [Finite α] (x : α) (hx : orderOf x = Nat.card α) :
-    IsCyclic α := by
-  cases nonempty_fintype α
-  use x
-  rw [← Set.range_eq_univ, ← coe_zpowers]
-  rw [← Nat.card_congr (Equiv.Set.univ α), Nat.card_eq_fintype_card, ← Fintype.card_zpowers] at hx
-  convert Set.eq_of_subset_of_card_le (Set.subset_univ _) (ge_of_eq hx)
+    IsCyclic α :=
+  isCyclic_iff_exists_orderOf_eq_natCard.mpr ⟨x, hx⟩
+
 @[deprecated (since := "2024-02-21")]
 alias isAddCyclic_of_orderOf_eq_card := isAddCyclic_of_addOrderOf_eq_card
 
@@ -252,14 +276,13 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
     subst this; infer_instance
 
 @[to_additive]
-lemma Subgroup.isCyclic_of_le {H H' : Subgroup G} (h : H ≤ H')
-    [IsCyclic H'] :
-    IsCyclic H := by
-  let e := Subgroup.subgroupOfEquivOfLe h
-  obtain ⟨g, hg⟩ := Subgroup.isCyclic <| H.subgroupOf H'
-  refine ⟨e g, fun x ↦ ?_⟩
-  obtain ⟨n, hn⟩ := hg (e.symm x)
-  exact ⟨n, by simp only at hn ⊢; rw [← map_zpow, hn, MulEquiv.apply_symm_apply]⟩
+theorem isCyclic_of_injective [IsCyclic G'] (f : G →* G') (hf : Function.Injective f) :
+    IsCyclic G :=
+  isCyclic_of_surjective (MonoidHom.ofInjective hf).symm (MonoidHom.ofInjective hf).symm.surjective
+
+@[to_additive]
+lemma Subgroup.isCyclic_of_le {H H' : Subgroup G} (h : H ≤ H') [IsCyclic H'] : IsCyclic H :=
+  isCyclic_of_injective (Subgroup.inclusion h) (Subgroup.inclusion_injective h)
 
 open Finset Nat
 
@@ -318,26 +341,6 @@ lemma IsCyclic.exists_ofOrder_eq_natCard [h : IsCyclic α] : ∃ g : α, orderOf
   use g
   rw [← card_zpowers g, (eq_top_iff' (zpowers g)).mpr hg]
   exact Nat.card_congr (Equiv.Set.univ α)
-
-@[to_additive]
-lemma isCyclic_iff_exists_ofOrder_eq_natCard [Finite α] :
-    IsCyclic α ↔ ∃ g : α, orderOf g = Nat.card α := by
-  refine ⟨fun h ↦ h.exists_ofOrder_eq_natCard, fun h ↦ ?_⟩
-  obtain ⟨g, hg⟩ := h
-  cases nonempty_fintype α
-  refine isCyclic_of_orderOf_eq_card g ?_
-  simp [hg]
-
-@[to_additive]
-protected alias IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype :=
-  isCyclic_iff_exists_ofOrder_eq_natCard
-
--- `alias` doesn't add the deprecation suggestion to the `to_additive` version
--- see https://github.com/leanprover-community/mathlib4/issues/19424
-attribute [deprecated isCyclic_iff_exists_ofOrder_eq_natCard (since := "2024-04-20")]
-IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype
-attribute [deprecated isAddCyclic_iff_exists_ofOrder_eq_natCard (since := "2024-04-20")]
-IsAddCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype
 
 section
 
@@ -612,9 +615,9 @@ open Monoid
 @[to_additive]
 theorem IsCyclic.exponent_eq_card [Group α] [IsCyclic α] :
     exponent α = Nat.card α := by
-  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := α)
+  obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := α)
   apply Nat.dvd_antisymm Group.exponent_dvd_nat_card
-  rw [← orderOf_eq_card_of_forall_mem_zpowers hg]
+  rw [← hg]
   exact order_dvd_exponent _
 
 @[to_additive]
@@ -725,12 +728,20 @@ noncomputable def mulEquivOfPrimeCardEq {p : ℕ} [Group G] [Group G']
   apply mulEquivOfCyclicCardEq
   exact hG.trans hH.symm
 
+variable (G) in
+/-- The automorphism group of a cyclic group is isomorphic to the multiplicative group of ZMod. -/
+@[simps!]
+noncomputable def IsCyclic.mulAutMulEquiv [Group G] [h : IsCyclic G] :
+    MulAut G ≃* (ZMod (Nat.card G))ˣ :=
+  ((MulAut.congr (zmodCyclicMulEquiv h)).symm.trans
+    (MulAutMultiplicative (ZMod (Nat.card G)))).trans (ZMod.AddAutEquivUnits (Nat.card G))
+
+variable (G) in
 theorem IsCyclic.card_mulAut [Group G] [Finite G] [h : IsCyclic G] :
     Nat.card (MulAut G) = Nat.totient (Nat.card G) := by
   have : NeZero (Nat.card G) := ⟨Nat.card_pos.ne'⟩
   rw [← ZMod.card_units_eq_totient, ← Nat.card_eq_fintype_card]
-  exact Nat.card_congr ((MulAut.congr (zmodCyclicMulEquiv h)).toEquiv.symm.trans
-    (MulEquiv.toAdditive.trans (ZMod.AddAutEquivUnits (Nat.card G)).toEquiv))
+  exact Nat.card_congr (mulAutMulEquiv G)
 
 end ZMod
 

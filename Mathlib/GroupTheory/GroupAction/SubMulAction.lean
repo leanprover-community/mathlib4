@@ -351,7 +351,7 @@ lemma orbitRel_of_subMul (p : SubMulAction R M) :
 /-- Stabilizers in group SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
     MulAction.stabilizer R m = MulAction.stabilizer R (m : M) := by
-  rw [← Subgroup.toSubmonoid_eq]
+  rw [← Subgroup.toSubmonoid_inj]
   exact stabilizer_of_subMul.submonoid m
 
 end MulActionGroup
@@ -441,3 +441,26 @@ lemma inclusion_injective (s : SubMulAction M α) :
   Subtype.val_injective
 
 end SubMulAction
+
+namespace Units
+
+variable (R M : Type*) [Monoid R] [AddCommMonoid M] [DistribMulAction R M]
+
+/-- The non-zero elements of `M` are invariant under the action by the units of `R`. -/
+def nonZeroSubMul : SubMulAction Rˣ M where
+  carrier := { x : M | x ≠ 0 }
+  smul_mem' := by simp [Units.smul_def]
+
+instance : MulAction Rˣ { x : M // x ≠ 0 } :=
+  SubMulAction.mulAction' (nonZeroSubMul R M)
+
+@[simp]
+lemma smul_coe (a : Rˣ) (x : { x : M // x ≠ 0 }) :
+    (a • x).val = a • x.val :=
+  rfl
+
+lemma orbitRel_nonZero_iff (x y : { v : M // v ≠ 0 }) :
+    MulAction.orbitRel Rˣ { v // v ≠ 0 } x y ↔ MulAction.orbitRel Rˣ M x y :=
+  ⟨by rintro ⟨a, rfl⟩; exact ⟨a, by simp⟩, by intro ⟨a, ha⟩; exact ⟨a, by ext; simpa⟩⟩
+
+end Units

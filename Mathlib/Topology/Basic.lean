@@ -570,6 +570,12 @@ theorem dense_compl_singleton_iff_not_open :
     obtain rfl : U = {x} := eq_singleton_iff_nonempty_unique_mem.2 ⟨hne, hUx⟩
     exact ho hU
 
+/-- If a closed property holds for a dense subset, it holds for the whole space. -/
+@[elab_as_elim]
+lemma Dense.induction (hs : Dense s) {P : X → Prop}
+    (mem : ∀ x ∈ s, P x) (isClosed : IsClosed { x | P x }) (x : X) : P x :=
+  hs.closure_eq.symm.subset.trans (isClosed.closure_subset_iff.mpr mem) trivial
+
 theorem IsOpen.subset_interior_closure {s : Set X} (s_open : IsOpen s) :
     s ⊆ interior (closure s) := s_open.subset_interior_iff.mpr subset_closure
 
@@ -1358,6 +1364,12 @@ variable {f : X → Y} {s : Set X} {x : X} {y : Y}
 theorem IsOpen.preimage (hf : Continuous f) {t : Set Y} (h : IsOpen t) :
     IsOpen (f ⁻¹' t) :=
   hf.isOpen_preimage t h
+
+lemma Equiv.continuous_symm_iff (e : X ≃ Y) : Continuous e.symm ↔ IsOpenMap e := by
+  simp_rw [continuous_def, ← Set.image_equiv_eq_preimage_symm, IsOpenMap]
+
+lemma Equiv.isOpenMap_symm_iff (e : X ≃ Y) : IsOpenMap e.symm ↔ Continuous e := by
+  simp_rw [← Equiv.continuous_symm_iff, Equiv.symm_symm]
 
 theorem continuous_congr {g : X → Y} (h : ∀ x, f x = g x) :
     Continuous f ↔ Continuous g :=

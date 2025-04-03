@@ -150,33 +150,6 @@ abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [Ad
   let _ := SeminormedAddCommGroup.induced E G f
   ⟨fun a b ↦ by simpa only [← map_smul f a b] using norm_smul_le a (f b)⟩
 
-section NormedAddCommGroup
-
-variable [NormedField 𝕜]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
-open NormedField
-
-/-- While this may appear identical to `NormedSpace.toModule`, it contains an implicit argument
-involving `NormedAddCommGroup.toSeminormedAddCommGroup` that typeclass inference has trouble
-inferring.
-
-Specifically, the following instance cannot be found without this `NormedSpace.toModule'`:
-```lean
-example
-  (𝕜 ι : Type*) (E : ι → Type*)
-  [NormedField 𝕜] [Π i, NormedAddCommGroup (E i)] [Π i, NormedSpace 𝕜 (E i)] :
-  Π i, Module 𝕜 (E i) := by infer_instance
-```
-
-[This Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/245151099)
-gives some more context. -/
-instance (priority := 100) NormedSpace.toModule' : Module 𝕜 F :=
-  NormedSpace.toModule
-
-end NormedAddCommGroup
-
 section NontriviallyNormedSpace
 
 variable (𝕜 E)
@@ -266,21 +239,6 @@ instance (priority := 100) NormedAlgebra.toNormedSpace : NormedSpace 𝕜 𝕜' 
   -- Porting note: previous Lean could figure out what we were extending
   { NormedAlgebra.toAlgebra.toModule with
   norm_smul_le := NormedAlgebra.norm_smul_le }
-
-/-- While this may appear identical to `NormedAlgebra.toNormedSpace`, it contains an implicit
-argument involving `NormedRing.toSeminormedRing` that typeclass inference has trouble inferring.
-
-Specifically, the following instance cannot be found without this `NormedSpace.toModule'`:
-```lean
-example
-  (𝕜 ι : Type*) (E : ι → Type*)
-  [NormedField 𝕜] [Π i, NormedRing (E i)] [Π i, NormedAlgebra 𝕜 (E i)] :
-  Π i, Module 𝕜 (E i) := by infer_instance
-```
-
-See `NormedSpace.toModule'` for a similar situation. -/
-instance (priority := 100) NormedAlgebra.toNormedSpace' {𝕜'} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] :
-    NormedSpace 𝕜 𝕜' := by infer_instance
 
 theorem norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * ‖(1 : 𝕜')‖ := by
   rw [Algebra.algebraMap_eq_smul_one]

@@ -179,6 +179,15 @@ attribute [local simp] Adjunction.homEquiv_unit Adjunction.homEquiv_counit
 
 namespace Adjunction
 
+@[ext]
+lemma ext {F : C ⥤ D} {G : D ⥤ C} {adj adj' : F ⊣ G}
+    (h : adj.unit = adj'.unit) : adj = adj' := by
+  suffices h' : adj.counit = adj'.counit by cases adj; cases adj'; aesop
+  ext X
+  apply (adj.homEquiv _ _).injective
+  rw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit,
+    Adjunction.right_triangle_components, h, Adjunction.right_triangle_components]
+
 section
 
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
@@ -658,6 +667,11 @@ lemma isLeftAdjoint_inverse : e.inverse.IsLeftAdjoint :=
 
 lemma isRightAdjoint_functor : e.functor.IsRightAdjoint :=
   e.symm.isRightAdjoint_inverse
+
+lemma trans_toAdjunction {E : Type*} [Category E] (e' : D ≌ E) :
+    (e.trans e').toAdjunction = e.toAdjunction.comp e'.toAdjunction := by
+  ext
+  simp [trans]
 
 end Equivalence
 

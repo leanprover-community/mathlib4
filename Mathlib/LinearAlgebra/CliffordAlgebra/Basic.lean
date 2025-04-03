@@ -207,7 +207,7 @@ theorem induction {C : CliffordAlgebra Q → Prop}
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (CliffordAlgebra Q) = s.val.comp (lift Q of) := by
     ext
-    simp [of]
+    simp [of, h]
     -- Porting note: `simp` can't apply this
     erw [LinearMap.codRestrict_apply]
   -- finding a proof is finding an element of the subalgebra

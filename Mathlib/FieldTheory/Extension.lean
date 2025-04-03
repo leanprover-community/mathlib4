@@ -183,7 +183,7 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
   have := finiteDimensional_adjoin (S := {α}) fun _ _ ↦ ((alg.tower_top ϕ.carrier).isIntegral).1 _
   let L (σ : Λ) : Lifts F E K := ⟨ϕ.carrier⟮α⟯.restrictScalars F, σ.restrictScalars F⟩
   have hL (σ : Λ) : ϕ < L σ := lt_iff.mpr
-    ⟨by simpa only [restrictScalars_adjoin_eq_sup, left_lt_sup, adjoin_simple_le_iff],
+    ⟨by simpa only [L, restrictScalars_adjoin_eq_sup, left_lt_sup, adjoin_simple_le_iff],
       AlgHom.coe_ringHom_injective σ.comp_algebraMap⟩
   have ⟨(ϕ_ext : ϕ.IsExtendible), ϕ_max⟩ := maximal_iff_forall_gt.mp hϕ
   simp_rw [Set.mem_setOf, IsExtendible] at ϕ_max; push_neg at ϕ_max

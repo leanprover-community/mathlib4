@@ -6,7 +6,7 @@ Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 
@@ -55,7 +55,7 @@ alias isLocalRingHom_of_comp := isLocalHom_of_comp
 /-- If `f : R →+* S` is a local ring hom, then `R` is a local ring if `S` is. -/
 theorem RingHom.domain_isLocalRing {R S : Type*} [CommSemiring R] [CommSemiring S] [IsLocalRing S]
     (f : R →+* S) [IsLocalHom f] : IsLocalRing R := by
-  haveI : Nontrivial R := pullback_nonzero f f.map_zero f.map_one
+  haveI : Nontrivial R := f.domain_nontrivial
   apply IsLocalRing.of_nonunits_add
   intro a b
   simp_rw [← map_mem_nonunits_iff f, f.map_add]

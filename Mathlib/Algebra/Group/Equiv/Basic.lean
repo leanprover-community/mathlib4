@@ -64,9 +64,6 @@ add_decl_doc AddEquiv.toAddHom
 /-- `MulEquiv α β` is the type of an equiv `α ≃ β` which preserves multiplication. -/
 @[to_additive]
 structure MulEquiv (M N : Type*) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
--- Porting note: remove when `to_additive` can do this
--- https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive existing] MulEquiv.toMulHom
 
 /-- The `Equiv` underlying a `MulEquiv`. -/
 add_decl_doc MulEquiv.toEquiv
@@ -449,14 +446,20 @@ section unique
 
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
-def mulEquivOfUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
-  { Equiv.equivOfUnique M N with map_mul' := fun _ _ => Subsingleton.elim _ _ }
+def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
+  { Equiv.ofUnique M N with map_mul' := fun _ _ => Subsingleton.elim _ _ }
+
+@[to_additive (attr := deprecated ofUnique (since := "2024-12-25"))]
+alias mulEquivOfUnique := ofUnique
+
+/-- Alias of `AddEquiv.ofEquiv`. -/
+add_decl_doc AddEquiv.addEquivOfUnique
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive "There is a unique additive monoid homomorphism between two additive monoids with
   a unique element."]
 instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
-  default := mulEquivOfUnique
+  default := ofUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
 
 end unique

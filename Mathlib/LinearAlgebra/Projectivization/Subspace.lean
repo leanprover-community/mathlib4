@@ -154,6 +154,9 @@ span of that set. -/
 theorem monotone_span : Monotone (span : Set (ℙ K V) → Subspace K V) :=
   gi.gc.monotone_l
 
+@[gcongr]
+lemma span_le_span {s t : Set (ℙ K V)} (hst : s ⊆ t) : span s ≤ span t := monotone_span hst
+
 theorem subset_span_trans {S T U : Set (ℙ K V)} (hST : S ⊆ span T) (hTU : T ⊆ span U) :
     S ⊆ span U :=
   gi.gc.le_u_l_trans hST hTU

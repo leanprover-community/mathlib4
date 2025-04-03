@@ -5,8 +5,8 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Comm
 -/
 import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.RingDivision
-import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.SetTheory.Cardinal.Basic
 
@@ -28,6 +28,8 @@ We define the multiset of roots of a polynomial, and prove basic results about i
   ranges through its roots.
 
 -/
+
+assert_not_exists Ideal
 
 open Multiset Finset
 
@@ -165,6 +167,9 @@ theorem roots_X_sub_C (r : R) : roots (X - C r) = {r} := by
   rw [count_roots, rootMultiplicity_X_sub_C, count_singleton]
 
 @[simp]
+theorem roots_X_add_C (r : R) : roots (X + C r) = {-r} := by simpa using roots_X_sub_C (-r)
+
+@[simp]
 theorem roots_X : roots (X : R[X]) = {0} := by rw [← roots_X_sub_C, C_0, sub_zero]
 
 @[simp]
@@ -192,6 +197,18 @@ theorem roots_smul_nonzero (p : R[X]) (ha : a ≠ 0) : (a • p).roots = p.roots
 @[simp]
 lemma roots_neg (p : R[X]) : (-p).roots = p.roots := by
   rw [← neg_one_smul R p, roots_smul_nonzero p (neg_ne_zero.mpr one_ne_zero)]
+
+@[simp]
+theorem roots_C_mul_X_sub_C_of_IsUnit (b : R) (a : Rˣ) : (C (a : R) * X - C b).roots =
+    {a⁻¹ * b} := by
+  rw [← roots_C_mul _ (Units.ne_zero a⁻¹), mul_sub, ← mul_assoc, ← C_mul, ← C_mul,
+    Units.inv_mul, C_1, one_mul]
+  exact roots_X_sub_C (a⁻¹ * b)
+
+@[simp]
+theorem roots_C_mul_X_add_C_of_IsUnit (b : R) (a : Rˣ) : (C (a : R) * X + C b).roots =
+    {-(a⁻¹ * b)} := by
+  rw [← sub_neg_eq_add, ← C_neg, roots_C_mul_X_sub_C_of_IsUnit, mul_neg]
 
 theorem roots_list_prod (L : List R[X]) :
     (0 : R[X]) ∉ L → L.prod.roots = (L : Multiset R[X]).bind roots :=

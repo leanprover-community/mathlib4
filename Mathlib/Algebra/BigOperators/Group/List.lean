@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Int
+import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Flatten
 import Mathlib.Data.List.Pairwise
@@ -118,7 +119,9 @@ theorem prod_concat : (l.concat a).prod = l.prod * a := by
 
 @[to_additive (attr := simp)]
 theorem prod_flatten {l : List (List M)} : l.flatten.prod = (l.map List.prod).prod := by
-  induction l <;> [rfl; simp only [*, List.flatten, map, prod_append, prod_cons]]
+  induction l with
+  | nil => simp
+  | cons head tail ih => simp only [*, List.flatten, map, prod_append, prod_cons]
 
 @[deprecated (since := "2024-10-15")] alias prod_join := prod_flatten
 @[deprecated (since := "2024-10-15")] alias sum_join := sum_flatten
@@ -129,7 +132,7 @@ theorem prod_eq_foldr {l : List M} : l.prod = foldr (· * ·) 1 l := rfl
 @[to_additive (attr := simp)]
 theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
   induction n with
-  | zero => rw [pow_zero]; rfl
+  | zero => rw [pow_zero, replicate_zero, prod_nil]
   | succ n ih => rw [replicate_succ, prod_cons, ih, pow_succ']
 
 @[to_additive sum_eq_card_nsmul]
@@ -205,7 +208,8 @@ theorem prod_take_mul_prod_drop (L : List M) (i : ℕ) :
 @[to_additive (attr := simp)]
 theorem prod_take_succ (L : List M) (i : ℕ) (p : i < L.length) :
     (L.take (i + 1)).prod = (L.take i).prod * L[i] := by
-  simp [← take_concat_get', p]
+  rw [← take_concat_get' _ _ p, prod_append]
+  simp
 
 /-- A list with product not one must have positive length. -/
 @[to_additive "A list with sum not zero must have positive length."]
@@ -386,10 +390,10 @@ lemma prod_map_ite (p : α → Prop) [DecidablePred p] (f g : α → M) (l : Lis
     rw [ih]
     clear ih
     by_cases hx : p x
-    · simp only [hx, ↓reduceIte, decide_not, decide_True, map_cons, prod_cons, not_true_eq_false,
-        decide_False, Bool.false_eq_true, mul_assoc]
-    · simp only [hx, ↓reduceIte, decide_not, decide_False, Bool.false_eq_true, not_false_eq_true,
-      decide_True, map_cons, prod_cons, mul_left_comm]
+    · simp only [hx, ↓reduceIte, decide_not, decide_true, map_cons, prod_cons, not_true_eq_false,
+        decide_false, Bool.false_eq_true, mul_assoc]
+    · simp only [hx, ↓reduceIte, decide_not, decide_false, Bool.false_eq_true, not_false_eq_true,
+      decide_true, map_cons, prod_cons, mul_left_comm]
 
 @[to_additive]
 lemma prod_map_filter_mul_prod_map_filter_not (p : α → Prop) [DecidablePred p] (f : α → M)
@@ -647,7 +651,7 @@ lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ 
 
 lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
   | [] => rfl
-  | a :: l => by simp only [flatten, ← map_flatten, ranges_flatten, sum_cons, range_add]
+  | a :: l => by simp [ranges, ← map_flatten, ranges_flatten, range_add]
 
 /-- The members of `l.ranges` have no duplicate -/
 theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
@@ -660,21 +664,9 @@ lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by
   rw [← mem_range, ← ranges_flatten, mem_flatten]
 
-@[simp]
-theorem length_flatMap (l : List α) (f : α → List β) :
-    length (List.flatMap l f) = sum (map (length ∘ f) l) := by
-  rw [List.flatMap, length_flatten, map_map]
-
 @[deprecated (since := "2024-10-16")] alias length_bind := length_flatMap
 
-lemma countP_flatMap (p : β → Bool) (l : List α) (f : α → List β) :
-    countP p (l.flatMap f) = sum (map (countP p ∘ f) l) := by
-  rw [List.flatMap, countP_flatten, map_map]
-
 @[deprecated (since := "2024-10-16")] alias countP_bind := countP_flatMap
-
-lemma count_flatMap [BEq β] (l : List α) (f : α → List β) (x : β) :
-    count x (l.flatMap f) = sum (map (count x ∘ f) l) := countP_flatMap _ _ _
 
 @[deprecated (since := "2024-10-16")] alias count_bind := count_flatMap
 

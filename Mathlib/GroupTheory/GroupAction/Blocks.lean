@@ -106,7 +106,7 @@ def IsTrivialBlock (B : Set X) := B.Subsingleton ∨ B = univ
 "A set `B` is a `G`-block iff the sets of the form `g +ᵥ B` are pairwise equal or disjoint. "]
 def IsBlock (B : Set X) := ∀ ⦃g₁ g₂ : G⦄, g₁ • B ≠ g₂ • B → Disjoint (g₁ • B) (g₂ • B)
 
-variable {G}
+variable {G} {s : Set G} {g g₁ g₂ : G}
 
 @[to_additive]
 lemma isBlock_iff_smul_eq_smul_of_nonempty :
@@ -121,6 +121,27 @@ lemma isBlock_iff_pairwiseDisjoint_range_smul :
 lemma isBlock_iff_smul_eq_smul_or_disjoint :
     IsBlock G B ↔ ∀ g₁ g₂ : G, g₁ • B = g₂ • B ∨ Disjoint (g₁ • B) (g₂ • B) :=
   forall₂_congr fun _ _ ↦ or_iff_not_imp_left.symm
+
+@[to_additive]
+lemma IsBlock.smul_eq_smul_of_subset (hB : IsBlock G B) (hg : g₁ • B ⊆ g₂ • B) :
+    g₁ • B = g₂ • B := by
+  by_contra! hg'
+  obtain rfl : B = ∅ := by simpa using (hB hg').eq_bot_of_le hg
+  simp at hg'
+
+@[to_additive]
+lemma IsBlock.not_smul_set_ssubset_smul_set (hB : IsBlock G B) : ¬ g₁ • B ⊂ g₂ • B :=
+  fun hab ↦ hab.ne <| hB.smul_eq_smul_of_subset hab.subset
+
+@[to_additive]
+lemma IsBlock.disjoint_smul_set_smul (hB : IsBlock G B) (hgs : ¬ g • B ⊆ s • B) :
+    Disjoint (g • B) (s • B) := by
+  rw [← iUnion_smul_set, disjoint_iUnion₂_right]
+  exact fun b hb ↦ hB fun h ↦ hgs <| h.trans_subset <| smul_set_subset_smul hb
+
+@[to_additive]
+lemma IsBlock.disjoint_smul_smul_set (hB : IsBlock G B) (hgs : ¬ g • B ⊆ s • B) :
+    Disjoint (s • B) (g • B) := (hB.disjoint_smul_set_smul hgs).symm
 
 alias ⟨IsBlock.smul_eq_smul_of_nonempty, _⟩ := isBlock_iff_smul_eq_smul_of_nonempty
 alias ⟨IsBlock.pairwiseDisjoint_range_smul, _⟩ := isBlock_iff_pairwiseDisjoint_range_smul
@@ -149,6 +170,19 @@ lemma IsFixedBlock.isInvariantBlock (hB : IsFixedBlock G B) : IsInvariantBlock G
   fun _ ↦ (hB _).le
 
 end SMul
+
+section Monoid
+variable {M X : Type*} [Monoid M] [MulAction M X] {B : Set X} {s : Set M}
+
+@[to_additive]
+lemma IsBlock.disjoint_smul_right (hB : IsBlock M B) (hs : ¬ B ⊆ s • B) : Disjoint B (s • B) := by
+  simpa using hB.disjoint_smul_set_smul (g := 1) (by simpa using hs)
+
+@[to_additive]
+lemma IsBlock.disjoint_smul_left (hB : IsBlock M B) (hs : ¬ B ⊆ s • B) : Disjoint (s • B) B :=
+  (hB.disjoint_smul_right hs).symm
+
+end Monoid
 
 section Group
 
@@ -311,7 +345,7 @@ theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
     obtain ⟨b : X, hb : b ∈ B⟩ := hBe
     obtain ⟨g, rfl⟩ := exists_smul_eq G b a
     use g • B
-    simp only [Set.smul_mem_smul_set_iff, hb, exists_unique_iff_exists, Set.mem_range,
+    simp only [Set.smul_mem_smul_set_iff, hb, existsUnique_iff_exists, Set.mem_range,
       exists_apply_eq_apply, exists_const, exists_prop, and_imp, forall_exists_index,
       forall_apply_eq_imp_iff, true_and]
     exact fun g' ha ↦ hB.smul_eq_smul_of_nonempty ⟨g • b, ha, ⟨b, hb, rfl⟩⟩

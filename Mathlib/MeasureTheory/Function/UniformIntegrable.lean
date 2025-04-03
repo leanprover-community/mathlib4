@@ -402,7 +402,7 @@ theorem Memℒp.eLpNorm_indicator_le_of_meas (hp_one : 1 ≤ p) (hp_top : p ≠ 
   obtain ⟨δ, hδpos, hδ⟩ := hf.eLpNorm_indicator_le' hp_one hp_top hmeas (half_pos hε)
   refine ⟨δ, hδpos, fun s hs hμs => le_trans (hδ s hs hμs) ?_⟩
   rw [ENNReal.ofReal_div_of_pos zero_lt_two, (by norm_num : ENNReal.ofReal 2 = 2),
-      ENNReal.mul_div_cancel'] <;>
+      ENNReal.mul_div_cancel] <;>
     norm_num
 
 @[deprecated (since := "2024-07-27")]

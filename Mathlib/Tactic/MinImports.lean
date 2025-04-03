@@ -215,10 +215,10 @@ def minImpsCore (stx id : Syntax) : CommandElabM Unit := do
 
 /-- `#min_imports in cmd` scans the syntax `cmd` and the declaration obtained by elaborating `cmd`
 to find a collection of minimal imports that should be sufficient for `cmd` to work. -/
-syntax (name := minImpsStx) "#min_imports in" command : command
+syntax (name := minImpsStx) "#min_imports" "in" command : command
 
 @[inherit_doc minImpsStx]
-syntax "#min_imports in" term : command
+syntax "#min_imports" "in" term : command
 
 elab_rules : command
   | `(#min_imports in $cmd:command) => do

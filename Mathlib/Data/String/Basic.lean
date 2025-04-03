@@ -31,7 +31,7 @@ def ltb (s₁ s₂ : Iterator) : Bool :=
 instance LT' : LT String :=
   ⟨fun s₁ s₂ ↦ ltb s₁.iter s₂.iter⟩
 
-instance decidableLT : @DecidableRel String (· < ·) := by
+instance decidableLT : DecidableRel (α := String) (· < ·) := by
   simp only [LT']
   infer_instance -- short-circuit type class inference
 
@@ -100,7 +100,7 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
 instance LE : LE String :=
   ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
 
-instance decidableLE : @DecidableRel String (· ≤ ·) := by
+instance decidableLE : DecidableRel (α := String) (· ≤ ·) := by
   simp only [LE]
   infer_instance -- short-circuit type class inference
 

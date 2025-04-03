@@ -47,7 +47,7 @@ We also provide equivalent conditions to satisfy alternate definitions given in 
 -/
 
 
-universe w v u
+universe w w' v u
 
 namespace CategoryTheory
 
@@ -81,6 +81,30 @@ theorem isSheaf_of_le (P : Cᵒᵖ ⥤ Type w) {J₁ J₂ : GrothendieckTopology
 
 theorem isSeparated_of_isSheaf (P : Cᵒᵖ ⥤ Type w) (h : IsSheaf J P) : IsSeparated J P :=
   fun S hS => (h S hS).isSeparatedFor
+
+section
+
+variable {J} {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ ⥤ Type w'}
+  (e : ∀ ⦃X : C⦄, P₁.obj (op X) ≃ P₂.obj (op X))
+  (he : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : P₁.obj (op Y)),
+    e (P₁.map f.op x) = P₂.map f.op (e x))
+
+include he in
+lemma isSheaf_of_nat_equiv (hP₁ : Presieve.IsSheaf J P₁) :
+    Presieve.IsSheaf J P₂ := fun _ R hR ↦
+  isSheafFor_of_nat_equiv e he (hP₁ R hR)
+
+include he in
+lemma isSheaf_iff_of_nat_equiv :
+    Presieve.IsSheaf J P₁ ↔ Presieve.IsSheaf J P₂ :=
+  ⟨fun hP₁ ↦ isSheaf_of_nat_equiv e he hP₁,
+    fun hP₂ ↦
+      isSheaf_of_nat_equiv (fun _ ↦ (@e _).symm) (fun X Y f x ↦ by
+        obtain ⟨y, rfl⟩ := e.surjective x
+        refine e.injective ?_
+        simp only [Equiv.apply_symm_apply, Equiv.symm_apply_apply, he]) hP₂⟩
+
+end
 
 /-- The property of being a sheaf is preserved by isomorphism. -/
 theorem isSheaf_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (h : IsSheaf J P) : IsSheaf J P' :=

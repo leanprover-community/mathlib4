@@ -3,6 +3,7 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Yury Kudryashov
 -/
+import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.Algebra.Module.UniformConvergence
 import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Hom.ContinuousEvalConst

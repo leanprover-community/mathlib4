@@ -10,7 +10,7 @@ import Mathlib.Topology.LocalAtTarget
 /-!
 # Morphisms surjective on stalks
 
-We define the classe of morphisms between schemes that are surjective on stalks.
+We define the class of morphisms between schemes that are surjective on stalks.
 We show that this class is stable under composition and base change.
 
 We also show that (`AlgebraicGeometry.SurjectiveOnStalks.isEmbedding_pullback`)
@@ -39,7 +39,7 @@ theorem Scheme.Hom.stalkMap_surjective (f : X.Hom Y) [SurjectiveOnStalks f] (x) 
 namespace SurjectiveOnStalks
 
 instance (priority := 900) [IsOpenImmersion f] : SurjectiveOnStalks f :=
-  ⟨fun _ ↦ (ConcreteCategory.bijective_of_isIso _).2⟩
+  ⟨fun _ ↦ (ConcreteCategory.bijective_of_isIso (C := CommRingCat) _).2⟩
 
 instance : MorphismProperty.IsMultiplicative @SurjectiveOnStalks where
   id_mem _ := inferInstance
@@ -63,7 +63,7 @@ instance : IsLocalAtSource @SurjectiveOnStalks :=
   eq_stalkwise ▸ stalkwise_isLocalAtSource_of_respectsIso RingHom.surjective_respectsIso
 
 lemma Spec_iff {R S : CommRingCat.{u}} {φ : R ⟶ S} :
-    SurjectiveOnStalks (Spec.map φ) ↔ RingHom.SurjectiveOnStalks φ := by
+    SurjectiveOnStalks (Spec.map φ) ↔ RingHom.SurjectiveOnStalks φ.hom := by
   rw [eq_stalkwise, stalkwise_Spec_map_iff RingHom.surjective_respectsIso,
     RingHom.SurjectiveOnStalks]
 
@@ -72,7 +72,7 @@ instance : HasRingHomProperty @SurjectiveOnStalks RingHom.SurjectiveOnStalks :=
 
 variable {f} in
 lemma iff_of_isAffine [IsAffine X] [IsAffine Y] :
-    SurjectiveOnStalks f ↔ RingHom.SurjectiveOnStalks (f.app ⊤) := by
+    SurjectiveOnStalks f ↔ RingHom.SurjectiveOnStalks (f.app ⊤).hom := by
   rw [← Spec_iff, MorphismProperty.arrow_mk_iso_iff @SurjectiveOnStalks (arrowIsoSpecΓOfIsAffine f)]
 
 theorem of_comp [SurjectiveOnStalks (f ≫ g)] : SurjectiveOnStalks f := by
@@ -103,8 +103,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
       .of_comp _ iS
     obtain ⟨φ, rfl⟩ : ∃ φ, Spec.map φ = f' := ⟨_, Spec.map_preimage _⟩
     obtain ⟨ψ, rfl⟩ : ∃ ψ, Spec.map ψ = g' := ⟨_, Spec.map_preimage _⟩
-    letI := φ.toAlgebra
-    letI := ψ.toAlgebra
+    algebraize [φ.hom, ψ.hom]
     rw [HasRingHomProperty.Spec_iff (P := @SurjectiveOnStalks)] at H
     convert ((iX.isOpenEmbedding.prodMap iY.isOpenEmbedding).isEmbedding.comp
       (PrimeSpectrum.isEmbedding_tensorProductTo_of_surjectiveOnStalks R A B H)).comp
@@ -113,10 +112,12 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
     obtain ⟨x, rfl⟩ := (Scheme.homeoOfIso (pullbackSpecIso R A B).symm).surjective x
     simp only [Scheme.homeoOfIso_apply, Function.comp_apply]
     ext
-    · simp only [← Scheme.comp_base_apply, pullback.lift_fst, Iso.symm_hom, Iso.inv_hom_id]
+    · simp only [L, ← Scheme.comp_base_apply, pullback.lift_fst, Iso.symm_hom,
+        Iso.inv_hom_id]
       erw [← Scheme.comp_base_apply, pullbackSpecIso_inv_fst_assoc]
       rfl
-    · simp only [← Scheme.comp_base_apply, pullback.lift_snd, Iso.symm_hom, Iso.inv_hom_id]
+    · simp only [L, ← Scheme.comp_base_apply, pullback.lift_snd, Iso.symm_hom,
+        Iso.inv_hom_id]
       erw [← Scheme.comp_base_apply, pullbackSpecIso_inv_snd_assoc]
       rfl
   let 𝒰 := S.affineOpenCover.openCover
@@ -178,7 +179,8 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
         inferInstance inferInstance inferInstance
     convert this using 6
     apply pullback.hom_ext <;>
-      simp [𝓤, ← pullback.condition, ← pullback.condition_assoc, Scheme.Cover.pullbackHom]
+      simp [𝓤, ← pullback.condition, ← pullback.condition_assoc,
+        Scheme.Cover.pullbackHom]
 
 end SurjectiveOnStalks
 

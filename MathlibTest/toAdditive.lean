@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Lean.Exception
+import Mathlib.Tactic.ReduceModChar.Ext
 import Qq.MetaM
 open Qq Lean Meta Elab Command ToAdditive
 
@@ -109,9 +110,6 @@ lemma foo15 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = 
 @[to_additive (reorder := 1 2, 4 5) bar16]
 lemma foo16 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := foo15 x y
 
-initialize testExt : SimpExtension ←
-  registerSimpAttr `simp_test "test"
-
 @[to_additive bar17]
 def foo17 [Group α] (x : α) : α := x * 1
 
@@ -192,7 +190,8 @@ def fixedNumeralTest {α} [One α] :=
 def fixedNumeralTest2 {α} [One α] :=
   @OfNat.ofNat ((fun _ => ℕ) (1 : α)) 1 (@One.toOfNat1 ((fun _ => ℕ) (1 : α)) _)
 
-/-! Test the namespace bug (https://github.com/leanprover-community/mathlib4/pull/8733). This code should *not* generate a lemma
+/-! Test the namespace bug (https://github.com/leanprover-community/mathlib4/pull/8733).
+This code should *not* generate a lemma
   `add_some_def.in_namespace`. -/
 def some_def.in_namespace : Bool := false
 
@@ -206,7 +205,8 @@ instance : One (myFin n) := ⟨(1 : ℕ)⟩
 @[to_additive bar]
 def myFin.foo : myFin (n+1) := 1
 
-/-- We can pattern-match with `1`, which creates a term with a pure nat literal. See https://github.com/leanprover-community/mathlib4/pull/2046 -/
+/-- We can pattern-match with `1`, which creates a term with a pure nat literal.
+See https://github.com/leanprover-community/mathlib4/pull/2046 -/
 @[to_additive]
 def mul_foo {α} [Monoid α] (a : α) : ℕ → α
   | 0 => 1
@@ -337,6 +337,28 @@ run_cmd do
   unless !(q((fun x => x) 3) : Q(Nat)).isConstantApplication do throwError "3"
   unless (q((fun _ => 5) 3) : Q(Nat)).isConstantApplication do throwError "4"
 
+@[to_additive, to_additive_dont_translate]
+def MonoidEnd : Type := Unit
+
+run_cmd do
+  let stx ← `(Semigroup MonoidEnd)
+  liftTermElabM do
+    let e ← Term.elabTerm stx none
+    guard <| additiveTest (← getEnv) e == some `Test.MonoidEnd
+
+
+@[to_additive instSemiGroupAddMonoidEnd]
+instance : Semigroup MonoidEnd where
+  mul _ _ := ()
+  mul_assoc _ _ _ := rfl
+
+@[to_additive]
+lemma monoidEnd_lemma (x y z : MonoidEnd) : x * (y * z) = (x * y) * z := mul_assoc .. |>.symm
+
+/-- info: Test.addMonoidEnd_lemma (x y z : AddMonoidEnd) : x * (y * z) = x * y * z -/
+#guard_msgs in
+#check addMonoidEnd_lemma
+
 /-!
 Some arbitrary tests to check whether additive names are guessed correctly.
 -/
@@ -400,3 +422,14 @@ run_cmd do
   unless findTranslation? (← getEnv) `localize.r == some `add_localize.r do throwError "1"
   unless findTranslation? (← getEnv) `localize   == some `add_localize   do throwError "2"
   unless findTranslation? (← getEnv) `localize.s == some `add_localize.s do throwError "3"
+
+/--
+warning: The source declaration one_eq_one was given the simp-attribute(s) reduce_mod_char, simp before calling @[to_additive]. The preferred method is to use something like `@[to_additive (attr := reduce_mod_char, simp)]` to apply the attribute to both one_eq_one and the target declaration zero_eq_zero.
+note: this linter can be disabled with `set_option linter.existingAttributeWarning false`
+-/
+#guard_msgs in
+@[simp, reduce_mod_char, to_additive]
+lemma one_eq_one {α : Type*} [One α] : (1 : α) = 1 := rfl
+
+@[to_additive (attr := reduce_mod_char, simp)]
+lemma one_eq_one' {α : Type*} [One α] : (1 : α) = 1 := rfl

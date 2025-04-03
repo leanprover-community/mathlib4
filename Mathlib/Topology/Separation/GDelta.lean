@@ -7,7 +7,7 @@ import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Regular
 import Mathlib.Topology.GDelta.Basic
 
 /-!

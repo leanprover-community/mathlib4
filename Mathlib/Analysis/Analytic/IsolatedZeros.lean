@@ -25,9 +25,6 @@ useful in this setup.
   accumulation point in `U` then `f` is identically `0` on `U`.
 -/
 
-
-open scoped Classical
-
 open Filter Function Nat FormalMultilinearSeries EMetric Set
 
 open scoped Topology
@@ -192,6 +189,7 @@ theorem exists_eventuallyEq_pow_smul_nonzero_iff (hf : AnalyticAt 𝕜 f z₀) :
       hp.iterate_dslope_fslope_ne_zero (hf_ne.imp hp.locally_zero_iff.mpr),
       hp.eq_pow_order_mul_iterate_dslope⟩
 
+open scoped Classical in
 /-- The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
 
 This is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the

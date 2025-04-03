@@ -165,6 +165,23 @@ include p in
 theorem reflexive_right : IsReflexive R N :=
   p.flip.reflexive_left
 
+instance : EquivLike (PerfectPairing R M N) M (Dual R N) where
+  coe p := p.toDualLeft
+  inv p := p.toDualLeft.symm
+  left_inv p x := LinearEquiv.symm_apply_apply _ _
+  right_inv p x := LinearEquiv.apply_symm_apply _ _
+  coe_injective' p q h h' := by
+    cases p
+    cases q
+    simp only [mk.injEq]
+    ext m n
+    simp only [DFunLike.coe_fn_eq] at h
+    exact LinearMap.congr_fun (LinearEquiv.congr_fun h m) n
+
+instance : LinearEquivClass (PerfectPairing R M N) R M (Dual R N) where
+  map_add p m₁ m₂ := p.toLin.map_add m₁ m₂
+  map_smulₛₗ p t m := p.toLin.map_smul t m
+
 include p in
 theorem finrank_eq [Module.Finite R M] [Module.Free R M] :
     finrank R M = finrank R N :=
@@ -244,11 +261,11 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
   suffices span K (Set.range v') = ⊤ by
     let e := (Module.Finite.finite_basis b).equivFin
     let b' : Basis _ K M' := Basis.mk hv' (by rw [this])
-    exact ⟨_, b.reindex e, b'.reindex e, fun i ↦ by simp [b, b']⟩
+    exact ⟨_, b.reindex e, b'.reindex e, fun i ↦ by simp [b, b', v']⟩
   suffices span K v = M' by
     apply Submodule.map_injective_of_injective M'.injective_subtype
     rw [Submodule.map_span, ← Set.image_univ, Set.image_image]
-    simpa
+    simpa [v']
   refine le_antisymm (Submodule.span_le.mpr hv₁) fun m hm ↦ ?_
   obtain ⟨w, hw₁, hw₂, hw₃⟩ := exists_linearIndependent L (N' : Set N)
   rw [hN] at hw₂
@@ -265,7 +282,7 @@ lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
       toDualLeft_apply, Basis.dualBasis_repr]
     exact hp (b j) (by simpa [b] using hv₁ j.2) (bN i) (by simpa [bN] using hw₁ i.2)
   have hA (i j) : b.toMatrix bM i j ∈ (algebraMap K L).range :=
-    Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left e _ (by simp) hp i j
+    Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left e _ (by simp [bM]) hp i j
   have h_span : span K v = span K (Set.range b) := by simp [b]
   rw [h_span, Basis.mem_span_iff_repr_mem, ← Basis.toMatrix_mulVec_repr bM b m]
   exact fun i ↦ Subring.sum_mem _ fun j _ ↦ Subring.mul_mem _ (hA i j) (hj j)
@@ -276,7 +293,7 @@ variable {S : Type*}
   {M' N' : Type*} [AddCommGroup M'] [Module S M'] [AddCommGroup N'] [Module S N']
   (i : M' →ₗ[S] M) (j : N' →ₗ[S] N)
 
-/-- An auxiliary definition used to constuct `PerfectPairing.restrictScalars`. -/
+/-- An auxiliary definition used to construct `PerfectPairing.restrictScalars`. -/
 private def restrictScalarsAux
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap S R).range) :
     M' →ₗ[S] N' →ₗ[S] S :=

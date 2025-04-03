@@ -21,7 +21,7 @@ noncomputable section
 
 namespace TopCat
 
-variable {J : Type v} [SmallCategory J]
+variable {J : Type v} [Category.{w} J]
 
 section Pullback
 

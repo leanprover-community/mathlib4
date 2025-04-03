@@ -92,7 +92,7 @@ that the `U i`'s are open subspaces of the glued space.
 -/
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
-structure GlueData extends GlueData (PresheafedSpace.{u, v, v} C) where
+structure GlueData extends CategoryTheory.GlueData (PresheafedSpace.{u, v, v} C) where
   f_open : ∀ i j, IsOpenImmersion (f i j)
 
 attribute [instance] GlueData.f_open
@@ -242,7 +242,7 @@ theorem ι_image_preimage_eq (i j : D.J) (U : Opens (D.U i).carrier) :
       (opensFunctor (D.f j i)).obj
         ((Opens.map (𝖣.t j i).base).obj ((Opens.map (𝖣.f i j).base).obj U)) := by
   ext1
-  dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe]
+  dsimp only [Opens.map_coe, IsOpenMap.coe_functor_obj]
   rw [← show _ = (𝖣.ι i).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) i, ←
     show _ = (𝖣.ι j).base from 𝖣.ι_gluedIso_inv (PresheafedSpace.forget _) j]
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw` on `coe_comp`
@@ -328,7 +328,7 @@ def ιInvAppπApp {i : D.J} (U : Opens (D.U i).carrier) (j) :
       D.opensImagePreimageMap i j U ≫ (D.f j k).c.app _ ≫ (D.V (j, k)).presheaf.map (eqToHom ?_)
     rw [Functor.op_obj]
     congr 1; ext1
-    dsimp only [Functor.op_obj, Opens.map_coe, unop_op, IsOpenMap.functor_obj_coe]
+    dsimp only [Functor.op_obj, Opens.map_coe, unop_op, IsOpenMap.coe_functor_obj]
     rw [Set.preimage_preimage]
     change (D.f j k ≫ 𝖣.ι j).base ⁻¹' _ = _
     -- Porting note: used to be `congr 3`

@@ -265,7 +265,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
   rw [← Multiset.eq_replicate_card] at h2
   rw [← sum_cycleType, h2, Multiset.sum_replicate, smul_eq_mul] at h
   have h : Multiset.card g.cycleType ≤ 3 :=
-    le_of_mul_le_mul_right (le_trans h (by simp only [card_fin]; ring_nf; decide)) (by simp)
+    le_of_mul_le_mul_right (le_trans h (by norm_num only [card_fin])) (by simp)
   rw [mem_alternatingGroup, sign_of_cycleType, h2] at ha
   norm_num at ha
   rw [pow_add, pow_mul, Int.units_pow_two, one_mul, neg_one_pow_eq_one_iff_even] at ha

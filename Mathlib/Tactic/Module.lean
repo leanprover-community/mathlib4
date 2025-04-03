@@ -573,10 +573,7 @@ def postprocess (mvarId : MVarId) : MetaM MVarId := do
     let ⟨levelParams, _, proof⟩ ← abstractMVars (mkConst thm)
     thms ← thms.add (.stx (← mkFreshId) Syntax.missing) levelParams proof
   -- now run `simp` with these lemmas, and (importantly) *no* simprocs
-  let ctx : Simp.Context := {
-      config      := { failIfUnchanged := false }
-      simpTheorems := #[thms]
-    }
+  let ctx ← Simp.mkContext { failIfUnchanged := false } (simpTheorems := #[thms])
   let (some r, _) ← simpTarget mvarId ctx (simprocs := #[]) |
     throwError "internal error in match_scalars tactic: postprocessing should not close goals"
   return r

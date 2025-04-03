@@ -856,11 +856,11 @@ variable {ι : Type*} {π : ι → Type*} [DecidableEq ι]
 -- Porting note: Dot notation on `Function.update` broke
 theorem update_sup [∀ i, SemilatticeSup (π i)] (f : ∀ i, π i) (i : ι) (a b : π i) :
     update f i (a ⊔ b) = update f i a ⊔ update f i b :=
-  funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_noteq, *]
+  funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_of_ne, *]
 
 theorem update_inf [∀ i, SemilatticeInf (π i)] (f : ∀ i, π i) (i : ι) (a b : π i) :
     update f i (a ⊓ b) = update f i a ⊓ update f i b :=
-  funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_noteq, *]
+  funext fun j => by obtain rfl | hji := eq_or_ne j i <;> simp [update_of_ne, *]
 
 end Function
 

@@ -29,8 +29,8 @@ for all pairs `(i, j) ∉ μ` and to satisfy the row-weak and column-strict cond
 - `SemistandardYoungTableau (μ : YoungDiagram)`: semistandard Young tableaux of shape `μ`. There is
   a `coe` instance such that `T i j` is value of the `(i, j)` entry of the semistandard Young
   tableau `T`.
-- `Ssyt.highestWeight (μ : YoungDiagram)`: the semistandard Young tableau whose `i`th row
-  consists entirely of `i`s, for each `i`.
+- `SemistandardYoungTableau.highestWeight (μ : YoungDiagram)`: the semistandard Young tableau whose
+  `i`th row consists entirely of `i`s, for each `i`.
 
 ## Tags
 

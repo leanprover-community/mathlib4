@@ -22,7 +22,7 @@ import Mathlib.Tactic.CC
 /-!
 # Equivalence between types
 
-In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lean`, defining
+In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/Defs.lean`, defining
 
 * canonical isomorphisms between various types: e.g.,
 
@@ -38,7 +38,7 @@ In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lea
     `eb : β₁ ≃ β₂` using `Prod.map`.
 
   More definitions of this kind can be found in other files.
-  E.g., `Logic/Equiv/TransferInstance.lean` does it for many algebraic type classes like
+  E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
   `Group`, `Module`, etc.
 
 ## Tags
@@ -1796,7 +1796,7 @@ def uniqueUniqueEquiv : Unique (Unique α) ≃ Unique α :=
 
 /-- If `Unique β`, then `Unique α` is equivalent to `α ≃ β`. -/
 def uniqueEquivEquivUnique (α : Sort u) (β : Sort v) [Unique β] : Unique α ≃ (α ≃ β) :=
-  equivOfSubsingletonOfSubsingleton (fun _ => Equiv.equivOfUnique _ _) Equiv.unique
+  equivOfSubsingletonOfSubsingleton (fun _ => Equiv.ofUnique _ _) Equiv.unique
 
 namespace Function
 
@@ -1818,9 +1818,8 @@ theorem piCongrLeft'_update [DecidableEq α] [DecidableEq β] (P : α → Sort*)
   ext b'
   rcases eq_or_ne b' b with (rfl | h)
   · simp
-  · simp only [Equiv.piCongrLeft'_apply, ne_eq, h, not_false_iff, update_noteq]
-    rw [update_noteq _]
-    rw [ne_eq]
+  · simp only [Equiv.piCongrLeft'_apply, ne_eq, h, not_false_iff, update_of_ne]
+    rw [update_of_ne]
     intro h'
     /- an example of something that should work, or also putting `EmbeddingLike.apply_eq_iff_eq`
       in the `simp` should too:

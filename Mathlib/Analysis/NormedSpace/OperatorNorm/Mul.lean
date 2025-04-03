@@ -97,15 +97,6 @@ theorem opNorm_mulLeftRight_apply_le (x : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x�
 @[deprecated (since := "2024-02-02")]
 alias op_norm_mulLeftRight_apply_le := opNorm_mulLeftRight_apply_le
 
-#adaptation_note
-/--
-Before https://github.com/leanprover/lean4/pull/4119
-we had to create a local instance in the signature:
-```
-letI : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') :=
-  hasOpNorm (𝕜₂ := 𝕜) (E := 𝕜') (F := 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')
-```
--/
 set_option maxSynthPendingDepth 2 in
 theorem opNorm_mulLeftRight_le :
     ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=

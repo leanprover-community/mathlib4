@@ -5,7 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.GroupTheory.MonoidLocalization.Away
 import Mathlib.RingTheory.Ideal.Quotient.Operations
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.RingTheory.Localization.Defs
 
 /-!
 # Ideals in localizations of commutative rings
@@ -24,6 +24,16 @@ section CommSemiring
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
 variable [Algebra R S] [IsLocalization M S]
 
+variable {M S} in
+theorem mk'_mem_iff {x} {y : M} {I : Ideal S} : mk' S x y ∈ I ↔ algebraMap R S x ∈ I := by
+  constructor <;> intro h
+  · rw [← mk'_spec S x y, mul_comm]
+    exact I.mul_mem_left ((algebraMap R S) y) h
+  · rw [← mk'_spec S x y] at h
+    obtain ⟨b, hb⟩ := isUnit_iff_exists_inv.1 (map_units S y)
+    have := I.mul_mem_left b h
+    rwa [mul_comm, mul_assoc, hb, mul_one] at this
+
 /-- Explicit characterization of the ideal given by `Ideal.map (algebraMap R S) I`.
 In practice, this ideal differs only in that the carrier set is defined explicitly.
 This definition is only meant to be used in proving `mem_map_algebraMap_iff`,
@@ -37,7 +47,7 @@ private def map_ideal (I : Ideal R) : Ideal S where
     let Z : { x // x ∈ I } := ⟨(a'.2 : R) * (b'.1 : R) + (b'.2 : R) * (a'.1 : R),
       I.add_mem (I.mul_mem_left _ b'.1.2) (I.mul_mem_left _ a'.1.2)⟩
     use ⟨Z, a'.2 * b'.2⟩
-    simp only [RingHom.map_add, Submodule.coe_mk, Submonoid.coe_mul, RingHom.map_mul]
+    simp only [Z, RingHom.map_add, Submodule.coe_mk, Submonoid.coe_mul, RingHom.map_mul]
     rw [add_mul, ← mul_assoc a, ha, mul_comm (algebraMap R S a'.2) (algebraMap R S b'.2), ←
       mul_assoc b, hb]
     ring
@@ -46,7 +56,7 @@ private def map_ideal (I : Ideal R) : Ideal S where
     obtain ⟨c', hc⟩ := IsLocalization.surj M c
     let Z : { x // x ∈ I } := ⟨c'.1 * x'.1, I.mul_mem_left c'.1 x'.1.2⟩
     use ⟨Z, c'.2 * x'.2⟩
-    simp only [← hx, ← hc, smul_eq_mul, Submodule.coe_mk, Submonoid.coe_mul, RingHom.map_mul]
+    simp only [Z, ← hx, ← hc, smul_eq_mul, Submodule.coe_mk, Submonoid.coe_mul, RingHom.map_mul]
     ring
 
 theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R S) I ↔
@@ -57,7 +67,7 @@ theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R
     obtain ⟨y, hy⟩ := hz
     let Z : { x // x ∈ I } := ⟨y, hy.left⟩
     use ⟨Z, 1⟩
-    simp [hy.right]
+    simp [Z, hy.right]
   · rintro ⟨⟨a, s⟩, h⟩
     rw [← Ideal.unit_mul_mem_iff_mem _ (map_units S s), mul_comm]
     exact h.symm ▸ Ideal.mem_map_of_mem _ a.2

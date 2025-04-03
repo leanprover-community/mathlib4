@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.Simps.NotationClass
 
 /-!
 # Typeclass for a type `F` with an injective map to `A → B`

@@ -259,7 +259,7 @@ def Derivation.liftKaehlerDifferential (D : Derivation R S M) : Ω[S⁄R] →ₗ
   · exact D.tensorProductTo.comp ((KaehlerDifferential.ideal R S).subtype.restrictScalars S)
   · intro x hx
     rw [LinearMap.mem_ker]
-    refine Submodule.smul_induction_on hx ?_ ?_
+    refine Submodule.smul_induction_on ((Submodule.restrictScalars_mem _ _ _).mp hx) ?_ ?_
     · rintro x hx y -
       rw [RingHom.mem_ker] at hx
       dsimp
@@ -839,7 +839,8 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
   constructor
   · rintro ⟨x, rfl⟩
     obtain ⟨x, rfl⟩ := Ideal.toCotangent_surjective _ x
-    simp [kerCotangentToTensor_toCotangent, RingHom.mem_ker.mp x.2]
+    simp only [kerCotangentToTensor_toCotangent, Submodule.restrictScalars_mem, LinearMap.mem_ker,
+      mapBaseChange_tmul, map_D, RingHom.mem_ker.mp x.2, map_zero, smul_zero]
   · intro hx
     obtain ⟨x, rfl⟩ := LinearMap.rTensor_surjective (Ω[A⁄R]) (g := Algebra.linearMap A B) h x
     obtain ⟨x, rfl⟩ := (TensorProduct.lid _ _).symm.surjective x
@@ -869,6 +870,8 @@ theorem KaehlerDifferential.range_kerCotangentToTensor
       simp [RingHom.mem_ker, ha, this.2]
     · simp only [map_sum, LinearMapClass.map_smul, kerCotangentToTensor_toCotangent, map_sub]
       simp_rw [← TensorProduct.tmul_smul]
+      -- was `simp [kerCotangentToTensor_toCotangent, RingHom.mem_ker.mp x.2]` and very slow
+      -- (https://github.com/leanprover-community/mathlib4/issues/19751)
       simp only [smul_sub, TensorProduct.tmul_sub, Finset.sum_sub_distrib, ← TensorProduct.tmul_sum,
         ← Finset.sum_smul, Finset.sum_attach, sub_eq_self,
         Finset.sum_attach (f := fun i ↦ x i • KaehlerDifferential.D R A i)]

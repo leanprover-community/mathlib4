@@ -138,11 +138,11 @@ theorem restrict_finite {R : Set α} (hR : R.Finite) : (M ↾ R).Finite :=
   rw [Dep, restrict_indep_iff, restrict_ground_eq]; tauto
 
 @[simp] theorem restrict_ground_eq_self (M : Matroid α) : (M ↾ M.E) = M := by
-  refine eq_of_indep_iff_indep_forall rfl ?_; aesop
+  refine ext_indep rfl ?_; aesop
 
 theorem restrict_restrict_eq {R₁ R₂ : Set α} (M : Matroid α) (hR : R₂ ⊆ R₁) :
     (M ↾ R₁) ↾ R₂ = M ↾ R₂ := by
-  refine eq_of_indep_iff_indep_forall rfl ?_
+  refine ext_indep rfl ?_
   simp only [restrict_ground_eq, restrict_indep_iff, and_congr_left_iff, and_iff_left_iff_imp]
   exact fun _ h _ _ ↦ h.trans hR
 
@@ -195,7 +195,7 @@ theorem basis_restrict_iff (hR : R ⊆ M.E := by aesop_mat) :
 
 theorem restrict_eq_restrict_iff (M M' : Matroid α) (X : Set α) :
     M ↾ X = M' ↾ X ↔ ∀ I, I ⊆ X → (M.Indep I ↔ M'.Indep I) := by
-  refine ⟨fun h I hIX ↦ ?_, fun h ↦ eq_of_indep_iff_indep_forall rfl fun I (hI : I ⊆ X) ↦ ?_⟩
+  refine ⟨fun h I hIX ↦ ?_, fun h ↦ ext_indep rfl fun I (hI : I ⊆ X) ↦ ?_⟩
   · rw [← and_iff_left (a := (M.Indep I)) hIX, ← and_iff_left (a := (M'.Indep I)) hIX,
       ← restrict_indep_iff, h, restrict_indep_iff]
   rw [restrict_indep_iff, and_iff_left hI, restrict_indep_iff, and_iff_left hI, h _ hI]

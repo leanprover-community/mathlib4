@@ -170,7 +170,7 @@ variable (β)
 def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] (a : α) :
     Cofinal (PartialIso α β) where
   carrier := {f | ∃ b : β, (a, b) ∈ f.val}
-  mem_gt f := by
+  isCofinal f := by
     cases' exists_across f a with b a_b
     refine
       ⟨⟨insert (a, b) f.val, fun p hp q hq ↦ ?_⟩, ⟨b, Finset.mem_insert_self _ _⟩,
@@ -190,8 +190,8 @@ variable (α) {β}
 def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α] (b : β) :
     Cofinal (PartialIso α β) where
   carrier := {f | ∃ a, (a, b) ∈ f.val}
-  mem_gt f := by
-    rcases (definedAtLeft α b).mem_gt f.comm with ⟨f', ⟨a, ha⟩, hl⟩
+  isCofinal f := by
+    rcases (definedAtLeft α b).isCofinal f.comm with ⟨f', ⟨a, ha⟩, hl⟩
     refine ⟨f'.comm, ⟨a, ?_⟩, ?_⟩
     · change (a, b) ∈ f'.val.image _
       rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage]

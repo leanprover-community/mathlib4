@@ -227,7 +227,7 @@ aren't two definitionally differing instances around. -/
 def ofIsEmpty [IsEmpty α] : FinEnum α := default
 
 instance [Unique α] : Unique (FinEnum α) where
-  default := ⟨1, Equiv.equivOfUnique α (Fin 1)⟩
+  default := ⟨1, Equiv.ofUnique α (Fin 1)⟩
   uniq e := by
     show FinEnum.mk e.1 e.2 = _
     congr 1

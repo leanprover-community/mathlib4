@@ -194,9 +194,7 @@ theorem normalize : PythagoreanTriple (x / Int.gcd x y) (y / Int.gcd x y) (z / I
 theorem isClassified_of_isPrimitiveClassified (hp : h.IsPrimitiveClassified) : h.IsClassified := by
   obtain ⟨m, n, H⟩ := hp
   use 1, m, n
-  rcases H with ⟨t, co, _⟩
-  rw [one_mul, one_mul]
-  exact ⟨t, co⟩
+  omega
 
 theorem isClassified_of_normalize_isPrimitiveClassified (hc : h.normalize.IsPrimitiveClassified) :
     h.IsClassified := by
@@ -531,9 +529,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
       · apply (mul_lt_mul_right (by norm_num : 0 < (2 : ℤ))).mp
         rw [Int.ediv_mul_cancel h1.1, zero_mul]
         exact hm2n2
-    rw [h2.1, h1.2.2.1] at hyo
-    revert hyo
-    norm_num
+    norm_num [h2.1, h1.2.2.1] at hyo
 
 theorem isPrimitiveClassified_of_coprime_of_pos (hc : Int.gcd x y = 1) (hzpos : 0 < z) :
     h.IsPrimitiveClassified := by
@@ -634,7 +630,7 @@ theorem coprime_classification' {x y z : ℤ} (h : PythagoreanTriple x y z)
           exact ht3
         · rw [Int.neg_emod_two, Int.neg_emod_two]
           apply And.intro ht4
-          linarith
+          omega
       · exfalso
         revert h_pos
         rw [h_neg]

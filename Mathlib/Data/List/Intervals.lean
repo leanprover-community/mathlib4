@@ -18,7 +18,7 @@ and strictly less than `n`.
 - Also do the versions for integers?
 - One could generalise even further, defining 'locally finite partial orders', for which
   `Set.Ico a b` is `[Finite]`, and 'locally finite total orders', for which there is a list model.
-- Once the above is done, get rid of `Data.Int.range` (and maybe `List.range'`?).
+- Once the above is done, get rid of `Int.range` (and maybe `List.range'`?).
 -/
 
 
@@ -29,8 +29,9 @@ namespace List
 /-- `Ico n m` is the list of natural numbers `n ≤ x < m`.
 (Ico stands for "interval, closed-open".)
 
-See also `Data/Set/Intervals.lean` for `Set.Ico`, modelling intervals in general preorders, and
-`Multiset.Ico` and `Finset.Ico` for `n ≤ x < m` as a multiset or as a finset.
+See also `Mathlib/Order/Interval/Basic.lean` for modelling intervals in general preorders, as well
+as sibling definitions alongside it such as `Set.Ico`, `Multiset.Ico` and `Finset.Ico`
+for sets, multisets and finite sets respectively.
  -/
 def Ico (n m : ℕ) : List ℕ :=
   range' n (m - n)
@@ -130,7 +131,7 @@ theorem not_mem_top {n m : ℕ} : m ∉ Ico n m := by simp
 theorem filter_lt_of_top_le {n m l : ℕ} (hml : m ≤ l) :
     ((Ico n m).filter fun x => x < l) = Ico n m :=
   filter_eq_self.2 fun k hk => by
-    simp only [(lt_of_lt_of_le (mem.1 hk).2 hml), decide_True]
+    simp only [(lt_of_lt_of_le (mem.1 hk).2 hml), decide_true]
 
 theorem filter_lt_of_le_bot {n m l : ℕ} (hln : l ≤ n) : ((Ico n m).filter fun x => x < l) = [] :=
   filter_eq_nil_iff.2 fun k hk => by

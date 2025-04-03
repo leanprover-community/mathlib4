@@ -352,7 +352,7 @@ theorem IsUniversalColimit.map_reflective
     · intro j
       rw [← Category.assoc, Iso.comp_inv_eq]
       ext
-      all_goals simp only [PreservesPullback.iso_hom_fst, PreservesPullback.iso_hom_snd,
+      all_goals simp only [c'', PreservesPullback.iso_hom_fst, PreservesPullback.iso_hom_snd,
           pullback.lift_fst, pullback.lift_snd, Category.assoc,
           Functor.mapCocone_ι_app, ← Gl.map_comp]
       · rw [IsIso.comp_inv_eq, adj.counit_naturality]
@@ -363,7 +363,8 @@ theorem IsUniversalColimit.map_reflective
         rw [Category.comp_id, Category.assoc]
   have :
       cf.hom ≫ (PreservesPullback.iso _ _ _).hom ≫ pullback.fst _ _ ≫ adj.counit.app _ = 𝟙 _ := by
-    simp only [IsIso.inv_hom_id, Iso.inv_hom_id_assoc, Category.assoc, pullback.lift_fst_assoc]
+    simp only [cf, IsIso.inv_hom_id, Iso.inv_hom_id_assoc, Category.assoc,
+      pullback.lift_fst_assoc]
   have : IsIso cf := by
     apply @Cocones.cocone_iso_of_hom_iso (i := ?_)
     rw [← IsIso.eq_comp_inv] at this
@@ -373,12 +374,12 @@ theorem IsUniversalColimit.map_reflective
   · exact ⟨IsColimit.precomposeHomEquiv β c' <|
       (isColimitOfPreserves Gl Hc'').ofIsoColimit (asIso cf).symm⟩
   · ext j
-    dsimp
+    dsimp [c'']
     simp only [Category.comp_id, Category.id_comp, Category.assoc,
       Functor.map_comp, pullback.lift_snd]
   · intro j
     apply IsPullback.of_right _ _ (IsPullback.of_hasPullback _ _)
-    · dsimp [α']
+    · dsimp [α', c'']
       simp only [Category.comp_id, Category.id_comp, Category.assoc, Functor.map_comp,
         pullback.lift_fst]
       rw [← Category.comp_id (Gr.map f)]
@@ -390,7 +391,7 @@ theorem IsUniversalColimit.map_reflective
       dsimp
       simp only [Category.comp_id, Adjunction.right_triangle_components, Category.id_comp,
         Category.assoc]
-    · dsimp
+    · dsimp [c'']
       simp only [Category.comp_id, Category.id_comp, Category.assoc, Functor.map_comp,
         pullback.lift_snd]
 
@@ -506,7 +507,7 @@ theorem BinaryCofan.isVanKampen_iff (c : BinaryCofan X Y) :
     have : F' = pair X' Y' := by
       apply Functor.hext
       · rintro ⟨⟨⟩⟩ <;> rfl
-      · rintro ⟨⟨⟩⟩ ⟨j⟩ ⟨⟨rfl : _ = j⟩⟩ <;> simp
+      · rintro ⟨⟨⟩⟩ ⟨j⟩ ⟨⟨rfl : _ = j⟩⟩ <;> simp [X', Y']
     clear_value X' Y'
     subst this
     change BinaryCofan X' Y' at c'

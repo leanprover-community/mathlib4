@@ -80,14 +80,14 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   apply Finset.sum_bij φ
   · -- φ(S) is contained in Sᶜ
     intro ij hij
-    simp only [S, Finset.mem_univ, Finset.compl_filter, Finset.mem_filter, true_and,
+    simp only [S, φ, Finset.mem_univ, Finset.compl_filter, Finset.mem_filter, true_and,
       Fin.val_succ, Fin.coe_castLT] at hij ⊢
-    linarith
+    omega
   · -- φ : S → Sᶜ is injective
     rintro ⟨i, j⟩ hij ⟨i', j'⟩ hij' h
     rw [Prod.mk.inj_iff]
-    exact ⟨by simpa using congr_arg Prod.snd h,
-      by simpa [Fin.castSucc_castLT] using congr_arg Fin.castSucc (congr_arg Prod.fst h)⟩
+    exact ⟨by simpa [φ] using congr_arg Prod.snd h,
+      by simpa [φ, Fin.castSucc_castLT] using congr_arg Fin.castSucc (congr_arg Prod.fst h)⟩
   · -- φ : S → Sᶜ is surjective
     rintro ⟨i', j'⟩ hij'
     simp only [S, Finset.mem_univ, forall_true_left, Prod.forall, Finset.compl_filter,
@@ -103,7 +103,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
     dsimp
     simp only [zsmul_comp, comp_zsmul, smul_smul, ← neg_smul]
     congr 1
-    · simp only [Fin.val_succ, pow_add, pow_one, mul_neg, neg_neg, mul_one]
+    · simp only [φ, Fin.val_succ, pow_add, pow_one, mul_neg, neg_neg, mul_one]
       apply mul_comm
     · rw [CategoryTheory.SimplicialObject.δ_comp_δ'']
       simpa [S] using hij

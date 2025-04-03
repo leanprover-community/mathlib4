@@ -115,7 +115,7 @@ noncomputable def mappingConeHomOfDegreewiseSplitIso :
     have s_g := (σ (p + 1)).s_g
     dsimp at r_f s_g ⊢
     simp only [mappingConeHomOfDegreewiseSplitXIso, mappingCone.ext_from_iff _ _ _ rfl,
-      mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by linarith),
+      mappingCone.inl_v_d_assoc _ (p + 1) _ (p + 1 + 1) (by linarith) (by omega),
       cocycleOfDegreewiseSplit, r_f, Int.reduceNeg, Cochain.ofHom_v, sub_comp, assoc,
       Hom.comm, comp_sub, mappingCone.inl_v_fst_v_assoc, mappingCone.inl_v_snd_v_assoc,
       shiftFunctor_obj_X', zero_comp, sub_zero, homOfDegreewiseSplit_f,

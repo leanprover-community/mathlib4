@@ -16,7 +16,7 @@ import Mathlib.Data.Vector.Basic
 * arithmetic operations for `SNum`.
 -/
 
-open Mathlib
+open List (Vector)
 
 namespace PosNum
 
@@ -409,7 +409,7 @@ end SNum
 namespace SNum
 
 /-- `a.bits n` is the vector of the `n` first bits of `a` (starting from the LSB). -/
-def bits : SNum → ∀ n, Vector Bool n
+def bits : SNum → ∀ n, List.Vector Bool n
   | _, 0 => Vector.nil
   | p, n + 1 => head p ::ᵥ bits (tail p) n
 

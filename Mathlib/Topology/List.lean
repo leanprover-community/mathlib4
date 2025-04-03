@@ -182,18 +182,18 @@ namespace Vector
 
 open List
 
-open Mathlib (Vector)
+open List (Vector)
 
-instance (n : ℕ) : TopologicalSpace (Vector α n) := by unfold Vector; infer_instance
+instance (n : ℕ) : TopologicalSpace (List.Vector α n) := by unfold List.Vector; infer_instance
 
-theorem tendsto_cons {n : ℕ} {a : α} {l : Vector α n} :
-    Tendsto (fun p : α × Vector α n => p.1 ::ᵥ p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (a ::ᵥ l)) := by
+theorem tendsto_cons {n : ℕ} {a : α} {l : List.Vector α n} :
+    Tendsto (fun p : α × List.Vector α n => p.1 ::ᵥ p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (a ::ᵥ l)) := by
   rw [tendsto_subtype_rng, Vector.cons_val]
   exact tendsto_fst.cons (Tendsto.comp continuousAt_subtype_val tendsto_snd)
 
 theorem tendsto_insertIdx {n : ℕ} {i : Fin (n + 1)} {a : α} :
-    ∀ {l : Vector α n},
-      Tendsto (fun p : α × Vector α n => Vector.insertIdx p.1 i p.2) (𝓝 a ×ˢ 𝓝 l)
+    ∀ {l : List.Vector α n},
+      Tendsto (fun p : α × List.Vector α n => Vector.insertIdx p.1 i p.2) (𝓝 a ×ˢ 𝓝 l)
         (𝓝 (Vector.insertIdx a i l))
   | ⟨l, hl⟩ => by
     rw [Vector.insertIdx, tendsto_subtype_rng]
@@ -204,29 +204,29 @@ theorem tendsto_insertIdx {n : ℕ} {i : Fin (n + 1)} {a : α} :
 
 /-- Continuity of `Vector.insertIdx`. -/
 theorem continuous_insertIdx' {n : ℕ} {i : Fin (n + 1)} :
-    Continuous fun p : α × Vector α n => Vector.insertIdx p.1 i p.2 :=
+    Continuous fun p : α × List.Vector α n => Vector.insertIdx p.1 i p.2 :=
   continuous_iff_continuousAt.mpr fun ⟨a, l⟩ => by
     rw [ContinuousAt, nhds_prod_eq]; exact tendsto_insertIdx
 
 @[deprecated (since := "2024-10-21")] alias continuous_insertNth' := continuous_insertIdx'
 
-theorem continuous_insertIdx {n : ℕ} {i : Fin (n + 1)} {f : β → α} {g : β → Vector α n}
+theorem continuous_insertIdx {n : ℕ} {i : Fin (n + 1)} {f : β → α} {g : β → List.Vector α n}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun b => Vector.insertIdx (f b) i (g b) :=
   continuous_insertIdx'.comp (hf.prod_mk hg : _)
 
 @[deprecated (since := "2024-10-21")] alias continuous_insertNth := continuous_insertIdx
 
 theorem continuousAt_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
-    ∀ {l : Vector α (n + 1)}, ContinuousAt (Vector.eraseIdx i) l
+    ∀ {l : List.Vector α (n + 1)}, ContinuousAt (List.Vector.eraseIdx i) l
   | ⟨l, hl⟩ => by
-    rw [ContinuousAt, Vector.eraseIdx, tendsto_subtype_rng]
+    rw [ContinuousAt, List.Vector.eraseIdx, tendsto_subtype_rng]
     simp only [Vector.eraseIdx_val]
     exact Tendsto.comp List.tendsto_eraseIdx continuousAt_subtype_val
 
 @[deprecated (since := "2024-05-04")] alias continuousAt_removeNth := continuousAt_eraseIdx
 
 theorem continuous_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
-    Continuous (Vector.eraseIdx i : Vector α (n + 1) → Vector α n) :=
+    Continuous (List.Vector.eraseIdx i : List.Vector α (n + 1) → List.Vector α n) :=
   continuous_iff_continuousAt.mpr fun ⟨_a, _l⟩ => continuousAt_eraseIdx
 
 @[deprecated (since := "2024-05-04")] alias continuous_removeNth := continuous_eraseIdx

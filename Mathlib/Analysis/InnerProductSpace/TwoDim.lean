@@ -211,7 +211,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
           have : Finset.card {x} = 1 := Finset.card_singleton x
           have : finrank ℝ K + finrank ℝ Kᗮ = finrank ℝ E := K.finrank_add_finrank_orthogonal
           have : finrank ℝ E = 2 := Fact.out
-          linarith
+          omega
         obtain ⟨w, hw₀⟩ : ∃ w : Kᗮ, w ≠ 0 := exists_ne 0
         have hw' : ⟪x, (w : E)⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
         have hw : (w : E) ≠ 0 := fun h => hw₀ (Submodule.coe_eq_zero.mp h)
@@ -540,10 +540,10 @@ attribute [local instance] Complex.finrank_real_complex_fact
 @[simp]
 protected theorem areaForm (w z : ℂ) : Complex.orientation.areaForm w z = (conj w * z).im := by
   let o := Complex.orientation
-  simp only [o.areaForm_to_volumeForm, o.volumeForm_robust Complex.orthonormalBasisOneI rfl,
-    Basis.det_apply, Matrix.det_fin_two, Basis.toMatrix_apply, toBasis_orthonormalBasisOneI,
-    Matrix.cons_val_zero, coe_basisOneI_repr, Matrix.cons_val_one, Matrix.head_cons, mul_im,
-    conj_re, conj_im]
+  simp only [o, o.areaForm_to_volumeForm,
+    o.volumeForm_robust Complex.orthonormalBasisOneI rfl, Basis.det_apply, Matrix.det_fin_two,
+    Basis.toMatrix_apply, toBasis_orthonormalBasisOneI, Matrix.cons_val_zero, coe_basisOneI_repr,
+    Matrix.cons_val_one, Matrix.head_cons, mul_im, conj_re, conj_im]
   ring
 
 @[simp]

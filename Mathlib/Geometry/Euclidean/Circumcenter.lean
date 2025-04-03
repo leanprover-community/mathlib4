@@ -645,7 +645,7 @@ theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {
     (orthogonalProjection W s.circumcenter : P) =
       ↑((s.face hc).orthogonalProjectionSpan s.circumcenter) := by
     apply eq_orthogonalProjection_of_eq_subspace
-    simp
+    simp [W]
   rw [EuclideanGeometry.reflection_apply, h_faces, s.orthogonalProjection_circumcenter hc,
     circumcenter_eq_centroid, s.face_centroid_eq_centroid hc,
     centroid_eq_affineCombination_of_pointsWithCircumcenter,

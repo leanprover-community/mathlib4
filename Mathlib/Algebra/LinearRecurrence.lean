@@ -69,11 +69,7 @@ def mkSol (init : Fin E.order → α) : ℕ → α
     if h : n < E.order then init ⟨n, h⟩
     else
       ∑ k : Fin E.order,
-        have _ : n - E.order + k < n := by
-          rw [add_comm, ← add_tsub_assoc_of_le (not_lt.mp h), tsub_lt_iff_left]
-          · exact add_lt_add_right k.is_lt n
-          · convert add_le_add (zero_le (k : ℕ)) (not_lt.mp h)
-            simp only [zero_add]
+        have _ : n - E.order + k < n := by omega
         E.coeffs k * mkSol init (n - E.order + k)
 
 /-- `E.mkSol` indeed gives solutions to `E`. -/
@@ -96,14 +92,9 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → α} {init : Fin E.order → α} 
   rw [mkSol]
   split_ifs with h'
   · exact mod_cast heq ⟨n, h'⟩
-  simp only
   rw [← tsub_add_cancel_of_le (le_of_not_lt h'), h (n - E.order)]
   congr with k
-  have : n - E.order + k < n := by
-    rw [add_comm, ← add_tsub_assoc_of_le (not_lt.mp h'), tsub_lt_iff_left]
-    · exact add_lt_add_right k.is_lt n
-    · convert add_le_add (zero_le (k : ℕ)) (not_lt.mp h')
-      simp only [zero_add]
+  have : n - E.order + k < n := by omega
   rw [eq_mk_of_is_sol_of_eq_init h heq (n - E.order + k)]
   simp
 

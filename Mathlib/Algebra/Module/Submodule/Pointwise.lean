@@ -3,11 +3,10 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Order.Group.Action
-import Mathlib.RingTheory.Ideal.Span
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+import Mathlib.LinearAlgebra.Finsupp.Supported
+import Mathlib.LinearAlgebra.Span.Basic
 
 /-! # Pointwise instances on `Submodule`s
 
@@ -39,6 +38,7 @@ Other than section `set_acting_on_submodules`, most of the lemmas in this file a
 lemmas from the file `Mathlib.Algebra.Group.Submonoid.Pointwise`.
 -/
 
+assert_not_exists Ideal
 
 variable {α : Type*} {R : Type*} {M : Type*}
 
@@ -479,6 +479,22 @@ lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
     · exact ⟨0, Submodule.zero_mem _, by aesop⟩
   · aesop
 
+lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → x ∈ a • N → Prop}
+    (smul₀ : ∀ (s : M) (hs : s ∈ N), p (a • s) (Submodule.smul_mem_pointwise_smul _ _ _ hs))
+    (smul₁ : ∀ (r : R) (m : M) (mem : m ∈ a • N), p m mem → p (r • m) (Submodule.smul_mem _ _ mem))
+    (add : ∀ (x y : M) (hx : x ∈ a • N) (hy : y ∈ a • N),
+      p x hx → p y hy → p (x + y) (Submodule.add_mem _ hx hy))
+    (zero : p 0 (Submodule.zero_mem _)) {x : M} (hx : x ∈ a • N) :
+    p x hx := by
+  simp_all only [← Submodule.singleton_set_smul]
+  let p' (x : M) (hx : x ∈ ({a} : Set S) • N) : Prop :=
+    p x (by rwa [← Submodule.singleton_set_smul])
+  refine Submodule.set_smul_inductionOn (motive := p') _ (N.singleton_set_smul a ▸ hx)
+      (fun r n hr hn ↦ ?_) smul₁ add zero
+  · simp only [Set.mem_singleton_iff] at hr
+    subst hr
+    exact smul₀ n hn
+
 -- Note that this can't be generalized to `Set S`, because even though `SMulCommClass R R M` implies
 -- `SMulComm R R N` for all `R`-submodules `N`, `SMulCommClass R S N` for all `R`-submodules `N`
 -- does not make sense. If we just focus on `R`-submodules that are also `S`-submodule, then this
@@ -526,33 +542,6 @@ lemma sup_set_smul (s t : Set S) :
         · exact Submodule.mem_sup_right (mem_set_smul_of_mem_mem hr hn))
     (sup_le (set_smul_mono_left _ le_sup_left) (set_smul_mono_left _ le_sup_right))
 
-lemma coe_span_smul {R' M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module R' M']
-    (s : Set R') (N : Submodule R' M') :
-    (Ideal.span s : Set R') • N = s • N :=
-  set_smul_eq_of_le _ _ _
-    (by rintro r n hr hn
-        induction hr using Submodule.span_induction with
-        | mem _ h => exact mem_set_smul_of_mem_mem h hn
-        | zero => rw [zero_smul]; exact Submodule.zero_mem _
-        | add _ _ _ _ ihr ihs => rw [add_smul]; exact Submodule.add_mem _ ihr ihs
-        | smul _ _ hr =>
-          rw [mem_span_set] at hr
-          obtain ⟨c, hc, rfl⟩ := hr
-          rw [Finsupp.sum, Finset.smul_sum, Finset.sum_smul]
-          refine Submodule.sum_mem _ fun i hi => ?_
-          rw [← mul_smul, smul_eq_mul, mul_comm, mul_smul]
-          exact mem_set_smul_of_mem_mem (hc hi) <| Submodule.smul_mem _ _ hn) <|
-    set_smul_mono_left _ Submodule.subset_span
-
 end set_acting_on_submodules
 
-lemma span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
-    (span ℤ {a}).toAddSubgroup = AddSubgroup.zmultiples a := by
-  ext i
-  simp [Ideal.mem_span_singleton', AddSubgroup.mem_zmultiples_iff]
-
 end Submodule
-
-@[simp] lemma Ideal.span_singleton_toAddSubgroup_eq_zmultiples (a : ℤ) :
-   (Ideal.span {a}).toAddSubgroup = AddSubgroup.zmultiples a :=
-  Submodule.span_singleton_toAddSubgroup_eq_zmultiples _

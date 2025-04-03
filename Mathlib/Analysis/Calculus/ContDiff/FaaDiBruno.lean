@@ -207,7 +207,7 @@ noncomputable def equivSigma : ((i : Fin c.length) × Fin (c.partSize i)) ≃ Fi
 lemma length_pos (h : 0 < n) : 0 < c.length := Nat.zero_lt_of_lt (c.index ⟨0, h⟩).2
 
 lemma neZero_length [NeZero n] (c : OrderedFinpartition n) : NeZero c.length :=
-  ⟨(c.length_pos size_pos').ne'⟩
+  ⟨(c.length_pos pos').ne'⟩
 
 lemma neZero_partSize (c : OrderedFinpartition n) (i : Fin c.length) : NeZero (c.partSize i) :=
   .of_pos (c.partSize_pos i)
@@ -357,7 +357,7 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
   parts_strictMono := by
     convert strictMono_succ.comp c.parts_strictMono with m
     rcases eq_or_ne m k with rfl | hm
-    · simp only [↓reduceDIte, update_same, add_tsub_cancel_right, comp_apply, cast_mk,
+    · simp only [↓reduceDIte, update_self, add_tsub_cancel_right, comp_apply, cast_mk,
         Nat.succ_eq_add_one]
       let a : Fin (c.partSize m + 1) := ⟨c.partSize m, lt_add_one (c.partSize m)⟩
       let b : Fin (c.partSize m) := ⟨c.partSize m - 1, Nat.sub_one_lt_of_lt (c.partSize_pos m)⟩
@@ -493,7 +493,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
   partSize_pos i := by
     rcases eq_or_ne i (c.index 0) with rfl | hi
     · simpa using c.one_lt_partSize_index_zero hc
-    · simp only [ne_eq, hi, not_false_eq_true, update_noteq]
+    · simp only [ne_eq, hi, not_false_eq_true, update_of_ne]
       exact c.partSize_pos i
   emb i j := by
     by_cases h : i = c.index 0
@@ -517,7 +517,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
     rw [← Nat.add_lt_add_iff_right (k := 1)]
     convert Fin.lt_iff_val_lt_val.1 (c.parts_strictMono hij)
     · rcases eq_or_ne i (c.index 0) with rfl | hi
-      · simp only [↓reduceDIte, Nat.succ_eq_add_one, update_same, succ_mk, cast_mk, coe_pred]
+      · simp only [↓reduceDIte, Nat.succ_eq_add_one, update_self, succ_mk, cast_mk, coe_pred]
         have A := c.one_lt_partSize_index_zero hc
         rw [Nat.sub_add_cancel]
         · congr; omega
@@ -526,14 +526,14 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
           rw [← lt_iff_val_lt_val]
           apply c.emb_strictMono
           simp [lt_iff_val_lt_val]
-      · simp only [hi, ↓reduceDIte, ne_eq, not_false_eq_true, update_noteq, cast_mk, coe_pred]
+      · simp only [hi, ↓reduceDIte, ne_eq, not_false_eq_true, update_of_ne, cast_mk, coe_pred]
         apply Nat.sub_add_cancel
         have : c.emb i ⟨c.partSize i - 1, Nat.sub_one_lt_of_lt (c.partSize_pos i)⟩
             ≠ c.emb (c.index 0) 0 := c.emb_ne_emb_of_ne hi
         simp only [c.emb_zero, ne_eq, ← val_eq_val, val_zero] at this
         omega
     · rcases eq_or_ne j (c.index 0) with rfl | hj
-      · simp only [↓reduceDIte, Nat.succ_eq_add_one, update_same, succ_mk, cast_mk, coe_pred]
+      · simp only [↓reduceDIte, Nat.succ_eq_add_one, update_self, succ_mk, cast_mk, coe_pred]
         have A := c.one_lt_partSize_index_zero hc
         rw [Nat.sub_add_cancel]
         · congr; omega
@@ -542,7 +542,7 @@ def eraseMiddle (c : OrderedFinpartition (n + 1)) (hc : range (c.emb 0) ≠ {0})
           rw [← lt_iff_val_lt_val]
           apply c.emb_strictMono
           simp [lt_iff_val_lt_val]
-      · simp only [hj, ↓reduceDIte, ne_eq, not_false_eq_true, update_noteq, cast_mk, coe_pred]
+      · simp only [hj, ↓reduceDIte, ne_eq, not_false_eq_true, update_of_ne, cast_mk, coe_pred]
         apply Nat.sub_add_cancel
         have : c.emb j ⟨c.partSize j - 1, Nat.sub_one_lt_of_lt (c.partSize_pos j)⟩
             ≠ c.emb (c.index 0) 0 := c.emb_ne_emb_of_ne hj
@@ -667,12 +667,12 @@ def extendEquiv (n : ℕ) :
       simp only [extend, extendMiddle, eraseMiddle, Nat.succ_eq_add_one, ↓reduceDIte]
       ext
       · rfl
-      · simp only [update_same, update_idem, heq_eq_eq, update_eq_self_iff, B]
+      · simp only [update_self, update_idem, heq_eq_eq, update_eq_self_iff, B]
       · refine hfunext rfl ?_
         simp only [heq_eq_eq, forall_eq']
         intro i
         refine ((Fin.heq_fun_iff ?_).mpr ?_).symm
-        · simp only [update_same, B, update_idem, update_eq_self]
+        · simp only [update_self, B, update_idem, update_eq_self]
         · intro j
           rcases eq_or_ne i (c.index 0) with rfl | hi
           · simp only [↓reduceDIte, comp_apply]
@@ -699,6 +699,11 @@ lemma applyOrderedFinpartition_apply (p : ∀ (i : Fin c.length), E[×c.partSize
     (v : Fin n → E) :
   c.applyOrderedFinpartition p v = (fun m ↦ p m (v ∘ c.emb m)) := rfl
 
+theorem norm_applyOrderedFinpartition_le (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F)
+    (v : Fin n → E) (m : Fin c.length) :
+    ‖c.applyOrderedFinpartition p v m‖ ≤ ‖p m‖ * ∏ i : Fin (c.partSize m), ‖v (c.emb m i)‖ :=
+  (p m).le_opNorm _
+
 /-- Technical lemma stating how `c.applyOrderedFinpartition` commutes with updating variables. This
 will be the key point to show that functions constructed from `applyOrderedFinpartition` retain
 multilinearity. -/
@@ -712,13 +717,13 @@ theorem applyOrderedFinpartition_update_right
   ext m
   by_cases h : m = c.index j
   · rw [h]
-    simp only [applyOrderedFinpartition, update_same]
+    simp only [applyOrderedFinpartition, update_self]
     congr
     rw [← Function.update_comp_eq_of_injective]
     · simp
     · exact (c.emb_strictMono (c.index j)).injective
   · simp only [applyOrderedFinpartition, ne_eq, h, not_false_eq_true,
-      update_noteq]
+      update_of_ne]
     congr
     apply Function.update_comp_eq_of_not_mem_range
     have A : Disjoint (range (c.emb m)) (range (c.emb (c.index j))) :=
@@ -741,9 +746,7 @@ variables, and for each `m` a continuous multilinear map `p m` in `c.partSize m`
 one can form a continuous multilinear map in `n`
 variables by applying `p m` to each part of the partition, and then
 applying `f` to the resulting vector. It is called `c.compAlongOrderedFinpartition f p`. -/
-def compAlongOrderedFinpartition
-    (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length ↦ F) G)
-    (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F) :
+def compAlongOrderedFinpartition (f : F [×c.length]→L[𝕜] G) (p : ∀ i, E [×c.partSize i]→L[𝕜] F) :
     E[×n]→L[𝕜] G where
   toFun v := f (c.applyOrderedFinpartition p v)
   map_update_add' v i x y := by
@@ -757,16 +760,24 @@ def compAlongOrderedFinpartition
     change Continuous (fun v m ↦ p m (v ∘ c.emb m))
     fun_prop
 
-@[simp] lemma compAlongOrderFinpartition_apply
-    (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length ↦ F) G)
-    (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F) (v : Fin n → E) :
+@[simp] lemma compAlongOrderFinpartition_apply (f : F [×c.length]→L[𝕜] G)
+    (p : ∀ i, E[×c.partSize i]→L[𝕜] F) (v : Fin n → E) :
     c.compAlongOrderedFinpartition f p v = f (c.applyOrderedFinpartition p v) := rfl
+
+theorem norm_compAlongOrderedFinpartition_le (f : F [×c.length]→L[𝕜] G)
+    (p : ∀ i, E [×c.partSize i]→L[𝕜] F) :
+    ‖c.compAlongOrderedFinpartition f p‖ ≤ ‖f‖ * ∏ i, ‖p i‖ := by
+  refine ContinuousMultilinearMap.opNorm_le_bound (by positivity) fun v ↦ ?_
+  rw [compAlongOrderFinpartition_apply, mul_assoc, ← c.prod_sigma_eq_prod,
+    ← Finset.prod_mul_distrib]
+  exact f.le_opNorm_mul_prod_of_le <| c.norm_applyOrderedFinpartition_le _ _
 
 /-- Bundled version of `compAlongOrderedFinpartition`, depending linearly on `f`
 and multilinearly on `p`.-/
+@[simps apply_apply]
 def compAlongOrderedFinpartitionₗ :
-    (ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length ↦ F) G) →ₗ[𝕜]
-      MultilinearMap 𝕜 (fun i : Fin c.length ↦ (E[×c.partSize i]→L[𝕜] F)) (E[×n]→L[𝕜] G) where
+    (F [×c.length]→L[𝕜] G) →ₗ[𝕜]
+      MultilinearMap 𝕜 (fun i : Fin c.length ↦ E[×c.partSize i]→L[𝕜] F) (E[×n]→L[𝕜] G) where
   toFun f :=
     { toFun := fun p ↦ c.compAlongOrderedFinpartition f p
       map_update_add' := by
@@ -786,23 +797,20 @@ variable (𝕜 E F G) in
 /-- Bundled version of `compAlongOrderedFinpartition`, depending continuously linearly on `f`
 and continuously multilinearly on `p`.-/
 noncomputable def compAlongOrderedFinpartitionL :
-    (ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length ↦ F) G) →L[𝕜]
-      ContinuousMultilinearMap 𝕜 (fun i : Fin c.length ↦ (E[×c.partSize i]→L[𝕜] F))
-        (E[×n]→L[𝕜] G) := by
-  refine MultilinearMap.mkContinuousLinear c.compAlongOrderedFinpartitionₗ 1 (fun f p ↦ ?_)
-  simp only [one_mul]
-  change ‖c.compAlongOrderedFinpartition f p‖ ≤ _
-  apply ContinuousMultilinearMap.opNorm_le_bound (by positivity) (fun v ↦ ?_)
-  simp only [compAlongOrderFinpartition_apply]
-  apply (f.le_opNorm _).trans
-  rw [mul_assoc, ← c.prod_sigma_eq_prod, ← Finset.prod_mul_distrib]
-  gcongr with m _
-  exact (p m).le_opNorm _
+    (F [×c.length]→L[𝕜] G) →L[𝕜]
+      ContinuousMultilinearMap 𝕜 (fun i ↦ E[×c.partSize i]→L[𝕜] F) (E[×n]→L[𝕜] G) := by
+  refine MultilinearMap.mkContinuousLinear c.compAlongOrderedFinpartitionₗ 1 fun f p ↦ ?_
+  simp only [one_mul, compAlongOrderedFinpartitionₗ_apply_apply]
+  apply norm_compAlongOrderedFinpartition_le
 
-@[simp] lemma compAlongOrderedFinpartitionL_apply
-    (f : ContinuousMultilinearMap 𝕜 (fun _i : Fin c.length ↦ F) G)
+@[simp] lemma compAlongOrderedFinpartitionL_apply (f : F [×c.length]→L[𝕜] G)
     (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F) :
     c.compAlongOrderedFinpartitionL 𝕜 E F G f p = c.compAlongOrderedFinpartition f p := rfl
+
+theorem norm_compAlongOrderedFinpartitionL_le :
+    set_option maxSynthPendingDepth 2 in
+    ‖c.compAlongOrderedFinpartitionL 𝕜 E F G‖ ≤ 1 :=
+  MultilinearMap.mkContinuousLinear_norm_le _ zero_le_one _
 
 end OrderedFinpartition
 
@@ -816,7 +824,7 @@ block of the composition, and then applying `q c.length` to the resulting vector
 called `q.compAlongComposition p c`. -/
 def compAlongOrderedFinpartition {n : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     (p : FormalMultilinearSeries 𝕜 E F) (c : OrderedFinpartition n) :
-    ContinuousMultilinearMap 𝕜 (fun _i : Fin n ↦ E) G :=
+    E [×n]→L[𝕜] G :=
   c.compAlongOrderedFinpartition (q c.length) (fun m ↦ p (c.partSize m))
 
 @[simp]
@@ -895,23 +903,24 @@ private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     ((c.compAlongOrderedFinpartitionL 𝕜 E F G (q c.length)).toContinuousLinearMap
       (fun i ↦ p (c.partSize i)) i).comp (p (c.partSize i + 1)).curryLeft := by
   ext e v
-  simp only [Nat.succ_eq_add_one, OrderedFinpartition.extend, extendMiddle,
-    ContinuousMultilinearMap.curryLeft_apply,
-    FormalMultilinearSeries.compAlongOrderedFinpartition_apply, ContinuousLinearMap.coe_comp',
-    comp_apply, ContinuousMultilinearMap.toContinuousLinearMap_toFun,
-    compAlongOrderedFinpartitionL_apply, compAlongOrderFinpartition_apply,
-    applyOrderedFinpartition_apply]
+  simp? [OrderedFinpartition.extend, extendMiddle, applyOrderedFinpartition_apply] says
+    simp only [Nat.succ_eq_add_one, OrderedFinpartition.extend, extendMiddle,
+      ContinuousMultilinearMap.curryLeft_apply,
+      FormalMultilinearSeries.compAlongOrderedFinpartition_apply, applyOrderedFinpartition_apply,
+      ContinuousLinearMap.coe_comp', comp_apply,
+      ContinuousMultilinearMap.toContinuousLinearMap_apply, compAlongOrderedFinpartitionL_apply,
+      compAlongOrderFinpartition_apply]
   congr
   ext j
   rcases eq_or_ne j i with rfl | hij
-  · simp only [↓reduceDIte, update_same, ContinuousMultilinearMap.curryLeft_apply,
+  · simp only [↓reduceDIte, update_self, ContinuousMultilinearMap.curryLeft_apply,
       Nat.succ_eq_add_one]
     apply FormalMultilinearSeries.congr _ (by simp)
     intro a ha h'a
     match a with
     | 0 => simp
     | a + 1 => simp [cons]
-  · simp only [hij, ↓reduceDIte, ne_eq, not_false_eq_true, update_noteq]
+  · simp only [hij, ↓reduceDIte, ne_eq, not_false_eq_true, update_of_ne]
     apply FormalMultilinearSeries.congr _ (by simp [hij])
     simp
 
@@ -952,7 +961,7 @@ theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E �
         hf.hasFDerivWithinAt (le_trans (mod_cast Nat.le_add_left 1 m)
           (ENat.add_one_natCast_le_withTop_of_lt hm)) hx
       convert HasFDerivWithinAt.linear_multilinear_comp (J.comp x K h) I B
-      simp only [Nat.succ_eq_add_one, Fintype.sum_option, comp_apply, faaDiBruno_aux1,
+      simp only [B, Nat.succ_eq_add_one, Fintype.sum_option, comp_apply, faaDiBruno_aux1,
         faaDiBruno_aux2]
     have B : HasFDerivWithinAt (fun x ↦ (q (f x)).taylorComp (p x) m)
         (∑ c : OrderedFinpartition m, ∑ i : Option (Fin c.length),

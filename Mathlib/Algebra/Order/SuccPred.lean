@@ -6,7 +6,7 @@ Authors: Violeta Hernández Palacios, Yaël Dillies
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.Int.Cast.Defs
-import Mathlib.Order.SuccPred.Archimedean
+import Mathlib.Order.SuccPred.Limit
 
 /-!
 # Interaction between successors and arithmetic
@@ -137,6 +137,46 @@ theorem covBy_iff_sub_one_eq [Sub α] [One α] [PredSubOrder α] [NoMinOrder α]
     x ⋖ y ↔ y - 1 = x := by
   rw [← pred_eq_sub_one]
   exact pred_eq_iff_covBy.symm
+
+theorem IsSuccPrelimit.add_one_lt [Add α] [One α] [SuccAddOrder α]
+    (hx : IsSuccPrelimit x) (hy : y < x) : y + 1 < x := by
+  rw [← succ_eq_add_one]
+  exact hx.succ_lt hy
+
+theorem IsPredPrelimit.lt_sub_one [Sub α] [One α] [PredSubOrder α]
+    (hx : IsPredPrelimit x) (hy : x < y) : x < y - 1 := by
+  rw [← pred_eq_sub_one]
+  exact hx.lt_pred hy
+
+theorem IsSuccLimit.add_one_lt [Add α] [One α] [SuccAddOrder α]
+    (hx : IsSuccLimit x) (hy : y < x) : y + 1 < x :=
+  hx.isSuccPrelimit.add_one_lt hy
+
+theorem IsPredLimit.lt_sub_one [Sub α] [One α] [PredSubOrder α]
+    (hx : IsPredLimit x) (hy : x < y) : x < y - 1 :=
+  hx.isPredPrelimit.lt_sub_one hy
+
+theorem IsSuccPrelimit.add_natCast_lt [AddMonoidWithOne α] [SuccAddOrder α]
+    (hx : IsSuccPrelimit x) (hy : y < x) : ∀ n : ℕ, y + n < x
+  | 0 => by simpa
+  | n + 1 => by
+    rw [Nat.cast_add_one, ← add_assoc]
+    exact hx.add_one_lt (hx.add_natCast_lt hy n)
+
+theorem IsPredPrelimit.lt_sub_natCast [AddCommGroupWithOne α] [PredSubOrder α]
+    (hx : IsPredPrelimit x) (hy : x < y) : ∀ n : ℕ, x < y - n
+  | 0 => by simpa
+  | n + 1 => by
+    rw [Nat.cast_add_one, ← sub_sub]
+    exact hx.lt_sub_one (hx.lt_sub_natCast hy n)
+
+theorem IsSuccLimit.add_natCast_lt [AddMonoidWithOne α] [SuccAddOrder α]
+    (hx : IsSuccLimit x) (hy : y < x) : ∀ n : ℕ, y + n < x :=
+  hx.isSuccPrelimit.add_natCast_lt hy
+
+theorem IsPredLimit.lt_sub_natCast [AddCommGroupWithOne α] [PredSubOrder α]
+    (hx : IsPredLimit x) (hy : x < y) : ∀ n : ℕ, x < y - n :=
+  hx.isPredPrelimit.lt_sub_natCast hy
 
 end PartialOrder
 

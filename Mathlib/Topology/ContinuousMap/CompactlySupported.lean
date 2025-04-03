@@ -522,3 +522,25 @@ instance : ZeroAtInftyContinuousMapClass F β γ where
 end ZeroAtInfty
 
 end CompactlySupportedContinuousMapClass
+
+section NonnegativePart
+
+open NNReal
+
+namespace CompactlySupportedContinuousMap
+
+/-- The nonnegative part of a bounded continuous `ℝ`-valued function as a bounded
+continuous `ℝ≥0`-valued function. -/
+noncomputable def nnrealPart (f : C_c(α, ℝ)) : C_c(α, ℝ≥0) where
+  toFun := Real.toNNReal.comp f.toFun
+  continuous_toFun := Continuous.comp continuous_real_toNNReal f.continuous
+  hasCompactSupport' := by
+    apply HasCompactSupport.comp_left f.hasCompactSupport' Real.toNNReal_zero
+
+@[simp]
+lemma nnrealPart_apply (f : C_c(α, ℝ)) (x : α) :
+    f.nnrealPart x = Real.toNNReal (f x) := rfl
+
+end CompactlySupportedContinuousMap
+
+end NonnegativePart

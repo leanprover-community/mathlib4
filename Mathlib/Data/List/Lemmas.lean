@@ -17,18 +17,21 @@ variable {α β γ : Type*}
 
 namespace List
 
+@[simp]
+theorem length_flatMap (l : List α) (f : α → List β) :
+    length (List.flatMap l f) = sum (map (length ∘ f) l) := by
+  rw [List.flatMap, length_flatten, map_map]
+
+lemma countP_flatMap (p : β → Bool) (l : List α) (f : α → List β) :
+    countP p (l.flatMap f) = sum (map (countP p ∘ f) l) := by
+  rw [List.flatMap, countP_flatten, map_map]
+
+lemma count_flatMap [BEq β] (l : List α) (f : α → List β) (x : β) :
+    count x (l.flatMap f) = sum (map (count x ∘ f) l) := countP_flatMap _ _ _
+
 @[deprecated (since := "2024-08-20")] alias getElem_reverse' := getElem_reverse
 
-theorem tail_reverse_eq_reverse_dropLast (l : List α) :
-    l.reverse.tail = l.dropLast.reverse := by
-  ext i v; by_cases hi : i < l.length - 1
-  · simp only [← drop_one]
-    rw [getElem?_eq_getElem (by simpa), getElem?_eq_getElem (by simpa),
-      ← getElem_drop' _, getElem_reverse, getElem_reverse, getElem_dropLast]
-    · simp [show l.length - 1 - (1 + i) = l.length - 1 - 1 - i by omega]
-    all_goals ((try simp); omega)
-  · rw [getElem?_eq_none, getElem?_eq_none]
-    all_goals (simp; omega)
+@[deprecated (since := "2024-12-10")] alias tail_reverse_eq_reverse_dropLast := tail_reverse
 
 @[deprecated (since := "2024-08-19")] alias nthLe_tail := getElem_tail
 

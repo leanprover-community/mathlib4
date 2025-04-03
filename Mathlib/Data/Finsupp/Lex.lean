@@ -75,6 +75,26 @@ instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) where
   le := (· ≤ ·)
   __ := LinearOrder.lift' (toLex ∘ toDFinsupp ∘ ofLex) finsuppEquivDFinsupp.injective
 
+theorem Lex.single_strictAnti : StrictAnti (fun (a : α) ↦ toLex (single a 1)) := by
+  intro a b h
+  simp only [LT.lt, Finsupp.lex_def]
+  simp only [ofLex_toLex, Nat.lt_eq]
+  use a
+  constructor
+  · intro d hd
+    simp only [Finsupp.single_eq_of_ne (ne_of_lt hd).symm,
+      Finsupp.single_eq_of_ne (ne_of_gt (lt_trans hd h))]
+  · simp only [single_eq_same, single_eq_of_ne (ne_of_lt h).symm, zero_lt_one]
+
+theorem Lex.single_lt_iff {a b : α} : toLex (single b 1) < toLex (single a 1) ↔ a < b :=
+  Lex.single_strictAnti.lt_iff_lt
+
+theorem Lex.single_le_iff {a b : α} : toLex (single b 1) ≤ toLex (single a 1) ↔ a ≤ b :=
+  Lex.single_strictAnti.le_iff_le
+
+theorem Lex.single_antitone : Antitone (fun (a : α) ↦ toLex (single a 1)) :=
+  Lex.single_strictAnti.antitone
+
 variable [PartialOrder N]
 
 theorem toLex_monotone : Monotone (@toLex (α →₀ N)) :=

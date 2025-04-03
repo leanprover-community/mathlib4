@@ -91,6 +91,10 @@ lemma term_congr {f g : ℕ → ℂ} (h : ∀ {n}, n ≠ 0 → f n = g n) (s : �
     term f s n = term g s n := by
   rcases eq_or_ne n 0 with hn | hn <;> simp [hn, h]
 
+lemma pow_mul_term_eq (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
+    (n + 1) ^ s * term f s (n + 1) = f (n + 1) := by
+  simp [term, natCast_add_one_cpow_ne_zero n _, mul_comm (f _), mul_div_assoc']
+
 lemma norm_term_eq (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     ‖term f s n‖ = if n = 0 then 0 else ‖f n‖ / n ^ s.re := by
   rcases eq_or_ne n 0 with rfl | hn
@@ -144,6 +148,7 @@ noncomputable
 def LSeries (f : ℕ → ℂ) (s : ℂ) : ℂ :=
   ∑' n, term f s n
 
+-- TODO: change argument order in `LSeries_congr` to have `s` last.
 lemma LSeries_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ {n}, n ≠ 0 → f n = g n) :
     LSeries f s = LSeries g s :=
   tsum_congr <| term_congr h s

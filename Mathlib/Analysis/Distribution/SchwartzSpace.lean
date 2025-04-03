@@ -755,14 +755,15 @@ end EvalCLM
 
 section Multiplication
 
-variable [NormedAddCommGroup D] [NormedSpace ℝ D]
-variable [NormedAddCommGroup G] [NormedSpace ℝ G]
+variable [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜]
+  [NormedAddCommGroup D] [NormedSpace ℝ D]
+  [NormedAddCommGroup G] [NormedSpace ℝ G]
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
 
 /-- The map `f ↦ (x ↦ B (f x) (g x))` as a continuous `𝕜`-linear map on Schwartz space,
 where `B` is a continuous `𝕜`-linear map and `g` is a function of temperate growth. -/
-def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemperateGrowth) :
-    𝓢(D, E) →L[ℝ] 𝓢(D, G) := by
-  -- Todo (after port): generalize to `B : E →L[𝕜] F →L[𝕜] G` and `𝕜`-linear
+def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth) :
+    𝓢(D, E) →L[𝕜] 𝓢(D, G) := by
   refine mkCLM (fun f x => B (f x) (g x))
     (fun _ _ _ => by
       simp only [map_add, add_left_inj, Pi.add_apply, eq_self_iff_true,
@@ -770,7 +771,8 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
     (fun _ _ _ => by
       simp only [smul_apply, map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
         RingHom.id_apply])
-    (fun f => (B.isBoundedBilinearMap.contDiff.restrict_scalars ℝ).comp (f.smooth'.prod hg.1)) ?_
+    (fun f => (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
+      (f.smooth'.prod hg.1)) ?_
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
   use
@@ -778,10 +780,12 @@ def bilinLeftCLM (B : E →L[ℝ] F →L[ℝ] G) {g : D → F} (hg : g.HasTemper
     by positivity
   intro f x
   have hxk : 0 ≤ ‖x‖ ^ k := by positivity
+  simp_rw [← ContinuousLinearMap.bilinearRestrictScalars_apply_apply ℝ B]
   have hnorm_mul :=
-    ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear B f.smooth' hg.1 x (n := n)
-    (mod_cast le_top)
+    ContinuousLinearMap.norm_iteratedFDeriv_le_of_bilinear (B.bilinearRestrictScalars ℝ)
+    f.smooth' hg.1 x (n := n) (mod_cast le_top)
   refine le_trans (mul_le_mul_of_nonneg_left hnorm_mul hxk) ?_
+  rw [ContinuousLinearMap.norm_bilinearRestrictScalars]
   move_mul [← ‖B‖]
   simp_rw [mul_assoc ‖B‖]
   gcongr _ * ?_

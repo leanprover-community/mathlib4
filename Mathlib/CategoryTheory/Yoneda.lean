@@ -252,7 +252,7 @@ def CorepresentableBy.toIso {F : C ⥤ Type v₁} {X : C} (e : F.Corepresentable
     coyoneda.obj (op X) ≅ F :=
   corepresentableByEquiv e
 
-/-- A functor `F : Cᵒᵖ ⥤ Type v` is representable if there is oan bject `Y` with a structure
+/-- A functor `F : Cᵒᵖ ⥤ Type v` is representable if there is an object `Y` with a structure
 `F.RepresentableBy Y`, i.e. there is a natural bijection `(X ⟶ Y) ≃ F.obj (op X)`,
 which may also be rephrased as a natural isomorphism `yoneda.obj X ≅ F` when `Category.{v} C`.
 
@@ -267,7 +267,7 @@ lemma RepresentableBy.isRepresentable {F : Cᵒᵖ ⥤ Type v} {Y : C} (e : F.Re
     F.IsRepresentable where
   has_representation := ⟨Y, ⟨e⟩⟩
 
-/-- Alternative constructure for `F.IsRepresentable`, which takes as an input an
+/-- Alternative constructor for `F.IsRepresentable`, which takes as an input an
 isomorphism `yoneda.obj X ≅ F`. -/
 lemma IsRepresentable.mk' {F : Cᵒᵖ ⥤ Type v₁} {X : C} (e : yoneda.obj X ≅ F) :
     F.IsRepresentable :=
@@ -289,7 +289,7 @@ lemma CorepresentableBy.isCorepresentable {F : C ⥤ Type v} {X : C} (e : F.Core
     F.IsCorepresentable where
   has_corepresentation := ⟨X, ⟨e⟩⟩
 
-/-- Alternative constructure for `F.IsCorepresentable`, which takes as an input an
+/-- Alternative constructor for `F.IsCorepresentable`, which takes as an input an
 isomorphism `coyoneda.obj (op X) ≅ F`. -/
 lemma IsCorepresentable.mk' {F : C ⥤ Type v₁} {X : C} (e : coyoneda.obj (op X) ≅ F) :
     F.IsCorepresentable :=

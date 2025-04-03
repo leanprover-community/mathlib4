@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodriguez
 -/
 import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Counting on ℕ

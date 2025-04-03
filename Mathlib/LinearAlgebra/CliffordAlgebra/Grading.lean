@@ -99,8 +99,7 @@ theorem GradedAlgebra.lift_ι_eq (i' : ZMod 2) (x' : evenOdd Q i') :
       · rw [Nat.succ_eq_add_one, add_comm, Nat.cast_add, Nat.cast_one]
       rfl
   | zero =>
-    set_option linter.deprecated false in
-    rw [AlgHom.map_zero]
+    rw [map_zero]
     apply Eq.symm
     apply DFinsupp.single_eq_zero.mpr; rfl
   | add x y hx hy ihx ihy =>

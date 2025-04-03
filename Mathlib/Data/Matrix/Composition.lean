@@ -40,22 +40,36 @@ section AddCommMonoid
 variable [AddCommMonoid R]
 
 /-- `Matrix.comp` as `AddEquiv` -/
-@[simps!]
 def compAddEquiv : Matrix I J (Matrix K L R) ≃+ Matrix (I × K) (J × L) R where
   __ := Matrix.comp I J K L R
   map_add' _ _ := rfl
+
+@[simp]
+theorem compAddEquiv_apply (M : Matrix I J (Matrix K L R)) :
+    compAddEquiv I J K L R M = comp I J K L R M := rfl
+
+@[simp]
+theorem compAddEquiv_symm_apply (M : Matrix (I × K) (J × L) R) :
+    (compAddEquiv I J K L R).symm M = (comp I J K L R).symm M := rfl
 
 end AddCommMonoid
 
 section Semiring
 
-variable [Semiring R] [Fintype I] [Fintype J] [DecidableEq I] [DecidableEq J]
+variable [Semiring R] [Fintype I] [Fintype J]
 
 /-- `Matrix.comp` as `RingEquiv` -/
-@[simps!]
 def compRingEquiv : Matrix I I (Matrix J J R) ≃+* Matrix (I × J) (I × J) R where
   __ := Matrix.compAddEquiv I I J J R
   map_mul' _ _ := by ext; exact (Matrix.sum_apply ..).trans <| .symm <| Fintype.sum_prod_type ..
+
+@[simp]
+theorem compRingEquiv_apply (M : Matrix I I (Matrix J J R)) :
+    compRingEquiv I J R M = comp I I J J R M := rfl
+
+@[simp]
+theorem compRingEquiv_symm_apply (M : Matrix (I × J) (I × J) R) :
+    (compRingEquiv I J R).symm M = (comp I I J J R).symm M := rfl
 
 end Semiring
 

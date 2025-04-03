@@ -132,7 +132,8 @@ def colimit : ModuleCatMax.{v, u, u} R :=
 
 /-- The linear map from a given `R`-module in the diagram to the colimit module. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F :=
-  { (AddCommGrp.FilteredColimits.colimitCocone
+  ofHom
+    { (AddCommGrp.FilteredColimits.colimitCocone
       (F ⋙ forget₂ (ModuleCat R) AddCommGrp.{max v u})).ι.app j with
     map_smul' := fun r x => by erw [colimit_smul_mk_eq F r ⟨j, x⟩]; rfl }
 
@@ -142,7 +143,7 @@ def colimitCocone : Cocone F where
   ι :=
     { app := coconeMorphism F
       naturality := fun _ _' f =>
-        LinearMap.coe_injective
+        hom_ext <| LinearMap.coe_injective
           ((Types.TypeMax.colimitCocone (F ⋙ forget (ModuleCat R))).ι.naturality f) }
 
 /-- Given a cocone `t` of `F`, the induced monoid linear map from the colimit to the cocone point.
@@ -150,25 +151,27 @@ We already know that this is a morphism between additive groups. The only thing 
 it is a linear map, i.e. preserves scalar multiplication.
 -/
 def colimitDesc (t : Cocone F) : colimit F ⟶ t.pt :=
-  { (AddCommGrp.FilteredColimits.colimitCoconeIsColimit
+  ofHom
+    { (AddCommGrp.FilteredColimits.colimitCoconeIsColimit
           (F ⋙ forget₂ (ModuleCatMax.{v, u} R) AddCommGrp.{max v u})).desc
       ((forget₂ (ModuleCat R) AddCommGrp.{max v u}).mapCocone t) with
     map_smul' := fun r x => by
       refine Quot.inductionOn x ?_; clear x; intro x; obtain ⟨j, x⟩ := x
       erw [colimit_smul_mk_eq]
-      exact LinearMap.map_smul (t.ι.app j) r x }
+      exact LinearMap.map_smul (t.ι.app j).hom r x }
 
 /-- The proposed colimit cocone is a colimit in `ModuleCat R`. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone F) where
   desc := colimitDesc F
   fac t j :=
-    LinearMap.coe_injective <|
+    hom_ext <| LinearMap.coe_injective <|
       (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget (ModuleCat R))).fac
         ((forget (ModuleCat R)).mapCocone t) j
   uniq t _ h :=
-    LinearMap.coe_injective <|
+    hom_ext <| LinearMap.coe_injective <|
       (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget (ModuleCat R))).uniq
-        ((forget (ModuleCat R)).mapCocone t) _ fun j => funext fun x => LinearMap.congr_fun (h j) x
+        ((forget (ModuleCat R)).mapCocone t) _ fun j => funext fun x => LinearMap.congr_fun
+          (ModuleCat.hom_ext_iff.mp (h j)) x
 
 instance forget₂AddCommGroup_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ (ModuleCat.{u} R) AddCommGrp.{u}) where

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Constructions
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousOn
 
@@ -288,6 +289,10 @@ protected theorem IsTopologicalBasis.continuous_iff {β : Type*} [TopologicalSpa
     {B : Set (Set β)} (hB : IsTopologicalBasis B) {f : α → β} :
     Continuous f ↔ ∀ s ∈ B, IsOpen (f ⁻¹' s) := by
   rw [hB.eq_generateFrom, continuous_generateFrom_iff]
+
+@[simp] lemma isTopologicalBasis_empty : IsTopologicalBasis (∅ : Set (Set α)) ↔ IsEmpty α where
+  mp h := by simpa using h.sUnion_eq.symm
+  mpr h := ⟨by simp, by simp [Set.univ_eq_empty_iff.2], Subsingleton.elim ..⟩
 
 variable (α)
 

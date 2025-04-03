@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+import Mathlib.Geometry.Manifold.Diffeomorph
 
 /-!
 # Derivatives of maps in the tangent bundle
@@ -62,7 +63,7 @@ lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y
 the basis also has unique differential. -/
 theorem UniqueMDiffOn.tangentBundle_proj_preimage {s : Set M} (hs : UniqueMDiffOn I s) :
     UniqueMDiffOn I.tangent (π E (TangentSpace I) ⁻¹' s) :=
-  hs.smooth_bundle_preimage _
+  hs.bundle_preimage _
 
 /-- To write a linear map between tangent spaces in coordinates amounts to precomposing and
 postcomposing it with derivatives of extended charts.
@@ -87,3 +88,13 @@ lemma inTangentCoordinates_eq_mfderiv_comp
     · apply mdifferentiableWithinAt_extChartAt_symm
       apply (extChartAt I (f x₀)).map_source
       simpa using hx
+
+open Bundle
+variable (I) in
+/-- The canonical identification between the tangent bundle to the model space and the product,
+as a diffeomorphism -/
+def tangentBundleModelSpaceDiffeomorph (n : ℕ∞) :
+    TangentBundle I H ≃ₘ^n⟮I.tangent, I.prod 𝓘(𝕜, E)⟯ ModelProd H E where
+  __ := TotalSpace.toProd H E
+  contMDiff_toFun := contMDiff_tangentBundleModelSpaceHomeomorph
+  contMDiff_invFun := contMDiff_tangentBundleModelSpaceHomeomorph_symm

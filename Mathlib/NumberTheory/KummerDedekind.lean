@@ -324,7 +324,7 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
     simp [normalizedFactors_irreducible hf]
   suffices ∃ y, normalizedFactors (I.map (algebraMap R S)) = {y} by
     obtain ⟨y, hy⟩ := this
-    have h := normalizedFactors_prod (show I.map (algebraMap R S) ≠ 0 by
+    have h := prod_normalizedFactors (show I.map (algebraMap R S) ≠ 0 by
           rwa [← bot_eq_zero, Ne,
             map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S)])
     rw [associated_iff_eq, hy, Multiset.prod_singleton] at h

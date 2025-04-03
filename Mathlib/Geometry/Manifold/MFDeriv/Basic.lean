@@ -693,10 +693,17 @@ protected theorem MDifferentiableAt.mfderiv (h : MDifferentiableAt I I' f x) :
 protected theorem HasMFDerivAt.mfderiv (h : HasMFDerivAt I I' f x f') : mfderiv I I' f x = f' :=
   (hasMFDerivAt_unique h h.mdifferentiableAt.hasMFDerivAt).symm
 
-theorem HasMFDerivWithinAt.mfderivWithin (h : HasMFDerivWithinAt I I' f s x f')
+protected theorem HasMFDerivWithinAt.mfderivWithin (h : HasMFDerivWithinAt I I' f s x f')
     (hxs : UniqueMDiffWithinAt I s x) : mfderivWithin I I' f s x = f' := by
   ext
   rw [hxs.eq h h.mdifferentiableWithinAt.hasMFDerivWithinAt]
+
+theorem HasMFDerivWithinAt.mfderivWithin_eq_zero (h : HasMFDerivWithinAt I I' f s x 0) :
+    mfderivWithin I I' f s x = 0 := by
+  simp only [mfld_simps, mfderivWithin, h.mdifferentiableWithinAt, ↓reduceIte]
+  simp only [HasMFDerivWithinAt, mfld_simps] at h
+  rw [fderivWithin, if_pos]
+  exact h.2
 
 theorem MDifferentiable.mfderivWithin (h : MDifferentiableAt I I' f x)
     (hxs : UniqueMDiffWithinAt I s x) : mfderivWithin I I' f s x = mfderiv I I' f x := by

@@ -177,10 +177,10 @@ def smoothRightMul : C^∞⟮I, G; I, G⟯ :=
   ⟨rightMul g, contMDiff_mul_right⟩
 
 -- Left multiplication. The abbreviation is `MIL`.
-scoped[LieGroup] notation "𝑳" => smoothLeftMul
+@[inherit_doc] scoped[LieGroup] notation "𝑳" => smoothLeftMul
 
 -- Right multiplication. The abbreviation is `MIR`.
-scoped[LieGroup] notation "𝑹" => smoothRightMul
+@[inherit_doc] scoped[LieGroup] notation "𝑹" => smoothRightMul
 
 open scoped LieGroup
 

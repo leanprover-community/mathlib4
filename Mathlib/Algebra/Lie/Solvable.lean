@@ -77,7 +77,7 @@ theorem derivedSeriesOfIdeal_add (k l : ℕ) : D (k + l) I = D k (D l I) := by
   | zero => rw [Nat.zero_add, derivedSeriesOfIdeal_zero]
   | succ k ih => rw [Nat.succ_add k l, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ, ih]
 
-@[mono]
+@[gcongr, mono]
 theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J) (h₂ : l ≤ k) :
     D k I ≤ D l J := by
   revert l; induction' k with k ih <;> intro l h₂
@@ -229,6 +229,9 @@ theorem Injective.lieAlgebra_isSolvable [h₁ : IsSolvable R L] (h₂ : Injectiv
   apply LieIdeal.bot_of_map_eq_bot h₂; rw [eq_bot_iff, ← hk]
   apply LieIdeal.derivedSeries_map_le
 
+instance (A : LieIdeal R L) [IsSolvable R L] : IsSolvable R A :=
+  A.incl_injective.lieAlgebra_isSolvable
+
 theorem Surjective.lieAlgebra_isSolvable [h₁ : IsSolvable R L'] (h₂ : Surjective f) :
     IsSolvable R L := by
   obtain ⟨k, hk⟩ := id h₁
@@ -238,7 +241,7 @@ theorem Surjective.lieAlgebra_isSolvable [h₁ : IsSolvable R L'] (h₂ : Surjec
 
 end Function
 
-theorem LieHom.isSolvable_range (f : L' →ₗ⁅R⁆ L) [LieAlgebra.IsSolvable R L'] :
+instance LieHom.isSolvable_range (f : L' →ₗ⁅R⁆ L) [LieAlgebra.IsSolvable R L'] :
     LieAlgebra.IsSolvable R f.range :=
   f.surjective_rangeRestrict.lieAlgebra_isSolvable
 

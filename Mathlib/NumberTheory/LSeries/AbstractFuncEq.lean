@@ -135,7 +135,7 @@ namespace WeakFEPair
 /-- As `x → 0`, we have `f x = x ^ (-P.k) • constant` up to a rapidly decaying error. -/
 lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
     (fun x ↦ P.f x - (P.ε * ↑(x ^ (-P.k))) • P.g₀) =O[𝓝[>] 0] (· ^ r) := by
-  have := (P.hg_top (-(r + P.k))).comp_tendsto tendsto_inv_zero_atTop
+  have := (P.hg_top (-(r + P.k))).comp_tendsto tendsto_inv_nhdsGT_zero
   simp_rw [IsBigO, IsBigOWith, eventually_nhdsWithin_iff] at this ⊢
   obtain ⟨C, hC⟩ := this
   use ‖P.ε‖ * C

@@ -600,6 +600,7 @@ theorem normalClosure_subset_iff {s t : Set G} (ht : IsNormalSubgroup t) :
     s ⊆ t ↔ normalClosure s ⊆ t :=
   ⟨normalClosure_subset ht, Set.Subset.trans subset_normalClosure⟩
 
+@[gcongr]
 theorem normalClosure_mono {s t : Set G} : s ⊆ t → normalClosure s ⊆ normalClosure t := fun h =>
   normalClosure_subset normalClosure.is_normal (Set.Subset.trans h subset_normalClosure)
 

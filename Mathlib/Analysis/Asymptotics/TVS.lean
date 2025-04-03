@@ -28,6 +28,9 @@ thus reducing the definition to the classical one.
 
 This frees the user from having to chose a canonical norm, at the expense of having to pick a
 specific base ring.
+This is exactly the tradeoff we want in `HasFDerivAtFilter`,
+as there the base ring is already chosen,
+and this removes the choice of norm being part of the statement.
 
 This definition was added to the library in order to migrate Fréchet derivatives
 from normed vector spaces to topological vector spaces.
@@ -50,10 +53,6 @@ until someone will need it (e.g., to prove properties of the Fréchet derivative
 * `isLittleOTVS_iff_tendsto_inv_smul`: the equivalence to convergence of the ratio to zero
   in case of a topological vector space.
 
-## TODO
-
-Use this to redefine `HasFDerivAtFilter`, as the base ring is already chosen there, and this removes
-the choice of norm being part of the statement.
 -/
 
 open Set Filter Asymptotics Metric
@@ -61,7 +60,7 @@ open scoped Topology Pointwise ENNReal NNReal
 
 namespace Asymptotics
 
-/-- `IsLittleOTVS 𝕜 f g l` is a generalization of `f =o[l] g` (`IsLittleO f g l`)
+/-- `f =o[𝕜;l] g` (`IsLittleOTVS 𝕜 l f g`) is a generalization of `f =o[l] g` (`IsLittleO l f g`)
 that works in topological `𝕜`-vector spaces.
 
 Given two functions `f` and `g` taking values in topological vector spaces
@@ -75,9 +74,12 @@ We use an `ENNReal`-valued function `egauge` for the gauge,
 so we unfold the definition of little o instead of reusing it. -/
 def IsLittleOTVS (𝕜 : Type*) {α E F : Type*}
     [NNNorm 𝕜] [TopologicalSpace E] [TopologicalSpace F] [Zero E] [Zero F] [SMul 𝕜 E] [SMul 𝕜 F]
-    (f : α → E) (g : α → F) (l : Filter α) : Prop :=
+    (l : Filter α) (f : α → E) (g : α → F) : Prop :=
   ∀ U ∈ 𝓝 (0 : E), ∃ V ∈ 𝓝 (0 : F), ∀ ε ≠ (0 : ℝ≥0),
     ∀ᶠ x in l, egauge 𝕜 U (f x) ≤ ε * egauge 𝕜 V (g x)
+
+@[inherit_doc]
+notation:100 f " =o[" 𝕜 ";" l "] " g:100 => IsLittleOTVS 𝕜 l f g
 
 variable {α β 𝕜 E F : Type*}
 
@@ -90,7 +92,7 @@ variable [NontriviallyNormedField 𝕜]
 theorem _root_.Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Sort*} {pE : ιE → Prop} {pF : ιF → Prop}
     {sE : ιE → Set E} {sF : ιF → Set F} (hE : HasBasis (𝓝 (0 : E)) pE sE)
     (hF : HasBasis (𝓝 (0 : F)) pF sF) {f : α → E} {g : α → F} {l : Filter α} :
-    IsLittleOTVS 𝕜 f g l ↔ ∀ i, pE i → ∃ j, pF j ∧ ∀ ε ≠ (0 : ℝ≥0),
+    f =o[𝕜;l] g ↔ ∀ i, pE i → ∃ j, pF j ∧ ∀ ε ≠ (0 : ℝ≥0),
       ∀ᶠ x in l, egauge 𝕜 (sE i) (f x) ≤ ε * egauge 𝕜 (sF j) (g x) := by
   refine (hE.forall_iff ?_).trans <| forall₂_congr fun _ _ ↦ hF.exists_iff ?_
   · rintro s t hsub ⟨V, hV₀, hV⟩
@@ -100,12 +102,12 @@ theorem _root_.Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Sort*} {pE : ιE → 
 
 @[simp]
 theorem isLittleOTVS_map {f : α → E} {g : α → F} {k : β → α} {l : Filter β} :
-    IsLittleOTVS 𝕜 f g (map k l) ↔ IsLittleOTVS 𝕜 (f ∘ k) (g ∘ k) l := by
+    f =o[𝕜; map k l] g ↔ (f ∘ k) =o[𝕜;l] (g ∘ k) := by
   simp [IsLittleOTVS]
 
 protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter α}
-    (h : IsLittleOTVS 𝕜 f g l) (c : α → 𝕜) :
-    IsLittleOTVS 𝕜 (fun x ↦ c x • f x) (fun x ↦ c x • g x) l := by
+    (h : f =o[𝕜;l] g) (c : α → 𝕜) :
+    (fun x ↦ c x • f x) =o[𝕜;l] (fun x ↦ c x • g x) := by
   unfold IsLittleOTVS at *
   peel h with U hU V hV ε hε x hx
   rw [egauge_smul_right, egauge_smul_right, mul_left_comm]
@@ -113,7 +115,7 @@ protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter
   all_goals exact fun _ ↦ Filter.nonempty_of_mem ‹_›
 
 lemma isLittleOTVS_one [ContinuousSMul 𝕜 E] {f : α → E} {l : Filter α} :
-    IsLittleOTVS 𝕜 f (1 : α → 𝕜) l ↔ Tendsto f l (𝓝 0) := by
+    f =o[𝕜;l] (1 : α → 𝕜) ↔ Tendsto f l (𝓝 0) := by
   constructor
   · intro hf
     rw [(basis_sets _).isLittleOTVS_iff nhds_basis_ball] at hf
@@ -148,7 +150,7 @@ lemma isLittleOTVS_one [ContinuousSMul 𝕜 E] {f : α → E} {l : Filter α} :
         simpa using le_egauge_ball_one 𝕜 (1 : 𝕜)
 
 lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E} {l : Filter α}
-    (h : IsLittleOTVS 𝕜 g f l) : Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
+    (h : g =o[𝕜;l] f) : Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
   rw [(basis_sets _).isLittleOTVS_iff nhds_basis_ball] at h
   rw [(nhds_basis_balanced 𝕜 E).tendsto_right_iff]
   rintro U ⟨hU, hUB⟩
@@ -174,7 +176,7 @@ lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g
 
 lemma isLittleOTVS_iff_tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E} {l : Filter α}
     (h₀ : ∀ᶠ x in l, f x = 0 → g x = 0) :
-    IsLittleOTVS 𝕜 g f l ↔ Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
+    g =o[𝕜;l] f ↔ Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
   refine ⟨IsLittleOTVS.tendsto_inv_smul, fun h U hU ↦ ?_⟩
   refine ⟨ball 0 1, ball_mem_nhds _ one_pos, fun ε hε ↦ ?_⟩
   rcases NormedField.exists_norm_lt 𝕜 hε.bot_lt with ⟨c, hc₀, hcε : ‖c‖₊ < ε⟩
@@ -197,7 +199,7 @@ variable [NontriviallyNormedField 𝕜]
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 lemma isLittleOTVS_iff_isLittleO {f : α → E} {g : α → F} {l : Filter α} :
-    IsLittleOTVS 𝕜 f g l ↔ f =o[l] g := by
+    f =o[𝕜;l] g ↔ f =o[l] g := by
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc : 1 < ‖c‖₊⟩
   have hc₀ : 0 < ‖c‖₊ := one_pos.trans hc
   simp only [isLittleO_iff, nhds_basis_ball.isLittleOTVS_iff nhds_basis_ball]

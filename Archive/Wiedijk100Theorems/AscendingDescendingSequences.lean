@@ -72,10 +72,10 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   · refine Or.imp ?_ ?_ hi
     on_goal 1 =>
       have : (ab i).1 ∈ image card (inc_sequences_ending_in i) := by
-        simp only [← hab]; exact max'_mem _ _
+        simp only [ab', ← hab]; exact max'_mem _ _
     on_goal 2 =>
       have : (ab i).2 ∈ image card (dec_sequences_ending_in i) := by
-        simp only [← hab]; exact max'_mem _ _
+        simp only [ab', ← hab]; exact max'_mem _ _
     all_goals
       intro hi
       rw [mem_image] at this
@@ -94,10 +94,12 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
     cases lt_or_gt_of_ne fun _ => ne_of_lt ‹i < j› (hf ‹f i = f j›)
     on_goal 1 =>
       apply ne_of_lt _ q₁
-      have : (ab' i).1 ∈ image card (inc_sequences_ending_in i) := by dsimp only; exact max'_mem _ _
+      have : (ab' i).1 ∈ image card (inc_sequences_ending_in i) := by
+        dsimp only [ab']; exact max'_mem _ _
     on_goal 2 =>
       apply ne_of_lt _ q₂
-      have : (ab' i).2 ∈ image card (dec_sequences_ending_in i) := by dsimp only; exact max'_mem _ _
+      have : (ab' i).2 ∈ image card (dec_sequences_ending_in i) := by
+        dsimp only [ab']; exact max'_mem _ _
     all_goals
       -- Reduce to showing there is a subsequence of length `a_i + 1` which ends at `j`.
       rw [Nat.lt_iff_add_one_le]

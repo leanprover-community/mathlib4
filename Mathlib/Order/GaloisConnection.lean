@@ -204,6 +204,9 @@ theorem u_eq_top {l : α → β} {u : β → α} (gc : GaloisConnection l u) {x}
 theorem u_top [OrderTop β] {l : α → β} {u : β → α} (gc : GaloisConnection l u) : u ⊤ = ⊤ :=
   gc.u_eq_top.2 le_top
 
+theorem u_l_top {l : α → β} {u : β → α} (gc : GaloisConnection l u) : u (l ⊤) = ⊤ :=
+  gc.u_eq_top.mpr le_rfl
+
 end OrderTop
 
 section OrderBot
@@ -215,6 +218,9 @@ theorem l_eq_bot {l : α → β} {u : β → α} (gc : GaloisConnection l u) {x}
 
 theorem l_bot [OrderBot α] {l : α → β} {u : β → α} (gc : GaloisConnection l u) : l ⊥ = ⊥ :=
   gc.dual.u_top
+
+theorem l_u_bot {l : α → β} {u : β → α} (gc : GaloisConnection l u) : l (u ⊥) = ⊥ :=
+  gc.l_eq_bot.mpr le_rfl
 
 end OrderBot
 

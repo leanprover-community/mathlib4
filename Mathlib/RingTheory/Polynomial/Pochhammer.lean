@@ -153,9 +153,19 @@ theorem ascPochhammer_nat_eq_ascFactorial (n : ℕ) :
     rw [ascPochhammer_succ_right, eval_mul, ascPochhammer_nat_eq_ascFactorial n t, eval_add, eval_X,
       eval_natCast, Nat.cast_id, Nat.ascFactorial_succ, mul_comm]
 
+theorem ascPochhammer_nat_eq_natCast_ascFactorial (S : Type*) [Semiring S] (n k : ℕ) :
+    (ascPochhammer S k).eval (n : S) = n.ascFactorial k := by
+  norm_cast
+  rw [ascPochhammer_nat_eq_ascFactorial]
+
 theorem ascPochhammer_nat_eq_descFactorial (a b : ℕ) :
     (ascPochhammer ℕ b).eval a = (a + b - 1).descFactorial b := by
   rw [ascPochhammer_nat_eq_ascFactorial, Nat.add_descFactorial_eq_ascFactorial']
+
+theorem ascPochhammer_nat_eq_natCast_descFactorial (S : Type*) [Semiring S] (a b : ℕ) :
+    (ascPochhammer S b).eval (a : S) = (a + b - 1).descFactorial b := by
+  norm_cast
+  rw [ascPochhammer_nat_eq_descFactorial]
 
 @[simp]
 theorem ascPochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :

@@ -232,7 +232,7 @@ lemma coe_lTensor (f : N →ₗ[R] Q) :
 
 @[simp]
 lemma restrictScalars_lTensor (f : N →ₗ[R] Q) :
-    LinearMap.restrictScalars R (lTensor A M f) = f.lTensor M := rfl
+    (lTensor A M f).restrictScalars R = f.lTensor M := rfl
 
 @[simp] lemma lTensor_tmul (f : N →ₗ[R] Q) (m : M) (n : N) :
     lTensor A M f (m ⊗ₜ[R] n) = m ⊗ₜ f n :=
@@ -250,6 +250,38 @@ lemma lTensor_one : lTensor A M (1 : N →ₗ[R] N) = 1 := map_id
 
 lemma lTensor_mul (f₁ f₂ : N →ₗ[R] N) :
     lTensor A M (f₁ * f₂) = lTensor A M f₁ * lTensor A M f₂ := lTensor_comp _ _
+
+variable (R N) in
+/-- Heterobasic version of `LinearMap.rTensor` -/
+def rTensor : (M →ₗ[A] P) →ₗ[R] M ⊗[R] N →ₗ[A] P ⊗[R] N where
+  toFun f := map f LinearMap.id
+  map_add' f₁ f₂ := map_add_left f₁ f₂ _
+  map_smul' _ _ := map_smul_left _ _ _
+
+@[simp]
+lemma coe_rTensor (f : M →ₗ[A] P) :
+    (rTensor R N f : M ⊗[R] N → P ⊗[R] N) = f.rTensor N := rfl
+
+@[simp]
+lemma restrictScalars_rTensor (f : M →ₗ[A] P) :
+    (rTensor R N f).restrictScalars R = f.rTensor N := rfl
+
+@[simp] lemma rTensor_tmul (f : M →ₗ[A] P) (m : M) (n : N) :
+    rTensor R N f (m ⊗ₜ[R] n) = f m ⊗ₜ n :=
+  rfl
+
+@[simp] lemma rTensor_id : rTensor R N (id : M →ₗ[A] M) = .id :=
+  ext fun _ _ => rfl
+
+lemma rTensor_comp (f₂ : P →ₗ[A] P') (f₁ : M →ₗ[A] P) :
+    rTensor R N (f₂.comp f₁) = (rTensor R N f₂).comp (rTensor R N f₁) :=
+  ext fun _ _ => rfl
+
+@[simp]
+lemma rTensor_one : rTensor R N (1 : M →ₗ[A] M) = 1 := map_id
+
+lemma rTensor_mul (f₁ f₂ : M →ₗ[A] M) :
+    rTensor R M (f₁ * f₂) = rTensor R M f₁ * rTensor R M f₂ := rTensor_comp _ _
 
 variable (R A B M N P Q)
 
@@ -374,8 +406,8 @@ theorem assoc_symm_tmul (m : M) (p : P) (q : Q) :
   rfl
 
 theorem rTensor_tensor [Module R P'] [IsScalarTower R A P'] (g : P →ₗ[A] P') :
-    rTensor (M ⊗[R] N) g =
-      assoc R A A P' M N ∘ₗ map (rTensor M g) id ∘ₗ (assoc R A A P M N).symm.toLinearMap :=
+    g.rTensor (M ⊗[R] N) =
+      assoc R A A P' M N ∘ₗ map (g.rTensor M) id ∘ₗ (assoc R A A P M N).symm.toLinearMap :=
   TensorProduct.ext <| LinearMap.ext fun _ ↦ ext fun _ _ ↦ rfl
 
 end assoc
@@ -404,6 +436,11 @@ theorem cancelBaseChange_tmul (m : M) (n : N) (a : A) :
 theorem cancelBaseChange_symm_tmul (m : M) (n : N) :
     (cancelBaseChange R A B M N).symm (m ⊗ₜ n) = m ⊗ₜ (1 ⊗ₜ n) :=
   rfl
+
+theorem lTensor_comp_cancelBaseChange (f : N →ₗ[R] Q) :
+    lTensor _ _ f ∘ₗ cancelBaseChange R A B M N =
+      (cancelBaseChange R A B M Q).toLinearMap ∘ₗ lTensor _ _ (lTensor _ _ f) := by
+  ext; simp
 
 end cancelBaseChange
 

@@ -479,6 +479,21 @@ theorem contMDiffOn_iff :
     convert hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
     mfld_set_tac
 
+/-- zero-smoothness on a set is equivalent to continuity on this set. -/
+theorem contMDiffOn_zero_iff :
+    ContMDiffOn I I' 0 f s ↔ ContinuousOn f s := by
+  rw [contMDiffOn_iff]
+  refine ⟨fun h ↦ h.1, fun h ↦ ⟨h, ?_⟩⟩
+  intro x y
+  rw [WithTop.coe_zero, contDiffOn_zero]
+  apply (continuousOn_extChartAt _).comp
+  · apply h.comp ((continuousOn_extChartAt_symm _).mono inter_subset_left) (fun z hz ↦ ?_)
+    simp only [preimage_inter, mem_inter_iff, mem_preimage] at hz
+    exact hz.2.1
+  · intro z hz
+    simp only [preimage_inter, mem_inter_iff, mem_preimage] at hz
+    exact hz.2.2
+
 /-- One can reformulate smoothness on a set as continuity on this set, and smoothness in any
 extended chart in the target. -/
 theorem contMDiffOn_iff_target :
@@ -524,6 +539,11 @@ theorem contMDiff_iff_target :
 @[deprecated (since := "2024-11-20")] alias smooth_iff := contMDiff_iff
 
 @[deprecated (since := "2024-11-20")] alias smooth_iff_target := contMDiff_iff_target
+
+/-- zero-smoothness is equivalent to continuity. -/
+theorem contMDiff_zero_iff :
+    ContMDiff I I' 0 f ↔ Continuous f := by
+  rw [← contMDiffOn_univ, continuous_iff_continuousOn_univ, contMDiffOn_zero_iff]
 
 end SmoothManifoldWithCorners
 

@@ -50,7 +50,7 @@ theorem _root_.Squarefree.natFactorization_le_one {n : ℕ} (p : ℕ) (hn : Squa
     n.factorization p ≤ 1 := by
   rcases eq_or_ne n 0 with (rfl | hn')
   · simp
-  rw [multiplicity.squarefree_iff_emultiplicity_le_one] at hn
+  rw [squarefree_iff_emultiplicity_le_one] at hn
   by_cases hp : p.Prime
   · have := hn p
     rw [← multiplicity_eq_factorization hp hn']
@@ -83,12 +83,7 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
       hp.dvd_iff_one_le_factorization hm.ne_zero, not_le, lt_one_iff] at h₁
     have h₂ := hn.natFactorization_le_one p
     have h₃ := hm.natFactorization_le_one p
-    rw [Nat.le_add_one_iff, Nat.le_zero] at h₂ h₃
-    cases' h₂ with h₂ h₂
-    · rwa [h₂, eq_comm, ← h₁]
-    · rw [h₂, h₃.resolve_left]
-      rw [← h₁, h₂]
-      simp only [Nat.one_ne_zero, not_false_iff, reduceCtorEq]
+    omega
   rw [factorization_eq_zero_of_non_prime _ hp, factorization_eq_zero_of_non_prime _ hp]
 
 theorem squarefree_pow_iff {n k : ℕ} (hn : n ≠ 1) (hk : k ≠ 0) :
@@ -269,7 +264,7 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
       rw [UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors h0.1] at hsq
       rw [Multiset.toFinset_subset, Multiset.toFinset_val, hsq.dedup, ← associated_iff_eq,
         normalizedFactors_mul h0.1 h0.2]
-      exact ⟨Multiset.subset_of_le (Multiset.le_add_right _ _), normalizedFactors_prod h0.1⟩
+      exact ⟨Multiset.subset_of_le (Multiset.le_add_right _ _), prod_normalizedFactors h0.1⟩
     · rintro ⟨s, hs, rfl⟩
       rw [Finset.mem_powerset, ← Finset.val_le_iff, Multiset.toFinset_val] at hs
       have hs0 : s.val.prod ≠ 0 := by
@@ -278,14 +273,14 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
         apply
           not_irreducible_zero
             (irreducible_of_normalized_factor 0 (Multiset.mem_dedup.1 (Multiset.mem_of_le hs con)))
-      rw [(normalizedFactors_prod h0).symm.dvd_iff_dvd_right]
+      rw [(prod_normalizedFactors h0).symm.dvd_iff_dvd_right]
       refine ⟨⟨Multiset.prod_dvd_prod_of_le (le_trans hs (Multiset.dedup_le _)), h0⟩, ?_⟩
       have h :=
         UniqueFactorizationMonoid.factors_unique irreducible_of_normalized_factor
           (fun x hx =>
             irreducible_of_normalized_factor x
               (Multiset.mem_of_le (le_trans hs (Multiset.dedup_le _)) hx))
-          (normalizedFactors_prod hs0)
+          (prod_normalizedFactors hs0)
       rw [associated_eq_eq, Multiset.rel_eq] at h
       rw [UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors hs0, h]
       apply s.nodup
@@ -387,8 +382,7 @@ lemma primeFactors_prod (hs : ∀ p ∈ s, p.Prime) : primeFactors (∏ p ∈ s,
 lemma primeFactors_div_gcd (hm : Squarefree m) (hn : n ≠ 0) :
     primeFactors (m / m.gcd n) = primeFactors m \ primeFactors n := by
   ext p
-  have : m / m.gcd n ≠ 0 :=
-    (Nat.div_ne_zero_iff <| gcd_ne_zero_right hn).2 <| gcd_le_left _ hm.ne_zero.bot_lt
+  have : m / m.gcd n ≠ 0 := by simp [gcd_ne_zero_right hn, gcd_le_left _ hm.ne_zero.bot_lt]
   simp only [mem_primeFactors, ne_eq, this, not_false_eq_true, and_true, not_and, mem_sdiff,
     hm.ne_zero, hn, dvd_div_iff_mul_dvd (gcd_dvd_left _ _)]
   refine ⟨fun hp ↦ ⟨⟨hp.1, dvd_of_mul_left_dvd hp.2⟩, fun _ hpn ↦ hp.1.not_unit <| hm _ <|

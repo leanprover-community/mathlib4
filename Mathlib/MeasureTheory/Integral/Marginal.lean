@@ -112,7 +112,7 @@ theorem lmarginal_update_of_mem {i : δ} (hi : i ∈ s)
   apply lmarginal_congr
   intro j hj
   have : j ≠ i := by rintro rfl; exact hj hi
-  apply update_noteq this
+  apply update_of_ne this
 
 variable {μ} in
 theorem lmarginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
@@ -122,8 +122,9 @@ theorem lmarginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :
   ext1 x
   calc (∫⋯∫⁻_{i}, f ∂μ) x
       = ∫⁻ (y : π (default : α)), f (updateFinset x {i} (e y)) ∂μ (default : α) := by
-        simp_rw [lmarginal, measurePreserving_piUnique (fun j : ({i} : Finset δ) ↦ μ j) |>.symm _
-          |>.lintegral_map_equiv]
+        simp_rw [lmarginal,
+          measurePreserving_piUnique (fun j : ({i} : Finset δ) ↦ μ j) |>.symm _
+            |>.lintegral_map_equiv]
     _ = ∫⁻ xᵢ, f (Function.update x i xᵢ) ∂μ i := by simp [update_eq_updateFinset]; rfl
 
 variable {μ} in

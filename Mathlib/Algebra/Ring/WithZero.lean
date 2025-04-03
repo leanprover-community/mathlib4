@@ -24,8 +24,7 @@ instance instRightDistribClass [Mul α] [Add α] [RightDistribClass α] :
     RightDistribClass (WithZero α) where
   right_distrib a b c := by
     cases' c with c
-    · change (a + b) * 0 = a * 0 + b * 0
-      simp
+    · simp
     cases' a with a <;> cases' b with b <;> try rfl
     exact congr_arg some (right_distrib _ _ _)
 

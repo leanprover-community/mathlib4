@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 import Mathlib.MeasureTheory.Group.GeometryOfNumbers
 import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 
 /-!
 # Convex Bodies
@@ -123,9 +124,9 @@ theorem adjust_f {w₁ : InfinitePlace K} (B : ℝ≥0) (hf : ∀ w, w ≠ w₁ 
     ∃ g : InfinitePlace K → ℝ≥0, (∀ w, w ≠ w₁ → g w = f w) ∧ ∏ w, (g w) ^ mult w = B := by
   let S := ∏ w ∈ Finset.univ.erase w₁, (f w) ^ mult w
   refine ⟨Function.update f w₁ ((B * S⁻¹) ^ (mult w₁ : ℝ)⁻¹), ?_, ?_⟩
-  · exact fun w hw => Function.update_noteq hw _ f
-  · rw [← Finset.mul_prod_erase Finset.univ _ (Finset.mem_univ w₁), Function.update_same,
-      Finset.prod_congr rfl fun w hw => by rw [Function.update_noteq (Finset.ne_of_mem_erase hw)],
+  · exact fun w hw => Function.update_of_ne hw _ f
+  · rw [← Finset.mul_prod_erase Finset.univ _ (Finset.mem_univ w₁), Function.update_self,
+      Finset.prod_congr rfl fun w hw => by rw [Function.update_of_ne (Finset.ne_of_mem_erase hw)],
       ← NNReal.rpow_natCast, ← NNReal.rpow_mul, inv_mul_cancel₀, NNReal.rpow_one, mul_assoc,
       inv_mul_cancel₀, mul_one]
     · rw [Finset.prod_ne_zero_iff]
@@ -433,8 +434,7 @@ theorem convexBodySum_volume :
       _ = (2 : ℝ) ^ nrRealPlaces K * (π / 2) ^ nrComplexPlaces K := by
         simp_rw [div_one, one_add_one_eq_two, Gamma_add_one two_ne_zero, Gamma_two, mul_one,
           mul_assoc, ← Real.rpow_add_one two_ne_zero, show (-2 : ℝ) + 1 = -1 by norm_num,
-          Real.rpow_neg_one]
-        rfl
+          Real.rpow_neg_one, div_eq_mul_inv]
 
 end convexBodySum
 

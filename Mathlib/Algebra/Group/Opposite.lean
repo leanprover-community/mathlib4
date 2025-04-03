@@ -208,10 +208,9 @@ end DivInvMonoid
 theorem op_natCast [NatCast α] (n : ℕ) : op (n : α) = n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[to_additive (attr := simp)]
 theorem op_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    op (no_index (OfNat.ofNat n : α)) = OfNat.ofNat n :=
+    op (ofNat(n) : α) = ofNat(n) :=
   rfl
 
 @[to_additive (attr := simp, norm_cast)]
@@ -222,10 +221,9 @@ theorem op_intCast [IntCast α] (n : ℤ) : op (n : α) = n :=
 theorem unop_natCast [NatCast α] (n : ℕ) : unop (n : αᵐᵒᵖ) = n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[to_additive (attr := simp)]
 theorem unop_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    unop (no_index (OfNat.ofNat n : αᵐᵒᵖ)) = OfNat.ofNat n :=
+    unop (ofNat(n) : αᵐᵒᵖ) = ofNat(n) :=
   rfl
 
 @[to_additive (attr := simp, norm_cast)]

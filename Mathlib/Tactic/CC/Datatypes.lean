@@ -3,11 +3,10 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Lean.Meta.CongrTheorems
 import Lean.Meta.Tactic.Rfl
 import Batteries.Data.RBMap.Basic
 import Mathlib.Lean.Meta.Basic
-import Std.Data.HashMap.Basic
+import Mathlib.Data.Ordering.Basic
 
 /-!
 # Datatypes for `cc`
@@ -154,9 +153,10 @@ scoped instance : Ord ACApps where
     | .ofExpr _, .apps _ _ => .lt
     | .apps _ _, .ofExpr _ => .gt
     | .apps op₁ args₁, .apps op₂ args₂ =>
-      compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.then <| Id.run do
-        for i in [:args₁.size] do
-          let o := compare args₁[i]! args₂[i]!
+      compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.dthen fun hs => Id.run do
+        have hs := Batteries.BEqCmp.cmp_iff_eq.mp hs
+        for hi : i in [:args₁.size] do
+          have hi := hi.right; let o := compare (args₁[i]'hi) (args₂[i]'(hs ▸ hi))
           if o != .eq then return o
         return .eq
 
@@ -691,5 +691,12 @@ structure CCStructure extends CCState where
   phandler : Option CCPropagationHandler := none
   cache : CCCongrTheoremCache := ∅
   deriving Inhabited
+
+initialize
+  registerTraceClass `Meta.Tactic.cc.merge
+  registerTraceClass `Meta.Tactic.cc.failure
+  registerTraceClass `Debug.Meta.Tactic.cc
+  registerTraceClass `Debug.Meta.Tactic.cc.ac
+  registerTraceClass `Debug.Meta.Tactic.cc.parentOccs
 
 end Mathlib.Tactic.CC

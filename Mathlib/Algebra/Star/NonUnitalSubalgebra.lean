@@ -1132,7 +1132,7 @@ theorem centralizer_univ : centralizer R Set.univ = center R A :=
   SetLike.ext' <| by rw [coe_centralizer, Set.univ_union, coe_center, Set.centralizer_univ]
 
 theorem centralizer_toNonUnitalSubalgebra (s : Set A) :
-    (centralizer R s).toNonUnitalSubalgebra = NonUnitalSubalgebra.centralizer R (s ∪ star s):=
+    (centralizer R s).toNonUnitalSubalgebra = NonUnitalSubalgebra.centralizer R (s ∪ star s) :=
   rfl
 
 theorem coe_centralizer_centralizer (s : Set A) :

@@ -121,8 +121,8 @@ theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
 theorem succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
     (f a + f b).succ * multinomial {a, b} f =
       (f a).succ * multinomial {a, b} (Function.update f a (f a).succ) := by
-  rw [binomial_eq_choose h, binomial_eq_choose h, mul_comm (f a).succ, Function.update_same,
-    Function.update_noteq (ne_comm.mp h)]
+  rw [binomial_eq_choose h, binomial_eq_choose h, mul_comm (f a).succ, Function.update_self,
+    Function.update_of_ne h.symm]
   rw [succ_mul_choose_eq (f a + f b) (f a), succ_add (f a) (f b)]
 
 /-! ### Simple cases -/
@@ -164,7 +164,7 @@ theorem multinomial_update (a : α) (f : α →₀ ℕ) :
     · rw [← Finset.insert_erase h, Nat.multinomial_insert (Finset.not_mem_erase a _),
         Finset.add_sum_erase _ f h, support_update_zero]
       congr 1
-      exact Nat.multinomial_congr fun _ h ↦ (Function.update_noteq (mem_erase.1 h).1 0 f).symm
+      exact Nat.multinomial_congr fun _ h ↦ (Function.update_of_ne (mem_erase.1 h).1 0 f).symm
     rw [not_mem_support_iff] at h
     rw [h, Nat.choose_zero_right, one_mul, ← h, update_self]
 
@@ -188,8 +188,8 @@ theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
   · ext1 a
     rw [toFinsupp_apply, count_filter, Finsupp.coe_update]
     split_ifs with h
-    · rw [Function.update_noteq h.symm, toFinsupp_apply]
-    · rw [not_ne_iff.1 h, Function.update_same]
+    · rw [Function.update_of_ne h.symm, toFinsupp_apply]
+    · rw [not_ne_iff.1 h, Function.update_self]
 
 @[simp]
 theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := by

@@ -698,7 +698,7 @@ theorem nhdsSet_prod_le_of_disjoint_cocompact {f : Filter Y} (hs : IsCompact s)
     _ = 𝓝ˢ (s ×ˢ K)         := (hs.nhdsSet_prod_eq hK).symm
     _ ≤ 𝓝ˢ (s ×ˢ Set.univ)  := nhdsSet_mono (prod_mono_right le_top)
 
-theorem prod_nhdsSet_le_of_disjoint_cocompact {f : Filter X} (ht : IsCompact t)
+theorem prod_nhdsSet_le_of_disjoint_cocompact {t : Set Y} {f : Filter X} (ht : IsCompact t)
     (hf : Disjoint f (Filter.cocompact X)) :
     f ×ˢ 𝓝ˢ t ≤ 𝓝ˢ (Set.univ ×ˢ t) := by
   obtain ⟨K, hKf, hK⟩ := (disjoint_cocompact_right f).mp hf
@@ -708,6 +708,16 @@ theorem prod_nhdsSet_le_of_disjoint_cocompact {f : Filter X} (ht : IsCompact t)
     _ ≤ 𝓝ˢ K ×ˢ 𝓝ˢ t       := Filter.prod_mono_left _ principal_le_nhdsSet
     _ = 𝓝ˢ (K ×ˢ t)         := (hK.nhdsSet_prod_eq ht).symm
     _ ≤ 𝓝ˢ (Set.univ ×ˢ t)  := nhdsSet_mono (prod_mono_left le_top)
+
+theorem nhds_prod_le_of_disjoint_cocompact {f : Filter Y} (x : X)
+    (hf : Disjoint f (Filter.cocompact Y)) :
+    𝓝 x ×ˢ f ≤ 𝓝ˢ ({x} ×ˢ Set.univ) := by
+  simpa using nhdsSet_prod_le_of_disjoint_cocompact isCompact_singleton hf
+
+theorem prod_nhds_le_of_disjoint_cocompact {f : Filter X} (y : Y)
+    (hf : Disjoint f (Filter.cocompact X)) :
+    f ×ˢ 𝓝 y ≤ 𝓝ˢ (Set.univ ×ˢ {y}) := by
+  simpa using prod_nhdsSet_le_of_disjoint_cocompact isCompact_singleton hf
 
 /-- If `s` and `t` are compact sets and `n` is an open neighborhood of `s × t`, then there exist
 open neighborhoods `u ⊇ s` and `v ⊇ t` such that `u × v ⊆ n`.
@@ -866,6 +876,16 @@ theorem Filter.comap_cocompact_le {f : X → Y} (hf : Continuous f) :
   intro t ht
   refine ⟨f '' t, ht.image hf, ?_⟩
   simpa using t.subset_preimage_image f
+
+/-- If a filter is disjoint from the cocompact filter, so is its image under any continuous
+function. -/
+theorem disjoint_map_cocompact {g : X → Y} {f : Filter X} (hg : Continuous g)
+    (hf : Disjoint f (Filter.cocompact X)) : Disjoint (map g f) (Filter.cocompact Y) := by
+  rw [← Filter.disjoint_comap_iff_map, disjoint_iff_inf_le]
+  calc
+    f ⊓ (comap g (cocompact Y))
+    _ ≤ f ⊓ Filter.cocompact X := inf_le_inf_left f (Filter.comap_cocompact_le hg)
+    _ = ⊥ := disjoint_iff.mp hf
 
 theorem isCompact_range [CompactSpace X] {f : X → Y} (hf : Continuous f) : IsCompact (range f) := by
   rw [← image_univ]; exact isCompact_univ.image hf

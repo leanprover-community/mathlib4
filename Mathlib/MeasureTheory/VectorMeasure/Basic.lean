@@ -710,9 +710,8 @@ theorem le_iff' : v ≤ w ↔ ∀ i, v i ≤ w i := by
 
 end
 
-set_option quotPrecheck false in -- Porting note: error message suggested to do this
 scoped[MeasureTheory]
-  notation:50 v " ≤[" i:50 "] " w:50 =>
+  notation3:50 v " ≤[" i:50 "] " w:50 =>
     MeasureTheory.VectorMeasure.restrict v i ≤ MeasureTheory.VectorMeasure.restrict w i
 
 section

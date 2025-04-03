@@ -52,7 +52,7 @@ theorem finite_isStableUnderBaseChange : IsStableUnderBaseChange @Finite := by
 
 end RingHom
 
-open scoped Pointwise Classical
+open scoped Pointwise
 
 universe u
 
@@ -114,6 +114,7 @@ theorem RingHom.localization_away_map_finite (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.Finite) : (IsLocalization.Away.map R' S' f r).Finite :=
   finite_localizationPreserves.away f r _ _ hf
 
+open scoped Classical in
 /-- Let `S` be an `R`-algebra, `M` a submonoid of `R`, and `S' = M⁻¹S`.
 If the image of some `x : S` falls in the span of some finite `s ⊆ S'` over `R`,
 then there exists some `m : M` such that `m • x` falls in the
@@ -194,6 +195,7 @@ theorem multiple_mem_adjoin_of_mem_localization_adjoin [Algebra R' S] [Algebra R
 /-- `S` is a finite `R`-algebra if there exists a set `{ r }` that
   spans `R` such that `Sᵣ` is a finite `Rᵣ`-algebra. -/
 theorem RingHom.finite_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.Finite := by
+  classical
   rw [RingHom.ofLocalizationSpan_iff_finite]
   introv R hs H
   -- We first setup the instances

@@ -207,8 +207,8 @@ lemma Algebra.trace_quotient_eq_of_isDedekindDomain (x) [IsDedekindDomain R] [Is
       RingHom.ker_eq_bot_iff_eq_zero]
     intro x hx
     obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective p.primeCompl x
-    simp only [RingHom.algebraMap_toAlgebra, IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff,
-      mul_eq_zero, Subtype.exists, exists_prop] at hx ⊢
+    simp only [Sₚ, RingHom.algebraMap_toAlgebra, IsLocalization.map_mk',
+      IsLocalization.mk'_eq_zero_iff, mul_eq_zero, Subtype.exists, exists_prop] at hx ⊢
     obtain ⟨_, ⟨a, ha, rfl⟩, H⟩ := hx
     simp only [(injective_iff_map_eq_zero' _).mp (NoZeroSMulDivisors.algebraMap_injective R S)] at H
     refine ⟨a, ha, H⟩

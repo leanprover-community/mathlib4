@@ -175,15 +175,15 @@ def opensRestrict :
 
 instance ΓRestrictAlgebra {X : Scheme.{u}} (U : X.Opens) :
     Algebra (Γ(X, ⊤)) Γ(U, ⊤) :=
-  U.ι.appTop.toAlgebra
+  U.ι.appTop.hom.toAlgebra
 
 lemma Scheme.map_basicOpen (r : Γ(U, ⊤)) :
     U.ι ''ᵁ U.toScheme.basicOpen r = X.basicOpen
       (X.presheaf.map (eqToHom U.isOpenEmbedding_obj_top.symm).op r) := by
   refine (Scheme.image_basicOpen (X.ofRestrict U.isOpenEmbedding) r).trans ?_
   rw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.isOpenEmbedding_obj_top).op]
-  rw [← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
-    op_id, CategoryTheory.Functor.map_id]
+  rw [← CommRingCat.comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans,
+    eqToHom_refl, op_id, CategoryTheory.Functor.map_id]
   congr
   exact PresheafedSpace.IsOpenImmersion.ofRestrict_invApp _ _ _
 
@@ -233,7 +233,7 @@ theorem Scheme.homOfLE_apply {U V : X.Opens} (e : U ≤ V) (x : U) :
 
 theorem Scheme.ι_image_homOfLE_le_ι_image {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
     U.ι ''ᵁ (X.homOfLE e ⁻¹ᵁ W) ≤ V.ι ''ᵁ W := by
-  simp only [← SetLike.coe_subset_coe, IsOpenMap.functor_obj_coe, Set.image_subset_iff,
+  simp only [← SetLike.coe_subset_coe, IsOpenMap.coe_functor_obj, Set.image_subset_iff,
     Scheme.homOfLE_base, Opens.map_coe, Opens.inclusion'_apply]
   rintro _ h
   exact ⟨_, h, rfl⟩
@@ -595,7 +595,7 @@ def morphismRestrictRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
   refine Arrow.isoMk' _ _ ((Scheme.Opens.ι _).isoImage _ ≪≫ Scheme.isoOfEq _ ?_)
     ((Scheme.Opens.ι _).isoImage _) ?_
   · ext x
-    simp only [IsOpenMap.functor_obj_coe, Opens.coe_inclusion',
+    simp only [IsOpenMap.coe_functor_obj, Opens.coe_inclusion',
       Opens.map_coe, Set.mem_image, Set.mem_preimage, SetLike.mem_coe, morphismRestrict_base]
     constructor
     · rintro ⟨⟨a, h₁⟩, h₂, rfl⟩
@@ -617,7 +617,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Op
   have e := Scheme.preimage_basicOpen U.ι r
   rw [Scheme.Opens.ι_app] at e
   rw [← U.toScheme.basicOpen_res_eq _ (eqToHom U.inclusion'_map_eq_top).op]
-  erw [← comp_apply]
+  erw [← CommRingCat.comp_apply]
   erw [← Y.presheaf.map_comp]
   rw [eqToHom_op, eqToHom_op, eqToHom_map, eqToHom_trans]
   erw [← e]

@@ -61,13 +61,15 @@ theorem IsSumSq.add [AddMonoid R] {S1 S2 : R} (p1 : IsSumSq S1)
 @[deprecated (since := "2024-08-09")] alias isSumSq.add := IsSumSq.add
 
 /-- A finite sum of squares is a sum of squares. -/
-theorem isSumSq_sum_mul_self {ι : Type*} [AddCommMonoid R] (s : Finset ι) (f : ι → R) :
+theorem IsSumSq.sum_mul_self {ι : Type*} [AddCommMonoid R] (s : Finset ι) (f : ι → R) :
     IsSumSq (∑ i ∈ s, f i * f i) := by
   induction s using Finset.cons_induction with
   | empty =>
     simpa only [Finset.sum_empty] using IsSumSq.zero
   | cons i s his h =>
     exact (Finset.sum_cons (β := R) his) ▸ IsSumSq.sq_add (f i) (∑ i ∈ s, f i * f i) h
+
+@[deprecated (since := "2024-12-27")] alias isSumSq_sum_mul_self := IsSumSq.sum_mul_self
 
 variable (R) in
 /--

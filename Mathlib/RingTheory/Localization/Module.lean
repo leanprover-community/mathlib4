@@ -283,4 +283,16 @@ lemma LocalizedModule.map_surjective (l : M →ₗ[R] N) (hl : Function.Surjecti
     Function.Surjective (map S l) :=
   IsLocalizedModule.map_surjective S (mkLinearMap S M) (mkLinearMap S N) l hl
 
+lemma LocalizedModule.restrictScalars_map_eq {M' N' : Type*} [AddCommMonoid M'] [AddCommMonoid N']
+    [Module R M'] [Module R N'] (g₁ : M →ₗ[R] M') (g₂ : N →ₗ[R] N')
+    [IsLocalizedModule S g₁] [IsLocalizedModule S g₂]
+    (l : M →ₗ[R] N) :
+    (map S l).restrictScalars R = (IsLocalizedModule.iso S g₂).symm ∘ₗ
+      IsLocalizedModule.map S g₁ g₂ l ∘ₗ IsLocalizedModule.iso S g₁ := by
+  rw [LinearEquiv.eq_toLinearMap_symm_comp, ← LinearEquiv.comp_toLinearMap_symm_eq]
+  apply IsLocalizedModule.linearMap_ext S g₁ g₂
+  rw [LinearMap.comp_assoc, IsLocalizedModule.iso_symm_comp]
+  ext
+  simp
+
 end LocalizedModule
