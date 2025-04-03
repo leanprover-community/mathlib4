@@ -156,7 +156,7 @@ end CommShift
 
 variable {B}
 
-lemma map_shiftFunctorComm_hom_app (F : C ⥤ D) [F.CommShift B] (X : C) (a b : B) :
+lemma map_shiftFunctorComm_hom_app [F.CommShift B] (X : C) (a b : B) :
     F.map ((shiftFunctorComm C a b).hom.app X) = (F.commShiftIso b).hom.app (X⟦a⟧) ≫
       ((F.commShiftIso a).hom.app X)⟦b⟧' ≫ (shiftFunctorComm D a b).hom.app (F.obj X) ≫
       ((F.commShiftIso b).inv.app X)⟦a⟧' ≫ (F.commShiftIso a).inv.app (X⟦b⟧) := by
@@ -175,6 +175,28 @@ lemma map_shiftFunctorComm_hom_app (F : C ⥤ D) [F.CommShift B] (X : C) (a b : 
     ← Functor.map_comp_assoc, Iso.hom_inv_id_app,
     Functor.map_id, Category.id_comp, comp_obj, Category.comp_id]
 
+@[simp, reassoc]
+lemma map_shiftFunctorCompIsoId_hom_app [F.CommShift A] (X : C) (a b : A) (h : a + b = 0) :
+    F.map ((shiftFunctorCompIsoId C a b h).hom.app X) =
+      (F.commShiftIso b).hom.app (X⟦a⟧) ≫ ((F.commShiftIso a).hom.app X)⟦b⟧' ≫
+        (shiftFunctorCompIsoId D a b h).hom.app (F.obj X) := by
+  dsimp [shiftFunctorCompIsoId]
+  have eq := NatTrans.congr_app (congr_arg Iso.hom (F.commShiftIso_add' h)) X
+  simp only [commShiftIso_zero, comp_obj, CommShift.isoZero_hom_app,
+    CommShift.isoAdd'_hom_app] at eq
+  rw [← cancel_epi (F.map ((shiftFunctorAdd' C a b 0 h).hom.app X)), ← reassoc_of% eq, F.map_comp]
+  simp only [Iso.inv_hom_id_app, id_obj, Category.comp_id, ← F.map_comp_assoc, Iso.hom_inv_id_app,
+    F.map_id, Category.id_comp]
+
+@[simp, reassoc]
+lemma map_shiftFunctorCompIsoId_inv_app [F.CommShift A] (X : C) (a b : A) (h : a + b = 0) :
+    F.map ((shiftFunctorCompIsoId C a b h).inv.app X) =
+      (shiftFunctorCompIsoId D a b h).inv.app (F.obj X) ≫
+        ((F.commShiftIso a).inv.app X)⟦b⟧' ≫ (F.commShiftIso b).inv.app (X⟦a⟧) := by
+  rw [← cancel_epi (F.map ((shiftFunctorCompIsoId C a b h).hom.app X)), ← F.map_comp,
+    Iso.hom_inv_id_app, F.map_id, map_shiftFunctorCompIsoId_hom_app]
+  simp only [comp_obj, id_obj, Category.assoc, Iso.hom_inv_id_app_assoc,
+    ← Functor.map_comp_assoc, Iso.hom_inv_id_app, Functor.map_id, Category.id_comp]
 
 end Functor
 

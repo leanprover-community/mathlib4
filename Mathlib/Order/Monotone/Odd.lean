@@ -25,7 +25,7 @@ variable {G H : Type*} [LinearOrderedAddCommGroup G] [OrderedAddCommGroup H]
 group provided that it is strictly monotone on `Set.Ici 0`. -/
 theorem strictMono_of_odd_strictMonoOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x) = -f x)
     (h₂ : StrictMonoOn f (Ici 0)) : StrictMono f := by
-  refine' StrictMonoOn.Iic_union_Ici (fun x hx y hy hxy => neg_lt_neg_iff.1 _) h₂
+  refine StrictMonoOn.Iic_union_Ici (fun x hx y hy hxy => neg_lt_neg_iff.1 ?_) h₂
   rw [← h₁, ← h₁]
   exact h₂ (neg_nonneg.2 hy) (neg_nonneg.2 hx) (neg_lt_neg hxy)
 #align strict_mono_of_odd_strict_mono_on_nonneg strictMono_of_odd_strictMonoOn_nonneg
@@ -41,7 +41,7 @@ theorem strictAnti_of_odd_strictAntiOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x
 provided that it is monotone on `Set.Ici 0`. -/
 theorem monotone_of_odd_of_monotoneOn_nonneg {f : G → H} (h₁ : ∀ x, f (-x) = -f x)
     (h₂ : MonotoneOn f (Ici 0)) : Monotone f := by
-  refine' MonotoneOn.Iic_union_Ici (fun x hx y hy hxy => neg_le_neg_iff.1 _) h₂
+  refine MonotoneOn.Iic_union_Ici (fun x hx y hy hxy => neg_le_neg_iff.1 ?_) h₂
   rw [← h₁, ← h₁]
   exact h₂ (neg_nonneg.2 hy) (neg_nonneg.2 hx) (neg_le_neg hxy)
 #align monotone_of_odd_of_monotone_on_nonneg monotone_of_odd_of_monotoneOn_nonneg

@@ -186,8 +186,8 @@ theorem divOf_add_modOf (x : k[G]) (g : G) :
     exact add_right_inj _
 #align add_monoid_algebra.div_of_add_mod_of AddMonoidAlgebra.divOf_add_modOf
 
-theorem modOf_add_divOf (x : k[G]) (g : G) : x %ᵒᶠ g + of' k G g * (x /ᵒᶠ g) = x :=
-  by rw [add_comm, divOf_add_modOf]
+theorem modOf_add_divOf (x : k[G]) (g : G) : x %ᵒᶠ g + of' k G g * (x /ᵒᶠ g) = x := by
+  rw [add_comm, divOf_add_modOf]
 #align add_monoid_algebra.mod_of_add_div_of AddMonoidAlgebra.modOf_add_divOf
 
 theorem of'_dvd_iff_modOf_eq_zero {x : k[G]} {g : G} :

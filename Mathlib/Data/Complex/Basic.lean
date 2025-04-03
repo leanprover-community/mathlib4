@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Mario Carneiro
 -/
 import Mathlib.Algebra.CharZero.Lemmas
-import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.Algebra.GroupWithZero.Bitwise
+import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
 
@@ -125,6 +124,7 @@ def Set.reProdIm (s t : Set ℝ) : Set ℂ :=
   re ⁻¹' s ∩ im ⁻¹' t
 #align set.re_prod_im Complex.Set.reProdIm
 
+@[inherit_doc]
 infixl:72 " ×ℂ " => Set.reProdIm
 
 theorem mem_reProdIm {z : ℂ} {s t : Set ℝ} : z ∈ s ×ℂ t ↔ z.re ∈ s ∧ z.im ∈ t :=
@@ -346,14 +346,25 @@ instance : Nontrivial ℂ :=
   pullback_nonzero re rfl rfl
 
 -- Porting note: moved from `Module/Data/Complex/Basic.lean`
+namespace SMul
+
+-- The useless `0` multiplication in `smul` is to make sure that
+-- `RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally.
+-- instance made scoped to avoid situations like instance synthesis
+-- of `SMul ℂ ℂ` trying to proceed via `SMul ℂ ℝ`.
+/-- Scalar multiplication by `R` on `ℝ` extends to `ℂ`. This is used here and in
+`Matlib.Data.Complex.Module` to transfer instances from `ℝ` to `ℂ`, but is not
+needed outside, so we make it scoped. -/
+scoped instance instSMulRealComplex {R : Type*} [SMul R ℝ] : SMul R ℂ where
+  smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
+
+end SMul
+
+open scoped SMul
+
 section SMul
 
 variable {R : Type*} [SMul R ℝ]
-
-/- The useless `0` multiplication in `smul` is to make sure that
-`RestrictScalars.module ℝ ℂ ℂ = Complex.module` definitionally. -/
-instance instSMulRealComplex : SMul R ℂ where
-  smul r x := ⟨r • x.re - 0 * x.im, r • x.im + 0 * x.re⟩
 
 theorem smul_re (r : R) (z : ℂ) : (r • z).re = r • z.re := by simp [(· • ·), SMul.smul]
 #align complex.smul_re Complex.smul_re
@@ -483,34 +494,44 @@ end
 
 /-! ### Cast lemmas -/
 
+noncomputable instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal' q
 noncomputable instance instRatCast : RatCast ℂ where ratCast q := ofReal' q
 
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast] lemma ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
     ofReal' (no_index (OfNat.ofNat n)) = OfNat.ofNat n := rfl
-@[simp, norm_cast] lemma ofReal_nat_cast (n : ℕ) : ofReal' n = n := rfl
-@[simp, norm_cast] lemma ofReal_int_cast (n : ℤ) : ofReal' n = n := rfl
-@[simp, norm_cast] lemma ofReal_rat_cast (q : ℚ) : ofReal' q = q := rfl
-#align complex.of_real_nat_cast Complex.ofReal_nat_cast
-#align complex.of_real_int_cast Complex.ofReal_int_cast
-#align complex.of_real_rat_cast Complex.ofReal_rat_cast
+@[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ofReal' n = n := rfl
+@[simp, norm_cast] lemma ofReal_intCast (n : ℤ) : ofReal' n = n := rfl
+@[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal' q = q := rfl
+@[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal' q = q := rfl
+#align complex.of_real_nat_cast Complex.ofReal_natCast
+#align complex.of_real_int_cast Complex.ofReal_intCast
+#align complex.of_real_rat_cast Complex.ofReal_ratCast
+
+@[deprecated (since := "2024-04-17")]
+alias ofReal_rat_cast := ofReal_ratCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).re = OfNat.ofNat n := rfl
 @[simp] lemma im_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).im = 0 := rfl
-@[simp, norm_cast] lemma nat_cast_re (n : ℕ) : (n : ℂ).re = n := rfl
-@[simp, norm_cast] lemma nat_cast_im (n : ℕ) : (n : ℂ).im = 0 := rfl
-@[simp, norm_cast] lemma int_cast_re (n : ℤ) : (n : ℂ).re = n := rfl
-@[simp, norm_cast] lemma int_cast_im (n : ℤ) : (n : ℂ).im = 0 := rfl
-@[simp, norm_cast] lemma rat_cast_re (q : ℚ) : (q : ℂ).re = q := rfl
-@[simp, norm_cast] lemma rat_cast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
-#align complex.nat_cast_re Complex.nat_cast_re
-#align complex.nat_cast_im Complex.nat_cast_im
-#align complex.int_cast_re Complex.int_cast_re
-#align complex.int_cast_im Complex.int_cast_im
-#align complex.rat_cast_re Complex.rat_cast_re
-#align complex.rat_cast_im Complex.rat_cast_im
+@[simp, norm_cast] lemma natCast_re (n : ℕ) : (n : ℂ).re = n := rfl
+@[simp, norm_cast] lemma natCast_im (n : ℕ) : (n : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma intCast_re (n : ℤ) : (n : ℂ).re = n := rfl
+@[simp, norm_cast] lemma intCast_im (n : ℤ) : (n : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma re_nnratCast (q : ℚ≥0) : (q : ℂ).re = q := rfl
+@[simp, norm_cast] lemma im_nnratCast (q : ℚ≥0) : (q : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
+@[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
+#align complex.nat_cast_re Complex.natCast_re
+#align complex.nat_cast_im Complex.natCast_im
+#align complex.int_cast_re Complex.intCast_re
+#align complex.int_cast_im Complex.intCast_im
+#align complex.rat_cast_re Complex.ratCast_re
+#align complex.rat_cast_im Complex.ratCast_im
+
+@[deprecated (since := "2024-04-17")]
+alias rat_cast_im := ratCast_im
 
 @[norm_cast] lemma ofReal_nsmul (n : ℕ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
 @[norm_cast] lemma ofReal_zsmul (n : ℤ) (r : ℝ) : ↑(n • r) = n • (r : ℂ) := by simp
@@ -550,7 +571,10 @@ theorem conj_I : conj I = -I :=
 #noalign complex.conj_bit0
 #noalign complex.conj_bit1
 
-theorem conj_nat_cast (n : ℕ) : conj (n : ℂ) = n := map_natCast _ _
+theorem conj_natCast (n : ℕ) : conj (n : ℂ) = n := map_natCast _ _
+
+@[deprecated (since := "2024-04-17")]
+alias conj_nat_cast := conj_natCast
 
 -- See note [no_index around OfNat.ofNat]
 theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
@@ -612,19 +636,28 @@ theorem normSq_ofReal (r : ℝ) : normSq r = r * r := by
 #align complex.norm_sq_of_real Complex.normSq_ofReal
 
 @[simp]
-theorem normSq_nat_cast (n : ℕ) : normSq n = n * n := normSq_ofReal _
+theorem normSq_natCast (n : ℕ) : normSq n = n * n := normSq_ofReal _
+
+@[deprecated (since := "2024-04-17")]
+alias normSq_nat_cast := normSq_natCast
 
 @[simp]
-theorem normSq_int_cast (z : ℤ) : normSq z = z * z := normSq_ofReal _
+theorem normSq_intCast (z : ℤ) : normSq z = z * z := normSq_ofReal _
+
+@[deprecated (since := "2024-04-17")]
+alias normSq_int_cast := normSq_intCast
 
 @[simp]
-theorem normSq_rat_cast (q : ℚ) : normSq q = q * q := normSq_ofReal _
+theorem normSq_ratCast (q : ℚ) : normSq q = q * q := normSq_ofReal _
+
+@[deprecated (since := "2024-04-17")]
+alias normSq_rat_cast := normSq_ratCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem normSq_ofNat (n : ℕ) [n.AtLeastTwo] :
     normSq (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n * OfNat.ofNat n :=
-  normSq_nat_cast _
+  normSq_natCast _
 
 @[simp]
 theorem normSq_mk (x y : ℝ) : normSq ⟨x, y⟩ = x * x + y * y :=
@@ -675,7 +708,10 @@ theorem normSq_pos {z : ℂ} : 0 < normSq z ↔ z ≠ 0 :=
   (normSq_nonneg z).lt_iff_ne.trans <| not_congr (eq_comm.trans normSq_eq_zero)
 #align complex.norm_sq_pos Complex.normSq_pos
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12228
+@[simp, nolint simpNF]
 theorem normSq_neg (z : ℂ) : normSq (-z) = normSq z := by simp [normSq]
 #align complex.norm_sq_neg Complex.normSq_neg
 
@@ -806,27 +842,19 @@ lemma div_im (z w : ℂ) : (z / w).im = z.im * w.re / normSq w - z.re * w.im / n
 noncomputable instance instField : Field ℂ where
   mul_inv_cancel := @Complex.mul_inv_cancel
   inv_zero := Complex.inv_zero
-  ratCast_def q := by ext <;> simp [Rat.cast_def, div_re, div_im, mul_div_mul_comm]
+  nnqsmul := (· • ·)
   qsmul := (· • ·)
+  nnratCast_def q := by ext <;> simp [NNRat.cast_def, div_re, div_im, mul_div_mul_comm]
+  ratCast_def q := by ext <;> simp [Rat.cast_def, div_re, div_im, mul_div_mul_comm]
+  nnqsmul_def n z := ext_iff.2 <| by simp [NNRat.smul_def, smul_re, smul_im]
   qsmul_def n z := ext_iff.2 <| by simp [Rat.smul_def, smul_re, smul_im]
 #align complex.field Complex.instField
 
 @[simp, norm_cast]
+lemma ofReal_nnqsmul (q : ℚ≥0) (r : ℝ) : ofReal' (q • r) = q • r := by simp [NNRat.smul_def]
+
+@[simp, norm_cast]
 lemma ofReal_qsmul (q : ℚ) (r : ℝ) : ofReal' (q • r) = q • r := by simp [Rat.smul_def]
-
-section
-set_option linter.deprecated false
-@[simp]
-theorem I_zpow_bit0 (n : ℤ) : I ^ bit0 n = (-1 : ℂ) ^ n := by rw [zpow_bit0', I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_zpow_bit0 Complex.I_zpow_bit0
-
-@[simp]
-theorem I_zpow_bit1 (n : ℤ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [zpow_bit1', I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_zpow_bit1 Complex.I_zpow_bit1
-
-end
 
 theorem conj_inv (x : ℂ) : conj x⁻¹ = (conj x)⁻¹ :=
   star_inv' _
@@ -871,43 +899,54 @@ theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
 lemma div_ofReal (z : ℂ) (x : ℝ) : z / x = ⟨z.re / x, z.im / x⟩ := by
   simp_rw [div_eq_inv_mul, ← ofReal_inv, ofReal_mul']
 
-lemma div_nat_cast (z : ℂ) (n : ℕ) : z / n = ⟨z.re / n, z.im / n⟩ :=
+lemma div_natCast (z : ℂ) (n : ℕ) : z / n = ⟨z.re / n, z.im / n⟩ :=
   mod_cast div_ofReal z n
 
-lemma div_int_cast (z : ℂ) (n : ℤ) : z / n = ⟨z.re / n, z.im / n⟩ :=
+@[deprecated (since := "2024-04-17")]
+alias div_nat_cast := div_natCast
+
+lemma div_intCast (z : ℂ) (n : ℤ) : z / n = ⟨z.re / n, z.im / n⟩ :=
   mod_cast div_ofReal z n
 
-lemma div_rat_cast (z : ℂ) (x : ℚ) : z / x = ⟨z.re / x, z.im / x⟩ :=
+@[deprecated (since := "2024-04-17")]
+alias div_int_cast := div_intCast
+
+lemma div_ratCast (z : ℂ) (x : ℚ) : z / x = ⟨z.re / x, z.im / x⟩ :=
   mod_cast div_ofReal z x
+
+@[deprecated (since := "2024-04-17")]
+alias div_rat_cast := div_ratCast
 
 lemma div_ofNat (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
     z / OfNat.ofNat n = ⟨z.re / OfNat.ofNat n, z.im / OfNat.ofNat n⟩ :=
-  div_nat_cast z n
+  div_natCast z n
 
 @[simp] lemma div_ofReal_re (z : ℂ) (x : ℝ) : (z / x).re = z.re / x := by rw [div_ofReal]
 @[simp] lemma div_ofReal_im (z : ℂ) (x : ℝ) : (z / x).im = z.im / x := by rw [div_ofReal]
-@[simp] lemma div_nat_cast_re (z : ℂ) (n : ℕ) : (z / n).re = z.re / n := by rw [div_nat_cast]
-@[simp] lemma div_nat_cast_im (z : ℂ) (n : ℕ) : (z / n).im = z.im / n := by rw [div_nat_cast]
-@[simp] lemma div_int_cast_re (z : ℂ) (n : ℤ) : (z / n).re = z.re / n := by rw [div_int_cast]
-@[simp] lemma div_int_cast_im (z : ℂ) (n : ℤ) : (z / n).im = z.im / n := by rw [div_int_cast]
-@[simp] lemma div_rat_cast_re (z : ℂ) (x : ℚ) : (z / x).re = z.re / x := by rw [div_rat_cast]
-@[simp] lemma div_rat_cast_im (z : ℂ) (x : ℚ) : (z / x).im = z.im / x := by rw [div_rat_cast]
+@[simp] lemma div_natCast_re (z : ℂ) (n : ℕ) : (z / n).re = z.re / n := by rw [div_natCast]
+@[simp] lemma div_natCast_im (z : ℂ) (n : ℕ) : (z / n).im = z.im / n := by rw [div_natCast]
+@[simp] lemma div_intCast_re (z : ℂ) (n : ℤ) : (z / n).re = z.re / n := by rw [div_intCast]
+@[simp] lemma div_intCast_im (z : ℂ) (n : ℤ) : (z / n).im = z.im / n := by rw [div_intCast]
+@[simp] lemma div_ratCast_re (z : ℂ) (x : ℚ) : (z / x).re = z.re / x := by rw [div_ratCast]
+@[simp] lemma div_ratCast_im (z : ℂ) (x : ℚ) : (z / x).im = z.im / x := by rw [div_ratCast]
+
+@[deprecated (since := "2024-04-17")]
+alias div_rat_cast_im := div_ratCast_im
 
 @[simp]
 lemma div_ofNat_re (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
-    (z / no_index (OfNat.ofNat n)).re = z.re / OfNat.ofNat n := div_nat_cast_re z n
+    (z / no_index (OfNat.ofNat n)).re = z.re / OfNat.ofNat n := div_natCast_re z n
 
 @[simp]
 lemma div_ofNat_im (z : ℂ) (n : ℕ) [n.AtLeastTwo] :
-    (z / no_index (OfNat.ofNat n)).im = z.im / OfNat.ofNat n := div_nat_cast_im z n
+    (z / no_index (OfNat.ofNat n)).im = z.im / OfNat.ofNat n := div_natCast_im z n
 
 /-! ### Characteristic zero -/
 
 
-instance charZero : CharZero ℂ :=
-  charZero_of_inj_zero fun n h => by
-    rwa [← ofReal_nat_cast, ofReal_eq_zero, Nat.cast_eq_zero] at h
-#align complex.char_zero_complex Complex.charZero
+instance instCharZero : CharZero ℂ :=
+  charZero_of_inj_zero fun n h => by rwa [← ofReal_natCast, ofReal_eq_zero, Nat.cast_eq_zero] at h
+#align complex.char_zero_complex Complex.instCharZero
 
 /-- A complex number `z` plus its conjugate `conj z` is `2` times its real part. -/
 theorem re_eq_add_conj (z : ℂ) : (z.re : ℂ) = (z + conj z) / 2 := by
@@ -919,6 +958,16 @@ theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
   simp only [sub_conj, ofReal_mul, ofReal_ofNat, mul_right_comm,
     mul_div_cancel_left₀ _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
 #align complex.im_eq_sub_conj Complex.im_eq_sub_conj
+
+/-- Show the imaginary number ⟨x, y⟩ as an "x + y*I" string
+
+Note that the Real numbers used for x and y will show as cauchy sequences due to the way Real
+numbers are represented.
+-/
+unsafe instance instRepr : Repr ℂ where
+  reprPrec f p :=
+    (if p > 65 then (Std.Format.bracket "(" · ")") else (·)) <|
+      reprPrec f.re 65 ++ " + " ++ reprPrec f.im 70 ++ "*I"
 
 end Complex
 

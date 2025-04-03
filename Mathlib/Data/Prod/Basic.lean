@@ -16,8 +16,6 @@ This file defines `Prod.swap : α × β → β × α` and proves various simple 
 It also defines better delaborators for product projections.
 -/
 
-set_option autoImplicit true
-
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 @[simp]
@@ -114,10 +112,10 @@ theorem mk.inj_right {α β : Type*} (b : β) :
   simpa only [and_true, eq_self_iff_true, mk.inj_iff] using h
 #align prod.mk.inj_right Prod.mk.inj_right
 
-lemma mk_inj_left : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
+lemma mk_inj_left {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
 #align prod.mk_inj_left Prod.mk_inj_left
 
-lemma mk_inj_right : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
+lemma mk_inj_right {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
 #align prod.mk_inj_right Prod.mk_inj_right
 
 theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
@@ -376,7 +374,7 @@ theorem map_bijective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ
     Bijective (map f g) ↔ Bijective f ∧ Bijective g := by
   haveI := Nonempty.map f ‹_›
   haveI := Nonempty.map g ‹_›
-  exact (map_injective.and map_surjective).trans (and_and_and_comm)
+  exact (map_injective.and map_surjective).trans and_and_and_comm
 #align prod.map_bijective Prod.map_bijective
 
 @[simp]

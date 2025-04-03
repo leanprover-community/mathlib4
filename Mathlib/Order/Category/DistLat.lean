@@ -31,7 +31,7 @@ def DistLat :=
 
 namespace DistLat
 
-instance : CoeSort DistLat (Type*) :=
+instance : CoeSort DistLat Type* :=
   Bundled.coeSort
 
 instance (X : DistLat) : DistribLattice X :=

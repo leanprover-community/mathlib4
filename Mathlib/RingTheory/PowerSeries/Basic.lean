@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kenny Lau
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.MvPowerSeries.Basic
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
@@ -46,8 +47,6 @@ Occasionally this leads to proofs that are uglier than expected.
 -/
 
 noncomputable section
-
-open BigOperators
 
 open Finset (antidiagonal mem_antidiagonal)
 
@@ -136,12 +135,12 @@ section Semiring
 
 variable (R) [Semiring R]
 
-/-- The `n`th coefficient of a formal power series.-/
+/-- The `n`th coefficient of a formal power series. -/
 def coeff (n : ℕ) : R⟦X⟧ →ₗ[R] R :=
   MvPowerSeries.coeff R (single () n)
 #align power_series.coeff PowerSeries.coeff
 
-/-- The `n`th monomial with coefficient `a` as formal power series.-/
+/-- The `n`th monomial with coefficient `a` as formal power series. -/
 def monomial (n : ℕ) : R →ₗ[R] R⟦X⟧ :=
   MvPowerSeries.monomial R (single () n)
 #align power_series.monomial PowerSeries.monomial
@@ -152,7 +151,7 @@ theorem coeff_def {s : Unit →₀ ℕ} {n : ℕ} (h : s () = n) : coeff R n = M
   erw [coeff, ← h, ← Finsupp.unique_single s]
 #align power_series.coeff_def PowerSeries.coeff_def
 
-/-- Two formal power series are equal if all their coefficients are equal.-/
+/-- Two formal power series are equal if all their coefficients are equal. -/
 @[ext]
 theorem ext {φ ψ : R⟦X⟧} (h : ∀ n, coeff R n φ = coeff R n ψ) : φ = ψ :=
   MvPowerSeries.ext fun n => by
@@ -161,12 +160,16 @@ theorem ext {φ ψ : R⟦X⟧} (h : ∀ n, coeff R n φ = coeff R n ψ) : φ = �
     rfl
 #align power_series.ext PowerSeries.ext
 
-/-- Two formal power series are equal if all their coefficients are equal.-/
+/-- Two formal power series are equal if all their coefficients are equal. -/
 theorem ext_iff {φ ψ : R⟦X⟧} : φ = ψ ↔ ∀ n, coeff R n φ = coeff R n ψ :=
   ⟨fun h n => congr_arg (coeff R n) h, ext⟩
 #align power_series.ext_iff PowerSeries.ext_iff
 
-/-- Constructor for formal power series.-/
+instance [Subsingleton R] : Subsingleton R⟦X⟧ := by
+  simp only [subsingleton_iff, ext_iff]
+  exact fun _ _ _ ↦ (subsingleton_iff).mp (by infer_instance) _ _
+
+/-- Constructor for formal power series. -/
 def mk {R} (f : ℕ → R) : R⟦X⟧ := fun s => f (s ())
 #align power_series.mk PowerSeries.mk
 
@@ -203,7 +206,7 @@ def constantCoeff : R⟦X⟧ →+* R :=
   MvPowerSeries.constantCoeff Unit R
 #align power_series.constant_coeff PowerSeries.constantCoeff
 
-/-- The constant formal power series.-/
+/-- The constant formal power series. -/
 def C : R →+* R⟦X⟧ :=
   MvPowerSeries.C Unit R
 set_option linter.uppercaseLean3 false in
@@ -211,7 +214,7 @@ set_option linter.uppercaseLean3 false in
 
 variable {R}
 
-/-- The variable of the formal power series ring.-/
+/-- The variable of the formal power series ring. -/
 def X : R⟦X⟧ :=
   MvPowerSeries.X ()
 set_option linter.uppercaseLean3 false in
@@ -228,8 +231,8 @@ theorem coeff_zero_eq_constantCoeff : ⇑(coeff R 0) = constantCoeff R := by
   rfl
 #align power_series.coeff_zero_eq_constant_coeff PowerSeries.coeff_zero_eq_constantCoeff
 
-theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = constantCoeff R φ :=
-  by rw [coeff_zero_eq_constantCoeff]
+theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = constantCoeff R φ := by
+  rw [coeff_zero_eq_constantCoeff]
 #align power_series.coeff_zero_eq_constant_coeff_apply PowerSeries.coeff_zero_eq_constantCoeff_apply
 
 @[simp]
@@ -260,6 +263,16 @@ theorem coeff_ne_zero_C {a : R} {n : ℕ} (h : n ≠ 0) : coeff R n (C R a) = 0 
 @[simp]
 theorem coeff_succ_C {a : R} {n : ℕ} : coeff R (n + 1) (C R a) = 0 :=
   coeff_ne_zero_C n.succ_ne_zero
+
+theorem C_injective : Function.Injective (C R) := by
+  intro a b H
+  have := (ext_iff (φ := C R a) (ψ := C R b)).mp H 0
+  rwa [coeff_zero_C, coeff_zero_C] at this
+
+protected theorem subsingleton_iff : Subsingleton R⟦X⟧ ↔ Subsingleton R := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
+  rw [subsingleton_iff] at h ⊢
+  exact fun a b ↦ C_injective (h (C R a) (C R b))
 
 theorem X_eq : (X : R⟦X⟧) = monomial R 1 1 :=
   rfl
@@ -315,7 +328,7 @@ theorem coeff_zero_one : coeff R 0 (1 : R⟦X⟧) = 1 :=
 #align power_series.coeff_zero_one PowerSeries.coeff_zero_one
 
 theorem coeff_mul (n : ℕ) (φ ψ : R⟦X⟧) :
-    coeff R n (φ * ψ) = ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
+    coeff R n (φ * ψ) = ∑ p ∈ antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
   -- `rw` can't see that `PowerSeries = MvPowerSeries Unit`, so use `.trans`
   refine (MvPowerSeries.coeff_mul _ φ ψ).trans ?_
   rw [Finsupp.antidiagonal_single, Finset.sum_map]
@@ -339,6 +352,11 @@ theorem coeff_smul {S : Type*} [Semiring S] [Module R S] (n : ℕ) (φ : PowerSe
     coeff S n (a • φ) = a • coeff S n φ :=
   rfl
 #align power_series.coeff_smul PowerSeries.coeff_smul
+
+@[simp]
+theorem constantCoeff_smul {S : Type*} [Semiring S] [Module R S] (φ : PowerSeries S) (a : R) :
+    constantCoeff S (a • φ) = a • constantCoeff S φ :=
+  rfl
 
 theorem smul_eq_C_mul (f : R⟦X⟧) (a : R) : a • f = C R a * f := by
   ext
@@ -400,7 +418,10 @@ theorem coeff_zero_X_mul (φ : R⟦X⟧) : coeff R 0 (X * φ) = 0 := by simp
 set_option linter.uppercaseLean3 false in
 #align power_series.coeff_zero_X_mul PowerSeries.coeff_zero_X_mul
 
--- The following section duplicates the api of `data.polynomial.coeff` and should attempt to keep
+theorem constantCoeff_surj : Function.Surjective (constantCoeff R) :=
+  fun r => ⟨(C R) r, constantCoeff_C r⟩
+
+-- The following section duplicates the API of `Data.Polynomial.Coeff` and should attempt to keep
 -- up to date with that
 section
 
@@ -445,7 +466,7 @@ theorem coeff_mul_X_pow' (p : R⟦X⟧) (n d : ℕ) :
     coeff R d (p * X ^ n) = ite (n ≤ d) (coeff R (d - n) p) 0 := by
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_mul_X_pow, add_tsub_cancel_right]
-  · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
     rw [coeff_X_pow, if_neg, mul_zero]
     exact ((le_of_add_le_right (mem_antidiagonal.mp hx).le).trans_lt <| not_le.mp h).ne
 set_option linter.uppercaseLean3 false in
@@ -456,7 +477,7 @@ theorem coeff_X_pow_mul' (p : R⟦X⟧) (n d : ℕ) :
   split_ifs with h
   · rw [← tsub_add_cancel_of_le h, coeff_X_pow_mul]
     simp
-  · refine' (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => _)
+  · refine (coeff_mul _ _ _).trans (Finset.sum_eq_zero fun x hx => ?_)
     rw [coeff_X_pow, if_neg, zero_mul]
     have := mem_antidiagonal.mp hx
     rw [add_comm] at this
@@ -466,7 +487,7 @@ set_option linter.uppercaseLean3 false in
 
 end
 
-/-- If a formal power series is invertible, then so is its constant coefficient.-/
+/-- If a formal power series is invertible, then so is its constant coefficient. -/
 theorem isUnit_constantCoeff (φ : R⟦X⟧) (h : IsUnit φ) : IsUnit (constantCoeff R φ) :=
   MvPowerSeries.isUnit_constantCoeff φ h
 #align power_series.is_unit_constant_coeff PowerSeries.isUnit_constantCoeff
@@ -498,7 +519,7 @@ section Map
 variable {S : Type*} {T : Type*} [Semiring S] [Semiring T]
 variable (f : R →+* S) (g : S →+* T)
 
-/-- The map between formal power series induced by a map on the coefficients.-/
+/-- The map between formal power series induced by a map on the coefficients. -/
 def map : R⟦X⟧ →+* S⟦X⟧ :=
   MvPowerSeries.map _ f
 #align power_series.map PowerSeries.map
@@ -637,7 +658,7 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 
 /-- Coefficients of a product of power series -/
 theorem coeff_prod (f : ι → PowerSeries R) (d : ℕ) (s : Finset ι) :
-    coeff R d (∏ j in s, f j) = ∑ l in piAntidiagonal s d, ∏ i in s, coeff R (l i) (f i) := by
+    coeff R d (∏ j ∈ s, f j) = ∑ l ∈ piAntidiagonal s d, ∏ i ∈ s, coeff R (l i) (f i) := by
   simp only [coeff]
   convert MvPowerSeries.coeff_prod _ _ _
   rw [← AddEquiv.finsuppUnique_symm d, ← mapRange_piAntidiagonal_eq, sum_map, sum_congr rfl]
@@ -654,6 +675,19 @@ end CommSemiring
 section CommRing
 
 variable {A : Type*} [CommRing A]
+
+theorem not_isField : ¬IsField A⟦X⟧ := by
+  by_cases hA : Subsingleton A
+  · exact not_isField_of_subsingleton _
+  · nontriviality A
+    rw [Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
+    use Ideal.span {X}
+    constructor
+    · rw [bot_lt_iff_ne_bot, Ne, Ideal.span_singleton_eq_bot]
+      exact X_ne_zero
+    · rw [lt_top_iff_ne_top, Ne, Ideal.eq_top_iff_one, Ideal.mem_span_singleton,
+        X_dvd_iff, constantCoeff_one]
+      exact one_ne_zero
 
 @[simp]
 theorem rescale_X (a : A) : rescale a X = C A a * X := by
@@ -738,7 +772,7 @@ section IsDomain
 variable [CommRing R] [IsDomain R]
 
 /-- The ideal spanned by the variable in the power series ring
- over an integral domain is a prime ideal.-/
+ over an integral domain is a prime ideal. -/
 theorem span_X_isPrime : (Ideal.span ({X} : Set R⟦X⟧)).IsPrime := by
   suffices Ideal.span ({X} : Set R⟦X⟧) = RingHom.ker (constantCoeff R) by
     rw [this]
@@ -749,7 +783,7 @@ theorem span_X_isPrime : (Ideal.span ({X} : Set R⟦X⟧)).IsPrime := by
 set_option linter.uppercaseLean3 false in
 #align power_series.span_X_is_prime PowerSeries.span_X_isPrime
 
-/-- The variable of the power series ring over an integral domain is prime.-/
+/-- The variable of the power series ring over an integral domain is prime. -/
 theorem X_prime : Prime (X : R⟦X⟧) := by
   rw [← Ideal.span_singleton_prime]
   · exact span_X_isPrime
@@ -757,6 +791,9 @@ theorem X_prime : Prime (X : R⟦X⟧) := by
     simpa [map_zero (coeff R 1)] using congr_arg (coeff R 1) h
 set_option linter.uppercaseLean3 false in
 #align power_series.X_prime PowerSeries.X_prime
+
+/-- The variable of the power series ring over an integral domain is irreducible. -/
+theorem X_irreducible : Irreducible (X : R⟦X⟧) := X_prime.irreducible
 
 theorem rescale_injective {a : R} (ha : a ≠ 0) : Function.Injective (rescale a) := by
   intro p q h
@@ -798,12 +835,12 @@ open Finsupp Polynomial
 variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : R[X])
 
 -- Porting note: added so we can add the `@[coe]` attribute
-/-- The natural inclusion from polynomials into formal power series.-/
+/-- The natural inclusion from polynomials into formal power series. -/
 @[coe]
 def ToPowerSeries : R[X] → (PowerSeries R) := fun φ =>
   PowerSeries.mk fun n => coeff φ n
 
-/-- The natural inclusion from polynomials into formal power series.-/
+/-- The natural inclusion from polynomials into formal power series. -/
 instance coeToPowerSeries : Coe R[X] (PowerSeries R) :=
   ⟨ToPowerSeries⟩
 #align polynomial.coe_to_power_series Polynomial.coeToPowerSeries

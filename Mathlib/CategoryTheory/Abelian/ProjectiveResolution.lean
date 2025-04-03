@@ -334,7 +334,7 @@ irreducible_def of : ProjectiveResolution Z where
     cases n
     · rw [ChainComplex.quasiIsoAt₀_iff, ShortComplex.quasiIso_iff_of_zeros']
       · dsimp
-        refine' (ShortComplex.exact_and_epi_g_iff_of_iso _).2
+        refine (ShortComplex.exact_and_epi_g_iff_of_iso ?_).2
           ⟨exact_d_f (Projective.π Z), by dsimp; infer_instance⟩
         exact ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _)
           (by simp [ofComplex]) (by simp)

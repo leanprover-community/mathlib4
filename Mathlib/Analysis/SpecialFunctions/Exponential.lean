@@ -55,7 +55,7 @@ We prove most results for an arbitrary field `𝕂`, and then specialize to `�
 
 open Filter RCLike ContinuousMultilinearMap NormedField NormedSpace Asymptotics
 
-open scoped Nat Topology BigOperators ENNReal
+open scoped Nat Topology ENNReal
 
 section AnyFieldAnyAlgebra
 
@@ -97,7 +97,7 @@ theorem hasFDerivAt_exp_of_mem_ball {x : 𝔸}
   suffices
     (fun h => exp x * (exp (0 + h) - exp 0 - ContinuousLinearMap.id 𝕂 𝔸 h)) =ᶠ[𝓝 0] fun h =>
       exp (x + h) - exp x - exp x • ContinuousLinearMap.id 𝕂 𝔸 h by
-    refine' (IsLittleO.const_mul_left _ _).congr' this (EventuallyEq.refl _ _)
+    refine (IsLittleO.const_mul_left ?_ _).congr' this (EventuallyEq.refl _ _)
     rw [← hasFDerivAt_iff_isLittleO_nhds_zero]
     exact hasFDerivAt_exp_zero_of_radius_pos hpos
   have : ∀ᶠ h in 𝓝 (0 : 𝔸), h ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius :=
@@ -126,8 +126,9 @@ variable {𝕂 : Type*} [NontriviallyNormedField 𝕂] [CompleteSpace 𝕂]
 /-- The exponential map in a complete normed field `𝕂` of characteristic zero has strict derivative
 `exp x` at any point `x` in the disk of convergence. -/
 theorem hasStrictDerivAt_exp_of_mem_ball [CharZero 𝕂] {x : 𝕂}
-    (hx : x ∈ EMetric.ball (0 : 𝕂) (expSeries 𝕂 𝕂).radius) : HasStrictDerivAt (exp) (exp x) x :=
-  by simpa using (hasStrictFDerivAt_exp_of_mem_ball hx).hasStrictDerivAt
+    (hx : x ∈ EMetric.ball (0 : 𝕂) (expSeries 𝕂 𝕂).radius) :
+    HasStrictDerivAt (exp) (exp x) x := by
+  simpa using (hasStrictFDerivAt_exp_of_mem_ball hx).hasStrictDerivAt
 #align has_strict_deriv_at_exp_of_mem_ball hasStrictDerivAt_exp_of_mem_ball
 
 /-- The exponential map in a complete normed field `𝕂` of characteristic zero has derivative
@@ -219,7 +220,7 @@ theorem hasDerivAt_exp_zero : HasDerivAt (exp) (1 : 𝕂) 0 :=
 end DerivRCLike
 
 theorem Complex.exp_eq_exp_ℂ : Complex.exp = NormedSpace.exp := by
-  refine' funext fun x => _
+  refine funext fun x => ?_
   rw [Complex.exp, exp_eq_tsum_div]
   have : CauSeq.IsComplete ℂ norm := Complex.instIsComplete
   exact tendsto_nhds_unique x.exp'.tendsto_limit (expSeries_div_summable ℝ x).hasSum.tendsto_sum_nat
@@ -423,3 +424,14 @@ theorem hasDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕂) :
 end RCLike
 
 end exp_smul
+
+section tsum_tprod
+
+variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+
+/-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
+lemma HasSum.exp {ι : Type*} {f : ι → 𝔸} {a : 𝔸} (h : HasSum f a) :
+    HasProd (exp 𝕂 ∘ f) (exp 𝕂 a) :=
+  Tendsto.congr (fun s ↦ exp_sum s f) <| Tendsto.exp h
+
+end tsum_tprod

@@ -38,7 +38,7 @@ def zagierSet : Set (ℕ × ℕ × ℕ) := {t | t.1 * t.1 + 4 * t.2.1 * t.2.2 = 
 
 lemma zagierSet_lower_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) : 0 < x ∧ 0 < y ∧ 0 < z := by
   rw [zagierSet, mem_setOf_eq] at h
-  refine' ⟨_, _, _⟩
+  refine ⟨?_, ?_, ?_⟩
   all_goals
     by_contra q
     rw [not_lt, nonpos_iff_eq_zero] at q
@@ -57,7 +57,7 @@ lemma zagierSet_upper_bound {x y z : ℕ} (h : (x, y, z) ∈ zagierSet k) :
     x ≤ k + 1 ∧ y ≤ k ∧ z ≤ k := by
   obtain ⟨_, _, _⟩ := zagierSet_lower_bound k h
   rw [zagierSet, mem_setOf_eq] at h
-  refine' ⟨_, _, _⟩ <;> nlinarith
+  refine ⟨?_, ?_, ?_⟩ <;> nlinarith
 
 lemma zagierSet_subset : zagierSet k ⊆ Ioc 0 (k + 1) ×ˢ Ioc 0 k ×ˢ Ioc 0 k := by
   intro x h

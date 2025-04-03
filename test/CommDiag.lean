@@ -30,6 +30,7 @@ example {fButActuallyTheNameIsReallyLong g : Nat ⟶ Bool}: fButActuallyTheNameI
       rhs
       enter [1]
       rw [← h]
+    rfl
 
 -- from Sina Hazratpour
 example {X Y Z : Type} {f g : X ⟶ Y} {k : Y ⟶ Y} {f' : Y ⟶ Z} {i : X ⟶ Z}

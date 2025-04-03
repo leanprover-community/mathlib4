@@ -32,7 +32,7 @@ def BoolRing :=
 
 namespace BoolRing
 
-instance : CoeSort BoolRing (Type*) :=
+instance : CoeSort BoolRing Type* :=
   Bundled.coeSort
 
 instance (X : BoolRing) : BooleanRing X :=

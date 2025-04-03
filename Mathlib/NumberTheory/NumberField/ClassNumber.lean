@@ -28,20 +28,20 @@ variable (K : Type*) [Field K] [NumberField K]
 
 namespace RingOfIntegers
 
-noncomputable instance instFintypeClassGroup : Fintype (ClassGroup (ringOfIntegers K)) :=
+noncomputable instance instFintypeClassGroup : Fintype (ClassGroup (𝓞 K)) :=
   ClassGroup.fintypeOfAdmissibleOfFinite ℚ K AbsoluteValue.absIsAdmissible
 
 end RingOfIntegers
 
 /-- The class number of a number field is the (finite) cardinality of the class group. -/
 noncomputable def classNumber : ℕ :=
-  Fintype.card (ClassGroup (ringOfIntegers K))
+  Fintype.card (ClassGroup (𝓞 K))
 #align number_field.class_number NumberField.classNumber
 
 variable {K}
 
 /-- The class number of a number field is `1` iff the ring of integers is a PID. -/
-theorem classNumber_eq_one_iff : classNumber K = 1 ↔ IsPrincipalIdealRing (ringOfIntegers K) :=
+theorem classNumber_eq_one_iff : classNumber K = 1 ↔ IsPrincipalIdealRing (𝓞 K) :=
   card_classGroup_eq_one_iff
 #align number_field.class_number_eq_one_iff NumberField.classNumber_eq_one_iff
 
@@ -49,7 +49,7 @@ open FiniteDimensional NumberField.InfinitePlace
 
 open scoped nonZeroDivisors Real
 
-theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)):
+theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)) :
     ∃ I : (Ideal (𝓞 K))⁰, ClassGroup.mk0 I = C ∧
       Ideal.absNorm (I : Ideal (𝓞 K)) ≤ (4 / π) ^ NrComplexPlaces K *
         ((finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K|) := by
@@ -77,7 +77,7 @@ theorem exists_ideal_in_class_of_norm_le (C : ClassGroup (𝓞 K)):
 theorem _root_.RingOfIntegers.isPrincipalIdealRing_of_abs_discr_lt
     (h : |discr K| < (2 * (π / 4) ^ NrComplexPlaces K *
       ((finrank ℚ K) ^ (finrank ℚ K) / (finrank ℚ K).factorial)) ^ 2) :
-    IsPrincipalIdealRing (ringOfIntegers K) := by
+    IsPrincipalIdealRing (𝓞 K) := by
   have : 0 < finrank ℚ K := finrank_pos -- Lean needs to know that for positivity to succeed
   rw [← Real.sqrt_lt (by positivity) (by positivity), mul_assoc, ← inv_mul_lt_iff' (by positivity),
     mul_inv, ← inv_pow, inv_div, inv_div, mul_assoc, Int.cast_abs] at h
@@ -100,7 +100,7 @@ open NumberField
 theorem classNumber_eq : NumberField.classNumber ℚ = 1 :=
   classNumber_eq_one_iff.mpr <| by
     convert IsPrincipalIdealRing.of_surjective
-      (Rat.ringOfIntegersEquiv.symm: ℤ →+* ringOfIntegers ℚ) Rat.ringOfIntegersEquiv.symm.surjective
+      (Rat.ringOfIntegersEquiv.symm: ℤ →+* 𝓞 ℚ) Rat.ringOfIntegersEquiv.symm.surjective
 #align rat.class_number_eq Rat.classNumber_eq
 
 end Rat

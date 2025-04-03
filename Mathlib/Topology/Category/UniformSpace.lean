@@ -43,7 +43,7 @@ deriving instance LargeCategory for UniformSpaceCat
 instance : ConcreteCategory UniformSpaceCat :=
   inferInstanceAs <| ConcreteCategory <| Bundled UniformSpace
 
-instance : CoeSort UniformSpaceCat (Type*) :=
+instance : CoeSort UniformSpaceCat Type* :=
   Bundled.coeSort
 
 instance (x : UniformSpaceCat) : UniformSpace x :=
@@ -198,6 +198,8 @@ noncomputable def extensionHom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
 instance (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) :=
   show UniformSpace X from inferInstance
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike in
 @[simp]
 theorem extensionHom_val {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
     (f : X ⟶ (forget₂ _ _).obj Y) (x) : (extensionHom f) x = Completion.extension f x :=
@@ -234,11 +236,9 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
         rfl }
 #align UniformSpace.adj UniformSpaceCat.adj
 
-noncomputable instance : IsRightAdjoint (forget₂ CpltSepUniformSpace UniformSpaceCat) :=
-  ⟨completionFunctor, adj⟩
-
 noncomputable instance : Reflective (forget₂ CpltSepUniformSpace UniformSpaceCat) where
-  preimage {X Y} f := f
+  adj := adj
+  map_surjective f := ⟨f, rfl⟩
 
 open CategoryTheory.Limits
 

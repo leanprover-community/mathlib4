@@ -27,7 +27,7 @@ in probability spaces), see `MeasureTheory.measure_limsup_eq_zero`.
 -/
 
 
-open scoped MeasureTheory ProbabilityTheory ENNReal BigOperators Topology
+open scoped MeasureTheory ProbabilityTheory ENNReal Topology
 
 open MeasureTheory ProbabilityTheory MeasurableSpace TopologicalSpace
 
@@ -62,7 +62,7 @@ theorem iIndepSet.condexp_indicator_filtrationOfSet_ae_eq (hsm : ∀ n, Measurab
     μ[(s j).indicator (fun _ => 1 : Ω → ℝ)|filtrationOfSet hsm i] =ᵐ[μ]
     fun _ => (μ (s j)).toReal := by
   rw [Filtration.filtrationOfSet_eq_natural (β := ℝ) hsm]
-  refine' (iIndepFun.condexp_natural_ae_eq_of_lt _ hs.iIndepFun_indicator hij).trans _
+  refine (iIndepFun.condexp_natural_ae_eq_of_lt _ hs.iIndepFun_indicator hij).trans ?_
   simp only [integral_indicator_const _ (hsm _), Algebra.id.smul_eq_mul, mul_one]; rfl
 set_option linter.uppercaseLean3 false in
 #align probability_theory.Indep_set.condexp_indicator_filtration_of_set_ae_eq ProbabilityTheory.iIndepSet.condexp_indicator_filtrationOfSet_ae_eq
@@ -75,29 +75,29 @@ theorem measure_limsup_eq_one {s : ℕ → Set Ω} (hsm : ∀ n, MeasurableSet (
     (hs' : (∑' n, μ (s n)) = ∞) : μ (limsup s atTop) = 1 := by
   rw [measure_congr (eventuallyEq_set.2 (ae_mem_limsup_atTop_iff μ <|
     measurableSet_filtrationOfSet' hsm) : (limsup s atTop : Set Ω) =ᵐ[μ]
-      {ω | Tendsto (fun n => ∑ k in Finset.range n,
+      {ω | Tendsto (fun n => ∑ k ∈ Finset.range n,
         (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|filtrationOfSet hsm k]) ω) atTop atTop})]
-  suffices {ω | Tendsto (fun n => ∑ k in Finset.range n,
+  suffices {ω | Tendsto (fun n => ∑ k ∈ Finset.range n,
       (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|filtrationOfSet hsm k]) ω) atTop atTop} =ᵐ[μ] Set.univ by
     rw [measure_congr this, measure_univ]
   have : ∀ᵐ ω ∂μ, ∀ n, (μ[(s (n + 1)).indicator (1 : Ω → ℝ)|filtrationOfSet hsm n]) ω = _ :=
     ae_all_iff.2 fun n => hs.condexp_indicator_filtrationOfSet_ae_eq hsm n.lt_succ_self
   filter_upwards [this] with ω hω
-  refine' eq_true (_ : Tendsto _ _ _)
+  refine eq_true (?_ : Tendsto _ _ _)
   simp_rw [hω]
-  have htends : Tendsto (fun n => ∑ k in Finset.range n, μ (s (k + 1))) atTop (𝓝 ∞) := by
+  have htends : Tendsto (fun n => ∑ k ∈ Finset.range n, μ (s (k + 1))) atTop (𝓝 ∞) := by
     rw [← ENNReal.tsum_add_one_eq_top hs' (measure_ne_top _ _)]
     exact ENNReal.tendsto_nat_tsum _
   rw [ENNReal.tendsto_nhds_top_iff_nnreal] at htends
-  refine' tendsto_atTop_atTop_of_monotone' _ _
-  · refine' monotone_nat_of_le_succ fun n => _
+  refine tendsto_atTop_atTop_of_monotone' ?_ ?_
+  · refine monotone_nat_of_le_succ fun n => ?_
     rw [← sub_nonneg, Finset.sum_range_succ_sub_sum]
     exact ENNReal.toReal_nonneg
   · rintro ⟨B, hB⟩
-    refine' not_eventually.2 (frequently_of_forall fun n => _) (htends B.toNNReal)
+    refine not_eventually.2 (frequently_of_forall fun n => ?_) (htends B.toNNReal)
     rw [mem_upperBounds] at hB
-    specialize hB (∑ k : ℕ in Finset.range n, μ (s (k + 1))).toReal _
-    · refine' ⟨n, _⟩
+    specialize hB (∑ k ∈ Finset.range n, μ (s (k + 1))).toReal _
+    · refine ⟨n, ?_⟩
       rw [ENNReal.toReal_sum]
       exact fun _ _ => measure_ne_top _ _
     · rw [not_lt, ← ENNReal.toReal_le_toReal (ENNReal.sum_lt_top _).ne ENNReal.coe_ne_top]

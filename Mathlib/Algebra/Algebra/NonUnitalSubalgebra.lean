@@ -22,8 +22,6 @@ In this file we define `NonUnitalSubalgebra`s and the usual operations on them (
 
 universe u u' v v' w w'
 
-open scoped BigOperators
-
 section NonUnitalSubalgebraClass
 
 variable {S R A : Type*} [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A]
@@ -63,13 +61,12 @@ variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [NonUnitalNonAssocSemiring C]
 variable [Module R A] [Module R B] [Module R C]
 
-instance : SetLike (NonUnitalSubalgebra R A) A
-    where
+instance : SetLike (NonUnitalSubalgebra R A) A where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance instNonUnitalSubsemiringClass : NonUnitalSubsemiringClass (NonUnitalSubalgebra R A) A
-    where
+instance instNonUnitalSubsemiringClass :
+    NonUnitalSubsemiringClass (NonUnitalSubalgebra R A) A where
   add_mem {s} := s.add_mem'
   mul_mem {s} := s.mul_mem'
   zero_mem {s} := s.zero_mem'
@@ -476,13 +473,11 @@ theorem injective_codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x 
 /-- Restrict the codomain of an `NonUnitalAlgHom` `f` to `f.range`.
 
 This is the bundled version of `Set.rangeFactorization`. -/
-@[reducible]
-def rangeRestrict (f : F) : A →ₙₐ[R] (NonUnitalAlgHom.range f : NonUnitalSubalgebra R B) :=
+abbrev rangeRestrict (f : F) : A →ₙₐ[R] (NonUnitalAlgHom.range f : NonUnitalSubalgebra R B) :=
   NonUnitalAlgHom.codRestrict f (NonUnitalAlgHom.range f) (NonUnitalAlgHom.mem_range_self f)
 
 /-- The equalizer of two non-unital `R`-algebra homomorphisms -/
-def equalizer (ϕ ψ : F) : NonUnitalSubalgebra R A
-    where
+def equalizer (ϕ ψ : F) : NonUnitalSubalgebra R A where
   carrier := {a | (ϕ a : B) = ψ a}
   zero_mem' := by rw [Set.mem_setOf_eq, map_zero, map_zero]
   add_mem' {x y} (hx : ϕ x = ψ x) (hy : ϕ y = ψ y) := by
@@ -520,8 +515,8 @@ def adjoin (s : Set A) : NonUnitalSubalgebra R A :=
       @fun a b (ha : a ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A))
         (hb : b ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A)) =>
       show a * b ∈ Submodule.span R (NonUnitalSubsemiring.closure s : Set A) by
-        refine' Submodule.span_induction ha _ _ _ _
-        · refine' Submodule.span_induction hb _ _ _ _
+        refine Submodule.span_induction ha ?_ ?_ ?_ ?_
+        · refine Submodule.span_induction hb ?_ ?_ ?_ ?_
           · exact fun x (hx : x ∈ NonUnitalSubsemiring.closure s) y
               (hy : y ∈ NonUnitalSubsemiring.closure s) => Submodule.subset_span (mul_mem hy hx)
           · exact fun x _hx => (mul_zero x).symm ▸ Submodule.zero_mem _
@@ -570,7 +565,7 @@ theorem adjoin_induction₂ {s : Set A} {p : A → A → Prop} {a b : A} (ha : a
 
 /-- The difference with `NonUnitalAlgebra.adjoin_induction` is that this acts on the subtype. -/
 @[elab_as_elim]
-lemma adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
+lemma adjoin_induction_subtype {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     (mem : ∀ x (h : x ∈ s), p ⟨x, subset_adjoin R h⟩)
     (add : ∀ x y, p x → p y → p (x + y)) (zero : p 0)
     (mul : ∀ x y, p x → p y → p (x * y)) (smul : ∀ (r : R) x, p x → p (r • x)) : p a :=
@@ -586,6 +581,17 @@ lemma adjoin_induction' {s : Set A} {p : adjoin R s → Prop} (a : adjoin R s)
     · exact fun r x hx => Exists.elim hx fun hx' hx =>
         ⟨SMulMemClass.smul_mem r hx', smul r _ hx⟩
 
+/-- A dependent version of `NonUnitalAlgebra.adjoin_induction`. -/
+theorem adjoin_induction' {s : Set A} {p : ∀ x, x ∈ adjoin R s → Prop}
+    (mem : ∀ (x) (h : x ∈ s), p x (subset_adjoin R h))
+    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem ‹_› ‹_›))
+    (zero : p 0 (zero_mem _))
+    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem ‹_› ‹_›))
+    (smul : ∀ (r : R) (x hx), p x hx → p (r • x) (SMulMemClass.smul_mem _ ‹_›))
+    {a} (ha : a ∈ adjoin R s) : p a ha :=
+  adjoin_induction_subtype ⟨a, ha⟩ (p := fun x ↦ p x.1 x.2) mem (fun x y ↦ add x.1 x.2 y.1 y.2)
+    zero (fun x y ↦ mul x.1 x.2 y.1 y.2) (fun r x ↦ smul r x.1 x.2)
+
 protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalSubalgebra R A) (↑) :=
   fun s S =>
   ⟨fun H => (NonUnitalSubsemiring.subset_closure.trans Submodule.subset_span).trans H,
@@ -594,8 +600,7 @@ protected theorem gc : GaloisConnection (adjoin R : Set A → NonUnitalSubalgebr
         NonUnitalSubsemiring.closure_le.2 H⟩
 
 /-- Galois insertion between `adjoin` and `Subtype.val`. -/
-protected def gi : GaloisInsertion (adjoin R : Set A → NonUnitalSubalgebra R A) (↑)
-    where
+protected def gi : GaloisInsertion (adjoin R : Set A → NonUnitalSubalgebra R A) (↑) where
   choice s hs := (adjoin R s).copy s <| le_antisymm (NonUnitalAlgebra.gc.le_u_l s) hs
   gc := NonUnitalAlgebra.gc
   le_l_u S := (NonUnitalAlgebra.gc (S : Set A) (adjoin R S)).1 <| le_rfl
@@ -613,6 +618,34 @@ theorem adjoin_le_iff {S : NonUnitalSubalgebra R A} {s : Set A} : adjoin R s ≤
 theorem adjoin_union (s t : Set A) : adjoin R (s ∪ t) = adjoin R s ⊔ adjoin R t :=
   (NonUnitalAlgebra.gc : GaloisConnection _ ((↑) : NonUnitalSubalgebra R A → Set A)).l_sup
 
+lemma adjoin_eq (s : NonUnitalSubalgebra R A) : adjoin R (s : Set A) = s :=
+  le_antisymm (adjoin_le le_rfl) (subset_adjoin R)
+
+open Submodule in
+lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigroup.closure s) := by
+  apply le_antisymm
+  · intro x hx
+    induction hx using adjoin_induction' with
+    | mem x hx => exact subset_span <| Subsemigroup.subset_closure hx
+    | add x _ y _ hpx hpy => exact add_mem hpx hpy
+    | zero => exact zero_mem _
+    | mul x _ y _ hpx hpy =>
+      apply span_induction₂ hpx hpy ?Hs (by simp) (by simp) ?Hadd_l ?Hadd_r ?Hsmul_l ?Hsmul_r
+      case Hs => exact fun x hx y hy ↦ subset_span <| mul_mem hx hy
+      case Hadd_l => exact fun x y z hxz hyz ↦ by simpa [add_mul] using add_mem hxz hyz
+      case Hadd_r => exact fun x y z hxz hyz ↦ by simpa [mul_add] using add_mem hxz hyz
+      case Hsmul_l => exact fun r x y hxy ↦ by simpa [smul_mul_assoc] using smul_mem _ _ hxy
+      case Hsmul_r => exact fun r x y hxy ↦ by simpa [mul_smul_comm] using smul_mem _ _ hxy
+    | smul r x _ hpx => exact smul_mem _ _ hpx
+  · apply span_le.2 _
+    show Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
+    exact Subsemigroup.closure_le.2 (subset_adjoin R)
+
+@[simp]
+lemma span_eq_toSubmodule (s : NonUnitalSubalgebra R A) :
+    Submodule.span R (s : Set A) = s.toSubmodule := by
+  simp [SetLike.ext'_iff, Submodule.coe_span_eq_self]
+
 variable (R A)
 
 @[simp]
@@ -622,6 +655,18 @@ theorem adjoin_empty : adjoin R (∅ : Set A) = ⊥ :=
 @[simp]
 theorem adjoin_univ : adjoin R (Set.univ : Set A) = ⊤ :=
   eq_top_iff.2 fun _x hx => subset_adjoin R hx
+
+open NonUnitalSubalgebra in
+lemma _root_.NonUnitalAlgHom.map_adjoin (f : F) (s : Set A) :
+    map f (adjoin R s) = adjoin R (f '' s) :=
+  Set.image_preimage.l_comm_of_u_comm (gc_map_comap f) NonUnitalAlgebra.gi.gc
+    NonUnitalAlgebra.gi.gc fun _t => rfl
+
+open NonUnitalSubalgebra in
+@[simp]
+lemma _root_.NonUnitalAlgHom.map_adjoin_singleton (f : F) (x : A) :
+    map f (adjoin R {x}) = adjoin R {f x} := by
+  simp [NonUnitalAlgHom.map_adjoin]
 
 variable {R A}
 
@@ -798,8 +843,7 @@ theorem range_val : NonUnitalAlgHom.range (NonUnitalSubalgebraClass.subtype S) =
 /-- The map `S → T` when `S` is a non-unital subalgebra contained in the non-unital subalgebra `T`.
 
 This is the non-unital subalgebra version of `Submodule.inclusion`, or `Subring.inclusion`  -/
-def inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) : S →ₙₐ[R] T
-    where
+def inclusion {S T : NonUnitalSubalgebra R A} (h : S ≤ T) : S →ₙₐ[R] T where
   toFun := Set.inclusion h
   map_add' _ _ := rfl
   map_mul' _ _ := rfl

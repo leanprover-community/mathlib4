@@ -57,7 +57,7 @@ def mulDysonETransform : Finset α × Finset α :=
 @[to_additive]
 theorem mulDysonETransform.subset :
     (mulDysonETransform e x).1 * (mulDysonETransform e x).2 ⊆ x.1 * x.2 := by
-  refine' union_mul_inter_subset_union.trans (union_subset Subset.rfl _)
+  refine union_mul_inter_subset_union.trans (union_subset Subset.rfl ?_)
   rw [mul_smul_comm, smul_mul_assoc, inv_smul_smul, mul_comm]
 #align finset.mul_dyson_e_transform.subset Finset.mulDysonETransform.subset
 #align finset.add_dyson_e_transform.subset Finset.addDysonETransform.subset
@@ -141,7 +141,7 @@ theorem mulETransformRight_one : mulETransformRight 1 x = x := by simp [mulETran
 @[to_additive]
 theorem mulETransformLeft.fst_mul_snd_subset :
     (mulETransformLeft e x).1 * (mulETransformLeft e x).2 ⊆ x.1 * x.2 := by
-  refine' inter_mul_union_subset_union.trans (union_subset Subset.rfl _)
+  refine inter_mul_union_subset_union.trans (union_subset Subset.rfl ?_)
   rw [op_smul_finset_mul_eq_mul_smul_finset, smul_inv_smul]
 #align finset.mul_e_transform_left.fst_mul_snd_subset Finset.mulETransformLeft.fst_mul_snd_subset
 #align finset.add_e_transform_left.fst_add_snd_subset Finset.addETransformLeft.fst_add_snd_subset
@@ -149,7 +149,7 @@ theorem mulETransformLeft.fst_mul_snd_subset :
 @[to_additive]
 theorem mulETransformRight.fst_mul_snd_subset :
     (mulETransformRight e x).1 * (mulETransformRight e x).2 ⊆ x.1 * x.2 := by
-  refine' union_mul_inter_subset_union.trans (union_subset Subset.rfl _)
+  refine union_mul_inter_subset_union.trans (union_subset Subset.rfl ?_)
   rw [op_smul_finset_mul_eq_mul_smul_finset, smul_inv_smul]
 #align finset.mul_e_transform_right.fst_mul_snd_subset Finset.mulETransformRight.fst_mul_snd_subset
 #align finset.add_e_transform_right.fst_add_snd_subset Finset.addETransformRight.fst_add_snd_subset

@@ -35,6 +35,9 @@ profinite
 
 -/
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+
 set_option linter.uppercaseLean3 false
 
 universe v u
@@ -76,7 +79,7 @@ instance hasForget₂ : HasForget₂ Profinite TopCat :=
   InducedCategory.hasForget₂ _
 #align Profinite.has_forget₂ Profinite.hasForget₂
 
-instance : CoeSort Profinite (Type*) :=
+instance : CoeSort Profinite Type* :=
   ⟨fun X => X.toCompHaus⟩
 
 -- Porting note (#10688): This lemma was not needed in mathlib3
@@ -141,11 +144,11 @@ def profiniteToCompHaus : Profinite ⥤ CompHaus :=
 -- deriving Full, Faithful
 #align Profinite_to_CompHaus profiniteToCompHaus
 
-instance : Full profiniteToCompHaus :=
-show Full <| inducedFunctor _ from inferInstance
+instance : profiniteToCompHaus.Full :=
+  show (inducedFunctor _).Full from inferInstance
 
-instance : Faithful profiniteToCompHaus :=
-show Faithful <| inducedFunctor _ from inferInstance
+instance : profiniteToCompHaus.Faithful :=
+  show (inducedFunctor _).Faithful from inferInstance
 
 -- Porting note: added, as it is not found otherwise.
 instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) :=
@@ -160,11 +163,11 @@ def Profinite.toTopCat : Profinite ⥤ TopCat :=
 -- deriving Full, Faithful
 #align Profinite.to_Top Profinite.toTopCat
 
-instance : Full Profinite.toTopCat :=
-show Full <| inducedFunctor _ from inferInstance
+instance : Profinite.toTopCat.Full :=
+  show (inducedFunctor _).Full from inferInstance
 
-instance : Faithful Profinite.toTopCat :=
-show Faithful <| inducedFunctor _ from inferInstance
+instance : Profinite.toTopCat.Faithful :=
+  show (inducedFunctor _).Faithful from inferInstance
 
 @[simp]
 theorem Profinite.to_compHausToTopCat :
@@ -236,28 +239,21 @@ def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
   map f := ⟨f, by continuity⟩
 #align Fintype.to_Profinite FintypeCat.toProfinite
 
+instance : FintypeCat.toProfinite.Faithful where
+  map_injective h := funext fun _ ↦ (DFunLike.ext_iff.mp h) _
+
+instance : FintypeCat.toProfinite.Full where
+  map_surjective f := ⟨fun x ↦ f x, rfl⟩
+
 end DiscreteTopology
 
 end Profinite
-
-/--
-Many definitions involving universe inequalities in Mathlib are expressed through use of `max u v`.
-Unfortunately, this leads to unbound universes which cannot be solved for during unification, eg
-`max u v =?= max v ?`.
-The current solution is to wrap `Type max u v` in `TypeMax.{u,v}`
-to expose both universe parameters directly.
-
-Similarly, for other concrete categories for which we need to refer to the maximum of two universes
-(e.g. any category for which we are constructing limits), we need an analogous abbreviation.
--/
-@[nolint checkUnivs]
-abbrev ProfiniteMax.{w, w'} := Profinite.{max w w'}
 
 namespace Profinite
 
 /-- An explicit limit cone for a functor `F : J ⥤ Profinite`, defined in terms of
 `CompHaus.limitCone`, which is defined in terms of `TopCat.limitCone`. -/
-def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ ProfiniteMax.{v, u}) : Limits.Cone F where
+def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ Profinite.{max u v}) : Limits.Cone F where
   pt :=
     { toCompHaus := (CompHaus.limitCone.{v, u} (F ⋙ profiniteToCompHaus)).pt
       isTotallyDisconnected := by
@@ -273,7 +269,7 @@ def limitCone {J : Type v} [SmallCategory J] (F : J ⥤ ProfiniteMax.{v, u}) : L
 #align Profinite.limit_cone Profinite.limitCone
 
 /-- The limit cone `Profinite.limitCone F` is indeed a limit cone. -/
-def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ ProfiniteMax.{v, u}) :
+def limitConeIsLimit {J : Type v} [SmallCategory J] (F : J ⥤ Profinite.{max u v}) :
     Limits.IsLimit (limitCone F) where
   lift S :=
     (CompHaus.limitConeIsLimit.{v, u} (F ⋙ profiniteToCompHaus)).lift
@@ -288,7 +284,7 @@ def toProfiniteAdjToCompHaus : CompHaus.toProfinite ⊣ profiniteToCompHaus :=
 
 /-- The category of profinite sets is reflective in the category of compact Hausdorff spaces -/
 instance toCompHaus.reflective : Reflective profiniteToCompHaus where
-  toIsRightAdjoint := ⟨CompHaus.toProfinite, Profinite.toProfiniteAdjToCompHaus⟩
+  adj := Profinite.toProfiniteAdjToCompHaus
 #align Profinite.to_CompHaus.reflective Profinite.toCompHaus.reflective
 
 noncomputable instance toCompHaus.createsLimits : CreatesLimits profiniteToCompHaus :=
@@ -334,7 +330,7 @@ noncomputable def isoOfBijective (bij : Function.Bijective f) : X ≅ Y :=
   asIso f
 #align Profinite.iso_of_bijective Profinite.isoOfBijective
 
-instance forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget Profinite) := by
+instance forget_reflectsIsomorphisms : (forget Profinite).ReflectsIsomorphisms := by
   constructor
   intro A B f hf
   exact Profinite.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)
@@ -345,7 +341,7 @@ instance forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget Profinite) :
 noncomputable
 def isoOfHomeo (f : X ≃ₜ Y) : X ≅ Y :=
   @asIso _ _ _ _ ⟨f, f.continuous⟩ (@isIso_of_reflects_iso _ _ _ _ _ _ _ profiniteToCompHaus
-    (IsIso.of_iso (CompHaus.isoOfHomeo f)) _)
+    (CompHaus.isoOfHomeo f).isIso_hom _)
 #align Profinite.iso_of_homeo Profinite.isoOfHomeo
 
 /-- Construct a homeomorphism from an isomorphism. -/
@@ -374,7 +370,7 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
     have hC : IsClosed C := (isCompact_range f.continuous).isClosed
     let U := Cᶜ
     have hyU : y ∈ U := by
-      refine' Set.mem_compl _
+      refine Set.mem_compl ?_
       rintro ⟨y', hy'⟩
       exact hy y' hy'
     have hUy : U ∈ 𝓝 y := hC.compl_mem_nhds hyU
@@ -391,7 +387,7 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
           Function.comp_apply, if_neg]
-        refine' mt (fun α => hVU α) _
+        refine mt (fun α => hVU α) ?_
         simp only [U, C, Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
       apply_fun fun e => (e y).down at H
       dsimp [g, LocallyConstant.ofIsClopen] at H

@@ -140,7 +140,7 @@ theorem _root_.CategoryTheory.EffectiveEpiFamily.toCompHaus
     {α : Type} [Finite α] {B : Stonean.{u}}
     {X : α → Stonean.{u}} {π : (a : α) → (X a ⟶ B)} (H : EffectiveEpiFamily X π) :
     EffectiveEpiFamily (toCompHaus.obj <| X ·) (toCompHaus.map <| π ·) := by
-  refine' ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => _)
+  refine ((CompHaus.effectiveEpiFamily_tfae _ _).out 0 2).2 (fun b => ?_)
   exact (((effectiveEpiFamily_tfae _ _).out 0 2).1 H : ∀ _, ∃ _, _) _
 
 end Stonean

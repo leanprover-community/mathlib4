@@ -3,10 +3,8 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Sqrt
-import Mathlib.Data.Set.Lattice
 import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Order.Monoid.MinMax
+import Mathlib.Data.Set.Lattice
 
 #align_import data.nat.pairing from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -26,6 +24,7 @@ It has the advantage of being monotone in both directions and sending `⟦0, n^2
 `⟦0, n - 1⟧²`.
 -/
 
+assert_not_exists MonoidWithZero
 
 open Prod Decidable Function
 
@@ -49,12 +48,12 @@ def unpair (n : ℕ) : ℕ × ℕ :=
 @[simp]
 theorem pair_unpair (n : ℕ) : pair (unpair n).1 (unpair n).2 = n := by
   dsimp only [unpair]; let s := sqrt n
-  have sm : s * s + (n - s * s) = n := add_tsub_cancel_of_le (sqrt_le _)
+  have sm : s * s + (n - s * s) = n := Nat.add_sub_cancel' (sqrt_le _)
   split_ifs with h
   · simp [pair, h, sm]
-  · have hl : n - s * s - s ≤ s :=
-      tsub_le_iff_left.mpr (tsub_le_iff_left.mpr <| by rw [← add_assoc]; apply sqrt_le_add)
-    simp [pair, hl.not_lt, add_assoc, add_tsub_cancel_of_le (le_of_not_gt h), sm]
+  · have hl : n - s * s - s ≤ s := Nat.sub_le_iff_le_add.2
+      (Nat.sub_le_iff_le_add'.2 <| by rw [← Nat.add_assoc]; apply sqrt_le_add)
+    simp [pair, hl.not_lt, Nat.add_assoc, Nat.add_sub_cancel' (le_of_not_gt h), sm]
 #align nat.mkpair_unpair Nat.pair_unpair
 
 theorem pair_unpair' {n a b} (H : unpair n = (a, b)) : pair a b = n := by
@@ -66,12 +65,12 @@ theorem unpair_pair (a b : ℕ) : unpair (pair a b) = (a, b) := by
   dsimp only [pair]; split_ifs with h
   · show unpair (b * b + a) = (a, b)
     have be : sqrt (b * b + a) = b := sqrt_add_eq _ (le_trans (le_of_lt h) (Nat.le_add_left _ _))
-    simp [unpair, be, add_tsub_cancel_right, h]
+    simp [unpair, be, Nat.add_sub_cancel_left, h]
   · show unpair (a * a + a + b) = (a, b)
     have ae : sqrt (a * a + (a + b)) = a := by
       rw [sqrt_add_eq]
-      exact add_le_add_left (le_of_not_gt h) _
-    simp [unpair, ae, Nat.not_lt_zero, add_assoc]
+      exact Nat.add_le_add_left (le_of_not_gt h) _
+    simp [unpair, ae, Nat.not_lt_zero, Nat.add_assoc, Nat.add_sub_cancel_left]
 #align nat.unpair_mkpair Nat.unpair_pair
 
 /-- An equivalence between `ℕ × ℕ` and `ℕ`. -/
@@ -93,12 +92,12 @@ theorem pair_eq_pair {a b c d : ℕ} : pair a b = pair c d ↔ a = c ∧ b = d :
 
 theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
   let s := sqrt n
-  simp only [unpair, ge_iff_le, tsub_le_iff_right, gt_iff_lt]
+  simp only [unpair, ge_iff_le, Nat.sub_le_iff_le_add]
   by_cases h : n - s * s < s <;> simp [h]
   · exact lt_of_lt_of_le h (sqrt_le_self _)
   · simp at h
     have s0 : 0 < s := sqrt_pos.2 n1
-    exact lt_of_le_of_lt h (tsub_lt_self n1 (mul_pos s0 s0))
+    exact lt_of_le_of_lt h (Nat.sub_lt n1 (Nat.mul_pos s0 s0))
 #align nat.unpair_lt Nat.unpair_lt
 
 @[simp]
@@ -125,51 +124,50 @@ theorem unpair_right_le (n : ℕ) : (unpair n).2 ≤ n := by
 #align nat.unpair_right_le Nat.unpair_right_le
 
 theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair a₂ b := by
-  by_cases h₁ : a₁ < b <;> simp [pair, h₁, add_assoc]
+  by_cases h₁ : a₁ < b <;> simp [pair, h₁, Nat.add_assoc]
   · by_cases h₂ : a₂ < b <;> simp [pair, h₂, h]
     simp? at h₂ says simp only [not_lt] at h₂
-    apply add_lt_add_of_le_of_lt
-    exact mul_self_le_mul_self h₂
-    exact Nat.lt_add_right _ h
+    apply Nat.add_lt_add_of_le_of_lt
+    · exact Nat.mul_self_le_mul_self h₂
+    · exact Nat.lt_add_right _ h
   · simp at h₁
     simp only [not_lt_of_gt (lt_of_le_of_lt h₁ h), ite_false]
     apply add_lt_add
-    exact mul_self_lt_mul_self h
-    apply add_lt_add_right; assumption
+    · exact Nat.mul_self_lt_mul_self h
+    · apply Nat.add_lt_add_right; assumption
 #align nat.mkpair_lt_mkpair_left Nat.pair_lt_pair_left
 
 theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pair a b₂ := by
-  by_cases h₁ : a < b₁ <;> simp [pair, h₁, add_assoc]
+  by_cases h₁ : a < b₁ <;> simp [pair, h₁, Nat.add_assoc]
   · simp [pair, lt_trans h₁ h, h]
     exact mul_self_lt_mul_self h
   · by_cases h₂ : a < b₂ <;> simp [pair, h₂, h]
     simp? at h₁ says simp only [not_lt] at h₁
-    rw [add_comm, add_comm _ a, add_assoc, add_lt_add_iff_left]
-    rwa [add_comm, ← sqrt_lt, sqrt_add_eq]
+    rw [Nat.add_comm, Nat.add_comm _ a, Nat.add_assoc, Nat.add_lt_add_iff_left]
+    rwa [Nat.add_comm, ← sqrt_lt, sqrt_add_eq]
     exact le_trans h₁ (Nat.le_add_left _ _)
 #align nat.mkpair_lt_mkpair_right Nat.pair_lt_pair_right
 
 theorem pair_lt_max_add_one_sq (m n : ℕ) : pair m n < (max m n + 1) ^ 2 := by
-  rw [pair, add_sq, mul_one, two_mul, sq, add_assoc, add_assoc]
-  cases' (lt_or_le m n) with h h
-  rw [if_pos h, max_eq_right h.le, add_lt_add_iff_left, add_assoc]
-  exact h.trans_le (self_le_add_right n _)
-  rw [if_neg h.not_lt, max_eq_left h, add_lt_add_iff_left, add_assoc, add_lt_add_iff_left]
-  exact lt_succ_of_le h
+  simp only [pair, Nat.pow_two, Nat.mul_add, Nat.add_mul, Nat.mul_one, Nat.one_mul, Nat.add_assoc]
+  split_ifs <;> simp [Nat.max_eq_left, Nat.max_eq_right, Nat.le_of_lt,  not_lt.1, *] <;> omega
 #align nat.mkpair_lt_max_add_one_sq Nat.pair_lt_max_add_one_sq
 
 theorem max_sq_add_min_le_pair (m n : ℕ) : max m n ^ 2 + min m n ≤ pair m n := by
   rw [pair]
   cases' lt_or_le m n with h h
-  rw [if_pos h, max_eq_right h.le, min_eq_left h.le, sq]
-  rw [if_neg h.not_lt, max_eq_left h, min_eq_right h, sq, add_assoc, add_le_add_iff_left]
-  exact le_add_self
+  · rw [if_pos h, max_eq_right h.le, min_eq_left h.le, Nat.pow_two]
+  rw [if_neg h.not_lt, max_eq_left h, min_eq_right h, Nat.pow_two, Nat.add_assoc,
+    Nat.add_le_add_iff_left]
+  exact Nat.le_add_left _ _
 #align nat.max_sq_add_min_le_mkpair Nat.max_sq_add_min_le_pair
 
-theorem add_le_pair (m n : ℕ) : m + n ≤ pair m n :=
-  (max_sq_add_min_le_pair _ _).trans' <| by
-    rw [sq, ← min_add_max, add_comm, add_le_add_iff_right]
-    exact le_mul_self _
+theorem add_le_pair (m n : ℕ) : m + n ≤ pair m n := by
+  simp only [pair, Nat.add_assoc]
+  split_ifs
+  · have := le_mul_self n
+    omega
+  · exact Nat.le_add_left _ _
 #align nat.add_le_mkpair Nat.add_le_pair
 
 theorem unpair_add_le (n : ℕ) : (unpair n).1 + (unpair n).2 ≤ n :=
@@ -198,8 +196,6 @@ end CompleteLattice
 
 namespace Set
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
 theorem iUnion_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
     ⋃ n : ℕ, s n.unpair.fst ×ˢ t n.unpair.snd = (⋃ n, s n) ×ˢ ⋃ n, t n := by
   rw [← Set.iUnion_prod]

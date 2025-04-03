@@ -17,8 +17,6 @@ files under `Mathlib.Data.Option`.
 Other basic operations on `Option` are defined in the core library.
 -/
 
-set_option autoImplicit true
-
 namespace Option
 
 #align option.lift_or_get Option.liftOrGet
@@ -36,7 +34,8 @@ protected def traverse.{u, v}
 #align option.mmap Option.mapM
 #align option.melim Option.elimM
 
-@[deprecated getDM]
+set_option autoImplicit true in
+@[deprecated getDM (since := "2023-03-09")]
 protected def getDM' [Monad m] (x : m (Option α)) (y : m α) : m α := do
   (← x).getDM y
 #align option.mget_or_else Option.getDM'
@@ -55,7 +54,7 @@ protected def elim' (b : β) (f : α → β) : Option α → β
 @[simp]
 theorem elim'_none (b : β) (f : α → β) : Option.elim' b f none = b := rfl
 @[simp]
-theorem elim'_some (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
+theorem elim'_some {a : α} (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
 
 -- Porting note: this lemma was introduced because it is necessary
 -- in `CategoryTheory.Category.PartialFun`
@@ -89,8 +88,7 @@ instance decidableExistsMem {p : α → Prop} [DecidablePred p] :
   | some a => if h : p a then isTrue <| ⟨_, rfl, h⟩ else isFalse fun ⟨_, ⟨rfl, hn⟩⟩ ↦ h hn
 
 /-- Inhabited `get` function. Returns `a` if the input is `some a`, otherwise returns `default`. -/
-@[reducible]
-def iget [Inhabited α] : Option α → α
+abbrev iget [Inhabited α] : Option α → α
   | some x => x
   | none => default
 #align option.iget Option.iget

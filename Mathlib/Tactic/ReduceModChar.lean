@@ -44,7 +44,7 @@ namespace ReduceModChar
 
 open Mathlib.Meta.NormNum
 
-lemma CharP.cast_int_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ) :
+lemma CharP.intCast_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ) :
     (k : R) = (k % p : ℤ) := by
   calc
     (k : R) = ↑(k % p + p * (k / p)) := by rw [Int.emod_add_ediv]
@@ -52,7 +52,7 @@ lemma CharP.cast_int_eq_mod (R : Type _) [Ring R] (p : ℕ) [CharP R p] (k : ℤ
 
 lemma CharP.isInt_of_mod {α : Type _} [Ring α] {n n' : ℕ} (inst : CharP α n) {e : α}
     (he : IsInt e e') (hn : IsNat n n') (h₂ : IsInt (e' % n') r) : IsInt e r :=
-  ⟨by rw [he.out, CharP.cast_int_eq_mod α n, show n = n' from hn.out, h₂.out, Int.cast_id]⟩
+  ⟨by rw [he.out, CharP.intCast_eq_mod α n, show n = n' from hn.out, h₂.out, Int.cast_id]⟩
 
 /-- Given an integral expression `e : t` such that `t` is a ring of characteristic `n`,
 reduce `e` modulo `n`. -/
@@ -61,8 +61,8 @@ partial def normIntNumeral {α : Q(Type u)} (n : Q(ℕ)) (e : Q($α)) (instRing 
   let ⟨ze, ne, pe⟩ ← Result.toInt instRing (← Mathlib.Meta.NormNum.derive e)
   let ⟨n', pn⟩ ← deriveNat n q(instAddMonoidWithOneNat)
   let rr ← evalIntMod.go _ _ ze q(IsInt.raw_refl $ne) _ <|
-    .isNat q(instAddMonoidWithOne) _ q(isNat_cast _ _ (IsNat.raw_refl $n'))
-  let ⟨zr, nr, pr⟩ ← rr.toInt q(Int.instRingInt)
+    .isNat q(instAddMonoidWithOne) _ q(isNat_natCast _ _ (IsNat.raw_refl $n'))
+  let ⟨zr, nr, pr⟩ ← rr.toInt q(Int.instRing)
   return .isInt instRing nr zr q(CharP.isInt_of_mod $instCharP $pe $pn $pr)
 
 lemma CharP.neg_eq_sub_one_mul {α : Type _} [Ring α] (n : ℕ) (inst : CharP α n) (b : α)

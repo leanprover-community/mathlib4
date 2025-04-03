@@ -51,10 +51,6 @@ when the module lives in a lower universe.
 
 ## TODO
 
-* Show that flatness is stable under base change (aka extension of scalars)
-  Using the `IsBaseChange` predicate should allow us to treat both
-  `A[X]` and `A ⊗ R[X]` as the base change of `R[X]` to `A`.
-  (Similar examples exist with `Fin n → R`, `R × R`, `ℤ[i] ⊗ ℝ`, etc...)
 * Generalize flatness to noncommutative rings.
 
 -/
@@ -112,12 +108,12 @@ theorem iff_rTensor_injective' :
 @[deprecated]
 alias lTensor_inj_iff_rTensor_inj := LinearMap.lTensor_inj_iff_rTensor_inj
 
-/-- The `lTensor`-variant of `iff_rTensor_injective`. .-/
+/-- The `lTensor`-variant of `iff_rTensor_injective`. . -/
 theorem iff_lTensor_injective :
     Module.Flat R M ↔ ∀ ⦃I : Ideal R⦄ (_ : I.FG), Function.Injective (lTensor M I.subtype) := by
   simpa [← comm_comp_rTensor_comp_comm_eq] using Module.Flat.iff_rTensor_injective R M
 
-/-- The `lTensor`-variant of `iff_rTensor_injective'`. .-/
+/-- The `lTensor`-variant of `iff_rTensor_injective'`. . -/
 theorem iff_lTensor_injective' :
     Module.Flat R M ↔ ∀ (I : Ideal R), Function.Injective (lTensor M I.subtype) := by
   simpa [← comm_comp_rTensor_comp_comm_eq] using Module.Flat.iff_rTensor_injective' R M
@@ -158,9 +154,9 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
   letI : ∀ i, AddCommGroup (I ⊗[R] M i) := inferInstance
   rw [← Equiv.comp_injective _ (TensorProduct.lid R (⨁ i, M i)).toEquiv]
   set η₁ := TensorProduct.lid R (⨁ i, M i)
-  set η := (fun i ↦ TensorProduct.lid R (M i))
-  set φ := (fun i ↦ rTensor (M i) I.subtype)
-  set π := (fun i ↦ component R ι (fun j ↦ M j) i)
+  set η := fun i ↦ TensorProduct.lid R (M i)
+  set φ := fun i ↦ rTensor (M i) I.subtype
+  set π := fun i ↦ component R ι (fun j ↦ M j) i
   set ψ := (TensorProduct.directSumRight R {x // x ∈ I} (fun i ↦ M i)).symm.toLinearMap with psi_def
   set ρ := rTensor (⨁ i, M i) I.subtype
   set τ := (fun i ↦ component R ι (fun j ↦ ({x // x ∈ I} ⊗[R] (M j))) i)
@@ -184,7 +180,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
   have f := LinearMap.congr_arg (f := (π i)) ha
   erw [LinearMap.congr_fun (h₁ i) a] at f
   rw [(map_zero (π i) : (π i) 0 = (0 : M i))] at f
-  have h₂ := (F i)
+  have h₂ := F i
   rw [iff_rTensor_injective] at h₂
   have h₃ := h₂ hI
   simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, AddEquivClass.map_eq_zero_iff,
@@ -228,7 +224,7 @@ theorem iff_characterModule_baer : Flat R M ↔ Module.Baer R (CharacterModule M
   simp_rw [iff_rTensor_injective', Baer, rTensor_injective_iff_lcomp_surjective,
     Surjective, DFunLike.ext_iff, Subtype.forall]; rfl
 
-/-- `CharacterModule M` is an injective module iff `M` is flat.-/
+/-- `CharacterModule M` is an injective module iff `M` is flat. -/
 theorem iff_characterModule_injective [Small.{v} R] :
     Flat R M ↔ Module.Injective R (CharacterModule M) :=
   iff_characterModule_baer.trans Module.Baer.iff_injective

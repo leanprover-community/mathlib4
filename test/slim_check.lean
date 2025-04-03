@@ -1,8 +1,10 @@
+import Mathlib.Algebra.Group.Fin
 import Mathlib.Tactic.SlimCheck
 import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Data.Finsupp.Notation
 import Mathlib.Testing.SlimCheck.Functions
 import Mathlib.Tactic.Have
+import Mathlib.Data.Nat.Prime
 
 private axiom test_sorry : ∀ {α}, α
 
@@ -179,7 +181,7 @@ f := [-2 ↦ 8, -3 ↦ -5, -5 ↦ -3, 8 ↦ -2, x ↦ x]
 guard: ⋯ (by construction)
 x := -2
 y := 0
-guard: ⋯
+guard: -2 ≤ 0
 issue: 8 ≤ 0 does not hold
 (7 shrinks)
 -------------------
@@ -215,7 +217,7 @@ Found problems!
 f := [-2 ↦ 5, -4 ↦ 1, _ ↦ -1]
 x := -2
 y := 0
-guard: ⋯
+guard: -2 ≤ 0
 issue: 5 ≤ -1 does not hold
 (5 shrinks)
 -------------------
@@ -317,7 +319,7 @@ example (x y : Prop) : true := by
 Found problems!
 x := false
 y := true
-guard: ¬false ↔ true
+guard: false ≠ true ↔ true
 issue: false does not hold
 (0 shrinks)
 -------------------
@@ -381,7 +383,7 @@ issue: true ≠ true does not hold
   trivial
 
 -- TODO: fails without this line!
-attribute [-instance] Finsupp.instReprFinsupp in
+attribute [-instance] Finsupp.instRepr in
 
 example (f : ℕ →₀ ℕ) : true := by
   have : f = 0 := by
@@ -413,7 +415,6 @@ issue: ⋯ does not hold
     exact test_sorry
   trivial
 
-open scoped BigOperators in
 example (n : ℕ) : true := by
   have : ∑ f : Unit → Fin (n + 1), f () = 0 := by
     success_if_fail_with_msg "
@@ -429,7 +430,6 @@ issue: 1 = 0 does not hold
   trivial
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/slim_check.20question/near/412709012
-open scoped BigOperators in
 /--
 info: Success
 ---
@@ -437,7 +437,7 @@ warning: declaration uses 'sorry'
 -/
 #guard_msgs in
 example (q : ℕ) : q = 0 ∨ q ≥ 2 ∨
-    8 = ∑ k in Finset.range 2, 5 ^ k * Nat.choose (2 * q + 1) (2 * k + 1) := by
+    8 = ∑ k ∈ Finset.range 2, 5 ^ k * Nat.choose (2 * q + 1) (2 * k + 1) := by
   slim_check
 
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/slim_check.20giving.20wrong.20counterexamples.3F/near/420008365
@@ -452,3 +452,20 @@ theorem testBit_pred :
     testBit (pred x) i = (decide (0 < x) &&
       (Bool.xor ((List.range i).all fun j => ! testBit x j) (testBit x i))) := by
   slim_check
+
+-- https://github.com/leanprover-community/mathlib4/issues/12565
+-- Make `slim_check` handle `Fact` instances.
+/--
+error:
+===================
+Found problems!
+a := 7
+guard: ⋯
+issue: ⋯ does not hold
+issue: ⋯ does not hold
+(0 shrinks)
+-------------------
+-/
+#guard_msgs in
+example {a : ℕ} [Fact a.Prime] : (a + 1).Prime ∨ (a + 2).Prime := by
+  slim_check (config := { randomSeed := some 257 })

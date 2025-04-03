@@ -19,7 +19,7 @@ squarefree as a corollary of the Marica-Schönheim inequality.
 -/
 
 open Finset
-open scoped BigOperators FinsetFamily
+open scoped FinsetFamily
 
 namespace Nat
 
@@ -42,7 +42,7 @@ lemma grahamConjecture_of_squarefree {n : ℕ} (f : ℕ → ℕ) (hf' : ∀ k < 
   calc
     n = 𝒜.card := ?_
     _ ≤ (𝒜 \\ 𝒜).card := 𝒜.card_le_card_diffs
-    _ ≤ (Ioo 0 n).card := card_le_card_of_inj_on (fun s ↦ ∏ p in s, p) ?_ ?_
+    _ ≤ (Ioo 0 n).card := card_le_card_of_inj_on (fun s ↦ ∏ p ∈ s, p) ?_ ?_
     _ = n - 1 := by rw [card_Ioo, tsub_zero]
     _ < n := tsub_lt_self hn.bot_lt zero_lt_one
   · rw [Finset.card_image_of_injOn, card_Iio]

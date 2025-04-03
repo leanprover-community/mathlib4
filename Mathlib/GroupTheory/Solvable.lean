@@ -137,7 +137,7 @@ theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G'
     IsSolvable G := by
   obtain ⟨n, hn⟩ := id hG''
   obtain ⟨m, hm⟩ := id hG'
-  refine' ⟨⟨n + m, le_bot_iff.mp (Subgroup.map_bot f ▸ hm ▸ _)⟩⟩
+  refine ⟨⟨n + m, le_bot_iff.mp (Subgroup.map_bot f ▸ hm ▸ ?_)⟩⟩
   clear hm
   induction' m with m hm
   · exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp
@@ -188,7 +188,7 @@ theorem IsSimpleGroup.comm_iff_isSolvable : (∀ a b : G, a * b = b * a) ↔ IsS
   ⟨isSolvable_of_comm, fun ⟨⟨n, hn⟩⟩ => by
     cases n
     · intro a b
-      refine' (mem_bot.1 _).trans (mem_bot.1 _).symm <;>
+      refine (mem_bot.1 ?_).trans (mem_bot.1 ?_).symm <;>
         · rw [← hn]
           exact mem_top _
     · rw [IsSimpleGroup.derivedSeries_succ] at hn
@@ -213,7 +213,7 @@ theorem Equiv.Perm.fin_5_not_solvable : ¬IsSolvable (Equiv.Perm (Fin 5)) := by
   let y : Equiv.Perm (Fin 5) := ⟨![3, 4, 2, 0, 1], ![3, 4, 2, 0, 1], by decide, by decide⟩
   let z : Equiv.Perm (Fin 5) := ⟨![0, 3, 2, 1, 4], ![0, 3, 2, 1, 4], by decide, by decide⟩
   have key : x = z * ⁅x, y * x * y⁻¹⁆ * z⁻¹ := by decide
-  refine' not_solvable_of_mem_derivedSeries (show x ≠ 1 by decide) fun n => _
+  refine not_solvable_of_mem_derivedSeries (show x ≠ 1 by decide) fun n => ?_
   induction' n with n ih
   · exact mem_top x
   · rw [key, (derivedSeries_normal _ _).mem_comm_iff, inv_mul_cancel_left]

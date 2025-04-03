@@ -115,4 +115,23 @@ example {α β : Type} (f g : α ⟶ β) (w : f ≫ 𝟙 β = g) (a : α) : f a 
   guard_hyp w : ∀ (x : α), f x = g x
   rw [w]
 
+variable {C : Type*} [Category C]
+
+def f (X : C) : X ⟶ X := 𝟙 X
+def g (X : C) : X ⟶ X := 𝟙 X
+def h (X : C) : X ⟶ X := 𝟙 X
+
+lemma gh (X : C) : g X = h X := rfl
+
+@[elementwise]
+theorem fh (X : C) : f X = h X := gh X
+
+variable (X : C) [ConcreteCategory C] (x : X)
+
+-- Prior to https://github.com/leanprover-community/mathlib4/pull/13413 this would produce
+-- `fh_apply X x : (g X) x = (h X) x`.
+/-- info: fh_apply X x : (f X) x = (h X) x -/
+#guard_msgs in
+#check fh_apply X x
+
 end ElementwiseTest

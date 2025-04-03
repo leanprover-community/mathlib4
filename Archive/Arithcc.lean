@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xi Wang
 -/
 import Mathlib.Init.Data.Nat.Lemmas
+import Mathlib.Data.Nat.Defs
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
 
@@ -53,20 +54,17 @@ section Types
 
 
 /-- Value type shared by both source and target languages. -/
-@[reducible]
-def Word :=
+abbrev Word :=
   ℕ
 #align arithcc.word Arithcc.Word
 
 /-- Variable identifier type in the source language. -/
-@[reducible]
-def Identifier :=
+abbrev Identifier :=
   String
 #align arithcc.identifier Arithcc.Identifier
 
 /-- Register name type in the target language. -/
-@[reducible]
-def Register :=
+abbrev Register :=
   ℕ
 #align arithcc.register Arithcc.Register
 

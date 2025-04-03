@@ -163,13 +163,13 @@ set_option linter.uppercaseLean3 false in
 #align Action.mk_iso Action.mkIso
 
 instance (priority := 100) isIso_of_hom_isIso {M N : Action V G} (f : M ⟶ N) [IsIso f.hom] :
-    IsIso f := IsIso.of_iso (mkIso (asIso f.hom) f.comm)
+    IsIso f := (mkIso (asIso f.hom) f.comm).isIso_hom
 set_option linter.uppercaseLean3 false in
 #align Action.is_iso_of_hom_is_iso Action.isIso_of_hom_isIso
 
 instance isIso_hom_mk {M N : Action V G} (f : M.V ⟶ N.V) [IsIso f] (w) :
     @IsIso _ _ M N (Hom.mk f w) :=
-  IsIso.of_iso (mkIso (asIso f) w)
+  (mkIso (asIso f) w).isIso_hom
 set_option linter.uppercaseLean3 false in
 #align Action.is_iso_hom_mk Action.isIso_hom_mk
 
@@ -273,7 +273,7 @@ def forget : Action V G ⥤ V where
 set_option linter.uppercaseLean3 false in
 #align Action.forget Action.forget
 
-instance : Faithful (forget V G) where map_injective w := Hom.ext _ _ w
+instance : (forget V G).Faithful where map_injective w := Hom.ext _ _ w
 
 instance [ConcreteCategory V] : ConcreteCategory (Action V G) where
   forget := forget V G ⋙ ConcreteCategory.forget
@@ -302,8 +302,8 @@ noncomputable instance instPreservesColimitsForget [HasColimits V] :
 end Forget
 
 theorem Iso.conj_ρ {M N : Action V G} (f : M ≅ N) (g : G) :
-    N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) :=
-      by rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
+    N.ρ g = ((forget V G).mapIso f).conj (M.ρ g) := by
+      rw [Iso.conj_apply, Iso.eq_inv_comp]; simp [f.hom.comm]
 set_option linter.uppercaseLean3 false in
 #align Action.iso.conj_ρ Action.Iso.conj_ρ
 

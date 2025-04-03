@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.MonCat.Limits
+import Mathlib.Algebra.Category.GroupCat.ForgetCorepresentable
 import Mathlib.Algebra.Category.GroupCat.Preadditive
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Limits.ConcreteCategory
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
-import Mathlib.GroupTheory.Subgroup.Basic
 
 #align_import algebra.category.Group.limits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -60,6 +62,8 @@ set_option linter.uppercaseLean3 false in
 instance sectionsGroup : Group (F ⋙ forget GroupCat.{u}).sections :=
   (sectionsSubgroup F).toGroup
 
+section
+
 variable [Small.{u} (Functor.sections (F ⋙ forget GroupCat))]
 
 @[to_additive]
@@ -86,7 +90,7 @@ reuse the existing limit."]
 noncomputable instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ GroupCat.{u} MonCat.{u}) :=
   -- Porting note: need to add `forget₂ GrpCat MonCat` reflects isomorphism
-  letI : ReflectsIsomorphisms (forget₂ GroupCat.{u} MonCat.{u}) :=
+  letI : (forget₂ GroupCat.{u} MonCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   createsLimitOfReflectsIso (K := F) (F := (forget₂ GroupCat.{u} MonCat.{u}))
     fun c' t =>
@@ -138,13 +142,27 @@ instance hasLimit : HasLimit F :=
     isLimit := limitConeIsLimit F
   }
 
+end
+
+/-- A functor `F : J ⥤ GroupCat.{u}` has a limit iff `(F ⋙ forget GroupCat).sections` is
+`u`-small.  -/
+@[to_additive "A functor `F : J ⥤ AddGroupCat.{u}` has a limit iff
+`(F ⋙ forget AddGroupCat).sections` is `u`-small."]
+lemma hasLimit_iff_small_sections :
+    HasLimit F ↔ Small.{u} (F ⋙ forget GroupCat).sections := by
+  constructor
+  · apply Concrete.small_sections_of_hasLimit
+  · intro
+    infer_instance
+
 /-- If `J` is `u`-small, `GroupCat.{u}` has limits of shape `J`. -/
 @[to_additive "If `J` is `u`-small, `AddGroupCat.{u}` has limits of shape `J`."]
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J GroupCat.{u} where
   has_limit _ := inferInstance
 
 /-- The category of groups has all limits. -/
-@[to_additive "The category of additive groups has all limits."]
+@[to_additive "The category of additive groups has all limits.",
+  to_additive_relevant_arg 2]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} GroupCat.{u} where
   has_limits_of_shape J _ := { }
 set_option linter.uppercaseLean3 false in
@@ -203,9 +221,8 @@ This means the underlying type of a limit can be computed as a limit in the cate
 
   This means the underlying type of a limit can be computed as a limit in the category of types.",
   to_additive_relevant_arg 2]
-noncomputable instance forgetPreservesLimitsOfSize [UnivLE.{v, u}] :
-    PreservesLimitsOfSize.{w, v} (forget GroupCat.{u})
-  where preservesLimitsOfShape {J _} := { }
+noncomputable instance forgetPreservesLimitsOfSize :
+    PreservesLimitsOfSize.{w, v} (forget GroupCat.{u}) := inferInstance
 set_option linter.uppercaseLean3 false in
 #align Group.forget_preserves_limits_of_size GroupCat.forgetPreservesLimitsOfSize
 set_option linter.uppercaseLean3 false in
@@ -233,10 +250,9 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.add_comm_group_obj AddCommGroupCat.addCommGroupObj
 
-variable [Small.{u} (Functor.sections (F ⋙ forget CommGroupCat))]
-
 @[to_additive]
-noncomputable instance limitCommGroup :
+noncomputable instance limitCommGroup
+    [Small.{u} (Functor.sections (F ⋙ forget CommGroupCat))] :
     CommGroup (Types.Small.limitCone.{v, u} (F ⋙ forget CommGroupCat.{u})).pt :=
   letI : CommGroup (F ⋙ forget CommGroupCat.{u}).sections :=
     @Subgroup.toCommGroup (∀ j, F.obj j) _
@@ -246,6 +262,10 @@ set_option linter.uppercaseLean3 false in
 #align CommGroup.limit_comm_group CommGroupCat.limitCommGroup
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.limit_add_comm_group AddCommGroupCat.limitAddCommGroup
+
+@[to_additive]
+instance : (forget₂ CommGroupCat.{u} GroupCat.{u}).ReflectsIsomorphisms :=
+    reflectsIsomorphisms_forget₂ _ _
 
 /-- We show that the forgetful functor `CommGroupCat ⥤ GroupCat` creates limits.
 
@@ -258,29 +278,32 @@ and then reuse the existing limit.
   and then reuse the existing limit."]
 noncomputable instance Forget₂.createsLimit :
     CreatesLimit F (forget₂ CommGroupCat GroupCat.{u}) :=
-  letI : ReflectsIsomorphisms (forget₂ CommGroupCat.{u} GroupCat.{u}) :=
-    CategoryTheory.reflectsIsomorphisms_forget₂ _ _
-  letI : Small.{u}
-      (Functor.sections ((F ⋙ forget₂ CommGroupCat GroupCat) ⋙ forget GroupCat)) :=
-    inferInstanceAs <| Small (Functor.sections (F ⋙ forget CommGroupCat))
-  letI : Small.{u}
-      (Functor.sections ((F ⋙ forget₂ _ GroupCat ⋙ forget₂ _ MonCat) ⋙ forget MonCat)) :=
-    inferInstanceAs <| Small (Functor.sections (F ⋙ forget CommGroupCat))
-  createsLimitOfReflectsIso fun c' t =>
-    { liftedCone :=
-        { pt := CommGroupCat.of (Types.Small.limitCone.{v, u} (F ⋙ forget CommGroupCat)).pt
-          π :=
-            { app := MonCat.limitπMonoidHom
-                (F ⋙ forget₂ CommGroupCat GroupCat.{u} ⋙ forget₂ GroupCat MonCat.{u})
-              naturality := (MonCat.HasLimits.limitCone _).π.naturality } }
-      validLift := by apply IsLimit.uniqueUpToIso (GroupCat.limitConeIsLimit _) t
-      makesLimit :=
-        IsLimit.ofFaithful (forget₂ _ GroupCat.{u} ⋙ forget₂ _ MonCat.{u})
-          (by apply MonCat.HasLimits.limitConeIsLimit _) (fun s => _) fun s => rfl }
+  createsLimitOfReflectsIso (fun c hc => by
+    have : HasLimit _ := ⟨_, hc⟩
+    have : Small.{u} (F ⋙ forget CommGroupCat).sections :=
+      Concrete.small_sections_of_hasLimit (F ⋙ forget₂ CommGroupCat GroupCat)
+    have : Small.{u} ((F ⋙ forget₂ CommGroupCat GroupCat ⋙ forget₂ GroupCat MonCat) ⋙
+      forget MonCat).sections := this
+    have : Small.{u} ((F ⋙ forget₂ CommGroupCat GroupCat) ⋙ forget GroupCat).sections := this
+    exact
+      { liftedCone :=
+          { pt := CommGroupCat.of (Types.Small.limitCone.{v, u} (F ⋙ forget CommGroupCat)).pt
+            π :=
+              { app := MonCat.limitπMonoidHom
+                  (F ⋙ forget₂ CommGroupCat GroupCat.{u} ⋙ forget₂ GroupCat MonCat.{u})
+                naturality := (MonCat.HasLimits.limitCone _).π.naturality } }
+        validLift := by apply IsLimit.uniqueUpToIso (GroupCat.limitConeIsLimit _) hc
+        makesLimit :=
+          IsLimit.ofFaithful (forget₂ _ GroupCat.{u} ⋙ forget₂ _ MonCat.{u})
+            (by apply MonCat.HasLimits.limitConeIsLimit _) (fun s => _) fun s => rfl })
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget₂.creates_limit CommGroupCat.Forget₂.createsLimit
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.forget₂.creates_limit AddCommGroupCat.Forget₂.createsLimit
+
+section
+
+variable [Small.{u} (Functor.sections (F ⋙ forget CommGroupCat))]
 
 /-- A choice of limit cone for a functor into `CommGroupCat`.
 (Generally, you'll just want to use `limit F`.)
@@ -318,13 +341,27 @@ instance hasLimit : HasLimit F :=
     isLimit := limitConeIsLimit F
   }
 
+end
+
+/-- A functor `F : J ⥤ CommGroupCat.{u}` has a limit iff `(F ⋙ forget CommGroupCat).sections` is
+`u`-small.  -/
+@[to_additive "A functor `F : J ⥤ AddCommGroupCat.{u}` has a limit iff
+`(F ⋙ forget AddCommGroupCat).sections` is `u`-small."]
+lemma hasLimit_iff_small_sections :
+    HasLimit F ↔ Small.{u} (F ⋙ forget CommGroupCat).sections := by
+  constructor
+  · apply Concrete.small_sections_of_hasLimit
+  · intro
+    infer_instance
+
 /-- If `J` is `u`-small, `CommGroupCat.{u}` has limits of shape `J`. -/
 @[to_additive "If `J` is `u`-small, `AddCommGroupCat.{u}` has limits of shape `J`."]
 instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommGroupCat.{u} where
   has_limit _ := inferInstance
 
 /-- The category of commutative groups has all limits. -/
-@[to_additive "The category of additive commutative groups has all limits."]
+@[to_additive "The category of additive commutative groups has all limits.",
+  to_additive_relevant_arg 2]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommGroupCat.{u}
   where has_limits_of_shape _ _ := { }
 set_option linter.uppercaseLean3 false in
@@ -340,18 +377,32 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.has_limits AddCommGroupCat.hasLimits
 
+@[to_additive]
+noncomputable instance forget₂GroupPreservesLimit :
+    PreservesLimit F (forget₂ CommGroupCat.{u} GroupCat.{u}) where
+  preserves {c} hc := by
+    have : HasLimit (F ⋙ forget₂ CommGroupCat GroupCat) := by
+      rw [GroupCat.hasLimit_iff_small_sections]
+      change Small.{u} (F ⋙ forget CommGroupCat).sections
+      rw [← CommGroupCat.hasLimit_iff_small_sections]
+      exact ⟨_, hc⟩
+    exact isLimitOfPreserves _ hc
+
+@[to_additive]
+noncomputable instance forget₂GroupPreservesLimitsOfShape :
+    PreservesLimitsOfShape J (forget₂ CommGroupCat.{u} GroupCat.{u}) where
+
 /-- The forgetful functor from commutative groups to groups preserves all limits.
 (That is, the underlying group could have been computed instead as limits in the category
 of groups.)
 -/
 @[to_additive
-  "The forgetful functor from additive commutative groups to groups preserves all limits.
+  "The forgetful functor from additive commutative groups to additive groups preserves all limits.
   (That is, the underlying group could have been computed instead as limits in the category
     of additive groups.)",
   to_additive_relevant_arg 2]
-noncomputable instance forget₂GroupPreservesLimitsOfSize [UnivLE.{v, u}] :
+noncomputable instance forget₂GroupPreservesLimitsOfSize :
     PreservesLimitsOfSize.{w, v} (forget₂ CommGroupCat.{u} GroupCat.{u}) where
-  preservesLimitsOfShape {J 𝒥} := { }
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget₂_Group_preserves_limits_of_size CommGroupCat.forget₂GroupPreservesLimitsOfSize
 set_option linter.uppercaseLean3 false in
@@ -370,7 +421,8 @@ set_option linter.uppercaseLean3 false in
 -/
 @[to_additive AddCommGroupCat.forget₂AddCommMonPreservesLimitsAux
   "An auxiliary declaration to speed up typechecking."]
-noncomputable def forget₂CommMonPreservesLimitsAux :
+noncomputable def forget₂CommMonPreservesLimitsAux
+    [Small.{u} (F ⋙ forget CommGroupCat).sections] :
     IsLimit ((forget₂ CommGroupCat.{u} CommMonCat.{u}).mapCone (limitCone.{v, u} F)) :=
   letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ CommMonCat) ⋙ forget CommMonCat)) :=
     inferInstanceAs <| Small (Functor.sections (F ⋙ forget CommGroupCat))
@@ -422,9 +474,8 @@ underlying types could have been computed instead as limits in the category of t
   "The forgetful functor from additive commutative groups to types preserves all limits.
   (That is, the underlying types could have been computed instead as limits in the category of
   types.)"]
-noncomputable instance forgetPreservesLimitsOfSize [UnivLE.{v, u}] :
-    PreservesLimitsOfSize.{w, v} (forget CommGroupCat.{u}) where
-  preservesLimitsOfShape {_ _} := { }
+noncomputable instance forgetPreservesLimitsOfSize :
+    PreservesLimitsOfSize.{w, v} (forget CommGroupCat.{u}) := inferInstance
 set_option linter.uppercaseLean3 false in
 #align CommGroup.forget_preserves_limits_of_size CommGroupCat.forgetPreservesLimitsOfSize
 set_option linter.uppercaseLean3 false in
@@ -471,18 +522,14 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     refine equalizer.hom_ext ?_
     ext x
     dsimp
-    generalize_proofs _ h1 h2
-    erw [DFunLike.congr_fun (kernel.lift_ι f _ h1) ⟨_, h2⟩]
-    rfl
+    apply DFunLike.congr_fun (kernel.lift_ι f _ _)
   inv_hom_id := by
     apply AddCommGroupCat.ext
     simp only [AddMonoidHom.coe_mk, coe_id, coe_comp]
     rintro ⟨x, mem⟩
     refine Subtype.ext ?_
     simp only [ZeroHom.coe_mk, Function.comp_apply, id_eq]
-    generalize_proofs _ h1 h2
-    erw [DFunLike.congr_fun (kernel.lift_ι f _ h1) ⟨_, mem⟩]
-    rfl
+    apply DFunLike.congr_fun (kernel.lift_ι f _ _)
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker AddCommGroupCat.kernelIsoKer
 
@@ -503,7 +550,7 @@ set_option linter.uppercaseLean3 false in
 -- Porting note: explicitly add what to be synthesized under `simps!`, because other lemmas
 -- automatically generated is not in normal form
 /-- The categorical kernel inclusion for `f : G ⟶ H`, as an object over `G`,
-agrees with the `subtype` map.
+agrees with the `AddSubgroup.subtype` map.
 -/
 @[simps! hom_left_apply_coe inv_left_apply]
 def kernelIsoKerOver {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :

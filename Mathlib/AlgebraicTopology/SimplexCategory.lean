@@ -89,7 +89,7 @@ protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F [n]) : ∀
   h n.len
 #align simplex_category.rec SimplexCategory.rec
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- Morphisms in the `SimplexCategory`. -/
 protected def Hom (a b : SimplexCategory) :=
   Fin (a.len + 1) →o Fin (b.len + 1)
@@ -215,7 +215,7 @@ one given by the following generators and relations.
 
 /-- The `i`-th face map from `[n]` to `[n+1]` -/
 def δ {n} (i : Fin (n + 2)) : ([n] : SimplexCategory) ⟶ [n + 1] :=
-  mkHom (Fin.succAboveEmb i).toOrderHom
+  mkHom (Fin.succAboveOrderEmb i).toOrderHom
 #align simplex_category.δ SimplexCategory.δ
 
 /-- The `i`-th degeneracy map from `[n+1]` to `[n]` -/
@@ -463,15 +463,15 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
 
 namespace SkeletalFunctor
 
-instance : Full skeletalFunctor where
-  preimage f := SimplexCategory.Hom.mk f
+instance : skeletalFunctor.Full where
+  map_surjective f := ⟨SimplexCategory.Hom.mk f, rfl⟩
 
-instance : Faithful skeletalFunctor where
+instance : skeletalFunctor.Faithful where
   map_injective {_ _ f g} h := by
     ext1
     exact h
 
-instance : EssSurj skeletalFunctor where
+instance : skeletalFunctor.EssSurj where
   mem_essImage X :=
     ⟨mk (Fintype.card X - 1 : ℕ),
       ⟨by
@@ -479,9 +479,9 @@ instance : EssSurj skeletalFunctor where
           (Nat.succ_pred_eq_of_pos <| Fintype.card_pos_iff.mpr ⟨⊥⟩).symm
         let f := monoEquivOfFin X aux
         have hf := (Finset.univ.orderEmbOfFin aux).strictMono
-        refine'
+        refine
           { hom := ⟨f, hf.monotone⟩
-            inv := ⟨f.symm, _⟩
+            inv := ⟨f.symm, ?_⟩
             hom_inv_id := by ext1; apply f.symm_apply_apply
             inv_hom_id := by ext1; apply f.apply_symm_apply }
         intro i j h
@@ -490,8 +490,7 @@ instance : EssSurj skeletalFunctor where
         show f (f.symm i) ≤ f (f.symm j)
         simpa only [OrderIso.apply_symm_apply]⟩⟩
 
-noncomputable instance isEquivalence : IsEquivalence skeletalFunctor :=
-  Equivalence.ofFullyFaithfullyEssSurj skeletalFunctor
+noncomputable instance isEquivalence : skeletalFunctor.IsEquivalence where
 #align simplex_category.skeletal_functor.is_equivalence SimplexCategory.SkeletalFunctor.isEquivalence
 
 end SkeletalFunctor
@@ -506,7 +505,7 @@ end Skeleton
 
 /-- `SimplexCategory` is a skeleton of `NonemptyFinLinOrd`.
 -/
-noncomputable def isSkeletonOf :
+lemma isSkeletonOf :
     IsSkeletonOf NonemptyFinLinOrd SimplexCategory skeletalFunctor where
   skel := skeletal
   eqv := SkeletalFunctor.isEquivalence
@@ -532,8 +531,8 @@ def inclusion {n : ℕ} : SimplexCategory.Truncated n ⥤ SimplexCategory :=
   fullSubcategoryInclusion _
 #align simplex_category.truncated.inclusion SimplexCategory.Truncated.inclusion
 
-instance (n : ℕ) : Full (inclusion : Truncated n ⥤ _) := FullSubcategory.full _
-instance (n : ℕ) : Faithful (inclusion : Truncated n ⥤ _) := FullSubcategory.faithful _
+instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Full := FullSubcategory.full _
+instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
 
 end Truncated
 
@@ -613,9 +612,9 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
     rw [Fin.lt_iff_val_lt_val] at h ⊢
     simpa only [Fin.val_succ, Fin.coe_castSucc] using Nat.lt.step h
 
-instance : ReflectsIsomorphisms (forget SimplexCategory) :=
+instance : (forget SimplexCategory).ReflectsIsomorphisms :=
   ⟨fun f hf =>
-    IsIso.of_iso
+    Iso.isIso_hom
       { hom := f
         inv := Hom.mk
             { toFun := inv ((forget SimplexCategory).map f)
@@ -726,7 +725,7 @@ theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (
     rcases hθ with ⟨x, y, ⟨h₁, h₂⟩⟩
     by_cases h : x < y
     · exact ⟨x, y, ⟨h₁, h⟩⟩
-    · refine' ⟨y, x, ⟨h₁.symm, _⟩⟩
+    · refine ⟨y, x, ⟨h₁.symm, ?_⟩⟩
       rcases lt_or_eq_of_le (not_lt.mp h) with h' | h'
       · exact h'
       · exfalso
@@ -761,8 +760,8 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
       dsimp [σ, δ]
       erw [Fin.predAbove_of_castSucc_lt _ _ (by rwa [Fin.castSucc_castPred])]
       rw [Fin.succAbove_of_le_castSucc i _]
-      erw [Fin.succ_pred]
-      exact Nat.le_sub_one_of_lt (Fin.lt_iff_val_lt_val.mp h')
+      · erw [Fin.succ_pred]
+      · exact Nat.le_sub_one_of_lt (Fin.lt_iff_val_lt_val.mp h')
   · obtain rfl := le_antisymm (Fin.le_last i) (not_lt.mp h)
     use θ ≫ σ (Fin.last _)
     ext x : 3

@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 
 import Mathlib.Algebra.Homology.HomotopyCofiber
-import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.CategoryTheory.Localization.HasLocalization
+import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.CategoryTheory.Localization.Composition
+import Mathlib.CategoryTheory.Localization.HasLocalization
 
 /-! The category of homological complexes up to quasi-isomorphisms
 
@@ -46,9 +46,9 @@ variable (C c)
 
 lemma HomologicalComplex.homologyFunctor_inverts_quasiIso (i : ι) :
     (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => by
-      rw [mem_quasiIso_iff] at hf
-      dsimp
-      infer_instance
+  rw [mem_quasiIso_iff] at hf
+  dsimp
+  infer_instance
 
 namespace HomologicalComplexUpToQuasiIso
 
@@ -71,7 +71,7 @@ lemma isIso_Q_map_iff_mem_quasiIso {K L : HomologicalComplex C c} (f : K ⟶ L) 
     rw [HomologicalComplex.mem_quasiIso_iff, quasiIso_iff]
     intro i
     rw [quasiIsoAt_iff_isIso_homologyMap]
-    refine' (NatIso.isIso_map_iff (homologyFunctorFactors C c i) f).1 _
+    refine (NatIso.isIso_map_iff (homologyFunctorFactors C c i) f).1 ?_
     dsimp
     infer_instance
   · intro h
@@ -89,9 +89,9 @@ variable (C : Type*) [Category C] {ι : Type*} (c : ComplexShape ι) [Preadditiv
 lemma HomologicalComplexUpToQuasiIso.Q_inverts_homotopyEquivalences :
     (HomologicalComplex.homotopyEquivalences C c).IsInvertedBy
       HomologicalComplexUpToQuasiIso.Q :=
-  MorphismProperty.IsInvertedBy.of_subset _ _ _
+  MorphismProperty.IsInvertedBy.of_le _ _ _
     (Localization.inverts Q (HomologicalComplex.quasiIso C c))
-    (homotopyEquivalences_subset_quasiIso C c)
+    (homotopyEquivalences_le_quasiIso C c)
 
 namespace HomotopyCategory
 
@@ -198,7 +198,7 @@ instance : HomologicalComplexUpToQuasiIso.Qh.IsLocalization (HomotopyCategory.qu
   Functor.IsLocalization.of_comp (HomotopyCategory.quotient C c)
     Qh (HomologicalComplex.homotopyEquivalences C c)
     (HomotopyCategory.quasiIso C c) (HomologicalComplex.quasiIso C c)
-    (homotopyEquivalences_subset_quasiIso C c)
+    (homotopyEquivalences_le_quasiIso C c)
     (HomotopyCategory.quasiIso_eq_quasiIso_map_quotient C c)
 
 end
@@ -236,9 +236,9 @@ lemma ComplexShape.QFactorsThroughHomotopy_of_exists_prev [CategoryWithHomology 
   areEqualizedByLocalization {K L f g} h := by
     have : DecidableRel c.Rel := by classical infer_instance
     exact h.map_eq_of_inverts_homotopyEquivalences hc _
-      (MorphismProperty.IsInvertedBy.of_subset _ _ _
+      (MorphismProperty.IsInvertedBy.of_le _ _ _
         (Localization.inverts _ (HomologicalComplex.quasiIso C _))
-        (homotopyEquivalences_subset_quasiIso C _))
+        (homotopyEquivalences_le_quasiIso C _))
 
 end Cylinder
 

@@ -105,7 +105,7 @@ theorem ContinuousOn.of_dslope (h : ContinuousOn (dslope f a) s) : ContinuousOn 
 
 theorem continuousWithinAt_dslope_of_ne (h : b ≠ a) :
     ContinuousWithinAt (dslope f a) s b ↔ ContinuousWithinAt f s b := by
-  refine' ⟨ContinuousWithinAt.of_dslope, fun hc => _⟩
+  refine ⟨ContinuousWithinAt.of_dslope, fun hc => ?_⟩
   simp only [dslope, continuousWithinAt_update_of_ne h]
   exact ((continuousWithinAt_id.sub continuousWithinAt_const).inv₀ (sub_ne_zero.2 h)).smul
     (hc.sub continuousWithinAt_const)
@@ -117,7 +117,7 @@ theorem continuousAt_dslope_of_ne (h : b ≠ a) : ContinuousAt (dslope f a) b �
 
 theorem continuousOn_dslope (h : s ∈ 𝓝 a) :
     ContinuousOn (dslope f a) s ↔ ContinuousOn f s ∧ DifferentiableAt 𝕜 f a := by
-  refine' ⟨fun hc => ⟨hc.of_dslope, continuousAt_dslope_same.1 <| hc.continuousAt h⟩, _⟩
+  refine ⟨fun hc => ⟨hc.of_dslope, continuousAt_dslope_same.1 <| hc.continuousAt h⟩, ?_⟩
   rintro ⟨hc, hd⟩ x hx
   rcases eq_or_ne x a with (rfl | hne)
   exacts [(continuousAt_dslope_same.2 hd).continuousWithinAt,
@@ -141,10 +141,10 @@ theorem DifferentiableOn.of_dslope (h : DifferentiableOn 𝕜 (dslope f a) s) :
 
 theorem differentiableWithinAt_dslope_of_ne (h : b ≠ a) :
     DifferentiableWithinAt 𝕜 (dslope f a) s b ↔ DifferentiableWithinAt 𝕜 f s b := by
-  refine' ⟨DifferentiableWithinAt.of_dslope, fun hd => _⟩
-  refine' (((differentiableWithinAt_id.sub_const a).inv (sub_ne_zero.2 h)).smul
-    (hd.sub_const (f a))).congr_of_eventuallyEq _ (dslope_of_ne _ h)
-  refine' (eqOn_dslope_slope _ _).eventuallyEq_of_mem _
+  refine ⟨DifferentiableWithinAt.of_dslope, fun hd => ?_⟩
+  refine (((differentiableWithinAt_id.sub_const a).inv (sub_ne_zero.2 h)).smul
+    (hd.sub_const (f a))).congr_of_eventuallyEq ?_ (dslope_of_ne _ h)
+  refine (eqOn_dslope_slope _ _).eventuallyEq_of_mem ?_
   exact mem_nhdsWithin_of_mem_nhds (isOpen_ne.mem_nhds h)
 #align differentiable_within_at_dslope_of_ne differentiableWithinAt_dslope_of_ne
 

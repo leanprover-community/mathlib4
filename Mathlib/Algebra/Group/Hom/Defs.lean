@@ -6,6 +6,7 @@ Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hu
 -/
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Data.FunLike.Basic
+import Mathlib.Logic.Function.Iterate
 
 #align_import algebra.hom.group from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
@@ -88,8 +89,8 @@ structure ZeroHom (M : Type*) (N : Type*) [Zero M] [Zero N] where
 
 You should extend this typeclass when you extend `ZeroHom`.
 -/
-class ZeroHomClass (F : Type*) (M N : outParam Type*) [Zero M] [Zero N] [FunLike F M N] : Prop
-    where
+class ZeroHomClass (F : Type*) (M N : outParam Type*) [Zero M] [Zero N] [FunLike F M N] :
+    Prop where
   /-- The proposition that the function preserves 0 -/
   map_zero : ∀ f : F, f 0 = 0
 #align zero_hom_class ZeroHomClass
@@ -412,8 +413,9 @@ theorem MonoidHom.coe_coe [MonoidHomClass F M N] (f : F) : ((f : M →* N) : M �
 #align add_monoid_hom.coe_coe AddMonoidHom.coe_coe
 
 @[to_additive]
-theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) : f a * f b = 1 :=
-  by rw [← map_mul, h, map_one]
+theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) :
+    f a * f b = 1 := by
+  rw [← map_mul, h, map_one]
 #align map_mul_eq_one map_mul_eq_one
 #align map_add_eq_zero map_add_eq_zero
 
@@ -620,84 +622,96 @@ end MonoidHom
 section Deprecated
 
 /-- Deprecated: use `DFunLike.congr_fun` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `DFunLike.congr_fun` instead."]
+@[to_additive (attr := deprecated (since := "2022-12-03"))
+ "Deprecated: use `DFunLike.congr_fun` instead."]
 theorem OneHom.congr_fun [One M] [One N] {f g : OneHom M N} (h : f = g) (x : M) : f x = g x :=
   DFunLike.congr_fun h x
 #align one_hom.congr_fun OneHom.congr_fun
 #align zero_hom.congr_fun ZeroHom.congr_fun
 
 /-- Deprecated: use `DFunLike.congr_fun` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `DFunLike.congr_fun` instead."]
+@[to_additive (attr := deprecated (since := "2022-12-03"))
+ "Deprecated: use `DFunLike.congr_fun` instead."]
 theorem MulHom.congr_fun [Mul M] [Mul N] {f g : M →ₙ* N} (h : f = g) (x : M) : f x = g x :=
   DFunLike.congr_fun h x
 #align mul_hom.congr_fun MulHom.congr_fun
 #align add_hom.congr_fun AddHom.congr_fun
 
 /-- Deprecated: use `DFunLike.congr_fun` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `DFunLike.congr_fun` instead."]
+@[to_additive (attr := deprecated (since := "2022-12-03"))
+ "Deprecated: use `DFunLike.congr_fun` instead."]
 theorem MonoidHom.congr_fun [MulOneClass M] [MulOneClass N] {f g : M →* N} (h : f = g) (x : M) :
     f x = g x := DFunLike.congr_fun h x
 #align monoid_hom.congr_fun MonoidHom.congr_fun
 #align add_monoid_hom.congr_fun AddMonoidHom.congr_fun
 
 /-- Deprecated: use `DFunLike.congr_arg` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `DFunLike.congr_arg` instead."]
+@[to_additive (attr := deprecated (since := "2022-12-03"))
+ "Deprecated: use `DFunLike.congr_arg` instead."]
 theorem OneHom.congr_arg [One M] [One N] (f : OneHom M N) {x y : M} (h : x = y) : f x = f y :=
   DFunLike.congr_arg f h
 #align one_hom.congr_arg OneHom.congr_arg
 #align zero_hom.congr_arg ZeroHom.congr_arg
 
 /-- Deprecated: use `DFunLike.congr_arg` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `DFunLike.congr_arg` instead."]
+@[to_additive (attr := deprecated (since := "2022-12-03"))
+ "Deprecated: use `DFunLike.congr_arg` instead."]
 theorem MulHom.congr_arg [Mul M] [Mul N] (f : M →ₙ* N) {x y : M} (h : x = y) : f x = f y :=
   DFunLike.congr_arg f h
 #align mul_hom.congr_arg MulHom.congr_arg
 #align add_hom.congr_arg AddHom.congr_arg
 
 /-- Deprecated: use `DFunLike.congr_arg` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `DFunLike.congr_arg` instead."]
+@[to_additive (attr := deprecated (since := "2022-12-03"))
+ "Deprecated: use `DFunLike.congr_arg` instead."]
 theorem MonoidHom.congr_arg [MulOneClass M] [MulOneClass N] (f : M →* N) {x y : M} (h : x = y) :
     f x = f y := DFunLike.congr_arg f h
 #align monoid_hom.congr_arg MonoidHom.congr_arg
 #align add_monoid_hom.congr_arg AddMonoidHom.congr_arg
 
 /-- Deprecated: use `DFunLike.coe_injective` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `DFunLike.coe_injective` instead."]
+@[to_additive (attr := deprecated (since := "2022-12-03"))
+ "Deprecated: use `DFunLike.coe_injective` instead."]
 theorem OneHom.coe_inj [One M] [One N] ⦃f g : OneHom M N⦄ (h : (f : M → N) = g) : f = g :=
   DFunLike.coe_injective h
 #align one_hom.coe_inj OneHom.coe_inj
 #align zero_hom.coe_inj ZeroHom.coe_inj
 
 /-- Deprecated: use `DFunLike.coe_injective` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `DFunLike.coe_injective` instead."]
+@[to_additive (attr := deprecated (since := "2022-12-03"))
+ "Deprecated: use `DFunLike.coe_injective` instead."]
 theorem MulHom.coe_inj [Mul M] [Mul N] ⦃f g : M →ₙ* N⦄ (h : (f : M → N) = g) : f = g :=
   DFunLike.coe_injective h
 #align mul_hom.coe_inj MulHom.coe_inj
 #align add_hom.coe_inj AddHom.coe_inj
 
 /-- Deprecated: use `DFunLike.coe_injective` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `DFunLike.coe_injective` instead."]
+@[to_additive (attr := deprecated (since := "2022-12-03"))
+ "Deprecated: use `DFunLike.coe_injective` instead."]
 theorem MonoidHom.coe_inj [MulOneClass M] [MulOneClass N] ⦃f g : M →* N⦄ (h : (f : M → N) = g) :
     f = g := DFunLike.coe_injective h
 #align monoid_hom.coe_inj MonoidHom.coe_inj
 #align add_monoid_hom.coe_inj AddMonoidHom.coe_inj
 
 /-- Deprecated: use `DFunLike.ext_iff` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `DFunLike.ext_iff` instead."]
+@[to_additive (attr := deprecated (since := "2022-12-03"))
+ "Deprecated: use `DFunLike.ext_iff` instead."]
 theorem OneHom.ext_iff [One M] [One N] {f g : OneHom M N} : f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 #align one_hom.ext_iff OneHom.ext_iff
 #align zero_hom.ext_iff ZeroHom.ext_iff
 
 /-- Deprecated: use `DFunLike.ext_iff` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `DFunLike.ext_iff` instead."]
+@[to_additive (attr := deprecated (since := "2022-12-03"))
+ "Deprecated: use `DFunLike.ext_iff` instead."]
 theorem MulHom.ext_iff [Mul M] [Mul N] {f g : M →ₙ* N} : f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 #align mul_hom.ext_iff MulHom.ext_iff
 #align add_hom.ext_iff AddHom.ext_iff
 
 /-- Deprecated: use `DFunLike.ext_iff` instead. -/
-@[to_additive (attr := deprecated) "Deprecated: use `DFunLike.ext_iff` instead."]
+@[to_additive (attr := deprecated (since := "2022-12-03"))
+ "Deprecated: use `DFunLike.ext_iff` instead."]
 theorem MonoidHom.ext_iff [MulOneClass M] [MulOneClass N] {f g : M →* N} : f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 #align monoid_hom.ext_iff MonoidHom.ext_iff
@@ -1097,18 +1111,26 @@ protected def End := M →* M
 
 namespace End
 
+instance instFunLike : FunLike (Monoid.End M) M M := MonoidHom.instFunLike
+instance instMonoidHomClass : MonoidHomClass (Monoid.End M) M M := MonoidHom.instMonoidHomClass
+
+instance instOne : One (Monoid.End M) where one := .id _
+instance instMul : Mul (Monoid.End M) where mul := .comp
+
 instance : Monoid (Monoid.End M) where
   mul := MonoidHom.comp
   one := MonoidHom.id M
   mul_assoc _ _ _ := MonoidHom.comp_assoc _ _ _
   mul_one := MonoidHom.comp_id
   one_mul := MonoidHom.id_comp
+  npow n f := (npowRec n f).copy f^[n] $ by induction n <;> simp [npowRec, *] <;> rfl
+  npow_succ n f := DFunLike.coe_injective $ Function.iterate_succ _ _
 
 instance : Inhabited (Monoid.End M) := ⟨1⟩
 
-instance : FunLike (Monoid.End M) M M := MonoidHom.instFunLike
-
-instance : MonoidHomClass (Monoid.End M) M M := MonoidHom.instMonoidHomClass
+@[simp, norm_cast] lemma coe_pow (f : Monoid.End M) (n : ℕ) : (↑(f ^ n) : M → M) = f^[n] := rfl
+#align monoid_hom.coe_pow Monoid.End.coe_pow
+#align monoid.End.coe_pow Monoid.End.coe_pow
 
 end End
 
@@ -1132,29 +1154,32 @@ protected def End := A →+ A
 
 namespace End
 
+instance instFunLike : FunLike (AddMonoid.End A) A A := AddMonoidHom.instFunLike
+instance instAddMonoidHomClass : AddMonoidHomClass (AddMonoid.End A) A A :=
+  AddMonoidHom.instAddMonoidHomClass
+
+instance instOne : One (AddMonoid.End A) where one := .id _
+instance instMul : Mul (AddMonoid.End A) where mul := .comp
+
+@[simp, norm_cast] lemma coe_one : ((1 : AddMonoid.End A) : A → A) = id := rfl
+#align add_monoid.coe_one AddMonoid.End.coe_one
+
+@[simp, norm_cast] lemma coe_mul (f g : AddMonoid.End A) : (f * g : A → A) = f ∘ g := rfl
+#align add_monoid.coe_mul AddMonoid.End.coe_mul
+
 instance monoid : Monoid (AddMonoid.End A) where
-  mul := AddMonoidHom.comp
-  one := AddMonoidHom.id A
   mul_assoc _ _ _ := AddMonoidHom.comp_assoc _ _ _
   mul_one := AddMonoidHom.comp_id
   one_mul := AddMonoidHom.id_comp
+  npow n f := (npowRec n f).copy (Nat.iterate f n) $ by induction n <;> simp [npowRec, *] <;> rfl
+  npow_succ n f := DFunLike.coe_injective $ Function.iterate_succ _ _
+
+@[simp, norm_cast] lemma coe_pow (f : AddMonoid.End A) (n : ℕ) : (↑(f ^ n) : A → A) = f^[n] := rfl
+#align add_monoid.End.coe_pow AddMonoid.End.coe_pow
 
 instance : Inhabited (AddMonoid.End A) := ⟨1⟩
 
-instance : FunLike (AddMonoid.End A) A A := AddMonoidHom.instFunLike
-
-instance : AddMonoidHomClass (AddMonoid.End A) A A := AddMonoidHom.instAddMonoidHomClass
-
 end End
-
-@[simp]
-theorem coe_one : ((1 : AddMonoid.End A) : A → A) = id := rfl
-#align add_monoid.coe_one AddMonoid.coe_one
-
-@[simp]
-theorem coe_mul (f g) : ((f * g : AddMonoid.End A) : A → A) = f ∘ g := rfl
-#align add_monoid.coe_mul AddMonoid.coe_mul
-
 end AddMonoid
 
 end End

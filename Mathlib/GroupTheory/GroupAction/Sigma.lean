@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.Group.Action.Defs
 
 #align_import group_theory.group_action.sigma from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
 
@@ -45,7 +45,8 @@ theorem smul_mk : a • mk i b = ⟨i, a • b⟩ :=
 #align sigma.vadd_mk Sigma.vadd_mk
 
 @[to_additive]
-instance [SMul M N] [∀ i, IsScalarTower M N (α i)] : IsScalarTower M N (Σi, α i) :=
+instance instIsScalarTowerOfSMul [SMul M N] [∀ i, IsScalarTower M N (α i)] :
+    IsScalarTower M N (Σi, α i) :=
   ⟨fun a b x => by
     cases x
     rw [smul_mk, smul_mk, smul_mk, smul_assoc]⟩

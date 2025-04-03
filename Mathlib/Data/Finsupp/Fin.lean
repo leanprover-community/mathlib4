@@ -87,12 +87,12 @@ theorem cons_ne_zero_of_right (h : s ≠ 0) : cons y s ≠ 0 := by
 #align finsupp.cons_ne_zero_of_right Finsupp.cons_ne_zero_of_right
 
 theorem cons_ne_zero_iff : cons y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
-  refine' ⟨fun h => _, fun h => h.casesOn cons_ne_zero_of_left cons_ne_zero_of_right⟩
-  refine' imp_iff_not_or.1 fun h' c => h _
+  refine ⟨fun h => ?_, fun h => h.casesOn cons_ne_zero_of_left cons_ne_zero_of_right⟩
+  refine imp_iff_not_or.1 fun h' c => h ?_
   rw [h', c, Finsupp.cons_zero_zero]
 #align finsupp.cons_ne_zero_iff Finsupp.cons_ne_zero_iff
 
-lemma cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb n).toEmbedding) := by
+lemma cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb n)) := by
   intro i hi
   suffices i = 0 ∨ ∃ a, ¬s a = 0 ∧ a.succ = i by simpa
   apply (Fin.eq_zero_or_eq_succ i).imp id (Exists.imp _)

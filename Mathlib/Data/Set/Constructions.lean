@@ -54,7 +54,7 @@ variable {S}
 theorem finiteInter_mem (cond : FiniteInter S) (F : Finset (Set α)) :
     ↑F ⊆ S → ⋂₀ (↑F : Set (Set α)) ∈ S := by
   classical
-    refine' Finset.induction_on F (fun _ => _) _
+    refine Finset.induction_on F (fun _ => ?_) ?_
     · simp [cond.univ_mem]
     · intro a s _ h1 h2
       suffices a ∩ ⋂₀ ↑s ∈ S by simpa

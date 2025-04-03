@@ -25,7 +25,7 @@ A `Content` is in particular an `AddContent` on the set of compact sets.
 Let `m` be an `AddContent C`. If `C` is a set semi-ring (`IsSetSemiring C`) we have the properties
 
 * `MeasureTheory.sum_addContent_le_of_subset`: if `I` is a finset of pairwise disjoint sets in `C`
-  and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s in I, m s ≤ m t`.
+  and `⋃₀ I ⊆ t` for `t ∈ C`, then `∑ s ∈ I, m s ≤ m t`.
 * `MeasureTheory.addContent_mono`: if `s ⊆ t` for two sets in `C`, then `m s ≤ m t`.
 * `MeasureTheory.addContent_union'`: if `s, t ∈ C` are disjoint and `s ∪ t ∈ C`,
   then `m (s ∪ t) = m s + m t`.
@@ -41,7 +41,7 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have, for `s, t ∈ C`,
 
 open Set Finset
 
-open scoped ENNReal BigOperators
+open scoped ENNReal
 
 namespace MeasureTheory
 
@@ -55,7 +55,7 @@ structure AddContent (C : Set (Set α)) where
   empty' : toFun ∅ = 0
   sUnion' (I : Finset (Set α)) (_h_ss : ↑I ⊆ C)
       (_h_dis : PairwiseDisjoint (I : Set (Set α)) id) (_h_mem : ⋃₀ ↑I ∈ C) :
-    toFun (⋃₀ I) = ∑ u in I, toFun u
+    toFun (⋃₀ I) = ∑ u ∈ I, toFun u
 
 instance : Inhabited (AddContent C) :=
   ⟨{toFun := fun _ => 0
@@ -82,7 +82,7 @@ protected lemma AddContent.ext_iff (m m' : AddContent C) : m = m' ↔ ∀ s, m s
 
 lemma addContent_sUnion (h_ss : ↑I ⊆ C)
     (h_dis : PairwiseDisjoint (I : Set (Set α)) id) (h_mem : ⋃₀ ↑I ∈ C) :
-    m (⋃₀ I) = ∑ u in I, m u :=
+    m (⋃₀ I) = ∑ u ∈ I, m u :=
   m.sUnion' I h_ss h_dis h_mem
 
 lemma addContent_union' (hs : s ∈ C) (ht : t ∈ C) (hst : s ∪ t ∈ C) (h_dis : Disjoint s t) :
@@ -111,7 +111,7 @@ section IsSetSemiring
 lemma addContent_eq_add_diffFinset₀_of_subset (hC : IsSetSemiring C)
     (hs : s ∈ C) (hI : ↑I ⊆ C) (hI_ss : ∀ t ∈ I, t ⊆ s)
     (h_dis : PairwiseDisjoint (I : Set (Set α)) id) :
-    m s = ∑ i in I, m i + ∑ i in hC.diffFinset₀ hs hI, m i := by
+    m s = ∑ i ∈ I, m i + ∑ i ∈ hC.diffFinset₀ hs hI, m i := by
   classical
   conv_lhs => rw [← hC.sUnion_union_diffFinset₀_of_subset hs hI hI_ss]
   rw [addContent_sUnion]
@@ -126,7 +126,7 @@ lemma addContent_eq_add_diffFinset₀_of_subset (hC : IsSetSemiring C)
 lemma sum_addContent_le_of_subset (hC : IsSetSemiring C)
     (h_ss : ↑I ⊆ C) (h_dis : PairwiseDisjoint (I : Set (Set α)) id)
     (ht : t ∈ C) (hJt : ∀ s ∈ I, s ⊆ t) :
-    ∑ u in I, m u ≤ m t := by
+    ∑ u ∈ I, m u ≤ m t := by
   classical
   rw [addContent_eq_add_diffFinset₀_of_subset hC ht h_ss hJt h_dis]
   exact le_add_right le_rfl
@@ -158,7 +158,7 @@ lemma addContent_union_le (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) :
 
 lemma addContent_biUnion_le {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     {S : Finset ι} (hs : ∀ n ∈ S, s n ∈ C) :
-    m (⋃ i ∈ S, s i) ≤ ∑ i in S, m (s i) := by
+    m (⋃ i ∈ S, s i) ≤ ∑ i ∈ S, m (s i) := by
   classical
   induction' S using Finset.induction with i S hiS h hs
   · simp

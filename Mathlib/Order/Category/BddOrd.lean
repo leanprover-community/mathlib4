@@ -30,7 +30,7 @@ structure BddOrd where
 
 namespace BddOrd
 
-instance : CoeSort BddOrd (Type*) :=
+instance : CoeSort BddOrd Type* :=
   InducedCategory.hasCoeToSort toPartOrd
 
 instance (X : BddOrd) : PartialOrder X :=

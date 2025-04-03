@@ -180,7 +180,7 @@ theorem ContinuousLinearEquiv.tsum_eq_iff [T2Space M] [T2Space M₂] {f : ι →
 
 protected theorem ContinuousLinearEquiv.map_tsum [T2Space M] [T2Space M₂] {f : ι → M}
     (e : M ≃SL[σ] M₂) : e (∑' z, f z) = ∑' z, e (f z) := by
-  refine' symm (e.tsum_eq_iff.mpr _)
+  refine symm (e.tsum_eq_iff.mpr ?_)
   rw [e.symm_apply_apply _]
 #align continuous_linear_equiv.map_tsum ContinuousLinearEquiv.map_tsum
 

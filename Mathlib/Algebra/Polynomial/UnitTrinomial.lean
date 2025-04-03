@@ -66,9 +66,9 @@ theorem trinomial_trailing_coeff' (hkm : k < m) (hmn : m < n) :
 
 theorem trinomial_natDegree (hkm : k < m) (hmn : m < n) (hw : w ≠ 0) :
     (trinomial k m n u v w).natDegree = n := by
-  refine'
+  refine
     natDegree_eq_of_degree_eq_some
-      ((Finset.sup_le fun i h => _).antisymm <|
+      ((Finset.sup_le fun i h => ?_).antisymm <|
         le_degree_of_ne_zero <| by rwa [trinomial_leading_coeff' hkm hmn])
   replace h := support_trinomial' k m n u v w h
   rw [mem_insert, mem_insert, mem_singleton] at h
@@ -80,9 +80,9 @@ theorem trinomial_natDegree (hkm : k < m) (hmn : m < n) (hw : w ≠ 0) :
 
 theorem trinomial_natTrailingDegree (hkm : k < m) (hmn : m < n) (hu : u ≠ 0) :
     (trinomial k m n u v w).natTrailingDegree = k := by
-  refine'
+  refine
     natTrailingDegree_eq_of_trailingDegree_eq_some
-      ((Finset.le_inf fun i h => _).antisymm <|
+      ((Finset.le_inf fun i h => ?_).antisymm <|
           trailingDegree_le_of_ne_zero <| by rwa [trinomial_trailing_coeff' hkm hmn]).symm
   replace h := support_trinomial' k m n u v w h
   rw [mem_insert, mem_insert, mem_singleton] at h
@@ -159,9 +159,9 @@ theorem coeff_isUnit (hp : p.IsUnitTrinomial) {k : ℕ} (hk : k ∈ p.support) :
   have := support_trinomial' k m n (u : ℤ) v w hk
   rw [mem_insert, mem_insert, mem_singleton] at this
   rcases this with (rfl | rfl | rfl)
-  · refine' ⟨u, by rw [trinomial_trailing_coeff' hkm hmn]⟩
-  · refine' ⟨v, by rw [trinomial_middle_coeff hkm hmn]⟩
-  · refine' ⟨w, by rw [trinomial_leading_coeff' hkm hmn]⟩
+  · refine ⟨u, by rw [trinomial_trailing_coeff' hkm hmn]⟩
+  · refine ⟨v, by rw [trinomial_middle_coeff hkm hmn]⟩
+  · refine ⟨w, by rw [trinomial_leading_coeff' hkm hmn]⟩
 #align polynomial.is_unit_trinomial.coeff_is_unit Polynomial.IsUnitTrinomial.coeff_isUnit
 
 theorem leadingCoeff_isUnit (hp : p.IsUnitTrinomial) : IsUnit p.leadingCoeff :=
@@ -176,7 +176,7 @@ end IsUnitTrinomial
 
 theorem isUnitTrinomial_iff :
     p.IsUnitTrinomial ↔ p.support.card = 3 ∧ ∀ k ∈ p.support, IsUnit (p.coeff k) := by
-  refine' ⟨fun hp => ⟨hp.card_support_eq_three, fun k => hp.coeff_isUnit⟩, fun hp => _⟩
+  refine ⟨fun hp => ⟨hp.card_support_eq_three, fun k => hp.coeff_isUnit⟩, fun hp => ?_⟩
   obtain ⟨k, m, n, hkm, hmn, x, y, z, hx, hy, hz, rfl⟩ := card_support_eq_three.mp hp.1
   rw [support_trinomial hkm hmn hx hy hz] at hp
   replace hx := hp.2 k (mem_insert_self k {m, n})
@@ -196,7 +196,7 @@ theorem isUnitTrinomial_iff' :
         3 := by
   rw [natDegree_mul_mirror, natTrailingDegree_mul_mirror, ← mul_add,
     Nat.mul_div_right _ zero_lt_two, coeff_mul_mirror]
-  refine' ⟨_, fun hp => _⟩
+  refine ⟨?_, fun hp => ?_⟩
   · rintro ⟨k, m, n, hkm, hmn, u, v, w, rfl⟩
     rw [sum_def, trinomial_support hkm hmn u.ne_zero v.ne_zero w.ne_zero,
       sum_insert (mt mem_insert.mp (not_or_of_not hkm.ne (mt mem_singleton.mp (hkm.trans hmn).ne))),
@@ -207,8 +207,8 @@ theorem isUnitTrinomial_iff' :
   · have key : ∀ k ∈ p.support, p.coeff k ^ 2 = 1 := fun k hk =>
       Int.sq_eq_one_of_sq_le_three
         ((single_le_sum (fun k _ => sq_nonneg (p.coeff k)) hk).trans hp.le) (mem_support_iff.mp hk)
-    refine' isUnitTrinomial_iff.mpr ⟨_, fun k hk => isUnit_ofPowEqOne (key k hk) two_ne_zero⟩
-    rw [sum_def, sum_congr rfl key, sum_const, Nat.smul_one_eq_coe] at hp
+    refine isUnitTrinomial_iff.mpr ⟨?_, fun k hk => isUnit_ofPowEqOne (key k hk) two_ne_zero⟩
+    rw [sum_def, sum_congr rfl key, sum_const, Nat.smul_one_eq_cast] at hp
     exact Nat.cast_injective hp
 #align polynomial.is_unit_trinomial_iff' Polynomial.isUnitTrinomial_iff'
 
@@ -239,7 +239,7 @@ theorem irreducible_aux1 {k m n : ℕ} (hkm : k < m) (hmn : m < n) (u v w : Unit
     simp only [ofFinsupp_single]
     rw [C_mul_monomial, C_mul_monomial, mul_comm (v : ℤ) w, add_comm (n - m + k) n]
   · exact fun h => h.2.ne rfl
-  · refine' ⟨_, add_lt_add_left key n⟩
+  · refine ⟨?_, add_lt_add_left key n⟩
     rwa [add_comm, add_lt_add_iff_left, lt_add_iff_pos_left, tsub_pos_iff_lt]
   · exact fun h => h.1.ne (add_comm k n)
   · exact ⟨add_lt_add_right hkm n, add_lt_add_right hmn n⟩
@@ -266,17 +266,17 @@ theorem irreducible_aux2 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
   simp only [add_left_inj, Units.eq_iff] at h
   rcases h with (⟨rfl, -⟩ | ⟨rfl, rfl, h⟩ | ⟨-, hm, hm'⟩)
   · exact Or.inl (hq.trans hp.symm)
-  · refine' Or.inr _
+  · refine Or.inr ?_
     rw [← trinomial_mirror hkm' hmn' u.ne_zero u.ne_zero, eq_comm, mirror_eq_iff] at hp
     exact hq.trans hp
   · suffices m = m' by
       rw [this] at hp
       exact Or.inl (hq.trans hp.symm)
     rw [tsub_add_eq_add_tsub hmn.le, eq_tsub_iff_add_eq_of_le, ← two_mul] at hm
-    rw [tsub_add_eq_add_tsub hmn'.le, eq_tsub_iff_add_eq_of_le, ← two_mul] at hm'
-    exact mul_left_cancel₀ two_ne_zero (hm.trans hm'.symm)
-    exact hmn'.le.trans (Nat.le_add_right n k)
-    exact hmn.le.trans (Nat.le_add_right n k)
+    · rw [tsub_add_eq_add_tsub hmn'.le, eq_tsub_iff_add_eq_of_le, ← two_mul] at hm'
+      · exact mul_left_cancel₀ two_ne_zero (hm.trans hm'.symm)
+      · exact hmn'.le.trans (Nat.le_add_right n k)
+    · exact hmn.le.trans (Nat.le_add_right n k)
 #align polynomial.is_unit_trinomial.irreducible_aux2 Polynomial.IsUnitTrinomial.irreducible_aux2
 
 theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k < m') (hmn' : m' < n)
@@ -310,7 +310,7 @@ theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
 
 theorem irreducible_of_coprime (hp : p.IsUnitTrinomial)
     (h : IsRelPrime p p.mirror) : Irreducible p := by
-  refine' irreducible_of_mirror hp.not_isUnit (fun q hpq => _) h
+  refine irreducible_of_mirror hp.not_isUnit (fun q hpq => ?_) h
   have hq : IsUnitTrinomial q := (isUnitTrinomial_iff'' hpq).mp hp
   obtain ⟨k, m, n, hkm, hmn, u, v, w, hp⟩ := hp
   obtain ⟨k', m', n', hkm', hmn', x, y, z, hq⟩ := hq
@@ -352,7 +352,7 @@ theorem irreducible_of_isCoprime (hp : p.IsUnitTrinomial) (h : IsCoprime p p.mir
 /-- A unit trinomial is irreducible if it has no complex roots in common with its mirror -/
 theorem irreducible_of_coprime' (hp : IsUnitTrinomial p)
     (h : ∀ z : ℂ, ¬(aeval z p = 0 ∧ aeval z (mirror p) = 0)) : Irreducible p := by
-  refine' hp.irreducible_of_coprime fun q hq hq' => _
+  refine hp.irreducible_of_coprime fun q hq hq' => ?_
   suffices ¬0 < q.natDegree by
     rcases hq with ⟨p, rfl⟩
     replace hp := hp.leadingCoeff_isUnit
@@ -365,7 +365,7 @@ theorem irreducible_of_coprime' (hp : IsUnitTrinomial p)
   rw [← degree_map_eq_of_injective (algebraMap ℤ ℂ).injective_int] at hq''
   cases' Complex.exists_root hq'' with z hz
   rw [IsRoot, eval_map, ← aeval_def] at hz
-  refine' h z ⟨_, _⟩
+  refine h z ⟨?_, ?_⟩
   · cases' hq with g' hg'
     rw [hg', aeval_mul, hz, zero_mul]
   · cases' hq' with g' hg'

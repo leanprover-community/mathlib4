@@ -61,15 +61,13 @@ variable {N : Type*} [DecidableEq N]
 
 /-- The forward direction of the homeomorphism
   between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
-@[reducible]
-def splitAt (i : N) : (I^N) ≃ₜ I × I^{ j // j ≠ i } :=
+abbrev splitAt (i : N) : (I^N) ≃ₜ I × I^{ j // j ≠ i } :=
   funSplitAt I i
 #align cube.split_at Cube.splitAt
 
 /-- The backward direction of the homeomorphism
   between the cube $I^N$ and $I × I^{N\setminus\{j\}}$. -/
-@[reducible]
-def insertAt (i : N) : (I × I^{ j // j ≠ i }) ≃ₜ I^N :=
+abbrev insertAt (i : N) : (I × I^{ j // j ≠ i }) ≃ₜ I^N :=
   (funSplitAt I i).symm
 #align cube.insert_at Cube.insertAt
 
@@ -85,8 +83,7 @@ end Cube
 variable (N X : Type*) [TopologicalSpace X] (x : X)
 
 /-- The space of paths with both endpoints equal to a specified point `x : X`. -/
-@[reducible]
-def LoopSpace :=
+abbrev LoopSpace :=
   Path x x
 #align loop_space LoopSpace
 
@@ -200,13 +197,12 @@ variable [DecidableEq N]
 
 /-- Loop from a generalized loop by currying $I^N → X$ into $I → (I^{N\setminus\{j\}} → X)$. -/
 @[simps]
-def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const
-    where
+def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const where
   toFun t :=
     ⟨(p.val.comp (Cube.insertAt i).toContinuousMap).curry t, fun y yH =>
       p.property (Cube.insertAt i (t, y)) (Cube.insertAt_boundary i <| Or.inr yH)⟩
-  source' := by ext t; refine' p.property (Cube.insertAt i (0, t)) ⟨i, Or.inl _⟩; simp
-  target' := by ext t; refine' p.property (Cube.insertAt i (1, t)) ⟨i, Or.inr _⟩; simp
+  source' := by ext t; refine p.property (Cube.insertAt i (0, t)) ⟨i, Or.inl ?_⟩; simp
+  target' := by ext t; refine p.property (Cube.insertAt i (1, t)) ⟨i, Or.inr ?_⟩; simp
 #align gen_loop.to_loop GenLoop.toLoop
 
 
@@ -253,8 +249,7 @@ theorem to_from (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : toLoop i (fr
   `n`-dimensional loops with base point `const`.
   We allow an arbitrary indexing type `N` in place of `Fin n` here. -/
 @[simps]
-def loopHomeo (i : N) : Ω^ N X x ≃ₜ Ω (Ω^ { j // j ≠ i } X x) const
-    where
+def loopHomeo (i : N) : Ω^ N X x ≃ₜ Ω (Ω^ { j // j ≠ i } X x) const where
   toFun := toLoop i
   invFun := fromLoop i
   left_inv p := by ext; exact congr_arg p (by dsimp; exact Equiv.apply_symm_apply _ _)
@@ -274,8 +269,7 @@ theorem fromLoop_apply (i : N) {p : Ω (Ω^ { j // j ≠ i } X x) const} {t : I^
 #align gen_loop.from_loop_apply GenLoop.fromLoop_apply
 
 /-- Composition with `Cube.insertAt` as a continuous map. -/
-@[reducible]
-def cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
+abbrev cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
   ⟨fun f => f.comp (Cube.insertAt i).toContinuousMap,
     (Cube.insertAt i).toContinuousMap.continuous_comp_left⟩
 #align gen_loop.c_comp_insert GenLoop.cCompInsert
@@ -297,7 +291,7 @@ theorem homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 <| C
 
 theorem homotopicTo (i : N) {p q : Ω^ N X x} :
     Homotopic p q → (toLoop i p).Homotopic (toLoop i q) := by
-  refine' Nonempty.map fun H => ⟨⟨⟨fun t => ⟨homotopyTo i H t, _⟩, _⟩, _, _⟩, _⟩
+  refine Nonempty.map fun H => ⟨⟨⟨fun t => ⟨homotopyTo i H t, ?_⟩, ?_⟩, ?_, ?_⟩, ?_⟩
   · rintro y ⟨i, iH⟩
     rw [homotopyTo_apply, H.eq_fst, p.2]
     all_goals apply Cube.insertAt_boundary; right; exact ⟨i, iH⟩
@@ -324,7 +318,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
 
 theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     (toLoop i p).Homotopic (toLoop i q) → Homotopic p q := by
-  refine' Nonempty.map fun H => ⟨⟨homotopyFrom i H, _, _⟩, _⟩
+  refine Nonempty.map fun H => ⟨⟨homotopyFrom i H, ?_, ?_⟩, ?_⟩
   pick_goal 3
   · rintro t y ⟨j, jH⟩
     erw [homotopyFrom_apply]
@@ -354,8 +348,9 @@ def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
       dsimp only [Path.trans, fromLoop, Path.coe_mk_mk, Function.comp_apply, mk_apply,
         ContinuousMap.comp_apply, toContinuousMap_apply, funSplitAt_apply,
         ContinuousMap.uncurry_apply, ContinuousMap.coe_mk, Function.uncurry_apply_pair]
-      split_ifs; change f _ = _; swap; change g _ = _
-      all_goals congr 1)
+      split_ifs
+      · show f _ = _; congr 1
+      · show g _ = _; congr 1)
 #align gen_loop.trans_at GenLoop.transAt
 
 /-- Reversal of a `GenLoop` along the `i`th coordinate. -/
@@ -403,14 +398,13 @@ open GenLoop
   `Ω^{j // j ≠ i} x`. -/
 def homotopyGroupEquivFundamentalGroup (i : N) :
     HomotopyGroup N X x ≃ FundamentalGroup (Ω^ { j // j ≠ i } X x) const := by
-  refine' Equiv.trans _ (CategoryTheory.Groupoid.isoEquivHom _ _).symm
+  refine Equiv.trans ?_ (CategoryTheory.Groupoid.isoEquivHom _ _).symm
   apply Quotient.congr (loopHomeo i).toEquiv
   exact fun p q => ⟨homotopicTo i, homotopicFrom i⟩
 #align homotopy_group_equiv_fundamental_group homotopyGroupEquivFundamentalGroup
 
 /-- Homotopy group of finite index. -/
-@[reducible]
-def HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
+abbrev HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
   HomotopyGroup (Fin n) _ x
 #align homotopy_group.pi HomotopyGroup.Pi
 
@@ -474,16 +468,16 @@ def genLoopEquivOfUnique (N) [Unique N] : Ω^ N X x ≃ Ω X x where
   i.e. the loops based at `x` up to homotopy. -/
 def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
     HomotopyGroup N X x ≃ FundamentalGroup X x := by
-  refine' Equiv.trans _ (CategoryTheory.Groupoid.isoEquivHom _ _).symm
-  refine' Quotient.congr (genLoopEquivOfUnique N) _
+  refine Equiv.trans ?_ (CategoryTheory.Groupoid.isoEquivHom _ _).symm
+  refine Quotient.congr (genLoopEquivOfUnique N) ?_
   intros a₁ a₂; constructor <;> rintro ⟨H⟩
   · exact
       ⟨{  toFun := fun tx => H (tx.fst, fun _ => tx.snd)
           map_zero_left := fun _ => H.apply_zero _
           map_one_left := fun _ => H.apply_one _
           prop' := fun t y iH => H.prop' _ _ ⟨default, iH⟩ }⟩
-  refine'
-    ⟨⟨⟨⟨fun tx => H (tx.fst, tx.snd default), H.continuous.comp _⟩, fun y => _, fun y => _⟩, _⟩⟩
+  refine
+    ⟨⟨⟨⟨fun tx => H (tx.fst, tx.snd default), H.continuous.comp ?_⟩, fun y => ?_, fun y => ?_⟩, ?_⟩⟩
   · exact continuous_fst.prod_mk ((continuous_apply _).comp continuous_snd)
   · exact (H.apply_zero _).trans (congr_arg a₁ (eq_const_of_unique y).symm)
   · exact (H.apply_one _).trans (congr_arg a₂ (eq_const_of_unique y).symm)
@@ -507,21 +501,19 @@ instance group (N) [DecidableEq N] [Nonempty N] : Group (HomotopyGroup N X x) :=
 /-- Group structure on `HomotopyGroup` obtained by pulling back path composition along the
   `i`th direction. The group structures for two different `i j : N` distribute over each
   other, and therefore are equal by the Eckmann-Hilton argument. -/
-@[reducible]
-def auxGroup (i : N) : Group (HomotopyGroup N X x) :=
+abbrev auxGroup (i : N) : Group (HomotopyGroup N X x) :=
   (homotopyGroupEquivFundamentalGroup i).group
 #align homotopy_group.aux_group HomotopyGroup.auxGroup
 
 theorem isUnital_auxGroup (i : N) :
-    EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) := {
-    left_id := (auxGroup i).one_mul,
-    right_id := (auxGroup i).mul_one
-  }
+    EckmannHilton.IsUnital (auxGroup i).mul (⟦const⟧ : HomotopyGroup N X x) where
+  left_id := (auxGroup i).one_mul
+  right_id := (auxGroup i).mul_one
 #align homotopy_group.is_unital_aux_group HomotopyGroup.isUnital_auxGroup
 
 theorem auxGroup_indep (i j : N) : (auxGroup i : Group (HomotopyGroup N X x)) = auxGroup j := by
   by_cases h : i = j; · rw [h]
-  refine' Group.ext (EckmannHilton.mul (isUnital_auxGroup i) (isUnital_auxGroup j) _)
+  refine Group.ext (EckmannHilton.mul (isUnital_auxGroup i) (isUnital_auxGroup j) ?_)
   rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨d⟩
   change Quotient.mk' _ = _
   apply congr_arg Quotient.mk'
@@ -552,12 +544,17 @@ theorem one_def [Nonempty N] : (1 : HomotopyGroup N X x) = ⟦const⟧ :=
 theorem mul_spec [Nonempty N] {i} {p q : Ω^ N X x} :
     -- Porting note (#11215): TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
     ((· * ·) : _ → _ → HomotopyGroup N X x) ⟦p⟧ ⟦q⟧ = ⟦transAt i q p⟧ := by
-  rw [transAt_indep _ q, ← fromLoop_trans_toLoop]; apply Quotient.sound; rfl
+  rw [transAt_indep (Classical.arbitrary N) q, ← fromLoop_trans_toLoop]
+  apply Quotient.sound
+  rfl
 #align homotopy_group.mul_spec HomotopyGroup.mul_spec
 
 /-- Characterization of multiplicative inverse -/
-theorem inv_spec [Nonempty N] {i} {p : Ω^ N X x} : ((⟦p⟧)⁻¹ : HomotopyGroup N X x) = ⟦symmAt i p⟧ :=
-  by rw [symmAt_indep _ p, ← fromLoop_symm_toLoop]; apply Quotient.sound; rfl
+theorem inv_spec [Nonempty N] {i} {p : Ω^ N X x} :
+    ((⟦p⟧)⁻¹ : HomotopyGroup N X x) = ⟦symmAt i p⟧ := by
+  rw [symmAt_indep (Classical.arbitrary N) p, ← fromLoop_symm_toLoop]
+  apply Quotient.sound
+  rfl
 #align homotopy_group.inv_spec HomotopyGroup.inv_spec
 
 /-- Multiplication on `HomotopyGroup N X x` is commutative for nontrivial `N`.

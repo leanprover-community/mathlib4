@@ -111,7 +111,7 @@ def partialSups.gi : GaloisInsertion (partialSups : (ℕ → α) → ℕ →o α
   choice f h :=
     ⟨f, by convert (partialSups f).monotone using 1; exact (le_partialSups f).antisymm h⟩
   gc f g := by
-    refine' ⟨(le_partialSups f).trans, fun h => _⟩
+    refine ⟨(le_partialSups f).trans, fun h => ?_⟩
     convert partialSups_mono h
     exact OrderHom.ext _ _ g.monotone.partialSups_eq.symm
   le_l_u f := le_partialSups f
@@ -164,7 +164,7 @@ theorem partialSups_eq_ciSup_Iic (f : ℕ → α) (n : ℕ) : partialSups f n = 
 @[simp]
 theorem ciSup_partialSups_eq {f : ℕ → α} (h : BddAbove (Set.range f)) :
     ⨆ n, partialSups f n = ⨆ n, f n := by
-  refine' (ciSup_le fun n => _).antisymm (ciSup_mono _ <| le_partialSups f)
+  refine (ciSup_le fun n => ?_).antisymm (ciSup_mono ?_ <| le_partialSups f)
   · rw [partialSups_eq_ciSup_Iic]
     exact ciSup_le fun i => le_ciSup h _
   · rwa [bddAbove_range_partialSups]

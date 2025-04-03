@@ -73,7 +73,7 @@ theorem commutator_centralizer_commutator_le_center :
   rw [← Subgroup.centralizer_univ, ← Subgroup.coe_top, ←
     Subgroup.commutator_eq_bot_iff_le_centralizer]
   suffices ⁅⁅⊤, centralizer (commutator G : Set G)⁆, centralizer (commutator G : Set G)⁆ = ⊥ by
-    refine' Subgroup.commutator_commutator_eq_bot_of_rotate _ this
+    refine Subgroup.commutator_commutator_eq_bot_of_rotate ?_ this
     rwa [Subgroup.commutator_comm (centralizer (commutator G : Set G))]
   rw [Subgroup.commutator_comm, Subgroup.commutator_eq_bot_iff_le_centralizer]
   exact Set.centralizer_subset (Subgroup.commutator_mono le_top le_top)
@@ -179,6 +179,10 @@ variable {H : Type v} [Group H] (f : G →* H)
 def map : Abelianization G →* Abelianization H :=
   lift (of.comp f)
 #align abelianization.map Abelianization.map
+
+/-- Use `map` as the preferred simp normal form. -/
+@[simp] theorem lift_of_comp :
+    Abelianization.lift (Abelianization.of.comp f) = Abelianization.map f := rfl
 
 @[simp]
 theorem map_of (x : G) : map f (of x) = of (f x) :=

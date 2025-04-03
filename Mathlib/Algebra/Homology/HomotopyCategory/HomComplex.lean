@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.Homotopy
-import Mathlib.Algebra.GroupPower.NegOnePow
+import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.Tactic.Linarith
 import Mathlib.CategoryTheory.Linear.LinearFunctor
@@ -78,7 +78,6 @@ def mk (v : ∀ (p q : ℤ) (_ : p + n = q), F.X p ⟶ G.X q) : Cochain F G n :=
   fun ⟨p, q, hpq⟩ => v p q hpq
 
 /-- The value of a cochain on a triplet `⟨p, q, hpq⟩`. -/
-@[pp_dot]
 def v (γ : Cochain F G n) (p q : ℤ) (hpq : p + n = q) :
     F.X p ⟶ G.X q := γ ⟨p, q, hpq⟩
 
@@ -170,8 +169,8 @@ lemma ofHom_v (φ : F ⟶ G) (p : ℤ) : (ofHom φ).v p p (add_zero p) = φ.f p 
 
 @[simp]
 lemma ofHom_v_comp_d (φ : F ⟶ G) (p q q' : ℤ) (hpq : p + 0 = q) :
-    (ofHom φ).v p q hpq ≫ G.d q q' = φ.f p ≫ G.d p q' :=
-by simp only [ofHom, ofHoms_v_comp_d]
+    (ofHom φ).v p q hpq ≫ G.d q q' = φ.f p ≫ G.d p q' := by
+  simp only [ofHom, ofHoms_v_comp_d]
 
 @[simp]
 lemma d_comp_ofHom_v (φ : F ⟶ G) (p' p q : ℤ) (hpq : p + 0 = q) :
@@ -217,7 +216,6 @@ lemma v_comp_XIsoOfEq_inv
   simp only [HomologicalComplex.XIsoOfEq, eqToIso_refl, Iso.refl_inv, comp_id]
 
 /-- The composition of cochains. -/
-@[pp_dot]
 def comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂) :
     Cochain F K n₁₂ :=
   Cochain.mk (fun p q hpq => z₁.v p (p + n₁) rfl ≫ z₂.v (p + n₁) q (by omega))
@@ -468,8 +466,10 @@ variable {F G R}
   δ_smul ..
 
 lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n₀ n₁ z) = 0 := by
-  by_cases h₁₂ : n₁ + 1 = n₂; swap; rw [δ_shape _ _ h₁₂]
-  by_cases h₀₁ : n₀ + 1 = n₁; swap; rw [δ_shape _ _ h₀₁, δ_zero]
+  by_cases h₁₂ : n₁ + 1 = n₂; swap
+  · rw [δ_shape _ _ h₁₂]
+  by_cases h₀₁ : n₀ + 1 = n₁; swap
+  · rw [δ_shape _ _ h₀₁, δ_zero]
   ext p q hpq
   dsimp
   simp only [δ_v n₁ n₂ h₁₂ _ p q hpq _ _ rfl rfl,
@@ -562,7 +562,13 @@ open HomComplex
 
 /-- The cochain complex of homomorphisms between two cochain complexes `F` and `G`.
 In degree `n : ℤ`, it consists of the abelian group `HomComplex.Cochain F G n`. -/
-@[simps! X d_apply]
+-- We also constructed the `d_apply` lemma using `@[simps]`
+-- until we made `AddCommGroupCat.coe_of` a simp lemma,
+-- after which the simp normal form linter complains.
+-- It was not used a simp lemma in Mathlib.
+-- Possible solution: higher priority function coercions that remove the `of`?
+-- @[simp]
+@[simps! X]
 def HomComplex : CochainComplex AddCommGroupCat ℤ where
   X i := AddCommGroupCat.of (Cochain F G i)
   d i j := AddCommGroupCat.ofHom (δ_hom ℤ F G i j)

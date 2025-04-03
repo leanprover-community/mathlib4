@@ -18,7 +18,6 @@ convex hull, radon, affine independence
 -/
 
 open Finset Set
-open BigOperators
 
 variable {ι 𝕜 E : Type*} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {f : ι → E}
 
@@ -32,9 +31,9 @@ theorem radon_partition (h : ¬ AffineIndependent 𝕜 f) :
   let I : Finset ι := s.filter fun i ↦ 0 ≤ w i
   let J : Finset ι := s.filter fun i ↦ w i < 0
   let p : E := centerMass I w f -- point of intersection
-  have hJI : ∑ j in J, w j + ∑ i in I, w i = 0 := by
+  have hJI : ∑ j ∈ J, w j + ∑ i ∈ I, w i = 0 := by
     simpa only [h_wsum, not_lt] using sum_filter_add_sum_filter_not s (fun i ↦ w i < 0) w
-  have hI : 0 < ∑ i in I, w i := by
+  have hI : 0 < ∑ i ∈ I, w i := by
     rcases exists_pos_of_sum_zero_of_exists_nonzero _ h_wsum ⟨nonzero_w_index, h1, h2⟩
       with ⟨pos_w_index, h1', h2'⟩
     exact sum_pos' (fun _i hi ↦ (mem_filter.1 hi).2)

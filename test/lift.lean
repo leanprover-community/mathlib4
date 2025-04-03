@@ -1,5 +1,5 @@
 import Mathlib.Tactic.Lift
-import Std.Tactic.PermuteGoals
+import Batteries.Tactic.PermuteGoals
 import Mathlib.Tactic.Coe
 import Mathlib.Init.Set
 import Mathlib.Order.Basic

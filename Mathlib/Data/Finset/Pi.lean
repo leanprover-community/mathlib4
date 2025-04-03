@@ -78,8 +78,8 @@ theorem Pi.cons_injective {a : α} {b : δ a} {s : Finset α} (hs : a ∉ s) :
       funext fun h =>
         have :
           Pi.cons s a b e₁ e (by simpa only [Multiset.mem_cons, mem_insert] using h) =
-            Pi.cons s a b e₂ e (by simpa only [Multiset.mem_cons, mem_insert] using h) :=
-          by rw [eq]
+            Pi.cons s a b e₂ e (by simpa only [Multiset.mem_cons, mem_insert] using h) := by
+          rw [eq]
         this
 #align finset.pi.cons_injective Finset.Pi.cons_injective
 
@@ -97,9 +97,9 @@ theorem pi_insert [∀ a, DecidableEq (β a)] {s : Finset α} {t : ∀ a : α, F
     (ha : a ∉ s) : pi (insert a s) t = (t a).biUnion fun b => (pi s t).image (Pi.cons s a b) := by
   apply eq_of_veq
   rw [← (pi (insert a s) t).2.dedup]
-  refine'
+  refine
     (fun s' (h : s' = a ::ₘ s.1) =>
-        (_ :
+        (?_ :
           dedup (Multiset.pi s' fun a => (t a).1) =
             dedup
               ((t a).1.bind fun b =>

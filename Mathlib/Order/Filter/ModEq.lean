@@ -3,7 +3,8 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Nat.Parity
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Data.Nat.ModEq
 import Mathlib.Order.Filter.AtTopBot
 
 #align_import order.filter.modeq from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
@@ -38,4 +39,3 @@ theorem frequently_odd : ∃ᶠ m : ℕ in atTop, Odd m := by
 #align nat.frequently_odd Nat.frequently_odd
 
 end Nat
-

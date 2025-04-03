@@ -120,7 +120,7 @@ theorem map_add_le (x y : V) : e (x + y) ≤ e x + e y :=
 theorem map_sub_le (x y : V) : e (x - y) ≤ e x + e y :=
   calc
     e (x - y) = e (x + -y) := by rw [sub_eq_add_neg]
-    _ ≤ e x + e (-y) := (e.map_add_le x (-y))
+    _ ≤ e x + e (-y) := e.map_add_le x (-y)
     _ = e x + e y := by rw [e.map_neg]
 #align enorm.map_sub_le ENorm.map_sub_le
 
@@ -184,8 +184,7 @@ theorem max_map (e₁ e₂ : ENorm 𝕜 V) (x : V) : (e₁ ⊔ e₂) x = max (e�
 #align enorm.max_map ENorm.max_map
 
 /-- Structure of an `EMetricSpace` defined by an extended norm. -/
-@[reducible]
-def emetricSpace : EMetricSpace V where
+abbrev emetricSpace : EMetricSpace V where
   edist x y := e (x - y)
   edist_self x := by simp
   eq_of_edist_eq_zero {x y} := by simp [sub_eq_zero]
@@ -211,7 +210,7 @@ def finiteSubspace : Subspace 𝕜 V where
 to ensure that this definition agrees with `e.emetricSpace`. -/
 instance metricSpace : MetricSpace e.finiteSubspace := by
   letI := e.emetricSpace
-  refine' EMetricSpace.toMetricSpace fun x y => _
+  refine EMetricSpace.toMetricSpace fun x y => ?_
   change e (x - y) ≠ ⊤
   exact ne_top_of_le_ne_top (ENNReal.add_lt_top.2 ⟨x.2, y.2⟩).ne (e.map_sub_le x y)
 

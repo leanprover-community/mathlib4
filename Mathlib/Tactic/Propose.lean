@@ -8,7 +8,7 @@ import Lean.Meta.Tactic.SolveByElim
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Basic
-import Std.Util.Cache
+import Batteries.Util.Cache
 import Mathlib.Tactic.Core
 
 /-!
@@ -24,7 +24,7 @@ It is a relative of `apply?` but for *forward reasoning* (i.e. looking at the hy
 rather than backward reasoning.
 
 ```
-import Std.Data.List.Basic
+import Batteries.Data.List.Basic
 import Mathlib.Tactic.Propose
 
 example (K L M : List α) (w : L.Disjoint M) (m : K ⊆ L) : True := by
@@ -37,7 +37,7 @@ set_option autoImplicit true
 
 namespace Mathlib.Tactic.Propose
 
-open Lean Meta Std.Tactic Tactic.TryThis
+open Lean Meta Batteries.Tactic Tactic.TryThis
 
 initialize registerTraceClass `Tactic.propose
 
@@ -59,7 +59,8 @@ open Lean.Meta.SolveByElim in
 /-- Shortcut for calling `solveByElim`. -/
 def solveByElim (orig : MVarId) (goals : Array MVarId) (use : Array Expr) (required : Array Expr)
     (depth) := do
-  let cfg : SolveByElimConfig := { maxDepth := depth, exfalso := true, symm := true }
+  let cfg : SolveByElimConfig :=
+    { maxDepth := depth, exfalso := true, symm := true, intro := false }
   let cfg := if !required.isEmpty then
     cfg.testSolutions (fun _ => do
     let r ← instantiateMVars (.mvar orig)
@@ -67,7 +68,8 @@ def solveByElim (orig : MVarId) (goals : Array MVarId) (use : Array Expr) (requi
   else
     cfg
   let cfg := cfg.synthInstance
-  _ ← SolveByElim.solveByElim cfg (use.toList.map pure) (pure (← getLocalHyps).toList) goals.toList
+  _ ← SolveByElim.solveByElim
+    cfg (use.toList.map pure) (fun _ => return (← getLocalHyps).toList) goals.toList
 
 /--
 Attempts to find lemmas which use all of the `required` expressions as arguments, and

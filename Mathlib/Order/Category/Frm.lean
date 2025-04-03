@@ -34,7 +34,7 @@ def Frm :=
 
 namespace Frm
 
-instance : CoeSort Frm (Type*) :=
+instance : CoeSort Frm Type* :=
   Bundled.coeSort
 
 instance (X : Frm) : Frame X :=
@@ -103,6 +103,6 @@ def topCatOpToFrm : TopCatᵒᵖ ⥤ Frm where
 #align Top_op_to_Frame topCatOpToFrm
 
 -- Note, `CompHaus` is too strong. We only need `T0Space`.
-instance CompHausOpToFrame.faithful : Faithful (compHausToTop.op ⋙ topCatOpToFrm.{u}) :=
+instance CompHausOpToFrame.faithful : (compHausToTop.op ⋙ topCatOpToFrm.{u}).Faithful :=
   ⟨fun h => Quiver.Hom.unop_inj <| Opens.comap_injective h⟩
 #align CompHaus_op_to_Frame.faithful CompHausOpToFrame.faithful

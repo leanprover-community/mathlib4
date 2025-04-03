@@ -89,8 +89,8 @@ open MonoidalOfChosenFiniteProducts
 
 /-- The monoidal structure coming from finite products is symmetric.
 -/
-def symmetricOfChosenFiniteProducts : SymmetricCategory (MonoidalOfChosenFiniteProductsSynonym 𝒯 ℬ)
-    where
+def symmetricOfChosenFiniteProducts :
+    SymmetricCategory (MonoidalOfChosenFiniteProductsSynonym 𝒯 ℬ) where
   braiding _ _ := Limits.BinaryFan.braiding (ℬ _ _).isLimit (ℬ _ _).isLimit
   braiding_naturality_left f X := braiding_naturality ℬ f (𝟙 X)
   braiding_naturality_right X _ _ f := braiding_naturality ℬ (𝟙 X) f

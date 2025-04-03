@@ -3,10 +3,10 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sum
-import Mathlib.Algebra.BigOperators.Basic
 
 #align_import combinatorics.hales_jewett from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
@@ -61,8 +61,6 @@ combinatorial line, Ramsey theory, arithmetic progression
 
 
 open scoped Classical
-
-open BigOperators
 
 universe u v
 
@@ -142,7 +140,7 @@ structure ColorFocused {α ι κ : Type*} (C : (ι → Option α) → κ) where
 #align combinatorics.line.color_focused Combinatorics.Line.ColorFocused
 
 instance {α ι κ} (C : (ι → Option α) → κ) : Inhabited (ColorFocused C) := by
-  refine' ⟨⟨0, fun _ => none, fun h => _, Multiset.nodup_zero⟩⟩
+  refine ⟨⟨0, fun _ => none, fun h => ?_, Multiset.nodup_zero⟩⟩
   simp only [Multiset.not_mem_zero, IsEmpty.forall_iff]
 
 /-- A function `f : α → α'` determines a function `line α ι → line α' ι`. For a coordinate `i`,
@@ -234,7 +232,7 @@ private theorem exists_mono_in_high_dimension' :
     -- This deals with the degenerate case where `α` is empty.
     intro κ _
     by_cases h : Nonempty κ
-    · refine' ⟨Unit, inferInstance, fun C => ⟨default, Classical.arbitrary _, PEmpty.rec⟩⟩
+    · refine ⟨Unit, inferInstance, fun C => ⟨default, Classical.arbitrary _, PEmpty.rec⟩⟩
     · exact ⟨Empty, inferInstance, fun C => (h ⟨C (Empty.rec)⟩).elim⟩)
   (by
     -- Now we have to show that the theorem holds for `Option α` if it holds for `α`.
@@ -245,7 +243,7 @@ private theorem exists_mono_in_high_dimension' :
     -- Then `Option α` has only one element, so any line is monochromatic.
     by_cases h : Nonempty α
     case neg =>
-      refine' ⟨Unit, inferInstance, fun C => ⟨diagonal _ Unit, C fun _ => none, ?_⟩⟩
+      refine ⟨Unit, inferInstance, fun C => ⟨diagonal _ Unit, C fun _ => none, ?_⟩⟩
       rintro (_ | ⟨a⟩)
       · rfl
       · exact (h ⟨a⟩).elim
@@ -259,7 +257,7 @@ private theorem exists_mono_in_high_dimension' :
       -- Given the key claim, we simply take `r = |κ| + 1`. We cannot have this many distinct colors
       -- so we must be in the second case, where there is a monochromatic line.
       obtain ⟨ι, _inst, hι⟩ := key (Fintype.card κ + 1)
-      refine' ⟨ι, _inst, fun C => (hι C).resolve_left _⟩
+      refine ⟨ι, _inst, fun C => (hι C).resolve_left ?_⟩
       rintro ⟨s, sr⟩
       apply Nat.not_succ_le_self (Fintype.card κ)
       rw [← Nat.add_one, ← sr, ← Multiset.card_map, ← Finset.card_mk]
@@ -277,7 +275,7 @@ private theorem exists_mono_in_high_dimension' :
     specialize ihα ((ι → Option α) → κ)
     obtain ⟨ι', _inst, hι'⟩ := ihα
     -- We claim that `ι ⊕ ι'` works for `Option α` and `κ`-coloring.
-    refine' ⟨Sum ι ι', inferInstance, _⟩
+    refine ⟨Sum ι ι', inferInstance, ?_⟩
     intro C
     -- A `κ`-coloring of `ι ⊕ ι' → Option α` induces an `(ι → Option α) → κ`-coloring of `ι' → α`.
     specialize hι' fun v' v => C (Sum.elim v (some ∘ v'))
@@ -287,7 +285,7 @@ private theorem exists_mono_in_high_dimension' :
     -- If `C'` has a monochromatic line, then so does `C`. We use this in two places below.
     have mono_of_mono : (∃ l, IsMono C' l) → ∃ l, IsMono C l := by
       rintro ⟨l, c, hl⟩
-      refine' ⟨l.horizontal (some ∘ l' (Classical.arbitrary α)), c, fun x => _⟩
+      refine ⟨l.horizontal (some ∘ l' (Classical.arbitrary α)), c, fun x => ?_⟩
       rw [Line.horizontal_apply, ← hl, ← hl']
     -- By choice of `ι`, `C'` either has `r` color-focused lines or a monochromatic line.
     specialize hι C'
@@ -298,17 +296,17 @@ private theorem exists_mono_in_high_dimension' :
     by_cases h : ∃ p ∈ s.lines, (p : AlmostMono _).color = C' s.focus
     -- If so then this is a `C'`-monochromatic line and we are done.
     · obtain ⟨p, p_mem, hp⟩ := h
-      refine' Or.inr (mono_of_mono ⟨p.line, p.color, _⟩)
+      refine Or.inr (mono_of_mono ⟨p.line, p.color, ?_⟩)
       rintro (_ | _)
-      rw [hp, s.is_focused p p_mem]
-      apply p.has_color
+      · rw [hp, s.is_focused p p_mem]
+      · apply p.has_color
     -- If not, we get `r+1` color focused lines by taking the product of the `r` lines with `l'`
     -- and adding to this the vertical line obtained by the focus point and `l`.
-    refine' Or.inl ⟨⟨(s.lines.map _).cons ⟨(l'.map some).vertical s.focus, C' s.focus, fun x => _⟩,
-            Sum.elim s.focus (l'.map some none), _, _⟩, _⟩
+    refine Or.inl ⟨⟨(s.lines.map ?_).cons ⟨(l'.map some).vertical s.focus, C' s.focus, fun x => ?_⟩,
+            Sum.elim s.focus (l'.map some none), ?_, ?_⟩, ?_⟩
     -- Porting note: Needed to reorder the following two goals
     -- The product lines are almost monochromatic.
-    · refine' fun p => ⟨p.line.prod (l'.map some), p.color, fun x => _⟩
+    · refine fun p => ⟨p.line.prod (l'.map some), p.color, fun x => ?_⟩
       rw [Line.prod_apply, Line.map_apply, ← p.has_color, ← congr_fun (hl' x)]
     -- The vertical line is almost monochromatic.
     · rw [vertical_apply, ← congr_fun (hl' x), Line.map_apply]
@@ -345,9 +343,9 @@ theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι
   set s : Finset ι := Finset.univ.filter (fun i => l.idxFun i = none) with hs
-  refine'
-    ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, _⟩, ∑ i in sᶜ, ((l.idxFun i).map _).getD 0,
-      c, _⟩
+  refine
+    ⟨s.card, Finset.card_pos.mpr ⟨l.proper.choose, ?_⟩, ∑ i ∈ sᶜ, ((l.idxFun i).map ?_).getD 0,
+      c, ?_⟩
   · rw [hs, Finset.mem_filter]
     exact ⟨Finset.mem_univ _, l.proper.choose_spec⟩
   · exact fun m => m

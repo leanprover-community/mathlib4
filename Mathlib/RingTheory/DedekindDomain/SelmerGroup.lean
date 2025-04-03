@@ -95,10 +95,11 @@ theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
   rw [show v.valuation (x : K) = _ * _ by rfl]
   rw [Units.val_inv_eq_inv_val]
   change _ = ite _ _ _ * (ite _ _ _)⁻¹
-  rw [IsLocalization.toLocalizationMap_sec]
-  rw [if_neg <| IsLocalization.sec_fst_ne_zero le_rfl x.ne_zero, if_neg ?_]
-  rfl
-  exact nonZeroDivisors.coe_ne_zero _
+  simp_rw [IsLocalization.toLocalizationMap_sec, SubmonoidClass.coe_subtype,
+    if_neg <| IsLocalization.sec_fst_ne_zero le_rfl x.ne_zero,
+    if_neg (nonZeroDivisors.coe_ne_zero _),
+    valuationOfNeZeroToFun, ofAdd_sub, ofAdd_neg, div_inv_eq_mul, WithZero.coe_mul,
+    WithZero.coe_inv, inv_inv]
 #align is_dedekind_domain.height_one_spectrum.valuation_of_ne_zero_to_fun_eq IsDedekindDomain.HeightOneSpectrum.valuationOfNeZeroToFun_eq
 
 /-- The multiplicative `v`-adic valuation on `Kˣ`. -/

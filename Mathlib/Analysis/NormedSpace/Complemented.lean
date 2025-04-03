@@ -86,7 +86,7 @@ isomorphic to `E`. -/
 def prodEquivOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : (p × q) ≃L[𝕜] E := by
   haveI := hp.completeSpace_coe; haveI := hq.completeSpace_coe
-  refine' (p.prodEquivOfIsCompl q h).toContinuousLinearEquivOfContinuous _
+  refine (p.prodEquivOfIsCompl q h).toContinuousLinearEquivOfContinuous ?_
   exact (p.subtypeL.coprod q.subtypeL).continuous
 #align subspace.prod_equiv_of_closed_compl Submodule.prodEquivOfClosedCompl
 

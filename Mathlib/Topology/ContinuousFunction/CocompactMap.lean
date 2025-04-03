@@ -41,7 +41,7 @@ section
 /-- `CocompactMapClass F α β` states that `F` is a type of cocompact continuous maps.
 
 You should also extend this typeclass when you extend `CocompactMap`. -/
-class CocompactMapClass (F : Type*) (α β : outParam <| Type*) [TopologicalSpace α]
+class CocompactMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
   [TopologicalSpace β] [FunLike F α β] extends ContinuousMapClass F α β : Prop where
   /-- The cocompact filter on `α` tends to the cocompact filter on `β` under the function -/
   cocompact_tendsto (f : F) : Tendsto f (cocompact α) (cocompact β)
@@ -206,7 +206,7 @@ def Homeomorph.toCocompactMap {α β : Type*} [TopologicalSpace α] [Topological
   toFun := f
   continuous_toFun := f.continuous
   cocompact_tendsto' := by
-    refine' CocompactMap.tendsto_of_forall_preimage fun K hK => _
+    refine CocompactMap.tendsto_of_forall_preimage fun K hK => ?_
     erw [K.preimage_equiv_eq_image_symm]
     exact hK.image f.symm.continuous
 #align homeomorph.to_cocompact_map Homeomorph.toCocompactMap

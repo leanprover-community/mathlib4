@@ -3,10 +3,10 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Data.Fintype.Perm
-import Mathlib.GroupTheory.Subgroup.Finite
 import Mathlib.GroupTheory.GroupAction.Group
+import Mathlib.GroupTheory.Perm.Basic
 
 #align_import group_theory.perm.subgroup from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 

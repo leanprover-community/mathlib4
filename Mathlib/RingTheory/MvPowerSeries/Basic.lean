@@ -49,12 +49,10 @@ it should not be hard to fill in the details.
 
 noncomputable section
 
-open BigOperators
-
 open Finset (antidiagonal mem_antidiagonal)
 
 /-- Multivariate formal power series, where `σ` is the index set of the variables
-and `R` is the coefficient ring.-/
+and `R` is the coefficient ring. -/
 def MvPowerSeries (σ : Type*) (R : Type*) :=
   (σ →₀ ℕ) → R
 #align mv_power_series MvPowerSeries
@@ -107,21 +105,21 @@ def monomial (n : σ →₀ ℕ) : R →ₗ[R] MvPowerSeries σ R :=
   LinearMap.stdBasis R (fun _ ↦ R) n
 #align mv_power_series.monomial MvPowerSeries.monomial
 
-/-- The `n`th coefficient of a multivariate formal power series.-/
+/-- The `n`th coefficient of a multivariate formal power series. -/
 def coeff (n : σ →₀ ℕ) : MvPowerSeries σ R →ₗ[R] R :=
   LinearMap.proj n
 #align mv_power_series.coeff MvPowerSeries.coeff
 
 variable {R}
 
-/-- Two multivariate formal power series are equal if all their coefficients are equal.-/
+/-- Two multivariate formal power series are equal if all their coefficients are equal. -/
 @[ext]
 theorem ext {φ ψ} (h : ∀ n : σ →₀ ℕ, coeff R n φ = coeff R n ψ) : φ = ψ :=
   funext h
 #align mv_power_series.ext MvPowerSeries.ext
 
 /-- Two multivariate formal power series are equal
- if and only if all their coefficients are equal.-/
+ if and only if all their coefficients are equal. -/
 theorem ext_iff {φ ψ : MvPowerSeries σ R} : φ = ψ ↔ ∀ n : σ →₀ ℕ, coeff R n φ = coeff R n ψ :=
   Function.funext_iff
 #align mv_power_series.ext_iff MvPowerSeries.ext_iff
@@ -197,10 +195,10 @@ instance : AddMonoidWithOne (MvPowerSeries σ R) :=
 
 instance : Mul (MvPowerSeries σ R) :=
   letI := Classical.decEq σ
-  ⟨fun φ ψ n => ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ⟩
+  ⟨fun φ ψ n => ∑ p ∈ antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ⟩
 
 theorem coeff_mul [DecidableEq σ] :
-    coeff R n (φ * ψ) = ∑ p in antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
+    coeff R n (φ * ψ) = ∑ p ∈ antidiagonal n, coeff R p.1 φ * coeff R p.2 ψ := by
   refine Finset.sum_congr ?_ fun _ _ => rfl
   rw [Subsingleton.elim (Classical.decEq σ) ‹DecidableEq σ›]
 #align mv_power_series.coeff_mul MvPowerSeries.coeff_mul
@@ -252,7 +250,7 @@ theorem coeff_add_mul_monomial (a : R) :
 @[simp]
 theorem commute_monomial {a : R} {n} :
     Commute φ (monomial R n a) ↔ ∀ m, Commute (coeff R m φ) a := by
-  refine' ext_iff.trans ⟨fun h m => _, fun h m => _⟩
+  refine ext_iff.trans ⟨fun h m => ?_, fun h m => ?_⟩
   · have := h (m + n)
     rwa [coeff_add_mul_monomial, add_comm, coeff_add_monomial_mul] at this
   · rw [coeff_mul_monomial, coeff_monomial_mul]
@@ -336,7 +334,7 @@ theorem monomial_mul_monomial (m n : σ →₀ ℕ) (a b : R) :
 
 variable (σ) (R)
 
-/-- The constant multivariate formal power series.-/
+/-- The constant multivariate formal power series. -/
 def C : R →+* MvPowerSeries σ R :=
   { monomial R (0 : σ →₀ ℕ) with
     map_one' := rfl
@@ -369,7 +367,7 @@ theorem coeff_zero_C (a : R) : coeff R (0 : σ →₀ ℕ) (C σ R a) = a :=
 set_option linter.uppercaseLean3 false in
 #align mv_power_series.coeff_zero_C MvPowerSeries.coeff_zero_C
 
-/-- The variables of the multivariate formal power series ring.-/
+/-- The variables of the multivariate formal power series ring. -/
 def X (s : σ) : MvPowerSeries σ R :=
   monomial R (single s 1) 1
 set_option linter.uppercaseLean3 false in
@@ -414,7 +412,7 @@ set_option linter.uppercaseLean3 false in
 theorem X_pow_eq (s : σ) (n : ℕ) : (X s : MvPowerSeries σ R) ^ n = monomial R (single s n) 1 := by
   induction' n with n ih
   · simp
-  · rw [pow_succ, ih, Nat.succ_eq_add_one, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
+  · rw [pow_succ, ih, Finsupp.single_add, X, monomial_mul_monomial, one_mul]
 set_option linter.uppercaseLean3 false in
 #align mv_power_series.X_pow_eq MvPowerSeries.X_pow_eq
 
@@ -449,7 +447,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (σ) (R)
 
-/-- The constant coefficient of a formal power series.-/
+/-- The constant coefficient of a formal power series. -/
 def constantCoeff : MvPowerSeries σ R →+* R :=
   { coeff R (0 : σ →₀ ℕ) with
     toFun := coeff R (0 : σ →₀ ℕ)
@@ -501,7 +499,7 @@ set_option linter.uppercaseLean3 false in
 #align mv_power_series.constant_coeff_X MvPowerSeries.constantCoeff_X
 
 /-- If a multivariate formal power series is invertible,
- then so is its constant coefficient.-/
+ then so is its constant coefficient. -/
 theorem isUnit_constantCoeff (φ : MvPowerSeries σ R) (h : IsUnit φ) :
     IsUnit (constantCoeff σ R φ) :=
   h.map _
@@ -544,7 +542,7 @@ variable {S T : Type*} [Semiring R] [Semiring S] [Semiring T]
 variable (f : R →+* S) (g : S →+* T)
 variable (σ)
 
-/-- The map between multivariate formal power series induced by a map on the coefficients.-/
+/-- The map between multivariate formal power series induced by a map on the coefficients. -/
 def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
   toFun φ n := f <| coeff R n φ
   map_zero' := ext fun _n => f.map_zero
@@ -628,7 +626,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
     rw [← hij, Finsupp.add_apply, Finsupp.single_eq_same]
     exact Nat.le_add_right n _
   · intro h
-    refine' ⟨fun m => coeff R (m + single s n) φ, _⟩
+    refine ⟨fun m => coeff R (m + single s n) φ, ?_⟩
     ext m
     by_cases H : m - single s n + single s n = m
     · rw [coeff_mul, Finset.sum_eq_single (single s n, m - single s n)]
@@ -641,7 +639,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
         · exfalso
           apply hne
           rw [← hij, ← hi, Prod.mk.inj_iff]
-          refine' ⟨rfl, _⟩
+          refine ⟨rfl, ?_⟩
           ext t
           simp only [add_tsub_cancel_left, Finsupp.add_apply, Finsupp.tsub_apply]
         · exact zero_mul _
@@ -689,9 +687,9 @@ variable {R : Type*} [CommSemiring R] {ι : Type*} [DecidableEq ι]
 /-- Coefficients of a product of power series -/
 theorem coeff_prod [DecidableEq σ]
     (f : ι → MvPowerSeries σ R) (d : σ →₀ ℕ) (s : Finset ι) :
-    coeff R d (∏ j in s, f j) =
-      ∑ l in piAntidiagonal s d,
-        ∏ i in s, coeff R (l i) (f i) := by
+    coeff R d (∏ j ∈ s, f j) =
+      ∑ l ∈ piAntidiagonal s d,
+        ∏ i ∈ s, coeff R (l i) (f i) := by
   induction s using Finset.induction_on generalizing d with
   | empty =>
     simp only [prod_empty, sum_const, nsmul_eq_mul, mul_one, coeff_one, piAntidiagonal_empty]
@@ -701,17 +699,17 @@ theorem coeff_prod [DecidableEq σ]
   | @insert a s ha ih =>
     rw [piAntidiagonal_insert ha, prod_insert ha, coeff_mul, sum_biUnion]
     · apply Finset.sum_congr rfl
-      · simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
-        rintro u v rfl
-        rw [ih, Finset.mul_sum, ← Finset.sum_attach]
-        apply Finset.sum_congr rfl
-        simp only [mem_attach, Finset.prod_insert ha, Function.update_same, forall_true_left,
-          Subtype.forall]
-        rintro x -
-        rw [Finset.prod_congr rfl]
-        intro i hi
-        rw [Function.update_noteq]
-        exact ne_of_mem_of_not_mem hi ha
+      simp only [mem_antidiagonal, sum_map, Function.Embedding.coeFn_mk, coe_update, Prod.forall]
+      rintro u v rfl
+      rw [ih, Finset.mul_sum, ← Finset.sum_attach]
+      apply Finset.sum_congr rfl
+      simp only [mem_attach, Finset.prod_insert ha, Function.update_same, forall_true_left,
+        Subtype.forall]
+      rintro x -
+      rw [Finset.prod_congr rfl]
+      intro i hi
+      rw [Function.update_noteq]
+      exact ne_of_mem_of_not_mem hi ha
     · simp only [Set.PairwiseDisjoint, Set.Pairwise, mem_coe, mem_antidiagonal, ne_eq,
         disjoint_left, mem_map, mem_attach, Function.Embedding.coeFn_mk, true_and, Subtype.exists,
         exists_prop, not_exists, not_and, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂,
@@ -755,11 +753,11 @@ instance [Nonempty σ] [Nontrivial R] : Nontrivial (Subalgebra R (MvPowerSeries 
       classical
       rw [Ne, SetLike.ext_iff, not_forall]
       inhabit σ
-      refine' ⟨X default, _⟩
+      refine ⟨X default, ?_⟩
       simp only [Algebra.mem_bot, not_exists, Set.mem_range, iff_true_iff, Algebra.mem_top]
       intro x
       rw [ext_iff, not_forall]
-      refine' ⟨Finsupp.single default 1, _⟩
+      refine ⟨Finsupp.single default 1, ?_⟩
       simp [algebraMap_apply, coeff_C]⟩⟩
 
 end Algebra
@@ -774,12 +772,12 @@ open Finsupp
 variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : MvPolynomial σ R)
 
 -- Porting note: added so we can add the `@[coe]` attribute
-/-- The natural inclusion from multivariate polynomials into multivariate formal power series.-/
+/-- The natural inclusion from multivariate polynomials into multivariate formal power series. -/
 @[coe]
 def toMvPowerSeries : MvPolynomial σ R → MvPowerSeries σ R :=
   fun φ n => coeff n φ
 
-/-- The natural inclusion from multivariate polynomials into multivariate formal power series.-/
+/-- The natural inclusion from multivariate polynomials into multivariate formal power series. -/
 instance coeToMvPowerSeries : Coe (MvPolynomial σ R) (MvPowerSeries σ R) :=
   ⟨toMvPowerSeries⟩
 #align mv_polynomial.coe_to_mv_power_series MvPolynomial.coeToMvPowerSeries

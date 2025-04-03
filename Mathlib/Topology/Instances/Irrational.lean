@@ -43,7 +43,7 @@ set_option linter.uppercaseLean3 false in
 @[deprecated] alias isGδ_irrational := IsGδ.setOf_irrational
 
 theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
-  refine' Real.isTopologicalBasis_Ioo_rat.dense_iff.2 _
+  refine Real.isTopologicalBasis_Ioo_rat.dense_iff.2 ?_
   simp only [gt_iff_lt, Rat.cast_lt, not_lt, ge_iff_le, Rat.cast_le, mem_iUnion, mem_singleton_iff,
     exists_prop, forall_exists_index, and_imp]
   rintro _ a b hlt rfl _
@@ -83,9 +83,9 @@ theorem eventually_forall_le_dist_cast_div (hx : Irrational x) (n : ℕ) :
     rintro ⟨m, rfl⟩
     simp at hx
   rcases Metric.mem_nhds_iff.1 (A.isOpen_compl.mem_nhds B) with ⟨ε, ε0, hε⟩
-  refine' (ge_mem_nhds ε0).mono fun δ hδ m => not_lt.1 fun hlt => _
+  refine (ge_mem_nhds ε0).mono fun δ hδ m => not_lt.1 fun hlt => ?_
   rw [dist_comm] at hlt
-  refine' hε (ball_subset_ball hδ hlt) ⟨m, _⟩
+  refine hε (ball_subset_ball hδ hlt) ⟨m, ?_⟩
   simp [div_eq_inv_mul]
 #align irrational.eventually_forall_le_dist_cast_div Irrational.eventually_forall_le_dist_cast_div
 

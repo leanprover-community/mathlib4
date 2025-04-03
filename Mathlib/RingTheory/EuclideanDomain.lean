@@ -43,7 +43,7 @@ theorem left_div_gcd_ne_zero {p q : R} (hp : p ≠ 0) : p / GCDMonoid.gcd p q �
   obtain ⟨r, hr⟩ := GCDMonoid.gcd_dvd_left p q
   obtain ⟨pq0, r0⟩ : GCDMonoid.gcd p q ≠ 0 ∧ r ≠ 0 := mul_ne_zero_iff.mp (hr ▸ hp)
   nth_rw 1 [hr]
-  rw [mul_comm, EuclideanDomain.mul_div_cancel _ pq0]
+  rw [mul_comm, mul_div_cancel_right₀ _ pq0]
   exact r0
 #align left_div_gcd_ne_zero left_div_gcd_ne_zero
 
@@ -51,7 +51,7 @@ theorem right_div_gcd_ne_zero {p q : R} (hq : q ≠ 0) : q / GCDMonoid.gcd p q �
   obtain ⟨r, hr⟩ := GCDMonoid.gcd_dvd_right p q
   obtain ⟨pq0, r0⟩ : GCDMonoid.gcd p q ≠ 0 ∧ r ≠ 0 := mul_ne_zero_iff.mp (hr ▸ hq)
   nth_rw 1 [hr]
-  rw [mul_comm, EuclideanDomain.mul_div_cancel _ pq0]
+  rw [mul_comm, mul_div_cancel_right₀ _ pq0]
   exact r0
 #align right_div_gcd_ne_zero right_div_gcd_ne_zero
 

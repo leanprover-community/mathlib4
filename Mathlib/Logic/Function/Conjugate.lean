@@ -67,7 +67,7 @@ then `fbc ∘ fab` semiconjugates `ga` to `gc`.
 
 See also `Function.Semiconj.trans` for a version with reversed arguments.
 
-**Backward compatibility note:** before 2024/01/13,
+**Backward compatibility note:** before 2024-01-13,
 this lemma used to have the same order of arguments that `Function.Semiconj.trans` has now. -/
 theorem comp_left (hbc : Semiconj fbc gb gc) (hab : Semiconj fab ga gb) :
     Semiconj (fbc ∘ fab) ga gc :=

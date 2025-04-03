@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Ashvni Narayanan
 -/
 import Mathlib.Algebra.Order.Group.TypeTags
-import Mathlib.FieldTheory.RatFunc
+import Mathlib.FieldTheory.RatFunc.Degree
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.Topology.Algebra.ValuedField
@@ -68,15 +68,15 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     intro c x
     rw [Algebra.smul_def, Algebra.smul_def]
     congr
-    refine' congr_fun (f := fun c => algebraMap Fqt F (e c)) _ c -- Porting note: Added `(f := _)`
-    refine' IsLocalization.ext (nonZeroDivisors Fq[X]) _ _ _ _ _ _ _ <;> intros <;>
+    refine congr_fun (f := fun c => algebraMap Fqt F (e c)) ?_ c -- Porting note: Added `(f := _)`
+    refine IsLocalization.ext (nonZeroDivisors Fq[X]) _ _ ?_ ?_ ?_ ?_ ?_ <;> intros <;>
       simp only [AlgEquiv.map_one, RingHom.map_one, AlgEquiv.map_mul, RingHom.map_mul,
         AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   constructor <;> intro h
   · let b := FiniteDimensional.finBasis (RatFunc Fq) F
     exact FiniteDimensional.of_fintype_basis (b.mapCoeffs e this)
   · let b := FiniteDimensional.finBasis Fqt F
-    refine' FiniteDimensional.of_fintype_basis (b.mapCoeffs e.symm _)
+    refine FiniteDimensional.of_fintype_basis (b.mapCoeffs e.symm ?_)
     intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
 #align function_field_iff functionField_iff
 
@@ -244,13 +244,11 @@ def inftyValuedFqt : Valued (RatFunc Fq) ℤₘ₀ :=
 set_option linter.uppercaseLean3 false in
 #align function_field.infty_valued_Fqt FunctionField.inftyValuedFqt
 
--- Adaptation note: 2024-03-15
--- Renamed to avoid the reserved name `inftyValuedFqt.def`.
-theorem inftyValuedFqt.def' {x : RatFunc Fq} :
+theorem inftyValuedFqt.def {x : RatFunc Fq} :
     @Valued.v (RatFunc Fq) _ _ _ (inftyValuedFqt Fq) x = inftyValuationDef Fq x :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align function_field.infty_valued_Fqt.def FunctionField.inftyValuedFqt.def'
+#align function_field.infty_valued_Fqt.def FunctionField.inftyValuedFqt.def
 
 /-- The completion `Fq((t⁻¹))` of `Fq(t)` with respect to the valuation at infinity. -/
 def FqtInfty :=
@@ -271,13 +269,11 @@ instance valuedFqtInfty : Valued (FqtInfty Fq) ℤₘ₀ :=
 set_option linter.uppercaseLean3 false in
 #align function_field.valued_Fqt_infty FunctionField.valuedFqtInfty
 
--- Adaptation note: 2024-03-15
--- Renamed to avoid the reserved name `valuedFqtInfty.def`.
-theorem valuedFqtInfty.def' {x : FqtInfty Fq} :
+theorem valuedFqtInfty.def {x : FqtInfty Fq} :
     Valued.v x = @Valued.extension (RatFunc Fq) _ _ _ (inftyValuedFqt Fq) x :=
   rfl
 set_option linter.uppercaseLean3 false in
-#align function_field.valued_Fqt_infty.def FunctionField.valuedFqtInfty.def'
+#align function_field.valued_Fqt_infty.def FunctionField.valuedFqtInfty.def
 
 end InftyValuation
 

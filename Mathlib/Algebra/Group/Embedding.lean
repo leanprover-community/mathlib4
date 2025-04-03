@@ -12,6 +12,8 @@ import Mathlib.Logic.Embedding.Basic
 # The embedding of a cancellative semigroup into itself by multiplication by a fixed element.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 variable {G : Type*}
 

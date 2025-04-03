@@ -3,12 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.GroupTheory.Subgroup.Pointwise
-import Mathlib.LinearAlgebra.Span
-import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.Order.Group.Action
+import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Span
+import Mathlib.RingTheory.Ideal.Basic
 
 #align_import algebra.module.submodule.pointwise from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
@@ -35,11 +35,11 @@ These actions are available in the `Pointwise` locale.
 ## Implementation notes
 
 For an `R`-module `M`, The action of a subset of `R` acting on a submodule of `M` introduced in
-section `set_acting_on_submodules` does not have a counterpart in
-`Mathlib/GroupTheory/Submonoid/Pointwise.lean`.
+section `set_acting_on_submodules` does not have a counterpart in the file
+`Mathlib.Algebra.Group.Submonoid.Pointwise`.
 
 Other than section `set_acting_on_submodules`, most of the lemmas in this file are direct copies of
-lemmas from `Mathlib/GroupTheory/Submonoid/Pointwise.lean`.
+lemmas from the file `Mathlib.Algebra.Group.Submonoid.Pointwise`.
 -/
 
 
@@ -90,8 +90,7 @@ theorem mem_neg {g : M} {S : Submodule R M} : g ∈ -S ↔ -g ∈ S :=
 /-- `Submodule.pointwiseNeg` is involutive.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M)
-    where
+protected def involutivePointwiseNeg : InvolutiveNeg (Submodule R M) where
   neg := Neg.neg
   neg_neg _S := SetLike.coe_injective <| neg_neg _
 #align submodule.has_involutive_pointwise_neg Submodule.involutivePointwiseNeg
@@ -108,8 +107,7 @@ theorem neg_le (S T : Submodule R M) : -S ≤ T ↔ S ≤ -T :=
 #align submodule.neg_le Submodule.neg_le
 
 /-- `Submodule.pointwiseNeg` as an order isomorphism. -/
-def negOrderIso : Submodule R M ≃o Submodule R M
-    where
+def negOrderIso : Submodule R M ≃o Submodule R M where
   toEquiv := Equiv.neg _
   map_rel_iff' := @neg_le_neg _ _ _ _ _
 #align submodule.neg_order_iso Submodule.negOrderIso
@@ -203,8 +201,7 @@ variable [Monoid α] [DistribMulAction α M] [SMulCommClass α R M]
 /-- The action on a submodule corresponding to applying the action to every element.
 
 This is available as an instance in the `Pointwise` locale. -/
-protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M)
-    where
+protected def pointwiseDistribMulAction : DistribMulAction α (Submodule R M) where
   smul a S := S.map (DistribMulAction.toLinearMap R M a : M →ₗ[R] M)
   one_smul S :=
     (congr_arg (fun f : Module.End R M => S.map f) (LinearMap.ext <| one_smul α)).trans S.map_id
@@ -382,8 +379,8 @@ instance : CovariantClass (Set S) (Submodule R M) HSMul.hSMul LE.le :=
   ⟨fun _ _ _ le => set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr)
     (mem2 := le hm)⟩
 
--- 2024-03-31
-@[deprecated smul_mono_right] theorem set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
+@[deprecated smul_mono_right (since := "2024-03-31")]
+theorem set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
     s • p ≤ s • q :=
   smul_mono_right s le
 
@@ -395,6 +392,19 @@ lemma set_smul_mono_left {s t : Set S} (le : s ≤ t) :
 lemma set_smul_le_of_le_le {s t : Set S} {p q : Submodule R M}
     (le_set : s ≤ t) (le_submodule : p ≤ q) : s • p ≤ t • q :=
   le_trans (set_smul_mono_left _ le_set) <| smul_mono_right _ le_submodule
+
+lemma set_smul_eq_iSup [SMulCommClass S R M] (s : Set S) (N : Submodule R M) :
+    s • N = ⨆ (a ∈ s), a • N := by
+  refine Eq.trans (congrArg sInf ?_) csInf_Ici
+  simp_rw [← Set.Ici_def, iSup_le_iff, @forall_comm M]
+  exact Set.ext fun _ => forall₂_congr (fun _ _ => Iff.symm map_le_iff_le_comap)
+
+theorem set_smul_span [SMulCommClass S R M] (s : Set S) (t : Set M) :
+    s • span R t = span R (s • t) := by
+  simp_rw [set_smul_eq_iSup, smul_span, iSup_span, Set.iUnion_smul_set]
+
+theorem span_set_smul [SMulCommClass S R M] (s : Set S) (t : Set M) :
+    span R (s • t) = s • span R t := (set_smul_span s t).symm
 
 variable {s N} in
 /--
@@ -528,17 +538,6 @@ protected def pointwiseSetMulAction [SMulCommClass R R M] :
         mem_set_smul_of_mem_mem (Set.mul_mem_mul hr (hc1 hr')) (c _).2)
 
 scoped[Pointwise] attribute [instance] Submodule.pointwiseSetMulAction
-
--- TODO: `r • N` should be generalized to allow `r` to be an element of `S`.
-lemma set_smul_eq_iSup [SMulCommClass R R M] :
-    sR • N = ⨆ (r ∈ sR), r • N :=
-  set_smul_eq_of_le _ _ _
-    (fun r m hr hm => (show r • N ≤ _ by
-      rw [iSup_subtype', ← sSup_range]
-      exact le_sSup ⟨⟨r, hr⟩, rfl⟩) ⟨_, hm, rfl⟩) <| by
-    rw [iSup_subtype', ← sSup_range, sSup_le_iff]
-    rintro _ ⟨⟨x, hx⟩, rfl⟩ _ ⟨y, hy, rfl⟩
-    exact mem_set_smul_of_mem_mem (mem1 := hx) (mem2 := hy)
 
 -- This cannot be generalized to `Set S` because `MulAction` can't be generalized already.
 /-- In a ring, sets acts on submodules. -/

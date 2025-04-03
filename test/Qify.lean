@@ -1,4 +1,5 @@
-import Mathlib.Data.Rat.Field
+import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Data.Int.CharZero
 import Mathlib.Tactic.Qify
 
 example (a b : ℕ) : (a : ℚ) ≤ b ↔ a ≤ b := by qify

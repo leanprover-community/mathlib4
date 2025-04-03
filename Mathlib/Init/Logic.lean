@@ -3,7 +3,6 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
-import Std.Tactic.Relation.Rfl
 import Mathlib.Tactic.Lemma
 import Mathlib.Mathport.Attributes
 import Mathlib.Mathport.Rename
@@ -14,29 +13,9 @@ set_option autoImplicit true
 
 #align opt_param_eq optParam_eq
 
-/- Implication -/
-
-@[deprecated] def Implies (a b : Prop) := a → b
-
-/-- Implication `→` is transitive. If `P → Q` and `Q → R` then `P → R`. -/
--- FIXME This should have `@[trans]`, but the `trans` attribute PR'd in #253 rejects it.
--- Note that it is still rejected after #857.
-@[deprecated] theorem Implies.trans {p q r : Prop} (h₁ : p → q) (h₂ : q → r) :
-    p → r := fun hp ↦ h₂ (h₁ hp)
-
-/- Not -/
-
-@[deprecated] def NonContradictory (a : Prop) : Prop := ¬¬a
-
 #align non_contradictory_intro not_not_intro
 
 /- Eq -/
-
-@[deprecated] theorem trans_rel_left {α : Sort u} {a b c : α}
-    (r : α → α → Prop) (h₁ : r a b) (h₂ : b = c) : r a c := h₂ ▸ h₁
-
-@[deprecated] theorem trans_rel_right {α : Sort u} {a b c : α}
-    (r : α → α → Prop) (h₁ : a = b) (h₂ : r b c) : r a c := h₁ ▸ h₂
 
 theorem not_of_eq_false {p : Prop} (h : p = False) : ¬p := fun hp ↦ h ▸ hp
 
@@ -45,8 +24,6 @@ theorem cast_proof_irrel (h₁ h₂ : α = β) (a : α) : cast h₁ a = cast h�
 attribute [symm] Eq.symm
 
 /- Ne -/
-
-theorem Ne.def {α : Sort u} (a b : α) : (a ≠ b) = ¬ (a = b) := rfl
 
 attribute [symm] Ne.symm
 
@@ -120,12 +97,10 @@ alias ⟨not_of_not_not_not, _⟩ := not_not_not
 -- FIXME
 -- attribute [congr] not_congr
 
-@[deprecated and_comm] theorem and_comm' (a b) : a ∧ b ↔ b ∧ a := and_comm
 #align and.comm and_comm
-#align and_comm and_comm'
+#align and_comm and_comm
 
-@[deprecated and_assoc] theorem and_assoc' (a b) : (a ∧ b) ∧ c ↔ a ∧ (b ∧ c) := and_assoc
-#align and_assoc and_assoc'
+#align and_assoc and_assoc
 #align and.assoc and_assoc
 
 #align and.left_comm and_left_comm
@@ -158,13 +133,11 @@ theorem false_and_iff : False ∧ p ↔ False := iff_of_eq (false_and _)
 #align eq_true_intro eq_true
 #align eq_false_intro eq_false
 
-@[deprecated or_comm] theorem or_comm' (a b) : a ∨ b ↔ b ∨ a := or_comm
 #align or.comm or_comm
-#align or_comm or_comm'
+#align or_comm or_comm
 
-@[deprecated or_assoc] theorem or_assoc' (a b) : (a ∨ b) ∨ c ↔ a ∨ (b ∨ c) := or_assoc
 #align or.assoc or_assoc
-#align or_assoc or_assoc'
+#align or_assoc or_assoc
 
 #align or_left_comm or_left_comm
 #align or.left_comm or_left_comm
@@ -213,16 +186,60 @@ theorem iff_self_iff (a : Prop) : (a ↔ a) ↔ True := iff_of_eq (iff_self _)
 
 def ExistsUnique (p : α → Prop) := ∃ x, p x ∧ ∀ y, p y → y = x
 
-open Lean TSyntax.Compat in
-macro "∃!" xs:explicitBinders ", " b:term : term => expandExplicitBinders ``ExistsUnique xs b
+namespace Mathlib.Notation
+open Lean
 
-/-- Pretty-printing for `ExistsUnique`, following the same pattern as pretty printing
-    for `Exists`. -/
+/--
+Checks to see that `xs` has only one binder.
+-/
+def isExplicitBinderSingular (xs : TSyntax ``explicitBinders) : Bool :=
+  match xs with
+  | `(explicitBinders| $_:binderIdent $[: $_]?) => true
+  | `(explicitBinders| ($_:binderIdent : $_)) => true
+  | _ => false
+
+open TSyntax.Compat in
+/--
+`∃! x : α, p x` means that there exists a unique `x` in `α` such that `p x`.
+This is notation for `ExistsUnique (fun (x : α) ↦ p x)`.
+
+This notation does not allow multiple binders like `∃! (x : α) (y : β), p x y`
+as a shorthand for `∃! (x : α), ∃! (y : β), p x y` since it is liable to be misunderstood.
+Often, the intended meaning is instead `∃! q : α × β, p q.1 q.2`.
+-/
+macro "∃!" xs:explicitBinders ", " b:term : term => do
+  if !isExplicitBinderSingular xs then
+    Macro.throwErrorAt xs "\
+      The `ExistsUnique` notation should not be used with more than one binder.\n\
+      \n\
+      The reason for this is that `∃! (x : α), ∃! (y : β), p x y` has a completely different \
+      meaning from `∃! q : α × β, p q.1 q.2`. \
+      To prevent confusion, this notation requires that you be explicit \
+      and use one with the correct interpretation."
+  expandExplicitBinders ``ExistsUnique xs b
+
+/--
+Pretty-printing for `ExistsUnique`, following the same pattern as pretty printing for `Exists`.
+However, it does *not* merge binders.
+-/
 @[app_unexpander ExistsUnique] def unexpandExistsUnique : Lean.PrettyPrinter.Unexpander
-  | `($(_) fun $x:ident ↦ ∃! $xs:binderIdent*, $b) => `(∃! $x:ident $xs:binderIdent*, $b)
   | `($(_) fun $x:ident ↦ $b)                      => `(∃! $x:ident, $b)
-  | `($(_) fun ($x:ident : $t) ↦ $b)               => `(∃! ($x:ident : $t), $b)
+  | `($(_) fun ($x:ident : $t) ↦ $b)               => `(∃! $x:ident : $t, $b)
   | _                                               => throw ()
+
+/--
+`∃! x ∈ s, p x` means `∃! x, x ∈ s ∧ p x`, which is to say that there exists a unique `x ∈ s`
+such that `p x`.
+Similarly, notations such as `∃! x ≤ n, p n` are supported,
+using any relation defined using the `binder_predicate` command.
+-/
+syntax "∃! " binderIdent binderPred ", " term : term
+
+macro_rules
+  | `(∃! $x:ident $p:binderPred, $b) => `(∃! $x:ident, satisfies_binder_pred% $x $p ∧ $b)
+  | `(∃! _ $p:binderPred, $b) => `(∃! x, satisfies_binder_pred% x $p ∧ $b)
+
+end Mathlib.Notation
 
 -- @[intro] -- TODO
 theorem ExistsUnique.intro {p : α → Prop} (w : α)
@@ -286,9 +303,6 @@ alias by_cases := byCases
 alias by_contradiction := byContradiction
 alias not_not_iff := not_not
 
-@[deprecated not_or] theorem not_or_iff_and_not (p q) [Decidable p] [Decidable q] :
-    ¬(p ∨ q) ↔ ¬p ∧ ¬q := not_or
-
 end Decidable
 
 #align decidable_of_decidable_of_iff decidable_of_decidable_of_iff
@@ -333,7 +347,7 @@ theorem decidableEq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α}
 
 #align inhabited.default Inhabited.default
 #align arbitrary Inhabited.default
-#align nonempty_of_inhabited instNonempty
+#align nonempty_of_inhabited instNonemptyOfInhabited
 
 /- subsingleton -/
 
@@ -343,9 +357,6 @@ theorem rec_subsingleton {p : Prop} [h : Decidable p] {h₁ : p → Sort u} {h�
   match h with
   | isTrue h => h₃ h
   | isFalse h => h₄ h
-
-@[deprecated ite_self]
-theorem if_t_t (c : Prop) [Decidable c] {α : Sort u} (t : α) : ite c t t = t := ite_self _
 
 theorem imp_of_if_pos {c t e : Prop} [Decidable c] (h : ite c t e) (hc : c) : t :=
   (if_pos hc ▸ h :)
@@ -657,5 +668,3 @@ end Binary
 #align subsingleton_iff_forall_eq subsingleton_iff_forall_eq
 #align false_ne_true false_ne_true
 #align ne_comm ne_comm
-
-attribute [pp_dot] False.elim Eq.symm Eq.trans

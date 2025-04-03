@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.AdaptationNote
 
 #align_import data.subtype from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 #align_import init.data.subtype.basic from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
@@ -35,7 +36,7 @@ variable {α β γ : Sort*} {p q : α → Prop}
 
 #noalign subtype.tag_irrelevant
 #noalign subtype.exists_of_subtype
-#align subtype.inhabited Subtype.instInhabitedSubtype
+#align subtype.inhabited Subtype.instInhabited
 
 attribute [coe] Subtype.val
 
@@ -141,8 +142,7 @@ theorem val_inj {a b : Subtype p} : a.val = b.val ↔ a = b :=
 
 lemma coe_ne_coe {a b : Subtype p} : (a : α) ≠ b ↔ a ≠ b := coe_injective.ne_iff
 
--- 2024-04-04
-@[deprecated] alias ⟨ne_of_val_ne, _⟩ := coe_ne_coe
+@[deprecated] alias ⟨ne_of_val_ne, _⟩ := coe_ne_coe -- 2024-04-04
 #align subtype.ne_of_val_ne Subtype.ne_of_val_ne
 
 -- Porting note: it is unclear why the linter doesn't like this.
@@ -183,7 +183,7 @@ theorem restrict_injective {α β} {f : α → β} (p : α → Prop) (h : Inject
 theorem surjective_restrict {α} {β : α → Type*} [ne : ∀ a, Nonempty (β a)] (p : α → Prop) :
     Surjective fun f : ∀ x, β x ↦ restrict p f := by
   letI := Classical.decPred p
-  refine' fun f ↦ ⟨fun x ↦ if h : p x then f ⟨x, h⟩ else Nonempty.some (ne x), funext <| _⟩
+  refine fun f ↦ ⟨fun x ↦ if h : p x then f ⟨x, h⟩ else Nonempty.some (ne x), funext <| ?_⟩
   rintro ⟨x, hx⟩
   exact dif_pos hx
 #align subtype.surjective_restrict Subtype.surjective_restrict
@@ -217,7 +217,7 @@ def map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ a, p a → 
 #align subtype.map Subtype.map
 #align subtype.map_coe Subtype.map_coe
 
--- Adaptation note: nightly-2024-03-16: added to replace simp [Subtype.map]
+#adaptation_note /-- nightly-2024-03-16: added to replace simp [Subtype.map] -/
 theorem map_def {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ a, p a → q (f a)) :
     map f h = fun x ↦ ⟨f x, h x x.prop⟩ :=
   rfl

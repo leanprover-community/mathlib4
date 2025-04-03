@@ -27,7 +27,7 @@ def HeytAlg :=
 
 namespace HeytAlg
 
-instance : CoeSort HeytAlg (Type*) :=
+instance : CoeSort HeytAlg Type* :=
   Bundled.coeSort
 
 instance (X : HeytAlg) : HeytingAlgebra X :=

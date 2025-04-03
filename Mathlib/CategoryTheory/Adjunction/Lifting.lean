@@ -74,7 +74,7 @@ coequalizer of something (i.e. a regular epi).
 def counitCoequalises [∀ X : B, RegularEpi (adj₁.counit.app X)] (X : B) :
     IsColimit (Cofork.ofπ (adj₁.counit.app X) (adj₁.counit_naturality _)) :=
   Cofork.IsColimit.mk' _ fun s => by
-    refine' ⟨(RegularEpi.desc' (adj₁.counit.app X) s.π _).1, _, _⟩
+    refine ⟨(RegularEpi.desc' (adj₁.counit.app X) s.π ?_).1, ?_, ?_⟩
     · rw [← cancel_epi (adj₁.counit.app (RegularEpi.W (adj₁.counit.app X)))]
       rw [← adj₁.counit_naturality_assoc RegularEpi.left]
       dsimp only [Functor.comp_obj]
@@ -153,7 +153,7 @@ noncomputable def constructLeftAdjointEquiv [∀ X : B, RegularEpi (adj₁.couni
 
 /-- Construct the left adjoint to `R`, with object map `constructLeftAdjointObj`. -/
 noncomputable def constructLeftAdjoint [∀ X : B, RegularEpi (adj₁.counit.app X)] : B ⥤ A := by
-  refine' Adjunction.leftAdjointOfEquiv (fun X Y => constructLeftAdjointEquiv R _ adj₁ adj₂ Y X) _
+  refine Adjunction.leftAdjointOfEquiv (fun X Y => constructLeftAdjointEquiv R _ adj₁ adj₂ Y X) ?_
   intro X Y Y' g h
   rw [constructLeftAdjointEquiv_apply, constructLeftAdjointEquiv_apply,
     Equiv.symm_apply_eq, Subtype.ext_iff]
@@ -175,30 +175,30 @@ pairs, then a functor `R : A ⥤ B` has a left adjoint if the composite `R ⋙ U
 Note the converse is true (with weaker assumptions), by `Adjunction.comp`.
 See https://ncatlab.org/nlab/show/adjoint+triangle+theorem
 -/
-noncomputable def adjointTriangleLift {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) (adj₁ : F ⊣ U)
+lemma adjointTriangleLift {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) (adj₁ : F ⊣ U)
     [∀ X : B, RegularEpi (adj₁.counit.app X)] [HasReflexiveCoequalizers A]
-    [IsRightAdjoint (R ⋙ U)] : IsRightAdjoint R where
-  left := LiftAdjoint.constructLeftAdjoint R _ adj₁ (Adjunction.ofRightAdjoint _)
-  adj := Adjunction.adjunctionOfEquivLeft _ _
-#align category_theory.adjoint_triangle_lift CategoryTheory.adjointTriangleLift
+    [(R ⋙ U).IsRightAdjoint ] : R.IsRightAdjoint where
+  exists_leftAdjoint :=
+    ⟨LiftAdjoint.constructLeftAdjoint R _ adj₁ (Adjunction.ofIsRightAdjoint _),
+      ⟨Adjunction.adjunctionOfEquivLeft _ _⟩⟩
 
 /-- If `R ⋙ U` has a left adjoint, the domain of `R` has reflexive coequalizers and `U` is a monadic
 functor, then `R` has a left adjoint.
 This is a special case of `adjointTriangleLift` which is often more useful in practice.
 -/
-noncomputable def monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint U] {R : A ⥤ B}
-    [HasReflexiveCoequalizers A] [IsRightAdjoint (R ⋙ U)] : IsRightAdjoint R := by
-  let R' : A ⥤ _ := R ⋙ Monad.comparison (Adjunction.ofRightAdjoint U)
-  rsuffices : IsRightAdjoint R'
-  · let this : IsRightAdjoint (R' ⋙ (Monad.comparison (Adjunction.ofRightAdjoint U)).inv) := by
+lemma monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint U] {R : A ⥤ B}
+    [HasReflexiveCoequalizers A] [(R ⋙ U).IsRightAdjoint] : R.IsRightAdjoint := by
+  let R' : A ⥤ _ := R ⋙ Monad.comparison (monadicAdjunction U)
+  rsuffices : R'.IsRightAdjoint
+  · let this : (R' ⋙ (Monad.comparison (monadicAdjunction U)).inv).IsRightAdjoint := by
       infer_instance
-    · let this : R' ⋙ (Monad.comparison (Adjunction.ofRightAdjoint U)).inv ≅ R :=
-        (isoWhiskerLeft R (Monad.comparison _).asEquivalence.unitIso.symm : _) ≪≫ R.rightUnitor
-      exact Adjunction.rightAdjointOfNatIso this
-  let this : IsRightAdjoint (R' ⋙ Monad.forget (Adjunction.ofRightAdjoint U).toMonad) :=
-    Adjunction.rightAdjointOfNatIso
-      (isoWhiskerLeft R (Monad.comparisonForget (Adjunction.ofRightAdjoint U)).symm : _)
-  let this : ∀ X, RegularEpi ((Monad.adj (Adjunction.ofRightAdjoint U).toMonad).counit.app X) := by
+    refine ((Adjunction.ofIsRightAdjoint
+      (R' ⋙ (Monad.comparison (monadicAdjunction U)).inv)).ofNatIsoRight ?_).isRightAdjoint
+    exact isoWhiskerLeft R (Monad.comparison _).asEquivalence.unitIso.symm ≪≫ R.rightUnitor
+  let this : (R' ⋙ Monad.forget (monadicAdjunction U).toMonad).IsRightAdjoint := by
+    refine ((Adjunction.ofIsRightAdjoint (R ⋙ U)).ofNatIsoRight ?_).isRightAdjoint
+    exact isoWhiskerLeft R (Monad.comparisonForget (monadicAdjunction U)).symm
+  let this : ∀ X, RegularEpi ((Monad.adj (monadicAdjunction U).toMonad).counit.app X) := by
     intro X
     simp only [Monad.adj_counit]
     exact ⟨_, _, _, _, Monad.beckAlgebraCoequalizer X⟩
@@ -222,12 +222,12 @@ Then `Q` has a left adjoint if `R` has a left adjoint.
 
 See https://ncatlab.org/nlab/show/adjoint+lifting+theorem
 -/
-noncomputable def adjointSquareLift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (R : C ⥤ D)
-    (comm : U ⋙ R ≅ Q ⋙ V) [IsRightAdjoint U] [IsRightAdjoint V] [IsRightAdjoint R]
-    [∀ X, RegularEpi ((Adjunction.ofRightAdjoint V).counit.app X)] [HasReflexiveCoequalizers A] :
-    IsRightAdjoint Q :=
-  letI := Adjunction.rightAdjointOfNatIso comm
-  adjointTriangleLift Q (Adjunction.ofRightAdjoint V)
+lemma adjointSquareLift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (R : C ⥤ D)
+    (comm : U ⋙ R ≅ Q ⋙ V) [U.IsRightAdjoint] [V.IsRightAdjoint] [R.IsRightAdjoint]
+    [∀ X, RegularEpi ((Adjunction.ofIsRightAdjoint V).counit.app X)] [HasReflexiveCoequalizers A] :
+    Q.IsRightAdjoint :=
+  have := ((Adjunction.ofIsRightAdjoint (U ⋙ R)).ofNatIsoRight comm).isRightAdjoint
+  adjointTriangleLift Q (Adjunction.ofIsRightAdjoint V)
 #align category_theory.adjoint_square_lift CategoryTheory.adjointSquareLift
 
 /-- Suppose we have a commutative square of functors
@@ -243,10 +243,10 @@ Then `Q` has a left adjoint if `R` has a left adjoint.
 
 See https://ncatlab.org/nlab/show/adjoint+lifting+theorem
 -/
-noncomputable def monadicAdjointSquareLift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (R : C ⥤ D)
-    (comm : U ⋙ R ≅ Q ⋙ V) [IsRightAdjoint U] [MonadicRightAdjoint V] [IsRightAdjoint R]
-    [HasReflexiveCoequalizers A] : IsRightAdjoint Q :=
-  letI := Adjunction.rightAdjointOfNatIso comm
+lemma monadicAdjointSquareLift (Q : A ⥤ B) (V : B ⥤ D) (U : A ⥤ C) (R : C ⥤ D)
+    (comm : U ⋙ R ≅ Q ⋙ V) [U.IsRightAdjoint] [MonadicRightAdjoint V] [R.IsRightAdjoint]
+    [HasReflexiveCoequalizers A] : Q.IsRightAdjoint :=
+  have := ((Adjunction.ofIsRightAdjoint (U ⋙ R)).ofNatIsoRight comm).isRightAdjoint
   monadicAdjointTriangleLift V
 #align category_theory.monadic_adjoint_square_lift CategoryTheory.monadicAdjointSquareLift
 

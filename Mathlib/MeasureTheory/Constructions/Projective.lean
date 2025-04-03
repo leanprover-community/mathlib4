@@ -51,8 +51,8 @@ lemma measure_univ_eq_of_subset (hP : IsProjectiveMeasureFamily P) (hJI : J ⊆ 
     P I univ = P J univ := by
   classical
   have : (univ : Set (∀ i : I, α i)) =
-      (fun x : ∀ i : I, α i ↦ fun i : J ↦ x ⟨i, hJI i.2⟩) ⁻¹' (univ : Set (∀ i : J, α i)) :=
-    by rw [preimage_univ]
+      (fun x : ∀ i : I, α i ↦ fun i : J ↦ x ⟨i, hJI i.2⟩) ⁻¹' (univ : Set (∀ i : J, α i)) := by
+    rw [preimage_univ]
   rw [this, ← Measure.map_apply _ MeasurableSet.univ]
   · rw [hP I J hJI]
   · exact measurable_pi_lambda _ (fun _ ↦ measurable_pi_apply _)

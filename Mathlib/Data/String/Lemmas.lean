@@ -12,12 +12,6 @@ namespace String
 lemma congr_append : ∀ (a b : String), a ++ b = String.mk (a.data ++ b.data)
   | ⟨_⟩, ⟨_⟩ => rfl
 
-@[simp] lemma length_append : ∀ (as bs : String), (as ++ bs).length = as.length + bs.length
-  | ⟨as⟩, ⟨bs⟩ => by
-    rw [congr_append]
-    simp only [String.length]
-    exact List.length_append as bs
-
 @[simp] lemma length_replicate (n : ℕ) (c : Char) : (replicate n c).length = n := by
   simp only [String.length, String.replicate, List.length_replicate]
 

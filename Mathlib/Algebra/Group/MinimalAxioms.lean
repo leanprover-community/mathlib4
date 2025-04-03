@@ -21,6 +21,9 @@ equalities.
 
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 universe u
 
 /-- Define a `Group` structure on a Type by proving `∀ a, 1 * a = a` and

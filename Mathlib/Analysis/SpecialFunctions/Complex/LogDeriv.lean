@@ -36,7 +36,7 @@ noncomputable def expPartialHomeomorph : PartialHomeomorph ℂ ℂ :=
       target := slitPlane
       map_source' := by
         rintro ⟨x, y⟩ ⟨h₁ : -π < y, h₂ : y < π⟩
-        refine' (not_or_of_imp fun hz => _).symm
+        refine (not_or_of_imp fun hz => ?_).symm
         obtain rfl : y = 0 := by
           rw [exp_im] at hz
           simpa [(Real.exp_pos _).ne', Real.sin_eq_zero_iff_of_lt_of_lt h₁ h₂] using hz

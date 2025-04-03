@@ -30,7 +30,7 @@ open Projective
 
 variable [HasZeroObject C] [HasZeroMorphisms C]
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /--
 A `ProjectiveResolution Z` consists of a bundled `ℕ`-indexed chain complex of projective objects,
 along with a quasi-isomorphism to the complex consisting of just `Z` supported in degree `0`.
@@ -78,7 +78,7 @@ variable {Z : C} (P : ProjectiveResolution Z)
 lemma complex_exactAt_succ (n : ℕ) :
     P.complex.ExactAt (n + 1) := by
   rw [← quasiIsoAt_iff_exactAt' P.π (n + 1) (exactAt_succ_single_obj _ _)]
-  · infer_instance
+  infer_instance
 
 lemma exact_succ (n : ℕ):
     (ShortComplex.mk _ _ (P.complex.d_comp_d (n + 2) (n + 1) n)).Exact :=

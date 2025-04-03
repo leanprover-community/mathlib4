@@ -12,7 +12,7 @@ import Mathlib.Data.List.Basic
 
 This file proves basic properties of `List.countP` and `List.count`, which count the number of
 elements of a list satisfying a predicate and equal to a given element respectively. Their
-definitions can be found in `Std.Data.List.Basic`.
+definitions can be found in `Batteries.Data.List.Basic`.
 -/
 
 assert_not_exists Set.range
@@ -86,7 +86,8 @@ variable [DecidableEq α]
 
 #align list.count_nil List.count_nil
 
-@[deprecated] theorem count_cons' (a b : α) (l : List α) :
+@[deprecated] -- 2023-08-23
+theorem count_cons' (a b : α) (l : List α) :
     count a (b :: l) = count a l + if a = b then 1 else 0 := by
   simp only [count, beq_iff_eq, countP_cons, Nat.add_right_inj]
   simp only [eq_comm]

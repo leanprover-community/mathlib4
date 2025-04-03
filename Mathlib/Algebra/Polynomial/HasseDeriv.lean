@@ -29,7 +29,7 @@ In the following, we write `D k` for the `k`-th Hasse derivative `hasse_deriv k`
 * `Polynomial.factorial_smul_hasseDeriv`: the identity `k! • (D k f) = derivative^[k] f`
 * `Polynomial.hasseDeriv_comp`: the identity `(D k).comp (D l) = (k+l).choose k • D (k+l)`
 * `Polynomial.hasseDeriv_mul`:
-  the "Leibniz rule" `D k (f * g) = ∑ ij in antidiagonal k, D ij.1 f * D ij.2 g`
+  the "Leibniz rule" `D k (f * g) = ∑ ij ∈ antidiagonal k, D ij.1 f * D ij.2 g`
 
 For the identity principle, see `Polynomial.eq_zero_of_hasseDeriv_eq_zero`
 in `Data/Polynomial/Taylor.lean`.
@@ -45,7 +45,7 @@ noncomputable section
 
 namespace Polynomial
 
-open Nat BigOperators Polynomial
+open Nat Polynomial
 
 open Function
 
@@ -95,7 +95,7 @@ theorem hasseDeriv_zero : @hasseDeriv R _ 0 = LinearMap.id :=
 theorem hasseDeriv_eq_zero_of_lt_natDegree (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
     hasseDeriv n p = 0 := by
   rw [hasseDeriv_apply, sum_def]
-  refine' Finset.sum_eq_zero fun x hx => _
+  refine Finset.sum_eq_zero fun x hx => ?_
   simp [Nat.choose_eq_zero_of_lt ((le_natDegree_of_mem_supp _ hx).trans_lt h)]
 #align polynomial.hasse_deriv_eq_zero_of_lt_nat_degree Polynomial.hasseDeriv_eq_zero_of_lt_natDegree
 
@@ -195,7 +195,7 @@ theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) ≤ natDegree p - n := by
   classical
     rw [hasseDeriv_apply, sum_def]
-    refine' (natDegree_sum_le _ _).trans _
+    refine (natDegree_sum_le _ _).trans ?_
     simp_rw [Function.comp, natDegree_monomial]
     rw [Finset.fold_ite, Finset.fold_const]
     · simp only [ite_self, max_eq_right, zero_le', Finset.fold_max_le, true_and_iff, and_imp,
@@ -213,7 +213,7 @@ theorem natDegree_hasseDeriv [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) = natDegree p - n := by
   cases' lt_or_le p.natDegree n with hn hn
   · simpa [hasseDeriv_eq_zero_of_lt_natDegree, hn] using (tsub_eq_zero_of_le hn.le).symm
-  · refine' map_natDegree_eq_sub _ _
+  · refine map_natDegree_eq_sub ?_ ?_
     · exact fun h => hasseDeriv_eq_zero_of_lt_natDegree _ _
     · classical
         simp only [ite_eq_right_iff, Ne, natDegree_monomial, hasseDeriv_monomial]
@@ -230,12 +230,12 @@ open AddMonoidHom Finset.Nat
 open Finset (antidiagonal mem_antidiagonal)
 
 theorem hasseDeriv_mul (f g : R[X]) :
-    hasseDeriv k (f * g) = ∑ ij in antidiagonal k, hasseDeriv ij.1 f * hasseDeriv ij.2 g := by
+    hasseDeriv k (f * g) = ∑ ij ∈ antidiagonal k, hasseDeriv ij.1 f * hasseDeriv ij.2 g := by
   let D k := (@hasseDeriv R _ k).toAddMonoidHom
   let Φ := @AddMonoidHom.mul R[X] _
   show
     (compHom (D k)).comp Φ f g =
-      ∑ ij : ℕ × ℕ in antidiagonal k, ((compHom.comp ((compHom Φ) (D ij.1))).flip (D ij.2) f) g
+      ∑ ij ∈ antidiagonal k, ((compHom.comp ((compHom Φ) (D ij.1))).flip (D ij.2) f) g
   simp only [← finset_sum_apply]
   congr 2
   clear f g

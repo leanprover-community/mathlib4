@@ -27,8 +27,6 @@ This file contains some results about vector spaces over the field of fractions 
 -/
 
 
-open BigOperators
-
 open nonZeroDivisors
 
 section Localization
@@ -60,7 +58,7 @@ theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
   rw [linearIndependent_iff'] at hv ⊢
   intro t g hg i hi
   choose! a g' hg' using IsLocalization.exist_integer_multiples S t g
-  have h0 : f (∑ i in t, g' i • v i) = 0 := by
+  have h0 : f (∑ i ∈ t, g' i • v i) = 0 := by
     apply_fun ((a : R) • ·) at hg
     rw [smul_zero, Finset.smul_sum] at hg
     rw [map_sum, ← hg]

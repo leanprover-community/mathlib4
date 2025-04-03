@@ -182,7 +182,7 @@ lemma inv_Gammaℝ_two_sub {s : ℂ} (hs : ∀ (n : ℕ), s ≠ -n) :
     neg_div, (by norm_num : (1 + 1) / 2 = (1 : ℂ)), Complex.Gamma_one, Gammaℂ_one,
     mul_one, Complex.sin_pi_div_two, mul_one, cpow_neg_one, mul_one, inv_inv,
     div_mul_cancel₀ _ (ofReal_ne_zero.mpr pi_ne_zero), inv_one]
-  rw [← Ne.def, ← sub_ne_zero] at h
+  rw [← Ne, ← sub_ne_zero] at h
   have h' (n : ℕ) : s - 1 ≠ -n := by
     cases' n with m
     · rwa [Nat.cast_zero, neg_zero]

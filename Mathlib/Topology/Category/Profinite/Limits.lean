@@ -23,7 +23,13 @@ which may be useful due to their definitional properties.
 
 namespace Profinite
 
-universe u
+universe u w
+
+/-
+Previously, this had accidentally been made a global instance,
+and we now turn it on locally when convenient.
+-/
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
 open CategoryTheory Limits
 
@@ -130,7 +136,7 @@ end Pullbacks
 
 section FiniteCoproducts
 
-variable {α : Type} [Finite α] (X : α → Profinite.{u})
+variable {α : Type w} [Finite α] (X : α → Profinite.{max u w})
 
 /--
 The coproduct of a finite family of objects in `Profinite`, constructed as the disjoint
@@ -148,7 +154,7 @@ To construct a morphism from the explicit finite coproduct, it suffices to
 specify a morphism from each of its factors.
 This is essentially the universal property of the coproduct.
 -/
-def finiteCoproduct.desc {B : Profinite.{u}} (e : (a : α) → (X a ⟶ B)) :
+def finiteCoproduct.desc {B : Profinite.{max u w}} (e : (a : α) → (X a ⟶ B)) :
     finiteCoproduct X ⟶ B where
   toFun := fun ⟨a, x⟩ => e a x
   continuous_toFun := by
@@ -157,10 +163,10 @@ def finiteCoproduct.desc {B : Profinite.{u}} (e : (a : α) → (X a ⟶ B)) :
     exact (e a).continuous
 
 @[reassoc (attr := simp)]
-lemma finiteCoproduct.ι_desc {B : Profinite.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
+lemma finiteCoproduct.ι_desc {B : Profinite.{max u w}} (e : (a : α) → (X a ⟶ B)) (a : α) :
     finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
 
-lemma finiteCoproduct.hom_ext {B : Profinite.{u}} (f g : finiteCoproduct X ⟶ B)
+lemma finiteCoproduct.hom_ext {B : Profinite.{max u w}} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
   ext ⟨a, x⟩
   specialize h a
@@ -168,21 +174,16 @@ lemma finiteCoproduct.hom_ext {B : Profinite.{u}} (f g : finiteCoproduct X ⟶ B
   exact h
 
 /-- The coproduct cocone associated to the explicit finite coproduct. -/
-@[simps]
-def finiteCoproduct.cocone : Limits.Cocone (Discrete.functor X) where
-  pt := finiteCoproduct X
-  ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι X a
+abbrev finiteCoproduct.cofan : Limits.Cofan X :=
+  Cofan.mk (finiteCoproduct X) (finiteCoproduct.ι X)
 
 /-- The explicit finite coproduct cocone is a colimit cocone. -/
-@[simps]
-def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cocone X) where
-  desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
-  fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
-  uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
-    specialize hm ⟨a⟩
-    ext t
-    apply_fun (· t) at hm
-    exact hm
+def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cofan X) :=
+  mkCofanColimit _
+    (fun s ↦ desc _ fun a ↦ s.inj a)
+    (fun s a ↦ ι_desc _ _ _)
+    fun s m hm ↦ finiteCoproduct.hom_ext _ _ _ fun a ↦
+      (by ext t; exact congrFun (congrArg DFunLike.coe (hm a)) t)
 
 section Iso
 
@@ -193,13 +194,12 @@ Limits.IsColimit.coconePointUniqueUpToIso (finiteCoproduct.isColimit X) (Limits.
 
 theorem Sigma.ι_comp_toFiniteCoproduct (a : α) :
     (Limits.Sigma.ι X a) ≫ (coproductIsoCoproduct X).inv = finiteCoproduct.ι X a := by
-  simp only [coproductIsoCoproduct, Limits.colimit.comp_coconePointUniqueUpToIso_inv,
-    finiteCoproduct.cocone_pt, finiteCoproduct.cocone_ι, Discrete.natTrans_app]
+  simp [coproductIsoCoproduct]
 
 /-- The homeomorphism from the explicit finite coproducts to the abstract coproduct. -/
 noncomputable
 def coproductHomeoCoproduct : finiteCoproduct X ≃ₜ (∐ X : _) :=
-Profinite.homeoOfIso (coproductIsoCoproduct X)
+  Profinite.homeoOfIso (coproductIsoCoproduct X)
 
 end Iso
 
@@ -222,6 +222,10 @@ instance : PreservesFiniteCoproducts profiniteToCompHaus := by
     preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
   apply preservesColimitOfPreservesColimitCocone (Profinite.finiteCoproduct.isColimit _)
   exact CompHaus.finiteCoproduct.isColimit _
+
+noncomputable instance : PreservesFiniteCoproducts Profinite.toTopCat.{u} where
+  preserves _ _:= (inferInstance :
+    PreservesColimitsOfShape _ (profiniteToCompHaus.{u} ⋙ compHausToTop.{u}))
 
 instance : FinitaryExtensive Profinite :=
   finitaryExtensive_of_preserves_and_reflects profiniteToCompHaus

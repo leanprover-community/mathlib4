@@ -3,8 +3,9 @@ Copyright (c) 2021 Alain Verberkmoes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alain Verberkmoes
 -/
-import Mathlib.Data.Int.Dvd.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Algebra.Order.Group.Int
+import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Algebra.Ring.Int
 
 #align_import imo.imo2011_q5 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
 
@@ -36,11 +37,11 @@ theorem imo2011_q5 (f : ℤ → ℤ) (hpos : ∀ n : ℤ, 0 < f n) (hdvd : ∀ m
     have h_neg_d_lt_fn : -d < f n := by
       calc
         -d = f (m - n) - f m := neg_sub _ _
-        _ < f (m - n) := (sub_lt_self _ (hpos m))
-        _ ≤ f n - f m := (le_of_dvd (sub_pos.mpr h_fm_lt_fn) ?_)
+        _ < f (m - n) := sub_lt_self _ (hpos m)
+        _ ≤ f n - f m := le_of_dvd (sub_pos.mpr h_fm_lt_fn) ?_
         _ < f n := sub_lt_self _ (hpos m)
       -- ⊢ f (m - n) ∣ f n - f m
-      rw [← dvd_neg, neg_sub]
+      rw [← Int.dvd_neg, neg_sub]
       exact hdvd m n
     have h_d_eq_zero : d = 0 := by
       obtain hd | hd | hd : d > 0 ∨ d = 0 ∨ d < 0 := trichotomous d 0

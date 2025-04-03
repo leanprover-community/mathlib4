@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Data.Set.NAry
 import Mathlib.Order.Directed
 
@@ -173,16 +173,14 @@ theorem IsGLB.dual (h : IsGLB s a) : IsLUB (ofDual ⁻¹' s) (toDual a) :=
 #align is_glb.dual IsGLB.dual
 
 /-- If `a` is the least element of a set `s`, then subtype `s` is an order with bottom element. -/
-@[reducible]
-def IsLeast.orderBot (h : IsLeast s a) :
+abbrev IsLeast.orderBot (h : IsLeast s a) :
     OrderBot s where
   bot := ⟨a, h.1⟩
   bot_le := Subtype.forall.2 h.2
 #align is_least.order_bot IsLeast.orderBot
 
 /-- If `a` is the greatest element of a set `s`, then subtype `s` is an order with top element. -/
-@[reducible]
-def IsGreatest.orderTop (h : IsGreatest s a) :
+abbrev IsGreatest.orderTop (h : IsGreatest s a) :
     OrderTop s where
   top := ⟨a, h.1⟩
   le_top := Subtype.forall.2 h.2
@@ -582,10 +580,10 @@ theorem exists_lub_Iio (i : γ) : ∃ j, IsLUB (Iio i) j := by
   by_cases h_exists_lt : ∃ j, j ∈ upperBounds (Iio i) ∧ j < i
   · obtain ⟨j, hj_ub, hj_lt_i⟩ := h_exists_lt
     exact ⟨j, hj_ub, fun k hk_ub => hk_ub hj_lt_i⟩
-  · refine' ⟨i, fun j hj => le_of_lt hj, _⟩
+  · refine ⟨i, fun j hj => le_of_lt hj, ?_⟩
     rw [mem_lowerBounds]
     by_contra h
-    refine' h_exists_lt _
+    refine h_exists_lt ?_
     push_neg at h
     exact h
 #align exists_lub_Iio exists_lub_Iio
@@ -868,7 +866,7 @@ theorem not_bddBelow_univ [NoMinOrder α] : ¬BddBelow (univ : Set α) :=
 
 @[simp]
 theorem upperBounds_empty : upperBounds (∅ : Set α) = univ := by
-  simp only [upperBounds, eq_univ_iff_forall, mem_setOf_eq, ball_empty_iff, forall_true_iff]
+  simp only [upperBounds, eq_univ_iff_forall, mem_setOf_eq, forall_mem_empty, forall_true_iff]
 #align upper_bounds_empty upperBounds_empty
 
 @[simp]
@@ -937,7 +935,7 @@ protected theorem BddAbove.insert [IsDirected α (· ≤ ·)] {s : Set α} (a : 
   bddAbove_insert.2
 #align bdd_above.insert BddAbove.insert
 
-/-- Adding a point to a set preserves its boundedness below.-/
+/-- Adding a point to a set preserves its boundedness below. -/
 @[simp]
 theorem bddBelow_insert [IsDirected α (· ≥ ·)] {s : Set α} {a : α} :
     BddBelow (insert a s) ↔ BddBelow s := by
@@ -1592,11 +1590,11 @@ lemma bddBelow_range_prod {F : ι → α × β} :
 
 theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
     IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
-  refine'
+  refine
     ⟨fun H =>
-      ⟨⟨monotone_fst.mem_upperBounds_image H.1, fun a ha => _⟩,
-        ⟨monotone_snd.mem_upperBounds_image H.1, fun a ha => _⟩⟩,
-      fun H => ⟨_, _⟩⟩
+      ⟨⟨monotone_fst.mem_upperBounds_image H.1, fun a ha => ?_⟩,
+        ⟨monotone_snd.mem_upperBounds_image H.1, fun a ha => ?_⟩⟩,
+      fun H => ⟨?_, ?_⟩⟩
   · suffices h : (a, p.2) ∈ upperBounds s from (H.2 h).1
     exact fun q hq => ⟨ha <| mem_image_of_mem _ hq, (H.1 hq).2⟩
   · suffices h : (p.1, a) ∈ upperBounds s from (H.2 h).2
@@ -1640,9 +1638,9 @@ lemma bddBelow_range_pi {F : ι → ∀ a, π a} :
 theorem isLUB_pi {s : Set (∀ a, π a)} {f : ∀ a, π a} :
     IsLUB s f ↔ ∀ a, IsLUB (Function.eval a '' s) (f a) := by
   classical
-    refine'
-      ⟨fun H a => ⟨(Function.monotone_eval a).mem_upperBounds_image H.1, fun b hb => _⟩, fun H =>
-        ⟨_, _⟩⟩
+    refine
+      ⟨fun H a => ⟨(Function.monotone_eval a).mem_upperBounds_image H.1, fun b hb => ?_⟩, fun H =>
+        ⟨?_, ?_⟩⟩
     · suffices h : Function.update f a b ∈ upperBounds s from Function.update_same a b f ▸ H.2 h a
       exact fun g hg => le_update_iff.2 ⟨hb <| mem_image_of_mem _ hg, fun i _ => H.1 hg i⟩
     · exact fun g hg a => (H a).1 (mem_image_of_mem _ hg)
@@ -1709,8 +1707,8 @@ def ScottContinuous (f : α → β) : Prop :=
 #align scott_continuous ScottContinuous
 
 protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f := by
-  refine' fun a b hab =>
-    (h (insert_nonempty _ _) (directedOn_pair le_refl hab) _).1
+  refine fun a b hab =>
+    (h (insert_nonempty _ _) (directedOn_pair le_refl hab) ?_).1
       (mem_image_of_mem _ <| mem_insert _ _)
   rw [IsLUB, upperBounds_insert, upperBounds_singleton,
     inter_eq_self_of_subset_right (Ici_subset_Ici.2 hab)]

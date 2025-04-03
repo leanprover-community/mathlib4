@@ -187,9 +187,9 @@ theorem sdiff_symmDiff_eq_sup : (a \ b) ∆ b = a ⊔ b := by
 
 @[simp]
 theorem symmDiff_sup_inf : a ∆ b ⊔ a ⊓ b = a ⊔ b := by
-  refine' le_antisymm (sup_le symmDiff_le_sup inf_le_sup) _
+  refine le_antisymm (sup_le symmDiff_le_sup inf_le_sup) ?_
   rw [sup_inf_left, symmDiff]
-  refine' sup_le (le_inf le_sup_right _) (le_inf _ le_sup_right)
+  refine sup_le (le_inf le_sup_right ?_) (le_inf ?_ le_sup_right)
   · rw [sup_right_comm]
     exact le_sup_of_le_left le_sdiff_sup
   · rw [sup_assoc]
@@ -211,9 +211,15 @@ theorem inf_symmDiff_symmDiff : (a ⊓ b) ∆ (a ∆ b) = a ⊔ b := by
 #align inf_symm_diff_symm_diff inf_symmDiff_symmDiff
 
 theorem symmDiff_triangle : a ∆ c ≤ a ∆ b ⊔ b ∆ c := by
-  refine' (sup_le_sup (sdiff_triangle a b c) <| sdiff_triangle _ b _).trans_eq _
+  refine (sup_le_sup (sdiff_triangle a b c) <| sdiff_triangle _ b _).trans_eq ?_
   rw [sup_comm (c \ b), sup_sup_sup_comm, symmDiff, symmDiff]
 #align symm_diff_triangle symmDiff_triangle
+
+theorem le_symmDiff_sup_right (a b : α) : a ≤ (a ∆ b) ⊔ b := by
+  convert symmDiff_triangle a b ⊥ <;> rw [symmDiff_bot]
+
+theorem le_symmDiff_sup_left (a b : α) : b ≤ (a ∆ b) ⊔ a :=
+  symmDiff_comm a b ▸ le_symmDiff_sup_right ..
 
 end GeneralizedCoheytingAlgebra
 
@@ -435,14 +441,14 @@ theorem sdiff_symmDiff_right : b \ a ∆ b = a ⊓ b := by
 #align sdiff_symm_diff_right sdiff_symmDiff_right
 
 theorem symmDiff_eq_sup : a ∆ b = a ⊔ b ↔ Disjoint a b := by
-  refine' ⟨fun h => _, Disjoint.symmDiff_eq_sup⟩
+  refine ⟨fun h => ?_, Disjoint.symmDiff_eq_sup⟩
   rw [symmDiff_eq_sup_sdiff_inf, sdiff_eq_self_iff_disjoint] at h
   exact h.of_disjoint_inf_of_le le_sup_left
 #align symm_diff_eq_sup symmDiff_eq_sup
 
 @[simp]
 theorem le_symmDiff_iff_left : a ≤ a ∆ b ↔ Disjoint a b := by
-  refine' ⟨fun h => _, fun h => h.symmDiff_eq_sup.symm ▸ le_sup_left⟩
+  refine ⟨fun h => ?_, fun h => h.symmDiff_eq_sup.symm ▸ le_sup_left⟩
   rw [symmDiff_eq_sup_sdiff_inf] at h
   exact disjoint_iff_inf_le.mpr (le_sdiff_iff.1 <| inf_le_of_left_le h).le
 #align le_symm_diff_iff_left le_symmDiff_iff_left
@@ -571,7 +577,7 @@ section BooleanAlgebra
 
 variable [BooleanAlgebra α] (a b c d : α)
 
-/- `CogeneralizedBooleanAlgebra` isn't actually a typeclass, but the lemmas in here are dual to
+/-! `CogeneralizedBooleanAlgebra` isn't actually a typeclass, but the lemmas in here are dual to
 the `GeneralizedBooleanAlgebra` ones -/
 section CogeneralizedBooleanAlgebra
 

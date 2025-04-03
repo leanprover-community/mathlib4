@@ -6,7 +6,7 @@ Authors: Arend Mellendijk
 
 import Mathlib.NumberTheory.ArithmeticFunction
 
-open scoped BigOperators
+
 open ArithmeticFunction
 
 variable {R : Type*} [Field R]

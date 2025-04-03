@@ -43,6 +43,10 @@ def toContinuousMap (p : R[X]) : C(R, R) :=
   ⟨fun x : R => p.eval x, by continuity⟩
 #align polynomial.to_continuous_map Polynomial.toContinuousMap
 
+open ContinuousMap in
+lemma toContinuousMap_X_eq_id : X.toContinuousMap = .id R := by
+  ext; simp
+
 /-- A polynomial as a continuous function,
 with domain restricted to some subset of the semiring of coefficients.
 
@@ -53,6 +57,12 @@ def toContinuousMapOn (p : R[X]) (X : Set R) : C(X, R) :=
   -- Porting note: Old proof was `⟨fun x : X => p.toContinuousMap x, by continuity⟩`
   ⟨fun x : X => p.toContinuousMap x, Continuous.comp (by continuity) (by continuity)⟩
 #align polynomial.to_continuous_map_on Polynomial.toContinuousMapOn
+
+open ContinuousMap in
+lemma toContinuousMapOn_X_eq_restrict_id (s : Set R) :
+    X.toContinuousMapOn s = restrict s (.id R) := by
+  ext; simp
+
 
 -- TODO some lemmas about when `toContinuousMapOn` is injective?
 end
@@ -65,7 +75,7 @@ variable {α : Type*} [TopologicalSpace α] [CommSemiring R] [TopologicalSpace R
 @[simp]
 theorem aeval_continuousMap_apply (g : R[X]) (f : C(α, R)) (x : α) :
     ((Polynomial.aeval f) g) x = g.eval (f x) := by
-  refine' Polynomial.induction_on' g _ _
+  refine Polynomial.induction_on' g ?_ ?_
   · intro p q hp hq
     simp [hp, hq]
   · intro n a
@@ -153,7 +163,7 @@ theorem polynomialFunctions_coe (X : Set R) :
 theorem polynomialFunctions_separatesPoints (X : Set R) : (polynomialFunctions X).SeparatesPoints :=
   fun x y h => by
   -- We use `Polynomial.X`, then clean up.
-  refine' ⟨_, ⟨⟨_, ⟨⟨Polynomial.X, ⟨Algebra.mem_top, rfl⟩⟩, rfl⟩⟩, _⟩⟩
+  refine ⟨_, ⟨⟨_, ⟨⟨Polynomial.X, ⟨Algebra.mem_top, rfl⟩⟩, rfl⟩⟩, ?_⟩⟩
   dsimp; simp only [Polynomial.eval_X]
   exact fun h' => h (Subtype.ext h')
 #align polynomial_functions_separates_points polynomialFunctions_separatesPoints
@@ -173,7 +183,7 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
     rw [DFunLike.ext_iff] at w
     dsimp at w
     let q := p.comp ((b - a)⁻¹ • Polynomial.X + Polynomial.C (-a * (b - a)⁻¹))
-    refine' ⟨q, ⟨_, _⟩⟩
+    refine ⟨q, ⟨?_, ?_⟩⟩
     · simp
     · ext x
       simp only [q, neg_mul, RingHom.map_neg, RingHom.map_mul, AlgHom.coe_toRingHom,
@@ -199,7 +209,7 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
           exact w₃
   · rintro ⟨p, ⟨-, rfl⟩⟩
     let q := p.comp ((b - a) • Polynomial.X + Polynomial.C a)
-    refine' ⟨q, ⟨_, _⟩⟩
+    refine ⟨q, ⟨?_, ?_⟩⟩
     · simp
     · ext x
       simp [q, mul_comm]

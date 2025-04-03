@@ -24,7 +24,7 @@ In the special case that `A = M →ₗ[R] M` and `φ : M →ₗ[R] M`, the modul
 abbreviated `Module.AEval' φ`. In this module we have `X • m = ↑φ m`.
 -/
 universe u v
-open Set Function Polynomial BigOperators
+open Set Function Polynomial
 
 namespace Module
 /--
@@ -282,7 +282,6 @@ theorem induction_linear {P : PolynomialModule R M → Prop} (f : PolynomialModu
   Finsupp.induction_linear f h0 hadd hsingle
 #align polynomial_module.induction_linear PolynomialModule.induction_linear
 
-@[semireducible]
 noncomputable instance polynomialModule : Module R[X] (PolynomialModule R M) :=
   inferInstanceAs (Module R[X] (Module.AEval' (Finsupp.lmapDomain M R Nat.succ)))
 #align polynomial_module.polynomial_module PolynomialModule.polynomialModule
@@ -311,10 +310,10 @@ theorem monomial_smul_single (i : ℕ) (r : R) (j : ℕ) (m : M) :
     Module.algebraMap_end_apply, smul_def]
   induction i generalizing r j m with
   | zero =>
-    rw [Nat.zero_eq, Function.iterate_zero, zero_add]
+    rw [Function.iterate_zero, zero_add]
     exact Finsupp.smul_single r j m
   | succ n hn =>
-    rw [Function.iterate_succ, Function.comp_apply, Nat.succ_eq_add_one, add_assoc, ← hn]
+    rw [Function.iterate_succ, Function.comp_apply, add_assoc, ← hn]
     congr 2
     rw [Nat.one_add]
     exact Finsupp.mapDomain_single
@@ -355,7 +354,7 @@ theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
 #align polynomial_module.smul_single_apply PolynomialModule.smul_single_apply
 
 theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
-    (f • g) n = ∑ x in Finset.antidiagonal n, f.coeff x.1 • g x.2 := by
+    (f • g) n = ∑ x ∈ Finset.antidiagonal n, f.coeff x.1 • g x.2 := by
   induction' f using Polynomial.induction_on' with p q hp hq f_n f_a
   · rw [add_smul, Finsupp.add_apply, hp, hq, ← Finset.sum_add_distrib]
     congr
@@ -385,7 +384,7 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
         single_apply, ge_iff_le, smul_eq_mul, Polynomial.coeff_mul, mul_ite, mul_zero]
         split_ifs with hn
         · rw [Finset.sum_eq_single (i - n, n)]
-          simp only [ite_true]
+          · simp only [ite_true]
           · rintro ⟨p, q⟩ hpq1 hpq2
             rw [Finset.mem_antidiagonal] at hpq1
             split_ifs with H
@@ -446,7 +445,7 @@ def eval (r : R) : PolynomialModule R M →ₗ[R] M where
   toFun p := p.sum fun i m => r ^ i • m
   map_add' x y := Finsupp.sum_add_index' (fun _ => smul_zero _) fun _ _ _ => smul_add _ _ _
   map_smul' s m := by
-    refine' (Finsupp.sum_smul_index' _).trans _
+    refine (Finsupp.sum_smul_index' ?_).trans ?_
     · exact fun i => smul_zero _
     · simp_rw [RingHom.id_apply, Finsupp.smul_sum]
       congr

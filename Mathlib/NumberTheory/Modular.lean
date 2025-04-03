@@ -100,7 +100,7 @@ theorem bottom_row_surj {R : Type*} [CommRing R] :
     convert gcd_eqn
     rw [det_fin_two]
     simp [A, (by ring : a * cd 1 + b₀ * cd 0 = b₀ * cd 0 + a * cd 1)]
-  refine' ⟨⟨A, det_A_1⟩, Set.mem_univ _, _⟩
+  refine ⟨⟨A, det_A_1⟩, Set.mem_univ _, ?_⟩
   ext; simp [A]
 #align modular_group.bottom_row_surj ModularGroup.bottom_row_surj
 
@@ -133,7 +133,7 @@ theorem tendsto_normSq_coprime_pair :
     ext1
     rw [f_def]
     dsimp only [Function.comp_def]
-    rw [ofReal_int_cast, ofReal_int_cast]
+    rw [ofReal_intCast, ofReal_intCast]
   rw [this]
   have hf : LinearMap.ker f = ⊥ := by
     let g : ℂ →ₗ[ℝ] Fin 2 → ℝ :=
@@ -183,25 +183,28 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     Matrix (Fin 2) (Fin 2) ℝ ≃ₗ[ℝ] Matrix (Fin 2) (Fin 2) ℝ :=
   LinearEquiv.piCongrRight
     ![by
-      refine'
+      refine
         LinearMap.GeneralLinearGroup.generalLinearEquiv ℝ (Fin 2 → ℝ)
-          (GeneralLinearGroup.toLinear (planeConformalMatrix (cd 0 : ℝ) (-(cd 1 : ℝ)) _))
+          (GeneralLinearGroup.toLinear (planeConformalMatrix (cd 0 : ℝ) (-(cd 1 : ℝ)) ?_))
       norm_cast
       rw [neg_sq]
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
 #align modular_group.lc_row0_extend ModularGroup.lcRow0Extend
 
+-- `simpNF` times out, but only in CI where all of `Mathlib` is imported
+attribute [nolint simpNF] lcRow0Extend_apply lcRow0Extend_symm_apply
+
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
-`[[* , *], [c, d]]`.-/
+`[[* , *], [c, d]]`. -/
 theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     Tendsto (fun g : { g : SL(2, ℤ) // (↑ₘg) 1 = cd } => lcRow0 cd ↑(↑g : SL(2, ℝ))) cofinite
       (cocompact ℝ) := by
   let mB : ℝ → Matrix (Fin 2) (Fin 2) ℝ := fun t => of ![![t, (-(1 : ℤ) : ℝ)], (↑) ∘ cd]
   have hmB : Continuous mB := by
-    refine' continuous_matrix _
+    refine continuous_matrix ?_
     simp only [mB, Fin.forall_fin_two, continuous_const, continuous_id', of_apply, cons_val_zero,
       cons_val_one, and_self_iff]
-  refine' Filter.Tendsto.of_tendsto_comp _ (comap_cocompact_le hmB)
+  refine Filter.Tendsto.of_tendsto_comp ?_ (comap_cocompact_le hmB)
   let f₁ : SL(2, ℤ) → Matrix (Fin 2) (Fin 2) ℝ := fun g =>
     Matrix.map (↑g : Matrix _ _ ℤ) ((↑) : ℤ → ℝ)
   have cocompact_ℝ_to_cofinite_ℤ_matrix :
@@ -247,7 +250,7 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
   rw [(by simp :
     (p 1 : ℂ) * z - p 0 = (p 1 * z - p 0) * ↑(Matrix.det (↑g : Matrix (Fin 2) (Fin 2) ℤ)))]
   rw [← hg, det_fin_two]
-  simp only [Int.coe_castRingHom, coe_matrix_coe, Int.cast_mul, ofReal_int_cast, map_apply, denom,
+  simp only [Int.coe_castRingHom, coe_matrix_coe, Int.cast_mul, ofReal_intCast, map_apply, denom,
     Int.cast_sub, coe_GLPos_coe_GL_coe_matrix, coe'_apply_complex]
   ring
 #align modular_group.smul_eq_lc_row0_add ModularGroup.smul_eq_lcRow0_add
@@ -289,7 +292,7 @@ theorem exists_max_im : ∃ g : SL(2, ℤ), ∀ g' : SL(2, ℤ), (g' • z).im �
   obtain ⟨p, hp_coprime, hp⟩ :=
     Filter.Tendsto.exists_within_forall_le hs (tendsto_normSq_coprime_pair z)
   obtain ⟨g, -, hg⟩ := bottom_row_surj hp_coprime
-  refine' ⟨g, fun g' => _⟩
+  refine ⟨g, fun g' => ?_⟩
   rw [ModularGroup.im_smul_eq_div_normSq, ModularGroup.im_smul_eq_div_normSq,
     div_le_div_left]
   · simpa [← hg] using hp ((↑ₘg') 1) (bottom_row_coprime g')
@@ -307,12 +310,12 @@ theorem exists_row_one_eq_and_min_re {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0
     let ⟨x, hx⟩ := bottom_row_surj hcd
     ⟨⟨x, hx.2⟩⟩
   obtain ⟨g, hg⟩ := Filter.Tendsto.exists_forall_le (tendsto_abs_re_smul z hcd)
-  refine' ⟨g, g.2, _⟩
-  · intro g1 hg1
-    have : g1 ∈ (fun g : SL(2, ℤ) => (↑ₘg) 1) ⁻¹' {cd} := by
-      rw [Set.mem_preimage, Set.mem_singleton_iff]
-      exact Eq.trans hg1.symm (Set.mem_singleton_iff.mp (Set.mem_preimage.mp g.2))
-    exact hg ⟨g1, this⟩
+  refine ⟨g, g.2, ?_⟩
+  intro g1 hg1
+  have : g1 ∈ (fun g : SL(2, ℤ) => (↑ₘg) 1) ⁻¹' {cd} := by
+    rw [Set.mem_preimage, Set.mem_singleton_iff]
+    exact Eq.trans hg1.symm (Set.mem_singleton_iff.mp (Set.mem_preimage.mp g.2))
+  exact hg ⟨g1, this⟩
 #align modular_group.exists_row_one_eq_and_min_re ModularGroup.exists_row_one_eq_and_min_re
 
 theorem coe_T_zpow_smul_eq {n : ℤ} : (↑(T ^ n • z) : ℂ) = z + n := by
@@ -321,11 +324,11 @@ theorem coe_T_zpow_smul_eq {n : ℤ} : (↑(T ^ n • z) : ℂ) = z + n := by
 #align modular_group.coe_T_zpow_smul_eq ModularGroup.coe_T_zpow_smul_eq
 
 theorem re_T_zpow_smul (n : ℤ) : (T ^ n • z).re = z.re + n := by
-  rw [← coe_re, coe_T_zpow_smul_eq, add_re, int_cast_re, coe_re]
+  rw [← coe_re, coe_T_zpow_smul_eq, add_re, intCast_re, coe_re]
 #align modular_group.re_T_zpow_smul ModularGroup.re_T_zpow_smul
 
 theorem im_T_zpow_smul (n : ℤ) : (T ^ n • z).im = z.im := by
-  rw [← coe_im, coe_T_zpow_smul_eq, add_im, int_cast_im, add_zero, coe_im]
+  rw [← coe_im, coe_T_zpow_smul_eq, add_im, intCast_im, add_zero, coe_im]
 #align modular_group.im_T_zpow_smul ModularGroup.im_T_zpow_smul
 
 theorem re_T_smul : (T • z).re = z.re + 1 := by simpa using re_T_zpow_smul z 1
@@ -362,7 +365,7 @@ theorem exists_eq_T_zpow_of_c_eq_zero (hc : (↑ₘg) 1 0 = 0) :
 theorem g_eq_of_c_eq_one (hc : (↑ₘg) 1 0 = 1) : g = T ^ (↑ₘg) 0 0 * S * T ^ (↑ₘg) 1 1 := by
   have hg := g.det_coe.symm
   replace hg : (↑ₘg) 0 1 = (↑ₘg) 0 0 * (↑ₘg) 1 1 - 1 := by rw [det_fin_two, hc] at hg; linarith
-  refine' Subtype.ext _
+  refine Subtype.ext ?_
   conv_lhs => rw [Matrix.eta_fin_two (↑ₘg)]
   rw [hc, hg]
   simp only [coe_mul, coe_T_zpow, coe_S, mul_fin_two]
@@ -431,7 +434,7 @@ theorem eq_zero_of_mem_fdo_of_T_zpow_mem_fdo {n : ℤ} (hz : z ∈ 𝒟ᵒ) (hg 
   rw [re_T_zpow_smul] at h₂
   calc
     |(n : ℝ)| ≤ |z.re| + |z.re + (n : ℝ)| := abs_add' (n : ℝ) z.re
-    _ < 1 / 2 + 1 / 2 := (add_lt_add h₁ h₂)
+    _ < 1 / 2 + 1 / 2 := add_lt_add h₁ h₂
     _ = 1 := add_halves 1
 #align modular_group.eq_zero_of_mem_fdo_of_T_zpow_mem_fdo ModularGroup.eq_zero_of_mem_fdo_of_T_zpow_mem_fdo
 
@@ -442,7 +445,7 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
   obtain ⟨g₀, hg₀⟩ := exists_max_im z
   -- then among those, minimize re
   obtain ⟨g, hg, hg'⟩ := exists_row_one_eq_and_min_re z (bottom_row_coprime g₀)
-  refine' ⟨g, _⟩
+  refine ⟨g, ?_⟩
   -- `g` has same max im property as `g₀`
   have hg₀' : ∀ g' : SL(2, ℤ), (g' • z).im ≤ (g • z).im := by
     have hg'' : (g • z).im = (g₀ • z).im := by
@@ -452,7 +455,7 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
   constructor
   · -- Claim: `1 ≤ ⇑norm_sq ↑(g • z)`. If not, then `S•g•z` has larger imaginary part
     contrapose! hg₀'
-    refine' ⟨S * g, _⟩
+    refine ⟨S * g, ?_⟩
     rw [mul_smul]
     exact im_lt_im_S_smul hg₀'
   · show |(g • z).re| ≤ 1 / 2
@@ -460,11 +463,11 @@ theorem exists_smul_mem_fd (z : ℍ) : ∃ g : SL(2, ℤ), g • z ∈ 𝒟 := b
     rw [abs_le]
     constructor
     · contrapose! hg'
-      refine' ⟨T * g, (T_mul_apply_one _).symm, _⟩
+      refine ⟨T * g, (T_mul_apply_one _).symm, ?_⟩
       rw [mul_smul, re_T_smul]
       cases abs_cases ((g • z).re + 1) <;> cases abs_cases (g • z).re <;> linarith
     · contrapose! hg'
-      refine' ⟨T⁻¹ * g, (T_inv_mul_apply_one _).symm, _⟩
+      refine ⟨T⁻¹ * g, (T_inv_mul_apply_one _).symm, ?_⟩
       rw [mul_smul, re_T_inv_smul]
       cases abs_cases ((g • z).re - 1) <;> cases abs_cases (g • z).re <;> linarith
 #align modular_group.exists_smul_mem_fd ModularGroup.exists_smul_mem_fd
@@ -482,12 +485,12 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |(↑ₘg
   suffices c ≠ 0 → 9 * c ^ 4 < 16 by
     rcases eq_or_ne c 0 with (hc | hc)
     · rw [hc]; norm_num
-    · refine' (abs_lt_of_sq_lt_sq' _ (by norm_num)).2
+    · refine (abs_lt_of_sq_lt_sq' ?_ (by norm_num)).2
       specialize this hc
       linarith
   intro hc
   replace hc : 0 < c ^ 4 := by
-    change 0 < c ^ (2 * 2); rw [pow_mul]; apply sq_pos_of_pos (sq_pos_of_ne_zero _ hc)
+    change 0 < c ^ (2 * 2); rw [pow_mul]; apply sq_pos_of_pos (sq_pos_of_ne_zero hc)
   have h₁ :=
     mul_lt_mul_of_pos_right
       (mul_lt_mul'' (three_lt_four_mul_im_sq_of_mem_fdo hg) (three_lt_four_mul_im_sq_of_mem_fdo hz)

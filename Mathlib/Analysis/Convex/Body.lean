@@ -40,9 +40,13 @@ variable {V : Type*}
 it is convex, compact, and nonempty.
 -/
 structure ConvexBody (V : Type*) [TopologicalSpace V] [AddCommMonoid V] [SMul ℝ V] where
+  /-- The **carrier set** underlying a convex body: the set of points contained in it -/
   carrier : Set V
+  /-- A convex body has convex carrier set -/
   convex' : Convex ℝ carrier
+  /-- A convex body has compact carrier set -/
   isCompact' : IsCompact carrier
+  /-- A convex body has non-empty carrier set -/
   nonempty' : carrier.Nonempty
 #align convex_body ConvexBody
 

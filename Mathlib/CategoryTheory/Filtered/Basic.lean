@@ -95,8 +95,7 @@ class IsFiltered extends IsFilteredOrEmpty C : Prop where
 #align category_theory.is_filtered CategoryTheory.IsFiltered
 
 instance (priority := 100) isFilteredOrEmpty_of_semilatticeSup (α : Type u) [SemilatticeSup α] :
-    IsFilteredOrEmpty α
-    where
+    IsFilteredOrEmpty α where
   cocone_objs X Y := ⟨X ⊔ Y, homOfLE le_sup_left, homOfLE le_sup_right, trivial⟩
   cocone_maps X Y f g := ⟨Y, 𝟙 _, by
     apply ULift.ext
@@ -221,8 +220,8 @@ theorem of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFilteredO
 
 /-- If `C` is filtered or empty, and we have a right adjoint functor `R : C ⥤ D`, then `D` is
 filtered or empty. -/
-theorem of_isRightAdjoint (R : C ⥤ D) [IsRightAdjoint R] : IsFilteredOrEmpty D :=
-  of_right_adjoint (Adjunction.ofRightAdjoint R)
+theorem of_isRightAdjoint (R : C ⥤ D) [R.IsRightAdjoint] : IsFilteredOrEmpty D :=
+  of_right_adjoint (Adjunction.ofIsRightAdjoint R)
 
 /-- Being filtered or empty is preserved by equivalence of categories. -/
 theorem of_equivalence (h : C ≌ D) : IsFilteredOrEmpty D :=
@@ -271,7 +270,7 @@ theorem sup_exists :
     exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
   · obtain ⟨X, Y, mX, mY, f⟩ := h'
     obtain ⟨S', T', w'⟩ := h''
-    refine' ⟨coeq (f ≫ T' mY) (T' mX), fun mZ => T' mZ ≫ coeqHom (f ≫ T' mY) (T' mX), _⟩
+    refine ⟨coeq (f ≫ T' mY) (T' mX), fun mZ => T' mZ ≫ coeqHom (f ≫ T' mY) (T' mX), ?_⟩
     intro X' Y' mX' mY' f' mf'
     rw [← Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
@@ -327,7 +326,7 @@ theorem cocone_nonempty (F : J ⥤ C) : Nonempty (Cocone F) := by
       Finset.univ.biUnion fun Y : J =>
         Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
   obtain ⟨Z, f, w⟩ := sup_exists O H
-  refine' ⟨⟨Z, ⟨fun X => f (by simp [O]), _⟩⟩⟩
+  refine ⟨⟨Z, ⟨fun X => f (by simp [O]), ?_⟩⟩⟩
   intro j j' g
   dsimp
   simp only [Category.comp_id]
@@ -353,8 +352,8 @@ theorem of_right_adjoint {L : D ⥤ C} {R : C ⥤ D} (h : L ⊣ R) : IsFiltered 
 #align category_theory.is_filtered.of_right_adjoint CategoryTheory.IsFiltered.of_right_adjoint
 
 /-- If `C` is filtered, and we have a right adjoint functor `R : C ⥤ D`, then `D` is filtered. -/
-theorem of_isRightAdjoint (R : C ⥤ D) [IsRightAdjoint R] : IsFiltered D :=
-  of_right_adjoint (Adjunction.ofRightAdjoint R)
+theorem of_isRightAdjoint (R : C ⥤ D) [R.IsRightAdjoint] : IsFiltered D :=
+  of_right_adjoint (Adjunction.ofIsRightAdjoint R)
 #align category_theory.is_filtered.of_is_right_adjoint CategoryTheory.IsFiltered.of_isRightAdjoint
 
 /-- Being filtered is preserved by equivalence of categories. -/
@@ -459,8 +458,9 @@ noncomputable def coeq₃Hom {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : j₂ ⟶ 
         (coeqHom g h ≫ rightToMax (coeq f g) (coeq g h))
 #align category_theory.is_filtered.coeq₃_hom CategoryTheory.IsFiltered.coeq₃Hom
 
-theorem coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) : f ≫ coeq₃Hom f g h = g ≫ coeq₃Hom f g h :=
-  by simp only [coeq₃Hom, ← Category.assoc, coeq_condition f g]
+theorem coeq₃_condition₁ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
+    f ≫ coeq₃Hom f g h = g ≫ coeq₃Hom f g h := by
+  simp only [coeq₃Hom, ← Category.assoc, coeq_condition f g]
 #align category_theory.is_filtered.coeq₃_condition₁ CategoryTheory.IsFiltered.coeq₃_condition₁
 
 theorem coeq₃_condition₂ {j₁ j₂ : C} (f g h : j₁ ⟶ j₂) :
@@ -529,7 +529,7 @@ theorem tulip {j₁ j₂ j₃ k₁ k₂ l : C} (f₁ : j₁ ⟶ k₁) (f₂ : j�
       f₁ ≫ α = g₁ ≫ β ∧ f₂ ≫ α = f₃ ≫ γ ∧ f₄ ≫ γ = g₂ ≫ β := by
   obtain ⟨l', k₁l, k₂l, hl⟩ := span f₂ f₃
   obtain ⟨s, ls, l's, hs₁, hs₂⟩ := bowtie g₁ (f₁ ≫ k₁l) g₂ (f₄ ≫ k₂l)
-  refine' ⟨s, k₁l ≫ l's, ls, k₂l ≫ l's, _, by simp only [← Category.assoc, hl], _⟩ <;>
+  refine ⟨s, k₁l ≫ l's, ls, k₂l ≫ l's, ?_, by simp only [← Category.assoc, hl], ?_⟩ <;>
     simp only [hs₁, hs₂, Category.assoc]
 #align category_theory.is_filtered.tulip CategoryTheory.IsFiltered.tulip
 
@@ -678,7 +678,7 @@ theorem cospan {i j j' : C} (f : j ⟶ i) (f' : j' ⟶ i) :
 theorem _root_.CategoryTheory.Functor.ranges_directed (F : C ⥤ Type*) (j : C) :
     Directed (· ⊇ ·) fun f : Σ'i, i ⟶ j => Set.range (F.map f.2) := fun ⟨i, ij⟩ ⟨k, kj⟩ => by
   let ⟨l, li, lk, e⟩ := cospan ij kj
-  refine' ⟨⟨l, lk ≫ kj⟩, e ▸ _, _⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
+  refine ⟨⟨l, lk ≫ kj⟩, e ▸ ?_, ?_⟩ <;> simp_rw [F.map_comp] <;> apply Set.range_comp_subset_range
 #align category_theory.functor.ranges_directed CategoryTheory.Functor.ranges_directed
 
 end AllowEmpty
@@ -705,8 +705,8 @@ theorem of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofiltered
 
 /-- If `C` is cofiltered or empty, and we have a left adjoint functor `L : C ⥤ D`, then `D` is
 cofiltered or empty. -/
-theorem of_isLeftAdjoint (L : C ⥤ D) [IsLeftAdjoint L] : IsCofilteredOrEmpty D :=
-  of_left_adjoint (Adjunction.ofLeftAdjoint L)
+theorem of_isLeftAdjoint (L : C ⥤ D) [L.IsLeftAdjoint] : IsCofilteredOrEmpty D :=
+  of_left_adjoint (Adjunction.ofIsLeftAdjoint L)
 
 /-- Being cofiltered or empty is preserved by equivalence of categories. -/
 theorem of_equivalence (h : C ≌ D) : IsCofilteredOrEmpty D :=
@@ -755,7 +755,7 @@ theorem inf_exists :
     exact ⟨S, fun mX => (f mX).some, by rintro - - - - - ⟨⟩⟩
   · obtain ⟨X, Y, mX, mY, f⟩ := h'
     obtain ⟨S', T', w'⟩ := h''
-    refine' ⟨eq (T' mX ≫ f) (T' mY), fun mZ => eqHom (T' mX ≫ f) (T' mY) ≫ T' mZ, _⟩
+    refine ⟨eq (T' mX ≫ f) (T' mY), fun mZ => eqHom (T' mX ≫ f) (T' mY) ≫ T' mZ, ?_⟩
     intro X' Y' mX' mY' f' mf'
     rw [Category.assoc]
     by_cases h : X = X' ∧ Y = Y'
@@ -811,7 +811,7 @@ theorem cone_nonempty (F : J ⥤ C) : Nonempty (Cone F) := by
       Finset.univ.biUnion fun Y : J =>
         Finset.univ.image fun f : X ⟶ Y => ⟨F.obj X, F.obj Y, by simp [O], by simp [O], F.map f⟩
   obtain ⟨Z, f, w⟩ := inf_exists O H
-  refine' ⟨⟨Z, ⟨fun X => f (by simp [O]), _⟩⟩⟩
+  refine ⟨⟨Z, ⟨fun X => f (by simp [O]), ?_⟩⟩⟩
   intro j j' g
   dsimp
   simp only [Category.id_comp]
@@ -839,8 +839,8 @@ theorem of_left_adjoint {L : C ⥤ D} {R : D ⥤ C} (h : L ⊣ R) : IsCofiltered
 #align category_theory.is_cofiltered.of_left_adjoint CategoryTheory.IsCofiltered.of_left_adjoint
 
 /-- If `C` is cofiltered, and we have a left adjoint functor `L : C ⥤ D`, then `D` is cofiltered. -/
-theorem of_isLeftAdjoint (L : C ⥤ D) [IsLeftAdjoint L] : IsCofiltered D :=
-  of_left_adjoint (Adjunction.ofLeftAdjoint L)
+theorem of_isLeftAdjoint (L : C ⥤ D) [L.IsLeftAdjoint] : IsCofiltered D :=
+  of_left_adjoint (Adjunction.ofIsLeftAdjoint L)
 #align category_theory.is_cofiltered.of_is_left_adjoint CategoryTheory.IsCofiltered.of_isLeftAdjoint
 
 /-- Being cofiltered is preserved by equivalence of categories. -/

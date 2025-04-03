@@ -75,8 +75,8 @@ theorem cantorFunctionAux_nonneg (h : 0 ≤ c) : 0 ≤ cantorFunctionAux c f n :
   apply pow_nonneg h
 #align cardinal.cantor_function_aux_nonneg Cardinal.cantorFunctionAux_nonneg
 
-theorem cantorFunctionAux_eq (h : f n = g n) : cantorFunctionAux c f n = cantorFunctionAux c g n :=
-  by simp [cantorFunctionAux, h]
+theorem cantorFunctionAux_eq (h : f n = g n) :
+    cantorFunctionAux c f n = cantorFunctionAux c g n := by simp [cantorFunctionAux, h]
 #align cardinal.cantor_function_aux_eq Cardinal.cantorFunctionAux_eq
 
 theorem cantorFunctionAux_zero (f : ℕ → Bool) : cantorFunctionAux c f 0 = cond (f 0) 1 0 := by
@@ -105,7 +105,8 @@ def cantorFunction (c : ℝ) (f : ℕ → Bool) : ℝ :=
 theorem cantorFunction_le (h1 : 0 ≤ c) (h2 : c < 1) (h3 : ∀ n, f n → g n) :
     cantorFunction c f ≤ cantorFunction c g := by
   apply tsum_le_tsum _ (summable_cantor_function f h1 h2) (summable_cantor_function g h1 h2)
-  intro n; cases h : f n; simp [h, cantorFunctionAux_nonneg h1]
+  intro n; cases h : f n
+  · simp [h, cantorFunctionAux_nonneg h1]
   replace h3 : g n = true := h3 n h; simp [h, h3]
 #align cardinal.cantor_function_le Cardinal.cantorFunction_le
 
@@ -130,17 +131,17 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
     have hf_max : ∀ n, f n → f_max n := by
       intro n hn
       cases n
-      rw [fn] at hn
-      contradiction
+      · rw [fn] at hn
+        contradiction
       apply rfl
     let g_min : ℕ → Bool := fun n => Nat.rec true (fun _ _ => false) n
     have hg_min : ∀ n, g_min n → g n := by
       intro n hn
       cases n
-      rw [gn]
+      · rw [gn]
       simp at hn
     apply (cantorFunction_le (le_of_lt h1) h3 hf_max).trans_lt
-    refine' lt_of_lt_of_le _ (cantorFunction_le (le_of_lt h1) h3 hg_min)
+    refine lt_of_lt_of_le ?_ (cantorFunction_le (le_of_lt h1) h3 hg_min)
     have : c / (1 - c) < 1 := by
       rw [div_lt_one, lt_sub_iff_add_lt]
       · convert _root_.add_lt_add h2 h2
@@ -150,10 +151,10 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
     · rw [cantorFunction_succ _ (le_of_lt h1) h3, div_eq_mul_inv, ←
         tsum_geometric_of_lt_one (le_of_lt h1) h3]
       apply zero_add
-    · refine' (tsum_eq_single 0 _).trans _
+    · refine (tsum_eq_single 0 ?_).trans ?_
       · intro n hn
         cases n
-        contradiction
+        · contradiction
         rfl
       · exact cantorFunctionAux_zero _
   rw [cantorFunction_succ f (le_of_lt h1) h3, cantorFunction_succ g (le_of_lt h1) h3]
@@ -183,13 +184,13 @@ theorem cantorFunction_injective (h1 : 0 < c) (h2 : c < 1 / 2) :
       exact Nat.find_min this hk
     cases fn : f n
     · apply _root_.ne_of_lt
-      refine' increasing_cantorFunction h1 h2 hn fn _
+      refine increasing_cantorFunction h1 h2 hn fn ?_
       apply Bool.eq_true_of_not_eq_false
       rw [← fn]
       apply Ne.symm
       exact Nat.find_spec this
     · apply _root_.ne_of_gt
-      refine' increasing_cantorFunction h1 h2 (fun k hk => (hn k hk).symm) _ fn
+      refine increasing_cantorFunction h1 h2 (fun k hk => (hn k hk).symm) ?_ fn
       apply Bool.eq_false_of_not_eq_true
       rw [← fn]
       apply Ne.symm
@@ -204,10 +205,10 @@ theorem mk_real : #ℝ = 𝔠 := by
     apply (mk_subtype_le _).trans_eq
     rw [← power_def, mk_nat, mkRat, aleph0_power_aleph0]
   · convert mk_le_of_injective (cantorFunction_injective _ _)
-    rw [← power_def, mk_bool, mk_nat, two_power_aleph0]
-    exact 1 / 3
-    norm_num
-    norm_num
+    · rw [← power_def, mk_bool, mk_nat, two_power_aleph0]
+    · exact 1 / 3
+    · norm_num
+    · norm_num
 #align cardinal.mk_real Cardinal.mk_real
 
 /-- The cardinality of the reals, as a set. -/
@@ -222,22 +223,22 @@ theorem not_countable_real : ¬(Set.univ : Set ℝ).Countable := by
 
 /-- The cardinality of the interval (a, ∞). -/
 theorem mk_Ioi_real (a : ℝ) : #(Ioi a) = 𝔠 := by
-  refine' le_antisymm (mk_real ▸ mk_set_le _) _
+  refine le_antisymm (mk_real ▸ mk_set_le _) ?_
   rw [← not_lt]
   intro h
-  refine' _root_.ne_of_lt _ mk_univ_real
+  refine _root_.ne_of_lt ?_ mk_univ_real
   have hu : Iio a ∪ {a} ∪ Ioi a = Set.univ := by
     convert @Iic_union_Ioi ℝ _ _
     exact Iio_union_right
   rw [← hu]
-  refine' lt_of_le_of_lt (mk_union_le _ _) _
-  refine' lt_of_le_of_lt (add_le_add_right (mk_union_le _ _) _) _
+  refine lt_of_le_of_lt (mk_union_le _ _) ?_
+  refine lt_of_le_of_lt (add_le_add_right (mk_union_le _ _) _) ?_
   have h2 : (fun x => a + a - x) '' Ioi a = Iio a := by
     convert @image_const_sub_Ioi ℝ _ _ _
     simp
   rw [← h2]
-  refine' add_lt_of_lt (cantor _).le _ h
-  refine' add_lt_of_lt (cantor _).le (mk_image_le.trans_lt h) _
+  refine add_lt_of_lt (cantor _).le ?_ h
+  refine add_lt_of_lt (cantor _).le (mk_image_le.trans_lt h) ?_
   rw [mk_singleton]
   exact one_lt_aleph0.trans (cantor _)
 #align cardinal.mk_Ioi_real Cardinal.mk_Ioi_real
@@ -249,7 +250,7 @@ theorem mk_Ici_real (a : ℝ) : #(Ici a) = 𝔠 :=
 
 /-- The cardinality of the interval (-∞, a). -/
 theorem mk_Iio_real (a : ℝ) : #(Iio a) = 𝔠 := by
-  refine' le_antisymm (mk_real ▸ mk_set_le _) _
+  refine le_antisymm (mk_real ▸ mk_set_le _) ?_
   have h2 : (fun x => a + a - x) '' Iio a = Ioi a := by
     simp only [image_const_sub_Iio, add_sub_cancel_right]
   exact mk_Ioi_real a ▸ h2 ▸ mk_image_le
@@ -262,13 +263,13 @@ theorem mk_Iic_real (a : ℝ) : #(Iic a) = 𝔠 :=
 
 /-- The cardinality of the interval (a, b). -/
 theorem mk_Ioo_real {a b : ℝ} (h : a < b) : #(Ioo a b) = 𝔠 := by
-  refine' le_antisymm (mk_real ▸ mk_set_le _) _
+  refine le_antisymm (mk_real ▸ mk_set_le _) ?_
   have h1 : #((fun x => x - a) '' Ioo a b) ≤ #(Ioo a b) := mk_image_le
-  refine' le_trans _ h1
+  refine le_trans ?_ h1
   rw [image_sub_const_Ioo, sub_self]
   replace h := sub_pos_of_lt h
   have h2 : #(Inv.inv '' Ioo 0 (b - a)) ≤ #(Ioo 0 (b - a)) := mk_image_le
-  refine' le_trans _ h2
+  refine le_trans ?_ h2
   rw [image_inv, inv_Ioo_0_left h, mk_Ioi_real]
 #align cardinal.mk_Ioo_real Cardinal.mk_Ioo_real
 

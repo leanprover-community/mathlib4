@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Multiset.Sort
 import Mathlib.Data.PNat.Basic
 import Mathlib.Data.PNat.Interval
-import Mathlib.Data.Rat.Order
 import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.IntervalCases
 
@@ -169,6 +169,7 @@ theorem Admissible.one_lt_sumInv {pqr : Multiset ℕ+} : Admissible pqr → 1 < 
   all_goals
     rw [← H, E', sumInv_pqr]
     conv_rhs => simp only [OfNat.ofNat, PNat.mk_coe]
+    rfl
 #align ADE_inequality.admissible.one_lt_sum_inv ADEInequality.Admissible.one_lt_sumInv
 
 theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv {p, q, r}) : p < 3 := by
@@ -179,16 +180,16 @@ theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv 
   have h3r := h3q.trans hqr
   have hp: (p : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv _ h3]
-    assumption_mod_cast
-    norm_num
+    · assumption_mod_cast
+    · norm_num
   have hq: (q : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv _ h3]
-    assumption_mod_cast
-    norm_num
+    · assumption_mod_cast
+    · norm_num
   have hr: (r : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv _ h3]
-    assumption_mod_cast
-    norm_num
+    · assumption_mod_cast
+    · norm_num
   calc
     (p : ℚ)⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹ ≤ 3⁻¹ + 3⁻¹ + 3⁻¹ := add_le_add (add_le_add hp hq) hr
     _ = 1 := by norm_num
@@ -201,12 +202,12 @@ theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 
   have h4r := H.trans hqr
   have hq: (q : ℚ)⁻¹ ≤ 4⁻¹ := by
     rw [inv_le_inv _ h4]
-    assumption_mod_cast
-    norm_num
+    · assumption_mod_cast
+    · norm_num
   have hr: (r : ℚ)⁻¹ ≤ 4⁻¹ := by
     rw [inv_le_inv _ h4]
-    assumption_mod_cast
-    norm_num
+    · assumption_mod_cast
+    · norm_num
   calc
     (2⁻¹ + (q : ℚ)⁻¹ + (r : ℚ)⁻¹) ≤ 2⁻¹ + 4⁻¹ + 4⁻¹ := add_le_add (add_le_add le_rfl hq) hr
     _ = 1 := by norm_num
@@ -218,8 +219,8 @@ theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
   rw [sumInv_pqr]
   have hr: (r : ℚ)⁻¹ ≤ 6⁻¹ := by
     rw [inv_le_inv _ h6]
-    assumption_mod_cast
-    norm_num
+    · assumption_mod_cast
+    · norm_num
   calc
     (2⁻¹ + 3⁻¹ + (r : ℚ)⁻¹ : ℚ) ≤ 2⁻¹ + 3⁻¹ + 6⁻¹ := add_le_add (add_le_add le_rfl le_rfl) hr
     _ = 1 := by norm_num

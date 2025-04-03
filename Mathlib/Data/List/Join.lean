@@ -54,7 +54,7 @@ theorem join_filter_not_isEmpty  :
       simp [join_filter_not_isEmpty (L := L)]
 #align list.join_filter_empty_eq_ff List.join_filter_not_isEmpty
 
-@[deprecated] alias join_filter_isEmpty_eq_false := join_filter_not_isEmpty
+@[deprecated] alias join_filter_isEmpty_eq_false := join_filter_not_isEmpty -- 2024-02-25
 
 @[simp]
 theorem join_filter_ne_nil [DecidablePred fun l : List α => l ≠ []] {L : List (List α)} :
@@ -131,7 +131,7 @@ theorem drop_take_succ_eq_cons_get (L : List α) (i : Fin L.length) :
 set_option linter.deprecated false in
 /-- Taking only the first `i+1` elements in a list, and then dropping the first `i` ones, one is
 left with a list of length `1` made of the `i`-th element of the original list. -/
-@[deprecated drop_take_succ_eq_cons_get]
+@[deprecated drop_take_succ_eq_cons_get] -- 2023-01-10
 theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length) :
     (L.take (i + 1)).drop i = [nthLe L i hi] := by
   induction' L with head tail generalizing i
@@ -140,9 +140,7 @@ theorem drop_take_succ_eq_cons_nthLe (L : List α) {i : ℕ} (hi : i < L.length)
   cases' i with i hi
   · simp
     rfl
-  have : i < tail.length := by
-    simp? at hi says simp only [length_cons] at hi
-    exact Nat.lt_of_succ_lt_succ hi
+  have : i < tail.length := by simpa using hi
   simp [*]
   rfl
 #align list.drop_take_succ_eq_cons_nth_le List.drop_take_succ_eq_cons_nthLe
@@ -169,7 +167,7 @@ theorem drop_take_succ_join_eq_get' (L : List (List α)) (i : Fin L.length) :
 sublists. -/
 theorem eq_iff_join_eq (L L' : List (List α)) :
     L = L' ↔ L.join = L'.join ∧ map length L = map length L' := by
-  refine' ⟨fun H => by simp [H], _⟩
+  refine ⟨fun H => by simp [H], ?_⟩
   rintro ⟨join_eq, length_eq⟩
   apply ext_get
   · have : length (map length L) = length (map length L') := by rw [length_eq]
@@ -188,7 +186,7 @@ theorem join_drop_length_sub_one {L : List (List α)} (h : L ≠ []) :
 /-- We can rebracket `x ++ (l₁ ++ x) ++ (l₂ ++ x) ++ ... ++ (lₙ ++ x)` to
 `(x ++ l₁) ++ (x ++ l₂) ++ ... ++ (x ++ lₙ) ++ x` where `L = [l₁, l₂, ..., lₙ]`. -/
 theorem append_join_map_append (L : List (List α)) (x : List α) :
-    x ++ (List.map (fun l => l ++ x) L).join = (List.map (fun l => x ++ l) L).join ++ x := by
+    x ++ (L.map (· ++ x)).join = (L.map (x ++ ·)).join ++ x := by
   induction' L with _ _ ih
   · rw [map_nil, join, append_nil, map_nil, join, nil_append]
   · rw [map_cons, join, map_cons, join, append_assoc, ih, append_assoc, append_assoc]
@@ -196,7 +194,7 @@ theorem append_join_map_append (L : List (List α)) (x : List α) :
 
 /-- Reversing a join is the same as reversing the order of parts and reversing all parts. -/
 theorem reverse_join (L : List (List α)) :
-    L.join.reverse = (List.map List.reverse L).reverse.join := by
+    L.join.reverse = (L.map reverse).reverse.join := by
   induction' L with _ _ ih
   · rfl
   · rw [join, reverse_append, ih, map_cons, reverse_cons', join_concat]
@@ -204,14 +202,14 @@ theorem reverse_join (L : List (List α)) :
 
 /-- Joining a reverse is the same as reversing all parts and reversing the joined result. -/
 theorem join_reverse (L : List (List α)) :
-    L.reverse.join = (List.map List.reverse L).join.reverse := by
+    L.reverse.join = (L.map reverse).join.reverse := by
   simpa [reverse_reverse, map_reverse] using congr_arg List.reverse (reverse_join L.reverse)
 #align list.join_reverse List.join_reverse
 
-/-- Any member of `l : List (List α))` is a sublist of `l.join` -/
-lemma sublist_join (l : List (List α)) {s : List α} (hs : s ∈ l) :
-    List.Sublist s (l.join) := by
-  induction l with
+/-- Any member of `L : List (List α))` is a sublist of `L.join` -/
+lemma sublist_join (L : List (List α)) {s : List α} (hs : s ∈ L) :
+    s.Sublist L.join := by
+  induction L with
   | nil =>
     exfalso
     exact not_mem_nil s hs

@@ -5,11 +5,10 @@ Authors: Mario Carneiro
 -/
 import Lean.Elab.Term
 import Lean.Elab.Tactic.Basic
-import Lean.Meta.Tactic.Apply
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
-import Std.Data.List.Basic
-import Std.Logic
+import Batteries.Data.List.Basic
+import Batteries.Logic
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 
@@ -41,78 +40,14 @@ For example, if we want to do introductions for propositions like `¬p`,
 the `¬` needs to be unfolded into `→ False`, and `intros` does not do such unfolding. -/
 partial def intros! (mvarId : MVarId) : MetaM (Array FVarId × MVarId) :=
   run #[] mvarId
-  where
+where
   /-- Implementation of `intros!`. -/
   run (acc : Array FVarId) (g : MVarId) :=
-  try
-    let ⟨f, g⟩ ← mvarId.intro1
-    run (acc.push f) g
-  catch _ =>
-    pure (acc, g)
-
-/--
-Try to convert an `Iff` into an `Eq` by applying `iff_of_eq`.
-If successful, returns the new goal, and otherwise returns the original `MVarId`.
-
-This may be regarded as being a special case of `Lean.MVarId.liftReflToEq`, specifically for `Iff`.
--/
-def iffOfEq (mvarId : MVarId) : MetaM MVarId := do
-  let res ← observing? do
-    let [mvarId] ← mvarId.apply (mkConst ``iff_of_eq []) | failure
-    return mvarId
-  return res.getD mvarId
-
-/--
-Try to convert an `Eq` into an `Iff` by applying `propext`.
-If successful, then returns then new goal, otherwise returns the original `MVarId`.
--/
-def propext (mvarId : MVarId) : MetaM MVarId := do
-  let res ← observing? do
-    -- Avoid applying `propext` if the target is not an equality of `Prop`s.
-    -- We don't want a unification specializing `Sort*` to `Prop`.
-    let tgt ← withReducible mvarId.getType'
-    let some (ty, _, _) := tgt.eq? | failure
-    guard ty.isProp
-    let [mvarId] ← mvarId.apply (mkConst ``propext []) | failure
-    return mvarId
-  return res.getD mvarId
-
-/--
-Try to close the goal with using `proof_irrel_heq`. Returns whether or not it succeeds.
-
-We need to be somewhat careful not to assign metavariables while doing this, otherwise we might
-specialize `Sort _` to `Prop`.
--/
-def proofIrrelHeq (mvarId : MVarId) : MetaM Bool :=
-  mvarId.withContext do
-    let res ← observing? do
-      mvarId.checkNotAssigned `proofIrrelHeq
-      let tgt ← withReducible mvarId.getType'
-      let some (_, lhs, _, rhs) := tgt.heq? | failure
-      -- Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Sort _` from specializing to `Prop`
-      let pf ← mkAppM ``proof_irrel_heq #[lhs, rhs]
-      mvarId.assign pf
-      return true
-    return res.getD false
-
-/--
-Try to close the goal using `Subsingleton.elim`. Returns whether or not it succeeds.
-
-We are careful to apply `Subsingleton.elim` in a way that does not assign any metavariables.
-This is to prevent the `Subsingleton Prop` instance from being used as justification to specialize
-`Sort _` to `Prop`.
--/
-def subsingletonElim (mvarId : MVarId) : MetaM Bool :=
-  mvarId.withContext do
-    let res ← observing? do
-      mvarId.checkNotAssigned `subsingletonElim
-      let tgt ← withReducible mvarId.getType'
-      let some (_, lhs, rhs) := tgt.eq? | failure
-      -- Note: `mkAppM` uses `withNewMCtxDepth`, which prevents `Sort _` from specializing to `Prop`
-      let pf ← mkAppM ``Subsingleton.elim #[lhs, rhs]
-      mvarId.assign pf
-      return true
-    return res.getD false
+    try
+      let ⟨f, g⟩ ← mvarId.intro1
+      run (acc.push f) g
+    catch _ =>
+      pure (acc, g)
 
 end Lean.MVarId
 

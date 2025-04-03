@@ -93,7 +93,7 @@ protected theorem IsChain.insert (hs : IsChain r s) (ha : ∀ b ∈ s, a ≠ b �
 #align is_chain.insert IsChain.insert
 
 theorem isChain_univ_iff : IsChain r (univ : Set α) ↔ IsTrichotomous α r := by
-  refine' ⟨fun h => ⟨fun a b => _⟩, fun h => @isChain_of_trichotomous _ _ h univ⟩
+  refine ⟨fun h => ⟨fun a b => ?_⟩, fun h => @isChain_of_trichotomous _ _ h univ⟩
   rw [or_left_comm, or_iff_not_imp_left]
   exact h trivial trivial
 #align is_chain_univ_iff isChain_univ_iff
@@ -225,14 +225,14 @@ private theorem chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁)
     · exact Or.inl (ih.trans subset_succChain)
     · exact (h hc₃ ih).imp_left fun (h : c₂ = c₃) => h ▸ Subset.rfl
   | union _ ih =>
-    refine' or_iff_not_imp_left.2 fun hn => sUnion_subset fun a ha => _
+    refine or_iff_not_imp_left.2 fun hn => sUnion_subset fun a ha => ?_
     exact (ih a ha).resolve_left fun h => hn <| h.trans <| subset_sUnion_of_mem ha
 
 private theorem chainClosure_succ_total (hc₁ : ChainClosure r c₁) (hc₂ : ChainClosure r c₂)
     (h : c₁ ⊆ c₂) : c₂ = c₁ ∨ SuccChain r c₁ ⊆ c₂ := by
   induction hc₂ generalizing c₁ hc₁ with
   | succ _ ih =>
-    refine' ((chainClosure_succ_total_aux hc₁) fun c₁ => ih).imp h.antisymm' fun h₁ => _
+    refine ((chainClosure_succ_total_aux hc₁) fun c₁ => ih).imp h.antisymm' fun h₁ => ?_
     obtain rfl | h₂ := ih hc₁ h₁
     · exact Subset.rfl
     · exact h₂.trans subset_succChain

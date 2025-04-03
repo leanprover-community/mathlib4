@@ -3,8 +3,8 @@ Copyright (c) 2023 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Positivity.Core
 
@@ -68,9 +68,7 @@ theorem doubleFactorial_two_mul : ∀ n : ℕ, (2 * n)‼ = 2 ^ n * n !
     ring
 #align nat.double_factorial_two_mul Nat.doubleFactorial_two_mul
 
-open BigOperators
-
-theorem doubleFactorial_eq_prod_even : ∀ n : ℕ, (2 * n)‼ = ∏ i in Finset.range n, 2 * (i + 1)
+theorem doubleFactorial_eq_prod_even : ∀ n : ℕ, (2 * n)‼ = ∏ i ∈ Finset.range n, 2 * (i + 1)
   | 0 => rfl
   | n + 1 => by
     rw [Finset.prod_range_succ, ← doubleFactorial_eq_prod_even _, mul_comm (2 * n)‼,
@@ -79,7 +77,7 @@ theorem doubleFactorial_eq_prod_even : ∀ n : ℕ, (2 * n)‼ = ∏ i in Finset
 #align nat.double_factorial_eq_prod_even Nat.doubleFactorial_eq_prod_even
 
 theorem doubleFactorial_eq_prod_odd :
-    ∀ n : ℕ, (2 * n + 1)‼ = ∏ i in Finset.range n, (2 * (i + 1) + 1)
+    ∀ n : ℕ, (2 * n + 1)‼ = ∏ i ∈ Finset.range n, (2 * (i + 1) + 1)
   | 0 => rfl
   | n + 1 => by
     rw [Finset.prod_range_succ, ← doubleFactorial_eq_prod_odd _, mul_comm (2 * n + 1)‼,

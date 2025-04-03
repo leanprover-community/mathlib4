@@ -100,8 +100,8 @@ theorem size_shiftLeft' {b m n} (h : shiftLeft' b m n ≠ 0) :
 -- TODO: decide whether `Nat.shiftLeft_eq` (which rewrites the LHS into a power) should be a simp
 -- lemma; it was not in mathlib3. Until then, tell the simpNF linter to ignore the issue.
 @[simp, nolint simpNF]
-theorem size_shiftLeft {m} (h : m ≠ 0) (n) : size (m <<< n) = size m + n :=
-  by simp only [size_shiftLeft' (shiftLeft'_ne_zero_left _ h _), ← shiftLeft'_false]
+theorem size_shiftLeft {m} (h : m ≠ 0) (n) : size (m <<< n) = size m + n := by
+  simp only [size_shiftLeft' (shiftLeft'_ne_zero_left _ h _), ← shiftLeft'_false]
 #align nat.size_shiftl Nat.size_shiftLeft
 
 theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by

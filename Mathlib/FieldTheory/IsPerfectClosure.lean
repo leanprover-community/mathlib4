@@ -180,7 +180,7 @@ theorem IsPRadical.trans [IsPRadical i p] [IsPRadical f p] :
     rw [RingHom.mem_ker, RingHom.comp_apply, ← RingHom.mem_ker] at h
     simpa only [← Ideal.mem_comap, comap_pNilradical] using ker_le f p h
 
-/-- If `i : K →+* L` is a `p`-radical ring homomorphism , then it makes `L` a perfect closure
+/-- If `i : K →+* L` is a `p`-radical ring homomorphism, then it makes `L` a perfect closure
 of `K`, if `L` is perfect.
 In this case the kernel of `i` is equal to the `p`-nilradical of `K`
 (see `IsPerfectClosure.ker_eq`).

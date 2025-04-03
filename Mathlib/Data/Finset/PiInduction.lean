@@ -49,8 +49,7 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
   · rcases sigma_nonempty.1 hne with ⟨i, -, hi⟩
     rcases H_ex i (f i) hi with ⟨x, x_mem, hr⟩
     set g := update f i ((f i).erase x) with hg
--- Porting note: this tactic does not exist yet
---  clear_value g
+    clear_value g
     have hx' : x ∉ g i := by
       rw [hg, update_same]
       apply not_mem_erase

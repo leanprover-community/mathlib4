@@ -86,7 +86,7 @@ theorem spectrum_star_mul_self_of_isStarNormal :
   rcases subsingleton_or_nontrivial A with ⟨⟩
   · simp only [spectrum.of_subsingleton, Set.empty_subset]
   · set a' : elementalStarAlgebra ℂ a := ⟨a, self_mem ℂ a⟩
-    refine' (spectrum.subset_starSubalgebra (star a' * a')).trans _
+    refine (spectrum.subset_starSubalgebra (star a' * a')).trans ?_
     rw [← spectrum.gelfandTransform_eq (star a' * a'), ContinuousMap.spectrum_eq_range]
     rintro - ⟨φ, rfl⟩
     rw [gelfandTransform_apply_apply ℂ _ (star a' * a') φ, map_mul φ, map_star φ]
@@ -131,7 +131,7 @@ theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
   have h₁ : (‖star a * a‖ : ℂ) ≠ 0 := Complex.ofReal_ne_zero.mpr (norm_ne_zero_iff.mpr h.ne_zero)
   set u : Units (elementalStarAlgebra ℂ a) :=
     Units.map (algebraMap ℂ (elementalStarAlgebra ℂ a)).toMonoidHom (Units.mk0 _ h₁)
-  refine' ⟨u.ofNearby _ _, rfl⟩
+  refine ⟨u.ofNearby _ ?_, rfl⟩
   simp only [u, Units.coe_map, Units.val_inv_eq_inv_val, RingHom.toMonoidHom_eq_coe, Units.val_mk0,
     Units.coe_map_inv, MonoidHom.coe_coe, norm_algebraMap', norm_inv, Complex.norm_eq_abs,
     Complex.abs_ofReal, abs_norm, inv_inv]
@@ -148,13 +148,13 @@ theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
     have h₃ : z ∈ Set.Icc (0 : ℂ) ‖star a * a‖ := by
       replace hz := Set.image_subset _ (spectrum_star_mul_self_of_isStarNormal a) hz
       rwa [Set.image_const_sub_Icc, sub_self, sub_zero] at hz
-    refine' lt_of_le_of_ne (Complex.real_le_real.1 <| Complex.eq_coe_norm_of_nonneg h₃.1 ▸ h₃.2) _
+    refine lt_of_le_of_ne (Complex.real_le_real.1 <| Complex.eq_coe_norm_of_nonneg h₃.1 ▸ h₃.2) ?_
     · intro hz'
       replace hz' := congr_arg (fun x : ℝ≥0 => ((x : ℝ) : ℂ)) hz'
       simp only [coe_nnnorm] at hz'
       rw [← Complex.eq_coe_norm_of_nonneg h₃.1] at hz'
       obtain ⟨w, hw₁, hw₂⟩ := hz
-      refine' (spectrum.zero_not_mem_iff ℂ).mpr h _
+      refine (spectrum.zero_not_mem_iff ℂ).mpr h ?_
       rw [hz', sub_eq_self] at hw₂
       rwa [hw₂] at hw₁
   /- The norm of `‖star a * a‖ • 1 - star a * a` in the subalgebra and in `A` coincide. In `A`,
@@ -164,10 +164,10 @@ theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
   exact ENNReal.coe_lt_coe.1
     (calc
       (‖star a' * a' - algebraMap ℂ _ ‖star a * a‖‖₊ : ℝ≥0∞) =
-          ‖algebraMap ℂ A ‖star a * a‖ - star a * a‖₊ :=
-        by rw [← nnnorm_neg, neg_sub]; rfl
+          ‖algebraMap ℂ A ‖star a * a‖ - star a * a‖₊ := by
+        rw [← nnnorm_neg, neg_sub]; rfl
       _ = spectralRadius ℂ (algebraMap ℂ A ‖star a * a‖ - star a * a) := by
-        refine' (IsSelfAdjoint.spectralRadius_eq_nnnorm _).symm
+        refine (IsSelfAdjoint.spectralRadius_eq_nnnorm ?_).symm
         rw [IsSelfAdjoint, star_sub, star_mul, star_star, ← algebraMap_star_comm]
         congr!
         exact RCLike.conj_ofReal _
@@ -183,7 +183,7 @@ theorem StarSubalgebra.isUnit_coe_inv_mem {S : StarSubalgebra ℂ A} (hS : IsClo
     rw [← one_mul (↑h.unit⁻¹ : A), ← hx.unit.inv_mul, mul_assoc, IsUnit.unit_spec, mul_assoc,
       h.mul_val_inv, mul_one]
     exact mul_mem this (star_mem hxS)
-  refine' le_of_isClosed_of_mem ℂ hS (mul_mem (star_mem hxS) hxS) _
+  refine le_of_isClosed_of_mem ℂ hS (mul_mem (star_mem hxS) hxS) ?_
   haveI := (IsSelfAdjoint.star_mul_self x).isStarNormal
   have hx' := elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal hx
   convert (↑hx'.unit⁻¹ : elementalStarAlgebra ℂ (star x * x)).prop using 1
@@ -195,9 +195,9 @@ theorem StarSubalgebra.isUnit_coe_inv_mem {S : StarSubalgebra ℂ A} (hS : IsClo
 `x` is invertible in `S`. -/
 theorem StarSubalgebra.coe_isUnit {S : StarSubalgebra ℂ A} (hS : IsClosed (S : Set A)) {x : S} :
     IsUnit (x : A) ↔ IsUnit x := by
-  refine'
-    ⟨fun hx => ⟨⟨x, ⟨(↑hx.unit⁻¹ : A), StarSubalgebra.isUnit_coe_inv_mem hS hx x.prop⟩, _, _⟩, rfl⟩,
-      fun hx => hx.map S.subtype⟩
+  refine ⟨fun hx =>
+           ⟨⟨x, ⟨(↑hx.unit⁻¹ : A), StarSubalgebra.isUnit_coe_inv_mem hS hx x.prop⟩, ?_, ?_⟩, rfl⟩,
+          fun hx => hx.map S.subtype⟩
   exacts [Subtype.coe_injective hx.mul_val_inv, Subtype.coe_injective hx.val_inv_mul]
 #align star_subalgebra.coe_is_unit StarSubalgebra.coe_isUnit
 
@@ -229,6 +229,11 @@ noncomputable def elementalStarAlgebra.characterSpaceToSpectrum (x : A)
       AlgHom.apply_mem_spectrum φ ⟨x, self_mem ℂ x⟩
 #align elemental_star_algebra.character_space_to_spectrum elementalStarAlgebra.characterSpaceToSpectrum
 
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12227
+attribute [nolint simpNF] elementalStarAlgebra.characterSpaceToSpectrum_coe
+
 theorem elementalStarAlgebra.continuous_characterSpaceToSpectrum (x : A) :
     Continuous (elementalStarAlgebra.characterSpaceToSpectrum x) :=
   continuous_induced_rng.2
@@ -237,7 +242,7 @@ theorem elementalStarAlgebra.continuous_characterSpaceToSpectrum (x : A) :
 
 theorem elementalStarAlgebra.bijective_characterSpaceToSpectrum :
     Function.Bijective (elementalStarAlgebra.characterSpaceToSpectrum a) := by
-  refine' ⟨fun φ ψ h => starAlgHomClass_ext ℂ _ _ _, _⟩
+  refine ⟨fun φ ψ h => starAlgHomClass_ext ℂ ?_ ?_ ?_, ?_⟩
   · exact (map_continuous φ)
   · exact (map_continuous ψ)
   · simpa only [elementalStarAlgebra.characterSpaceToSpectrum, Subtype.mk_eq_mk,

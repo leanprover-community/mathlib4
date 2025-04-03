@@ -36,7 +36,7 @@ variable {ι : Type uι} {E : Type uE} [NormedAddCommGroup E] [NormedSpace ℝ E
 
 open Function Filter FiniteDimensional Set
 
-open scoped Topology Manifold Classical Filter BigOperators
+open scoped Topology Manifold Classical Filter
 
 noncomputable section
 
@@ -91,8 +91,8 @@ theorem comp_embeddingPiTangent_mfderiv (x : M) (hx : x ∈ s) :
       (@ContinuousLinearMap.proj ℝ _ ι (fun _ => E × ℝ) _ _ (fun _ => inferInstance) (f.ind x hx))
   have := L.hasMFDerivAt.comp x f.embeddingPiTangent.smooth.mdifferentiableAt.hasMFDerivAt
   convert hasMFDerivAt_unique this _
-  refine' (hasMFDerivAt_extChartAt I (f.mem_chartAt_ind_source x hx)).congr_of_eventuallyEq _
-  refine' (f.eventuallyEq_one x hx).mono fun y hy => _
+  refine (hasMFDerivAt_extChartAt I (f.mem_chartAt_ind_source x hx)).congr_of_eventuallyEq ?_
+  refine (f.eventuallyEq_one x hx).mono fun y hy => ?_
   simp only [L, embeddingPiTangent_coe, ContinuousLinearMap.coe_comp', (· ∘ ·),
     ContinuousLinearMap.coe_fst', ContinuousLinearMap.proj_apply]
   rw [hy, Pi.one_apply, one_smul]

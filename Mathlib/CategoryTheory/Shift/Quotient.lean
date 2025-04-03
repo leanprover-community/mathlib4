@@ -46,12 +46,12 @@ noncomputable instance HasShift.quotient [r.IsCompatibleWithShift A] :
   HasShift.induced (Quotient.functor r) A
     (fun a => Quotient.lift r (shiftFunctor C a ⋙ Quotient.functor r)
       (fun _ _ _ _ hfg => Quotient.sound r (HomRel.IsCompatibleWithShift.condition _ _ _ hfg)))
-    (fun _ => Quotient.lift.isLift _ _ _) ⟨⟨inferInstance⟩, inferInstance⟩
+    (fun _ => Quotient.lift.isLift _ _ _)
 
 /-- The functor `Quotient.functor r : C ⥤ Quotient r` commutes with the shift. -/
 noncomputable instance Quotient.functor_commShift [r.IsCompatibleWithShift A] :
     (Quotient.functor r).CommShift A :=
-  Functor.CommShift.ofInduced _ _ _ _ _
+  Functor.CommShift.ofInduced _ _ _ _
 
 -- the construction is made irreducible in order to prevent timeouts and abuse of defeq
 attribute [irreducible] HasShift.quotient Quotient.functor_commShift

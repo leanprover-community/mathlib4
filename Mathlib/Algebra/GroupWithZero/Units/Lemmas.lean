@@ -15,6 +15,7 @@ import Mathlib.GroupTheory.GroupAction.Units
 
 -/
 
+assert_not_exists DenselyOrdered
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
 variable [MonoidWithZero M₀]

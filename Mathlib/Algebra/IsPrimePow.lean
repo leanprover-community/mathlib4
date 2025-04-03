@@ -84,9 +84,9 @@ theorem Nat.Prime.isPrimePow {p : ℕ} (hp : p.Prime) : IsPrimePow p :=
 theorem isPrimePow_nat_iff_bounded (n : ℕ) :
     IsPrimePow n ↔ ∃ p : ℕ, p ≤ n ∧ ∃ k : ℕ, k ≤ n ∧ p.Prime ∧ 0 < k ∧ p ^ k = n := by
   rw [isPrimePow_nat_iff]
-  refine' Iff.symm ⟨fun ⟨p, _, k, _, hp, hk, hn⟩ => ⟨p, k, hp, hk, hn⟩, _⟩
+  refine Iff.symm ⟨fun ⟨p, _, k, _, hp, hk, hn⟩ => ⟨p, k, hp, hk, hn⟩, ?_⟩
   rintro ⟨p, k, hp, hk, rfl⟩
-  refine' ⟨p, _, k, (Nat.lt_pow_self hp.one_lt _).le, hp, hk, rfl⟩
+  refine ⟨p, ?_, k, (Nat.lt_pow_self hp.one_lt _).le, hp, hk, rfl⟩
   conv => { lhs; rw [← (pow_one p)] }
   exact pow_le_pow_right hp.one_lt.le hk
 #align is_prime_pow_nat_iff_bounded isPrimePow_nat_iff_bounded
@@ -98,7 +98,7 @@ theorem IsPrimePow.dvd {n m : ℕ} (hn : IsPrimePow n) (hm : m ∣ n) (hm₁ : m
   rw [isPrimePow_nat_iff] at hn ⊢
   rcases hn with ⟨p, k, hp, _hk, rfl⟩
   obtain ⟨i, hik, rfl⟩ := (Nat.dvd_prime_pow hp).1 hm
-  refine' ⟨p, i, hp, _, rfl⟩
+  refine ⟨p, i, hp, ?_, rfl⟩
   apply Nat.pos_of_ne_zero
   rintro rfl
   simp only [pow_zero, ne_eq, not_true_eq_false] at hm₁

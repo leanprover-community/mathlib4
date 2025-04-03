@@ -67,8 +67,8 @@ open scoped Classical
 
 @[simp]
 theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ Nonempty α ∧ Infinite β := by
-  refine'
-    ⟨fun H => _, fun H =>
+  refine
+    ⟨fun H => ?_, fun H =>
       H.elim (and_imp.2 <| @Prod.infinite_of_left α β) (and_imp.2 <| @Prod.infinite_of_right α β)⟩
   rw [and_comm]; contrapose! H; intro H'
   rcases Infinite.nonempty (α × β) with ⟨a, b⟩
@@ -79,7 +79,7 @@ theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ 
 instance Pi.infinite_of_left {ι : Sort*} {π : ι → Sort _} [∀ i, Nontrivial <| π i] [Infinite ι] :
     Infinite (∀ i : ι, π i) := by
   choose m n hm using fun i => exists_pair_ne (π i)
-  refine' Infinite.of_injective (fun i => update m i (n i)) fun x y h => of_not_not fun hne => _
+  refine Infinite.of_injective (fun i => update m i (n i)) fun x y h => of_not_not fun hne => ?_
   simp_rw [update_eq_iff, update_noteq hne] at h
   exact (hm x h.1.symm).elim
 #align pi.infinite_of_left Pi.infinite_of_left

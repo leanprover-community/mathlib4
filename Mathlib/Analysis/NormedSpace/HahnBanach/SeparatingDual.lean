@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2023 Sébastien Gouëzel All rights reserved.
+Copyright (c) 2023 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
@@ -191,7 +191,7 @@ lemma completeSpace_of_completeSpace_continuousMultilinearMap
     exact (ContinuousLinearMap.lipschitz _).cauchySeq_comp hf
   obtain ⟨a, ha⟩ : ∃ a, Tendsto g atTop (𝓝 a) := cauchy_iff_exists_le_nhds.mp this
   refine ⟨a m, ?_⟩
-  have : Tendsto (fun n ↦ g n m) atTop (𝓝 (a m)) := ((continuous_eval_left _).tendsto _).comp ha
+  have : Tendsto (fun n ↦ g n m) atTop (𝓝 (a m)) := ((continuous_eval_const _).tendsto _).comp ha
   simpa [g, hφ]
 
 lemma completeSpace_continuousMultilinearMap_iff {m : ∀ i, M i} (hm : ∀ i, m i ≠ 0) :

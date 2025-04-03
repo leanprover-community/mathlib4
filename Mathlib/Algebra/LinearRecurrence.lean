@@ -42,7 +42,7 @@ noncomputable section
 
 open Finset
 
-open BigOperators Polynomial
+open Polynomial
 
 /-- A "linear recurrence relation" over a commutative semiring is given by its
   order `n` and `n` coefficients. -/
@@ -155,7 +155,7 @@ def toInit : E.solSpace ≃ₗ[α] Fin E.order → α where
 /-- Two solutions are equal iff they are equal on `range E.order`. -/
 theorem sol_eq_of_eq_init (u v : ℕ → α) (hu : E.IsSolution u) (hv : E.IsSolution v) :
     u = v ↔ Set.EqOn u v ↑(range E.order) := by
-  refine' Iff.intro (fun h x _ ↦ h ▸ rfl) _
+  refine Iff.intro (fun h x _ ↦ h ▸ rfl) ?_
   intro h
   set u' : ↥E.solSpace := ⟨u, hu⟩
   set v' : ↥E.solSpace := ⟨v, hv⟩
@@ -216,7 +216,7 @@ def charPoly : α[X] :=
   `q` is a root of `E`'s characteristic polynomial. -/
 theorem geom_sol_iff_root_charPoly (q : α) :
     (E.IsSolution fun n ↦ q ^ n) ↔ E.charPoly.IsRoot q := by
-  rw [charPoly, Polynomial.IsRoot.definition, Polynomial.eval]
+  rw [charPoly, Polynomial.IsRoot.def, Polynomial.eval]
   simp only [Polynomial.eval₂_finset_sum, one_mul, RingHom.id_apply, Polynomial.eval₂_monomial,
     Polynomial.eval₂_sub]
   constructor

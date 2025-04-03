@@ -3,7 +3,7 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Ideal.QuotientOperations
 
 #align_import ring_theory.quotient_nilpotent from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
@@ -44,7 +44,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
     exact (hI' hI).elim
   apply h₂ (I ^ 2) _ (Ideal.pow_le_self two_ne_zero)
   · apply H n.succ _ (I ^ 2)
-    · rw [← pow_mul, eq_bot_iff, ← hI, Nat.succ_eq_add_one, Nat.succ_eq_add_one]
+    · rw [← pow_mul, eq_bot_iff, ← hI, Nat.succ_eq_add_one]
       apply Ideal.pow_le_pow_right (by omega)
     · exact n.succ.lt_succ_self
   · apply h₁
@@ -53,7 +53,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
 
 theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type*} [CommRing R] {I : Ideal R}
     (hI : IsNilpotent I) {x : R} : IsUnit (Ideal.Quotient.mk I x) ↔ IsUnit x := by
-  refine' ⟨_, fun h => h.map <| Ideal.Quotient.mk I⟩
+  refine ⟨?_, fun h => h.map <| Ideal.Quotient.mk I⟩
   revert x
   apply Ideal.IsNilpotent.induction_on (R := R) (S := R) I hI <;> clear hI I
   swap

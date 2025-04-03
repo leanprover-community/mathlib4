@@ -42,7 +42,7 @@ theorem dirac_one_mconv [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] :
     (Measure.dirac 1) ∗ μ = μ := by
   unfold mconv
   rw [MeasureTheory.Measure.dirac_prod, map_map]
-  simp only [Function.comp_def, one_mul, map_id']
+  · simp only [Function.comp_def, one_mul, map_id']
   all_goals { measurability }
 
 /-- Convolution of a measure μ with the dirac measure at 1 returns μ. -/
@@ -51,7 +51,7 @@ theorem mconv_dirac_one [MeasurableMul₂ M]
     (μ : Measure M) [SFinite μ] : μ ∗ (Measure.dirac 1) = μ := by
   unfold mconv
   rw [MeasureTheory.Measure.prod_dirac, map_map]
-  simp only [Function.comp_def, mul_one, map_id']
+  · simp only [Function.comp_def, mul_one, map_id']
   all_goals { measurability }
 
 /-- Convolution of the zero measure with a measure μ returns the zero measure. -/
@@ -92,7 +92,7 @@ theorem mconv_comm {M : Type*} [CommMonoid M] [MeasurableSpace M] [MeasurableMul
 /-- Convolution of SFinite maps is SFinite. -/
 @[to_additive sfinite_conv_of_sfinite]
 instance sfinite_mconv_of_sfinite (μ : Measure M) (ν : Measure M) [SFinite μ] [SFinite ν] :
-    SFinite (μ ∗ ν) := instSFiniteMap (μ.prod ν) fun x ↦ x.1 * x.2
+    SFinite (μ ∗ ν) := inferInstanceAs <| SFinite ((μ.prod ν).map fun (x : M × M) ↦ x.1 * x.2)
 
 @[to_additive finite_of_finite_conv]
 instance finite_of_finite_mconv (μ : Measure M) (ν : Measure M) [IsFiniteMeasure μ]

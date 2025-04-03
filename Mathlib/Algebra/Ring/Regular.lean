@@ -19,7 +19,7 @@ variable {α : Type*}
 The typeclass that restricts all terms of `α` to have this property is `NoZeroDivisors`. -/
 theorem isLeftRegular_of_non_zero_divisor [NonUnitalNonAssocRing α] (k : α)
     (h : ∀ x : α, k * x = 0 → x = 0) : IsLeftRegular k := by
-  refine' fun x y (h' : k * x = k * y) => sub_eq_zero.mp (h _ _)
+  refine fun x y (h' : k * x = k * y) => sub_eq_zero.mp (h _ ?_)
   rw [mul_sub, sub_eq_zero, h']
 #align is_left_regular_of_non_zero_divisor isLeftRegular_of_non_zero_divisor
 
@@ -27,7 +27,7 @@ theorem isLeftRegular_of_non_zero_divisor [NonUnitalNonAssocRing α] (k : α)
 The typeclass that restricts all terms of `α` to have this property is `NoZeroDivisors`. -/
 theorem isRightRegular_of_non_zero_divisor [NonUnitalNonAssocRing α] (k : α)
     (h : ∀ x : α, x * k = 0 → x = 0) : IsRightRegular k := by
-  refine' fun x y (h' : x * k = y * k) => sub_eq_zero.mp (h _ _)
+  refine fun x y (h' : x * k = y * k) => sub_eq_zero.mp (h _ ?_)
   rw [sub_mul, sub_eq_zero, h']
 #align is_right_regular_of_non_zero_divisor isRightRegular_of_non_zero_divisor
 
@@ -49,8 +49,7 @@ theorem isRegular_iff_ne_zero' [Nontrivial α] [NonUnitalNonAssocRing α] [NoZer
 /-- A ring with no zero divisors is a `CancelMonoidWithZero`.
 
 Note this is not an instance as it forms a typeclass loop. -/
-@[reducible]
-def NoZeroDivisors.toCancelMonoidWithZero [Ring α] [NoZeroDivisors α] : CancelMonoidWithZero α :=
+abbrev NoZeroDivisors.toCancelMonoidWithZero [Ring α] [NoZeroDivisors α] : CancelMonoidWithZero α :=
   { (by infer_instance : MonoidWithZero α) with
     mul_left_cancel_of_ne_zero := fun ha =>
       @IsRegular.left _ _ _ (isRegular_of_ne_zero' ha) _ _,
@@ -61,8 +60,7 @@ def NoZeroDivisors.toCancelMonoidWithZero [Ring α] [NoZeroDivisors α] : Cancel
 /-- A commutative ring with no zero divisors is a `CancelCommMonoidWithZero`.
 
 Note this is not an instance as it forms a typeclass loop. -/
-@[reducible]
-def NoZeroDivisors.toCancelCommMonoidWithZero [CommRing α] [NoZeroDivisors α] :
+abbrev NoZeroDivisors.toCancelCommMonoidWithZero [CommRing α] [NoZeroDivisors α] :
     CancelCommMonoidWithZero α :=
   { NoZeroDivisors.toCancelMonoidWithZero, ‹CommRing α› with }
 #align no_zero_divisors.to_cancel_comm_monoid_with_zero NoZeroDivisors.toCancelCommMonoidWithZero

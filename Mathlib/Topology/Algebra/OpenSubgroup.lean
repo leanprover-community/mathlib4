@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2019 Johan Commelin All rights reserved.
+Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
@@ -167,8 +167,8 @@ instance : Inhabited (OpenSubgroup G) :=
 @[to_additive]
 theorem isClosed [ContinuousMul G] (U : OpenSubgroup G) : IsClosed (U : Set G) := by
   apply isOpen_compl_iff.1
-  refine' isOpen_iff_forall_mem_open.2 fun x hx => ⟨(fun y => y * x⁻¹) ⁻¹' U, _, _, _⟩
-  · refine' fun u hux hu => hx _
+  refine isOpen_iff_forall_mem_open.2 fun x hx => ⟨(fun y => y * x⁻¹) ⁻¹' U, ?_, ?_, ?_⟩
+  · refine fun u hux hu => hx ?_
     simp only [Set.mem_preimage, SetLike.mem_coe] at hux hu ⊢
     convert U.mul_mem (U.inv_mem hux) hu
     simp
@@ -307,7 +307,7 @@ variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousMul G] (H : Subgr
 
 @[to_additive]
 theorem isOpen_of_mem_nhds {g : G} (hg : (H : Set G) ∈ 𝓝 g) : IsOpen (H : Set G) := by
-  refine' isOpen_iff_mem_nhds.2 fun x hx => _
+  refine isOpen_iff_mem_nhds.2 fun x hx => ?_
   have hg' : g ∈ H := SetLike.mem_coe.1 (mem_of_mem_nhds hg)
   have : Filter.Tendsto (fun y => y * (x⁻¹ * g)) (𝓝 x) (𝓝 g) :=
     (continuous_id.mul continuous_const).tendsto' _ _ (mul_inv_cancel_left _ _)

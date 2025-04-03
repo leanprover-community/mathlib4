@@ -288,7 +288,7 @@ theorem explicitCokernelDesc_comp_eq_desc {X Y Z W : SemiNormedGroupCat.{u}} {f 
     explicitCokernelDesc cond' ≫ h =
       explicitCokernelDesc
         (show f ≫ g ≫ h = 0 by rw [← CategoryTheory.Category.assoc, cond', Limits.zero_comp]) := by
-  refine' explicitCokernelDesc_unique _ _ _
+  refine explicitCokernelDesc_unique _ _ ?_
   rw [← CategoryTheory.Category.assoc, explicitCokernelπ_desc]
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.explicit_cokernel_desc_comp_eq_desc SemiNormedGroupCat.explicitCokernelDesc_comp_eq_desc
@@ -347,7 +347,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem explicitCokernelDesc_normNoninc {X Y Z : SemiNormedGroupCat.{u}} {f : X ⟶ Y} {g : Y ⟶ Z}
     {cond : f ≫ g = 0} (hg : g.NormNoninc) : (explicitCokernelDesc cond).NormNoninc := by
-  refine' NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one.2 _
+  refine NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one.2 ?_
   rw [← NNReal.coe_one]
   exact
     explicitCokernelDesc_norm_le_of_norm_le cond 1

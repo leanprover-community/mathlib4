@@ -90,7 +90,7 @@ theorem ext ⦃α β : X ≅ Y⦄ (w : α.hom = β.hom) : α = β :=
 #align category_theory.iso.ext CategoryTheory.Iso.ext
 
 /-- Inverse isomorphism. -/
-@[symm, pp_dot]
+@[symm]
 def symm (I : X ≅ Y) : Y ≅ X where
   hom := I.inv
   inv := I.hom
@@ -298,6 +298,15 @@ theorem inv_hom_id_assoc (f : X ⟶ Y) [I : IsIso f] {Z} (g : Y ⟶ Z) : inv f �
 
 end IsIso
 
+lemma Iso.isIso_hom (e : X ≅ Y) : IsIso e.hom :=
+  ⟨e.inv, by simp, by simp⟩
+#align category_theory.is_iso.of_iso CategoryTheory.Iso.isIso_hom
+
+lemma Iso.isIso_inv (e : X ≅ Y) : IsIso e.inv := e.symm.isIso_hom
+#align category_theory.is_iso.of_iso_inv CategoryTheory.Iso.isIso_inv
+
+attribute [instance] Iso.isIso_hom Iso.isIso_inv
+
 open IsIso
 
 /-- Reinterpret a morphism `f` with an `IsIso f` instance as an `Iso`. -/
@@ -365,16 +374,14 @@ theorem eq_inv_of_inv_hom_id {f : X ⟶ Y} [IsIso f] {g : Y ⟶ X} (inv_hom_id :
 instance id (X : C) : IsIso (𝟙 X) := ⟨⟨𝟙 X, by simp⟩⟩
 #align category_theory.is_iso.id CategoryTheory.IsIso.id
 
-instance of_iso (f : X ≅ Y) : IsIso f.hom := ⟨⟨f.inv, by simp⟩⟩
-#align category_theory.is_iso.of_iso CategoryTheory.IsIso.of_iso
-
-instance of_iso_inv (f : X ≅ Y) : IsIso f.inv := IsIso.of_iso f.symm
-#align category_theory.is_iso.of_iso_inv CategoryTheory.IsIso.of_iso_inv
+-- deprecated on 2024-05-15
+@[deprecated] alias of_iso := CategoryTheory.Iso.isIso_hom
+@[deprecated] alias of_iso_inv := CategoryTheory.Iso.isIso_inv
 
 variable {f g : X ⟶ Y} {h : Y ⟶ Z}
 
 instance inv_isIso [IsIso f] : IsIso (inv f) :=
-  IsIso.of_iso_inv (asIso f)
+  (asIso f).isIso_inv
 #align category_theory.is_iso.inv_is_iso CategoryTheory.IsIso.inv_isIso
 
 /- The following instance has lower priority for the following reason:
@@ -382,7 +389,7 @@ Suppose we are given `f : X ≅ Y` with `X Y : Type u`.
 Without the lower priority, typeclass inference cannot deduce `IsIso f.hom`
 because `f.hom` is defeq to `(fun x ↦ x) ≫ f.hom`, triggering a loop. -/
 instance (priority := 900) comp_isIso [IsIso f] [IsIso h] : IsIso (f ≫ h) :=
-  IsIso.of_iso <| asIso f ≪≫ asIso h
+  (asIso f ≪≫ asIso h).isIso_hom
 #align category_theory.is_iso.comp_is_iso CategoryTheory.IsIso.comp_isIso
 
 @[simp]
@@ -581,7 +588,7 @@ variable {D : Type u₂}
 variable [Category.{v₂} D]
 
 /-- A functor `F : C ⥤ D` sends isomorphisms `i : X ≅ Y` to isomorphisms `F.obj X ≅ F.obj Y` -/
-@[simps, pp_dot]
+@[simps]
 def mapIso (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.obj X ≅ F.obj Y where
   hom := F.map i.hom
   inv := F.map i.inv
@@ -598,8 +605,8 @@ theorem mapIso_symm (F : C ⥤ D) {X Y : C} (i : X ≅ Y) : F.mapIso i.symm = (F
 
 @[simp]
 theorem mapIso_trans (F : C ⥤ D) {X Y Z : C} (i : X ≅ Y) (j : Y ≅ Z) :
-    F.mapIso (i ≪≫ j) = F.mapIso i ≪≫ F.mapIso j :=
-  by ext; apply Functor.map_comp
+    F.mapIso (i ≪≫ j) = F.mapIso i ≪≫ F.mapIso j := by
+  ext; apply Functor.map_comp
 #align category_theory.functor.map_iso_trans CategoryTheory.Functor.mapIso_trans
 
 @[simp]
@@ -608,7 +615,7 @@ theorem mapIso_refl (F : C ⥤ D) (X : C) : F.mapIso (Iso.refl X) = Iso.refl (F.
 #align category_theory.functor.map_iso_refl CategoryTheory.Functor.mapIso_refl
 
 instance map_isIso (F : C ⥤ D) (f : X ⟶ Y) [IsIso f] : IsIso (F.map f) :=
-  IsIso.of_iso <| F.mapIso (asIso f)
+  (F.mapIso (asIso f)).isIso_hom
 #align category_theory.functor.map_is_iso CategoryTheory.Functor.map_isIso
 
 @[simp]

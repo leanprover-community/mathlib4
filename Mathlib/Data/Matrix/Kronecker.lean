@@ -5,7 +5,7 @@ Authors: Filippo A. E. Nuccio, Eric Wieser
 -/
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
-import Mathlib.LinearAlgebra.Matrix.Determinant
+import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
@@ -47,6 +47,7 @@ These require `open Kronecker`:
 namespace Matrix
 
 open Matrix
+open scoped RightActions
 
 variable {R α α' β β' γ γ' : Type*}
 variable {l m n p : Type*} {q r : Type*} {l' m' n' p' : Type*}
@@ -240,8 +241,8 @@ theorem det_kroneckerMapBilinear [CommSemiring R] [Fintype m] [Fintype n] [Decid
       det (A.map fun a => f a 1) ^ Fintype.card n * det (B.map fun b => f 1 b) ^ Fintype.card m :=
   calc
     det (kroneckerMapBilinear f A B) =
-        det (kroneckerMapBilinear f A 1 * kroneckerMapBilinear f 1 B) :=
-      by rw [← kroneckerMapBilinear_mul_mul f h_comm, Matrix.mul_one, Matrix.one_mul]
+        det (kroneckerMapBilinear f A 1 * kroneckerMapBilinear f 1 B) := by
+      rw [← kroneckerMapBilinear_mul_mul f h_comm, Matrix.mul_one, Matrix.one_mul]
     _ = det (blockDiagonal fun _ => A.map fun a => f a 1) *
         det (blockDiagonal fun _ => B.map fun b => f 1 b) := by
       rw [det_mul, ← diagonal_one, ← diagonal_one, kroneckerMapBilinear_apply_apply,
@@ -324,7 +325,7 @@ theorem diagonal_kronecker_diagonal [MulZeroClass α] [DecidableEq m] [Decidable
 #align matrix.diagonal_kronecker_diagonal Matrix.diagonal_kronecker_diagonal
 
 theorem kronecker_diagonal [MulZeroClass α] [DecidableEq n] (A : Matrix l m α) (b : n → α) :
-    A ⊗ₖ diagonal b = blockDiagonal fun i => MulOpposite.op (b i) • A :=
+    A ⊗ₖ diagonal b = blockDiagonal fun i => A <• b i :=
   kroneckerMap_diagonal_right _ mul_zero _ _
 #align matrix.kronecker_diagonal Matrix.kronecker_diagonal
 
@@ -333,6 +334,37 @@ theorem diagonal_kronecker [MulZeroClass α] [DecidableEq l] (a : l → α) (B :
       Matrix.reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _) (blockDiagonal fun i => a i • B) :=
   kroneckerMap_diagonal_left _ zero_mul _ _
 #align matrix.diagonal_kronecker Matrix.diagonal_kronecker
+
+@[simp]
+theorem natCast_kronecker_natCast [NonAssocSemiring α] [DecidableEq m] [DecidableEq n] (a b : ℕ) :
+    (a : Matrix m m α) ⊗ₖ (b : Matrix n n α) = ↑(a * b) :=
+  (diagonal_kronecker_diagonal _ _).trans <| by simp_rw [← Nat.cast_mul]; rfl
+
+theorem kronecker_natCast [NonAssocSemiring α] [DecidableEq n] (A : Matrix l m α) (b : ℕ) :
+    A ⊗ₖ (b : Matrix n n α) = blockDiagonal fun _ => b • A :=
+  kronecker_diagonal _ _ |>.trans <| by
+    congr! 2
+    ext
+    simp [(Nat.cast_commute b _).eq]
+
+theorem natCast_kronecker [NonAssocSemiring α] [DecidableEq l] (a : ℕ) (B : Matrix m n α) :
+    (a : Matrix l l α) ⊗ₖ B =
+      Matrix.reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _) (blockDiagonal fun _ => a • B) :=
+  diagonal_kronecker _ _ |>.trans <| by
+    congr! 2
+    ext
+    simp [(Nat.cast_commute a _).eq]
+
+theorem kronecker_ofNat [Semiring α] [DecidableEq n] (A : Matrix l m α) (b : ℕ) [b.AtLeastTwo] :
+    A ⊗ₖ (no_index (OfNat.ofNat b) : Matrix n n α) =
+      blockDiagonal fun _ => A <• (OfNat.ofNat b : α):=
+  kronecker_diagonal _ _
+
+theorem ofNat_kronecker [Semiring α] [DecidableEq l] (a : ℕ) [a.AtLeastTwo] (B : Matrix m n α) :
+    (no_index (OfNat.ofNat a) : Matrix l l α) ⊗ₖ B =
+      Matrix.reindex (.prodComm _ _) (.prodComm _ _)
+        (blockDiagonal fun _ => (OfNat.ofNat a : α) • B) :=
+  diagonal_kronecker _ _
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem one_kronecker_one [MulZeroOneClass α] [DecidableEq m] [DecidableEq n] :
@@ -378,7 +410,7 @@ theorem trace_kronecker [Fintype m] [Fintype n] [Semiring α] (A : Matrix m m α
 theorem det_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [CommRing R]
     (A : Matrix m m R) (B : Matrix n n R) :
     det (A ⊗ₖ B) = det A ^ Fintype.card n * det B ^ Fintype.card m := by
-  refine' (det_kroneckerMapBilinear (Algebra.lmul ℕ R).toLinearMap mul_mul_mul_comm _ _).trans _
+  refine (det_kroneckerMapBilinear (Algebra.lmul ℕ R).toLinearMap mul_mul_mul_comm _ _).trans ?_
   congr 3
   · ext i j
     exact mul_one _
@@ -394,7 +426,7 @@ theorem inv_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [C
   · cases isEmpty_or_nonempty n
     · exact Subsingleton.elim _ _
     have hAB : ¬IsUnit (A ⊗ₖ B).det := by
-      refine' mt (fun hAB => _) hA
+      refine mt (fun hAB => ?_) hA
       rw [det_kronecker] at hAB
       exact (isUnit_pow_iff Fintype.card_ne_zero).mp (isUnit_of_mul_isUnit_left hAB)
     rw [nonsing_inv_apply_not_isUnit _ hA, zero_kronecker, nonsing_inv_apply_not_isUnit _ hAB]
@@ -402,7 +434,7 @@ theorem inv_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [C
   · cases isEmpty_or_nonempty m
     · exact Subsingleton.elim _ _
     have hAB : ¬IsUnit (A ⊗ₖ B).det := by
-      refine' mt (fun hAB => _) hB
+      refine mt (fun hAB => ?_) hB
       rw [det_kronecker] at hAB
       exact (isUnit_pow_iff Fintype.card_ne_zero).mp (isUnit_of_mul_isUnit_right hAB)
     rw [nonsing_inv_apply_not_isUnit _ hB, kronecker_zero, nonsing_inv_apply_not_isUnit _ hAB]
@@ -560,7 +592,7 @@ variable [CommRing R] [CommRing α] [CommRing β] [Algebra R α] [Algebra R β]
 theorem det_kroneckerTMul [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
     (A : Matrix m m α) (B : Matrix n n β) :
     det (A ⊗ₖₜ[R] B) = (det A ^ Fintype.card n) ⊗ₜ[R] (det B ^ Fintype.card m) := by
-  refine' (det_kroneckerMapBilinear (TensorProduct.mk R α β) tmul_mul_tmul _ _).trans _
+  refine (det_kroneckerMapBilinear (TensorProduct.mk R α β) tmul_mul_tmul _ _).trans ?_
   simp (config := { eta := false }) only [mk_apply, ← includeLeft_apply (S := R),
     ← includeRight_apply]
   simp only [← AlgHom.mapMatrix_apply, ← AlgHom.map_det]

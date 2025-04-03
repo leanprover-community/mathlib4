@@ -56,9 +56,13 @@ Note that the textbook meaning of "glue nicely" is given in
 `Geometry.SimplicialComplex.convexHull_inter_convexHull` is enough for all purposes. -/
 @[ext]
 structure SimplicialComplex where
+  /-- the faces of this simplicial complex: currently, given by their spanning vertices -/
   faces : Set (Finset E)
+  /-- the empty set is not a face: hence, all faces are non-empty -/
   not_empty_mem : ∅ ∉ faces
+  /-- the vertices in each face are affine independent: this is an implementation detail -/
   indep : ∀ {s}, s ∈ faces → AffineIndependent 𝕜 ((↑) : s → E)
+  /-- faces are downward closed: a non-empty subset of its spanning vertices spans another face -/
   down_closed : ∀ {s t}, s ∈ faces → t ⊆ s → t ≠ ∅ → t ∈ faces
   inter_subset_convexHull : ∀ {s t}, s ∈ faces → t ∈ faces →
     convexHull 𝕜 ↑s ∩ convexHull 𝕜 ↑t ⊆ convexHull 𝕜 (s ∩ t : Set E)
@@ -108,8 +112,8 @@ theorem disjoint_or_exists_inter_eq_convexHull (hs : s ∈ K.faces) (ht : t ∈ 
       ∃ u ∈ K.faces, convexHull 𝕜 (s : Set E) ∩ convexHull 𝕜 ↑t = convexHull 𝕜 ↑u := by
   classical
   by_contra! h
-  refine' h.2 (s ∩ t) (K.down_closed hs (inter_subset_left _ _) fun hst => h.1 <|
-    disjoint_iff_inf_le.mpr <| (K.inter_subset_convexHull hs ht).trans _) _
+  refine h.2 (s ∩ t) (K.down_closed hs (inter_subset_left _ _) fun hst => h.1 <|
+    disjoint_iff_inf_le.mpr <| (K.inter_subset_convexHull hs ht).trans ?_) ?_
   · rw [← coe_inter, hst, coe_empty, convexHull_empty]
     rfl
   · rw [coe_inter, convexHull_inter_convexHull hs ht]
@@ -153,7 +157,7 @@ theorem mem_vertices : x ∈ K.vertices ↔ {x} ∈ K.faces := Iff.rfl
 
 theorem vertices_eq : K.vertices = ⋃ k ∈ K.faces, (k : Set E) := by
   ext x
-  refine' ⟨fun h => mem_biUnion h <| mem_coe.2 <| mem_singleton_self x, fun h => _⟩
+  refine ⟨fun h => mem_biUnion h <| mem_coe.2 <| mem_singleton_self x, fun h => ?_⟩
   obtain ⟨s, hs, hx⟩ := mem_iUnion₂.1 h
   exact K.down_closed hs (Finset.singleton_subset_iff.2 <| mem_coe.1 hx) (singleton_ne_empty _)
 #align geometry.simplicial_complex.vertices_eq Geometry.SimplicialComplex.vertices_eq
@@ -164,7 +168,7 @@ theorem vertices_subset_space : K.vertices ⊆ K.space :=
 
 theorem vertex_mem_convexHull_iff (hx : x ∈ K.vertices) (hs : s ∈ K.faces) :
     x ∈ convexHull 𝕜 (s : Set E) ↔ x ∈ s := by
-  refine' ⟨fun h => _, fun h => subset_convexHull 𝕜 _ h⟩
+  refine ⟨fun h => ?_, fun h => subset_convexHull 𝕜 _ h⟩
   classical
   have h := K.inter_subset_convexHull hx hs ⟨by simp, h⟩
   by_contra H
@@ -198,7 +202,7 @@ theorem facets_subset : K.facets ⊆ K.faces := fun _ hs => hs.1
 #align geometry.simplicial_complex.facets_subset Geometry.SimplicialComplex.facets_subset
 
 theorem not_facet_iff_subface (hs : s ∈ K.faces) : s ∉ K.facets ↔ ∃ t, t ∈ K.faces ∧ s ⊂ t := by
-  refine' ⟨fun hs' : ¬(_ ∧ _) => _, _⟩
+  refine ⟨fun hs' : ¬(_ ∧ _) => ?_, ?_⟩
   · push_neg at hs'
     obtain ⟨t, ht⟩ := hs' hs
     exact ⟨t, ht.1, ⟨ht.2.1, fun hts => ht.2.2 (Subset.antisymm ht.2.1 hts)⟩⟩

@@ -26,6 +26,9 @@ This file defines the union of a family `t : α → Finset β` of finsets bounde
 Remove `Finset.biUnion` in favour of `Finset.sup`.
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists MulAction
+
 variable {α β γ : Type*} {s s₁ s₂ : Finset α} {t t₁ t₂ : α → Finset β}
 
 namespace Finset
@@ -79,23 +82,29 @@ lemma disjiUnion_disjiUnion (s : Finset α) (f : α → Finset β) (g : β → F
         disjoint_left.mpr fun x hxa hxb ↦ by
           obtain ⟨xa, hfa, hga⟩ := mem_disjiUnion.mp hxa
           obtain ⟨xb, hfb, hgb⟩ := mem_disjiUnion.mp hxb
-          refine'
-            disjoint_left.mp
-              (h2 (mem_disjiUnion.mpr ⟨_, a.prop, hfa⟩) (mem_disjiUnion.mpr ⟨_, b.prop, hfb⟩) _) hga
-              hgb
+          refine disjoint_left.mp
+            (h2 (mem_disjiUnion.mpr ⟨_, a.prop, hfa⟩) (mem_disjiUnion.mpr ⟨_, b.prop, hfb⟩) ?_) hga
+            hgb
           rintro rfl
           exact disjoint_left.mp (h1 a.prop b.prop <| Subtype.coe_injective.ne hab) hfa hfb :=
   eq_of_veq <| Multiset.bind_assoc.trans (Multiset.attach_bind_coe _ _).symm
 #align finset.disj_Union_disj_Union Finset.disjiUnion_disjiUnion
 
-lemma disjiUnion_filter_eq_of_maps_to [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β}
-    (h : ∀ x ∈ s, f x ∈ t) :
-    t.disjiUnion (fun a ↦ s.filter (fun c ↦ f c = a))
-      (fun x' hx y' hy hne ↦ by
-        simp_rw [disjoint_left, mem_filter]
-        rintro i ⟨_, rfl⟩ ⟨_, rfl⟩
-        exact hne rfl) = s :=
-  ext fun b ↦ by simpa using h b
+variable [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β}
+
+private lemma pairwiseDisjoint_fibers : Set.PairwiseDisjoint ↑t fun a ↦ s.filter (f · = a) :=
+  fun x' hx y' hy hne ↦ by
+    simp_rw [disjoint_left, mem_filter]; rintro i ⟨_, rfl⟩ ⟨_, rfl⟩; exact hne rfl
+
+-- `simpNF` claims that the statement can't simplify itself, but it can (as of 2024-02-14)
+@[simp, nolint simpNF] lemma disjiUnion_filter_eq (s : Finset α) (t : Finset β) (f : α → β) :
+    t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers =
+      s.filter fun c ↦ f c ∈ t :=
+  ext fun b => by simpa using and_comm
+
+lemma disjiUnion_filter_eq_of_maps_to (h : ∀ x ∈ s, f x ∈ t) :
+    t.disjiUnion (fun a ↦ s.filter (f · = a)) pairwiseDisjoint_fibers = s := by
+  simpa [filter_eq_self]
 #align finset.disj_Union_filter_eq_of_maps_to Finset.disjiUnion_filter_eq_of_maps_to
 
 end DisjiUnion

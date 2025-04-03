@@ -59,14 +59,12 @@ variable {F : Type u₀ → Type u₁ → Type u₂} [Bifunctor F]
 namespace Bifunctor
 
 /-- Left map of a bifunctor. -/
-@[reducible]
-def fst {α α' β} (f : α → α') : F α β → F α' β :=
+abbrev fst {α α' β} (f : α → α') : F α β → F α' β :=
   bimap f id
 #align bifunctor.fst Bifunctor.fst
 
 /-- Right map of a bifunctor. -/
-@[reducible]
-def snd {α β β'} (f : β → β') : F α β → F α β' :=
+abbrev snd {α β β'} (f : β → β') : F α β → F α β' :=
   bimap id f
 #align bifunctor.snd Bifunctor.snd
 
@@ -119,29 +117,34 @@ open Functor
 instance Prod.bifunctor : Bifunctor Prod where bimap := @Prod.map
 #align prod.bifunctor Prod.bifunctor
 
-instance Prod.lawfulBifunctor : LawfulBifunctor Prod := by
-  refine' { .. } <;> intros <;> rfl
+instance Prod.lawfulBifunctor : LawfulBifunctor Prod where
+  id_bimap _ := rfl
+  bimap_bimap _ _ _ _ _ := rfl
 #align prod.is_lawful_bifunctor Prod.lawfulBifunctor
 
 instance Bifunctor.const : Bifunctor Const where bimap f _ := f
 #align bifunctor.const Bifunctor.const
 
-instance LawfulBifunctor.const : LawfulBifunctor Const := by refine' { .. } <;> intros <;> rfl
+instance LawfulBifunctor.const : LawfulBifunctor Const where
+  id_bimap _ := rfl
+  bimap_bimap _ _ _ _ _ := rfl
 #align is_lawful_bifunctor.const LawfulBifunctor.const
 
 instance Bifunctor.flip : Bifunctor (flip F) where
   bimap {_α α' _β β'} f f' x := (bimap f' f x : F β' α')
 #align bifunctor.flip Bifunctor.flip
 
-instance LawfulBifunctor.flip [LawfulBifunctor F] : LawfulBifunctor (flip F) := by
-  refine' { .. } <;> intros <;> simp [bimap, functor_norm]
+instance LawfulBifunctor.flip [LawfulBifunctor F] : LawfulBifunctor (flip F) where
+  id_bimap := by simp [bimap, functor_norm]
+  bimap_bimap := by simp [bimap, functor_norm]
 #align is_lawful_bifunctor.flip LawfulBifunctor.flip
 
 instance Sum.bifunctor : Bifunctor Sum where bimap := @Sum.map
 #align sum.bifunctor Sum.bifunctor
 
-instance Sum.lawfulBifunctor : LawfulBifunctor Sum := by
-  refine' { .. } <;> aesop
+instance Sum.lawfulBifunctor : LawfulBifunctor Sum where
+  id_bimap := by aesop
+  bimap_bimap := by aesop
 #align sum.is_lawful_bifunctor Sum.lawfulBifunctor
 
 open Bifunctor Functor
@@ -149,9 +152,12 @@ open Bifunctor Functor
 instance (priority := 10) Bifunctor.functor {α} : Functor (F α) where map f x := snd f x
 #align bifunctor.functor Bifunctor.functor
 
-instance (priority := 10) Bifunctor.lawfulFunctor [LawfulBifunctor F] {α} : LawfulFunctor (F α) :=
+instance (priority := 10) Bifunctor.lawfulFunctor [LawfulBifunctor F] {α} :
+    LawfulFunctor (F α) where
   -- Porting note: `mapConst` is required to prove new theorem
-  by refine' { .. } <;> intros <;> simp [mapConst, Functor.map, functor_norm]
+  id_map := by simp [Functor.map, functor_norm]
+  comp_map := by simp [Functor.map, functor_norm]
+  map_const := by simp [mapConst, Functor.map]
 #align bifunctor.is_lawful_functor Bifunctor.lawfulFunctor
 
 section Bicompl

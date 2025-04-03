@@ -46,16 +46,15 @@ set_option linter.uppercaseLean3 false in
 
 instance : MonoidalClosed (ModuleCat.{u} R) where
   closed M :=
-    { isAdj :=
-        { right := (linearCoyoneda R (ModuleCat.{u} R)).obj (op M)
-          adj := Adjunction.mkOfHomEquiv
+    { rightAdj := (linearCoyoneda R (ModuleCat.{u} R)).obj (op M)
+      adj := Adjunction.mkOfHomEquiv
             { homEquiv := fun N P => monoidalClosedHomEquiv M N P
               -- Porting note: this proof was automatic in mathlib3
               homEquiv_naturality_left_symm := by
                 intros
                 apply TensorProduct.ext'
                 intro m n
-                rfl } } }
+                rfl } }
 
 theorem ihom_map_apply {M N P : ModuleCat.{u} R} (f : N ⟶ P) (g : ModuleCat.of R (M ⟶ N)) :
     (ihom M).map f g = g ≫ f :=

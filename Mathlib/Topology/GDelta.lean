@@ -111,7 +111,7 @@ protected theorem IsGδ.iInter [Countable ι'] {s : ι' → Set X} (hs : ∀ i, 
     IsGδ (⋂ i, s i) := by
   choose T hTo hTc hTs using hs
   obtain rfl : s = fun i => ⋂₀ T i := funext hTs
-  refine' ⟨⋃ i, T i, _, countable_iUnion hTc, (sInter_iUnion _).symm⟩
+  refine ⟨⋃ i, T i, ?_, countable_iUnion hTc, (sInter_iUnion _).symm⟩
   simpa [@forall_swap ι'] using hTo
 #align is_Gδ_Inter IsGδ.iInter
 
@@ -154,7 +154,7 @@ theorem IsGδ.sUnion {S : Set (Set X)} (hS : S.Finite) (h : ∀ s ∈ S, IsGδ s
   induction S, hS using Set.Finite.dinduction_on with
   | H0 => simp
   | H1 _ _ ih =>
-    simp only [ball_insert_iff, sUnion_insert] at *
+    simp only [forall_mem_insert, sUnion_insert] at *
     exact h.1.union (ih h.2)
 
 /-- The union of finitely many Gδ sets is a Gδ set, bounded indexed union version. -/
@@ -296,7 +296,7 @@ lemma IsClosed.isNowhereDense_iff {s : Set X} (hs : IsClosed s) :
     IsNowhereDense s ↔ interior s = ∅ := by
   rw [IsNowhereDense, IsClosed.closure_eq hs]
 
-/-- If a set `s` is nowhere dense, so is its closure.-/
+/-- If a set `s` is nowhere dense, so is its closure. -/
 protected lemma IsNowhereDense.closure {s : Set X} (hs : IsNowhereDense s) :
     IsNowhereDense (closure s) := by
   rwa [IsNowhereDense, closure_closure]

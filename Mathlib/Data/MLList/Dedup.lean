@@ -3,8 +3,8 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Std.Data.MLList.Basic
-import Std.Data.HashMap.Basic
+import Batteries.Data.MLList.Basic
+import Batteries.Data.HashMap.Basic
 
 /-!
 # Lazy deduplication of lazy lists
@@ -12,7 +12,7 @@ import Std.Data.HashMap.Basic
 
 set_option autoImplicit true
 
-open Std
+open Batteries
 
 namespace MLList
 

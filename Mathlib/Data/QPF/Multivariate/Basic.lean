@@ -167,7 +167,7 @@ theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
   · intro h a f haf
     have : LiftP (fun i u => u ∈ f i '' univ) x := by
       rw [liftP_iff]
-      refine' ⟨a, f, haf.symm, _⟩
+      refine ⟨a, f, haf.symm, ?_⟩
       intro i u
       exact mem_image_of_mem _ (mem_univ _)
     exact h this
@@ -189,7 +189,7 @@ theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     have : LiftP (supp x) x := by rw [h]; introv; exact id
     rw [liftP_iff] at this
     rcases this with ⟨a, f, xeq, h'⟩
-    refine' ⟨a, f, xeq.symm, _⟩
+    refine ⟨a, f, xeq.symm, ?_⟩
     intro a' f' h''
     rintro hu u ⟨j, _h₂, hfi⟩
     have hh : u ∈ supp x a' := by rw [← hfi]; apply h'
@@ -200,7 +200,7 @@ theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     rw [← f'ieq]
     apply h'
   intro h'
-  refine' ⟨a, f, xeq.symm, _⟩; intro j y
+  refine ⟨a, f, xeq.symm, ?_⟩; intro j y
   apply h'; rw [mem_supp]
   intro a' f' xeq'
   apply h _ a' f' xeq'
@@ -243,7 +243,7 @@ theorem liftP_iff_of_isUniform (h : q.IsUniform) {α : TypeVec n} (x : F α) (p 
     rw [← hi]
     apply hf
   intro h'
-  refine' ⟨a, f, rfl, fun _ i => h' _ _ _⟩
+  refine ⟨a, f, rfl, fun _ i => h' _ _ ?_⟩
   rw [supp_eq_of_isUniform h]
   exact ⟨i, mem_univ i, rfl⟩
 #align mvqpf.liftp_iff_of_is_uniform MvQPF.liftP_iff_of_isUniform

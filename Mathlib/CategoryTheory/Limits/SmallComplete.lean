@@ -53,14 +53,14 @@ instance (priority := 100) : Quiver.IsThin C := fun X Y =>
       let md := ΣZ W : C, Z ⟶ W
       let α := #md
       apply not_le_of_lt (Cardinal.cantor α)
-      let yp : C := ∏ fun _ : md => Y
-      refine' _root_.trans _ _
+      let yp : C := ∏ᶜ fun _ : md => Y
+      apply _root_.trans _ _
       · exact #(X ⟶ yp)
       · apply le_trans (Cardinal.power_le_power_right z)
         rw [Cardinal.power_def]
         apply le_of_eq
         rw [Cardinal.eq]
-        refine' ⟨⟨Pi.lift, fun f k => f ≫ Pi.π _ k, _, _⟩⟩
+        refine ⟨⟨Pi.lift, fun f k => f ≫ Pi.π _ k, ?_, ?_⟩⟩
         · intro f
           ext k
           simp

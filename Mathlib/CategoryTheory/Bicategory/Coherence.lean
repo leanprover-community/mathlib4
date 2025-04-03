@@ -80,13 +80,13 @@ See `inclusion`.
 -/
 def preinclusion (B : Type u) [Quiver.{v + 1} B] :
     PrelaxFunctor (LocallyDiscrete (Paths B)) (FreeBicategory B) where
-  obj := id
-  map := @fun a b => (@inclusionPath B _ a b).obj
+  obj a := a.as
+  map := @fun a b f => (@inclusionPath B _ a.as b.as).obj f
   map₂ η := (inclusionPath _ _).map η
 #align category_theory.free_bicategory.preinclusion CategoryTheory.FreeBicategory.preinclusion
 
 @[simp]
-theorem preinclusion_obj (a : B) : (preinclusion B).obj a = a :=
+theorem preinclusion_obj (a : B) : (preinclusion B).obj ⟨a⟩ = a :=
   rfl
 #align category_theory.free_bicategory.preinclusion_obj CategoryTheory.FreeBicategory.preinclusion_obj
 
@@ -196,7 +196,7 @@ theorem normalizeAux_nil_comp {a b c : B} (f : Hom a b) (g : Hom b c) :
 /-- The normalization pseudofunctor for the free bicategory on a quiver `B`. -/
 def normalize (B : Type u) [Quiver.{v + 1} B] :
     Pseudofunctor (FreeBicategory B) (LocallyDiscrete (Paths B)) where
-  obj := id
+  obj a := ⟨a⟩
   map f := ⟨normalizeAux nil f⟩
   map₂ η := eqToHom <| Discrete.ext _ _ <| normalizeAux_congr nil η
   mapId a := eqToIso <| Discrete.ext _ _ rfl
@@ -224,9 +224,8 @@ def normalizeEquiv (a b : B) : Hom a b ≌ Discrete (Path.{v + 1} a b) :=
       · rfl
       · ext1
         injection ih with ih
-        conv =>
-          rhs
-          rw [← ih]))
+        conv_rhs => rw [← ih]
+        rfl))
 #align category_theory.free_bicategory.normalize_equiv CategoryTheory.FreeBicategory.normalizeEquiv
 
 /-- The coherence theorem for bicategories. -/
@@ -250,7 +249,7 @@ def inclusion (B : Type u) [Quiver.{v + 1} B] :
     Pseudofunctor (LocallyDiscrete (Paths B)) (FreeBicategory B) :=
   { -- All the conditions for 2-morphisms are trivial thanks to the coherence theorem!
     preinclusion B with
-    mapId := fun a : FreeBicategory B => Iso.refl (𝟙 a)
+    mapId := fun a => Iso.refl _
     mapComp := fun f g => inclusionMapCompAux f.as g.as }
 #align category_theory.free_bicategory.inclusion CategoryTheory.FreeBicategory.inclusion
 

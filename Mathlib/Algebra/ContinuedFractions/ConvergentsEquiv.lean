@@ -174,7 +174,7 @@ theorem succ_succ_nth_convergent'_aux_eq_succ_nth_convergent'_aux_squashSeq :
           convergents'Aux (squashSeq s (m + 1)) (m + 2)
         by simpa only [convergents'Aux, s_head_eq]
       have : convergents'Aux s.tail (m + 2) = convergents'Aux (squashSeq s.tail m) (m + 1) := by
-        refine' IH gp_succ_n _
+        refine IH gp_succ_n ?_
         simpa [Stream'.Seq.get?_tail] using s_succ_nth_eq
       have : (squashSeq s (m + 1)).head = some gp_head :=
         (squashSeq_nth_of_lt m.succ_pos).trans s_head_eq
@@ -374,12 +374,12 @@ theorem convergents_eq_convergents' [LinearOrderedField K]
               simp_all only [Option.some.injEq]
             rwa [this]
           have m_lt_n : m < m.succ := Nat.lt_succ_self m
-          refine' ⟨(s_pos (Nat.lt.step m_lt_n) mth_s_eq).left, _⟩
-          refine' add_pos (s_pos (Nat.lt.step m_lt_n) mth_s_eq).right _
+          refine ⟨(s_pos (Nat.lt.step m_lt_n) mth_s_eq).left, ?_⟩
+          refine add_pos (s_pos (Nat.lt.step m_lt_n) mth_s_eq).right ?_
           have : 0 < gp_succ_m.a ∧ 0 < gp_succ_m.b := s_pos (lt_add_one <| m + 1) s_succ_mth_eq
           exact div_pos this.left this.right
         · -- the easy case: before the squashed position, nothing changes
-          refine' s_pos (Nat.lt.step <| Nat.lt.step succ_m_lt_n) _
+          refine s_pos (Nat.lt.step <| Nat.lt.step succ_m_lt_n) ?_
           exact Eq.trans (squashGCF_nth_of_lt succ_m_lt_n).symm s_mth_eq'
       -- now the result follows from the fact that the convergents coincide at the squashed position
       -- as established in `succ_nth_convergent_eq_squashGCF_nth_convergent`.

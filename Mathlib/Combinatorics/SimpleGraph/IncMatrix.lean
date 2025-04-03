@@ -46,7 +46,7 @@ incidence matrix for each `SimpleGraph α` has the same type.
 
 open Finset Matrix SimpleGraph Sym2
 
-open BigOperators Matrix
+open Matrix
 
 namespace SimpleGraph
 
@@ -134,7 +134,7 @@ theorem incMatrix_mul_transpose_diag [Fintype (neighborSet G a)] :
 theorem sum_incMatrix_apply_of_mem_edgeSet [Fintype α] :
     e ∈ G.edgeSet → ∑ a, G.incMatrix R a e = 2 := by
   classical
-    refine' e.ind _
+    refine e.ind ?_
     intro a b h
     rw [mem_edgeSet] at h
     rw [← Nat.cast_two, ← card_pair h.ne]
@@ -156,7 +156,7 @@ theorem incMatrix_transpose_mul_diag [Fintype α] [Decidable (e ∈ G.edgeSet)] 
       sum_boole, and_self_iff]
     split_ifs with h
     · revert h
-      refine' e.ind _
+      refine e.ind ?_
       intro v w h
       rw [← Nat.cast_two, ← card_pair (G.ne_of_adj h)]
       simp only [mk'_mem_incidenceSet_iff, G.mem_edgeSet.mp h, true_and, mem_univ, forall_true_left,
@@ -165,7 +165,7 @@ theorem incMatrix_transpose_mul_diag [Fintype α] [Decidable (e ∈ G.edgeSet)] 
       ext u
       simp
     · revert h
-      refine' e.ind _
+      refine e.ind ?_
       intro v w h
       simp [mk'_mem_incidenceSet_iff, G.mem_edgeSet.not.mp h]
 #align simple_graph.inc_matrix_transpose_mul_diag SimpleGraph.incMatrix_transpose_mul_diag

@@ -22,10 +22,10 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [Conti
 /-- A non-empty star convex set is a contractible space. -/
 protected theorem StarConvex.contractibleSpace (h : StarConvex ℝ x s) (hne : s.Nonempty) :
     ContractibleSpace s := by
-  refine'
+  refine
     (contractible_iff_id_nullhomotopic s).2
       ⟨⟨x, h.mem hne⟩,
-        ⟨⟨⟨fun p => ⟨p.1.1 • x + (1 - p.1.1) • (p.2 : E), _⟩, _⟩, fun x => _, fun x => _⟩⟩⟩
+        ⟨⟨⟨fun p => ⟨p.1.1 • x + (1 - p.1.1) • (p.2 : E), ?_⟩, ?_⟩, fun x => ?_, fun x => ?_⟩⟩⟩
   · exact h p.2.2 p.1.2.1 (sub_nonneg.2 p.1.2.2) (add_sub_cancel _ _)
   · exact
       ((continuous_subtype_val.fst'.smul continuous_const).add

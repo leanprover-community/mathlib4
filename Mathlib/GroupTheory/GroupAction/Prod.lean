@@ -29,8 +29,7 @@ https://leanprover.zulipchat.com/#narrow/near/316087838
 This was not done as part of the port in order to stay as close as possible to the mathlib3 code.
 -/
 
-set_option autoImplicit true
-
+assert_not_exists MonoidWithZero
 
 variable {M N P E α β : Type*}
 
@@ -176,11 +175,11 @@ instance distribSMul {R M N : Type*} [AddZeroClass M] [AddZeroClass N] [DistribS
     [DistribSMul R N] : DistribSMul R (M × N) where
   smul_add _ _ _ := mk.inj_iff.mpr ⟨smul_add _ _ _, smul_add _ _ _⟩
 
-instance distribMulAction [Monoid R] [AddMonoid M] [AddMonoid N]
+instance distribMulAction {R : Type*} [Monoid R] [AddMonoid M] [AddMonoid N]
     [DistribMulAction R M] [DistribMulAction R N] : DistribMulAction R (M × N) :=
   { Prod.mulAction, Prod.distribSMul with }
 
-instance mulDistribMulAction [Monoid R] [Monoid M] [Monoid N]
+instance mulDistribMulAction {R : Type*} [Monoid R] [Monoid M] [Monoid N]
     [MulDistribMulAction R M] [MulDistribMulAction R N] : MulDistribMulAction R (M × N) where
   smul_mul _ _ _ := mk.inj_iff.mpr ⟨smul_mul' _ _ _, smul_mul' _ _ _⟩
   smul_one _ := mk.inj_iff.mpr ⟨smul_one _, smul_one _⟩
@@ -249,10 +248,10 @@ def MulAction.prodEquiv :
   right_inv := by
     rintro ⟨hM, hN, -⟩
     dsimp only; congr 1
-    · ext m a; conv_rhs => rw [← hN.one_smul a]; rfl
+    · ext m a; (conv_rhs => rw [← hN.one_smul a]); rfl
     congr 1
-    · funext; congr; ext m a; conv_rhs => rw [← hN.one_smul a]; rfl
-    · ext n a; conv_rhs => rw [← hM.one_smul (SMul.smul n a)]; rfl
+    · funext; congr; ext m a; (conv_rhs => rw [← hN.one_smul a]); rfl
+    · ext n a; (conv_rhs => rw [← hM.one_smul (SMul.smul n a)]); rfl
     · apply heq_prop
 
 variable [AddMonoid α]
@@ -282,10 +281,10 @@ def DistribMulAction.prodEquiv : DistribMulAction (M × N) α ≃
   right_inv := by
     rintro ⟨_, x, _⟩
     dsimp only; congr 1
-    · ext m a; conv_rhs => rw [← one_smul N a]; rfl
+    · ext m a; (conv_rhs => rw [← one_smul N a]); rfl
     congr 1
-    · funext i; congr; ext m a; clear i; conv_rhs => rw [← one_smul N a]; rfl
-    · ext n a; conv_rhs => rw [← one_smul M (SMul.smul n a)]; rfl
+    · funext i; congr; ext m a; clear i; (conv_rhs => rw [← one_smul N a]); rfl
+    · ext n a; (conv_rhs => rw [← one_smul M (SMul.smul n a)]); rfl
     · apply heq_prop
 
 end Action_by_Prod

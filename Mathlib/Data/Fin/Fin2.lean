@@ -36,10 +36,10 @@ universe u
 
 /-- An alternate definition of `Fin n` defined as an inductive type instead of a subtype of `ℕ`. -/
 inductive Fin2 : ℕ → Type
-  /-- `0` as a member of `Fin (succ n)` (`Fin 0` is empty) -/
-  | fz {n} : Fin2 (succ n)
-  /-- `n` as a member of `Fin (succ n)` -/
-  | fs {n} : Fin2 n → Fin2 (succ n)
+  /-- `0` as a member of `Fin (n + 1)` (`Fin 0` is empty) -/
+  | fz {n} : Fin2 (n + 1)
+  /-- `n` as a member of `Fin (n + 1)` -/
+  | fs {n} : Fin2 n → Fin2 (n + 1)
 #align fin2 Fin2
 
 namespace Fin2
@@ -101,8 +101,8 @@ def insertPerm : ∀ {n}, Fin2 n → Fin2 n → Fin2 n
   on the right (that is, `remapLeft f k (m + i) = n + i`). -/
 def remapLeft {m n} (f : Fin2 m → Fin2 n) : ∀ k, Fin2 (m + k) → Fin2 (n + k)
   | 0, i => f i
-  | succ _, @fz _ => fz
-  | succ _, @fs _ i => fs (remapLeft f _ i)
+  | _k + 1, @fz _ => fz
+  | _k + 1, @fs _ i => fs (remapLeft f _ i)
 #align fin2.remap_left Fin2.remapLeft
 
 /-- This is a simple type class inference prover for proof obligations

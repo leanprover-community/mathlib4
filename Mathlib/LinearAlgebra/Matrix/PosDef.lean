@@ -133,9 +133,9 @@ section sqrt
 variable [DecidableEq n] {A : Matrix n n 𝕜} (hA : PosSemidef A)
 
 /-- The positive semidefinite square root of a positive semidefinite matrix -/
-@[pp_dot]
 noncomputable def sqrt : Matrix n n 𝕜 :=
-  hA.1.eigenvectorMatrix * diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues) * hA.1.eigenvectorMatrixᴴ
+  hA.1.eigenvectorUnitary.1 * diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues) *
+  (star hA.1.eigenvectorUnitary : Matrix n n 𝕜)
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Custom elaborator to produce output like `(_ : PosSemidef A).sqrt` in the goal view. -/
@@ -143,6 +143,7 @@ open Lean PrettyPrinter.Delaborator SubExpr in
 def delabSqrt : Delab :=
   whenPPOption getPPNotation <|
   whenNotPPOption getPPAnalysisSkip <|
+  withOverApp 7 <|
   withOptionAtCurrPos `pp.analysis.skip true do
     let e ← getExpr
     guard <| e.isAppOfArity ``Matrix.PosSemidef.sqrt 7
@@ -161,23 +162,16 @@ lemma posSemidef_sqrt : PosSemidef hA.sqrt := by
 
 @[simp]
 lemma sq_sqrt : hA.sqrt ^ 2 = A := by
-  let C := hA.1.eigenvectorMatrix
+  let C : Matrix n n 𝕜 := hA.1.eigenvectorUnitary
   let E := diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues : n → 𝕜)
-  suffices C * (E * (Cᴴ * C) * E) * Cᴴ = A by
+  suffices C * (E * (star C * C) * E) * star C = A by
     rw [Matrix.PosSemidef.sqrt, pow_two]
-    change (C * E * Cᴴ) * (C * E * Cᴴ) = A
     simpa only [← mul_assoc] using this
-  have : Cᴴ * C = 1 := by
-    rw [Matrix.IsHermitian.conjTranspose_eigenvectorMatrix, mul_eq_one_comm]
-    exact hA.1.eigenvectorMatrix_mul_inv
-  rw [this, mul_one]
   have : E * E = diagonal ((↑) ∘ hA.1.eigenvalues) := by
     rw [diagonal_mul_diagonal]
-    refine congr_arg _ (funext fun v ↦ ?_) -- why doesn't "congr with v" work?
+    congr! with v
     simp [← pow_two, ← RCLike.ofReal_pow, Real.sq_sqrt (hA.eigenvalues_nonneg v)]
-  rw [this]
-  convert hA.1.spectral_theorem'.symm
-  apply Matrix.IsHermitian.conjTranspose_eigenvectorMatrix
+  simpa [C, this] using hA.1.spectral_theorem.symm
 
 @[simp]
 lemma sqrt_mul_self : hA.sqrt * hA.sqrt = A := by rw [← pow_two, sq_sqrt]
@@ -242,8 +236,8 @@ theorem posSemidef_conjTranspose_mul_self (A : Matrix m n R) : PosSemidef (Aᴴ 
   exact Finset.sum_nonneg fun i _ => star_mul_self_nonneg _
 
 /-- A matrix multiplied by its conjugate transpose is positive semidefinite -/
-theorem posSemidef_self_mul_conjTranspose (A : Matrix m n R) : PosSemidef (A * Aᴴ) :=
-  by simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
+theorem posSemidef_self_mul_conjTranspose (A : Matrix m n R) : PosSemidef (A * Aᴴ) := by
+  simpa only [conjTranspose_conjTranspose] using posSemidef_conjTranspose_mul_self Aᴴ
 
 lemma eigenvalues_conjTranspose_mul_self_nonneg (A : Matrix m n 𝕜) [DecidableEq n] (i : n) :
     0 ≤ (isHermitian_transpose_mul_self A).eigenvalues i :=
@@ -263,10 +257,9 @@ lemma posSemidef_iff_eq_transpose_mul_self {A : Matrix n n 𝕜} :
 
 lemma IsHermitian.posSemidef_of_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : IsHermitian A) (h : ∀ i : n, 0 ≤ hA.eigenvalues i) : PosSemidef A := by
-  simp_rw [hA.conjTranspose_eigenvectorMatrix.symm ▸ hA.spectral_theorem']
-  refine (posSemidef_diagonal_iff.mpr fun i ↦ ?_).mul_mul_conjTranspose_same _
-  rw [RCLike.le_iff_re_im]
-  simpa using h i
+  rw [hA.spectral_theorem]
+  refine (posSemidef_diagonal_iff.mpr ?_).mul_mul_conjTranspose_same _
+  simpa using h
 
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
 theorem PosSemidef.dotProduct_mulVec_zero_iff
@@ -308,7 +301,7 @@ theorem re_dotProduct_pos {M : Matrix n n 𝕜} (hM : M.PosDef) {x : n → 𝕜}
   RCLike.pos_iff.mp (hM.2 _ hx) |>.1
 
 theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
-  refine' ⟨hM.1, _⟩
+  refine ⟨hM.1, ?_⟩
   intro x
   by_cases hx : x = 0
   · simp only [hx, zero_dotProduct, star_zero, RCLike.zero_re']
@@ -324,7 +317,7 @@ theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
 
 theorem of_toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.IsSymm)
     (hMq : M.toQuadraticForm'.PosDef) : M.PosDef := by
-  refine' ⟨hM, fun x hx => _⟩
+  refine ⟨hM, fun x hx => ?_⟩
   simp only [toQuadraticForm', QuadraticForm.PosDef, LinearMap.BilinForm.toQuadraticForm_apply,
     toLinearMap₂'_apply'] at hMq
   apply hMq x hx
@@ -341,19 +334,14 @@ theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
 /-- The eigenvalues of a positive definite matrix are positive -/
 lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosDef A) (i : n) : 0 < hA.1.eigenvalues i := by
-  rw [hA.1.eigenvalues_eq, hA.1.transpose_eigenvectorMatrix_apply]
+  simp only [hA.1.eigenvalues_eq]
   exact hA.re_dotProduct_pos <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
 
 theorem det_pos [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) : 0 < det M := by
-  rw [hM.isHermitian.det_eq_prod_eigenvalues]
-  apply Finset.prod_pos
-  intro i _
-  rw [hM.isHermitian.eigenvalues_eq]
-  refine hM.2 _ fun h => ?_
-  have h_det : hM.isHermitian.eigenvectorMatrixᵀ.det = 0 :=
-    Matrix.det_eq_zero_of_row_eq_zero i fun j => congr_fun h j
-  simpa only [h_det, not_isUnit_zero] using
-    isUnit_det_of_invertible hM.isHermitian.eigenvectorMatrixᵀ
+   rw [hM.isHermitian.det_eq_prod_eigenvalues]
+   apply Finset.prod_pos
+   intro i _
+   exact hM.eigenvalues_pos i
 #align matrix.pos_def.det_pos Matrix.PosDef.det_pos
 
 end PosDef
@@ -385,8 +373,7 @@ namespace Matrix
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 
 /-- A positive definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
-@[reducible]
-noncomputable def NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
+noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
     NormedAddCommGroup (n → 𝕜) :=
   @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
     { inner := fun x y => dotProduct (star x) (M *ᵥ y)

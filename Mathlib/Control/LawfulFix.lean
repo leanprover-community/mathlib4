@@ -148,8 +148,8 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
     cases' exists_fix_le_approx f x with i hx
     trans approx f i.succ x
     · trans
-      apply hx
-      apply approx_mono' f
+      · apply hx
+      · apply approx_mono' f
     apply le_ωSup_of_le i.succ
     dsimp [approx]
     rfl
@@ -166,7 +166,10 @@ theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ 
   intro i
   induction i with
   | zero => dsimp [Fix.approx]; apply bot_le
-  | succ _ i_ih => trans f X; apply f.monotone i_ih; apply hX
+  | succ _ i_ih =>
+    trans f X
+    · apply f.monotone i_ih
+    · apply hX
 #align part.fix_le Part.fix_le
 
 variable {f} (hc : Continuous f)
@@ -284,9 +287,8 @@ instance lawfulFix' [LawfulFix <| (x : Sigma β) → γ x.1 x.2] :
     LawfulFix ((x y : _) → γ x y) where
   fix_eq {_f} hc := by
     dsimp [fix]
-    conv =>
-      lhs
-      erw [LawfulFix.fix_eq (uncurry_curry_continuous hc)]
+    conv_lhs => erw [LawfulFix.fix_eq (uncurry_curry_continuous hc)]
+    rfl
 #align pi.pi.lawful_fix' Pi.lawfulFix'
 
 end Pi

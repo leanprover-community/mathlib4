@@ -3,12 +3,14 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Std.Data.Nat.Lemmas
-import Std.WF
+import Batteries.Data.Nat.Lemmas
+import Batteries.WF
 import Mathlib.Init.Data.Nat.Basic
-import Mathlib.Init.Order.Defs
+import Mathlib.Util.AssertExists
 
 #align_import init.data.nat.lemmas from "leanprover-community/lean"@"38b59111b2b4e6c572582b27e8937e92fc70ac02"
+
+assert_not_exists Preorder
 
 universe u
 
@@ -106,19 +108,6 @@ theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
 #align nat.lt_of_le_and_ne Nat.lt_of_le_of_ne
 
 #align nat.lt_iff_le_not_le Nat.lt_iff_le_not_le
-
-instance linearOrder : LinearOrder ℕ where
-  le := Nat.le
-  le_refl := @Nat.le_refl
-  le_trans := @Nat.le_trans
-  le_antisymm := @Nat.le_antisymm
-  le_total := @Nat.le_total
-  lt := Nat.lt
-  lt_iff_le_not_le := @Nat.lt_iff_le_not_le
-  decidableLT := inferInstance
-  decidableLE := inferInstance
-  decidableEq := inferInstance
-#align nat.linear_order Nat.linearOrder
 
 #align nat.eq_zero_of_le_zero Nat.eq_zero_of_le_zero
 
@@ -270,8 +259,8 @@ protected theorem bit0_inj : ∀ {n m : ℕ}, bit0 n = bit0 m → n = m
   | n + 1, 0, h => by contradiction
   | n + 1, m + 1, h => by
     have : succ (succ (n + n)) = succ (succ (m + m)) := by
-      unfold bit0 at h; simp [add_one, add_succ, succ_add] at h
-      have aux : n + n = m + m := h; rw [aux]
+      unfold bit0 at h; simp only [add_one, add_succ, succ_add, succ_inj'] at h
+      rw [h]
     have : n + n = m + m := by repeat injection this with this
     have : n = m := Nat.bit0_inj this
     rw [this]
@@ -695,7 +684,7 @@ protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
       if pm : p m then ⟨m, pm, al⟩
       else
         have : ∀ n ≤ m, ¬p n := fun n h =>
-          Or.elim (Decidable.lt_or_eq_of_le h) (al n) fun e => by rw [e]; exact pm
+          Or.elim (Nat.lt_or_eq_of_le h) (al n) fun e => by rw [e]; exact pm
         IH _ ⟨rfl, this⟩ fun n h => this n <| Nat.le_of_succ_le_succ h)
     0 fun n h => absurd h (Nat.not_lt_zero _)
 #align nat.find_x Nat.findX
@@ -724,7 +713,7 @@ protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
 #align nat.find_min Nat.find_min
 
 protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
-  le_of_not_lt fun l => Nat.find_min H l h
+  Nat.le_of_not_lt fun l => Nat.find_min H l h
 #align nat.find_min' Nat.find_min'
 
 end Find

@@ -6,9 +6,9 @@ Authors: Mario Carneiro, Thomas Murrills
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
 import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Int.Basic
-import Mathlib.Algebra.Invertible.Basic
-import Mathlib.Tactic.Clear!
+import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.GroupWithZero.Invertible
+import Mathlib.Tactic.ClearExclamation
 import Mathlib.Data.Nat.Cast.Basic
 
 /-!
@@ -101,8 +101,11 @@ theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) →
 
 /-! # Casts -/
 
-theorem isNat_cast {R} [AddMonoidWithOne R] (n m : ℕ) :
+theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
+
+@[deprecated (since := "2024-04-17")]
+alias isNat_cast := isNat_natCast
 
 /-- The `norm_num` extension which identifies an expression `Nat.cast n`, returning `n`. -/
 @[norm_num Nat.cast _, NatCast.natCast _] def evalNatCast : NormNumExt where eval {u α} e := do
@@ -111,13 +114,19 @@ theorem isNat_cast {R} [AddMonoidWithOne R] (n m : ℕ) :
   guard <|← withNewMCtxDepth <| isDefEq n q(Nat.cast (R := $α))
   let ⟨na, pa⟩ ← deriveNat a q(instAddMonoidWithOneNat)
   haveI' : $e =Q $a := ⟨⟩
-  return .isNat sα na q(isNat_cast $a $na $pa)
+  return .isNat sα na q(isNat_natCast $a $na $pa)
 
-theorem isNat_int_cast {R} [Ring R] (n : ℤ) (m : ℕ) :
+theorem isNat_intCast {R} [Ring R] (n : ℤ) (m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-theorem isInt_cast {R} [Ring R] (n m : ℤ) :
+@[deprecated (since := "2024-04-17")]
+alias isNat_int_cast := isNat_intCast
+
+theorem isintCast {R} [Ring R] (n m : ℤ) :
     IsInt n m → IsInt (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
+
+@[deprecated (since := "2024-04-17")]
+alias isInt_cast := isintCast
 
 /-- The `norm_num` extension which identifies an expression `Int.cast n`, returning `n`. -/
 @[norm_num Int.cast _, IntCast.intCast _] def evalIntCast : NormNumExt where eval {u α} e := do
@@ -128,11 +137,11 @@ theorem isInt_cast {R} [Ring R] (n m : ℤ) :
   | .isNat _ na pa =>
     assumeInstancesCommute
     haveI' : $e =Q Int.cast $a := ⟨⟩
-    return .isNat _ na q(isNat_int_cast $a $na $pa)
+    return .isNat _ na q(isNat_intCast $a $na $pa)
   | .isNegNat _ na pa =>
     assumeInstancesCommute
     haveI' : $e =Q Int.cast $a := ⟨⟩
-    return .isNegNat _ na q(isInt_cast $a (.negOfNat $na) $pa)
+    return .isNegNat _ na q(isintCast $a (.negOfNat $na) $pa)
   | _ => failure
 
 /-! # Arithmetic -/
@@ -186,7 +195,7 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   use this
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
   have h₁ := congr_arg (↑· * (⅟↑da * ⅟↑db : α)) h₁
-  simp only [Int.cast_add, Int.cast_mul, Int.cast_ofNat, ← mul_assoc,
+  simp only [Int.cast_add, Int.cast_mul, Int.cast_natCast, ← mul_assoc,
     add_mul, mul_mul_invOf_self_cancel] at h₁
   have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
   simp only [H, mul_mul_invOf_self_cancel', Nat.cast_mul, ← mul_assoc] at h₁ h₂
@@ -369,7 +378,7 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   refine ⟨this, ?_⟩
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
   have h₁ := congr_arg (Int.cast (R := α)) h₁
-  simp only [Int.cast_mul, Int.cast_ofNat] at h₁
+  simp only [Int.cast_mul, Int.cast_natCast] at h₁
   simp only [← mul_assoc, (Nat.cast_commute (α := α) da nb).invOf_left.right_comm, h₁]
   have h₂ := congr_arg (↑nc * ↑· * (⅟↑da * ⅟↑db * ⅟↑dc : α)) h₂
   simp only [Nat.cast_mul, ← mul_assoc] at h₂; rw [H] at h₂

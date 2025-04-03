@@ -94,8 +94,8 @@ def cokernelUnopOp : Opposite.op (cokernel g.unop) ≅ kernel g :=
 
 theorem cokernel.π_op :
     (cokernel.π f.op).unop =
-      (cokernelOpUnop f).hom ≫ kernel.ι f ≫ eqToHom (Opposite.unop_op _).symm :=
-  by simp [cokernelOpUnop]
+      (cokernelOpUnop f).hom ≫ kernel.ι f ≫ eqToHom (Opposite.unop_op _).symm := by
+  simp [cokernelOpUnop]
 #align category_theory.cokernel.π_op CategoryTheory.cokernel.π_op
 
 theorem kernel.ι_op :
@@ -128,8 +128,8 @@ theorem kernel.ι_unop :
 
 theorem cokernel.π_unop :
     (cokernel.π g.unop).op =
-      (cokernelUnopOp g).hom ≫ kernel.ι g ≫ eqToHom (Opposite.op_unop _).symm :=
-  by simp
+      (cokernelUnopOp g).hom ≫ kernel.ι g ≫ eqToHom (Opposite.op_unop _).symm := by
+  simp
 #align category_theory.cokernel.π_unop CategoryTheory.cokernel.π_unop
 
 /-- The cokernel of `g.unop` is the opposite of `kernel g`. -/

@@ -146,14 +146,12 @@ def fin3Equiv : SignType ≃* Fin 3 where
     | ⟨0, _⟩ => 0
     | ⟨1, _⟩ => 1
     | ⟨2, _⟩ => -1
-    | ⟨n + 3, h⟩ => (h.not_le le_add_self).elim
   left_inv a := by cases a <;> rfl
   right_inv a :=
     match a with
     | ⟨0, _⟩ => by simp
     | ⟨1, _⟩ => by simp
     | ⟨2, _⟩ => by simp
-    | ⟨n + 3, h⟩ => by simp at h
   map_mul' a b := by
     cases a <;> cases b <;> rfl
 #align sign_type.fin3_equiv SignType.fin3Equiv
@@ -283,6 +281,11 @@ lemma coe_neg {α : Type*} [One α] [SubtractionMonoid α] (s : SignType) :
     (↑(-s) : α) = -↑s := by
   cases s <;> simp
 
+/-- Casting `SignType → ℤ → α` is the same as casting directly `SignType → α`. -/
+@[simp, norm_cast]
+lemma intCast_cast {α : Type*} [AddGroupWithOne α] (s : SignType) : ((s : ℤ) : α) = s :=
+  map_cast' _ Int.cast_one Int.cast_zero (@Int.cast_one α _ ▸ Int.cast_neg 1) _
+
 end cast
 
 /-- `SignType.cast` as a `MulWithZeroHom`. -/
@@ -353,17 +356,17 @@ theorem sign_neg (ha : a < 0) : sign a = -1 := by rwa [sign_apply, if_neg <| asy
 #align sign_neg sign_neg
 
 theorem sign_eq_one_iff : sign a = 1 ↔ 0 < a := by
-  refine' ⟨fun h => _, fun h => sign_pos h⟩
+  refine ⟨fun h => ?_, fun h => sign_pos h⟩
   by_contra hn
   rw [sign_apply, if_neg hn] at h
   split_ifs at h
 #align sign_eq_one_iff sign_eq_one_iff
 
 theorem sign_eq_neg_one_iff : sign a = -1 ↔ a < 0 := by
-  refine' ⟨fun h => _, fun h => sign_neg h⟩
+  refine ⟨fun h => ?_, fun h => sign_neg h⟩
   rw [sign_apply] at h
   split_ifs at h
-  · assumption
+  assumption
 #align sign_eq_neg_one_iff sign_eq_neg_one_iff
 
 end Preorder
@@ -380,7 +383,7 @@ lemma StrictMono.sign_comp {β F : Type*} [Zero β] [Preorder β] [DecidableRel 
 
 @[simp]
 theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
-  refine' ⟨fun h => _, fun h => h.symm ▸ sign_zero⟩
+  refine ⟨fun h => ?_, fun h => h.symm ▸ sign_zero⟩
   rw [sign_apply] at h
   split_ifs at h with h_1 h_2
   cases' h
@@ -420,6 +423,16 @@ theorem sign_one : sign (1 : α) = 1 :=
 
 end OrderedSemiring
 
+section OrderedRing
+
+@[simp]
+lemma sign_intCast {α : Type*} [OrderedRing α] [Nontrivial α]
+    [DecidableRel ((· < ·) : α → α → Prop)] (n : ℤ) :
+    sign (n : α) = sign n := by
+  simp only [sign_apply, Int.cast_pos, Int.cast_lt_zero]
+
+end OrderedRing
+
 section LinearOrderedRing
 
 variable [LinearOrderedRing α] {a b : α}
@@ -430,16 +443,18 @@ theorem sign_mul (x y : α) : sign (x * y) = sign x * sign y := by
 #align sign_mul sign_mul
 
 @[simp] theorem sign_mul_abs (x : α) : (sign x * |x| : α) = x := by
-  rcases lt_trichotomy x 0 with (hx | rfl | hx)
-  · rw [sign_neg hx, abs_of_neg hx, coe_neg_one, neg_one_mul, neg_neg]
-  · rw [abs_zero, mul_zero]
-  · rw [sign_pos hx, abs_of_pos hx, coe_one, one_mul]
+  rcases lt_trichotomy x 0 with hx | rfl | hx <;> simp [*, abs_of_pos, abs_of_neg]
 
 @[simp] theorem abs_mul_sign (x : α) : (|x| * sign x : α) = x := by
-  rcases lt_trichotomy x 0 with (hx | rfl | hx)
-  · rw [sign_neg hx, abs_of_neg hx, coe_neg_one, mul_neg_one, neg_neg]
-  · rw [abs_zero, zero_mul]
-  · rw [sign_pos hx, abs_of_pos hx, coe_one, mul_one]
+  rcases lt_trichotomy x 0 with hx | rfl | hx <;> simp [*, abs_of_pos, abs_of_neg]
+
+@[simp]
+theorem sign_mul_self (x : α) : sign x * x = |x| := by
+  rcases lt_trichotomy x 0 with hx | rfl | hx <;> simp [*, abs_of_pos, abs_of_neg]
+
+@[simp]
+theorem self_mul_sign (x : α) : x * sign x = |x| := by
+  rcases lt_trichotomy x 0 with hx | rfl | hx <;> simp [*, abs_of_pos, abs_of_neg]
 
 /-- `SignType.sign` as a `MonoidWithZeroHom` for a nontrivial ordered semiring. Note that linearity
 is required; consider ℂ with the order `z ≤ w` iff they have the same imaginary part and
@@ -484,7 +499,6 @@ theorem Right.sign_neg [CovariantClass α α (Function.swap (· + ·)) (· < ·)
 end AddGroup
 
 section LinearOrderedAddCommGroup
-open BigOperators
 
 variable [LinearOrderedAddCommGroup α]
 
@@ -494,7 +508,7 @@ https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Decidable.2
 attribute [local instance] LinearOrderedAddCommGroup.decidableLT
 
 theorem sign_sum {ι : Type*} {s : Finset ι} {f : ι → α} (hs : s.Nonempty) (t : SignType)
-    (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i in s, f i) = t := by
+    (h : ∀ i ∈ s, sign (f i) = t) : sign (∑ i ∈ s, f i) = t := by
   cases t
   · simp_rw [zero_eq_zero, sign_eq_zero_iff] at h ⊢
     exact Finset.sum_eq_zero h
@@ -516,18 +530,16 @@ end Int
 
 open Finset Nat
 
-open BigOperators
-
 /- Porting note: For all the following theorems, needed to add {α : Type u_1} to the assumptions
 because lean4 infers α to live in a different universe u_2 otherwise -/
 private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Finset α) (f : α → ℤ) :
     ∃ (β : Type u_1) (t : Finset β) (sgn : β → SignType) (g : β → α),
       (∀ b, g b ∈ s) ∧
-        (t.card = ∑ a in s, (f a).natAbs) ∧
-          ∀ a ∈ s, (∑ b in t, if g b = a then (sgn b : ℤ) else 0) = f a := by
-  refine'
+        (t.card = ∑ a ∈ s, (f a).natAbs) ∧
+          ∀ a ∈ s, (∑ b ∈ t, if g b = a then (sgn b : ℤ) else 0) = f a := by
+  refine
     ⟨(Σ _ : { x // x ∈ s }, ℕ), Finset.univ.sigma fun a => range (f a).natAbs,
-      fun a => sign (f a.1), fun a => a.1, fun a => a.1.2, _, _⟩
+      fun a => sign (f a.1), fun a => a.1, fun a => a.1.2, ?_, ?_⟩
   · simp [sum_attach (f := fun a => (f a).natAbs)]
   · intro x hx
     simp [sum_sigma, hx, ← Int.sign_eq_sign, Int.sign_mul_abs, mul_comm |f _|,
@@ -537,7 +549,7 @@ private theorem exists_signed_sum_aux {α : Type u_1} [DecidableEq α] (s : Fins
 theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : α → ℤ) :
     ∃ (β : Type u_1) (_ : Fintype β) (sgn : β → SignType) (g : β → α),
       (∀ b, g b ∈ s) ∧
-        (Fintype.card β = ∑ a in s, (f a).natAbs) ∧
+        (Fintype.card β = ∑ a ∈ s, (f a).natAbs) ∧
           ∀ a ∈ s, (∑ b, if g b = a then (sgn b : ℤ) else 0) = f a :=
   let ⟨β, t, sgn, g, hg, ht, hf⟩ := exists_signed_sum_aux s f
   ⟨t, inferInstance, fun b => sgn b, fun b => g b, fun b => hg b, by simp [ht], fun a ha =>
@@ -546,15 +558,15 @@ theorem exists_signed_sum {α : Type u_1} [DecidableEq α] (s : Finset α) (f : 
 
 /-- We can decompose a sum of absolute value less than `n` into a sum of at most `n` signs. -/
 theorem exists_signed_sum' {α : Type u_1} [Nonempty α] [DecidableEq α] (s : Finset α) (f : α → ℤ)
-    (n : ℕ) (h : (∑ i in s, (f i).natAbs) ≤ n) :
+    (n : ℕ) (h : (∑ i ∈ s, (f i).natAbs) ≤ n) :
     ∃ (β : Type u_1) (_ : Fintype β) (sgn : β → SignType) (g : β → α),
       (∀ b, g b ∉ s → sgn b = 0) ∧
         Fintype.card β = n ∧ ∀ a ∈ s, (∑ i, if g i = a then (sgn i : ℤ) else 0) = f a := by
   obtain ⟨β, _, sgn, g, hg, hβ, hf⟩ := exists_signed_sum s f
-  refine'
-    ⟨Sum β (Fin (n - ∑ i in s, (f i).natAbs)), inferInstance, Sum.elim sgn 0,
+  refine
+    ⟨Sum β (Fin (n - ∑ i ∈ s, (f i).natAbs)), inferInstance, Sum.elim sgn 0,
       Sum.elim g (Classical.arbitrary (Fin (n - Finset.sum s fun i => Int.natAbs (f i)) → α)),
-        _, by simp [hβ, h], fun a ha => by simp [hf _ ha]⟩
+        ?_, by simp [hβ, h], fun a ha => by simp [hf _ ha]⟩
   rintro (b | b) hb
   · cases hb (hg _)
   · rfl

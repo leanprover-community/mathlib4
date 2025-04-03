@@ -67,7 +67,7 @@ protected theorem integrable_normed : Integrable (f.normed μ) μ :=
 variable [μ.IsOpenPosMeasure]
 
 theorem integral_pos : 0 < ∫ x, f x ∂μ := by
-  refine' (integral_pos_iff_support_of_nonneg f.nonneg' f.integrable).mpr _
+  refine (integral_pos_iff_support_of_nonneg f.nonneg' f.integrable).mpr ?_
   rw [f.support_eq]
   exact measure_ball_pos μ c f.rOut_pos
 #align cont_diff_bump.integral_pos ContDiffBump.integral_pos
@@ -110,9 +110,9 @@ theorem integral_normed_smul {X} [NormedAddCommGroup X] [NormedSpace ℝ X]
 
 theorem measure_closedBall_le_integral : (μ (closedBall c f.rIn)).toReal ≤ ∫ x, f x ∂μ := by calc
   (μ (closedBall c f.rIn)).toReal = ∫ x in closedBall c f.rIn, 1 ∂μ := by simp
-  _ = ∫ x in closedBall c f.rIn, f x ∂μ := set_integral_congr (measurableSet_closedBall)
+  _ = ∫ x in closedBall c f.rIn, f x ∂μ := setIntegral_congr measurableSet_closedBall
         (fun x hx ↦ (one_of_mem_closedBall f hx).symm)
-  _ ≤ ∫ x, f x ∂μ := set_integral_le_integral f.integrable (eventually_of_forall (fun x ↦ f.nonneg))
+  _ ≤ ∫ x, f x ∂μ := setIntegral_le_integral f.integrable (eventually_of_forall (fun x ↦ f.nonneg))
 
 theorem normed_le_div_measure_closedBall_rIn (x : E) :
     f.normed μ x ≤ 1 / (μ (closedBall c f.rIn)).toReal := by
@@ -124,11 +124,11 @@ theorem normed_le_div_measure_closedBall_rIn (x : E) :
 
 theorem integral_le_measure_closedBall : ∫ x, f x ∂μ ≤ (μ (closedBall c f.rOut)).toReal := by calc
   ∫ x, f x ∂μ = ∫ x in closedBall c f.rOut, f x ∂μ := by
-    apply (set_integral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
+    apply (setIntegral_eq_integral_of_forall_compl_eq_zero (fun x hx ↦ ?_)).symm
     apply f.zero_of_le_dist (le_of_lt _)
     simpa using hx
   _ ≤ ∫ x in closedBall c f.rOut, 1 ∂μ := by
-    apply set_integral_mono f.integrable.integrableOn _ (fun x ↦ f.le_one)
+    apply setIntegral_mono f.integrable.integrableOn _ (fun x ↦ f.le_one)
     simp [measure_closedBall_lt_top]
   _ = (μ (closedBall c f.rOut)).toReal := by simp
 

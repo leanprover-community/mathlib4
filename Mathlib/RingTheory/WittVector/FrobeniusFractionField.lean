@@ -81,7 +81,7 @@ theorem succNthDefiningPoly_degree [IsDomain k] (n : ℕ) (a₁ a₂ : 𝕎 k) (
     (succNthDefiningPoly p n a₁ a₂ bs).degree = p := by
   have : (X ^ p * C (a₁.coeff 0 ^ p ^ (n + 1))).degree = (p : WithBot ℕ) := by
     rw [degree_mul, degree_C]
-    · simp only [Nat.cast_withBot, add_zero, degree_X, degree_pow, Nat.smul_one_eq_coe]
+    · simp only [Nat.cast_withBot, add_zero, degree_X, degree_pow, Nat.smul_one_eq_cast]
     · exact pow_ne_zero _ ha₁
   have : (X ^ p * C (a₁.coeff 0 ^ p ^ (n + 1)) - X * C (a₂.coeff 0 ^ p ^ (n + 1))).degree =
       (p : WithBot ℕ) := by
@@ -132,7 +132,7 @@ theorem succNthVal_spec' (n : ℕ) (a₁ a₂ : 𝕎 k) (bs : Fin (n + 1) → k)
   have := succNthVal_spec p n a₁ a₂ bs ha₁ ha₂
   simp only [Polynomial.map_add, Polynomial.eval_X, Polynomial.map_pow, Polynomial.eval_C,
     Polynomial.eval_pow, succNthDefiningPoly, Polynomial.eval_mul, Polynomial.eval_add,
-    Polynomial.eval_sub, Polynomial.map_mul, Polynomial.map_sub, Polynomial.IsRoot.definition]
+    Polynomial.eval_sub, Polynomial.map_mul, Polynomial.map_sub, Polynomial.IsRoot.def]
     at this
   convert this using 1
   ring
@@ -147,10 +147,7 @@ namespace RecursionBase
 variable {k : Type*} [Field k] [IsAlgClosed k]
 
 theorem solution_pow (a₁ a₂ : 𝕎 k) : ∃ x : k, x ^ (p - 1) = a₂.coeff 0 / a₁.coeff 0 :=
-  IsAlgClosed.exists_pow_nat_eq _ <|
-    -- Porting note: was
-    -- by linarith [hp.out.one_lt, le_of_lt hp.out.one_lt]
-    tsub_pos_of_lt hp.out.one_lt
+  IsAlgClosed.exists_pow_nat_eq _ <| tsub_pos_of_lt hp.out.one_lt
 #align witt_vector.recursion_base.solution_pow WittVector.RecursionBase.solution_pow
 
 /-- The base case (0th coefficient) of our solution vector. -/
@@ -168,9 +165,7 @@ theorem solution_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha�
   have := solution_spec p a₁ a₂
   rw [h, zero_pow] at this
   · simpa [ha₁, ha₂] using _root_.div_eq_zero_iff.mp this.symm
-  · -- Porting note: was
-    -- linarith [hp.out.one_lt, le_of_lt hp.out.one_lt]
-    exact Nat.sub_ne_zero_of_lt hp.out.one_lt
+  · exact Nat.sub_ne_zero_of_lt hp.out.one_lt
 #align witt_vector.recursion_base.solution_nonzero WittVector.RecursionBase.solution_nonzero
 
 theorem solution_spec' {a₁ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (a₂ : 𝕎 k) :
@@ -222,7 +217,6 @@ theorem frobeniusRotation_nonzero {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠
 theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0) (ha₂ : a₂.coeff 0 ≠ 0) :
     frobenius (frobeniusRotation p ha₁ ha₂) * a₁ = frobeniusRotation p ha₁ ha₂ * a₂ := by
   ext n
-  -- Porting note: was `induction' n with n ih`
   cases' n with n
   · simp only [WittVector.mul_coeff_zero, WittVector.coeff_frobenius_charP, frobeniusRotation,
       frobeniusRotationCoeff, Nat.zero_eq]
@@ -256,7 +250,7 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
     have H := congr_arg (fun x : 𝕎 k => x * (p : 𝕎 k) ^ m * (p : 𝕎 k) ^ n)
       (frobenius_frobeniusRotation p hr' hq')
     dsimp at H
-    refine' (Eq.trans _ H).trans _ <;> ring
+    refine (Eq.trans ?_ H).trans ?_ <;> ring
   have hq'' : algebraMap (𝕎 k) (FractionRing (𝕎 k)) q' ≠ 0 := by
     have hq''' : q' ≠ 0 := fun h => hq' (by simp [h])
     simpa only [Ne, map_zero] using
@@ -274,14 +268,14 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
 theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha : a ≠ 0) :
     ∃ᵉ (b ≠ 0) (m : ℤ), φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
   revert ha
-  refine' Localization.induction_on a _
+  refine Localization.induction_on a ?_
   rintro ⟨r, q, hq⟩ hrq
   have hq0 : q ≠ 0 := mem_nonZeroDivisors_iff_ne_zero.1 hq
   have hr0 : r ≠ 0 := fun h => hrq (by simp [h])
   obtain ⟨m, r', hr', rfl⟩ := exists_eq_pow_p_mul r hr0
   obtain ⟨n, q', hq', rfl⟩ := exists_eq_pow_p_mul q hq0
   let b := frobeniusRotation p hr' hq'
-  refine' ⟨algebraMap (𝕎 k) (FractionRing (𝕎 k)) b, _, m - n, _⟩
+  refine ⟨algebraMap (𝕎 k) (FractionRing (𝕎 k)) b, ?_, m - n, ?_⟩
   · simpa only [map_zero] using
       (IsFractionRing.injective (WittVector p k) (FractionRing (WittVector p k))).ne
         (frobeniusRotation_nonzero p hr' hq')

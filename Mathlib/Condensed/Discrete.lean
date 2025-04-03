@@ -10,7 +10,7 @@ import Mathlib.Condensed.Basic
 
 # Discrete-underlying adjunction
 
-Given a well-behaved concrete category `C`, we define a functor `C ⥤ Condensed C` which associates
+Given a well-behaved category `C`, we define a functor `C ⥤ Condensed C` which associates
 to an object of `C` the corresponding "discrete" condensed object (see `Condensed.discrete`).
 
 In `Condensed.discrete_underlying_adj` we prove that this functor is left adjoint to the forgetful
@@ -34,11 +34,12 @@ The underlying object of a condensed object in `C` is the condensed object eval
 This can be viewed as a sort of forgetful functor from `Condensed C` to `C`
 -/
 @[simps!]
-noncomputable def Condensed.underlying : Condensed.{u} C ⥤ C := (sheafSections _ _).obj (op (⊤_ _))
+noncomputable def Condensed.underlying : Condensed.{u} C ⥤ C :=
+  (sheafSections _ _).obj ⟨CompHaus.of PUnit.{u+1}⟩
 
 /--
 Discreteness is left adjoint to the forgetful functor. When `C` is `Type*`, this is analogous to
 `TopCat.adj₁ : TopCat.discrete ⊣ forget TopCat`.  
 -/
 noncomputable def Condensed.discrete_underlying_adj : discrete C ⊣ underlying C :=
-  constantSheafAdj _ _ terminalIsTerminal
+  constantSheafAdj _ _ CompHaus.isTerminalPUnit

@@ -84,7 +84,7 @@ theorem wellFounded_iff_has_min {r : α → α → Prop} :
   refine ⟨fun h => h.has_min, fun h => ⟨fun x => ?_⟩⟩
   by_contra hx
   obtain ⟨m, hm, hm'⟩ := h {x | ¬Acc r x} ⟨x, hx⟩
-  refine' hm ⟨_, fun y hy => _⟩
+  refine hm ⟨_, fun y hy => ?_⟩
   by_contra hy'
   exact hm' y hy' hy
 #align well_founded.well_founded_iff_has_min WellFounded.wellFounded_iff_has_min
@@ -129,13 +129,13 @@ protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {
       rw [WellFounded.succ, dif_pos] at h'
       exact wo.wf.not_lt_min _ h hy h'
     rcases trichotomous_of r x y with (hy | hy | hy)
-    exfalso
-    exact this hy
-    right
-    exact hy.symm
+    · exfalso
+      exact this hy
+    · right
+      exact hy.symm
     left
     exact hy
-  rintro (hy | rfl); exact _root_.trans hy (wo.wf.lt_succ h); exact wo.wf.lt_succ h
+  rintro (hy | rfl); (· exact _root_.trans hy (wo.wf.lt_succ h)); exact wo.wf.lt_succ h
 #align well_founded.lt_succ_iff WellFounded.lt_succ_iff
 
 section LinearOrder

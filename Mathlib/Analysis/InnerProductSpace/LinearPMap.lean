@@ -223,7 +223,7 @@ theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
   · simp only [LinearMap.toPMap_domain, Submodule.mem_top, iff_true_iff,
       LinearPMap.mem_adjoint_domain_iff, LinearMap.coe_comp, innerₛₗ_apply_coe]
     exact ((innerSL 𝕜 x).comp <| A.comp <| Submodule.subtypeL _).cont
-  refine' LinearPMap.adjoint_apply_eq _ _ fun v => _
+  refine LinearPMap.adjoint_apply_eq ?_ _ fun v => ?_
   · -- Porting note: was simply `hp` as an argument above
     simpa using hp
   · simp only [adjoint_inner_left, hxy, LinearMap.toPMap_apply, coe_coe]

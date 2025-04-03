@@ -45,11 +45,9 @@ def IsSubterminal (A : C) : Prop :=
   ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g
 #align category_theory.is_subterminal CategoryTheory.IsSubterminal
 
--- Adaptation note: 2024-03-15
--- Renamed to avoid the reserved name `IsSubterminal.def`.
-theorem IsSubterminal.def' : IsSubterminal A ↔ ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g :=
+theorem IsSubterminal.def : IsSubterminal A ↔ ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g :=
   Iff.rfl
-#align category_theory.is_subterminal.def CategoryTheory.IsSubterminal.def'
+#align category_theory.is_subterminal.def CategoryTheory.IsSubterminal.def
 
 /-- If `A` is subterminal, the unique morphism from it to a terminal object is a monomorphism.
 The converse of `isSubterminal_of_mono_isTerminal_from`.
@@ -99,7 +97,7 @@ The converse of `isSubterminal_of_isIso_diag`.
 theorem IsSubterminal.isIso_diag (hA : IsSubterminal A) [HasBinaryProduct A A] : IsIso (diag A) :=
   ⟨⟨Limits.prod.fst,
       ⟨by simp, by
-        rw [IsSubterminal.def'] at hA
+        rw [IsSubterminal.def] at hA
         aesop_cat⟩⟩⟩
 #align category_theory.is_subterminal.is_iso_diag CategoryTheory.IsSubterminal.isIso_diag
 
@@ -142,10 +140,10 @@ def subterminalInclusion : Subterminals C ⥤ C :=
   fullSubcategoryInclusion _
 #align category_theory.subterminal_inclusion CategoryTheory.subterminalInclusion
 
-instance (C : Type u₁) [Category.{v₁} C] : Full (subterminalInclusion C) :=
+instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Full :=
   FullSubcategory.full _
 
-instance (C : Type u₁) [Category.{v₁} C] : Faithful (subterminalInclusion C) :=
+instance (C : Type u₁) [Category.{v₁} C] : (subterminalInclusion C).Faithful :=
   FullSubcategory.faithful _
 
 instance subterminals_thin (X Y : Subterminals C) : Subsingleton (X ⟶ Y) :=

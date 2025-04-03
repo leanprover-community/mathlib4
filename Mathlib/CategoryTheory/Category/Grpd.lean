@@ -50,7 +50,7 @@ instance str' (C : Grpd.{v, u}) : Groupoid.{v, u} C.α :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.str CategoryTheory.Grpd.str'
 
-instance : CoeSort Grpd (Type*) :=
+instance : CoeSort Grpd Type* :=
   Bundled.coeSort
 
 /-- Construct a bundled `Grpd` from the underlying type and the typeclass `Groupoid`. -/
@@ -91,11 +91,11 @@ def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.forget_to_Cat CategoryTheory.Grpd.forgetToCat
 
-instance forgetToCatFull : Full forgetToCat where preimage := id
+instance forgetToCat_full : forgetToCat.Full where map_surjective f := ⟨f, rfl⟩
 set_option linter.uppercaseLean3 false in
-#align category_theory.Groupoid.forget_to_Cat_full CategoryTheory.Grpd.forgetToCatFull
+#align category_theory.Groupoid.forget_to_Cat_full CategoryTheory.Grpd.forgetToCat_full
 
-instance forgetToCat_faithful : Faithful forgetToCat where
+instance forgetToCat_faithful : forgetToCat.Faithful where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.forget_to_Cat_faithful CategoryTheory.Grpd.forgetToCat_faithful
 
@@ -142,7 +142,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The product of a family of groupoids is isomorphic
 to the product object in the category of Groupoids -/
-noncomputable def piIsoPi (J : Type u) (f : J → Grpd.{u, u}) : @of (∀ j, f j) _ ≅ ∏ f :=
+noncomputable def piIsoPi (J : Type u) (f : J → Grpd.{u, u}) : @of (∀ j, f j) _ ≅ ∏ᶜ f :=
   Limits.IsLimit.conePointUniqueUpToIso (piLimitFanIsLimit f)
     (Limits.limit.isLimit (Discrete.functor f))
 set_option linter.uppercaseLean3 false in

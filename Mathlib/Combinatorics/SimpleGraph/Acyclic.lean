@@ -166,23 +166,23 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
     rw [Finset.card_compl, Finset.card_singleton, Nat.sub_add_cancel Fintype.card_pos]
   rw [← this, add_left_inj]
   choose f hf hf' using (hG.existsUnique_path · default)
-  refine Eq.symm <| Finset.card_congr
+  refine Eq.symm <| Finset.card_bij
           (fun w hw => ((f w).firstDart <| ?notNil).edge)
           (fun a ha => ?memEdges) ?inj ?surj
   case notNil => exact not_nil_of_ne (by simpa using hw)
   case memEdges => simp
   case inj =>
-    intros a b ha hb h
+    intros a ha b hb h
     wlog h' : (f a).length ≤ (f b).length generalizing a b
-    · exact Eq.symm (this _ _ hb ha h.symm (le_of_not_le h'))
+    · exact Eq.symm (this _ hb _ ha h.symm (le_of_not_le h'))
     rw [dart_edge_eq_iff] at h
     obtain (h | h) := h
     · exact (congrArg (·.fst) h)
     · have h1 : ((f a).firstDart <| not_nil_of_ne (by simpa using ha)).snd = b :=
         congrArg (·.snd) h
       have h3 := congrArg length (hf' _ (((f _).tail _).copy h1 rfl) ?_)
-      rw [length_copy, ← add_left_inj 1, length_tail_add_one] at h3
-      · omega
+      · rw [length_copy, ← add_left_inj 1, length_tail_add_one] at h3
+        omega
       · simp only [ne_eq, eq_mp_eq_cast, id_eq, isPath_copy]
         exact (hf _).tail _
   case surj =>
@@ -198,7 +198,7 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
           length_cons, length_nil] at h'
       simp [Nat.le_zero, Nat.one_ne_zero] at h'
     rw [← hf' _ (.cons h.symm (f x)) ((cons_isPath_iff _ _).2 ⟨hf _, fun hy => ?contra⟩)]
-    rfl
+    · rfl
     case contra =>
       suffices (f x).takeUntil y hy = .cons h .nil by
         rw [← take_spec _ hy] at h'

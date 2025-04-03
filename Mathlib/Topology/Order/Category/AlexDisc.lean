@@ -33,8 +33,8 @@ deriving instance LargeCategory for AlexDisc
 
 instance instConcreteCategory : ConcreteCategory AlexDisc := BundledHom.concreteCategory _
 instance instHasForgetToTop : HasForget₂ AlexDisc TopCat := BundledHom.forget₂ _ _
-instance ForgetToTop.instFull : Full (forget₂ AlexDisc TopCat) := BundledHom.forget₂Full _ _
-instance ForgetToTop.instFaithful : Faithful (forget₂ AlexDisc TopCat) where
+instance forgetToTop_full : (forget₂ AlexDisc TopCat).Full := BundledHom.forget₂_full _ _
+instance forgetToTop_faithful : (forget₂ AlexDisc TopCat).Faithful where
 
 @[simp] lemma coe_forgetToTop (X : AlexDisc) : ↥((forget₂ _ TopCat).obj X) = X := rfl
 
@@ -44,6 +44,9 @@ def of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] : AlexDisc := 
 @[simp] lemma coe_of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] : ↥(of α) = α := rfl
 @[simp] lemma forgetToTop_of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] :
   (forget₂ AlexDisc TopCat).obj (of α) = TopCat.of α := rfl
+
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
 /-- Constructs an equivalence between preorders from an order isomorphism between them. -/
 @[simps]

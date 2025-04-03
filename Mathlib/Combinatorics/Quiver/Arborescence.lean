@@ -75,8 +75,8 @@ noncomputable def arborescenceMk {V : Type u} [Quiver V] (r : V) (height : V →
       have height_le : ∀ {a b}, Path a b → height a ≤ height b := by
         intro a b p
         induction' p with b c _ e ih
-        rfl
-        exact le_of_lt (lt_of_le_of_lt ih (height_lt e))
+        · rfl
+        · exact le_of_lt (lt_of_le_of_lt ih (height_lt e))
       suffices ∀ p q : Path r b, p = q by
         intro p
         apply this

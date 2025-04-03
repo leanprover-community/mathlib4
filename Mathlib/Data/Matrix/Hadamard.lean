@@ -37,10 +37,10 @@ variable {R : Type*}
 
 namespace Matrix
 
-open Matrix BigOperators
+open Matrix
 
 /-- `Matrix.hadamard` defines the Hadamard product,
-    which is the pointwise product of two matrices of the same size.-/
+    which is the pointwise product of two matrices of the same size. -/
 def hadamard [Mul α] (A : Matrix m n α) (B : Matrix m n α) : Matrix m n α :=
   of fun i j => A i j * B i j
 #align matrix.hadamard Matrix.hadamard

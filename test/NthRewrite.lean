@@ -1,7 +1,7 @@
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Vector
-import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Vector.Defs
+import Mathlib.Algebra.Ring.Nat
 
 set_option autoImplicit true
 

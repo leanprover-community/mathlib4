@@ -66,6 +66,7 @@ The structure `ContDiffBump` contains the data required to construct the functio
 real numbers `rIn`, `rOut`, and proofs of `0 < rIn < rOut`. The function itself is available through
 `CoeFun` when the space is nice enough, i.e., satisfies the `HasContDiffBump` typeclass. -/
 structure ContDiffBump (c : E) where
+  /-- real numbers `0 < rIn < rOut` -/
   (rIn rOut : ℝ)
   rIn_pos : 0 < rIn
   rIn_lt_rOut : rIn < rOut
@@ -82,8 +83,9 @@ add more properties if they are useful and satisfied in the examples of inner pr
 and finite dimensional vector spaces, notably derivative norm control in terms of `R - 1`.
 
 TODO: do we ever need `f x = 1 ↔ ‖x‖ ≤ 1`? -/
--- Porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not yet ported; was @[nolint has_nonempty_instance]
 structure ContDiffBumpBase (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] where
+  /-- The function underlying this family of bump functions -/
   toFun : ℝ → E → ℝ
   mem_Icc : ∀ (R : ℝ) (x : E), toFun R x ∈ Icc (0 : ℝ) 1
   symmetric : ∀ (R : ℝ) (x : E), toFun R (-x) = toFun R x

@@ -41,7 +41,7 @@ structure Encoding (α : Type u) where
 #align computability.encoding Computability.Encoding
 
 theorem Encoding.encode_injective {α : Type u} (e : Encoding α) : Function.Injective e.encode := by
-  refine' fun _ _ h => Option.some_injective _ _
+  refine fun _ _ h => Option.some_injective _ ?_
   rw [← e.decode_encode, ← e.decode_encode, h]
 #align computability.encoding.encode_injective Computability.Encoding.encode_injective
 

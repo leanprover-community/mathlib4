@@ -29,8 +29,7 @@ namespace Finsupp
 variable [Zero α] {s : Finset ι} (f : ∀ i ∈ s, α) {i : ι}
 
 /-- Create an element of `ι →₀ α` from a finset `s` and a function `f` defined on this finset. -/
-def indicator (s : Finset ι) (f : ∀ i ∈ s, α) : ι →₀ α
-    where
+def indicator (s : Finset ι) (f : ∀ i ∈ s, α) : ι →₀ α where
   toFun i :=
     haveI := Classical.decEq ι
     if H : i ∈ s then f i H else 0

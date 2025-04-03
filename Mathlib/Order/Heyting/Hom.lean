@@ -38,9 +38,9 @@ variable {F α β γ δ : Type*}
 Heyting implication. -/
 structure HeytingHom (α β : Type*) [HeytingAlgebra α] [HeytingAlgebra β] extends
   LatticeHom α β where
-  /-- The proposition that a Heyting homomorphism preserves the bottom element.-/
+  /-- The proposition that a Heyting homomorphism preserves the bottom element. -/
   protected map_bot' : toFun ⊥ = ⊥
-  /-- The proposition that a Heyting homomorphism preserves the Heyting implication.-/
+  /-- The proposition that a Heyting homomorphism preserves the Heyting implication. -/
   protected map_himp' : ∀ a b, toFun (a ⇨ b) = toFun a ⇨ toFun b
 #align heyting_hom HeytingHom
 
@@ -48,9 +48,9 @@ structure HeytingHom (α β : Type*) [HeytingAlgebra α] [HeytingAlgebra β] ext
 preserve difference. -/
 structure CoheytingHom (α β : Type*) [CoheytingAlgebra α] [CoheytingAlgebra β] extends
   LatticeHom α β where
-  /-- The proposition that a co-Heyting homomorphism preserves the top element.-/
+  /-- The proposition that a co-Heyting homomorphism preserves the top element. -/
   protected map_top' : toFun ⊤ = ⊤
-  /-- The proposition that a co-Heyting homomorphism preserves the difference operation.-/
+  /-- The proposition that a co-Heyting homomorphism preserves the difference operation. -/
   protected map_sdiff' : ∀ a b, toFun (a \ b) = toFun a \ toFun b
 #align coheyting_hom CoheytingHom
 
@@ -58,9 +58,9 @@ structure CoheytingHom (α β : Type*) [CoheytingAlgebra α] [CoheytingAlgebra �
 preserve Heyting implication and difference. -/
 structure BiheytingHom (α β : Type*) [BiheytingAlgebra α] [BiheytingAlgebra β] extends
   LatticeHom α β where
-  /-- The proposition that a bi-Heyting homomorphism preserves the Heyting implication.-/
+  /-- The proposition that a bi-Heyting homomorphism preserves the Heyting implication. -/
   protected map_himp' : ∀ a b, toFun (a ⇨ b) = toFun a ⇨ toFun b
-  /-- The proposition that a bi-Heyting homomorphism preserves the difference operation.-/
+  /-- The proposition that a bi-Heyting homomorphism preserves the difference operation. -/
   protected map_sdiff' : ∀ a b, toFun (a \ b) = toFun a \ toFun b
 #align biheyting_hom BiheytingHom
 
@@ -69,9 +69,9 @@ structure BiheytingHom (α β : Type*) [BiheytingAlgebra α] [BiheytingAlgebra �
 You should extend this class when you extend `HeytingHom`. -/
 class HeytingHomClass (F α β : Type*) [HeytingAlgebra α] [HeytingAlgebra β] [FunLike F α β]
   extends LatticeHomClass F α β : Prop where
-  /-- The proposition that a Heyting homomorphism preserves the bottom element.-/
+  /-- The proposition that a Heyting homomorphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
-  /-- The proposition that a Heyting homomorphism preserves the Heyting implication.-/
+  /-- The proposition that a Heyting homomorphism preserves the Heyting implication. -/
   map_himp (f : F) : ∀ a b, f (a ⇨ b) = f a ⇨ f b
 #align heyting_hom_class HeytingHomClass
 
@@ -80,9 +80,9 @@ class HeytingHomClass (F α β : Type*) [HeytingAlgebra α] [HeytingAlgebra β] 
 You should extend this class when you extend `CoheytingHom`. -/
 class CoheytingHomClass (F α β : Type*) [CoheytingAlgebra α] [CoheytingAlgebra β] [FunLike F α β]
   extends LatticeHomClass F α β : Prop where
-  /-- The proposition that a co-Heyting homomorphism preserves the top element.-/
+  /-- The proposition that a co-Heyting homomorphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
-  /-- The proposition that a co-Heyting homomorphism preserves the difference operation.-/
+  /-- The proposition that a co-Heyting homomorphism preserves the difference operation. -/
   map_sdiff (f : F) : ∀ a b, f (a \ b) = f a \ f b
 #align coheyting_hom_class CoheytingHomClass
 
@@ -91,9 +91,9 @@ class CoheytingHomClass (F α β : Type*) [CoheytingAlgebra α] [CoheytingAlgebr
 You should extend this class when you extend `BiheytingHom`. -/
 class BiheytingHomClass (F α β : Type*) [BiheytingAlgebra α] [BiheytingAlgebra β] [FunLike F α β]
   extends LatticeHomClass F α β : Prop where
-  /-- The proposition that a bi-Heyting homomorphism preserves the Heyting implication.-/
+  /-- The proposition that a bi-Heyting homomorphism preserves the Heyting implication. -/
   map_himp (f : F) : ∀ a b, f (a ⇨ b) = f a ⇨ f b
-  /-- The proposition that a bi-Heyting homomorphism preserves the difference operation.-/
+  /-- The proposition that a bi-Heyting homomorphism preserves the difference operation. -/
   map_sdiff (f : F) : ∀ a b, f (a \ b) = f a \ f b
 #align biheyting_hom_class BiheytingHomClass
 
@@ -185,10 +185,8 @@ end Equiv
 
 variable [FunLike F α β]
 
--- Porting note: Revisit this issue to see if it works in Lean 4. -/
--- See note [reducible non instances]
+-- Porting note: Revisit this issue to see if it works in Lean 4.
 /-- This can't be an instance because of typeclass loops. -/
-@[reducible]
 lemma BoundedLatticeHomClass.toBiheytingHomClass [BooleanAlgebra α] [BooleanAlgebra β]
     [BoundedLatticeHomClass F α β] : BiheytingHomClass F α β :=
   { ‹BoundedLatticeHomClass F α β› with

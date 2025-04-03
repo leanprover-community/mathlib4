@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2017 Simon Hudon All rights reserved.
+Copyright (c) 2017 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
@@ -249,7 +249,7 @@ def children (x : M F) (i : F.B (head x)) : M F :=
       have P' := x.2 (succ n)
       apply agree_children _ _ _ P'
       trans i
-      apply cast_heq
+      · apply cast_heq
       symm
       apply cast_heq }
 set_option linter.uppercaseLean3 false in
@@ -310,8 +310,7 @@ set_option linter.uppercaseLean3 false in
 end Approx
 
 /-- constructor for M-types -/
-protected def mk (x : F (M F)) : M F
-    where
+protected def mk (x : F (M F)) : M F where
   approx := Approx.sMk x
   consistent := Approx.P_mk x
 set_option linter.uppercaseLean3 false in
@@ -347,15 +346,15 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   rw [h']
   intros ch h
   congr
-  · ext a
-    dsimp only [children]
-    generalize hh : cast _ a = a''
-    rw [cast_eq_iff_heq] at hh
-    revert a''
-    rw [h]
-    intros _ hh
-    cases hh
-    rfl
+  ext a
+  dsimp only [children]
+  generalize hh : cast _ a = a''
+  rw [cast_eq_iff_heq] at hh
+  revert a''
+  rw [h]
+  intros _ hh
+  cases hh
+  rfl
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.mk_dest PFunctor.M.mk_dest
 
@@ -404,7 +403,7 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
     Agree (x.approx n) (y.approx <| n + 1) ↔ Agree' n x y := by
   constructor <;> intro h
   · induction' n with _ n_ih generalizing x y
-    constructor
+    · constructor
     · induction x using PFunctor.M.casesOn'
       induction y using PFunctor.M.casesOn'
       simp only [approx_mk] at h
@@ -414,7 +413,7 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
       apply n_ih
       apply hagree
   · induction' n with _ n_ih generalizing x y
-    constructor
+    · constructor
     · cases' h with _ _ _ a x' y'
       induction' x using PFunctor.M.casesOn' with x_a x_f
       induction' y using PFunctor.M.casesOn' with y_a y_f
@@ -516,8 +515,8 @@ theorem iselect_eq_default [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) (x 
     induction' x using PFunctor.M.casesOn' with x_a x_f
     simp only [iselect, isubtree] at ps_ih ⊢
     by_cases h'' : a = x_a
-    subst x_a
-    · simp only [dif_pos, eq_self_iff_true, casesOn_mk']
+    · subst x_a
+      simp only [dif_pos, eq_self_iff_true, casesOn_mk']
       rw [ps_ih]
       intro h'
       apply h
@@ -772,7 +771,7 @@ theorem corec_unique (g : α → P α) (f : α → M P) (hyp : ∀ x, M.dest (f 
   cases' gxeq : g x with a f'
   have h₀ : M.dest (f x) = ⟨a, f ∘ f'⟩ := by rw [hyp, gxeq, PFunctor.map_eq]
   have h₁ : M.dest (M.corec g x) = ⟨a, M.corec g ∘ f'⟩ := by rw [dest_corec, gxeq, PFunctor.map_eq]
-  refine' ⟨_, _, _, h₀, h₁, _⟩
+  refine ⟨_, _, _, h₀, h₁, ?_⟩
   intro i
   exact ⟨f' i, trivial, rfl, rfl⟩
 set_option linter.uppercaseLean3 false in

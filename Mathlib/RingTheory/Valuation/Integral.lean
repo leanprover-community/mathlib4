@@ -17,8 +17,6 @@ The ring of integers is integrally closed inside the original ring.
 
 universe u v w
 
-open scoped BigOperators
-
 namespace Valuation
 
 namespace Integers
@@ -34,9 +32,9 @@ theorem mem_of_integral {x : R} (hx : IsIntegral O x) : x ∈ v.integer :=
   let ⟨p, hpm, hpx⟩ := hx
   le_of_not_lt fun hvx : 1 < v x => by
     rw [hpm.as_sum, eval₂_add, eval₂_pow, eval₂_X, eval₂_finset_sum, add_eq_zero_iff_eq_neg] at hpx
-    replace hpx := congr_arg v hpx; refine' ne_of_gt _ hpx
+    replace hpx := congr_arg v hpx; refine ne_of_gt ?_ hpx
     rw [v.map_neg, v.map_pow]
-    refine' v.map_sum_lt' (zero_lt_one.trans_le (one_le_pow_of_one_le' hvx.le _)) fun i hi => _
+    refine v.map_sum_lt' (zero_lt_one.trans_le (one_le_pow_of_one_le' hvx.le _)) fun i hi => ?_
     rw [eval₂_mul, eval₂_pow, eval₂_C, eval₂_X, v.map_mul, v.map_pow, ←
       one_mul (v x ^ p.natDegree)]
     cases' (hv.2 <| p.coeff i).lt_or_eq with hvpi hvpi

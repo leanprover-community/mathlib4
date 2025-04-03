@@ -7,7 +7,7 @@ import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Tactic.GCongr
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.LeftRightNhds
 
 #align_import algebra.continued_fractions.computation.approximation_corollaries from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 

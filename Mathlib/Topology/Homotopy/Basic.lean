@@ -84,7 +84,7 @@ section
 `f₁`.
 
 You should extend this class when you extend `ContinuousMap.Homotopy`. -/
-class HomotopyLike {X Y : outParam (Type*)} [TopologicalSpace X] [TopologicalSpace Y]
+class HomotopyLike {X Y : outParam Type*} [TopologicalSpace X] [TopologicalSpace Y]
     (F : Type*) (f₀ f₁ : outParam <| C(X, Y)) [FunLike F (I × X) Y]
     extends ContinuousMapClass F (I × X) Y : Prop where
   /-- value of the homotopy at 0 -/
@@ -235,10 +235,10 @@ homotopy on `[0, 1/2]` and the second on `[1/2, 1]`.
 def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁ f₂) : Homotopy f₀ f₂ where
   toFun x := if (x.1 : ℝ) ≤ 1 / 2 then F.extend (2 * x.1) x.2 else G.extend (2 * x.1 - 1) x.2
   continuous_toFun := by
-    refine'
+    refine
       continuous_if_le (continuous_induced_dom.comp continuous_fst) continuous_const
         (F.continuous.comp (by continuity)).continuousOn
-        (G.continuous.comp (by continuity)).continuousOn _
+        (G.continuous.comp (by continuity)).continuousOn ?_
     rintro x hx
     norm_num [hx]
   map_zero_left x := by set_option tactic.skipAssignedInstances false in norm_num

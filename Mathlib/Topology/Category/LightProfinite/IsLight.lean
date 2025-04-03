@@ -34,6 +34,9 @@ universe u
 
 open CategoryTheory Limits FintypeCat Opposite TopologicalSpace
 
+-- This was a global instance prior to #13170. We may experiment with removing it.
+attribute [local instance] ConcreteCategory.instFunLike
+
 open scoped Classical
 
 namespace Profinite
@@ -75,7 +78,7 @@ instance (S : LightProfinite.{u}) : S.toProfinite.IsLight where
       refine @Pi.finite _ _ ?_ _
       simp only [Functor.comp_obj, toProfinite_obj_toCompHaus_toTop_α]
       infer_instance
-    · exact fun a ↦ a.snd.comap (S.cone.π.app ⟨a.fst⟩).1
+    · exact fun a ↦ a.snd.comap (S.cone.π.app ⟨a.fst⟩)
     · intro a
       obtain ⟨n, g, h⟩ := Profinite.exists_locallyConstant S.cone S.isLimit a
       exact ⟨⟨unop n, g⟩, h.symm⟩

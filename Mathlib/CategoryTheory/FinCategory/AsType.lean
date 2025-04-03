@@ -46,8 +46,7 @@ abbrev AsType : Type :=
 #align category_theory.fin_category.as_type CategoryTheory.FinCategory.AsType
 
 @[simps (config := .lemmasOnly) id comp]
-noncomputable instance categoryAsType : SmallCategory (AsType α)
-    where
+noncomputable instance categoryAsType : SmallCategory (AsType α) where
   Hom i j := Fin (Fintype.card (@Quiver.Hom (ObjAsType α) _ i j))
   id i := Fintype.equivFin _ (𝟙 _)
   comp f g := Fintype.equivFin _ ((Fintype.equivFin _).symm f ≫ (Fintype.equivFin _).symm g)
@@ -57,16 +56,14 @@ attribute [local simp] categoryAsType_id categoryAsType_comp
 
 /-- The "identity" functor from `AsType α` to `ObjAsType α`. -/
 @[simps]
-noncomputable def asTypeToObjAsType : AsType α ⥤ ObjAsType α
-    where
+noncomputable def asTypeToObjAsType : AsType α ⥤ ObjAsType α where
   obj := id
   map {X Y} := (Fintype.equivFin _).symm
 #align category_theory.fin_category.as_type_to_obj_as_type CategoryTheory.FinCategory.asTypeToObjAsType
 
 /-- The "identity" functor from `ObjAsType α` to `AsType α`. -/
 @[simps]
-noncomputable def objAsTypeToAsType : ObjAsType α ⥤ AsType α
-    where
+noncomputable def objAsTypeToAsType : ObjAsType α ⥤ AsType α where
   obj := id
   map {X Y} := Fintype.equivFin _
 #align category_theory.fin_category.obj_as_type_to_as_type CategoryTheory.FinCategory.objAsTypeToAsType

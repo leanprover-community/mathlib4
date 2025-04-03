@@ -17,6 +17,9 @@ import Mathlib.Tactic.Spread
 # Group structures on the multiplicative and additive opposites
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
+
 variable {α : Type*}
 
 namespace MulOpposite
@@ -76,7 +79,7 @@ instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne αᵐᵒᵖ 
   toAddMonoidWithOne := instAddMonoidWithOne
   toIntCast := instIntCast
   __ := instAddGroup
-  intCast_ofNat n := show op ((n : ℤ) : α) = op (n : α) by rw [Int.cast_ofNat]
+  intCast_ofNat n := show op ((n : ℤ) : α) = op (n : α) by rw [Int.cast_natCast]
   intCast_negSucc n := show op _ = op (-unop (op ((n + 1 : ℕ) : α))) by simp
 
 instance instAddCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵐᵒᵖ where
@@ -256,8 +259,8 @@ theorem op_div [DivInvMonoid α] (x y : α) : op (x / y) = (op y)⁻¹ * op x :=
 #align add_opposite.op_sub AddOpposite.op_sub
 
 @[to_additive (attr := simp)]
-theorem semiconjBy_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) ↔ SemiconjBy a x y :=
-  by simp only [SemiconjBy, ← op_mul, op_inj, eq_comm]
+theorem semiconjBy_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) ↔ SemiconjBy a x y := by
+  simp only [SemiconjBy, ← op_mul, op_inj, eq_comm]
 #align mul_opposite.semiconj_by_op MulOpposite.semiconjBy_op
 #align add_opposite.semiconj_by_op AddOpposite.addSemiconjBy_op
 
@@ -388,7 +391,7 @@ instance instAddCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne 
   toIntCast := instIntCast
   toAddCommGroup := instAddCommGroup
   __ := instAddCommMonoidWithOne
-  intCast_ofNat _ := congr_arg op <| Int.cast_ofNat _
+  intCast_ofNat _ := congr_arg op <| Int.cast_natCast _
   intCast_negSucc _ := congr_arg op <| Int.cast_negSucc _
 
 /-- The function `AddOpposite.op` is a multiplicative equivalence. -/

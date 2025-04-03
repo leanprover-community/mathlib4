@@ -61,7 +61,7 @@ results for general rings are instead stated about `Ring.inverse`:
 -/
 
 
-open scoped Matrix BigOperators
+open scoped Matrix
 
 open NormedSpace -- For `exp`.
 
@@ -135,7 +135,7 @@ nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
 
 nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
     (h : (s : Set ι).Pairwise fun i j => Commute (f i) (f j)) :
-    exp (∑ i in s, f i) =
+    exp (∑ i ∈ s, f i) =
       s.noncommProd (fun i => exp (f i)) fun i hi j hj _ => (h.of_refl hi hj).exp := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
@@ -189,9 +189,9 @@ theorem exp_neg (A : Matrix m m 𝔸) : exp (-A) = (exp A)⁻¹ := by
 
 theorem exp_zsmul (z : ℤ) (A : Matrix m m 𝔸) : exp (z • A) = exp A ^ z := by
   obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
-  · rw [zpow_coe_nat, natCast_zsmul, exp_nsmul 𝕂]
+  · rw [zpow_natCast, natCast_zsmul, exp_nsmul 𝕂]
   · have : IsUnit (exp A).det := (Matrix.isUnit_iff_isUnit_det _).mp (isUnit_exp 𝕂 _)
-    rw [Matrix.zpow_neg this, zpow_coe_nat, neg_smul, exp_neg 𝕂, natCast_zsmul, exp_nsmul 𝕂]
+    rw [Matrix.zpow_neg this, zpow_natCast, neg_smul, exp_neg 𝕂, natCast_zsmul, exp_nsmul 𝕂]
 #align matrix.exp_zsmul Matrix.exp_zsmul
 
 theorem exp_conj (U : Matrix m m 𝔸) (A : Matrix m m 𝔸) (hy : IsUnit U) :

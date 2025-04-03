@@ -1,0 +1,30 @@
+name:  move-decls (label)
+on:
+  pull_request:
+    types:
+      - labeled
+
+jobs:
+  add-comment:
+    if: github.event.label.name == 'move-decls'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ## fetch the whole repository, useful to find a common fork
+          fetch-depth: 0
+      - id: short_diff
+        run: |
+          ## back and forth to settle a "detached head" (maybe?)
+          git checkout -q master
+          git checkout -q -
+          printf $'summary<<EOF\n%s\nEOF' "$(./scripts/no_lost_declarations.sh short)" >> "$GITHUB_OUTPUT"
+      - name: Add comment
+        run: gh pr comment "$NUMBER" --body "$BODY"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.pull_request.number }}
+          BODY: ${{ steps.short_diff.outputs.summary }}

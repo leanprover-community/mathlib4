@@ -28,7 +28,7 @@ theorem isPrimePow_of_minFac_pow_factorization_eq {n : ℕ}
     (h : n.minFac ^ n.factorization n.minFac = n) (hn : n ≠ 1) : IsPrimePow n := by
   rcases eq_or_ne n 0 with (rfl | hn')
   · simp_all
-  refine' ⟨_, _, (Nat.minFac_prime hn).prime, _, h⟩
+  refine ⟨_, _, (Nat.minFac_prime hn).prime, ?_, h⟩
   simp [pos_iff_ne_zero, ← Finsupp.mem_support_iff, Nat.support_factorization, hn',
     Nat.minFac_prime hn, Nat.minFac_dvd]
 #align is_prime_pow_of_min_fac_pow_factorization_eq isPrimePow_of_minFac_pow_factorization_eq
@@ -41,7 +41,7 @@ theorem isPrimePow_iff_minFac_pow_factorization_eq {n : ℕ} (hn : n ≠ 1) :
 theorem isPrimePow_iff_factorization_eq_single {n : ℕ} :
     IsPrimePow n ↔ ∃ p k : ℕ, 0 < k ∧ n.factorization = Finsupp.single p k := by
   rw [isPrimePow_nat_iff]
-  refine' exists₂_congr fun p k => _
+  refine exists₂_congr fun p k => ?_
   constructor
   · rintro ⟨hp, hk, hn⟩
     exact ⟨hk, by rw [← hn, Nat.Prime.factorization_pow hp]⟩
@@ -65,21 +65,21 @@ theorem IsPrimePow.exists_ord_compl_eq_one {n : ℕ} (h : IsPrimePow n) :
   rcases eq_or_ne n 0 with (rfl | hn0); · cases not_isPrimePow_zero h
   rcases isPrimePow_iff_factorization_eq_single.mp h with ⟨p, k, hk0, h1⟩
   rcases em' p.Prime with (pp | pp)
-  · refine' absurd _ hk0.ne'
+  · refine absurd ?_ hk0.ne'
     simp [← Nat.factorization_eq_zero_of_non_prime n pp, h1]
-  refine' ⟨p, pp, _⟩
-  refine' Nat.eq_of_factorization_eq (Nat.ord_compl_pos p hn0).ne' (by simp) fun q => _
+  refine ⟨p, pp, ?_⟩
+  refine Nat.eq_of_factorization_eq (Nat.ord_compl_pos p hn0).ne' (by simp) fun q => ?_
   rw [Nat.factorization_ord_compl n p, h1]
   simp
 #align is_prime_pow.exists_ord_compl_eq_one IsPrimePow.exists_ord_compl_eq_one
 
 theorem exists_ord_compl_eq_one_iff_isPrimePow {n : ℕ} (hn : n ≠ 1) :
     IsPrimePow n ↔ ∃ p : ℕ, p.Prime ∧ ord_compl[p] n = 1 := by
-  refine' ⟨fun h => IsPrimePow.exists_ord_compl_eq_one h, fun h => _⟩
+  refine ⟨fun h => IsPrimePow.exists_ord_compl_eq_one h, fun h => ?_⟩
   rcases h with ⟨p, pp, h⟩
   rw [isPrimePow_nat_iff]
   rw [← Nat.eq_of_dvd_of_div_eq_one (Nat.ord_proj_dvd n p) h] at hn ⊢
-  refine' ⟨p, n.factorization p, pp, _, by simp⟩
+  refine ⟨p, n.factorization p, pp, ?_, by simp⟩
   contrapose! hn
   simp [Nat.le_zero.1 hn]
 #align exists_ord_compl_eq_one_iff_is_prime_pow exists_ord_compl_eq_one_iff_isPrimePow
@@ -90,13 +90,13 @@ theorem isPrimePow_iff_unique_prime_dvd {n : ℕ} : IsPrimePow n ↔ ∃! p : �
   rw [isPrimePow_nat_iff]
   constructor
   · rintro ⟨p, k, hp, hk, rfl⟩
-    refine' ⟨p, ⟨hp, dvd_pow_self _ hk.ne'⟩, _⟩
+    refine ⟨p, ⟨hp, dvd_pow_self _ hk.ne'⟩, ?_⟩
     rintro q ⟨hq, hq'⟩
     exact (Nat.prime_dvd_prime_iff_eq hq hp).1 (hq.dvd_of_dvd_pow hq')
   rintro ⟨p, ⟨hp, hn⟩, hq⟩
   rcases eq_or_ne n 0 with (rfl | hn₀)
   · cases (hq 2 ⟨Nat.prime_two, dvd_zero 2⟩).trans (hq 3 ⟨Nat.prime_three, dvd_zero 3⟩).symm
-  refine' ⟨p, n.factorization p, hp, hp.factorization_pos_of_dvd hn₀ hn, _⟩
+  refine ⟨p, n.factorization p, hp, hp.factorization_pos_of_dvd hn₀ hn, ?_⟩
   simp only [and_imp] at hq
   apply Nat.dvd_antisymm (Nat.ord_proj_dvd _ _)
   -- We need to show n ∣ p ^ n.factorization p
@@ -124,8 +124,8 @@ theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn
   rcases eq_or_ne b 0 with (rfl | hb)
   · simp only [Nat.coprime_zero_right] at hab
     simp [hab, Finset.filter_singleton, not_isPrimePow_one]
-  refine'
-    ⟨_, fun h =>
+  refine
+    ⟨?_, fun h =>
       Or.elim h (fun i => i.trans ((@dvd_mul_right a b a hab).mpr (dvd_refl a)))
           fun i => i.trans ((@dvd_mul_left a b b hab.symm).mpr (dvd_refl b))⟩
   obtain ⟨p, k, hp, _, rfl⟩ := (isPrimePow_nat_iff _).1 hn

@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
-import Mathlib.Data.Option.Basic
 
 #align_import algebra.group.with_one.basic from "leanprover-community/mathlib"@"4dc134b97a3de65ef2ed881f3513d56260971562"
 
@@ -21,6 +20,8 @@ that were not available in `Algebra/Group/WithOne/Defs`.
 * `WithOne.map`, `WithZero.map`
 -/
 
+assert_not_exists MonoidWithZero
+assert_not_exists DenselyOrdered
 
 universe u v w
 
@@ -119,13 +120,13 @@ theorem map_coe (f : α →ₙ* β) (a : α) : map f (a : WithOne α) = f a :=
 @[to_additive (attr := simp)]
 theorem map_id : map (MulHom.id α) = MonoidHom.id (WithOne α) := by
   ext x
-  induction x using WithOne.cases_on <;> rfl
+  induction x <;> rfl
 #align with_one.map_id WithOne.map_id
 #align with_zero.map_id WithZero.map_id
 
 @[to_additive]
 theorem map_map (f : α →ₙ* β) (g : β →ₙ* γ) (x) : map g (map f x) = map (g.comp f) x := by
-  induction x using WithOne.cases_on <;> rfl
+  induction x <;> rfl
 #align with_one.map_map WithOne.map_map
 #align with_zero.map_map WithZero.map_map
 
@@ -142,8 +143,8 @@ theorem map_comp (f : α →ₙ* β) (g : β →ₙ* γ) : map (g.comp f) = (map
 def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :=
   { map e.toMulHom with
     toFun := map e.toMulHom, invFun := map e.symm.toMulHom,
-    left_inv := (by induction · using WithOne.cases_on <;> simp)
-    right_inv := (by induction · using WithOne.cases_on <;> simp) }
+    left_inv := (by induction · <;> simp)
+    right_inv := (by induction · <;> simp) }
 #align mul_equiv.with_one_congr MulEquiv.withOneCongr
 #align add_equiv.with_zero_congr AddEquiv.withZeroCongr
 #align mul_equiv.with_one_congr_apply MulEquiv.withOneCongr_apply
@@ -171,31 +172,3 @@ theorem _root_.MulEquiv.withOneCongr_trans (e₁ : α ≃* β) (e₂ : β ≃* �
 end Map
 
 end WithOne
-
-namespace WithZero
-
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv (WithZero α) :=
-  { WithZero.inv with
-    inv_inv := fun a =>
-      (Option.map_map _ _ _).trans <| by simp_rw [inv_comp_inv, Option.map_id, id] }
-
-instance divisionMonoid [DivisionMonoid α] : DivisionMonoid (WithZero α) :=
-  { WithZero.divInvMonoid, WithZero.involutiveInv with
-    mul_inv_rev := fun a b =>
-      match a, b with
-      | none, none => rfl
-      | none, some b => rfl
-      | some a, none => rfl
-      | some a, some b => congr_arg some <| mul_inv_rev _ _,
-    inv_eq_of_mul := fun a b ↦
-      match a, b with
-      | none, none => fun _ ↦ rfl
-      | none, some b => fun _ ↦ by contradiction
-      | some a, none => fun _ ↦ by contradiction
-      | some a, some b => fun h ↦
-        congr_arg some <| inv_eq_of_mul_eq_one_right <| Option.some_injective _ h }
-
-instance divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid (WithZero α) :=
-  { WithZero.divisionMonoid, WithZero.commSemigroup with }
-
-end WithZero

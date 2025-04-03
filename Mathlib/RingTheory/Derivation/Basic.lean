@@ -1,9 +1,11 @@
 /-
-Copyright © 2020 Nicolò Cavalleri. All rights reserved.
+Copyright (c) 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
 -/
 import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Derivative
 
 #align_import ring_theory.derivation.basic from "leanprover-community/mathlib"@"b608348ffaeb7f557f2fd46876037abafd326ff3"
 
@@ -148,20 +150,29 @@ theorem map_algebraMap : D (algebraMap R A r) = 0 := by
 #align derivation.map_algebra_map Derivation.map_algebraMap
 
 @[simp]
-theorem map_coe_nat (n : ℕ) : D (n : A) = 0 := by
+theorem map_natCast (n : ℕ) : D (n : A) = 0 := by
   rw [← nsmul_one, D.map_smul_of_tower n, map_one_eq_zero, smul_zero]
-#align derivation.map_coe_nat Derivation.map_coe_nat
+#align derivation.map_coe_nat Derivation.map_natCast
 
 @[simp]
 theorem leibniz_pow (n : ℕ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
   induction' n with n ihn
-  · rw [Nat.zero_eq, pow_zero, map_one_eq_zero, zero_smul]
+  · rw [pow_zero, map_one_eq_zero, zero_smul]
   · rcases (zero_le n).eq_or_lt with (rfl | hpos)
     · erw [pow_one, one_smul, pow_zero, one_smul]
     · have : a * a ^ (n - 1) = a ^ n := by rw [← pow_succ', Nat.sub_add_cancel hpos]
       simp only [pow_succ', leibniz, ihn, smul_comm a n (_ : M), smul_smul a, add_smul, this,
         Nat.succ_eq_add_one, Nat.add_succ_sub_one, add_zero, one_nsmul]
 #align derivation.leibniz_pow Derivation.leibniz_pow
+
+open Polynomial in
+@[simp]
+theorem map_aeval (P : R[X]) (x : A) :
+    D (aeval x P) = aeval x (derivative P) • D x := by
+  induction P using Polynomial.induction_on
+  · simp
+  · simp [add_smul, *]
+  · simp [mul_smul, nsmul_eq_smul_cast A]
 
 theorem eqOn_adjoin {s : Set A} (h : Set.EqOn D1 D2 s) : Set.EqOn D1 D2 (adjoin R s) := fun x hx =>
   Algebra.adjoin_induction hx h (fun r => (D1.map_algebraMap r).trans (D2.map_algebraMap r).symm)
@@ -395,13 +406,17 @@ protected theorem map_sub : D (a - b) = D a - D b :=
 #align derivation.map_sub Derivation.map_sub
 
 @[simp]
-theorem map_coe_int (n : ℤ) : D (n : A) = 0 := by
+theorem map_intCast (n : ℤ) : D (n : A) = 0 := by
   rw [← zsmul_one, D.map_smul_of_tower n, map_one_eq_zero, smul_zero]
-#align derivation.map_coe_int Derivation.map_coe_int
+#align derivation.map_coe_int Derivation.map_intCast
+
+-- 2024-04-05
+@[deprecated] alias map_coe_nat := map_natCast
+@[deprecated] alias map_coe_int := map_intCast
 
 theorem leibniz_of_mul_eq_one {a b : A} (h : a * b = 1) : D a = -a ^ 2 • D b := by
   rw [neg_smul]
-  refine' eq_neg_of_add_eq_zero_left _
+  refine eq_neg_of_add_eq_zero_left ?_
   calc
     D a + a ^ 2 • D b = a • b • D a + a • a • D b := by simp only [smul_smul, h, one_smul, sq]
     _ = a • D (a * b) := by rw [leibniz, smul_add, add_comm]

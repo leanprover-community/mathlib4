@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.Real.NNReal
-import Mathlib.Data.Set.Intervals.WithBotTop
+import Mathlib.Order.Interval.Set.WithBotTop
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
 
@@ -90,7 +90,6 @@ context, or if we have `(f : α → ℝ≥0∞) (hf : ∀ x, f x ≠ ∞)`.
 
 
 open Function Set NNReal
-open scoped BigOperators
 
 variable {α : Type*}
 
@@ -162,6 +161,7 @@ instance : Inhabited ℝ≥0∞ := ⟨0⟩
 instance : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
 
 /-- A version of `WithTop.recTopCoe` that uses `ENNReal.ofNNReal`. -/
+@[elab_as_elim, induction_eliminator, cases_eliminator]
 def recTopCoe {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0∞) : C x :=
   WithTop.recTopCoe top coe x
 
@@ -187,11 +187,11 @@ theorem range_coe' : range ofNNReal = Iio ∞ := WithTop.range_coe
 theorem range_coe : range ofNNReal = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
 
 /-- `toNNReal x` returns `x` if it is real, otherwise 0. -/
-@[pp_dot] protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
+protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
 #align ennreal.to_nnreal ENNReal.toNNReal
 
 /-- `toReal x` returns `x` if it is real, `0` otherwise. -/
-@[pp_dot] protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
+protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
 #align ennreal.to_real ENNReal.toReal
 
 /-- `ofReal x` returns `x` if it is nonnegative, `0` otherwise. -/
@@ -286,7 +286,7 @@ theorem forall_ne_top {p : ℝ≥0∞ → Prop} : (∀ a, a ≠ ∞ → p a) ↔
   Option.ball_ne_none
 #align ennreal.forall_ne_top ENNReal.forall_ne_top
 
-@[deprecated]
+@[deprecated (since := "2023-02-27")]
 theorem exists_ne_top' {p : ℝ≥0∞ → Prop} : (∃ (a : ℝ≥0∞) (_ : a ≠ ∞), p a) ↔ ∃ r : ℝ≥0, p r :=
   Option.bex_ne_none
 #align ennreal.exists_ne_top ENNReal.exists_ne_top'
@@ -558,34 +558,34 @@ theorem one_lt_coe_iff : 1 < (↑p : ℝ≥0∞) ↔ 1 < p := coe_lt_coe
 #align ennreal.one_lt_coe_iff ENNReal.one_lt_coe_iff
 
 @[simp, norm_cast]
-theorem coe_nat (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
-#align ennreal.coe_nat ENNReal.coe_nat
+theorem coe_natCast (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
+#align ennreal.coe_nat ENNReal.coe_natCast
 
-@[simp, norm_cast] lemma ofReal_coe_nat (n : ℕ) : ENNReal.ofReal n = n := by simp [ENNReal.ofReal]
-#align ennreal.of_real_coe_nat ENNReal.ofReal_coe_nat
+@[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ENNReal.ofReal n = n := by simp [ENNReal.ofReal]
+#align ennreal.of_real_coe_nat ENNReal.ofReal_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
     ENNReal.ofReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
-  ofReal_coe_nat n
+  ofReal_natCast n
 
-@[simp] theorem nat_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.nat_ne_top n
-#align ennreal.nat_ne_top ENNReal.nat_ne_top
+@[simp] theorem natCast_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.natCast_ne_top n
+#align ennreal.nat_ne_top ENNReal.natCast_ne_top
 
-@[simp] theorem top_ne_nat (n : ℕ) : ∞ ≠ n := WithTop.top_ne_nat n
-#align ennreal.top_ne_nat ENNReal.top_ne_nat
+@[simp] theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
+#align ennreal.top_ne_nat ENNReal.top_ne_natCast
 
 @[simp] theorem one_lt_top : 1 < ∞ := coe_lt_top
 #align ennreal.one_lt_top ENNReal.one_lt_top
 
 @[simp, norm_cast]
 theorem toNNReal_nat (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
-  rw [← ENNReal.coe_nat n, ENNReal.toNNReal_coe]
+  rw [← ENNReal.coe_natCast n, ENNReal.toNNReal_coe]
 #align ennreal.to_nnreal_nat ENNReal.toNNReal_nat
 
 @[simp, norm_cast]
 theorem toReal_nat (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
-  rw [← ENNReal.ofReal_coe_nat n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]
+  rw [← ENNReal.ofReal_natCast n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]
 #align ennreal.to_real_nat ENNReal.toReal_nat
 
 -- See note [no_index around OfNat.ofNat]
@@ -653,7 +653,7 @@ theorem lt_iff_exists_nnreal_btwn : a < b ↔ ∃ r : ℝ≥0, a < r ∧ (r : �
 #align ennreal.lt_iff_exists_nnreal_btwn ENNReal.lt_iff_exists_nnreal_btwn
 
 theorem lt_iff_exists_add_pos_lt : a < b ↔ ∃ r : ℝ≥0, 0 < r ∧ a + r < b := by
-  refine' ⟨fun hab => _, fun ⟨r, _, hr⟩ => lt_of_le_of_lt le_self_add hr⟩
+  refine ⟨fun hab => ?_, fun ⟨r, _, hr⟩ => lt_of_le_of_lt le_self_add hr⟩
   rcases lt_iff_exists_nnreal_btwn.1 hab with ⟨c, ac, cb⟩
   lift a to ℝ≥0 using ac.ne_top
   rw [coe_lt_coe] at ac
@@ -667,18 +667,23 @@ theorem le_of_forall_pos_le_add (h : ∀ ε : ℝ≥0, 0 < ε → b < ∞ → a 
   exact ⟨r, hr0, h.trans_le le_top, hr⟩
 #align ennreal.le_of_forall_pos_le_add ENNReal.le_of_forall_pos_le_add
 
-theorem coe_nat_lt_coe {n : ℕ} : (n : ℝ≥0∞) < r ↔ ↑n < r :=
-  ENNReal.coe_nat n ▸ coe_lt_coe
-#align ennreal.coe_nat_lt_coe ENNReal.coe_nat_lt_coe
+theorem natCast_lt_coe {n : ℕ} : n < (r : ℝ≥0∞) ↔ n < r := ENNReal.coe_natCast n ▸ coe_lt_coe
+#align ennreal.coe_nat_lt_coe ENNReal.natCast_lt_coe
 
-theorem coe_lt_coe_nat {n : ℕ} : (r : ℝ≥0∞) < n ↔ r < n :=
-  ENNReal.coe_nat n ▸ coe_lt_coe
-#align ennreal.coe_lt_coe_nat ENNReal.coe_lt_coe_nat
+theorem coe_lt_natCast {n : ℕ} : (r : ℝ≥0∞) < n ↔ r < n := ENNReal.coe_natCast n ▸ coe_lt_coe
+#align ennreal.coe_lt_coe_nat ENNReal.coe_lt_natCast
+
+@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
+@[deprecated (since := "2024-04-05")] alias ofReal_coe_nat := ofReal_natCast
+@[deprecated (since := "2024-04-05")] alias nat_ne_top := natCast_ne_top
+@[deprecated (since := "2024-04-05")] alias top_ne_nat := top_ne_natCast
+@[deprecated (since := "2024-04-05")] alias coe_nat_lt_coe := natCast_lt_coe
+@[deprecated (since := "2024-04-05")] alias coe_lt_coe_nat := coe_lt_natCast
 
 protected theorem exists_nat_gt {r : ℝ≥0∞} (h : r ≠ ∞) : ∃ n : ℕ, r < n := by
   lift r to ℝ≥0 using h
   rcases exists_nat_gt r with ⟨n, hn⟩
-  exact ⟨n, coe_lt_coe_nat.2 hn⟩
+  exact ⟨n, coe_lt_natCast.2 hn⟩
 #align ennreal.exists_nat_gt ENNReal.exists_nat_gt
 
 @[simp]
@@ -690,7 +695,7 @@ theorem iUnion_Iio_coe_nat : ⋃ n : ℕ, Iio (n : ℝ≥0∞) = {∞}ᶜ := by
 
 @[simp]
 theorem iUnion_Iic_coe_nat : ⋃ n : ℕ, Iic (n : ℝ≥0∞) = {∞}ᶜ :=
-  Subset.antisymm (iUnion_subset fun n _x hx => ne_top_of_le_ne_top (nat_ne_top n) hx) <|
+  Subset.antisymm (iUnion_subset fun n _x hx => ne_top_of_le_ne_top (natCast_ne_top n) hx) <|
     iUnion_Iio_coe_nat ▸ iUnion_mono fun _ => Iio_subset_Iic_self
 #align ennreal.Union_Iic_coe_nat ENNReal.iUnion_Iic_coe_nat
 
@@ -820,7 +825,7 @@ theorem preimage_coe_nnreal_ennreal (h : u.OrdConnected) : ((↑) ⁻¹' u : Set
 
 -- Porting note (#11215): TODO: generalize to `WithTop`
 theorem image_coe_nnreal_ennreal (h : t.OrdConnected) : ((↑) '' t : Set ℝ≥0∞).OrdConnected := by
-  refine' ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => _⟩
+  refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
   rcases ENNReal.le_coe_iff.1 hz.2 with ⟨z, rfl, -⟩
   exact mem_image_of_mem _ (h.out hx hy ⟨ENNReal.coe_le_coe.1 hz.1, ENNReal.coe_le_coe.1 hz.2⟩)
 #align set.ord_connected.image_coe_nnreal_ennreal Set.OrdConnected.image_coe_nnreal_ennreal
@@ -864,11 +869,7 @@ def evalENNRealOfNNReal : PositivityExt where eval {u α} _zα _pα e := do
 
 end Mathlib.Meta.Positivity
 
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on the 2023/12/23.
--/
-
-@[deprecated] protected alias ENNReal.le_inv_smul_iff_of_pos := le_inv_smul_iff_of_pos
-@[deprecated] protected alias ENNReal.inv_smul_le_iff_of_pos := inv_smul_le_iff_of_pos
+@[deprecated (since := "2023-12-23")] protected alias
+ENNReal.le_inv_smul_iff_of_pos := le_inv_smul_iff_of_pos
+@[deprecated (since := "2023-12-23")] protected alias
+ENNReal.inv_smul_le_iff_of_pos := inv_smul_le_iff_of_pos

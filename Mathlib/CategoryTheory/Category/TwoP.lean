@@ -38,7 +38,7 @@ structure TwoP : Type (u + 1) where
 
 namespace TwoP
 
-instance : CoeSort TwoP (Type*) :=
+instance : CoeSort TwoP Type* :=
   ⟨TwoP.X⟩
 
 /-- Turns a two-pointing into a two-pointed type. -/
@@ -164,8 +164,8 @@ noncomputable def pointedToTwoPFstForgetCompBipointedToPointedFstAdjunction :
             apply Bipointed.Hom.ext
             funext x
             cases x
-            exact f.map_snd.symm
-            rfl
+            · exact f.map_snd.symm
+            · rfl
           right_inv := fun f => Pointed.Hom.ext _ _ rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
@@ -184,8 +184,8 @@ noncomputable def pointedToTwoPSndForgetCompBipointedToPointedSndAdjunction :
             apply Bipointed.Hom.ext
             funext x
             cases x
-            exact f.map_fst.symm
-            rfl
+            · exact f.map_fst.symm
+            · rfl
           right_inv := fun f => Pointed.Hom.ext _ _ rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext

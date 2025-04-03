@@ -1,5 +1,5 @@
 import Mathlib.Data.MLList.BestFirst
-import Mathlib.Data.Nat.Sqrt
+import Mathlib.Data.Nat.Defs
 
 /-!
 # Testing best first search and beam search.

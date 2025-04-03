@@ -96,6 +96,16 @@ theorem centralizer_univ : centralizer Set.univ = center M :=
 #align submonoid.centralizer_univ Submonoid.centralizer_univ
 #align add_submonoid.centralizer_univ AddSubmonoid.centralizer_univ
 
+@[to_additive]
+lemma le_centralizer_centralizer {s : Submonoid M} : s ≤ centralizer (centralizer (s : Set M)) :=
+  Set.subset_centralizer_centralizer
+
+@[to_additive (attr := simp)]
+lemma centralizer_centralizer_centralizer {s : Set M} :
+    centralizer s.centralizer.centralizer = centralizer s := by
+  apply SetLike.coe_injective
+  simp only [coe_centralizer, Set.centralizer_centralizer_centralizer]
+
 end
 
 end Submonoid

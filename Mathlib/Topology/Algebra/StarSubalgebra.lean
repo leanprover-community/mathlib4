@@ -128,16 +128,14 @@ theorem _root_.Subalgebra.topologicalClosure_star_comm (s : Subalgebra R A) :
 
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
 closure. See note [reducible non-instances]. -/
-@[reducible]
-def commSemiringTopologicalClosure [T2Space A] (s : StarSubalgebra R A)
+abbrev commSemiringTopologicalClosure [T2Space A] (s : StarSubalgebra R A)
     (hs : ∀ x y : s, x * y = y * x) : CommSemiring s.topologicalClosure :=
   s.toSubalgebra.commSemiringTopologicalClosure hs
 #align star_subalgebra.comm_semiring_topological_closure StarSubalgebra.commSemiringTopologicalClosure
 
 /-- If a star subalgebra of a topological star algebra is commutative, then so is its topological
 closure. See note [reducible non-instances]. -/
-@[reducible]
-def commRingTopologicalClosure {R A} [CommRing R] [StarRing R] [TopologicalSpace A] [Ring A]
+abbrev commRingTopologicalClosure {R A} [CommRing R] [StarRing R] [TopologicalSpace A] [Ring A]
     [Algebra R A] [StarRing A] [StarModule R A] [TopologicalRing A] [ContinuousStar A] [T2Space A]
     (s : StarSubalgebra R A) (hs : ∀ x y : s, x * y = y * x) : CommRing s.topologicalClosure :=
   s.toSubalgebra.commRingTopologicalClosure hs
@@ -152,7 +150,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
     φ = ψ := by
   rw [DFunLike.ext'_iff]
   have : Dense (Set.range <| inclusion (le_topologicalClosure S)) := by
-    refine' embedding_subtype_val.toInducing.dense_iff.2 fun x => _
+    refine embedding_subtype_val.toInducing.dense_iff.2 fun x => ?_
     convert show ↑x ∈ closure (S : Set A) from x.prop
     rw [← Set.range_comp]
     exact
@@ -160,7 +158,7 @@ theorem _root_.StarAlgHom.ext_topologicalClosure [T2Space B] {S : StarSubalgebra
         ⟨by
           rintro ⟨y, rfl⟩
           exact y.prop, fun hy => ⟨⟨y, hy⟩, rfl⟩⟩
-  refine' Continuous.ext_on this hφ hψ _
+  refine Continuous.ext_on this hφ hψ ?_
   rintro _ ⟨x, rfl⟩
   simpa only using DFunLike.congr_fun h x
 #align star_alg_hom.ext_topological_closure StarAlgHom.ext_topologicalClosure
@@ -218,7 +216,7 @@ instance {R A} [CommRing R] [StarRing R] [TopologicalSpace A] [Ring A] [Algebra 
     CommRing (elementalStarAlgebra R x) :=
   StarSubalgebra.commRingTopologicalClosure _ mul_comm
 
-protected theorem isClosed (x : A) : IsClosed (elementalStarAlgebra R x : Set A) :=
+theorem isClosed (x : A) : IsClosed (elementalStarAlgebra R x : Set A) :=
   isClosed_closure
 #align elemental_star_algebra.is_closed elementalStarAlgebra.isClosed
 
@@ -237,13 +235,37 @@ theorem closedEmbedding_coe (x : A) : ClosedEmbedding ((↑) : elementalStarAlge
   { induced := rfl
     inj := Subtype.coe_injective
     isClosed_range := by
-      convert elementalStarAlgebra.isClosed R x
+      convert isClosed R x
       exact
         Set.ext fun y =>
           ⟨by
             rintro ⟨y, rfl⟩
             exact y.prop, fun hy => ⟨⟨y, hy⟩, rfl⟩⟩ }
 #align elemental_star_algebra.closed_embedding_coe elementalStarAlgebra.closedEmbedding_coe
+
+@[elab_as_elim]
+theorem induction_on {x y : A}
+    (hy : y ∈ elementalStarAlgebra R x) {P : (u : A) → u ∈ elementalStarAlgebra R x → Prop}
+    (self : P x (self_mem R x)) (star_self : P (star x) (star_self_mem R x))
+    (algebraMap : ∀ r, P (algebraMap R A r) (_root_.algebraMap_mem _ r))
+    (add : ∀ u hu v hv, P u hu → P v hv → P (u + v) (add_mem hu hv))
+    (mul : ∀ u hu v hv, P u hu → P v hv → P (u * v) (mul_mem hu hv))
+    (closure : ∀ s : Set A, (hs : s ⊆ elementalStarAlgebra R x) → (∀ u, (hu : u ∈ s) →
+      P u (hs hu)) → ∀ v, (hv : v ∈ closure s) → P v (closure_minimal hs (isClosed R x) hv)) :
+    P y hy := by
+  apply closure (adjoin R {x} : Set A) subset_closure (fun y hy ↦ ?_) y hy
+  rw [SetLike.mem_coe, ← mem_toSubalgebra, adjoin_toSubalgebra] at hy
+  induction hy using Algebra.adjoin_induction'' with
+  | mem u hu =>
+    obtain ((rfl : u = x) | (hu : star u = x)) := by simpa using hu
+    · exact self
+    · simp_rw [← hu, star_star] at star_self
+      exact star_self
+  | algebraMap r => exact algebraMap r
+  | add u hu_mem v hv_mem hu hv =>
+    exact add u (subset_closure hu_mem) v (subset_closure hv_mem) (hu hu_mem) (hv hv_mem)
+  | mul u hu_mem v hv_mem hu hv =>
+    exact mul u (subset_closure hu_mem) v (subset_closure hv_mem) (hu hu_mem) (hv hv_mem)
 
 theorem starAlgHomClass_ext [T2Space B] {F : Type*} {a : A}
     [FunLike F (elementalStarAlgebra R a) B] [AlgHomClass F R _ B] [StarAlgHomClass F R _ B]

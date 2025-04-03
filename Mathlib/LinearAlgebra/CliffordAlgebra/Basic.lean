@@ -134,8 +134,8 @@ variable (Q)
 from `CliffordAlgebra Q` to `A`.
 -/
 @[simps symm_apply]
-def lift : { f : M →ₗ[R] A // ∀ m, f m * f m = algebraMap _ _ (Q m) } ≃ (CliffordAlgebra Q →ₐ[R] A)
-    where
+def lift :
+    { f : M →ₗ[R] A // ∀ m, f m * f m = algebraMap _ _ (Q m) } ≃ (CliffordAlgebra Q →ₐ[R] A) where
   toFun f :=
     RingQuot.liftAlgHom R
       ⟨TensorAlgebra.lift R (f : M →ₗ[R] A), fun x y (h : Rel Q x y) => by
@@ -359,7 +359,7 @@ lemma leftInverse_map_of_leftInverse {Q₁ : QuadraticForm R M₁} {Q₂ : Quadr
   rw [← AlgHom.comp_apply, map_comp_map, h, map_id, AlgHom.coe_id, id_eq]
 
 /-- If a linear map preserves the quadratic forms and is surjective, then the algebra
-maps it induces between Clifford algebras is also surjective.-/
+maps it induces between Clifford algebras is also surjective. -/
 lemma map_surjective {Q₁ : QuadraticForm R M₁} {Q₂ : QuadraticForm R M₂} (f : Q₁ →qᵢ Q₂)
     (hf : Function.Surjective f) : Function.Surjective (CliffordAlgebra.map f) :=
   CliffordAlgebra.induction

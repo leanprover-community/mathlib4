@@ -3,9 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.ZMod.Basic
 import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.Data.Int.Parity
 import Mathlib.Data.Fintype.BigOperators
 
 #align_import number_theory.sum_four_squares from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
@@ -23,8 +23,6 @@ The proof used is close to Lagrange's original proof.
 
 
 open Finset Polynomial FiniteField Equiv
-
-open scoped BigOperators
 
 /-- **Euler's four-square identity**. -/
 theorem euler_four_squares {R : Type*} [CommRing R] (a b c d x y z w : R) :
@@ -125,10 +123,10 @@ private theorem sum_four_squares_of_two_mul_sum_four_squares {m a b c d : ℤ}
     rfl
   set σ := swap i 0
   obtain ⟨x, hx⟩ : (2 : ℤ) ∣ f (σ 0) ^ 2 + f (σ 1) ^ 2 :=
-    (CharP.int_cast_eq_zero_iff (ZMod 2) 2 _).1 <| by
+    (CharP.intCast_eq_zero_iff (ZMod 2) 2 _).1 <| by
       simpa only [σ, Int.cast_pow, Int.cast_add, Equiv.swap_apply_right, ZMod.pow_card] using hσ.1
   obtain ⟨y, hy⟩ : (2 : ℤ) ∣ f (σ 2) ^ 2 + f (σ 3) ^ 2 :=
-    (CharP.int_cast_eq_zero_iff (ZMod 2) 2 _).1 <| by
+    (CharP.intCast_eq_zero_iff (ZMod 2) 2 _).1 <| by
       simpa only [Int.cast_pow, Int.cast_add, ZMod.pow_card] using hσ.2
   refine ⟨(f (σ 0) - f (σ 1)) / 2, (f (σ 0) + f (σ 1)) / 2, (f (σ 2) - f (σ 3)) / 2,
     (f (σ 2) + f (σ 3)) / 2, ?_⟩
@@ -178,7 +176,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     -- `m ∣ |f a| ^ 2 + |f b| ^ 2 + |f c| ^ 2 + |f d| ^ 2`
     obtain ⟨r, hr⟩ :
         m ∣ (f a).natAbs ^ 2 + (f b).natAbs ^ 2 + (f c).natAbs ^ 2 + (f d).natAbs ^ 2 := by
-      simp only [← Int.natCast_dvd_natCast, ← ZMod.int_cast_zmod_eq_zero_iff_dvd]
+      simp only [← Int.natCast_dvd_natCast, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
       push_cast [hf_mod, sq_abs]
       norm_cast
       simp [habcd]
@@ -187,7 +185,7 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     rcases (zero_le r).eq_or_gt with rfl | hr₀
     · replace hr : f a = 0 ∧ f b = 0 ∧ f c = 0 ∧ f d = 0 := by simpa [and_assoc] using hr
       obtain ⟨⟨a, rfl⟩, ⟨b, rfl⟩, ⟨c, rfl⟩, ⟨d, rfl⟩⟩ : m ∣ a ∧ m ∣ b ∧ m ∣ c ∧ m ∣ d := by
-        simp only [← ZMod.nat_cast_zmod_eq_zero_iff_dvd, ← hf_mod, hr, Int.cast_zero, and_self]
+        simp only [← ZMod.natCast_zmod_eq_zero_iff_dvd, ← hf_mod, hr, Int.cast_zero, and_self]
       have : m * m ∣ m * p := habcd ▸ ⟨a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2, by ring⟩
       rw [mul_dvd_mul_iff_left hm₀.ne'] at this
       exact (hp.eq_one_or_self_of_dvd _ this).elim hm₁.ne' hmp.ne
@@ -213,14 +211,14 @@ protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     have := congr_arg₂ (· * Nat.cast ·) hr habcd
     simp only [← _root_.euler_four_squares, Nat.cast_add, Nat.cast_pow] at this
     refine ⟨_, _, _, _, ?_, ?_, ?_, ?_, this⟩
-    · simp [← ZMod.int_cast_zmod_eq_zero_iff_dvd, hf_mod, mul_comm]
+    · simp [← ZMod.intCast_zmod_eq_zero_iff_dvd, hf_mod, mul_comm]
     · suffices ((a : ZMod m) ^ 2 + (b : ZMod m) ^ 2 + (c : ZMod m) ^ 2 + (d : ZMod m) ^ 2) = 0 by
-        simpa [← ZMod.int_cast_zmod_eq_zero_iff_dvd, hf_mod, sq, add_comm, add_assoc,
+        simpa [← ZMod.intCast_zmod_eq_zero_iff_dvd, hf_mod, sq, add_comm, add_assoc,
           add_left_comm] using this
       norm_cast
       simp [habcd]
-    · simp [← ZMod.int_cast_zmod_eq_zero_iff_dvd, hf_mod, mul_comm]
-    · simp [← ZMod.int_cast_zmod_eq_zero_iff_dvd, hf_mod, mul_comm]
+    · simp [← ZMod.intCast_zmod_eq_zero_iff_dvd, hf_mod, mul_comm]
+    · simp [← ZMod.intCast_zmod_eq_zero_iff_dvd, hf_mod, mul_comm]
 
 /-- **Four squares theorem** -/
 theorem sum_four_squares (n : ℕ) : ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = n := by

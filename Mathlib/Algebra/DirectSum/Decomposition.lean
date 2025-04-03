@@ -33,7 +33,7 @@ bundled homs, but means we don't have to repeat statements for different types o
 
 variable {ι R M σ : Type*}
 
-open DirectSum BigOperators
+open DirectSum
 
 namespace DirectSum
 
@@ -184,18 +184,18 @@ theorem decompose_symm_add (x y : ⨁ i, ℳ i) :
 
 @[simp]
 theorem decompose_sum {ι'} (s : Finset ι') (f : ι' → M) :
-    decompose ℳ (∑ i in s, f i) = ∑ i in s, decompose ℳ (f i) :=
+    decompose ℳ (∑ i ∈ s, f i) = ∑ i ∈ s, decompose ℳ (f i) :=
   map_sum (decomposeAddEquiv ℳ) f s
 #align direct_sum.decompose_sum DirectSum.decompose_sum
 
 @[simp]
 theorem decompose_symm_sum {ι'} (s : Finset ι') (f : ι' → ⨁ i, ℳ i) :
-    (decompose ℳ).symm (∑ i in s, f i) = ∑ i in s, (decompose ℳ).symm (f i) :=
+    (decompose ℳ).symm (∑ i ∈ s, f i) = ∑ i ∈ s, (decompose ℳ).symm (f i) :=
   map_sum (decomposeAddEquiv ℳ).symm f s
 #align direct_sum.decompose_symm_sum DirectSum.decompose_symm_sum
 
 theorem sum_support_decompose [∀ (i) (x : ℳ i), Decidable (x ≠ 0)] (r : M) :
-    (∑ i in (decompose ℳ r).support, (decompose ℳ r i : M)) = r := by
+    (∑ i ∈ (decompose ℳ r).support, (decompose ℳ r i : M)) = r := by
   conv_rhs =>
     rw [← (decompose ℳ).symm_apply_apply r, ← sum_support_of (fun i ↦ ℳ i) (decompose ℳ r)]
   rw [decompose_symm_sum]

@@ -137,7 +137,7 @@ theorem mem_normalizer_iff' (x : L) : x ∈ H.normalizer ↔ ∀ y : L, y ∈ H 
 
 theorem mem_normalizer_iff (x : L) : x ∈ H.normalizer ↔ ∀ y : L, y ∈ H → ⁅x, y⁆ ∈ H := by
   rw [mem_normalizer_iff']
-  refine' forall₂_congr fun y hy => _
+  refine forall₂_congr fun y hy => ?_
   rw [← lie_skew, neg_mem_iff (G := L)]
 #align lie_subalgebra.mem_normalizer_iff LieSubalgebra.mem_normalizer_iff
 
@@ -162,7 +162,7 @@ theorem lie_mem_sup_of_mem_normalizer {x y z : L} (hx : x ∈ H.normalizer) (hy 
   apply Submodule.mem_sup_right
   simp only [LieSubalgebra.mem_coe_submodule, smul_lie, add_lie, zero_add, lie_add, smul_zero,
     lie_smul, lie_self]
-  refine' H.add_mem (H.smul_mem s _) (H.add_mem (H.smul_mem t _) (H.lie_mem hv hw))
+  refine H.add_mem (H.smul_mem s ?_) (H.add_mem (H.smul_mem t ?_) (H.lie_mem hv hw))
   exacts [(H.mem_normalizer_iff' x).mp hx v hv, (H.mem_normalizer_iff x).mp hx w hw]
 #align lie_subalgebra.lie_mem_sup_of_mem_normalizer LieSubalgebra.lie_mem_sup_of_mem_normalizer
 
@@ -185,7 +185,7 @@ variable (H)
 theorem normalizer_eq_self_iff :
     H.normalizer = H ↔ (LieModule.maxTrivSubmodule R H <| L ⧸ H.toLieSubmodule) = ⊥ := by
   rw [LieSubmodule.eq_bot_iff]
-  refine' ⟨fun h => _, fun h => le_antisymm _ H.le_normalizer⟩
+  refine ⟨fun h => ?_, fun h => le_antisymm ?_ H.le_normalizer⟩
   · rintro ⟨x⟩ hx
     suffices x ∈ H by rwa [Submodule.Quotient.quot_mk_eq_mk, Submodule.Quotient.mk_eq_zero,
       coe_toLieSubmodule, mem_coe_submodule]

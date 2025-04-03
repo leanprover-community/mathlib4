@@ -108,8 +108,7 @@ theorem ι_colimitLimitToLimitColimit_π_apply [Small.{v} J] [Small.{v} K] (F : 
 /-- The map `colimit_limit_to_limit_colimit` realized as a map of cones. -/
 @[simps]
 noncomputable def colimitLimitToLimitColimitCone (G : J ⥤ K ⥤ C) [HasLimit G] :
-    colim.mapCone (limit.cone G) ⟶ limit.cone (G ⋙ colim)
-    where
+    colim.mapCone (limit.cone G) ⟶ limit.cone (G ⋙ colim) where
   hom :=
     colim.map (limitIsoSwapCompLim G).hom ≫
       colimitLimitToLimitColimit (uncurry.obj G : _) ≫

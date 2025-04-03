@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Functions defined piecewise on a finset
@@ -123,14 +123,14 @@ lemma update_piecewise [DecidableEq ι] (i : ι) (v : π i) :
 lemma update_piecewise_of_mem [DecidableEq ι] {i : ι} (hi : i ∈ s) (v : π i) :
     update (s.piecewise f g) i v = s.piecewise (update f i v) g := by
   rw [update_piecewise]
-  refine' s.piecewise_congr (fun _ _ => rfl) fun j hj => update_noteq _ _ _
+  refine s.piecewise_congr (fun _ _ => rfl) fun j hj => update_noteq ?_ _ _
   exact fun h => hj (h.symm ▸ hi)
 #align finset.update_piecewise_of_mem Finset.update_piecewise_of_mem
 
 lemma update_piecewise_of_not_mem [DecidableEq ι] {i : ι} (hi : i ∉ s) (v : π i) :
     update (s.piecewise f g) i v = s.piecewise f (update g i v) := by
   rw [update_piecewise]
-  refine' s.piecewise_congr (fun j hj => update_noteq _ _ _) fun _ _ => rfl
+  refine s.piecewise_congr (fun j hj => update_noteq ?_ _ _) fun _ _ => rfl
   exact fun h => hi (h ▸ hj)
 #align finset.update_piecewise_of_not_mem Finset.update_piecewise_of_not_mem
 

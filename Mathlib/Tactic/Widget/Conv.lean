@@ -5,8 +5,8 @@ Authors: Robin Böhne, Wojciech Nawrocki, Patrick Massot
 -/
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Data.String.Defs
-import Std.Lean.Position
-import Std.Tactic.Lint
+import Batteries.Lean.Position
+import Batteries.Tactic.Lint
 
 /-! # Conv widget
 
@@ -132,7 +132,7 @@ def ConvSelectionPanel : Component SelectInsertParams :=
 
 open scoped Json in
 /-- Display a widget panel allowing to generate a `conv` call zooming to the subexpression selected
-in the goal.-/
+in the goal. -/
 elab stx:"conv?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
   Widget.savePanelWidgetInfo ConvSelectionPanel.javascriptHash

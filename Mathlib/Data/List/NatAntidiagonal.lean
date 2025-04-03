@@ -41,7 +41,7 @@ theorem mem_antidiagonal {n : ℕ} {x : ℕ × ℕ} : x ∈ antidiagonal n ↔ x
     rw [mem_range, Nat.lt_succ_iff] at hi
     exact Nat.add_sub_cancel' hi
   · rintro rfl
-    refine' ⟨x.fst, _, _⟩
+    refine ⟨x.fst, ?_, ?_⟩
     · rw [mem_range]
       omega
     · exact Prod.ext rfl (by simp only [Nat.add_sub_cancel_left])
@@ -68,7 +68,7 @@ theorem nodup_antidiagonal (n : ℕ) : Nodup (antidiagonal n) :=
 theorem antidiagonal_succ {n : ℕ} :
     antidiagonal (n + 1) = (0, n + 1) :: (antidiagonal n).map (Prod.map Nat.succ id) := by
   simp only [antidiagonal, range_succ_eq_map, map_cons, true_and_iff, Nat.add_succ_sub_one,
-    Nat.add_zero, id.def, eq_self_iff_true, Nat.sub_zero, map_map, Prod.map_mk]
+    Nat.add_zero, id, eq_self_iff_true, Nat.sub_zero, map_map, Prod.map_mk]
   apply congr rfl (congr rfl _)
   ext; simp
 #align list.nat.antidiagonal_succ List.Nat.antidiagonal_succ

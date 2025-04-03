@@ -44,7 +44,7 @@ namespace List
 variable (α)
 
 /-- The product of a family of types over a list. -/
-def TProd (l : List ι) : Type v :=
+abbrev TProd (l : List ι) : Type v :=
   l.foldr (fun i β => α i × β) PUnit
 #align list.tprod List.TProd
 
@@ -117,8 +117,9 @@ theorem ext :
       (_ : ∀ (i) (hi : i ∈ l), v.elim hi = w.elim hi), v = w
   | [], _, v, w, _ => PUnit.ext v w
   | i :: is, hl, v, w, hvw => by
-    apply Prod.ext; rw [← elim_self v, hvw, elim_self]
-    refine' ext (nodup_cons.mp hl).2 fun j hj => _
+    apply Prod.ext
+    · rw [← elim_self v, hvw, elim_self]
+    refine ext (nodup_cons.mp hl).2 fun j hj => ?_
     rw [← elim_of_mem hl, hvw, elim_of_mem hl]
 #align list.tprod.ext List.TProd.ext
 

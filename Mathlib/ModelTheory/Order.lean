@@ -232,7 +232,7 @@ theorem realize_noTopOrder_iff : M ⊨ Language.order.noTopOrderSentence ↔ NoT
   simp only [noTopOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
-  refine' ⟨fun h => ⟨fun a => h a⟩, _⟩
+  refine ⟨fun h => ⟨fun a => h a⟩, ?_⟩
   intro h a
   exact exists_not_le a
 #align first_order.language.realize_no_top_order_iff FirstOrder.Language.realize_noTopOrder_iff
@@ -246,7 +246,7 @@ theorem realize_noBotOrder_iff : M ⊨ Language.order.noBotOrderSentence ↔ NoB
   simp only [noBotOrderSentence, Sentence.Realize, Formula.Realize, BoundedFormula.realize_all,
     BoundedFormula.realize_ex, BoundedFormula.realize_not, Term.realize, Term.realize_le,
     Sum.elim_inr]
-  refine' ⟨fun h => ⟨fun a => h a⟩, _⟩
+  refine ⟨fun h => ⟨fun a => h a⟩, ?_⟩
   intro h a
   exact exists_not_ge a
 #align first_order.language.realize_no_bot_order_iff FirstOrder.Language.realize_noBotOrder_iff
@@ -263,7 +263,7 @@ theorem realize_denselyOrdered_iff [Preorder M] :
   simp only [denselyOrderedSentence, Sentence.Realize, Formula.Realize,
     BoundedFormula.realize_imp, BoundedFormula.realize_all, Term.realize, Term.realize_lt,
     Sum.elim_inr, BoundedFormula.realize_ex, BoundedFormula.realize_inf]
-  refine' ⟨fun h => ⟨fun a b ab => h a b ab⟩, _⟩
+  refine ⟨fun h => ⟨fun a b ab => h a b ab⟩, ?_⟩
   intro h a b ab
   exact exists_between ab
 #align first_order.language.realize_densely_ordered_iff FirstOrder.Language.realize_denselyOrdered_iff
