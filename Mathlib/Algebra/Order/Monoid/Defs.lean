@@ -36,11 +36,11 @@ section IsOrderedMonoid
 variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
 
 @[to_additive]
-instance IsOrderedMonoid.toMulLeftMono : MulLeftMono α where
+instance (priority := 900) IsOrderedMonoid.toMulLeftMono : MulLeftMono α where
   elim := fun a _ _ bc ↦ IsOrderedMonoid.mul_le_mul_left _ _ bc a
 
 @[to_additive]
-instance IsOrderedMonoid.toMulRightMono : MulRightMono α where
+instance (priority := 900) IsOrderedMonoid.toMulRightMono : MulRightMono α where
   elim := fun a _ _ bc ↦ IsOrderedMonoid.mul_le_mul_right _ _ bc a
 
 end IsOrderedMonoid
@@ -72,7 +72,7 @@ instance (priority := 200) IsOrderedCancelMonoid.toMulLeftReflectLE :
   ⟨IsOrderedCancelMonoid.le_of_mul_le_mul_left⟩
 
 @[to_additive]
-instance IsOrderedCancelMonoid.toMulLeftReflectLT :
+instance (priority := 900) IsOrderedCancelMonoid.toMulLeftReflectLT :
     MulLeftReflectLT α where
   elim := contravariant_lt_of_contravariant_le α α _ ContravariantClass.elim
 
