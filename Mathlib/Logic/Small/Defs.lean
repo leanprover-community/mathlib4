@@ -59,6 +59,12 @@ protected noncomputable def Shrink.rec {α : Type*} [Small.{w} α] {F : Shrink �
     (h : ∀ X, F (equivShrink _ X)) : ∀ X, F X :=
   fun X => ((equivShrink _).apply_symm_apply X) ▸ (h _)
 
+@[simp]
+lemma Shrink.rec_equivShrink {α : Type*} [Small.{w} α] {F : Shrink α → Sort v}
+    {f : (a : α) → F (equivShrink α a)} (a : α) : Shrink.rec f (equivShrink _ a) = f a := by
+  simp only [Shrink.rec, eqRec_eq_cast, cast_eq_iff_heq]
+  rw [Equiv.symm_apply_apply]
+
 instance small_self (α : Type v) : Small.{v} α :=
   Small.mk' <| Equiv.refl α
 
