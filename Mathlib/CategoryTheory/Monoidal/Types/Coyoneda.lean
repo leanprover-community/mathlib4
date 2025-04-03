@@ -6,8 +6,6 @@ Authors: Michael Jendrusch, Scott Morrison
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 
-#align_import category_theory.monoidal.types.coyoneda from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
-
 /-!
 # `(𝟙_ C ⟶ -)` is a lax monoidal functor to `Type`
 -/
@@ -58,6 +56,5 @@ def coyonedaTensorUnit (C : Type u) [Category.{v} C] [MonoidalCategory C] :
       ext ⟨f, ⟨⟩⟩; dsimp at f
       dsimp
       simp [unitors_inv_equal])
-#align category_theory.coyoneda_tensor_unit CategoryTheory.coyonedaTensorUnit
 
 end CategoryTheory

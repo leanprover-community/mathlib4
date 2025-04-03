@@ -8,8 +8,6 @@ import Batteries.Tactic.Classical
 import Mathlib.Tactic.TypeStar
 import Mathlib.Mathport.Rename
 
-#align_import data.list.tfae from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"
-
 /-!
 # The Following Are Equivalent
 
@@ -27,15 +25,12 @@ The `tfae_have` and `tfae_finish` tactics can be useful in proofs with `TFAE` go
 -/
 def TFAE (l : List Prop) : Prop :=
   ∀ x ∈ l, ∀ y ∈ l, x ↔ y
-#align list.tfae List.TFAE
 
 theorem tfae_nil : TFAE [] :=
   forall_mem_nil _
-#align list.tfae_nil List.tfae_nil
 
 @[simp]
 theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
-#align list.tfae_singleton List.tfae_singleton
 
 theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l :=
   ⟨fun H => ⟨H a (by simp) b (Mem.tail a h),
@@ -46,11 +41,9 @@ theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔
         · exact ab.trans (H _ h _ hq)
         · exact (ab.trans (H _ h _ hp)).symm
         · exact H _ hp _ hq⟩
-#align list.tfae_cons_of_mem List.tfae_cons_of_mem
 
 theorem tfae_cons_cons {a b} {l : List Prop} : TFAE (a :: b :: l) ↔ (a ↔ b) ∧ TFAE (b :: l) :=
   tfae_cons_of_mem (Mem.head _)
-#align list.tfae_cons_cons List.tfae_cons_cons
 
 @[simp]
 theorem tfae_cons_self {a} {l : List Prop} : TFAE (a :: a :: l) ↔ TFAE (a :: l) := by
@@ -58,7 +51,6 @@ theorem tfae_cons_self {a} {l : List Prop} : TFAE (a :: a :: l) ↔ TFAE (a :: l
 
 theorem tfae_of_forall (b : Prop) (l : List Prop) (h : ∀ a ∈ l, a ↔ b) : TFAE l :=
   fun _a₁ h₁ _a₂ h₂ => (h _ h₁).trans (h _ h₂).symm
-#align list.tfae_of_forall List.tfae_of_forall
 
 theorem tfae_of_cycle {a b} {l : List Prop} (h_chain : List.Chain (· → ·) a (b :: l))
     (h_last : getLastD l b → a) : TFAE (a :: b :: l) := by
@@ -69,12 +61,10 @@ theorem tfae_of_cycle {a b} {l : List Prop} (h_chain : List.Chain (· → ·) a 
     rcases h_chain with ⟨ab, ⟨bc, ch⟩⟩
     have := IH ⟨bc, ch⟩ (ab ∘ h_last)
     exact ⟨⟨ab, h_last ∘ (this.2 c (.head _) _ (getLastD_mem_cons _ _)).1 ∘ bc⟩, this⟩
-#align list.tfae_of_cycle List.tfae_of_cycle
 
 theorem TFAE.out {l} (h : TFAE l) (n₁ n₂) {a b} (h₁ : List.get? l n₁ = some a := by rfl)
     (h₂ : List.get? l n₂ = some b := by rfl) : a ↔ b :=
   h _ (List.get?_mem h₁) _ (List.get?_mem h₂)
-#align list.tfae.out List.TFAE.out
 
 /-- If `P₁ x ↔ ... ↔ Pₙ x` for all `x`, then `(∀ x, P₁ x) ↔ ... ↔ (∀ x, Pₙ x)`.
 Note: in concrete cases, Lean has trouble finding the list `[P₁, ..., Pₙ]` from the list

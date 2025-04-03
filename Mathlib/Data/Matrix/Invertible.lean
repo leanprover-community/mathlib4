@@ -5,8 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.Data.Matrix.Basic
 
-#align_import data.matrix.invertible from "leanprover-community/mathlib"@"722b3b152ddd5e0cf21c0a29787c76596cb6b422"
-
 /-! # Extra lemmas about invertible matrices
 
 A few of the `Invertible` lemmas generalize to multiplication of rectangular matrices.
@@ -33,33 +31,21 @@ namespace Matrix
 section Semiring
 variable [Semiring α]
 
-#align matrix.inv_of_mul_self invOf_mul_self
-#align matrix.mul_inv_of_self mul_invOf_self
-
 /-- A copy of `invOf_mul_self_assoc` for rectangular matrices. -/
 protected theorem invOf_mul_self_assoc (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
     ⅟ A * (A * B) = B := by rw [← Matrix.mul_assoc, invOf_mul_self, Matrix.one_mul]
-#align matrix.inv_of_mul_self_assoc Matrix.invOf_mul_self_assoc
 
 /-- A copy of `mul_invOf_self_assoc` for rectangular matrices. -/
 protected theorem mul_invOf_self_assoc (A : Matrix n n α) (B : Matrix n m α) [Invertible A] :
     A * (⅟ A * B) = B := by rw [← Matrix.mul_assoc, mul_invOf_self, Matrix.one_mul]
-#align matrix.mul_inv_of_self_assoc Matrix.mul_invOf_self_assoc
 
 /-- A copy of `mul_invOf_mul_self_cancel` for rectangular matrices. -/
 protected theorem mul_invOf_mul_self_cancel (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
     A * ⅟ B * B = A := by rw [Matrix.mul_assoc, invOf_mul_self, Matrix.mul_one]
-#align matrix.mul_inv_of_mul_self_cancel Matrix.mul_invOf_mul_self_cancel
 
 /-- A copy of `mul_mul_invOf_self_cancel` for rectangular matrices. -/
 protected theorem mul_mul_invOf_self_cancel (A : Matrix m n α) (B : Matrix n n α) [Invertible B] :
     A * B * ⅟ B = A := by rw [Matrix.mul_assoc, mul_invOf_self, Matrix.mul_one]
-#align matrix.mul_mul_inv_of_self_cancel Matrix.mul_mul_invOf_self_cancel
-
-#align matrix.invertible_mul invertibleMul
-#align matrix.inv_of_mul invOf_mul
-#align matrix.invertible_of_invertible_mul invertibleOfInvertibleMul
-#align matrix.invertible_of_mul_invertible invertibleOfMulInvertible
 
 section ConjTranspose
 variable [StarRing α] (A : Matrix n n α)
@@ -73,7 +59,6 @@ lemma conjTranspose_invOf [Invertible A] [Invertible Aᴴ] : (⅟A)ᴴ = ⅟(A�
 def invertibleOfInvertibleConjTranspose [Invertible Aᴴ] : Invertible A := by
   rw [← conjTranspose_conjTranspose A, ← star_eq_conjTranspose]
   infer_instance
-#align matrix.invertible_of_invertible_conj_transpose Matrix.invertibleOfInvertibleConjTranspose
 
 @[simp] lemma isUnit_conjTranspose : IsUnit Aᴴ ↔ IsUnit A := isUnit_star
 
@@ -90,7 +75,6 @@ instance invertibleTranspose [Invertible A] : Invertible Aᵀ where
   invOf := (⅟A)ᵀ
   invOf_mul_self := by rw [← transpose_mul, mul_invOf_self, transpose_one]
   mul_invOf_self := by rw [← transpose_mul, invOf_mul_self, transpose_one]
-#align matrix.invertible_transpose Matrix.invertibleTranspose
 
 lemma transpose_invOf [Invertible A] [Invertible Aᵀ] : (⅟A)ᵀ = ⅟(Aᵀ) := by
   letI := invertibleTranspose A
@@ -101,7 +85,6 @@ def invertibleOfInvertibleTranspose [Invertible Aᵀ] : Invertible A where
   invOf := (⅟(Aᵀ))ᵀ
   invOf_mul_self := by rw [← transpose_one, ← mul_invOf_self Aᵀ, transpose_mul, transpose_transpose]
   mul_invOf_self := by rw [← transpose_one, ← invOf_mul_self Aᵀ, transpose_mul, transpose_transpose]
-#align matrix.invertible__of_invertible_transpose Matrix.invertibleOfInvertibleTranspose
 
 /-- Together `Matrix.invertibleTranspose` and `Matrix.invertibleOfInvertibleTranspose` form an
 equivalence, although both sides of the equiv are subsingleton anyway. -/
@@ -119,6 +102,3 @@ def transposeInvertibleEquivInvertible : Invertible Aᵀ ≃ Invertible A where
 end CommSemiring
 
 end Matrix
-
-#align invertible.matrix_mul_left Invertible.mulLeft
-#align invertible.matrix_mul_right Invertible.mulRight

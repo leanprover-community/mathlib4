@@ -48,7 +48,6 @@ assuming that incomparable terms are `Ordering.eq`.
 -/
 def cmpUsing {α : Type u} (lt : α → α → Prop) [DecidableRel lt] (a b : α) : Ordering :=
   if lt a b then Ordering.lt else if lt b a then Ordering.gt else Ordering.eq
-#align cmp_using cmpUsing
 
 /--
 Construct an `Ordering` from a type with a decidable `LT` instance,

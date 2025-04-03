@@ -7,8 +7,6 @@ import Mathlib.Algebra.Polynomial.Degree.Definitions
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Tactic.ComputeDegree
 
-#align_import data.polynomial.cancel_leads from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # Cancel the leading terms of two polynomials
 
@@ -40,14 +38,12 @@ variable [Ring R] (p q : R[X])
 def cancelLeads : R[X] :=
   C p.leadingCoeff * X ^ (p.natDegree - q.natDegree) * q -
     C q.leadingCoeff * X ^ (q.natDegree - p.natDegree) * p
-#align polynomial.cancel_leads Polynomial.cancelLeads
 
 variable {p q}
 
 @[simp]
 theorem neg_cancelLeads : -p.cancelLeads q = q.cancelLeads p :=
   neg_sub _ _
-#align polynomial.neg_cancel_leads Polynomial.neg_cancelLeads
 
 theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm
     (comm : p.leadingCoeff * q.leadingCoeff = q.leadingCoeff * p.leadingCoeff)
@@ -69,7 +65,6 @@ theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm
     simp only [coeff_mul_X_pow, coeff_neg, coeff_C_mul, add_tsub_cancel_left, coeff_add]
     rw [add_comm p.natDegree, tsub_add_cancel_of_le h, ← leadingCoeff, ← leadingCoeff, comm,
       add_right_neg]
-#align polynomial.nat_degree_cancel_leads_lt_of_nat_degree_le_nat_degree_of_comm Polynomial.natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm
 
 end Ring
 
@@ -79,12 +74,10 @@ variable [CommRing R] {p q : R[X]}
 
 theorem dvd_cancelLeads_of_dvd_of_dvd {r : R[X]} (pq : p ∣ q) (pr : p ∣ r) : p ∣ q.cancelLeads r :=
   dvd_sub (pr.trans (Dvd.intro_left _ rfl)) (pq.trans (Dvd.intro_left _ rfl))
-#align polynomial.dvd_cancel_leads_of_dvd_of_dvd Polynomial.dvd_cancelLeads_of_dvd_of_dvd
 
 theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree (h : p.natDegree ≤ q.natDegree)
     (hq : 0 < q.natDegree) : (p.cancelLeads q).natDegree < q.natDegree :=
   natDegree_cancelLeads_lt_of_natDegree_le_natDegree_of_comm (mul_comm _ _) h hq
-#align polynomial.nat_degree_cancel_leads_lt_of_nat_degree_le_nat_degree Polynomial.natDegree_cancelLeads_lt_of_natDegree_le_natDegree
 
 end CommRing
 

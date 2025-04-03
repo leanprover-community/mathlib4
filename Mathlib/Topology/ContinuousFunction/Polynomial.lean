@@ -8,8 +8,6 @@ import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Topology.UnitInterval
 import Mathlib.Algebra.Star.Subalgebra
 
-#align_import topology.continuous_function.polynomial from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
-
 /-!
 # Constructions relating polynomial functions and continuous functions.
 
@@ -41,7 +39,6 @@ Every polynomial with coefficients in a topological semiring gives a (bundled) c
 @[simps]
 def toContinuousMap (p : R[X]) : C(R, R) :=
   ⟨fun x : R => p.eval x, by fun_prop⟩
-#align polynomial.to_continuous_map Polynomial.toContinuousMap
 
 open ContinuousMap in
 lemma toContinuousMap_X_eq_id : X.toContinuousMap = .id R := by
@@ -55,7 +52,6 @@ with domain restricted to some subset of the semiring of coefficients.
 @[simps]
 def toContinuousMapOn (p : R[X]) (X : Set R) : C(X, R) :=
   ⟨fun x : X => p.toContinuousMap x, by fun_prop⟩
-#align polynomial.to_continuous_map_on Polynomial.toContinuousMapOn
 
 open ContinuousMap in
 lemma toContinuousMapOn_X_eq_restrict_id (s : Set R) :
@@ -79,7 +75,6 @@ theorem aeval_continuousMap_apply (g : R[X]) (f : C(α, R)) (x : α) :
     simp [hp, hq]
   · intro n a
     simp [Pi.pow_apply]
-#align polynomial.aeval_continuous_map_apply Polynomial.aeval_continuousMap_apply
 
 end
 
@@ -107,7 +102,6 @@ def toContinuousMapAlgHom : R[X] →ₐ[R] C(R, R) where
   commutes' _ := by
     ext
     simp [Algebra.algebraMap_eq_smul_one]
-#align polynomial.to_continuous_map_alg_hom Polynomial.toContinuousMapAlgHom
 
 /-- The algebra map from `R[X]` to continuous functions `C(X, R)`, for any subset `X` of `R`.
 -/
@@ -129,7 +123,6 @@ def toContinuousMapOnAlgHom (X : Set R) : R[X] →ₐ[R] C(X, R) where
   commutes' _ := by
     ext
     simp [Algebra.algebraMap_eq_smul_one]
-#align polynomial.to_continuous_map_on_alg_hom Polynomial.toContinuousMapOnAlgHom
 
 end
 
@@ -146,14 +139,12 @@ The subalgebra of polynomial functions in `C(X, R)`, for `X` a subset of some to
 noncomputable -- Porting note: added noncomputable
 def polynomialFunctions (X : Set R) : Subalgebra R C(X, R) :=
   (⊤ : Subalgebra R R[X]).map (Polynomial.toContinuousMapOnAlgHom X)
-#align polynomial_functions polynomialFunctions
 
 @[simp]
 theorem polynomialFunctions_coe (X : Set R) :
     (polynomialFunctions X : Set C(X, R)) = Set.range (Polynomial.toContinuousMapOnAlgHom X) := by
   ext
   simp [polynomialFunctions]
-#align polynomial_functions_coe polynomialFunctions_coe
 
 -- TODO:
 -- if `f : R → R` is an affine equivalence, then pulling back along `f`
@@ -165,7 +156,6 @@ theorem polynomialFunctions_separatesPoints (X : Set R) : (polynomialFunctions X
   refine ⟨_, ⟨⟨_, ⟨⟨Polynomial.X, ⟨Algebra.mem_top, rfl⟩⟩, rfl⟩⟩, ?_⟩⟩
   dsimp; simp only [Polynomial.eval_X]
   exact fun h' => h (Subtype.ext h')
-#align polynomial_functions_separates_points polynomialFunctions_separatesPoints
 
 open unitInterval
 
@@ -212,8 +202,6 @@ theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a <
     · simp
     · ext x
       simp [q, mul_comm]
-set_option linter.uppercaseLean3 false in
-#align polynomial_functions.comap_comp_right_alg_hom_Icc_homeo_I polynomialFunctions.comap_compRightAlgHom_iccHomeoI
 
 theorem polynomialFunctions.eq_adjoin_X (s : Set R) :
     polynomialFunctions s = Algebra.adjoin R {toContinuousMapOnAlgHom s X} := by

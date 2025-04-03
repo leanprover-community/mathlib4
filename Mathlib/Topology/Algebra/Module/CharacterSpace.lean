@@ -8,8 +8,6 @@ import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Topology.ContinuousFunction.Algebra
 import Mathlib.Data.Set.Lattice
 
-#align_import topology.algebra.module.character_space from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
-
 /-!
 # Character space of a topological algebra
 
@@ -42,7 +40,6 @@ are also algebra homomorphisms. -/
 def characterSpace (𝕜 : Type*) (A : Type*) [CommSemiring 𝕜] [TopologicalSpace 𝕜] [ContinuousAdd 𝕜]
     [ContinuousConstSMul 𝕜 𝕜] [NonUnitalNonAssocSemiring A] [TopologicalSpace A] [Module 𝕜 A] :=
   {φ : WeakDual 𝕜 A | φ ≠ 0 ∧ ∀ x y : A, φ (x * y) = φ x * φ y}
-#align weak_dual.character_space WeakDual.characterSpace
 
 variable {𝕜 : Type*} {A : Type*}
 
@@ -70,22 +67,18 @@ instance instContinuousLinearMapClass : ContinuousLinearMapClass (characterSpace
 @[simp, norm_cast]
 protected theorem coe_coe (φ : characterSpace 𝕜 A) : ⇑(φ : WeakDual 𝕜 A) = (φ : A → 𝕜) :=
   rfl
-#align weak_dual.character_space.coe_coe WeakDual.CharacterSpace.coe_coe
 
 @[ext]
 theorem ext {φ ψ : characterSpace 𝕜 A} (h : ∀ x, φ x = ψ x) : φ = ψ :=
   DFunLike.ext _ _ h
-#align weak_dual.character_space.ext WeakDual.CharacterSpace.ext
 
 /-- An element of the character space, as a continuous linear map. -/
 def toCLM (φ : characterSpace 𝕜 A) : A →L[𝕜] 𝕜 :=
   (φ : WeakDual 𝕜 A)
-#align weak_dual.character_space.to_clm WeakDual.CharacterSpace.toCLM
 
 @[simp]
 theorem coe_toCLM (φ : characterSpace 𝕜 A) : ⇑(toCLM φ) = φ :=
   rfl
-#align weak_dual.character_space.coe_to_clm WeakDual.CharacterSpace.coe_toCLM
 
 /-- Elements of the character space are non-unital algebra homomorphisms. -/
 instance instNonUnitalAlgHomClass : NonUnitalAlgHomClass (characterSpace 𝕜 A) 𝕜 A 𝕜 :=
@@ -101,12 +94,10 @@ def toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : A →ₙₐ[𝕜] 𝕜 wher
   map_smul' := map_smul φ
   map_zero' := map_zero φ
   map_add' := map_add φ
-#align weak_dual.character_space.to_non_unital_alg_hom WeakDual.CharacterSpace.toNonUnitalAlgHom
 
 @[simp]
 theorem coe_toNonUnitalAlgHom (φ : characterSpace 𝕜 A) : ⇑(toNonUnitalAlgHom φ) = φ :=
   rfl
-#align weak_dual.character_space.coe_to_non_unital_alg_hom WeakDual.CharacterSpace.coe_toNonUnitalAlgHom
 
 instance instIsEmpty [Subsingleton A] : IsEmpty (characterSpace 𝕜 A) :=
   ⟨fun φ => φ.prop.1 <|
@@ -122,7 +113,6 @@ theorem union_zero :
       · exact hφ.2
       · exact fun _ _ => by exact (zero_mul (0 : 𝕜)).symm)
     fun φ hφ => Or.elim (em <| φ = 0) Or.inr fun h₀ => Or.inl ⟨h₀, hφ⟩
-#align weak_dual.character_space.union_zero WeakDual.CharacterSpace.union_zero
 
 /-- The `characterSpace 𝕜 A` along with `0` is always a closed set in `WeakDual 𝕜 A`. -/
 theorem union_zero_isClosed [T2Space 𝕜] [ContinuousMul 𝕜] :
@@ -132,7 +122,6 @@ theorem union_zero_isClosed [T2Space 𝕜] [ContinuousMul 𝕜] :
     isClosed_iInter fun x =>
       isClosed_iInter fun y =>
         isClosed_eq (eval_continuous _) <| (eval_continuous _).mul (eval_continuous _)
-#align weak_dual.character_space.union_zero_is_closed WeakDual.CharacterSpace.union_zero_isClosed
 
 end NonUnitalNonAssocSemiring
 
@@ -161,7 +150,6 @@ def toAlgHom (φ : characterSpace 𝕜 A) : A →ₐ[𝕜] 𝕜 :=
   { toNonUnitalAlgHom φ with
     map_one' := map_one φ
     commutes' := AlgHomClass.commutes φ }
-#align weak_dual.character_space.to_alg_hom WeakDual.CharacterSpace.toAlgHom
 
 theorem eq_set_map_one_map_mul [Nontrivial 𝕜] :
     characterSpace 𝕜 A = {φ : WeakDual 𝕜 A | φ 1 = 1 ∧ ∀ x y : A, φ (x * y) = φ x * φ y} := by
@@ -174,7 +162,6 @@ theorem eq_set_map_one_map_mul [Nontrivial 𝕜] :
     refine ⟨?_, hφ₂⟩
     rintro rfl
     exact zero_ne_one hφ₁
-#align weak_dual.character_space.eq_set_map_one_map_mul WeakDual.CharacterSpace.eq_set_map_one_map_mul
 
 /-- under suitable mild assumptions on `𝕜`, the character space is a closed set in
 `WeakDual 𝕜 A`. -/
@@ -183,7 +170,6 @@ protected theorem isClosed [Nontrivial 𝕜] [T2Space 𝕜] [ContinuousMul 𝕜]
   rw [eq_set_map_one_map_mul, Set.setOf_and]
   refine IsClosed.inter (isClosed_eq (eval_continuous _) continuous_const) ?_
   simpa only [(union_zero 𝕜 A).symm] using union_zero_isClosed _ _
-#align weak_dual.character_space.is_closed WeakDual.CharacterSpace.isClosed
 
 end Unital
 
@@ -194,14 +180,12 @@ variable [CommRing 𝕜] [NoZeroDivisors 𝕜] [TopologicalSpace 𝕜] [Continuo
 
 theorem apply_mem_spectrum [Nontrivial 𝕜] (φ : characterSpace 𝕜 A) (a : A) : φ a ∈ spectrum 𝕜 a :=
   AlgHom.apply_mem_spectrum φ a
-#align weak_dual.character_space.apply_mem_spectrum WeakDual.CharacterSpace.apply_mem_spectrum
 
 theorem ext_ker {φ ψ : characterSpace 𝕜 A} (h : RingHom.ker φ = RingHom.ker ψ) : φ = ψ := by
   ext x
   have : x - algebraMap 𝕜 A (ψ x) ∈ RingHom.ker φ := by
     simpa only [h, RingHom.mem_ker, map_sub, AlgHomClass.commutes] using sub_self (ψ x)
   rwa [RingHom.mem_ker, map_sub, AlgHomClass.commutes, sub_eq_zero] at this
-#align weak_dual.character_space.ext_ker WeakDual.CharacterSpace.ext_ker
 
 end Ring
 
@@ -216,7 +200,6 @@ variable [Ring A] [TopologicalSpace A] [Algebra 𝕜 A]
 instance ker_isMaximal (φ : characterSpace 𝕜 A) : (RingHom.ker φ).IsMaximal :=
   RingHom.ker_isMaximal_of_surjective φ fun z =>
     ⟨algebraMap 𝕜 A z, by simp only [AlgHomClass.commutes, Algebra.id.map_eq_id, RingHom.id_apply]⟩
-#align weak_dual.ker_is_maximal WeakDual.ker_isMaximal
 
 end Kernel
 
@@ -240,7 +223,6 @@ def gelfandTransform : A →ₐ[𝕜] C(characterSpace 𝕜 A, 𝕜) where
   map_zero' := by ext; simp only [map_zero, coe_mk, coe_mul, coe_zero, Pi.zero_apply]
   map_add' a b := by ext; simp only [map_add, coe_mk, coe_add, Pi.add_apply]
   commutes' k := by ext; simp [AlgHomClass.commutes]
-#align weak_dual.gelfand_transform WeakDual.gelfandTransform
 
 end GelfandTransform
 

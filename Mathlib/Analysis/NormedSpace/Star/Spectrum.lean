@@ -8,8 +8,6 @@ import Mathlib.Analysis.NormedSpace.Spectrum
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Algebra.Star.StarAlgHom
 
-#align_import analysis.normed_space.star.spectrum from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
-
 /-! # Spectral properties in C⋆-algebras
 In this file, we establish various properties related to the spectrum of elements in C⋆-algebras.
 -/
@@ -39,12 +37,10 @@ theorem unitary.spectrum_subset_circle (u : unitary E) :
     have : ‖k‖⁻¹ ≤ ‖(↑(unitary.toUnits u)⁻¹ : E)‖ := by
       simpa only [norm_inv] using norm_le_norm_of_mem hk
     simpa using inv_le_of_inv_le (norm_pos_iff.mpr hnk) this
-#align unitary.spectrum_subset_circle unitary.spectrum_subset_circle
 
 theorem spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :
     spectrum 𝕜 u ⊆ Metric.sphere 0 1 :=
   unitary.spectrum_subset_circle ⟨u, h⟩
-#align spectrum.subset_circle_of_unitary spectrum.subset_circle_of_unitary
 
 end UnitarySpectrum
 
@@ -67,7 +63,6 @@ theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
   refine funext fun n => ?_
   rw [Function.comp_apply, ha.nnnorm_pow_two_pow, ENNReal.coe_pow, ← rpow_natCast, ← rpow_mul]
   simp
-#align is_self_adjoint.spectral_radius_eq_nnnorm IsSelfAdjoint.spectralRadius_eq_nnnorm
 
 /-- In a C⋆-algebra, the spectral radius of a self-adjoint element is equal to its norm.
 See `IsSelfAdjoint.toReal_spectralRadius_eq_norm` for a version involving
@@ -91,7 +86,6 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
   rw [← heq] at h₂
   convert tendsto_nhds_unique h₂ (pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a⋆ * a))
   rw [(IsSelfAdjoint.star_mul_self a).spectralRadius_eq_nnnorm, sq, nnnorm_star_mul_self, coe_mul]
-#align is_star_normal.spectral_radius_eq_nnnorm IsStarNormal.spectralRadius_eq_nnnorm
 
 /-- Any element of the spectrum of a selfadjoint is real. -/
 theorem IsSelfAdjoint.mem_spectrum_eq_re [StarModule ℂ A] {a : A} (ha : IsSelfAdjoint a) {z : ℂ}
@@ -106,13 +100,11 @@ theorem IsSelfAdjoint.mem_spectrum_eq_re [StarModule ℂ A] {a : A} (ha : IsSelf
     simpa only [← Complex.exp_eq_exp_ℂ, mem_sphere_zero_iff_norm, norm_eq_abs, abs_exp,
       Real.exp_eq_one_iff, smul_eq_mul, I_mul, neg_eq_zero] using
       spectrum.subset_circle_of_unitary hu this
-#align is_self_adjoint.mem_spectrum_eq_re IsSelfAdjoint.mem_spectrum_eq_re
 
 /-- Any element of the spectrum of a selfadjoint is real. -/
 theorem selfAdjoint.mem_spectrum_eq_re [StarModule ℂ A] (a : selfAdjoint A) {z : ℂ}
     (hz : z ∈ spectrum ℂ (a : A)) : z = z.re :=
   a.prop.mem_spectrum_eq_re hz
-#align self_adjoint.mem_spectrum_eq_re selfAdjoint.mem_spectrum_eq_re
 
 /-- The spectrum of a selfadjoint is real -/
 theorem IsSelfAdjoint.val_re_map_spectrum [StarModule ℂ A] {a : A} (ha : IsSelfAdjoint a) :
@@ -120,13 +112,11 @@ theorem IsSelfAdjoint.val_re_map_spectrum [StarModule ℂ A] {a : A} (ha : IsSel
   le_antisymm (fun z hz => ⟨z, hz, (ha.mem_spectrum_eq_re hz).symm⟩) fun z => by
     rintro ⟨z, hz, rfl⟩
     simpa only [(ha.mem_spectrum_eq_re hz).symm, Function.comp_apply] using hz
-#align is_self_adjoint.coe_re_map_spectrum IsSelfAdjoint.val_re_map_spectrum
 
 /-- The spectrum of a selfadjoint is real -/
 theorem selfAdjoint.val_re_map_spectrum [StarModule ℂ A] (a : selfAdjoint A) :
     spectrum ℂ (a : A) = ((↑) ∘ re '' spectrum ℂ (a : A) : Set ℂ) :=
   a.property.val_re_map_spectrum
-#align self_adjoint.coe_re_map_spectrum selfAdjoint.val_re_map_spectrum
 
 end ComplexScalars
 
@@ -147,12 +137,10 @@ theorem nnnorm_apply_le (a : A) : ‖(φ a : B)‖₊ ≤ ‖a‖₊ := by
     coe_le_coe] using
     show spectralRadius ℂ (φ s) ≤ spectralRadius ℂ s from
       iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset φ s)
-#align star_alg_hom.nnnorm_apply_le StarAlgHom.nnnorm_apply_le
 
 /-- A star algebra homomorphism of complex C⋆-algebras is norm contractive. -/
 theorem norm_apply_le (a : A) : ‖(φ a : B)‖ ≤ ‖a‖ :=
   nnnorm_apply_le φ a
-#align star_alg_hom.norm_apply_le StarAlgHom.norm_apply_le
 
 /-- Star algebra homomorphisms between C⋆-algebras are continuous linear maps.
 See note [lower instance priority] -/
@@ -211,7 +199,6 @@ noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass
 `WeakDual.Complex.instStarHomClass`. -/
 lemma _root_.AlgHomClass.instStarAlgHomClass : StarAlgHomClass F ℂ A ℂ :=
   { WeakDual.Complex.instStarHomClass, hF with }
-#align alg_hom_class.star_alg_hom_class AlgHomClass.instStarAlgHomClass
 
 namespace CharacterSpace
 

@@ -11,8 +11,6 @@ import Batteries.Data.HashMap.Basic
 import Batteries.Data.RBMap.Basic
 import Mathlib.Mathport.Rename
 
-#align_import data.hash_map from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
-
 /-!
 # Additional API for `HashMap` and `RBSet`.
 
@@ -24,7 +22,6 @@ set_option autoImplicit true
 namespace Batteries.HashMap
 
 -- not an exact match, the Lean3 version was dependently-typed
-#align hash_map Batteries.HashMapₓ
 
 variable [BEq α] [Hashable α]
 

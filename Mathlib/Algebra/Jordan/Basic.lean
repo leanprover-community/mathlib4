@@ -5,8 +5,6 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.Lie.OfAssociative
 
-#align_import algebra.jordan.basic from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # Jordan rings
 
@@ -83,12 +81,10 @@ class IsJordan [Mul A] : Prop where
   lmul_lmul_comm_rmul : ∀ a b : A, a * a * (b * a) = a * a * b * a
   lmul_comm_rmul_rmul : ∀ a b : A, a * b * (a * a) = a * (b * (a * a))
   rmul_comm_rmul_rmul : ∀ a b : A, b * a * (a * a) = b * (a * a) * a
-#align is_jordan IsJordan
 
 /-- A commutative Jordan multipication -/
 class IsCommJordan [CommMagma A] : Prop where
   lmul_comm_rmul_rmul : ∀ a b : A, a * b * (a * a) = a * (b * (a * a))
-#align is_comm_jordan IsCommJordan
 
 -- see Note [lower instance priority]
 /-- A (commutative) Jordan multiplication is also a Jordan multipication -/
@@ -103,7 +99,6 @@ instance (priority := 100) IsCommJordan.toIsJordan [CommMagma A] [IsCommJordan A
       IsCommJordan.lmul_comm_rmul_rmul, mul_comm, mul_comm b (a * a)]
   rmul_comm_rmul_rmul a b := by
     rw [mul_comm b a, IsCommJordan.lmul_comm_rmul_rmul, mul_comm]
-#align is_comm_jordan.to_is_jordan IsCommJordan.toIsJordan
 
 -- see Note [lower instance priority]
 /-- Semigroup multiplication satisfies the (non-commutative) Jordan axioms-/
@@ -113,12 +108,10 @@ instance (priority := 100) Semigroup.isJordan [Semigroup A] : IsJordan A where
   lmul_comm_rmul_rmul a b := by rw [mul_assoc]
   lmul_lmul_comm_rmul a b := by rw [← mul_assoc]
   rmul_comm_rmul_rmul a b := by rw [← mul_assoc, ← mul_assoc]
-#align semigroup.is_jordan Semigroup.isJordan
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemigroup.isCommJordan [CommSemigroup A] : IsCommJordan A where
   lmul_comm_rmul_rmul _ _ := mul_assoc _ _ _
-#align comm_semigroup.is_comm_jordan CommSemigroup.isCommJordan
 
 local notation "L" => AddMonoid.End.mulLeft
 
@@ -136,27 +129,22 @@ variable {A} [NonUnitalNonAssocRing A] [IsJordan A]
 @[simp]
 theorem commute_lmul_rmul (a : A) : Commute (L a) (R a) :=
   AddMonoidHom.ext fun _ => (IsJordan.lmul_comm_rmul _ _).symm
-#align commute_lmul_rmul commute_lmul_rmul
 
 @[simp]
 theorem commute_lmul_lmul_sq (a : A) : Commute (L a) (L (a * a)) :=
   AddMonoidHom.ext fun _ => (IsJordan.lmul_lmul_comm_lmul _ _).symm
-#align commute_lmul_lmul_sq commute_lmul_lmul_sq
 
 @[simp]
 theorem commute_lmul_rmul_sq (a : A) : Commute (L a) (R (a * a)) :=
   AddMonoidHom.ext fun _ => (IsJordan.lmul_comm_rmul_rmul _ _).symm
-#align commute_lmul_rmul_sq commute_lmul_rmul_sq
 
 @[simp]
 theorem commute_lmul_sq_rmul (a : A) : Commute (L (a * a)) (R a) :=
   AddMonoidHom.ext fun _ => IsJordan.lmul_lmul_comm_rmul _ _
-#align commute_lmul_sq_rmul commute_lmul_sq_rmul
 
 @[simp]
 theorem commute_rmul_rmul_sq (a : A) : Commute (R a) (R (a * a)) :=
   AddMonoidHom.ext fun _ => (IsJordan.rmul_comm_rmul_rmul _ _).symm
-#align commute_rmul_rmul_sq commute_rmul_rmul_sq
 
 end Commute
 
@@ -176,7 +164,6 @@ theorem two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add (a b : A) :
   simp only [add_mul, mul_add, map_add, lie_add, add_lie, mul_comm b a,
     (commute_lmul_lmul_sq a).lie_eq, (commute_lmul_lmul_sq b).lie_eq, zero_add, add_zero, two_smul]
   abel
-#align two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add two_nsmul_lie_lmul_lmul_add_eq_lie_lmul_lmul_add
 
 -- Porting note: the monolithic `calc`-based proof of `two_nsmul_lie_lmul_lmul_add_add_eq_zero`
 -- has had four auxiliary parts `aux{0,1,2,3}` split off from it.
@@ -244,4 +231,3 @@ theorem two_nsmul_lie_lmul_lmul_add_add_eq_zero (a b c : A) :
     0 = ⁅L (a + b + c), L ((a + b + c) * (a + b + c))⁆ := by
       rw [(commute_lmul_lmul_sq (a + b + c)).lie_eq]
     _ = _ := by rw [aux0, aux1, aux2, aux3, nsmul_add, nsmul_add]
-#align two_nsmul_lie_lmul_lmul_add_add_eq_zero two_nsmul_lie_lmul_lmul_add_add_eq_zero

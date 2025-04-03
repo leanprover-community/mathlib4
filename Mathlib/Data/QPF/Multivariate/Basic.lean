@@ -5,8 +5,6 @@ Authors: Jeremy Avigad, Simon Hudon
 -/
 import Mathlib.Data.PFunctor.Multivariate.Basic
 
-#align_import data.qpf.multivariate.basic from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
-
 /-!
 # Multivariate quotients of polynomial functors.
 
@@ -88,7 +86,6 @@ class MvQPF {n : ℕ} (F : TypeVec.{u} n → Type*) extends MvFunctor F where
   repr : ∀ {α}, F α → P α
   abs_repr : ∀ {α} (x : F α), abs (repr x) = x
   abs_map : ∀ {α β} (f : α ⟹ β) (p : P α), abs (f <$$> p) = f <$$> abs p
-#align mvqpf MvQPF
 
 namespace MvQPF
 
@@ -104,19 +101,16 @@ open MvFunctor (LiftP LiftR)
 protected theorem id_map {α : TypeVec n} (x : F α) : TypeVec.id <$$> x = x := by
   rw [← abs_repr x, ← abs_map]
   rfl
-#align mvqpf.id_map MvQPF.id_map
 
 @[simp]
 theorem comp_map {α β γ : TypeVec n} (f : α ⟹ β) (g : β ⟹ γ) (x : F α) :
     (g ⊚ f) <$$> x = g <$$> f <$$> x := by
   rw [← abs_repr x, ← abs_map, ← abs_map, ← abs_map]
   rfl
-#align mvqpf.comp_map MvQPF.comp_map
 
 instance (priority := 100) lawfulMvFunctor : LawfulMvFunctor F where
   id_map := @MvQPF.id_map n F _
   comp_map := @comp_map n F _
-#align mvqpf.is_lawful_mvfunctor MvQPF.lawfulMvFunctor
 
 -- Lifting predicates and relations
 theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
@@ -132,7 +126,6 @@ theorem liftP_iff {α : TypeVec n} (p : ∀ ⦃i⦄, α i → Prop) (x : F α) :
   rintro ⟨a, f, h₀, h₁⟩
   use abs ⟨a, fun i j => ⟨f i j, h₁ i j⟩⟩
   rw [← abs_map, h₀]; rfl
-#align mvqpf.liftp_iff MvQPF.liftP_iff
 
 theorem liftR_iff {α : TypeVec n} (r : ∀ /- ⦃i⦄ -/ {i}, α i → α i → Prop) (x y : F α) :
     LiftR r x y ↔ ∃ a f₀ f₁, x = abs ⟨a, f₀⟩ ∧ y = abs ⟨a, f₁⟩ ∧ ∀ i j, r (f₀ i j) (f₁ i j) := by
@@ -151,7 +144,6 @@ theorem liftR_iff {α : TypeVec n} (r : ∀ /- ⦃i⦄ -/ {i}, α i → α i →
   dsimp; constructor
   · rw [xeq, ← abs_map]; rfl
   rw [yeq, ← abs_map]; rfl
-#align mvqpf.liftr_iff MvQPF.liftR_iff
 
 open Set
 
@@ -171,11 +163,9 @@ theorem mem_supp {α : TypeVec n} (x : F α) (i) (u : α i) :
   rintro ⟨a, f, xeq, h'⟩
   rcases h a f xeq.symm with ⟨i, _, hi⟩
   rw [← hi]; apply h'
-#align mvqpf.mem_supp MvQPF.mem_supp
 
 theorem supp_eq {α : TypeVec n} {i} (x : F α) :
     supp x i = { u | ∀ a f, abs ⟨a, f⟩ = x → u ∈ f i '' univ } := by ext; apply mem_supp
-#align mvqpf.supp_eq MvQPF.supp_eq
 
 theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
     (∀ p, LiftP p x ↔ ∀ (i), ∀ u ∈ supp x i, p i u) ↔
@@ -201,24 +191,20 @@ theorem has_good_supp_iff {α : TypeVec n} (x : F α) :
   intro a' f' xeq'
   apply h _ a' f' xeq'
   apply mem_image_of_mem _ (mem_univ _)
-#align mvqpf.has_good_supp_iff MvQPF.has_good_supp_iff
 
 /-- A qpf is said to be uniform if every polynomial functor
 representing a single value all have the same range. -/
 def IsUniform : Prop :=
   ∀ ⦃α : TypeVec n⦄ (a a' : q.P.A) (f : q.P.B a ⟹ α) (f' : q.P.B a' ⟹ α),
     abs ⟨a, f⟩ = abs ⟨a', f'⟩ → ∀ i, f i '' univ = f' i '' univ
-#align mvqpf.is_uniform MvQPF.IsUniform
 
 /-- does `abs` preserve `liftp`? -/
 def LiftPPreservation : Prop :=
   ∀ ⦃α : TypeVec n⦄ (p : ∀ ⦃i⦄, α i → Prop) (x : q.P α), LiftP p (abs x) ↔ LiftP p x
-#align mvqpf.liftp_preservation MvQPF.LiftPPreservation
 
 /-- does `abs` preserve `supp`? -/
 def SuppPreservation : Prop :=
   ∀ ⦃α⦄ (x : q.P α), supp (abs x) = supp x
-#align mvqpf.supp_preservation MvQPF.SuppPreservation
 
 theorem supp_eq_of_isUniform (h : q.IsUniform) {α : TypeVec n} (a : q.P.A) (f : q.P.B a ⟹ α) :
     ∀ i, supp (abs ⟨a, f⟩) i = f i '' univ := by
@@ -227,7 +213,6 @@ theorem supp_eq_of_isUniform (h : q.IsUniform) {α : TypeVec n} (a : q.P.A) (f :
     apply h' _ _ rfl
   intro h' a' f' e
   rw [← h _ _ _ _ e.symm]; apply h'
-#align mvqpf.supp_eq_of_is_uniform MvQPF.supp_eq_of_isUniform
 
 theorem liftP_iff_of_isUniform (h : q.IsUniform) {α : TypeVec n} (x : F α) (p : ∀ i, α i → Prop) :
     LiftP p x ↔ ∀ (i), ∀ u ∈ supp x i, p i u := by
@@ -242,14 +227,12 @@ theorem liftP_iff_of_isUniform (h : q.IsUniform) {α : TypeVec n} (x : F α) (p 
   refine ⟨a, f, rfl, fun _ i => h' _ _ ?_⟩
   rw [supp_eq_of_isUniform h]
   exact ⟨i, mem_univ i, rfl⟩
-#align mvqpf.liftp_iff_of_is_uniform MvQPF.liftP_iff_of_isUniform
 
 theorem supp_map (h : q.IsUniform) {α β : TypeVec n} (g : α ⟹ β) (x : F α) (i) :
     supp (g <$$> x) i = g i '' supp x i := by
   rw [← abs_repr x]; cases' repr x with a f; rw [← abs_map, MvPFunctor.map_eq]
   rw [supp_eq_of_isUniform h, supp_eq_of_isUniform h, ← image_comp]
   rfl
-#align mvqpf.supp_map MvQPF.supp_map
 
 theorem suppPreservation_iff_isUniform : q.SuppPreservation ↔ q.IsUniform := by
   constructor
@@ -258,7 +241,6 @@ theorem suppPreservation_iff_isUniform : q.SuppPreservation ↔ q.IsUniform := b
   · rintro h α ⟨a, f⟩
     ext
     rwa [supp_eq_of_isUniform, MvPFunctor.supp_eq]
-#align mvqpf.supp_preservation_iff_uniform MvQPF.suppPreservation_iff_isUniform
 
 theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftPPreservation := by
   constructor <;> intro h
@@ -273,11 +255,9 @@ theorem suppPreservation_iff_liftpPreservation : q.SuppPreservation ↔ q.LiftPP
     simp only [LiftPPreservation] at h
     ext
     simp only [supp, h, mem_setOf_eq]
-#align mvqpf.supp_preservation_iff_liftp_preservation MvQPF.suppPreservation_iff_liftpPreservation
 
 theorem liftpPreservation_iff_uniform : q.LiftPPreservation ↔ q.IsUniform := by
   rw [← suppPreservation_iff_liftpPreservation, suppPreservation_iff_isUniform]
-#align mvqpf.liftp_preservation_iff_uniform MvQPF.liftpPreservation_iff_uniform
 
 /-- Any type function `F` that is (extensionally) equivalent to a QPF, is itself a QPF,
 assuming that the functorial map of `F` behaves similar to `MvFunctor.ofEquiv eqv` -/

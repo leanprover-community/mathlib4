@@ -6,8 +6,6 @@ Authors: Moritz Doll
 import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.BilinearMap
 
-#align_import linear_algebra.basis.bilinear from "leanprover-community/mathlib"@"87c54600fe3cdc7d32ff5b50873ac724d86aef8d"
-
 /-!
 # Lemmas about bilinear maps with a basis over each argument
 -/
@@ -36,7 +34,6 @@ variable (b₁ : Basis ι₁ R M) (b₂ : Basis ι₂ S N) (b₁' : Basis ι₁ 
 theorem ext_basis {B B' : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P} (h : ∀ i j, B (b₁ i) (b₂ j) = B' (b₁ i) (b₂ j)) :
     B = B' :=
   b₁.ext fun i => b₂.ext fun j => h i j
-#align linear_map.ext_basis LinearMap.ext_basis
 
 /-- Write out `B x y` as a sum over `B (b i) (b j)` if `b` is a basis.
 
@@ -47,7 +44,6 @@ theorem sum_repr_mul_repr_mulₛₗ {B : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁
   conv_rhs => rw [← b₁.total_repr x, ← b₂.total_repr y]
   simp_rw [Finsupp.total_apply, Finsupp.sum, map_sum₂, map_sum, LinearMap.map_smulₛₗ₂,
     LinearMap.map_smulₛₗ]
-#align linear_map.sum_repr_mul_repr_mulₛₗ LinearMap.sum_repr_mul_repr_mulₛₗ
 
 /-- Write out `B x y` as a sum over `B (b i) (b j)` if `b` is a basis.
 
@@ -58,7 +54,6 @@ theorem sum_repr_mul_repr_mul {B : Mₗ →ₗ[Rₗ] Nₗ →ₗ[Rₗ] Pₗ} (x 
   conv_rhs => rw [← b₁'.total_repr x, ← b₂'.total_repr y]
   simp_rw [Finsupp.total_apply, Finsupp.sum, map_sum₂, map_sum, LinearMap.map_smul₂,
     LinearMap.map_smul]
-#align linear_map.sum_repr_mul_repr_mul LinearMap.sum_repr_mul_repr_mul
 
 end AddCommMonoid
 

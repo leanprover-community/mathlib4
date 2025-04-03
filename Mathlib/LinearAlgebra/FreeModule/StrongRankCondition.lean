@@ -6,8 +6,6 @@ Authors: Riccardo Brasca
 import Mathlib.RingTheory.FiniteType
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 
-#align_import linear_algebra.free_module.strong_rank_condition from "leanprover-community/mathlib"@"f37e88f3ec14ee5eab18a9330ace717740e9c92c"
-
 /-!
 
 # Strong rank condition for commutative rings
@@ -43,4 +41,3 @@ variable (R : Type*) [CommRing R] [Nontrivial R]
 /-- Any nontrivial commutative ring satisfies the `StrongRankCondition`. -/
 instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R :=
   inferInstance
-#align comm_ring_strong_rank_condition commRing_strongRankCondition

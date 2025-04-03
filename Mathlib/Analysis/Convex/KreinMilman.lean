@@ -7,8 +7,6 @@ import Mathlib.Analysis.Convex.Exposed
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Topology.Algebra.ContinuousAffineMap
 
-#align_import analysis.convex.krein_milman from "leanprover-community/mathlib"@"279297937dede7b1b3451b7b0f1786352ad011fa"
-
 /-!
 # The Krein-Milman theorem
 
@@ -88,7 +86,6 @@ theorem IsCompact.extremePoints_nonempty (hscomp : IsCompact s) (hsnemp : s.None
       (hFS t.mem).2.1
   obtain htu | hut := hF.total t.mem u.mem
   exacts [⟨t, Subset.rfl, htu⟩, ⟨u, hut, Subset.rfl⟩]
-#align is_compact.has_extreme_point IsCompact.extremePoints_nonempty
 
 /-- **Krein-Milman theorem**: In a LCTVS, any compact convex set is the closure of the convex hull
     of its extreme points. -/
@@ -104,7 +101,6 @@ theorem closure_convexHull_extremePoints (hscomp : IsCompact s) (hAconv : Convex
   obtain ⟨y, hy⟩ := (h.isCompact hscomp).extremePoints_nonempty ⟨z, hzA, hz⟩
   linarith [hlr _ (subset_closure <| subset_convexHull _ _ <|
     h.isExtreme.extremePoints_subset_extremePoints hy), hy.1.2 x hxA]
-#align closure_convex_hull_extreme_points closure_convexHull_extremePoints
 
 /-- A continuous affine map is surjective from the extreme points of a compact set to the extreme
 points of the image of that set. This inclusion is in general strict. -/

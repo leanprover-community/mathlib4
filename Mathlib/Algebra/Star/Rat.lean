@@ -28,4 +28,3 @@ lemma star_nnratCast [DivisionSemiring R] [StarRing R] (q : ℚ≥0) : star (q :
 @[simp, norm_cast]
 theorem star_ratCast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=
   (congr_arg unop <| map_ratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) r).trans (unop_ratCast _)
-#align star_rat_cast star_ratCast

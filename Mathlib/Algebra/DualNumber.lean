@@ -5,8 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.TrivSqZeroExt
 
-#align_import algebra.dual_number from "leanprover-community/mathlib"@"b8d2eaa69d69ce8f03179a5cda774fc0cde984e4"
-
 /-!
 # Dual numbers
 
@@ -43,12 +41,10 @@ variable {R A B : Type*}
 `R[ε]` is notation for `DualNumber R`. -/
 abbrev DualNumber (R : Type*) : Type _ :=
   TrivSqZeroExt R R
-#align dual_number DualNumber
 
 /-- The unit element $ε$ that squares to zero, with notation `ε`. -/
 def DualNumber.eps [Zero R] [One R] : DualNumber R :=
   TrivSqZeroExt.inr 1
-#align dual_number.eps DualNumber.eps
 
 @[inherit_doc]
 scoped[DualNumber] notation "ε" => DualNumber.eps
@@ -65,23 +61,19 @@ open TrivSqZeroExt
 @[simp]
 theorem fst_eps [Zero R] [One R] : fst ε = (0 : R) :=
   fst_inr _ _
-#align dual_number.fst_eps DualNumber.fst_eps
 
 @[simp]
 theorem snd_eps [Zero R] [One R] : snd ε = (1 : R) :=
   snd_inr _ _
-#align dual_number.snd_eps DualNumber.snd_eps
 
 /-- A version of `TrivSqZeroExt.snd_mul` with `*` instead of `•`. -/
 @[simp]
 theorem snd_mul [Semiring R] (x y : R[ε]) : snd (x * y) = fst x * snd y + snd x * fst y :=
   TrivSqZeroExt.snd_mul _ _
-#align dual_number.snd_mul DualNumber.snd_mul
 
 @[simp]
 theorem eps_mul_eps [Semiring R] : (ε * ε : R[ε]) = 0 :=
   inr_mul_inr _ _ _
-#align dual_number.eps_mul_eps DualNumber.eps_mul_eps
 
 @[simp]
 theorem inv_eps [DivisionRing R] : (ε : R[ε])⁻¹ = 0 :=
@@ -90,7 +82,6 @@ theorem inv_eps [DivisionRing R] : (ε : R[ε])⁻¹ = 0 :=
 @[simp]
 theorem inr_eq_smul_eps [MulZeroOneClass R] (r : R) : inr r = (r • ε : R[ε]) :=
   ext (mul_zero r).symm (mul_one r).symm
-#align dual_number.inr_eq_smul_eps DualNumber.inr_eq_smul_eps
 
 /-- `ε` commutes with every element of the algebra. -/
 theorem commute_eps_left [Semiring R] (x : DualNumber R) : Commute ε x := by
@@ -120,7 +111,6 @@ nonrec theorem algHom_ext ⦃f g : R[ε] →ₐ[R] A⦄ (hε : f ε = g ε) : f 
   ext
   dsimp
   simp only [one_smul, hε]
-#align dual_number.alg_hom_ext DualNumber.algHom_ext
 
 /-- A universal property of the dual numbers, providing a unique `A[ε] →ₐ[R] B` for every map
 `f : A →ₐ[R] B` and a choice of element `e : B` which squares to `0` and commutes with the range of
@@ -152,7 +142,6 @@ def lift :
     right_inv := fun fg => Subtype.ext <| Prod.ext rfl <| LinearMap.ext fun x =>
       show fg.val.1 x * fg.val.2 1 = fg.val.2 x by
         rw [← fg.prop.2.1, smul_eq_mul, mul_one] }
-#align dual_number.lift DualNumber.lift
 
 theorem lift_apply_apply (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A[ε]) :
     lift fe a = fe.val.1 a.fst + fe.val.1 a.snd * fe.val.2 := rfl
@@ -180,14 +169,12 @@ theorem lift_apply_apply (fe : {_fe : (A →ₐ[R] B) × B // _}) (a : A[ε]) :
     (fe : {fe : (A →ₐ[R] B) × B // fe.2 * fe.2 = 0 ∧ ∀ a, Commute fe.2 (fe.1 a)}) :
     lift fe (ε : A[ε]) = fe.val.2 := by
   simp only [lift_apply_apply, fst_eps, map_zero, snd_eps, map_one, one_mul, zero_add]
-#align dual_number.lift_apply_eps DualNumber.lift_apply_eps
 
 /-- Lifting `DualNumber.eps` itself gives the identity. -/
 @[simp]
 theorem lift_inlAlgHom_eps :
     lift ⟨(inlAlgHom _ _ _, ε), eps_mul_eps, fun _ => commute_eps_left _⟩ = AlgHom.id R A[ε] :=
   lift.apply_symm_apply <| AlgHom.id R A[ε]
-#align dual_number.lift_eps DualNumber.lift_inlAlgHom_epsₓ
 
 /-- Show DualNumber with values x and y as an "x + y*ε" string -/
 instance instRepr [Repr R] : Repr (DualNumber R) where

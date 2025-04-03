@@ -8,8 +8,6 @@ import Mathlib.Algebra.Star.Order
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Tactic.Polyrith
 
-#align_import algebra.star.chsh from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
-
 /-!
 # The Clauser-Horne-Shimony-Holt inequality and Tsirelson's inequality.
 
@@ -97,8 +95,6 @@ structure IsCHSHTuple {R} [Monoid R] [StarMul R] (A₀ A₁ B₀ B₁ : R) : Pro
   A₀B₁_commutes : A₀ * B₁ = B₁ * A₀
   A₁B₀_commutes : A₁ * B₀ = B₀ * A₁
   A₁B₁_commutes : A₁ * B₁ = B₁ * A₁
-set_option linter.uppercaseLean3 false in
-#align is_CHSH_tuple IsCHSHTuple
 
 variable {R : Type u}
 
@@ -111,8 +107,6 @@ theorem CHSH_id [CommRing R] {A₀ A₁ B₀ B₁ : R} (A₀_inv : A₀ ^ 2 = 1)
     (2 * B₀ * B₁ + 2) * A₀_inv + (B₀ ^ 2 - 2 * B₀ * B₁ + B₁ ^ 2) * A₁_inv +
         (A₀ ^ 2 + 2 * A₀ * A₁ + 1) * B₀_inv +
       (A₀ ^ 2 - 2 * A₀ * A₁ + 1) * B₁_inv
-set_option linter.uppercaseLean3 false in
-#align CHSH_id CHSH_id
 
 /-- Given a CHSH tuple (A₀, A₁, B₀, B₁) in a *commutative* ordered `*`-algebra over ℝ,
 `A₀ * B₀ + A₀ * B₁ + A₁ * B₀ - A₁ * B₁ ≤ 2`.
@@ -137,8 +131,6 @@ theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarRing R] [StarOrderedRin
       using smul_nonneg (by norm_num : (0 : ℝ) ≤ 1 / 4) (star_mul_self_nonneg P)
   apply le_of_sub_nonneg
   simpa only [sub_add_eq_sub_sub, ← sub_add] using i₁
-set_option linter.uppercaseLean3 false in
-#align CHSH_inequality_of_comm CHSH_inequality_of_comm
 
 /-!
 We now prove some rather specialized lemmas in preparation for the Tsirelson inequality,
@@ -161,12 +153,10 @@ theorem tsirelson_inequality_aux : √2 * √2 ^ 3 = √2 * (2 * (√2)⁻¹ + 4
   rw [mul_inv_cancel (ne_of_gt (Real.sqrt_pos.2 (show (2 : ℝ) > 0 by norm_num)))]
   convert congr_arg (· ^ 2) (@Real.sq_sqrt 2 (by norm_num)) using 1 <;>
     (try simp only [← pow_mul]) <;> norm_num
-#align tsirelson_inequality.tsirelson_inequality_aux TsirelsonInequality.tsirelson_inequality_aux
 
 theorem sqrt_two_inv_mul_self : (√2)⁻¹ * (√2)⁻¹ = (2⁻¹ : ℝ) := by
   rw [← mul_inv]
   norm_num
-#align tsirelson_inequality.sqrt_two_inv_mul_self TsirelsonInequality.sqrt_two_inv_mul_self
 
 end TsirelsonInequality
 
@@ -221,4 +211,3 @@ theorem tsirelson_inequality [OrderedRing R] [StarRing R] [StarOrderedRing R] [A
     exact smul_nonneg (by positivity) (add_nonneg P2_nonneg Q2_nonneg)
   apply le_of_sub_nonneg
   simpa only [sub_add_eq_sub_sub, ← sub_add, w, Nat.cast_zero] using pos
-#align tsirelson_inequality tsirelson_inequality

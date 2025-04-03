@@ -10,8 +10,6 @@ import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Monotonicity
 
-#align_import algebra.continued_fractions.computation.approximations from "leanprover-community/mathlib"@"a7e36e48519ab281320c4d192da6a7b348ce40ad"
-
 /-!
 # Approximations for Continued Fraction Computations (`GenContFract.of`)
 
@@ -78,19 +76,16 @@ theorem nth_stream_fr_nonneg_lt_one {ifp_n : IntFractPair K}
     rcases succ_nth_stream_eq_some_iff.1 nth_stream_eq with ⟨_, _, _, ifp_of_eq_ifp_n⟩
     rw [← ifp_of_eq_ifp_n, IntFractPair.of]
     exact ⟨fract_nonneg _, fract_lt_one _⟩
-#align generalized_continued_fraction.int_fract_pair.nth_stream_fr_nonneg_lt_one GenContFract.IntFractPair.nth_stream_fr_nonneg_lt_one
 
 /-- Shows that the fractional parts of the stream are nonnegative. -/
 theorem nth_stream_fr_nonneg {ifp_n : IntFractPair K}
     (nth_stream_eq : IntFractPair.stream v n = some ifp_n) : 0 ≤ ifp_n.fr :=
   (nth_stream_fr_nonneg_lt_one nth_stream_eq).left
-#align generalized_continued_fraction.int_fract_pair.nth_stream_fr_nonneg GenContFract.IntFractPair.nth_stream_fr_nonneg
 
 /-- Shows that the fractional parts of the stream are smaller than one. -/
 theorem nth_stream_fr_lt_one {ifp_n : IntFractPair K}
     (nth_stream_eq : IntFractPair.stream v n = some ifp_n) : ifp_n.fr < 1 :=
   (nth_stream_fr_nonneg_lt_one nth_stream_eq).right
-#align generalized_continued_fraction.int_fract_pair.nth_stream_fr_lt_one GenContFract.IntFractPair.nth_stream_fr_lt_one
 
 /-- Shows that the integer parts of the stream are at least one. -/
 theorem one_le_succ_nth_stream_b {ifp_succ_n : IntFractPair K}
@@ -105,7 +100,6 @@ theorem one_le_succ_nth_stream_b {ifp_succ_n : IntFractPair K}
       lt_of_le_of_ne (nth_stream_fr_nonneg nth_stream_eq) stream_nth_fr_ne_zero.symm
     apply one_le_inv h this
   simp only [le_of_lt (nth_stream_fr_lt_one nth_stream_eq)]
-#align generalized_continued_fraction.int_fract_pair.one_le_succ_nth_stream_b GenContFract.IntFractPair.one_le_succ_nth_stream_b
 
 /--
 Shows that the `n + 1`th integer part `bₙ₊₁` of the stream is smaller or equal than the inverse of
@@ -125,7 +119,6 @@ theorem succ_nth_stream_b_le_nth_stream_fr_inv {ifp_n ifp_succ_n : IntFractPair 
       simpa [this, IntFractPair.stream, nth_stream_eq, Option.coe_def] using succ_nth_stream_eq
     rwa [← this]
   exact floor_le ifp_n.fr⁻¹
-#align generalized_continued_fraction.int_fract_pair.succ_nth_stream_b_le_nth_stream_fr_inv GenContFract.IntFractPair.succ_nth_stream_b_le_nth_stream_fr_inv
 
 end IntFractPair
 
@@ -145,7 +138,6 @@ theorem of_one_le_get?_partDen {b : K}
     IntFractPair.exists_succ_get?_stream_of_gcf_of_get?_eq_some nth_s_eq
   rw [← ifp_n_b_eq_gp_n_b]
   exact mod_cast IntFractPair.one_le_succ_nth_stream_b succ_nth_stream_eq
-#align generalized_continued_fraction.of_one_le_nth_part_denom GenContFract.of_one_le_get?_partDen
 
 /--
 Shows that the partial numerators `aᵢ` of the continued fraction are equal to one and the partial
@@ -161,7 +153,6 @@ theorem of_partNum_eq_one_and_exists_int_partDen_eq {gp : GenContFract.Pair K}
     have : some gp = some ⟨1, ifp.b⟩ := by rwa [nth_s_eq] at this
     injection this
   simp [this]
-#align generalized_continued_fraction.of_part_num_eq_one_and_exists_int_part_denom_eq GenContFract.of_partNum_eq_one_and_exists_int_partDen_eq
 
 /-- Shows that the partial numerators `aᵢ` are equal to one. -/
 theorem of_partNum_eq_one {a : K} (nth_partNum_eq : (of v).partNums.get? n = some a) :
@@ -170,7 +161,6 @@ theorem of_partNum_eq_one {a : K} (nth_partNum_eq : (of v).partNums.get? n = som
     exists_s_a_of_partNum nth_partNum_eq
   have : gp.a = 1 := (of_partNum_eq_one_and_exists_int_partDen_eq nth_s_eq).left
   rwa [gp_a_eq_a_n] at this
-#align generalized_continued_fraction.of_part_num_eq_one GenContFract.of_partNum_eq_one
 
 /-- Shows that the partial denominators `bᵢ` correspond to an integer. -/
 theorem exists_int_eq_of_partDen {b : K}
@@ -179,7 +169,6 @@ theorem exists_int_eq_of_partDen {b : K}
     exists_s_b_of_partDen nth_partDen_eq
   have : ∃ z : ℤ, gp.b = (z : K) := (of_partNum_eq_one_and_exists_int_partDen_eq nth_s_eq).right
   rwa [gp_b_eq_b_n] at this
-#align generalized_continued_fraction.exists_int_eq_of_part_denom GenContFract.exists_int_eq_of_partDen
 
 end GenContFract
 
@@ -188,22 +177,18 @@ variable (v)
 theorem GenContFract.of_isSimpContFract :
     (of v).IsSimpContFract := fun _ _ nth_partNum_eq =>
   of_partNum_eq_one nth_partNum_eq
-#align generalized_continued_fraction.of_is_simple_continued_fraction GenContFract.of_isSimpContFract
 
 /-- Creates the simple continued fraction of a value. -/
 nonrec def SimpContFract.of : SimpContFract K :=
   ⟨of v, GenContFract.of_isSimpContFract v⟩
-#align simple_continued_fraction.of SimpContFract.of
 
 theorem SimpContFract.of_isContFract :
     (SimpContFract.of v).IsContFract := fun _ _ nth_partDen_eq =>
   lt_of_lt_of_le zero_lt_one (of_one_le_get?_partDen nth_partDen_eq)
-#align simple_continued_fraction.of_is_continued_fraction SimpContFract.of_isContFract
 
 /-- Creates the continued fraction of a value. -/
 def ContFract.of : ContFract K :=
   ⟨SimpContFract.of v, SimpContFract.of_isContFract v⟩
-#align continued_fraction.of ContFract.of
 
 variable {v}
 
@@ -259,7 +244,6 @@ theorem fib_le_of_contsAux_b :
         mono
         · norm_num
         · tauto)
-#align generalized_continued_fraction.fib_le_of_continuants_aux_b GenContFract.fib_le_of_contsAux_b
 
 /-- Shows that the `n`th denominator is greater than or equal to the `n + 1`th fibonacci number,
 that is `Nat.fib (n + 1) ≤ Bₙ`. -/
@@ -271,7 +255,6 @@ theorem succ_nth_fib_le_of_nth_den (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1
     | zero => exact Or.inl <| le_refl 1
     | succ n => exact Or.inr (Or.resolve_left hyp n.succ_ne_zero)
   exact fib_le_of_contsAux_b this
-#align generalized_continued_fraction.succ_nth_fib_le_of_nth_denom GenContFract.succ_nth_fib_le_of_nth_den
 
 /-! As a simple consequence, we can now derive that all denominators are nonnegative. -/
 
@@ -292,12 +275,10 @@ theorem zero_le_of_contsAux_b : 0 ≤ ((of v).contsAux n).b := by
       calc
         (0 : K) ≤ fib (n + 1) := mod_cast (n + 1).fib.zero_le
         _ ≤ ((of v).contsAux (n + 1)).b := fib_le_of_contsAux_b (Or.inr not_terminated)
-#align generalized_continued_fraction.zero_le_of_continuants_aux_b GenContFract.zero_le_of_contsAux_b
 
 /-- Shows that all denominators are nonnegative. -/
 theorem zero_le_of_den : 0 ≤ (of v).dens n := by
   rw [den_eq_conts_b, nth_cont_eq_succ_nth_contAux]; exact zero_le_of_contsAux_b
-#align generalized_continued_fraction.zero_le_of_denom GenContFract.zero_le_of_den
 
 theorem le_of_succ_succ_get?_contsAux_b {b : K}
     (nth_partDen_eq : (of v).partDens.get? n = some b) :
@@ -306,7 +287,6 @@ theorem le_of_succ_succ_get?_contsAux_b {b : K}
     exists_s_b_of_partDen nth_partDen_eq
   simp [of_partNum_eq_one (partNum_eq_s_a nth_s_eq), zero_le_of_contsAux_b,
     GenContFract.contsAux_recurrence nth_s_eq rfl rfl]
-#align generalized_continued_fraction.le_of_succ_succ_nth_continuants_aux_b GenContFract.le_of_succ_succ_get?_contsAux_b
 
 /-- Shows that `bₙ * Bₙ ≤ Bₙ₊₁`, where `bₙ` is the `n`th partial denominator and `Bₙ₊₁` and `Bₙ` are
 the `n + 1`th and `n`th denominator of the continued fraction. -/
@@ -315,7 +295,6 @@ theorem le_of_succ_get?_den {b : K}
     b * (of v).dens n ≤ (of v).dens (n + 1) := by
   rw [den_eq_conts_b, nth_cont_eq_succ_nth_contAux]
   exact le_of_succ_succ_get?_contsAux_b nth_partDenom_eq
-#align generalized_continued_fraction.le_of_succ_nth_denom GenContFract.le_of_succ_get?_den
 
 /-- Shows that the sequence of denominators is monotone, that is `Bₙ ≤ Bₙ₊₁`. -/
 theorem of_den_mono : (of v).dens n ≤ (of v).dens (n + 1) := by
@@ -334,7 +313,6 @@ theorem of_den_mono : (of v).dens n ≤ (of v).dens (n + 1) := by
       g.dens n ≤ b * g.dens n := by
         simpa using mul_le_mul_of_nonneg_right this zero_le_of_den
       _ ≤ g.dens (n + 1) := le_of_succ_get?_den nth_partDen_eq
-#align generalized_continued_fraction.of_denom_mono GenContFract.of_den_mono
 
 section ErrorTerm
 
@@ -419,7 +397,6 @@ theorem sub_convs_eq {ifp : IntFractPair K}
       _ = (pA * B - pB * A) / ((pB + ifp.fr⁻¹ * B) * B) := by ring
       _ = (-1) ^ n / ((pB + ifp.fr⁻¹ * B) * B) := by rw [determinant_eq]
       _ = (-1) ^ n / (B * (ifp.fr⁻¹ * B + pB)) := by ac_rfl
-#align generalized_continued_fraction.sub_convergents_eq GenContFract.sub_convs_eq
 
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (Bₙ * Bₙ₊₁)`. -/
 theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
@@ -499,7 +476,6 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
       IntFractPair.succ_nth_stream_b_le_nth_stream_fr_inv stream_nth_eq succ_nth_stream_eq
     have : 0 ≤ conts.b := le_of_lt zero_lt_conts_b
     gcongr; exact this
-#align generalized_continued_fraction.abs_sub_convergents_le GenContFract.abs_sub_convs_le
 
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (bₙ * Bₙ * Bₙ)`. This bound is worse than the one shown in
 `GenContFract.abs_sub_convs_le`, but sometimes it is easier to apply and
@@ -521,7 +497,6 @@ theorem abs_sub_convergents_le' {b : K}
       apply_rules [mul_pos]
     · conv_rhs => rw [mul_comm]
       exact mul_le_mul_of_nonneg_right (le_of_succ_get?_den nth_partDen_eq) hB.le
-#align generalized_continued_fraction.abs_sub_convergents_le' GenContFract.abs_sub_convergents_le'
 
 end ErrorTerm
 

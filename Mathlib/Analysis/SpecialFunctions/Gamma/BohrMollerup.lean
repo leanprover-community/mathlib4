@@ -5,8 +5,6 @@ Authors: David Loeffler
 -/
 import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 
-#align_import analysis.special_functions.gamma.bohr_mollerup from "leanprover-community/mathlib"@"a3209ddf94136d36e5e5c624b10b2a347cc9d090"
-
 /-! # Convexity properties of the Gamma function
 
 In this file, we prove that `Gamma` and `log ∘ Gamma` are convex functions on the positive real
@@ -37,7 +35,6 @@ to a constant, and it should be possible to deduce the value of this constant us
 formula).
 -/
 
-set_option linter.uppercaseLean3 false
 
 noncomputable section
 
@@ -54,46 +51,38 @@ variable {𝕜 E β : Type*} {s : Set E} {f g : E → β} [OrderedSemiring 𝕜]
 theorem ConvexOn.congr [SMul 𝕜 β] (hf : ConvexOn 𝕜 s f) (hfg : EqOn f g s) : ConvexOn 𝕜 s g :=
   ⟨hf.1, fun x hx y hy a b ha hb hab => by
     simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha hb hab)] using hf.2 hx hy ha hb hab⟩
-#align convex_on.congr ConvexOn.congr
 
 theorem ConcaveOn.congr [SMul 𝕜 β] (hf : ConcaveOn 𝕜 s f) (hfg : EqOn f g s) : ConcaveOn 𝕜 s g :=
   ⟨hf.1, fun x hx y hy a b ha hb hab => by
     simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha hb hab)] using hf.2 hx hy ha hb hab⟩
-#align concave_on.congr ConcaveOn.congr
 
 theorem StrictConvexOn.congr [SMul 𝕜 β] (hf : StrictConvexOn 𝕜 s f) (hfg : EqOn f g s) :
     StrictConvexOn 𝕜 s g :=
   ⟨hf.1, fun x hx y hy hxy a b ha hb hab => by
     simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha.le hb.le hab)] using
       hf.2 hx hy hxy ha hb hab⟩
-#align strict_convex_on.congr StrictConvexOn.congr
 
 theorem StrictConcaveOn.congr [SMul 𝕜 β] (hf : StrictConcaveOn 𝕜 s f) (hfg : EqOn f g s) :
     StrictConcaveOn 𝕜 s g :=
   ⟨hf.1, fun x hx y hy hxy a b ha hb hab => by
     simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha.le hb.le hab)] using
       hf.2 hx hy hxy ha hb hab⟩
-#align strict_concave_on.congr StrictConcaveOn.congr
 
 theorem ConvexOn.add_const [Module 𝕜 β] (hf : ConvexOn 𝕜 s f) (b : β) :
     ConvexOn 𝕜 s (f + fun _ => b) :=
   hf.add (convexOn_const _ hf.1)
-#align convex_on.add_const ConvexOn.add_const
 
 theorem ConcaveOn.add_const [Module 𝕜 β] (hf : ConcaveOn 𝕜 s f) (b : β) :
     ConcaveOn 𝕜 s (f + fun _ => b) :=
   hf.add (concaveOn_const _ hf.1)
-#align concave_on.add_const ConcaveOn.add_const
 
 theorem StrictConvexOn.add_const {γ : Type*} {f : E → γ} [OrderedCancelAddCommMonoid γ]
     [Module 𝕜 γ] (hf : StrictConvexOn 𝕜 s f) (b : γ) : StrictConvexOn 𝕜 s (f + fun _ => b) :=
   hf.add_convexOn (convexOn_const _ hf.1)
-#align strict_convex_on.add_const StrictConvexOn.add_const
 
 theorem StrictConcaveOn.add_const {γ : Type*} {f : E → γ} [OrderedCancelAddCommMonoid γ]
     [Module 𝕜 γ] (hf : StrictConcaveOn 𝕜 s f) (b : γ) : StrictConcaveOn 𝕜 s (f + fun _ => b) :=
   hf.add_concaveOn (concaveOn_const _ hf.1)
-#align strict_concave_on.add_const StrictConcaveOn.add_const
 
 end Convexity
 
@@ -159,7 +148,6 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
     ring
   · rw [one_div_one_div, one_div_one_div]
     congr 2 <;> exact setIntegral_congr measurableSet_Ioi fun x hx => fpow (by assumption) _ hx
-#align real.Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma Real.Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma
 
 theorem convexOn_log_Gamma : ConvexOn ℝ (Ioi 0) (log ∘ Gamma) := by
   refine convexOn_iff_forall_pos.mpr ⟨convex_Ioi _, fun x hx y hy a b ha hb hab => ?_⟩
@@ -171,7 +159,6 @@ theorem convexOn_log_Gamma : ConvexOn ℝ (Ioi 0) (log ∘ Gamma) := by
   · gcongr
     exact Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma hx hy ha hb hab
   all_goals positivity
-#align real.convex_on_log_Gamma Real.convexOn_log_Gamma
 
 theorem convexOn_Gamma : ConvexOn ℝ (Ioi 0) Gamma := by
   refine
@@ -182,7 +169,6 @@ theorem convexOn_Gamma : ConvexOn ℝ (Ioi 0) Gamma := by
   refine isPreconnected_Ioi.image _ fun x hx => ContinuousAt.continuousWithinAt ?_
   refine (differentiableAt_Gamma fun m => ?_).continuousAt.log (Gamma_pos_of_pos hx).ne'
   exact (neg_lt_iff_pos_add.mpr (add_pos_of_pos_of_nonneg (mem_Ioi.mp hx) (Nat.cast_nonneg m))).ne'
-#align real.convex_on_Gamma Real.convexOn_Gamma
 
 end Convexity
 
@@ -194,7 +180,6 @@ namespace BohrMollerup
 `log (Gamma x)` as `n → ∞`. -/
 def logGammaSeq (x : ℝ) (n : ℕ) : ℝ :=
   x * log n + log n ! - ∑ m ∈ Finset.range (n + 1), log (x + m)
-#align real.bohr_mollerup.log_gamma_seq Real.BohrMollerup.logGammaSeq
 
 variable {f : ℝ → ℝ} {x : ℝ} {n : ℕ}
 
@@ -208,7 +193,6 @@ theorem f_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hn
   conv_rhs => rw [← Nat.succ_pred_eq_of_pos hm, Nat.factorial_succ, mul_comm]
   congr
   exact (Nat.succ_pred_eq_of_pos hm).symm
-#align real.bohr_mollerup.f_nat_eq Real.BohrMollerup.f_nat_eq
 
 theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (n : ℕ) :
     f (x + n) = f x + ∑ m ∈ Finset.range n, log (x + m) := by
@@ -219,7 +203,6 @@ theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y)
     · rw [Finset.range_succ, Finset.sum_insert Finset.not_mem_range_self]
       abel
     · linarith [(Nat.cast_nonneg n : 0 ≤ (n : ℝ))]
-#align real.bohr_mollerup.f_add_nat_eq Real.BohrMollerup.f_add_nat_eq
 
 /-- Linear upper bound for `f (x + n)` on unit interval -/
 theorem f_add_nat_le (hf_conv : ConvexOn ℝ (Ioi 0) f)
@@ -230,7 +213,6 @@ theorem f_add_nat_le (hf_conv : ConvexOn ℝ (Ioi 0) f)
   rw [this, (by ring : (n : ℝ) + x = (1 - x) * n + x * (n + 1))]
   simpa only [smul_eq_mul] using
     hf_conv.2 hn' (by linarith : 0 < (n + 1 : ℝ)) (by linarith : 0 ≤ 1 - x) hx.le (by linarith)
-#align real.bohr_mollerup.f_add_nat_le Real.BohrMollerup.f_add_nat_le
 
 /-- Linear lower bound for `f (x + n)` on unit interval -/
 theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
@@ -247,7 +229,6 @@ theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
     -- rw [hf_feq npos, add_sub_cancel]
     rw [eq_sub_iff_add_eq, ← hf_feq npos, sub_add_cancel]
   rwa [this, le_div_iff hx, sub_sub_cancel, le_sub_iff_add_le, mul_comm _ x, add_comm] at c
-#align real.bohr_mollerup.f_add_nat_ge Real.BohrMollerup.f_add_nat_ge
 
 theorem logGammaSeq_add_one (x : ℝ) (n : ℕ) :
     logGammaSeq (x + 1) n = logGammaSeq x (n + 1) + log x - (x + 1) * (log (n + 1) - log n) := by
@@ -264,7 +245,6 @@ theorem logGammaSeq_add_one (x : ℝ) (n : ℕ) :
     abel
   rw [← this, Nat.cast_add_one n]
   ring
-#align real.bohr_mollerup.log_gamma_seq_add_one Real.BohrMollerup.logGammaSeq_add_one
 
 theorem le_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hx' : x ≤ 1) (n : ℕ) :
@@ -273,7 +253,6 @@ theorem le_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
   refine (f_add_nat_le hf_conv (@hf_feq) (Nat.add_one_ne_zero n) hx hx').trans (le_of_eq ?_)
   rw [f_nat_eq @hf_feq (by linarith : n + 1 ≠ 0), Nat.add_sub_cancel, Nat.cast_add_one]
   ring
-#align real.bohr_mollerup.le_log_gamma_seq Real.BohrMollerup.le_logGammaSeq
 
 theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hn : n ≠ 0) :
@@ -285,7 +264,6 @@ theorem ge_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     · ring
     · exact Nat.succ_ne_zero _
   · omega
-#align real.bohr_mollerup.ge_log_gamma_seq Real.BohrMollerup.ge_logGammaSeq
 
 theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) (hx' : x ≤ 1) :
@@ -302,7 +280,6 @@ theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
   · show ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
     filter_upwards [eventually_ne_atTop 0] with n hn using
       le_sub_iff_add_le'.mpr (ge_logGammaSeq hf_conv hf_feq hx hn)
-#align real.bohr_mollerup.tendsto_log_gamma_seq_of_le_one Real.BohrMollerup.tendsto_logGammaSeq_of_le_one
 
 theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
     (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y) (hx : 0 < x) :
@@ -353,7 +330,6 @@ theorem tendsto_logGammaSeq (hf_conv : ConvexOn ℝ (Ioi 0) f)
       rw [sub_add_cancel] at this
       rw [this]
       ring
-#align real.bohr_mollerup.tendsto_log_gamma_seq Real.BohrMollerup.tendsto_logGammaSeq
 
 theorem tendsto_log_gamma {x : ℝ} (hx : 0 < x) :
     Tendsto (logGammaSeq x) atTop (𝓝 <| log (Gamma x)) := by
@@ -363,7 +339,6 @@ theorem tendsto_log_gamma {x : ℝ} (hx : 0 < x) :
   refine BohrMollerup.tendsto_logGammaSeq convexOn_log_Gamma (fun {y} hy => ?_) hx
   rw [Function.comp_apply, Gamma_add_one hy.ne', log_mul hy.ne' (Gamma_pos_of_pos hy).ne', add_comm,
     Function.comp_apply]
-#align real.bohr_mollerup.tendsto_log_Gamma Real.BohrMollerup.tendsto_log_gamma
 
 end BohrMollerup
 
@@ -382,7 +357,6 @@ theorem eq_Gamma_of_log_convex {f : ℝ → ℝ} (hf_conv : ConvexOn ℝ (Ioi 0)
   · intro y hy
     rw [Function.comp_apply, Function.comp_apply, hf_feq hy, log_mul hy.ne' (hf_pos hy).ne']
     ring
-#align real.eq_Gamma_of_log_convex Real.eq_Gamma_of_log_convex
 
 end BohrMollerup
 
@@ -390,7 +364,6 @@ end BohrMollerup
 section StrictMono
 
 theorem Gamma_two : Gamma 2 = 1 := by simp [Nat.factorial_one]
-#align real.Gamma_two Real.Gamma_two
 
 theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
   -- This can also be proved using the closed-form evaluation of `Gamma (1 / 2)` in
@@ -413,7 +386,6 @@ theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
   rw [sub_neg, mul_one, ← Nat.cast_two, ← log_pow, ← exp_lt_exp, Nat.cast_two, exp_log two_pos,
       exp_log] <;>
     norm_num
-#align real.Gamma_three_div_two_lt_one Real.Gamma_three_div_two_lt_one
 
 theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
   convert
@@ -422,7 +394,6 @@ theorem Gamma_strictMonoOn_Ici : StrictMonoOn Gamma (Ici 2) := by
   symm
   rw [inter_eq_right]
   exact fun x hx => two_pos.trans_le <| mem_Ici.mp hx
-#align real.Gamma_strict_mono_on_Ici Real.Gamma_strictMonoOn_Ici
 
 end StrictMono
 
@@ -440,19 +411,16 @@ multiple of `Gamma`, and we can compute the constant by specialising at `s = 1`.
 /-- Auxiliary definition for the doubling formula (we'll show this is equal to `Gamma s`) -/
 def doublingGamma (s : ℝ) : ℝ :=
   Gamma (s / 2) * Gamma (s / 2 + 1 / 2) * 2 ^ (s - 1) / √π
-#align real.doubling_Gamma Real.doublingGamma
 
 theorem doublingGamma_add_one (s : ℝ) (hs : s ≠ 0) :
     doublingGamma (s + 1) = s * doublingGamma s := by
   rw [doublingGamma, doublingGamma, (by abel : s + 1 - 1 = s - 1 + 1), add_div, add_assoc,
     add_halves (1 : ℝ), Gamma_add_one (div_ne_zero hs two_ne_zero), rpow_add two_pos, rpow_one]
   ring
-#align real.doubling_Gamma_add_one Real.doublingGamma_add_one
 
 theorem doublingGamma_one : doublingGamma 1 = 1 := by
   simp_rw [doublingGamma, Gamma_one_half_eq, add_halves (1 : ℝ), sub_self, Gamma_one, mul_one,
     rpow_zero, mul_one, div_self (sqrt_ne_zero'.mpr pi_pos)]
-#align real.doubling_Gamma_one Real.doublingGamma_one
 
 theorem log_doublingGamma_eq :
     EqOn (log ∘ doublingGamma)
@@ -467,7 +435,6 @@ theorem log_doublingGamma_eq :
   rw [Function.comp_apply, doublingGamma, log_div (mul_ne_zero (mul_ne_zero h2 h3) h4) h1,
     log_mul (mul_ne_zero h2 h3) h4, log_mul h2 h3, log_rpow two_pos, log_mul two_ne_zero h1]
   ring_nf
-#align real.log_doubling_Gamma_eq Real.log_doublingGamma_eq
 
 theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ doublingGamma) := by
   refine (((ConvexOn.add ?_ ?_).add ?_).add_const _).congr log_doublingGamma_eq.symm
@@ -493,7 +460,6 @@ theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ dou
       rw [smul_eq_mul, mul_comm, mul_one_div]
   · simpa only [mul_comm _ (log _)] using
       (convexOn_id (convex_Ioi (0 : ℝ))).smul (log_pos one_lt_two).le
-#align real.doubling_Gamma_log_convex_Ioi Real.doublingGamma_log_convex_Ioi
 
 theorem doublingGamma_eq_Gamma {s : ℝ} (hs : 0 < s) : doublingGamma s = Gamma s := by
   refine
@@ -501,7 +467,6 @@ theorem doublingGamma_eq_Gamma {s : ℝ} (hs : 0 < s) : doublingGamma s = Gamma 
       (fun {y} hy => doublingGamma_add_one y hy.ne') (fun {y} hy => ?_) doublingGamma_one hs
   apply_rules [mul_pos, Gamma_pos_of_pos, add_pos, inv_pos_of_pos, rpow_pos_of_pos, two_pos,
     one_pos, sqrt_pos_of_pos pi_pos]
-#align real.doubling_Gamma_eq_Gamma Real.doublingGamma_eq_Gamma
 
 /-- Legendre's doubling formula for the Gamma function, for positive real arguments. Note that
 we shall later prove this for all `s` as `Real.Gamma_mul_Gamma_add_half` (superseding this result)
@@ -513,7 +478,6 @@ theorem Gamma_mul_Gamma_add_half_of_pos {s : ℝ} (hs : 0 < s) :
     rpow_neg zero_le_two]
   field_simp [(sqrt_pos_of_pos pi_pos).ne', (rpow_pos_of_pos two_pos (2 * s - 1)).ne']
   ring
-#align real.Gamma_mul_Gamma_add_half_of_pos Real.Gamma_mul_Gamma_add_half_of_pos
 
 end Doubling
 

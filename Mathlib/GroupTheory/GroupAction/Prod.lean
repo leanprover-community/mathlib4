@@ -6,8 +6,6 @@ Authors: Simon Hudon, Patrick Massot, Eric Wieser
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 
-#align_import group_theory.group_action.prod from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
-
 /-!
 # Prod instances for additive and multiplicative actions
 This file defines instances for binary product of additive and multiplicative actions and provides
@@ -41,11 +39,9 @@ variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (x : α × β)
 
 theorem smul_zero_mk {α : Type*} [Monoid M] [AddMonoid α] [DistribMulAction M α] (a : M) (c : β) :
     a • ((0 : α), c) = (0, a • c) := by rw [Prod.smul_mk, smul_zero]
-#align prod.smul_zero_mk Prod.smul_zero_mk
 
 theorem smul_mk_zero {β : Type*} [Monoid M] [AddMonoid β] [DistribMulAction M β] (a : M) (b : α) :
     a • (b, (0 : β)) = (a • b, 0) := by rw [Prod.smul_mk, smul_zero]
-#align prod.smul_mk_zero Prod.smul_mk_zero
 
 end
 

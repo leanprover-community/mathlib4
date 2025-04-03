@@ -6,8 +6,6 @@ Authors: Yury G. Kudryashov
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.Topology.Order.Basic
 
-#align_import topology.algebra.order.archimedean from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
-
 /-!
 # Topology on archimedean groups and fields
 
@@ -29,7 +27,6 @@ open Set
 theorem Rat.denseRange_cast {𝕜} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
     [Archimedean 𝕜] : DenseRange ((↑) : ℚ → 𝕜) :=
   dense_of_exists_between fun _ _ h => Set.exists_range_iff.2 <| exists_rat_btwn h
-#align rat.dense_range_cast Rat.denseRange_cast
 
 namespace AddSubgroup
 
@@ -60,7 +57,6 @@ theorem dense_of_no_min (S : AddSubgroup G) (hbot : S ≠ ⊥)
   refine S.dense_of_not_isolated_zero fun ε ε0 => ?_
   contrapose! H
   exact exists_isLeast_pos hbot ε0 (disjoint_left.2 H)
-#align real.subgroup_dense_of_no_min AddSubgroup.dense_of_no_minₓ
 
 /-- An additive subgroup of an archimedean linear ordered additive commutative group `G` with order
 topology either is dense in `G` or is a cyclic subgroup. -/
@@ -69,6 +65,5 @@ theorem dense_or_cyclic (S : AddSubgroup G) : Dense (S : Set G) ∨ ∃ a : G, S
   push_neg at h
   rcases h with ⟨ε, ε0, hε⟩
   exact cyclic_of_isolated_zero ε0 (disjoint_left.2 hε)
-#align real.subgroup_dense_or_cyclic AddSubgroup.dense_or_cyclicₓ
 
 end AddSubgroup

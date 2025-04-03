@@ -5,8 +5,6 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.Order.Zorn
 
-#align_import order.extension.linear from "leanprover-community/mathlib"@"9830a300340708eaa85d477c3fb96dd25f9468a5"
-
 /-!
 # Extend a partial order to a linear order
 
@@ -71,12 +69,10 @@ theorem extend_partialOrder {α : Type u} (r : α → α → Prop) [IsPartialOrd
     · exact (h.2 (_root_.trans ya (_root_.trans ab bx))).elim
     · exact (h.2 (_root_.trans yb (_root_.trans ba ax))).elim
     · exact (h.2 (_root_.trans yb bx)).elim
-#align extend_partial_order extend_partialOrder
 
 /-- A type alias for `α`, intended to extend a partial order on `α` to a linear order. -/
 def LinearExtension (α : Type u) : Type u :=
   α
-#align linear_extension LinearExtension
 
 noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExtension α) where
   le := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose
@@ -90,7 +86,6 @@ noncomputable instance {α : Type u} [PartialOrder α] : LinearOrder (LinearExte
 def toLinearExtension {α : Type u} [PartialOrder α] : α →o LinearExtension α where
   toFun x := x
   monotone' := (extend_partialOrder ((· ≤ ·) : α → α → Prop)).choose_spec.2
-#align to_linear_extension toLinearExtension
 
 instance {α : Type u} [Inhabited α] : Inhabited (LinearExtension α) :=
   ⟨(default : α)⟩

@@ -34,7 +34,6 @@ open Metric
 /-- A pseudometric space is proper if all closed balls are compact. -/
 class ProperSpace (α : Type u) [PseudoMetricSpace α] : Prop where
   isCompact_closedBall : ∀ x : α, ∀ r, IsCompact (closedBall x r)
-#align proper_space ProperSpace
 
 export ProperSpace (isCompact_closedBall)
 
@@ -42,7 +41,6 @@ export ProperSpace (isCompact_closedBall)
 theorem isCompact_sphere {α : Type*} [PseudoMetricSpace α] [ProperSpace α] (x : α) (r : ℝ) :
     IsCompact (sphere x r) :=
   (isCompact_closedBall x r).of_isClosed_subset isClosed_sphere sphere_subset_closedBall
-#align is_compact_sphere isCompact_sphere
 
 /-- In a proper pseudometric space, any sphere is a `CompactSpace` when considered as a subtype. -/
 instance Metric.sphere.compactSpace {α : Type*} [PseudoMetricSpace α] [ProperSpace α]
@@ -61,7 +59,6 @@ instance (priority := 100) secondCountable_of_proper [ProperSpace α] :
   rcases em (Nonempty α) with (⟨⟨x⟩⟩ | hn)
   · exact ⟨⟨fun n => closedBall x n, fun n => isCompact_closedBall _ _, iUnion_closedBall_nat _⟩⟩
   · exact ⟨⟨fun _ => ∅, fun _ => isCompact_empty, iUnion_eq_univ_iff.2 fun x => (hn ⟨x⟩).elim⟩⟩
-#align second_countable_of_proper secondCountable_of_proper
 
 /-- If all closed balls of large enough radius are compact, then the space is proper. Especially
 useful when the lower bound for the radius is 0. -/
@@ -69,7 +66,6 @@ theorem ProperSpace.of_isCompact_closedBall_of_le (R : ℝ)
     (h : ∀ x : α, ∀ r, R ≤ r → IsCompact (closedBall x r)) : ProperSpace α :=
   ⟨fun x r => IsCompact.of_isClosed_subset (h x (max r R) (le_max_right _ _)) isClosed_ball
     (closedBall_subset_closedBall <| le_max_left _ _)⟩
-#align proper_space_of_compact_closed_ball_of_le ProperSpace.of_isCompact_closedBall_of_le
 
 @[deprecated (since := "2024-01-31")]
 alias properSpace_of_compact_closedBall_of_le := ProperSpace.of_isCompact_closedBall_of_le
@@ -87,14 +83,12 @@ theorem ProperSpace.of_seq_closedBall {β : Type*} {l : Filter β} [NeBot l] {x 
 -- see Note [lower instance priority]
 instance (priority := 100) proper_of_compact [CompactSpace α] : ProperSpace α :=
   ⟨fun _ _ => isClosed_ball.isCompact⟩
-#align proper_of_compact proper_of_compact
 
 -- see Note [lower instance priority]
 /-- A proper space is locally compact -/
 instance (priority := 100) locally_compact_of_proper [ProperSpace α] : LocallyCompactSpace α :=
   .of_hasBasis (fun _ => nhds_basis_closedBall) fun _ _ _ =>
     isCompact_closedBall _ _
-#align locally_compact_of_proper locally_compact_of_proper
 
 -- see Note [lower instance priority]
 /-- A proper space is complete -/
@@ -110,7 +104,6 @@ instance (priority := 100) complete_of_proper [ProperSpace α] : CompleteSpace �
         (le_principal_iff.2 this) with
       ⟨y, -, hy⟩
     exact ⟨y, hy⟩⟩
-#align complete_of_proper complete_of_proper
 
 /-- A binary product of proper spaces is proper. -/
 instance prod_properSpace {α : Type*} {β : Type*} [PseudoMetricSpace α] [PseudoMetricSpace β]
@@ -119,7 +112,6 @@ instance prod_properSpace {α : Type*} {β : Type*} [PseudoMetricSpace α] [Pseu
     rintro ⟨x, y⟩ r
     rw [← closedBall_prod_same x y]
     exact (isCompact_closedBall x r).prod (isCompact_closedBall y r)
-#align prod_proper_space prod_properSpace
 
 /-- A finite product of proper spaces is proper. -/
 instance pi_properSpace {π : β → Type*} [Fintype β] [∀ b, PseudoMetricSpace (π b)]
@@ -127,7 +119,6 @@ instance pi_properSpace {π : β → Type*} [Fintype β] [∀ b, PseudoMetricSpa
   refine .of_isCompact_closedBall_of_le 0 fun x r hr => ?_
   rw [closedBall_pi _ hr]
   exact isCompact_univ_pi fun _ => isCompact_closedBall _ _
-#align pi_proper_space pi_properSpace
 
 end ProperSpace
 

@@ -6,8 +6,6 @@ Authors: Scott Morrison
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Topology.Sheaves.Sheaf
 
-#align_import topology.sheaves.forget from "leanprover-community/mathlib"@"5dc6092d09e5e489106865241986f7f2ad28d4c8"
-
 /-!
 # Checking the sheaf condition on the underlying presheaf of types.
 
@@ -58,8 +56,6 @@ theorem isSheaf_iff_isSheaf_comp {C : Type u₁} [Category.{v} C] {D : Type u₂
     (G : C ⥤ D) [G.ReflectsIsomorphisms] [HasLimits C] [PreservesLimits G]
     {X : TopCat.{v}} (F : Presheaf C X) : Presheaf.IsSheaf F ↔ Presheaf.IsSheaf (F ⋙ G) :=
   isSheaf_iff_isSheaf_comp' G F
-set_option linter.uppercaseLean3 false in
-#align Top.presheaf.is_sheaf_iff_is_sheaf_comp TopCat.Presheaf.isSheaf_iff_isSheaf_comp
 
 /-!
 As an example, we now have everything we need to check the sheaf condition

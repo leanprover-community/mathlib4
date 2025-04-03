@@ -8,8 +8,6 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
-#align_import number_theory.modular_forms.congruence_subgroups from "leanprover-community/mathlib"@"ae690b0c236e488a0043f6faa8ce3546e7f2f9c5"
-
 /-!
 # Congruence subgroups
 
@@ -34,13 +32,11 @@ variable (N : ℕ)
 local notation "SLMOD(" N ")" =>
   @Matrix.SpecialLinearGroup.map (Fin 2) _ _ _ _ _ _ (Int.castRingHom (ZMod N))
 
-set_option linter.uppercaseLean3 false
 
 @[simp]
 theorem SL_reduction_mod_hom_val (N : ℕ) (γ : SL(2, ℤ)) :
     ∀ i j : Fin 2, (SLMOD(N) γ : Matrix (Fin 2) (Fin 2) (ZMod N)) i j = ((↑ₘγ i j : ℤ) : ZMod N) :=
   fun _ _ => rfl
-#align SL_reduction_mod_hom_val SL_reduction_mod_hom_val
 
 namespace CongruenceSubgroup
 
@@ -48,11 +44,9 @@ namespace CongruenceSubgroup
 modulo `N`. -/
 def Gamma (N : ℕ) : Subgroup SL(2, ℤ) :=
   SLMOD(N).ker
-#align Gamma CongruenceSubgroup.Gamma
 
 theorem Gamma_mem' (N : ℕ) (γ : SL(2, ℤ)) : γ ∈ Gamma N ↔ SLMOD(N) γ = 1 :=
   Iff.rfl
-#align Gamma_mem' CongruenceSubgroup.Gamma_mem'
 
 @[simp]
 theorem Gamma_mem (N : ℕ) (γ : SL(2, ℤ)) : γ ∈ Gamma N ↔ ((↑ₘγ 0 0 : ℤ) : ZMod N) = 1 ∧
@@ -66,16 +60,13 @@ theorem Gamma_mem (N : ℕ) (γ : SL(2, ℤ)) : γ ∈ Gamma N ↔ ((↑ₘγ 0 
     rw [SL_reduction_mod_hom_val N γ]
     fin_cases i <;> fin_cases j <;> simp only [h]
     exacts [h.1, h.2.1, h.2.2.1, h.2.2.2]
-#align CongruenceSubgroup.Gamma_mem CongruenceSubgroup.Gamma_mem
 
 theorem Gamma_normal (N : ℕ) : Subgroup.Normal (Gamma N) :=
   SLMOD(N).normal_ker
-#align Gamma_normal CongruenceSubgroup.Gamma_normal
 
 theorem Gamma_one_top : Gamma 1 = ⊤ := by
   ext
   simp [eq_iff_true_of_subsingleton]
-#align Gamma_one_top CongruenceSubgroup.Gamma_one_top
 
 theorem Gamma_zero_bot : Gamma 0 = ⊥ := by
   ext
@@ -88,7 +79,6 @@ theorem Gamma_zero_bot : Gamma 0 = ⊥ := by
     exacts [h.1, h.2.1, h.2.2.1, h.2.2.2]
   · intro h
     simp [h]
-#align Gamma_zero_bot CongruenceSubgroup.Gamma_zero_bot
 
 lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
     (ModularGroup.T ^ M) ∈ Gamma (Int.natAbs N) := by
@@ -117,15 +107,12 @@ def Gamma0 (N : ℕ) : Subgroup SL(2, ℤ) where
     simp only [cons_val_zero, cons_val_one, head_cons, coe_matrix_coe,
       coe_mk, Int.coe_castRingHom, map_apply, Int.cast_neg, neg_eq_zero, Set.mem_setOf_eq] at *
     exact ha
-#align Gamma0 CongruenceSubgroup.Gamma0
 
 @[simp]
 theorem Gamma0_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma0 N ↔ ((↑ₘA 1 0 : ℤ) : ZMod N) = 0 :=
   Iff.rfl
-#align Gamma0_mem CongruenceSubgroup.Gamma0_mem
 
 theorem Gamma0_det (N : ℕ) (A : Gamma0 N) : (A.1.1.det : ZMod N) = 1 := by simp [A.1.property]
-#align Gamma0_det CongruenceSubgroup.Gamma0_det
 
 /-- The group homomorphism from `Gamma0` to `ZMod N` given by mapping a matrix to its lower
 right-hand entry. -/
@@ -142,18 +129,15 @@ def Gamma0Map (N : ℕ) : Gamma0 N →* ZMod N where
       coe_matrix_coe, Int.coe_castRingHom, map_apply] at *
     rw [ha]
     simp
-#align Gamma_0_map CongruenceSubgroup.Gamma0Map
 
 /-- The congruence subgroup `Gamma1` (as a subgroup of `Gamma0`) of matrices whose bottom
 row is congruent to `(0,1)` modulo `N`. -/
 def Gamma1' (N : ℕ) : Subgroup (Gamma0 N) :=
   (Gamma0Map N).ker
-#align Gamma1' CongruenceSubgroup.Gamma1'
 
 @[simp]
 theorem Gamma1_mem' (N : ℕ) (γ : Gamma0 N) : γ ∈ Gamma1' N ↔ (Gamma0Map N) γ = 1 :=
   Iff.rfl
-#align Gamma1_mem' CongruenceSubgroup.Gamma1_mem'
 
 theorem Gamma1_to_Gamma0_mem (N : ℕ) (A : Gamma0 N) : A ∈ Gamma1' N ↔
     ((↑ₘA 0 0 : ℤ) : ZMod N) = 1 ∧ ((↑ₘA 1 1 : ℤ) : ZMod N) = 1 ∧ ((↑ₘA 1 0 : ℤ) : ZMod N) = 0 := by
@@ -172,13 +156,11 @@ theorem Gamma1_to_Gamma0_mem (N : ℕ) (A : Gamma0 N) : A ∈ Gamma1' N ↔
     simp only [Gamma1_mem', Gamma0Map, MonoidHom.coe_mk, coe_matrix_coe,
       Int.coe_castRingHom, map_apply]
     exact ha.2.1
-#align Gamma1_to_Gamma0_mem CongruenceSubgroup.Gamma1_to_Gamma0_mem
 
 /-- The congruence subgroup `Gamma1` of `SL(2, ℤ)` consisting of matrices whose bottom
 row is congruent to `(0,1)` modulo `N`. -/
 def Gamma1 (N : ℕ) : Subgroup SL(2, ℤ) :=
   Subgroup.map ((Gamma0 N).subtype.comp (Gamma1' N).subtype) ⊤
-#align Gamma1 CongruenceSubgroup.Gamma1
 
 @[simp]
 theorem Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
@@ -200,13 +182,11 @@ theorem Gamma1_mem (N : ℕ) (A : SL(2, ℤ)) : A ∈ Gamma1 N ↔
       exact ha
     refine ⟨(⟨(⟨A, hA⟩ : Gamma0 N), HA⟩ : (Gamma1' N : Subgroup (Gamma0 N))), ?_⟩
     simp
-#align Gamma1_mem CongruenceSubgroup.Gamma1_mem
 
 theorem Gamma1_in_Gamma0 (N : ℕ) : Gamma1 N ≤ Gamma0 N := by
   intro x HA
   simp only [Gamma0_mem, Gamma1_mem, coe_matrix_coe, Int.coe_castRingHom, map_apply] at *
   exact HA.2.2
-#align Gamma1_in_Gamma0 CongruenceSubgroup.Gamma1_in_Gamma0
 
 section CongruenceSubgroups
 
@@ -214,28 +194,23 @@ section CongruenceSubgroups
 `(N : ℕ+)`. -/
 def IsCongruenceSubgroup (Γ : Subgroup SL(2, ℤ)) : Prop :=
   ∃ N : ℕ+, Gamma N ≤ Γ
-#align is_congruence_subgroup CongruenceSubgroup.IsCongruenceSubgroup
 
 theorem isCongruenceSubgroup_trans (H K : Subgroup SL(2, ℤ)) (h : H ≤ K)
     (h2 : IsCongruenceSubgroup H) : IsCongruenceSubgroup K := by
   obtain ⟨N, hN⟩ := h2
   exact ⟨N, le_trans hN h⟩
-#align is_congruence_subgroup_trans CongruenceSubgroup.isCongruenceSubgroup_trans
 
 theorem Gamma_is_cong_sub (N : ℕ+) : IsCongruenceSubgroup (Gamma N) :=
   ⟨N, by simp only [le_refl]⟩
-#align Gamma_is_cong_sub CongruenceSubgroup.Gamma_is_cong_sub
 
 theorem Gamma1_is_congruence (N : ℕ+) : IsCongruenceSubgroup (Gamma1 N) := by
   refine ⟨N, ?_⟩
   intro A hA
   simp only [Gamma1_mem, Gamma_mem] at *
   simp only [hA, eq_self_iff_true, and_self_iff]
-#align Gamma1_is_congruence CongruenceSubgroup.Gamma1_is_congruence
 
 theorem Gamma0_is_congruence (N : ℕ+) : IsCongruenceSubgroup (Gamma0 N) :=
   isCongruenceSubgroup_trans _ _ (Gamma1_in_Gamma0 N) (Gamma1_is_congruence N)
-#align Gamma0_is_congruence CongruenceSubgroup.Gamma0_is_congruence
 
 end CongruenceSubgroups
 
@@ -245,7 +220,6 @@ open Pointwise
 
 theorem Gamma_cong_eq_self (N : ℕ) (g : ConjAct SL(2, ℤ)) : g • Gamma N = Gamma N := by
   apply Subgroup.Normal.conjAct (Gamma_normal N)
-#align Gamma_cong_eq_self CongruenceSubgroup.Gamma_cong_eq_self
 
 theorem conj_cong_is_cong (g : ConjAct SL(2, ℤ)) (Γ : Subgroup SL(2, ℤ))
     (h : IsCongruenceSubgroup Γ) : IsCongruenceSubgroup (g • Γ) := by
@@ -253,7 +227,6 @@ theorem conj_cong_is_cong (g : ConjAct SL(2, ℤ)) (Γ : Subgroup SL(2, ℤ))
   refine ⟨N, ?_⟩
   rw [← Gamma_cong_eq_self N g, Subgroup.pointwise_smul_le_pointwise_smul_iff]
   exact HN
-#align conj_cong_is_cong CongruenceSubgroup.conj_cong_is_cong
 
 end Conjugation
 

@@ -8,7 +8,6 @@ import Mathlib.Data.Real.Archimedean
 import Mathlib.LinearAlgebra.LinearPMap
 
 
-#align_import analysis.convex.cone.basic from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 
 /-!
 # Extension theorems
@@ -110,7 +109,6 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
       replace : c ≤ f (r⁻¹ • ⟨x, hx⟩) := c_le (r⁻¹ • ⟨x, hx⟩) (by exact this)
       rwa [← mul_le_mul_left hr, f.map_smul, smul_eq_mul, ← mul_assoc, mul_inv_cancel hr.ne',
         one_mul] at this
-#align riesz_extension.step RieszExtension.step
 
 theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x)
     (hp_dense : ∀ y, ∃ x : p.domain, (x : E) + y ∈ s) :
@@ -137,7 +135,6 @@ theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : 
     ⟨Submodule.inclusion hpq.left x, hx⟩
   rcases step s q hqs hqd hq with ⟨r, hqr, hr⟩
   exact ⟨r, hr, hqr.le, hqr.ne'⟩
-#align riesz_extension.exists_top RieszExtension.exists_top
 
 end RieszExtension
 
@@ -154,7 +151,6 @@ theorem riesz_extension (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
   refine ⟨g.comp (LinearMap.id.codRestrict ⊤ fun _ ↦ trivial), ?_, ?_⟩
   · exact fun x => (hfg rfl).symm
   · exact fun x hx => hgs ⟨x, _⟩ hx
-#align riesz_extension riesz_extension
 
 /-- **Hahn-Banach theorem**: if `N : E → ℝ` is a sublinear map, `f` is a linear map
 defined on a subspace of `E`, and `f x ≤ N x` for all `x` in the domain of `f`,
@@ -187,4 +183,3 @@ theorem exists_extension_of_le_sublinear (f : E →ₗ.[ℝ] ℝ) (N : E → ℝ
   · calc -g (x, 0) = g (0, N x) - g (x, N x) := by simp [← map_sub, ← map_neg]
       _ = N x - g (x, N x) := by simpa using g_eq 0 (N x)
       _ ≤ N x := by simpa using g_nonneg ⟨x, N x⟩ (le_refl (N x))
-#align exists_extension_of_le_sublinear exists_extension_of_le_sublinear

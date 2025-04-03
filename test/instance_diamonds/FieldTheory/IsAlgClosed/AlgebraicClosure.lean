@@ -18,4 +18,3 @@ example [CharZero k] : AlgebraicClosure.instAlgebra k = algebraRat :=
 example : algebraInt (AlgebraicClosure ℚ) = AlgebraicClosure.instAlgebra ℚ :=
   rfl
   -- TODO: by with_reducible_and_instances rfl fails
-

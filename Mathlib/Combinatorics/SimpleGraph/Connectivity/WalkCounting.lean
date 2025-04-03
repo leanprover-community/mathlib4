@@ -35,14 +35,12 @@ section WalkCounting
 theorem set_walk_self_length_zero_eq (u : V) : {p : G.Walk u u | p.length = 0} = {Walk.nil} := by
   ext p
   simp
-#align simple_graph.set_walk_self_length_zero_eq SimpleGraph.set_walk_self_length_zero_eq
 
 theorem set_walk_length_zero_eq_of_ne {u v : V} (h : u ≠ v) :
     {p : G.Walk u v | p.length = 0} = ∅ := by
   ext p
   simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false_iff]
   exact fun h' => absurd (Walk.eq_of_length_eq_zero h') h
-#align simple_graph.set_walk_length_zero_eq_of_ne SimpleGraph.set_walk_length_zero_eq_of_ne
 
 theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
     {p : G.Walk u v | p.length = n.succ} =
@@ -57,7 +55,6 @@ theorem set_walk_length_succ_eq (u v : V) (n : ℕ) :
       exact ⟨w, huw, pwv, rfl, rfl⟩
     · rintro ⟨w, huw, pwv, rfl, rfl, rfl⟩
       rfl
-#align simple_graph.set_walk_length_succ_eq SimpleGraph.set_walk_length_succ_eq
 
 variable [DecidableEq V]
 
@@ -92,7 +89,6 @@ def finsetWalkLength (n : ℕ) (u v : V) : Finset (G.Walk u v) :=
   | n + 1 =>
     Finset.univ.biUnion fun (w : G.neighborSet u) =>
       (finsetWalkLength n w v).map ⟨fun p => Walk.cons w.property p, fun _ _ => by simp⟩
-#align simple_graph.finset_walk_length SimpleGraph.finsetWalkLength
 
 theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
     (G.finsetWalkLength n u v : Set (G.Walk u v)) = {p : G.Walk u v | p.length = n} := by
@@ -108,21 +104,18 @@ theorem coe_finsetWalkLength_eq (n : ℕ) (u v : V) :
     have := Set.ext_iff.mp (ih w v) q
     simp only [Finset.mem_coe, Set.mem_setOf_eq] at this
     rw [← this]
-#align simple_graph.coe_finset_walk_length_eq SimpleGraph.coe_finsetWalkLength_eq
 
 variable {G}
 
 theorem Walk.mem_finsetWalkLength_iff_length_eq {n : ℕ} {u v : V} (p : G.Walk u v) :
     p ∈ G.finsetWalkLength n u v ↔ p.length = n :=
   Set.ext_iff.mp (G.coe_finsetWalkLength_eq n u v) p
-#align simple_graph.walk.mem_finset_walk_length_iff_length_eq SimpleGraph.Walk.mem_finsetWalkLength_iff_length_eq
 
 variable (G)
 
 instance fintypeSetWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v | p.length = n} :=
   Fintype.ofFinset (G.finsetWalkLength n u v) fun p => by
     rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
-#align simple_graph.fintype_set_walk_length SimpleGraph.fintypeSetWalkLength
 
 instance fintypeSubtypeWalkLength (u v : V) (n : ℕ) : Fintype {p : G.Walk u v // p.length = n} :=
   fintypeSetWalkLength G u v n
@@ -131,7 +124,6 @@ theorem set_walk_length_toFinset_eq (n : ℕ) (u v : V) :
     {p : G.Walk u v | p.length = n}.toFinset = G.finsetWalkLength n u v := by
   ext p
   simp [← coe_finsetWalkLength_eq]
-#align simple_graph.set_walk_length_to_finset_eq SimpleGraph.set_walk_length_toFinset_eq
 
 /- See `SimpleGraph.adjMatrix_pow_apply_eq_card_walk` for the cardinality in terms of the `n`th
 power of the adjacency matrix. -/
@@ -139,13 +131,11 @@ theorem card_set_walk_length_eq (u v : V) (n : ℕ) :
     Fintype.card {p : G.Walk u v | p.length = n} = (G.finsetWalkLength n u v).card :=
   Fintype.card_ofFinset (G.finsetWalkLength n u v) fun p => by
     rw [← Finset.mem_coe, coe_finsetWalkLength_eq]
-#align simple_graph.card_set_walk_length_eq SimpleGraph.card_set_walk_length_eq
 
 instance fintypeSetPathLength (u v : V) (n : ℕ) :
     Fintype {p : G.Walk u v | p.IsPath ∧ p.length = n} :=
   Fintype.ofFinset ((G.finsetWalkLength n u v).filter Walk.IsPath) <| by
     simp [Walk.mem_finsetWalkLength_iff_length_eq, and_comm]
-#align simple_graph.fintype_set_path_length SimpleGraph.fintypeSetPathLength
 
 end LocallyFinite
 
@@ -162,7 +152,6 @@ theorem reachable_iff_exists_finsetWalkLength_nonempty (u v : V) :
     simp [Walk.mem_finsetWalkLength_iff_length_eq]
   · rintro ⟨_, p, _⟩
     exact ⟨p⟩
-#align simple_graph.reachable_iff_exists_finset_walk_length_nonempty SimpleGraph.reachable_iff_exists_finsetWalkLength_nonempty
 
 instance : DecidableRel G.Reachable := fun u v =>
   decidable_of_iff' _ (reachable_iff_exists_finsetWalkLength_nonempty G u v)

@@ -7,8 +7,6 @@ import Mathlib.Analysis.NormedSpace.Units
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Topology.ContinuousFunction.Algebra
 
-#align_import topology.continuous_function.units from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
-
 /-!
 # Units of continuous functions
 
@@ -46,8 +44,6 @@ def unitsLift : C(X, Mˣ) ≃ C(X, M)ˣ where
         MulOpposite.continuous_op.comp (↑f⁻¹ : C(X, M)).continuous }
   left_inv f := by ext; rfl
   right_inv f := by ext; rfl
-#align continuous_map.units_lift ContinuousMap.unitsLift
-#align continuous_map.add_units_lift ContinuousMap.addUnitsLift
 
 -- Porting note: add manually because `simps` used `inv` and `simpNF` complained
 @[to_additive (attr := simp)]
@@ -77,7 +73,6 @@ theorem continuous_isUnit_unit {f : C(X, R)} (h : ∀ x, IsUnit (f x)) :
   simp only
   simp only [← Ring.inverse_unit, IsUnit.unit_spec] at this ⊢
   exact this.comp (f.continuousAt x)
-#align normed_ring.is_unit_unit_continuous ContinuousMap.continuous_isUnit_unit
 -- Porting note: this had the worst namespace: `NormedRing`
 
 /-- Construct a continuous map into the group of units of a normed ring from a function into the
@@ -86,18 +81,15 @@ normed ring and a proof that every element of the range is a unit. -/
 noncomputable def unitsOfForallIsUnit {f : C(X, R)} (h : ∀ x, IsUnit (f x)) : C(X, Rˣ) where
   toFun x := (h x).unit
   continuous_toFun := continuous_isUnit_unit h
-#align continuous_map.units_of_forall_is_unit ContinuousMap.unitsOfForallIsUnit
 
 instance canLift :
     CanLift C(X, R) C(X, Rˣ) (fun f => ⟨fun x => f x, Units.continuous_val.comp f.continuous⟩)
       fun f => ∀ x, IsUnit (f x) where
   prf f h := ⟨unitsOfForallIsUnit h, by ext; rfl⟩
-#align continuous_map.can_lift ContinuousMap.canLift
 
 theorem isUnit_iff_forall_isUnit (f : C(X, R)) : IsUnit f ↔ ∀ x, IsUnit (f x) :=
   Iff.intro (fun h => fun x => ⟨unitsLift.symm h.unit x, rfl⟩) fun h =>
     ⟨ContinuousMap.unitsLift (unitsOfForallIsUnit h), by ext; rfl⟩
-#align continuous_map.is_unit_iff_forall_is_unit ContinuousMap.isUnit_iff_forall_isUnit
 
 end NormedRing
 
@@ -107,7 +99,6 @@ variable [NormedField 𝕜] [NormedDivisionRing R] [Algebra 𝕜 R] [CompleteSpa
 
 theorem isUnit_iff_forall_ne_zero (f : C(X, R)) : IsUnit f ↔ ∀ x, f x ≠ 0 := by
   simp_rw [f.isUnit_iff_forall_isUnit, isUnit_iff_ne_zero]
-#align continuous_map.is_unit_iff_forall_ne_zero ContinuousMap.isUnit_iff_forall_ne_zero
 
 theorem spectrum_eq_preimage_range (f : C(X, R)) :
     spectrum 𝕜 f = algebraMap _ _ ⁻¹' Set.range f := by
@@ -120,7 +111,6 @@ theorem spectrum_eq_preimage_range (f : C(X, R)) :
 theorem spectrum_eq_range [CompleteSpace 𝕜] (f : C(X, 𝕜)) : spectrum 𝕜 f = Set.range f := by
   rw [spectrum_eq_preimage_range, Algebra.id.map_eq_id]
   exact Set.preimage_id
-#align continuous_map.spectrum_eq_range ContinuousMap.spectrum_eq_range
 
 end NormedField
 

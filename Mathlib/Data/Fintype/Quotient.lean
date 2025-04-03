@@ -5,8 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fintype.Basic
 
-#align_import data.fintype.quotient from "leanprover-community/mathlib"@"d78597269638367c3863d40d45108f52207e03cf"
-
 /-!
 # Quotients of families indexed by a finite type
 
@@ -38,7 +36,6 @@ def Quotient.finChoiceAux {ι : Type*} [DecidableEq ι] {α : ι → Type*} [S :
     · subst j
       exact h₁
     · exact h₂ _ _
-#align quotient.fin_choice_aux Quotient.finChoiceAux
 
 theorem Quotient.finChoiceAux_eq {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [S : ∀ i, Setoid (α i)] :
@@ -49,7 +46,6 @@ theorem Quotient.finChoiceAux_eq {ι : Type*} [DecidableEq ι] {α : ι → Type
     refine Quotient.sound fun j h => ?_
     by_cases e : j = i <;> simp [e] <;> try exact Setoid.refl _
     subst j; exact Setoid.refl _
-#align quotient.fin_choice_aux_eq Quotient.finChoiceAux_eq
 
 /-- Given a collection of setoids indexed by a fintype `ι` and a
 function that for each `i : ι` gives a term of the corresponding
@@ -71,7 +67,6 @@ def Quotient.finChoice {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → T
           (Quotient.sound h) (g a)
       · change HEq (g a) (g b); congr 1; exact Quotient.sound h))
     (fun f => ⟦fun i => f i (Finset.mem_univ _)⟧) (fun a b h => Quotient.sound fun i => by apply h)
-#align quotient.fin_choice Quotient.finChoice
 
 theorem Quotient.finChoice_eq {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → Type*}
     [∀ i, Setoid (α i)] (f : ∀ i, α i) : (Quotient.finChoice fun i => ⟦f i⟧) = ⟦f⟧ := by
@@ -82,7 +77,6 @@ theorem Quotient.finChoice_eq {ι : Type*} [DecidableEq ι] [Fintype ι] {α : �
       change _ = ⟦fun i _ => f i⟧
       exact Quotient.inductionOn (@Finset.univ ι _).1 fun l => Quotient.finChoiceAux_eq _ _
   rfl
-#align quotient.fin_choice_eq Quotient.finChoice_eq
 
 /-- Given a function that for each `i : ι` gives a term of the corresponding
 truncation type, then there is corresponding term in the truncation of the product. -/

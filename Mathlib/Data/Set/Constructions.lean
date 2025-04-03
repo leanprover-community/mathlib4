@@ -6,8 +6,6 @@ Authors: Adam Topaz
 import Mathlib.Data.Finset.Basic
 import Mathlib.Data.Set.Lattice
 
-#align_import data.set.constructions from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
-
 /-!
 # Constructions involving sets of sets.
 
@@ -33,7 +31,6 @@ structure FiniteInter : Prop where
   univ_mem : Set.univ ∈ S
   /-- `inter_mem` states that any two intersections of sets in `S` is also in `S`. -/
   inter_mem : ∀ ⦃s⦄, s ∈ S → ∀ ⦃t⦄, t ∈ S → s ∩ t ∈ S
-#align has_finite_inter FiniteInter
 
 namespace FiniteInter
 
@@ -42,12 +39,10 @@ inductive finiteInterClosure : Set (Set α)
   | basic {s} : s ∈ S → finiteInterClosure s
   | univ : finiteInterClosure Set.univ
   | inter {s t} : finiteInterClosure s → finiteInterClosure t → finiteInterClosure (s ∩ t)
-#align has_finite_inter.finite_inter_closure FiniteInter.finiteInterClosure
 
 theorem finiteInterClosure_finiteInter : FiniteInter (finiteInterClosure S) :=
   { univ_mem := finiteInterClosure.univ
     inter_mem := fun _ h _ => finiteInterClosure.inter h }
-#align has_finite_inter.finite_inter_closure_has_finite_inter FiniteInter.finiteInterClosure_finiteInter
 
 variable {S}
 
@@ -61,7 +56,6 @@ theorem finiteInter_mem (cond : FiniteInter S) (F : Finset (Set α)) :
       exact
         cond.inter_mem (h2 (Finset.mem_insert_self a s))
           (h1 fun x hx => h2 <| Finset.mem_insert_of_mem hx)
-#align has_finite_inter.finite_inter_mem FiniteInter.finiteInter_mem
 
 theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
     (H : P ∈ finiteInterClosure (insert A S)) : P ∈ S ∨ ∃ Q ∈ S, P = A ∩ Q := by
@@ -80,7 +74,6 @@ theorem finiteInterClosure_insert {A : Set α} (cond : FiniteInter S) (P)
           ⟨Q ∩ R, cond.inter_mem hQ hR, by
             ext x
             constructor <;> simp (config := { contextual := true })⟩
-#align has_finite_inter.finite_inter_closure_insert FiniteInter.finiteInterClosure_insert
 
 open Set
 

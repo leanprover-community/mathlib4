@@ -8,8 +8,6 @@ import Mathlib.Algebra.CharP.Algebra
 import Mathlib.FieldTheory.IsAlgClosed.Basic
 import Mathlib.FieldTheory.SplittingField.Construction
 
-#align_import field_theory.is_alg_closed.algebraic_closure from "leanprover-community/mathlib"@"df76f43357840485b9d04ed5dee5ab115d420e87"
-
 /-!
 # Algebraic Closure
 
@@ -46,19 +44,15 @@ open MvPolynomial
 /-- The subtype of monic irreducible polynomials -/
 abbrev MonicIrreducible : Type u :=
   { f : k[X] // Monic f ∧ Irreducible f }
-#align algebraic_closure.monic_irreducible AlgebraicClosure.MonicIrreducible
 
 /-- Sends a monic irreducible polynomial `f` to `f(x_f)` where `x_f` is a formal indeterminate. -/
 def evalXSelf (f : MonicIrreducible k) : MvPolynomial (MonicIrreducible k) k :=
   Polynomial.eval₂ MvPolynomial.C (X f) f
-set_option linter.uppercaseLean3 false in
-#align algebraic_closure.eval_X_self AlgebraicClosure.evalXSelf
 
 /-- The span of `f(x_f)` across monic irreducible polynomials `f` where `x_f` is an
 indeterminate. -/
 def spanEval : Ideal (MvPolynomial (MonicIrreducible k) k) :=
   Ideal.span <| Set.range <| evalXSelf k
-#align algebraic_closure.span_eval AlgebraicClosure.spanEval
 
 /-- Given a finset of monic irreducible polynomials, construct an algebra homomorphism to the
 splitting field of the product of the polynomials sending each indeterminate `x_f` represented by
@@ -72,15 +66,12 @@ def toSplittingField (s : Finset (MonicIrreducible k)) :
           (SplittingField.splits _) f hf)
         (mt isUnit_iff_degree_eq_zero.2 f.2.2.not_unit)
     else 37
-#align algebraic_closure.to_splitting_field AlgebraicClosure.toSplittingField
 
 theorem toSplittingField_evalXSelf {s : Finset (MonicIrreducible k)} {f} (hf : f ∈ s) :
     toSplittingField k s (evalXSelf k f) = 0 := by
   rw [toSplittingField, evalXSelf, ← AlgHom.coe_toRingHom, hom_eval₂, AlgHom.coe_toRingHom,
     MvPolynomial.aeval_X, dif_pos hf, ← MvPolynomial.algebraMap_eq, AlgHom.comp_algebraMap]
   exact map_rootOfSplits _ _ _
-set_option linter.uppercaseLean3 false in
-#align algebraic_closure.to_splitting_field_eval_X_self AlgebraicClosure.toSplittingField_evalXSelf
 
 theorem spanEval_ne_top : spanEval k ≠ ⊤ := by
   rw [Ideal.ne_top_iff_one, spanEval, Ideal.span, ← Set.image_univ,
@@ -92,47 +83,37 @@ theorem spanEval_ne_top : spanEval k ≠ ⊤ := by
   intro j hj
   rw [smul_eq_mul, map_mul, toSplittingField_evalXSelf (s := v.support) hj,
     mul_zero]
-#align algebraic_closure.span_eval_ne_top AlgebraicClosure.spanEval_ne_top
 
 /-- A random maximal ideal that contains `spanEval k` -/
 def maxIdeal : Ideal (MvPolynomial (MonicIrreducible k) k) :=
   Classical.choose <| Ideal.exists_le_maximal _ <| spanEval_ne_top k
-#align algebraic_closure.max_ideal AlgebraicClosure.maxIdeal
 
 instance maxIdeal.isMaximal : (maxIdeal k).IsMaximal :=
   (Classical.choose_spec <| Ideal.exists_le_maximal _ <| spanEval_ne_top k).1
-#align algebraic_closure.max_ideal.is_maximal AlgebraicClosure.maxIdeal.isMaximal
 
 theorem le_maxIdeal : spanEval k ≤ maxIdeal k :=
   (Classical.choose_spec <| Ideal.exists_le_maximal _ <| spanEval_ne_top k).2
-#align algebraic_closure.le_max_ideal AlgebraicClosure.le_maxIdeal
 
 /-- The first step of constructing `AlgebraicClosure`: adjoin a root of all monic polynomials -/
 def AdjoinMonic : Type u :=
   MvPolynomial (MonicIrreducible k) k ⧸ maxIdeal k
-#align algebraic_closure.adjoin_monic AlgebraicClosure.AdjoinMonic
 
 instance AdjoinMonic.field : Field (AdjoinMonic k) :=
   Ideal.Quotient.field _
-#align algebraic_closure.adjoin_monic.field AlgebraicClosure.AdjoinMonic.field
 
 instance AdjoinMonic.inhabited : Inhabited (AdjoinMonic k) :=
   ⟨37⟩
-#align algebraic_closure.adjoin_monic.inhabited AlgebraicClosure.AdjoinMonic.inhabited
 
 /-- The canonical ring homomorphism to `AdjoinMonic k`. -/
 def toAdjoinMonic : k →+* AdjoinMonic k :=
   (Ideal.Quotient.mk _).comp C
-#align algebraic_closure.to_adjoin_monic AlgebraicClosure.toAdjoinMonic
 
 instance AdjoinMonic.algebra : Algebra k (AdjoinMonic k) :=
   (toAdjoinMonic k).toAlgebra
-#align algebraic_closure.adjoin_monic.algebra AlgebraicClosure.AdjoinMonic.algebra
 
 -- Porting note: In the statement, the type of `C` had to be made explicit.
 theorem AdjoinMonic.algebraMap : algebraMap k (AdjoinMonic k) = (Ideal.Quotient.mk _).comp
     (C : k →+* MvPolynomial (MonicIrreducible k) k) := rfl
-#align algebraic_closure.adjoin_monic.algebra_map AlgebraicClosure.AdjoinMonic.algebraMap
 
 theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
   let ⟨p, hp⟩ := Ideal.Quotient.mk_surjective z
@@ -145,7 +126,6 @@ theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
       refine ⟨f, f.2.1, ?_⟩
       erw [AdjoinMonic.algebraMap, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
       exact le_maxIdeal k (Ideal.subset_span ⟨f, rfl⟩)
-#align algebraic_closure.adjoin_monic.is_integral AlgebraicClosure.AdjoinMonic.isIntegral
 
 theorem AdjoinMonic.exists_root {f : k[X]} (hfm : f.Monic) (hfi : Irreducible f) :
     ∃ x : AdjoinMonic k, f.eval₂ (toAdjoinMonic k) x = 0 :=
@@ -153,45 +133,37 @@ theorem AdjoinMonic.exists_root {f : k[X]} (hfm : f.Monic) (hfi : Irreducible f)
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [toAdjoinMonic, ← hom_eval₂, Ideal.Quotient.eq_zero_iff_mem]
     exact le_maxIdeal k (Ideal.subset_span <| ⟨_, rfl⟩)⟩
-#align algebraic_closure.adjoin_monic.exists_root AlgebraicClosure.AdjoinMonic.exists_root
 
 /-- The `n`th step of constructing `AlgebraicClosure`, together with its `Field` instance. -/
 def stepAux (n : ℕ) : Σ α : Type u, Field α :=
   Nat.recOn n ⟨k, inferInstance⟩ fun _ ih => ⟨@AdjoinMonic ih.1 ih.2, @AdjoinMonic.field ih.1 ih.2⟩
-#align algebraic_closure.step_aux AlgebraicClosure.stepAux
 
 /-- The `n`th step of constructing `AlgebraicClosure`. -/
 def Step (n : ℕ) : Type u :=
   (stepAux k n).1
-#align algebraic_closure.step AlgebraicClosure.Step
 
 -- Porting note: added during the port to help in the proof of `Step.isIntegral` below.
 theorem Step.zero : Step k 0 = k := rfl
 
 instance Step.field (n : ℕ) : Field (Step k n) :=
   (stepAux k n).2
-#align algebraic_closure.step.field AlgebraicClosure.Step.field
 
 -- Porting note: added during the port to help in the proof of `Step.isIntegral` below.
 theorem Step.succ (n : ℕ) : Step k (n + 1) = AdjoinMonic (Step k n) := rfl
 
 instance Step.inhabited (n) : Inhabited (Step k n) :=
   ⟨37⟩
-#align algebraic_closure.step.inhabited AlgebraicClosure.Step.inhabited
 
 /-- The canonical inclusion to the `0`th step. -/
 def toStepZero : k →+* Step k 0 :=
   RingHom.id k
-#align algebraic_closure.to_step_zero AlgebraicClosure.toStepZero
 
 /-- The canonical ring homomorphism to the next step. -/
 def toStepSucc (n : ℕ) : Step k n →+* (Step k (n + 1)) :=
   @toAdjoinMonic (Step k n) (Step.field k n)
-#align algebraic_closure.to_step_succ AlgebraicClosure.toStepSucc
 
 instance Step.algebraSucc (n) : Algebra (Step k n) (Step k (n + 1)) :=
   (toStepSucc k n).toAlgebra
-#align algebraic_closure.step.algebra_succ AlgebraicClosure.Step.algebraSucc
 
 theorem toStepSucc.exists_root {n} {f : Polynomial (Step k n)} (hfm : f.Monic)
     (hfi : Irreducible f) : ∃ x : Step k (n + 1), f.eval₂ (toStepSucc k n) x = 0 := by
@@ -200,7 +172,6 @@ theorem toStepSucc.exists_root {n} {f : Polynomial (Step k n)} (hfm : f.Monic)
   obtain ⟨x, hx⟩ := @AdjoinMonic.exists_root _ (Step.field k n) _ hfm hfi
 -- Porting note: using `hx` instead of `by apply hx` timeouts.
   exact ⟨x, by apply hx⟩
-#align algebraic_closure.to_step_succ.exists_root AlgebraicClosure.toStepSucc.exists_root
 
 -- Porting note: the following two declarations were added during the port to be used in the
 -- definition of toStepOfLE
@@ -240,22 +211,18 @@ def toStepOfLE (m n : ℕ) (h : m ≤ n) : Step k m →+* Step k n where
     induction' h with a h ih
     · dsimp [toStepOfLE']; simp_rw [Nat.leRecOn_self]
     · simp_rw [toStepOfLE'.succ k m a h]; simp only at ih; simp [ih]
-#align algebraic_closure.to_step_of_le AlgebraicClosure.toStepOfLE
 
 @[simp]
 theorem coe_toStepOfLE (m n : ℕ) (h : m ≤ n) :
     (toStepOfLE k m n h : Step k m → Step k n) = Nat.leRecOn h @fun n => toStepSucc k n :=
   rfl
-#align algebraic_closure.coe_to_step_of_le AlgebraicClosure.coe_toStepOfLE
 
 instance Step.algebra (n) : Algebra k (Step k n) :=
   (toStepOfLE k 0 n n.zero_le).toAlgebra
-#align algebraic_closure.step.algebra AlgebraicClosure.Step.algebra
 
 instance Step.scalar_tower (n) : IsScalarTower k (Step k n) (Step k (n + 1)) :=
   IsScalarTower.of_algebraMap_eq fun z =>
     @Nat.leRecOn_succ (Step k) 0 n n.zero_le (n + 1).zero_le (@fun n => toStepSucc k n) z
-#align algebraic_closure.step.scalar_tower AlgebraicClosure.Step.scalar_tower
 
 -- Porting note: Added to make `Step.isIntegral` faster
 private theorem toStepOfLE.succ (n : ℕ) (h : 0 ≤ n) :
@@ -288,11 +255,9 @@ theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
       have := AdjoinMonic.isIntegral (Step k a) (z : Step k (a + 1))
       convert this
     · convert h -- Porting note: This times out at 500000
-#align algebraic_closure.step.is_integral AlgebraicClosure.Step.isIntegral
 
 instance toStepOfLE.directedSystem : DirectedSystem (Step k) fun i j h => toStepOfLE k i j h :=
   ⟨fun _ x _ => Nat.leRecOn_self x, fun h₁₂ h₂₃ x => (Nat.leRecOn_trans h₁₂ h₂₃ x).symm⟩
-#align algebraic_closure.to_step_of_le.directed_system AlgebraicClosure.toStepOfLE.directedSystem
 
 end AlgebraicClosure
 
@@ -302,7 +267,6 @@ certain instance diamonds commute by definition.
 -/
 def AlgebraicClosureAux [Field k] : Type u :=
   Ring.DirectLimit (AlgebraicClosure.Step k) fun i j h => AlgebraicClosure.toStepOfLE k i j h
-#align algebraic_closure AlgebraicClosureAux
 
 namespace AlgebraicClosureAux
 
@@ -318,9 +282,6 @@ instance : Inhabited (AlgebraicClosureAux k) :=
 /-- The canonical ring embedding from the `n`th step to the algebraic closure. -/
 def ofStep (n : ℕ) : Step k n →+* AlgebraicClosureAux k :=
   Ring.DirectLimit.of _ _ _
-#noalign algebraic_closure.of_step
-
-#noalign algebraic_closure.algebra_of_step
 
 theorem ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofStep k n := by
   ext x
@@ -338,11 +299,9 @@ theorem ofStep_succ (n : ℕ) : (ofStep k (n + 1)).comp (toStepSucc k n) = ofSte
   -- RingHom.ext fun x =>
   --   show Ring.DirectLimit.of (Step k) (fun i j h => toStepOfLE k i j h) _ _ = _ by
   --     convert Ring.DirectLimit.of_f n.le_succ x; ext x; exact (Nat.leRecOn_succ' x).symm
-#noalign algebraic_closure.of_step_succ
 
 theorem exists_ofStep (z : AlgebraicClosureAux k) : ∃ n x, ofStep k n x = z :=
   Ring.DirectLimit.exists_of z
-#noalign algebraic_closure.exists_of_step
 
 theorem exists_root {f : Polynomial (AlgebraicClosureAux k)}
     (hfm : f.Monic) (hfi : Irreducible f) : ∃ x : AlgebraicClosureAux k, f.eval x = 0 := by
@@ -354,7 +313,6 @@ theorem exists_root {f : Polynomial (AlgebraicClosureAux k)}
   obtain ⟨x, hx⟩ := toStepSucc.exists_root k hfm this
   refine ⟨ofStep k (n + 1) x, ?_⟩
   rw [← ofStep_succ k n, eval_map, ← hom_eval₂, hx, RingHom.map_zero]
-#noalign algebraic_closure.exists_root
 
 @[local instance] theorem instIsAlgClosed : IsAlgClosed (AlgebraicClosureAux k) :=
   IsAlgClosed.of_exists_root _ fun _ => exists_root k
@@ -362,8 +320,6 @@ theorem exists_root {f : Polynomial (AlgebraicClosureAux k)}
 /-- `AlgebraicClosureAux k` is a `k`-`Algebra` -/
 local instance instAlgebra : Algebra k (AlgebraicClosureAux k) :=
   (ofStep k 0).toAlgebra
-
-#noalign algebraic_closure.algebra_map_def
 
 /-- Canonical algebra embedding from the `n`th step to the algebraic closure. -/
 def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
@@ -376,7 +332,6 @@ def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
           MonoidHom.coe_coe]
       convert @Ring.DirectLimit.of_f ℕ _ (Step k) _ (fun m n h => (toStepOfLE k m n h : _ → _))
           0 n n.zero_le x }
-#noalign algebraic_closure.of_step_hom
 
 instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosureAux k) :=
   ⟨fun z =>
@@ -446,7 +401,6 @@ instance instField : Field (AlgebraicClosure k) where
 
 instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) :=
   IsAlgClosed.of_ringEquiv _ _ (algEquivAlgebraicClosureAux k).symm.toRingEquiv
-#align algebraic_closure.is_alg_closed AlgebraicClosure.isAlgClosed
 
 instance : IsAlgClosure k (AlgebraicClosure k) := by
   rw [isAlgClosure_iff]
@@ -454,7 +408,6 @@ instance : IsAlgClosure k (AlgebraicClosure k) := by
 
 instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
   IsAlgClosure.algebraic
-#align algebraic_closure.is_algebraic AlgebraicClosure.isAlgebraic
 
 instance [CharZero k] : CharZero (AlgebraicClosure k) :=
   charZero_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k)))

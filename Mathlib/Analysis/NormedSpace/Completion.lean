@@ -7,8 +7,6 @@ import Mathlib.Analysis.Normed.Group.Completion
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Topology.Algebra.UniformRing
 
-#align_import analysis.normed_space.completion from "leanprover-community/mathlib"@"d3af0609f6db8691dffdc3e1fb7feb7da72698f2"
-
 /-!
 # Normed space structure on the completion of a normed space
 
@@ -33,7 +31,6 @@ variable (𝕜 E : Type*) [NormedField 𝕜] [NormedAddCommGroup E] [NormedSpace
 instance (priority := 100) NormedSpace.to_uniformContinuousConstSMul :
     UniformContinuousConstSMul 𝕜 E :=
   ⟨fun c => (lipschitzWith_smul c).uniformContinuous⟩
-#align uniform_space.completion.normed_space.to_has_uniform_continuous_const_smul UniformSpace.Completion.NormedSpace.to_uniformContinuousConstSMul
 
 instance : NormedSpace 𝕜 (Completion E) :=
   { Completion.instModule with
@@ -50,31 +47,23 @@ def toComplₗᵢ : E →ₗᵢ[𝕜] Completion E :=
     toFun := (↑)
     map_smul' := coe_smul
     norm_map' := norm_coe }
-#align uniform_space.completion.to_complₗᵢ UniformSpace.Completion.toComplₗᵢ
 
 @[simp]
 theorem coe_toComplₗᵢ : ⇑(toComplₗᵢ : E →ₗᵢ[𝕜] Completion E) = ((↑) : E → Completion E) :=
   rfl
-#align uniform_space.completion.coe_to_complₗᵢ UniformSpace.Completion.coe_toComplₗᵢ
 
 /-- Embedding of a normed space to its completion as a continuous linear map. -/
 def toComplL : E →L[𝕜] Completion E :=
   toComplₗᵢ.toContinuousLinearMap
-set_option linter.uppercaseLean3 false in
-#align uniform_space.completion.to_complL UniformSpace.Completion.toComplL
 
 @[simp]
 theorem coe_toComplL : ⇑(toComplL : E →L[𝕜] Completion E) = ((↑) : E → Completion E) :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align uniform_space.completion.coe_to_complL UniformSpace.Completion.coe_toComplL
 
 @[simp]
 theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] [Nontrivial E] : ‖(toComplL : E →L[𝕜] Completion E)‖ = 1 :=
   (toComplₗᵢ : E →ₗᵢ[𝕜] Completion E).norm_toContinuousLinearMap
-set_option linter.uppercaseLean3 false in
-#align uniform_space.completion.norm_to_complL UniformSpace.Completion.norm_toComplL
 
 section Algebra
 

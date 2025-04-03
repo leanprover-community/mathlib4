@@ -8,8 +8,6 @@ import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Submodule
 import Mathlib.Algebra.Lie.Basic
 
-#align_import algebra.lie.direct_sum from "leanprover-community/mathlib"@"c0cc689babd41c0e9d5f02429211ffbe2403472a"
-
 /-!
 # Direct sums of Lie algebras and Lie modules
 
@@ -57,7 +55,6 @@ instance : LieRingModule L (⨁ i, M i) where
 @[simp]
 theorem lie_module_bracket_apply (x : L) (m : ⨁ i, M i) (i : ι) : ⁅x, m⁆ i = ⁅x, m i⁆ :=
   mapRange_apply _ _ m i
-#align direct_sum.lie_module_bracket_apply DirectSum.lie_module_bracket_apply
 
 instance : LieModule R L (⨁ i, M i) where
   smul_lie t x m := by
@@ -81,13 +78,11 @@ def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
         simp only [lof, lsingle, AddHom.toFun_eq_coe, lie_module_bracket_apply]
         erw [AddHom.coe_mk]
         simp [h] }
-#align direct_sum.lie_module_of DirectSum.lieModuleOf
 
 /-- The projection map onto one component, as a morphism of Lie modules. -/
 def lieModuleComponent (j : ι) : (⨁ i, M i) →ₗ⁅R,L⁆ M j :=
   { component R ι M j with
     map_lie' := fun {x m} => by simp [component, lapply] }
-#align direct_sum.lie_module_component DirectSum.lieModuleComponent
 
 end Modules
 
@@ -115,17 +110,14 @@ instance lieRing : LieRing (⨁ i, L i) :=
       refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
       simp only [sub_apply, zipWith_apply, add_apply, zero_apply]
       apply leibniz_lie }
-#align direct_sum.lie_ring DirectSum.lieRing
 
 @[simp]
 theorem bracket_apply (x y : ⨁ i, L i) (i : ι) : ⁅x, y⁆ i = ⁅x i, y i⁆ :=
   zipWith_apply _ _ x y i
-#align direct_sum.bracket_apply DirectSum.bracket_apply
 
 theorem lie_of_same [DecidableEq ι] {i : ι} (x y : L i) :
     ⁅of L i x, of L i y⁆ = of L i ⁅x, y⁆ :=
   DFinsupp.zipWith_single_single _ _ _ _
-#align direct_sum.lie_of_of_eq DirectSum.lie_of_same
 
 theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : i ≠ j) (x : L i) (y : L j) :
     ⁅of L i x, of L j y⁆ = 0 := by
@@ -134,7 +126,6 @@ theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : i ≠ j) (x : L i) (y : 
   obtain rfl | hik := Decidable.eq_or_ne i k
   · rw [of_eq_of_ne _ _ _ _ hij.symm, lie_zero, zero_apply]
   · rw [of_eq_of_ne _ _ _ _ hik, zero_lie, zero_apply]
-#align direct_sum.lie_of_of_ne DirectSum.lie_of_of_ne
 
 @[simp]
 theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
@@ -142,14 +133,12 @@ theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
   obtain rfl | hij := Decidable.eq_or_ne i j
   · simp only [lie_of_same L x y, dif_pos]
   · simp only [lie_of_of_ne L hij x y, hij, dif_neg, dite_false]
-#align direct_sum.lie_of DirectSum.lie_of
 
 instance lieAlgebra : LieAlgebra R (⨁ i, L i) :=
   { (inferInstance : Module R _) with
     lie_smul := fun c x y => by
       refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
       simp only [zipWith_apply, smul_apply, bracket_apply, lie_smul] }
-#align direct_sum.lie_algebra DirectSum.lieAlgebra
 
 variable (R ι)
 
@@ -176,7 +165,6 @@ def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
         · simp only [h, dite_false, single_apply, lie_self]
         · intros
           erw [single_add] }
-#align direct_sum.lie_algebra_of DirectSum.lieAlgebraOf
 
 /-- The projection map onto one component, as a morphism of Lie algebras. -/
 @[simps]
@@ -184,13 +172,11 @@ def lieAlgebraComponent (j : ι) : (⨁ i, L i) →ₗ⁅R⁆ L j :=
   { component R ι L j with
     toFun := component R ι L j
     map_lie' := fun {x y} => by simp [component, lapply] }
-#align direct_sum.lie_algebra_component DirectSum.lieAlgebraComponent
 
 @[ext]
 theorem lieAlgebra_ext {x y : ⨁ i, L i}
     (h : ∀ i, lieAlgebraComponent R ι L i x = lieAlgebraComponent R ι L i y) : x = y :=
   DFinsupp.ext h
-#align direct_sum.lie_algebra_ext DirectSum.lieAlgebra_ext
 
 variable {R L ι}
 
@@ -231,7 +217,6 @@ def toLieAlgebra [DecidableEq ι] (L' : Type w₁) [LieRing L'] [LieAlgebra R L'
           LieHom.map_lie]
       · simp_rw [lie_of_of_ne _ hij.symm, map_zero,  LinearMap.toAddMonoidHom_coe,
           LieHom.coe_toLinearMap, hf hij.symm x y] }
-#align direct_sum.to_lie_algebra DirectSum.toLieAlgebra
 
 end Algebras
 
@@ -244,12 +229,10 @@ variable {L : Type w} [LieRing L] [LieAlgebra R L] (I : ι → LieIdeal R L)
 Typeclass.20resolution.20under.20binders/near/245151099). -/
 instance lieRingOfIdeals : LieRing (⨁ i, I i) :=
   DirectSum.lieRing fun i => ↥(I i)
-#align direct_sum.lie_ring_of_ideals DirectSum.lieRingOfIdeals
 
 /-- See `DirectSum.lieRingOfIdeals` comment. -/
 instance lieAlgebraOfIdeals : LieAlgebra R (⨁ i, I i) :=
   DirectSum.lieAlgebra fun i => ↥(I i)
-#align direct_sum.lie_algebra_of_ideals DirectSum.lieAlgebraOfIdeals
 
 end Ideals
 

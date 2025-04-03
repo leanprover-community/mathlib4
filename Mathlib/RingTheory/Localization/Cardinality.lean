@@ -6,8 +6,6 @@ Authors: Eric Rodriguez
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.RingTheory.Artinian
 
-#align_import ring_theory.localization.cardinality from "leanprover-community/mathlib"@"3b09a2601bb7690643936643e99bba0fedfbf6ed"
-
 /-!
 # Cardinality of localizations
 
@@ -46,13 +44,11 @@ theorem card_le : #L ≤ #R := by
     use (x, y)
     dsimp [f]
     rwa [dif_pos <| show ↑y ∈ S from y.2, SetLike.eta]
-#align is_localization.card_le IsLocalization.card_le
 
 variable (L)
 
 /-- If you do not localize at any zero-divisors, localization preserves cardinality. -/
 theorem card (hS : S ≤ R⁰) : #R = #L :=
   (Cardinal.mk_le_of_injective (IsLocalization.injective L hS)).antisymm (card_le S)
-#align is_localization.card IsLocalization.card
 
 end IsLocalization

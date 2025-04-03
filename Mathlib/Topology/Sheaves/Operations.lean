@@ -8,8 +8,6 @@ import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Topology.Sheaves.Stalks
 
-#align_import topology.sheaves.operations from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 
 # Operations on sheaves
@@ -22,7 +20,6 @@ import Mathlib.Topology.Sheaves.Stalks
 
 -/
 
-set_option linter.uppercaseLean3 false
 
 open scoped nonZeroDivisors
 
@@ -43,7 +40,6 @@ structure SubmonoidPresheaf [∀ X : C, MulOneClass X] [∀ X Y : C, MonoidHomCl
     (F : X.Presheaf C) where
   obj : ∀ U, Submonoid (F.obj U)
   map : ∀ {U V : (Opens X)ᵒᵖ} (i : U ⟶ V), obj U ≤ (obj V).comap (F.map i)
-#align Top.presheaf.submonoid_presheaf TopCat.Presheaf.SubmonoidPresheaf
 
 variable {F : X.Presheaf CommRingCat.{w}} (G : F.SubmonoidPresheaf)
 
@@ -60,7 +56,6 @@ protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf 
     delta CommRingCat.ofHom CommRingCat.of Bundled.of
     simp_rw [F.map_comp, CommRingCat.comp_eq_ring_hom_comp]
     rw [IsLocalization.map_comp_map]
-#align Top.presheaf.submonoid_presheaf.localization_presheaf TopCat.Presheaf.SubmonoidPresheaf.localizationPresheaf
 
 -- Porting note: this instance can't be synthesized
 instance (U) : Algebra ((forget CommRingCat).obj (F.obj U)) (G.localizationPresheaf.obj U) :=
@@ -75,7 +70,6 @@ instance (U) : IsLocalization (G.obj U) (G.localizationPresheaf.obj U) :=
 def SubmonoidPresheaf.toLocalizationPresheaf : F ⟶ G.localizationPresheaf where
   app U := CommRingCat.ofHom <| algebraMap (F.obj U) (Localization <| G.obj U)
   naturality {_ _} i := (IsLocalization.map_comp (G.map i)).symm
-#align Top.presheaf.submonoid_presheaf.to_localization_presheaf TopCat.Presheaf.SubmonoidPresheaf.toLocalizationPresheaf
 
 instance epi_toLocalizationPresheaf : Epi G.toLocalizationPresheaf :=
   @NatTrans.epi_of_epi_app _ _ _ _ _ _ G.toLocalizationPresheaf fun U => Localization.epi' (G.obj U)
@@ -95,7 +89,6 @@ noncomputable def submonoidPresheafOfStalk (S : ∀ x : X, Submonoid (F.stalk x)
     change (F.map i.unop.op ≫ F.germ x) s ∈ _
     rw [F.germ_res]
     exact hs _
-#align Top.presheaf.submonoid_presheaf_of_stalk TopCat.Presheaf.submonoidPresheafOfStalk
 
 noncomputable instance : Inhabited F.SubmonoidPresheaf :=
   ⟨F.submonoidPresheafOfStalk fun _ => ⊥⟩
@@ -103,12 +96,10 @@ noncomputable instance : Inhabited F.SubmonoidPresheaf :=
 /-- The localization of a presheaf of `CommRing`s at locally non-zero-divisor sections. -/
 noncomputable def totalQuotientPresheaf : X.Presheaf CommRingCat.{w} :=
   (F.submonoidPresheafOfStalk fun x => (F.stalk x)⁰).localizationPresheaf
-#align Top.presheaf.total_quotient_presheaf TopCat.Presheaf.totalQuotientPresheaf
 
 /-- The map into the presheaf of total quotient rings -/
 noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
   SubmonoidPresheaf.toLocalizationPresheaf _
-#align Top.presheaf.to_total_quotient_presheaf TopCat.Presheaf.toTotalQuotientPresheaf
 
 -- Porting note: deriving `Epi` failed
 instance : Epi (toTotalQuotientPresheaf F) := epi_toLocalizationPresheaf _

@@ -8,8 +8,6 @@ import Mathlib.CategoryTheory.Functor.Flat
 import Mathlib.CategoryTheory.Sites.Continuous
 import Mathlib.CategoryTheory.Sites.LeftExact
 
-#align_import category_theory.sites.pushforward from "leanprover-community/mathlib"@"e2e38c005fc6f715502490da6cb0ec84df9ed228"
-
 /-!
 # Pullback of sheaves
 
@@ -58,7 +56,6 @@ same direction as `G`. -/
 @[simps!]
 def Functor.sheafPullback : Sheaf J A ⥤ Sheaf K A :=
   sheafToPresheaf J A ⋙ G.op.lan ⋙ presheafToSheaf K A
-#align category_theory.sites.pushforward CategoryTheory.Functor.sheafPullback
 
 instance [RepresentablyFlat G] : PreservesFiniteLimits (G.sheafPullback A J K) := by
   have : PreservesFiniteLimits (G.op.lan ⋙ presheafToSheaf K A) :=
@@ -70,6 +67,5 @@ def Functor.sheafAdjunctionContinuous [Functor.IsContinuous.{v₁} G J K] :
     G.sheafPullback A J K ⊣ G.sheafPushforwardContinuous A J K :=
   ((G.op.lanAdjunction A).comp (sheafificationAdjunction K A)).restrictFullyFaithful
     (fullyFaithfulSheafToPresheaf J A) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
-#align category_theory.sites.pullback_pushforward_adjunction CategoryTheory.Functor.sheafAdjunctionContinuous
 
 end CategoryTheory

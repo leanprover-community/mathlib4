@@ -7,8 +7,6 @@ import Mathlib.Algebra.Group.Fin.Basic
 import Mathlib.Order.Fin.Basic
 import Mathlib.Order.SuccPred.Basic
 
-#align_import data.fin.succ_pred from "leanprover-community/mathlib"@"7c523cb78f4153682c2929e3006c863bfef463d0"
-
 /-!
 # Successors and predecessors of `Fin n`
 
@@ -40,12 +38,10 @@ instance : ∀ {n : ℕ}, SuccOrder (Fin n)
 @[simp]
 theorem succ_eq {n : ℕ} : SuccOrder.succ = fun a => if a < Fin.last n then a + 1 else a :=
   rfl
-#align fin.succ_eq Fin.succ_eq
 
 @[simp]
 theorem succ_apply {n : ℕ} (a) : SuccOrder.succ a = if a < Fin.last n then a + 1 else a :=
   rfl
-#align fin.succ_apply Fin.succ_apply
 
 instance : ∀ {n : ℕ}, PredOrder (Fin n)
   | 0 => by constructor <;> first | intro a; exact elim0 a
@@ -67,11 +63,9 @@ instance : ∀ {n : ℕ}, PredOrder (Fin n)
 @[simp]
 theorem pred_eq {n} : PredOrder.pred = fun a : Fin (n + 1) => if a = 0 then 0 else a - 1 :=
   rfl
-#align fin.pred_eq Fin.pred_eq
 
 @[simp]
 theorem pred_apply {n : ℕ} (a : Fin (n + 1)) : PredOrder.pred a = if a = 0 then 0 else a - 1 :=
   rfl
-#align fin.pred_apply Fin.pred_apply
 
 end Fin

@@ -11,8 +11,6 @@ import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.ConcreteCategory
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
 
-#align_import algebra.category.Group.limits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # The category of (commutative) (additive) groups has all limits
 
@@ -37,10 +35,6 @@ variable (F : J ⥤ Grp.{u})
 @[to_additive]
 instance groupObj (j) : Group ((F ⋙ forget Grp).obj j) :=
   inferInstanceAs <| Group (F.obj j)
-set_option linter.uppercaseLean3 false in
-#align Group.group_obj Grp.groupObj
-set_option linter.uppercaseLean3 false in
-#align AddGroup.add_group_obj AddGrp.addGroupObj
 
 /-- The flat sections of a functor into `Grp` form a subgroup of all sections.
 -/
@@ -53,10 +47,6 @@ def sectionsSubgroup : Subgroup (∀ j, F.obj j) :=
       simp only [Functor.comp_map, Pi.inv_apply, MonoidHom.map_inv, inv_inj]
       dsimp [Functor.sections] at ah ⊢
       rw [(F.map f).map_inv (a j), ah f] }
-set_option linter.uppercaseLean3 false in
-#align Group.sections_subgroup Grp.sectionsSubgroup
-set_option linter.uppercaseLean3 false in
-#align AddGroup.sections_add_subgroup AddGrp.sectionsAddSubgroup
 
 @[to_additive]
 instance sectionsGroup : Group (F ⋙ forget Grp.{u}).sections :=
@@ -77,10 +67,6 @@ variable [Small.{u} (Functor.sections (F ⋙ forget Grp))]
 noncomputable instance limitGroup :
     Group (Types.Small.limitCone.{v, u} (F ⋙ forget Grp.{u})).pt :=
   inferInstanceAs <| Group (Shrink (F ⋙ forget Grp.{u}).sections)
-set_option linter.uppercaseLean3 false in
-#align Group.limit_group Grp.limitGroup
-set_option linter.uppercaseLean3 false in
-#align AddGroup.limit_add_group AddGrp.limitAddGroup
 
 @[to_additive]
 instance : Small.{u} (Functor.sections ((F ⋙ forget₂ Grp MonCat) ⋙ forget MonCat)) :=
@@ -112,10 +98,6 @@ noncomputable instance Forget₂.createsLimit :
       makesLimit :=
         IsLimit.ofFaithful (forget₂ Grp MonCat.{u}) (MonCat.HasLimits.limitConeIsLimit _)
           (fun s => _) fun s => rfl }
-set_option linter.uppercaseLean3 false in
-#align Group.forget₂.creates_limit Grp.Forget₂.createsLimit
-set_option linter.uppercaseLean3 false in
-#align AddGroup.forget₂.creates_limit AddGrp.Forget₂.createsLimit
 
 /-- A choice of limit cone for a functor into `Grp`.
 (Generally, you'll just want to use `limit F`.)
@@ -124,10 +106,6 @@ set_option linter.uppercaseLean3 false in
   (Generally, you'll just want to use `limit F`.)"]
 noncomputable def limitCone : Cone F :=
   liftLimit (limit.isLimit (F ⋙ forget₂ Grp.{u} MonCat.{u}))
-set_option linter.uppercaseLean3 false in
-#align Group.limit_cone Grp.limitCone
-set_option linter.uppercaseLean3 false in
-#align AddGroup.limit_cone AddGrp.limitCone
 
 /-- The chosen cone is a limit cone.
 (Generally, you'll just want to use `limit.cone F`.)
@@ -136,10 +114,6 @@ set_option linter.uppercaseLean3 false in
   (Generally, you'll just want to use `limit.cone F`.)"]
 noncomputable def limitConeIsLimit : IsLimit (limitCone F) :=
   liftedLimitIsLimit _
-set_option linter.uppercaseLean3 false in
-#align Group.limit_cone_is_limit Grp.limitConeIsLimit
-set_option linter.uppercaseLean3 false in
-#align AddGroup.limit_cone_is_limit AddGrp.limitConeIsLimit
 
 /-- If `(F ⋙ forget Grp).sections` is `u`-small, `F` has a limit. -/
 @[to_additive "If `(F ⋙ forget AddGrp).sections` is `u`-small, `F` has a limit."]
@@ -172,18 +146,10 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J Grp.{u} where
   to_additive_relevant_arg 2]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} Grp.{u} where
   has_limits_of_shape J _ := { }
-set_option linter.uppercaseLean3 false in
-#align Group.has_limits_of_size Grp.hasLimitsOfSize
-set_option linter.uppercaseLean3 false in
-#align AddGroup.has_limits_of_size AddGrp.hasLimitsOfSize
 
 @[to_additive]
 instance hasLimits : HasLimits Grp.{u} :=
   Grp.hasLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align Group.has_limits Grp.hasLimits
-set_option linter.uppercaseLean3 false in
-#align AddGroup.has_limits AddGrp.hasLimits
 
 /-- The forgetful functor from groups to monoids preserves all limits.
 
@@ -198,19 +164,11 @@ This means the underlying monoid of a limit can be computed as a limit in the ca
 noncomputable instance forget₂MonPreservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ Grp.{u} MonCat.{u}) where
   preservesLimitsOfShape {J _} := { }
-set_option linter.uppercaseLean3 false in
-#align Group.forget₂_Mon_preserves_limits_of_size Grp.forget₂MonPreservesLimitsOfSize
-set_option linter.uppercaseLean3 false in
-#align AddGroup.forget₂_AddMon_preserves_limits AddGrp.forget₂AddMonPreservesLimitsOfSize
 
 @[to_additive]
 noncomputable instance forget₂MonPreservesLimits :
   PreservesLimits (forget₂ Grp.{u} MonCat.{u}) :=
   Grp.forget₂MonPreservesLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align Group.forget₂_Mon_preserves_limits Grp.forget₂MonPreservesLimits
-set_option linter.uppercaseLean3 false in
-#align AddGroup.forget₂_Mon_preserves_limits AddGrp.forget₂MonPreservesLimits
 
 /-- If `J` is `u`-small, the forgetful functor from `Grp.{u}` preserves limits of shape `J`. -/
 @[to_additive "If `J` is `u`-small, the forgetful functor from `AddGrp.{u}`\n
@@ -230,18 +188,10 @@ This means the underlying type of a limit can be computed as a limit in the cate
   to_additive_relevant_arg 2]
 noncomputable instance forgetPreservesLimitsOfSize :
     PreservesLimitsOfSize.{w, v} (forget Grp.{u}) := inferInstance
-set_option linter.uppercaseLean3 false in
-#align Group.forget_preserves_limits_of_size Grp.forgetPreservesLimitsOfSize
-set_option linter.uppercaseLean3 false in
-#align AddGroup.forget_preserves_limits_of_size AddGrp.forgetPreservesLimitsOfSize
 
 @[to_additive]
 noncomputable instance forgetPreservesLimits : PreservesLimits (forget Grp.{u}) :=
   Grp.forgetPreservesLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align Group.forget_preserves_limits Grp.forgetPreservesLimits
-set_option linter.uppercaseLean3 false in
-#align AddGroup.forget_preserves_limits AddGrp.forgetPreservesLimits
 
 end Grp
 
@@ -252,10 +202,6 @@ variable (F : J ⥤ CommGrp.{u})
 @[to_additive]
 instance commGroupObj (j) : CommGroup ((F ⋙ forget CommGrp).obj j) :=
   inferInstanceAs <| CommGroup (F.obj j)
-set_option linter.uppercaseLean3 false in
-#align CommGroup.comm_group_obj CommGrp.commGroupObj
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.add_comm_group_obj AddCommGrp.addCommGroupObj
 
 @[to_additive]
 noncomputable instance limitCommGroup
@@ -265,10 +211,6 @@ noncomputable instance limitCommGroup
     @Subgroup.toCommGroup (∀ j, F.obj j) _
       (Grp.sectionsSubgroup (F ⋙ forget₂ CommGrp.{u} Grp.{u}))
   inferInstanceAs <| CommGroup (Shrink (F ⋙ forget CommGrp.{u}).sections)
-set_option linter.uppercaseLean3 false in
-#align CommGroup.limit_comm_group CommGrp.limitCommGroup
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.limit_add_comm_group AddCommGrp.limitAddCommGroup
 
 @[to_additive]
 instance : (forget₂ CommGrp.{u} Grp.{u}).ReflectsIsomorphisms :=
@@ -303,10 +245,6 @@ noncomputable instance Forget₂.createsLimit :
         makesLimit :=
           IsLimit.ofFaithful (forget₂ _ Grp.{u} ⋙ forget₂ _ MonCat.{u})
             (by apply MonCat.HasLimits.limitConeIsLimit _) (fun s => _) fun s => rfl })
-set_option linter.uppercaseLean3 false in
-#align CommGroup.forget₂.creates_limit CommGrp.Forget₂.createsLimit
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.forget₂.creates_limit AddCommGrp.Forget₂.createsLimit
 
 section
 
@@ -322,10 +260,6 @@ noncomputable def limitCone : Cone F :=
   letI : Small.{u} (Functor.sections ((F ⋙ forget₂ CommGrp Grp) ⋙ forget Grp)) :=
     inferInstanceAs <| Small (Functor.sections (F ⋙ forget CommGrp))
   liftLimit (limit.isLimit (F ⋙ forget₂ CommGrp.{u} Grp.{u}))
-set_option linter.uppercaseLean3 false in
-#align CommGroup.limit_cone CommGrp.limitCone
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.limit_cone AddCommGrp.limitCone
 
 /-- The chosen cone is a limit cone.
 (Generally, you'll just want to use `limit.cone F`.)
@@ -335,10 +269,6 @@ set_option linter.uppercaseLean3 false in
   (Generally, you'll just want to use `limit.cone F`.)"]
 noncomputable def limitConeIsLimit : IsLimit (limitCone.{v, u} F) :=
   liftedLimitIsLimit _
-set_option linter.uppercaseLean3 false in
-#align CommGroup.limit_cone_is_limit CommGrp.limitConeIsLimit
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.limit_cone_is_limit AddCommGrp.limitConeIsLimit
 
 /-- If `(F ⋙ forget CommGrp).sections` is `u`-small, `F` has a limit. -/
 @[to_additive "If `(F ⋙ forget AddCommGrp).sections` is `u`-small, `F` has a limit."]
@@ -371,18 +301,10 @@ instance hasLimitsOfShape [Small.{u} J] : HasLimitsOfShape J CommGrp.{u} where
   to_additive_relevant_arg 2]
 instance hasLimitsOfSize [UnivLE.{v, u}] : HasLimitsOfSize.{w, v} CommGrp.{u}
   where has_limits_of_shape _ _ := { }
-set_option linter.uppercaseLean3 false in
-#align CommGroup.has_limits_of_size CommGrp.hasLimitsOfSize
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.has_limits_of_size AddCommGrp.hasLimitsOfSize
 
 @[to_additive]
 instance hasLimits : HasLimits CommGrp.{u} :=
   CommGrp.hasLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align CommGroup.has_limits CommGrp.hasLimits
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.has_limits AddCommGrp.hasLimits
 
 @[to_additive]
 noncomputable instance forget₂GroupPreservesLimit :
@@ -410,19 +332,11 @@ of groups.)
   to_additive_relevant_arg 2]
 noncomputable instance forget₂GroupPreservesLimitsOfSize :
     PreservesLimitsOfSize.{w, v} (forget₂ CommGrp.{u} Grp.{u}) where
-set_option linter.uppercaseLean3 false in
-#align CommGroup.forget₂_Group_preserves_limits_of_size CommGrp.forget₂GroupPreservesLimitsOfSize
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.forget₂_AddGroup_preserves_limits AddCommGrp.forget₂AddGroupPreservesLimitsOfSize
 
 @[to_additive]
 noncomputable instance forget₂GroupPreservesLimits :
     PreservesLimits (forget₂ CommGrp Grp.{u}) :=
   CommGrp.forget₂GroupPreservesLimitsOfSize.{u, u}
-set_option linter.uppercaseLean3 false in
-#align CommGroup.forget₂_Group_preserves_limits CommGrp.forget₂GroupPreservesLimits
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.forget₂_Group_preserves_limits AddCommGrp.forget₂AddGroupPreservesLimits
 
 /-- An auxiliary declaration to speed up typechecking.
 -/
@@ -434,10 +348,6 @@ noncomputable def forget₂CommMonPreservesLimitsAux
   letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ CommMonCat) ⋙ forget CommMonCat)) :=
     inferInstanceAs <| Small (Functor.sections (F ⋙ forget CommGrp))
   CommMonCat.limitConeIsLimit.{v, u} (F ⋙ forget₂ CommGrp.{u} CommMonCat.{u})
-set_option linter.uppercaseLean3 false in
-#align CommGroup.forget₂_CommMon_preserves_limits_aux CommGrp.forget₂CommMonPreservesLimitsAux
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.forget₂_AddCommMon_preserves_limits_aux AddCommGrp.forget₂AddCommMonPreservesLimitsAux
 
 /-- If `J` is `u`-small, the forgetful functor from `CommGrp.{u}` to `CommMonCat.{u}`
 preserves limits of shape `J`. -/
@@ -460,10 +370,6 @@ in the category of commutative monoids.)
 noncomputable instance forget₂CommMonPreservesLimitsOfSize [UnivLE.{v, u}] :
     PreservesLimitsOfSize.{w, v} (forget₂ CommGrp CommMonCat.{u}) where
   preservesLimitsOfShape := { }
-set_option linter.uppercaseLean3 false in
-#align CommGroup.forget₂_CommMon_preserves_limits_of_size CommGrp.forget₂CommMonPreservesLimitsOfSize
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.forget₂_AddCommMon_preserves_limits AddCommGrp.forget₂AddCommMonPreservesLimitsOfSize
 
 /-- If `J` is `u`-small, the forgetful functor from `CommGrp.{u}` preserves limits of
 shape `J`. -/
@@ -483,10 +389,6 @@ underlying types could have been computed instead as limits in the category of t
   types.)"]
 noncomputable instance forgetPreservesLimitsOfSize :
     PreservesLimitsOfSize.{w, v} (forget CommGrp.{u}) := inferInstance
-set_option linter.uppercaseLean3 false in
-#align CommGroup.forget_preserves_limits_of_size CommGrp.forgetPreservesLimitsOfSize
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.forget_preserves_limits AddCommGrp.forgetPreservesLimitsOfSize
 
 noncomputable instance _root_.AddCommGrp.forgetPreservesLimits :
     PreservesLimits (forget AddCommGrp.{u}) :=
@@ -533,22 +435,16 @@ def kernelIsoKer {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     refine Subtype.ext ?_
     simp only [ZeroHom.coe_mk, Function.comp_apply, id_eq]
     apply DFunLike.congr_fun (kernel.lift_ι f _ _)
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.kernel_iso_ker AddCommGrp.kernelIsoKer
 
 @[simp]
 theorem kernelIsoKer_hom_comp_subtype {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     (kernelIsoKer f).hom ≫ AddSubgroup.subtype f.ker = kernel.ι f := by ext; rfl
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.kernel_iso_ker_hom_comp_subtype AddCommGrp.kernelIsoKer_hom_comp_subtype
 
 @[simp]
 theorem kernelIsoKer_inv_comp_ι {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     (kernelIsoKer f).inv ≫ kernel.ι f = AddSubgroup.subtype f.ker := by
   ext
   simp [kernelIsoKer]
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.kernel_iso_ker_inv_comp_ι AddCommGrp.kernelIsoKer_inv_comp_ι
 
 -- Porting note: explicitly add what to be synthesized under `simps!`, because other lemmas
 -- automatically generated is not in normal form
@@ -559,8 +455,6 @@ agrees with the `AddSubgroup.subtype` map.
 def kernelIsoKerOver {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     Over.mk (kernel.ι f) ≅ @Over.mk _ _ G (AddCommGrp.of f.ker) (AddSubgroup.subtype f.ker) :=
   Over.isoMk (kernelIsoKer f)
-set_option linter.uppercaseLean3 false in
-#align AddCommGroup.kernel_iso_ker_over AddCommGrp.kernelIsoKerOver
 
 -- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
 attribute [nolint simpNF] AddCommGrp.kernelIsoKerOver_inv_left_apply

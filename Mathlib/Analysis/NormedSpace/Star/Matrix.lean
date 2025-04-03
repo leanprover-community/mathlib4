@@ -9,8 +9,6 @@ import Mathlib.Analysis.RCLike.Basic
 import Mathlib.LinearAlgebra.UnitaryGroup
 import Mathlib.Topology.UniformSpace.Matrix
 
-#align_import analysis.normed_space.star.matrix from "leanprover-community/mathlib"@"468b141b14016d54b479eb7a0fff1e360b7e3cf6"
-
 /-!
 # Analytic properties of the `star` operation on matrices
 
@@ -75,7 +73,6 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
   -- Putting it all together
   rw [← sq_le_one_iff (norm_nonneg (U i j)), ← diag_eq_one, re_diag_eq_norm_sum]
   exact norm_sum
-#align entry_norm_bound_of_unitary entry_norm_bound_of_unitary
 
 attribute [local instance] Matrix.normedAddCommGroup
 
@@ -88,7 +85,6 @@ theorem entrywise_sup_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Ma
     rw [pi_norm_le_iff_of_nonneg zero_le_one]
   intros
   exact entry_norm_bound_of_unitary hU _ _
-#align entrywise_sup_norm_bound_of_unitary entrywise_sup_norm_bound_of_unitary
 
 end EntrywiseSupNorm
 

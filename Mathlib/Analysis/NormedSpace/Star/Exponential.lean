@@ -5,8 +5,6 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.NormedSpace.Exponential
 
-#align_import analysis.normed_space.star.exponential from "leanprover-community/mathlib"@"1e3201306d4d9eb1fd54c60d7c4510ad5126f6f9"
-
 /-! # The exponential map from selfadjoint to unitary
 In this file, we establish various properties related to the map `fun a ↦ exp ℂ A (I • a)`
 between the subtypes `selfAdjoint A` and `unitary A`.
@@ -35,7 +33,6 @@ over ℂ. -/
 noncomputable def selfAdjoint.expUnitary (a : selfAdjoint A) : unitary A :=
   ⟨exp ((I • a.val) : A),
       exp_mem_unitary_of_mem_skewAdjoint ℂ (a.prop.smul_mem_skewAdjoint conj_I)⟩
-#align self_adjoint.exp_unitary selfAdjoint.expUnitary
 
 open selfAdjoint
 
@@ -46,7 +43,6 @@ theorem Commute.expUnitary_add {a b : selfAdjoint A} (h : Commute (a : A) (b : A
     unfold Commute SemiconjBy
     simp only [h.eq, Algebra.smul_mul_assoc, Algebra.mul_smul_comm]
   simpa only [expUnitary_coe, AddSubgroup.coe_add, smul_add] using exp_add_of_commute ℂ hcomm
-#align commute.exp_unitary_add Commute.expUnitary_add
 
 theorem Commute.expUnitary {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
     Commute (expUnitary a) (expUnitary b) :=
@@ -54,6 +50,5 @@ theorem Commute.expUnitary {a b : selfAdjoint A} (h : Commute (a : A) (b : A)) :
     selfAdjoint.expUnitary a * selfAdjoint.expUnitary b =
         selfAdjoint.expUnitary b * selfAdjoint.expUnitary a := by
       rw [← h.expUnitary_add, ← h.symm.expUnitary_add, add_comm]
-#align commute.exp_unitary Commute.expUnitary
 
 end Star

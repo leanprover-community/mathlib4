@@ -6,8 +6,6 @@ Authors: Patrick Massot
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.SpecificLimits.Normed
 
-#align_import analysis.normed.group.controlled_closure from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-! # Extending a backward bound on a normed group homomorphism from a dense set
 
 Possible TODO (from the PR's review, https://github.com/leanprover-community/mathlib/pull/8498 ):
@@ -104,7 +102,6 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
       _ ≤ (C + ε) * ‖h‖ := by
         rw [add_comm, add_mul]
         apply add_le_add_left this
-#align controlled_closure_of_complete controlled_closure_of_complete
 
 /-- Given `f : NormedAddGroupHom G H` for some complete `G`, if every element `x` of the image of
 an isometric immersion `j : NormedAddGroupHom K H` has a preimage under `f` whose norm is at most
@@ -123,4 +120,3 @@ theorem controlled_closure_range_of_complete {f : NormedAddGroupHom G H} {K : Ty
     rw [hj]
     exact hyp k
   exact controlled_closure_of_complete hC hε hyp
-#align controlled_closure_range_of_complete controlled_closure_range_of_complete

@@ -6,8 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Data.Set.Image
 import Mathlib.Data.List.Defs
 
-#align_import data.set.list from "leanprover-community/mathlib"@"2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4"
-
 /-!
 # Lemmas about `List`s and `Set.range`
 
@@ -28,17 +26,14 @@ theorem range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x �
   rcases ihl fun x hx => hl x <| subset_cons _ _ hx with ⟨l, rfl⟩
   rcases hl a (mem_cons_self _ _) with ⟨a, rfl⟩
   exact ⟨a :: l, map_cons _ _ _⟩
-#align set.range_list_map Set.range_list_map
 
 theorem range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l | ∀ x ∈ l, x ∈ s } := by
   rw [range_list_map, Subtype.range_coe]
-#align set.range_list_map_coe Set.range_list_map_coe
 
 @[simp]
 theorem range_list_get : range l.get = { x | x ∈ l } := by
   ext x
   rw [mem_setOf_eq, mem_iff_get, mem_range]
-#align set.range_list_nth_le Set.range_list_get
 @[deprecated (since := "2024-04-22")] alias range_list_nthLe := range_list_get
 
 theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) := by
@@ -46,7 +41,6 @@ theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) :
   refine (range_subset_iff.2 fun n => ?_).antisymm (insert_subset_iff.2 ⟨?_, ?_⟩)
   exacts [(le_or_lt l.length n).imp get?_eq_none.2 (fun hlt => ⟨⟨_, hlt⟩, (get?_eq_get hlt).symm⟩),
     ⟨_, get?_eq_none.2 le_rfl⟩, range_subset_iff.2 fun k => ⟨_, get?_eq_get _⟩]
-#align set.range_list_nth Set.range_list_get?
 
 @[simp]
 theorem range_list_getD (d : α) : (range fun n : Nat => l[n]?.getD d) = insert d { x | x ∈ l } :=
@@ -55,14 +49,12 @@ theorem range_list_getD (d : α) : (range fun n : Nat => l[n]?.getD d) = insert 
       simp [← range_comp, (· ∘ ·)]
     _ = insert d { x | x ∈ l } := by
       simp only [range_list_get?, image_insert_eq, Option.getD, image_image, image_id']
-#align set.range_list_nthd Set.range_list_getD
 
 @[simp]
 theorem range_list_getI [Inhabited α] (l : List α) :
     range l.getI = insert default { x | x ∈ l } := by
   unfold List.getI
   simp
-#align set.range_list_inth Set.range_list_getI
 
 end Set
 
@@ -73,4 +65,3 @@ instance List.canLift (c) (p) [CanLift α β c p] :
   prf l H := by
     rw [← Set.mem_range, Set.range_list_map]
     exact fun a ha => CanLift.prf a (H a ha)
-#align list.can_lift List.canLift

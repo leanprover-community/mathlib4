@@ -6,8 +6,6 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.Calculus.Deriv.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Slope
 
-#align_import analysis.calculus.deriv.slope from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
-
 /-!
 # Derivative as the limit of the slope
 
@@ -61,22 +59,18 @@ theorem hasDerivAtFilter_iff_tendsto_slope {x : 𝕜} {L : Filter 𝕜} :
         rw [inv_smul_smul₀ (sub_ne_zero.2 hy) f']
   _ ↔ Tendsto (slope f x) (L ⊓ 𝓟 {x}ᶜ) (𝓝 f') := by
         rw [← nhds_translation_sub f', tendsto_comap_iff]; rfl
-#align has_deriv_at_filter_iff_tendsto_slope hasDerivAtFilter_iff_tendsto_slope
 
 theorem hasDerivWithinAt_iff_tendsto_slope :
     HasDerivWithinAt f f' s x ↔ Tendsto (slope f x) (𝓝[s \ {x}] x) (𝓝 f') := by
   simp only [HasDerivWithinAt, nhdsWithin, diff_eq, ← inf_assoc, inf_principal.symm]
   exact hasDerivAtFilter_iff_tendsto_slope
-#align has_deriv_within_at_iff_tendsto_slope hasDerivWithinAt_iff_tendsto_slope
 
 theorem hasDerivWithinAt_iff_tendsto_slope' (hs : x ∉ s) :
     HasDerivWithinAt f f' s x ↔ Tendsto (slope f x) (𝓝[s] x) (𝓝 f') := by
   rw [hasDerivWithinAt_iff_tendsto_slope, diff_singleton_eq_self hs]
-#align has_deriv_within_at_iff_tendsto_slope' hasDerivWithinAt_iff_tendsto_slope'
 
 theorem hasDerivAt_iff_tendsto_slope : HasDerivAt f f' x ↔ Tendsto (slope f x) (𝓝[≠] x) (𝓝 f') :=
   hasDerivAtFilter_iff_tendsto_slope
-#align has_deriv_at_iff_tendsto_slope hasDerivAt_iff_tendsto_slope
 
 theorem hasDerivAt_iff_tendsto_slope_zero :
     HasDerivAt f f' x ↔ Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[≠] 0) (𝓝 f') := by
@@ -166,17 +160,14 @@ variable {f : ℝ → ℝ} {f' : ℝ} {s : Set ℝ} {x : ℝ} {r : ℝ}
 theorem HasDerivWithinAt.limsup_slope_le (hf : HasDerivWithinAt f f' s x) (hr : f' < r) :
     ∀ᶠ z in 𝓝[s \ {x}] x, slope f x z < r :=
   hasDerivWithinAt_iff_tendsto_slope.1 hf (IsOpen.mem_nhds isOpen_Iio hr)
-#align has_deriv_within_at.limsup_slope_le HasDerivWithinAt.limsup_slope_le
 
 theorem HasDerivWithinAt.limsup_slope_le' (hf : HasDerivWithinAt f f' s x) (hs : x ∉ s)
     (hr : f' < r) : ∀ᶠ z in 𝓝[s] x, slope f x z < r :=
   (hasDerivWithinAt_iff_tendsto_slope' hs).1 hf (IsOpen.mem_nhds isOpen_Iio hr)
-#align has_deriv_within_at.limsup_slope_le' HasDerivWithinAt.limsup_slope_le'
 
 theorem HasDerivWithinAt.liminf_right_slope_le (hf : HasDerivWithinAt f f' (Ici x) x)
     (hr : f' < r) : ∃ᶠ z in 𝓝[>] x, slope f x z < r :=
   (hf.Ioi_of_Ici.limsup_slope_le' (lt_irrefl x) hr).frequently
-#align has_deriv_within_at.liminf_right_slope_le HasDerivWithinAt.liminf_right_slope_le
 
 end Real
 
@@ -203,7 +194,6 @@ theorem HasDerivWithinAt.limsup_norm_slope_le (hf : HasDerivWithinAt f f' s x) (
   filter_upwards [C.1]
   simp only [norm_smul, mem_Iio, norm_inv]
   exact fun _ => id
-#align has_deriv_within_at.limsup_norm_slope_le HasDerivWithinAt.limsup_norm_slope_le
 
 /-- If `f` has derivative `f'` within `s` at `x`, then for any `r > ‖f'‖` the ratio
 `(‖f z‖ - ‖f x‖) / ‖z - x‖` is less than `r` in some neighborhood of `x` within `s`.
@@ -218,7 +208,6 @@ theorem HasDerivWithinAt.limsup_slope_norm_le (hf : HasDerivWithinAt f f' s x) (
   intro z hz
   refine lt_of_le_of_lt (mul_le_mul_of_nonneg_left (norm_sub_norm_le _ _) ?_) hz
   exact inv_nonneg.2 (norm_nonneg _)
-#align has_deriv_within_at.limsup_slope_norm_le HasDerivWithinAt.limsup_slope_norm_le
 
 /-- If `f` has derivative `f'` within `(x, +∞)` at `x`, then for any `r > ‖f'‖` the ratio
 `‖f z - f x‖ / ‖z - x‖` is frequently less than `r` as `z → x+0`.
@@ -228,7 +217,6 @@ for a stronger version using limit superior and any set `s`. -/
 theorem HasDerivWithinAt.liminf_right_norm_slope_le (hf : HasDerivWithinAt f f' (Ici x) x)
     (hr : ‖f'‖ < r) : ∃ᶠ z in 𝓝[>] x, ‖z - x‖⁻¹ * ‖f z - f x‖ < r :=
   (hf.Ioi_of_Ici.limsup_norm_slope_le hr).frequently
-#align has_deriv_within_at.liminf_right_norm_slope_le HasDerivWithinAt.liminf_right_norm_slope_le
 
 /-- If `f` has derivative `f'` within `(x, +∞)` at `x`, then for any `r > ‖f'‖` the ratio
 `(‖f z‖ - ‖f x‖) / (z - x)` is frequently less than `r` as `z → x+0`.
@@ -246,6 +234,5 @@ theorem HasDerivWithinAt.liminf_right_slope_norm_le (hf : HasDerivWithinAt f f' 
   have := (hf.Ioi_of_Ici.limsup_slope_norm_le hr).frequently
   refine this.mp (Eventually.mono self_mem_nhdsWithin fun z hxz hz ↦ ?_)
   rwa [Real.norm_eq_abs, abs_of_pos (sub_pos_of_lt hxz)] at hz
-#align has_deriv_within_at.liminf_right_slope_norm_le HasDerivWithinAt.liminf_right_slope_norm_le
 
 end RealSpace

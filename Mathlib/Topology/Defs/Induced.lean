@@ -63,7 +63,6 @@ def induced (f : X → Y) (t : TopologicalSpace Y) : TopologicalSpace X where
     refine ⟨⋃₀ (g '' S), isOpen_sUnion <| forall_mem_image.2 hgo, ?_⟩
     rw [preimage_sUnion, biUnion_image, sUnion_eq_biUnion]
     exact iUnion₂_congr hfg
-#align topological_space.induced TopologicalSpace.induced
 
 instance _root_.instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpace X] :
     TopologicalSpace (Subtype p) :=
@@ -78,7 +77,6 @@ def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
   isOpen_univ := t.isOpen_univ
   isOpen_inter s₁ s₂ h₁ h₂ := h₁.inter h₂
   isOpen_sUnion s h := by simpa only [preimage_sUnion] using isOpen_biUnion h
-#align topological_space.coinduced TopologicalSpace.coinduced
 
 end TopologicalSpace
 
@@ -103,8 +101,6 @@ under `f` of some open set `t : Set Y`. -/
 structure Inducing (f : X → Y) : Prop where
   /-- The topology on the domain is equal to the induced topology. -/
   induced : tX = tY.induced f
-#align inducing Inducing
-#align inducing_iff inducing_iff
 
 /-- A function between topological spaces is an embedding if it is injective,
   and for all `s : Set X`, `s` is open iff it is the preimage of an open set. -/
@@ -113,28 +109,21 @@ structure Embedding [TopologicalSpace X] [TopologicalSpace Y] (f : X → Y) exte
   Inducing f : Prop where
   /-- A topological embedding is injective. -/
   inj : Function.Injective f
-#align embedding Embedding
-#align embedding_iff embedding_iff
 
 /-- An open embedding is an embedding with open range. -/
 @[mk_iff]
 structure OpenEmbedding (f : X → Y) extends Embedding f : Prop where
   /-- The range of an open embedding is an open set. -/
   isOpen_range : IsOpen <| range f
-#align open_embedding OpenEmbedding
-#align open_embedding_iff openEmbedding_iff
 
 /-- A closed embedding is an embedding with closed image. -/
 @[mk_iff]
 structure ClosedEmbedding (f : X → Y) extends Embedding f : Prop where
   /-- The range of a closed embedding is a closed set. -/
   isClosed_range : IsClosed <| range f
-#align closed_embedding ClosedEmbedding
-#align closed_embedding_iff closedEmbedding_iff
 
 /-- A function between topological spaces is a quotient map if it is surjective,
   and for all `s : Set Y`, `s` is open iff its preimage is an open set. -/
 def QuotientMap {X : Type*} {Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
     (f : X → Y) : Prop :=
   Function.Surjective f ∧ tY = tX.coinduced f
-#align quotient_map QuotientMap

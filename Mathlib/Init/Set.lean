@@ -56,12 +56,10 @@ relied on. Instead, `setOf` and membership of a set (`∈`) should be used to co
 and predicates.
 -/
 def Set (α : Type u) := α → Prop
-#align set Set
 
 /-- Turn a predicate `p : α → Prop` into a set, also written as `{x | p x}` -/
 def setOf {α : Type u} (p : α → Prop) : Set α :=
   p
-#align set_of setOf
 
 namespace Set
 
@@ -162,7 +160,6 @@ This is conceptually the "same as" `α` (in set theory, it is actually the same)
 makes the distinction that `α` is a type while `Set.univ` is a term of type `Set α`. `Set.univ` can
 itself be coerced to a type `↥Set.univ` which is in bijection with (but distinct from) `α`. -/
 def univ : Set α := {_a | True}
-#align set.univ Set.univ
 
 /-- `Set.insert a s` is the set `{a} ∪ s`.
 
@@ -229,6 +226,5 @@ in theorem assumptions instead of `∃ x, x ∈ s` or `s ≠ ∅` as it gives ac
 to the dot notation. -/
 protected def Nonempty (s : Set α) : Prop :=
   ∃ x, x ∈ s
-#align set.nonempty Set.Nonempty
 
 end Set

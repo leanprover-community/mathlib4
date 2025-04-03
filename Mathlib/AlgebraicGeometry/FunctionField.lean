@@ -5,8 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Properties
 
-#align_import algebraic_geometry.function_field from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
-
 /-!
 # Function field of integral schemes
 
@@ -21,7 +19,6 @@ This is a field when the scheme is integral.
 
 -- Explicit universe annotations were used in this file to improve perfomance #12737
 
-set_option linter.uppercaseLean3 false
 
 universe u v
 
@@ -35,7 +32,6 @@ variable (X : Scheme)
 Despite the name, this is a field only when the scheme is integral. -/
 noncomputable abbrev Scheme.functionField [IrreducibleSpace X] : CommRingCat :=
   X.presheaf.stalk (genericPoint X)
-#align algebraic_geometry.Scheme.function_field AlgebraicGeometry.Scheme.functionField
 
 /-- The restriction map from a component to the function field. -/
 noncomputable abbrev Scheme.germToFunctionField [IrreducibleSpace X] (U : Opens X)
@@ -43,7 +39,6 @@ noncomputable abbrev Scheme.germToFunctionField [IrreducibleSpace X] (U : Opens 
   X.presheaf.germ
     ⟨genericPoint X,
       ((genericPoint_spec X).mem_open_set_iff U.isOpen).mpr (by simpa using h)⟩
-#align algebraic_geometry.Scheme.germ_to_function_field AlgebraicGeometry.Scheme.germToFunctionField
 
 noncomputable instance [IrreducibleSpace X] (U : Opens X) [Nonempty U] :
     Algebra Γ(X, U) X.functionField :=
@@ -73,12 +68,10 @@ theorem germ_injective_of_isIntegral [IsIntegral X] {U : Opens X} (x : U) :
   cases Subsingleton.elim iU iV
   haveI : Nonempty W := ⟨⟨_, hW⟩⟩
   exact map_injective_of_isIntegral X iU e
-#align algebraic_geometry.germ_injective_of_is_integral AlgebraicGeometry.germ_injective_of_isIntegral
 
 theorem Scheme.germToFunctionField_injective [IsIntegral X] (U : Opens X) [Nonempty U] :
     Function.Injective (X.germToFunctionField U) :=
   germ_injective_of_isIntegral _ _
-#align algebraic_geometry.Scheme.germ_to_function_field_injective AlgebraicGeometry.Scheme.germToFunctionField_injective
 
 theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f]
     [hX : IrreducibleSpace X] [IrreducibleSpace Y] :
@@ -91,13 +84,11 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsO
   · rw [Set.univ_inter, Set.image_univ]
   · apply PreirreducibleSpace.isPreirreducible_univ (X := Y)
   · exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
-#align algebraic_geometry.generic_point_eq_of_is_open_immersion AlgebraicGeometry.genericPoint_eq_of_isOpenImmersion
 
 noncomputable instance stalkFunctionFieldAlgebra [IrreducibleSpace X] (x : X) :
     Algebra (X.presheaf.stalk x) X.functionField := by
   apply RingHom.toAlgebra
   exact X.presheaf.stalkSpecializes ((genericPoint_spec X).specializes trivial)
-#align algebraic_geometry.stalk_function_field_algebra AlgebraicGeometry.stalkFunctionFieldAlgebra
 
 instance functionField_isScalarTower [IrreducibleSpace X] (U : Opens X) (x : U)
     [Nonempty U] : IsScalarTower Γ(X, U) (X.presheaf.stalk x) X.functionField := by
@@ -105,7 +96,6 @@ instance functionField_isScalarTower [IrreducibleSpace X] (U : Opens X) (x : U)
   simp_rw [RingHom.algebraMap_toAlgebra]
   change _ = X.presheaf.germ x ≫ _
   rw [X.presheaf.germ_stalkSpecializes]
-#align algebraic_geometry.function_field_is_scalar_tower AlgebraicGeometry.functionField_isScalarTower
 
 noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
     Algebra R (Spec R).functionField :=
@@ -119,7 +109,6 @@ theorem genericPoint_eq_bot_of_affine (R : CommRingCat) [IsDomain R] :
   rw [← PrimeSpectrum.zeroLocus_vanishingIdeal_eq_closure, PrimeSpectrum.vanishingIdeal_singleton]
   rw [Set.top_eq_univ, ← PrimeSpectrum.zeroLocus_singleton_zero]
   rfl
-#align algebraic_geometry.generic_point_eq_bot_of_affine AlgebraicGeometry.genericPoint_eq_bot_of_affine
 
 instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain R] :
     IsFractionRing R (Spec R).functionField := by
@@ -131,7 +120,6 @@ instance functionField_isFractionRing_of_affine (R : CommRingCat.{u}) [IsDomain 
   rw [genericPoint_eq_bot_of_affine]
   ext
   exact mem_nonZeroDivisors_iff_ne_zero
-#align algebraic_geometry.function_field_is_fraction_ring_of_affine AlgebraicGeometry.functionField_isFractionRing_of_affine
 
 instance {X : Scheme} [IsIntegral X] {U : Opens X} [hU : Nonempty U] :
     IsIntegral (X ∣_ᵤ U) :=
@@ -152,7 +140,6 @@ theorem IsAffineOpen.primeIdealOf_genericPoint {X : Scheme} [IsIntegral X] {U : 
   -- Porting note: this was `ext1`
   apply Subtype.ext
   exact (genericPoint_eq_of_isOpenImmersion (Scheme.ιOpens U)).symm
-#align algebraic_geometry.is_affine_open.prime_ideal_of_generic_point AlgebraicGeometry.IsAffineOpen.primeIdealOf_genericPoint
 
 theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X)
     (hU : IsAffineOpen U) [hU' : Nonempty U] :
@@ -166,7 +153,6 @@ theorem functionField_isFractionRing_of_isAffineOpen [IsIntegral X] (U : Opens X
   convert hU.isLocalization_stalk ⟨genericPoint X, _⟩ using 1
   rw [hU.primeIdealOf_genericPoint, genericPoint_eq_bot_of_affine]
   ext; exact mem_nonZeroDivisors_iff_ne_zero
-#align algebraic_geometry.function_field_is_fraction_ring_of_is_affine_open AlgebraicGeometry.functionField_isFractionRing_of_isAffineOpen
 
 instance (x : X) : IsAffine (X.affineCover.obj x) :=
   AlgebraicGeometry.isAffine_Spec _

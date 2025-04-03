@@ -8,8 +8,6 @@ import Mathlib.Data.Nat.Defs
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
 
-#align_import arithcc from "leanprover-community/mathlib"@"eb3595ed8610db8107b75b75ab64ab6390684155"
-
 /-!
 # A compiler for arithmetic expressions
 
@@ -56,25 +54,20 @@ section Types
 /-- Value type shared by both source and target languages. -/
 abbrev Word :=
   ℕ
-#align arithcc.word Arithcc.Word
 
 /-- Variable identifier type in the source language. -/
 abbrev Identifier :=
   String
-#align arithcc.identifier Arithcc.Identifier
 
 /-- Register name type in the target language. -/
 abbrev Register :=
   ℕ
-#align arithcc.register Arithcc.Register
 
 theorem Register.lt_succ_self : ∀ r : Register, r < r + 1 :=
   Nat.lt_succ_self
-#align arithcc.register.lt_succ_self Arithcc.Register.lt_succ_self
 
 theorem Register.le_of_lt_succ {r₁ r₂ : Register} : r₁ < r₂ + 1 → r₁ ≤ r₂ :=
   Nat.le_of_succ_le_succ
-#align arithcc.register.le_of_lt_succ Arithcc.Register.le_of_lt_succ
 
 end Types
 
@@ -89,7 +82,6 @@ inductive Expr
   | var (x : Identifier) : Expr
   | sum (s₁ s₂ : Expr) : Expr
   deriving Inhabited
-#align arithcc.expr Arithcc.Expr
 
 /-- The semantics of the source language (2.1). -/
 @[simp]
@@ -97,7 +89,6 @@ def value : Expr → (Identifier → Word) → Word
   | Expr.const v, _ => v
   | Expr.var x, ξ => ξ x
   | Expr.sum s₁ s₂, ξ => value s₁ ξ + value s₂ ξ
-#align arithcc.value Arithcc.value
 
 end Source
 
@@ -113,7 +104,6 @@ inductive Instruction
   | sto : Register → Instruction
   | add : Register → Instruction
   deriving Inhabited
-#align arithcc.instruction Arithcc.Instruction
 
 /-- Machine state consists of the accumulator and a vector of registers.
 
@@ -123,7 +113,6 @@ For clarity, we make accessing the accumulator explicit and use `read`/`write` f
 structure State where mk ::
   ac : Word
   rs : Register → Word
-#align arithcc.state Arithcc.State
 
 instance : Inhabited State :=
   ⟨{  ac := 0
@@ -133,13 +122,11 @@ instance : Inhabited State :=
 @[simp]
 def read (r : Register) (η : State) : Word :=
   η.rs r
-#align arithcc.read Arithcc.read
 
 /-- This is similar to the `a` function (3.9), but for registers only. -/
 @[simp]
 def write (r : Register) (v : Word) (η : State) : State :=
   { η with rs := fun x => if x = r then v else η.rs x }
-#align arithcc.write Arithcc.write
 
 /-- The semantics of the target language (3.11). -/
 def step : Instruction → State → State
@@ -147,14 +134,12 @@ def step : Instruction → State → State
   | Instruction.load r, η => { η with ac := read r η }
   | Instruction.sto r, η => write r η.ac η
   | Instruction.add r, η => { η with ac := read r η + η.ac }
-#align arithcc.step Arithcc.step
 
 /-- The resulting machine state of running a target program from a given machine state (3.12). -/
 @[simp]
 def outcome : List Instruction → State → State
   | [], η => η
   | i :: is, η => outcome is (step i η)
-#align arithcc.outcome Arithcc.outcome
 
 /-- A lemma on the concatenation of two programs (3.13). -/
 @[simp]
@@ -163,7 +148,6 @@ theorem outcome_append (p₁ p₂ : List Instruction) (η : State) :
   revert η
   induction' p₁ with _ _ p₁_ih <;> intros <;> simp
   apply p₁_ih
-#align arithcc.outcome_append Arithcc.outcome_append
 
 end Target
 
@@ -178,7 +162,6 @@ open Instruction
 @[simp]
 def loc (ν : Identifier) (map : Identifier → Register) : Register :=
   map ν
-#align arithcc.loc Arithcc.loc
 
 /-- The implementation of the compiler (4.2).
 
@@ -189,7 +172,6 @@ def compile (map : Identifier → Register) : Expr → Register → List Instruc
   | Expr.const v, _ => [li v]
   | Expr.var x, _ => [load (loc x map)]
   | Expr.sum s₁ s₂, t => compile map s₁ t ++ [sto t] ++ compile map s₂ (t + 1) ++ [add t]
-#align arithcc.compile Arithcc.compile
 
 end Compiler
 
@@ -201,42 +183,35 @@ section Correctness
 /-- Machine states ζ₁ and ζ₂ are equal except for the accumulator and registers {x | x ≥ t}. -/
 def StateEqRs (t : Register) (ζ₁ ζ₂ : State) : Prop :=
   ∀ r : Register, r < t → ζ₁.rs r = ζ₂.rs r
-#align arithcc.state_eq_rs Arithcc.StateEqRs
 
 notation:50 ζ₁ " ≃[" t "]/ac " ζ₂:50 => StateEqRs t ζ₁ ζ₂
 
 @[refl]
 protected theorem StateEqRs.refl (t : Register) (ζ : State) : ζ ≃[t]/ac ζ := by simp [StateEqRs]
-#align arithcc.state_eq_rs.refl Arithcc.StateEqRs.refl
 
 @[symm]
 protected theorem StateEqRs.symm {t : Register} (ζ₁ ζ₂ : State) :
     ζ₁ ≃[t]/ac ζ₂ → ζ₂ ≃[t]/ac ζ₁ := by
   simp_all [StateEqRs] -- Porting note: was `finish [StateEqRs]`
-#align arithcc.state_eq_rs.symm Arithcc.StateEqRs.symm
 
 @[trans]
 protected theorem StateEqRs.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
     ζ₁ ≃[t]/ac ζ₂ → ζ₂ ≃[t]/ac ζ₃ → ζ₁ ≃[t]/ac ζ₃ := by
   simp_all [StateEqRs] -- Porting note: was `finish [StateEqRs]`
-#align arithcc.state_eq_rs.trans Arithcc.StateEqRs.trans
 
 /-- Machine states ζ₁ and ζ₂ are equal except for registers {x | x ≥ t}. -/
 def StateEq (t : Register) (ζ₁ ζ₂ : State) : Prop :=
   ζ₁.ac = ζ₂.ac ∧ StateEqRs t ζ₁ ζ₂
-#align arithcc.state_eq Arithcc.StateEq
 
 notation:50 ζ₁ " ≃[" t "] " ζ₂:50 => StateEq t ζ₁ ζ₂
 
 @[refl]
 protected theorem StateEq.refl (t : Register) (ζ : State) : ζ ≃[t] ζ := by simp [StateEq]; rfl
-#align arithcc.state_eq.refl Arithcc.StateEq.refl
 
 @[symm]
 protected theorem StateEq.symm {t : Register} (ζ₁ ζ₂ : State) : ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t] ζ₁ := by
   simp [StateEq]; intros
   constructor <;> (symm; assumption)
-#align arithcc.state_eq.symm Arithcc.StateEq.symm
 
 @[trans]
 protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
@@ -245,7 +220,6 @@ protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
   constructor
   · simp_all only
   · trans ζ₂ <;> assumption
-#align arithcc.state_eq.trans Arithcc.StateEq.trans
 
 -- Porting note (#10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEq (t + 1)) (StateEq (t + 1)) :=
@@ -257,7 +231,6 @@ protected theorem StateEqStateEqRs.trans (t : Register) (ζ₁ ζ₂ ζ₃ : Sta
     ζ₁ ≃[t] ζ₂ → ζ₂ ≃[t]/ac ζ₃ → ζ₁ ≃[t]/ac ζ₃ := by
   simp [StateEq]; intros
   trans ζ₂ <;> assumption
-#align arithcc.state_eq_state_eq_rs.trans Arithcc.StateEqStateEqRs.trans
 
 -- Porting note (#10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEqRs (t + 1)) (StateEqRs (t + 1)) :=
@@ -275,7 +248,6 @@ theorem stateEq_implies_write_eq {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁
     specialize h r hr
     simp_all
   · simp_all
-#align arithcc.state_eq_implies_write_eq Arithcc.stateEq_implies_write_eq
 
 /-- Writing the same value to any register preserves `≃[t]/ac`. -/
 theorem stateEqRs_implies_write_eq_rs {t : Register} {ζ₁ ζ₂ : State} (h : ζ₁ ≃[t]/ac ζ₂)
@@ -284,7 +256,6 @@ theorem stateEqRs_implies_write_eq_rs {t : Register} {ζ₁ ζ₂ : State} (h : 
   intro r' hr'
   specialize h r' hr'
   congr
-#align arithcc.state_eq_rs_implies_write_eq_rs Arithcc.stateEqRs_implies_write_eq_rs
 
 /-- `≃[t + 1]` with writing to register `t` implies `≃[t]`. -/
 theorem write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
@@ -295,7 +266,6 @@ theorem write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
   cases' h with _ h
   specialize h r (lt_trans hr (Register.lt_succ_self _))
   rwa [if_neg (ne_of_lt hr)] at h
-#align arithcc.write_eq_implies_state_eq Arithcc.write_eq_implies_stateEq
 
 /-- The main **compiler correctness theorem**.
 
@@ -365,7 +335,6 @@ theorem compiler_correctness
         simp [StateEq] at hζ₃ ⊢; cases hζ₃; assumption
       _  ≃[t + 1] { write t ν₁ η with ac := ν } := by simp_all; rfl
     apply write_eq_implies_stateEq <;> assumption
-#align arithcc.compiler_correctness Arithcc.compiler_correctness
 
 end Correctness
 

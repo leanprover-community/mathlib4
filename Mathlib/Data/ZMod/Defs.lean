@@ -8,8 +8,6 @@ import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Fintype.Card
 
-#align_import data.zmod.defs from "leanprover-community/mathlib"@"3a2b5524a138b5d0b818b858b516d4ac8a484b03"
-
 /-!
 # Definition of `ZMod n` + basic results.
 
@@ -53,7 +51,6 @@ instance instCommSemigroup (n : ℕ) : CommSemigroup (Fin n) :=
           _ ≡ a * (b * c) [MOD n] := by rw [mul_assoc]
           _ ≡ a * (b * c % n) [MOD n] := (Nat.mod_modEq _ _).symm.mul_left _
     mul_comm := Fin.mul_comm }
-#align fin.comm_semigroup Fin.instCommSemigroup
 
 private theorem left_distrib_aux (n : ℕ) : ∀ a b c : Fin n, a * (b + c) = a * b + a * c :=
   fun ⟨a, ha⟩ ⟨b, hb⟩ ⟨c, hc⟩ =>
@@ -69,7 +66,6 @@ instance instDistrib (n : ℕ) : Distrib (Fin n) :=
     left_distrib := left_distrib_aux n
     right_distrib := fun a b c => by
       rw [mul_comm, left_distrib_aux, mul_comm _ b, mul_comm] }
-#align fin.distrib Fin.instDistrib
 
 /-- Commutative ring structure on `Fin n`. -/
 instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
@@ -80,14 +76,12 @@ instance instCommRing (n : ℕ) [NeZero n] : CommRing (Fin n) :=
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
     zero_mul := Fin.zero_mul'
     mul_zero := Fin.mul_zero' }
-#align fin.comm_ring Fin.instCommRing
 
 /-- Note this is more general than `Fin.instCommRing` as it applies (vacuously) to `Fin 0` too. -/
 instance instHasDistribNeg (n : ℕ) : HasDistribNeg (Fin n) :=
   { toInvolutiveNeg := Fin.instInvolutiveNeg n
     mul_neg := Nat.casesOn n finZeroElim fun _i => mul_neg
     neg_mul := Nat.casesOn n finZeroElim fun _i => neg_mul }
-#align fin.has_distrib_neg Fin.instHasDistribNeg
 
 end Fin
 
@@ -95,17 +89,14 @@ end Fin
 def ZMod : ℕ → Type
   | 0 => ℤ
   | n + 1 => Fin (n + 1)
-#align zmod ZMod
 
 instance ZMod.decidableEq : ∀ n : ℕ, DecidableEq (ZMod n)
   | 0 => inferInstanceAs (DecidableEq ℤ)
   | n + 1 => inferInstanceAs (DecidableEq (Fin (n + 1)))
-#align zmod.decidable_eq ZMod.decidableEq
 
 instance ZMod.repr : ∀ n : ℕ, Repr (ZMod n)
   | 0 => by dsimp [ZMod]; infer_instance
   | n + 1 => by dsimp [ZMod]; infer_instance
-#align zmod.has_repr ZMod.repr
 
 namespace ZMod
 
@@ -114,18 +105,15 @@ instance instUnique : Unique (ZMod 1) := Fin.uniqueFinOne
 instance fintype : ∀ (n : ℕ) [NeZero n], Fintype (ZMod n)
   | 0, h => (h.ne rfl).elim
   | n + 1, _ => Fin.fintype (n + 1)
-#align zmod.fintype ZMod.fintype
 
 instance infinite : Infinite (ZMod 0) :=
   Int.infinite
-#align zmod.infinite ZMod.infinite
 
 @[simp]
 theorem card (n : ℕ) [Fintype (ZMod n)] : Fintype.card (ZMod n) = n := by
   cases n with
   | zero => exact (not_finite (ZMod 0)).elim
   | succ n => convert Fintype.card_fin (n + 1) using 2
-#align zmod.card ZMod.card
 
 /- We define each field by cases, to ensure that the eta-expanded `ZMod.commRing` is defeq to the
 original, this helps avoid diamonds with instances coming from classes extending `CommRing` such as
@@ -190,10 +178,8 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
   npow_succ := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).npow_succ
     fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow_succ
-#align zmod.comm_ring ZMod.commRing
 
 instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩
-#align zmod.inhabited ZMod.inhabited
 
 end ZMod

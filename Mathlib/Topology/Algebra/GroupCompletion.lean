@@ -7,8 +7,6 @@ import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.UniformSpace.Completion
 
-#align_import topology.algebra.group_completion from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
-
 /-!
 # Completion of topological groups:
 
@@ -56,7 +54,6 @@ instance [Sub α] : Sub (Completion α) :=
 @[norm_cast]
 theorem UniformSpace.Completion.coe_zero [Zero α] : ((0 : α) : Completion α) = 0 :=
   rfl
-#align uniform_space.completion.coe_zero UniformSpace.Completion.coe_zero
 
 end Group
 
@@ -83,17 +80,14 @@ variable [UniformSpace α] [AddGroup α] [UniformAddGroup α]
 @[norm_cast]
 theorem coe_neg (a : α) : ((-a : α) : Completion α) = -a :=
   (map_coe uniformContinuous_neg a).symm
-#align uniform_space.completion.coe_neg UniformSpace.Completion.coe_neg
 
 @[norm_cast]
 theorem coe_sub (a b : α) : ((a - b : α) : Completion α) = a - b :=
   (map₂_coe_coe a b Sub.sub uniformContinuous_sub).symm
-#align uniform_space.completion.coe_sub UniformSpace.Completion.coe_sub
 
 @[norm_cast]
 theorem coe_add (a b : α) : ((a + b : α) : Completion α) = a + b :=
   (map₂_coe_coe a b (· + ·) uniformContinuous_add).symm
-#align uniform_space.completion.coe_add UniformSpace.Completion.coe_add
 
 instance : AddMonoid (Completion α) :=
   { (inferInstance : Zero <| Completion α),
@@ -181,17 +175,14 @@ def toCompl : α →+ Completion α where
   toFun := (↑)
   map_add' := coe_add
   map_zero' := coe_zero
-#align uniform_space.completion.to_compl UniformSpace.Completion.toCompl
 
 theorem continuous_toCompl : Continuous (toCompl : α → Completion α) :=
   continuous_coe α
-#align uniform_space.completion.continuous_to_compl UniformSpace.Completion.continuous_toCompl
 
 variable (α)
 
 theorem denseInducing_toCompl : DenseInducing (toCompl : α → Completion α) :=
   denseInducing_coe
-#align uniform_space.completion.dense_inducing_to_compl UniformSpace.Completion.denseInducing_toCompl
 
 variable {α}
 
@@ -219,7 +210,6 @@ instance instModule [Semiring R] [Module R α] [UniformContinuousConstSMul R α]
       ext' (continuous_const_smul _) ((continuous_const_smul _).add (continuous_const_smul _))
         fun x ↦ by
           rw [← coe_smul, add_smul, coe_add, coe_smul, coe_smul] }
-#align uniform_space.completion.module UniformSpace.Completion.instModule
 
 end UniformAddCommGroup
 
@@ -246,34 +236,28 @@ def AddMonoidHom.extension [CompleteSpace β] [T0Space β] (f : α →+ β) (hf 
         fun a b ↦
         show Completion.extension f _ = Completion.extension f _ + Completion.extension f _ by
         rw_mod_cast [extension_coe hf, extension_coe hf, extension_coe hf, f.map_add] }
-#align add_monoid_hom.extension AddMonoidHom.extension
 
 theorem AddMonoidHom.extension_coe [CompleteSpace β] [T0Space β] (f : α →+ β)
     (hf : Continuous f) (a : α) : f.extension hf a = f a :=
   UniformSpace.Completion.extension_coe (uniformContinuous_addMonoidHom_of_continuous hf) a
-#align add_monoid_hom.extension_coe AddMonoidHom.extension_coe
 
 @[continuity]
 theorem AddMonoidHom.continuous_extension [CompleteSpace β] [T0Space β] (f : α →+ β)
     (hf : Continuous f) : Continuous (f.extension hf) :=
   UniformSpace.Completion.continuous_extension
-#align add_monoid_hom.continuous_extension AddMonoidHom.continuous_extension
 
 /-- Completion of a continuous group hom, as a group hom. -/
 def AddMonoidHom.completion (f : α →+ β) (hf : Continuous f) : Completion α →+ Completion β :=
   (toCompl.comp f).extension (continuous_toCompl.comp hf)
-#align add_monoid_hom.completion AddMonoidHom.completion
 
 @[continuity]
 theorem AddMonoidHom.continuous_completion (f : α →+ β) (hf : Continuous f) :
     Continuous (AddMonoidHom.completion f hf : Completion α → Completion β) :=
   continuous_map
-#align add_monoid_hom.continuous_completion AddMonoidHom.continuous_completion
 
 theorem AddMonoidHom.completion_coe (f : α →+ β) (hf : Continuous f) (a : α) :
     AddMonoidHom.completion f hf a = f a :=
   map_coe (uniformContinuous_addMonoidHom_of_continuous hf) a
-#align add_monoid_hom.completion_coe AddMonoidHom.completion_coe
 
 theorem AddMonoidHom.completion_zero :
     AddMonoidHom.completion (0 : α →+ β) continuous_const = 0 := by
@@ -283,7 +267,6 @@ theorem AddMonoidHom.completion_zero :
     exact continuous_const
   · intro a
     simp [(0 : α →+ β).completion_coe continuous_const, coe_zero]
-#align add_monoid_hom.completion_zero AddMonoidHom.completion_zero
 
 theorem AddMonoidHom.completion_add {γ : Type*} [AddCommGroup γ] [UniformSpace γ]
     [UniformAddGroup γ] (f g : α →+ γ) (hf : Continuous f) (hg : Continuous g) :
@@ -296,6 +279,5 @@ theorem AddMonoidHom.completion_add {γ : Type*} [AddCommGroup γ] [UniformSpace
       ((f.continuous_completion hf).add (g.continuous_completion hg))
   · intro a
     simp [(f + g).completion_coe hfg, coe_add, f.completion_coe hf, g.completion_coe hg]
-#align add_monoid_hom.completion_add AddMonoidHom.completion_add
 
 end AddMonoidHom

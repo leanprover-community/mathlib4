@@ -6,8 +6,6 @@ Authors: Ruben Van de Velde, Stanislas Polu
 import Mathlib.Data.Real.Basic
 import Mathlib.Analysis.NormedSpace.Basic
 
-#align_import imo.imo1972_q5 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
-
 /-!
 # IMO 1972 Q5
 

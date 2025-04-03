@@ -9,8 +9,6 @@ import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.CategoryTheory.Monad.Products
 
-#align_import category_theory.adjunction.over from "leanprover-community/mathlib"@"cea27692b3fdeb328a2ddba6aabf181754543184"
-
 /-!
 # Adjunctions related to the over category
 
@@ -56,8 +54,6 @@ def pullback {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
   map := fun g {h} {k} =>
     Over.homMk (pullback.lift (pullback.fst _ _ ≫ k.left) (pullback.snd _ _)
       (by simp [pullback.condition]))
-#align category_theory.over.pullback CategoryTheory.Over.pullback
-#align category_theory.limits.base_change CategoryTheory.Over.pullback
 
 @[deprecated (since := "2024-05-15")]
 noncomputable alias Limits.baseChange := Over.pullback
@@ -81,7 +77,6 @@ def mapPullbackAdj {X Y : C} (f : X ⟶ Y) : Over.map f ⊣ pullback f :=
             ext
             · simp
             · simpa using (Over.w v).symm } }
-#align category_theory.over.map_pullback_adj CategoryTheory.Over.mapPullbackAdj
 
 @[deprecated (since := "2024-07-08")]
 noncomputable alias mapAdjunction := mapPullbackAdj
@@ -89,18 +84,15 @@ noncomputable alias mapAdjunction := mapPullbackAdj
 /-- pullback (𝟙 X) : Over X ⥤ Over X is the identity functor. -/
 def pullbackId {X : C} : pullback (𝟙 X) ≅ 𝟭 _ :=
   conjugateIsoEquiv (mapPullbackAdj (𝟙 _)) (Adjunction.id (C := Over _)) (Over.mapId _).symm
-#align category_theory.over.pullback_id CategoryTheory.Over.pullbackId
 
 /-- pullback commutes with composition (up to natural isomorphism). -/
 def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
     pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
   conjugateIsoEquiv (mapPullbackAdj _) ((mapPullbackAdj _).comp (mapPullbackAdj _))
     (Over.mapComp _ _).symm
-#align category_theory.over.pullback_comp CategoryTheory.Over.pullbackComp
 
 instance pullbackIsRightAdjoint {X Y : C} (f : X ⟶ Y) : (pullback f).IsRightAdjoint  :=
   ⟨_, ⟨mapPullbackAdj f⟩⟩
-#align category_theory.over.pullback_is_right_adjoint CategoryTheory.Over.pullbackIsRightAdjoint
 
 /--
 The functor from `C` to `Over X` which sends `Y : C` to `π₁ : X ⨯ Y ⟶ X`, sometimes denoted `X*`.
@@ -108,7 +100,6 @@ The functor from `C` to `Over X` which sends `Y : C` to `π₁ : X ⨯ Y ⟶ X`,
 @[simps! obj_left obj_hom map_left]
 def star [HasBinaryProducts C] : C ⥤ Over X :=
   cofree _ ⋙ coalgebraToOver X
-#align category_theory.star CategoryTheory.Over.star
 
 /-- The functor `Over.forget X : Over X ⥤ C` has a right adjoint given by `star X`.
 
@@ -117,7 +108,6 @@ Note that the binary products assumption is necessary: the existence of a right 
 -/
 def forgetAdjStar [HasBinaryProducts C] : forget X ⊣ star X :=
   (coalgebraEquivOver X).symm.toAdjunction.comp (adj _)
-#align category_theory.forget_adj_star CategoryTheory.Over.forgetAdjStar
 
 /-- Note that the binary products assumption is necessary: the existence of a right adjoint to
 `Over.forget X` is equivalent to the existence of each binary product `X ⨯ -`.
@@ -143,7 +133,6 @@ def pushout {X Y : C} (f : X ⟶ Y) : Under X ⥤ Under Y where
   map := fun x {x'} {u} =>
     Under.homMk (pushout.desc (u.right ≫ pushout.inl _ _) (pushout.inr _ _)
       (by simp [← pushout.condition]))
-#align category_theory.under.pushout CategoryTheory.Under.pushout
 
 /-- `Under.pushout f` is left adjoint to `Under.map f`. -/
 @[simps! unit_app counit_app]

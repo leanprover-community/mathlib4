@@ -5,8 +5,6 @@ Authors: Rishikesh Vaishnav
 -/
 import Mathlib.MeasureTheory.Measure.Typeclasses
 
-#align_import probability.conditional_probability from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 # Conditional Probability
 
@@ -72,7 +70,6 @@ and scaled by the inverse of `μ s` (to make it a probability measure):
 `(μ s)⁻¹ • μ.restrict s`. -/
 def cond (s : Set Ω) : Measure Ω :=
   (μ s)⁻¹ • μ.restrict s
-#align probability_theory.cond ProbabilityTheory.cond
 
 end Definitions
 
@@ -99,7 +96,6 @@ theorem cond_isProbabilityMeasure_of_finite (hcs : μ s ≠ 0) (hs : μ s ≠ �
 is a probability measure. -/
 theorem cond_isProbabilityMeasure [IsFiniteMeasure μ] (hcs : μ s ≠ 0) :
     IsProbabilityMeasure μ[|s] := cond_isProbabilityMeasure_of_finite μ hcs (measure_ne_top μ s)
-#align probability_theory.cond_is_probability_measure ProbabilityTheory.cond_isProbabilityMeasure
 
 instance cond_isFiniteMeasure : IsFiniteMeasure μ[|s] := by
   constructor
@@ -128,12 +124,10 @@ section Bayes
 
 @[simp]
 theorem cond_empty : μ[|∅] = 0 := by simp [cond]
-#align probability_theory.cond_empty ProbabilityTheory.cond_empty
 
 @[simp]
 theorem cond_univ [IsProbabilityMeasure μ] : μ[|Set.univ] = μ := by
   simp [cond, measure_univ, Measure.restrict_univ]
-#align probability_theory.cond_univ ProbabilityTheory.cond_univ
 
 @[simp] lemma cond_eq_zero (hμs : μ s ≠ ⊤) : μ[|s] = 0 ↔ μ s = 0 := by simp [cond, hμs]
 
@@ -142,27 +136,23 @@ lemma cond_eq_zero_of_meas_eq_zero (hμs : μ s = 0) : μ[|s] = 0 := by simp [h�
 /-- The axiomatic definition of conditional probability derived from a measure-theoretic one. -/
 theorem cond_apply (hms : MeasurableSet s) (t : Set Ω) : μ[t|s] = (μ s)⁻¹ * μ (s ∩ t) := by
   rw [cond, Measure.smul_apply, Measure.restrict_apply' hms, Set.inter_comm, smul_eq_mul]
-#align probability_theory.cond_apply ProbabilityTheory.cond_apply
 
 theorem cond_apply' {t : Set Ω} (hA : MeasurableSet t) : μ[t|s] = (μ s)⁻¹ * μ (s ∩ t) := by
   rw [cond, Measure.smul_apply, Measure.restrict_apply hA, Set.inter_comm, smul_eq_mul]
 
 theorem cond_inter_self (hms : MeasurableSet s) (t : Set Ω) : μ[s ∩ t|s] = μ[t|s] := by
   rw [cond_apply _ hms, ← Set.inter_assoc, Set.inter_self, ← cond_apply _ hms]
-#align probability_theory.cond_inter_self ProbabilityTheory.cond_inter_self
 
 theorem inter_pos_of_cond_ne_zero (hms : MeasurableSet s) (hcst : μ[t|s] ≠ 0) : 0 < μ (s ∩ t) := by
   refine pos_iff_ne_zero.mpr (right_ne_zero_of_mul (a := (μ s)⁻¹) ?_)
   convert hcst
   simp [hms, Set.inter_comm, cond]
-#align probability_theory.inter_pos_of_cond_ne_zero ProbabilityTheory.inter_pos_of_cond_ne_zero
 
 theorem cond_pos_of_inter_ne_zero [IsFiniteMeasure μ]
     (hms : MeasurableSet s) (hci : μ (s ∩ t) ≠ 0) : 0 < μ[|s] t := by
   rw [cond_apply _ hms]
   refine ENNReal.mul_pos ?_ hci
   exact ENNReal.inv_ne_zero.mpr (measure_ne_top _ _)
-#align probability_theory.cond_pos_of_inter_ne_zero ProbabilityTheory.cond_pos_of_inter_ne_zero
 
 lemma cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t) (hcs : μ s ≠ ∞) :
     μ[|s][|t] = μ[|s ∩ t] := by
@@ -175,25 +165,21 @@ lemma cond_cond_eq_cond_inter' (hms : MeasurableSet s) (hmt : MeasurableSet t) (
       (measure_pos_of_superset Set.inter_subset_left hst).ne'
     simp [*, ← mul_assoc, ← Set.inter_assoc, ENNReal.mul_inv, ENNReal.mul_inv_cancel,
       mul_right_comm _ _ (μ s)⁻¹]
-#align probability_theory.cond_cond_eq_cond_inter' ProbabilityTheory.cond_cond_eq_cond_inter'
 
 /-- Conditioning first on `s` and then on `t` results in the same measure as conditioning
 on `s ∩ t`. -/
 theorem cond_cond_eq_cond_inter [IsFiniteMeasure μ] (hms : MeasurableSet s)
     (hmt : MeasurableSet t) : μ[|s][|t] = μ[|s ∩ t] :=
   cond_cond_eq_cond_inter' μ hms hmt (measure_ne_top μ s)
-#align probability_theory.cond_cond_eq_cond_inter ProbabilityTheory.cond_cond_eq_cond_inter
 
 theorem cond_mul_eq_inter' (hms : MeasurableSet s) (hcs' : μ s ≠ ∞) (t : Set Ω) :
     μ[t|s] * μ s = μ (s ∩ t) := by
   obtain hcs | hcs := eq_or_ne (μ s) 0
   · simp [hcs, measure_inter_null_of_null_left]
   · rw [cond_apply μ hms t, mul_comm, ← mul_assoc, ENNReal.mul_inv_cancel hcs hcs', one_mul]
-#align probability_theory.cond_mul_eq_inter' ProbabilityTheory.cond_mul_eq_inter'
 
 theorem cond_mul_eq_inter [IsFiniteMeasure μ] (hms : MeasurableSet s) (t : Set Ω) :
     μ[t|s] * μ s = μ (s ∩ t) := cond_mul_eq_inter' μ hms (measure_ne_top _ s) t
-#align probability_theory.cond_mul_eq_inter ProbabilityTheory.cond_mul_eq_inter
 
 /-- A version of the law of total probability. -/
 theorem cond_add_cond_compl_eq [IsFiniteMeasure μ] (hms : MeasurableSet s) :
@@ -201,13 +187,11 @@ theorem cond_add_cond_compl_eq [IsFiniteMeasure μ] (hms : MeasurableSet s) :
   rw [cond_mul_eq_inter μ hms, cond_mul_eq_inter μ hms.compl, Set.inter_comm _ t,
     Set.inter_comm _ t]
   exact measure_inter_add_diff t hms
-#align probability_theory.cond_add_cond_compl_eq ProbabilityTheory.cond_add_cond_compl_eq
 
 /-- **Bayes' Theorem** -/
 theorem cond_eq_inv_mul_cond_mul [IsFiniteMeasure μ]
     (hms : MeasurableSet s) (hmt : MeasurableSet t) : μ[t|s] = (μ s)⁻¹ * μ[s|t] * μ t := by
   rw [mul_assoc, cond_mul_eq_inter μ hmt s, Set.inter_comm, cond_apply _ hms]
-#align probability_theory.cond_eq_inv_mul_cond_mul ProbabilityTheory.cond_eq_inv_mul_cond_mul
 
 end Bayes
 

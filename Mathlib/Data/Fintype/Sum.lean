@@ -7,8 +7,6 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Sum
 import Mathlib.Logic.Embedding.Set
 
-#align_import data.fintype.sum from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
-
 /-!
 ## Instances
 
@@ -30,19 +28,16 @@ instance (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (Sum α
 theorem Finset.univ_disjSum_univ {α β : Type*} [Fintype α] [Fintype β] :
     univ.disjSum univ = (univ : Finset (Sum α β)) :=
   rfl
-#align finset.univ_disj_sum_univ Finset.univ_disjSum_univ
 
 @[simp]
 theorem Fintype.card_sum [Fintype α] [Fintype β] :
     Fintype.card (Sum α β) = Fintype.card α + Fintype.card β :=
   card_disjSum _ _
-#align fintype.card_sum Fintype.card_sum
 
 /-- If the subtype of all-but-one elements is a `Fintype` then the type itself is a `Fintype`. -/
 def fintypeOfFintypeNe (a : α) (h : Fintype { b // b ≠ a }) : Fintype α :=
   Fintype.ofBijective (Sum.elim ((↑) : { b // b = a } → α) ((↑) : { b // b ≠ a } → α)) <| by
     classical exact (Equiv.sumCompl (· = a)).bijective
-#align fintype_of_fintype_ne fintypeOfFintypeNe
 
 theorem image_subtype_ne_univ_eq_image_erase [Fintype α] [DecidableEq β] (k : β) (b : α → β) :
     image (fun i : { a // b a ≠ k } => b ↑i) univ = (image b univ).erase k := by
@@ -55,7 +50,6 @@ theorem image_subtype_ne_univ_eq_image_erase [Fintype α] [DecidableEq β] (k : 
     rcases mem_image.1 (erase_subset _ _ hi) with ⟨a, _, ha⟩
     subst ha
     exact ⟨⟨a, ne_of_mem_erase hi⟩, mem_univ _, rfl⟩
-#align image_subtype_ne_univ_eq_image_erase image_subtype_ne_univ_eq_image_erase
 
 theorem image_subtype_univ_ssubset_image_univ [Fintype α] [DecidableEq β] (k : β) (b : α → β)
     (hk : k ∈ Finset.image b univ) (p : β → Prop) [DecidablePred p] (hp : ¬p k) :
@@ -72,7 +66,6 @@ theorem image_subtype_univ_ssubset_image_univ [Fintype α] [DecidableEq β] (k :
     rw [mem_image] at this
     rcases this with ⟨j, _, hj'⟩
     exact hp (hj' ▸ j.2)
-#align image_subtype_univ_ssubset_image_univ image_subtype_univ_ssubset_image_univ
 
 /-- Any injection from a finset `s` in a fintype `α` to a finset `t` of the same cardinality as `α`
 can be extended to a bijection between `α` and `t`. -/
@@ -98,7 +91,6 @@ theorem Finset.exists_equiv_extend_of_card_eq [Fintype α] [DecidableEq β] {t :
           (ne_of_eq_of_ne (hg' _ hi) <|
             hfs.ne (subset_insert _ _ hi) (mem_insert_self _ _) <| ne_of_mem_of_not_mem hi has)
     · exact g'.injective.ne (ne_of_mem_of_not_mem hi has)
-#align finset.exists_equiv_extend_of_card_eq Finset.exists_equiv_extend_of_card_eq
 
 /-- Any injection from a set `s` in a fintype `α` to a finset `t` of the same cardinality as `α`
 can be extended to a bijection between `α` and `t`. -/
@@ -113,7 +105,6 @@ theorem Set.MapsTo.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
     refine ⟨g, fun i hi => ?_⟩
     apply hg
     simpa [s'] using hi
-#align set.maps_to.exists_equiv_extend_of_card_eq Set.MapsTo.exists_equiv_extend_of_card_eq
 
 theorem Fintype.card_subtype_or (p q : α → Prop) [Fintype { x // p x }] [Fintype { x // q x }]
     [Fintype { x // p x ∨ q x }] :
@@ -121,7 +112,6 @@ theorem Fintype.card_subtype_or (p q : α → Prop) [Fintype { x // p x }] [Fint
   classical
     convert Fintype.card_le_of_embedding (subtypeOrLeftEmbedding p q)
     rw [Fintype.card_sum]
-#align fintype.card_subtype_or Fintype.card_subtype_or
 
 theorem Fintype.card_subtype_or_disjoint (p q : α → Prop) (h : Disjoint p q) [Fintype { x // p x }]
     [Fintype { x // q x }] [Fintype { x // p x ∨ q x }] :
@@ -129,7 +119,6 @@ theorem Fintype.card_subtype_or_disjoint (p q : α → Prop) (h : Disjoint p q) 
   classical
     convert Fintype.card_congr (subtypeOrEquiv p q h)
     simp
-#align fintype.card_subtype_or_disjoint Fintype.card_subtype_or_disjoint
 
 section
 
@@ -140,6 +129,5 @@ theorem infinite_sum : Infinite (Sum α β) ↔ Infinite α ∨ Infinite β := b
   refine ⟨fun H => ?_, fun H => H.elim (@Sum.infinite_of_left α β) (@Sum.infinite_of_right α β)⟩
   contrapose! H; haveI := fintypeOfNotInfinite H.1; haveI := fintypeOfNotInfinite H.2
   exact Infinite.false
-#align infinite_sum infinite_sum
 
 end

@@ -6,8 +6,6 @@ Authors: Scott Morrison
 import Mathlib.Algebra.Homology.HomologicalComplex
 import Mathlib.CategoryTheory.DifferentialObject
 
-#align_import algebra.homology.differential_object from "leanprover-community/mathlib"@"b535c2d5d996acd9b0554b76395d9c920e186f4f"
-
 /-!
 # Homological complexes are differential graded objects.
 
@@ -40,19 +38,14 @@ is used to aid the simplifier. -/
 abbrev objEqToHom {i j : β} (h : i = j) :
     X.obj i ⟶ X.obj j :=
   eqToHom (congr_arg X.obj h)
-set_option linter.uppercaseLean3 false in
-#align category_theory.differential_object.X_eq_to_hom CategoryTheory.DifferentialObject.objEqToHom
 
 @[simp]
 theorem objEqToHom_refl (i : β) : X.objEqToHom (refl i) = 𝟙 _ :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.differential_object.X_eq_to_hom_refl CategoryTheory.DifferentialObject.objEqToHom_refl
 
 @[reassoc (attr := simp)]
 theorem objEqToHom_d {x y : β} (h : x = y) :
     X.objEqToHom h ≫ X.d y = X.d x ≫ X.objEqToHom (by cases h; rfl) := by cases h; dsimp; simp
-#align homological_complex.eq_to_hom_d CategoryTheory.DifferentialObject.objEqToHom_d
 
 @[reassoc (attr := simp)]
 theorem d_squared_apply {x : β} : X.d x ≫ X.d _ = 0 := congr_fun X.d_squared _
@@ -60,7 +53,6 @@ theorem d_squared_apply {x : β} : X.d x ≫ X.d _ = 0 := congr_fun X.d_squared 
 @[reassoc (attr := simp)]
 theorem eqToHom_f' {X Y : DifferentialObject ℤ (GradedObjectWithShift b V)} (f : X ⟶ Y) {x y : β}
     (h : x = y) : X.objEqToHom h ≫ f.f y = f.f x ≫ Y.objEqToHom h := by cases h; simp
-#align homological_complex.eq_to_hom_f' CategoryTheory.DifferentialObject.eqToHom_f'
 
 end CategoryTheory.DifferentialObject
 
@@ -77,7 +69,6 @@ variable (V : Type*) [Category V] [HasZeroMorphisms V]
 @[reassoc (attr := simp, nolint simpNF)]
 theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :
     X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
-#align homological_complex.d_eq_to_hom HomologicalComplex.d_eqToHom
 
 set_option maxHeartbeats 400000 in
 /-- The functor from differential graded objects to homological complexes.
@@ -103,7 +94,6 @@ def dgoToHomologicalComplex :
         -- Porting note: this `rw` used to be part of the `simp`.
         have : f.f i ≫ Y.d i = X.d i ≫ f.f _ := (congr_fun f.comm i).symm
         rw [reassoc_of% this] }
-#align homological_complex.dgo_to_homological_complex HomologicalComplex.dgoToHomologicalComplex
 
 /-- The functor from homological complexes to differential graded objects.
 -/
@@ -115,7 +105,6 @@ def homologicalComplexToDGO :
     { obj := fun i => X.X i
       d := fun i => X.d i _ }
   map {X Y} f := { f := f.f }
-#align homological_complex.homological_complex_to_dgo HomologicalComplex.homologicalComplexToDGO
 
 /-- The unit isomorphism for `dgoEquivHomologicalComplex`.
 -/
@@ -126,7 +115,6 @@ def dgoEquivHomologicalComplexUnitIso :
   NatIso.ofComponents (fun X =>
     { hom := { f := fun i => 𝟙 (X.obj i) }
       inv := { f := fun i => 𝟙 (X.obj i) } })
-#align homological_complex.dgo_equiv_homological_complex_unit_iso HomologicalComplex.dgoEquivHomologicalComplexUnitIso
 
 /-- The counit isomorphism for `dgoEquivHomologicalComplex`.
 -/
@@ -137,7 +125,6 @@ def dgoEquivHomologicalComplexCounitIso :
   NatIso.ofComponents (fun X =>
     { hom := { f := fun i => 𝟙 (X.X i) }
       inv := { f := fun i => 𝟙 (X.X i) } })
-#align homological_complex.dgo_equiv_homological_complex_counit_iso HomologicalComplex.dgoEquivHomologicalComplexCounitIso
 
 /-- The category of differential graded objects in `V` is equivalent
 to the category of homological complexes in `V`.
@@ -150,6 +137,5 @@ def dgoEquivHomologicalComplex :
   inverse := homologicalComplexToDGO b V
   unitIso := dgoEquivHomologicalComplexUnitIso b V
   counitIso := dgoEquivHomologicalComplexCounitIso b V
-#align homological_complex.dgo_equiv_homological_complex HomologicalComplex.dgoEquivHomologicalComplex
 
 end HomologicalComplex

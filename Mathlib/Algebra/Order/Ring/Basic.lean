@@ -7,8 +7,6 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Parity
 
-#align_import algebra.group_power.order from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
-
 /-!
 # Basic lemmas about ordered rings
 -/
@@ -26,14 +24,11 @@ variable [Ring R] [Monoid M] [LinearOrder M] [CovariantClass M M (· * ·) (· �
 
 theorem map_neg_one : f (-1) = 1 :=
   (pow_eq_one_iff (Nat.succ_ne_zero 1)).1 <| by rw [← map_pow, neg_one_sq, map_one]
-#align monoid_hom.map_neg_one MonoidHom.map_neg_one
 
 @[simp]
 theorem map_neg (x : R) : f (-x) = f x := by rw [← neg_one_mul, map_mul, map_neg_one, one_mul]
-#align monoid_hom.map_neg MonoidHom.map_neg
 
 theorem map_sub_swap (x y : R) : f (x - y) = f (y - x) := by rw [← map_neg, neg_sub]
-#align monoid_hom.map_sub_swap MonoidHom.map_sub_swap
 
 end MonoidHom
 
@@ -44,7 +39,6 @@ variable [OrderedSemiring R] {a b x y : R} {n m : ℕ}
 theorem zero_pow_le_one : ∀ n : ℕ, (0 : R) ^ n ≤ 1
   | 0 => (pow_zero _).le
   | n + 1 => by rw [zero_pow n.succ_ne_zero]; exact zero_le_one
-#align zero_pow_le_one zero_pow_le_one
 
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
   rcases Nat.exists_eq_succ_of_ne_zero hn with ⟨k, rfl⟩
@@ -65,19 +59,16 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
       _ ≤ (x + y) ^ n.succ := by
         rw [pow_succ' _ n]
         exact mul_le_mul_of_nonneg_left (ih (Nat.succ_ne_zero k)) h2
-#align pow_add_pow_le pow_add_pow_le
 
 theorem pow_le_one : ∀ n : ℕ, 0 ≤ a → a ≤ 1 → a ^ n ≤ 1
   | 0, _, _ => (pow_zero a).le
   | n + 1, h₀, h₁ => (pow_succ a n).le.trans (mul_le_one (pow_le_one n h₀ h₁) h₀ h₁)
-#align pow_le_one pow_le_one
 
 theorem pow_lt_one (h₀ : 0 ≤ a) (h₁ : a < 1) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < 1
   | 0, h => (h rfl).elim
   | n + 1, _ => by
     rw [pow_succ']
     exact mul_lt_one_of_nonneg_of_lt_one_left h₀ h₁ (pow_le_one _ h₀ h₁.le)
-#align pow_lt_one pow_lt_one
 
 theorem one_le_pow_of_one_le (H : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
   | 0 => by rw [pow_zero]
@@ -85,36 +76,29 @@ theorem one_le_pow_of_one_le (H : 1 ≤ a) : ∀ n : ℕ, 1 ≤ a ^ n
     rw [pow_succ']
     simpa only [mul_one] using
       mul_le_mul H (one_le_pow_of_one_le H n) zero_le_one (le_trans zero_le_one H)
-#align one_le_pow_of_one_le one_le_pow_of_one_le
 
 theorem pow_right_mono (h : 1 ≤ a) : Monotone (a ^ ·) :=
   monotone_nat_of_le_succ fun n => by
     rw [pow_succ']
     exact le_mul_of_one_le_left (pow_nonneg (zero_le_one.trans h) _) h
-#align pow_mono pow_right_mono
 
 @[gcongr]
 theorem pow_le_pow_right (ha : 1 ≤ a) (h : n ≤ m) : a ^ n ≤ a ^ m := pow_right_mono ha h
-#align pow_le_pow pow_le_pow_right
 
 theorem le_self_pow (ha : 1 ≤ a) (h : m ≠ 0) : a ≤ a ^ m := by
   simpa only [pow_one] using pow_le_pow_right ha <| Nat.pos_iff_ne_zero.2 h
-#align self_le_pow le_self_pow
-#align le_self_pow le_self_pow
 
 @[mono, gcongr]
 theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^ n
   | 0 => by simp
   | n + 1 => by simpa only [pow_succ']
       using mul_le_mul hab (pow_le_pow_left ha hab _) (pow_nonneg ha _) (ha.trans hab)
-#align pow_le_pow_of_le_left pow_le_pow_left
 
 theorem one_lt_pow (ha : 1 < a) : ∀ {n : ℕ} (_ : n ≠ 0), 1 < a ^ n
   | 0, h => (h rfl).elim
   | n + 1, _ => by
     rw [pow_succ']
     exact one_lt_mul_of_lt_of_le ha (one_le_pow_of_one_le ha.le _)
-#align one_lt_pow one_lt_pow
 
 lemma pow_add_pow_le' (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ n + b ^ n ≤ 2 * (a + b) ^ n := by
   rw [two_mul]
@@ -133,30 +117,23 @@ theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → 
   | n + 1, _ => by
     simpa only [pow_succ] using
       mul_lt_mul_of_le_of_le' (pow_le_pow_left hx h.le _) h (pow_pos (hx.trans_lt h) _) hx
-#align pow_lt_pow_of_lt_left pow_lt_pow_left
 
 /-- See also `pow_left_strictMono` and `Nat.pow_left_strictMono`. -/
 lemma pow_left_strictMonoOn (hn : n ≠ 0) : StrictMonoOn (· ^ n : R → R) {a | 0 ≤ a} :=
   fun _a ha _b _ hab ↦ pow_lt_pow_left hab ha hn
-#align strict_mono_on_pow pow_left_strictMonoOn
 
 /-- See also `pow_right_strictMono'`. -/
 lemma pow_right_strictMono (h : 1 < a) : StrictMono (a ^ ·) :=
   have : 0 < a := zero_le_one.trans_lt h
   strictMono_nat_of_lt_succ fun n => by
     simpa only [one_mul, pow_succ'] using mul_lt_mul h (le_refl (a ^ n)) (pow_pos this _) this.le
-#align pow_strict_mono_right pow_right_strictMono
 
 @[gcongr]
 theorem pow_lt_pow_right (h : 1 < a) (hmn : m < n) : a ^ m < a ^ n := pow_right_strictMono h hmn
-#align pow_lt_pow_right pow_lt_pow_right
-#align nat.pow_lt_pow_of_lt_right pow_lt_pow_right
 
 lemma pow_lt_pow_iff_right (h : 1 < a) : a ^ n < a ^ m ↔ n < m := (pow_right_strictMono h).lt_iff_lt
-#align pow_lt_pow_iff_ pow_lt_pow_iff_right
 
 lemma pow_le_pow_iff_right (h : 1 < a) : a ^ n ≤ a ^ m ↔ n ≤ m := (pow_right_strictMono h).le_iff_le
-#align pow_le_pow_iff pow_le_pow_iff_right
 
 theorem lt_self_pow (h : 1 < a) (hm : 1 < m) : a < a ^ m := by
   simpa only [pow_one] using pow_lt_pow_right h hm
@@ -164,22 +141,17 @@ theorem lt_self_pow (h : 1 < a) (hm : 1 < m) : a < a ^ m := by
 theorem pow_right_strictAnti (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ ·) :=
   strictAnti_nat_of_succ_lt fun n => by
     simpa only [pow_succ', one_mul] using mul_lt_mul h₁ le_rfl (pow_pos h₀ n) zero_le_one
-#align strict_anti_pow pow_right_strictAnti
 
 theorem pow_lt_pow_iff_right_of_lt_one (h₀ : 0 < a) (h₁ : a < 1) : a ^ m < a ^ n ↔ n < m :=
   (pow_right_strictAnti h₀ h₁).lt_iff_lt
-#align pow_lt_pow_iff_of_lt_one pow_lt_pow_iff_right_of_lt_one
 
 theorem pow_lt_pow_right_of_lt_one (h₀ : 0 < a) (h₁ : a < 1) (hmn : m < n) : a ^ n < a ^ m :=
   (pow_lt_pow_iff_right_of_lt_one h₀ h₁).2 hmn
-#align pow_lt_pow_of_lt_one pow_lt_pow_right_of_lt_one
 
 theorem pow_lt_self_of_lt_one (h₀ : 0 < a) (h₁ : a < 1) (hn : 1 < n) : a ^ n < a := by
   simpa only [pow_one] using pow_lt_pow_right_of_lt_one h₀ h₁ hn
-#align pow_lt_self_of_lt_one pow_lt_self_of_lt_one
 
 theorem sq_pos_of_pos (ha : 0 < a) : 0 < a ^ 2 := pow_pos ha _
-#align sq_pos_of_pos sq_pos_of_pos
 
 end StrictOrderedSemiring
 
@@ -187,7 +159,6 @@ section StrictOrderedRing
 variable [StrictOrderedRing R] {a : R}
 
 lemma sq_pos_of_neg (ha : a < 0) : 0 < a ^ 2 := by rw [sq]; exact mul_pos_of_neg_of_neg ha ha
-#align sq_pos_of_neg sq_pos_of_neg
 
 end StrictOrderedRing
 
@@ -203,7 +174,6 @@ lemma pow_lt_pow_iff_left (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n <
 @[simp]
 lemma pow_left_inj (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
   (pow_left_strictMonoOn hn).eq_iff_eq ha hb
-#align pow_left_inj pow_left_inj
 
 lemma pow_right_injective (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective (a ^ ·) := by
   obtain ha₁ | ha₁ := ha₁.lt_or_lt
@@ -216,56 +186,44 @@ lemma pow_right_inj (ha₀ : 0 < a) (ha₁ : a ≠ 1) : a ^ m = a ^ n ↔ m = n 
 
 theorem pow_le_one_iff_of_nonneg (ha : 0 ≤ a) (hn : n ≠ 0) : a ^ n ≤ 1 ↔ a ≤ 1 := by
   simpa only [one_pow] using pow_le_pow_iff_left ha zero_le_one hn
-#align pow_le_one_iff_of_nonneg pow_le_one_iff_of_nonneg
 
 theorem one_le_pow_iff_of_nonneg (ha : 0 ≤ a) (hn : n ≠ 0) : 1 ≤ a ^ n ↔ 1 ≤ a := by
   simpa only [one_pow] using pow_le_pow_iff_left (zero_le_one' R) ha hn
-#align one_le_pow_iff_of_nonneg one_le_pow_iff_of_nonneg
 
 theorem pow_lt_one_iff_of_nonneg (ha : 0 ≤ a) (hn : n ≠ 0) : a ^ n < 1 ↔ a < 1 :=
   lt_iff_lt_of_le_iff_le (one_le_pow_iff_of_nonneg ha hn)
-#align pow_lt_one_iff_of_nonneg pow_lt_one_iff_of_nonneg
 
 theorem one_lt_pow_iff_of_nonneg (ha : 0 ≤ a) (hn : n ≠ 0) : 1 < a ^ n ↔ 1 < a := by
   simpa only [one_pow] using pow_lt_pow_iff_left (zero_le_one' R) ha hn
-#align one_lt_pow_iff_of_nonneg one_lt_pow_iff_of_nonneg
 
 lemma pow_eq_one_iff_of_nonneg (ha : 0 ≤ a) (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 := by
   simpa only [one_pow] using pow_left_inj ha zero_le_one hn
 
 theorem sq_le_one_iff {a : R} (ha : 0 ≤ a) : a ^ 2 ≤ 1 ↔ a ≤ 1 :=
   pow_le_one_iff_of_nonneg ha (Nat.succ_ne_zero _)
-#align sq_le_one_iff sq_le_one_iff
 
 theorem sq_lt_one_iff {a : R} (ha : 0 ≤ a) : a ^ 2 < 1 ↔ a < 1 :=
   pow_lt_one_iff_of_nonneg ha (Nat.succ_ne_zero _)
-#align sq_lt_one_iff sq_lt_one_iff
 
 theorem one_le_sq_iff {a : R} (ha : 0 ≤ a) : 1 ≤ a ^ 2 ↔ 1 ≤ a :=
   one_le_pow_iff_of_nonneg ha (Nat.succ_ne_zero _)
-#align one_le_sq_iff one_le_sq_iff
 
 theorem one_lt_sq_iff {a : R} (ha : 0 ≤ a) : 1 < a ^ 2 ↔ 1 < a :=
   one_lt_pow_iff_of_nonneg ha (Nat.succ_ne_zero _)
-#align one_lt_sq_iff one_lt_sq_iff
 
 theorem lt_of_pow_lt_pow_left (n : ℕ) (hb : 0 ≤ b) (h : a ^ n < b ^ n) : a < b :=
   lt_of_not_ge fun hn => not_lt_of_ge (pow_le_pow_left hb hn _) h
-#align lt_of_pow_lt_pow lt_of_pow_lt_pow_left
 
 theorem le_of_pow_le_pow_left (hn : n ≠ 0) (hb : 0 ≤ b) (h : a ^ n ≤ b ^ n) : a ≤ b :=
   le_of_not_lt fun h1 => not_le_of_lt (pow_lt_pow_left h1 hb hn) h
-#align le_of_pow_le_pow le_of_pow_le_pow_left
 
 @[simp]
 theorem sq_eq_sq {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 = b ^ 2 ↔ a = b :=
   pow_left_inj ha hb (by decide)
-#align sq_eq_sq sq_eq_sq
 
 theorem lt_of_mul_self_lt_mul_self (hb : 0 ≤ b) : a * a < b * b → a < b := by
   simp_rw [← sq]
   exact lt_of_pow_lt_pow_left _ hb
-#align lt_of_mul_self_lt_mul_self lt_of_mul_self_lt_mul_self
 
 /-!
 ### Lemmas for canonically linear ordered semirings or linear ordered rings
@@ -326,39 +284,30 @@ protected lemma Even.add_pow_le (hn : Even n) :
 
 lemma Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
   obtain ⟨k, rfl⟩ := hn; rw [pow_add]; exact mul_self_nonneg _
-#align even.pow_nonneg Even.pow_nonneg
 
 lemma Even.pow_pos (hn : Even n) (ha : a ≠ 0) : 0 < a ^ n :=
   (hn.pow_nonneg _).lt_of_ne' (pow_ne_zero _ ha)
-#align even.pow_pos Even.pow_pos
 
 lemma Even.pow_pos_iff (hn : Even n) (h₀ : n ≠ 0) : 0 < a ^ n ↔ a ≠ 0 := by
   obtain ⟨k, rfl⟩ := hn; rw [pow_add, mul_self_pos (α := R), pow_ne_zero_iff (by simpa using h₀)]
-#align even.pow_pos_iff Even.pow_pos_iff
 
 lemma Odd.pow_neg_iff (hn : Odd n) : a ^ n < 0 ↔ a < 0 := by
   refine ⟨lt_imp_lt_of_le_imp_le (pow_nonneg · _), fun ha ↦ ?_⟩
   obtain ⟨k, rfl⟩ := hn
   rw [pow_succ]
   exact mul_neg_of_pos_of_neg ((even_two_mul _).pow_pos ha.ne) ha
-#align odd.pow_neg_iff Odd.pow_neg_iff
 
 lemma Odd.pow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
   le_iff_le_iff_lt_iff_lt.2 hn.pow_neg_iff
-#align odd.pow_nonneg_iff Odd.pow_nonneg_iff
 
 lemma Odd.pow_nonpos_iff (hn : Odd n) : a ^ n ≤ 0 ↔ a ≤ 0 := by
   rw [le_iff_lt_or_eq, le_iff_lt_or_eq, hn.pow_neg_iff, pow_eq_zero_iff]
   rintro rfl; simp [Odd, eq_comm (a := 0)] at hn
-#align odd.pow_nonpos_iff Odd.pow_nonpos_iff
 
 lemma Odd.pow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := lt_iff_lt_of_le_iff_le hn.pow_nonpos_iff
-#align odd.pow_pos_iff Odd.pow_pos_iff
 
 alias ⟨_, Odd.pow_nonpos⟩ := Odd.pow_nonpos_iff
 alias ⟨_, Odd.pow_neg⟩ := Odd.pow_neg_iff
-#align odd.pow_nonpos Odd.pow_nonpos
-#align odd.pow_neg Odd.pow_neg
 
 lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
   have hn₀ : n ≠ 0 := by rintro rfl; simp [Odd, eq_comm (a := 0)] at hn
@@ -379,28 +328,14 @@ lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
     _ = b ^ n + (c ^ n + d ^ n) := by rw [add_left_comm, hn.pow_add_pow_eq_zero hbd.symm, add_zero]
   refine lt_of_add_lt_add_right (a := a + b) ?_
   rwa [add_rotate', ← hbd, add_zero, add_left_comm, ← add_assoc, ← hac, zero_add]
-#align odd.strict_mono_pow Odd.strictMono_pow
 
 lemma sq_pos_iff {a : R} : 0 < a ^ 2 ↔ a ≠ 0 := even_two.pow_pos_iff two_ne_zero
-#align sq_pos_iff sq_pos_iff
 
 alias ⟨_, sq_pos_of_ne_zero⟩ := sq_pos_iff
 alias pow_two_pos_of_ne_zero := sq_pos_of_ne_zero
-#align sq_pos_of_ne_zero sq_pos_of_ne_zero
-#align pow_two_pos_of_ne_zero pow_two_pos_of_ne_zero
 
 lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=
   (pow_mul a 2 2).symm ▸ pow_le_pow_left (sq_nonneg a) h 2
-#align pow_four_le_pow_two_of_pow_two_le pow_four_le_pow_two_of_pow_two_le
-
-#noalign pow_bit0_nonneg
-#noalign pow_bit0_pos
-#noalign pow_bit0_pos_iff
-#noalign pow_bit1_neg_iff
-#noalign pow_bit1_nonneg_iff
-#noalign pow_bit1_nonpos_iff
-#noalign pow_bit1_pos_iff
-#noalign strict_mono_pow_bit1
 
 end LinearOrderedSemiring
 

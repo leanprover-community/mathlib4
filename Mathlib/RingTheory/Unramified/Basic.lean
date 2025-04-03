@@ -53,7 +53,6 @@ class FormallyUnramified : Prop where
     ∀ ⦃B : Type u⦄ [CommRing B],
       ∀ [Algebra R B] (I : Ideal B) (_ : I ^ 2 = ⊥),
         Function.Injective ((Ideal.Quotient.mkₐ R I).comp : (A →ₐ[R] B) → A →ₐ[R] B ⧸ I)
-#align algebra.formally_unramified Algebra.FormallyUnramified
 
 end
 
@@ -80,12 +79,10 @@ theorem lift_unique {B : Type u} [CommRing B] [_RB : Algebra R B]
     replace e := AlgHom.congr_fun e x
     dsimp only [AlgHom.comp_apply, Ideal.Quotient.mkₐ_eq_mk] at e ⊢
     rwa [Ideal.Quotient.eq, ← map_sub, Ideal.mem_quotient_iff_mem hIJ, ← Ideal.Quotient.eq]
-#align algebra.formally_unramified.lift_unique Algebra.FormallyUnramified.lift_unique
 
 theorem ext [FormallyUnramified R A] (hI : IsNilpotent I) {g₁ g₂ : A →ₐ[R] B}
     (H : ∀ x, Ideal.Quotient.mk I (g₁ x) = Ideal.Quotient.mk I (g₂ x)) : g₁ = g₂ :=
   FormallyUnramified.lift_unique I hI g₁ g₂ (AlgHom.ext H)
-#align algebra.formally_unramified.ext Algebra.FormallyUnramified.ext
 
 theorem lift_unique_of_ringHom [FormallyUnramified R A] {C : Type u} [CommRing C]
     (f : B →+* C) (hf : IsNilpotent <| RingHom.ker f) (g₁ g₂ : A →ₐ[R] B)
@@ -96,19 +93,16 @@ theorem lift_unique_of_ringHom [FormallyUnramified R A] {C : Type u} [CommRing C
       have := RingHom.congr_fun h x
       simpa only [Ideal.Quotient.eq, Function.comp_apply, AlgHom.coe_comp, Ideal.Quotient.mkₐ_eq_mk,
         RingHom.mem_ker, map_sub, sub_eq_zero])
-#align algebra.formally_unramified.lift_unique_of_ring_hom Algebra.FormallyUnramified.lift_unique_of_ringHom
 
 theorem ext' [FormallyUnramified R A] {C : Type u} [CommRing C] (f : B →+* C)
     (hf : IsNilpotent <| RingHom.ker f) (g₁ g₂ : A →ₐ[R] B) (h : ∀ x, f (g₁ x) = f (g₂ x)) :
     g₁ = g₂ :=
   FormallyUnramified.lift_unique_of_ringHom f hf g₁ g₂ (RingHom.ext h)
-#align algebra.formally_unramified.ext' Algebra.FormallyUnramified.ext'
 
 theorem lift_unique' [FormallyUnramified R A] {C : Type u} [CommRing C]
     [Algebra R C] (f : B →ₐ[R] C) (hf : IsNilpotent <| RingHom.ker (f : B →+* C))
     (g₁ g₂ : A →ₐ[R] B) (h : f.comp g₁ = f.comp g₂) : g₁ = g₂ :=
   FormallyUnramified.ext' _ hf g₁ g₂ (AlgHom.congr_fun h)
-#align algebra.formally_unramified.lift_unique' Algebra.FormallyUnramified.lift_unique'
 
 end
 
@@ -125,7 +119,6 @@ theorem of_equiv [FormallyUnramified R A] (e : A ≃ₐ[R] B) :
   congr 1
   refine FormallyUnramified.comp_injective I hI ?_
   rw [← AlgHom.comp_assoc, e', AlgHom.comp_assoc]
-#align algebra.formally_unramified.of_equiv Algebra.FormallyUnramified.of_equiv
 
 end OfEquiv
 
@@ -149,7 +142,6 @@ theorem comp [FormallyUnramified R A] [FormallyUnramified A B] :
   change F₁ x = F₂ x
   congr
   exact FormallyUnramified.ext I ⟨2, hI⟩ (AlgHom.congr_fun e)
-#align algebra.formally_unramified.comp Algebra.FormallyUnramified.comp
 
 theorem of_comp [FormallyUnramified R B] : FormallyUnramified A B := by
   constructor
@@ -160,7 +152,6 @@ theorem of_comp [FormallyUnramified R B] : FormallyUnramified A B := by
   refine FormallyUnramified.ext I ⟨2, e⟩ ?_
   intro x
   exact AlgHom.congr_fun e' x
-#align algebra.formally_unramified.of_comp Algebra.FormallyUnramified.of_comp
 
 end Comp
 
@@ -181,7 +172,6 @@ instance base_change [FormallyUnramified R A] :
   ext : 1
   · subsingleton
   · exact FormallyUnramified.ext I ⟨2, hI⟩ fun x => AlgHom.congr_fun e (1 ⊗ₜ x)
-#align algebra.formally_unramified.base_change Algebra.FormallyUnramified.base_change
 
 end BaseChange
 
@@ -204,7 +194,6 @@ theorem of_isLocalization : FormallyUnramified R Rₘ := by
   refine IsLocalization.ringHom_ext M ?_
   ext
   simp
-#align algebra.formally_unramified.of_is_localization Algebra.FormallyUnramified.of_isLocalization
 
 /-- This actually does not need the localization instance, and is stated here again for
 consistency. See `Algebra.FormallyUnramified.of_comp` instead.
@@ -216,7 +205,6 @@ theorem localization_base [FormallyUnramified R Sₘ] : FormallyUnramified Rₘ 
   -- Porting note: added
   let _ := M
   FormallyUnramified.of_comp R Rₘ Sₘ
-#align algebra.formally_unramified.localization_base Algebra.FormallyUnramified.localization_base
 
 theorem localization_map [FormallyUnramified R S] :
     FormallyUnramified Rₘ Sₘ := by
@@ -224,7 +212,6 @@ theorem localization_map [FormallyUnramified R S] :
     FormallyUnramified.of_isLocalization (M.map (algebraMap R S))
   haveI : FormallyUnramified R Sₘ := FormallyUnramified.comp R S Sₘ
   exact FormallyUnramified.localization_base M
-#align algebra.formally_unramified.localization_map Algebra.FormallyUnramified.localization_map
 
 end Localization
 

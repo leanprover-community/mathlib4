@@ -8,8 +8,6 @@ import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.RingTheory.Adjoin.Basic
 
-#align_import algebra.free_algebra from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
-
 /-!
 # Free Algebras
 
@@ -62,7 +60,6 @@ inductive Pre
   | ofScalar : R → Pre
   | add : Pre → Pre → Pre
   | mul : Pre → Pre → Pre
-#align free_algebra.pre FreeAlgebra.Pre
 
 namespace Pre
 
@@ -71,33 +68,26 @@ instance : Inhabited (Pre R X) := ⟨ofScalar 0⟩
 -- Note: These instances are only used to simplify the notation.
 /-- Coercion from `X` to `Pre R X`. Note: Used for notation only. -/
 def hasCoeGenerator : Coe X (Pre R X) := ⟨of⟩
-#align free_algebra.pre.has_coe_generator FreeAlgebra.Pre.hasCoeGenerator
 
 /-- Coercion from `R` to `Pre R X`. Note: Used for notation only. -/
 def hasCoeSemiring : Coe R (Pre R X) := ⟨ofScalar⟩
-#align free_algebra.pre.has_coe_semiring FreeAlgebra.Pre.hasCoeSemiring
 
 /-- Multiplication in `Pre R X` defined as `Pre.mul`. Note: Used for notation only. -/
 def hasMul : Mul (Pre R X) := ⟨mul⟩
-#align free_algebra.pre.has_mul FreeAlgebra.Pre.hasMul
 
 /-- Addition in `Pre R X` defined as `Pre.add`. Note: Used for notation only. -/
 def hasAdd : Add (Pre R X) := ⟨add⟩
-#align free_algebra.pre.has_add FreeAlgebra.Pre.hasAdd
 
 /-- Zero in `Pre R X` defined as the image of `0` from `R`. Note: Used for notation only. -/
 def hasZero : Zero (Pre R X) := ⟨ofScalar 0⟩
-#align free_algebra.pre.has_zero FreeAlgebra.Pre.hasZero
 
 /-- One in `Pre R X` defined as the image of `1` from `R`. Note: Used for notation only. -/
 def hasOne : One (Pre R X) := ⟨ofScalar 1⟩
-#align free_algebra.pre.has_one FreeAlgebra.Pre.hasOne
 
 /-- Scalar multiplication defined as multiplication by the image of elements from `R`.
 Note: Used for notation only.
 -/
 def hasSMul : SMul R (Pre R X) := ⟨fun r m ↦ mul (ofScalar r) m⟩
-#align free_algebra.pre.has_smul FreeAlgebra.Pre.hasSMul
 
 end Pre
 
@@ -114,7 +104,6 @@ def liftFun {A : Type*} [Semiring A] [Algebra R A] (f : X → A) :
   | .add a b => liftFun f a + liftFun f b
   | .mul a b => liftFun f a * liftFun f b
   | .ofScalar c => algebraMap _ _ c
-#align free_algebra.lift_fun FreeAlgebra.liftFun
 
 /-- An inductively defined relation on `Pre R X` used to force the initial algebra structure on
 the associated quotient.
@@ -149,7 +138,6 @@ inductive Rel : Pre R X → Pre R X → Prop
   | add_compat_right {a b c : Pre R X} : Rel a b → Rel (c + a) (c + b)
   | mul_compat_left {a b c : Pre R X} : Rel a b → Rel (a * c) (b * c)
   | mul_compat_right {a b c : Pre R X} : Rel a b → Rel (c * a) (c * b)
-#align free_algebra.rel FreeAlgebra.Rel
 
 end FreeAlgebra
 
@@ -157,7 +145,6 @@ end FreeAlgebra
 -/
 def FreeAlgebra :=
   Quot (FreeAlgebra.Rel R X)
-#align free_algebra FreeAlgebra
 
 namespace FreeAlgebra
 
@@ -297,11 +284,9 @@ variable {X}
 /-- The canonical function `X → FreeAlgebra R X`.
 -/
 irreducible_def ι : X → FreeAlgebra R X := fun m ↦ Quot.mk _ m
-#align free_algebra.ι FreeAlgebra.ι
 
 @[simp]
 theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by rw [ι_def]
-#align free_algebra.quot_mk_eq_ι FreeAlgebra.quot_mk_eq_ι
 
 variable {A : Type*} [Semiring A] [Algebra R A]
 
@@ -390,19 +375,16 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa * fb) = F (fa * fb)
         rw [map_mul, map_mul, ha, hb] }
-#align free_algebra.lift FreeAlgebra.lift
 
 @[simp]
 theorem liftAux_eq (f : X → A) : liftAux R f = lift R f := by
   rw [lift]
   rfl
-#align free_algebra.lift_aux_eq FreeAlgebra.liftAux_eq
 
 @[simp]
 theorem lift_symm_apply (F : FreeAlgebra R X →ₐ[R] A) : (lift R).symm F = F ∘ ι R := by
   rw [lift]
   rfl
-#align free_algebra.lift_symm_apply FreeAlgebra.lift_symm_apply
 
 variable {R}
 
@@ -411,20 +393,17 @@ theorem ι_comp_lift (f : X → A) : (lift R f : FreeAlgebra R X → A) ∘ ι R
   ext
   rw [Function.comp_apply, ι_def, lift]
   rfl
-#align free_algebra.ι_comp_lift FreeAlgebra.ι_comp_lift
 
 @[simp]
 theorem lift_ι_apply (f : X → A) (x) : lift R f (ι R x) = f x := by
   rw [ι_def, lift]
   rfl
-#align free_algebra.lift_ι_apply FreeAlgebra.lift_ι_apply
 
 @[simp]
 theorem lift_unique (f : X → A) (g : FreeAlgebra R X →ₐ[R] A) :
     (g : FreeAlgebra R X → A) ∘ ι R = f ↔ g = lift R f := by
   rw [← (lift R).symm_apply_eq, lift]
   rfl
-#align free_algebra.lift_unique FreeAlgebra.lift_unique
 
 /-!
 Since we have set the basic definitions as `@[Irreducible]`, from this point onwards one
@@ -440,7 +419,6 @@ theorem lift_comp_ι (g : FreeAlgebra R X →ₐ[R] A) :
     lift R ((g : FreeAlgebra R X → A) ∘ ι R) = g := by
   rw [← lift_symm_apply]
   exact (lift R).apply_symm_apply g
-#align free_algebra.lift_comp_ι FreeAlgebra.lift_comp_ι
 
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
@@ -448,7 +426,6 @@ theorem hom_ext {f g : FreeAlgebra R X →ₐ[R] A}
     (w : (f : FreeAlgebra R X → A) ∘ ι R = (g : FreeAlgebra R X → A) ∘ ι R) : f = g := by
   rw [← lift_symm_apply, ← lift_symm_apply] at w
   exact (lift R).symm.injective w
-#align free_algebra.hom_ext FreeAlgebra.hom_ext
 
 /-- The free algebra on `X` is "just" the monoid algebra on the free monoid on `X`.
 
@@ -470,7 +447,6 @@ noncomputable def equivMonoidAlgebraFreeMonoid :
     (by
       ext
       simp)
-#align free_algebra.equiv_monoid_algebra_free_monoid FreeAlgebra.equivMonoidAlgebraFreeMonoid
 
 /-- `FreeAlgebra R X` is nontrivial when `R` is. -/
 instance [Nontrivial R] : Nontrivial (FreeAlgebra R X) :=
@@ -489,28 +465,23 @@ section
 /-- The left-inverse of `algebraMap`. -/
 def algebraMapInv : FreeAlgebra R X →ₐ[R] R :=
   lift R (0 : X → R)
-#align free_algebra.algebra_map_inv FreeAlgebra.algebraMapInv
 
 theorem algebraMap_leftInverse :
     Function.LeftInverse algebraMapInv (algebraMap R <| FreeAlgebra R X) := fun x ↦ by
   simp [algebraMapInv]
-#align free_algebra.algebra_map_left_inverse FreeAlgebra.algebraMap_leftInverse
 
 @[simp]
 theorem algebraMap_inj (x y : R) :
     algebraMap R (FreeAlgebra R X) x = algebraMap R (FreeAlgebra R X) y ↔ x = y :=
   algebraMap_leftInverse.injective.eq_iff
-#align free_algebra.algebra_map_inj FreeAlgebra.algebraMap_inj
 
 @[simp]
 theorem algebraMap_eq_zero_iff (x : R) : algebraMap R (FreeAlgebra R X) x = 0 ↔ x = 0 :=
   map_eq_zero_iff (algebraMap _ _) algebraMap_leftInverse.injective
-#align free_algebra.algebra_map_eq_zero_iff FreeAlgebra.algebraMap_eq_zero_iff
 
 @[simp]
 theorem algebraMap_eq_one_iff (x : R) : algebraMap R (FreeAlgebra R X) x = 1 ↔ x = 1 :=
   map_eq_one_iff (algebraMap _ _) algebraMap_leftInverse.injective
-#align free_algebra.algebra_map_eq_one_iff FreeAlgebra.algebraMap_eq_one_iff
 
 -- this proof is copied from the approach in `FreeAbelianGroup.of_injective`
 theorem ι_injective [Nontrivial R] : Function.Injective (ι R : X → FreeAlgebra R X) :=
@@ -522,12 +493,10 @@ theorem ι_injective [Nontrivial R] : Function.Injective (ι R : X → FreeAlgeb
         have hfy1 : f (ι R y) = 1 := hoxy ▸ hfx1
         have hfy0 : f (ι R y) = 0 := (lift_ι_apply _ _).trans <| if_neg hxy
         one_ne_zero <| hfy1.symm.trans hfy0
-#align free_algebra.ι_injective FreeAlgebra.ι_injective
 
 @[simp]
 theorem ι_inj [Nontrivial R] (x y : X) : ι R x = ι R y ↔ x = y :=
   ι_injective.eq_iff
-#align free_algebra.ι_inj FreeAlgebra.ι_inj
 
 @[simp]
 theorem ι_ne_algebraMap [Nontrivial R] (x : X) (r : R) : ι R x ≠ algebraMap R _ r := fun h ↦ by
@@ -538,17 +507,14 @@ theorem ι_ne_algebraMap [Nontrivial R] (x : X) (r : R) : ι R x ≠ algebraMap 
   rw [h, f0.commutes, Algebra.id.map_eq_self] at hf0
   rw [h, f1.commutes, Algebra.id.map_eq_self] at hf1
   exact zero_ne_one (hf0.symm.trans hf1)
-#align free_algebra.ι_ne_algebra_map FreeAlgebra.ι_ne_algebraMap
 
 @[simp]
 theorem ι_ne_zero [Nontrivial R] (x : X) : ι R x ≠ 0 :=
   ι_ne_algebraMap x 0
-#align free_algebra.ι_ne_zero FreeAlgebra.ι_ne_zero
 
 @[simp]
 theorem ι_ne_one [Nontrivial R] (x : X) : ι R x ≠ 1 :=
   ι_ne_algebraMap x 1
-#align free_algebra.ι_ne_one FreeAlgebra.ι_ne_one
 
 end
 
@@ -585,7 +551,6 @@ theorem induction {C : FreeAlgebra R X → Prop}
     exact Subtype.prop (lift R of a)
   simp [AlgHom.ext_iff] at of_id
   exact of_id a
-#align free_algebra.induction FreeAlgebra.induction
 
 @[simp]
 theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X)) = ⊤ := by

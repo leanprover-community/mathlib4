@@ -6,8 +6,6 @@ Authors: Johan Commelin, Robert Y. Lewis
 import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.RingTheory.WittVector.Basic
-
-#align_import ring_theory.witt_vector.is_poly from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 /-!
 # The `is_poly` predicate
 
@@ -120,7 +118,6 @@ theorem poly_eq_of_wittPolynomial_bind_eq' [Fact p.Prime] (f g : ℕ → MvPolyn
     congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
   simpa only [Function.comp, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
     bind₁_wittPolynomial_xInTermsOfW, bind₁_X_right] using h
-#align witt_vector.poly_eq_of_witt_polynomial_bind_eq' WittVector.poly_eq_of_wittPolynomial_bind_eq'
 
 theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolynomial ℕ ℤ)
     (h : ∀ n, bind₁ f (wittPolynomial p _ n) = bind₁ g (wittPolynomial p _ n)) : f = g := by
@@ -131,7 +128,6 @@ theorem poly_eq_of_wittPolynomial_bind_eq [Fact p.Prime] (f g : ℕ → MvPolyno
     congr_arg (fun fam => bind₁ (MvPolynomial.map (Int.castRingHom ℚ) ∘ fam) (xInTermsOfW p ℚ n)) h
   simpa only [Function.comp, map_bind₁, map_wittPolynomial, ← bind₁_bind₁,
     bind₁_wittPolynomial_xInTermsOfW, bind₁_X_right] using h
-#align witt_vector.poly_eq_of_witt_polynomial_bind_eq WittVector.poly_eq_of_wittPolynomial_bind_eq
 
 -- Ideally, we would generalise this to n-ary functions
 -- But we don't have a good theory of n-ary compositions in mathlib
@@ -151,16 +147,13 @@ class IsPoly (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R) : Prop wh
   poly :
     ∃ φ : ℕ → MvPolynomial ℕ ℤ,
       ∀ ⦃R⦄ [CommRing R] (x : 𝕎 R), (f x).coeff = fun n => aeval x.coeff (φ n)
-#align witt_vector.is_poly WittVector.IsPoly
 
 /-- The identity function on Witt vectors is a polynomial function. -/
 instance idIsPoly : IsPoly p fun _ _ => id :=
   ⟨⟨X, by intros; simp only [aeval_X, id]⟩⟩
-#align witt_vector.id_is_poly WittVector.idIsPoly
 
 instance idIsPolyI' : IsPoly p fun _ _ a => a :=
   WittVector.idIsPoly _
-#align witt_vector.id_is_poly_i' WittVector.idIsPolyI'
 
 namespace IsPoly
 
@@ -193,7 +186,6 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly p f) (hg : IsPoly p g)
     ext1
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
     simp only [coeff_mk]; rfl
-#align witt_vector.is_poly.ext WittVector.IsPoly.ext
 
 /-- The composition of polynomial functions is polynomial. -/
 -- Porting note (#10754): made this an instance
@@ -204,7 +196,6 @@ instance comp {g f} [hg : IsPoly p g] [hf : IsPoly p f] :
   use fun n => bind₁ φ (ψ n)
   intros
   simp only [aeval_bind₁, Function.comp, hg, hf]
-#align witt_vector.is_poly.comp WittVector.IsPoly.comp
 
 end IsPoly
 
@@ -223,7 +214,6 @@ class IsPoly₂ (f : ∀ ⦃R⦄ [CommRing R], WittVector p R → 𝕎 R → �
   poly :
     ∃ φ : ℕ → MvPolynomial (Fin 2 × ℕ) ℤ,
       ∀ ⦃R⦄ [CommRing R] (x y : 𝕎 R), (f x y).coeff = fun n => peval (φ n) ![x.coeff, y.coeff]
-#align witt_vector.is_poly₂ WittVector.IsPoly₂
 
 variable {p}
 
@@ -244,7 +234,6 @@ instance IsPoly₂.comp {h f g} [hh : IsPoly₂ p h] [hf : IsPoly p f] [hg : IsP
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, n⟩
   fin_cases i <;> simp [aeval_eq_eval₂Hom, eval₂Hom_rename, Function.comp]
-#align witt_vector.is_poly₂.comp WittVector.IsPoly₂.comp
 
 /-- The composition of a polynomial function with a binary polynomial function is polynomial. -/
 -- Porting note (#10754): made this an instance
@@ -255,7 +244,6 @@ instance IsPoly.comp₂ {g f} [hg : IsPoly p g] [hf : IsPoly₂ p f] :
   use fun n => bind₁ φ (ψ n)
   intros
   simp only [peval, aeval_bind₁, Function.comp, hg, hf]
-#align witt_vector.is_poly.comp₂ WittVector.IsPoly.comp₂
 
 /-- The diagonal `fun x ↦ f x x` of a polynomial function `f` is polynomial. -/
 -- Porting note (#10754): made this an instance
@@ -267,7 +255,6 @@ instance IsPoly₂.diag {f} [hf : IsPoly₂ p f] : IsPoly p fun R _Rcr x => f x 
   apply eval₂Hom_congr rfl _ rfl
   ext ⟨i, k⟩
   fin_cases i <;> simp
-#align witt_vector.is_poly₂.diag WittVector.IsPoly₂.diag
 
 -- Porting note: Lean 4's typeclass inference is sufficiently more powerful that we no longer
 -- need the `@[is_poly]` attribute. Use of the attribute should just be replaced by changing the
@@ -281,7 +268,6 @@ instance negIsPoly [Fact p.Prime] : IsPoly p fun R _ => @Neg.neg (𝕎 R) _ :=
       rw [neg_coeff, aeval_eq_eval₂Hom, eval₂Hom_rename]
       apply eval₂Hom_congr rfl _ rfl
       ext ⟨i, k⟩; fin_cases i; rfl⟩⟩
-#align witt_vector.neg_is_poly WittVector.negIsPoly
 
 section ZeroOne
 
@@ -290,18 +276,15 @@ we model them as constant unary functions. -/
 /-- The function that is constantly zero on Witt vectors is a polynomial function. -/
 instance zeroIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 0 :=
   ⟨⟨0, by intros; funext n; simp only [Pi.zero_apply, map_zero, zero_coeff]⟩⟩
-#align witt_vector.zero_is_poly WittVector.zeroIsPoly
 
 @[simp]
 theorem bind₁_zero_wittPolynomial [Fact p.Prime] (n : ℕ) :
     bind₁ (0 : ℕ → MvPolynomial ℕ R) (wittPolynomial p R n) = 0 := by
   rw [← aeval_eq_bind₁, aeval_zero, constantCoeff_wittPolynomial, RingHom.map_zero]
-#align witt_vector.bind₁_zero_witt_polynomial WittVector.bind₁_zero_wittPolynomial
 
 /-- The coefficients of `1 : 𝕎 R` as polynomials. -/
 def onePoly (n : ℕ) : MvPolynomial ℕ ℤ :=
   if n = 0 then 1 else 0
-#align witt_vector.one_poly WittVector.onePoly
 
 @[simp]
 theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
@@ -313,7 +296,6 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
     simp only [onePoly, if_neg hi0, zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, map_pow,
       bind₁_X_right, map_mul]
   · simp
-#align witt_vector.bind₁_one_poly_witt_polynomial WittVector.bind₁_onePoly_wittPolynomial
 
 /-- The function that is constantly one on Witt vectors is a polynomial function. -/
 instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
@@ -325,7 +307,6 @@ instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
         simp only [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false,
           map_zero]
   ⟩⟩
-#align witt_vector.one_is_poly WittVector.oneIsPoly
 
 end ZeroOne
 
@@ -335,7 +316,6 @@ instance addIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· + ·) :=
   -- porting note: the proof was
   -- `⟨⟨wittAdd p, by intros; dsimp only [WittVector.hasAdd]; simp [eval]⟩⟩`
   ⟨⟨wittAdd p, by intros; ext; exact add_coeff _ _ _⟩⟩
-#align witt_vector.add_is_poly₂ WittVector.addIsPoly₂
 
 /-- Multiplication of Witt vectors is a polynomial function. -/
 -- Porting note: replaced `@[is_poly]` with `instance`.
@@ -343,7 +323,6 @@ instance mulIsPoly₂ [Fact p.Prime] : IsPoly₂ p fun _ _ => (· * ·) :=
   -- porting note: the proof was
   -- `⟨⟨wittMul p, by intros; dsimp only [WittVector.hasMul]; simp [eval]⟩⟩`
   ⟨⟨wittMul p, by intros; ext; exact mul_coeff _ _ _⟩⟩
-#align witt_vector.mul_is_poly₂ WittVector.mulIsPoly₂
 
 -- unfortunately this is not universe polymorphic, merely because `f` isn't
 theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : 𝕎 R) :
@@ -357,7 +336,6 @@ theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : �
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
   ext  -- Porting note: this `ext` was not present in the mathport output
   simp only [map_coeff]
-#align witt_vector.is_poly.map WittVector.IsPoly.map
 
 namespace IsPoly₂
 
@@ -371,7 +349,6 @@ instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ => (· + ·))) :=
 theorem compLeft {g f} [IsPoly₂ p g] [IsPoly p f] :
     IsPoly₂ p fun _R _Rcr x y => g (f x) y :=
   inferInstance
-#align witt_vector.is_poly₂.comp_left WittVector.IsPoly₂.compLeft
 
 -- Porting note: maybe just drop this now that it works by `inferInstance`
 /-- The composition of a binary polynomial function
@@ -379,7 +356,6 @@ theorem compLeft {g f} [IsPoly₂ p g] [IsPoly p f] :
 theorem compRight {g f} [IsPoly₂ p g] [IsPoly p f] :
     IsPoly₂ p fun _R _Rcr x y => g x (f y) :=
   inferInstance
-#align witt_vector.is_poly₂.comp_right WittVector.IsPoly₂.compRight
 
 theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
     (h : ∀ (R : Type u) [_Rcr : CommRing R] (x y : 𝕎 R) (n : ℕ),
@@ -407,7 +383,6 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
     apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
     ext ⟨b, _⟩
     fin_cases b <;> simp only [coeff_mk, uncurry] <;> rfl
-#align witt_vector.is_poly₂.ext WittVector.IsPoly₂.ext
 
 -- unfortunately this is not universe polymorphic, merely because `f` isn't
 theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 R) :
@@ -420,7 +395,6 @@ theorem map [Fact p.Prime] {f} (hf : IsPoly₂ p f) (g : R →+* S) (x y : 𝕎 
   apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
   ext ⟨i, k⟩
   fin_cases i <;> simp
-#align witt_vector.is_poly₂.map WittVector.IsPoly₂.map
 
 end IsPoly₂
 

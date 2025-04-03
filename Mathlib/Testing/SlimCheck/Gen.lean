@@ -6,8 +6,6 @@ Authors: Henrik Böving, Simon Hudon
 import Mathlib.Control.Random
 import Batteries.Data.List.Perm
 
-#align_import testing.slim_check.gen from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
-
 /-!
 # `Gen` Monad
 

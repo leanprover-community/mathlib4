@@ -8,8 +8,6 @@ import Lean.Elab.Match
 import Lean.Elab.Deriving.Basic
 import Lean.Elab.PreDefinition.Main
 
-#align_import control.traversable.derive from "leanprover-community/mathlib"@"b01d6eb9d0a308807af54319b264d0994b91774b"
-
 /-!
 # Deriving handler for `Traversable` instances
 

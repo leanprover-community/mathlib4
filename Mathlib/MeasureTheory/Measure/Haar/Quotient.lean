@@ -9,8 +9,6 @@ import Mathlib.MeasureTheory.Group.FundamentalDomain
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.MeasureTheory.Constructions.Polish
 
-#align_import measure_theory.measure.haar.quotient from "leanprover-community/mathlib"@"3b52265189f3fb43aa631edffce5d060fafaf82f"
-
 /-!
 # Haar quotient measure
 
@@ -60,8 +58,6 @@ instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [M
     MeasurableSMul G (G ⧸ Γ) where
   measurable_const_smul g := (continuous_const_smul g).measurable
   measurable_smul_const x := (QuotientGroup.continuous_smul₁ x).measurable
-#align quotient_group.has_measurable_smul QuotientGroup.measurableSMul
-#align quotient_add_group.has_measurable_vadd QuotientAddGroup.measurableVAdd
 
 end
 
@@ -99,8 +95,6 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotie
         simp [Set.preimage]
       rw [measure_preimage_mul]
     rw [this, ← preimage_smul_inv]; rfl
-#align measure_theory.is_fundamental_domain.smul_invariant_measure_map MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotient
-#align measure_theory.is_add_fundamental_domain.vadd_invariant_measure_map MeasureTheory.AddQuotientMeasureEqMeasurePreimage.vaddInvariantMeasure_quotient
 
 /-- Given a subgroup `Γ` of a topological group `G` with measure `ν`, and a measure 'μ' on the
   quotient `G ⧸ Γ` satisfying `QuotientMeasureEqMeasurePreimage`, the restriction

@@ -6,8 +6,6 @@ Authors: Simon Hudon
 import Mathlib.Data.DList.Defs
 import Mathlib.Tactic.TypeStar
 
-#align_import data.dlist.basic from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
-
 
 /-!
 # Difference list
@@ -29,16 +27,13 @@ namespace Batteries
 def DList.join {α : Type*} : List (DList α) → DList α
   | [] => DList.empty
   | x :: xs => x ++ DList.join xs
-#align dlist.join Batteries.DList.join
 
 @[simp]
 theorem DList_singleton {α : Type*} {a : α} : DList.singleton a = DList.lazy_ofList [a] :=
   rfl
-#align dlist_singleton Batteries.DList_singleton
 
 @[simp]
 theorem DList_lazy {α : Type*} {l : List α} : DList.lazy_ofList l = Batteries.DList.ofList l :=
   rfl
-#align dlist_lazy Batteries.DList_lazy
 
 end Batteries

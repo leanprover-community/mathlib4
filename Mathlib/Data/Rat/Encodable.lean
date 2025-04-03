@@ -7,8 +7,6 @@ import Mathlib.Logic.Encodable.Basic
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Rat.Init
 
-#align_import data.rat.encodable from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
-
 /-! # The rationals are `Encodable`.
 
 As a consequence we also get the instance `Countable ℚ`.

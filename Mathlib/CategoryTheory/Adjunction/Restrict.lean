@@ -51,7 +51,6 @@ noncomputable def restrictFullyFaithful : L ⊣ R :=
         suffices R'.map (iD.map g) ≫ comm2.hom.app Y = comm2.hom.app Y' ≫ iC.map (R.map g) by
           simp [Trans.trans, this]
         apply comm2.hom.naturality g }
-#align category_theory.adjunction.restrict_fully_faithful CategoryTheory.Adjunction.restrictFullyFaithful
 
 @[simp, reassoc]
 lemma map_restrictFullyFaithful_unit_app (X : C) :

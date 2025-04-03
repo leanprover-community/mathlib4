@@ -6,8 +6,6 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.GroupTheory.Subsemigroup.Center
 
-#align_import group_theory.submonoid.center from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
-
 /-!
 # Centers of monoids
 
@@ -36,19 +34,14 @@ def center : Submonoid M where
   carrier := Set.center M
   one_mem' := Set.one_mem_center
   mul_mem' := Set.mul_mem_center
-#align submonoid.center Submonoid.center
-#align add_submonoid.center AddSubmonoid.center
 
 @[to_additive]
 theorem coe_center : ↑(center M) = Set.center M :=
   rfl
-#align submonoid.coe_center Submonoid.coe_center
-#align add_submonoid.coe_center AddSubmonoid.coe_center
 
 @[to_additive (attr := simp) AddSubmonoid.center_toAddSubsemigroup]
 theorem center_toSubsemigroup : (center M).toSubsemigroup = Subsemigroup.center M :=
   rfl
-#align submonoid.center_to_subsemigroup Submonoid.center_toSubsemigroup
 
 variable {M}
 
@@ -79,26 +72,20 @@ example : center.commMonoid.toMonoid = Submonoid.toMonoid (center M) := by
 theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by
   rw [← Semigroup.mem_center_iff]
   exact Iff.rfl
-#align submonoid.mem_center_iff Submonoid.mem_center_iff
-#align add_submonoid.mem_center_iff AddSubmonoid.mem_center_iff
 
 @[to_additive]
 instance decidableMemCenter (a) [Decidable <| ∀ b : M, b * a = a * b] : Decidable (a ∈ center M) :=
   decidable_of_iff' _ mem_center_iff
-#align submonoid.decidable_mem_center Submonoid.decidableMemCenter
-#align add_submonoid.decidable_mem_center AddSubmonoid.decidableMemCenter
 
 
 
 /-- The center of a monoid acts commutatively on that monoid. -/
 instance center.smulCommClass_left : SMulCommClass (center M) M M where
   smul_comm m x y := Commute.left_comm (m.prop.comm x) y
-#align submonoid.center.smul_comm_class_left Submonoid.center.smulCommClass_left
 
 /-- The center of a monoid acts commutatively on that monoid. -/
 instance center.smulCommClass_right : SMulCommClass M (center M) M :=
   SMulCommClass.symm _ _ _
-#align submonoid.center.smul_comm_class_right Submonoid.center.smulCommClass_right
 
 /-! Note that `smulCommClass (center M) (center M) M` is already implied by
 `Submonoid.smulCommClass_right` -/
@@ -114,7 +101,6 @@ variable (M : Type*) [CommMonoid M]
 @[simp]
 theorem center_eq_top : center M = ⊤ :=
   SetLike.coe_injective (Set.center_eq_univ M)
-#align submonoid.center_eq_top Submonoid.center_eq_top
 
 end
 

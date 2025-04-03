@@ -6,8 +6,6 @@ Authors: Kexing Ying
 import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Martingale.Basic
 
-#align_import probability.martingale.optional_stopping from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-! # Optional stopping theorem (fair game theorem)
 
 The optional stopping theorem states that an adapted integrable process `f` is a submartingale if
@@ -61,7 +59,6 @@ theorem Submartingale.expected_stoppedValue_mono [SigmaFiniteFiltration μ 𝒢]
       (𝒢.le _ _ (this _))
   · exact hf.integrable_stoppedValue hπ hbdd
   · exact hf.integrable_stoppedValue hτ fun ω => le_trans (hle ω) (hbdd ω)
-#align measure_theory.submartingale.expected_stopped_value_mono MeasureTheory.Submartingale.expected_stoppedValue_mono
 
 /-- The converse direction of the optional stopping theorem, i.e. an adapted integrable process `f`
 is a submartingale if for all bounded stopping times `τ` and `π` such that `τ ≤ π`, the
@@ -78,7 +75,6 @@ theorem submartingale_of_expected_stoppedValue_mono [IsFiniteMeasure μ] (hadp :
   rwa [stoppedValue_const, stoppedValue_piecewise_const,
     integral_piecewise (𝒢.le _ _ hs) (hint _).integrableOn (hint _).integrableOn, ←
     integral_add_compl (𝒢.le _ _ hs) (hint j), add_le_add_iff_right] at hf
-#align measure_theory.submartingale_of_expected_stopped_value_mono MeasureTheory.submartingale_of_expected_stoppedValue_mono
 
 /-- **The optional stopping theorem** (fair game theorem): an adapted integrable process `f`
 is a submartingale if and only if for all bounded stopping times `τ` and `π` such that `τ ≤ π`, the
@@ -89,7 +85,6 @@ theorem submartingale_iff_expected_stoppedValue_mono [IsFiniteMeasure μ] (hadp 
       τ ≤ π → (∃ N, ∀ x, π x ≤ N) → μ[stoppedValue f τ] ≤ μ[stoppedValue f π] :=
   ⟨fun hf _ _ hτ hπ hle ⟨_, hN⟩ => hf.expected_stoppedValue_mono hτ hπ hle hN,
     submartingale_of_expected_stoppedValue_mono hadp hint⟩
-#align measure_theory.submartingale_iff_expected_stopped_value_mono MeasureTheory.submartingale_iff_expected_stoppedValue_mono
 
 /-- The stopped process of a submartingale with respect to a stopping time is a submartingale. -/
 protected theorem Submartingale.stoppedProcess [IsFiniteMeasure μ] (h : Submartingale f 𝒢 μ)
@@ -103,7 +98,6 @@ protected theorem Submartingale.stoppedProcess [IsFiniteMeasure μ] (h : Submart
   · exact Adapted.stoppedProcess_of_discrete h.adapted hτ
   · exact fun i =>
       h.integrable_stoppedValue ((isStoppingTime_const _ i).min hτ) fun ω => min_le_left _ _
-#align measure_theory.submartingale.stopped_process MeasureTheory.Submartingale.stoppedProcess
 
 section Maximal
 
@@ -131,7 +125,6 @@ theorem smul_le_stoppedValue_hitting [IsFiniteMeasure μ] (hsub : Submartingale 
   · exact h
   · exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
   · exact le_trans (mul_nonneg ε.coe_nonneg ENNReal.toReal_nonneg) h
-#align measure_theory.smul_le_stopped_value_hitting MeasureTheory.smul_le_stoppedValue_hitting
 
 /-- **Doob's maximal inequality**: Given a non-negative submartingale `f`, for all `ε : ℝ≥0`,
 we have `ε • μ {ε ≤ f* n} ≤ ∫ ω in {ε ≤ f* n}, f n` where `f* n ω = max_{k ≤ n}, f k ω`.
@@ -216,7 +209,6 @@ theorem maximal_ineq [IsFiniteMeasure μ] (hsub : Submartingale f 𝒢 μ) (hnon
       rw [← stoppedValue_const f n]
       exact hsub.expected_stoppedValue_mono (hitting_isStoppingTime hsub.adapted measurableSet_Ici)
         (isStoppingTime_const _ _) (fun ω => hitting_le ω) (fun _ => le_refl n)
-#align measure_theory.maximal_ineq MeasureTheory.maximal_ineq
 
 end Maximal
 

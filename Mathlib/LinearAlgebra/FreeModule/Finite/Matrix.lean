@@ -6,8 +6,6 @@ Authors: Riccardo Brasca
 import Mathlib.LinearAlgebra.Dimension.LinearMap
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
-#align_import linear_algebra.free_module.finite.matrix from "leanprover-community/mathlib"@"b1c23399f01266afe392a0d8f71f599a0dad4f7b"
-
 /-!
 # Finite and free modules using matrices
 
@@ -41,11 +39,9 @@ private noncomputable def linearMapEquivFun : (M →ₗ[R] N) ≃ₗ[S] ChooseBa
 
 instance Module.Free.linearMap [Module.Free S N] : Module.Free S (M →ₗ[R] N) :=
   Module.Free.of_equiv (linearMapEquivFun R S M N).symm
-#align module.free.linear_map Module.Free.linearMap
 
 instance Module.Finite.linearMap [Module.Finite S N] : Module.Finite S (M →ₗ[R] N) :=
   Module.Finite.equiv (linearMapEquivFun R S M N).symm
-#align module.finite.linear_map Module.Finite.linearMap
 
 variable [StrongRankCondition R] [StrongRankCondition S] [Module.Free S N]
 
@@ -59,7 +55,6 @@ theorem FiniteDimensional.rank_linearMap :
 theorem FiniteDimensional.finrank_linearMap :
     finrank S (M →ₗ[R] N) = finrank R M * finrank S N := by
   simp_rw [finrank, rank_linearMap, toNat_mul, toNat_lift]
-#align finite_dimensional.finrank_linear_map FiniteDimensional.finrank_linearMap
 
 variable [Module R S] [SMulCommClass R S S]
 
@@ -101,12 +96,10 @@ variable [AddCommGroup M] [Module.Finite ℤ M] [Module.Free ℤ M] [AddCommGrou
 
 instance Module.Finite.addMonoidHom [Module.Finite ℤ N] : Module.Finite ℤ (M →+ N) :=
   Module.Finite.equiv (addMonoidHomLequivInt ℤ).symm
-#align module.finite.add_monoid_hom Module.Finite.addMonoidHom
 
 instance Module.Free.addMonoidHom [Module.Free ℤ N] : Module.Free ℤ (M →+ N) :=
   letI : Module.Free ℤ (M →ₗ[ℤ] N) := Module.Free.linearMap _ _ _ _
   Module.Free.of_equiv (addMonoidHomLequivInt ℤ).symm
-#align module.free.add_monoid_hom Module.Free.addMonoidHom
 
 end Integer
 
@@ -117,4 +110,3 @@ theorem Matrix.rank_vecMulVec {K m n : Type u} [CommRing K] [Fintype n]
   refine le_trans (LinearMap.rank_comp_le_left _ _) ?_
   refine (LinearMap.rank_le_domain _).trans_eq ?_
   rw [rank_fun', Fintype.card_ofSubsingleton, Nat.cast_one]
-#align matrix.rank_vec_mul_vec Matrix.rank_vecMulVec

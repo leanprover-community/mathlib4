@@ -7,8 +7,6 @@ import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Multiset.Functor
 
-#align_import data.finset.functor from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
-
 /-!
 # Functoriality of `Finset`
 
@@ -45,7 +43,6 @@ instance lawfulFunctor : LawfulFunctor Finset where
 
 @[simp]
 theorem fmap_def {s : Finset α} (f : α → β) : f <$> s = s.image f := rfl
-#align finset.fmap_def Finset.fmap_def
 
 end Functor
 
@@ -57,7 +54,6 @@ protected instance pure : Pure Finset :=
 
 @[simp]
 theorem pure_def {α} : (pure : α → Finset α) = singleton := rfl
-#align finset.pure_def Finset.pure_def
 
 /-! ### Applicative functor -/
 
@@ -75,17 +71,14 @@ protected instance applicative : Applicative Finset :=
 @[simp]
 theorem seq_def (s : Finset α) (t : Finset (α → β)) : t <*> s = t.sup fun f => s.image f :=
   rfl
-#align finset.seq_def Finset.seq_def
 
 @[simp]
 theorem seqLeft_def (s : Finset α) (t : Finset β) : s <* t = if t = ∅ then ∅ else s :=
   rfl
-#align finset.seq_left_def Finset.seqLeft_def
 
 @[simp]
 theorem seqRight_def (s : Finset α) (t : Finset β) : s *> t = if s = ∅ then ∅ else t :=
   rfl
-#align finset.seq_right_def Finset.seqRight_def
 
 /-- `Finset.image₂` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
@@ -93,7 +86,6 @@ theorem image₂_def {α β γ : Type u} (f : α → β → γ) (s : Finset α) 
     image₂ f s t = f <$> s <*> t := by
   ext
   simp [mem_sup]
-#align finset.image₂_def Finset.image₂_def
 
 instance lawfulApplicative : LawfulApplicative Finset :=
   { Finset.lawfulFunctor with
@@ -158,7 +150,6 @@ instance : Monad Finset :=
 @[simp]
 theorem bind_def {α β} : (· >>= ·) = sup (α := Finset α) (β := β) :=
   rfl
-#align finset.bind_def Finset.bind_def
 
 instance : LawfulMonad Finset :=
   { Finset.lawfulApplicative with
@@ -194,13 +185,11 @@ variable {α β γ : Type u} {F G : Type u → Type u} [Applicative F] [Applicat
 /-- Traverse function for `Finset`. -/
 def traverse [DecidableEq β] (f : α → F β) (s : Finset α) : F (Finset β) :=
   Multiset.toFinset <$> Multiset.traverse f s.1
-#align finset.traverse Finset.traverse
 
 @[simp]
 theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → Id α) s = s := by
   rw [traverse, Multiset.id_traverse]
   exact s.val_toFinset
-#align finset.id_traverse Finset.id_traverse
 
 open scoped Classical
 
@@ -208,14 +197,12 @@ open scoped Classical
 theorem map_comp_coe (h : α → β) :
     Functor.map h ∘ Multiset.toFinset = Multiset.toFinset ∘ Functor.map h :=
   funext fun _ => image_toFinset
-#align finset.map_comp_coe Finset.map_comp_coe
 
 theorem map_traverse (g : α → G β) (h : β → γ) (s : Finset α) :
     Functor.map h <$> traverse g s = traverse (Functor.map h ∘ g) s := by
   unfold traverse
   simp only [map_comp_coe, functor_norm]
   rw [LawfulFunctor.comp_map, Multiset.map_traverse]
-#align finset.map_traverse Finset.map_traverse
 
 end Traversable
 

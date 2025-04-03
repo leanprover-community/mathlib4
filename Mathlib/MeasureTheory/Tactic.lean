@@ -7,8 +7,6 @@ Authors: Rémy Degenne
 import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
 import Mathlib.Tactic.Measurability
 
-#align_import measure_theory.tactic from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
-
 /-!
 # Tactics for measure theory
 

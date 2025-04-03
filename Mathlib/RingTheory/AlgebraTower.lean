@@ -7,8 +7,6 @@ import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.LinearAlgebra.Basis
 
-#align_import ring_theory.algebra_tower from "leanprover-community/mathlib"@"94825b2b0b982306be14d891c4f063a1eca4f370"
-
 /-!
 # Towers of algebras
 
@@ -48,14 +46,12 @@ def Invertible.algebraTower (r : R) [Invertible (algebraMap R S r)] :
     Invertible (algebraMap R A r) :=
   Invertible.copy (Invertible.map (algebraMap S A) (algebraMap R S r)) (algebraMap R A r)
     (IsScalarTower.algebraMap_apply R S A r)
-#align is_scalar_tower.invertible.algebra_tower IsScalarTower.Invertible.algebraTower
 
 /-- A natural number that is invertible when coerced to `R` is also invertible
 when coerced to any `R`-algebra. -/
 def invertibleAlgebraCoeNat (n : ℕ) [inv : Invertible (n : R)] : Invertible (n : A) :=
   haveI : Invertible (algebraMap ℕ R n) := inv
   Invertible.algebraTower ℕ R A n
-#align is_scalar_tower.invertible_algebra_coe_nat IsScalarTower.invertibleAlgebraCoeNat
 
 end Semiring
 
@@ -79,17 +75,13 @@ then a basis for `M` as `R`-module is also a basis for `M` as `R'`-module. -/
 @[simps! repr_apply_support_val repr_apply_toFun]
 noncomputable def Basis.algebraMapCoeffs : Basis ι A M :=
   b.mapCoeffs (RingEquiv.ofBijective _ h) fun c x => by simp
-#align basis.algebra_map_coeffs Basis.algebraMapCoeffs
-#noalign Basis.algebraMapCoeffs_repr_symm_apply -- failed simpNF linter
 
 theorem Basis.algebraMapCoeffs_apply (i : ι) : b.algebraMapCoeffs A h i = b i :=
   b.mapCoeffs_apply _ _ _
-#align basis.algebra_map_coeffs_apply Basis.algebraMapCoeffs_apply
 
 @[simp]
 theorem Basis.coe_algebraMapCoeffs : (b.algebraMapCoeffs A h : ι → M) = b :=
   b.coe_mapCoeffs _ _
-#align basis.coe_algebra_map_coeffs Basis.coe_algebraMapCoeffs
 
 end AlgebraMapCoeffs
 
@@ -119,7 +111,6 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
     simp_rw [← smul_assoc, ← Finset.sum_smul] at h1
     exact hb _ _ (hc _ _ h1 k (Finset.mem_image_of_mem _ hik)) i (Finset.mem_image_of_mem _ hik)
   exact hg _ hik
-#align linear_independent_smul linearIndependent_smul
 
 variable (R)
 
@@ -143,18 +134,15 @@ noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R 
       (Finsupp.lcongr (Equiv.refl _) b.repr ≪≫ₗ
         ((finsuppProdLEquiv R).symm ≪≫ₗ
           Finsupp.lcongr (Equiv.prodComm ι' ι) (LinearEquiv.refl _ _))))
-#align basis.smul Basis.smul
 
 @[simp]
 theorem Basis.smul_repr {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
     (b.smul c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by
   simp [Basis.smul]
-#align basis.smul_repr Basis.smul_repr
 
 theorem Basis.smul_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A)
     (x i j) : (b.smul c).repr x (i, j) = b.repr (c.repr x j) i :=
   b.smul_repr c x (i, j)
-#align basis.smul_repr_mk Basis.smul_repr_mk
 
 @[simp]
 theorem Basis.smul_apply {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (ij) :
@@ -168,7 +156,6 @@ theorem Basis.smul_apply {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (
   split_ifs with hi
   · simp [hi, Finsupp.single_apply]
   · simp [hi]
-#align basis.smul_apply Basis.smul_apply
 
 end Semiring
 
@@ -182,7 +169,6 @@ theorem Basis.algebraMap_injective {ι : Type*} [NoZeroDivisors R] [Nontrivial S
     (b : @Basis ι R S _ _ Algebra.toModule) : Function.Injective (algebraMap R S) :=
   have : NoZeroSMulDivisors R S := b.noZeroSMulDivisors
   NoZeroSMulDivisors.algebraMap_injective R S
-#align basis.algebra_map_injective Basis.algebraMap_injective
 
 end Ring
 
@@ -197,7 +183,6 @@ variable (f : C →ₐ[A] D) [CommSemiring B] [Algebra A B] [Algebra B C] [IsSca
 /-- Restrict the domain of an `AlgHom`. -/
 def AlgHom.restrictDomain : B →ₐ[A] D :=
   f.comp (IsScalarTower.toAlgHom A B C)
-#align alg_hom.restrict_domain AlgHom.restrictDomain
 
 -- Porting note: definition below used to be
 --  { f with commutes' := fun _ => rfl }
@@ -216,7 +201,6 @@ def AlgHom.extendScalars : @AlgHom B C D _ _ _ _ (f.restrictDomain B).toRingHom.
     MonoidHom.toOneHom_coe, MonoidHom.coe_coe, map_add, RingHom.coe_coe, forall_const]
   commutes' := fun _ ↦ rfl
   __ := (f.restrictDomain B).toRingHom.toAlgebra
-#align alg_hom.extend_scalars AlgHom.extendScalars
 
 variable {B}
 
@@ -237,6 +221,5 @@ def algHomEquivSigma :
       ext x
       exact (hg x).symm
     rfl
-#align alg_hom_equiv_sigma algHomEquivSigma
 
 end AlgHomTower

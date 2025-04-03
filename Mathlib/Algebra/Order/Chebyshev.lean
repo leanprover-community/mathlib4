@@ -9,8 +9,6 @@ import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 
-#align_import algebra.order.chebyshev from "leanprover-community/mathlib"@"b7399344324326918d65d0c74e9571e3a8cb9199"
-
 /-!
 # Chebyshev's sum inequality
 
@@ -62,7 +60,6 @@ theorem MonovaryOn.sum_smul_sum_le_card_smul_sum (hfg : MonovaryOn f g s) :
     exact
       sum_le_card_nsmul _ _ _ fun n _ =>
         hfg.sum_smul_comp_perm_le_sum_smul fun x hx => hs fun h => hx <| IsFixedPt.perm_pow h _
-#align monovary_on.sum_smul_sum_le_card_smul_sum MonovaryOn.sum_smul_sum_le_card_smul_sum
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (eg one is monotone, the
 other is antitone), the scalar product of their sum is less than the size of the set times their
@@ -70,7 +67,6 @@ scalar product. -/
 theorem AntivaryOn.card_smul_sum_le_sum_smul_sum (hfg : AntivaryOn f g s) :
     (s.card • ∑ i ∈ s, f i • g i) ≤ (∑ i ∈ s, f i) • ∑ i ∈ s, g i := by
   exact hfg.dual_right.sum_smul_sum_le_card_smul_sum
-#align antivary_on.card_smul_sum_le_sum_smul_sum AntivaryOn.card_smul_sum_le_sum_smul_sum
 
 variable [Fintype ι]
 
@@ -80,7 +76,6 @@ scalar product. -/
 theorem Monovary.sum_smul_sum_le_card_smul_sum (hfg : Monovary f g) :
     ((∑ i, f i) • ∑ i, g i) ≤ Fintype.card ι • ∑ i, f i • g i :=
   (hfg.monovaryOn _).sum_smul_sum_le_card_smul_sum
-#align monovary.sum_smul_sum_le_card_smul_sum Monovary.sum_smul_sum_le_card_smul_sum
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (eg one is monotone, the
 other is antitone), the scalar product of their sum is less than the size of the set times their
@@ -88,7 +83,6 @@ scalar product. -/
 theorem Antivary.card_smul_sum_le_sum_smul_sum (hfg : Antivary f g) :
     (Fintype.card ι • ∑ i, f i • g i) ≤ (∑ i, f i) • ∑ i, g i := by
   exact (hfg.dual_right.monovaryOn _).sum_smul_sum_le_card_smul_sum
-#align antivary.card_smul_sum_le_sum_smul_sum Antivary.card_smul_sum_le_sum_smul_sum
 
 end SMul
 
@@ -110,7 +104,6 @@ theorem MonovaryOn.sum_mul_sum_le_card_mul_sum (hfg : MonovaryOn f g s) :
     ((∑ i ∈ s, f i) * ∑ i ∈ s, g i) ≤ s.card * ∑ i ∈ s, f i * g i := by
   rw [← nsmul_eq_mul]
   exact hfg.sum_smul_sum_le_card_smul_sum
-#align monovary_on.sum_mul_sum_le_card_mul_sum MonovaryOn.sum_mul_sum_le_card_mul_sum
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (eg one is monotone, the
 other is antitone), the product of their sum is greater than the size of the set times their scalar
@@ -119,14 +112,12 @@ theorem AntivaryOn.card_mul_sum_le_sum_mul_sum (hfg : AntivaryOn f g s) :
     ((s.card : α) * ∑ i ∈ s, f i * g i) ≤ (∑ i ∈ s, f i) * ∑ i ∈ s, g i := by
   rw [← nsmul_eq_mul]
   exact hfg.card_smul_sum_le_sum_smul_sum
-#align antivary_on.card_mul_sum_le_sum_mul_sum AntivaryOn.card_mul_sum_le_sum_mul_sum
 
 /-- Special case of **Chebyshev's Sum Inequality** or the **Cauchy-Schwarz Inequality**: The square
 of the sum is less than the size of the set times the sum of the squares. -/
 theorem sq_sum_le_card_mul_sum_sq : (∑ i ∈ s, f i) ^ 2 ≤ s.card * ∑ i ∈ s, f i ^ 2 := by
   simp_rw [sq]
   exact (monovaryOn_self _ _).sum_mul_sum_le_card_mul_sum
-#align sq_sum_le_card_mul_sum_sq sq_sum_le_card_mul_sum_sq
 
 variable [Fintype ι]
 
@@ -136,7 +127,6 @@ product. -/
 theorem Monovary.sum_mul_sum_le_card_mul_sum (hfg : Monovary f g) :
     ((∑ i, f i) * ∑ i, g i) ≤ Fintype.card ι * ∑ i, f i * g i :=
   (hfg.monovaryOn _).sum_mul_sum_le_card_mul_sum
-#align monovary.sum_mul_sum_le_card_mul_sum Monovary.sum_mul_sum_le_card_mul_sum
 
 /-- **Chebyshev's Sum Inequality**: When `f` and `g` antivary together (eg one is monotone, the
 other is antitone), the product of their sum is less than the size of the set times their scalar
@@ -144,7 +134,6 @@ product. -/
 theorem Antivary.card_mul_sum_le_sum_mul_sum (hfg : Antivary f g) :
     ((Fintype.card ι : α) * ∑ i, f i * g i) ≤ (∑ i, f i) * ∑ i, g i :=
   (hfg.antivaryOn _).card_mul_sum_le_sum_mul_sum
-#align antivary.card_mul_sum_le_sum_mul_sum Antivary.card_mul_sum_le_sum_mul_sum
 
 end Mul
 
@@ -158,4 +147,3 @@ theorem sum_div_card_sq_le_sum_sq_div_card :
   rw [div_pow, div_le_div_iff (sq_pos_of_ne_zero hs.ne') hs, sq (s.card : α), mul_left_comm, ←
     mul_assoc]
   exact mul_le_mul_of_nonneg_right sq_sum_le_card_mul_sum_sq hs.le
-#align sum_div_card_sq_le_sum_sq_div_card sum_div_card_sq_le_sum_sq_div_card

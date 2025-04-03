@@ -6,8 +6,6 @@ Authors: Sébastien Gouëzel
 import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.Analysis.NormedSpace.Basic
 
-#align_import measure_theory.integral.lebesgue_normed_space from "leanprover-community/mathlib"@"bf6a01357ff5684b1ebcd0f1a13be314fc82c0bf"
-
 /-! # A lemma about measurability with density under scalar multiplication in normed spaces -/
 
 
@@ -45,4 +43,3 @@ theorem aemeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E] [NormedS
     rw [← hx, smul_smul, _root_.inv_mul_cancel, one_smul]
     simp only [Ne, ENNReal.coe_eq_zero] at h'x
     simpa only [NNReal.coe_eq_zero, Ne] using h'x
-#align ae_measurable_with_density_iff aemeasurable_withDensity_iff

@@ -8,8 +8,6 @@ import Mathlib.Algebra.FreeAlgebra
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.Algebra.Category.ModuleCat.Basic
 
-#align_import algebra.category.Algebra.basic from "leanprover-community/mathlib"@"79ffb5563b56fefdea3d60b5736dad168a9494ab"
-
 /-!
 # Category instance for algebras over a commutative ring
 
@@ -18,7 +16,6 @@ with the forgetful functors to `RingCat` and `ModuleCat`. We furthermore show th
 associating to a type the free `R`-algebra on that type is left adjoint to the forgetful functor.
 -/
 
-set_option linter.uppercaseLean3 false
 
 open CategoryTheory
 
@@ -33,7 +30,6 @@ structure AlgebraCat where
   carrier : Type v
   [isRing : Ring carrier]
   [isAlgebra : Algebra R carrier]
-#align Algebra AlgebraCat
 
 -- Porting note: typemax hack to fix universe complaints
 /-- An alias for `AlgebraCat.{max u₁ u₂}`, to deal around unification issues.
@@ -79,13 +75,11 @@ instance hasForgetToRing : HasForget₂ (AlgebraCat.{v} R) RingCat.{v} where
   forget₂ :=
     { obj := fun A => RingCat.of A
       map := fun f => RingCat.ofHom f.toRingHom }
-#align Algebra.has_forget_to_Ring AlgebraCat.hasForgetToRing
 
 instance hasForgetToModule : HasForget₂ (AlgebraCat.{v} R) (ModuleCat.{v} R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
       map := fun f => ModuleCat.ofHom f.toLinearMap }
-#align Algebra.has_forget_to_Module AlgebraCat.hasForgetToModule
 
 @[simp]
 lemma forget₂_module_obj (X : AlgebraCat.{v} R) :
@@ -101,19 +95,16 @@ lemma forget₂_module_map {X Y : AlgebraCat.{v} R} (f : X ⟶ Y) :
 typeclasses. -/
 def of (X : Type v) [Ring X] [Algebra R X] : AlgebraCat.{v} R :=
   ⟨X⟩
-#align Algebra.of AlgebraCat.of
 
 /-- Typecheck a `AlgHom` as a morphism in `AlgebraCat R`. -/
 def ofHom {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y] [Algebra R Y]
     (f : X →ₐ[R] Y) : of R X ⟶ of R Y :=
   f
-#align Algebra.of_hom AlgebraCat.ofHom
 
 @[simp]
 theorem ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
     [Algebra R Y] (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x :=
   rfl
-#align Algebra.of_hom_apply AlgebraCat.ofHom_apply
 
 instance : Inhabited (AlgebraCat R) :=
   ⟨of R R⟩
@@ -121,7 +112,6 @@ instance : Inhabited (AlgebraCat R) :=
 @[simp]
 theorem coe_of (X : Type u) [Ring X] [Algebra R X] : (of R X : Type u) = X :=
   rfl
-#align Algebra.coe_of AlgebraCat.coe_of
 
 variable {R}
 
@@ -131,19 +121,16 @@ algebra. -/
 def ofSelfIso (M : AlgebraCat.{v} R) : AlgebraCat.of R M ≅ M where
   hom := 𝟙 M
   inv := 𝟙 M
-#align Algebra.of_self_iso AlgebraCat.ofSelfIso
 
 variable {M N U : ModuleCat.{v} R}
 
 @[simp]
 theorem id_apply (m : M) : (𝟙 M : M → M) m = m :=
   rfl
-#align Algebra.id_apply AlgebraCat.id_apply
 
 @[simp]
 theorem coe_comp (f : M ⟶ N) (g : N ⟶ U) : (f ≫ g : M → U) = g ∘ f :=
   rfl
-#align Algebra.coe_comp AlgebraCat.coe_comp
 
 variable (R)
 
@@ -165,7 +152,6 @@ def free : Type u ⥤ AlgebraCat.{u} R where
     -- Porting node: this ↓ `erw` and `rfl` used to be handled by the `simp` above
     erw [FreeAlgebra.lift_ι_apply, FreeAlgebra.lift_ι_apply]
     rfl
-#align Algebra.free AlgebraCat.free
 
 /-- The free/forget adjunction for `R`-algebras. -/
 def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
@@ -188,7 +174,6 @@ def adj : free.{u} R ⊣ forget (AlgebraCat.{u} R) :=
         -- Porting note: proof used to be done after this ↑ `simp`; added ↓ two lines
         erw [FreeAlgebra.lift_symm_apply, FreeAlgebra.lift_symm_apply]
         rfl }
-#align Algebra.adj AlgebraCat.adj
 
 instance : (forget (AlgebraCat.{u} R)).IsRightAdjoint := (adj R).isRightAdjoint
 
@@ -205,7 +190,6 @@ def AlgEquiv.toAlgebraIso {g₁ : Ring X₁} {g₂ : Ring X₂} {m₁ : Algebra 
   inv := (e.symm : X₂ →ₐ[R] X₁)
   hom_inv_id := by ext x; exact e.left_inv x
   inv_hom_id := by ext x; exact e.right_inv x
-#align alg_equiv.to_Algebra_iso AlgEquiv.toAlgebraIso
 
 namespace CategoryTheory.Iso
 
@@ -227,7 +211,6 @@ def toAlgEquiv {X Y : AlgebraCat R} (i : X ≅ Y) : X ≃ₐ[R] Y :=
       simp only [inv_hom_id]
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [id_apply] }
-#align category_theory.iso.to_alg_equiv CategoryTheory.Iso.toAlgEquiv
 
 end CategoryTheory.Iso
 
@@ -238,14 +221,12 @@ def algEquivIsoAlgebraIso {X Y : Type u} [Ring X] [Ring Y] [Algebra R X] [Algebr
     (X ≃ₐ[R] Y) ≅ AlgebraCat.of R X ≅ AlgebraCat.of R Y where
   hom e := e.toAlgebraIso
   inv i := i.toAlgEquiv
-#align alg_equiv_iso_Algebra_iso algEquivIsoAlgebraIso
 
 instance AlgebraCat.forget_reflects_isos : (forget (AlgebraCat.{u} R)).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget (AlgebraCat.{u} R)).map f)
     let e : X ≃ₐ[R] Y := { f, i.toEquiv with }
     exact e.toAlgebraIso.isIso_hom
-#align Algebra.forget_reflects_isos AlgebraCat.forget_reflects_isos
 
 /-!
 `@[simp]` lemmas for `AlgHom.comp` and categorical identities.

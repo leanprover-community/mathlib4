@@ -7,8 +7,6 @@ import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 
-#align_import measure_theory.measure.lebesgue.integral from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
-
 /-! # Properties of integration with respect to the Lebesgue measure -/
 
 
@@ -29,7 +27,6 @@ theorem volume_regionBetween_eq_integral' [SigmaFinite μ] (f_int : IntegrableOn
     lintegral_coe_eq_integral _ ((integrable_congr h).mp (g_int.sub f_int))]
   dsimp only
   rfl
-#align volume_region_between_eq_integral' volume_regionBetween_eq_integral'
 
 /-- If two functions are integrable on a measurable set, and one function is less than
     or equal to the other on that set, then the volume of the region
@@ -39,7 +36,6 @@ theorem volume_regionBetween_eq_integral [SigmaFinite μ] (f_int : IntegrableOn 
     μ.prod volume (regionBetween f g s) = ENNReal.ofReal (∫ y in s, (g - f) y ∂μ) :=
   volume_regionBetween_eq_integral' f_int g_int hs
     ((ae_restrict_iff' hs).mpr (eventually_of_forall hfg))
-#align volume_region_between_eq_integral volume_regionBetween_eq_integral
 
 end regionBetween
 
@@ -67,7 +63,6 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] 
     simpa only [ContinuousMap.restrict_apply, comp_apply, coe_addRight, Subtype.coe_mk,
       sub_add_cancel] using this
   · exact iUnion_Icc_intCast ℝ
-#align real.integrable_of_summable_norm_Icc Real.integrable_of_summable_norm_Icc
 
 end SummableNormIcc
 
@@ -89,7 +84,6 @@ theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace �
   have := MeasurableEmbedding.setIntegral_map (μ := volume) A f (Ici (-c))
   rw [Measure.map_neg_eq_self (volume : Measure ℝ)] at this
   simp_rw [← integral_Ici_eq_integral_Ioi, this, neg_preimage, preimage_neg_Ici, neg_neg]
-#align integral_comp_neg_Iic integral_comp_neg_Iic
 
 /- @[simp] Porting note: Linter complains it does not apply to itself. Although it does apply to
 itself, it does not apply when `f` is more complicated -/
@@ -97,7 +91,6 @@ theorem integral_comp_neg_Ioi {E : Type*} [NormedAddCommGroup E] [NormedSpace �
     (c : ℝ) (f : ℝ → E) : (∫ x in Ioi c, f (-x)) = ∫ x in Iic (-c), f x := by
   rw [← neg_neg c, ← integral_comp_neg_Iic]
   simp only [neg_neg]
-#align integral_comp_neg_Ioi integral_comp_neg_Ioi
 
 theorem integral_comp_abs {f : ℝ → ℝ} :
     ∫ x, f |x| = 2 * ∫ x in Ioi (0 : ℝ), f x := by

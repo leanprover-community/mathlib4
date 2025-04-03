@@ -8,8 +8,6 @@ import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Ring.Divisibility.Basic
 
-#align_import ring_theory.prime from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
-
 /-!
 # Prime elements in rings
 This file contains lemmas about prime elements of commutative rings.
@@ -44,7 +42,6 @@ theorem mul_eq_mul_prime_prod {α : Type*} [DecidableEq α] {x y a : R} {s : Fin
     · rw [← mul_assoc, mul_right_comm b, mul_left_inj' hpi.ne_zero] at hbc
       exact ⟨t, insert i u, b, d, by rw [union_insert, htus], disjoint_insert_right.2 ⟨hit, htu⟩, by
           simp [← hbc, prod_insert hiu, mul_assoc, mul_comm, mul_left_comm]⟩
-#align mul_eq_mul_prime_prod mul_eq_mul_prime_prod
 
 /-- If `x * y = a * p ^ n` where `p` is prime, then `x` and `y` can both be written
   as the product of a power of `p` and a divisor of `a`. -/
@@ -54,7 +51,6 @@ theorem mul_eq_mul_prime_pow {x y a p : R} {n : ℕ} (hp : Prime p) (hx : x * y 
     (show x * y = a * (range n).prod fun _ ↦ p by simpa) with
       ⟨t, u, b, c, htus, htu, rfl, rfl, rfl⟩
   exact ⟨t.card, u.card, b, c, by rw [← card_union_of_disjoint htu, htus, card_range], by simp⟩
-#align mul_eq_mul_prime_pow mul_eq_mul_prime_pow
 
 end CancelCommMonoidWithZero
 
@@ -65,12 +61,10 @@ variable {α : Type*} [CommRing α]
 theorem Prime.neg {p : α} (hp : Prime p) : Prime (-p) := by
   obtain ⟨h1, h2, h3⟩ := hp
   exact ⟨neg_ne_zero.mpr h1, by rwa [IsUnit.neg_iff], by simpa [neg_dvd] using h3⟩
-#align prime.neg Prime.neg
 
 theorem Prime.abs [LinearOrder α] {p : α} (hp : Prime p) : Prime (abs p) := by
   obtain h | h := abs_choice p <;> rw [h]
   · exact hp
   · exact hp.neg
-#align prime.abs Prime.abs
 
 end CommRing

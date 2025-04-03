@@ -8,8 +8,6 @@ import Mathlib.Tactic.CategoryTheory.Coherence
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.Tactic.ApplyFun
 
-#align_import category_theory.monoidal.rigid.basic from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
-
 /-!
 # Rigid (autonomous) monoidal categories
 
@@ -88,7 +86,6 @@ class ExactPairing (X Y : C) where
   evaluation_coevaluation' :
     coevaluation' ▷ X ≫ (α_ _ _ _).hom ≫ X ◁ evaluation' = (λ_ X).hom ≫ (ρ_ X).inv := by
     aesop_cat
-#align category_theory.exact_pairing CategoryTheory.ExactPairing
 
 namespace ExactPairing
 
@@ -134,21 +131,18 @@ instance exactPairingUnit : ExactPairing (𝟙_ C) (𝟙_ C) where
   evaluation' := (ρ_ _).hom
   coevaluation_evaluation' := by rw [← id_tensorHom, ← tensorHom_id]; coherence
   evaluation_coevaluation' := by rw [← id_tensorHom, ← tensorHom_id]; coherence
-#align category_theory.exact_pairing_unit CategoryTheory.exactPairingUnit
 
 /-- A class of objects which have a right dual. -/
 class HasRightDual (X : C) where
   /-- The right dual of the object `X`. -/
   rightDual : C
   [exact : ExactPairing X rightDual]
-#align category_theory.has_right_dual CategoryTheory.HasRightDual
 
 /-- A class of objects which have a left dual. -/
 class HasLeftDual (Y : C) where
   /-- The left dual of the object `X`. -/
   leftDual : C
   [exact : ExactPairing leftDual Y]
-#align category_theory.has_left_dual CategoryTheory.HasLeftDual
 
 attribute [instance] HasRightDual.exact
 attribute [instance] HasLeftDual.exact
@@ -160,39 +154,31 @@ open ExactPairing HasRightDual HasLeftDual MonoidalCategory
 
 instance hasRightDualUnit : HasRightDual (𝟙_ C) where
   rightDual := 𝟙_ C
-#align category_theory.has_right_dual_unit CategoryTheory.hasRightDualUnit
 
 instance hasLeftDualUnit : HasLeftDual (𝟙_ C) where
   leftDual := 𝟙_ C
-#align category_theory.has_left_dual_unit CategoryTheory.hasLeftDualUnit
 
 instance hasRightDualLeftDual {X : C} [HasLeftDual X] : HasRightDual ᘁX where
   rightDual := X
-#align category_theory.has_right_dual_left_dual CategoryTheory.hasRightDualLeftDual
 
 instance hasLeftDualRightDual {X : C} [HasRightDual X] : HasLeftDual Xᘁ where
   leftDual := X
-#align category_theory.has_left_dual_right_dual CategoryTheory.hasLeftDualRightDual
 
 @[simp]
 theorem leftDual_rightDual {X : C} [HasRightDual X] : ᘁXᘁ = X :=
   rfl
-#align category_theory.left_dual_right_dual CategoryTheory.leftDual_rightDual
 
 @[simp]
 theorem rightDual_leftDual {X : C} [HasLeftDual X] : (ᘁX)ᘁ = X :=
   rfl
-#align category_theory.right_dual_left_dual CategoryTheory.rightDual_leftDual
 
 /-- The right adjoint mate `fᘁ : Xᘁ ⟶ Yᘁ` of a morphism `f : X ⟶ Y`. -/
 def rightAdjointMate {X Y : C} [HasRightDual X] [HasRightDual Y] (f : X ⟶ Y) : Yᘁ ⟶ Xᘁ :=
   (ρ_ _).inv ≫ _ ◁ η_ _ _ ≫ _ ◁ f ▷ _ ≫ (α_ _ _ _).inv ≫ ε_ _ _ ▷ _ ≫ (λ_ _).hom
-#align category_theory.right_adjoint_mate CategoryTheory.rightAdjointMate
 
 /-- The left adjoint mate `ᘁf : ᘁY ⟶ ᘁX` of a morphism `f : X ⟶ Y`. -/
 def leftAdjointMate {X Y : C} [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) : ᘁY ⟶ ᘁX :=
   (λ_ _).inv ≫ η_ (ᘁX) X ▷ _ ≫ (_ ◁ f) ▷ _ ≫ (α_ _ _ _).hom ≫ _ ◁ ε_ _ _ ≫ (ρ_ _).hom
-#align category_theory.left_adjoint_mate CategoryTheory.leftAdjointMate
 
 @[inherit_doc] notation f "ᘁ" => rightAdjointMate f
 @[inherit_doc] notation "ᘁ" f => leftAdjointMate f
@@ -200,12 +186,10 @@ def leftAdjointMate {X Y : C} [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) : �
 @[simp]
 theorem rightAdjointMate_id {X : C} [HasRightDual X] : (𝟙 X)ᘁ = 𝟙 (Xᘁ) := by
   simp [rightAdjointMate]
-#align category_theory.right_adjoint_mate_id CategoryTheory.rightAdjointMate_id
 
 @[simp]
 theorem leftAdjointMate_id {X : C} [HasLeftDual X] : (ᘁ(𝟙 X)) = 𝟙 (ᘁX) := by
   simp [leftAdjointMate]
-#align category_theory.left_adjoint_mate_id CategoryTheory.leftAdjointMate_id
 
 theorem rightAdjointMate_comp {X Y Z : C} [HasRightDual X] [HasRightDual Y] {f : X ⟶ Y}
     {g : Xᘁ ⟶ Z} :
@@ -217,7 +201,6 @@ theorem rightAdjointMate_comp {X Y Z : C} [HasRightDual X] [HasRightDual Y] {f :
       dsimp only [rightAdjointMate]; coherence
     _ = _ := by
       rw [← whisker_exchange, tensorHom_def]; coherence
-#align category_theory.right_adjoint_mate_comp CategoryTheory.rightAdjointMate_comp
 
 theorem leftAdjointMate_comp {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] {f : X ⟶ Y}
     {g : (ᘁX) ⟶ Z} :
@@ -229,7 +212,6 @@ theorem leftAdjointMate_comp {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] {f : X 
       dsimp only [leftAdjointMate]; coherence
     _ = _ := by
       rw [whisker_exchange, tensorHom_def']; coherence
-#align category_theory.left_adjoint_mate_comp CategoryTheory.leftAdjointMate_comp
 
 /-- The composition of right adjoint mates is the adjoint mate of the composition. -/
 @[reassoc]
@@ -251,7 +233,6 @@ theorem comp_rightAdjointMate {X Y Z : C} [HasRightDual X] [HasRightDual Y] [Has
       rw [← whisker_exchange]; coherence
     _ = η_ X Xᘁ ≫ f ▷ Xᘁ ≫ g ▷ Xᘁ := by
       rw [evaluation_coevaluation'']; coherence
-#align category_theory.comp_right_adjoint_mate CategoryTheory.comp_rightAdjointMate
 
 /-- The composition of left adjoint mates is the adjoint mate of the composition. -/
 @[reassoc]
@@ -273,7 +254,6 @@ theorem comp_leftAdjointMate {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] [HasLef
       rw [whisker_exchange]; coherence
     _ = η_ (ᘁX) X ≫ (ᘁX) ◁ f ≫ (ᘁX) ◁ g := by
       rw [coevaluation_evaluation'']; coherence
-#align category_theory.comp_left_adjoint_mate CategoryTheory.comp_leftAdjointMate
 
 /-- Given an exact pairing on `Y Y'`,
 we get a bijection on hom-sets `(Y' ⊗ X ⟶ Z) ≃ (X ⟶ Y ⊗ Z)`
@@ -303,7 +283,6 @@ def tensorLeftHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (Y' ⊗ X ⟶ Z) ≃
         rw [← whisker_exchange]; coherence
       _ = f := by
         rw [evaluation_coevaluation'']; coherence
-#align category_theory.tensor_left_hom_equiv CategoryTheory.tensorLeftHomEquiv
 
 /-- Given an exact pairing on `Y Y'`,
 we get a bijection on hom-sets `(X ⊗ Y ⟶ Z) ≃ (X ⟶ Z ⊗ Y')`
@@ -328,33 +307,28 @@ def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃
         rw [whisker_exchange]; coherence
       _ = f := by
         rw [coevaluation_evaluation'']; coherence
-#align category_theory.tensor_right_hom_equiv CategoryTheory.tensorRightHomEquiv
 
 theorem tensorLeftHomEquiv_naturality {X Y Y' Z Z' : C} [ExactPairing Y Y'] (f : Y' ⊗ X ⟶ Z)
     (g : Z ⟶ Z') :
     (tensorLeftHomEquiv X Y Y' Z') (f ≫ g) = (tensorLeftHomEquiv X Y Y' Z) f ≫ Y ◁ g := by
   simp [tensorLeftHomEquiv]
-#align category_theory.tensor_left_hom_equiv_naturality CategoryTheory.tensorLeftHomEquiv_naturality
 
 theorem tensorLeftHomEquiv_symm_naturality {X X' Y Y' Z : C} [ExactPairing Y Y'] (f : X ⟶ X')
     (g : X' ⟶ Y ⊗ Z) :
     (tensorLeftHomEquiv X Y Y' Z).symm (f ≫ g) =
       _ ◁ f ≫ (tensorLeftHomEquiv X' Y Y' Z).symm g := by
   simp [tensorLeftHomEquiv]
-#align category_theory.tensor_left_hom_equiv_symm_naturality CategoryTheory.tensorLeftHomEquiv_symm_naturality
 
 theorem tensorRightHomEquiv_naturality {X Y Y' Z Z' : C} [ExactPairing Y Y'] (f : X ⊗ Y ⟶ Z)
     (g : Z ⟶ Z') :
     (tensorRightHomEquiv X Y Y' Z') (f ≫ g) = (tensorRightHomEquiv X Y Y' Z) f ≫ g ▷ Y' := by
   simp [tensorRightHomEquiv]
-#align category_theory.tensor_right_hom_equiv_naturality CategoryTheory.tensorRightHomEquiv_naturality
 
 theorem tensorRightHomEquiv_symm_naturality {X X' Y Y' Z : C} [ExactPairing Y Y'] (f : X ⟶ X')
     (g : X' ⟶ Z ⊗ Y') :
     (tensorRightHomEquiv X Y Y' Z).symm (f ≫ g) =
       f ▷ Y ≫ (tensorRightHomEquiv X' Y Y' Z).symm g := by
   simp [tensorRightHomEquiv]
-#align category_theory.tensor_right_hom_equiv_symm_naturality CategoryTheory.tensorRightHomEquiv_symm_naturality
 
 /-- If `Y Y'` have an exact pairing,
 then the functor `tensorLeft Y'` is left adjoint to `tensorLeft Y`.
@@ -364,7 +338,6 @@ def tensorLeftAdjunction (Y Y' : C) [ExactPairing Y Y'] : tensorLeft Y' ⊣ tens
     { homEquiv := fun X Z => tensorLeftHomEquiv X Y Y' Z
       homEquiv_naturality_left_symm := fun f g => tensorLeftHomEquiv_symm_naturality f g
       homEquiv_naturality_right := fun f g => tensorLeftHomEquiv_naturality f g }
-#align category_theory.tensor_left_adjunction CategoryTheory.tensorLeftAdjunction
 
 /-- If `Y Y'` have an exact pairing,
 then the functor `tensor_right Y` is left adjoint to `tensor_right Y'`.
@@ -374,7 +347,6 @@ def tensorRightAdjunction (Y Y' : C) [ExactPairing Y Y'] : tensorRight Y ⊣ ten
     { homEquiv := fun X Z => tensorRightHomEquiv X Y Y' Z
       homEquiv_naturality_left_symm := fun f g => tensorRightHomEquiv_symm_naturality f g
       homEquiv_naturality_right := fun f g => tensorRightHomEquiv_naturality f g }
-#align category_theory.tensor_right_adjunction CategoryTheory.tensorRightAdjunction
 
 /--
 If `Y` has a left dual `ᘁY`, then it is a closed object, with the internal hom functor `Y ⟶[C] -`
@@ -389,7 +361,6 @@ naturally isomorphic).
 -/
 def closedOfHasLeftDual (Y : C) [HasLeftDual Y] : Closed Y where
   adj := tensorLeftAdjunction (ᘁY) Y
-#align category_theory.closed_of_has_left_dual CategoryTheory.closedOfHasLeftDual
 
 /-- `tensorLeftHomEquiv` commutes with tensoring on the right -/
 theorem tensorLeftHomEquiv_tensor {X X' Y Y' Z Z' : C} [ExactPairing Y Y'] (f : X ⟶ Y ⊗ Z)
@@ -397,7 +368,6 @@ theorem tensorLeftHomEquiv_tensor {X X' Y Y' Z Z' : C} [ExactPairing Y Y'] (f : 
     (tensorLeftHomEquiv (X ⊗ X') Y Y' (Z ⊗ Z')).symm ((f ⊗ g) ≫ (α_ _ _ _).hom) =
       (α_ _ _ _).inv ≫ ((tensorLeftHomEquiv X Y Y' Z).symm f ⊗ g) := by
   simp [tensorLeftHomEquiv, tensorHom_def']
-#align category_theory.tensor_left_hom_equiv_tensor CategoryTheory.tensorLeftHomEquiv_tensor
 
 /-- `tensorRightHomEquiv` commutes with tensoring on the left -/
 theorem tensorRightHomEquiv_tensor {X X' Y Y' Z Z' : C} [ExactPairing Y Y'] (f : X ⟶ Z ⊗ Y')
@@ -405,7 +375,6 @@ theorem tensorRightHomEquiv_tensor {X X' Y Y' Z Z' : C} [ExactPairing Y Y'] (f :
     (tensorRightHomEquiv (X' ⊗ X) Y Y' (Z' ⊗ Z)).symm ((g ⊗ f) ≫ (α_ _ _ _).inv) =
       (α_ _ _ _).hom ≫ (g ⊗ (tensorRightHomEquiv X Y Y' Z).symm f) := by
   simp [tensorRightHomEquiv, tensorHom_def]
-#align category_theory.tensor_right_hom_equiv_tensor CategoryTheory.tensorRightHomEquiv_tensor
 
 @[simp]
 theorem tensorLeftHomEquiv_symm_coevaluation_comp_whiskerLeft {Y Y' Z : C} [ExactPairing Y Y']
@@ -416,7 +385,6 @@ theorem tensorLeftHomEquiv_symm_coevaluation_comp_whiskerLeft {Y Y' Z : C} [Exac
     _ = (Y' ◁ η_ Y Y' ⊗≫ ε_ Y Y' ▷ Y') ⊗≫ f := by
       rw [whisker_exchange]; coherence
     _ = _ := by rw [coevaluation_evaluation'']; coherence
-#align category_theory.tensor_left_hom_equiv_symm_coevaluation_comp_id_tensor CategoryTheory.tensorLeftHomEquiv_symm_coevaluation_comp_whiskerLeft
 
 @[simp]
 theorem tensorLeftHomEquiv_symm_coevaluation_comp_whiskerRight {X Y : C} [HasRightDual X]
@@ -424,7 +392,6 @@ theorem tensorLeftHomEquiv_symm_coevaluation_comp_whiskerRight {X Y : C} [HasRig
     (tensorLeftHomEquiv _ _ _ _).symm (η_ _ _ ≫ f ▷ (Xᘁ)) = (ρ_ _).hom ≫ fᘁ := by
   dsimp [tensorLeftHomEquiv, rightAdjointMate]
   simp
-#align category_theory.tensor_left_hom_equiv_symm_coevaluation_comp_tensor_id CategoryTheory.tensorLeftHomEquiv_symm_coevaluation_comp_whiskerRight
 
 @[simp]
 theorem tensorRightHomEquiv_symm_coevaluation_comp_whiskerLeft {X Y : C} [HasLeftDual X]
@@ -432,7 +399,6 @@ theorem tensorRightHomEquiv_symm_coevaluation_comp_whiskerLeft {X Y : C} [HasLef
     (tensorRightHomEquiv _ (ᘁY) _ _).symm (η_ (ᘁX) X ≫ (ᘁX) ◁ f) = (λ_ _).hom ≫ ᘁf := by
   dsimp [tensorRightHomEquiv, leftAdjointMate]
   simp
-#align category_theory.tensor_right_hom_equiv_symm_coevaluation_comp_id_tensor CategoryTheory.tensorRightHomEquiv_symm_coevaluation_comp_whiskerLeft
 
 @[simp]
 theorem tensorRightHomEquiv_symm_coevaluation_comp_whiskerRight {Y Y' Z : C} [ExactPairing Y Y']
@@ -444,7 +410,6 @@ theorem tensorRightHomEquiv_symm_coevaluation_comp_whiskerRight {Y Y' Z : C} [Ex
       rw [← whisker_exchange]; coherence
     _ = _ := by
       rw [evaluation_coevaluation'']; coherence
-#align category_theory.tensor_right_hom_equiv_symm_coevaluation_comp_tensor_id CategoryTheory.tensorRightHomEquiv_symm_coevaluation_comp_whiskerRight
 
 @[simp]
 theorem tensorLeftHomEquiv_whiskerLeft_comp_evaluation {Y Z : C} [HasLeftDual Z] (f : Y ⟶ ᘁZ) :
@@ -456,21 +421,18 @@ theorem tensorLeftHomEquiv_whiskerLeft_comp_evaluation {Y Z : C} [HasLeftDual Z]
       rw [← whisker_exchange]; coherence
     _ = _ := by
       rw [evaluation_coevaluation'']; coherence
-#align category_theory.tensor_left_hom_equiv_id_tensor_comp_evaluation CategoryTheory.tensorLeftHomEquiv_whiskerLeft_comp_evaluation
 
 @[simp]
 theorem tensorLeftHomEquiv_whiskerRight_comp_evaluation {X Y : C} [HasLeftDual X] [HasLeftDual Y]
     (f : X ⟶ Y) : (tensorLeftHomEquiv _ _ _ _) (f ▷ _ ≫ ε_ _ _) = (ᘁf) ≫ (ρ_ _).inv := by
   dsimp [tensorLeftHomEquiv, leftAdjointMate]
   simp
-#align category_theory.tensor_left_hom_equiv_tensor_id_comp_evaluation CategoryTheory.tensorLeftHomEquiv_whiskerRight_comp_evaluation
 
 @[simp]
 theorem tensorRightHomEquiv_whiskerLeft_comp_evaluation {X Y : C} [HasRightDual X] [HasRightDual Y]
     (f : X ⟶ Y) : (tensorRightHomEquiv _ _ _ _) ((Yᘁ) ◁ f ≫ ε_ _ _) = fᘁ ≫ (λ_ _).inv := by
   dsimp [tensorRightHomEquiv, rightAdjointMate]
   simp
-#align category_theory.tensor_right_hom_equiv_id_tensor_comp_evaluation CategoryTheory.tensorRightHomEquiv_whiskerLeft_comp_evaluation
 
 @[simp]
 theorem tensorRightHomEquiv_whiskerRight_comp_evaluation {X Y : C} [HasRightDual X] (f : Y ⟶ Xᘁ) :
@@ -482,7 +444,6 @@ theorem tensorRightHomEquiv_whiskerRight_comp_evaluation {X Y : C} [HasRightDual
       rw [whisker_exchange]; coherence
     _ = _ := by
       rw [coevaluation_evaluation'']; coherence
-#align category_theory.tensor_right_hom_equiv_tensor_id_comp_evaluation CategoryTheory.tensorRightHomEquiv_whiskerRight_comp_evaluation
 
 -- Next four lemmas passing `fᘁ` or `ᘁf` through (co)evaluations.
 @[reassoc]
@@ -490,28 +451,24 @@ theorem coevaluation_comp_rightAdjointMate {X Y : C} [HasRightDual X] [HasRightD
     η_ Y (Yᘁ) ≫ _ ◁ (fᘁ) = η_ _ _ ≫ f ▷ _ := by
   apply_fun (tensorLeftHomEquiv _ Y (Yᘁ) _).symm
   simp
-#align category_theory.coevaluation_comp_right_adjoint_mate CategoryTheory.coevaluation_comp_rightAdjointMate
 
 @[reassoc]
 theorem leftAdjointMate_comp_evaluation {X Y : C} [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) :
     X ◁ (ᘁf) ≫ ε_ _ _ = f ▷ _ ≫ ε_ _ _ := by
   apply_fun tensorLeftHomEquiv _ (ᘁX) X _
   simp
-#align category_theory.left_adjoint_mate_comp_evaluation CategoryTheory.leftAdjointMate_comp_evaluation
 
 @[reassoc]
 theorem coevaluation_comp_leftAdjointMate {X Y : C} [HasLeftDual X] [HasLeftDual Y] (f : X ⟶ Y) :
     η_ (ᘁY) Y ≫ (ᘁf) ▷ Y = η_ (ᘁX) X ≫ (ᘁX) ◁ f := by
   apply_fun (tensorRightHomEquiv _ (ᘁY) Y _).symm
   simp
-#align category_theory.coevaluation_comp_left_adjoint_mate CategoryTheory.coevaluation_comp_leftAdjointMate
 
 @[reassoc]
 theorem rightAdjointMate_comp_evaluation {X Y : C} [HasRightDual X] [HasRightDual Y] (f : X ⟶ Y) :
     (fᘁ ▷ X) ≫ ε_ X (Xᘁ) = ((Yᘁ) ◁ f) ≫ ε_ Y (Yᘁ) := by
   apply_fun tensorRightHomEquiv _ X (Xᘁ) _
   simp
-#align category_theory.right_adjoint_mate_comp_evaluation CategoryTheory.rightAdjointMate_comp_evaluation
 
 /-- Transport an exact pairing across an isomorphism in the first argument. -/
 def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : ExactPairing X Y where
@@ -542,7 +499,6 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
         rw [coevaluation_evaluation'']
         -- coherence failed
         simp [monoidalComp]
-#align category_theory.exact_pairing_congr_left CategoryTheory.exactPairingCongrLeft
 
 /-- Transport an exact pairing across an isomorphism in the second argument. -/
 def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : ExactPairing X Y where
@@ -573,14 +529,12 @@ def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : Exa
         rw [Iso.hom_inv_id]
         -- coherence failed
         simp [monoidalComp]
-#align category_theory.exact_pairing_congr_right CategoryTheory.exactPairingCongrRight
 
 /-- Transport an exact pairing across isomorphisms. -/
 def exactPairingCongr {X X' Y Y' : C} [ExactPairing X' Y'] (i : X ≅ X') (j : Y ≅ Y') :
     ExactPairing X Y :=
   haveI : ExactPairing X' Y := exactPairingCongrRight j
   exactPairingCongrLeft i
-#align category_theory.exact_pairing_congr CategoryTheory.exactPairingCongr
 
 /-- Right duals are isomorphic. -/
 def rightDualIso {X Y₁ Y₂ : C} (p₁ : ExactPairing X Y₁) (p₂ : ExactPairing X Y₂) : Y₁ ≅ Y₂ where
@@ -595,7 +549,6 @@ def rightDualIso {X Y₁ Y₂ : C} (p₁ : ExactPairing X Y₁) (p₂ : ExactPai
     rw [← @comp_rightAdjointMate C _ _ X X X ⟨Y₂⟩ ⟨Y₁⟩ ⟨Y₂⟩, Category.comp_id,
       @rightAdjointMate_id _ _ _ _ ⟨Y₂⟩]
     rfl
-#align category_theory.right_dual_iso CategoryTheory.rightDualIso
 
 /-- Left duals are isomorphic. -/
 def leftDualIso {X₁ X₂ Y : C} (p₁ : ExactPairing X₁ Y) (p₂ : ExactPairing X₂ Y) : X₁ ≅ X₂ where
@@ -610,29 +563,24 @@ def leftDualIso {X₁ X₂ Y : C} (p₁ : ExactPairing X₁ Y) (p₂ : ExactPair
     rw [← @comp_leftAdjointMate C _ _ Y Y Y ⟨X₂⟩ ⟨X₁⟩ ⟨X₂⟩, Category.comp_id,
       @leftAdjointMate_id _ _ _ _ ⟨X₂⟩]
     rfl
-#align category_theory.left_dual_iso CategoryTheory.leftDualIso
 
 @[simp]
 theorem rightDualIso_id {X Y : C} (p : ExactPairing X Y) : rightDualIso p p = Iso.refl Y := by
   ext
   simp only [rightDualIso, Iso.refl_hom, @rightAdjointMate_id _ _ _ _ ⟨Y⟩]
-#align category_theory.right_dual_iso_id CategoryTheory.rightDualIso_id
 
 @[simp]
 theorem leftDualIso_id {X Y : C} (p : ExactPairing X Y) : leftDualIso p p = Iso.refl X := by
   ext
   simp only [leftDualIso, Iso.refl_hom, @leftAdjointMate_id _ _ _ _ ⟨X⟩]
-#align category_theory.left_dual_iso_id CategoryTheory.leftDualIso_id
 
 /-- A right rigid monoidal category is one in which every object has a right dual. -/
 class RightRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
   [rightDual : ∀ X : C, HasRightDual X]
-#align category_theory.right_rigid_category CategoryTheory.RightRigidCategory
 
 /-- A left rigid monoidal category is one in which every object has a right dual. -/
 class LeftRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] where
   [leftDual : ∀ X : C, HasLeftDual X]
-#align category_theory.left_rigid_category CategoryTheory.LeftRigidCategory
 
 attribute [instance 100] RightRigidCategory.rightDual
 attribute [instance 100] LeftRigidCategory.leftDual
@@ -648,11 +596,9 @@ naturally isomorphic). -/
 def monoidalClosedOfLeftRigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C]
     [LeftRigidCategory C] : MonoidalClosed C where
   closed X := closedOfHasLeftDual X
-#align category_theory.monoidal_closed_of_left_rigid_category CategoryTheory.monoidalClosedOfLeftRigidCategory
 
 /-- A rigid monoidal category is a monoidal category which is left rigid and right rigid. -/
 class RigidCategory (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C] extends
     RightRigidCategory C, LeftRigidCategory C
-#align category_theory.rigid_category CategoryTheory.RigidCategory
 
 end CategoryTheory

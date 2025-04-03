@@ -7,8 +7,6 @@ import Mathlib.Probability.Notation
 import Mathlib.Probability.Independence.Basic
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic
 
-#align_import probability.conditional_expectation from "leanprover-community/mathlib"@"2f8347015b12b0864dfaf366ec4909eb70c78740"
-
 /-!
 
 # Probabilistic properties of the conditional expectation
@@ -75,6 +73,5 @@ theorem condexp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
     rwa [← integral_congr_ae huv, ←
       (setIntegral_congr_ae (hle₂ _ hms) _ : ∫ x in s, u x ∂μ = ∫ x in s, v x ∂μ)]
     filter_upwards [huv] with x hx _ using hx
-#align measure_theory.condexp_indep_eq MeasureTheory.condexp_indep_eq
 
 end MeasureTheory

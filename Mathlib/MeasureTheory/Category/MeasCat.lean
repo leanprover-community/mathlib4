@@ -8,8 +8,6 @@ import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
 import Mathlib.CategoryTheory.Monad.Algebra
 import Mathlib.Topology.Category.TopCat.Basic
 
-#align_import measure_theory.category.Meas from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
-
 /-!
 # The category of measurable spaces
 
@@ -37,12 +35,10 @@ open scoped ENNReal
 
 universe u v
 
-set_option linter.uppercaseLean3 false -- `Meas` `Top` `Borel`
 
 /-- The category of measurable spaces and measurable functions. -/
 def MeasCat : Type (u + 1) :=
   Bundled MeasurableSpace
-#align Meas MeasCat
 
 namespace MeasCat
 
@@ -55,16 +51,13 @@ instance (X : MeasCat) : MeasurableSpace X :=
 /-- Construct a bundled `MeasCat` from the underlying type and the typeclass. -/
 def of (α : Type u) [ms : MeasurableSpace α] : MeasCat :=
   ⟨α, ms⟩
-#align Meas.of MeasCat.of
 
 @[simp]
 theorem coe_of (X : Type u) [MeasurableSpace X] : (of X : Type u) = X :=
   rfl
-#align Meas.coe_of MeasCat.coe_of
 
 instance unbundledHom : UnbundledHom @Measurable :=
   ⟨@measurable_id, @Measurable.comp⟩
-#align Meas.unbundled_hom MeasCat.unbundledHom
 
 deriving instance LargeCategory for MeasCat
 
@@ -94,7 +87,6 @@ def Measure : MeasCat ⥤ MeasCat where
   map f := ⟨Measure.map (⇑f), Measure.measurable_map f.1 f.2⟩
   map_id := fun ⟨α, I⟩ => Subtype.eq <| funext fun μ => @Measure.map_id α I μ
   map_comp := fun ⟨_, hf⟩ ⟨_, hg⟩ => Subtype.eq <| funext fun _ => (Measure.map_map hg hf).symm
-#align Meas.Measure MeasCat.Measure
 
 /-- The Giry monad, i.e. the monadic structure associated with `Measure`. -/
 def Giry : CategoryTheory.Monad MeasCat where
@@ -108,7 +100,6 @@ def Giry : CategoryTheory.Monad MeasCat where
   assoc' _ := Subtype.eq <| funext fun _ => Measure.join_map_join _
   left_unit' _ := Subtype.eq <| funext fun _ => Measure.join_dirac _
   right_unit' _ := Subtype.eq <| funext fun _ => Measure.join_map_dirac _
-#align Meas.Giry MeasCat.Giry
 
 /-- An example for an algebra on `Measure`: the nonnegative Lebesgue integral is a hom, behaving
 nicely under the monad operations. -/
@@ -120,15 +111,12 @@ def Integral : Giry.Algebra where
     show ∫⁻ x, x ∂μ.join = ∫⁻ x, x ∂Measure.map (fun m => ∫⁻ x, x ∂m) μ by
       rw [Measure.lintegral_join, lintegral_map] <;>
         apply_rules [measurable_id, Measure.measurable_lintegral]
-#align Meas.Integral MeasCat.Integral
 
 end MeasCat
 
 instance TopCat.hasForgetToMeasCat : HasForget₂ TopCat.{u} MeasCat.{u} :=
   BundledHom.mkHasForget₂ borel (fun f => ⟨f.1, f.2.borel_measurable⟩) (fun _ => rfl)
-#align Top.has_forget_to_Meas TopCat.hasForgetToMeasCat
 
 /-- The Borel functor, the canonical embedding of topological spaces into measurable spaces. -/
 abbrev Borel : TopCat.{u} ⥤ MeasCat.{u} :=
   forget₂ TopCat.{u} MeasCat.{u}
-#align Borel Borel

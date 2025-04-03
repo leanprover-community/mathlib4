@@ -5,8 +5,6 @@ Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.Valuation.Basic
 
-#align_import ring_theory.valuation.integers from "leanprover-community/mathlib"@"7b7da89322fe46a16bf03eeb345b0acfc73fe10e"
-
 /-!
 # Ring of integers under a given valuation
 
@@ -33,7 +31,6 @@ def integer : Subring R where
   zero_mem' := by simp only [Set.mem_setOf_eq, _root_.map_zero, zero_le']
   add_mem' {x y} hx hy := le_trans (v.map_add x y) (max_le hx hy)
   neg_mem' {x} hx := by simp only [Set.mem_setOf_eq] at hx; simpa only [Set.mem_setOf_eq, map_neg]
-#align valuation.integer Valuation.integer
 
 lemma mem_integer_iff (r : R) : r ∈ v.integer ↔ v r ≤ 1 := by rfl
 
@@ -51,7 +48,6 @@ structure Integers : Prop where
   hom_inj : Function.Injective (algebraMap O R)
   map_le_one : ∀ x, v (algebraMap O R x) ≤ 1
   exists_of_le_one : ∀ ⦃r⦄, v r ≤ 1 → ∃ x, algebraMap O R x = r
-#align valuation.integers Valuation.Integers
 
 -- typeclass shortcut
 instance : Algebra v.integer R :=
@@ -61,7 +57,6 @@ theorem integer.integers : v.Integers v.integer :=
   { hom_inj := Subtype.coe_injective
     map_le_one := fun r => r.2
     exists_of_le_one := fun r hr => ⟨⟨r, hr⟩, rfl⟩ }
-#align valuation.integer.integers Valuation.integer.integers
 
 namespace Integers
 
@@ -95,13 +90,11 @@ theorem isUnit_of_one {x : O} (hx : IsUnit (algebraMap O R x)) (hvx : v (algebra
   ⟨⟨r1, r2, hv.1 <| by rw [RingHom.map_mul, RingHom.map_one, hr1, hr2, Units.mul_inv],
       hv.1 <| by rw [RingHom.map_mul, RingHom.map_one, hr1, hr2, Units.inv_mul]⟩,
     hv.1 <| hr1.trans hu⟩
-#align valuation.integers.is_unit_of_one Valuation.Integers.isUnit_of_one
 
 theorem le_of_dvd {x y : O} (h : x ∣ y) : v (algebraMap O R y) ≤ v (algebraMap O R x) := by
   let ⟨z, hz⟩ := h
   rw [← mul_one (v (algebraMap O R x)), hz, RingHom.map_mul, v.map_mul]
   exact mul_le_mul_left' (hv.2 z) _
-#align valuation.integers.le_of_dvd Valuation.Integers.le_of_dvd
 
 end Integers
 
@@ -127,15 +120,12 @@ theorem dvd_of_le {x y : O} (h : v (algebraMap O F x) ≤ v (algebraMap O F y)) 
       exact mul_le_mul_left' h _
     let ⟨z, hz⟩ := hv.3 this
     ⟨z, hv.1 <| ((algebraMap O F).map_mul y z).symm ▸ hz.symm ▸ (mul_inv_cancel_left₀ hy _).symm⟩
-#align valuation.integers.dvd_of_le Valuation.Integers.dvd_of_le
 
 theorem dvd_iff_le {x y : O} : x ∣ y ↔ v (algebraMap O F y) ≤ v (algebraMap O F x) :=
   ⟨hv.le_of_dvd, hv.dvd_of_le⟩
-#align valuation.integers.dvd_iff_le Valuation.Integers.dvd_iff_le
 
 theorem le_iff_dvd {x y : O} : v (algebraMap O F x) ≤ v (algebraMap O F y) ↔ y ∣ x :=
   ⟨hv.dvd_of_le, hv.le_of_dvd⟩
-#align valuation.integers.le_iff_dvd Valuation.Integers.le_iff_dvd
 
 /--
 This is the special case of `Valuation.Integers.isUnit_of_one` when the valuation is defined

@@ -10,9 +10,6 @@ import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.PushNeg
 import Mathlib.Util.AssertExists
 
-#align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
-#align_import data.nat.sqrt from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
-
 /-!
 # Basic operations on the natural numbers
 
@@ -75,7 +72,6 @@ instance instLinearOrder : LinearOrder ℕ where
   decidableLT := inferInstance
   decidableLE := inferInstance
   decidableEq := inferInstance
-#align nat.linear_order Nat.instLinearOrder
 
 instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
@@ -92,40 +88,25 @@ attribute [simp] Nat.min_eq_left Nat.min_eq_right
 /-! ### `succ`, `pred` -/
 
 lemma succ_pos' : 0 < succ n := succ_pos n
-#align nat.succ_pos' Nat.succ_pos'
 
 alias succ_inj := succ_inj'
-#align nat.succ_inj' Nat.succ_inj
 
 lemma succ_injective : Injective Nat.succ := @succ.inj
-#align nat.succ_injective Nat.succ_injective
 
 lemma succ_ne_succ : succ m ≠ succ n ↔ m ≠ n := succ_injective.ne_iff
-#align nat.succ_ne_succ Nat.succ_ne_succ
 
 -- Porting note: no longer a simp lemma, as simp can prove this
 lemma succ_succ_ne_one (n : ℕ) : n.succ.succ ≠ 1 := by simp
-#align nat.succ_succ_ne_one Nat.succ_succ_ne_one
 
 lemma one_lt_succ_succ (n : ℕ) : 1 < n.succ.succ := succ_lt_succ <| succ_pos n
-#align nat.one_lt_succ_succ Nat.one_lt_succ_succ
 
 -- Moved to Batteries
-#align nat.succ_le_succ_iff Nat.succ_le_succ_iff
-#align nat.succ_lt_succ_iff Nat.succ_lt_succ_iff
-#align nat.le_pred_of_lt Nat.le_pred_of_lt
-#align nat.max_succ_succ Nat.succ_max_succ
 
 alias _root_.LT.lt.nat_succ_le := succ_le_of_lt
-#align has_lt.lt.nat_succ_le LT.lt.nat_succ_le
 
 lemma not_succ_lt_self : ¬ succ n < n := Nat.not_lt_of_ge n.le_succ
-#align nat.not_succ_lt_self Nat.not_succ_lt_self
-
-#align nat.lt_succ_iff Nat.lt_succ_iff
 
 lemma succ_le_iff : succ m ≤ n ↔ m < n := ⟨lt_of_succ_le, succ_le_of_lt⟩
-#align nat.succ_le_iff Nat.succ_le_iff
 
 lemma le_succ_iff : m ≤ n.succ ↔ m ≤ n ∨ m = n.succ := by
   refine ⟨fun hmn ↦ (Nat.lt_or_eq_of_le hmn).imp_left le_of_lt_succ, ?_⟩
@@ -134,97 +115,64 @@ lemma le_succ_iff : m ≤ n.succ ↔ m ≤ n ∨ m = n.succ := by
   · exact Nat.le_refl _
 
 alias ⟨of_le_succ, _⟩ := le_succ_iff
-#align nat.of_le_succ Nat.of_le_succ
-
-#align nat.lt_succ_iff_lt_or_eq Nat.lt_succ_iff_lt_or_eq
-#align nat.eq_of_lt_succ_of_not_lt Nat.eq_of_lt_succ_of_not_lt
-#align nat.eq_of_le_of_lt_succ Nat.eq_of_le_of_lt_succ
 
 lemma lt_iff_le_pred : ∀ {n}, 0 < n → (m < n ↔ m ≤ n - 1) | _ + 1, _ => Nat.lt_succ_iff
-#align nat.lt_iff_le_pred Nat.lt_iff_le_pred
 
 lemma le_of_pred_lt : ∀ {m}, pred m < n → m ≤ n
   | 0 => Nat.le_of_lt
   | _ + 1 => id
-#align nat.le_of_pred_lt Nat.le_of_pred_lt
 
 lemma lt_iff_add_one_le : m < n ↔ m + 1 ≤ n := by rw [succ_le_iff]
-#align nat.lt_iff_add_one_le Nat.lt_iff_add_one_le
-
-#align nat.lt_add_one_iff Nat.lt_add_one_iff
 
 -- A flipped version of `lt_add_one_iff`.
 lemma lt_one_add_iff : m < 1 + n ↔ m ≤ n := by simp only [Nat.add_comm, Nat.lt_succ_iff]
-#align nat.lt_one_add_iff Nat.lt_one_add_iff
-
-#align nat.add_one_le_iff Nat.add_one_le_iff
 
 lemma one_add_le_iff : 1 + m ≤ n ↔ m < n := by simp only [Nat.add_comm, add_one_le_iff]
-#align nat.one_add_le_iff Nat.one_add_le_iff
 
 lemma one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 := Nat.pos_iff_ne_zero
-#align nat.one_le_iff_ne_zero Nat.one_le_iff_ne_zero
 
 lemma one_lt_iff_ne_zero_and_ne_one : ∀ {n : ℕ}, 1 < n ↔ n ≠ 0 ∧ n ≠ 1
   | 0 => by decide
   | 1 => by decide
   | n + 2 => by omega
-#align nat.one_lt_iff_ne_zero_and_ne_one Nat.one_lt_iff_ne_zero_and_ne_one
 
 lemma le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 1 := by simp [le_succ_iff]
 
 @[simp] lemma lt_one_iff : n < 1 ↔ n = 0 := Nat.lt_succ_iff.trans $ by rw [le_zero_eq]
-#align nat.lt_one_iff Nat.lt_one_iff
 
 lemma one_le_of_lt (h : a < b) : 1 ≤ b := Nat.lt_of_le_of_lt (Nat.zero_le _) h
-#align nat.one_le_of_lt Nat.one_le_of_lt
 
 @[simp] lemma min_eq_zero_iff : min m n = 0 ↔ m = 0 ∨ n = 0 := by omega
 @[simp] lemma max_eq_zero_iff : max m n = 0 ↔ m = 0 ∧ n = 0 := by omega
-#align nat.min_eq_zero_iff Nat.min_eq_zero_iff
-#align nat.max_eq_zero_iff Nat.max_eq_zero_iff
 
 -- Moved to Batteries
-#align nat.succ_eq_one_add Nat.succ_eq_one_add
-#align nat.one_add Nat.one_add
-#align nat.zero_max Nat.zero_max
-
-#align nat.pred_eq_sub_one Nat.pred_eq_sub_one
 
 lemma pred_one_add (n : ℕ) : pred (1 + n) = n := by rw [Nat.add_comm, add_one, Nat.pred_succ]
-#align nat.pred_one_add Nat.pred_one_add
 
 lemma pred_eq_self_iff : n.pred = n ↔ n = 0 := by cases n <;> simp [(Nat.succ_ne_self _).symm]
-#align nat.pred_eq_self_iff Nat.pred_eq_self_iff
 
 lemma pred_eq_of_eq_succ (H : m = n.succ) : m.pred = n := by simp [H]
-#align nat.pred_eq_of_eq_succ Nat.pred_eq_of_eq_succ
 
 @[simp] lemma pred_eq_succ_iff : n - 1 = m + 1 ↔ n = m + 2 := by
   cases n <;> constructor <;> rintro ⟨⟩ <;> rfl
-#align nat.pred_eq_succ_iff Nat.pred_eq_succ_iff
 
 -- Porting note: this doesn't work as a simp lemma in Lean 4
 lemma and_forall_succ : p 0 ∧ (∀ n, p (n + 1)) ↔ ∀ n, p n :=
   ⟨fun h n ↦ Nat.casesOn n h.1 h.2, fun h ↦ ⟨h _, fun _ ↦ h _⟩⟩
-#align nat.and_forall_succ Nat.and_forall_succ
 
 -- Porting note: this doesn't work as a simp lemma in Lean 4
 lemma or_exists_succ : p 0 ∨ (∃ n, p (n + 1)) ↔ ∃ n, p n :=
   ⟨fun h ↦ h.elim (fun h0 ↦ ⟨0, h0⟩) fun ⟨n, hn⟩ ↦ ⟨n + 1, hn⟩, by
     rintro ⟨_ | n, hn⟩
     exacts [Or.inl hn, Or.inr ⟨n, hn⟩]⟩
-#align nat.or_exists_succ Nat.or_exists_succ
 
 lemma forall_lt_succ : (∀ m < n + 1, p m) ↔ (∀ m < n, p m) ∧ p n := by
   simp only [Nat.lt_succ_iff, Nat.le_iff_lt_or_eq, or_comm, forall_eq_or_imp, and_comm]
-#align nat.forall_lt_succ Nat.forall_lt_succ
 
 lemma exists_lt_succ : (∃ m < n + 1, p m) ↔ (∃ m < n, p m) ∨ p n := by
   rw [← not_iff_not]
   push_neg
   exact forall_lt_succ
-#align nat.exists_lt_succ Nat.exists_lt_succ
 
 lemma two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
   | 0, h, _, _ => (h rfl).elim
@@ -232,20 +180,16 @@ lemma two_lt_of_ne : ∀ {n}, n ≠ 0 → n ≠ 1 → n ≠ 2 → 2 < n
   | 2, _, _, h => (h rfl).elim
   -- Porting note: was `by decide`
   | n + 3, _, _, _ => le_add_left 3 n
-#align nat.two_lt_of_ne Nat.two_lt_of_ne
 
 /-! ### `pred` -/
 
 @[simp] lemma add_succ_sub_one (m n : ℕ) : m + succ n - 1 = m + n := rfl
-#align nat.add_succ_sub_one Nat.add_succ_sub_one
 
 @[simp]
 lemma succ_add_sub_one (n m : ℕ) : succ m + n - 1 = m + n := by rw [succ_add, Nat.add_one_sub_one]
-#align nat.succ_add_sub_one Nat.succ_add_sub_one
 
 lemma pred_sub (n m : ℕ) : pred n - m = pred (n - m) := by
   rw [← Nat.sub_one, Nat.sub_sub, one_add, sub_succ]
-#align nat.pred_sub Nat.pred_sub
 
 lemma self_add_sub_one : ∀ n, n + (n - 1) = 2 * n - 1
   | 0 => rfl
@@ -258,21 +202,12 @@ lemma pred_add_self (n : ℕ) : pred n + n = (2 * n).pred := sub_one_add_self n
 
 lemma pred_le_iff : pred m ≤ n ↔ m ≤ succ n :=
   ⟨le_succ_of_pred_le, by cases m; exacts [fun _ ↦ zero_le n, le_of_succ_le_succ]⟩
-#align nat.pred_le_iff Nat.pred_le_iff
 
 lemma lt_of_lt_pred (h : m < n - 1) : m < n := by omega
-#align nat.lt_of_lt_pred Nat.lt_of_lt_pred
 
 lemma le_add_pred_of_pos (a : ℕ) (hb : b ≠ 0) : a ≤ b + (a - 1) := by omega
-#align nat.le_add_pred_of_pos Nat.le_add_pred_of_pos
 
 /-! ### `add` -/
-
-#align nat.add_pos_left Nat.add_pos_left
-#align nat.add_pos_right Nat.add_pos_right
-#align nat.exists_eq_add_of_le Nat.exists_eq_add_of_le
-#align nat.exists_eq_add_of_le' Nat.exists_eq_add_of_le'
-#align nat.exists_eq_add_of_lt Nat.exists_eq_add_of_lt
 
 attribute [simp] le_add_left le_add_right Nat.lt_add_left_iff_pos Nat.lt_add_right_iff_pos
   Nat.add_le_add_iff_left Nat.add_le_add_iff_right Nat.add_lt_add_iff_left Nat.add_lt_add_iff_right
@@ -286,7 +221,6 @@ attribute [simp] le_add_left le_add_right Nat.lt_add_left_iff_pos Nat.lt_add_rig
 -- matching. These lemmas package them back up as typeclass mediated operations.
 -- TODO: This is a duplicate of `Nat.add_eq`
 @[simp] lemma add_def : Nat.add m n = m + n := rfl
-#align nat.add_def Nat.add_def
 
 -- We want to use these two lemmas earlier than the lemmas simp can prove them with
 @[simp, nolint simpNF] protected lemma add_eq_left : a + b = a ↔ b = 0 := by omega
@@ -296,45 +230,35 @@ lemma two_le_iff : ∀ n, 2 ≤ n ↔ n ≠ 0 ∧ n ≠ 1
   | 0 => by simp
   | 1 => by simp
   | n + 2 => by simp
-#align nat.two_le_iff Nat.two_le_iff
 
 lemma add_eq_max_iff : m + n = max m n ↔ m = 0 ∨ n = 0 := by omega
 lemma add_eq_min_iff : m + n = min m n ↔ m = 0 ∧ n = 0 := by omega
-#align nat.add_eq_max_iff Nat.add_eq_max_iff
-#align nat.add_eq_min_iff Nat.add_eq_min_iff
 
 -- We want to use this lemma earlier than the lemma simp can prove it with
 @[simp, nolint simpNF] protected lemma add_eq_zero : m + n = 0 ↔ m = 0 ∧ n = 0 := by omega
 
 lemma add_pos_iff_pos_or_pos : 0 < m + n ↔ 0 < m ∨ 0 < n := by omega
-#align nat.add_pos_iff_pos_or_pos Nat.add_pos_iff_pos_or_pos
 
 lemma add_eq_one_iff : m + n = 1 ↔ m = 0 ∧ n = 1 ∨ m = 1 ∧ n = 0 := by
   cases n <;> simp [← Nat.add_assoc, succ_inj']
-#align nat.add_eq_one_iff Nat.add_eq_one_iff
 
 lemma add_eq_two_iff : m + n = 2 ↔ m = 0 ∧ n = 2 ∨ m = 1 ∧ n = 1 ∨ m = 2 ∧ n = 0 := by
   omega
-#align nat.add_eq_two_iff Nat.add_eq_two_iff
 
 lemma add_eq_three_iff :
     m + n = 3 ↔ m = 0 ∧ n = 3 ∨ m = 1 ∧ n = 2 ∨ m = 2 ∧ n = 1 ∨ m = 3 ∧ n = 0 := by
   omega
-#align nat.add_eq_three_iff Nat.add_eq_three_iff
 
 lemma le_add_one_iff : m ≤ n + 1 ↔ m ≤ n ∨ m = n + 1 := by
   rw [Nat.le_iff_lt_or_eq, Nat.lt_add_one_iff]
-#align nat.le_add_one_iff Nat.le_add_one_iff
 
 lemma le_and_le_add_one_iff : n ≤ m ∧ m ≤ n + 1 ↔ m = n ∨ m = n + 1 := by
   rw [le_add_one_iff, and_or_left, ← Nat.le_antisymm_iff, eq_comm, and_iff_right_of_imp]
   rintro rfl
   exact n.le_succ
-#align nat.le_and_le_add_one_iff Nat.le_and_le_add_one_iff
 
 lemma add_succ_lt_add (hab : a < b) (hcd : c < d) : a + c + 1 < b + d := by
   rw [Nat.add_assoc]; exact Nat.add_lt_add_of_lt_of_le hab (Nat.succ_le_iff.2 hcd)
-#align nat.add_succ_lt_add Nat.add_succ_lt_add
 
 theorem le_or_le_of_add_eq_add_pred (h : a + c = b + d - 1) : b ≤ a ∨ d ≤ c := by
   rcases le_or_lt b a with h' | h' <;> [left; right]
@@ -346,7 +270,6 @@ theorem le_or_le_of_add_eq_add_pred (h : a + c = b + d - 1) : b ≤ a ∨ d ≤ 
       exact zero_le c
     rw [d.add_sub_assoc (Nat.succ_le_of_lt hn), Nat.add_lt_add_iff_left] at h'
     exact Nat.le_of_pred_lt h'
-#align nat.le_or_le_of_add_eq_add_pred Nat.le_or_le_of_add_eq_add_pred
 
 /-! ### `sub` -/
 
@@ -355,7 +278,6 @@ attribute [simp] Nat.sub_eq_zero_of_le Nat.sub_le_iff_le_add Nat.add_sub_cancel_
 
 /-- A version of `Nat.sub_succ` in the form `_ - 1` instead of `Nat.pred _`. -/
 lemma sub_succ' (m n : ℕ) : m - n.succ = m - n - 1 := rfl
-#align nat.sub_succ' Nat.sub_succ'
 
 protected lemma sub_eq_of_eq_add' (h : a = b + c) : a - b = c := by rw [h, Nat.add_sub_cancel_left]
 protected lemma eq_sub_of_add_eq (h : c + b = a) : c = a - b := (Nat.sub_eq_of_eq_add h.symm).symm
@@ -371,29 +293,19 @@ protected lemma add_sub_sub_cancel (h : c ≤ a) : a + b - (a - c) = b + c := by
 protected lemma sub_add_sub_cancel (hab : b ≤ a) (hcb : c ≤ b) : a - b + (b - c) = a - c := by omega
 
 lemma lt_pred_iff : a < pred b ↔ succ a < b := Nat.lt_sub_iff_add_lt (b := 1)
-#align nat.lt_pred_iff Nat.lt_pred_iff
 
 protected lemma sub_lt_sub_iff_right (h : c ≤ a) : a - c < b - c ↔ a < b := by omega
 
 /-! ### `mul` -/
 
-#align nat.mul_ne_zero Nat.mul_ne_zero
-#align nat.mul_eq_zero Nat.mul_eq_zero
-#align nat.eq_of_mul_eq_mul_right Nat.eq_of_mul_eq_mul_right
-#align nat.le_mul_of_pos_left Nat.le_mul_of_pos_left
-#align nat.le_mul_of_pos_right Nat.le_mul_of_pos_right
-
 @[simp] lemma mul_def : Nat.mul m n = m * n := rfl
-#align nat.mul_def Nat.mul_def
 
 -- Porting note: removing `simp` attribute
 protected lemma zero_eq_mul : 0 = m * n ↔ m = 0 ∨ n = 0 := by rw [eq_comm, Nat.mul_eq_zero]
-#align nat.zero_eq_mul Nat.zero_eq_mul
 
 lemma two_mul_ne_two_mul_add_one : 2 * n ≠ 2 * m + 1 :=
   mt (congrArg (· % 2))
     (by rw [Nat.add_comm, add_mul_mod_self_left, mul_mod_right, mod_eq_of_lt] <;> simp)
-#align nat.two_mul_ne_two_mul_add_one Nat.two_mul_ne_two_mul_add_one
 
 -- TODO: Replace `Nat.mul_right_cancel_iff` with `Nat.mul_left_inj`
 protected lemma mul_left_inj (ha : a ≠ 0) : b * a = c * a ↔ b = c :=
@@ -405,21 +317,17 @@ protected lemma mul_right_inj (ha : a ≠ 0) : a * b = a * c ↔ b = c :=
 
 protected lemma mul_ne_mul_left (ha : a ≠ 0) : b * a ≠ c * a ↔ b ≠ c :=
   not_congr (Nat.mul_left_inj ha)
-#align nat.mul_ne_mul_left Nat.mul_ne_mul_left
 
 protected lemma mul_ne_mul_right (ha : a ≠ 0) : a * b ≠ a * c ↔ b ≠ c :=
   not_congr (Nat.mul_right_inj ha)
-#align nat.mul_ne_mul_right Nat.mul_ne_mul_right
 
 lemma mul_eq_left (ha : a ≠ 0) : a * b = a ↔ b = 1 := by simpa using Nat.mul_right_inj ha (c := 1)
 lemma mul_eq_right (hb : b ≠ 0) : a * b = b ↔ a = 1 := by simpa using Nat.mul_left_inj hb (c := 1)
 
 -- TODO: Deprecate
 lemma mul_right_eq_self_iff (ha : 0 < a) : a * b = a ↔ b = 1 := mul_eq_left $ ne_of_gt ha
-#align nat.mul_right_eq_self_iff Nat.mul_right_eq_self_iff
 
 lemma mul_left_eq_self_iff (hb : 0 < b) : a * b = b ↔ a = 1 := mul_eq_right $ ne_of_gt hb
-#align nat.mul_left_eq_self_iff Nat.mul_left_eq_self_iff
 
 protected lemma le_of_mul_le_mul_right (h : a * c ≤ b * c) (hc : 0 < c) : a ≤ b :=
   Nat.le_of_mul_le_mul_left (by simpa [Nat.mul_comm]) hc
@@ -442,11 +350,9 @@ lemma one_lt_mul_iff : 1 < m * n ↔ 0 < m ∧ 0 < n ∧ (1 < m ∨ 1 < n) := by
     · exact Nat.mul_lt_mul_of_le_of_lt h.1 hn h.1
 
 lemma eq_one_of_mul_eq_one_right (H : m * n = 1) : m = 1 := eq_one_of_dvd_one ⟨n, H.symm⟩
-#align nat.eq_one_of_mul_eq_one_right Nat.eq_one_of_mul_eq_one_right
 
 lemma eq_one_of_mul_eq_one_left (H : m * n = 1) : n = 1 :=
   eq_one_of_mul_eq_one_right (by rwa [Nat.mul_comm])
-#align nat.eq_one_of_mul_eq_one_left Nat.eq_one_of_mul_eq_one_left
 
 @[simp] protected lemma lt_mul_iff_one_lt_left (hb : 0 < b) : b < a * b ↔ 1 < a := by
   simpa using Nat.mul_lt_mul_right (b := 1) hb
@@ -455,53 +361,42 @@ lemma eq_one_of_mul_eq_one_left (H : m * n = 1) : n = 1 :=
   simpa using Nat.mul_lt_mul_left (b := 1) ha
 
 lemma eq_zero_of_double_le (h : 2 * n ≤ n) : n = 0 := by omega
-#align nat.eq_zero_of_double_le Nat.eq_zero_of_double_le
 
 lemma eq_zero_of_mul_le (hb : 2 ≤ n) (h : n * m ≤ m) : m = 0 :=
   eq_zero_of_double_le <| Nat.le_trans (Nat.mul_le_mul_right _ hb) h
-#align nat.eq_zero_of_mul_le Nat.eq_zero_of_mul_le
 
 lemma succ_mul_pos (m : ℕ) (hn : 0 < n) : 0 < succ m * n := Nat.mul_pos m.succ_pos hn
-#align nat.succ_mul_pos Nat.succ_mul_pos
 
 lemma mul_self_le_mul_self (h : m ≤ n) : m * m ≤ n * n := Nat.mul_le_mul h h
-#align nat.mul_self_le_mul_self Nat.mul_self_le_mul_self
 
 lemma mul_lt_mul'' (hac : a < c) (hbd : b < d) : a * b < c * d :=
   Nat.mul_lt_mul_of_lt_of_le hac (Nat.le_of_lt hbd) $ by omega
 
 lemma mul_self_lt_mul_self (h : m < n) : m * m < n * n := mul_lt_mul'' h h
-#align nat.mul_self_lt_mul_self Nat.mul_self_lt_mul_self
 
 lemma mul_self_le_mul_self_iff : m * m ≤ n * n ↔ m ≤ n :=
   ⟨fun h => Nat.le_of_not_lt fun h' => Nat.not_le_of_gt (mul_self_lt_mul_self h') h,
    mul_self_le_mul_self⟩
-#align nat.mul_self_le_mul_self_iff Nat.mul_self_le_mul_self_iff
 
 lemma mul_self_lt_mul_self_iff : m * m < n * n ↔ m < n := by
   simp only [← Nat.not_le, mul_self_le_mul_self_iff]
-#align nat.mul_self_lt_mul_self_iff Nat.mul_self_lt_mul_self_iff
 
 lemma le_mul_self : ∀ n : ℕ, n ≤ n * n
   | 0 => Nat.le_refl _
   | n + 1 => by simp [Nat.mul_add]
-#align nat.le_mul_self Nat.le_mul_self
 
 lemma mul_self_inj : m * m = n * n ↔ m = n := by
   simp [Nat.le_antisymm_iff, mul_self_le_mul_self_iff]
-#align nat.mul_self_inj Nat.mul_self_inj
 
 @[simp] lemma lt_mul_self_iff : ∀ {n : ℕ}, n < n * n ↔ 1 < n
   | 0 => by simp
   | n + 1 => Nat.lt_mul_iff_one_lt_left n.succ_pos
-#align nat.lt_mul_self_iff Nat.lt_mul_self_iff
 
 lemma add_sub_one_le_mul (ha : a ≠ 0) (hb : b ≠ 0) : a + b - 1 ≤ a * b := by
   cases a
   · cases ha rfl
   · rw [succ_add, Nat.add_one_sub_one, succ_mul]
     exact Nat.add_le_add_right (Nat.le_mul_of_pos_right _ $ Nat.pos_iff_ne_zero.2 hb) _
-#align nat.add_sub_one_le_mul Nat.add_sub_one_le_mul
 
 protected lemma add_le_mul {a : ℕ} (ha : 2 ≤ a) : ∀ {b : ℕ} (_ : 2 ≤ b), a + b ≤ a * b
   | 2, _ => by omega
@@ -509,45 +404,33 @@ protected lemma add_le_mul {a : ℕ} (ha : 2 ≤ a) : ∀ {b : ℕ} (_ : 2 ≤ b
 
 /-! ### `div` -/
 
-#align nat.pow_div Nat.pow_div
-#align nat.div_lt_of_lt_mul Nat.div_lt_of_lt_mul
-#align nat.div_eq_zero Nat.div_eq_of_lt
-
 attribute [simp] Nat.div_self
 
 lemma div_le_iff_le_mul_add_pred (hb : 0 < b) : a / b ≤ c ↔ a ≤ b * c + (b - 1) := by
   rw [← Nat.lt_succ_iff, div_lt_iff_lt_mul hb, succ_mul, Nat.mul_comm]
   cases hb <;> exact Nat.lt_succ_iff
-#align nat.div_le_iff_le_mul_add_pred Nat.div_le_iff_le_mul_add_pred
 
 /-- A version of `Nat.div_lt_self` using successors, rather than additional hypotheses. -/
 lemma div_lt_self' (a b : ℕ) : (a + 1) / (b + 2) < a + 1 :=
   Nat.div_lt_self (Nat.succ_pos _) (Nat.succ_lt_succ (Nat.succ_pos _))
-#align nat.div_lt_self' Nat.div_lt_self'
 
 lemma le_div_iff_mul_le' (hb : 0 < b) : a ≤ c / b ↔ a * b ≤ c := le_div_iff_mul_le hb
-#align nat.le_div_iff_mul_le' Nat.le_div_iff_mul_le'
 
 lemma div_lt_iff_lt_mul' (hb : 0 < b) : a / b < c ↔ a < c * b := by
   simp only [← Nat.not_le, le_div_iff_mul_le' hb]
-#align nat.div_lt_iff_lt_mul' Nat.div_lt_iff_lt_mul'
 
 lemma one_le_div_iff (hb : 0 < b) : 1 ≤ a / b ↔ b ≤ a := by rw [le_div_iff_mul_le hb, Nat.one_mul]
-#align nat.one_le_div_iff Nat.one_le_div_iff
 
 lemma div_lt_one_iff (hb : 0 < b) : a / b < 1 ↔ a < b := by
   simp only [← Nat.not_le, one_le_div_iff hb]
-#align nat.div_lt_one_iff Nat.div_lt_one_iff
 
 @[gcongr]
 protected lemma div_le_div_right (h : a ≤ b) : a / c ≤ b / c :=
   (c.eq_zero_or_pos.elim fun hc ↦ by simp [hc]) fun hc ↦
     (le_div_iff_mul_le' hc).2 <| Nat.le_trans (Nat.div_mul_le_self _ _) h
-#align nat.div_le_div_right Nat.div_le_div_right
 
 lemma lt_of_div_lt_div (h : a / c < b / c) : a < b :=
   Nat.lt_of_not_le fun hab ↦ Nat.not_le_of_lt h $ Nat.div_le_div_right hab
-#align nat.lt_of_div_lt_div Nat.lt_of_div_lt_div
 
 protected lemma div_pos (hba : b ≤ a) (hb : 0 < b) : 0 < a / b :=
   Nat.pos_of_ne_zero fun h ↦ Nat.lt_irrefl a $
@@ -555,42 +438,28 @@ protected lemma div_pos (hba : b ≤ a) (hb : 0 < b) : 0 < a / b :=
       a = a % b := by simpa [h] using (mod_add_div a b).symm
       _ < b := mod_lt a hb
       _ ≤ a := hba
-#align nat.div_pos Nat.div_pos
 
 lemma lt_mul_of_div_lt (h : a / c < b) (hc : 0 < c) : a < b * c :=
   Nat.lt_of_not_ge <| Nat.not_le_of_gt h ∘ (Nat.le_div_iff_mul_le hc).2
-#align nat.lt_mul_of_div_lt Nat.lt_mul_of_div_lt
 
 lemma mul_div_le_mul_div_assoc (a b c : ℕ) : a * (b / c) ≤ a * b / c :=
   if hc0 : c = 0 then by simp [hc0] else
     (Nat.le_div_iff_mul_le (Nat.pos_of_ne_zero hc0)).2
       (by rw [Nat.mul_assoc]; exact Nat.mul_le_mul_left _ (Nat.div_mul_le_self _ _))
-#align nat.mul_div_le_mul_div_assoc Nat.mul_div_le_mul_div_assoc
-
-#align nat.eq_mul_of_div_eq_right Nat.eq_mul_of_div_eq_right
-#align nat.div_eq_iff_eq_mul_right Nat.div_eq_iff_eq_mul_right
-#align nat.div_eq_iff_eq_mul_left Nat.div_eq_iff_eq_mul_left
 
 protected lemma eq_mul_of_div_eq_left (H1 : b ∣ a) (H2 : a / b = c) : a = c * b := by
   rw [Nat.mul_comm, Nat.eq_mul_of_div_eq_right H1 H2]
-#align nat.eq_mul_of_div_eq_left Nat.eq_mul_of_div_eq_left
 
 protected lemma mul_div_cancel_left' (Hd : a ∣ b) : a * (b / a) = b := by
   rw [Nat.mul_comm, Nat.div_mul_cancel Hd]
-#align nat.mul_div_cancel_left' Nat.mul_div_cancel_left'
-
-#align nat.mul_div_mul_left Nat.mul_div_mul_left
-#align nat.mul_div_mul_right Nat.mul_div_mul_right
 
 lemma lt_div_mul_add (hb : 0 < b) : a < a / b * b + b := by
   rw [← Nat.succ_mul, ← Nat.div_lt_iff_lt_mul hb]; exact Nat.lt_succ_self _
-#align nat.lt_div_mul_add Nat.lt_div_mul_add
 
 @[simp]
 protected lemma div_left_inj (hda : d ∣ a) (hdb : d ∣ b) : a / d = b / d ↔ a = b := by
   refine ⟨fun h ↦ ?_, congrArg fun b ↦ b / d⟩
   rw [← Nat.mul_div_cancel' hda, ← Nat.mul_div_cancel' hdb, h]
-#align nat.div_left_inj Nat.div_left_inj
 
 lemma div_mul_div_comm : b ∣ a → d ∣ c → (a / b) * (c / d) = (a * c) / (b * d) := by
   rintro ⟨x, rfl⟩ ⟨y, rfl⟩
@@ -600,18 +469,15 @@ lemma div_mul_div_comm : b ∣ a → d ∣ c → (a / b) * (c / d) = (a * c) / (
   · simp
   rw [Nat.mul_div_cancel_left _ hb, Nat.mul_div_cancel_left _ hd, Nat.mul_assoc b,
     Nat.mul_left_comm x, ← Nat.mul_assoc b, Nat.mul_div_cancel_left _ (Nat.mul_pos hb hd)]
-#align nat.div_mul_div_comm Nat.div_mul_div_comm
 
 protected lemma mul_div_mul_comm (hba : b ∣ a) (hdc : d ∣ c) : a * c / (b * d) = a / b * (c / d) :=
   (div_mul_div_comm hba hdc).symm
-#align nat.mul_div_mul_comm_of_dvd_dvd Nat.mul_div_mul_comm
 
 @[deprecated (since := "2024-05-29")] alias mul_div_mul_comm_of_dvd_dvd := Nat.mul_div_mul_comm
 
 lemma eq_zero_of_le_div (hn : 2 ≤ n) (h : m ≤ m / n) : m = 0 :=
   eq_zero_of_mul_le hn <| by
     rw [Nat.mul_comm]; exact (Nat.le_div_iff_mul_le' (Nat.lt_of_lt_of_le (by decide) hn)).1 h
-#align nat.eq_zero_of_le_div Nat.eq_zero_of_le_div
 
 lemma div_mul_div_le_div (a b c : ℕ) : a / c * b / a ≤ b / c := by
   obtain rfl | ha := Nat.eq_zero_or_pos a
@@ -621,24 +487,20 @@ lemma div_mul_div_le_div (a b c : ℕ) : a / c * b / a ≤ b / c := by
         Nat.div_le_div_right (by rw [Nat.mul_comm]; exact mul_div_le_mul_div_assoc _ _ _)
       _ = b / c := by rw [Nat.div_div_eq_div_mul, Nat.mul_comm b, Nat.mul_comm c,
           Nat.mul_div_mul_left _ _ ha]
-#align nat.div_mul_div_le_div Nat.div_mul_div_le_div
 
 lemma eq_zero_of_le_half (h : n ≤ n / 2) : n = 0 := eq_zero_of_le_div (Nat.le_refl _) h
-#align nat.eq_zero_of_le_half Nat.eq_zero_of_le_half
 
 lemma le_half_of_half_lt_sub (h : a / 2 < a - b) : b ≤ a / 2 := by
   rw [Nat.le_div_iff_mul_le Nat.two_pos]
   rw [Nat.div_lt_iff_lt_mul Nat.two_pos, Nat.sub_mul, Nat.lt_sub_iff_add_lt,
     Nat.mul_two a] at h
   exact Nat.le_of_lt (Nat.lt_of_add_lt_add_left h)
-#align nat.le_half_of_half_lt_sub Nat.le_half_of_half_lt_sub
 
 lemma half_le_of_sub_le_half (h : a - b ≤ a / 2) : a / 2 ≤ b := by
   rw [Nat.le_div_iff_mul_le Nat.two_pos, Nat.sub_mul, Nat.sub_le_iff_le_add,
     Nat.mul_two, Nat.add_le_add_iff_left] at h
   rw [← Nat.mul_div_left b Nat.two_pos]
   exact Nat.div_le_div_right h
-#align nat.half_le_of_sub_le_half Nat.half_le_of_sub_le_half
 
 protected lemma div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n := by
   obtain rfl | hk := k.eq_zero_or_pos
@@ -648,7 +510,6 @@ protected lemma div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n := by
       k * (m / k) ≤ m % k + k * (m / k) := Nat.le_add_left _ _
       _ = m := mod_add_div _ _
       _ ≤ k * n := h
-#align nat.div_le_of_le_mul' Nat.div_le_of_le_mul'
 
 protected lemma div_le_self' (m n : ℕ) : m / n ≤ m := by
   obtain rfl | hn := n.eq_zero_or_pos
@@ -657,16 +518,13 @@ protected lemma div_le_self' (m n : ℕ) : m / n ≤ m := by
     calc
       m = 1 * m := by rw [Nat.one_mul]
       _ ≤ n * m := Nat.mul_le_mul_right _ hn
-#align nat.div_le_self' Nat.div_le_self'
 
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
   conv => rhs; rw [← Nat.mod_add_div n 2, hn, Nat.add_sub_cancel_left]
-#align nat.two_mul_odd_div_two Nat.two_mul_odd_div_two
 
 @[gcongr]
 lemma div_le_div_left (hcb : c ≤ b) (hc : 0 < c) : a / b ≤ a / c :=
   (Nat.le_div_iff_mul_le hc).2 <| Nat.le_trans (Nat.mul_le_mul_left _ hcb) (div_mul_le_self _ _)
-#align nat.div_le_div_left Nat.div_le_div_left
 
 lemma div_eq_self : m / n = m ↔ m = 0 ∨ n = 1 := by
   constructor
@@ -680,7 +538,6 @@ lemma div_eq_self : m / n = m ↔ m = 0 ∨ n = 1 := by
       refine eq_zero_of_le_half ?_
       simp_all
   · rintro (rfl | rfl) <;> simp
-#align nat.div_eq_self Nat.div_eq_self
 
 lemma div_eq_sub_mod_div : m / n = (m - m % n) / n := by
   obtain rfl | hn := n.eq_zero_or_pos
@@ -688,7 +545,6 @@ lemma div_eq_sub_mod_div : m / n = (m - m % n) / n := by
   · have : m - m % n = n * (m / n) := by
       rw [Nat.sub_eq_iff_eq_add (Nat.mod_le _ _), Nat.add_comm, mod_add_div]
     rw [this, mul_div_right _ hn]
-#align nat.div_eq_sub_mod_div Nat.div_eq_sub_mod_div
 
 protected lemma eq_div_of_mul_eq_left (hc : c ≠ 0) (h : a * c = b) : a = b / c := by
   rw [← h, Nat.mul_div_cancel _ (Nat.pos_iff_ne_zero.2 hc)]
@@ -721,17 +577,10 @@ protected lemma div_mul_div_le (a b c d : ℕ) :
 * Rename `Nat.pow_le_pow_of_le_right` to `Nat.pow_le_pow_right`, protect it, remove the alias
 -/
 
-#align nat.pow_le_pow_of_le_left Nat.pow_le_pow_left
-#align nat.pow_le_pow_of_le_right Nat.pow_le_pow_right
-#align nat.pow_le_iff_lt_right Nat.pow_le_pow_iff_right
-#align nat.pow_lt_iff_lt_right Nat.pow_lt_pow_iff_right
-#align nat.pow_lt_pow_succ Nat.pow_lt_pow_succ
-
 protected lemma pow_lt_pow_left (h : a < b) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < b ^ n
   | 1, _ => by simpa
   | n + 2, _ => Nat.mul_lt_mul_of_lt_of_le (Nat.pow_lt_pow_left h n.succ_ne_zero) (Nat.le_of_lt h)
     (zero_lt_of_lt h)
-#align nat.pow_lt_pow_of_lt_left Nat.pow_lt_pow_left
 
 protected lemma pow_lt_pow_right (ha : 1 < a) (h : m < n) : a ^ m < a ^ n :=
   (Nat.pow_lt_pow_iff_right ha).2 h
@@ -739,22 +588,18 @@ protected lemma pow_lt_pow_right (ha : 1 < a) (h : m < n) : a ^ m < a ^ n :=
 protected lemma pow_le_pow_iff_left {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ b ^ n ↔ a ≤ b where
   mp := by simpa only [← Nat.not_le, Decidable.not_imp_not] using (Nat.pow_lt_pow_left · hn)
   mpr h := Nat.pow_le_pow_left h _
-#align nat.pow_le_iff_le_left Nat.pow_le_pow_iff_left
 
 protected lemma pow_lt_pow_iff_left (hn : n ≠ 0) : a ^ n < b ^ n ↔ a < b := by
   simp only [← Nat.not_le, Nat.pow_le_pow_iff_left hn]
-#align nat.pow_lt_iff_lt_left Nat.pow_lt_pow_iff_left
 
 @[deprecated (since := "2023-12-23")] alias pow_lt_pow_of_lt_left := Nat.pow_lt_pow_left
 @[deprecated (since := "2023-12-23")] alias pow_le_iff_le_left := Nat.pow_le_pow_iff_left
 
 lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := by
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_left hn]
-#align nat.pow_left_injective Nat.pow_left_injective
 
 protected lemma pow_right_injective (ha : 2 ≤ a) : Injective (a ^ ·) := by
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_right ha]
-#align nat.pow_right_injective Nat.pow_right_injective
 
 -- We want to use this lemma earlier than the lemma simp can prove it with
 @[simp, nolint simpNF] protected lemma pow_eq_zero {a : ℕ} : ∀ {n : ℕ}, a ^ n = 0 ↔ a = 0 ∧ n ≠ 0
@@ -768,7 +613,6 @@ lemma pow_eq_self_iff {a b : ℕ} (ha : 1 < a) : a ^ b = a ↔ b = 1 :=
 lemma le_self_pow (hn : n ≠ 0) : ∀ a : ℕ, a ≤ a ^ n
   | 0 => zero_le _
   | a + 1 => by simpa using Nat.pow_le_pow_right a.succ_pos (Nat.one_le_iff_ne_zero.2 hn)
-#align nat.le_self_pow Nat.le_self_pow
 
 lemma lt_pow_self (ha : 1 < a) : ∀ n : ℕ, n < a ^ n
   | 0 => by simp
@@ -776,52 +620,37 @@ lemma lt_pow_self (ha : 1 < a) : ∀ n : ℕ, n < a ^ n
     calc
       n + 1 < a ^ n + 1 := Nat.add_lt_add_right (lt_pow_self ha _) _
       _ ≤ a ^ (n + 1) := Nat.pow_lt_pow_succ ha
-#align nat.lt_pow_self Nat.lt_pow_self
 
 lemma lt_two_pow (n : ℕ) : n < 2 ^ n := lt_pow_self (by decide) n
-#align nat.lt_two_pow Nat.lt_two_pow
 
 lemma one_le_pow (n m : ℕ) (h : 0 < m) : 1 ≤ m ^ n := by simpa using Nat.pow_le_pow_of_le_left h n
-#align nat.one_le_pow Nat.one_le_pow
 
 lemma one_le_pow' (n m : ℕ) : 1 ≤ (m + 1) ^ n := one_le_pow n (m + 1) (succ_pos m)
-#align nat.one_le_pow' Nat.one_le_pow'
-
-#align nat.one_le_two_pow Nat.one_le_two_pow
 
 lemma one_lt_pow (hn : n ≠ 0) (ha : 1 < a) : 1 < a ^ n := by simpa using Nat.pow_lt_pow_left ha hn
-#align nat.one_lt_pow Nat.one_lt_pow
 
 lemma two_pow_succ (n : ℕ) : 2 ^ (n + 1) = 2 ^ n + 2 ^ n := by simp [Nat.pow_succ, Nat.mul_two]
 
 lemma one_lt_pow' (n m : ℕ) : 1 < (m + 2) ^ (n + 1) :=
   one_lt_pow n.succ_ne_zero (Nat.lt_of_sub_eq_succ rfl)
-#align nat.one_lt_pow' Nat.one_lt_pow'
 
 @[simp] lemma one_lt_pow_iff {n : ℕ} (hn : n ≠ 0) : ∀ {a}, 1 < a ^ n ↔ 1 < a
  | 0 => by simp [Nat.zero_pow (Nat.pos_of_ne_zero hn)]
  | 1 => by simp
  | a + 2 => by simp [one_lt_pow hn]
   -- one_lt_pow_iff_of_nonneg (zero_le _) h
-#align nat.one_lt_pow_iff Nat.one_lt_pow_iff
-
-#align nat.one_lt_two_pow Nat.one_lt_two_pow
 
 lemma one_lt_two_pow' (n : ℕ) : 1 < 2 ^ (n + 1) := one_lt_pow n.succ_ne_zero (by decide)
-#align nat.one_lt_two_pow' Nat.one_lt_two_pow'
 
 lemma mul_lt_mul_pow_succ (ha : 0 < a) (hb : 1 < b) : n * b < a * b ^ (n + 1) := by
   rw [Nat.pow_succ, ← Nat.mul_assoc, Nat.mul_lt_mul_right (Nat.lt_trans Nat.zero_lt_one hb)]
   exact Nat.lt_of_le_of_lt (Nat.le_mul_of_pos_left _ ha)
     ((Nat.mul_lt_mul_left ha).2 $ Nat.lt_pow_self hb _)
-#align nat.mul_lt_mul_pow_succ Nat.mul_lt_mul_pow_succ
 
 lemma sq_sub_sq (a b : ℕ) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
   simpa [Nat.pow_succ] using Nat.mul_self_sub_mul_self_eq a b
-#align nat.sq_sub_sq Nat.sq_sub_sq
 
 alias pow_two_sub_pow_two := sq_sub_sq
-#align nat.pow_two_sub_pow_two Nat.pow_two_sub_pow_two
 
 protected lemma div_pow (h : a ∣ b) : (b / a) ^ c = b ^ c / a ^ c := by
   obtain rfl | hc := c.eq_zero_or_pos
@@ -843,11 +672,9 @@ proved above, and some of the results in later sections depend on the definition
 
 @[simp]
 lemma rec_zero {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) : Nat.rec h0 h 0 = h0 := rfl
-#align nat.rec_zero Nat.rec_zero
 
 lemma rec_add_one {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) (n : ℕ) :
     Nat.rec h0 h (n + 1) = h n (Nat.rec h0 h n) := rfl
-#align nat.rec_add_one Nat.rec_add_one
 
 @[simp] lemma rec_one {C : ℕ → Sort*} (h0 : C 0) (h : ∀ n, C n → C (n + 1)) :
     Nat.rec (motive := C) h0 h 1 = h 0 h0 := rfl
@@ -924,7 +751,6 @@ Prefer `Nat.leRec`, which can be used as `induction h using Nat.leRec`. -/
 @[elab_as_elim, deprecated Nat.leRec (since := "2024-07-05")]
 def leRecOn' {C : ℕ → Sort*} : ∀ {m}, n ≤ m → (∀ ⦃k⦄, n ≤ k → C k → C (k + 1)) → C n → C m :=
   fun h of_succ self => Nat.leRec self of_succ h
-#align nat.le_rec_on' Nat.leRecOn'
 
 /-- Recursion starting at a non-zero number: given a map `C k → C (k + 1)` for each `k`,
 there is a map from `C n` to each `C m`, `n ≤ m`. For a version where the assumption is only made
@@ -932,34 +758,28 @@ when `k ≥ n`, see `Nat.leRec`. -/
 @[elab_as_elim]
 def leRecOn {C : ℕ → Sort*} {n : ℕ} : ∀ {m}, n ≤ m → (∀ {k}, C k → C (k + 1)) → C n → C m :=
   fun h of_succ self => Nat.leRec self (fun _ _ => @of_succ _) h
-#align nat.le_rec_on Nat.leRecOn
 
 lemma leRecOn_self {C : ℕ → Sort*} {n} {next : ∀ {k}, C k → C (k + 1)} (x : C n) :
     (leRecOn n.le_refl next x : C n) = x :=
   leRec_self _ _
-#align nat.le_rec_on_self Nat.leRecOn_self
 
 lemma leRecOn_succ {C : ℕ → Sort*} {n m} (h1 : n ≤ m) {h2 : n ≤ m + 1} {next} (x : C n) :
     (leRecOn h2 next x : C (m + 1)) = next (leRecOn h1 next x : C m) :=
   leRec_succ _ _ _
-#align nat.le_rec_on_succ Nat.leRecOn_succ
 
 lemma leRecOn_succ' {C : ℕ → Sort*} {n} {h : n ≤ n + 1} {next : ∀ {k}, C k → C (k + 1)} (x : C n) :
     (leRecOn h next x : C (n + 1)) = next x :=
   leRec_succ' _ _
-#align nat.le_rec_on_succ' Nat.leRecOn_succ'
 
 lemma leRecOn_trans {C : ℕ → Sort*} {n m k} (hnm : n ≤ m) (hmk : m ≤ k) {next} (x : C n) :
     (leRecOn (Nat.le_trans hnm hmk) (@next) x : C k) =
       leRecOn hmk (@next) (leRecOn hnm (@next) x) :=
   leRec_trans _ _ _ _
-#align nat.le_rec_on_trans Nat.leRecOn_trans
 
 lemma leRecOn_succ_left {C : ℕ → Sort*} {n m}
     {next : ∀ {k}, C k → C (k + 1)} (x : C n) (h1 : n ≤ m) (h2 : n + 1 ≤ m) :
     (leRecOn h2 next (next x) : C m) = (leRecOn h1 next x : C m) :=
   leRec_succ_left (motive := fun n _ => C n) _ (fun _ _ => @next _) _ _
-#align nat.le_rec_on_succ_left Nat.leRecOn_succ_left
 
 lemma leRecOn_injective {C : ℕ → Sort*} {n m} (hnm : n ≤ m) (next : ∀ {k}, C k → C (k + 1))
     (Hnext : ∀ n, Injective (@next n)) : Injective (@leRecOn C n m hnm next) := by
@@ -971,7 +791,6 @@ lemma leRecOn_injective {C : ℕ → Sort*} {n m} (hnm : n ≤ m) (next : ∀ {k
     intro x y H
     rw [leRecOn_succ hnm, leRecOn_succ hnm] at H
     exact ih (Hnext _ H)
-#align nat.le_rec_on_injective Nat.leRecOn_injective
 
 lemma leRecOn_surjective {C : ℕ → Sort*} {n m} (hnm : n ≤ m) (next : ∀ {k}, C k → C (k + 1))
     (Hnext : ∀ n, Surjective (@next n)) : Surjective (@leRecOn C n m hnm next) := by
@@ -986,24 +805,20 @@ lemma leRecOn_surjective {C : ℕ → Sort*} {n m} (hnm : n ≤ m) (next : ∀ {
     obtain ⟨x, rfl⟩ := ih w
     refine ⟨x, ?_⟩
     rw [leRecOn_succ]
-#align nat.le_rec_on_surjective Nat.leRecOn_surjective
 
 /-- Recursion principle based on `<`. -/
 @[elab_as_elim]
 protected def strongRec' {p : ℕ → Sort*} (H : ∀ n, (∀ m, m < n → p m) → p n) : ∀ n : ℕ, p n
   | n => H n fun m _ ↦ Nat.strongRec' H m
-#align nat.strong_rec' Nat.strongRec'
 
 /-- Recursion principle based on `<` applied to some natural number. -/
 @[elab_as_elim]
 def strongRecOn' {P : ℕ → Sort*} (n : ℕ) (h : ∀ n, (∀ m, m < n → P m) → P n) : P n :=
   Nat.strongRec' h n
-#align nat.strong_rec_on' Nat.strongRecOn'
 
 lemma strongRecOn'_beta {P : ℕ → Sort*} {h} :
     (strongRecOn' n h : P n) = h n fun m _ ↦ (strongRecOn' m h : P m) := by
   simp only [strongRecOn']; rw [Nat.strongRec']
-#align nat.strong_rec_on_beta' Nat.strongRecOn'_beta
 
 /-- Induction principle starting at a non-zero number.
 To use in an induction proof, the syntax is `induction n, hn using Nat.le_induction` (or the same
@@ -1014,7 +829,6 @@ This is an alias of `Nat.leRec`, specialized to `Prop`. -/
 lemma le_induction {m : ℕ} {P : ∀ n, m ≤ n → Prop} (base : P m m.le_refl)
     (succ : ∀ n hmn, P n hmn → P (n + 1) (le_succ_of_le hmn)) : ∀ n hmn, P n hmn :=
   @Nat.leRec (motive := P) base succ
-#align nat.le_induction Nat.le_induction
 
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `k < n`, then `P n` implies `P m` for
 all `m ≤ n`.
@@ -1029,14 +843,12 @@ def decreasingInduction {n} {motive : (m : ℕ) → m ≤ n → Sort*}
   | refl => exact self
   | @le_succ_of_le k _ ih =>
     apply ih (fun i hi => of_succ i (le_succ_of_le hi)) (of_succ k (lt_succ_self _) self)
-#align nat.decreasing_induction Nat.decreasingInduction
 
 @[simp]
 lemma decreasingInduction_self {n} {motive : (m : ℕ) → m ≤ n → Sort*} (of_succ self) :
     (decreasingInduction (motive := motive) of_succ self le_rfl) = self := by
   dsimp only [decreasingInduction]
   rw [leRec_self]
-#align nat.decreasing_induction_self Nat.decreasingInduction_self
 
 lemma decreasingInduction_succ {n} {motive : (m : ℕ) → m ≤ n + 1 → Sort*} (of_succ self)
     (mn : m ≤ n) (msn : m ≤ n + 1) :
@@ -1044,13 +856,11 @@ lemma decreasingInduction_succ {n} {motive : (m : ℕ) → m ≤ n + 1 → Sort*
       decreasingInduction (motive := fun m h => motive m (le_succ_of_le h))
         (fun i hi => of_succ _ _) (of_succ _ _ self) mn := by
   dsimp only [decreasingInduction]; rw [leRec_succ]
-#align nat.decreasing_induction_succ Nat.decreasingInduction_succ
 
 @[simp]
 lemma decreasingInduction_succ' {n} {motive : (m : ℕ) → m ≤ n + 1 → Sort*} (of_succ self) :
     decreasingInduction (motive := motive) of_succ self n.le_succ = of_succ _ _ self := by
   dsimp only [decreasingInduction]; rw [leRec_succ']
-#align nat.decreasing_induction_succ' Nat.decreasingInduction_succ'
 
 lemma decreasingInduction_trans {motive : (m : ℕ) → m ≤ k → Sort*} (hmn : m ≤ n) (hnk : n ≤ k)
     (of_succ self) :
@@ -1060,7 +870,6 @@ lemma decreasingInduction_trans {motive : (m : ℕ) → m ≤ k → Sort*} (hmn 
   | refl => rw [decreasingInduction_self]
   | step hnk ih =>
       rw [decreasingInduction_succ _ _ (Nat.le_trans hmn hnk), ih, decreasingInduction_succ]
-#align nat.decreasing_induction_trans Nat.decreasingInduction_trans
 
 lemma decreasingInduction_succ_left  {motive : (m : ℕ) → m ≤ n → Sort*} (of_succ self)
     (smn : m + 1 ≤ n) (mn : m ≤ n) :
@@ -1068,7 +877,6 @@ lemma decreasingInduction_succ_left  {motive : (m : ℕ) → m ≤ n → Sort*} 
       of_succ m smn (decreasingInduction of_succ self smn) := by
   rw [Subsingleton.elim mn (Nat.le_trans (le_succ m) smn), decreasingInduction_trans,
     decreasingInduction_succ']
-#align nat.decreasing_induction_succ_left Nat.decreasingInduction_succ_left
 
 /-- Given `P : ℕ → ℕ → Sort*`, if for all `m n : ℕ` we can extend `P` from the rectangle
 strictly below `(m, n)` to `P m n`, then we have `P n m` for all `n m : ℕ`.
@@ -1078,7 +886,6 @@ since this produces equation lemmas. -/
 def strongSubRecursion {P : ℕ → ℕ → Sort*} (H : ∀ m n, (∀ x y, x < m → y < n → P x y) → P m n) :
     ∀ n m : ℕ, P n m
   | n, m => H n m fun x y _ _ ↦ strongSubRecursion H x y
-#align nat.strong_sub_recursion Nat.strongSubRecursion
 
 /-- Given `P : ℕ → ℕ → Sort*`, if we have `P m 0` and `P 0 n` for all `m n : ℕ`, and for any
 `m n : ℕ` we can extend `P` from `(m, n + 1)` and `(m + 1, n)` to `(m + 1, n + 1)` then we have
@@ -1092,7 +899,6 @@ def pincerRecursion {P : ℕ → ℕ → Sort*} (Ha0 : ∀ m : ℕ, P m 0) (H0b 
   | m, 0 => Ha0 m
   | 0, n => H0b n
   | Nat.succ m, Nat.succ n => H _ _ (pincerRecursion Ha0 H0b H _ _) (pincerRecursion Ha0 H0b H _ _)
-#align nat.pincer_recursion Nat.pincerRecursion
 
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `m ≤ k < n`, then `P n` implies `P m`.
 Also works for functions to `Sort*`.
@@ -1105,7 +911,6 @@ def decreasingInduction' {P : ℕ → Sort*} (h : ∀ k < n, m ≤ k → P (k + 
   | self => exact hP
   | of_succ k hk ih =>
     exact h _ (lt_of_succ_le hk) le_rfl (ih fun k' hk' h'' => h k' hk' <| le_of_succ_le h'')
-#align nat.decreasing_induction' Nat.decreasingInduction'
 
 /-- Given a predicate on two naturals `P : ℕ → ℕ → Prop`, `P a b` is true for all `a < b` if
 `P (a + 1) (a + 1)` is true for all `a`, `P 0 (b + 1)` is true for all `b` and for all
@@ -1126,52 +931,35 @@ theorem diag_induction (P : ℕ → ℕ → Prop) (ha : ∀ a, P (a + 1) (a + 1)
     apply Nat.lt_of_le_of_lt (Nat.le_succ _) h
   termination_by a b _c => a + b
   decreasing_by all_goals assumption
-#align nat.diag_induction Nat.diag_induction
 
 /-- A subset of `ℕ` containing `k : ℕ` and closed under `Nat.succ` contains every `n ≥ k`. -/
 lemma set_induction_bounded {S : Set ℕ} (hk : k ∈ S) (h_ind : ∀ k : ℕ, k ∈ S → k + 1 ∈ S)
     (hnk : k ≤ n) : n ∈ S :=
   @leRecOn (fun n => n ∈ S) k n hnk @h_ind hk
-#align nat.set_induction_bounded Nat.set_induction_bounded
 
 /-- A subset of `ℕ` containing zero and closed under `Nat.succ` contains all of `ℕ`. -/
 lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S → k + 1 ∈ S) (n : ℕ) :
     n ∈ S :=
   set_induction_bounded hb h_ind (zero_le n)
-#align nat.set_induction Nat.set_induction
 
 /-! ### `mod`, `dvd` -/
-
-#align nat.pow_dvd_of_le_of_pow_dvd Nat.pow_dvd_of_le_of_pow_dvd
-#align nat.dvd_of_pow_dvd Nat.dvd_of_pow_dvd
-#align nat.mod_pow_succ Nat.mod_pow_succ
-#align nat.pow_dvd_pow_iff_pow_le_pow Nat.pow_dvd_pow_iff_pow_le_pow
-#align nat.pow_dvd_pow_iff_le_right Nat.pow_dvd_pow_iff_le_right
-#align nat.pow_dvd_pow_iff_le_right' Nat.pow_dvd_pow_iff_le_right'
-#align nat.mod_mul_right_div_self Nat.mod_mul_right_div_self
-#align nat.mod_mul_left_div_self Nat.mod_mul_left_div_self
-#align nat.mod_div_self Nat.mod_div_self
 
 attribute [simp] Nat.dvd_zero
 
 @[simp] lemma mod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
   cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
-#align nat.mod_two_ne_one Nat.mod_two_ne_one
 
 @[simp] lemma mod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
   cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
-#align nat.mod_two_ne_zero Nat.mod_two_ne_zero
 
 @[deprecated mod_mul_right_div_self (since := "2024-05-29")]
 lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
   (mod_mul_right_div_self a b c).symm
-#align nat.div_mod_eq_mod_mul_div Nat.div_mod_eq_mod_mul_div
 
 protected lemma lt_div_iff_mul_lt (hdn : d ∣ n) (a : ℕ) : a < n / d ↔ d * a < n := by
   obtain rfl | hd := d.eq_zero_or_pos
   · simp [Nat.zero_dvd.1 hdn]
   · rw [← Nat.mul_lt_mul_left hd, ← Nat.eq_mul_of_div_eq_right hdn rfl]
-#align nat.lt_div_iff_mul_lt Nat.lt_div_iff_mul_lt
 
 lemma mul_div_eq_iff_dvd {n d : ℕ} : d * (n / d) = n ↔ d ∣ n :=
   calc
@@ -1188,13 +976,11 @@ lemma div_eq_iff_eq_of_dvd_dvd (hn : n ≠ 0) (ha : a ∣ n) (hb : b ∣ n) : n 
     rw [eq_comm, Nat.mul_comm, Nat.mul_div_assoc _ hb]
     exact Nat.eq_mul_of_div_eq_right ha h
   · rw [h]
-#align nat.div_eq_iff_eq_of_dvd_dvd Nat.div_eq_iff_eq_of_dvd_dvd
 
 protected lemma div_eq_zero_iff (hb : 0 < b) : a / b = 0 ↔ a < b where
   mp h := by rw [← mod_add_div a b, h, Nat.mul_zero, Nat.add_zero]; exact mod_lt _ hb
   mpr h := by rw [← Nat.mul_right_inj (Nat.ne_of_gt hb), ← Nat.add_left_cancel_iff, mod_add_div,
       mod_eq_of_lt h, Nat.mul_zero, Nat.add_zero]
-#align nat.div_eq_zero_iff Nat.div_eq_zero_iff
 
 protected lemma div_ne_zero_iff (hb : b ≠ 0) : a / b ≠ 0 ↔ b ≤ a := by
   rw [ne_eq, Nat.div_eq_zero_iff (Nat.pos_of_ne_zero hb), not_lt]
@@ -1219,7 +1005,6 @@ lemma pow_mod (a b n : ℕ) : a ^ b % n = (a % n) ^ b % n := by
   induction b with
   | zero => rfl
   | succ b ih => simp [Nat.pow_succ, Nat.mul_mod, ih]
-#align nat.pow_mod Nat.pow_mod
 
 lemma not_pos_pow_dvd : ∀ {a n : ℕ} (_ : 1 < a) (_ : 1 < n), ¬ a ^ n ∣ a
   | succ a, succ n, hp, hk, h =>
@@ -1231,28 +1016,23 @@ lemma not_pos_pow_dvd : ∀ {a n : ℕ} (_ : 1 < a) (_ : 1 < n), ¬ a ^ n ∣ a
     have : n = 0 := Nat.eq_zero_of_le_zero <| le_of_lt_succ this
     have : 1 < 1 := by rwa [this] at hk
     absurd this (by decide)
-#align nat.not_pos_pow_dvd Nat.not_pos_pow_dvd
 
 lemma lt_of_pow_dvd_right (hb : b ≠ 0) (ha : 2 ≤ a) (h : a ^ n ∣ b) : n < b := by
   rw [← Nat.pow_lt_pow_iff_right (succ_le_iff.1 ha)]
   exact Nat.lt_of_le_of_lt (le_of_dvd (Nat.pos_iff_ne_zero.2 hb) h) (lt_pow_self ha _)
-#align nat.lt_of_pow_dvd_right Nat.lt_of_pow_dvd_right
 
 lemma div_dvd_of_dvd (h : n ∣ m) : m / n ∣ m := ⟨n, (Nat.div_mul_cancel h).symm⟩
-#align nat.div_dvd_of_dvd Nat.div_dvd_of_dvd
 
 protected lemma div_div_self (h : n ∣ m) (hm : m ≠ 0) : m / (m / n) = n := by
   rcases h with ⟨_, rfl⟩
   rw [Nat.mul_ne_zero_iff] at hm
   rw [mul_div_right _ (Nat.pos_of_ne_zero hm.1), mul_div_left _ (Nat.pos_of_ne_zero hm.2)]
-#align nat.div_div_self Nat.div_div_self
 
 lemma not_dvd_of_pos_of_lt (h1 : 0 < n) (h2 : n < m) : ¬m ∣ n := by
   rintro ⟨k, rfl⟩
   rcases Nat.eq_zero_or_pos k with (rfl | hk)
   · exact Nat.lt_irrefl 0 h1
   · exact Nat.not_lt.2 (Nat.le_mul_of_pos_right _ hk) h2
-#align nat.not_dvd_of_pos_of_lt Nat.not_dvd_of_pos_of_lt
 
 lemma eq_of_dvd_of_lt_two_mul (ha : a ≠ 0) (hdvd : b ∣ a) (hlt : a < 2 * b) : a = b := by
   obtain ⟨_ | _ | c, rfl⟩ := hdvd
@@ -1263,46 +1043,38 @@ lemma eq_of_dvd_of_lt_two_mul (ha : a ≠ 0) (hdvd : b ∣ a) (hlt : a < 2 * b) 
 
 lemma mod_eq_iff_lt (hn : n ≠ 0) : m % n = m ↔ m < n :=
   ⟨fun h ↦ by rw [← h]; exact mod_lt _ $ Nat.pos_iff_ne_zero.2 hn, mod_eq_of_lt⟩
-#align nat.mod_eq_iff_lt Nat.mod_eq_iff_lt
 
 @[simp]
 lemma mod_succ_eq_iff_lt : m % n.succ = m ↔ m < n.succ :=
   mod_eq_iff_lt (succ_ne_zero _)
-#align nat.mod_succ_eq_iff_lt Nat.mod_succ_eq_iff_lt
 
 @[simp] lemma mod_succ (n : ℕ) : n % n.succ = n := mod_eq_of_lt n.lt_succ_self
 
 -- Porting note `Nat.div_add_mod` is now in core.
 
 lemma mod_add_div' (a b : ℕ) : a % b + a / b * b = a := by rw [Nat.mul_comm]; exact mod_add_div _ _
-#align nat.mod_add_div' Nat.mod_add_div'
 
 lemma div_add_mod' (a b : ℕ) : a / b * b + a % b = a := by rw [Nat.mul_comm]; exact div_add_mod _ _
-#align nat.div_add_mod' Nat.div_add_mod'
 
 /-- See also `Nat.divModEquiv` for a similar statement as an `Equiv`. -/
 protected lemma div_mod_unique (h : 0 < b) :
     a / b = d ∧ a % b = c ↔ c + b * d = a ∧ c < b :=
   ⟨fun ⟨e₁, e₂⟩ ↦ e₁ ▸ e₂ ▸ ⟨mod_add_div _ _, mod_lt _ h⟩, fun ⟨h₁, h₂⟩ ↦ h₁ ▸ by
     rw [add_mul_div_left _ _ h, add_mul_mod_self_left]; simp [div_eq_of_lt, mod_eq_of_lt, h₂]⟩
-#align nat.div_mod_unique Nat.div_mod_unique
 
 /-- If `m` and `n` are equal mod `k`, `m - n` is zero mod `k`. -/
 lemma sub_mod_eq_zero_of_mod_eq (h : m % k = n % k) : (m - n) % k = 0 := by
   rw [← Nat.mod_add_div m k, ← Nat.mod_add_div n k, ← h, ← Nat.sub_sub,
     Nat.add_sub_cancel_left, ← k.mul_sub, Nat.mul_mod_right]
-#align nat.sub_mod_eq_zero_of_mod_eq Nat.sub_mod_eq_zero_of_mod_eq
 
 @[simp] lemma one_mod (n : ℕ) : 1 % (n + 2) = 1 :=
   Nat.mod_eq_of_lt (Nat.add_lt_add_right n.succ_pos 1)
-#align nat.one_mod Nat.one_mod
 
 lemma one_mod_of_ne_one : ∀ {n : ℕ}, n ≠ 1 → 1 % n = 1
   | 0, _ | (n + 2), _ => by simp
 
 lemma dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
   ⟨k / n, Nat.sub_eq_of_eq_add (Nat.div_add_mod k n).symm⟩
-#align nat.dvd_sub_mod Nat.dvd_sub_mod
 
 lemma add_mod_eq_ite :
     (m + n) % k = if k ≤ m % k + n % k then m % k + n % k - k else m % k + n % k := by
@@ -1314,7 +1086,6 @@ lemma add_mod_eq_ite :
     exact (Nat.sub_lt_iff_lt_add h).mpr (Nat.add_lt_add (m.mod_lt (zero_lt_succ _))
       (n.mod_lt (zero_lt_succ _)))
   · exact Nat.mod_eq_of_lt (Nat.lt_of_not_ge h)
-#align nat.add_mod_eq_ite Nat.add_mod_eq_ite
 
 /-- `m` is not divisible by `n` if it is between `n * k` and `n * (k + 1)` for some `k`. -/
 theorem not_dvd_of_between_consec_multiples (h1 : n * k < m) (h2 : m < n * (k + 1)) : ¬n ∣ m := by
@@ -1322,59 +1093,41 @@ theorem not_dvd_of_between_consec_multiples (h1 : n * k < m) (h2 : m < n * (k + 
   have := Nat.lt_of_mul_lt_mul_left h1
   have := Nat.lt_of_mul_lt_mul_left h2
   omega
-#align nat.not_dvd_of_between_consec_multiples Nat.not_dvd_of_between_consec_multiples
 
 -- TODO: Replace `Nat.dvd_add_iff_left`
 protected lemma dvd_add_left (h : a ∣ c) : a ∣ b + c ↔ a ∣ b := (Nat.dvd_add_iff_left h).symm
-#align nat.dvd_add_left Nat.dvd_add_left
 
 protected lemma dvd_add_right (h : a ∣ b) : a ∣ b + c ↔ a ∣ c := (Nat.dvd_add_iff_right h).symm
-#align nat.dvd_add_right Nat.dvd_add_right
 
 /-- special case of `mul_dvd_mul_iff_left` for `ℕ`.
 Duplicated here to keep simple imports for this file. -/
 protected lemma mul_dvd_mul_iff_left (ha : 0 < a) : a * b ∣ a * c ↔ b ∣ c :=
   exists_congr fun d ↦ by rw [Nat.mul_assoc, Nat.mul_right_inj $ ne_of_gt ha]
-#align nat.mul_dvd_mul_iff_left Nat.mul_dvd_mul_iff_left
 
 /-- special case of `mul_dvd_mul_iff_right` for `ℕ`.
 Duplicated here to keep simple imports for this file. -/
 protected lemma mul_dvd_mul_iff_right (hc : 0 < c) : a * c ∣ b * c ↔ a ∣ b :=
   exists_congr fun d ↦ by rw [Nat.mul_right_comm, Nat.mul_left_inj $ ne_of_gt hc]
-#align nat.mul_dvd_mul_iff_right Nat.mul_dvd_mul_iff_right
-
-#align nat.dvd_one Nat.dvd_one
-#align nat.mod_mod_of_dvd Nat.mod_mod_of_dvd
 
 -- Moved to Batteries
-#align nat.mod_mod Nat.mod_mod
-#align nat.mod_add_mod Nat.mod_add_mod
-#align nat.add_mod_mod Nat.add_mod_mod
-#align nat.add_mod Nat.add_mod
 
 lemma add_mod_eq_add_mod_right (c : ℕ) (H : a % d = b % d) : (a + c) % d = (b + c) % d := by
   rw [← mod_add_mod, ← mod_add_mod b, H]
-#align nat.add_mod_eq_add_mod_right Nat.add_mod_eq_add_mod_right
 
 lemma add_mod_eq_add_mod_left (c : ℕ) (H : a % d = b % d) : (c + a) % d = (c + b) % d := by
   rw [Nat.add_comm, add_mod_eq_add_mod_right _ H, Nat.add_comm]
-#align nat.add_mod_eq_add_mod_left Nat.add_mod_eq_add_mod_left
 
 -- Moved to Batteries
-#align nat.mul_mod Nat.mul_mod
 
 lemma mul_dvd_of_dvd_div (hcb : c ∣ b) (h : a ∣ b / c) : c * a ∣ b :=
   have ⟨d, hd⟩ := h
   ⟨d, by simpa [Nat.mul_comm, Nat.mul_left_comm] using Nat.eq_mul_of_div_eq_left hcb hd⟩
-#align nat.mul_dvd_of_dvd_div Nat.mul_dvd_of_dvd_div
 
 lemma eq_of_dvd_of_div_eq_one (hab : a ∣ b) (h : b / a = 1) : a = b := by
   rw [← Nat.div_mul_cancel hab, h, Nat.one_mul]
-#align nat.eq_of_dvd_of_div_eq_one Nat.eq_of_dvd_of_div_eq_one
 
 lemma eq_zero_of_dvd_of_div_eq_zero (hab : a ∣ b) (h : b / a = 0) : b = 0 := by
   rw [← Nat.div_mul_cancel hab, h, Nat.zero_mul]
-#align nat.eq_zero_of_dvd_of_div_eq_zero Nat.eq_zero_of_dvd_of_div_eq_zero
 
 @[gcongr]
 protected theorem div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (h3 : d ≠ 0) : a / c ≤ b / d :=
@@ -1382,34 +1135,27 @@ protected theorem div_le_div {a b c d : ℕ} (h1 : a ≤ b) (h2 : d ≤ c) (h3 :
     _ ≤ b / d := Nat.div_le_div_left h2 (Nat.pos_of_ne_zero h3)
 
 -- Moved to Batteries
-#align nat.mul_div_le Nat.mul_div_le
 
 lemma lt_mul_div_succ (a : ℕ) (hb : 0 < b) : a < b * (a / b + 1) := by
   rw [Nat.mul_comm, ← Nat.div_lt_iff_lt_mul' hb]
   exact lt_succ_self _
-#align nat.lt_mul_div_succ Nat.lt_mul_div_succ
 
 -- TODO: Batteries claimed this name but flipped the order of multiplication
 lemma mul_add_mod' (a b c : ℕ) : (a * b + c) % b = c % b := by rw [Nat.mul_comm, Nat.mul_add_mod]
-#align nat.mul_add_mod Nat.mul_add_mod'
 
 lemma mul_add_mod_of_lt (h : c < b) : (a * b + c) % b = c := by
   rw [Nat.mul_add_mod', Nat.mod_eq_of_lt h]
-#align nat.mul_add_mod_of_lt Nat.mul_add_mod_of_lt
 
 set_option linter.deprecated false in
 @[simp]
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ 2 * n + 1 := by
   omega
-#align nat.not_two_dvd_bit1 Nat.not_two_dvd_bit1
 
 /-- A natural number `m` divides the sum `m + n` if and only if `m` divides `n`.-/
 @[simp] protected lemma dvd_add_self_left : m ∣ m + n ↔ m ∣ n := Nat.dvd_add_right (Nat.dvd_refl m)
-#align nat.dvd_add_self_left Nat.dvd_add_self_left
 
 /-- A natural number `m` divides the sum `n + m` if and only if `m` divides `n`.-/
 @[simp] protected lemma dvd_add_self_right : m ∣ n + m ↔ m ∣ n := Nat.dvd_add_left (Nat.dvd_refl m)
-#align nat.dvd_add_self_right Nat.dvd_add_self_right
 
 -- TODO: update `Nat.dvd_sub` in core
 lemma dvd_sub' (h₁ : k ∣ m) (h₂ : k ∣ n) : k ∣ m - n := by
@@ -1417,7 +1163,6 @@ lemma dvd_sub' (h₁ : k ∣ m) (h₂ : k ∣ n) : k ∣ m - n := by
   · exact dvd_sub H h₁ h₂
   · rw [Nat.sub_eq_zero_iff_le.mpr H]
     exact Nat.dvd_zero k
-#align nat.dvd_sub' Nat.dvd_sub'
 
 lemma succ_div : ∀ a b : ℕ, (a + 1) / b = a / b + if b ∣ a + 1 then 1 else 0
   | a, 0 => by simp
@@ -1448,26 +1193,20 @@ lemma succ_div : ∀ a b : ℕ, (a + 1) / b = a / b + if b ∣ a + 1 then 1 else
       have hb_dvd_a : ¬b + 1 ∣ a + 2 := fun h =>
         hb_le_a1 (le_of_succ_le_succ (le_of_dvd (succ_pos _) h))
       simp [hba, hb_le_a1, hb_dvd_a]
-#align nat.succ_div Nat.succ_div
 
 lemma succ_div_of_dvd (hba : b ∣ a + 1) : (a + 1) / b = a / b + 1 := by rw [succ_div, if_pos hba]
-#align nat.succ_div_of_dvd Nat.succ_div_of_dvd
 
 lemma succ_div_of_not_dvd (hba : ¬b ∣ a + 1) : (a + 1) / b = a / b := by
   rw [succ_div, if_neg hba, Nat.add_zero]
-#align nat.succ_div_of_not_dvd Nat.succ_div_of_not_dvd
 
 lemma dvd_iff_div_mul_eq (n d : ℕ) : d ∣ n ↔ n / d * d = n :=
   ⟨fun h => Nat.div_mul_cancel h, fun h => by rw [← h]; exact Nat.dvd_mul_left _ _⟩
-#align nat.dvd_iff_div_mul_eq Nat.dvd_iff_div_mul_eq
 
 lemma dvd_iff_le_div_mul (n d : ℕ) : d ∣ n ↔ n ≤ n / d * d :=
   ((dvd_iff_div_mul_eq _ _).trans le_antisymm_iff).trans (and_iff_right (div_mul_le_self n d))
-#align nat.dvd_iff_le_div_mul Nat.dvd_iff_le_div_mul
 
 lemma dvd_iff_dvd_dvd (n d : ℕ) : d ∣ n ↔ ∀ k : ℕ, k ∣ d → k ∣ n :=
   ⟨fun h _ hkd => Nat.dvd_trans hkd h, fun h => h _ (Nat.dvd_refl _)⟩
-#align nat.dvd_iff_dvd_dvd Nat.dvd_iff_dvd_dvd
 
 lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a :=
   if ha : a = 0 then by simp [ha]
@@ -1477,11 +1216,9 @@ lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a :=
     let ⟨d, hd⟩ := h1
     have h2 : c / a = b * d := Nat.div_eq_of_eq_mul_right ha (by simpa [Nat.mul_assoc] using hd)
     show ∃ d, c / a = b * d from ⟨d, h2⟩
-#align nat.dvd_div_of_mul_dvd Nat.dvd_div_of_mul_dvd
 
 @[simp] lemma dvd_div_iff_mul_dvd (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b :=
   ⟨fun h => mul_dvd_of_dvd_div hbc h, fun h => dvd_div_of_mul_dvd h⟩
-#align nat.dvd_div_iff Nat.dvd_div_iff_mul_dvd
 
 @[deprecated (since := "2024-06-18")] alias dvd_div_iff := dvd_div_iff_mul_dvd
 
@@ -1510,19 +1247,16 @@ lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c := by
       Nat.mul_div_cancel_left k2 (Nat.pos_of_ne_zero c_split), Nat.mul_comm ((c + 1) * k2) k, ←
       Nat.mul_assoc k (c + 1) k2, Nat.mul_div_cancel _ (Nat.pos_of_ne_zero k2_nonzero),
       Nat.mul_div_cancel _ (Nat.pos_of_ne_zero c_split)]
-#align nat.div_div_div_eq_div Nat.div_div_div_eq_div
 
 /-- If a small natural number is divisible by a larger natural number,
 the small number is zero. -/
 lemma eq_zero_of_dvd_of_lt (w : a ∣ b) (h : b < a) : b = 0 :=
   Nat.eq_zero_of_dvd_of_div_eq_zero w ((Nat.div_eq_zero_iff (lt_of_le_of_lt (zero_le b) h)).mpr h)
-#align nat.eq_zero_of_dvd_of_lt Nat.eq_zero_of_dvd_of_lt
 
 lemma le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
   rw [← mul_succ] at h
   exact Nat.mul_le_mul_left _ (Nat.lt_succ_iff.1 <| Nat.lt_of_mul_lt_mul_left h)
-#align nat.le_of_lt_add_of_dvd Nat.le_of_lt_add_of_dvd
 
 /-- `n` is not divisible by `a` iff it is between `a * k` and `a * (k + 1)` for some `k`. -/
 lemma not_dvd_iff_between_consec_multiples (n : ℕ) {a : ℕ} (ha : 0 < a) :
@@ -1531,29 +1265,24 @@ lemma not_dvd_iff_between_consec_multiples (n : ℕ) {a : ℕ} (ha : 0 < a) :
     ⟨fun ⟨k, hk1, hk2⟩ => not_dvd_of_between_consec_multiples hk1 hk2, fun han =>
       ⟨n / a, ⟨lt_of_le_of_ne (mul_div_le n a) ?_, lt_mul_div_succ _ ha⟩⟩⟩
   exact mt (⟨n / a, Eq.symm ·⟩) han
-#align nat.not_dvd_iff_between_consec_multiples Nat.not_dvd_iff_between_consec_multiples
 
 /-- Two natural numbers are equal if and only if they have the same multiples. -/
 lemma dvd_right_iff_eq : (∀ a : ℕ, m ∣ a ↔ n ∣ a) ↔ m = n :=
   ⟨fun h => Nat.dvd_antisymm ((h _).mpr (Nat.dvd_refl _)) ((h _).mp (Nat.dvd_refl _)),
     fun h n => by rw [h]⟩
-#align nat.dvd_right_iff_eq Nat.dvd_right_iff_eq
 
 /-- Two natural numbers are equal if and only if they have the same divisors. -/
 lemma dvd_left_iff_eq : (∀ a : ℕ, a ∣ m ↔ a ∣ n) ↔ m = n :=
   ⟨fun h => Nat.dvd_antisymm ((h _).mp (Nat.dvd_refl _)) ((h _).mpr (Nat.dvd_refl _)),
     fun h n => by rw [h]⟩
-#align nat.dvd_left_iff_eq Nat.dvd_left_iff_eq
 
 /-- `dvd` is injective in the left argument -/
 lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun _ _ h =>
   dvd_right_iff_eq.mp fun a => iff_of_eq (congr_fun h a)
-#align nat.dvd_left_injective Nat.dvd_left_injective
 
 lemma div_lt_div_of_lt_of_dvd {a b d : ℕ} (hdb : d ∣ b) (h : a < b) : a / d < b / d := by
   rw [Nat.lt_div_iff_mul_lt hdb]
   exact lt_of_le_of_lt (mul_div_le a d) h
-#align nat.div_lt_div_of_lt_of_dvd Nat.div_lt_div_of_lt_of_dvd
 
 /-!
 ### `sqrt`
@@ -1616,14 +1345,7 @@ lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) 
     rw [Nat.add_assoc, Nat.mul_add]
     exact Nat.add_lt_add_left (lt_mul_div_succ _ (lt_of_le_of_lt (Nat.zero_le m) h)) _
   · simpa only [dif_neg h] using hn
-
-#align nat.sqrt Nat.sqrt
 -- Porting note: the implementation of `Nat.sqrt` in `Batteries` no longer needs `sqrt_aux`.
-#noalign nat.sqrt_aux_dec
-#noalign nat.sqrt_aux
-#noalign nat.sqrt_aux_0
-#noalign nat.sqrt_aux_1
-#noalign nat.sqrt_aux_2
 private def IsSqrt (n q : ℕ) : Prop :=
   q * q ≤ n ∧ n < (q + 1) * (q + 1)
 -- Porting note: as the definition of square root has changed,
@@ -1655,73 +1377,54 @@ private lemma sqrt_isSqrt (n : ℕ) : IsSqrt n (sqrt n) := by
     · exact Nat.le_add_left _ _
 
 lemma sqrt_le (n : ℕ) : sqrt n * sqrt n ≤ n := (sqrt_isSqrt n).left
-#align nat.sqrt_le Nat.sqrt_le
 
 lemma sqrt_le' (n : ℕ) : sqrt n ^ 2 ≤ n := by simpa [Nat.pow_two] using sqrt_le n
-#align nat.sqrt_le' Nat.sqrt_le'
 
 lemma lt_succ_sqrt (n : ℕ) : n < succ (sqrt n) * succ (sqrt n) := (sqrt_isSqrt n).right
-#align nat.lt_succ_sqrt Nat.lt_succ_sqrt
 
 lemma lt_succ_sqrt' (n : ℕ) : n < succ (sqrt n) ^ 2 := by simpa [Nat.pow_two] using lt_succ_sqrt n
-#align nat.lt_succ_sqrt' Nat.lt_succ_sqrt'
 
 lemma sqrt_le_add (n : ℕ) : n ≤ sqrt n * sqrt n + sqrt n + sqrt n := by
   rw [← succ_mul]; exact le_of_lt_succ (lt_succ_sqrt n)
-#align nat.sqrt_le_add Nat.sqrt_le_add
 
 lemma le_sqrt : m ≤ sqrt n ↔ m * m ≤ n :=
   ⟨fun h ↦ le_trans (mul_self_le_mul_self h) (sqrt_le n),
     fun h ↦ le_of_lt_succ <| Nat.mul_self_lt_mul_self_iff.1 <| lt_of_le_of_lt h (lt_succ_sqrt n)⟩
-#align nat.le_sqrt Nat.le_sqrt
 
 lemma le_sqrt' : m ≤ sqrt n ↔ m ^ 2 ≤ n := by simpa only [Nat.pow_two] using le_sqrt
-#align nat.le_sqrt' Nat.le_sqrt'
 
 lemma sqrt_lt : sqrt m < n ↔ m < n * n := by simp only [← not_le, le_sqrt]
-#align nat.sqrt_lt Nat.sqrt_lt
 
 lemma sqrt_lt' : sqrt m < n ↔ m < n ^ 2 := by simp only [← not_le, le_sqrt']
-#align nat.sqrt_lt' Nat.sqrt_lt'
 
 lemma sqrt_le_self (n : ℕ) : sqrt n ≤ n := le_trans (le_mul_self _) (sqrt_le n)
-#align nat.sqrt_le_self Nat.sqrt_le_self
 
 lemma sqrt_le_sqrt (h : m ≤ n) : sqrt m ≤ sqrt n := le_sqrt.2 (le_trans (sqrt_le _) h)
-#align nat.sqrt_le_sqrt Nat.sqrt_le_sqrt
 
 @[simp] lemma sqrt_zero : sqrt 0 = 0 := rfl
-#align nat.sqrt_zero Nat.sqrt_zero
 
 @[simp] lemma sqrt_one : sqrt 1 = 1 := rfl
-#align nat.sqrt_one Nat.sqrt_one
 
 lemma sqrt_eq_zero : sqrt n = 0 ↔ n = 0 :=
   ⟨fun h ↦
       Nat.eq_zero_of_le_zero <| le_of_lt_succ <| (@sqrt_lt n 1).1 <| by rw [h]; decide,
     by rintro rfl; simp⟩
-#align nat.sqrt_eq_zero Nat.sqrt_eq_zero
 
 lemma eq_sqrt : a = sqrt n ↔ a * a ≤ n ∧ n < (a + 1) * (a + 1) :=
   ⟨fun e ↦ e.symm ▸ sqrt_isSqrt n,
    fun ⟨h₁, h₂⟩ ↦ le_antisymm (le_sqrt.2 h₁) (le_of_lt_succ <| sqrt_lt.2 h₂)⟩
-#align nat.eq_sqrt Nat.eq_sqrt
 
 lemma eq_sqrt' : a = sqrt n ↔ a ^ 2 ≤ n ∧ n < (a + 1) ^ 2 := by
   simpa only [Nat.pow_two] using eq_sqrt
-#align nat.eq_sqrt' Nat.eq_sqrt'
 
 lemma le_three_of_sqrt_eq_one (h : sqrt n = 1) : n ≤ 3 :=
   le_of_lt_succ <| (@sqrt_lt n 2).1 <| by rw [h]; decide
-#align nat.le_three_of_sqrt_eq_one Nat.le_three_of_sqrt_eq_one
 
 lemma sqrt_lt_self (h : 1 < n) : sqrt n < n :=
   sqrt_lt.2 <| by have := Nat.mul_lt_mul_of_pos_left h (lt_of_succ_lt h); rwa [Nat.mul_one] at this
-#align nat.sqrt_lt_self Nat.sqrt_lt_self
 
 lemma sqrt_pos : 0 < sqrt n ↔ 0 < n :=
   le_sqrt
-#align nat.sqrt_pos Nat.sqrt_pos
 
 lemma sqrt_add_eq (n : ℕ) (h : a ≤ n + n) : sqrt (n * n + a) = n :=
   le_antisymm
@@ -1730,47 +1433,36 @@ lemma sqrt_add_eq (n : ℕ) (h : a ≤ n + n) : sqrt (n * n + a) = n :=
         rw [succ_mul, mul_succ, add_succ, Nat.add_assoc]
         exact lt_succ_of_le (Nat.add_le_add_left h _))
     (le_sqrt.2 <| Nat.le_add_right _ _)
-#align nat.sqrt_add_eq Nat.sqrt_add_eq
 
 lemma sqrt_add_eq' (n : ℕ) (h : a ≤ n + n) : sqrt (n ^ 2 + a) = n := by
   simpa [Nat.pow_two] using sqrt_add_eq n h
-#align nat.sqrt_add_eq' Nat.sqrt_add_eq'
 
 lemma sqrt_eq (n : ℕ) : sqrt (n * n) = n := sqrt_add_eq n (zero_le _)
-#align nat.sqrt_eq Nat.sqrt_eq
 
 lemma sqrt_eq' (n : ℕ) : sqrt (n ^ 2) = n := sqrt_add_eq' n (zero_le _)
-#align nat.sqrt_eq' Nat.sqrt_eq'
 
 lemma sqrt_succ_le_succ_sqrt (n : ℕ) : sqrt n.succ ≤ n.sqrt.succ :=
   le_of_lt_succ <| sqrt_lt.2 <| lt_succ_of_le <|
   succ_le_succ <| le_trans (sqrt_le_add n) <| Nat.add_le_add_right
     (by refine add_le_add (Nat.mul_le_mul_right _ ?_) ?_ <;> exact Nat.le_add_right _ 2) _
-#align nat.sqrt_succ_le_succ_sqrt Nat.sqrt_succ_le_succ_sqrt
 
 lemma exists_mul_self (x : ℕ) : (∃ n, n * n = x) ↔ sqrt x * sqrt x = x :=
   ⟨fun ⟨n, hn⟩ ↦ by rw [← hn, sqrt_eq], fun h ↦ ⟨sqrt x, h⟩⟩
-#align nat.exists_mul_self Nat.exists_mul_self
 
 lemma exists_mul_self' (x : ℕ) : (∃ n, n ^ 2 = x) ↔ sqrt x ^ 2 = x := by
   simpa only [Nat.pow_two] using exists_mul_self x
-#align nat.exists_mul_self' Nat.exists_mul_self'
 
 lemma sqrt_mul_sqrt_lt_succ (n : ℕ) : sqrt n * sqrt n < n + 1 :=
   Nat.lt_succ_iff.mpr (sqrt_le _)
-#align nat.sqrt_mul_sqrt_lt_succ Nat.sqrt_mul_sqrt_lt_succ
 
 lemma sqrt_mul_sqrt_lt_succ' (n : ℕ) : sqrt n ^ 2 < n + 1 :=
   Nat.lt_succ_iff.mpr (sqrt_le' _)
-#align nat.sqrt_mul_sqrt_lt_succ' Nat.sqrt_mul_sqrt_lt_succ'
 
 lemma succ_le_succ_sqrt (n : ℕ) : n + 1 ≤ (sqrt n + 1) * (sqrt n + 1) :=
   le_of_pred_lt (lt_succ_sqrt _)
-#align nat.succ_le_succ_sqrt Nat.succ_le_succ_sqrt
 
 lemma succ_le_succ_sqrt' (n : ℕ) : n + 1 ≤ (sqrt n + 1) ^ 2 :=
   le_of_pred_lt (lt_succ_sqrt' _)
-#align nat.succ_le_succ_sqrt' Nat.succ_le_succ_sqrt'
 
 /-- There are no perfect squares strictly between m² and (m+1)² -/
 lemma not_exists_sq (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) : ¬∃ t, t * t = n := by
@@ -1778,19 +1470,11 @@ lemma not_exists_sq (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) : ¬∃ t, t *
   have h1 : m < t := Nat.mul_self_lt_mul_self_iff.1 hl
   have h2 : t < m + 1 := Nat.mul_self_lt_mul_self_iff.1 hr
   exact (not_lt_of_ge <| le_of_lt_succ h2) h1
-#align nat.not_exists_sq Nat.not_exists_sq
 
 lemma not_exists_sq' : m ^ 2 < n → n < (m + 1) ^ 2 → ¬∃ t, t ^ 2 = n := by
   simpa only [Nat.pow_two] using not_exists_sq
-#align nat.not_exists_sq' Nat.not_exists_sq'
 
 /-! ### Decidability of predicates -/
-
-#align nat.decidable_ball_lt Nat.decidableBallLT
-#align nat.decidable_forall_fin Nat.decidableForallFin
-#align nat.decidable_ball_le Nat.decidableBallLE
-#align nat.decidable_exists_lt Nat.decidableExistsLT
-#align nat.decidable_exists_le Nat.decidableExistsLE
 
 instance decidableLoHi (lo hi : ℕ) (P : ℕ → Prop) [H : DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x < hi → P x) :=
@@ -1799,12 +1483,10 @@ instance decidableLoHi (lo hi : ℕ) (P : ℕ → Prop) [H : DecidablePred P] :
       fun al x h ↦ al _ (Nat.le_add_right _ _) (Nat.lt_sub_iff_add_lt'.1 h)⟩
     have := al (x - lo) ((Nat.sub_lt_sub_iff_right hl).2 hh)
     rwa [Nat.add_sub_cancel' hl] at this
-#align nat.decidable_lo_hi Nat.decidableLoHi
 
 instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     Decidable (∀ x, lo ≤ x → x ≤ hi → P x) :=
   decidable_of_iff (∀ x, lo ≤ x → x < hi + 1 → P x) <|
     forall₂_congr fun _ _ ↦ imp_congr Nat.lt_succ_iff Iff.rfl
-#align nat.decidable_lo_hi_le Nat.decidableLoHiLe
 
 end Nat

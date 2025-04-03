@@ -7,8 +7,6 @@ import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Types
 
-#align_import category_theory.isomorphism_classes from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
-
 /-!
 # Objects of a category up to an isomorphism
 
@@ -27,7 +25,6 @@ variable {C : Type u} [Category.{v} C]
 
 /-- An object `X` is isomorphic to an object `Y`, if `X ≅ Y` is not empty. -/
 def IsIsomorphic : C → C → Prop := fun X Y => Nonempty (X ≅ Y)
-#align category_theory.is_isomorphic CategoryTheory.IsIsomorphic
 
 variable (C)
 
@@ -35,7 +32,6 @@ variable (C)
 def isIsomorphicSetoid : Setoid C where
   r := IsIsomorphic
   iseqv := ⟨fun X => ⟨Iso.refl X⟩, fun ⟨α⟩ => ⟨α.symm⟩, fun ⟨α⟩ ⟨β⟩ => ⟨α.trans β⟩⟩
-#align category_theory.is_isomorphic_setoid CategoryTheory.isIsomorphicSetoid
 
 end Category
 
@@ -58,11 +54,9 @@ def isomorphismClasses : Cat.{v, u} ⥤ Type u where
       simp only [types_id_apply]
     · intro _
       rfl
-#align category_theory.isomorphism_classes CategoryTheory.isomorphismClasses
 
 theorem Groupoid.isIsomorphic_iff_nonempty_hom {C : Type u} [Groupoid.{v} C] {X Y : C} :
     IsIsomorphic X Y ↔ Nonempty (X ⟶ Y) :=
   (Groupoid.isoEquivHom X Y).nonempty_congr
-#align category_theory.groupoid.is_isomorphic_iff_nonempty_hom CategoryTheory.Groupoid.isIsomorphic_iff_nonempty_hom
 
 end CategoryTheory

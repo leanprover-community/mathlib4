@@ -7,8 +7,6 @@ import Mathlib.Topology.Order
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.ContinuousFunction.Basic
 
-#align_import topology.continuous_function.t0_sierpinski from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
-
 /-!
 # Any T0 space embeds in a product of copies of the Sierpinski space.
 
@@ -35,7 +33,6 @@ theorem eq_induced_by_maps_to_sierpinski (X : Type*) [t : TopologicalSpace X] :
     apply isOpen_generateFrom_of_mem
     simp only [Set.mem_iUnion, Set.mem_setOf_eq, isOpen_induced_iff]
     exact ⟨⟨u, h⟩, {True}, isOpen_singleton_true, by simp [Set.preimage]⟩
-#align topological_space.eq_induced_by_maps_to_sierpinski TopologicalSpace.eq_induced_by_maps_to_sierpinski
 
 variable (X : Type*) [TopologicalSpace X]
 
@@ -45,21 +42,17 @@ open subset `u` of `X`). The `u` coordinate of `productOfMemOpens x` is given by
 def productOfMemOpens : C(X, Opens X → Prop) where
   toFun x u := x ∈ u
   continuous_toFun := continuous_pi_iff.2 fun u => continuous_Prop.2 u.isOpen
-#align topological_space.product_of_mem_opens TopologicalSpace.productOfMemOpens
 
 theorem productOfMemOpens_inducing : Inducing (productOfMemOpens X) := by
   convert inducing_iInf_to_pi fun (u : Opens X) (x : X) => x ∈ u
   apply eq_induced_by_maps_to_sierpinski
-#align topological_space.product_of_mem_opens_inducing TopologicalSpace.productOfMemOpens_inducing
 
 theorem productOfMemOpens_injective [T0Space X] : Function.Injective (productOfMemOpens X) := by
   intro x1 x2 h
   apply Inseparable.eq
   rw [← Inducing.inseparable_iff (productOfMemOpens_inducing X), h]
-#align topological_space.product_of_mem_opens_injective TopologicalSpace.productOfMemOpens_injective
 
 theorem productOfMemOpens_embedding [T0Space X] : Embedding (productOfMemOpens X) :=
   Embedding.mk (productOfMemOpens_inducing X) (productOfMemOpens_injective X)
-#align topological_space.product_of_mem_opens_embedding TopologicalSpace.productOfMemOpens_embedding
 
 end TopologicalSpace

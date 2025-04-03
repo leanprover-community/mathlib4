@@ -6,8 +6,6 @@ Authors: Kenny Lau, Yury Kudryashov
 import Mathlib.Algebra.Algebra.Hom
 import Mathlib.Algebra.Module.Prod
 
-#align_import algebra.algebra.prod from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
-
 /-!
 # The R-algebra structure on products of R-algebras
 
@@ -43,14 +41,12 @@ instance algebra : Algebra R (A × B) :=
       rintro r ⟨a, b⟩
       dsimp
       rw [Algebra.smul_def r a, Algebra.smul_def r b] }
-#align prod.algebra Prod.algebra
 
 variable {R A B}
 
 @[simp]
 theorem algebraMap_apply (r : R) : algebraMap R (A × B) r = (algebraMap R A r, algebraMap R B r) :=
   rfl
-#align prod.algebra_map_apply Prod.algebraMap_apply
 
 end Prod
 
@@ -61,12 +57,10 @@ variable (R A B)
 /-- First projection as `AlgHom`. -/
 def fst : A × B →ₐ[R] A :=
   { RingHom.fst A B with commutes' := fun _r => rfl }
-#align alg_hom.fst AlgHom.fst
 
 /-- Second projection as `AlgHom`. -/
 def snd : A × B →ₐ[R] B :=
   { RingHom.snd A B with commutes' := fun _r => rfl }
-#align alg_hom.snd AlgHom.snd
 
 variable {R A B}
 
@@ -77,24 +71,19 @@ def prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : A →ₐ[R] B × C :=
     commutes' := fun r => by
       simp only [toRingHom_eq_coe, RingHom.toFun_eq_coe, RingHom.prod_apply, coe_toRingHom,
         commutes, Prod.algebraMap_apply] }
-#align alg_hom.prod AlgHom.prod
 
 theorem coe_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : ⇑(f.prod g) = Pi.prod f g :=
   rfl
-#align alg_hom.coe_prod AlgHom.coe_prod
 
 @[simp]
 theorem fst_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (fst R B C).comp (prod f g) = f := by ext; rfl
-#align alg_hom.fst_prod AlgHom.fst_prod
 
 @[simp]
 theorem snd_prod (f : A →ₐ[R] B) (g : A →ₐ[R] C) : (snd R B C).comp (prod f g) = g := by ext; rfl
-#align alg_hom.snd_prod AlgHom.snd_prod
 
 @[simp]
 theorem prod_fst_snd : prod (fst R A B) (snd R A B) = 1 :=
   DFunLike.coe_injective Pi.prod_fst_snd
-#align alg_hom.prod_fst_snd AlgHom.prod_fst_snd
 
 /-- Taking the product of two maps with the same domain is equivalent to taking the product of
 their codomains. -/
@@ -104,6 +93,5 @@ def prodEquiv : (A →ₐ[R] B) × (A →ₐ[R] C) ≃ (A →ₐ[R] B × C) wher
   invFun f := ((fst _ _ _).comp f, (snd _ _ _).comp f)
   left_inv f := by ext <;> rfl
   right_inv f := by ext <;> rfl
-#align alg_hom.prod_equiv AlgHom.prodEquiv
 
 end AlgHom

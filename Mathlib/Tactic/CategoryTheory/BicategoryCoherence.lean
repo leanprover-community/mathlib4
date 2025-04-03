@@ -6,8 +6,6 @@ Authors: Yuma Mizuno
 import Mathlib.CategoryTheory.Bicategory.Free
 import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 
-#align_import category_theory.bicategory.coherence_tactic from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
-
 /-!
 # A `coherence` tactic for bicategories
 
@@ -38,69 +36,54 @@ class LiftHom {a b : B} (f : a ⟶ b) where
   /-- A lift of a morphism to the free bicategory.
   This should only exist for "structural" morphisms. -/
   lift : of.obj a ⟶ of.obj b
-#align category_theory.bicategory.lift_hom Mathlib.Tactic.BicategoryCoherence.LiftHom
 
 instance liftHomId : LiftHom (𝟙 a) where lift := 𝟙 (of.obj a)
-#align category_theory.bicategory.lift_hom_id Mathlib.Tactic.BicategoryCoherence.liftHomId
 
 instance liftHomComp (f : a ⟶ b) (g : b ⟶ c) [LiftHom f] [LiftHom g] : LiftHom (f ≫ g) where
   lift := LiftHom.lift f ≫ LiftHom.lift g
-#align category_theory.bicategory.lift_hom_comp Mathlib.Tactic.BicategoryCoherence.liftHomComp
 
 instance (priority := 100) liftHomOf (f : a ⟶ b) : LiftHom f where lift := of.map f
-#align category_theory.bicategory.lift_hom_of Mathlib.Tactic.BicategoryCoherence.liftHomOf
 
 /-- A typeclass carrying a choice of lift of a 2-morphism from `B` to `FreeBicategory B`. -/
 class LiftHom₂ {f g : a ⟶ b} [LiftHom f] [LiftHom g] (η : f ⟶ g) where
   /-- A lift of a 2-morphism to the free bicategory.
   This should only exist for "structural" 2-morphisms. -/
   lift : LiftHom.lift f ⟶ LiftHom.lift g
-#align category_theory.bicategory.lift_hom₂ Mathlib.Tactic.BicategoryCoherence.LiftHom₂
 
 instance liftHom₂Id (f : a ⟶ b) [LiftHom f] : LiftHom₂ (𝟙 f) where
   lift := 𝟙 _
-#align category_theory.bicategory.lift_hom₂_id Mathlib.Tactic.BicategoryCoherence.liftHom₂Id
 
 instance liftHom₂LeftUnitorHom (f : a ⟶ b) [LiftHom f] : LiftHom₂ (λ_ f).hom where
   lift := (λ_ (LiftHom.lift f)).hom
-#align category_theory.bicategory.lift_hom₂_left_unitor_hom Mathlib.Tactic.BicategoryCoherence.liftHom₂LeftUnitorHom
 
 instance liftHom₂LeftUnitorInv (f : a ⟶ b) [LiftHom f] : LiftHom₂ (λ_ f).inv where
   lift := (λ_ (LiftHom.lift f)).inv
-#align category_theory.bicategory.lift_hom₂_left_unitor_inv Mathlib.Tactic.BicategoryCoherence.liftHom₂LeftUnitorInv
 
 instance liftHom₂RightUnitorHom (f : a ⟶ b) [LiftHom f] : LiftHom₂ (ρ_ f).hom where
   lift := (ρ_ (LiftHom.lift f)).hom
-#align category_theory.bicategory.lift_hom₂_right_unitor_hom Mathlib.Tactic.BicategoryCoherence.liftHom₂RightUnitorHom
 
 instance liftHom₂RightUnitorInv (f : a ⟶ b) [LiftHom f] : LiftHom₂ (ρ_ f).inv where
   lift := (ρ_ (LiftHom.lift f)).inv
-#align category_theory.bicategory.lift_hom₂_right_unitor_inv Mathlib.Tactic.BicategoryCoherence.liftHom₂RightUnitorInv
 
 instance liftHom₂AssociatorHom (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) [LiftHom f] [LiftHom g]
     [LiftHom h] : LiftHom₂ (α_ f g h).hom where
   lift := (α_ (LiftHom.lift f) (LiftHom.lift g) (LiftHom.lift h)).hom
-#align category_theory.bicategory.lift_hom₂_associator_hom Mathlib.Tactic.BicategoryCoherence.liftHom₂AssociatorHom
 
 instance liftHom₂AssociatorInv (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) [LiftHom f] [LiftHom g]
     [LiftHom h] : LiftHom₂ (α_ f g h).inv where
   lift := (α_ (LiftHom.lift f) (LiftHom.lift g) (LiftHom.lift h)).inv
-#align category_theory.bicategory.lift_hom₂_associator_inv Mathlib.Tactic.BicategoryCoherence.liftHom₂AssociatorInv
 
 instance liftHom₂Comp {f g h : a ⟶ b} [LiftHom f] [LiftHom g] [LiftHom h] (η : f ⟶ g) (θ : g ⟶ h)
     [LiftHom₂ η] [LiftHom₂ θ] : LiftHom₂ (η ≫ θ) where
   lift := LiftHom₂.lift η ≫ LiftHom₂.lift θ
-#align category_theory.bicategory.lift_hom₂_comp Mathlib.Tactic.BicategoryCoherence.liftHom₂Comp
 
 instance liftHom₂WhiskerLeft (f : a ⟶ b) [LiftHom f] {g h : b ⟶ c} (η : g ⟶ h) [LiftHom g]
     [LiftHom h] [LiftHom₂ η] : LiftHom₂ (f ◁ η) where
   lift := LiftHom.lift f ◁ LiftHom₂.lift η
-#align category_theory.bicategory.lift_hom₂_whisker_left Mathlib.Tactic.BicategoryCoherence.liftHom₂WhiskerLeft
 
 instance liftHom₂WhiskerRight {f g : a ⟶ b} (η : f ⟶ g) [LiftHom f] [LiftHom g] [LiftHom₂ η]
     {h : b ⟶ c} [LiftHom h] : LiftHom₂ (η ▷ h) where
   lift := LiftHom₂.lift η ▷ LiftHom.lift h
-#align category_theory.bicategory.lift_hom₂_whisker_right Mathlib.Tactic.BicategoryCoherence.liftHom₂WhiskerRight
 
 open Lean Elab Tactic Meta
 
@@ -175,7 +158,6 @@ built out of unitors and associators.
 theorem assoc_liftHom₂ {f g h i : a ⟶ b} [LiftHom f] [LiftHom g] [LiftHom h]
     (η : f ⟶ g) (θ : g ⟶ h) (ι : h ⟶ i) [LiftHom₂ η] [LiftHom₂ θ] : η ≫ θ ≫ ι = (η ≫ θ) ≫ ι :=
   (Category.assoc _ _ _).symm
-#align tactic.bicategory.coherence.assoc_lift_hom₂ Mathlib.Tactic.BicategoryCoherence.assoc_liftHom₂
 
 end BicategoryCoherence
 

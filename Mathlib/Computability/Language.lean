@@ -9,8 +9,6 @@ import Mathlib.Data.List.Join
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.DeriveFintype
 
-#align_import computability.language from "leanprover-community/mathlib"@"a239cd3e7ac2c7cde36c913808f9d40c411344f6"
-
 /-!
 # Languages
 
@@ -32,7 +30,6 @@ variable {α β γ : Type*}
 /-- A language is a set of strings over an alphabet. -/
 def Language (α) :=
   Set (List α)
-#align language Language
 
 instance : Membership (List α) (Language α) := ⟨Set.Mem⟩
 instance : Singleton (List α) (Language α) := ⟨Set.singleton⟩
@@ -67,19 +64,15 @@ instance : Mul (Language α) :=
 
 theorem zero_def : (0 : Language α) = (∅ : Set _) :=
   rfl
-#align language.zero_def Language.zero_def
 
 theorem one_def : (1 : Language α) = ({[]} : Set (List α)) :=
   rfl
-#align language.one_def Language.one_def
 
 theorem add_def (l m : Language α) : l + m = (l ∪ m : Set (List α)) :=
   rfl
-#align language.add_def Language.add_def
 
 theorem mul_def (l m : Language α) : l * m = image2 (· ++ ·) l m :=
   rfl
-#align language.mul_def Language.mul_def
 
 /-- The Kleene star of a language `L` is the set of all strings which can be written by
 concatenating strings from `L`. -/
@@ -87,7 +80,6 @@ instance : KStar (Language α) := ⟨fun l ↦ {x | ∃ L : List (List α), x = 
 
 lemma kstar_def (l : Language α) : l∗ = {x | ∃ L : List (List α), x = L.join ∧ ∀ y ∈ L, y ∈ l} :=
   rfl
-#align language.kstar_def Language.kstar_def
 
 -- Porting note: `reducible` attribute cannot be local,
 --               so this new theorem is required in place of `Set.ext`.
@@ -98,39 +90,30 @@ theorem ext {l m : Language α} (h : ∀ (x : List α), x ∈ l ↔ x ∈ m) : l
 @[simp]
 theorem not_mem_zero (x : List α) : x ∉ (0 : Language α) :=
   id
-#align language.not_mem_zero Language.not_mem_zero
 
 @[simp]
 theorem mem_one (x : List α) : x ∈ (1 : Language α) ↔ x = [] := by rfl
-#align language.mem_one Language.mem_one
 
 theorem nil_mem_one : [] ∈ (1 : Language α) :=
   Set.mem_singleton _
-#align language.nil_mem_one Language.nil_mem_one
 
 theorem mem_add (l m : Language α) (x : List α) : x ∈ l + m ↔ x ∈ l ∨ x ∈ m :=
   Iff.rfl
-#align language.mem_add Language.mem_add
 
 theorem mem_mul : x ∈ l * m ↔ ∃ a ∈ l, ∃ b ∈ m, a ++ b = x :=
   mem_image2
-#align language.mem_mul Language.mem_mul
 
 theorem append_mem_mul : a ∈ l → b ∈ m → a ++ b ∈ l * m :=
   mem_image2_of_mem
-#align language.append_mem_mul Language.append_mem_mul
 
 theorem mem_kstar : x ∈ l∗ ↔ ∃ L : List (List α), x = L.join ∧ ∀ y ∈ L, y ∈ l :=
   Iff.rfl
-#align language.mem_kstar Language.mem_kstar
 
 theorem join_mem_kstar {L : List (List α)} (h : ∀ y ∈ L, y ∈ l) : L.join ∈ l∗ :=
   ⟨L, rfl, h⟩
-#align language.join_mem_kstar Language.join_mem_kstar
 
 theorem nil_mem_kstar (l : Language α) : [] ∈ l∗ :=
   ⟨[], rfl, fun _ h ↦ by contradiction⟩
-#align language.nil_mem_kstar Language.nil_mem_kstar
 
 instance instSemiring : Semiring (Language α) where
   add := (· + ·)
@@ -156,7 +139,6 @@ instance instSemiring : Semiring (Language α) where
 @[simp]
 theorem add_self (l : Language α) : l + l = l :=
   sup_idem _
-#align language.add_self Language.add_self
 
 /-- Maps the alphabet of a language. -/
 def map (f : α → β) : Language α →+* Language β where
@@ -165,16 +147,13 @@ def map (f : α → β) : Language α →+* Language β where
   map_one' := image_singleton
   map_add' := image_union _
   map_mul' _ _ := image_image2_distrib <| map_append _
-#align language.map Language.map
 
 @[simp]
 theorem map_id (l : Language α) : map id l = l := by simp [map]
-#align language.map_id Language.map_id
 
 @[simp]
 theorem map_map (g : β → γ) (f : α → β) (l : Language α) : map g (map f l) = map (g ∘ f) l := by
   simp [map, image_image]
-#align language.map_map Language.map_map
 
 lemma mem_kstar_iff_exists_nonempty {x : List α} :
     x ∈ l∗ ↔ ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] := by
@@ -191,45 +170,36 @@ lemma mem_kstar_iff_exists_nonempty {x : List α} :
 theorem kstar_def_nonempty (l : Language α) :
     l∗ = { x | ∃ S : List (List α), x = S.join ∧ ∀ y ∈ S, y ∈ l ∧ y ≠ [] } := by
   ext x; apply mem_kstar_iff_exists_nonempty
-#align language.kstar_def_nonempty Language.kstar_def_nonempty
 
 theorem le_iff (l m : Language α) : l ≤ m ↔ l + m = m :=
   sup_eq_right.symm
-#align language.le_iff Language.le_iff
 
 theorem le_mul_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ * l₂ ≤ m₁ * m₂ := by
   intro h₁ h₂ x hx
   simp only [mul_def, exists_and_left, mem_image2, image_prod] at hx ⊢
   tauto
-#align language.le_mul_congr Language.le_mul_congr
 
 theorem le_add_congr {l₁ l₂ m₁ m₂ : Language α} : l₁ ≤ m₁ → l₂ ≤ m₂ → l₁ + l₂ ≤ m₁ + m₂ :=
   sup_le_sup
-#align language.le_add_congr Language.le_add_congr
 
 theorem mem_iSup {ι : Sort v} {l : ι → Language α} {x : List α} : (x ∈ ⨆ i, l i) ↔ ∃ i, x ∈ l i :=
   mem_iUnion
-#align language.mem_supr Language.mem_iSup
 
 theorem iSup_mul {ι : Sort v} (l : ι → Language α) (m : Language α) :
     (⨆ i, l i) * m = ⨆ i, l i * m :=
   image2_iUnion_left _ _ _
-#align language.supr_mul Language.iSup_mul
 
 theorem mul_iSup {ι : Sort v} (l : ι → Language α) (m : Language α) :
     (m * ⨆ i, l i) = ⨆ i, m * l i :=
   image2_iUnion_right _ _ _
-#align language.mul_supr Language.mul_iSup
 
 theorem iSup_add {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (⨆ i, l i) + m = ⨆ i, l i + m :=
   iSup_sup
-#align language.supr_add Language.iSup_add
 
 theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Language α) :
     (m + ⨆ i, l i) = ⨆ i, m + l i :=
   sup_iSup
-#align language.add_supr Language.add_iSup
 
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.join ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
@@ -247,7 +217,6 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     · rintro ⟨_ | ⟨a, S⟩, rfl, hn, hS⟩ <;> cases hn
       rw [forall_mem_cons] at hS
       exact ⟨a, hS.1, _, ⟨S, rfl, rfl, hS.2⟩, rfl⟩
-#align language.mem_pow Language.mem_pow
 
 theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
   ext x
@@ -257,29 +226,24 @@ theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
     exact ⟨_, S, rfl, rfl, hS⟩
   · rintro ⟨_, S, rfl, rfl, hS⟩
     exact ⟨S, rfl, hS⟩
-#align language.kstar_eq_supr_pow Language.kstar_eq_iSup_pow
 
 @[simp]
 theorem map_kstar (f : α → β) (l : Language α) : map f l∗ = (map f l)∗ := by
   rw [kstar_eq_iSup_pow, kstar_eq_iSup_pow]
   simp_rw [← map_pow]
   exact image_iUnion
-#align language.map_kstar Language.map_kstar
 
 theorem mul_self_kstar_comm (l : Language α) : l∗ * l = l * l∗ := by
   simp only [kstar_eq_iSup_pow, mul_iSup, iSup_mul, ← pow_succ, ← pow_succ']
-#align language.mul_self_kstar_comm Language.mul_self_kstar_comm
 
 @[simp]
 theorem one_add_self_mul_kstar_eq_kstar (l : Language α) : 1 + l * l∗ = l∗ := by
   simp only [kstar_eq_iSup_pow, mul_iSup, ← pow_succ', ← pow_zero l]
   exact sup_iSup_nat_succ _
-#align language.one_add_self_mul_kstar_eq_kstar Language.one_add_self_mul_kstar_eq_kstar
 
 @[simp]
 theorem one_add_kstar_mul_self_eq_kstar (l : Language α) : 1 + l∗ * l = l∗ := by
   rw [mul_self_kstar_comm, one_add_self_mul_kstar_eq_kstar]
-#align language.one_add_kstar_mul_self_eq_kstar Language.one_add_kstar_mul_self_eq_kstar
 
 instance : KleeneAlgebra (Language α) :=
   { Language.instSemiring, Set.completeAtomicBooleanAlgebra with

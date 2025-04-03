@@ -8,8 +8,6 @@ import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.Tactic.LinearCombination
 
-#align_import number_theory.fermat4 from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
-
 /-!
 # Fermat's Last Theorem for the case n = 4
 There are no non-zero integers `a`, `b` and `c` such that `a ^ 4 + b ^ 4 = c ^ 4`.
@@ -25,7 +23,6 @@ We will show that no integers satisfy this equation. Clearly Fermat's Last theor
 follows. -/
 def Fermat42 (a b c : ℤ) : Prop :=
   a ≠ 0 ∧ b ≠ 0 ∧ a ^ 4 + b ^ 4 = c ^ 2
-#align fermat_42 Fermat42
 
 namespace Fermat42
 
@@ -33,7 +30,6 @@ theorem comm {a b c : ℤ} : Fermat42 a b c ↔ Fermat42 b a c := by
   delta Fermat42
   rw [add_comm]
   tauto
-#align fermat_42.comm Fermat42.comm
 
 theorem mul {a b c k : ℤ} (hk0 : k ≠ 0) :
     Fermat42 a b c ↔ Fermat42 (k * a) (k * b) (k ^ 2 * c) := by
@@ -53,20 +49,17 @@ theorem mul {a b c k : ℤ} (hk0 : k ≠ 0) :
     · exact right_ne_zero_of_mul f42.2.1
     apply (mul_right_inj' (pow_ne_zero 4 hk0)).mp
     linear_combination f42.2.2
-#align fermat_42.mul Fermat42.mul
 
 theorem ne_zero {a b c : ℤ} (h : Fermat42 a b c) : c ≠ 0 := by
   apply ne_zero_pow two_ne_zero _; apply ne_of_gt
   rw [← h.2.2, (by ring : a ^ 4 + b ^ 4 = (a ^ 2) ^ 2 + (b ^ 2) ^ 2)]
   exact
     add_pos (sq_pos_of_ne_zero (pow_ne_zero 2 h.1)) (sq_pos_of_ne_zero (pow_ne_zero 2 h.2.1))
-#align fermat_42.ne_zero Fermat42.ne_zero
 
 /-- We say a solution to `a ^ 4 + b ^ 4 = c ^ 2` is minimal if there is no other solution with
 a smaller `c` (in absolute value). -/
 def Minimal (a b c : ℤ) : Prop :=
   Fermat42 a b c ∧ ∀ a1 b1 c1 : ℤ, Fermat42 a1 b1 c1 → Int.natAbs c ≤ Int.natAbs c1
-#align fermat_42.minimal Fermat42.Minimal
 
 /-- if we have a solution to `a ^ 4 + b ^ 4 = c ^ 2` then there must be a minimal one. -/
 theorem exists_minimal {a b c : ℤ} (h : Fermat42 a b c) : ∃ a0 b0 c0, Minimal a0 b0 c0 := by
@@ -83,7 +76,6 @@ theorem exists_minimal {a b c : ℤ} (h : Fermat42 a b c) : ∃ a0 b0 c0, Minima
   rw [← hs1]
   apply Nat.find_min'
   use ⟨a1, ⟨b1, c1⟩⟩
-#align fermat_42.exists_minimal Fermat42.exists_minimal
 
 /-- a minimal solution to `a ^ 4 + b ^ 4 = c ^ 2` must have `a` and `b` coprime. -/
 theorem coprime_of_minimal {a b c : ℤ} (h : Minimal a b c) : IsCoprime a b := by
@@ -103,12 +95,10 @@ theorem coprime_of_minimal {a b c : ℤ} (h : Minimal a b c) : IsCoprime a b := 
   rw [Int.natAbs_mul, lt_mul_iff_one_lt_left, Int.natAbs_pow, Int.natAbs_ofNat]
   · exact Nat.one_lt_pow two_ne_zero (Nat.Prime.one_lt hp)
   · exact Nat.pos_of_ne_zero (Int.natAbs_ne_zero.2 (ne_zero hf))
-#align fermat_42.coprime_of_minimal Fermat42.coprime_of_minimal
 
 /-- We can swap `a` and `b` in a minimal solution to `a ^ 4 + b ^ 4 = c ^ 2`. -/
 theorem minimal_comm {a b c : ℤ} : Minimal a b c → Minimal b a c := fun ⟨h1, h2⟩ =>
   ⟨Fermat42.comm.mp h1, h2⟩
-#align fermat_42.minimal_comm Fermat42.minimal_comm
 
 /-- We can assume that a minimal solution to `a ^ 4 + b ^ 4 = c ^ 2` has positive `c`. -/
 theorem neg_of_minimal {a b c : ℤ} : Minimal a b c → Minimal a b (-c) := by
@@ -118,7 +108,6 @@ theorem neg_of_minimal {a b c : ℤ} : Minimal a b c → Minimal a b (-c) := by
     rw [heq]
     exact (neg_sq c).symm
   rwa [Int.natAbs_neg c]
-#align fermat_42.neg_of_minimal Fermat42.neg_of_minimal
 
 /-- We can assume that a minimal solution to `a ^ 4 + b ^ 4 = c ^ 2` has `a` odd. -/
 theorem exists_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
@@ -134,7 +123,6 @@ theorem exists_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
       decide
     · exact ⟨b0, ⟨a0, ⟨c0, minimal_comm hf, hbp⟩⟩⟩
   exact ⟨a0, ⟨b0, ⟨c0, hf, hap⟩⟩⟩
-#align fermat_42.exists_odd_minimal Fermat42.exists_odd_minimal
 
 /-- We can assume that a minimal solution to `a ^ 4 + b ^ 4 = c ^ 2` has
 `a` odd and `c` positive. -/
@@ -147,20 +135,17 @@ theorem exists_pos_odd_minimal {a b c : ℤ} (h : Fermat42 a b c) :
     exact ne_zero hf.1 h1.symm
   · use a0, b0, -c0, neg_of_minimal hf, hc
     exact neg_pos.mpr h1
-#align fermat_42.exists_pos_odd_minimal Fermat42.exists_pos_odd_minimal
 
 end Fermat42
 
 theorem Int.coprime_of_sq_sum {r s : ℤ} (h2 : IsCoprime s r) : IsCoprime (r ^ 2 + s ^ 2) r := by
   rw [sq, sq]
   exact (IsCoprime.mul_left h2 h2).mul_add_left_left r
-#align int.coprime_of_sq_sum Int.coprime_of_sq_sum
 
 theorem Int.coprime_of_sq_sum' {r s : ℤ} (h : IsCoprime r s) :
     IsCoprime (r ^ 2 + s ^ 2) (r * s) := by
   apply IsCoprime.mul_right (Int.coprime_of_sq_sum (isCoprime_comm.mp h))
   rw [add_comm]; apply Int.coprime_of_sq_sum h
-#align int.coprime_of_sq_sum' Int.coprime_of_sq_sum'
 
 namespace Fermat42
 
@@ -291,7 +276,6 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
     apply h.2 j k i
     exact ⟨hj0, hk0, hh.symm⟩
   apply absurd (not_le_of_lt hic) (not_not.mpr hic')
-#align fermat_42.not_minimal Fermat42.not_minimal
 
 end Fermat42
 
@@ -300,7 +284,6 @@ theorem not_fermat_42 {a b c : ℤ} (ha : a ≠ 0) (hb : b ≠ 0) : a ^ 4 + b ^ 
   obtain ⟨a0, b0, c0, ⟨hf, h2, hp⟩⟩ :=
     Fermat42.exists_pos_odd_minimal (And.intro ha (And.intro hb h))
   apply Fermat42.not_minimal hf h2 hp
-#align not_fermat_42 not_fermat_42
 
 /--
 Fermat's Last Theorem for $n=4$: if `a b c : ℕ` are all non-zero
@@ -311,7 +294,6 @@ theorem fermatLastTheoremFour : FermatLastTheoremFor 4 := by
   intro a b c ha hb _ heq
   apply @not_fermat_42 _ _ (c ^ 2) ha hb
   rw [heq]; ring
-#align not_fermat_4 fermatLastTheoremFour
 
 /--
 To prove Fermat's Last Theorem, it suffices to prove it for odd prime exponents.

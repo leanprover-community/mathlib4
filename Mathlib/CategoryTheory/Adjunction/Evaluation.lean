@@ -6,8 +6,6 @@ Authors: Adam Topaz
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Functor.EpiMono
 
-#align_import category_theory.adjunction.evaluation from "leanprover-community/mathlib"@"937c692d73f5130c7fecd3fd32e81419f4e04eb7"
-
 /-!
 
 # Adjunctions involving evaluation
@@ -44,7 +42,6 @@ def evaluationLeftAdjoint (c : C) : D ⥤ C ⥤ D where
         dsimp
         ext
         simp }
-#align category_theory.evaluation_left_adjoint CategoryTheory.evaluationLeftAdjoint
 
 /-- The adjunction showing that evaluation is a right adjoint. -/
 @[simps! unit_app counit_app_app]
@@ -72,11 +69,9 @@ def evaluationAdjunctionRight (c : C) : evaluationLeftAdjoint D c ⊣ (evaluatio
             simp }
       -- This used to be automatic before leanprover/lean4#2644
       homEquiv_naturality_right := by intros; dsimp; simp }
-#align category_theory.evaluation_adjunction_right CategoryTheory.evaluationAdjunctionRight
 
 instance evaluationIsRightAdjoint (c : C) : ((evaluation _ D).obj c).IsRightAdjoint  :=
   ⟨_, ⟨evaluationAdjunctionRight _ _⟩⟩
-#align category_theory.evaluation_is_right_adjoint CategoryTheory.evaluationIsRightAdjoint
 
 theorem NatTrans.mono_iff_mono_app {F G : C ⥤ D} (η : F ⟶ G) : Mono η ↔ ∀ c, Mono (η.app c) := by
   constructor
@@ -84,7 +79,6 @@ theorem NatTrans.mono_iff_mono_app {F G : C ⥤ D} (η : F ⟶ G) : Mono η ↔ 
     exact (inferInstance : Mono (((evaluation _ _).obj c).map η))
   · intro _
     apply NatTrans.mono_of_mono_app
-#align category_theory.nat_trans.mono_iff_mono_app CategoryTheory.NatTrans.mono_iff_mono_app
 
 end
 
@@ -105,7 +99,6 @@ def evaluationRightAdjoint (c : C) : D ⥤ C ⥤ D where
         dsimp
         ext
         simp }
-#align category_theory.evaluation_right_adjoint CategoryTheory.evaluationRightAdjoint
 
 /-- The adjunction showing that evaluation is a left adjoint. -/
 @[simps! unit_app_app counit_app]
@@ -131,11 +124,9 @@ def evaluationAdjunctionLeft (c : C) : (evaluation _ _).obj c ⊣ evaluationRigh
             simp only [Discrete.functor_obj, NatTrans.naturality_assoc,
               evaluationRightAdjoint_obj_obj, evaluationRightAdjoint_obj_map, limit.lift_π,
               Fan.mk_pt, Fan.mk_π_app, Discrete.natTrans_app, Category.comp_id] } }
-#align category_theory.evaluation_adjunction_left CategoryTheory.evaluationAdjunctionLeft
 
 instance evaluationIsLeftAdjoint (c : C) : ((evaluation _ D).obj c).IsLeftAdjoint :=
   ⟨_, ⟨evaluationAdjunctionLeft _ _⟩⟩
-#align category_theory.evaluation_is_left_adjoint CategoryTheory.evaluationIsLeftAdjoint
 
 theorem NatTrans.epi_iff_epi_app {F G : C ⥤ D} (η : F ⟶ G) : Epi η ↔ ∀ c, Epi (η.app c) := by
   constructor
@@ -143,7 +134,6 @@ theorem NatTrans.epi_iff_epi_app {F G : C ⥤ D} (η : F ⟶ G) : Epi η ↔ ∀
     exact (inferInstance : Epi (((evaluation _ _).obj c).map η))
   · intros
     apply NatTrans.epi_of_epi_app
-#align category_theory.nat_trans.epi_iff_epi_app CategoryTheory.NatTrans.epi_iff_epi_app
 
 end
 

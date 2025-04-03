@@ -5,8 +5,6 @@ Authors: Patrick Massot
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 
-#align_import analysis.hofer from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Hofer's lemma
 
@@ -27,8 +25,6 @@ open Topology
 open Filter Finset
 
 local notation "d" => dist
-
-#noalign pos_div_pow_pos
 
 theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (ε_pos : 0 < ε)
     {ϕ : X → ℝ} (cont : Continuous ϕ) (nonneg : ∀ y, 0 ≤ ϕ y) : ∃ ε' > 0, ∃ x' : X,
@@ -102,4 +98,3 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
   have lim : Tendsto (ϕ ∘ u) atTop (𝓝 (ϕ y)) := Tendsto.comp cont.continuousAt limy
   -- So we have our contradiction!
   exact not_tendsto_atTop_of_tendsto_nhds lim lim_top
-#align hofer hofer

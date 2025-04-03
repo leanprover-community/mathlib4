@@ -6,8 +6,6 @@ Authors: David Kurniadi Angdinata
 import Mathlib.RingTheory.PrimeSpectrum
 import Mathlib.RingTheory.Localization.AsSubring
 
-#align_import algebraic_geometry.prime_spectrum.maximal from "leanprover-community/mathlib"@"052f6013363326d50cb99c6939814a4b8eb7b301"
-
 /-!
 # Maximal spectrum of a commutative ring
 
@@ -39,7 +37,6 @@ variable (R : Type u) [CommRing R]
 structure MaximalSpectrum where
   asIdeal : Ideal R
   IsMaximal : asIdeal.IsMaximal
-#align maximal_spectrum MaximalSpectrum
 
 attribute [instance] MaximalSpectrum.IsMaximal
 
@@ -54,11 +51,9 @@ instance [Nontrivial R] : Nonempty <| MaximalSpectrum R :=
 /-- The natural inclusion from the maximal spectrum to the prime spectrum. -/
 def toPrimeSpectrum (x : MaximalSpectrum R) : PrimeSpectrum R :=
   ⟨x.asIdeal, x.IsMaximal.isPrime⟩
-#align maximal_spectrum.to_prime_spectrum MaximalSpectrum.toPrimeSpectrum
 
 theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h => by
   simpa only [MaximalSpectrum.mk.injEq] using (PrimeSpectrum.ext_iff _ _).mp h
-#align maximal_spectrum.to_prime_spectrum_injective MaximalSpectrum.toPrimeSpectrum_injective
 
 open PrimeSpectrum Set
 
@@ -93,7 +88,6 @@ theorem iInf_localization_eq_bot : (⨅ v : MaximalSpectrum R,
             (h ▸ hd) max.zero_mem]⟩
   · rintro ⟨y, rfl⟩ ⟨v, hv⟩
     exact ⟨y, 1, v.ne_top_iff_one.mp hv.ne_top, by rw [map_one, inv_one, mul_one]⟩
-#align maximal_spectrum.infi_localization_eq_bot MaximalSpectrum.iInf_localization_eq_bot
 
 end MaximalSpectrum
 
@@ -114,6 +108,5 @@ theorem iInf_localization_eq_bot : ⨅ v : PrimeSpectrum R,
   · rw [Algebra.mem_bot]
     rintro ⟨y, rfl⟩ ⟨v, hv⟩
     exact ⟨y, 1, v.ne_top_iff_one.mp hv.ne_top, by rw [map_one, inv_one, mul_one]⟩
-#align prime_spectrum.infi_localization_eq_bot PrimeSpectrum.iInf_localization_eq_bot
 
 end PrimeSpectrum

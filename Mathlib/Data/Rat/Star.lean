@@ -10,8 +10,6 @@ import Mathlib.Data.NNRat.Lemmas
 import Mathlib.Algebra.Order.Monoid.Submonoid
 import Mathlib.Tactic.FieldSimp
 
-#align_import data.rat.star from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
-
 /-!
 # Star ordered ring structures on `ℚ` and `ℚ≥0`
 

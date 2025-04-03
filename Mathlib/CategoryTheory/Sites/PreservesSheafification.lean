@@ -83,8 +83,6 @@ variable [HasWeakSheafify J B]
 of `X.val ⋙ F`. -/
 noncomputable abbrev Sheaf.composeAndSheafify : Sheaf J A ⥤ Sheaf J B :=
   sheafToPresheaf J A ⋙ (whiskeringRight _ _ _).obj F ⋙ presheafToSheaf J B
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.compose_and_sheafify CategoryTheory.Sheaf.composeAndSheafify
 
 variable [HasWeakSheafify J A]
 

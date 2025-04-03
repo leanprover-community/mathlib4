@@ -6,8 +6,6 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.NormedSpace.Dual
 
-#align_import analysis.inner_product_space.dual from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
-
 /-!
 # The Fréchet-Riesz representation theorem
 
@@ -62,19 +60,15 @@ see `toDual`.
 -/
 def toDualMap : E →ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
   { innerSL 𝕜 with norm_map' := innerSL_apply_norm _ }
-#align inner_product_space.to_dual_map InnerProductSpace.toDualMap
 
 variable {E}
 
 @[simp]
 theorem toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
   rfl
-#align inner_product_space.to_dual_map_apply InnerProductSpace.toDualMap_apply
 
 theorem innerSL_norm [Nontrivial E] : ‖(innerSL 𝕜 : E →L⋆[𝕜] E →L[𝕜] 𝕜)‖ = 1 :=
   show ‖(toDualMap 𝕜 E).toContinuousLinearMap‖ = 1 from LinearIsometry.norm_toContinuousLinearMap _
-set_option linter.uppercaseLean3 false in
-#align inner_product_space.innerSL_norm InnerProductSpace.innerSL_norm
 
 variable {𝕜}
 
@@ -88,7 +82,6 @@ theorem ext_inner_left_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
   rw [← inner_conj_symm]
   conv_rhs => rw [← inner_conj_symm]
   exact congr_arg conj (h i)
-#align inner_product_space.ext_inner_left_basis InnerProductSpace.ext_inner_left_basis
 
 theorem ext_inner_right_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
     (h : ∀ i : ι, ⟪x, b i⟫ = ⟪y, b i⟫) : x = y := by
@@ -96,7 +89,6 @@ theorem ext_inner_right_basis {ι : Type*} {x y : E} (b : Basis ι 𝕜 E)
   rw [← inner_conj_symm]
   conv_rhs => rw [← inner_conj_symm]
   exact congr_arg conj (h i)
-#align inner_product_space.ext_inner_right_basis InnerProductSpace.ext_inner_right_basis
 
 variable (𝕜) (E)
 variable [CompleteSpace E]
@@ -143,20 +135,17 @@ def toDual : E ≃ₗᵢ⋆[𝕜] NormedSpace.Dual 𝕜 E :=
             _ = ℓ x * ⟪z, z⟫ / ⟪z, z⟫ := by rw [h₂]
             _ = ℓ x := by field_simp [inner_self_ne_zero.2 z_ne_0]
         exact h₄)
-#align inner_product_space.to_dual InnerProductSpace.toDual
 
 variable {𝕜} {E}
 
 @[simp]
 theorem toDual_apply {x y : E} : toDual 𝕜 E x y = ⟪x, y⟫ :=
   rfl
-#align inner_product_space.to_dual_apply InnerProductSpace.toDual_apply
 
 @[simp]
 theorem toDual_symm_apply {x : E} {y : NormedSpace.Dual 𝕜 E} : ⟪(toDual 𝕜 E).symm y, x⟫ = y x := by
   rw [← toDual_apply]
   simp only [LinearIsometryEquiv.apply_symm_apply]
-#align inner_product_space.to_dual_symm_apply InnerProductSpace.toDual_symm_apply
 
 /-- Maps a bounded sesquilinear form to its continuous linear map,
 given by interpreting the form as a map `B : E →L⋆[𝕜] NormedSpace.Dual 𝕜 E`
@@ -164,7 +153,6 @@ and dualizing the result using `toDual`.
 -/
 def continuousLinearMapOfBilin (B : E →L⋆[𝕜] E →L[𝕜] 𝕜) : E →L[𝕜] E :=
   comp (toDual 𝕜 E).symm.toContinuousLinearEquiv.toContinuousLinearMap B
-#align inner_product_space.continuous_linear_map_of_bilin InnerProductSpace.continuousLinearMapOfBilin
 
 local postfix:1024 "♯" => continuousLinearMapOfBilin
 
@@ -174,7 +162,6 @@ variable (B : E →L⋆[𝕜] E →L[𝕜] 𝕜)
 theorem continuousLinearMapOfBilin_apply (v w : E) : ⟪B♯ v, w⟫ = B v w := by
   rw [continuousLinearMapOfBilin, coe_comp', ContinuousLinearEquiv.coe_coe,
     LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply, toDual_symm_apply]
-#align inner_product_space.continuous_linear_map_of_bilin_apply InnerProductSpace.continuousLinearMapOfBilin_apply
 
 theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪f, w⟫ = B v w) :
     f = B♯ v := by
@@ -182,6 +169,5 @@ theorem unique_continuousLinearMapOfBilin {v f : E} (is_lax_milgram : ∀ w, ⟪
   intro w
   rw [continuousLinearMapOfBilin_apply]
   exact is_lax_milgram w
-#align inner_product_space.unique_continuous_linear_map_of_bilin InnerProductSpace.unique_continuousLinearMapOfBilin
 
 end InnerProductSpace

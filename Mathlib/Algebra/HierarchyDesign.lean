@@ -6,8 +6,6 @@ Authors: Scott Morrison, Eric Wieser
 import Batteries.Util.LibraryNote
 import Mathlib.Mathport.Rename
 
-#align_import algebra.hierarchy_design from "leanprover-community/mathlib"@"41cf0cc2f528dd40a8f2db167ea4fb37b8fde7f3"
-
 /-!
 # Documentation of the algebraic hierarchy
 

@@ -7,8 +7,6 @@ import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Analysis.NormedSpace.ProdLp
 import Mathlib.Topology.Instances.TrivSqZeroExt
 
-#align_import analysis.normed_space.triv_sq_zero_ext from "leanprover-community/mathlib"@"88a563b158f59f2983cfad685664da95502e8cdd"
-
 /-!
 # Results on `TrivSqZeroExt R M` related to the norm
 
@@ -98,7 +96,6 @@ theorem hasSum_snd_expSeries_of_smul_comm (x : tsze R M)
   rw [Finset.range_one, Finset.sum_singleton, Nat.factorial_zero, Nat.cast_one, pow_zero,
     inv_one, one_smul, snd_one, sub_zero]
   exact h.smul_const _
-#align triv_sq_zero_ext.has_sum_snd_exp_series_of_smul_comm TrivSqZeroExt.hasSum_snd_expSeries_of_smul_comm
 
 /-- If `exp R x.fst` converges to `e` then `exp R x` converges to `inl e + inr (e • x.snd)`. -/
 theorem hasSum_expSeries_of_smul_comm
@@ -109,7 +106,6 @@ theorem hasSum_expSeries_of_smul_comm
     simpa [fst_expSeries] using h
   simpa only [inl_fst_add_inr_snd_eq] using
     (hasSum_inl _ <| this).add (hasSum_inr _ <| hasSum_snd_expSeries_of_smul_comm 𝕜 x hx h)
-#align triv_sq_zero_ext.has_sum_exp_series_of_smul_comm TrivSqZeroExt.hasSum_expSeries_of_smul_comm
 
 variable [Algebra ℚ R] [Module ℚ M]
 variable [T2Space R] [T2Space M]
@@ -130,13 +126,11 @@ theorem exp_def_of_smul_comm (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd
 theorem exp_inl (x : R) : exp (inl x : tsze R M) = inl (exp x) := by
   rw [exp_def_of_smul_comm, snd_inl, fst_inl, smul_zero, inr_zero, add_zero]
   rw [snd_inl, fst_inl, smul_zero, smul_zero]
-#align triv_sq_zero_ext.exp_inl TrivSqZeroExt.exp_inl
 
 @[simp]
 theorem exp_inr (m : M) : exp (inr m : tsze R M) = 1 + inr m := by
   rw [exp_def_of_smul_comm, snd_inr, fst_inr, exp_zero, one_smul, inl_one]
   rw [snd_inr, fst_inr, MulOpposite.op_zero, zero_smul, zero_smul]
-#align triv_sq_zero_ext.exp_inr TrivSqZeroExt.exp_inr
 
 end Ring
 
@@ -151,24 +145,20 @@ variable [T2Space R] [T2Space M]
 
 theorem exp_def (x : tsze R M) : exp x = inl (exp x.fst) + inr (exp x.fst • x.snd) :=
   exp_def_of_smul_comm x (op_smul_eq_smul _ _)
-#align triv_sq_zero_ext.exp_def TrivSqZeroExt.exp_def
 
 @[simp]
 theorem fst_exp (x : tsze R M) : fst (exp x) = exp x.fst := by
   rw [exp_def, fst_add, fst_inl, fst_inr, add_zero]
-#align triv_sq_zero_ext.fst_exp TrivSqZeroExt.fst_exp
 
 @[simp]
 theorem snd_exp (x : tsze R M) : snd (exp x) = exp x.fst • x.snd := by
   rw [exp_def, snd_add, snd_inl, snd_inr, zero_add]
-#align triv_sq_zero_ext.snd_exp TrivSqZeroExt.snd_exp
 
 /-- Polar form of trivial-square-zero extension. -/
 theorem eq_smul_exp_of_invertible (x : tsze R M) [Invertible x.fst] :
     x = x.fst • exp (⅟ x.fst • inr x.snd) := by
   rw [← inr_smul, exp_inr, smul_add, ← inl_one, ← inl_smul, ← inr_smul, smul_eq_mul, mul_one,
     smul_smul, mul_invOf_self, one_smul, inl_fst_add_inr_snd_eq]
-#align triv_sq_zero_ext.eq_smul_exp_of_invertible TrivSqZeroExt.eq_smul_exp_of_invertible
 
 end CommRing
 
@@ -187,7 +177,6 @@ theorem eq_smul_exp_of_ne_zero (x : tsze R M) (hx : x.fst ≠ 0) :
     x = x.fst • exp (x.fst⁻¹ • inr x.snd) :=
   letI : Invertible x.fst := invertibleOfNonzero hx
   eq_smul_exp_of_invertible _
-#align triv_sq_zero_ext.eq_smul_exp_of_ne_zero TrivSqZeroExt.eq_smul_exp_of_ne_zero
 
 end Field
 

@@ -5,8 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.Construction
 
-#align_import category_theory.localization.predicate from "leanprover-community/mathlib"@"8efef279998820353694feb6ff5631ed0d309ecc"
-
 /-!
 
 # Predicate for localized categories
@@ -52,7 +50,6 @@ class IsLocalization : Prop where
   inverts : W.IsInvertedBy L
   /-- the induced functor from the constructed localized category is an equivalence -/
   isEquivalence : IsEquivalence (Localization.Construction.lift L inverts)
-#align category_theory.functor.is_localization CategoryTheory.Functor.IsLocalization
 
 instance q_isLocalization : W.Q.IsLocalization W where
   inverts := W.Q_inverts
@@ -63,8 +60,6 @@ instance q_isLocalization : W.Q.IsLocalization W where
     apply Localization.Construction.uniq
     simp only [Localization.Construction.fac]
     rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.functor.Q_is_localization CategoryTheory.Functor.q_isLocalization
 
 end Functor
 
@@ -82,7 +77,6 @@ structure StrictUniversalPropertyFixedTarget where
   fac : ∀ (F : C ⥤ E) (hF : W.IsInvertedBy F), L ⋙ lift F hF = F
   /-- uniqueness of the lifted functor -/
   uniq : ∀ (F₁ F₂ : D ⥤ E) (_ : L ⋙ F₁ = L ⋙ F₂), F₁ = F₂
-#align category_theory.localization.strict_universal_property_fixed_target CategoryTheory.Localization.StrictUniversalPropertyFixedTarget
 
 /-- The localized category `W.Localization` that was constructed satisfies
 the universal property of the localization. -/
@@ -92,8 +86,6 @@ def strictUniversalPropertyFixedTargetQ : StrictUniversalPropertyFixedTarget W.Q
   lift := Construction.lift
   fac := Construction.fac
   uniq := Construction.uniq
-set_option linter.uppercaseLean3 false in
-#align category_theory.localization.strict_universal_property_fixed_target_Q CategoryTheory.Localization.strictUniversalPropertyFixedTargetQ
 
 instance : Inhabited (StrictUniversalPropertyFixedTarget W.Q W E) :=
   ⟨strictUniversalPropertyFixedTargetQ _ _⟩
@@ -112,7 +104,6 @@ def strictUniversalPropertyFixedTargetId (hW : W ≤ MorphismProperty.isomorphis
     cases F₁
     cases F₂
     exact eq
-#align category_theory.localization.strict_universal_property_fixed_target_id CategoryTheory.Localization.strictUniversalPropertyFixedTargetId
 
 end Localization
 
@@ -127,12 +118,10 @@ theorem IsLocalization.mk' (h₁ : Localization.StrictUniversalPropertyFixedTarg
         simp only [← Functor.assoc, Localization.Construction.fac, h₂.fac, Functor.comp_id])))
       (eqToIso (h₁.uniq _ _ (by
         simp only [← Functor.assoc, h₂.fac, Localization.Construction.fac, Functor.comp_id]))) }
-#align category_theory.functor.is_localization.mk' CategoryTheory.Functor.IsLocalization.mk'
 
 theorem IsLocalization.for_id (hW : W ≤ MorphismProperty.isomorphisms C) : (𝟭 C).IsLocalization W :=
   IsLocalization.mk' _ _ (Localization.strictUniversalPropertyFixedTargetId W _ hW)
     (Localization.strictUniversalPropertyFixedTargetId W _ hW)
-#align category_theory.functor.is_localization.for_id CategoryTheory.Functor.IsLocalization.for_id
 
 end Functor
 
@@ -142,7 +131,6 @@ variable [L.IsLocalization W]
 
 theorem inverts : W.IsInvertedBy L :=
   (inferInstance : L.IsLocalization W).inverts
-#align category_theory.localization.inverts CategoryTheory.Localization.inverts
 
 /-- The isomorphism `L.obj X ≅ L.obj Y` that is deduced from a morphism `f : X ⟶ Y` which
 belongs to `W`, when `L.IsLocalization W`. -/
@@ -150,7 +138,6 @@ belongs to `W`, when `L.IsLocalization W`. -/
 def isoOfHom {X Y : C} (f : X ⟶ Y) (hf : W f) : L.obj X ≅ L.obj Y :=
   haveI : IsIso (L.map f) := inverts L W f hf
   asIso (L.map f)
-#align category_theory.localization.iso_of_hom CategoryTheory.Localization.isoOfHom
 
 @[reassoc (attr := simp)]
 lemma isoOfHom_hom_inv_id {X Y : C} (f : X ⟶ Y) (hf : W f) :
@@ -176,14 +163,11 @@ instance : (Localization.Construction.lift L (inverts L W)).IsEquivalence :=
 order to deduce properties of `L` from properties of `W.Q`. -/
 def equivalenceFromModel : W.Localization ≌ D :=
   (Localization.Construction.lift L (inverts L W)).asEquivalence
-#align category_theory.localization.equivalence_from_model CategoryTheory.Localization.equivalenceFromModel
 
 /-- Via the equivalence of categories `equivalence_from_model L W : W.localization ≌ D`,
 one may identify the functors `W.Q` and `L`. -/
 def qCompEquivalenceFromModelFunctorIso : W.Q ⋙ (equivalenceFromModel L W).functor ≅ L :=
   eqToIso (Construction.fac _ _)
-set_option linter.uppercaseLean3 false in
-#align category_theory.localization.Q_comp_equivalence_from_model_functor_iso CategoryTheory.Localization.qCompEquivalenceFromModelFunctorIso
 
 /-- Via the equivalence of categories `equivalence_from_model L W : W.localization ≌ D`,
 one may identify the functors `L` and `W.Q`. -/
@@ -195,7 +179,6 @@ def compEquivalenceFromModelInverseIso : L ⋙ (equivalenceFromModel L W).invers
       (Functor.associator _ _ _)
     _ ≅ W.Q ⋙ 𝟭 _ := isoWhiskerLeft _ (equivalenceFromModel L W).unitIso.symm
     _ ≅ W.Q := Functor.rightUnitor _
-#align category_theory.localization.comp_equivalence_from_model_inverse_iso CategoryTheory.Localization.compEquivalenceFromModelInverseIso
 
 theorem essSurj : L.EssSurj :=
   ⟨fun X =>
@@ -203,14 +186,12 @@ theorem essSurj : L.EssSurj :=
       Nonempty.intro
         ((qCompEquivalenceFromModelFunctorIso L W).symm.app _ ≪≫
           (equivalenceFromModel L W).counitIso.app X)⟩⟩
-#align category_theory.localization.ess_surj CategoryTheory.Localization.essSurj
 
 /-- The functor `(D ⥤ E) ⥤ W.functors_inverting E` induced by the composition
 with a localization functor `L : C ⥤ D` with respect to `W : morphism_property C`. -/
 def whiskeringLeftFunctor : (D ⥤ E) ⥤ W.FunctorsInverting E :=
   FullSubcategory.lift _ ((whiskeringLeft _ _ E).obj L)
     (MorphismProperty.IsInvertedBy.of_comp W L (inverts L W))
-#align category_theory.localization.whiskering_left_functor CategoryTheory.Localization.whiskeringLeftFunctor
 
 instance : (whiskeringLeftFunctor L W E).IsEquivalence := by
   let iso : (whiskeringLeft (MorphismProperty.Localization W) D E).obj
@@ -235,7 +216,6 @@ the composition with a localization functor `L : C ⥤ D` with respect to
 `W : MorphismProperty C`. -/
 def functorEquivalence : D ⥤ E ≌ W.FunctorsInverting E :=
   (whiskeringLeftFunctor L W E).asEquivalence
-#align category_theory.localization.functor_equivalence CategoryTheory.Localization.functorEquivalence
 
 /-- The functor `(D ⥤ E) ⥤ (C ⥤ E)` given by the composition with a localization
 functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
@@ -243,18 +223,15 @@ functor `L : C ⥤ D` with respect to `W : MorphismProperty C`. -/
 def whiskeringLeftFunctor' (_ : MorphismProperty C) (E : Type*) [Category E] :
     (D ⥤ E) ⥤ C ⥤ E :=
   (whiskeringLeft C D E).obj L
-#align category_theory.localization.whiskering_left_functor' CategoryTheory.Localization.whiskeringLeftFunctor'
 
 theorem whiskeringLeftFunctor'_eq :
     whiskeringLeftFunctor' L W E = Localization.whiskeringLeftFunctor L W E ⋙ inducedFunctor _ :=
   rfl
-#align category_theory.localization.whiskering_left_functor'_eq CategoryTheory.Localization.whiskeringLeftFunctor'_eq
 
 variable {E} in
 @[simp]
 theorem whiskeringLeftFunctor'_obj (F : D ⥤ E) : (whiskeringLeftFunctor' L W E).obj F = L ⋙ F :=
   rfl
-#align category_theory.localization.whiskering_left_functor'_obj CategoryTheory.Localization.whiskeringLeftFunctor'_obj
 
 instance : (whiskeringLeftFunctor' L W E).Full := by
   rw [whiskeringLeftFunctor'_eq]
@@ -281,7 +258,6 @@ theorem natTrans_ext {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)
   haveI := essSurj L W
   ext Y
   rw [← cancel_epi (F₁.map (L.objObjPreimageIso Y).hom), τ.naturality, τ'.naturality, h]
-#align category_theory.localization.nat_trans_ext CategoryTheory.Localization.natTrans_ext
 
 -- Porting note: the field `iso` was renamed `Lifting.iso'` and it was redefined as
 -- `Lifting.iso` with explicit parameters
@@ -291,7 +267,6 @@ is commutative up to an isomorphism. -/
 class Lifting (W : MorphismProperty C) (F : C ⥤ E) (F' : D ⥤ E) where
   /-- the isomorphism relating the localization functor and the two other given functors -/
   iso' : L ⋙ F' ≅ F
-#align category_theory.localization.lifting CategoryTheory.Localization.Lifting
 
 /-- The distinguished isomorphism `L ⋙ F' ≅ F` given by `[Lifting L W F F']`. -/
 def Lifting.iso (F : C ⥤ E) (F' : D ⥤ E) [Lifting L W F F'] :
@@ -305,12 +280,10 @@ a functor `F : C ⥤ E` which inverts `W`, this is a choice of functor
 `D ⥤ E` which lifts `F`. -/
 def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) (L : C ⥤ D) [L.IsLocalization W] : D ⥤ E :=
   (functorEquivalence L W E).inverse.obj ⟨F, hF⟩
-#align category_theory.localization.lift CategoryTheory.Localization.lift
 
 instance liftingLift (F : C ⥤ E) (hF : W.IsInvertedBy F) (L : C ⥤ D) [L.IsLocalization W] :
     Lifting L W F (lift F hF L) :=
   ⟨(inducedFunctor _).mapIso ((functorEquivalence L W E).counitIso.app ⟨F, hF⟩)⟩
-#align category_theory.localization.lifting_lift CategoryTheory.Localization.liftingLift
 
 -- Porting note: removed the unnecessary @[simps] attribute
 /-- The canonical isomorphism `L ⋙ lift F hF L ≅ F` for any functor `F : C ⥤ E`
@@ -318,12 +291,10 @@ which inverts `W`, when `L : C ⥤ D` is a localization functor for `W`. -/
 def fac (F : C ⥤ E) (hF : W.IsInvertedBy F) (L : C ⥤ D) [L.IsLocalization W] :
     L ⋙ lift F hF L ≅ F :=
   Lifting.iso L W F _
-#align category_theory.localization.fac CategoryTheory.Localization.fac
 
 instance liftingConstructionLift (F : C ⥤ D) (hF : W.IsInvertedBy F) :
     Lifting W.Q W F (Construction.lift F hF) :=
   ⟨eqToIso (Construction.fac F hF)⟩
-#align category_theory.localization.lifting_construction_lift CategoryTheory.Localization.liftingConstructionLift
 
 variable (W)
 
@@ -334,7 +305,6 @@ def liftNatTrans (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [Lifting L W F₁
     (τ : F₁ ⟶ F₂) : F₁' ⟶ F₂' :=
   (whiskeringLeftFunctor' L W E).preimage
     ((Lifting.iso L W F₁ F₁').hom ≫ τ ≫ (Lifting.iso L W F₂ F₂').inv)
-#align category_theory.localization.lift_nat_trans CategoryTheory.Localization.liftNatTrans
 
 @[simp]
 theorem liftNatTrans_app (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [Lifting L W F₁ F₁'] [Lifting L W F₂ F₂']
@@ -342,7 +312,6 @@ theorem liftNatTrans_app (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [Lifting 
     (liftNatTrans L W F₁ F₂ F₁' F₂' τ).app (L.obj X) =
       (Lifting.iso L W F₁ F₁').hom.app X ≫ τ.app X ≫ (Lifting.iso L W F₂ F₂').inv.app X :=
   congr_app (Functor.map_preimage (whiskeringLeftFunctor' L W E) _) X
-#align category_theory.localization.lift_nat_trans_app CategoryTheory.Localization.liftNatTrans_app
 
 @[reassoc (attr := simp)]
 theorem comp_liftNatTrans (F₁ F₂ F₃ : C ⥤ E) (F₁' F₂' F₃' : D ⥤ E) [h₁ : Lifting L W F₁ F₁']
@@ -351,7 +320,6 @@ theorem comp_liftNatTrans (F₁ F₂ F₃ : C ⥤ E) (F₁' F₂' F₃' : D ⥤ 
       liftNatTrans L W F₁ F₃ F₁' F₃' (τ ≫ τ') :=
   natTrans_ext L W _ _ fun X => by
     simp only [NatTrans.comp_app, liftNatTrans_app, assoc, Iso.inv_hom_id_app_assoc]
-#align category_theory.localization.comp_lift_nat_trans CategoryTheory.Localization.comp_liftNatTrans
 
 @[simp]
 theorem liftNatTrans_id (F : C ⥤ E) (F' : D ⥤ E) [h : Lifting L W F F'] :
@@ -359,7 +327,6 @@ theorem liftNatTrans_id (F : C ⥤ E) (F' : D ⥤ E) [h : Lifting L W F F'] :
   natTrans_ext L W _ _ fun X => by
     simp only [liftNatTrans_app, NatTrans.id_app, id_comp, Iso.hom_inv_id_app]
     rfl
-#align category_theory.localization.lift_nat_trans_id CategoryTheory.Localization.liftNatTrans_id
 
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
 if `(F₁' F₂' : D ⥤ E)` are functors which lifts functors `(F₁ F₂ : C ⥤ E)`,
@@ -369,7 +336,6 @@ def liftNatIso (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [h₁ : Lifting L W
     (e : F₁ ≅ F₂) : F₁' ≅ F₂' where
   hom := liftNatTrans L W F₁ F₂ F₁' F₂' e.hom
   inv := liftNatTrans L W F₂ F₁ F₂' F₁' e.inv
-#align category_theory.localization.lift_nat_iso CategoryTheory.Localization.liftNatIso
 
 namespace Lifting
 
@@ -377,12 +343,10 @@ namespace Lifting
 instance compRight {E' : Type*} [Category E'] (F : C ⥤ E) (F' : D ⥤ E) [Lifting L W F F']
     (G : E ⥤ E') : Lifting L W (F ⋙ G) (F' ⋙ G) :=
   ⟨isoWhiskerRight (iso L W F F') G⟩
-#align category_theory.localization.lifting.comp_right CategoryTheory.Localization.Lifting.compRight
 
 @[simps]
 instance id : Lifting L W L (𝟭 D) :=
   ⟨Functor.rightUnitor L⟩
-#align category_theory.localization.lifting.id CategoryTheory.Localization.Lifting.id
 
 @[simps]
 instance compLeft (F : D ⥤ E) : Localization.Lifting L W (L ⋙ F) F := ⟨Iso.refl _⟩
@@ -397,7 +361,6 @@ is isomorphic to `F₁'` also lifts a functor `F₂` that is isomorphic to `F₁
 def ofIsos {F₁ F₂ : C ⥤ E} {F₁' F₂' : D ⥤ E} (e : F₁ ≅ F₂) (e' : F₁' ≅ F₂') [Lifting L W F₁ F₁'] :
     Lifting L W F₂ F₂' :=
   ⟨isoWhiskerLeft L e'.symm ≪≫ iso L W F₁ F₁' ≪≫ e⟩
-#align category_theory.localization.lifting.of_isos CategoryTheory.Localization.Lifting.ofIsos
 
 end Lifting
 
@@ -417,7 +380,6 @@ theorem of_iso {L₁ L₂ : C ⥤ D} (e : L₁ ≅ L₂) [L₁.IsLocalization W]
   exact
     { inverts := h
       isEquivalence := Functor.isEquivalence_of_iso (liftNatIso W.Q W L₁ L₂ F₁ F₂ e) }
-#align category_theory.functor.is_localization.of_iso CategoryTheory.Functor.IsLocalization.of_iso
 
 /-- If `L : C ⥤ D` is a localization for `W : MorphismProperty C`, then it is also
 the case of a functor obtained by post-composing `L` with an equivalence of categories. -/
@@ -432,7 +394,6 @@ theorem of_equivalence_target {E : Type*} [Category E] (L' : C ⥤ E) (eq : D �
   exact
     { inverts := h
       isEquivalence := Functor.isEquivalence_of_iso e' }
-#align category_theory.functor.is_localization.of_equivalence_target CategoryTheory.Functor.IsLocalization.of_equivalence_target
 
 instance (F : D ⥤ E) [F.IsEquivalence] [L.IsLocalization W] :
     (L ⋙ F).IsLocalization W :=

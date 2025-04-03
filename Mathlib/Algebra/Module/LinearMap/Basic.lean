@@ -8,8 +8,6 @@ import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Algebra.Module.Pi
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
-#align_import algebra.module.linear_map from "leanprover-community/mathlib"@"cc8e88c7c8c7bc80f91f84d11adb584bf9bd658f"
-
 /-!
 # Further results on (semi)linear maps
 -/

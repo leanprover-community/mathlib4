@@ -6,8 +6,6 @@ Authors: Johan Commelin
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.NeZero
 
-#align_import algebra.group_with_zero.defs from "leanprover-community/mathlib"@"2f3994e1b117b1e1da49bcfb67334f33460c3ce4"
-
 /-!
 # `NeZero 1` in a nontrivial `MulZeroOneClass`.
 
@@ -31,7 +29,6 @@ instance NeZero.one : NeZero (1 : M₀) := ⟨by
     _ = 0 := by rw [h, zero_mul]
     _ = 1 * y := by rw [h, zero_mul]
     _ = y := by rw [one_mul]⟩
-#align ne_zero.one NeZero.one
 
 /-- Pullback a `Nontrivial` instance along a function sending `0` to `0` and `1` to `1`. -/
 theorem pullback_nonzero [Zero M₀'] [One M₀'] (f : M₀' → M₀) (zero : f 0 = 0) (one : f 1 = 1) :
@@ -39,7 +36,6 @@ theorem pullback_nonzero [Zero M₀'] [One M₀'] (f : M₀' → M₀) (zero : f
   ⟨⟨0, 1, mt (congr_arg f) <| by
     rw [zero, one]
     exact zero_ne_one⟩⟩
-#align pullback_nonzero pullback_nonzero
 
 section GroupWithZero
 
@@ -49,7 +45,6 @@ variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀}
 theorem inv_ne_zero (h : a ≠ 0) : a⁻¹ ≠ 0 := fun a_eq_0 => by
   have := mul_inv_cancel h
   simp only [a_eq_0, mul_zero, zero_ne_one] at this
-#align inv_ne_zero inv_ne_zero
 
 @[simp]
 theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
@@ -57,6 +52,5 @@ theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
     a⁻¹ * a = a⁻¹ * a * a⁻¹ * a⁻¹⁻¹ := by simp [inv_ne_zero h]
     _ = a⁻¹ * a⁻¹⁻¹ := by simp [h]
     _ = 1 := by simp [inv_ne_zero h]
-#align inv_mul_cancel inv_mul_cancel
 
 end GroupWithZero

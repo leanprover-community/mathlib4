@@ -5,8 +5,6 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.LocalProperties
 
-#align_import ring_theory.ring_hom.surjective from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
-
 /-!
 
 # The meta properties of surjective ring homomorphisms.
@@ -25,13 +23,11 @@ local notation "surjective" => fun {X Y : Type _} [CommRing X] [CommRing Y] => f
 
 theorem surjective_stableUnderComposition : StableUnderComposition surjective := by
   introv R hf hg; exact hg.comp hf
-#align ring_hom.surjective_stable_under_composition RingHom.surjective_stableUnderComposition
 
 theorem surjective_respectsIso : RespectsIso surjective := by
   apply surjective_stableUnderComposition.respectsIso
   intros _ _ _ _ e
   exact e.surjective
-#align ring_hom.surjective_respects_iso RingHom.surjective_respectsIso
 
 theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := by
   refine StableUnderBaseChange.mk _ surjective_respectsIso ?_
@@ -43,7 +39,6 @@ theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := b
     obtain ⟨y, rfl⟩ := h y; use y • x; dsimp
     rw [TensorProduct.smul_tmul, Algebra.algebraMap_eq_smul_one]
   | add x y ex ey => obtain ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩ := ex, ey; exact ⟨x + y, map_add _ x y⟩
-#align ring_hom.surjective_stable_under_base_change RingHom.surjective_stableUnderBaseChange
 
 theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
   introv R hs H
@@ -68,6 +63,5 @@ theorem surjective_ofLocalizationSpan : OfLocalizationSpan surjective := by
     dsimp at hm ⊢
     simp_rw [_root_.one_mul, ← _root_.mul_assoc, ← map_pow, ← f.map_mul, ← pow_add, map_pow] at hm
     exact ⟨_, hm⟩
-#align ring_hom.surjective_of_localization_span RingHom.surjective_ofLocalizationSpan
 
 end RingHom

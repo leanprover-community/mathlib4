@@ -6,8 +6,6 @@ Authors: Rémy Degenne
 import Mathlib.MeasureTheory.Function.SimpleFuncDenseLp
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lemmas
 
-#align_import measure_theory.function.strongly_measurable.lp from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Finitely strongly measurable functions in `Lp`
 
@@ -52,7 +50,6 @@ theorem Memℒp.finStronglyMeasurable_of_stronglyMeasurable (hf : Memℒp f p μ
     apply SimpleFunc.tendsto_approxOn
     apply subset_closure
     simp
-#align measure_theory.mem_ℒp.fin_strongly_measurable_of_strongly_measurable MeasureTheory.Memℒp.finStronglyMeasurable_of_stronglyMeasurable
 
 theorem Memℒp.aefinStronglyMeasurable (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     AEFinStronglyMeasurable f μ :=
@@ -61,17 +58,13 @@ theorem Memℒp.aefinStronglyMeasurable (hf : Memℒp f p μ) (hp_ne_zero : p �
           hf).finStronglyMeasurable_of_stronglyMeasurable
       hf.aestronglyMeasurable.stronglyMeasurable_mk hp_ne_zero hp_ne_top,
     hf.aestronglyMeasurable.ae_eq_mk⟩
-#align measure_theory.mem_ℒp.ae_fin_strongly_measurable MeasureTheory.Memℒp.aefinStronglyMeasurable
 
 theorem Integrable.aefinStronglyMeasurable (hf : Integrable f μ) : AEFinStronglyMeasurable f μ :=
   (memℒp_one_iff_integrable.mpr hf).aefinStronglyMeasurable one_ne_zero ENNReal.coe_ne_top
-#align measure_theory.integrable.ae_fin_strongly_measurable MeasureTheory.Integrable.aefinStronglyMeasurable
 
 theorem Lp.finStronglyMeasurable (f : Lp G p μ) (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     FinStronglyMeasurable f μ :=
   (Lp.memℒp f).finStronglyMeasurable_of_stronglyMeasurable (Lp.stronglyMeasurable f) hp_ne_zero
     hp_ne_top
-set_option linter.uppercaseLean3 false in
-#align measure_theory.Lp.fin_strongly_measurable MeasureTheory.Lp.finStronglyMeasurable
 
 end MeasureTheory

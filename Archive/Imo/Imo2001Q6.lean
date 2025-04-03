@@ -7,8 +7,6 @@ import Mathlib.Algebra.Associated.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 
-#align_import imo.imo2001_q6 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
-
 /-!
 # IMO 2001 Q6
 Let $a$, $b$, $c$, $d$ be integers with $a > b > c > d > 0$. Suppose that
@@ -41,4 +39,3 @@ theorem imo2001_q6 (hd : 0 < d) (hdc : d < c) (hcb : c < b) (hba : b < a)
   · have aux : 0 < a * d + b * c := by nlinarith only [ha, hb, hc, hd]
     have : a * c + b * d ≤ a * d + b * c := Int.le_of_dvd aux h2
     nlinarith only [hba, hdc, h, this]
-#align imo2001_q6 imo2001_q6

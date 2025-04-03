@@ -69,13 +69,11 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(↑s : GenContFract K).TerminatedAt 
       rw [pow_succ_n, ← this]
       ring
     exact IH <| Or.inr <| mt (terminated_stable <| n.sub_le 1) not_terminated_at_n
-#align generalized_continued_fraction.determinant_aux SimpContFract.determinant_aux
 
 /-- The determinant formula `Aₙ * Bₙ₊₁ - Bₙ * Aₙ₊₁ = (-1)^(n + 1)`. -/
 theorem determinant (not_terminatedAt_n : ¬(↑s : GenContFract K).TerminatedAt n) :
     (↑s : GenContFract K).nums n * (↑s : GenContFract K).dens (n + 1) -
       (↑s : GenContFract K).dens n * (↑s : GenContFract K).nums (n + 1) = (-1) ^ (n + 1) :=
   determinant_aux <| Or.inr <| not_terminatedAt_n
-#align generalized_continued_fraction.determinant SimpContFract.determinant
 
 end SimpContFract

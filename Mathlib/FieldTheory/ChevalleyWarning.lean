@@ -5,8 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.FieldTheory.Finite.Basic
 
-#align_import field_theory.chevalley_warning from "leanprover-community/mathlib"@"e001509c11c4d0f549d91d89da95b4a0b43c714f"
-
 /-!
 # The Chevalley–Warning theorem
 
@@ -95,7 +93,6 @@ theorem MvPolynomial.sum_eval_eq_zero (f : MvPolynomial σ K)
   rintro ⟨j, hj⟩
   show (e a : σ → K) j ^ d j = x₀ ⟨j, hj⟩ ^ d j
   rw [Equiv.subtypeEquivCodomain_symm_apply_ne]
-#align mv_polynomial.sum_eval_eq_zero MvPolynomial.sum_eval_eq_zero
 
 variable [DecidableEq K] (p : ℕ) [CharP K p]
 
@@ -158,7 +155,6 @@ theorem char_dvd_card_solutions_of_sum_lt {s : Finset ι} {f : ι → MvPolynomi
         max (1 : MvPolynomial σ K).totalDegree (f i ^ (q - 1)).totalDegree := totalDegree_sub _ _
     _ ≤ (f i ^ (q - 1)).totalDegree := by simp
     _ ≤ (q - 1) * (f i).totalDegree := totalDegree_pow _ _
-#align char_dvd_card_solutions_of_sum_lt char_dvd_card_solutions_of_sum_lt
 
 /-- The **Chevalley–Warning theorem**, `Fintype` version.
 Let `(f i)` be a finite family of multivariate polynomials
@@ -169,7 +165,6 @@ theorem char_dvd_card_solutions_of_fintype_sum_lt [Fintype ι] {f : ι → MvPol
     (h : (∑ i, (f i).totalDegree) < Fintype.card σ) :
     p ∣ Fintype.card { x : σ → K // ∀ i, eval x (f i) = 0 } := by
   simpa using char_dvd_card_solutions_of_sum_lt p h
-#align char_dvd_card_solutions_of_fintype_sum_lt char_dvd_card_solutions_of_fintype_sum_lt
 
 /-- The **Chevalley–Warning theorem**, unary version.
 Let `f` be a multivariate polynomial in finitely many variables (`X s`, `s : σ`)
@@ -186,7 +181,6 @@ theorem char_dvd_card_solutions {f : MvPolynomial σ K} (h : f.totalDegree < Fin
   -- `  char_dvd_card_solutions_of_sum_lt p this`
   convert char_dvd_card_solutions_of_sum_lt p this
   aesop
-#align char_dvd_card_solutions char_dvd_card_solutions
 
 /-- The **Chevalley–Warning theorem**, binary version.
 Let `f₁`, `f₂` be two multivariate polynomials in finitely many variables (`X s`, `s : σ`) over a
@@ -199,6 +193,5 @@ theorem char_dvd_card_solutions_of_add_lt {f₁ f₂ : MvPolynomial σ K}
   let F : Bool → MvPolynomial σ K := fun b => cond b f₂ f₁
   have : (∑ b : Bool, (F b).totalDegree) < Fintype.card σ := (add_comm _ _).trans_lt h
   simpa only [Bool.forall_bool] using char_dvd_card_solutions_of_fintype_sum_lt p this
-#align char_dvd_card_solutions_of_add_lt char_dvd_card_solutions_of_add_lt
 
 end FiniteField

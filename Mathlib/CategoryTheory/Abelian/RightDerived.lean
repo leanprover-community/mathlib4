@@ -6,8 +6,6 @@ Authors: Jujian Zhang, Scott Morrison, Joël Riou
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.CategoryTheory.Abelian.InjectiveResolution
 
-#align_import category_theory.abelian.right_derived from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
-
 /-!
 # Right-derived functors
 
@@ -104,7 +102,6 @@ lemma InjectiveResolution.isoRightDerivedToHomotopyCategoryObj_inv_naturality
 /-- The right derived functors of an additive functor. -/
 noncomputable def Functor.rightDerived (F : C ⥤ D) [F.Additive] (n : ℕ) : C ⥤ D :=
   F.rightDerivedToHomotopyCategory ⋙ HomotopyCategory.homologyFunctor D _ n
-#align category_theory.functor.right_derived CategoryTheory.Functor.rightDerived
 
 /-- We can compute a right derived functor using a chosen injective resolution. -/
 noncomputable def InjectiveResolution.isoRightDerivedObj {X : C} (I : InjectiveResolution X)
@@ -166,7 +163,6 @@ theorem Functor.rightDerived_map_eq (F : C ⥤ D) [F.Additive] (n : ℕ) {X Y : 
     assoc, assoc, Iso.inv_hom_id, comp_id]
   rw [← HomologicalComplex.comp_f, w, HomologicalComplex.comp_f,
     CochainComplex.single₀_map_f_zero]
-#align category_theory.functor.right_derived_map_eq CategoryTheory.Functor.rightDerived_map_eq
 
 /-- The natural transformation
 `F.rightDerivedToHomotopyCategory ⟶ G.rightDerivedToHomotopyCategory` induced by
@@ -212,7 +208,6 @@ noncomputable def NatTrans.rightDerived
     {F G : C ⥤ D} [F.Additive] [G.Additive] (α : F ⟶ G) (n : ℕ) :
     F.rightDerived n ⟶ G.rightDerived n :=
   whiskerRight (NatTrans.rightDerivedToHomotopyCategory α) _
-#align category_theory.nat_trans.right_derived CategoryTheory.NatTrans.rightDerived
 
 @[simp]
 theorem NatTrans.rightDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
@@ -220,14 +215,12 @@ theorem NatTrans.rightDerived_id (F : C ⥤ D) [F.Additive] (n : ℕ) :
   dsimp only [rightDerived]
   simp only [rightDerivedToHomotopyCategory_id, whiskerRight_id']
   rfl
-#align category_theory.nat_trans.right_derived_id CategoryTheory.NatTrans.rightDerived_id
 
 @[simp, reassoc]
 theorem NatTrans.rightDerived_comp {F G H : C ⥤ D} [F.Additive] [G.Additive] [H.Additive]
     (α : F ⟶ G) (β : G ⟶ H) (n : ℕ) :
     NatTrans.rightDerived (α ≫ β) n = NatTrans.rightDerived α n ≫ NatTrans.rightDerived β n := by
   simp [NatTrans.rightDerived]
-#align category_theory.nat_trans.right_derived_comp CategoryTheory.NatTrans.rightDerived_comp
 
 namespace InjectiveResolution
 

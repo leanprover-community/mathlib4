@@ -7,8 +7,6 @@ import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Group.Nat
 import Mathlib.Algebra.Ring.Defs
 
-#align_import data.nat.basic from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
-
 /-!
 # The natural numbers form a semiring
 
@@ -39,7 +37,6 @@ instance instCommSemiring : CommSemiring ℕ where
 instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ where
   __ : CommMonoidWithZero ℕ := by infer_instance
   mul_left_cancel_of_ne_zero h := Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h)
-#align nat.cancel_comm_monoid_with_zero Nat.instCancelCommMonoidWithZero
 
 instance instMulDivCancelClass : MulDivCancelClass ℕ where
   mul_div_cancel _ _b hb := Nat.mul_div_cancel _ (Nat.pos_iff_ne_zero.2 hb)

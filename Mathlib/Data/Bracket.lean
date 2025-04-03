@@ -6,8 +6,6 @@ Authors: Patrick Lutz, Oliver Nash
 import Mathlib.Mathport.Rename
 import Mathlib.Tactic.TypeStar
 
-#align_import data.bracket from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
-
 /-!
 # Bracket Notation
 This file provides notation which can be used for the Lie bracket, for the commutator of two
@@ -36,6 +34,5 @@ class Bracket (L M : Type*) where
   /-- `⁅x, y⁆` is the result of a bracket operation on elements `x` and `y`.
   It is supported by the `Bracket` typeclass. -/
   bracket : L → M → M
-#align has_bracket Bracket
 
 @[inherit_doc] notation "⁅" x ", " y "⁆" => Bracket.bracket x y

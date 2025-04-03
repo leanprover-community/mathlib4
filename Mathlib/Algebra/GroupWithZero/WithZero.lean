@@ -34,7 +34,6 @@ instance one : One (WithZero α) where
   __ := ‹One α›
 
 @[simp, norm_cast] lemma coe_one : ((1 : α) : WithZero α) = 1 := rfl
-#align with_zero.coe_one WithZero.coe_one
 
 end One
 
@@ -47,7 +46,6 @@ instance mulZeroClass : MulZeroClass (WithZero α) where
   mul_zero := Option.map₂_none_right (· * ·)
 
 @[simp, norm_cast] lemma coe_mul (a b : α) : (↑(a * b) : WithZero α) = a * b := rfl
-#align with_zero.coe_mul WithZero.coe_mul
 
 lemma unzero_mul {x y : WithZero α} (hxy : x * y ≠ 0) :
     unzero hxy = unzero (left_ne_zero_of_mul hxy) * unzero (right_ne_zero_of_mul hxy) := by
@@ -151,7 +149,6 @@ instance pow : Pow (WithZero α) ℕ where
     | some x, n => ↑(x ^ n)
 
 @[simp, norm_cast] lemma coe_pow (a : α) (n : ℕ) : (↑(a ^ n) : WithZero α) = a ^ n := rfl
-#align with_zero.coe_pow WithZero.coe_pow
 
 end Pow
 
@@ -176,10 +173,8 @@ variable [Inv α]
 instance inv : Inv (WithZero α) where inv a := Option.map (·⁻¹) a
 
 @[simp, norm_cast] lemma coe_inv (a : α) : ((a⁻¹ : α) : WithZero α) = (↑a)⁻¹ := rfl
-#align with_zero.coe_inv WithZero.coe_inv
 
 @[simp] protected lemma inv_zero : (0 : WithZero α)⁻¹ = 0 := rfl
-#align with_zero.inv_zero WithZero.inv_zero
 
 end Inv
 
@@ -192,7 +187,6 @@ variable [Div α]
 instance div : Div (WithZero α) where div := Option.map₂ (· / ·)
 
 @[norm_cast] lemma coe_div (a b : α) : ↑(a / b : α) = (a / b : WithZero α) := rfl
-#align with_zero.coe_div WithZero.coe_div
 
 end Div
 
@@ -207,7 +201,6 @@ instance : Pow (WithZero α) ℤ where
     | some x, n => ↑(x ^ n)
 
 @[simp, norm_cast] lemma coe_zpow (a : α) (n : ℤ) : ↑(a ^ n) = (↑a : WithZero α) ^ n := rfl
-#align with_zero.coe_zpow WithZero.coe_zpow
 
 end ZPow
 
@@ -273,7 +266,6 @@ def unitsWithZeroEquiv : (WithZero α)ˣ ≃* α where
   left_inv _ := Units.ext <| by simp only [coe_unzero, Units.mk0_val]
   right_inv _ := rfl
   map_mul' _ _ := coe_inj.mp <| by simp only [Units.val_mul, coe_unzero, coe_mul]
-#align with_zero.units_with_zero_equiv WithZero.unitsWithZeroEquiv
 
 end Group
 

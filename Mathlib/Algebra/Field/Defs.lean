@@ -6,8 +6,6 @@ Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro, Yaël
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Rat.Init
 
-#align_import algebra.field.defs from "leanprover-community/mathlib"@"2651125b48fc5c170ab1111afd0817c903b1fc6c"
-
 /-!
 # Division (semi)rings and (semi)fields
 
@@ -74,9 +72,6 @@ def NNRat.castRec [NatCast K] [Div K] (q : ℚ≥0) : K := q.num / q.den
 Do not use this directly (instances of `DivisionRing` are allowed to override that default for
 better definitional properties). Instead, use the coercion. -/
 def Rat.castRec [NatCast K] [IntCast K] [Div K] (q : ℚ) : K := q.num / q.den
-#align rat.cast_rec Rat.castRec
-
-#noalign qsmul_rec
 
 /-- A `DivisionSemiring` is a `Semiring` with multiplicative inverses for nonzero elements.
 
@@ -104,7 +99,6 @@ class DivisionSemiring (α : Type*) extends Semiring α, GroupWithZero α, NNRat
 
   Do not use this lemma directly. Use `NNRat.smul_def` instead. -/
   protected nnqsmul_def (q : ℚ≥0) (a : α) : nnqsmul q a = NNRat.cast q * a := by intros; rfl
-#align division_semiring DivisionSemiring
 
 /-- A `DivisionRing` is a `Ring` with multiplicative inverses for nonzero elements.
 
@@ -154,13 +148,10 @@ class DivisionRing (α : Type*)
 
   Do not use this lemma directly. Use `Rat.cast_def` instead. -/
   protected qsmul_def (a : ℚ) (x : α) : qsmul a x = Rat.cast a * x := by intros; rfl
-#align division_ring DivisionRing
-#align division_ring.rat_cast_mk DivisionRing.ratCast_def
 
 -- see Note [lower instance priority]
 instance (priority := 100) DivisionRing.toDivisionSemiring [DivisionRing α] : DivisionSemiring α :=
   { ‹DivisionRing α› with }
-#align division_ring.to_division_semiring DivisionRing.toDivisionSemiring
 
 /-- A `Semifield` is a `CommSemiring` with multiplicative inverses for nonzero elements.
 
@@ -172,7 +163,6 @@ itself). See also note [forgetful inheritance].
 If the semifield has positive characteristic `p`, our division by zero convention forces
 `nnratCast (1 / p) = 1 / 0 = 0`. -/
 class Semifield (α : Type*) extends CommSemiring α, DivisionSemiring α, CommGroupWithZero α
-#align semifield Semifield
 
 /-- A `Field` is a `CommRing` with multiplicative inverses for nonzero elements.
 
@@ -184,11 +174,9 @@ See also note [forgetful inheritance].
 If the field has positive characteristic `p`, our division by zero convention forces
 `ratCast (1 / p) = 1 / 0 = 0`. -/
 class Field (K : Type u) extends CommRing K, DivisionRing K
-#align field Field
 
 -- see Note [lower instance priority]
 instance (priority := 100) Field.toSemifield [Field α] : Semifield α := { ‹Field α› with }
-#align field.to_semifield Field.toSemifield
 
 namespace NNRat
 variable [DivisionSemiring α]
@@ -210,22 +198,17 @@ namespace Rat
 variable [DivisionRing K] {a b : K}
 
 lemma cast_def (q : ℚ) : (q : K) = q.num / q.den := DivisionRing.ratCast_def _
-#align rat.cast_def Rat.cast_def
 
 lemma cast_mk' (a b h1 h2) : ((⟨a, b, h1, h2⟩ : ℚ) : K) = a / b := cast_def _
-#align rat.cast_mk' Rat.cast_mk'
 
 instance (priority := 100) smulDivisionRing : SMul ℚ K :=
   ⟨DivisionRing.qsmul⟩
-#align rat.smul_division_ring Rat.smulDivisionRing
 
 theorem smul_def (a : ℚ) (x : K) : a • x = ↑a * x := DivisionRing.qsmul_def a x
-#align rat.smul_def Rat.smul_def
 
 @[simp]
 theorem smul_one_eq_cast (A : Type*) [DivisionRing A] (m : ℚ) : m • (1 : A) = ↑m := by
   rw [Rat.smul_def, mul_one]
-#align rat.smul_one_eq_coe Rat.smul_one_eq_cast
 
 @[deprecated (since := "2024-05-03")] alias smul_one_eq_coe := smul_one_eq_cast
 

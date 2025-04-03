@@ -7,8 +7,6 @@ import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.NormedSpace.Completion
 
-#align_import analysis.analytic.uniqueness from "leanprover-community/mathlib"@"a3209ddf94136d36e5e5c624b10b2a347cc9d090"
-
 /-!
 # Uniqueness principle for analytic functions
 
@@ -68,7 +66,6 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux [CompleteSpace F] {f 
     ext n
     exact this.apply_eq_zero n _
   exact HasSum.unique A B
-#align analytic_on.eq_on_zero_of_preconnected_of_eventually_eq_zero_aux AnalyticOn.eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux
 
 /-- The *identity principle* for analytic functions: If an analytic function vanishes in a whole
 neighborhood of a point `z₀`, then it is uniformly zero along a connected set. For a one-dimensional
@@ -87,7 +84,6 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
   intro z hz
   have : e (f z) = e 0 := by simpa only using A hz
   exact UniformSpace.Completion.coe_injective F this
-#align analytic_on.eq_on_zero_of_preconnected_of_eventually_eq_zero AnalyticOn.eqOn_zero_of_preconnected_of_eventuallyEq_zero
 
 /-- The *identity principle* for analytic functions: If two analytic functions coincide in a whole
 neighborhood of a point `z₀`, then they coincide globally along a connected set.
@@ -99,7 +95,6 @@ theorem eqOn_of_preconnected_of_eventuallyEq {f g : E → F} {U : Set E} (hf : A
   have hfg' : f - g =ᶠ[𝓝 z₀] 0 := hfg.mono fun z h => by simp [h]
   simpa [sub_eq_zero] using fun z hz =>
     (hf.sub hg).eqOn_zero_of_preconnected_of_eventuallyEq_zero hU h₀ hfg' hz
-#align analytic_on.eq_on_of_preconnected_of_eventually_eq AnalyticOn.eqOn_of_preconnected_of_eventuallyEq
 
 /-- The *identity principle* for analytic functions: If two analytic functions on a normed space
 coincide in a neighborhood of a point `z₀`, then they coincide everywhere.
@@ -109,6 +104,5 @@ theorem eq_of_eventuallyEq {f g : E → F} [PreconnectedSpace E] (hf : AnalyticO
     (hg : AnalyticOn 𝕜 g univ) {z₀ : E} (hfg : f =ᶠ[𝓝 z₀] g) : f = g :=
   funext fun x =>
     eqOn_of_preconnected_of_eventuallyEq hf hg isPreconnected_univ (mem_univ z₀) hfg (mem_univ x)
-#align analytic_on.eq_of_eventually_eq AnalyticOn.eq_of_eventuallyEq
 
 end AnalyticOn

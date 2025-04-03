@@ -30,4 +30,3 @@ example [CharZero K] : SplittingField.algebra' f = algebraRat :=
 example {q : ℚ[X]} : algebraInt (SplittingField q) = SplittingField.algebra' q :=
   rfl
   -- TODO: by with_reducible_and_instances rfl fails
-

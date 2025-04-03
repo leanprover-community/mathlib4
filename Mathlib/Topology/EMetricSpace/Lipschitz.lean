@@ -7,8 +7,6 @@ import Mathlib.Logic.Function.Iterate
 import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Tactic.GCongr
 
-#align_import topology.metric_space.lipschitz from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
-
 /-!
 # Lipschitz continuous functions
 
@@ -54,13 +52,11 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {K : ℝ≥0} {s t : Se
 /-- A function `f` is **Lipschitz continuous** with constant `K ≥ 0` if for all `x, y`
 we have `dist (f x) (f y) ≤ K * dist x y`. -/
 def LipschitzWith (K : ℝ≥0) (f : α → β) := ∀ x y, edist (f x) (f y) ≤ K * edist x y
-#align lipschitz_with LipschitzWith
 
 /-- A function `f` is **Lipschitz continuous** with constant `K ≥ 0` **on `s`** if
 for all `x, y` in `s` we have `dist (f x) (f y) ≤ K * dist x y`. -/
 def LipschitzOnWith (K : ℝ≥0) (f : α → β) (s : Set α) :=
   ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄, y ∈ s → edist (f x) (f y) ≤ K * edist x y
-#align lipschitz_on_with LipschitzOnWith
 
 /-- `f : α → β` is called **locally Lipschitz continuous** iff every point `x`
 has a neighourhood on which `f` is Lipschitz. -/
@@ -74,14 +70,12 @@ def LocallyLipschitzOn (s : Set α) (f : α → β) : Prop :=
 /-- Every function is Lipschitz on the empty set (with any Lipschitz constant). -/
 @[simp]
 theorem lipschitzOnWith_empty (K : ℝ≥0) (f : α → β) : LipschitzOnWith K f ∅ := fun _ => False.elim
-#align lipschitz_on_with_empty lipschitzOnWith_empty
 
 @[simp] lemma locallyLipschitzOn_empty (f : α → β) : LocallyLipschitzOn ∅ f := fun _ ↦ False.elim
 
 /-- Being Lipschitz on a set is monotone w.r.t. that set. -/
 theorem LipschitzOnWith.mono (hf : LipschitzOnWith K f t) (h : s ⊆ t) : LipschitzOnWith K f s :=
   fun _x x_in _y y_in => hf (h x_in) (h y_in)
-#align lipschitz_on_with.mono LipschitzOnWith.mono
 
 lemma LocallyLipschitzOn.mono (hf : LocallyLipschitzOn t f) (h : s ⊆ t) : LocallyLipschitzOn s f :=
   fun x hx ↦ by obtain ⟨K, u, hu, hfu⟩ := hf (h hx); exact ⟨K, u, nhdsWithin_mono _ h hu, hfu⟩
@@ -89,7 +83,6 @@ lemma LocallyLipschitzOn.mono (hf : LocallyLipschitzOn t f) (h : s ⊆ t) : Loca
 /-- `f` is Lipschitz iff it is Lipschitz on the entire space. -/
 @[simp] lemma lipschitzOnWith_univ : LipschitzOnWith K f univ ↔ LipschitzWith K f := by
   simp [LipschitzOnWith, LipschitzWith]
-#align lipschitz_on_univ lipschitzOnWith_univ
 
 @[deprecated (since := "2024-07-17")] alias lipschitzOn_univ := lipschitzOnWith_univ
 
@@ -98,7 +91,6 @@ lemma LocallyLipschitzOn.mono (hf : LocallyLipschitzOn t f) (h : s ⊆ t) : Loca
 
 theorem lipschitzOnWith_iff_restrict : LipschitzOnWith K f s ↔ LipschitzWith K (s.restrict f) := by
   simp only [LipschitzOnWith, LipschitzWith, SetCoe.forall', restrict, Subtype.edist_eq]
-#align lipschitz_on_with_iff_restrict lipschitzOnWith_iff_restrict
 
 lemma lipschitzOnWith_restrict {t : Set s} :
     LipschitzOnWith K (s.restrict f) t ↔ LipschitzOnWith K f (s ∩ Subtype.val '' t) := by
@@ -119,15 +111,12 @@ lemma locallyLipschitzOn_iff_restrict :
 
 alias ⟨LipschitzOnWith.to_restrict, _⟩ := lipschitzOnWith_iff_restrict
 alias ⟨LocallyLipschitzOn.restrict, _⟩ := locallyLipschitzOn_iff_restrict
-#align lipschitz_on_with.to_restrict LipschitzOnWith.to_restrict
 
 lemma Set.MapsTo.lipschitzOnWith_iff_restrict {t : Set β} (h : MapsTo f s t) :
     LipschitzOnWith K f s ↔ LipschitzWith K (h.restrict f s t) :=
   _root_.lipschitzOnWith_iff_restrict
-#align maps_to.lipschitz_on_with_iff_restrict Set.MapsTo.lipschitzOnWith_iff_restrict
 
 alias ⟨LipschitzOnWith.to_restrict_mapsTo, _⟩ := Set.MapsTo.lipschitzOnWith_iff_restrict
-#align lipschitz_on_with.to_restrict_maps_to LipschitzOnWith.to_restrict_mapsTo
 
 end PseudoEMetricSpace
 
@@ -140,78 +129,63 @@ variable {K : ℝ≥0} {f : α → β} {x y : α} {r : ℝ≥0∞}
 
 protected theorem lipschitzOnWith (h : LipschitzWith K f) (s : Set α) : LipschitzOnWith K f s :=
   fun x _ y _ => h x y
-#align lipschitz_with.lipschitz_on_with LipschitzWith.lipschitzOnWith
 
 theorem edist_le_mul (h : LipschitzWith K f) (x y : α) : edist (f x) (f y) ≤ K * edist x y :=
   h x y
-#align lipschitz_with.edist_le_mul LipschitzWith.edist_le_mul
 
 theorem edist_le_mul_of_le (h : LipschitzWith K f) (hr : edist x y ≤ r) :
     edist (f x) (f y) ≤ K * r :=
   (h x y).trans <| ENNReal.mul_left_mono hr
-#align lipschitz_with.edist_le_mul_of_le LipschitzWith.edist_le_mul_of_le
 
 theorem edist_lt_mul_of_lt (h : LipschitzWith K f) (hK : K ≠ 0) (hr : edist x y < r) :
     edist (f x) (f y) < K * r :=
   (h x y).trans_lt <| (ENNReal.mul_lt_mul_left (ENNReal.coe_ne_zero.2 hK) ENNReal.coe_ne_top).2 hr
-#align lipschitz_with.edist_lt_mul_of_lt LipschitzWith.edist_lt_mul_of_lt
 
 theorem mapsTo_emetric_closedBall (h : LipschitzWith K f) (x : α) (r : ℝ≥0∞) :
     MapsTo f (closedBall x r) (closedBall (f x) (K * r)) := fun _y hy => h.edist_le_mul_of_le hy
-#align lipschitz_with.maps_to_emetric_closed_ball LipschitzWith.mapsTo_emetric_closedBall
 
 theorem mapsTo_emetric_ball (h : LipschitzWith K f) (hK : K ≠ 0) (x : α) (r : ℝ≥0∞) :
     MapsTo f (ball x r) (ball (f x) (K * r)) := fun _y hy => h.edist_lt_mul_of_lt hK hy
-#align lipschitz_with.maps_to_emetric_ball LipschitzWith.mapsTo_emetric_ball
 
 theorem edist_lt_top (hf : LipschitzWith K f) {x y : α} (h : edist x y ≠ ⊤) :
     edist (f x) (f y) < ⊤ :=
   (hf x y).trans_lt <| ENNReal.mul_lt_top ENNReal.coe_ne_top h
-#align lipschitz_with.edist_lt_top LipschitzWith.edist_lt_top
 
 theorem mul_edist_le (h : LipschitzWith K f) (x y : α) :
     (K⁻¹ : ℝ≥0∞) * edist (f x) (f y) ≤ edist x y := by
   rw [mul_comm, ← div_eq_mul_inv]
   exact ENNReal.div_le_of_le_mul' (h x y)
-#align lipschitz_with.mul_edist_le LipschitzWith.mul_edist_le
 
 protected theorem of_edist_le (h : ∀ x y, edist (f x) (f y) ≤ edist x y) : LipschitzWith 1 f :=
   fun x y => by simp only [ENNReal.coe_one, one_mul, h]
-#align lipschitz_with.of_edist_le LipschitzWith.of_edist_le
 
 protected theorem weaken (hf : LipschitzWith K f) {K' : ℝ≥0} (h : K ≤ K') : LipschitzWith K' f :=
   fun x y => le_trans (hf x y) <| ENNReal.mul_right_mono (ENNReal.coe_le_coe.2 h)
-#align lipschitz_with.weaken LipschitzWith.weaken
 
 theorem ediam_image_le (hf : LipschitzWith K f) (s : Set α) :
     EMetric.diam (f '' s) ≤ K * EMetric.diam s := by
   apply EMetric.diam_le
   rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩
   exact hf.edist_le_mul_of_le (EMetric.edist_le_diam_of_mem hx hy)
-#align lipschitz_with.ediam_image_le LipschitzWith.ediam_image_le
 
 theorem edist_lt_of_edist_lt_div (hf : LipschitzWith K f) {x y : α} {d : ℝ≥0∞}
     (h : edist x y < d / K) : edist (f x) (f y) < d :=
   calc
     edist (f x) (f y) ≤ K * edist x y := hf x y
     _ < d := ENNReal.mul_lt_of_lt_div' h
-#align lipschitz_with.edist_lt_of_edist_lt_div LipschitzWith.edist_lt_of_edist_lt_div
 
 /-- A Lipschitz function is uniformly continuous. -/
 protected theorem uniformContinuous (hf : LipschitzWith K f) : UniformContinuous f :=
   EMetric.uniformContinuous_iff.2 fun ε εpos =>
     ⟨ε / K, ENNReal.div_pos_iff.2 ⟨ne_of_gt εpos, ENNReal.coe_ne_top⟩, hf.edist_lt_of_edist_lt_div⟩
-#align lipschitz_with.uniform_continuous LipschitzWith.uniformContinuous
 
 /-- A Lipschitz function is continuous. -/
 protected theorem continuous (hf : LipschitzWith K f) : Continuous f :=
   hf.uniformContinuous.continuous
-#align lipschitz_with.continuous LipschitzWith.continuous
 
 /-- Constant functions are Lipschitz (with any constant). -/
 protected theorem const (b : β) : LipschitzWith 0 fun _ : α => b := fun x y => by
   simp only [edist_self, zero_le]
-#align lipschitz_with.const LipschitzWith.const
 
 protected theorem const' (b : β) {K : ℝ≥0} : LipschitzWith K fun _ : α => b := fun x y => by
   simp only [edist_self, zero_le]
@@ -219,28 +193,22 @@ protected theorem const' (b : β) {K : ℝ≥0} : LipschitzWith K fun _ : α => 
 /-- The identity is 1-Lipschitz. -/
 protected theorem id : LipschitzWith 1 (@id α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
-#align lipschitz_with.id LipschitzWith.id
 
 /-- The inclusion of a subset is 1-Lipschitz. -/
 protected theorem subtype_val (s : Set α) : LipschitzWith 1 (Subtype.val : s → α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
-#align lipschitz_with.subtype_val LipschitzWith.subtype_val
-#align lipschitz_with.subtype_coe LipschitzWith.subtype_val
 
 theorem subtype_mk (hf : LipschitzWith K f) {p : β → Prop} (hp : ∀ x, p (f x)) :
     LipschitzWith K (fun x => ⟨f x, hp x⟩ : α → { y // p y }) :=
   hf
-#align lipschitz_with.subtype_mk LipschitzWith.subtype_mk
 
 protected theorem eval {α : ι → Type u} [∀ i, PseudoEMetricSpace (α i)] [Fintype ι] (i : ι) :
     LipschitzWith 1 (Function.eval i : (∀ i, α i) → α i) :=
   LipschitzWith.of_edist_le fun f g => by convert edist_le_pi_edist f g i
-#align lipschitz_with.eval LipschitzWith.eval
 
 /-- The restriction of a `K`-Lipschitz function is `K`-Lipschitz. -/
 protected theorem restrict (hf : LipschitzWith K f) (s : Set α) : LipschitzWith K (s.restrict f) :=
   fun x y => hf x y
-#align lipschitz_with.restrict LipschitzWith.restrict
 
 /-- The composition of Lipschitz functions is Lipschitz. -/
 protected theorem comp {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} (hf : LipschitzWith Kf f)
@@ -249,20 +217,16 @@ protected theorem comp {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} (hf : L
     edist (f (g x)) (f (g y)) ≤ Kf * edist (g x) (g y) := hf _ _
     _ ≤ Kf * (Kg * edist x y) := ENNReal.mul_left_mono (hg _ _)
     _ = (Kf * Kg : ℝ≥0) * edist x y := by rw [← mul_assoc, ENNReal.coe_mul]
-#align lipschitz_with.comp LipschitzWith.comp
 
 theorem comp_lipschitzOnWith {Kf Kg : ℝ≥0} {f : β → γ} {g : α → β} {s : Set α}
     (hf : LipschitzWith Kf f) (hg : LipschitzOnWith Kg g s) : LipschitzOnWith (Kf * Kg) (f ∘ g) s :=
   lipschitzOnWith_iff_restrict.mpr <| hf.comp hg.to_restrict
-#align lipschitz_with.comp_lipschitz_on_with LipschitzWith.comp_lipschitzOnWith
 
 protected theorem prod_fst : LipschitzWith 1 (@Prod.fst α β) :=
   LipschitzWith.of_edist_le fun _ _ => le_max_left _ _
-#align lipschitz_with.prod_fst LipschitzWith.prod_fst
 
 protected theorem prod_snd : LipschitzWith 1 (@Prod.snd α β) :=
   LipschitzWith.of_edist_le fun _ _ => le_max_right _ _
-#align lipschitz_with.prod_snd LipschitzWith.prod_snd
 
 /-- If `f` and `g` are Lipschitz functions, so is the induced map `f × g` to the product type. -/
 protected theorem prod {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f) {g : α → γ} {Kg : ℝ≥0}
@@ -270,15 +234,12 @@ protected theorem prod {f : α → β} {Kf : ℝ≥0} (hf : LipschitzWith Kf f) 
   intro x y
   rw [ENNReal.coe_mono.map_max, Prod.edist_eq, ENNReal.max_mul]
   exact max_le_max (hf x y) (hg x y)
-#align lipschitz_with.prod LipschitzWith.prod
 
 protected theorem prod_mk_left (a : α) : LipschitzWith 1 (Prod.mk a : β → α × β) := by
   simpa only [max_eq_right zero_le_one] using (LipschitzWith.const a).prod LipschitzWith.id
-#align lipschitz_with.prod_mk_left LipschitzWith.prod_mk_left
 
 protected theorem prod_mk_right (b : β) : LipschitzWith 1 fun a : α => (a, b) := by
   simpa only [max_eq_left zero_le_one] using LipschitzWith.id.prod (LipschitzWith.const b)
-#align lipschitz_with.prod_mk_right LipschitzWith.prod_mk_right
 
 protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ b, LipschitzWith Kα fun a => f a b)
     (hβ : ∀ a, LipschitzWith Kβ (f a)) : LipschitzWith (Kα + Kβ) (Function.uncurry f) := by
@@ -288,24 +249,20 @@ protected theorem uncurry {f : α → β → γ} {Kα Kβ : ℝ≥0} (hα : ∀ 
   exact
     add_le_add (le_trans (hα _ _ _) <| ENNReal.mul_left_mono <| le_max_left _ _)
       (le_trans (hβ _ _ _) <| ENNReal.mul_left_mono <| le_max_right _ _)
-#align lipschitz_with.uncurry LipschitzWith.uncurry
 
 /-- Iterates of a Lipschitz function are Lipschitz. -/
 protected theorem iterate {f : α → α} (hf : LipschitzWith K f) : ∀ n, LipschitzWith (K ^ n) f^[n]
   | 0 => by simpa only [pow_zero] using LipschitzWith.id
   | n + 1 => by rw [pow_succ]; exact (LipschitzWith.iterate hf n).comp hf
-#align lipschitz_with.iterate LipschitzWith.iterate
 
 theorem edist_iterate_succ_le_geometric {f : α → α} (hf : LipschitzWith K f) (x n) :
     edist (f^[n] x) (f^[n + 1] x) ≤ edist x (f x) * (K : ℝ≥0∞) ^ n := by
   rw [iterate_succ, mul_comm]
   simpa only [ENNReal.coe_pow] using (hf.iterate n) x (f x)
-#align lipschitz_with.edist_iterate_succ_le_geometric LipschitzWith.edist_iterate_succ_le_geometric
 
 protected theorem mul_end {f g : Function.End α} {Kf Kg} (hf : LipschitzWith Kf f)
     (hg : LipschitzWith Kg g) : LipschitzWith (Kf * Kg) (f * g : Function.End α) :=
   hf.comp hg
-#align lipschitz_with.mul LipschitzWith.mul_end
 
 /-- The product of a list of Lipschitz continuous endomorphisms is a Lipschitz continuous
 endomorphism. -/
@@ -315,7 +272,6 @@ protected theorem list_prod (f : ι → Function.End α) (K : ι → ℝ≥0)
   | i::l => by
     simp only [List.map_cons, List.prod_cons]
     exact (h i).mul_end (LipschitzWith.list_prod f K h l)
-#align lipschitz_with.list_prod LipschitzWith.list_prod
 
 protected theorem pow_end {f : Function.End α} {K} (h : LipschitzWith K f) :
     ∀ n : ℕ, LipschitzWith (K ^ n) (f ^ n : Function.End α)
@@ -323,7 +279,6 @@ protected theorem pow_end {f : Function.End α} {K} (h : LipschitzWith K f) :
   | n + 1 => by
     rw [pow_succ, pow_succ]
     exact (LipschitzWith.pow_end h n).mul_end h
-#align lipschitz_with.pow LipschitzWith.pow_end
 
 end LipschitzWith
 
@@ -334,11 +289,9 @@ variable {K : ℝ≥0} {s : Set α} {f : α → β}
 
 protected theorem uniformContinuousOn (hf : LipschitzOnWith K f s) : UniformContinuousOn f s :=
   uniformContinuousOn_iff_restrict.mpr hf.to_restrict.uniformContinuous
-#align lipschitz_on_with.uniform_continuous_on LipschitzOnWith.uniformContinuousOn
 
 protected theorem continuousOn (hf : LipschitzOnWith K f s) : ContinuousOn f s :=
   hf.uniformContinuousOn.continuousOn
-#align lipschitz_on_with.continuous_on LipschitzOnWith.continuousOn
 
 theorem edist_le_mul_of_le (h : LipschitzOnWith K f s) {x y : α} (hx : x ∈ s) (hy : y ∈ s)
     {r : ℝ≥0∞} (hr : edist x y ≤ r) :
@@ -349,12 +302,10 @@ theorem edist_lt_of_edist_lt_div (hf : LipschitzOnWith K f s) {x y : α} (hx : x
     {d : ℝ≥0∞} (hd : edist x y < d / K) : edist (f x) (f y) < d :=
    hf.to_restrict.edist_lt_of_edist_lt_div <|
     show edist (⟨x, hx⟩ : s) ⟨y, hy⟩ < d / K from hd
-#align lipschitz_on_with.edist_lt_of_edist_lt_div LipschitzOnWith.edist_lt_of_edist_lt_div
 
 protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : LipschitzOnWith Kg g t)
     (hf : LipschitzOnWith K f s) (hmaps : MapsTo f s t) : LipschitzOnWith (Kg * K) (g ∘ f) s :=
   lipschitzOnWith_iff_restrict.mpr <| hg.to_restrict.comp (hf.to_restrict_mapsTo hmaps)
-#align lipschitz_on_with.comp LipschitzOnWith.comp
 
 /-- If `f` and `g` are Lipschitz on `s`, so is the induced map `f × g` to the product type. -/
 protected theorem prod {g : α → γ} {Kf Kg : ℝ≥0} (hf : LipschitzOnWith Kf f s)
@@ -373,7 +324,6 @@ theorem ediam_image2_le (f : α → β → γ) {K₁ K₂ : ℝ≥0} (s : Set α
     add_le_add
       ((hf₁ b₁ hb₁ ha₁ ha₂).trans <| ENNReal.mul_left_mono <| EMetric.edist_le_diam_of_mem ha₁ ha₂)
       ((hf₂ a₂ ha₂ hb₁ hb₂).trans <| ENNReal.mul_left_mono <| EMetric.edist_le_diam_of_mem hb₁ hb₂)
-#align lipschitz_on_with.ediam_image2_le LipschitzOnWith.ediam_image2_le
 
 end LipschitzOnWith
 
@@ -499,7 +449,6 @@ theorem continuousOn_prod_of_continuousOn_lipschitzOnWith [PseudoEMetricSpace α
     (hb : ∀ b ∈ t, LipschitzOnWith K (fun x => f (x, b)) s) : ContinuousOn f (s ×ˢ t) :=
   continuousOn_prod_of_subset_closure_continuousOn_lipschitzOnWith
     f Subset.rfl subset_closure K ha hb
-#align continuous_on_prod_of_continuous_on_lipschitz_on continuousOn_prod_of_continuousOn_lipschitzOnWith
 
 /-- Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical section”
 `{a} × univ` for `a : α` from a dense set. Suppose that it is Lipschitz continuous on each
@@ -526,4 +475,3 @@ theorem continuous_prod_of_continuous_lipschitzWith [PseudoEMetricSpace α] [Top
     [PseudoEMetricSpace γ] (f : α × β → γ) (K : ℝ≥0) (ha : ∀ a, Continuous fun y => f (a, y))
     (hb : ∀ b, LipschitzWith K fun x => f (x, b)) : Continuous f :=
   continuous_prod_of_dense_continuous_lipschitzWith f K dense_univ (fun _ _ ↦ ha _) hb
-#align continuous_prod_of_continuous_lipschitz continuous_prod_of_continuous_lipschitzWith

@@ -9,8 +9,6 @@ import Mathlib.Algebra.Polynomial.Induction
 import Mathlib.Algebra.Polynomial.EraseLead
 import Mathlib.Order.Interval.Finset.Nat
 
-#align_import data.polynomial.inductions from "leanprover-community/mathlib"@"57e09a1296bfb4330ddf6624f1028ba186117d82"
-
 /-!
 # Induction on polynomials
 
@@ -38,19 +36,13 @@ variable [Semiring R] {p q : R[X]}
   It can be used in a semiring where the usual division algorithm is not possible -/
 def divX (p : R[X]) : R[X] :=
   ⟨AddMonoidAlgebra.divOf p.toFinsupp 1⟩
-set_option linter.uppercaseLean3 false in
-#align polynomial.div_X Polynomial.divX
 
 @[simp]
 theorem coeff_divX : (divX p).coeff n = p.coeff (n + 1) := by
   rw [add_comm]; cases p; rfl
-set_option linter.uppercaseLean3 false in
-#align polynomial.coeff_div_X Polynomial.coeff_divX
 
 theorem divX_mul_X_add (p : R[X]) : divX p * X + C (p.coeff 0) = p :=
   ext <| by rintro ⟨_ | _⟩ <;> simp [coeff_C, Nat.succ_ne_zero, coeff_mul_X]
-set_option linter.uppercaseLean3 false in
-#align polynomial.div_X_mul_X_add Polynomial.divX_mul_X_add
 
 @[simp]
 theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p :=
@@ -59,18 +51,12 @@ theorem X_mul_divX_add (p : R[X]) : X * divX p + C (p.coeff 0) = p :=
 @[simp]
 theorem divX_C (a : R) : divX (C a) = 0 :=
   ext fun n => by simp [coeff_divX, coeff_C, Finsupp.single_eq_of_ne _]
-set_option linter.uppercaseLean3 false in
-#align polynomial.div_X_C Polynomial.divX_C
 
 theorem divX_eq_zero_iff : divX p = 0 ↔ p = C (p.coeff 0) :=
   ⟨fun h => by simpa [eq_comm, h] using divX_mul_X_add p, fun h => by rw [h, divX_C]⟩
-set_option linter.uppercaseLean3 false in
-#align polynomial.div_X_eq_zero_iff Polynomial.divX_eq_zero_iff
 
 theorem divX_add : divX (p + q) = divX p + divX q :=
   ext <| by simp
-set_option linter.uppercaseLean3 false in
-#align polynomial.div_X_add Polynomial.divX_add
 
 @[simp]
 theorem divX_zero : divX (0 : R[X]) = 0 := leadingCoeff_eq_zero.mp rfl
@@ -141,8 +127,6 @@ theorem degree_divX_lt (hp0 : p ≠ 0) : (divX p).degree < p.degree := by
                     le_rfl
         rw [degree_add_eq_left_of_degree_lt this]; exact degree_lt_degree_mul_X hXp0
     _ = degree p := congr_arg _ (divX_mul_X_add _)
-set_option linter.uppercaseLean3 false in
-#align polynomial.degree_div_X_lt Polynomial.degree_divX_lt
 
 /-- An induction principle for polynomials, valued in Sort* instead of Prop. -/
 @[elab_as_elim]
@@ -164,7 +148,6 @@ noncomputable def recOnHorner {M : R[X] → Sort*} (p : R[X]) (M0 : M 0)
           (if hpX0 : divX p = 0 then show M (divX p * X) by rw [hpX0, zero_mul]; exact M0
           else MX (divX p) hpX0 (recOnHorner _ M0 MC MX))
 termination_by p.degree
-#align polynomial.rec_on_horner Polynomial.recOnHorner
 
 /-- A property holds for all polynomials of positive `degree` with coefficients in a semiring `R`
 if it holds for
@@ -191,7 +174,6 @@ theorem degree_pos_induction_on {P : R[X] → Prop} (p : R[X]) (h0 : 0 < degree 
         rw [eq_C_of_degree_le_zero (le_of_not_gt h0)] at h0' ⊢
         exact hC fun h : coeff p 0 = 0 => by simp [h, Nat.not_lt_zero] at h0')
     h0
-#align polynomial.degree_pos_induction_on Polynomial.degree_pos_induction_on
 
 /-- A property holds for all polynomials of non-zero `natDegree` with coefficients in a
 semiring `R` if it holds for
@@ -226,7 +208,6 @@ theorem natDegree_ne_zero_induction_on {M : R[X] → Prop} {f : R[X]} (f0 : f.na
     · refine Or.inr ?_
       rw [C_mul_X_pow_eq_monomial]
       exact h_monomial a0 n.succ_ne_zero
-#align polynomial.nat_degree_ne_zero_induction_on Polynomial.natDegree_ne_zero_induction_on
 
 end Semiring
 

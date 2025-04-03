@@ -6,8 +6,6 @@ Authors: Damiano Testa, Eric Wieser
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.PUnitInstances.Algebra
 
-#align_import char_p_zero_ne_char_zero from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
-
 /-! # `CharP R 0` and `CharZero R` need not coincide for semirings
 
 For rings, the two notions coincide.
@@ -27,14 +25,11 @@ namespace Counterexample
 @[simp]
 theorem add_one_eq_one (x : WithZero Unit) : x + 1 = 1 :=
   WithZero.cases_on x (by rfl) fun h => by rfl
-#align counterexample.add_one_eq_one Counterexample.add_one_eq_one
 
 theorem withZero_unit_charP_zero : CharP (WithZero Unit) 0 :=
   ⟨fun x => by cases x <;> simp⟩
-#align counterexample.with_zero_unit_char_p_zero Counterexample.withZero_unit_charP_zero
 
 theorem withZero_unit_not_charZero : ¬CharZero (WithZero Unit) := fun ⟨h⟩ =>
   h.ne (by simp : 1 + 1 ≠ 0 + 1) (by set_option simprocs false in simp)
-#align counterexample.with_zero_unit_not_char_zero Counterexample.withZero_unit_not_charZero
 
 end Counterexample

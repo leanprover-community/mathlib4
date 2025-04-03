@@ -7,8 +7,6 @@ import Mathlib.Algebra.Polynomial.Coeff
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.RingTheory.PowerSeries.Basic
 
-#align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
-
 
 /-!
 
@@ -39,19 +37,16 @@ open Finset Nat
 /-- The `n`th truncation of a formal power series to a polynomial -/
 def trunc (n : ℕ) (φ : R⟦X⟧) : R[X] :=
   ∑ m ∈ Ico 0 n, Polynomial.monomial m (coeff R m φ)
-#align power_series.trunc PowerSeries.trunc
 
 theorem coeff_trunc (m) (n) (φ : R⟦X⟧) :
     (trunc n φ).coeff m = if m < n then coeff R m φ else 0 := by
   simp [trunc, Polynomial.coeff_sum, Polynomial.coeff_monomial, Nat.lt_succ_iff]
-#align power_series.coeff_trunc PowerSeries.coeff_trunc
 
 @[simp]
 theorem trunc_zero (n) : trunc n (0 : R⟦X⟧) = 0 :=
   Polynomial.ext fun m => by
     rw [coeff_trunc, LinearMap.map_zero, Polynomial.coeff_zero]
     split_ifs <;> rfl
-#align power_series.trunc_zero PowerSeries.trunc_zero
 
 @[simp]
 theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 :=
@@ -62,15 +57,12 @@ theorem trunc_one (n) : trunc (n + 1) (1 : R⟦X⟧) = 1 :=
     · rfl
     · subst h'; simp at h
     · rfl
-#align power_series.trunc_one PowerSeries.trunc_one
 
 @[simp]
 theorem trunc_C (n) (a : R) : trunc (n + 1) (C R a) = Polynomial.C a :=
   Polynomial.ext fun m => by
     rw [coeff_trunc, coeff_C, Polynomial.coeff_C]
     split_ifs with H <;> first |rfl|try simp_all
-set_option linter.uppercaseLean3 false in
-#align power_series.trunc_C PowerSeries.trunc_C
 
 @[simp]
 theorem trunc_add (n) (φ ψ : R⟦X⟧) : trunc n (φ + ψ) = trunc n φ + trunc n ψ :=
@@ -79,7 +71,6 @@ theorem trunc_add (n) (φ ψ : R⟦X⟧) : trunc n (φ + ψ) = trunc n φ + trun
     split_ifs with H
     · rfl
     · rw [zero_add]
-#align power_series.trunc_add PowerSeries.trunc_add
 
 theorem trunc_succ (f : R⟦X⟧) (n : ℕ) :
     trunc n.succ f = trunc n f + Polynomial.monomial n (coeff R n f) := by

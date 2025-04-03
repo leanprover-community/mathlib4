@@ -6,8 +6,6 @@ Authors: Yakov Pechersky
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.List.GetD
 
-#align_import data.list.to_finsupp from "leanprover-community/mathlib"@"06a655b5fcfbda03502f9158bbf6c0f1400886f9"
-
 /-!
 
 # Lists as finsupp
@@ -50,22 +48,18 @@ def toFinsupp : ℕ →₀ M where
     simp only [Ne, Finset.mem_filter, Finset.mem_range, and_iff_right_iff_imp]
     contrapose!
     exact getD_eq_default _ _
-#align list.to_finsupp List.toFinsupp
 
 @[norm_cast]
 theorem coe_toFinsupp : (l.toFinsupp : ℕ → M) = (l.getD · 0) :=
   rfl
-#align list.coe_to_finsupp List.coe_toFinsupp
 
 @[simp, norm_cast]
 theorem toFinsupp_apply (i : ℕ) : (l.toFinsupp : ℕ → M) i = l.getD i 0 :=
   rfl
-#align list.to_finsupp_apply List.toFinsupp_apply
 
 theorem toFinsupp_support :
     l.toFinsupp.support = (Finset.range l.length).filter (getD l · 0 ≠ 0) :=
   rfl
-#align list.to_finsupp_support List.toFinsupp_support
 
 theorem toFinsupp_apply_lt (hn : n < l.length) : l.toFinsupp n = l.get ⟨n, hn⟩ :=
   getD_eq_get _ _ _
@@ -77,36 +71,30 @@ set_option linter.deprecated false in
 @[deprecated (since := "2023-04-10")]
 theorem toFinsupp_apply_lt' (hn : n < l.length) : l.toFinsupp n = l.nthLe n hn :=
   getD_eq_get _ _ _
-#align list.to_finsupp_apply_lt List.toFinsupp_apply_lt'
 
 theorem toFinsupp_apply_le (hn : l.length ≤ n) : l.toFinsupp n = 0 :=
   getD_eq_default _ _ hn
-#align list.to_finsupp_apply_le List.toFinsupp_apply_le
 
 @[simp]
 theorem toFinsupp_nil [DecidablePred fun i => getD ([] : List M) i 0 ≠ 0] :
     toFinsupp ([] : List M) = 0 := by
   ext
   simp
-#align list.to_finsupp_nil List.toFinsupp_nil
 
 theorem toFinsupp_singleton (x : M) [DecidablePred (getD [x] · 0 ≠ 0)] :
     toFinsupp [x] = Finsupp.single 0 x := by
   ext ⟨_ | i⟩ <;> simp [Finsupp.single_apply, (Nat.zero_lt_succ _).ne]
-#align list.to_finsupp_singleton List.toFinsupp_singleton
 
 @[deprecated "This lemma is unused, and can be proved by `simp`." (since := "2024-06-12")]
 theorem toFinsupp_cons_apply_zero (x : M) (xs : List M)
     [DecidablePred (getD (x::xs) · 0 ≠ 0)] : (x::xs).toFinsupp 0 = x :=
   rfl
-#align list.to_finsupp_cons_apply_zero List.toFinsupp_cons_apply_zero
 
 @[deprecated "This lemma is unused, and can be proved by `simp`." (since := "2024-06-12")]
 theorem toFinsupp_cons_apply_succ (x : M) (xs : List M) (n : ℕ)
     [DecidablePred (getD (x::xs) · 0 ≠ 0)] [DecidablePred (getD xs · 0 ≠ 0)] :
     (x::xs).toFinsupp n.succ = xs.toFinsupp n :=
   rfl
-#align list.to_finsupp_cons_apply_succ List.toFinsupp_cons_apply_succ
 
 theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
     [DecidablePred (getD (l₁ ++ l₂) · 0 ≠ 0)] [DecidablePred (getD l₁ · 0 ≠ 0)]
@@ -134,14 +122,12 @@ theorem toFinsupp_cons_eq_single_add_embDomain {R : Type*} [AddZeroClass R] (x :
     · exact (toFinsupp_singleton x).symm
     · ext n
       exact add_comm n 1
-#align list.to_finsupp_cons_eq_single_add_emb_domain List.toFinsupp_cons_eq_single_add_embDomain
 
 theorem toFinsupp_concat_eq_toFinsupp_add_single {R : Type*} [AddZeroClass R] (x : R) (xs : List R)
     [DecidablePred fun i => getD (xs ++ [x]) i 0 ≠ 0] [DecidablePred fun i => getD xs i 0 ≠ 0] :
     toFinsupp (xs ++ [x]) = toFinsupp xs + Finsupp.single xs.length x := by
   classical rw [toFinsupp_append, toFinsupp_singleton, Finsupp.embDomain_single,
     addLeftEmbedding_apply, add_zero]
-#align list.to_finsupp_concat_eq_to_finsupp_add_single List.toFinsupp_concat_eq_toFinsupp_add_single
 
 
 theorem toFinsupp_eq_sum_map_enum_single {R : Type*} [AddMonoid R] (l : List R)
@@ -154,6 +140,5 @@ theorem toFinsupp_eq_sum_map_enum_single {R : Type*} [AddMonoid R] (l : List R)
   | nil => exact toFinsupp_nil
   | append_singleton x xs ih =>
     classical simp [toFinsupp_concat_eq_toFinsupp_add_single, enum_append, ih]
-#align list.to_finsupp_eq_sum_map_enum_single List.toFinsupp_eq_sum_map_enum_single
 
 end List

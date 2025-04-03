@@ -6,8 +6,6 @@ Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Ring.Int
 
-#align_import algebra.field.power from "leanprover-community/mathlib"@"1e05171a5e8cf18d98d9cf7b207540acb044acae"
-
 /-!
 # Results about powers in fields or division rings.
 
@@ -28,9 +26,7 @@ theorem Odd.neg_zpow (h : Odd n) (a : α) : (-a) ^ n = -a ^ n := by
   obtain ⟨k, rfl⟩ := h
   simp_rw [zpow_add' (.inr (.inl hn)), zpow_one, zpow_mul, zpow_two, neg_mul_neg,
     neg_mul_eq_mul_neg]
-#align odd.neg_zpow Odd.neg_zpow
 
 theorem Odd.neg_one_zpow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_zpow, one_zpow]
-#align odd.neg_one_zpow Odd.neg_one_zpow
 
 end DivisionRing

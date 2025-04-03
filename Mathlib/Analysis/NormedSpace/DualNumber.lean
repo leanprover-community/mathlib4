@@ -6,8 +6,6 @@ Authors: Eric Wieser
 import Mathlib.Algebra.DualNumber
 import Mathlib.Analysis.NormedSpace.TrivSqZeroExt
 
-#align_import analysis.normed_space.dual_number from "leanprover-community/mathlib"@"806c0bb86f6128cfa2f702285727518eb5244390"
-
 /-!
 # Results on `DualNumber R` related to the norm
 
@@ -32,11 +30,9 @@ variable [UniformSpace R] [TopologicalRing R] [CompleteSpace R] [T2Space R]
 @[simp]
 theorem exp_eps : exp (eps : DualNumber R) = 1 + eps :=
   exp_inr _
-#align dual_number.exp_eps DualNumber.exp_eps
 
 @[simp]
 theorem exp_smul_eps (r : R) : exp (r • eps : DualNumber R) = 1 + r • eps := by
   rw [eps, ← inr_smul, exp_inr]
-#align dual_number.exp_smul_eps DualNumber.exp_smul_eps
 
 end DualNumber

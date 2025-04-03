@@ -9,8 +9,6 @@ import Mathlib.Data.Set.Subsingleton
 import Mathlib.Topology.Category.TopCat.Limits.Konig
 import Mathlib.Tactic.AdaptationNote
 
-#align_import category_theory.cofiltered_system from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
-
 /-!
 # Cofiltered systems
 
@@ -74,7 +72,6 @@ theorem nonempty_sections_of_finite_cofiltered_system.init {J : Type u} [SmallCa
   haveI : ∀ j, Nonempty (F'.obj j) := hne
   obtain ⟨⟨u, hu⟩⟩ := TopCat.nonempty_limitCone_of_compact_t2_cofiltered_system.{u} F'
   exact ⟨u, hu⟩
-#align nonempty_sections_of_finite_cofiltered_system.init nonempty_sections_of_finite_cofiltered_system.init
 
 /-- The cofiltered limit of nonempty finite types is nonempty.
 
@@ -99,7 +96,6 @@ theorem nonempty_sections_of_finite_cofiltered_system {J : Type u} [Category.{w}
   have h := @hu (⟨j⟩ : J') (⟨j'⟩ : J') (ULift.up f)
   simp only [F', down, AsSmall.down, Functor.comp_map, uliftFunctor_map, Functor.op_map] at h
   simp_rw [← h]
-#align nonempty_sections_of_finite_cofiltered_system nonempty_sections_of_finite_cofiltered_system
 
 /-- The inverse limit of nonempty finite types is nonempty.
 
@@ -118,7 +114,6 @@ theorem nonempty_sections_of_finite_inverse_system {J : Type u} [Preorder J] [Is
   · haveI : IsEmpty Jᵒᵖ := ⟨fun j => isEmptyElim j.unop⟩ -- TODO: this should be a global instance
     exact ⟨isEmptyElim, by apply isEmptyElim⟩
   · exact nonempty_sections_of_finite_cofiltered_system _
-#align nonempty_sections_of_finite_inverse_system nonempty_sections_of_finite_inverse_system
 
 end FiniteKonig
 
@@ -132,12 +127,10 @@ variable {J : Type u} [Category J] (F : J ⥤ Type v) {i j k : J} (s : Set (F.ob
 of the ranges of all maps `F.map f` with `i : J` and `f : i ⟶ j`. -/
 def eventualRange (j : J) :=
   ⋂ (i) (f : i ⟶ j), range (F.map f)
-#align category_theory.functor.eventual_range CategoryTheory.Functor.eventualRange
 
 theorem mem_eventualRange_iff {x : F.obj j} :
     x ∈ F.eventualRange j ↔ ∀ ⦃i⦄ (f : i ⟶ j), x ∈ range (F.map f) :=
   mem_iInter₂
-#align category_theory.functor.mem_eventual_range_iff CategoryTheory.Functor.mem_eventualRange_iff
 
 /-- The functor `F : J ⥤ Type v` satisfies the Mittag-Leffler condition if for all `j : J`,
 there exists some `i : J` and `f : i ⟶ j` such that for all `k : J` and `g : k ⟶ j`, the range
@@ -146,14 +139,12 @@ in other words (see `isMittagLeffler_iff_eventualRange`), the eventual range at 
 by some `f : i ⟶ j`. -/
 def IsMittagLeffler : Prop :=
   ∀ j : J, ∃ (i : _) (f : i ⟶ j), ∀ ⦃k⦄ (g : k ⟶ j), range (F.map f) ⊆ range (F.map g)
-#align category_theory.functor.is_mittag_leffler CategoryTheory.Functor.IsMittagLeffler
 
 theorem isMittagLeffler_iff_eventualRange :
     F.IsMittagLeffler ↔ ∀ j : J, ∃ (i : _) (f : i ⟶ j), F.eventualRange j = range (F.map f) :=
   forall_congr' fun _ =>
     exists₂_congr fun _ _ =>
       ⟨fun h => (iInter₂_subset _ _).antisymm <| subset_iInter₂ h, fun h => h ▸ iInter₂_subset⟩
-#align category_theory.functor.is_mittag_leffler_iff_eventual_range CategoryTheory.Functor.isMittagLeffler_iff_eventualRange
 
 theorem IsMittagLeffler.subset_image_eventualRange (h : F.IsMittagLeffler) (f : j ⟶ i) :
     F.eventualRange i ⊆ F.map f '' F.eventualRange j := by
@@ -161,7 +152,6 @@ theorem IsMittagLeffler.subset_image_eventualRange (h : F.IsMittagLeffler) (f : 
   rw [hg]; intro x hx
   obtain ⟨x, rfl⟩ := F.mem_eventualRange_iff.1 hx (g ≫ f)
   exact ⟨_, ⟨x, rfl⟩, by rw [map_comp_apply]⟩
-#align category_theory.functor.is_mittag_leffler.subset_image_eventual_range CategoryTheory.Functor.IsMittagLeffler.subset_image_eventualRange
 
 theorem eventualRange_eq_range_precomp (f : i ⟶ j) (g : j ⟶ k)
     (h : F.eventualRange k = range (F.map g)) : F.eventualRange k = range (F.map <| f ≫ g) := by
@@ -169,12 +159,10 @@ theorem eventualRange_eq_range_precomp (f : i ⟶ j) (g : j ⟶ k)
   · apply iInter₂_subset
   · rw [h, F.map_comp]
     apply range_comp_subset_range
-#align category_theory.functor.eventual_range_eq_range_precomp CategoryTheory.Functor.eventualRange_eq_range_precomp
 
 theorem isMittagLeffler_of_surjective (h : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.map f).Surjective) :
     F.IsMittagLeffler :=
   fun j => ⟨j, 𝟙 j, fun k g => by rw [map_id, types_id, range_id, (h g).range_eq]⟩
-#align category_theory.functor.is_mittag_leffler_of_surjective CategoryTheory.Functor.isMittagLeffler_of_surjective
 
 /-- The subfunctor of `F` obtained by restricting to the preimages of a set `s ∈ F.obj i`. -/
 @[simps]
@@ -196,11 +184,9 @@ def toPreimages : J ⥤ Type v where
     simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp] -/
     simp only [MapsTo.restrict, Subtype.map_def, F.map_comp]
     rfl
-#align category_theory.functor.to_preimages CategoryTheory.Functor.toPreimages
 
 instance toPreimages_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite ((F.toPreimages s).obj j) :=
   fun _ => Subtype.finite
-#align category_theory.functor.to_preimages_finite CategoryTheory.Functor.toPreimages_finite
 
 variable [IsCofilteredOrEmpty J]
 
@@ -212,12 +198,10 @@ theorem eventualRange_mapsTo (f : j ⟶ i) :
   obtain ⟨x, rfl⟩ := hx g
   rw [← map_comp_apply, he, F.map_comp]
   exact ⟨_, rfl⟩
-#align category_theory.functor.eventual_range_maps_to CategoryTheory.Functor.eventualRange_mapsTo
 
 theorem IsMittagLeffler.eq_image_eventualRange (h : F.IsMittagLeffler) (f : j ⟶ i) :
     F.eventualRange i = F.map f '' F.eventualRange j :=
   (h.subset_image_eventualRange F f).antisymm <| mapsTo'.1 (F.eventualRange_mapsTo f)
-#align category_theory.functor.is_mittag_leffler.eq_image_eventual_range CategoryTheory.Functor.IsMittagLeffler.eq_image_eventualRange
 
 theorem eventualRange_eq_iff {f : i ⟶ j} :
     F.eventualRange j = range (F.map f) ↔
@@ -228,12 +212,10 @@ theorem eventualRange_eq_iff {f : i ⟶ j} :
   refine (h g).trans ?_
   rw [he, F.map_comp]
   apply range_comp_subset_range
-#align category_theory.functor.eventual_range_eq_iff CategoryTheory.Functor.eventualRange_eq_iff
 
 theorem isMittagLeffler_iff_subset_range_comp : F.IsMittagLeffler ↔ ∀ j : J, ∃ (i : _) (f : i ⟶ j),
     ∀ ⦃k⦄ (g : k ⟶ i), range (F.map f) ⊆ range (F.map <| g ≫ f) := by
   simp_rw [isMittagLeffler_iff_eventualRange, eventualRange_eq_iff]
-#align category_theory.functor.is_mittag_leffler_iff_subset_range_comp CategoryTheory.Functor.isMittagLeffler_iff_subset_range_comp
 
 theorem IsMittagLeffler.toPreimages (h : F.IsMittagLeffler) : (F.toPreimages s).IsMittagLeffler :=
   (isMittagLeffler_iff_subset_range_comp _).2 fun j => by
@@ -254,7 +236,6 @@ theorem IsMittagLeffler.toPreimages (h : F.IsMittagLeffler) : (F.toPreimages s).
       apply mem_iInter.1 hx
     · simp_rw [toPreimages_map, MapsTo.val_restrict_apply]
       rw [← Category.assoc, map_comp_apply, h₃, map_comp_apply]
-#align category_theory.functor.is_mittag_leffler.to_preimages CategoryTheory.Functor.IsMittagLeffler.toPreimages
 
 theorem isMittagLeffler_of_exists_finite_range
     (h : ∀ j : J, ∃ (i : _) (f : i ⟶ j), (range <| F.map f).Finite) : F.IsMittagLeffler := by
@@ -269,7 +250,6 @@ theorem isMittagLeffler_of_exists_finite_range
   refine (eq_of_le_of_not_lt hl ?_).ge
   have := hmin _ ⟨k', g', (m.finite_toSet.subset <| hm.substr hl).coe_toFinset⟩
   rwa [Finset.lt_iff_ssubset, ← Finset.coe_ssubset, Set.Finite.coe_toFinset, hm] at this
-#align category_theory.functor.is_mittag_leffler_of_exists_finite_range CategoryTheory.Functor.isMittagLeffler_of_exists_finite_range
 
 /-- The subfunctor of `F` obtained by restricting to the eventual range at each index. -/
 @[simps]
@@ -287,11 +267,9 @@ def toEventualRanges : J ⥤ Type v where
     simp (config := { unfoldPartialApp := true }) only [MapsTo.restrict, Subtype.map, F.map_comp] -/
     simp only [MapsTo.restrict, Subtype.map_def, F.map_comp]
     rfl
-#align category_theory.functor.to_eventual_ranges CategoryTheory.Functor.toEventualRanges
 
 instance toEventualRanges_finite [∀ j, Finite (F.obj j)] : ∀ j, Finite (F.toEventualRanges.obj j) :=
   fun _ => Subtype.finite
-#align category_theory.functor.to_eventual_ranges_finite CategoryTheory.Functor.toEventualRanges_finite
 
 /-- The sections of the functor `F : J ⥤ Type v` are in bijection with the sections of
 `F.toEventualRanges`. -/
@@ -305,7 +283,6 @@ def toEventualRangesSectionsEquiv : F.toEventualRanges.sections ≃ F.sections w
   right_inv _ := by
     ext
     rfl
-#align category_theory.functor.to_eventual_ranges_sections_equiv CategoryTheory.Functor.toEventualRangesSectionsEquiv
 
 /-- If `F` satisfies the Mittag-Leffler condition, its restriction to eventual ranges is a
 surjective functor. -/
@@ -313,7 +290,6 @@ theorem surjective_toEventualRanges (h : F.IsMittagLeffler) ⦃i j⦄ (f : i ⟶
     (F.toEventualRanges.map f).Surjective := fun ⟨x, hx⟩ => by
   obtain ⟨y, hy, rfl⟩ := h.subset_image_eventualRange F f hx
   exact ⟨⟨y, hy⟩, rfl⟩
-#align category_theory.functor.surjective_to_eventual_ranges CategoryTheory.Functor.surjective_toEventualRanges
 
 /-- If `F` is nonempty at each index and Mittag-Leffler, then so is `F.toEventualRanges`. -/
 theorem toEventualRanges_nonempty (h : F.IsMittagLeffler) [∀ j : J, Nonempty (F.obj j)] (j : J) :
@@ -321,14 +297,12 @@ theorem toEventualRanges_nonempty (h : F.IsMittagLeffler) [∀ j : J, Nonempty (
   let ⟨i, f, h⟩ := F.isMittagLeffler_iff_eventualRange.1 h j
   rw [toEventualRanges_obj, h]
   infer_instance
-#align category_theory.functor.to_eventual_ranges_nonempty CategoryTheory.Functor.toEventualRanges_nonempty
 
 /-- If `F` has all arrows surjective, then it "factors through a poset". -/
 theorem thin_diagram_of_surjective (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.map f).Surjective) {i j}
     (f g : i ⟶ j) : F.map f = F.map g :=
   let ⟨k, φ, hφ⟩ := IsCofilteredOrEmpty.cone_maps f g
   (Fsur φ).injective_comp_right <| by simp_rw [← types_comp, ← F.map_comp, hφ]
-#align category_theory.functor.thin_diagram_of_surjective CategoryTheory.Functor.thin_diagram_of_surjective
 
 theorem toPreimages_nonempty_of_surjective [hFn : ∀ j : J, Nonempty (F.obj j)]
     (Fsur : ∀ ⦃i j : J⦄ (f : i ⟶ j), (F.map f).Surjective) (hs : s.Nonempty) (j) :
@@ -339,7 +313,6 @@ theorem toPreimages_nonempty_of_surjective [hFn : ∀ j : J, Nonempty (F.obj j)]
   · obtain ⟨y, ys⟩ := hs
     obtain ⟨x, rfl⟩ := Fsur ji y
     exact ⟨x, fun ji' => (F.thin_diagram_of_surjective Fsur ji' ji).symm ▸ ys⟩
-#align category_theory.functor.to_preimages_nonempty_of_surjective CategoryTheory.Functor.toPreimages_nonempty_of_surjective
 
 theorem eval_section_injective_of_eventually_injective {j}
     (Finj : ∀ (i) (f : i ⟶ j), (F.map f).Injective) (i) (f : i ⟶ j) :
@@ -350,7 +323,6 @@ theorem eval_section_injective_of_eventually_injective {j}
   rw [← s₀.prop (mi ≫ f), ← s₁.prop (mi ≫ f)] at h
   rw [← s₀.prop mk, ← s₁.prop mk]
   exact congr_arg _ (Finj m (mi ≫ f) h)
-#align category_theory.functor.eval_section_injective_of_eventually_injective CategoryTheory.Functor.eval_section_injective_of_eventually_injective
 
 section FiniteCofilteredSystem
 
@@ -367,7 +339,6 @@ theorem eval_section_surjective_of_surjective (i : J) :
     simp only [mem_iInter, mem_preimage, mem_singleton_iff] at this
     have := this (𝟙 i)
     rwa [map_id_apply] at this
-#align category_theory.functor.eval_section_surjective_of_surjective CategoryTheory.Functor.eval_section_surjective_of_surjective
 
 theorem eventually_injective [Nonempty J] [Finite F.sections] :
     ∃ j, ∀ (i) (f : i ⟶ j), (F.map f).Injective := by
@@ -381,7 +352,6 @@ theorem eventually_injective [Nonempty J] [Finite F.sections] :
       ⟨Fsur f, le_antisymm ?_ (Fintype.card_le_of_surjective _ <| Fsur f)⟩).1⟩
   rw [← Nat.sub_sub_self (card_le i), tsub_le_iff_tsub_le]
   apply fn.argmin_le
-#align category_theory.functor.eventually_injective CategoryTheory.Functor.eventually_injective
 
 end FiniteCofilteredSystem
 

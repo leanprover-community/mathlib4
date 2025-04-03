@@ -6,8 +6,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Extreme
 
-#align_import analysis.convex.independent from "leanprover-community/mathlib"@"fefd8a38be7811574cd2ec2f77d3a393a407f112"
-
 /-!
 # Convex independence
 
@@ -57,7 +55,6 @@ variable (𝕜) [OrderedSemiring 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : S
 of sets containing it. -/
 def ConvexIndependent (p : ι → E) : Prop :=
   ∀ (s : Set ι) (x : ι), p x ∈ convexHull 𝕜 (p '' s) → x ∈ s
-#align convex_independent ConvexIndependent
 
 variable {𝕜}
 
@@ -67,7 +64,6 @@ theorem Subsingleton.convexIndependent [Subsingleton ι] (p : ι → E) : Convex
   have : (convexHull 𝕜 (p '' s)).Nonempty := ⟨p x, hx⟩
   rw [convexHull_nonempty_iff, Set.image_nonempty] at this
   rwa [Subsingleton.mem_iff_nonempty]
-#align subsingleton.convex_independent Subsingleton.convexIndependent
 
 /-- A convex independent family is injective. -/
 protected theorem ConvexIndependent.injective {p : ι → E} (hc : ConvexIndependent 𝕜 p) :
@@ -75,7 +71,6 @@ protected theorem ConvexIndependent.injective {p : ι → E} (hc : ConvexIndepen
   refine fun i j hij => hc {j} i ?_
   rw [hij, Set.image_singleton, convexHull_singleton]
   exact Set.mem_singleton _
-#align convex_independent.injective ConvexIndependent.injective
 
 /-- If a family is convex independent, so is any subfamily given by composition of an embedding into
 index type with the original family. -/
@@ -84,14 +79,12 @@ theorem ConvexIndependent.comp_embedding {ι' : Type*} (f : ι' ↪ ι) {p : ι 
   intro s x hx
   rw [← f.injective.mem_set_image]
   exact hc _ _ (by rwa [Set.image_image])
-#align convex_independent.comp_embedding ConvexIndependent.comp_embedding
 
 /-- If a family is convex independent, so is any subfamily indexed by a subtype of the index type.
 -/
 protected theorem ConvexIndependent.subtype {p : ι → E} (hc : ConvexIndependent 𝕜 p) (s : Set ι) :
     ConvexIndependent 𝕜 fun i : s => p i :=
   hc.comp_embedding (Embedding.subtype _)
-#align convex_independent.subtype ConvexIndependent.subtype
 
 /-- If an indexed family of points is convex independent, so is the corresponding set of points. -/
 protected theorem ConvexIndependent.range {p : ι → E} (hc : ConvexIndependent 𝕜 p) :
@@ -102,13 +95,11 @@ protected theorem ConvexIndependent.range {p : ι → E} (hc : ConvexIndependent
   convert hc.comp_embedding fe
   ext
   rw [Embedding.coeFn_mk, comp_apply, hf]
-#align convex_independent.range ConvexIndependent.range
 
 /-- A subset of a convex independent set of points is convex independent as well. -/
 protected theorem ConvexIndependent.mono {s t : Set E} (hc : ConvexIndependent 𝕜 ((↑) : t → E))
     (hs : s ⊆ t) : ConvexIndependent 𝕜 ((↑) : s → E) :=
   hc.comp_embedding (s.embeddingOfSubset t hs)
-#align convex_independent.mono ConvexIndependent.mono
 
 /-- The range of an injective indexed family of points is convex independent iff that family is. -/
 theorem Function.Injective.convexIndependent_iff_set {p : ι → E} (hi : Function.Injective p) :
@@ -118,7 +109,6 @@ theorem Function.Injective.convexIndependent_iff_set {p : ι → E} (hi : Functi
       (⟨fun i => ⟨p i, Set.mem_range_self _⟩, fun _ _ h => hi (Subtype.mk_eq_mk.1 h)⟩ :
         ι ↪ Set.range p),
     ConvexIndependent.range⟩
-#align function.injective.convex_independent_iff_set Function.Injective.convexIndependent_iff_set
 
 /-- If a family is convex independent, a point in the family is in the convex hull of some of the
 points given by a subset of the index type if and only if the point's index is in this subset. -/
@@ -126,7 +116,6 @@ points given by a subset of the index type if and only if the point's index is i
 protected theorem ConvexIndependent.mem_convexHull_iff {p : ι → E} (hc : ConvexIndependent 𝕜 p)
     (s : Set ι) (i : ι) : p i ∈ convexHull 𝕜 (p '' s) ↔ i ∈ s :=
   ⟨hc _ _, fun hi => subset_convexHull 𝕜 _ (Set.mem_image_of_mem p hi)⟩
-#align convex_independent.mem_convex_hull_iff ConvexIndependent.mem_convexHull_iff
 
 /-- If a family is convex independent, a point in the family is not in the convex hull of the other
 points. See `convexIndependent_set_iff_not_mem_convexHull_diff` for the `Set` version. -/
@@ -139,7 +128,6 @@ theorem convexIndependent_iff_not_mem_convexHull_diff {p : ι → E} :
     refine h i s ?_
     rw [Set.diff_singleton_eq_self H]
     exact hi
-#align convex_independent_iff_not_mem_convex_hull_diff convexIndependent_iff_not_mem_convexHull_diff
 
 theorem convexIndependent_set_iff_inter_convexHull_subset {s : Set E} :
     ConvexIndependent 𝕜 ((↑) : s → E) ↔ ∀ t, t ⊆ s → s ∩ convexHull 𝕜 t ⊆ t := by
@@ -151,7 +139,6 @@ theorem convexIndependent_set_iff_inter_convexHull_subset {s : Set E} :
   · intro hc t x h
     rw [← Subtype.coe_injective.mem_set_image]
     exact hc (t.image ((↑) : s → E)) (Subtype.coe_image_subset s t) ⟨x.prop, h⟩
-#align convex_independent_set_iff_inter_convex_hull_subset convexIndependent_set_iff_inter_convexHull_subset
 
 /-- If a set is convex independent, a point in the set is not in the convex hull of the other
 points. See `convexIndependent_iff_not_mem_convexHull_diff` for the indexed family version. -/
@@ -164,7 +151,6 @@ theorem convexIndependent_set_iff_not_mem_convexHull_diff {s : Set E} :
   · rintro hs t ht x ⟨hxs, hxt⟩
     by_contra h
     exact hs _ hxs (convexHull_mono (Set.subset_diff_singleton ht h) hxt)
-#align convex_independent_set_iff_not_mem_convex_hull_diff convexIndependent_set_iff_not_mem_convexHull_diff
 
 end OrderedSemiring
 
@@ -193,7 +179,6 @@ theorem convexIndependent_iff_finset {p : ι → E} :
   refine h _ x ?_
   rwa [t.image_preimage p hp.injOn, filter_true_of_mem]
   exact fun y hy => s.image_subset_range p (ht <| mem_coe.2 hy)
-#align convex_independent_iff_finset convexIndependent_iff_finset
 
 /-! ### Extreme points -/
 
@@ -205,6 +190,5 @@ theorem Convex.convexIndependent_extremePoints (hs : Convex 𝕜 s) :
           (inter_extremePoints_subset_extremePoints_of_subset
             (convexHull_min (Set.diff_subset.trans extremePoints_subset) hs) ⟨h, hx⟩)).2
       (Set.mem_singleton _)
-#align convex.convex_independent_extreme_points Convex.convexIndependent_extremePoints
 
 end LinearOrderedField

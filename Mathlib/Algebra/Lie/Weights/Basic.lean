@@ -11,8 +11,6 @@ import Mathlib.RingTheory.Artinian
 import Mathlib.LinearAlgebra.Trace
 import Mathlib.LinearAlgebra.FreeModule.PID
 
-#align_import algebra.lie.weights from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
-
 /-!
 # Weight spaces of Lie modules of nilpotent Lie algebras
 
@@ -282,7 +280,6 @@ theorem zero_weightSpace_eq_top_of_nilpotent' [IsNilpotent R L M] :
     weightSpace M (0 : L → R) = ⊤ := by
   ext
   simp [weightSpace, weightSpaceOf]
-#align lie_module.zero_weight_space_eq_top_of_nilpotent' LieModule.zero_weightSpace_eq_top_of_nilpotent'
 
 theorem coe_weightSpace_of_top (χ : L → R) :
     (weightSpace M (χ ∘ (⊤ : LieSubalgebra R L).incl) : Submodule R M) = weightSpace M χ := by
@@ -290,7 +287,6 @@ theorem coe_weightSpace_of_top (χ : L → R) :
   simp only [mem_weightSpace, LieSubmodule.mem_coeSubmodule, Subtype.forall]
   apply forall_congr'
   simp
-#align lie_module.coe_weight_space_of_top LieModule.coe_weightSpace_of_top
 
 @[simp]
 theorem zero_weightSpace_eq_top_of_nilpotent [IsNilpotent R L M] :
@@ -301,7 +297,6 @@ theorem zero_weightSpace_eq_top_of_nilpotent [IsNilpotent R L M] :
   intro x
   obtain ⟨k, hk⟩ := exists_forall_pow_toEnd_eq_zero R L M
   exact ⟨k, by simp [hk x]⟩
-#align lie_module.zero_weight_space_eq_top_of_nilpotent LieModule.zero_weightSpace_eq_top_of_nilpotent
 
 theorem exists_weightSpace_le_ker_of_isNoetherian [IsNoetherian R M] (χ : L → R) (x : L) :
     ∃ k : ℕ,
@@ -334,7 +329,6 @@ module. -/
 theorem isNilpotent_toEnd_weightSpace_zero [IsNoetherian R M] (x : L) :
     _root_.IsNilpotent <| toEnd R L (weightSpace M (0 : L → R)) x := by
   simpa using isNilpotent_toEnd_sub_algebraMap M (0 : L → R) x
-#align lie_module.is_nilpotent_to_endomorphism_weight_space_zero LieModule.isNilpotent_toEnd_weightSpace_zero
 
 /-- By Engel's theorem, the zero weight space of a Noetherian Lie module is nilpotent. -/
 instance [IsNoetherian R M] :

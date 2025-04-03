@@ -6,8 +6,6 @@ Authors: Riccardo Brasca
 import Mathlib.CategoryTheory.Abelian.Pseudoelements
 import Mathlib.Algebra.Category.ModuleCat.Biproducts
 
-#align_import pseudoelement from "leanprover-community/mathlib"@"328375597f2c0dd00522d9c2e5a33b6a6128feeb"
-
 /-!
 # Pseudoelements and pullbacks
 Borceux claims in Proposition 1.9.5 that the pseudoelement constructed in
@@ -47,12 +45,10 @@ open CategoryTheory.Abelian.Pseudoelement
 /-- `x` is given by `t ↦ (t, 2 * t)`. -/
 def x : Over (of ℤ ℚ ⊞ of ℤ ℚ) :=
   Over.mk (biprod.lift (𝟙 _) (2 • 𝟙 _))
-#align counterexample.x Counterexample.x
 
 /-- `y` is given by `t ↦ (t, t)`. -/
 def y : Over (of ℤ ℚ ⊞ of ℤ ℚ) :=
   Over.mk (biprod.lift (𝟙 _) (𝟙 _))
-#align counterexample.y Counterexample.y
 
 /-- `biprod.fst ≫ x` is pseudoequal to `biprod.fst y`. -/
 theorem fst_x_pseudo_eq_fst_y : PseudoEqual _ (app biprod.fst x) (app biprod.fst y) := by
@@ -60,7 +56,6 @@ theorem fst_x_pseudo_eq_fst_y : PseudoEqual _ (app biprod.fst x) (app biprod.fst
   · exact (ModuleCat.epi_iff_surjective _).2 fun a => ⟨(a : ℚ), rfl⟩
   · dsimp [x, y]
     simp
-#align counterexample.fst_x_pseudo_eq_fst_y Counterexample.fst_x_pseudo_eq_fst_y
 
 /-- `biprod.snd ≫ x` is pseudoequal to `biprod.snd y`. -/
 theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd y) := by
@@ -70,7 +65,6 @@ theorem snd_x_pseudo_eq_snd_y : PseudoEqual _ (app biprod.snd x) (app biprod.snd
   · dsimp [x, y]
     refine ConcreteCategory.hom_ext _ _ fun a => ?_
     simp_rw [biprod.lift_snd]; rfl
-#align counterexample.snd_x_pseudo_eq_snd_y Counterexample.snd_x_pseudo_eq_snd_y
 
 -- Porting note: locally disable instance to avoid inferred/synthesized clash
 attribute [-instance] AddCommGroup.intModule in
@@ -103,7 +97,6 @@ theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
   subst ha₁
   simp only [self_eq_add_right] at ha₂
   exact one_ne_zero' ℚ ha₂
-#align counterexample.x_not_pseudo_eq Counterexample.x_not_pseudo_eq
 
 attribute [local instance] Pseudoelement.setoid
 
@@ -113,13 +106,11 @@ open scoped Pseudoelement
 theorem fst_mk'_x_eq_fst_mk'_y :
     (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) ⟦x⟧ = (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) ⟦y⟧ :=
   Quotient.eq.2 fst_x_pseudo_eq_fst_y
-#align counterexample.fst_mk_x_eq_fst_mk_y Counterexample.fst_mk'_x_eq_fst_mk'_y
 
 /-- `biprod.snd ⟦x⟧ = biprod.snd ⟦y⟧`. -/
 theorem snd_mk'_x_eq_snd_mk'_y :
     (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) ⟦x⟧ = (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) ⟦y⟧ :=
   Quotient.eq.2 snd_x_pseudo_eq_snd_y
-#align counterexample.snd_mk_x_eq_snd_mk_y Counterexample.snd_mk'_x_eq_snd_mk'_y
 
 -- Porting note: needs explicit type ascription `: Quotient <| Pseudoelement.setoid _`
 -- for some reason the setoid instance isn't picked up automatically,
@@ -127,7 +118,6 @@ theorem snd_mk'_x_eq_snd_mk'_y :
 /-- `⟦x⟧ ≠ ⟦y⟧`. -/
 theorem mk'_x_ne_mk'_y : (⟦x⟧ : Quotient <| Pseudoelement.setoid _) ≠ ⟦y⟧ :=
   fun h => x_not_pseudo_eq <| Quotient.eq'.1 h
-#align counterexample.mk_x_ne_mk_y Counterexample.mk'_x_ne_mk'_y
 
 /-- There are two pseudoelements `x y : ℚ ⊞ ℚ` such that `x ≠ y`, `biprod.fst x = biprod.fst y` and
  `biprod.snd x = biprod.snd y`. -/
@@ -138,7 +128,6 @@ theorem exist_ne_and_fst_eq_fst_and_snd_eq_snd :
         (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) x = (biprod.fst : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) y ∧
           (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) x = (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _) y :=
   ⟨⟦x⟧, ⟦y⟧, mk'_x_ne_mk'_y, fst_mk'_x_eq_fst_mk'_y, snd_mk'_x_eq_snd_mk'_y⟩
-#align counterexample.exist_ne_and_fst_eq_fst_and_snd_eq_snd Counterexample.exist_ne_and_fst_eq_fst_and_snd_eq_snd
 
 end
 

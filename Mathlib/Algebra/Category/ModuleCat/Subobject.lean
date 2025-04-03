@@ -8,8 +8,6 @@ import Mathlib.Algebra.Category.ModuleCat.Kernels
 import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.CategoryTheory.Subobject.Limits
 
-#align_import algebra.category.Module.subobject from "leanprover-community/mathlib"@"6d584f1709bedbed9175bd9350df46599bdd7213"
-
 /-!
 # Subobjects in the category of `R`-modules
 
@@ -30,7 +28,6 @@ open ModuleCat
 universe v u
 
 namespace ModuleCat
-set_option linter.uppercaseLean3 false -- `Module`
 
 variable {R : Type u} [Ring R] (M : ModuleCat.{v} R)
 
@@ -71,11 +68,9 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
         convert LinearMap.range_comp_le_range (ofMkLEMk _ _ h) (↾T.subtype)
         · simpa only [← comp_def, ofMkLEMk_comp] using (Submodule.range_subtype _).symm
         · exact (Submodule.range_subtype _).symm }
-#align Module.subobject_Module ModuleCat.subobjectModule
 
 instance wellPowered_moduleCat : WellPowered (ModuleCat.{v} R) :=
   ⟨fun M => ⟨⟨_, ⟨(subobjectModule M).toEquiv⟩⟩⟩⟩
-#align Module.well_powered_Module ModuleCat.wellPowered_moduleCat
 
 attribute [local instance] hasKernels_moduleCat
 
@@ -83,7 +78,6 @@ attribute [local instance] hasKernels_moduleCat
 noncomputable def toKernelSubobject {M N : ModuleCat.{v} R} {f : M ⟶ N} :
     LinearMap.ker f →ₗ[R] kernelSubobject f :=
   (kernelSubobjectIso f ≪≫ ModuleCat.kernelIsoKer f).inv
-#align Module.to_kernel_subobject ModuleCat.toKernelSubobject
 
 @[simp]
 theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap.ker f) :
@@ -94,7 +88,6 @@ theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap
   rw [Iso.trans_inv, ← coe_comp, Category.assoc]
   simp only [Category.assoc, kernelSubobject_arrow', kernelIsoKer_inv_kernel_ι]
   aesop_cat
-#align Module.to_kernel_subobject_arrow ModuleCat.toKernelSubobject_arrow
 
 /-- An extensionality lemma showing that two elements of a cokernel by an image
 are equal if they differ by an element of the image.
@@ -118,6 +111,5 @@ theorem cokernel_π_imageSubobject_ext {L M N : ModuleCat.{v} R} (f : L ⟶ M) [
   rw [← coe_comp, ← coe_comp, Category.assoc]
   simp only [cokernel.condition, comp_zero]
   rfl
-#align Module.cokernel_π_image_subobject_ext ModuleCat.cokernel_π_imageSubobject_ext
 
 end ModuleCat

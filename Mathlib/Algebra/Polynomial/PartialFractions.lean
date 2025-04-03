@@ -9,8 +9,6 @@ import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 
-#align_import data.polynomial.partial_fractions from "leanprover-community/mathlib"@"6e70e0d419bf686784937d64ed4bfde866ff229e"
-
 /-!
 
 # Partial fractions
@@ -77,7 +75,6 @@ theorem div_eq_quo_add_rem_div_add_rem_div (f : R[X]) {g₁ g₂ : R[X]} (hg₁ 
   field_simp
   norm_cast
   linear_combination -1 * f * hcd + -1 * g₁ * hfc + -1 * g₂ * hfd
-#align div_eq_quo_add_rem_div_add_rem_div div_eq_quo_add_rem_div_add_rem_div
 
 end TwoDenominators
 
@@ -129,6 +126,5 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
   rw [if_neg]
   rintro rfl
   exact hab hxb
-#align div_eq_quo_add_sum_rem_div div_eq_quo_add_sum_rem_div
 
 end NDenominators

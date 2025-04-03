@@ -8,8 +8,6 @@ import Mathlib.Tactic.GCongr
 import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.Compactness.Paracompact
 
-#align_import topology.metric_space.emetric_paracompact from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
-
 /-!
 # (Extended) metric spaces are paracompact
 
@@ -163,10 +161,8 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     simp only [mem_iUnion]
     refine ⟨I.1, ?_, I.2, hI, rfl⟩
     exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
-#align emetric.paracompact_space EMetric.instParacompactSpace
 
 -- Porting note: no longer an instance because `inferInstance` can find it
 theorem t4Space [EMetricSpace α] : T4Space α := inferInstance
-#align emetric.normal_of_emetric EMetric.t4Space
 
 end EMetric

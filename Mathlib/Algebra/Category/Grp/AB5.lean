@@ -45,4 +45,3 @@ noncomputable instance :
 noncomputable instance :
     PreservesFiniteLimits <| colim (J := J) (C := AddCommGrp.{u}) := by
   apply Functor.preservesFiniteLimitsOfPreservesHomology
-
