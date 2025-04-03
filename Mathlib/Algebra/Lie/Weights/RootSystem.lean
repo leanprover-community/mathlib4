@@ -465,16 +465,7 @@ lemma invtSubmodule_reflection:
     --simp at hq
     --dsimp [RootPairing.reflection] at hq
 
-
-instance : (LieAlgebra.IsKilling.rootSystem H).IsIrreducible where
-  nontrivial := by
-    have := LieSubalgebra.ne_bot_of_isCartanSubalgebra H
-    exact Module.instNontrivialDual K
-  nontrivial' := by
-    have := LieSubalgebra.ne_bot_of_isCartanSubalgebra H
-    exact LieSubalgebra.instNontrivialSubtypeMemOfIsCartanSubalgebra H
-  eq_top_of_invtSubmodule_reflection := by
-    exact invtSubmodule_reflection K L H
-  eq_top_of_invtSubmodule_coreflection := sorry
+instance : (LieAlgebra.IsKilling.rootSystem H).IsIrreducible := RootPairing.IsIrreducible.mk'
+  (LieAlgebra.IsKilling.rootSystem H).toRootPairing (invtSubmodule_reflection K L H)
 
 end jjj
