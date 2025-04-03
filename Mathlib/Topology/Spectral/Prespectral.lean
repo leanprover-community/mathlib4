@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 import Mathlib.Order.Ideal
 import Mathlib.Topology.Sets.Compacts
+import Mathlib.Topology.Sets.OpenCover
 import Mathlib.Topology.Spectral.Hom
-import Mathlib.Topology.LocalAtTarget
 
 /-!
 
@@ -21,23 +21,19 @@ open TopologicalSpace Topology
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 
 /-- A space is prespectral if the lattice of compact opens forms a basis. -/
-@[mk_iff]
+@[stacks 08YG "The last condition for spectral spaces", mk_iff]
 class PrespectralSpace (X : Type*) [TopologicalSpace X] : Prop where
-  isTopologicalBasis : TopologicalSpace.IsTopologicalBasis { U : Set X | IsOpen U ∧ IsCompact U }
+  isTopologicalBasis : IsTopologicalBasis { U : Set X | IsOpen U ∧ IsCompact U }
 
 /-- A space is prespectral if it has a basis consisting of compact opens. -/
 lemma PrespectralSpace.of_isTopologicalBasis {B : Set (Set X)}
     (basis : IsTopologicalBasis B) (isCompact_basis : ∀ U ∈ B, IsCompact U) :
     PrespectralSpace X where
-  isTopologicalBasis.exists_subset_inter _ ht₁ _ ht₂ _ hx :=
-    have ⟨v, hvB, hv⟩ := basis.exists_subset_of_mem_open hx (ht₁.1.inter ht₂.1)
-    ⟨v, ⟨basis.isOpen hvB, isCompact_basis v hvB⟩, hv⟩
-  isTopologicalBasis.sUnion_eq := Set.univ_subset_iff.mp (basis.sUnion_eq.superset.trans
-    (Set.sUnion_mono fun s hs ↦ ⟨basis.isOpen hs, isCompact_basis s hs⟩))
-  isTopologicalBasis.eq_generateFrom := (le_generateFrom fun _ h ↦ h.1).antisymm (le_trans
-    (generateFrom_anti fun s hs ↦ ⟨basis.isOpen hs, isCompact_basis s hs⟩) basis.eq_generateFrom.ge)
+  isTopologicalBasis := basis.of_isOpen_of_subset (fun _ h ↦ h.1)
+    fun s hs ↦ ⟨basis.isOpen hs, isCompact_basis s hs⟩
 
-/-- A variant with an indexed basis instead. -/
+/-- A space is prespectral if it has a basis consisting of compact opens.
+This is the variant with an indexed basis instead. -/
 lemma PrespectralSpace.of_isTopologicalBasis' {ι : Type*} {b : ι → Set X}
     (basis : IsTopologicalBasis (Set.range b)) (isCompact_basis : ∀ i, IsCompact (b i)) :
     PrespectralSpace X :=
@@ -52,8 +48,8 @@ instance (priority := low) [PrespectralSpace X] : LocallyCompactSpace X where
     ⟨V, hV₁.mem_nhds hxV, hVn, hV₂⟩
 
 open PrespectralSpace in
-instance (priority := low) [T2Space X] [PrespectralSpace X] : TotallyDisconnectedSpace X where
-  isTotallyDisconnected_univ := isTotallyDisconnected_of_isClopen_set fun _ _ hxy ↦
+instance (priority := low) [T2Space X] [PrespectralSpace X] : TotallySeparatedSpace X :=
+  totallySeparatedSpace_iff_exists_isClopen.mpr fun _ _ hxy ↦
     have ⟨U, ⟨hU₁, hU₂⟩, hxU, hyU⟩ :=
       isTopologicalBasis.exists_subset_of_mem_open hxy isClosed_singleton.isOpen_compl
     ⟨U, ⟨hU₂.isClosed, hU₁⟩, hxU, fun h ↦ hyU h rfl⟩
@@ -87,7 +83,7 @@ def PrespectralSpace.opensEquiv [PrespectralSpace X] :
     · intro x hxU
       obtain ⟨V, ⟨h₁, h₂⟩, hxV, hVU⟩ := isTopologicalBasis.exists_subset_of_mem_open hxU U.2
       simp only [Opens.mem_iSup, SetLike.mem_coe]
-      refine ⟨⟨⟨_, h₂⟩, h₁⟩, hVU, hxV⟩
+      exact ⟨⟨⟨_, h₂⟩, h₁⟩, hVU, hxV⟩
   right_inv I := by
     ext U
     dsimp

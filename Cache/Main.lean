@@ -74,7 +74,7 @@ def main (args : List String) : IO Unit := do
     let mod := `Mathlib
     let sp := (← read).srcSearchPath
     let sourceFile ← Lean.findLean sp mod
-    roots := Std.HashMap.empty.insert mod sourceFile
+    roots := roots.insert mod sourceFile
 
   let hashMemo ← getHashMemo roots
   let hashMap := hashMemo.hashMap
