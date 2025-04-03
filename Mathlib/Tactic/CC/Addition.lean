@@ -70,7 +70,7 @@ def addOccurrence (parent child : Expr) (symmTable : Bool) : CCM Unit := do
 def propagateInstImplicit (e : Expr) : CCM Unit := do
   let type ← inferType e
   let type ← normalize type
-  match (← get).instImplicitReprs.find? type with
+  match (← get).instImplicitReprs[type]? with
   | some l =>
     for e' in l do
       if ← pureIsDefEq e e' then
@@ -212,8 +212,8 @@ between their root representatives to the todo list, or update the root represen
 def checkNewSubsingletonEq (oldRoot newRoot : Expr) : CCM Unit := do
   guard (← isEqv oldRoot newRoot)
   guard ((← getRoot oldRoot) == newRoot)
-  let some it₁ := (← get).subsingletonReprs.find? oldRoot | return
-  if let some it₂ := (← get).subsingletonReprs.find? newRoot then
+  let some it₁ := (← get).subsingletonReprs[oldRoot]? | return
+  if let some it₂ := (← get).subsingletonReprs[newRoot]? then
     pushSubsingletonEq it₁ it₂
   else
     modify fun ccs =>
@@ -516,8 +516,8 @@ return the canonical form of `op`. -/
 def isAC (e : Expr) : CCM (Option Expr) := do
   let .app (.app op _) _ := e | return none
   let ccs ← get
-  if let some cop := ccs.canOps.find? op then
-    let some b := ccs.opInfo.find? cop
+  if let some cop := ccs.canOps[op]? then
+    let some b := ccs.opInfo[cop]?
       | throwError "opInfo should contain all canonical operators in canOps"
     return bif b then some cop else none
   for (cop, b) in ccs.opInfo do
@@ -564,7 +564,7 @@ def internalizeAC (e : Expr) (parent? : Option Expr) : CCM Unit := do
 
   let (args, norme) ← convertAC op e
   let rep := ACApps.mkApps op args
-  let some true := (← get).opInfo.find? op | failure
+  let some true := (← get).opInfo[op]? | failure
   let some repe := rep.toExpr | failure
   let pr ← mkACProof norme repe
 
@@ -944,7 +944,7 @@ partial def processSubsingletonElem (e : Expr) : CCM Unit := do
   -- Make sure type has been internalized
   internalizeCore type none
   -- Try to find representative
-  if let some it := (← get).subsingletonReprs.find? type then
+  if let some it := (← get).subsingletonReprs[type]? then
     pushSubsingletonEq e it
   else
     modify fun ccs =>
@@ -952,7 +952,7 @@ partial def processSubsingletonElem (e : Expr) : CCM Unit := do
         subsingletonReprs := ccs.subsingletonReprs.insert type e }
   let typeRoot ← getRoot type
   if typeRoot == type then return
-  if let some it2 := (← get).subsingletonReprs.find? typeRoot then
+  if let some it2 := (← get).subsingletonReprs[typeRoot]? then
     pushSubsingletonEq e it2
   else
     modify fun ccs =>
@@ -977,7 +977,7 @@ def mayPropagate (e : Expr) : Bool :=
 parents to propagate equality, to `parentsToPropagate`.
 Returns the new value of `parentsToPropagate`. -/
 def removeParents (e : Expr) (parentsToPropagate : Array Expr := #[]) : CCM (Array Expr) := do
-  let some ps := (← get).parents.find? e | return parentsToPropagate
+  let some ps := (← get).parents[e]? | return parentsToPropagate
   let mut parentsToPropagate := parentsToPropagate
   for pocc in ps do
     let p := pocc.expr
