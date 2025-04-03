@@ -263,6 +263,17 @@ def equivMatricesOver [Nonempty n] [DecidableEq n] :
   right_inv _ := ringCon_injective <| RingCon.matricesOver_ofMatricesOver _
   left_inv _ := ringCon_injective <| RingCon.ofMatricesOver_matricesOver _
 
+theorem coe_equivMatricesOver_symm_apply (I : TwoSidedIdeal (Matrix n n R)) (i j : n) :
+    equivMatricesOver.symm I = {N i j | N ∈ I} := by
+  ext r
+  constructor
+  · intro h
+    exact ⟨stdBasisMatrix i j r, by simpa using h i j, by simp⟩
+  · rintro ⟨n, hn, rfl⟩
+    intros i j'
+    simpa [mem_iff] using
+      mul_mem_right I _ (stdBasisMatrix _ _ 1) (mul_mem_left I (stdBasisMatrix _ _ 1) _ hn)
+
 /--
 Two-sided ideals in $R$ are order-isomorphic with those in $Mₙ(R)$.
 See also `equivMatricesOver`.
