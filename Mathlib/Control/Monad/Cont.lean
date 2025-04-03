@@ -6,6 +6,7 @@ Authors: Simon Hudon
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Writer
 import Mathlib.Control.Lawful
+import Batteries.Tactic.Congr
 
 #align_import control.monad.cont from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
 

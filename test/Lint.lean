@@ -57,14 +57,3 @@ set_option linter.dupNamespace true in
 export Nat (add)
 
 end add
-
-theorem toAlign : True := .intro
-
-/--
-warning: This `#align` spans 2 lines, instead of just one.
-Do not worry, the 100 character limit does not apply to `#align` statements!
-note: this linter can be disabled with `set_option linter.oneLineAlign false`
--/
-#guard_msgs in
-#align to_align
-  toAlign

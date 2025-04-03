@@ -5,6 +5,7 @@ Authors: Reid Barton, Mario Carneiro, Scott Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Limits.Cones
+import Batteries.Tactic.Congr
 
 #align_import category_theory.limits.is_limit from "leanprover-community/mathlib"@"740acc0e6f9adf4423f92a485d0456fc271482da"
 

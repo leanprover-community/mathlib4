@@ -18,8 +18,6 @@ This file defines basic operations on the types expr, name, declaration, level, 
 This file is mostly for non-tactics.
 -/
 
-set_option autoImplicit true
-
 namespace Lean
 
 namespace BinderInfo
@@ -340,7 +338,10 @@ def sides? (ty : Expr) : Option (Expr × Expr × Expr × Expr) :=
 
 end recognizers
 
-def modifyAppArgM [Functor M] [Pure M] (modifier : Expr → M Expr) : Expr → M Expr
+universe u
+
+def modifyAppArgM {M : Type → Type u} [Functor M] [Pure M]
+    (modifier : Expr → M Expr) : Expr → M Expr
   | app f a => mkApp f <$> modifier a
   | e => pure e
 
@@ -370,8 +371,8 @@ def getArg? (e : Expr) (i : Nat) (n := e.getAppNumArgs) : Option Expr :=
 
 /-- Given `f a₀ a₁ ... aₙ₋₁`, runs `modifier` on the `i`th argument.
 An argument `n` may be provided which says how many arguments we are expecting `e` to have. -/
-def modifyArgM [Monad M] (modifier : Expr → M Expr) (e : Expr) (i : Nat) (n := e.getAppNumArgs) :
-    M Expr := do
+def modifyArgM {M : Type → Type u} [Monad M] (modifier : Expr → M Expr)
+    (e : Expr) (i : Nat) (n := e.getAppNumArgs) : M Expr := do
   let some a := getArg? e i | return e
   let a ← modifier a
   return modifyArg (fun _ ↦ a) e i n

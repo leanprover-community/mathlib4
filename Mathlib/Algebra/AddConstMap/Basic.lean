@@ -314,9 +314,9 @@ instance : FunLike (G →+c[a, b] H) G H where
   coe := AddConstMap.toFun
   coe_injective' | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
 
-@[scoped simp] theorem coe_mk (f : G → H) (hf) : ⇑(mk f hf : G →+c[a, b] H) = f := rfl
-@[scoped simp] theorem mk_coe (f : G →+c[a, b] H) : mk f f.2 = f := rfl
-@[scoped simp] theorem toFun_eq_coe (f : G →+c[a, b] H) : f.toFun = f := rfl
+@[simp, push_cast] theorem coe_mk (f : G → H) (hf) : ⇑(mk f hf : G →+c[a, b] H) = f := rfl
+@[simp] theorem mk_coe (f : G →+c[a, b] H) : mk f f.2 = f := rfl
+@[simp] theorem toFun_eq_coe (f : G →+c[a, b] H) : f.toFun = f := rfl
 
 instance : AddConstMapClass (G →+c[a, b] H) G H a b where
   map_add_const f := f.map_add_const'
@@ -342,8 +342,8 @@ def comp {K : Type*} [Add K] {c : K} (g : H →+c[b, c] K) (f : G →+c[a, b] H)
     G →+c[a, c] K :=
   ⟨g ∘ f, by simp⟩
 
-@[scoped simp] theorem comp_id (f : G →+c[a, b] H) : f.comp .id = f := rfl
-@[scoped simp] theorem id_comp (f : G →+c[a, b] H) : .comp .id f = f := rfl
+@[simp] theorem comp_id (f : G →+c[a, b] H) : f.comp .id = f := rfl
+@[simp] theorem id_comp (f : G →+c[a, b] H) : .comp .id f = f := rfl
 
 /-- Change constants `a` and `b` in `(f : G →+c[a, b] H)` to improve definitional equalities. -/
 @[simps (config := .asFn)]
@@ -360,7 +360,7 @@ def replaceConsts (f : G →+c[a, b] H) (a' b') (ha : a = a') (hb : b = b') :
 instance {K : Type*} [VAdd K H] [VAddAssocClass K H H] : VAdd K (G →+c[a, b] H) :=
   ⟨fun c f ↦ ⟨c +ᵥ ⇑f, fun x ↦ by simp [vadd_add_assoc]⟩⟩
 
-@[scoped simp]
+@[simp, norm_cast]
 theorem coe_vadd {K : Type*} [VAdd K H] [VAddAssocClass K H H] (c : K) (f : G →+c[a, b] H) :
     ⇑(c +ᵥ f) = c +ᵥ ⇑f :=
   rfl
@@ -383,14 +383,21 @@ instance : Monoid (G →+c[a, a] G) :=
   DFunLike.coe_injective.monoid (M₂ := Function.End G) _ rfl (fun _ _ ↦ rfl) fun _ _ ↦ rfl
 
 theorem mul_def (f g : G →+c[a, a] G) : f * g = f.comp g := rfl
-@[scoped simp] theorem coe_mul (f g : G →+c[a, a] G) : ⇑(f * g) = f ∘ g := rfl
+@[simp, push_cast] theorem coe_mul (f g : G →+c[a, a] G) : ⇑(f * g) = f ∘ g := rfl
 
 theorem one_def : (1 : G →+c[a, a] G) = .id := rfl
-@[scoped simp] theorem coe_one : ⇑(1 : G →+c[a, a] G) = id := rfl
+@[simp, push_cast] theorem coe_one : ⇑(1 : G →+c[a, a] G) = id := rfl
 
-@[scoped simp] theorem coe_pow (f : G →+c[a, a] G) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
+@[simp, push_cast] theorem coe_pow (f : G →+c[a, a] G) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 
 theorem pow_apply (f : G →+c[a, a] G) (n : ℕ) (x : G) : (f ^ n) x = f^[n] x := rfl
+
+/-- Coercion to functions as a monoid homomorphism to `Function.End G`. -/
+@[simps (config := .asFn)]
+def toEnd : (G →+c[a, a] G) →* Function.End G where
+  toFun := DFunLike.coe
+  map_mul' _ _ := rfl
+  map_one' := rfl
 
 end Add
 
@@ -440,7 +447,7 @@ def conjNeg : (G →+c[a, b] H) ≃ (G →+c[a, b] H) :=
   Involutive.toPerm (fun f ↦ ⟨fun x ↦ - f (-x), fun _ ↦ by simp [neg_add_eq_sub]⟩) fun _ ↦
     AddConstMap.ext fun _ ↦ by simp
 
-@[scoped simp] theorem conjNeg_symm : (conjNeg (a := a) (b := b)).symm = conjNeg := rfl
+@[simp] theorem conjNeg_symm : (conjNeg (a := a) (b := b)).symm = conjNeg := rfl
 
 end AddCommGroup
 

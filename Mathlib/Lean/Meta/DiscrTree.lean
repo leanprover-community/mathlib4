@@ -9,8 +9,6 @@ import Lean.Meta.DiscrTree
 # Additions to `Lean.Meta.DiscrTree`
 -/
 
-set_option autoImplicit true
-
 namespace Lean.Meta.DiscrTree
 
 /--
@@ -24,8 +22,8 @@ Implementation: we reverse the results from `getMatch`,
 so that we return lemmas matching larger subexpressions first,
 and amongst those we return more specific lemmas first.
 -/
-partial def getSubexpressionMatches (d : DiscrTree α) (e : Expr) (config : WhnfCoreConfig) :
-    MetaM (Array α) := do
+partial def getSubexpressionMatches {α : Type}
+    (d : DiscrTree α) (e : Expr) (config : WhnfCoreConfig) : MetaM (Array α) := do
   match e with
   | .bvar _ => return #[]
   | .forallE _ _ _ _ => forallTelescope e (fun args body => do

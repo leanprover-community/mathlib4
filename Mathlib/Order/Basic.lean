@@ -11,6 +11,9 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Cases
 import Mathlib.Order.Notation
+import Batteries.Data.Sum.Lemmas
+import Batteries.Tactic.Classical
+
 
 #align_import order.basic from "leanprover-community/mathlib"@"90df25ded755a2cf9651ea850d1abe429b1e4eb1"
 

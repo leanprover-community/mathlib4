@@ -5,6 +5,8 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Tactic.Basic
 import Mathlib.Mathport.Rename
+import Batteries.Lean.Expr
+import Batteries.Lean.Meta.UnusedNames
 
 /-!
 # lift tactic

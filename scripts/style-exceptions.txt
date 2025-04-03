@@ -42,7 +42,7 @@ Mathlib/Data/Set/Function.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2042 
 Mathlib/Data/Set/Image.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1649 lines, try to split it up
 Mathlib/Data/Set/Lattice.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2290 lines, try to split it up
 Mathlib/FieldTheory/Adjoin.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1538 lines, try to split it up
-Mathlib/GroupTheory/MonoidLocalization.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2195 lines, try to split it up
+Mathlib/GroupTheory/MonoidLocalization/Basic.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1779 lines, try to split it up
 Mathlib/LinearAlgebra/AffineSpace/AffineSubspace.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1892 lines, try to split it up
 Mathlib/LinearAlgebra/Basis.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1618 lines, try to split it up
 Mathlib/LinearAlgebra/Dual.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1902 lines, try to split it up

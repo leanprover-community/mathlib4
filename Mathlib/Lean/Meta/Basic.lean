@@ -12,12 +12,10 @@ import Lean.Meta.Basic
 Likely these already exist somewhere. Pointers welcome.
 -/
 
-set_option autoImplicit true
-
 /--
 Restore the metavariable context after execution.
 -/
-def Lean.Meta.preservingMCtx (x : MetaM α) : MetaM α := do
+def Lean.Meta.preservingMCtx {α : Type} (x : MetaM α) : MetaM α := do
   let mctx ← getMCtx
   try x finally setMCtx mctx
 

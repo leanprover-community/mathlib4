@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.LinearAlgebra.Span
+import Mathlib.Algebra.Module.Equiv.Basic
 
 #align_import linear_algebra.quotient from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 

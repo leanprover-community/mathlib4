@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
 import Mathlib.Data.Fin.Basic
 import Mathlib.Data.Nat.Find
+import Batteries.Data.Fin.Lemmas
 
 #align_import data.fin.tuple.basic from "leanprover-community/mathlib"@"ef997baa41b5c428be3fb50089a7139bf4ee886b"
 
@@ -78,6 +79,8 @@ For a **pivot** `p : Fin (n + 1)`,
 -/
 
 assert_not_exists Monoid
+
+#align fin.coe_clamp Fin.coe_clamp
 
 universe u v
 

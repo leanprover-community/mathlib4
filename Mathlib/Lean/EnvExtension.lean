@@ -9,8 +9,6 @@ import Lean.ScopedEnvExtension
 # Helper function for environment extensions and attributes.
 -/
 
-set_option autoImplicit true
-
 open Lean
 
-instance [Inhabited σ] : Inhabited (ScopedEnvExtension.State σ) := ⟨{state := default}⟩
+instance {σ : Type} [Inhabited σ] : Inhabited (ScopedEnvExtension.State σ) := ⟨{state := default}⟩

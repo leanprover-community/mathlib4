@@ -687,6 +687,43 @@ instance : HasImageMaps (Type u) where
         simp only [Functor.id_obj, Functor.id_map, types_comp_apply] at p
         erw [p, Classical.choose_spec x.2]⟩⟩) rfl
 
+variable {F : ℕᵒᵖ ⥤ Type u} {c : Cone F} (hc : IsLimit c)
+  (hF : ∀ n, Function.Surjective (F.map (homOfLE (Nat.le_succ n)).op))
+
+private noncomputable def limitOfSurjectionsSurjective.preimage
+    (a : F.obj ⟨0⟩) : (n : ℕ) → F.obj ⟨n⟩
+    | 0 => a
+    | n+1 => (hF n (preimage a n)).choose
+
+open limitOfSurjectionsSurjective in
+/-- Auxiliary lemma. Use `limit_of_surjections_surjective` instead. -/
+lemma surjective_π_app_zero_of_surjective_map_aux :
+    Function.Surjective ((limitCone F).π.app ⟨0⟩) := by
+  intro a
+  refine ⟨⟨fun ⟨n⟩ ↦ preimage hF a n, ?_⟩, rfl⟩
+  intro ⟨n⟩ ⟨m⟩ ⟨⟨⟨(h : m ≤ n)⟩⟩⟩
+  induction h with
+  | refl =>
+    erw [CategoryTheory.Functor.map_id, types_id_apply]
+  | @step p h ih =>
+    rw [← ih]
+    have h' : m ≤ p := h
+    erw [CategoryTheory.Functor.map_comp (f := (homOfLE (Nat.le_succ p)).op) (g := (homOfLE h').op),
+      types_comp_apply, (hF p _).choose_spec]
+    rfl
+
+/--
+Given surjections `⋯ ⟶ Xₙ₊₁ ⟶ Xₙ ⟶ ⋯ ⟶ X₀`, the projection map `lim Xₙ ⟶ X₀` is surjective.
+-/
+lemma surjective_π_app_zero_of_surjective_map : Function.Surjective (c.π.app ⟨0⟩) := by
+  let i := hc.conePointUniqueUpToIso (limitConeIsLimit F)
+  have : c.π.app ⟨0⟩ = i.hom ≫ (limitCone F).π.app ⟨0⟩ := by simp [i]
+  rw [this]
+  apply Function.Surjective.comp
+  · exact surjective_π_app_zero_of_surjective_map_aux hF
+  · rw [← epi_iff_surjective]
+    infer_instance
+
 end Types
 
 open Functor Opposite
