@@ -44,6 +44,9 @@ set_option linter.deprecated false in
 structure LinearOrderedCommGroupWithZero (α : Type*) extends LinearOrderedCommMonoidWithZero α,
   CommGroupWithZero α
 
+attribute [nolint docBlame] LinearOrderedCommMonoidWithZero.toCommMonoidWithZero
+  LinearOrderedCommGroupWithZero.toCommGroupWithZero
+
 /-- An ordered monoid with zero is a “monoid with zero” with a order such that
 multiplication is monotone and `0` is less or equal to `1`. -/
 class IsOrderedMonoidWithZero (α : Type*) [CommMonoidWithZero α] [PartialOrder α] extends

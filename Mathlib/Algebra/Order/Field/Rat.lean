@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Rat
-import Mathlib.Algebra.Order.Nonneg.Field
+import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Data.NNRat.Defs
 
 /-!
 # The rational numbers form a linear ordered field

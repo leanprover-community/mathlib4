@@ -6,6 +6,7 @@ Authors: Yaël Dillies, George Shakan
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.GCongr

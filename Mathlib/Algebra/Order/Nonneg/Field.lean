@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Field.Canonical
-import Mathlib.Algebra.Order.Nonneg.Ring
+import Mathlib.Algebra.Order.Ring.Unbundled.Nonneg
 import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
