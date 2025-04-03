@@ -23,7 +23,7 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 /-- A space is prespectral if the lattice of compact opens forms a basis. -/
 @[mk_iff]
 class PrespectralSpace (X : Type*) [TopologicalSpace X] : Prop where
-  isTopologicalBasis : TopologicalSpace.IsTopologicalBasis { U : Set X | IsOpen U ∧ IsCompact U }
+  isTopologicalBasis : IsTopologicalBasis { U : Set X | IsOpen U ∧ IsCompact U }
 
 /-- A space is prespectral if it has a basis consisting of compact opens. -/
 lemma PrespectralSpace.of_isTopologicalBasis {B : Set (Set X)}
