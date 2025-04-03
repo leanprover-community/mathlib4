@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
 import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Interval.Set.LinearOrder
 
 /-!
 # Monotonicity on intervals

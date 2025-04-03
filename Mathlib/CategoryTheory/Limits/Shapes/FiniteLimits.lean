@@ -39,8 +39,8 @@ class HasFiniteLimits : Prop where
   and which has `FinType` objects and morphisms -/
   out (J : Type) [𝒥 : SmallCategory J] [@FinCategory J 𝒥] : @HasLimitsOfShape J 𝒥 C _
 
-instance (priority := 100) hasLimitsOfShape_of_hasFiniteLimits (J : Type w) [SmallCategory J]
-    [FinCategory J] [HasFiniteLimits C] : HasLimitsOfShape J C := by
+instance (priority := 100) hasLimitsOfShape_of_hasFiniteLimits [HasFiniteLimits C] (J : Type w)
+    [SmallCategory J] [FinCategory J] : HasLimitsOfShape J C := by
   apply @hasLimitsOfShape_of_equivalence _ _ _ _ _ _ (FinCategory.equivAsType J) ?_
   apply HasFiniteLimits.out
 
