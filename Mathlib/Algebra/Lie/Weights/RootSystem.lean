@@ -465,8 +465,42 @@ lemma invtSubmodule_reflection:
     apply h2
 
   have rr3 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) : LieModule.genWeightSpace L (i.1.1 + j.1.1) = ⊥ := by
-    sorry
+    by_contra!
+    let r := LieModule.Weight.mk (R := K) (L := H) (M := L) (i.1.1 + j.1.1) this
+    --simp? at r
+    have r2 : r ∈ H.root ∨ r = 0 := by
+      simp only [Finset.mem_filter, Finset.mem_univ, true_and, S]
+      have ttt: r = 0 ∨ r ≠ 0 := by
+        exact eq_or_ne r 0
+      rcases ttt with h1 | h1
+      right
+      exact h1
+      left
+      exact LieModule.Weight.isNonZero_iff_ne_zero.mpr h1
+    have r3 : r ≠ 0 := by
+      intro a
+      have r31 : i.1 = -j.1 := by
+        have tt : i.1.1 + j.1.1 = 0 := by
+          simp_all [S, r]
+          obtain ⟨val, property⟩ := i
+          obtain ⟨val_1, property_1⟩ := j
+          simp_all only [S]
+          sorry
+        sorry
 
+        --dsimp [r] at a
+        --search_proof
+
+      have r32 := rr2 i j h1 h2
+      rw [r31] at r32
+      simp at r32
+      have t : j.1.IsNonZero := by
+        have tt := j.2
+        sorry
+      have r33 := LieAlgebra.IsKilling.root_apply_coroot (K := K) (H := H) (L := L) t
+      rw [r33] at r32
+      field_simp at r32
+    sorry
   have rr4 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : LieAlgebra.rootSpace H i.1.1) (lj : LieAlgebra.rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
     --lie_mem_genWeightSpace_of_mem_genWeightSpace
     sorry
