@@ -39,8 +39,8 @@ variable [LinearOrder α] [LinearOrder β] [LinearOrder γ]
 
 /-- This condition is the LHS of the `IsLUB (f '' Iio a) (f a)` predicate. -/
 theorem of_mem_lowerBounds_upperBounds {f : α → β} (hf : StrictMono f)
-    (H : ∀ a, IsSuccLimit a → f a ∈ lowerBounds (upperBounds (f '' Iio a))) : IsNormal f := by
-  refine ⟨hf, @fun a ha ↦ ⟨?_, H _ ha⟩⟩
+    (hl : ∀ {a}, IsSuccLimit a → f a ∈ lowerBounds (upperBounds (f '' Iio a))) : IsNormal f := by
+  refine ⟨hf, @fun a ha ↦ ⟨?_, hl ha⟩⟩
   rintro - ⟨b, hb, rfl⟩
   exact (hf hb).le
 
@@ -108,7 +108,7 @@ protected theorem id : IsNormal (@id α) :=
   (OrderIso.refl _).isNormal
 
 theorem comp (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) := by
-  refine .of_mem_lowerBounds_upperBounds (hg.strictMono.comp hf.strictMono) fun a ha b hb ↦ ?_
+  refine .of_mem_lowerBounds_upperBounds (hg.strictMono.comp hf.strictMono) fun ha b hb ↦ ?_
   simp_rw [Function.comp_apply, mem_upperBounds, forall_mem_image] at hb
   simpa [hg.le_iff_forall_le (hf.map_isSuccLimit ha), hf.lt_iff_exists_lt ha] using
     fun c d hd hc ↦ (hg.strictMono hc).le.trans (hb hd)
