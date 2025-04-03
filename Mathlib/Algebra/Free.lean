@@ -424,7 +424,7 @@ if `M` is any additive semigroup, and `f : α → M` is any function,
 then this function is the composite of `FreeAddSemigroup.of` and a unique semigroup homomorphism
 `FreeAddSemigroup.lift f : FreeAddSemigroup α →ₙ+ M`.
 
-A typical element of `FreeAddSemigroup α` is a formal sum of elements of `α`.
+A typical element of `FreeAddSemigroup α` is a nonempty formal sum of elements of `α`.
 For example if `x` and `y` are terms of type `α` then `x + y + y + x` is a
 "typical" element of `FreeAddSemigroup α`. In particular if `α` is empty
 then `FreeAddSemigroup α` is also empty, and if `α` has one term
@@ -445,7 +445,7 @@ the following universal property: if `M` is any semigroup, and `f : α → M` is
 then this function is the composite of `FreeSemigroup.of` and a unique semigroup homomorphism
 `FreeSemigroup.lift f : FreeSemigroup α →ₙ* M`.
 
-A typical element of `FreeSemigroup α` is a formal product of elements of `α`.
+A typical element of `FreeSemigroup α` is a nonempty formal product of elements of `α`.
 For example if `x` and `y` are terms of type `α` then `x * y * y * x` is a
 "typical" element of `FreeSemigroup α`. In particular if `α` is empty
 then `FreeSemigroup α` is also empty, and if `α` has one term
