@@ -435,7 +435,7 @@ variable (K L : Type*) [Field K] [CharZero K]
   [Nontrivial L]
 
 #check (LieAlgebra.IsKilling.rootSystem H)
-
+set_option maxHeartbeats 10000000
 --  eq_top_of_invtSubmodule_reflection (q : Submodule R M) :
 --    (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤
 
@@ -475,29 +475,29 @@ lemma invtSubmodule_reflection:
   have help : ⨆ χ : LieModule.Weight K H L, LieModule.genWeightSpace L χ = ⊤ := by
     exact LieModule.iSup_genWeightSpace_eq_top' K H L
   let gg := ⋃ i ∈ Φ, (LieAlgebra.rootSpace H i : Set L)
-  let I := LieSubmodule.lieSpan K L gg
+  let I := LieSubalgebra.lieSpan K L gg
   have rr5 : I ≠ ⊤ := by
     sorry
   have rr6 : I ≠ ⊥ := by
     sorry
-  have rr7 : LieAlgebra.IsSimple K L := inferInstance
-  have := rr7.eq_bot_or_eq_top I
+  have rr7 : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
+    sorry
+  have rr8 := (LieSubalgebra.exists_lieIdeal_coe_eq_iff (R := K) (L := L) (K := I)).2 rr7
+  obtain ⟨I', hhh⟩ := rr8
+  have rr9 : LieAlgebra.IsSimple K L := inferInstance
+  have := rr9.eq_bot_or_eq_top I'
+
+  have rr52 : I' ≠ ⊤ := by
+    rw [← hhh] at rr5
+    exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) rr5
+
+  have rr62 : I' ≠ ⊥ := by
+    rw [← hhh] at rr6
+    exact ne_of_apply_ne (LieIdeal.toLieSubalgebra K L) rr6
+
   rcases this with h_bot | h_top
   · contradiction
   contradiction
-
-
-
-      --search_proof
-      --simp_all
-      --search_proof
-      --have i ∈ H.root := by
-      --  sorry
-    --simp at hq
-    --dsimp [Module.End.invtSubmodule] at hq
-    --simp
-    --simp at hq
-    --dsimp [RootPairing.reflection] at hq
 
 instance : (LieAlgebra.IsKilling.rootSystem H).IsIrreducible := RootPairing.IsIrreducible.mk'
   (LieAlgebra.IsKilling.rootSystem H).toRootPairing (invtSubmodule_reflection K L H)
