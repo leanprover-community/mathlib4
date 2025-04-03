@@ -64,7 +64,7 @@ theorem meromorphicNFOn_laurentPolynomial_top (d : 𝕜 → ℤ) :
 theorem meromorphicNFOn_laurentPolynomial (d : 𝕜 → ℤ) (U : Set 𝕜) :
     MeromorphicNFOn (∏ᶠ u, fun z ↦ (z - u) ^ d u) U := by
   intro z hz
-  exact meromorphicNF_LaurentPolynomial d (trivial)
+  exact meromorphicNFOn_laurentPolynomial_top d (trivial)
 
 /--
 Helper Lemma: Identifying the support of `d` as the mulsupport of the product defining the Laurent
@@ -90,7 +90,7 @@ lemma mulSupport_laurentPolynomial (d : 𝕜 → ℤ) :
 
 /-- The order of the Laurent polynomial `(∏ᶠ u, fun z ↦ (z - u) ^ d u)` at z equals `d z`. -/
 theorem order_laurentPolynomial {z : 𝕜} (d : 𝕜 → ℤ) (h₁d : Set.Finite d.support) :
-    (((meromorphicNF_LaurentPolynomial d).meromorphicOn) z trivial).order = d z := by
+    (((meromorphicNFOn_laurentPolynomial_top d).meromorphicOn) z trivial).order = d z := by
   classical
   rw [MeromorphicAt.order_eq_int_iff]
   use ∏ x ∈ h₁d.toFinset.erase z, fun z => (z - x) ^ d x,
@@ -109,9 +109,9 @@ theorem order_laurentPolynomial {z : 𝕜} (d : 𝕜 → ℤ) (h₁d : Set.Finit
   · apply Filter.Eventually.of_forall
     intro x
     have t₀ : (Function.mulSupport fun u z => (z - u) ^ d u).Finite := by
-      rwa [mulsupport_LaurentPolynomial d]
+      rwa [mulSupport_laurentPolynomial d]
     have t₁ : h₁d.toFinset = t₀.toFinset := by
-      simp [eq_comm, mulsupport_LaurentPolynomial d]
+      simp [eq_comm, mulSupport_laurentPolynomial d]
     rw [finprod_eq_prod _ t₀, t₁, eq_comm]
     simp only [Finset.prod_apply, smul_eq_mul]
     by_cases hz : z ∈ h₁d.toFinset
@@ -132,10 +132,10 @@ theorem order_laurentPolynomial {z : 𝕜} (d : 𝕜 → ℤ) (h₁d : Set.Finit
 Laurent polynomials are nowhere locally constant zero.
 -/
 theorem order_LaurentPolynomial_ne_top {z : 𝕜} (d : 𝕜 → ℤ) :
-    (meromorphicNF_LaurentPolynomial d (trivial : z ∈ ⊤)).meromorphicAt.order ≠ ⊤ := by
+    (meromorphicNFOn_laurentPolynomial_top d (trivial : z ∈ ⊤)).meromorphicAt.order ≠ ⊤ := by
   by_cases hd : Set.Finite (Function.support d)
-  · simp [order_LaurentPolynomial d hd]
-  · rw [← mulsupport_LaurentPolynomial] at hd
+  · simp [order_laurentPolynomial d hd]
+  · rw [← mulSupport_laurentPolynomial] at hd
     have : AnalyticAt 𝕜 (1 : 𝕜 → 𝕜) z := analyticAt_const
     simp [finprod_of_infinite_mulSupport hd, this.meromorphicAt_order,
       this.order_eq_zero_iff.2 (by simp)]
@@ -144,13 +144,12 @@ theorem order_LaurentPolynomial_ne_top {z : 𝕜} (d : 𝕜 → ℤ) :
 The divisor function associated with the divisor of the Laurent polynomial
 `(∏ᶠ u, fun z ↦ (z - u) ^ d u)` equals `d`.
 -/
-theorem divisor_LaurentPolynomial [CompleteSpace 𝕜] (d : 𝕜 → ℤ)
-  (h₁d : Set.Finite d.support) :
-  MeromorphicOn.divisor (∏ᶠ u, fun z ↦ (z - u) ^ d u) ⊤ = d := by
+theorem divisor_LaurentPolynomial [CompleteSpace 𝕜] (d : 𝕜 → ℤ) (h₁d : Set.Finite d.support) :
+    MeromorphicOn.divisor (∏ᶠ u, fun z ↦ (z - u) ^ d u) ⊤ = d := by
   ext z
-  simp_rw [MeromorphicOn.divisor_apply (meromorphicNF_LaurentPolynomial d).meromorphicOn
+  simp_rw [(meromorphicNFOn_laurentPolynomial_top d).meromorphicOn.divisor_apply
     (by simp : z ∈ Set.univ)]
-  rw [order_LaurentPolynomial d h₁d]
+  rw [order_laurentPolynomial d h₁d]
   simp
 
 /--
@@ -162,6 +161,6 @@ theorem divisor_laurentPolynomial_within [CompleteSpace 𝕜] {U : Set 𝕜}
     MeromorphicOn.divisor (∏ᶠ u, fun z ↦ (z - u) ^ D u) U = D := by
   ext z
   by_cases hz : z ∈ U
-  · simp [(MeromorphicNFOn_LaurentPolynomial D U).meromorphicOn, hz,
-      MeromorphicOn.divisor_apply, order_LaurentPolynomial D hD]
+  · simp [(meromorphicNFOn_laurentPolynomial D U).meromorphicOn, hz,
+      MeromorphicOn.divisor_apply, order_laurentPolynomial D hD]
   · simp [hz]
