@@ -456,7 +456,6 @@ lemma coe_finsetSup {ι : Type*} {f : ι → CompactOpens α} {s : Finset ι} :
   classical
   induction s using Finset.induction_on <;> simp [*]
 
-
 instance : Inhabited (CompactOpens α) :=
   ⟨⊥⟩
 
