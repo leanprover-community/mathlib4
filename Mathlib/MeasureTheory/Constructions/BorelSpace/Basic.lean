@@ -554,13 +554,13 @@ theorem measurable_of_continuousOn_compl_singleton [T1Space α] {f : α → γ} 
 theorem Continuous.measurable2 [SecondCountableTopologyEither α β] {f : δ → α}
     {g : δ → β} {c : α → β → γ} (h : Continuous fun p : α × β => c p.1 p.2) (hf : Measurable f)
     (hg : Measurable g) : Measurable fun a => c (f a) (g a) :=
-  h.measurable.comp (hf.prod_mk hg)
+  h.measurable.comp (hf.prodMk hg)
 
 theorem Continuous.aemeasurable2 [SecondCountableTopologyEither α β]
     {f : δ → α} {g : δ → β} {c : α → β → γ} {μ : Measure δ}
     (h : Continuous fun p : α × β => c p.1 p.2) (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun a => c (f a) (g a)) μ :=
-  h.measurable.comp_aemeasurable (hf.prod_mk hg)
+  h.measurable.comp_aemeasurable (hf.prodMk hg)
 
 instance (priority := 100) HasContinuousInv₀.measurableInv [GroupWithZero γ] [T1Space γ]
     [HasContinuousInv₀ γ] : MeasurableInv γ :=

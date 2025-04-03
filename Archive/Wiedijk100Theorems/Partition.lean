@@ -130,7 +130,7 @@ theorem num_series' [Field α] (i : ℕ) :
       simp only [coeff_one, if_false, mul_sub, mul_one, coeff_indicator,
         LinearMap.map_sub, reduceCtorEq]
       simp_rw [coeff_mul, coeff_X_pow, coeff_indicator, @boole_mul _ _ _ _]
-      erw [sum_ite, sum_ite]
+      rw [sum_ite (hp := fun _ ↦ Classical.propDecidable _), sum_ite]
       simp_rw [@filter_filter _ _ _ _ _, sum_const_zero, add_zero, sum_const, nsmul_eq_mul, mul_one,
         sub_eq_iff_eq_add, zero_add]
       symm
@@ -141,7 +141,7 @@ theorem num_series' [Field α] (i : ℕ) :
         obtain ⟨p, hp⟩ := h
         refine ⟨((i + 1) * (p - 1), i + 1), ?_⟩
         ext ⟨a₁, a₂⟩
-        simp only [mem_filter, Prod.mk.inj_iff, mem_antidiagonal, mem_singleton]
+        simp only [mem_filter, Prod.mk_inj, mem_antidiagonal, mem_singleton]
         constructor
         · rintro ⟨a_left, ⟨a, rfl⟩, rfl⟩
           refine ⟨?_, rfl⟩

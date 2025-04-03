@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Group.Support
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
+import Mathlib.Topology.Piecewise
 import Mathlib.Topology.Separation.SeparatedNhds
 import Mathlib.Topology.Compactness.LocallyCompact
 
@@ -375,7 +376,8 @@ theorem isOpen_setOf_eventually_nhdsWithin [T1Space X] {p : X → Prop} :
   · rw [h.symm.nhdsWithin_compl_singleton] at hb
     exact hb.filter_mono nhdsWithin_le_nhds
 
-protected theorem Set.Finite.isClosed [T1Space X] {s : Set X} (hs : Set.Finite s) : IsClosed s := by
+@[simp] protected lemma Set.Finite.isClosed [T1Space X] {s : Set X} (hs : s.Finite) :
+    IsClosed s := by
   rw [← biUnion_of_singleton s]
   exact hs.isClosed_biUnion fun i _ => isClosed_singleton
 
@@ -545,11 +547,9 @@ theorem compl_singleton_mem_nhds_iff [T1Space X] {x y : X} : {x}ᶜ ∈ 𝓝 y �
 theorem compl_singleton_mem_nhds [T1Space X] {x y : X} (h : y ≠ x) : {x}ᶜ ∈ 𝓝 y :=
   compl_singleton_mem_nhds_iff.mpr h
 
-@[simp]
 theorem closure_singleton [T1Space X] {x : X} : closure ({x} : Set X) = {x} :=
   isClosed_singleton.closure_eq
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: the proof was `hs.induction_on (by simp) fun x => by simp`
 theorem Set.Subsingleton.closure [T1Space X] {s : Set X} (hs : s.Subsingleton) :
     (closure s).Subsingleton := by
   rcases hs.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩) <;> simp
@@ -769,10 +769,14 @@ theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Sp
   constructor
   · intro h x y xspecy
     rw [← IsInducing.specializes_iff isInducing_mk, h xspecy] at *
-  · rintro h ⟨x⟩ ⟨y⟩ sxspecsy
+  · -- TODO is there are better way to do this,
+    -- so the case split produces `SeparationQuotient.mk` directly, rather than `Quot.mk`?
+    -- Currently we need the `change` statement to recover this.
+    rintro h ⟨x⟩ ⟨y⟩ sxspecsy
+    change mk _ = mk _
     have xspecy : x ⤳ y := isInducing_mk.specializes_iff.mp sxspecsy
     have yspecx : y ⤳ x := h xspecy
-    erw [mk_eq_mk, inseparable_iff_specializes_and]
+    rw [mk_eq_mk, inseparable_iff_specializes_and]
     exact ⟨xspecy, yspecx⟩
 
 lemma Set.Subsingleton.isClosed [T1Space X] {A : Set X} (h : A.Subsingleton) : IsClosed A := by

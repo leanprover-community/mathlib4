@@ -287,15 +287,15 @@ theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' 
   -- simpa only [mul_hom, to_add_monoid, dfinsupp.lift_add_hom_apply, dfinsupp.sum_add_hom_apply,
   -- add_monoid_hom.dfinsupp_sum_apply, flip_apply, add_monoid_hom.dfinsupp_sum_add_hom_apply],
   rw [mulHom, toAddMonoid, DFinsupp.liftAddHom_apply]
+  dsimp only [DirectSum]
+  rw [DFinsupp.sumAddHom_apply, AddMonoidHom.dfinsupp_sum_apply]
+  apply congrArg _
+  simp_rw [flip_apply]
+  funext x
   -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [DFinsupp.sumAddHom_apply]
-  rw [AddMonoidHom.dfinsupp_sum_apply]
-  apply congrArg _
-  funext x
-  simp_rw [flip_apply]
-  erw [DFinsupp.sumAddHom_apply]
   simp only [gMulHom, AddMonoidHom.dfinsupp_sum_apply, flip_apply, coe_comp, AddMonoidHom.coe_mk,
-  ZeroHom.coe_mk, Function.comp_apply, AddMonoidHom.compHom_apply_apply]
+    ZeroHom.coe_mk, Function.comp_apply, AddMonoidHom.compHom_apply_apply]
 
 /-- A heavily unfolded version of the definition of multiplication -/
 theorem mul_eq_sum_support_ghas_mul [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
