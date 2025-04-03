@@ -53,9 +53,9 @@ instance preN2 : PartialOrder (ℕ × ZMod 2) where
       · exact Or.inr (xy.trans yz)
   le_antisymm := by
     intro a b ab ba
-    cases' ab with ab ab
+    obtain ab | ab := ab
     · exact ab
-    · cases' ba with ba ba
+    · obtain ba | ba := ba
       · exact ba.symm
       · exact (Nat.lt_asymm ab ba).elim
 

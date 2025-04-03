@@ -80,12 +80,7 @@ def buildIsLimit (t₁ : IsLimit c₁) (t₂ : IsLimit c₂) (hi : IsLimit i) :
     · apply t₂.hom_ext
       intro ⟨j⟩
       simp [hs, ht]
-  uniq q m w :=
-    hi.hom_ext
-      (i.equalizer_ext
-        (t₁.hom_ext fun j => by
-          cases' j with j
-          simpa using w j))
+  uniq q m w := hi.hom_ext (i.equalizer_ext (t₁.hom_ext fun j => by simpa using w j.1))
   fac s j := by simp
 
 end HasLimitOfHasProductsOfHasEqualizers
@@ -204,14 +199,9 @@ lemma preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts [HasEquali
     [HasFiniteProducts C] (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
     [PreservesFiniteProducts G] : PreservesFiniteLimits G where
   preservesFiniteLimits := by
-    intro J sJ fJ
-    haveI : Fintype J := inferInstance
-    haveI : Fintype ((p : J × J) × (p.fst ⟶ p.snd)) := inferInstance
-    apply @preservesLimit_of_preservesEqualizers_and_product _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
-    · apply hasLimitsOfShape_discrete _ _
-    · apply hasLimitsOfShape_discrete _
-    · apply PreservesFiniteProducts.preserves _
-    · apply PreservesFiniteProducts.preserves _
+    intros
+    apply preservesLimit_of_preservesEqualizers_and_product
+
 
 /-- If G preserves equalizers and products, it preserves all limits. -/
 lemma preservesLimits_of_preservesEqualizers_and_products [HasEqualizers C]
@@ -292,7 +282,7 @@ lemma preservesFiniteLimits_of_preservesTerminal_and_pullbacks [HasTerminal C]
       preservesEqualizers_of_preservesPullbacks_and_binaryProducts G
   apply
     @preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts _ _ _ _ _ _ G _ ?_
-  apply PreservesFiniteProducts.mk
+  refine ⟨fun n ↦ ?_⟩
   apply preservesFiniteProducts_of_preserves_binary_and_terminal G
 
 attribute [local instance] preservesFiniteLimits_of_preservesTerminal_and_pullbacks in
@@ -357,8 +347,7 @@ def buildIsColimit (t₁ : IsColimit c₁) (t₂ : IsColimit c₂) (hi : IsColim
     · refine t₂.desc (Cofan.mk _ fun j => ?_)
       apply q.ι.app j
     · apply t₁.hom_ext
-      intro j
-      cases' j with j
+      intro ⟨j⟩
       have reassoced_s (f : (p : J × J) × (p.fst ⟶ p.snd)) {W : C} (h : _ ⟶ W) :
         c₁.ι.app ⟨f⟩ ≫ s ≫ h = F.map f.snd ≫ c₂.ι.app ⟨f.fst.snd⟩ ≫ h := by
           simp only [← Category.assoc]
@@ -368,12 +357,7 @@ def buildIsColimit (t₁ : IsColimit c₁) (t₂ : IsColimit c₂) (hi : IsColim
           simp only [← Category.assoc]
           apply eq_whisker (ht f)
       simp [reassoced_s, reassoced_t]
-  uniq q m w :=
-    hi.hom_ext
-      (i.coequalizer_ext
-        (t₂.hom_ext fun j => by
-          cases' j with j
-          simpa using w j))
+  uniq q m w := hi.hom_ext (i.coequalizer_ext (t₂.hom_ext fun j => by simpa using w j.1))
   fac s j := by simp
 
 end HasColimitOfHasCoproductsOfHasCoequalizers
@@ -493,13 +477,7 @@ lemma preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts
     [PreservesFiniteCoproducts G] : PreservesFiniteColimits G where
   preservesFiniteColimits := by
     intro J sJ fJ
-    haveI : Fintype J := inferInstance
-    haveI : Fintype ((p : J × J) × (p.fst ⟶ p.snd)) := inferInstance
-    apply @preservesColimit_of_preservesCoequalizers_and_coproduct _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
-    · apply hasColimitsOfShape_discrete _ _
-    · apply hasColimitsOfShape_discrete _
-    · apply PreservesFiniteCoproducts.preserves _
-    · apply PreservesFiniteCoproducts.preserves _
+    apply preservesColimit_of_preservesCoequalizers_and_coproduct
 
 /-- If G preserves coequalizers and coproducts, it preserves all colimits. -/
 lemma preservesColimits_of_preservesCoequalizers_and_coproducts [HasCoequalizers C]
@@ -580,7 +558,7 @@ lemma preservesFiniteColimits_of_preservesInitial_and_pushouts [HasInitial C]
       (preservesCoequalizers_of_preservesPushouts_and_binaryCoproducts G)
   refine
     @preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts _ _ _ _ _ _ G _ ?_
-  apply PreservesFiniteCoproducts.mk
+  refine ⟨fun _ ↦ ?_⟩
   apply preservesFiniteCoproductsOfPreservesBinaryAndInitial G
 
 attribute [local instance] preservesFiniteColimits_of_preservesInitial_and_pushouts in

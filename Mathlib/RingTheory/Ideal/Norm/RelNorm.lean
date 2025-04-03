@@ -53,15 +53,12 @@ def spanNorm (I : Ideal S) : Ideal R :=
 theorem spanNorm_bot :
     spanNorm R (⊥ : Ideal S) = ⊥ := span_eq_bot.mpr fun x hx => by simpa using hx
 
-variable {R}
-
+variable {R} in
 @[simp]
 theorem spanNorm_eq_bot_iff {I : Ideal S} : spanNorm R I = ⊥ ↔ I = ⊥ := by
   simp only [spanNorm, span_eq_bot, Set.mem_image, SetLike.mem_coe, forall_exists_index, and_imp,
-    forall_apply_eq_imp_iff₂, Algebra.intNorm_eq_zero, @eq_bot_iff _ _ _ I, SetLike.le_def, map]
-  rfl
-
-variable (R)
+    forall_apply_eq_imp_iff₂, Algebra.intNorm_eq_zero, @eq_bot_iff _ _ _ I, SetLike.le_def, map,
+    mem_bot]
 
 theorem intNorm_mem_spanNorm {I : Ideal S} {x : S} (hx : x ∈ I) :
     Algebra.intNorm R S x ∈ I.spanNorm R :=
@@ -111,7 +108,7 @@ theorem spanIntNorm_localization (I : Ideal S) (M : Submonoid R) (hM : M ≤ R�
   let g : Sₘ →+* L := IsLocalization.map _ (M := Algebra.algebraMapSubmonoid S M) (T := S⁰)
       (RingHom.id S) (Submonoid.map_le_of_le_comap _ <| hM.trans
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
-        (NoZeroSMulDivisors.algebraMap_injective _ _)))
+        (FaithfulSMul.algebraMap_injective _ _)))
   algebraize [f, g, (algebraMap K L).comp f]
   have : IsScalarTower R Rₘ K := IsScalarTower.of_algebraMap_eq'
     (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHomCompTriple.comp_eq])
@@ -202,7 +199,7 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
     IsScalarTower.of_algebraMap_eq (fun x =>
       (IsLocalization.map_eq (T := P') (Q := Localization P') P.primeCompl.le_comap_map x).symm)
   have h : P' ≤ S⁰ :=
-    map_le_nonZeroDivisors_of_injective _ (NoZeroSMulDivisors.algebraMap_injective _ _)
+    map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
       P.primeCompl_le_nonZeroDivisors
   have : IsDomain Sₚ := IsLocalization.isDomain_localization h
   have : IsDedekindDomain Sₚ := IsLocalization.isDedekindDomain S h _
@@ -234,7 +231,7 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
     (Rₘ := Localization.AtPrime P) (Sₘ := Localization P') _ _ P.primeCompl_le_nonZeroDivisors]
   rw [← (I.map _).span_singleton_generator, ← (J.map _).span_singleton_generator,
     span_singleton_mul_span_singleton, spanNorm_singleton, spanNorm_singleton,
-      spanNorm_singleton, span_singleton_mul_span_singleton, _root_.map_mul]
+    spanNorm_singleton, span_singleton_mul_span_singleton, _root_.map_mul]
 
 /-- The relative norm `Ideal.relNorm R (I : Ideal S)`, where `R` and `S` are Dedekind domains,
 and `S` is an extension of `R` that is finite and free as a module. -/
@@ -259,13 +256,10 @@ theorem relNorm_bot : relNorm R (⊥ : Ideal S) = ⊥ := by
 theorem relNorm_top : relNorm R (⊤ : Ideal S) = ⊤ := by
   simpa only [one_eq_top] using map_one (relNorm R : Ideal S →*₀ _)
 
-variable {R}
-
+variable {R} in
 @[simp]
 theorem relNorm_eq_bot_iff {I : Ideal S} : relNorm R I = ⊥ ↔ I = ⊥ :=
   spanNorm_eq_bot_iff
-
-variable (R)
 
 theorem norm_mem_relNorm [Module.Free R S] (I : Ideal S) {x : S} (hx : x ∈ I) :
     Algebra.norm R x ∈ relNorm R I :=

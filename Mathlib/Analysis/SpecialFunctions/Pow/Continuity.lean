@@ -195,7 +195,7 @@ theorem continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
 
 theorem continuousAt_rpow_of_pos (p : ℝ × ℝ) (hp : 0 < p.2) :
     ContinuousAt (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
-  cases' p with x y
+  obtain ⟨x, y⟩ := p
   dsimp only at hp
   obtain hx | rfl := ne_or_eq x 0
   · exact continuousAt_rpow_of_ne (x, y) hx
@@ -293,7 +293,7 @@ theorem continuousAt_cpow_zero_of_re_pos {z : ℂ} (hz : 0 < z.re) :
     ContinuousAt (fun x : ℂ × ℂ => x.1 ^ x.2) (0, z) := by
   have hz₀ : z ≠ 0 := ne_of_apply_ne re hz.ne'
   rw [ContinuousAt, zero_cpow hz₀, tendsto_zero_iff_norm_tendsto_zero]
-  refine squeeze_zero (fun _ => norm_nonneg _) (fun _ => abs_cpow_le _ _) ?_
+  refine squeeze_zero (fun _ => norm_nonneg _) (fun _ => norm_cpow_le _ _) ?_
   simp only [div_eq_mul_inv, ← Real.exp_neg]
   refine Tendsto.zero_mul_isBoundedUnder_le ?_ ?_
   · convert
@@ -316,7 +316,7 @@ open ComplexOrder in
 assumptions about `p.2`. -/
 theorem continuousAt_cpow_of_re_pos {p : ℂ × ℂ} (h₁ : 0 ≤ p.1.re ∨ p.1.im ≠ 0) (h₂ : 0 < p.2.re) :
     ContinuousAt (fun x : ℂ × ℂ => x.1 ^ x.2) p := by
-  cases' p with z w
+  obtain ⟨z, w⟩ := p
   rw [← not_lt_zero_iff, lt_iff_le_and_ne, not_and_or, Ne, Classical.not_not,
     not_le_zero_iff] at h₁
   rcases h₁ with (h₁ | (rfl : z = 0))
@@ -353,12 +353,9 @@ theorem continuousAt_ofReal_cpow (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) 
       rwa [neg_re, ofReal_re, neg_pos]
     · exact (continuous_exp.comp (continuous_const.mul continuous_snd)).continuousAt
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-  need `by exact` to deal with tricky unification -/
 theorem continuousAt_ofReal_cpow_const (x : ℝ) (y : ℂ) (h : 0 < y.re ∨ x ≠ 0) :
-    ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x := by
-  exact ContinuousAt.comp (x := x) (continuousAt_ofReal_cpow x y h)
-          ((continuous_id (X := ℝ)).prod_mk (continuous_const (y := y))).continuousAt
+    ContinuousAt (fun a => (a : ℂ) ^ y : ℝ → ℂ) x :=
+  (continuousAt_ofReal_cpow x y h).comp₂_of_eq (by fun_prop) (by fun_prop) rfl
 
 theorem continuous_ofReal_cpow_const {y : ℂ} (hs : 0 < y.re) :
     Continuous (fun x => (x : ℂ) ^ y : ℝ → ℂ) :=
@@ -385,7 +382,7 @@ theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
   refine continuous_real_toNNReal.continuousAt.comp (ContinuousAt.comp ?_ ?_)
   · apply Real.continuousAt_rpow
     simpa using h
-  · exact ((continuous_subtype_val.comp continuous_fst).prod_mk continuous_snd).continuousAt
+  · fun_prop
 
 theorem eventually_pow_one_div_le (x : ℝ≥0) {y : ℝ≥0} (hy : 1 < y) :
     ∀ᶠ n : ℕ in atTop, x ^ (1 / n : ℝ) ≤ y := by

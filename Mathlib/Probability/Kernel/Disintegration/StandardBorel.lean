@@ -280,7 +280,7 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
   exact ha
 
 /-- For `κ' := map κ (Prod.map (id : β → β) e)`, the hypothesis `hη` is `fst κ' ⊗ₖ η = κ'`.
-With that hypothesis, `fst κ ⊗ₖ borelMarkovFromReal κ η = κ`.-/
+With that hypothesis, `fst κ ⊗ₖ borelMarkovFromReal κ η = κ`. -/
 lemma compProd_fst_borelMarkovFromReal (κ : Kernel α (β × Ω)) [IsSFiniteKernel κ]
     (η : Kernel (α × β) ℝ) [IsSFiniteKernel η]
     (hη : (fst (map κ (Prod.map (id : β → β) (embeddingReal Ω)))) ⊗ₖ η

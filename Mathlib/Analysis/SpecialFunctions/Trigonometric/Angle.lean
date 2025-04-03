@@ -90,6 +90,9 @@ theorem coe_nsmul (n : ℕ) (x : ℝ) : ↑(n • x : ℝ) = n • (↑x : Angle
 theorem coe_zsmul (z : ℤ) (x : ℝ) : ↑(z • x : ℝ) = z • (↑x : Angle) :=
   rfl
 
+theorem coe_eq_zero_iff {x : ℝ} : (x : Angle) = 0 ↔ ∃ n : ℤ, n • (2 * π) = x :=
+  AddCircle.coe_eq_zero_iff (2 * π)
+
 @[simp, norm_cast]
 theorem natCast_mul_eq_nsmul (x : ℝ) (n : ℕ) : ↑((n : ℝ) * x) = n • (↑x : Angle) := by
   simpa only [nsmul_eq_mul] using coeHom.map_nsmul x n
@@ -222,7 +225,7 @@ theorem sin_eq_iff_coe_eq_or_add_eq_pi {θ ψ : ℝ} :
   constructor
   · intro Hsin
     rw [← cos_pi_div_two_sub, ← cos_pi_div_two_sub] at Hsin
-    cases' cos_eq_iff_coe_eq_or_eq_neg.mp Hsin with h h
+    rcases cos_eq_iff_coe_eq_or_eq_neg.mp Hsin with h | h
     · left
       rw [coe_sub, coe_sub] at h
       exact sub_right_inj.1 h
@@ -242,8 +245,8 @@ theorem sin_eq_iff_coe_eq_or_add_eq_pi {θ ψ : ℝ} :
       mul_zero]
 
 theorem cos_sin_inj {θ ψ : ℝ} (Hcos : cos θ = cos ψ) (Hsin : sin θ = sin ψ) : (θ : Angle) = ψ := by
-  cases' cos_eq_iff_coe_eq_or_eq_neg.mp Hcos with hc hc; · exact hc
-  cases' sin_eq_iff_coe_eq_or_add_eq_pi.mp Hsin with hs hs; · exact hs
+  rcases cos_eq_iff_coe_eq_or_eq_neg.mp Hcos with hc | hc; · exact hc
+  rcases sin_eq_iff_coe_eq_or_add_eq_pi.mp Hsin with hs | hs; · exact hs
   rw [eq_neg_iff_add_eq_zero, hs] at hc
   obtain ⟨n, hn⟩ : ∃ n, n • _ = _ := QuotientAddGroup.leftRel_apply.mp (Quotient.exact' hc)
   rw [← neg_one_mul, add_zero, ← sub_eq_zero, zsmul_eq_mul, ← mul_assoc, ← sub_mul, mul_eq_zero,

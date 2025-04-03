@@ -101,9 +101,6 @@ instance : CentroidHomClass (CentroidHom α) α where
   map_mul_left f := f.map_mul_left'
   map_mul_right f := f.map_mul_right'
 
-
--- Porting note: removed @[simp]; not in normal form. (`toAddMonoidHom_eq_coe` below ensures that
--- the LHS simplifies to the RHS anyway.)
 theorem toFun_eq_coe {f : CentroidHom α} : f.toFun = f := rfl
 
 @[ext]
@@ -610,7 +607,6 @@ section NonUnitalRing
 
 variable [NonUnitalRing α]
 
--- Porting note: Not sure why Lean didn't like `CentroidHom.Ring`
 -- See note [reducible non instances]
 /-- A prime associative ring has commutative centroid. -/
 abbrev commRing

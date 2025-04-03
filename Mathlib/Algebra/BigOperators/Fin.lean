@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov, Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Anne Baanen
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Fin
@@ -22,6 +22,8 @@ constant function. These results have variants for sums instead of products.
 
 * `finFunctionFinEquiv`: An explicit equivalence between `Fin n → Fin m` and `Fin (m ^ n)`.
 -/
+
+assert_not_exists Field
 
 open Finset
 
@@ -181,6 +183,17 @@ theorem prod_trunc {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin (a + b) → M
   rw [prod_univ_add, Fintype.prod_eq_one _ hf, mul_one]
   rfl
 
+lemma sum_neg_one_pow (R : Type*) [Ring R] (m : ℕ) :
+    (∑ n : Fin m, (-1) ^ n.1 : R) = if Even m then 0 else 1 := by
+  induction m with
+  | zero => simp
+  | succ n IH =>
+    simp only [Fin.sum_univ_castSucc, Fin.coe_castSucc, IH, Fin.val_last,
+      Nat.even_add_one, ← Nat.not_even_iff_odd, ite_not]
+    split_ifs with h
+    · simp [*]
+    · simp [(Nat.not_even_iff_odd.mp h).neg_pow]
+
 section PartialProd
 
 variable [Monoid α] {n : ℕ}
@@ -284,10 +297,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
         ext
         simp_rw [Fin.sum_univ_succ, Fin.val_zero, Fin.val_succ, pow_zero, Nat.div_one,
           mul_one, pow_succ', ← Nat.div_div_eq_div_mul, mul_left_comm _ m, ← mul_sum]
-        rw [ih _ (Nat.div_lt_of_lt_mul ?_), Nat.mod_add_div]
-        -- Porting note: replaces `a.is_lt` in the wildcard above.
-        -- Caused by a refactor of the `npow` instance for `Fin`.
-        exact a.is_lt.trans_eq (pow_succ' _ _)
+        rw [ih _ (Nat.div_lt_of_lt_mul (a.is_lt.trans_eq (pow_succ' _ _))), Nat.mod_add_div]
 
 theorem finFunctionFinEquiv_apply {m n : ℕ} (f : Fin n → Fin m) :
     (finFunctionFinEquiv f : ℕ) = ∑ i : Fin n, ↑(f i) * m ^ (i : ℕ) :=
@@ -297,7 +307,7 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
     (finFunctionFinEquiv (Pi.single i j) : ℕ) = j * m ^ (i : ℕ) := by
   rw [finFunctionFinEquiv_apply, Fintype.sum_eq_single i, Pi.single_eq_same]
   rintro x hx
-  rw [Pi.single_eq_of_ne hx, Fin.val_zero', zero_mul]
+  rw [Pi.single_eq_of_ne hx, Fin.val_zero, zero_mul]
 
 /-- Equivalence between `∀ i : Fin m, Fin (n i)` and `Fin (∏ i : Fin m, n i)`. -/
 def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃ Fin (∏ i : Fin m, n i) :=
@@ -351,21 +361,8 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         change (_ + ∑ y : _, _ / (x * _) % _ * (x * _)) = _
         simp_rw [← Nat.div_div_eq_div_mul, mul_left_comm (_ % _ : ℕ), ← mul_sum]
         convert Nat.mod_add_div _ _
-        -- Porting note: new
         refine (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq ?_))
-        exact Fin.prod_univ_succ _
-        -- Porting note: was:
-        /-
-        refine' Eq.trans _ (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq _))
-        swap
-        · convert Fin.prod_univ_succ (Fin.cons x xs : _ → ℕ)
-          simp_rw [Fin.cons_succ]
-        congr with i
-        congr with j
-        · cases j
-          rfl
-        · cases j
-          rfl-/)
+        exact Fin.prod_univ_succ _)
 
 theorem finPiFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (f : ∀ i : Fin m, Fin (n i)) :
     (finPiFinEquiv f : ℕ) = ∑ i, f i * ∏ j, n (Fin.castLE i.is_lt.le j) := rfl
@@ -376,7 +373,7 @@ theorem finPiFinEquiv_single {m : ℕ} {n : Fin m → ℕ} [∀ i, NeZero (n i)]
       j * ∏ j, n (Fin.castLE i.is_lt.le j) := by
   rw [finPiFinEquiv_apply, Fintype.sum_eq_single i, Pi.single_eq_same]
   rintro x hx
-  rw [Pi.single_eq_of_ne hx, Fin.val_zero', zero_mul]
+  rw [Pi.single_eq_of_ne hx, Fin.val_zero, zero_mul]
 
 /-- Equivalence between the Sigma type `(i : Fin m) × Fin (n i)` and `Fin (∑ i : Fin m, n i)`. -/
 def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) ≃ Fin (∑ i : Fin m, n i) :=
@@ -392,10 +389,10 @@ def finSigmaFinEquiv {m : ℕ} {n : Fin m → ℕ} : (i : Fin m) × Fin (n i) �
 @[simp]
 theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) × Fin (n i)) :
     (finSigmaFinEquiv k : ℕ) = ∑ i : Fin k.1, n (Fin.castLE k.1.2.le i) + k.2 := by
-  induction m
-  · exact k.fst.elim0
-  rename_i m ih
-  rcases k with ⟨⟨iv,hi⟩,j⟩
+  induction m with
+  | zero => exact k.fst.elim0
+  | succ m ih =>
+  rcases k with ⟨⟨iv, hi⟩, j⟩
   rw [finSigmaFinEquiv]
   unfold finSumFinEquiv
   simp only [Equiv.coe_fn_mk, Equiv.sigmaCongrLeft, Equiv.coe_fn_symm_mk, Equiv.instTrans_trans,
@@ -414,7 +411,7 @@ theorem finSigmaFinEquiv_apply {m : ℕ} {n : Fin m → ℕ} (k : (i : Fin m) ×
     simp
     rfl
 
-/-- `finSigmaFinEquiv` on `Fin 1 × f` is just `f`-/
+/-- `finSigmaFinEquiv` on `Fin 1 × f` is just `f` -/
 theorem finSigmaFinEquiv_one {n : Fin 1 → ℕ} (ij : (i : Fin 1) × Fin (n i)) :
     (finSigmaFinEquiv ij : ℕ) = ij.2 := by
   rw [finSigmaFinEquiv_apply, add_left_eq_self]

@@ -121,7 +121,7 @@ theorem tendsto_rpow_neg_div : Tendsto (fun x => x ^ (-(1 : ℝ) / x)) atTop (�
 
 /-- The function `exp(x) / x ^ s` tends to `+∞` at `+∞`, for any real number `s`. -/
 theorem tendsto_exp_div_rpow_atTop (s : ℝ) : Tendsto (fun x : ℝ => exp x / x ^ s) atTop atTop := by
-  cases' archimedean_iff_nat_lt.1 Real.instArchimedean s with n hn
+  obtain ⟨n, hn⟩ := archimedean_iff_nat_lt.1 Real.instArchimedean s
   refine tendsto_atTop_mono' _ ?_ (tendsto_exp_div_pow_atTop n)
   filter_upwards [eventually_gt_atTop (0 : ℝ), eventually_ge_atTop (1 : ℝ)] with x hx₀ hx₁
   gcongr
@@ -191,32 +191,30 @@ theorem isTheta_exp_arg_mul_im (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x
   exact mul_le_mul (abs_arg_le_pi _) hx (abs_nonneg _) Real.pi_pos.le
 
 theorem isBigO_cpow_rpow (hl : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|) :
-    (fun x => f x ^ g x) =O[l] fun x => abs (f x) ^ (g x).re :=
+    (fun x => f x ^ g x) =O[l] fun x => ‖f x‖ ^ (g x).re :=
   calc
     (fun x => f x ^ g x) =O[l]
-        (show α → ℝ from fun x => abs (f x) ^ (g x).re / Real.exp (arg (f x) * im (g x))) :=
-      isBigO_of_le _ fun _ => (abs_cpow_le _ _).trans (le_abs_self _)
-    _ =Θ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re / (1 : ℝ)) :=
+        (show α → ℝ from fun x => ‖f x‖ ^ (g x).re / Real.exp (arg (f x) * im (g x))) :=
+      isBigO_of_le _ fun _ => (norm_cpow_le _ _).trans (le_abs_self _)
+    _ =Θ[l] (show α → ℝ from fun x => ‖f x‖ ^ (g x).re / (1 : ℝ)) :=
       ((isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl))
-    _ =ᶠ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re) := by
-      simp only [ofReal_one, div_one]
-      rfl
+    _ =ᶠ[l] (show α → ℝ from fun x => ‖f x‖ ^ (g x).re) := by
+      simp only [ofReal_one, div_one, EventuallyEq.rfl]
 
 theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).im|)
     (hl : ∀ᶠ x in l, f x = 0 → re (g x) = 0 → g x = 0) :
-    (fun x => f x ^ g x) =Θ[l] fun x => abs (f x) ^ (g x).re :=
+    (fun x => f x ^ g x) =Θ[l] fun x => ‖f x‖ ^ (g x).re :=
   calc
     (fun x => f x ^ g x) =Θ[l]
-        (fun x => abs (f x) ^ (g x).re / Real.exp (arg (f x) * im (g x))) :=
-      .of_norm_eventuallyEq <| hl.mono fun _ => abs_cpow_of_imp
-    _ =Θ[l] fun x => abs (f x) ^ (g x).re / (1 : ℝ) :=
+        (fun x => ‖f x‖ ^ (g x).re / Real.exp (arg (f x) * im (g x))) :=
+      .of_norm_eventuallyEq <| hl.mono fun _ => norm_cpow_of_imp
+    _ =Θ[l] fun x => ‖f x‖ ^ (g x).re / (1 : ℝ) :=
       (isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl_im)
-    _ =ᶠ[l] (fun x => abs (f x) ^ (g x).re) := by
-      simp only [ofReal_one, div_one]
-      rfl
+    _ =ᶠ[l] (fun x => ‖f x‖ ^ (g x).re) := by
+      simp only [ofReal_one, div_one, EventuallyEq.rfl]
 
 theorem isTheta_cpow_const_rpow {b : ℂ} (hl : b.re = 0 → b ≠ 0 → ∀ᶠ x in l, f x ≠ 0) :
-    (fun x => f x ^ b) =Θ[l] fun x => abs (f x) ^ b.re :=
+    (fun x => f x ^ b) =Θ[l] fun x => ‖f x‖ ^ b.re :=
   isTheta_cpow_rpow isBoundedUnder_const <| by
     simpa only [eventually_imp_distrib_right, not_imp_not, Imp.swap (a := b.re = 0)] using hl
 
@@ -265,6 +263,37 @@ protected lemma IsLittleO.sqrt (hfg : f =o[l] g) (hg : 0 ≤ᶠ[l] g) :
 protected lemma IsTheta.sqrt (hfg : f =Θ[l] g) (hf : 0 ≤ᶠ[l] f) (hg : 0 ≤ᶠ[l] g) :
     (Real.sqrt <| f ·) =Θ[l] (Real.sqrt <| g ·) :=
   ⟨hfg.1.sqrt hg, hfg.2.sqrt hf⟩
+
+theorem isBigO_atTop_natCast_rpow_of_tendsto_div_rpow {𝕜 : Type*} [RCLike 𝕜] {g : ℕ → 𝕜}
+    {a : 𝕜} {r : ℝ} (hlim : Tendsto (fun n ↦ g n / (n ^ r : ℝ)) atTop (𝓝 a)) :
+    g =O[atTop] fun n ↦ (n : ℝ) ^ r := by
+  refine (isBigO_of_div_tendsto_nhds ?_ ‖a‖ ?_).of_norm_left
+  · filter_upwards [eventually_ne_atTop 0] with _ h
+    simp [Real.rpow_eq_zero_iff_of_nonneg, h]
+  · exact hlim.norm.congr fun n ↦ by simp [abs_of_nonneg, show 0 ≤ (n : ℝ) ^ r by positivity]
+
+variable {E : Type*} [SeminormedRing E] (a b c : ℝ)
+
+theorem IsBigO.mul_atTop_rpow_of_isBigO_rpow {f g : ℝ → E}
+    (hf : f =O[atTop] fun t ↦ (t : ℝ) ^ a) (hg : g =O[atTop] fun t ↦ (t : ℝ) ^ b)
+    (h : a + b ≤ c) :
+    (f * g) =O[atTop] fun t ↦ (t : ℝ) ^ c := by
+  refine (hf.mul hg).trans (Eventually.isBigO ?_)
+  filter_upwards [eventually_ge_atTop 1] with t ht
+  rw [← Real.rpow_add (zero_lt_one.trans_le ht), Real.norm_of_nonneg (Real.rpow_nonneg
+    (zero_le_one.trans ht) (a + b))]
+  exact Real.rpow_le_rpow_of_exponent_le ht h
+
+theorem IsBigO.mul_atTop_rpow_natCast_of_isBigO_rpow {f g : ℕ → E}
+    (hf : f =O[atTop] fun n ↦ (n : ℝ) ^ a) (hg : g =O[atTop] fun n ↦ (n : ℝ) ^ b)
+    (h : a + b ≤ c) :
+    (f * g) =O[atTop] fun n ↦ (n : ℝ) ^ c := by
+  refine (hf.mul hg).trans (Eventually.isBigO ?_)
+  filter_upwards [eventually_ge_atTop 1] with t ht
+  replace ht : 1 ≤ (t : ℝ) := Nat.one_le_cast.mpr ht
+  rw [← Real.rpow_add (zero_lt_one.trans_le ht), Real.norm_of_nonneg (Real.rpow_nonneg
+    (zero_le_one.trans ht) (a + b))]
+  exact Real.rpow_le_rpow_of_exponent_le ht h
 
 end Asymptotics
 

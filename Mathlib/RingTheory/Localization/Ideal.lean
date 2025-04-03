@@ -182,6 +182,17 @@ def orderIsoOfPrime :
         map_comap M S I'.val ▸ Ideal.map_mono h)
     exact fun h x hx => h hx
 
+include M in
+lemma map_radical (I : Ideal R) :
+    I.radical.map (algebraMap R S) = (I.map (algebraMap R S)).radical := by
+  refine (I.map_radical_le (algebraMap R S)).antisymm ?_
+  rintro x ⟨n, hn⟩
+  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
+  simp only [← IsLocalization.mk'_pow, IsLocalization.mk'_mem_map_algebraMap_iff M,
+    Submonoid.mem_powers_iff, exists_exists_eq_and] at hn ⊢
+  obtain ⟨s, hs, h⟩ := hn
+  refine ⟨s, hs, n + 1, by convert I.mul_mem_left (s ^ n * x) h; ring⟩
+
 end CommSemiring
 
 section CommRing
@@ -263,7 +274,7 @@ lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing 
   have e : Algebra.algebraMapSubmonoid S M ≤ S⁰ :=
     Submonoid.map_le_of_le_comap _ <| hM.trans
       (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
-        (NoZeroSMulDivisors.algebraMap_injective _ _))
+        (FaithfulSMul.algebraMap_injective _ _))
   have : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors S e
   have : algebraMap Rₚ Sₚ = IsLocalization.map (T := Algebra.algebraMapSubmonoid S M) Sₚ
     (algebraMap R S) (Submonoid.le_comap_map M) := by
@@ -277,8 +288,30 @@ lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing 
     Subtype.exists, exists_prop, this] at hx ⊢
   obtain ⟨_, ⟨a, ha, rfl⟩, H⟩ := hx
   simp only [← _root_.map_mul,
-    (injective_iff_map_eq_zero' _).mp (NoZeroSMulDivisors.algebraMap_injective R S)] at H
+    (injective_iff_map_eq_zero' _).mp (FaithfulSMul.algebraMap_injective R S)] at H
   exact ⟨a, ha, H⟩
+
+lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
+    (f : R →+* R') (hf : Function.Surjective f) (g : S →+* S') (hg : Function.Surjective g)
+    (H : g.comp (algebraMap R S) = (algebraMap _ _).comp f)
+    (H' : RingHom.ker g ≤ (RingHom.ker f).map (algebraMap R S)) : IsLocalization (M.map f) S' where
+  map_units' := by
+    rintro ⟨_, y, hy, rfl⟩
+    simpa only [← RingHom.comp_apply, H] using (IsLocalization.map_units S ⟨y, hy⟩).map g
+  surj' := by
+    intro z
+    obtain ⟨z, rfl⟩ := hg z
+    obtain ⟨⟨r, s⟩, e⟩ := IsLocalization.surj M z
+    refine ⟨⟨f r, _, s.1, s.2, rfl⟩, ?_⟩
+    simpa only [map_mul, ← RingHom.comp_apply, H] using DFunLike.congr_arg g e
+  exists_of_eq := by
+    intro x y e
+    obtain ⟨x, rfl⟩ := hf x
+    obtain ⟨y, rfl⟩ := hf y
+    rw [← sub_eq_zero, ← map_sub, ← map_sub, ← RingHom.comp_apply, ← H, RingHom.comp_apply,
+      ← IsLocalization.mk'_one (M := M)] at e
+    obtain ⟨r, hr, hr'⟩ := (IsLocalization.mk'_mem_map_algebraMap_iff M _ _ _ _).mp (H' e)
+    exact ⟨⟨_, r, hr, rfl⟩, by simpa [sub_eq_zero, mul_sub] using hr'⟩
 
 end CommRing
 

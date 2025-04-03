@@ -58,7 +58,7 @@ instance (S : SSet) [KanComplex S] : Quasicategory S where
 lemma quasicategory_of_filler (S : SSet)
     (filler : ∀ ⦃n : ℕ⦄ ⦃i : Fin (n+3)⦄ (σ₀ : Λ[n+2, i] ⟶ S)
       (_h0 : 0 < i) (_hn : i < Fin.last (n+2)),
-      ∃ σ : S _[n+2], ∀ (j) (h : j ≠ i), S.δ j σ = σ₀.app _ (horn.face i j h)) :
+      ∃ σ : S _⦋n+2⦌, ∀ (j) (h : j ≠ i), S.δ j σ = σ₀.app _ (horn.face i j h)) :
     Quasicategory S where
   hornFilling' n i σ₀ h₀ hₙ := by
     obtain ⟨σ, h⟩ := filler σ₀ h₀ hₙ

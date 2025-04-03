@@ -338,7 +338,7 @@ theorem iff_characterModule_baer : Flat R M ↔ Baer R (CharacterModule M) := by
 
 /-- An `R`-module `M` is flat iff for all ideals `I` of `R`, the tensor product of the
 inclusion `I → R` and the identity `M → M` is injective. See `iff_rTensor_injective` to
-restrict to finitely generated ideals `I`. --/
+restrict to finitely generated ideals `I`. -/
 theorem iff_rTensor_injective' :
     Flat R M ↔ ∀ I : Ideal R, Function.Injective (rTensor M I.subtype) := by
   simp_rw [iff_characterModule_baer, Baer, rTensor_injective_iff_lcomp_surjective,

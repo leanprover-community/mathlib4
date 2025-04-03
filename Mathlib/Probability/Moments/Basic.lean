@@ -114,11 +114,10 @@ theorem mgf_zero_fun : mgf 0 μ t = (μ Set.univ).toReal := by
 theorem cgf_zero_fun : cgf 0 μ t = log (μ Set.univ).toReal := by simp only [cgf, mgf_zero_fun]
 
 @[simp]
-theorem mgf_zero_measure : mgf X (0 : Measure Ω) t = 0 := by simp only [mgf, integral_zero_measure]
+theorem mgf_zero_measure : mgf X (0 : Measure Ω) = 0 := by ext; simp [mgf]
 
 @[simp]
-theorem cgf_zero_measure : cgf X (0 : Measure Ω) t = 0 := by
-  simp only [cgf, log_zero, mgf_zero_measure]
+theorem cgf_zero_measure : cgf X (0 : Measure Ω) = 0 := by ext; simp [cgf]
 
 @[simp]
 theorem mgf_const' (c : ℝ) : mgf (fun _ => c) μ t = (μ Set.univ).toReal * exp (t * c) := by
@@ -199,7 +198,7 @@ lemma exp_cgf [IsProbabilityMeasure μ] (hX : Integrable (fun ω ↦ exp (t * X 
 lemma mgf_id_map (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
   ext t
   rw [mgf, integral_map hX]
-  · rfl
+  · simp [mgf]
   · exact (measurable_const_mul _).exp.aestronglyMeasurable
 
 lemma mgf_congr_identDistrib {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ' : Measure Ω'}

@@ -212,7 +212,7 @@ theorem of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p
   obtain ⟨p, hp⟩ := h₁
   refine ⟨p, hp, ?_⟩
   intro x hx
-  cases' WfDvdMonoid.exists_factors x hx with fx hfx
+  obtain ⟨fx, hfx⟩ := WfDvdMonoid.exists_factors x hx
   refine ⟨Multiset.card fx, ?_⟩
   have H := hfx.2
   rw [← Associates.mk_eq_mk_iff_associated] at H ⊢
@@ -317,7 +317,7 @@ variable {R}
 theorem associated_pow_irreducible {x : R} (hx : x ≠ 0) {ϖ : R} (hirr : Irreducible ϖ) :
     ∃ n : ℕ, Associated x (ϖ ^ n) := by
   have : WfDvdMonoid R := IsNoetherianRing.wfDvdMonoid
-  cases' WfDvdMonoid.exists_factors x hx with fx hfx
+  obtain ⟨fx, hfx⟩ := WfDvdMonoid.exists_factors x hx
   use Multiset.card fx
   have H := hfx.2
   rw [← Associates.mk_eq_mk_iff_associated] at H ⊢
@@ -371,7 +371,7 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
   obtain rfl : m = n := unit_mul_pow_congr_pow hirr hirr u v m n h
   rw [← sub_eq_zero] at h
   rw [← sub_mul, mul_eq_zero] at h
-  cases' h with h h
+  rcases h with h | h
   · rw [sub_eq_zero] at h
     exact mod_cast h
   · apply (hirr.ne_zero (pow_eq_zero h)).elim
@@ -394,7 +394,7 @@ theorem addVal_def (r : R) (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) (
     emultiplicity_eq_of_associated_right (Associated.symm ⟨u, mul_comm _ _⟩),
     emultiplicity_pow_self_of_prime (irreducible_iff_prime.1 hϖ)]
 
-/-- An alternative definition of the additive valuation, taking units into account.-/
+/-- An alternative definition of the additive valuation, taking units into account -/
 theorem addVal_def' (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) :
     addVal R ((u : R) * ϖ ^ n) = n :=
   addVal_def _ u hϖ n rfl
@@ -450,6 +450,21 @@ theorem addVal_le_iff_dvd {a b : R} : addVal R a ≤ addVal R b ↔ a ∣ b := b
 
 theorem addVal_add {a b : R} : min (addVal R a) (addVal R b) ≤ addVal R (a + b) :=
   (addVal R).map_add _ _
+
+@[simp]
+lemma addVal_eq_zero_of_unit (u : Rˣ) :
+    addVal R u = 0 := by
+  obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
+  rw [addVal_def (u : R) u hϖ 0] <;>
+  simp
+
+lemma addVal_eq_zero_iff {x : R} :
+    addVal R x = 0 ↔ IsUnit x := by
+  rcases eq_or_ne x 0 with rfl|hx
+  · simp
+  obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
+  obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible hx hϖ
+  simp [isUnit_pow_iff_of_not_isUnit hϖ.not_unit, hϖ]
 
 end
 

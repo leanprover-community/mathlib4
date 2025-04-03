@@ -8,7 +8,6 @@ import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
@@ -206,6 +205,26 @@ open scoped RightActions in
 @[to_additive]
 lemma image_op_smul_distrib [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
     (f : F) (a : α) (s : Set α) : f '' (s <• a) = f '' s <• f a := image_comm fun _ ↦ map_mul _ _ _
+
+@[to_additive]
+theorem smul_set_prod {M : Type*} [SMul M α] [SMul M β] (c : M) (s : Set α) (t : Set β) :
+    c • (s ×ˢ t) = (c • s) ×ˢ (c • t) :=
+  prodMap_image_prod (c • ·) (c • ·) s t
+
+@[to_additive]
+theorem smul_set_pi {G ι : Type*} {α : ι → Type*} [Group G] [∀ i, MulAction G (α i)]
+    (c : G) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi fun i ↦ c • s i :=
+  smul_set_pi_of_surjective c I s fun _ _ ↦ (MulAction.bijective c).surjective
+
+@[to_additive]
+theorem smul_set_pi_of_isUnit {M ι : Type*} {α : ι → Type*} [Monoid M] [∀ i, MulAction M (α i)]
+    {c : M} (hc : IsUnit c) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s ·) := by
+  lift c to Mˣ using hc
+  exact smul_set_pi c I s
+
+theorem smul_set_pi₀ {M ι : Type*} {α : ι → Type*} [GroupWithZero M] [∀ i, MulAction M (α i)]
+    {c : M} (hc : c ≠ 0) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s ·) :=
+  smul_set_pi_of_isUnit (.mk0 _ hc) I s
 
 section SMul
 

@@ -199,9 +199,9 @@ theorem _root_.Submodule.eq_top_of_finrank_eq [FiniteDimensional K V] {S : Submo
     (h : finrank K S = finrank K V) : S = ⊤ := by
   haveI : IsNoetherian K V := iff_fg.2 inferInstance
   set bS := Basis.ofVectorSpace K S with bS_eq
-  have : LinearIndependent K ((↑) : ((↑) '' Basis.ofVectorSpaceIndex K S : Set V) → V) :=
-    LinearIndependent.image_subtype (f := Submodule.subtype S)
-      (by simpa [bS] using bS.linearIndependent) (by simp)
+  have : LinearIndepOn K id (Subtype.val '' Basis.ofVectorSpaceIndex K S) := by
+    simpa [bS] using bS.linearIndependent.linearIndepOn_id.image
+      (f := Submodule.subtype S) (by simp)
   set b := Basis.extend this with b_eq
   -- Porting note: `letI` now uses `this` so we need to give different names
   letI i1 : Fintype (this.extend _) :=
@@ -549,17 +549,18 @@ theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} 
     (s : Finset ι) (comm) (h : s.SupIndep fun i ↦ ker (f i)) :
     ker (s.noncommProd f comm) = ⨆ i ∈ s, ker (f i) := by
   classical
-  induction' s using Finset.induction_on with i s hi ih
-  · simp [one_eq_id]
-  replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
-      ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
-  rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, mul_eq_comp,
-    ker_comp_eq_of_commute_of_disjoint_ker]
-  · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
-  · exact s.noncommProd_commute _ _ _ fun j hj ↦
-      comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by aesop)
-  · replace h := Finset.supIndep_iff_disjoint_erase.mp h i (s.mem_insert_self i)
-    simpa [ih, hi, Finset.sup_eq_iSup] using h
+  induction s using Finset.induction_on with
+  | empty => simp [one_eq_id]
+  | @insert i s hi ih =>
+    replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =
+        ⨆ x ∈ s, ker (f x) := ih _ (h.subset (s.subset_insert i))
+    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, mul_eq_comp,
+      ker_comp_eq_of_commute_of_disjoint_ker]
+    · simp_rw [Finset.mem_insert_coe, iSup_insert, Finset.mem_coe, ih]
+    · exact s.noncommProd_commute _ _ _ fun j hj ↦
+        comm (s.mem_insert_self i) (Finset.mem_insert_of_mem hj) (by aesop)
+    · replace h := Finset.supIndep_iff_disjoint_erase.mp h i (s.mem_insert_self i)
+      simpa [ih, hi, Finset.sup_eq_iSup] using h
 
 end DivisionRing
 
@@ -713,7 +714,7 @@ theorem finrank_eq_one_iff_of_nonzero (v : V) (nz : v ≠ 0) :
     finrank K V = 1 ↔ span K ({v} : Set V) = ⊤ :=
   ⟨fun h => by simpa using (basisSingleton Unit h v nz).span_eq, fun s =>
     finrank_eq_card_basis
-      (Basis.mk (linearIndependent_singleton nz)
+      (Basis.mk (LinearIndepOn.id_singleton _ nz)
         (by
           convert s.ge  -- Porting note: added `.ge` to make things easier for `convert`
           simp))⟩

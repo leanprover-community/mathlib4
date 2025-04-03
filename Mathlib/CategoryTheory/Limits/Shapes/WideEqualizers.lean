@@ -218,7 +218,7 @@ def Trident.ofι [Nonempty J] {P : C} (ι : P ⟶ X) (w : ∀ j₁ j₂, ι ≫ 
     { app := fun X => WalkingParallelFamily.casesOn X ι (ι ≫ f (Classical.arbitrary J))
       naturality := fun i j f => by
         dsimp
-        cases' f with _ k
+        obtain - | k := f
         · simp
         · simp [w (Classical.arbitrary J) k] }
 
@@ -233,7 +233,7 @@ def Cotrident.ofπ [Nonempty J] {P : C} (π : Y ⟶ P) (w : ∀ j₁ j₂, f j�
     { app := fun X => WalkingParallelFamily.casesOn X (f (Classical.arbitrary J) ≫ π) π
       naturality := fun i j f => by
         dsimp
-        cases' f with _ k
+        obtain - | k := f
         · simp
         · simp [w (Classical.arbitrary J) k] }
 

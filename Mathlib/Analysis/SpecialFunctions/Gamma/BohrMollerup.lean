@@ -72,13 +72,13 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
   -- show `f c u` is in `ℒp` for `p = 1/c`:
   have f_mem_Lp :
     ∀ {c u : ℝ} (hc : 0 < c) (hu : 0 < u),
-      Memℒp (f c u) (ENNReal.ofReal (1 / c)) (volume.restrict (Ioi 0)) := by
+      MemLp (f c u) (ENNReal.ofReal (1 / c)) (volume.restrict (Ioi 0)) := by
     intro c u hc hu
     have A : ENNReal.ofReal (1 / c) ≠ 0 := by
       rwa [Ne, ENNReal.ofReal_eq_zero, not_le, one_div_pos]
     have B : ENNReal.ofReal (1 / c) ≠ ∞ := ENNReal.ofReal_ne_top
-    rw [← memℒp_norm_rpow_iff _ A B, ENNReal.toReal_ofReal (one_div_nonneg.mpr hc.le),
-      ENNReal.div_self A B, memℒp_one_iff_integrable]
+    rw [← memLp_norm_rpow_iff _ A B, ENNReal.toReal_ofReal (one_div_nonneg.mpr hc.le),
+      ENNReal.div_self A B, memLp_one_iff_integrable]
     · apply Integrable.congr (GammaIntegral_convergent hu)
       refine eventuallyEq_of_mem (self_mem_ae_restrict measurableSet_Ioi) fun x hx => ?_
       dsimp only
@@ -339,7 +339,7 @@ theorem Gamma_three_div_two_lt_one : Gamma (3 / 2) < 1 := by
     log_mul A.ne' (Gamma_pos_of_pos A).ne', ← le_sub_iff_add_le',
     log_le_iff_le_exp (Gamma_pos_of_pos A)] at this
   refine this.trans_lt (exp_lt_one_iff.mpr ?_)
-  rw [mul_comm, ← mul_div_assoc, div_sub' _ _ (2 : ℝ) two_ne_zero]
+  rw [mul_comm, ← mul_div_assoc, div_sub' two_ne_zero]
   refine div_neg_of_neg_of_pos ?_ two_pos
   rw [sub_neg, mul_one, ← Nat.cast_two, ← log_pow, ← exp_lt_exp, Nat.cast_two, exp_log two_pos,
       exp_log] <;>

@@ -39,7 +39,7 @@ namespace Lex
 
 theorem cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
     Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
-  ⟨fun h => by cases' h with _ _ _ _ _ h _ _ _ _ h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
+  ⟨fun h => by obtain - | h | h := h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
 
 @[deprecated (since := "2024-12-21")] alias not_nil_right := not_lex_nil
 
@@ -122,7 +122,7 @@ theorem to_ne : ∀ {l₁ l₂ : List α}, Lex (· ≠ ·) l₁ l₂ → l₁ �
 theorem _root_.Decidable.List.Lex.ne_iff [DecidableEq α] {l₁ l₂ : List α}
     (H : length l₁ ≤ length l₂) : Lex (· ≠ ·) l₁ l₂ ↔ l₁ ≠ l₂ :=
   ⟨to_ne, fun h => by
-    induction' l₁ with a l₁ IH generalizing l₂ <;> cases' l₂ with b l₂
+    induction' l₁ with a l₁ IH generalizing l₂ <;> rcases l₂ with - | ⟨b, l₂⟩
     · contradiction
     · apply nil
     · exact (not_lt_of_ge H).elim (succ_pos _)

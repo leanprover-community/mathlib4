@@ -135,39 +135,51 @@ theorem right_not_mem_Ico : b ∉ Ico a b := fun h => lt_irrefl _ (mem_Ico.1 h).
 
 theorem right_not_mem_Ioo : b ∉ Ioo a b := fun h => lt_irrefl _ (mem_Ioo.1 h).2
 
+@[gcongr]
 theorem Icc_subset_Icc (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Icc a₁ b₁ ⊆ Icc a₂ b₂ := by
   simpa [← coe_subset] using Set.Icc_subset_Icc ha hb
 
+@[gcongr]
 theorem Ico_subset_Ico (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Ico a₁ b₁ ⊆ Ico a₂ b₂ := by
   simpa [← coe_subset] using Set.Ico_subset_Ico ha hb
 
+@[gcongr]
 theorem Ioc_subset_Ioc (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ := by
   simpa [← coe_subset] using Set.Ioc_subset_Ioc ha hb
 
+@[gcongr]
 theorem Ioo_subset_Ioo (ha : a₂ ≤ a₁) (hb : b₁ ≤ b₂) : Ioo a₁ b₁ ⊆ Ioo a₂ b₂ := by
   simpa [← coe_subset] using Set.Ioo_subset_Ioo ha hb
 
+@[gcongr]
 theorem Icc_subset_Icc_left (h : a₁ ≤ a₂) : Icc a₂ b ⊆ Icc a₁ b :=
   Icc_subset_Icc h le_rfl
 
+@[gcongr]
 theorem Ico_subset_Ico_left (h : a₁ ≤ a₂) : Ico a₂ b ⊆ Ico a₁ b :=
   Ico_subset_Ico h le_rfl
 
+@[gcongr]
 theorem Ioc_subset_Ioc_left (h : a₁ ≤ a₂) : Ioc a₂ b ⊆ Ioc a₁ b :=
   Ioc_subset_Ioc h le_rfl
 
+@[gcongr]
 theorem Ioo_subset_Ioo_left (h : a₁ ≤ a₂) : Ioo a₂ b ⊆ Ioo a₁ b :=
   Ioo_subset_Ioo h le_rfl
 
+@[gcongr]
 theorem Icc_subset_Icc_right (h : b₁ ≤ b₂) : Icc a b₁ ⊆ Icc a b₂ :=
   Icc_subset_Icc le_rfl h
 
+@[gcongr]
 theorem Ico_subset_Ico_right (h : b₁ ≤ b₂) : Ico a b₁ ⊆ Ico a b₂ :=
   Ico_subset_Ico le_rfl h
 
+@[gcongr]
 theorem Ioc_subset_Ioc_right (h : b₁ ≤ b₂) : Ioc a b₁ ⊆ Ioc a b₂ :=
   Ioc_subset_Ioc le_rfl h
 
+@[gcongr]
 theorem Ioo_subset_Ioo_right (h : b₁ ≤ b₂) : Ioo a b₁ ⊆ Ioo a b₂ :=
   Ioo_subset_Ioo le_rfl h
 
@@ -326,9 +338,14 @@ lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 alias ⟨_, Aesop.nonempty_Ioi_of_not_isMax⟩ := nonempty_Ioi
 
+@[simp]
 theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a := by
-  simpa [← coe_subset] using Set.Ici_subset_Ici
+  simp [← coe_subset]
 
+@[gcongr]
+alias ⟨_, _root_.GCongr.Finset.Ici_subset_Ici⟩ := Ici_subset_Ici
+
+@[gcongr]
 theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := by
   simpa [← coe_subset] using Set.Ioi_subset_Ioi h
 
@@ -376,9 +393,14 @@ lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty
 @[aesop safe apply (rule_sets := [finsetNonempty])]
 alias ⟨_, Aesop.nonempty_Iio_of_not_isMin⟩ := nonempty_Iio
 
+@[simp]
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b := by
-  simpa [← coe_subset] using Set.Iic_subset_Iic
+  simp [← coe_subset]
 
+@[gcongr]
+alias ⟨_, _root_.GCongr.Finset.Iic_subset_Iic⟩ := Iic_subset_Iic
+
+@[gcongr]
 theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := by
   simpa [← coe_subset] using Set.Iio_subset_Iio h
 
@@ -401,6 +423,9 @@ theorem Ico_subset_Iic_self : Ico a b ⊆ Iic b :=
 
 theorem Ioo_subset_Iic_self : Ioo a b ⊆ Iic b :=
   Ioo_subset_Ioc_self.trans Ioc_subset_Iic_self
+
+theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
+  disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_lt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
 
 end LocallyFiniteOrderBot
 
@@ -721,6 +746,15 @@ lemma sup'_Iic (a : α) : (Iic a).sup' nonempty_Iic id = a :=
 @[simp] lemma sup_Iic [OrderBot α] (a : α) : (Iic a).sup id = a :=
   le_antisymm (Finset.sup_le fun _ ↦ mem_Iic.1) <| le_sup (f := id) <| mem_Iic.2 <| le_refl a
 
+lemma image_subset_Iic_sup [OrderBot α] [DecidableEq α] (f : ι → α) (s : Finset ι) :
+    s.image f ⊆ Iic (s.sup f) := by
+  refine fun i hi ↦ mem_Iic.2 ?_
+  obtain ⟨j, hj, rfl⟩ := mem_image.1 hi
+  exact le_sup hj
+
+lemma subset_Iic_sup_id [OrderBot α] (s : Finset α) : s ⊆ Iic (s.sup id) :=
+  fun _ h ↦ mem_Iic.2 <| le_sup (f := id) h
+
 end SemilatticeSup
 
 section SemilatticeInf
@@ -810,6 +844,25 @@ theorem Ico_diff_Ico_right (a b c : α) : Ico a b \ Ico c b = Ico a (min b c) :=
     ext x
     rw [mem_sdiff, mem_Ico, mem_Ico, mem_Ico, min_eq_right h, and_assoc, not_and', not_le]
     exact and_congr_right' ⟨fun hx => hx.2 hx.1, fun hx => ⟨hx.trans_le h, fun _ => hx⟩⟩
+
+section LocallyFiniteOrderBot
+
+variable [LocallyFiniteOrderBot α]
+
+theorem Iic_diff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
+  rw [← coe_inj]
+  push_cast
+  exact Set.Iic_diff_Ioc
+
+theorem Iic_diff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by
+  rw [Iic_diff_Ioc, min_eq_left hab]
+
+theorem Iic_union_Ioc_eq_Iic (h : a ≤ b) : Iic a ∪ Ioc a b = Iic b := by
+  rw [← coe_inj]
+  push_cast
+  exact Set.Iic_union_Ioc_eq_Iic h
+
+end LocallyFiniteOrderBot
 
 end LocallyFiniteOrder
 

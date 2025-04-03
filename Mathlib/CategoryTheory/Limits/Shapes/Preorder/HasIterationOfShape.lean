@@ -35,6 +35,8 @@ class HasIterationOfShape : Prop where
 
 attribute [instance] HasIterationOfShape.hasColimitsOfShape
 
+instance [HasColimitsOfSize.{w, w} C] : HasIterationOfShape J C where
+
 variable [HasIterationOfShape J C]
 
 variable {J} in
@@ -97,5 +99,8 @@ lemma hasIterationOfShape_of_initialSeg {α : Type*} [LinearOrder α]
       exact ⟨⟨a, ha⟩⟩
     exact hasColimitsOfShape_of_initialSeg  _
       (InitialSeg.trans (Set.principalSegIio j) h)
+
+instance (j : J) : HasIterationOfShape (Set.Iic j) C :=
+  hasIterationOfShape_of_initialSeg C (Set.initialSegIic j)
 
 end CategoryTheory.Limits

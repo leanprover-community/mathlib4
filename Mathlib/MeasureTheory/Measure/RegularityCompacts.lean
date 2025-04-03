@@ -11,13 +11,15 @@ import Mathlib.Topology.UniformSpace.Cauchy
 /-!
 # Inner regularity of finite measures
 
-The main result of this file is `theorem InnerRegularCompactLTTop`:
+The main result of this file is
+`InnerRegularCompactLTTop_of_pseudoEMetricSpace_completeSpace_secondCountable`:
 A finite measure `μ` on a `PseudoEMetricSpace E` and `CompleteSpace E` with
 `SecondCountableTopology E` is inner regular with respect to compact sets. In other
 words, a finite measure on such a space is a tight measure.
 
 Finite measures on Polish spaces are an important special case, which makes the result
-`theorem PolishSpace.innerRegular_isCompact_measurableSet` an important result in probability.
+`MeasureTheory.PolishSpace.innerRegular_isCompact_isClosed_measurableSet` an important result in
+probability.
 -/
 
 open Set MeasureTheory
@@ -99,9 +101,7 @@ theorem exists_isCompact_closure_measure_compl_lt [UniformSpace α] [CompleteSpa
   cases isEmpty_or_nonempty α
   case inl =>
     refine ⟨∅, by simp, ?_⟩
-    rw [← Set.univ_eq_empty_iff.mpr]
-    · simpa only [compl_univ, measure_empty, ENNReal.coe_pos] using hε
-    · assumption
+    rwa [Set.eq_empty_of_isEmpty ∅ᶜ, measure_empty]
   case inr =>
     let seq := TopologicalSpace.denseSeq α
     have hseq_dense : DenseRange seq := TopologicalSpace.denseRange_denseSeq α
@@ -171,8 +171,8 @@ instance InnerRegular_of_pseudoEMetricSpace_completeSpace_secondCountable [Pseud
     [CompleteSpace α] [SecondCountableTopology α] [BorelSpace α]
     (P : Measure α) [IsFiniteMeasure P] :
     P.InnerRegular := by
-  refine @Measure.InnerRegularCompactLTTop.instInnerRegularOfSigmaFinite _ _ _ _
-      ⟨Measure.InnerRegularWRT.measurableSet_of_isOpen ?_ ?_⟩ _
+  suffices P.InnerRegularCompactLTTop from inferInstance
+  refine ⟨Measure.InnerRegularWRT.measurableSet_of_isOpen ?_ ?_⟩
   · exact innerRegularWRT_isCompact_isOpen P
   · exact fun s t hs_compact ht_open ↦ hs_compact.inter_right ht_open.isClosed_compl
 
@@ -194,17 +194,14 @@ instance InnerRegularCompactLTTop_of_pseudoEMetricSpace_completeSpace_secondCoun
     [PseudoEMetricSpace α] [CompleteSpace α] [SecondCountableTopology α] [BorelSpace α]
     (μ : Measure α) :
     μ.InnerRegularCompactLTTop := by
-  constructor; intro A ⟨hA1, hA2⟩ r hr
-  have IRC : Measure.InnerRegularCompactLTTop (μ.restrict A) := by
-    exact @Measure.InnerRegular.instInnerRegularCompactLTTop _ _ _ _
-        (@InnerRegular_of_pseudoEMetricSpace_completeSpace_secondCountable _ _ _ _ _ _
-        (μ.restrict A) (@Restrict.isFiniteMeasure _ _ _ μ (fact_iff.mpr hA2.lt_top)))
+  constructor
+  intro A ⟨hA1, hA2⟩ r hr
+  have := Fact.mk hA2.lt_top
   have hA2' : (μ.restrict A) A ≠ ⊤ := by
     rwa [Measure.restrict_apply_self]
   have hr' : r < μ.restrict A A := by
     rwa [Measure.restrict_apply_self]
-  obtain ⟨K, ⟨hK1, hK2, hK3⟩⟩ := @MeasurableSet.exists_lt_isCompact_of_ne_top
-      _ _ (μ.restrict A) _ IRC _ hA1 hA2' r hr'
+  obtain ⟨K, ⟨hK1, hK2, hK3⟩⟩ := MeasurableSet.exists_lt_isCompact_of_ne_top hA1 hA2' hr'
   use K, hK1, hK2
   rwa [Measure.restrict_eq_self μ hK1] at hK3
 
@@ -226,7 +223,7 @@ theorem innerRegular_isCompact_isClosed_measurableSet_of_finite [PseudoEMetricSp
   suffices P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s)
       fun s ↦ MeasurableSet s ∧ P s ≠ ∞ by
     convert this
-    simp only [eq_iff_iff, iff_self_and]
+    simp only [iff_self_and]
     exact fun _ ↦ measure_ne_top P _
   refine Measure.InnerRegularWRT.measurableSet_of_isOpen ?_ ?_
   · exact innerRegularWRT_isCompact_isClosed_isOpen P

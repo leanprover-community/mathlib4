@@ -64,12 +64,6 @@ open CategoryTheory
 
 namespace Grp
 
-
--- Porting note: already have Group G but Lean can't use that
-@[to_additive]
-instance (G : Grp) : Group G.carrier :=
-  G.str
-
 variable {A B : Grp.{u}} (f : A ⟶ B)
 
 @[to_additive]
@@ -109,7 +103,6 @@ instance : SMul B X' where
     match x with
     | fromCoset y => fromCoset ⟨b • y, by
           rw [← y.2.choose_spec, leftCoset_assoc]
-          -- Porting note: should we make `Bundled.α` reducible?
           let b' : B := y.2.choose
           use b * b'⟩
     | ∞ => ∞
@@ -198,7 +191,6 @@ local notation "g" => g f
 /-- Define `h : B ⟶ S(X')` to be `τ g τ⁻¹`
 -/
 def h : B →* SX' where
-  -- Porting note: mathport removed () from (τ) which are needed
   toFun β := ((τ).symm.trans (g β)).trans τ
   map_one' := by
     ext
@@ -349,10 +341,6 @@ namespace CommGrp
 
 
 variable {A B : CommGrp.{u}} (f : A ⟶ B)
-
--- Porting note: again to help with non-transparency
-private instance (A : CommGrp) : CommGroup A.carrier := A.str
-private instance (A : CommGrp) : Group A.carrier := A.str.toGroup
 
 @[to_additive]
 theorem ker_eq_bot_of_mono [Mono f] : f.hom.ker = ⊥ :=

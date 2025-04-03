@@ -25,7 +25,7 @@ open TrivSqZeroExt
 
 variable {R : Type*} [CommRing R] [Algebra ℚ R]
 
-variable [UniformSpace R] [TopologicalRing R] [T2Space R]
+variable [UniformSpace R] [IsTopologicalRing R] [T2Space R]
 
 @[simp]
 theorem exp_eps : exp (eps : DualNumber R) = 1 + eps :=

@@ -3,12 +3,10 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Tactic.Use
 import Batteries.Tactic.Congr
-import Mathlib.Order.TypeTags
-import Mathlib.Data.Option.Basic
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Data.Set.SymmDiff
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Images and preimages of sets
@@ -336,6 +334,17 @@ theorem image_subset_preimage_of_inverse {f : α → β} {g : β → α} (I : Le
 theorem preimage_subset_image_of_inverse {f : α → β} {g : β → α} (I : LeftInverse g f) (s : Set β) :
     f ⁻¹' s ⊆ g '' s := fun b h => ⟨f b, h, I b⟩
 
+theorem range_inter_ssubset_iff_preimage_ssubset {f : α → β} {S S' : Set β} :
+  range f ∩ S ⊂ range f ∩ S' ↔ f ⁻¹' S ⊂ f ⁻¹' S' := by
+    simp only [Set.ssubset_iff_exists]
+    apply and_congr ?_ (by aesop)
+    constructor
+    all_goals
+      intro r x hx
+      simp_all only [subset_inter_iff, inter_subset_left, true_and, mem_preimage,
+        mem_inter_iff, mem_range, true_and]
+      aesop
+
 theorem image_eq_preimage_of_inverse {f : α → β} {g : β → α} (h₁ : LeftInverse g f)
     (h₂ : RightInverse g f) : image f = preimage g :=
   funext fun s =>
@@ -422,11 +431,19 @@ theorem Nonempty.subset_preimage_const {s : Set α} (hs : Set.Nonempty s) (t : S
     s ⊆ (fun _ => a) ⁻¹' t ↔ a ∈ t := by
   rw [← image_subset_iff, hs.image_const, singleton_subset_iff]
 
+-- Note defeq abuse identifying `preimage` with function composition in the following two proofs.
+
+@[simp]
+theorem preimage_injective : Injective (preimage f) ↔ Surjective f :=
+  injective_comp_right_iff_surjective
+
+@[simp]
+theorem preimage_surjective : Surjective (preimage f) ↔ Injective f :=
+  surjective_comp_right_iff_injective
+
 @[simp]
 theorem preimage_eq_preimage {f : β → α} (hf : Surjective f) : f ⁻¹' s = f ⁻¹' t ↔ s = t :=
-  Iff.intro
-    fun eq => by rw [← image_preimage_eq s hf, ← image_preimage_eq t hf, eq]
-    fun eq => eq ▸ rfl
+  (preimage_injective.mpr hf).eq_iff
 
 theorem image_inter_preimage (f : α → β) (s : Set α) (t : Set β) :
     f '' (s ∩ f ⁻¹' t) = f '' s ∩ t := by
@@ -619,6 +636,12 @@ theorem Nonempty.preimage' {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : 
 
 theorem range_comp (g : α → β) (f : ι → α) : range (g ∘ f) = g '' range f := by aesop
 
+/--
+Variant of `range_comp` using a lambda instead of function composition.
+-/
+theorem range_comp' (g : α → β) (f : ι → α) : range (fun x => g (f x)) = g '' range f :=
+  range_comp g f
+
 theorem range_subset_iff : range f ⊆ s ↔ ∀ y, f y ∈ s :=
   forall_mem_range
 
@@ -799,6 +822,15 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
     Sum.inl '' (Sum.inl ⁻¹' s) ∪ Sum.inr '' (Sum.inr ⁻¹' s) = s := by
   rw [image_preimage_eq_inter_range, image_preimage_eq_inter_range, ← inter_union_distrib_left,
     range_inl_union_range_inr, inter_univ]
+
+open Sum in
+/-- Sets on sum types are equivalent to pairs of sets on each summand. -/
+def sumEquiv {α β : Type*} : Set (α ⊕ β) ≃o Set α × Set β where
+  toFun s := (inl ⁻¹' s, inr ⁻¹' s)
+  invFun s := inl '' s.1 ∪ inr '' s.2
+  left_inv s := image_preimage_inl_union_image_preimage_inr s
+  right_inv s := by simp [preimage_image_eq _ inl_injective, preimage_image_eq _ inr_injective]
+  map_rel_iff' := by simp [subset_def]
 
 @[simp]
 theorem range_quot_mk (r : α → α → Prop) : range (Quot.mk r) = univ :=
@@ -1059,10 +1091,8 @@ theorem Surjective.preimage_injective (hf : Surjective f) : Injective (preimage 
 theorem Injective.preimage_image (hf : Injective f) (s : Set α) : f ⁻¹' (f '' s) = s :=
   preimage_image_eq s hf
 
-theorem Injective.preimage_surjective (hf : Injective f) : Surjective (preimage f) := by
-  intro s
-  use f '' s
-  rw [hf.preimage_image]
+theorem Injective.preimage_surjective (hf : Injective f) : Surjective (preimage f) :=
+  Set.preimage_surjective.mpr hf
 
 theorem Injective.subsingleton_image_iff (hf : Injective f) {s : Set α} :
     (f '' s).Subsingleton ↔ s.Subsingleton :=
@@ -1284,20 +1314,6 @@ open Function
 section ImagePreimage
 
 variable {α : Type u} {β : Type v} {f : α → β}
-
-@[simp]
-theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
-  refine ⟨fun h y => ?_, Surjective.preimage_injective⟩
-  obtain ⟨x, hx⟩ : (f ⁻¹' {y}).Nonempty := by
-    rw [h.nonempty_apply_iff preimage_empty]
-    apply singleton_nonempty
-  exact ⟨x, hx⟩
-
-@[simp]
-theorem preimage_surjective : Surjective (preimage f) ↔ Injective f := by
-  refine ⟨fun h x x' hx => ?_, Injective.preimage_surjective⟩
-  rcases h {x} with ⟨s, hs⟩; have := mem_singleton x
-  rwa [← hs, mem_preimage, hx, ← mem_preimage, hs, mem_singleton_iff, eq_comm] at this
 
 @[simp]
 theorem image_surjective : Surjective (image f) ↔ Surjective f := by

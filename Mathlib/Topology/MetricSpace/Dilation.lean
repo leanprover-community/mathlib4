@@ -149,7 +149,7 @@ theorem edist_eq [DilationClass F α β] (f : F) (x y : α) :
   rw [ratio]; split_ifs with key
   · rcases DilationClass.edist_eq' f with ⟨r, hne, hr⟩
     replace hr := hr x y
-    cases' key x y with h h
+    rcases key x y with h | h
     · simp only [hr, h, mul_zero]
     · simp [hr, h, hne]
   exact (DilationClass.edist_eq' f).choose_spec.2 x y

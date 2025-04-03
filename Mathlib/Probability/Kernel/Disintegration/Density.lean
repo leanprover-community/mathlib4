@@ -3,7 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.Basic
+import Mathlib.Probability.Kernel.Composition.MapComap
 import Mathlib.Probability.Martingale.Convergence
 import Mathlib.Probability.Process.PartitionFiltration
 
@@ -16,7 +16,7 @@ We build a function `density κ ν : α → γ → Set β → ℝ` jointly measu
 such that for all `a : α` and all measurable sets `s : Set β` and `A : Set γ`,
 `∫ x in A, density κ ν a x s ∂(ν a) = (κ a (A ×ˢ s)).toReal`.
 
-There are two main applications of this construction (still TODO, in other files).
+There are two main applications of this construction.
 * Disintegration of kernels: for `κ : Kernel α (γ × β)`, we want to build a kernel
   `η : Kernel (α × γ) β` such that `κ = fst κ ⊗ₖ η`. For `β = ℝ`, we can use the density of `κ`
   with respect to `fst κ` for intervals to build a kernel cumulative distribution function for `η`.
@@ -190,7 +190,7 @@ lemma eLpNorm_densityProcess_le (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (s : 
 lemma integrable_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν] (n : ℕ)
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x ↦ densityProcess κ ν n a x s) (ν a) := by
-  rw [← memℒp_one_iff_integrable]
+  rw [← memLp_one_iff_integrable]
   refine ⟨Measurable.aestronglyMeasurable ?_, ?_⟩
   · exact measurable_densityProcess_right κ ν n a hs
   · exact (eLpNorm_densityProcess_le hκν n a s).trans_lt (measure_lt_top _ _)
@@ -383,9 +383,9 @@ lemma tendsto_densityProcess_limitProcess (hκν : fst κ ≤ ν)
 
 lemma memL1_limitProcess_densityProcess (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
-    Memℒp ((countableFiltration γ).limitProcess
+    MemLp ((countableFiltration γ).limitProcess
       (fun n x ↦ densityProcess κ ν n a x s) (ν a)) 1 (ν a) := by
-  refine Submartingale.memℒp_limitProcess (martingale_densityProcess hκν a hs).submartingale
+  refine Submartingale.memLp_limitProcess (martingale_densityProcess hκν a hs).submartingale
     (R := (ν a univ).toNNReal) (fun n ↦ ?_)
   refine (eLpNorm_densityProcess_le hκν n a s).trans_eq ?_
   rw [ENNReal.coe_toNNReal]
@@ -491,7 +491,7 @@ lemma eLpNorm_density_le (hκν : fst κ ≤ ν) (a : α) (s : Set β) :
 lemma integrable_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) :
     Integrable (fun x ↦ density κ ν a x s) (ν a) := by
-  rw [← memℒp_one_iff_integrable]
+  rw [← memLp_one_iff_integrable]
   refine ⟨Measurable.aestronglyMeasurable ?_, ?_⟩
   · exact measurable_density_right κ ν hs a
   · exact (eLpNorm_density_le hκν a s).trans_lt (measure_lt_top _ _)

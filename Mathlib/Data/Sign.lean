@@ -344,7 +344,7 @@ theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
   refine ⟨fun h => ?_, fun h => h.symm ▸ sign_zero⟩
   rw [sign_apply] at h
   split_ifs at h with h_1 h_2
-  cases' h
+  cases h
   exact (le_of_not_lt h_1).eq_of_not_lt h_2
 
 theorem sign_ne_zero : sign a ≠ 0 ↔ a ≠ 0 :=

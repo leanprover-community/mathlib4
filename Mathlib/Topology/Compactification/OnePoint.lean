@@ -524,8 +524,9 @@ instance [T1Space X] : T1Space (OnePoint X) where
     · rw [← image_singleton, isClosed_image_coe]
       exact ⟨isClosed_singleton, isCompact_singleton⟩
 
-/-- The one point compactification of a locally compact R₁ space is a normal topological space. -/
-instance [LocallyCompactSpace X] [R1Space X] : NormalSpace (OnePoint X) := by
+/-- The one point compactification of a weakly locally compact R₁ space
+is a normal topological space. -/
+instance [WeaklyLocallyCompactSpace X] [R1Space X] : NormalSpace (OnePoint X) := by
   suffices R1Space (OnePoint X) by infer_instance
   have key : ∀ z : X, Disjoint (𝓝 (some z)) (𝓝 ∞) := fun z ↦ by
     rw [nhds_infty_eq, disjoint_sup_right, nhds_coe_eq, coclosedCompact_eq_cocompact,
@@ -595,9 +596,10 @@ noncomputable def equivOfIsEmbeddingOfRangeEq :
     { toFun := fun p ↦ p.elim y f
       invFun := fun q ↦ if hq : q = y then ∞ else ↑(show q ∈ range f from by simpa [hy]).choose
       left_inv := fun p ↦ by
-        induction' p using OnePoint.rec with p
-        · simp
-        · have hp : f p ≠ y := by simpa [hy] using mem_range_self (f := f) p
+        induction p using OnePoint.rec with
+        | infty => simp
+        | coe p =>
+          have hp : f p ≠ y := by simpa [hy] using mem_range_self (f := f) p
           simpa [hp] using hf.injective (mem_range_self p).choose_spec
       right_inv := fun q ↦ by
         rcases eq_or_ne q y with rfl | hq

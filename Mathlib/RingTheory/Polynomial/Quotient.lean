@@ -22,15 +22,15 @@ namespace Polynomial
 
 variable {R : Type*} [CommRing R]
 
-noncomputable def quotientSpanXSubCAlgEquivAux2 (x : R) :
+private noncomputable def quotientSpanXSubCAlgEquivAux2 (x : R) :
     (R[X] ⧸ (RingHom.ker (aeval x).toRingHom : Ideal R[X])) ≃ₐ[R] R :=
   let e := RingHom.quotientKerEquivOfRightInverse (fun x => by
     exact eval_C : Function.RightInverse (fun a : R => (C a : R[X])) (@aeval R R _ _ _ x))
   { e with commutes' := fun r => e.apply_symm_apply r }
 
-noncomputable def quotientSpanXSubCAlgEquivAux1 (x : R) :
+private noncomputable def quotientSpanXSubCAlgEquivAux1 (x : R) :
     (R[X] ⧸ Ideal.span {X - C x}) ≃ₐ[R] (R[X] ⧸ (RingHom.ker (aeval x).toRingHom : Ideal R[X])) :=
-  @Ideal.quotientEquivAlgOfEq R R[X] _ _ _ _ _ (ker_evalRingHom x).symm
+  Ideal.quotientEquivAlgOfEq R (ker_evalRingHom x).symm
 
 -- Porting note: need to split this definition into two sub-definitions to prevent time out
 /-- For a commutative ring $R$, evaluating a polynomial at an element $x \in R$ induces an

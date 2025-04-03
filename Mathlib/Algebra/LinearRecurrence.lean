@@ -45,7 +45,9 @@ open Polynomial
 /-- A "linear recurrence relation" over a commutative semiring is given by its
   order `n` and `n` coefficients. -/
 structure LinearRecurrence (α : Type*) [CommSemiring α] where
+  /-- Order of the linear recurrence -/
   order : ℕ
+  /-- Coefficients of the linear recurrence -/
   coeffs : Fin order → α
 
 instance (α : Type*) [CommSemiring α] : Inhabited (LinearRecurrence α) :=
@@ -92,7 +94,8 @@ theorem eq_mk_of_is_sol_of_eq_init {u : ℕ → α} {init : Fin E.order → α} 
   rw [mkSol]
   split_ifs with h'
   · exact mod_cast heq ⟨n, h'⟩
-  · rw [← tsub_add_cancel_of_le (le_of_not_lt h'), h (n - E.order)]
+  · dsimp only
+    rw [← tsub_add_cancel_of_le (le_of_not_lt h'), h (n - E.order)]
     congr with k
     have : n - E.order + k < n := by omega
     rw [eq_mk_of_is_sol_of_eq_init h heq (n - E.order + k)]

@@ -10,7 +10,7 @@ import Mathlib.Topology.UniformSpace.Basic
 # Uniform structure on topological groups
 
 This file defines uniform groups and its additive counterpart. These typeclasses should be
-preferred over using `[TopologicalSpace α] [TopologicalGroup α]` since every topological
+preferred over using `[TopologicalSpace α] [IsTopologicalGroup α]` since every topological
 group naturally induces a uniform structure.
 
 ## Main declarations
@@ -19,7 +19,7 @@ group naturally induces a uniform structure.
 
 ## Main results
 
-* `TopologicalAddGroup.toUniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
+* `IsTopologicalAddGroup.toUniformSpace` and `comm_topologicalAddGroup_is_uniform` can be used
   to construct a canonical uniformity for a topological add group.
 
 See `Mathlib.Topology.Algebra.UniformGroup.Basic` for further results.
@@ -142,7 +142,7 @@ theorem uniformContinuous_zpow_const (n : ℤ) : UniformContinuous fun x : α =>
   uniformContinuous_id.zpow_const n
 
 @[to_additive]
-instance (priority := 10) UniformGroup.to_topologicalGroup : TopologicalGroup α where
+instance (priority := 10) UniformGroup.to_topologicalGroup : IsTopologicalGroup α where
   continuous_mul := uniformContinuous_mul.continuous
   continuous_inv := uniformContinuous_inv.continuous
 
@@ -181,7 +181,6 @@ variable [Group β]
 @[to_additive]
 theorem uniformGroup_sInf {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @UniformGroup β u _) :
     @UniformGroup β (sInf us) _ :=
-  -- Porting note: {_} does not find `sInf us` instance, see `continuousSMul_sInf`
   @UniformGroup.mk β (_) _ <|
     uniformContinuous_sInf_rng.mpr fun u hu =>
       uniformContinuous_sInf_dom₂ hu hu (@UniformGroup.uniformContinuous_div β u _ (h u hu))
@@ -349,11 +348,11 @@ theorem uniformContinuous_monoidHom_of_continuous {hom : Type*} [UniformSpace β
 
 end UniformGroup
 
-section TopologicalGroup
+section IsTopologicalGroup
 
 open Filter
 
-variable (G : Type*) [Group G] [TopologicalSpace G] [TopologicalGroup G]
+variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 /-- The right uniformity on a topological group (as opposed to the left uniformity).
 
@@ -368,7 +367,7 @@ Warning: in general the right and left uniformities do not coincide and so one d
 `UniformAddGroup` structure. Two important special cases where they _do_ coincide are for
 commutative additive groups (see `comm_topologicalAddGroup_is_uniform`) and for compact
 additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`)."]
-def TopologicalGroup.toUniformSpace : UniformSpace G where
+def IsTopologicalGroup.toUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
   symm :=
     have : Tendsto (fun p : G × G ↦ (p.2 / p.1)⁻¹) (comap (fun p : G × G ↦ p.2 / p.1) (𝓝 1))
@@ -381,13 +380,13 @@ def TopologicalGroup.toUniformSpace : UniformSpace G where
     simpa using V_mul _ hz₂ _ hz₁
   nhds_eq_comap_uniformity _ := by simp only [comap_comap, Function.comp_def, nhds_translation_div]
 
-attribute [local instance] TopologicalGroup.toUniformSpace
+attribute [local instance] IsTopologicalGroup.toUniformSpace
 
 @[to_additive]
 theorem uniformity_eq_comap_nhds_one' : 𝓤 G = comap (fun p : G × G => p.2 / p.1) (𝓝 (1 : G)) :=
   rfl
 
-end TopologicalGroup
+end IsTopologicalGroup
 
 section TopologicalCommGroup
 
@@ -395,22 +394,27 @@ universe u v w x
 
 open Filter
 
-variable (G : Type*) [CommGroup G] [TopologicalSpace G] [TopologicalGroup G]
+variable (G : Type*) [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 section
 
-attribute [local instance] TopologicalGroup.toUniformSpace
+attribute [local instance] IsTopologicalGroup.toUniformSpace
 
 variable {G}
 
 @[to_additive]
--- Porting note: renamed theorem to conform to naming convention
-theorem comm_topologicalGroup_is_uniform : UniformGroup G := by
+theorem uniformGroup_of_commGroup : UniformGroup G := by
   constructor
   simp only [UniformContinuous, uniformity_prod_eq_prod, uniformity_eq_comap_nhds_one',
     tendsto_comap_iff, tendsto_map'_iff, prod_comap_comap_eq, Function.comp_def,
     div_div_div_comm _ (Prod.snd (Prod.snd _)), ← nhds_prod_eq, Prod.mk_one_one]
   exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
+
+@[deprecated (since := "2027-02-28")]
+alias comm_topologicalGroup_is_uniform := uniformGroup_of_commGroup
+
+@[deprecated (since := "2027-02-28")]
+alias comm_topologicalAddGroup_is_uniform := uniformAddGroup_of_addCommGroup
 
 open Set
 
@@ -418,7 +422,7 @@ end
 
 @[to_additive]
 theorem UniformGroup.toUniformSpace_eq {G : Type*} [u : UniformSpace G] [Group G]
-    [UniformGroup G] : TopologicalGroup.toUniformSpace G = u := by
+    [UniformGroup G] : IsTopologicalGroup.toUniformSpace G = u := by
   ext : 1
   rw [uniformity_eq_comap_nhds_one' G, uniformity_eq_comap_nhds_one G]
 
@@ -429,7 +433,7 @@ open Filter Set Function
 section
 
 variable {α : Type*} {β : Type*} {hom : Type*}
-variable [TopologicalSpace α] [Group α] [TopologicalGroup α]
+variable [TopologicalSpace α] [Group α] [IsTopologicalGroup α]
 
 -- β is a dense subgroup of α, inclusion is denoted by e
 variable [TopologicalSpace β] [Group β]
@@ -442,8 +446,7 @@ theorem tendsto_div_comap_self (de : IsDenseInducing e) (x₀ : α) :
   have comm : ((fun x : α × α => x.2 / x.1) ∘ fun t : β × β => (e t.1, e t.2)) =
       e ∘ fun t : β × β => t.2 / t.1 := by
     ext t
-    change e t.2 / e t.1 = e (t.2 / t.1)
-    rw [← map_div e t.2 t.1]
+    simp
   have lim : Tendsto (fun x : α × α => x.2 / x.1) (𝓝 (x₀, x₀)) (𝓝 (e 1)) := by
     simpa using (continuous_div'.comp (@continuous_swap α α _ _)).tendsto (x₀, x₀)
   simpa using de.tendsto_comap_nhds_nhds lim comm
@@ -457,9 +460,9 @@ variable {G : Type*}
 
 -- β is a dense subgroup of α, inclusion is denoted by e
 -- δ is a dense subgroup of γ, inclusion is denoted by f
-variable [TopologicalSpace α] [AddCommGroup α] [TopologicalAddGroup α]
+variable [TopologicalSpace α] [AddCommGroup α] [IsTopologicalAddGroup α]
 variable [TopologicalSpace β] [AddCommGroup β]
-variable [TopologicalSpace γ] [AddCommGroup γ] [TopologicalAddGroup γ]
+variable [TopologicalSpace γ] [AddCommGroup γ] [IsTopologicalAddGroup γ]
 variable [TopologicalSpace δ] [AddCommGroup δ]
 variable [UniformSpace G] [AddCommGroup G]
 variable {e : β →+ α} (de : IsDenseInducing e)

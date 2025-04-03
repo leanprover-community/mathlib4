@@ -145,7 +145,7 @@ def Comp.scale (c : Comp) (n : Nat) : Comp :=
 `Comp.add c1 c2` adds the expressions represented by `c1` and `c2`.
 The coefficient of variable `a` in `c1.add c2`
 is the sum of the coefficients of `a` in `c1` and `c2`.
- -/
+-/
 def Comp.add (c1 c2 : Comp) : Comp :=
   ⟨c1.str.max c2.str, c1.coeffs.add c2.coeffs⟩
 
@@ -160,7 +160,7 @@ def Comp.cmp : Comp → Comp → Ordering
 /--
 A `Comp` represents a contradiction if its expression has no coefficients and its strength is <,
 that is, it represents the fact `0 < 0`.
- -/
+-/
 def Comp.isContr (c : Comp) : Bool := c.coeffs.isEmpty && c.str = Ineq.lt
 
 instance Comp.ToFormat : ToFormat Comp :=

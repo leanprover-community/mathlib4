@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Ivanov
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Finset.Sups
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
 # The Ahlswede-Zhang identity
@@ -373,7 +374,7 @@ variable [Nonempty α]
     if t ⊆ s then (card α - #s : ℚ) / ((card α - #t) * (card α).choose #t) else 0 := by
     rintro t
     simp_rw [truncatedSup_singleton, le_iff_subset]
-    split_ifs <;> simp [card_univ]
+    split_ifs <;> simp
   simp_rw [← sub_eq_of_eq_add (Fintype.sum_div_mul_card_choose_card α), eq_sub_iff_add_eq,
     ← eq_sub_iff_add_eq', supSum, ← sum_sub_distrib, ← sub_div]
   rw [sum_congr rfl fun t _ ↦ this t, sum_ite, sum_const_zero, add_zero, filter_subset_univ,
@@ -395,7 +396,7 @@ lemma supSum_of_not_univ_mem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ �
     supSum 𝒜 = card α * ∑ k ∈ range (card α), (k : ℚ)⁻¹ := by
   set m := 𝒜.card with hm
   clear_value m
-  induction' m using Nat.strong_induction_on with m ih generalizing 𝒜
+  induction m using Nat.strongRecOn generalizing 𝒜 with | ind m ih => _
   replace ih := fun 𝒜 h𝒜 h𝒜₁ h𝒜₂ ↦ @ih _ h𝒜 𝒜 h𝒜₁ h𝒜₂ rfl
   obtain ⟨a, rfl⟩ | h𝒜₃ := h𝒜₁.exists_eq_singleton_or_nontrivial
   · refine supSum_singleton ?_

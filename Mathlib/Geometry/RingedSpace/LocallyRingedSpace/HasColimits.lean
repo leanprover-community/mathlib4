@@ -52,54 +52,43 @@ namespace LocallyRingedSpace
 section HasCoproducts
 
 variable {ι : Type u} (F : Discrete ι ⥤ LocallyRingedSpace.{u})
--- Porting note: in this section, I marked `CommRingCat` as `CommRingCatMax.{u,u}`
--- This is a hack to avoid the following:
-/-
-```
-stuck at solving universe constraint
-  u =?= max u ?u.11876
-while trying to unify
-  HasLimits CommRingCat
-with
-  (HasLimitsOfSize CommRingCatMax) (HasLimitsOfSize CommRingCatMax) (HasLimitsOfSize CommRingCatMax)
-```
--/
+
 /-- The explicit coproduct for `F : discrete ι ⥤ LocallyRingedSpace`. -/
 noncomputable def coproduct : LocallyRingedSpace where
-  toSheafedSpace := colimit (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u})
+  toSheafedSpace := colimit (C := SheafedSpace.{u+1, u, u} CommRingCat.{u})
     (F ⋙ forgetToSheafedSpace)
   isLocalRing x := by
     obtain ⟨i, y, ⟨⟩⟩ := SheafedSpace.colimit_exists_rep (F ⋙ forgetToSheafedSpace) x
     haveI : IsLocalRing (((F ⋙ forgetToSheafedSpace).obj i).presheaf.stalk y) :=
       (F.obj i).isLocalRing _
     exact
-      (asIso ((colimit.ι (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u})
+      (asIso ((colimit.ι (C := SheafedSpace.{u+1, u, u} CommRingCat.{u})
           (F ⋙ forgetToSheafedSpace) i :).stalkMap y)).symm.commRingCatIsoToRingEquiv.isLocalRing
 
 /-- The explicit coproduct cofan for `F : discrete ι ⥤ LocallyRingedSpace`. -/
 noncomputable def coproductCofan : Cocone F where
   pt := coproduct F
   ι :=
-    { app := fun j => ⟨colimit.ι (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u})
+    { app := fun j => ⟨colimit.ι (C := SheafedSpace.{u+1, u, u} CommRingCat.{u})
         (F ⋙ forgetToSheafedSpace) j, inferInstance⟩
       naturality := fun ⟨j⟩ ⟨j'⟩ ⟨⟨(f : j = j')⟩⟩ => by subst f; simp }
 
 /-- The explicit coproduct cofan constructed in `coproduct_cofan` is indeed a colimit. -/
 noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
   desc s :=
-    ⟨colimit.desc (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u})
+    ⟨colimit.desc (C := SheafedSpace.{u+1, u, u} CommRingCat.{u})
       (F ⋙ forgetToSheafedSpace) (forgetToSheafedSpace.mapCocone s), by
       intro x
       obtain ⟨i, y, ⟨⟩⟩ := SheafedSpace.colimit_exists_rep (F ⋙ forgetToSheafedSpace) x
       have := PresheafedSpace.stalkMap.comp
-        (colimit.ι (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u})
+        (colimit.ι (C := SheafedSpace.{u+1, u, u} CommRingCat.{u})
           (F ⋙ forgetToSheafedSpace) i)
-        (colimit.desc (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u})
+        (colimit.desc (C := SheafedSpace.{u+1, u, u} CommRingCat.{u})
           (F ⋙ forgetToSheafedSpace) (forgetToSheafedSpace.mapCocone s)) y
       rw [← IsIso.comp_inv_eq] at this
       erw [← this,
         PresheafedSpace.stalkMap.congr_hom _ _
-          (colimit.ι_desc (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u})
+          (colimit.ι_desc (C := SheafedSpace.{u+1, u, u} CommRingCat.{u})
             (forgetToSheafedSpace.mapCocone s) i :)]
       haveI :
         IsLocalHom
@@ -107,7 +96,7 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
         (s.ι.app i).2 y
       infer_instance⟩
   fac _ _ := LocallyRingedSpace.Hom.ext'
-    (colimit.ι_desc (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u}) _ _)
+    (colimit.ι_desc (C := SheafedSpace.{u+1, u, u} CommRingCat.{u}) _ _)
   uniq s f h :=
     LocallyRingedSpace.Hom.ext'
       (IsColimit.uniq _ (forgetToSheafedSpace.mapCocone s) f.toShHom fun j =>
@@ -120,7 +109,7 @@ noncomputable instance (J : Type _) :
     PreservesColimitsOfShape (Discrete.{u} J) forgetToSheafedSpace.{u} :=
   ⟨fun {G} =>
     preservesColimit_of_preserves_colimit_cocone (coproductCofanIsColimit G)
-      ((colimit.isColimit (C := SheafedSpace.{u+1, u, u} CommRingCatMax.{u, u}) _).ofIsoColimit
+      ((colimit.isColimit (C := SheafedSpace.{u+1, u, u} CommRingCat.{u}) _).ofIsoColimit
         (Cocones.ext (Iso.refl _) fun _ => Category.comp_id _))⟩
 
 end HasCoproducts
@@ -189,7 +178,7 @@ theorem imageBasicOpen_image_preimage :
     (g.base : X.carrier.1 ⟶ Y.carrier.1)
   · ext
     simp_rw [types_comp_apply, ← TopCat.comp_app, ← PresheafedSpace.comp_base]
-    congr 2
+    congr 3
     exact coequalizer.condition f.toShHom g.toShHom
   · apply isColimitCoforkMapOfIsColimit (forget TopCat)
     apply isColimitCoforkMapOfIsColimit (SheafedSpace.forget _)
@@ -217,8 +206,7 @@ theorem imageBasicOpen_image_open :
   erw [← TopCat.coe_comp]
   rw [PreservesCoequalizer.iso_hom, ι_comp_coequalizerComparison]
   dsimp only [SheafedSpace.forget]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): change `rw` to `erw`
-  erw [imageBasicOpen_image_preimage]
+  rw [imageBasicOpen_image_preimage]
   exact (imageBasicOpen f g U s).2
 
 @[instance]
@@ -227,10 +215,9 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
   constructor
   rintro a ha
   rcases TopCat.Presheaf.germ_exist _ _ a with ⟨U, hU, s, rfl⟩
-  rw [← CommRingCat.forget_map_apply, forget_map_eq_coe,
-    PresheafedSpace.stalkMap_germ_apply
+  rw [-- Manually apply `elementwise_of%` to generate a `ConcreteCategory` lemma
+    elementwise_of% PresheafedSpace.stalkMap_germ
       (coequalizer.π (C := SheafedSpace _) f.toShHom g.toShHom) U _ hU] at ha
-  rw [coe_toHasForget_instFunLike]
   let V := imageBasicOpen f g U s
   have hV : (coequalizer.π f.toShHom g.toShHom).base ⁻¹'
       ((coequalizer.π f.toShHom g.toShHom).base '' V.1) = V.1 :=
@@ -243,7 +230,7 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
   have VleU : ⟨(coequalizer.π f.toShHom g.toShHom).base '' V.1, V_open⟩ ≤ U :=
     Set.image_subset_iff.mpr (Y.toRingedSpace.basicOpen_le _)
   have hxV : x ∈ V := ⟨hU, ha⟩
-  rw [← CommRingCat.germ_res_apply (coequalizer f.toShHom g.toShHom).presheaf (homOfLE VleU) _
+  rw [← (coequalizer f.toShHom g.toShHom).presheaf.germ_res_apply (homOfLE VleU) _
       (@Set.mem_image_of_mem _ _ (coequalizer.π f.toShHom g.toShHom).base x V.1 hxV) s]
   apply RingHom.isUnit_map
   rw [← isUnit_map_iff ((coequalizer.π f.toShHom g.toShHom :).c.app _).hom,

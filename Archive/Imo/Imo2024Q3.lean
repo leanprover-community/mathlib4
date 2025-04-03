@@ -3,6 +3,7 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Nat.Nth
 
 /-!
@@ -30,7 +31,7 @@ open scoped Finset
 namespace Imo2024Q3
 
 /-- The condition of the problem. Following usual Lean conventions, this is expressed with
-indices starting from 0, rather than from 1 as in the informal statment (but `N` remains as the
+indices starting from 0, rather than from 1 as in the informal statement (but `N` remains as the
 index of the last term for which `a n` is not defined in terms of previous terms). -/
 def Condition (a : ℕ → ℕ) (N : ℕ) : Prop :=
   (∀ i, 0 < a i) ∧ ∀ n, N < n → a n = #{i ∈ Finset.range n | a i = a (n - 1)}

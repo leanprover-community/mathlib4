@@ -115,7 +115,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
   have mA : MeasurableSet A := by
     suffices A = Metric.closedBall (0 : V) (R + 1) by
       rw [this]
-      exact Metric.isClosed_ball.measurableSet
+      exact Metric.isClosed_closedBall.measurableSet
     simp_rw [A, Metric.closedBall, dist_eq_norm, sub_zero]
   obtain ⟨B, hB_pos, hB_vol⟩ : ∃ B : ℝ≥0, 0 < B ∧ volume A ≤ B := by
     have hc : IsCompact A := by
@@ -243,7 +243,7 @@ end InnerProductSpace
 
 section NoInnerProduct
 
-variable (f) [AddCommGroup V] [TopologicalSpace V] [TopologicalAddGroup V] [T2Space V]
+variable (f) [AddCommGroup V] [TopologicalSpace V] [IsTopologicalAddGroup V] [T2Space V]
   [MeasurableSpace V] [BorelSpace V] [Module ℝ V] [ContinuousSMul ℝ V] [FiniteDimensional ℝ V]
 
 /-- Riemann-Lebesgue lemma for functions on a finite-dimensional real vector space, formulated via

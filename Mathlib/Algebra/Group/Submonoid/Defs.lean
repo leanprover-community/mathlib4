@@ -7,6 +7,7 @@ Amelia Livingston, Yury Kudryashov
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Subsemigroup.Defs
 import Mathlib.Tactic.FastInstance
+import Mathlib.Data.Set.Insert
 
 /-!
 # Submonoids: definition
@@ -45,7 +46,7 @@ numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_m
 submonoid, submonoids
 -/
 
-assert_not_exists CompleteLattice MonoidWithZero
+assert_not_exists RelIso CompleteLattice MonoidWithZero
 
 variable {M : Type*} {N : Type*}
 
@@ -138,11 +139,10 @@ initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
 theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl
 
--- Porting note: `x ∈ s.carrier` is now syntactically `x ∈ s.toSubsemigroup.carrier`,
--- which `simp` already simplifies to `x ∈ s.toSubsemigroup`. So we remove the `@[simp]` attribute
--- here, and instead add the simp lemma `mem_toSubsemigroup` to allow `simp` to do this exact
--- simplification transitively.
-@[to_additive]
+-- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
+-- If that were still the case, this would useful as a `@[simp]` lemma,
+-- despite the fact that it is provable by `simp` (by not `dsimp`).
+@[to_additive (attr := simp, nolint simpNF)] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 theorem mem_carrier {s : Submonoid M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -374,6 +374,16 @@ instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A
 def subtype : S' →* M where
   toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
 
+variable {S'} in
+@[to_additive (attr := simp)]
+lemma subtype_apply (x : S') :
+    SubmonoidClass.subtype S' x = x := rfl
+
+@[to_additive]
+lemma subtype_injective :
+    Function.Injective (SubmonoidClass.subtype S') :=
+  Subtype.coe_injective
+
 @[to_additive (attr := simp)]
 theorem coe_subtype : (SubmonoidClass.subtype S' : S' → M) = Subtype.val :=
   rfl
@@ -444,6 +454,15 @@ instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S := fas
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
 def subtype : S →* M where
   toFun := Subtype.val; map_one' := rfl; map_mul' _ _ := by simp
+
+@[to_additive (attr := simp)]
+lemma subtype_apply {s : Submonoid M} (x : s) :
+    s.subtype x = x := rfl
+
+@[to_additive]
+lemma subtype_injective (s : Submonoid M) :
+    Function.Injective s.subtype :=
+  Subtype.coe_injective
 
 @[to_additive (attr := simp)]
 theorem coe_subtype : ⇑S.subtype = Subtype.val :=

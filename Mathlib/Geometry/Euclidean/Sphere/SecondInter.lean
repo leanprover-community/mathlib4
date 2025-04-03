@@ -50,14 +50,11 @@ theorem Sphere.secondInter_dist (s : Sphere P) (p : P) (v : V) :
 theorem Sphere.secondInter_mem {s : Sphere P} {p : P} (v : V) : s.secondInter p v ∈ s ↔ p ∈ s := by
   simp_rw [mem_sphere, Sphere.secondInter_dist]
 
-variable (V)
-
+variable (V) in
 /-- If the vector is zero, `secondInter` gives the original point. -/
 @[simp]
 theorem Sphere.secondInter_zero (s : Sphere P) (p : P) : s.secondInter p (0 : V) = p := by
   simp [Sphere.secondInter]
-
-variable {V}
 
 /-- The point given by `secondInter` equals the original point if and only if the line is
 orthogonal to the radius vector. -/

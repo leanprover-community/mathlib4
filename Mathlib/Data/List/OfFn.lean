@@ -33,9 +33,7 @@ namespace List
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
   simp; congr
 
-/-- The `n`th element of a list -/
-theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i := by
-  simp [ofFnNthVal]
+@[deprecated (since := "2025-02-15")] alias get?_ofFn := List.getElem?_ofFn
 
 @[simp]
 theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
@@ -123,15 +121,14 @@ theorem ofFn_getElem_eq_map {β : Type*} (l : List α) (f : α → β) :
     ofFn (fun i : Fin l.length => f <| l[(i : Nat)]) = l.map f := by
   rw [← Function.comp_def, ← map_ofFn, ofFn_getElem]
 
--- not registered as a simp lemma, as otherwise it fires before `forall_mem_ofFn_iff` which
--- is much more useful
-theorem mem_ofFn {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.range f := by
+-- Note there is a now another `mem_ofFn` defined in Lean, with an existential on the RHS,
+-- which is marked as a simp lemma.
+theorem mem_ofFn' {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.range f := by
   simp only [mem_iff_get, Set.mem_range, get_ofFn]
   exact ⟨fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩, fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩⟩
 
-@[simp]
 theorem forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
-    (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp only [mem_ofFn, Set.forall_mem_range]
+    (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp
 
 @[simp]
 theorem ofFn_const : ∀ (n : ℕ) (c : α), (ofFn fun _ : Fin n => c) = replicate n c

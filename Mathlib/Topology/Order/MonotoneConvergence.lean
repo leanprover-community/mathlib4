@@ -48,7 +48,7 @@ as `x → -∞` (formally, at the filter `Filter.atBot`). We require this for `�
 
 This property holds for linear orders with order topology as well as their products. -/
 class InfConvergenceClass (α : Type*) [Preorder α] [TopologicalSpace α] : Prop where
-  /-- proof that a monotone function tends to `𝓝 a` as `x → -∞`-/
+  /-- proof that a monotone function tends to `𝓝 a` as `x → -∞` -/
   tendsto_coe_atBot_isGLB :
     ∀ (a : α) (s : Set α), IsGLB s a → Tendsto (CoeTC.coe : s → α) atBot (𝓝 a)
 

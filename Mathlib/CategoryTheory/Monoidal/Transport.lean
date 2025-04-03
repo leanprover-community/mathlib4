@@ -76,7 +76,6 @@ where the operations are already defined on the destination type `D`.
 
 The functor `F` must preserve all the data parts of the monoidal structure between the two
 categories.
-
 -/
 def induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     (fData : InducingFunctorData F) :

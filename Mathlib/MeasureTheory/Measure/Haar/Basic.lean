@@ -134,7 +134,7 @@ theorem mem_prehaar_empty {K₀ : Set G} {f : Compacts G → ℝ} :
 def clPrehaar (K₀ : Set G) (V : OpenNhdsOf (1 : G)) : Set (Compacts G → ℝ) :=
   closure <| prehaar K₀ '' { U : Set G | U ⊆ V.1 ∧ IsOpen U ∧ (1 : G) ∈ U }
 
-variable [TopologicalGroup G]
+variable [IsTopologicalGroup G]
 
 /-!
 ### Lemmas about `index`
@@ -509,7 +509,7 @@ open haar
 ### The Haar measure
 -/
 
-variable [TopologicalSpace G] [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
+variable [TopologicalSpace G] [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
 
 /-- The Haar measure on the locally compact group `G`, scaled so that `haarMeasure K₀ K₀ = 1`. -/
 @[to_additive

@@ -3,10 +3,9 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.LinearAlgebra.Prod
-import Mathlib.Algebra.BigOperators.Pi
 
 /-!
 # Trivial Square-Zero Extension
@@ -640,12 +639,12 @@ $r_0\cdots r_{i-1}m_ir_{i+1}\cdots r_n$. -/
 theorem snd_list_prod [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) :
     l.prod.snd =
-      (l.enum.map fun x : ℕ × tsze R M =>
-          ((l.map fst).take x.1).prod •> x.snd.snd <• ((l.map fst).drop x.1.succ).prod).sum := by
+      (l.zipIdx.map fun x : tsze R M × ℕ =>
+          ((l.map fst).take x.2).prod •> x.fst.snd <• ((l.map fst).drop x.2.succ).prod).sum := by
   induction l with
   | nil => simp
   | cons x xs ih =>
-    rw [List.enum_cons, ← List.map_fst_add_enum_eq_enumFrom]
+    rw [List.zipIdx_cons']
     simp_rw [List.map_cons, List.map_map, Function.comp_def, Prod.map_snd, Prod.map_fst, id,
       List.take_zero, List.take_succ_cons, List.prod_nil, List.prod_cons, snd_mul, one_smul,
       List.drop, mul_smul, List.sum_cons, fst_list_prod, ih, List.smul_sum, List.map_map,

@@ -98,10 +98,15 @@ structure ImplicitFunctionData (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E 
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E] (F : Type*) [NormedAddCommGroup F]
     [NormedSpace 𝕜 F] [CompleteSpace F] (G : Type*) [NormedAddCommGroup G] [NormedSpace 𝕜 G]
     [CompleteSpace G] where
+  /-- Left function -/
   leftFun : E → F
+  /-- Derivative of the left function -/
   leftDeriv : E →L[𝕜] F
+  /-- Right function -/
   rightFun : E → G
+  /-- Derivative of the right function -/
   rightDeriv : E →L[𝕜] G
+  /-- The point at which `leftFun` and `rightFun` are strictly differentiable -/
   pt : E
   left_has_deriv : HasStrictFDerivAt leftFun leftDeriv pt
   right_has_deriv : HasStrictFDerivAt rightFun rightDeriv pt

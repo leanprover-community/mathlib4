@@ -8,6 +8,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Field.Subfield.Defs
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.Analysis.Normed.Group.Constructions
+import Mathlib.Analysis.Normed.Group.Subgroup
 import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.Algebra.Ring.Regular
 

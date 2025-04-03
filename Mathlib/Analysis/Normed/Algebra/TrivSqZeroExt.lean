@@ -63,7 +63,7 @@ variable [Field 𝕜] [Ring R] [AddCommGroup M]
   [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
 @[simp] theorem fst_expSeries (x : tsze R M) (n : ℕ) :
     fst (expSeries 𝕜 (tsze R M) n fun _ => x) = expSeries 𝕜 R n fun _ => x.fst := by
@@ -76,7 +76,7 @@ variable [Field 𝕜] [CharZero 𝕜] [Ring R] [AddCommGroup M]
   [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
 theorem snd_expSeries_of_smul_comm
     (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) (n : ℕ) :
@@ -141,7 +141,7 @@ section CommRing
 variable [CommRing R] [AddCommGroup M] [Algebra ℚ R] [Module ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
 variable [Algebra ℚ R] [Module ℚ M]
 variable [T2Space R] [T2Space M]
@@ -170,7 +170,7 @@ variable [Field R] [AddCommGroup M]
   [Algebra ℚ R] [Module ℚ M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
 variable [T2Space R] [T2Space M]
 

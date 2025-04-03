@@ -423,8 +423,7 @@ end Star
 ### Coercion from an algebra into its multiplier algebra
 -/
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- The natural coercion of `A` into `𝓜(𝕜, A)` given by sending `a : A` to the pair of linear
 maps `Lₐ Rₐ : A →L[𝕜] A` given by left- and right-multiplication by `a`, respectively.
 
@@ -437,8 +436,6 @@ protected noncomputable def coe (a : A) : 𝓜(𝕜, A) :=
   { fst := ContinuousLinearMap.mul 𝕜 A a
     snd := (ContinuousLinearMap.mul 𝕜 A).flip a
     central := fun _x _y => mul_assoc _ _ _ }
-
-variable {𝕜}
 
 /-- The natural coercion of `A` into `𝓜(𝕜, A)` given by sending `a : A` to the pair of linear
 maps `Lₐ Rₐ : A →L[𝕜] A` given by left- and right-multiplication by `a`, respectively.

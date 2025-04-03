@@ -372,9 +372,13 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
     sigmaFinsuppEquivDFinsupp_single, LinearEquiv.ofBijective_apply,
     sigmaFinsuppAddEquivDFinsupp_apply]
   rw [DFinsupp.mapRange.linearEquiv_symm]
+  -- `DFunLike.coe (β := fun x ↦ ⨁ (i : ι), ↥(A i))`
+  -- appears in the goal, but the lemma is expecting
+  -- `DFunLike.coe (β := fun x ↦ Π₀ (i : ι), ↥(A i))`
   erw [DFinsupp.mapRange.linearEquiv_apply]
   simp only [DFinsupp.mapRange_single, Basis.repr_symm_apply, linearCombination_single, one_smul,
     toModule]
+  -- Similarly here.
   erw [DFinsupp.lsum_single]
   simp only [Submodule.coe_subtype]
 

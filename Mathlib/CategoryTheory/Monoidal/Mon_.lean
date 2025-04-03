@@ -3,11 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Group.PUnit
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.Algebra.PUnitInstances.Algebra
 
 /-!
 # The category of monoids in a monoidal category.
@@ -29,6 +29,7 @@ variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
 
 When the monoidal category is preadditive, this is also sometimes called an "algebra object".
 -/
+@[ext]
 class Mon_Class (X : C) where
   /-- The unit morphism of a monoid object. -/
   one : 𝟙_ C ⟶ X

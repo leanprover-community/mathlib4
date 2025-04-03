@@ -23,7 +23,7 @@ namespace AffineMap
 
 variable {R E F : Type*}
 variable [AddCommGroup E] [TopologicalSpace E]
-variable [AddCommGroup F] [TopologicalSpace F] [TopologicalAddGroup F]
+variable [AddCommGroup F] [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 section Ring
 
@@ -57,8 +57,8 @@ variable [CommRing R] [Module R F] [ContinuousConstSMul R F]
 theorem homothety_continuous (x : F) (t : R) : Continuous <| homothety x t := by
   suffices ⇑(homothety x t) = fun y => t • (y - x) + x by
     rw [this]
-    exact ((continuous_id.sub continuous_const).const_smul _).add continuous_const
     -- Porting note: proof was `by continuity`
+    exact ((continuous_id.sub continuous_const).const_smul _).add continuous_const
   ext y
   simp [homothety_apply]
 

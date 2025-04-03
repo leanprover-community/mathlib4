@@ -338,7 +338,7 @@ lemma Polynomial.Monic.quotient_isIntegral {g : S[X]} (mon : g.Monic) {I : Ideal
           as_sum_range_C_mul_X_pow g', map_sum]
         simp only [Polynomial.C_mul', ← map_pow, map_smul]
       exact this ▸ (aeval_mem_adjoin_singleton S ((Ideal.Quotient.mk I) Polynomial.X))
-  exact fun a ↦ (eq_top ▸ (adjoin_le_integralClosure (mon.quotient_isIntegralElem h)))
+  exact fun a ↦ (eq_top ▸ adjoin_le_integralClosure <| mon.quotient_isIntegralElem h)
     Algebra.mem_top
 
 end
@@ -551,7 +551,7 @@ theorem Algebra.IsIntegral.tower_bot [Algebra R S] [Algebra R T] [Algebra S T]
     [h : Algebra.IsIntegral R T] : Algebra.IsIntegral R S where
   isIntegral := by
     apply RingHom.IsIntegral.tower_bot (algebraMap R S) (algebraMap S T)
-      (NoZeroSMulDivisors.algebraMap_injective S T)
+      (FaithfulSMul.algebraMap_injective S T)
     rw [← IsScalarTower.algebraMap_eq R S T]
     exact h.isIntegral
 

@@ -263,7 +263,7 @@ theorem eq_pell_lem : ∀ (n) (b : ℤ√(d a1)), 1 ≤ b → IsPell b →
     else
       suffices ¬1 < b from ⟨0, show b = 1 from (Or.resolve_left (lt_or_eq_of_le h1) this).symm⟩
       fun h1l => by
-      cases' b with x y
+      obtain ⟨x, y⟩ := b
       exact by
         have bm : (_ * ⟨_, _⟩ : ℤ√d a1) = 1 := Pell.isPell_norm.1 hp
         have y0l : (0 : ℤ√d a1) < ⟨x - x, y - -y⟩ :=
@@ -422,7 +422,7 @@ theorem xy_modEq_yn (n) :
             rw [_root_.pow_succ]
             exact hx.mul_right' _) <| by
         have : k * xn a1 n ^ (k - 1) * yn a1 n * xn a1 n = k * xn a1 n ^ k * yn a1 n := by
-          cases' k with k <;> simp [_root_.pow_succ]; ring_nf
+          rcases k with - | k <;> simp [_root_.pow_succ]; ring_nf
         rw [← this]
         exact hy.mul_right _
     rw [add_tsub_cancel_right, Nat.mul_succ, xn_add, yn_add, pow_succ (xn _ n), Nat.succ_mul,
@@ -676,7 +676,7 @@ theorem eq_of_xn_modEq_le {i j n} (ij : i ≤ j) (j2n : j ≤ 2 * n)
         have x0 : 0 < xn a1 0 % xn a1 n := by
           rw [Nat.mod_eq_of_lt (strictMono_x a1 (Nat.pos_of_ne_zero npos))]
           exact Nat.succ_pos _
-        cases' i with i
+        rcases i with - | i
         · exact x0
         rw [jn] at ij'
         exact
@@ -719,10 +719,11 @@ theorem modEq_of_xn_modEq {i j n} (ipos : 0 < i) (hin : i ≤ n)
   have jl : j' < 4 * n := Nat.mod_lt _ n4
   have jj : j ≡ j' [MOD 4 * n] := by delta ModEq; rw [Nat.mod_eq_of_lt jl]
   have : ∀ j q, xn a1 (j + 4 * n * q) ≡ xn a1 j [MOD xn a1 n] := by
-    intro j q; induction' q with q IH
-    · simp [ModEq.refl]
-    rw [Nat.mul_succ, ← add_assoc, add_comm]
-    exact (xn_modEq_x4n_add _ _ _).trans IH
+    intro j q; induction q with
+    | zero => simp [ModEq.refl]
+    | succ q IH =>
+      rw [Nat.mul_succ, ← add_assoc, add_comm]
+      exact (xn_modEq_x4n_add _ _ _).trans IH
   Or.imp (fun ji : j' = i => by rwa [← ji])
     (fun ji : j' + i = 4 * n =>
       (jj.add_right _).trans <| by

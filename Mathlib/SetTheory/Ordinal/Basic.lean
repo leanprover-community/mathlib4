@@ -121,6 +121,9 @@ instance wellFoundedLT_toType_lt (o : Ordinal) : WellFoundedLT o.toType :=
 
 namespace Ordinal
 
+noncomputable instance (o : Ordinal) : SuccOrder o.toType :=
+  SuccOrder.ofLinearWellFoundedLT o.toType
+
 /-! ### Basic properties of the order type -/
 
 /-- The order type of a well order is an ordinal. -/
@@ -142,7 +145,6 @@ instance one : One Ordinal :=
 @[deprecated "Avoid using `Quotient.mk` to construct an `Ordinal` directly."
   (since := "2024-10-24")]
 theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := rfl
-
 
 @[deprecated "Avoid using `Quotient.mk` to construct an `Ordinal` directly."
   (since := "2024-10-24")]
@@ -570,7 +572,12 @@ instance small_Icc (a b : Ordinal.{u}) : Small.{u} (Icc a b) := small_subset Icc
 instance small_Ioo (a b : Ordinal.{u}) : Small.{u} (Ioo a b) := small_subset Ioo_subset_Iio_self
 instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc_subset_Iic_self
 
+/-- `o.toType` is an `OrderBot` whenever `o ≠ 0`. -/
+def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.toType where
+  bot_le := enum_zero_le' (by rwa [Ordinal.pos_iff_ne_zero])
+
 /-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
+@[deprecated "use toTypeOrderBot" (since := "2025-02-13")]
 def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
   bot_le := enum_zero_le' ho
 
@@ -579,7 +586,7 @@ noncomputable alias outOrderBotOfPos := toTypeOrderBotOfPos
 
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
     enum (α := o.toType) (· < ·) ⟨0, by rwa [type_toType]⟩ =
-      have H := toTypeOrderBotOfPos ho
+      have H := toTypeOrderBot (o := o) (by rintro rfl; simp at ho)
       (⊥ : o.toType) :=
   rfl
 
@@ -1035,14 +1042,14 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
   ⟨↑liftInitialSeg.{max (u + 1) v, u}, univ.{u, v}, by
     refine fun b => inductionOn b ?_; intro β s _
     rw [univ, ← lift_umax]; constructor <;> intro h
-    · cases' h with a e
+    · obtain ⟨a, e⟩ := h
       rw [← e]
       refine inductionOn a ?_
       intro α r _
       exact lift_type_lt.{u, u + 1, max (u + 1) v}.2 ⟨typein r⟩
     · rw [← lift_id (type s)] at h ⊢
-      cases' lift_type_lt.{_,_,v}.1 h with f
-      cases' f with f a hf
+      obtain ⟨f⟩ := lift_type_lt.{_,_,v}.1 h
+      obtain ⟨f, a, hf⟩ := f
       exists a
       revert hf
       -- Porting note: apply inductionOn does not work, refine does
@@ -1055,7 +1062,7 @@ def liftPrincipalSeg : Ordinal.{u} <i Ordinal.{max (u + 1) v} :=
         rw [typein_enum, typein_enum]
         exact f.map_rel_iff.2 h
       · intro a'
-        cases' (hf _).2 (typein_lt_type _ a') with b e
+        obtain ⟨b, e⟩ := (hf _).2 (typein_lt_type _ a')
         exists b
         simp only [RelEmbedding.ofMonotone_coe]
         simp [e]⟩
@@ -1143,7 +1150,7 @@ theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card :=
         exact
           let ⟨f⟩ := h
           ⟨f.toEmbedding⟩
-      · cases' h with f
+      · obtain ⟨f⟩ := h
         have g := RelEmbedding.preimage f s
         haveI := RelEmbedding.isWellOrder g
         exact le_trans (ord_le_type _) g.ordinal_type_le
@@ -1343,7 +1350,7 @@ theorem lt_univ {c} : c < univ.{u, u + 1} ↔ ∃ c', c = lift.{u + 1, u} c' :=
   ⟨fun h => by
     have := ord_lt_ord.2 h
     rw [ord_univ] at this
-    cases' liftPrincipalSeg.mem_range_of_rel_top (by simpa only [liftPrincipalSeg_top]) with o e
+    obtain ⟨o, e⟩ := liftPrincipalSeg.mem_range_of_rel_top (by simpa only [liftPrincipalSeg_top])
     have := card_ord c
     rw [← e, liftPrincipalSeg_coe, ← lift_card] at this
     exact ⟨_, this.symm⟩, fun ⟨_, e⟩ => e.symm ▸ lift_lt_univ _⟩
@@ -1363,6 +1370,11 @@ theorem small_iff_lift_mk_lt_univ {α : Type u} :
     exact ⟨#β, lift_mk_eq.{u, _, v + 1}.2 e⟩
   · rintro ⟨c, hc⟩
     exact ⟨⟨c.out, lift_mk_eq.{u, _, v + 1}.1 (hc.trans (congr rfl c.mk_out.symm))⟩⟩
+
+/-- If a cardinal `c` is non zero, then `c.ord.toType` has a least element. -/
+noncomputable def toTypeOrderBot {c : Cardinal} (hc : c ≠ 0) :
+    OrderBot c.ord.toType :=
+  Ordinal.toTypeOrderBot (fun h ↦ hc (ord_injective (by simpa using h)))
 
 end Cardinal
 
@@ -1487,3 +1499,5 @@ theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List
       | head as => exact List.head_le_of_lt hmltl
       | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_sorted_cons hm _ hi)
           (List.head_le_of_lt hmltl))
+
+set_option linter.style.longFile 1700

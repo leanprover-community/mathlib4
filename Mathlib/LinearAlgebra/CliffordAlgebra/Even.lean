@@ -181,8 +181,8 @@ private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q
     · rintro _ ⟨b, m₃, rfl⟩
       change f.bilin _ _ * (f.bilin _ _ * b) = Q m • (f.bilin _ _ * b)
       rw [← smul_mul_assoc, ← mul_assoc, f.contract_mid]
-    · change f.bilin m₁ m * 0 = Q m • (0 : A)  -- Porting note: `•` now needs the type of `0`
-      rw [mul_zero, smul_zero]
+    · suffices f.bilin m₁ m * 0 = Q m • (0 : A) by simp
+      simp
     · rintro x y _hx _hy ihx ihy
       rw [LinearMap.add_apply, LinearMap.add_apply, mul_add, smul_add, ihx, ihy]
     · rintro x hx _c ihx
@@ -216,7 +216,7 @@ theorem aux_algebraMap (r) (hr) : aux f ⟨algebraMap R _ r, hr⟩ = algebraMap 
 
 @[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout https://github.com/leanprover-community/mathlib4/pull/8386
 theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
-  cases' x with x x_property
+  obtain ⟨x, x_property⟩ := x
   cases y
   refine (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans ?_
   dsimp only

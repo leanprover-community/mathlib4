@@ -61,7 +61,7 @@ variable (S : Type*) [SetLike S K] [h : SubfieldClass S K]
 
 Be assured that we're not actually proving that subfields are subgroups:
 `SubgroupClass` is really an abbreviation of `SubgroupWithOrWithoutZeroClass`.
- -/
+-/
 instance (priority := 100) toSubgroupClass : SubgroupClass S K :=
   { h with }
 
@@ -320,6 +320,14 @@ end DerivedFromSubfieldClass
 /-- The embedding from a subfield of the field `K` to `K`. -/
 def subtype (s : Subfield K) : s →+* K :=
   { s.toSubmonoid.subtype, s.toAddSubgroup.subtype with toFun := (↑) }
+
+@[simp]
+lemma subtype_apply {s : Subfield K} (x : s) :
+    s.subtype x = x := rfl
+
+lemma subtype_injective (s : Subfield K) :
+    Function.Injective s.subtype :=
+  Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype : ⇑(s.subtype) = ((↑) : s → K) :=

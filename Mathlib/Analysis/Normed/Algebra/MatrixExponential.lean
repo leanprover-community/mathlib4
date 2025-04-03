@@ -73,7 +73,7 @@ section Topological
 section Ring
 
 variable [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype (n' i)]
-  [∀ i, DecidableEq (n' i)] [Ring 𝔸] [TopologicalSpace 𝔸] [TopologicalRing 𝔸]
+  [∀ i, DecidableEq (n' i)] [Ring 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸]
   [Algebra ℚ 𝔸] [T2Space 𝔸]
 
 theorem exp_diagonal (v : m → 𝔸) : exp (diagonal v) = diagonal (exp v) := by
@@ -99,8 +99,8 @@ end Ring
 
 section CommRing
 
-variable [Fintype m] [DecidableEq m] [CommRing 𝔸] [TopologicalSpace 𝔸] [TopologicalRing 𝔸]
-  [Algebra ℚ 𝔸] [T2Space 𝔸]
+variable [Fintype m] [DecidableEq m] [CommRing 𝔸] [TopologicalSpace 𝔸]
+  [IsTopologicalRing 𝔸] [Algebra ℚ 𝔸] [T2Space 𝔸]
 
 theorem exp_transpose (A : Matrix m m 𝔸) : exp Aᵀ = (exp A)ᵀ := by
   simp_rw [exp_eq_tsum, transpose_tsum, transpose_smul, transpose_pow]

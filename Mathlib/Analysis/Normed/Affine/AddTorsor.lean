@@ -6,7 +6,7 @@ Authors: Joseph Myers, Yury Kudryashov
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Normed.Group.AddTorsor
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 import Mathlib.Topology.Instances.RealVectorSpace
 
 
@@ -171,6 +171,11 @@ theorem dist_right_midpoint (p₁ p₂ : P) :
 theorem nndist_right_midpoint (p₁ p₂ : P) :
     nndist p₂ (midpoint 𝕜 p₁ p₂) = ‖(2 : 𝕜)‖₊⁻¹ * nndist p₁ p₂ :=
   NNReal.eq <| dist_right_midpoint _ _
+
+/-- The midpoint of the segment AB is the same distance from A as it is from B. -/
+theorem dist_left_midpoint_eq_dist_right_midpoint (p₁ p₂ : P) :
+    dist p₁ (midpoint 𝕜 p₁ p₂) = dist p₂ (midpoint 𝕜 p₁ p₂) := by
+  rw [dist_left_midpoint p₁ p₂, dist_right_midpoint p₁ p₂]
 
 theorem dist_midpoint_midpoint_le' (p₁ p₂ p₃ p₄ : P) :
     dist (midpoint 𝕜 p₁ p₂) (midpoint 𝕜 p₃ p₄) ≤ (dist p₁ p₃ + dist p₂ p₄) / ‖(2 : 𝕜)‖ := by

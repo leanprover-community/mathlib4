@@ -7,9 +7,9 @@ import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Analysis.Convex.Star
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.NoncommRing
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Defs
 
 /-!
 # Convex sets and functions in vector spaces
@@ -94,7 +94,7 @@ theorem convex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, Convex 𝕜 (s
     Convex 𝕜 (⋂ i, s i) :=
   sInter_range s ▸ convex_sInter <| forall_mem_range.2 h
 
-theorem convex_iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : ∀ i, κ i → Set E}
+theorem convex_iInter₂ {ι : Sort*} {κ : ι → Sort*} {s : (i : ι) → κ i → Set E}
     (h : ∀ i j, Convex 𝕜 (s i j)) : Convex 𝕜 (⋂ (i) (j), s i j) :=
   convex_iInter fun i => convex_iInter <| h i
 

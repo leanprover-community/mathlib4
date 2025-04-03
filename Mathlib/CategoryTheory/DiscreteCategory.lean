@@ -167,9 +167,9 @@ theorem functor_obj {I : Type u₁} (F : I → C) (i : I) :
     (Discrete.functor F).obj (Discrete.mk i) = F i :=
   rfl
 
-@[simp]
 theorem functor_map {I : Type u₁} (F : I → C) {i : Discrete I} (f : i ⟶ i) :
     (Discrete.functor F).map f = 𝟙 (F i.as) := by aesop_cat
+
 @[simp]
 theorem functor_obj_eq_as {I : Type u₁} (F : I → C) (X : Discrete I) :
     (Discrete.functor F).obj X = F X.as :=
@@ -220,12 +220,12 @@ theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discret
 
 /-- Every functor `F` from a discrete category is naturally isomorphic (actually, equal) to
   `Discrete.functor (F.obj)`. -/
-@[simp]
+@[simps!]
 def natIsoFunctor {I : Type u₁} {F : Discrete I ⥤ C} : F ≅ Discrete.functor (F.obj ∘ Discrete.mk) :=
   natIso fun _ => Iso.refl _
 
 /-- Composing `Discrete.functor F` with another functor `G` amounts to composing `F` with `G.obj` -/
-@[simp]
+@[simps!]
 def compNatIsoDiscrete {I : Type u₁} {D : Type u₃} [Category.{v₃} D] (F : I → C) (G : C ⥤ D) :
     Discrete.functor F ⋙ G ≅ Discrete.functor (G.obj ∘ F) :=
   natIso fun _ => Iso.refl _

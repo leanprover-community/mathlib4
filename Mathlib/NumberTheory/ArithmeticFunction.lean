@@ -3,7 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Data.Nat.Squarefree
@@ -573,11 +573,12 @@ theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Arith
     (hf : f.IsMultiplicative) (s : Finset ι) (hs : (s : Set ι).Pairwise (Coprime on g)) :
     f (∏ i ∈ s, g i) = ∏ i ∈ s, f (g i) := by
   classical
-    induction' s using Finset.induction_on with a s has ih hs
-    · simp [hf]
-    rw [coe_insert, Set.pairwise_insert_of_symmetric (Coprime.symmetric.comap g)] at hs
-    rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
-    exact .prod_right fun i hi => hs.2 _ hi (hi.ne_of_not_mem has).symm
+    induction s using Finset.induction_on with
+    | empty => simp [hf]
+    | insert has ih =>
+      rw [coe_insert, Set.pairwise_insert_of_symmetric (Coprime.symmetric.comap g)] at hs
+      rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]
+      exact .prod_right fun i hi => hs.2 _ hi (hi.ne_of_not_mem has).symm
 
 theorem map_prod_of_prime [CommSemiring R] {f : ArithmeticFunction R}
     (h_mult : ArithmeticFunction.IsMultiplicative f)
@@ -809,10 +810,7 @@ def pow (k : ℕ) : ArithmeticFunction ℕ :=
 
 @[simp]
 theorem pow_apply {k n : ℕ} : pow k n = if k = 0 ∧ n = 0 then 0 else n ^ k := by
-  cases k
-  · simp [pow]
-  rename_i k  -- Porting note: added
-  simp [pow, k.succ_pos.ne']
+  cases k <;> simp [pow]
 
 theorem pow_zero_eq_zeta : pow 0 = ζ := by
   ext n
@@ -877,10 +875,9 @@ theorem isMultiplicative_id : IsMultiplicative ArithmeticFunction.id :=
 @[arith_mult]
 theorem IsMultiplicative.ppow [CommSemiring R] {f : ArithmeticFunction R} (hf : f.IsMultiplicative)
     {k : ℕ} : IsMultiplicative (f.ppow k) := by
-  induction' k with k hi
-  · exact isMultiplicative_zeta.natCast
-  · rw [ppow_succ']
-    apply hf.pmul hi
+  induction k with
+  | zero => exact isMultiplicative_zeta.natCast
+  | succ k hi => rw [ppow_succ']; apply hf.pmul hi
 
 @[arith_mult]
 theorem isMultiplicative_pow {k : ℕ} : IsMultiplicative (pow k) :=
@@ -911,8 +908,7 @@ lemma cardFactors_zero : Ω 0 = 0 := by simp
 @[simp]
 theorem cardFactors_eq_one_iff_prime {n : ℕ} : Ω n = 1 ↔ n.Prime := by
   refine ⟨fun h => ?_, fun h => List.length_eq_one.2 ⟨n, primeFactorsList_prime h⟩⟩
-  cases' n with n
-  · simp at h
+  cases n with | zero => simp at h | succ n =>
   rcases List.length_eq_one.1 h with ⟨x, hx⟩
   rw [← prod_primeFactorsList n.add_one_ne_zero, hx, List.prod_singleton]
   apply prime_of_mem_primeFactorsList

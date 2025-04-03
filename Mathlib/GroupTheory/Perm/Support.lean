@@ -3,10 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Commute.Basic
-import Mathlib.Data.Finset.NoncommProd
 import Mathlib.Data.Fintype.Card
-import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.Group.End
+import Mathlib.Data.Finset.NoncommProd
 
 /-!
 # support of a permutation
@@ -78,7 +78,7 @@ theorem disjoint_iff_eq_or_eq : Disjoint f g ↔ ∀ x : α, f x = x ∨ g x = x
 theorem disjoint_refl_iff : Disjoint f f ↔ f = 1 := by
   refine ⟨fun h => ?_, fun h => h.symm ▸ disjoint_one_left 1⟩
   ext x
-  cases' h x with hx hx <;> simp [hx]
+  rcases h x with hx | hx <;> simp [hx]
 
 theorem Disjoint.inv_left (h : Disjoint f g) : Disjoint f⁻¹ g := by
   intro x
@@ -166,7 +166,7 @@ theorem zpow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
 theorem Disjoint.mul_apply_eq_iff {σ τ : Perm α} (hστ : Disjoint σ τ) {a : α} :
     (σ * τ) a = a ↔ σ a = a ∧ τ a = a := by
   refine ⟨fun h => ?_, fun h => by rw [mul_apply, h.2, h.1]⟩
-  cases' hστ a with hσ hτ
+  rcases hστ a with hσ | hτ
   · exact ⟨hσ, σ.injective (h.trans hσ.symm)⟩
   · exact ⟨(congr_arg σ hτ).symm.trans h, hτ⟩
 

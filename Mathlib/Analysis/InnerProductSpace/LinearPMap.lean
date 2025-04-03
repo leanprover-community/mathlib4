@@ -158,7 +158,7 @@ variable {T}
 
 theorem mem_adjoint_domain_of_exists (y : F) (h : ∃ w : E, ∀ x : T.domain, ⟪w, x⟫ = ⟪y, T x⟫) :
     y ∈ T†.domain := by
-  cases' h with w hw
+  obtain ⟨w, hw⟩ := h
   rw [T.mem_adjoint_domain_iff]
   have : Continuous ((innerSL 𝕜 w).comp T.domain.subtypeL) := by fun_prop
   convert this using 1

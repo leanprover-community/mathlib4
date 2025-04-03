@@ -30,7 +30,7 @@ This is a ring hom if the ring has characteristic dividing `n`
 
 -/
 
-assert_not_exists Submodule TwoSidedIdeal
+assert_not_exists Field Submodule TwoSidedIdeal
 
 open Function ZMod
 
@@ -98,7 +98,7 @@ theorem val_natCast_of_lt {n a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
 instance charP (n : ℕ) : CharP (ZMod n) n where
   cast_eq_zero_iff' := by
     intro k
-    cases' n with n
+    rcases n with - | n
     · simp [zero_dvd_iff, Int.natCast_eq_zero]
     · exact Fin.natCast_eq_zero
 
@@ -110,7 +110,7 @@ theorem addOrderOf_one (n : ℕ) : addOrderOf (1 : ZMod n) = n :=
 where `a ≠ 0` is `addOrderOf_coe'`. -/
 @[simp]
 theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
-  cases' a with a
+  rcases a with - | a
   · simp only [Nat.cast_zero, addOrderOf_zero, Nat.gcd_zero_right,
       Nat.pos_of_ne_zero n0, Nat.div_self]
   rw [← Nat.smul_one_eq_cast, addOrderOf_nsmul' _ a.succ_ne_zero, ZMod.addOrderOf_one]
@@ -196,8 +196,8 @@ ring, see `ZMod.intCast_cast`. -/
 theorem intCast_zmod_cast (a : ZMod n) : ((cast a : ℤ) : ZMod n) = a := by
   cases n
   · simp [ZMod.cast, ZMod]
-  · dsimp [ZMod.cast, ZMod]
-    erw [Int.cast_natCast, Fin.cast_val_eq_self]
+  · dsimp [ZMod.cast]
+    rw [Int.cast_natCast, natCast_zmod_val]
 
 theorem intCast_rightInverse : Function.RightInverse (cast : ZMod n → ℤ) ((↑) : ℤ → ZMod n) :=
   intCast_zmod_cast
@@ -246,7 +246,7 @@ theorem intCast_cast (i : ZMod n) : ((cast i : ℤ) : R) = cast i :=
 theorem cast_add_eq_ite {n : ℕ} (a b : ZMod n) :
     (cast (a + b) : ℤ) =
       if (n : ℤ) ≤ cast a + cast b then (cast a + cast b - n : ℤ) else cast a + cast b := by
-  cases' n with n
+  rcases n with - | n
   · simp; rfl
   change Fin (n + 1) at a b
   change ((((a + b) : Fin (n + 1)) : ℕ) : ℤ) = if ((n + 1 : ℕ) : ℤ) ≤ (a : ℕ) + b then _ else _
@@ -266,7 +266,7 @@ variable {m : ℕ} [CharP R m]
 
 @[simp]
 theorem cast_one (h : m ∣ n) : (cast (1 : ZMod n) : R) = 1 := by
-  cases' n with n
+  rcases n with - | n
   · exact Int.cast_one
   show ((1 % (n + 1) : ℕ) : R) = 1
   cases n
@@ -281,8 +281,8 @@ theorem cast_add (h : m ∣ n) (a b : ZMod n) : (cast (a + b : ZMod n) : R) = ca
   cases n
   · apply Int.cast_add
   symm
-  dsimp [ZMod, ZMod.cast]
-  erw [← Nat.cast_add, ← sub_eq_zero, ← Nat.cast_sub (Nat.mod_le _ _),
+  dsimp [ZMod, ZMod.cast, ZMod.val]
+  rw [← Nat.cast_add, Fin.val_add, ← sub_eq_zero, ← Nat.cast_sub (Nat.mod_le _ _),
     @CharP.cast_eq_zero_iff R _ m]
   exact h.trans (Nat.dvd_sub_mod _)
 
@@ -290,8 +290,8 @@ theorem cast_mul (h : m ∣ n) (a b : ZMod n) : (cast (a * b : ZMod n) : R) = ca
   cases n
   · apply Int.cast_mul
   symm
-  dsimp [ZMod, ZMod.cast]
-  erw [← Nat.cast_mul, ← sub_eq_zero, ← Nat.cast_sub (Nat.mod_le _ _),
+  dsimp [ZMod, ZMod.cast, ZMod.val]
+  rw [← Nat.cast_mul, Fin.val_mul, ← sub_eq_zero, ← Nat.cast_sub (Nat.mod_le _ _),
     @CharP.cast_eq_zero_iff R _ m]
   exact h.trans (Nat.dvd_sub_mod _)
 
@@ -408,7 +408,7 @@ lemma ringEquivOfPrime_eq_ringEquiv [Fintype R] {p : ℕ} [CharP R p] (hp : p.Pr
 
 /-- The identity between `ZMod m` and `ZMod n` when `m = n`, as a ring isomorphism. -/
 def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
-  cases' m with m <;> cases' n with n
+  rcases m with - | m <;> rcases n with - | n
   · exact RingEquiv.refl _
   · exfalso
     exact n.succ_ne_zero h.symm
@@ -524,7 +524,7 @@ theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
 
 /-- `-1 : ZMod n` lifts to `n - 1 : R`. This avoids the characteristic assumption in `cast_neg`. -/
 theorem cast_neg_one {R : Type*} [Ring R] (n : ℕ) : cast (-1 : ZMod n) = (n - 1 : R) := by
-  cases' n with n
+  rcases n with - | n
   · dsimp [ZMod, ZMod.cast]; simp
   · rw [← natCast_val, val_neg_one, Nat.cast_succ, add_sub_cancel_right]
 
@@ -699,7 +699,7 @@ theorem inv_zero : ∀ n : ℕ, (0 : ZMod n)⁻¹ = 0
       rfl
 
 theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := by
-  cases' n with n
+  rcases n with - | n
   · dsimp [ZMod] at a ⊢
     calc
       _ = a * Int.sign a := rfl
@@ -758,7 +758,7 @@ lemma val_inv_mul (hmn : m.Coprime n) : ((m⁻¹ : ZMod n).val * m : ZMod n) = 1
   rw [mul_comm, mul_val_inv hmn]
 
 /-- `unitOfCoprime` makes an element of `(ZMod n)ˣ` given
-  a natural number `x` and a proof that `x` is coprime to `n`  -/
+a natural number `x` and a proof that `x` is coprime to `n` -/
 def unitOfCoprime {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) : (ZMod n)ˣ :=
   ⟨x, x⁻¹, coe_mul_inv_eq_one x h, by rw [mul_comm, coe_mul_inv_eq_one x h]⟩
 
@@ -768,7 +768,7 @@ theorem coe_unitOfCoprime {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
   rfl
 
 theorem val_coe_unit_coprime {n : ℕ} (u : (ZMod n)ˣ) : Nat.Coprime (u : ZMod n).val n := by
-  cases' n with n
+  rcases n with - | n
   · rcases Int.units_eq_one_or u with (rfl | rfl) <;> simp
   apply Nat.coprime_of_mul_modEq_one ((u⁻¹ : Units (ZMod (n + 1))) : ZMod (n + 1)).val
   have := Units.ext_iff.1 (mul_inv_cancel u)
@@ -938,7 +938,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
     rw [← a.natCast_zmod_val, ← Nat.cast_two, ← Nat.cast_mul, natCast_zmod_eq_zero_iff_dvd]
   constructor
   · rintro ⟨m, he⟩
-    cases' m with m
+    rcases m with - | m
     · rw [mul_zero, mul_eq_zero] at he
       rcases he with (⟨⟨⟩⟩ | he)
       exact Or.inl (a.val_eq_zero.1 he)
@@ -1050,30 +1050,6 @@ theorem natAbs_min_of_le_div_two (n : ℕ) (x y : ℤ) (he : (x : ZMod n) = y) (
   refine le_trans ?_ (Nat.le_mul_of_pos_right _ <| Int.natAbs_pos.2 hm)
   rw [← mul_two]; apply Nat.div_mul_le_self
 
-variable (p : ℕ) [Fact p.Prime]
-
-private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 := by
-  obtain ⟨k, rfl⟩ := natCast_zmod_surjective a
-  apply coe_mul_inv_eq_one
-  apply Nat.Coprime.symm
-  rwa [Nat.Prime.coprime_iff_not_dvd Fact.out, ← CharP.cast_eq_zero_iff (ZMod p)]
-
-/-- Field structure on `ZMod p` if `p` is prime. -/
-instance instField : Field (ZMod p) where
-  mul_inv_cancel := mul_inv_cancel_aux p
-  inv_zero := inv_zero p
-  nnqsmul := _
-  nnqsmul_def := fun _ _ => rfl
-  qsmul := _
-  qsmul_def := fun _ _ => rfl
-
-/-- `ZMod p` is an integral domain when `p` is prime. -/
-instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
-  -- We need `cases p` here in order to resolve which `CommRing` instance is being used.
-  cases p
-  · exact (Nat.not_prime_zero hp.out).elim
-  exact @Field.isDomain (ZMod _) (inferInstanceAs (Field (ZMod _)))
-
 end ZMod
 
 theorem RingHom.ext_zmod {n : ℕ} {R : Type*} [Semiring R] (f g : ZMod n →+* R) : f = g := by
@@ -1100,8 +1076,8 @@ instance subsingleton_ringEquiv [Semiring R] : Subsingleton (ZMod n ≃+* R) :=
 theorem ringHom_map_cast [Ring R] (f : R →+* ZMod n) (k : ZMod n) : f (cast k) = k := by
   cases n
   · dsimp [ZMod, ZMod.cast] at f k ⊢; simp
-  · dsimp [ZMod, ZMod.cast] at f k ⊢
-    erw [map_natCast, Fin.cast_val_eq_self]
+  · dsimp [ZMod.cast]
+    rw [map_natCast, natCast_zmod_val]
 
 /-- Any ring homomorphism into `ZMod n` has a right inverse. -/
 theorem ringHom_rightInverse [Ring R] (f : R →+* ZMod n) :

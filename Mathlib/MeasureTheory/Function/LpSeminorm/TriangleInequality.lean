@@ -126,7 +126,7 @@ theorem eLpNorm_sub_le {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : A
     (hp : 1 ≤ p) : eLpNorm (f - g) p μ ≤ eLpNorm f p μ + eLpNorm g p μ := by
   simpa [LpAddConst_of_one_le hp] using eLpNorm_sub_le' hf hg p
 
-theorem eLpNorm_add_lt_top {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
+theorem eLpNorm_add_lt_top {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) :
     eLpNorm (f + g) p μ < ∞ :=
   calc
     eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) :=
@@ -149,26 +149,26 @@ theorem eLpNorm_sum_le {ι} {f : ι → α → E} {s : Finset ι}
     (fun f => AEStronglyMeasurable f μ) eLpNorm_zero (fun _f _g hf hg => eLpNorm_add_le hf hg hp1)
     (fun _f _g hf hg => hf.add hg) _ hfs
 
-theorem Memℒp.add {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) : Memℒp (f + g) p μ :=
+theorem MemLp.add {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) : MemLp (f + g) p μ :=
   ⟨AEStronglyMeasurable.add hf.1 hg.1, eLpNorm_add_lt_top hf hg⟩
 
-theorem Memℒp.sub {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) : Memℒp (f - g) p μ := by
+theorem MemLp.sub {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) : MemLp (f - g) p μ := by
   rw [sub_eq_add_neg]
   exact hf.add hg.neg
 
-theorem memℒp_finset_sum {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ i ∈ s, Memℒp (f i) p μ) :
-    Memℒp (fun a => ∑ i ∈ s, f i a) p μ := by
+theorem memLp_finset_sum {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
+    MemLp (fun a => ∑ i ∈ s, f i a) p μ := by
   haveI : DecidableEq ι := Classical.decEq _
   revert hf
   refine Finset.induction_on s ?_ ?_
-  · simp only [Memℒp.zero', Finset.sum_empty, imp_true_iff]
+  · simp only [MemLp.zero', Finset.sum_empty, imp_true_iff]
   · intro i s his ih hf
     simp only [his, Finset.sum_insert, not_false_iff]
     exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
 
-theorem memℒp_finset_sum' {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ i ∈ s, Memℒp (f i) p μ) :
-    Memℒp (∑ i ∈ s, f i) p μ := by
-  convert memℒp_finset_sum s hf using 1
+theorem memLp_finset_sum' {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
+    MemLp (∑ i ∈ s, f i) p μ := by
+  convert memLp_finset_sum s hf using 1
   ext x
   simp
 

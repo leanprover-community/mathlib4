@@ -5,6 +5,7 @@ Authors: Chris Hughes, Yaël Dillies
 -/
 
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.Finite
 import Mathlib.GroupTheory.Perm.List
 
@@ -372,7 +373,7 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
     ∀ (n : ℤ) {b x : α} {f : Perm α} (_ : (swap x (f x) * f) b ≠ b) (_ : (f ^ n) (f x) = b),
       ∃ i : ℤ, ((swap x (f x) * f) ^ i) (f x) = b := by
   intro n
-  induction n with
+  cases n with
   | ofNat n => exact isCycle_swap_mul_aux₁ n
   | negSucc n =>
     intro b x f hb h
@@ -409,9 +410,9 @@ theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f 
       else by
         rw [swap_apply_of_ne_of_ne hyx hfyx]
         refine by_contradiction fun hy => ?_
-        cases' hz.2 hy with j hj
+        obtain ⟨j, hj⟩ := hz.2 hy
         rw [← sub_add_cancel j i, zpow_add, mul_apply, hi] at hj
-        cases' zpow_apply_eq_of_apply_apply_eq_self hffx (j - i) with hji hji
+        rcases zpow_apply_eq_of_apply_apply_eq_self hffx (j - i) with hji | hji
         · rw [← hj, hji] at hyx
           tauto
         · rw [← hj, hji] at hfyx
@@ -422,8 +423,7 @@ theorem IsCycle.swap_mul {α : Type*} [DecidableEq α] {f : Perm α} (hf : IsCyc
   ⟨f x, by simp [swap_apply_def, mul_apply, if_neg hffx, f.injective.eq_iff, if_neg hx, hx],
     fun y hy =>
     let ⟨i, hi⟩ := hf.exists_zpow_eq hx (ne_and_ne_of_swap_mul_apply_ne_self hy).1
-    -- Porting note: Needed to add Perm α typehint, otherwise does not know how to coerce to fun
-    have hi : (f ^ (i - 1) : Perm α) (f x) = y :=
+    have hi : (f ^ (i - 1)) (f x) = y :=
       calc
         (f ^ (i - 1) : Perm α) (f x) = (f ^ (i - 1) * f ^ (1 : ℤ) : Perm α) x := by simp
         _ = y := by rwa [← zpow_add, sub_add_cancel]
@@ -459,7 +459,7 @@ theorem IsCycle.of_pow {n : ℕ} (h1 : IsCycle (f ^ n)) (h2 : f.support ⊆ (f ^
     exact (support_pow_le _ n).antisymm h2
   obtain ⟨x, hx1, hx2⟩ := h1
   refine ⟨x, (key x).mp hx1, fun y hy => ?_⟩
-  cases' hx2 ((key y).mpr hy) with i _
+  obtain ⟨i, _⟩ := hx2 ((key y).mpr hy)
   exact ⟨n * i, by rwa [zpow_mul]⟩
 
 -- The lemma `support_zpow_le` is relevant. It means that `h2` is equivalent to
@@ -544,7 +544,7 @@ theorem IsCycle.pow_iff [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} :
         simp [pow_mul, pow_orderOf_eq_one]
       have : orderOf (f ^ n) = orderOf f := by rw [h.orderOf, hr, hf.orderOf]
       rw [orderOf_pow, Nat.div_eq_self] at this
-      cases' this with h
+      rcases this with h | _
       · exact absurd h (orderOf_pos _).ne'
       · rwa [Nat.coprime_iff_gcd_eq_one, Nat.gcd_comm]
     · intro h
@@ -858,9 +858,9 @@ variable [DecidableEq α] {l : List α}
 theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
     l.formPerm.IsCycleOn { a | a ∈ l } := by
   refine ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => ?_⟩
-  rw [Set.mem_setOf, ← List.indexOf_lt_length_iff] at ha hb
-  rw [← List.getElem_indexOf ha, ← List.getElem_indexOf hb]
-  refine ⟨l.indexOf b - l.indexOf a, ?_⟩
+  rw [Set.mem_setOf, ← List.idxOf_lt_length_iff] at ha hb
+  rw [← List.getElem_idxOf ha, ← List.getElem_idxOf hb]
+  refine ⟨l.idxOf b - l.idxOf a, ?_⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_natCast,
     Equiv.Perm.coe_mul, List.formPerm_pow_apply_getElem _ h, Function.comp]
   rw [add_comm]

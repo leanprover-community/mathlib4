@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Order.Filter.AtTopBot.Finset
 import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Topology.Algebra.Star
 
@@ -71,6 +72,33 @@ end ProdCodomain
 section ContinuousMul
 
 variable [CommMonoid α] [TopologicalSpace α] [ContinuousMul α]
+
+section Sum
+
+@[to_additive]
+lemma HasProd.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
+    {f : α ⊕ β → M} {a b : M}
+    (h₁ : HasProd (f ∘ Sum.inl) a) (h₂ : HasProd (f ∘ Sum.inr) b) : HasProd f (a * b) := by
+  have : Tendsto ((∏ b ∈ ·, f b) ∘ sumEquiv.symm) (atTop.map sumEquiv) (nhds (a * b)) := by
+    rw [Finset.sumEquiv.map_atTop, ← prod_atTop_atTop_eq]
+    convert (tendsto_mul.comp (nhds_prod_eq (x := a) (y := b) ▸ Tendsto.prod_map h₁ h₂))
+    ext s
+    simp
+  simpa [Tendsto, ← Filter.map_map] using this
+
+@[to_additive "For the statement that `tsum` commutes with `Finset.sum`, see `tsum_finsetSum`."]
+lemma tprod_sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M] [T2Space M]
+    {f : α ⊕ β → M} (h₁ : Multipliable (f ∘ .inl)) (h₂ : Multipliable (f ∘ .inr)) :
+    ∏' i, f i = (∏' i, f (.inl i)) * (∏' i, f (.inr i)) :=
+  (h₁.hasProd.sum h₂.hasProd).tprod_eq
+
+@[to_additive]
+lemma Multipliable.sum {α β M : Type*} [CommMonoid M] [TopologicalSpace M] [ContinuousMul M]
+    (f : α ⊕ β → M) (h₁ : Multipliable (f ∘ Sum.inl)) (h₂ : Multipliable (f ∘ Sum.inr)) :
+    Multipliable f :=
+  ⟨_, .sum h₁.hasProd h₂.hasProd⟩
+
+end Sum
 
 section RegularSpace
 

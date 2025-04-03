@@ -23,10 +23,9 @@ The pen-and-paper definition of nim defines the possible moves of `nim o` to be 
 However, this definition does not work for us because it would make the type of nim
 `Ordinal.{u} → SetTheory.PGame.{u + 1}`, which would make it impossible for us to state the
 Sprague-Grundy theorem, since that requires the type of `nim` to be
-`Ordinal.{u} → SetTheory.PGame.{u}`. For this reason, we
-instead use `o.toType` for the possible moves. You can use `to_left_moves_nim` and
-`to_right_moves_nim` to convert an ordinal less than `o` into a left or right move of `nim o`, and
-vice versa.
+`Ordinal.{u} → SetTheory.PGame.{u}`. For this reason, we instead use `o.toType` for the possible
+moves. We expose `toLeftMovesNim` and `toRightMovesNim` to conveniently convert an ordinal less than
+`o` into a left or right move of `nim o`, and vice versa.
 -/
 
 
@@ -50,20 +49,21 @@ noncomputable def nim (o : Ordinal.{u}) : PGame.{u} :=
 termination_by o
 decreasing_by all_goals exact ((enumIsoToType o).symm x).prop
 
+@[deprecated "you can use `rw [nim]` directly" (since := "2025-01-23")]
 theorem nim_def (o : Ordinal) : nim o =
     ⟨o.toType, o.toType,
       fun x => nim ((enumIsoToType o).symm x).val,
       fun x => nim ((enumIsoToType o).symm x).val⟩ := by
   rw [nim]
 
-theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.toType := by rw [nim_def]; rfl
-theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.toType := by rw [nim_def]; rfl
+theorem leftMoves_nim (o : Ordinal) : (nim o).LeftMoves = o.toType := by rw [nim]; rfl
+theorem rightMoves_nim (o : Ordinal) : (nim o).RightMoves = o.toType := by rw [nim]; rfl
 
 theorem moveLeft_nim_hEq (o : Ordinal) :
-    HEq (nim o).moveLeft fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim_def]; rfl
+    HEq (nim o).moveLeft fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
 
 theorem moveRight_nim_hEq (o : Ordinal) :
-    HEq (nim o).moveRight fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim_def]; rfl
+    HEq (nim o).moveRight fun i : o.toType => nim ((enumIsoToType o).symm i) := by rw [nim]; rfl
 
 /-- Turns an ordinal less than `o` into a left move for `nim o` and vice versa. -/
 noncomputable def toLeftMovesNim {o : Ordinal} : Set.Iio o ≃ (nim o).LeftMoves :=
@@ -118,11 +118,11 @@ def rightMovesNimRecOn {o : Ordinal} {P : (nim o).RightMoves → Sort*} (i : (ni
   rw [← toRightMovesNim.apply_symm_apply i]; apply H
 
 instance isEmpty_nim_zero_leftMoves : IsEmpty (nim 0).LeftMoves := by
-  rw [nim_def]
+  rw [nim]
   exact isEmpty_toType_zero
 
 instance isEmpty_nim_zero_rightMoves : IsEmpty (nim 0).RightMoves := by
-  rw [nim_def]
+  rw [nim]
   exact isEmpty_toType_zero
 
 /-- `nim 0` has exactly the same moves as `0`. -/
@@ -164,7 +164,7 @@ theorem nim_one_moveRight (x) : (nim 1).moveRight x = nim 0 := by simp
 
 /-- `nim 1` has exactly the same moves as `star`. -/
 def nimOneRelabelling : nim 1 ≡r star := by
-  rw [nim_def]
+  rw [nim]
   refine ⟨?_, ?_, fun i => ?_, fun j => ?_⟩
   any_goals dsimp; apply Equiv.ofUnique
   all_goals simpa [enumIsoToType] using nimZeroRelabelling
@@ -175,7 +175,7 @@ theorem nim_one_equiv : nim 1 ≈ star :=
 @[simp]
 theorem nim_birthday (o : Ordinal) : (nim o).birthday = o := by
   induction' o using Ordinal.induction with o IH
-  rw [nim_def, birthday_def]
+  rw [nim, birthday_def]
   dsimp
   rw [max_eq_right le_rfl]
   convert lsub_typein o with i
@@ -184,9 +184,9 @@ theorem nim_birthday (o : Ordinal) : (nim o).birthday = o := by
 @[simp]
 theorem neg_nim (o : Ordinal) : -nim o = nim o := by
   induction' o using Ordinal.induction with o IH
-  rw [nim_def]; dsimp; congr <;> funext i <;> exact IH _ (Ordinal.typein_lt_self i)
+  rw [nim]; dsimp; congr <;> funext i <;> exact IH _ (Ordinal.typein_lt_self i)
 
-instance nim_impartial (o : Ordinal) : Impartial (nim o) := by
+instance impartial_nim (o : Ordinal) : Impartial (nim o) := by
   induction' o using Ordinal.induction with o IH
   rw [impartial_def, neg_nim]
   refine ⟨equiv_rfl, fun i => ?_, fun i => ?_⟩ <;> simpa using IH _ (typein_lt_self _)

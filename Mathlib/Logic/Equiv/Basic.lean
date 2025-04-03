@@ -266,23 +266,6 @@ def psumEquivSum (α β) : α ⊕' β ≃ α ⊕ β where
 def sumCongr {α₁ α₂ β₁ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) : α₁ ⊕ β₁ ≃ α₂ ⊕ β₂ :=
   ⟨Sum.map ea eb, Sum.map ea.symm eb.symm, fun x => by simp, fun x => by simp⟩
 
-/-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕' β ≃ α' ⊕' β'`. -/
-def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : α ⊕' γ ≃ β ⊕' δ where
-  toFun x := PSum.casesOn x (PSum.inl ∘ e₁) (PSum.inr ∘ e₂)
-  invFun x := PSum.casesOn x (PSum.inl ∘ e₁.symm) (PSum.inr ∘ e₂.symm)
-  left_inv := by rintro (x | x) <;> simp
-  right_inv := by rintro (x | x) <;> simp
-
-/-- Combine two `Equiv`s using `PSum` in the domain and `Sum` in the codomain. -/
-def psumSum {α₂ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
-    α₁ ⊕' β₁ ≃ α₂ ⊕ β₂ :=
-  (ea.psumCongr eb).trans (psumEquivSum _ _)
-
-/-- Combine two `Equiv`s using `Sum` in the domain and `PSum` in the codomain. -/
-def sumPSum {α₁ β₁} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
-    α₁ ⊕ β₁ ≃ α₂ ⊕' β₂ :=
-  (ea.symm.psumSum eb.symm).symm
-
 @[simp]
 theorem sumCongr_trans {α₁ α₂ β₁ β₂ γ₁ γ₂} (e : α₁ ≃ β₁) (f : α₂ ≃ β₂) (g : β₁ ≃ γ₁) (h : β₂ ≃ γ₂) :
     (Equiv.sumCongr e f).trans (Equiv.sumCongr g h) = Equiv.sumCongr (e.trans g) (f.trans h) := by
@@ -299,6 +282,23 @@ theorem sumCongr_refl {α β} :
     Equiv.sumCongr (Equiv.refl α) (Equiv.refl β) = Equiv.refl (α ⊕ β) := by
   ext i
   cases i <;> rfl
+
+/-- If `α ≃ α'` and `β ≃ β'`, then `α ⊕' β ≃ α' ⊕' β'`. -/
+def psumCongr (e₁ : α ≃ β) (e₂ : γ ≃ δ) : α ⊕' γ ≃ β ⊕' δ where
+  toFun x := PSum.casesOn x (PSum.inl ∘ e₁) (PSum.inr ∘ e₂)
+  invFun x := PSum.casesOn x (PSum.inl ∘ e₁.symm) (PSum.inr ∘ e₂.symm)
+  left_inv := by rintro (x | x) <;> simp
+  right_inv := by rintro (x | x) <;> simp
+
+/-- Combine two `Equiv`s using `PSum` in the domain and `Sum` in the codomain. -/
+def psumSum {α₂ β₂} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
+    α₁ ⊕' β₁ ≃ α₂ ⊕ β₂ :=
+  (ea.psumCongr eb).trans (psumEquivSum _ _)
+
+/-- Combine two `Equiv`s using `Sum` in the domain and `PSum` in the codomain. -/
+def sumPSum {α₁ β₁} (ea : α₁ ≃ α₂) (eb : β₁ ≃ β₂) :
+    α₁ ⊕ β₁ ≃ α₂ ⊕' β₂ :=
+  (ea.symm.psumSum eb.symm).symm
 
 /-- A subtype of a sum is equivalent to a sum of subtypes. -/
 def subtypeSum {α β} {p : α ⊕ β → Prop} :
@@ -829,9 +829,11 @@ end Perm
 
 section
 
-/-- The type of functions to a product `α × β` is equivalent to the type of pairs of functions
-`γ → α` and `γ → β`. -/
-def arrowProdEquivProdArrow (α β γ : Type*) : (γ → α × β) ≃ (γ → α) × (γ → β) where
+/-- The type of functions to a product `β × γ` is equivalent to the type of pairs of functions
+`α → β` and `β → γ`. -/
+@[simps]
+def arrowProdEquivProdArrow (α : Type*) (β γ : α → Type*) :
+    ((i : α) → β i × γ i) ≃ ((i : α) → β i) × ((i : α) → γ i) where
   toFun := fun f => (fun c => (f c).1, fun c => (f c).2)
   invFun := fun p c => (p.1 c, p.2 c)
   left_inv := fun _ => rfl
@@ -1429,10 +1431,7 @@ theorem swapCore_swapCore (r a b : α) : swapCore a b (swapCore a b r) = r := by
   unfold swapCore; split_ifs <;> cc
 
 theorem swapCore_comm (r a b : α) : swapCore a b r = swapCore b a r := by
-  unfold swapCore
-  -- Porting note: whatever solution works for `swapCore_swapCore` will work here too.
-  split_ifs with h₁ h₂ h₃ <;> try simp
-  · cases h₁; cases h₂; rfl
+  unfold swapCore; split_ifs <;> cc
 
 /-- `swap a b` is the permutation that swaps `a` and `b` and
   leaves other values as is. -/
@@ -1682,17 +1681,20 @@ lemma piCongrLeft_apply_eq_cast {P : β → Sort v} {e : α ≃ β}
     piCongrLeft P e f b = cast (congr_arg P (e.apply_symm_apply b)) (f (e.symm b)) :=
   Eq.rec_eq_cast _ _
 
-theorem piCongrLeft_sum_inl {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
+theorem piCongrLeft_sumInl {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (i : ι) :
     piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inl i)) = f i := by
   simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
     sum_rec_congr _ _ _ (e.symm_apply_apply (inl i)), cast_cast, cast_eq]
 
-theorem piCongrLeft_sum_inr {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
+theorem piCongrLeft_sumInr {ι ι' ι''} (π : ι'' → Type*) (e : ι ⊕ ι' ≃ ι'') (f : ∀ i, π (e (inl i)))
     (g : ∀ i, π (e (inr i))) (j : ι') :
     piCongrLeft π e (sumPiEquivProdPi (fun x => π (e x)) |>.symm (f, g)) (e (inr j)) = g j := by
   simp_rw [piCongrLeft_apply_eq_cast, sumPiEquivProdPi_symm_apply,
     sum_rec_congr _ _ _ (e.symm_apply_apply (inr j)), cast_cast, cast_eq]
+
+@[deprecated (since := "2025-02-21")] alias piCongrLeft_sum_inl := piCongrLeft_sumInl
+@[deprecated (since := "2025-02-21")] alias piCongrLeft_sum_inr := piCongrLeft_sumInr
 
 end
 

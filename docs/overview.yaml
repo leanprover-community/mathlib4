@@ -63,7 +63,7 @@ General algebra:
 
   Ideals and quotients:
     ideal of a commutative ring: 'Ideal'
-    quotient ring: 'Ideal.instHasQuotient'
+    quotient ring: 'Ideal.Quotient.ring'
     prime ideal: 'Ideal.IsPrime'
     maximal ideal: 'Ideal.IsMaximal'
     Chinese remainder theorem: 'Ideal.quotientInfRingEquivPiQuotient'
@@ -236,10 +236,10 @@ Topology:
     intermediate value theorem: 'intermediate_value_Icc'
     extreme value theorem: 'IsCompact.exists_isMinOn'
     limit infimum and supremum: 'order/liminf_limsup.html'
-    topological group: 'TopologicalGroup'
+    topological group: 'IsTopologicalGroup'
     completion of an abelian topological group: 'UniformSpace.Completion.instAddCommGroup'
     infinite sum: 'HasSum'
-    topological ring: 'TopologicalRing'
+    topological ring: 'IsTopologicalRing'
     completion of a topological ring: 'UniformSpace.Completion.ring'
     topological module: 'ContinuousSMul'
     continuous linear map: 'ContinuousLinearMap'

@@ -115,7 +115,7 @@ section Continuous
    a topology); but it seems hard to imagine cases where this extra generality would be useful, and
    allowing it would complicate matters in the most important use cases.
 -/
-variable [TopologicalSpace 𝕜] [TopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
+variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
   [TopologicalSpace W] {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
 
 /-- For any `w`, the Fourier integral is convergent iff `f` is integrable. -/
@@ -161,7 +161,7 @@ end Continuous
 
 section Fubini
 
-variable [TopologicalSpace 𝕜] [TopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
+variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
   [TopologicalSpace W] [MeasurableSpace W] [BorelSpace W]
   {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
   {ν : Measure W} [SigmaFinite μ] [SigmaFinite ν] [SecondCountableTopology V]

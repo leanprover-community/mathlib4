@@ -10,6 +10,8 @@ import Mathlib.Tactic.NormNum.Basic
 ## `norm_num` plugin for `^`.
 -/
 
+assert_not_exists RelIso
+
 namespace Mathlib
 open Lean
 open Meta

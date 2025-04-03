@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
+import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.Order.Filter.AtTopBot
 
 /-!
 # Noetherian rings and modules
@@ -160,7 +160,7 @@ theorem set_has_maximal_iff_noetherian :
 /-- A module is Noetherian iff every increasing chain of submodules stabilizes. -/
 theorem monotone_stabilizes_iff_noetherian :
     (∀ f : ℕ →o Submodule R M, ∃ n, ∀ m, n ≤ m → f n = f m) ↔ IsNoetherian R M := by
-  rw [isNoetherian_iff, WellFounded.monotone_chain_condition]
+  rw [isNoetherian_iff', wellFoundedGT_iff_monotone_chain_condition]
 
 variable [IsNoetherian R M]
 

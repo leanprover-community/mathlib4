@@ -33,7 +33,7 @@ its quotients by open normal subgroups.
 
 universe u
 
-open CategoryTheory TopologicalGroup
+open CategoryTheory IsTopologicalGroup
 
 namespace ProfiniteGrp
 
@@ -42,28 +42,27 @@ instance (P : ProfiniteGrp) : SmallCategory (OpenNormalSubgroup P) :=
 
 /-- The functor from `OpenNormalSubgroup P` to `FiniteGrp` sending `U` to `P ⧸ U`,
 where `P : ProfiniteGrp`. -/
-def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ FiniteGrp := {
-    obj := fun H => FiniteGrp.of (P ⧸ H.toSubgroup)
-    map := fun fHK => FiniteGrp.ofHom (QuotientGroup.map _ _ (.id _) (leOfHom fHK))
-    map_id _ := ConcreteCategory.ext <| QuotientGroup.map_id _
-    map_comp f g := ConcreteCategory.ext <| (QuotientGroup.map_comp_map
-      _ _ _ (.id _) (.id _) (leOfHom f) (leOfHom g)).symm }
+def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ FiniteGrp where
+  obj := fun H => FiniteGrp.of (P ⧸ H.toSubgroup)
+  map := fun fHK => FiniteGrp.ofHom (QuotientGroup.map _ _ (.id _) (leOfHom fHK))
+  map_id _ := ConcreteCategory.ext <| QuotientGroup.map_id _
+  map_comp f g := ConcreteCategory.ext <| (QuotientGroup.map_comp_map
+    _ _ _ (.id _) (.id _) (leOfHom f) (leOfHom g)).symm
 
-/--The `MonoidHom` from a profinite group `P` to  the projective limit of its quotients by
-open normal subgroups ordered by inclusion.-/
+/-- The `MonoidHom` from a profinite group `P` to the projective limit of its quotients by
+open normal subgroups ordered by inclusion -/
 def toLimit_fun (P : ProfiniteGrp.{u}) : P →*
     limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp) where
-  toFun p := ⟨fun _ => QuotientGroup.mk p, fun _ => rfl⟩
+  toFun p := ⟨fun _ => QuotientGroup.mk p, fun _ ↦ fun _ _ ↦ rfl⟩
   map_one' := Subtype.val_inj.mp rfl
   map_mul' _ _ := Subtype.val_inj.mp rfl
 
 lemma toLimit_fun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimit_fun P) := by
   apply continuous_induced_rng.mpr (continuous_pi _)
   intro H
-  dsimp only [Functor.comp_obj, CompHausLike.toCompHausLike_obj, CompHausLike.compHausLikeToTop_obj,
-    CompHausLike.coe_of, Functor.comp_map, CompHausLike.toCompHausLike_map,
-    CompHausLike.compHausLikeToTop_map, Set.mem_setOf_eq, toLimit_fun,
-    MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
+  dsimp only [Functor.comp_obj, CompHausLike.coe_of, Functor.comp_map,
+    CompHausLike.toCompHausLike_map, CompHausLike.compHausLikeToTop_map, Set.mem_setOf_eq,
+    toLimit_fun, MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
   apply Continuous.mk
   intro s _
   rw [← (Set.biUnion_preimage_singleton QuotientGroup.mk s)]
@@ -75,13 +74,13 @@ lemma toLimit_fun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimit_fun P)
   exact Iff.symm (Set.mem_smul_set_iff_inv_smul_mem)
 
 /-- The morphism in the category of `ProfiniteGrp` from a profinite group `P` to
-the projective limit of its quotients by open normal subgroups ordered by inclusion.-/
+the projective limit of its quotients by open normal subgroups ordered by inclusion -/
 def toLimit (P : ProfiniteGrp.{u}) : P ⟶
     limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp) :=
   ofHom { toLimit_fun P with
   continuous_toFun := toLimit_fun_continuous P }
 
-/--An auxiliary result, superceded by `toLimit_surjective`.-/
+/-- An auxiliary result, superseded by `toLimit_surjective` -/
 theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   apply dense_iff_inter_open.mpr
   rintro U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩
@@ -124,10 +123,9 @@ theorem toLimit_injective (P : ProfiniteGrp.{u}) : Function.Injective (toLimit P
 its quotients by open normal subgroups -/
 noncomputable def continuousMulEquivLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
     P ≃ₜ* (limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp)) := {
-  (Continuous.homeoOfEquivCompactToT2 (f := Equiv.ofBijective _
-  ⟨toLimit_injective P, toLimit_surjective P⟩)
-    P.toLimit.hom.continuous_toFun)
-  with
+  (Continuous.homeoOfEquivCompactToT2
+    (f := Equiv.ofBijective _ ⟨toLimit_injective P, toLimit_surjective P⟩)
+    P.toLimit.hom.continuous_toFun) with
   map_mul' := (toLimit P).hom.map_mul' }
 
 instance isIso_toLimit (P : ProfiniteGrp.{u}) : IsIso (toLimit P) := by

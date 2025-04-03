@@ -123,6 +123,12 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : Kernel α Ω) [IsFiniteKernel
     exacts [rfl, measurable_prod_mk_left hs]
   · exact measurable_id.prod_map hf.measurable hs
 
+lemma condKernel_compProd (μ : Measure α) [IsFiniteMeasure μ] (κ : Kernel α Ω) [IsMarkovKernel κ] :
+    (μ ⊗ₘ κ).condKernel =ᵐ[μ] κ := by
+  suffices κ =ᵐ[(μ ⊗ₘ κ).fst] (μ ⊗ₘ κ).condKernel by symm; rwa [Measure.fst_compProd] at this
+  refine eq_condKernel_of_measure_eq_compProd _ ?_
+  rw [Measure.fst_compProd]
+
 end Measure
 
 section KernelAndMeasure

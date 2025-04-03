@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Filippo A. E. Nuccio, Junyan Xu
 -/
 import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Homotopy.Basic
+import Mathlib.Topology.Path
 
 /-!
 # H-spaces
@@ -75,23 +75,14 @@ open HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
     [HSpace Y] : HSpace (X × Y) where
-  hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by
-    -- Porting note: was `continuity`
-    exact ((map_continuous HSpace.hmul).comp ((continuous_fst.comp continuous_fst).prod_mk
-        (continuous_fst.comp continuous_snd))).prod_mk ((map_continuous HSpace.hmul).comp
-        ((continuous_snd.comp continuous_fst).prod_mk (continuous_snd.comp continuous_snd)))
-  ⟩
+  hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by fun_prop⟩
   e := (HSpace.e, HSpace.e)
   hmul_e_e := by
     simp only [ContinuousMap.coe_mk, Prod.mk.inj_iff]
     exact ⟨HSpace.hmul_e_e, HSpace.hmul_e_e⟩
   eHmul := by
     let G : I × X × Y → X × Y := fun p => (HSpace.eHmul (p.1, p.2.1), HSpace.eHmul (p.1, p.2.2))
-    have hG : Continuous G :=
-      (Continuous.comp HSpace.eHmul.1.1.2
-          (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
-        (Continuous.comp HSpace.eHmul.1.1.2
-          (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
+    have hG : Continuous G := by fun_prop
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
       exact Prod.ext (HSpace.eHmul.1.2 x) (HSpace.eHmul.1.2 y)
@@ -102,11 +93,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
       exact Prod.ext (HSpace.eHmul.2 t x h.1) (HSpace.eHmul.2 t y h.2)
   hmulE := by
     let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
-    have hG : Continuous G :=
-      (Continuous.comp HSpace.hmulE.1.1.2
-            (continuous_fst.prod_mk (continuous_fst.comp continuous_snd))).prod_mk
-        (Continuous.comp HSpace.hmulE.1.1.2
-          (continuous_fst.prod_mk (continuous_snd.comp continuous_snd)))
+    have hG : Continuous G := by fun_prop
     use! ⟨G, hG⟩
     · rintro ⟨x, y⟩
       exact Prod.ext (HSpace.hmulE.1.2 x) (HSpace.hmulE.1.2 y)
@@ -117,17 +104,17 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
       exact Prod.ext (HSpace.hmulE.2 t x h.1) (HSpace.hmulE.2 t y h.2)
 
 
-namespace TopologicalGroup
+namespace IsTopologicalGroup
 
 /-- The definition `toHSpace` is not an instance because its additive version would
 lead to a diamond since a topological field would inherit two `HSpace` structures, one from the
 `MulOneClass` and one from the `AddZeroClass`. In the case of a group, we make
-`TopologicalGroup.hSpace` an instance."-/
+`IsTopologicalGroup.hSpace` an instance." -/
 @[to_additive
       "The definition `toHSpace` is not an instance because it comes together with a
       multiplicative version which would lead to a diamond since a topological field would inherit
       two `HSpace` structures, one from the `MulOneClass` and one from the `AddZeroClass`.
-      In the case of an additive group, we make `TopologicalAddGroup.hSpace` an instance."]
+      In the case of an additive group, we make `IsTopologicalAddGroup.hSpace` an instance."]
 def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M] : HSpace M where
   hmul := ⟨Function.uncurry Mul.mul, continuous_mul⟩
   e := 1
@@ -136,23 +123,23 @@ def toHSpace (M : Type u) [MulOneClass M] [TopologicalSpace M] [ContinuousMul M]
   hmulE := (HomotopyRel.refl _ _).cast rfl (by ext1; apply mul_one)
 
 @[to_additive]
-instance (priority := 600) hSpace (G : Type u) [TopologicalSpace G] [Group G] [TopologicalGroup G] :
-    HSpace G :=
+instance (priority := 600) hSpace (G : Type u) [TopologicalSpace G] [Group G]
+    [IsTopologicalGroup G] : HSpace G :=
   toHSpace G
 
-theorem one_eq_hSpace_e {G : Type u} [TopologicalSpace G] [Group G] [TopologicalGroup G] :
+theorem one_eq_hSpace_e {G : Type u} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] :
     (1 : G) = HSpace.e :=
   rfl
 
 /- In the following example we see that the H-space structure on the product of two topological
 groups is definitionally equally to the product H-space-structure of the two groups. -/
-example {G G' : Type u} [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace G']
-    [Group G'] [TopologicalGroup G'] : TopologicalGroup.hSpace (G × G') = HSpace.prod G G' := by
+example {G G' : Type u} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] [TopologicalSpace G']
+    [Group G'] [IsTopologicalGroup G'] : IsTopologicalGroup.hSpace (G × G') = HSpace.prod G G' := by
   simp only [HSpace.prod]
   rfl
 
 
-end TopologicalGroup
+end IsTopologicalGroup
 
 namespace unitInterval
 
@@ -161,6 +148,7 @@ continuity of `delayReflRight`. -/
 def qRight (p : I × I) : I :=
   Set.projIcc 0 1 zero_le_one (2 * p.1 / (1 + p.2))
 
+@[fun_prop]
 theorem continuous_qRight : Continuous qRight :=
   continuous_projIcc.comp <|
     Continuous.div (by fun_prop) (by fun_prop) fun _ ↦ (add_pos zero_lt_one).ne'
@@ -202,7 +190,7 @@ variable {X : Type u} [TopologicalSpace X] {x y : X}
 the product path `γ ∧ e` to `γ`. -/
 def delayReflRight (θ : I) (γ : Path x y) : Path x y where
   toFun t := γ (qRight (t, θ))
-  continuous_toFun := γ.continuous.comp (continuous_qRight.comp <| Continuous.Prod.mk_left θ)
+  continuous_toFun := by fun_prop
   source' := by
     dsimp only
     rw [qRight_zero_left, γ.source]

@@ -479,7 +479,7 @@ theorem X_inj [Nontrivial R] {s t : σ} : (X s : MvPowerSeries σ R) = X t ↔ s
     rw [coeff_X, if_pos rfl, coeff_X] at h
     split_ifs at h with H
     · rw [Finsupp.single_eq_single_iff] at H
-      cases' H with H H
+      rcases H with H | H
       · exact H.1
       · exfalso
         exact one_ne_zero H.1
@@ -492,8 +492,8 @@ section Map
 
 variable {S T : Type*} [Semiring R] [Semiring S] [Semiring T]
 variable (f : R →+* S) (g : S →+* T)
-variable (σ)
 
+variable (σ) in
 /-- The map between multivariate formal power series induced by a map on the coefficients. -/
 def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
   toFun φ n := f <| coeff R n φ
@@ -515,8 +515,6 @@ def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
         rw [coeff_mul, map_sum, coeff_mul]
         apply Finset.sum_congr rfl
         rintro ⟨i, j⟩ _; rw [f.map_mul]; rfl
-
-variable {σ}
 
 @[simp]
 theorem map_id : map σ (RingHom.id R) = RingHom.id _ :=
@@ -548,6 +546,13 @@ theorem map_C (a : R) : map σ f (C σ R a) = C σ S (f a) :=
 theorem map_X (s : σ) : map σ f (X s) = X s := by simp [MvPowerSeries.X]
 
 end Map
+
+@[simp]
+theorem map_eq_zero {S : Type*} [DivisionSemiring R] [Semiring S] [Nontrivial S]
+    (φ : MvPowerSeries σ R) (f : R →+* S) : φ.map σ f = 0 ↔ φ = 0 := by
+  simp only [MvPowerSeries.ext_iff]
+  congr! with n
+  simp
 
 section Semiring
 
@@ -659,7 +664,7 @@ theorem coeff_prod [DecidableEq σ]
       exact h rfl huv.symm
 
 /-- The `d`th coefficient of a power of a multivariate power series
-is the sum, indexed by `finsuppAntidiag (Finset.range n) d`, of products of coefficients  -/
+is the sum, indexed by `finsuppAntidiag (Finset.range n) d`, of products of coefficients -/
 theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ →₀ ℕ) :
     coeff R d (f ^ n) =
       ∑ l ∈ finsuppAntidiag (Finset.range n) d,

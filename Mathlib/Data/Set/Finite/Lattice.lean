@@ -53,6 +53,17 @@ lemma toFinset_iUnion [Fintype β] [DecidableEq α] (f : β → Set α)
   ext v
   simp only [mem_toFinset, mem_iUnion, Finset.mem_biUnion, Finset.mem_univ, true_and]
 
+/-- A union of sets with `Fintype` structure over a set with `Fintype` structure has a `Fintype`
+structure. -/
+def fintypeBiUnion [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : ι → Set α)
+    (H : ∀ i ∈ s, Fintype (t i)) : Fintype (⋃ x ∈ s, t x) :=
+  haveI : ∀ i : toFinset s, Fintype (t i) := fun i => H i (mem_toFinset.1 i.2)
+  Fintype.ofFinset (s.toFinset.attach.biUnion fun x => (t x).toFinset) fun x => by simp
+
+instance fintypeBiUnion' [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] (t : ι → Set α)
+    [∀ i, Fintype (t i)] : Fintype (⋃ x ∈ s, t x) :=
+  Fintype.ofFinset (s.toFinset.biUnion fun x => (t x).toFinset) <| by simp
+
 end FintypeInstances
 
 end Set
@@ -424,6 +435,17 @@ lemma Set.finite_diff_iUnion_Ioo (s : Set α) : (s \ ⋃ (x ∈ s) (y ∈ s), Io
 
 lemma Set.finite_diff_iUnion_Ioo' (s : Set α) : (s \ ⋃ x : s × s, Ioo x.1 x.2).Finite := by
   simpa only [iUnion, iSup_prod, iSup_subtype] using s.finite_diff_iUnion_Ioo
+
+lemma Directed.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} [Nonempty ι]
+    {f : ι → Set α} (h : Directed (· ⊆ ·) f) {s : Finset α} (hs : (s : Set α) ⊆ ⋃ i, f i) :
+    ∃ i, (s : Set α) ⊆ f i := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons b t hbt iht =>
+    simp only [Finset.coe_cons, Set.insert_subset_iff, Set.mem_iUnion] at hs ⊢
+    rcases hs.imp_right iht with ⟨⟨i, hi⟩, j, hj⟩
+    rcases h i j with ⟨k, hik, hjk⟩
+    exact ⟨k, hik hi, hj.trans hjk⟩
 
 theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f : ι → Set α}
     {c : Set ι} (hn : c.Nonempty) (hc : DirectedOn (fun i j => f i ⊆ f j) c) {s : Finset α}

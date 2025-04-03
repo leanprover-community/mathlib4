@@ -233,13 +233,13 @@ variable [PartialOrder α] {a b : α}
 theorem Set.Ici.isAtom_iff {b : Set.Ici a} : IsAtom b ↔ a ⋖ b := by
   rw [← bot_covBy_iff]
   refine (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => a ≤ c) ?_).symm
-  simpa only [OrderEmbedding.subtype_apply, Subtype.range_coe_subtype] using Set.ordConnected_Ici
+  simpa only [OrderEmbedding.coe_subtype, Subtype.range_coe_subtype] using Set.ordConnected_Ici
 
 @[simp]
 theorem Set.Iic.isCoatom_iff {a : Set.Iic b} : IsCoatom a ↔ ↑a ⋖ b := by
   rw [← covBy_top_iff]
   refine (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => c ≤ b) ?_).symm
-  simpa only [OrderEmbedding.subtype_apply, Subtype.range_coe_subtype] using Set.ordConnected_Iic
+  simpa only [OrderEmbedding.coe_subtype, Subtype.range_coe_subtype] using Set.ordConnected_Iic
 
 theorem covBy_iff_atom_Ici (h : a ≤ b) : a ⋖ b ↔ IsAtom (⟨b, h⟩ : Set.Ici a) := by simp
 
@@ -255,11 +255,15 @@ theorem IsAtom.inf_eq_bot_of_ne [SemilatticeInf α] [OrderBot α] {a b : α} (ha
 
 theorem IsAtom.disjoint_of_ne [SemilatticeInf α] [OrderBot α] {a b : α} (ha : IsAtom a)
     (hb : IsAtom b) (hab : a ≠ b) : Disjoint a b :=
-  disjoint_iff.mpr (IsAtom.inf_eq_bot_of_ne ha hb hab)
+  disjoint_iff.mpr (ha.inf_eq_bot_of_ne hb hab)
 
 theorem IsCoatom.sup_eq_top_of_ne [SemilatticeSup α] [OrderTop α] {a b : α} (ha : IsCoatom a)
     (hb : IsCoatom b) (hab : a ≠ b) : a ⊔ b = ⊤ :=
   ha.dual.inf_eq_bot_of_ne hb.dual hab
+
+theorem IsCoatom.codisjoint_of_ne [SemilatticeSup α] [OrderTop α] {a b : α} (ha : IsCoatom a)
+    (hb : IsCoatom b) (hab : a ≠ b) : Codisjoint a b :=
+  codisjoint_iff.mpr (ha.sup_eq_top_of_ne hb hab)
 
 end Pairwise
 

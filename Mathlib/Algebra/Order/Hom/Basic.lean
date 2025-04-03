@@ -206,11 +206,11 @@ export AddGroupNormClass (eq_zero_of_map_eq_zero)
 
 export GroupNormClass (eq_one_of_map_eq_zero)
 
-attribute [simp] map_one_eq_zero -- Porting note: `to_additive` translation already exists
+attribute [simp] map_one_eq_zero
 
 attribute [simp] map_neg_eq_map
 
-attribute [simp] map_inv_eq_map -- Porting note: `to_additive` translation already exists
+attribute [simp] map_inv_eq_map
 
 attribute [to_additive] GroupSeminormClass.toMulLEAddHomClass
 

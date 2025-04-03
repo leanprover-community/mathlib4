@@ -378,12 +378,11 @@ theorem exists_upperSemicontinuous_le_lintegral_le (f : α → ℝ≥0) (int_f :
       (∫⁻ x, f x ∂μ) ≤ (∫⁻ x, g x ∂μ) + ε := by
   obtain ⟨fs, fs_le_f, int_fs⟩ :
     ∃ fs : α →ₛ ℝ≥0, (∀ x, fs x ≤ f x) ∧ (∫⁻ x, f x ∂μ) ≤ (∫⁻ x, fs x ∂μ) + ε / 2 := by
-    -- Porting note: need to name identifier (not `this`), because `conv_rhs at this` errors
-    have aux := ENNReal.lt_add_right int_f (ENNReal.half_pos ε0).ne'
-    conv_rhs at aux => rw [lintegral_eq_nnreal (fun x => (f x : ℝ≥0∞)) μ]
-    erw [ENNReal.biSup_add] at aux <;> [skip; exact ⟨0, fun x => by simp⟩]
-    simp only [lt_iSup_iff] at aux
-    rcases aux with ⟨fs, fs_le_f, int_fs⟩
+    have := ENNReal.lt_add_right int_f (ENNReal.half_pos ε0).ne'
+    conv_rhs at this => rw [lintegral_eq_nnreal (fun x => (f x : ℝ≥0∞)) μ]
+    erw [ENNReal.biSup_add] at this <;> [skip; exact ⟨0, fun x => by simp⟩]
+    simp only [lt_iSup_iff] at this
+    rcases this with ⟨fs, fs_le_f, int_fs⟩
     refine ⟨fs, fun x => by simpa only [ENNReal.coe_le_coe] using fs_le_f x, ?_⟩
     convert int_fs.le
     rw [← SimpleFunc.lintegral_eq_lintegral]

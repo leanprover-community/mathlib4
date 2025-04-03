@@ -3,7 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.IsManifold.Basic
+import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
 
 /-!
@@ -163,7 +163,7 @@ read in the preferred chart at this point. -/
 def ContMDiffWithinAt (n : WithTop ℕ∞) (f : M → M') (s : Set M) (x : M) :=
   LiftPropWithinAt (ContDiffWithinAtProp I I' n) f s x
 
-@[deprecated (since := "024-11-21")] alias SmoothWithinAt := ContMDiffWithinAt
+@[deprecated (since := "2024-11-21")] alias SmoothWithinAt := ContMDiffWithinAt
 
 variable (I I') in
 /-- A function is `n` times continuously differentiable at a point in a manifold if
@@ -179,7 +179,7 @@ theorem contMDiffAt_iff {n : WithTop ℕ∞} {f : M → M'} {x : M} :
           (extChartAt I x x) :=
   liftPropAt_iff.trans <| by rw [ContDiffWithinAtProp, preimage_univ, univ_inter]; rfl
 
-@[deprecated (since := "024-11-21")] alias SmoothAt := ContMDiffAt
+@[deprecated (since := "2024-11-21")] alias SmoothAt := ContMDiffAt
 
 variable (I I') in
 /-- A function is `n` times continuously differentiable in a set of a manifold if it is continuous
@@ -188,7 +188,7 @@ around these points. -/
 def ContMDiffOn (n : WithTop ℕ∞) (f : M → M') (s : Set M) :=
   ∀ x ∈ s, ContMDiffWithinAt I I' n f s x
 
-@[deprecated (since := "024-11-21")] alias SmoothOn := ContMDiffOn
+@[deprecated (since := "2024-11-21")] alias SmoothOn := ContMDiffOn
 
 variable (I I') in
 /-- A function is `n` times continuously differentiable in a manifold if it is continuous
@@ -197,7 +197,7 @@ around these points. -/
 def ContMDiff (n : WithTop ℕ∞) (f : M → M') :=
   ∀ x, ContMDiffAt I I' n f x
 
-@[deprecated (since := "024-11-21")] alias Smooth := ContMDiff
+@[deprecated (since := "2024-11-21")] alias Smooth := ContMDiff
 
 
 /-! ### Deducing smoothness from higher smoothness -/
@@ -368,7 +368,7 @@ theorem contMDiffWithinAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maximalAtl
   (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_indep_chart he hx he' hy
 
 /-- An alternative formulation of `contMDiffWithinAt_iff_of_mem_maximalAtlas`
-  if the set if `s` lies in `e.source`. -/
+if the set if `s` lies in `e.source`. -/
 theorem contMDiffWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I n M)
     (he' : e' ∈ maximalAtlas I' n M')
     (hs : s ⊆ e.source) (hx : x ∈ e.source) (hy : f x ∈ e'.source) :
@@ -434,10 +434,10 @@ theorem contMDiffOn_iff_of_mem_maximalAtlas' (he : e ∈ maximalAtlas I n M)
     (e.continuousOn_writtenInExtend_iff hs h2s).1 h.continuousOn
 
 /-- If the set where you want `f` to be `C^n` lies entirely in a single chart, and `f` maps it
-  into a single chart, the fact that `f` is `C^n` on that set can be expressed by purely looking in
-  these charts.
-  Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
-  that this set lies in `(extChartAt I x).target`. -/
+into a single chart, the fact that `f` is `C^n` on that set can be expressed by purely looking in
+these charts.
+Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
+that this set lies in `(extChartAt I x).target`. -/
 theorem contMDiffOn_iff_of_subset_source {x : M} {y : M'} (hs : s ⊆ (chartAt H x).source)
     (h2s : MapsTo f s (chartAt H' y).source) :
     ContMDiffOn I I' n f s ↔
@@ -447,10 +447,10 @@ theorem contMDiffOn_iff_of_subset_source {x : M} {y : M'} (hs : s ⊆ (chartAt H
     h2s
 
 /-- If the set where you want `f` to be `C^n` lies entirely in a single chart, and `f` maps it
-  into a single chart, the fact that `f` is `C^n` on that set can be expressed by purely looking in
-  these charts.
-  Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
-  that this set lies in `(extChartAt I x).target`. -/
+into a single chart, the fact that `f` is `C^n` on that set can be expressed by purely looking in
+these charts.
+Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
+that this set lies in `(extChartAt I x).target`. -/
 theorem contMDiffOn_iff_of_subset_source' {x : M} {y : M'} (hs : s ⊆ (extChartAt I x).source)
     (h2s : MapsTo f s (extChartAt I' y).source) :
     ContMDiffOn I I' n f s ↔
@@ -615,7 +615,7 @@ theorem contMDiff_infty : ContMDiff I I' ∞ f ↔ ∀ n : ℕ, ContMDiff I I' n
 theorem contMDiffWithinAt_iff_nat {n : ℕ∞} :
     ContMDiffWithinAt I I' n f s x ↔ ∀ m : ℕ, (m : ℕ∞) ≤ n → ContMDiffWithinAt I I' m f s x := by
   refine ⟨fun h m hm => h.of_le (mod_cast hm), fun h => ?_⟩
-  cases' n with n
+  obtain - | n := n
   · exact contMDiffWithinAt_infty.2 fun n => h n le_top
   · exact h n le_rfl
 

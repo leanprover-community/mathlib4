@@ -234,7 +234,7 @@ theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
   · rcases eq_or_ne ξ q with (rfl | H)
     · exact le_rfl
     · have hξ₀ : (0 : ℚ) < ξ.den := Nat.cast_pos.mpr ξ.pos
-      rw [← Rat.num_div_den ξ, div_mul_eq_mul_div, div_sub' _ _ _ hξ₀.ne', abs_div, abs_of_pos hξ₀,
+      rw [← Rat.num_div_den ξ, div_mul_eq_mul_div, div_sub' hξ₀.ne', abs_div, abs_of_pos hξ₀,
         div_lt_iff₀ hξ₀, div_mul_comm, mul_one] at h
       refine Nat.cast_le.mp ((one_lt_div hq₀).mp <| lt_of_le_of_lt ?_ h).le
       norm_cast
@@ -340,9 +340,10 @@ theorem convergent_succ (ξ : ℝ) (n : ℕ) :
 /-- All convergents of `0` are zero. -/
 @[simp]
 theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
-  induction' n with n ih
-  · simp only [convergent_zero, floor_zero, cast_zero]
-  · simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
+  induction n with
+  | zero => simp only [convergent_zero, floor_zero, cast_zero]
+  | succ n ih =>
+    simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
 
 /-- If `ξ` is an integer, all its convergents equal `ξ`. -/
 @[simp]
@@ -436,7 +437,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
   refine ⟨lt_of_le_of_ne' hu₀ fun hf => ?_, lt_of_le_of_ne hu₁ fun hf => ?_⟩ <;>
     · rw [hf] at huv_cop
       simp only [isCoprime_zero_left, isCoprime_self, isUnit_iff] at huv_cop
-      cases' huv_cop with huv_cop huv_cop <;> linarith only [hv, huv_cop]
+      rcases huv_cop with huv_cop | huv_cop <;> linarith only [hv, huv_cop]
 
 -- The key step: the relevant inequality persists in the inductive step.
 private theorem aux₃ :

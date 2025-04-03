@@ -165,4 +165,36 @@ lemma isCardinalFiltered_preorder (J : Type w) [Preorder J]
       { app a := homOfLE (hj a)
         naturality _ _ _ := rfl }⟩
 
+instance (κ : Cardinal.{w}) [hκ : Fact κ.IsRegular] :
+    IsCardinalFiltered κ.ord.toType κ :=
+  isCardinalFiltered_preorder _ _ (fun ι f hs ↦ by
+    have h : Function.Surjective (fun i ↦ (⟨f i, i, rfl⟩ : Set.range f)) := fun _ ↦ by aesop
+    obtain ⟨j, hj⟩ := Ordinal.lt_cof_type
+      (α := κ.ord.toType) (r := (· < ·)) (S := Set.range f)
+      (lt_of_le_of_lt (Cardinal.mk_le_of_surjective h)
+        (lt_of_lt_of_le hs (by simp [hκ.out.cof_eq])))
+    exact ⟨j, fun i ↦ (hj (f i) (by simp)).le⟩)
+
+open IsCardinalFiltered
+
+instance isCardinalFiltered_under
+    (J : Type u) [Category.{v} J] (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalFiltered J κ] (j₀ : J) : IsCardinalFiltered (Under j₀) κ where
+  nonempty_cocone {A _} F hA := ⟨by
+    have := isFiltered_of_isCardinalDirected J κ
+    let c := cocone (F ⋙ Under.forget j₀) hA
+    let x (a : A) : j₀ ⟶ IsFiltered.max j₀ c.pt := (F.obj a).hom ≫ c.ι.app a ≫
+      IsFiltered.rightToMax j₀ c.pt
+    have hκ' : HasCardinalLT A κ := hasCardinalLT_of_hasCardinalLT_arrow hA
+    exact
+      { pt := Under.mk (toCoeq x hκ')
+        ι :=
+          { app a := Under.homMk (c.ι.app a ≫ IsFiltered.rightToMax j₀ c.pt ≫ coeqHom x hκ')
+              (by simpa [x] using coeq_condition x hκ' a)
+            naturality a b f := by
+              ext
+              have := c.w f
+              dsimp at this ⊢
+              simp only [reassoc_of% this, Category.assoc, Category.comp_id] } }⟩
+
 end CategoryTheory

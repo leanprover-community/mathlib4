@@ -87,9 +87,9 @@ theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
     Nat.cast_injective.eq_iff] at hq
   exact hm' ((mul_eq_right₀ (mul_ne_zero_iff.mp hn).2).mp hq)
 
-/--Let `p` be a prime number. Let `K` be a field.
+/-- Let `p` be a prime number. Let `K` be a field.
 Let `t ∈ K` be an element which does not have a `p`th root in `K`.
-Then the polynomial `x ^ p - t` is irreducible over `K`.-/
+Then the polynomial `x ^ p - t` is irreducible over `K`. -/
 @[stacks 09HF "We proved the result without the condition that `K` is char p in 09HF."]
 theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ p - C a) := by

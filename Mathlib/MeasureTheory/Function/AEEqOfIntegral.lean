@@ -3,7 +3,7 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.InnerProductSpace.Continuous
 import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Lp
@@ -353,9 +353,9 @@ theorem ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim (hm : 
 
 theorem Integrable.ae_eq_zero_of_forall_setIntegral_eq_zero {f : α → E} (hf : Integrable f μ)
     (hf_zero : ∀ s, MeasurableSet s → μ s < ∞ → ∫ x in s, f x ∂μ = 0) : f =ᵐ[μ] 0 := by
-  have hf_Lp : Memℒp f 1 μ := memℒp_one_iff_integrable.mpr hf
+  have hf_Lp : MemLp f 1 μ := memLp_one_iff_integrable.mpr hf
   let f_Lp := hf_Lp.toLp f
-  have hf_f_Lp : f =ᵐ[μ] f_Lp := (Memℒp.coeFn_toLp hf_Lp).symm
+  have hf_f_Lp : f =ᵐ[μ] f_Lp := (MemLp.coeFn_toLp hf_Lp).symm
   refine hf_f_Lp.trans ?_
   refine Lp.ae_eq_zero_of_forall_setIntegral_eq_zero f_Lp one_ne_zero ENNReal.coe_ne_top ?_ ?_
   · exact fun s _ _ => Integrable.integrableOn (L1.integrable_coeFn _)

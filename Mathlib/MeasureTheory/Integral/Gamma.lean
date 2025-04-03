@@ -77,7 +77,7 @@ theorem Complex.integral_rpow_mul_exp_neg_rpow {p q : ℝ} (hp : 1 ≤ p) (hq : 
   calc
     _ = ∫ x in Ioi (0 : ℝ) ×ˢ Ioo (-π) π, x.1 * (|x.1| ^ q * rexp (-|x.1| ^ p)) := by
       rw [← Complex.integral_comp_polarCoord_symm, polarCoord_target]
-      simp_rw [Complex.norm_eq_abs, Complex.polarCoord_symm_abs, smul_eq_mul]
+      simp_rw [Complex.norm_polarCoord_symm, smul_eq_mul]
     _ = (∫ x in Ioi (0 : ℝ), x * |x| ^ q * rexp (-|x| ^ p)) * ∫ _ in Ioo (-π) π, 1 := by
       rw [← setIntegral_prod_mul, volume_eq_prod]
       simp_rw [mul_one]
@@ -104,7 +104,7 @@ theorem Complex.integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 1 ≤ p) 
   calc
     _ = ∫ x in Ioi (0 : ℝ) ×ˢ Ioo (-π) π, x.1 * (|x.1| ^ q * rexp (- b * |x.1| ^ p)) := by
       rw [← Complex.integral_comp_polarCoord_symm, polarCoord_target]
-      simp_rw [Complex.norm_eq_abs, Complex.polarCoord_symm_abs, smul_eq_mul]
+      simp_rw [Complex.norm_polarCoord_symm, smul_eq_mul]
     _ = (∫ x in Ioi (0 : ℝ), x * |x| ^ q * rexp (- b * |x| ^ p)) * ∫ _ in Ioo (-π) π, 1 := by
       rw [← setIntegral_prod_mul, volume_eq_prod]
       simp_rw [mul_one]
@@ -127,14 +127,14 @@ theorem Complex.integral_rpow_mul_exp_neg_mul_rpow {p q b : ℝ} (hp : 1 ≤ p) 
 theorem Complex.integral_exp_neg_rpow {p : ℝ} (hp : 1 ≤ p) :
     ∫ x : ℂ, rexp (- ‖x‖ ^ p) = π * Real.Gamma (2 / p + 1) := by
   convert (integral_rpow_mul_exp_neg_rpow hp (by linarith : (-2 : ℝ) < 0)) using 1
-  · simp_rw [norm_eq_abs, rpow_zero, one_mul]
+  · simp_rw [rpow_zero, one_mul]
   · rw [zero_add, Real.Gamma_add_one (div_ne_zero two_ne_zero (by linarith))]
     ring
 
 theorem Complex.integral_exp_neg_mul_rpow {p b : ℝ} (hp : 1 ≤ p) (hb : 0 < b) :
     ∫ x : ℂ, rexp (- b * ‖x‖ ^ p) = π * b ^ (-2 / p) * Real.Gamma (2 / p + 1) := by
   convert (integral_rpow_mul_exp_neg_mul_rpow hp (by linarith : (-2 : ℝ) < 0)) hb using 1
-  · simp_rw [norm_eq_abs, rpow_zero, one_mul]
+  · simp_rw [rpow_zero, one_mul]
   · rw [zero_add, Real.Gamma_add_one (div_ne_zero two_ne_zero (by linarith))]
     ring
 

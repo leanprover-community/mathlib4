@@ -256,7 +256,7 @@ theorem toNonneg_coe {a : { x : α // 0 ≤ x }} : toNonneg (a : α) = a :=
 
 @[simp]
 theorem toNonneg_le {a : α} {b : { x : α // 0 ≤ x }} : toNonneg a ≤ b ↔ a ≤ b := by
-  cases' b with b hb
+  obtain ⟨b, hb⟩ := b
   simp [toNonneg, hb]
 
 instance sub [Sub α] : Sub { x : α // 0 ≤ x } :=
@@ -274,7 +274,7 @@ variable [Zero α] [LinearOrder α]
 
 @[simp]
 theorem toNonneg_lt {a : { x : α // 0 ≤ x }} {b : α} : a < toNonneg b ↔ ↑a < b := by
-  cases' a with a ha
+  obtain ⟨a, ha⟩ := a
   simp [toNonneg, ha.not_lt]
 
 end LinearOrder

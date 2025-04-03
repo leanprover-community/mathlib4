@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Logic.Encodable.Basic
@@ -21,7 +21,7 @@ This property already has a name, namely `α ≃ ℕ`, but here we are intereste
 typeclass.
 -/
 
-assert_not_exists OrderedSemiring
+assert_not_exists Monoid
 
 variable {α β : Type*}
 
@@ -84,10 +84,7 @@ way. -/
 def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
   { Encodable.ofEquiv _ e with
     decode_inv := fun n => by
-      -- Porting note: replaced `simp`
-      simp_rw [Option.mem_def, decode_ofEquiv e, encode_ofEquiv e, decode_eq_ofNat,
-        Option.map_some', Option.some_inj, exists_eq_left', Equiv.apply_symm_apply,
-        Denumerable.encode_ofNat] }
+      simp [decode_ofEquiv, encode_ofEquiv] }
 
 @[simp]
 theorem ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
@@ -188,8 +185,8 @@ section Classical
 
 theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s := by
   by_contra h
-  have : ∀ (a : ℕ) (_ : a ∈ s), a < x + 1 := fun a ha =>
-    lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [add_right_comm, Nat.add_sub_cancel' hax]⟩
+  have (a : ℕ) (ha : a ∈ s) : a < x + 1 :=
+    lt_of_not_ge fun hax => h ⟨a - (x + 1), by rwa [Nat.add_right_comm, Nat.add_sub_cancel' hax]⟩
   classical
   exact Fintype.false
     ⟨(((Multiset.range (succ x)).filter (· ∈ s)).pmap
@@ -241,13 +238,15 @@ theorem ofNat_surjective : Surjective (ofNat s)
         (by intros a ha; simpa using (List.mem_filter.mp ha).2) with ht
     have hmt : ∀ {y : s}, y ∈ t ↔ y < ⟨x, hx⟩ := by
       simp [List.mem_filter, Subtype.ext_iff_val, ht]
-    cases' hmax : List.maximum t with m
-    · refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (⊥ : s) ?_)⟩
+    cases hmax : List.maximum t with
+    | bot =>
+      refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (⊥ : s) ?_)⟩
       rwa [← List.maximum_eq_bot.1 hmax, hmt]
-    have wf : ↑m < x := by simpa using hmt.mp (List.maximum_mem hmax)
-    rcases ofNat_surjective m with ⟨a, rfl⟩
-    refine ⟨a + 1, le_antisymm (succ_le_of_lt wf) ?_⟩
-    exact le_succ_of_forall_lt_le fun z hz => List.le_maximum_of_mem (hmt.2 hz) hmax
+    | coe m =>
+      have wf : ↑m < x := by simpa using hmt.mp (List.maximum_mem hmax)
+      rcases ofNat_surjective m with ⟨a, rfl⟩
+      refine ⟨a + 1, le_antisymm (succ_le_of_lt wf) ?_⟩
+      exact le_succ_of_forall_lt_le fun z hz => List.le_maximum_of_mem (hmt.2 hz) hmax
   termination_by n => n.val
 
 @[simp]

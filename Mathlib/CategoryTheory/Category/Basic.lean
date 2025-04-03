@@ -274,11 +274,28 @@ theorem cancel_mono_id (f : X ⟶ Y) [Mono f] {g : X ⟶ X} : g ≫ f = f ↔ g 
   convert cancel_mono f
   simp
 
+/-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
+as typeclass arguments. For a version taking them as explicit arguments, see `epi_comp'`. -/
 instance epi_comp {X Y Z : C} (f : X ⟶ Y) [Epi f] (g : Y ⟶ Z) [Epi g] : Epi (f ≫ g) :=
   ⟨fun _ _ w => (cancel_epi g).1 <| (cancel_epi_assoc_iff f).1 w⟩
 
+/-- The composition of epimorphisms is again an epimorphism. This version takes `Epi f` and `Epi g`
+as explicit arguments. For a version taking them as typeclass arguments, see `epi_comp`. -/
+theorem epi_comp' {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (hf : Epi f) (hg : Epi g) : Epi (f ≫ g) :=
+  inferInstance
+
+/-- The composition of monomorphisms is again a monomorphism. This version takes `Mono f` and
+`Mono g` as typeclass arguments. For a version taking them as explicit arguments, see `mono_comp'`.
+-/
 instance mono_comp {X Y Z : C} (f : X ⟶ Y) [Mono f] (g : Y ⟶ Z) [Mono g] : Mono (f ≫ g) :=
   ⟨fun _ _ w => (cancel_mono f).1 <| (cancel_mono_assoc_iff g).1 w⟩
+
+/-- The composition of monomorphisms is again a monomorphism. This version takes `Mono f` and
+`Mono g` as explicit arguments. For a version taking them as typeclass arguments, see `mono_comp`.
+-/
+theorem mono_comp' {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} (hf : Mono f) (hg : Mono g) :
+    Mono (f ≫ g) :=
+  inferInstance
 
 theorem mono_of_mono {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [Mono (f ≫ g)] : Mono f :=
   ⟨fun _ _ w => (cancel_mono (f ≫ g)).1 <| by simp only [← Category.assoc, w]⟩

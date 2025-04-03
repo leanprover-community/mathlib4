@@ -90,7 +90,6 @@ theorem trop_untrop (x : Tropical R) : trop (untrop x) = x :=
 theorem untrop_trop (x : R) : untrop (trop x) = x :=
   rfl
 
--- Porting note: New attribute seems to fix things
 attribute [irreducible] Tropical
 
 theorem leftInverse_trop : Function.LeftInverse (trop : R → Tropical R) untrop :=

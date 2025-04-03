@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan
 -/
 import Mathlib.Algebra.Ring.Subsemiring.Defs
-import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.RingTheory.NonUnitalSubring.Defs
 
 /-!
@@ -62,7 +61,7 @@ Lattice inclusion (e.g. `≤` and `⊓`) is used rather than set notation (`⊆`
 subring, subrings
 -/
 
-assert_not_exists OrderedRing
+assert_not_exists RelIso Even OrderedCommMonoid
 
 universe u v w
 
@@ -117,17 +116,27 @@ def subtype (s : S) : s →+* R :=
   { SubmonoidClass.subtype s, AddSubgroupClass.subtype s with
     toFun := (↑) }
 
+variable {s} in
 @[simp]
-theorem coeSubtype : (subtype s : s → R) = ((↑) : s → R) :=
+lemma subtype_apply (x : s) :
+    SubringClass.subtype s x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (subtype s) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
 
-@[simp, norm_cast]
-theorem coe_natCast (n : ℕ) : ((n : s) : R) = n :=
-  map_natCast (subtype s) n
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 @[simp, norm_cast]
-theorem coe_intCast (n : ℤ) : ((n : s) : R) = n :=
-  map_intCast (subtype s) n
+theorem coe_natCast (n : ℕ) : ((n : s) : R) = n := rfl
+
+@[simp, norm_cast]
+theorem coe_intCast (n : ℤ) : ((n : s) : R) = n := rfl
 
 end SubringClass
 
@@ -327,16 +336,25 @@ def subtype (s : Subring R) : s →+* R :=
   { s.toSubmonoid.subtype, s.toAddSubgroup.subtype with toFun := (↑) }
 
 @[simp]
-theorem coeSubtype : ⇑s.subtype = ((↑) : s → R) :=
+lemma subtype_apply {s : Subring R} (x : s) :
+    s.subtype x = x := rfl
+
+lemma subtype_injective (s : Subring R) :
+    Function.Injective s.subtype :=
+  s.toSubmonoid.subtype_injective
+
+@[simp]
+theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
 
-@[norm_cast]
-theorem coe_natCast : ∀ n : ℕ, ((n : s) : R) = n :=
-  map_natCast s.subtype
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 @[norm_cast]
-theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
-  map_intCast s.subtype
+theorem coe_natCast (n : ℕ) : ((n : s) : R) = n := rfl
+
+@[norm_cast]
+theorem coe_intCast (n : ℤ) : ((n : s) : R) = n := rfl
 
 /-! ## Partial order -/
 
@@ -344,9 +362,10 @@ theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
 theorem coe_toSubsemiring (s : Subring R) : (s.toSubsemiring : Set R) = s :=
   rfl
 
--- Porting note: https://github.com/leanprover-community/mathlib4/issues/10675
--- dsimp cannot prove this
-@[simp, nolint simpNF]
+-- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
+-- If that were still the case, this would useful as a `@[simp]` lemma,
+-- despite the fact that it is provable by `simp` (by not `dsimp`).
+@[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 theorem mem_toSubmonoid {s : Subring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
@@ -354,9 +373,10 @@ theorem mem_toSubmonoid {s : Subring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ 
 theorem coe_toSubmonoid (s : Subring R) : (s.toSubmonoid : Set R) = s :=
   rfl
 
--- Porting note: https://github.com/leanprover-community/mathlib4/issues/10675
--- dsimp cannot prove this
-@[simp, nolint simpNF]
+-- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
+-- If that were still the case, this would useful as a `@[simp]` lemma,
+-- despite the fact that it is provable by `simp` (by not `dsimp`).
+@[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 theorem mem_toAddSubgroup {s : Subring R} {x : R} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 
@@ -376,8 +396,3 @@ lemma Subring.toNonUnitalSubring_toSubring (S : Subring R) :
 
 lemma NonUnitalSubring.toSubring_toNonUnitalSubring (S : NonUnitalSubring R) (h1 : (1 : R) ∈ S) :
     (NonUnitalSubring.toSubring S h1).toNonUnitalSubring = S := by cases S; rfl
-
-theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
-    (k : R) * g ∈ G := by
-  convert AddSubgroup.zsmul_mem G h k using 1
-  simp

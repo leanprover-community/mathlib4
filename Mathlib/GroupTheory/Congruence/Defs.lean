@@ -191,7 +191,6 @@ an addition."]
 protected def Quotient :=
   Quotient c.toSetoid
 
--- Porting note: made implicit
 variable {c}
 
 /-- The morphism into the quotient by a congruence relation -/
@@ -551,23 +550,17 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
     ⟨comap ((↑) : M → c.Quotient) (fun _ _ => rfl) d, fun x y h =>
       show d x y by rw [c.eq.2 h]; exact d.refl _⟩
   left_inv d :=
-    -- Porting note: by exact needed for unknown reason
-    by exact
-      Subtype.ext_iff_val.2 <|
-        ext fun x y =>
-          ⟨fun h =>
-            let ⟨a, b, hx, hy, H⟩ := h
-            d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
-            fun h => ⟨_, _, rfl, rfl, h⟩⟩
-  right_inv d :=
-    -- Porting note: by exact needed for unknown reason
-    by exact
+    Subtype.ext_iff_val.2 <|
       ext fun x y =>
-        ⟨fun h =>
-          let ⟨_, _, hx, hy, H⟩ := h
-          hx ▸ hy ▸ H,
-          Con.induction_on₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
-  map_rel_iff' := @fun s t => by
+        ⟨fun ⟨a, b, hx, hy, H⟩ =>
+          d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
+          fun h => ⟨_, _, rfl, rfl, h⟩⟩
+  right_inv d :=
+    ext fun x y =>
+      ⟨fun ⟨_, _, hx, hy, H⟩ =>
+        hx ▸ hy ▸ H,
+        Con.induction_on₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
+  map_rel_iff' {s t} := by
     constructor
     · intros h x y hs
       rcases h ⟨x, y, rfl, rfl, hs⟩ with ⟨a, b, hx, hy, ht⟩

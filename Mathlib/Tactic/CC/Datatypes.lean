@@ -470,7 +470,7 @@ structure CCState extends CCConfig where
   /-- Records equality between `ACApps`. -/
   acR : RBACAppsMap (ACApps × DelayedExpr) := ∅
   /-- Returns true if the `CCState` is inconsistent. For example if it had both `a = b` and `a ≠ b`
-      in it.-/
+      in it. -/
   inconsistent : Bool := false
   /-- "Global Modification Time". gmt is a number stored on the `CCState`,
       it is compared with the modification time of a cc_entry in e-matching. See `CCState.mt`. -/
@@ -592,9 +592,11 @@ def getVarWithLeastOccs (ccs : CCState) (e : ACApps) (inLHS : Bool) : Option Exp
     return r
   | .ofExpr e => e
 
+/-- Search for the AC-variable (`Entry.acVar`) with the fewest occurrences in the LHS. -/
 def getVarWithLeastLHSOccs (ccs : CCState) (e : ACApps) : Option Expr :=
   ccs.getVarWithLeastOccs e true
 
+/-- Search for the AC-variable (`Entry.acVar`) with the fewest occurrences in the RHS. -/
 def getVarWithLeastRHSOccs (ccs : CCState) (e : ACApps) : Option Expr :=
   ccs.getVarWithLeastOccs e false
 

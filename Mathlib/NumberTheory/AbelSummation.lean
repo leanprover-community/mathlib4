@@ -180,7 +180,7 @@ end abelSummationProof
 
 section specialversions
 
-/-- Specialized version of `sum_mul_eq_sub_sub_integral_mul` for the case `a = 0`.-/
+/-- Specialized version of `sum_mul_eq_sub_sub_integral_mul` for the case `a = 0` -/
 theorem sum_mul_eq_sub_integral_mul {b : ℝ} (hb : 0 ≤ b)
     (hf_diff : ∀ t ∈ Set.Icc 0 b, DifferentiableAt ℝ f t)
     (hf_int : IntegrableOn (deriv f) (Set.Icc 0 b)) :

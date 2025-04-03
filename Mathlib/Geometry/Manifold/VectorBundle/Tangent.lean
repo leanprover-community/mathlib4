@@ -445,7 +445,7 @@ lemma contMDiff_snd_tangentBundle_modelSpace {n : ℕ∞} :
   · exact contMDiff_tangentBundleModelSpaceHomeomorph
 
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
-space sense-/
+space sense. -/
 lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {s : Set E} {x : E} :
     ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) s x ↔
@@ -459,7 +459,7 @@ lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
     simp
 
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
-space sense-/
+space sense. -/
 lemma contMDiffAt_vectorSpace_iff_contDiffAt
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {x : E} :
     ContMDiffAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) x ↔
@@ -468,7 +468,7 @@ lemma contMDiffAt_vectorSpace_iff_contDiffAt
     contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt]
 
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
-space sense-/
+space sense. -/
 lemma contMDiffOn_vectorSpace_iff_contDiffOn
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {s : Set E} :
     ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) s ↔
@@ -476,7 +476,7 @@ lemma contMDiffOn_vectorSpace_iff_contDiffOn
   simp only [ContMDiffOn, ContDiffOn, contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt ]
 
 /-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
-space sense-/
+space sense. -/
 lemma contMDiff_vectorSpace_iff_contDiff
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} :
     ContMDiff 𝓘(𝕜, E) 𝓘(𝕜, E).tangent n (fun x ↦ (V x : TangentBundle 𝓘(𝕜, E) E)) ↔

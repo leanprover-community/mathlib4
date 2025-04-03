@@ -184,8 +184,14 @@ def proj (i : ι) : (∀ i, φ i) →L[R] φ i :=
 theorem proj_apply (i : ι) (b : ∀ i, φ i) : (proj i : (∀ i, φ i) →L[R] φ i) b = b i :=
   rfl
 
-theorem proj_pi (f : ∀ i, M₂ →L[R] φ i) (i : ι) : (proj i).comp (pi f) = f i :=
-  ext fun _c => rfl
+@[simp]
+theorem proj_pi (f : ∀ i, M₂ →L[R] φ i) (i : ι) : (proj i).comp (pi f) = f i := rfl
+
+@[simp]
+theorem pi_proj : pi proj = .id R (∀ i, φ i) := rfl
+
+@[simp]
+theorem pi_proj_comp (f : M₂ →L[R] ∀ i, φ i) : pi (proj · ∘L f) = f := rfl
 
 theorem iInf_ker_proj : (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i) : Submodule R (∀ i, φ i)) = ⊥ :=
   LinearMap.iInf_ker_proj

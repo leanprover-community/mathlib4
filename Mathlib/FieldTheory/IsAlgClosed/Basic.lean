@@ -279,10 +279,10 @@ variable {S : Type v} [CommRing S] [IsDomain S] [Algebra R S] [Algebra R M] [NoZ
 variable {M}
 
 private instance FractionRing.isAlgebraic :
-    letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+    letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
     letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
     Algebra.IsAlgebraic (FractionRing R) (FractionRing S) := by
-  letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+  letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
   letI : Algebra (FractionRing R) (FractionRing S) := FractionRing.liftAlgebra R _
   have := FractionRing.isScalarTower_liftAlgebra R (FractionRing S)
   have := (IsFractionRing.isAlgebraic_iff' R S (FractionRing S)).1 inferInstance
@@ -295,7 +295,7 @@ private instance FractionRing.isAlgebraic :
   closed extension of R. -/
 @[stacks 09GU]
 noncomputable irreducible_def lift : S →ₐ[R] M := by
-  letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R S).isDomain _
+  letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
   letI := FractionRing.liftAlgebra R M
   letI := FractionRing.liftAlgebra R (FractionRing S)
   have := FractionRing.isScalarTower_liftAlgebra R M
@@ -328,23 +328,16 @@ end IsAlgClosed
 
 namespace IsAlgClosure
 
--- Porting note: errors with
--- > cannot find synthesization order for instance isAlgClosed with type
--- > all remaining arguments have metavariables
--- attribute [local instance] IsAlgClosure.isAlgClosed
-
 section
 
 variable (R : Type u) [CommRing R] (L : Type v) (M : Type w) [Field L] [Field M]
 variable [Algebra R M] [NoZeroSMulDivisors R M] [IsAlgClosure R M]
 variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 
+attribute [local instance] IsAlgClosure.isAlgClosed in
 /-- A (random) isomorphism between two algebraic closures of `R`. -/
 @[stacks 09GV]
 noncomputable def equiv : L ≃ₐ[R] M :=
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added to replace local instance above
-  haveI : IsAlgClosed L := IsAlgClosure.isAlgClosed R
-  haveI : IsAlgClosed M := IsAlgClosure.isAlgClosed R
   AlgEquiv.ofBijective _ (IsAlgClosure.isAlgebraic.algHom_bijective₂
     (IsAlgClosed.lift : L →ₐ[R] M)
     (IsAlgClosed.lift : M →ₐ[R] L)).1
@@ -363,26 +356,23 @@ variable [Algebra K J] [Algebra J L] [IsAlgClosure J L] [Algebra K L] [IsScalarT
 
 /-- If `J` is an algebraic extension of `K` and `L` is an algebraic closure of `J`, then it is
   also an algebraic closure of `K`. -/
-theorem ofAlgebraic [hKJ : Algebra.IsAlgebraic K J] : IsAlgClosure K L :=
-  ⟨IsAlgClosure.isAlgClosed J, hKJ.trans⟩
+theorem ofAlgebraic [Algebra.IsAlgebraic K J] : IsAlgClosure K L :=
+  ⟨IsAlgClosure.isAlgClosed J, .trans K J L⟩
 
 /-- A (random) isomorphism between an algebraic closure of `R` and an algebraic closure of
   an algebraic extension of `R` -/
 noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
     [Algebra.IsAlgebraic R L] : L ≃ₐ[R] M := by
-  letI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective <| by
-    rw [IsScalarTower.algebraMap_eq R S L]
-    exact (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective S L)
-            (NoZeroSMulDivisors.algebraMap_injective R S) :)
-  letI : IsAlgClosure R L :=
+  have : NoZeroSMulDivisors R L := NoZeroSMulDivisors.trans_faithfulSMul R S L
+  have : IsAlgClosure R L :=
     { isAlgClosed := IsAlgClosure.isAlgClosed S
       isAlgebraic := ‹_› }
   exact IsAlgClosure.equiv _ _ _
 
 /-- A (random) isomorphism between an algebraic closure of `K` and an algebraic closure
   of an algebraic extension of `K` -/
-noncomputable def equivOfAlgebraic [hKJ : Algebra.IsAlgebraic K J] : L ≃ₐ[K] M :=
-  have : Algebra.IsAlgebraic K L := hKJ.trans
+noncomputable def equivOfAlgebraic [Algebra.IsAlgebraic K J] : L ≃ₐ[K] M :=
+  have := Algebra.IsAlgebraic.trans K J L
   equivOfAlgebraic' K J _ _
 
 end EquivOfAlgebraic
@@ -396,17 +386,14 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
     { e : L ≃+* M // e.toRingHom.comp (algebraMap S L) = (algebraMap R M).comp hSR.toRingHom } := by
   letI : Algebra R S := RingHom.toAlgebra hSR.symm.toRingHom
   letI : Algebra S R := RingHom.toAlgebra hSR.toRingHom
-  letI : IsDomain R := (NoZeroSMulDivisors.algebraMap_injective R M).isDomain _
-  letI : IsDomain S := (NoZeroSMulDivisors.algebraMap_injective S L).isDomain _
+  have : IsDomain S := (FaithfulSMul.algebraMap_injective S L).isDomain _
   letI : Algebra R L := RingHom.toAlgebra ((algebraMap S L).comp (algebraMap R S))
-  haveI : IsScalarTower R S L := IsScalarTower.of_algebraMap_eq fun _ => rfl
-  haveI : IsScalarTower S R L :=
-    IsScalarTower.of_algebraMap_eq (by simp [RingHom.algebraMap_toAlgebra])
-  haveI : NoZeroSMulDivisors R S := NoZeroSMulDivisors.of_algebraMap_injective hSR.symm.injective
+  haveI : IsScalarTower R S L := .of_algebraMap_eq fun _ => rfl
+  haveI : IsScalarTower S R L := .of_algebraMap_eq (by simp [RingHom.algebraMap_toAlgebra])
+  have : FaithfulSMul R S := (faithfulSMul_iff_algebraMap_injective R S).mpr hSR.symm.injective
   have : Algebra.IsAlgebraic R L := (IsAlgClosure.isAlgebraic.extendScalars
     (show Function.Injective (algebraMap S R) from hSR.injective))
-  refine
-    ⟨equivOfAlgebraic' R S L M, ?_⟩
+  refine ⟨equivOfAlgebraic' R S L M, ?_⟩
   ext x
   simp only [RingEquiv.toRingHom_eq_coe, Function.comp_apply, RingHom.coe_comp,
     AlgEquiv.coe_ringEquiv, RingEquiv.coe_toRingHom]

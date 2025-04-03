@@ -164,19 +164,13 @@ def Simps.symm_apply (e : PartialEquiv α β) : β → α :=
 
 initialize_simps_projections PartialEquiv (toFun → apply, invFun → symm_apply)
 
--- Porting note: this can be proven with `dsimp only`
--- @[simp, mfld_simps]
--- theorem coe_mk (f : α → β) (g s t ml mr il ir) :
---  (PartialEquiv.mk f g s t ml mr il ir : α → β) = f := by dsimp only
+theorem coe_mk (f : α → β) (g s t ml mr il ir) :
+    (PartialEquiv.mk f g s t ml mr il ir : α → β) = f := rfl
 
 @[simp, mfld_simps]
 theorem coe_symm_mk (f : α → β) (g s t ml mr il ir) :
     ((PartialEquiv.mk f g s t ml mr il ir).symm : β → α) = g :=
   rfl
-
--- Porting note: this is now a syntactic tautology
--- @[simp, mfld_simps]
--- theorem toFun_as_coe : e.toFun = e := rfl
 
 @[simp, mfld_simps]
 theorem invFun_as_coe : e.invFun = e.symm :=
@@ -531,9 +525,7 @@ theorem refl_symm : (PartialEquiv.refl α).symm = PartialEquiv.refl α :=
 theorem refl_restr_source (s : Set α) : ((PartialEquiv.refl α).restr s).source = s := by simp
 
 @[mfld_simps]
-theorem refl_restr_target (s : Set α) : ((PartialEquiv.refl α).restr s).target = s := by
-  change univ ∩ id ⁻¹' s = s
-  simp
+theorem refl_restr_target (s : Set α) : ((PartialEquiv.refl α).restr s).target = s := by simp
 
 /-- The identity partial equivalence on a set `s` -/
 def ofSet (s : Set α) : PartialEquiv α α where

@@ -286,14 +286,14 @@ theorem eq_homEquiv_apply {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B
     g = adj.homEquiv A B f ↔ (adj.homEquiv A B).symm g = f :=
   eq_unit_comp_map_iff adj f g
 
-/--  If `adj : F ⊣ G`, and `X : C`, then `F.obj X` corepresents `Y ↦ (X ⟶ G.obj Y)`-/
+/-- If `adj : F ⊣ G`, and `X : C`, then `F.obj X` corepresents `Y ↦ (X ⟶ G.obj Y)`. -/
 @[simps]
 def corepresentableBy (X : C) :
     (G ⋙ coyoneda.obj (Opposite.op X)).CorepresentableBy (F.obj X) where
   homEquiv := adj.homEquiv _ _
   homEquiv_comp := by simp
 
-/--  If `adj : F ⊣ G`, and `Y : D`, then `G.obj Y` represents `X ↦ (F.obj X ⟶ Y)`-/
+/-- If `adj : F ⊣ G`, and `Y : D`, then `G.obj Y` represents `X ↦ (F.obj X ⟶ Y)`. -/
 @[simps]
 def representableBy (Y : D) :
     (F.op ⋙ yoneda.obj Y).RepresentableBy (G.obj Y) where

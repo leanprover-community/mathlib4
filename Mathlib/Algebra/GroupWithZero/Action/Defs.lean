@@ -5,6 +5,7 @@ Authors: Chris Hughes, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Tactic.MinImports
 
 /-!
 # Definitions of group actions
@@ -254,80 +255,6 @@ theorem smul_neg (r : M) (x : A) : r • -x = -(r • x) :=
 
 theorem smul_sub (r : M) (x y : A) : r • (x - y) = r • x - r • y := by
   rw [sub_eq_add_neg, sub_eq_add_neg, smul_add, smul_neg]
-
-end
-
-/-- Typeclass for multiplicative actions on multiplicative structures. This generalizes
-conjugation actions. -/
-@[ext]
-class MulDistribMulAction (M : Type*) (A : Type*) [Monoid M] [Monoid A] extends
-  MulAction M A where
-  /-- Distributivity of `•` across `*` -/
-  smul_mul : ∀ (r : M) (x y : A), r • (x * y) = r • x * r • y
-  /-- Multiplying `1` by a scalar gives `1` -/
-  smul_one : ∀ r : M, r • (1 : A) = 1
-
-export MulDistribMulAction (smul_one)
-
-section
-
-variable [Monoid M] [Monoid A] [MulDistribMulAction M A]
-
-theorem smul_mul' (a : M) (b₁ b₂ : A) : a • (b₁ * b₂) = a • b₁ * a • b₂ :=
-  MulDistribMulAction.smul_mul _ _ _
-
-/-- Pullback a multiplicative distributive multiplicative action along an injective monoid
-homomorphism.
-See note [reducible non-instances]. -/
-protected abbrev Function.Injective.mulDistribMulAction [Monoid B] [SMul M B] (f : B →* A)
-    (hf : Injective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B :=
-  { hf.mulAction f smul with
-    smul_mul := fun c x y => hf <| by simp only [smul, f.map_mul, smul_mul'],
-    smul_one := fun c => hf <| by simp only [smul, f.map_one, smul_one] }
-
-/-- Pushforward a multiplicative distributive multiplicative action along a surjective monoid
-homomorphism.
-See note [reducible non-instances]. -/
-protected abbrev Function.Surjective.mulDistribMulAction [Monoid B] [SMul M B] (f : A →* B)
-    (hf : Surjective f) (smul : ∀ (c : M) (x), f (c • x) = c • f x) : MulDistribMulAction M B :=
-  { hf.mulAction f smul with
-    smul_mul := fun c x y => by
-      rcases hf x with ⟨x, rfl⟩
-      rcases hf y with ⟨y, rfl⟩
-      simp only [smul_mul', ← smul, ← f.map_mul],
-    smul_one := fun c => by rw [← f.map_one, ← smul, smul_one] }
-
-variable (A)
-
-/-- Scalar multiplication by `r` as a `MonoidHom`. -/
-def MulDistribMulAction.toMonoidHom (r : M) :
-    A →* A where
-  toFun := (r • ·)
-  map_one' := smul_one r
-  map_mul' := smul_mul' r
-
-variable {A}
-
-@[simp]
-theorem MulDistribMulAction.toMonoidHom_apply (r : M) (x : A) :
-    MulDistribMulAction.toMonoidHom A r x = r • x :=
-  rfl
-
-@[simp] lemma smul_pow' (r : M) (x : A) (n : ℕ) : r • x ^ n = (r • x) ^ n :=
-  (MulDistribMulAction.toMonoidHom _ _).map_pow _ _
-
-end
-
-section
-
-variable [Monoid M] [Group A] [MulDistribMulAction M A]
-
-@[simp]
-theorem smul_inv' (r : M) (x : A) : r • x⁻¹ = (r • x)⁻¹ :=
-  (MulDistribMulAction.toMonoidHom A r).map_inv x
-
-theorem smul_div' (r : M) (x y : A) : r • (x / y) = r • x / r • y :=
-  map_div (MulDistribMulAction.toMonoidHom A r) x y
 
 end
 

@@ -6,6 +6,7 @@ Neil Strickland, Aaron Anderson
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Divisibility.Units
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Divisibility in groups with zero.

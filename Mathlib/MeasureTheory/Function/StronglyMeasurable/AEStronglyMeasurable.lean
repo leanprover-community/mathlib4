@@ -34,8 +34,8 @@ measurable functions, as a basis for the Bochner integral.
 
 ## References
 
-* Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
-  Springer, 2016.
+* [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
+  Springer, 2016.][Hytönen_VanNeerven_Veraar_Wies_2016]
 
 -/
 
@@ -274,19 +274,19 @@ protected theorem inv [Inv β] [ContinuousInv β] (hf : AEStronglyMeasurable[m] 
   ⟨(hf.mk f)⁻¹, hf.stronglyMeasurable_mk.inv, hf.ae_eq_mk.inv⟩
 
 @[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
-protected theorem div [Group β] [TopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ)
+protected theorem div [Group β] [IsTopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ)
     (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (f / g) μ :=
   ⟨hf.mk f / hg.mk g, hf.stronglyMeasurable_mk.div hg.stronglyMeasurable_mk,
     hf.ae_eq_mk.div hg.ae_eq_mk⟩
 
 @[to_additive]
-theorem mul_iff_right [CommGroup β] [TopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ) :
+theorem mul_iff_right [CommGroup β] [IsTopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ) :
     AEStronglyMeasurable[m] (f * g) μ ↔ AEStronglyMeasurable[m] g μ :=
   ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
     fun h ↦ hf.mul h⟩
 
 @[to_additive]
-theorem mul_iff_left [CommGroup β] [TopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ) :
+theorem mul_iff_left [CommGroup β] [IsTopologicalGroup β] (hf : AEStronglyMeasurable[m] f μ) :
     AEStronglyMeasurable[m] (g * f) μ ↔ AEStronglyMeasurable[m] g μ :=
   mul_comm g f ▸ AEStronglyMeasurable.mul_iff_right hf
 
@@ -429,14 +429,25 @@ protected theorem nnnorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β
     (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun x => ‖f x‖₊) μ :=
   continuous_nnnorm.comp_aestronglyMeasurable hf
 
-@[measurability]
+/-- The `enorm` of a strongly a.e. measurable function is a.e. measurable.
+
+Note that unlike `AEStrongMeasurable.norm` and `AEStronglyMeasurable.nnnorm`, this lemma proves
+a.e. measurability, **not** a.e. strong measurability. This is an intentional decision:
+for functions taking values in ℝ≥0∞, a.e. measurability is much more useful than
+a.e. strong measurability. -/
+@[fun_prop, measurability]
 protected theorem enorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
-  (ENNReal.continuous_coe.comp_aestronglyMeasurable hf.nnnorm).aemeasurable
+  (continuous_enorm.comp_aestronglyMeasurable hf).aemeasurable
 
 @[deprecated (since := "2025-01-20")] alias ennnorm := AEStronglyMeasurable.enorm
 
-@[aesop safe 20 apply (rule_sets := [Measurable])]
+/-- Given a.e. strongly measurable functions `f` and `g`, `edist f g` is measurable.
+
+Note that this lemma proves a.e. measurability, **not** a.e. strong measurability.
+This is an intentional decision: for functions taking values in ℝ≥0∞,
+a.e. measurability is much more useful than a.e. strong measurability. -/
+@[aesop safe 20 apply (rule_sets := [Measurable]), fun_prop]
 protected theorem edist {β : Type*} [SeminormedAddCommGroup β] {f g : α → β}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     AEMeasurable (fun a => edist (f a) (g a)) μ :=
@@ -769,7 +780,7 @@ protected theorem add [AddMonoid β] [ContinuousAdd β] (hf : AEFinStronglyMeasu
     hf.ae_eq_mk.add hg.ae_eq_mk⟩
 
 @[measurability]
-protected theorem neg [AddGroup β] [TopologicalAddGroup β] (hf : AEFinStronglyMeasurable f μ) :
+protected theorem neg [AddGroup β] [IsTopologicalAddGroup β] (hf : AEFinStronglyMeasurable f μ) :
     AEFinStronglyMeasurable (-f) μ :=
   ⟨-hf.mk f, hf.finStronglyMeasurable_mk.neg, hf.ae_eq_mk.neg⟩
 

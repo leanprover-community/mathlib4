@@ -22,7 +22,7 @@ which were not available in the import dependencies of `Data.Int.Cast.Basic`.
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
 
-assert_not_exists OrderedCommMonoid
+assert_not_exists RelIso OrderedCommMonoid Field
 
 open Additive Function Multiplicative Nat
 

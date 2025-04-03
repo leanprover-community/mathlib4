@@ -33,8 +33,8 @@ We provide a solid API for strongly measurable functions, as a basis for the Boc
 
 ## References
 
-* Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
-  Springer, 2016.
+* [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
+  Springer, 2016.][Hytönen_VanNeerven_Veraar_Wies_2016]
 
 -/
 
@@ -109,7 +109,6 @@ theorem stronglyMeasurable_const' (hf : ∀ x y, f x = f y) : StronglyMeasurable
   convert stronglyMeasurable_const (β := β) using 1
   exact funext fun x => hf x default
 
--- Porting note: changed binding type of `MeasurableSpace α`.
 @[simp]
 theorem Subsingleton.stronglyMeasurable' [Subsingleton α] (f : α → β) : StronglyMeasurable f :=
   stronglyMeasurable_const' fun x y => by rw [Subsingleton.elim x y]
@@ -198,7 +197,7 @@ theorem norm_approxBounded_le {β} {f : α → β} [SeminormedAddCommGroup β] [
 
 theorem _root_.stronglyMeasurable_bot_iff [Nonempty β] [T2Space β] :
     StronglyMeasurable[⊥] f ↔ ∃ c, f = fun _ => c := by
-  cases' isEmpty_or_nonempty α with hα hα
+  rcases isEmpty_or_nonempty α with hα | hα
   · simp only [@Subsingleton.stronglyMeasurable' _ _ ⊥ _ _ f,
       eq_iff_true_of_subsingleton, exists_const]
   refine ⟨fun hf => ?_, fun hf_eq => ?_⟩
@@ -379,13 +378,13 @@ protected theorem div [Div β] [ContinuousDiv β] (hf : StronglyMeasurable f)
   ⟨fun n => hf.approx n / hg.approx n, fun x => (hf.tendsto_approx x).div' (hg.tendsto_approx x)⟩
 
 @[to_additive]
-theorem mul_iff_right [CommGroup β] [TopologicalGroup β] (hf : StronglyMeasurable f) :
+theorem mul_iff_right [CommGroup β] [IsTopologicalGroup β] (hf : StronglyMeasurable f) :
     StronglyMeasurable (f * g) ↔ StronglyMeasurable g :=
   ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
     fun h ↦ hf.mul h⟩
 
 @[to_additive]
-theorem mul_iff_left [CommGroup β] [TopologicalGroup β] (hf : StronglyMeasurable f) :
+theorem mul_iff_left [CommGroup β] [IsTopologicalGroup β] (hf : StronglyMeasurable f) :
     StronglyMeasurable (g * f) ↔ StronglyMeasurable g :=
   mul_comm g f ▸ mul_iff_right hf
 
@@ -775,7 +774,12 @@ protected theorem nnnorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCom
     (hf : StronglyMeasurable f) : StronglyMeasurable fun x => ‖f x‖₊ :=
   continuous_nnnorm.comp_stronglyMeasurable hf
 
-@[measurability]
+/-- The `enorm` of a strongly measurable function is measurable.
+
+Unlike `StrongMeasurable.norm` and `StronglyMeasurable.nnnorm`, this lemma proves measurability,
+**not** strong measurability. This is an intentional decision: for functions taking values in
+ℝ≥0∞, measurability is much more useful than strong measurability. -/
+@[fun_prop, measurability]
 protected theorem enorm {_ : MeasurableSpace α} {β : Type*} [SeminormedAddCommGroup β]
     {f : α → β} (hf : StronglyMeasurable f) : Measurable (‖f ·‖ₑ) :=
   (ENNReal.continuous_coe.comp_stronglyMeasurable hf.nnnorm).measurable
@@ -994,7 +998,7 @@ protected theorem add [AddMonoid β] [ContinuousAdd β] (hf : FinStronglyMeasura
     fun x => (hf.tendsto_approx x).add (hg.tendsto_approx x)⟩
 
 @[measurability]
-protected theorem neg [AddGroup β] [TopologicalAddGroup β] (hf : FinStronglyMeasurable f μ) :
+protected theorem neg [AddGroup β] [IsTopologicalAddGroup β] (hf : FinStronglyMeasurable f μ) :
     FinStronglyMeasurable (-f) μ := by
   refine ⟨fun n => -hf.approx n, fun n => ?_, fun x => (hf.tendsto_approx x).neg⟩
   suffices μ (Function.support fun x => -(hf.approx n) x) < ∞ by convert this

@@ -230,13 +230,10 @@ variable {A : Type v} [CommRing A] (φ : R →+* A)
 def map : WeierstrassCurve A :=
   ⟨φ W.a₁, φ W.a₂, φ W.a₃, φ W.a₄, φ W.a₆⟩
 
-variable (A)
-
+variable (A) in
 /-- The Weierstrass curve base changed to an algebra `A` over `R`. -/
 abbrev baseChange [Algebra R A] : WeierstrassCurve A :=
   W.map <| algebraMap R A
-
-variable {A}
 
 @[simp]
 lemma map_b₂ : (W.map φ).b₂ = φ W.b₂ := by

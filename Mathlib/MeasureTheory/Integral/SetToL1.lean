@@ -113,7 +113,7 @@ theorem of_eq_top_imp_eq_top {μ' : Measure α} (h : ∀ s, MeasurableSet s → 
     (hT : FinMeasAdditive μ T) : FinMeasAdditive μ' T := fun s t hs ht hμ's hμ't hst =>
   hT s t hs ht (mt (h s hs) hμ's) (mt (h t ht) hμ't) hst
 
-theorem of_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞) (hT : FinMeasAdditive (c • μ) T) :
+theorem of_smul_measure {c : ℝ≥0∞} (hc_ne_top : c ≠ ∞) (hT : FinMeasAdditive (c • μ) T) :
     FinMeasAdditive μ T := by
   refine of_eq_top_imp_eq_top (fun s _ hμs => ?_) hT
   rw [Measure.smul_apply, smul_eq_mul, ENNReal.mul_eq_top] at hμs
@@ -129,7 +129,7 @@ theorem smul_measure (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hT : FinMeasAdditi
 
 theorem smul_measure_iff (c : ℝ≥0∞) (hc_ne_zero : c ≠ 0) (hc_ne_top : c ≠ ∞) :
     FinMeasAdditive (c • μ) T ↔ FinMeasAdditive μ T :=
-  ⟨fun hT => of_smul_measure c hc_ne_top hT, fun hT => smul_measure c hc_ne_zero hT⟩
+  ⟨fun hT => of_smul_measure hc_ne_top hT, fun hT => smul_measure c hc_ne_zero hT⟩
 
 theorem map_empty_eq_zero {β} [AddCancelMonoid β] {T : Set α → β} (hT : FinMeasAdditive μ T) :
     T ∅ = 0 := by
@@ -227,7 +227,7 @@ theorem add_measure_left {_ : MeasurableSpace α} (μ ν : Measure α)
     (hT : DominatedFinMeasAdditive ν T C) (hC : 0 ≤ C) : DominatedFinMeasAdditive (μ + ν) T C :=
   of_measure_le (Measure.le_add_left le_rfl) hT hC
 
-theorem of_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞) (hT : DominatedFinMeasAdditive (c • μ) T C) :
+theorem of_smul_measure {c : ℝ≥0∞} (hc_ne_top : c ≠ ∞) (hT : DominatedFinMeasAdditive (c • μ) T C) :
     DominatedFinMeasAdditive μ T (c.toReal * C) := by
   have h : ∀ s, MeasurableSet s → c • μ s = ∞ → μ s = ∞ := by
     intro s _ hcμs
@@ -241,10 +241,10 @@ theorem of_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞) (hT : Dominated
   refine (hT.2 s hs hcμs.lt_top).trans (le_of_eq ?_)
   ring
 
-theorem of_measure_le_smul {μ' : Measure α} (c : ℝ≥0∞) (hc : c ≠ ∞) (h : μ ≤ c • μ')
+theorem of_measure_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hc : c ≠ ∞) (h : μ ≤ c • μ')
     (hT : DominatedFinMeasAdditive μ T C) (hC : 0 ≤ C) :
     DominatedFinMeasAdditive μ' T (c.toReal * C) :=
-  (hT.of_measure_le h hC).of_smul_measure c hc
+  (hT.of_measure_le h hC).of_smul_measure hc
 
 end DominatedFinMeasAdditive
 
@@ -1356,7 +1356,7 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
     let f_lp := hfi.toL1 f
     let F_lp i := if hFi : Integrable (fs i) μ then hFi.toL1 (fs i) else 0
     have tendsto_L1 : Tendsto F_lp l (𝓝 f_lp) := by
-      rw [Lp.tendsto_Lp_iff_tendsto_ℒp']
+      rw [Lp.tendsto_Lp_iff_tendsto_eLpNorm']
       simp_rw [eLpNorm_one_eq_lintegral_enorm, Pi.sub_apply]
       refine (tendsto_congr' ?_).mp hfs
       filter_upwards [hfsi] with i hi
@@ -1395,12 +1395,12 @@ theorem tendsto_setToFun_approxOn_of_measurable_of_range_subset
 `f : α →₁[μ'] G` is continuous when `μ' ≤ c' • μ` for `c' ≠ ∞`. -/
 theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ ∞) (hμ'_le : μ' ≤ c' • μ) :
     Continuous fun f : α →₁[μ] G =>
-      (Integrable.of_measure_le_smul c' hc' hμ'_le (L1.integrable_coeFn f)).toL1 f := by
+      (Integrable.of_measure_le_smul hc' hμ'_le (L1.integrable_coeFn f)).toL1 f := by
   by_cases hc'0 : c' = 0
   · have hμ'0 : μ' = 0 := by rw [← Measure.nonpos_iff_eq_zero']; refine hμ'_le.trans ?_; simp [hc'0]
     have h_im_zero :
       (fun f : α →₁[μ] G =>
-          (Integrable.of_measure_le_smul c' hc' hμ'_le (L1.integrable_coeFn f)).toL1 f) =
+          (Integrable.of_measure_le_smul hc' hμ'_le (L1.integrable_coeFn f)).toL1 f) =
         0 := by
       ext1 f; ext1; simp_rw [hμ'0]; simp only [ae_zero, EventuallyEq, eventually_bot]
     rw [h_im_zero]
@@ -1411,7 +1411,7 @@ theorem continuous_L1_toL1 {μ' : Measure α} (c' : ℝ≥0∞) (hc' : c' ≠ �
   refine ⟨div_pos (half_pos hε_pos) (toReal_pos hc'0 hc'), ?_⟩
   intro g hfg
   rw [Lp.dist_def] at hfg ⊢
-  let h_int := fun f' : α →₁[μ] G => (L1.integrable_coeFn f').of_measure_le_smul c' hc' hμ'_le
+  let h_int := fun f' : α →₁[μ] G => (L1.integrable_coeFn f').of_measure_le_smul hc' hμ'_le
   have :
     eLpNorm (⇑(Integrable.toL1 g (h_int g)) - ⇑(Integrable.toL1 f (h_int f))) 1 μ' =
       eLpNorm (⇑g - ⇑f) 1 μ' :=
@@ -1437,7 +1437,7 @@ theorem setToFun_congr_measure_of_integrable {μ' : Measure α} (c' : ℝ≥0∞
     setToFun μ T hT f = setToFun μ' T hT' f := by
   -- integrability for `μ` implies integrability for `μ'`.
   have h_int : ∀ g : α → E, Integrable g μ → Integrable g μ' := fun g hg =>
-    Integrable.of_measure_le_smul c' hc' hμ'_le hg
+    Integrable.of_measure_le_smul hc' hμ'_le hg
   -- We use `Integrable.induction`
   apply hfμ.induction (P := fun f => setToFun μ T hT f = setToFun μ' T hT' f)
   · intro c s hs hμs
@@ -1467,7 +1467,7 @@ theorem setToFun_congr_measure {μ' : Measure α} (c c' : ℝ≥0∞) (hc : c �
   · exact setToFun_congr_measure_of_integrable c' hc' hμ'_le hT hT' f hf
   · -- if `f` is not integrable, both `setToFun` are 0.
     have h_int : ∀ g : α → E, ¬Integrable g μ → ¬Integrable g μ' := fun g =>
-      mt fun h => h.of_measure_le_smul _ hc hμ_le
+      mt fun h => h.of_measure_le_smul hc hμ_le
     simp_rw [setToFun_undef _ hf, setToFun_undef _ (h_int f hf)]
 
 theorem setToFun_congr_measure_of_add_right {μ' : Measure α}

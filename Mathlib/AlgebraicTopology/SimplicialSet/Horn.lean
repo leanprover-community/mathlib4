@@ -59,7 +59,7 @@ def const (n : ℕ) (i k : Fin (n+3)) (m : SimplexCategoryᵒᵖ) : Λ[n+2, i].o
 
 This edge only exists if `{i, a, b}` has cardinality less than `n`. -/
 @[simps]
-def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) : Λ[n, i] _[1] := by
+def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) : Λ[n, i] _⦋1⦌ := by
   refine ⟨stdSimplex.edge n a b hab, ?range⟩
   case range =>
     suffices ∃ x, ¬i = x ∧ ¬a = x ∧ ¬b = x by
@@ -77,7 +77,7 @@ def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) : 
 assuming `3 ≤ n`. -/
 @[simps!]
 def edge₃ (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : 3 ≤ n) :
-    Λ[n, i] _[1] :=
+    Λ[n, i] _⦋1⦌ :=
   horn.edge n i a b hab <| Finset.card_le_three.trans H
 
 /-- The edge of `Λ[n, i]` with endpoints `j` and `j+1`.
@@ -87,7 +87,7 @@ which is the type of horn that occurs in the horn-filling condition of quasicate
 @[simps!]
 def primitiveEdge {n : ℕ} {i : Fin (n+1)}
     (h₀ : 0 < i) (hₙ : i < Fin.last n) (j : Fin n) :
-    Λ[n, i] _[1] := by
+    Λ[n, i] _⦋1⦌ := by
   refine horn.edge n i j.castSucc j.succ ?_ ?_
   · simp only [← Fin.val_fin_le, Fin.coe_castSucc, Fin.val_succ, le_add_iff_nonneg_right, zero_le]
   simp only [← Fin.val_fin_lt, Fin.val_zero, Fin.val_last] at h₀ hₙ
@@ -103,7 +103,7 @@ which is the type of horn that occurs in the horn-filling condition of quasicate
 @[simps]
 def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n+3))
-    (k : ℕ) (h : k < n+2) : Λ[n+3, i] _[2] := by
+    (k : ℕ) (h : k < n+2) : Λ[n+3, i] _⦋2⦌ := by
   refine ⟨stdSimplex.triangle
     (n := n+3) ⟨k, by omega⟩ ⟨k+1, by omega⟩ ⟨k+2, by omega⟩ ?_ ?_, ?_⟩
   · simp only [Fin.mk_le_mk, le_add_iff_nonneg_right, zero_le]
@@ -128,7 +128,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
 
 /-- The `j`th subface of the `i`-th horn. -/
 @[simps]
-def face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : Λ[n+1, i] _[n] :=
+def face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : Λ[n+1, i] _⦋n⦌ :=
   ⟨(stdSimplex.objEquiv _ _).symm (SimplexCategory.δ j), by
     simpa [← Set.univ_subset_iff, Set.subset_def, asOrderHom, SimplexCategory.δ, not_or,
       stdSimplex.objEquiv, asOrderHom, Equiv.ulift]⟩

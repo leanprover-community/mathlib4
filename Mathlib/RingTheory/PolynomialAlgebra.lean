@@ -8,11 +8,12 @@ import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Composition
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.RingTheory.MatrixAlgebra
+import Mathlib.RingTheory.IsTensorProduct
 
 /-!
 # Algebra isomorphism between matrices of polynomials and polynomials of matrices
 
-Given `[CommRing R] [Ring A] [Algebra R A]`
+Given `[CommSemiring R] [Semiring A] [Algebra R A]`
 we show `A[X] ≃ₐ[R] (A ⊗[R] R[X])`.
 Combining this with the isomorphism `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)` proved earlier
 in `RingTheory.MatrixAlgebra`, we obtain the algebra isomorphism
@@ -214,7 +215,7 @@ it's an algebra equivalence, and characterised extensionally by the lemma
 `matPolyEquiv_coeff_apply` below.)
 -/
 noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
-  ((matrixEquivTensor R R[X] n).trans (Algebra.TensorProduct.comm R _ _)).trans
+  ((matrixEquivTensor n R R[X]).trans (Algebra.TensorProduct.comm R _ _)).trans
     (polyEquivTensor R (Matrix n n R)).symm
 
 @[simp] theorem matPolyEquiv_symm_C (M : Matrix n n R) : matPolyEquiv.symm (C M) = M.map C := by
@@ -318,3 +319,25 @@ lemma evalRingHom_mapMatrix_comp_compRingEquiv {m} [Fintype m] [DecidableEq m] :
     (evalRingHom 0).mapMatrix.comp (compRingEquiv m n R[X]) =
       (compRingEquiv m n R).toRingHom.comp (evalRingHom 0).mapMatrix.mapMatrix := by
   ext; simp
+
+/-- If `A` is an `R`-algebra, then `A[X]` is an `R[X]` algebra.
+This gives a diamond for `Algebra R[X] R[X][X]`, so this is not a global instance. -/
+@[reducible] def Polynomial.algebra : Algebra R[X] A[X] :=
+  (mapRingHom (algebraMap R A)).toAlgebra' fun _ _ ↦ by
+    ext; rw [coeff_mul, ← Finset.Nat.sum_antidiagonal_swap, coeff_mul]; simp [Algebra.commutes]
+
+attribute [local instance] Polynomial.algebra
+
+instance : IsScalarTower R R[X] A[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
+
+variable [Algebra R S]
+
+instance : Algebra.IsPushout R S R[X] S[X] := by
+  constructor
+  let e : S[X] ≃ₐ[S] TensorProduct R S R[X] := { __ := polyEquivTensor R S, commutes' := by simp }
+  convert (TensorProduct.isBaseChange R R[X] S).comp (.ofEquiv e.symm.toLinearEquiv) using 1
+  ext : 2
+  refine Eq.trans ?_ (polyEquivTensor_symm_apply_tmul R S _ _).symm
+  simp [RingHom.algebraMap_toAlgebra]
+
+instance : Algebra.IsPushout R R[X] S S[X] := .symm inferInstance

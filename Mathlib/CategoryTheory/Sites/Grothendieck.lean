@@ -172,7 +172,7 @@ theorem covering_iff_covers_id (S : Sieve X) : S ∈ J X ↔ J.Covers S (𝟙 X)
 
 /-- The maximality axiom in 'arrow' form: Any arrow `f` in `S` is covered by `S`. -/
 theorem arrow_max (f : Y ⟶ X) (S : Sieve X) (hf : S f) : J.Covers S f := by
-  rw [Covers, (Sieve.pullback_eq_top_iff_mem f).1 hf]
+  rw [Covers, (Sieve.mem_iff_pullback_eq_top f).1 hf]
   apply J.top_mem
 
 /-- The stability axiom in 'arrow' form: If `S` covers `f` then `S` covers `g ≫ f` for any `g`. -/
@@ -307,7 +307,7 @@ theorem top_covering : S ∈ (⊤ : GrothendieckTopology C) X :=
   ⟨⟩
 
 theorem bot_covers (S : Sieve X) (f : Y ⟶ X) : (⊥ : GrothendieckTopology C).Covers S f ↔ S f := by
-  rw [covers_iff, bot_covering, ← Sieve.pullback_eq_top_iff_mem]
+  rw [covers_iff, bot_covering, ← Sieve.mem_iff_pullback_eq_top]
 
 @[simp]
 theorem top_covers (S : Sieve X) (f : Y ⟶ X) : (⊤ : GrothendieckTopology C).Covers S f := by
@@ -556,16 +556,21 @@ def Relation.mk' {S : J.Cover X} {fst snd : S.Arrow} (r : fst.Relation snd) :
     S.Relation where
   r := r
 
+
+/-- The shape of the multiequalizer diagrams associated to `S : J.Cover X`. -/
+@[simps]
+def shape (S : J.Cover X) : Limits.MulticospanShape where
+  L := S.Arrow
+  R := S.Relation
+  fst I := I.fst
+  snd I := I.snd
+
 -- This is used extensively in `Plus.lean`, etc.
 -- We place this definition here as it will be used in `Sheaf.lean` as well.
 /-- To every `S : J.Cover X` and presheaf `P`, associate a `MulticospanIndex`. -/
 @[simps]
 def index {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
-    Limits.MulticospanIndex D where
-  L := S.Arrow
-  R := S.Relation
-  fstTo I := I.fst
-  sndTo I := I.snd
+    Limits.MulticospanIndex S.shape D where
   left I := P.obj (Opposite.op I.Y)
   right I := P.obj (Opposite.op I.r.Z)
   fst I := P.map I.r.g₁.op
@@ -593,7 +598,7 @@ noncomputable abbrev toMultiequalizer {D : Type u₁} [Category.{v₁} D] (S : J
   Limits.Multiequalizer.lift _ _ (fun I => P.map I.f.op)
     (by
       intro I
-      dsimp only [index, Relation.fst, Relation.snd]
+      dsimp only [shape, index, Relation.fst, Relation.snd]
       simp only [← P.map_comp, ← op_comp, I.r.w])
 
 end Cover

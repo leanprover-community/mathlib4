@@ -351,7 +351,8 @@ theorem div_modByMonic_unique {f g} (q r : R[X]) (hg : Monic g)
       not_le_of_gt h₄ <|
         calc
           degree g ≤ degree g + degree (q - f /ₘ g) := by
-            erw [degree_eq_natDegree hg.ne_zero, degree_eq_natDegree hqf, WithBot.coe_le_coe]
+            rw [degree_eq_natDegree hg.ne_zero, degree_eq_natDegree hqf]
+            norm_cast
             exact Nat.le_add_right _ _
           _ = degree (r - f %ₘ g) := by rw [h₂, degree_mul']; simpa [Monic.def.1 hg]
   exact ⟨Eq.symm <| eq_of_sub_eq_zero h₅, Eq.symm <| eq_of_sub_eq_zero <| by simpa [h₅] using h₁⟩
@@ -397,7 +398,7 @@ theorem modByMonic_eq_zero_iff_dvd (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
     exact not_lt_of_ge (Nat.le_add_right _ _) (WithBot.coe_lt_coe.1 this)⟩
 
 
-/-- See `Polynomial.mul_left_modByMonic` for the other multiplication order. That version, unlike
+/-- See `Polynomial.mul_self_modByMonic` for the other multiplication order. That version, unlike
 this one, requires commutativity. -/
 @[simp]
 lemma self_mul_modByMonic (hq : q.Monic) : (q * p) %ₘ q = 0 := by
@@ -476,7 +477,7 @@ section multiplicity
 
 /-- An algorithm for deciding polynomial divisibility.
 The algorithm is "compute `p %ₘ q` and compare to `0`".
-See `polynomial.modByMonic` for the algorithm that computes `%ₘ`.
+See `Polynomial.modByMonic` for the algorithm that computes `%ₘ`.
 -/
 def decidableDvdMonic [DecidableEq R] (p : R[X]) (hq : Monic q) : Decidable (q ∣ p) :=
   decidable_of_iff (p %ₘ q = 0) (modByMonic_eq_zero_iff_dvd hq)
@@ -525,7 +526,7 @@ theorem rootMultiplicity_eq_multiplicity [DecidableEq R]
   · rfl
   rename_i h
   simp only [finiteMultiplicity_X_sub_C a h, ↓reduceDIte]
-  rw [← ENat.some_eq_coe, WithTop.untop'_coe]
+  rw [← ENat.some_eq_coe, WithTop.untopD_coe]
   congr
 
 @[simp]
@@ -652,7 +653,7 @@ theorem eval_divByMonic_pow_rootMultiplicity_ne_zero {p : R[X]} (a : R) (hp : p 
       (monic_X_sub_C _) hp).not_pow_dvd_of_multiplicity_lt
       (Nat.lt_succ_self _) (dvd_of_mul_right_eq _ this)
 
-/-- See `Polynomial.mul_right_modByMonic` for the other multiplication order. This version, unlike
+/-- See `Polynomial.self_mul_modByMonic` for the other multiplication order. This version, unlike
 that one, requires commutativity. -/
 @[simp]
 lemma mul_self_modByMonic (hq : q.Monic) : (p * q) %ₘ q = 0 := by
@@ -667,7 +668,7 @@ lemma modByMonic_eq_of_dvd_sub (hq : q.Monic) (h : q ∣ p₁ - p₂) : p₁ %�
 
 lemma add_modByMonic (p₁ p₂ : R[X]) : (p₁ + p₂) %ₘ q = p₁ %ₘ q + p₂ %ₘ q := by
   by_cases hq : q.Monic
-  · cases' subsingleton_or_nontrivial R with hR hR
+  · rcases subsingleton_or_nontrivial R with hR | hR
     · simp only [eq_iff_true_of_subsingleton]
     · exact
       (div_modByMonic_unique (p₁ /ₘ q + p₂ /ₘ q) _ hq
@@ -712,7 +713,7 @@ lemma le_rootMultiplicity_iff (p0 : p ≠ 0) {a : R} {n : ℕ} :
   rw [rootMultiplicity_eq_nat_find_of_nonzero p0, @Nat.le_find_iff _ (_)]
   simp_rw [Classical.not_not]
   refine ⟨fun h => ?_, fun h m hm => (pow_dvd_pow _ hm).trans h⟩
-  cases' n with n
+  rcases n with - | n
   · rw [pow_zero]
     apply one_dvd
   · exact h n n.lt_succ_self
@@ -774,7 +775,7 @@ lemma degree_eq_one_of_irreducible_of_root (hi : Irreducible p) {x : R} (hx : Is
 lemma leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R) :
     leadingCoeff (p /ₘ (X - C a)) = leadingCoeff p := by
   nontriviality
-  cases' hp.lt_or_lt with hd hd
+  rcases hp.lt_or_lt with hd | hd
   · rw [degree_eq_bot.mp <| Nat.WithBot.lt_zero_iff.mp hd, zero_divByMonic]
   refine leadingCoeff_divByMonic_of_monic (monic_X_sub_C a) ?_
   rwa [degree_X_sub_C, Nat.WithBot.one_le_iff_zero_lt]

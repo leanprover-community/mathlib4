@@ -106,7 +106,7 @@ protected def elim {α : Sort u} (_ : IsEmpty α) {p : α → Sort*} (a : α) : 
   isEmptyElim a
 
 /-- Non-dependent version of `IsEmpty.elim`. Helpful if the elaborator cannot elaborate `h.elim a`
-  correctly. -/
+correctly. -/
 protected def elim' {β : Sort*} (h : IsEmpty α) (a : α) : β :=
   (h.false a).elim
 

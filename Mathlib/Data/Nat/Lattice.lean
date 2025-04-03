@@ -180,7 +180,7 @@ section
 variable {α : Type*} [CompleteLattice α]
 
 theorem iSup_lt_succ (u : ℕ → α) (n : ℕ) : ⨆ k < n + 1, u k = (⨆ k < n, u k) ⊔ u n := by
-  simp [Nat.lt_succ_iff_lt_or_eq, iSup_or, iSup_sup_eq]
+  simp_rw [Nat.lt_add_one_iff, biSup_le_eq_sup]
 
 theorem iSup_lt_succ' (u : ℕ → α) (n : ℕ) : ⨆ k < n + 1, u k = u 0 ⊔ ⨆ k < n, u (k + 1) := by
   rw [← sup_iSup_nat_succ]

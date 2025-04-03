@@ -41,6 +41,16 @@ def Foo2.Simps.elim (α : Type _) : Foo2 α → α × α := fun x ↦ (x.elim.1,
 
 initialize_simps_projections Foo2
 
+
+/--
+info: [simps.verbose] The projections for this structure have already been initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.
+    Generated projections for Foo2:
+    Projection elim: fun α x => (x.elim.1, x.elim.2)
+-/
+#guard_msgs in
+initialize_simps_projections Foo2
+
+
 @[simps]
 def Foo2.foo2 : Foo2 Nat := ⟨(0, 0)⟩
 
@@ -100,7 +110,7 @@ structure Equiv' (α : Sort _) (β : Sort _) where
 infix:25 (priority := default+1) " ≃ " => Equiv'
 
 /- Since `prod` and `PProd` are a special case for `@[simps]`, we define a new structure to test
-  the basic functionality.-/
+  the basic functionality. -/
 structure MyProd (α β : Type _) where (fst : α) (snd : β)
 
 def MyProd.map {α α' β β'} (f : α → α') (g : β → β') (x : MyProd α β) : MyProd α' β' :=
@@ -447,6 +457,29 @@ example (X : Type u) {x : Type u} (h : (X → X) = x) : (X ⟶ X) = x := by simp
 example (X : Type u) {f : X → X} (h : ∀ x, f x = x) : 𝟙 X = f := by ext; simp; rw [h]
 example (X Y Z : Type u) (f : X ⟶ Y) (g : Y ⟶ Z) {k : X → Z} (h : ∀ x, g (f x) = k x) :
   f ≫ g = k := by ext; simp; rw [h]
+
+-- Ensure that a universe polymorphic projection like `PLift.down`
+-- doesn't cause `simp` lemmas about proofs.
+
+instance discreteCategory : CategoryStruct Nat where
+  hom X Y := ULift (PLift (X = Y))
+  id _ := ULift.up (PLift.up rfl)
+  comp f g := ⟨⟨f.1.1.trans g.1.1⟩⟩
+
+structure Prefunctor (C : Type u) [CategoryStruct C] (D : Type v) [CategoryStruct D] where
+  /-- The action of a (pre)functor on vertices/objects. -/
+  obj : C → D
+  /-- The action of a (pre)functor on edges/arrows/morphisms. -/
+  map : ∀ {X Y : C}, (X ⟶ Y) → (obj X ⟶ obj Y)
+
+@[simps]
+def IdentityPreunctor : Prefunctor (Type u) Nat where
+  obj _ := 5
+  map _ := ⟨⟨rfl⟩⟩
+
+/-- error: unknown identifier 'IdentityPreunctor_map_down_down' -/
+#guard_msgs in
+#check IdentityPreunctor_map_down_down
 
 namespace coercing
 

@@ -202,16 +202,13 @@ theorem coeff_frobeniusFun (x : 𝕎 R) (n : ℕ) :
     coeff (frobeniusFun x) n = MvPolynomial.aeval x.coeff (frobeniusPoly p n) := by
   rw [frobeniusFun, coeff_mk]
 
-variable (p)
-
+variable (p) in
 /-- `frobeniusFun` is tautologically a polynomial function.
 
 See also `frobenius_isPoly`. -/
 -- Porting note: replaced `@[is_poly]` with `instance`.
 instance frobeniusFun_isPoly : IsPoly p fun R _ Rcr => @frobeniusFun p R _ Rcr :=
   ⟨⟨frobeniusPoly p, by intros; funext n; apply coeff_frobeniusFun⟩⟩
-
-variable {p}
 
 @[ghost_simps]
 theorem ghostComponent_frobeniusFun (n : ℕ) (x : 𝕎 R) :
