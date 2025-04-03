@@ -57,7 +57,7 @@ def mkAllCLI (args : Parsed) : IO UInt32 := do
     let mut allFiles ← getAllModulesSorted git d
     -- mathlib exception: manually import Std and Batteries in `Mathlib.lean`
     if d == "Mathlib" then
-      allFiles := #["Std", "Batteries"] ++ allFiles
+      allFiles := #["Std", "Batteries", "MathlibLinters"] ++ allFiles
     let fileContent := ("\n".intercalate (allFiles.map ("import " ++ ·)).toList).push '\n'
     if !(← pathExists fileName) then
       if check then

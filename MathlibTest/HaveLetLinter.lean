@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Linter.HaveLetLinter
+import MathlibLinters.HaveLetLinter
 import Mathlib.Tactic.Tauto
 
 

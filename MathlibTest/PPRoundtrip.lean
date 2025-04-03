@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Linter.PPRoundtrip
+import MathlibLinters.PPRoundtrip
 
 /--
 info: "a   a"

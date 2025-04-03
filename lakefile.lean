@@ -75,6 +75,9 @@ lean_lib Mathlib where
   -- Mathlib also enforces these linter options, which are not active by default.
   moreServerOptions := mathlibOnlyLinters
 
+lean_lib MathlibLinters where
+  leanOptions := mathlibLeanOptions
+
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
 lean_lib Cache

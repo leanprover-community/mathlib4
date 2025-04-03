@@ -7,7 +7,7 @@ Authors: Damiano Testa, Jeremy Tan, Adomas Baliuka
 import Lean.Elab.Command
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+import MathlibLinters.Header
 
 /-!
 # Linter against deprecated syntax

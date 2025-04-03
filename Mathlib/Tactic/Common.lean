@@ -20,7 +20,8 @@ import Batteries.Tactic.HelpCmd
 import LeanSearchClient
 
 -- Import Mathlib-specific linters.
-import Mathlib.Tactic.Linter.Lint
+import MathlibLinters.Lint
+import MathlibLinters
 
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Tactic.ApplyCongr
@@ -65,7 +66,6 @@ import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lift
-import Mathlib.Tactic.Linter
 import Mathlib.Tactic.MkIffOfInductiveProp
 -- NormNum imports `Algebra.Order.Invertible`, `Data.Int.Basic`, `Data.Nat.Cast.Commute`
 -- import Mathlib.Tactic.NormNum.Basic

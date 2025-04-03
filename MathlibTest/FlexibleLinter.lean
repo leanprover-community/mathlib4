@@ -1,5 +1,5 @@
 import Batteries.Tactic.PermuteGoals
-import Mathlib.Tactic.Linter.FlexibleLinter
+import MathlibLinters.FlexibleLinter
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.Ring
 

@@ -1,5 +1,5 @@
 import Mathlib.Tactic.AdaptationNote
-import Mathlib.Tactic.Linter.DocString
+import MathlibLinters.DocString
 
 /-! Tests for the `docstring` linter -/
 

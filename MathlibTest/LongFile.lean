@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Linter.Style
+import MathlibLinters.Style
 
 /-
 # Testing the `longFile` linter

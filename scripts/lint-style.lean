@@ -6,7 +6,7 @@ Authors: Michael Rothgang
 
 import Lean.Elab.ParseImportsFast
 import Batteries.Data.String.Basic
-import Mathlib.Tactic.Linter.TextBased
+import MathlibLinters.TextBased
 import Cli.Basic
 
 /-!

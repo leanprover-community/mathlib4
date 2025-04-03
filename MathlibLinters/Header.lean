@@ -5,7 +5,7 @@ Authors: Michael Rothgang, Damiano Testa
 -/
 import Lean.Elab.Command
 import Lean.Elab.ParseImportsFast
-import Mathlib.Tactic.Linter.DirectoryDependency
+import MathlibLinters.DirectoryDependency
 
 /-!
 #  The "header" linter

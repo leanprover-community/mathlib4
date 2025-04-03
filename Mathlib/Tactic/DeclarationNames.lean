@@ -8,7 +8,7 @@ import Lean.DeclarationRange
 import Lean.ResolveName
 -- Import this linter explicitly to ensure that
 -- this file has a valid copyright header and module docstring.
-import Mathlib.Tactic.Linter.Header
+import MathlibLinters.Header
 
 /-!
 This file contains functions that are used by multiple linters.

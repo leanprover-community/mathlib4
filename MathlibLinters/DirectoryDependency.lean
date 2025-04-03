@@ -135,6 +135,8 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra),
   (`Mathlib, `Mathlib.Deprecated),
 
+  (`MathlibLinters, `Mathlib),
+
   -- This is used to test the linter.
   (`MathlibTest.Header, `Mathlib.Deprecated),
 

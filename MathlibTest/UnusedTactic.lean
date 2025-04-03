@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Linter.UnusedTactic
+import MathlibLinters.UnusedTactic
 import Mathlib.Tactic.AdaptationNote
 
 example (h : 0 + 1 = 0) : False := by

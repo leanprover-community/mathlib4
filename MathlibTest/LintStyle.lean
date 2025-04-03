@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Linter.Style
+import MathlibLinters.Style
 import Mathlib.Order.SetNotation
 
 /-! Tests for all the style linters. -/

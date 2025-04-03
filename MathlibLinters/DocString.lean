@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang, Damiano Testa
 -/
 
-import Mathlib.Tactic.Linter.Header
+import MathlibLinters.Header
 
 /-!
 #  The "DocString" style linter
