@@ -56,14 +56,11 @@ theorem exp_inj_of_neg_pi_lt_of_le_pi {x y : ℂ} (hx₁ : -π < x.im) (hx₂ : 
     (hy₂ : y.im ≤ π) (hxy : exp x = exp y) : x = y := by
   rw [← log_exp hx₁ hx₂, ← log_exp hy₁ hy₂, hxy]
 
-theorem exp_mul_I_injOn : Set.InjOn (fun (θ : ℝ) => exp (θ * I)) (Set.Ioc (-π) π) :=
-    fun _ hx _ hy he => by
-  rw [← ofReal_inj, ← mul_left_inj' I_ne_zero]
-  rw [Set.mem_Ioc] at hx
-  rw [Set.mem_Ioc] at hy
-  exact exp_inj_of_neg_pi_lt_of_le_pi (by rw [mul_I_im_ofReal]; exact hx.1)
-    (by rw [mul_I_im_ofReal]; exact hx.2) (by rw [mul_I_im_ofReal]; exact hy.1)
-    (by rw [mul_I_im_ofReal]; exact hy.2) he
+theorem exp_mul_I_injOn : Set.InjOn (fun θ : ℝ ↦ exp (θ * I)) (Ioc (-π) π) := by
+  intro x hx y hy he
+  suffices x * I = y * I by aesop
+  refine exp_inj_of_neg_pi_lt_of_le_pi ?_ ?_ ?_ ?_ he
+  all_goals aesop
 
 theorem ofReal_log {x : ℝ} (hx : 0 ≤ x) : (x.log : ℂ) = log x :=
   Complex.ext (by rw [log_re, ofReal_re, Complex.norm_of_nonneg hx])
