@@ -436,6 +436,36 @@ variable (K L : Type*) [Field K] [CharZero K]
 
 #check (LieAlgebra.IsKilling.rootSystem H)
 
+--  eq_top_of_invtSubmodule_reflection (q : Submodule R M) :
+--    (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤
+
+lemma invtSubmodule_reflection (q : Submodule K (Module.Dual K H)) :
+    (∀ (i : H.root), q ∈ Module.End.invtSubmodule
+      ((LieAlgebra.IsKilling.rootSystem H).reflection i)) → q ≠ ⊥ → q = ⊤ := by
+  let S := (LieAlgebra.IsKilling.rootSystem H)
+  by_contra!
+  obtain ⟨q, hq1, hq2, hq3⟩ := this
+  have := RootPairing.l3 (LieAlgebra.IsKilling.rootSystem H) q hq1 hq2 hq3
+  obtain ⟨Φ, hhh1, hhh2, hhh3, hhh4⟩ := this
+  have rr (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) : S.root i (S.coroot j) = 0 := by
+    --obtain ⟨i1, i2⟩ := i
+    --obtain ⟨j1, j2⟩ := j
+    have t1 := hhh2 j h2
+    have t2 := hhh1 i h1
+    sorry
+  sorry
+      --search_proof
+      --simp_all
+      --search_proof
+      --have i ∈ H.root := by
+      --  sorry
+    --simp at hq
+    --dsimp [Module.End.invtSubmodule] at hq
+    --simp
+    --simp at hq
+    --dsimp [RootPairing.reflection] at hq
+
+
 instance : (LieAlgebra.IsKilling.rootSystem H).IsIrreducible where
   nontrivial := by
     have := LieSubalgebra.ne_bot_of_isCartanSubalgebra H
@@ -444,16 +474,8 @@ instance : (LieAlgebra.IsKilling.rootSystem H).IsIrreducible where
     have := LieSubalgebra.ne_bot_of_isCartanSubalgebra H
     exact LieSubalgebra.instNontrivialSubtypeMemOfIsCartanSubalgebra H
   eq_top_of_invtSubmodule_reflection := by
-    by_contra!
-    obtain ⟨q, hq⟩ := this
-    simp at hq
-    dsimp [Module.End.invtSubmodule] at hq
-    --simp
-    simp at hq
-    dsimp [RootPairing.reflection] at hq
-
-
-
+    intro q
+    exact invtSubmodule_reflection K L H q
   eq_top_of_invtSubmodule_coreflection := sorry
 
 end jjj
