@@ -49,6 +49,7 @@ This isn't an instance because it's not usually how we want to construct interna
 we'll usually prove all objects are closed uniformly.
 -/
 def tensorClosed {X Y : C} (hX : Closed X) (hY : Closed Y) : Closed (X ⊗ Y) where
+  rightAdj := Closed.rightAdj X ⋙ Closed.rightAdj Y
   adj := (hY.adj.comp hX.adj).ofNatIsoLeft (MonoidalCategory.tensorLeftTensor X Y).symm
 
 /-- The unit object is always closed.

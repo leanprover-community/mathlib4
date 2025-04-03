@@ -7,6 +7,7 @@ import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Subgroup.MulOpposite
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Cosets
