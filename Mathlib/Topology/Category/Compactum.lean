@@ -84,8 +84,7 @@ namespace Compactum
 
 /-- The forgetful functor to Type* -/
 def forget : Compactum ⥤ Type* :=
-  Monad.forget _ --deriving CreatesLimits, Faithful
-  -- Porting note: deriving fails, adding manually. Note `CreatesLimits` now noncomputable
+  Monad.forget _
 
 instance : forget.Faithful :=
   show (Monad.forget _).Faithful from inferInstance
@@ -148,8 +147,7 @@ theorem join_distrib (X : Compactum) (uux : Ultrafilter (Ultrafilter X)) :
   rw [Monad.Algebra.assoc]
   rfl
 
--- Porting note: changes to X.A from X since Lean can't see through X to X.A below
-instance {X : Compactum} : TopologicalSpace X.A where
+instance {X : Compactum} : TopologicalSpace X where
   IsOpen U := ∀ F : Ultrafilter X, X.str F ∈ U → U ∈ F
   isOpen_univ _ _ := Filter.univ_sets _
   isOpen_inter _ _ h3 h4 _ h6 := Filter.inter_sets _ (h3 _ h6.1) (h4 _ h6.2)

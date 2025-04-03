@@ -3,7 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Yaël Dillies
 -/
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Order.Hom.Basic
 
@@ -482,8 +482,6 @@ theorem closure_union_closure (x y : α) : l (l x ∪ l y) = l (x ∪ y) := by
 theorem closure_iUnion_closure (f : ι → α) : l (⋃ i, l (f i)) = l (⋃ i, f i) :=
   SetLike.coe_injective <| l.closure_iSup_closure _
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[simp]
 theorem closure_iUnion₂_closure (f : ∀ i, κ i → α) :
     l (⋃ (i) (j), l (f i j)) = l (⋃ (i) (j), f i j) :=

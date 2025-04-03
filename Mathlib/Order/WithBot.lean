@@ -21,7 +21,7 @@ Adding a `bot` or a `top` to an order.
 
 * `With<Top/Bot> α`: Equips `Option α` with the order on `α` plus `none` as the top/bottom element.
 
- -/
+-/
 
 variable {α β γ δ : Type*}
 
@@ -63,28 +63,47 @@ theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
 
 /-- Specialization of `Option.getD` to values in `WithBot α` that respects API boundaries.
 -/
-def unbot' (d : α) (x : WithBot α) : α :=
+def unbotD (d : α) (x : WithBot α) : α :=
   recBotCoe d id x
 
-@[simp]
-theorem unbot'_bot {α} (d : α) : unbot' d ⊥ = d :=
-  rfl
+@[deprecated (since := "2025-02-06")]
+alias unbot' := unbotD
 
 @[simp]
-theorem unbot'_coe {α} (d x : α) : unbot' d x = x :=
+theorem unbotD_bot {α} (d : α) : unbotD d ⊥ = d :=
   rfl
+
+@[deprecated (since := "2025-02-06")]
+alias unbot'_bot := unbotD_bot
+
+@[simp]
+theorem unbotD_coe {α} (d x : α) : unbotD d x = x :=
+  rfl
+
+@[deprecated (since := "2025-02-06")]
+alias unbot'_coe := unbotD_coe
 
 theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b := coe_inj
 
-theorem unbot'_eq_iff {d y : α} {x : WithBot α} : unbot' d x = y ↔ x = y ∨ x = ⊥ ∧ y = d := by
+theorem unbotD_eq_iff {d y : α} {x : WithBot α} : unbotD d x = y ↔ x = y ∨ x = ⊥ ∧ y = d := by
   induction x <;> simp [@eq_comm _ d]
 
-@[simp] theorem unbot'_eq_self_iff {d : α} {x : WithBot α} : unbot' d x = d ↔ x = d ∨ x = ⊥ := by
-  simp [unbot'_eq_iff]
+@[deprecated (since := "2025-02-06")]
+alias unbot'_eq_iff := unbotD_eq_iff
 
-theorem unbot'_eq_unbot'_iff {d : α} {x y : WithBot α} :
-    unbot' d x = unbot' d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
- induction y <;> simp [unbot'_eq_iff, or_comm]
+@[simp]
+theorem unbotD_eq_self_iff {d : α} {x : WithBot α} : unbotD d x = d ↔ x = d ∨ x = ⊥ := by
+  simp [unbotD_eq_iff]
+
+@[deprecated (since := "2025-02-06")]
+alias unbot'_eq_self_iff := unbotD_eq_self_iff
+
+theorem unbotD_eq_unbotD_iff {d : α} {x y : WithBot α} :
+    unbotD d x = unbotD d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
+  induction y <;> simp [unbotD_eq_iff, or_comm]
+
+@[deprecated (since := "2025-02-06")]
+alias unbot'_eq_unbot'_iff := unbotD_eq_unbotD_iff
 
 /-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithBot α → WithBot β :=
@@ -132,8 +151,10 @@ lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f
 
 lemma ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x := Option.ne_none_iff_exists
 
-lemma forall_ne_iff_eq_bot {x : WithBot α} : (∀ a : α, ↑a ≠ x) ↔ x = ⊥ :=
-  Option.forall_some_ne_iff_eq_none
+lemma eq_bot_iff_forall_ne {x : WithBot α} : x = ⊥ ↔ ∀ a : α, ↑a ≠ x :=
+  Option.eq_none_iff_forall_some_ne
+
+@[deprecated (since := "2025-03-19")] alias forall_ne_iff_eq_bot := eq_bot_iff_forall_ne
 
 /-- Deconstruct a `x : WithBot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
 def unbot : ∀ x : WithBot α, x ≠ ⊥ → α | (x : α), _ => x
@@ -188,15 +209,6 @@ lemma not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := by simp [le_def]
 
 instance orderBot : OrderBot (WithBot α) where bot_le := by simp [le_def]
 
--- TODO: This deprecated lemma is still used (through simp)
-@[simp, deprecated coe_le_coe "Don't mix Option and WithBot" (since := "2024-05-27")]
-theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔ a ≤ b :=
-  coe_le_coe
-
--- TODO: This deprecated lemma is still used (through simp)
-@[simp, deprecated bot_le "Don't mix Option and WithBot" (since := "2024-05-27")]
-theorem none_le {a : WithBot α} : @LE.le (WithBot α) _ none a := bot_le
-
 instance orderTop [OrderTop α] : OrderTop (WithBot α) where le_top x := by cases x <;> simp [le_def]
 
 instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) :=
@@ -219,7 +231,10 @@ protected theorem _root_.IsMax.withBot (h : IsMax a) : IsMax (a : WithBot α) :=
 
 lemma le_unbot_iff (hy : y ≠ ⊥) : a ≤ unbot y hy ↔ a ≤ y := by lift y to α using id hy; simp
 lemma unbot_le_iff (hx : x ≠ ⊥) : unbot x hx ≤ b ↔ x ≤ b := by lift x to α using id hx; simp
-lemma unbot'_le_iff (hx : x = ⊥ → a ≤ b) : x.unbot' a ≤ b ↔ x ≤ b := by cases x <;> simp [hx]
+lemma unbotD_le_iff (hx : x = ⊥ → a ≤ b) : x.unbotD a ≤ b ↔ x ≤ b := by cases x <;> simp [hx]
+
+@[deprecated (since := "2025-02-06")]
+alias unbot'_le_iff := unbotD_le_iff
 
 end LE
 
@@ -236,18 +251,6 @@ lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b
 @[simp] lemma bot_lt_coe (a : α) : ⊥ < (a : WithBot α) := by simp [lt_def]
 @[simp] protected lemma not_lt_bot (a : WithBot α) : ¬a < ⊥ := by simp [lt_def]
 
--- TODO: This deprecated lemma is still used (through simp)
-@[simp, deprecated coe_lt_coe "Don't mix Option and WithBot" (since := "2024-05-27")]
-theorem some_lt_some : @LT.lt (WithBot α) _ (Option.some a) (Option.some b) ↔ a < b := coe_lt_coe
-
--- TODO: This deprecated lemma is still used (through simp)
-@[simp, deprecated bot_lt_coe "Don't mix Option and WithBot" (since := "2024-05-27")]
-theorem none_lt_some (a : α) : @LT.lt (WithBot α) _ none (some a) := bot_lt_coe _
-
--- TODO: This deprecated lemma is still used (through simp)
-@[simp, deprecated not_lt_bot "Don't mix Option and WithBot" (since := "2024-05-27")]
-theorem not_lt_none (a : WithBot α) : ¬@LT.lt (WithBot α) _ a none := WithBot.not_lt_bot _
-
 lemma lt_iff_exists_coe : x < y ↔ ∃ b : α, y = b ∧ x < b := by cases y <;> simp
 
 lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := by simp [lt_def]
@@ -258,7 +261,10 @@ protected lemma bot_lt_iff_ne_bot : ⊥ < x ↔ x ≠ ⊥ := by cases x <;> simp
 
 lemma lt_unbot_iff (hy : y ≠ ⊥) : a < unbot y hy ↔ a < y := by lift y to α using id hy; simp
 lemma unbot_lt_iff (hx : x ≠ ⊥) : unbot x hx < b ↔ x < b := by lift x to α using id hx; simp
-lemma unbot'_lt_iff (hx : x = ⊥ → a < b) : x.unbot' a < b ↔ x < b := by cases x <;> simp [hx]
+lemma unbotD_lt_iff (hx : x = ⊥ → a < b) : x.unbotD a < b ↔ x < b := by cases x <;> simp [hx]
+
+@[deprecated (since := "2025-02-06")]
+alias unbot'_lt_iff := unbotD_lt_iff
 
 end LT
 
@@ -313,18 +319,24 @@ alias ⟨_, _root_.StrictMono.withBot_map⟩ := strictMono_map_iff
 lemma map_le_iff (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
     x.map f ≤ y.map f ↔ x ≤ y := by cases x <;> cases y <;> simp [mono_iff]
 
-theorem le_coe_unbot' (x : WithBot α) (b : α) : x ≤ x.unbot' b := by cases x <;> simp
+theorem le_coe_unbotD (x : WithBot α) (b : α) : x ≤ x.unbotD b := by cases x <;> simp
+
+@[deprecated (since := "2025-02-06")]
+alias le_coe_unbot' := le_coe_unbotD
 
 @[simp]
 theorem lt_coe_bot [OrderBot α] : x < (⊥ : α) ↔ x = ⊥ := by cases x <;> simp
 
-lemma forall_lt_iff_eq_bot : (∀ b : α, x < b) ↔ x = ⊥ := by
+lemma eq_bot_iff_forall_lt : x = ⊥ ↔ ∀ b : α, x < b := by
   cases x <;> simp; simpa using ⟨_, lt_irrefl _⟩
 
-lemma forall_le_iff_eq_bot [NoMinOrder α] : (∀ b : α, x ≤ b) ↔ x = ⊥ := by
-  refine ⟨fun h ↦ forall_lt_iff_eq_bot.1 fun y ↦ ?_, by simp +contextual⟩
+lemma eq_bot_iff_forall_le [NoMinOrder α] : x = ⊥ ↔ ∀ b : α, x ≤ b := by
+  refine ⟨by simp +contextual, fun h ↦ eq_bot_iff_forall_lt.2 fun y ↦ ?_⟩
   obtain ⟨w, hw⟩ := exists_lt y
   exact (h w).trans_lt (coe_lt_coe.2 hw)
+
+@[deprecated (since := "2025-03-19")] alias forall_lt_iff_eq_bot := eq_bot_iff_forall_lt
+@[deprecated (since := "2025-03-19")] alias forall_le_iff_eq_bot := eq_bot_iff_forall_le
 
 end Preorder
 
@@ -362,12 +374,12 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) where
 instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
-instance decidableLE [LE α] [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := WithBot α) (· ≤ ·)
+instance decidableLE [LE α] [DecidableLE α] : DecidableLE (WithBot α)
   | ⊥, _ => isTrue <| by simp
   | (a : α), ⊥ => isFalse <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_le_coe
 
-instance decidableLT [LT α] [DecidableRel (α := α) (· < ·)] : DecidableRel (α := WithBot α) (· < ·)
+instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithBot α)
   | _, ⊥ => isFalse <| by simp
   | ⊥, (a : α) => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
@@ -527,30 +539,49 @@ theorem ofDual_apply_coe (a : αᵒᵈ) : WithTop.ofDual (a : WithTop αᵒᵈ) 
 
 /-- Specialization of `Option.getD` to values in `WithTop α` that respects API boundaries.
 -/
-def untop' (d : α) (x : WithTop α) : α :=
+def untopD (d : α) (x : WithTop α) : α :=
   recTopCoe d id x
 
-@[simp]
-theorem untop'_top {α} (d : α) : untop' d ⊤ = d :=
-  rfl
+@[deprecated (since := "2025-02-06")]
+alias untop' := untopD
 
 @[simp]
-theorem untop'_coe {α} (d x : α) : untop' d x = x :=
+theorem untopD_top {α} (d : α) : untopD d ⊤ = d :=
   rfl
 
-@[simp, norm_cast] -- Porting note: added `simp`
+@[deprecated (since := "2025-02-06")]
+alias untop'_top := untopD_top
+
+@[simp]
+theorem untopD_coe {α} (d x : α) : untopD d x = x :=
+  rfl
+
+@[deprecated (since := "2025-02-06")]
+alias untop'_coe := untopD_coe
+
+@[simp, norm_cast]
 theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
   Option.some_inj
 
-theorem untop'_eq_iff {d y : α} {x : WithTop α} : untop' d x = y ↔ x = y ∨ x = ⊤ ∧ y = d :=
-  WithBot.unbot'_eq_iff
+theorem untopD_eq_iff {d y : α} {x : WithTop α} : untopD d x = y ↔ x = y ∨ x = ⊤ ∧ y = d :=
+  WithBot.unbotD_eq_iff
 
-@[simp] theorem untop'_eq_self_iff {d : α} {x : WithTop α} : untop' d x = d ↔ x = d ∨ x = ⊤ :=
-  WithBot.unbot'_eq_self_iff
+@[deprecated (since := "2025-02-06")]
+alias untop'_eq_iff := untopD_eq_iff
 
-theorem untop'_eq_untop'_iff {d : α} {x y : WithTop α} :
-    untop' d x = untop' d y ↔ x = y ∨ x = d ∧ y = ⊤ ∨ x = ⊤ ∧ y = d :=
-  WithBot.unbot'_eq_unbot'_iff
+@[simp]
+theorem untopD_eq_self_iff {d : α} {x : WithTop α} : untopD d x = d ↔ x = d ∨ x = ⊤ :=
+  WithBot.unbotD_eq_self_iff
+
+@[deprecated (since := "2025-02-06")]
+alias untop'_eq_self_iff := untopD_eq_self_iff
+
+theorem untopD_eq_untopD_iff {d : α} {x y : WithTop α} :
+    untopD d x = untopD d y ↔ x = y ∨ x = d ∧ y = ⊤ ∨ x = ⊤ ∧ y = d :=
+  WithBot.unbotD_eq_unbotD_iff
+
+@[deprecated (since := "2025-02-06")]
+alias untop'_eq_untop'_iff := untopD_eq_untopD_iff
 
 /-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithTop α → WithTop β :=
@@ -612,8 +643,10 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
 
 lemma ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x := Option.ne_none_iff_exists
 
-lemma forall_ne_iff_eq_top {x : WithTop α} : (∀ a : α, ↑a ≠ x) ↔ x = ⊤ :=
-  Option.forall_some_ne_iff_eq_none
+lemma eq_top_iff_forall_ne {x : WithTop α} : x = ⊤ ↔ ∀ a : α, ↑a ≠ x :=
+  Option.eq_none_iff_forall_some_ne
+
+@[deprecated (since := "2025-03-19")] alias forall_ne_iff_eq_top := eq_top_iff_forall_ne
 
 /-- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
 def untop : ∀ x : WithTop α, x ≠ ⊤ → α | (x : α), _ => x
@@ -662,16 +695,7 @@ lemma le_def : x ≤ y ↔ ∀ b : α, y = ↑b → ∃ a : α, x = ↑a ∧ a �
 
 lemma not_top_le_coe (a : α) : ¬ ⊤ ≤ (a : WithTop α) := by simp [le_def]
 
--- TODO: This deprecated lemma is still used (through simp)
-@[simp, deprecated coe_le_coe "Don't mix Option and WithTop" (since := "2024-05-27")]
-theorem some_le_some : @LE.le (WithTop α) _ (Option.some a) (Option.some b) ↔ a ≤ b :=
-  coe_le_coe
-
 instance orderTop : OrderTop (WithTop α) where le_top := by simp [le_def]
-
--- TODO: This deprecated lemma is still used (through simp)
-@[simp, deprecated le_top "Don't mix Option and WithTop" (since := "2024-05-27")]
-theorem le_none {a : WithTop α} : @LE.le (WithTop α) _ a none := le_top
 
 instance orderBot [OrderBot α] : OrderBot (WithTop α) where bot_le x := by cases x <;> simp [le_def]
 
@@ -695,7 +719,10 @@ protected theorem _root_.IsMin.withTop (h : IsMin a) : IsMin (a : WithTop α) :=
 
 lemma untop_le_iff (hx : x ≠ ⊤) : untop x hx ≤ b ↔ x ≤ b := by lift x to α using id hx; simp
 lemma le_untop_iff (hy : y ≠ ⊤) : a ≤ untop y hy ↔ a ≤ y := by lift y to α using id hy; simp
-lemma le_untop'_iff (hy : y = ⊤ → a ≤ b) : a ≤ y.untop' b ↔ a ≤ y := by cases y <;> simp [hy]
+lemma le_untopD_iff (hy : y = ⊤ → a ≤ b) : a ≤ y.untopD b ↔ a ≤ y := by cases y <;> simp [hy]
+
+@[deprecated (since := "2025-02-11")]
+alias le_untop'_iff := le_untopD_iff
 
 end LE
 
@@ -712,15 +739,6 @@ lemma lt_def : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b
 @[simp] lemma coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by simp [lt_def]
 @[simp] protected lemma not_top_lt (a : WithTop α) : ¬⊤ < a := by simp [lt_def]
 
-@[simp, deprecated coe_lt_coe "Don't mix Option and WithTop" (since := "2024-05-27")]
-theorem some_lt_some : @LT.lt (WithTop α) _ (Option.some a) (Option.some b) ↔ a < b := coe_lt_coe
-
-@[simp, deprecated coe_lt_top "Don't mix Option and WithTop" (since := "2024-05-27")]
-theorem some_lt_none (a : α) : @LT.lt (WithTop α) _ (Option.some a) none := coe_lt_top a
-
-@[simp, deprecated not_top_lt "Don't mix Option and WithTop" (since := "2024-05-27")]
-theorem not_none_lt (a : WithTop α) : ¬@LT.lt (WithTop α) _ none a := WithTop.not_top_lt _
-
 lemma lt_iff_exists_coe : x < y ↔ ∃ a : α, x = a ∧ a < y := by cases x <;> simp
 
 lemma coe_lt_iff : a < y ↔ ∀ b : α, y = b → a < b := by simp [lt_def]
@@ -731,7 +749,10 @@ protected lemma lt_top_iff_ne_top : x < ⊤ ↔ x ≠ ⊤ := by cases x <;> simp
 
 lemma lt_untop_iff (hy : y ≠ ⊤) : a < y.untop hy ↔ a < y := by lift y to α using id hy; simp
 lemma untop_lt_iff (hx : x ≠ ⊤) : x.untop hx < b ↔ x < b := by lift x to α using id hx; simp
-lemma lt_untop'_iff (hy : y = ⊤ → a < b) : a < y.untop' b ↔ a < y := by cases y <;> simp [hy]
+lemma lt_untopD_iff (hy : y = ⊤ → a < b) : a < y.untopD b ↔ a < y := by cases y <;> simp [hy]
+
+@[deprecated (since := "2025-02-11")]
+alias lt_untop'_iff := lt_untopD_iff
 
 end LT
 
@@ -784,16 +805,27 @@ alias ⟨_, _root_.StrictMono.withTop_map⟩ := strictMono_map_iff
 theorem map_le_iff (f : α → β) (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
     x.map f ≤ y.map f ↔ x ≤ y := by cases x <;> cases y <;> simp [mono_iff]
 
-theorem coe_untop'_le (y : WithTop α) (a : α) : y.untop' a ≤ y :=  by cases y <;> simp
+theorem coe_untopD_le (y : WithTop α) (a : α) : y.untopD a ≤ y :=  by cases y <;> simp
+
+@[deprecated (since := "2025-02-11")]
+alias coe_untop'_le := coe_untopD_le
 
 @[simp]
 theorem coe_top_lt [OrderTop α] : (⊤ : α) < x ↔ x = ⊤ := by cases x <;> simp
 
-lemma forall_gt_iff_eq_top : (∀ a : α, a < y) ↔ y = ⊤ := by
+lemma eq_top_iff_forall_gt : y = ⊤ ↔ ∀ a : α, a < y := by
   cases y <;> simp; simpa using ⟨_, lt_irrefl _⟩
 
-lemma forall_ge_iff_eq_top [NoMaxOrder α] : (∀ a : α, a ≤ y) ↔ y = ⊤ :=
-  WithBot.forall_le_iff_eq_bot (α := αᵒᵈ)
+lemma eq_top_iff_forall_ge [NoMaxOrder α] : y = ⊤ ↔ ∀ a : α, a ≤ y :=
+  WithBot.eq_bot_iff_forall_le (α := αᵒᵈ)
+
+@[deprecated (since := "2025-03-19")] alias forall_lt_iff_eq_top := eq_top_iff_forall_gt
+@[deprecated (since := "2025-03-19")] alias forall_le_iff_eq_top := eq_top_iff_forall_ge
+
+lemma forall_coe_le_iff_le [NoMaxOrder α] {x y : WithTop α} : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y := by
+  obtain _ | x := x
+  · simp [WithTop.none_eq_top, eq_top_iff_forall_ge]
+  · exact ⟨fun h ↦ h _ le_rfl, fun hmn a ham ↦ ham.trans hmn⟩
 
 end Preorder
 
@@ -831,12 +863,12 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) where
 instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
-instance decidableLE [LE α] [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := WithTop α) (· ≤ ·)
+instance decidableLE [LE α] [DecidableLE α] : DecidableLE (WithTop α)
   | _, ⊤ => isTrue <| by simp
   | ⊤, (a : α) => isFalse <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_le_coe
 
-instance decidableLT [LT α] [DecidableRel (α := α) (· < ·)] : DecidableRel (α := WithTop α) (· < ·)
+instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithTop α)
   | ⊤, _ => isFalse <| by simp
   | (a : α), ⊤ => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe

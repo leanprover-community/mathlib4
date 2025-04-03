@@ -73,7 +73,7 @@ $$n_i = \sum_j a_{ij} y_j$$
 and for all $j$,
 $$\sum_i a_{ij} m_i = 0.$$
 Note that this condition is not symmetric in $M$ and $N$.
-(The terminology "trivial" comes from [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK).)-/
+(The terminology "trivial" comes from [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK).) -/
 abbrev VanishesTrivially : Prop :=
   ∃ (k : ℕ) (a : ι → Fin k → R) (y : Fin k → N),
     (∀ i, n i = ∑ j, a i j • y j) ∧ ∀ j, ∑ i, a i j • m i = 0

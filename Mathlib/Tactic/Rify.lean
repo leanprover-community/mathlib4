@@ -49,7 +49,7 @@ The proof uses `rify` to lift both assumptions to `ℝ` before calling `linarith
 ```
 example {n : ℕ} {k : ℤ} (hn : 8 ≤ n) (hk : 2 * k ≤ n + 2) :
     (0 : ℝ) < n - k - 1 := by
-  rify at hn hk /- Now have hn : 8 ≤ (n : ℝ)   hk : 2 * (k : ℝ) ≤ (n : ℝ) + 2-/
+  rify at hn hk /- Now have hn : 8 ≤ (n : ℝ)   hk : 2 * (k : ℝ) ≤ (n : ℝ) + 2 -/
   linarith
 ```
 

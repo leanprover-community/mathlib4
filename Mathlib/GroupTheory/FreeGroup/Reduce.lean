@@ -3,9 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.GroupTheory.FreeGroup.Basic
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.Dedup
+import Mathlib.Data.Fintype.Defs
 import Mathlib.Data.List.Sublists
+import Mathlib.GroupTheory.FreeGroup.Basic
 
 /-!
 # The maximal reduction of a word in a free group
@@ -97,7 +98,7 @@ theorem reduce.not {p : Prop} :
         simp only [List.length, zero_add, List.length_append] at this
       omega
     | cons hd tail =>
-      cases' hd with y c
+      obtain ⟨y, c⟩ := hd
       dsimp only
       split_ifs with h <;> intro H
       · rw [H] at r
@@ -116,7 +117,7 @@ only reduces to itself. -/
 theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
   induction' H with L1 L' L2 H1 H2 ih
   · rfl
-  · cases' H1 with L4 L5 x b
+  · obtain ⟨L4, L5, x, b⟩ := H1
     exact reduce.not H2
 
 /-- `reduce` is idempotent, i.e. the maximal reduction of the maximal reduction of a word is the
@@ -315,7 +316,7 @@ theorem norm_inv_eq {x : FreeGroup α} : norm x⁻¹ = norm x := by
 
 @[to_additive (attr := simp)]
 theorem norm_eq_zero {x : FreeGroup α} : norm x = 0 ↔ x = 1 := by
-  simp only [norm, List.length_eq_zero, toWord_eq_nil_iff]
+  simp only [norm, List.length_eq_zero_iff, toWord_eq_nil_iff]
 
 @[to_additive (attr := simp)]
 theorem norm_one : norm (1 : FreeGroup α) = 0 :=
@@ -334,7 +335,7 @@ theorem norm_mul_le (x y : FreeGroup α) : norm (x * y) ≤ norm x + norm y :=
   calc
     norm (x * y) = norm (mk (x.toWord ++ y.toWord)) := by rw [← mul_mk, mk_toWord, mk_toWord]
     _ ≤ (x.toWord ++ y.toWord).length := norm_mk_le
-    _ = norm x + norm y := List.length_append _ _
+    _ = norm x + norm y := List.length_append
 
 @[to_additive (attr := simp)]
 theorem norm_of_pow (a : α) (n : ℕ) : norm (of a ^ n) = n := by

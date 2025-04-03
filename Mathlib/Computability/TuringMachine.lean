@@ -553,7 +553,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
           Nat.sub_self, List.length_singleton, List.getElem_singleton,
           le_refl, Nat.lt_succ_self]
       rw [← proj_map_nth, hL, ListBlank.nth_mk]
-      cases' lt_or_gt_of_ne h with h h
+      rcases lt_or_gt_of_ne h with h | h
       · rw [List.getI_append]
         simpa only [List.length_map, List.length_reverse] using h
       · rw [gt_iff_lt] at h
@@ -571,7 +571,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
       List.reverse_cons, ← List.length_reverse, List.getElem?_concat_length]
     rfl
   | pop f =>
-    cases' e : S k with hd tl
+    rcases e : S k with - | ⟨hd, tl⟩
     · simp only [Tape.mk'_head, ListBlank.head_cons, Tape.move_left_mk', List.length,
         Tape.write_mk', List.head?, iterate_zero_apply, List.tail_nil]
       rw [← e, Function.update_eq_self]
@@ -595,7 +595,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : TM1.Stmt (Γ' K Γ) (Λ'
           · rfl
           rw [h, List.length_reverse, List.length_map]
         rw [← proj_map_nth, hL, ListBlank.nth_mk, e, List.map, List.reverse_cons]
-        cases' lt_or_gt_of_ne h with h h
+        rcases lt_or_gt_of_ne h with h | h
         · rw [List.getI_append]
           simpa only [List.length_map, List.length_reverse] using h
         · rw [gt_iff_lt] at h
@@ -662,7 +662,7 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
   obtain ⟨T', hT', hrun⟩ := tr_respects_aux₂ (Λ := Λ) hT o
   have := hgo.tail' rfl
   rw [tr, TM1.stepAux, Tape.move_right_n_head, Tape.mk'_nth_nat, addBottom_nth_snd,
-    stk_nth_val _ (hT k), List.getElem?_eq_none (le_of_eq (List.length_reverse _)),
+    stk_nth_val _ (hT k), List.getElem?_eq_none (le_of_eq List.length_reverse),
     Option.isNone, cond, hrun, TM1.stepAux] at this
   obtain ⟨c, gc, rc⟩ := IH hT'
   refine ⟨c, gc, (this.to₀.trans (tr_respects_aux₃ M _) c (TransGen.head' rfl ?_)).to_reflTransGen⟩
@@ -674,12 +674,10 @@ attribute [local simp] Respects TM2.step TM2.stepAux trNormal
 theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   intro c₁ c₂ h
-  cases' h with l v S L hT
-  cases' l with l; · constructor
+  obtain @⟨- | l, v, S, L, hT⟩ := h; · constructor
   rsuffices ⟨b, c, r⟩ : ∃ b, _ ∧ Reaches (TM1.step (tr M)) _ _
   · exact ⟨b, c, TransGen.head' rfl r⟩
   simp only [tr]
-  -- Porting note: `refine'` failed because of implicit lambda, so `induction` is used.
   generalize M l = N
   induction N using stmtStRec generalizing v S L hT with
   | H₁ k s q IH => exact tr_respects_aux M hT s @IH
@@ -760,7 +758,7 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
         at sub
       have hgo := sub _ (Or.inl <| Or.inl rfl)
       have hret := sub _ (Or.inl <| Or.inr rfl)
-      cases' IH ss' fun x hx ↦ sub x <| Or.inr hx with IH₁ IH₂
+      obtain ⟨IH₁, IH₂⟩ := IH ss' fun x hx ↦ sub x <| Or.inr hx
       refine ⟨by simp only [trNormal_run, TM1.SupportsStmt]; intros; exact hgo, fun l h ↦ ?_⟩
       rw [trStmts₁_run] at h
       simp only [TM2to1.trStmts₁_run, Finset.mem_union, Finset.mem_insert, Finset.mem_singleton]
@@ -778,8 +776,8 @@ theorem tr_supports {S} (ss : TM2.Supports M S) : TM1.Supports (tr M) (trSupp M 
       exact IH ss' sub
     · intro _ _ _ IH₁ IH₂ ss' sub -- branch
       unfold TM2to1.trStmts₁ at sub
-      cases' IH₁ ss'.1 fun x hx ↦ sub x <| Finset.mem_union_left _ hx with IH₁₁ IH₁₂
-      cases' IH₂ ss'.2 fun x hx ↦ sub x <| Finset.mem_union_right _ hx with IH₂₁ IH₂₂
+      obtain ⟨IH₁₁, IH₁₂⟩ := IH₁ ss'.1 fun x hx ↦ sub x <| Finset.mem_union_left _ hx
+      obtain ⟨IH₂₁, IH₂₂⟩ := IH₂ ss'.2 fun x hx ↦ sub x <| Finset.mem_union_right _ hx
       refine ⟨⟨IH₁₁, IH₂₁⟩, fun l h ↦ ?_⟩
       rw [trStmts₁] at h
       rcases Finset.mem_union.1 h with (h | h) <;> [exact IH₁₂ _ h; exact IH₂₂ _ h]

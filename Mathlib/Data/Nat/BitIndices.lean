@@ -85,8 +85,7 @@ theorem bitIndices_bit_false (n : ℕ) :
 See `Finset.equivBitIndices` for this bijection. -/
 theorem bitIndices_twoPowsum {L : List ℕ} (hL : List.Sorted (· < ·) L) :
     (L.map (fun i ↦ 2^i)).sum.bitIndices = L := by
-  cases' L with a L
-  · simp
+  cases L with | nil => simp | cons a L =>
   obtain ⟨haL, hL⟩ := sorted_cons.1 hL
   simp_rw [Nat.lt_iff_add_one_le] at haL
   have h' : ∃ (L₀ : List ℕ), L₀.Sorted (· < ·) ∧ L = L₀.map (· + a + 1) := by
@@ -111,7 +110,7 @@ termination_by L.length
 
 theorem two_pow_le_of_mem_bitIndices (ha : a ∈ n.bitIndices) : 2^a ≤ n := by
   rw [← twoPowSum_bitIndices n]
-  exact List.single_le_sum (by simp) _ <| mem_map_of_mem _ ha
+  exact List.single_le_sum (by simp) _ <| mem_map_of_mem ha
 
 theorem not_mem_bitIndices_self (n : ℕ) : n ∉ n.bitIndices :=
   fun h ↦ (n.lt_two_pow_self).not_le <| two_pow_le_of_mem_bitIndices h

@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 /-!
 # Matrix algebra is an Azumaya algebra over R
 
-In this file we prove that finite dimesional matrix algebra `Matrix n n R` over `R`
+In this file we prove that finite dimensional matrix algebra `Matrix n n R` over `R`
 is an Azumaya algebra where `R` is a commutative ring.
 
 ## Main Results
@@ -35,7 +35,7 @@ abbrev AlgHom.mulLeftRightMatrix_inv :
   map_add' f1 f2 := by simp [add_smul, Finset.sum_add_distrib]
   map_smul' r f := by simp [MulAction.mul_smul, Finset.smul_sum]
 
-lemma AlgHom.mulLeftRightMatrix.inv_comp:
+lemma AlgHom.mulLeftRightMatrix.inv_comp :
     (AlgHom.mulLeftRightMatrix_inv R n).comp
     (AlgHom.mulLeftRight R (Matrix n n R)).toLinearMap = .id :=
   Basis.ext (Basis.tensorProduct (Matrix.stdBasis _ _ _)
@@ -44,13 +44,15 @@ lemma AlgHom.mulLeftRightMatrix.inv_comp:
     simp [stdBasis_eq_stdBasisMatrix, ite_and, Fintype.sum_prod_type,
       mulLeftRight_apply, stdBasisMatrix, Matrix.mul_apply]
 
-lemma AlgHom.mulLeftRightMatrix.comp_inv:
+lemma AlgHom.mulLeftRightMatrix.comp_inv :
     (AlgHom.mulLeftRight R (Matrix n n R)).toLinearMap.comp
     (AlgHom.mulLeftRightMatrix_inv R n) = .id := by
   ext f : 1
   apply Basis.ext (Matrix.stdBasis _ _ _)
   intro ⟨i, j⟩
-  simp [AlgHom.mulLeftRight_apply, stdBasis_eq_stdBasisMatrix]
+  simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, map_sum,
+    _root_.map_smul, stdBasis_eq_stdBasisMatrix, LinearMap.coeFn_sum, Finset.sum_apply,
+    LinearMap.smul_apply, LinearMap.id_coe, id_eq]
   ext k l
   simp [sum_apply, Matrix.mul_apply, Finset.sum_mul, Finset.mul_sum, stdBasisMatrix,
     Fintype.sum_prod_type, ite_and]

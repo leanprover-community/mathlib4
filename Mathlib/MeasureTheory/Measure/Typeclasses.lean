@@ -232,6 +232,10 @@ lemma prob_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α}
   apply (measure_mono (subset_univ _)).trans
   rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with h | h <;> simp [h]
 
+lemma toReal_prob_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α} :
+    (μ s).toReal ≤ 1 :=
+  ENNReal.toReal_le_of_le_ofReal zero_le_one (ENNReal.ofReal_one.symm ▸ prob_le_one)
+
 @[simp]
 theorem one_le_prob_iff {μ : Measure α} [IsZeroOrProbabilityMeasure μ] : 1 ≤ μ s ↔ μ s = 1 :=
   ⟨fun h => le_antisymm prob_le_one h, fun h => h ▸ le_refl _⟩
@@ -268,13 +272,11 @@ theorem IsProbabilityMeasure.ne_zero (μ : Measure α) [IsProbabilityMeasure μ]
 instance (priority := 100) IsProbabilityMeasure.neZero (μ : Measure α) [IsProbabilityMeasure μ] :
     NeZero μ := ⟨IsProbabilityMeasure.ne_zero μ⟩
 
--- Porting note: no longer an `instance` because `inferInstance` can find it now
 theorem IsProbabilityMeasure.ae_neBot [IsProbabilityMeasure μ] : NeBot (ae μ) := inferInstance
 
 theorem prob_add_prob_compl [IsProbabilityMeasure μ] (h : MeasurableSet s) : μ s + μ sᶜ = 1 :=
   (measure_add_measure_compl h).trans measure_univ
 
--- Porting note: made an `instance`, using `NeZero`
 instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
     IsProbabilityMeasure ((μ univ)⁻¹ • μ) :=
   ⟨ENNReal.inv_mul_cancel (NeZero.ne (μ univ)) (measure_ne_top _ _)⟩
@@ -380,6 +382,10 @@ lemma prob_compl_le_one_sub_of_le_prob {p : ℝ≥0∞} (hμs : p ≤ μ s) (s_m
   rcases eq_zero_or_isProbabilityMeasure μ with rfl | h
   · simp
   · simpa [prob_compl_eq_one_sub s_mble] using tsub_le_tsub_left hμs 1
+
+@[simp]
+lemma inv_measure_univ_smul_eq_self : (μ univ)⁻¹ • μ = μ := by
+  rcases eq_zero_or_isProbabilityMeasure μ with h | h <;> simp [h]
 
 end IsZeroOrProbabilityMeasure
 
@@ -627,12 +633,6 @@ theorem exists_isFiniteMeasure_absolutelyContinuous [SFinite μ] :
     simp [(hc₀ _).ne']
   refine ⟨.sum fun n ↦ c n • sfiniteSeq μ n, ⟨?_⟩, fun _ ↦ this.1, fun _ ↦ this.2⟩
   simpa [mul_comm] using hc
-
-variable (μ) in
-@[deprecated exists_isFiniteMeasure_absolutelyContinuous (since := "2024-08-25")]
-theorem exists_absolutelyContinuous_isFiniteMeasure [SFinite μ] :
-    ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν :=
-  let ⟨ν, hfin, h, _⟩ := exists_isFiniteMeasure_absolutelyContinuous μ; ⟨ν, hfin, h⟩
 
 end SFinite
 

@@ -58,7 +58,7 @@ map to `Q`, i.e. in the following diagram, if `f` is injective then there is an 
     ∃ h : Y →ₗ[R] Q, ∀ x, h (f x) = g x
 
 /-- An `R`-module `Q` satisfies Baer's criterion if any `R`-linear map from an `Ideal R` extends to
-an `R`-linear map `R ⟶ Q`-/
+an `R`-linear map `R ⟶ Q` -/
 def Module.Baer : Prop :=
   ∀ (I : Ideal R) (g : I →ₗ[R] Q), ∃ g' : R →ₗ[R] Q, ∀ (x : R) (mem : x ∈ I), g' x = g ⟨x, mem⟩
 
@@ -149,7 +149,7 @@ def ExtensionOf.max {c : Set (ExtensionOf i f)} (hchain : IsChain (· ≤ ·) c)
     is_extension := fun m => by
       refine Eq.trans (hnonempty.some.is_extension m) ?_
       symm
-      generalize_proofs _ h1
+      generalize_proofs _ _ h1
       exact
         LinearPMap.sSup_apply (IsChain.directedOn <| chain_linearPMap_of_chain_extensionOf hchain)
           ((Set.mem_image _ _ _).mpr ⟨hnonempty.some, hnonempty.choose_spec, rfl⟩) ⟨i m, h1⟩ }
@@ -228,7 +228,7 @@ theorem ExtensionOfMaxAdjoin.eqn {y : N} (x : supExtensionOfMaxSingleton i f y) 
 variable (f)
 
 -- TODO: refactor to use colon ideals?
-/-- The ideal `I = {r | r • y ∈ N}`-/
+/-- The ideal `I = {r | r • y ∈ N}` -/
 def ExtensionOfMaxAdjoin.ideal (y : N) : Ideal R :=
   (extensionOfMax i f).domain.comap ((LinearMap.id : R →ₗ[R] R).smulRight y)
 
@@ -245,7 +245,7 @@ def ExtensionOfMaxAdjoin.idealTo (y : N) : ExtensionOfMaxAdjoin.ideal i f y →�
     apply mul_smul
 
 /-- Since we assumed `Q` being Baer, the linear map `x ↦ f' (x • y) : I ⟶ Q` extends to `R ⟶ Q`,
-call this extended map `φ`-/
+call this extended map `φ` -/
 def ExtensionOfMaxAdjoin.extendIdealTo (h : Module.Baer R Q) (y : N) : R →ₗ[R] Q :=
   (h (ExtensionOfMaxAdjoin.ideal i f y) (ExtensionOfMaxAdjoin.idealTo i f y)).choose
 
@@ -290,7 +290,7 @@ theorem ExtensionOfMaxAdjoin.extensionToFun_wd (h : Module.Baer R Q) {y : N}
     (r : R) (eq1 : ↑x = ↑a + r • y) :
     ExtensionOfMaxAdjoin.extensionToFun i f h x =
       (extensionOfMax i f).toLinearPMap a + ExtensionOfMaxAdjoin.extendIdealTo i f h y r := by
-  cases' a with a ha
+  obtain ⟨a, ha⟩ := a
   have eq2 :
     (ExtensionOfMaxAdjoin.fst i x - a : N) = (r - ExtensionOfMaxAdjoin.snd i x) • y := by
     change x = a + r • y at eq1
@@ -308,7 +308,7 @@ theorem ExtensionOfMaxAdjoin.extensionToFun_wd (h : Module.Baer R Q) {y : N}
   rw [Subtype.coe_mk, add_sub, ← eq1]
   exact eq_sub_of_add_eq (ExtensionOfMaxAdjoin.eqn i x).symm
 
-/-- The linear map `M ⊔ ⟨y⟩ ⟶ Q` by `x + r • y ↦ f x + φ r` is an extension of `f`-/
+/-- The linear map `M ⊔ ⟨y⟩ ⟶ Q` by `x + r • y ↦ f x + φ r` is an extension of `f` -/
 def extensionOfMaxAdjoin (h : Module.Baer R Q) (y : N) : ExtensionOf i f where
   domain := supExtensionOfMaxSingleton i f y -- (extensionOfMax i f).domain ⊔ Submodule.span R {y}
   le := le_trans (extensionOfMax i f).le le_sup_left

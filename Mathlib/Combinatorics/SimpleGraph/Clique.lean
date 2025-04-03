@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Finset.Pairwise
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Lattice
 
@@ -148,6 +149,34 @@ protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsCl
     (G.map f).IsClique (s.map f) := by
   simpa
 
+/-- If a set of vertices `A` is a clique in subgraph of `G` induced by a superset of `A`,
+ its embedding is a clique in `G`. -/
+theorem IsClique.of_induce {S : Subgraph G} {F : Set α} {A : Set F}
+    (c : (S.induce F).coe.IsClique A) : G.IsClique (Subtype.val '' A) := by
+  simp only [Set.Pairwise, Set.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
+  intro _ ⟨_, ainA⟩ _ ⟨_, binA⟩ anb
+  exact S.adj_sub (c ainA binA (Subtype.coe_ne_coe.mp anb)).2.2
+
+lemma IsClique.sdiff_of_sup_edge {v w : α} {s : Set α} (hc : (G ⊔ edge v w).IsClique s) :
+    G.IsClique (s \ {v}) := by
+  intro _ hx _ hy hxy
+  have := hc hx.1 hy.1 hxy
+  simp_all [sup_adj, edge_adj]
+
+lemma isClique_sup_edge_of_ne_sdiff {v w : α} {s : Set α} (h : v ≠ w ) (hv : G.IsClique (s \ {v}))
+    (hw : G.IsClique (s \ {w})) : (G ⊔ edge v w).IsClique s := by
+  intro x hx y hy hxy
+  by_cases h' : x ∈ s \ {v} ∧ y ∈ s \ {v} ∨ x ∈ s \ {w} ∧ y ∈ s \ {w}
+  · obtain (⟨hx, hy⟩ | ⟨hx, hy⟩) := h'
+    · exact hv.mono le_sup_left hx hy hxy
+    · exact hw.mono le_sup_left hx hy hxy
+  · exact Or.inr ⟨by by_cases x = v <;> aesop, hxy⟩
+
+lemma isClique_sup_edge_of_ne_iff {v w : α} {s : Set α} (h : v ≠ w) :
+    (G ⊔ edge v w).IsClique s ↔ G.IsClique (s \ {v}) ∧ G.IsClique (s \ {w}) :=
+  ⟨fun h' ↦ ⟨h'.sdiff_of_sup_edge, (edge_comm .. ▸ h').sdiff_of_sup_edge⟩,
+    fun h' ↦ isClique_sup_edge_of_ne_sdiff h h'.1 h'.2⟩
+
 end Clique
 
 /-! ### `n`-cliques -/
@@ -213,12 +242,24 @@ section DecidableEq
 
 variable [DecidableEq α]
 
-theorem IsNClique.insert (hs : G.IsNClique n s) (h : ∀ b ∈ s, G.Adj a b) :
+protected theorem IsNClique.insert (hs : G.IsNClique n s) (h : ∀ b ∈ s, G.Adj a b) :
     G.IsNClique (n + 1) (insert a s) := by
   constructor
   · push_cast
     exact hs.1.insert fun b hb _ => h _ hb
   · rw [card_insert_of_not_mem fun ha => (h _ ha).ne rfl, hs.2]
+
+lemma IsNClique.erase_of_mem (hs : G.IsNClique n s) (ha : a ∈ s) :
+    G.IsNClique (n - 1) (s.erase a) where
+  isClique := hs.isClique.subset <| by simp
+  card_eq := by rw [card_erase_of_mem ha, hs.2]
+
+protected lemma IsNClique.insert_erase
+    (hs : G.IsNClique n s) (ha : ∀ w ∈ s \ {b}, G.Adj a w) (hb : b ∈ s) :
+    G.IsNClique n (insert a (erase s b)) := by
+  cases n with
+  | zero => exact False.elim <| not_mem_empty _ (isNClique_zero.1 hs ▸ hb)
+  | succ _ => exact (hs.erase_of_mem hb).insert fun w h ↦ by aesop
 
 theorem is3Clique_triple_iff : G.IsNClique 3 {a, b, c} ↔ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
   simp only [isNClique_iff, isClique_iff, Set.pairwise_insert_of_symmetric G.symm, coe_insert]
@@ -243,6 +284,20 @@ theorem is3Clique_iff_exists_cycle_length_three :
   exact
     ⟨(fun ⟨_, a, _, _, hab, hac, hbc, _⟩ => ⟨a, cons hab (cons hbc (cons hac.symm nil)), by aesop⟩),
     (fun ⟨_, .cons hab (.cons hbc (.cons hca nil)), _, _⟩ => ⟨_, _, _, _, hab, hca.symm, hbc, rfl⟩)⟩
+
+/-- If a set of vertices `A` is an `n`-clique in subgraph of `G` induced by a superset of `A`,
+ its embedding is an `n`-clique in `G`. -/
+theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ}
+    (cc : (S.induce F).coe.IsNClique n s) :
+    G.IsNClique n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
+  rw [isNClique_iff] at cc ⊢
+  simp only [Subgraph.induce_verts, coe_map, card_map]
+  exact ⟨cc.left.of_induce, cc.right⟩
+
+lemma IsNClique.erase_of_sup_edge_of_mem [DecidableEq α] {v w : α} {s : Finset α} {n : ℕ}
+    (hc : (G ⊔ edge v w).IsNClique n s) (hx : v ∈ s) : G.IsNClique (n - 1) (s.erase v) where
+  isClique := coe_erase v _ ▸ hc.1.sdiff_of_sup_edge
+  card_eq  := by rw [card_erase_of_mem hx, hc.2]
 
 end NClique
 
@@ -271,11 +326,8 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
   simp only [coe_map, Set.mem_image, coe_univ, Set.mem_univ, true_and] at hv hw
   obtain ⟨v', rfl⟩ := hv
   obtain ⟨w', rfl⟩ := hw
-  simp only [coe_sort_coe, RelEmbedding.coe_toEmbedding, comap_adj, Function.Embedding.coe_subtype,
-    f.map_adj_iff, top_adj, ne_eq, Subtype.mk.injEq, RelEmbedding.inj]
-  -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
-  erw [Function.Embedding.coe_subtype, f.map_adj_iff]
-  simp
+  simp_rw [RelEmbedding.coe_toEmbedding, comap_adj, Function.Embedding.coe_subtype, f.map_adj_iff,
+    top_adj, ne_eq, Subtype.mk.injEq, RelEmbedding.inj]
 
 /-- An embedding of a complete graph that witnesses the fact that the graph is not clique-free. -/
 noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
@@ -380,35 +432,18 @@ theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
   · rintro rfl
     exact cliqueFree_bot le_rfl
 
+lemma CliqueFree.mem_of_sup_edge_isNClique {x y : α} {t : Finset α} {n : ℕ} (h : G.CliqueFree n)
+    (hc : (G ⊔ edge x y).IsNClique n t) : x ∈ t := by
+  by_contra! hf
+  have ht : (t : Set α) \ {x} = t := sdiff_eq_left.mpr <| Set.disjoint_singleton_right.mpr hf
+  exact h t ⟨ht ▸ hc.1.sdiff_of_sup_edge, hc.2⟩
+
+open Classical in
 /-- Adding an edge increases the clique number by at most one. -/
 protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
-    (G ⊔ edge v w).CliqueFree (n + 1) := by
-  contrapose h
-  obtain ⟨f, ha⟩ := topEmbeddingOfNotCliqueFree h
-  simp only [ne_eq, top_adj] at ha
-  rw [not_cliqueFree_iff]
-  by_cases mw : w ∈ Set.range f
-  · obtain ⟨x, hx⟩ := mw
-    use ⟨f ∘ x.succAboveEmb, f.2.comp Fin.succAbove_right_injective⟩
-    intro a b
-    simp_rw [Embedding.coeFn_mk, comp_apply, Fin.succAboveEmb_apply, top_adj]
-    have hs := @ha (x.succAbove a) (x.succAbove b)
-    have ia : w ≠ f (x.succAbove a) :=
-      (hx ▸ f.apply_eq_iff_eq x (x.succAbove a)).ne.mpr (x.succAbove_ne a).symm
-    have ib : w ≠ f (x.succAbove b) :=
-      (hx ▸ f.apply_eq_iff_eq x (x.succAbove b)).ne.mpr (x.succAbove_ne b).symm
-    rw [sup_adj, edge_adj] at hs
-    simp only [ia.symm, ib.symm, and_false, false_and, or_false] at hs
-    rw [hs, Fin.succAbove_right_inj]
-  · use ⟨f ∘ Fin.succEmb n, (f.2.of_comp_iff _).mpr (Fin.succ_injective _)⟩
-    intro a b
-    simp only [Fin.val_succEmb, Embedding.coeFn_mk, comp_apply, top_adj]
-    have hs := @ha a.succ b.succ
-    have ia : f a.succ ≠ w := by simp_all
-    have ib : f b.succ ≠ w := by simp_all
-    rw [sup_adj, edge_adj] at hs
-    simp only [ia, ib, and_false, false_and, or_false] at hs
-    rw [hs, Fin.succ_inj]
+   (G ⊔ edge v w).CliqueFree (n + 1) :=
+  fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
+    (h.mono n.le_succ).mem_of_sup_edge_isNClique hs).not_cliqueFree h
 
 end CliqueFree
 
@@ -707,6 +742,12 @@ theorem isIndepSet_neighborSet_of_triangleFree [DecidableEq α] (h: G.CliqueFree
   obtain ⟨j, avj, k, avk, _, ajk⟩ := nind
   exact h {v, j, k} (is3Clique_triple_iff.mpr (by simp [avj, avk, ajk]))
 
+/-- The embedding of an independent set of an induced subgraph of the subgraph `G` is an independent
+ set in `G` and vice versa. -/
+theorem isIndepSet_induce {F : Set α} {s : Set F} :
+    ((⊤ : Subgraph G).induce F).coe.IsIndepSet s ↔ G.IsIndepSet (Subtype.val '' s) := by
+  simp [Set.Pairwise]
+
 end IndepSet
 
 /-! ### N-Independent sets -/
@@ -736,6 +777,13 @@ instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
     Decidable (G.IsNIndepSet n s) :=
   decidable_of_iff' _ (G.isNIndepSet_iff n s)
 
+/-- The embedding of an `n`-independent set of an induced subgraph of the subgraph `G` is an
+`n`-independent set in `G` and vice versa. -/
+theorem isNIndepSet_induce {F : Set α} {s : Finset { x // x ∈ F }} {n : ℕ} :
+    ((⊤ : Subgraph G).induce F).coe.IsNIndepSet n ↑s ↔
+    G.IsNIndepSet n (Finset.map ⟨Subtype.val, Subtype.val_injective⟩ s) := by
+  simp [isNIndepSet_iff, (isIndepSet_induce)]
+
 end NIndepSet
 
 /-! ### Graphs without independent sets -/
@@ -763,7 +811,7 @@ def IndepSetFreeOn (G : SimpleGraph α) (s : Set α) (n : ℕ) : Prop :=
 
 end IndepSetFree
 
-/-! ### Set of independent sets-/
+/-! ### Set of independent sets -/
 
 
 section IndepSetSet
@@ -782,7 +830,7 @@ theorem mem_indepSetSet_iff : s ∈ G.indepSetSet n ↔ G.IsNIndepSet n s :=
 
 end IndepSetSet
 
-/-! ### Independence Number-/
+/-! ### Independence Number -/
 
 
 section IndepNumber

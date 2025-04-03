@@ -3,10 +3,10 @@ Copyright (c) 2021 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Filtered
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.Types.Filtered
+import Mathlib.Algebra.Category.MonCat.Basic
 
 /-!
 # The forgetful functor from (commutative) (additive) monoids preserves filtered colimits.
@@ -36,7 +36,7 @@ section
 
 -- Porting note: mathlib 3 used `parameters` here, mainly so we can have the abbreviations `M` and
 -- `M.mk` below, without passing around `F` all the time.
-variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCatMax.{v, u})
+variable {J : Type v} [SmallCategory J] (F : J ⥤ MonCat.{max v u})
 
 /-- The colimit of `F ⋙ forget MonCat` in the category of types.
 In the following, we will construct a monoid structure on `M`.
@@ -108,15 +108,8 @@ theorem colimitMulAux_eq_of_rel_left {x x' y : Σ j, F.obj j}
       (IsFiltered.rightToMax j₃ j₂) (IsFiltered.leftToMax j₃ j₂) f g
   apply M.mk_eq
   use s, α, γ
-  dsimp
-  simp_rw [MonoidHom.map_mul]
-  -- Porting note: Lean cannot seem to use lemmas from concrete categories directly
-  change (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _ =
-    (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _
-  simp_rw [← F.map_comp, h₁, h₂, h₃, F.map_comp]
-  congr 1
-  change F.map _ (F.map _ _) = F.map _ (F.map _ _)
-  rw [hfg]
+  simp_rw [MonoidHom.map_mul, ← ConcreteCategory.comp_apply, ← F.map_comp, h₁, h₂, h₃, F.map_comp,
+    ConcreteCategory.comp_apply, hfg]
 
 /-- Multiplication in the colimit is well-defined in the right argument. -/
 @[to_additive "Addition in the colimit is well-defined in the right argument."]
@@ -132,14 +125,8 @@ theorem colimitMulAux_eq_of_rel_right {x y y' : Σ j, F.obj j}
   apply M.mk_eq
   use s, α, γ
   dsimp
-  simp_rw [MonoidHom.map_mul]
-  -- Porting note: Lean cannot seem to use lemmas from concrete categories directly
-  change (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _ =
-    (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _
-  simp_rw [← F.map_comp, h₁, h₂, h₃, F.map_comp]
-  congr 1
-  change F.map _ (F.map _ _) = F.map _ (F.map _ _)
-  rw [hfg]
+  simp_rw [MonoidHom.map_mul, ← ConcreteCategory.comp_apply, ← F.map_comp, h₁, h₂, h₃, F.map_comp,
+    ConcreteCategory.comp_apply, hfg]
 
 /-- Multiplication in the colimit. See also `colimitMulAux`. -/
 @[to_additive "Addition in the colimit. See also `colimitAddAux`."]
@@ -171,11 +158,7 @@ theorem colimit_mul_mk_eq (x y : Σ j, F.obj j) (k : J) (f : x.1 ⟶ k) (g : y.1
   refine M.mk_eq F _ _ ?_
   use s, α, β
   dsimp
-  simp_rw [MonoidHom.map_mul]
-  -- Porting note: Lean cannot seem to use lemmas from concrete categories directly
-  change (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _ =
-    (F.map _ ≫ F.map _) _ * (F.map _ ≫ F.map _) _
-  simp_rw [← F.map_comp, h₁, h₂]
+  simp_rw [MonoidHom.map_mul, ← ConcreteCategory.comp_apply, ← F.map_comp, h₁, h₂]
 
 @[to_additive]
 noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
@@ -186,17 +169,13 @@ noncomputable instance colimitMulOneClass : MulOneClass (M.{v, u} F) :=
       intro x
       obtain ⟨j, x⟩ := x
       rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, 1⟩ ⟨j, x⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
-        one_mul, F.map_id]
-      -- Porting note: `id_apply` does not work here, but the two sides are def-eq
-      rfl
+        one_mul, F.map_id, id_apply]
     mul_one := fun x => by
       refine Quot.inductionOn x ?_
       intro x
       obtain ⟨j, x⟩ := x
       rw [colimit_one_eq F j, colimit_mul_mk_eq F ⟨j, x⟩ ⟨j, 1⟩ j (𝟙 j) (𝟙 j), MonoidHom.map_one,
-        mul_one, F.map_id]
-      -- Porting note: `id_apply` does not work here, but the two sides are def-eq
-      rfl }
+        mul_one, F.map_id, id_apply] }
 
 @[to_additive]
 noncomputable instance colimitMonoid : Monoid (M.{v, u} F) :=
@@ -280,11 +259,8 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt :=
       rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
         (IsFiltered.rightToMax i j)]
       dsimp [Types.TypeMax.colimitCoconeIsColimit]
-      rw [MonoidHom.map_mul]
-      -- Porting note: `rw` can't see through coercion is actually forgetful functor,
-      -- so can't rewrite `t.w_apply`
-      congr 1 <;>
-      exact t.w_apply _ _ }
+      rw [MonoidHom.map_mul, t.w_apply, t.w_apply]
+      rfl }
 
 /-- The proposed colimit cocone is a colimit in `MonCat`. -/
 @[to_additive "The proposed colimit cocone is a colimit in `AddMonCat`."]

@@ -37,8 +37,9 @@ class IsOpenUnits (M : Type*) [Monoid M] [TopologicalSpace M] : Prop where
   isOpenEmbedding_unitsVal : IsOpenEmbedding (Units.val : Mˣ → M)
 
 instance (priority := 900) (M : Type*) [Monoid M] [TopologicalSpace M] [DiscreteTopology M] :
-    IsOpenUnits M := ⟨.of_continuous_injective_isOpenMap Units.continuous_val Units.ext
-      fun _ _ ↦ isOpen_discrete _⟩
+    IsOpenUnits M where
+  isOpenEmbedding_unitsVal :=
+    .of_continuous_injective_isOpenMap Units.continuous_val Units.ext fun _ _ ↦ isOpen_discrete _
 
 instance (priority := 900) {M : Type*} [Group M] [TopologicalSpace M] [ContinuousInv M] :
     IsOpenUnits M where
@@ -55,7 +56,7 @@ instance (priority := 900) {M : Type*} [GroupWithZero M]
 
 /-- If `R` has the `I`-adic topology where `I` is contained in the jacobson radical
 (e.g. when `R` is complete or local), then `Rˣ` is an open subspace of `R`. -/
-lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [TopologicalRing R]
+lemma IsOpenUnits.of_isAdic {R : Type*} [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
     {I : Ideal R}
     (hR : IsAdic I) (hI : I ≤ Ideal.jacobson ⊥) :
     IsOpenUnits R := by

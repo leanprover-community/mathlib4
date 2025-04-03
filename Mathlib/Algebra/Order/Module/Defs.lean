@@ -523,7 +523,7 @@ section PartialOrder
 variable [PartialOrder α] [Preorder β]
 
 /-- A constructor for `PosSMulMono` requiring you to prove `b₁ ≤ b₂ → a • b₁ ≤ a • b₂` only when
-`0 < a`-/
+`0 < a` -/
 lemma PosSMulMono.of_pos (h₀ : ∀ a : α, 0 < a → ∀ b₁ b₂ : β, b₁ ≤ b₂ → a • b₁ ≤ a • b₂) :
     PosSMulMono α β where
   elim a ha b₁ b₂ h := by
@@ -532,7 +532,7 @@ lemma PosSMulMono.of_pos (h₀ : ∀ a : α, 0 < a → ∀ b₁ b₂ : β, b₁ 
     · exact h₀ _ ha _ _ h
 
 /-- A constructor for `PosSMulReflectLT` requiring you to prove `a • b₁ < a • b₂ → b₁ < b₂` only
-when `0 < a`-/
+when `0 < a` -/
 lemma PosSMulReflectLT.of_pos (h₀ : ∀ a : α, 0 < a → ∀ b₁ b₂ : β, a • b₁ < a • b₂ → b₁ < b₂) :
     PosSMulReflectLT α β where
   elim a ha b₁ b₂ h := by
@@ -546,7 +546,7 @@ section PartialOrder
 variable [Preorder α] [PartialOrder β]
 
 /-- A constructor for `SMulPosMono` requiring you to prove `a₁ ≤ a₂ → a₁ • b ≤ a₂ • b` only when
-`0 < b`-/
+`0 < b` -/
 lemma SMulPosMono.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ ≤ a₂ → a₁ • b ≤ a₂ • b) :
     SMulPosMono α β where
   elim b hb a₁ a₂ h := by
@@ -555,7 +555,7 @@ lemma SMulPosMono.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ 
     · exact h₀ _ hb _ _ h
 
 /-- A constructor for `SMulPosReflectLT` requiring you to prove `a₁ • b < a₂ • b → a₁ < a₂` only
-when `0 < b`-/
+when `0 < b` -/
 lemma SMulPosReflectLT.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ • b < a₂ • b → a₁ < a₂) :
     SMulPosReflectLT α β where
   elim b hb a₁ a₂ h := by
@@ -924,7 +924,7 @@ variable [LinearOrderedRing α] [LinearOrderedAddCommGroup β] [Module α β] [P
 
 lemma nonneg_and_nonneg_or_nonpos_and_nonpos_of_smul_nonneg (hab : 0 ≤ a • b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
-  simp only [Decidable.or_iff_not_and_not, not_and, not_le]
+  simp only [Decidable.or_iff_not_not_and_not, not_and, not_le]
   refine fun ab nab ↦ hab.not_lt ?_
   obtain ha | rfl | ha := lt_trichotomy 0 a
   exacts [smul_neg_of_pos_of_neg ha (ab ha.le), ((ab le_rfl).asymm (nab le_rfl)).elim,

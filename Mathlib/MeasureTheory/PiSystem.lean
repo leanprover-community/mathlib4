@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
 -/
 import Mathlib.Logic.Encodable.Lattice
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
+import Mathlib.Order.Disjointed
 
 /-!
 # Induction principles for measurable sets, related to π-systems and λ-systems.
@@ -81,18 +82,18 @@ theorem IsPiSystem.singleton (S : Set α) : IsPiSystem ({S} : Set (Set α)) := b
 theorem IsPiSystem.insert_empty {S : Set (Set α)} (h_pi : IsPiSystem S) :
     IsPiSystem (insert ∅ S) := by
   intro s hs t ht hst
-  cases' hs with hs hs
+  rcases hs with hs | hs
   · simp [hs]
-  · cases' ht with ht ht
+  · rcases ht with ht | ht
     · simp [ht]
     · exact Set.mem_insert_of_mem _ (h_pi s hs t ht hst)
 
 theorem IsPiSystem.insert_univ {S : Set (Set α)} (h_pi : IsPiSystem S) :
     IsPiSystem (insert Set.univ S) := by
   intro s hs t ht hst
-  cases' hs with hs hs
-  · cases' ht with ht ht <;> simp [hs, ht]
-  · cases' ht with ht ht
+  rcases hs with hs | hs
+  · rcases ht with ht | ht <;> simp [hs, ht]
+  · rcases ht with ht | ht
     · simp [hs, ht]
     · exact Set.mem_insert_of_mem _ (h_pi s hs t ht hst)
 
@@ -107,8 +108,8 @@ theorem isPiSystem_iUnion_of_directed_le {α ι} (p : ι → Set (Set α))
     IsPiSystem (⋃ n, p n) := by
   intro t1 ht1 t2 ht2 h
   rw [Set.mem_iUnion] at ht1 ht2 ⊢
-  cases' ht1 with n ht1
-  cases' ht2 with m ht2
+  obtain ⟨n, ht1⟩ := ht1
+  obtain ⟨m, ht2⟩ := ht2
   obtain ⟨k, hpnk, hpmk⟩ : ∃ k, p n ≤ p k ∧ p m ≤ p k := hp_directed n m
   exact ⟨k, hp_pi k t1 (hpnk ht1) t2 (hpmk ht2) h⟩
 
@@ -310,7 +311,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
   · intros b h_b
     simp_rw [Finset.mem_image, Subtype.exists, exists_and_right, exists_eq_right]
       at h_b
-    cases' h_b with h_b_w h_b_h
+    obtain ⟨h_b_w, h_b_h⟩ := h_b
     have h_b_alt : b = (Subtype.mk b h_b_w).val := rfl
     rw [h_b_alt, Subtype.val_injective.extend_apply]
     apply h_t'
@@ -348,9 +349,8 @@ theorem piiUnionInter_singleton (π : ι → Set (Set α)) (i : ι) :
         ext1 x
         simp only [Finset.not_mem_empty, iff_false]
         exact fun hx => hi (hti x hx ▸ hx)
-      -- Porting note: `Finset.not_mem_empty` required
-      simp [ht_empty, Finset.not_mem_empty, iInter_false, iInter_univ, Set.mem_singleton univ]
-  · cases' h with hs hs
+      simp [ht_empty, iInter_false, iInter_univ, Set.mem_singleton univ]
+  · rcases h with hs | hs
     · refine ⟨{i}, ?_, fun _ => s, ⟨fun x hx => ?_, ?_⟩⟩
       · rw [Finset.coe_singleton]
       · rw [Finset.mem_singleton] at hx
@@ -613,18 +613,15 @@ theorem ofMeasurableSpace_toMeasurableSpace
 
 /-- If `s` is in a Dynkin system `d`, we can form the new Dynkin system `{s ∩ t | t ∈ d}`. -/
 def restrictOn {s : Set α} (h : d.Has s) : DynkinSystem α where
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   Has t := d.Has (t ∩ s)
   has_empty := by simp [d.has_empty]
   has_compl {t} hts := by
-    beta_reduce
     have : tᶜ ∩ s = (t ∩ s)ᶜ \ sᶜ := Set.ext fun x => by by_cases h : x ∈ s <;> simp [h]
-    rw [this]
+    simp_rw [this]
     exact
       d.has_diff (d.has_compl hts) (d.has_compl h)
         (compl_subset_compl.mpr inter_subset_right)
   has_iUnion_nat {f} hd hf := by
-    simp only []
     rw [iUnion_inter]
     refine d.has_iUnion_nat ?_ hf
     exact hd.mono fun i j => Disjoint.mono inter_subset_left inter_subset_left

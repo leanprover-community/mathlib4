@@ -10,10 +10,11 @@ import Mathlib.Data.Prod.TProd
 import Mathlib.Data.Set.UnionLift
 import Mathlib.GroupTheory.Coset.Defs
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
-import Mathlib.Order.Filter.SmallSets
-import Mathlib.Order.LiminfLimsup
+import Mathlib.Order.Disjointed
 import Mathlib.Order.Filter.AtTopBot.CompleteLattice
 import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+import Mathlib.Order.Filter.SmallSets
+import Mathlib.Order.LiminfLimsup
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -52,7 +53,6 @@ defined in terms of the Galois connection induced by f.
 
 measurable space, σ-algebra, measurable function, dynkin system, π-λ theorem, π-system
 -/
-
 
 open Set Encodable Function Equiv Filter MeasureTheory
 
@@ -214,8 +214,6 @@ lemma Measurable.sup_of_right {mα mα' : MeasurableSpace α} {_ : MeasurableSpa
 
 theorem measurable_id'' {m mα : MeasurableSpace α} (hm : m ≤ mα) : @Measurable α α mα m id :=
   measurable_id.mono le_rfl hm
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add TC `DiscreteMeasurable` + instances
 
 @[measurability]
 theorem measurable_from_top [MeasurableSpace β] {f : α → β} : Measurable[⊤] f := fun _ _ => trivial
@@ -390,7 +388,7 @@ end ULift
 
 section Nat
 
-variable [MeasurableSpace α]
+variable {mα : MeasurableSpace α}
 
 @[measurability]
 theorem measurable_from_nat {f : ℕ → α} : Measurable f :=
@@ -424,6 +422,11 @@ theorem measurable_findGreatest {p : α → ℕ → Prop} [∀ x, DecidablePred 
   simp only [Nat.findGreatest_eq_iff, setOf_and, setOf_forall, ← compl_setOf]
   repeat' apply_rules [MeasurableSet.inter, MeasurableSet.const, MeasurableSet.iInter,
     MeasurableSet.compl, hN] <;> try intros
+
+@[simp, measurability]
+protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, MeasurableSet (f i)) (n) :
+    MeasurableSet (disjointed f n) :=
+  disjointedRec (fun _ _ ht => MeasurableSet.diff ht <| h _) (h n)
 
 theorem measurable_find {p : α → ℕ → Prop} [∀ x, DecidablePred (p x)] (hp : ∀ x, ∃ N, p x N)
     (hm : ∀ k, MeasurableSet { x | p x k }) : Measurable fun x => Nat.find (hp x) := by
@@ -682,28 +685,40 @@ theorem Measurable.prod {f : α → β × γ} (hf₁ : Measurable fun a => (f a)
         exact hf₂)
 
 @[fun_prop]
-theorem Measurable.prod_mk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace γ} {f : α → β}
+theorem Measurable.prodMk {β γ} {_ : MeasurableSpace β} {_ : MeasurableSpace γ} {f : α → β}
     {g : α → γ} (hf : Measurable f) (hg : Measurable g) : Measurable fun a : α => (f a, g a) :=
   Measurable.prod hf hg
 
+@[deprecated (since := "2025-03-05")]
+alias Measurable.prod_mk := Measurable.prodMk
+
 @[fun_prop]
-theorem Measurable.prod_map [MeasurableSpace δ] {f : α → β} {g : γ → δ} (hf : Measurable f)
+theorem Measurable.prodMap [MeasurableSpace δ] {f : α → β} {g : γ → δ} (hf : Measurable f)
     (hg : Measurable g) : Measurable (Prod.map f g) :=
-  (hf.comp measurable_fst).prod_mk (hg.comp measurable_snd)
+  (hf.comp measurable_fst).prodMk (hg.comp measurable_snd)
 
-theorem measurable_prod_mk_left {x : α} : Measurable (@Prod.mk _ β x) :=
-  measurable_const.prod_mk measurable_id
+@[deprecated (since := "2025-03-05")]
+alias Measurable.prod_map := Measurable.prodMap
 
-theorem measurable_prod_mk_right {y : β} : Measurable fun x : α => (x, y) :=
-  measurable_id.prod_mk measurable_const
+theorem measurable_prodMk_left {x : α} : Measurable (@Prod.mk _ β x) :=
+  measurable_const.prodMk measurable_id
+
+@[deprecated (since := "2025-03-05")]
+alias measurable_prod_mk_left := measurable_prodMk_left
+
+theorem measurable_prodMk_right {y : β} : Measurable fun x : α => (x, y) :=
+  measurable_id.prodMk measurable_const
+
+@[deprecated (since := "2025-03-05")]
+alias measurable_prod_mk_right := measurable_prodMk_right
 
 theorem Measurable.of_uncurry_left {f : α → β → γ} (hf : Measurable (uncurry f)) {x : α} :
     Measurable (f x) :=
-  hf.comp measurable_prod_mk_left
+  hf.comp measurable_prodMk_left
 
 theorem Measurable.of_uncurry_right {f : α → β → γ} (hf : Measurable (uncurry f)) {y : β} :
     Measurable fun x => f x y :=
-  hf.comp measurable_prod_mk_right
+  hf.comp measurable_prodMk_right
 
 theorem measurable_prod {f : α → β × γ} :
     Measurable f ↔ (Measurable fun a => (f a).1) ∧ Measurable fun a => (f a).2 :=
@@ -726,8 +741,8 @@ theorem measurableSet_prod_of_nonempty {s : Set α} {t : Set β} (h : (s ×ˢ t)
     MeasurableSet (s ×ˢ t) ↔ MeasurableSet s ∧ MeasurableSet t := by
   rcases h with ⟨⟨x, y⟩, hx, hy⟩
   refine ⟨fun hst => ?_, fun h => h.1.prod h.2⟩
-  have : MeasurableSet ((fun x => (x, y)) ⁻¹' s ×ˢ t) := measurable_prod_mk_right hst
-  have : MeasurableSet (Prod.mk x ⁻¹' s ×ˢ t) := measurable_prod_mk_left hst
+  have : MeasurableSet ((fun x => (x, y)) ⁻¹' s ×ˢ t) := measurable_prodMk_right hst
+  have : MeasurableSet (Prod.mk x ⁻¹' s ×ˢ t) := measurable_prodMk_left hst
   simp_all
 
 theorem measurableSet_prod {s : Set α} {t : Set β} :
@@ -769,7 +784,7 @@ theorem Measurable.find {_ : MeasurableSpace α} {f : ℕ → α → β} {p : �
     [∀ n, DecidablePred (p n)] (hf : ∀ n, Measurable (f n)) (hp : ∀ n, MeasurableSet { x | p n x })
     (h : ∀ x, ∃ n, p n x) : Measurable fun x => f (Nat.find (h x)) x :=
   have : Measurable fun p : α × ℕ => f p.2 p.1 := measurable_from_prod_countable fun n => hf n
-  this.comp (Measurable.prod_mk measurable_id (measurable_find h hp))
+  this.comp (Measurable.prodMk measurable_id (measurable_find h hp))
 
 /-- Let `t i` be a countable covering of a set `T` by measurable sets. Let `f i : t i → β` be a
 family of functions that agree on the intersections `t i ∩ t j`. Then the function
@@ -822,35 +837,35 @@ end Prod
 
 section Pi
 
-variable {π : δ → Type*} [MeasurableSpace α]
+variable {X : δ → Type*} [MeasurableSpace α]
 
-instance MeasurableSpace.pi [m : ∀ a, MeasurableSpace (π a)] : MeasurableSpace (∀ a, π a) :=
+instance MeasurableSpace.pi [m : ∀ a, MeasurableSpace (X a)] : MeasurableSpace (∀ a, X a) :=
   ⨆ a, (m a).comap fun b => b a
 
-variable [∀ a, MeasurableSpace (π a)] [MeasurableSpace γ]
+variable [∀ a, MeasurableSpace (X a)] [MeasurableSpace γ]
 
-theorem measurable_pi_iff {g : α → ∀ a, π a} : Measurable g ↔ ∀ a, Measurable fun x => g x a := by
+theorem measurable_pi_iff {g : α → ∀ a, X a} : Measurable g ↔ ∀ a, Measurable fun x => g x a := by
   simp_rw [measurable_iff_comap_le, MeasurableSpace.pi, MeasurableSpace.comap_iSup,
     MeasurableSpace.comap_comp, Function.comp_def, iSup_le_iff]
 
 @[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
-theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, π a => f a :=
+theorem measurable_pi_apply (a : δ) : Measurable fun f : ∀ a, X a => f a :=
   measurable_pi_iff.1 measurable_id a
 
 @[aesop safe 100 apply (rule_sets := [Measurable])]
-theorem Measurable.eval {a : δ} {g : α → ∀ a, π a} (hg : Measurable g) :
+theorem Measurable.eval {a : δ} {g : α → ∀ a, X a} (hg : Measurable g) :
     Measurable fun x => g x a :=
   (measurable_pi_apply a).comp hg
 
 @[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
-theorem measurable_pi_lambda (f : α → ∀ a, π a) (hf : ∀ a, Measurable fun c => f c a) :
+theorem measurable_pi_lambda (f : α → ∀ a, X a) (hf : ∀ a, Measurable fun c => f c a) :
     Measurable f :=
   measurable_pi_iff.mpr hf
 
-/-- The function `(f, x) ↦ update f a x : (Π a, π a) × π a → Π a, π a` is measurable. -/
+/-- The function `(f, x) ↦ update f a x : (Π a, X a) × X a → Π a, X a` is measurable. -/
 @[measurability, fun_prop]
 theorem measurable_update'  {a : δ} [DecidableEq δ] :
-    Measurable (fun p : (∀ i, π i) × π a ↦ update p.1 a p.2) := by
+    Measurable (fun p : (∀ i, X i) × X a ↦ update p.1 a p.2) := by
   rw [measurable_pi_iff]
   intro j
   dsimp [update]
@@ -862,44 +877,54 @@ theorem measurable_update'  {a : δ} [DecidableEq δ] :
 
 @[measurability, fun_prop]
 theorem measurable_uniqueElim [Unique δ] :
-    Measurable (uniqueElim : π (default : δ) → ∀ i, π i) := by
+    Measurable (uniqueElim : X (default : δ) → ∀ i, X i) := by
   simp_rw [measurable_pi_iff, Unique.forall_iff, uniqueElim_default]; exact measurable_id
 
 @[measurability, fun_prop]
-theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : ∀ i, π i} :
-    Measurable (updateFinset x s) := by
-  simp (config := { unfoldPartialApp := true }) only [updateFinset, measurable_pi_iff]
+theorem measurable_updateFinset' [DecidableEq δ] {s : Finset δ} :
+    Measurable (fun p : (Π i, X i) × (Π i : s, X i) ↦ updateFinset p.1 s p.2) := by
+  simp only [updateFinset, measurable_pi_iff]
   intro i
-  by_cases h : i ∈ s <;> simp [h, measurable_pi_apply]
+  by_cases h : i ∈ s <;> simp [h, Measurable.eval, measurable_fst, measurable_snd]
 
-/-- The function `update f a : π a → Π a, π a` is always measurable.
+@[measurability, fun_prop]
+theorem measurable_updateFinset [DecidableEq δ] {s : Finset δ} {x : Π i, X i} :
+    Measurable (updateFinset x s) :=
+  measurable_updateFinset'.comp measurable_prodMk_left
+
+@[measurability, fun_prop]
+theorem measurable_updateFinset_left [DecidableEq δ] {s : Finset δ} {x : Π i : s, X i} :
+    Measurable (updateFinset · s x) :=
+  measurable_updateFinset'.comp measurable_prodMk_right
+
+/-- The function `update f a : X a → Π a, X a` is always measurable.
   This doesn't require `f` to be measurable.
   This should not be confused with the statement that `update f a x` is measurable. -/
 @[measurability, fun_prop]
-theorem measurable_update (f : ∀ a : δ, π a) {a : δ} [DecidableEq δ] : Measurable (update f a) :=
-  measurable_update'.comp measurable_prod_mk_left
+theorem measurable_update (f : ∀ a : δ, X a) {a : δ} [DecidableEq δ] : Measurable (update f a) :=
+  measurable_update'.comp measurable_prodMk_left
 
 @[measurability, fun_prop]
-theorem measurable_update_left {a : δ} [DecidableEq δ] {x : π a} :
+theorem measurable_update_left {a : δ} [DecidableEq δ] {x : X a} :
     Measurable (update · a x) :=
-  measurable_update'.comp measurable_prod_mk_right
+  measurable_update'.comp measurable_prodMk_right
 
 @[measurability, fun_prop]
-theorem Set.measurable_restrict (s : Set δ) : Measurable (s.restrict (π := π)) :=
+theorem Set.measurable_restrict (s : Set δ) : Measurable (s.restrict (π := X)) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
 theorem Set.measurable_restrict₂ {s t : Set δ} (hst : s ⊆ t) :
-    Measurable (restrict₂ (π := π) hst) :=
+    Measurable (restrict₂ (π := X) hst) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
-theorem Finset.measurable_restrict (s : Finset δ) : Measurable (s.restrict (π := π)) :=
+theorem Finset.measurable_restrict (s : Finset δ) : Measurable (s.restrict (π := X)) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
 theorem Finset.measurable_restrict₂ {s t : Finset δ} (hst : s ⊆ t) :
-    Measurable (Finset.restrict₂ (π := π) hst) :=
+    Measurable (Finset.restrict₂ (π := X) hst) :=
   measurable_pi_lambda _ fun _ ↦ measurable_pi_apply _
 
 @[measurability, fun_prop]
@@ -920,35 +945,36 @@ theorem Finset.measurable_restrict₂_apply {s t : Finset α} (hst : s ⊆ t)
     {f : t → γ} (hf : Measurable f) :
     Measurable (restrict₂ (π := fun _ ↦ γ) hst f) := hf.comp (measurable_inclusion hst)
 
-variable (π) in
-theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg π h).mp := by
+variable (X) in
+theorem measurable_eq_mp {i i' : δ} (h : i = i') : Measurable (congr_arg X h).mp := by
   cases h
   exact measurable_id
 
-variable (π) in
-theorem Measurable.eq_mp {β} [MeasurableSpace β] {i i' : δ} (h : i = i') {f : β → π i}
-    (hf : Measurable f) : Measurable fun x => (congr_arg π h).mp (f x) :=
-  (measurable_eq_mp π h).comp hf
+variable (X) in
+theorem Measurable.eq_mp {β} [MeasurableSpace β] {i i' : δ} (h : i = i') {f : β → X i}
+    (hf : Measurable f) : Measurable fun x => (congr_arg X h).mp (f x) :=
+  (measurable_eq_mp X h).comp hf
 
-theorem measurable_piCongrLeft (f : δ' ≃ δ) : Measurable (piCongrLeft π f) := by
+@[measurability, fun_prop]
+theorem measurable_piCongrLeft (f : δ' ≃ δ) : Measurable (piCongrLeft X f) := by
   rw [measurable_pi_iff]
   intro i
   simp_rw [piCongrLeft_apply_eq_cast]
-  exact Measurable.eq_mp π (f.apply_symm_apply i) <| measurable_pi_apply <| f.symm i
+  exact Measurable.eq_mp X (f.apply_symm_apply i) <| measurable_pi_apply <| f.symm i
 
 /- Even though we cannot use projection notation, we still keep a dot to be consistent with similar
   lemmas, like `MeasurableSet.prod`. -/
 @[measurability]
-protected theorem MeasurableSet.pi {s : Set δ} {t : ∀ i : δ, Set (π i)} (hs : s.Countable)
+protected theorem MeasurableSet.pi {s : Set δ} {t : ∀ i : δ, Set (X i)} (hs : s.Countable)
     (ht : ∀ i ∈ s, MeasurableSet (t i)) : MeasurableSet (s.pi t) := by
   rw [pi_def]
   exact MeasurableSet.biInter hs fun i hi => measurable_pi_apply _ (ht i hi)
 
-protected theorem MeasurableSet.univ_pi [Countable δ] {t : ∀ i : δ, Set (π i)}
+protected theorem MeasurableSet.univ_pi [Countable δ] {t : ∀ i : δ, Set (X i)}
     (ht : ∀ i, MeasurableSet (t i)) : MeasurableSet (pi univ t) :=
   MeasurableSet.pi (to_countable _) fun i _ => ht i
 
-theorem measurableSet_pi_of_nonempty {s : Set δ} {t : ∀ i, Set (π i)} (hs : s.Countable)
+theorem measurableSet_pi_of_nonempty {s : Set δ} {t : ∀ i, Set (X i)} (hs : s.Countable)
     (h : (pi s t).Nonempty) : MeasurableSet (pi s t) ↔ ∀ i ∈ s, MeasurableSet (t i) := by
   classical
     rcases h with ⟨f, hf⟩
@@ -957,58 +983,58 @@ theorem measurableSet_pi_of_nonempty {s : Set δ} {t : ∀ i, Set (π i)} (hs : 
     rw [update_preimage_pi hi]
     exact fun j hj _ => hf j hj
 
-theorem measurableSet_pi {s : Set δ} {t : ∀ i, Set (π i)} (hs : s.Countable) :
+theorem measurableSet_pi {s : Set δ} {t : ∀ i, Set (X i)} (hs : s.Countable) :
     MeasurableSet (pi s t) ↔ (∀ i ∈ s, MeasurableSet (t i)) ∨ pi s t = ∅ := by
   rcases (pi s t).eq_empty_or_nonempty with h | h
   · simp [h]
   · simp [measurableSet_pi_of_nonempty hs, h, ← not_nonempty_iff_eq_empty]
 
-instance Pi.instMeasurableSingletonClass [Countable δ] [∀ a, MeasurableSingletonClass (π a)] :
-    MeasurableSingletonClass (∀ a, π a) :=
+instance Pi.instMeasurableSingletonClass [Countable δ] [∀ a, MeasurableSingletonClass (X a)] :
+    MeasurableSingletonClass (∀ a, X a) :=
   ⟨fun f => univ_pi_singleton f ▸ MeasurableSet.univ_pi fun t => measurableSet_singleton (f t)⟩
 
-variable (π)
+variable (X)
 
 @[measurability]
 theorem measurable_piEquivPiSubtypeProd_symm (p : δ → Prop) [DecidablePred p] :
-    Measurable (Equiv.piEquivPiSubtypeProd p π).symm := by
+    Measurable (Equiv.piEquivPiSubtypeProd p X).symm := by
   refine measurable_pi_iff.2 fun j => ?_
   by_cases hj : p j
   · simp only [hj, dif_pos, Equiv.piEquivPiSubtypeProd_symm_apply]
-    have : Measurable fun (f : ∀ i : { x // p x }, π i.1) => f ⟨j, hj⟩ :=
-      measurable_pi_apply (π := fun i : {x // p x} => π i.1) ⟨j, hj⟩
+    have : Measurable fun (f : ∀ i : { x // p x }, X i.1) => f ⟨j, hj⟩ :=
+      measurable_pi_apply (X := fun i : {x // p x} => X i.1) ⟨j, hj⟩
     exact Measurable.comp this measurable_fst
   · simp only [hj, Equiv.piEquivPiSubtypeProd_symm_apply, dif_neg, not_false_iff]
-    have : Measurable fun (f : ∀ i : { x // ¬p x }, π i.1) => f ⟨j, hj⟩ :=
-      measurable_pi_apply (π := fun i : {x // ¬p x} => π i.1) ⟨j, hj⟩
+    have : Measurable fun (f : ∀ i : { x // ¬p x }, X i.1) => f ⟨j, hj⟩ :=
+      measurable_pi_apply (X := fun i : {x // ¬p x} => X i.1) ⟨j, hj⟩
     exact Measurable.comp this measurable_snd
 
 @[measurability]
 theorem measurable_piEquivPiSubtypeProd (p : δ → Prop) [DecidablePred p] :
-    Measurable (Equiv.piEquivPiSubtypeProd p π) :=
-  (measurable_pi_iff.2 fun _ => measurable_pi_apply _).prod_mk
+    Measurable (Equiv.piEquivPiSubtypeProd p X) :=
+  (measurable_pi_iff.2 fun _ => measurable_pi_apply _).prodMk
     (measurable_pi_iff.2 fun _ => measurable_pi_apply _)
 
 end Pi
 
-instance TProd.instMeasurableSpace (π : δ → Type*) [∀ x, MeasurableSpace (π x)] :
-    ∀ l : List δ, MeasurableSpace (List.TProd π l)
+instance TProd.instMeasurableSpace (X : δ → Type*) [∀ i, MeasurableSpace (X i)] :
+    ∀ l : List δ, MeasurableSpace (List.TProd X l)
   | [] => PUnit.instMeasurableSpace
-  | _::is => @Prod.instMeasurableSpace _ _ _ (TProd.instMeasurableSpace π is)
+  | _::is => @Prod.instMeasurableSpace _ _ _ (TProd.instMeasurableSpace X is)
 
 section TProd
 
 open List
 
-variable {π : δ → Type*} [∀ x, MeasurableSpace (π x)]
+variable {X : δ → Type*} [∀ i, MeasurableSpace (X i)]
 
-theorem measurable_tProd_mk (l : List δ) : Measurable (@TProd.mk δ π l) := by
+theorem measurable_tProd_mk (l : List δ) : Measurable (@TProd.mk δ X l) := by
   induction' l with i l ih
   · exact measurable_const
-  · exact (measurable_pi_apply i).prod_mk ih
+  · exact (measurable_pi_apply i).prodMk ih
 
 theorem measurable_tProd_elim [DecidableEq δ] :
-    ∀ {l : List δ} {i : δ} (hi : i ∈ l), Measurable fun v : TProd π l => v.elim hi
+    ∀ {l : List δ} {i : δ} (hi : i ∈ l), Measurable fun v : TProd X l => v.elim hi
   | i::is, j, hj => by
     by_cases hji : j = i
     · subst hji
@@ -1018,10 +1044,10 @@ theorem measurable_tProd_elim [DecidableEq δ] :
       exact (measurable_tProd_elim (hj.resolve_left hji)).comp measurable_snd
 
 theorem measurable_tProd_elim' [DecidableEq δ] {l : List δ} (h : ∀ i, i ∈ l) :
-    Measurable (TProd.elim' h : TProd π l → ∀ i, π i) :=
+    Measurable (TProd.elim' h : TProd X l → ∀ i, X i) :=
   measurable_pi_lambda _ fun i => measurable_tProd_elim (h i)
 
-theorem MeasurableSet.tProd (l : List δ) {s : ∀ i, Set (π i)} (hs : ∀ i, MeasurableSet (s i)) :
+theorem MeasurableSet.tProd (l : List δ) {s : ∀ i, Set (X i)} (hs : ∀ i, MeasurableSet (s i)) :
     MeasurableSet (Set.tprod l s) := by
   induction' l with i l ih
   · exact MeasurableSet.univ
@@ -1409,7 +1435,7 @@ instance Subtype.instSingleton [MeasurableSingletonClass α] :
 
 instance Subtype.instLawfulSingleton [MeasurableSingletonClass α] :
     LawfulSingleton α (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun _ => Subtype.eq <| insert_emptyc_eq _⟩
+  ⟨fun _ => Subtype.eq <| insert_empty_eq _⟩
 
 instance Subtype.instHasCompl : HasCompl (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x => ⟨xᶜ, x.prop.compl⟩⟩

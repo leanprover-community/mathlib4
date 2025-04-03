@@ -117,7 +117,7 @@ lemma one_le_prod_of_one_le [Preorder M] [MulLeftMono M] {l : List M}
   induction' l with hd tl ih
   · rfl
   rw [prod_cons]
-  exact one_le_mul (hl₁ hd (mem_cons_self hd tl)) (ih fun x h => hl₁ x (mem_cons_of_mem hd h))
+  exact one_le_mul (hl₁ hd mem_cons_self) (ih fun x h => hl₁ x (mem_cons_of_mem hd h))
 
 @[to_additive]
 lemma max_prod_le (l : List α) (f g : α → M) [LinearOrder M]
@@ -188,7 +188,7 @@ variable [OrderedCommMonoid M] [CanonicallyOrderedMul M] {l : List M}
 
 @[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i => (L.take i).prod := by
   refine monotone_nat_of_le_succ fun n => ?_
-  cases' lt_or_le n L.length with h h
+  rcases lt_or_le n L.length with h | h
   · rw [prod_take_succ _ _ h]
     exact le_self_mul
   · simp [take_of_length_le h, take_of_length_le (le_trans h (Nat.le_succ _))]

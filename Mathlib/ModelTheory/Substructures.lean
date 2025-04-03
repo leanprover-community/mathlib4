@@ -313,7 +313,7 @@ lemma mem_closure_iff_of_isRelational [L.IsRelational] (s : Set M) (m : M) :
   rw [← SetLike.mem_coe, closure_eq_of_isRelational]
 
 theorem _root_.Set.Countable.substructure_closure
-    [Countable (Σl, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
+    [Countable (Σ l, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
   haveI : Countable s := h.to_subtype
   rw [← mk_le_aleph0_iff, ← lift_le_aleph0]
   exact lift_card_closure_le_card_term.trans mk_le_aleph0
@@ -414,7 +414,7 @@ variable {L} {M}
 
 /-!
 ### `comap` and `map`
- -/
+-/
 
 
 /-- The preimage of a substructure along a homomorphism is a substructure. -/
@@ -628,8 +628,18 @@ def subtype (S : L.Substructure M) : S ↪[L] M where
   inj' := Subtype.coe_injective
 
 @[simp]
-theorem coeSubtype : ⇑S.subtype = ((↑) : S → M) :=
+theorem subtype_apply {S : L.Substructure M} {x : S} : subtype S x = x :=
   rfl
+
+theorem subtype_injective (S : L.Substructure M): Function.Injective (subtype S) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype : ⇑S.subtype = ((↑) : S → M) :=
+  rfl
+
+@[deprecated (since := "2025-02-18")]
+alias coeSubtype := coe_subtype
 
 /-- The equivalence between the maximal substructure of a structure and the structure itself. -/
 def topEquiv : (⊤ : L.Substructure M) ≃[L] M where
@@ -706,7 +716,7 @@ namespace Substructure
 def withConstants (S : L.Substructure M) {A : Set M} (h : A ⊆ S) : L[[A]].Substructure M where
   carrier := S
   fun_mem {n} f := by
-    cases' f with f f
+    obtain f | f := f
     · exact S.fun_mem f
     · cases n
       · exact fun _ _ => h f.2
@@ -851,7 +861,6 @@ def codRestrict (p : L.Substructure N) (f : M ↪[L] N) (h : ∀ c, f c ∈ p) :
   inj' _ _ ab := f.injective (Subtype.mk_eq_mk.1 ab)
   map_fun' {_} F x := (f.toHom.codRestrict p h).map_fun' F x
   map_rel' {n} r x := by
-    simp only
     rw [← p.subtype.map_rel]
     change RelMap r (Hom.comp p.subtype.toHom (f.toHom.codRestrict p h) ∘ x) ↔ _
     rw [Hom.subtype_comp_codRestrict, ← f.map_rel]
@@ -948,7 +957,7 @@ theorem coe_inclusion {S T : L.Substructure M} (h : S ≤ T) :
 
 theorem range_subtype (S : L.Substructure M) : S.subtype.toHom.range = S := by
   ext x
-  simp only [Hom.mem_range, Embedding.coe_toHom, coeSubtype]
+  simp only [Hom.mem_range, Embedding.coe_toHom, coe_subtype]
   refine ⟨?_, fun h => ⟨⟨x, h⟩, rfl⟩⟩
   rintro ⟨⟨y, hy⟩, rfl⟩
   exact hy

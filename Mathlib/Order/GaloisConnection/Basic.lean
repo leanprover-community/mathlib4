@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Bounds.Image
-import Mathlib.Order.CompleteLattice
-import Mathlib.Order.GaloisConnection.Defs
+import Mathlib.Order.CompleteLattice.Basic
+import Mathlib.Order.WithBot
 
 /-!
 # Galois connections, insertions and coinsertions
@@ -206,6 +206,24 @@ namespace OrderIso
 
 variable [Preorder α] [Preorder β]
 
+/-- Makes a Galois connection from an order-preserving bijection. -/
+lemma to_galoisConnection (e : α ≃o β) : GaloisConnection e e.symm :=
+  fun _ _ => e.rel_symm_apply.symm
+
+/-- Makes a Galois insertion from an order-preserving bijection. -/
+protected def toGaloisInsertion (e : α ≃o β) : GaloisInsertion e e.symm where
+  choice b _ := e b
+  gc := e.to_galoisConnection
+  le_l_u g := le_of_eq (e.right_inv g).symm
+  choice_eq _ _ := rfl
+
+/-- Makes a Galois coinsertion from an order-preserving bijection. -/
+protected def toGaloisCoinsertion (e : α ≃o β) : GaloisCoinsertion e e.symm where
+  choice b _ := e.symm b
+  gc := e.to_galoisConnection
+  u_l_le g := le_of_eq (e.left_inv g)
+  choice_eq _ _ := rfl
+
 @[simp]
 theorem bddAbove_image (e : α ≃o β) {s : Set α} : BddAbove (e '' s) ↔ BddAbove s :=
   e.to_galoisConnection.bddAbove_l_image
@@ -354,8 +372,8 @@ abbrev liftCompleteLattice [CompleteLattice α] (gi : GaloisInsertion l u) : Com
       gi.choice (sInf (u '' s)) <|
         (isGLB_sInf _).2 <|
           gi.gc.monotone_u.mem_lowerBounds_image (gi.isGLB_of_u_image <| isGLB_sInf _).1
-    sInf_le := fun s => by dsimp; rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).1
-    le_sInf := fun s => by dsimp; rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).2 }
+    sInf_le := fun s => by rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).1
+    le_sInf := fun s => by rw [gi.choice_eq]; exact (gi.isGLB_of_u_image (isGLB_sInf _)).2 }
 
 end lift
 
@@ -486,9 +504,12 @@ def gci_Ici_sInf [CompleteSemilatticeInf α] :
 
 /-- If `α` is a partial order with bottom element (e.g., `ℕ`, `ℝ≥0`), then `WithBot.unbot' ⊥` and
 coercion form a Galois insertion. -/
-def WithBot.giUnbot'Bot [Preorder α] [OrderBot α] :
-    GaloisInsertion (WithBot.unbot' ⊥) (some : α → WithBot α) where
-  gc _ _ := WithBot.unbot'_le_iff (fun _ ↦ bot_le)
+def WithBot.giUnbotDBot [Preorder α] [OrderBot α] :
+    GaloisInsertion (WithBot.unbotD ⊥) (some : α → WithBot α) where
+  gc _ _ := WithBot.unbotD_le_iff (fun _ ↦ bot_le)
   le_l_u _ := le_rfl
-  choice o _ := o.unbot' ⊥
+  choice o _ := o.unbotD ⊥
   choice_eq _ _ := rfl
+
+@[deprecated (since := "2025-02-06")]
+alias WithBot.giUnbot'Bot := WithBot.giUnbotDBot

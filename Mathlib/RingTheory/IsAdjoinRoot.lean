@@ -195,17 +195,13 @@ where `S` is given by adjoining a root of `f` to `R`. -/
 def lift (h : IsAdjoinRoot S f) (hx : f.eval₂ i x = 0) : S →+* T where
   toFun z := (h.repr z).eval₂ i x
   map_zero' := by
-    dsimp only -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ (map_zero _), eval₂_zero]
   map_add' z w := by
-    dsimp only -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z + h.repr w), eval₂_add]
     rw [map_add, map_repr, map_repr]
   map_one' := by
-    beta_reduce -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ (map_one _), eval₂_one]
   map_mul' z w := by
-    dsimp only -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z * h.repr w), eval₂_mul]
     rw [map_mul, map_repr, map_repr]
 
@@ -214,7 +210,7 @@ variable {i x}
 @[simp]
 theorem lift_map (h : IsAdjoinRoot S f) (z : R[X]) : h.lift i x hx (h.map z) = z.eval₂ i x := by
   rw [lift, RingHom.coe_mk]
-  dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):added a `dsimp`
+  dsimp
   rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ rfl]
 
 @[simp]
@@ -240,15 +236,13 @@ theorem eq_lift (h : IsAdjoinRoot S f) (g : S →+* T) (hmap : ∀ a, g (algebra
 end
 
 variable [Algebra R T] (hx' : aeval x f = 0)
-variable (x)
 
+variable (x) in
 -- To match `AdjoinRoot.liftHom`
 /-- Lift the algebra map `R → T` to `S →ₐ[R] T` by specifying a root `x` of `f` in `T`,
 where `S` is given by adjoining a root of `f` to `R`. -/
 def liftHom (h : IsAdjoinRoot S f) : S →ₐ[R] T :=
   { h.lift (algebraMap R T) x hx' with commutes' := fun a => h.lift_algebraMap hx' a }
-
-variable {x}
 
 @[simp]
 theorem coe_liftHom (h : IsAdjoinRoot S f) :
@@ -399,13 +393,11 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         rintro i rfl
         exact i.prop.not_le hm
       map_add' := fun x y => by
-        beta_reduce -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
         rw [map_add, toFinsupp_add, Finsupp.comapDomain_add_of_injective Fin.val_injective]
       -- Porting note: the original simp proof with the same lemmas does not work
       -- See https://github.com/leanprover-community/mathlib4/issues/5026
       -- simp only [map_add, Finsupp.comapDomain_add_of_injective Fin.val_injective, toFinsupp_add]
       map_smul' := fun c x => by
-        dsimp only -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10752): added `dsimp only`
         rw [map_smul, toFinsupp_smul, Finsupp.comapDomain_smul_of_injective Fin.val_injective,
           RingHom.id_apply] }
       -- Porting note: the original simp proof with the same lemmas does not work

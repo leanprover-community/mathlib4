@@ -70,6 +70,7 @@ While this is equivalent, `SetLike` conveniently uses a carrier set projection d
 subobjects
 -/
 
+assert_not_exists RelIso
 
 /-- A class to indicate that there is a canonical injection between `A` and `Set B`.
 
@@ -171,8 +172,6 @@ theorem mem_coe {x : B} : x ∈ (p : Set B) ↔ x ∈ p :=
 @[simp, norm_cast]
 theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
   Subtype.ext_iff_val.symm
-
--- Porting note: this is not necessary anymore due to the way coercions work
 
 @[simp]
 theorem coe_mem (x : p) : (x : B) ∈ p :=

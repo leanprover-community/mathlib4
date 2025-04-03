@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 import Mathlib.AlgebraicTopology.RelativeCellComplex.AttachCells
 
@@ -41,17 +42,11 @@ as above, there may not exist a lifting `B i ⟶ X`, but the construction
 provides a tautological morphism `B i ⟶ functorObj f πX`
 (see `SmallObject.ιFunctorObj_extension`).
 
-## TODO
-
-* Show that `ιFunctorObj f πX : X ⟶ functorObj f πX` has the
-left lifting property with respect to the class of morphisms that
-have the right lifting property with respect to the morphisms `f i`.
-
 ## References
 - https://ncatlab.org/nlab/show/small+object+argument
 
 -/
-universe w v u
+universe t w v u
 
 namespace CategoryTheory
 
@@ -120,6 +115,10 @@ lemma functorObj_comm :
     functorObjTop f πX ≫ ιFunctorObj f πX = functorObjLeft f πX ≫ ρFunctorObj f πX :=
   pushout.condition
 
+lemma functorObj_isPushout :
+    IsPushout (functorObjTop f πX) (functorObjLeft f πX) (ιFunctorObj f πX) (ρFunctorObj f πX) :=
+  IsPushout.of_hasPushout _ _
+
 @[reassoc]
 lemma FunctorObjIndex.comm (x : FunctorObjIndex f πX) :
     f x.i ≫ Sigma.ι (functorObjTgtFamily f πX) x ≫ ρFunctorObj f πX = x.t ≫ ιFunctorObj f πX := by
@@ -143,7 +142,8 @@ lemma ιFunctorObj_πFunctorObj : ιFunctorObj f πX ≫ πFunctorObj f πX = π
 /-- The morphism `ιFunctorObj f πX : X ⟶ functorObj f πX` is obtained by
 attaching `f`-cells. -/
 @[simps]
-noncomputable def attachCellsιFunctorObj : AttachCells f (ιFunctorObj f πX) where
+noncomputable def attachCellsιFunctorObj :
+    AttachCells.{max v w} f (ιFunctorObj f πX) where
   ι := FunctorObjIndex f πX
   π x := x.i
   isColimit₁ := coproductIsCoproduct _
@@ -152,6 +152,39 @@ noncomputable def attachCellsιFunctorObj : AttachCells f (ιFunctorObj f πX) w
   g₁ := functorObjTop f πX
   g₂ := ρFunctorObj f πX
   isPushout := IsPushout.of_hasPushout (functorObjTop f πX) (functorObjLeft f πX)
+  cofan₁ := _
+  cofan₂ := _
+
+section Small
+
+variable [LocallySmall.{t} C] [Small.{t} I]
+
+instance : Small.{t} (FunctorObjIndex f πX) := by
+  let φ (x : FunctorObjIndex f πX) :
+    Σ (i : Shrink.{t} I),
+      Shrink.{t} ((A ((equivShrink _).symm i) ⟶ X) ×
+        (B ((equivShrink _).symm i) ⟶ S)) :=
+        ⟨equivShrink _ x.i, equivShrink _
+          ⟨eqToHom (by simp) ≫ x.t, eqToHom (by simp) ≫ x.b⟩⟩
+  have hφ : Function.Injective φ := by
+    rintro ⟨i₁, t₁, b₁, _⟩ ⟨i₂, t₂, b₂, _⟩ h
+    obtain rfl : i₁ = i₂ := by simpa [φ] using congr_arg Sigma.fst h
+    simpa [cancel_epi, φ] using h
+  exact small_of_injective hφ
+
+instance : Small.{t} (attachCellsιFunctorObj f πX).ι := by
+  dsimp
+  infer_instance
+
+/-- The morphism `ιFunctorObj f πX : X ⟶ functorObj f πX` is obtained by
+attaching `f`-cells, and the index type can be chosen to be in `Type t`
+if the category is `t`-locally small and the index type for `f`
+is `t`-small. -/
+noncomputable def attachCellsιFunctorObjOfSmall :
+    AttachCells.{t} f (ιFunctorObj f πX) :=
+  (attachCellsιFunctorObj f πX).reindex (equivShrink.{t} _).symm
+
+end Small
 
 section
 
@@ -247,6 +280,22 @@ lemma ιFunctorObj_extension {i : I} (t : A i ⟶ X) (b : B i ⟶ S)
       l ≫ πFunctorObj f πX = b :=
   ⟨Sigma.ι (functorObjTgtFamily f πX) (FunctorObjIndex.mk i t b sq.w) ≫
     ρFunctorObj f πX, (FunctorObjIndex.mk i t b _).comm, by simp⟩
+
+/-- Variant of `ιFunctorObj_extension` where the diagram involving `functorObj f πX`
+is replaced by an isomorphic diagram. -/
+lemma ιFunctorObj_extension' {X' S' Z' : C} (πX' : X' ⟶ S') (ι' : X' ⟶ Z') (πZ' : Z' ⟶ S')
+    (fac' : ι' ≫ πZ' = πX') (eX : X' ≅ X) (eS : S' ≅ S) (eZ : Z' ≅ functorObj f πX)
+    (commι : ι' ≫ eZ.hom = eX.hom ≫ ιFunctorObj f πX)
+    (commπ : πZ' ≫ eS.hom = eZ.hom ≫ πFunctorObj f πX)
+    {i : I} (t : A i ⟶ X') (b : B i ⟶ S') (fac : t ≫ πX' = f i ≫ b) :
+    ∃ (l : B i ⟶ Z'), f i ≫ l = t ≫ ι' ∧ l ≫ πZ' = b := by
+  obtain ⟨l, hl₁, hl₂⟩ :=
+    ιFunctorObj_extension f (πX := πX) (i := i) (t ≫ eX.hom) (b ≫ eS.hom) ⟨by
+      rw [assoc, ← ιFunctorObj_πFunctorObj f πX, ← reassoc_of% commι, ← commπ,
+        reassoc_of% fac', reassoc_of% fac]⟩
+  refine ⟨l ≫ eZ.inv, ?_, ?_⟩
+  · rw [reassoc_of% hl₁, ← reassoc_of% commι, eZ.hom_inv_id, comp_id]
+  · rw [← cancel_mono eS.hom, assoc, assoc, commπ, eZ.inv_hom_id_assoc, hl₂]
 
 end
 
