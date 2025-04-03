@@ -138,11 +138,14 @@ theorem matricesOver_apply (c : RingCon R) (M N : Matrix n n R) :
 theorem matricesOver_monotone : Monotone (matricesOver (R := R) n) :=
   fun _ _ hc _ _ h _ _ => hc (h _ _)
 
-theorem matricesOver_strictMono_of_nonempty [Nonempty n] :
-    StrictMono (matricesOver (R := R) n) :=
-  matricesOver_monotone n |>.strictMono_of_injective <| fun I J eq => RingCon.ext fun r s => by
+theorem matricesOver_injective [Nonempty n] : Function.Injective (matricesOver (R := R) n) :=
+  fun I J eq => RingCon.ext fun r s => by
     have := congr_fun (DFunLike.congr_fun eq (Matrix.of fun _ _ => r)) (Matrix.of fun _ _ => s)
     simpa using this
+
+theorem matricesOver_strictMono_of_nonempty [Nonempty n] :
+    StrictMono (matricesOver (R := R) n) :=
+  matricesOver_monotone n |>.strictMono_of_injective <| matricesOver_injective _
 
 @[simp]
 theorem matricesOver_bot : (⊥ : RingCon R).matricesOver n = ⊥ :=
@@ -229,10 +232,8 @@ theorem matricesOver_monotone : Monotone (matricesOver (R := R) n) :=
 
 theorem matricesOver_strictMono_of_nonempty [h : Nonempty n] :
     StrictMono (matricesOver (R := R) n) :=
-  matricesOver_monotone n |>.strictMono_of_injective <| fun I J eq => by
-    ext x
-    have : _ ↔ _ := congr((Matrix.of fun _ _ => x) ∈ $eq)
-    simpa only [mem_matricesOver, of_apply, forall_const] using this
+  matricesOver_monotone n |>.strictMono_of_injective <|
+    .comp (fun _ _ => mk.inj) <| (RingCon.matricesOver_injective n).comp ringCon_injective
 
 @[simp]
 theorem matricesOver_bot : (⊥ : TwoSidedIdeal R).matricesOver n = ⊥ :=
