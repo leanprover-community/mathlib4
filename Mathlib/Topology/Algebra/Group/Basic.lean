@@ -1650,7 +1650,7 @@ alias Units.embedding_val := Units.isEmbedding_val
 lemma Continuous.of_coeHom_comp [Group G] [Monoid H] [TopologicalSpace G] [TopologicalSpace H]
     [ContinuousInv G] {f : G →* Hˣ} (hf : Continuous ((Units.coeHom H).comp f)) : Continuous f := by
   apply continuous_induced_rng.mpr ?_
-  refine continuous_prod_mk.mpr ⟨hf, ?_⟩
+  refine continuous_prodMk.mpr ⟨hf, ?_⟩
   simp_rw [← map_inv]
   exact MulOpposite.continuous_op.comp (hf.comp continuous_inv)
 
