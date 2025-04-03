@@ -491,6 +491,9 @@ include 𝕂
 noncomputable def invertibleExp (x : 𝔸) : Invertible (exp x) :=
   invertibleExpOfMemBall 𝕂 <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
+theorem isUnit_exp (x : 𝔸) : IsUnit (exp x) :=
+  isUnit_exp_of_mem_ball 𝕂 <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+
 theorem invOf_exp (x : 𝔸) [Invertible (exp x)] : ⅟ (exp x) = exp (-x) :=
   invOf_exp_of_mem_ball 𝕂 <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
@@ -625,9 +628,9 @@ end DivisionAlgebra
 
 section CommAlgebra
 
-variable {𝕂 𝔸 : Type _} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
-
+variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 variable [Algebra ℚ 𝔸]
+variable (𝕂)
 
 include 𝕂 in
 /-- In a commutative Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`,

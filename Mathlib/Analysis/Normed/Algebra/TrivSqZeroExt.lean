@@ -143,7 +143,6 @@ variable [CommRing R] [AddCommGroup M] [Algebra ℚ R] [Module ℚ M] [Module R 
   [TopologicalSpace R] [TopologicalSpace M]
   [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
-variable [Algebra ℚ R] [Module ℚ M]
 variable [T2Space R] [T2Space M]
 
 theorem exp_def (x : tsze R M) : exp x = inl (exp x.fst) + inr (exp x.fst • x.snd) :=

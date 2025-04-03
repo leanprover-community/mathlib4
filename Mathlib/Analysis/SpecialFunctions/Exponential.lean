@@ -247,7 +247,7 @@ open Asymptotics Filter
 
 section MemBall
 
-variable [NontriviallyNormedField 𝕂] [CharZero 𝕂]
+variable [NontriviallyNormedField 𝕂]
 variable [NormedCommRing 𝕊] [NormedRing 𝔸]
 variable [NormedSpace 𝕂 𝕊] [Algebra ℚ 𝔸] [NormedAlgebra 𝕂 𝔸] [Algebra 𝕊 𝔸] [ContinuousSMul 𝕊 𝔸]
 variable [IsScalarTower 𝕂 𝕊 𝔸]
@@ -396,10 +396,12 @@ end exp_smul
 section tsum_tprod
 
 variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+  [Algebra ℚ 𝔸]
 
+include 𝕂 in
 /-- If `f` has sum `a`, then `NormedSpace.exp ∘ f` has product `NormedSpace.exp a`. -/
 lemma HasSum.exp {ι : Type*} {f : ι → 𝔸} {a : 𝔸} (h : HasSum f a) :
-    HasProd (exp 𝕂 ∘ f) (exp 𝕂 a) :=
-  Tendsto.congr (fun s ↦ exp_sum s f) <| Tendsto.exp h
+    HasProd (exp ∘ f) (exp a) :=
+  Tendsto.congr (fun s ↦ exp_sum 𝕂 s f) <| Tendsto.exp 𝕂 h
 
 end tsum_tprod

@@ -116,6 +116,7 @@ section Normed
 
 variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
   [NormedRing 𝔸] [Algebra ℚ 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+include 𝕂
 
 nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
     exp (A + B) = exp A * exp B := by
@@ -163,6 +164,7 @@ section NormedComm
 
 variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
   [NormedCommRing 𝔸] [Algebra ℚ 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+include 𝕂
 
 theorem exp_neg (A : Matrix m m 𝔸) : exp (-A) = (exp A)⁻¹ := by
   rw [nonsing_inv_eq_ring_inverse]
