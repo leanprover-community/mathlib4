@@ -272,7 +272,7 @@ scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedAlgebra
 /-- The operator norm on `Matrix n n 𝕜` given by the identification with (continuous) linear
 endmorphisms of `EuclideanSpace 𝕜 n` makes it into a `L2OpRing`. -/
 lemma instCstarRing : CstarRing (Matrix n n 𝕜) where
-  norm_star_mul_self := l2_opNorm_conjTranspose_mul_self _
+  norm_mul_self_le M := le_of_eq <| Eq.symm <| l2_opNorm_conjTranspose_mul_self M
 
 scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instCstarRing
 

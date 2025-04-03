@@ -3,7 +3,8 @@ Copyright (c) 2021 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.GroupTheory.MonoidLocalization
+import Mathlib.RingTheory.OreLocalization.Ring
 import Mathlib.Topology.Algebra.Ring.Basic
 
 #align_import topology.algebra.localization from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"

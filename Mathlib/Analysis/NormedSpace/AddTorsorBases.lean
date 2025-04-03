@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Analysis.NormedSpace.FiniteDimension
-import Mathlib.Analysis.Calculus.AffineMap
-import Mathlib.Analysis.Convex.Combination
 import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 #align_import analysis.normed_space.add_torsor_bases from "leanprover-community/mathlib"@"2f4cdce0c2f2f3b8cd58f05d556d03b468e1eb2e"
@@ -24,6 +22,7 @@ This file contains results about bases in normed affine spaces.
  * `interior_convexHull_nonempty_iff_affineSpan_eq_top`
 -/
 
+assert_not_exists HasFDerivAt
 
 section Barycentric
 
@@ -44,10 +43,6 @@ variable [FiniteDimensional 𝕜 E] (b : AffineBasis ι 𝕜 P)
 theorem continuous_barycentric_coord (i : ι) : Continuous (b.coord i) :=
   (b.coord i).continuous_of_finiteDimensional
 #align continuous_barycentric_coord continuous_barycentric_coord
-
-theorem smooth_barycentric_coord (b : AffineBasis ι 𝕜 E) (i : ι) : ContDiff 𝕜 ⊤ (b.coord i) :=
-  (⟨b.coord i, continuous_barycentric_coord b i⟩ : E →ᴬ[𝕜] 𝕜).contDiff
-#align smooth_barycentric_coord smooth_barycentric_coord
 
 end Barycentric
 

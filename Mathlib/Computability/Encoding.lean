@@ -19,10 +19,10 @@ It also contains several examples:
 
 ## Examples
 
-- `finEncodingNatBool`   : a binary encoding of ℕ in a simple alphabet.
+- `finEncodingNatBool`  : a binary encoding of ℕ in a simple alphabet.
 - `finEncodingNatΓ'`    : a binary encoding of ℕ in the alphabet used for TM's.
 - `unaryFinEncodingNat` : a unary encoding of ℕ
-- `finEncodingBoolBool`  : an encoding of bool.
+- `finEncodingBoolBool` : an encoding of bool.
 -/
 
 

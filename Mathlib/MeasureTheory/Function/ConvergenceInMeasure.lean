@@ -321,7 +321,7 @@ theorem tendstoInMeasure_of_tendsto_snorm_top {E} [NormedAddCommGroup E] {f : ι
   specialize hfg (ENNReal.ofReal δ / 2)
       (ENNReal.div_pos_iff.2 ⟨(ENNReal.ofReal_pos.2 hδ).ne.symm, ENNReal.two_ne_top⟩)
   refine hfg.mono fun n hn => ?_
-  simp only [true_and_iff, gt_iff_lt, ge_iff_le, zero_tsub, zero_le, zero_add, Set.mem_Icc,
+  simp only [true_and_iff, gt_iff_lt, zero_tsub, zero_le, zero_add, Set.mem_Icc,
     Pi.sub_apply] at *
   have : essSup (fun x : α => (‖f n x - g x‖₊ : ℝ≥0∞)) μ < ENNReal.ofReal δ :=
     lt_of_le_of_lt hn

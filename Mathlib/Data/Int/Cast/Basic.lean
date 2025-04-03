@@ -3,7 +3,6 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Gabriel Ebner
 -/
-import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Algebra.Group.Basic
 
@@ -125,20 +124,8 @@ theorem cast_sub (m n) : ((m - n : ℤ) : R) = m - n := by
 #align int.cast_sub Int.cast_subₓ
 -- type had `HasLiftT`
 
-section deprecated
-set_option linter.deprecated false
-
-@[norm_cast, deprecated (since := "2022-11-22")]
-theorem cast_bit0 (n : ℤ) : ((bit0 n : ℤ) : R) = bit0 (n : R) :=
-  Int.cast_add _ _
-#align int.cast_bit0 Int.cast_bit0
-
-@[norm_cast, deprecated (since := "2022-11-22")]
-theorem cast_bit1 (n : ℤ) : ((bit1 n : ℤ) : R) = bit1 (n : R) := by
-  rw [bit1, Int.cast_add, Int.cast_one, cast_bit0]; rfl
-#align int.cast_bit1 Int.cast_bit1
-
-end deprecated
+#noalign int.cast_bit0
+#noalign int.cast_bit1
 
 theorem cast_two : ((2 : ℤ) : R) = 2 := cast_ofNat _
 #align int.cast_two Int.cast_two

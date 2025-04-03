@@ -21,6 +21,8 @@ providing as much API as possible.
 
 -/
 
+suppress_compilation
+
 open Submodule
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
@@ -45,6 +47,11 @@ theorem transitionMap_map_mul {m n : ℕ} (hmn : m ≤ n) (x y : R ⧸ (I ^ n �
     transitionMap I R hmn (x * y) = transitionMap I R hmn x * transitionMap I R hmn y :=
   Quotient.inductionOn₂' x y (fun _ _ ↦ rfl)
 
+@[local simp]
+theorem transitionMap_map_pow {m n a : ℕ} (hmn : m ≤ n) (x : R ⧸ (I ^ n • ⊤ : Ideal R)) :
+    transitionMap I R hmn (x ^ a) = transitionMap I R hmn x ^ a :=
+  Quotient.inductionOn' x (fun _ ↦ rfl)
+
 /-- `AdicCompletion.transitionMap` as an algebra homomorphism. -/
 def transitionMapₐ {m n : ℕ} (hmn : m ≤ n) :
     R ⧸ (I ^ n • ⊤ : Ideal R) →ₐ[R] R ⧸ (I ^ m • ⊤ : Ideal R) :=
@@ -59,11 +66,35 @@ def subalgebra : Subalgebra R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
 def subring : Subring (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
   Subalgebra.toSubring (subalgebra I)
 
-instance : CommRing (AdicCompletion I R) :=
-  inferInstanceAs <| CommRing (subring I)
+instance : Mul (AdicCompletion I R) where
+  mul x y := ⟨x.val * y.val, by simp [x.property, y.property]⟩
 
-instance : Algebra R (AdicCompletion I R) :=
-  inferInstanceAs <| Algebra R (subalgebra I)
+instance : One (AdicCompletion I R) where
+  one := ⟨1, by simp⟩
+
+instance : NatCast (AdicCompletion I R) where
+  natCast n := ⟨n, fun _ ↦ rfl⟩
+
+instance : IntCast (AdicCompletion I R) where
+  intCast n := ⟨n, fun _ ↦ rfl⟩
+
+instance : Pow (AdicCompletion I R) ℕ where
+  pow x n := ⟨x.val ^ n, fun _ ↦ by simp [x.property]⟩
+
+instance : CommRing (AdicCompletion I R) :=
+  let f : AdicCompletion I R → ∀ n, R ⧸ (I ^ n • ⊤ : Ideal R) := Subtype.val
+  Subtype.val_injective.commRing f rfl rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
+
+instance : Algebra R (AdicCompletion I R) where
+  toFun r := ⟨algebraMap R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) r, by simp⟩
+  map_one' := Subtype.ext <| map_one _
+  map_mul' x y := Subtype.ext <| map_mul _ x y
+  map_zero' := Subtype.ext <| map_zero _
+  map_add' x y := Subtype.ext <| map_add _ x y
+  commutes' r x := Subtype.ext <| Algebra.commutes' r x.val
+  smul_def' r x := Subtype.ext <| Algebra.smul_def' r x.val
 
 @[simp]
 theorem val_one (n : ℕ) : (1 : AdicCompletion I R).val n = 1 :=
@@ -100,11 +131,35 @@ def AdicCauchySequence.subalgebra : Subalgebra R (ℕ → R) :=
 def AdicCauchySequence.subring : Subring (ℕ → R) :=
   Subalgebra.toSubring (AdicCauchySequence.subalgebra I)
 
-instance : CommRing (AdicCauchySequence I R) :=
-  inferInstanceAs <| CommRing (AdicCauchySequence.subring I)
+instance : Mul (AdicCauchySequence I R) where
+  mul x y := ⟨x.val * y.val, fun hmn ↦ SModEq.mul (x.property hmn) (y.property hmn)⟩
 
-instance : Algebra R (AdicCauchySequence I R) :=
-  inferInstanceAs <| Algebra R (AdicCauchySequence.subalgebra I)
+instance : One (AdicCauchySequence I R) where
+  one := ⟨1, fun _ ↦ rfl⟩
+
+instance : NatCast (AdicCauchySequence I R) where
+  natCast n := ⟨n, fun _ ↦ rfl⟩
+
+instance : IntCast (AdicCauchySequence I R) where
+  intCast n := ⟨n, fun _ ↦ rfl⟩
+
+instance : Pow (AdicCauchySequence I R) ℕ where
+  pow x n := ⟨x.val ^ n, fun hmn ↦ SModEq.pow n (x.property hmn)⟩
+
+instance : CommRing (AdicCauchySequence I R) :=
+  let f : AdicCauchySequence I R → (ℕ → R) := Subtype.val
+  Subtype.val_injective.commRing f rfl rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
+
+instance : Algebra R (AdicCauchySequence I R) where
+  toFun r := ⟨algebraMap R (∀ _, R) r, fun _ ↦ rfl⟩
+  map_one' := Subtype.ext <| map_one _
+  map_mul' x y := Subtype.ext <| map_mul _ x y
+  map_zero' := Subtype.ext <| map_zero _
+  map_add' x y := Subtype.ext <| map_add _ x y
+  commutes' r x := Subtype.ext <| Algebra.commutes' r x.val
+  smul_def' r x := Subtype.ext <| Algebra.smul_def' r x.val
 
 @[simp]
 theorem one_apply (n : ℕ) : (1 : AdicCauchySequence I R) n = 1 :=
@@ -220,3 +275,5 @@ Both agree definitionally. -/
 example : module I = @Algebra.toModule (AdicCompletion I R)
     (AdicCompletion I R) _ _ (Algebra.id _) := by
   with_reducible_and_instances rfl
+
+end AdicCompletion

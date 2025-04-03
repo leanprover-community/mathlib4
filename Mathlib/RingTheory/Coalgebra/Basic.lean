@@ -3,6 +3,7 @@ Copyright (c) 2023 Ali Ramsey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ali Ramsey, Eric Wieser
 -/
+import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.TensorProduct.Basic
@@ -241,3 +242,17 @@ instance instCoalgebra : Coalgebra R (ι →₀ A) where
 end Finsupp
 
 end CommSemiring
+namespace TensorProduct
+open Coalgebra
+
+variable {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
+  [Module R A] [Module R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
+
+/-- The coalgebra instance will be defined in #11975, in
+`Mathlib.RingTheory.Coalgebra.TensorProduct`. -/
+@[simps] instance instCoalgebraStruct :
+    CoalgebraStruct R (A ⊗[R] B) where
+  comul := TensorProduct.tensorTensorTensorComm R A A B B ∘ₗ TensorProduct.map comul comul
+  counit := LinearMap.mul' R R ∘ₗ TensorProduct.map counit counit
+
+end TensorProduct

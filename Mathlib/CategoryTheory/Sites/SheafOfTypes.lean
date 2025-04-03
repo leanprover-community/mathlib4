@@ -111,7 +111,7 @@ theorem isSheaf_pretopology [HasPullbacks C] (K : Pretopology C) :
   · rintro PK X S ⟨R, hR, RS⟩
     have gRS : ⇑(generate R) ≤ S := by
       apply giGenerate.gc.monotone_u
-      rwa [sets_iff_generate]
+      rwa [generate_le_iff]
     apply isSheafFor_subsieve P gRS _
     intro Y f
     rw [← pullbackArrows_comm, ← isSheafFor_iff_generate]

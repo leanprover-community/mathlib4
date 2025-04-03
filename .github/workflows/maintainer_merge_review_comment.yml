@@ -7,7 +7,7 @@ on:
 jobs:
   ping_zulip:
     name: Ping maintainers on Zulip
-    if: (startsWith(github.event.comment.body, 'maintainer merge') || contains(toJSON(github.event.comment.body), '\r\nmaintainer merge'))
+    if: (startsWith(github.event.comment.body, 'maintainer merge') || contains(toJSON(github.event.comment.body), '\nmaintainer merge'))
     runs-on: ubuntu-latest
     steps:
       - name: Check whether user is part of mathlib-reviewers team
@@ -28,7 +28,7 @@ jobs:
           type: 'stream'
           topic: 'maintainer merge'
           content: |
-            ${{ format('{0} requested a maintainer merge on PR [#{1}]({2}):', github.event.comment.user.login, github.event.pull_request.number, github.event.pull_request.html_url ) }}
+            ${{ format('{0} requested a maintainer merge from review comment on PR [#{1}]({2}):', github.event.comment.user.login, github.event.pull_request.number, github.event.pull_request.html_url ) }}
 
             > ${{ github.event.pull_request.title }}
 

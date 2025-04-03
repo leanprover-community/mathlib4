@@ -358,6 +358,11 @@ protected def restrictScalars (d : Derivation S A M) : Derivation R A M where
   toLinearMap := d.toLinearMap.restrictScalars R
 #align derivation.restrict_scalars Derivation.restrictScalars
 
+lemma coe_restrictScalars (d : Derivation S A M) : ⇑(d.restrictScalars R) = ⇑d := rfl
+
+@[simp]
+lemma restrictScalars_apply (d : Derivation S A M) (x : A) : d.restrictScalars R x = d x := rfl
+
 end RestrictScalars
 
 end
@@ -427,12 +432,48 @@ theorem leibniz_invOf [Invertible a] : D (⅟ a) = -⅟ a ^ 2 • D a :=
   D.leibniz_of_mul_eq_one <| invOf_mul_self a
 #align derivation.leibniz_inv_of Derivation.leibniz_invOf
 
-theorem leibniz_inv {K : Type*} [Field K] [Module K M] [Algebra R K] (D : Derivation R K M)
-    (a : K) : D a⁻¹ = -a⁻¹ ^ 2 • D a := by
+section Field
+
+variable {K : Type*} [Field K] [Module K M] [Algebra R K] (D : Derivation R K M)
+
+theorem leibniz_inv (a : K) : D a⁻¹ = -a⁻¹ ^ 2 • D a := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp
   · exact D.leibniz_of_mul_eq_one (inv_mul_cancel ha)
 #align derivation.leibniz_inv Derivation.leibniz_inv
+
+theorem leibniz_div (a b : K) : D (a / b) = b⁻¹ ^ 2 • (b • D a - a • D b) := by
+  simp only [div_eq_mul_inv, leibniz, leibniz_inv, inv_pow, neg_smul, smul_neg, smul_smul, add_comm,
+    sub_eq_add_neg, smul_add]
+  rw [← inv_mul_mul_self b⁻¹, inv_inv]
+  ring_nf
+
+theorem leibniz_div_const (a b : K) (h : D b = 0) : D (a / b) = b⁻¹ • D a := by
+  simp only [leibniz_div, inv_pow, h, smul_zero, sub_zero, smul_smul]
+  rw [← mul_self_mul_inv b⁻¹, inv_inv]
+  ring_nf
+
+lemma leibniz_zpow (a : K) (n : ℤ) : D (a ^ n) = n • a ^ (n - 1) • D a := by
+  by_cases hn : n = 0
+  · simp [hn]
+  by_cases ha : a = 0
+  · simp [ha, zero_zpow n hn]
+  rcases Int.natAbs_eq n with h | h
+  · rw [h]
+    simp only [zpow_natCast, leibniz_pow, natCast_zsmul]
+    rw [← zpow_natCast]
+    congr
+    omega
+  · rw [h, zpow_neg, zpow_natCast, leibniz_inv, leibniz_pow, inv_pow, ← pow_mul, ← zpow_natCast,
+      ← zpow_natCast, nsmul_eq_smul_cast K, zsmul_eq_smul_cast K, smul_smul, smul_smul, smul_smul]
+    trans (-n.natAbs * (a ^ ((n.natAbs - 1 : ℕ) : ℤ) / (a ^ ((n.natAbs * 2 : ℕ) : ℤ)))) • D a
+    · ring_nf
+    rw [← zpow_sub₀ ha]
+    congr 3
+    · norm_cast
+    omega
+
+end Field
 
 instance : Neg (Derivation R A M) :=
   ⟨fun D =>

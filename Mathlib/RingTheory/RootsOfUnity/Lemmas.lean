@@ -74,3 +74,5 @@ lemma self_sub_one_pow_dvd_order {k n : ℕ} (hn : k < n) {μ : R} (hμ : IsPrim
     rw [← prod_range_mul_prod_Ico _ (Nat.le_add_left k m), mul_comm _ (_ ^ card _), ← mul_assoc,
       prod_mul_pow_card]
     conv => enter [2, 1, 2, j]; rw [← (Zdef _).2]
+
+end IsPrimitiveRoot

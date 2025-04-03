@@ -168,7 +168,7 @@ lemma condexpKernel_ae_eq_condexp' [IsFiniteMeasure μ] {s : Set Ω} (hs : Measu
     (fun ω ↦ (condexpKernel μ m ω s).toReal) =ᵐ[μ] μ⟦s | m ⊓ mΩ⟧ := by
   have h := condDistrib_ae_eq_condexp (μ := μ)
     (measurable_id'' (inf_le_right : m ⊓ mΩ ≤ mΩ)) measurable_id hs
-  simp only [id_eq, ge_iff_le, MeasurableSpace.comap_id, preimage_id_eq] at h
+  simp only [id_eq, MeasurableSpace.comap_id, preimage_id_eq] at h
   simp_rw [condexpKernel_apply_eq_condDistrib]
   exact h
 

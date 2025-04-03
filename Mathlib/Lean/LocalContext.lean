@@ -5,6 +5,10 @@ Authors: Scott Morrison
 -/
 import Lean.LocalContext
 
+/-!
+# Additional methods about `LocalContext`
+-/
+
 namespace Lean.LocalContext
 
 universe u v

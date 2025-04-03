@@ -113,8 +113,9 @@ instance : TopologicalRing ℚ := inferInstance
 #align rat.continuous_mul continuous_mul
 
 nonrec theorem totallyBounded_Icc (a b : ℚ) : TotallyBounded (Icc a b) := by
-  simpa only [preimage_cast_Icc] using
-    totallyBounded_preimage Rat.uniformEmbedding_coe_real (totallyBounded_Icc (a : ℝ) b)
+  simpa only [preimage_cast_Icc]
+    using totallyBounded_preimage Rat.uniformEmbedding_coe_real.toUniformInducing
+      (totallyBounded_Icc (a : ℝ) b)
 #align rat.totally_bounded_Icc Rat.totallyBounded_Icc
 
 end Rat

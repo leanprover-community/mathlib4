@@ -11,7 +11,7 @@ import Mathlib.Algebra.Order.Module.Defs
 
 This file proves properties of algebras where both rings are ordered compatibly.
 
-### TODO
+## TODO
 
 `positivity` extension for `algebraMap`
 -/

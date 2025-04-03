@@ -319,7 +319,6 @@ To prove Fermat's Last Theorem, it suffices to prove it for odd prime exponents.
 theorem FermatLastTheorem.of_odd_primes
     (hprimes : ∀ p : ℕ, Nat.Prime p → Odd p → FermatLastTheoremFor p) : FermatLastTheorem := by
   intro n h
-  rw [ge_iff_le, Nat.succ_le_iff] at h
   obtain hdvd|⟨p, hpprime, hdvd, hpodd⟩ := Nat.four_dvd_or_exists_odd_prime_and_dvd_of_two_lt h <;>
     apply FermatLastTheoremWith.mono hdvd
   · exact fermatLastTheoremFour

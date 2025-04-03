@@ -15,7 +15,6 @@ namespace Nat
 /-! ### `shiftLeft` and `shiftRight` -/
 
 section
-set_option linter.deprecated false
 
 theorem shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
 #align nat.shiftl_eq_mul_pow Nat.shiftLeft_eq_mul_pow
@@ -23,10 +22,8 @@ theorem shiftLeft_eq_mul_pow (m) : ∀ n, m <<< n = m * 2 ^ n := shiftLeft_eq _
 theorem shiftLeft'_tt_eq_mul_pow (m) : ∀ n, shiftLeft' true m n + 1 = (m + 1) * 2 ^ n
   | 0 => by simp [shiftLeft', pow_zero, Nat.one_mul]
   | k + 1 => by
-    change bit1 (shiftLeft' true m k) + 1 = (m + 1) * (2 ^ k * 2)
-    rw [bit1_val]
-    change 2 * (shiftLeft' true m k + 1) = _
-    rw [shiftLeft'_tt_eq_mul_pow m k, mul_left_comm, mul_comm 2]
+    rw [shiftLeft', bit_val, cond_true, add_assoc, ← Nat.mul_add_one, shiftLeft'_tt_eq_mul_pow m k,
+      mul_left_comm, mul_comm 2, pow_succ]
 #align nat.shiftl'_tt_eq_mul_pow Nat.shiftLeft'_tt_eq_mul_pow
 
 end
@@ -41,7 +38,7 @@ theorem shiftLeft'_ne_zero_left (b) {m} (h : m ≠ 0) (n) : shiftLeft' b m n ≠
 
 theorem shiftLeft'_tt_ne_zero (m) : ∀ {n}, (n ≠ 0) → shiftLeft' true m n ≠ 0
   | 0, h => absurd rfl h
-  | succ _, _ => Nat.bit1_ne_zero _
+  | succ _, _ => by dsimp [shiftLeft', bit]; omega
 #align nat.shiftl'_tt_ne_zero Nat.shiftLeft'_tt_ne_zero
 
 /-! ### `size` -/
@@ -62,21 +59,13 @@ theorem size_bit {b n} (h : bit b n ≠ 0) : size (bit b n) = succ (size n) := b
 #align nat.size_bit Nat.size_bit
 
 section
-set_option linter.deprecated false
 
-@[simp]
-theorem size_bit0 {n} (h : n ≠ 0) : size (bit0 n) = succ (size n) :=
-  @size_bit false n (Nat.bit0_ne_zero h)
-#align nat.size_bit0 Nat.size_bit0
-
-@[simp]
-theorem size_bit1 (n) : size (bit1 n) = succ (size n) :=
-  @size_bit true n (Nat.bit1_ne_zero n)
-#align nat.size_bit1 Nat.size_bit1
+#noalign nat.size_bit0
+#noalign nat.size_bit1
 
 @[simp]
 theorem size_one : size 1 = 1 :=
-  show size (bit1 0) = 1 by rw [size_bit1, size_zero]
+  show size (bit true 0) = 1 by rw [size_bit, size_zero]; exact Nat.one_ne_zero
 #align nat.size_one Nat.size_one
 
 end
@@ -84,9 +73,12 @@ end
 @[simp]
 theorem size_shiftLeft' {b m n} (h : shiftLeft' b m n ≠ 0) :
     size (shiftLeft' b m n) = size m + n := by
-  induction' n with n IH <;> simp [shiftLeft'] at h ⊢
+  induction' n with n IH
+  · simp [shiftLeft']
+  simp only [shiftLeft', ne_eq] at h ⊢
   rw [size_bit h, Nat.add_succ]
-  by_cases s0 : shiftLeft' b m n = 0 <;> [skip; rw [IH s0]]
+  by_cases s0 : shiftLeft' b m n = 0
+  case neg => rw [IH s0]
   rw [s0] at h ⊢
   cases b; · exact absurd rfl h
   have : shiftLeft' true m n + 1 = 1 := congr_arg (· + 1) s0
@@ -94,7 +86,7 @@ theorem size_shiftLeft' {b m n} (h : shiftLeft' b m n ≠ 0) :
   obtain rfl := succ.inj (eq_one_of_dvd_one ⟨_, this.symm⟩)
   simp only [zero_add, one_mul] at this
   obtain rfl : n = 0 := not_ne_iff.1 fun hn ↦ ne_of_gt (Nat.one_lt_pow hn (by decide)) this
-  rfl
+  rw [add_zero]
 #align nat.size_shiftl' Nat.size_shiftLeft'
 
 -- TODO: decide whether `Nat.shiftLeft_eq` (which rewrites the LHS into a power) should be a simp
@@ -112,8 +104,8 @@ theorem lt_size_self (n : ℕ) : n < 2 ^ size n := by
   intro b n IH
   by_cases h : bit b n = 0
   · apply this h
-  rw [size_bit h, shiftLeft_succ, shiftLeft_eq, one_mul, ← bit0_val]
-  exact bit_lt_bit0 _ (by simpa [shiftLeft_eq, shiftRight_eq_div_pow] using IH)
+  rw [size_bit h, shiftLeft_succ, shiftLeft_eq, one_mul]
+  cases b <;> dsimp [bit] <;> omega
 #align nat.lt_size_self Nat.lt_size_self
 
 theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
@@ -130,8 +122,9 @@ theorem size_le {m n : ℕ} : size m ≤ n ↔ m < 2 ^ n :=
       · exact e.elim (Nat.eq_zero_of_le_zero (le_of_lt_succ h))
       · apply succ_le_succ (IH _)
         apply Nat.lt_of_mul_lt_mul_left (a := 2)
-        simp only [← bit0_val, shiftLeft_succ] at *
-        exact lt_of_le_of_lt (bit0_le_bit b rfl.le) h⟩
+        simp only [shiftLeft_succ] at *
+        refine lt_of_le_of_lt ?_ h
+        cases b <;> dsimp [bit] <;> omega⟩
 #align nat.size_le Nat.size_le
 
 theorem lt_size {m n : ℕ} : m < size n ↔ 2 ^ m ≤ n := by

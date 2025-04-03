@@ -106,7 +106,7 @@ example (n : ℤ) (hn : 0 < n) : True := by
   fail_if_success lift (n : Option ℤ) to ℕ
   trivial
 
- example (n : ℤ) : ℕ := by
+example (n : ℤ) : ℕ := by
   fail_if_success lift n to ℕ
   exact 0
 
@@ -120,7 +120,7 @@ example {R : Type _} {P : R → Prop} (x : R) (hx : P x) : P x := by
   guard_hyp hx : P y
   exact hx
 
- example (n : ℤ) (h_ans : n = 5) (hn : 0 ≤ 1 * n) : n = 5 := by
+example (n : ℤ) (h_ans : n = 5) (hn : 0 ≤ 1 * n) : n = 5 := by
   lift n to ℕ using by { simpa [Int.one_mul] using hn } with k hk
   guard_target =ₛ (k : Int) = 5
   guard_hyp hk : k = n

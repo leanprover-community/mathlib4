@@ -771,7 +771,7 @@ theorem length_toList (s : Multiset α) : s.toList.length = card s := by
   rw [← coe_card, coe_toList]
 #align multiset.length_to_list Multiset.length_toList
 
-@[simp] -- Porting note (#10675): `dsimp` can not prove this, yet linter complains
+@[simp]
 theorem card_zero : @card α 0 = 0 :=
   rfl
 #align multiset.card_zero Multiset.card_zero
@@ -1049,7 +1049,7 @@ theorem coe_erase (l : List α) (a : α) : erase (l : Multiset α) a = l.erase a
   rfl
 #align multiset.coe_erase Multiset.coe_erase
 
-@[simp] -- Porting note (#10675): `dsimp` can not prove this, yet linter complains
+@[simp]
 theorem erase_zero (a : α) : (0 : Multiset α).erase a = 0 :=
   rfl
 #align multiset.erase_zero Multiset.erase_zero
@@ -1199,7 +1199,7 @@ theorem map_congr {f g : α → β} {s t : Multiset α} :
     s = t → (∀ x ∈ t, f x = g x) → map f s = map g t := by
   rintro rfl h
   induction s using Quot.inductionOn
-  exact congr_arg _ (List.map_congr h)
+  exact congr_arg _ (List.map_congr_left h)
 #align multiset.map_congr Multiset.map_congr
 
 theorem map_hcongr {β' : Type v} {m : Multiset α} {f : α → β} {f' : α → β'} (h : β = β')
@@ -1984,6 +1984,11 @@ theorem filter_zero : filter p 0 = 0 :=
   rfl
 #align multiset.filter_zero Multiset.filter_zero
 
+#adaptation_note
+/--
+Please re-enable the linter once we moved to `nightly-2024-06-22` or later.
+-/
+set_option linter.deprecated false in
 theorem filter_congr {p q : α → Prop} [DecidablePred p] [DecidablePred q] {s : Multiset α} :
     (∀ x ∈ s, p x ↔ q x) → filter p s = filter q s :=
   Quot.inductionOn s fun _l h => congr_arg ofList <| filter_congr' <| by simpa using h
@@ -2147,14 +2152,17 @@ theorem filter_add_not (s : Multiset α) : filter p s + filter (fun a => ¬p a) 
       decide_True, implies_true, Decidable.em]
 #align multiset.filter_add_not Multiset.filter_add_not
 
-theorem map_filter (f : β → α) (s : Multiset β) : filter p (map f s) = map f (filter (p ∘ f) s) :=
-  Quot.inductionOn s fun l => by simp [List.map_filter]; rfl
-#align multiset.map_filter Multiset.map_filter
+theorem filter_map (f : β → α) (s : Multiset β) : filter p (map f s) = map f (filter (p ∘ f) s) :=
+  Quot.inductionOn s fun l => by simp [List.filter_map]; rfl
+#align multiset.map_filter Multiset.filter_map
 
+@[deprecated (since := "2024-06-16")] alias map_filter := filter_map
+
+-- TODO: rename to `map_filter` when the deprecated alias above is removed.
 lemma map_filter' {f : α → β} (hf : Injective f) (s : Multiset α)
     [DecidablePred fun b => ∃ a, p a ∧ f a = b] :
     (s.filter p).map f = (s.map f).filter fun b => ∃ a, p a ∧ f a = b := by
-  simp [(· ∘ ·), map_filter, hf.eq_iff]
+  simp [(· ∘ ·), filter_map, hf.eq_iff]
 #align multiset.map_filter' Multiset.map_filter'
 
 lemma card_filter_le_iff (s : Multiset α) (P : α → Prop) [DecidablePred P] (n : ℕ) :
@@ -2438,7 +2446,7 @@ theorem coe_count (a : α) (l : List α) : count a (ofList l) = l.count a := by
   rfl
 #align multiset.coe_count Multiset.coe_count
 
-@[simp] -- Porting note (#10618): simp can prove this at EOF, but not right now
+@[simp]
 theorem count_zero (a : α) : count a 0 = 0 :=
   rfl
 #align multiset.count_zero Multiset.count_zero
@@ -2739,7 +2747,7 @@ for more discussion.
 @[simp]
 theorem map_count_True_eq_filter_card (s : Multiset α) (p : α → Prop) [DecidablePred p] :
     (s.map p).count True = card (s.filter p) := by
-  simp only [count_eq_card_filter_eq, map_filter, card_map, Function.id_comp,
+  simp only [count_eq_card_filter_eq, filter_map, card_map, Function.id_comp,
     eq_true_eq_id, Function.comp_apply]
 #align multiset.map_count_true_eq_filter_card Multiset.map_count_True_eq_filter_card
 

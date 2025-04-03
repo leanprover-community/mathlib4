@@ -64,7 +64,7 @@ class ContinuousAddMonoidHomClass (A B : outParam Type*) [AddMonoid A] [AddMonoi
   map_continuous (f : F) : Continuous f
 #align continuous_add_monoid_hom_class ContinuousAddMonoidHomClass
 
-/-- `ContinuousMonoidHomClass F A B` states that `F` is a type of continuous additive monoid
+/-- `ContinuousMonoidHomClass F A B` states that `F` is a type of continuous monoid
 homomorphisms.
 
 You should also extend this typeclass when you extend `ContinuousMonoidHom`. -/

@@ -314,7 +314,7 @@ theorem mulVec_cramer (A : Matrix n n α) (b : n → α) : A *ᵥ cramer A b = A
 
 theorem adjugate_subsingleton [Subsingleton n] (A : Matrix n n α) : adjugate A = 1 := by
   ext i j
-  simp [Subsingleton.elim i j, adjugate_apply, det_eq_elem_of_subsingleton _ i]
+  simp [Subsingleton.elim i j, adjugate_apply, det_eq_elem_of_subsingleton _ i, one_apply]
 #align matrix.adjugate_subsingleton Matrix.adjugate_subsingleton
 
 theorem adjugate_eq_one_of_card_eq_one {A : Matrix n n α} (h : Fintype.card n = 1) :
@@ -380,7 +380,7 @@ theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.c
   let A' := mvPolynomialX n n ℤ
   suffices A'.adjugate.det = A'.det ^ (Fintype.card n - 1) by
     rw [← mvPolynomialX_mapMatrix_aeval ℤ A, ← AlgHom.map_adjugate, ← AlgHom.map_det, ←
-      AlgHom.map_det, ← AlgHom.map_pow, this]
+      AlgHom.map_det, ← map_pow, this]
   apply mul_left_cancel₀ (show A'.det ≠ 0 from det_mvPolynomialX_ne_zero n ℤ)
   calc
     A'.det * A'.adjugate.det = (A' * adjugate A').det := (det_mul _ _).symm
@@ -537,8 +537,7 @@ theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
     adjugate (adjugate A) = det A ^ (Fintype.card n - 2) • A := by
   -- get rid of the `- 2`
   cases' h_card : Fintype.card n with n'
-  · haveI : IsEmpty n := Fintype.card_eq_zero_iff.mp h_card
-    apply Subsingleton.elim
+  · subsingleton [Fintype.card_eq_zero_iff.mp h_card]
   cases n'
   · exact (h h_card).elim
   rw [← h_card]
@@ -547,8 +546,8 @@ theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
   let A' := mvPolynomialX n n ℤ
   suffices adjugate (adjugate A') = det A' ^ (Fintype.card n - 2) • A' by
     rw [← mvPolynomialX_mapMatrix_aeval ℤ A, ← AlgHom.map_adjugate, ← AlgHom.map_adjugate, this,
-      ← AlgHom.map_det, ← AlgHom.map_pow, AlgHom.mapMatrix_apply, AlgHom.mapMatrix_apply,
-      Matrix.map_smul' _ _ _ (_root_.map_mul _)]
+      ← AlgHom.map_det, ← map_pow (MvPolynomial.aeval _), AlgHom.mapMatrix_apply,
+      AlgHom.mapMatrix_apply, Matrix.map_smul' _ _ _ (_root_.map_mul _)]
   have h_card' : Fintype.card n - 2 + 1 = Fintype.card n - 1 := by simp [h_card]
   have is_reg : IsSMulRegular (MvPolynomial (n × n) ℤ) (det A') := fun x y =>
     mul_left_cancel₀ (det_mvPolynomialX_ne_zero n ℤ)

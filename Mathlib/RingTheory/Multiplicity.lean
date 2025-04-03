@@ -3,7 +3,7 @@ Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes
 -/
-import Mathlib.Algebra.Associated
+import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Nat.PartENat
@@ -236,7 +236,7 @@ theorem multiplicity_le_multiplicity_iff {a b : α} {c d : β} :
     letI := Classical.dec (Finite a b)
     if hab : Finite a b then by
       rw [← PartENat.natCast_get (finite_iff_dom.1 hab)];
-        exact le_multiplicity_of_pow_dvd (h _ (pow_multiplicity_dvd _))
+      exact le_multiplicity_of_pow_dvd (h _ (pow_multiplicity_dvd _))
     else by
       have : ∀ n : ℕ, c ^ n ∣ d := fun n => h n (not_finite_iff_forall.1 hab _)
       rw [eq_top_iff_not_finite.2 hab, eq_top_iff_not_finite.2 (not_finite_iff_forall.2 this)]⟩
@@ -408,11 +408,11 @@ variable [Semiring α] [DecidableRel ((· ∣ ·) : α → α → Prop)]
 theorem min_le_multiplicity_add {p a b : α} :
     min (multiplicity p a) (multiplicity p b) ≤ multiplicity p (a + b) :=
   (le_total (multiplicity p a) (multiplicity p b)).elim
-    (fun h => by
+    (fun h ↦ by
       rw [min_eq_left h, multiplicity_le_multiplicity_iff];
-        exact fun n hn => dvd_add hn (multiplicity_le_multiplicity_iff.1 h n hn))
-    fun h => by
-    rw [min_eq_right h, multiplicity_le_multiplicity_iff];
+      exact fun n hn => dvd_add hn (multiplicity_le_multiplicity_iff.1 h n hn))
+    fun h ↦ by
+      rw [min_eq_right h, multiplicity_le_multiplicity_iff];
       exact fun n hn => dvd_add (multiplicity_le_multiplicity_iff.1 h n hn) hn
 #align multiplicity.min_le_multiplicity_add multiplicity.min_le_multiplicity_add
 
@@ -489,8 +489,8 @@ theorem finite_mul_aux {p : α} (hp : Prime p) {a b : α} :
           Nat.pos_of_ne_zero fun hn0 => by simp [hx, hn0] at ha
         have hpx : ¬p ^ (n - 1 + 1) ∣ x := fun ⟨y, hy⟩ =>
           ha (hx.symm ▸ ⟨y, mul_right_cancel₀ hp.1 <| by
-                  rw [tsub_add_cancel_of_le (succ_le_of_lt hn0)] at hy;
-                    simp [hy, pow_add, mul_comm, mul_assoc, mul_left_comm]⟩)
+            rw [tsub_add_cancel_of_le (succ_le_of_lt hn0)] at hy;
+            simp [hy, pow_add, mul_comm, mul_assoc, mul_left_comm]⟩)
         have : 1 ≤ n + m := le_trans hn0 (Nat.le_add_right n m)
         finite_mul_aux hp hpx hb
           ⟨s, mul_right_cancel₀ hp.1 (by
@@ -505,7 +505,7 @@ theorem finite_mul_aux {p : α} (hp : Prime p) {a b : α} :
               ⟨y,
                 mul_right_cancel₀ hp.1 <| by
                   rw [tsub_add_cancel_of_le (succ_le_of_lt hm0)] at hy;
-                    simp [hy, pow_add, mul_comm, mul_assoc, mul_left_comm]⟩)
+                  simp [hy, pow_add, mul_comm, mul_assoc, mul_left_comm]⟩)
         finite_mul_aux hp ha hpx
         ⟨s, mul_right_cancel₀ hp.1 (by
               rw [add_assoc, tsub_add_cancel_of_le (succ_le_of_lt hm0)]
@@ -542,8 +542,7 @@ theorem get_multiplicity_self {a : α} (ha : Finite a a) : get (multiplicity a a
       ⟨by simp, fun ⟨b, hb⟩ => by
         rw [← mul_one a, pow_add, pow_one, mul_assoc, mul_assoc,
             mul_right_inj' (ne_zero_of_finite ha)] at hb;
-          exact
-            mt isUnit_iff_dvd_one.2 (not_unit_of_finite ha) ⟨b, by simp_all⟩⟩)
+        exact mt isUnit_iff_dvd_one.2 (not_unit_of_finite ha) ⟨b, by simp_all⟩⟩)
 #align multiplicity.get_multiplicity_self multiplicity.get_multiplicity_self
 
 protected theorem mul' {p a b : α} (hp : Prime p) (h : (multiplicity p (a * b)).Dom) :

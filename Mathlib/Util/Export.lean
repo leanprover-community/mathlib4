@@ -12,8 +12,6 @@ A rudimentary export format, adapted from
 with support for lean 4 kernel primitives.
 -/
 
-set_option autoImplicit true
-
 open Lean (HashMap HashSet)
 
 namespace Lean
@@ -196,7 +194,7 @@ where
 
 end
 
-def runExportM (m : ExportM α) : CoreM α := m.run' default
+def runExportM {α : Type} (m : ExportM α) : CoreM α := m.run' default
 
 -- #eval runExportM (exportDef `Lean.Expr)
 end Export

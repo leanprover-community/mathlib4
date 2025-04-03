@@ -122,7 +122,7 @@ theorem mul_polyOfInterest_aux1 (n : ℕ) :
   simp only [wittPolyProd]
   convert wittStructureInt_prop p (X (0 : Fin 2) * X 1) n using 1
   · simp only [wittPolynomial, wittMul]
-    rw [AlgHom.map_sum]
+    rw [map_sum]
     congr 1 with i
     congr 1
     have hsupp : (Finsupp.single i (p ^ (n - i))).support = {i} := by
@@ -152,7 +152,7 @@ theorem mul_polyOfInterest_aux3 (n : ℕ) : wittPolyProd p (n + 1) =
   -- Porting note: the original proof applies `sum_range_succ` through a non-`conv` rewrite,
   -- but this does not work in Lean 4; the whole proof also times out very badly. The proof has been
   -- nearly totally rewritten here and now finishes quite fast.
-  rw [wittPolyProd, wittPolynomial, AlgHom.map_sum, AlgHom.map_sum]
+  rw [wittPolyProd, wittPolynomial, map_sum, map_sum]
   conv_lhs =>
     arg 1
     rw [sum_range_succ, ← C_mul_X_pow_eq_monomial, tsub_self, pow_zero, pow_one, map_mul,

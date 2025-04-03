@@ -164,6 +164,12 @@ theorem map_obj (f : X ⟶ Y) (U) (p) : (map f).obj ⟨U, p⟩ = ⟨f ⁻¹' U, 
 #align topological_space.opens.map_obj TopologicalSpace.Opens.map_obj
 
 @[simp]
+lemma map_homOfLE (f : X ⟶ Y) {U V : Opens Y} (e : U ≤ V) :
+    (TopologicalSpace.Opens.map f).map (homOfLE e) =
+      homOfLE (show (Opens.map f).obj U ≤ (Opens.map f).obj V from fun _ hx ↦ e hx) :=
+  rfl
+
+@[simp]
 theorem map_id_obj (U : Opens X) : (map (𝟙 X)).obj U = U :=
   let ⟨_, _⟩ := U
   rfl
@@ -367,8 +373,7 @@ theorem inclusion_top_functor (X : TopCat) :
   · intro U
     ext x
     exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h => ⟨⟨x, trivial⟩, h, rfl⟩⟩
-  · intros U V f
-    apply Subsingleton.elim
+  · subsingleton
 #align topological_space.opens.inclusion_top_functor TopologicalSpace.Opens.inclusion_top_functor
 
 theorem functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U : Opens Y) :
@@ -415,7 +420,7 @@ theorem map_functor_eq {X : TopCat} {U : Opens X} (V : Opens U) :
 theorem adjunction_counit_map_functor {X : TopCat} {U : Opens X} (V : Opens U) :
     U.openEmbedding.isOpenMap.adjunction.counit.app (U.openEmbedding.isOpenMap.functor.obj V) =
       eqToHom (by dsimp; rw [map_functor_eq V]) := by
-  apply Subsingleton.elim
+  subsingleton
 #align topological_space.opens.adjunction_counit_map_functor TopologicalSpace.Opens.adjunction_counit_map_functor
 
 end TopologicalSpace.Opens

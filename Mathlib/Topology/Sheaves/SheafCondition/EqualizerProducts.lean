@@ -359,14 +359,14 @@ def coneEquivUnitIsoApp (c : Cone ((diagram U).op ⋙ F)) :
   hom :=
     { hom := 𝟙 _
       w := fun j => by
-        induction j using Opposite.rec' with | h j => ?_;
+        induction j using Opposite.rec' with | h j => ?_
         rcases j with ⟨⟩ <;>
         · dsimp [coneEquivInverse]
           simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }
   inv :=
     { hom := 𝟙 _
       w := fun j => by
-        induction j using Opposite.rec' with | h j => ?_;
+        induction j using Opposite.rec' with | h j => ?_
         rcases j with ⟨⟩ <;>
         · dsimp [coneEquivInverse]
           simp only [Limits.Fan.mk_π_app, Category.id_comp, Limits.limit.lift_π] }

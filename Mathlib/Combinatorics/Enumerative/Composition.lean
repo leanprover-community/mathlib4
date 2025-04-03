@@ -171,12 +171,12 @@ theorem one_le_blocks {i : ℕ} (h : i ∈ c.blocks) : 1 ≤ i :=
 #align composition.one_le_blocks Composition.one_le_blocks
 
 @[simp]
-theorem one_le_blocks' {i : ℕ} (h : i < c.length) : 1 ≤ c.blocks.get ⟨i, h⟩ :=
+theorem one_le_blocks' {i : ℕ} (h : i < c.length) : 1 ≤ c.blocks[i] :=
   c.one_le_blocks (get_mem (blocks c) i h)
 #align composition.one_le_blocks' Composition.one_le_blocks'
 
 @[simp]
-theorem blocks_pos' (i : ℕ) (h : i < c.length) : 0 < c.blocks.get ⟨i, h⟩ :=
+theorem blocks_pos' (i : ℕ) (h : i < c.length) : 0 < c.blocks[i] :=
   c.one_le_blocks' h
 #align composition.blocks_pos' Composition.blocks_pos'
 
@@ -221,7 +221,7 @@ theorem sizeUpTo_le (i : ℕ) : c.sizeUpTo i ≤ n := by
 #align composition.size_up_to_le Composition.sizeUpTo_le
 
 theorem sizeUpTo_succ {i : ℕ} (h : i < c.length) :
-    c.sizeUpTo (i + 1) = c.sizeUpTo i + c.blocks.get ⟨i, h⟩ := by
+    c.sizeUpTo (i + 1) = c.sizeUpTo i + c.blocks[i] := by
   simp only [sizeUpTo]
   rw [sum_take_succ _ _ h]
 #align composition.size_up_to_succ Composition.sizeUpTo_succ
@@ -487,7 +487,7 @@ theorem ones_blocks (n : ℕ) : (ones n).blocks = replicate n (1 : ℕ) :=
 
 @[simp]
 theorem ones_blocksFun (n : ℕ) (i : Fin (ones n).length) : (ones n).blocksFun i = 1 := by
-  simp only [blocksFun, ones, blocks, i.2, List.get_replicate]
+  simp only [blocksFun, ones, get_eq_getElem, getElem_replicate]
 #align composition.ones_blocks_fun Composition.ones_blocksFun
 
 @[simp]
@@ -697,33 +697,56 @@ theorem sum_take_map_length_splitWrtComposition (l : List α) (c : Composition l
   exact map_length_splitWrtComposition l c
 #align list.sum_take_map_length_split_wrt_composition List.sum_take_map_length_splitWrtComposition
 
-theorem get_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ} (hi) :
-    (l.splitWrtCompositionAux ns).get ⟨i, hi⟩  =
+theorem getElem_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ}
+    (hi : i < (l.splitWrtCompositionAux ns).length) :
+    (l.splitWrtCompositionAux ns)[i]  =
       (l.take (ns.take (i + 1)).sum).drop (ns.take i).sum := by
   induction' ns with n ns IH generalizing l i
   · cases hi
   cases' i with i
   · rw [Nat.add_zero, List.take_zero, sum_nil]
-    simpa using get_mk_zero hi
-  · simp only [splitWrtCompositionAux, get_cons_succ, IH, take,
+    simp
+  · simp only [splitWrtCompositionAux, getElem_cons_succ, IH, take,
         sum_cons, Nat.add_eq, add_zero, splitAt_eq_take_drop, drop_take, drop_drop]
     rw [add_comm (sum _) n, Nat.add_sub_add_left]
-#align list.nth_le_split_wrt_composition_aux List.get_splitWrtCompositionAux
+#align list.nth_le_split_wrt_composition_aux List.getElem_splitWrtCompositionAux
 
 /-- The `i`-th sublist in the splitting of a list `l` along a composition `c`, is the slice of `l`
 between the indices `c.sizeUpTo i` and `c.sizeUpTo (i+1)`, i.e., the indices in the `i`-th
 block of the composition. -/
-theorem get_splitWrtComposition' (l : List α) (c : Composition n) {i : ℕ}
+theorem getElem_splitWrtComposition' (l : List α) (c : Composition n) {i : ℕ}
     (hi : i < (l.splitWrtComposition c).length) :
-    (l.splitWrtComposition c).get ⟨i, hi⟩ = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) :=
-  get_splitWrtCompositionAux _ _ _
-#align list.nth_le_split_wrt_composition List.get_splitWrtComposition'
+    (l.splitWrtComposition c)[i] = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) :=
+  getElem_splitWrtCompositionAux _ _ _
+#align list.nth_le_split_wrt_composition List.getElem_splitWrtComposition'
 
 -- Porting note: restatement of `get_splitWrtComposition`
+theorem getElem_splitWrtComposition (l : List α) (c : Composition n)
+    (i : Nat) (h : i < (l.splitWrtComposition c).length) :
+    (l.splitWrtComposition c)[i] = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) :=
+  getElem_splitWrtComposition' _ _ _
+
+@[deprecated getElem_splitWrtCompositionAux (since := "2024-06-12")]
+theorem get_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ} (hi) :
+    (l.splitWrtCompositionAux ns).get ⟨i, hi⟩  =
+      (l.take (ns.take (i + 1)).sum).drop (ns.take i).sum := by
+  simp [getElem_splitWrtCompositionAux]
+
+/-- The `i`-th sublist in the splitting of a list `l` along a composition `c`, is the slice of `l`
+between the indices `c.sizeUpTo i` and `c.sizeUpTo (i+1)`, i.e., the indices in the `i`-th
+block of the composition. -/
+@[deprecated getElem_splitWrtComposition' (since := "2024-06-12")]
+theorem get_splitWrtComposition' (l : List α) (c : Composition n) {i : ℕ}
+    (hi : i < (l.splitWrtComposition c).length) :
+    (l.splitWrtComposition c).get ⟨i, hi⟩ = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) := by
+  simp [getElem_splitWrtComposition']
+
+-- Porting note: restatement of `get_splitWrtComposition`
+@[deprecated getElem_splitWrtComposition (since := "2024-06-12")]
 theorem get_splitWrtComposition (l : List α) (c : Composition n)
     (i : Fin (l.splitWrtComposition c).length) :
-    get (l.splitWrtComposition c) i = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) :=
-  get_splitWrtComposition' _ _ _
+    get (l.splitWrtComposition c) i = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) := by
+  simp [getElem_splitWrtComposition]
 
 theorem join_splitWrtCompositionAux {ns : List ℕ} :
     ∀ {l : List α}, ns.sum = l.length → (l.splitWrtCompositionAux ns).join = l := by
@@ -803,9 +826,9 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
           simp only [Nat.succ_eq_add_one, Nat.lt_succ_iff_lt_or_eq, i_ne_last, or_false] at this
         exact Nat.pred_lt_pred i_ne_zero this
       · convert i_mem
-        simp only [ge_iff_le]
+        simp only
         rwa [add_comm]
-      · simp only [ge_iff_le]
+      · simp only
         symm
         rwa [add_comm]
   right_inv := by

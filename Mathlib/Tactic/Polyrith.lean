@@ -60,8 +60,6 @@ remember to force recompilation of any files that call `polyrith`.
 
 -/
 
-set_option autoImplicit true
-
 namespace Mathlib.Tactic.Polyrith
 open Lean hiding Rat
 open Meta Ring Qq PrettyPrinter AtomM
@@ -131,7 +129,7 @@ def Poly.toSyntax : Poly → Unhygienic Syntax.Term
   | .neg p => do `(-$(← p.toSyntax))
 
 /-- Reifies a ring expression of type `α` as a `Poly`. -/
-partial def parse {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
+partial def parse {u : Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     (c : Ring.Cache sα) (e : Q($α)) : AtomM Poly := do
   let els := do
     try pure <| Poly.const (← (← NormNum.derive e).toRat)
@@ -244,7 +242,7 @@ def Poly.pow' : ℕ → ℕ → Poly
   | i, k => .pow (.var i) (.const k)
 
 /-- Constructs a sum from a monadic function supplying the monomials. -/
-def Poly.sumM [Monad m] (a : Array α) (f : α → m Poly) : m Poly :=
+def Poly.sumM {m : Type → Type*} {α : Type*} [Monad m] (a : Array α) (f : α → m Poly) : m Poly :=
   a.foldlM (init := .const 0) fun p a => return p.add' (← f a)
 
 instance : FromJson Poly where
@@ -427,3 +425,9 @@ elab_rules : tactic
       replaceMainGoal []
       if !traceMe then Lean.Meta.Tactic.TryThis.addSuggestion tk stx
     | .error g => replaceMainGoal [g]
+
+end Polyrith
+
+end Tactic
+
+end Mathlib

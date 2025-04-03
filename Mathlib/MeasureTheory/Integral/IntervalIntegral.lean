@@ -20,7 +20,7 @@ In this file we define `∫ x in a..b, f x ∂μ` to be `∫ x in Ioc a b, f x �
 ### Avoiding `if`, `min`, and `max`
 
 In order to avoid `if`s in the definition, we define `IntervalIntegrable f μ a b` as
-`integrable_on f (Ioc a b) μ ∧ integrable_on f (Ioc b a) μ`. For any `a`, `b` one of these
+`IntegrableOn f (Ioc a b) μ ∧ IntegrableOn f (Ioc b a) μ`. For any `a`, `b` one of these
 intervals is empty and the other coincides with `Set.uIoc a b = Set.Ioc (min a b) (max a b)`.
 
 Similarly, we define `∫ x in a..b, f x ∂μ` to be `∫ x in Ioc a b, f x ∂μ - ∫ x in Ioc b a, f x ∂μ`.
@@ -1140,7 +1140,7 @@ theorem integral_lt_integral_of_continuousOn_of_le_of_exists_lt {f g : ℝ → �
     (∫ x in a..b, f x) < ∫ x in a..b, g x := by
   apply integral_lt_integral_of_ae_le_of_measure_setOf_lt_ne_zero hab.le
     (hfc.intervalIntegrable_of_Icc hab.le) (hgc.intervalIntegrable_of_Icc hab.le)
-  · simpa only [gt_iff_lt, not_lt, ge_iff_le, measurableSet_Ioc, ae_restrict_eq, le_principal_iff]
+  · simpa only [gt_iff_lt, not_lt, measurableSet_Ioc, ae_restrict_eq, le_principal_iff]
       using (ae_restrict_mem measurableSet_Ioc).mono hle
   contrapose! hlt
   have h_eq : f =ᵐ[volume.restrict (Ioc a b)] g := by
@@ -1234,8 +1234,9 @@ theorem _root_.MeasureTheory.Integrable.hasSum_intervalIntegral (hfi : Integrabl
 #align measure_theory.integrable.has_sum_interval_integral MeasureTheory.Integrable.hasSum_intervalIntegral
 
 theorem _root_.MeasureTheory.Integrable.hasSum_intervalIntegral_comp_add_int (hfi : Integrable f) :
-    HasSum (fun n : ℤ => ∫ x in (0:ℝ)..(1:ℝ), f (x + n)) (∫ x, f x) := by
-  simpa only [integral_comp_add_right, zero_add, add_comm (1:ℝ)] using hfi.hasSum_intervalIntegral 0
+    HasSum (fun n : ℤ => ∫ x in (0 : ℝ)..(1 : ℝ), f (x + n)) (∫ x, f x) := by
+  simpa only [integral_comp_add_right, zero_add, add_comm (1 : ℝ)] using
+    hfi.hasSum_intervalIntegral 0
 #align measure_theory.integrable.has_sum_interval_integral_comp_add_int MeasureTheory.Integrable.hasSum_intervalIntegral_comp_add_int
 
 end HasSum

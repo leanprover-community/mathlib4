@@ -70,7 +70,7 @@ lemma of_equivalence_source (L₁ : C₁ ⥤ D) (W₁ : MorphismProperty C₁)
     [L₁.IsLocalization W₁] (iso : E.functor ⋙ L₂ ≅ L₁) : L₂.IsLocalization W₂ := by
   have h : W₁.IsInvertedBy (E.functor ⋙ W₂.Q) := fun _ _ f hf => by
     obtain ⟨_, _, f', hf', ⟨e⟩⟩ := hW₁ f hf
-    exact ((MorphismProperty.RespectsIso.isomorphisms _).arrow_mk_iso_iff
+    exact ((MorphismProperty.isomorphisms _).arrow_mk_iso_iff
       (W₂.Q.mapArrow.mapIso e)).1 (Localization.inverts W₂.Q W₂ _ hf')
   exact
     { inverts := hW₂

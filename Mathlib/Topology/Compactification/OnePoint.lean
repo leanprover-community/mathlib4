@@ -393,8 +393,8 @@ theorem continuousAt_coe {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y}
 
 lemma continuous_iff {Y : Type*} [TopologicalSpace Y] (f : OnePoint X → Y) : Continuous f ↔
     Tendsto (fun x : X ↦ f x) (coclosedCompact X) (𝓝 (f ∞)) ∧ Continuous (fun x : X ↦ f x) := by
-  simp only [continuous_iff_continuousAt, OnePoint.forall, continuousAt_coe, continuousAt_infty']
-  rfl
+  simp only [continuous_iff_continuousAt, OnePoint.forall, continuousAt_coe, continuousAt_infty',
+    Function.comp_def]
 
 /--
 A constructor for continuous maps out of a one point compactification, given a continuous map from

@@ -363,7 +363,7 @@ theorem split_by_characteristic_domain [IsDomain R] (h_pos : ∀ p : ℕ, Nat.Pr
   exact h_pos p p_prime p_char
 #align split_by_characteristic_domain split_by_characteristic_domain
 
- /--
+/--
 In a `LocalRing R`, split any `Prop` over `R` into the three cases:
 - *prime power* characteristic.
 - equal characteristic zero.

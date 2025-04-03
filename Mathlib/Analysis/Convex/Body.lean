@@ -196,7 +196,6 @@ noncomputable instance : PseudoMetricSpace (ConvexBody V) where
   dist_self _ := Metric.hausdorffDist_self_zero
   dist_comm _ _ := Metric.hausdorffDist_comm
   dist_triangle K L M := Metric.hausdorffDist_triangle hausdorffEdist_ne_top
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
 
 @[simp, norm_cast]
 theorem hausdorffDist_coe : Metric.hausdorffDist (K : Set V) L = dist K L :=

@@ -3,7 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Morenikeji Neri
 -/
-import Mathlib.Algebra.EuclideanDomain.Instances
+import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.UniqueFactorizationDomain
 
@@ -488,6 +488,12 @@ theorem exists_associated_pow_of_mul_eq_pow' {a b c : R} (hab : IsCoprime a b) {
   letI := IsBezout.toGCDDomain R
   exact exists_associated_pow_of_mul_eq_pow ((gcd_isUnit_iff _ _).mpr hab) h
 #align exists_associated_pow_of_mul_eq_pow' exists_associated_pow_of_mul_eq_pow'
+
+theorem exists_associated_pow_of_associated_pow_mul {a b c : R} (hab : IsCoprime a b) {k : ℕ}
+    (h : Associated (c ^ k) (a * b)) : ∃ d : R, Associated (d ^ k) a := by
+  obtain ⟨u, hu⟩ := h.symm
+  exact exists_associated_pow_of_mul_eq_pow'
+    ((isCoprime_mul_unit_right_right u.isUnit a b).mpr hab) <| mul_assoc a _ _ ▸ hu
 
 end Bezout
 

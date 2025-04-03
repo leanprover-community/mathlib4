@@ -9,6 +9,7 @@ import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.Sylow
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.TFAE
+import Mathlib.Algebra.Group.Subgroup.Order
 
 #align_import group_theory.nilpotent from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
@@ -869,14 +870,14 @@ theorem IsPGroup.isNilpotent [Finite G] {p : ℕ} [hp : Fact (Nat.Prime p)] (h :
       exact of_quotient_center_nilpotent hnq
 #align is_p_group.is_nilpotent IsPGroup.isNilpotent
 
-variable [Fintype G]
+variable [Finite G]
 
 /-- If a finite group is the direct product of its Sylow groups, it is nilpotent -/
 theorem isNilpotent_of_product_of_sylow_group
-    (e : (∀ p : (Fintype.card G).primeFactors, ∀ P : Sylow p G, (↑P : Subgroup G)) ≃* G) :
+    (e : (∀ p : (Nat.card G).primeFactors, ∀ P : Sylow p G, (↑P : Subgroup G)) ≃* G) :
     IsNilpotent G := by
   classical
-    let ps := (Fintype.card G).primeFactors
+    let ps := (Nat.card G).primeFactors
     have : ∀ (p : ps) (P : Sylow p G), IsNilpotent (↑P : Subgroup G) := by
       intro p P
       haveI : Fact (Nat.Prime ↑p) := Fact.mk <| Nat.prime_of_mem_primeFactors p.2
@@ -892,7 +893,7 @@ theorem isNilpotent_of_finite_tfae :
       [IsNilpotent G, NormalizerCondition G, ∀ H : Subgroup G, IsCoatom H → H.Normal,
         ∀ (p : ℕ) (_hp : Fact p.Prime) (P : Sylow p G), (↑P : Subgroup G).Normal,
         Nonempty
-          ((∀ p : (card G).primeFactors, ∀ P : Sylow p G, (↑P : Subgroup G)) ≃* G)] := by
+          ((∀ p : (Nat.card G).primeFactors, ∀ P : Sylow p G, (↑P : Subgroup G)) ≃* G)] := by
   tfae_have 1 → 2
   · exact @normalizerCondition_of_isNilpotent _ _
   tfae_have 2 → 3

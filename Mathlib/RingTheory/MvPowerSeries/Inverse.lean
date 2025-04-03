@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
 
+import Mathlib.Algebra.Group.Units
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.Ideal.LocalRing
-
+import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
 
 #align_import ring_theory.power_series.basic from "leanprover-community/mathlib"@"2d5739b61641ee4e7e53eca5688a08f66f2e6a60"
 
@@ -104,6 +105,7 @@ theorem constantCoeff_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) :
   rw [← coeff_zero_eq_constantCoeff_apply, coeff_invOfUnit, if_pos rfl]
 #align mv_power_series.constant_coeff_inv_of_unit MvPowerSeries.constantCoeff_invOfUnit
 
+@[simp]
 theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ R φ = u) :
     φ * invOfUnit φ u = 1 :=
   ext fun n =>
@@ -136,6 +138,22 @@ theorem mul_invOfUnit (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ 
         ext1 s
         exact Nat.eq_zero_of_le_zero (H s)
 #align mv_power_series.mul_inv_of_unit MvPowerSeries.mul_invOfUnit
+
+-- TODO : can one prove equivalence?
+@[simp]
+theorem invOfUnit_mul (φ : MvPowerSeries σ R) (u : Rˣ) (h : constantCoeff σ R φ = u) :
+    invOfUnit φ u * φ = 1 := by
+  rw [← mul_cancel_right_mem_nonZeroDivisors (r := φ.invOfUnit u), mul_assoc, one_mul,
+    mul_invOfUnit _ _ h, mul_one]
+  apply mem_nonZeroDivisors_of_constantCoeff
+  simp only [constantCoeff_invOfUnit, IsUnit.mem_nonZeroDivisors (Units.isUnit u⁻¹)]
+
+theorem isUnit_iff_constantCoeff {φ : MvPowerSeries σ R} :
+    IsUnit φ ↔ IsUnit (constantCoeff σ R φ) := by
+  constructor
+  · exact IsUnit.map _
+  · intro ⟨u, hu⟩
+    use ⟨_, φ.invOfUnit u, mul_invOfUnit φ u hu.symm,  invOfUnit_mul φ u hu.symm⟩
 
 end Ring
 
@@ -177,6 +195,8 @@ instance map.isLocalRingHom : IsLocalRingHom (map σ f) :=
 end LocalRing
 
 section Field
+
+open MvPowerSeries
 
 variable {k : Type*} [Field k]
 

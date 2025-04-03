@@ -3,6 +3,7 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Floris van Doorn
 -/
+import Mathlib.Data.Nat.Find
 import Mathlib.Data.PNat.Basic
 
 #align_import data.pnat.find from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"

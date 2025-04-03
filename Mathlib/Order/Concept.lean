@@ -172,7 +172,8 @@ initialize_simps_projections Concept (+toProd, -fst, -snd)
 
 namespace Concept
 
-variable {r α β} {c d : Concept α β r}
+variable {r α β}
+variable {c d : Concept α β r}
 
 attribute [simp] closure_fst closure_snd
 

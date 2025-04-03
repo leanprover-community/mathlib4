@@ -15,7 +15,7 @@ import Mathlib.CategoryTheory.Functor.ReflectsIso
 Basic properties of reflective functors, especially those relating to their essential image.
 
 Note properties of reflective functors relating to limits and colimits are included in
-`CategoryTheory.Monad.Limits`.
+`Mathlib.CategoryTheory.Monad.Limits`.
 -/
 
 

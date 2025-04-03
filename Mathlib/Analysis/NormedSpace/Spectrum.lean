@@ -11,6 +11,7 @@ import Mathlib.Analysis.Analytic.RadiusLiminf
 import Mathlib.Topology.Algebra.Module.CharacterSpace
 import Mathlib.Analysis.NormedSpace.Exponential
 import Mathlib.Analysis.NormedSpace.UnitizationL1
+import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 #align_import analysis.normed_space.spectrum from "leanprover-community/mathlib"@"d608fc5d4e69d4cc21885913fb573a88b0deb521"
 
@@ -678,6 +679,29 @@ lemma nnreal_iff_spectralRadius_le [Algebra ℝ A] {a : A} {t : ℝ≥0} (ht : s
     rw [← NNReal.coe_le_coe, coe_nnnorm, Real.norm_eq_abs, abs_le] at h_le
     linarith [h_le.2]
 
+lemma _root_.NNReal.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+    [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty)
+    (ha' : SpectrumRestricts a ContinuousMap.realToNNReal) :
+    (spectralRadius ℝ a).toNNReal ∈ spectrum ℝ≥0 a := by
+  obtain ⟨x, hx₁, hx₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty ha
+  rw [← hx₂, ENNReal.toNNReal_coe, ← spectrum.algebraMap_mem_iff ℝ, NNReal.algebraMap_eq_coe]
+  have : 0 ≤ x := ha'.rightInvOn hx₁ ▸ NNReal.zero_le_coe
+  convert hx₁
+  simpa
+
+lemma _root_.Real.spectralRadius_mem_spectrum {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+    [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty)
+    (ha' : SpectrumRestricts a ContinuousMap.realToNNReal) :
+    (spectralRadius ℝ a).toReal ∈ spectrum ℝ a :=
+  NNReal.spectralRadius_mem_spectrum ha ha'
+
+lemma _root_.Real.spectralRadius_mem_spectrum_or {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
+    [CompleteSpace A] {a : A} (ha : (spectrum ℝ a).Nonempty) :
+    (spectralRadius ℝ a).toReal ∈ spectrum ℝ a ∨ -(spectralRadius ℝ a).toReal ∈ spectrum ℝ a := by
+  obtain ⟨x, hx₁, hx₂⟩ := spectrum.exists_nnnorm_eq_spectralRadius_of_nonempty ha
+  simp only [← hx₂, ENNReal.coe_toReal, coe_nnnorm, Real.norm_eq_abs]
+  exact abs_choice x |>.imp (fun h ↦ by rwa [h]) (fun h ↦ by simpa [h])
+
 end SpectrumRestricts
 
 namespace QuasispectrumRestricts
@@ -711,3 +735,11 @@ lemma real_iff [Module ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] {a
     Unitization.quasispectrum_eq_spectrum_inr' _ ℂ, SpectrumRestricts.real_iff]
 
 end QuasispectrumRestricts
+
+variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
+
+lemma coe_mem_spectrum_real_of_nonneg [Algebra ℝ A] [NonnegSpectrumClass ℝ A] {a : A} {x : ℝ≥0}
+    (ha : 0 ≤ a := by cfc_tac) :
+    (x : ℝ) ∈ spectrum ℝ a ↔ x ∈ spectrum ℝ≥0 a := by
+  simp [← (SpectrumRestricts.nnreal_of_nonneg ha).algebraMap_image, Set.mem_image,
+    NNReal.algebraMap_eq_coe]

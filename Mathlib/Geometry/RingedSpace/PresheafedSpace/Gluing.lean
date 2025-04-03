@@ -108,9 +108,9 @@ variable (D : GlueData.{v, u} C)
 
 local notation "𝖣" => D.toGlueData
 
-local notation "π₁ " i ", " j ", " k => @pullback.fst _ _ _ _ _ (D.f i j) (D.f i k) _
+local notation "π₁ " i ", " j ", " k => pullback.fst (D.f i j) (D.f i k)
 
-local notation "π₂ " i ", " j ", " k => @pullback.snd _ _ _ _ _ (D.f i j) (D.f i k) _
+local notation "π₂ " i ", " j ", " k => pullback.snd (D.f i j) (D.f i k)
 
 set_option quotPrecheck false
 local notation "π₁⁻¹ " i ", " j ", " k =>

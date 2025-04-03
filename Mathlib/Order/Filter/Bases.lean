@@ -78,13 +78,7 @@ machinery, e.g., `simp only [true_and]` or `simp only [forall_const]` can help w
 `p = fun _ ↦ True`.
 -/
 
-set_option autoImplicit true
-
-
 open Set Filter
-
-open scoped Classical
-open Filter
 
 section sort
 
@@ -187,7 +181,7 @@ theorem eq_iInf_principal (B : FilterBasis α) : B.filter = ⨅ s : B.sets, 𝓟
     rintro ⟨U, U_in⟩ ⟨V, V_in⟩
     rcases B.inter_sets U_in V_in with ⟨W, W_in, W_sub⟩
     use ⟨W, W_in⟩
-    simp only [ge_iff_le, le_principal_iff, mem_principal, Subtype.coe_mk]
+    simp only [le_principal_iff, mem_principal, Subtype.coe_mk]
     exact subset_inter_iff.mp W_sub
   ext U
   simp [mem_filter_iff, mem_iInf_of_directed this]

@@ -3,11 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Jujian Zhang
 -/
-import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Order.Group.Action
-import Mathlib.LinearAlgebra.Finsupp
-import Mathlib.LinearAlgebra.Span
 import Mathlib.RingTheory.Ideal.Basic
 
 #align_import algebra.module.submodule.pointwise from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
@@ -428,7 +426,7 @@ lemma set_smul_inductionOn {motive : (x : M) → (_ : x ∈ s • N) → Prop}
       motive (r • n) (mem_set_smul_of_mem_mem mem₁ mem₂))
     (smul₁ : ∀ (r : R) ⦃m : M⦄ (mem : m ∈ s • N) ,
       motive m mem → motive (r • m) (Submodule.smul_mem _ r mem)) --
-    (add : ∀ ⦃m₁ m₂ : M⦄ (mem₁: m₁ ∈ s • N) (mem₂ : m₂ ∈ s • N),
+    (add : ∀ ⦃m₁ m₂ : M⦄ (mem₁ : m₁ ∈ s • N) (mem₂ : m₂ ∈ s • N),
       motive m₁ mem₁ → motive m₂ mem₂ → motive (m₁ + m₂) (Submodule.add_mem _ mem₁ mem₂))
     (zero : motive 0 (Submodule.zero_mem _)) :
     motive x hx :=
@@ -494,14 +492,12 @@ lemma mem_set_smul (x : M) [SMulCommClass R R N] :
 @[simp] lemma set_smul_bot : s • (⊥ : Submodule R M) = ⊥ :=
   eq_bot_iff.mpr fun x hx ↦ by induction x, hx using set_smul_inductionOn <;> aesop
 
--- TODO: `r • N` should be generalized to allow `r` to be an element of `S`.
-lemma singleton_set_smul [SMulCommClass R R M] (r : R) :
-    ({r} : Set R) • N = r • N := by
+lemma singleton_set_smul [SMulCommClass S R M] (r : S) : ({r} : Set S) • N = r • N := by
   apply set_smul_eq_of_le
-  · rintro r m rfl hm; exact ⟨m, hm, rfl⟩
+  · rintro _ m rfl hm; exact ⟨m, hm, rfl⟩
   · rintro _ ⟨m, hm, rfl⟩
     rw [mem_set_smul_def, Submodule.mem_sInf]
-    intro p hp; exact hp rfl hm
+    intro _ hp; exact hp rfl hm
 
 lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
     x ∈ ({r} : Set S) • N ↔ ∃ (m : M), m ∈ N ∧ x = r • m := by
@@ -516,8 +512,7 @@ lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
       rcases h₂ with ⟨m₂, h₂, rfl⟩
       exact ⟨m₁ + m₂, Submodule.add_mem _ h₁ h₂, by aesop⟩
     · exact ⟨0, Submodule.zero_mem _, by aesop⟩
-  · rintro ⟨m, hm, rfl⟩
-    aesop
+  · aesop
 
 -- Note that this can't be generalized to `Set S`, because even though `SMulCommClass R R M` implies
 -- `SMulComm R R N` for all `R`-submodules `N`, `SMulCommClass R S N` for all `R`-submodules `N`

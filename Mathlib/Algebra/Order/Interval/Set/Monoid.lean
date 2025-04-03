@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Data.Set.Function
 import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Algebra.Order.Monoid.Defs
+import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 
 #align_import data.set.intervals.monoid from "leanprover-community/mathlib"@"aba57d4d3dae35460225919dcd82fe91355162f9"
 

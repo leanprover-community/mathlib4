@@ -11,6 +11,7 @@ import Mathlib.Data.PFun
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Basic
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Data.List.GetD
 
 #align_import computability.turing_machine from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -59,8 +60,15 @@ Given these parameters, there are a few common structures for the model that ari
   formalizes "essentially finite" mentioned above.
 -/
 
+-- After https://github.com/leanprover/lean4/pull/4400
+-- the simp normal forms for `List` lookup use the `GetElem` typeclass, rather than `List.get?`.
+-- This file has not been updated to reflect that change, so uses a number of deprecated lemmas.
+-- Updating this file to allow restoring the deprecation linter would be much appreciated.
+set_option linter.deprecated false
+
 assert_not_exists MonoidWithZero
 
+open Mathlib (Vector)
 open Relation
 
 open Nat (iterate)
@@ -85,7 +93,7 @@ theorem BlankExtends.refl {Γ} [Inhabited Γ] (l : List Γ) : BlankExtends l l :
 theorem BlankExtends.trans {Γ} [Inhabited Γ] {l₁ l₂ l₃ : List Γ} :
     BlankExtends l₁ l₂ → BlankExtends l₂ l₃ → BlankExtends l₁ l₃ := by
   rintro ⟨i, rfl⟩ ⟨j, rfl⟩
-  exact ⟨i + j, by simp [List.replicate_add]⟩
+  exact ⟨i + j, by simp⟩
 #align turing.blank_extends.trans Turing.BlankExtends.trans
 
 theorem BlankExtends.below_of_le {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} :
@@ -287,7 +295,8 @@ def ListBlank.nth {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) : Γ := by
   rw [List.getI_eq_default _ h]
   rcases le_or_lt _ n with h₂ | h₂
   · rw [List.getI_eq_default _ h₂]
-  rw [List.getI_eq_get _ h₂, List.get_append_right' h, List.get_replicate]
+  rw [List.getI_eq_get _ h₂, List.get_eq_getElem, List.getElem_append_right' h,
+    List.getElem_replicate]
 #align turing.list_blank.nth Turing.ListBlank.nth
 
 @[simp]
@@ -839,7 +848,7 @@ theorem mem_eval {σ} {f : σ → Option σ} {a b} : b ∈ eval f a ↔ Reaches 
     refine @evalInduction _ _ _ (fun a ↦ Reaches f a b ∧ f b = none) _ h fun a h IH ↦ ?_
     cases' e : f a with a'
     · rw [Part.mem_unique h
-          (PFun.mem_fix_iff.2 <| Or.inl <| Part.mem_some_iff.2 <| by rw [e] <;> rfl)]
+          (PFun.mem_fix_iff.2 <| Or.inl <| Part.mem_some_iff.2 <| by rw [e]; rfl)]
       exact ⟨ReflTransGen.refl, e⟩
     · rcases PFun.mem_fix_iff.1 h with (h | ⟨_, h, _⟩) <;> rw [e] at h <;>
         cases Part.mem_some_iff.1 h
@@ -2654,7 +2663,7 @@ theorem tr_respects_aux₁ {k} (o q v) {S : List (Γ k)} {L : ListBlank (∀ k, 
       ⟨some (go k o q), v, (Tape.move Dir.right)^[n] (Tape.mk' ∅ (addBottom L))⟩ := by
   induction' n with n IH; · rfl
   apply (IH (le_of_lt H)).tail
-  rw [iterate_succ_apply'];
+  rw [iterate_succ_apply']
   simp only [TM1.step, TM1.stepAux, tr, Tape.mk'_nth_nat, Tape.move_right_n_head,
     addBottom_nth_snd, Option.mem_def]
   rw [stk_nth_val _ hL, List.get?_eq_get]

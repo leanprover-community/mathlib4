@@ -143,7 +143,7 @@ end instances
 
 end StandardBorelSpace
 
-end section
+end
 
 variable {ι : Type*}
 

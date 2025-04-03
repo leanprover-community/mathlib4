@@ -43,60 +43,41 @@ instance isOpenImmersion_isStableUnderComposition :
   comp_mem f g _ _ := LocallyRingedSpace.IsOpenImmersion.comp f g
 #align algebraic_geometry.is_open_immersion_stable_under_composition AlgebraicGeometry.isOpenImmersion_isStableUnderComposition
 
-theorem isOpenImmersion_respectsIso : MorphismProperty.RespectsIso @IsOpenImmersion := by
+instance isOpenImmersion_respectsIso : MorphismProperty.RespectsIso @IsOpenImmersion := by
   apply MorphismProperty.respectsIso_of_isStableUnderComposition
   intro _ _ f (hf : IsIso f)
   have : IsIso f := hf
   infer_instance
 #align algebraic_geometry.is_open_immersion_respects_iso AlgebraicGeometry.isOpenImmersion_respectsIso
 
-theorem isOpenImmersion_isLocalAtTarget : PropertyIsLocalAtTarget @IsOpenImmersion := by
-  constructor
-  · exact isOpenImmersion_respectsIso
+instance isOpenImmersion_isLocalAtTarget : IsLocalAtTarget @IsOpenImmersion := by
+  apply IsLocalAtTarget.mk'
   · intros; infer_instance
-  · intro X Y f 𝒰 H
+  · intro X Y f ι U hU H
     rw [isOpenImmersion_iff_stalk]
     constructor
-    · apply (openEmbedding_iff_openEmbedding_of_iSup_eq_top 𝒰.iSup_opensRange f.1.base.2).mpr
+    · apply (openEmbedding_iff_openEmbedding_of_iSup_eq_top hU f.1.base.2).mpr
       intro i
-      have := ((isOpenImmersion_respectsIso.arrow_iso_iff
-        (morphismRestrictOpensRange f (𝒰.map i))).mpr (H i)).1
-      erw [Arrow.mk_hom, morphismRestrict_val_base] at this
+      have := (f ∣_ U i).openEmbedding
+      rw [morphismRestrict_val_base] at this
       norm_cast
     · intro x
+      obtain ⟨i, hi⟩ : ∃ i, f.1.base x ∈ U i := by
+        simpa only [← SetLike.mem_coe, Opens.coe_iSup, Set.mem_iUnion, Opens.coe_top, Set.mem_univ,
+          eq_iff_iff, iff_true] using congr(f.1.base x ∈ $hU)
       have := Arrow.iso_w (morphismRestrictStalkMap
-        f (Scheme.Hom.opensRange (𝒰.map <| 𝒰.f <| f.1.base x)) ⟨x, 𝒰.covers _⟩)
+        f (Scheme.ιOpens (U i)).opensRange ⟨x, ⟨_, hi⟩, rfl⟩)
       dsimp only [Arrow.mk_hom] at this
       rw [this]
-      haveI : IsOpenImmersion (f ∣_ Scheme.Hom.opensRange (𝒰.map <| 𝒰.f <| f.1.base x)) :=
-        (isOpenImmersion_respectsIso.arrow_iso_iff
-          (morphismRestrictOpensRange f (𝒰.map _))).mpr (H _)
+      haveI : IsOpenImmersion (f ∣_ (Scheme.ιOpens (U i)).opensRange) := by
+        rw [opensRange_ιOpens]
+        infer_instance
       infer_instance
 #align algebraic_geometry.is_open_immersion_is_local_at_target AlgebraicGeometry.isOpenImmersion_isLocalAtTarget
 
-theorem IsOpenImmersion.openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) : List.TFAE
-    [IsOpenImmersion f,
-    ∃ 𝒰 : Scheme.OpenCover.{u} Y,
-      ∀ i : 𝒰.J, IsOpenImmersion (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
-    ∀ (𝒰 : Scheme.OpenCover.{u} Y) (i : 𝒰.J),
-      IsOpenImmersion (pullback.snd : (𝒰.pullbackCover f).obj i ⟶ 𝒰.obj i),
-    ∀ U : Opens Y.carrier, IsOpenImmersion (f ∣_ U),
-    ∀ {U : Scheme} (g : U ⟶ Y) [IsOpenImmersion g],
-      IsOpenImmersion (pullback.snd : pullback f g ⟶ _),
-    ∃ (ι : Type u) (U : ι → Opens Y.carrier) (_ : iSup U = ⊤),
-      ∀ i, IsOpenImmersion (f ∣_ U i)] :=
-  isOpenImmersion_isLocalAtTarget.openCover_TFAE f
-#align algebraic_geometry.is_open_immersion.open_cover_tfae AlgebraicGeometry.IsOpenImmersion.openCover_TFAE
-
-theorem IsOpenImmersion.openCover_iff {X Y : Scheme.{u}} (𝒰 : Scheme.OpenCover.{u} Y)
-    (f : X ⟶ Y) :
-    IsOpenImmersion f ↔ ∀ i, IsOpenImmersion (pullback.snd : pullback f (𝒰.map i) ⟶ _) :=
-  isOpenImmersion_isLocalAtTarget.openCover_iff f 𝒰
-#align algebraic_geometry.is_open_immersion.open_cover_iff AlgebraicGeometry.IsOpenImmersion.openCover_iff
-
 theorem isOpenImmersion_stableUnderBaseChange :
     MorphismProperty.StableUnderBaseChange @IsOpenImmersion :=
-  MorphismProperty.StableUnderBaseChange.mk isOpenImmersion_respectsIso <| by
+  MorphismProperty.StableUnderBaseChange.mk <| by
     intro X Y Z f g H; infer_instance
 #align algebraic_geometry.is_open_immersion_stable_under_base_change AlgebraicGeometry.isOpenImmersion_stableUnderBaseChange
 

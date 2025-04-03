@@ -3,7 +3,7 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johan Commelin
 -/
-import Mathlib.RingTheory.IntegralClosure
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 #align_import field_theory.minpoly.basic from "leanprover-community/mathlib"@"df0098f0db291900600f32070f6abb3e178be2ba"
 
@@ -196,7 +196,7 @@ theorem natDegree_pos [Nontrivial B] (hx : IsIntegral A x) : 0 < natDegree (minp
     rw [eq_C_of_natDegree_eq_zero ndeg_eq_zero]
     convert C_1 (R := A)
     simpa only [ndeg_eq_zero.symm] using (monic hx).leadingCoeff
-  simpa only [eq_one, AlgHom.map_one, one_ne_zero] using aeval A x
+  simpa only [eq_one, map_one, one_ne_zero] using aeval A x
 #align minpoly.nat_degree_pos minpoly.natDegree_pos
 
 /-- The degree of a minimal polynomial is positive. -/

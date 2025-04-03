@@ -93,3 +93,9 @@ syntax (name := group) "group" (location)? : tactic
 macro_rules
 | `(tactic| group $[$loc]?) =>
   `(tactic| repeat (fail_if_no_progress (aux_group₁ $[$loc]? <;> aux_group₂ $[$loc]?)))
+
+end Group
+
+end Tactic
+
+end Mathlib

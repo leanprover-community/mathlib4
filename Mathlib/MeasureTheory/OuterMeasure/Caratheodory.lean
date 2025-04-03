@@ -134,7 +134,7 @@ theorem f_iUnion {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i)) (hd : 
   rw [ENNReal.tsum_eq_iSup_nat]
   refine iSup_le fun n => ?_
   have := @isCaratheodory_sum _ m _ h hd univ n
-  simp only [inter_comm, inter_univ, univ_inter] at this; simp only [this, ge_iff_le]
+  simp only [inter_comm, inter_univ, univ_inter] at this; simp only [this]
   exact m.mono (iUnion₂_subset fun i _ => subset_iUnion _ i)
 #align measure_theory.outer_measure.f_Union MeasureTheory.OuterMeasure.f_iUnion
 
@@ -239,3 +239,5 @@ theorem dirac_caratheodory (a : α) : (dirac a).caratheodory = ⊤ :=
 #align measure_theory.outer_measure.dirac_caratheodory MeasureTheory.OuterMeasure.dirac_caratheodory
 
 end OuterMeasure
+
+end MeasureTheory

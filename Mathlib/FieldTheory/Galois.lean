@@ -46,13 +46,13 @@ variable (F : Type*) [Field F] (E : Type*) [Field E] [Algebra F E]
 /-- A field extension E/F is Galois if it is both separable and normal. Note that in mathlib
 a separable extension of fields is by definition algebraic. -/
 class IsGalois : Prop where
-  [to_isSeparable : IsSeparable F E]
+  [to_isSeparable : Algebra.IsSeparable F E]
   [to_normal : Normal F E]
 #align is_galois IsGalois
 
 variable {F E}
 
-theorem isGalois_iff : IsGalois F E ↔ IsSeparable F E ∧ Normal F E :=
+theorem isGalois_iff : IsGalois F E ↔ Algebra.IsSeparable F E ∧ Normal F E :=
   ⟨fun h => ⟨h.1, h.2⟩, fun h =>
     { to_isSeparable := h.1
       to_normal := h.2 }⟩
@@ -75,8 +75,8 @@ theorem integral [IsGalois F E] (x : E) : IsIntegral F x :=
   to_normal.isIntegral x
 #align is_galois.integral IsGalois.integral
 
-theorem separable [IsGalois F E] (x : E) : (minpoly F x).Separable :=
-  IsSeparable.separable F x
+theorem separable [IsGalois F E] (x : E) : IsSeparable F x :=
+  Algebra.IsSeparable.isSeparable F x
 #align is_galois.separable IsGalois.separable
 
 theorem splits [IsGalois F E] (x : E) : (minpoly F x).Splits (algebraMap F E) :=
@@ -91,7 +91,7 @@ instance of_fixed_field (G : Type*) [Group G] [Finite G] [MulSemiringAction G E]
 #align is_galois.of_fixed_field IsGalois.of_fixed_field
 
 theorem IntermediateField.AdjoinSimple.card_aut_eq_finrank [FiniteDimensional F E] {α : E}
-    (hα : IsIntegral F α) (h_sep : (minpoly F α).Separable)
+    (hα : IsIntegral F α) (h_sep : IsSeparable F α)
     (h_splits : (minpoly F α).Splits (algebraMap F F⟮α⟯)) :
     Fintype.card (F⟮α⟯ ≃ₐ[F] F⟮α⟯) = finrank F F⟮α⟯ := by
   letI : Fintype (F⟮α⟯ →ₐ[F] F⟮α⟯) := IntermediateField.fintypeOfAlgHomAdjoinIntegral F hα
@@ -112,7 +112,7 @@ theorem card_aut_eq_finrank [FiniteDimensional F E] [IsGalois F E] :
       map_add' := fun _ _ => rfl
       commutes' := fun _ => rfl }
   have H : IsIntegral F α := IsGalois.integral F α
-  have h_sep : (minpoly F α).Separable := IsGalois.separable F α
+  have h_sep : IsSeparable F α := IsGalois.separable F α
   have h_splits : (minpoly F α).Splits (algebraMap F E) := IsGalois.splits F α
   replace h_splits : Polynomial.Splits (algebraMap F F⟮α⟯) (minpoly F α) := by
     simpa using
@@ -135,7 +135,7 @@ variable (F K E : Type*) [Field F] [Field K] [Field E] {E' : Type*} [Field E'] [
 variable [Algebra F K] [Algebra F E] [Algebra K E] [IsScalarTower F K E]
 
 theorem IsGalois.tower_top_of_isGalois [IsGalois F E] : IsGalois K E :=
-  { to_isSeparable := isSeparable_tower_top_of_isSeparable F K E
+  { to_isSeparable := Algebra.isSeparable_tower_top_of_isSeparable F K E
     to_normal := Normal.tower_top_of_normal F K E }
 #align is_galois.tower_top_of_is_galois IsGalois.tower_top_of_isGalois
 
@@ -155,7 +155,7 @@ theorem isGalois_iff_isGalois_bot : IsGalois (⊥ : IntermediateField F E) E ↔
 #align is_galois_iff_is_galois_bot isGalois_iff_isGalois_bot
 
 theorem IsGalois.of_algEquiv [IsGalois F E] (f : E ≃ₐ[F] E') : IsGalois F E' :=
-  { to_isSeparable := IsSeparable.of_algHom F E f.symm
+  { to_isSeparable := Algebra.IsSeparable.of_algHom F E f.symm
     to_normal := Normal.of_algEquiv f }
 #align is_galois.of_alg_equiv IsGalois.of_algEquiv
 
@@ -407,7 +407,7 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
   apply IntermediateField.induction_on_adjoin_finset _ P
   · have key := IntermediateField.card_algHom_adjoin_integral F (K := E)
       (show IsIntegral F (0 : E) from isIntegral_zero)
-    rw [minpoly.zero, Polynomial.natDegree_X] at key
+    rw [IsSeparable, minpoly.zero, Polynomial.natDegree_X] at key
     specialize key Polynomial.separable_X (Polynomial.splits_X (algebraMap F E))
     rw [← @Subalgebra.finrank_bot F E _ _ _, ← IntermediateField.bot_toSubalgebra] at key
     refine Eq.trans ?_ key
@@ -428,7 +428,7 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
 /-- Equivalent characterizations of a Galois extension of finite degree-/
 theorem tfae [FiniteDimensional F E] :
     List.TFAE [IsGalois F E, IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥,
-      Fintype.card (E ≃ₐ[F] E) = finrank F E, ∃ p: F[X], p.Separable ∧ p.IsSplittingField F E] := by
+      Fintype.card (E ≃ₐ[F] E) = finrank F E, ∃ p : F[X], p.Separable ∧ p.IsSplittingField F E] := by
   tfae_have 1 → 2
   · exact fun h => OrderIso.map_bot (@intermediateFieldEquivSubgroup F _ E _ _ _ h).symm
   tfae_have 1 → 3
@@ -454,7 +454,7 @@ variable (k K F : Type*) [Field k] [Field K] [Field F] [Algebra k K] [Algebra k 
   [IsScalarTower k K F] [IsGalois k F]
 
 instance IsGalois.normalClosure : IsGalois k (normalClosure k K F) where
-  to_isSeparable := isSeparable_tower_bot_of_isSeparable k _ F
+  to_isSeparable := Algebra.isSeparable_tower_bot_of_isSeparable k _ F
 #align is_galois.normal_closure IsGalois.normalClosure
 
 end normalClosure

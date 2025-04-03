@@ -239,12 +239,7 @@ theorem Commute.zpow_zpow_self (A : M) (m n : ℤ) : Commute (A ^ m) (A ^ n) :=
   Commute.zpow_zpow (Commute.refl A) _ _
 #align matrix.commute.zpow_zpow_self Matrix.Commute.zpow_zpow_self
 
-set_option linter.deprecated false in
-theorem zpow_bit0 (A : M) (n : ℤ) : A ^ bit0 n = A ^ n * A ^ n := by
-  rcases le_total 0 n with nonneg | nonpos
-  · exact zpow_add_of_nonneg nonneg nonneg
-  · exact zpow_add_of_nonpos nonpos nonpos
-#align matrix.zpow_bit0 Matrix.zpow_bit0
+#noalign matrix.zpow_bit0
 
 theorem zpow_add_one_of_ne_neg_one {A : M} : ∀ n : ℤ, n ≠ -1 → A ^ (n + 1) = A ^ n * A
   | (n : ℕ), _ => by simp only [pow_succ, ← Nat.cast_succ, zpow_natCast]
@@ -256,12 +251,7 @@ theorem zpow_add_one_of_ne_neg_one {A : M} : ∀ n : ℤ, n ≠ -1 → A ^ (n + 
       simp_rw [zpow_neg_natCast, ← inv_pow', h, zero_pow $ Nat.succ_ne_zero _, zero_mul]
 #align matrix.zpow_add_one_of_ne_neg_one Matrix.zpow_add_one_of_ne_neg_one
 
-set_option linter.deprecated false in
-theorem zpow_bit1 (A : M) (n : ℤ) : A ^ bit1 n = A ^ n * A ^ n * A := by
-  rw [bit1, zpow_add_one_of_ne_neg_one, zpow_bit0]
-  intro h
-  simpa using congr_arg bodd h
-#align matrix.zpow_bit1 Matrix.zpow_bit1
+#noalign matrix.zpow_bit1
 
 theorem zpow_mul (A : M) (h : IsUnit A.det) : ∀ m n : ℤ, A ^ (m * n) = (A ^ m) ^ n
   | (m : ℕ), (n : ℕ) => by rw [zpow_natCast, zpow_natCast, ← pow_mul, ← zpow_natCast, Int.ofNat_mul]
@@ -308,15 +298,8 @@ theorem Commute.mul_zpow {A B : M} (h : Commute A B) : ∀ i : ℤ, (A * B) ^ i 
       h.mul_pow n.succ, (h.pow_pow _ _).eq]
 #align matrix.commute.mul_zpow Matrix.Commute.mul_zpow
 
-set_option linter.deprecated false in
-theorem zpow_bit0' (A : M) (n : ℤ) : A ^ bit0 n = (A * A) ^ n :=
-  (zpow_bit0 A n).trans (Commute.mul_zpow (Commute.refl A) n).symm
-#align matrix.zpow_bit0' Matrix.zpow_bit0'
-
-set_option linter.deprecated false in
-theorem zpow_bit1' (A : M) (n : ℤ) : A ^ bit1 n = (A * A) ^ n * A := by
-  rw [zpow_bit1, Commute.mul_zpow (Commute.refl A)]
-#align matrix.zpow_bit1' Matrix.zpow_bit1'
+#noalign matrix.zpow_bit0'
+#noalign matrix.zpow_bit1'
 
 theorem zpow_neg_mul_zpow_self (n : ℤ) {A : M} (h : IsUnit A.det) : A ^ (-n) * A ^ n = 1 := by
   rw [zpow_neg h, nonsing_inv_mul _ (h.det_zpow _)]

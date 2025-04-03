@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Num.Lemmas
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Tactic.Ring
 
 #align_import data.num.prime from "leanprover-community/mathlib"@"58581d0fe523063f5651df0619be2bf65012a94a"
@@ -50,7 +50,7 @@ theorem minFacAux_to_nat {fuel : ℕ} {n k : PosNum} (h : Nat.sqrt n < fuel + k.
   simp only [cast_lt, dvd_to_nat]
   split_ifs <;> try rfl
   rw [ih] <;> [congr; convert Nat.lt_succ_of_lt h using 1] <;>
-    simp only [_root_.bit1, _root_.bit0, cast_bit1, cast_succ, Nat.succ_eq_add_one, add_assoc,
+    simp only [cast_bit1, cast_succ, Nat.succ_eq_add_one, add_assoc,
       add_left_comm, ← one_add_one_eq_two]
 #align pos_num.min_fac_aux_to_nat PosNum.minFacAux_to_nat
 
@@ -67,11 +67,10 @@ theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
   · rfl
   · rw [minFac, Nat.minFac_eq, if_neg]
     swap
-    · simp
+    · simp [← two_mul]
     rw [minFacAux_to_nat]
     · rfl
     simp only [cast_one, cast_bit1]
-    unfold _root_.bit1 _root_.bit0
     rw [Nat.sqrt_lt]
     calc
       (n : ℕ) + (n : ℕ) + 1 ≤ (n : ℕ) + (n : ℕ) + (n : ℕ) := by simp
@@ -80,7 +79,7 @@ theorem minFac_to_nat (n : PosNum) : (minFac n : ℕ) = Nat.minFac n := by
         set_option simprocs false in simp [mul_lt_mul]
   · rw [minFac, Nat.minFac_eq, if_pos]
     · rfl
-    simp
+    simp [← two_mul]
 #align pos_num.min_fac_to_nat PosNum.minFac_to_nat
 
 /-- Primality predicate for a `PosNum`. -/
@@ -99,11 +98,12 @@ instance decidablePrime : DecidablePred PosNum.Prime
         rw [← minFac_to_nat, to_nat_inj]
         exact ⟨bit0.inj, congr_arg _⟩)
   | bit1 n =>
-    decidable_of_iff' (minFacAux (bit1 n) n 1 = bit1 n)
-      (by
+    decidable_of_iff' (minFacAux (bit1 n) n 1 = bit1 n) <| by
         refine Nat.prime_def_minFac.trans ((and_iff_right ?_).trans ?_)
-        · exact Nat.bit0_le_bit1_iff.2 (to_nat_pos _)
-        rw [← minFac_to_nat, to_nat_inj]; rfl)
+        · simp only [cast_bit1]
+          have := to_nat_pos n
+          omega
+        rw [← minFac_to_nat, to_nat_inj]; rfl
 #align pos_num.decidable_prime PosNum.decidablePrime
 
 end PosNum

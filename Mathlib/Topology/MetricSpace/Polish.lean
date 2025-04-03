@@ -229,6 +229,10 @@ theorem exists_polishSpace_forall_le {ι : Type*} [Countable ι] [t : Topologica
     .iInf ⟨none, Option.forall.2 ⟨le_rfl, hm⟩⟩ <| Option.forall.2 ⟨p, h'm⟩⟩
 #align polish_space.exists_polish_space_forall_le PolishSpace.exists_polishSpace_forall_le
 
+instance : PolishSpace ENNReal :=
+  ClosedEmbedding.polishSpace ⟨ENNReal.orderIsoUnitIntervalBirational.toHomeomorph.embedding,
+    ENNReal.orderIsoUnitIntervalBirational.range_eq ▸ isClosed_univ⟩
+
 end PolishSpace
 
 /-!

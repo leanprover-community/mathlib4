@@ -114,7 +114,7 @@ theorem lfpApprox_add_one (h : x ≤ f x) (a : Ordinal) :
 /-- The ordinal approximants of the least fixed point are stabilizing
   when reaching a fixed point of f -/
 theorem lfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : x ≤ f x) (h_ab : a ≤ b)
-    (h: lfpApprox f x a ∈ fixedPoints f) : lfpApprox f x b = lfpApprox f x a := by
+    (h : lfpApprox f x a ∈ fixedPoints f) : lfpApprox f x b = lfpApprox f x a := by
   rw [mem_fixedPoints_iff] at h
   induction b using Ordinal.induction with | h b IH =>
   apply le_antisymm
@@ -224,7 +224,7 @@ unseal gfpApprox lfpApprox
 theorem gfpApprox_antitone : Antitone (gfpApprox f x) :=
   lfpApprox_monotone (OrderHom.dual f) x
 
-theorem gfpApprox_le {a : Ordinal}: gfpApprox f x a ≤ x :=
+theorem gfpApprox_le {a : Ordinal} : gfpApprox f x a ≤ x :=
   le_lfpApprox (OrderHom.dual f) x
 
 theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
@@ -234,7 +234,7 @@ theorem gfpApprox_add_one (h : f x ≤ x) (a : Ordinal) :
 /-- The ordinal approximants of the least fixed point are stabilizing
   when reaching a fixed point of f -/
 theorem gfpApprox_eq_of_mem_fixedPoints {a b : Ordinal} (h_init : f x ≤ x) (h_ab : a ≤ b)
-    (h: gfpApprox f x a ∈ fixedPoints f) : gfpApprox f x b = gfpApprox f x a :=
+    (h : gfpApprox f x a ∈ fixedPoints f) : gfpApprox f x b = gfpApprox f x a :=
   lfpApprox_eq_of_mem_fixedPoints (OrderHom.dual f) x h_init h_ab h
 
 /-- There are distinct ordinals smaller than the successor of the domains cardinals with
@@ -251,7 +251,7 @@ lemma gfpApprox_ord_mem_fixedPoint (h_init : f x ≤ x) :
 /-- Every value of the ordinal approximants are greater or equal than every fixed point of f
   that is smaller then the initial value -/
 lemma le_gfpApprox_of_mem_fixedPoints {a : α}
-    (h_a : a ∈ fixedPoints f) (h_le_init : a ≤ x) (i : Ordinal) : a ≤ gfpApprox f x i:=
+    (h_a : a ∈ fixedPoints f) (h_le_init : a ≤ x) (i : Ordinal) : a ≤ gfpApprox f x i :=
   lfpApprox_le_of_mem_fixedPoints (OrderHom.dual f) x h_a h_le_init i
 
 /-- The greatest fixed point of f is reached after the successor of the domains cardinality -/
@@ -259,7 +259,7 @@ theorem gfpApprox_ord_eq_gfp : gfpApprox f ⊤ (ord <| succ #α) = gfp f :=
   lfpApprox_ord_eq_lfp (OrderHom.dual f)
 
 /-- Some ordinal approximation of the greatest fixed point is the greatest fixed point. -/
-theorem gfp_mem_range_gfpApprox  : gfp f ∈ Set.range (gfpApprox f ⊤) :=
+theorem gfp_mem_range_gfpApprox : gfp f ∈ Set.range (gfpApprox f ⊤) :=
   lfp_mem_range_lfpApprox (OrderHom.dual f)
 
 end OrdinalApprox

@@ -93,11 +93,9 @@ theorem of_one : of R 𝒜 ℬ 1 = 1 := rfl
 @[simp]
 theorem of_symm_one : (of R 𝒜 ℬ).symm 1 = 1 := rfl
 
--- for dsimp
 @[simp]
 theorem of_symm_of (x : A ⊗[R] B) : (of R 𝒜 ℬ).symm (of R 𝒜 ℬ x) = x := rfl
 
--- for dsimp
 @[simp]
 theorem symm_of_of (x : 𝒜 ᵍ⊗[R] ℬ) : of R 𝒜 ℬ ((of R 𝒜 ℬ).symm x) = x := rfl
 
@@ -307,12 +305,7 @@ def lift (f : A →ₐ[R] C) (g : B →ₐ[R] C)
       ∘ₗ ((of R 𝒜 ℬ).symm : 𝒜 ᵍ⊗[R] ℬ →ₗ[R] A ⊗[R] B))
     (by
       dsimp [Algebra.TensorProduct.one_def]
-      #adaptation_note /-- nightly-2024-03-11.
-      No longer works with dsimp, even though it is a rfl lemma.
-      This may be a Lean bug.
-      It would be great if someone could try to minimize this to an no imports example. -/
-      rw [Algebra.TensorProduct.one_def]
-      dsimp; simp only [_root_.map_one, mul_one])
+      simp only [_root_.map_one, mul_one])
     (by
       rw [LinearMap.map_mul_iff]
       ext a₁ : 3
@@ -345,14 +338,14 @@ def liftEquiv :
   toFun fg := lift 𝒜 ℬ _ _ fg.prop
   invFun F := ⟨(F.comp (includeLeft 𝒜 ℬ), F.comp (includeRight 𝒜 ℬ)), fun i j a b => by
     dsimp
-    rw [← F.map_mul, ← F.map_mul, tmul_coe_mul_coe_tmul, one_mul, mul_one, AlgHom.map_smul_of_tower,
-      tmul_one_mul_one_tmul, smul_smul, Int.units_mul_self, one_smul]⟩
+    rw [← _root_.map_mul, ← _root_.map_mul F, tmul_coe_mul_coe_tmul, one_mul, mul_one,
+      AlgHom.map_smul_of_tower, tmul_one_mul_one_tmul, smul_smul, Int.units_mul_self, one_smul]⟩
   left_inv fg := by ext <;> (dsimp; simp only [_root_.map_one, mul_one, one_mul])
   right_inv F := by
     apply AlgHom.toLinearMap_injective
     ext
     dsimp
-    rw [← F.map_mul, tmul_one_mul_one_tmul]
+    rw [← _root_.map_mul, tmul_one_mul_one_tmul]
 
 /-- Two algebra morphism from the graded tensor product agree if their compositions with the left
 and right inclusions agree. -/

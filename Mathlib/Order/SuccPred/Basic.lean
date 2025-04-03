@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.Cover
+import Mathlib.Order.GaloisConnection
 import Mathlib.Order.Iterate
 import Mathlib.Order.WellFounded
 
@@ -43,15 +44,6 @@ for all non maximal elements (enforced by the combination of `le_succ` and the c
 `max_of_succ_le`).
 The stricter condition of every element having a sensible successor can be obtained through the
 combination of `SuccOrder α` and `NoMaxOrder α`.
-
-## TODO
-
-Is `GaloisConnection pred succ` always true? If not, we should introduce
-```lean
-class SuccPredOrder (α : Type*) [Preorder α] extends SuccOrder α, PredOrder α :=
-  (pred_succ_gc : GaloisConnection (pred : α → α) succ)
-```
-`CovBy` should help here.
 -/
 
 
@@ -240,6 +232,8 @@ theorem succ_le_of_lt {a b : α} : a < b → succ a ≤ b :=
   SuccOrder.succ_le_of_lt
 #align order.succ_le_of_lt Order.succ_le_of_lt
 
+alias _root_.LT.lt.succ_le := succ_le_of_lt
+
 theorem le_of_lt_succ {a b : α} : a < succ b → a ≤ b :=
   SuccOrder.le_of_lt_succ
 #align order.le_of_lt_succ Order.le_of_lt_succ
@@ -248,6 +242,8 @@ theorem le_of_lt_succ {a b : α} : a < succ b → a ≤ b :=
 theorem succ_le_iff_isMax : succ a ≤ a ↔ IsMax a :=
   ⟨max_of_succ_le, fun h => h <| le_succ _⟩
 #align order.succ_le_iff_is_max Order.succ_le_iff_isMax
+
+alias ⟨_root_.IsMax.of_succ_le, _root_.IsMax.succ_le⟩ := succ_le_iff_isMax
 
 @[simp]
 theorem lt_succ_iff_not_isMax : a < succ a ↔ ¬IsMax a :=
@@ -297,6 +293,16 @@ theorem succ_le_succ (h : a ≤ b) : succ a ≤ succ b := by
 
 theorem succ_mono : Monotone (succ : α → α) := fun _ _ => succ_le_succ
 #align order.succ_mono Order.succ_mono
+
+/-- See also `Order.succ_eq_of_covBy`. -/
+lemma le_succ_of_wcovBy (h : a ⩿ b) : b ≤ succ a := by
+  obtain hab | ⟨-, hba⟩ := h.covBy_or_le_and_le
+  · by_contra hba
+    exact h.2 (lt_succ_of_not_isMax hab.lt.not_isMax) $ hab.lt.succ_le.lt_of_not_le hba
+  · exact hba.trans (le_succ _)
+
+alias _root_.WCovBy.le_succ := le_succ_of_wcovBy
+#align wcovby.le_succ WCovBy.le_succ
 
 theorem le_succ_iterate (k : ℕ) (x : α) : x ≤ succ^[k] x := by
   conv_lhs => rw [(by simp only [Function.iterate_id, id] : x = id^[k] x)]
@@ -445,15 +451,11 @@ theorem le_le_succ_iff : a ≤ b ∧ b ≤ succ a ↔ b = a ∨ b = succ a := by
   · exact ⟨le_succ a, le_rfl⟩
 #align order.le_le_succ_iff Order.le_le_succ_iff
 
-theorem _root_.CovBy.succ_eq (h : a ⋖ b) : succ a = b :=
-  (succ_le_of_lt h.lt).eq_of_not_lt fun h' => h.2 (lt_succ_of_not_isMax h.lt.not_isMax) h'
-#align covby.succ_eq CovBy.succ_eq
+/-- See also `Order.le_succ_of_wcovBy`. -/
+lemma succ_eq_of_covBy (h : a ⋖ b) : succ a = b := (succ_le_of_lt h.lt).antisymm h.wcovBy.le_succ
 
-theorem _root_.WCovBy.le_succ (h : a ⩿ b) : b ≤ succ a := by
-  obtain h | rfl := h.covBy_or_eq
-  · exact (CovBy.succ_eq h).ge
-  · exact le_succ _
-#align wcovby.le_succ WCovBy.le_succ
+alias _root_.CovBy.succ_eq := succ_eq_of_covBy
+#align covby.succ_eq CovBy.succ_eq
 
 theorem le_succ_iff_eq_or_le : a ≤ succ b ↔ a = succ b ∨ a ≤ b := by
   by_cases hb : IsMax b
@@ -628,6 +630,8 @@ theorem le_pred_of_lt {a b : α} : a < b → a ≤ pred b :=
   PredOrder.le_pred_of_lt
 #align order.le_pred_of_lt Order.le_pred_of_lt
 
+alias _root_.LT.lt.le_pred := le_pred_of_lt
+
 theorem le_of_pred_lt {a b : α} : pred a < b → a ≤ b :=
   PredOrder.le_of_pred_lt
 #align order.le_of_pred_lt Order.le_of_pred_lt
@@ -636,6 +640,8 @@ theorem le_of_pred_lt {a b : α} : pred a < b → a ≤ b :=
 theorem le_pred_iff_isMin : a ≤ pred a ↔ IsMin a :=
   ⟨min_of_le_pred, fun h => h <| pred_le _⟩
 #align order.le_pred_iff_is_min Order.le_pred_iff_isMin
+
+alias ⟨_root_.IsMin.of_le_pred, _root_.IsMin.le_pred⟩ := le_pred_iff_isMin
 
 @[simp]
 theorem pred_lt_iff_not_isMin : pred a < a ↔ ¬IsMin a :=
@@ -679,6 +685,16 @@ theorem pred_le_pred {a b : α} (h : a ≤ b) : pred a ≤ pred b :=
 
 theorem pred_mono : Monotone (pred : α → α) := fun _ _ => pred_le_pred
 #align order.pred_mono Order.pred_mono
+
+/-- See also `Order.pred_eq_of_covBy`. -/
+lemma pred_le_of_wcovBy (h : a ⩿ b) : pred b ≤ a := by
+  obtain hab | ⟨-, hba⟩ := h.covBy_or_le_and_le
+  · by_contra hba
+    exact h.2 (hab.lt.le_pred.lt_of_not_le hba) (pred_lt_of_not_isMin hab.lt.not_isMin)
+  · exact (pred_le _).trans hba
+
+alias _root_.WCovBy.pred_le := pred_le_of_wcovBy
+#align wcovby.pred_le WCovBy.pred_le
 
 theorem pred_iterate_le (k : ℕ) (x : α) : pred^[k] x ≤ x := by
   conv_rhs => rw [(by simp only [Function.iterate_id, id] : x = id^[k] x)]
@@ -817,15 +833,11 @@ theorem pred_le_le_iff {a b : α} : pred a ≤ b ∧ b ≤ a ↔ b = a ∨ b = p
   · exact ⟨le_rfl, pred_le a⟩
 #align order.pred_le_le_iff Order.pred_le_le_iff
 
-theorem _root_.CovBy.pred_eq {a b : α} (h : a ⋖ b) : pred b = a :=
-  (le_pred_of_lt h.lt).eq_of_not_gt fun h' => h.2 h' <| pred_lt_of_not_isMin h.lt.not_isMin
-#align covby.pred_eq CovBy.pred_eq
+/-- See also `Order.pred_le_of_wcovBy`. -/
+lemma pred_eq_of_covBy (h : a ⋖ b) : pred b = a := h.wcovBy.pred_le.antisymm (le_pred_of_lt h.lt)
 
-theorem _root_.WCovBy.pred_le (h : a ⩿ b) : pred b ≤ a := by
-  obtain h | rfl := h.covBy_or_eq
-  · exact (CovBy.pred_eq h).le
-  · exact pred_le _
-#align wcovby.pred_le WCovBy.pred_le
+alias _root_.CovBy.pred_eq := pred_eq_of_covBy
+#align covby.pred_eq CovBy.pred_eq
 
 theorem pred_le_iff_eq_or_le : pred a ≤ b ↔ b = pred a ∨ a ≤ b := by
   by_cases ha : IsMin a
@@ -971,6 +983,19 @@ end CompleteLattice
 /-! ### Successor-predecessor orders -/
 
 section SuccPredOrder
+section Preorder
+variable [Preorder α] [SuccOrder α] [PredOrder α] {a b : α}
+
+lemma le_succ_pred (a : α) : a ≤ succ (pred a) := (pred_wcovBy _).le_succ
+lemma pred_succ_le (a : α) : pred (succ a) ≤ a := (wcovBy_succ _).pred_le
+
+lemma pred_le_iff_le_succ : pred a ≤ b ↔ a ≤ succ b where
+  mp hab := (le_succ_pred _).trans (succ_mono hab)
+  mpr hab := (pred_mono hab).trans (pred_succ_le _)
+
+lemma gc_pred_succ : GaloisConnection (pred : α → α) succ := fun _ _ ↦ pred_le_iff_le_succ
+
+end Preorder
 
 variable [PartialOrder α] [SuccOrder α] [PredOrder α] {a b : α}
 

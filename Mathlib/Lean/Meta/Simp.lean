@@ -3,7 +3,6 @@ Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Gabriel Ebner, Floris van Doorn
 -/
-import Batteries.Tactic.OpenPrivate
 import Lean.Elab.Tactic.Simp
 
 /-!
@@ -56,76 +55,6 @@ def getPropHyps : MetaM (Array FVarId) := do
       if (← isProp localDecl.type) then
         result := result.push localDecl.fvarId
   return result
-
-export private checkTypeIsProp shouldPreprocess preprocess mkSimpTheoremCore
-  from Lean.Meta.Tactic.Simp.SimpTheorems
-
-/-- Similar to `mkSimpTheoremsFromConst` except that it also returns the names of the generated
-lemmas.
-Remark: either the length of the arrays is the same,
-or the length of the first one is 0 and the length of the second one is 1. -/
-def mkSimpTheoremsFromConst' (declName : Name) (post : Bool) (inv : Bool) (prio : Nat) :
-    MetaM (Array Name × Array SimpTheorem) := do
-  let cinfo ← getConstInfo declName
-  let val := mkConst declName (cinfo.levelParams.map mkLevelParam)
-  withReducible do
-    let type ← inferType val
-    checkTypeIsProp type
-    if inv || (← shouldPreprocess type) then
-      let mut r := #[]
-      let mut auxNames := #[]
-      for (val, type) in (← preprocess val type inv (isGlobal := true)) do
-        let auxName ← mkAuxLemma cinfo.levelParams type val
-        auxNames := auxNames.push auxName
-        r := r.push <| ← mkSimpTheoremCore (.decl declName)
-          (mkConst auxName (cinfo.levelParams.map mkLevelParam)) #[] (mkConst auxName) post prio
-          false
-      return (auxNames, r)
-    else
-      return (#[], #[← mkSimpTheoremCore (.decl declName) (mkConst declName <|
-        cinfo.levelParams.map mkLevelParam) #[] (mkConst declName) post prio false])
-
-/-- Similar to `addSimpTheorem` except that it returns an array of all auto-generated
-  simp-theorems. -/
-def addSimpTheorem' (ext : SimpExtension) (declName : Name) (post : Bool) (inv : Bool)
-    (attrKind : AttributeKind) (prio : Nat) : MetaM (Array Name) := do
-  let (auxNames, simpThms) ← mkSimpTheoremsFromConst' declName post inv prio
-  for simpThm in simpThms do
-    ext.add (SimpEntry.thm simpThm) attrKind
-  return auxNames
-
-/-- Similar to `AttributeImpl.add` in `mkSimpAttr` except that it doesn't require syntax,
-  and returns an array of all auto-generated lemmas. -/
-def addSimpAttr (declName : Name) (ext : SimpExtension) (attrKind : AttributeKind)
-    (post : Bool) (prio : Nat) :
-    MetaM (Array Name) := do
-  let info ← getConstInfo declName
-  if (← isProp info.type) then
-    addSimpTheorem' ext declName post (inv := false) attrKind prio
-  else if info.hasValue then
-    if let some eqns ← getEqnsFor? declName then
-      let mut auxNames := #[]
-      for eqn in eqns do
-        -- Is this list is always empty?
-        let newAuxNames ← addSimpTheorem' ext eqn post (inv := false) attrKind prio
-        auxNames := auxNames ++ newAuxNames
-      ext.add (SimpEntry.toUnfoldThms declName eqns) attrKind
-      if hasSmartUnfoldingDecl (← getEnv) declName then
-        ext.add (SimpEntry.toUnfold declName) attrKind
-      return auxNames
-    else
-      ext.add (SimpEntry.toUnfold declName) attrKind
-      return #[]
-  else
-    throwError "invalid 'simp', it is not a proposition nor a definition (to unfold)"
-
-/-- Similar to `AttributeImpl.add` in `mkSimpAttr` except that it returns an array of all
-  auto-generated lemmas. -/
-def addSimpAttrFromSyntax (declName : Name) (ext : SimpExtension) (attrKind : AttributeKind)
-    (stx : Syntax) : MetaM (Array Name) := do
-  let post := if stx[1].isNone then true else stx[1][0].getKind == ``Lean.Parser.Tactic.simpPost
-  let prio ← getAttrParamOptPrio stx[2]
-  addSimpAttr declName ext attrKind post prio
 
 end Simp
 

@@ -24,6 +24,7 @@ The main statements pertain to lists generated using `List.ofFn`
   via `List.ofFn`.
 -/
 
+assert_not_exists Monoid
 
 universe u
 
@@ -47,26 +48,38 @@ theorem length_ofFn {n} (f : Fin n → α) : length (ofFn f) = n := by
 
 #noalign list.nth_of_fn_aux
 
-theorem get_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
-    get (ofFn.go f i j h) ⟨k, hk⟩ = f ⟨j + k, by simp at hk; omega⟩ := by
+theorem getElem_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
+    (ofFn.go f i j h)[k] = f ⟨j + k, by simp at hk; omega⟩ := by
   let i+1 := i
-  cases k <;> simp [ofFn.go, get_ofFn_go (i := i)]
+  cases k <;> simp [ofFn.go, getElem_ofFn_go (i := i)]
   congr 2; omega
 
+theorem get_ofFn_go {n} (f : Fin n → α) (i j h) (k) (hk) :
+    get (ofFn.go f i j h) ⟨k, hk⟩ = f ⟨j + k, by simp at hk; omega⟩ := by
+  simp [getElem_ofFn_go]
+
 @[simp]
+theorem getElem_ofFn {n} (f : Fin n → α) (i : Nat) (h : i < (ofFn f).length) :
+    (ofFn f)[i] = f ⟨i, by simp_all⟩ := by
+  simp [ofFn, getElem_ofFn_go]
+
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
-  cases i; simp [ofFn, get_ofFn_go]
+  simp; congr
 
 /-- The `n`th element of a list -/
 @[simp]
-theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i :=
+theorem getElem?_ofFn {n} (f : Fin n → α) (i) : (ofFn f)[i]? = ofFnNthVal f i :=
   if h : i < (ofFn f).length
   then by
-    rw [get?_eq_get h, get_ofFn]
+    rw [getElem?_eq_getElem h, getElem_ofFn]
     · simp only [length_ofFn] at h; simp [ofFnNthVal, h]
   else by
     rw [ofFnNthVal, dif_neg] <;>
     simpa using h
+
+/-- The `n`th element of a list -/
+theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i := by
+  simp
 #align list.nth_of_fn List.get?_ofFn
 
 set_option linter.deprecated false in
@@ -117,7 +130,7 @@ theorem ofFn_zero (f : Fin 0 → α) : ofFn f = [] :=
 theorem ofFn_succ {n} (f : Fin (succ n) → α) : ofFn f = f 0 :: ofFn fun i => f i.succ :=
   ext_get (by simp) (fun i hi₁ hi₂ => by
     cases i
-    · simp; rfl
+    · simp
     · simp)
 #align list.of_fn_succ List.ofFn_succ
 
@@ -194,8 +207,21 @@ theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
     exact ofFn_get l
 
 @[simp]
+theorem ofFn_getElem : ∀ l : List α, (ofFn (fun i : Fin l.length => l[(i : Nat)])) = l
+  | [] => by rw [ofFn_zero]
+  | a :: l => by
+    rw [ofFn_succ]
+    congr
+    exact ofFn_get l
+
+@[simp]
+theorem ofFn_getElem_eq_map {β : Type*} (l : List α) (f : α → β) :
+    ofFn (fun i : Fin l.length => f <| l[(i : Nat)]) = l.map f := by
+  rw [← Function.comp_def, ← map_ofFn, ofFn_getElem]
+
+@[deprecated ofFn_getElem_eq_map (since := "2024-06-12")]
 theorem ofFn_get_eq_map {β : Type*} (l : List α) (f : α → β) : ofFn (f <| l.get ·) = l.map f := by
-  rw [← Function.comp_def, ← map_ofFn, ofFn_get]
+  simp
 
 set_option linter.deprecated false in
 @[deprecated ofFn_get (since := "2023-01-17")]
@@ -232,7 +258,7 @@ theorem ofFn_fin_repeat {m} (a : Fin m → α) (n : ℕ) :
 theorem pairwise_ofFn {R : α → α → Prop} {n} {f : Fin n → α} :
     (ofFn f).Pairwise R ↔ ∀ ⦃i j⦄, i < j → R (f i) (f j) := by
   simp only [pairwise_iff_get, (Fin.rightInverse_cast (length_ofFn f)).surjective.forall, get_ofFn,
-    lt_iff_not_le, Fin.cast_le_cast]
+    ← Fin.not_le, Fin.cast_le_cast]
 #align list.pairwise_of_fn List.pairwise_ofFn
 
 /-- Lists are equivalent to the sigma type of tuples of a given length. -/

@@ -16,14 +16,12 @@ nice properties, like preserving pullbacks and finite coproducts, then this Yone
 satisfies the sheaf condition for the regular and extensive topologies respectively.
 
 We apply this API to `CompHaus` and define the functor
-`topCatToCondensed : TopCat.{u+1} ⥤ CondensedSet.{u}`.
+`topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u}`.
 
 ## Projects
 
-* Prove that `topCatToCondensed` is faithful.
 * Define compactly generated topological spaces.
-* Prove that `topCatToCondensed` restricted to compactly generated spaces is fully faithful.
-* Define the left adjoint of the restriction mentioned in the previous point.
+* Prove that `topCatToCondensedSet` restricted to compactly generated spaces is fully faithful.
 -/
 
 universe w w' v u
@@ -40,18 +38,18 @@ An auxiliary lemma to that allows us to use `QuotientMap.lift` in the proof of
 theorem factorsThrough_of_pullbackCondition {Z B : C} {π : Z ⟶ B} [HasPullback π π]
     [PreservesLimit (cospan π π) G]
     {a : C(G.obj Z, X)}
-    (ha : a ∘ (G.map pullback.fst) = a ∘ (G.map (pullback.snd (f := π) (g := π)))) :
+    (ha : a ∘ (G.map (pullback.fst _ _)) = a ∘ (G.map (pullback.snd π π))) :
     Function.FactorsThrough a (G.map π) := by
   intro x y hxy
   let xy : G.obj (pullback π π) := (PreservesPullback.iso G π π).inv <|
     (TopCat.pullbackIsoProdSubtype (G.map π) (G.map π)).inv ⟨(x, y), hxy⟩
   have ha' := congr_fun ha xy
   dsimp at ha'
-  have h₁ : ∀ y, G.map pullback.fst ((PreservesPullback.iso G π π).inv y) =
-      pullback.fst (f := G.map π) (g := G.map π) y := by
+  have h₁ : ∀ y, G.map (pullback.fst _ _) ((PreservesPullback.iso G π π).inv y) =
+      pullback.fst (G.map π) (G.map π) y := by
     simp only [← PreservesPullback.iso_inv_fst]; intro y; rfl
-  have h₂ : ∀ y, G.map pullback.snd ((PreservesPullback.iso G π π).inv y) =
-      pullback.snd (f := G.map π) (g := G.map π) y := by
+  have h₂ : ∀ y, G.map (pullback.snd _ _) ((PreservesPullback.iso G π π).inv y) =
+      pullback.snd (G.map π) (G.map π) y := by
     simp only [← PreservesPullback.iso_inv_snd]; intro y; rfl
   erw [h₁, h₂, TopCat.pullbackIsoProdSubtype_inv_fst_apply,
     TopCat.pullbackIsoProdSubtype_inv_snd_apply] at ha'
@@ -108,8 +106,8 @@ noncomputable instance [PreservesFiniteCoproducts G] :
 Associate to a `(u+1)`-small topological space the corresponding condensed set, given by
 `yonedaPresheaf`.
 -/
--- @[simps!]
-noncomputable def TopCat.toCondensed (X : TopCat.{u+1}) : CondensedSet.{u} :=
+@[simps! val_obj val_map]
+noncomputable def TopCat.toCondensedSet (X : TopCat.{u+1}) : CondensedSet.{u} :=
   @CondensedSet.ofSheafCompHaus (yonedaPresheaf.{u, u+1, u, u+1} compHausToTop.{u} X) _ (by
     apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
       compHausToTop.{u} X
@@ -119,8 +117,9 @@ noncomputable def TopCat.toCondensed (X : TopCat.{u+1}) : CondensedSet.{u} :=
 
 
 /--
-`TopCat.toCondensed` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
+`TopCat.toCondensedSet` yields a functor from `TopCat.{u+1}` to `CondensedSet.{u}`.
 -/
-noncomputable def topCatToCondensed : TopCat.{u+1} ⥤ CondensedSet.{u} where
-  obj X := X.toCondensed
+@[simps]
+noncomputable def topCatToCondensedSet : TopCat.{u+1} ⥤ CondensedSet.{u} where
+  obj X := X.toCondensedSet
   map f := ⟨⟨fun _ g ↦ f.comp g, by aesop⟩⟩

@@ -78,6 +78,8 @@ end LinearMap
 
 namespace QuadraticForm
 
+open QuadraticMap
+
 section Semiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N]
@@ -89,7 +91,7 @@ def dualProd : QuadraticForm R (Module.Dual R M × M) where
   toFun_smul a p := by
     dsimp only  -- Porting note: added
     rw [Prod.smul_fst, Prod.smul_snd, LinearMap.smul_apply, LinearMap.map_smul, smul_eq_mul,
-      smul_eq_mul, mul_assoc]
+      smul_eq_mul, smul_eq_mul, mul_assoc]
   exists_companion' :=
     ⟨LinearMap.dualProd R M, fun p q => by
       dsimp only  -- Porting note: added
@@ -100,7 +102,7 @@ def dualProd : QuadraticForm R (Module.Dual R M × M) where
 
 @[simp]
 theorem _root_.LinearMap.dualProd.toQuadraticForm :
-    (LinearMap.dualProd R M).toQuadraticForm = 2 • dualProd R M :=
+    (LinearMap.dualProd R M).toQuadraticMap = 2 • dualProd R M :=
   ext fun _a => (two_nsmul _).symm
 #align bilin_form.dual_prod.to_quadratic_form LinearMap.dualProd.toQuadraticForm
 
@@ -152,7 +154,7 @@ def toDualProd (Q : QuadraticForm R M) [Invertible (2 : R)] :
       sub_eq_add_neg (Q x.1) (Q x.2)]
 #align quadratic_form.to_dual_prod QuadraticForm.toDualProdₓ
 
-#align quadratic_form.to_dual_prod_isometry QuadraticForm.Isometry.map_appₓ
+#align quadratic_form.to_dual_prod_isometry QuadraticMap.Isometry.map_appₓ
 
 /-!
 TODO: show that `QuadraticForm.toDualProd` is an `QuadraticForm.IsometryEquiv`

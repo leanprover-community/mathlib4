@@ -45,7 +45,7 @@ def natSumNatEquivNat : ℕ ⊕ ℕ ≃ ℕ :=
 
 set_option linter.deprecated false in
 @[simp]
-theorem natSumNatEquivNat_apply : ⇑natSumNatEquivNat = Sum.elim bit0 bit1 := by
+theorem natSumNatEquivNat_apply : ⇑natSumNatEquivNat = Sum.elim (2 * ·) (2 * · + 1) := by
   ext (x | x) <;> rfl
 #align equiv.nat_sum_nat_equiv_nat_apply Equiv.natSumNatEquivNat_apply
 

@@ -171,7 +171,7 @@ theorem iterate_le_of_map_le (h : Commute f g) (hf : Monotone f) (hg : Monotone 
   apply hf.seq_le_seq n
   · rfl
   · intros; rw [iterate_succ_apply']
-  · intros; simp [h.iterate_right _ _, hg.iterate _ hx];
+  · intros; simp [h.iterate_right _ _, hg.iterate _ hx]
 #align function.commute.iterate_le_of_map_le Function.Commute.iterate_le_of_map_le
 
 theorem iterate_pos_lt_of_map_lt (h : Commute f g) (hf : Monotone f) (hg : StrictMono g) {x}

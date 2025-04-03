@@ -848,18 +848,19 @@ theorem inv_Ioo_0_left {a : α} (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
   ext x
   exact
     ⟨fun h => inv_inv x ▸ (inv_lt_inv ha h.1).2 h.2, fun h =>
-      ⟨inv_pos.2 <| (inv_pos.2 ha).trans h,
-        inv_inv a ▸ (inv_lt_inv ((inv_pos.2 ha).trans h) (inv_pos.2 ha)).2 h⟩⟩
+      ⟨inv_pos (α := α) |>.2 <| (inv_pos (α := α) |>.2 ha).trans h,
+        inv_inv a ▸ (inv_lt_inv ((inv_pos (α := α) |>.2 ha).trans h)
+          (inv_pos (α := α) |>.2 ha)).2 h⟩⟩
 #align set.inv_Ioo_0_left Set.inv_Ioo_0_left
 
 theorem inv_Ioi {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
-  rw [inv_eq_iff_eq_inv, inv_Ioo_0_left (inv_pos.2 ha), inv_inv]
+  rw [inv_eq_iff_eq_inv, inv_Ioo_0_left (inv_pos (α := α) |>.2 ha), inv_inv]
 #align set.inv_Ioi Set.inv_Ioi
 
 theorem image_const_mul_Ioi_zero {k : Type*} [LinearOrderedField k] {x : k} (hx : 0 < x) :
     (fun y => x * y) '' Ioi (0 : k) = Ioi 0 := by
-  erw [(Units.mk0 x hx.ne').mulLeft.image_eq_preimage, preimage_const_mul_Ioi 0 (inv_pos.mpr hx),
-    zero_div]
+  erw [(Units.mk0 x hx.ne').mulLeft.image_eq_preimage,
+    preimage_const_mul_Ioi 0 (inv_pos (α := k) |>.mpr hx), zero_div]
 #align set.image_const_mul_Ioi_zero Set.image_const_mul_Ioi_zero
 
 /-!

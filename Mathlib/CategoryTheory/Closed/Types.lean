@@ -59,7 +59,7 @@ instance {C : Type v₁} [SmallCategory C] : CartesianClosed (C ⥤ Type v₁) :
   CartesianClosed.mk _
     (fun F => by
       letI := FunctorCategory.prodPreservesColimits F
-      have := isLeftAdjointOfPreservesColimits (prod.functor.obj F)
+      have := Presheaf.isLeftAdjoint_of_preservesColimits (prod.functor.obj F)
       exact Exponentiable.mk _ _ (Adjunction.ofIsLeftAdjoint (prod.functor.obj F)))
 
 end CartesianClosed

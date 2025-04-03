@@ -23,10 +23,9 @@ complete category. It is also preadditive when `C` is preadditive.
 
 -/
 
-
 noncomputable section
 
-open CategoryTheory.Category CategoryTheory.Preadditive CategoryTheory.Limits BigOperators
+open CategoryTheory.Category CategoryTheory.Preadditive CategoryTheory.Limits
 
 namespace CategoryTheory
 
@@ -122,6 +121,9 @@ theorem comp_f {P Q R : Karoubi C} (f : P ⟶ Q) (g : Q ⟶ R) : (f ≫ g).f = f
 #align category_theory.idempotents.karoubi.comp_f CategoryTheory.Idempotents.Karoubi.comp_f
 
 @[simp]
+theorem id_f {P : Karoubi C} : Hom.f (𝟙 P) = P.p := rfl
+
+@[deprecated (since := "2024-07-15")]
 theorem id_eq {P : Karoubi C} : 𝟙 P = ⟨P.p, by repeat' rw [P.idem]⟩ := rfl
 #align category_theory.idempotents.karoubi.id_eq CategoryTheory.Idempotents.Karoubi.id_eq
 
@@ -144,7 +146,7 @@ theorem coe_p (X : C) : (X : Karoubi C).p = 𝟙 X := rfl
 theorem eqToHom_f {P Q : Karoubi C} (h : P = Q) :
     Karoubi.Hom.f (eqToHom h) = P.p ≫ eqToHom (congr_arg Karoubi.X h) := by
   subst h
-  simp only [eqToHom_refl, Karoubi.id_eq, comp_id]
+  simp only [eqToHom_refl, Karoubi.id_f, comp_id]
 #align category_theory.idempotents.karoubi.eq_to_hom_f CategoryTheory.Idempotents.Karoubi.eqToHom_f
 
 end Karoubi
@@ -284,7 +286,7 @@ is actually a direct factor in the category `Karoubi C`. -/
 @[reassoc]
 theorem decompId (P : Karoubi C) : 𝟙 P = decompId_i P ≫ decompId_p P := by
   ext
-  simp only [comp_f, id_eq, P.idem, decompId_i, decompId_p]
+  simp only [comp_f, id_f, P.idem, decompId_i, decompId_p]
 #align category_theory.idempotents.karoubi.decomp_id CategoryTheory.Idempotents.Karoubi.decompId
 
 theorem decomp_p (P : Karoubi C) : (toKaroubi C).map P.p = decompId_p P ≫ decompId_i P := by

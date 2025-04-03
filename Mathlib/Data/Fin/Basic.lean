@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
 import Mathlib.Data.Nat.Defs
+import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Tactic.Common
@@ -497,55 +498,14 @@ theorem val_add_eq_ite {n : ℕ} (a b : Fin n) :
     Nat.mod_eq_of_lt (show ↑b < n from b.2)]
 #align fin.coe_add_eq_ite Fin.val_add_eq_ite
 
-section deprecated
-set_option linter.deprecated false
-
-@[deprecated (since := "2023-01-12")]
-theorem val_bit0 {n : ℕ} (k : Fin n) : ((bit0 k : Fin n) : ℕ) = bit0 (k : ℕ) % n := by
-  cases k
-  rfl
-#align fin.coe_bit0 Fin.val_bit0
-
-@[deprecated (since := "2023-01-12")]
-theorem val_bit1 {n : ℕ} [NeZero n] (k : Fin n) :
-    ((bit1 k : Fin n) : ℕ) = bit1 (k : ℕ) % n := by
-  cases n;
-  · cases' k with k h
-    cases k
-    · show _ % _ = _
-      simp at h
-    cases' h with _ h
-  simp [bit1, Fin.val_bit0, Fin.val_add, Fin.val_one]
-#align fin.coe_bit1 Fin.val_bit1
-
-end deprecated
-
+#noalign fin.coe_bit0
+#noalign fin.coe_bit1
 #align fin.coe_add_one_of_lt Fin.val_add_one_of_lt
 #align fin.last_add_one Fin.last_add_one
 #align fin.coe_add_one Fin.val_add_one
-
-section Bit
-set_option linter.deprecated false
-
-@[simp, deprecated (since := "2023-01-12")]
-theorem mk_bit0 {m n : ℕ} (h : bit0 m < n) :
-    (⟨bit0 m, h⟩ : Fin n) = (bit0 ⟨m, (Nat.le_add_right m m).trans_lt h⟩ : Fin _) :=
-  eq_of_val_eq (Nat.mod_eq_of_lt h).symm
-#align fin.mk_bit0 Fin.mk_bit0
-
-@[simp, deprecated (since := "2023-01-12")]
-theorem mk_bit1 {m n : ℕ} [NeZero n] (h : bit1 m < n) :
-    (⟨bit1 m, h⟩ : Fin n) =
-      (bit1 ⟨m, (Nat.le_add_right m m).trans_lt ((m + m).lt_succ_self.trans h)⟩ : Fin _) := by
-  ext
-  simp only [bit1, bit0] at h
-  simp only [bit1, bit0, val_add, val_one', ← Nat.add_mod, Nat.mod_eq_of_lt h]
-#align fin.mk_bit1 Fin.mk_bit1
-
-end Bit
-
+#noalign fin.mk_bit0
+#noalign fin.mk_bit1
 #align fin.val_two Fin.val_two
-
 --- Porting note: syntactically the same as the above
 #align fin.coe_two Fin.val_two
 
@@ -841,8 +801,7 @@ lemma _root_.finCongr_eq_equivCast (h : n = m) : finCongr h = .cast (h ▸ rfl) 
 
 @[simp]
 theorem cast_zero {n' : ℕ} [NeZero n] {h : n = n'} : cast h (0 : Fin n) =
-    by { haveI : NeZero n' := by {rw [← h]; infer_instance}; exact 0} :=
-  ext rfl
+    by { haveI : NeZero n' := by {rw [← h]; infer_instance}; exact 0} := rfl
 #align fin.cast_zero Fin.cast_zero
 
 #align fin.cast_last Fin.cast_lastₓ
@@ -1628,7 +1587,7 @@ lemma predAbove_castSucc_of_lt (p i : Fin n) (h : p < i) (hi := castSucc_ne_zero
     p.predAbove (castSucc i) = i.castSucc.pred hi := by
   rw [predAbove_of_castSucc_lt _ _ (castSucc_lt_castSucc_iff.2 h)]
 
-lemma predAbove_castSucc_of_le (p i : Fin n) (h : i ≤ p) :p.predAbove (castSucc i) = i := by
+lemma predAbove_castSucc_of_le (p i : Fin n) (h : i ≤ p) : p.predAbove (castSucc i) = i := by
   rw [predAbove_of_le_castSucc _ _ (castSucc_le_castSucc_iff.mpr h), castPred_castSucc]
 
 @[simp] lemma predAbove_castSucc_self (p : Fin n) : p.predAbove (castSucc p) = p :=
@@ -1850,6 +1809,8 @@ open Nat Int
 /-- Negation on `Fin n` -/
 instance neg (n : ℕ) : Neg (Fin n) :=
   ⟨fun a => ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩⟩
+
+theorem neg_def (a : Fin n) : -a = ⟨(n - a) % n, Nat.mod_lt _ a.pos⟩ := rfl
 
 protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
   rfl

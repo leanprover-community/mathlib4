@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.RingTheory.MvPolynomial.Basic
 
 #align_import field_theory.finite.polynomial from "leanprover-community/mathlib"@"5aa3c1de9f3c642eac76e11071c852766f220fd0"
@@ -33,8 +34,8 @@ variable {p : ℕ} [Fact p.Prime]
 theorem frobenius_zmod (f : MvPolynomial σ (ZMod p)) : frobenius _ p f = expand p f := by
   apply induction_on f
   · intro a; rw [expand_C, frobenius_def, ← C_pow, ZMod.pow_card]
-  · simp only [AlgHom.map_add, RingHom.map_add]; intro _ _ hf hg; rw [hf, hg]
-  · simp only [expand_X, RingHom.map_mul, AlgHom.map_mul]
+  · simp only [map_add]; intro _ _ hf hg; rw [hf, hg]
+  · simp only [expand_X, map_mul]
     intro _ _ hf; rw [hf, frobenius_def]
 #align mv_polynomial.frobenius_zmod MvPolynomial.frobenius_zmod
 

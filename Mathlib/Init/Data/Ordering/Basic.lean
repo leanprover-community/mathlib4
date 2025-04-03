@@ -6,9 +6,22 @@ Authors: Leonardo de Moura
 
 import Mathlib.Mathport.Rename
 
-/-!  # Helper definitions and instances for `Ordering` -/
+/-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
 
-set_option autoImplicit true
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+
+# Helper definitions and instances for `Ordering`
+-/
+
+universe u
 
 deriving instance Repr for Ordering
 
@@ -22,7 +35,7 @@ def orElse : Ordering → Ordering → Ordering
   | gt, _ => gt
 
 /-- The relation corresponding to each `Ordering` constructor (e.g. `.lt.toProp a b` is `a < b`). -/
-def toRel [LT α] : Ordering → α → α → Prop
+def toRel {α : Type u} [LT α] : Ordering → α → α → Prop
   | .lt => (· < ·)
   | .eq => Eq
   | .gt => (· > ·)

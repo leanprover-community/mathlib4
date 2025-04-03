@@ -805,8 +805,8 @@ theorem dist_pointReflection_fixed (x y : P) : dist (pointReflection 𝕜 x y) x
 
 set_option linter.deprecated false in
 theorem dist_pointReflection_self' (x y : P) :
-    dist (pointReflection 𝕜 x y) y = ‖bit0 (x -ᵥ y)‖ := by
-  rw [pointReflection_apply, dist_eq_norm_vsub V, vadd_vsub_assoc, bit0]
+    dist (pointReflection 𝕜 x y) y = ‖2 • (x -ᵥ y)‖ := by
+  rw [pointReflection_apply, dist_eq_norm_vsub V, vadd_vsub_assoc, two_nsmul]
 #align affine_isometry_equiv.dist_point_reflection_self' AffineIsometryEquiv.dist_pointReflection_self'
 
 set_option linter.deprecated false in

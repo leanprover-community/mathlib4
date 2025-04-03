@@ -484,6 +484,9 @@ theorem sInf_eq_top : sInf s = ⊤ ↔ ∀ a ∈ s, a = ⊤ :=
   @sSup_eq_bot αᵒᵈ _ _
 #align Inf_eq_top sInf_eq_top
 
+lemma sSup_eq_bot' [CompleteLattice α] {s : Set α} : sSup s = ⊥ ↔ s = ∅ ∨ s = {⊥} := by
+  rw [sSup_eq_bot, ← subset_singleton_iff_eq, subset_singleton_iff]
+
 theorem eq_singleton_bot_of_sSup_eq_bot_of_nonempty {s : Set α} (h_sup : sSup s = ⊥)
     (hne : s.Nonempty) : s = {⊥} := by
   rw [Set.eq_singleton_iff_nonempty_unique_mem]
@@ -1740,11 +1743,13 @@ instance Pi.instCompleteLattice {α : Type*} {β : α → Type*} [∀ i, Complet
   le_sInf _ _ hf := fun i => le_iInf fun g => hf g g.2 i
 #align pi.complete_lattice Pi.instCompleteLattice
 
+@[simp]
 theorem sSup_apply {α : Type*} {β : α → Type*} [∀ i, SupSet (β i)] {s : Set (∀ a, β a)} {a : α} :
     (sSup s) a = ⨆ f : s, (f : ∀ a, β a) a :=
   rfl
 #align Sup_apply sSup_apply
 
+@[simp]
 theorem sInf_apply {α : Type*} {β : α → Type*} [∀ i, InfSet (β i)] {s : Set (∀ a, β a)} {a : α} :
     sInf s a = ⨅ f : s, (f : ∀ a, β a) a :=
   rfl
@@ -1789,15 +1794,33 @@ theorem binary_relation_sInf_iff {α β : Type*} (s : Set (α → β → Prop)) 
 
 section CompleteLattice
 
-variable [Preorder α] [CompleteLattice β]
+variable {ι : Sort*} [Preorder α] [CompleteLattice β] {s : Set (α → β)} {f : ι → α → β}
 
-theorem monotone_sSup_of_monotone {s : Set (α → β)} (m_s : ∀ f ∈ s, Monotone f) :
-    Monotone (sSup s) := fun _ _ h => iSup_mono fun f => m_s f f.2 h
-#align monotone_Sup_of_monotone monotone_sSup_of_monotone
+protected lemma Monotone.sSup (hs : ∀ f ∈ s, Monotone f) : Monotone (sSup s) :=
+  fun _ _ h ↦ iSup_mono fun f ↦ hs f f.2 h
+#align monotone_Sup_of_monotone Monotone.sSup
 
-theorem monotone_sInf_of_monotone {s : Set (α → β)} (m_s : ∀ f ∈ s, Monotone f) :
-    Monotone (sInf s) := fun _ _ h => iInf_mono fun f => m_s f f.2 h
-#align monotone_Inf_of_monotone monotone_sInf_of_monotone
+protected lemma Monotone.sInf (hs : ∀ f ∈ s, Monotone f) : Monotone (sInf s) :=
+  fun _ _ h ↦ iInf_mono fun f ↦ hs f f.2 h
+#align monotone_Inf_of_monotone Monotone.sInf
+
+protected lemma Antitone.sSup (hs : ∀ f ∈ s, Antitone f) : Antitone (sSup s) :=
+  fun _ _ h ↦ iSup_mono fun f ↦ hs f f.2 h
+
+protected lemma Antitone.sInf (hs : ∀ f ∈ s, Antitone f) : Antitone (sInf s) :=
+  fun _ _ h ↦ iInf_mono fun f ↦ hs f f.2 h
+
+@[deprecated (since := "2024-05-29")] alias monotone_sSup_of_monotone := Monotone.sSup
+@[deprecated (since := "2024-05-29")] alias monotone_sInf_of_monotone := Monotone.sInf
+
+protected lemma Monotone.iSup (hf : ∀ i, Monotone (f i)) : Monotone (⨆ i, f i) :=
+  Monotone.sSup (by simpa)
+protected lemma Monotone.iInf (hf : ∀ i, Monotone (f i)) : Monotone (⨅ i, f i) :=
+  Monotone.sInf (by simpa)
+protected lemma Antitone.iSup (hf : ∀ i, Antitone (f i)) : Antitone (⨆ i, f i) :=
+  Antitone.sSup (by simpa)
+protected lemma Antitone.iInf (hf : ∀ i, Antitone (f i)) : Antitone (⨅ i, f i) :=
+  Antitone.sInf (by simpa)
 
 end CompleteLattice
 

@@ -38,7 +38,7 @@ variable (R : Type*) (A : Type u)
 variable [CommSemiring R] [Semiring A] [Algebra R A]
 variable [TopologicalSpace R] [TopologicalSpace A]
 
- @[continuity, fun_prop]
+@[continuity, fun_prop]
 theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A) := by
   rw [algebraMap_eq_smul_one']
   exact continuous_id.smul continuous_const
@@ -178,12 +178,3 @@ instance [T2Space A] {x : A} : CommRing (Algebra.elementalAlgebra R x) :=
 
 end Ring
 
-section DivisionRing
-
-/-- The action induced by `algebraRat` is continuous. -/
-instance DivisionRing.continuousConstSMul_rat {A} [DivisionRing A] [TopologicalSpace A]
-    [ContinuousMul A] [CharZero A] : ContinuousConstSMul ℚ A :=
-  ⟨fun r => by simpa only [Algebra.smul_def] using continuous_const.mul continuous_id⟩
-#align division_ring.has_continuous_const_smul_rat DivisionRing.continuousConstSMul_rat
-
-end DivisionRing

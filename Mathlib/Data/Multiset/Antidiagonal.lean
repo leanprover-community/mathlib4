@@ -51,7 +51,7 @@ theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
     dsimp only [quot_mk_to_coe, antidiagonal_coe]
     refine ⟨fun h => revzip_powersetAux h, fun h ↦ ?_⟩
     haveI := Classical.decEq α
-    simp only [revzip_powersetAux_lemma l revzip_powersetAux, h.symm, ge_iff_le, mem_coe,
+    simp only [revzip_powersetAux_lemma l revzip_powersetAux, h.symm, mem_coe,
       List.mem_map, mem_powersetAux]
     cases' x with x₁ x₂
     exact ⟨x₁, le_add_right _ _, by rw [add_tsub_cancel_left x₁ x₂]⟩
@@ -59,7 +59,7 @@ theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
 
 @[simp]
 theorem antidiagonal_map_fst (s : Multiset α) : (antidiagonal s).map Prod.fst = powerset s :=
-  Quotient.inductionOn s fun l ↦ by simp [powersetAux'];
+  Quotient.inductionOn s fun l ↦ by simp [powersetAux']
 #align multiset.antidiagonal_map_fst Multiset.antidiagonal_map_fst
 
 @[simp]

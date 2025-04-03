@@ -64,7 +64,7 @@ lemma lintegral_gammaPDF_of_nonpos {x a r : ℝ} (hx : x ≤ 0) :
     ∫⁻ y in Iio x, gammaPDF a r y = 0 := by
   rw [setLIntegral_congr_fun (g := fun _ ↦ 0) measurableSet_Iio]
   · rw [lintegral_zero, ← ENNReal.ofReal_zero]
-  · simp only [gammaPDF_eq, ge_iff_le, ENNReal.ofReal_eq_zero]
+  · simp only [gammaPDF_eq, ENNReal.ofReal_eq_zero]
     filter_upwards with a (_ : a < _)
     rw [if_neg (by linarith)]
 
@@ -151,3 +151,5 @@ lemma gammaCDFReal_eq_lintegral {a r : ℝ} (ha : 0 < a) (hr : 0 < r) (x : ℝ) 
   simp only [gammaMeasure, measurableSet_Iic, withDensity_apply, gammaPDF]
 
 end GammaCDF
+
+end ProbabilityTheory

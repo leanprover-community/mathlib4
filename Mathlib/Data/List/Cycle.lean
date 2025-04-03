@@ -184,7 +184,7 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   intro H
   obtain ⟨⟨_ | k, hk⟩, hk'⟩ := get_of_mem H
   · rw [← Option.some_inj] at hk'
-    rw [← get?_eq_get, dropLast_eq_take, get?_take, get?_zero, head?_cons,
+    rw [← get?_eq_get, dropLast_eq_take, get?_eq_getElem?, getElem?_take, getElem?_cons_zero,
       Option.some_inj] at hk'
     · exact hy (Eq.symm hk')
     rw [length_cons, Nat.pred_succ]
@@ -197,10 +197,11 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
     refine Fin.val_eq_of_eq <| @hl ⟨k, Nat.lt_of_succ_lt <| by simpa using hk⟩
       ⟨tl.length, by simp⟩ ?_
     rw [← Option.some_inj] at hk'
-    rw [← get?_eq_get, dropLast_eq_take, get?_take, get?, get?_eq_get, Option.some_inj] at hk'
-    · rw [hk']
-      simp only [getLast_eq_get, length_cons, ge_iff_le, Nat.succ_sub_succ_eq_sub,
-        nonpos_iff_eq_zero, add_eq_zero_iff, and_false, Nat.sub_zero, get_cons_succ]
+    rw [← get?_eq_get, dropLast_eq_take, get?_eq_getElem?, getElem?_take, getElem?_cons_succ,
+      getElem?_eq_getElem, Option.some_inj] at hk'
+    · rw [get_eq_getElem, hk']
+      simp only [getLast_eq_get, length_cons, Nat.succ_eq_add_one, Nat.succ_sub_succ_eq_sub,
+        Nat.sub_zero, get_eq_getElem, getElem_cons_succ]
     simpa using hk
 #align list.next_last_cons List.next_getLast_cons
 
@@ -329,7 +330,6 @@ theorem prev_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
     · rw [prev_ne_cons_cons]
       · convert hl n.succ y h.of_cons (Nat.le_of_succ_le_succ hn) using 1
         have : ∀ k hk, (y :: l).nthLe k hk = (x :: y :: l).nthLe (k + 1) (Nat.succ_lt_succ hk) := by
-          intros
           simp [List.nthLe]
         rw [this]
         congr
@@ -377,7 +377,7 @@ theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
   cases' l with hd tl
   · simp at hx
   · have : (n + 1 + length tl) % (length tl + 1) = n := by
-      rw [length_cons, Nat.succ_eq_add_one] at hn
+      rw [length_cons] at hn
       rw [add_assoc, add_comm 1, Nat.add_mod_right, Nat.mod_eq_of_lt hn]
     simp only [length_cons, Nat.succ_sub_succ_eq_sub, Nat.sub_zero, Nat.succ_eq_add_one, this]
 #align list.prev_next List.prev_next
@@ -390,7 +390,7 @@ theorem next_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
   cases' l with hd tl
   · simp at hx
   · have : (n + length tl + 1) % (length tl + 1) = n := by
-      rw [length_cons, Nat.succ_eq_add_one] at hn
+      rw [length_cons] at hn
       rw [add_assoc, Nat.add_mod_right, Nat.mod_eq_of_lt hn]
     simp [this]
 #align list.next_prev List.next_prev
@@ -410,7 +410,7 @@ theorem prev_reverse_eq_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l)
     rw [← nthLe_reverse]
     · simp [Nat.sub_sub_self (Nat.le_sub_one_of_lt hk)]
     · simpa using (Nat.sub_le _ _).trans_lt (Nat.sub_lt lpos Nat.succ_pos')
-    · simpa
+  · simpa
 #align list.prev_reverse_eq_next List.prev_reverse_eq_next
 
 theorem next_reverse_eq_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :

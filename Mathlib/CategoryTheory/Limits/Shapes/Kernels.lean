@@ -121,7 +121,7 @@ def ofιCongr {P : C} {ι ι' : P ⟶ X} {w : ι ≫ f = 0} (h : ι = ι') :
     the diagram indexing the (co)kernel of `F.map f`. -/
 def compNatIso {D : Type u'} [Category.{v} D] [HasZeroMorphisms D] (F : C ⥤ D) [F.IsEquivalence] :
     parallelPair f 0 ⋙ F ≅ parallelPair (F.map f) 0 :=
-  let app (j :WalkingParallelPair) :
+  let app (j : WalkingParallelPair) :
       (parallelPair f 0 ⋙ F).obj j ≅ (parallelPair (F.map f) 0).obj j :=
     match j with
     | zero => Iso.refl _

@@ -5,6 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Nat.Multiplicity
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.GCongr
 

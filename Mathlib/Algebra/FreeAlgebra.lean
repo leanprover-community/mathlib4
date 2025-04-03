@@ -384,12 +384,12 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa + fb) = F (fa + fb)
-        rw [AlgHom.map_add, AlgHom.map_add, ha, hb]
+        rw [map_add, map_add, ha, hb]
       | mul a b ha hb =>
         let fa : FreeAlgebra R X := Quot.mk (Rel R X) a
         let fb : FreeAlgebra R X := Quot.mk (Rel R X) b
         change liftAux R (F ∘ ι R) (fa * fb) = F (fa * fb)
-        rw [AlgHom.map_mul, AlgHom.map_mul, ha, hb] }
+        rw [map_mul, map_mul, ha, hb] }
 #align free_algebra.lift FreeAlgebra.lift
 
 @[simp]

@@ -454,7 +454,7 @@ theorem map_le_iff_le_comap {f : L →ₐ[K] L'}
     s.map f ≤ t ↔ s ≤ t.comap f :=
   Set.image_subset_iff
 
-theorem gc_map_comap (f :L →ₐ[K] L') : GaloisConnection (map f) (comap f) :=
+theorem gc_map_comap (f : L →ₐ[K] L') : GaloisConnection (map f) (comap f) :=
   fun _ _ ↦ map_le_iff_le_comap
 
 /-- Given an equivalence `e : L ≃ₐ[K] L'` of `K`-field extensions and an intermediate
@@ -602,7 +602,7 @@ theorem toSubalgebra_injective :
   rw [← mem_toSubalgebra, ← mem_toSubalgebra, h]
 #align intermediate_field.to_subalgebra_injective IntermediateField.toSubalgebra_injective
 
-theorem map_injective (f : L →ₐ[K] L'):
+theorem map_injective (f : L →ₐ[K] L') :
     Function.Injective (map f) := by
   intro _ _ h
   rwa [← toSubalgebra_injective.eq_iff, toSubalgebra_map, toSubalgebra_map,

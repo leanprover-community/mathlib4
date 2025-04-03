@@ -54,11 +54,11 @@ theorem tendsto_rpow_neg_atTop {y : ℝ} (hy : 0 < y) : Tendsto (fun x : ℝ => 
 
 open Asymptotics in
 lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 1) :
-    Tendsto (b ^ · : ℝ → ℝ) atTop (𝓝 (0:ℝ)) := by
+    Tendsto (b ^ · : ℝ → ℝ) atTop (𝓝 (0 : ℝ)) := by
   rcases lt_trichotomy b 0 with hb|rfl|hb
   case inl => -- b < 0
     simp_rw [Real.rpow_def_of_nonpos hb.le, hb.ne, ite_false]
-    rw [← isLittleO_const_iff (c := (1:ℝ)) one_ne_zero, (one_mul (1 : ℝ)).symm]
+    rw [← isLittleO_const_iff (c := (1 : ℝ)) one_ne_zero, (one_mul (1 : ℝ)).symm]
     refine IsLittleO.mul_isBigO ?exp ?cos
     case exp =>
       rw [isLittleO_const_iff one_ne_zero]
@@ -79,7 +79,7 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
     exact (log_neg_iff hb).mpr hb₁
 
 lemma tendsto_rpow_atTop_of_base_gt_one (b : ℝ) (hb : 1 < b) :
-    Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 (0:ℝ)) := by
+    Tendsto (b ^ · : ℝ → ℝ) atBot (𝓝 (0 : ℝ)) := by
   simp_rw [Real.rpow_def_of_pos (by positivity : 0 < b)]
   refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_pos ?_).mpr tendsto_id
   exact (log_pos_iff (by positivity)).mpr <| by aesop

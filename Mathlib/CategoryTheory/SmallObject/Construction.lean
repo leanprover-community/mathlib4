@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
 # Construction for the small object argument
@@ -111,10 +111,10 @@ noncomputable abbrev functorObj : C :=
   pushout (functorObjTop f πX) (functorObjLeft f πX)
 
 /-- The canonical morphism `X ⟶ functorObj f πX`. -/
-noncomputable abbrev ιFunctorObj : X ⟶ functorObj f πX := pushout.inl
+noncomputable abbrev ιFunctorObj : X ⟶ functorObj f πX := pushout.inl _ _
 
 /-- The canonical morphism `∐ (functorObjTgtFamily f πX) ⟶ functorObj f πX`. -/
-noncomputable abbrev ρFunctorObj : ∐ functorObjTgtFamily f πX ⟶ functorObj f πX := pushout.inr
+noncomputable abbrev ρFunctorObj : ∐ functorObjTgtFamily f πX ⟶ functorObj f πX := pushout.inr _ _
 
 @[reassoc]
 lemma functorObj_comm :

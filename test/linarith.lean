@@ -704,3 +704,23 @@ example {x1 x2 x3 x4 x5 x6 x7 x8 : ℚ} :
     x7 - x5 < 0 → False := by
   intros
   linarith (config := { oracle := .fourierMotzkin })
+
+section findSquares
+
+private abbrev wrapped (z : ℤ) : ℤ := z
+/-- the `findSquares` preprocessor can look through reducible defeq -/
+example (x : ℤ) : 0 ≤ x * wrapped x := by nlinarith
+
+private def tightlyWrapped (z : ℤ) : ℤ := z
+/--
+error: linarith failed to find a contradiction
+case a
+x : ℤ
+a✝ : 0 > x * tightlyWrapped x
+⊢ False
+failed
+-/
+#guard_msgs in
+example (x : ℤ) : 0 ≤ x * tightlyWrapped x := by nlinarith
+
+end findSquares

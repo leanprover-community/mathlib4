@@ -62,15 +62,15 @@ lemma not_mem_primesBelow (n : ℕ) : n ∉ primesBelow n :=
 
 /-- `factoredNumbers s`, for a finite set `s` of natural numbers, is the set of positive natural
 numbers all of whose prime factors are in `s`. -/
-def factoredNumbers (s : Finset ℕ) : Set ℕ := {m | m ≠ 0 ∧ ∀ p ∈ factors m, p ∈ s}
+def factoredNumbers (s : Finset ℕ) : Set ℕ := {m | m ≠ 0 ∧ ∀ p ∈ primeFactorsList m, p ∈ s}
 
 lemma mem_factoredNumbers {s : Finset ℕ} {m : ℕ} :
-    m ∈ factoredNumbers s ↔ m ≠ 0 ∧ ∀ p ∈ factors m, p ∈ s :=
+    m ∈ factoredNumbers s ↔ m ≠ 0 ∧ ∀ p ∈ primeFactorsList m, p ∈ s :=
   Iff.rfl
 
 /-- Membership in `Nat.factoredNumbers n` is decidable. -/
 instance (s : Finset ℕ) : DecidablePred (· ∈ factoredNumbers s) :=
-  inferInstanceAs <| DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ factors m, p ∈ s}
+  inferInstanceAs <| DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ primeFactorsList m, p ∈ s}
 
 /-- A number that divides an `s`-factored number is itself `s`-factored. -/
 lemma mem_factoredNumbers_of_dvd {s : Finset ℕ} {m k : ℕ} (h : m ∈ factoredNumbers s)
@@ -79,14 +79,14 @@ lemma mem_factoredNumbers_of_dvd {s : Finset ℕ} {m k : ℕ} (h : m ∈ factore
   obtain ⟨h₁, h₂⟩ := h
   have hk := ne_zero_of_dvd_ne_zero h₁ h'
   refine ⟨hk, fun p hp ↦ h₂ p ?_⟩
-  rw [mem_factors <| by assumption] at hp ⊢
+  rw [mem_primeFactorsList <| by assumption] at hp ⊢
   exact ⟨hp.1, hp.2.trans h'⟩
 
 /-- `m` is `s`-factored if and only if `m` is nonzero and all prime divisors `≤ m` of `m`
 are in `s`. -/
 lemma mem_factoredNumbers_iff_forall_le {s : Finset ℕ} {m : ℕ} :
     m ∈ factoredNumbers s ↔ m ≠ 0 ∧ ∀ p ≤ m, p.Prime → p ∣ m → p ∈ s := by
-  simp_rw [mem_factoredNumbers, mem_factors']
+  simp_rw [mem_factoredNumbers, mem_primeFactorsList']
   exact ⟨fun ⟨H₀, H₁⟩ ↦ ⟨H₀, fun p _ hp₂ hp₃ ↦ H₁ p ⟨hp₂, hp₃, H₀⟩⟩,
     fun ⟨H₀, H₁⟩ ↦
       ⟨H₀, fun p ⟨hp₁, hp₂, hp₃⟩ ↦ H₁ p (le_of_dvd (Nat.pos_of_ne_zero hp₃) hp₂) hp₁ hp₂⟩⟩
@@ -111,7 +111,7 @@ lemma primeFactors_subset_of_mem_factoredNumbers {s : Finset ℕ} {m : ℕ}
     (hm : m ∈ factoredNumbers s) :
     m.primeFactors ⊆ s := by
   rw [mem_factoredNumbers] at hm
-  exact fun n hn ↦ hm.2 n (mem_primeFactors_iff_mem_factors.mp hn)
+  exact fun n hn ↦ hm.2 n (mem_primeFactors_iff_mem_primeFactorsList.mp hn)
 
 /-- If `m ≠ 0` and the `Finset` of prime factors of `m` is contained in `s`, then `m`
 is `s`-factored. -/
@@ -119,7 +119,7 @@ lemma mem_factoredNumbers_of_primeFactors_subset {s : Finset ℕ} {m : ℕ} (hm 
     (hp : m.primeFactors ⊆ s) :
     m ∈ factoredNumbers s := by
   rw [mem_factoredNumbers]
-  exact ⟨hm, fun p hp' ↦ hp <| mem_primeFactors_iff_mem_factors.mpr hp'⟩
+  exact ⟨hm, fun p hp' ↦ hp <| mem_primeFactors_iff_mem_primeFactorsList.mpr hp'⟩
 
 /-- `m` is `s`-factored if and only if `m ≠ 0` and its `Finset` of prime factors
 is contained in `s`. -/
@@ -132,8 +132,8 @@ lemma mem_factoredNumbers_iff_primeFactors_subset {s : Finset ℕ} {m : ℕ} :
 lemma factoredNumbers_empty : factoredNumbers ∅ = {1} := by
   ext m
   simp only [mem_factoredNumbers, Finset.not_mem_empty, ← List.eq_nil_iff_forall_not_mem,
-    factors_eq_nil, and_or_left, not_and_self_iff, ne_and_eq_iff_right zero_ne_one, false_or,
-    Set.mem_singleton_iff]
+    primeFactorsList_eq_nil, and_or_left, not_and_self_iff, ne_and_eq_iff_right zero_ne_one,
+    false_or, Set.mem_singleton_iff]
 
 /-- The product of two `s`-factored numbers is again `s`-factored. -/
 lemma mul_mem_factoredNumbers {s : Finset ℕ} {m n : ℕ} (hm : m ∈ factoredNumbers s)
@@ -146,13 +146,13 @@ lemma mul_mem_factoredNumbers {s : Finset ℕ} {m n : ℕ} (hm : m ∈ factoredN
 
 /-- The product of the prime factors of `n` that are in `s` is an `s`-factored number. -/
 lemma prod_mem_factoredNumbers (s : Finset ℕ) (n : ℕ) :
-    (n.factors.filter (· ∈ s)).prod ∈ factoredNumbers s := by
-  have h₀ : (n.factors.filter (· ∈ s)).prod ≠ 0 :=
-    List.prod_ne_zero fun h ↦ (pos_of_mem_factors (List.mem_of_mem_filter h)).false
+    (n.primeFactorsList.filter (· ∈ s)).prod ∈ factoredNumbers s := by
+  have h₀ : (n.primeFactorsList.filter (· ∈ s)).prod ≠ 0 :=
+    List.prod_ne_zero fun h ↦ (pos_of_mem_primeFactorsList (List.mem_of_mem_filter h)).false
   refine ⟨h₀, fun p hp ↦ ?_⟩
-  obtain ⟨H₁, H₂⟩ := (mem_factors h₀).mp hp
+  obtain ⟨H₁, H₂⟩ := (mem_primeFactorsList h₀).mp hp
   simpa only [decide_eq_true_eq] using List.of_mem_filter <| mem_list_primes_of_dvd_prod H₁.prime
-    (fun _ hq ↦ (prime_of_mem_factors (List.mem_of_mem_filter hq)).prime) H₂
+    (fun _ hq ↦ (prime_of_mem_primeFactorsList (List.mem_of_mem_filter hq)).prime) H₂
 
 /-- The sets of `s`-factored and of `s ∪ {N}`-factored numbers are the same when `N` is not prime.
 See `Nat.equivProdNatFactoredNumbers` for when `N` is prime. -/
@@ -161,7 +161,8 @@ lemma factoredNumbers_insert (s : Finset ℕ) {N : ℕ} (hN : ¬ N.Prime) :
   ext m
   refine ⟨fun hm ↦ ⟨hm.1, fun p hp ↦ ?_⟩,
           fun hm ↦ ⟨hm.1, fun p hp ↦ Finset.mem_insert_of_mem <| hm.2 p hp⟩⟩
-  exact Finset.mem_of_mem_insert_of_ne (hm.2 p hp) fun h ↦ hN <| h ▸ prime_of_mem_factors hp
+  exact Finset.mem_of_mem_insert_of_ne (hm.2 p hp)
+    fun h ↦ hN <| h ▸ prime_of_mem_primeFactorsList hp
 
 @[gcongr] lemma factoredNumbers_mono {s t : Finset ℕ} (hst : s ≤ t) :
     factoredNumbers s ⊆ factoredNumbers t :=
@@ -177,8 +178,8 @@ lemma factoredNumbers_compl {N : ℕ} {s : Finset ℕ} (h : primesBelow N ≤ s)
   obtain ⟨p, hp₁, hp₂⟩ := hn.1 hn.2
   have : N ≤ p := by
     contrapose! hp₂
-    exact h <| mem_primesBelow.mpr ⟨hp₂, prime_of_mem_factors hp₁⟩
-  exact this.trans <| le_of_mem_factors hp₁
+    exact h <| mem_primesBelow.mpr ⟨hp₂, prime_of_mem_primeFactorsList hp₁⟩
+  exact this.trans <| le_of_mem_primeFactorsList hp₁
 
 /-- If `p` is a prime and `n` is `s`-factored, then every product `p^e * n`
 is `s ∪ {p}`-factored. -/
@@ -187,8 +188,8 @@ lemma pow_mul_mem_factoredNumbers {s : Finset ℕ} {p n : ℕ} (hp : p.Prime) (e
     p ^ e * n ∈ factoredNumbers (insert p s) := by
   have hp' := pow_ne_zero e hp.ne_zero
   refine ⟨mul_ne_zero hp' hn.1, fun q hq ↦ ?_⟩
-  rcases (mem_factors_mul hp' hn.1).mp hq with H | H
-  · rw [mem_factors hp'] at H
+  rcases (mem_primeFactorsList_mul hp' hn.1).mp hq with H | H
+  · rw [mem_primeFactorsList hp'] at H
     rw [(prime_dvd_prime_iff_eq H.1 hp).mp <| H.1.dvd_of_dvd_pow H.2]
     exact Finset.mem_insert_self p s
   · exact Finset.mem_insert_of_mem <| hn.2 _ H
@@ -197,7 +198,7 @@ lemma pow_mul_mem_factoredNumbers {s : Finset ℕ} {p n : ℕ} (hp : p.Prime) (e
 lemma Prime.factoredNumbers_coprime {s : Finset ℕ} {p n : ℕ} (hp : p.Prime) (hs : p ∉ s)
     (hn : n ∈ factoredNumbers s) :
     Nat.Coprime p n := by
-  rw [hp.coprime_iff_not_dvd, ← mem_factors_iff_dvd hn.1 hp]
+  rw [hp.coprime_iff_not_dvd, ← mem_primeFactorsList_iff_dvd hn.1 hp]
   exact fun H ↦ hs <| hn.2 p H
 
 /-- If `f : ℕ → F` is multiplicative on coprime arguments, `p ∉ s` is a prime and `m`
@@ -212,11 +213,11 @@ open List Perm in
 /-- We establish the bijection from `ℕ × factoredNumbers s` to `factoredNumbers (s ∪ {p})`
 given by `(e, n) ↦ p^e * n` when `p ∉ s` is a prime. See `Nat.factoredNumbers_insert` for
 when `p` is not prime. -/
-def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp: p.Prime) (hs : p ∉ s) :
+def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : p ∉ s) :
     ℕ × factoredNumbers s ≃ factoredNumbers (insert p s) where
   toFun := fun ⟨e, n⟩ ↦ ⟨p ^ e * n, pow_mul_mem_factoredNumbers hp e n.2⟩
   invFun := fun ⟨m, _⟩  ↦ (m.factorization p,
-                            ⟨(m.factors.filter (· ∈ s)).prod, prod_mem_factoredNumbers ..⟩)
+                            ⟨(m.primeFactorsList.filter (· ∈ s)).prod, prod_mem_factoredNumbers ..⟩)
   left_inv := by
     rintro ⟨e, m, hm₀, hm⟩
     simp (config := { etaStruct := .all }) only
@@ -226,36 +227,37 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp: p.Prime) (hs : p
       simp only [factorization_pow, Finsupp.coe_add, Finsupp.coe_smul, nsmul_eq_mul,
         Pi.natCast_def, cast_id, Pi.add_apply, Pi.mul_apply, hp.factorization_self,
         mul_one, add_right_eq_self]
-      rw [← factors_count_eq, count_eq_zero]
+      rw [← primeFactorsList_count_eq, count_eq_zero]
       exact fun H ↦ hs (hm p H)
-    · nth_rewrite 2 [← prod_factors hm₀]
-      refine prod_eq <| (filter _ <| perm_factors_mul (pow_ne_zero e hp.ne_zero) hm₀).trans ?_
-      rw [filter_append, hp.factors_pow,
+    · nth_rewrite 2 [← prod_primeFactorsList hm₀]
+      refine prod_eq <|
+        (filter _ <| perm_primeFactorsList_mul (pow_ne_zero e hp.ne_zero) hm₀).trans ?_
+      rw [filter_append, hp.primeFactorsList_pow,
           filter_eq_nil.mpr fun q hq ↦ by rw [mem_replicate] at hq; simp [hq.2, hs],
           nil_append, filter_eq_self.mpr fun q hq ↦ by simp only [hm q hq, decide_True]]
   right_inv := by
     rintro ⟨m, hm₀, hm⟩
     simp only [Set.coe_setOf, Set.mem_setOf_eq, Subtype.mk.injEq]
-    rw [← factors_count_eq, ← prod_replicate, ← prod_append]
-    nth_rewrite 3 [← prod_factors hm₀]
-    have : m.factors.filter (· = p) = m.factors.filter (¬ · ∈ s) := by
-      refine (filter_congr' fun q hq ↦ ?_).symm
+    rw [← primeFactorsList_count_eq, ← prod_replicate, ← prod_append]
+    nth_rewrite 3 [← prod_primeFactorsList hm₀]
+    have : m.primeFactorsList.filter (· = p) = m.primeFactorsList.filter (¬ · ∈ s) := by
+      refine (filter_congr fun q hq ↦ ?_).symm
       simp only [decide_not, Bool.not_eq_true', decide_eq_false_iff_not, decide_eq_true_eq]
       rcases Finset.mem_insert.mp <| hm _ hq with h | h
-      · simp only [h, hs, not_false_eq_true]
-      · simp only [h, not_true_eq_false, false_iff]
+      · simp only [h, hs, decide_False, Bool.not_false, decide_True]
+      · simp only [h, decide_True, Bool.not_true, false_eq_decide_iff]
         exact fun H ↦ hs <| H ▸ h
-    refine prod_eq <| (filter_eq m.factors p).symm ▸ this ▸ perm_append_comm.trans ?_
+    refine prod_eq <| (filter_eq m.primeFactorsList p).symm ▸ this ▸ perm_append_comm.trans ?_
     simp only [decide_not]
-    exact filter_append_perm (· ∈ s) (factors m)
+    exact filter_append_perm (· ∈ s) (primeFactorsList m)
 
 @[simp]
-lemma equivProdNatFactoredNumbers_apply {s : Finset ℕ} {p e m : ℕ} (hp: p.Prime) (hs : p ∉ s)
+lemma equivProdNatFactoredNumbers_apply {s : Finset ℕ} {p e m : ℕ} (hp : p.Prime) (hs : p ∉ s)
     (hm : m ∈ factoredNumbers s) :
     equivProdNatFactoredNumbers hp hs (e, ⟨m, hm⟩) = p ^ e * m := rfl
 
 @[simp]
-lemma equivProdNatFactoredNumbers_apply' {s : Finset ℕ} {p : ℕ} (hp: p.Prime) (hs : p ∉ s)
+lemma equivProdNatFactoredNumbers_apply' {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : p ∉ s)
     (x : ℕ × factoredNumbers s) :
     equivProdNatFactoredNumbers hp hs x = p ^ x.1 * x.2 := rfl
 
@@ -266,15 +268,16 @@ lemma equivProdNatFactoredNumbers_apply' {s : Finset ℕ} {p : ℕ} (hp: p.Prime
 
 /-- `smoothNumbers n` is the set of *`n`-smooth positive natural numbers*, i.e., the
 positive natural numbers all of whose prime factors are less than `n`. -/
-def smoothNumbers (n : ℕ) : Set ℕ := {m | m ≠ 0 ∧ ∀ p ∈ factors m, p < n}
+def smoothNumbers (n : ℕ) : Set ℕ := {m | m ≠ 0 ∧ ∀ p ∈ primeFactorsList m, p < n}
 
-lemma mem_smoothNumbers {n m : ℕ} : m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ p ∈ factors m, p < n :=
+lemma mem_smoothNumbers {n m : ℕ} : m ∈ smoothNumbers n ↔ m ≠ 0 ∧ ∀ p ∈ primeFactorsList m, p < n :=
   Iff.rfl
 
 /-- The `n`-smooth numbers agree with the `Finset.range n`-factored numbers. -/
 lemma smoothNumbers_eq_factoredNumbers (n : ℕ) :
     smoothNumbers n = factoredNumbers (Finset.range n) := by
-  simp only [smoothNumbers, ne_eq, mem_factors', and_imp, factoredNumbers, Finset.mem_range]
+  simp only [smoothNumbers, ne_eq, mem_primeFactorsList', and_imp, factoredNumbers,
+    Finset.mem_range]
 
 /-- The `n`-smooth numbers agree with the `primesBelow n`-factored numbers. -/
 lemma smmoothNumbers_eq_factoredNumbers_primesBelow (n : ℕ) :
@@ -286,7 +289,7 @@ lemma smmoothNumbers_eq_factoredNumbers_primesBelow (n : ℕ) :
 
 /-- Membership in `Nat.smoothNumbers n` is decidable. -/
 instance (n : ℕ) : DecidablePred (· ∈ smoothNumbers n) :=
-  inferInstanceAs <| DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ factors m, p < n}
+  inferInstanceAs <| DecidablePred fun x ↦ x ∈ {m | m ≠ 0 ∧ ∀ p ∈ primeFactorsList m, p < n}
 
 /-- A number that divides an `n`-smooth number is itself `n`-smooth. -/
 lemma mem_smoothNumbers_of_dvd {n m k : ℕ} (h : m ∈ smoothNumbers n) (h' : k ∣ m) :
@@ -337,7 +340,8 @@ theorem mul_mem_smoothNumbers {m₁ m₂ n : ℕ}
   exact mul_mem_factoredNumbers hm1 hm2
 
 /-- The product of the prime factors of `n` that are less than `N` is an `N`-smooth number. -/
-lemma prod_mem_smoothNumbers (n N : ℕ) : (n.factors.filter (· < N)).prod ∈ smoothNumbers N := by
+lemma prod_mem_smoothNumbers (n N : ℕ) :
+    (n.primeFactorsList.filter (· < N)).prod ∈ smoothNumbers N := by
   simp only [smoothNumbers_eq_factoredNumbers, ← Finset.mem_range, prod_mem_factoredNumbers]
 
 /-- The sets of `N`-smooth and of `(N+1)`-smooth numbers are the same when `N` is not prime.
@@ -355,7 +359,7 @@ lemma smoothNumbers_succ {N : ℕ} (hN : ¬ N.Prime) : N.succ.smoothNumbers = N.
 /-- All `m`, `0 < m < n` are `n`-smooth numbers -/
 lemma mem_smoothNumbers_of_lt {m n : ℕ} (hm : 0 < m) (hmn : m < n) : m ∈ n.smoothNumbers :=
   smoothNumbers_eq_factoredNumbers _ ▸ ⟨not_eq_zero_of_lt hm,
-  fun _ h => Finset.mem_range.mpr <| lt_of_le_of_lt (le_of_mem_factors h) hmn⟩
+  fun _ h => Finset.mem_range.mpr <| lt_of_le_of_lt (le_of_mem_primeFactorsList h) hmn⟩
 
 /-- The non-zero non-`N`-smooth numbers are `≥ N`. -/
 lemma smoothNumbers_compl (N : ℕ) : (N.smoothNumbers)ᶜ \ {0} ⊆ {n | N ≤ n} := by
@@ -369,8 +373,8 @@ lemma pow_mul_mem_smoothNumbers {p n : ℕ} (hp : p ≠ 0) (e : ℕ) (hn : n ∈
   have : NoZeroDivisors ℕ := inferInstance -- this is needed twice --> speed-up
   have hp' := pow_ne_zero e hp
   refine ⟨mul_ne_zero hp' hn.1, fun q hq ↦ ?_⟩
-  rcases (mem_factors_mul hp' hn.1).mp hq with H | H
-  · rw [mem_factors hp'] at H
+  rcases (mem_primeFactorsList_mul hp' hn.1).mp hq with H | H
+  · rw [mem_primeFactorsList hp'] at H
     exact lt_succ.mpr <| le_of_dvd hp.bot_lt <| H.1.dvd_of_dvd_pow H.2
   · exact (hn.2 q H).trans <| lt_succ_self p
 
@@ -392,18 +396,18 @@ open List Perm Equiv in
 /-- We establish the bijection from `ℕ × smoothNumbers p` to `smoothNumbers (p+1)`
 given by `(e, n) ↦ p^e * n` when `p` is a prime. See `Nat.smoothNumbers_succ` for
 when `p` is not prime. -/
-def equivProdNatSmoothNumbers {p : ℕ} (hp: p.Prime) :
+def equivProdNatSmoothNumbers {p : ℕ} (hp : p.Prime) :
     ℕ × smoothNumbers p ≃ smoothNumbers p.succ :=
   ((prodCongrRight fun _ ↦ setCongr <| smoothNumbers_eq_factoredNumbers p).trans <|
     equivProdNatFactoredNumbers hp Finset.not_mem_range_self).trans <|
     setCongr <| (smoothNumbers_eq_factoredNumbers p.succ) ▸ Finset.range_succ ▸ rfl
 
 @[simp]
-lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp: p.Prime) (hm : m ∈ p.smoothNumbers) :
+lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp : p.Prime) (hm : m ∈ p.smoothNumbers) :
     equivProdNatSmoothNumbers hp (e, ⟨m, hm⟩) = p ^ e * m := rfl
 
 @[simp]
-lemma equivProdNatSmoothNumbers_apply' {p : ℕ} (hp: p.Prime) (x : ℕ × p.smoothNumbers) :
+lemma equivProdNatSmoothNumbers_apply' {p : ℕ} (hp : p.Prime) (x : ℕ × p.smoothNumbers) :
     equivProdNatSmoothNumbers hp x = p ^ x.1 * x.2 := rfl
 
 
@@ -445,7 +449,7 @@ lemma eq_prod_primes_mul_sq_of_mem_smoothNumbers {n k : ℕ} (h : n ∈ smoothNu
     ∃ s ∈ k.primesBelow.powerset, ∃ m, n = m ^ 2 * (s.prod id) := by
   obtain ⟨l, m, H₁, H₂⟩ := sq_mul_squarefree n
   have hl : l ∈ smoothNumbers k := mem_smoothNumbers_of_dvd h (Dvd.intro_left (m ^ 2) H₁)
-  refine ⟨l.factors.toFinset, ?_,  m, ?_⟩
+  refine ⟨l.primeFactorsList.toFinset, ?_,  m, ?_⟩
   · simp only [toFinset_factors, Finset.mem_powerset]
     refine fun p hp ↦ mem_primesBelow.mpr ⟨?_, (mem_primeFactors.mp hp).1⟩
     rw [mem_primeFactors] at hp

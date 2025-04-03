@@ -61,6 +61,7 @@ def GradedAlgebra.liftι :
   lift R ⟨by apply GradedAlgebra.ι R M, GradedAlgebra.ι_sq_zero R M⟩
 #align exterior_algebra.graded_algebra.lift_ι ExteriorAlgebra.GradedAlgebra.liftι
 
+set_option linter.deprecated false in
 theorem GradedAlgebra.liftι_eq (i : ℕ) (x : ⋀[R]^i M) :
     GradedAlgebra.liftι R M x = DirectSum.of (fun i => ⋀[R]^i M) i x := by
   cases' x with x hx

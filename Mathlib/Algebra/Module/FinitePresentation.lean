@@ -297,7 +297,7 @@ lemma Module.FinitePresentation.isLocalizedModule_map
     have := (Module.End_isUnit_iff _).mp (IsLocalizedModule.map_units (S := S) (f := g) s)
     constructor
     · exact fun _ _ e ↦ LinearMap.ext fun m ↦ this.left (LinearMap.congr_fun e m)
-    · intro h;
+    · intro h
       use ((IsLocalizedModule.map_units (S := S) (f := g) s).unit⁻¹).1 ∘ₗ h
       ext x
       exact Module.End_isUnit_apply_inv_apply_of_isUnit

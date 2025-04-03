@@ -359,7 +359,7 @@ theorem iUnion_image_inf_right : ⋃ b ∈ t, (· ⊓ b) '' s = s ⊼ t :=
 @[simp]
 theorem image_inf_prod (s t : Set α) : Set.image2 (fun x x_1 => x ⊓ x_1) s t = s ⊼ t := by
   have : (s ×ˢ t).image (uncurry (· ⊓ ·)) = Set.image2 (fun x x_1 => x ⊓ x_1) s t := by
-    simp only [@ge_iff_le, @Set.image_uncurry_prod]
+    simp only [@@Set.image_uncurry_prod]
   rw [← this]
   exact image_uncurry_prod _ _ _
 #align set.image_inf_prod Set.image_inf_prod

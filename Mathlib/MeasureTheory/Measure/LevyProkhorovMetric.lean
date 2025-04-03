@@ -28,7 +28,7 @@ import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
   probability measures on a separable space coincides with the topology of convergence in
   distribution, and in particular convergence in distribution is then pseudometrizable.
 
-## Todo
+## TODO
 
 * Show that in Borel spaces, the Lévy-Prokhorov distance is a metric; not just a pseudometric.
 
@@ -414,7 +414,7 @@ lemma LevyProkhorov.continuous_toProbabilityMeasure :
     filter_upwards [key (aux _), ε_of_room <| Iio_mem_nhds <| half_pos <|
                       Real.mul_pos (inv_pos.mpr norm_f_pos) δ_pos]
       with n hn hn'
-    simp only [gt_iff_lt, eventually_atTop, ge_iff_le, ne_eq, mem_map,
+    simp only [gt_iff_lt, eventually_atTop, ne_eq, mem_map,
                mem_atTop_sets, mem_preimage, mem_Iio] at *
     specialize εs_pos n
     have bound := BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt
@@ -439,7 +439,7 @@ lemma LevyProkhorov.continuous_toProbabilityMeasure :
       simp only [Ps, P, LevyProkhorov.toProbabilityMeasure]
     · exact eventually_of_forall f_nn
   · simp only [IsCoboundedUnder, IsCobounded, eventually_map, eventually_atTop,
-               ge_iff_le, forall_exists_index]
+               forall_exists_index]
     refine ⟨0, fun a i hia ↦ le_trans (integral_nonneg f_nn) (hia i le_rfl)⟩
 
 /-- The topology of the Lévy-Prokhorov metric is at least as fine as the topology of convergence in

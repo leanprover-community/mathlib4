@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Polynomial.GroupRingAction
+import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.Algebra.Ring.Action.Invariant
 import Mathlib.FieldTheory.Normal
 import Mathlib.FieldTheory.Separable
@@ -178,7 +179,7 @@ def minpoly : Polynomial (FixedPoints.subfield G F) :=
 namespace minpoly
 
 theorem monic : (minpoly G F x).Monic := by
-  simp only [minpoly, Polynomial.monic_toSubring];
+  simp only [minpoly, Polynomial.monic_toSubring]
   exact prodXSubSMul.monic G F x
 #align fixed_points.minpoly.monic FixedPoints.minpoly.monic
 
@@ -285,14 +286,15 @@ instance normal : Normal (FixedPoints.subfield G F) F where
       exact Polynomial.splits_prod _ fun _ _ => Polynomial.splits_X_sub_C _
 #align fixed_points.normal FixedPoints.normal
 
-instance separable : IsSeparable (FixedPoints.subfield G F) F :=
+instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F :=
   ⟨fun x => by
     cases nonempty_fintype G
     -- this was a plain rw when we were using unbundled subrings
-    erw [← minpoly_eq_minpoly, ← Polynomial.separable_map (FixedPoints.subfield G F).subtype,
-      minpoly, Polynomial.map_toSubring _ (subfield G F).toSubring]
+    erw [IsSeparable, ← minpoly_eq_minpoly,
+      ← Polynomial.separable_map (FixedPoints.subfield G F).subtype, minpoly,
+      Polynomial.map_toSubring _ (subfield G F).toSubring]
     exact Polynomial.separable_prod_X_sub_C_iff.2 (injective_ofQuotientStabilizer G x)⟩
-#align fixed_points.separable FixedPoints.separable
+#align fixed_points.separable FixedPoints.isSeparable
 
 instance : FiniteDimensional (subfield G F) F := by
   cases nonempty_fintype G

@@ -72,7 +72,7 @@ theorem nhdsWithin_eq (a : α) (s : Set α) :
   ((nhds_basis_opens a).inf_principal s).eq_biInf
 #align nhds_within_eq nhdsWithin_eq
 
-theorem nhdsWithin_univ (a : α) : 𝓝[Set.univ] a = 𝓝 a := by
+@[simp] lemma nhdsWithin_univ (a : α) : 𝓝[Set.univ] a = 𝓝 a := by
   rw [nhdsWithin, principal_univ, inf_top_eq]
 #align nhds_within_univ nhdsWithin_univ
 
@@ -739,11 +739,6 @@ theorem nhdsWithin_le_comap {x : α} {s : Set α} {f : α → β} (ctsf : Contin
   ctsf.tendsto_nhdsWithin_image.le_comap
 #align nhds_within_le_comap nhdsWithin_le_comap
 
-@[simp]
-theorem comap_nhdsWithin_range {α} (f : α → β) (y : β) : comap f (𝓝[range f] y) = comap f (𝓝 y) :=
-  comap_inf_principal_range
-#align comap_nhds_within_range comap_nhdsWithin_range
-
 theorem ContinuousWithinAt.mono {f : α → β} {s t : Set α} {x : α} (h : ContinuousWithinAt f t x)
     (hs : s ⊆ t) : ContinuousWithinAt f s x :=
   h.mono_left (nhdsWithin_mono x hs)
@@ -1194,6 +1189,11 @@ theorem OpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : OpenEmbed
   rw [inter_assoc, inter_self]
 #align open_embedding.map_nhds_within_preimage_eq OpenEmbedding.map_nhdsWithin_preimage_eq
 
+theorem QuotientMap.continuousOn_isOpen_iff {f : α → β} {g : β → γ} (h : QuotientMap f) {s : Set β}
+    (hs : IsOpen s) : ContinuousOn g s ↔ ContinuousOn (g ∘ f) (f ⁻¹' s) := by
+  simp only [continuousOn_iff_continuous_restrict, (h.restrictPreimage_isOpen hs).continuous_iff]
+  rfl
+
 theorem continuousWithinAt_of_not_mem_closure {f : α → β} {s : Set α} {x : α} (hx : x ∉ closure s) :
     ContinuousWithinAt f s x := by
   rw [mem_closure_iff_nhdsWithin_neBot, not_neBot] at hx
@@ -1417,3 +1417,5 @@ theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} 
       ContinuousWithinAt (Prod.fst ∘ f) s x ∧ ContinuousWithinAt (Prod.snd ∘ f) s x :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prod h2⟩
 #align continuous_within_at_prod_iff continuousWithinAt_prod_iff
+
+end Pi

@@ -41,7 +41,13 @@ structure Opposite :=
 #align opposite.unop Opposite.unop
 #align opposite.op Opposite.op
 
--- Porting note: pp_nodot has not been implemented for Opposite.op
+attribute [pp_nodot] Opposite.unop
+
+/-- Make sure that `Opposite.op a` is pretty-printed as `op a` instead of `{ unop := a }` or
+`⟨a⟩`. -/
+@[app_unexpander Opposite.op]
+protected def Opposite.unexpander_op : Lean.PrettyPrinter.Unexpander
+  | s => pure s
 
 @[inherit_doc]
 notation:max -- Use a high right binding power (like that of postfix ⁻¹) so that, for example,

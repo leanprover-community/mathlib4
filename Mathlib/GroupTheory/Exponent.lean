@@ -3,8 +3,6 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
-import Mathlib.Data.ZMod.Quotient
-import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
@@ -467,12 +465,12 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   obtain ⟨t, ht⟩ := hne.csSup_mem hfin
   use t
   apply Nat.dvd_antisymm (order_dvd_exponent _)
-  refine Nat.dvd_of_factors_subperm he ?_
+  refine Nat.dvd_of_primeFactorsList_subperm he ?_
   rw [List.subperm_ext_iff]
   by_contra! h
   obtain ⟨p, hp, hpe⟩ := h
-  replace hp := Nat.prime_of_mem_factors hp
-  simp only [Nat.factors_count_eq] at hpe
+  replace hp := Nat.prime_of_mem_primeFactorsList hp
+  simp only [Nat.primeFactorsList_count_eq] at hpe
   set k := (orderOf t).factorization p with hk
   obtain ⟨g, hg⟩ := hp.exists_orderOf_eq_pow_factorization_exponent G
   suffices orderOf t < orderOf (t ^ p ^ k * g) by
@@ -576,38 +574,6 @@ theorem Subgroup.pow_exponent_eq_one {H : Subgroup G} {g : G} (g_in_H : g ∈ H)
     g ^ Monoid.exponent H = 1 := exponent_toSubmonoid H ▸ Submonoid.pow_exponent_eq_one g_in_H
 
 end Group
-
-section CommGroup
-
-open Subgroup
-
-variable (G) [CommGroup G] [Group.FG G]
-
-@[to_additive]
-theorem card_dvd_exponent_pow_rank : Nat.card G ∣ Monoid.exponent G ^ Group.rank G := by
-  obtain ⟨S, hS1, hS2⟩ := Group.rank_spec G
-  rw [← hS1, ← Fintype.card_coe, ← Finset.card_univ, ← Finset.prod_const]
-  let f : (∀ g : S, zpowers (g : G)) →* G := noncommPiCoprod fun s t _ x y _ _ => mul_comm x _
-  have hf : Function.Surjective f := by
-    rw [← MonoidHom.range_top_iff_surjective, eq_top_iff, ← hS2, closure_le]
-    exact fun g hg => ⟨Pi.mulSingle ⟨g, hg⟩ ⟨g, mem_zpowers g⟩, noncommPiCoprod_mulSingle _ _⟩
-  replace hf := nat_card_dvd_of_surjective f hf
-  rw [Nat.card_pi] at hf
-  refine hf.trans (Finset.prod_dvd_prod_of_dvd _ _ fun g _ => ?_)
-  rw [Nat.card_zpowers]
-  exact Monoid.order_dvd_exponent (g : G)
-#align card_dvd_exponent_pow_rank card_dvd_exponent_pow_rank
-#align card_dvd_exponent_nsmul_rank card_dvd_exponent_nsmul_rank
-
-@[to_additive]
-theorem card_dvd_exponent_pow_rank' {n : ℕ} (hG : ∀ g : G, g ^ n = 1) :
-    Nat.card G ∣ n ^ Group.rank G :=
-  (card_dvd_exponent_pow_rank G).trans
-    (pow_dvd_pow_of_dvd (Monoid.exponent_dvd_of_forall_pow_eq_one hG) (Group.rank G))
-#align card_dvd_exponent_pow_rank' card_dvd_exponent_pow_rank'
-#align card_dvd_exponent_nsmul_rank' card_dvd_exponent_nsmul_rank'
-
-end CommGroup
 
 section PiProd
 

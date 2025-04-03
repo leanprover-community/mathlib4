@@ -1149,7 +1149,7 @@ lemma prod_apply (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel α γ) [I
   rw [prod_apply' _ _ _ hs, Measure.prod_apply hs]
   rfl
 
-lemma prod_const (μ : Measure α) [SFinite μ] (ν : Measure β) [SFinite ν] :
+lemma prod_const (μ : Measure β) [SFinite μ] (ν : Measure γ) [SFinite ν] :
     const α μ ×ₖ const α ν = const α (μ.prod ν) := by
   ext x
   rw [const_apply, prod_apply, const_apply, const_apply]

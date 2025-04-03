@@ -319,7 +319,7 @@ def comp (g : EsakiaHom β γ) (f : EsakiaHom α β) : EsakiaHom α γ :=
 
 @[simp]
 theorem coe_comp_continuousOrderHom (g : EsakiaHom β γ) (f : EsakiaHom α β) :
-    (g.comp f : α →Co γ) = (g: β →Co γ).comp f := rfl
+    (g.comp f : α →Co γ) = (g : β →Co γ).comp f := rfl
 #align esakia_hom.coe_comp_continuous_order_hom EsakiaHom.coe_comp_continuousOrderHom
 
 @[simp]

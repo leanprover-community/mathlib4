@@ -116,7 +116,7 @@ instance [IsAsymm ι r] [∀ i, IsAntisymm (α i) (s i)] : IsAntisymm _ (Lex r s
     · exact (asymm hij hji).elim
     · exact (irrefl _ hij).elim
     · exact (irrefl _ hji).elim
-    · exact ext rfl (heq_of_eq <| antisymm hab hba)⟩
+    · exact congr_arg (Sigma.mk _ ·) <| antisymm hab hba⟩
 
 instance [IsTrichotomous ι r] [∀ i, IsTotal (α i) (s i)] : IsTotal _ (Lex r s) :=
   ⟨by

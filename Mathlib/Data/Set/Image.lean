@@ -220,6 +220,10 @@ theorem _root_.Function.Injective.mem_set_image {f : α → β} (hf : Injective 
   ⟨fun ⟨_, hb, Eq⟩ => hf Eq ▸ hb, mem_image_of_mem f⟩
 #align function.injective.mem_set_image Function.Injective.mem_set_image
 
+lemma preimage_subset_of_surjOn {t : Set β} (hf : Injective f) (h : SurjOn f s t) :
+    f ⁻¹' t ⊆ s := fun _ hx ↦
+  hf.mem_set_image.1 $ h hx
+
 theorem forall_mem_image {f : α → β} {s : Set α} {p : β → Prop} :
     (∀ y ∈ f '' s, p y) ↔ ∀ ⦃x⦄, x ∈ s → p (f x) := by simp
 #align set.ball_image_iff Set.forall_mem_image

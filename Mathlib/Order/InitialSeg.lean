@@ -39,9 +39,6 @@ any `b' < b` also belongs to the range). The type of these embeddings from `r` t
 `InitialSeg r s`, and denoted by `r ≼i s`.
 -/
 
-set_option autoImplicit true
-
-
 variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
   {t : γ → γ → Prop}
 
@@ -89,7 +86,7 @@ theorem init (f : r ≼i s) {a : α} {b : β} : s b (f a) → ∃ a', f a' = b :
   f.init' _ _
 #align initial_seg.init InitialSeg.init
 
-theorem map_rel_iff (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
+theorem map_rel_iff {a b : α} (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 #align initial_seg.map_rel_iff InitialSeg.map_rel_iff
 
@@ -181,9 +178,8 @@ theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
           ⟨x, fun y =>
             ⟨IH _, fun ⟨a, e⟩ => by
               rw [← e];
-                exact
-                  (trichotomous _ _).resolve_right
-                    (not_or_of_not (hn a) fun hl => not_exists.2 hn (f.init hl))⟩⟩
+              exact (trichotomous _ _).resolve_right
+                (not_or_of_not (hn a) fun hl => not_exists.2 hn (f.init hl))⟩⟩
 #align initial_seg.eq_or_principal InitialSeg.eq_or_principal
 
 /-- Restrict the codomain of an initial segment -/

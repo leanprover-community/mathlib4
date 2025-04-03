@@ -387,6 +387,9 @@ instance id : Lifting L W L (𝟭 D) :=
 @[simps]
 instance compLeft (F : D ⥤ E) : Localization.Lifting L W (L ⋙ F) F := ⟨Iso.refl _⟩
 
+@[simp]
+lemma compLeft_iso (F : D ⥤ E) : Localization.Lifting.iso L W (L ⋙ F) F = Iso.refl _ := rfl
+
 /-- Given a localization functor `L : C ⥤ D` for `W : MorphismProperty C`,
 if `F₁' : D ⥤ E` lifts a functor `F₁ : C ⥤ D`, then a functor `F₂'` which
 is isomorphic to `F₁'` also lifts a functor `F₂` that is isomorphic to `F₁`.  -/
@@ -491,7 +494,7 @@ variable {X Y : C} (f g : X ⟶ Y)
 /-- The property that two morphisms become equal in the localized category. -/
 def AreEqualizedByLocalization : Prop := W.Q.map f = W.Q.map g
 
-lemma areEqualizedByLocalization_iff [L.IsLocalization W]:
+lemma areEqualizedByLocalization_iff [L.IsLocalization W] :
     AreEqualizedByLocalization W f g ↔ L.map f = L.map g := by
   dsimp [AreEqualizedByLocalization]
   constructor
@@ -512,7 +515,8 @@ lemma mk (L : C ⥤ D) [L.IsLocalization W] (h : L.map f = L.map g) :
     AreEqualizedByLocalization W f g :=
   (areEqualizedByLocalization_iff L W f g).2 h
 
-variable {W f g} (h : AreEqualizedByLocalization W f g)
+variable {W f g}
+variable (h : AreEqualizedByLocalization W f g)
 
 lemma map_eq (L : C ⥤ D) [L.IsLocalization W] : L.map f = L.map g :=
   (areEqualizedByLocalization_iff L W f g).1 h

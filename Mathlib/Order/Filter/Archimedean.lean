@@ -46,7 +46,7 @@ theorem tendsto_natCast_atTop_atTop [OrderedSemiring R] [Archimedean R] :
 alias tendsto_nat_cast_atTop_atTop := tendsto_natCast_atTop_atTop
 
 theorem Filter.Eventually.natCast_atTop [OrderedSemiring R] [Archimedean R] {p : R → Prop}
-    (h : ∀ᶠ (x:R) in atTop, p x) : ∀ᶠ (n:ℕ) in atTop, p n :=
+    (h : ∀ᶠ (x : R) in atTop, p x) : ∀ᶠ (n : ℕ) in atTop, p n :=
   tendsto_natCast_atTop_atTop.eventually h
 
 @[deprecated (since := "2024-04-17")]
@@ -91,14 +91,14 @@ theorem tendsto_intCast_atTop_atTop [StrictOrderedRing R] [Archimedean R] :
 alias tendsto_int_cast_atTop_atTop := tendsto_intCast_atTop_atTop
 
 theorem Filter.Eventually.intCast_atTop [StrictOrderedRing R] [Archimedean R] {p : R → Prop}
-    (h : ∀ᶠ (x:R) in atTop, p x) : ∀ᶠ (n:ℤ) in atTop, p n := by
+    (h : ∀ᶠ (x : R) in atTop, p x) : ∀ᶠ (n : ℤ) in atTop, p n := by
   rw [← Int.comap_cast_atTop (R := R)]; exact h.comap _
 
 @[deprecated (since := "2024-04-17")]
 alias Filter.Eventually.int_cast_atTop := Filter.Eventually.intCast_atTop
 
 theorem Filter.Eventually.intCast_atBot [StrictOrderedRing R] [Archimedean R] {p : R → Prop}
-    (h : ∀ᶠ (x:R) in atBot, p x) : ∀ᶠ (n:ℤ) in atBot, p n := by
+    (h : ∀ᶠ (x : R) in atBot, p x) : ∀ᶠ (n : ℤ) in atBot, p n := by
   rw [← Int.comap_cast_atBot (R := R)]; exact h.comap _
 
 @[deprecated (since := "2024-04-17")]
@@ -135,14 +135,14 @@ theorem tendsto_ratCast_atBot_iff [LinearOrderedField R] [Archimedean R] {f : α
 alias tendsto_rat_cast_atBot_iff := tendsto_ratCast_atBot_iff
 
 theorem Filter.Eventually.ratCast_atTop [LinearOrderedField R] [Archimedean R] {p : R → Prop}
-    (h : ∀ᶠ (x:R) in atTop, p x) : ∀ᶠ (n:ℚ) in atTop, p n := by
+    (h : ∀ᶠ (x : R) in atTop, p x) : ∀ᶠ (n : ℚ) in atTop, p n := by
   rw [← Rat.comap_cast_atTop (R := R)]; exact h.comap _
 
 @[deprecated (since := "2024-04-17")]
 alias Filter.Eventually.rat_cast_atTop := Filter.Eventually.ratCast_atTop
 
 theorem Filter.Eventually.ratCast_atBot [LinearOrderedField R] [Archimedean R] {p : R → Prop}
-    (h : ∀ᶠ (x:R) in atBot, p x) : ∀ᶠ (n:ℚ) in atBot, p n := by
+    (h : ∀ᶠ (x : R) in atBot, p x) : ∀ᶠ (n : ℚ) in atBot, p n := by
   rw [← Rat.comap_cast_atBot (R := R)]; exact h.comap _
 
 @[deprecated (since := "2024-04-17")]

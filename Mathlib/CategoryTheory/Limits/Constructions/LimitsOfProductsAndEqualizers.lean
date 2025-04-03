@@ -25,7 +25,7 @@ Similarly, if it has all finite products, and all equalizers, then it has all fi
 If a functor preserves all products and equalizers, then it preserves all limits.
 Similarly, if it preserves all finite products and equalizers, then it preserves all finite limits.
 
-# TODO
+## TODO
 
 Provide the dual results.
 Show the analogous results for functors which reflect or create (co)limits.

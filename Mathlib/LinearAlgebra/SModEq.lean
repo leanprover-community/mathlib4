@@ -92,10 +92,30 @@ theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := 
   simp_rw [Quotient.mk_smul, hxy]
 #align smodeq.smul SModEq.smul
 
+lemma nsmul (hxy : x ≡ y [SMOD U]) (n : ℕ) : n • x ≡ n • y [SMOD U] := by
+  rw [SModEq.def] at hxy ⊢
+  simp_rw [Quotient.mk_smul, hxy]
+
+lemma zsmul (hxy : x ≡ y [SMOD U]) (n : ℤ) : n • x ≡ n • y [SMOD U] := by
+  rw [SModEq.def] at hxy ⊢
+  simp_rw [Quotient.mk_smul, hxy]
+
 theorem mul {I : Ideal A} {x₁ x₂ y₁ y₂ : A} (hxy₁ : x₁ ≡ y₁ [SMOD I])
     (hxy₂ : x₂ ≡ y₂ [SMOD I]) : x₁ * x₂ ≡ y₁ * y₂ [SMOD I] := by
   simp only [SModEq.def, Ideal.Quotient.mk_eq_mk, map_mul] at hxy₁ hxy₂ ⊢
   rw [hxy₁, hxy₂]
+
+lemma pow {I : Ideal A} {x y : A} (n : ℕ) (hxy : x ≡ y [SMOD I]) :
+    x ^ n ≡ y ^ n [SMOD I] := by
+  simp only [SModEq.def, Ideal.Quotient.mk_eq_mk, map_pow] at hxy ⊢
+  rw [hxy]
+
+lemma neg (hxy : x ≡ y [SMOD U]) : - x ≡ - y [SMOD U] := by
+  simpa only [SModEq.def, Quotient.mk_neg, neg_inj]
+
+lemma sub (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ - x₂ ≡ y₁ - y₂ [SMOD U] := by
+  rw [SModEq.def] at hxy₁ hxy₂ ⊢
+  simp_rw [Quotient.mk_sub, hxy₁, hxy₂]
 
 theorem zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def, Submodule.Quotient.eq, sub_zero]
 #align smodeq.zero SModEq.zero

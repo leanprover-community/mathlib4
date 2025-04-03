@@ -724,3 +724,5 @@ theorem of_real_exp_ℝ_ℝ (r : ℝ) : ↑(exp r) = exp (r : ℂ) :=
 #align of_real_exp_ℝ_ℝ NormedSpace.of_real_exp_ℝ_ℝ
 
 end ScalarTower
+
+end NormedSpace

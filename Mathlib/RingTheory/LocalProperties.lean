@@ -377,6 +377,14 @@ theorem surjective_localRingHom_of_surjective (h : Function.Surjective f) (P : I
     (Submonoid.map_comap_eq_of_surjective h P.primeCompl).symm ▸ Localization.isLocalization
   localizationPreserves_surjective _ _ _ _ h
 
+lemma surjective_respectsIso : RingHom.RespectsIso (fun f ↦ Function.Surjective f) := by
+  apply RingHom.StableUnderComposition.respectsIso
+  · intro R S T _ _ _ f g hf hg
+    simp only [RingHom.coe_comp]
+    exact Function.Surjective.comp hg hf
+  · intro R S _ _ e
+    exact EquivLike.surjective e
+
 end Surjective
 
 section Finite
@@ -462,7 +470,7 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
   rw [Submodule.span_smul] at hx₁
   replace hx : _ ∈ y' • Submodule.span R (s : Set S') := Set.smul_mem_smul_set hx
   rw [hx₁] at hx
-  erw [← g.map_smul, ← Submodule.map_span (g : S →ₗ[R] S')] at hx
+  erw [← _root_.map_smul g, ← Submodule.map_span (g : S →ₗ[R] S')] at hx
   -- Since `x` falls in the span of `s` in `S'`, `y' • x : S` falls in the span of `s'` in `S'`.
   -- That is, there exists some `x' : S` in the span of `s'` in `S` and `x' = y' • x` in `S'`.
   -- Thus `a • (y' • x) = a • x' ∈ span s'` in `S` for some `a ∈ M`.

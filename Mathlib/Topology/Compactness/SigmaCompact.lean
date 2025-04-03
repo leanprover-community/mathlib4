@@ -207,7 +207,10 @@ theorem iUnion_compactCovering : ⋃ n, compactCovering X n = univ := by
   exact (Classical.choose_spec SigmaCompactSpace.exists_compact_covering).2
 #align Union_compact_covering iUnion_compactCovering
 
-@[mono]
+theorem iUnion_closure_compactCovering : ⋃ n, closure (compactCovering X n) = univ :=
+  eq_top_mono (iUnion_mono fun _ ↦ subset_closure) (iUnion_compactCovering X)
+
+@[mono, gcongr]
 theorem compactCovering_subset ⦃m n : ℕ⦄ (h : m ≤ n) : compactCovering X m ⊆ compactCovering X n :=
   monotone_accumulate h
 #align compact_covering_subset compactCovering_subset

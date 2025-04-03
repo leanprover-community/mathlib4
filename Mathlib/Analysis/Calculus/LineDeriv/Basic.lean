@@ -221,6 +221,11 @@ theorem HasLineDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasLineD
     Tendsto (fun (t : 𝕜) ↦ t⁻¹ • (f (x + t • v) - f x)) (𝓝[<] 0) (𝓝 f') :=
   h.tendsto_slope_zero.mono_left (nhds_left'_le_nhds_ne 0)
 
+theorem HasLineDerivWithinAt.hasLineDerivAt'
+    (h : HasLineDerivWithinAt 𝕜 f f' s x v) (hs : ∀ᶠ t : 𝕜 in 𝓝 0, x + t • v ∈ s) :
+    HasLineDerivAt 𝕜 f f' x v :=
+  h.hasDerivAt hs
+
 end Module
 
 section NormedSpace
@@ -241,10 +246,8 @@ theorem HasLineDerivWithinAt.mono_of_mem
 
 theorem HasLineDerivWithinAt.hasLineDerivAt
     (h : HasLineDerivWithinAt 𝕜 f f' s x v) (hs : s ∈ 𝓝 x) :
-    HasLineDerivAt 𝕜 f f' x v := by
-  rw [← hasLineDerivWithinAt_univ]
-  rw [← nhdsWithin_univ] at hs
-  exact h.mono_of_mem hs
+    HasLineDerivAt 𝕜 f f' x v :=
+  h.hasLineDerivAt' <| (Continuous.tendsto' (by fun_prop) 0 _ (by simp)).eventually hs
 
 theorem LineDifferentiableWithinAt.lineDifferentiableAt (h : LineDifferentiableWithinAt 𝕜 f s x v)
     (hs : s ∈ 𝓝 x) : LineDifferentiableAt 𝕜 f x v :=
@@ -409,7 +412,7 @@ then its line derivative at `x₀` in the direction `v` has norm bounded by `C *
 theorem HasLineDerivAt.le_of_lipschitz
     {f : E → F} {f' : F} {x₀ : E} (hf : HasLineDerivAt 𝕜 f f' x₀ v)
     {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖f'‖ ≤ C * ‖v‖ :=
-  hf.le_of_lipschitzOn univ_mem (lipschitzOn_univ.2 hlip)
+  hf.le_of_lipschitzOn univ_mem (lipschitzOnWith_univ.2 hlip)
 
 variable (𝕜)
 
@@ -441,7 +444,7 @@ its line derivative at `x₀` in the direction `v` has norm bounded by `C * ‖v
 Version using `lineDeriv`. -/
 theorem norm_lineDeriv_le_of_lipschitz {f : E → F} {x₀ : E}
     {C : ℝ≥0} (hlip : LipschitzWith C f) : ‖lineDeriv 𝕜 f x₀ v‖ ≤ C * ‖v‖ :=
-  norm_lineDeriv_le_of_lipschitzOn 𝕜 univ_mem (lipschitzOn_univ.2 hlip)
+  norm_lineDeriv_le_of_lipschitzOn 𝕜 univ_mem (lipschitzOnWith_univ.2 hlip)
 
 variable {𝕜}
 

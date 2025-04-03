@@ -150,16 +150,16 @@ theorem card_le_two_pow {x k : ℕ} :
     intro m hm
     simp only [f, K, M₁, M, mem_filter, mem_range, mem_powerset, mem_image, exists_prop] at hm ⊢
     obtain ⟨⟨-, hmp⟩, hms⟩ := hm
-    use! (m + 1).factors
-    · rwa [Multiset.coe_nodup, ← Nat.squarefree_iff_nodup_factors m.succ_ne_zero]
+    use! (m + 1).primeFactorsList
+    · rwa [Multiset.coe_nodup, ← Nat.squarefree_iff_nodup_primeFactorsList m.succ_ne_zero]
     refine ⟨fun p => ?_, ?_⟩
-    · suffices p ∈ (m + 1).factors → ∃ a : ℕ, a < k ∧ a.succ = p by simpa
-      simp only [Nat.mem_factors m.succ_ne_zero]
+    · suffices p ∈ (m + 1).primeFactorsList → ∃ a : ℕ, a < k ∧ a.succ = p by simpa
+      simp only [Nat.mem_primeFactorsList m.succ_ne_zero]
       intro hp
       exact
         ⟨p.pred, (Nat.pred_lt (Nat.Prime.ne_zero hp.1)).trans_le ((hmp p) hp),
           Nat.succ_pred_eq_of_pos (Nat.Prime.pos hp.1)⟩
-    · simp [Nat.prod_factors m.succ_ne_zero, m.add_one_sub_one]
+    · simp [Nat.prod_primeFactorsList m.succ_ne_zero, m.add_one_sub_one]
   -- The number of elements of `M x k` with `e + 1` squarefree is bounded by the number of subsets
   -- of `[1, k]`.
   calc

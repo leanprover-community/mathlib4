@@ -112,7 +112,7 @@ theorem Multiset.untrop_sum [LinearOrder R] [OrderTop R] (s : Multiset (Tropical
     untrop s.sum = Multiset.inf (s.map untrop) := by
   induction' s using Multiset.induction with s x IH
   · simp
-  · simp only [sum_cons, ge_iff_le, untrop_add, untrop_le_iff, map_cons, inf_cons, ← IH]
+  · simp only [sum_cons, untrop_add, untrop_le_iff, map_cons, inf_cons, ← IH]
     rfl
 #align multiset.untrop_sum Multiset.untrop_sum
 

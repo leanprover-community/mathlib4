@@ -392,7 +392,7 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
     congr with e
     congr with k
     by_cases hke : k ∈ Set.range e
-    · simp only [hke, ↓reduceDite]
+    · simp only [hke, ↓reduceDIte]
       split_ifs with hkf
       · simp only [← Equiv.succ_embeddingFinSucc_fst_symm_apply e hkf hke, Fin.cons_succ]
       · obtain rfl : k = e 0 := by
@@ -409,7 +409,7 @@ theorem hasFTaylorSeriesUpTo_iteratedFDeriv :
         contrapose! hke
         rw [Equiv.embeddingFinSucc_fst] at hke
         exact Set.range_comp_subset_range _ _ hke
-      simp only [hke, hkf, ↓reduceDite, Pi.compRightL,
+      simp only [hke, hkf, ↓reduceDIte, Pi.compRightL,
         ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk]
       rw [Function.update_noteq]
       contrapose! hke
@@ -492,7 +492,7 @@ theorem factorial_smul (n : ℕ) :
   cases n
   · rw [factorial_zero, one_smul, h.iteratedFDeriv_zero_apply_diag]
   · rw [factorial_succ, mul_comm, mul_smul, ← derivSeries_apply_diag, ← smul_apply,
-      factorial_smul'.{_,u,v} _ h.fderiv, iteratedFDeriv_succ_apply_right]
+      factorial_smul' _ h.fderiv, iteratedFDeriv_succ_apply_right]
     rfl
 
 theorem hasSum_iteratedFDeriv [CharZero 𝕜] {y : E} (hy : y ∈ EMetric.ball 0 r) :

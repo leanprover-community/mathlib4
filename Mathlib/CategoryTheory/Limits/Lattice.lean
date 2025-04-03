@@ -5,7 +5,6 @@ Authors: Scott Morrison, Justus Springer
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.Data.Finset.Lattice
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits

@@ -3,7 +3,6 @@ Copyright (c) 2020 Alexander Bentkamp, Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp, Sébastien Gouëzel, Eric Wieser
 -/
-
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Data.Complex.Basic
@@ -55,8 +54,6 @@ variable {R : Type*} {S : Type*}
 
 attribute [local ext] Complex.ext
 
--- Test that the `SMul ℚ ℂ` instance is correct.
-example : (Complex.SMul.instSMulRealComplex : SMul ℚ ℂ) = (Algebra.toSMul : SMul ℚ ℂ) := rfl
 
 /- The priority of the following instances has been manually lowered, as when they don't apply
 they lead Lean to a very costly path, and most often they don't apply (most actions on `ℂ` don't
@@ -125,7 +122,7 @@ theorem _root_.AlgHom.map_coe_real_complex (f : ℂ →ₐ[ℝ] A) (x : ℝ) : f
 @[ext]
 theorem algHom_ext ⦃f g : ℂ →ₐ[ℝ] A⦄ (h : f I = g I) : f = g := by
   ext ⟨x, y⟩
-  simp only [mk_eq_add_mul_I, AlgHom.map_add, AlgHom.map_coe_real_complex, AlgHom.map_mul, h]
+  simp only [mk_eq_add_mul_I, map_add, AlgHom.map_coe_real_complex, map_mul, h]
 #align complex.alg_hom_ext Complex.algHom_ext
 
 end
@@ -344,7 +341,7 @@ This isomorphism is named to match the very similar `Zsqrtd.lift`. -/
 @[simps (config := { simpRhs := true })]
 def lift : { I' : A // I' * I' = -1 } ≃ (ℂ →ₐ[ℝ] A) where
   toFun I' := liftAux I' I'.prop
-  invFun F := ⟨F I, by rw [← F.map_mul, I_mul_I, AlgHom.map_neg, AlgHom.map_one]⟩
+  invFun F := ⟨F I, by rw [← map_mul, I_mul_I, map_neg, map_one]⟩
   left_inv I' := Subtype.ext <| liftAux_apply_I (I' : A) I'.prop
   right_inv F := algHom_ext <| liftAux_apply_I _ _
 #align complex.lift Complex.lift

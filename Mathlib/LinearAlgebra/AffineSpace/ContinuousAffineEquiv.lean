@@ -105,7 +105,7 @@ def Simps.apply (e : P₁ ≃ᵃL[k] P₂) : P₁ → P₂ :=
   e
 
 /-- See Note [custom simps projection]. -/
-def Simps.coe (e: P₁ ≃ᵃL[k] P₂) : P₁ ≃ᵃ[k] P₂ :=
+def Simps.coe (e : P₁ ≃ᵃL[k] P₂) : P₁ ≃ᵃ[k] P₂ :=
   e
 
 initialize_simps_projections ContinuousLinearMap (toAffineEquiv_toFun → apply, toAffineEquiv → coe)

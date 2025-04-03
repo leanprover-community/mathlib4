@@ -30,10 +30,7 @@ symmetric powers
 -/
 
 assert_not_exists MonoidWithZero
-
-set_option autoImplicit true
-
-
+open Mathlib (Vector)
 open Function
 
 /-- The nth symmetric power is n-tuples up to permutation.  We define it
@@ -55,7 +52,7 @@ instance Sym.hasCoe (α : Type*) (n : ℕ) : CoeOut (Sym α n) (Multiset α) :=
 #align sym.has_coe Sym.hasCoe
 
 -- Porting note: instance needed for Data.Finset.Sym
-instance [DecidableEq α] : DecidableEq (Sym α n) :=
+instance {α : Type*} {n : ℕ} [DecidableEq α] : DecidableEq (Sym α n) :=
   inferInstanceAs <| DecidableEq <| Subtype _
 
 /-- This is the `List.Perm` setoid lifted to `Vector`.
@@ -217,7 +214,7 @@ def erase [DecidableEq α] (s : Sym α (n + 1)) (a : α) (h : a ∈ s) : Sym α 
 theorem erase_mk [DecidableEq α] (m : Multiset α)
     (hc : Multiset.card m = n + 1) (a : α) (h : a ∈ m) :
     (mk m hc).erase a h =mk (m.erase a)
-        (by rw [Multiset.card_erase_of_mem h, hc]; rfl) :=
+        (by rw [Multiset.card_erase_of_mem h, hc, Nat.add_one, Nat.pred_succ]) :=
   rfl
 #align sym.erase_mk Sym.erase_mk
 
@@ -382,11 +379,11 @@ theorem mem_map {n : ℕ} {f : α → β} {b : β} {l : Sym α n} :
 /-- Note: `Sym.map_id` is not simp-normal, as simp ends up unfolding `id` with `Sym.map_congr` -/
 @[simp]
 theorem map_id' {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map (fun x : α => x) s = s := by
-  ext; simp only [map, val_eq_coe, Multiset.map_id', coe_inj]; rfl
+  ext; simp only [map, Multiset.map_id', ← val_eq_coe]
 #align sym.map_id' Sym.map_id'
 
 theorem map_id {α : Type*} {n : ℕ} (s : Sym α n) : Sym.map id s = s := by
-  ext; simp only [map, val_eq_coe, id_eq, Multiset.map_id', coe_inj]; rfl
+  ext; simp only [map, id_eq, Multiset.map_id', ← val_eq_coe]
 #align sym.map_id Sym.map_id
 
 @[simp]

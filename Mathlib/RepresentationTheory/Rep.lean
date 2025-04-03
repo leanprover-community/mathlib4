@@ -607,7 +607,7 @@ theorem to_Module_monoidAlgebra_map_aux {k G : Type*} [CommRing k] [Monoid G] (V
     exact LinearMap.congr_fun (w g) x
   · intro g h gw hw; simp only [map_add, add_left_inj, LinearMap.add_apply, hw, gw]
   · intro r g w
-    simp only [AlgHom.map_smul, w, RingHom.id_apply, LinearMap.smul_apply, LinearMap.map_smulₛₗ]
+    simp only [map_smul, w, RingHom.id_apply, LinearMap.smul_apply, LinearMap.map_smulₛₗ]
 set_option linter.uppercaseLean3 false in
 #align Rep.to_Module_monoid_algebra_map_aux Rep.to_Module_monoidAlgebra_map_aux
 
@@ -721,3 +721,5 @@ set_option linter.uppercaseLean3 false in
 
 -- TODO Verify that the equivalence with `ModuleCat (MonoidAlgebra k G)` is a monoidal functor.
 end
+
+end Rep

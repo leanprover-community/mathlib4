@@ -173,3 +173,5 @@ lemma mulSupport_one_sub' [AddGroup R] (f : ι → R) : mulSupport (1 - f) = sup
 lemma mulSupport_one_sub [AddGroup R] (f : ι → R) :
     mulSupport (fun x ↦ 1 - f x) = support f := mulSupport_one_sub' f
 #align function.mul_support_one_sub Function.mulSupport_one_sub
+
+end Function

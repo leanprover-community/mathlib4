@@ -22,7 +22,7 @@ Notation: categories `C`, `I` and functors `D : Iᵒᵖ ⥤ C`, `F : C ⥤ Type`
 - `colimitCoyonedaHomIsoLimit'`: a variant of `colimitCoyonedaHomIsoLimit` for a covariant
   diagram.
 
-## TODO:
+## TODO
 
 - define the ind-yoneda versions (for contravariant `F`)
 

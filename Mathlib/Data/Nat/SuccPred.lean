@@ -22,7 +22,7 @@ namespace Nat
 variable {m n : ℕ}
 
 -- so that Lean reads `Nat.succ` through `succ_order.succ`
-@[instance] abbrev instSuccOrder  : SuccOrder ℕ :=
+@[instance] abbrev instSuccOrder : SuccOrder ℕ :=
   SuccOrder.ofSuccLeIff succ Nat.succ_le
 
 -- so that Lean reads `Nat.pred` through `pred_order.pred`

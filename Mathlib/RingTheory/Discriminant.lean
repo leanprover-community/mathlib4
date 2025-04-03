@@ -3,9 +3,9 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.IntegrallyClosed
-import Mathlib.RingTheory.Trace
-import Mathlib.RingTheory.Norm
+import Mathlib.RingTheory.IntegralClosure.IntegrallyClosed
+import Mathlib.RingTheory.Trace.Basic
+import Mathlib.RingTheory.Norm.Basic
 
 #align_import ring_theory.discriminant from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
@@ -97,7 +97,7 @@ theorem discr_zero_of_not_linearIndependent [IsDomain A] {b : ι → B}
   have : (traceMatrix A b) *ᵥ g = 0 := by
     ext i
     have : ∀ j, (trace A B) (b i * b j) * g j = (trace A B) (g j • b j * b i) := by
-      intro j;
+      intro j
       simp [mul_comm]
     simp only [mulVec, dotProduct, traceMatrix_apply, Pi.zero_apply, traceForm_apply, fun j =>
       this j, ← map_sum, ← sum_mul, hg, zero_mul, LinearMap.map_zero]
@@ -133,7 +133,7 @@ variable [Algebra K L] [Algebra K E]
 variable [Module.Finite K L] [IsAlgClosed E]
 
 /-- If `b` is a basis of a finite separable field extension `L/K`, then `Algebra.discr K b ≠ 0`. -/
-theorem discr_not_zero_of_basis [IsSeparable K L] (b : Basis ι K L) :
+theorem discr_not_zero_of_basis [Algebra.IsSeparable K L] (b : Basis ι K L) :
     discr K b ≠ 0 := by
   rw [discr_def, traceMatrix_of_basis, ← LinearMap.BilinForm.nondegenerate_iff_det_ne_zero]
   exact traceForm_nondegenerate _ _
@@ -141,7 +141,7 @@ theorem discr_not_zero_of_basis [IsSeparable K L] (b : Basis ι K L) :
 
 /-- If `b` is a basis of a finite separable field extension `L/K`,
   then `Algebra.discr K b` is a unit. -/
-theorem discr_isUnit_of_basis [IsSeparable K L] (b : Basis ι K L) : IsUnit (discr K b) :=
+theorem discr_isUnit_of_basis [Algebra.IsSeparable K L] (b : Basis ι K L) : IsUnit (discr K b) :=
   IsUnit.mk0 _ (discr_not_zero_of_basis _ _)
 #align algebra.discr_is_unit_of_basis Algebra.discr_isUnit_of_basis
 
@@ -151,14 +151,15 @@ variable (b : ι → L) (pb : PowerBasis K L)
 determinant of the matrix whose `(i, j)` coefficient is `σⱼ (b i)`, where `σⱼ : L →ₐ[K] E` is the
 embedding in an algebraically closed field `E` corresponding to `j : ι` via a bijection
 `e : ι ≃ (L →ₐ[K] E)`. -/
-theorem discr_eq_det_embeddingsMatrixReindex_pow_two [IsSeparable K L] (e : ι ≃ (L →ₐ[K] E)) :
+theorem discr_eq_det_embeddingsMatrixReindex_pow_two
+    [Algebra.IsSeparable K L] (e : ι ≃ (L →ₐ[K] E)) :
     algebraMap K E (discr K b) = (embeddingsMatrixReindex K E b e).det ^ 2 := by
   rw [discr_def, RingHom.map_det, RingHom.mapMatrix_apply,
     traceMatrix_eq_embeddingsMatrixReindex_mul_trans, det_mul, det_transpose, pow_two]
 #align algebra.discr_eq_det_embeddings_matrix_reindex_pow_two Algebra.discr_eq_det_embeddingsMatrixReindex_pow_two
 
 /-- The discriminant of a power basis. -/
-theorem discr_powerBasis_eq_prod (e : Fin pb.dim ≃ (L →ₐ[K] E)) [IsSeparable K L] :
+theorem discr_powerBasis_eq_prod (e : Fin pb.dim ≃ (L →ₐ[K] E)) [Algebra.IsSeparable K L] :
     algebraMap K E (discr K pb.basis) =
       ∏ i : Fin pb.dim, ∏ j ∈ Ioi i, (e j pb.gen - e i pb.gen) ^ 2 := by
   rw [discr_eq_det_embeddingsMatrixReindex_pow_two K E pb.basis e,
@@ -168,7 +169,7 @@ theorem discr_powerBasis_eq_prod (e : Fin pb.dim ≃ (L →ₐ[K] E)) [IsSeparab
 #align algebra.discr_power_basis_eq_prod Algebra.discr_powerBasis_eq_prod
 
 /-- A variation of `Algebra.discr_powerBasis_eq_prod`. -/
-theorem discr_powerBasis_eq_prod' [IsSeparable K L] (e : Fin pb.dim ≃ (L →ₐ[K] E)) :
+theorem discr_powerBasis_eq_prod' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃ (L →ₐ[K] E)) :
     algebraMap K E (discr K pb.basis) =
       ∏ i : Fin pb.dim, ∏ j ∈ Ioi i, -((e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen)) := by
   rw [discr_powerBasis_eq_prod _ _ _ e]
@@ -179,7 +180,7 @@ theorem discr_powerBasis_eq_prod' [IsSeparable K L] (e : Fin pb.dim ≃ (L →�
 local notation "n" => finrank K L
 
 /-- A variation of `Algebra.discr_powerBasis_eq_prod`. -/
-theorem discr_powerBasis_eq_prod'' [IsSeparable K L] (e : Fin pb.dim ≃ (L →ₐ[K] E)) :
+theorem discr_powerBasis_eq_prod'' [Algebra.IsSeparable K L] (e : Fin pb.dim ≃ (L →ₐ[K] E)) :
     algebraMap K E (discr K pb.basis) =
       (-1) ^ (n * (n - 1) / 2) *
         ∏ i : Fin pb.dim, ∏ j ∈ Ioi i, (e j pb.gen - e i pb.gen) * (e i pb.gen - e j pb.gen) := by
@@ -212,7 +213,7 @@ theorem discr_powerBasis_eq_prod'' [IsSeparable K L] (e : Fin pb.dim ≃ (L →�
 
 /-- Formula for the discriminant of a power basis using the norm of the field extension. -/
 -- Porting note: `(minpoly K pb.gen).derivative` does not work anymore.
-theorem discr_powerBasis_eq_norm [IsSeparable K L] :
+theorem discr_powerBasis_eq_norm [Algebra.IsSeparable K L] :
     discr K pb.basis =
       (-1) ^ (n * (n - 1) / 2) *
       norm K (aeval pb.gen (derivative (R := K) (minpoly K pb.gen))) := by
@@ -223,11 +224,11 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
     rw [Fintype.card_fin, AlgHom.card]
     exact (PowerBasis.finrank pb).symm
   have hnodup : ((minpoly K pb.gen).aroots E).Nodup :=
-    nodup_roots (Separable.map (IsSeparable.separable K pb.gen))
+    nodup_roots (Separable.map (Algebra.IsSeparable.isSeparable K pb.gen))
   have hroots : ∀ σ : L →ₐ[K] E, σ pb.gen ∈ (minpoly K pb.gen).aroots E := by
     intro σ
     rw [mem_roots, IsRoot.def, eval_map, ← aeval_def, aeval_algHom_apply]
-    repeat' simp [minpoly.ne_zero (IsSeparable.isIntegral K pb.gen)]
+    repeat' simp [minpoly.ne_zero (Algebra.IsSeparable.isIntegral K pb.gen)]
   apply (algebraMap K E).injective
   rw [RingHom.map_mul, RingHom.map_pow, RingHom.map_neg, RingHom.map_one,
     discr_powerBasis_eq_prod'' _ _ _ e]
@@ -238,7 +239,7 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
     rfl
     ext σ
     rw [← aeval_algHom_apply,
-      aeval_root_derivative_of_splits (minpoly.monic (IsSeparable.isIntegral K pb.gen))
+      aeval_root_derivative_of_splits (minpoly.monic (Algebra.IsSeparable.isIntegral K pb.gen))
         (IsAlgClosed.splits_codomain _) (hroots σ),
       ← Finset.prod_mk _ (hnodup.erase _)]
   rw [prod_sigma', prod_sigma']
@@ -246,7 +247,7 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
     (fun σ hσ ↦ ⟨e.symm (PowerBasis.lift pb σ.2 ?_), e.symm σ.1⟩) ?_ ?_ ?_ ?_ (fun i _ ↦ by simp)
   -- Porting note: `@mem_compl` was not necessary.
     <;> simp only [mem_sigma, mem_univ, Finset.mem_mk, hnodup.mem_erase_iff, IsRoot.def,
-      mem_roots', minpoly.ne_zero (IsSeparable.isIntegral K pb.gen), not_false_eq_true,
+      mem_roots', minpoly.ne_zero (Algebra.IsSeparable.isIntegral K pb.gen), not_false_eq_true,
       mem_singleton, true_and, @mem_compl _ _ _ (_), Sigma.forall, Equiv.apply_symm_apply,
       PowerBasis.lift_gen, and_imp, implies_true, forall_const, Equiv.symm_apply_apply,
       Sigma.ext_iff, Equiv.symm_apply_eq, heq_eq_eq, and_true] at *
@@ -274,7 +275,7 @@ theorem discr_isIntegral {b : ι → L} (h : ∀ i, IsIntegral R (b i)) : IsInte
 separable extension of `K`. Let `B : PowerBasis K L` be such that `IsIntegral R B.gen`.
 Then for all, `z : L` that are integral over `R`, we have
 `(discr K B.basis) • z ∈ adjoin R ({B.gen} : Set L)`. -/
-theorem discr_mul_isIntegral_mem_adjoin [IsSeparable K L] [IsIntegrallyClosed R]
+theorem discr_mul_isIntegral_mem_adjoin [Algebra.IsSeparable K L] [IsIntegrallyClosed R]
     [IsFractionRing R K] {B : PowerBasis K L} (hint : IsIntegral R B.gen) {z : L}
     (hz : IsIntegral R z) : discr K B.basis • z ∈ adjoin R ({B.gen} : Set L) := by
   have hinv : IsUnit (traceMatrix K B.basis).det := by

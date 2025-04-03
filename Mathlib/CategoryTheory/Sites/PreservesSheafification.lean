@@ -158,7 +158,7 @@ left adjoints to the forget functors `sheafToPresheaf`. -/
 def sheafComposeNatTrans :
     (whiskeringRight Cᵒᵖ A B).obj F ⋙ G₂ ⟶ G₁ ⋙ sheafCompose J F where
   app P := (adj₂.homEquiv _ _).symm (whiskerRight (adj₁.unit.app P) F)
-  naturality {P Q} f:= by
+  naturality {P Q} f := by
     dsimp
     erw [← adj₂.homEquiv_naturality_left_symm,
       ← adj₂.homEquiv_naturality_right_symm]

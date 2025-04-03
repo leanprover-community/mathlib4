@@ -1356,8 +1356,8 @@ def Structomorph.trans (e : Structomorph G M M') (e' : Structomorph G M' M'') :
 theorem StructureGroupoid.restriction_mem_maximalAtlas_subtype
     {e : PartialHomeomorph M H} (he : e ∈ atlas H M)
     (hs : Nonempty e.source) [HasGroupoid M G] [ClosedUnderRestriction G] :
-    let s := { carrier := e.source, is_open' := e.open_source : Opens M };
-    let t := { carrier := e.target, is_open' := e.open_target : Opens H };
+    let s := { carrier := e.source, is_open' := e.open_source : Opens M }
+    let t := { carrier := e.target, is_open' := e.open_target : Opens H }
     ∀ c' ∈ atlas H t, e.toHomeomorphSourceTarget.toPartialHomeomorph ≫ₕ c' ∈ G.maximalAtlas s := by
   intro s t c' hc'
   have : Nonempty t := nonempty_coe_sort.mpr (e.mapsTo.nonempty (nonempty_coe_sort.mp hs))

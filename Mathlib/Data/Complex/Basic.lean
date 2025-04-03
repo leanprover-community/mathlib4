@@ -426,7 +426,7 @@ instance addGroupWithOne : AddGroupWithOne ℂ :=
     intCast_negSucc := fun n => by
       ext
       · simp [AddGroupWithOne.intCast_negSucc]
-        show -(1: ℝ) + (-n) = -(↑(n + 1))
+        show -(1 : ℝ) + (-n) = -(↑(n + 1))
         simp [Nat.cast_add, add_comm]
       · simp [AddGroupWithOne.intCast_negSucc]
         show im ⟨n, 0⟩ = 0
@@ -490,17 +490,8 @@ theorem coe_imAddGroupHom : (imAddGroupHom : ℂ → ℝ) = im :=
 #align complex.coe_im_add_group_hom Complex.coe_imAddGroupHom
 
 section
-set_option linter.deprecated false
-@[simp]
-theorem I_pow_bit0 (n : ℕ) : I ^ bit0 n = (-1 : ℂ) ^ n := by rw [pow_bit0', Complex.I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_pow_bit0 Complex.I_pow_bit0
-
-@[simp]
-theorem I_pow_bit1 (n : ℕ) : I ^ bit1 n = (-1 : ℂ) ^ n * I := by rw [pow_bit1', Complex.I_mul_I]
-set_option linter.uppercaseLean3 false in
-#align complex.I_pow_bit1 Complex.I_pow_bit1
-
+#noalign complex.I_pow_bit0
+#noalign complex.I_pow_bit1
 end
 
 /-! ### Cast lemmas -/
@@ -569,6 +560,7 @@ theorem conj_im (z : ℂ) : (conj z).im = -z.im :=
   rfl
 #align complex.conj_im Complex.conj_im
 
+@[simp]
 theorem conj_ofReal (r : ℝ) : conj (r : ℂ) = r :=
   ext_iff.2 <| by simp [star]
 #align complex.conj_of_real Complex.conj_ofReal
@@ -576,7 +568,7 @@ theorem conj_ofReal (r : ℝ) : conj (r : ℂ) = r :=
 @[simp]
 theorem conj_I : conj I = -I :=
   ext_iff.2 <| by simp
-  set_option linter.uppercaseLean3 false in
+set_option linter.uppercaseLean3 false in
 #align complex.conj_I Complex.conj_I
 
 #noalign complex.conj_bit0
@@ -718,9 +710,6 @@ theorem normSq_pos {z : ℂ} : 0 < normSq z ↔ z ≠ 0 :=
   (normSq_nonneg z).lt_iff_ne.trans <| not_congr (eq_comm.trans normSq_eq_zero)
 #align complex.norm_sq_pos Complex.normSq_pos
 
-#adaptation_note /-- nightly-2024-04-01
-The simpNF linter now times out on this lemma.
-See https://github.com/leanprover-community/mathlib4/issues/12228 -/
 @[simp]
 theorem normSq_neg (z : ℂ) : normSq (-z) = normSq z := by simp [normSq]
 #align complex.norm_sq_neg Complex.normSq_neg

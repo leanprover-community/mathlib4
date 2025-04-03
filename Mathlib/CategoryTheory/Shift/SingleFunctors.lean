@@ -27,8 +27,8 @@ which sends an object `X : C` to a complex where `X` sits in a single degree.
 
 open CategoryTheory Category ZeroObject Limits
 
-variable (C D E E' : Type*) [Category C] [Category D] [Category E]
-  (A : Type*) [AddMonoid A] [HasShift D A] [HasShift E A]
+variable (C D E E' : Type*) [Category C] [Category D] [Category E] [Category E']
+  (A : Type*) [AddMonoid A] [HasShift D A] [HasShift E A] [HasShift E' A]
 
 namespace CategoryTheory
 
@@ -217,6 +217,40 @@ def postcomp (G : D ⥤ E) [G.CommShift A] :
       Functor.CommShift.isoAdd_inv_app, Functor.map_comp, id_comp, assoc,
       Functor.commShiftIso_inv_naturality_assoc]
     simp only [← G.map_comp, Iso.inv_hom_id_app_assoc]
+
+variable (C A)
+
+/-- The functor `SingleFunctors C D A ⥤ SingleFunctors C E A` given by the postcomposition
+by a functor `G : D ⥤ E` which commutes with the shift. -/
+def postcompFunctor (G : D ⥤ E) [G.CommShift A] :
+    SingleFunctors C D A ⥤ SingleFunctors C E A where
+  obj F := F.postcomp G
+  map {F₁ F₂} φ :=
+    { hom := fun a => whiskerRight (φ.hom a) G
+      comm := fun n a a' ha' => by
+        ext X
+        simpa using G.congr_map (congr_app (φ.comm n a a' ha') X) }
+
+variable {C E' A}
+
+/-- The canonical isomorphism `(F.postcomp G).postcomp G' ≅ F.postcomp (G ⋙ G')`. -/
+@[simps!]
+def postcompPostcompIso (G : D ⥤ E) (G' : E ⥤ E') [G.CommShift A] [G'.CommShift A] :
+    (F.postcomp G).postcomp G' ≅ F.postcomp (G ⋙ G') :=
+  isoMk (fun a => Functor.associator _ _ _) (fun n a a' ha' => by
+    ext X
+    simp [Functor.commShiftIso_comp_inv_app])
+
+/-- The isomorphism `F.postcomp G ≅ F.postcomp G'` induced by an isomorphism `e : G ≅ G'`
+which commutes with the shift. -/
+@[simps!]
+def postcompIsoOfIso {G G' : D ⥤ E} (e : G ≅ G') [G.CommShift A] [G'.CommShift A]
+    [NatTrans.CommShift e.hom A] :
+    F.postcomp G ≅ F.postcomp G' :=
+  isoMk (fun a => isoWhiskerLeft (F.functor a) e) (fun n a a' ha' => by
+    ext X
+    dsimp
+    simp [NatTrans.CommShift.shift_app e.hom n])
 
 end SingleFunctors
 

@@ -78,3 +78,7 @@ instance : OuterMeasureClass (OuterMeasure α) α where
   measure_empty f := f.empty
   measure_mono f := f.mono
   measure_iUnion_nat_le f := f.iUnion_nat
+
+end OuterMeasure
+
+end MeasureTheory

@@ -304,12 +304,10 @@ theorem choose_le_succ_of_lt_half_left {r n : ℕ} (h : r < n / 2) :
 
 /-- Show that for small values of the right argument, the middle value is largest. -/
 private theorem choose_le_middle_of_le_half_left {n r : ℕ} (hr : r ≤ n / 2) :
-    choose n r ≤ choose n (n / 2) :=
-  decreasingInduction
-    (fun _ k a =>
-      (eq_or_lt_of_le a).elim (fun t => t.symm ▸ le_rfl) fun h =>
-        (choose_le_succ_of_lt_half_left h).trans (k h))
-    hr (fun _ => le_rfl) hr
+    choose n r ≤ choose n (n / 2) := by
+  induction hr using decreasingInduction with
+  | self => rfl
+  | of_succ k hk ih => exact (choose_le_succ_of_lt_half_left hk).trans ih
 
 /-- `choose n r` is maximised when `r` is `n/2`. -/
 theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by

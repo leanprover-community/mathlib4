@@ -328,7 +328,7 @@ theorem IsBaseChange.comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {g : N →
   have : IsScalarTower R S Q := by
     refine ⟨fun x y z => ?_⟩
     change (IsScalarTower.toAlgHom R S T) (x • y) • z = x • algebraMap S T y • z
-    rw [AlgHom.map_smul, smul_assoc]
+    rw [map_smul, smul_assoc]
     rfl
   refine
     ⟨hg.lift (hf.lift i), by
@@ -421,12 +421,12 @@ noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Typ
   letI := Module.compHom A f.toRingHom
   haveI : IsScalarTower R S A :=
     { smul_assoc := fun r s a =>
-        show f (r • s) * a = r • (f s * a) by rw [f.map_smul, smul_mul_assoc] }
+        show f (r • s) * a = r • (f s * a) by rw [map_smul, smul_mul_assoc] }
   haveI : IsScalarTower S A A := { smul_assoc := fun r a b => mul_assoc _ _ _ }
   have : ∀ x, H.out.lift g.toLinearMap (algebraMap R' S' x) = g x := H.out.lift_eq _
   refine AlgHom.ofLinearMap ((H.out.lift g.toLinearMap).restrictScalars R) ?_ ?_
   · dsimp only [LinearMap.restrictScalars_apply]
-    rw [← (algebraMap R' S').map_one, this, g.map_one]
+    rw [← (algebraMap R' S').map_one, this, _root_.map_one]
   · intro x y
     refine H.out.inductionOn x ?_ ?_ ?_ ?_
     · rw [zero_mul, map_zero, zero_mul]
@@ -460,7 +460,7 @@ theorem Algebra.pushoutDesc_left [H : Algebra.IsPushout R S R' S'] {A : Type*} [
   letI := Module.compHom A f.toRingHom
   haveI : IsScalarTower R S A :=
     { smul_assoc := fun r s a =>
-        show f (r • s) * a = r • (f s * a) by rw [f.map_smul, smul_mul_assoc] }
+        show f (r • s) * a = r • (f s * a) by rw [map_smul, smul_mul_assoc] }
   haveI : IsScalarTower S A A := { smul_assoc := fun r a b => mul_assoc _ _ _ }
   rw [Algebra.algebraMap_eq_smul_one, pushoutDesc_apply, map_smul, ←
     Algebra.pushoutDesc_apply S' f g H, _root_.map_one]
@@ -480,7 +480,7 @@ theorem Algebra.pushoutDesc_right [H : Algebra.IsPushout R S R' S'] {A : Type*} 
   letI := Module.compHom A f.toRingHom
   haveI : IsScalarTower R S A :=
     { smul_assoc := fun r s a =>
-        show f (r • s) * a = r • (f s * a) by rw [f.map_smul, smul_mul_assoc] }
+        show f (r • s) * a = r • (f s * a) by rw [map_smul, smul_mul_assoc] }
   IsBaseChange.lift_eq _ _ _
 #align algebra.pushout_desc_right Algebra.pushoutDesc_right
 
@@ -499,7 +499,7 @@ theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type
   · simp only [map_zero]
   · exact AlgHom.congr_fun h₁
   · intro s s' e
-    rw [Algebra.smul_def, f.map_mul, g.map_mul, e]
+    rw [Algebra.smul_def, _root_.map_mul, _root_.map_mul, e]
     congr 1
     exact (AlgHom.congr_fun h₂ s : _)
   · intro s₁ s₂ e₁ e₂

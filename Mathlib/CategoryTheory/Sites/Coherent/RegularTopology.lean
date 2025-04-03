@@ -31,14 +31,14 @@ theorem mem_sieves_of_hasEffectiveEpi (S : Sieve X) :
     (∃ (Y : C) (π : Y ⟶ X), EffectiveEpi π ∧ S.arrows π) → (S ∈ (regularTopology C).sieves X) := by
   rintro ⟨Y, π, h⟩
   have h_le : Sieve.generate (Presieve.ofArrows (fun () ↦ Y) (fun _ ↦ π)) ≤ S := by
-    rw [Sieve.sets_iff_generate (Presieve.ofArrows _ _) S]
+    rw [Sieve.generate_le_iff (Presieve.ofArrows _ _) S]
     apply Presieve.le_of_factorsThru_sieve (Presieve.ofArrows _ _) S _
     intro W g f
     refine ⟨W, 𝟙 W, ?_⟩
     cases f
     exact ⟨π, ⟨h.2, Category.id_comp π⟩⟩
   apply Coverage.saturate_of_superset (regularCoverage C) h_le
-  exact Coverage.saturate.of X _ ⟨Y, π, rfl, h.1⟩
+  exact Coverage.Saturate.of X _ ⟨Y, π, rfl, h.1⟩
 
 /-- Effective epis in a preregular category are stable under composition. -/
 instance {Y Y' : C} (π : Y ⟶ X) [EffectiveEpi π]
@@ -49,9 +49,9 @@ instance {Y Y' : C} (π : Y ⟶ X) [EffectiveEpi π]
     change Nonempty _
     rw [← Sieve.forallYonedaIsSheaf_iff_colimit]
     exact fun W => regularTopology.isSheaf_yoneda_obj W _ h₂
-  apply Coverage.saturate.transitive X (Sieve.generate (Presieve.ofArrows (fun () ↦ Y)
+  apply Coverage.Saturate.transitive X (Sieve.generate (Presieve.ofArrows (fun () ↦ Y)
       (fun () ↦ π)))
-  · apply Coverage.saturate.of
+  · apply Coverage.Saturate.of
     use Y, π
   · intro V f ⟨Y₁, h, g, ⟨hY, hf⟩⟩
     rw [← hf, Sieve.pullback_comp]

@@ -332,8 +332,8 @@ set_option linter.uppercaseLean3 false in
 
 theorem bind₁_monomial (f : σ → MvPolynomial τ R) (d : σ →₀ ℕ) (r : R) :
     bind₁ f (monomial d r) = C r * ∏ i ∈ d.support, f i ^ d i := by
-  simp only [monomial_eq, AlgHom.map_mul, bind₁_C_right, Finsupp.prod, AlgHom.map_prod,
-    AlgHom.map_pow, bind₁_X_right]
+  simp only [monomial_eq, map_mul, bind₁_C_right, Finsupp.prod, map_prod,
+    map_pow, bind₁_X_right]
 #align mv_polynomial.bind₁_monomial MvPolynomial.bind₁_monomial
 
 theorem bind₂_monomial (f : R →+* MvPolynomial σ S) (d : σ →₀ ℕ) (r : R) :
@@ -353,7 +353,7 @@ theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPol
     (bind₁ f φ).vars ⊆ φ.vars.biUnion fun i => (f i).vars := by
   calc (bind₁ f φ).vars
     _ = (φ.support.sum fun x : σ →₀ ℕ => (bind₁ f) (monomial x (coeff x φ))).vars := by
-      rw [← AlgHom.map_sum, ← φ.as_sum]
+      rw [← map_sum, ← φ.as_sum]
     _ ≤ φ.support.biUnion fun i : σ →₀ ℕ => ((bind₁ f) (monomial i (coeff i φ))).vars :=
       (vars_sum_subset _ _)
     _ = φ.support.biUnion fun d : σ →₀ ℕ => vars (C (coeff d φ) * ∏ i ∈ d.support, f i ^ d i) := by

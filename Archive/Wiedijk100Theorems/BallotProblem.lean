@@ -210,7 +210,7 @@ theorem first_vote_pos :
       0 < p + q → condCount (countedSequence p q : Set (List ℤ)) {l | l.headI = 1} = p / (p + q)
   | p + 1, 0, _ => by
     rw [counted_right_zero, condCount_singleton]
-    simp [ENNReal.div_self _ _]
+    simp [ENNReal.div_self _ _, List.replicate_succ]
   | 0, q + 1, _ => by
     rw [counted_left_zero, condCount_singleton]
     simp only [List.replicate, Nat.add_eq, add_zero, mem_setOf_eq, List.headI_cons, Nat.cast_zero,

@@ -74,7 +74,7 @@ set_option linter.uppercaseLean3 false in
 /-- Specialized destructor on `WPath` -/
 def wPathCasesOn {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W} (g' : P.drop.B a ⟹ α)
     (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) : P.WPath ⟨a, f⟩ ⟹ α := by
-  intro i x;
+  intro i x
   match x with
   | WPath.root _ _ i c => exact g' i c
   | WPath.child _ _ i j c => exact g j i c

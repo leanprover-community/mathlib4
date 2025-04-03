@@ -240,7 +240,7 @@ abbrev tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : tensorObj ℬ W Y �
 #align category_theory.monoidal_of_chosen_finite_products.tensor_hom CategoryTheory.MonoidalOfChosenFiniteProducts.tensorHom
 
 theorem tensor_id (X₁ X₂ : C) : tensorHom ℬ (𝟙 X₁) (𝟙 X₂) = 𝟙 (tensorObj ℬ X₁ X₂) := by
-  apply IsLimit.hom_ext (ℬ _ _).isLimit;
+  apply IsLimit.hom_ext (ℬ _ _).isLimit
   rintro ⟨⟨⟩⟩ <;>
     · dsimp [tensorHom]
       simp
@@ -248,7 +248,7 @@ theorem tensor_id (X₁ X₂ : C) : tensorHom ℬ (𝟙 X₁) (𝟙 X₂) = 𝟙
 
 theorem tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁)
     (g₂ : Y₂ ⟶ Z₂) : tensorHom ℬ (f₁ ≫ g₁) (f₂ ≫ g₂) = tensorHom ℬ f₁ f₂ ≫ tensorHom ℬ g₁ g₂ := by
-  apply IsLimit.hom_ext (ℬ _ _).isLimit;
+  apply IsLimit.hom_ext (ℬ _ _).isLimit
   rintro ⟨⟨⟩⟩ <;>
     · dsimp [tensorHom]
       simp

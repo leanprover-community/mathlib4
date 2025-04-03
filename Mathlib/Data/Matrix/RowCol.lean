@@ -58,7 +58,7 @@ theorem row_apply (v : n → α) (i : ι) (j) : row ι v i j = v j :=
   rfl
 #align matrix.row_apply Matrix.row_apply
 
-theorem col_injective [Inhabited ι] : Function.Injective (col ι: (m → α) → Matrix m ι α) :=
+theorem col_injective [Inhabited ι] : Function.Injective (col ι : (m → α) → Matrix m ι α) :=
   fun _x _y h => funext fun i => congr_fun₂ h i default
 
 @[simp] theorem col_inj [Inhabited ι] {v w : m → α} : col ι v = col ι w ↔ v = w :=
@@ -363,3 +363,5 @@ theorem reindex_updateColumn [DecidableEq o] [DecidableEq n] (A : Matrix m n α)
     reindex e f (A.updateColumn j c) = updateColumn (reindex e f A) (f j) fun i => c (e.symm i) :=
   submatrix_updateColumn_equiv _ _ _ _ _
 #align matrix.reindex_update_column Matrix.reindex_updateColumn
+
+end Matrix

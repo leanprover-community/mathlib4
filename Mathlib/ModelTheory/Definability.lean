@@ -309,7 +309,8 @@ def DefinableSet :=
 
 namespace DefinableSet
 
-variable {L A α} {s t : L.DefinableSet A α} {x : α → M}
+variable {L A α}
+variable {s t : L.DefinableSet A α} {x : α → M}
 
 instance instSetLike : SetLike (L.DefinableSet A α) (α → M) where
   coe := Subtype.val

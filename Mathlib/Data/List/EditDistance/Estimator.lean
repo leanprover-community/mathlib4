@@ -80,7 +80,7 @@ instance estimator' :
   | [], split, eq => by
     simp only [List.reverse_nil, List.nil_append] at split
     rw [e.distances_eq] at eq
-    simp only [List.getElem_eq_get] at eq
+    simp only [← List.get_eq_getElem] at eq
     rw [split] at eq
     exact eq.le
   | y :: t, split, eq => by
@@ -99,7 +99,7 @@ instance estimator' :
     | [], split, eq, _ =>
       simp only [List.reverse_nil, List.nil_append] at split
       rw [e.distances_eq] at eq
-      simp only [List.getElem_eq_get] at eq
+      simp only [← List.get_eq_getElem] at eq
       rw [split] at eq
       exact eq
     | [y], split, b_eq, d_eq =>

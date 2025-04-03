@@ -187,7 +187,7 @@ section Group
 variable [AddGroup G]
 
 theorem AEStronglyMeasurable.convolution_integrand' [MeasurableAdd₂ G]
-    [MeasurableNeg G] [SigmaFinite ν] (hf : AEStronglyMeasurable f ν)
+    [MeasurableNeg G] [SFinite ν] (hf : AEStronglyMeasurable f ν)
     (hg : AEStronglyMeasurable g <| map (fun p : G × G => p.1 - p.2) (μ.prod ν)) :
     AEStronglyMeasurable (fun p : G × G => L (f p.2) (g (p.1 - p.2))) (μ.prod ν) :=
   L.aestronglyMeasurable_comp₂ hf.snd <| hg.comp_measurable measurable_sub
@@ -250,7 +250,7 @@ end
 
 section Left
 
-variable [MeasurableAdd₂ G] [MeasurableNeg G] [SigmaFinite μ] [IsAddRightInvariant μ]
+variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsAddRightInvariant μ]
 
 theorem AEStronglyMeasurable.convolution_integrand_snd (hf : AEStronglyMeasurable f μ)
     (hg : AEStronglyMeasurable g μ) (x : G) :
@@ -281,8 +281,7 @@ end Left
 
 section Right
 
-variable [MeasurableAdd₂ G] [MeasurableNeg G] [SigmaFinite μ] [IsAddRightInvariant μ]
-  [SigmaFinite ν]
+variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsAddRightInvariant μ] [SFinite ν]
 
 theorem AEStronglyMeasurable.convolution_integrand (hf : AEStronglyMeasurable f ν)
     (hg : AEStronglyMeasurable g μ) :
@@ -376,7 +375,7 @@ integrable on the support of the integrand, and that both functions are strongly
 
 This is a variant of `BddAbove.convolutionExistsAt'` in an abelian group with a left-invariant
 measure. This allows us to state the boundedness and measurability of `g` in a more natural way. -/
-theorem _root_.BddAbove.convolutionExistsAt [MeasurableAdd₂ G] [SigmaFinite μ] {x₀ : G} {s : Set G}
+theorem _root_.BddAbove.convolutionExistsAt [MeasurableAdd₂ G] [SFinite μ] {x₀ : G} {s : Set G}
     (hbg : BddAbove ((fun i => ‖g i‖) '' ((fun t => x₀ - t) ⁻¹' s))) (hs : MeasurableSet s)
     (h2s : (support fun t => L (f t) (g (x₀ - t))) ⊆ s) (hf : IntegrableOn f s μ)
     (hmg : AEStronglyMeasurable g μ) : ConvolutionExistsAt f g x₀ L μ := by
@@ -536,15 +535,12 @@ theorem convolution_mono_right_of_nonneg {f g g' : G → ℝ}
 
 variable (L)
 
-theorem convolution_congr [MeasurableAdd₂ G] [MeasurableNeg G] [SigmaFinite μ]
+theorem convolution_congr [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ]
     [IsAddRightInvariant μ] (h1 : f =ᵐ[μ] f') (h2 : g =ᵐ[μ] g') : f ⋆[L, μ] g = f' ⋆[L, μ] g' := by
   ext x
   apply integral_congr_ae
-  exact
-    (h1.prod_mk <|
-          h2.comp_tendsto
-            (quasiMeasurePreserving_sub_left_of_right_invariant μ x).tendsto_ae).fun_comp
-      ↿fun x y => L x y
+  exact (h1.prod_mk <| h2.comp_tendsto
+    (quasiMeasurePreserving_sub_left_of_right_invariant μ x).tendsto_ae).fun_comp ↿fun x y ↦ L x y
 #align convolution_congr MeasureTheory.convolution_congr
 
 theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g + support f := by
@@ -563,7 +559,7 @@ theorem support_convolution_subset_swap : support (f ⋆[L, μ] g) ⊆ support g
 
 section
 
-variable [MeasurableAdd₂ G] [MeasurableNeg G] [SigmaFinite μ] [IsAddRightInvariant μ]
+variable [MeasurableAdd₂ G] [MeasurableNeg G] [SFinite μ] [IsAddRightInvariant μ]
 
 theorem Integrable.integrable_convolution (hf : Integrable f μ)
     (hg : Integrable g μ) : Integrable (f ⋆[L, μ] g) μ :=
@@ -784,7 +780,7 @@ theorem convolution_eq_right' {x₀ : G} {R : ℝ} (hf : support f ⊆ ball (0 :
 #align convolution_eq_right' MeasureTheory.convolution_eq_right'
 
 variable [BorelSpace G] [SecondCountableTopology G]
-variable [IsAddLeftInvariant μ] [SigmaFinite μ]
+variable [IsAddLeftInvariant μ] [SFinite μ]
 
 /-- Approximate `(f ⋆ g) x₀` if the support of the `f` is bounded within a ball, and `g` is near
 `g x₀` on a ball with the same radius around `x₀`. See `dist_convolution_le` for a special case.
@@ -912,7 +908,7 @@ variable (L₂ : F →L[𝕜] E'' →L[𝕜] F')
 variable (L₃ : E →L[𝕜] F'' →L[𝕜] F')
 variable (L₄ : E' →L[𝕜] E'' →L[𝕜] F'')
 variable [AddGroup G]
-variable [SigmaFinite μ] [SigmaFinite ν] [IsAddRightInvariant μ]
+variable [SFinite μ] [SFinite ν] [IsAddRightInvariant μ]
 
 theorem integral_convolution [MeasurableAdd₂ G] [MeasurableNeg G] [NormedSpace ℝ E]
     [NormedSpace ℝ E'] [CompleteSpace E] [CompleteSpace E'] (hf : Integrable f ν)
@@ -1012,7 +1008,7 @@ theorem convolution_precompR_apply {g : G → E'' →L[𝕜] E'} (hf : LocallyIn
 set_option linter.uppercaseLean3 false in
 #align convolution_precompR_apply MeasureTheory.convolution_precompR_apply
 
-variable [NormedSpace 𝕜 G] [SigmaFinite μ] [IsAddLeftInvariant μ]
+variable [NormedSpace 𝕜 G] [SFinite μ] [IsAddLeftInvariant μ]
 
 /-- Compute the total derivative of `f ⋆ g` if `g` is `C^1` with compact support and `f` is locally
 integrable. To write down the total derivative as a convolution, we use
@@ -1073,7 +1069,7 @@ variable {n : ℕ∞}
 variable (L : E →L[𝕜] E' →L[𝕜] F)
 variable [CompleteSpace F]
 variable {μ : Measure 𝕜}
-variable [IsAddLeftInvariant μ] [SigmaFinite μ]
+variable [IsAddLeftInvariant μ] [SFinite μ]
 
 theorem _root_.HasCompactSupport.hasDerivAt_convolution_right (hf : LocallyIntegrable f₀ μ)
     (hcg : HasCompactSupport g₀) (hg : ContDiff 𝕜 1 g₀) (x₀ : 𝕜) :
@@ -1476,9 +1472,8 @@ theorem posConvolution_eq_convolution_indicator (f : ℝ → E) (g : ℝ → E')
         ContinuousLinearMap.zero_apply]
 #align pos_convolution_eq_convolution_indicator MeasureTheory.posConvolution_eq_convolution_indicator
 
-theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Measure ℝ}
-    [SigmaFinite μ]
-    [SigmaFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] (hf : IntegrableOn f (Ioi 0) ν)
+theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Measure ℝ} [SFinite μ]
+    [SFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] (hf : IntegrableOn f (Ioi 0) ν)
     (hg : IntegrableOn g (Ioi 0) μ) (L : E →L[ℝ] E' →L[ℝ] F) :
     Integrable (posConvolution f g L ν) μ := by
   rw [← integrable_indicator_iff (measurableSet_Ioi : MeasurableSet (Ioi (0 : ℝ)))] at hf hg
@@ -1488,9 +1483,8 @@ theorem integrable_posConvolution {f : ℝ → E} {g : ℝ → E'} {μ ν : Meas
 
 /-- The integral over `Ioi 0` of a forward convolution of two functions is equal to the product
 of their integrals over this set. (Compare `integral_convolution` for the two-sided convolution.) -/
-theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E']
-    {μ ν : Measure ℝ}
-    [SigmaFinite μ] [SigmaFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] {f : ℝ → E} {g : ℝ → E'}
+theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E'] {μ ν : Measure ℝ}
+    [SFinite μ] [SFinite ν] [IsAddRightInvariant μ] [NoAtoms ν] {f : ℝ → E} {g : ℝ → E'}
     (hf : IntegrableOn f (Ioi 0) ν) (hg : IntegrableOn g (Ioi 0) μ) (L : E →L[ℝ] E' →L[ℝ] F) :
     ∫ x : ℝ in Ioi 0, ∫ t : ℝ in (0)..x, L (f t) (g (x - t)) ∂ν ∂μ =
       L (∫ x : ℝ in Ioi 0, f x ∂ν) (∫ x : ℝ in Ioi 0, g x ∂μ) := by

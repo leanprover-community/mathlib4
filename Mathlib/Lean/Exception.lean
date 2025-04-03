@@ -5,6 +5,15 @@ Authors: E.W.Ayers
 -/
 import Lean.Exception
 
+/-!
+# Additional methods for working with `Exception`s
+
+This file contains two additional methods for working with `Exception`s
+* `successIfFail`, a generalisation of `fail_if_success` to arbitrary `MonadError`s
+* `isFailedToSynthesize`: check if an exception is of the "failed to synthesize" form
+
+-/
+
 set_option autoImplicit true
 
 open Lean

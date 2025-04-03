@@ -27,6 +27,7 @@ with respect to an ideal `I`:
 
 -/
 
+suppress_compilation
 
 open Submodule
 
@@ -213,11 +214,43 @@ def submodule : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M))
     rw [Pi.add_apply, Pi.add_apply, LinearMap.map_add, hf hmn, hg hmn]
   smul_mem' c f hf m n hmn := by rw [Pi.smul_apply, Pi.smul_apply, LinearMap.map_smul, hf hmn]
 
+instance : Zero (AdicCompletion I M) where
+  zero := ⟨0, by simp⟩
+
+instance : Add (AdicCompletion I M) where
+  add x y := ⟨x.val + y.val, by simp [x.property, y.property]⟩
+
+instance : Neg (AdicCompletion I M) where
+  neg x := ⟨- x.val, by simp [x.property]⟩
+
+instance : Sub (AdicCompletion I M) where
+  sub x y := ⟨x.val - y.val, by simp [x.property, y.property]⟩
+
+instance : SMul ℕ (AdicCompletion I M) where
+  smul n x := ⟨n • x.val, by simp [x.property]⟩
+
+instance : SMul ℤ (AdicCompletion I M) where
+  smul n x := ⟨n • x.val, by simp [x.property]⟩
+
 instance : AddCommGroup (AdicCompletion I M) :=
-  inferInstanceAs <| AddCommGroup (submodule I M)
+  let f : AdicCompletion I M → ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) := Subtype.val
+  Subtype.val_injective.addCommGroup f rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+instance : SMul R (AdicCompletion I M) where
+  smul r x := ⟨r • x.val, by simp [x.property]⟩
 
 instance : Module R (AdicCompletion I M) :=
-  inferInstanceAs <| Module R (submodule I M)
+  let f : AdicCompletion I M →+ ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M) :=
+    { toFun := Subtype.val, map_zero' := rfl, map_add' := fun _ _ ↦ rfl }
+  Subtype.val_injective.module R f (fun _ _ ↦ rfl)
+
+/-- The canonical inclusion from the completion to the product. -/
+@[simps]
+def incl : AdicCompletion I M →ₗ[R] (∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
+  toFun x := x.val
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 /-- The canonical linear map to the completion. -/
 def of : M →ₗ[R] AdicCompletion I M where
@@ -278,6 +311,11 @@ theorem val_add (n : ℕ) (f g : AdicCompletion I M) : (f + g).val n = f.val n +
 @[simp]
 theorem val_sub (n : ℕ) (f g : AdicCompletion I M) : (f - g).val n = f.val n - g.val n :=
   rfl
+
+@[simp]
+theorem val_sum {α : Type*} (s : Finset α) (f : α → AdicCompletion I M) (n : ℕ) :
+    (Finset.sum s f).val n = Finset.sum s (fun a ↦ (f a).val n) := by
+  simp_rw [← incl_apply, map_sum, Finset.sum_apply]
 
 /- No `simp` attribute, since it causes `simp` unification timeouts when considering
 the `AdicCompletion I R` module instance on `AdicCompletion I M` (see `AdicCompletion/Algebra`). -/
@@ -361,14 +399,39 @@ def submodule : Submodule R (ℕ → M) where
     intro r f hf m n hmn
     exact SModEq.smul (hf hmn) r
 
-instance : CoeFun (AdicCauchySequence I M) (fun _ ↦ ℕ → M) where
-  coe f := f.val
+instance : Zero (AdicCauchySequence I M) where
+  zero := ⟨0, fun _ ↦ rfl⟩
 
-instance : AddCommGroup (AdicCauchySequence I M) :=
-  inferInstanceAs <| AddCommGroup (AdicCauchySequence.submodule I M)
+instance : Add (AdicCauchySequence I M) where
+  add x y := ⟨x.val + y.val, fun hmn ↦ SModEq.add (x.property hmn) (y.property hmn)⟩
+
+instance : Neg (AdicCauchySequence I M) where
+  neg x := ⟨- x.val, fun hmn ↦ SModEq.neg (x.property hmn)⟩
+
+instance : Sub (AdicCauchySequence I M) where
+  sub x y := ⟨x.val - y.val, fun hmn ↦ SModEq.sub (x.property hmn) (y.property hmn)⟩
+
+instance : SMul ℕ (AdicCauchySequence I M) where
+  smul n x := ⟨n • x.val, fun hmn ↦ SModEq.nsmul (x.property hmn) n⟩
+
+instance : SMul ℤ (AdicCauchySequence I M) where
+  smul n x := ⟨n • x.val, fun hmn ↦ SModEq.zsmul (x.property hmn) n⟩
+
+instance : AddCommGroup (AdicCauchySequence I M) := by
+  let f : AdicCauchySequence I M → (ℕ → M) := Subtype.val
+  apply Subtype.val_injective.addCommGroup f rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+instance : SMul R (AdicCauchySequence I M) where
+  smul r x := ⟨r • x.val, fun hmn ↦ SModEq.smul (x.property hmn) r⟩
 
 instance : Module R (AdicCauchySequence I M) :=
-  inferInstanceAs <| Module R (AdicCauchySequence.submodule I M)
+  let f : AdicCauchySequence I M →+ (ℕ → M) :=
+    { toFun := Subtype.val, map_zero' := rfl, map_add' := fun _ _ ↦ rfl }
+  Subtype.val_injective.module R f (fun _ _ ↦ rfl)
+
+instance : CoeFun (AdicCauchySequence I M) (fun _ ↦ ℕ → M) where
+  coe f := f.val
 
 @[simp]
 theorem zero_apply (n : ℕ) : (0 : AdicCauchySequence I M) n = 0 :=
@@ -433,6 +496,17 @@ def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
     exact (f.property hmn).symm⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+/-- Criterion for checking that an adic cauchy sequence is mapped to zero in the adic completion. -/
+theorem mk_zero_of (f : AdicCauchySequence I M)
+    (h : ∃ k : ℕ, ∀ n ≥ k, ∃ m ≥ n, ∃ l ≥ n, f m ∈ (I ^ l • ⊤ : Submodule R M)) :
+    AdicCompletion.mk I M f = 0 := by
+  obtain ⟨k, h⟩ := h
+  ext n
+  obtain ⟨m, hnm, l, hnl, hl⟩ := h (n + k) (by omega)
+  rw [mk_apply_coe, Submodule.mkQ_apply, val_zero,
+    ← AdicCauchySequence.mk_eq_mk (show n ≤ m by omega)]
+  simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by omega))) hl
 
 /-- Every element in the adic completion is represented by a Cauchy sequence. -/
 theorem mk_surjective : Function.Surjective (mk I M) := by

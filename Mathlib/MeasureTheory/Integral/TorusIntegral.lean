@@ -5,6 +5,7 @@ Authors: Cuma Kökmen, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Integral.CircleIntegral
+import Mathlib.Order.Fin.Tuple
 
 #align_import measure_theory.integral.torus_integral from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 

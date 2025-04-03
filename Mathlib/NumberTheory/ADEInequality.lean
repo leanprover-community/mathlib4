@@ -178,15 +178,15 @@ theorem lt_three {p q r : ℕ+} (hpq : p ≤ q) (hqr : q ≤ r) (H : 1 < sumInv 
   rw [sumInv_pqr]
   have h3q := H.trans hpq
   have h3r := h3q.trans hqr
-  have hp: (p : ℚ)⁻¹ ≤ 3⁻¹ := by
+  have hp : (p : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv _ h3]
     · assumption_mod_cast
     · norm_num
-  have hq: (q : ℚ)⁻¹ ≤ 3⁻¹ := by
+  have hq : (q : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv _ h3]
     · assumption_mod_cast
     · norm_num
-  have hr: (r : ℚ)⁻¹ ≤ 3⁻¹ := by
+  have hr : (r : ℚ)⁻¹ ≤ 3⁻¹ := by
     rw [inv_le_inv _ h3]
     · assumption_mod_cast
     · norm_num
@@ -200,11 +200,11 @@ theorem lt_four {q r : ℕ+} (hqr : q ≤ r) (H : 1 < sumInv {2, q, r}) : q < 4 
   contrapose! H
   rw [sumInv_pqr]
   have h4r := H.trans hqr
-  have hq: (q : ℚ)⁻¹ ≤ 4⁻¹ := by
+  have hq : (q : ℚ)⁻¹ ≤ 4⁻¹ := by
     rw [inv_le_inv _ h4]
     · assumption_mod_cast
     · norm_num
-  have hr: (r : ℚ)⁻¹ ≤ 4⁻¹ := by
+  have hr : (r : ℚ)⁻¹ ≤ 4⁻¹ := by
     rw [inv_le_inv _ h4]
     · assumption_mod_cast
     · norm_num
@@ -217,7 +217,7 @@ theorem lt_six {r : ℕ+} (H : 1 < sumInv {2, 3, r}) : r < 6 := by
   have h6 : (0 : ℚ) < 6 := by norm_num
   contrapose! H
   rw [sumInv_pqr]
-  have hr: (r : ℚ)⁻¹ ≤ 6⁻¹ := by
+  have hr : (r : ℚ)⁻¹ ≤ 6⁻¹ := by
     rw [inv_le_inv _ h6]
     · assumption_mod_cast
     · norm_num
@@ -265,7 +265,7 @@ theorem admissible_of_one_lt_sumInv {p q r : ℕ+} (H : 1 < sumInv {p, q, r}) :
   rw [hpqr]
   rw [hpqr] at H
   apply admissible_of_one_lt_sumInv_aux hS _ H
-  simp only [S, ge_iff_le, insert_eq_cons, length_sort, card_cons, card_singleton]
+  simp only [S, insert_eq_cons, length_sort, card_cons, card_singleton]
 #align ADE_inequality.admissible_of_one_lt_sum_inv ADEInequality.admissible_of_one_lt_sumInv
 
 /-- A multiset `{p,q,r}` of positive natural numbers

@@ -12,13 +12,11 @@ import Mathlib.Order.Hom.Set
 # Order isomorphisms and bounds.
 -/
 
-set_option autoImplicit true
-
 open Set
 
 namespace OrderIso
 
-variable [Preorder α] [Preorder β] (f : α ≃o β)
+variable {α β : Type*} [Preorder α] [Preorder β] (f : α ≃o β)
 
 theorem upperBounds_image {s : Set α} : upperBounds (f '' s) = f '' upperBounds s :=
   Subset.antisymm

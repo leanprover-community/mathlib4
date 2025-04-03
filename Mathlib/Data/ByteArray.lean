@@ -4,11 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 
-set_option autoImplicit true
+/-!
+# Main result
+Introduce main properties of `Up` (well-ordered relation for "upwards" induction on `ℕ`) and of
+ `ByteArray`
+-/
 
 namespace Nat
-
-/- Up -/
 
 /-- A well-ordered relation for "upwards" induction on the natural numbers up to some bound `ub`. -/
 def Up (ub a i : Nat) := i < a ∧ i < ub
@@ -51,9 +53,10 @@ def toArray : ByteSlice → ByteArray
 /-- Index into a byte slice. The `getOp` function allows the use of the `buf[i]` notation. -/
 @[inline] def getOp (self : ByteSlice) (idx : Nat) : UInt8 := self.arr.get! (self.off + idx)
 
+universe u v
 
 /-- The inner loop of the `forIn` implementation for byte slices. -/
-def forIn.loop [Monad m] (f : UInt8 → β → m (ForInStep β))
+def forIn.loop {m : Type u → Type v} {β : Type u} [Monad m] (f : UInt8 → β → m (ForInStep β))
     (arr : ByteArray) (off _end : Nat) (i : Nat) (b : β) : m β :=
   if h : i < _end then do
     match ← f (arr.get! i) b with
@@ -62,7 +65,7 @@ def forIn.loop [Monad m] (f : UInt8 → β → m (ForInStep β))
   else pure b
 termination_by _end - i
 
-instance : ForIn m ByteSlice UInt8 :=
+instance {m : Type u → Type v} : ForIn m ByteSlice UInt8 :=
   ⟨fun ⟨arr, off, len⟩ b f ↦ forIn.loop f arr off (off + len) off b⟩
 
 end ByteSlice

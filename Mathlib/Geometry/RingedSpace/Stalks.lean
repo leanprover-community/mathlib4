@@ -153,13 +153,9 @@ theorem comp {X Y Z : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (β : Y ⟶ Z)
         (stalkMap α x : Y.stalk (α.base x) ⟶ X.stalk x) := by
   dsimp [stalkMap, stalkFunctor, stalkPushforward]
   -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
-  refine colimit.hom_ext fun U => ?_
-  induction U with | h U => ?_
-  cases U
-  simp only [whiskeringLeft_obj_obj, comp_obj, op_obj, unop_op, OpenNhds.inclusion_obj,
-    ι_colimMap_assoc, pushforwardObj_obj, Opens.map_comp_obj, whiskerLeft_app, comp_c_app,
-    OpenNhds.map_obj, whiskerRight_app, NatTrans.id_app, map_id, colimit.ι_pre, id_comp, assoc,
-    colimit.ι_pre_assoc]
+  apply colimit.hom_ext
+  rintro ⟨U, hU⟩
+  simp
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.stalk_map.comp AlgebraicGeometry.PresheafedSpace.stalkMap.comp
 
@@ -233,15 +229,14 @@ theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
   -- Porting note: the original one liner `dsimp [stalkMap]; simp [stalkMap]` doesn't work,
   -- I had to uglify this
   dsimp [stalkSpecializes, stalkMap, stalkFunctor, stalkPushforward]
-  -- We can't use `ext` here due to https://github.com/leanprover/std4/pull/159
+  -- We can't use `ext` here due to https://github.com/leanprover-community/batteries/pull/159
   refine colimit.hom_ext fun j => ?_
   induction j with | h j => ?_
   dsimp
-  simp only [colimit.ι_desc_assoc, comp_obj, op_obj, unop_op, ι_colimMap_assoc, colimit.map_desc,
-    OpenNhds.inclusion_obj, pushforwardObj_obj, whiskerLeft_app, OpenNhds.map_obj, whiskerRight_app,
-    NatTrans.id_app, map_id, colimit.ι_pre, id_comp, assoc, colimit.pre_desc]
-  erw [colimit.ι_desc]
-  dsimp
+  simp only [colimit.ι_desc_assoc, ι_colimMap_assoc, whiskerLeft_app,
+    whiskerRight_app, NatTrans.id_app, map_id, colimit.ι_pre, id_comp, assoc,
+    colimit.pre_desc, colimit.map_desc, colimit.ι_desc, Cocones.precompose_obj_ι,
+    Cocone.whisker_ι, NatTrans.comp_app]
   erw [X.presheaf.map_id, id_comp]
   rfl
 set_option linter.uppercaseLean3 false in

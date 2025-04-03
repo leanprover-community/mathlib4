@@ -141,7 +141,7 @@ theorem FrechetUrysohnSpace.of_seq_tendsto_imp_tendsto
       (∀ u : ℕ → X, Tendsto u atTop (𝓝 a) → Tendsto (f ∘ u) atTop (𝓝 (f a))) → ContinuousAt f a) :
     FrechetUrysohnSpace X := by
   refine ⟨fun s x hcx => ?_⟩
-  by_cases hx : x ∈ s;
+  by_cases hx : x ∈ s
   · exact subset_seqClosure hx
   · obtain ⟨u, hux, hus⟩ : ∃ u : ℕ → X, Tendsto u atTop (𝓝 x) ∧ ∃ᶠ x in atTop, u x ∈ s := by
       simpa only [ContinuousAt, hx, tendsto_nhds_true, (· ∘ ·), ← not_frequently, exists_prop,

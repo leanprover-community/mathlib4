@@ -8,8 +8,10 @@ import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Finset.NoncommProd
-import Mathlib.Data.Int.Order.Lemmas
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Util.AssertExists
 
 #align_import group_theory.submonoid.membership from "leanprover-community/mathlib"@"e655e4ea5c6d02854696f97494997ba4c31be802"
 
@@ -35,6 +37,9 @@ In this file we prove various facts about membership in a submonoid:
 ## Tags
 submonoid, submonoids
 -/
+
+-- We don't need ordered structures to establish basic membership facts for submonoids
+assert_not_exists OrderedSemiring
 
 variable {M A B : Type*}
 
@@ -644,7 +649,7 @@ theorem sup_eq_range (s t : Submonoid N) : s ⊔ t = mrange (s.subtype.coprod t.
 
 @[to_additive]
 theorem mem_sup {s t : Submonoid N} {x : N} : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x := by
-  simp only [ge_iff_le, sup_eq_range, mem_mrange, coprod_apply, coe_subtype, Prod.exists,
+  simp only [sup_eq_range, mem_mrange, coprod_apply, coe_subtype, Prod.exists,
     Subtype.exists, exists_prop]
 #align submonoid.mem_sup Submonoid.mem_sup
 #align add_submonoid.mem_sup AddSubmonoid.mem_sup

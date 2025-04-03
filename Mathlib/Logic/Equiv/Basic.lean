@@ -12,6 +12,7 @@ import Mathlib.Data.Sum.Basic
 import Mathlib.Init.Data.Sigma.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
+import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Contrapose
@@ -653,13 +654,13 @@ theorem Perm.subtypeCongr.right_apply_subtype (a : { a // ¬p a }) : ep.subtypeC
 theorem Perm.subtypeCongr.refl :
     Perm.subtypeCongr (Equiv.refl { a // p a }) (Equiv.refl { a // ¬p a }) = Equiv.refl ε := by
   ext x
-  by_cases h:p x <;> simp [h]
+  by_cases h : p x <;> simp [h]
 #align equiv.perm.subtype_congr.refl Equiv.Perm.subtypeCongr.refl
 
 @[simp]
 theorem Perm.subtypeCongr.symm : (ep.subtypeCongr en).symm = Perm.subtypeCongr ep.symm en.symm := by
   ext x
-  by_cases h:p x
+  by_cases h : p x
   · have : p (ep.symm ⟨x, h⟩) := Subtype.property _
     simp [Perm.subtypeCongr.apply, h, symm_apply_eq, this]
   · have : ¬p (en.symm ⟨x, h⟩) := Subtype.property (en.symm _)
@@ -671,7 +672,7 @@ theorem Perm.subtypeCongr.trans :
     (ep.subtypeCongr en).trans (ep'.subtypeCongr en')
     = Perm.subtypeCongr (ep.trans ep') (en.trans en') := by
   ext x
-  by_cases h:p x
+  by_cases h : p x
   · have : p (ep ⟨x, h⟩) := Subtype.property _
     simp [Perm.subtypeCongr.apply, h, this]
   · have : ¬p (en ⟨x, h⟩) := Subtype.property (en _)
@@ -1412,7 +1413,7 @@ def piEquivPiSubtypeProd {α : Type*} (p : α → Prop) (β : α → Type*) [Dec
         simp only [property, dif_pos, dif_neg, not_false_iff, Subtype.coe_mk]
   left_inv f := by
     ext x
-    by_cases h:p x <;>
+    by_cases h : p x <;>
       · simp only [h, dif_neg, dif_pos, not_false_iff]
 #align equiv.pi_equiv_pi_subtype_prod Equiv.piEquivPiSubtypeProd
 #align equiv.pi_equiv_pi_subtype_prod_symm_apply Equiv.piEquivPiSubtypeProd_symm_apply
@@ -1645,7 +1646,7 @@ theorem swap_apply_left (a b : α) : swap a b a = b :=
 
 @[simp]
 theorem swap_apply_right (a b : α) : swap a b b = a := by
-  by_cases h:b = a <;> simp [swap_apply_def, h]
+  by_cases h : b = a <;> simp [swap_apply_def, h]
 #align equiv.swap_apply_right Equiv.swap_apply_right
 
 theorem swap_apply_of_ne_of_ne {a b x : α} : x ≠ a → x ≠ b → swap a b x = x := by
@@ -2011,10 +2012,10 @@ end Equiv
 theorem Function.Injective.swap_apply
     [DecidableEq α] [DecidableEq β] {f : α → β} (hf : Function.Injective f) (x y z : α) :
     Equiv.swap (f x) (f y) (f z) = f (Equiv.swap x y z) := by
-  by_cases hx:z = x
+  by_cases hx : z = x
   · simp [hx]
 
-  by_cases hy:z = y
+  by_cases hy : z = y
   · simp [hy]
 
   rw [Equiv.swap_apply_of_ne_of_ne hx hy, Equiv.swap_apply_of_ne_of_ne (hf.ne hx) (hf.ne hy)]

@@ -14,6 +14,8 @@ This file contains some basic results about the `Fintype` instance for `Fin`,
 especially properties of `Finset.univ : Finset (Fin n)`.
 -/
 
+open Mathlib
+
 open Finset
 
 open Fintype

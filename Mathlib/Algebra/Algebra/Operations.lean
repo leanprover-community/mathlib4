@@ -27,7 +27,7 @@ An interface for multiplication and division of sub-R-modules of an R-algebra A 
 
 Let `R` be a commutative ring (or semiring) and let `A` be an `R`-algebra.
 
-* `1 : Submodule R A`       : the R-submodule R of the R-algebra A
+* `1 : Submodule R A`   : the R-submodule R of the R-algebra A
 * `Mul (Submodule R A)` : multiplication of two sub-R-modules M and N of A is defined to be
                               the smallest submodule containing all the products `m * n`.
 * `Div (Submodule R A)` : `I / J` is defined to be the submodule consisting of all `a : A` such

@@ -18,7 +18,7 @@ locally convex.
 
 * [N. Bourbaki, *Topological Vector Spaces*][bourbaki1987]
 
-## Todo
+## TODO
 
 * Characterization in terms of seminorms
 

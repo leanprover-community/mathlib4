@@ -52,7 +52,7 @@ assert_not_exists MonoidWithZero
 
 open Function (Injective Surjective)
 
-variable {M N G A B α β γ δ : Type*}
+variable {M N G H A B α β γ δ : Type*}
 
 /-! ### Faithful actions -/
 
@@ -552,6 +552,54 @@ lemma smul_pow (r : M) (x : N) : ∀ n, (r • x) ^ n = r ^ n • x ^ n
 #align smul_pow smul_pow
 
 end Monoid
+
+section Group
+variable [Group G] [MulAction G α] {g : G} {a b : α}
+
+@[to_additive (attr := simp)]
+lemma inv_smul_smul (g : G) (a : α) : g⁻¹ • g • a = a := by rw [smul_smul, mul_left_inv, one_smul]
+#align inv_smul_smul inv_smul_smul
+#align neg_vadd_vadd neg_vadd_vadd
+
+@[to_additive (attr := simp)]
+lemma smul_inv_smul (g : G) (a : α) : g • g⁻¹ • a = a := by rw [smul_smul, mul_right_inv, one_smul]
+#align smul_inv_smul smul_inv_smul
+#align vadd_neg_vadd vadd_neg_vadd
+
+@[to_additive] lemma inv_smul_eq_iff : g⁻¹ • a = b ↔ a = g • b :=
+  ⟨fun h ↦ by rw [← h, smul_inv_smul], fun h ↦ by rw [h, inv_smul_smul]⟩
+#align inv_smul_eq_iff inv_smul_eq_iff
+#align neg_vadd_eq_iff neg_vadd_eq_iff
+
+@[to_additive] lemma eq_inv_smul_iff : a = g⁻¹ • b ↔ g • a = b :=
+  ⟨fun h ↦ by rw [h, smul_inv_smul], fun h ↦ by rw [← h, inv_smul_smul]⟩
+#align eq_inv_smul_iff eq_inv_smul_iff
+#align eq_neg_vadd_iff eq_neg_vadd_iff
+
+section Mul
+variable [Mul H] [MulAction G H] [SMulCommClass G H H] [IsScalarTower G H H] {g : G} {a b : H}
+
+@[simp] lemma Commute.smul_right_iff : Commute a (g • b) ↔ Commute a b :=
+  ⟨fun h ↦ inv_smul_smul g b ▸ h.smul_right g⁻¹, fun h ↦ h.smul_right g⟩
+#align commute.smul_right_iff Commute.smul_right_iff
+
+@[simp] lemma Commute.smul_left_iff : Commute (g • a) b ↔ Commute a b := by
+  rw [Commute.symm_iff, Commute.smul_right_iff, Commute.symm_iff]
+#align commute.smul_left_iff Commute.smul_left_iff
+
+end Mul
+
+variable [Group H] [MulAction G H] [SMulCommClass G H H] [IsScalarTower G H H]
+
+lemma smul_inv (g : G) (a : H) : (g • a)⁻¹ = g⁻¹ • a⁻¹ :=
+  inv_eq_of_mul_eq_one_right $ by rw [smul_mul_smul, mul_right_inv, mul_right_inv, one_smul]
+#align smul_inv smul_inv
+
+lemma smul_zpow (g : G) (a : H) (n : ℤ) : (g • a) ^ n = g ^ n • a ^ n := by
+  cases n <;> simp [smul_pow, smul_inv]
+#align smul_zpow smul_zpow
+
+end Group
 end
 
 lemma SMulCommClass.of_commMonoid

@@ -1,7 +1,7 @@
-import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Data.Nat.Notation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ApplyFun
-import Mathlib.Init.Function
+import Mathlib.Logic.Function.Defs
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Matrix.Basic
 

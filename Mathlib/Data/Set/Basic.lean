@@ -3,7 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Init.ZeroOne
+import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Data.Set.Defs
 import Mathlib.Order.Basic
 import Mathlib.Order.SymmDiff
@@ -1230,6 +1230,9 @@ theorem singleton_def (a : α) : ({a} : Set α) = insert a ∅ :=
 theorem mem_singleton_iff {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=
   Iff.rfl
 #align set.mem_singleton_iff Set.mem_singleton_iff
+
+theorem not_mem_singleton_iff {a b : α} : a ∉ ({b} : Set α) ↔ a ≠ b :=
+  Iff.rfl
 
 @[simp]
 theorem setOf_eq_eq_singleton {a : α} : { n | n = a } = {a} :=
@@ -2530,38 +2533,40 @@ end Subsingleton
 
 namespace Set
 
-variable {α : Type u} (s t : Set α) (a : α)
+variable {α : Type u} (s t : Set α) (a b : α)
 
 instance decidableSdiff [Decidable (a ∈ s)] [Decidable (a ∈ t)] : Decidable (a ∈ s \ t) :=
-  (by infer_instance : Decidable (a ∈ s ∧ a ∉ t))
+  inferInstanceAs (Decidable (a ∈ s ∧ a ∉ t))
 #align set.decidable_sdiff Set.decidableSdiff
 
 instance decidableInter [Decidable (a ∈ s)] [Decidable (a ∈ t)] : Decidable (a ∈ s ∩ t) :=
-  (by infer_instance : Decidable (a ∈ s ∧ a ∈ t))
+  inferInstanceAs (Decidable (a ∈ s ∧ a ∈ t))
 #align set.decidable_inter Set.decidableInter
 
 instance decidableUnion [Decidable (a ∈ s)] [Decidable (a ∈ t)] : Decidable (a ∈ s ∪ t) :=
-  (by infer_instance : Decidable (a ∈ s ∨ a ∈ t))
+  inferInstanceAs (Decidable (a ∈ s ∨ a ∈ t))
 #align set.decidable_union Set.decidableUnion
 
 instance decidableCompl [Decidable (a ∈ s)] : Decidable (a ∈ sᶜ) :=
-  (by infer_instance : Decidable (a ∉ s))
+  inferInstanceAs (Decidable (a ∉ s))
 #align set.decidable_compl Set.decidableCompl
 
-instance decidableEmptyset : DecidablePred (· ∈ (∅ : Set α)) := fun _ => Decidable.isFalse (by simp)
+instance decidableEmptyset : Decidable (a ∈ (∅ : Set α)) := Decidable.isFalse (by simp)
 #align set.decidable_emptyset Set.decidableEmptyset
 
-instance decidableUniv : DecidablePred (· ∈ (Set.univ : Set α)) := fun _ =>
-  Decidable.isTrue (by simp)
+instance decidableUniv : Decidable (a ∈ univ) := Decidable.isTrue (by simp)
 #align set.decidable_univ Set.decidableUniv
+
+instance decidableInsert [Decidable (a = b)] [Decidable (a ∈ s)] : Decidable (a ∈ insert b s) :=
+  inferInstanceAs (Decidable (_ ∨ _))
+
+-- Porting note: Lean 3 unfolded `{a}` before finding instances but Lean 4 needs additional help
+instance decidableSingleton [Decidable (a = b)] : Decidable (a ∈ ({b} : Set α)) :=
+  inferInstanceAs (Decidable (a = b))
 
 instance decidableSetOf (p : α → Prop) [Decidable (p a)] : Decidable (a ∈ { a | p a }) := by
   assumption
 #align set.decidable_set_of Set.decidableSetOf
-
--- Porting note: Lean 3 unfolded `{a}` before finding instances but Lean 4 needs additional help
-instance decidableMemSingleton {a b : α} [DecidableEq α] :
-    Decidable (a ∈ ({b} : Set α)) := decidableSetOf _ (· = b)
 
 end Set
 

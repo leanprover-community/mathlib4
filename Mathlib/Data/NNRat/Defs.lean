@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.Data.Int.Lemmas
+import Mathlib.Data.Nat.Cast.Order.Ring
 
 #align_import data.rat.nnrat from "leanprover-community/mathlib"@"b3f4f007a962e3787aa0f3b5c7942a1317f7d88e"
 
@@ -31,7 +31,6 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℚ` with 
 Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean inserts `NNRat.cast`, not
 `Subtype.val`. Else your lemma will never apply.
 -/
-
 
 open Function
 
@@ -103,11 +102,9 @@ theorem coe_nonneg (q : ℚ≥0) : (0 : ℚ) ≤ q :=
   q.2
 #align nnrat.coe_nonneg NNRat.coe_nonneg
 
--- eligible for dsimp
 @[simp, norm_cast] lemma coe_zero : ((0 : ℚ≥0) : ℚ) = 0 := rfl
 #align nnrat.coe_zero NNRat.coe_zero
 
--- eligible for dsimp
 @[simp, norm_cast] lemma coe_one : ((1 : ℚ≥0) : ℚ) = 1 := rfl
 #align nnrat.coe_one NNRat.coe_one
 
@@ -121,7 +118,6 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
   rfl
 #align nnrat.coe_mul NNRat.coe_mul
 
--- eligible for dsimp
 @[simp, norm_cast] lemma coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n :=
   rfl
 #align nnrat.coe_pow NNRat.coe_pow
@@ -194,7 +190,6 @@ def coeHom : ℚ≥0 →+* ℚ where
   map_add' := coe_add
 #align nnrat.coe_hom NNRat.coeHom
 
--- eligible for dsimp
 @[simp, norm_cast] lemma coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n := rfl
 #align nnrat.coe_nat_cast NNRat.coe_natCast
 
@@ -380,11 +375,8 @@ lemma coprime_num_den (q : ℚ≥0) : q.num.Coprime q.den := by simpa [num, den]
 @[simp] lemma den_ofNat (n : ℕ) [n.AtLeastTwo] : den (no_index (OfNat.ofNat n)) = 1 := rfl
 
 theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
-  refine ext <| Rat.ext ?_ ?_
-  · apply (Int.natAbs_inj_of_nonneg_of_nonneg _ _).1 hn
-    · exact Rat.num_nonneg.2 p.2
-    · exact Rat.num_nonneg.2 q.2
-  · exact hd
+  refine ext <| Rat.ext ?_ hd
+  simpa [num_coe]
 #align nnrat.ext_num_denom NNRat.ext_num_den
 
 theorem ext_num_den_iff : p = q ↔ p.num = q.num ∧ p.den = q.den :=

@@ -3,6 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
+import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.MetricSpace.Cauchy
 
@@ -339,15 +340,15 @@ theorem _root_.totallyBounded_Icc (a b : α) : TotallyBounded (Icc a b) :=
 #align totally_bounded_Icc totallyBounded_Icc
 
 theorem _root_.totallyBounded_Ico (a b : α) : TotallyBounded (Ico a b) :=
-  totallyBounded_subset Ico_subset_Icc_self (totallyBounded_Icc a b)
+  (totallyBounded_Icc a b).subset Ico_subset_Icc_self
 #align totally_bounded_Ico totallyBounded_Ico
 
 theorem _root_.totallyBounded_Ioc (a b : α) : TotallyBounded (Ioc a b) :=
-  totallyBounded_subset Ioc_subset_Icc_self (totallyBounded_Icc a b)
+  (totallyBounded_Icc a b).subset Ioc_subset_Icc_self
 #align totally_bounded_Ioc totallyBounded_Ioc
 
 theorem _root_.totallyBounded_Ioo (a b : α) : TotallyBounded (Ioo a b) :=
-  totallyBounded_subset Ioo_subset_Icc_self (totallyBounded_Icc a b)
+  (totallyBounded_Icc a b).subset Ioo_subset_Icc_self
 #align totally_bounded_Ioo totallyBounded_Ioo
 
 theorem isBounded_Icc (a b : α) : IsBounded (Icc a b) :=

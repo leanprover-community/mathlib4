@@ -1104,12 +1104,12 @@ theorem cbiSup_eq_of_not_forall {p : ι → Prop} {f : Subtype p → α} (hp : �
       refine ⟨c ⊔ sSup ∅, ?_⟩
       rintro - ⟨i, rfl⟩
       by_cases hi : p i
-      · simp only [hi, dite_true, ge_iff_le, le_sup_iff, hc (mem_range_self _), true_or]
-      · simp only [hi, dite_false, ge_iff_le, le_sup_right]
+      · simp only [hi, dite_true, le_sup_iff, hc (mem_range_self _), true_or]
+      · simp only [hi, dite_false, le_sup_right]
     apply le_antisymm
     · apply ciSup_le (fun i ↦ ?_)
       by_cases hi : p i
-      · simp only [hi, dite_true, ge_iff_le, le_sup_iff]
+      · simp only [hi, dite_true, le_sup_iff]
         left
         exact le_ciSup H _
       · simp [hi]
@@ -1183,6 +1183,11 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 
 section ConditionallyCompleteLinearOrderBot
 
+@[simp]
+theorem csInf_univ [ConditionallyCompleteLinearOrder α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
+  isLeast_univ.csInf_eq
+#align cInf_univ csInf_univ
+
 variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {f : ι → α} {a : α}
 
 @[simp]
@@ -1198,11 +1203,6 @@ theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by
 theorem ciSup_false (f : False → α) : ⨆ i, f i = ⊥ :=
   ciSup_of_empty f
 #align csupr_false ciSup_false
-
-@[simp]
-theorem csInf_univ : sInf (univ : Set α) = ⊥ :=
-  isLeast_univ.csInf_eq
-#align cInf_univ csInf_univ
 
 theorem isLUB_csSup' {s : Set α} (hs : BddAbove s) : IsLUB s (sSup s) := by
   rcases eq_empty_or_nonempty s with (rfl | hne)

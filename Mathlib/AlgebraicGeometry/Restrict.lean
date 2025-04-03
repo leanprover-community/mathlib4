@@ -44,6 +44,16 @@ notation3:60 X:60 " ∣_ᵤ " U:61 => Scheme.restrict X (U : Opens X).openEmbedd
 /-- The restriction of a scheme to an open subset. -/
 abbrev Scheme.ιOpens {X : Scheme.{u}} (U : Opens X) : X ∣_ᵤ U ⟶ X := X.ofRestrict _
 
+lemma Scheme.ιOpens_image_top {X : Scheme.{u}} (U : Opens X) : (Scheme.ιOpens U) ''ᵁ ⊤ = U :=
+  U.openEmbedding_obj_top
+
+instance Scheme.ιOpens_appLE_isIso {X : Scheme.{u}} (U : Opens X) :
+    IsIso ((Scheme.ιOpens U).appLE U ⊤ (by simp)) := by
+  simp only [restrict_presheaf_obj, ofRestrict_appLE]
+  have : IsIso (homOfLE <| le_of_eq (ιOpens_image_top U)) :=
+    homOfLE_isIso_of_eq _ <| ιOpens_image_top U
+  infer_instance
+
 lemma Scheme.ofRestrict_app_self {X : Scheme.{u}} (U : Opens X) :
     (ιOpens U).app U = X.presheaf.map (eqToHom (by simp)).op := rfl
 
@@ -55,6 +65,12 @@ lemma Scheme.eq_restrict_presheaf_map_eqToHom {X : Scheme.{u}} (U : Opens X) {V 
 @[simp]
 lemma opensRange_ιOpens {X : Scheme.{u}} (U : Opens X) : (Scheme.ιOpens U).opensRange = U :=
   Opens.ext Subtype.range_val
+
+attribute [-simp] eqToHom_op in
+/-- The global sections of the restriction is isomorphic to the sections on the open set. -/
+@[simps!]
+def Scheme.resTop (X : Scheme.{u}) (U : Opens X) : Γ(X ∣_ᵤ U, ⊤) ≅ Γ(X, U) :=
+  X.presheaf.mapIso (eqToIso U.openEmbedding_obj_top.symm).op
 
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
@@ -85,7 +101,6 @@ lemma Scheme.map_basicOpen_map (X : Scheme.{u}) (U : Opens X) (r : Γ(X, U)) :
     ιOpens U ''ᵁ ((X ∣_ᵤ U).basicOpen <|
       X.presheaf.map (eqToHom U.openEmbedding_obj_top).op r) = X.basicOpen r := by
   rw [Scheme.map_basicOpen', Scheme.basicOpen_res_eq, Scheme.basicOpen_res_eq]
-
 
 -- Porting note: `simps` can't synthesize `obj_left, obj_hom, mapLeft`
 /-- The functor taking open subsets of `X` to open subschemes of `X`. -/
@@ -238,7 +253,7 @@ section MorphismRestrict
 /-- Given a morphism `f : X ⟶ Y` and an open set `U ⊆ Y`, we have `X ×[Y] U ≅ X |_{f ⁻¹ U}` -/
 def pullbackRestrictIsoRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
     pullback f (Scheme.ιOpens U) ≅ X ∣_ᵤ f ⁻¹ᵁ U := by
-  refine IsOpenImmersion.isoOfRangeEq pullback.fst (X.ofRestrict _) ?_
+  refine IsOpenImmersion.isoOfRangeEq (pullback.fst f _) (X.ofRestrict _) ?_
   rw [IsOpenImmersion.range_pullback_fst_of_right]
   dsimp [Opens.coe_inclusion, Scheme.restrict]
   rw [Subtype.range_val, Subtype.range_coe]
@@ -247,19 +262,19 @@ def pullbackRestrictIsoRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
 
 @[simp, reassoc]
 theorem pullbackRestrictIsoRestrict_inv_fst {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
-    (pullbackRestrictIsoRestrict f U).inv ≫ pullback.fst = X.ofRestrict _ := by
+    (pullbackRestrictIsoRestrict f U).inv ≫ pullback.fst f _ = X.ofRestrict _ := by
   delta pullbackRestrictIsoRestrict; simp
 #align algebraic_geometry.pullback_restrict_iso_restrict_inv_fst AlgebraicGeometry.pullbackRestrictIsoRestrict_inv_fst
 
 @[simp, reassoc]
 theorem pullbackRestrictIsoRestrict_hom_restrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
-    (pullbackRestrictIsoRestrict f U).hom ≫ Scheme.ιOpens (f ⁻¹ᵁ U) = pullback.fst := by
+    (pullbackRestrictIsoRestrict f U).hom ≫ Scheme.ιOpens (f ⁻¹ᵁ U) = pullback.fst f _ := by
   delta pullbackRestrictIsoRestrict; simp
 #align algebraic_geometry.pullback_restrict_iso_restrict_hom_restrict AlgebraicGeometry.pullbackRestrictIsoRestrict_hom_restrict
 
 /-- The restriction of a morphism `X ⟶ Y` onto `X |_{f ⁻¹ U} ⟶ Y |_ U`. -/
 def morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) : X ∣_ᵤ f ⁻¹ᵁ U ⟶ Y ∣_ᵤ U :=
-  (pullbackRestrictIsoRestrict f U).inv ≫ pullback.snd
+  (pullbackRestrictIsoRestrict f U).inv ≫ pullback.snd _ _
 #align algebraic_geometry.morphism_restrict AlgebraicGeometry.morphismRestrict
 
 /-- the notation for restricting a morphism of scheme to an open subset of the target scheme -/
@@ -267,7 +282,7 @@ infixl:85 " ∣_ " => morphismRestrict
 
 @[simp, reassoc]
 theorem pullbackRestrictIsoRestrict_hom_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y)
-    (U : Opens Y) : (pullbackRestrictIsoRestrict f U).hom ≫ f ∣_ U = pullback.snd :=
+    (U : Opens Y) : (pullbackRestrictIsoRestrict f U).hom ≫ f ∣_ U = pullback.snd _ _ :=
   Iso.hom_inv_id_assoc _ _
 #align algebraic_geometry.pullback_restrict_iso_restrict_hom_morphism_restrict AlgebraicGeometry.pullbackRestrictIsoRestrict_hom_morphismRestrict
 
@@ -295,7 +310,7 @@ theorem morphismRestrict_comp {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z) (
   rw [← pullbackRightPullbackFstIso_inv_snd_snd]
   simp_rw [← Category.assoc]
   congr 1
-  rw [← cancel_mono pullback.fst]
+  rw [← cancel_mono (pullback.fst _ _)]
   simp_rw [Category.assoc]
   rw [pullbackRestrictIsoRestrict_inv_fst, pullbackRightPullbackFstIso_inv_snd_fst, ←
     pullback.condition, pullbackRestrictIsoRestrict_inv_fst_assoc,
@@ -376,7 +391,7 @@ theorem Γ_map_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Opens Y) :
 along the immersion. -/
 def morphismRestrictOpensRange
     {X Y U : Scheme.{u}} (f : X ⟶ Y) (g : U ⟶ Y) [hg : IsOpenImmersion g] :
-    Arrow.mk (f ∣_ g.opensRange) ≅ Arrow.mk (pullback.snd : pullback f g ⟶ _) := by
+    Arrow.mk (f ∣_ g.opensRange) ≅ Arrow.mk (pullback.snd f g) := by
   let V : Opens Y := g.opensRange
   let e :=
     IsOpenImmersion.isoOfRangeEq g (Scheme.ιOpens V) Subtype.range_coe.symm

@@ -501,6 +501,9 @@ lemma coe_id {X : CommRingCat} : (𝟙 X : X → X) = id := rfl
 
 lemma coe_comp {X Y Z : CommRingCat} {f : X ⟶ Y} {g : Y ⟶ Z} : (f ≫ g : X → Z) = g ∘ f := rfl
 
+/-- Specialization of `ConcreteCategory.id_apply` because `simp` can't see through the defeq. -/
+@[simp] lemma id_apply (R : CommRingCat) (x : R) : 𝟙 R x = x := rfl
+
 @[simp] lemma forget_map {X Y : CommRingCat} (f : X ⟶ Y) :
     (forget CommRingCat).map f = (f : X → Y) := rfl
 

@@ -116,7 +116,7 @@ def functor : C ⥤ Quotient r where
 #align category_theory.quotient.functor CategoryTheory.Quotient.functor
 
 instance full_functor : (functor r).Full where
-  map_surjective f:= ⟨Quot.out f, by simp [functor]⟩
+  map_surjective f := ⟨Quot.out f, by simp [functor]⟩
 
 instance essSurj_functor : (functor r).EssSurj where
   mem_essImage Y :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
 import Mathlib.Tactic.Basic
-import Mathlib.Init.Data.Int.Basic
+import Mathlib.Mathport.Rename
 
 /-!
 # lift tactic
@@ -24,7 +24,7 @@ class CanLift (α β : Sort*) (coe : outParam <| β → α) (cond : outParam <| 
   prf : ∀ x : α, cond x → ∃ y : β, coe y = x
 #align can_lift CanLift
 
-instance : CanLift ℤ ℕ (fun n : ℕ ↦ n) (0 ≤ ·) :=
+instance : CanLift Int Nat (fun n : Nat ↦ n) (0 ≤ ·) :=
   ⟨fun n hn ↦ ⟨n.natAbs, Int.natAbs_of_nonneg hn⟩⟩
 
 /-- Enable automatic handling of pi types in `CanLift`. -/

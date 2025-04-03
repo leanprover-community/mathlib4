@@ -165,7 +165,7 @@ def inverse : AlgebraCat.{u} R ⥤ Mon_ (ModuleCat.{u} R) where
   map f :=
     { hom := f.toLinearMap
       one_hom := LinearMap.ext f.commutes
-      mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| f.map_mul }
+      mul_hom := TensorProduct.ext <| LinearMap.ext₂ <| map_mul f }
 #align Module.Mon_Module_equivalence_Algebra.inverse ModuleCat.MonModuleEquivalenceAlgebra.inverse
 
 end MonModuleEquivalenceAlgebra

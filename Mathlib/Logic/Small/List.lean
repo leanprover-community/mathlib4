@@ -18,6 +18,8 @@ and is used by category theory files which do not need everything imported by `D
 
 universe u v
 
+open Mathlib
+
 instance smallVector {α : Type v} {n : ℕ} [Small.{u} α] : Small.{u} (Vector α n) :=
   small_of_injective (Equiv.vectorEquivFin α n).injective
 #align small_vector smallVector

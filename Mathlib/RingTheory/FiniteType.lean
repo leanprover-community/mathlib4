@@ -457,17 +457,17 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [AddCommMonoid M] [CommSemir
   · have : m ∈ closure S := hS.symm ▸ mem_top _
     refine AddSubmonoid.closure_induction this (fun m hm => ?_) ?_ ?_
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
-    · exact ⟨1, AlgHom.map_one _⟩
+    · exact ⟨1, map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
       exact
         ⟨P₁ * P₂, by
-          rw [AlgHom.map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single,
+          rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single,
             one_mul]; rfl⟩
   · rcases ihf with ⟨P, rfl⟩
     rcases ihg with ⟨Q, rfl⟩
-    exact ⟨P + Q, AlgHom.map_add _ _ _⟩
+    exact ⟨P + Q, map_add _ _ _⟩
   · rcases ih with ⟨P, rfl⟩
-    exact ⟨r • P, AlgHom.map_smul _ _ _⟩
+    exact ⟨r • P, map_smul _ _ _⟩
 #align add_monoid_algebra.mv_polynomial_aeval_of_surjective_of_closure AddMonoidAlgebra.mvPolynomial_aeval_of_surjective_of_closure
 
 variable [AddMonoid M]
@@ -483,17 +483,17 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
   · have : m ∈ closure S := hS.symm ▸ mem_top _
     refine AddSubmonoid.closure_induction this (fun m hm => ?_) ?_ ?_
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
-    · exact ⟨1, AlgHom.map_one _⟩
+    · exact ⟨1, map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
       exact
         ⟨P₁ * P₂, by
-          rw [AlgHom.map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single,
+          rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single,
             one_mul]; rfl⟩
   · rcases ihf with ⟨P, rfl⟩
     rcases ihg with ⟨Q, rfl⟩
-    exact ⟨P + Q, AlgHom.map_add _ _ _⟩
+    exact ⟨P + Q, map_add _ _ _⟩
   · rcases ih with ⟨P, rfl⟩
-    exact ⟨r • P, AlgHom.map_smul _ _ _⟩
+    exact ⟨r • P, map_smul _ _ _⟩
 
 variable (R M)
 
@@ -636,15 +636,15 @@ theorem mvPolynomial_aeval_of_surjective_of_closure [CommMonoid M] [CommSemiring
   · have : m ∈ closure S := hS.symm ▸ mem_top _
     refine Submonoid.closure_induction this (fun m hm => ?_) ?_ ?_
     · exact ⟨MvPolynomial.X ⟨m, hm⟩, MvPolynomial.aeval_X _ _⟩
-    · exact ⟨1, AlgHom.map_one _⟩
+    · exact ⟨1, map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
       exact
         ⟨P₁ * P₂, by
-          rw [AlgHom.map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single, one_mul]⟩
+          rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single, one_mul]⟩
   · rcases ihf with ⟨P, rfl⟩; rcases ihg with ⟨Q, rfl⟩
-    exact ⟨P + Q, AlgHom.map_add _ _ _⟩
+    exact ⟨P + Q, map_add _ _ _⟩
   · rcases ih with ⟨P, rfl⟩
-    exact ⟨r • P, AlgHom.map_smul _ _ _⟩
+    exact ⟨r • P, map_smul _ _ _⟩
 #align monoid_algebra.mv_polynomial_aeval_of_surjective_of_closure MonoidAlgebra.mvPolynomial_aeval_of_surjective_of_closure
 
 
@@ -661,16 +661,16 @@ theorem freeAlgebra_lift_of_surjective_of_closure [CommSemiring R] {S : Set M}
   · have : m ∈ closure S := hS.symm ▸ mem_top _
     refine Submonoid.closure_induction this (fun m hm => ?_) ?_ ?_
     · exact ⟨FreeAlgebra.ι R ⟨m, hm⟩, FreeAlgebra.lift_ι_apply _ _⟩
-    · exact ⟨1, AlgHom.map_one _⟩
+    · exact ⟨1, map_one _⟩
     · rintro m₁ m₂ ⟨P₁, hP₁⟩ ⟨P₂, hP₂⟩
       exact
         ⟨P₁ * P₂, by
-          rw [AlgHom.map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single, one_mul]⟩
+          rw [map_mul, hP₁, hP₂, of_apply, of_apply, of_apply, single_mul_single, one_mul]⟩
   · rcases ihf with ⟨P, rfl⟩
     rcases ihg with ⟨Q, rfl⟩
-    exact ⟨P + Q, AlgHom.map_add _ _ _⟩
+    exact ⟨P + Q, map_add _ _ _⟩
   · rcases ih with ⟨P, rfl⟩
-    exact ⟨r • P, AlgHom.map_smul _ _ _⟩
+    exact ⟨r • P, map_smul _ _ _⟩
 
 /-- If a monoid `M` is finitely generated then `MonoidAlgebra R M` is of finite type. -/
 instance finiteType_of_fg [CommRing R] [Monoid.FG M] : FiniteType R (MonoidAlgebra R M) :=

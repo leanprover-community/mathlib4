@@ -469,7 +469,7 @@ theorem measure_eq_content_of_regular (H : MeasureTheory.Content.ContentRegular 
     _ ≤ μ.measure (closure K) := by
       rw [μ.measure_apply (isClosed_closure.measurableSet)]
       exact μ.le_outerMeasure_compacts _
-    _ = μ.measure K := Measure.OuterRegular.measure_closure_eq_of_isCompact K.2
+    _ = μ.measure K := K.2.measure_closure _
 #align measure_theory.content.measure_eq_content_of_regular MeasureTheory.Content.measure_eq_content_of_regular
 
 end RegularContents

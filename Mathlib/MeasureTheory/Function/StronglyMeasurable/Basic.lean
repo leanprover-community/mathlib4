@@ -88,6 +88,7 @@ def FinStronglyMeasurable [Zero β]
 
 /-- A function is `AEStronglyMeasurable` with respect to a measure `μ` if it is almost everywhere
 equal to the limit of a sequence of simple functions. -/
+@[fun_prop]
 def AEStronglyMeasurable
     {_ : MeasurableSpace α} (f : α → β) (μ : Measure α := by volume_tac) : Prop :=
   ∃ g, StronglyMeasurable g ∧ f =ᵐ[μ] g
@@ -1318,7 +1319,7 @@ theorem _root_.Continuous.comp_aestronglyMeasurable₂
   hg.comp_aestronglyMeasurable (hf.prod_mk h'f)
 
 /-- In a space with second countable topology, measurable implies ae strongly measurable. -/
-@[aesop unsafe 30% apply (rule_sets := [Measurable])]
+@[fun_prop, aesop unsafe 30% apply (rule_sets := [Measurable])]
 theorem _root_.Measurable.aestronglyMeasurable {_ : MeasurableSpace α} {μ : Measure α}
     [MeasurableSpace β] [PseudoMetrizableSpace β] [SecondCountableTopology β]
     [OpensMeasurableSpace β] (hf : Measurable f) : AEStronglyMeasurable f μ :=

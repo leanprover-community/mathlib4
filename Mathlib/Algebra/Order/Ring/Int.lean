@@ -75,34 +75,7 @@ lemma add_two_le_iff_lt_of_even_sub {m n : ℤ} (even : Even (n - m)) : m + 2 �
 
 end Int
 
-section bit0_bit1
-variable {R}
-set_option linter.deprecated false
-
--- The next four lemmas allow us to replace multiplication by a numeral with a `zsmul` expression.
-
-section NonUnitalNonAssocRing
-variable [NonUnitalNonAssocRing R] (n r : R)
-
-lemma bit0_mul : bit0 n * r = (2 : ℤ) • (n * r) := by
-  rw [bit0, add_mul, ← one_add_one_eq_two, add_zsmul, one_zsmul]
-#align bit0_mul bit0_mul
-
-lemma mul_bit0 : r * bit0 n = (2 : ℤ) • (r * n) := by
-  rw [bit0, mul_add, ← one_add_one_eq_two, add_zsmul, one_zsmul]
-#align mul_bit0 mul_bit0
-
-end NonUnitalNonAssocRing
-
-section NonAssocRing
-variable [NonAssocRing R] (n r : R)
-
-lemma bit1_mul : bit1 n * r = (2 : ℤ) • (n * r) + r := by rw [bit1, add_mul, bit0_mul, one_mul]
-#align bit1_mul bit1_mul
-
-lemma mul_bit1 {n r : R} : r * bit1 n = (2 : ℤ) • (r * n) + r := by
-  rw [bit1, mul_add, mul_bit0, mul_one]
-#align mul_bit1 mul_bit1
-
-end NonAssocRing
-end bit0_bit1
+#noalign bit0_mul
+#noalign mul_bit0
+#noalign bit1_mul
+#noalign mul_bit1

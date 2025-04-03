@@ -486,3 +486,5 @@ theorem restrict_sInf_eq_sInf_restrict (m : Set (OuterMeasure α)) {s : Set α} 
 end sInfGen
 
 end OuterMeasure
+
+end MeasureTheory

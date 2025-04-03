@@ -89,3 +89,5 @@ theorem natDegree_cancelLeads_lt_of_natDegree_le_natDegree (h : p.natDegree ≤ 
 end CommRing
 
 end
+
+end Polynomial

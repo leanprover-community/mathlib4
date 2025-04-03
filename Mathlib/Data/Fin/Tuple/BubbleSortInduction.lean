@@ -5,6 +5,7 @@ Authors: Michael Stoll
 -/
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Order.WellFounded
+import Mathlib.Order.PiLex
 
 #align_import data.fin.tuple.bubble_sort_induction from "leanprover-community/mathlib"@"bf2428c9486c407ca38b5b3fb10b87dad0bc99fa"
 

@@ -2054,6 +2054,17 @@ lemma prod_mul_eq_prod_mul_of_exists [DecidableEq α] {s : Finset α} {f : α �
   simp only [mem_erase, ne_eq, not_true_eq_false, false_and, not_false_eq_true, prod_insert]
   rw [mul_assoc, mul_comm, mul_assoc, mul_comm b₁, h, ← mul_assoc, mul_comm _ (f a)]
 
+@[to_additive]
+lemma isSquare_prod {s : Finset ι} [CommMonoid α] (f : ι → α)
+    (h : ∀ c ∈ s, IsSquare (f c)) : IsSquare (∏ i ∈ s, f i) := by
+  rw [isSquare_iff_exists_sq]
+  use (∏ (x : s), ((isSquare_iff_exists_sq _).mp (h _ x.2)).choose)
+  rw [@sq, ← Finset.prod_mul_distrib, ← Finset.prod_coe_sort]
+  congr
+  ext i
+  rw [← @sq]
+  exact ((isSquare_iff_exists_sq _).mp (h _ i.2)).choose_spec
+
 end CommMonoid
 
 section CancelCommMonoid
@@ -2324,7 +2335,7 @@ theorem prod_empty {α β : Type*} [CommMonoid β] [IsEmpty α] [Fintype α] (f 
 @[to_additive]
 theorem prod_subsingleton {α β : Type*} [CommMonoid β] [Subsingleton α] [Fintype α] (f : α → β)
     (a : α) : ∏ x : α, f x = f a := by
-  haveI : Unique α := uniqueOfSubsingleton a
+  have : Unique α := uniqueOfSubsingleton a
   rw [prod_unique f, Subsingleton.elim default a]
 #align fintype.prod_subsingleton Fintype.prod_subsingleton
 #align fintype.sum_subsingleton Fintype.sum_subsingleton
@@ -2418,7 +2429,7 @@ theorem prod_toFinset {M : Type*} [DecidableEq α] [CommMonoid M] (f : α → M)
 @[simp]
 theorem sum_toFinset_count_eq_length [DecidableEq α] (l : List α) :
     ∑ a in l.toFinset, l.count a = l.length := by
-  simpa using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
+  simpa [List.map_const'] using (Finset.sum_list_map_count l fun _ => (1 : ℕ)).symm
 
 end List
 

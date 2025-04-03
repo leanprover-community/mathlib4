@@ -3,8 +3,8 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Filippo A. E. Nuccio
 -/
-import Mathlib.RingTheory.IntegralClosure
 import Mathlib.RingTheory.FractionalIdeal.Basic
+import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
 
 #align_import ring_theory.fractional_ideal from "leanprover-community/mathlib"@"ed90a7d327c3a5caf65a6faf7e8a0d63c4605df7"
 
@@ -55,7 +55,7 @@ theorem _root_.IsFractional.map (g : P →ₐ[R] P') {I : Submodule R P} :
       rw [AlgHom.toLinearMap_apply] at hb'
       obtain ⟨x, hx⟩ := hI b' b'_mem
       use x
-      rw [← g.commutes, hx, g.map_smul, hb']⟩
+      rw [← g.commutes, hx, _root_.map_smul, hb']⟩
 #align is_fractional.map IsFractional.map
 
 /-- `I.map g` is the pushforward of the fractional ideal `I` along the algebra morphism `g` -/

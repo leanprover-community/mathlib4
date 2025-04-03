@@ -298,14 +298,14 @@ theorem algebraMap' (k : K) : (_root_.algebraMap K (K_hat R K) k).IsFiniteAdele 
     apply_fun v.valuation at hk
     simp only [Valuation.map_mul, valuation_of_algebraMap] at hk
     rw [mem_setOf_eq, valuation_of_algebraMap]
-    have := int_valuation_le_one v n
+    have := intValuation_le_one v n
     contrapose! this
     change 1 < v.intValuation n
     rw [← hk, mul_comm]
     exact lt_mul_of_le_of_one_lt' this hv (by simp) (by simp)
   simp_rw [valuation_of_algebraMap]
   change {v : HeightOneSpectrum R | v.intValuationDef d < 1}.Finite
-  simp_rw [int_valuation_lt_one_iff_dvd]
+  simp_rw [intValuation_lt_one_iff_dvd]
   apply Ideal.finite_factors
   simpa only [Submodule.zero_eq_bot, ne_eq, Ideal.span_singleton_eq_bot]
 

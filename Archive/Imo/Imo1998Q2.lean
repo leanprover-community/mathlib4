@@ -130,8 +130,9 @@ theorem A_fibre_over_contestant_card (c : C) :
       ((A r).filter fun a : AgreedTriple C J => a.contestant = c).card := by
   rw [A_fibre_over_contestant r]
   apply Finset.card_image_of_injOn
-  -- Porting note (#10936): used to be `tidy`. TODO: remove `ext` after `extCore` to `aesop`.
-  unfold Set.InjOn; intros; ext; all_goals aesop
+  unfold Set.InjOn
+  rintro ⟨a, p⟩ h ⟨a', p'⟩ h' rfl
+  aesop
 #align imo1998_q2.A_fibre_over_contestant_card Imo1998Q2.A_fibre_over_contestant_card
 
 theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
@@ -139,10 +140,7 @@ theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
     AgreedTriple.contestant := by
   dsimp only [A, agreedContestants]; ext c; constructor <;> intro h
   · rw [Finset.mem_image]; refine ⟨⟨c, p⟩, ?_⟩; aesop
-  -- Porting note: this used to be `finish`
-  · simp only [Finset.mem_filter, Finset.mem_image, Prod.exists] at h
-    rcases h with ⟨_, ⟨_, ⟨_, ⟨h, _⟩⟩⟩⟩
-    cases h; aesop
+  · aesop
 #align imo1998_q2.A_fibre_over_judge_pair Imo1998Q2.A_fibre_over_judgePair
 
 theorem A_fibre_over_judgePair_card {p : JudgePair J} (h : p.Distinct) :

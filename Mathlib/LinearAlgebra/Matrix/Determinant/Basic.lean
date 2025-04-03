@@ -226,7 +226,6 @@ theorem det_transpose (M : Matrix n n R) : Mᵀ.det = M.det := by
   rw [sign_inv]
   congr 1
   apply Fintype.prod_equiv σ
-  intros
   simp
 #align matrix.det_transpose Matrix.det_transpose
 
@@ -495,7 +494,7 @@ theorem det_updateColumn_add_smul_self (A : Matrix n n R) {i j : n} (hij : i ≠
 
 theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Finset n} :
     ∀ (c : n → R) (_ : ∀ i, i ∉ s → c i = 0) (k : n) (_ : k ∉ s)
-      (_: ∀ i j, A i j = B i j + c i * B k j), det A = det B := by
+      (_ : ∀ i j, A i j = B i j + c i * B k j), det A = det B := by
   induction s using Finset.induction_on generalizing B with
   | empty =>
     rintro c hs k - A_eq

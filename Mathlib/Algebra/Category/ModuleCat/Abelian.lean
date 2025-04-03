@@ -6,7 +6,7 @@ Authors: Markus Himmel
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.Algebra.Category.ModuleCat.Kernels
 import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.CategoryTheory.Abelian.Exact
+import Mathlib.CategoryTheory.Abelian.Basic
 
 #align_import algebra.category.Module.abelian from "leanprover-community/mathlib"@"09f981f72d43749f1fa072deade828d9c1e185bb"
 
@@ -86,7 +86,7 @@ section ReflectsLimits
 
 -- Porting note: added to make the following definitions work
 instance : HasLimitsOfSize.{v,v} (ModuleCatMax.{v, w} R) :=
-  ModuleCat.hasLimitsOfSize.{v, max v w, _, v}
+  ModuleCat.hasLimitsOfSize.{v, v, max v w}
 
 /- We need to put this in this weird spot because we need to know that the category of modules
     is balanced. -/
@@ -113,19 +113,5 @@ set_option linter.uppercaseLean3 false in
 #align Module.forget₂_reflects_limits ModuleCat.forget₂ReflectsLimits
 
 end ReflectsLimits
-
-variable {O : ModuleCat.{v} R} (g : N ⟶ O)
-
-open LinearMap
-
-attribute [local instance] Preadditive.hasEqualizers_of_hasKernels
-
-theorem exact_iff : Exact f g ↔ LinearMap.range f = LinearMap.ker g := by
-  rw [abelian.exact_iff' f g (kernelIsLimit _) (cokernelIsColimit _)]
-  exact
-    ⟨fun h => le_antisymm (range_le_ker_iff.2 h.1) (ker_le_range_iff.2 h.2), fun h =>
-      ⟨range_le_ker_iff.1 <| le_of_eq h, ker_le_range_iff.1 <| le_of_eq h.symm⟩⟩
-set_option linter.uppercaseLean3 false in
-#align Module.exact_iff ModuleCat.exact_iff
 
 end ModuleCat

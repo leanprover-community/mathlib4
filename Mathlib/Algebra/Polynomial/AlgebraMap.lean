@@ -124,7 +124,7 @@ theorem algHom_eval₂_algebraMap {R A B : Type*} [CommSemiring R] [Semiring A] 
     [Algebra R A] [Algebra R B] (p : R[X]) (f : A →ₐ[R] B) (a : A) :
     f (eval₂ (algebraMap R A) a p) = eval₂ (algebraMap R B) (f a) p := by
   simp only [eval₂_eq_sum, sum_def]
-  simp only [f.map_sum, f.map_mul, f.map_pow, eq_intCast, map_intCast, AlgHom.commutes]
+  simp only [map_sum, map_mul, map_pow, eq_intCast, map_intCast, AlgHom.commutes]
 #align polynomial.alg_hom_eval₂_algebra_map Polynomial.algHom_eval₂_algebraMap
 
 @[simp]
@@ -132,7 +132,7 @@ theorem eval₂_algebraMap_X {R A : Type*} [CommSemiring R] [Semiring A] [Algebr
     (f : R[X] →ₐ[R] A) : eval₂ (algebraMap R A) (f X) p = f p := by
   conv_rhs => rw [← Polynomial.sum_C_mul_X_pow_eq p]
   simp only [eval₂_eq_sum, sum_def]
-  simp only [f.map_sum, f.map_mul, f.map_pow, eq_intCast, map_intCast]
+  simp only [map_sum, map_mul, map_pow, eq_intCast, map_intCast]
   simp [Polynomial.C_eq_algebraMap]
 set_option linter.uppercaseLean3 false in
 #align polynomial.eval₂_algebra_map_X Polynomial.eval₂_algebraMap_X
@@ -157,14 +157,6 @@ set_option linter.uppercaseLean3 false in
 @[deprecated (since := "2024-04-17")]
 alias eval₂_int_castRingHom_X := eval₂_intCastRingHom_X
 
-end CommSemiring
-
-section aeval
-
-variable [CommSemiring R] [Semiring A] [CommSemiring A'] [Semiring B]
-variable [Algebra R A] [Algebra R A'] [Algebra R B]
-variable {p q : R[X]} (x : A)
-
 /-- `Polynomial.eval₂` as an `AlgHom` for noncommutative algebras.
 
 This is `Polynomial.eval₂RingHom'` for `AlgHom`s. -/
@@ -172,6 +164,77 @@ This is `Polynomial.eval₂RingHom'` for `AlgHom`s. -/
 def eval₂AlgHom' (f : A →ₐ[R] B) (b : B) (hf : ∀ a, Commute (f a) b) : A[X] →ₐ[R] B where
   toRingHom := eval₂RingHom' f b hf
   commutes' _ := (eval₂_C _ _).trans (f.commutes _)
+
+section Map
+
+/-- `Polynomial.map` as an `AlgHom` for noncommutative algebras.
+
+  This is the algebra version of `Polynomial.mapRingHom`. -/
+def mapAlgHom (f : A →ₐ[R] B) : Polynomial A →ₐ[R] Polynomial B where
+  toRingHom := mapRingHom f.toRingHom
+  commutes' := by simp
+
+@[simp]
+theorem coe_mapAlgHom (f : A →ₐ[R] B) : ⇑(mapAlgHom f) = map f :=
+  rfl
+
+@[simp]
+theorem mapAlgHom_id : mapAlgHom (AlgHom.id R A) = AlgHom.id R (Polynomial A) :=
+  AlgHom.ext fun _x => map_id
+
+@[simp]
+theorem mapAlgHom_coe_ringHom (f : A →ₐ[R] B) :
+    ↑(mapAlgHom f : _ →ₐ[R] Polynomial B) = (mapRingHom ↑f : Polynomial A →+* Polynomial B) :=
+  rfl
+
+@[simp]
+theorem mapAlgHom_comp (C : Type z) [Semiring C] [Algebra R C] (f : B →ₐ[R] C) (g : A →ₐ[R] B) :
+    (mapAlgHom f).comp (mapAlgHom g) = mapAlgHom (f.comp g) := by
+  apply AlgHom.ext
+  intro x
+  simp [AlgHom.comp_algebraMap, map_map]
+  congr
+
+theorem mapAlgHom_eq_eval₂AlgHom'_CAlgHom (f : A →ₐ[R] B) : mapAlgHom f = eval₂AlgHom'
+    (CAlgHom.comp f) X (fun a => (commute_X (C (f a))).symm) := by
+  apply AlgHom.ext
+  intro x
+  congr
+
+/-- If `A` and `B` are isomorphic as `R`-algebras, then so are their polynomial rings -/
+def mapAlgEquiv (f : A ≃ₐ[R] B) : Polynomial A ≃ₐ[R] Polynomial B :=
+  AlgEquiv.ofAlgHom (mapAlgHom f.toAlgHom) (mapAlgHom f.symm.toAlgHom) (by simp) (by simp)
+
+@[simp]
+theorem coe_mapAlgEquiv (f : A ≃ₐ[R] B) : ⇑(mapAlgEquiv f) = map f :=
+  rfl
+
+@[simp]
+theorem mapAlgEquiv_id : mapAlgEquiv (@AlgEquiv.refl R A _ _ _) = AlgEquiv.refl :=
+  AlgEquiv.ext fun _x => map_id
+
+@[simp]
+theorem mapAlgEquiv_coe_ringHom (f : A ≃ₐ[R] B) :
+    ↑(mapAlgEquiv f : _ ≃ₐ[R] Polynomial B) = (mapRingHom ↑f : Polynomial A →+* Polynomial B) :=
+  rfl
+
+@[simp]
+theorem mapAlgEquiv_comp (C : Type z) [Semiring C] [Algebra R C] (f : A ≃ₐ[R] B) (g : B ≃ₐ[R] C) :
+    (mapAlgEquiv f).trans (mapAlgEquiv g) = mapAlgEquiv (f.trans g) := by
+  apply AlgEquiv.ext
+  intro x
+  simp [AlgEquiv.trans_apply, map_map]
+  congr
+
+end Map
+
+end CommSemiring
+
+section aeval
+
+variable [CommSemiring R] [Semiring A] [CommSemiring A'] [Semiring B]
+variable [Algebra R A] [Algebra R A'] [Algebra R B]
+variable {p q : R[X]} (x : A)
 
 /-- Given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
 the unique `R`-algebra homomorphism from `R[X]` to `A` sending `X` to `x`.
@@ -202,7 +265,7 @@ theorem aeval_def (p : R[X]) : aeval x p = eval₂ (algebraMap R A) x p :=
 
 -- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_zero : aeval x (0 : R[X]) = 0 :=
-  AlgHom.map_zero (aeval x)
+  map_zero (aeval x)
 #align polynomial.aeval_zero Polynomial.aeval_zero
 
 @[simp]
@@ -230,12 +293,12 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_add : aeval x (p + q) = aeval x p + aeval x q :=
-  AlgHom.map_add _ _ _
+  map_add _ _ _
 #align polynomial.aeval_add Polynomial.aeval_add
 
 -- Porting note: removed `@[simp]` because `simp` can prove this
 theorem aeval_one : aeval x (1 : R[X]) = 1 :=
-  AlgHom.map_one _
+  map_one _
 #align polynomial.aeval_one Polynomial.aeval_one
 
 #noalign polynomial.aeval_bit0
@@ -250,7 +313,7 @@ theorem aeval_natCast (n : ℕ) : aeval x (n : R[X]) = n :=
 alias aeval_nat_cast := aeval_natCast
 
 theorem aeval_mul : aeval x (p * q) = aeval x p * aeval x q :=
-  AlgHom.map_mul _ _ _
+  map_mul _ _ _
 #align polynomial.aeval_mul Polynomial.aeval_mul
 
 theorem comp_eq_aeval : p.comp q = aeval q p := rfl
@@ -345,7 +408,7 @@ theorem coeff_zero_eq_aeval_zero' (p : R[X]) : algebraMap R A (p.coeff 0) = aeva
   simp [aeval_def]
 #align polynomial.coeff_zero_eq_aeval_zero' Polynomial.coeff_zero_eq_aeval_zero'
 
-theorem map_aeval_eq_aeval_map {S T U : Type*} [CommSemiring S] [CommSemiring T] [Semiring U]
+theorem map_aeval_eq_aeval_map {S T U : Type*} [Semiring S] [CommSemiring T] [Semiring U]
     [Algebra R S] [Algebra T U] {φ : R →+* T} {ψ : S →+* U}
     (h : (algebraMap T U).comp φ = ψ.comp (algebraMap R S)) (p : R[X]) (a : S) :
     ψ (aeval a p) = aeval (ψ a) (p.map φ) := by
@@ -376,7 +439,7 @@ instance instCommSemiringAdjoinSingleton :
   { mul_comm := fun ⟨p, hp⟩ ⟨q, hq⟩ ↦ by
       obtain ⟨p', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hp
       obtain ⟨q', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hq
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Submonoid.mk_mul_mk, ← AlgHom.map_mul,
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Submonoid.mk_mul_mk, ← map_mul,
         mul_comm p' q'] }
 
 instance instCommRingAdjoinSingleton {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (x : A) :

@@ -47,21 +47,21 @@ variable {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ']
 lifting `𝟙 R`, then `IsCartesian.map f φ φ'` is the morphism `a' ⟶ a` obtained from the universal
 property of `φ`. -/
 protected noncomputable def map : a' ⟶ a :=
-  Classical.choose <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ'
+  Classical.choose <| IsCartesian.universal_property (p := p) (f := f) (φ := φ) φ'
 
 instance map_isHomLift : IsHomLift p (𝟙 R) (IsCartesian.map p f φ φ') :=
-  (Classical.choose_spec <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').1.1
+  (Classical.choose_spec <| IsCartesian.universal_property (p := p) (f := f) (φ := φ) φ').1.1
 
 @[reassoc (attr := simp)]
 lemma fac : IsCartesian.map p f φ φ' ≫ φ = φ' :=
-  (Classical.choose_spec <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').1.2
+  (Classical.choose_spec <| IsCartesian.universal_property (p := p) (f := f) (φ := φ) φ').1.2
 
 /-- Given a cartesian arrow `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, a morphism `φ' : a' ⟶ b`
 lifting `𝟙 R`, and a morphism `ψ : a' ⟶ a` such that `g ≫ ψ = φ'`. Then `ψ` is the map induced
 by the universal property of `φ`. -/
 lemma map_uniq (ψ : a' ⟶ a) [IsHomLift p (𝟙 R) ψ] (hψ : ψ ≫ φ = φ') :
     ψ = IsCartesian.map p f φ φ' :=
-  (Classical.choose_spec <| IsCartesian.universal_property (p:=p) (f:=f) (φ:=φ) φ').2
+  (Classical.choose_spec <| IsCartesian.universal_property (p := p) (f := f) (φ := φ) φ').2
     ψ ⟨inferInstance, hψ⟩
 
 /-- Given a cartesian arrow `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, a morphism `φ' : a' ⟶ b`
@@ -116,3 +116,5 @@ instance of_comp_iso {b' : 𝒳} (φ' : b ≅ b') [IsHomLift p (𝟙 S) φ'.hom]
     simp only [Iso.eq_comp_inv, assoc, hτ₂]
 
 end Functor.IsCartesian
+
+end CategoryTheory

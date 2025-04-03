@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Control.Monad.Basic
-import Mathlib.Data.Part
 import Mathlib.Order.Chain
 import Mathlib.Order.Hom.Order
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Order.Part
 
 #align_import order.omega_complete_partial_order from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
@@ -54,32 +53,11 @@ supremum helps define the meaning of recursive procedures.
  * [Semantics of Programming Languages: Structures and Techniques][gunter1992]
 -/
 
+assert_not_exists OrderedCommMonoid
 
 universe u v
 
--- Porting note: can this really be a good idea?
-attribute [-simp] Part.bind_eq_bind Part.map_eq_map
-
 open scoped Classical
-
-namespace OrderHom
-
-variable {α : Type*} {β : Type*} {γ : Type*}
-variable [Preorder α] [Preorder β] [Preorder γ]
-
-/-- `Part.bind` as a monotone function -/
-@[simps]
-def bind {β γ} (f : α →o Part β) (g : α →o β → Part γ) : α →o Part γ where
-  toFun x := f x >>= g x
-  monotone' := by
-    intro x y h a
-    simp only [and_imp, exists_prop, Part.bind_eq_bind, Part.mem_bind_iff, exists_imp]
-    intro b hb ha
-    exact ⟨b, f.monotone h _ hb, g.monotone h _ _ ha⟩
-#align order_hom.bind OrderHom.bind
-#align order_hom.bind_coe OrderHom.bind_coe
-
-end OrderHom
 
 namespace OmegaCompletePartialOrder
 
@@ -326,7 +304,7 @@ theorem continuous_id : Continuous (@OrderHom.id α _) := by intro c; rw [c.map_
 #align omega_complete_partial_order.continuous_id OmegaCompletePartialOrder.continuous_id
 
 theorem continuous_comp (hfc : Continuous f) (hgc : Continuous g) : Continuous (g.comp f) := by
-  dsimp [Continuous] at *; intro;
+  dsimp [Continuous] at *; intro
   rw [hfc, hgc, Chain.map_comp]
 #align omega_complete_partial_order.continuous_comp OmegaCompletePartialOrder.continuous_comp
 
@@ -566,7 +544,7 @@ theorem inf_continuous (f g : α →o β) (hf : Continuous f) (hg : Continuous g
     Continuous (f ⊓ g) := by
   refine fun c => eq_of_forall_ge_iff fun z => ?_
   simp only [inf_le_iff, hf c, hg c, ωSup_le_iff, ← forall_or_left, ← forall_or_right,
-             Chain.map_coe, OrderHom.coe_inf, ge_iff_le, Pi.inf_apply, Function.comp]
+             Chain.map_coe, OrderHom.coe_inf, Pi.inf_apply, Function.comp]
   exact ⟨fun h _ ↦ h _ _, fun h i j ↦
     (h (max j i)).imp (le_trans <| f.mono <| c.mono <| le_max_left _ _)
       (le_trans <| g.mono <| c.mono <| le_max_right _ _)⟩
@@ -674,9 +652,10 @@ theorem ite_continuous' {p : Prop} [hp : Decidable p] (f g : α → β) (hf : Co
 #align omega_complete_partial_order.continuous_hom.ite_continuous' OmegaCompletePartialOrder.ContinuousHom.ite_continuous'
 
 theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α →o β → Part γ) :
-    ωSup (c.map (f.bind g)) = ωSup (c.map f) >>= ωSup (c.map g) := by
+    ωSup (c.map (f.partBind g)) = ωSup (c.map f) >>= ωSup (c.map g) := by
   apply eq_of_forall_ge_iff; intro x
-  simp only [ωSup_le_iff, Part.bind_le, Chain.mem_map_iff, and_imp, OrderHom.bind_coe, exists_imp]
+  simp only [ωSup_le_iff, Part.bind_le, Chain.mem_map_iff, and_imp, OrderHom.partBind_coe,
+    exists_imp]
   constructor <;> intro h'''
   · intro b hb
     apply ωSup_le _ _ _
@@ -689,12 +668,12 @@ theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α
     replace hy : y ∈ g (c (max i j)) b := g.mono (c.mono (le_max_left i j)) _ _ hy
     apply h''' (max i j)
     simp only [exists_prop, Part.bind_eq_bind, Part.mem_bind_iff, Chain.map_coe,
-      Function.comp_apply, OrderHom.bind_coe]
+      Function.comp_apply, OrderHom.partBind_coe]
     exact ⟨_, hb, hy⟩
   · intro i
     intro y hy
     simp only [exists_prop, Part.bind_eq_bind, Part.mem_bind_iff, Chain.map_coe,
-      Function.comp_apply, OrderHom.bind_coe] at hy
+      Function.comp_apply, OrderHom.partBind_coe] at hy
     rcases hy with ⟨b, hb₀, hb₁⟩
     apply h''' b _
     · apply le_ωSup (c.map g) _ _ _ hb₁
@@ -704,7 +683,7 @@ theorem ωSup_bind {β γ : Type v} (c : Chain α) (f : α →o Part β) (g : α
 theorem bind_continuous' {β γ : Type v} (f : α → Part β) (g : α → β → Part γ) :
     Continuous' f → Continuous' g → Continuous' fun x => f x >>= g x
   | ⟨hf, hf'⟩, ⟨hg, hg'⟩ =>
-    Continuous.of_bundled' (OrderHom.bind ⟨f, hf⟩ ⟨g, hg⟩)
+    Continuous.of_bundled' (OrderHom.partBind ⟨f, hf⟩ ⟨g, hg⟩)
       (by intro c; rw [ωSup_bind, ← hf', ← hg']; rfl)
 #align omega_complete_partial_order.continuous_hom.bind_continuous' OmegaCompletePartialOrder.ContinuousHom.bind_continuous'
 
@@ -890,7 +869,7 @@ def flip {α : Type*} (f : α → β →𝒄 γ) : β →𝒄 α → γ where
 /-- `Part.bind` as a continuous function. -/
 @[simps! apply] -- Porting note: removed `(config := { rhsMd := reducible })`
 noncomputable def bind {β γ : Type v} (f : α →𝒄 Part β) (g : α →𝒄 β → Part γ) : α →𝒄 Part γ :=
-  .mk (OrderHom.bind f g.toOrderHom) fun c => by
+  .mk (OrderHom.partBind f g.toOrderHom) fun c => by
     rw [ωSup_bind, ← f.continuous, g.toOrderHom_eq_coe, ← g.continuous]
     rfl
 #align omega_complete_partial_order.continuous_hom.bind OmegaCompletePartialOrder.ContinuousHom.bind
@@ -901,8 +880,8 @@ noncomputable def bind {β γ : Type v} (f : α →𝒄 Part β) (g : α →𝒄
 noncomputable def map {β γ : Type v} (f : β → γ) (g : α →𝒄 Part β) : α →𝒄 Part γ :=
   .copy (fun x => f <$> g x) (bind g (const (pure ∘ f))) <| by
     ext1
-    simp only [map_eq_bind_pure_comp, bind, coe_mk, OrderHom.bind_coe, coe_apply, coe_toOrderHom,
-      const_apply]
+    simp only [map_eq_bind_pure_comp, bind, coe_mk, OrderHom.partBind_coe, coe_apply,
+      coe_toOrderHom, const_apply, Part.bind_eq_bind]
 #align omega_complete_partial_order.continuous_hom.map OmegaCompletePartialOrder.ContinuousHom.map
 #align omega_complete_partial_order.continuous_hom.map_apply OmegaCompletePartialOrder.ContinuousHom.map_apply
 
@@ -912,7 +891,7 @@ noncomputable def seq {β γ : Type v} (f : α →𝒄 Part (β → γ)) (g : α
   .copy (fun x => f x <*> g x) (bind f <| flip <| _root_.flip map g) <| by
       ext
       simp only [seq_eq_bind_map, Part.bind_eq_bind, Part.mem_bind_iff, flip_apply, _root_.flip,
-        map_apply, bind_apply]
+        map_apply, bind_apply, Part.map_eq_map]
 #align omega_complete_partial_order.continuous_hom.seq OmegaCompletePartialOrder.ContinuousHom.seq
 #align omega_complete_partial_order.continuous_hom.seq_apply OmegaCompletePartialOrder.ContinuousHom.seq_apply
 

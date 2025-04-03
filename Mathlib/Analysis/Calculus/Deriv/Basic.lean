@@ -478,8 +478,17 @@ theorem fderiv_deriv : (fderiv 𝕜 f x : 𝕜 → F) 1 = deriv f x :=
   rfl
 #align fderiv_deriv fderiv_deriv
 
-theorem deriv_fderiv : smulRight (1 : 𝕜 →L[𝕜] 𝕜) (deriv f x) = fderiv 𝕜 f x := by simp [deriv]
+@[simp]
+theorem fderiv_eq_smul_deriv (y : 𝕜) : (fderiv 𝕜 f x : 𝕜 → F) y = y • deriv f x := by
+  rw [← fderiv_deriv, ← ContinuousLinearMap.map_smul]
+  simp only [smul_eq_mul, mul_one]
+
+theorem deriv_fderiv : smulRight (1 : 𝕜 →L[𝕜] 𝕜) (deriv f x) = fderiv 𝕜 f x := by
+  simp only [deriv, ContinuousLinearMap.smulRight_one_one]
 #align deriv_fderiv deriv_fderiv
+
+lemma fderiv_eq_deriv_mul {f : 𝕜 → 𝕜} {x y : 𝕜} : (fderiv 𝕜 f x : 𝕜 → 𝕜) y = (deriv f x) * y := by
+  simp [mul_comm]
 
 theorem norm_deriv_eq_norm_fderiv : ‖deriv f x‖ = ‖fderiv 𝕜 f x‖ := by
   simp [← deriv_fderiv]

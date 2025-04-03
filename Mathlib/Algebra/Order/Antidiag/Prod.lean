@@ -64,19 +64,19 @@ attribute [simp] mem_antidiagonal
 variable {A : Type*}
 
 /-- All `HasAntidiagonal` instances are equal -/
-instance [AddMonoid A] : Subsingleton (HasAntidiagonal A) :=
-  ⟨by
+instance [AddMonoid A] : Subsingleton (HasAntidiagonal A) where
+  allEq := by
     rintro ⟨a, ha⟩ ⟨b, hb⟩
     congr with n xy
-    rw [ha, hb]⟩
+    rw [ha, hb]
 
 -- The goal of this lemma is to allow to rewrite antidiagonal
 -- when the decidability instances obsucate Lean
 lemma hasAntidiagonal_congr (A : Type*) [AddMonoid A]
     [H1 : HasAntidiagonal A] [H2 : HasAntidiagonal A] :
-    H1.antidiagonal = H2.antidiagonal := by congr!; apply Subsingleton.elim
+    H1.antidiagonal = H2.antidiagonal := by congr!; subsingleton
 
-theorem swap_mem_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} {xy : A × A}:
+theorem swap_mem_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} {xy : A × A} :
     xy.swap ∈ antidiagonal n ↔ xy ∈ antidiagonal n := by
   simp [add_comm]
 

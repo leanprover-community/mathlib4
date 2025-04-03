@@ -578,13 +578,13 @@ theorem pointReflection_involutive (x : P₁) : Involutive (pointReflection k x 
 set_option linter.deprecated false in
 /-- `x` is the only fixed point of `pointReflection x`. This lemma requires
 `x + x = y + y ↔ x = y`. There is no typeclass to use here, so we add it as an explicit argument. -/
-theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P₁} (h : Injective (bit0 : V₁ → V₁)) :
+theorem pointReflection_fixed_iff_of_injective_bit0 {x y : P₁} (h : Injective (2 • · : V₁ → V₁)) :
     pointReflection k x y = y ↔ y = x :=
   Equiv.pointReflection_fixed_iff_of_injective_bit0 h
 #align affine_equiv.point_reflection_fixed_iff_of_injective_bit0 AffineEquiv.pointReflection_fixed_iff_of_injective_bit0
 
 set_option linter.deprecated false in
-theorem injective_pointReflection_left_of_injective_bit0 (h : Injective (bit0 : V₁ → V₁)) (y : P₁) :
+theorem injective_pointReflection_left_of_injective_bit0 (h : Injective (2 • · : V₁ → V₁)) (y : P₁) :
     Injective fun x : P₁ => pointReflection k x y :=
   Equiv.injective_pointReflection_left_of_injective_bit0 h y
 #align affine_equiv.injective_point_reflection_left_of_injective_bit0 AffineEquiv.injective_pointReflection_left_of_injective_bit0
@@ -592,7 +592,8 @@ theorem injective_pointReflection_left_of_injective_bit0 (h : Injective (bit0 : 
 theorem injective_pointReflection_left_of_module [Invertible (2 : k)] :
     ∀ y, Injective fun x : P₁ => pointReflection k x y :=
   injective_pointReflection_left_of_injective_bit0 k fun x y h => by
-    rwa [bit0, bit0, ← two_smul k x, ← two_smul k y,
+    dsimp at h
+    rwa [two_nsmul, two_nsmul, ← two_smul k x, ← two_smul k y,
       (isUnit_of_invertible (2 : k)).smul_left_cancel] at h
 #align affine_equiv.injective_point_reflection_left_of_module AffineEquiv.injective_pointReflection_left_of_module
 

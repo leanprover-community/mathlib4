@@ -122,9 +122,10 @@ noncomputable def isoRestrict : X ≅ Y.restrict H.base_open :=
       erw [Set.preimage_image_eq _ H.base_open.inj]
       rfl
     · intro U V i
-      simp only [CategoryTheory.eqToIso.hom, TopCat.Presheaf.pushforwardObj_map, Category.assoc,
-        Functor.op_map, Iso.trans_hom, asIso_hom, Functor.mapIso_hom, ← X.presheaf.map_comp]
-      erw [f.c.naturality_assoc, ← X.presheaf.map_comp]
+      dsimp
+      simp only [NatTrans.naturality_assoc, TopCat.Presheaf.pushforward_obj_obj,
+        TopCat.Presheaf.pushforward_obj_map, Quiver.Hom.unop_op, Category.assoc]
+      erw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
       congr 1
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.iso_restrict AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.isoRestrict
 
@@ -149,6 +150,11 @@ instance mono : Mono f := by
   rw [← H.isoRestrict_hom_ofRestrict]; apply mono_comp
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.mono AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.mono
 
+lemma c_iso' {V : Opens Y} (U : Opens X) (h : V = (opensFunctor f).obj U) :
+    IsIso (f.c.app (Opposite.op V)) := by
+  subst h
+  infer_instance
+
 /-- The composition of two open immersions is an open immersion. -/
 instance comp {Z : PresheafedSpace C} (g : Y ⟶ Z) [hg : IsOpenImmersion g] :
     IsOpenImmersion (f ≫ g) where
@@ -156,20 +162,16 @@ instance comp {Z : PresheafedSpace C} (g : Y ⟶ Z) [hg : IsOpenImmersion g] :
   c_iso U := by
     generalize_proofs h
     dsimp only [AlgebraicGeometry.PresheafedSpace.comp_c_app, unop_op, Functor.op, comp_base,
-      TopCat.Presheaf.pushforwardObj_obj, Opens.map_comp_obj]
+      Opens.map_comp_obj]
     apply (config := { allowSynthFailures := true }) IsIso.comp_isIso
-    · rw [show h.functor.obj U = (opensFunctor g).obj ((opensFunctor f).obj U) by ext; simp]
-      infer_instance
-    · have : (Opens.map g.base).obj (h.functor.obj U) = (opensFunctor f).obj U := by
-        ext1
-        dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe, comp_base]
-        -- Porting note: slightly more hand holding here: `g ∘ f` and `fun x => g (f x)`
-        erw [coe_comp, show g.base ∘ f.base = fun x => g.base (f.base x) from rfl,
-          ← Set.image_image g.base f.base, Set.preimage_image_eq _ hg.base_open.inj]
-           -- now `erw` after #13170
-      rw [this]
-      infer_instance
-
+    · exact c_iso' g ((opensFunctor f).obj U) (by ext; simp)
+    · apply c_iso' f U
+      ext1
+      dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe, comp_base]
+      -- Porting note: slightly more hand holding here: `g ∘ f` and `fun x => g (f x)`
+      erw [coe_comp, show g.base ∘ f.base = fun x => g.base (f.base x) from rfl,
+        ← Set.image_image g.base f.base, Set.preimage_image_eq _ hg.base_open.inj]
+         -- now `erw` after #13170
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.comp AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.comp
 
 /-- For an open immersion `f : X ⟶ Y` and an open set `U ⊆ X`, we have the map `X(U) ⟶ Y(U)`. -/
@@ -186,8 +188,8 @@ theorem inv_naturality {U V : (Opens X)ᵒᵖ} (i : U ⟶ V) :
   simp only [invApp, ← Category.assoc]
   rw [IsIso.comp_inv_eq]
   simp only [Functor.op_obj, op_unop, ← X.presheaf.map_comp, Functor.op_map, Category.assoc,
-    NatTrans.naturality, TopCat.Presheaf.pushforwardObj_obj, TopCat.Presheaf.pushforwardObj_map,
-    Quiver.Hom.unop_op, IsIso.inv_hom_id_assoc]
+    NatTrans.naturality, Quiver.Hom.unop_op, IsIso.inv_hom_id_assoc,
+    TopCat.Presheaf.pushforward_obj_map]
   congr 1
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.inv_naturality AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.inv_naturality
 
@@ -314,7 +316,7 @@ variable {X Y Z : PresheafedSpace C} (f : X ⟶ Z) [hf : IsOpenImmersion f] (g :
 -/
 def pullbackConeOfLeftFst :
     Y.restrict (TopCat.snd_openEmbedding_of_left_openEmbedding hf.base_open g.base) ⟶ X where
-  base := pullback.fst
+  base := pullback.fst _ _
   c :=
     { app := fun U =>
         hf.invApp (unop U) ≫
@@ -351,10 +353,9 @@ def pullbackConeOfLeftFst :
         -- Note: this doesn't fire in `simp` because of reduction of the term via structure eta
         -- before discrimination tree key generation
         rw [inv_naturality_assoc]
-        simp only [restrict_carrier, restrict_presheaf, TopCat.Presheaf.pushforwardObj_obj,
-          Functor.op_obj, Functor.comp_obj, Functor.op_map, NatTrans.naturality_assoc,
-          TopCat.Presheaf.pushforwardObj_map, Quiver.Hom.unop_op, ← Y.presheaf.map_comp,
-          Functor.comp_map, Category.assoc]
+        dsimp
+        simp only [NatTrans.naturality_assoc, TopCat.Presheaf.pushforward_obj_map,
+          Quiver.Hom.unop_op, ← Functor.map_comp, Category.assoc]
         rfl }
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_cone_of_left_fst AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftFst
 
@@ -368,8 +369,8 @@ theorem pullback_cone_of_left_condition : pullbackConeOfLeftFst f g ≫ f = Y.of
     rw [NatTrans.comp_app]
     dsimp only [comp_c_app, unop_op, whiskerRight_app, pullbackConeOfLeftFst]
     -- simp only [ofRestrict_c_app, NatTrans.comp_app]
-    simp only [Quiver.Hom.unop_op, TopCat.Presheaf.pushforwardObj_map, app_invApp_assoc,
-      eqToHom_app, eqToHom_unop, Category.assoc, NatTrans.naturality_assoc, Functor.op_map]
+    simp only [app_invApp_assoc,
+      eqToHom_app, Category.assoc, NatTrans.naturality_assoc]
     erw [← Y.presheaf.map_comp, ← Y.presheaf.map_comp]
     congr 1
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_cone_of_left_condition AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullback_cone_of_left_condition
@@ -424,7 +425,7 @@ theorem pullbackConeOfLeftLift_fst :
     pullbackConeOfLeftLift f g s ≫ (pullbackConeOfLeft f g).fst = s.fst := by
   -- Porting note: `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext _ _ <| funext fun x => ?_
-  · change pullback.lift _ _ _ ≫ pullback.fst = _
+  · change pullback.lift _ _ _ ≫ pullback.fst _ _ = _
     simp
   · induction x using Opposite.rec' with | h x => ?_
     change ((_ ≫ _) ≫ _ ≫ _) ≫ _ = _
@@ -444,7 +445,7 @@ theorem pullbackConeOfLeftLift_snd :
     pullbackConeOfLeftLift f g s ≫ (pullbackConeOfLeft f g).snd = s.snd := by
   -- Porting note: `ext` did not pick up `NatTrans.ext`
   refine PresheafedSpace.Hom.ext _ _ ?_ <| NatTrans.ext _ _ <| funext fun x => ?_
-  · change pullback.lift _ _ _ ≫ pullback.snd = _
+  · change pullback.lift _ _ _ ≫ pullback.snd _ _ = _
     simp
   · change (_ ≫ _ ≫ _) ≫ _ = _
     simp_rw [Category.assoc]
@@ -481,14 +482,14 @@ instance hasPullback_of_right : HasPullback g f :=
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.has_pullback_of_right AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.hasPullback_of_right
 
 /-- Open immersions are stable under base-change. -/
-instance pullbackSndOfLeft : IsOpenImmersion (pullback.snd : pullback f g ⟶ _) := by
+instance pullbackSndOfLeft : IsOpenImmersion (pullback.snd f g) := by
   delta pullback.snd
   rw [← limit.isoLimitCone_hom_π ⟨_, pullbackConeOfLeftIsLimit f g⟩ WalkingCospan.right]
   infer_instance
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_snd_of_left AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackSndOfLeft
 
 /-- Open immersions are stable under base-change. -/
-instance pullbackFstOfRight : IsOpenImmersion (pullback.fst : pullback g f ⟶ _) := by
+instance pullbackFstOfRight : IsOpenImmersion (pullback.fst g f) := by
   rw [← pullbackSymmetry_hom_comp_snd]
   infer_instance
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_fst_of_right AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullbackFstOfRight
@@ -520,12 +521,12 @@ instance forgetPreservesLimitsOfRight : PreservesLimit (cospan g f) (forget C) :
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.forget_preserves_limits_of_right AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.forgetPreservesLimitsOfRight
 
 theorem pullback_snd_isIso_of_range_subset (H : Set.range g.base ⊆ Set.range f.base) :
-    IsIso (pullback.snd : pullback f g ⟶ _) := by
+    IsIso (pullback.snd f g) := by
   haveI := TopCat.snd_iso_of_left_embedding_range_subset hf.base_open.toEmbedding g.base H
-  have : IsIso (pullback.snd : pullback f g ⟶ _).base := by
+  have : IsIso (pullback.snd f g).base := by
     delta pullback.snd
     rw [← limit.isoLimitCone_hom_π ⟨_, pullbackConeOfLeftIsLimit f g⟩ WalkingCospan.right]
-    change IsIso (_ ≫ pullback.snd)
+    change IsIso (_ ≫ pullback.snd _ _)
     infer_instance
   apply to_iso
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.pullback_snd_is_iso_of_range_subset AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.pullback_snd_isIso_of_range_subset
@@ -537,7 +538,7 @@ commutes with these maps.
 -/
 def lift (H : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
   haveI := pullback_snd_isIso_of_range_subset f g H
-  inv (pullback.snd : pullback f g ⟶ _) ≫ pullback.fst
+  inv (pullback.snd f g) ≫ pullback.fst _ _
 #align algebraic_geometry.PresheafedSpace.is_open_immersion.lift AlgebraicGeometry.PresheafedSpace.IsOpenImmersion.lift
 
 @[simp, reassoc]
@@ -762,7 +763,7 @@ instance sheafedSpace_hasPullback_of_right : HasPullback g f :=
 
 /-- Open immersions are stable under base-change. -/
 instance sheafedSpace_pullback_snd_of_left :
-    SheafedSpace.IsOpenImmersion (pullback.snd : pullback f g ⟶ _) := by
+    SheafedSpace.IsOpenImmersion (pullback.snd f g) := by
   delta pullback.snd
   have : _ = limit.π (cospan f g) right := preservesLimitsIso_hom_π forget (cospan f g) right
   rw [← this]
@@ -774,7 +775,7 @@ instance sheafedSpace_pullback_snd_of_left :
 #align algebraic_geometry.SheafedSpace.is_open_immersion.SheafedSpace_pullback_snd_of_left AlgebraicGeometry.SheafedSpace.IsOpenImmersion.sheafedSpace_pullback_snd_of_left
 
 instance sheafedSpace_pullback_fst_of_right :
-    SheafedSpace.IsOpenImmersion (pullback.fst : pullback g f ⟶ _) := by
+    SheafedSpace.IsOpenImmersion (pullback.fst g f) := by
   delta pullback.fst
   have : _ = limit.π (cospan g f) left := preservesLimitsIso_hom_π forget (cospan g f) left
   rw [← this]
@@ -1087,7 +1088,7 @@ instance hasPullback_of_right : HasPullback g f :=
 
 /-- Open immersions are stable under base-change. -/
 instance pullback_snd_of_left :
-    LocallyRingedSpace.IsOpenImmersion (pullback.snd : pullback f g ⟶ _) := by
+    LocallyRingedSpace.IsOpenImmersion (pullback.snd f g) := by
   delta pullback.snd
   rw [← limit.isoLimitCone_hom_π ⟨_, pullbackConeOfLeftIsLimit f g⟩ WalkingCospan.right]
   infer_instance
@@ -1095,7 +1096,7 @@ instance pullback_snd_of_left :
 
 /-- Open immersions are stable under base-change. -/
 instance pullback_fst_of_right :
-    LocallyRingedSpace.IsOpenImmersion (pullback.fst : pullback g f ⟶ _) := by
+    LocallyRingedSpace.IsOpenImmersion (pullback.fst g f) := by
   rw [← pullbackSymmetry_hom_comp_snd]
   infer_instance
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.pullback_fst_of_right AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.pullback_fst_of_right
@@ -1182,7 +1183,7 @@ instance forgetToPresheafedSpaceReflectsPullbackOfRight :
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.forgetToPresheafedSpace_reflects_pullback_of_right AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.forgetToPresheafedSpaceReflectsPullbackOfRight
 
 theorem pullback_snd_isIso_of_range_subset (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
-    IsIso (pullback.snd : pullback f g ⟶ _) := by
+    IsIso (pullback.snd f g) := by
   apply (config := {allowSynthFailures := true}) Functor.ReflectsIsomorphisms.reflects
     (F := LocallyRingedSpace.forgetToSheafedSpace)
   apply (config := {allowSynthFailures := true}) Functor.ReflectsIsomorphisms.reflects
@@ -1202,7 +1203,7 @@ commutes with these maps.
 def lift (H' : Set.range g.1.base ⊆ Set.range f.1.base) : Y ⟶ X :=
   -- Porting note (#10754): added instance manually
   have := pullback_snd_isIso_of_range_subset f g H'
-  inv (pullback.snd : pullback f g ⟶ _) ≫ pullback.fst
+  inv (pullback.snd f g) ≫ pullback.fst _ _
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.lift AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.lift
 
 @[simp, reassoc]
@@ -1219,7 +1220,7 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
   -- Porting note (#10754): added instance manually
   have := pullback_snd_isIso_of_range_subset f g H'
   dsimp only [lift]
-  have : _ = (pullback.fst : pullback f g ⟶ _).val.base :=
+  have : _ = (pullback.fst f g).val.base :=
     PreservesPullback.iso_hom_fst
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) f g
   erw [LocallyRingedSpace.comp_val, SheafedSpace.comp_base, ← this, ← Category.assoc, coe_comp]
@@ -1232,7 +1233,7 @@ theorem lift_range (H' : Set.range g.1.base ⊆ Set.range f.1.base) :
     · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
     · rintro ⟨y, eq⟩; exact ⟨y, eq.symm⟩
   · erw [← TopCat.epi_iff_surjective] -- now `erw` after #13170
-    rw [show (inv (pullback.snd : pullback f g ⟶ _)).val.base = _ from
+    rw [show (inv (pullback.snd f g)).val.base = _ from
         (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _).map_inv _]
     infer_instance
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.lift_range AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.lift_range

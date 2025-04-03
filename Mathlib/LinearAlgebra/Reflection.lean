@@ -3,6 +3,7 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury
 -/
+import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.FiniteSpan
@@ -179,7 +180,7 @@ lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (h�
     (hygΦ : MapsTo (preReflection y g) Φ Φ)
     (hyΦ : y ∈ Φ) :
     x = y := by
-  have : _root_.Finite Φ := hΦ
+  rw [← finite_coe_iff] at hΦ
   set sxy : M ≃ₗ[R] M := (Module.reflection hgy).trans (Module.reflection hfx)
   have hb : BijOn sxy Φ Φ :=
     (bijOn_reflection_of_mapsTo hfx hxfΦ).comp (bijOn_reflection_of_mapsTo hgy hygΦ)

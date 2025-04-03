@@ -276,7 +276,7 @@ lemma meagre_empty : IsMeagre (∅ : Set X) := by
   exact Filter.univ_mem
 
 /-- Subsets of meagre sets are meagre. -/
-lemma IsMeagre.mono {s t : Set X} (hs : IsMeagre s) (hts: t ⊆ s) : IsMeagre t :=
+lemma IsMeagre.mono {s t : Set X} (hs : IsMeagre s) (hts : t ⊆ s) : IsMeagre t :=
   Filter.mem_of_superset hs (compl_subset_compl.mpr hts)
 
 /-- An intersection with a meagre set is meagre. -/

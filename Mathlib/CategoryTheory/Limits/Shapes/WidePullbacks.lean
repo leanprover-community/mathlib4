@@ -85,14 +85,14 @@ aesop rule directing on `WidePushoutOut` and it didn't take for some reason -/
 def evalCasesBash : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePullbackShape _,
-      (_: WidePullbackShape _) ⟶ (_ : WidePullbackShape _) ))
+      (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _) ))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash
 
 instance subsingleton_hom : Quiver.IsThin (WidePullbackShape J) := fun _ _ => by
   constructor
   intro a b
-  casesm* WidePullbackShape _, (_: WidePullbackShape _) ⟶ (_ : WidePullbackShape _)
+  casesm* WidePullbackShape _, (_ : WidePullbackShape _) ⟶ (_ : WidePullbackShape _)
   · rfl
   · rfl
   · rfl
@@ -151,12 +151,8 @@ def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') :
     WidePullbackShape J ≌ WidePullbackShape J' where
   functor := wideCospan none (fun j => some (h j)) fun j => Hom.term (h j)
   inverse := wideCospan none (fun j => some (h.invFun j)) fun j => Hom.term (h.invFun j)
-  unitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat) fun f =>
-      by simp only [eq_iff_true_of_subsingleton]
-  counitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat)
-      fun f => by simp only [eq_iff_true_of_subsingleton]
+  unitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
+  counitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
 #align category_theory.limits.wide_pullback_shape.equivalence_of_equiv CategoryTheory.Limits.WidePullbackShape.equivalenceOfEquiv
 
 /-- Lifting universe and morphism levels preserves wide pullback diagrams. -/
@@ -203,14 +199,14 @@ open Lean Elab Tactic
 def evalCasesBash' : TacticM Unit := do
   evalTactic
     (← `(tactic| casesm* WidePushoutShape _,
-      (_: WidePushoutShape _) ⟶ (_ : WidePushoutShape _) ))
+      (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _) ))
 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])] evalCasesBash'
 
 instance subsingleton_hom : Quiver.IsThin (WidePushoutShape J) := fun _ _ => by
   constructor
   intro a b
-  casesm* WidePushoutShape _, (_: WidePushoutShape _) ⟶ (_ : WidePushoutShape _)
+  casesm* WidePushoutShape _, (_ : WidePushoutShape _) ⟶ (_ : WidePushoutShape _)
   repeat rfl
 #align category_theory.limits.wide_pushout_shape.subsingleton_hom CategoryTheory.Limits.WidePushoutShape.subsingleton_hom
 
@@ -270,12 +266,8 @@ def mkCocone {F : WidePushoutShape J ⥤ C} {X : C} (f : F.obj none ⟶ X) (ι :
 def equivalenceOfEquiv (J' : Type w') (h : J ≃ J') : WidePushoutShape J ≌ WidePushoutShape J' where
   functor := wideSpan none (fun j => some (h j)) fun j => Hom.init (h j)
   inverse := wideSpan none (fun j => some (h.invFun j)) fun j => Hom.init (h.invFun j)
-  unitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat) fun f => by
-      simp only [eq_iff_true_of_subsingleton]
-  counitIso :=
-    NatIso.ofComponents (fun j => by aesop_cat) fun f => by
-      simp only [eq_iff_true_of_subsingleton]
+  unitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
+  counitIso := NatIso.ofComponents (fun j => by cases j <;> exact eqToIso (by simp))
 
 /-- Lifting universe and morphism levels preserves wide pushout diagrams. -/
 def uliftEquivalence :

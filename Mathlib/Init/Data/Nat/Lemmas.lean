@@ -5,10 +5,24 @@ Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Batteries.Data.Nat.Lemmas
 import Batteries.WF
-import Mathlib.Init.Data.Nat.Basic
 import Mathlib.Util.AssertExists
+import Mathlib.Mathport.Rename
+import Mathlib.Data.Nat.Notation
 
 #align_import init.data.nat.lemmas from "leanprover-community/lean"@"38b59111b2b4e6c572582b27e8937e92fc70ac02"
+
+/-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
+-/
 
 assert_not_exists Preorder
 
@@ -213,134 +227,32 @@ protected def ltByCases {a b : ℕ} {C : Sort u} (h₁ : a < b → C) (h₂ : a 
 
 /-! bit0/bit1 properties -/
 section bit
-set_option linter.deprecated false
 
-protected theorem bit1_eq_succ_bit0 (n : ℕ) : bit1 n = succ (bit0 n) :=
-  rfl
-#align nat.bit1_eq_succ_bit0 Nat.bit1_eq_succ_bit0
-
-protected theorem bit1_succ_eq (n : ℕ) : bit1 (succ n) = succ (succ (bit1 n)) :=
-  Eq.trans (Nat.bit1_eq_succ_bit0 (succ n)) (congr_arg succ (Nat.bit0_succ_eq n))
-#align nat.bit1_succ_eq Nat.bit1_succ_eq
-
-protected theorem bit1_ne_one : ∀ {n : ℕ}, n ≠ 0 → bit1 n ≠ 1
-  | 0, h, _h1 => absurd rfl h
-  | _n + 1, _h, h1 => Nat.noConfusion h1 fun h2 => absurd h2 (succ_ne_zero _)
-#align nat.bit1_ne_one Nat.bit1_ne_one
-
-protected theorem bit0_ne_one : ∀ n : ℕ, bit0 n ≠ 1
-  | 0, h => absurd h (Ne.symm Nat.one_ne_zero)
-  | n + 1, h =>
-    have h1 : succ (succ (n + n)) = 1 := succ_add n n ▸ h
-    Nat.noConfusion h1 fun h2 => absurd h2 (succ_ne_zero (n + n))
-#align nat.bit0_ne_one Nat.bit0_ne_one
+#noalign nat.bit1_eq_succ_bit0
+#noalign nat.bit1_succ_eq
+#noalign nat.bit1_ne_one
+#noalign nat.bit0_ne_one
 
 #align nat.add_self_ne_one Nat.add_self_ne_one
 
-protected theorem bit1_ne_bit0 : ∀ n m : ℕ, bit1 n ≠ bit0 m
-  | 0, m, h => absurd h (Ne.symm (Nat.add_self_ne_one m))
-  | n + 1, 0, h =>
-    have h1 : succ (bit0 (succ n)) = 0 := h
-    absurd h1 (Nat.succ_ne_zero _)
-  | n + 1, m + 1, h =>
-    have h1 : succ (succ (bit1 n)) = succ (succ (bit0 m)) :=
-      Nat.bit0_succ_eq m ▸ Nat.bit1_succ_eq n ▸ h
-    have h2 : bit1 n = bit0 m := Nat.noConfusion h1 fun h2' => Nat.noConfusion h2' fun h2'' => h2''
-    absurd h2 (Nat.bit1_ne_bit0 n m)
-#align nat.bit1_ne_bit0 Nat.bit1_ne_bit0
-
-protected theorem bit0_ne_bit1 : ∀ n m : ℕ, bit0 n ≠ bit1 m := fun n m : Nat =>
-  Ne.symm (Nat.bit1_ne_bit0 m n)
-#align nat.bit0_ne_bit1 Nat.bit0_ne_bit1
-
-protected theorem bit0_inj : ∀ {n m : ℕ}, bit0 n = bit0 m → n = m
-  | 0, 0, _h => rfl
-  | 0, m + 1, h => by contradiction
-  | n + 1, 0, h => by contradiction
-  | n + 1, m + 1, h => by
-    have : succ (succ (n + n)) = succ (succ (m + m)) := by
-      unfold bit0 at h; simp only [add_one, add_succ, succ_add, succ_inj'] at h
-      rw [h]
-    have : n + n = m + m := by repeat injection this with this
-    have : n = m := Nat.bit0_inj this
-    rw [this]
-#align nat.bit0_inj Nat.bit0_inj
-
-protected theorem bit1_inj : ∀ {n m : ℕ}, bit1 n = bit1 m → n = m := @fun n m h =>
-  have : succ (bit0 n) = succ (bit0 m) := by simp [Nat.bit1_eq_succ_bit0] at h; rw [h]
-  have : bit0 n = bit0 m := by injection this
-  Nat.bit0_inj this
-#align nat.bit1_inj Nat.bit1_inj
-
-protected theorem bit0_ne {n m : ℕ} : n ≠ m → bit0 n ≠ bit0 m := fun h₁ h₂ =>
-  absurd (Nat.bit0_inj h₂) h₁
-#align nat.bit0_ne Nat.bit0_ne
-
-protected theorem bit1_ne {n m : ℕ} : n ≠ m → bit1 n ≠ bit1 m := fun h₁ h₂ =>
-  absurd (Nat.bit1_inj h₂) h₁
-#align nat.bit1_ne Nat.bit1_ne
-
-protected theorem zero_ne_bit0 {n : ℕ} : n ≠ 0 → 0 ≠ bit0 n := fun h => Ne.symm (Nat.bit0_ne_zero h)
-#align nat.zero_ne_bit0 Nat.zero_ne_bit0
-
-protected theorem zero_ne_bit1 (n : ℕ) : 0 ≠ bit1 n :=
-  Ne.symm (Nat.bit1_ne_zero n)
-#align nat.zero_ne_bit1 Nat.zero_ne_bit1
-
-protected theorem one_ne_bit0 (n : ℕ) : 1 ≠ bit0 n :=
-  Ne.symm (Nat.bit0_ne_one n)
-#align nat.one_ne_bit0 Nat.one_ne_bit0
-
-protected theorem one_ne_bit1 {n : ℕ} : n ≠ 0 → 1 ≠ bit1 n := fun h => Ne.symm (Nat.bit1_ne_one h)
-#align nat.one_ne_bit1 Nat.one_ne_bit1
-
-protected theorem one_lt_bit1 : ∀ {n : Nat}, n ≠ 0 → 1 < bit1 n
-  | 0, h => by contradiction
-  | succ n, _h => by
-    rw [Nat.bit1_succ_eq]
-    apply succ_lt_succ
-    apply zero_lt_succ
-#align nat.one_lt_bit1 Nat.one_lt_bit1
-
-protected theorem one_lt_bit0 : ∀ {n : Nat}, n ≠ 0 → 1 < bit0 n
-  | 0, h => by contradiction
-  | succ n, _h => by
-    rw [Nat.bit0_succ_eq]
-    apply succ_lt_succ
-    apply zero_lt_succ
-#align nat.one_lt_bit0 Nat.one_lt_bit0
-
-protected theorem bit0_lt {n m : Nat} (h : n < m) : bit0 n < bit0 m :=
-  Nat.add_lt_add h h
-#align nat.bit0_lt Nat.bit0_lt
-
-protected theorem bit1_lt {n m : Nat} (h : n < m) : bit1 n < bit1 m :=
-  succ_lt_succ (Nat.add_lt_add h h)
-#align nat.bit1_lt Nat.bit1_lt
-
-protected theorem bit0_lt_bit1 {n m : Nat} (h : n ≤ m) : bit0 n < bit1 m :=
-  lt_succ_of_le (Nat.add_le_add h h)
-#align nat.bit0_lt_bit1 Nat.bit0_lt_bit1
-
-protected theorem bit1_lt_bit0 : ∀ {n m : Nat}, n < m → bit1 n < bit0 m
-  | n, 0, h => absurd h n.not_lt_zero
-  | n, succ m, h =>
-    have : n ≤ m := le_of_lt_succ h
-    have : succ (n + n) ≤ succ (m + m) := succ_le_succ (Nat.add_le_add this this)
-    have : succ (n + n) ≤ succ m + m := by rw [succ_add]; assumption
-    show succ (n + n) < succ (succ m + m) from lt_succ_of_le this
-#align nat.bit1_lt_bit0 Nat.bit1_lt_bit0
-
-protected theorem one_le_bit1 (n : ℕ) : 1 ≤ bit1 n :=
-  show 1 ≤ succ (bit0 n) from succ_le_succ (bit0 n).zero_le
-#align nat.one_le_bit1 Nat.one_le_bit1
-
-protected theorem one_le_bit0 : ∀ n : ℕ, n ≠ 0 → 1 ≤ bit0 n
-  | 0, h => absurd rfl h
-  | n + 1, _h =>
-    suffices 1 ≤ succ (succ (bit0 n)) from Eq.symm (Nat.bit0_succ_eq n) ▸ this
-    succ_le_succ (bit0 n).succ.zero_le
-#align nat.one_le_bit0 Nat.one_le_bit0
+#noalign nat.bit1_ne_bit0
+#noalign nat.bit0_ne_bit1
+#noalign nat.bit0_inj
+#noalign nat.bit1_inj
+#noalign nat.bit0_ne
+#noalign nat.bit1_ne
+#noalign nat.zero_ne_bit0
+#noalign nat.zero_ne_bit1
+#noalign nat.one_ne_bit0
+#noalign nat.one_ne_bit1
+#noalign nat.one_lt_bit1
+#noalign nat.one_lt_bit0
+#noalign nat.bit0_lt
+#noalign nat.bit1_lt
+#noalign nat.bit0_lt_bit1
+#noalign nat.bit1_lt_bit0
+#noalign nat.one_le_bit1
+#noalign nat.one_le_bit0
 
 end bit
 
@@ -651,71 +563,5 @@ theorem cond_decide_mod_two (x : ℕ) [d : Decidable (x % 2 = 1)] :
 #align nat.dvd_of_mul_dvd_mul_left Nat.dvd_of_mul_dvd_mul_leftₓ
 
 #align nat.dvd_of_mul_dvd_mul_right Nat.dvd_of_mul_dvd_mul_rightₓ
-
-/-! find -/
-
-
-section Find
-
-variable {p : ℕ → Prop}
-
-private def lbp (m n : ℕ) : Prop :=
-  m = n + 1 ∧ ∀ k ≤ n, ¬p k
-
-variable [DecidablePred p] (H : ∃ n, p n)
-
-private def wf_lbp : WellFounded (@lbp p) :=
-  ⟨let ⟨n, pn⟩ := H
-    suffices ∀ m k, n ≤ k + m → Acc lbp k from fun a => this _ _ (Nat.le_add_left _ _)
-    fun m =>
-    Nat.recOn m
-      (fun k kn =>
-        ⟨_, fun y r =>
-          match y, r with
-          | _, ⟨rfl, a⟩ => absurd pn (a _ kn)⟩)
-      fun m IH k kn =>
-      ⟨_, fun y r =>
-        match y, r with
-        | _, ⟨rfl, _a⟩ => IH _ (by rw [Nat.add_right_comm]; exact kn)⟩⟩
-
-protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
-  @WellFounded.fix _ (fun k => (∀ n < k, ¬p n) → { n // p n ∧ ∀ m < n, ¬p m }) lbp (wf_lbp H)
-    (fun m IH al =>
-      if pm : p m then ⟨m, pm, al⟩
-      else
-        have : ∀ n ≤ m, ¬p n := fun n h =>
-          Or.elim (Nat.lt_or_eq_of_le h) (al n) fun e => by rw [e]; exact pm
-        IH _ ⟨rfl, this⟩ fun n h => this n <| Nat.le_of_succ_le_succ h)
-    0 fun n h => absurd h (Nat.not_lt_zero _)
-#align nat.find_x Nat.findX
-
-/-- If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
-there exists some natural number satisfying `p`, then `Nat.find hp` is the
-smallest natural number satisfying `p`. Note that `Nat.find` is protected,
-meaning that you can't just write `find`, even if the `Nat` namespace is open.
-
-The API for `Nat.find` is:
-
-* `Nat.find_spec` is the proof that `Nat.find hp` satisfies `p`.
-* `Nat.find_min` is the proof that if `m < Nat.find hp` then `m` does not satisfy `p`.
-* `Nat.find_min'` is the proof that if `m` does satisfy `p` then `Nat.find hp ≤ m`.
--/
-protected def find : ℕ :=
-  (Nat.findX H).1
-#align nat.find Nat.find
-
-protected theorem find_spec : p (Nat.find H) :=
-  (Nat.findX H).2.left
-#align nat.find_spec Nat.find_spec
-
-protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
-  @(Nat.findX H).2.right
-#align nat.find_min Nat.find_min
-
-protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
-  Nat.le_of_not_lt fun l => Nat.find_min H l h
-#align nat.find_min' Nat.find_min'
-
-end Find
 
 end Nat

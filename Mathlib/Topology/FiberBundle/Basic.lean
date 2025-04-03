@@ -889,7 +889,7 @@ theorem continuous_proj : @Continuous _ _ a.totalSpaceTopology _ (π F E) := by
 #align fiber_prebundle.continuous_proj FiberPrebundle.continuous_proj
 
 instance {e₀} (he₀ : e₀ ∈ a.pretrivializationAtlas) :
-    (letI := a.totalSpaceTopology; letI := a.toFiberBundle;
+    (letI := a.totalSpaceTopology; letI := a.toFiberBundle
       MemTrivializationAtlas (a.trivializationOfMemPretrivializationAtlas he₀)) :=
   letI := a.totalSpaceTopology; letI := a.toFiberBundle; ⟨e₀, he₀, rfl⟩
 

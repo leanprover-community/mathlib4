@@ -106,6 +106,9 @@ theorem toNNReal_mono (hb : b ≠ ∞) (h : a ≤ b) : a.toNNReal ≤ b.toNNReal
   toReal_mono hb h
 #align ennreal.to_nnreal_mono ENNReal.toNNReal_mono
 
+theorem le_toNNReal_of_coe_le (h : p ≤ a) (ha : a ≠ ∞) : p ≤ a.toNNReal :=
+  @toNNReal_coe p ▸ toNNReal_mono ha h
+
 /-- If `a ≤ b + c` and `a = ∞` whenever `b = ∞` or `c = ∞`, then
 `ENNReal.toReal a ≤ ENNReal.toReal b + ENNReal.toReal c`. This lemma is useful to transfer
 triangle-like inequalities from `ENNReal`s to `Real`s. -/
@@ -126,6 +129,7 @@ theorem toNNReal_le_toNNReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toNNReal ≤ 
   ⟨fun h => by rwa [← coe_toNNReal ha, ← coe_toNNReal hb, coe_le_coe], toNNReal_mono hb⟩
 #align ennreal.to_nnreal_le_to_nnreal ENNReal.toNNReal_le_toNNReal
 
+@[gcongr]
 theorem toNNReal_strict_mono (hb : b ≠ ∞) (h : a < b) : a.toNNReal < b.toNNReal := by
   simpa [← ENNReal.coe_lt_coe, hb, h.ne_top]
 #align ennreal.to_nnreal_strict_mono ENNReal.toNNReal_strict_mono
@@ -134,6 +138,9 @@ theorem toNNReal_strict_mono (hb : b ≠ ∞) (h : a < b) : a.toNNReal < b.toNNR
 theorem toNNReal_lt_toNNReal (ha : a ≠ ∞) (hb : b ≠ ∞) : a.toNNReal < b.toNNReal ↔ a < b :=
   ⟨fun h => by rwa [← coe_toNNReal ha, ← coe_toNNReal hb, coe_lt_coe], toNNReal_strict_mono hb⟩
 #align ennreal.to_nnreal_lt_to_nnreal ENNReal.toNNReal_lt_toNNReal
+
+theorem toNNReal_lt_of_lt_coe (h : a < p) : a.toNNReal < p :=
+  @toNNReal_coe p ▸ toNNReal_strict_mono coe_ne_top h
 
 theorem toReal_max (hr : a ≠ ∞) (hp : b ≠ ∞) :
     ENNReal.toReal (max a b) = max (ENNReal.toReal a) (ENNReal.toReal b) :=

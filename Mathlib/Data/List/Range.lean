@@ -22,9 +22,6 @@ tactics. `range' a b = [a, ..., a + b - 1]` is there to help prove properties ab
 Actual maths should use `List.Ico` instead.
 -/
 
-set_option autoImplicit true
-
-
 universe u
 
 open Nat
@@ -33,7 +30,7 @@ namespace List
 
 variable {α : Type u}
 
-@[simp] theorem range'_one {step} : range' s 1 step = [s] := rfl
+@[simp] theorem range'_one {s step : ℕ} : range' s 1 step = [s] := rfl
 
 #align list.length_range' List.length_range'
 #align list.range'_eq_nil List.range'_eq_nil
@@ -85,9 +82,9 @@ theorem pairwise_le_range (n : ℕ) : Pairwise (· ≤ ·) (range n) :=
 #align list.pairwise_le_range List.pairwise_le_range
 
 theorem take_range (m n : ℕ) : take m (range n) = range (min m n) := by
-  apply List.ext_get
+  apply List.ext_getElem
   · simp
-  · simp (config := { contextual := true }) [← get_take, Nat.lt_min]
+  · simp (config := { contextual := true }) [← getElem_take, Nat.lt_min]
 
 theorem nodup_range (n : ℕ) : Nodup (range n) := by
   simp (config := {decide := true}) only [range_eq_range', nodup_range']
@@ -200,9 +197,14 @@ theorem nthLe_range {n} (i) (H : i < (range n).length) : nthLe (range n) i H = i
 #align list.nth_le_range List.nthLe_range
 
 @[simp]
+theorem getElem_finRange {n : ℕ} {i : ℕ} (h) :
+    (finRange n)[i] = ⟨i, length_finRange n ▸ h⟩ := by
+  simp only [finRange, getElem_range, getElem_pmap]
+
+-- Porting note (#10756): new theorem
 theorem get_finRange {n : ℕ} {i : ℕ} (h) :
     (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
-  simp only [finRange, get_range, get_pmap]
+  simp
 
 @[simp]
 theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
@@ -216,7 +218,7 @@ theorem nthLe_finRange {n : ℕ} {i : ℕ} (h) :
   get_finRange h
 #align list.nth_le_fin_range List.nthLe_finRange
 
-@[simp] theorem indexOf_finRange (i : Fin k) : (finRange k).indexOf i = i := by
+@[simp] theorem indexOf_finRange {k : ℕ} (i : Fin k) : (finRange k).indexOf i = i := by
   have : (finRange k).indexOf i < (finRange k).length := indexOf_lt_length.mpr (by simp)
   have h₁ : (finRange k).get ⟨(finRange k).indexOf i, this⟩ = i := indexOf_get this
   have h₂ : (finRange k).get ⟨i, by simp⟩ = i := get_finRange _
@@ -261,7 +263,7 @@ theorem ranges_length (l : List ℕ) :
   | cons a l hl => -- (a :: l)
     simp only [map, length_range, map_map, cons.injEq, true_and]
     conv_rhs => rw [← hl]
-    apply map_congr
+    apply map_congr_left
     intro s _
     simp only [Function.comp_apply, length_map]
 
@@ -276,7 +278,7 @@ lemma mem_mem_ranges_iff_lt_natSum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < Nat.sum l := by
   rw [← mem_range, ← ranges_join', mem_join]
 
- /-- The members of `l.ranges` have no duplicate -/
+/-- The members of `l.ranges` have no duplicate -/
 theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
   (List.pairwise_join.mp $ by rw [ranges_join']; exact nodup_range _).1 s hs
 

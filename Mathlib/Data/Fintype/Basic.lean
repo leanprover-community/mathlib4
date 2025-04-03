@@ -114,6 +114,14 @@ theorem univ_eq_empty_iff : (univ : Finset α) = ∅ ↔ IsEmpty α := by
   rw [← not_nonempty_iff, ← univ_nonempty_iff, not_nonempty_iff_eq_empty]
 #align finset.univ_eq_empty_iff Finset.univ_eq_empty_iff
 
+theorem univ_nontrivial_iff :
+    (Finset.univ : Finset α).Nontrivial ↔ Nontrivial α := by
+  rw [Finset.Nontrivial, Finset.coe_univ, Set.nontrivial_univ_iff]
+
+theorem univ_nontrivial [h : Nontrivial α] :
+    (Finset.univ : Finset α).Nontrivial :=
+  univ_nontrivial_iff.mpr h
+
 @[simp]
 theorem univ_eq_empty [IsEmpty α] : (univ : Finset α) = ∅ :=
   univ_eq_empty_iff.2 ‹_›
@@ -581,7 +589,8 @@ def ofSubsingleton (a : α) [Subsingleton α] : Fintype α :=
   ⟨{a}, fun _ => Finset.mem_singleton.2 (Subsingleton.elim _ _)⟩
 #align fintype.of_subsingleton Fintype.ofSubsingleton
 
-@[simp]
+-- In principle, this could be a `simp` theorem but it applies to any occurence of `univ` and
+-- required unification of the (possibly very complex) `Fintype` instances.
 theorem univ_ofSubsingleton (a : α) [Subsingleton α] : @univ _ (ofSubsingleton a) = {a} :=
   rfl
 #align fintype.univ_of_subsingleton Fintype.univ_ofSubsingleton
@@ -614,7 +623,7 @@ def toFinset (s : Set α) [Fintype s] : Finset α :=
 
 @[congr]
 theorem toFinset_congr {s t : Set α} [Fintype s] [Fintype t] (h : s = t) :
-    toFinset s = toFinset t := by subst h; congr; exact Subsingleton.elim _ _
+    toFinset s = toFinset t := by subst h; congr!
 #align set.to_finset_congr Set.toFinset_congr
 
 @[simp]
@@ -877,9 +886,13 @@ theorem Fin.univ_succAbove (n : ℕ) (p : Fin (n + 1)) :
     Finset.univ.image l.get = l.toFinset := by
   simp [univ_image_def]
 
-@[simp] theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
+@[simp] theorem Fin.univ_image_getElem' [DecidableEq β] (l : List α) (f : α → β) :
+    Finset.univ.image (fun i : Fin l.length => f <| l[(i : Nat)]) = (l.map f).toFinset := by
+  simp only [univ_image_def, List.ofFn_getElem_eq_map]
+
+theorem Fin.univ_image_get' [DecidableEq β] (l : List α) (f : α → β) :
     Finset.univ.image (f <| l.get ·) = (l.map f).toFinset := by
-  simp [univ_image_def]
+  simp
 
 @[instance]
 def Unique.fintype {α : Type*} [Unique α] : Fintype α :=

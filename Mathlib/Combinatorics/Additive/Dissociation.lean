@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Set.Pointwise.Basic
 
@@ -19,8 +20,6 @@ independence and linear span of sets in a vector space but where the scalars are
 * `MulDissociated`/`AddDissociated`: Predicate for a set to be dissociated.
 * `Finset.mulSpan`/`Finset.addSpan`: Span of a finset.
 -/
-
-open scoped BigOperators Pointwise
 
 variable {α β : Type*} [CommGroup α] [CommGroup β]
 

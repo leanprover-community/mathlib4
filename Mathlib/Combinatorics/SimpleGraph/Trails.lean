@@ -25,7 +25,7 @@ as Eulerian circuits).
 * `SimpleGraph.Walk.IsEulerian.card_odd_degree` gives the possible numbers of odd-degree
   vertices when there exists an Eulerian trail.
 
-## Todo
+## TODO
 
 * Prove that there exists an Eulerian trail when the conclusion to
   `SimpleGraph.Walk.IsEulerian.card_odd_degree` holds.

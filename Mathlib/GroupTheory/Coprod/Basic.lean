@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.PUnitInstances
+import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.GroupTheory.Congruence.Basic
 
 /-!
@@ -724,3 +724,5 @@ def punitCoprod : AddMonoid.Coprod PUnit M ≃+ M :=
     (AddMonoid.Coprod.hom_ext (Subsingleton.elim _ _) rfl) AddMonoid.Coprod.snd_comp_inr
 
 end AddEquiv
+
+end Monoid

@@ -185,7 +185,7 @@ def whiskerLeft (X : Center C) {Y₁ Y₂ : Center C} (f : Y₁ ⟶ Y₂) :
   comm U := whiskerLeft_comm X f U
 
 @[reassoc]
-theorem whiskerRight_comm {X₁ X₂: Center C} (f : X₁ ⟶ X₂) (Y : Center C) (U : C) :
+theorem whiskerRight_comm {X₁ X₂ : Center C} (f : X₁ ⟶ X₂) (Y : Center C) (U : C) :
     f.f ▷ Y.1 ▷ U ≫ ((tensorObj X₂ Y).2.β U).hom =
       ((tensorObj X₁ Y).2.β U).hom ≫ U ◁ f.f ▷ Y.1 := by
   dsimp only [tensorObj_fst, tensorObj_snd_β, Iso.trans_hom, whiskerLeftIso_hom,

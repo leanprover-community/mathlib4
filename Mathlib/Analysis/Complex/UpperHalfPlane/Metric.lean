@@ -128,7 +128,6 @@ def metricSpaceAux : MetricSpace ℍ where
   dist_triangle := UpperHalfPlane.dist_triangle
   eq_of_dist_eq_zero {z w} h := by
     simpa [dist_eq, Real.sqrt_eq_zero', (mul_pos z.im_pos w.im_pos).not_le, ext_iff] using h
-  edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
 #align upper_half_plane.metric_space_aux UpperHalfPlane.metricSpaceAux
 
 open Complex
@@ -372,7 +371,7 @@ instance : IsometricSMul SL(2, ℝ) ℍ :=
         have h₂ : Complex.abs (y₁ * y₂) ≠ 0 := by simp [y₁.ne_zero, y₂.ne_zero]
         simp only [dist_eq, modular_S_smul, inv_neg, neg_div, div_mul_div_comm, coe_mk, mk_im,
           div_one, Complex.inv_im, Complex.neg_im, coe_im, neg_neg, Complex.normSq_neg,
-          mul_eq_mul_left_iff, Real.arsinh_inj, bit0_eq_zero, one_ne_zero, or_false_iff,
+          mul_eq_mul_left_iff, Real.arsinh_inj, one_ne_zero, or_false_iff,
           dist_neg_neg, mul_neg, neg_mul, dist_inv_inv₀ y₁.ne_zero y₂.ne_zero, ←
           AbsoluteValue.map_mul, ← Complex.normSq_mul, Real.sqrt_div h₁, ← Complex.abs_apply,
           mul_div (2 : ℝ), div_div_div_comm, div_self h₂, Complex.norm_eq_abs]

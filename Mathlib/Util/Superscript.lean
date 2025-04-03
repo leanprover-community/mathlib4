@@ -24,10 +24,12 @@ However, note that Unicode has a rather restricted character set for superscript
 parser for complex expressions.
 -/
 
-set_option autoImplicit true
+universe u
 
 namespace Mathlib.Tactic
+
 open Lean Parser PrettyPrinter
+
 namespace Superscript
 
 instance : Hashable Char := ⟨fun c => hash c.1⟩
@@ -128,7 +130,7 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
         let c' := m.toNormal.find! c
         newStr := newStr.push c'
         pos := pos + c
-        if String.csize c != String.csize c' then
+        if c.utf8Size != c'.utf8Size then
           aligns := aligns.push (newStr.endPos, pos)
       newStr := newStr.push ' '
       if stopWs.1 - stopTk.1 != 1 then

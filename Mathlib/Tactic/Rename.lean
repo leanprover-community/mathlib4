@@ -5,6 +5,11 @@ Authors: Gabriel Ebner
 -/
 import Lean
 
+/-!
+# The `rename'` tactic
+The `rename'` tactic renames one or several hypotheses.
+-/
+
 namespace Mathlib.Tactic
 
 open Lean Elab.Tactic Meta

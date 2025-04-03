@@ -23,34 +23,37 @@ system it determines has a non-zero integer solution `t` with
 
 ## Notation
 
- - `‖_‖ ` : Matrix.seminormedAddCommGroup is the sup norm, the maximum of the absolute values of
- the entries of the matrix
+- `‖_‖ ` : Matrix.seminormedAddCommGroup is the sup norm, the maximum of the absolute values of
+the entries of the matrix
 
 ## References
 
 See [M. Hindry and J. Silverman, Diophantine Geometry: an Introduction][hindrysilverman00].
 -/
 
-/-We set ‖⬝‖ to be Matrix.seminormedAddCommGroup  -/
+/- We set ‖⬝‖ to be Matrix.seminormedAddCommGroup  -/
 attribute [local instance] Matrix.seminormedAddCommGroup
 
 open Matrix Finset
 
 namespace Int.Matrix
 
-variable (m n : ℕ) (A : Matrix (Fin m) (Fin n) ℤ) (v : Fin n → ℤ) (hn : m < n) (hm : 0 < m)
+variable {α β : Type _} [Fintype α] [Fintype β] [DecidableEq β] [DecidableEq α]
+  (A : Matrix α β ℤ) (v : β → ℤ) (hn : Fintype.card α < Fintype.card β) (hm : 0 < Fintype.card α)
 
---Some definitions and relative properties
+-- Some definitions and relative properties
 
-local notation3 "e" => m / ((n : ℝ) - m) --exponent
+local notation3 "m" => Fintype.card α
+local notation3 "n" => Fintype.card β
+local notation3 "e" => m / ((n : ℝ) - m) -- exponent
 local notation3 "B" => Nat.floor (((n : ℝ) * ‖A‖) ^ e)
---B' is the vector with all components = B
-local notation3 "B'" => fun _ : Fin n => (B : ℤ)
---T is the box [0 B]^n
+-- B' is the vector with all components = B
+local notation3 "B'" => fun _ : β => (B : ℤ)
+-- T is the box [0 B]^n
 local notation3 "T" =>  Finset.Icc 0 B'
-local notation3 "P" => fun i : Fin m => ∑ j : Fin n, B * posPart (A i j)
-local notation3 "N" => fun i : Fin m => ∑ j : Fin n, B * (- negPart (A i j))
---S is the box where the image of T goes
+local notation3 "P" => fun i : α => ∑ j : β, B * posPart (A i j)
+local notation3 "N" => fun i : α => ∑ j : β, B * (- negPart (A i j))
+-- S is the box where the image of T goes
 local notation3 "S" => Finset.Icc N P
 
 section preparation
@@ -63,19 +66,19 @@ Pigeonhole will give different x and y in T with A.mulVec x = A.mulVec y in S
 Their difference is the solution we are looking for
 -/
 
---# Step 1: ∀ v ∈ T, A *ᵥ v ∈  S
+-- # Step 1: ∀ v ∈ T, A *ᵥ v ∈  S
 
 private lemma image_T_subset_S (v) (hv : v ∈ T) : A *ᵥ v ∈ S := by
   rw [mem_Icc] at hv ⊢
   have mulVec_def : A.mulVec v =
-      fun i ↦ Finset.sum univ fun j : Fin n ↦ A i j * v j := rfl
+      fun i ↦ Finset.sum univ fun j : β ↦ A i j * v j := rfl
   rw [mulVec_def]
   refine ⟨fun i ↦ ?_, fun i ↦ ?_⟩
   all_goals
     simp only [mul_neg]
-    gcongr ∑ _ : Fin n, ?_ with j _ --get rid of sums
-    rw [← mul_comm (v j)] --move A i j to the right of the products
-    rcases le_total 0 (A i j) with hsign | hsign--we have to distinguish cases: we have now 4 goals
+    gcongr ∑ _ : α, ?_ with j _ -- Get rid of sums
+    rw [← mul_comm (v j)] -- Move A i j to the right of the products
+    rcases le_total 0 (A i j) with hsign | hsign-- We have to distinguish cases: we have now 4 goals
   · rw [negPart_eq_zero.2 hsign]
     exact mul_nonneg (hv.1 j) hsign
   · rw [negPart_eq_neg.2 hsign]
@@ -86,14 +89,15 @@ private lemma image_T_subset_S (v) (hv : v ∈ T) : A *ᵥ v ∈ S := by
   · rw [posPart_eq_zero.2 hsign]
     exact mul_nonpos_of_nonneg_of_nonpos (hv.1 j) hsign
 
---# Preparation for Step 2
+-- # Preparation for Step 2
 
 private lemma card_T_eq : (T).card = (B + 1) ^ n := by
   rw [Pi.card_Icc 0 B']
-  simp only [Pi.zero_apply, Int.card_Icc, sub_zero, Int.toNat_ofNat_add_one, prod_const, card_fin]
+  simp only [Pi.zero_apply, card_Icc, sub_zero, toNat_ofNat_add_one, prod_const, card_univ,
+    add_pos_iff, zero_lt_one, or_true]
 
---This lemma is necessary to be able to apply the formula (Icc a b).card = b + 1 - a
-private lemma N_le_P_add_one (i : Fin m) : N i ≤ P i + 1 := by
+-- This lemma is necessary to be able to apply the formula (Icc a b).card = b + 1 - a
+private lemma N_le_P_add_one (i : α) : N i ≤ P i + 1 := by
   calc N i
   _ ≤ 0 := by
     apply Finset.sum_nonpos
@@ -105,16 +109,16 @@ private lemma N_le_P_add_one (i : Fin m) : N i ≤ P i + 1 := by
     intro j _
     exact mul_nonneg (Nat.cast_nonneg B) (posPart_nonneg (A i j))
 
-private lemma card_S_eq : (Finset.Icc N P).card = ∏ i : Fin m, (P i - N i + 1) := by
+private lemma card_S_eq : (Finset.Icc N P).card = ∏ i : α, (P i - N i + 1) := by
   rw [Pi.card_Icc N P, Nat.cast_prod]
   congr
   ext i
-  rw [Int.card_Icc_of_le (N i) (P i) (N_le_P_add_one m n A i)]
+  rw [Int.card_Icc_of_le (N i) (P i) (N_le_P_add_one A i)]
   exact add_sub_right_comm (P i) 1 (N i)
 
 variable  (hA : A ≠ 0)
 
-/--The sup norm of a non-zero integer matrix is at lest one  -/
+/-- The sup norm of a non-zero integer matrix is at least one  -/
 lemma one_le_norm_A_of_ne_zero : 1 ≤ ‖A‖ := by
   by_contra! h
   apply hA
@@ -126,37 +130,38 @@ lemma one_le_norm_A_of_ne_zero : 1 ≤ ‖A‖ := by
   norm_cast at h
   exact Int.abs_lt_one_iff.1 h
 
---# Step 2: S.card < T.card
+-- # Step 2: S.card < T.card
 
 open Real Nat
 
 private lemma card_S_lt_card_T : (S).card < (T).card := by
-  zify --this is necessary to use card_S_eq
-  rw [card_T_eq, card_S_eq]
-  rify --this is necessary because ‖A‖ is a real number
+  zify -- This is necessary to use card_S_eq
+  rw [card_T_eq A, card_S_eq]
+  rify -- This is necessary because ‖A‖ is a real number
   calc
-  ∏ x : Fin m, (∑ x_1 : Fin n, ↑B * ↑(A x x_1)⁺ - ∑ x_1 : Fin n, ↑B * -↑(A x x_1)⁻ + 1)
-    ≤ (n * ‖A‖ * B + 1) ^ m := by
-      rw [← Fin.prod_const m (n * ‖A‖ * B + 1)] --transform ^m into a product
+  ∏ x : α, (∑ x_1 : β, ↑B * ↑(A x x_1)⁺ - ∑ x_1 : β, ↑B * -↑(A x x_1)⁻ + 1)
+    ≤ ∏ x : α, (n * ‖A‖ * B + 1) := by
       refine Finset.prod_le_prod (fun i _ ↦ ?_) (fun i _ ↦ ?_)
-      · have h := N_le_P_add_one m n A i
+      · have h := N_le_P_add_one A i
         rify at h
         linarith only [h]
       · simp only [mul_neg, sum_neg_distrib, sub_neg_eq_add, add_le_add_iff_right]
-        have h1 : n * ‖A‖ * B = ∑ _ : Fin n, ‖A‖ * B := by
-          simp only [sum_const, card_univ, Fintype.card_fin, nsmul_eq_mul, mul_assoc ↑n ‖A‖ ↑B]
+        have h1 : n * ‖A‖ * B = ∑ _ : β, ‖A‖ * B := by
+          simp only [sum_const, card_univ, nsmul_eq_mul]
+          ring
         simp_rw [h1, ← Finset.sum_add_distrib, ← mul_add, mul_comm ‖A‖, ← Int.cast_add]
         gcongr with j _
         rw [posPart_add_negPart (A i j), Int.cast_abs]
         exact norm_entry_le_entrywise_sup_norm A
+  _  = (n * ‖A‖ * B + 1) ^ m := by simp only [prod_const, card_univ]
   _  ≤ (n * ‖A‖) ^ m * (B + 1) ^ m := by
         rw [← mul_pow, mul_add, mul_one]
         gcongr
         have H : 1 ≤ (n : ℝ) := mod_cast (hm.trans hn)
-        exact one_le_mul_of_one_le_of_one_le H <| one_le_norm_A_of_ne_zero m n A hA
+        exact one_le_mul_of_one_le_of_one_le H <| one_le_norm_A_of_ne_zero A hA
   _ = ((n * ‖A‖) ^ (m / ((n : ℝ) - m))) ^ ((n : ℝ) - m)  * (B + 1) ^ m := by
         congr 1
-        rw [← rpow_mul (mul_nonneg n.cast_nonneg (norm_nonneg A)), ← Real.rpow_natCast,
+        rw [← rpow_mul (mul_nonneg (Nat.cast_nonneg' n) (norm_nonneg A)), ← Real.rpow_natCast,
           div_mul_cancel₀]
         exact sub_ne_zero_of_ne (mod_cast hn.ne')
   _ < (B + 1) ^ ((n : ℝ) - m) * (B + 1) ^ m := by
@@ -168,15 +173,15 @@ private lemma card_S_lt_card_T : (S).card < (T).card := by
 
 end preparation
 
-theorem exists_ne_zero_int_vec_norm_le  (hA_nezero : A ≠ 0) : ∃ t : Fin n → ℤ, t ≠ 0 ∧
+theorem exists_ne_zero_int_vec_norm_le (hA_nezero : A ≠ 0) : ∃ t : β → ℤ, t ≠ 0 ∧
     A *ᵥ t = 0 ∧ ‖t‖ ≤ (n * ‖A‖) ^ ((m : ℝ) / (n - m)) := by
-  --Pigeonhole
+  -- Pigeonhole
   rcases Finset.exists_ne_map_eq_of_card_lt_of_maps_to
-    (card_S_lt_card_T m n A hn hm hA_nezero) (image_T_subset_S m n A)
+    (card_S_lt_card_T A hn hm hA_nezero) (image_T_subset_S A)
     with ⟨x, hxT, y, hyT, hneq, hfeq⟩
-  --proofs that x - y ≠ 0 and x - y is a solution
+  -- Proofs that x - y ≠ 0 and x - y is a solution
   refine ⟨x - y, sub_ne_zero.mpr hneq, by simp only [mulVec_sub, sub_eq_zero, hfeq], ?_⟩
-  --Inequality
+  -- Inequality
   have n_mul_norm_A_pow_e_nonneg : 0 ≤ (n * ‖A‖) ^ e := by positivity
   rw [← norm_col (ι := Unit), norm_le_iff n_mul_norm_A_pow_e_nonneg]
   intro i j

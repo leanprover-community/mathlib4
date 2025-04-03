@@ -67,7 +67,7 @@ Linear algebra:
     Jordan normal form: 'https://en.wikipedia.org/wiki/Jordan_normal_form'
   Linear representations:
     irreducible representation: 'https://en.wikipedia.org/wiki/Irreducible_representation'
-    Schur's lemma: 'FdRep.finrank_hom_simple_simple'
+    Schur's lemma: 'FDRep.finrank_hom_simple_simple'
     examples: ''
   Exponential:
     endomorphism exponential: ''
@@ -112,11 +112,11 @@ Group Theory:
     representations of abelian groups: 'https://proofwiki.org/wiki/Irreducible_Representations_of_Abelian_Group'
     dual groups: 'https://kconrad.math.uconn.edu/blurbs/grouptheory/charthy.pdf'
     Maschke theorem: 'MonoidAlgebra.Submodule.exists_isCompl'
-    orthogonality of irreducible characters: 'FdRep.char_orthonormal'
+    orthogonality of irreducible characters: 'FDRep.char_orthonormal'
     Fourier transform for finite abelian groups: 'https://en.wikipedia.org/wiki/Fourier_transform_on_finite_groups#Fourier_transform_for_finite_abelian_groups'
     convolution: 'https://en.wikipedia.org/wiki/Fourier_transform_on_finite_groups#Transform_of_a_convolution'
     class function over a group: 'https://en.wikipedia.org/wiki/Class_function'
-    characters of a finite dimensional representation: 'FdRep.character'
+    characters of a finite dimensional representation: 'FDRep.character'
     orthonormal basis of irreducible characters: 'https://en.wikipedia.org/wiki/Character_theory#Orthogonality_relations'
     examples of groups with small cardinality: ''
 
@@ -202,7 +202,7 @@ Bilinear and Quadratic Forms Over a Vector Space:
     rank of a bilinear form: ''
   Quadratic forms:
     quadratic form: 'QuadraticForm'
-    polar form of a quadratic: 'QuadraticForm.polar'
+    polar form of a quadratic: 'QuadraticMap.polar'
   Orthogonality:
     orthogonal elements: 'LinearMap.BilinForm.IsOrtho'
     adjoint endomorphism: 'LinearMap.BilinForm.leftAdjointOfNondegenerate'

@@ -983,7 +983,7 @@ lemma sup'_comp_eq_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : s.N
     s.sup' hs (g ∘ f) = (s.map f).sup' (map_nonempty.2 hs) g :=
   .symm <| sup'_map _ _
 
-theorem sup'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty):
+theorem sup'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
     s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f :=
   Finset.sup'_le h₁ _ (fun _ hb => le_sup' _ (h hb))
 
@@ -1612,12 +1612,10 @@ theorem lt_min'_iff : x < s.min' H ↔ ∀ y ∈ s, x < y :=
   @max'_lt_iff αᵒᵈ _ _ H _
 #align finset.lt_min'_iff Finset.lt_min'_iff
 
-theorem max'_eq_sup' : s.max' H = s.sup' H id :=
-  eq_of_forall_ge_iff fun _ => (max'_le_iff _ _).trans (sup'_le_iff _ _).symm
+theorem max'_eq_sup' : s.max' H = s.sup' H id := rfl
 #align finset.max'_eq_sup' Finset.max'_eq_sup'
 
-theorem min'_eq_inf' : s.min' H = s.inf' H id :=
-  @max'_eq_sup' αᵒᵈ _ s H
+theorem min'_eq_inf' : s.min' H = s.inf' H id := rfl
 #align finset.min'_eq_inf' Finset.min'_eq_inf'
 
 /-- `{a}.max' _` is `a`. -/

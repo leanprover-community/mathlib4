@@ -37,8 +37,6 @@ lemma idem_f (P : Karoubi (Karoubi C)) : P.p.f ≫ P.p.f = P.p.f := by
 lemma p_comm_f {P Q : Karoubi (Karoubi C)} (f : P ⟶ Q) : P.p.f ≫ f.f.f = f.f.f ≫ Q.p.f := by
   simpa only [hom_ext_iff, comp_f] using p_comm f
 
-attribute [local simp] p_comm_f
-
 /-- The canonical functor `Karoubi (Karoubi C) ⥤ Karoubi C` -/
 @[simps]
 def inverse : Karoubi (Karoubi C) ⥤ Karoubi C where
@@ -54,21 +52,12 @@ def unitIso : 𝟭 (Karoubi C) ≅ toKaroubi (Karoubi C) ⋙ inverse C :=
   eqToIso (Functor.ext (by aesop_cat) (by aesop_cat))
 #align category_theory.idempotents.karoubi_karoubi.unit_iso CategoryTheory.Idempotents.KaroubiKaroubi.unitIso
 
+attribute [local simp] p_comm_f in
 /-- The counit isomorphism of the equivalence -/
 @[simps]
 def counitIso : inverse C ⋙ toKaroubi (Karoubi C) ≅ 𝟭 (Karoubi (Karoubi C)) where
-  hom :=
-    { app := fun P =>
-        { f :=
-            { f := P.p.1
-              comm := by simp }
-          comm := by simp } }
-  inv :=
-    { app := fun P =>
-        { f :=
-            { f := P.p.1
-              comm := by simp }
-          comm := by simp } }
+  hom := { app := fun P => { f := { f := P.p.1 } } }
+  inv := { app := fun P => { f := { f := P.p.1 }  } }
 #align category_theory.idempotents.karoubi_karoubi.counit_iso CategoryTheory.Idempotents.KaroubiKaroubi.counitIso
 
 /-- The equivalence `Karoubi C ≌ Karoubi (Karoubi C)` -/

@@ -5,10 +5,10 @@ Authors: Gabriel Ebner
 -/
 import Lean.Elab.ElabRules
 
-open Lean Elab Term Meta
-
 /-!
-Defines notations for coercions.
+# Additional coercion notation
+
+Defines notation for coercions.
 1. `↑ t` is defined in core.
 2. `(↑)` is equivalent to the eta-reduction of `(↑ ·)`
 3. `⇑ t` is a coercion to a function type.
@@ -16,6 +16,8 @@ Defines notations for coercions.
 3. `↥ t` is a coercion to a type.
 6. `(↥)` is equivalent to the eta-reduction of `(↥ ·)`
 -/
+
+open Lean Meta
 
 namespace Lean.Elab.Term.CoeImpl
 

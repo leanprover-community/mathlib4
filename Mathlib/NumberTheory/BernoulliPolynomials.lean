@@ -224,7 +224,7 @@ theorem bernoulli_generating_function (t : A) :
   -- check equality of power series by checking coefficients of X^n
   ext n
   -- n = 0 case solved by `simp`
-  cases' n with n;
+  cases' n with n
   · simp
   -- n ≥ 1, the coefficients is a sum to n+2, so use `sum_range_succ` to write as
   -- last term plus sum to n+1
@@ -243,7 +243,7 @@ theorem bernoulli_generating_function (t : A) :
     mul_one_div_cancel (show (n ! : ℚ) ≠ 0 from cast_ne_zero.2 (factorial_ne_zero n)), mul_one,
     mul_comm (t ^ n), ← aeval_monomial, cast_add, cast_one]
   -- But this is the RHS of `Polynomial.sum_bernoulli`
-  rw [← sum_bernoulli, Finset.mul_sum, AlgHom.map_sum]
+  rw [← sum_bernoulli, Finset.mul_sum, map_sum]
   -- and now we have to prove a sum is a sum, but all the terms are equal.
   apply Finset.sum_congr rfl
   -- The rest is just trivialities, hampered by the fact that we're coercing
@@ -251,7 +251,7 @@ theorem bernoulli_generating_function (t : A) :
   intro i hi
   -- deal with coefficients of e^X-1
   simp only [Nat.cast_choose ℚ (mem_range_le hi), coeff_mk, if_neg (mem_range_sub_ne_zero hi),
-    one_div, AlgHom.map_smul, PowerSeries.coeff_one, coeff_exp, sub_zero, LinearMap.map_sub,
+    one_div, map_smul, PowerSeries.coeff_one, coeff_exp, sub_zero, LinearMap.map_sub,
     Algebra.smul_mul_assoc, Algebra.smul_def, mul_right_comm _ ((aeval t) _), ← mul_assoc, ←
     RingHom.map_mul, succ_eq_add_one, ← Polynomial.C_eq_algebraMap, Polynomial.aeval_mul,
     Polynomial.aeval_C]

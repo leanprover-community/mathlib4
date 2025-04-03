@@ -3,6 +3,7 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
+import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Pointwise.Basic
@@ -451,11 +452,17 @@ theorem range_smul_range {ι κ : Type*} [SMul α β] (b : ι → α) (c : κ �
 #align set.range_vadd_range Set.range_vadd_range
 
 @[to_additive]
-theorem smul_set_range [SMul α β] {ι : Sort*} {f : ι → β} :
+theorem smul_set_range [SMul α β] {ι : Sort*} (a : α) (f : ι → β) :
     a • range f = range fun i ↦ a • f i :=
   (range_comp _ _).symm
 #align set.smul_set_range Set.smul_set_range
 #align set.vadd_set_range Set.vadd_set_range
+
+@[to_additive] lemma range_smul [SMul α β] {ι : Sort*} (a : α) (f : ι → β) :
+    range (fun i ↦ a • f i) = a • range f := (smul_set_range ..).symm
+
+@[to_additive] lemma range_mul [Mul α] {ι : Sort*} (a : α) (f : ι → α) :
+    range (fun i ↦ a * f i) = a • range f := range_smul a f
 
 @[to_additive]
 instance smulCommClass_set [SMul α γ] [SMul β γ] [SMulCommClass α β γ] :

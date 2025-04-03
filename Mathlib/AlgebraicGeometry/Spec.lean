@@ -338,7 +338,7 @@ set_option linter.uppercaseLean3 false in
 theorem Spec_Γ_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
     f ≫ toSpecΓ S = toSpecΓ R ≫ Γ.map (Spec.toLocallyRingedSpace.map f.op).op := by
   -- Porting note: `ext` failed to pick up one of the three lemmas
-  refine RingHom.ext fun x => Subtype.ext <| funext fun x' => ?_; symm;
+  refine RingHom.ext fun x => Subtype.ext <| funext fun x' => ?_; symm
   apply Localization.localRingHom_to_map
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec_Γ_naturality AlgebraicGeometry.Spec_Γ_naturality
@@ -480,8 +480,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
         U.2
     change PrimeSpectrum.basicOpen r ≤ U at hrU
     apply_fun (Spec.topMap (algebraMap R S) _* (structureSheaf S).1).map (homOfLE hrU).op at e
-    simp only [TopCat.Presheaf.pushforwardObj_map, Functor.op_map, map_zero, ← comp_apply,
-      toOpen_res] at e
+    simp only [Functor.op_map, map_zero, ← comp_apply, toOpen_res] at e
     have : toOpen S (PrimeSpectrum.basicOpen <| algebraMap R S r) x = 0 := by
       refine Eq.trans ?_ e; rfl
     have :=

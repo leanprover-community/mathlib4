@@ -147,7 +147,7 @@ theorem map_frobeniusPoly (n : ℕ) :
   refine Nat.strong_induction_on n ?_; clear n
   intro n IH
   rw [xInTermsOfW_eq]
-  simp only [AlgHom.map_sum, AlgHom.map_sub, AlgHom.map_mul, AlgHom.map_pow, bind₁_C_right]
+  simp only [map_sum, map_sub, map_mul, map_pow (bind₁ _), bind₁_C_right]
   have h1 : (p : ℚ) ^ n * ⅟ (p : ℚ) ^ n = 1 := by rw [← mul_pow, mul_invOf_self, one_pow]
   rw [bind₁_X_right, Function.comp_apply, wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ,
     sum_range_succ, tsub_self, add_tsub_cancel_left, pow_zero, pow_one, pow_one, sub_mul, add_mul,
@@ -182,7 +182,7 @@ theorem map_frobeniusPoly (n : ℕ) :
   rw [Rat.natCast_div _ _ (map_frobeniusPoly.key₁ p (n - i) j hj)]
   simp only [Nat.cast_pow, pow_add, pow_one]
   suffices
-    (((p ^ (n - i)).choose (j + 1): ℚ) * (p : ℚ) ^ (j - v p ⟨j + 1, j.succ_pos⟩) * ↑p * (p ^ n : ℚ))
+    (((p ^ (n - i)).choose (j + 1) : ℚ) * (p : ℚ) ^ (j - v p ⟨j + 1, j.succ_pos⟩) * ↑p * (p ^ n : ℚ))
       = (p : ℚ) ^ j * p * ↑((p ^ (n - i)).choose (j + 1) * p ^ i) *
         (p : ℚ) ^ (n - i - v p ⟨j + 1, j.succ_pos⟩) by
     have aux : ∀ k : ℕ, (p : ℚ)^ k ≠ 0 := by

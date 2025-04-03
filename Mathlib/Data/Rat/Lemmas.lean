@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Ring.Rat
 import Mathlib.Data.PNat.Defs
 
@@ -154,7 +152,7 @@ theorem exists_eq_mul_div_num_and_eq_mul_div_den (n : ℤ) {d : ℤ} (d_ne_zero 
 theorem mul_num_den' (q r : ℚ) :
     (q * r).num * q.den * r.den = q.num * r.num * (q * r).den := by
   let s := q.num * r.num /. (q.den * r.den : ℤ)
-  have hs : (q.den * r.den : ℤ) ≠ 0 := Int.natCast_ne_zero_iff_pos.mpr (mul_pos q.pos r.pos)
+  have hs : (q.den * r.den : ℤ) ≠ 0 := Int.natCast_ne_zero_iff_pos.mpr (Nat.mul_pos q.pos r.pos)
   obtain ⟨c, ⟨c_mul_num, c_mul_den⟩⟩ :=
     exists_eq_mul_div_num_and_eq_mul_div_den (q.num * r.num) hs
   rw [c_mul_num, mul_assoc, mul_comm]
@@ -169,7 +167,7 @@ theorem mul_num_den' (q r : ℚ) :
 theorem add_num_den' (q r : ℚ) :
     (q + r).num * q.den * r.den = (q.num * r.den + r.num * q.den) * (q + r).den := by
   let s := divInt (q.num * r.den + r.num * q.den) (q.den * r.den : ℤ)
-  have hs : (q.den * r.den : ℤ) ≠ 0 := Int.natCast_ne_zero_iff_pos.mpr (mul_pos q.pos r.pos)
+  have hs : (q.den * r.den : ℤ) ≠ 0 := Int.natCast_ne_zero_iff_pos.mpr (Nat.mul_pos q.pos r.pos)
   obtain ⟨c, ⟨c_mul_num, c_mul_den⟩⟩ :=
     exists_eq_mul_div_num_and_eq_mul_div_den (q.num * r.den + r.num * q.den) hs
   rw [c_mul_num, mul_assoc, mul_comm]
@@ -297,7 +295,7 @@ theorem inv_natCast_num (a : ℕ) : (a : ℚ)⁻¹.num = Int.sign a :=
 
 @[simp]
 theorem inv_ofNat_num (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℚ))⁻¹.num = 1 :=
-  inv_natCast_num_of_pos (NeZero.pos a)
+  inv_natCast_num_of_pos (Nat.pos_of_neZero a)
 
 @[simp]
 theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.natAbs := by
@@ -306,10 +304,12 @@ theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.
   · obtain ⟨a, rfl⟩ : ∃ b, -b = a := ⟨-a, a.neg_neg⟩
     simp at lt
     rw [if_neg (by omega)]
-    simp [Rat.inv_neg, inv_intCast_den_of_pos lt, abs_of_pos lt]
+    simp only [Int.cast_neg, Rat.inv_neg, neg_den, inv_intCast_den_of_pos lt, Int.natAbs_neg]
+    exact Int.eq_natAbs_of_zero_le (by omega)
   · rfl
   · rw [if_neg (by omega)]
-    simp [inv_intCast_den_of_pos gt, abs_of_pos gt]
+    simp only [inv_intCast_den_of_pos gt]
+    exact Int.eq_natAbs_of_zero_le (by omega)
 #align rat.inv_coe_int_denom Rat.inv_intCast_den
 
 @[simp]
@@ -333,7 +333,7 @@ theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a 
 @[simp]
 theorem inv_ofNat_den (a : ℕ) [a.AtLeastTwo] :
     (no_index (OfNat.ofNat a : ℚ))⁻¹.den = OfNat.ofNat a :=
-  inv_natCast_den_of_pos (NeZero.pos a)
+  inv_natCast_den_of_pos (Nat.pos_of_neZero a)
 
 protected theorem «forall» {p : ℚ → Prop} : (∀ r, p r) ↔ ∀ a b : ℤ, p (a / b) :=
   ⟨fun h _ _ => h _,

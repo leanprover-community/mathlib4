@@ -40,8 +40,8 @@ theorem effectiveEpiOfKernelPair {B X : C} (f : X ⟶ B) [HasPullback f f]
 noncomputable instance regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPullback f f]
     [EffectiveEpi f] : RegularEpi f where
   W := pullback f f
-  left := pullback.fst
-  right := pullback.snd
+  left := pullback.fst f f
+  right := pullback.snd f f
   w := pullback.condition
   isColimit := {
     desc := fun s ↦ EffectiveEpi.desc f (s.ι.app WalkingParallelPair.one) fun g₁ g₂ hg ↦ (by
@@ -59,3 +59,5 @@ noncomputable instance regularEpiOfEffectiveEpi {B X : C} (f : X ⟶ B) [HasPull
       | zero => simp [this]
       | one => simp [this]
     uniq := fun _ _ h ↦ EffectiveEpi.uniq f _ _ _ (h WalkingParallelPair.one) }
+
+end CategoryTheory

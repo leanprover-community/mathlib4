@@ -416,7 +416,7 @@ theorem arccos_of_one_le {x : ℝ} (hx : 1 ≤ x) : arccos x = 0 := by
 #align real.arccos_of_one_le Real.arccos_of_one_le
 
 theorem arccos_of_le_neg_one {x : ℝ} (hx : x ≤ -1) : arccos x = π := by
-  rw [arccos, arcsin_of_le_neg_one hx, sub_neg_eq_add, add_halves']
+  rw [arccos, arcsin_of_le_neg_one hx, sub_neg_eq_add, add_halves]
 #align real.arccos_of_le_neg_one Real.arccos_of_le_neg_one
 
 -- The junk values for `arccos` and `sqrt` make this true even outside `[-1, 1]`.

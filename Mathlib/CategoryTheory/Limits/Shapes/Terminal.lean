@@ -803,6 +803,20 @@ instance isIso_ι_initial [HasInitial J] (F : J ⥤ C) [∀ (i j : J) (f : i ⟶
   isIso_ι_of_isInitial initialIsInitial F
 #align category_theory.limits.is_iso_ι_initial CategoryTheory.Limits.isIso_ι_initial
 
+/-- Any morphism between terminal objects is an isomorphism. -/
+lemma isIso_of_isTerminal {X Y : C} (hX : IsTerminal X) (hY : IsTerminal Y) (f : X ⟶ Y) :
+    IsIso f := by
+  refine ⟨⟨IsTerminal.from hX Y, ?_⟩⟩
+  simp only [IsTerminal.comp_from, IsTerminal.from_self, true_and]
+  apply IsTerminal.hom_ext hY
+
+/-- Any morphism between initial objects is an isomorphism. -/
+lemma isIso_of_isInitial {X Y : C} (hX : IsInitial X) (hY : IsInitial Y) (f : X ⟶ Y) :
+    IsIso f := by
+  refine ⟨⟨IsInitial.to hY X, ?_⟩⟩
+  simp only [IsInitial.to_comp, IsInitial.to_self, and_true]
+  apply IsInitial.hom_ext hX
+
 end
 
 end CategoryTheory.Limits

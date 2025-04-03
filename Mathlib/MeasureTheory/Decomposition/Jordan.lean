@@ -234,9 +234,9 @@ def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
     negPart_finite := inferInstance
     mutuallySingular := by
       refine ⟨iᶜ, hi.1.compl, ?_, ?_⟩
-      -- Porting note: added `← NNReal.eq_iff`
-      · rw [toMeasureOfZeroLE_apply _ _ hi.1 hi.1.compl]; simp [← NNReal.eq_iff]
-      · rw [toMeasureOfLEZero_apply _ _ hi.1.compl hi.1.compl.compl]; simp [← NNReal.eq_iff] }
+      -- Porting note: added `NNReal.eq_iff`
+      · rw [toMeasureOfZeroLE_apply _ _ hi.1 hi.1.compl]; simp [NNReal.eq_iff]
+      · rw [toMeasureOfLEZero_apply _ _ hi.1.compl hi.1.compl.compl]; simp [NNReal.eq_iff] }
 #align measure_theory.signed_measure.to_jordan_decomposition MeasureTheory.SignedMeasure.toJordanDecomposition
 
 theorem toJordanDecomposition_spec (s : SignedMeasure α) :
@@ -524,9 +524,9 @@ theorem absolutelyContinuous_ennreal_iff (s : SignedMeasure α) (μ : VectorMeas
     rw [totalVariation, Measure.add_apply, hpos, hneg, toMeasureOfZeroLE_apply _ _ _ hS₁,
       toMeasureOfLEZero_apply _ _ _ hS₁]
     rw [← VectorMeasure.AbsolutelyContinuous.ennrealToMeasure] at h
-    -- Porting note: added `← NNReal.eq_iff`
+    -- Porting note: added `NNReal.eq_iff`
     simp [h (measure_mono_null (i.inter_subset_right) hS₂),
-      h (measure_mono_null (iᶜ.inter_subset_right) hS₂), ← NNReal.eq_iff]
+      h (measure_mono_null (iᶜ.inter_subset_right) hS₂), NNReal.eq_iff]
   · refine VectorMeasure.AbsolutelyContinuous.mk fun S hS₁ hS₂ => ?_
     rw [← VectorMeasure.ennrealToMeasure_apply hS₁] at hS₂
     exact null_of_totalVariation_zero s (h hS₂)
@@ -556,13 +556,13 @@ theorem mutuallySingular_iff (s t : SignedMeasure α) :
     refine ⟨u, hmeas, ?_, ?_⟩
     · rw [totalVariation, Measure.add_apply, hipos, hineg, toMeasureOfZeroLE_apply _ _ _ hmeas,
         toMeasureOfLEZero_apply _ _ _ hmeas]
-      -- Porting note: added `← NNReal.eq_iff`
-      simp [hu₁ _ Set.inter_subset_right, ← NNReal.eq_iff]
+      -- Porting note: added `NNReal.eq_iff`
+      simp [hu₁ _ Set.inter_subset_right, NNReal.eq_iff]
     · rw [totalVariation, Measure.add_apply, hjpos, hjneg,
         toMeasureOfZeroLE_apply _ _ _ hmeas.compl,
         toMeasureOfLEZero_apply _ _ _ hmeas.compl]
-      -- Porting note: added `← NNReal.eq_iff`
-      simp [hu₂ _ Set.inter_subset_right, ← NNReal.eq_iff]
+      -- Porting note: added `NNReal.eq_iff`
+      simp [hu₂ _ Set.inter_subset_right, NNReal.eq_iff]
   · rintro ⟨u, hmeas, hu₁, hu₂⟩
     exact
       ⟨u, hmeas, fun t htu => null_of_totalVariation_zero _ (measure_mono_null htu hu₁),
@@ -577,8 +577,8 @@ theorem mutuallySingular_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure 
     refine ⟨u, hmeas, ?_, ?_⟩
     · rw [totalVariation, Measure.add_apply, hpos, hneg, toMeasureOfZeroLE_apply _ _ _ hmeas,
         toMeasureOfLEZero_apply _ _ _ hmeas]
-      -- Porting note: added `← NNReal.eq_iff`
-      simp [hu₁ _ Set.inter_subset_right, ← NNReal.eq_iff]
+      -- Porting note: added `NNReal.eq_iff`
+      simp [hu₁ _ Set.inter_subset_right, NNReal.eq_iff]
     · rw [VectorMeasure.ennrealToMeasure_apply hmeas.compl]
       exact hu₂ _ (Set.Subset.refl _)
   · rintro ⟨u, hmeas, hu₁, hu₂⟩

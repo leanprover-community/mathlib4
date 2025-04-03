@@ -798,7 +798,7 @@ lemma subsingleton_Icc_of_ge (hba : b ≤ a) : Set.Subsingleton (Icc a b) :=
     Set.Subsingleton (Icc a b) ↔ b ≤ a := by
   refine ⟨fun h ↦ ?_, subsingleton_Icc_of_ge⟩
   contrapose! h
-  simp only [ge_iff_le, gt_iff_lt, not_subsingleton_iff]
+  simp only [gt_iff_lt, not_subsingleton_iff]
   exact ⟨a, ⟨le_refl _, h.le⟩, b, ⟨h.le, le_refl _⟩, h.ne⟩
 
 @[simp]
@@ -1192,7 +1192,7 @@ theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a
       simp only [Subset.antisymm_iff] at e
       simp only [le_antisymm_iff]
       cases' h with h h <;>
-      simp only [gt_iff_lt, not_lt, ge_iff_le, Ico_subset_Ico_iff h] at e <;>
+      simp only [gt_iff_lt, not_lt, Ico_subset_Ico_iff h] at e <;>
       [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
       -- Porting note: restore `tauto`
       have hab := (Ico_subset_Ico_iff <| h₁.trans_lt <| h.trans_le h₂).1 e' <;>

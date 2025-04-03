@@ -193,7 +193,7 @@ theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
     rw [MvFunctor.map_map]
     dsimp (config := { unfoldPartialApp := true }) [(· ⊚ ·)]
     suffices (fun i => Subtype.val) = (fun i x => (MvFunctor.f P n α i x).val)
-      by rw [this];
+      by rw [this]
     ext i ⟨x, _⟩
     cases i <;> rfl
 #align mvfunctor.liftp_last_pred_iff MvFunctor.LiftP_PredLast_iff
@@ -234,7 +234,7 @@ theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
     suffices  (fun i t => t.val.fst) = ((fun i x => (MvFunctor.f' rr n α i x).val.fst))
             ∧ (fun i t => t.val.snd) = ((fun i x => (MvFunctor.f' rr n α i x).val.snd))
     by  rcases this with ⟨left, right⟩
-        rw [left, right];
+        rw [left, right]
     constructor <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
 #align mvfunctor.liftr_last_rel_iff MvFunctor.LiftR_RelLast_iff
 

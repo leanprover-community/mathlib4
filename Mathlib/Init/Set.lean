@@ -8,6 +8,16 @@ import Batteries.Util.ExtendedBinder
 import Mathlib.Mathport.Rename
 
 /-!
+# Note about `Mathlib/Init/`
+The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
+(They contain content moved from lean3 itself that Mathlib needed but was not moved to lean4.)
+
+We intend to move all the content of these files out into the main `Mathlib` directory structure.
+Contributions assisting with this are appreciated.
+
+`#align` statements without corresponding declarations
+(i.e. because the declaration is in Batteries or Lean) can be left here.
+These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
 
 # Sets
 
@@ -36,7 +46,8 @@ This file is a port of the core Lean 3 file `lib/lean/library/init/data/set.lean
 
 open Batteries.ExtendedBinder
 
-set_option autoImplicit true
+universe u
+variable {α : Type u}
 
 /-- A set is a collection of elements of some type `α`.
 
@@ -199,9 +210,10 @@ def powerset (s : Set α) : Set (Set α) := {t | t ⊆ s}
 
 @[inherit_doc] prefix:100 "𝒫" => powerset
 
+universe v in
 /-- The image of `s : Set α` by `f : α → β`, written `f '' s`, is the set of `b : β` such that
 `f a = b` for some `a ∈ s`. -/
-def image (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
+def image {β : Type v} (f : α → β) (s : Set α) : Set β := {f a | a ∈ s}
 
 instance : Functor Set where map := @Set.image
 

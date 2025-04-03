@@ -7,6 +7,7 @@ import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.Set.Image
+import Mathlib.Order.WellFounded
 
 #align_import data.fintype.card from "leanprover-community/mathlib"@"bf2428c9486c407ca38b5b3fb10b87dad0bc99fa"
 
@@ -126,8 +127,7 @@ theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s 
 theorem card_of_subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x)
     [Fintype { x // p x }] : card { x // p x } = s.card := by
   rw [← subtype_card s H]
-  congr
-  apply Subsingleton.elim
+  congr!
 #align fintype.card_of_subtype Fintype.card_of_subtype
 
 @[simp]
@@ -137,7 +137,7 @@ theorem card_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈
 #align fintype.card_of_finset Fintype.card_ofFinset
 
 theorem card_of_finset' {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) [Fintype p] :
-    Fintype.card p = s.card := by rw [← card_ofFinset s H]; congr; apply Subsingleton.elim
+    Fintype.card p = s.card := by rw [← card_ofFinset s H]; congr!
 #align fintype.card_of_finset' Fintype.card_of_finset'
 
 end Fintype
@@ -149,7 +149,7 @@ theorem ofEquiv_card [Fintype α] (f : α ≃ β) : @card β (ofEquiv α f) = ca
 #align fintype.of_equiv_card Fintype.ofEquiv_card
 
 theorem card_congr {α β} [Fintype α] [Fintype β] (f : α ≃ β) : card α = card β := by
-  rw [← ofEquiv_card f]; congr; apply Subsingleton.elim
+  rw [← ofEquiv_card f]; congr!
 #align fintype.card_congr Fintype.card_congr
 
 @[congr]
@@ -943,7 +943,7 @@ theorem wellFounded_of_trans_of_irrefl (r : α → α → Prop) [IsTrans α r] [
     fun x y hxy =>
     Finset.card_lt_card <| by
       simp only [Finset.lt_iff_ssubset.symm, lt_iff_le_not_le, Finset.le_iff_subset,
-          Finset.subset_iff, mem_filter, true_and_iff, mem_univ, hxy];
+          Finset.subset_iff, mem_filter, true_and_iff, mem_univ, hxy]
       exact
         ⟨fun z hzx => _root_.trans hzx hxy,
           not_forall_of_exists_not ⟨x, Classical.not_imp.2 ⟨hxy, irrefl x⟩⟩⟩

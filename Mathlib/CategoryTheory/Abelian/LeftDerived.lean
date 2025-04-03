@@ -3,9 +3,8 @@ Copyright (c) 2021 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Riccardo Brasca, Adam Topaz, Jujian Zhang, Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.Homology
-import Mathlib.CategoryTheory.Abelian.ProjectiveResolution
 import Mathlib.Algebra.Homology.Additive
+import Mathlib.CategoryTheory.Abelian.ProjectiveResolution
 
 #align_import category_theory.abelian.left_derived from "leanprover-community/mathlib"@"8001ea54ece3bd5c0d0932f1e4f6d0f142ea20d9"
 

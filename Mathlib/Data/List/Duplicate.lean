@@ -139,7 +139,7 @@ theorem Duplicate.not_nodup (h : x ∈+ l) : ¬Nodup l := fun H =>
 #align list.duplicate.not_nodup List.Duplicate.not_nodup
 
 theorem duplicate_iff_two_le_count [DecidableEq α] : x ∈+ l ↔ 2 ≤ count x l := by
-  simp [duplicate_iff_sublist, le_count_iff_replicate_sublist]
+  simp [replicate_succ, duplicate_iff_sublist, le_count_iff_replicate_sublist]
 #align list.duplicate_iff_two_le_count List.duplicate_iff_two_le_count
 
 instance decidableDuplicate [DecidableEq α] (x : α) : ∀ l : List α, Decidable (x ∈+ l)

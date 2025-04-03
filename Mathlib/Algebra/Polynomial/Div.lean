@@ -265,8 +265,8 @@ theorem modByMonic_add_div (p : R[X]) {q : R[X]} (hq : Monic q) : p %ₘ q + q *
 
 theorem divByMonic_eq_zero_iff [Nontrivial R] (hq : Monic q) : p /ₘ q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
-    have := modByMonic_add_div p hq;
-      rwa [h, mul_zero, add_zero, modByMonic_eq_self_iff hq] at this,
+    have := modByMonic_add_div p hq
+    rwa [h, mul_zero, add_zero, modByMonic_eq_self_iff hq] at this,
   fun h => by
     classical
     have : ¬degree q ≤ degree p := not_le_of_gt h
@@ -298,13 +298,13 @@ theorem degree_divByMonic_le (p q : R[X]) : degree (p /ₘ q) ≤ degree p :=
   else
     if hq : Monic q then
       if h : degree q ≤ degree p then by
-        haveI := Nontrivial.of_polynomial_ne hp0;
-            rw [← degree_add_divByMonic hq h, degree_eq_natDegree hq.ne_zero,
-              degree_eq_natDegree (mt (divByMonic_eq_zero_iff hq).1 (not_lt.2 h))];
-          exact WithBot.coe_le_coe.2 (Nat.le_add_left _ _)
+        haveI := Nontrivial.of_polynomial_ne hp0
+        rw [← degree_add_divByMonic hq h, degree_eq_natDegree hq.ne_zero,
+          degree_eq_natDegree (mt (divByMonic_eq_zero_iff hq).1 (not_lt.2 h))]
+        exact WithBot.coe_le_coe.2 (Nat.le_add_left _ _)
       else by
-        unfold divByMonic divModByMonicAux;
-          simp [dif_pos hq, h, false_and_iff, if_false, degree_zero, bot_le]
+        unfold divByMonic divModByMonicAux
+        simp [dif_pos hq, h, false_and_iff, if_false, degree_zero, bot_le]
     else (divByMonic_eq_of_not_monic p hq).symm ▸ bot_le
 #align polynomial.degree_div_by_monic_le Polynomial.degree_divByMonic_le
 
@@ -448,13 +448,16 @@ theorem sum_modByMonic_coeff (hq : q.Monic) {n : ℕ} (hn : q.degree ≤ n) :
       (sum_monomial_eq _)
 #align polynomial.sum_mod_by_monic_coeff Polynomial.sum_modByMonic_coeff
 
-theorem mul_div_mod_by_monic_cancel_left (p : R[X]) {q : R[X]} (hmo : q.Monic) :
+theorem mul_divByMonic_cancel_left (p : R[X]) {q : R[X]} (hmo : q.Monic) :
     q * p /ₘ q = p := by
   nontriviality R
   refine (div_modByMonic_unique _ 0 hmo ⟨by rw [zero_add], ?_⟩).1
   rw [degree_zero]
   exact Ne.bot_lt fun h => hmo.ne_zero (degree_eq_bot.1 h)
-#align polynomial.mul_div_mod_by_monic_cancel_left Polynomial.mul_div_mod_by_monic_cancel_left
+#align polynomial.mul_div_mod_by_monic_cancel_left Polynomial.mul_divByMonic_cancel_left
+
+@[deprecated (since := "2024-06-30")]
+alias mul_div_mod_by_monic_cancel_left := mul_divByMonic_cancel_left
 
 lemma coeff_divByMonic_X_sub_C_rec (p : R[X]) (a : R) (n : ℕ) :
     (p /ₘ (X - C a)).coeff n = coeff p (n + 1) + a * (p /ₘ (X - C a)).coeff (n + 1) := by

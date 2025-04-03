@@ -5,6 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Ring.Invertible
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.GroupTheory.GroupAction.Units
@@ -41,6 +42,7 @@ semimodule, module, vector space
 assert_not_exists Multiset
 assert_not_exists Set.indicator
 assert_not_exists Pi.single_smul₀
+assert_not_exists Field
 
 open Function Set
 
@@ -106,8 +108,8 @@ theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_s
 
 set_option linter.deprecated false in
 @[deprecated (since := "2022-12-31")]
-theorem two_smul' : (2 : R) • x = bit0 x :=
-  two_smul R x
+theorem two_smul' : (2 : R) • x = (2 : ℕ) • x := by
+  rw [two_smul, two_nsmul]
 #align two_smul' two_smul'
 
 @[simp]
@@ -176,7 +178,7 @@ def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
     -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
     -- use in later fields.  See
     -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Heterogeneous.20scalar.20multiplication
-    map_zero' := AddMonoidHom.ext fun r => show (0:R) • r = 0 by simp
+    map_zero' := AddMonoidHom.ext fun r => show (0 : R) • r = 0 by simp
     map_add' := fun x y =>
       AddMonoidHom.ext fun r => show (x + y) • r = x • r + y • r by simp [add_smul] }
 #align module.to_add_monoid_End Module.toAddMonoidEnd

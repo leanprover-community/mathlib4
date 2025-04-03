@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Set.Image
-import Mathlib.Data.List.GetD
+import Mathlib.Data.List.Defs
 
 #align_import data.set.list from "leanprover-community/mathlib"@"2ec920d35348cb2d13ac0e1a2ad9df0fdf1a76b4"
 
@@ -49,17 +49,19 @@ theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) :
 #align set.range_list_nth Set.range_list_get?
 
 @[simp]
-theorem range_list_getD (d : α) : (range fun n => l.getD n d) = insert d { x | x ∈ l } :=
+theorem range_list_getD (d : α) : (range fun n : Nat => l[n]?.getD d) = insert d { x | x ∈ l } :=
   calc
-    (range fun n => l.getD n d) = (fun o : Option α => o.getD d) '' range l.get? := by
-      simp only [← range_comp, (· ∘ ·), getD_eq_getD_get?]
+    (range fun n => l[n]?.getD d) = (fun o : Option α => o.getD d) '' range l.get? := by
+      simp [← range_comp, (· ∘ ·)]
     _ = insert d { x | x ∈ l } := by
       simp only [range_list_get?, image_insert_eq, Option.getD, image_image, image_id']
 #align set.range_list_nthd Set.range_list_getD
 
 @[simp]
-theorem range_list_getI [Inhabited α] (l : List α) : range l.getI = insert default { x | x ∈ l } :=
-  range_list_getD l default
+theorem range_list_getI [Inhabited α] (l : List α) :
+    range l.getI = insert default { x | x ∈ l } := by
+  unfold List.getI
+  simp
 #align set.range_list_inth Set.range_list_getI
 
 end Set

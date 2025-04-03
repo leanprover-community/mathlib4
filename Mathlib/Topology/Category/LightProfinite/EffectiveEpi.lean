@@ -10,9 +10,10 @@ import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 # Effective epimorphisms in `LightProfinite`
 
 This file proves that `EffectiveEpi`, `Epi` and `Surjective` are all equivalent in `LightProfinite`.
-As a consequence we prove that `LightProfinite` is `Preregular`. It follows from the constructions
-in `LightProfinite/Limits.lean` that `LightProfinite` is `FinitaryExtensive`. Together this implies
-that it is `Precoherent`.
+As a consequence we prove that `LightProfinite` is `Preregular`.
+It follows from the constructions in `Mathlib/Topology/Category/LightProfinite/Limits.lean` that
+`LightProfinite` is `FinitaryExtensive`.
+Together this implies that it is `Precoherent`.
 
 -/
 

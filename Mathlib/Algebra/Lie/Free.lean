@@ -225,7 +225,7 @@ def lift : (X → L) ≃ (FreeLieAlgebra R X →ₗ⁅R⁆ L) where
       map_lie' := by rintro ⟨a⟩ ⟨b⟩; rw [← liftAux_map_mul]; rfl }
   invFun F := F ∘ of R
   left_inv f := by
-    ext x;
+    ext x
     simp only [liftAux, of, Quot.liftOn_mk, LieHom.coe_mk, Function.comp_apply, lib.lift_of_apply]
   right_inv F := by
     ext ⟨a⟩

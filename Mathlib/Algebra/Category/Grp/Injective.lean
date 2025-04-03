@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
+import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Module.Injective
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Topology.Instances.AddCircle

@@ -49,7 +49,7 @@ theorem riesz_lemma {F : Subspace 𝕜 E} (hFc : IsClosed (F : Set E)) (hF : ∃
         hx ((hFc.mem_iff_infDist_zero hFn).2 heq.symm)
     let r' := max r 2⁻¹
     have hr' : r' < 1 := by
-      simp only [r', ge_iff_le, max_lt_iff, hr, true_and]
+      simp only [r', max_lt_iff, hr, true_and]
       norm_num
     have hlt : 0 < r' := lt_of_lt_of_le (by norm_num) (le_max_right r 2⁻¹)
     have hdlt : d < d / r' := (lt_div_iff hlt).mpr ((mul_lt_iff_lt_one_right hdp).2 hr')

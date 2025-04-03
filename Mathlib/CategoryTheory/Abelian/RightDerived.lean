@@ -3,9 +3,8 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Scott Morrison, Joël Riou
 -/
-import Mathlib.CategoryTheory.Abelian.InjectiveResolution
 import Mathlib.Algebra.Homology.Additive
-import Mathlib.CategoryTheory.Abelian.Homology
+import Mathlib.CategoryTheory.Abelian.InjectiveResolution
 
 #align_import category_theory.abelian.right_derived from "leanprover-community/mathlib"@"024a4231815538ac739f52d08dd20a55da0d6b23"
 

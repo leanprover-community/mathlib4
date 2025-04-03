@@ -140,18 +140,19 @@ theorem rel_equiv : Equivalence D.Rel :=
     rintro (⟨⟨⟩⟩ | ⟨y, e₃, e₄⟩)
     · exact Or.inr ⟨x, e₁, e₂⟩
     let z := (pullbackIsoProdSubtype (D.f j i) (D.f j k)).inv ⟨⟨_, _⟩, e₂.trans e₃.symm⟩
-    have eq₁ : (D.t j i) ((pullback.fst : _ /-(D.f j k)-/ ⟶ D.V (j, i)) z) = x := by
+    have eq₁ : (D.t j i) ((pullback.fst _ _ : _ /-(D.f j k)-/ ⟶ D.V (j, i)) z) = x := by
       dsimp only [coe_of, z]
       erw [pullbackIsoProdSubtype_inv_fst_apply, D.t_inv_apply]-- now `erw` after #13170
-    have eq₂ : (pullback.snd : _ ⟶ D.V _) z = y := pullbackIsoProdSubtype_inv_snd_apply _ _ _
+    have eq₂ : (pullback.snd _ _ : _ ⟶ D.V _) z = y := pullbackIsoProdSubtype_inv_snd_apply _ _ _
     clear_value z
     right
-    use (pullback.fst : _ ⟶ D.V (i, k)) (D.t' _ _ _ z)
+    use (pullback.fst _ _ : _ ⟶ D.V (i, k)) (D.t' _ _ _ z)
     dsimp only at *
     substs eq₁ eq₂ e₁ e₃ e₄
-    have h₁ : D.t' j i k ≫ pullback.fst ≫ D.f i k = pullback.fst ≫ D.t j i ≫ D.f i j := by
+    have h₁ : D.t' j i k ≫ pullback.fst _ _ ≫ D.f i k = pullback.fst _ _ ≫ D.t j i ≫ D.f i j := by
       rw [← 𝖣.t_fac_assoc]; congr 1; exact pullback.condition
-    have h₂ : D.t' j i k ≫ pullback.fst ≫ D.t i k ≫ D.f k i = pullback.snd ≫ D.t j k ≫ D.f k j := by
+    have h₂ : D.t' j i k ≫ pullback.fst _ _ ≫ D.t i k ≫ D.f k i =
+        pullback.snd _ _ ≫ D.t j k ≫ D.f k j := by
       rw [← 𝖣.t_fac_assoc]
       apply @Epi.left_cancellation _ _ _ _ (D.t' k j i)
       rw [𝖣.cocycle_assoc, 𝖣.t_fac_assoc, 𝖣.t_inv_assoc]
@@ -369,8 +370,8 @@ theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i)
   have := h.cocycle j i j x ?_
   · rw [h.t_id] at this
     · convert Subtype.eq this
-    rw [h.V_id]
-    trivial
+  rw [h.V_id]
+  trivial
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t_inv TopCat.GlueData.MkCore.t_inv
 

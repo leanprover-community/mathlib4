@@ -5,7 +5,6 @@ Authors: Antoine Labelle
 -/
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Contraction
@@ -230,8 +229,7 @@ theorem ofModule_asAlgebraHom_apply_apply (r : MonoidAlgebra k G)
   · intro f g fw gw
     simp only [fw, gw, map_add, add_smul, LinearMap.add_apply]
   · intro r f w
-    simp only [w, AlgHom.map_smul, LinearMap.smul_apply,
-      RestrictScalars.addEquiv_symm_map_smul_smul]
+    simp only [w, map_smul, LinearMap.smul_apply, RestrictScalars.addEquiv_symm_map_smul_smul]
 #align representation.of_module_as_algebra_hom_apply_apply Representation.ofModule_asAlgebraHom_apply_apply
 
 @[simp]
@@ -354,7 +352,7 @@ theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k
   -- Porting note: trouble figuring out the motive
   x.induction_on (p := fun z => z • y = z * y)
     (fun g => by
-      show asAlgebraHom (ofMulAction k G G) _ _ = _; ext;
+      show asAlgebraHom (ofMulAction k G G) _ _ = _; ext
       simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul,
         ofMulAction_apply, smul_eq_mul]
       -- Porting note: single_mul_apply not firing in simp

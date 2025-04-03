@@ -48,7 +48,7 @@ set `s` of integration variables is a `Finset`. We are assuming that the functio
 for most of this file. Note that asking whether it is `AEMeasurable` is not even well-posed,
 since there is no well-behaved measure on the domain of `f`.
 
-## Todo
+## TODO
 
 * Define the marginal function for functions taking values in a Banach space.
 
@@ -248,3 +248,5 @@ theorem lintegral_le_of_lmarginal_le [Fintype δ] (s : Finset δ) {f g : (∀ i,
   simp_rw [lintegral_eq_lmarginal_univ x, lmarginal_le_of_subset (Finset.subset_univ s) hf hg hfg x]
 
 end LMarginal
+
+end MeasureTheory

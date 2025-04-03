@@ -13,7 +13,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 In this file we prove that `x ↦ ‖x‖ ^ p` is continuously differentiable for
 an inner product space and for a real number `p > 1`.
 
-## Todo:
+## TODO
 * `x ↦ ‖x‖ ^ p` should be `C^n` for `p > n`.
 
 -/

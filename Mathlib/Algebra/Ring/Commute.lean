@@ -43,30 +43,10 @@ theorem add_left [Distrib R] {a b c : R} : Commute a c → Commute b c → Commu
 #align commute.add_left Commute.add_leftₓ
 -- for some reason mathport expected `Semiring` instead of `Distrib`?
 
-section deprecated
-set_option linter.deprecated false
-
-@[deprecated (since := "2022-11-28")]
-theorem bit0_right [Distrib R] {x y : R} (h : Commute x y) : Commute x (bit0 y) :=
-  h.add_right h
-#align commute.bit0_right Commute.bit0_right
-
-@[deprecated (since := "2022-11-28")]
-theorem bit0_left [Distrib R] {x y : R} (h : Commute x y) : Commute (bit0 x) y :=
-  h.add_left h
-#align commute.bit0_left Commute.bit0_left
-
-@[deprecated (since := "2022-11-28")]
-theorem bit1_right [NonAssocSemiring R] {x y : R} (h : Commute x y) : Commute x (bit1 y) :=
-  h.bit0_right.add_right (Commute.one_right x)
-#align commute.bit1_right Commute.bit1_right
-
-@[deprecated (since := "2022-11-28")]
-theorem bit1_left [NonAssocSemiring R] {x y : R} (h : Commute x y) : Commute (bit1 x) y :=
-  h.bit0_left.add_left (Commute.one_left y)
-#align commute.bit1_left Commute.bit1_left
-
-end deprecated
+#noalign commute.bit0_right
+#noalign commute.bit0_left
+#noalign commute.bit1_right
+#noalign commute.bit1_left
 
 /-- Representation of a difference of two squares of commuting elements as a product. -/
 theorem mul_self_sub_mul_self_eq [NonUnitalNonAssocRing R] {a b : R} (h : Commute a b) :
@@ -179,19 +159,8 @@ lemma neg_pow (a : R) (n : ℕ) : (-a) ^ n = (-1) ^ n * a ^ n :=
 lemma neg_pow' (a : R) (n : ℕ) : (-a) ^ n = a ^ n * (-1) ^ n :=
   mul_neg_one a ▸ (Commute.neg_one_right a).mul_pow n
 
-section
-set_option linter.deprecated false
-
-lemma neg_pow_bit0 (a : R) (n : ℕ) : (-a) ^ bit0 n = a ^ bit0 n := by
-  rw [pow_bit0', neg_mul_neg, pow_bit0']
-#align neg_pow_bit0 neg_pow_bit0
-
-@[simp]
-lemma neg_pow_bit1 (a : R) (n : ℕ) : (-a) ^ bit1 n = -a ^ bit1 n := by
-  simp only [bit1, pow_succ', neg_pow_bit0, neg_mul_eq_neg_mul]
-#align neg_pow_bit1 neg_pow_bit1
-
-end
+#noalign neg_pow_bit0
+#noalign neg_pow_bit1
 
 lemma neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
 #align neg_sq neg_sq

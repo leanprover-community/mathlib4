@@ -5,7 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 #align_import category_theory.limits.constructions.pullbacks from "leanprover-community/mathlib"@"cd7a8a184d7c5635e30083eabc4baf5589c30b7a"
 
@@ -37,8 +37,8 @@ theorem hasLimit_cospan_of_hasLimit_pair_of_hasLimit_parallelPair {C : Type u} [
       isLimit :=
         PullbackCone.IsLimit.mk _ (fun s => equalizer.lift
           (prod.lift (s.π.app WalkingCospan.left) (s.π.app WalkingCospan.right)) <| by
-              rw [← Category.assoc, limit.lift_π, ← Category.assoc, limit.lift_π];
-                exact PullbackCone.condition _)
+            rw [← Category.assoc, limit.lift_π, ← Category.assoc, limit.lift_π]
+            exact PullbackCone.condition _)
           (by simp [π₁, e]) (by simp [π₂, e]) fun s m h₁ h₂ => by
           ext
           · dsimp; simpa using h₁

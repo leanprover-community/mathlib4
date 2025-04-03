@@ -3,13 +3,11 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Adjunction.Unique
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 
 #align_import category_theory.limits.over from "leanprover-community/mathlib"@"3e0dd193514c9380edc69f1da92e80c02713c41d"
 
@@ -22,8 +20,6 @@ any colimits that `C` has (as well as the dual that `forget X : Under X ⟶ C` c
 Note that the folder `CategoryTheory.Limits.Shapes.Constructions.Over` further shows that
 `forget X : Over X ⥤ C` creates connected limits (so `Over X` has connected limits), and that
 `Over X` has `J`-indexed products if `C` has `J`-indexed wide pullbacks.
-
-TODO: If `C` has binary products, then `forget X : Over X ⥤ C` has a right adjoint.
 -/
 
 
@@ -87,67 +83,6 @@ def _root_.CategoryTheory.Limits.colimit.isColimitToOver (F : J ⥤ C) [HasColim
     IsColimit (colimit.toOver F) :=
   Over.isColimitToOver (colimit.isColimit F)
 
-section
-
-variable [HasPullbacks C]
-
-open Tactic
-
-/-- When `C` has pullbacks, a morphism `f : X ⟶ Y` induces a functor `Over Y ⥤ Over X`,
-by pulling back a morphism along `f`. -/
-@[simps]
-def pullback {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X where
-  obj g := Over.mk (pullback.snd : CategoryTheory.Limits.pullback g.hom f ⟶ X)
-  map := fun g {h} {k} =>
-    Over.homMk (pullback.lift (pullback.fst ≫ k.left) pullback.snd (by simp [pullback.condition]))
-#align category_theory.over.pullback CategoryTheory.Over.pullback
-
-/-- `Over.map f` is left adjoint to `Over.pullback f`. -/
-def mapPullbackAdj {A B : C} (f : A ⟶ B) : Over.map f ⊣ pullback f :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := fun g h =>
-        { toFun := fun X =>
-            Over.homMk (pullback.lift X.left g.hom (Over.w X)) (pullback.lift_snd _ _ _)
-          invFun := fun Y => by
-            refine Over.homMk ?_ ?_
-            · refine Y.left ≫ pullback.fst
-            dsimp
-            rw [← Over.w Y, Category.assoc, pullback.condition, Category.assoc]; rfl
-          left_inv := fun X => by
-            ext
-            dsimp
-            simp
-          right_inv := fun Y => by
-            -- TODO: It would be nice to replace the next two lines with just `ext`.
-            apply OverMorphism.ext
-            apply pullback.hom_ext
-            · dsimp
-              simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app]
-            · dsimp
-              simp only [limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app, ← Over.w Y ]
-              rfl }
-      -- This used to be automatic before leanprover/lean4#2644
-      homEquiv_naturality_right := by intros; dsimp; congr 1; aesop_cat
-      }
-#align category_theory.over.map_pullback_adj CategoryTheory.Over.mapPullbackAdj
-
-/-- pullback (𝟙 A) : Over A ⥤ Over A is the identity functor. -/
-def pullbackId {A : C} : pullback (𝟙 A) ≅ 𝟭 _ :=
-  Adjunction.rightAdjointUniq (mapPullbackAdj _) (Adjunction.id.ofNatIsoLeft (Over.mapId A).symm)
-#align category_theory.over.pullback_id CategoryTheory.Over.pullbackId
-
-/-- pullback commutes with composition (up to natural isomorphism). -/
-def pullbackComp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : pullback (f ≫ g) ≅ pullback g ⋙ pullback f :=
-  Adjunction.rightAdjointUniq (mapPullbackAdj _)
-    (((mapPullbackAdj _).comp (mapPullbackAdj _)).ofNatIsoLeft (Over.mapComp _ _).symm)
-#align category_theory.over.pullback_comp CategoryTheory.Over.pullbackComp
-
-instance pullbackIsRightAdjoint {A B : C} (f : A ⟶ B) : (pullback f).IsRightAdjoint  :=
-  ⟨_, ⟨mapPullbackAdj f⟩⟩
-#align category_theory.over.pullback_is_right_adjoint CategoryTheory.Over.pullbackIsRightAdjoint
-
-end
-
 end CategoryTheory.Over
 
 namespace CategoryTheory.Under
@@ -198,20 +133,5 @@ def isLimitToUnder {F : J ⥤ C} {c : Cone F} (hc : IsLimit c) : IsLimit c.toUnd
 def _root_.CategoryTheory.Limits.limit.isLimitToOver (F : J ⥤ C) [HasLimit F] :
     IsLimit (limit.toUnder F) :=
   Under.isLimitToUnder (limit.isLimit F)
-
-section
-
-variable [HasPushouts C]
-
-/-- When `C` has pushouts, a morphism `f : X ⟶ Y` induces a functor `Under X ⥤ Under Y`,
-by pushing a morphism forward along `f`. -/
-@[simps]
-def pushout {X Y : C} (f : X ⟶ Y) : Under X ⥤ Under Y where
-  obj g := Under.mk (pushout.inr : Y ⟶ CategoryTheory.Limits.pushout g.hom f)
-  map := fun g {h} {k} =>
-    Under.homMk (pushout.desc (k.right ≫ pushout.inl) pushout.inr (by simp [← pushout.condition]))
-#align category_theory.under.pushout CategoryTheory.Under.pushout
-
-end
 
 end CategoryTheory.Under

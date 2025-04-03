@@ -179,8 +179,10 @@ protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
     Complex.polarCoord.symm p = p.1 * (Real.cos p.2 + Real.sin p.2 * Complex.I) := by
   simp [Complex.polarCoord, equivRealProdCLM_symm_apply, mul_add, mul_assoc]
 
-theorem polardCoord_symm_abs (p : ℝ × ℝ) :
+theorem polarCoord_symm_abs (p : ℝ × ℝ) :
     Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp
+
+@[deprecated (since := "2024-07-15")] alias polardCoord_symm_abs := polarCoord_symm_abs
 
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :

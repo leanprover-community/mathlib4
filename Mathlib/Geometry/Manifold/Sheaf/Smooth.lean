@@ -70,7 +70,7 @@ universe u
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {EM : Type*} [NormedAddCommGroup EM] [NormedSpace 𝕜 EM]
   {HM : Type*} [TopologicalSpace HM] (IM : ModelWithCorners 𝕜 EM HM)
-  variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
   {H' : Type*} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E H')
   (M : Type u) [TopologicalSpace M] [ChartedSpace HM M]
@@ -134,7 +134,7 @@ variable {IM I N}
 
 @[simp] lemma smoothSheaf.eval_germ (U : Opens M) (x : U)
     (f : (smoothSheaf IM I M N).presheaf.obj (op U)) :
-    smoothSheaf.eval IM I N (x:M) ((smoothSheaf IM I M N).presheaf.germ x f) = f x :=
+    smoothSheaf.eval IM I N (x : M) ((smoothSheaf IM I M N).presheaf.germ x f) = f x :=
   TopCat.stalkToFiber_germ ((contDiffWithinAt_localInvariantProp IM I ⊤).localPredicate M N) _ _ _
 
 lemma smoothSheaf.smooth_section {U : (Opens (TopCat.of M))ᵒᵖ}

@@ -567,7 +567,7 @@ theorem Lp_add_le (f g : ι → ℝ≥0) {p : ℝ} (hp : 1 ≤ p) :
     (∑ i ∈ s, (f i + g i) ^ p) ^ (1 / p) ≤
       (∑ i ∈ s, f i ^ p) ^ (1 / p) + (∑ i ∈ s, g i ^ p) ^ (1 / p) := by
   -- The result is trivial when `p = 1`, so we can assume `1 < p`.
-  rcases eq_or_lt_of_le hp with (rfl | hp);
+  rcases eq_or_lt_of_le hp with (rfl | hp)
   · simp [Finset.sum_add_distrib]
   have hpq := Real.IsConjExponent.conjExponent hp
   have := isGreatest_Lp s (f + g) hpq
@@ -592,7 +592,7 @@ theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Sum
       (∑ i ∈ s, (f i + g i) ^ p) ≤
         ((∑' i, f i ^ p) ^ (1 / p) + (∑' i, g i ^ p) ^ (1 / p)) ^ p := by
     intro s
-    rw [← NNReal.rpow_one_div_le_iff pos]
+    rw [one_div, ← NNReal.rpow_inv_le_iff pos, ← one_div]
     refine le_trans (Lp_add_le s f g hp) (add_le_add ?_ ?_) <;>
         rw [NNReal.rpow_le_rpow_iff (one_div_pos.mpr pos)] <;>
       refine sum_le_tsum _ (fun _ _ => zero_le _) ?_
@@ -603,7 +603,7 @@ theorem Lp_add_le_tsum {f g : ι → ℝ≥0} {p : ℝ} (hp : 1 ≤ p) (hf : Sum
     exact H₁ s
   have H₂ : Summable _ := (hasSum_of_isLUB _ (isLUB_ciSup bdd)).summable
   refine ⟨H₂, ?_⟩
-  rw [NNReal.rpow_one_div_le_iff pos]
+  rw [one_div, NNReal.rpow_inv_le_iff pos, ← one_div]
   exact tsum_le_of_sum_le H₂ H₁
 #align nnreal.Lp_add_le_tsum NNReal.Lp_add_le_tsum
 

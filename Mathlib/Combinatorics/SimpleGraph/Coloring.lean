@@ -8,6 +8,7 @@ import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Order.Antichain
+import Mathlib.Data.Nat.Cast.Order.Ring
 
 #align_import combinatorics.simple_graph.coloring from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
@@ -41,7 +42,7 @@ a complete graph, whose vertices represent the colors.
 
 * `C.colorClasses` is the set containing all color classes.
 
-## Todo:
+## TODO
 
   * Gather material from:
     * https://github.com/leanprover-community/mathlib/blob/simple_graph_matching/src/combinatorics/simple_graph/coloring.lean
@@ -69,7 +70,8 @@ This is also known as a proper coloring.
 abbrev Coloring (α : Type v) := G →g (⊤ : SimpleGraph α)
 #align simple_graph.coloring SimpleGraph.Coloring
 
-variable {G} {α β : Type*} (C : G.Coloring α)
+variable {G}
+variable {α β : Type*} (C : G.Coloring α)
 
 theorem Coloring.valid {v w : V} (h : G.Adj v w) : C v ≠ C w :=
   C.map_rel h
@@ -345,7 +347,7 @@ theorem chromaticNumber_pos [Nonempty V] {n : ℕ} (hc : G.Colorable n) : 0 < G.
   by_contra h'
   simp only [not_le] at h'
   obtain ⟨i, hi⟩ := hm.some (Classical.arbitrary V)
-  have h₁: i < 0 := lt_of_lt_of_le hi (Nat.le_of_lt_succ h')
+  have h₁ : i < 0 := lt_of_lt_of_le hi (Nat.le_of_lt_succ h')
   exact Nat.not_lt_zero _ h₁
 #align simple_graph.chromatic_number_pos SimpleGraph.chromaticNumber_pos
 
@@ -390,7 +392,7 @@ lemma card_le_chromaticNumber_iff_forall_surjective [Fintype α] :
     by_contra! hi
     let D : G.Coloring {a // a ≠ i} := ⟨fun v ↦ ⟨C v, hi v⟩, (C.valid · <| congr_arg Subtype.val ·)⟩
     classical
-    exact Nat.not_mem_of_lt_sInf ((Nat.pred_lt' <| card_pos_iff.2 ⟨i⟩).trans_le h)
+    exact Nat.not_mem_of_lt_sInf ((Nat.sub_one_lt_of_lt <| card_pos_iff.2 ⟨i⟩).trans_le h)
       ⟨G.recolorOfEquiv (equivOfCardEq <| by simp [Nat.pred_eq_sub_one]) D⟩
   · simp only [chromaticNumber, Set.mem_setOf_eq, le_iInf_iff, Nat.cast_le, exists_prop]
     rintro i ⟨C⟩

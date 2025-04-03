@@ -10,6 +10,7 @@ import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
 import Mathlib.Algebra.Order.Monoid.Basic
+import Mathlib.Algebra.Order.AddGroupWithTop
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.TypeTags
 import Mathlib.Algebra.Order.ZeroLEOne

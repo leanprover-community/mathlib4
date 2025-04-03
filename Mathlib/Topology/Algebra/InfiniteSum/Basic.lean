@@ -503,7 +503,7 @@ theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β �
   · have hf_fin' : ¬ Set.Finite (mulSupport (f ∘ g)) := by
       rwa [this, Set.finite_image_iff hg.injOn] at hf_fin
     simp_rw [tprod_def, if_neg hf_fin, if_neg hf_fin', Multipliable,
-      hg.hasProd_iff (mulSupport_subset_iff'.1 hf)]
+      funext fun a => propext <| hg.hasProd_iff (mulSupport_subset_iff'.1 hf) (a := a)]
 
 @[to_additive]
 theorem Equiv.tprod_eq (e : γ ≃ β) (f : β → α) : ∏' c, f (e c) = ∏' b, f b :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Batteries.Data.MLList.Basic
-import Mathlib.Init.Control.Combinators
+import Mathlib.Control.Combinators
 
 /-!
 # Depth first search

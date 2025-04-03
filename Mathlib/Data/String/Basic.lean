@@ -81,7 +81,7 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
     · rename_i c₂ cs₂; apply iff_of_true
       · unfold ltb
         #adaptation_note /-- v4.7.0-rc1 exclude reduceMk from simp -/
-        simp [-reduceMk, Iterator.hasNext, csize_pos]
+        simp [-reduceMk, Iterator.hasNext, Char.utf8Size_pos]
       · apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih; apply iff_of_false
       · unfold ltb
@@ -90,7 +90,7 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
       · apply not_lt_of_lt; apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih c₂ cs₂; unfold ltb
       simp only [Iterator.hasNext, Pos.byteIdx_zero, endPos, utf8ByteSize, utf8ByteSize.go,
-        add_pos_iff, csize_pos, or_true, decide_eq_true_eq, ↓reduceIte, Iterator.curr, get,
+        add_pos_iff, Char.utf8Size_pos, or_true, decide_eq_true_eq, ↓reduceIte, Iterator.curr, get,
         utf8GetAux, Iterator.next, next, Bool.ite_eq_true_distrib]
       split_ifs with h
       · subst c₂

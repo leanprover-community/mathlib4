@@ -3,10 +3,12 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
 -/
-import Mathlib.Algebra.Homology.Exact
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Adjunction.FullyFaithful
 import Mathlib.CategoryTheory.Adjunction.Limits
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 
 #align_import category_theory.preadditive.projective from "leanprover-community/mathlib"@"3974a774a707e2e06046a14c0eaef4654584fada"
 
@@ -262,39 +264,5 @@ theorem enoughProjectives_iff (F : C ≌ D) : EnoughProjectives C ↔ EnoughProj
 #align category_theory.equivalence.enough_projectives_iff CategoryTheory.Equivalence.enoughProjectives_iff
 
 end Equivalence
-
-open Projective
-
-section
-
-variable [HasZeroMorphisms C] [HasEqualizers C] [HasImages C]
-
-/-- Given a projective object `P` mapping via `h` into
-the middle object `R` of a pair of exact morphisms `f : Q ⟶ R` and `g : R ⟶ S`,
-such that `h ≫ g = 0`, there is a lift of `h` to `Q`.
--/
-def Exact.lift {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R) (g : R ⟶ S) (hfg : Exact f g)
-    (w : h ≫ g = 0) : P ⟶ Q :=
-  -- See the porting note on `Exact.epi`.
-  haveI := hfg.epi
-  factorThru (factorThru (factorThruKernelSubobject g h w) (imageToKernel f g hfg.w))
-    (factorThruImageSubobject f)
-#align category_theory.exact.lift CategoryTheory.Exact.lift
-
-@[simp]
-theorem Exact.lift_comp {P Q R S : C} [Projective P] (h : P ⟶ R) (f : Q ⟶ R) (g : R ⟶ S)
-    (hfg : Exact f g) (w : h ≫ g = 0) : Exact.lift h f g hfg w ≫ f = h := by
-  simp only [Exact.lift]
-  conv_lhs =>
-    congr
-    rfl
-    rw [← imageSubobject_arrow_comp f]
-  -- See the porting note on `Exact.epi`.
-  haveI := hfg.epi
-  rw [← Category.assoc, factorThru_comp, ← imageToKernel_arrow f g, ← Category.assoc,
-    CategoryTheory.Projective.factorThru_comp, factorThruKernelSubobject_comp_arrow]
-#align category_theory.exact.lift_comp CategoryTheory.Exact.lift_comp
-
-end
 
 end CategoryTheory

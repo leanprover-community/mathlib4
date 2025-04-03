@@ -55,8 +55,7 @@ universe u
 
 variable {R M : Type u} [CommRing R] [AddCommGroup M] [Module R M]
 
-open Classical DirectSum LinearMap TensorProduct Finsupp
-open scoped BigOperators
+open Classical LinearMap TensorProduct Finsupp
 
 namespace Module
 

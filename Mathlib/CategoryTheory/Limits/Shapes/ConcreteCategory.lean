@@ -206,13 +206,13 @@ lemma pullbackMk_surjective (x : (forget C).obj (pullback f₁ f₂)) :
 
 @[simp]
 lemma pullbackMk_fst (x₁ : X₁) (x₂ : X₂) (h : f₁ x₁ = f₂ x₂) :
-    @pullback.fst _ _ _ _ _ f₁ f₂ _ (pullbackMk f₁ f₂ x₁ x₂ h) = x₁ :=
+    pullback.fst f₁ f₂ (pullbackMk f₁ f₂ x₁ x₂ h) = x₁ :=
   (congr_fun (PreservesPullback.iso_inv_fst (forget C) f₁ f₂) _).trans
     (congr_fun (Types.pullbackIsoPullback_inv_fst ((forget C).map f₁) ((forget C).map f₂)) _)
 
 @[simp]
 lemma pullbackMk_snd (x₁ : X₁) (x₂ : X₂) (h : f₁ x₁ = f₂ x₂) :
-    @pullback.snd _ _ _ _ _ f₁ f₂ _ (pullbackMk f₁ f₂ x₁ x₂ h) = x₂ :=
+    pullback.snd f₁ f₂ (pullbackMk f₁ f₂ x₁ x₂ h) = x₂ :=
   (congr_fun (PreservesPullback.iso_inv_snd (forget C) f₁ f₂) _).trans
     (congr_fun (Types.pullbackIsoPullback_inv_snd ((forget C).map f₁) ((forget C).map f₂)) _)
 

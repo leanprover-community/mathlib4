@@ -93,7 +93,7 @@ def ι : L →ₗ⁅R⁆ UniversalEnvelopingAlgebra R L :=
   { (mkAlgHom R L).toLinearMap.comp ιₜ with
     map_lie' := fun {x y} => by
       suffices mkAlgHom R L (ιₜ ⁅x, y⁆ + ιₜ y * ιₜ x) = mkAlgHom R L (ιₜ x * ιₜ y) by
-        rw [AlgHom.map_mul] at this; simp [LieRing.of_associative_ring_bracket, ← this]
+        rw [map_mul] at this; simp [LieRing.of_associative_ring_bracket, ← this]
       exact RingQuot.mkAlgHom_rel _ (Rel.lie_compat x y) }
 #align universal_enveloping_algebra.ι UniversalEnvelopingAlgebra.ι
 

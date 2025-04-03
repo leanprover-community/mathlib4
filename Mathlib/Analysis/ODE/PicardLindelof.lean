@@ -164,7 +164,8 @@ structure FunSpace where
 
 namespace FunSpace
 
-variable {v} (f : FunSpace v)
+variable {v}
+variable (f : FunSpace v)
 
 instance : CoeFun (FunSpace v) fun _ => Icc v.tMin v.tMax → E :=
   ⟨toFun⟩

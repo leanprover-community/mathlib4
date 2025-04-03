@@ -44,7 +44,7 @@ random variables with this distribution.
   its pdf having support `s`, then `X` has expectation `(λ s)⁻¹ * ∫ x in s, x dx` where `λ`
   is the Lebesgue measure.
 
-## TODOs
+## TODO
 
 Ultimately, we would also like to define characteristic functions to describe distributions as
 it exists for all random variables. However, to define this, we will need Fourier transforms
@@ -252,7 +252,6 @@ theorem integrable_pdf_smul_iff [IsFiniteMeasure ℙ] {X : Ω → E} [HasPDF X �
   erw [← integrable_map_measure (hf.mono_ac HasPDF.absolutelyContinuous)
     (HasPDF.aemeasurable X ℙ μ),
     map_eq_withDensity_pdf X ℙ μ, pdf_def, integrable_rnDeriv_smul_iff HasPDF.absolutelyContinuous]
-  eta_reduce
   rw [withDensity_rnDeriv_eq _ _ HasPDF.absolutelyContinuous]
 #align measure_theory.pdf.integrable_iff_integrable_mul_pdf MeasureTheory.pdf.integrable_pdf_smul_iff
 

@@ -1,4 +1,4 @@
-import Mathlib.Tactic.Congr!
+import Mathlib.Tactic.CongrExclamation
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Subtype
@@ -90,7 +90,11 @@ example (s t : Set α) (f : Subtype s → α) (g : Subtype t → α) :
 
 set_option linter.unusedTactic false in
 /- `ι = κ` is not plausible -/
-example (f : ι → α) (g : κ → α) :
+-- This test does not work unless we specify that `ι` and `κ` lie in the same universe.
+-- Prior to https://github.com/leanprover/lean4/pull/4493 it did,
+-- because previously bodies of `example`s were (confusingly!) allowed to
+-- affect the elaboration of the signature!
+example {ι κ : Type u} (f : ι → α) (g : κ → α) :
     Set.image f Set.univ = Set.image g Set.univ := by
   congr!
   guard_target = Set.image f Set.univ = Set.image g Set.univ
@@ -216,13 +220,13 @@ example {α β γ δ} {F : ∀{α β}, (α → β) → γ → δ} {f g : α → 
   funext
   apply h
 
-example {α β} {f : _ → β} {x y : {x : {x : α // x = x} // x = x} } (h : x.1 = y.1) :
+example {α β} {f : _ → β} {x y : {x : {x : α // x = x} // x = x}} (h : x.1 = y.1) :
     f x = f y := by
   congr! 1
   ext1
   exact h
 
-example {α β} {F : _ → β} {f g : {f : α → β // f = f} }
+example {α β} {F : _ → β} {f g : {f : α → β // f = f}}
     (h : ∀ x : α, (f : α → β) x = (g : α → β) x) :
     F f = F g := by
   congr!

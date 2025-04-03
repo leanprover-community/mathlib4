@@ -368,6 +368,12 @@ theorem val_smul (n : α) : ∀ y : HomogeneousLocalization 𝒜 x, (n • y).va
   Quotient.ind' fun _ ↦ by rw [← mk_smul, val_mk, val_mk, Localization.smul_mk]; rfl
 #align homogeneous_localization.smul_val HomogeneousLocalization.val_smul
 
+theorem val_nsmul (n : ℕ) (y : HomogeneousLocalization 𝒜 x) : (n • y).val = n • y.val := by
+  rw [val_smul, OreLocalization.nsmul_eq_nsmul]
+
+theorem val_zsmul (n : ℤ) (y : HomogeneousLocalization 𝒜 x) : (n • y).val = n • y.val := by
+  rw [val_smul, OreLocalization.zsmul_eq_zsmul]
+
 end SMul
 
 instance : Neg (HomogeneousLocalization 𝒜 x) where
@@ -473,7 +479,7 @@ theorem val_intCast (n : ℤ) : (n : HomogeneousLocalization 𝒜 x).val = n :=
 
 instance homogenousLocalizationCommRing : CommRing (HomogeneousLocalization 𝒜 x) :=
   (HomogeneousLocalization.val_injective x).commRing _ val_zero val_one val_add val_mul val_neg
-    val_sub (val_smul x · ·) (val_smul x · ·) val_pow val_natCast val_intCast
+    val_sub (val_nsmul x · ·) (val_zsmul x · ·) val_pow val_natCast val_intCast
 #align homogeneous_localization.homogenous_localization_comm_ring HomogeneousLocalization.homogenousLocalizationCommRing
 
 instance homogeneousLocalizationAlgebra :

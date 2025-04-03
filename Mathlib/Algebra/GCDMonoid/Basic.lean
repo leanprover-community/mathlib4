@@ -3,9 +3,8 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Associated
+import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.Tactic.Common
 
 #align_import algebra.gcd_monoid.basic from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
@@ -19,10 +18,10 @@ This file defines extra structures on `CancelCommMonoidWithZero`s, including `Is
 * `NormalizationMonoid`
 * `GCDMonoid`
 * `NormalizedGCDMonoid`
-* `gcdMonoid_of_gcd`, `gcdMonoid_of_exists_gcd`, `normalizedGCDMonoid_of_gcd`,
-  `normalizedGCDMonoid_of_exists_gcd`
-* `gcdMonoid_of_lcm`, `gcdMonoid_of_exists_lcm`, `normalizedGCDMonoid_of_lcm`,
-  `normalizedGCDMonoid_of_exists_lcm`
+* `gcdMonoidOfGCD`, `gcdMonoidOfExistsGCD`, `normalizedGCDMonoidOfGCD`,
+  `normalizedGCDMonoidOfExistsGCD`
+* `gcdMonoidOfLCM`, `gcdMonoidOfExistsLCM`, `normalizedGCDMonoidOfLCM`,
+  `normalizedGCDMonoidOfExistsLCM`
 
 For the `NormalizedGCDMonoid` instances on `ℕ` and `ℤ`, see `Mathlib.Algebra.GCDMonoid.Nat`.
 
@@ -39,17 +38,17 @@ definition as currently implemented does casework on `0`.
   normalized. This makes `gcd`s of polynomials easier to work with, but excludes Euclidean domains,
   and monoids without zero.
 
-* `gcdMonoid_of_gcd` and `normalizedGCDMonoid_of_gcd` noncomputably construct a `GCDMonoid`
+* `gcdMonoidOfGCD` and `normalizedGCDMonoidOfGCD` noncomputably construct a `GCDMonoid`
   (resp. `NormalizedGCDMonoid`) structure just from the `gcd` and its properties.
 
-* `gcdMonoid_of_exists_gcd` and `normalizedGCDMonoid_of_exists_gcd` noncomputably construct a
+* `gcdMonoidOfExistsGCD` and `normalizedGCDMonoidOfExistsGCD` noncomputably construct a
   `GCDMonoid` (resp. `NormalizedGCDMonoid`) structure just from a proof that any two elements
   have a (not necessarily normalized) `gcd`.
 
-* `gcdMonoid_of_lcm` and `normalizedGCDMonoid_of_lcm` noncomputably construct a `GCDMonoid`
+* `gcdMonoidOfLCM` and `normalizedGCDMonoidOfLCM` noncomputably construct a `GCDMonoid`
   (resp. `NormalizedGCDMonoid`) structure just from the `lcm` and its properties.
 
-* `gcdMonoid_of_exists_lcm` and `normalizedGCDMonoid_of_exists_lcm` noncomputably construct a
+* `gcdMonoidOfExistsLCM` and `normalizedGCDMonoidOfExistsLCM` noncomputably construct a
   `GCDMonoid` (resp. `NormalizedGCDMonoid`) structure just from a proof that any two elements
   have a (not necessarily normalized) `lcm`.
 
@@ -100,7 +99,7 @@ def normalize : α →*₀ α where
   toFun x := x * normUnit x
   map_zero' := by
     simp only [normUnit_zero]
-    exact mul_one (0:α)
+    exact mul_one (0 : α)
   map_one' := by dsimp only; rw [normUnit_one, one_mul]; rfl
   map_mul' x y :=
     (by_cases fun hx : x = 0 => by dsimp only; rw [hx, zero_mul, zero_mul, zero_mul]) fun hx =>

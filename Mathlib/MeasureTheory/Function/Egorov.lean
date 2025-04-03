@@ -62,7 +62,7 @@ theorem measure_inter_notConvergentSeq_eq_zero [SemilatticeSup ι] [Nonempty ι]
   simp_rw [Metric.tendsto_atTop, ae_iff] at hfg
   rw [← nonpos_iff_eq_zero, ← hfg]
   refine measure_mono fun x => ?_
-  simp only [Set.mem_inter_iff, Set.mem_iInter, ge_iff_le, mem_notConvergentSeq_iff]
+  simp only [Set.mem_inter_iff, Set.mem_iInter, mem_notConvergentSeq_iff]
   push_neg
   rintro ⟨hmem, hx⟩
   refine ⟨hmem, 1 / (n + 1 : ℝ), Nat.one_div_pos_of_nat, fun N => ?_⟩

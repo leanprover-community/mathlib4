@@ -16,6 +16,9 @@ namespace Thunk
 
 #align thunk.mk Thunk.mk
 
+@[simp] theorem get_pure {α} (x : α) : (Thunk.pure x).get = x := rfl
+@[simp] theorem get_mk {α} (f : Unit → α) : (Thunk.mk f).get = f () := rfl
+
 instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α) := by
   intro a b
   have : a = b ↔ a.get = b.get := ⟨by intro x; rw [x], by intro; ext; assumption⟩

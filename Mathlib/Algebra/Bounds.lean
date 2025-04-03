@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 
 #align_import algebra.bounds from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 

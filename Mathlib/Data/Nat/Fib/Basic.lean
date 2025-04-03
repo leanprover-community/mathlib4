@@ -6,6 +6,7 @@ Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Nat.Bits
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Ring
@@ -192,27 +193,10 @@ theorem fib_two_mul_add_two (n : ℕ) :
   zify [this]
   ring
 
-section deprecated
-
-set_option linter.deprecated false
-
-theorem fib_bit0 (n : ℕ) : fib (bit0 n) = fib n * (2 * fib (n + 1) - fib n) := by
-  rw [bit0_eq_two_mul, fib_two_mul]
-#align nat.fib_bit0 Nat.fib_bit0
-
-theorem fib_bit1 (n : ℕ) : fib (bit1 n) = fib (n + 1) ^ 2 + fib n ^ 2 := by
-  rw [Nat.bit1_eq_succ_bit0, bit0_eq_two_mul, fib_two_mul_add_one]
-#align nat.fib_bit1 Nat.fib_bit1
-
-theorem fib_bit0_succ (n : ℕ) : fib (bit0 n + 1) = fib (n + 1) ^ 2 + fib n ^ 2 :=
-  fib_bit1 n
-#align nat.fib_bit0_succ Nat.fib_bit0_succ
-
-theorem fib_bit1_succ (n : ℕ) : fib (bit1 n + 1) = fib (n + 1) * (2 * fib n + fib (n + 1)) := by
-  rw [Nat.bit1_eq_succ_bit0, bit0_eq_two_mul, fib_two_mul_add_two]
-#align nat.fib_bit1_succ Nat.fib_bit1_succ
-
-end deprecated
+#noalign nat.fib_bit0
+#noalign nat.fib_bit1
+#noalign nat.fib_bit0_succ
+#noalign nat.fib_bit1_succ
 
 /-- Computes `(Nat.fib n, Nat.fib (n + 1))` using the binary representation of `n`.
 Supports `Nat.fastFib`. -/
@@ -255,7 +239,7 @@ theorem fast_fib_aux_eq (n : ℕ) : fastFibAux n = (fib n, fib (n + 1)) := by
     cases b <;>
           simp only [fast_fib_aux_bit_ff, fast_fib_aux_bit_tt, congr_arg Prod.fst ih,
             congr_arg Prod.snd ih, Prod.mk.inj_iff] <;>
-          simp [bit, fib_bit0, fib_bit1, fib_bit0_succ, fib_bit1_succ]
+          simp [bit, fib_two_mul, fib_two_mul_add_one, fib_two_mul_add_two]
 #align nat.fast_fib_aux_eq Nat.fast_fib_aux_eq
 
 theorem fast_fib_eq (n : ℕ) : fastFib n = fib n := by rw [fastFib, fast_fib_aux_eq]

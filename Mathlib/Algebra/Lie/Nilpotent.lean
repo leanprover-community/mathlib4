@@ -105,7 +105,7 @@ theorem lcs_le_self : N.lcs k ≤ N := by
   induction' k with k ih
   · simp
   · simp only [lcs_succ]
-    exact (LieSubmodule.mono_lie_right _ _ ⊤ ih).trans (N.lie_le_right ⊤)
+    exact (LieSubmodule.mono_lie_right ⊤ ih).trans (N.lie_le_right ⊤)
 #align lie_submodule.lcs_le_self LieSubmodule.lcs_le_self
 
 theorem lowerCentralSeries_eq_lcs_comap : lowerCentralSeries R L N k = (N.lcs k).comap N.incl := by
@@ -136,7 +136,7 @@ theorem antitone_lowerCentralSeries : Antitone <| lowerCentralSeries R L M := by
   · exact (Nat.le_zero.mp h).symm ▸ le_rfl
   · rcases Nat.of_le_succ h with (hk | hk)
     · rw [lowerCentralSeries_succ]
-      exact (LieSubmodule.mono_lie_right _ _ ⊤ (ih hk)).trans (LieSubmodule.lie_le_right _ _)
+      exact (LieSubmodule.mono_lie_right ⊤ (ih hk)).trans (LieSubmodule.lie_le_right _ _)
     · exact hk.symm ▸ le_rfl
 #align lie_module.antitone_lower_central_series LieModule.antitone_lowerCentralSeries
 
@@ -168,7 +168,7 @@ theorem iterate_toEnd_mem_lowerCentralSeries (x : L) (m : M) (k : ℕ) :
   · simp only [Nat.zero_eq, Function.iterate_zero, lowerCentralSeries_zero, LieSubmodule.mem_top]
   · simp only [lowerCentralSeries_succ, Function.comp_apply, Function.iterate_succ',
       toEnd_apply_apply]
-    exact LieSubmodule.lie_mem_lie _ _ (LieSubmodule.mem_top x) ih
+    exact LieSubmodule.lie_mem_lie (LieSubmodule.mem_top x) ih
 #align lie_module.iterate_to_endomorphism_mem_lower_central_series LieModule.iterate_toEnd_mem_lowerCentralSeries
 
 theorem iterate_toEnd_mem_lowerCentralSeries₂ (x y : L) (m : M) (k : ℕ) :
@@ -179,8 +179,8 @@ theorem iterate_toEnd_mem_lowerCentralSeries₂ (x y : L) (m : M) (k : ℕ) :
   have hk : 2 * k.succ = (2 * k + 1) + 1 := rfl
   simp only [lowerCentralSeries_succ, Function.comp_apply, Function.iterate_succ', hk,
       toEnd_apply_apply, LinearMap.coe_comp, toEnd_apply_apply]
-  refine LieSubmodule.lie_mem_lie _ _ (LieSubmodule.mem_top x) ?_
-  exact LieSubmodule.lie_mem_lie _ _ (LieSubmodule.mem_top y) ih
+  refine LieSubmodule.lie_mem_lie (LieSubmodule.mem_top x) ?_
+  exact LieSubmodule.lie_mem_lie (LieSubmodule.mem_top y) ih
 
 variable {R L M}
 
@@ -189,7 +189,7 @@ theorem map_lowerCentralSeries_le (f : M →ₗ⁅R,L⁆ M₂) :
   induction' k with k ih
   · simp only [Nat.zero_eq, lowerCentralSeries_zero, le_top]
   · simp only [LieModule.lowerCentralSeries_succ, LieSubmodule.map_bracket_eq]
-    exact LieSubmodule.mono_lie_right _ _ ⊤ ih
+    exact LieSubmodule.mono_lie_right ⊤ ih
 #align lie_module.map_lower_central_series_le LieModule.map_lowerCentralSeries_le
 
 lemma map_lowerCentralSeries_eq {f : M →ₗ⁅R,L⁆ M₂} (hf : Function.Surjective f) :
@@ -211,7 +211,7 @@ theorem derivedSeries_le_lowerCentralSeries (k : ℕ) :
   · rw [derivedSeries_def, derivedSeriesOfIdeal_zero, lowerCentralSeries_zero]
   · have h' : derivedSeries R L k ≤ ⊤ := by simp only [le_top]
     rw [derivedSeries_def, derivedSeriesOfIdeal_succ, lowerCentralSeries_succ]
-    exact LieSubmodule.mono_lie _ _ _ _ h' h
+    exact LieSubmodule.mono_lie h' h
 #align lie_module.derived_series_le_lower_central_series LieModule.derivedSeries_le_lowerCentralSeries
 
 /-- A Lie module is nilpotent if its lower central series reaches 0 (in a finite number of
@@ -296,7 +296,7 @@ theorem nilpotentOfNilpotentQuotient {N : LieSubmodule R L M} (h₁ : N ≤ maxT
   use k + 1
   simp only [lowerCentralSeries_succ]
   suffices lowerCentralSeries R L M k ≤ N by
-    replace this := LieSubmodule.mono_lie_right _ _ ⊤ (le_trans this h₁)
+    replace this := LieSubmodule.mono_lie_right ⊤ (le_trans this h₁)
     rwa [ideal_oper_maxTrivSubmodule_eq_bot, le_bot_iff] at this
   rw [← LieSubmodule.Quotient.map_mk'_eq_bot_le, ← le_bot_iff, ← hk]
   exact map_lowerCentralSeries_le k (LieSubmodule.Quotient.mk' N)
@@ -705,7 +705,7 @@ theorem LieIdeal.map_lowerCentralSeries_le (k : ℕ) {f : L →ₗ⁅R⁆ L'} :
   induction' k with k ih
   · simp only [Nat.zero_eq, LieModule.lowerCentralSeries_zero, le_top]
   · simp only [LieModule.lowerCentralSeries_succ]
-    exact le_trans (LieIdeal.map_bracket_le f) (LieSubmodule.mono_lie _ _ _ _ le_top ih)
+    exact le_trans (LieIdeal.map_bracket_le f) (LieSubmodule.mono_lie le_top ih)
 #align lie_ideal.map_lower_central_series_le LieIdeal.map_lowerCentralSeries_le
 
 theorem LieIdeal.lowerCentralSeries_map_eq (k : ℕ) {f : L →ₗ⁅R⁆ L'} (h : Function.Surjective f) :

@@ -42,7 +42,7 @@ Effective epi families in a precoherent category are transitive, in the sense th
 Note: The finiteness condition is an artifact of the proof and is probably unnecessary.
 -/
 theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Finite α] {Y : α → C}
-    (π : (a : α) → (Y a ⟶ X)) (h : EffectiveEpiFamily Y π) {β : α → Type} [∀ (a: α), Finite (β a)]
+    (π : (a : α) → (Y a ⟶ X)) (h : EffectiveEpiFamily Y π) {β : α → Type} [∀ (a : α), Finite (β a)]
     {Y_n : (a : α) → β a → C} (π_n : (a : α) → (b : β a) → (Y_n a b ⟶ Y a))
     (H : ∀ a, EffectiveEpiFamily (Y_n a) (π_n a)) :
     EffectiveEpiFamily
@@ -55,8 +55,8 @@ theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Finite α] {Y : α 
     exact fun W => coherentTopology.isSheaf_yoneda_obj W _ h₂
   -- Show that a covering sieve is a colimit, which implies the original set of arrows is regular
   -- epimorphic. We use the transitivity property of saturation
-  apply Coverage.saturate.transitive X (Sieve.generate (Presieve.ofArrows Y π))
-  · apply Coverage.saturate.of
+  apply Coverage.Saturate.transitive X (Sieve.generate (Presieve.ofArrows Y π))
+  · apply Coverage.Saturate.of
     use α, inferInstance, Y, π
   · intro V f ⟨Y₁, h, g, ⟨hY, hf⟩⟩
     rw [← hf, Sieve.pullback_comp]

@@ -393,9 +393,6 @@ theorem compr₂_apply (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R]
 
 variable (R M)
 
-/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
-protected abbrev BilinForm : Type _ := M →ₗ[R] M →ₗ[R] R
-
 /-- Scalar multiplication as a bilinear map `R → M → M`. -/
 def lsmul : R →ₗ[R] M →ₗ[R] M :=
   mk₂ R (· • ·) add_smul (fun _ _ _ => mul_smul _ _ _) smul_add fun r s m => by
@@ -412,6 +409,14 @@ variable {M}
 @[simp]
 theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 #align linear_map.lsmul_apply LinearMap.lsmul_apply
+
+variable (R M Nₗ) in
+/-- A shorthand for the type of `R`-bilinear `Nₗ`-valued maps on `M`. -/
+protected abbrev BilinMap : Type _ := M →ₗ[R] M →ₗ[R] Nₗ
+
+variable (R M) in
+/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
+protected abbrev BilinForm : Type _ := LinearMap.BilinMap R M R
 
 end CommSemiring
 

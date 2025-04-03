@@ -586,8 +586,6 @@ def mkInductive : Homotopy e 0 where
     congr
     · cases i
       · dsimp [fromNext, mkInductiveAux₂]
-        rw [dif_neg]
-        decide
       · dsimp [fromNext]
         simp only [ChainComplex.next_nat_succ, dite_true]
         rw [mkInductiveAux₃ e zero comm_zero one comm_one succ]
@@ -725,8 +723,6 @@ def mkCoinductive : Homotopy e 0 where
     congr
     · cases i
       · dsimp [toPrev, mkCoinductiveAux₂]
-        rw [dif_neg]
-        decide
       · dsimp [toPrev]
         simp only [CochainComplex.prev_nat_succ, dite_true]
         rw [mkCoinductiveAux₃ e zero comm_zero one comm_one succ]
@@ -804,41 +800,6 @@ def ofIso {ι : Type*} {V : Type u} [Category.{v} V] [Preadditive V] {c : Comple
 #align homotopy_equiv.of_iso HomotopyEquiv.ofIso
 
 end HomotopyEquiv
-
-variable [HasEqualizers V] [HasCokernels V] [HasImages V] [HasImageMaps V]
-
-/-- Homotopic maps induce the same map on homology.
--/
-theorem homology'_map_eq_of_homotopy (h : Homotopy f g) (i : ι) :
-    (homology'Functor V c i).map f = (homology'Functor V c i).map g := by
-  dsimp [homology'Functor]
-  apply eq_of_sub_eq_zero
-  ext
-  simp only [homology'.π_map, comp_zero, Preadditive.comp_sub]
-  dsimp [kernelSubobjectMap]
-  simp_rw [h.comm i]
-  simp only [zero_add, zero_comp, dNext_eq_dFrom_fromNext, kernelSubobject_arrow_comp_assoc,
-    Preadditive.comp_add]
-  rw [← Preadditive.sub_comp]
-  simp only [CategoryTheory.Subobject.factorThru_add_sub_factorThru_right]
-  erw [Subobject.factorThru_ofLE (D.boundaries_le_cycles' i)]
-  · simp
-  · rw [prevD_eq_toPrev_dTo, ← assoc]
-    apply imageSubobject_factors_comp_self
-#align homology_map_eq_of_homotopy homology'_map_eq_of_homotopy
-
-/-- Homotopy equivalent complexes have isomorphic homologies. -/
-def homologyObjIsoOfHomotopyEquiv (f : HomotopyEquiv C D) (i : ι) :
-    (homology'Functor V c i).obj C ≅ (homology'Functor V c i).obj D where
-  hom := (homology'Functor V c i).map f.hom
-  inv := (homology'Functor V c i).map f.inv
-  hom_inv_id := by
-    rw [← Functor.map_comp, homology'_map_eq_of_homotopy f.homotopyHomInvId,
-      CategoryTheory.Functor.map_id]
-  inv_hom_id := by
-    rw [← Functor.map_comp, homology'_map_eq_of_homotopy f.homotopyInvHomId,
-      CategoryTheory.Functor.map_id]
-#align homology_obj_iso_of_homotopy_equiv homologyObjIsoOfHomotopyEquiv
 
 end
 
@@ -935,3 +896,5 @@ noncomputable def HomotopyEquiv.toHomologyIso (h : HomotopyEquiv K L) (i : ι)
   inv := homologyMap h.inv i
   hom_inv_id := by rw [← homologyMap_comp, h.homotopyHomInvId.homologyMap_eq, homologyMap_id]
   inv_hom_id := by rw [← homologyMap_comp, h.homotopyInvHomId.homologyMap_eq, homologyMap_id]
+
+end

@@ -61,7 +61,8 @@ theorem mem_localizationLocalizationSubmodule {x : R} :
     exact ⟨y, y.prop, _, ⟨z, z.prop, rfl⟩, e.symm⟩
 #align is_localization.mem_localization_localization_submodule IsLocalization.mem_localizationLocalizationSubmodule
 
-variable (M N) [IsLocalization M S]
+variable (M N)
+variable [IsLocalization M S]
 
 theorem localization_localization_map_units [IsLocalization N T]
     (y : localizationLocalizationSubmodule M N) : IsUnit (algebraMap R T y) := by

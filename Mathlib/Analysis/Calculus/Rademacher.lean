@@ -377,5 +377,5 @@ end LipschitzOnWith
 differentiable almost everywhere. -/
 theorem LipschitzWith.ae_differentiableAt {f : E → F} (h : LipschitzWith C f) :
     ∀ᵐ x ∂μ, DifferentiableAt ℝ f x := by
-  rw [← lipschitzOn_univ] at h
+  rw [← lipschitzOnWith_univ] at h
   simpa [differentiableWithinAt_univ] using h.ae_differentiableWithinAt_of_mem

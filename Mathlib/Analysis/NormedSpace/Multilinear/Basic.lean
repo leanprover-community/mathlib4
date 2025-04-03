@@ -76,6 +76,20 @@ We use the following type variables in this file:
 
 universe u v v' wE wE₁ wE' wG wG'
 
+/-- Applying a multilinear map to a vector is continuous in both coordinates. -/
+theorem ContinuousMultilinearMap.continuous_eval {𝕜 ι : Type*} {E : ι → Type*} {F : Type*}
+    [NormedField 𝕜] [Finite ι] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
+    [TopologicalSpace F] [AddCommGroup F] [TopologicalAddGroup F] [Module 𝕜 F] :
+    Continuous fun p : ContinuousMultilinearMap 𝕜 E F × ∀ i, E i => p.1 p.2 := by
+  cases nonempty_fintype ι
+  let _ := TopologicalAddGroup.toUniformSpace F
+  have := comm_topologicalAddGroup_is_uniform (G := F)
+  refine (UniformOnFun.continuousOn_eval₂ fun m ↦ ?_).comp_continuous
+    (embedding_toUniformOnFun.continuous.prod_map continuous_id) fun (f, x) ↦ f.cont.continuousAt
+  exact ⟨ball m 1, NormedSpace.isVonNBounded_of_isBounded _ isBounded_ball,
+    ball_mem_nhds _ one_pos⟩
+#align continuous_multilinear_map.continuous_eval ContinuousMultilinearMap.continuous_eval
+
 section Seminorm
 
 variable {𝕜 : Type u} {ι : Type v} {ι' : Type v'} {E : ι → Type wE} {E₁ : ι → Type wE₁}
@@ -720,37 +734,6 @@ theorem norm_image_sub_le (m₁ m₂ : ∀ i, E i) :
   f.toMultilinearMap.norm_image_sub_le_of_bound (norm_nonneg _) f.le_opNorm _ _
 #align continuous_multilinear_map.norm_image_sub_le ContinuousMultilinearMap.norm_image_sub_le
 
-/-- Applying a multilinear map to a vector is continuous in both coordinates. -/
-theorem continuous_eval : Continuous
-    fun p : ContinuousMultilinearMap 𝕜 E G × ∀ i, E i => p.1 p.2 := by
-  apply continuous_iff_continuousAt.2 fun p => ?_
-  apply
-    continuousAt_of_locally_lipschitz zero_lt_one
-      ((‖p‖ + 1) * Fintype.card ι * (‖p‖ + 1) ^ (Fintype.card ι - 1) + ∏ i, ‖p.2 i‖) fun q hq => ?_
-  have : 0 ≤ max ‖q.2‖ ‖p.2‖ := by simp
-  have : 0 ≤ ‖p‖ + 1 := zero_le_one.trans ((le_add_iff_nonneg_left 1).2 <| norm_nonneg p)
-  have A : ‖q‖ ≤ ‖p‖ + 1 := norm_le_of_mem_closedBall hq.le
-  have : max ‖q.2‖ ‖p.2‖ ≤ ‖p‖ + 1 :=
-    (max_le_max (norm_snd_le q) (norm_snd_le p)).trans (by simp [A, zero_le_one])
-  have : ∀ i : ι, i ∈ univ → 0 ≤ ‖p.2 i‖ := fun i _ => norm_nonneg _
-  calc
-    dist (q.1 q.2) (p.1 p.2) ≤ dist (q.1 q.2) (q.1 p.2) + dist (q.1 p.2) (p.1 p.2) :=
-      dist_triangle _ _ _
-    _ = ‖q.1 q.2 - q.1 p.2‖ + ‖q.1 p.2 - p.1 p.2‖ := by rw [dist_eq_norm, dist_eq_norm]
-    _ ≤ ‖q.1‖ * Fintype.card ι * max ‖q.2‖ ‖p.2‖ ^ (Fintype.card ι - 1) * ‖q.2 - p.2‖ +
-        ‖q.1 - p.1‖ * ∏ i, ‖p.2 i‖ :=
-      (add_le_add (norm_image_sub_le _ _ _) ((q.1 - p.1).le_opNorm p.2))
-    _ ≤ (‖p‖ + 1) * Fintype.card ι * (‖p‖ + 1) ^ (Fintype.card ι - 1) * ‖q - p‖ +
-        ‖q - p‖ * ∏ i, ‖p.2 i‖ := by
-      apply_rules [add_le_add, mul_le_mul, le_refl, le_trans (norm_fst_le q) A, Nat.cast_nonneg,
-        mul_nonneg, pow_le_pow_left, pow_nonneg, norm_snd_le (q - p), norm_nonneg,
-        norm_fst_le (q - p), prod_nonneg]
-    _ = ((‖p‖ + 1) * Fintype.card ι * (‖p‖ + 1) ^ (Fintype.card ι - 1) + ∏ i, ‖p.2 i‖)
-          * dist q p := by
-      rw [dist_eq_norm]
-      ring
-#align continuous_multilinear_map.continuous_eval ContinuousMultilinearMap.continuous_eval
-
 end ContinuousMultilinearMap
 
 /-- If a continuous multilinear map is constructed from a multilinear map via the constructor
@@ -1331,7 +1314,7 @@ noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α] [DecidableEq
       simp [i.2]
     · rw [prod_subtype _ (fun _ ↦ s.mem_toFinset), ← Equiv.prod_comp e.symm]
       apply Finset.prod_le_prod (fun i _ ↦ norm_nonneg _) (fun i _ ↦ ?_)
-      simpa only [i.2, ↓reduceDite, Subtype.coe_eta] using norm_le_pi_norm (m (e.symm i)) ↑i
+      simpa only [i.2, ↓reduceDIte, Subtype.coe_eta] using norm_le_pi_norm (m (e.symm i)) ↑i
 
 @[simp] lemma iteratedFDerivComponent_apply {α : Type*} [Fintype α] [DecidableEq ι]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)]
@@ -1433,82 +1416,6 @@ theorem nnnorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
     ‖ofSubsingleton 𝕜 G G i (.id _ _)‖₊ = 1 :=
   NNReal.eq <| norm_ofSubsingleton_id _ _ _
 #align continuous_multilinear_map.nnnorm_of_subsingleton ContinuousMultilinearMap.nnnorm_ofSubsingleton_id
-
-variable {𝕜 G}
-
-open Topology Filter
-
-/-- If the target space is complete, the space of continuous multilinear maps with its norm is also
-complete. The proof is essentially the same as for the space of continuous linear maps (modulo the
-addition of `Finset.prod` where needed). The duplication could be avoided by deducing the linear
-case from the multilinear case via a currying isomorphism. However, this would mess up imports,
-and it is more satisfactory to have the simplest case as a standalone proof. -/
-instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearMap 𝕜 E G) := by
-  -- We show that every Cauchy sequence converges.
-  refine Metric.complete_of_cauchySeq_tendsto fun f hf => ?_
-  -- We now expand out the definition of a Cauchy sequence,
-  rcases cauchySeq_iff_le_tendsto_0.1 hf with ⟨b, b0, b_bound, b_lim⟩
-  -- and establish that the evaluation at any point `v : Π i, E i` is Cauchy.
-  have cau : ∀ v, CauchySeq fun n => f n v := by
-    intro v
-    apply cauchySeq_iff_le_tendsto_0.2 ⟨fun n => b n * ∏ i, ‖v i‖, _, _, _⟩
-    · intro n
-      have := b0 n
-      positivity
-    · intro n m N hn hm
-      rw [dist_eq_norm]
-      apply le_trans ((f n - f m).le_opNorm v) _
-      exact mul_le_mul_of_nonneg_right (b_bound n m N hn hm) <| by positivity
-    · simpa using b_lim.mul tendsto_const_nhds
-  -- We assemble the limits points of those Cauchy sequences
-  -- (which exist as `G` is complete)
-  -- into a function which we call `F`.
-  choose F hF using fun v => cauchySeq_tendsto_of_complete (cau v)
-  -- Next, we show that this `F` is multilinear,
-  let Fmult : MultilinearMap 𝕜 E G :=
-    { toFun := F
-      map_add' := fun v i x y => by
-        have A := hF (Function.update v i (x + y))
-        have B := (hF (Function.update v i x)).add (hF (Function.update v i y))
-        simp? at A B says simp only [map_add] at A B
-        exact tendsto_nhds_unique A B
-      map_smul' := fun v i c x => by
-        have A := hF (Function.update v i (c • x))
-        have B := Filter.Tendsto.smul (tendsto_const_nhds (x := c)) (hF (Function.update v i x))
-        simp? at A B says simp only [map_smul] at A B
-        exact tendsto_nhds_unique A B }
-  -- and that `F` has norm at most `(b 0 + ‖f 0‖)`.
-  have Fnorm : ∀ v, ‖F v‖ ≤ (b 0 + ‖f 0‖) * ∏ i, ‖v i‖ := by
-    intro v
-    have A : ∀ n, ‖f n v‖ ≤ (b 0 + ‖f 0‖) * ∏ i, ‖v i‖ := by
-      intro n
-      apply le_trans ((f n).le_opNorm _) _
-      apply mul_le_mul_of_nonneg_right _ <| by positivity
-      calc
-        ‖f n‖ = ‖f n - f 0 + f 0‖ := by
-          congr 1
-          abel
-        _ ≤ ‖f n - f 0‖ + ‖f 0‖ := norm_add_le _ _
-        _ ≤ b 0 + ‖f 0‖ := by
-          apply add_le_add_right
-          simpa [dist_eq_norm] using b_bound n 0 0 (zero_le _) (zero_le _)
-    exact le_of_tendsto (hF v).norm (eventually_of_forall A)
-  -- Thus `F` is continuous, and we propose that as the limit point of our original Cauchy sequence.
-  let Fcont := Fmult.mkContinuous _ Fnorm
-  use Fcont
-  -- Our last task is to establish convergence to `F` in norm.
-  have : ∀ n, ‖f n - Fcont‖ ≤ b n := by
-    intro n
-    apply opNorm_le_bound _ (b0 n) fun v => ?_
-    have A : ∀ᶠ m in atTop, ‖(f n - f m) v‖ ≤ b n * ∏ i, ‖v i‖ := by
-      refine eventually_atTop.2 ⟨n, fun m hm => ?_⟩
-      apply le_trans ((f n - f m).le_opNorm _) _
-      exact mul_le_mul_of_nonneg_right (b_bound n m n le_rfl hm) <| by positivity
-    have B : Tendsto (fun m => ‖(f n - f m) v‖) atTop (𝓝 ‖(f n - Fcont) v‖) :=
-      Tendsto.norm (tendsto_const_nhds.sub (hF v))
-    exact le_of_tendsto B A
-  rw [tendsto_iff_norm_sub_tendsto_zero]
-  exact squeeze_zero (fun n => norm_nonneg _) this b_lim
 
 end ContinuousMultilinearMap
 

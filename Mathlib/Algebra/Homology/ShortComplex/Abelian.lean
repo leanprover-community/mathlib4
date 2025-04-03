@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.ShortComplex.Homology
 import Mathlib.CategoryTheory.Abelian.Basic
 
@@ -182,9 +181,6 @@ instance _root_.CategoryTheory.categoryWithHomology_of_abelian :
     CategoryWithHomology C where
   hasHomology S := HasHomology.mk' (HomologyData.ofAbelian S)
 
-/-- Comparison isomorphism between two definitions of homology. -/
-noncomputable def homology'IsoHomology :
-    _root_.homology' S.f S.g S.zero ≅ S.homology :=
-  homology'IsoCokernelLift S.f S.g S.zero ≪≫ S.homologyIsoCokernelLift.symm
-
 end ShortComplex
+
+end CategoryTheory

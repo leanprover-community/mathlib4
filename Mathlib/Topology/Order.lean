@@ -579,6 +579,18 @@ theorem le_induced_generateFrom {α β} [t : TopologicalSpace α] {b : Set (Set 
   exact h
 #align le_induced_generate_from le_induced_generateFrom
 
+lemma generateFrom_insert_of_generateOpen {α : Type*} {s : Set (Set α)} {t : Set α}
+    (ht : GenerateOpen s t) : generateFrom (insert t s) = generateFrom s := by
+  refine le_antisymm (generateFrom_anti <| subset_insert t s) (le_generateFrom ?_)
+  rintro t (rfl | h)
+  · exact ht
+  · exact isOpen_generateFrom_of_mem h
+
+@[simp]
+lemma generateFrom_insert_univ {α : Type*} {s : Set (Set α)} :
+    generateFrom (insert univ s) = generateFrom s :=
+  generateFrom_insert_of_generateOpen .univ
+
 /-- This construction is left adjoint to the operation sending a topology on `α`
   to its neighborhood filter at a fixed point `a : α`. -/
 def nhdsAdjoint (a : α) (f : Filter α) : TopologicalSpace α where

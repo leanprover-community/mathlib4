@@ -6,6 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Infix
+import Mathlib.Order.Fin.Basic
 
 #align_import data.list.sort from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -144,8 +145,7 @@ theorem Sorted.rel_nthLe_of_lt {l : List α} (h : l.Sorted r) {a b : ℕ} (ha : 
 
 theorem Sorted.rel_get_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : Fin l.length}
     (hab : a ≤ b) : r (l.get a) (l.get b) := by
-  rcases hab.eq_or_lt with (rfl | hlt)
-  exacts [refl _, h.rel_get_of_lt hlt]
+  obtain rfl | hlt := Fin.eq_or_lt_of_le hab; exacts [refl _, h.rel_get_of_lt hlt]
 
 set_option linter.deprecated false in
 @[deprecated Sorted.rel_get_of_le (since := "2024-05-08")]
@@ -156,11 +156,11 @@ theorem Sorted.rel_nthLe_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b
 
 theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {k : ℕ} {x y : α}
     (hx : x ∈ List.take k l) (hy : y ∈ List.drop k l) : r x y := by
-  obtain ⟨⟨iy, hiy⟩, rfl⟩ := get_of_mem hy
-  obtain ⟨⟨ix, hix⟩, rfl⟩ := get_of_mem hx
-  rw [get_take', get_drop']
+  obtain ⟨iy, hiy, rfl⟩ := getElem_of_mem hy
+  obtain ⟨ix, hix, rfl⟩ := getElem_of_mem hx
+  rw [getElem_take', getElem_drop']
   rw [length_take] at hix
-  exact h.rel_get_of_lt (Nat.lt_add_right _ (lt_min_iff.mp hix).left)
+  exact h.rel_get_of_lt (Nat.lt_add_right _ (Nat.lt_min.mp hix).left)
 #align list.sorted.rel_of_mem_take_of_mem_drop List.Sorted.rel_of_mem_take_of_mem_drop
 
 end Sorted

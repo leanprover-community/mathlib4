@@ -81,3 +81,5 @@ example : (ex.run []).1 = node leaf (node (node leaf leaf [(), (), ()]) leaf [()
 example : (ex.run []).2 = [1, 2, 3, 3, 2, 1] := rfl
 
 end
+
+end Testing

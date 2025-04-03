@@ -178,6 +178,10 @@ theorem integral_add_compl (hs : MeasurableSet s) (hfi : Integrable f μ) :
   integral_add_compl₀ hs.nullMeasurableSet hfi
 #align measure_theory.integral_add_compl MeasureTheory.integral_add_compl
 
+theorem setIntegral_compl (hs : MeasurableSet s) (hfi : Integrable f μ) :
+    ∫ x in sᶜ, f x ∂μ = ∫ x, f x ∂μ - ∫ x in s, f x ∂μ := by
+  rw [← integral_add_compl (μ := μ) hs hfi, add_sub_cancel_left]
+
 /-- For a function `f` and a measurable set `s`, the integral of `indicator s f`
 over the whole space is equal to `∫ x in s, f x ∂μ` defined as `∫ x, f x ∂(μ.restrict s)`. -/
 theorem integral_indicator (hs : MeasurableSet s) :
@@ -688,26 +692,23 @@ theorem setIntegral_pos_iff_support_of_nonneg_ae {f : X → ℝ} (hf : 0 ≤ᵐ[
 @[deprecated (since := "2024-04-17")]
 alias set_integral_pos_iff_support_of_nonneg_ae := setIntegral_pos_iff_support_of_nonneg_ae
 
-theorem setIntegral_gt_gt {R : ℝ} {f : X → ℝ} (hR : 0 ≤ R) (hfm : Measurable f)
+theorem setIntegral_gt_gt {R : ℝ} {f : X → ℝ} (hR : 0 ≤ R)
     (hfint : IntegrableOn f {x | ↑R < f x} μ) (hμ : μ {x | ↑R < f x} ≠ 0) :
     (μ {x | ↑R < f x}).toReal * R < ∫ x in {x | ↑R < f x}, f x ∂μ := by
   have : IntegrableOn (fun _ => R) {x | ↑R < f x} μ := by
     refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_ hfint.2⟩
-    refine
-      setLIntegral_mono (Measurable.nnnorm ?_).coe_nnreal_ennreal hfm.nnnorm.coe_nnreal_ennreal
-        fun x hx => ?_
-    · exact measurable_const
-    · simp only [ENNReal.coe_le_coe, Real.nnnorm_of_nonneg hR,
-        Real.nnnorm_of_nonneg (hR.trans <| le_of_lt hx), Subtype.mk_le_mk]
-      exact le_of_lt hx
+    refine setLIntegral_mono_ae hfint.1.ennnorm <| ae_of_all _ fun x hx => ?_
+    simp only [ENNReal.coe_le_coe, Real.nnnorm_of_nonneg hR,
+      Real.nnnorm_of_nonneg (hR.trans <| le_of_lt hx), Subtype.mk_le_mk]
+    exact le_of_lt hx
   rw [← sub_pos, ← smul_eq_mul, ← setIntegral_const, ← integral_sub hfint this,
     setIntegral_pos_iff_support_of_nonneg_ae]
   · rw [← zero_lt_iff] at hμ
     rwa [Set.inter_eq_self_of_subset_right]
     exact fun x hx => Ne.symm (ne_of_lt <| sub_pos.2 hx)
-  · rw [Pi.zero_def, EventuallyLE, ae_restrict_iff]
+  · rw [Pi.zero_def, EventuallyLE, ae_restrict_iff₀]
     · exact eventually_of_forall fun x hx => sub_nonneg.2 <| le_of_lt hx
-    · exact measurableSet_le measurable_zero (hfm.sub measurable_const)
+    · exact nullMeasurableSet_le aemeasurable_zero (hfint.1.aemeasurable.sub aemeasurable_const)
   · exact Integrable.sub hfint this
 #align measure_theory.set_integral_gt_gt MeasureTheory.setIntegral_gt_gt
 
@@ -728,7 +729,6 @@ alias set_integral_trim := setIntegral_trim
 The primed lemmas take explicit arguments about the endpoint having zero measure, while the
 unprimed ones use `[NoAtoms μ]`.
 -/
-
 
 section PartialOrder
 

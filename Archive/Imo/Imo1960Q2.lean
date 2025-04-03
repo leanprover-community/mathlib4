@@ -66,3 +66,5 @@ theorem isGood_iff {x} : IsGood x ↔ x ∈ Ico (-1/2) (45/8) \ {0} := by
       _ ↔ 2 * x + 1 < (7 / 2) ^ 2 := sqrt_lt' <| by positivity
       _ ↔ x < 45 / 8 := by constructor <;> intro <;> linarith
       _ ↔ x ∈ Ico (-1/2) (45/8) \ {0} := by simp [*]
+
+end Imo1960Q2

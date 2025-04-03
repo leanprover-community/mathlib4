@@ -11,11 +11,11 @@ import Mathlib.MeasureTheory.Function.LpSpace
 /-!
 # Order related properties of Lp spaces
 
-### Results
+## Results
 
 - `Lp E p μ` is an `OrderedAddCommGroup` when `E` is a `NormedLatticeAddCommGroup`.
 
-### TODO
+## TODO
 
 - move definitions of `Lp.posPart` and `Lp.negPart` to this file, and define them as
   `PosPart.pos` and `NegPart.neg` given by the lattice structure.

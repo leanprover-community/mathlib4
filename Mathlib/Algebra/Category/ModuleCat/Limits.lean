@@ -21,7 +21,7 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-universe v w u t
+universe t v w u
 
 -- `u` is determined by the ring, so can come later
 noncomputable section
@@ -60,6 +60,8 @@ instance : AddCommMonoid (F ⋙ forget (ModuleCat R)).sections :=
 
 instance : Module R (F ⋙ forget (ModuleCat R)).sections :=
   inferInstanceAs <| Module R (sectionsSubmodule F)
+
+section
 
 variable [Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R)))]
 
@@ -117,7 +119,7 @@ def limitCone : Cone F where
 /-- Witness that the limit cone in `ModuleCat R` is a limit cone.
 (Internal use only; use the limits API.)
 -/
-def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
+def limitConeIsLimit : IsLimit (limitCone.{t, v, w} F) := by
   refine IsLimit.ofFaithful (forget (ModuleCat R)) (Types.Small.limitConeIsLimit.{v, w} _)
     (fun s => ⟨⟨(Types.Small.limitConeIsLimit.{v, w} _).lift
                 ((forget (ModuleCat R)).mapCone s), ?_⟩, ?_⟩)
@@ -153,7 +155,7 @@ lemma hasLimitsOfSize [UnivLE.{v, w}] : HasLimitsOfSize.{t, v} (ModuleCat.{w} R)
 #align Module.has_limits_of_size ModuleCat.hasLimitsOfSize
 
 instance hasLimits : HasLimits (ModuleCat.{w} R) :=
-  ModuleCat.hasLimitsOfSize.{w, w, u}
+  ModuleCat.hasLimitsOfSize.{w, w, w, u}
 #align Module.has_limits ModuleCat.hasLimits
 
 instance (priority := high) hasLimits' : HasLimits (ModuleCat.{u} R) :=
@@ -174,10 +176,6 @@ instance forget₂AddCommGroupPreservesLimit :
     PreservesLimit F (forget₂ (ModuleCat R) AddCommGrp) :=
   preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
     (forget₂AddCommGroupPreservesLimitsAux F)
-
-instance forget₂AddCommGroupReflectsLimit :
-    ReflectsLimit F (forget₂ (ModuleCat R) AddCommGrp) :=
-  reflectsLimitOfReflectsIsomorphisms _ _
 
 /-- The forgetful functor from R-modules to abelian groups preserves all limits.
 -/
@@ -204,6 +202,23 @@ instance forgetPreservesLimitsOfSize [UnivLE.{v, w}] :
 instance forgetPreservesLimits : PreservesLimits (forget (ModuleCat.{w} R)) :=
   ModuleCat.forgetPreservesLimitsOfSize.{w, w}
 #align Module.forget_preserves_limits ModuleCat.forgetPreservesLimits
+
+end
+
+instance forget₂AddCommGroupReflectsLimit :
+    ReflectsLimit F (forget₂ (ModuleCat.{w} R) AddCommGrp) where
+  reflects {c} hc := by
+    have : HasLimit (F ⋙ forget₂ (ModuleCat R) AddCommGrp) := ⟨_, hc⟩
+    have : Small.{w} (Functor.sections (F ⋙ forget (ModuleCat R))) := by
+      simpa only [AddCommGrp.hasLimit_iff_small_sections] using this
+    have := reflectsLimitOfReflectsIsomorphisms F (forget₂ (ModuleCat R) AddCommGrp)
+    exact isLimitOfReflects _ hc
+
+instance forget₂AddCommGroupReflectsLimitOfShape :
+    ReflectsLimitsOfShape J (forget₂ (ModuleCat.{w} R) AddCommGrp) where
+
+instance forget₂AddCommGroupReflectsLimitOfSize :
+    ReflectsLimitsOfSize.{t, v} (forget₂ (ModuleCat.{w} R) AddCommGrp) where
 
 section DirectLimit
 

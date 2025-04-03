@@ -219,7 +219,7 @@ theorem oangle_ne_zero_and_ne_pi_iff_affineIndependent {p₁ p₂ p₃ : P} :
     ∡ p₁ p₂ p₃ ≠ 0 ∧ ∡ p₁ p₂ p₃ ≠ π ↔ AffineIndependent ℝ ![p₁, p₂, p₃] := by
   rw [oangle, o.oangle_ne_zero_and_ne_pi_iff_linearIndependent,
     affineIndependent_iff_linearIndependent_vsub ℝ _ (1 : Fin 3), ←
-    linearIndependent_equiv (finSuccAboveEquiv (1 : Fin 3)).toEquiv]
+    linearIndependent_equiv (finSuccAboveEquiv (1 : Fin 3))]
   convert Iff.rfl
   ext i
   fin_cases i <;> rfl

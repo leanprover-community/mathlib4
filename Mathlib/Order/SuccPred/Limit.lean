@@ -15,7 +15,7 @@ We define the predicate `Order.IsSuccLimit` for "successor limits", values that 
 others. They are so named since they can't be the successors of anything smaller. We define
 `Order.IsPredLimit` analogously, and prove basic results.
 
-## Todo
+## TODO
 
 The plan is to eventually replace `Ordinal.IsLimit` and `Cardinal.IsLimit` with the common
 predicate `Order.IsSuccLimit`.

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 #align_import category_theory.limits.shapes.disjoint_coproduct from "leanprover-community/mathlib"@"c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e"
 
@@ -37,9 +37,11 @@ variable {C : Type u} [Category.{v} C]
 
 /-- Given any pullback diagram of the form
 
-Z ⟶ X₁
-↓      ↓
+```
+Z  ⟶ X₁
+↓    ↓
 X₂ ⟶ X
+```
 
 where `X₁ ⟶ X ← X₂` is a coproduct diagram, then `Z` is initial, and both `X₁ ⟶ X` and `X₂ ⟶ X`
 are mono.
@@ -55,9 +57,11 @@ class CoproductDisjoint (X₁ X₂ : C) where
 
 /-- If the coproduct of `X₁` and `X₂` is disjoint, then given any pullback square
 
-Z ⟶ X₁
-↓      ↓
+```
+Z  ⟶ X₁
+↓    ↓
 X₂ ⟶ X
+```
 
 where `X₁ ⟶ X ← X₂` is a coproduct, then `Z` is initial.
 -/
@@ -69,9 +73,11 @@ def isInitialOfIsPullbackOfIsCoproduct {Z X₁ X₂ X : C} [CoproductDisjoint X�
 
 /-- If the coproduct of `X₁` and `X₂` is disjoint, then given any pullback square
 
-Z ⟶ X₁
+```
+Z  ⟶    X₁
 ↓       ↓
 X₂ ⟶ X₁ ⨿ X₂
+```
 
 `Z` is initial.
 -/
@@ -85,9 +91,11 @@ noncomputable def isInitialOfIsPullbackOfCoproduct {Z X₁ X₂ : C} [HasBinaryC
 /-- If the coproduct of `X₁` and `X₂` is disjoint, then provided `X₁ ⟶ X ← X₂` is a coproduct the
 pullback is an initial object:
 
-        X₁
-        ↓
+```
+     X₁
+     ↓
 X₂ ⟶ X
+```
 -/
 noncomputable def isInitialOfPullbackOfIsCoproduct {X X₁ X₂ : C} [CoproductDisjoint X₁ X₂]
     {pX₁ : X₁ ⟶ X} {pX₂ : X₂ ⟶ X} [HasPullback pX₁ pX₂] (cX : IsColimit (BinaryCofan.mk pX₁ pX₂)) :

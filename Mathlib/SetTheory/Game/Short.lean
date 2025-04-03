@@ -201,13 +201,10 @@ instance ListShort.cons (hd : PGame.{u}) [short_hd : Short hd]
 #align pgame.list_short.cons SetTheory.PGame.ListShort.cons
 
 instance listShortGet :
-    ∀ (L : List PGame.{u}) [ListShort L] (i : Fin (List.length L)), Short (List.get L i)
-  | [], _, n => by
-    exfalso
-    rcases n with ⟨_, ⟨⟩⟩;
-  | _::_, ListShort.cons' S _, ⟨0, _⟩ => S
-  | hd::tl, ListShort.cons' _ S, ⟨n + 1, h⟩ =>
-    @listShortGet tl S ⟨n, (add_lt_add_iff_right 1).mp h⟩
+    ∀ (L : List PGame.{u}) [ListShort L] (i : Nat) (h : i < List.length L), Short L[i]
+  | _::_, ListShort.cons' S _, 0, _ => S
+  | _::tl, ListShort.cons' _ S, n + 1, h =>
+    @listShortGet tl S n ((add_lt_add_iff_right 1).mp h)
 #align pgame.list_short_nth_le SetTheory.PGame.listShortGet
 
 instance shortOfLists : ∀ (L R : List PGame) [ListShort L] [ListShort R], Short (PGame.ofLists L R)
@@ -235,7 +232,7 @@ instance shortNeg : ∀ (x : PGame.{u}) [Short x], Short (-x)
 
 instance shortAdd : ∀ (x y : PGame.{u}) [Short x] [Short y], Short (x + y)
   | mk xl xr xL xR, mk yl yr yL yR, _, _ => by
-    apply Short.mk;
+    apply Short.mk
     all_goals
       rintro ⟨i⟩
       · apply shortAdd
@@ -252,11 +249,11 @@ instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short (no_index (OfNat.ofNat 
 
 -- Porting note: `bit0` and `bit1` are deprecated so these instances can probably be removed.
 set_option linter.deprecated false in
-instance shortBit0 (x : PGame.{u}) [Short x] : Short (bit0 x) := by dsimp [bit0]; infer_instance
+instance shortBit0 (x : PGame.{u}) [Short x] : Short (x + x) := by infer_instance
 #align pgame.short_bit0 SetTheory.PGame.shortBit0
 
 set_option linter.deprecated false in
-instance shortBit1 (x : PGame.{u}) [Short x] : Short (bit1 x) := by dsimp [bit1]; infer_instance
+instance shortBit1 (x : PGame.{u}) [Short x] : Short ((x + x) + 1) := shortAdd _ _
 #align pgame.short_bit1 SetTheory.PGame.shortBit1
 
 /-- Auxiliary construction of decidability instances.
@@ -321,3 +318,5 @@ example : Decidable ((1 : PGame) ≤ 1) := by infer_instance
 -- example : (0 : PGame.{u}) ≤ 0 := by decide
 -- example : (1 : PGame.{u}) ≤ 1 := by decide
 end PGame
+
+end SetTheory

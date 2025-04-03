@@ -133,7 +133,7 @@ for the defining sum. -/
 
 lemma sinKernel_def (a x : ℝ) : ↑(sinKernel ↑a x) = jacobiTheta₂' a (I * x) / (-2 * π) := by
   rw [sinKernel, Function.Periodic.lift_coe, re_eq_add_conj, map_div₀, jacobiTheta₂'_conj]
-  simp_rw [map_mul, conj_I, conj_ofReal, map_neg, map_ofNat, neg_mul, neg_neg, half_add_self]
+  simp_rw [map_mul, conj_I, conj_ofReal, map_neg, map_ofNat, neg_mul, neg_neg, add_self_div_two]
 
 lemma sinKernel_undef (a : UnitAddCircle) {x : ℝ} (hx : x ≤ 0) : sinKernel a x = 0 := by
   induction' a using QuotientAddGroup.induction_on' with a'

@@ -869,7 +869,6 @@ noncomputable instance preservesLimitRestrictScalars
     (F : J ⥤ ModuleCat.{v} S) [Small.{v} (F ⋙ forget _).sections] :
     PreservesLimit F (restrictScalars f) :=
   ⟨fun {c} hc => by
-    have : Small.{v} ((F ⋙ restrictScalars f) ⋙ forget _).sections := by assumption
     have hc' := isLimitOfPreserves (forget₂ _ AddCommGrp) hc
     exact isLimitOfReflects (forget₂ _ AddCommGrp) hc'⟩
 
@@ -884,5 +883,7 @@ instance preservesColimitRestrictScalars {R S : Type*} [Ring R] [Ring S]
   apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGrp.{v})
   exact HasColimit.isColimitColimitCocone F
 
+
+end ModuleCat
 
 end ModuleCat

@@ -3,7 +3,7 @@ Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.RingTheory.Trace
+import Mathlib.RingTheory.Trace.Basic
 import Mathlib.FieldTheory.Finite.GaloisField
 
 #align_import field_theory.finite.trace from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"

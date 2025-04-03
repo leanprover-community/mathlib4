@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Christopher Hoskin
 -/
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Module.Hom
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Basic
 
 #align_import algebra.hom.centroid from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
 
@@ -43,6 +44,8 @@ be satisfied by itself and all stricter types.
 
 centroid
 -/
+
+assert_not_exists Field
 
 open Function
 
@@ -379,7 +382,6 @@ instance : AddCommMonoid (CentroidHom α) :=
 
 instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α)
 
--- Porting note: `nolint simpNF` added because simplify fails on left-hand side
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id α) :=
   rfl
@@ -457,7 +459,7 @@ instance applyModule : Module (CentroidHom α) α where
   add_smul _ _ _ := rfl
   zero_smul _ := rfl
   one_smul _ := rfl
-  mul_smul _ _ _:= rfl
+  mul_smul _ _ _ := rfl
   smul_zero := map_zero
   smul_add := map_add
 
@@ -511,17 +513,15 @@ lemma centroid_eq_centralizer_mulLeftRight :
 def centerToCentroid : NonUnitalSubsemiring.center α →ₙ+* CentroidHom α where
   toFun z :=
     { L (z : α) with
-      map_mul_left' := ((Set.mem_center_iff _).mp z.prop).left_comm
-      map_mul_right' := ((Set.mem_center_iff _).mp z.prop).left_assoc }
+      map_mul_left' := z.prop.left_comm
+      map_mul_right' := z.prop.left_assoc }
   map_zero' := by
     simp only [ZeroMemClass.coe_zero, map_zero]
     exact rfl
   map_add' := fun _ _ => by
     simp only [AddSubmonoid.coe_add, NonUnitalSubsemiring.coe_toAddSubmonoid, map_add]
     exact rfl
-  map_mul' := fun z₁ z₂ => by
-    ext a
-    exact (((Set.mem_center_iff _).mp z₁.prop).left_assoc z₂ a).symm
+  map_mul' z₁ z₂ := by ext a; exact (z₁.prop.left_assoc z₂ a).symm
 
 lemma centerToCentroid_apply (z : NonUnitalSubsemiring.center α) (a : α) :
     (centerToCentroid z) a = z * a := rfl
@@ -603,7 +603,6 @@ instance : Sub (CentroidHom α) :=
 
 instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α)
 
--- Porting note: `nolint simpNF` added because simplify fails on left-hand side
 @[simp, norm_cast]
 theorem coe_intCast (z : ℤ) : ⇑(z : CentroidHom α) = z • (CentroidHom.id α) :=
   rfl

@@ -3,7 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Set.Finite
+import Mathlib.Order.Interval.Finset.Defs
 import Mathlib.Order.Atoms
 
 #align_import order.atoms.finite from "leanprover-community/mathlib"@"d6fad0e5bf2d6f48da9175d25c3dc5706b3834ce"
@@ -90,3 +90,40 @@ instance (priority := 100) Finite.to_isAtomic [PartialOrder α] [OrderBot α] [F
 #align finite.to_is_atomic Finite.to_isAtomic
 
 end Fintype
+
+section LocallyFinite
+
+variable [Preorder α] [LocallyFiniteOrder α]
+
+instance : IsStronglyAtomic α where
+  exists_covBy_le_of_lt a b hab := by
+    obtain ⟨x, hxmem, hx⟩ := (LocallyFiniteOrder.finsetIoc a b).exists_minimal
+      ⟨b, by simpa [LocallyFiniteOrder.finset_mem_Ioc]⟩
+    simp only [LocallyFiniteOrder.finset_mem_Ioc, and_imp] at hxmem hx
+    exact ⟨x, ⟨hxmem.1, fun c hac hcx ↦ hx _ hac (hcx.le.trans hxmem.2) hcx⟩, hxmem.2⟩
+
+instance : IsStronglyCoatomic α := by
+  rw [← isStronglyAtomic_dual_iff_is_stronglyCoatomic]; infer_instance
+
+end LocallyFinite
+
+section IsStronglyAtomic
+
+variable [PartialOrder α] {a : α}
+
+theorem exists_covby_infinite_Ici_of_infinite_Ici [IsStronglyAtomic α]
+    (ha : (Set.Ici a).Infinite) (hfin : {x | a ⋖ x}.Finite) :
+    ∃ b, a ⋖ b ∧ (Set.Ici b).Infinite := by
+  by_contra! h
+  refine ((hfin.biUnion (t := Set.Ici) (by simpa using h)).subset (fun b hb ↦ ?_)).not_infinite
+    (ha.diff (Set.finite_singleton a))
+  obtain ⟨x, hax, hxb⟩ := ((show a ≤ b from hb.1).lt_of_ne (Ne.symm hb.2)).exists_covby_le
+  exact Set.mem_biUnion hax hxb
+
+theorem exists_covby_infinite_Iic_of_infinite_Iic [IsStronglyCoatomic α]
+    (ha : (Set.Iic a).Infinite) (hfin : {x | x ⋖ a}.Finite) :
+    ∃ b, b ⋖ a ∧ (Set.Iic b).Infinite := by
+  simp_rw [← toDual_covBy_toDual_iff (α := α)] at hfin ⊢
+  exact exists_covby_infinite_Ici_of_infinite_Ici (α := αᵒᵈ) ha hfin
+
+end IsStronglyAtomic

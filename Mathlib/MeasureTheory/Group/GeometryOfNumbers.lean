@@ -114,7 +114,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     erw [← Set.iInter_inter, K.iInter_smul_eq_self h_zero] at this
     · obtain ⟨x, hx⟩ := this
       exact ⟨⟨x, by aesop⟩, by aesop⟩
-    · exact (exists_seq_strictAnti_tendsto (0:ℝ≥0)).choose_spec.2.2
+    · exact (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.2
   have h_clos : IsClosed ((L : Set E) \ {0}) := by
     rsuffices ⟨U, hU⟩ : ∃ U : Set E, IsOpen U ∧  U ∩ L = {0}
     · rw [sdiff_eq_sdiff_iff_inf_eq_inf (z := U).mpr (by simp [Set.inter_comm .. ▸ hU.2, zero_mem])]
@@ -125,7 +125,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
   · refine Set.inter_subset_inter_left _ (SetLike.coe_subset_coe.mpr ?_)
     refine ConvexBody.smul_le_of_le K h_zero ?_
     rw [add_le_add_iff_left]
-    exact le_of_lt <| (exists_seq_strictAnti_tendsto (0:ℝ≥0)).choose_spec.1 (Nat.lt.base n)
+    exact le_of_lt <| (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.1 (Nat.lt.base n)
   · suffices μ F * 2 ^ finrank ℝ E < μ (S n : Set E) by
       have h_symm' : ∀ x ∈ S n, -x ∈ S n := by
         rintro _ ⟨y, hy, rfl⟩
@@ -139,6 +139,6 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     refine (mul_lt_mul_right h_mes (ne_of_lt h_cpt.measure_lt_top)).mpr ?_
     rw [ofReal_pow (NNReal.coe_nonneg _)]
     refine one_lt_pow ?_ (ne_of_gt finrank_pos)
-    simp [(exists_seq_strictAnti_tendsto (0:ℝ≥0)).choose_spec.2.1 n]
+    simp [(exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.1 n]
 
 end MeasureTheory

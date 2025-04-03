@@ -191,7 +191,8 @@ theorem mk_mul_mk [Add ι] [GMul A] {i j} (a : A i) (b : A j) :
 
 namespace GMonoid
 
-variable {A} [AddMonoid ι] [GMul A] [GOne A]
+variable {A}
+variable [AddMonoid ι] [GMul A] [GOne A]
 
 /-- A default implementation of power on a graded monoid, like `npowRec`.
 `GMonoid.gnpow` should be used instead. -/
@@ -237,7 +238,7 @@ class GMonoid [AddMonoid ι] extends GMul A, GOne A where
   /-- Successor powers behave as expected -/
   gnpow_succ' :
     ∀ (n : ℕ) (a : GradedMonoid A),
-      (GradedMonoid.mk _ <| gnpow n.succ a.snd) = ⟨_, gnpow n a.snd⟩ * a:= by
+      (GradedMonoid.mk _ <| gnpow n.succ a.snd) = ⟨_, gnpow n a.snd⟩ * a := by
     apply_gmonoid_gnpowRec_succ_tac
 #align graded_monoid.gmonoid GradedMonoid.GMonoid
 
@@ -336,7 +337,7 @@ section Monoid
 variable [AddMonoid ι] [GMonoid A]
 
 instance : NatPow (A 0) where
-  pow x n := @Eq.rec ι (n • (0:ι)) (fun a _ => A a) (GMonoid.gnpow n x) 0 (nsmul_zero n)
+  pow x n := @Eq.rec ι (n • (0 : ι)) (fun a _ => A a) (GMonoid.gnpow n x) 0 (nsmul_zero n)
 
 variable {A}
 

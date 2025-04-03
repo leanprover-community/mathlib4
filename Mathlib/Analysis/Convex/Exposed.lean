@@ -38,11 +38,7 @@ See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 
 ## TODO
 
-Define intrinsic frontier/interior and prove the lemmas related to exposed sets and points.
-
-Generalise to Locally Convex Topological Vector Spaces™
-
-More not-yet-PRed stuff is available on the branch `sperner_again`.
+Prove lemmas relating exposed sets and points to the intrinsic frontier.
 -/
 
 

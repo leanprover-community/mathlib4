@@ -203,7 +203,7 @@ theorem Finsupp.toMultiset_toFinsupp [DecidableEq α] (f : α →₀ ℕ) :
   Multiset.toFinsupp.apply_symm_apply _
 #align finsupp.to_multiset_to_finsupp Finsupp.toMultiset_toFinsupp
 
-theorem Finsupp.toMultiset_eq_iff [DecidableEq α] {f : α →₀ ℕ} {s : Multiset α}:
+theorem Finsupp.toMultiset_eq_iff [DecidableEq α] {f : α →₀ ℕ} {s : Multiset α} :
     Finsupp.toMultiset f = s ↔ f = Multiset.toFinsupp s :=
   Multiset.toFinsupp.symm_apply_eq
 

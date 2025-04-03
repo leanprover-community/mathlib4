@@ -460,7 +460,7 @@ theorem Submodule.bot_eq_top_of_rank_eq_zero [NoZeroSMulDivisors R M] (h : Modul
     (⊥ : Submodule R M) = ⊤ := by
   nontriviality R
   rw [rank_zero_iff] at h
-  exact Subsingleton.elim _ _
+  subsingleton
 #align bot_eq_top_of_rank_eq_zero Submodule.bot_eq_top_of_rank_eq_zero
 
 /-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed. -/
@@ -535,7 +535,7 @@ then the module has dimension one. -/
 theorem rank_eq_one (v : M) (n : v ≠ 0) (h : ∀ w : M, ∃ c : R, c • v = w) :
     Module.rank R M = 1 := by
   haveI := nontrivial_of_invariantBasisNumber R
-  obtain ⟨b⟩ := (Basis.basis_singleton_iff.{u} PUnit).mpr ⟨v, n, h⟩
+  obtain ⟨b⟩ := (Basis.basis_singleton_iff.{_, _, u} PUnit).mpr ⟨v, n, h⟩
   rw [rank_eq_card_basis b, Fintype.card_punit, Nat.cast_one]
 
 /-- If there is a nonzero vector and every other vector is a multiple of it,

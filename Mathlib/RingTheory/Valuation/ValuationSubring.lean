@@ -6,6 +6,7 @@ Authors: Adam Topaz, Junyan Xu, Jack McKoen
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
 import Mathlib.Algebra.Ring.Subring.Pointwise
+import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 
 #align_import ring_theory.valuation.valuation_subring from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
@@ -128,7 +129,7 @@ instance : ValuationRing A where
       ext
       field_simp
     · rw [show (a / b : K)⁻¹ = b / a by field_simp] at hh
-      use ⟨b / a, hh⟩;
+      use ⟨b / a, hh⟩
       left
       ext
       field_simp
@@ -351,13 +352,14 @@ theorem ofPrime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) :
   · intro hx; by_cases hr : x ∈ R; · exact R.le_ofPrime _ hr
     have : x ≠ 0 := fun h => hr (by rw [h]; exact R.zero_mem)
     replace hr := (R.mem_or_inv_mem x).resolve_left hr
-    -- Porting note: added `⟨⟩` brackets and reordered goals
-    use 1, ⟨x⁻¹, hr⟩; constructor
-    · field_simp
-    · change (⟨x⁻¹, h hr⟩ : S) ∉ nonunits S
-      rw [mem_nonunits_iff, Classical.not_not]
+    refine ⟨1, ⟨x⁻¹, hr⟩, ?_, ?_⟩
+    · simp only [Ideal.primeCompl, Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_compl_iff,
+        SetLike.mem_coe, idealOfLE, Ideal.mem_comap, LocalRing.mem_maximalIdeal, mem_nonunits_iff,
+        not_not]
+      change IsUnit (⟨x⁻¹, h hr⟩ : S)
       apply isUnit_of_mul_eq_one _ (⟨x, hx⟩ : S)
       ext; field_simp
+    · field_simp
 #align valuation_subring.of_prime_ideal_of_le ValuationSubring.ofPrime_idealOfLE
 
 theorem ofPrime_le_of_le (P Q : Ideal A) [P.IsPrime] [Q.IsPrime] (h : P ≤ Q) :
@@ -420,13 +422,8 @@ def valuationSubring : ValuationSubring K :=
   { v.integer with
     mem_or_inv_mem' := by
       intro x
-      rcases le_or_lt (v x) 1 with h | h
-      · left; exact h
-      · right; change v x⁻¹ ≤ 1
-        rw [map_inv₀ v, ← inv_one, inv_le_inv₀]
-        · exact le_of_lt h
-        · intro c; simp [c] at h
-        · exact one_ne_zero }
+      rcases val_le_one_or_val_inv_le_one v x with h | h
+      exacts [Or.inl h, Or.inr h] }
 #align valuation.valuation_subring Valuation.valuationSubring
 
 @[simp]

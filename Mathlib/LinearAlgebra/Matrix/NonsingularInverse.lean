@@ -5,7 +5,7 @@ Authors: Anne Baanen, Lu-Ming Zhang
 -/
 import Mathlib.Data.Matrix.Invertible
 import Mathlib.LinearAlgebra.Matrix.Adjugate
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 
 #align_import linear_algebra.matrix.nonsingular_inverse from "leanprover-community/mathlib"@"722b3b152ddd5e0cf21c0a29787c76596cb6b422"
 

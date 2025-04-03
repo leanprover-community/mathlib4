@@ -242,13 +242,13 @@ lemma finitelyAtomistic : ∀ s : Finset (LieIdeal R L), ↑s ⊆ {I : LieIdeal 
   -- and `J ⊓ K = ⊥` by the independence of the atoms.
   · apply (setIndependent_isAtom.disjoint_sSup (hs hJs) hs'S (Finset.not_mem_erase _ _)).le_bot
     apply LieSubmodule.lie_le_inf
-    apply LieSubmodule.lie_mem_lie _ _ j.2
+    apply LieSubmodule.lie_mem_lie j.2
     simpa only [K, Finset.sup_id_eq_sSup] using hz
   -- By similar reasoning, `j` brackets to `0` with `x = y + z ∈ I`, if we show `J ⊓ I = ⊥`.
   suffices J ⊓ I = ⊥ by
     apply this.le
     apply LieSubmodule.lie_le_inf
-    exact LieSubmodule.lie_mem_lie _ _ j.2 hx
+    exact LieSubmodule.lie_mem_lie j.2 hx
   -- Indeed `J ⊓ I = ⊥`, since `J` is an atom that is not contained in `I`.
   apply ((hs hJs).le_iff.mp _).resolve_right
   · contrapose! hJI

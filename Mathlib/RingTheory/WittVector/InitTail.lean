@@ -73,8 +73,8 @@ theorem coeff_select (x : 𝕎 R) (n : ℕ) :
     (select P x).coeff n = aeval x.coeff (selectPoly P n) := by
   dsimp [select, selectPoly]
   split_ifs with hi
-  · rw [aeval_X, mk]; simp only [hi]; rfl
-  · rw [AlgHom.map_zero, mk]; simp only [hi]; rfl
+  · rw [aeval_X, mk]; simp only [hi, if_true]
+  · rw [map_zero, mk]; simp only [hi, if_false]
 #align witt_vector.coeff_select WittVector.coeff_select
 
 -- Porting note: replaced `@[is_poly]` with `instance`. Made the argument `P` implicit in doing so.
@@ -98,9 +98,9 @@ theorem select_add_select_not : ∀ x : 𝕎 R, select P x + select (fun i => ¬
         (bind₁ (selectPoly fun i => ¬P i)) (wittPolynomial p ℤ n) =
       wittPolynomial p ℤ n by
     apply_fun aeval x.coeff at this
-    simpa only [AlgHom.map_add, aeval_bind₁, ← coeff_select]
-  simp only [wittPolynomial_eq_sum_C_mul_X_pow, selectPoly, AlgHom.map_sum, AlgHom.map_pow,
-    AlgHom.map_mul, bind₁_X_right, bind₁_C_right, ← Finset.sum_add_distrib, ← mul_add]
+    simpa only [map_add, aeval_bind₁, ← coeff_select]
+  simp only [wittPolynomial_eq_sum_C_mul_X_pow, selectPoly, map_sum, map_pow, map_mul,
+    bind₁_X_right, bind₁_C_right, ← Finset.sum_add_distrib, ← mul_add]
   apply Finset.sum_congr rfl
   refine fun m _ => mul_eq_mul_left_iff.mpr (Or.inl ?_)
   rw [ite_pow, zero_pow (pow_ne_zero _ hp.out.ne_zero)]

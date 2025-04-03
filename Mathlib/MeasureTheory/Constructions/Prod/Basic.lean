@@ -372,7 +372,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
     calc
       μ s * ν t ≤ μ s' * ν t := by gcongr
       _ = ∫⁻ _ in s', ν t ∂μ := by rw [setLIntegral_const, mul_comm]
-      _ ≤ ∫⁻ x in s', f x ∂μ := setLIntegral_mono measurable_const hfm fun x => id
+      _ ≤ ∫⁻ x in s', f x ∂μ := setLIntegral_mono hfm fun x => id
       _ ≤ ∫⁻ x, f x ∂μ := lintegral_mono' restrict_le_self le_rfl
       _ = μ.prod ν ST := (prod_apply hSTm).symm
       _ = μ.prod ν (s ×ˢ t) := measure_toMeasurable _
@@ -441,9 +441,7 @@ instance prod.instIsFiniteMeasureOnCompacts {α β : Type*} [TopologicalSpace α
     exact ⟨⟨y, hxy⟩, ⟨x, hxy⟩⟩
   apply lt_of_le_of_lt (measure_mono this)
   rw [hL, prod_prod]
-  exact
-    mul_lt_top (IsCompact.measure_lt_top (hK.image continuous_fst)).ne
-      (IsCompact.measure_lt_top (hK.image continuous_snd)).ne
+  exact mul_lt_top (hK.image continuous_fst).measure_ne_top (hK.image continuous_snd).measure_ne_top
 #align measure_theory.measure.prod.measure_theory.is_finite_measure_on_compacts MeasureTheory.Measure.prod.instIsFiniteMeasureOnCompacts
 
 instance {X Y : Type*}

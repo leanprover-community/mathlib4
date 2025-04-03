@@ -18,9 +18,13 @@ Define the interior and boundary of a manifold.
 - **boundary I M** is the **boundary** of `M`, the set of its boundary points.
 
 ## Main results
-- `univ_eq_interior_union_boundary`: `M` is the union of its interior and boundary
-- `interior_boundary_disjoint`: interior and boundary of `M` are disjoint
-- if `M` is boundaryless, every point is an interior point
+- `ModelWithCorners.univ_eq_interior_union_boundary`: `M` is the union of its interior and boundary
+- `ModelWithCorners.interior_boundary_disjoint`: interior and boundary of `M` are disjoint
+- `BoundarylessManifold.isInteriorPoint`: if `M` is boundaryless, every point is an interior point
+
+- `ModelWithCorners.interior_prod`: the interior of `M × N` is the product of the interiors
+of `M` and `N`.
+- `ModelWithCorners.boundary_prod`: the boundary of `M × N` is `∂M × N ∪ (M × ∂N)`.
 
 ## Tags
 manifold, interior, boundary
@@ -140,3 +144,54 @@ lemma Boundaryless.boundary_eq_empty : I.boundary M = ∅ := by
 
 end BoundarylessManifold
 end ModelWithCorners
+
+-- Interior and boundary of the product of two manifolds.
+section prod
+
+variable {I}
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  {H' : Type*} [TopologicalSpace H']
+  {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
+  (J : ModelWithCorners 𝕜 E' H') [SmoothManifoldWithCorners J N] {x : M} {y : N}
+
+/-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
+lemma ModelWithCorners.interior_prod :
+    (I.prod J).interior (M × N) = (I.interior M) ×ˢ (J.interior N) := by
+  ext p
+  have aux : (interior (range ↑I)) ×ˢ (interior (range J)) = interior (range (I.prod J)) := by
+    rw [← interior_prod_eq, ← Set.range_prod_map, modelWithCorners_prod_coe]
+  constructor <;> intro hp
+  · replace hp : (I.prod J).IsInteriorPoint p := hp
+    rw [ModelWithCorners.IsInteriorPoint, ← aux] at hp
+    exact hp
+  · obtain ⟨h₁, h₂⟩ := Set.mem_prod.mp hp
+    rw [ModelWithCorners.interior] at h₁ h₂
+    show (I.prod J).IsInteriorPoint p
+    rw [ModelWithCorners.IsInteriorPoint, ← aux]
+    apply mem_prod.mpr; constructor; exacts [h₁, h₂]
+
+/-- The boundary of `M × N` is `∂M × N ∪ (M × ∂N)`. -/
+lemma ModelWithCorners.boundary_prod :
+    (I.prod J).boundary (M × N) = Set.prod univ (J.boundary N) ∪ Set.prod (I.boundary M) univ := by
+  let h := calc (I.prod J).boundary (M × N)
+    _ = ((I.prod J).interior (M × N))ᶜ := (I.prod J).boundary_eq_complement_interior
+    _ = ((I.interior M) ×ˢ (J.interior N))ᶜ := by rw [ModelWithCorners.interior_prod]
+    _ = (I.interior M)ᶜ ×ˢ univ ∪ univ ×ˢ (J.interior N)ᶜ := by rw [compl_prod_eq_union]
+  rw [h, I.boundary_eq_complement_interior, J.boundary_eq_complement_interior, union_comm]
+  rfl
+
+/-- If `M` is boundaryless, `∂(M×N) = M × ∂N`. -/
+lemma boundary_of_boundaryless_left [I.Boundaryless] :
+    (I.prod J).boundary (M × N) = Set.prod (univ : Set M) (J.boundary N) := by
+  rw [ModelWithCorners.boundary_prod, ModelWithCorners.Boundaryless.boundary_eq_empty I]
+  have : Set.prod (∅ : Set M) (univ : Set N) = ∅ := Set.empty_prod
+  rw [this, union_empty]
+
+/-- If `N` is boundaryless, `∂(M×N) = ∂M × N`. -/
+lemma boundary_of_boundaryless_right [J.Boundaryless] :
+    (I.prod J).boundary (M × N) = Set.prod (I.boundary M) (univ : Set N) := by
+  rw [ModelWithCorners.boundary_prod, ModelWithCorners.Boundaryless.boundary_eq_empty J]
+  have : Set.prod (univ : Set M) (∅ : Set N) = ∅ := Set.prod_empty
+  rw [this, empty_union]
+
+end prod

@@ -476,6 +476,27 @@ def ringHomComp (χ : MulChar R R') (f : R' →+* R'') : MulChar R R'' :=
     map_nonunit' := fun a ha => by simp only [map_nonunit χ ha, map_zero] }
 #align mul_char.ring_hom_comp MulChar.ringHomComp
 
+@[simp]
+lemma ringHomComp_one (f : R' →+* R'') : (1 : MulChar R R').ringHomComp f = 1 := by
+  ext1
+  simp only [MulChar.ringHomComp_apply, MulChar.one_apply_coe, map_one]
+
+lemma ringHomComp_inv {R : Type*} [CommRing R] (χ : MulChar R R') (f : R' →+* R'') :
+    (χ.ringHomComp f)⁻¹ = χ⁻¹.ringHomComp f := by
+  ext1
+  simp only [inv_apply, Ring.inverse_unit, ringHomComp_apply]
+
+lemma ringHomComp_mul (χ φ : MulChar R R') (f : R' →+* R'') :
+    (χ * φ).ringHomComp f = χ.ringHomComp f * φ.ringHomComp f := by
+  ext1
+  simp only [ringHomComp_apply, coeToFun_mul, Pi.mul_apply, map_mul]
+
+lemma ringHomComp_pow (χ : MulChar R R') (f : R' →+* R'') (n : ℕ) :
+    χ.ringHomComp f ^ n = (χ ^ n).ringHomComp f := by
+  induction n
+  case zero => simp only [pow_zero, ringHomComp_one]
+  case succ n ih => simp only [pow_succ, ih, ringHomComp_mul]
+
 lemma injective_ringHomComp {f : R' →+* R''} (hf : Function.Injective f) :
     Function.Injective (ringHomComp (R := R) · f) := by
   simpa only [Function.Injective, ext_iff, ringHomComp, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
@@ -635,3 +656,5 @@ lemma val_neg_one_eq_one_of_odd_order {χ : MulChar R R'} {n : ℕ} (hn : Odd n)
   exact MulChar.one_apply_coe (-1)
 
 end Ring
+
+end MulChar

@@ -3,10 +3,10 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Devon Tuma, Oliver Nash
 -/
-import Mathlib.Algebra.Associated
+import Mathlib.Algebra.Associated.Basic
+import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Ring.Opposite
-import Mathlib.GroupTheory.GroupAction.Opposite
+import Mathlib.Algebra.GroupWithZero.Opposite
 
 #align_import ring_theory.non_zero_divisors from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
@@ -175,6 +175,7 @@ theorem nonZeroDivisors.ne_zero [Nontrivial M] {x} (hx : x ∈ M⁰) : x ≠ 0 :
   ne_of_mem_of_not_mem hx zero_not_mem_nonZeroDivisors
 #align non_zero_divisors.ne_zero nonZeroDivisors.ne_zero
 
+@[simp]
 theorem nonZeroDivisors.coe_ne_zero [Nontrivial M] (x : M⁰) : (x : M) ≠ 0 :=
   nonZeroDivisors.ne_zero x.2
 #align non_zero_divisors.coe_ne_zero nonZeroDivisors.coe_ne_zero

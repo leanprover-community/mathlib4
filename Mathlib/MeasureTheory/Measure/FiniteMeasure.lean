@@ -371,7 +371,7 @@ theorem zero_testAgainstNN_apply (f : Ω →ᵇ ℝ≥0) : (0 : FiniteMeasure Ω
 #align measure_theory.finite_measure.zero.test_against_nn_apply MeasureTheory.FiniteMeasure.zero_testAgainstNN_apply
 
 theorem zero_testAgainstNN : (0 : FiniteMeasure Ω).testAgainstNN = 0 := by
-  funext;
+  funext
   simp only [zero_testAgainstNN_apply, Pi.zero_apply]
 #align measure_theory.finite_measure.zero.test_against_nn MeasureTheory.FiniteMeasure.zero_testAgainstNN
 
@@ -417,7 +417,7 @@ theorem testAgainstNN_lipschitz_estimate (μ : FiniteMeasure Ω) (f g : Ω →�
     rw [add_le_add_iff_left]
     exact dist_le_coe.mp (le_dist ω)
   have le : (f ω : ℝ≥0∞) ≤ (g ω : ℝ≥0∞) + nndist f g := by
-    rw [← ENNReal.coe_add];
+    rw [← ENNReal.coe_add]
     exact ENNReal.coe_mono le'
   rwa [coe_nnreal_ennreal_nndist] at le
 #align measure_theory.finite_measure.test_against_nn_lipschitz_estimate MeasureTheory.FiniteMeasure.testAgainstNN_lipschitz_estimate

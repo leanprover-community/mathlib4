@@ -25,7 +25,7 @@ This file defines the matrix associated with a permutation
 
 -/
 
-open BigOperators Matrix Equiv
+open Equiv
 
 variable {n R : Type*} [DecidableEq n] [Fintype n] (σ : Perm n)
 

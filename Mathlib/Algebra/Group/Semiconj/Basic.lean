@@ -63,5 +63,9 @@ variable [Group G] {a x y : G}
 #align semiconj_by.zpow_right SemiconjBy.zpow_right
 #align add_semiconj_by.zsmul_right AddSemiconjBy.zsmul_right
 
+variable (a) in
+@[to_additive] lemma eq_one_iff (h : SemiconjBy a x y): x = 1 ↔ y = 1 := by
+  rw [← conj_eq_one_iff (a := a) (b := x), h.eq, mul_inv_cancel_right]
+
 end Group
 end SemiconjBy

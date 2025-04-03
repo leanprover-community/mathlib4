@@ -118,7 +118,7 @@ def lift [Algebra K F] (f : K[X]) [IsSplittingField K L f]
         rw [← (splits_iff L f).1 (show f.Splits (RingHom.id K) from hf0.symm ▸ splits_zero _)]
         exact Algebra.toTop
   else AlgHom.comp (by
-    rw [← adjoin_rootSet L f];
+    rw [← adjoin_rootSet L f]
     exact Classical.choice (lift_of_splits _ fun y hy =>
       have : aeval y f = 0 := (eval₂_eq_eval_map _).trans <|
         (mem_roots <| map_ne_zero hf0).1 (Multiset.mem_toFinset.mp hy)

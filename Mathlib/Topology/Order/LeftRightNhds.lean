@@ -439,3 +439,5 @@ lemma mem_nhdsWithin_Iio [NoMinOrder α] {S : Set α} (hS : OrdConnected S)
   nhdsWithin_mono _ Iio_subset_Iic_self <| hS.mem_nhdsWithin_Iic hx hy hxy
 
 end OrdConnected
+
+end Set
