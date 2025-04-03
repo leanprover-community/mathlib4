@@ -794,7 +794,7 @@ protected theorem IsPath.of_map {f : G →g G'} (hp : (p.map f).IsPath) : p.IsPa
     obtain ⟨hp1, hp2⟩ := hp
     refine ⟨ih hp1, ?_⟩
     contrapose! hp2
-    exact List.mem_map_of_mem hp2
+    exact List.mem_map_of_mem _ hp2
 
 theorem map_isPath_iff_of_injective (hinj : Function.Injective f) : (p.map f).IsPath ↔ p.IsPath :=
   ⟨IsPath.of_map, map_isPath_of_injective hinj⟩
@@ -1422,8 +1422,8 @@ theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
   constructor
   · rintro ⟨p⟩
     use p.map (.ofLE (by simp))
-    simp_rw [Walk.edges_map, List.mem_map, Hom.ofLE_apply, Sym2.map_id', id]
-    rintro ⟨e, h, rfl⟩
+    simp_rw [Walk.edges_map, Hom.coe_ofLE, Sym2.map_id, List.map_id_fun, id_eq] at *
+    intro h
     simpa using p.edges_subset_edgeSet h
   · rintro ⟨p, h⟩
     refine ⟨p.transfer _ fun e ep => ?_⟩
@@ -1512,7 +1512,7 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
   · exact ⟨(P.toDeleteEdges {s(x,y)} (by aesop)).reverse⟩
   have hyP := P.snd_mem_support_of_mem_edges heP
   let P₁ := P.takeUntil y hyP
-  have hxP₁ := Walk.endpoint_not_mem_support_takeUntil hP hyP hxy.ne
+  have hxP₁ := Walk.end_not_mem_support_takeUntil hP hyP hxy.ne
   have heP₁ : s(x,y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
   exact (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x,y)} (by aesop)⟩)
 
