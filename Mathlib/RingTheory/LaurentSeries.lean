@@ -488,10 +488,7 @@ theorem algebraMap_apply_div :
     rw [← mk_one, coe_def, coeAlgHom, mk_eq_div, liftAlgHom_apply_div, map_one, div_one,
       Algebra.ofId_apply]
 
-instance : IsScalarTower F[X] (RatFunc F) F⸨X⸩ :=
-  ⟨fun x y z => by
-    ext
-    simp⟩
+instance : IsScalarTower F[X] (RatFunc F) F⸨X⸩ := .of_algHom (coeAlgHom F)
 
 end RatFunc
 section AdicValuation

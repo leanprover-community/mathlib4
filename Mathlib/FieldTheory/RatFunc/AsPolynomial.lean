@@ -40,7 +40,7 @@ open RatFunc
 
 section Domain
 
-variable [CommRing K] [IsDomain K]
+variable [CommRing K]
 
 /-- `RatFunc.C a` is the constant rational function `a`. -/
 def C : K →+* RatFunc K := algebraMap _ _
