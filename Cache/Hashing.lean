@@ -102,7 +102,7 @@ def getRootHash : CacheM UInt64 := do
     mathlibDepPath / "lake-manifest.json"]
   let hashes ← rootFiles.mapM fun path =>
     hashFileContents <$> IO.FS.readFile path
-  return hash (hash Lean.githash :: hashes)
+  return hash (rootHashGeneration :: hash Lean.githash :: hashes)
 
 /--
 Computes the hash of a file, which mixes:
