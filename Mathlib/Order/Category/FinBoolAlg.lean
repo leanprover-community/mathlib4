@@ -126,7 +126,7 @@ def Iso.mk {α β : FinBoolAlg.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : FinBoolAlg ⥤ FinBoolAlg where
   obj X := of Xᵒᵈ
-  map {X Y} := BoundedLatticeHom.dual
+  map {_ _} := BoundedLatticeHom.dual
 
 /-- The equivalence between `FinBoolAlg` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]

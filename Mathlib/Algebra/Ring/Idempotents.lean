@@ -5,6 +5,7 @@ Authors: Christopher Hoskin
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commute.Defs
+import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
@@ -49,6 +50,10 @@ theorem mul_of_commute {p q : S} (h : Commute p q) (h₁ : IsIdempotentElem p)
     (h₂ : IsIdempotentElem q) : IsIdempotentElem (p * q) := by
   rw [IsIdempotentElem, mul_assoc, ← mul_assoc q, ← h.eq, mul_assoc p, h₂.eq, ← mul_assoc, h₁.eq]
 
+lemma mul {M} [CommSemigroup M] {e₁ e₂ : M}
+    (he₁ : IsIdempotentElem e₁) (he₂ : IsIdempotentElem e₂) : IsIdempotentElem (e₁ * e₂) :=
+  he₁.mul_of_commute (.all e₁ e₂) he₂
+
 theorem zero : IsIdempotentElem (0 : M₀) :=
   mul_zero _
 
@@ -82,6 +87,10 @@ theorem iff_eq_zero_or_one {p : G₀} : IsIdempotentElem p ↔ p = 0 ∨ p = 1 :
     Iff.intro (fun h => or_iff_not_imp_left.mpr fun hp => ?_) fun h =>
       h.elim (fun hp => hp.symm ▸ zero) fun hp => hp.symm ▸ one
   exact mul_left_cancel₀ hp (h.trans (mul_one p).symm)
+
+lemma map {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N] {e : M}
+    (he : IsIdempotentElem e) (f : F) : IsIdempotentElem (f e) := by
+  rw [IsIdempotentElem, ← map_mul, he.eq]
 
 /-! ### Instances on `Subtype IsIdempotentElem` -/
 

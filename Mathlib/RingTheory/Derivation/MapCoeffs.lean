@@ -22,7 +22,7 @@ open Polynomial Module
 namespace Derivation
 
 variable {R A M : Type*} [CommRing R] [CommRing A] [Algebra R A] [AddCommGroup M]
-  [Module A M] [Module R M] (d : Derivation R A M) (a : A)
+  [Module A M] [Module R M] (d : Derivation R A M)
 
 /--
 The `R`-derivation from `A[X]` to `M[X]` which applies the derivative to each

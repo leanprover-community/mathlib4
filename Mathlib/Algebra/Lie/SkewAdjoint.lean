@@ -126,10 +126,9 @@ def skewAdjointMatricesLieSubalgebraEquiv (P : Matrix n n R) (h : Invertible P) 
       exact this
     simp [Matrix.IsSkewAdjoint, J.isAdjointPair_equiv _ _ P (isUnit_of_invertible P)]
 
--- TODO(mathlib4#6607): fix elaboration so annotation on `A` isn't needed
 theorem skewAdjointMatricesLieSubalgebraEquiv_apply (P : Matrix n n R) (h : Invertible P)
     (A : skewAdjointMatricesLieSubalgebra J) :
-    ↑(skewAdjointMatricesLieSubalgebraEquiv J P h A) = P⁻¹ * (A : Matrix n n R) * P := by
+    ↑(skewAdjointMatricesLieSubalgebraEquiv J P h A) = P⁻¹ * A * P := by
   simp [skewAdjointMatricesLieSubalgebraEquiv]
 
 /-- An equivalence of matrix algebras commuting with the transpose endomorphisms restricts to an

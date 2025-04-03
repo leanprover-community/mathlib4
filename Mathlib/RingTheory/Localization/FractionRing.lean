@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Algebra.Field.Equiv
+import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.RingTheory.Localization.Basic
 
 /-!
 # Fraction ring / fraction field Frac(R) as localization
@@ -126,13 +128,13 @@ noncomputable abbrev toField : Field K where
   mul_inv_cancel := IsFractionRing.mul_inv_cancel A
   inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun a x => rfl
+  qsmul_def := fun _ _ => rfl
 
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where
   mp h := (RingEquiv.ofBijective (algebraMap R K)
-      ⟨IsFractionRing.injective R K, h⟩).toMulEquiv.isField (IsFractionRing.toField R).toIsField
+      ⟨IsFractionRing.injective R K, h⟩).toMulEquiv.isField _ (IsFractionRing.toField R).toIsField
   mpr h :=
     letI := h.toField
     (IsLocalization.atUnits R _ (S := K)
@@ -225,6 +227,81 @@ noncomputable def fieldEquivOfRingEquiv [Algebra B L] [IsFractionRing B L] (h : 
       erw [h.toEquiv.image_eq_preimage, Set.preimage, Set.mem_setOf_eq,
         mem_nonZeroDivisors_iff_ne_zero, mem_nonZeroDivisors_iff_ne_zero]
       exact h.symm.map_ne_zero_iff)
+
+@[simp]
+lemma fieldEquivOfRingEquiv_algebraMap [Algebra B L] [IsFractionRing B L] (h : A ≃+* B)
+    (a : A) : fieldEquivOfRingEquiv h (algebraMap A K a) = algebraMap B L (h a) := by
+  simp [fieldEquivOfRingEquiv]
+
+section fieldEquivOfAlgEquiv
+
+variable {A B C D : Type*}
+  [CommRing A] [CommRing B] [CommRing C] [CommRing D]
+  [IsDomain A] [IsDomain B] [IsDomain C] [IsDomain D]
+  [Algebra A B] [Algebra A C] [Algebra A D]
+  (FA FB FC FD : Type*) [Field FA] [Field FB] [Field FC] [Field FD]
+  [Algebra A FA] [Algebra B FB] [Algebra C FC] [Algebra D FD]
+  [IsFractionRing A FA] [IsFractionRing B FB] [IsFractionRing C FC] [IsFractionRing D FD]
+  [Algebra A FB] [IsScalarTower A B FB]
+  [Algebra A FC] [IsScalarTower A C FC]
+  [Algebra A FD] [IsScalarTower A D FD]
+  [Algebra FA FB] [IsScalarTower A FA FB]
+  [Algebra FA FC] [IsScalarTower A FA FC]
+  [Algebra FA FD] [IsScalarTower A FA FD]
+
+/-- An algebra isomorphism of rings induces an algebra isomorphism of fraction fields. -/
+noncomputable def fieldEquivOfAlgEquiv (f : B ≃ₐ[A] C) : FB ≃ₐ[FA] FC where
+  __ := IsFractionRing.fieldEquivOfRingEquiv f.toRingEquiv
+  commutes' x := by
+    obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := A) x
+    simp_rw [map_div₀, ← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B FB]
+    simp [← IsScalarTower.algebraMap_apply A C FC]
+
+/-- This says that `fieldEquivOfAlgEquiv f` is an extension of `f` (i.e., it agrees with `f` on
+`B`). Whereas `(fieldEquivOfAlgEquiv f).commutes` says that `fieldEquivOfAlgEquiv f` fixes `K`. -/
+@[simp]
+lemma fieldEquivOfAlgEquiv_algebraMap (f : B ≃ₐ[A] C) (b : B) :
+    fieldEquivOfAlgEquiv FA FB FC f (algebraMap B FB b) = algebraMap C FC (f b) :=
+  fieldEquivOfRingEquiv_algebraMap f.toRingEquiv b
+
+variable (A B) in
+@[simp]
+lemma fieldEquivOfAlgEquiv_refl :
+    fieldEquivOfAlgEquiv FA FB FB (AlgEquiv.refl : B ≃ₐ[A] B) = AlgEquiv.refl := by
+  ext x
+  obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := B) x
+  simp
+
+lemma fieldEquivOfAlgEquiv_trans (f : B ≃ₐ[A] C) (g : C ≃ₐ[A] D) :
+    fieldEquivOfAlgEquiv FA FB FD (f.trans g) =
+      (fieldEquivOfAlgEquiv FA FB FC f).trans (fieldEquivOfAlgEquiv FA FC FD g) := by
+  ext x
+  obtain ⟨x, y, -, rfl⟩ := IsFractionRing.div_surjective (A := B) x
+  simp
+
+end fieldEquivOfAlgEquiv
+
+section fieldEquivOfAlgEquivHom
+
+variable {A B : Type*} [CommRing A] [CommRing B] [IsDomain A] [IsDomain B] [Algebra A B]
+  (K L : Type*) [Field K] [Field L]
+  [Algebra A K] [Algebra B L] [IsFractionRing A K] [IsFractionRing B L]
+  [Algebra A L] [IsScalarTower A B L] [Algebra K L] [IsScalarTower A K L]
+
+/-- An algebra automorphism of a ring induces an algebra automorphism of its fraction field.
+
+This is a bundled version of `fieldEquivOfAlgEquiv`. -/
+noncomputable def fieldEquivOfAlgEquivHom : (B ≃ₐ[A] B) →* (L ≃ₐ[K] L) where
+  toFun := fieldEquivOfAlgEquiv K L L
+  map_one' := fieldEquivOfAlgEquiv_refl A B K L
+  map_mul' f g := fieldEquivOfAlgEquiv_trans K L L L g f
+
+@[simp]
+lemma fieldEquivOfAlgEquivHom_apply (f : B ≃ₐ[A] B) :
+    fieldEquivOfAlgEquivHom K L f = fieldEquivOfAlgEquiv K L L f :=
+  rfl
+
+end fieldEquivOfAlgEquivHom
 
 theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsFractionRing R S ↔

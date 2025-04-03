@@ -96,8 +96,8 @@ variable (X Y)
 def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
   toFun := Iso.hom
   invFun f := ⟨f, Groupoid.inv f, (by aesop_cat), (by aesop_cat)⟩
-  left_inv i := Iso.ext rfl
-  right_inv f := rfl
+  left_inv _ := Iso.ext rfl
+  right_inv _ := rfl
 
 variable (C)
 
@@ -105,7 +105,7 @@ variable (C)
 @[simps]
 noncomputable def Groupoid.invFunctor : C ⥤ Cᵒᵖ where
   obj := Opposite.op
-  map {X Y} f := (inv f).op
+  map {_ _} f := (inv f).op
 
 end
 

@@ -405,19 +405,19 @@ instance ULift.isometricSMul' : IsometricSMul M (ULift X) :=
 @[to_additive]
 instance {ι} {X : ι → Type*} [Fintype ι] [∀ i, SMul M (X i)] [∀ i, PseudoEMetricSpace (X i)]
     [∀ i, IsometricSMul M (X i)] : IsometricSMul M (∀ i, X i) :=
-  ⟨fun c => isometry_dcomp (fun _ => (c • ·)) fun i => isometry_smul (X i) c⟩
+  ⟨fun c => .piMap (fun _ => (c • ·)) fun i => isometry_smul (X i) c⟩
 
 @[to_additive]
 instance Pi.isometricSMul' {ι} {M X : ι → Type*} [Fintype ι] [∀ i, SMul (M i) (X i)]
     [∀ i, PseudoEMetricSpace (X i)] [∀ i, IsometricSMul (M i) (X i)] :
     IsometricSMul (∀ i, M i) (∀ i, X i) :=
-  ⟨fun c => isometry_dcomp (fun i => (c i • ·)) fun _ => isometry_smul _ _⟩
+  ⟨fun c => .piMap (fun i => (c i • ·)) fun _ => isometry_smul _ _⟩
 
 @[to_additive]
 instance Pi.isometricSMul'' {ι} {M : ι → Type*} [Fintype ι] [∀ i, Mul (M i)]
     [∀ i, PseudoEMetricSpace (M i)] [∀ i, IsometricSMul (M i)ᵐᵒᵖ (M i)] :
     IsometricSMul (∀ i, M i)ᵐᵒᵖ (∀ i, M i) :=
-  ⟨fun c => isometry_dcomp (fun i (x : M i) => x * c.unop i) fun _ => isometry_mul_right _⟩
+  ⟨fun c => .piMap (fun i (x : M i) => x * c.unop i) fun _ => isometry_mul_right _⟩
 
 instance Additive.isometricVAdd : IsometricVAdd (Additive M) X :=
   ⟨fun c => isometry_smul X (toMul c)⟩

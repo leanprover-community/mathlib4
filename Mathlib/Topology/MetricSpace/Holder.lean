@@ -239,7 +239,7 @@ end PseudoMetric
 
 section Metric
 
-variable [PseudoMetricSpace X] [MetricSpace Y] {C r : ℝ≥0} {f : X → Y}
+variable [PseudoMetricSpace X] [MetricSpace Y] {r : ℝ≥0} {f : X → Y}
 
 @[simp]
 lemma holderWith_zero_iff : HolderWith 0 r f ↔ ∀ x₁ x₂, f x₁ = f x₂ := by

@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.Dimension.RankNullity
 /-!
 # Dimension of vector spaces
 
-In this file we provide results about `Module.rank` and `FiniteDimensional.finrank` of vector spaces
+In this file we provide results about `Module.rank` and `Module.finrank` of vector spaces
 over division rings.
 
 ## Main statements
@@ -112,7 +112,7 @@ end Module
 
 section Basis
 
-open FiniteDimensional
+open Module
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
 

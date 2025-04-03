@@ -29,7 +29,7 @@ variable (f g : C ⟶ D) (h k : D ⟶ E) (i : ι)
 namespace HomologicalComplex
 
 instance : Zero (C ⟶ D) :=
-  ⟨{ f := fun i => 0 }⟩
+  ⟨{ f := fun _ => 0 }⟩
 
 instance : Add (C ⟶ D) :=
   ⟨fun f g => { f := fun i => f.f i + g.f i }⟩
@@ -133,7 +133,7 @@ isomorphic to the identity functor. -/
 @[simps!]
 def Functor.mapHomologicalComplexIdIso (c : ComplexShape ι) :
     (𝟭 W₁).mapHomologicalComplex c ≅ 𝟭 _ :=
-  NatIso.ofComponents fun K => Hom.isoOfComponents fun i => Iso.refl _
+  NatIso.ofComponents fun K => Hom.isoOfComponents fun _ => Iso.refl _
 
 instance Functor.mapHomologicalComplex_reflects_iso (F : W₁ ⥤ W₂) [F.PreservesZeroMorphisms]
     [ReflectsIsomorphisms F] (c : ComplexShape ι) :
@@ -155,7 +155,7 @@ between those functors applied to homological complexes.
 def NatTrans.mapHomologicalComplex {F G : W₁ ⥤ W₂}
     [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] (α : F ⟶ G)
     (c : ComplexShape ι) : F.mapHomologicalComplex c ⟶ G.mapHomologicalComplex c where
-  app C := { f := fun i => α.app _ }
+  app C := { f := fun _ => α.app _ }
 
 @[simp]
 theorem NatTrans.mapHomologicalComplex_id

@@ -23,7 +23,7 @@ variable {G H : Type*}
 
 section AddCommMonoid
 variable [AddCommMonoid G] [AddCommMonoid H] {A B : Set (G × G)} {s : Set G} {t : Set H} {f : G → H}
-  {a b c x₁ y₁ x₂ y₂ : G}
+  {x₁ y₁ x₂ y₂ : G}
 
 /-- A **corner** of a set `A` in an abelian group is a triple of points of the form
 `(x, y), (x + d, y), (x, y + d)`. It is **nontrivial** if `d ≠ 0`.

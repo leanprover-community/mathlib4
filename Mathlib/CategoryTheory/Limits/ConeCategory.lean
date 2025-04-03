@@ -145,12 +145,12 @@ def Cone.equivCostructuredArrow (F : J ⥤ C) : Cone F ≌ CostructuredArrow (co
   functor := Cone.toCostructuredArrow F
   inverse := Cone.fromCostructuredArrow F
   unitIso := NatIso.ofComponents Cones.eta
-  counitIso := NatIso.ofComponents fun c => (CostructuredArrow.eta _).symm
+  counitIso := NatIso.ofComponents fun _ => (CostructuredArrow.eta _).symm
 
 /-- A cone is a limit cone iff it is terminal. -/
 def Cone.isLimitEquivIsTerminal {F : J ⥤ C} (c : Cone F) : IsLimit c ≃ IsTerminal c :=
   IsLimit.isoUniqueConeMorphism.toEquiv.trans
-    { toFun := fun h => IsTerminal.ofUnique _
+    { toFun := fun _ => IsTerminal.ofUnique _
       invFun := fun h s => ⟨⟨IsTerminal.from h s⟩, fun a => IsTerminal.hom_ext h a _⟩
       left_inv := by aesop_cat
       right_inv := by aesop_cat }
@@ -304,12 +304,12 @@ def Cocone.equivStructuredArrow (F : J ⥤ C) : Cocone F ≌ StructuredArrow F (
   functor := Cocone.toStructuredArrow F
   inverse := Cocone.fromStructuredArrow F
   unitIso := NatIso.ofComponents Cocones.eta
-  counitIso := NatIso.ofComponents fun c => (StructuredArrow.eta _).symm
+  counitIso := NatIso.ofComponents fun _ => (StructuredArrow.eta _).symm
 
 /-- A cocone is a colimit cocone iff it is initial. -/
 def Cocone.isColimitEquivIsInitial {F : J ⥤ C} (c : Cocone F) : IsColimit c ≃ IsInitial c :=
   IsColimit.isoUniqueCoconeMorphism.toEquiv.trans
-    { toFun := fun h => IsInitial.ofUnique _
+    { toFun := fun _ => IsInitial.ofUnique _
       invFun := fun h s => ⟨⟨IsInitial.to h s⟩, fun a => IsInitial.hom_ext h a _⟩
       left_inv := by aesop_cat
       right_inv := by aesop_cat }

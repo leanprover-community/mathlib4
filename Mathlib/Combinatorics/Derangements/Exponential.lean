@@ -5,7 +5,7 @@ Authors: Henry Swanson, Patrick Massot
 -/
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Combinatorics.Derangements.Finite
-import Mathlib.Order.Filter.Basic
+import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Derangement exponential series

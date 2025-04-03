@@ -12,19 +12,18 @@ import Mathlib.RingTheory.SimpleModule
 
 We prove **Maschke's theorem** for finite groups,
 in the formulation that every submodule of a `k[G]` module has a complement,
-when `k` is a field with `Invertible (Fintype.card G : k)`.
+when `k` is a field with `Fintype.card G` invertible in `k`.
 
 We do the core computation in greater generality.
-For any `[CommRing k]` in which `[Invertible (Fintype.card G : k)]`,
+For any commutative ring `k` in which `Fintype.card G` is invertible,
 and a `k[G]`-linear map `i : V → W` which admits a `k`-linear retraction `π`,
 we produce a `k[G]`-linear retraction by
 taking the average over `G` of the conjugates of `π`.
 
 ## Implementation Notes
-* These results assume `Invertible (Fintype.card G : k)` which is equivalent to the more
-familiar `¬(ringChar k ∣ Fintype.card G)`. It is possible to convert between them using
-`invertibleOfRingCharNotDvd` and `not_ringChar_dvd_of_invertible`.
 
+* These results assume `IsUnit (Fintype.card G : k)` which is equivalent to the more
+  familiar `¬(ringChar k ∣ Fintype.card G)`.
 
 ## Future work
 It's not so far to give the usual statement, that every finite dimensional representation
@@ -55,7 +54,7 @@ namespace LinearMap
 
 
 -- At first we work with any `[CommRing k]`, and add the assumption that
--- `[Invertible (Fintype.card G : k)]` when it is required.
+-- `IsUnit (Fintype.card G : k)` when it is required.
 variable {k : Type u} [CommRing k] {G : Type u} [Group G]
 variable {V : Type v} [AddCommGroup V] [Module k V] [Module (MonoidAlgebra k G) V]
 variable [IsScalarTower k (MonoidAlgebra k G) V]
@@ -65,7 +64,7 @@ variable (π : W →ₗ[k] V)
 
 /-- We define the conjugate of `π` by `g`, as a `k`-linear map. -/
 def conjugate (g : G) : W →ₗ[k] V :=
-  .comp (.comp (GroupSMul.linearMap k V g⁻¹) π) (GroupSMul.linearMap k W g)
+  GroupSMul.linearMap k V g⁻¹ ∘ₗ π ∘ₗ GroupSMul.linearMap k W g
 
 theorem conjugate_apply (g : G) (v : W) :
     π.conjugate g v = MonoidAlgebra.single g⁻¹ (1 : k) • π (MonoidAlgebra.single g (1 : k) • v) :=
@@ -75,7 +74,7 @@ variable (i : V →ₗ[MonoidAlgebra k G] W)
 
 section
 
-theorem conjugate_i (h : ∀ v : V, (π : W → V) (i v) = v) (g : G) (v : V) :
+theorem conjugate_i (h : ∀ v : V, π (i v) = v) (g : G) (v : V) :
     (conjugate π g : W → V) (i v) = v := by
   rw [conjugate_apply, ← i.map_smul, h, ← mul_smul, single_mul_single, mul_one, inv_mul_cancel,
     ← one_def, one_smul]
@@ -108,24 +107,22 @@ theorem sumOfConjugatesEquivariant_apply (v : W) :
 
 section
 
-variable [Invertible (Fintype.card G : k)]
-
 /-- We construct our `k[G]`-linear retraction of `i` as
 $$ \frac{1}{|G|} \sum_{g \in G} g⁻¹ • π(g • -). $$
 -/
 def equivariantProjection : W →ₗ[MonoidAlgebra k G] V :=
-  ⅟(Fintype.card G : k) • π.sumOfConjugatesEquivariant G
+  Ring.inverse (Fintype.card G : k) • π.sumOfConjugatesEquivariant G
 
 theorem equivariantProjection_apply (v : W) :
-    π.equivariantProjection G v = ⅟(Fintype.card G : k) • ∑ g : G, π.conjugate g v := by
+    π.equivariantProjection G v = Ring.inverse (Fintype.card G : k) • ∑ g : G, π.conjugate g v := by
   simp only [equivariantProjection, smul_apply, sumOfConjugatesEquivariant_apply]
 
-theorem equivariantProjection_condition (h : ∀ v : V, (π : W → V) (i v) = v) (v : V) :
-    (π.equivariantProjection G) (i v) = v := by
+theorem equivariantProjection_condition (hcard : IsUnit (Fintype.card G : k))
+    (h : ∀ v : V, π (i v) = v) (v : V) : (π.equivariantProjection G) (i v) = v := by
   rw [equivariantProjection_apply]
   simp only [conjugate_i π i h]
   rw [Finset.sum_const, Finset.card_univ, ← Nat.cast_smul_eq_nsmul k, smul_smul,
-    Invertible.invOf_mul_self, one_smul]
+    Ring.inverse_mul_cancel _ hcard, one_smul]
 
 end
 
@@ -136,13 +133,13 @@ end
 namespace MonoidAlgebra
 
 -- Now we work over a `[Field k]`.
-variable {k : Type u} [Field k] {G : Type u} [Fintype G] [Invertible (Fintype.card G : k)]
+variable {k : Type u} [Field k] {G : Type u} [Fintype G] [NeZero (Fintype.card G : k)]
 variable [Group G]
 variable {V : Type u} [AddCommGroup V] [Module (MonoidAlgebra k G) V]
 variable {W : Type u} [AddCommGroup W] [Module (MonoidAlgebra k G) W]
 
-theorem exists_leftInverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W)
-    (hf : LinearMap.ker f = ⊥) :
+theorem exists_leftInverse_of_injective
+    (f : V →ₗ[MonoidAlgebra k G] W) (hf : LinearMap.ker f = ⊥) :
     ∃ g : W →ₗ[MonoidAlgebra k G] V, g.comp f = LinearMap.id := by
   let A := MonoidAlgebra k G
   letI : Module k W := .compHom W (algebraMap k A)
@@ -152,7 +149,7 @@ theorem exists_leftInverse_of_injective (f : V →ₗ[MonoidAlgebra k G] W)
   obtain ⟨φ, hφ⟩ := (f.restrictScalars k).exists_leftInverse_of_injective <| by
     simp only [hf, Submodule.restrictScalars_bot, LinearMap.ker_restrictScalars]
   refine ⟨φ.equivariantProjection G, DFunLike.ext _ _ ?_⟩
-  exact φ.equivariantProjection_condition G _ <| DFunLike.congr_fun hφ
+  exact φ.equivariantProjection_condition G _ (.mk0 _ <| NeZero.ne _) <| DFunLike.congr_fun hφ
 
 namespace Submodule
 
@@ -167,7 +164,7 @@ instance complementedLattice : ComplementedLattice (Submodule (MonoidAlgebra k G
   ⟨exists_isCompl⟩
 
 instance [AddGroup G] : IsSemisimpleRing (AddMonoidAlgebra k G) :=
-  letI : Invertible (Fintype.card (Multiplicative G) : k) := by
+  haveI : NeZero (Fintype.card (Multiplicative G) : k) := by
     rwa [Fintype.card_congr Multiplicative.toAdd]
   (AddMonoidAlgebra.toMultiplicativeAlgEquiv k G (R := ℕ)).toRingEquiv.symm.isSemisimpleRing
 

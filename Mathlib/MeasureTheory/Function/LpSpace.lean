@@ -254,7 +254,7 @@ theorem nnnorm_coe_ennreal (f : Lp E p μ) : (‖f‖₊ : ℝ≥0∞) = eLpNorm
 
 @[simp]
 lemma norm_toLp (f : α → E) (hf : Memℒp f p μ) : ‖hf.toLp f‖ = ENNReal.toReal (eLpNorm f p μ) := by
-  erw [norm_def, eLpNorm_congr_ae (Memℒp.coeFn_toLp hf)]
+  rw [norm_def, eLpNorm_congr_ae (Memℒp.coeFn_toLp hf)]
 
 @[simp]
 theorem nnnorm_toLp (f : α → E) (hf : Memℒp f p μ) :
@@ -406,7 +406,7 @@ instance instNormedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (Lp E
           simp only [Lp.nnnorm_coe_ennreal]
           exact (eLpNorm_congr_ae (AEEqFun.coeFn_add _ _)).trans_le
             (eLpNorm_add_le (Lp.aestronglyMeasurable _) (Lp.aestronglyMeasurable _) hp.out)
-        eq_zero_of_map_eq_zero' := fun f =>
+        eq_zero_of_map_eq_zero' := fun _ =>
           (norm_eq_zero_iff <| zero_lt_one.trans_le hp.1).1 } with
     edist := edist
     edist_dist := Lp.edist_dist }
@@ -616,7 +616,7 @@ theorem eLpNorm_indicator_eq_eLpNorm_restrict {f : α → F} (hs : MeasurableSet
   simp_rw [eLpNorm_eq_lintegral_rpow_nnnorm hp_zero hp_top]
   suffices (∫⁻ x, (‖s.indicator f x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) =
       ∫⁻ x in s, (‖f x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ by rw [this]
-  rw [← lintegral_indicator _ hs]
+  rw [← lintegral_indicator hs]
   congr
   simp_rw [nnnorm_indicator_eq_indicator_nnnorm, ENNReal.coe_indicator]
   have h_zero : (fun x => x ^ p.toReal) (0 : ℝ≥0∞) = 0 := by
@@ -857,7 +857,7 @@ theorem memℒp_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (supp
 
 /-- The indicator of a disjoint union of two sets is the sum of the indicators of the sets. -/
 theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
-    (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (hst : s ∩ t = ∅) (c : E) :
+    (hμs : μ s ≠ ∞) (hμt : μ t ≠ ∞) (hst : Disjoint s t) (c : E) :
     indicatorConstLp p (hs.union ht) (measure_union_ne_top hμs hμt) c =
       indicatorConstLp p hs hμs c + indicatorConstLp p ht hμt c := by
   ext1
@@ -865,7 +865,7 @@ theorem indicatorConstLp_disjoint_union {s t : Set α} (hs : MeasurableSet s) (h
   refine
     EventuallyEq.trans ?_
       (EventuallyEq.add indicatorConstLp_coeFn.symm indicatorConstLp_coeFn.symm)
-  rw [Set.indicator_union_of_disjoint (Set.disjoint_iff_inter_eq_empty.mpr hst) _]
+  rw [Set.indicator_union_of_disjoint hst]
 
 end IndicatorConstLp
 
@@ -1064,7 +1064,7 @@ theorem MeasureTheory.Memℒp.of_comp_antilipschitzWith {α E F} {K'} [Measurabl
     rw [← dist_zero_right, ← dist_zero_right, ← g0]
     apply hg'.le_mul_dist
   have B : AEStronglyMeasurable f μ :=
-    (hg'.uniformEmbedding hg).embedding.aestronglyMeasurable_comp_iff.1 hL.1
+    (hg'.isUniformEmbedding hg).isEmbedding.aestronglyMeasurable_comp_iff.1 hL.1
   exact hL.of_le_mul B (Filter.Eventually.of_forall A)
 
 namespace LipschitzWith
@@ -1435,8 +1435,8 @@ theorem cauchySeq_Lp_iff_cauchySeq_ℒp {ι} [Nonempty ι] [SemilatticeSup ι] [
 
 theorem completeSpace_lp_of_cauchy_complete_ℒp [hp : Fact (1 ≤ p)]
     (H :
-      ∀ (f : ℕ → α → E) (hf : ∀ n, Memℒp (f n) p μ) (B : ℕ → ℝ≥0∞) (hB : ∑' i, B i < ∞)
-        (h_cau : ∀ N n m : ℕ, N ≤ n → N ≤ m → eLpNorm (f n - f m) p μ < B N),
+      ∀ (f : ℕ → α → E) (_ : ∀ n, Memℒp (f n) p μ) (B : ℕ → ℝ≥0∞) (_ : ∑' i, B i < ∞)
+        (_ : ∀ N n m : ℕ, N ≤ n → N ≤ m → eLpNorm (f n - f m) p μ < B N),
         ∃ (f_lim : α → E), Memℒp f_lim p μ ∧
           atTop.Tendsto (fun n => eLpNorm (f n - f_lim) p μ) (𝓝 0)) :
     CompleteSpace (Lp E p μ) := by

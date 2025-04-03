@@ -256,7 +256,7 @@ end Continuity
 
 section tsum
 
-variable [Semiring α] [AddCommMonoid R] [TopologicalSpace R] [Module α R]
+variable [AddCommMonoid R] [TopologicalSpace R]
 
 theorem HasSum.matrix_transpose {f : X → Matrix m n R} {a : Matrix m n R} (hf : HasSum f a) :
     HasSum (fun x => (f x)ᵀ) aᵀ :=

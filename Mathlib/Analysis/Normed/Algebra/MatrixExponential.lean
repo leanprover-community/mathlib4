@@ -64,7 +64,7 @@ open scoped Matrix
 
 open NormedSpace -- For `exp`.
 
-variable (𝕂 : Type*) {m n p : Type*} {n' : m → Type*} {𝔸 : Type*}
+variable (𝕂 : Type*) {m n : Type*} {n' : m → Type*} {𝔸 : Type*}
 
 namespace Matrix
 
@@ -114,8 +114,8 @@ end Topological
 
 section Normed
 
-variable [RCLike 𝕂] [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype (n' i)]
-  [∀ i, DecidableEq (n' i)] [NormedRing 𝔸] [Algebra ℚ 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
+  [NormedRing 𝔸] [Algebra ℚ 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
     exp (A + B) = exp A * exp B := by
@@ -127,7 +127,7 @@ nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
 nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
     (h : (s : Set ι).Pairwise fun i j => Commute (f i) (f j)) :
     exp (∑ i ∈ s, f i) =
-      s.noncommProd (fun i => exp (f i)) fun i hi j hj _ => (h.of_refl hi hj).exp := by
+      s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
@@ -145,25 +145,23 @@ nonrec theorem isUnit_exp (A : Matrix m m 𝔸) : IsUnit (exp A) := by
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact isUnit_exp 𝕂 A
 
--- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
 nonrec theorem exp_units_conj (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
-    exp (U.val * A * (U⁻¹).val) = U.val * exp A * (U⁻¹).val := by
+    exp (U * A * U⁻¹) = U * exp A * U⁻¹ := by
   letI : SeminormedRing (Matrix m m 𝔸) := Matrix.linftyOpSemiNormedRing
   letI : NormedRing (Matrix m m 𝔸) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact exp_units_conj 𝕂 U A
 
--- TODO(mathlib4#6607): fix elaboration so `val` isn't needed
 theorem exp_units_conj' (U : (Matrix m m 𝔸)ˣ) (A : Matrix m m 𝔸) :
-    exp ((U⁻¹).val * A * U.val) = (U⁻¹).val * exp A * U.val :=
+    exp (U⁻¹ * A * U) = U⁻¹ * exp A * U :=
   exp_units_conj 𝕂 U⁻¹ A
 
 end Normed
 
 section NormedComm
 
-variable [RCLike 𝕂] [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype (n' i)]
-  [∀ i, DecidableEq (n' i)] [NormedCommRing 𝔸] [Algebra ℚ 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable [RCLike 𝕂] [Fintype m] [DecidableEq m]
+  [NormedCommRing 𝔸] [Algebra ℚ 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 theorem exp_neg (A : Matrix m m 𝔸) : exp (-A) = (exp A)⁻¹ := by
   rw [nonsing_inv_eq_ring_inverse]

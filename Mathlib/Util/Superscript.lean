@@ -95,7 +95,8 @@ partial def satisfyTokensFn (p : Char → Bool) (errorMsg : String) (many := tru
 variable {α : Type u} [Inhabited α] (as : Array α) (leftOfPartition : α → Bool) in
 /-- Given a predicate `leftOfPartition` which is true for indexes `< i` and false for `≥ i`,
 returns `i`, by binary search. -/
-@[specialize] partial def partitionPoint (lo := 0) (hi := as.size) : Nat :=
+@[specialize]
+def partitionPoint (lo := 0) (hi := as.size) : Nat :=
   if lo < hi then
     let m := (lo + hi)/2
     let a := as.get! m
@@ -104,6 +105,7 @@ returns `i`, by binary search. -/
     else
       partitionPoint lo m
   else lo
+  termination_by hi - lo
 
 /-- The core function for super/subscript parsing. It consists of three stages:
 

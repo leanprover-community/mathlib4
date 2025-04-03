@@ -274,7 +274,7 @@ lemma coverMincard_eq_zero_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n :
     coverMincard T F U n = 0 ↔ F = ∅ := by
   refine Iff.intro (fun h ↦ subset_empty_iff.1 ?_) (fun F_empt ↦ by rw [F_empt, coverMincard_empty])
   have := coverMincard_finite_iff T F U n
-  rw [h, eq_true ENat.zero_lt_top, true_iff] at this
+  rw [h, eq_true ENat.top_pos, true_iff] at this
   simp only [IsDynCoverOf, Finset.mem_coe, Nat.cast_eq_zero, Finset.card_eq_zero, exists_eq_right,
     Finset.not_mem_empty, iUnion_of_empty, iUnion_empty] at this
   exact this

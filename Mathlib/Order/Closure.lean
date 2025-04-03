@@ -202,7 +202,7 @@ theorem ext_isClosed (c₁ c₂ : ClosureOperator α)
 /-- A closure operator is equal to the closure operator obtained by feeding `c.closed` into the
 `ofPred` constructor. -/
 theorem eq_ofPred_closed (c : ClosureOperator α) :
-    c = ofPred c c.IsClosed c.le_closure c.isClosed_closure fun x y ↦ closure_min := by
+    c = ofPred c c.IsClosed c.le_closure c.isClosed_closure fun _ _ ↦ closure_min := by
   ext
   rfl
 
@@ -248,15 +248,15 @@ end SemilatticeSup
 
 section CompleteLattice
 
-variable [CompleteLattice α] (c : ClosureOperator α) {p : α → Prop}
+variable [CompleteLattice α] (c : ClosureOperator α)
 
 /-- Define a closure operator from a predicate that's preserved under infima. -/
 @[simps!]
 def ofCompletePred (p : α → Prop) (hsinf : ∀ s, (∀ a ∈ s, p a) → p (sInf s)) : ClosureOperator α :=
   ofPred (fun a ↦ ⨅ b : {b // a ≤ b ∧ p b}, b) p
-    (fun a ↦ by set_option tactic.skipAssignedInstances false in simp [forall_swap])
-    (fun a ↦ hsinf _ <| forall_mem_range.2 fun b ↦ b.2.2)
-    (fun a b hab hb ↦ iInf_le_of_le ⟨b, hab, hb⟩ le_rfl)
+    (fun a ↦ by simp [forall_swap])
+    (fun _ ↦ hsinf _ <| forall_mem_range.2 fun b ↦ b.2.2)
+    (fun _ b hab hb ↦ iInf_le_of_le ⟨b, hab, hb⟩ le_rfl)
 
 theorem sInf_isClosed {c : ClosureOperator α} {S : Set α}
     (H : ∀ x ∈ S, c.IsClosed x) : c.IsClosed (sInf S) :=

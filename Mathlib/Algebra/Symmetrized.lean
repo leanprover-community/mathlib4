@@ -95,11 +95,9 @@ theorem unsym_injective : Injective (unsym : αˢʸᵐ → α) :=
 theorem unsym_surjective : Surjective (unsym : αˢʸᵐ → α) :=
   unsym.surjective
 
--- Porting note (#10618): @[simp] can prove this
 theorem sym_inj {a b : α} : sym a = sym b ↔ a = b :=
   sym_injective.eq_iff
 
--- Porting note (#10618): @[simp] can prove this
 theorem unsym_inj {a b : αˢʸᵐ} : unsym a = unsym b ↔ a = b :=
   unsym_injective.eq_iff
 

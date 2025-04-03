@@ -111,7 +111,7 @@ private theorem comp_gen : (((𝓤 α).lift' gen).lift' fun s => compRel s s) �
       · exact monotone_gen
       · exact monotone_id.compRel monotone_id
     _ ≤ (𝓤 α).lift' fun s => gen <| compRel s s :=
-      lift'_mono' fun s _hs => compRel_gen_gen_subset_gen_compRel
+      lift'_mono' fun _ _hs => compRel_gen_gen_subset_gen_compRel
     _ = ((𝓤 α).lift' fun s : Set (α × α) => compRel s s).lift' gen := by
       rw [lift'_lift'_assoc]
       · exact monotone_id.compRel monotone_id
@@ -143,7 +143,7 @@ theorem mem_uniformity' {s : Set (CauchyFilter α × CauchyFilter α)} :
 def pureCauchy (a : α) : CauchyFilter α :=
   ⟨pure a, cauchy_pure⟩
 
-theorem uniformInducing_pureCauchy : UniformInducing (pureCauchy : α → CauchyFilter α) :=
+theorem isUniformInducing_pureCauchy : IsUniformInducing (pureCauchy : α → CauchyFilter α) :=
   ⟨have : (preimage fun x : α × α => (pureCauchy x.fst, pureCauchy x.snd)) ∘ gen = id :=
       funext fun s =>
         Set.ext fun ⟨a₁, a₂⟩ => by simp [preimage, gen, pureCauchy, prod_principal_principal]
@@ -154,9 +154,15 @@ theorem uniformInducing_pureCauchy : UniformInducing (pureCauchy : α → Cauchy
       _ = 𝓤 α := by simp [this]
       ⟩
 
-theorem uniformEmbedding_pureCauchy : UniformEmbedding (pureCauchy : α → CauchyFilter α) :=
-  { uniformInducing_pureCauchy with
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing_pureCauchy := isUniformInducing_pureCauchy
+
+theorem isUniformEmbedding_pureCauchy : IsUniformEmbedding (pureCauchy : α → CauchyFilter α) :=
+  { isUniformInducing_pureCauchy with
     inj := fun _a₁ _a₂ h => pure_injective <| Subtype.ext_iff_val.1 h }
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_pureCauchy := isUniformEmbedding_pureCauchy
 
 theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α) := fun f => by
   have h_ex : ∀ s ∈ 𝓤 (CauchyFilter α), ∃ y : α, (f, pureCauchy y) ∈ s := fun s hs =>
@@ -181,10 +187,10 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α)
     exact ⟨_, this⟩
 
 theorem isDenseInducing_pureCauchy : IsDenseInducing (pureCauchy : α → CauchyFilter α) :=
-  uniformInducing_pureCauchy.isDenseInducing denseRange_pureCauchy
+  isUniformInducing_pureCauchy.isDenseInducing denseRange_pureCauchy
 
 theorem isDenseEmbedding_pureCauchy : IsDenseEmbedding (pureCauchy : α → CauchyFilter α) :=
-  uniformEmbedding_pureCauchy.isDenseEmbedding denseRange_pureCauchy
+  isUniformEmbedding_pureCauchy.isDenseEmbedding denseRange_pureCauchy
 
 @[deprecated (since := "2024-09-30")]
 alias denseEmbedding_pureCauchy := isDenseEmbedding_pureCauchy
@@ -202,11 +208,11 @@ section
 -- set_option eqn_compiler.zeta true
 
 instance : CompleteSpace (CauchyFilter α) :=
-  completeSpace_extension uniformInducing_pureCauchy denseRange_pureCauchy fun f hf =>
+  completeSpace_extension isUniformInducing_pureCauchy denseRange_pureCauchy fun f hf =>
     let f' : CauchyFilter α := ⟨f, hf⟩
     have : map pureCauchy f ≤ (𝓤 <| CauchyFilter α).lift' (preimage (Prod.mk f')) :=
-      le_lift'.2 fun s hs =>
-        let ⟨t, ht₁, (ht₂ : gen t ⊆ s)⟩ := (mem_lift'_sets monotone_gen).mp hs
+      le_lift'.2 fun _ hs =>
+        let ⟨t, ht₁, ht₂⟩ := (mem_lift'_sets monotone_gen).mp hs
         let ⟨t', ht', (h : t' ×ˢ t' ⊆ t)⟩ := mem_prod_same_iff.mp (hf.right ht₁)
         have : t' ⊆ { y : α | (f', pureCauchy y) ∈ gen t } := fun x hx =>
           (f ×ˢ pure x).sets_of_superset (prod_mem_prod ht' hx) h
@@ -237,7 +243,7 @@ variable [T0Space β]
 theorem extend_pureCauchy {f : α → β} (hf : UniformContinuous f) (a : α) :
     extend f (pureCauchy a) = f a := by
   rw [extend, if_pos hf]
-  exact uniformly_extend_of_ind uniformInducing_pureCauchy denseRange_pureCauchy hf _
+  exact uniformly_extend_of_ind isUniformInducing_pureCauchy denseRange_pureCauchy hf _
 
 end T0Space
 
@@ -246,7 +252,7 @@ variable [CompleteSpace β]
 theorem uniformContinuous_extend {f : α → β} : UniformContinuous (extend f) := by
   by_cases hf : UniformContinuous f
   · rw [extend, if_pos hf]
-    exact uniformContinuous_uniformly_extend uniformInducing_pureCauchy denseRange_pureCauchy hf
+    exact uniformContinuous_uniformly_extend isUniformInducing_pureCauchy denseRange_pureCauchy hf
   · rw [extend, if_neg hf]
     exact uniformContinuous_of_const fun a _b => by congr
 
@@ -319,12 +325,15 @@ instance : Coe α (Completion α) :=
 -- note [use has_coe_t]
 protected theorem coe_eq : ((↑) : α → Completion α) = SeparationQuotient.mk ∘ pureCauchy := rfl
 
-theorem uniformInducing_coe : UniformInducing ((↑) : α → Completion α) :=
-  SeparationQuotient.uniformInducing_mk.comp uniformInducing_pureCauchy
+theorem isUniformInducing_coe : IsUniformInducing ((↑) : α → Completion α) :=
+  SeparationQuotient.isUniformInducing_mk.comp isUniformInducing_pureCauchy
+
+@[deprecated (since := "2024-10-05")]
+alias uniformInducing_coe := isUniformInducing_coe
 
 theorem comap_coe_eq_uniformity :
     ((𝓤 _).comap fun p : α × α => ((p.1 : Completion α), (p.2 : Completion α))) = 𝓤 α :=
-  (uniformInducing_coe _).1
+  (isUniformInducing_coe _).1
 
 variable {α}
 
@@ -341,7 +350,7 @@ def cPkg {α : Type*} [UniformSpace α] : AbstractCompletion α where
   uniformStruct := by infer_instance
   complete := by infer_instance
   separation := by infer_instance
-  uniformInducing := Completion.uniformInducing_coe α
+  isUniformInducing := Completion.isUniformInducing_coe α
   dense := Completion.denseRange_coe
 
 instance AbstractCompletion.inhabited : Inhabited (AbstractCompletion α) :=
@@ -359,17 +368,20 @@ theorem uniformContinuous_coe : UniformContinuous ((↑) : α → Completion α)
 theorem continuous_coe : Continuous ((↑) : α → Completion α) :=
   cPkg.continuous_coe
 
-theorem uniformEmbedding_coe [T0Space α] : UniformEmbedding ((↑) : α → Completion α) :=
+theorem isUniformEmbedding_coe [T0Space α] : IsUniformEmbedding ((↑) : α → Completion α) :=
   { comap_uniformity := comap_coe_eq_uniformity α
     inj := separated_pureCauchy_injective }
 
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_coe := isUniformEmbedding_coe
+
 theorem coe_injective [T0Space α] : Function.Injective ((↑) : α → Completion α) :=
-  UniformEmbedding.inj (uniformEmbedding_coe _)
+  IsUniformEmbedding.inj (isUniformEmbedding_coe _)
 
 variable {α}
 
 theorem isDenseInducing_coe : IsDenseInducing ((↑) : α → Completion α) :=
-  { (uniformInducing_coe α).inducing with dense := denseRange_coe }
+  { (isUniformInducing_coe α).isInducing with dense := denseRange_coe }
 
 /-- The uniform bijection between a complete space and its uniform completion. -/
 def UniformCompletion.completeEquivSelf [CompleteSpace α] [T0Space α] : Completion α ≃ᵤ α :=
@@ -388,12 +400,12 @@ alias denseEmbedding_coe := isDenseEmbedding_coe
 
 theorem denseRange_coe₂ :
     DenseRange fun x : α × β => ((x.1 : Completion α), (x.2 : Completion β)) :=
-  denseRange_coe.prod_map denseRange_coe
+  denseRange_coe.prodMap denseRange_coe
 
 theorem denseRange_coe₃ :
     DenseRange fun x : α × β × γ =>
       ((x.1 : Completion α), ((x.2.1 : Completion β), (x.2.2 : Completion γ))) :=
-  denseRange_coe.prod_map denseRange_coe₂
+  denseRange_coe.prodMap denseRange_coe₂
 
 @[elab_as_elim]
 theorem induction_on {p : Completion α → Prop} (a : Completion α) (hp : IsClosed { a | p a })

@@ -3,6 +3,7 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Edward Ayers
 -/
+import Mathlib.Data.Set.Lattice
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.HasPullback
 
 /-!
@@ -130,7 +131,7 @@ theorem ofArrows_pUnit : (ofArrows _ fun _ : PUnit => f) = singleton f := by
     exact ofArrows.mk PUnit.unit
 
 theorem ofArrows_pullback [HasPullbacks C] {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X) :
-    (ofArrows (fun i => pullback (g i) f) fun i => pullback.snd _ _) =
+    (ofArrows (fun i => pullback (g i) f) fun _ => pullback.snd _ _) =
       pullbackArrows f (ofArrows Z g) := by
   funext T
   ext h
@@ -144,7 +145,7 @@ theorem ofArrows_pullback [HasPullbacks C] {ι : Type*} (Z : ι → C) (g : ∀ 
 theorem ofArrows_bind {ι : Type*} (Z : ι → C) (g : ∀ i : ι, Z i ⟶ X)
     (j : ∀ ⦃Y⦄ (f : Y ⟶ X), ofArrows Z g f → Type*) (W : ∀ ⦃Y⦄ (f : Y ⟶ X) (H), j f H → C)
     (k : ∀ ⦃Y⦄ (f : Y ⟶ X) (H i), W f H i ⟶ Y) :
-    ((ofArrows Z g).bind fun Y f H => ofArrows (W f H) (k f H)) =
+    ((ofArrows Z g).bind fun _ f H => ofArrows (W f H) (k f H)) =
       ofArrows (fun i : Σi, j _ (ofArrows.mk i) => W (g i.1) _ i.2) fun ij =>
         k (g ij.1) _ ij.2 ≫ g ij.1 := by
   funext Y
@@ -267,7 +268,7 @@ open Lattice
 
 /-- The supremum of a collection of sieves: the union of them all. -/
 protected def sup (𝒮 : Set (Sieve X)) : Sieve X where
-  arrows Y := { f | ∃ S ∈ 𝒮, Sieve.arrows S f }
+  arrows _ := { f | ∃ S ∈ 𝒮, Sieve.arrows S f }
   downward_closed {_ _ f} hf _ := by
     obtain ⟨S, hS, hf⟩ := hf
     exact ⟨S, hS, S.downward_closed hf _⟩
@@ -279,12 +280,12 @@ protected def inf (𝒮 : Set (Sieve X)) : Sieve X where
 
 /-- The union of two sieves is a sieve. -/
 protected def union (S R : Sieve X) : Sieve X where
-  arrows Y f := S f ∨ R f
+  arrows _ f := S f ∨ R f
   downward_closed := by rintro _ _ _ (h | h) g <;> simp [h]
 
 /-- The intersection of two sieves is a sieve. -/
 protected def inter (S R : Sieve X) : Sieve X where
-  arrows Y f := S f ∧ R f
+  arrows _ f := S f ∧ R f
   downward_closed := by
     rintro _ _ _ ⟨h₁, h₂⟩ g
     simp [h₁, h₂]
@@ -294,9 +295,9 @@ We generate this directly rather than using the galois insertion for nicer defin
 -/
 instance : CompleteLattice (Sieve X) where
   le S R := ∀ ⦃Y⦄ (f : Y ⟶ X), S f → R f
-  le_refl S f q := id
-  le_trans S₁ S₂ S₃ S₁₂ S₂₃ Y f h := S₂₃ _ (S₁₂ _ h)
-  le_antisymm S R p q := Sieve.ext fun Y f => ⟨p _, q _⟩
+  le_refl _ _ _ := id
+  le_trans _ _ _ S₁₂ S₂₃ _ _ h := S₂₃ _ (S₁₂ _ h)
+  le_antisymm _ _ p q := Sieve.ext fun _ _ => ⟨p _, q _⟩
   top :=
     { arrows := fun _ => Set.univ
       downward_closed := fun _ _ => ⟨⟩ }
@@ -307,8 +308,8 @@ instance : CompleteLattice (Sieve X) where
   inf := Sieve.inter
   sSup := Sieve.sup
   sInf := Sieve.inf
-  le_sSup 𝒮 S hS Y f hf := ⟨S, hS, hf⟩
-  sSup_le := fun s a ha Y f ⟨b, hb, hf⟩ => (ha b hb) _ hf
+  le_sSup _ S hS _ _ hf := ⟨S, hS, hf⟩
+  sSup_le := fun _ _ ha _ _ ⟨b, hb, hf⟩ => (ha b hb) _ hf
   sInf_le _ _ hS _ _ h := h _ hS
   le_sInf _ _ hS _ _ hf _ hR := hS _ hR _ hf
   le_sup_left _ _ _ _ := Or.inl
@@ -362,7 +363,7 @@ produce a sieve on `X`.
 -/
 @[simps]
 def bind (S : Presieve X) (R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y) : Sieve X where
-  arrows := S.bind fun Y f h => R h
+  arrows := S.bind fun _ _ h => R h
   downward_closed := by
     rintro Y Z f ⟨W, f, h, hh, hf, rfl⟩ g
     exact ⟨_, g ≫ f, _, hh, by simp [hf]⟩
@@ -370,7 +371,7 @@ def bind (S : Presieve X) (R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Sieve Y) :
 open Order Lattice
 
 theorem generate_le_iff (R : Presieve X) (S : Sieve X) : generate R ≤ S ↔ R ≤ S :=
-  ⟨fun H Y g hg => H _ ⟨_, 𝟙 _, _, hg, id_comp _⟩, fun ss Y f => by
+  ⟨fun H _ _ hg => H _ ⟨_, 𝟙 _, _, hg, id_comp _⟩, fun ss Y f => by
     rintro ⟨Z, f, g, hg, rfl⟩
     exact S.downward_closed (ss Z hg) f⟩
 
@@ -470,7 +471,7 @@ lemma ofArrows_eq_ofObjects {X : C} (hX : IsTerminal X)
     That is, `Sieve.pullback S h := (≫ h) '⁻¹ S`. -/
 @[simps]
 def pullback (h : Y ⟶ X) (S : Sieve X) : Sieve Y where
-  arrows Y sl := S (sl ≫ h)
+  arrows _ sl := S (sl ≫ h)
   downward_closed g := by simp [g]
 
 @[simp]
@@ -506,7 +507,7 @@ factors through some `g : Z ⟶ Y` which is in `R`.
 -/
 @[simps]
 def pushforward (f : Y ⟶ X) (R : Sieve Y) : Sieve X where
-  arrows Z gf := ∃ g, g ≫ f = gf ∧ R g
+  arrows _ gf := ∃ g, g ≫ f = gf ∧ R g
   downward_closed := fun ⟨j, k, z⟩ h => ⟨h ≫ j, by simp [k], by simp [z]⟩
 
 theorem pushforward_apply_comp {R : Sieve Y} {Z : C} {g : Z ⟶ Y} (hg : R g) (f : Y ⟶ X) :
@@ -767,11 +768,11 @@ def functor (S : Sieve X) : Cᵒᵖ ⥤ Type v₁ where
 presheaves.
 -/
 @[simps]
-def natTransOfLe {S T : Sieve X} (h : S ≤ T) : S.functor ⟶ T.functor where app Y f := ⟨f.1, h _ f.2⟩
+def natTransOfLe {S T : Sieve X} (h : S ≤ T) : S.functor ⟶ T.functor where app _ f := ⟨f.1, h _ f.2⟩
 
 /-- The natural inclusion from the functor induced by a sieve to the yoneda embedding. -/
 @[simps]
-def functorInclusion (S : Sieve X) : S.functor ⟶ yoneda.obj X where app Y f := f.1
+def functorInclusion (S : Sieve X) : S.functor ⟶ yoneda.obj X where app _ f := f.1
 
 theorem natTransOfLe_comm {S T : Sieve X} (h : S ≤ T) :
     natTransOfLe h ≫ functorInclusion _ = functorInclusion _ :=
@@ -806,7 +807,7 @@ theorem sieveOfSubfunctor_functorInclusion : sieveOfSubfunctor S.functorInclusio
     exact ⟨⟨_, hf⟩, rfl⟩
 
 instance functorInclusion_top_isIso : IsIso (⊤ : Sieve X).functorInclusion :=
-  ⟨⟨{ app := fun Y a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
+  ⟨⟨{ app := fun _ a => ⟨a, ⟨⟩⟩ }, rfl, rfl⟩⟩
 
 end Sieve
 

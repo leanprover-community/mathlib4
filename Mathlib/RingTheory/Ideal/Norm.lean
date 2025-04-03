@@ -4,15 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Alex J. Best
 -/
 import Mathlib.Algebra.CharP.Quotient
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Data.Finsupp.Fintype
 import Mathlib.Data.Int.AbsoluteValue
 import Mathlib.Data.Int.Associated
 import Mathlib.LinearAlgebra.FreeModule.Determinant
 import Mathlib.LinearAlgebra.FreeModule.IdealQuotient
 import Mathlib.RingTheory.DedekindDomain.PID
-import Mathlib.RingTheory.Ideal.Basis
-import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.RingTheory.Localization.NormTrace
 
 /-!
@@ -391,24 +387,66 @@ theorem absNorm_eq_zero_iff {I : Ideal S} : Ideal.absNorm I = 0 ↔ I = ⊥ := b
   · rintro rfl
     exact absNorm_bot
 
-theorem absNorm_ne_zero_of_nonZeroDivisors (I : (Ideal S)⁰) : Ideal.absNorm (I : Ideal S) ≠ 0 :=
-  Ideal.absNorm_eq_zero_iff.not.mpr <| nonZeroDivisors.coe_ne_zero _
+theorem absNorm_ne_zero_iff_mem_nonZeroDivisors {I : Ideal S} :
+    absNorm I ≠ 0 ↔ I ∈ (Ideal S)⁰ := by
+  simp_rw [ne_eq, Ideal.absNorm_eq_zero_iff, mem_nonZeroDivisors_iff_ne_zero, Submodule.zero_eq_bot]
 
-theorem finite_setOf_absNorm_eq [CharZero S] {n : ℕ} (hn : 0 < n) :
+theorem absNorm_pos_iff_mem_nonZeroDivisors {I : Ideal S} :
+    0 < absNorm I ↔ I ∈ (Ideal S)⁰ := by
+  rw [← absNorm_ne_zero_iff_mem_nonZeroDivisors, Nat.pos_iff_ne_zero]
+
+theorem absNorm_ne_zero_of_nonZeroDivisors (I : (Ideal S)⁰) : absNorm (I : Ideal S) ≠ 0 :=
+  absNorm_ne_zero_iff_mem_nonZeroDivisors.mpr (SetLike.coe_mem I)
+
+theorem absNorm_pos_of_nonZeroDivisors (I : (Ideal S)⁰) : 0 < absNorm (I : Ideal S) :=
+  absNorm_pos_iff_mem_nonZeroDivisors.mpr (SetLike.coe_mem I)
+
+theorem finite_setOf_absNorm_eq [CharZero S] (n : ℕ) :
     {I : Ideal S | Ideal.absNorm I = n}.Finite := by
-  let f := fun I : Ideal S => Ideal.map (Ideal.Quotient.mk (@Ideal.span S _ {↑n})) I
-  refine @Set.Finite.of_finite_image _ _ _ f ?_ ?_
-  · suffices Finite (S ⧸ @Ideal.span S _ {↑n}) by
-      let g := ((↑) : Ideal (S ⧸ @Ideal.span S _ {↑n}) → Set (S ⧸ @Ideal.span S _ {↑n}))
-      refine @Set.Finite.of_finite_image _ _ _ g ?_ SetLike.coe_injective.injOn
-      exact Set.Finite.subset (@Set.finite_univ _ (@Set.finite' _ this)) (Set.subset_univ _)
-    rw [← absNorm_ne_zero_iff, absNorm_span_singleton]
-    simpa only [Ne, Int.natAbs_eq_zero, Algebra.norm_eq_zero_iff, Nat.cast_eq_zero] using
-      ne_of_gt hn
-  · intro I hI J hJ h
-    rw [← comap_map_mk (span_singleton_absNorm_le I), ← hI.symm, ←
-      comap_map_mk (span_singleton_absNorm_le J), ← hJ.symm]
-    congr
+  obtain hn | hn := Nat.eq_zero_or_pos n
+  · simp only [hn, absNorm_eq_zero_iff, Set.setOf_eq_eq_singleton, Set.finite_singleton]
+  · let f := fun I : Ideal S => Ideal.map (Ideal.Quotient.mk (@Ideal.span S _ {↑n})) I
+    refine Set.Finite.of_finite_image (f := f) ?_ ?_
+    · suffices Finite (S ⧸ @Ideal.span S _ {↑n}) by
+        let g := ((↑) : Ideal (S ⧸ @Ideal.span S _ {↑n}) → Set (S ⧸ @Ideal.span S _ {↑n}))
+        refine Set.Finite.of_finite_image (f := g) ?_ SetLike.coe_injective.injOn
+        exact Set.Finite.subset Set.finite_univ (Set.subset_univ _)
+      rw [← absNorm_ne_zero_iff, absNorm_span_singleton]
+      simpa only [Ne, Int.natAbs_eq_zero, Algebra.norm_eq_zero_iff, Nat.cast_eq_zero] using
+        ne_of_gt hn
+    · intro I hI J hJ h
+      rw [← comap_map_mk (span_singleton_absNorm_le I), ← hI.symm, ←
+        comap_map_mk (span_singleton_absNorm_le J), ← hJ.symm]
+      congr
+
+theorem finite_setOf_absNorm_le [CharZero S] (n : ℕ) :
+    {I : Ideal S | Ideal.absNorm I ≤ n}.Finite := by
+  rw [show {I : Ideal S | Ideal.absNorm I ≤ n} =
+    (⋃ i ∈ Set.Icc 0 n, {I : Ideal S | Ideal.absNorm I = i}) by ext; simp]
+  refine Set.Finite.biUnion (Set.finite_Icc 0 n) (fun i _ => Ideal.finite_setOf_absNorm_eq i)
+
+theorem card_norm_le_eq_card_norm_le_add_one (n : ℕ) [CharZero S] :
+    Nat.card {I : Ideal S // absNorm I ≤ n} =
+      Nat.card {I : (Ideal S)⁰ // absNorm (I : Ideal S) ≤ n} + 1 := by
+  classical
+  have : Finite {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
+    (finite_setOf_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
+  have : Finite {I : Ideal S // I ∉ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
+    (finite_setOf_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
+  rw [Nat.card_congr (Equiv.subtypeSubtypeEquivSubtypeInter (fun I ↦ I ∈ (Ideal S)⁰)
+    (fun I ↦ absNorm I ≤ n))]
+  let e : {I : Ideal S // absNorm I ≤ n} ≃ {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} ⊕
+      {I : Ideal S // I ∉ (Ideal S)⁰ ∧ absNorm I ≤ n} := by
+    refine (Equiv.subtypeEquivRight ?_).trans (subtypeOrEquiv _ _ ?_)
+    · intro _
+      simp_rw [← or_and_right, em, true_and]
+    · exact Pi.disjoint_iff.mpr fun I ↦ Prop.disjoint_iff.mpr (by tauto)
+  simp_rw [Nat.card_congr e, Nat.card_sum, add_right_inj]
+  conv_lhs =>
+    enter [1, 1, I]
+    rw [← absNorm_ne_zero_iff_mem_nonZeroDivisors, ne_eq, not_not, and_iff_left_iff_imp.mpr
+      (fun h ↦ by rw [h]; exact Nat.zero_le n), absNorm_eq_zero_iff]
+  rw [Nat.card_unique]
 
 theorem norm_dvd_iff {x : S} (hx : Prime (Algebra.norm ℤ x)) {y : ℤ} :
     Algebra.norm ℤ x ∣ y ↔ x ∣ y := by

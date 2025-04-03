@@ -43,7 +43,7 @@ dedekind domain, dedekind ring
 -/
 
 
-variable (R A K : Type*) [CommRing R] [CommRing A] [IsDomain A] [Field K]
+variable (A : Type*) [CommRing A] [IsDomain A]
 
 open scoped nonZeroDivisors Polynomial
 

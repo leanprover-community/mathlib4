@@ -59,7 +59,7 @@ separable degree, degree, separable closure
 
 -/
 
-open FiniteDimensional Polynomial IntermediateField Field
+open Module Polynomial IntermediateField Field
 
 noncomputable section
 

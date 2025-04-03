@@ -27,7 +27,7 @@ namespace Set
 
 section Preorder
 
-variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α}
+variable {α β : Type*} [Preorder α] [Preorder β] {s : Set α}
 
 /-- We say that a set `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the
 interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
@@ -101,7 +101,7 @@ namespace Set
 
 section Preorder
 
-variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α}
+variable {α β : Type*} [Preorder α] [Preorder β]
 
 @[simp]
 lemma image_subtype_val_Icc {s : Set α} [OrdConnected s] (x y : s) :

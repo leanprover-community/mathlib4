@@ -152,7 +152,7 @@ def Iso.mk {α β : SemilatSupCat.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : SemilatSupCat ⥤ SemilatInfCat where
   obj X := SemilatInfCat.of Xᵒᵈ
-  map {X Y} := SupBotHom.dual
+  map {_ _} := SupBotHom.dual
 
 end SemilatSupCat
 
@@ -170,7 +170,7 @@ def Iso.mk {α β : SemilatInfCat.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : SemilatInfCat ⥤ SemilatSupCat where
   obj X := SemilatSupCat.of Xᵒᵈ
-  map {X Y} := InfTopHom.dual
+  map {_ _} := InfTopHom.dual
 
 end SemilatInfCat
 

@@ -34,7 +34,7 @@ instance simple_of_isSimpleModule [IsSimpleModule R M] : Simple (of R M) :=
 instance isSimpleModule_of_simple (M : ModuleCat R) [Simple M] : IsSimpleModule R M :=
   simple_iff_isSimpleModule.mp (Simple.of_iso (ofSelfIso M))
 
-open FiniteDimensional
+open Module
 
 attribute [local instance] moduleOfAlgebraModule isScalarTower_of_algebra_moduleCat
 

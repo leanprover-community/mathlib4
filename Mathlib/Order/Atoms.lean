@@ -8,6 +8,7 @@ import Mathlib.Order.ModularLattice
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.Nontriviality
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -512,7 +513,7 @@ theorem sSup_atoms_eq_top : sSup { a : α | IsAtom a } = ⊤ := by
   exact (and_iff_left le_top).symm
 
 theorem le_iff_atom_le_imp {a b : α} : a ≤ b ↔ ∀ c : α, IsAtom c → c ≤ a → c ≤ b :=
-  ⟨fun ab c _ ca => le_trans ca ab, fun h => by
+  ⟨fun ab _ _ ca => le_trans ca ab, fun h => by
     rw [← sSup_atoms_le_eq a, ← sSup_atoms_le_eq b]
     exact sSup_le_sSup fun c hc => ⟨hc.1, h c hc.1 hc.2⟩⟩
 
@@ -1090,7 +1091,7 @@ theorem isAtom_iff {f : ∀ i, π i} [∀ i, PartialOrder (π i)] [∀ i, OrderB
 
 theorem isAtom_single {i : ι} [DecidableEq ι] [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)]
     {a : π i} (h : IsAtom a) : IsAtom (Function.update (⊥ : ∀ i, π i) i a) :=
-  isAtom_iff.2 ⟨i, by simpa, fun j hji => Function.update_noteq hji _ _⟩
+  isAtom_iff.2 ⟨i, by simpa, fun _ hji => Function.update_noteq hji _ _⟩
 
 theorem isAtom_iff_eq_single [DecidableEq ι] [∀ i, PartialOrder (π i)]
     [∀ i, OrderBot (π i)] {f : ∀ i, π i} :

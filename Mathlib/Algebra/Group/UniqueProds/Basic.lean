@@ -52,6 +52,8 @@ assert_not_exists Algebra
 assert_not_exists Submodule
 assert_not_exists StarModule
 
+open Finset
+
 /-- Let `G` be a Type with multiplication, let `A B : Finset G` be finite subsets and
 let `a0 b0 : G` be two elements.  `UniqueMul A B a0 b0` asserts `a0 * b0` can be written in at
 most one way as a product of an element of `A` and an element of `B`. -/
@@ -71,7 +73,7 @@ theorem of_subsingleton [Subsingleton G] : UniqueMul A B a0 b0 := by
   simp [UniqueMul, eq_iff_true_of_subsingleton]
 
 @[to_additive of_card_le_one]
-theorem of_card_le_one (hA : A.Nonempty) (hB : B.Nonempty) (hA1 : A.card ≤ 1) (hB1 : B.card ≤ 1) :
+theorem of_card_le_one (hA : A.Nonempty) (hB : B.Nonempty) (hA1 : #A ≤ 1) (hB1 : #B ≤ 1) :
     ∃ a ∈ A, ∃ b ∈ B, UniqueMul A B a b := by
   rw [Finset.card_le_one_iff] at hA1 hB1
   obtain ⟨a, ha⟩ := hA; obtain ⟨b, hb⟩ := hB
@@ -118,7 +120,7 @@ theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
 open Finset in
 @[to_additive iff_card_le_one]
 theorem iff_card_le_one [DecidableEq G] (ha0 : a0 ∈ A) (hb0 : b0 ∈ B) :
-    UniqueMul A B a0 b0 ↔ ((A ×ˢ B).filter (fun p ↦ p.1 * p.2 = a0 * b0)).card ≤ 1 := by
+    UniqueMul A B a0 b0 ↔ #{p ∈ A ×ˢ B | p.1 * p.2 = a0 * b0} ≤ 1 := by
   simp_rw [card_le_one_iff, mem_filter, mem_product]
   refine ⟨fun h p1 p2 ⟨⟨ha1, hb1⟩, he1⟩ ⟨⟨ha2, hb2⟩, he2⟩ ↦ ?_, fun h a b ha hb he ↦ ?_⟩
   · have h1 := h ha1 hb1 he1; have h2 := h ha2 hb2 he2
@@ -136,7 +138,7 @@ alias _root_.UniqueAdd.iff_card_nonpos := UniqueAdd.iff_card_le_one
 theorem exists_iff_exists_existsUnique :
     (∃ a0 b0 : G, a0 ∈ A ∧ b0 ∈ B ∧ UniqueMul A B a0 b0) ↔
       ∃ g : G, ∃! ab, ab ∈ A ×ˢ B ∧ ab.1 * ab.2 = g :=
-  ⟨fun ⟨a0, b0, hA, hB, h⟩ ↦ ⟨_, (iff_existsUnique hA hB).mp h⟩, fun ⟨g, h⟩ ↦ by
+  ⟨fun ⟨_, _, hA, hB, h⟩ ↦ ⟨_, (iff_existsUnique hA hB).mp h⟩, fun ⟨g, h⟩ ↦ by
     have h' := h
     rcases h' with ⟨⟨a, b⟩, ⟨hab, rfl, -⟩, -⟩
     cases' Finset.mem_product.mp hab with ha hb
@@ -210,7 +212,7 @@ open Finset in
 theorem of_image_filter [DecidableEq H]
     (f : G →ₙ* H) {A B : Finset G} {aG bG : G} {aH bH : H} (hae : f aG = aH) (hbe : f bG = bH)
     (huH : UniqueMul (A.image f) (B.image f) aH bH)
-    (huG : UniqueMul (A.filter (f · = aH)) (B.filter (f · = bH)) aG bG) :
+    (huG : UniqueMul {a ∈ A | f a = aH} {b ∈ B | f b = bH} aG bG) :
     UniqueMul A B aG bG := fun a b ha hb he ↦ by
   specialize huH (mem_image_of_mem _ ha) (mem_image_of_mem _ hb)
   rw [← map_mul, he, map_mul, hae, hbe] at huH
@@ -245,7 +247,7 @@ of elements satisfying the `UniqueAdd` property. -/
 class TwoUniqueSums (G) [Add G] : Prop where
 /-- For `A B` two finite sets whose product has cardinality at least 2,
   we can find at least two unique pairs. -/
-  uniqueAdd_of_one_lt_card : ∀ {A B : Finset G}, 1 < A.card * B.card →
+  uniqueAdd_of_one_lt_card : ∀ {A B : Finset G}, 1 < #A * #B →
     ∃ p1 ∈ A ×ˢ B, ∃ p2 ∈ A ×ˢ B, p1 ≠ p2 ∧ UniqueAdd A B p1.1 p1.2 ∧ UniqueAdd A B p2.1 p2.2
 
 /-- Let `G` be a Type with multiplication. `TwoUniqueProds G` asserts that any two non-empty
@@ -254,16 +256,16 @@ of elements satisfying the `UniqueMul` property. -/
 class TwoUniqueProds (G) [Mul G] : Prop where
 /-- For `A B` two finite sets whose product has cardinality at least 2,
   we can find at least two unique pairs. -/
-  uniqueMul_of_one_lt_card : ∀ {A B : Finset G}, 1 < A.card * B.card →
+  uniqueMul_of_one_lt_card : ∀ {A B : Finset G}, 1 < #A * #B →
     ∃ p1 ∈ A ×ˢ B, ∃ p2 ∈ A ×ˢ B, p1 ≠ p2 ∧ UniqueMul A B p1.1 p1.2 ∧ UniqueMul A B p2.1 p2.2
 
 attribute [to_additive] TwoUniqueProds
 
 @[to_additive]
-lemma uniqueMul_of_twoUniqueMul {G} [Mul G] {A B : Finset G} (h : 1 < A.card * B.card →
+lemma uniqueMul_of_twoUniqueMul {G} [Mul G] {A B : Finset G} (h : 1 < #A * #B →
     ∃ p1 ∈ A ×ˢ B, ∃ p2 ∈ A ×ˢ B, p1 ≠ p2 ∧ UniqueMul A B p1.1 p1.2 ∧ UniqueMul A B p2.1 p2.2)
     (hA : A.Nonempty) (hB : B.Nonempty) : ∃ a ∈ A, ∃ b ∈ B, UniqueMul A B a b := by
-  by_cases hc : A.card ≤ 1 ∧ B.card ≤ 1
+  by_cases hc : #A ≤ 1 ∧ #B ≤ 1
   · exact UniqueMul.of_card_le_one hA hB hc.1 hc.2
   simp_rw [not_and_or, not_le] at hc
   rw [← Finset.card_pos] at hA hB
@@ -388,7 +390,7 @@ open MulOpposite in
     obtain ⟨a, ha, b, hb, hu⟩ := uniqueMul_of_nonempty hc.1 hc.2.1
     let C := A.map ⟨_, mul_right_injective a⁻¹⟩ -- C = a⁻¹A
     let D := B.map ⟨_, mul_left_injective b⁻¹⟩  -- D = Bb⁻¹
-    have hcard : 1 < C.card ∨ 1 < D.card := by simp_rw [C, D, card_map]; exact hc.2.2
+    have hcard : 1 < #C ∨ 1 < #D := by simp_rw [C, D, card_map]; exact hc.2.2
     have hC : 1 ∈ C := mem_map.mpr ⟨a, ha, inv_mul_cancel a⟩
     have hD : 1 ∈ D := mem_map.mpr ⟨b, hb, mul_inv_cancel b⟩
     suffices ∃ c ∈ C, ∃ d ∈ D, (c ≠ 1 ∨ d ≠ 1) ∧ UniqueMul C D c d by
@@ -439,13 +441,13 @@ open UniqueMul in
     let _ := isWellFounded_ssubset (α := ∀ i, G i) -- why need this?
     apply IsWellFounded.induction (· ⊂ ·) A; intro A ihA B hA
     apply IsWellFounded.induction (· ⊂ ·) B; intro B ihB hB
-    by_cases hc : A.card ≤ 1 ∧ B.card ≤ 1
+    by_cases hc : #A ≤ 1 ∧ #B ≤ 1
     · exact of_card_le_one hA hB hc.1 hc.2
     simp_rw [not_and_or, not_le] at hc
     obtain ⟨i, hc⟩ := exists_or.mpr (hc.imp exists_of_one_lt_card_pi exists_of_one_lt_card_pi)
     obtain ⟨ai, hA, bi, hB, hi⟩ := uniqueMul_of_nonempty (hA.image (· i)) (hB.image (· i))
     rw [mem_image, ← filter_nonempty_iff] at hA hB
-    let A' := A.filter (· i = ai); let B' := B.filter (· i = bi)
+    let A' := {a ∈ A | a i = ai}; let B' := {b ∈ B | b i = bi}
     obtain ⟨a0, ha0, b0, hb0, hu⟩ : ∃ a0 ∈ A', ∃ b0 ∈ B', UniqueMul A' B' a0 b0 := by
       rcases hc with hc | hc; · exact ihA A' (hc.2 ai) hA hB
       by_cases hA' : A' = A
@@ -484,7 +486,7 @@ open Finset
     [TwoUniqueProds G] : TwoUniqueProds H where
   uniqueMul_of_one_lt_card {A B} hc := by
     classical
-    obtain hc' | hc' := lt_or_le 1 ((A.image f).card * (B.image f).card)
+    obtain hc' | hc' := lt_or_le 1 (#(A.image f) * #(B.image f))
     · obtain ⟨⟨a1, b1⟩, h1, ⟨a2, b2⟩, h2, hne, hu1, hu2⟩ := uniqueMul_of_one_lt_card hc'
       simp_rw [mem_product, mem_image] at h1 h2 ⊢
       obtain ⟨⟨a1, ha1, rfl⟩, b1, hb1, rfl⟩ := h1
@@ -536,11 +538,11 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
       contrapose! hne; rw [Prod.mk.inj_iff] at hne ⊢
       rw [← ha1.2, ← hb1.2, ← ha2.2, ← hb2.2, hne.1, hne.2]; exact ⟨rfl, rfl⟩
     all_goals rcases hc with hc | hc; · exact ihA _ (hc.2 _)
-    · by_cases hA : A.filter (· i = p2.1) = A
+    · by_cases hA : {a ∈ A | a i = p2.1} = A
       · rw [hA]
         exact ihB _ (hc.2 _)
       · exact ihA _ ((A.filter_subset _).ssubset_of_ne hA)
-    · by_cases hA : A.filter (· i = p1.1) = A
+    · by_cases hA : {a ∈ A | a i = p1.1} = A
       · rw [hA]
         exact ihB _ (hc.2 _)
       · exact ihA _ ((A.filter_subset _).ssubset_of_ne hA)
@@ -579,7 +581,7 @@ theorem of_mulOpposite (h : TwoUniqueProds Gᵐᵒᵖ) : TwoUniqueProds G where
   "This instance asserts that if `G` has a right-cancellative addition, a linear order,
   and addition is strictly monotone w.r.t. the second argument, then `G` has `TwoUniqueSums`." ]
 instance (priority := 100) of_covariant_right [IsRightCancelMul G]
-    [LinearOrder G] [CovariantClass G G (· * ·) (· < ·)] :
+    [LinearOrder G] [MulLeftStrictMono G] :
     TwoUniqueProds G where
   uniqueMul_of_one_lt_card {A B} hc := by
     obtain ⟨hA, hB, -⟩ := Nat.one_lt_mul_iff.mp hc
@@ -613,10 +615,10 @@ open MulOpposite in
   "This instance asserts that if `G` has a left-cancellative addition, a linear order, and
   addition is strictly monotone w.r.t. the first argument, then `G` has `TwoUniqueSums`." ]
 instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
-    [LinearOrder G] [CovariantClass G G (Function.swap (· * ·)) (· < ·)] :
+    [LinearOrder G] [MulRightStrictMono G] :
     TwoUniqueProds G :=
   let _ := LinearOrder.lift' (unop : Gᵐᵒᵖ → G) unop_injective
-  let _ : CovariantClass Gᵐᵒᵖ Gᵐᵒᵖ (· * ·) (· < ·) :=
+  let _ : MulLeftStrictMono Gᵐᵒᵖ :=
     { elim := fun _ _ _ bc ↦ mul_lt_mul_right' (α := G) bc (unop _) }
   of_mulOpposite of_covariant_right
 

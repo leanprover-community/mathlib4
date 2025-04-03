@@ -5,8 +5,8 @@ Authors: Eric Wieser, Jireh Loreaux
 -/
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Algebra.Group.Invertible.Basic
-import Mathlib.Data.Set.Basic
 import Mathlib.Logic.Basic
+import Mathlib.Data.Set.Basic
 
 /-!
 # Centers of magmas and semigroups
@@ -70,7 +70,7 @@ attribute [to_additive existing] isMulCentral_iff
 
 namespace IsMulCentral
 
-variable {a b c : M} [Mul M]
+variable {a c : M} [Mul M]
 
 -- cf. `Commute.left_comm`
 @[to_additive]

@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Kim Morrison, Simon Hudon
 -/
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Equiv.Basic
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Opposites
@@ -114,7 +114,6 @@ def Aut (X : C) := X ≅ X
 
 namespace Aut
 
--- Porting note: added because `Iso.ext` is not triggered automatically
 @[ext]
 lemma ext {X : C} {φ₁ φ₂ : Aut X} (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
   Iso.ext h
@@ -140,8 +139,8 @@ are (multiplicatively) equivalent to automorphisms of that object.
 def unitsEndEquivAut : (End X)ˣ ≃* Aut X where
   toFun f := ⟨f.1, f.2, f.4, f.3⟩
   invFun f := ⟨f.1, f.2, f.4, f.3⟩
-  left_inv := fun ⟨f₁, f₂, f₃, f₄⟩ => rfl
-  right_inv := fun ⟨f₁, f₂, f₃, f₄⟩ => rfl
+  left_inv := fun ⟨_, _, _, _⟩ => rfl
+  right_inv := fun ⟨_, _, _, _⟩ => rfl
   map_mul' f g := by cases f; cases g; rfl
 
 /-- The inclusion of `Aut X` to `End X` as a monoid homomorphism. -/

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Module.LocalizedModule
-import Mathlib.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Localization.Module
 
 /-!
@@ -56,6 +56,35 @@ lemma Submodule.mem_localized' (x : N) :
 /-- The localization of an `R`-submodule of `M` at `p` viewed as an `Rₚ`-submodule of `Mₚ`. -/
 abbrev Submodule.localized : Submodule (Localization p) (LocalizedModule p M) :=
   M'.localized' (Localization p) p (LocalizedModule.mkLinearMap p M)
+
+@[simp]
+lemma Submodule.localized'_bot : (⊥ : Submodule R M).localized' S p f = ⊥ := by
+  rw [← le_bot_iff]
+  rintro _ ⟨_, rfl, s, rfl⟩
+  simp only [IsLocalizedModule.mk'_zero, mem_bot]
+
+@[simp]
+lemma Submodule.localized'_top : (⊤ : Submodule R M).localized' S p f = ⊤ := by
+  rw [← top_le_iff]
+  rintro x _
+  obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective p f x
+  exact ⟨x, trivial, s, rfl⟩
+
+@[simp]
+lemma Submodule.localized'_span (s : Set M) : (span R s).localized' S p f = span S (f '' s) := by
+  apply le_antisymm
+  · rintro _ ⟨x, hx, t, rfl⟩
+    have := IsLocalizedModule.mk'_smul_mk' S f 1 x t 1
+    simp only [IsLocalizedModule.mk'_one, one_smul, mul_one] at this
+    rw [← this]
+    apply Submodule.smul_mem
+    rw [← Submodule.restrictScalars_mem R, ← Submodule.mem_comap]
+    refine (show span R s ≤ _ from ?_) hx
+    rw [← Submodule.map_le_iff_le_comap, Submodule.map_span]
+    exact span_le_restrictScalars _ _ _
+  · rw [Submodule.span_le, Set.image_subset_iff]
+    intro x hx
+    exact ⟨x, subset_span hx, 1, IsLocalizedModule.mk'_one _ _ _⟩
 
 /-- The localization map of a submodule. -/
 @[simps!]

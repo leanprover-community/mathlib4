@@ -29,7 +29,9 @@ open HomologicalComplex
 
 attribute [local simp] XIsoOfEq_hom_naturality smul_smul
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
+-- See https://github.com/leanprover-community/mathlib4/issues/12534
+-- Removing this adds about 10% to the instruction count in this file.
+set_option backward.isDefEq.lazyWhnfCore false in
 /-- The natural isomorphism `(K⟦n⟧).sc' i j k ≅ K.sc' i' j' k'` when `n + i = i'`,
 `n + j = j'` and `n + k = k'`. -/
 @[simps!]

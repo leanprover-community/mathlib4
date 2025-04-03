@@ -528,7 +528,7 @@ def Lattice.mk' {α : Type*} [Sup α] [Inf α] (sup_comm : ∀ a b : α, a ⊔ b
 
 section Lattice
 
-variable [Lattice α] {a b c d : α}
+variable [Lattice α] {a b c : α}
 
 theorem inf_le_sup : a ⊓ b ≤ a ⊔ b :=
   inf_le_left.trans le_sup_left

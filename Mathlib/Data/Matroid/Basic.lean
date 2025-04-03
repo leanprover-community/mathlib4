@@ -133,7 +133,7 @@ There are a few design decisions worth discussing.
   so our notation mirrors common practice.
 
 ### Notation
-  We use a couple of nonstandard conventions in theorem names that are related to the above.
+  We use a few nonstandard conventions in theorem names that are related to the above.
   First, we mirror common informal practice by referring explicitly to the `ground` set rather
   than the notation `E`. (Writing `ground` everywhere in a proof term would be unwieldy, and
   writing `E` in theorem names would be unnatural to read.)
@@ -145,6 +145,10 @@ There are a few design decisions worth discussing.
   For this reason, we use the term `compl` in theorem names to refer to taking a set difference
   with respect to the ground set, rather than a complement within a type. The lemma
   `compl_base_dual` is one of the many examples of this.
+
+  Finally, in theorem names, matroid predicates that apply to sets
+  (such as `Base`, `Indep`, `Basis`) are typically used as suffixes rather than prefixes.
+  For instance, we have `ground_indep_iff_base` rather than `indep_ground_iff_base`.
 
 ## References
 
@@ -410,11 +414,11 @@ theorem Base.infinite_of_infinite (hB : M.Base B) (h : B.Infinite) (hB₁ : M.Ba
   by_contra (fun hB_inf ↦ (hB₁.finite_of_finite (not_infinite.mp hB_inf) hB).not_infinite h)
 
 theorem Base.finite [FiniteRk M] (hB : M.Base B) : B.Finite :=
-  let ⟨B₀,hB₀⟩ := ‹FiniteRk M›.exists_finite_base
+  let ⟨_,hB₀⟩ := ‹FiniteRk M›.exists_finite_base
   hB₀.1.finite_of_finite hB₀.2 hB
 
 theorem Base.infinite [InfiniteRk M] (hB : M.Base B) : B.Infinite :=
-  let ⟨B₀,hB₀⟩ := ‹InfiniteRk M›.exists_infinite_base
+  let ⟨_,hB₀⟩ := ‹InfiniteRk M›.exists_infinite_base
   hB₀.1.infinite_of_infinite hB₀.2 hB
 
 theorem empty_not_base [h : RkPos M] : ¬M.Base ∅ :=

@@ -25,7 +25,7 @@ to `EMetricSpace` at the end.
 -/
 
 assert_not_exists Nat.instLocallyFiniteOrder
-assert_not_exists UniformEmbedding
+assert_not_exists IsUniformEmbedding
 assert_not_exists TendstoUniformlyOnFilter
 
 open Set Filter
@@ -311,7 +311,7 @@ instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] : PseudoEMetricSpace
   edist x y := edist x.1 y.1 ⊔ edist x.2 y.2
   edist_self x := by simp
   edist_comm x y := by simp [edist_comm]
-  edist_triangle x y z :=
+  edist_triangle _ _ _ :=
     max_le (le_trans (edist_triangle _ _ _) (add_le_add (le_max_left _ _) (le_max_left _ _)))
       (le_trans (edist_triangle _ _ _) (add_le_add (le_max_right _ _) (le_max_right _ _)))
   uniformity_edist := uniformity_prod.trans <| by
@@ -548,7 +548,7 @@ theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : Is
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
   lift t to Set s using hts
   refine ⟨⟨t, countable_of_injective_of_countable_image Subtype.coe_injective.injOn htc, ?_⟩⟩
-  rwa [inducing_subtype_val.dense_iff, Subtype.forall]
+  rwa [IsInducing.subtypeVal.dense_iff, Subtype.forall]
 
 end Compact
 

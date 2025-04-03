@@ -89,27 +89,21 @@ theorem toComplex_re (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).re = x := by si
 @[simp]
 theorem toComplex_im (x y : ℤ) : ((⟨x, y⟩ : ℤ[i]) : ℂ).im = y := by simp [toComplex_def]
 
--- Porting note (#10618): @[simp] can prove this
 theorem toComplex_add (x y : ℤ[i]) : ((x + y : ℤ[i]) : ℂ) = x + y :=
   toComplex.map_add _ _
 
--- Porting note (#10618): @[simp] can prove this
 theorem toComplex_mul (x y : ℤ[i]) : ((x * y : ℤ[i]) : ℂ) = x * y :=
   toComplex.map_mul _ _
 
--- Porting note (#10618): @[simp] can prove this
 theorem toComplex_one : ((1 : ℤ[i]) : ℂ) = 1 :=
   toComplex.map_one
 
--- Porting note (#10618): @[simp] can prove this
 theorem toComplex_zero : ((0 : ℤ[i]) : ℂ) = 0 :=
   toComplex.map_zero
 
--- Porting note (#10618): @[simp] can prove this
 theorem toComplex_neg (x : ℤ[i]) : ((-x : ℤ[i]) : ℂ) = -x :=
   toComplex.map_neg _
 
--- Porting note (#10618): @[simp] can prove this
 theorem toComplex_sub (x y : ℤ[i]) : ((x - y : ℤ[i]) : ℂ) = x - y :=
   toComplex.map_sub _ _
 
@@ -250,7 +244,7 @@ instance : EuclideanDomain ℤ[i] :=
     r := _
     r_wellFounded := (measure (Int.natAbs ∘ norm)).wf
     remainder_lt := natAbs_norm_mod_lt
-    mul_left_not_lt := fun a b hb0 => not_lt_of_ge <| norm_le_norm_mul_left a hb0 }
+    mul_left_not_lt := fun a _ hb0 => not_lt_of_ge <| norm_le_norm_mul_left a hb0 }
 
 open PrincipalIdealRing
 

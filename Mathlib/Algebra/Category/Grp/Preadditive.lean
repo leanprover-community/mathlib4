@@ -16,7 +16,6 @@ universe u
 
 namespace AddCommGrp
 
--- porting note (#10670): this instance was not necessary in mathlib
 instance (P Q : AddCommGrp) : AddCommGroup (P ⟶ Q) :=
   (inferInstance : AddCommGroup (AddMonoidHom P Q))
 

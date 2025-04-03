@@ -32,7 +32,7 @@ lemma ShortComplex.zero_apply
     [Limits.HasZeroMorphisms C] [(forget₂ C Ab).PreservesZeroMorphisms]
     (S : ShortComplex C) (x : (forget₂ C Ab).obj S.X₁) :
     ((forget₂ C Ab).map S.g) (((forget₂ C Ab).map S.f) x) = 0 := by
-  erw [← comp_apply, ← Functor.map_comp, S.zero, Functor.map_zero]
+  rw [← comp_apply, ← Functor.map_comp, S.zero, Functor.map_zero]
   rfl
 
 section preadditive

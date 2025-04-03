@@ -54,7 +54,7 @@ instance : ConcreteCategory CompleteLat := by
 instance hasForgetToBddLat : HasForget₂ CompleteLat BddLat where
   forget₂ :=
     { obj := fun X => BddLat.of X
-      map := fun {X Y} => CompleteLatticeHom.toBoundedLatticeHom }
+      map := fun {_ _} => CompleteLatticeHom.toBoundedLatticeHom }
   forget_comp := rfl
 
 /-- Constructs an isomorphism of complete lattices from an order isomorphism between them. -/
@@ -69,7 +69,7 @@ def Iso.mk {α β : CompleteLat.{u}} (e : α ≃o β) : α ≅ β where
 @[simps]
 def dual : CompleteLat ⥤ CompleteLat where
   obj X := of Xᵒᵈ
-  map {X Y} := CompleteLatticeHom.dual
+  map {_ _} := CompleteLatticeHom.dual
 
 /-- The equivalence between `CompleteLat` and itself induced by `OrderDual` both ways. -/
 @[simps functor inverse]

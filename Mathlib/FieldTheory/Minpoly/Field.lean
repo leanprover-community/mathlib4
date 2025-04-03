@@ -77,7 +77,7 @@ lemma dvd_iff {p : A[X]} : minpoly A x ∣ p ↔ Polynomial.aeval x p = 0 :=
 theorem isRadical [IsReduced B] : IsRadical (minpoly A x) := fun n p dvd ↦ by
   rw [dvd_iff] at dvd ⊢; rw [map_pow] at dvd; exact IsReduced.eq_zero _ ⟨n, dvd⟩
 
-theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [CommRing R]
+theorem dvd_map_of_isScalarTower (A K : Type*) {R : Type*} [CommRing A] [Field K] [Ring R]
     [Algebra A K] [Algebra A R] [Algebra K R] [IsScalarTower A K R] (x : R) :
     minpoly K x ∣ (minpoly A x).map (algebraMap A K) := by
   refine minpoly.dvd K x ?_
@@ -144,9 +144,30 @@ theorem add_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
     refine fun h ↦ hx ?_
     simpa only [add_sub_cancel_right] using IsIntegral.sub h (isIntegral_algebraMap (x := a))
 
-theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] {x : B}
+theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
     (a : A) : minpoly A (x - algebraMap A B a) = (minpoly A x).comp (X + C a) := by
   simpa [sub_eq_add_neg] using add_algebraMap x (-a)
+
+theorem neg {B : Type*} [CommRing B] [Algebra A B] (x : B) :
+    minpoly A (- x) = (-1) ^ (natDegree (minpoly A x)) * (minpoly A x).comp (- X) := by
+  by_cases hx : IsIntegral A x
+  · refine (minpoly.unique _ _ ((minpoly.monic hx).neg_one_pow_natDegree_mul_comp_neg_X)
+        ?_ fun q qmo hq => ?_).symm
+    · simp [aeval_comp]
+    · have : (Polynomial.aeval x) ((-1) ^ q.natDegree * q.comp (- X)) = 0 := by
+        simpa [aeval_comp] using hq
+      have H := minpoly.min A x qmo.neg_one_pow_natDegree_mul_comp_neg_X this
+      have n1 := ((minpoly.monic hx).neg_one_pow_natDegree_mul_comp_neg_X).ne_zero
+      have n2 := qmo.neg_one_pow_natDegree_mul_comp_neg_X.ne_zero
+      rw [degree_eq_natDegree qmo.ne_zero,
+        degree_eq_natDegree n1, natDegree_mul (by simp) (right_ne_zero_of_mul n1), natDegree_comp]
+      rw [degree_eq_natDegree (minpoly.ne_zero hx),
+        degree_eq_natDegree qmo.neg_one_pow_natDegree_mul_comp_neg_X.ne_zero,
+        natDegree_mul (by simp) (right_ne_zero_of_mul n2), natDegree_comp] at H
+      simpa using H
+  · rw [minpoly.eq_zero hx, minpoly.eq_zero, zero_comp]
+    · simp only [natDegree_zero, pow_zero, mul_zero]
+    · exact IsIntegral.neg_iff.not.mpr hx
 
 section AlgHomFintype
 
@@ -158,11 +179,9 @@ noncomputable def Fintype.subtypeProd {E : Type*} {X : Set E} (hX : X.Finite) {L
 variable (F E K : Type*) [Field F] [Ring E] [CommRing K] [IsDomain K] [Algebra F E] [Algebra F K]
   [FiniteDimensional F E]
 
--- Porting note (#11083): removed `noncomputable!` since it seems not to be slow in lean 4,
--- though it isn't very computable in practice (since neither `finrank` nor `finBasis` are).
 /-- Function from Hom_K(E,L) to pi type Π (x : basis), roots of min poly of x -/
 def rootsOfMinPolyPiType (φ : E →ₐ[F] K)
-    (x : range (FiniteDimensional.finBasis F E : _ → E)) :
+    (x : range (Module.finBasis F E : _ → E)) :
     { l : K // l ∈ (minpoly F x.1).aroots K } :=
   ⟨φ x, by
     rw [mem_roots_map (minpoly.ne_zero_of_finite F x.val),
@@ -173,14 +192,14 @@ theorem aux_inj_roots_of_min_poly : Injective (rootsOfMinPolyPiType F E K) := by
   -- needs explicit coercion on the RHS
   suffices (f : E →ₗ[F] K) = (g : E →ₗ[F] K) by rwa [DFunLike.ext'_iff] at this ⊢
   rw [funext_iff] at h
-  exact LinearMap.ext_on (FiniteDimensional.finBasis F E).span_eq fun e he =>
+  exact LinearMap.ext_on (Module.finBasis F E).span_eq fun e he =>
     Subtype.ext_iff.mp (h ⟨e, he⟩)
 
 /-- Given field extensions `E/F` and `K/F`, with `E/F` finite, there are finitely many `F`-algebra
   homomorphisms `E →ₐ[K] K`. -/
 noncomputable instance AlgHom.fintype : Fintype (E →ₐ[F] K) :=
   @Fintype.ofInjective _ _
-    (Fintype.subtypeProd (finite_range (FiniteDimensional.finBasis F E)) fun e =>
+    (Fintype.subtypeProd (finite_range (Module.finBasis F E)) fun e =>
       (minpoly F e).aroots K)
     _ (aux_inj_roots_of_min_poly F E K)
 

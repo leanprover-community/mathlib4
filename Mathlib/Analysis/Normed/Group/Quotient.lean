@@ -5,7 +5,7 @@ Authors: Patrick Massot, Riccardo Brasca
 -/
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Normed.Group.Hom
-import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
@@ -156,7 +156,7 @@ theorem quotient_norm_mk_eq (S : AddSubgroup M) (m : M) :
 
 /-- The quotient norm is nonnegative. -/
 theorem quotient_norm_nonneg (S : AddSubgroup M) (x : M ⧸ S) : 0 ≤ ‖x‖ :=
-  Real.sInf_nonneg _ <| forall_mem_image.2 fun _ _ ↦ norm_nonneg _
+  Real.sInf_nonneg <| forall_mem_image.2 fun _ _ ↦ norm_nonneg _
 
 /-- The quotient norm is nonnegative. -/
 theorem norm_mk_nonneg (S : AddSubgroup M) (m : M) : 0 ≤ ‖mk' S m‖ :=
@@ -282,9 +282,9 @@ theorem _root_.QuotientAddGroup.norm_lift_apply_le {S : AddSubgroup M} (f : Norm
     rcases mk_surjective x with ⟨x, rfl⟩
     simpa [h] using le_opNorm f x
   | inr h =>
-    rw [← not_lt, ← _root_.lt_div_iff' h, norm_lt_iff]
+    rw [← not_lt, ← lt_div_iff₀' h, norm_lt_iff]
     rintro ⟨x, rfl, hx⟩
-    exact ((lt_div_iff' h).1 hx).not_le (le_opNorm f x)
+    exact ((lt_div_iff₀' h).1 hx).not_le (le_opNorm f x)
 
 /-- The operator norm of the projection is `1` if the subspace is not dense. -/
 theorem norm_normedMk (S : AddSubgroup M) (h : (S.topologicalClosure : Set M) ≠ univ) :

@@ -14,8 +14,6 @@ import Mathlib.Data.Finset.Prod
 
 open Function
 
-open Nat
-
 universe u v
 
 variable {α β γ : Type*}

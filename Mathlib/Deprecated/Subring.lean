@@ -64,8 +64,6 @@ theorem isSubring_set_range {R : Type u} {S : Type v} [Ring R] [Ring S] (f : R �
 
 end RingHom
 
-variable {cR : Type u} [CommRing cR]
-
 theorem IsSubring.inter {S₁ S₂ : Set R} (hS₁ : IsSubring S₁) (hS₂ : IsSubring S₂) :
     IsSubring (S₁ ∩ S₂) :=
   { IsAddSubgroup.inter hS₁.toIsAddSubgroup hS₂.toIsAddSubgroup,

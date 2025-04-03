@@ -152,7 +152,7 @@ end IsCyclotomicExtension
 
 section Gal
 
-variable [Field L] (hμ : IsPrimitiveRoot μ n) [Algebra K L] [IsCyclotomicExtension {n} K L]
+variable [Field L] [Algebra K L] [IsCyclotomicExtension {n} K L]
   (h : Irreducible (cyclotomic n K)) {K}
 
 /-- `IsCyclotomicExtension.autEquivPow` repackaged in terms of `Gal`.

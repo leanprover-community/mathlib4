@@ -17,7 +17,7 @@ noncomputable section
 
 open Filter Function
 
-open scoped Topology BigOperators Classical
+open scoped Topology Classical
 
 variable {𝕜 𝕜': Type*} [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜']
   [NormedAlgebra 𝕜 𝕜']
@@ -49,6 +49,13 @@ theorem logDeriv_mul {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g 
       logDeriv (fun z => f z * g z) x = logDeriv f x + logDeriv g x := by
   simp only [logDeriv_apply, deriv_mul hdf hdg]
   field_simp [mul_comm]
+
+theorem logDeriv_div {f g : 𝕜 → 𝕜'} (x : 𝕜) (hf : f x ≠ 0) (hg : g x ≠ 0)
+    (hdf : DifferentiableAt 𝕜 f x) (hdg : DifferentiableAt 𝕜 g x) :
+    logDeriv (fun z => f z / g z) x = logDeriv f x - logDeriv g x := by
+  simp only [logDeriv_apply, deriv_div hdf hdg]
+  field_simp [mul_comm]
+  ring
 
 theorem logDeriv_mul_const {f : 𝕜 → 𝕜'} (x : 𝕜) (a : 𝕜') (ha : a ≠ 0):
     logDeriv (fun z => f z * a) x = logDeriv f x := by
@@ -102,4 +109,3 @@ theorem logDeriv_comp {f : 𝕜' → 𝕜'} {g : 𝕜 → 𝕜'} {x : 𝕜} (hf 
     (hg : DifferentiableAt 𝕜 g x) : logDeriv (f ∘ g) x = logDeriv f (g x) * deriv g x := by
   simp only [logDeriv, Pi.div_apply, deriv.comp _ hf hg, comp_apply]
   ring
-

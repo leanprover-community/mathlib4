@@ -356,7 +356,9 @@ Single Variable Real Analysis:
     Weierstrass trigonometric approximation theorem: 'span_fourier_closure_eq_top'
   Convexity:
     convex functions of a real variable: 'ConvexOn'
-    continuity and differentiability of convex functions: 'https://en.wikipedia.org/wiki/Convex_function#Functions_of_one_variable'
+    continuity and differentiability of convex functions:
+      continuity: 'ConvexOn.continuousOn'
+      differentiability: 'https://en.wikipedia.org/wiki/Convex_function#Functions_of_one_variable'
     characterizations of convexity: 'convexOn_of_deriv2_nonneg'
     convexity inequalities: 'analysis/mean_inequalities.html'
 

@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.Order.Field.Rat
 
 /-!
@@ -60,13 +61,6 @@ end Rat
 namespace NNRat
 
 variable {p q : ℚ≥0}
-
-@[simp]
-lemma num_div_den (q : ℚ≥0) : (q.num : ℚ≥0) / q.den = q := by
-  ext : 1
-  rw [coe_div, coe_natCast, coe_natCast, num, ← Int.cast_natCast,
-    Int.natAbs_of_nonneg (Rat.num_nonneg.2 q.cast_nonneg)]
-  exact Rat.num_div_den q
 
 /-- A recursor for nonnegative rationals in terms of numerators and denominators. -/
 protected def rec {α : ℚ≥0 → Sort*} (h : ∀ m n : ℕ, α (m / n)) (q : ℚ≥0) : α q := by

@@ -50,7 +50,7 @@ instance : Bicategory (MonoidalSingleObj C) where
   Hom _ _ := C
   id _ := 𝟙_ C
   comp X Y := tensorObj X Y
-  whiskerLeft X Y Z f := X ◁ f
+  whiskerLeft X _ _ f := X ◁ f
   whiskerRight f Z := f ▷ Z
   associator X Y Z := α_ X Y Z
   leftUnitor X := λ_ X
@@ -75,7 +75,7 @@ def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.sta
   obj X := X
   map f := f
   ε := 𝟙 _
-  μ X Y := 𝟙 _
+  μ _ _ := 𝟙 _
 
 /-- The equivalence between the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,

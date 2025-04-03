@@ -35,12 +35,12 @@ lemma ZMod.natCast_smul_units (n : ℕ) (au : Additive ℤˣ) : (n : ZMod 2) •
 /-- This is an indirect way of saying that `ℤˣ` has a power operation by `ZMod 2`. -/
 instance : Module (ZMod 2) (Additive ℤˣ) where
   smul z au := .ofMul <| Additive.toMul au ^ z.val
-  one_smul au := Additive.toMul.injective <| pow_one _
+  one_smul _ := Additive.toMul.injective <| pow_one _
   mul_smul z₁ z₂ au := Additive.toMul.injective <| by
     dsimp only [ZMod.smul_units_def, toMul_nsmul]
     rw [← pow_mul, ZMod.val_mul, ← Int.units_pow_eq_pow_mod_two, mul_comm]
-  smul_zero z := Additive.toMul.injective <| one_pow _
-  smul_add z au₁ au₂ := Additive.toMul.injective <| mul_pow _ _ _
+  smul_zero _ := Additive.toMul.injective <| one_pow _
+  smul_add _ _ _ := Additive.toMul.injective <| mul_pow _ _ _
   add_smul z₁ z₂ au := Additive.toMul.injective <| by
     dsimp only [ZMod.smul_units_def, toMul_nsmul, toMul_add]
     rw [← pow_add, ZMod.val_add, ← Int.units_pow_eq_pow_mod_two]

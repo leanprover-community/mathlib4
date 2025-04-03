@@ -71,7 +71,7 @@ noncomputable section
 
 open scoped RealInnerProductSpace ComplexConjugate
 
-open FiniteDimensional
+open Module
 
 lemma FiniteDimensional.of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
     [AddCommGroup V] [Module K V] [Fact (finrank K V = 2)] : FiniteDimensional K V :=
@@ -204,7 +204,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
         exact o.areaForm_le x (o.rightAngleRotationAux₁ x)
       · let K : Submodule ℝ E := ℝ ∙ x
         have : Nontrivial Kᗮ := by
-          apply @FiniteDimensional.nontrivial_of_finrank_pos ℝ
+          apply nontrivial_of_finrank_pos (R := ℝ)
           have : finrank ℝ K ≤ Finset.card {x} := by
             rw [← Set.toFinset_singleton]
             exact finrank_span_le_card ({x} : Set E)
@@ -260,7 +260,6 @@ theorem rightAngleRotation_symm :
   rw [rightAngleRotation]
   exact LinearIsometryEquiv.toLinearIsometry_injective rfl
 
--- @[simp] -- Porting note (#10618): simp already proves this
 theorem inner_rightAngleRotation_self (x : E) : ⟪J x, x⟫ = 0 := by simp
 
 theorem inner_rightAngleRotation_swap (x y : E) : ⟪x, J y⟫ = -⟪J x, y⟫ := by simp
@@ -279,7 +278,6 @@ theorem areaForm_rightAngleRotation_left (x y : E) : ω (J x) y = -⟪x, y⟫ :=
 theorem areaForm_rightAngleRotation_right (x y : E) : ω x (J y) = ⟪x, y⟫ := by
   rw [← o.inner_rightAngleRotation_left, o.inner_comp_rightAngleRotation]
 
--- @[simp] -- Porting note (#10618): simp already proves this
 theorem areaForm_comp_rightAngleRotation (x y : E) : ω (J x) (J y) = ω x y := by simp
 
 @[simp]

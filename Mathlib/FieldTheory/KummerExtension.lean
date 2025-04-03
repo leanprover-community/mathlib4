@@ -182,7 +182,7 @@ theorem X_pow_sub_C_irreducible_iff_of_prime {p : ℕ} (hp : p.Prime) {a : K} :
 
 theorem X_pow_mul_sub_C_irreducible
     {n m : ℕ} {a : K} (hm : Irreducible (X ^ m - C a))
-    (hn : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (hx : minpoly K x = X ^ m - C a),
+    (hn : ∀ (E : Type u) [Field E] [Algebra K E] (x : E) (_ : minpoly K x = X ^ m - C a),
       Irreducible (X ^ n - C (AdjoinSimple.gen K x))) :
     Irreducible (X ^ (n * m) - C a) := by
   have hm' : m ≠ 0 := by
@@ -272,6 +272,11 @@ theorem Polynomial.separable_X_pow_sub_C_of_irreducible : (X ^ n - C a).Separabl
     AdjoinRoot.algebraMap_eq,
     X_pow_sub_C_eq_prod (hζ.map_of_injective (algebraMap K _).injective) hn
     (root_X_pow_sub_C_pow n a), separable_prod_X_sub_C_iff']
+  #adaptation_note
+  /--
+  After https://github.com/leanprover/lean4/pull/5376 we need to provide this helper instance.
+  -/
+  have : MonoidHomClass (K →+* K[n√a]) K K[n√a] := inferInstance
   exact (hζ.map_of_injective (algebraMap K K[n√a]).injective).injOn_pow_mul
     (root_X_pow_sub_C_ne_zero (lt_of_le_of_ne (show 1 ≤ n from hn) (Ne.symm hn')) _)
 
@@ -364,7 +369,6 @@ lemma autAdjoinRootXPowSubCEquiv_root (η) :
     autAdjoinRootXPowSubCEquiv hζ hn H η (root _) = ((η : Kˣ) : K) • root _ :=
   autAdjoinRootXPowSubC_root hn a η
 
-set_option tactic.skipAssignedInstances false in
 lemma autAdjoinRootXPowSubCEquiv_symm_smul (σ) :
     ((autAdjoinRootXPowSubCEquiv hζ hn H).symm σ : Kˣ) • (root _ : K[n√a]) = σ (root _) := by
   have := Fact.mk H
@@ -375,7 +379,7 @@ lemma autAdjoinRootXPowSubCEquiv_symm_smul (σ) :
     Units.val_ofPowEqOne, ite_mul, one_mul, ne_eq]
   simp_rw [← root_X_pow_sub_C_eq_zero_iff H]
   split_ifs with h
-  · rw [h, mul_zero, map_zero]
+  · rw [h, map_zero]
   · rw [div_mul_cancel₀ _ h]
 
 end AdjoinRoot
@@ -530,7 +534,7 @@ lemma isGalois_of_isSplittingField_X_pow_sub_C : IsGalois K L :=
   IsGalois.of_separable_splitting_field (separable_X_pow_sub_C_of_irreducible hζ a H)
 
 include hζ H in
-lemma finrank_of_isSplittingField_X_pow_sub_C : FiniteDimensional.finrank K L = n := by
+lemma finrank_of_isSplittingField_X_pow_sub_C : Module.finrank K L = n := by
   have := Polynomial.IsSplittingField.finiteDimensional L (X ^ n - C a)
   have := isGalois_of_isSplittingField_X_pow_sub_C hζ H L
   have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
@@ -545,9 +549,9 @@ end IsSplittingField
 section IsCyclic
 
 variable {L} [Field L] [Algebra K L] [FiniteDimensional K L]
-variable (hK : (primitiveRoots (FiniteDimensional.finrank K L) K).Nonempty)
+variable (hK : (primitiveRoots (Module.finrank K L) K).Nonempty)
 
-open FiniteDimensional
+open Module
 variable (K L)
 
 include hK in
@@ -623,7 +627,7 @@ lemma isSplittingField_X_pow_sub_C_of_root_adjoin_eq_top
 
 end IsCyclic
 
-open FiniteDimensional in
+open Module in
 /--
 Suppose `L/K` is a finite extension of dimension `n`, and `K` contains all `n`-th roots of unity.
 Then `L/K` is cyclic iff
@@ -631,7 +635,7 @@ Then `L/K` is cyclic iff
 `L = K[α]` for some `αⁿ ∈ K`.
 -/
 lemma isCyclic_tfae (K L) [Field K] [Field L] [Algebra K L] [FiniteDimensional K L]
-    (hK : (primitiveRoots (FiniteDimensional.finrank K L) K).Nonempty) :
+    (hK : (primitiveRoots (Module.finrank K L) K).Nonempty) :
     List.TFAE [
       IsGalois K L ∧ IsCyclic (L ≃ₐ[K] L),
       ∃ a : K, Irreducible (X ^ (finrank K L) - C a) ∧

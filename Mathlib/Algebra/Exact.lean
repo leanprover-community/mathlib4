@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.LinearAlgebra.Prod
-import Mathlib.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-! # Exactness of a pair
 

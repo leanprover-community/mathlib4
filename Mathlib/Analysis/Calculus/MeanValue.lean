@@ -808,7 +808,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
         exact differentiableWithinAt_of_derivWithin_ne_zero this
       have hcont_Ioc : ∀ z ∈ Ioc a b, ContinuousWithinAt f (Icc a b) z := by
         intro z hz''
-        refine (hdiff'.continuousOn z hz'').mono_of_mem ?_
+        refine (hdiff'.continuousOn z hz'').mono_of_mem_nhdsWithin ?_
         have hfinal : 𝓝[Ioc a b] z = 𝓝[Icc a b] z := by
           refine nhdsWithin_eq_nhdsWithin' (s := Ioi a) (Ioi_mem_nhds hz''.1) ?_
           simp only [Ioc_inter_Ioi, le_refl, sup_of_le_left]
@@ -901,7 +901,7 @@ theorem Convex.mul_sub_lt_image_sub_of_lt_deriv {D : Set ℝ} (hD : Convex ℝ D
   obtain ⟨a, a_mem, ha⟩ : ∃ a ∈ Ioo x y, deriv f a = (f y - f x) / (y - x) :=
     exists_deriv_eq_slope f hxy (hf.mono hxyD) (hf'.mono hxyD')
   have : C < (f y - f x) / (y - x) := ha ▸ hf'_gt _ (hxyD' a_mem)
-  exact (lt_div_iff (sub_pos.2 hxy)).1 this
+  exact (lt_div_iff₀ (sub_pos.2 hxy)).1 this
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `C < f'`, then `f` grows faster than
 `C * x`, i.e., `C * (y - x) < f y - f x` whenever `x < y`. -/
@@ -1039,14 +1039,14 @@ of the real line. If `f` is differentiable on the interior of `D` and `f'` is no
 lemma monotoneOn_of_hasDerivWithinAt_nonneg {D : Set ℝ} (hD : Convex ℝ D) {f f' : ℝ → ℝ}
     (hf : ContinuousOn f D) (hf' : ∀ x ∈ interior D, HasDerivWithinAt f (f' x) (interior D) x)
     (hf'₀ : ∀ x ∈ interior D, 0 ≤ f' x) : MonotoneOn f D :=
-  monotoneOn_of_deriv_nonneg hD hf (fun x hx ↦ (hf' _ hx).differentiableWithinAt) fun x hx ↦ by
+  monotoneOn_of_deriv_nonneg hD hf (fun _ hx ↦ (hf' _ hx).differentiableWithinAt) fun x hx ↦ by
     rw [deriv_eqOn isOpen_interior hf' hx]; exact hf'₀ _ hx
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f'` is nonnegative, then
 `f` is a monotone function. -/
 lemma monotone_of_hasDerivAt_nonneg {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt f (f' x) x)
     (hf' : 0 ≤ f') : Monotone f :=
-  monotone_of_deriv_nonneg (fun x ↦ (hf _).differentiableAt) fun x ↦ by
+  monotone_of_deriv_nonneg (fun _ ↦ (hf _).differentiableAt) fun x ↦ by
     rw [(hf _).deriv]; exact hf' _
 
 /-- Let `f` be a function continuous on a convex (or, equivalently, connected) subset `D`
@@ -1114,14 +1114,14 @@ of the real line. If `f` is differentiable on the interior of `D` and `f'` is no
 lemma antitoneOn_of_hasDerivWithinAt_nonpos {D : Set ℝ} (hD : Convex ℝ D) {f f' : ℝ → ℝ}
     (hf : ContinuousOn f D) (hf' : ∀ x ∈ interior D, HasDerivWithinAt f (f' x) (interior D) x)
     (hf'₀ : ∀ x ∈ interior D, f' x ≤ 0) : AntitoneOn f D :=
-  antitoneOn_of_deriv_nonpos hD hf (fun x hx ↦ (hf' _ hx).differentiableWithinAt) fun x hx ↦ by
+  antitoneOn_of_deriv_nonpos hD hf (fun _ hx ↦ (hf' _ hx).differentiableWithinAt) fun x hx ↦ by
     rw [deriv_eqOn isOpen_interior hf' hx]; exact hf'₀ _ hx
 
 /-- Let `f : ℝ → ℝ` be a differentiable function. If `f'` is nonpositive, then `f` is an antitone
 function. -/
 lemma antitone_of_hasDerivAt_nonpos {f f' : ℝ → ℝ} (hf : ∀ x, HasDerivAt f (f' x) x)
     (hf' : f' ≤ 0) : Antitone f :=
-  antitone_of_deriv_nonpos (fun x ↦ (hf _).differentiableAt) fun x ↦ by
+  antitone_of_deriv_nonpos (fun _ ↦ (hf _).differentiableAt) fun x ↦ by
     rw [(hf _).deriv]; exact hf' _
 
 /-! ### Functions `f : E → ℝ` -/

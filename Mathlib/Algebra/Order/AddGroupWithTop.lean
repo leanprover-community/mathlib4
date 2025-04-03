@@ -25,7 +25,7 @@ whereas it is a very common target for valuations.
 The solutions is to use a typeclass, and that is exactly what we do in this file.
 -/
 
-variable {α β : Type*}
+variable {α : Type*}
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
@@ -47,7 +47,7 @@ instance WithTop.linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid �
     top_add' := WithTop.top_add }
 
 section LinearOrderedAddCommMonoidWithTop
-variable [LinearOrderedAddCommMonoidWithTop α] {a b c d x y z : α} {n : ℕ}
+variable [LinearOrderedAddCommMonoidWithTop α]
 
 @[simp]
 theorem top_add (a : α) : ⊤ + a = ⊤ :=
@@ -65,7 +65,7 @@ open Function
 
 namespace LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α] {a b c d : α}
+variable [LinearOrderedAddCommGroup α]
 
 instance instNeg : Neg (WithTop α) where neg := Option.map fun a : α => -a
 

@@ -27,7 +27,7 @@ noncomputable section
 
 open scoped NNReal Filter Topology ENNReal
 
-open Asymptotics Filter Set Real MeasureTheory FiniteDimensional
+open Asymptotics Filter Set Real MeasureTheory Module
 
 variable {E : Type*} [NormedAddCommGroup E]
 
@@ -85,7 +85,7 @@ theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ
   refine IntegrableOn.setLIntegral_lt_top ?_
   rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le zero_le_one]
   apply intervalIntegral.intervalIntegrable_rpow'
-  rwa [neg_lt_neg_iff, inv_mul_lt_iff' hr, one_mul]
+  rwa [neg_lt_neg_iff, inv_mul_lt_iff₀' hr, one_mul]
 
 variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [μ.IsAddHaarMeasure]
 
@@ -126,7 +126,7 @@ theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r)
     -- The integral over the constant zero function is finite:
     rw [setLIntegral_congr_fun measurableSet_Ioi (ae_of_all volume <| h_int''), lintegral_const 0,
       zero_mul]
-    exact WithTop.zero_lt_top
+    exact WithTop.top_pos
 
 theorem integrable_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
     Integrable (fun x ↦ (1 + ‖x‖) ^ (-r)) μ := by

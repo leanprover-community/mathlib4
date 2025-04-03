@@ -112,7 +112,7 @@ lemma Nat.cast_pos_of_pos {R : Type} [OrderedSemiring R] [Nontrivial R] {n : ℕ
   Nat.cast_pos.mpr
 
 lemma Nat.one_le_cast_of_le {α : Type} [AddCommMonoidWithOne α] [PartialOrder α]
-    [CovariantClass α α (fun (x y : α) => x + y) fun (x y : α) => x ≤ y] [ZeroLEOneClass α]
+    [AddLeftMono α] [ZeroLEOneClass α]
     [CharZero α] {n : ℕ} : 1 ≤ n → 1 ≤ (n : α) :=
   Nat.one_le_cast.mpr
 

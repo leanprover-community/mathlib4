@@ -25,7 +25,7 @@ corresponding quotient type, then there is a corresponding term in the
 quotient of the product of the setoids indexed by `l`. -/
 def Quotient.finChoiceAux {ι : Type*} [DecidableEq ι] {α : ι → Type*} [S : ∀ i, Setoid (α i)] :
     ∀ l : List ι, (∀ i ∈ l, Quotient (S i)) → @Quotient (∀ i ∈ l, α i) (by infer_instance)
-  | [], _ => ⟦fun i h => nomatch List.not_mem_nil _ h⟧
+  | [], _ => ⟦fun _ h => nomatch List.not_mem_nil _ h⟧
   | i :: l, f => by
     refine Quotient.liftOn₂ (f i (List.mem_cons_self _ _))
         (Quotient.finChoiceAux l fun j h => f j (List.mem_cons_of_mem _ h)) ?_ ?_
@@ -40,7 +40,7 @@ def Quotient.finChoiceAux {ι : Type*} [DecidableEq ι] {α : ι → Type*} [S :
 theorem Quotient.finChoiceAux_eq {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [S : ∀ i, Setoid (α i)] :
     ∀ (l : List ι) (f : ∀ i ∈ l, α i), (Quotient.finChoiceAux l fun i h => ⟦f i h⟧) = ⟦f⟧
-  | [], f => Quotient.sound fun i h => nomatch List.not_mem_nil _ h
+  | [], _ => Quotient.sound fun _ h => nomatch List.not_mem_nil _ h
   | i :: l, f => by
     simp only [finChoiceAux, Quotient.finChoiceAux_eq l, eq_mpr_eq_cast, lift_mk]
     refine Quotient.sound fun j h => ?_
@@ -66,7 +66,7 @@ def Quotient.finChoice {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → T
       · exact eqRec_heq (φ := fun l : Multiset ι => @Quotient (∀ i ∈ l, α i) (by infer_instance))
           (Quotient.sound h) (g a)
       · change HEq (g a) (g b); congr 1; exact Quotient.sound h))
-    (fun f => ⟦fun i => f i (Finset.mem_univ _)⟧) (fun a b h => Quotient.sound fun i => by apply h)
+    (fun f => ⟦fun i => f i (Finset.mem_univ _)⟧) (fun _ _ h => Quotient.sound fun i => by apply h)
 
 theorem Quotient.finChoice_eq {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → Type*}
     [∀ i, Setoid (α i)] (f : ∀ i, α i) : (Quotient.finChoice fun i => ⟦f i⟧) = ⟦f⟧ := by

@@ -3,7 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Ideal.Pointwise
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.Localization.Integral
 
@@ -29,11 +29,9 @@ variable {R : Type*} [CommRing R]
 
 namespace Ideal
 
-open Polynomial
+open Polynomial Submodule
 
-open Polynomial
-
-open Submodule
+open scoped Pointwise
 
 section CommRing
 
@@ -428,5 +426,136 @@ lemma map_eq_top_iff {R S} [CommRing R] [CommRing S]
   map_eq_top_iff_of_ker_le f (by simp [f.injective_iff_ker_eq_bot.mp hf₁]) hf₂
 
 end IsDomain
+
+section ideal_liesOver
+
+section Semiring
+
+variable (A : Type*) [CommSemiring A] {B : Type*} [Semiring B] [Algebra A B]
+  (P : Ideal B) (p : Ideal A)
+
+/-- The ideal obtained by pulling back the ideal `P` from `B` to `A`. -/
+abbrev under : Ideal A := Ideal.comap (algebraMap A B) P
+
+theorem under_def : P.under A = Ideal.comap (algebraMap A B) P := rfl
+
+instance IsPrime.under [hP : P.IsPrime] : (P.under A).IsPrime :=
+  hP.comap (algebraMap A B)
+
+@[simp]
+lemma under_smul {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G A B] (g : G) :
+    (g • P : Ideal B).under A = P.under A := by
+  ext a
+  rw [mem_comap, mem_comap, mem_pointwise_smul_iff_inv_smul_mem, smul_algebraMap]
+
+variable {A}
+
+/-- `P` lies over `p` if `p` is the preimage of `P` of the `algebraMap`. -/
+class LiesOver : Prop where
+  over : p = P.under A
+
+instance over_under : P.LiesOver (P.under A) where over := rfl
+
+theorem over_def [P.LiesOver p] : p = P.under A := LiesOver.over
+
+theorem mem_of_liesOver [P.LiesOver p] (x : A) : x ∈ p ↔ algebraMap A B x ∈ P := by
+  rw [P.over_def p]
+  rfl
+
+end Semiring
+
+section CommSemiring
+
+variable {A : Type*} [CommSemiring A] {B : Type*} [CommSemiring B] {C : Type*} [Semiring C]
+  [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
+  (𝔓 : Ideal C) (P : Ideal B) (p : Ideal A)
+
+@[simp]
+theorem under_under : (𝔓.under B).under A  = 𝔓.under A := by
+  simp_rw [comap_comap, ← IsScalarTower.algebraMap_eq]
+
+theorem LiesOver.trans [𝔓.LiesOver P] [P.LiesOver p] : 𝔓.LiesOver p where
+  over := by rw [P.over_def p, 𝔓.over_def P, under_under]
+
+theorem LiesOver.tower_bot [hp : 𝔓.LiesOver p] [hP : 𝔓.LiesOver P] : P.LiesOver p where
+  over := by rw [𝔓.over_def p, 𝔓.over_def P, under_under]
+
+variable (B)
+
+instance under_liesOver_of_liesOver [𝔓.LiesOver p] : (𝔓.under B).LiesOver p :=
+  LiesOver.tower_bot 𝔓 (𝔓.under B) p
+
+end CommSemiring
+
+section CommRing
+
+namespace Quotient
+
+variable (R : Type*) [CommSemiring R] {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+  [Algebra R A] [Algebra R B] [IsScalarTower R A B] (P : Ideal B) (p : Ideal A) [P.LiesOver p]
+
+/-- If `P` lies over `p`, then canonically `B ⧸ P` is a `A ⧸ p`-algebra. -/
+instance algebraOfLiesOver : Algebra (A ⧸ p) (B ⧸ P) :=
+  algebraQuotientOfLEComap (le_of_eq (P.over_def p))
+
+instance isScalarTower_of_liesOver : IsScalarTower R (A ⧸ p) (B ⧸ P) :=
+  IsScalarTower.of_algebraMap_eq' <|
+    congrArg (algebraMap B (B ⧸ P)).comp (IsScalarTower.algebraMap_eq R A B)
+
+/-- `B ⧸ P` is a finite `A ⧸ p`-module if `B` is a finite `A`-module. -/
+instance module_finite_of_liesOver [Module.Finite A B] : Module.Finite (A ⧸ p) (B ⧸ P) :=
+  Module.Finite.of_restrictScalars_finite A (A ⧸ p) (B ⧸ P)
+
+example [Module.Finite A B] : Module.Finite (A ⧸ P.under A) (B ⧸ P) := inferInstance
+
+/-- `B ⧸ P` is a finitely generated `A ⧸ p`-algebra if `B` is a finitely generated `A`-algebra. -/
+instance algebra_finiteType_of_liesOver [Algebra.FiniteType A B] :
+    Algebra.FiniteType (A ⧸ p) (B ⧸ P) :=
+  Algebra.FiniteType.of_restrictScalars_finiteType A (A ⧸ p) (B ⧸ P)
+
+/-- `B ⧸ P` is a Noetherian `A ⧸ p`-module if `B` is a Noetherian `A`-module. -/
+instance isNoetherian_of_liesOver [IsNoetherian A B] : IsNoetherian (A ⧸ p) (B ⧸ P) :=
+  isNoetherian_of_tower A inferInstance
+
+theorem algebraMap_injective_of_liesOver :
+    Function.Injective (algebraMap (A ⧸ p) (B ⧸ P)) := by
+  rintro ⟨a⟩ ⟨b⟩ hab
+  apply Quotient.eq.mpr ((mem_of_liesOver P p (a - b)).mpr _)
+  rw [RingHom.map_sub]
+  exact Quotient.eq.mp hab
+
+instance [P.IsPrime] : NoZeroSMulDivisors (A ⧸ p) (B ⧸ P) :=
+  NoZeroSMulDivisors.of_algebraMap_injective (Quotient.algebraMap_injective_of_liesOver P p)
+
+end Quotient
+
+end CommRing
+
+section IsIntegral
+
+variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] [Algebra A B] [Algebra.IsIntegral A B]
+  (P : Ideal B) (p : Ideal A) [P.LiesOver p]
+
+variable (A) in
+/-- If `B` is an integral `A`-algebra, `P` is a maximal ideal of `B`, then the pull back of
+  `P` is also a maximal ideal of `A`. -/
+instance IsMaximal.under [P.IsMaximal] : (P.under A).IsMaximal :=
+  isMaximal_comap_of_isIntegral_of_isMaximal P
+
+theorem IsMaximal.of_liesOver_isMaximal [hpm : p.IsMaximal] [P.IsPrime] : P.IsMaximal := by
+  rw [P.over_def p] at hpm
+  exact isMaximal_of_isIntegral_of_isMaximal_comap P hpm
+
+theorem IsMaximal.of_isMaximal_liesOver [P.IsMaximal] : p.IsMaximal := by
+  rw [P.over_def p]
+  exact isMaximal_comap_of_isIntegral_of_isMaximal P
+
+/-- `B ⧸ P` is an integral `A ⧸ p`-algebra if `B` is a integral `A`-algebra. -/
+instance Quotient.algebra_isIntegral_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=
+  Algebra.IsIntegral.tower_top A
+
+end IsIntegral
+
+end ideal_liesOver
 
 end Ideal

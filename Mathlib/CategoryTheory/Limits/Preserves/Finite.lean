@@ -27,7 +27,7 @@ open CategoryTheory
 namespace CategoryTheory.Limits
 
 -- declare the `v`'s first; see `CategoryTheory.Category` for an explanation
-universe w w₂ v₁ v₂ v₃ u₁ u₂ u₃
+universe u w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
@@ -84,6 +84,11 @@ def compPreservesFiniteLimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteLimits
     [PreservesFiniteLimits G] : PreservesFiniteLimits (F ⋙ G) :=
   ⟨fun _ _ _ => inferInstance⟩
 
+/-- Transfer preservation of finite limits along a natural isomorphism in the functor. -/
+def preservesFiniteLimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [PreservesFiniteLimits F] :
+    PreservesFiniteLimits G where
+  preservesFiniteLimits _ _ _ := preservesLimitsOfShapeOfNatIso h
+
 /- Porting note: adding this class because quantified classes don't behave well
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J`
@@ -92,6 +97,12 @@ class PreservesFiniteProducts (F : C ⥤ D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesLimitsOfShape (Discrete J) F
 
 attribute [instance] PreservesFiniteProducts.preserves
+
+noncomputable instance (priority := 100) (F : C ⥤ D) (J : Type u) [Finite J]
+    [PreservesFiniteProducts F] : PreservesLimitsOfShape (Discrete J) F := by
+  apply Nonempty.some
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
+  exact ⟨preservesLimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F⟩
 
 instance compPreservesFiniteProducts (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteProducts F] [PreservesFiniteProducts G] :
@@ -225,6 +236,11 @@ def compPreservesFiniteColimits (F : C ⥤ D) (G : D ⥤ E) [PreservesFiniteColi
     [PreservesFiniteColimits G] : PreservesFiniteColimits (F ⋙ G) :=
   ⟨fun _ _ _ => inferInstance⟩
 
+/-- Transfer preservation of finite colimits along a natural isomorphism in the functor. -/
+def preservesFiniteColimitsOfNatIso {F G : C ⥤ D} (h : F ≅ G) [PreservesFiniteColimits F] :
+    PreservesFiniteColimits G where
+  preservesFiniteColimits _ _ _ := preservesColimitsOfShapeOfNatIso h
+
 /- Porting note: adding this class because quantified classes don't behave well
 [#2764](https://github.com/leanprover-community/mathlib4/pull/2764) -/
 /-- A functor `F` preserves finite products if it preserves all from `Discrete J`
@@ -233,21 +249,21 @@ class PreservesFiniteCoproducts (F : C ⥤ D) where
   /-- preservation of colimits indexed by `Discrete J` when `[Fintype J]` -/
   preserves : ∀ (J : Type) [Fintype J], PreservesColimitsOfShape (Discrete J) F
 
-noncomputable instance (F : C ⥤ D) (J : Type*) [Finite J] [PreservesFiniteCoproducts F] :
-    PreservesColimitsOfShape (Discrete J) F := by
+attribute [instance] PreservesFiniteCoproducts.preserves
+
+noncomputable instance (priority := 100) (F : C ⥤ D) (J : Type u) [Finite J]
+    [PreservesFiniteCoproducts F] : PreservesColimitsOfShape (Discrete J) F := by
   apply Nonempty.some
   obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
-  have : PreservesColimitsOfShape (Discrete (Fin n)) F := PreservesFiniteCoproducts.preserves _
   exact ⟨preservesColimitsOfShapeOfEquiv (Discrete.equivalence e.symm) F⟩
 
-noncomputable instance compPreservesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
+instance compPreservesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
     [PreservesFiniteCoproducts F] [PreservesFiniteCoproducts G] :
     PreservesFiniteCoproducts (F ⋙ G) where
   preserves _ _ := inferInstance
 
 noncomputable instance (F : C ⥤ D) [PreservesFiniteColimits F] : PreservesFiniteCoproducts F where
   preserves _ _ := inferInstance
-
 
 /--
 A functor is said to reflect finite colimits, if it reflects all colimits of shape `J`,

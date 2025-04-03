@@ -50,8 +50,6 @@ theorem comp_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
     Mon_.Hom.hom (f ≫ g) = f.hom ≫ g.hom :=
   rfl
 
--- Porting note (#5229): added because `Mon_.Hom.ext` is not triggered automatically
--- for morphisms in `CommMon_ C`
 @[ext]
 lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
   Mon_.Hom.ext h

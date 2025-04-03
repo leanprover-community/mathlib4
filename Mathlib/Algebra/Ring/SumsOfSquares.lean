@@ -3,9 +3,8 @@ Copyright (c) 2024 Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Florent Schaffhauser
 -/
-import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Submonoid.Basic
-import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
@@ -60,6 +59,15 @@ theorem IsSumSq.add [AddMonoid R] {S1 S2 : R} (p1 : IsSumSq S1)
   | sq_add a S pS ih => rw [add_assoc]; exact IsSumSq.sq_add a (S + S2) ih
 
 @[deprecated (since := "2024-08-09")] alias isSumSq.add := IsSumSq.add
+
+/-- A finite sum of squares is a sum of squares. -/
+theorem isSumSq_sum_mul_self {ι : Type*} [AddCommMonoid R] (s : Finset ι) (f : ι → R) :
+    IsSumSq (∑ i ∈ s, f i * f i) := by
+  induction s using Finset.cons_induction with
+  | empty =>
+    simpa only [Finset.sum_empty] using IsSumSq.zero
+  | cons i s his h =>
+    exact (Finset.sum_cons (β := R) his) ▸ IsSumSq.sq_add (f i) (∑ i ∈ s, f i * f i) h
 
 variable (R) in
 /--

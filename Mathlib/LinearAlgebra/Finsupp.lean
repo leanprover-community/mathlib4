@@ -276,7 +276,7 @@ def supported (s : Set α) : Submodule R (α →₀ M) where
     simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]
     intro h ha
     exact (ha rfl).elim
-  smul_mem' a p hp := Subset.trans (Finset.coe_subset.2 support_smul) hp
+  smul_mem' _ _ hp := Subset.trans (Finset.coe_subset.2 support_smul) hp
 
 variable {M}
 
@@ -636,9 +636,14 @@ theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 :=
 
 variable {α M}
 
+theorem linearCombination_linear_comp (f : M →ₗ[R] M') :
+    linearCombination R (f ∘ v) = f ∘ₗ linearCombination R v := by
+  ext
+  simp [linearCombination_apply]
+
 theorem apply_linearCombination (f : M →ₗ[R] M') (v) (l : α →₀ R) :
-    f (linearCombination R v l) = linearCombination R (f ∘ v) l := by
-  apply Finsupp.induction_linear l <;> simp (config := { contextual := true })
+    f (linearCombination R v l) = linearCombination R (f ∘ v) l :=
+  congr($(linearCombination_linear_comp R f) l).symm
 
 @[deprecated (since := "2024-08-29")] alias apply_total := apply_linearCombination
 
@@ -889,7 +894,6 @@ theorem domLCongr_symm {α₁ α₂ : Type*} (f : α₁ ≃ α₂) :
     ((Finsupp.domLCongr f).symm : (_ →₀ M) ≃ₗ[R] _) = Finsupp.domLCongr f.symm :=
   LinearEquiv.ext fun _ => rfl
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem domLCongr_single {α₁ : Type*} {α₂ : Type*} (e : α₁ ≃ α₂) (i : α₁) (m : M) :
     (Finsupp.domLCongr e : _ ≃ₗ[R] _) (Finsupp.single i m) = Finsupp.single (e i) m := by
   simp
@@ -1226,10 +1230,8 @@ protected theorem Submodule.finsupp_sum_mem {ι β : Type*} [Zero β] (S : Submo
   AddSubmonoidClass.finsupp_sum_mem S f g h
 
 theorem LinearMap.map_finsupp_linearCombination (f : M →ₗ[R] N) {ι : Type*} {g : ι → M}
-    (l : ι →₀ R) : f (linearCombination R g l) = linearCombination R (f ∘ g) l := by
-  -- Porting note: `(· ∘ ·)` is required.
-  simp only [linearCombination_apply, linearCombination_apply, Finsupp.sum, map_sum, map_smul,
-             (· ∘ ·)]
+    (l : ι →₀ R) : f (linearCombination R g l) = linearCombination R (f ∘ g) l :=
+  apply_linearCombination _ _ _ _
 
 @[deprecated (since := "2024-08-29")] alias LinearMap.map_finsupp_total :=
   LinearMap.map_finsupp_linearCombination
@@ -1266,7 +1268,7 @@ theorem mem_span_finset {s : Finset M} {x : M} :
       (Finsupp.mem_span_image_iff_linearCombination _).1
         (show x ∈ span R (_root_.id '' (↑s : Set M)) by rwa [Set.image_id])
     ⟨v, hvx ▸ (linearCombination_apply_of_mem_supported _ hvs).symm⟩,
-    fun ⟨f, hf⟩ => hf ▸ sum_mem fun i hi => smul_mem _ _ <| subset_span hi⟩
+    fun ⟨_, hf⟩ => hf ▸ sum_mem fun _ hi => smul_mem _ _ <| subset_span hi⟩
 
 /-- An element `m ∈ M` is contained in the `R`-submodule spanned by a set `s ⊆ M`, if and only if
 `m` can be written as a finite `R`-linear combination of elements of `s`.
@@ -1331,8 +1333,7 @@ def splittingOfFinsuppSurjective (f : M →ₗ[R] α →₀ R) (s : Surjective f
 
 theorem splittingOfFinsuppSurjective_splits (f : M →ₗ[R] α →₀ R) (s : Surjective f) :
     f.comp (splittingOfFinsuppSurjective f s) = LinearMap.id := by
-  -- Porting note: `ext` can't find appropriate theorems.
-  refine lhom_ext' fun x => ext_ring <| Finsupp.ext fun y => ?_
+  ext x
   dsimp [splittingOfFinsuppSurjective]
   congr
   rw [sum_single_index, one_smul]
@@ -1357,8 +1358,7 @@ def splittingOfFunOnFintypeSurjective [Finite α] (f : M →ₗ[R] α → R) (s 
 theorem splittingOfFunOnFintypeSurjective_splits [Finite α] (f : M →ₗ[R] α → R)
     (s : Surjective f) : f.comp (splittingOfFunOnFintypeSurjective f s) = LinearMap.id := by
   classical
-  -- Porting note: `ext` can't find appropriate theorems.
-  refine pi_ext' fun x => ext_ring <| funext fun y => ?_
+  ext x y
   dsimp [splittingOfFunOnFintypeSurjective]
   rw [linearEquivFunOnFinite_symm_single, Finsupp.sum_single_index, one_smul,
     (s (Finsupp.single x 1)).choose_spec, Finsupp.single_eq_pi_single]

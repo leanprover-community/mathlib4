@@ -428,7 +428,7 @@ theorem _root_.Filter.Tendsto.mass {γ : Type*} {F : Filter γ} {μs : γ → Fi
 theorem tendsto_iff_weakDual_tendsto {γ : Type*} {F : Filter γ} {μs : γ → FiniteMeasure Ω}
     {μ : FiniteMeasure Ω} :
     Tendsto μs F (𝓝 μ) ↔ Tendsto (fun i ↦ (μs i).toWeakDualBCNN) F (𝓝 μ.toWeakDualBCNN) :=
-  Inducing.tendsto_nhds_iff ⟨rfl⟩
+  IsInducing.tendsto_nhds_iff ⟨rfl⟩
 
 theorem tendsto_iff_forall_toWeakDualBCNN_tendsto {γ : Type*} {F : Filter γ}
     {μs : γ → FiniteMeasure Ω} {μ : FiniteMeasure Ω} :
@@ -501,16 +501,18 @@ lemma injective_toWeakDualBCNN :
 
 variable (Ω)
 
-lemma embedding_toWeakDualBCNN :
-    Embedding (toWeakDualBCNN : FiniteMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)) where
-  induced := rfl
+lemma isEmbedding_toWeakDualBCNN :
+    IsEmbedding (toWeakDualBCNN : FiniteMeasure Ω → WeakDual ℝ≥0 (Ω →ᵇ ℝ≥0)) where
+  eq_induced := rfl
   inj := injective_toWeakDualBCNN
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_toWeakDualBCNN := isEmbedding_toWeakDualBCNN
 
 /-- On topological spaces where indicators of closed sets have decreasing approximating sequences of
 continuous functions (`HasOuterApproxClosed`), the topology of weak convergence of finite Borel
 measures is Hausdorff (`T2Space`). -/
-instance t2Space : T2Space (FiniteMeasure Ω) :=
-  Embedding.t2Space (embedding_toWeakDualBCNN Ω)
+instance t2Space : T2Space (FiniteMeasure Ω) := (isEmbedding_toWeakDualBCNN Ω).t2Space
 
 end Hausdorff -- section
 

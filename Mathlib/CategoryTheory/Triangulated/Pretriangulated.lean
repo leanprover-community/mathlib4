@@ -563,7 +563,7 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
     `φ'.hom₁` and `φ'.hom₂` are identities. Then, it suffices to show that
     `φ'.hom₃` is an isomorphism, which is achieved by using Yoneda's lemma
     and diagram chases. -/
-  let f₁ := Pi.map (fun j => (T j).mor₁)
+  let f₁ := Limits.Pi.map (fun j => (T j).mor₁)
   obtain ⟨Z, f₂, f₃, hT'⟩ := distinguished_cocone_triangle f₁
   let T' := Triangle.mk f₁ f₂ f₃
   change T' ∈ distTriang C at hT'

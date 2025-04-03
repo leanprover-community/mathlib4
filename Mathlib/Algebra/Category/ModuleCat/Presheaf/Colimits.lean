@@ -63,22 +63,22 @@ taking a colimit in the category of modules over `R.obj X` for all `X`. -/
 @[simps]
 noncomputable def colimitPresheafOfModules : PresheafOfModules R where
   obj X := colimit (F ⋙ evaluation R X)
-  map {X Y} f := colimMap (whiskerLeft F (restriction R f)) ≫
+  map {_ Y} f := colimMap (whiskerLeft F (restriction R f)) ≫
     (preservesColimitIso (ModuleCat.restrictScalars (R.map f)) (F ⋙ evaluation R Y)).inv
   map_id X := colimit.hom_ext (fun j => by
     dsimp
     rw [ι_colimMap_assoc, whiskerLeft_app, restriction_app]
-    erw [ι_preservesColimitsIso_inv (G := ModuleCat.restrictScalars (R.map (𝟙 X))),
+    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (𝟙 X))),
       ModuleCat.restrictScalarsId'App_inv_naturality]
     rw [map_id]
     dsimp)
   map_comp {X Y Z} f g := colimit.hom_ext (fun j => by
     dsimp
     rw [ι_colimMap_assoc, whiskerLeft_app, restriction_app, assoc, ι_colimMap_assoc]
-    erw [ι_preservesColimitsIso_inv (G := ModuleCat.restrictScalars (R.map (f ≫ g))),
-      ι_preservesColimitsIso_inv_assoc (G := ModuleCat.restrictScalars (R.map f))]
+    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map (f ≫ g))),
+      ι_preservesColimitIso_inv_assoc (G := ModuleCat.restrictScalars (R.map f))]
     rw [← Functor.map_comp_assoc, ι_colimMap_assoc]
-    erw [ι_preservesColimitsIso_inv (G := ModuleCat.restrictScalars (R.map g))]
+    erw [ι_preservesColimitIso_inv (G := ModuleCat.restrictScalars (R.map g))]
     rw [map_comp, ModuleCat.restrictScalarsComp'_inv_app, assoc, assoc,
       whiskerLeft_app, whiskerLeft_app, restriction_app, restriction_app]
     simp only [Functor.map_comp, assoc]
@@ -94,7 +94,7 @@ noncomputable def colimitCocone : Cocone F where
         { app := fun X ↦ colimit.ι (F ⋙ evaluation R X) j
           naturality := fun {X Y} f ↦ by
             dsimp
-            erw [colimit.ι_desc_assoc, assoc, ← ι_preservesColimitsIso_inv]
+            erw [colimit.ι_desc_assoc, assoc, ← ι_preservesColimitIso_inv]
             rfl }
       naturality := fun {X Y} f ↦ by
         ext1 X

@@ -32,7 +32,6 @@ This file contains basic definitions for root systems and root data.
 ## TODO
 
  * Base change of root pairings (may need flatness; perhaps should go in a different file).
- * Isomorphism of root pairings.
  * Crystallographic root systems are isomorphic to base changes of root systems over `ℤ`: Take
    `M₀` and `N₀` to be the `ℤ`-span of roots and coroots.
 
@@ -50,7 +49,6 @@ We have opted for a design in which some of the uniquely-determined data is incl
 between roots and coroots is (implicitly) included and the coroots are included for root systems.
 Empirically this seems to be by far the most convenient design and by providing extensionality
 lemmas expressing the uniqueness we expect to get the best of both worlds.
-
 
 Furthermore, we require roots and coroots to be injections from a base indexing type `ι` rather than
 subsets of their codomains. This design was chosen to avoid the bijection between roots and coroots
@@ -88,7 +86,7 @@ evaluates to `2`, and the permutation attached to each element of `ι` is compat
 reflections on the corresponding roots and coroots.
 
 It exists to allow for a convenient unification of the theories of root systems and root data. -/
-structure RootPairing extends PerfectPairing R M N :=
+structure RootPairing extends PerfectPairing R M N where
   /-- A parametrized family of vectors, called roots. -/
   root : ι ↪ M
   /-- A parametrized family of dual vectors, called coroots. -/
@@ -112,7 +110,7 @@ abbrev RootDatum (X₁ X₂ : Type*) [AddCommGroup X₁] [AddCommGroup X₂] := 
 
 Note that this is slightly more general than the usual definition in the sense that `N` is not
 required to be the dual of `M`. -/
-structure RootSystem extends RootPairing ι R M N :=
+structure RootSystem extends RootPairing ι R M N where
   span_eq_top : span R (range root) = ⊤
 
 attribute [simp] RootSystem.span_eq_top
@@ -146,11 +144,25 @@ protected def flip : RootPairing ι R N M :=
 lemma flip_flip : P.flip.flip = P :=
   rfl
 
+/-- Roots written as functionals on the coweight space. -/
+abbrev root' (i : ι) : Dual R N := P.toPerfectPairing (P.root i)
+
+/-- Coroots written as functionals on the weight space. -/
+abbrev coroot' (i : ι) : Dual R M := P.toPerfectPairing.flip (P.coroot i)
+
 /-- This is the pairing between roots and coroots. -/
-def pairing : R := P.toPerfectPairing (P.root i) (P.coroot j)
+def pairing : R := P.root' i (P.coroot j)
 
 @[simp]
 lemma root_coroot_eq_pairing : P.toPerfectPairing (P.root i) (P.coroot j) = P.pairing i j :=
+  rfl
+
+@[simp]
+lemma root'_coroot_eq_pairing : P.root' i (P.coroot j) = P.pairing i j :=
+  rfl
+
+@[simp]
+lemma root_coroot'_eq_pairing : P.coroot' i (P.root j) = P.pairing j i :=
   rfl
 
 lemma coroot_root_eq_pairing : P.toLin.flip (P.coroot i) (P.root j) = P.pairing j i := by
@@ -178,7 +190,7 @@ theorem mapsTo_reflection_root :
   exact P.root_reflection_perm i j ▸ mem_range_self (P.reflection_perm i j)
 
 lemma reflection_apply (x : M) :
-    P.reflection i x = x - (P.toPerfectPairing x (P.coroot i)) • P.root i :=
+    P.reflection i x = x - (P.coroot' i x) • P.root i :=
   rfl
 
 lemma reflection_apply_root :
@@ -253,7 +265,7 @@ theorem mapsTo_coreflection_coroot :
   exact P.coroot_reflection_perm i j ▸ mem_range_self (P.reflection_perm i j)
 
 lemma coreflection_apply (f : N) :
-    P.coreflection i f = f - (P.toPerfectPairing (P.root i) f) • P.coroot i :=
+    P.coreflection i f = f - (P.root' i) f • P.coroot i :=
   rfl
 
 lemma coreflection_apply_coroot :
@@ -303,10 +315,42 @@ lemma coroot_eq_coreflection_of_root_eq
   rw [← P.root_reflection_perm, EmbeddingLike.apply_eq_iff_eq] at hk
   rw [← P.coroot_reflection_perm, hk]
 
+lemma coroot'_reflection_perm {i j : ι} :
+    P.coroot' (P.reflection_perm i j) = P.coroot' j ∘ₗ P.reflection i := by
+  ext y
+  simp [coreflection_apply_coroot, reflection_apply, map_sub, mul_comm]
+
+lemma coroot'_reflection {i j : ι} (y : M) :
+    P.coroot' j (P.reflection i y) = P.coroot' (P.reflection_perm i j) y :=
+  (LinearMap.congr_fun P.coroot'_reflection_perm y).symm
+
+lemma pairing_reflection_perm (i j k : ι) :
+    P.pairing j (P.reflection_perm i k) = P.pairing (P.reflection_perm i j) k := by
+  simp only [pairing, root', coroot_reflection_perm, root_reflection_perm]
+  simp only [coreflection_apply_coroot, map_sub, map_smul, smul_eq_mul,
+    reflection_apply_root]
+  simp only [← toLin_toPerfectPairing, map_smul, LinearMap.smul_apply, map_sub, map_smul,
+    LinearMap.sub_apply, smul_eq_mul]
+  simp only [PerfectPairing.toLin_apply, root'_coroot_eq_pairing, sub_right_inj, mul_comm]
+
+@[simp]
+lemma pairing_reflection_perm_self_left (P : RootPairing ι R M N) (i j : ι) :
+    P.pairing (P.reflection_perm i i) j = - P.pairing i j := by
+  rw [pairing, root', ← reflection_perm_root, root'_coroot_eq_pairing, pairing_same, two_smul,
+    sub_add_cancel_left, ← toLin_toPerfectPairing, LinearMap.map_neg₂, toLin_toPerfectPairing,
+    root'_coroot_eq_pairing]
+
+@[simp]
+lemma pairing_reflection_perm_self_right (i j : ι) :
+    P.pairing i (P.reflection_perm j j) = - P.pairing i j := by
+  rw [pairing, ← reflection_perm_coroot, root_coroot_eq_pairing, pairing_same, two_smul,
+    sub_add_cancel_left, ← toLin_toPerfectPairing, map_neg, toLin_toPerfectPairing,
+    root_coroot_eq_pairing]
+
 /-- A root pairing is said to be crystallographic if the pairing between a root and coroot is
 always an integer. -/
 def IsCrystallographic : Prop :=
-  ∀ i, MapsTo (P.toPerfectPairing (P.root i)) (range P.coroot) (zmultiples (1 : R))
+  ∀ i, MapsTo (P.root' i) (range P.coroot) (zmultiples (1 : R))
 
 lemma isCrystallographic_iff :
     P.IsCrystallographic ↔ ∀ i j, ∃ z : ℤ, z = P.pairing i j := by
@@ -457,12 +501,12 @@ lemma reflection_perm_eq_reflection_perm_iff_of_span :
     P.reflection_perm i = P.reflection_perm j ↔
     ∀ x ∈ span R (range P.root), P.reflection i x = P.reflection j x := by
   refine ⟨fun h x hx ↦ ?_, fun h ↦ ?_⟩
-  · induction hx using Submodule.span_induction' with
+  · induction hx using Submodule.span_induction with
     | mem x hx =>
       obtain ⟨k, rfl⟩ := hx
       simp only [← root_reflection_perm, h]
     | zero => simp
-    | add x _ y _ hx hy => simp [hx, hy]
+    | add x y _ _ hx hy => simp [hx, hy]
     | smul t x _ hx => simp [hx]
   · ext k
     apply P.root.injective
@@ -488,12 +532,12 @@ lemma IsOrthogonal.symm : IsOrthogonal P i j ↔ IsOrthogonal P j i := by
   simp only [IsOrthogonal, and_comm]
 
 lemma isOrthogonal_comm (h : IsOrthogonal P i j) : Commute (P.reflection i) (P.reflection j) := by
-  rw [Commute, SemiconjBy]
+  rw [commute_iff_eq]
   ext v
   replace h : P.pairing i j = 0 ∧ P.pairing j i = 0 := by simpa [IsOrthogonal] using h
   erw [LinearMap.mul_apply, LinearMap.mul_apply]
-  simp only [LinearEquiv.coe_coe, reflection_apply, map_sub, map_smul, root_coroot_eq_pairing,
-    zero_smul, sub_zero, toLin_toPerfectPairing, h]
+  simp only [LinearEquiv.coe_coe, reflection_apply, PerfectPairing.flip_apply_apply, map_sub,
+    map_smul, root_coroot_eq_pairing, h, zero_smul, sub_zero]
   abel
 
 end RootPairing

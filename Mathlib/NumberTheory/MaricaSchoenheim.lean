@@ -40,9 +40,9 @@ lemma grahamConjecture_of_squarefree {n : ℕ} (f : ℕ → ℕ) (hf' : ∀ k < 
     fun i hi j ↦ (hf' _ hi).squarefree_of_dvd <| div_dvd_of_dvd <| gcd_dvd_left _ _
   refine lt_irrefl n ?_
   calc
-    n = 𝒜.card := ?_
-    _ ≤ (𝒜 \\ 𝒜).card := 𝒜.card_le_card_diffs
-    _ ≤ (Ioo 0 n).card := card_le_card_of_injOn (fun s ↦ ∏ p ∈ s, p) ?_ ?_
+    n = #𝒜 := ?_
+    _ ≤ #(𝒜 \\ 𝒜) := 𝒜.card_le_card_diffs
+    _ ≤ #(Ioo 0 n) := card_le_card_of_injOn (fun s ↦ ∏ p ∈ s, p) ?_ ?_
     _ = n - 1 := by rw [card_Ioo, tsub_zero]
     _ < n := tsub_lt_self hn.bot_lt zero_lt_one
   · rw [Finset.card_image_of_injOn, card_Iio]

@@ -23,7 +23,60 @@ universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
 
-variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory.{v₁} C]
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory.{v₁} C]
+
+/-- A monoid object internal to a monoidal category.
+
+When the monoidal category is preadditive, this is also sometimes called an "algebra object".
+-/
+class Mon_Class (X : C) where
+  /-- The unit morphism of a monoid object. -/
+  one : 𝟙_ C ⟶ X
+  /-- The multiplication morphism of a monoid object. -/
+  mul : X ⊗ X ⟶ X
+  /- For the names of the conditions below, the unprimed names are reserved for the version where
+  the argument `X` is explicit. -/
+  one_mul' : one ▷ X ≫ mul = (λ_ X).hom := by aesop_cat
+  mul_one' : X ◁ one ≫ mul = (ρ_ X).hom := by aesop_cat
+  -- Obviously there is some flexibility stating this axiom.
+  -- This one has left- and right-hand sides matching the statement of `Monoid.mul_assoc`,
+  -- and chooses to place the associator on the right-hand side.
+  -- The heuristic is that unitors and associators "don't have much weight".
+  mul_assoc' : (mul ▷ X) ≫ mul = (α_ X X X).hom ≫ (X ◁ mul) ≫ mul := by aesop_cat
+
+namespace Mon_Class
+
+@[inherit_doc] scoped notation "μ" => Mon_Class.mul
+@[inherit_doc] scoped notation "μ["M"]" => Mon_Class.mul (X := M)
+@[inherit_doc] scoped notation "η" => Mon_Class.one
+@[inherit_doc] scoped notation "η["M"]" => Mon_Class.one (X := M)
+
+/- The simp attribute is reserved for the unprimed versions. -/
+attribute [reassoc] one_mul' mul_one' mul_assoc'
+
+@[reassoc (attr := simp)]
+theorem one_mul (X : C) [Mon_Class X] : η ▷ X ≫ μ = (λ_ X).hom := one_mul'
+
+@[reassoc (attr := simp)]
+theorem mul_one (X : C) [Mon_Class X] : X ◁ η ≫ μ = (ρ_ X).hom := mul_one'
+
+@[reassoc (attr := simp)]
+theorem mul_assoc (X : C) [Mon_Class X] : μ ▷ X ≫ μ = (α_ X X X).hom ≫ X ◁ μ ≫ μ := mul_assoc'
+
+end Mon_Class
+
+open scoped Mon_Class
+
+variable {M N : C} [Mon_Class M] [Mon_Class N]
+
+/-- The property that a morphism between monoid objects is a monoid morphism. -/
+class IsMon_Hom (f : M ⟶ N) : Prop where
+  one_hom : η ≫ f = η := by aesop_cat
+  mul_hom : μ ≫ f = (f ⊗ f) ≫ μ := by aesop_cat
+
+attribute [reassoc (attr := simp)] IsMon_Hom.one_hom IsMon_Hom.mul_hom
+
+variable (C)
 
 /-- A monoid object internal to a monoidal category.
 
@@ -49,6 +102,24 @@ attribute [simp] Mon_.one_mul Mon_.mul_one
 attribute [reassoc (attr := simp)] Mon_.mul_assoc
 
 namespace Mon_
+
+variable {C}
+
+/-- Construct an object of `Mon_ C` from an object `X : C` and `Mon_Class X` instance. -/
+@[simps]
+def mk' (X : C) [Mon_Class X] : Mon_ C where
+  X := X
+  one := η
+  mul := μ
+
+instance {M : Mon_ C} : Mon_Class M.X where
+  one := M.one
+  mul := M.mul
+  one_mul' := M.one_mul
+  mul_one' := M.mul_one
+  mul_assoc' := M.mul_assoc
+
+variable (C)
 
 /-- The trivial monoid object. We later show this is initial in `Mon_ C`.
 -/
@@ -104,7 +175,6 @@ instance : Category (Mon_ C) where
   id := id
   comp f g := comp f g
 
--- Porting note: added, as `Hom.ext` does not apply to a morphism.
 @[ext]
 lemma ext {X Y : Mon_ C} {f g : X ⟶ Y} (w : f.hom = g.hom) : f = g :=
   Hom.ext w
@@ -236,7 +306,7 @@ def monToLaxMonoidal : Mon_ C ⥤ LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C 
   { obj := fun _ => A.X
     map := fun _ => 𝟙 _
     ε := A.one
-    μ := fun _ _ => A.mul }
+    «μ» := fun _ _ => A.mul }
   map f :=
   { app := fun _ => f.hom }
 
@@ -497,13 +567,17 @@ theorem tensor_mul (M N : Mon_ C) : (M ⊗ N).mul =
 instance monMonoidal : MonoidalCategory (Mon_ C) where
   tensorHom_def := by intros; ext; simp [tensorHom_def]
 
+@[simps!]
+instance {M N : C} [Mon_Class M] [Mon_Class N] : Mon_Class (M ⊗ N) :=
+  inferInstanceAs <| Mon_Class (Mon_.mk' M ⊗ Mon_.mk' N).X
+
 variable (C)
 
 /-- The forgetful functor from `Mon_ C` to `C` is monoidal when `C` is braided monoidal. -/
 def forgetMonoidal : MonoidalFunctor (Mon_ C) C :=
   { forget C with
     ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+    «μ» := fun _ _ => 𝟙 _ }
 
 @[simp] theorem forgetMonoidal_toFunctor : (forgetMonoidal C).toFunctor = forget C := rfl
 @[simp] theorem forgetMonoidal_ε : (forgetMonoidal C).ε = 𝟙 (𝟙_ C) := rfl

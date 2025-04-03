@@ -19,12 +19,12 @@ def foo0 {α} [Mul α] [One α] (x y : α) : α := x * y * 1
 
 theorem bar0_works : bar0 3 4 = 7 := by decide
 
-class my_has_pow (α : Type u) (β : Type v) :=
+class my_has_pow (α : Type u) (β : Type v) where
   (pow : α → β → α)
 
 instance : my_has_pow Nat Nat := ⟨fun a b => a ^ b⟩
 
-class my_has_scalar (M : Type u) (α : Type v) :=
+class my_has_scalar (M : Type u) (α : Type v) where
   (smul : M → α → α)
 
 instance : my_has_scalar Nat Nat := ⟨fun a b => a * b⟩

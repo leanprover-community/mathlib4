@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison
 -/
 import Mathlib.Algebra.Order.ZeroLEOne
-import Mathlib.Data.List.InsertNth
+import Mathlib.Data.List.InsertIdx
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
@@ -22,6 +22,9 @@ A pregame (`SetTheory.PGame` below) is axiomatised via an inductive type, whose 
 takes two types (thought of as indexing the possible moves for the players Left and Right), and a
 pair of functions out of these types to `SetTheory.PGame` (thought of as describing the resulting
 game after making a move).
+
+We may denote a game as $\{L | R\}$, where $L$ and $R$ stand for the collections of left and right
+moves. This notation is not currently used in Mathlib.
 
 Combinatorial games themselves, as a quotient of pregames, are constructed in `Game.lean`.
 
@@ -349,15 +352,17 @@ instance isEmpty_one_rightMoves : IsEmpty (RightMoves 1) :=
 
 /-- The less or equal relation on pre-games.
 
-If `0 ≤ x`, then Left can win `x` as the second player. -/
+If `0 ≤ x`, then Left can win `x` as the second player. `x ≤ y` means that `0 ≤ y - x`.
+See `PGame.le_iff_sub_nonneg`. -/
 instance le : LE PGame :=
   ⟨Sym2.GameAdd.fix wf_isOption fun x y le =>
       (∀ i, ¬le y (x.moveLeft i) (Sym2.GameAdd.snd_fst <| IsOption.moveLeft i)) ∧
         ∀ j, ¬le (y.moveRight j) x (Sym2.GameAdd.fst_snd <| IsOption.moveRight j)⟩
 
-/-- The less or fuzzy relation on pre-games.
+/-- The less or fuzzy relation on pre-games. `x ⧏ y` is defined as `¬ y ≤ x`.
 
-If `0 ⧏ x`, then Left can win `x` as the first player. -/
+If `0 ⧏ x`, then Left can win `x` as the first player. `x ⧏ y` means that `0 ⧏ y - x`.
+See `PGame.lf_iff_sub_zero_lf`. -/
 def LF (x y : PGame) : Prop :=
   ¬y ≤ x
 
@@ -997,7 +1002,7 @@ def moveRightSymm :
 /-- The identity relabelling. -/
 @[refl]
 def refl (x : PGame) : x ≡r x :=
-  ⟨Equiv.refl _, Equiv.refl _, fun i => refl _, fun j => refl _⟩
+  ⟨Equiv.refl _, Equiv.refl _, fun _ => refl _, fun _ => refl _⟩
 termination_by x
 
 instance (x : PGame) : Inhabited (x ≡r x) :=
@@ -1542,10 +1547,10 @@ private theorem add_le_add_right' : ∀ {x y z : PGame}, x ≤ y → x + z ≤ y
         Or.inr ⟨@toRightMovesAdd _ ⟨_, _, _, _⟩ (Sum.inr i), add_le_add_right' h⟩
 termination_by x y z => (x, y, z)
 
-instance covariantClass_swap_add_le : CovariantClass PGame PGame (swap (· + ·)) (· ≤ ·) :=
+instance addRightMono : AddRightMono PGame :=
   ⟨fun _ _ _ => add_le_add_right'⟩
 
-instance covariantClass_add_le : CovariantClass PGame PGame (· + ·) (· ≤ ·) :=
+instance addLeftMono : AddLeftMono PGame :=
   ⟨fun x _ _ h => (add_comm_le.trans (add_le_add_right h x)).trans add_comm_le⟩
 
 theorem add_lf_add_right {y z : PGame} (h : y ⧏ z) (x) : y + x ⧏ z + x :=
@@ -1566,10 +1571,10 @@ theorem add_lf_add_left {y z : PGame} (h : y ⧏ z) (x) : x + y ⧏ x + z := by
   rw [lf_congr add_comm_equiv add_comm_equiv]
   apply add_lf_add_right h
 
-instance covariantClass_swap_add_lt : CovariantClass PGame PGame (swap (· + ·)) (· < ·) :=
+instance addRightStrictMono : AddRightStrictMono PGame :=
   ⟨fun x _ _ h => ⟨add_le_add_right h.1 x, add_lf_add_right h.2 x⟩⟩
 
-instance covariantClass_add_lt : CovariantClass PGame PGame (· + ·) (· < ·) :=
+instance addLeftStrictMono : AddLeftStrictMono PGame :=
   ⟨fun x _ _ h => ⟨add_le_add_left h.1 x, add_lf_add_left h.2 x⟩⟩
 
 theorem add_lf_add_of_lf_of_le {w x y z : PGame} (hwx : w ⧏ x) (hyz : y ≤ z) : w + y ⧏ x + z :=

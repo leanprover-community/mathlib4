@@ -21,10 +21,7 @@ This file contains the usual formulas (and existence assertions) for the derivat
 -/
 
 
-open scoped Classical
-open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
-
-noncomputable section
+open Asymptotics ContinuousLinearMap Topology
 
 section
 
@@ -32,13 +29,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-variable {G' : Type*} [NormedAddCommGroup G'] [NormedSpace 𝕜 G']
-variable {f f₀ f₁ g : E → F}
-variable {f' f₀' f₁' g' : E →L[𝕜] F}
-variable (e : E →L[𝕜] F)
+variable {f : E → F}
+variable {f' : E →L[𝕜] F}
 variable {x : E}
-variable {s t : Set E}
-variable {L L₁ L₂ : Filter E}
+variable {s : Set E}
 
 section CLMCompApply
 
@@ -573,10 +567,10 @@ theorem hasStrictFDerivAt_list_prod_finRange' {n : ℕ} {x : Fin n → 𝔸} :
 theorem hasStrictFDerivAt_list_prod_attach' [DecidableEq ι] {l : List ι} {x : {i // i ∈ l} → 𝔸} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.attach.map x).prod)
       (∑ i : Fin l.length, ((l.attach.take i).map x).prod •
-        smulRight (proj l.attach[i.cast l.length_attach.symm])
+        smulRight (proj l.attach[i.cast List.length_attach.symm])
           ((l.attach.drop (.succ i)).map x).prod) x :=
   hasStrictFDerivAt_list_prod'.congr_fderiv <| Eq.symm <|
-    Finset.sum_equiv (finCongr l.length_attach.symm) (by simp) (by simp)
+    Finset.sum_equiv (finCongr List.length_attach.symm) (by simp) (by simp)
 
 @[fun_prop]
 theorem hasFDerivAt_list_prod' [Fintype ι] {l : List ι} {x : ι → 𝔸'} :
@@ -596,7 +590,7 @@ theorem hasFDerivAt_list_prod_finRange' {n : ℕ} {x : Fin n → 𝔸} :
 theorem hasFDerivAt_list_prod_attach' [DecidableEq ι] {l : List ι} {x : {i // i ∈ l} → 𝔸} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.attach.map x).prod)
       (∑ i : Fin l.length, ((l.attach.take i).map x).prod •
-        smulRight (proj l.attach[i.cast l.length_attach.symm])
+        smulRight (proj l.attach[i.cast List.length_attach.symm])
           ((l.attach.drop (.succ i)).map x).prod) x :=
   hasStrictFDerivAt_list_prod_attach'.hasFDerivAt
 
@@ -648,7 +642,7 @@ theorem HasStrictFDerivAt.list_prod' {l : List ι} {x : E}
         smulRight (f' l[i]) ((l.drop (.succ i)).map (f · x)).prod) x := by
   simp only [← List.finRange_map_get l, List.map_map]
   refine .congr_fderiv (hasStrictFDerivAt_list_prod_finRange'.comp x
-    (hasStrictFDerivAt_pi.mpr fun i ↦ h l[i] (l.getElem_mem ..))) ?_
+    (hasStrictFDerivAt_pi.mpr fun i ↦ h l[i] (List.getElem_mem ..))) ?_
   ext m
   simp [← List.map_map]
 
@@ -663,7 +657,7 @@ theorem HasFDerivAt.list_prod' {l : List ι} {x : E}
         smulRight (f' l[i]) ((l.drop (.succ i)).map (f · x)).prod) x := by
   simp only [← List.finRange_map_get l, List.map_map]
   refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp x
-    (hasFDerivAt_pi.mpr fun i ↦ h l[i] (l.getElem_mem i i.isLt))) ?_
+    (hasFDerivAt_pi.mpr fun i ↦ h l[i] (List.getElem_mem i.isLt))) ?_
   ext m
   simp [← List.map_map]
 

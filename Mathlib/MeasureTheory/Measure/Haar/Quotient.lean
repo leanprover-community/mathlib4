@@ -57,7 +57,7 @@ instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [M
     [TopologicalSpace G] [TopologicalGroup G] [BorelSpace G] [BorelSpace (G ⧸ Γ)] :
     MeasurableSMul G (G ⧸ Γ) where
   measurable_const_smul g := (continuous_const_smul g).measurable
-  measurable_smul_const x := (QuotientGroup.continuous_smul₁ x).measurable
+  measurable_smul_const _ := (continuous_id.smul continuous_const).measurable
 
 end
 
@@ -223,7 +223,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     [IsFiniteMeasure μ] : IsHaarMeasure μ := by
   obtain ⟨K⟩ := PositiveCompacts.nonempty' (α := G)
   let K' : PositiveCompacts (G ⧸ Γ) :=
-    K.map π continuous_coinduced_rng (QuotientGroup.isOpenMap_coe Γ)
+    K.map π QuotientGroup.continuous_mk QuotientGroup.isOpenMap_coe
   haveI : IsMulLeftInvariant μ :=
     MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotient ν
   rw [haarMeasure_unique μ K']

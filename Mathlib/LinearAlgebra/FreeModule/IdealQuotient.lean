@@ -6,7 +6,7 @@ Authors: Anne Baanen
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
-import Mathlib.LinearAlgebra.QuotientPi
+import Mathlib.LinearAlgebra.Quotient.Pi
 import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.LinearAlgebra.Dimension.Constructions
 
@@ -114,9 +114,9 @@ noncomputable def quotientEquivDirectSum :
 theorem finrank_quotient_eq_sum {ι} [Fintype ι] (b : Basis ι R S) [Nontrivial F]
     [∀ i, Module.Free F (R ⧸ span ({I.smithCoeffs b hI i} : Set R))]
     [∀ i, Module.Finite F (R ⧸ span ({I.smithCoeffs b hI i} : Set R))] :
-    FiniteDimensional.finrank F (S ⧸ I) =
-      ∑ i, FiniteDimensional.finrank F (R ⧸ span ({I.smithCoeffs b hI i} : Set R)) := by
+    Module.finrank F (S ⧸ I) =
+      ∑ i, Module.finrank F (R ⧸ span ({I.smithCoeffs b hI i} : Set R)) := by
   -- slow, and dot notation doesn't work
-  rw [LinearEquiv.finrank_eq <| quotientEquivDirectSum F b hI, FiniteDimensional.finrank_directSum]
+  rw [LinearEquiv.finrank_eq <| quotientEquivDirectSum F b hI, Module.finrank_directSum]
 
 end Ideal

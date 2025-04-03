@@ -27,7 +27,7 @@ theorem extract_append_left {a b : Array α} {i j : Nat} (h : j ≤ a.size) :
   · simp only [size_extract, size_append]
     omega
   · intro h1 h2 h3
-    rw [get_extract, get_append_left, get_extract]
+    rw [getElem_extract, getElem_append_left, getElem_extract]
 
 theorem extract_append_right {a b : Array α} {i j : Nat} (h : a.size ≤ i) :
     (a ++ b).extract i j = b.extract (i - a.size) (j - a.size) := by
@@ -35,8 +35,8 @@ theorem extract_append_right {a b : Array α} {i j : Nat} (h : a.size ≤ i) :
   · rw [size_extract, size_extract, size_append]
     omega
   · intro k hi h2
-    rw [get_extract, get_extract,
-      get_append_right (show size a ≤ i + k by omega)]
+    rw [getElem_extract, getElem_extract,
+      getElem_append_right (show size a ≤ i + k by omega)]
     congr
     omega
 
@@ -50,6 +50,6 @@ theorem extract_extract {s1 e2 e1 s2 : Nat} {a : Array α} (h : s1 + e2 ≤ e1) 
   · simp only [size_extract]
     omega
   · intro i h1 h2
-    simp only [get_extract, Nat.add_assoc]
+    simp only [getElem_extract, Nat.add_assoc]
 
 end Array

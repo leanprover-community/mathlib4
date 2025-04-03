@@ -232,10 +232,13 @@ nonrec theorem StrictMono.induced_topology_eq_preorder {α β : Type*} [LinearOr
 
 /-- A strictly monotone function between linear orders with order topology is a topological
 embedding provided that the range of `f` is order-connected. -/
-theorem StrictMono.embedding_of_ordConnected {α β : Type*} [LinearOrder α] [LinearOrder β]
+theorem StrictMono.isEmbedding_of_ordConnected {α β : Type*} [LinearOrder α] [LinearOrder β]
     [TopologicalSpace α] [h : OrderTopology α] [TopologicalSpace β] [OrderTopology β] {f : α → β}
-    (hf : StrictMono f) (hc : OrdConnected (range f)) : Embedding f :=
+    (hf : StrictMono f) (hc : OrdConnected (range f)) : IsEmbedding f :=
   ⟨⟨h.1.trans <| Eq.symm <| hf.induced_topology_eq_preorder hc⟩, hf.injective⟩
+
+@[deprecated (since := "2024-10-26")]
+alias StrictMono.embedding_of_ordConnected := StrictMono.isEmbedding_of_ordConnected
 
 /-- On a `Set.OrdConnected` subset of a linear order, the order topology for the restriction of the
 order is the same as the restriction to the subset of the order topology. -/
@@ -284,10 +287,10 @@ theorem nhdsWithin_Iic_basis [TopologicalSpace α] [LinearOrder α] [OrderTopolo
   nhdsWithin_Iic_basis' (exists_lt a)
 
 theorem nhds_top_order [TopologicalSpace α] [Preorder α] [OrderTop α] [OrderTopology α] :
-    𝓝 (⊤ : α) = ⨅ (l) (h₂ : l < ⊤), 𝓟 (Ioi l) := by simp [nhds_eq_order (⊤ : α)]
+    𝓝 (⊤ : α) = ⨅ (l) (_ : l < ⊤), 𝓟 (Ioi l) := by simp [nhds_eq_order (⊤ : α)]
 
 theorem nhds_bot_order [TopologicalSpace α] [Preorder α] [OrderBot α] [OrderTopology α] :
-    𝓝 (⊥ : α) = ⨅ (l) (h₂ : ⊥ < l), 𝓟 (Iio l) := by simp [nhds_eq_order (⊥ : α)]
+    𝓝 (⊥ : α) = ⨅ (l) (_ : ⊥ < l), 𝓟 (Iio l) := by simp [nhds_eq_order (⊥ : α)]
 
 theorem nhds_top_basis [TopologicalSpace α] [LinearOrder α] [OrderTop α] [OrderTopology α]
     [Nontrivial α] : (𝓝 ⊤).HasBasis (fun a : α => a < ⊤) fun a : α => Ioi a := by

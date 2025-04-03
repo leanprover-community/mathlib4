@@ -63,7 +63,7 @@ theorem to_isEvenlyCovered_preimage {x : X} {I : Type*} [TopologicalSpace I]
     (h : IsEvenlyCovered f x I) : IsEvenlyCovered f x (f ⁻¹' {x}) :=
   let ⟨_, h2⟩ := h
   ⟨((Classical.choose h2).preimageSingletonHomeomorph
-          (Classical.choose_spec h2)).embedding.discreteTopology,
+          (Classical.choose_spec h2)).isEmbedding.discreteTopology,
     _, h.mem_toTrivialization_baseSet⟩
 
 end IsEvenlyCovered
@@ -87,7 +87,7 @@ protected theorem continuousAt (hf : IsCoveringMapOn f s) {x : E} (hx : f x ∈ 
   (hf (f x) hx).continuousAt
 
 protected theorem continuousOn (hf : IsCoveringMapOn f s) : ContinuousOn f (f ⁻¹' s) :=
-  ContinuousAt.continuousOn fun _ => hf.continuousAt
+  continuousOn_of_forall_continuousAt fun _ => hf.continuousAt
 
 protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
     IsLocalHomeomorphOn f (f ⁻¹' s) := by
@@ -152,8 +152,11 @@ protected theorem isLocalHomeomorph : IsLocalHomeomorph f :=
 protected theorem isOpenMap : IsOpenMap f :=
   hf.isLocalHomeomorph.isOpenMap
 
-protected theorem quotientMap (hf' : Function.Surjective f) : QuotientMap f :=
-  hf.isOpenMap.to_quotientMap hf.continuous hf'
+theorem isQuotientMap (hf' : Function.Surjective f) : IsQuotientMap f :=
+  hf.isOpenMap.isQuotientMap hf.continuous hf'
+
+@[deprecated (since := "2024-10-22")]
+alias quotientMap := isQuotientMap
 
 protected theorem isSeparatedMap : IsSeparatedMap f :=
   fun e₁ e₂ he hne ↦ by

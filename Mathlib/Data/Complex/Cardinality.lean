@@ -24,7 +24,6 @@ theorem mk_complex : #ℂ = 𝔠 := by
   rw [mk_congr Complex.equivRealProd, mk_prod, lift_id, mk_real, continuum_mul_self]
 
 /-- The cardinality of the complex numbers, as a set. -/
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem mk_univ_complex : #(Set.univ : Set ℂ) = 𝔠 := by rw [mk_univ, mk_complex]
 
 /-- The complex numbers are not countable. -/

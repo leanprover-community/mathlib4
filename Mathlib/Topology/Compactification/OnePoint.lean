@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang, Yury Kudryashov
 -/
 import Mathlib.Data.Fintype.Option
-import Mathlib.Topology.Separation
 import Mathlib.Topology.Sets.Opens
 
 /-!
@@ -44,7 +43,7 @@ In this section we define `OnePoint X` to be the disjoint union of `X` and `∞`
 -/
 
 
-variable {X : Type*}
+variable {X Y : Type*}
 
 /-- The OnePoint extension of an arbitrary topological space `X` -/
 def OnePoint (X : Type*) :=
@@ -67,6 +66,11 @@ scoped notation "∞" => OnePoint.infty
 
 /-- Coercion from `X` to `OnePoint X`. -/
 @[coe, match_pattern] def some : X → OnePoint X := Option.some
+
+@[simp]
+lemma some_eq_iff (x₁ x₂ : X) : (some x₁ = some x₂) ↔ (x₁ = x₂) := by
+  rw [iff_eq_eq]
+  exact Option.some.injEq x₁ x₂
 
 instance : CoeTC X (OnePoint X) := ⟨some⟩
 
@@ -107,6 +111,13 @@ protected def rec {C : OnePoint X → Sort*} (h₁ : C ∞) (h₂ : ∀ x : X, C
     ∀ z : OnePoint X, C z
   | ∞ => h₁
   | (x : X) => h₂ x
+
+/-- An elimination principle for `OnePoint`. -/
+@[inline] protected def elim : OnePoint X → Y → (X → Y) → Y := Option.elim
+
+@[simp] theorem elim_infty (y : Y) (f : X → Y) : ∞.elim y f = y := rfl
+
+@[simp] theorem elim_some (y : Y) (f : X → Y) (x : X) : (some x).elim y f = f x := rfl
 
 theorem isCompl_range_coe_infty : IsCompl (range ((↑) : X → OnePoint X)) {∞} :=
   isCompl_range_some_none X
@@ -187,7 +198,7 @@ instance : TopologicalSpace (OnePoint X) where
     rw [preimage_sUnion]
     exact isOpen_biUnion fun s hs => (ho s hs).2
 
-variable {s : Set (OnePoint X)} {t : Set X}
+variable {s : Set (OnePoint X)}
 
 theorem isOpen_def :
     IsOpen s ↔ (∞ ∈ s → IsCompact ((↑) ⁻¹' s : Set X)ᶜ) ∧ IsOpen ((↑) ⁻¹' s : Set X) :=
@@ -241,28 +252,31 @@ theorem continuous_coe : Continuous ((↑) : X → OnePoint X) :=
 
 theorem isOpenMap_coe : IsOpenMap ((↑) : X → OnePoint X) := fun _ => isOpen_image_coe.2
 
-theorem openEmbedding_coe : OpenEmbedding ((↑) : X → OnePoint X) :=
-  openEmbedding_of_continuous_injective_open continuous_coe coe_injective isOpenMap_coe
+theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : X → OnePoint X) :=
+  isOpenEmbedding_of_continuous_injective_open continuous_coe coe_injective isOpenMap_coe
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_coe := isOpenEmbedding_coe
 
 theorem isOpen_range_coe : IsOpen (range ((↑) : X → OnePoint X)) :=
-  openEmbedding_coe.isOpen_range
+  isOpenEmbedding_coe.isOpen_range
 
 theorem isClosed_infty : IsClosed ({∞} : Set (OnePoint X)) := by
   rw [← compl_range_coe, isClosed_compl_iff]
   exact isOpen_range_coe
 
 theorem nhds_coe_eq (x : X) : 𝓝 ↑x = map ((↑) : X → OnePoint X) (𝓝 x) :=
-  (openEmbedding_coe.map_nhds_eq x).symm
+  (isOpenEmbedding_coe.map_nhds_eq x).symm
 
 theorem nhdsWithin_coe_image (s : Set X) (x : X) :
     𝓝[(↑) '' s] (x : OnePoint X) = map (↑) (𝓝[s] x) :=
-  (openEmbedding_coe.toEmbedding.map_nhdsWithin_eq _ _).symm
+  (isOpenEmbedding_coe.isEmbedding.map_nhdsWithin_eq _ _).symm
 
 theorem nhdsWithin_coe (s : Set (OnePoint X)) (x : X) : 𝓝[s] ↑x = map (↑) (𝓝[(↑) ⁻¹' s] x) :=
-  (openEmbedding_coe.map_nhdsWithin_preimage_eq _ _).symm
+  (isOpenEmbedding_coe.map_nhdsWithin_preimage_eq _ _).symm
 
 theorem comap_coe_nhds (x : X) : comap ((↑) : X → OnePoint X) (𝓝 x) = 𝓝 x :=
-  (openEmbedding_coe.toInducing.nhds_eq_comap x).symm
+  (isOpenEmbedding_coe.isInducing.nhds_eq_comap x).symm
 
 /-- If `x` is not an isolated point of `X`, then `x : OnePoint X` is not an isolated point
 of `OnePoint X`. -/
@@ -393,7 +407,7 @@ noncomputable def continuousMapDiscreteEquiv (Y : Type*) [DiscreteTopology X] [T
         ⟨fun x ↦ f x, ⟨f ∞, continuous_iff_from_discrete f |>.mp <| map_continuous f⟩⟩
       exact Classical.choose_spec f'.property
     · simp
-  right_inv f := rfl
+  right_inv _ := rfl
 
 lemma continuous_iff_from_nat {Y : Type*} [TopologicalSpace Y] (f : OnePoint ℕ → Y) :
     Continuous f ↔ Tendsto (fun x : ℕ ↦ f x) atTop (𝓝 (f ∞)) := by
@@ -427,18 +441,18 @@ theorem denseRange_coe [NoncompactSpace X] : DenseRange ((↑) : X → OnePoint 
   exact dense_compl_singleton _
 
 theorem isDenseEmbedding_coe [NoncompactSpace X] : IsDenseEmbedding ((↑) : X → OnePoint X) :=
-  { openEmbedding_coe with dense := denseRange_coe }
+  { isOpenEmbedding_coe with dense := denseRange_coe }
 
 @[deprecated (since := "2024-09-30")]
 alias denseEmbedding_coe := isDenseEmbedding_coe
 
 @[simp, norm_cast]
 theorem specializes_coe {x y : X} : (x : OnePoint X) ⤳ y ↔ x ⤳ y :=
-  openEmbedding_coe.toInducing.specializes_iff
+  isOpenEmbedding_coe.isInducing.specializes_iff
 
 @[simp, norm_cast]
 theorem inseparable_coe {x y : X} : Inseparable (x : OnePoint X) y ↔ Inseparable x y :=
-  openEmbedding_coe.toInducing.inseparable_iff
+  isOpenEmbedding_coe.isInducing.inseparable_iff
 
 theorem not_specializes_infty_coe {x : X} : ¬Specializes ∞ (x : OnePoint X) :=
   isClosed_infty.not_specializes rfl (coe_ne_infty x)
@@ -537,6 +551,51 @@ instance (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
         disjoint_compl_right⟩
       rw [OnePoint.isOpen_iff_of_not_mem]
       exacts [isOpen_discrete _, (Option.some_ne_none val).symm]
+
+section Uniqueness
+
+variable [TopologicalSpace Y] [T2Space Y] [CompactSpace Y]
+  (y : Y) (f : X → Y) (hf : IsEmbedding f) (hy : range f = {y}ᶜ)
+
+open scoped Classical in
+/-- If `f` embeds `X` into a compact Hausdorff space `Y`, and has exactly one point outside its
+range, then `(Y, f)` is the one-point compactification of `X`. -/
+noncomputable def equivOfIsEmbeddingOfRangeEq :
+    OnePoint X ≃ₜ Y :=
+  have _i := hf.t2Space
+  have : Tendsto f (coclosedCompact X) (𝓝 y) := by
+    rw [coclosedCompact_eq_cocompact, hasBasis_cocompact.tendsto_left_iff]
+    intro N hN
+    obtain ⟨U, hU₁, hU₂, hU₃⟩ := mem_nhds_iff.mp hN
+    refine ⟨f⁻¹' Uᶜ, ?_, by simpa using (mapsTo_preimage f U).mono_right hU₁⟩
+    rw [hf.isCompact_iff, image_preimage_eq_iff.mpr (by simpa [hy])]
+    exact (isClosed_compl_iff.mpr hU₂).isCompact
+  let e : OnePoint X ≃ Y :=
+    { toFun := fun p ↦ p.elim y f
+      invFun := fun q ↦ if hq : q = y then ∞ else ↑(show q ∈ range f from by simpa [hy]).choose
+      left_inv := fun p ↦ by
+        induction' p using OnePoint.rec with p
+        · simp
+        · have hp : f p ≠ y := by simpa [hy] using mem_range_self (f := f) p
+          simpa [hp] using hf.injective (mem_range_self p).choose_spec
+      right_inv := fun q ↦ by
+        rcases eq_or_ne q y with rfl | hq
+        · simp
+        · have hq' : q ∈ range f := by simpa [hy]
+          simpa [hq] using hq'.choose_spec }
+  Continuous.homeoOfEquivCompactToT2 <| (continuous_iff e).mpr ⟨this, hf.continuous⟩
+
+@[simp]
+lemma equivOfIsEmbeddingOfRangeEq_apply_coe (x : X) :
+    equivOfIsEmbeddingOfRangeEq y f hf hy x = f x :=
+  rfl
+
+@[simp]
+lemma equivOfIsEmbeddingOfRangeEq_apply_infty :
+    equivOfIsEmbeddingOfRangeEq y f hf hy ∞ = y :=
+  rfl
+
+end Uniqueness
 
 end OnePoint
 

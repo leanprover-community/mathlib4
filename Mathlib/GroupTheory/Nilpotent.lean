@@ -144,25 +144,55 @@ theorem upperCentralSeries_one : upperCentralSeries G 1 = center G := by
     Subgroup.mem_center_iff, mem_mk, mem_bot, Set.mem_setOf_eq]
   exact forall_congr' fun y => by rw [mul_inv_eq_one, mul_inv_eq_iff_eq_mul, eq_comm]
 
+variable {G}
+
 /-- The `n+1`st term of the upper central series `H i` has underlying set equal to the `x` such
 that `⁅x,G⁆ ⊆ H n`-/
-theorem mem_upperCentralSeries_succ_iff (n : ℕ) (x : G) :
+theorem mem_upperCentralSeries_succ_iff {n : ℕ} {x : G} :
     x ∈ upperCentralSeries G (n + 1) ↔ ∀ y : G, x * y * x⁻¹ * y⁻¹ ∈ upperCentralSeries G n :=
   Iff.rfl
 
+@[simp] lemma comap_upperCentralSeries {H : Type*} [Group H] (e : H ≃* G) :
+    ∀ n, (upperCentralSeries G n).comap e = upperCentralSeries H n
+  | 0 => by simpa [MonoidHom.ker_eq_bot_iff] using e.injective
+  | n + 1 => by
+    ext
+    simp [mem_upperCentralSeries_succ_iff, ← comap_upperCentralSeries e n,
+      ← e.toEquiv.forall_congr_right]
 
--- is_nilpotent is already defined in the root namespace (for elements of rings).
+namespace Group
+
+variable (G) in
+-- `IsNilpotent` is already defined in the root namespace (for elements of rings).
+-- TODO: Rename it to `IsNilpotentElement`?
 /-- A group `G` is nilpotent if its upper central series is eventually `G`. -/
-class Group.IsNilpotent (G : Type*) [Group G] : Prop where
+@[mk_iff]
+class IsNilpotent (G : Type*) [Group G] : Prop where
   nilpotent' : ∃ n : ℕ, upperCentralSeries G n = ⊤
 
 -- Porting note: add lemma since infer kinds are unsupported in the definition of `IsNilpotent`
-lemma Group.IsNilpotent.nilpotent (G : Type*) [Group G] [IsNilpotent G] :
+lemma IsNilpotent.nilpotent (G : Type*) [Group G] [IsNilpotent G] :
     ∃ n : ℕ, upperCentralSeries G n = ⊤ := Group.IsNilpotent.nilpotent'
 
-open Group
+lemma isNilpotent_congr {H : Type*} [Group H] (e : G ≃* H) : IsNilpotent G ↔ IsNilpotent H := by
+  simp_rw [isNilpotent_iff]
+  refine exists_congr fun n ↦ ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · simp [← Subgroup.comap_top e.symm.toMonoidHom, ← h]
+  · simp [← Subgroup.comap_top e.toMonoidHom, ← h]
 
-variable {G}
+@[simp] lemma isNilpotent_top : IsNilpotent (⊤ : Subgroup G) ↔ IsNilpotent G :=
+  isNilpotent_congr Subgroup.topEquiv
+
+variable (G) in
+/-- A group `G` is virtually nilpotent if it has a nilpotent cofinite subgroup `N`. -/
+def IsVirtuallyNilpotent : Prop := ∃ N : Subgroup G, IsNilpotent N ∧ FiniteIndex N
+
+lemma IsNilpotent.isVirtuallyNilpotent (hG : IsNilpotent G) : IsVirtuallyNilpotent G :=
+  ⟨⊤, by simpa, inferInstance⟩
+
+end Group
+
+open Group
 
 /-- A sequence of subgroups of `G` is an ascending central series if `H 0` is trivial and
   `⁅H (n + 1), G⁆ ⊆ H n` for all `n`. Note that we do not require that `H n = G` for some `n`. -/
@@ -287,10 +317,11 @@ theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
   simp only [mem_lowerCentralSeries_succ_iff, exists_prop, mem_top, exists_true_left,
     true_and] at hx
   refine
-    closure_induction hx ?_ (Subgroup.one_mem _) (@Subgroup.mul_mem _ _ _) (@Subgroup.inv_mem _ _ _)
+    closure_induction ?_ (Subgroup.one_mem _) (fun _ _ _ _ ↦ mul_mem) (fun _ _ ↦ inv_mem) hx
   rintro y ⟨z, hz, a, ha⟩
   rw [← ha, mul_assoc, mul_assoc, ← mul_assoc a z⁻¹ a⁻¹]
   exact mul_mem hz (Normal.conj_mem (lowerCentralSeries_normal n) z⁻¹ (inv_mem hz) a)
+
 
 /-- The lower central series of a group is a descending central series. -/
 theorem lowerCentralSeries_isDescendingCentralSeries :
@@ -449,8 +480,8 @@ theorem lowerCentralSeries.map {H : Type*} [Group H] (f : G →* H) (n : ℕ) :
   induction' n with d hd
   · simp
   · rintro a ⟨x, hx : x ∈ lowerCentralSeries G d.succ, rfl⟩
-    refine closure_induction hx ?_ (by simp [f.map_one, Subgroup.one_mem _])
-      (fun y z hy hz => by simp [MonoidHom.map_mul, Subgroup.mul_mem _ hy hz]) (fun y hy => by
+    refine closure_induction (hx := hx) ?_ (by simp [f.map_one, Subgroup.one_mem _])
+      (fun y z _ _ hy hz => by simp [MonoidHom.map_mul, Subgroup.mul_mem _ hy hz]) (fun y _ hy => by
         rw [f.map_inv]; exact Subgroup.inv_mem _ hy)
     rintro a ⟨y, hy, z, ⟨-, rfl⟩⟩
     apply mem_closure.mpr

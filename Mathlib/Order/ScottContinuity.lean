@@ -32,8 +32,8 @@ open Set
 variable {α β : Type*}
 
 section ScottContinuous
-variable [Preorder α] [Preorder β] {D D₁ D₂ : Set (Set α)} {E : Set (Set β)}
-  {f : α → β} {a : α}
+variable [Preorder α] [Preorder β] {D D₁ D₂ : Set (Set α)}
+  {f : α → β}
 
 /-- A function between preorders is said to be Scott continuous on a set `D` of directed sets if it
 preserves `IsLUB` on elements of `D`.
@@ -109,7 +109,7 @@ end ScottContinuous
 
 section SemilatticeSup
 
-variable [Preorder α] [SemilatticeSup β]
+variable [SemilatticeSup β]
 
 lemma ScottContinuousOn.sup₂ {D : Set (Set (β × β))} :
     ScottContinuousOn D fun (a, b) => (a ⊔ b : β) := by

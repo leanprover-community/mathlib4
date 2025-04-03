@@ -36,7 +36,7 @@ exists_adjoin_simple_eq_top
 
 noncomputable section
 
-open FiniteDimensional Polynomial IntermediateField
+open Module Polynomial IntermediateField
 
 namespace Field
 
@@ -63,7 +63,7 @@ theorem exists_primitive_element_of_finite_top [Finite E] : ∃ α : E, F⟮α�
 /-- Primitive element theorem for finite dimensional extension of a finite field. -/
 theorem exists_primitive_element_of_finite_bot [Finite F] [FiniteDimensional F E] :
     ∃ α : E, F⟮α⟯ = ⊤ :=
-  haveI : Finite E := finite_of_finite F E
+  haveI : Finite E := Module.finite_of_finite F
   exists_primitive_element_of_finite_top F E
 
 end PrimitiveElementFinite
@@ -367,7 +367,7 @@ section iff
 
 namespace Field
 
-open FiniteDimensional IntermediateField Polynomial Algebra Set
+open Module IntermediateField Polynomial Algebra Set
 
 variable (F : Type*) {E : Type*} [Field F] [Field E] [Algebra F E] [FiniteDimensional F E]
 

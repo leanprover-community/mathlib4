@@ -41,7 +41,7 @@ section dual
 @[simps] def dualIndepMatroid (M : Matroid α) : IndepMatroid α where
   E := M.E
   Indep I := I ⊆ M.E ∧ ∃ B, M.Base B ∧ Disjoint I B
-  indep_empty := ⟨empty_subset M.E, M.exists_base.imp (fun B hB ↦ ⟨hB, empty_disjoint _⟩)⟩
+  indep_empty := ⟨empty_subset M.E, M.exists_base.imp (fun _ hB ↦ ⟨hB, empty_disjoint _⟩)⟩
   indep_subset := by
     rintro I J ⟨hJE, B, hB, hJB⟩ hIJ
     exact ⟨hIJ.trans hJE, ⟨B, hB, disjoint_of_subset_left hIJ hJB⟩⟩

@@ -202,10 +202,13 @@ lemma Polynomial.isCoprime_iff_aeval_ne_zero_of_isAlgClosed (K : Type v) [Field 
 /-- Typeclass for an extension being an algebraic closure. -/
 class IsAlgClosure (R : Type u) (K : Type v) [CommRing R] [Field K] [Algebra R K]
     [NoZeroSMulDivisors R K] : Prop where
-  alg_closed : IsAlgClosed K
-  algebraic : Algebra.IsAlgebraic R K
+  isAlgClosed : IsAlgClosed K
+  isAlgebraic : Algebra.IsAlgebraic R K
 
-attribute [instance] IsAlgClosure.algebraic
+@[deprecated (since := "2024-08-31")] alias IsAlgClosure.alg_closed := IsAlgClosure.isAlgClosed
+@[deprecated (since := "2024-08-31")] alias IsAlgClosure.algebraic := IsAlgClosure.isAlgebraic
+
+attribute [instance] IsAlgClosure.isAlgebraic
 
 theorem isAlgClosure_iff (K : Type v) [Field K] [Algebra k K] :
     IsAlgClosure k K ↔ IsAlgClosed K ∧ Algebra.IsAlgebraic k K :=
@@ -213,12 +216,16 @@ theorem isAlgClosure_iff (K : Type v) [Field K] [Algebra k K] :
 
 instance (priority := 100) IsAlgClosure.normal (R K : Type*) [Field R] [Field K] [Algebra R K]
     [IsAlgClosure R K] : Normal R K where
-  toIsAlgebraic := IsAlgClosure.algebraic
-  splits' _ := @IsAlgClosed.splits_codomain _ _ _ (IsAlgClosure.alg_closed R) _ _ _
+  toIsAlgebraic := IsAlgClosure.isAlgebraic
+  splits' _ := @IsAlgClosed.splits_codomain _ _ _ (IsAlgClosure.isAlgClosed R) _ _ _
 
 instance (priority := 100) IsAlgClosure.separable (R K : Type*) [Field R] [Field K] [Algebra R K]
     [IsAlgClosure R K] [CharZero R] : Algebra.IsSeparable R K :=
   ⟨fun _ => (minpoly.irreducible (Algebra.IsIntegral.isIntegral _)).separable⟩
+
+instance IsAlgClosed.instIsAlgClosure (F : Type*) [Field F] [IsAlgClosed F] : IsAlgClosure F F where
+  isAlgClosed := ‹_›
+  isAlgebraic := .of_finite F F
 
 namespace IsAlgClosed
 
@@ -298,9 +305,9 @@ end IsAlgClosed
 namespace IsAlgClosure
 
 -- Porting note: errors with
--- > cannot find synthesization order for instance alg_closed with type
+-- > cannot find synthesization order for instance isAlgClosed with type
 -- > all remaining arguments have metavariables
--- attribute [local instance] IsAlgClosure.alg_closed
+-- attribute [local instance] IsAlgClosure.isAlgClosed
 
 section
 
@@ -311,9 +318,9 @@ variable [Algebra R L] [NoZeroSMulDivisors R L] [IsAlgClosure R L]
 /-- A (random) isomorphism between two algebraic closures of `R`. -/
 noncomputable def equiv : L ≃ₐ[R] M :=
   -- Porting note (#10754): added to replace local instance above
-  haveI : IsAlgClosed L := IsAlgClosure.alg_closed R
-  haveI : IsAlgClosed M := IsAlgClosure.alg_closed R
-  AlgEquiv.ofBijective _ (IsAlgClosure.algebraic.algHom_bijective₂
+  haveI : IsAlgClosed L := IsAlgClosure.isAlgClosed R
+  haveI : IsAlgClosed M := IsAlgClosure.isAlgClosed R
+  AlgEquiv.ofBijective _ (IsAlgClosure.isAlgebraic.algHom_bijective₂
     (IsAlgClosed.lift : L →ₐ[R] M)
     (IsAlgClosed.lift : M →ₐ[R] L)).1
 
@@ -332,7 +339,7 @@ variable [Algebra K J] [Algebra J L] [IsAlgClosure J L] [Algebra K L] [IsScalarT
 /-- If `J` is an algebraic extension of `K` and `L` is an algebraic closure of `J`, then it is
   also an algebraic closure of `K`. -/
 theorem ofAlgebraic [hKJ : Algebra.IsAlgebraic K J] : IsAlgClosure K L :=
-  ⟨IsAlgClosure.alg_closed J, hKJ.trans⟩
+  ⟨IsAlgClosure.isAlgClosed J, hKJ.trans⟩
 
 /-- A (random) isomorphism between an algebraic closure of `R` and an algebraic closure of
   an algebraic extension of `R` -/
@@ -343,8 +350,8 @@ noncomputable def equivOfAlgebraic' [Nontrivial S] [NoZeroSMulDivisors R S]
     exact (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective S L)
             (NoZeroSMulDivisors.algebraMap_injective R S) : _)
   letI : IsAlgClosure R L :=
-    { alg_closed := IsAlgClosure.alg_closed S
-      algebraic := ‹_› }
+    { isAlgClosed := IsAlgClosure.isAlgClosed S
+      isAlgebraic := ‹_› }
   exact IsAlgClosure.equiv _ _ _
 
 /-- A (random) isomorphism between an algebraic closure of `K` and an algebraic closure
@@ -371,7 +378,7 @@ noncomputable def equivOfEquivAux (hSR : S ≃+* R) :
   haveI : IsScalarTower S R L :=
     IsScalarTower.of_algebraMap_eq (by simp [RingHom.algebraMap_toAlgebra])
   haveI : NoZeroSMulDivisors R S := NoZeroSMulDivisors.of_algebraMap_injective hSR.symm.injective
-  have : Algebra.IsAlgebraic R L := (IsAlgClosure.algebraic.tower_top_of_injective
+  have : Algebra.IsAlgebraic R L := (IsAlgClosure.isAlgebraic.tower_top_of_injective
     (show Function.Injective (algebraMap S R) from hSR.injective))
   refine
     ⟨equivOfAlgebraic' R S L M, ?_⟩

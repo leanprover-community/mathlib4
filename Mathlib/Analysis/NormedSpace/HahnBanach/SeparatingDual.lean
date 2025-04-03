@@ -26,7 +26,7 @@ equivalences acts transitively on the set of nonzero vectors.
 registers that continuous linear forms on `E` separate points of `E`. -/
 @[mk_iff separatingDual_def]
 class SeparatingDual (R V : Type*) [Ring R] [AddCommGroup V] [TopologicalSpace V]
-    [TopologicalSpace R] [Module R V] : Prop :=
+    [TopologicalSpace R] [Module R V] : Prop where
   /-- Any nonzero vector can be mapped by a continuous linear map to a nonzero scalar. -/
   exists_ne_zero' : ∀ (x : V), x ≠ 0 → ∃ f : V →L[R] R, f x ≠ 0
 

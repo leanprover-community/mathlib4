@@ -40,10 +40,10 @@ theorem one_mem : (1 : ℝ) ∈ I :=
   ⟨zero_le_one, le_rfl⟩
 
 theorem mul_mem {x y : ℝ} (hx : x ∈ I) (hy : y ∈ I) : x * y ∈ I :=
-  ⟨mul_nonneg hx.1 hy.1, mul_le_one hx.2 hy.1 hy.2⟩
+  ⟨mul_nonneg hx.1 hy.1, mul_le_one₀ hx.2 hy.1 hy.2⟩
 
 theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / y ∈ I :=
-  ⟨div_nonneg hx hy, div_le_one_of_le hxy hy⟩
+  ⟨div_nonneg hx hy, div_le_one_of_le₀ hxy hy⟩
 
 theorem fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩
@@ -208,6 +208,20 @@ theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc
 
 theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1 / 2 : ℝ) 1 := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
+
+/-- The unit interval as a submonoid of ℝ. -/
+def submonoid : Submonoid ℝ where
+  carrier := unitInterval
+  one_mem' := unitInterval.one_mem
+  mul_mem' := unitInterval.mul_mem
+
+@[simp] theorem coe_unitIntervalSubmonoid : submonoid = unitInterval := rfl
+@[simp] theorem mem_unitIntervalSubmonoid {x} : x ∈ submonoid ↔ x ∈ unitInterval :=
+  Iff.rfl
+
+protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → ℝ}
+    (h : ∀ c ∈ t, f c ∈ unitInterval) :
+    ∏ c ∈ t, f c ∈ unitInterval := _root_.prod_mem (S := unitInterval.submonoid) h
 
 instance : LinearOrderedCommMonoidWithZero I where
   zero_mul i := zero_mul i

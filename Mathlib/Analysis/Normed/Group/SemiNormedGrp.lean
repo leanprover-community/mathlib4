@@ -56,7 +56,7 @@ instance (M : SemiNormedGrp) : SeminormedAddCommGroup M :=
 -- Porting note (#10754): added instance
 instance funLike {V W : SemiNormedGrp} : FunLike (V ⟶ W) V W where
   coe := (forget SemiNormedGrp).map
-  coe_injective' := fun f g h => by cases f; cases g; congr
+  coe_injective' f g h := by cases f; cases g; congr
 
 instance toAddMonoidHomClass {V W : SemiNormedGrp} : AddMonoidHomClass (V ⟶ W) V W where
   map_add f := f.map_add'
@@ -112,8 +112,7 @@ theorem iso_isometry_of_normNoninc {V W : SemiNormedGrp} (i : V ≅ W) (h1 : i.h
   intro v
   apply le_antisymm (h1 v)
   calc
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    ‖v‖ = ‖i.inv (i.hom v)‖ := by erw [Iso.hom_inv_id_apply]
+    ‖v‖ = ‖i.inv (i.hom v)‖ := by rw [Iso.hom_inv_id_apply]
     _ ≤ ‖i.hom v‖ := h2 _
 
 end SemiNormedGrp
@@ -132,7 +131,7 @@ instance : CoeSort SemiNormedGrp₁ Type* where
 instance : LargeCategory.{u} SemiNormedGrp₁ where
   Hom X Y := { f : NormedAddGroupHom X Y // f.NormNoninc }
   id X := ⟨NormedAddGroupHom.id X, NormedAddGroupHom.NormNoninc.id⟩
-  comp {X Y Z} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
+  comp {_ _ _} f g := ⟨g.1.comp f.1, g.2.comp f.2⟩
 
 -- Porting note (#10754): added instance
 instance instFunLike (X Y : SemiNormedGrp₁) : FunLike (X ⟶ Y) X Y where

@@ -121,7 +121,7 @@ theorem generateMeasurable_eq_rec (s : Set (Set α)) :
       refine mem_iUnion.2 ⟨Ordinal.enum (α := ω₁) (· < ·)
         ⟨Ordinal.lsub fun n => Ordinal.typein.{u} (α := ω₁) (· < ·) (I n), ?_⟩,
           iUnion_mem_generateMeasurableRec fun n => ⟨I n, ?_, hI n⟩⟩
-      · rw [Ordinal.type_lt]
+      · rw [Ordinal.type_toType]
         refine Ordinal.lsub_lt_ord_lift ?_ fun i => Ordinal.typein_lt_self _
         rw [mk_denumerable, lift_aleph0, isRegular_aleph_one.cof_eq]
         exact aleph0_lt_aleph_one

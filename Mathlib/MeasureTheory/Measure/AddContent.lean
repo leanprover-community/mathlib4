@@ -3,6 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.ENNReal.Basic
 import Mathlib.MeasureTheory.SetSemiring
 
@@ -63,9 +64,8 @@ instance : Inhabited (AddContent C) :=
     sUnion' := by simp }⟩
 
 instance : DFunLike (AddContent C) (Set α) (fun _ ↦ ℝ≥0∞) where
-  coe := fun m s ↦ m.toFun s
-  coe_injective' := by
-    intro m m' h
+  coe m s := m.toFun s
+  coe_injective' m m' _ := by
     cases m
     cases m'
     congr

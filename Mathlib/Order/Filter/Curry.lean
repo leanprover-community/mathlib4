@@ -49,13 +49,6 @@ namespace Filter
 
 variable {α β γ : Type*}
 
-/-- This filter is characterized by `Filter.eventually_curry_iff`:
-`(∀ᶠ (x : α × β) in f.curry g, p x) ↔ ∀ᶠ (x : α) in f, ∀ᶠ (y : β) in g, p (x, y)`. Useful
-in adding quantifiers to the middle of `Tendsto`s. See
-`hasFDerivAt_of_tendstoUniformlyOnFilter`. -/
-def curry (f : Filter α) (g : Filter β) : Filter (α × β) :=
-  bind f fun a ↦ map (a, ·) g
-
 theorem eventually_curry_iff {f : Filter α} {g : Filter β} {p : α × β → Prop} :
     (∀ᶠ x : α × β in f.curry g, p x) ↔ ∀ᶠ x : α in f, ∀ᶠ y : β in g, p (x, y) :=
   Iff.rfl

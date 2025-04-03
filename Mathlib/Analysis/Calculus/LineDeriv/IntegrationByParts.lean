@@ -44,7 +44,7 @@ TODO: prove similar theorems assuming that the functions tend to zero at infinit
 integrable derivatives.
 -/
 
-open MeasureTheory Measure FiniteDimensional
+open MeasureTheory Measure Module
 
 variable {E F G W : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
   [NormedSpace ℝ F] [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedAddCommGroup W]
@@ -130,7 +130,7 @@ theorem integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
       -∫ (x : E' × ℝ), (B (f' (L.symm x))) (g (L.symm x)) ∂ν by
     have : μ = Measure.map L.symm ν := by
       simp [Measure.map_map L.symm.continuous.measurable L.continuous.measurable]
-    have hL : ClosedEmbedding L.symm := L.symm.toHomeomorph.closedEmbedding
+    have hL : IsClosedEmbedding L.symm := L.symm.toHomeomorph.isClosedEmbedding
     simpa [this, hL.integral_map] using H
   have L_emb : MeasurableEmbedding L := L.toHomeomorph.measurableEmbedding
   apply integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux2

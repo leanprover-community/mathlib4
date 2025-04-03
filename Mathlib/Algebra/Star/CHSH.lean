@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Real.Sqrt
 import Mathlib.Tactic.Polyrith
 

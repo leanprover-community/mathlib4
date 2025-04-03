@@ -263,7 +263,7 @@ def coneEquivInverseObj (c : Limits.Cone (SheafConditionEqualizerProducts.diagra
         rintro rfl
         rcases x with (⟨i⟩ | ⟨⟩) <;> rcases y with (⟨⟩ | ⟨j, j⟩) <;> rcases f' with ⟨⟩
         · dsimp
-          erw [F.map_id]
+          rw [F.map_id]
           simp
         · dsimp
           simp only [Category.id_comp, Category.assoc]
@@ -284,7 +284,7 @@ def coneEquivInverseObj (c : Limits.Cone (SheafConditionEqualizerProducts.diagra
           simp
           rfl
         · dsimp
-          erw [F.map_id]
+          rw [F.map_id]
           simp }
 
 /-- Implementation of `SheafConditionPairwiseIntersections.coneEquiv`. -/

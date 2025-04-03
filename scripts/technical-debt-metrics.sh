@@ -3,6 +3,19 @@
 # Make this script robust against unintentional errors.
 # See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
 set -euo pipefail
+
+# We need to make the script robust against changes on disk
+# that might have happened during the script execution, e.g. from switching branches.
+# We do that by making sure the entire script is parsed before execution starts
+# using the following pattern
+# {
+# # script content
+# exit
+# }
+# (see https://stackoverflow.com/a/2358432).
+# So please do not delete the following line, or the final two lines of this script.
+{
+
 IFS=$'\n\t'
 
 # `./scripts/technical-debt-metrics.sh` returns a tally of some technical debts in current Mathlib,
@@ -15,6 +28,28 @@ IFS=$'\n\t'
 currCommit="${1:-"$(git rev-parse HEAD)"}"
 refCommit="${2:-"$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)"}"
 
+## `computeDiff input` assumes that input consists of lines of the form `value|description`
+## where `value` is a number and `description` is the statistic that `value` reports.
+## `value` is non-negative, if it refers to the current commit and it is negative otherwise.
+## The output is of the form `|current value|difference|description|`.
+computeDiff () {
+  awk -F'|' 'BEGIN{con=1}{
+      # order keeps track of maintaining the final order of the counters the same as the input one
+      # rdict stores the difference of the current value minus the old value
+      # curr stores the current value, making sure that the number is non-negative and does not start with `-`
+      if(rdict[$2] == "") {order[con]=$2; con++}
+      if((0 <= $1+0) && (!($1 ~ "-"))) {curr[$2]=$1}
+      rdict[$2]+=$1+0
+    } END {
+    # loop over the "sorted" index in `order`
+    for(ind=1; ind<=con-1; ind++) {
+      # retrieve the description of the counter
+      val=order[ind]
+      # print `|current value|difference|name of counter|`
+      printf("|%s|%s|%s|\n", curr[val], rdict[val], val)}
+  }' "${1}"
+}
+
 # `tdc` produces a semi-formatted output of the form
 # ...
 # <number>|description
@@ -23,28 +58,28 @@ refCommit="${2:-"$(git log --pretty=%H --since="$(date -I -d 'last week')" | tai
 # The script uses the fact that a line represents a technical debt if and only if the text before
 # the first `|` is a number.  This is then used for comparison and formatting.
 tdc () {
-titlesAndRegexes=(
-  "porting notes"                  "Porting note"
-  "backwards compatibility flags"  "set_option.*backward"
-  "skipAssignedInstances flags"    "set_option tactic.skipAssignedInstances"
-  "adaptation notes"               "adaptation_note"
-  "disabled simpNF lints"          "nolint simpNF"
-  "disabled deprecation lints"     "set_option linter.deprecated false"
-  "erw"                            "erw \["
-  "maxHeartBeats modifications"    "^ *set_option .*maxHeartbeats"
+titlesPathsAndRegexes=(
+  "porting notes"                  "*"      "Porting note"
+  "backwards compatibility flags"  "*"      "set_option.*backward"
+  "skipAssignedInstances flags"    "*"      "set_option tactic.skipAssignedInstances"
+  "adaptation notes"               "*"      "adaptation_note"
+  "disabled simpNF lints"          "*"      "nolint simpNF"
+  "disabled deprecation lints"     "*"      "set_option linter.deprecated false"
+  "erw"                            "*"      "erw \["
+  "maxHeartBeats modifications"    ":^test" "^ *set_option .*maxHeartbeats"
 )
 
-printf '|Current number|Change|Type|\n|-:|:-:|:-|\n'
-for i in ${!titlesAndRegexes[@]}; do
-  # loop on the odd-indexed entries and name each entry and the following
-  if (( (i + 1) % 2 )); then
-    title="${titlesAndRegexes[$i]}"
-    regex="${titlesAndRegexes[$(( i + 1 ))]}"
+for i in ${!titlesPathsAndRegexes[@]}; do
+  # loop on every 3rd entry and name that entry and the following two
+  if (( i % 3 == 0 )); then
+    title="${titlesPathsAndRegexes[$i]}"
+    pathspec="${titlesPathsAndRegexes[$(( i + 1 ))]}"
+    regex="${titlesPathsAndRegexes[$(( i + 2 ))]}"
     if [ "${title}" == "porting notes" ]
     then fl="-i"  # just for porting notes we ignore the case in the regex
     else fl="--"
     fi
-    printf '%s|%s\n' "$(git grep "${fl}" "${regex}" | wc -l)" "${title}"
+    printf '%s|%s\n' "$(git grep "${fl}" "${regex}" "${pathspec}" | wc -l)" "${title}"
   fi
 done
 
@@ -53,47 +88,44 @@ printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nol
 printf '%s|%s\n' "$(git grep '^set_option linter.style.longFile [0-9]*' Mathlib | wc -l)" "large files"
 printf '%s|%s\n' "$(git grep "^open .*Classical" | grep -v " in$" -c)" "bare open (scoped) Classical"
 
+printf '%s|%s\n' "$(wc -l < scripts/no_lints_prime_decls.txt)" "exceptions for the docPrime linter"
+
 deprecatedFiles="$(git ls-files '**/Deprecated/*.lean' | xargs wc -l | sed 's=^ *==')"
 
 printf '%s|%s\n' "$(printf '%s' "${deprecatedFiles}" | wc -l)" "\`Deprecated\` files"
-printf '%s|%s\n' "$(printf '%s\n' "${deprecatedFiles}" | grep total | sed 's= total==')"  'total LoC in `Deprecated` files'
-
-initFiles="$(git ls-files '**/Init/*.lean' | xargs wc -l | sed 's=^ *==')"
-
-printf '%s|%s\n' "$(printf '%s' "${initFiles}" | wc -l)" "\`Init\` files"
-printf '%s|%s\n\n' "$(printf '%s\n' "${initFiles}" | grep total | sed 's= total==')"  'total LoC in `Init` files'
-
-printf $'```spoiler Changed \'Init\' lines by file\n%s\n```\n' "$(
-    printf '%s\n' "${initFiles}" | awk 'BEGIN{print("|LoC|Change|File|\n|-:|:-:|-|")} {printf("%s|%s\n", $1, $2)}'
-  )"
+printf '%s|%s\n\n' "$(printf '%s\n' "${deprecatedFiles}" | grep total | sed 's= total==')"  'total LoC in `Deprecated` files'
 }
 
-# collect the technical debts from the current mathlib
-new="$(git checkout -q "${currCommit}" && tdc; git switch -q -)"
+# collect the technical debts and the line counts of the deprecated file from the current mathlib
+git checkout -q "${currCommit}"
+new="$(tdc)"
+newDeprecatedFiles="$(git ls-files '**/Deprecated/*.lean' | xargs wc -l | sed 's=^ *==')"
+git switch -q -
 
-# collect the technical debts from the reference mathlib -- switch to the
-old="$(git checkout -q "${refCommit}" && tdc; git switch -q -)"
+# collect the technical debts and the line counts of the deprecated file from the reference mathlib
+git checkout -q "${refCommit}"
+old="$(tdc | sed 's=^[0-9]=-&=')"
+oldDeprecatedFiles="$(git ls-files '**/Deprecated/*.lean' | xargs wc -l | sed 's=^ *=-=')"
+git switch -q -
 
-# place the outputs side-by-side, using `@` as a separator
-paste -d@ <(echo "$new") <(echo "${old}") | sed 's=@=|@|=' |
-  # each line should look like eithe
-  # [new number]|description@[old number]|descr
-  # or something that does not start with [number]|
-  # we split the lines into "words", using `|` as a separator
-  awk -F'|' '
-    # if the first "word" is a number, then we write the 1st entry and compare it with the 4th
-    ($1+0 == $1) { printf("|%s|%s|%s|\n", $1, $1-$4, $2) }
-    # otherwise, the line is a "formatting" line, so we simply print it unchanged until we find `@`
-    !($1+0 == $1) {
-      for(i=1; i<=NF; i++) {
-        if ($i == "@") { break }
-        else { printf("%s|", $i) }
-      }
-      print "@"
-    }' |
-  # the sequence `@|` ending a line is an artifact of our process and we remove it
-  sed 's=|@$=='
+printf '|Current number|Change|Type|\n|-:|:-:|:-|\n'
+printf '%s\n%s\n' "${old}" "${new}" | computeDiff -
+deprSummary="$(printf '%s\n%s\n' "${oldDeprecatedFiles}" "${newDeprecatedFiles}" | tr ' ' '|' | computeDiff -)"
+
+printf $'```spoiler Changed \'Deprecated\' lines by file\n%s\n```\n' "$(
+    printf '%s\n' "${deprSummary}" | awk -F'|' 'BEGIN{print("|LoC|Change|File|\n|-:|:-:|-|")}
+    ($4 == "total") {total=$0}
+    (!($4 == "total")) {
+      printf("%s\n", $0)
+    } END {printf("%s\n", total)}'
+  )"
 
 baseURL='https://github.com/leanprover-community/mathlib4/commit'
 printf '\nCurrent commit [%s](%s)\n' "${currCommit:0:10}" "${baseURL}/${currCommit}"
 printf 'Reference commit [%s](%s)\n' "${refCommit:0:10}"  "${baseURL}/${refCommit}"
+
+# These last two lines are needed to make the script robust against changes on disk
+# that might have happened during the script execution, e.g. from switching branches
+# See the top of the file for more details.
+exit
+}

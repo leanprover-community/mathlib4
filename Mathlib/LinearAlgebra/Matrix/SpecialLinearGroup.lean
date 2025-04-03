@@ -53,8 +53,6 @@ namespace Matrix
 
 universe u v
 
-open Matrix
-
 open LinearMap
 
 section
@@ -95,11 +93,11 @@ instance instCoeFun : CoeFun (SpecialLinearGroup n R) fun _ => n → n → R whe
 
 end CoeFnInstance
 
-theorem ext_iff (A B : SpecialLinearGroup n R) : A = B ↔ ∀ i j, ↑ₘA i j = ↑ₘB i j :=
+theorem ext_iff (A B : SpecialLinearGroup n R) : A = B ↔ ∀ i j, A i j = B i j :=
   Subtype.ext_iff.trans Matrix.ext_iff.symm
 
 @[ext]
-theorem ext (A B : SpecialLinearGroup n R) : (∀ i j, ↑ₘA i j = ↑ₘB i j) → A = B :=
+theorem ext (A B : SpecialLinearGroup n R) : (∀ i j, A i j = B i j) → A = B :=
   (SpecialLinearGroup.ext_iff A B).mpr
 
 instance subsingleton_of_subsingleton [Subsingleton n] : Subsingleton (SpecialLinearGroup n R) := by
@@ -113,16 +111,19 @@ instance hasInv : Inv (SpecialLinearGroup n R) :=
   ⟨fun A => ⟨adjugate A, by rw [det_adjugate, A.prop, one_pow]⟩⟩
 
 instance hasMul : Mul (SpecialLinearGroup n R) :=
-  ⟨fun A B => ⟨↑ₘA * ↑ₘB, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
+  ⟨fun A B => ⟨A * B, by rw [det_mul, A.prop, B.prop, one_mul]⟩⟩
 
 instance hasOne : One (SpecialLinearGroup n R) :=
   ⟨⟨1, det_one⟩⟩
 
 instance : Pow (SpecialLinearGroup n R) ℕ where
-  pow x n := ⟨↑ₘx ^ n, (det_pow _ _).trans <| x.prop.symm ▸ one_pow _⟩
+  pow x n := ⟨x ^ n, (det_pow _ _).trans <| x.prop.symm ▸ one_pow _⟩
 
 instance : Inhabited (SpecialLinearGroup n R) :=
   ⟨1⟩
+
+instance [Fintype R] [DecidableEq R] : Fintype (SpecialLinearGroup n R) := Subtype.fintype _
+instance [Finite R] : Finite (SpecialLinearGroup n R) := Subtype.finite
 
 /-- The transpose of a matrix in `SL(n, R)` -/
 def transpose (A : SpecialLinearGroup n R) : SpecialLinearGroup n R :=
@@ -140,7 +141,7 @@ theorem coe_mk (A : Matrix n n R) (h : det A = 1) : ↑(⟨A, h⟩ : SpecialLine
   rfl
 
 @[simp]
-theorem coe_inv : ↑ₘA⁻¹ = adjugate A :=
+theorem coe_inv : ↑ₘ(A⁻¹) = adjugate A :=
   rfl
 
 @[simp]
@@ -148,7 +149,7 @@ theorem coe_mul : ↑ₘ(A * B) = ↑ₘA * ↑ₘB :=
   rfl
 
 @[simp]
-theorem coe_one : ↑ₘ(1 : SpecialLinearGroup n R) = (1 : Matrix n n R) :=
+theorem coe_one : (1 : SpecialLinearGroup n R) = (1 : Matrix n n R) :=
   rfl
 
 @[simp]
@@ -167,7 +168,7 @@ theorem det_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) : det ↑ₘg �
   rw [g.det_coe]
   norm_num
 
-theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : ↑ₘg i ≠ 0 := fun h =>
+theorem row_ne_zero [Nontrivial R] (g : SpecialLinearGroup n R) (i : n) : g i ≠ 0 := fun h =>
   g.det_ne_zero <| det_eq_zero_of_row_eq_zero i <| by simp [h]
 
 end CoeLemmas
@@ -299,7 +300,7 @@ noncomputable def center_equiv_rootsOfUnity :
   (fun hn ↦ by
     rw [center_eq_bot_of_subsingleton, Fintype.card_eq_zero, Nat.toPNat'_zero, rootsOfUnity_one]
     exact MulEquiv.mulEquivOfUnique)
-  (fun hn ↦ center_equiv_rootsOfUnity' (Classical.arbitrary n))
+  (fun _ ↦ center_equiv_rootsOfUnity' (Classical.arbitrary n))
 
 end center
 
@@ -366,7 +367,7 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
   ext i j; fin_cases i <;> fin_cases j <;> rfl
 
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
-    (hg : (g : Matrix (Fin 2) (Fin 2) R) 1 0 = 0) :
+    (hg : g 1 0 = 0) :
     ∃ (a b : R) (h : a ≠ 0), g = (⟨!![a, b; 0, a⁻¹], by simp [h]⟩ : SL(2, R)) := by
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h_det
   replace hg : c = 0 := by simpa using hg
@@ -444,9 +445,6 @@ open MatrixGroups
 
 open Matrix Matrix.SpecialLinearGroup
 
-local notation:1024 "↑ₘ" A:1024 => ((A : SL(2, ℤ)) : Matrix (Fin 2) (Fin 2) ℤ)
-
-
 /-- The matrix `S = [[0, -1], [1, 0]]` as an element of `SL(2, ℤ)`.
 
 This element acts naturally on the Euclidean plane as a rotation about the origin by `π / 2`.
@@ -456,19 +454,19 @@ represents the Mobiüs transformation `z ↦ -1/z` and is an involutive elliptic
 def S : SL(2, ℤ) :=
   ⟨!![0, -1; 1, 0], by norm_num [Matrix.det_fin_two_of]⟩
 
-/-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)` -/
+/-- The matrix `T = [[1, 1], [0, 1]]` as an element of `SL(2, ℤ)`. -/
 def T : SL(2, ℤ) :=
   ⟨!![1, 1; 0, 1], by norm_num [Matrix.det_fin_two_of]⟩
 
-theorem coe_S : ↑ₘS = !![0, -1; 1, 0] :=
+theorem coe_S : ↑S = !![0, -1; 1, 0] :=
   rfl
 
-theorem coe_T : ↑ₘT = !![1, 1; 0, 1] :=
+theorem coe_T : ↑T = (!![1, 1; 0, 1] : Matrix _ _ ℤ) :=
   rfl
 
-theorem coe_T_inv : ↑ₘT⁻¹ = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, adjugate_fin_two]
+theorem coe_T_inv : ↑(T⁻¹) = !![1, -1; 0, 1] := by simp [coe_inv, coe_T, adjugate_fin_two]
 
-theorem coe_T_zpow (n : ℤ) : ↑ₘ(T ^ n) = !![1, n; 0, 1] := by
+theorem coe_T_zpow (n : ℤ) : (T ^ n).1 = !![1, n; 0, 1] := by
   induction' n using Int.induction_on with n h n h
   · rw [zpow_zero, coe_one, Matrix.one_fin_two]
   · simp_rw [zpow_add, zpow_one, coe_mul, h, coe_T, Matrix.mul_fin_two]
@@ -478,16 +476,22 @@ theorem coe_T_zpow (n : ℤ) : ↑ₘ(T ^ n) = !![1, n; 0, 1] := by
     congrm !![?_, ?_; _, _] <;> ring
 
 @[simp]
-theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : ↑ₘ(T ^ n * g) 1 = ↑ₘg 1 := by
+theorem T_pow_mul_apply_one (n : ℤ) (g : SL(2, ℤ)) : (T ^ n * g) 1 = g 1 := by
   ext j
   simp [coe_T_zpow, Matrix.vecMul, Matrix.dotProduct, Fin.sum_univ_succ, vecTail]
 
 @[simp]
-theorem T_mul_apply_one (g : SL(2, ℤ)) : ↑ₘ(T * g) 1 = ↑ₘg 1 := by
+theorem T_mul_apply_one (g : SL(2, ℤ)) : (T * g) 1 = g 1 := by
   simpa using T_pow_mul_apply_one 1 g
 
 @[simp]
-theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : ↑ₘ(T⁻¹ * g) 1 = ↑ₘg 1 := by
+theorem T_inv_mul_apply_one (g : SL(2, ℤ)) : (T⁻¹ * g) 1 = g 1 := by
   simpa using T_pow_mul_apply_one (-1) g
+
+lemma S_mul_S_eq : (S : Matrix (Fin 2) (Fin 2) ℤ) * S = -1 := by
+  simp only [S, Int.reduceNeg, pow_two, coe_mul, cons_mul, Nat.succ_eq_add_one, Nat.reduceAdd,
+    vecMul_cons, head_cons, zero_smul, tail_cons, neg_smul, one_smul, neg_cons, neg_zero, neg_empty,
+    empty_vecMul, add_zero, zero_add, empty_mul, Equiv.symm_apply_apply]
+  exact Eq.symm (eta_fin_two (-1))
 
 end ModularGroup

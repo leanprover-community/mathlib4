@@ -7,6 +7,8 @@ import Cli.Basic
 import Lake.CLI.Main
 import Mathlib.Util.GetAllModules
 
+-- The `style.header` linter flags `import Lake.CLI.Main` as a potential performance issue.
+set_option linter.style.header false
 /-!
 # Script to create a file importing all files from a folder
 
@@ -24,7 +26,8 @@ it includes `Mathlib/Tactic`. -/
 def getLeanLibs : IO (Array String) := do
   let (elanInstall?, leanInstall?, lakeInstall?) ← findInstall?
   let config ← MonadError.runEIO <| mkLoadConfig { elanInstall?, leanInstall?, lakeInstall? }
-  let ws ← MonadError.runEIO (MainM.runLogIO (loadWorkspace config)).toEIO
+  let some ws ← loadWorkspace config |>.toBaseIO
+    | throw <| IO.userError "failed to load Lake workspace"
   let package := ws.root
   let libs := (package.leanLibs.map (·.name)).map (·.toString)
   return if package.name == `mathlib then

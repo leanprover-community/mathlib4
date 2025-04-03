@@ -40,8 +40,8 @@ namespace FirstOrder
 
 namespace Language
 
-variable (L : Language.{u, v}) (M : Type w) (N : Type w') {P : Type*}
-variable [L.Structure M] [L.Structure N] [L.Structure P]
+variable (L : Language.{u, v}) (M : Type w) (N : Type w')
+variable [L.Structure M] [L.Structure N]
 
 open FirstOrder Structure Substructure
 

@@ -43,8 +43,8 @@ noncomputable def expPartialHomeomorph : PartialHomeomorph ℂ ℂ :=
       map_target' := fun z h => by
         simp only [mem_setOf, log_im, mem_Ioo, neg_pi_lt_arg, arg_lt_pi_iff, true_and]
         exact h.imp_left le_of_lt
-      left_inv' := fun x hx => log_exp hx.1 (le_of_lt hx.2)
-      right_inv' := fun x hx => exp_log <| slitPlane_ne_zero hx }
+      left_inv' := fun _ hx => log_exp hx.1 (le_of_lt hx.2)
+      right_inv' := fun _ hx => exp_log <| slitPlane_ne_zero hx }
     continuous_exp.continuousOn isOpenMap_exp (isOpen_Ioo.preimage continuous_im)
 
 theorem hasStrictDerivAt_log {x : ℂ} (h : x ∈ slitPlane) : HasStrictDerivAt log x⁻¹ x :=

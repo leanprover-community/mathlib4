@@ -71,27 +71,24 @@ variable [Group α] [DecidableEq α] {x y : Finset α × Finset α} {s t : Finse
 * or `|s₁ + t₁| = |s₂ + t₂|` and `|s₂| + |t₂| < |s₁| + |t₁|`
 * or `|s₁ + t₁| = |s₂ + t₂|` and `|s₁| + |t₁| = |s₂| + |t₂|` and `|s₁| < |s₂|`."]
 private def DevosMulRel : Finset α × Finset α → Finset α × Finset α → Prop :=
-  Prod.Lex (· < ·) (Prod.Lex (· > ·) (· < ·)) on fun x ↦
-    ((x.1 * x.2).card, x.1.card + x.2.card, x.1.card)
+  Prod.Lex (· < ·) (Prod.Lex (· > ·) (· < ·)) on fun x ↦ (#(x.1 * x.2), #x.1 + #x.2, #x.1)
 
 @[to_additive]
 private lemma devosMulRel_iff :
     DevosMulRel x y ↔
-      (x.1 * x.2).card < (y.1 * y.2).card ∨
-        (x.1 * x.2).card = (y.1 * y.2).card ∧ y.1.card + y.2.card < x.1.card + x.2.card ∨
-          (x.1 * x.2).card = (y.1 * y.2).card ∧
-            x.1.card + x.2.card = y.1.card + y.2.card ∧ x.1.card < y.1.card := by
+      #(x.1 * x.2) < #(y.1 * y.2) ∨
+        #(x.1 * x.2) = #(y.1 * y.2) ∧ #y.1 + #y.2 < #x.1 + #x.2 ∨
+          #(x.1 * x.2) = #(y.1 * y.2) ∧ #x.1 + #x.2 = #y.1 + #y.2 ∧ #x.1 < #y.1 := by
   simp [DevosMulRel, Prod.lex_iff, and_or_left]
 
 @[to_additive]
-private lemma devosMulRel_of_le (mul : (x.1 * x.2).card ≤ (y.1 * y.2).card)
-    (hadd : y.1.card + y.2.card < x.1.card + x.2.card) : DevosMulRel x y :=
+private lemma devosMulRel_of_le (mul : #(x.1 * x.2) ≤ #(y.1 * y.2))
+    (hadd : #y.1 + #y.2 < #x.1 + #x.2) : DevosMulRel x y :=
   devosMulRel_iff.2 <| mul.lt_or_eq.imp_right fun h ↦ Or.inl ⟨h, hadd⟩
 
 @[to_additive]
-private lemma devosMulRel_of_le_of_le (mul : (x.1 * x.2).card ≤ (y.1 * y.2).card)
-    (hadd : y.1.card + y.2.card ≤ x.1.card + x.2.card) (hone : x.1.card < y.1.card) :
-    DevosMulRel x y :=
+private lemma devosMulRel_of_le_of_le (mul : #(x.1 * x.2) ≤ #(y.1 * y.2))
+    (hadd : #y.1 + #y.2 ≤ #x.1 + #x.2) (hone : #x.1 < #y.1) : DevosMulRel x y :=
   devosMulRel_iff.2 <|
     mul.lt_or_eq.imp_right fun h ↦ hadd.gt_or_eq.imp (And.intro h) fun h' ↦ ⟨h, h', hone⟩
 
@@ -113,20 +110,20 @@ subgroup. -/
 `s + t` is lower-bounded by `|s| + |t| - 1` unless this quantity is greater than the size of the
 smallest subgroup."]
 lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
-    min (minOrder α) ↑(s.card + t.card - 1) ≤ (s * t).card := by
+    min (minOrder α) ↑(#s + #t - 1) ≤ #(s * t) := by
   -- Set up the induction on `x := (s, t)` along the `DevosMulRel` relation.
   set x := (s, t) with hx
   clear_value x
   simp only [Prod.ext_iff] at hx
   obtain ⟨rfl, rfl⟩ := hx
   refine wellFoundedOn_devosMulRel.induction (P := fun x : Finset α × Finset α ↦
-    min (minOrder α) ↑(card x.1 + card x.2 - 1) ≤ card (x.1 * x.2)) ⟨hs, ht⟩ ?_
+    min (minOrder α) ↑(#x.1 + #x.2 - 1) ≤ #(x.1 * x.2)) ⟨hs, ht⟩ ?_
   clear! x
   rintro ⟨s, t⟩ ⟨hs, ht⟩ ih
   simp only [min_le_iff, tsub_le_iff_right, Prod.forall, Set.mem_setOf_eq, and_imp,
     Nat.cast_le] at *
-  -- If `t.card < s.card`, we're done by the induction hypothesis on `(t⁻¹, s⁻¹)`.
-  obtain hts | hst := lt_or_le t.card s.card
+  -- If `#t < #s`, we're done by the induction hypothesis on `(t⁻¹, s⁻¹)`.
+  obtain hts | hst := lt_or_le #t #s
   · simpa only [← mul_inv_rev, add_comm, card_inv] using
       ih _ _ ht.inv hs.inv
         (devosMulRel_iff.2 <| Or.inr <| Or.inr <| by
@@ -159,7 +156,7 @@ lemma Finset.min_le_card_mul (hs : s.Nonempty) (ht : t.Nonempty) :
     simp [-coe_smul_finset]
   -- Else, we can transform `s`, `t` to `s'`, `t'` and `s''`, `t''`, such that one of `(s', t')` and
   -- `(s'', t'')` is strictly smaller than `(s, t)` according to `DevosMulRel`.
-  replace hsg : (s ∩ op g • s).card < s.card := card_lt_card ⟨inter_subset_left, fun h ↦
+  replace hsg : #(s ∩ op g • s) < #s := card_lt_card ⟨inter_subset_left, fun h ↦
     hsg <| eq_of_superset_of_card_ge (h.trans inter_subset_right) (card_smul_finset _ _).le⟩
   replace aux1 := card_mono <| mulETransformLeft.fst_mul_snd_subset g (s, t)
   replace aux2 := card_mono <| mulETransformRight.fst_mul_snd_subset g (s, t)
@@ -184,7 +181,7 @@ by `|s| + |t| - 1`. -/
 @[to_additive "The **Cauchy-Davenport theorem** for torsion-free groups. The size of `s + t` is
 lower-bounded by `|s| + |t| - 1`."]
 lemma Monoid.IsTorsionFree.card_add_card_sub_one_le_card_mul (h : IsTorsionFree α)
-    (hs : s.Nonempty) (ht : t.Nonempty) : s.card + t.card - 1 ≤ (s * t).card := by
+    (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by
   simpa only [h.minOrder, min_eq_right, le_top, Nat.cast_le] using Finset.min_le_card_mul hs ht
 
 end General
@@ -194,7 +191,7 @@ end General
 /-- The **Cauchy-Davenport Theorem**. If `s`, `t` are nonempty sets in $$ℤ/pℤ$$, then the size of
 `s + t` is lower-bounded by `|s| + |t| - 1`, unless this quantity is greater than `p`. -/
 lemma ZMod.min_le_card_add {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs : s.Nonempty)
-    (ht : t.Nonempty) : min p (s.card + t.card - 1) ≤ (s + t).card := by
+    (ht : t.Nonempty) : min p (#s + #t - 1) ≤ #(s + t) := by
   simpa only [ZMod.minOrder_of_prime hp, min_le_iff, Nat.cast_le] using Finset.min_le_card_add hs ht
 
 /-! ### Linearly ordered cancellative semigroups -/
@@ -205,8 +202,8 @@ lemma ZMod.min_le_card_add {p : ℕ} (hp : p.Prime) {s t : Finset (ZMod p)} (hs 
 "The **Cauchy-Davenport theorem** for linearly ordered additive cancellative semigroups. The size of
 `s + t` is lower-bounded by `|s| + |t| - 1`."]
 lemma Finset.card_add_card_sub_one_le_card_mul [LinearOrder α] [Semigroup α] [IsCancelMul α]
-    [CovariantClass α α (· * ·) (· ≤ ·)] [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
-    {s t : Finset α} (hs : s.Nonempty) (ht : t.Nonempty) : s.card + t.card - 1 ≤ (s * t).card := by
+    [MulLeftMono α] [MulRightMono α]
+    {s t : Finset α} (hs : s.Nonempty) (ht : t.Nonempty) : #s + #t - 1 ≤ #(s * t) := by
   suffices s * {t.min' ht} ∩ ({s.max' hs} * t) = {s.max' hs * t.min' ht} by
     rw [← card_singleton_mul t (s.max' hs), ← card_mul_singleton s (t.min' ht),
       ← card_union_add_card_inter, ← card_singleton _, ← this, Nat.add_sub_cancel]

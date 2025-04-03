@@ -27,7 +27,7 @@ section AddSubmonoidWithOneClass
 
 /-- `AddSubmonoidWithOneClass S R` says `S` is a type of subsets `s ≤ R` that contain `0`, `1`,
 and are closed under `(+)` -/
-class AddSubmonoidWithOneClass (S R : Type*) [AddMonoidWithOne R]
+class AddSubmonoidWithOneClass (S : Type*) (R : outParam Type*) [AddMonoidWithOne R]
   [SetLike S R] extends AddSubmonoidClass S R, OneMemClass S R : Prop
 
 variable {S R : Type*} [AddMonoidWithOne R] [SetLike S R] (s : S)
@@ -59,14 +59,19 @@ section SubsemiringClass
 
 /-- `SubsemiringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative and an additive submonoid. -/
-class SubsemiringClass (S : Type*) (R : Type u) [NonAssocSemiring R]
+class SubsemiringClass (S : Type*) (R : outParam (Type u)) [NonAssocSemiring R]
   [SetLike S R] extends SubmonoidClass S R, AddSubmonoidClass S R : Prop
 
 -- See note [lower instance priority]
 instance (priority := 100) SubsemiringClass.addSubmonoidWithOneClass (S : Type*)
-    (R : Type u) [NonAssocSemiring R] [SetLike S R] [h : SubsemiringClass S R] :
+    (R : Type u) {_ : NonAssocSemiring R} [SetLike S R] [h : SubsemiringClass S R] :
     AddSubmonoidWithOneClass S R :=
   { h with }
+
+instance (priority := 100) SubsemiringClass.nonUnitalSubsemiringClass (S : Type*)
+    (R : Type u) [NonAssocSemiring R] [SetLike S R] [SubsemiringClass S R] :
+    NonUnitalSubsemiringClass S R where
+  mul_mem := mul_mem
 
 variable [SetLike S R] [hSR : SubsemiringClass S R] (s : S)
 
@@ -147,7 +152,6 @@ instance : SubsemiringClass (Subsemiring R) R where
 theorem mem_toSubmonoid {s : Subsemiring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
--- `@[simp]` -- Porting note (#10618): simp can prove thisrove this
 theorem mem_carrier {s : Subsemiring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -741,61 +745,68 @@ theorem closure_addSubmonoid_closure {s : Set R} :
 of `s`, and is preserved under addition and multiplication, then `p` holds for all elements
 of the closure of `s`. -/
 @[elab_as_elim]
-theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
-    (zero : p 0) (one : p 1) (add : ∀ x y, p x → p y → p (x + y))
-    (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨⟨p, @mul⟩, one⟩, @add, zero⟩).2 mem h
-
-@[elab_as_elim]
-theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
-    (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h))
+theorem closure_induction {s : Set R} {p : (x : R) → x ∈ closure s → Prop}
+    (mem : ∀ (x) (hx : x ∈ s), p x (subset_closure hx))
     (zero : p 0 (zero_mem _)) (one : p 1 (one_mem _))
-    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
-    {a : R} (ha : a ∈ closure s) : p a ha := by
-  refine Exists.elim ?_ fun (ha : a ∈ closure s) (hc : p a ha) => hc
-  refine
-    closure_induction ha (fun m hm => ⟨subset_closure hm, mem m hm⟩) ⟨zero_mem _, zero⟩
-      ⟨one_mem _, one⟩ ?_ ?_
-  · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
-      ⟨add_mem hx' hy', add _ _ _ _ hx hy⟩)
-  · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
-      ⟨mul_mem hx' hy', mul _ _ _ _ hx hy⟩)
+    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    {x} (hx : x ∈ closure s)  : p x hx :=
+  let K : Subsemiring R :=
+    { carrier := { x | ∃ hx, p x hx }
+      mul_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, mul _ _ _ _ hpx hpy⟩
+      add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
+      one_mem' := ⟨_, one⟩
+      zero_mem' := ⟨_, zero⟩ }
+  closure_le (t := K) |>.mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
+
+@[deprecated closure_induction (since := "2024-10-10")]
+alias closure_induction' := closure_induction
 
 /-- An induction principle for closure membership for predicates with two arguments. -/
 @[elab_as_elim]
-theorem closure_induction₂ {s : Set R} {p : R → R → Prop} {x} {y : R} (hx : x ∈ closure s)
-    (hy : y ∈ closure s) (Hs : ∀ x ∈ s, ∀ y ∈ s, p x y) (H0_left : ∀ x, p 0 x)
-    (H0_right : ∀ x, p x 0) (H1_left : ∀ x, p 1 x) (H1_right : ∀ x, p x 1)
-    (Hadd_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ + x₂) y)
-    (Hadd_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
-    (Hmul_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ * x₂) y)
-    (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p x y :=
-  closure_induction hx
-    (fun x₁ x₁s =>
-      closure_induction hy (Hs x₁ x₁s) (H0_right x₁) (H1_right x₁) (Hadd_right x₁) (Hmul_right x₁))
-    (H0_left y) (H1_left y) (fun z z' => Hadd_left z z' y) fun z z' => Hmul_left z z' y
+theorem closure_induction₂ {s : Set R} {p : (x y : R) → x ∈ closure s → y ∈ closure s → Prop}
+    (mem_mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ s), p x y (subset_closure hx) (subset_closure hy))
+    (zero_left : ∀ x hx, p 0 x (zero_mem _) hx) (zero_right : ∀ x hx, p x 0 hx (zero_mem _))
+    (one_left : ∀ x hx, p 1 x (one_mem _) hx) (one_right : ∀ x hx, p x 1 hx (one_mem _))
+    (add_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x + y) z (add_mem hx hy) hz)
+    (add_right : ∀ x y z hx hy hz, p x y hx hy → p x z hx hz → p x (y + z) hx (add_mem hy hz))
+    (mul_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x * y) z (mul_mem hx hy) hz)
+    (mul_right : ∀ x y z hx hy hz, p x y hx hy → p x z hx hz → p x (y * z) hx (mul_mem hy hz))
+    {x y : R} (hx : x ∈ closure s) (hy : y ∈ closure s) :
+    p x y hx hy := by
+  induction hy using closure_induction with
+  | mem z hz => induction hx using closure_induction with
+    | mem _ h => exact mem_mem _ _ h hz
+    | zero => exact zero_left _ _
+    | one => exact one_left _ _
+    | mul _ _ _ _ h₁ h₂ => exact mul_left _ _ _ _ _ _ h₁ h₂
+    | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
+  | zero => exact zero_right x hx
+  | one => exact one_right x hx
+  | mul _ _ _ _ h₁ h₂ => exact mul_right _ _ _ _ _ _ h₁ h₂
+  | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
 
 theorem mem_closure_iff_exists_list {R} [Semiring R] {s : Set R} {x} :
     x ∈ closure s ↔ ∃ L : List (List R), (∀ t ∈ L, ∀ y ∈ t, y ∈ s) ∧ (L.map List.prod).sum = x := by
   constructor
   · intro hx
-    -- Porting note: needed explicit `p`
-    let p : R → Prop := fun x =>
-      ∃ (L : List (List R)),
-        (∀ (t : List R), t ∈ L → ∀ (y : R), y ∈ t → y ∈ s) ∧ (List.map List.prod L).sum = x
-    exact AddSubmonoid.closure_induction (p := p) (mem_closure_iff.1 hx)
-      (fun x hx =>
-        suffices ∃ t : List R, (∀ y ∈ t, y ∈ s) ∧ t.prod = x from
-          let ⟨t, ht1, ht2⟩ := this
-          ⟨[t], List.forall_mem_singleton.2 ht1, by
-            rw [List.map_singleton, List.sum_singleton, ht2]⟩
-        Submonoid.closure_induction hx
-          (fun x hx => ⟨[x], List.forall_mem_singleton.2 hx, List.prod_singleton⟩)
-          ⟨[], List.forall_mem_nil _, rfl⟩ fun x y ⟨t, ht1, ht2⟩ ⟨u, hu1, hu2⟩ =>
-          ⟨t ++ u, List.forall_mem_append.2 ⟨ht1, hu1⟩, by rw [List.prod_append, ht2, hu2]⟩)
-      ⟨[], List.forall_mem_nil _, rfl⟩ fun x y ⟨L, HL1, HL2⟩ ⟨M, HM1, HM2⟩ =>
-      ⟨L ++ M, List.forall_mem_append.2 ⟨HL1, HM1⟩, by
+    rw [mem_closure_iff] at hx
+    induction hx using AddSubmonoid.closure_induction with
+    | mem x hx =>
+      suffices ∃ t : List R, (∀ y ∈ t, y ∈ s) ∧ t.prod = x from
+        let ⟨t, ht1, ht2⟩ := this
+        ⟨[t], List.forall_mem_singleton.2 ht1, by
+          rw [List.map_singleton, List.sum_singleton, ht2]⟩
+      induction hx using Submonoid.closure_induction with
+      | mem x hx => exact ⟨[x], List.forall_mem_singleton.2 hx, List.prod_singleton⟩
+      | one => exact ⟨[], List.forall_mem_nil _, rfl⟩
+      | mul x y _ _ ht hu =>
+        obtain ⟨⟨t, ht1, ht2⟩, ⟨u, hu1, hu2⟩⟩ := And.intro ht hu
+        exact ⟨t ++ u, List.forall_mem_append.2 ⟨ht1, hu1⟩, by rw [List.prod_append, ht2, hu2]⟩
+    | one => exact ⟨[], List.forall_mem_nil _, rfl⟩
+    | mul x y _ _ hL hM =>
+      obtain ⟨⟨L, HL1, HL2⟩, ⟨M, HM1, HM2⟩⟩ := And.intro hL hM
+      exact ⟨L ++ M, List.forall_mem_append.2 ⟨HL1, HM1⟩, by
         rw [List.map_append, List.sum_append, HL2, HM2]⟩
   · rintro ⟨L, HL1, HL2⟩
     exact HL2 ▸
@@ -1195,17 +1206,19 @@ instance center.smulCommClass_right : SMulCommClass R' (center R') R' :=
 def closureCommSemiringOfComm {s : Set R'} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommSemiring (closure s) :=
   { (closure s).toSemiring with
-    mul_comm := fun x y => by
+    mul_comm := fun ⟨x, hx⟩ ⟨y, hy⟩ => by
       ext
-      simp only [Subsemiring.coe_mul]
-      refine
-        closure_induction₂ x.prop y.prop hcomm (fun x => by simp only [zero_mul, mul_zero])
-          (fun x => by simp only [zero_mul, mul_zero]) (fun x => by simp only [one_mul, mul_one])
-          (fun x => by simp only [one_mul, mul_one])
-          (fun x y z h₁ h₂ => by simp only [add_mul, mul_add, h₁, h₂])
-          (fun x y z h₁ h₂ => by simp only [add_mul, mul_add, h₁, h₂])
-          (fun x y z h₁ h₂ => by rw [mul_assoc, h₂, ← mul_assoc, h₁, mul_assoc]) fun x y z h₁ h₂ =>
-          by rw [← mul_assoc, h₁, mul_assoc, h₂, ← mul_assoc] }
+      simp only [MulMemClass.mk_mul_mk]
+      induction hx, hy using closure_induction₂ with
+      | mem_mem x y hx hy => exact hcomm x hx y hy
+      | zero_left x _ => exact Commute.zero_left x
+      | zero_right x _ => exact Commute.zero_right x
+      | one_left x _ => exact Commute.one_left x
+      | one_right x _ => exact Commute.one_right x
+      | mul_left _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂
+      | mul_right _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_right h₁ h₂
+      | add_left _ _ _ _ _ _ h₁ h₂ => exact Commute.add_left h₁ h₂
+      | add_right _ _ _ _ _ _ h₁ h₂ => exact Commute.add_right h₁ h₂ }
 
 end Subsemiring
 

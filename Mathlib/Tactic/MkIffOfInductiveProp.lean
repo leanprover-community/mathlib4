@@ -3,7 +3,8 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, David Renshaw
 -/
-import Lean
+import Lean.Elab.DeclarationRange
+import Lean.Meta.Tactic.Cases
 import Mathlib.Lean.Meta
 import Mathlib.Lean.Name
 import Mathlib.Tactic.TypeStar

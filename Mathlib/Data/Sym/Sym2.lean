@@ -182,9 +182,9 @@ def lift : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ } 
     Quot.lift (uncurry ↑f) <| by
       rintro _ _ ⟨⟩
       exacts [rfl, f.prop _ _]
-  invFun F := ⟨curry (F ∘ Sym2.mk), fun a₁ a₂ => congr_arg F eq_swap⟩
-  left_inv f := Subtype.ext rfl
-  right_inv F := funext <| Sym2.ind fun x y => rfl
+  invFun F := ⟨curry (F ∘ Sym2.mk), fun _ _ => congr_arg F eq_swap⟩
+  left_inv _ := Subtype.ext rfl
+  right_inv _ := funext <| Sym2.ind fun _ _ => rfl
 
 @[simp]
 theorem lift_mk (f : { f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ }) (a₁ a₂ : α) :
@@ -211,8 +211,8 @@ def lift₂ :
     ⟨fun a₁ a₂ b₁ b₂ => F s(a₁, a₂) s(b₁, b₂), fun a₁ a₂ b₁ b₂ => by
       constructor
       exacts [congr_arg₂ F eq_swap rfl, congr_arg₂ F rfl eq_swap]⟩
-  left_inv f := Subtype.ext rfl
-  right_inv F := funext₂ fun a b => Sym2.inductionOn₂ a b fun _ _ _ _ => rfl
+  left_inv _ := Subtype.ext rfl
+  right_inv _ := funext₂ fun a b => Sym2.inductionOn₂ a b fun _ _ _ _ => rfl
 
 @[simp]
 theorem lift₂_mk
@@ -456,23 +456,23 @@ theorem fromRel_proj_prop {sym : Symmetric r} {z : α × α} : Sym2.mk z ∈ fro
 theorem fromRel_prop {sym : Symmetric r} {a b : α} : s(a, b) ∈ fromRel sym ↔ r a b :=
   Iff.rfl
 
-theorem fromRel_bot : fromRel (fun (x y : α) z => z : Symmetric ⊥) = ∅ := by
+theorem fromRel_bot : fromRel (fun (_ _ : α) z => z : Symmetric ⊥) = ∅ := by
   apply Set.eq_empty_of_forall_not_mem fun e => _
   apply Sym2.ind
   simp [-Set.bot_eq_empty, Prop.bot_eq_false]
 
-theorem fromRel_top : fromRel (fun (x y : α) z => z : Symmetric ⊤) = Set.univ := by
+theorem fromRel_top : fromRel (fun (_ _ : α) z => z : Symmetric ⊤) = Set.univ := by
   apply Set.eq_univ_of_forall fun e => _
   apply Sym2.ind
   simp [-Set.top_eq_univ, Prop.top_eq_true]
 
-theorem fromRel_ne : fromRel (fun (x y : α) z => z.symm : Symmetric Ne) = {z | ¬IsDiag z} := by
+theorem fromRel_ne : fromRel (fun (_ _ : α) z => z.symm : Symmetric Ne) = {z | ¬IsDiag z} := by
   ext z; exact z.ind (by simp)
 
 theorem fromRel_irreflexive {sym : Symmetric r} :
     Irreflexive r ↔ ∀ {z}, z ∈ fromRel sym → ¬IsDiag z :=
   { mp := by intro h; apply Sym2.ind; aesop
-    mpr := fun h x hr => h (fromRel_prop.mpr hr) rfl }
+    mpr := fun h _ hr => h (fromRel_prop.mpr hr) rfl }
 
 theorem mem_fromRel_irrefl_other_ne {sym : Symmetric r} (irrefl : Irreflexive r) {a : α}
     {z : Sym2 α} (hz : z ∈ fromRel sym) (h : a ∈ z) : Mem.other h ≠ a :=
@@ -647,7 +647,7 @@ theorem other_invol {a : α} {z : Sym2 α} (ha : a ∈ z) (hb : Mem.other ha ∈
     apply other_eq_other'
 
 theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :
-    ((s ×ˢ s).image Sym2.mk).filter IsDiag = s.diag.image Sym2.mk := by
+    {a ∈ (s ×ˢ s).image Sym2.mk | a.IsDiag} = s.diag.image Sym2.mk := by
   ext z
   induction' z
   simp only [mem_image, mem_diag, exists_prop, mem_filter, Prod.exists, mem_product]
@@ -660,8 +660,7 @@ theorem filter_image_mk_isDiag [DecidableEq α] (s : Finset α) :
     exact ⟨⟨a, a, ⟨ha, ha⟩, rfl⟩, rfl⟩
 
 theorem filter_image_mk_not_isDiag [DecidableEq α] (s : Finset α) :
-    (((s ×ˢ s).image Sym2.mk).filter fun a : Sym2 α => ¬a.IsDiag) =
-      s.offDiag.image Sym2.mk := by
+    {a ∈ (s ×ˢ s).image Sym2.mk | ¬a.IsDiag} = s.offDiag.image Sym2.mk := by
   ext z
   induction z
   simp only [mem_image, mem_offDiag, mem_filter, Prod.exists, mem_product]

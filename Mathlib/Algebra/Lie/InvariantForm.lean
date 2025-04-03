@@ -124,14 +124,14 @@ variable (hΦ_inv : Φ.lieInvariant L) (hΦ_refl : Φ.IsRefl)
 variable (hL : ∀ I : LieIdeal K L, IsAtom I → ¬IsLieAbelian I)
 include hΦ_nondeg hΦ_refl hL
 
-open FiniteDimensional Submodule in
+open Module Submodule in
 lemma orthogonal_isCompl_coe_submodule (I : LieIdeal K L) (hI : IsAtom I) :
     IsCompl I.toSubmodule (orthogonal Φ hΦ_inv I).toSubmodule := by
   rw [orthogonal_toSubmodule, LinearMap.BilinForm.isCompl_orthogonal_iff_disjoint hΦ_refl,
       ← orthogonal_toSubmodule _ hΦ_inv, ← LieSubmodule.disjoint_iff_coe_toSubmodule]
   exact orthogonal_disjoint Φ hΦ_nondeg hΦ_inv hL I hI
 
-open FiniteDimensional Submodule in
+open Module Submodule in
 lemma orthogonal_isCompl (I : LieIdeal K L) (hI : IsAtom I) :
     IsCompl I (orthogonal Φ hΦ_inv I) := by
   rw [LieSubmodule.isCompl_iff_coe_toSubmodule]
@@ -151,7 +151,7 @@ lemma restrict_orthogonal_nondegenerate (I : LieIdeal K L) (hI : IsAtom I) :
     LinearMap.BilinForm.orthogonal_orthogonal hΦ_nondeg hΦ_refl]
   exact (orthogonal_isCompl_coe_submodule Φ hΦ_nondeg hΦ_inv hΦ_refl hL I hI).symm
 
-open FiniteDimensional Submodule in
+open Module Submodule in
 lemma atomistic : ∀ I : LieIdeal K L, sSup {J : LieIdeal K L | IsAtom J ∧ J ≤ I} = I := by
   intro I
   apply le_antisymm

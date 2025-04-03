@@ -6,7 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Set.Finite
-import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Prime.Infinite
 
 /-!
 # Prime numbers

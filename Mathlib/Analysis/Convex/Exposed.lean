@@ -60,7 +60,7 @@ end PreorderSemiring
 section OrderedRing
 
 variable {𝕜 : Type*} {E : Type*} [TopologicalSpace 𝕜] [OrderedRing 𝕜] [AddCommMonoid E]
-  [TopologicalSpace E] [Module 𝕜 E] {l : E →L[𝕜] 𝕜} {A B C : Set E} {X : Finset E} {x : E}
+  [TopologicalSpace E] [Module 𝕜 E] {l : E →L[𝕜] 𝕜} {A B C : Set E} {x : E}
 
 /-- A useful way to build exposed sets from intersecting `A` with halfspaces (modelled by an
 inequality with a functional). -/
@@ -209,7 +209,7 @@ end OrderedRing
 section LinearOrderedRing
 
 variable {𝕜 : Type*} {E : Type*} [TopologicalSpace 𝕜] [LinearOrderedRing 𝕜] [AddCommMonoid E]
-  [TopologicalSpace E] [Module 𝕜 E] {A B C : Set E}
+  [TopologicalSpace E] [Module 𝕜 E] {A B : Set E}
 
 namespace IsExposed
 

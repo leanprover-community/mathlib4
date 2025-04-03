@@ -15,7 +15,7 @@ set -e # abort whenever a command in the script fails
 {
 
 # Default values
-AUTO="no"
+AUTO="yes"
 
 # Function to display usage
 usage() {
@@ -25,7 +25,7 @@ usage() {
   echo "BUMPVERSION: The upcoming release that we are targeting, e.g., 'v4.10.0'"
   echo "NIGHTLYDATE: The date of the nightly toolchain currently used on 'nightly-testing'"
   echo "NIGHTLYSHA: The SHA of the nightly toolchain that we want to adapt to"
-  echo "AUTO: Optional flag to specify automatic mode, default is 'no'"
+  echo "AUTO: Optional flag to specify automatic mode, default is 'yes'"
   exit 1
 }
 
@@ -72,24 +72,6 @@ if ! command -v gh &> /dev/null; then
     exit 1
 fi
 
-# Check the CI status of the latest commit on the 'nightly-testing' branch
-status=$(gh run list --branch nightly-testing | grep -m1 . | awk '{print $1}')
-if [ "$status" != "completed" ]; then
-  if [ "$status" != "in_progress" ]; then
-    echo "The latest commit on the 'nightly-testing' branch did not pass CI. Please fix the issues and try again."
-    gh run list --branch nightly-testing
-    exit 1
-  else
-    if [ "$AUTO" = "yes" ]; then
-      echo "Auto mode enabled. Bailing out because the latest commit on 'nightly-testing' is still running CI."
-      exit 1
-    else
-      echo "The latest commit on 'nightly-testing' is still running CI."
-      read -p "Press enter to continue, or ctrl-C if you'd prefer to wait for CI."
-    fi
-  fi
-fi
-
 echo "### Creating a PR for the nightly adaptation for $NIGHTLYDATE"
 
 echo
@@ -108,7 +90,7 @@ echo "### [auto] checkout 'bump/$BUMPVERSION' and merge the latest changes from 
 
 git checkout "bump/$BUMPVERSION"
 git pull
-git merge origin/master || true # ignore error if there are conflicts
+git merge --no-edit origin/master || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -153,7 +135,7 @@ echo
 echo "### [auto] create a new branch 'bump/nightly-$NIGHTLYDATE' and merge the latest changes from 'origin/nightly-testing'"
 
 git checkout -b "bump/nightly-$NIGHTLYDATE"
-git merge $NIGHTLYSHA || true # ignore error if there are conflicts
+git merge --no-edit $NIGHTLYSHA || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -222,7 +204,7 @@ if git diff --name-only bump/$BUMPVERSION bump/nightly-$NIGHTLYDATE | grep -q .;
   echo "### [auto/user] post a link to the PR on Zulip"
   
   zulip_title="#$pr_number adaptations for nightly-$NIGHTLYDATE"
-  zulip_body="> $pr_title #$pr_number"
+  zulip_body="> $pr_title #$pr_number\\\n\\\nPlease review this PR. At the end of the month this diff will land in \\\`master\\\`."
   
   echo "Post the link to the PR in a new thread on the #nightly-testing channel on Zulip"
   echo "Here is a suggested message:"
@@ -270,7 +252,7 @@ echo "### [auto] checkout the 'nightly-testing' branch and merge the new branch 
 
 git checkout nightly-testing
 git pull
-git merge "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
+git merge --no-edit "bump/nightly-$NIGHTLYDATE" || true # ignore error if there are conflicts
 
 # Check if there are merge conflicts
 if git diff --name-only --diff-filter=U | grep -q .; then
@@ -292,7 +274,7 @@ if git diff --name-only --diff-filter=U | grep -q . || ! git diff-index --quiet 
   if [ "$AUTO" = "yes" ]; then
     echo "Auto mode enabled. Bailing out due to unresolved conflicts or uncommitted changes."
     echo "PR has been created, and message posted to Zulip."
-    echo "Error occured while merging the new branch into 'nightly-testing'."
+    echo "Error occurred while merging the new branch into 'nightly-testing'."
     exit 2
   fi
 fi

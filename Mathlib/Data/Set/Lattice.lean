@@ -87,10 +87,10 @@ theorem mem_iInter₂_of_mem {s : ∀ i, κ i → Set α} {a : α} (h : ∀ i j,
 
 instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) :=
   { instBooleanAlgebraSet with
-    le_sSup := fun s t t_in a a_in => ⟨t, t_in, a_in⟩
-    sSup_le := fun s t h a ⟨t', ⟨t'_in, a_in⟩⟩ => h t' t'_in a_in
-    le_sInf := fun s t h a a_in t' t'_in => h t' t'_in a_in
-    sInf_le := fun s t t_in a h => h _ t_in
+    le_sSup := fun _ t t_in _ a_in => ⟨t, t_in, a_in⟩
+    sSup_le := fun _ _ h _ ⟨t', ⟨t'_in, a_in⟩⟩ => h t' t'_in a_in
+    le_sInf := fun _ _ h _ a_in t' t'_in => h t' t'_in a_in
+    sInf_le := fun _ _ t_in _ h => h _ t_in
     iInf_iSup_eq := by intros; ext; simp [Classical.skolem] }
 
 section GaloisConnection
@@ -239,7 +239,6 @@ theorem subset_iInter_iff {s : Set α} {t : ι → Set α} : (s ⊆ ⋂ i, t i) 
   le_iInf_iff
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem subset_iInter₂_iff {s : Set α} {t : ∀ i, κ i → Set α} :
     (s ⊆ ⋂ (i) (j), t i j) ↔ ∀ i j, s ⊆ t i j := by simp_rw [subset_iInter_iff]
 
@@ -568,7 +567,6 @@ theorem iInter_eq_univ : ⋂ i, s i = univ ↔ ∀ i, s i = univ :=
 theorem nonempty_iUnion : (⋃ i, s i).Nonempty ↔ ∃ i, (s i).Nonempty := by
   simp [nonempty_iff_ne_empty]
 
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem nonempty_biUnion {t : Set α} {s : α → Set β} :
     (⋃ i ∈ t, s i).Nonempty ↔ ∃ i ∈ t, (s i).Nonempty := by simp
 
@@ -1019,7 +1017,6 @@ theorem nonempty_iInter {f : ι → Set α} : (⋂ i, f i).Nonempty ↔ ∃ x, �
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 -- classical
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem nonempty_iInter₂ {s : ∀ i, κ i → Set α} :
     (⋂ (i) (j), s i j).Nonempty ↔ ∃ a, ∀ i j, a ∈ s i j := by
   simp
@@ -1172,6 +1169,30 @@ theorem union_distrib_iInter_right (s : ι → Set α) (t : Set α) : (⋂ i, s 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem union_distrib_iInter₂_right (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋂ (i) (j), s i j) ∪ t = ⋂ (i) (j), s i j ∪ t := by simp_rw [union_distrib_iInter_right]
+
+lemma biUnion_lt_eq_iUnion [LT α] [NoMaxOrder α] {s : α → Set β} :
+    ⋃ (n) (m < n), s m = ⋃ n, s n := biSup_lt_eq_iSup
+
+lemma biUnion_le_eq_iUnion [Preorder α] {s : α → Set β} :
+    ⋃ (n) (m ≤ n), s m = ⋃ n, s n := biSup_le_eq_iSup
+
+lemma biInter_lt_eq_iInter [LT α] [NoMaxOrder α] {s : α → Set β} :
+    ⋂ (n) (m < n), s m = ⋂ (n), s n := biInf_lt_eq_iInf
+
+lemma biInter_le_eq_iInter [Preorder α] {s : α → Set β} :
+    ⋂ (n) (m ≤ n), s m = ⋂ (n), s n := biInf_le_eq_iInf
+
+lemma biUnion_gt_eq_iUnion [LT α] [NoMinOrder α] {s : α → Set β} :
+    ⋃ (n) (m > n), s m = ⋃ n, s n := biSup_gt_eq_iSup
+
+lemma biUnion_ge_eq_iUnion [Preorder α] {s : α → Set β} :
+    ⋃ (n) (m ≥ n), s m = ⋃ n, s n := biSup_ge_eq_iSup
+
+lemma biInter_gt_eq_iInf [LT α] [NoMinOrder α] {s : α → Set β} :
+    ⋂ (n) (m > n), s m = ⋂ n, s n := biInf_gt_eq_iInf
+
+lemma biInter_ge_eq_iInf [Preorder α] {s : α → Set β} :
+    ⋂ (n) (m ≥ n), s m = ⋂ n, s n := biInf_ge_eq_iInf
 
 section Function
 
@@ -1767,13 +1788,11 @@ theorem disjoint_iUnion_right {ι : Sort*} {s : ι → Set α} :
   disjoint_iSup_iff
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem disjoint_iUnion₂_left {s : ∀ i, κ i → Set α} {t : Set α} :
     Disjoint (⋃ (i) (j), s i j) t ↔ ∀ i j, Disjoint (s i j) t :=
   iSup₂_disjoint_iff
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
--- Porting note (#10618): removing `simp`. `simp` can prove it
 theorem disjoint_iUnion₂_right {s : Set α} {t : ∀ i, κ i → Set α} :
     Disjoint s (⋃ (i) (j), t i j) ↔ ∀ i j, Disjoint s (t i j) :=
   disjoint_iSup₂_iff

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Maps
-import Mathlib.Data.List.Lemmas
 
 /-!
 
@@ -509,7 +508,7 @@ theorem getLast_support {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
 
 theorem tail_support_append {u v w : V} (p : G.Walk u v) (p' : G.Walk v w) :
     (p.append p').support.tail = p.support.tail ++ p'.support.tail := by
-  rw [support_append, List.tail_append_of_ne_nil _ _ (support_ne_nil _)]
+  rw [support_append, List.tail_append_of_ne_nil (support_ne_nil _)]
 
 theorem support_eq_cons {u v : V} (p : G.Walk u v) : p.support = u :: p.support.tail := by
   cases p <;> simp

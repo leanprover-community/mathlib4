@@ -67,7 +67,7 @@ def mapBifunctorHomologicalComplexShift₁Iso :
     ((F.mapBifunctorHomologicalComplex _ _).obj (K₁⟦x⟧)).obj K₂ ≅
     (HomologicalComplex₂.shiftFunctor₁ D x).obj
       (((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj K₂) :=
-  HomologicalComplex.Hom.isoOfComponents (fun i₁ => Iso.refl _)
+  HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _)
 
 instance : HasMapBifunctor (K₁⟦x⟧) K₂ F :=
   HomologicalComplex₂.hasTotal_of_iso (mapBifunctorHomologicalComplexShift₁Iso K₁ K₂ F x).symm _
@@ -95,7 +95,7 @@ def mapBifunctorHomologicalComplexShift₂Iso :
     (HomologicalComplex₂.shiftFunctor₂ D y).obj
       (((F.mapBifunctorHomologicalComplex _ _).obj K₁).obj K₂) :=
   HomologicalComplex.Hom.isoOfComponents
-    (fun i₁ => HomologicalComplex.Hom.isoOfComponents (fun i₂ => Iso.refl _))
+    (fun i₁ => HomologicalComplex.Hom.isoOfComponents (fun _ => Iso.refl _))
 
 instance : HasMapBifunctor K₁ (K₂⟦y⟧) F :=
   HomologicalComplex₂.hasTotal_of_iso (mapBifunctorHomologicalComplexShift₂Iso K₁ K₂ F y).symm _

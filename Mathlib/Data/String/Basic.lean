@@ -6,7 +6,6 @@ Authors: Mario Carneiro
 import Batteries.Data.String.Lemmas
 import Mathlib.Data.List.Lex
 import Mathlib.Data.Char
-import Mathlib.Tactic.AdaptationNote
 import Mathlib.Algebra.Order.Group.Nat
 
 /-!
@@ -16,6 +15,8 @@ Supplementary theorems about the `String` type.
 -/
 
 namespace String
+
+@[simp] theorem endPos_empty : "".endPos = 0 := rfl
 
 /-- `<` on string iterators. This coincides with `<` on strings as lists. -/
 def ltb (s₁ s₂ : Iterator) : Bool :=
@@ -76,13 +77,11 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
     · unfold ltb; decide
     · rename_i c₂ cs₂; apply iff_of_true
       · unfold ltb
-        #adaptation_note /-- v4.7.0-rc1 exclude reduceMk from simp -/
-        simp [-reduceMk, Iterator.hasNext, Char.utf8Size_pos]
+        simp [Iterator.hasNext, Char.utf8Size_pos]
       · apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih; apply iff_of_false
       · unfold ltb
-        #adaptation_note /-- v4.7.0-rc1 exclude reduceMk from simp -/
-        simp [-reduceMk, Iterator.hasNext]
+        simp [Iterator.hasNext]
       · apply not_lt_of_lt; apply List.nil_lt_cons
     · rename_i c₁ cs₁ ih c₂ cs₂; unfold ltb
       simp only [Iterator.hasNext, Pos.byteIdx_zero, endPos, utf8ByteSize, utf8ByteSize.go,
@@ -139,7 +138,7 @@ theorem head_empty : "".data.head! = default :=
   rfl
 
 instance : LinearOrder String where
-  le_refl a := le_iff_toList_le.mpr le_rfl
+  le_refl _ := le_iff_toList_le.mpr le_rfl
   le_trans a b c := by
     simp only [le_iff_toList_le]
     apply le_trans

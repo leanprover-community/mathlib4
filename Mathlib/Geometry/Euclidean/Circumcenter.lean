@@ -453,7 +453,7 @@ theorem orthogonalProjection_eq_circumcenter_of_dist_eq {n : ℕ} (s : Simplex �
 /-- The orthogonal projection of the circumcenter onto a face is the
 circumcenter of that face. -/
 theorem orthogonalProjection_circumcenter {n : ℕ} (s : Simplex ℝ P n) {fs : Finset (Fin (n + 1))}
-    {m : ℕ} (h : fs.card = m + 1) :
+    {m : ℕ} (h : #fs = m + 1) :
     ↑((s.face h).orthogonalProjectionSpan s.circumcenter) = (s.face h).circumcenter :=
   haveI hr : ∃ r, ∀ i, dist ((s.face h).points i) s.circumcenter = r := by
     use s.circumradius
@@ -564,7 +564,7 @@ theorem point_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : Simp
 terms of `pointsWithCircumcenter`. -/
 def centroidWeightsWithCircumcenter {n : ℕ} (fs : Finset (Fin (n + 1))) :
     PointsWithCircumcenterIndex n → ℝ
-  | pointIndex i => if i ∈ fs then (card fs : ℝ)⁻¹ else 0
+  | pointIndex i => if i ∈ fs then (#fs : ℝ)⁻¹ else 0
   | circumcenterIndex => 0
 
 /-- `centroidWeightsWithCircumcenter` sums to 1, if the `Finset` is nonempty. -/
@@ -584,7 +584,7 @@ theorem centroid_eq_affineCombination_of_pointsWithCircumcenter {n : ℕ} (s : S
   simp_rw [centroid_def, affineCombination_apply, weightedVSubOfPoint_apply,
     sum_pointsWithCircumcenter, centroidWeightsWithCircumcenter,
     pointsWithCircumcenter_point, zero_smul, add_zero, centroidWeights,
-    ← sum_indicator_subset_of_eq_zero (Function.const (Fin (n + 1)) (card fs : ℝ)⁻¹)
+    ← sum_indicator_subset_of_eq_zero (Function.const (Fin (n + 1)) (#fs : ℝ)⁻¹)
       (fun i wi => wi • (s.points i -ᵥ Classical.choice AddTorsor.nonempty)) fs.subset_univ fun _ =>
       zero_smul ℝ _,
     Set.indicator_apply]
@@ -638,7 +638,7 @@ theorem reflection_circumcenter_eq_affineCombination_of_pointsWithCircumcenter {
     reflection (affineSpan ℝ (s.points '' {i₁, i₂})) s.circumcenter =
       (univ : Finset (PointsWithCircumcenterIndex n)).affineCombination ℝ s.pointsWithCircumcenter
         (reflectionCircumcenterWeightsWithCircumcenter i₁ i₂) := by
-  have hc : card ({i₁, i₂} : Finset (Fin (n + 1))) = 2 := by simp [h]
+  have hc : #{i₁, i₂} = 2 := by simp [h]
   -- Making the next line a separate definition helps the elaborator:
   set W : AffineSubspace ℝ P := affineSpan ℝ (s.points '' {i₁, i₂})
   have h_faces :
@@ -667,7 +667,7 @@ end Affine
 
 namespace EuclideanGeometry
 
-open Affine AffineSubspace FiniteDimensional
+open Affine AffineSubspace Module
 
 variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P]

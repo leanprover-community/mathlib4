@@ -96,6 +96,13 @@ theorem ext_functor {G} [Groupoid.{v} G] [IsFreeGroupoid G] {X : Type v} [Group 
   let ⟨_, _, u⟩ := @unique_lift G _ _ X _ fun (a b : Generators G) (e : a ⟶ b) => g.map (of e)
   _root_.trans (u _ h) (u _ fun _ _ _ => rfl).symm
 
+#adaptation_note
+/--
+The new unused variable linter in
+https://github.com/leanprover/lean4/pull/5338
+flags `{ e // _ }`.
+-/
+set_option linter.unusedVariables false in
 /-- An action groupoid over a free group is free. More generally, one could show that the groupoid
 of elements over a free groupoid is free, but this version is easier to prove and suffices for our
 purposes.
@@ -106,7 +113,7 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
     IsFreeGroupoid (ActionCategory G A) where
   quiverGenerators :=
     ⟨fun a b => { e : IsFreeGroup.Generators G // IsFreeGroup.of e • a.back = b.back }⟩
-  of := fun (e : { e // _}) => ⟨IsFreeGroup.of e, e.property⟩
+  of := fun (e : { e // _ }) => ⟨IsFreeGroup.of e, e.property⟩
   unique_lift := by
     intro X _ f
     let f' : IsFreeGroup.Generators G → (A → X) ⋊[mulAutArrow] G := fun e =>
@@ -114,7 +121,6 @@ instance actionGroupoidIsFree {G A : Type u} [Group G] [IsFreeGroup G] [MulActio
     rcases IsFreeGroup.unique_lift f' with ⟨F', hF', uF'⟩
     refine ⟨uncurry F' ?_, ?_, ?_⟩
     · suffices SemidirectProduct.rightHom.comp F' = MonoidHom.id _ by
-        -- Porting note: `MonoidHom.ext_iff` has been deprecated.
         exact DFunLike.ext_iff.mp this
       apply IsFreeGroup.ext_hom (fun x ↦ ?_)
       rw [MonoidHom.comp_apply, hF']

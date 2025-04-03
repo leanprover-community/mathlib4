@@ -30,17 +30,23 @@ theorem dist_cast (x y : ℚ) : dist (x : ℝ) y = dist x y :=
 theorem uniformContinuous_coe_real : UniformContinuous ((↑) : ℚ → ℝ) :=
   uniformContinuous_comap
 
-theorem uniformEmbedding_coe_real : UniformEmbedding ((↑) : ℚ → ℝ) :=
-  uniformEmbedding_comap Rat.cast_injective
+theorem isUniformEmbedding_coe_real : IsUniformEmbedding ((↑) : ℚ → ℝ) :=
+  isUniformEmbedding_comap Rat.cast_injective
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_coe_real := isUniformEmbedding_coe_real
 
 theorem isDenseEmbedding_coe_real : IsDenseEmbedding ((↑) : ℚ → ℝ) :=
-  uniformEmbedding_coe_real.isDenseEmbedding Rat.denseRange_cast
+  isUniformEmbedding_coe_real.isDenseEmbedding Rat.denseRange_cast
 
 @[deprecated (since := "2024-09-30")]
 alias denseEmbedding_coe_real := isDenseEmbedding_coe_real
 
-theorem embedding_coe_real : Embedding ((↑) : ℚ → ℝ) :=
-  isDenseEmbedding_coe_real.to_embedding
+theorem isEmbedding_coe_real : IsEmbedding ((↑) : ℚ → ℝ) :=
+  isDenseEmbedding_coe_real.isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_coe_real := isEmbedding_coe_real
 
 theorem continuous_coe_real : Continuous ((↑) : ℚ → ℝ) :=
   uniformContinuous_coe_real.continuous
@@ -51,31 +57,43 @@ end Rat
 theorem Nat.dist_cast_rat (x y : ℕ) : dist (x : ℚ) y = dist x y := by
   rw [← Nat.dist_cast_real, ← Rat.dist_cast]; congr
 
-theorem Nat.uniformEmbedding_coe_rat : UniformEmbedding ((↑) : ℕ → ℚ) :=
-  uniformEmbedding_bot_of_pairwise_le_dist zero_lt_one <| by simpa using Nat.pairwise_one_le_dist
+theorem Nat.isUniformEmbedding_coe_rat : IsUniformEmbedding ((↑) : ℕ → ℚ) :=
+  isUniformEmbedding_bot_of_pairwise_le_dist zero_lt_one <| by simpa using Nat.pairwise_one_le_dist
 
-theorem Nat.closedEmbedding_coe_rat : ClosedEmbedding ((↑) : ℕ → ℚ) :=
-  closedEmbedding_of_pairwise_le_dist zero_lt_one <| by simpa using Nat.pairwise_one_le_dist
+@[deprecated (since := "2024-10-01")]
+alias Nat.uniformEmbedding_coe_rat := Nat.isUniformEmbedding_coe_rat
+
+theorem Nat.isClosedEmbedding_coe_rat : IsClosedEmbedding ((↑) : ℕ → ℚ) :=
+  isClosedEmbedding_of_pairwise_le_dist zero_lt_one <| by simpa using Nat.pairwise_one_le_dist
+
+@[deprecated (since := "2024-10-20")]
+alias Nat.closedEmbedding_coe_rat := Nat.isClosedEmbedding_coe_rat
 
 @[norm_cast, simp]
 theorem Int.dist_cast_rat (x y : ℤ) : dist (x : ℚ) y = dist x y := by
   rw [← Int.dist_cast_real, ← Rat.dist_cast]; congr
 
-theorem Int.uniformEmbedding_coe_rat : UniformEmbedding ((↑) : ℤ → ℚ) :=
-  uniformEmbedding_bot_of_pairwise_le_dist zero_lt_one <| by simpa using Int.pairwise_one_le_dist
+theorem Int.isUniformEmbedding_coe_rat : IsUniformEmbedding ((↑) : ℤ → ℚ) :=
+  isUniformEmbedding_bot_of_pairwise_le_dist zero_lt_one <| by simpa using Int.pairwise_one_le_dist
 
-theorem Int.closedEmbedding_coe_rat : ClosedEmbedding ((↑) : ℤ → ℚ) :=
-  closedEmbedding_of_pairwise_le_dist zero_lt_one <| by simpa using Int.pairwise_one_le_dist
+@[deprecated (since := "2024-10-01")]
+alias Int.uniformEmbedding_coe_rat := Int.isUniformEmbedding_coe_rat
+
+theorem Int.isClosedEmbedding_coe_rat : IsClosedEmbedding ((↑) : ℤ → ℚ) :=
+  isClosedEmbedding_of_pairwise_le_dist zero_lt_one <| by simpa using Int.pairwise_one_le_dist
+
+@[deprecated (since := "2024-10-20")]
+alias Int.closedEmbedding_coe_rat := Int.isClosedEmbedding_coe_rat
 
 namespace Rat
 
-instance : NoncompactSpace ℚ := Int.closedEmbedding_coe_rat.noncompactSpace
+instance : NoncompactSpace ℚ := Int.isClosedEmbedding_coe_rat.noncompactSpace
 
 theorem uniformContinuous_add : UniformContinuous fun p : ℚ × ℚ => p.1 + p.2 :=
-  Rat.uniformEmbedding_coe_real.toUniformInducing.uniformContinuous_iff.2 <| by
+  Rat.isUniformEmbedding_coe_real.isUniformInducing.uniformContinuous_iff.2 <| by
     simp only [Function.comp_def, Rat.cast_add]
     exact Real.uniformContinuous_add.comp
-      (Rat.uniformContinuous_coe_real.prod_map Rat.uniformContinuous_coe_real)
+      (Rat.uniformContinuous_coe_real.prodMap Rat.uniformContinuous_coe_real)
 
 theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
@@ -97,7 +115,7 @@ instance : TopologicalRing ℚ := inferInstance
 
 nonrec theorem totallyBounded_Icc (a b : ℚ) : TotallyBounded (Icc a b) := by
   simpa only [preimage_cast_Icc]
-    using totallyBounded_preimage Rat.uniformEmbedding_coe_real.toUniformInducing
+    using totallyBounded_preimage Rat.isUniformEmbedding_coe_real.isUniformInducing
       (totallyBounded_Icc (a : ℝ) b)
 
 end Rat

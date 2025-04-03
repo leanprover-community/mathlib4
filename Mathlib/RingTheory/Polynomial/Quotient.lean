@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, David Kurniadi Angdinata, Devon Tuma, Riccardo Brasca
 -/
 import Mathlib.Algebra.Polynomial.Div
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.RingTheory.Ideal.QuotientOperations
 
 /-!
 # Quotients of polynomial rings
@@ -211,10 +211,10 @@ lemma quotientEquivQuotientMvPolynomial_rightInverse (I : Ideal R) :
     Function.RightInverse
       (eval₂ (Ideal.Quotient.lift I
         ((Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R))).comp C)
-          fun i hi => quotient_map_C_eq_zero hi)
+          fun _ hi => quotient_map_C_eq_zero hi)
           fun i => Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R)) (X i))
       (Ideal.Quotient.lift (Ideal.map C I : Ideal (MvPolynomial σ R))
-        (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun a ha => eval₂_C_mk_eq_zero ha) := by
+        (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha => eval₂_C_mk_eq_zero ha) := by
   intro f
   apply induction_on f
   · intro r
@@ -233,10 +233,10 @@ lemma quotientEquivQuotientMvPolynomial_leftInverse (I : Ideal R) :
     Function.LeftInverse
       (eval₂ (Ideal.Quotient.lift I
         ((Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R))).comp C)
-          fun i hi => quotient_map_C_eq_zero hi)
+          fun _ hi => quotient_map_C_eq_zero hi)
           fun i => Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R)) (X i))
       (Ideal.Quotient.lift (Ideal.map C I : Ideal (MvPolynomial σ R))
-        (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun a ha => eval₂_C_mk_eq_zero ha) := by
+        (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha => eval₂_C_mk_eq_zero ha) := by
   intro f
   obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective f
   apply induction_on f
@@ -244,7 +244,7 @@ lemma quotientEquivQuotientMvPolynomial_leftInverse (I : Ideal R) :
     rw [Ideal.Quotient.lift_mk, eval₂Hom_C, RingHom.comp_apply, eval₂_C, Ideal.Quotient.lift_mk,
       RingHom.comp_apply]
   · intros p q hp hq
-    erw [Ideal.Quotient.lift_mk] at hp hq ⊢
+    rw [Ideal.Quotient.lift_mk] at hp hq ⊢
     simp only [Submodule.Quotient.quot_mk_eq_mk, eval₂_add, RingHom.map_add, coe_eval₂Hom,
       Ideal.Quotient.lift_mk, Ideal.Quotient.mk_eq_mk] at hp hq ⊢
     rw [hp, hq]

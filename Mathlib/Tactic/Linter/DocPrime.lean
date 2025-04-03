@@ -40,6 +40,8 @@ def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if (← get).messages.hasErrors then
     return
   unless [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind do return
+  -- ignore private declarations
+  if (stx.find? (·.isOfKind ``Lean.Parser.Command.private)).isSome then return
   let docstring := stx[0][0]
   -- The current declaration's id, possibly followed by a list of universe names.
   let declId :=

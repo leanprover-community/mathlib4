@@ -20,9 +20,9 @@ group of `x`.
 
 open CategoryTheory
 
-universe u v
+universe u
 
-variable {X : Type u} {Y : Type v} [TopologicalSpace X] [TopologicalSpace Y]
+variable {X : Type u} [TopologicalSpace X]
 variable {x₀ x₁ : X}
 
 noncomputable section
@@ -59,7 +59,7 @@ theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
         · norm_num
       · unit_interval
     · rw [mul_assoc]
-      apply mul_le_one
+      apply mul_le_one₀
       · unit_interval
       · apply mul_nonneg
         · norm_num
@@ -69,7 +69,7 @@ theorem reflTransSymmAux_mem_I (x : I × I) : reflTransSymmAux x ∈ I := by
     · apply mul_nonneg
       · unit_interval
       linarith [unitInterval.nonneg x.2, unitInterval.le_one x.2]
-    · apply mul_le_one
+    · apply mul_le_one₀
       · unit_interval
       · linarith [unitInterval.nonneg x.2, unitInterval.le_one x.2]
       · linarith [unitInterval.nonneg x.2, unitInterval.le_one x.2]
@@ -299,14 +299,14 @@ attribute [local instance] Path.Homotopic.setoid
 instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
   Hom x y := Path.Homotopic.Quotient x.as y.as
   id x := ⟦Path.refl x.as⟧
-  comp {x y z} := Path.Homotopic.Quotient.comp
-  id_comp {x y} f :=
+  comp {_ _ _} := Path.Homotopic.Quotient.comp
+  id_comp {x _} f :=
     Quotient.inductionOn f fun a =>
       show ⟦(Path.refl x.as).trans a⟧ = ⟦a⟧ from Quotient.sound ⟨Path.Homotopy.reflTrans a⟩
-  comp_id {x y} f :=
+  comp_id {_ y} f :=
     Quotient.inductionOn f fun a =>
       show ⟦a.trans (Path.refl y.as)⟧ = ⟦a⟧ from Quotient.sound ⟨Path.Homotopy.transRefl a⟩
-  assoc {w x y z} f g h :=
+  assoc {_ _ _ _} f g h :=
     Quotient.inductionOn₃ f g h fun p q r =>
       show ⟦(p.trans q).trans r⟧ = ⟦p.trans (q.trans r)⟧ from
         Quotient.sound ⟨Path.Homotopy.transAssoc p q r⟩
@@ -318,11 +318,11 @@ instance : CategoryTheory.Groupoid (FundamentalGroupoid X) where
         rw [Quotient.eq]
         exact ⟨h.symm₂⟩)
       p
-  inv_comp {x y} f :=
+  inv_comp {_ y} f :=
     Quotient.inductionOn f fun a =>
       show ⟦a.symm.trans a⟧ = ⟦Path.refl y.as⟧ from
         Quotient.sound ⟨(Path.Homotopy.reflSymmTrans a).symm⟩
-  comp_inv {x y} f :=
+  comp_inv {x _} f :=
     Quotient.inductionOn f fun a =>
       show ⟦a.trans a.symm⟧ = ⟦Path.refl x.as⟧ from
         Quotient.sound ⟨(Path.Homotopy.reflTransSymm a).symm⟩
@@ -337,7 +337,7 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
   map f :=
     { obj := fun x => ⟨f x.as⟩
       map := fun {X Y} p => by exact Path.Homotopic.Quotient.mapFn p f
-      map_id := fun X => rfl
+      map_id := fun _ => rfl
       map_comp := fun {x y z} p q => by
         refine Quotient.inductionOn₂ p q fun a b => ?_
         simp only [comp_eq, ← Path.Homotopic.map_lift, ← Path.Homotopic.comp_lift, Path.map_trans] }

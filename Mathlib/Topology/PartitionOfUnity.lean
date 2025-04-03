@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.ShrinkingLemma
@@ -139,7 +140,7 @@ variable {E : Type*} [AddCommMonoid E] [SMulWithZero ℝ E] [TopologicalSpace E]
 
 instance : FunLike (PartitionOfUnity ι X s) ι C(X, ℝ) where
   coe := toFun
-  coe_injective' := fun f g h ↦ by cases f; cases g; congr
+  coe_injective' f g h := by cases f; cases g; congr
 
 protected theorem locallyFinite : LocallyFinite fun i => support (f i) :=
   f.locallyFinite'
@@ -311,7 +312,7 @@ variable {s : Set X} (f : BumpCovering ι X s)
 
 instance : FunLike (BumpCovering ι X s) ι C(X, ℝ) where
   coe := toFun
-  coe_injective' := fun f g h ↦ by cases f; cases g; congr
+  coe_injective' f g h := by cases f; cases g; congr
 
 protected theorem locallyFinite : LocallyFinite fun i => support (f i) :=
   f.locallyFinite'
@@ -339,7 +340,7 @@ protected def single (i : ι) (s : Set X) : BumpCovering ι X s where
     contrapose! hx
     rw [mem_singleton_iff] at hx
     simp [hx]
-  nonneg' := le_update_iff.2 ⟨fun x => zero_le_one, fun _ _ => le_rfl⟩
+  nonneg' := le_update_iff.2 ⟨fun _ => zero_le_one, fun _ _ => le_rfl⟩
   le_one' := update_le_iff.2 ⟨le_rfl, fun _ _ _ => zero_le_one⟩
   eventuallyEq_one' x _ := ⟨i, by rw [Pi.single_eq_same, ContinuousMap.coe_one]⟩
 
@@ -506,7 +507,7 @@ def toPartitionOfUnity : PartitionOfUnity ι X s where
   toFun i := ⟨f.toPOUFun i, f.continuous_toPOUFun i⟩
   locallyFinite' := f.locallyFinite.subset f.support_toPOUFun_subset
   nonneg' i x :=
-    mul_nonneg (f.nonneg i x) (finprod_cond_nonneg fun j hj => sub_nonneg.2 <| f.le_one j x)
+    mul_nonneg (f.nonneg i x) (finprod_cond_nonneg fun j _ => sub_nonneg.2 <| f.le_one j x)
   sum_eq_one' x hx := by
     simp only [ContinuousMap.coe_mk, sum_toPOUFun_eq, sub_eq_self]
     apply finprod_eq_zero (fun i => 1 - f i x) (f.ind x hx)

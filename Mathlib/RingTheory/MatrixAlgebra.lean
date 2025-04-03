@@ -99,13 +99,11 @@ theorem invFun_algebraMap (M : Matrix n n R) : invFun R A n (M.map (algebraMap R
   convert Finset.sum_product (β := Matrix n n R) ..; simp
 
 theorem right_inv (M : Matrix n n A) : (toFunAlgHom R A n) (invFun R A n M) = M := by
-  simp only [invFun, map_sum, stdBasisMatrix, apply_ite ↑(algebraMap R A), smul_eq_mul,
-    mul_boole, toFunAlgHom_apply, RingHom.map_zero, RingHom.map_one, Matrix.map_apply,
-    Pi.smul_def]
+  simp only [invFun, map_sum, toFunAlgHom_apply]
   convert Finset.sum_product (β := Matrix n n A) ..
   conv_lhs => rw [matrix_eq_sum_stdBasisMatrix M]
   refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => Matrix.ext fun a b => ?_
-  simp only [stdBasisMatrix, smul_apply, Matrix.map_apply]
+  dsimp [stdBasisMatrix]
   split_ifs <;> aesop
 
 theorem left_inv (M : A ⊗[R] Matrix n n R) : invFun R A n (toFunAlgHom R A n M) = M := by

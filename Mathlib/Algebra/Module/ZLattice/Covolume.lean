@@ -8,7 +8,7 @@ import Mathlib.Algebra.Module.ZLattice.Basic
 /-!
 # Covolume of ℤ-lattices
 
-Let `E` be a finite dimensional real vector space with an inner product.
+Let `E` be a finite dimensional real vector space.
 
 Let `L` be a `ℤ`-lattice `L` defined as a discrete `ℤ`-submodule of `E` that spans `E` over `ℝ`.
 
@@ -29,14 +29,11 @@ noncomputable section
 
 namespace ZLattice
 
-open Submodule MeasureTheory FiniteDimensional MeasureTheory Module
+open Submodule MeasureTheory Module MeasureTheory Module ZSpan
 
 section General
 
-variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
-variable [ProperSpace E] [MeasurableSpace E]
-variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice K L]
+variable {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] (L : Submodule ℤ E)
 
 /-- The covolume of a `ℤ`-lattice is the volume of some fundamental domain; see
 `ZLattice.covolume_eq_volume` for the proof that the volume does not depend on the choice of
@@ -61,18 +58,30 @@ theorem covolume_eq_measure_fundamentalDomain {F : Set E} (h : IsAddFundamentalD
 theorem covolume_ne_zero : covolume L μ ≠ 0 := by
   rw [covolume_eq_measure_fundamentalDomain L μ (isAddFundamentalDomain (Free.chooseBasis ℤ L) μ),
     ENNReal.toReal_ne_zero]
-  refine ⟨ZSpan.measure_fundamentalDomain_ne_zero _, ne_of_lt ?_⟩
-  exact Bornology.IsBounded.measure_lt_top (ZSpan.fundamentalDomain_isBounded _)
+  refine ⟨measure_fundamentalDomain_ne_zero _, ne_of_lt ?_⟩
+  exact Bornology.IsBounded.measure_lt_top (fundamentalDomain_isBounded _)
 
 theorem covolume_pos : 0 < covolume L μ :=
   lt_of_le_of_ne ENNReal.toReal_nonneg (covolume_ne_zero L μ).symm
 
+theorem covolume_comap {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F]
+    [MeasurableSpace F] [BorelSpace F] (ν : Measure F := by volume_tac) [Measure.IsAddHaarMeasure ν]
+    {e : F ≃L[ℝ] E} (he : MeasurePreserving e ν μ) :
+    covolume (ZLattice.comap ℝ L e.toLinearMap) ν = covolume L μ := by
+  rw [covolume_eq_measure_fundamentalDomain _ _ (isAddFundamentalDomain (Free.chooseBasis ℤ L) μ),
+    covolume_eq_measure_fundamentalDomain _ _ ((isAddFundamentalDomain
+    ((Free.chooseBasis ℤ L).ofZLatticeComap ℝ L e.toLinearEquiv) ν)), ← he.measure_preimage
+    (fundamentalDomain_measurableSet _).nullMeasurableSet, ← e.image_symm_eq_preimage,
+    ← e.symm.coe_toLinearEquiv, map_fundamentalDomain]
+  congr!
+  ext; simp
+
 theorem covolume_eq_det_mul_measure {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ L)
     (b₀ : Basis ι ℝ E) :
-    covolume L μ = |b₀.det ((↑) ∘ b)| * (μ (ZSpan.fundamentalDomain b₀)).toReal := by
+    covolume L μ = |b₀.det ((↑) ∘ b)| * (μ (fundamentalDomain b₀)).toReal := by
   rw [covolume_eq_measure_fundamentalDomain L μ (isAddFundamentalDomain b μ),
-    ZSpan.measure_fundamentalDomain _ _ b₀,
-    measure_congr (ZSpan.fundamentalDomain_ae_parallelepiped b₀ μ), ENNReal.toReal_mul,
+    measure_fundamentalDomain _ _ b₀,
+    measure_congr (fundamentalDomain_ae_parallelepiped b₀ μ), ENNReal.toReal_mul,
     ENNReal.toReal_ofReal (by positivity)]
   congr
   ext
@@ -82,7 +91,7 @@ theorem covolume_eq_det {ι : Type*} [Fintype ι] [DecidableEq ι] (L : Submodul
     [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L) :
     covolume L = |(Matrix.of ((↑) ∘ b)).det| := by
   rw [covolume_eq_measure_fundamentalDomain L volume (isAddFundamentalDomain b volume),
-    ZSpan.volume_fundamentalDomain, ENNReal.toReal_ofReal (by positivity)]
+    volume_fundamentalDomain, ENNReal.toReal_ofReal (by positivity)]
   congr
   ext1
   exact b.ofZLatticeBasis_apply ℝ L _

@@ -5,7 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.LocalRing.RingHom.Defs
+import Mathlib.Algebra.Group.Units.Hom
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal
@@ -44,7 +44,7 @@ namespace Ideal
 def primeCompl : Submonoid R where
   carrier := (Pᶜ : Set R)
   one_mem' := by convert P.ne_top_iff_one.1 hp.1
-  mul_mem' {x y} hnx hny hxy := Or.casesOn (hp.mem_or_mem hxy) hnx hny
+  mul_mem' {_ _} hnx hny hxy := Or.casesOn (hp.mem_or_mem hxy) hnx hny
 
 theorem primeCompl_le_nonZeroDivisors [NoZeroDivisors R] : P.primeCompl ≤ nonZeroDivisors R :=
   le_nonZeroDivisors_of_noZeroDivisors <| not_not_intro P.zero_mem
@@ -188,12 +188,12 @@ theorem AtPrime.map_eq_maximalIdeal :
   -- Porting note: can not find `hI`
   rw [map_comap I.primeCompl]
 
-theorem le_comap_primeCompl_iff {J : Ideal P} [hJ : J.IsPrime] {f : R →+* P} :
+theorem le_comap_primeCompl_iff {J : Ideal P} [J.IsPrime] {f : R →+* P} :
     I.primeCompl ≤ J.primeCompl.comap f ↔ J.comap f ≤ I :=
   ⟨fun h x hx => by
     contrapose! hx
     exact h hx,
-   fun h x hx hfxJ => hx (h hfxJ)⟩
+   fun h _ hx hfxJ => hx (h hfxJ)⟩
 
 variable (I)
 
@@ -218,13 +218,17 @@ theorem localRingHom_mk' (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.
         (⟨f y, le_comap_primeCompl_iff.mpr (ge_of_eq hIJ) y.2⟩ : J.primeCompl) :=
   map_mk' _ _ _
 
-instance isLocalRingHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P)
-    (hIJ : I = J.comap f) : IsLocalRingHom (localRingHom I J f hIJ) :=
-  IsLocalRingHom.mk fun x hx => by
+@[instance]
+theorem isLocalHom_localRingHom (J : Ideal P) [hJ : J.IsPrime] (f : R →+* P)
+    (hIJ : I = J.comap f) : IsLocalHom (localRingHom I J f hIJ) :=
+  IsLocalHom.mk fun x hx => by
     rcases IsLocalization.mk'_surjective I.primeCompl x with ⟨r, s, rfl⟩
     rw [localRingHom_mk'] at hx
     rw [AtPrime.isUnit_mk'_iff] at hx ⊢
     exact fun hr => hx ((SetLike.ext_iff.mp hIJ r).mp hr)
+
+@[deprecated (since := "2024-10-10")]
+alias isLocalRingHom_localRingHom := isLocalHom_localRingHom
 
 theorem localRingHom_unique (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f)
     {j : Localization.AtPrime I →+* Localization.AtPrime J}

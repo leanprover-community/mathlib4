@@ -365,31 +365,28 @@ theorem unit_mul_pow_congr_unit {ϖ : R} (hirr : Irreducible ϖ) (u v : Rˣ) (m 
 /-!
 ## The additive valuation on a DVR
 -/
-open multiplicity
 
 open Classical in
-/-- The `PartENat`-valued additive valuation on a DVR. -/
+/-- The `ℕ∞`-valued additive valuation on a DVR. -/
 noncomputable def addVal (R : Type u) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
-    AddValuation R PartENat :=
-  addValuation (Classical.choose_spec (exists_prime R))
+    AddValuation R ℕ∞ :=
+  multiplicity_addValuation (Classical.choose_spec (exists_prime R))
 
 theorem addVal_def (r : R) (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) (hr : r = u * ϖ ^ n) :
     addVal R r = n := by
   classical
-  rw [addVal, addValuation_apply, hr, eq_of_associated_left
+  rw [addVal, multiplicity_addValuation_apply, hr, emultiplicity_eq_of_associated_left
       (associated_of_irreducible R hϖ (Classical.choose_spec (exists_prime R)).irreducible),
-    eq_of_associated_right (Associated.symm ⟨u, mul_comm _ _⟩),
-    multiplicity_pow_self_of_prime (irreducible_iff_prime.1 hϖ)]
+    emultiplicity_eq_of_associated_right (Associated.symm ⟨u, mul_comm _ _⟩),
+    emultiplicity_pow_self_of_prime (irreducible_iff_prime.1 hϖ)]
 
 theorem addVal_def' (u : Rˣ) {ϖ : R} (hϖ : Irreducible ϖ) (n : ℕ) :
     addVal R ((u : R) * ϖ ^ n) = n :=
   addVal_def _ u hϖ n rfl
 
---@[simp] Porting note (#10618): simp can prove it
 theorem addVal_zero : addVal R 0 = ⊤ :=
   (addVal R).map_zero
 
---@[simp] Porting note (#10618): simp can prove it
 theorem addVal_one : addVal R 1 = 0 :=
   (addVal R).map_one
 
@@ -398,7 +395,6 @@ theorem addVal_uniformizer {ϖ : R} (hϖ : Irreducible ϖ) : addVal R ϖ = 1 := 
   simpa only [one_mul, eq_self_iff_true, Units.val_one, pow_one, forall_true_left, Nat.cast_one]
     using addVal_def ϖ 1 hϖ 1
 
---@[simp] Porting note (#10618): simp can prove it
 theorem addVal_mul {a b : R} :
     addVal R (a * b) = addVal R a + addVal R b :=
   (addVal R).map_mul _ _
@@ -418,7 +414,7 @@ theorem addVal_eq_top_iff {a : R} : addVal R a = ⊤ ↔ a = 0 := by
     obtain ⟨n, ha⟩ := associated_pow_irreducible h hi
     obtain ⟨u, rfl⟩ := ha.symm
     rw [mul_comm, addVal_def' u hi n]
-    exact PartENat.natCast_ne_top _
+    nofun
   · rintro rfl
     exact addVal_zero
 
@@ -431,10 +427,11 @@ theorem addVal_le_iff_dvd {a b : R} : addVal R a ≤ addVal R b ↔ a ∣ b := b
       rw [h]
       apply dvd_zero
     obtain ⟨n, ha⟩ := associated_pow_irreducible ha0 hp.irreducible
-    rw [addVal, addValuation_apply, addValuation_apply, multiplicity_le_multiplicity_iff] at h
+    rw [addVal, multiplicity_addValuation_apply, multiplicity_addValuation_apply,
+      emultiplicity_le_emultiplicity_iff] at h
     exact ha.dvd.trans (h n ha.symm.dvd)
-  · rw [addVal, addValuation_apply, addValuation_apply]
-    exact multiplicity_le_multiplicity_of_dvd_right h
+  · rw [addVal, multiplicity_addValuation_apply, multiplicity_addValuation_apply]
+    exact emultiplicity_le_emultiplicity_of_dvd_right h
 
 theorem addVal_add {a b : R} : min (addVal R a) (addVal R b) ≤ addVal R (a + b) :=
   (addVal R).map_add _ _
@@ -447,7 +444,7 @@ instance (R : Type*) [CommRing R] [IsDomain R] [DiscreteValuationRing R] :
     obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
     simp only [← Ideal.one_eq_top, smul_eq_mul, mul_one, SModEq.zero, hϖ.maximalIdeal_eq,
       Ideal.span_singleton_pow, Ideal.mem_span_singleton, ← addVal_le_iff_dvd, hϖ.addVal_pow] at hx
-    rwa [← addVal_eq_top_iff, PartENat.eq_top_iff_forall_le]
+    rwa [← addVal_eq_top_iff, ← WithTop.forall_ge_iff_eq_top]
 
 end DiscreteValuationRing
 

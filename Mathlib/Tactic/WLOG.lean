@@ -86,7 +86,8 @@ def _root_.Lean.MVarId.wlog (goal : MVarId) (h : Option Name) (P : Expr)
   let hGoal := HExpr.mvarId!
   /- Begin the "reduction goal" which will contain hypotheses `H` and `¬h`. For now, it only
   contains `H`. Keep track of that hypothesis' FVarId. -/
-  let (HFVarId, reductionGoal) ← goal.assertHypotheses #[⟨H, HType, HExpr⟩]
+  let (HFVarId, reductionGoal) ←
+    goal.assertHypotheses #[{ userName := H, type := HType, value := HExpr }]
   let HFVarId := HFVarId[0]!
   /- Clear the reverted fvars from the branch that will contain `h` as a hypothesis. -/
   let hGoal ← hGoal.tryClearMany revertedFVars

@@ -25,11 +25,11 @@ Also see `tfae_of_isNoetherianRing_of_localRing_of_isDomain` for a version witho
 -/
 
 
-variable (R : Type*) [CommRing R] (K : Type*) [Field K] [Algebra R K] [IsFractionRing R K]
+variable (R : Type*) [CommRing R]
 
 open scoped Multiplicative
 
-open LocalRing FiniteDimensional
+open LocalRing Module
 
 theorem exists_maximalIdeal_pow_eq_of_principal [IsNoetherianRing R] [LocalRing R] [IsDomain R]
     (h' : (maximalIdeal R).IsPrincipal) (I : Ideal R) (hI : I ≠ ⊥) :

@@ -3,12 +3,13 @@ Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen, Mitchell Lee
 -/
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Ring.Int
-import Mathlib.GroupTheory.PresentedGroup
 import Mathlib.GroupTheory.Coxeter.Matrix
+import Mathlib.GroupTheory.PresentedGroup
+import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Use
-import Mathlib.Tactic.NormNum.DivMod
 
 /-!
 # Coxeter groups and Coxeter systems
@@ -249,7 +250,8 @@ preserved under multiplication, then it holds for all elements of `W`. -/
 theorem simple_induction {p : W → Prop} (w : W) (simple : ∀ i : B, p (s i)) (one : p 1)
     (mul : ∀ w w' : W, p w → p w' → p (w * w')) : p w := by
   have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
-  exact Submonoid.closure_induction this (fun x ⟨i, hi⟩ ↦ hi ▸ simple i) one mul
+  exact Submonoid.closure_induction (fun x ⟨i, hi⟩ ↦ hi ▸ simple i) one (fun _ _ _ _ ↦ mul _ _)
+    this
 
 /-- If `p : W → Prop` holds for the identity and it is preserved under multiplying on the left
 by a simple reflection, then it holds for all elements of `W`. -/

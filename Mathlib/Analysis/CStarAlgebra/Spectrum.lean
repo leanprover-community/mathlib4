@@ -78,7 +78,7 @@ theorem unitary.spectrum_subset_circle (u : unitary E) :
     rw [← inv_inv (unitary.toUnits u), ← spectrum.map_inv, Set.mem_inv] at hk
     have : ‖k‖⁻¹ ≤ ‖(↑(unitary.toUnits u)⁻¹ : E)‖ := by
       simpa only [norm_inv] using norm_le_norm_of_mem hk
-    simpa using inv_le_of_inv_le (norm_pos_iff.mpr hnk) this
+    simpa using inv_le_of_inv_le₀ (norm_pos_iff.mpr hnk) this
 
 theorem spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :
     spectrum 𝕜 u ⊆ Metric.sphere 0 1 :=
@@ -86,12 +86,21 @@ theorem spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :
 
 end UnitarySpectrum
 
+section Quasispectrum
+
+open scoped NNReal in
+lemma CStarAlgebra.le_nnnorm_of_mem_quasispectrum {A : Type*} [NonUnitalCStarAlgebra A]
+    {a : A} {x : ℝ≥0} (hx : x ∈ quasispectrum ℝ≥0 a) : x ≤ ‖a‖₊ := by
+  rw [Unitization.quasispectrum_eq_spectrum_inr' ℝ≥0 ℂ] at hx
+  simpa [Unitization.nnnorm_inr] using spectrum.le_nnnorm_of_mem hx
+
+end Quasispectrum
+
 section ComplexScalars
 
 open Complex
 
-variable {A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CStarRing A]
+variable {A : Type*} [CStarAlgebra A]
 
 local notation "↑ₐ" => algebraMap ℂ A
 
@@ -179,7 +188,7 @@ lemma IsSelfAdjoint.isConnected_spectrum_compl {a : A} (ha : IsSelfAdjoint a) :
   case nonempty =>
     have := Filter.NeBot.nonempty_of_mem inferInstance <| Filter.mem_map.mp <|
       Complex.isometry_ofReal.antilipschitz.tendsto_cobounded (spectrum.isBounded a |>.compl)
-    exact this.image Complex.ofReal' |>.mono <| by simp
+    exact this.image Complex.ofReal |>.mono <| by simp
   case' upper => apply Complex.isConnected_of_upperHalfPlane ?_ <| Set.inter_subset_right
   case' lower => apply Complex.isConnected_of_lowerHalfPlane ?_ <| Set.inter_subset_right
   all_goals
@@ -222,11 +231,7 @@ end ComplexScalars
 
 namespace NonUnitalStarAlgHom
 
-variable {F A B : Type*}
-variable [NonUnitalNormedRing A] [CompleteSpace A] [StarRing A] [CStarRing A]
-variable [NormedSpace ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
-variable [NonUnitalNormedRing B] [CompleteSpace B] [StarRing B] [CStarRing B]
-variable [NormedSpace ℂ B] [IsScalarTower ℂ B B] [SMulCommClass ℂ B B] [StarModule ℂ B]
+variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
 open Unitization
@@ -241,7 +246,6 @@ lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
       exact this <| .star_mul_self x
     intro s hs
     suffices this : spectralRadius ℂ (ψ s) ≤ spectralRadius ℂ s by
-      -- changing the order of `rw`s below runs into https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/weird.20type.20class.20synthesis.20error/near/421224482
       rwa [(hs.map ψ).spectralRadius_eq_nnnorm, hs.spectralRadius_eq_nnnorm, coe_le_coe]
         at this
     exact iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset ψ s)
@@ -264,10 +268,7 @@ end NonUnitalStarAlgHom
 
 namespace StarAlgEquiv
 
-variable {F A B : Type*} [NonUnitalNormedRing A] [NormedSpace ℂ A] [SMulCommClass ℂ A A]
-variable [IsScalarTower ℂ A A] [CompleteSpace A] [StarRing A] [CStarRing A] [StarModule ℂ A]
-variable [NonUnitalNormedRing B] [NormedSpace ℂ B] [SMulCommClass ℂ B B] [IsScalarTower ℂ B B]
-variable [CompleteSpace B] [StarRing B] [CStarRing B] [StarModule ℂ B] [EquivLike F A B]
+variable {F A B : Type*} [NonUnitalCStarAlgebra A] [NonUnitalCStarAlgebra B] [EquivLike F A B]
 variable [NonUnitalAlgEquivClass F ℂ A B] [StarHomClass F A B]
 
 lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
@@ -290,8 +291,7 @@ open ContinuousMap Complex
 
 open scoped ComplexStarModule
 
-variable {F A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
-  [CStarRing A] [StarModule ℂ A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
+variable {F A : Type*} [CStarAlgebra A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
 
 /-- This instance is provided instead of `StarHomClass` to avoid type class inference loops.
 See note [lower instance priority] -/

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Nat.Defs
-import Mathlib.Init.Algebra.Classes
 import Mathlib.Logic.IsEmpty
 import Mathlib.Order.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
@@ -91,10 +90,6 @@ theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap 
   { @IsPreorder.swap α r _, @IsAntisymm.swap α r _ with }
 
 @[deprecated (since := "2024-07-30")]
-theorem IsTotalPreorder.swap (r) [IsTotalPreorder α r] : IsTotalPreorder α (swap r) :=
-  { @IsPreorder.swap α r _, @IsTotal.swap α r _ with }
-
-@[deprecated (since := "2024-07-30")]
 theorem IsLinearOrder.swap (r) [IsLinearOrder α r] : IsLinearOrder α (swap r) :=
   { @IsPartialOrder.swap α r _, @IsTotal.swap α r _ with }
 
@@ -133,15 +128,13 @@ theorem eq_empty_relation (r) [IsIrrefl α r] [Subsingleton α] : r = EmptyRelat
 instance : IsIrrefl α EmptyRelation :=
   ⟨fun _ => id⟩
 
-theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α} :
-    ¬r b a → r b c → r a c := by
-  intro h₁ h₂
+theorem trans_trichotomous_left [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+    (h₁ : ¬r b a) (h₂ : r b c) : r a c := by
   rcases trichotomous_of r a b with (h₃ | rfl | h₃)
   exacts [_root_.trans h₃ h₂, h₂, absurd h₃ h₁]
 
-theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α} :
-    r a b → ¬r c b → r a c := by
-  intro h₁ h₂
+theorem trans_trichotomous_right [IsTrans α r] [IsTrichotomous α r] {a b c : α}
+    (h₁ : r a b) (h₂ : ¬r c b) : r a c := by
   rcases trichotomous_of r b c with (h₃ | rfl | h₃)
   exacts [_root_.trans h₁ h₃, h₁, absurd h₃ h₂]
 
@@ -159,7 +152,7 @@ See note [reducible non-instances]. -/
 abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
   le x y := x = y ∨ r x y
   lt := r
-  le_refl x := Or.inl rfl
+  le_refl _ := Or.inl rfl
   le_trans x y z h₁ h₂ :=
     match y, z, h₁, h₂ with
     | _, _, Or.inl rfl, h₂ => h₂
@@ -177,15 +170,14 @@ abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
 /-- Construct a linear order from an `IsStrictTotalOrder` relation.
 
 See note [reducible non-instances]. -/
-abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [∀ x y, Decidable ¬r x y] : LinearOrder α :=
-  let hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y =>
-      decidable_of_iff (¬r y x)
-        ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
-          h.elim (fun h => h ▸ irrefl_of _ _) (asymm_of r)⟩
+abbrev linearOrderOfSTO (r) [IsStrictTotalOrder α r] [DecidableRel r] : LinearOrder α :=
+  let hD : DecidableRel (fun x y => x = y ∨ r x y) := fun x y => decidable_of_iff (¬r y x)
+    ⟨fun h => ((trichotomous_of r y x).resolve_left h).imp Eq.symm id, fun h =>
+      h.elim (fun h => h ▸ irrefl_of _ _) (asymm_of r)⟩
   { __ := partialOrderOfSO r
     le_total := fun x y =>
       match y, trichotomous_of r x y with
-      | y, Or.inl h => Or.inl (Or.inr h)
+      | _, Or.inl h => Or.inl (Or.inr h)
       | _, Or.inr (Or.inl rfl) => Or.inl (Or.inl rfl)
       | _, Or.inr (Or.inr h) => Or.inr (Or.inr h),
     toMin := minOfLe,
@@ -422,9 +414,9 @@ def toWellFoundedRelation : WellFoundedRelation α :=
 
 end WellFoundedGT
 
+open Classical in
 /-- Construct a decidable linear order from a well-founded linear order. -/
 noncomputable def IsWellOrder.linearOrder (r : α → α → Prop) [IsWellOrder α r] : LinearOrder α :=
-  letI := fun x y => Classical.dec ¬r x y
   linearOrderOfSTO r
 
 /-- Derive a `WellFoundedRelation` instance from an `IsWellOrder` instance. -/
@@ -777,9 +769,6 @@ instance LE.isTotal [LinearOrder α] : IsTotal α (· ≤ ·) :=
 instance [LinearOrder α] : IsTotal α (· ≥ ·) :=
   IsTotal.swap _
 
-@[deprecated (since := "2024-08-22")] instance [LinearOrder α] : IsTotalPreorder α (· ≤ ·) where
-@[deprecated (since := "2024-08-22")] instance [LinearOrder α] : IsTotalPreorder α (· ≥ ·) where
-
 instance [LinearOrder α] : IsLinearOrder α (· ≤ ·) where
 
 instance [LinearOrder α] : IsLinearOrder α (· ≥ ·) where
@@ -799,9 +788,6 @@ instance [LinearOrder α] : IsTrichotomous α (· ≥ ·) :=
 instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
 instance [LinearOrder α] : IsOrderConnected α (· < ·) := by infer_instance
-
-@[deprecated (since := "2024-07-30")]
-instance [LinearOrder α] : IsIncompTrans α (· < ·) := by infer_instance
 
 @[deprecated (since := "2024-07-30")]
 instance [LinearOrder α] : IsStrictWeakOrder α (· < ·) := by infer_instance

@@ -1,22 +1,5 @@
 -- Manual exceptions for the text-based linters.
 -- The entries in this file could be necessary in the long term.
--- In some cases, entries are a side effect of making the linter stricter than its Python ancestor.
-
--- The `Mathlib/Init.lean` files does not have a copyright header
-Mathlib/Init.lean : line 2 : ERR_COP : Malformed or missing copyright header: Copyright line is malformed
-Mathlib/Init.lean : line 3 : ERR_COP : Malformed or missing copyright header: Second line should be "Released under Apache 2.0 license as described in the file LICENSE."
-Mathlib/Init.lean : line 4 : ERR_COP : Malformed or missing copyright header: The third line should describe the file's main authors
-
--- This file was recognised as import-only by the old heuristic, but not by the new, simpler one.
-Mathlib/Tactic/Linter.lean : line 2 : ERR_COP : Malformed or missing copyright header: Copyright line is malformed
-Mathlib/Tactic/Linter.lean : line 3 : ERR_COP : Malformed or missing copyright header: Second line should be "Released under Apache 2.0 license as described in the file LICENSE."
-Mathlib/Tactic/Linter.lean : line 4 : ERR_COP : Malformed or missing copyright header: The third line should describe the file's main authors
-
--- The first line of the copyright is split in two (because of many authors, it is longer than
--- 100 characters). Suggestion: tweak the line length linter and put this on one line?
-Archive/Sensitivity.lean : line 2 : ERR_COP : Malformed or missing copyright header: Copyright line is malformed
-Archive/Sensitivity.lean : line 3 : ERR_COP : Malformed or missing copyright header: Second line should be "Released under Apache 2.0 license as described in the file LICENSE."
-Archive/Sensitivity.lean : line 4 : ERR_COP : Malformed or missing copyright header: The third line should describe the file's main authors
 
 -- The linter for the string "adaptation note" fires in the implementation of the linter,
 -- and in the implementation of the #adaptation_note tactic: this is as expected.
@@ -32,3 +15,7 @@ Mathlib/Tactic/Linter/TextBased.lean : line 84 : ERR_ADN : Found the string "Ada
 Mathlib/Tactic/Linter/TextBased.lean : line 274 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
 Mathlib/Tactic/Linter/TextBased.lean : line 279 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
 Mathlib/Tactic/Linter/TextBased.lean : line 280 : ERR_ADN : Found the string "Adaptation note:", please use the #adaptation_note command instead
+
+-- The "duplicate imports" linter fires on this line inside a multi-line module docstring,
+-- which says 'import statements': this is a false positive.
+Mathlib/Tactic/Linter/Header.lean : line 228 : ERR_DIMP : Duplicate imports: import statements* (already imported on line 19)

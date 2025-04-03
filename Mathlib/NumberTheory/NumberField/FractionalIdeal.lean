@@ -89,7 +89,7 @@ theorem mem_span_basisOfFractionalIdeal {I : (FractionalIdeal (𝓞 K)⁰ K)ˣ} 
   rw [basisOfFractionalIdeal, (fractionalIdealBasis K I.1).ofIsLocalizedModule_span ℚ ℤ⁰ _]
   simp
 
-open FiniteDimensional in
+open Module in
 theorem fractionalIdeal_rank (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
     finrank ℤ I = finrank ℤ (𝓞 K) := by
   rw [finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank,

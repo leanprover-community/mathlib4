@@ -78,7 +78,7 @@ theorem measurable_dirac : Measurable (Measure.dirac : α → Measure α) := by
 theorem measurable_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun μ : Measure α => ∫⁻ x, f x ∂μ := by
   simp only [lintegral_eq_iSup_eapprox_lintegral, hf, SimpleFunc.lintegral]
-  refine measurable_iSup fun n => Finset.measurable_sum _ fun i _ => ?_
+  refine .iSup fun n => Finset.measurable_sum _ fun i _ => ?_
   refine Measurable.const_mul ?_ _
   exact measurable_coe ((SimpleFunc.eapprox f n).measurableSet_preimage _)
 
@@ -154,6 +154,11 @@ theorem bind_apply {m : Measure α} {f : α → Measure β} {s : Set β} (hs : M
     (hf : Measurable f) : bind m f s = ∫⁻ a, f a s ∂m := by
   rw [bind, join_apply hs, lintegral_map (measurable_coe hs) hf]
 
+@[simp]
+lemma bind_const {m : Measure α} {ν : Measure β} : m.bind (fun _ ↦ ν) = m Set.univ • ν := by
+  ext s hs
+  rw [bind_apply hs measurable_const, lintegral_const, smul_apply, smul_eq_mul, mul_comm]
+
 theorem measurable_bind' {g : α → Measure β} (hg : Measurable g) : Measurable fun m => bind m g :=
   measurable_join.comp (measurable_map _ hg)
 
@@ -169,15 +174,26 @@ theorem bind_bind {γ} [MeasurableSpace γ] {m : Measure α} {f : α → Measure
   conv_rhs => enter [2, a]; erw [bind_apply hs hg]
   rfl
 
-theorem bind_dirac {f : α → Measure β} (hf : Measurable f) (a : α) : bind (dirac a) f = f a := by
+theorem dirac_bind {f : α → Measure β} (hf : Measurable f) (a : α) : bind (dirac a) f = f a := by
   ext1 s hs
   erw [bind_apply hs hf, lintegral_dirac' a ((measurable_coe hs).comp hf)]
   rfl
 
-theorem dirac_bind {m : Measure α} : bind m dirac = m := by
+@[simp]
+theorem bind_dirac {m : Measure α} : bind m dirac = m := by
   ext1 s hs
-  simp only [bind_apply hs measurable_dirac, dirac_apply' _ hs, lintegral_indicator 1 hs,
+  simp only [bind_apply hs measurable_dirac, dirac_apply' _ hs, lintegral_indicator hs,
     Pi.one_apply, lintegral_one, restrict_apply, MeasurableSet.univ, univ_inter]
+
+@[simp]
+lemma bind_dirac_eq_map (m : Measure α) {f : α → β} (hf : Measurable f) :
+    m.bind (fun x ↦ Measure.dirac (f x)) = m.map f := by
+  ext s hs
+  rw [bind_apply hs]
+  swap; · exact measurable_dirac.comp hf
+  simp_rw [dirac_apply' _ hs]
+  rw [← lintegral_map _ hf, lintegral_indicator_one hs]
+  exact measurable_const.indicator hs
 
 theorem join_eq_bind (μ : Measure (Measure α)) : join μ = bind μ id := by rw [bind, map_id]
 
@@ -195,11 +211,10 @@ theorem join_map_join (μ : Measure (Measure (Measure α))) : join (map join μ)
   funext ν
   exact join_eq_bind ν
 
-theorem join_map_dirac (μ : Measure α) : join (map dirac μ) = μ :=
-  dirac_bind
+theorem join_map_dirac (μ : Measure α) : join (map dirac μ) = μ := bind_dirac
 
 theorem join_dirac (μ : Measure α) : join (dirac μ) = μ :=
-  (join_eq_bind (dirac μ)).trans (bind_dirac measurable_id _)
+  (join_eq_bind (dirac μ)).trans (dirac_bind measurable_id _)
 
 end Measure
 

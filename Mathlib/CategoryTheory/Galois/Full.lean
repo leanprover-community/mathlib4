@@ -42,7 +42,7 @@ namespace PreGaloisCategory
 
 open Limits Functor
 
-variable {C : Type u} [Category.{u} C] (F : C ⥤ FintypeCat.{u}) [GaloisCategory C] [FiberFunctor F]
+variable {C : Type u} [Category.{v} C] (F : C ⥤ FintypeCat.{u}) [GaloisCategory C] [FiberFunctor F]
 
 /--
 Let `X` be an object of a Galois category with fiber functor `F` and `Y` a sub-`Aut F`-set

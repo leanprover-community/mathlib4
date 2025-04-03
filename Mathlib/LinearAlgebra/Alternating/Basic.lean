@@ -88,14 +88,10 @@ section Coercions
 
 instance instFunLike : FunLike (M [⋀^ι]→ₗ[R] N) (ι → M) N where
   coe f := f.toFun
-  coe_injective' := fun f g h ↦ by
+  coe_injective' f g h := by
     rcases f with ⟨⟨_, _, _⟩, _⟩
     rcases g with ⟨⟨_, _, _⟩, _⟩
     congr
-
--- shortcut instance
-instance coeFun : CoeFun (M [⋀^ι]→ₗ[R] N) fun _ => (ι → M) → N :=
-  ⟨DFunLike.coe⟩
 
 initialize_simps_projections AlternatingMap (toFun → apply)
 
@@ -118,7 +114,7 @@ protected theorem congr_arg (f : M [⋀^ι]→ₗ[R] N) {x y : ι → M} (h : x 
 theorem coe_injective : Injective ((↑) : M [⋀^ι]→ₗ[R] N → (ι → M) → N) :=
   DFunLike.coe_injective
 
-@[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem coe_inj {f g : M [⋀^ι]→ₗ[R] N} : (f : (ι → M) → N) = g ↔ f = g :=
   coe_injective.eq_iff
 
@@ -286,7 +282,7 @@ theorem coe_add : (↑(f + f') : MultilinearMap R (fun _ : ι => M) N) = f + f' 
 
 instance zero : Zero (M [⋀^ι]→ₗ[R] N) :=
   ⟨{ (0 : MultilinearMap R (fun _ : ι => M) N) with
-      map_eq_zero_of_eq' := fun v i j _ _ => by simp }⟩
+      map_eq_zero_of_eq' := fun _ _ _ _ _ => by simp }⟩
 
 @[simp]
 theorem zero_apply : (0 : M [⋀^ι]→ₗ[R] N) v = 0 :=
@@ -407,19 +403,12 @@ end AlternatingMap
 
 namespace LinearMap
 
-variable {N₂ : Type*} [AddCommMonoid N₂] [Module R N₂]
+variable {S : Type*} {N₂ : Type*} [AddCommMonoid N₂] [Module R N₂]
 
 /-- Composing an alternating map with a linear map on the left gives again an alternating map. -/
-def compAlternatingMap (g : N →ₗ[R] N₂) : (M [⋀^ι]→ₗ[R] N) →+ (M [⋀^ι]→ₗ[R] N₂) where
-  toFun f :=
-    { g.compMultilinearMap (f : MultilinearMap R (fun _ : ι => M) N) with
-      map_eq_zero_of_eq' := fun v i j h hij => by simp [f.map_eq_zero_of_eq v h hij] }
-  map_zero' := by
-    ext
-    simp
-  map_add' a b := by
-    ext
-    simp
+def compAlternatingMap (g : N →ₗ[R] N₂) (f : M [⋀^ι]→ₗ[R] N) : M [⋀^ι]→ₗ[R] N₂ where
+  __ := g.compMultilinearMap (f : MultilinearMap R (fun _ : ι => M) N)
+  map_eq_zero_of_eq' v i j h hij := by simp [f.map_eq_zero_of_eq v h hij]
 
 @[simp]
 theorem coe_compAlternatingMap (g : N →ₗ[R] N₂) (f : M [⋀^ι]→ₗ[R] N) :
@@ -430,6 +419,47 @@ theorem coe_compAlternatingMap (g : N →ₗ[R] N₂) (f : M [⋀^ι]→ₗ[R] N
 theorem compAlternatingMap_apply (g : N →ₗ[R] N₂) (f : M [⋀^ι]→ₗ[R] N) (m : ι → M) :
     g.compAlternatingMap f m = g (f m) :=
   rfl
+
+@[simp]
+theorem compAlternatingMap_zero (g : N →ₗ[R] N₂) :
+    g.compAlternatingMap (0 : M [⋀^ι]→ₗ[R] N) = 0 :=
+  AlternatingMap.ext fun _ => map_zero g
+
+@[simp]
+theorem zero_compAlternatingMap (f: M [⋀^ι]→ₗ[R] N) :
+    (0 : N →ₗ[R] N₂).compAlternatingMap f = 0 := rfl
+
+@[simp]
+theorem compAlternatingMap_add (g : N →ₗ[R] N₂) (f₁ f₂ : M [⋀^ι]→ₗ[R] N) :
+    g.compAlternatingMap (f₁ + f₂) = g.compAlternatingMap f₁ + g.compAlternatingMap f₂ :=
+  AlternatingMap.ext fun _ => map_add g _ _
+
+@[simp]
+theorem add_compAlternatingMap (g₁ g₂ : N →ₗ[R] N₂) (f: M [⋀^ι]→ₗ[R] N) :
+    (g₁ + g₂).compAlternatingMap f = g₁.compAlternatingMap f + g₂.compAlternatingMap f := rfl
+
+@[simp]
+theorem compAlternatingMap_smul [Monoid S] [DistribMulAction S N] [DistribMulAction S N₂]
+    [SMulCommClass R S N] [SMulCommClass R S N₂] [CompatibleSMul N N₂ S R]
+    (g : N →ₗ[R] N₂) (s : S) (f : M [⋀^ι]→ₗ[R] N) :
+    g.compAlternatingMap (s • f) = s • g.compAlternatingMap f :=
+  AlternatingMap.ext fun _ => g.map_smul_of_tower _ _
+
+@[simp]
+theorem smul_compAlternatingMap [Monoid S] [DistribMulAction S N₂] [SMulCommClass R S N₂]
+    (g : N →ₗ[R] N₂) (s : S) (f : M [⋀^ι]→ₗ[R] N) :
+    (s • g).compAlternatingMap f = s • g.compAlternatingMap f := rfl
+
+variable (S) in
+/-- `LinearMap.compAlternatingMap` as an `S`-linear map. -/
+@[simps]
+def compAlternatingMapₗ [Semiring S] [Module S N] [Module S N₂]
+    [SMulCommClass R S N] [SMulCommClass R S N₂] [LinearMap.CompatibleSMul N N₂ S R]
+    (g : N →ₗ[R] N₂) :
+    (M [⋀^ι]→ₗ[R] N) →ₗ[S] (M [⋀^ι]→ₗ[R] N₂) where
+  toFun := g.compAlternatingMap
+  map_add' := g.compAlternatingMap_add
+  map_smul' := g.compAlternatingMap_smul
 
 theorem smulRight_eq_comp {R M₁ M₂ ι : Type*} [CommSemiring R] [AddCommMonoid M₁]
     [AddCommMonoid M₂] [Module R M₁] [Module R M₂] (f : M₁ [⋀^ι]→ₗ[R] R) (z : M₂) :
@@ -491,9 +521,7 @@ theorem add_compLinearMap (f₁ f₂ : M [⋀^ι]→ₗ[R] N) (g : M₂ →ₗ[R
 theorem compLinearMap_zero [Nonempty ι] (f : M [⋀^ι]→ₗ[R] N) :
     f.compLinearMap (0 : M₂ →ₗ[R] M) = 0 := by
   ext
-  -- Porting note: Was `simp_rw [.., ← Pi.zero_def, map_zero, zero_apply]`.
-  simp_rw [compLinearMap_apply, LinearMap.zero_apply, ← Pi.zero_def, zero_apply]
-  exact map_zero f
+  simp_rw [compLinearMap_apply, LinearMap.zero_apply, ← Pi.zero_def, map_zero, zero_apply]
 
 /-- Composing an alternating map with the identity linear map in each argument. -/
 @[simp]
@@ -873,8 +901,8 @@ def curryLeft {n : ℕ} (f : M'' [⋀^Fin n.succ]→ₗ[R'] N'') :
       map_eq_zero_of_eq' := fun v i j hv hij =>
         f.map_eq_zero_of_eq _ (by
           rwa [Matrix.cons_val_succ, Matrix.cons_val_succ]) ((Fin.succ_injective _).ne hij) }
-  map_add' m₁ m₂ := ext fun v => f.map_vecCons_add _ _ _
-  map_smul' r m := ext fun v => f.map_vecCons_smul _ _ _
+  map_add' _ _ := ext fun _ => f.map_vecCons_add _ _ _
+  map_smul' _ _ := ext fun _ => f.map_vecCons_smul _ _ _
 
 @[simp]
 theorem curryLeft_zero {n : ℕ} : curryLeft (0 : M'' [⋀^Fin n.succ]→ₗ[R'] N'') = 0 :=
@@ -903,7 +931,7 @@ def curryLeftLinearMap {n : ℕ} :
 @[simp]
 theorem curryLeft_same {n : ℕ} (f : M'' [⋀^Fin n.succ.succ]→ₗ[R'] N'') (m : M'') :
     (f.curryLeft m).curryLeft m = 0 :=
-  ext fun x => f.map_eq_zero_of_eq _ (by simp) Fin.zero_ne_one
+  ext fun _ => f.map_eq_zero_of_eq _ (by simp) Fin.zero_ne_one
 
 @[simp]
 theorem curryLeft_compAlternatingMap {n : ℕ} (g : N'' →ₗ[R'] N₂'')

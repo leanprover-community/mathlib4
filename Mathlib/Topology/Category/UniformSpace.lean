@@ -191,7 +191,7 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
     { homEquiv := fun X Y =>
         { toFun := fun f => completionHom X ≫ f
           invFun := fun f => extensionHom f
-          left_inv := fun f => by dsimp; erw [extension_comp_coe]
+          left_inv := fun f => by dsimp; rw [extension_comp_coe]
           right_inv := fun f => by
             apply Subtype.eq; funext x; cases f
             exact @Completion.extension_coe _ _ _ _ _ (CpltSepUniformSpace.t0Space _)

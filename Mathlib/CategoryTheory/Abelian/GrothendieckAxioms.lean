@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Isaac Hernando, Coleton Kotch, Adam Topaz
 -/
 
-import Mathlib.CategoryTheory.Limits.Filtered
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
+import Mathlib.CategoryTheory.Limits.Constructions.Filtered
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 
 /-!
 
@@ -19,6 +20,10 @@ basic facts about them.
 - `AB4` -- an abelian category satisfies `AB4` provided that coproducts are exact.
 - `AB5` -- an abelian category satisfies `AB5` provided that filtered colimits are exact.
 - The duals of the above definitions, called `AB4Star` and `AB5Star`.
+
+## Theorems
+
+- The implication from `AB5` to `AB4` is established in `AB4.ofAB5`.
 
 ## Remarks
 
@@ -42,9 +47,11 @@ namespace CategoryTheory
 
 open Limits
 
-universe v v' u u'
+universe v v' u u' w
 
 variable (C : Type u) [Category.{v} C]
+
+attribute [local instance] hasCoproducts_of_finite_and_filtered
 
 /--
 A category `C` which has coproducts is said to have `AB4` provided that
@@ -89,5 +96,33 @@ class AB5Star [HasCofilteredLimits C] where
     PreservesFiniteColimits (lim (J := J) (C := C))
 
 attribute [instance] AB5Star.preservesFiniteColimits
+
+noncomputable section
+
+open CoproductsFromFiniteFiltered
+
+variable {α : Type w}
+variable [HasZeroMorphisms C] [HasFiniteBiproducts C] [HasFiniteLimits C]
+
+instance preservesFiniteLimitsLiftToFinset : PreservesFiniteLimits (liftToFinset C α) :=
+  preservesFiniteLimitsOfEvaluation _ fun I =>
+    letI : PreservesFiniteLimits (colim (J := Discrete I) (C := C)) :=
+      preservesFiniteLimitsOfNatIso HasBiproductsOfShape.colimIsoLim.symm
+    letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
+        (Discrete.functor fun x ↦ ↑x)) :=
+      ⟨fun J _ _ => whiskeringLeftPreservesLimitsOfShape J _⟩
+    letI : PreservesFiniteLimits ((whiskeringLeft (Discrete I) (Discrete α) C).obj
+        (Discrete.functor (·.val)) ⋙ colim) :=
+      compPreservesFiniteLimits _ _
+    preservesFiniteLimitsOfNatIso (liftToFinsetEvaluationIso  I).symm
+
+/-- A category with finite biproducts and finite limits is AB4 if it is AB5. -/
+def AB4.ofAB5 [HasFiniteCoproducts C] [HasFilteredColimits C] [AB5 C] : AB4 C where
+  preservesFiniteLimits J :=
+    letI : PreservesFiniteLimits (liftToFinset C J ⋙ colim) :=
+      compPreservesFiniteLimits _ _
+    preservesFiniteLimitsOfNatIso (liftToFinsetColimIso)
+
+end
 
 end CategoryTheory

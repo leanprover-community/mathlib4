@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.Ring.Ideal
+import Mathlib.Topology.Algebra.UniformGroup.Basic
 
 /-!
 # Completion of topological rings:
@@ -47,7 +48,7 @@ instance one : One (Completion α) :=
   ⟨(1 : α)⟩
 
 instance mul : Mul (Completion α) :=
-  ⟨curry <| (isDenseInducing_coe.prod isDenseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
+  ⟨curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
 
 @[norm_cast]
 theorem coe_one : ((1 : α) : Completion α) = 1 :=
@@ -59,7 +60,7 @@ variable {α : Type*} [Ring α] [UniformSpace α] [TopologicalRing α]
 
 @[norm_cast]
 theorem coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
-  ((isDenseInducing_coe.prod isDenseInducing_coe).extend_eq
+  ((isDenseInducing_coe.prodMap isDenseInducing_coe).extend_eq
       ((continuous_coe α).comp (@continuous_mul α _ _ _)) (a, b)).symm
 
 variable [UniformAddGroup α]
@@ -222,7 +223,7 @@ variable {α : Type*}
 theorem inseparableSetoid_ring (α) [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
     inseparableSetoid α = Submodule.quotientRel (Ideal.closure ⊥) :=
   Setoid.ext fun x y =>
-    addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_r_def _).symm
+    addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_def _).symm
 
 @[deprecated (since := "2024-03-09")]
 alias ring_sep_rel := inseparableSetoid_ring
@@ -259,11 +260,11 @@ def sepQuotRingEquivRingQuot (α) [CommRing α] [TopologicalSpace α] [Topologic
 instance topologicalRing [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
     TopologicalRing (SeparationQuotient α) where
   toContinuousAdd :=
-    Inducing.continuousAdd (sepQuotRingEquivRingQuot α) (sepQuotHomeomorphRingQuot α).inducing
+    (sepQuotHomeomorphRingQuot α).isInducing.continuousAdd (sepQuotRingEquivRingQuot α)
   toContinuousMul :=
-    Inducing.continuousMul (sepQuotRingEquivRingQuot α) (sepQuotHomeomorphRingQuot α).inducing
+    (sepQuotHomeomorphRingQuot α).isInducing.continuousMul (sepQuotRingEquivRingQuot α)
   toContinuousNeg :=
-    Inducing.continuousNeg (sepQuotHomeomorphRingQuot α).inducing <|
+    (sepQuotHomeomorphRingQuot α).isInducing.continuousNeg <|
       map_neg (sepQuotRingEquivRingQuot α)
 
 end UniformSpace
@@ -276,8 +277,8 @@ variable {γ : Type*} [UniformSpace γ] [Semiring γ] [TopologicalSemiring γ]
 variable [T2Space γ] [CompleteSpace γ]
 
 /-- The dense inducing extension as a ring homomorphism. -/
-noncomputable def IsDenseInducing.extendRingHom {i : α →+* β} {f : α →+* γ} (ue : UniformInducing i)
-    (dr : DenseRange i) (hf : UniformContinuous f) : β →+* γ where
+noncomputable def IsDenseInducing.extendRingHom {i : α →+* β} {f : α →+* γ}
+    (ue : IsUniformInducing i) (dr : DenseRange i) (hf : UniformContinuous f) : β →+* γ where
   toFun := (ue.isDenseInducing dr).extend f
   map_one' := by
     convert IsDenseInducing.extend_eq (ue.isDenseInducing dr) hf.continuous 1

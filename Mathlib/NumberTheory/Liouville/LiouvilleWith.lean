@@ -53,7 +53,7 @@ theorem liouvilleWith_one (x : ℝ) : LiouvilleWith 1 x := by
   refine ((eventually_gt_atTop 0).mono fun n hn => ?_).frequently
   have hn' : (0 : ℝ) < n := by simpa
   have : x < ↑(⌊x * ↑n⌋ + 1) / ↑n := by
-    rw [lt_div_iff hn', Int.cast_add, Int.cast_one]
+    rw [lt_div_iff₀ hn', Int.cast_add, Int.cast_one]
     exact Int.lt_floor_add_one _
   refine ⟨⌊x * n⌋ + 1, this.ne, ?_⟩
   rw [abs_sub_comm, abs_of_pos (sub_pos.2 this), rpow_one, sub_lt_iff_lt_add',
@@ -64,7 +64,7 @@ theorem liouvilleWith_one (x : ℝ) : LiouvilleWith 1 x := by
 
 namespace LiouvilleWith
 
-variable {p q x y : ℝ} {r : ℚ} {m : ℤ} {n : ℕ}
+variable {p q x : ℝ} {r : ℚ} {m : ℤ} {n : ℕ}
 
 /-- The constant `C` provided by the definition of `LiouvilleWith` can be made positive.
 We also add `1 ≤ n` to the list of assumptions about the denominator. While it is equivalent to
@@ -100,7 +100,7 @@ theorem frequently_lt_rpow_neg (h : LiouvilleWith p x) (hlt : q < p) :
   refine (this.and_frequently hC).mono ?_
   rintro n ⟨hnC, hn, m, hne, hlt⟩
   replace hn : (0 : ℝ) < n := Nat.cast_pos.2 hn
-  refine ⟨m, hne, hlt.trans <| (div_lt_iff <| rpow_pos_of_pos hn _).2 ?_⟩
+  refine ⟨m, hne, hlt.trans <| (div_lt_iff₀ <| rpow_pos_of_pos hn _).2 ?_⟩
   rwa [mul_comm, ← rpow_add hn, ← sub_eq_add_neg]
 
 /-- The product of a Liouville number and a nonzero rational number is again a Liouville number. -/

@@ -19,7 +19,7 @@ namespace Set
 
 section OrderedCommGroup
 
-variable [OrderedCommGroup α] {a b c d : α}
+variable [OrderedCommGroup α] {a c d : α}
 
 /-! `inv_mem_Ixx_iff`, `sub_mem_Ixx_iff` -/
 

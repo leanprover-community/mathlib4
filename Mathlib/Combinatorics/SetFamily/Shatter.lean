@@ -28,7 +28,7 @@ This file defines the shattering property and VC-dimension of set families.
 open scoped FinsetFamily
 
 namespace Finset
-variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α} {n : ℕ}
+variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α}
 
 /-- A set family `𝒜` shatters a set `s` if all subsets of `s` can be obtained as the intersection
 of `s` and some element of the set family, and we denote this `𝒜.Shatters s`. We also say that `s`
@@ -72,7 +72,8 @@ lemma univ_shatters [Fintype α] : univ.Shatters s :=
   rw [shatters_iff, powerset_univ]; simp_rw [univ_inter, image_id']
 
 /-- The set family of sets that are shattered by `𝒜`. -/
-def shatterer (𝒜 : Finset (Finset α)) : Finset (Finset α) := (𝒜.biUnion powerset).filter 𝒜.Shatters
+def shatterer (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
+  {s ∈ 𝒜.biUnion powerset | 𝒜.Shatters s}
 
 @[simp] lemma mem_shatterer : s ∈ 𝒜.shatterer ↔ 𝒜.Shatters s := by
   refine mem_filter.trans <| and_iff_right_of_imp fun h ↦ ?_
@@ -106,15 +107,14 @@ private lemma aux (h : ∀ t ∈ 𝒜, a ∉ t) (ht : 𝒜.Shatters t) : a ∉ t
   obtain ⟨u, hu, htu⟩ := ht.exists_superset; exact not_mem_mono htu <| h u hu
 
 /-- Pajor's variant of the **Sauer-Shelah lemma**. -/
-lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : 𝒜.card ≤ 𝒜.shatterer.card := by
+lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : #𝒜 ≤ #𝒜.shatterer := by
   refine memberFamily_induction_on 𝒜 ?_ ?_ ?_
   · simp
   · rfl
   intros a 𝒜 ih₀ ih₁
   set ℬ : Finset (Finset α) :=
     ((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer).image (insert a)
-  have hℬ :
-      ℬ.card = ((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer).card := by
+  have hℬ : #ℬ = #((memberSubfamily a 𝒜).shatterer ∩ (nonMemberSubfamily a 𝒜).shatterer) := by
     refine card_image_of_injOn <| insert_erase_invOn.2.injOn.mono ?_
     simp only [coe_inter, Set.subset_def, Set.mem_inter_iff, mem_coe, Set.mem_setOf_eq, and_imp,
       mem_shatterer]
@@ -183,7 +183,7 @@ def vcDim (𝒜 : Finset (Finset α)) : ℕ := 𝒜.shatterer.sup card
 
 @[gcongr] lemma vcDim_mono (h𝒜ℬ : 𝒜 ⊆ ℬ) : 𝒜.vcDim ≤ ℬ.vcDim := by unfold vcDim; gcongr
 
-lemma Shatters.card_le_vcDim (hs : 𝒜.Shatters s) : s.card ≤ 𝒜.vcDim := le_sup <| mem_shatterer.2 hs
+lemma Shatters.card_le_vcDim (hs : 𝒜.Shatters s) : #s ≤ 𝒜.vcDim := le_sup <| mem_shatterer.2 hs
 
 /-- Down-compressing decreases the VC-dimension. -/
 lemma vcDim_compress_le (a : α) (𝒜 : Finset (Finset α)) : (𝓓 a 𝒜).vcDim ≤ 𝒜.vcDim :=
@@ -191,9 +191,9 @@ lemma vcDim_compress_le (a : α) (𝒜 : Finset (Finset α)) : (𝓓 a 𝒜).vcD
 
 /-- The **Sauer-Shelah lemma**. -/
 lemma card_shatterer_le_sum_vcDim [Fintype α] :
-    𝒜.shatterer.card ≤ ∑ k ∈ Iic 𝒜.vcDim, (Fintype.card α).choose k := by
+    #𝒜.shatterer ≤ ∑ k ∈ Iic 𝒜.vcDim, (Fintype.card α).choose k := by
   simp_rw [← card_univ, ← card_powersetCard]
-  refine (card_le_card fun s hs ↦ mem_biUnion.2 ⟨card s, ?_⟩).trans card_biUnion_le
+  refine (card_le_card fun s hs ↦ mem_biUnion.2 ⟨#s, ?_⟩).trans card_biUnion_le
   exact ⟨mem_Iic.2 (mem_shatterer.1 hs).card_le_vcDim, mem_powersetCard_univ.2 rfl⟩
 
 end Finset

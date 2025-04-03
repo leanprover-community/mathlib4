@@ -3,7 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Aaron Anderson
 -/
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Finsupp.Basic
 
 /-!
@@ -21,7 +23,7 @@ noncomputable section
 
 open Finset
 
-variable {ι α β : Type*}
+variable {ι κ α β : Type*}
 
 namespace Finsupp
 
@@ -31,6 +33,15 @@ namespace Finsupp
 section Zero
 
 variable [Zero α]
+
+section OrderedAddCommMonoid
+variable [OrderedAddCommMonoid β] {f : ι →₀ α} {h₁ h₂ : ι → α → β}
+
+@[gcongr]
+lemma sum_le_sum (h : ∀ i ∈ f.support, h₁ i (f i) ≤ h₂ i (f i)) : f.sum h₁ ≤ f.sum h₂ :=
+  Finset.sum_le_sum h
+
+end OrderedAddCommMonoid
 
 section LE
 variable [LE α] {f g : ι →₀ α}
@@ -58,12 +69,12 @@ theorem orderEmbeddingToFun_apply {f : ι →₀ α} {i : ι} : orderEmbeddingTo
 end LE
 
 section Preorder
-variable [Preorder α] {f g : ι →₀ α}
+variable [Preorder α] {f g : ι →₀ α} {i : ι} {a b : α}
 
 instance preorder : Preorder (ι →₀ α) :=
   { Finsupp.instLEFinsupp with
-    le_refl := fun f i => le_rfl
-    le_trans := fun f g h hfg hgh i => (hfg i).trans (hgh i) }
+    le_refl := fun _ _ => le_rfl
+    le_trans := fun _ _ _ hfg hgh i => (hfg i).trans (hgh i) }
 
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl
@@ -71,6 +82,26 @@ lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 lemma coe_mono : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
 
 lemma coe_strictMono : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) := fun _ _ ↦ id
+
+@[simp] lemma single_le_single : single i a ≤ single i b ↔ a ≤ b := by
+  classical exact Pi.single_le_single
+
+lemma single_mono : Monotone (single i : α → ι →₀ α) := fun _ _ ↦ single_le_single.2
+
+@[gcongr] protected alias ⟨_, GCongr.single_mono⟩ := single_le_single
+
+@[simp] lemma single_nonneg : 0 ≤ single i a ↔ 0 ≤ a := by classical exact Pi.single_nonneg
+@[simp] lemma single_nonpos : single i a ≤ 0 ↔ a ≤ 0 := by classical exact Pi.single_nonpos
+
+variable [OrderedAddCommMonoid β]
+
+lemma sum_le_sum_index [DecidableEq ι] {f₁ f₂ : ι →₀ α} {h : ι → α → β} (hf : f₁ ≤ f₂)
+    (hh : ∀ i ∈ f₁.support ∪ f₂.support, Monotone (h i))
+    (hh₀ : ∀ i ∈ f₁.support ∪ f₂.support, h i 0 = 0) : f₁.sum h ≤ f₂.sum h := by
+  classical
+  rw [sum_of_support_subset _ Finset.subset_union_left _ hh₀,
+    sum_of_support_subset _ Finset.subset_union_right _ hh₀]
+  exact Finset.sum_le_sum fun i hi ↦ hh _ hi <| hf _
 
 end Preorder
 
@@ -117,18 +148,31 @@ end Zero
 
 /-! ### Algebraic order structures -/
 
+section OrderedAddCommMonoid
+variable [OrderedAddCommMonoid α] {i : ι} {f : ι → κ} {g g₁ g₂ : ι →₀ α}
 
-instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (ι →₀ α) :=
+instance orderedAddCommMonoid : OrderedAddCommMonoid (ι →₀ α) :=
   { Finsupp.instAddCommMonoid, Finsupp.partialorder with
     add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
+
+lemma mapDomain_mono : Monotone (mapDomain f : (ι →₀ α) → (κ →₀ α)) := by
+  classical exact fun g₁ g₂ h ↦ sum_le_sum_index h (fun _ _ ↦ single_mono) (by simp)
+
+@[gcongr] protected lemma GCongr.mapDomain_mono (hg : g₁ ≤ g₂) : g₁.mapDomain f ≤ g₂.mapDomain f :=
+  mapDomain_mono hg
+
+lemma mapDomain_nonneg (hg : 0 ≤ g) : 0 ≤ g.mapDomain f := by simpa using mapDomain_mono hg
+lemma mapDomain_nonpos (hg : g ≤ 0) : g.mapDomain f ≤ 0 := by simpa using mapDomain_mono hg
+
+end OrderedAddCommMonoid
 
 instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :
     OrderedCancelAddCommMonoid (ι →₀ α) :=
   { Finsupp.orderedAddCommMonoid with
     le_of_add_le_add_left := fun _f _g _i h s => le_of_add_le_add_left (h s) }
 
-instance contravariantClass [OrderedAddCommMonoid α] [ContravariantClass α α (· + ·) (· ≤ ·)] :
-    ContravariantClass (ι →₀ α) (ι →₀ α) (· + ·) (· ≤ ·) :=
+instance addLeftReflectLE [OrderedAddCommMonoid α] [AddLeftReflectLE α] :
+    AddLeftReflectLE (ι →₀ α) :=
   ⟨fun _f _g _h H x => le_of_add_le_add_left <| H x⟩
 
 section SMulZeroClass

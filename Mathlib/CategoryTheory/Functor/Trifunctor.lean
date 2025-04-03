@@ -31,7 +31,7 @@ variable (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ ⥤ C₃ ⥤ C₄)
 def bifunctorComp₁₂Obj (X₁ : C₁) : C₂ ⥤ C₃ ⥤ C₄ where
   obj X₂ :=
     { obj := fun X₃ => (G.obj ((F₁₂.obj X₁).obj X₂)).obj X₃
-      map := fun {X₃ Y₃} φ => (G.obj ((F₁₂.obj X₁).obj X₂)).map φ }
+      map := fun {_ _} φ => (G.obj ((F₁₂.obj X₁).obj X₂)).map φ }
   map {X₂ Y₂} φ :=
     { app := fun X₃ => (G.map ((F₁₂.obj X₁).map φ)).app X₃ }
 
@@ -59,7 +59,7 @@ variable (F : C₁ ⥤ C₂₃ ⥤ C₄) (G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃)
 def bifunctorComp₂₃Obj (X₁ : C₁) : C₂ ⥤ C₃ ⥤ C₄ where
   obj X₂ :=
     { obj := fun X₃ => (F.obj X₁).obj ((G₂₃.obj X₂).obj X₃)
-      map := fun {X₃ Y₃} φ => (F.obj X₁).map ((G₂₃.obj X₂).map φ) }
+      map := fun {_ _} φ => (F.obj X₁).map ((G₂₃.obj X₂).map φ) }
   map {X₂ Y₂} φ :=
     { app := fun X₃ => (F.obj X₁).map ((G₂₃.map φ).app X₃)
       naturality := fun {X₃ Y₃} φ => by

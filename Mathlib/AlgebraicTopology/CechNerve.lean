@@ -67,7 +67,7 @@ def mapCechNerve {f g : Arrow C}
 def augmentedCechNerve : SimplicialObject.Augmented C where
   left := f.cechNerve
   right := f.right
-  hom := { app := fun i => WidePullback.base _ }
+  hom := { app := fun _ => WidePullback.base _ }
 
 /-- The morphism between augmented Čech nerve associated to a morphism of arrows. -/
 @[simps]
@@ -142,7 +142,7 @@ def cechNerveEquiv (X : SimplicialObject.Augmented C) (F : Arrow C) :
     intro A
     ext
     · dsimp
-      erw [WidePullback.lift_π]
+      rw [WidePullback.lift_π]
       nth_rw 2 [← Category.id_comp A.left]
       congr 1
       convert X.left.map_id _
@@ -193,7 +193,7 @@ def cechConerve : CosimplicialObject C where
   map {x y} g := by
     refine WidePushout.desc (WidePushout.head _)
       (fun i => (@WidePushout.ι _ _ _ _ _ (fun _ => f.hom) (_) (g.toOrderHom i))) (fun j => ?_)
-    erw [← WidePushout.arrow_ι]
+    rw [← WidePushout.arrow_ι]
 
 /-- The morphism between Čech conerves associated to a morphism of arrows. -/
 @[simps]
@@ -211,7 +211,7 @@ def augmentedCechConerve : CosimplicialObject.Augmented C where
   left := f.left
   right := f.cechConerve
   hom :=
-    { app := fun i => (WidePushout.head _ : f.left ⟶ _) }
+    { app := fun _ => (WidePushout.head _ : f.left ⟶ _) }
 
 /-- The morphism between augmented Čech conerves associated to a morphism of arrows. -/
 @[simps]
@@ -308,7 +308,7 @@ def cechConerveEquiv (F : Arrow C) (X : CosimplicialObject.Augmented C) :
     ext
     · rfl
     · dsimp
-      erw [WidePushout.ι_desc]
+      rw [WidePushout.ι_desc]
       nth_rw 2 [← Category.comp_id A.right]
       congr 1
       convert X.right.map_id _
@@ -357,7 +357,7 @@ def wideCospan.limitCone [Finite ι] (X : C) : LimitCone (wideCospan ι X) where
               subsingleton } }
   isLimit :=
     { lift := fun s => Limits.Pi.lift fun j => s.π.app (some j)
-      fac := fun s j => Option.casesOn j (by subsingleton) fun j => limit.lift_π _ _
+      fac := fun s j => Option.casesOn j (by subsingleton) fun _ => limit.lift_π _ _
       uniq := fun s f h => by
         dsimp
         ext j
@@ -405,7 +405,7 @@ lemma wideCospan.limitIsoPi_hom_comp_pi [Finite ι] (X : C) (j : ι) :
 naturally isomorphic to a simplicial object sending `[n]` to `Xⁿ⁺¹` (when `C` is `G-Set`, this is
 `EG`, the universal cover of the classifying space of `G`. -/
 def iso (X : C) : (Arrow.mk (terminal.from X)).cechNerve ≅ cechNerveTerminalFrom X :=
-  NatIso.ofComponents (fun m => wideCospan.limitIsoPi _ _) (fun {m n} f => by
+  NatIso.ofComponents (fun _ => wideCospan.limitIsoPi _ _) (fun {m n} f => by
     dsimp only [cechNerveTerminalFrom, Arrow.cechNerve]
     ext ⟨j⟩
     simp only [Category.assoc, limit.lift_π, Fan.mk_π_app]

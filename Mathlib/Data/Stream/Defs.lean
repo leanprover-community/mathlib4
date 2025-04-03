@@ -82,7 +82,7 @@ def corec' (f : α → β × α) : α → Stream' β :=
 def corecState {σ α} (cmd : StateM σ α) (s : σ) : Stream' α :=
   corec Prod.fst (cmd.run ∘ Prod.snd) (cmd.run s)
 
--- corec is also known as unfold
+-- corec is also known as unfolds
 abbrev unfolds (g : α → β) (f : α → α) (a : α) : Stream' β :=
   corec g f a
 
@@ -94,7 +94,7 @@ infixl:65 " ⋈ " => interleave
 
 /-- Elements of a stream with even indices. -/
 def even (s : Stream' α) : Stream' α :=
-  corec (fun s => head s) (fun s => tail (tail s)) s
+  corec head (fun s => tail (tail s)) s
 
 /-- Elements of a stream with odd indices. -/
 def odd (s : Stream' α) : Stream' α :=

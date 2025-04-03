@@ -45,7 +45,7 @@ intermediate value theorem, connected space, connected set
 open Filter OrderDual TopologicalSpace Function Set
 open scoped Topology Filter Interval
 
-universe u v w
+universe u v
 
 /-!
 ### Intermediate value theorem on a (pre)connected space
@@ -216,9 +216,7 @@ theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s)
 
 end
 
-variable {α : Type u} {β : Type v} {γ : Type w} [ConditionallyCompleteLinearOrder α]
-  [TopologicalSpace α] [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β]
-  [OrderTopology β] [Nonempty γ]
+variable {α : Type u} [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α]
 
 /-- A bounded connected subset of a conditionally complete linear order includes the open interval
 `(Inf s, Sup s)`. -/

@@ -137,11 +137,9 @@ theorem toBoolAlg_ofBoolAlg (a : AsBoolAlg α) : toBoolAlg (ofBoolAlg a) = a :=
 theorem ofBoolAlg_toBoolAlg (a : α) : ofBoolAlg (toBoolAlg a) = a :=
   rfl
 
--- Porting note (#10618): simp can prove this -- @[simp]
 theorem toBoolAlg_inj {a b : α} : toBoolAlg a = toBoolAlg b ↔ a = b :=
   Iff.rfl
 
--- Porting note (#10618): simp can prove this -- @[simp]
 theorem ofBoolAlg_inj {a b : AsBoolAlg α} : ofBoolAlg a = ofBoolAlg b ↔ a = b :=
   Iff.rfl
 
@@ -355,11 +353,9 @@ theorem toBoolRing_ofBoolRing (a : AsBoolRing α) : toBoolRing (ofBoolRing a) = 
 theorem ofBoolRing_toBoolRing (a : α) : ofBoolRing (toBoolRing a) = a :=
   rfl
 
--- Porting note (#10618): simp can prove this -- @[simp]
 theorem toBoolRing_inj {a b : α} : toBoolRing a = toBoolRing b ↔ a = b :=
   Iff.rfl
 
--- Porting note (#10618): simp can prove this -- @[simp]
 theorem ofBoolRing_inj {a b : AsBoolRing α} : ofBoolRing a = ofBoolRing b ↔ a = b :=
   Iff.rfl
 
@@ -534,7 +530,7 @@ instance : BooleanRing Bool where
   left_distrib := and_xor_distrib_left
   right_distrib := and_xor_distrib_right
   mul_self := Bool.and_self
-  zero_mul a := rfl
+  zero_mul _ := rfl
   mul_zero a := by cases a <;> rfl
   nsmul := nsmulRec
   zsmul := zsmulRec

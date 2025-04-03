@@ -121,9 +121,9 @@ theorem _root_.cauchy_product (ha : IsCauSeq abs fun m ↦ ∑ n ∈ range m, ab
         (by rw [← sum_mul, mul_comm]; gcongr)
   rw [sum_range_sub_sum_range (le_of_lt hNMK)]
   calc
-    (∑ i ∈ (range K).filter fun k ↦ max N M + 1 ≤ k,
+    (∑ i ∈ range K with max N M + 1 ≤ i,
           abv (f i) * abv ((∑ k ∈ range (K - i), g k) - ∑ k ∈ range K, g k)) ≤
-        ∑ i ∈ (range K).filter fun k ↦ max N M + 1 ≤ k, abv (f i) * (2 * Q) := by
+        ∑ i ∈ range K with max N M + 1 ≤ i, abv (f i) * (2 * Q) := by
         gcongr
         rw [sub_eq_add_neg]
         refine le_trans (abv_add _ _ _) ?_
@@ -188,7 +188,7 @@ lemma geo_series [Nontrivial β] (x : β) (hx1 : abv x < 1) :
     · gcongr
       exact sub_le_self _ (abv_pow abv x n ▸ abv_nonneg _ _)
     refine div_nonneg (sub_nonneg.2 ?_) (sub_nonneg.2 <| le_of_lt hx1)
-    exact pow_le_one _ (by positivity) hx1.le
+    exact pow_le_one₀ (by positivity) hx1.le
   · intro n _
     rw [← one_mul (abv x ^ n), pow_succ']
     gcongr
@@ -213,7 +213,7 @@ lemma series_ratio_test {f : ℕ → β} (n : ℕ) (r : α) (hr0 : 0 ≤ r) (hr1
     positivity
   · have kn : k + n.succ ≥ n.succ := by
       rw [← zero_add n.succ]; exact add_le_add (Nat.zero_le _) (by simp)
-    erw [hk, Nat.succ_add, pow_succ r, ← mul_assoc]
+    rw [hk, Nat.succ_add, pow_succ r, ← mul_assoc]
     refine
       le_trans (by rw [mul_comm] <;> exact h _ (Nat.le_of_succ_le kn))
         (mul_le_mul_of_nonneg_right ?_ hr0)

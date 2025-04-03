@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ian Benway
 -/
 import Mathlib.Init
-import Lean
+import Lean.Elab.Tactic.ElabTerm
 
 /-!
 # The `set` tactic

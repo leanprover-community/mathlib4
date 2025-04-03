@@ -67,8 +67,7 @@ Because the pointwise action can easily be spelled out in such cases, we give hi
 nat and int actions.
 -/
 
-
-open Function
+open Function MulOpposite
 
 variable {F α β γ : Type*}
 
@@ -89,6 +88,8 @@ scoped[Pointwise] attribute [instance] Set.one Set.zero
 
 open Pointwise
 
+-- TODO: This would be a good simp lemma scoped to `Pointwise`, but it seems `@[simp]` can't be
+-- scoped
 @[to_additive]
 theorem singleton_one : ({1} : Set α) = 1 :=
   rfl
@@ -129,6 +130,8 @@ noncomputable def singletonOneHom : OneHom α (Set α) where
 @[to_additive (attr := simp)]
 theorem coe_singletonOneHom : (singletonOneHom : α → Set α) = singleton :=
   rfl
+
+@[to_additive] lemma image_op_one : (1 : Set α).image op = 1 := image_singleton
 
 end One
 
@@ -327,7 +330,6 @@ theorem mul_singleton : s * {b} = (· * b) '' s :=
 theorem singleton_mul : {a} * t = (a * ·) '' t :=
   image2_singleton_left
 
--- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem singleton_mul_singleton : ({a} : Set α) * {b} = {a * b} :=
   image2_singleton
@@ -531,7 +533,6 @@ theorem div_singleton : s / {b} = (· / b) '' s :=
 theorem singleton_div : {a} / t = (· / ·) a '' t :=
   image2_singleton_left
 
--- Porting note (#10618): simp can prove this
 @[to_additive]
 theorem singleton_div_singleton : ({a} : Set α) / {b} = {a / b} :=
   image2_singleton
@@ -1098,10 +1099,17 @@ theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) (hn : m ≤ n) : s ^ m �
     rw [pow_succ']
     exact ih.trans (subset_mul_right _ hs)
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) nsmul_empty]
 theorem empty_pow {n : ℕ} (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by
   match n with
   | n + 1 => rw [pow_succ', empty_mul]
+
+@[deprecated (since := "2024-10-21")] alias empty_nsmul := nsmul_empty
+
+@[to_additive (attr := simp) nsmul_singleton]
+lemma singleton_pow (a : α) : ∀ n, ({a} : Set α) ^ n = {a ^ n}
+  | 0 => by simp [singleton_one]
+  | n + 1 => by simp [pow_succ, singleton_pow _ n]
 
 @[to_additive]
 theorem mul_univ_of_one_mem (hs : (1 : α) ∈ s) : s * univ = univ :=
@@ -1138,7 +1146,7 @@ open Pointwise
 
 section DivisionMonoid
 
-variable [DivisionMonoid α] {s t : Set α}
+variable [DivisionMonoid α] {s t : Set α} {n : ℤ}
 
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} ∧ a * b = 1 := by
@@ -1191,6 +1199,12 @@ lemma univ_div_univ : (univ / univ : Set α) = univ := by simp [div_eq_mul_inv]
 @[to_additive] lemma inv_subset_div_right (hs : 1 ∈ s) : t⁻¹ ⊆ s / t := by
   rw [div_eq_mul_inv]; exact subset_mul_right _ hs
 
+@[to_additive (attr := simp) zsmul_empty]
+lemma empty_zpow (hn : n ≠ 0) : (∅ : Set α) ^ n = ∅ := by cases n <;> aesop
+
+@[to_additive (attr := simp) zsmul_singleton]
+lemma singleton_zpow (a : α) (n : ℤ) : ({a} : Set α) ^ n = {a ^ n} := by cases n <;> simp
+
 end DivisionMonoid
 
 /-- `Set α` is a commutative division monoid under pointwise operations if `α` is. -/
@@ -1199,6 +1213,8 @@ end DivisionMonoid
 protected noncomputable def divisionCommMonoid [DivisionCommMonoid α] :
     DivisionCommMonoid (Set α) :=
   { Set.divisionMonoid, Set.commSemigroup with }
+
+scoped[Pointwise] attribute [instance] Set.divisionCommMonoid Set.subtractionCommMonoid
 
 section Group
 

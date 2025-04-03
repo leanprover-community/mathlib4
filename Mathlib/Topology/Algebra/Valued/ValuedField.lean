@@ -194,7 +194,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
   intro x₀
   rcases eq_or_ne x₀ 0 with (rfl | h)
   · refine ⟨0, ?_⟩
-    erw [← Completion.isDenseInducing_coe.toInducing.nhds_eq_comap]
+    erw [← Completion.isDenseInducing_coe.isInducing.nhds_eq_comap]
     exact Valued.continuous_valuation.tendsto' 0 0 (map_zero v)
   · have preimage_one : v ⁻¹' {(1 : Γ₀)} ∈ 𝓝 (1 : K) := by
       have : (v (1 : K) : Γ₀) ≠ 0 := by

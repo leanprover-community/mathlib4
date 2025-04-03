@@ -73,7 +73,7 @@ See also `OrderIso.mulLeft` when working in an ordered group. -/
       "The order embedding sending `b` to `a + b`, for some fixed `a`.
        See also `OrderIso.addLeft` when working in an additive ordered group."]
 def OrderEmbedding.mulLeft {α : Type*} [Mul α] [LinearOrder α]
-    [CovariantClass α α (· * ·) (· < ·)] (m : α) : α ↪o α :=
+    [MulLeftStrictMono α] (m : α) : α ↪o α :=
   OrderEmbedding.ofStrictMono (fun n => m * n) fun _ _ w => mul_lt_mul_left' w m
 
 /-- The order embedding sending `b` to `b * a`, for some fixed `a`.
@@ -82,5 +82,5 @@ See also `OrderIso.mulRight` when working in an ordered group. -/
       "The order embedding sending `b` to `b + a`, for some fixed `a`.
        See also `OrderIso.addRight` when working in an additive ordered group."]
 def OrderEmbedding.mulRight {α : Type*} [Mul α] [LinearOrder α]
-    [CovariantClass α α (swap (· * ·)) (· < ·)] (m : α) : α ↪o α :=
+    [MulRightStrictMono α] (m : α) : α ↪o α :=
   OrderEmbedding.ofStrictMono (fun n => n * m) fun _ _ w => mul_lt_mul_right' w m

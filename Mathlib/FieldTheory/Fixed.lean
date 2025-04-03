@@ -17,7 +17,7 @@ This is the basis of the Fundamental Theorem of Galois Theory.
 Given a (finite) group `G` that acts on a field `F`, we define `FixedPoints.subfield G F`,
 the subfield consisting of elements of `F` fixed_points by every element of `G`.
 
-This subfield is then normal and separable, and in addition (TODO) if `G` acts faithfully on `F`
+This subfield is then normal and separable, and in addition if `G` acts faithfully on `F`
 then `finrank (FixedPoints.subfield G F) F = Fintype.card G`.
 
 ## Main Definitions
@@ -30,7 +30,7 @@ element of `G`, where `G` is a group that acts on `F`.
 
 noncomputable section
 
-open MulAction Finset FiniteDimensional
+open MulAction Finset Module
 
 universe u v w
 
@@ -193,7 +193,7 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
   have h : Polynomial.map (MulSemiringActionHom.toRingHom (IsInvariantSubring.subtypeHom G
     (subfield G F).toSubring)) f = Polynomial.map
     ((IsInvariantSubring.subtypeHom G (subfield G F).toSubring)) f := rfl
-  erw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
+  rw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
     Polynomial.map_toSubring _ _, prodXSubSMul]
   refine
     Fintype.prod_dvd_of_coprime
@@ -246,7 +246,7 @@ theorem minpoly_eq_minpoly : minpoly G F x = _root_.minpoly (FixedPoints.subfiel
 theorem rank_le_card : Module.rank (FixedPoints.subfield G F) F ≤ Fintype.card G :=
   rank_le fun s hs => by
     simpa only [rank_fun', Cardinal.mk_coe_finset, Finset.coe_sort_coe, Cardinal.lift_natCast,
-      Cardinal.natCast_le] using
+      Nat.cast_le] using
       (linearIndependent_smul_of_linearIndependent G F hs).cardinal_lift_le_rank
 
 end Fintype
@@ -282,7 +282,7 @@ instance : FiniteDimensional (subfield G F) F := by
 end Finite
 
 theorem finrank_le_card [Fintype G] : finrank (subfield G F) F ≤ Fintype.card G := by
-  rw [← Cardinal.natCast_le, finrank_eq_rank]
+  rw [← @Nat.cast_le Cardinal, finrank_eq_rank]
   apply rank_le_card
 
 end FixedPoints
@@ -311,8 +311,9 @@ theorem finrank_algHom (K : Type u) (V : Type v) [Field K] [Field V] [Algebra K 
 
 namespace FixedPoints
 
-theorem finrank_eq_card (G : Type u) (F : Type v) [Group G] [Field F] [Fintype G]
-    [MulSemiringAction G F] [FaithfulSMul G F] :
+variable (G F : Type*) [Group G] [Field F] [MulSemiringAction G F]
+
+theorem finrank_eq_card [Fintype G] [FaithfulSMul G F] :
     finrank (FixedPoints.subfield G F) F = Fintype.card G :=
   le_antisymm (FixedPoints.finrank_le_card G F) <|
     calc
@@ -322,8 +323,7 @@ theorem finrank_eq_card (G : Type u) (F : Type v) [Group G] [Field F] [Fintype G
       _ = finrank (FixedPoints.subfield G F) F := finrank_linearMap_self _ _ _
 
 /-- `MulSemiringAction.toAlgHom` is bijective. -/
-theorem toAlgHom_bijective (G : Type u) (F : Type v) [Group G] [Field F] [Finite G]
-    [MulSemiringAction G F] [FaithfulSMul G F] :
+theorem toAlgHom_bijective [Finite G] [FaithfulSMul G F] :
     Function.Bijective (MulSemiringAction.toAlgHom _ _ : G → F →ₐ[subfield G F] F) := by
   cases nonempty_fintype G
   rw [Fintype.bijective_iff_injective_and_card]
@@ -334,9 +334,37 @@ theorem toAlgHom_bijective (G : Type u) (F : Type v) [Group G] [Field F] [Finite
     · rw [← finrank_eq_card G F]
       exact LE.le.trans_eq (finrank_algHom _ F) (finrank_linearMap_self _ _ _)
 
-/-- Bijection between G and algebra homomorphisms that fix the fixed points -/
-def toAlgHomEquiv (G : Type u) (F : Type v) [Group G] [Field F] [Finite G] [MulSemiringAction G F]
-    [FaithfulSMul G F] : G ≃ (F →ₐ[FixedPoints.subfield G F] F) :=
+/-- Bijection between `G` and algebra endomorphisms of `F` that fix the fixed points. -/
+def toAlgHomEquiv [Finite G] [FaithfulSMul G F] : G ≃ (F →ₐ[FixedPoints.subfield G F] F) :=
   Equiv.ofBijective _ (toAlgHom_bijective G F)
+
+/-- `MulSemiringAction.toAlgAut` is bijective. -/
+theorem toAlgAut_bijective [Finite G] [FaithfulSMul G F] :
+    Function.Bijective (MulSemiringAction.toAlgAut G (FixedPoints.subfield G F) F) := by
+  refine ⟨fun _ _ h ↦ (FixedPoints.toAlgHom_bijective G F).injective ?_,
+    fun f ↦ ((FixedPoints.toAlgHom_bijective G F).surjective f).imp (fun _ h ↦ ?_)⟩ <;>
+      rwa [DFunLike.ext_iff] at h ⊢
+
+/-- Bijection between `G` and algebra automorphisms of `F` that fix the fixed points. -/
+def toAlgAutMulEquiv [Finite G] [FaithfulSMul G F] : G ≃* (F ≃ₐ[FixedPoints.subfield G F] F) :=
+  MulEquiv.ofBijective _ (toAlgAut_bijective G F)
+
+/-- `MulSemiringAction.toAlgAut` is surjective. -/
+theorem toAlgAut_surjective [Finite G] :
+    Function.Surjective (MulSemiringAction.toAlgAut G (FixedPoints.subfield G F) F) := by
+  let f : G →* F ≃ₐ[FixedPoints.subfield G F] F :=
+    MulSemiringAction.toAlgAut G (FixedPoints.subfield G F) F
+  let Q := G ⧸ f.ker
+  let _ : MulSemiringAction Q F := MulSemiringAction.compHom _ (QuotientGroup.kerLift f)
+  have : FaithfulSMul Q F := ⟨by
+    intro q₁ q₂
+    refine Quotient.inductionOn₂' q₁ q₂ (fun g₁ g₂ h ↦ QuotientGroup.eq.mpr ?_)
+    rwa [MonoidHom.mem_ker, map_mul, map_inv, inv_mul_eq_one, AlgEquiv.ext_iff]⟩
+  intro f
+  obtain ⟨q, hq⟩ := (toAlgAut_bijective Q F).surjective
+    (AlgEquiv.ofRingEquiv (f := f) (fun ⟨x, hx⟩ ↦ f.commutes' ⟨x, fun g ↦ hx g⟩))
+  revert hq
+  refine QuotientGroup.induction_on q (fun g hg ↦ ⟨g, ?_⟩)
+  rwa [AlgEquiv.ext_iff] at hg ⊢
 
 end FixedPoints

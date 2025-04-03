@@ -3,6 +3,7 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Lean.Expr.Rat
 import Mathlib.Tactic.NormNum.Result
 import Mathlib.Util.Qq
 import Lean.Elab.Tactic.Location
@@ -93,7 +94,7 @@ def derive {α : Q(Type u)} (e : Q($α)) (post := false) : MetaM (Result e) := d
           trace[Tactic.norm_num] "{ext.name}:\n{e} ==> {new}"
           return new
         catch err =>
-          trace[Tactic.norm_num] "{e} failed: {err.toMessageData}"
+          trace[Tactic.norm_num] "{ext.name} failed {e}: {err.toMessageData}"
           s.restore
     throwError "{e}: no norm_nums apply"
 

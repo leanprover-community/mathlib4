@@ -20,7 +20,7 @@ In most applications `m` and `n` are finite types. -/
 def DMatrix (m : Type u) (n : Type u') (α : m → n → Type v) : Type max u u' v :=
   ∀ i j, α i j
 
-variable {l m n o : Type*}
+variable {m n : Type*}
 variable {α : m → n → Type v}
 
 namespace DMatrix
@@ -49,7 +49,7 @@ theorem map_apply {M : DMatrix m n α} {β : m → n → Type w} {f : ∀ ⦃i j
 @[simp]
 theorem map_map {M : DMatrix m n α} {β : m → n → Type w} {γ : m → n → Type z}
     {f : ∀ ⦃i j⦄, α i j → β i j} {g : ∀ ⦃i j⦄, β i j → γ i j} :
-    (M.map f).map g = M.map fun i j x => g (f x) := by ext; simp
+    (M.map f).map g = M.map fun _ _ x => g (f x) := by ext; simp
 
 /-- The transpose of a dmatrix. -/
 def transpose (M : DMatrix m n α) : DMatrix n m fun j i => α i j

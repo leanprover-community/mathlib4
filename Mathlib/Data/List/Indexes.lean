@@ -55,9 +55,9 @@ theorem mapIdxGo_append : ∀ (f : ℕ → α → β) (l₁ l₂ : List α) (arr
       cases l₂
       · rfl
       · rw [List.length_append] at h; contradiction
-    rw [l₁_nil, l₂_nil]; simp only [mapIdx.go, Array.toList_eq, Array.toArray_data]
+    rw [l₁_nil, l₂_nil]; simp only [mapIdx.go, List.toArray_toList]
   · cases' l₁ with head tail <;> simp only [mapIdx.go]
-    · simp only [nil_append, Array.toList_eq, Array.toArray_data]
+    · simp only [nil_append, List.toArray_toList]
     · simp only [List.append_eq]
       rw [ih]
       · simp only [cons_append, length_cons, length_append, Nat.succ.injEq] at h
@@ -67,7 +67,7 @@ theorem mapIdxGo_length : ∀ (f : ℕ → α → β) (l : List α) (arr : Array
     length (mapIdx.go f l arr) = length l + arr.size := by
   intro f l
   induction' l with head tail ih
-  · intro; simp only [mapIdx.go, Array.toList_eq, length_nil, Nat.zero_add]
+  · intro; simp only [mapIdx.go, length_nil, Nat.zero_add]
   · intro; simp only [mapIdx.go]; rw [ih]; simp only [Array.size_push, length_cons]
     simp only [Nat.add_succ, Fin.add_zero, Nat.add_comm]
 
@@ -77,7 +77,7 @@ theorem mapIdx_append_one : ∀ (f : ℕ → α → β) (l : List α) (e : α),
   unfold mapIdx
   rw [mapIdxGo_append f l [e]]
   simp only [mapIdx.go, Array.size_toArray, mapIdxGo_length, length_nil, Nat.add_zero,
-    Array.toList_eq, Array.push_data, Array.data_toArray]
+    Array.push_toList, Array.toList_toArray]
 
 @[local simp]
 theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α → β),
@@ -119,15 +119,16 @@ theorem getElem?_mapIdx_go (f : ℕ → α → β) : ∀ (l : List α) (arr : Ar
     (mapIdx.go f l arr)[i]? =
       if h : i < arr.size then some arr[i] else Option.map (f i) l[i - arr.size]?
   | [], arr, i => by
-    simp [mapIdx.go, getElem?_eq, Array.getElem_eq_data_getElem]
+    simp only [mapIdx.go, Array.toListImpl_eq, getElem?_eq, Array.length_toList,
+      Array.getElem_eq_getElem_toList, length_nil, Nat.not_lt_zero, ↓reduceDIte, Option.map_none']
   | a :: l, arr, i => by
     rw [mapIdx.go, getElem?_mapIdx_go]
     simp only [Array.size_push]
     split <;> split
     · simp only [Option.some.injEq]
-      rw [Array.getElem_eq_data_getElem]
-      simp only [Array.push_data]
-      rw [getElem_append_left, Array.getElem_eq_data_getElem]
+      rw [Array.getElem_eq_getElem_toList]
+      simp only [Array.push_toList]
+      rw [getElem_append_left, Array.getElem_eq_getElem_toList]
     · have : i = arr.size := by omega
       simp_all
     · omega
@@ -158,7 +159,7 @@ theorem mapIdx_append (K L : List α) (f : ℕ → α → β) :
 
 @[simp]
 theorem mapIdx_eq_nil {f : ℕ → α → β} {l : List α} : List.mapIdx f l = [] ↔ l = [] := by
-  rw [List.mapIdx_eq_enum_map, List.map_eq_nil, List.enum_eq_nil]
+  rw [List.mapIdx_eq_enum_map, List.map_eq_nil_iff, List.enum_eq_nil]
 
 theorem get_mapIdx (l : List α) (f : ℕ → α → β) (i : ℕ) (h : i < l.length)
     (h' : i < (l.mapIdx f).length := h.trans_le (l.length_mapIdx f).ge) :
@@ -356,12 +357,12 @@ theorem mapIdxMGo_eq_mapIdxMAuxSpec
       congr
       conv => { lhs; intro x; rw [ih _ _ h]; }
       funext x
-      simp only [Array.toList_eq, Array.push_data, append_assoc, singleton_append, Array.size_push,
+      simp only [Array.push_toList, append_assoc, singleton_append, Array.size_push,
         map_eq_pure_bind]
 
 theorem mapIdxM_eq_mmap_enum [LawfulMonad m] {β} (f : ℕ → α → m β) (as : List α) :
     as.mapIdxM f = List.traverse (uncurry f) (enum as) := by
-  simp only [mapIdxM, mapIdxMGo_eq_mapIdxMAuxSpec, Array.toList_eq, Array.data_toArray,
+  simp only [mapIdxM, mapIdxMGo_eq_mapIdxMAuxSpec, Array.toList_toArray,
     nil_append, mapIdxMAuxSpec, Array.size_toArray, length_nil, id_map', enum]
 
 end MapIdxM

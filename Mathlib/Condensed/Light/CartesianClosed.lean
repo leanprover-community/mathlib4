@@ -17,6 +17,4 @@ noncomputable section
 
 open CategoryTheory
 
-variable {C : Type u} [SmallCategory C]
-
 instance : CartesianClosed (LightCondSet.{u}) := inferInstanceAs (CartesianClosed (Sheaf _ _))

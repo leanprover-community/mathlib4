@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.Factorization.Basic
+import Mathlib.Data.Nat.Prime.Pow
 
 /-!
 # Prime powers and factorizations
@@ -12,8 +13,6 @@ import Mathlib.Data.Nat.Factorization.Basic
 This file deals with factorizations of prime powers.
 -/
 
-
-variable {R : Type*} [CommMonoidWithZero R] (n p : R) (k : ℕ)
 
 theorem IsPrimePow.minFac_pow_factorization_eq {n : ℕ} (hn : IsPrimePow n) :
     n.minFac ^ n.factorization n.minFac = n := by

@@ -100,7 +100,7 @@ attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `LightProfinite`, endowing a finite type with the
 discrete topology. -/
-@[simps!]
+@[simps! map_apply]
 def FintypeCat.toLightProfinite : FintypeCat ⥤ LightProfinite where
   obj A := LightProfinite.of A
   map f := ⟨f, by continuity⟩
@@ -118,6 +118,11 @@ instance : FintypeCat.toLightProfinite.Faithful :=
 
 instance : FintypeCat.toLightProfinite.Full :=
   FintypeCat.toLightProfiniteFullyFaithful.full
+
+instance (X : FintypeCat.{u}) : Fintype (FintypeCat.toLightProfinite.obj X) :=
+  inferInstanceAs (Fintype X)
+
+instance (X : FintypeCat.{u}) : Fintype (LightProfinite.of X) :=  inferInstanceAs (Fintype X)
 
 end DiscreteTopology
 
@@ -140,7 +145,7 @@ def limitCone {J : Type v} [SmallCategory J] [CountableCategory J]
         constructor
         · infer_instance
         · change SecondCountableTopology ({ u : ∀ j : J, F.obj j | _ } : Type _)
-          apply inducing_subtype_val.secondCountableTopology }
+          apply IsInducing.subtypeVal.secondCountableTopology }
   π :=
   { app := (CompHaus.limitCone.{v, u} (F ⋙ lightProfiniteToCompHaus)).π.app
     naturality := by
@@ -155,7 +160,7 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] [CountableCategory J]
   lift S :=
     (CompHaus.limitConeIsLimit.{v, u} (F ⋙ lightProfiniteToCompHaus)).lift
       (lightProfiniteToCompHaus.mapCone S)
-  uniq S m h := (CompHaus.limitConeIsLimit.{v, u} _).uniq (lightProfiniteToCompHaus.mapCone S) _ h
+  uniq S _ h := (CompHaus.limitConeIsLimit.{v, u} _).uniq (lightProfiniteToCompHaus.mapCone S) _ h
 
 noncomputable instance createsCountableLimits {J : Type v} [SmallCategory J] [CountableCategory J] :
     CreatesLimitsOfShape J lightToProfinite.{max v u} where
@@ -333,7 +338,7 @@ noncomputable def LightProfinite.equivDiagram : LightProfinite.{u} ≌ LightDiag
   inverse := lightDiagramToLightProfinite
   unitIso := Iso.refl _
   counitIso := NatIso.ofComponents
-    (fun X ↦ lightDiagramToProfinite.preimageIso (Iso.refl _)) (by
+    (fun _ ↦ lightDiagramToProfinite.preimageIso (Iso.refl _)) (by
       intro _ _ f
       simp only [Functor.comp_obj, lightDiagramToLightProfinite_obj,
         lightProfiniteToLightDiagram_obj, Functor.id_obj, Functor.comp_map,

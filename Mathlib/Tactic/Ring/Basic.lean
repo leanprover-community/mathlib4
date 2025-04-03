@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
-import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Tactic.NormNum.Inv
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Util.AtomM
@@ -74,6 +73,8 @@ This feature wasn't needed yet, so it's not implemented yet.
 
 ring, semiring, exponent, power
 -/
+
+assert_not_exists OrderedAddCommMonoid
 
 namespace Mathlib.Tactic
 namespace Ring
@@ -885,7 +886,7 @@ def evalPow {a : Q($α)} {b : Q(ℕ)} (va : ExSum sα a) (vb : ExSum sℕ b) :
     return ⟨_, vd, q(pow_add $pc₁ $pc₂ $pd)⟩
 
 /-- This cache contains data required by the `ring` tactic during execution. -/
-structure Cache {α : Q(Type u)} (sα : Q(CommSemiring $α)) :=
+structure Cache {α : Q(Type u)} (sα : Q(CommSemiring $α)) where
   /-- A ring instance on `α`, if available. -/
   rα : Option Q(Ring $α)
   /-- A division ring instance on `α`, if available. -/
@@ -1014,7 +1015,7 @@ def ExSum.evalInv {a : Q($α)} (czα : Option Q(CharZero $α)) (va : ExSum sα a
   match va with
   | ExSum.zero => pure ⟨_, .zero, (q(inv_zero (R := $α)) : Expr)⟩
   | ExSum.add va ExSum.zero => do
-    let ⟨_, vb, pb⟩ ← va.evalInv dα czα
+    let ⟨_, vb, pb⟩ ← va.evalInv sα dα czα
     pure ⟨_, vb.toSum, (q(inv_single $pb) : Expr)⟩
   | va => do
     let ⟨_, vb, pb⟩ ← evalInvAtom sα dα a

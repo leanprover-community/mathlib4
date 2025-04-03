@@ -32,7 +32,7 @@ namespace HomRel
 
 /-- A relation on morphisms is compatible with the shift by a monoid `A` when the
 relation if preserved by the shift. -/
-class IsCompatibleWithShift : Prop :=
+class IsCompatibleWithShift : Prop where
   /-- the condition that the relation is preserved by the shift -/
   condition : ∀ (a : A) ⦃X Y : C⦄ (f g : X ⟶ Y), r f g → r (f⟦a⟧') (g⟦a⟧')
 

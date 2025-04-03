@@ -114,7 +114,7 @@ end InvolutiveStar
 
 section AddMonoid
 
-variable [AddMonoid α] [StarAddMonoid α] [AddMonoid β] [StarAddMonoid β]
+variable [AddMonoid α] [StarAddMonoid α]
 
 /-- A diagonal matrix is hermitian if the entries are self-adjoint (as a vector) -/
 theorem isHermitian_diagonal_of_self_adjoint [DecidableEq n] (v : n → α) (h : IsSelfAdjoint v) :
@@ -174,7 +174,7 @@ end AddGroup
 
 section NonUnitalSemiring
 
-variable [NonUnitalSemiring α] [StarRing α] [NonUnitalSemiring β] [StarRing β]
+variable [NonUnitalSemiring α] [StarRing α]
 
 /-- Note this is more general than `IsSelfAdjoint.mul_star_self` as `B` can be rectangular. -/
 theorem isHermitian_mul_conjTranspose_self [Fintype n] (A : Matrix m n α) :
@@ -202,7 +202,7 @@ end NonUnitalSemiring
 
 section Semiring
 
-variable [Semiring α] [StarRing α] [Semiring β] [StarRing β]
+variable [Semiring α] [StarRing α]
 
 /-- Note this is more general for matrices than `isSelfAdjoint_one` as it does not
 require `Fintype n`, which is necessary for `Monoid (Matrix n n R)`. -/
@@ -255,7 +255,7 @@ section RCLike
 
 open RCLike
 
-variable [RCLike α] [RCLike β]
+variable [RCLike α]
 
 /-- The diagonal elements of a complex hermitian matrix are real. -/
 theorem IsHermitian.coe_re_apply_self {A : Matrix n n α} (h : A.IsHermitian) (i : n) :

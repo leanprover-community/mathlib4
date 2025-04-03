@@ -8,6 +8,7 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Order.CompactlyGenerated.Basic
@@ -74,7 +75,7 @@ theorem subset_span : s ⊆ span R s := fun _ h => mem_span.2 fun _ hp => hp h
 theorem span_le {p} : span R s ≤ p ↔ s ⊆ p :=
   ⟨Subset.trans subset_span, fun ss _ h => mem_span.1 h _ ss⟩
 
-theorem span_mono (h : s ⊆ t) : span R s ≤ span R t :=
+@[gcongr] theorem span_mono (h : s ⊆ t) : span R s ≤ span R t :=
   span_le.2 <| Subset.trans h subset_span
 
 theorem span_monotone : Monotone (span R : Set M → Submodule R M) := fun _ _ => span_mono
@@ -157,82 +158,87 @@ theorem span_closure {s : Set M} : span R (AddSubmonoid.closure s : Set M) = spa
 preserved under addition and scalar multiplication, then `p` holds for all elements of the span of
 `s`. -/
 @[elab_as_elim]
-theorem span_induction {p : M → Prop} (h : x ∈ span R s) (mem : ∀ x ∈ s, p x) (zero : p 0)
-    (add : ∀ x y, p x → p y → p (x + y)) (smul : ∀ (a : R) (x), p x → p (a • x)) : p x :=
-  ((@span_le (p := ⟨⟨⟨p, by intros x y; exact add x y⟩, zero⟩, smul⟩)) s).2 mem h
+theorem span_induction {p : (x : M) → x ∈ span R s → Prop}
+    (mem : ∀ (x) (h : x ∈ s), p x (subset_span h))
+    (zero : p 0 (Submodule.zero_mem _))
+    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
+    (smul : ∀ (a : R) (x hx), p x hx → p (a • x) (Submodule.smul_mem _ _ ‹_›)) {x}
+    (hx : x ∈ span R s) : p x hx := by
+  let p : Submodule R M :=
+    { carrier := { x | ∃ hx, p x hx }
+      add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
+      zero_mem' := ⟨_, zero⟩
+      smul_mem' := fun r ↦ fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩ }
+  exact span_le (p := p) |>.mpr (fun y hy ↦ ⟨subset_span hy, mem y hy⟩) hx |>.elim fun _ ↦ id
+
+@[deprecated span_induction (since := "2024-10-10")]
+alias span_induction' := span_induction
 
 /-- An induction principle for span membership. This is a version of `Submodule.span_induction`
 for binary predicates. -/
-theorem span_induction₂ {p : M → M → Prop} {a b : M} (ha : a ∈ Submodule.span R s)
-    (hb : b ∈ Submodule.span R s) (mem_mem : ∀ x ∈ s, ∀ y ∈ s, p x y)
-    (zero_left : ∀ y, p 0 y) (zero_right : ∀ x, p x 0)
-    (add_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ + x₂) y)
-    (add_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
-    (smul_left : ∀ (r : R) x y, p x y → p (r • x) y)
-    (smul_right : ∀ (r : R) x y, p x y → p x (r • y)) : p a b :=
-  Submodule.span_induction ha
-    (fun x hx => Submodule.span_induction hb (mem_mem x hx) (zero_right x) (add_right x) fun r =>
-      smul_right r x)
-    (zero_left b) (fun x₁ x₂ => add_left x₁ x₂ b) fun r x => smul_left r x b
-
-/-- A dependent version of `Submodule.span_induction`. -/
-@[elab_as_elim]
-theorem span_induction' {p : ∀ x, x ∈ span R s → Prop}
-    (mem : ∀ (x) (h : x ∈ s), p x (subset_span h))
-    (zero : p 0 (Submodule.zero_mem _))
-    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
-    (smul : ∀ (a : R) (x hx), p x hx → p (a • x) (Submodule.smul_mem _ _ ‹_›)) {x}
-    (hx : x ∈ span R s) : p x hx := by
-  refine Exists.elim ?_ fun (hx : x ∈ span R s) (hc : p x hx) => hc
-  refine
-    span_induction hx (fun m hm => ⟨subset_span hm, mem m hm⟩) ⟨zero_mem _, zero⟩
-      (fun x y hx hy =>
-        Exists.elim hx fun hx' hx =>
-          Exists.elim hy fun hy' hy => ⟨add_mem hx' hy', add _ _ _ _ hx hy⟩)
-      fun r x hx => Exists.elim hx fun hx' hx => ⟨smul_mem _ _ hx', smul r _ _ hx⟩
+theorem span_induction₂ {p : (x y : M) → x ∈ span R s → y ∈ span R s → Prop}
+    (mem_mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ s), p x y (subset_span hx) (subset_span hy))
+    (zero_left : ∀ y hy, p 0 y (zero_mem _) hy) (zero_right : ∀ x hx, p x 0 hx (zero_mem _))
+    (add_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x + y) z (add_mem hx hy) hz)
+    (add_right : ∀ x y z hx hy hz, p x y hx hy → p x z hx hz → p x (y + z) hx (add_mem hy hz))
+    (smul_left : ∀ (r : R) x y hx hy, p x y hx hy → p (r • x) y (smul_mem _ r hx) hy)
+    (smul_right : ∀ (r : R) x y hx hy, p x y hx hy → p x (r • y) hx (smul_mem _ r hy))
+    {a b : M} (ha : a ∈ Submodule.span R s)
+    (hb : b ∈ Submodule.span R s) : p a b ha hb := by
+  induction hb using span_induction with
+  | mem z hz => induction ha using span_induction with
+    | mem _ h => exact mem_mem _ _ h hz
+    | zero => exact zero_left _ _
+    | add _ _ _ _ h₁ h₂ => exact add_left _ _ _ _ _ _ h₁ h₂
+    | smul _ _ _ h => exact smul_left _ _ _ _ _ h
+  | zero => exact zero_right a ha
+  | add _ _ _ _ h₁ h₂ => exact add_right _ _ _ _ _ _ h₁ h₂
+  | smul _ _ _ h => exact smul_right _ _ _ _ _ h
 
 open AddSubmonoid in
 theorem span_eq_closure {s : Set M} : (span R s).toAddSubmonoid = closure (@univ R • s) := by
-  refine le_antisymm
-    (fun x hx ↦ span_induction hx (fun x hx ↦ subset_closure ⟨1, trivial, x, hx, one_smul R x⟩)
-      (zero_mem _) (fun _ _ ↦ add_mem) fun r m hm ↦ closure_induction hm ?_ ?_ fun _ _ h h' ↦ ?_)
-    (closure_le.2 ?_)
-  · rintro _ ⟨r, -, m, hm, rfl⟩; exact smul_mem _ _ (subset_span hm)
-  · rintro _ ⟨r', -, m, hm, rfl⟩; exact subset_closure ⟨r * r', trivial, m, hm, mul_smul r r' m⟩
-  · rw [smul_zero]; apply zero_mem
-  · rw [smul_add]; exact add_mem h h'
+  refine le_antisymm (fun x (hx : x ∈ span R s) ↦ ?of_mem_span) (fun x hx ↦ ?of_mem_closure)
+  case of_mem_span =>
+    induction hx using span_induction with
+    | mem x hx => exact subset_closure ⟨1, trivial, x, hx, one_smul R x⟩
+    | zero => exact zero_mem _
+    | add _ _ _ _ h₁ h₂ => exact add_mem h₁ h₂
+    | smul r₁ y _h hy =>
+      clear _h
+      induction hy using AddSubmonoid.closure_induction with
+      | mem _ h =>
+        obtain ⟨r₂, -, x, hx, rfl⟩ := h
+        exact subset_closure ⟨r₁ * r₂, trivial, x, hx, mul_smul ..⟩
+      | one => simpa only [smul_zero] using zero_mem _
+      | mul _ _ _ _ h₁ h₂ => simpa only [smul_add] using add_mem h₁ h₂
+  case of_mem_closure =>
+    refine closure_le.2 ?_ hx
+    rintro - ⟨r, -, x, hx, rfl⟩
+    exact smul_mem _ _ (subset_span hx)
 
+open AddSubmonoid in
 /-- A variant of `span_induction` that combines `∀ x ∈ s, p x` and `∀ r x, p x → p (r • x)`
 into a single condition `∀ r, ∀ x ∈ s, p (r • x)`, which can be easier to verify. -/
 @[elab_as_elim]
-theorem closure_induction {p : M → Prop} (h : x ∈ span R s) (zero : p 0)
-    (add : ∀ x y, p x → p y → p (x + y)) (smul_mem : ∀ r : R, ∀ x ∈ s, p (r • x)) : p x := by
-  rw [← mem_toAddSubmonoid, span_eq_closure] at h
-  refine AddSubmonoid.closure_induction h ?_ zero add
-  rintro _ ⟨r, -, m, hm, rfl⟩
-  exact smul_mem r m hm
-
-/-- A dependent version of `Submodule.closure_induction`. -/
-@[elab_as_elim]
-theorem closure_induction' {p : ∀ x, x ∈ span R s → Prop}
+theorem closure_induction {p : (x : M) → x ∈ span R s → Prop}
     (zero : p 0 (Submodule.zero_mem _))
-    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
+    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
     (smul_mem : ∀ (r x) (h : x ∈ s), p (r • x) (Submodule.smul_mem _ _ <| subset_span h)) {x}
     (hx : x ∈ span R s) : p x hx := by
-  refine Exists.elim ?_ fun (hx : x ∈ span R s) (hc : p x hx) ↦ hc
-  refine closure_induction hx ⟨zero_mem _, zero⟩
-    (fun x y hx hy ↦ Exists.elim hx fun hx' hx ↦
-      Exists.elim hy fun hy' hy ↦ ⟨add_mem hx' hy', add _ _ _ _ hx hy⟩)
-    fun r x hx ↦ ⟨Submodule.smul_mem _ _ (subset_span hx), smul_mem r x hx⟩
+  have key {v} : v ∈ span R s ↔ v ∈ closure (@univ R • s) := by simp [← span_eq_closure]
+  refine AddSubmonoid.closure_induction (p := fun x hx ↦ p x (key.mpr hx))
+    ?_ zero (by simpa only [key] using add) (key.mp hx)
+  rintro - ⟨r, -, x, hx, rfl⟩
+  exact smul_mem r x hx
+
+@[deprecated closure_induction (since := "2024-10-10")]
+alias closure_induction' := closure_induction
 
 @[simp]
 theorem span_span_coe_preimage : span R (((↑) : span R s → M) ⁻¹' s) = ⊤ :=
-  eq_top_iff.2 fun x ↦ Subtype.recOn x fun x hx _ ↦ by
-    refine span_induction' (p := fun x hx ↦ (⟨x, hx⟩ : span R s) ∈ span R (Subtype.val ⁻¹' s))
-      (fun x' hx' ↦ subset_span hx') ?_ (fun x _ y _ ↦ ?_) (fun r x _ ↦ ?_) hx
-    · exact zero_mem _
-    · exact add_mem
-    · exact smul_mem _ _
+  eq_top_iff.2 fun x _ ↦ Subtype.recOn x fun _ hx' ↦
+    span_induction (fun _ h ↦ subset_span h) (zero_mem _) (fun _ _ _ _ ↦ add_mem)
+      (fun _ _ _ ↦ smul_mem _ _) hx'
 
 @[simp]
 lemma span_setOf_mem_eq_top :
@@ -254,9 +260,9 @@ theorem span_nat_eq (s : AddSubmonoid M) : (span ℕ (s : Set M)).toAddSubmonoid
 theorem span_int_eq_addSubgroup_closure {M : Type*} [AddCommGroup M] (s : Set M) :
     (span ℤ s).toAddSubgroup = AddSubgroup.closure s :=
   Eq.symm <|
-    AddSubgroup.closure_eq_of_le _ subset_span fun x hx =>
-      span_induction hx (fun x hx => AddSubgroup.subset_closure hx) (AddSubgroup.zero_mem _)
-        (fun _ _ => AddSubgroup.add_mem _) fun _ _ _ => AddSubgroup.zsmul_mem _ ‹_› _
+    AddSubgroup.closure_eq_of_le _ subset_span fun _ hx =>
+      span_induction (fun _ hx => AddSubgroup.subset_closure hx) (AddSubgroup.zero_mem _)
+        (fun _ _ _ _ => AddSubgroup.add_mem _) (fun _ _ _ _ => AddSubgroup.zsmul_mem _ ‹_› _) hx
 
 @[simp]
 theorem span_int_eq {M : Type*} [AddCommGroup M] (s : AddSubgroup M) :
@@ -377,15 +383,15 @@ variable {p p'}
 theorem mem_sup : x ∈ p ⊔ p' ↔ ∃ y ∈ p, ∃ z ∈ p', y + z = x :=
   ⟨fun h => by
     rw [← span_eq p, ← span_eq p', ← span_union] at h
-    refine span_induction h ?_ ?_ ?_ ?_
+    refine span_induction ?_ ?_ ?_ ?_ h
     · rintro y (h | h)
       · exact ⟨y, h, 0, by simp, by simp⟩
       · exact ⟨0, by simp, y, h, by simp⟩
     · exact ⟨0, by simp, 0, by simp⟩
-    · rintro _ _ ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
+    · rintro _ _ - - ⟨y₁, hy₁, z₁, hz₁, rfl⟩ ⟨y₂, hy₂, z₂, hz₂, rfl⟩
       exact ⟨_, add_mem hy₁ hy₂, _, add_mem hz₁ hz₂, by
         rw [add_assoc, add_assoc, ← add_assoc y₂, ← add_assoc z₁, add_comm y₂]⟩
-    · rintro a _ ⟨y, hy, z, hz, rfl⟩
+    · rintro a - _ ⟨y, hy, z, hz, rfl⟩
       exact ⟨_, smul_mem _ a hy, _, smul_mem _ a hz, by simp [smul_add]⟩, by
     rintro ⟨y, hy, z, hz, rfl⟩
     exact add_mem ((le_sup_left : p ≤ p ⊔ p') hy) ((le_sup_right : p' ≤ p ⊔ p') hz)⟩
@@ -430,13 +436,13 @@ theorem nontrivial_span_singleton {x : M} (h : x ≠ 0) : Nontrivial (R ∙ x) :
 
 theorem mem_span_singleton {y : M} : (x ∈ R ∙ y) ↔ ∃ a : R, a • y = x :=
   ⟨fun h => by
-    refine span_induction h ?_ ?_ ?_ ?_
+    refine span_induction ?_ ?_ ?_ ?_ h
     · rintro y (rfl | ⟨⟨_⟩⟩)
       exact ⟨1, by simp⟩
     · exact ⟨0, by simp⟩
-    · rintro _ _ ⟨a, rfl⟩ ⟨b, rfl⟩
+    · rintro _ _ - - ⟨a, rfl⟩ ⟨b, rfl⟩
       exact ⟨a + b, by simp [add_smul]⟩
-    · rintro a _ ⟨b, rfl⟩
+    · rintro a _ - ⟨b, rfl⟩
       exact ⟨a * b, by simp [smul_smul]⟩, by
     rintro ⟨a, y, rfl⟩; exact smul_mem _ _ (subset_span <| by simp)⟩
 
@@ -603,17 +609,18 @@ theorem iSup_toAddSubmonoid {ι : Sort*} (p : ι → Submodule R M) :
   refine le_antisymm (fun x => ?_) (iSup_le fun i => toAddSubmonoid_mono <| le_iSup _ i)
   simp_rw [iSup_eq_span, AddSubmonoid.iSup_eq_closure, mem_toAddSubmonoid, coe_toAddSubmonoid]
   intro hx
-  refine Submodule.span_induction hx (fun x hx => ?_) ?_ (fun x y hx hy => ?_) fun r x hx => ?_
+  refine Submodule.span_induction (fun x hx => ?_) ?_ (fun x y _ _ hx hy => ?_)
+    (fun r x _ hx => ?_) hx
   · exact AddSubmonoid.subset_closure hx
   · exact AddSubmonoid.zero_mem _
   · exact AddSubmonoid.add_mem _ hx hy
-  · refine AddSubmonoid.closure_induction hx ?_ ?_ ?_
+  · refine AddSubmonoid.closure_induction ?_ ?_ ?_ hx
     · rintro x ⟨_, ⟨i, rfl⟩, hix : x ∈ p i⟩
       apply AddSubmonoid.subset_closure (Set.mem_iUnion.mpr ⟨i, _⟩)
       exact smul_mem _ r hix
     · rw [smul_zero]
       exact AddSubmonoid.zero_mem _
-    · intro x y hx hy
+    · intro x y _ _ hx hy
       rw [smul_add]
       exact AddSubmonoid.add_mem _ hx hy
 
@@ -703,20 +710,20 @@ such that the element is contained in the span of the subset. -/
 theorem mem_span_finite_of_mem_span {S : Set M} {x : M} (hx : x ∈ span R S) :
     ∃ T : Finset M, ↑T ⊆ S ∧ x ∈ span R (T : Set M) := by
   classical
-  refine span_induction hx (fun x hx => ?_) ?_ ?_ ?_
+  refine span_induction (fun x hx => ?_) ?_ ?_ ?_ hx
   · refine ⟨{x}, ?_, ?_⟩
     · rwa [Finset.coe_singleton, Set.singleton_subset_iff]
     · rw [Finset.coe_singleton]
       exact Submodule.mem_span_singleton_self x
   · use ∅
     simp
-  · rintro x y ⟨X, hX, hxX⟩ ⟨Y, hY, hyY⟩
+  · rintro x y - - ⟨X, hX, hxX⟩ ⟨Y, hY, hyY⟩
     refine ⟨X ∪ Y, ?_, ?_⟩
     · rw [Finset.coe_union]
       exact Set.union_subset hX hY
     rw [Finset.coe_union, span_union, mem_sup]
     exact ⟨x, hxX, y, hyY, rfl⟩
-  · rintro a x ⟨T, hT, h2⟩
+  · rintro a x - ⟨T, hT, h2⟩
     exact ⟨T, hT, smul_mem _ _ h2⟩
 
 end
@@ -940,7 +947,6 @@ theorem span_singleton_eq_range (x : M) : (R ∙ x) = range (toSpanSingleton R M
     refine Iff.trans ?_ LinearMap.mem_range.symm
     exact mem_span_singleton
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem toSpanSingleton_one (x : M) : toSpanSingleton R M x 1 = x :=
   one_smul _ _
 

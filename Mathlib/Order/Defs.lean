@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Batteries.Classes.Order
+import Batteries.Tactic.Trans
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Tactic.Lemma
-import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.SplitIfs
 import Mathlib.Tactic.TypeStar
 
@@ -125,6 +125,38 @@ instance (priority := 90) isAsymm_of_isTrans_of_isIrrefl [IsTrans α r] [IsIrref
     IsAsymm α r :=
   ⟨fun a _b h₁ h₂ => absurd (_root_.trans h₁ h₂) (irrefl a)⟩
 
+instance IsIrrefl.decide [DecidableRel r] [IsIrrefl α r] :
+    IsIrrefl α (fun a b => decide (r a b) = true) where
+  irrefl := fun a => by simpa using irrefl a
+
+instance IsRefl.decide [DecidableRel r] [IsRefl α r] :
+    IsRefl α (fun a b => decide (r a b) = true) where
+  refl := fun a => by simpa using refl a
+
+instance IsTrans.decide [DecidableRel r] [IsTrans α r] :
+    IsTrans α (fun a b => decide (r a b) = true) where
+  trans := fun a b c => by simpa using trans a b c
+
+instance IsSymm.decide [DecidableRel r] [IsSymm α r] :
+    IsSymm α (fun a b => decide (r a b) = true) where
+  symm := fun a b => by simpa using symm a b
+
+instance IsAntisymm.decide [DecidableRel r] [IsAntisymm α r] :
+    IsAntisymm α (fun a b => decide (r a b) = true) where
+  antisymm := fun a b h₁ h₂ => antisymm _ _ (by simpa using h₁) (by simpa using h₂)
+
+instance IsAsymm.decide [DecidableRel r] [IsAsymm α r] :
+    IsAsymm α (fun a b => decide (r a b) = true) where
+  asymm := fun a b => by simpa using asymm a b
+
+instance IsTotal.decide [DecidableRel r] [IsTotal α r] :
+    IsTotal α (fun a b => decide (r a b) = true) where
+  total := fun a b => by simpa using total a b
+
+instance IsTrichotomous.decide [DecidableRel r] [IsTrichotomous α r] :
+    IsTrichotomous α (fun a b => decide (r a b) = true) where
+  trichotomous := fun a b => by simpa using trichotomous a b
+
 variable (r)
 
 @[elab_without_expected_type] lemma irrefl_of [IsIrrefl α r] (a : α) : ¬a ≺ a := irrefl a
@@ -183,6 +215,32 @@ theorem InvImage.irreflexive (h : Irreflexive r) : Irreflexive (InvImage r f) :=
 end
 
 end
+
+/-! ### Minimal and maximal -/
+
+section LE
+
+variable {α : Type*} [LE α] {P : α → Prop} {x y : α}
+
+/-- `Minimal P x` means that `x` is a minimal element satisfying `P`. -/
+def Minimal (P : α → Prop) (x : α) : Prop := P x ∧ ∀ ⦃y⦄, P y → y ≤ x → x ≤ y
+
+/-- `Maximal P x` means that `x` is a maximal element satisfying `P`. -/
+def Maximal (P : α → Prop) (x : α) : Prop := P x ∧ ∀ ⦃y⦄, P y → x ≤ y → y ≤ x
+
+lemma Minimal.prop (h : Minimal P x) : P x :=
+  h.1
+
+lemma Maximal.prop (h : Maximal P x) : P x :=
+  h.1
+
+lemma Minimal.le_of_le (h : Minimal P x) (hy : P y) (hle : y ≤ x) : x ≤ y :=
+  h.2 hy hle
+
+lemma Maximal.le_of_ge (h : Maximal P x) (hy : P y) (hge : x ≤ y) : y ≤ x :=
+  h.2 hy hge
+
+end LE
 
 /-! ### Bundled classes -/
 
@@ -357,7 +415,7 @@ macro "compareOfLessAndEq_rfl" : tactic =>
 
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
-class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α :=
+class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α where
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
@@ -501,10 +559,13 @@ lemma min_comm (a b : α) : min a b = min b a :=
 
 lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
   apply eq_min
-  · apply le_trans; apply min_le_left; apply min_le_left
-  · apply le_min; apply le_trans; apply min_le_left; apply min_le_right; apply min_le_right
-  · intro d h₁ h₂; apply le_min; apply le_min h₁; apply le_trans h₂; apply min_le_left
-    apply le_trans h₂; apply min_le_right
+  · apply le_trans (min_le_left ..); apply min_le_left
+  · apply le_min
+    · apply le_trans (min_le_left ..); apply min_le_right
+    · apply min_le_right
+  · intro d h₁ h₂; apply le_min
+    · apply le_min h₁; apply le_trans h₂; apply min_le_left
+    · apply le_trans h₂; apply min_le_right
 
 lemma min_left_comm (a b c : α) : min a (min b c) = min b (min a c) := by
   rw [← min_assoc, min_comm a, min_assoc]
@@ -525,10 +586,13 @@ lemma max_comm (a b : α) : max a b = max b a :=
 
 lemma max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
   apply eq_max
-  · apply le_trans; apply le_max_left a b; apply le_max_left
-  · apply max_le; apply le_trans; apply le_max_right a b; apply le_max_left; apply le_max_right
-  · intro d h₁ h₂; apply max_le; apply max_le h₁; apply le_trans (le_max_left _ _) h₂
-    apply le_trans (le_max_right _ _) h₂
+  · apply le_trans (le_max_left a b); apply le_max_left
+  · apply max_le
+    · apply le_trans (le_max_right a b); apply le_max_left
+    · apply le_max_right
+  · intro d h₁ h₂; apply max_le
+    · apply max_le h₁; apply le_trans (le_max_left _ _) h₂
+    · apply le_trans (le_max_right _ _) h₂
 
 lemma max_left_comm (a b c : α) : max a (max b c) = max b (max a c) := by
   rw [← max_assoc, max_comm a, max_assoc]
@@ -589,7 +653,17 @@ lemma compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.Compares a b
   · exact compare_eq_iff_eq
   · exact compare_gt_iff_gt
 
-instance : Batteries.TransCmp (compare (α := α)) where
+theorem cmp_eq_compare (a b : α) : cmp a b = compare a b := by
+  refine ((compare_iff ..).2 ?_).symm
+  unfold cmp cmpUsing; split_ifs with h1 h2
+  · exact h1
+  · exact h2
+  · exact le_antisymm (not_lt.1 h2) (not_lt.1 h1)
+
+theorem cmp_eq_compareOfLessAndEq (a b : α) : cmp a b = compareOfLessAndEq a b :=
+  (cmp_eq_compare ..).trans (LinearOrder.compare_eq_compareOfLessAndEq ..)
+
+instance : Batteries.LawfulCmp (compare (α := α)) where
   symm a b := by
     cases h : compare a b <;>
     simp only [Ordering.swap] <;> symm
@@ -598,6 +672,9 @@ instance : Batteries.TransCmp (compare (α := α)) where
     · exact compare_lt_iff_lt.2 <| compare_gt_iff_gt.1 h
   le_trans := fun h₁ h₂ ↦
     compare_le_iff_le.2 <| le_trans (compare_le_iff_le.1 h₁) (compare_le_iff_le.1 h₂)
+  cmp_iff_beq := by simp [compare_eq_iff_eq]
+  cmp_iff_lt := by simp [compare_lt_iff_lt]
+  cmp_iff_le := by simp [compare_le_iff_le]
 
 end Ord
 

@@ -132,7 +132,7 @@ section
 
 instance laxMonoidalId : LaxMonoidal.{v₁, v₁} (id : C → C) where
   ε := 𝟙 _
-  μ X Y := 𝟙 _
+  μ _ _ := 𝟙 _
 
 end
 

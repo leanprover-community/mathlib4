@@ -7,6 +7,7 @@ import Mathlib.Data.Fintype.Order
 import Mathlib.Algebra.DirectLimit
 import Mathlib.ModelTheory.Quotients
 import Mathlib.ModelTheory.FinitelyGenerated
+import Mathlib.Data.Finite.Sum
 
 /-!
 # Direct Limits of First-Order Structures
@@ -72,7 +73,7 @@ theorem coe_natLERec (m n : ℕ) (h : m ≤ n) :
       Embedding.comp_apply, ih]
 
 instance natLERec.directedSystem : DirectedSystem G' fun i j h => natLERec f' i j h :=
-  ⟨fun i x _ => congr (congr rfl (Nat.leRecOn_self _)) rfl,
+  ⟨fun _ _ _ => congr (congr rfl (Nat.leRecOn_self _)) rfl,
    fun hij hjk => by simp [Nat.leRecOn_trans hij hjk]⟩
 
 end DirectedSystem
@@ -104,7 +105,7 @@ variable [DirectedSystem G fun i j h => f i j h]
 
 @[simp]
 theorem unify_sigma_mk_self {α : Type*} {i : ι} {x : α → G i} :
-    (unify f (fun a => .mk f i (x a)) i fun j ⟨a, hj⟩ =>
+    (unify f (fun a => .mk f i (x a)) i fun _ ⟨_, hj⟩ =>
       _root_.trans (le_of_eq hj.symm) (refl _)) = x := by
   ext a
   rw [unify]
@@ -127,7 +128,7 @@ namespace DirectLimit
 def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] : Setoid (Σˣ f) where
   r := fun ⟨i, x⟩ ⟨j, y⟩ => ∃ (k : ι) (ik : i ≤ k) (jk : j ≤ k), f i k ik x = f j k jk y
   iseqv :=
-    ⟨fun ⟨i, x⟩ => ⟨i, refl i, refl i, rfl⟩, @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, ik, jk, h⟩ =>
+    ⟨fun ⟨i, _⟩ => ⟨i, refl i, refl i, rfl⟩, @fun ⟨_, _⟩ ⟨_, _⟩ ⟨k, ik, jk, h⟩ =>
       ⟨k, jk, ik, h.symm⟩,
       @fun ⟨i, x⟩ ⟨j, y⟩ ⟨k, z⟩ ⟨ij, hiij, hjij, hij⟩ ⟨jk, hjjk, hkjk, hjk⟩ => by
         obtain ⟨ijk, hijijk, hjkijk⟩ := directed_of (· ≤ ·) ij jk
@@ -348,7 +349,7 @@ def lift (g : ∀ i, G i ↪[L] P) (Hg : ∀ i j hij x, g j (f i j hij x) = g i 
     rw [← Quotient.out_eq x, ← Quotient.out_eq y, Quotient.lift_mk, Quotient.lift_mk] at xy
     obtain ⟨i, hx, hy⟩ := directed_of (· ≤ ·) x.out.1 y.out.1
     rw [← Hg x.out.1 i hx, ← Hg y.out.1 i hy] at xy
-    rw [← Quotient.out_eq x, ← Quotient.out_eq y, Quotient.eq, equiv_iff G f hx hy]
+    rw [← Quotient.out_eq x, ← Quotient.out_eq y, Quotient.eq_iff_equiv, equiv_iff G f hx hy]
     exact (g i).injective xy
   map_fun' F x := by
     obtain ⟨i, y, rfl⟩ := exists_quotient_mk'_sigma_mk'_eq G f x

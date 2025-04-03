@@ -124,7 +124,7 @@ instance const.instIsFiniteKernel {μβ : Measure β} [IsFiniteMeasure μβ] :
 
 instance const.instIsSFiniteKernel {μβ : Measure β} [SFinite μβ] :
     IsSFiniteKernel (const α μβ) :=
-  ⟨fun n ↦ const α (sFiniteSeq μβ n), fun n ↦ inferInstance, by rw [sum_const, sum_sFiniteSeq]⟩
+  ⟨fun n ↦ const α (sfiniteSeq μβ n), fun n ↦ inferInstance, by rw [sum_const, sum_sfiniteSeq]⟩
 
 instance const.instIsMarkovKernel {μβ : Measure β} [hμβ : IsProbabilityMeasure μβ] :
     IsMarkovKernel (const α μβ) :=

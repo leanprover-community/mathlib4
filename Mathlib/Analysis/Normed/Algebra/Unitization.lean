@@ -184,8 +184,8 @@ open scoped Uniformity Topology
 
 theorem uniformity_eq_aux :
     𝓤[instUniformSpaceProd.comap <| addEquiv 𝕜 A] = 𝓤 (Unitization 𝕜 A) := by
-  have key : UniformInducing (addEquiv 𝕜 A) :=
-    antilipschitzWith_addEquiv.uniformInducing lipschitzWith_addEquiv.uniformContinuous
+  have key : IsUniformInducing (addEquiv 𝕜 A) :=
+    antilipschitzWith_addEquiv.isUniformInducing lipschitzWith_addEquiv.uniformContinuous
   rw [← key.comap_uniformity]
   rfl
 
@@ -202,16 +202,19 @@ instance instUniformSpace : UniformSpace (Unitization 𝕜 A) :=
 
 /-- The natural equivalence between `Unitization 𝕜 A` and `𝕜 × A` as a uniform equivalence. -/
 def uniformEquivProd : (Unitization 𝕜 A) ≃ᵤ (𝕜 × A) :=
-  Equiv.toUniformEquivOfUniformInducing (addEquiv 𝕜 A) ⟨rfl⟩
+  Equiv.toUniformEquivOfIsUniformInducing (addEquiv 𝕜 A) ⟨rfl⟩
 
 /-- The bornology on `Unitization 𝕜 A` is inherited from `𝕜 × A`. -/
 instance instBornology : Bornology (Unitization 𝕜 A) :=
   Bornology.induced <| addEquiv 𝕜 A
 
-theorem uniformEmbedding_addEquiv {𝕜} [NontriviallyNormedField 𝕜] :
-    UniformEmbedding (addEquiv 𝕜 A) where
+theorem isUniformEmbedding_addEquiv {𝕜} [NontriviallyNormedField 𝕜] :
+    IsUniformEmbedding (addEquiv 𝕜 A) where
   comap_uniformity := rfl
   inj := (addEquiv 𝕜 A).injective
+
+@[deprecated (since := "2024-10-01")]
+alias uniformEmbedding_addEquiv := isUniformEmbedding_addEquiv
 
 /-- `Unitization 𝕜 A` is complete whenever `𝕜` and `A` are also. -/
 instance instCompleteSpace [CompleteSpace 𝕜] [CompleteSpace A] :
@@ -252,6 +255,10 @@ lemma nnnorm_inr (a : A) : ‖(a : Unitization 𝕜 A)‖₊ = ‖a‖₊ :=
 
 lemma isometry_inr : Isometry ((↑) : A → Unitization 𝕜 A) :=
   AddMonoidHomClass.isometry_of_norm (inrNonUnitalAlgHom 𝕜 A) norm_inr
+
+@[fun_prop]
+theorem continuous_inr : Continuous (inr : A → Unitization 𝕜 A) :=
+  isometry_inr.continuous
 
 lemma dist_inr (a b : A) : dist (a : Unitization 𝕜 A) (b : Unitization 𝕜 A) = dist a b :=
   isometry_inr.dist_eq a b

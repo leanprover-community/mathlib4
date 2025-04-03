@@ -19,22 +19,18 @@ axiom pq : P → Q
 axiom qp : Q → P
 
 example : TFAE [P, Q] := by
-  tfae_have 1 → 2
-  · exact pq
-  tfae_have 2 → 1
-  · exact qp
+  tfae_have 1 → 2 := pq
+  tfae_have 2 → 1 := qp
   tfae_finish
 
 example : TFAE [P, Q] := by
-  tfae_have 1 ↔ 2
-  · exact Iff.intro pq qp
+  tfae_have 1 ↔ 2 := Iff.intro pq qp
   tfae_finish
 
 example : TFAE [P, Q] := by
-  tfae_have 2 ← 1
-  · exact pq
-  tfae_have 1 ← 2
-  · exact qp
+  tfae_have 2 ← 1 := pq
+  guard_hyp tfae_2_from_1 : P → Q
+  tfae_have 1 ← 2 := qp
   tfae_finish
 
 end two
@@ -49,28 +45,20 @@ axiom qr : Q → R
 axiom rp : R → P
 
 example : TFAE [P, Q, R] := by
-  tfae_have 1 → 2
-  · exact pq
-  tfae_have 2 → 3
-  · exact qr
-  tfae_have 3 → 1
-  · exact rp
+  tfae_have 1 → 2 := pq
+  tfae_have 2 → 3 := qr
+  tfae_have 3 → 1 := rp
   tfae_finish
 
 example : TFAE [P, Q, R] := by
-  tfae_have 1 ↔ 2
-  · exact Iff.intro pq (rp ∘ qr)
-  tfae_have 3 ↔ 2
-  · exact Iff.intro (pq ∘ rp) qr
+  tfae_have 1 ↔ 2 := Iff.intro pq (rp ∘ qr)
+  tfae_have 3 ↔ 2 := Iff.intro (pq ∘ rp) qr
   tfae_finish
 
 example : TFAE [P, Q, R] := by
-  tfae_have 1 → 2
-  · exact pq
-  tfae_have 2 → 1
-  · exact rp ∘ qr
-  tfae_have 2 ↔ 3
-  · exact Iff.intro qr (pq ∘ rp)
+  tfae_have 1 → 2 := pq
+  tfae_have 2 → 1 := rp ∘ qr
+  tfae_have 2 ↔ 3 := Iff.intro qr (pq ∘ rp)
   tfae_finish
 
 end three
@@ -93,20 +81,14 @@ axiom h₆ : P₅ → P₃
 axiom h₇ : P₃ → P₂
 
 example : TFAE [P₁, P₂, P₃, P₄, P₅, P₆, P₇] := by
-  tfae_have 1 ↔ 2
-  · exact h₁
-  tfae_have 1 → 6
-  · exact h₂
-  tfae_have 6 → 7
-  · exact h₃
-  tfae_have 7 → 4
-  · exact h₄
-  tfae_have 4 → 5
-  · exact h₅
-  tfae_have 5 → 3
-  · exact h₆
-  tfae_have 3 → 2
-  · exact h₇
+  tfae_have test : 1 ↔ 2 := h₁
+  guard_hyp test : _
+  tfae_have 1 → 6 := h₂
+  tfae_have 6 → 7 := h₃
+  tfae_have 7 → 4 := h₄
+  tfae_have 4 → 5 := h₅
+  tfae_have 5 → 3 := h₆
+  tfae_have 3 → 2 := h₇
   tfae_finish
 
 end seven
@@ -115,7 +97,7 @@ section context
 
 example (n : ℕ) : List.TFAE [n = 1, n + 1 = 2] := by
   generalize n = m
-  tfae_have 1 ↔ 2; simp
+  tfae_have 1 ↔ 2 := by simp
   tfae_finish
 
 example (h₁ : P → Q) (h₂ : Q → P) : TFAE [P, Q] := by
@@ -166,3 +148,26 @@ example : TFAE [P, Q] := by
   tfae_finish
 
 end term
+
+section deprecation
+
+/-! This section tests the deprecation of "goal-style" `tfae_have` syntax. -/
+
+/--
+warning: "Goal-style" syntax 'tfae_have 1 → 2' is deprecated in favor of 'tfae_have 1 → 2 := ...'.
+
+To turn this warning off, use set_option Mathlib.Tactic.TFAE.useDeprecated true
+-/
+#guard_msgs in
+example : TFAE [P, Q] := by
+  tfae_have 1 → 2; exact pq
+  tfae_have 2 → 1 := qp
+  tfae_finish
+
+set_option Mathlib.Tactic.TFAE.useDeprecated true in
+example : TFAE [P, Q] := by
+  tfae_have 1 → 2; exact pq
+  tfae_have 2 → 1 := qp
+  tfae_finish
+
+end deprecation

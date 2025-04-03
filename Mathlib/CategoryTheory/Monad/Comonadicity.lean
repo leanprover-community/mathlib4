@@ -117,7 +117,7 @@ def rightAdjointComparison
   · apply comparisonRightAdjointHomEquiv
   · intro A B B' g h
     apply equalizer.hom_ext
-    simp
+    simp [Adjunction.homEquiv_unit]
 
 /-- Provided we have the appropriate equalizers, we have an adjunction to the comparison functor.
 -/
@@ -161,7 +161,7 @@ theorem comparisonAdjunction_counit_f
       (adj.unit.app (G.obj A.A))]
     (A : adj.toComonad.Coalgebra) :
     ((comparisonAdjunction adj).counit.app A).f = (beckEqualizer A).lift (counitFork A) := by
-  simp
+  simp [Adjunction.homEquiv_counit]
 
 variable (adj)
 
@@ -205,7 +205,7 @@ theorem comparisonAdjunction_unit_app
   change
     equalizer.lift ((adj.homEquiv B _) (𝟙 _)) _ ≫ equalizer.ι _ _ =
       equalizer.lift _ _ ≫ equalizer.ι _ _
-  simp
+  simp [Adjunction.homEquiv_unit]
 
 end ComonadicityInternal
 

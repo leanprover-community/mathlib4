@@ -1,6 +1,6 @@
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Data.List.InsertNth
+import Mathlib.Data.List.InsertIdx
 import Mathlib.Algebra.Group.Basic
 
 -- This is partially duplicative with the tests for `rw?` in Lean.

@@ -42,7 +42,7 @@ def proveNatSqrt (ex : Q(ℕ)) : (ey : Q(ℕ)) × Q(Nat.sqrt $ex = $ey) :=
 
 /-- Evaluates the `Nat.sqrt` function. -/
 @[norm_num Nat.sqrt _]
-def evalNatSqrt : NormNumExt where eval {u α} e := do
+def evalNatSqrt : NormNumExt where eval {_ _} e := do
   let .app _ (x : Q(ℕ)) ← Meta.whnfR e | failure
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨ex, p⟩ ← deriveNat x sℕ

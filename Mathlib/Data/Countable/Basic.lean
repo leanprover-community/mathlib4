@@ -66,7 +66,7 @@ instance Sum.uncountable_inr [Uncountable β] : Uncountable (α ⊕ β) :=
   inr_injective.uncountable
 
 instance Option.instCountable [Countable α] : Countable (Option α) :=
-  Countable.of_equiv _ (Equiv.optionEquivSumPUnit.{_, 0} α).symm
+  Countable.of_equiv _ (Equiv.optionEquivSumPUnit.{0, _} α).symm
 
 instance WithTop.instCountable [Countable α] : Countable (WithTop α) := Option.instCountable
 instance WithBot.instCountable [Countable α] : Countable (WithBot α) := Option.instCountable

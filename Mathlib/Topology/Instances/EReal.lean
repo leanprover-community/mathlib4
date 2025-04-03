@@ -48,29 +48,35 @@ instance : SecondCountableTopology EReal :=
 
 /-! ### Real coercion -/
 
-theorem embedding_coe : Embedding ((↑) : ℝ → EReal) :=
-  coe_strictMono.embedding_of_ordConnected <| by rw [range_coe_eq_Ioo]; exact ordConnected_Ioo
+theorem isEmbedding_coe : IsEmbedding ((↑) : ℝ → EReal) :=
+  coe_strictMono.isEmbedding_of_ordConnected <| by rw [range_coe_eq_Ioo]; exact ordConnected_Ioo
 
-theorem openEmbedding_coe : OpenEmbedding ((↑) : ℝ → EReal) :=
-  ⟨embedding_coe, by simp only [range_coe_eq_Ioo, isOpen_Ioo]⟩
+@[deprecated (since := "2024-10-26")]
+alias embedding_coe := isEmbedding_coe
+
+theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℝ → EReal) :=
+  ⟨isEmbedding_coe, by simp only [range_coe_eq_Ioo, isOpen_Ioo]⟩
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_coe := isOpenEmbedding_coe
 
 @[norm_cast]
 theorem tendsto_coe {α : Type*} {f : Filter α} {m : α → ℝ} {a : ℝ} :
     Tendsto (fun a => (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
-  embedding_coe.tendsto_nhds_iff.symm
+  isEmbedding_coe.tendsto_nhds_iff.symm
 
 theorem _root_.continuous_coe_real_ereal : Continuous ((↑) : ℝ → EReal) :=
-  embedding_coe.continuous
+  isEmbedding_coe.continuous
 
 theorem continuous_coe_iff {f : α → ℝ} : (Continuous fun a => (f a : EReal)) ↔ Continuous f :=
-  embedding_coe.continuous_iff.symm
+  isEmbedding_coe.continuous_iff.symm
 
 theorem nhds_coe {r : ℝ} : 𝓝 (r : EReal) = (𝓝 r).map (↑) :=
-  (openEmbedding_coe.map_nhds_eq r).symm
+  (isOpenEmbedding_coe.map_nhds_eq r).symm
 
 theorem nhds_coe_coe {r p : ℝ} :
     𝓝 ((r : EReal), (p : EReal)) = (𝓝 (r, p)).map fun p : ℝ × ℝ => (↑p.1, ↑p.2) :=
-  ((openEmbedding_coe.prod openEmbedding_coe).map_nhds_eq (r, p)).symm
+  ((isOpenEmbedding_coe.prodMap isOpenEmbedding_coe).map_nhds_eq (r, p)).symm
 
 theorem tendsto_toReal {a : EReal} (ha : a ≠ ⊤) (h'a : a ≠ ⊥) :
     Tendsto EReal.toReal (𝓝 a) (𝓝 a.toReal) := by
@@ -89,24 +95,30 @@ def neBotTopHomeomorphReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ₜ ℝ where
 
 /-! ### ENNReal coercion -/
 
-theorem embedding_coe_ennreal : Embedding ((↑) : ℝ≥0∞ → EReal) :=
-  coe_ennreal_strictMono.embedding_of_ordConnected <| by
+theorem isEmbedding_coe_ennreal : IsEmbedding ((↑) : ℝ≥0∞ → EReal) :=
+  coe_ennreal_strictMono.isEmbedding_of_ordConnected <| by
     rw [range_coe_ennreal]; exact ordConnected_Ici
 
-theorem closedEmbedding_coe_ennreal : ClosedEmbedding ((↑) : ℝ≥0∞ → EReal) :=
-  ⟨embedding_coe_ennreal, by rw [range_coe_ennreal]; exact isClosed_Ici⟩
+@[deprecated (since := "2024-10-26")]
+alias embedding_coe_ennreal := isEmbedding_coe_ennreal
+
+theorem isClosedEmbedding_coe_ennreal : IsClosedEmbedding ((↑) : ℝ≥0∞ → EReal) :=
+  ⟨isEmbedding_coe_ennreal, by rw [range_coe_ennreal]; exact isClosed_Ici⟩
+
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_coe_ennreal := isClosedEmbedding_coe_ennreal
 
 @[norm_cast]
 theorem tendsto_coe_ennreal {α : Type*} {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun a => (m a : EReal)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
-  embedding_coe_ennreal.tendsto_nhds_iff.symm
+  isEmbedding_coe_ennreal.tendsto_nhds_iff.symm
 
 theorem _root_.continuous_coe_ennreal_ereal : Continuous ((↑) : ℝ≥0∞ → EReal) :=
-  embedding_coe_ennreal.continuous
+  isEmbedding_coe_ennreal.continuous
 
 theorem continuous_coe_ennreal_iff {f : α → ℝ≥0∞} :
     (Continuous fun a => (f a : EReal)) ↔ Continuous f :=
-  embedding_coe_ennreal.continuous_iff.symm
+  isEmbedding_coe_ennreal.continuous_iff.symm
 
 /-! ### Neighborhoods of infinity -/
 
@@ -184,22 +196,11 @@ lemma tendsto_toReal_atBot : Tendsto EReal.toReal (𝓝[≠] ⊥) atBot := by
 
 variable {α : Type*} {u v : α → EReal}
 
-lemma add_iInf_le_iInf_add : (⨅ x, u x) + (⨅ x, v x) ≤ ⨅ x, (u + v) x := by
-  refine add_le_of_forall_add_le fun a a_u b b_v ↦ ?_
-  rw [lt_iInf_iff] at a_u b_v
-  rcases a_u with ⟨c, a_c, c_u⟩
-  rcases b_v with ⟨d, b_d, d_v⟩
-  simp only [Pi.add_apply, le_iInf_iff]
-  exact fun x ↦ add_le_add (lt_of_lt_of_le a_c (c_u x)).le (lt_of_lt_of_le b_d (d_v x)).le
+lemma add_iInf_le_iInf_add : (⨅ x, u x) + ⨅ x, v x ≤ ⨅ x, (u + v) x :=
+  le_iInf fun i ↦ add_le_add (iInf_le u i) (iInf_le v i)
 
-lemma iSup_add_le_add_iSup (h : ⨆ x, u x ≠ ⊥ ∨ ⨆ x, v x ≠ ⊤) (h' : ⨆ x, u x ≠ ⊤ ∨ ⨆ x, v x ≠ ⊥) :
-    ⨆ x, (u + v) x ≤ (⨆ x, u x) + (⨆ x, v x) := by
-  refine le_add_of_forall_le_add h h' fun a a_u b b_v ↦ ?_
-  rw [gt_iff_lt, iSup_lt_iff] at a_u b_v
-  rcases a_u with ⟨c, a_c, c_u⟩
-  rcases b_v with ⟨d, b_d, d_v⟩
-  simp only [Pi.add_apply, iSup_le_iff]
-  exact fun x ↦ add_le_add (lt_of_le_of_lt (c_u x) a_c).le (lt_of_le_of_lt (d_v x) b_d).le
+lemma iSup_add_le_add_iSup : ⨆ x, (u + v) x ≤ (⨆ x, u x) + ⨆ x, v x :=
+  iSup_le fun i ↦ add_le_add (le_iSup u i) (le_iSup v i)
 
 /-! ### Liminfs and Limsups -/
 
@@ -226,14 +227,14 @@ lemma limsup_add_le_add_limsup (h : limsup u f ≠ ⊥ ∨ limsup v f ≠ ⊤)
   exact (add_lt_add a_x b_x).trans c_ab
 
 lemma limsup_add_liminf_le_limsup_add : (limsup u f) + (liminf v f) ≤ limsup (u + v) f :=
-  add_le_of_forall_add_le fun a a_u b b_v ↦ (le_limsup_iff).2 fun c c_ab ↦
+  add_le_of_forall_add_le fun _ a_u _ b_v ↦ (le_limsup_iff).2 fun _ c_ab ↦
     Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
     ((eventually_lt_of_lt_liminf) b_v)) fun _ ab_x ↦ c_ab.trans (add_lt_add ab_x.1 ab_x.2)
 
 lemma liminf_add_le_limsup_add_liminf (h : limsup u f ≠ ⊥ ∨ liminf v f ≠ ⊤)
     (h' : limsup u f ≠ ⊤ ∨ liminf v f ≠ ⊥) :
     liminf (u + v) f ≤ (limsup u f) + (liminf v f) :=
-  le_add_of_forall_le_add h h' fun a a_u b b_v ↦ (liminf_le_iff).2 fun c c_ab ↦
+  le_add_of_forall_le_add h h' fun _ a_u _ b_v ↦ (liminf_le_iff).2 fun _ c_ab ↦
     Frequently.mono (Frequently.and_eventually ((frequently_lt_of_liminf_lt) b_v)
     ((eventually_lt_of_limsup_lt) a_u)) fun _ ab_x ↦ (add_lt_add ab_x.2 ab_x.1).trans c_ab
 
@@ -358,7 +359,7 @@ private lemma continuousAt_mul_symm1 {a b : EReal}
     simp
   rw [this]
   apply ContinuousAt.comp (Continuous.continuousAt continuous_neg)
-    <| ContinuousAt.comp _ (ContinuousAt.prod_map (Continuous.continuousAt continuous_neg)
+    <| ContinuousAt.comp _ (ContinuousAt.prodMap (Continuous.continuousAt continuous_neg)
       (Continuous.continuousAt continuous_id))
   simp [h]
 

@@ -108,10 +108,10 @@ Any character `c` in `(A ⊗ B)⋆` induces a linear map `A → B⋆` by `a ↦ 
     CharacterModule (A ⊗[R] B) →ₗ[R] (A →ₗ[R] CharacterModule B) where
   toFun c :=
   { toFun := (c.comp <| TensorProduct.mk R A B ·)
-    map_add' := fun a a' ↦ DFunLike.ext _ _ fun b ↦
+    map_add' := fun _ _ ↦ DFunLike.ext _ _ fun b ↦
       congr(c <| $(map_add (mk R A B) _ _) b).trans (c.map_add _ _)
     map_smul' := fun r a ↦ by ext; exact congr(c $(TensorProduct.tmul_smul _ _ _)).symm }
-  map_add' c c' := rfl
+  map_add' _ _ := rfl
   map_smul' r c := by ext; exact congr(c $(TensorProduct.tmul_smul _ _ _)).symm
 
 /--

@@ -223,8 +223,8 @@ def ComplexShape.strictUniversalPropertyFixedTargetQuotient (E : Type*) [Categor
     intro K L f g ⟨h⟩
     have : DecidableRel c.Rel := by classical infer_instance
     exact h.map_eq_of_inverts_homotopyEquivalences hc F hF)
-  fac F hF := rfl
-  uniq F₁ F₂ h := Quotient.lift_unique' _ _ _ h
+  fac _ _ := rfl
+  uniq _ _ h := Quotient.lift_unique' _ _ _ h
 
 lemma ComplexShape.quotient_isLocalization :
     (HomotopyCategory.quotient C c).IsLocalization

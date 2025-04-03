@@ -3,7 +3,6 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Init.Logic
 import Mathlib.Logic.OpClass
 import Mathlib.Order.Lattice
 
@@ -243,19 +242,5 @@ instance instAssociativeMin : Std.Associative (α := α) min where assoc := min_
 
 theorem max_left_commutative : LeftCommutative (max : α → α → α) := ⟨max_left_comm⟩
 theorem min_left_commutative : LeftCommutative (min : α → α → α) := ⟨min_left_comm⟩
-
-section deprecated
-set_option linter.deprecated false
-
-@[deprecated instCommutativeMax (since := "2024-09-12")]
-theorem max_commutative : Commutative (α := α) max := max_comm
-@[deprecated instAssociativeMax (since := "2024-09-12")]
-theorem max_associative : Associative (α := α) max := max_assoc
-@[deprecated instCommutativeMin (since := "2024-09-12")]
-theorem min_commutative : Commutative (α := α) min := min_comm
-@[deprecated instAssociativeMin (since := "2024-09-12")]
-theorem min_associative : Associative (α := α) min := min_assoc
-
-end deprecated
 
 end

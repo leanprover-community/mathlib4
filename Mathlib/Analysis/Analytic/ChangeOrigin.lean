@@ -45,7 +45,7 @@ namespace FormalMultilinearSeries
 
 section
 
-variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
+variable (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r : ℝ≥0}
 
 /-- A term of `FormalMultilinearSeries.changeOriginSeries`.
 
@@ -60,7 +60,7 @@ p (k + l) (s.piecewise (fun _ ↦ x) (fun _ ↦ y))`
 def changeOriginSeriesTerm (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l) :
     E[×l]→L[𝕜] E[×k]→L[𝕜] F :=
   let a := ContinuousMultilinearMap.curryFinFinset 𝕜 E F hs
-    (by erw [Finset.card_compl, Fintype.card_fin, hs, add_tsub_cancel_right])
+    (by rw [Finset.card_compl, Fintype.card_fin, hs, add_tsub_cancel_right])
   a (p (k + l))
 
 theorem changeOriginSeriesTerm_apply (k l : ℕ) (s : Finset (Fin (k + l))) (hs : s.card = l)
@@ -236,7 +236,7 @@ end
 
 -- From this point on, assume that the space is complete, to make sure that series that converge
 -- in norm also converge in `F`.
-variable [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x y : E} {r R : ℝ≥0}
+variable [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x y : E}
 
 theorem hasFPowerSeriesOnBall_changeOrigin (k : ℕ) (hr : 0 < p.radius) :
     HasFPowerSeriesOnBall (fun x => p.changeOrigin x k) (p.changeOriginSeries k) 0 p.radius :=

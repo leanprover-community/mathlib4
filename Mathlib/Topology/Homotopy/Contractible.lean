@@ -91,9 +91,9 @@ protected theorem Homeomorph.contractibleSpace_iff (e : X ≃ₜ Y) :
 
 namespace ContractibleSpace
 
-instance [Unique Y] : ContractibleSpace Y := by
-  have : ContractibleSpace (Unit) := ⟨⟨HomotopyEquiv.refl Unit⟩⟩
-  apply (Homeomorph.homeomorphOfUnique Y Unit).contractibleSpace
+instance [Nonempty Y] [Subsingleton Y] : ContractibleSpace Y :=
+  let ⟨_⟩ := nonempty_unique Y
+  ⟨⟨(Homeomorph.homeomorphOfUnique Y Unit).toHomotopyEquiv⟩⟩
 
 variable (X Y) in
 theorem hequiv [ContractibleSpace X] [ContractibleSpace Y] :

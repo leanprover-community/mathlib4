@@ -17,7 +17,7 @@ open Nat
 
 universe u v
 
-variable {ι α β γ : Type*} {κ : ι → Type*} [Π i, Fintype (κ i)]
+variable {ι α : Type*} {κ : ι → Type*} [Π i, Fintype (κ i)]
 
 open Finset Function
 

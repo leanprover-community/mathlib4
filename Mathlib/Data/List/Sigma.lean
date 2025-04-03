@@ -3,8 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Sean Leather
 -/
-import Mathlib.Data.List.Perm
 import Mathlib.Data.List.Pairwise
+import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.List.Nodup
 
 /-!
 # Utilities for lists of sigmas
@@ -63,7 +64,7 @@ theorem not_mem_keys {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ b : β a, 
 
 theorem not_eq_key {a} {l : List (Sigma β)} : a ∉ l.keys ↔ ∀ s : Sigma β, s ∈ l → a ≠ s.1 :=
   Iff.intro (fun h₁ s h₂ e => absurd (mem_keys_of_mem h₂) (by rwa [e] at h₁)) fun f h₁ =>
-    let ⟨b, h₂⟩ := exists_of_mem_keys h₁
+    let ⟨_, h₂⟩ := exists_of_mem_keys h₁
     f _ h₂ rfl
 
 /-! ### `NodupKeys` -/
@@ -365,7 +366,7 @@ theorem Perm.kreplace {a : α} {b : β a} {l₁ l₂ : List (Sigma β)} (nd : l�
 def kerase (a : α) : List (Sigma β) → List (Sigma β) :=
   eraseP fun s => a = s.1
 
--- Porting note (#10618): removing @[simp], `simp` can prove it
+@[simp]
 theorem kerase_nil {a} : @kerase _ β _ a [] = [] :=
   rfl
 

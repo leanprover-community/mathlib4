@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ShortComplex.Ab
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 import Mathlib.CategoryTheory.Triangulated.Opposite
 
@@ -23,7 +24,7 @@ variable {C : Type*} [Category C] [Preadditive C] [HasShift C ℤ]
 
 namespace CategoryTheory
 
-open Limits Pretriangulated.Opposite
+open Limits Opposite Pretriangulated.Opposite
 
 namespace Pretriangulated
 
@@ -61,6 +62,43 @@ lemma preadditiveCoyoneda_homologySequenceδ_apply
     (preadditiveCoyoneda.obj A).homologySequenceδ T n₀ n₁ h x =
       x ≫ T.mor₃⟦n₀⟧' ≫ (shiftFunctorAdd' C 1 n₀ n₁ (by omega)).inv.app _ := by
   apply Category.assoc
+
+section
+
+variable [∀ (n : ℤ), (shiftFunctor C n).Additive]
+
+noncomputable instance (B : C) : (preadditiveYoneda.obj B).ShiftSequence ℤ where
+  sequence n := preadditiveYoneda.obj (B⟦n⟧)
+  isoZero := preadditiveYoneda.mapIso ((shiftFunctorZero C ℤ).app B)
+  shiftIso n a a' h := NatIso.ofComponents (fun A ↦ AddEquiv.toAddCommGrpIso
+    { toEquiv := Quiver.Hom.opEquiv.trans (ShiftedHom.opEquiv' n a a' h).symm
+      map_add' := fun _ _ ↦ ShiftedHom.opEquiv'_symm_add _ _ _ h })
+        (by intros; ext; apply ShiftedHom.opEquiv'_symm_comp _ _ _ h)
+  shiftIso_zero a := by ext; apply ShiftedHom.opEquiv'_zero_add_symm
+  shiftIso_add n m a a' a'' ha' ha'' := by
+    ext _ x
+    exact ShiftedHom.opEquiv'_add_symm n m a a' a'' ha' ha'' x.op
+
+lemma preadditiveYoneda_shiftMap_apply (B : C) {X Y : Cᵒᵖ} (n : ℤ) (f : X ⟶ Y⟦n⟧)
+    (a a' : ℤ) (h : n + a = a') (z : X.unop ⟶ B⟦a⟧) :
+    (preadditiveYoneda.obj B).shiftMap f a a' h z =
+      ((ShiftedHom.opEquiv _).symm f).comp z (show a + n = a' by omega) := by
+  symm
+  apply ShiftedHom.opEquiv_symm_apply_comp
+
+lemma preadditiveYoneda_homologySequenceδ_apply
+    (T : Triangle C) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) {B : C} (x : T.obj₁ ⟶ B⟦n₀⟧) :
+    (preadditiveYoneda.obj B).homologySequenceδ
+      ((triangleOpEquivalence _).functor.obj (op T)) n₀ n₁ h x =
+      T.mor₃ ≫ x⟦(1 : ℤ)⟧' ≫ (shiftFunctorAdd' C n₀ 1 n₁ h).inv.app B := by
+  simp only [Functor.homologySequenceδ, preadditiveYoneda_shiftMap_apply,
+    ShiftedHom.comp, ← Category.assoc]
+  congr 2
+  apply (ShiftedHom.opEquiv _).injective
+  rw [Equiv.apply_symm_apply]
+  rfl
+
+end
 
 end Pretriangulated
 

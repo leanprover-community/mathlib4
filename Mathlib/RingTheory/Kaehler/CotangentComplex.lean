@@ -22,6 +22,10 @@ defined by `I`), we may define the (naive) cotangent complex `I/I² → ⨁ᵢ S
 - `Algebra.Generators.exact_cotangentComplex_toKaehler`: `I/I² → ⨁ᵢ S dxᵢ → Ω[S/R]` is exact.
 - `Algebra.Generators.Hom.Sub`: If `f` and `g` are two maps between presentations, `f - g` induces
   a map `⨁ᵢ S dxᵢ → I/I²` that makes `f` and `g` homotopic.
+- `Algebra.Generators.H1Cotangent`: The first homology of the (naive) cotangent complex
+  of `S` over `R`, induced by a given presentation.
+- `Algebra.H1Cotangent`: `H¹(L_{S/R})`,
+  the first homology of the (naive) cotangent complex of `S` over `R`.
 -/
 
 open KaehlerDifferential TensorProduct MvPolynomial
@@ -83,6 +87,16 @@ attribute [local instance] SMulCommClass.of_commMonoid
 
 variable {P P'}
 
+universe w'' u'' v''
+
+variable {R'' : Type u''} {S'' : Type v''} [CommRing R''] [CommRing S''] [Algebra R'' S'']
+variable {P'' : Generators.{w''} R'' S''}
+variable [Algebra R R''] [Algebra S S''] [Algebra R S'']
+  [IsScalarTower R R'' S''] [IsScalarTower R S S'']
+variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
+  [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
+variable [IsScalarTower S S' S'']
+
 namespace CotangentSpace
 
 /--
@@ -113,16 +127,6 @@ lemma repr_map (f : Hom P P') (i j) :
       aeval P'.val (pderiv j (f.val i)) := by
   simp only [cotangentSpaceBasis_apply, map_tmul, map_one, Hom.toAlgHom_X,
     cotangentSpaceBasis_repr_one_tmul]
-
-universe w'' u'' v''
-
-variable {R'' : Type u''} {S'' : Type v''} [CommRing R''] [CommRing S''] [Algebra R'' S'']
-variable {P'' : Generators.{w''} R'' S''}
-variable [Algebra R R''] [Algebra S S''] [Algebra R S'']
-  [IsScalarTower R R'' S''] [IsScalarTower R S S'']
-variable [Algebra R' R''] [Algebra S' S''] [Algebra R' S'']
-  [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
-variable [IsScalarTower S S' S'']
 
 @[simp]
 lemma map_id :
@@ -156,10 +160,6 @@ lemma map_comp_cotangentComplex (f : Hom P P') :
   ext x; exact map_cotangentComplex f x
 
 end CotangentSpace
-
-universe uT
-
-variable {T : Type uT} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 lemma Hom.sub_aux (f g : Hom P P') (x y) :
     letI := ((algebraMap S S').comp (algebraMap P.Ring S)).toAlgebra
@@ -279,6 +279,114 @@ lemma toKaehler_surjective : Function.Surjective P.toKaehler :=
 lemma exact_cotangentComplex_toKaehler : Function.Exact P.cotangentComplex P.toKaehler :=
   exact_kerCotangentToTensor_mapBaseChange _ _ _ P.algebraMap_surjective
 
+variable (P) in
+/--
+The first homology of the (naive) cotangent complex of `S` over `R`,
+induced by a given presentation `0 → I → P → R → 0`,
+defined as the kernel of `I/I² → S ⊗[P] Ω[P⁄R]`.
+-/
+protected noncomputable
+def H1Cotangent : Type _ := LinearMap.ker P.cotangentComplex
+
+variable {P : Generators R S}
+
+noncomputable
+instance : AddCommGroup P.H1Cotangent := by delta Generators.H1Cotangent; infer_instance
+
+noncomputable
+instance {R₀} [CommRing R₀] [Algebra R₀ S] [Module R₀ P.Cotangent]
+    [IsScalarTower R₀ S P.Cotangent] : Module R₀ P.H1Cotangent := by
+  delta Generators.H1Cotangent; infer_instance
+
+@[simp] lemma H1Cotangent.val_add (x y : P.H1Cotangent) : (x + y).1 = x.1 + y.1 := rfl
+@[simp] lemma H1Cotangent.val_zero : (0 : P.H1Cotangent).1 = 0 := rfl
+@[simp] lemma H1Cotangent.val_smul {R₀} [CommRing R₀] [Algebra R₀ S] [Module R₀ P.Cotangent]
+    [IsScalarTower R₀ S P.Cotangent] (r : R₀) (x : P.H1Cotangent) : (r • x).1 = r • x.1 := rfl
+
+noncomputable
+instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ R₂]
+    [Algebra R₁ S] [Algebra R₂ S]
+    [Module R₁ P.Cotangent] [IsScalarTower R₁ S P.Cotangent]
+    [Module R₂ P.Cotangent] [IsScalarTower R₂ S P.Cotangent]
+    [IsScalarTower R₁ R₂ P.Cotangent] :
+    IsScalarTower R₁ R₂ P.H1Cotangent := by
+  delta Generators.H1Cotangent; infer_instance
+
+lemma subsingleton_h1Cotangent (P : Generators R S) :
+    Subsingleton P.H1Cotangent ↔ Function.Injective P.cotangentComplex := by
+  delta Generators.H1Cotangent
+  rw [← LinearMap.ker_eq_bot, Submodule.eq_bot_iff, subsingleton_iff_forall_eq 0, Subtype.forall']
+  simp only [Subtype.ext_iff, Submodule.coe_zero]
+
+/-- The inclusion of `H¹(L_{S/R})` into the conormal space of a presentation. -/
+@[simps!] def h1Cotangentι : P.H1Cotangent →ₗ[S] P.Cotangent := Submodule.subtype _
+
+lemma h1Cotangentι_injective : Function.Injective P.h1Cotangentι := Subtype.val_injective
+
+@[ext] lemma h1Cotangentι_ext (x y : P.H1Cotangent) (e : x.1 = y.1) : x = y := Subtype.ext e
+
+/--
+The induced map on the first homology of the (naive) cotangent complex.
+-/
+@[simps!]
+noncomputable
+def H1Cotangent.map (f : Hom P P') : P.H1Cotangent →ₗ[S] P'.H1Cotangent := by
+  refine (Cotangent.map f).restrict (p := LinearMap.ker P.cotangentComplex)
+    (q := (LinearMap.ker P'.cotangentComplex).restrictScalars S) fun x hx ↦ ?_
+  simp only [LinearMap.mem_ker, Submodule.restrictScalars_mem] at hx ⊢
+  apply_fun (CotangentSpace.map f) at hx
+  rw [CotangentSpace.map_cotangentComplex] at hx
+  rw [hx]
+  exact LinearMap.map_zero _
+
+lemma H1Cotangent.map_eq (f g : Hom P P') : map f = map g := by
+  ext x
+  simp only [map_apply_coe]
+  rw [← sub_eq_zero, ← Cotangent.val_sub, ← LinearMap.sub_apply, Cotangent.map_sub_map]
+  simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.map_coe_ker, map_zero,
+    Cotangent.val_zero]
+
+@[simp] lemma H1Cotangent.map_id : map (.id P) = LinearMap.id := by ext; simp
+
+lemma H1Cotangent.map_comp [IsScalarTower R R' R''] (f : Hom P P') (g : Hom P' P'') :
+    map (g.comp f) = (map g).restrictScalars S ∘ₗ map f := by ext; simp [Cotangent.map_comp]
+
+/-- `H¹(L_{S/R})` is independent of the presentation chosen. -/
+@[simps! apply]
+noncomputable
+def H1Cotangent.equiv (P : Generators.{w} R S) (P' : Generators.{w'} R S) :
+    P.H1Cotangent ≃ₗ[S] P'.H1Cotangent where
+  __ := map default
+  invFun := map default
+  left_inv x :=
+    show ((map (defaultHom P' P)) ∘ₗ (map (defaultHom P P'))) x = LinearMap.id x by
+    rw [← map_id, eq_comm, map_eq _ ((defaultHom P' P).comp (defaultHom P P')), map_comp]; rfl
+  right_inv x :=
+    show ((map (defaultHom P P')) ∘ₗ (map (defaultHom P' P))) x = LinearMap.id x by
+    rw [← map_id, eq_comm, map_eq _ ((defaultHom P P').comp (defaultHom P' P)), map_comp]; rfl
+
 end Generators
+
+variable {S' : Type*} [CommRing S'] [Algebra R S']
+variable {T : Type w} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
+variable [Algebra S' T] [IsScalarTower R S' T]
+
+variable (R S S' T)
+
+/-- `H¹(L_{S/R})`, the first homology of the (naive) cotangent complex of `S` over `R`. -/
+abbrev H1Cotangent : Type _ := (Generators.self R S).H1Cotangent
+
+/-- The induced map on the first homology of the (naive) cotangent complex of `S` over `R`. -/
+noncomputable
+def H1Cotangent.map : H1Cotangent R S' →ₗ[S'] H1Cotangent S T :=
+  Generators.H1Cotangent.map (Generators.defaultHom _ _)
+
+variable {R S S' T}
+
+/-- `H¹(L_{S/R})` is independent of the presentation chosen. -/
+noncomputable
+abbrev Generators.equivH1Cotangent (P : Generators.{w} R S) :
+    P.H1Cotangent ≃ₗ[S] H1Cotangent R S :=
+  Generators.H1Cotangent.equiv _ _
 
 end Algebra

@@ -91,7 +91,7 @@ end Const
 
 section Restrict
 
-variable {s t : Set β}
+variable {s : Set β}
 
 @[simp]
 theorem integral_restrict (hs : MeasurableSet s) :

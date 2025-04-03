@@ -401,7 +401,7 @@ theorem expSeries_radius_eq_top : (expSeries 𝕂 𝔸).radius = ∞ := by
 
 theorem expSeries_radius_pos : 0 < (expSeries 𝕂 𝔸).radius := by
   rw [expSeries_radius_eq_top]
-  exact WithTop.zero_lt_top
+  exact WithTop.top_pos
 
 variable {𝕂 𝔸 𝔹}
 
@@ -497,7 +497,7 @@ commute then `NormedSpace.exp (∑ i, f i) = ∏ i, NormedSpace.exp (f i)`. -/
 theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     (h : (s : Set ι).Pairwise fun i j => Commute (f i) (f j)) :
     exp (∑ i ∈ s, f i) =
-      s.noncommProd (fun i => exp (f i)) fun i hi j hj _ => (h.of_refl hi hj).exp := by
+      s.noncommProd (fun i => exp (f i)) fun _ hi _ hj _ => (h.of_refl hi hj).exp := by
   classical
     induction' s using Finset.induction_on with a s ha ih
     · simp
