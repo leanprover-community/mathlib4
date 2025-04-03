@@ -62,7 +62,8 @@ private theorem norm_neg' (z : ℂ) : ‖-z‖ = ‖z‖ := by
 
 instance instNormedAddCommGroup : NormedAddCommGroup ℂ :=
   AddGroupNorm.toNormedAddCommGroup
-  { map_zero' := norm_map_zero'
+  { toFun := norm
+    map_zero' := norm_map_zero'
     add_le' := norm_add_le'
     neg' := norm_neg'
     eq_zero_of_map_eq_zero' := fun _ ↦ norm_eq_zero_iff.mp }

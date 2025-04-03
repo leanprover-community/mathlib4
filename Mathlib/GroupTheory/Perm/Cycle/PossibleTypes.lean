@@ -108,7 +108,7 @@ theorem Equiv.Perm.exists_with_cycleType_iff {m : Multiset ℕ} :
       · -- length >= 1
         intro a h
         apply Nat.not_succ_le_self 1
-        conv_rhs => rw [← List.length_singleton a]; rw [← h]
+        conv_rhs => rw [← List.length_singleton (a := a)]; rw [← h]
         exact hp2 x hx
     · -- cycles
       intro g
