@@ -8,6 +8,7 @@ import Mathlib.Combinatorics.Quiver.Basic
 import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.Common
 import Mathlib.Tactic.StacksAttribute
+import Mathlib.Tactic.TryThis
 
 /-!
 # Categories
@@ -26,8 +27,6 @@ Users may like to add `g ⊚ f` for composition in the standard convention, usin
 local notation:80 g " ⊚ " f:80 => CategoryTheory.CategoryStruct.comp f g    -- type as \oo
 ```
 
-## Porting note
-I am experimenting with using the `aesop` tactic as a replacement for `tidy`.
 -/
 
 
@@ -109,6 +108,22 @@ open Lean Meta Elab.Tactic in
     throwError "The goal does not contain `sorry`"
 
 /--
+`rfl_cat` is a macro for `intros; rfl` which is attempted in `aesop_cat` before
+doing the more expensive `aesop` tactic.
+
+This gives a speedup because `simp` (called by `aesop`) is too slow.
+There is a fix for this slowness in https://github.com/leanprover/lean4/pull/7428.
+So, when that is resolved, the performance impact of `rfl_cat` should be measured again.
+
+Note on `refine id ?_`:
+In some cases it is important that the type of the proof matches the expected type exactly.
+e.g. if the goal is `2 = 1 + 1`, the `rfl` tactic will give a proof of type `2 = 2`.
+Starting a proof with `refine id ?_` is a trick to make sure that the proof has exactly
+the expected type, in this case `2 = 1 + 1`.
+-/
+macro (name := rfl_cat) "rfl_cat" : tactic => do `(tactic| (refine id ?_; intros; rfl))
+
+/--
 A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
 allows `aesop` to look through semireducible definitions when calling `intros`.
 This tactic fails when it is unable to solve the goal, making it suitable for
@@ -116,7 +131,7 @@ use in auto-params.
 -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  first | sorry_if_sorry |
+  first | sorry_if_sorry | rfl_cat |
   aesop $c* (config := { introsTransparency? := some .default, terminal := true })
             (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 
@@ -125,7 +140,7 @@ We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop
 -/
 macro (name := aesop_cat?) "aesop_cat?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  first | sorry_if_sorry |
+  first | sorry_if_sorry | try_this rfl_cat |
   aesop? $c* (config := { introsTransparency? := some .default, terminal := true })
              (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 /--
@@ -343,36 +358,3 @@ example (D : Type u) [SmallCategory D] : LargeCategory (ULift.{u + 1} D) := by i
 end
 
 end CategoryTheory
-
--- Porting note: We hope that this will become less necessary,
--- as in Lean4 `simp` will automatically enter "`dsimp` mode" when needed with dependent arguments.
--- Optimistically, we will eventually remove this library note.
-library_note "dsimp, simp"
-/-- Many proofs in the category theory library use the `dsimp, simp` pattern,
-which typically isn't necessary elsewhere.
-
-One would usually hope that the same effect could be achieved simply with `simp`.
-
-The essential issue is that composition of morphisms involves dependent types.
-When you have a chain of morphisms being composed, say `f : X ⟶ Y` and `g : Y ⟶ Z`,
-then `simp` can operate successfully on the morphisms
-(e.g. if `f` is the identity it can strip that off).
-
-However if we have an equality of objects, say `Y = Y'`,
-then `simp` can't operate because it would break the typing of the composition operations.
-We rarely have interesting equalities of objects
-(because that would be "evil" --- anything interesting should be expressed as an isomorphism
-and tracked explicitly),
-except of course that we have plenty of definitional equalities of objects.
-
-`dsimp` can apply these safely, even inside a composition.
-
-After `dsimp` has cleared up the object level, `simp` can resume work on the morphism level ---
-but without the `dsimp` step, because `simp` looks at expressions syntactically,
-the relevant lemmas might not fire.
-
-There's no bound on how many times you potentially could have to switch back and forth,
-if the `simp` introduced new objects we again need to `dsimp`.
-In practice this does occur, but only rarely, because `simp` tends to shorten chains of compositions
-(i.e. not introduce new objects at all).
--/

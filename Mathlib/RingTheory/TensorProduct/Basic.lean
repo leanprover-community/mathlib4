@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+import Mathlib.Algebra.Module.Rat
 import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Adjoin.Basic
 
 /-!
 # The tensor product of R-algebras
@@ -202,6 +203,25 @@ lemma range_liftBaseChange (l : M →ₗ[R] N) :
 end liftBaseChange
 
 end LinearMap
+
+namespace Module.End
+
+open LinearMap
+
+variable (R M N : Type*)
+  [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+
+/-- The map `LinearMap.lTensorHom` which sends `f ↦ 1 ⊗ f` as a morphism of algebras. -/
+@[simps!]
+noncomputable def lTensorAlgHom : Module.End R M →ₐ[R] Module.End R (N ⊗[R] M) :=
+  .ofLinearMap (lTensorHom (M := N)) (lTensor_id N M) (lTensor_mul N)
+
+/-- The map `LinearMap.rTensorHom` which sends `f ↦ f ⊗ 1` as a morphism of algebras. -/
+@[simps!]
+noncomputable def rTensorAlgHom : Module.End R M →ₐ[R] Module.End R (M ⊗[R] N) :=
+  .ofLinearMap (rTensorHom (M := N)) (rTensor_id N M) (rTensor_mul N)
+
+end Module.End
 
 namespace Algebra
 
@@ -843,6 +863,15 @@ def lidOfCompatibleSMul : S ⊗[R] A ≃ₐ[S] A :=
 
 theorem lidOfCompatibleSMul_tmul (s a) : lidOfCompatibleSMul R S A (s ⊗ₜ[R] a) = s • a := rfl
 
+instance {R M N : Type*} [CommSemiring R] [AddCommGroup M] [AddCommGroup N]
+    [Module R M] [Module R N] [Module ℚ M] [Module ℚ N] : CompatibleSMul R ℚ M N where
+  smul_tmul q m n := by
+    suffices q.den • ((q • m) ⊗ₜ[R] n) = q.den • (m ⊗ₜ[R] (q • n)) from
+      smul_right_injective (M ⊗[R] N) (c := q.den) q.den_nz <| by norm_cast
+    rw [smul_tmul', ← tmul_smul, ← smul_assoc, ← smul_assoc, nsmul_eq_mul, Rat.den_mul_eq_num]
+    norm_cast
+    rw [smul_tmul]
+
 end CompatibleSMul
 
 section
@@ -1049,7 +1078,6 @@ theorem leftComm_toLinearEquiv :
     (leftComm R A B C : _ ≃ₗ[R] _) = _root_.TensorProduct.leftComm R A B C := rfl
 
 variable (R S A B C D) in
-set_option maxSynthPendingDepth 2 in
 /-- Tensor product of algebras analogue of `mul_mul_mul_comm`.
 
 This is the algebra version of `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`. -/
@@ -1062,7 +1090,6 @@ theorem tensorTensorTensorComm_tmul (m : A) (n : B) (p : C) (q : D) :
     tensorTensorTensorComm R S A B C D (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
   rfl
 
-set_option maxSynthPendingDepth 2 in
 @[simp]
 theorem tensorTensorTensorComm_symm_tmul (m : A) (n : C) (p : B) (q : D) :
     (tensorTensorTensorComm R S A B C D).symm (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
@@ -1072,7 +1099,6 @@ theorem tensorTensorTensorComm_symm :
     (tensorTensorTensorComm R R A B C D).symm = tensorTensorTensorComm R R A C B D := by
   ext; rfl
 
-set_option maxSynthPendingDepth 2 in
 theorem tensorTensorTensorComm_toLinearEquiv :
     (tensorTensorTensorComm R S A B C D).toLinearEquiv =
       TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S A B C D := rfl
@@ -1208,17 +1234,6 @@ lemma mk_one_injective_of_isScalarTower (M : Type*) [AddCommGroup M]
 end TensorProduct
 
 end Algebra
-
-namespace LinearMap
-
-open Algebra.TensorProduct
-
-variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
-  [Fintype ι] [Finite ι₂] [DecidableEq ι]
-  [CommSemiring R] [CommSemiring A] [Algebra R A]
-  [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
-
-end LinearMap
 
 lemma Algebra.baseChange_lmul {R B : Type*} [CommSemiring R] [Semiring B] [Algebra R B]
     {A : Type*} [CommSemiring A] [Algebra R A] (f : B) :
@@ -1385,7 +1400,7 @@ theorem linearMap_comp_mul' :
       map (Algebra.linearMap R A) (Algebra.linearMap R B) := by
   ext
   simp only [AlgebraTensorModule.curry_apply, curry_apply, LinearMap.coe_restrictScalars, map_tmul,
-    Algebra.linearMap_apply, _root_.map_one, LinearMap.coe_comp, Function.comp_apply,
+    Algebra.linearMap_apply, map_one, LinearMap.coe_comp, Function.comp_apply,
     LinearMap.mul'_apply, mul_one, Algebra.TensorProduct.one_def]
 
 @[simp]
@@ -1398,3 +1413,14 @@ theorem mul'_comp_tensorTensorTensorComm :
 end Lemmas
 
 end TensorProduct.Algebra
+
+open LinearMap in
+lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMonoid Q]
+    [Module R Q] {I : Submodule R R} :
+    (range <| rTensor Q I.subtype).map (TensorProduct.lid R Q) = I • ⊤ := by
+  rw [← map_top, ← map_coe_toLinearMap, ← Submodule.map_comp, map_top]
+  refine le_antisymm ?_ fun q h ↦ Submodule.smul_induction_on h
+    (fun r hr q _ ↦ ⟨⟨r, hr⟩ ⊗ₜ q, by simp⟩) (by simp +contextual [add_mem])
+  rintro _ ⟨t, rfl⟩
+  exact t.induction_on (by simp) (by simp +contextual [Submodule.smul_mem_smul])
+    (by simp +contextual [add_mem])

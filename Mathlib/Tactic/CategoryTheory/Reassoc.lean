@@ -67,7 +67,7 @@ Note that if you want both the lemma and the reassociated lemma to be
 The variant `@[simp, reassoc]` on a lemma `F` will tag `F` with `@[simp]`,
 but not `F_assoc` (this is sometimes useful).
 -/
-syntax (name := reassoc) "reassoc" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+syntax (name := reassoc) "reassoc" (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
 
 initialize registerBuiltinAttribute {
   name := `reassoc

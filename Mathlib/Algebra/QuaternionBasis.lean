@@ -45,7 +45,7 @@ structure Basis {R : Type*} (A : Type*) [CommRing R] [Ring A] [Algebra R A] (c�
   j_mul_i : j * i = c₂ • j - k
 
 variable {R : Type*} {A B : Type*} [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
-variable {c₁ c₂ c₃: R}
+variable {c₁ c₂ c₃ : R}
 
 namespace Basis
 

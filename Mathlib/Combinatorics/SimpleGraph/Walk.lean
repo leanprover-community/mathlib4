@@ -1358,7 +1358,7 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
 
 /-- The specialization of `SimpleGraph.Walk.map` for mapping walks to supergraphs. -/
 abbrev mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v) : G'.Walk u v :=
-  p.map (Hom.mapSpanningSubgraphs h)
+  p.map (.ofLE h)
 
 /-! ### Transferring between graphs -/
 
@@ -1378,9 +1378,10 @@ theorem transfer_self : p.transfer G p.edges_subset_edgeSet = p := by
 
 variable {H : SimpleGraph V}
 
-theorem transfer_eq_map_of_le (hp) (GH : G ≤ H) :
-    p.transfer H hp = p.map (SimpleGraph.Hom.mapSpanningSubgraphs GH) := by
+theorem transfer_eq_map_ofLE (hp) (GH : G ≤ H) : p.transfer H hp = p.map (.ofLE GH) := by
   induction p <;> simp [*]
+
+@[deprecated (since := "2025-03-17")] alias transfer_eq_map_of_le := transfer_eq_map_ofLE
 
 @[simp]
 theorem edges_transfer (hp) : (p.transfer H hp).edges = p.edges := by
@@ -1457,8 +1458,8 @@ abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
 
 @[simp]
 theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
-    Walk.map (Hom.mapSpanningSubgraphs (G.deleteEdges_le s)) (p.toDeleteEdges s hp) = p := by
-  rw [← transfer_eq_map_of_le, transfer_transfer, transfer_self]
+    Walk.map (.ofLE (G.deleteEdges_le s)) (p.toDeleteEdges s hp) = p := by
+  rw [← transfer_eq_map_ofLE, transfer_transfer, transfer_self]
   intros e
   rw [edges_transfer]
   apply edges_subset_edgeSet p

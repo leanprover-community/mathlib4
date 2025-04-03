@@ -89,7 +89,6 @@ def ofEquiv (α) {β} [Denumerable α] (e : β ≃ α) : Denumerable β :=
 @[simp]
 theorem ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
     @ofNat β (ofEquiv _ e) n = e.symm (ofNat α n) := by
-  -- Porting note: added `letI`
   letI := ofEquiv _ e
   refine ofNat_of_decode ?_
   rw [decode_ofEquiv e]
@@ -217,9 +216,8 @@ theorem le_succ_of_forall_lt_le {x y : s} (h : ∀ z < x, z ≤ y) : x ≤ succ 
 
 theorem lt_succ_self (x : s) : x < succ x :=
   calc
-    -- Porting note: replaced `x + _`, added type annotations
-    (x : ℕ) ≤ (x + Nat.find (exists_succ x) : ℕ) := le_add_right ..
-    _ < (succ x : ℕ) := Nat.lt_succ_self (x + _)
+    (x : ℕ) ≤ (x + _)  := le_add_right ..
+    _       < (succ x) := Nat.lt_succ_self (x + _)
 
 theorem lt_succ_iff_le {x y : s} : x < succ y ↔ x ≤ y :=
   ⟨fun h => le_of_not_gt fun h' => not_le_of_gt h (succ_le_of_lt h'), fun h =>
@@ -240,7 +238,7 @@ theorem ofNat_surjective : Surjective (ofNat s)
       simp [List.mem_filter, Subtype.ext_iff_val, ht]
     cases hmax : List.maximum t with
     | bot =>
-      refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (⊥ : s) ?_)⟩
+      refine ⟨0, le_antisymm bot_le (le_of_not_gt fun h => List.not_mem_nil (a := (⊥ : s)) ?_)⟩
       rwa [← List.maximum_eq_bot.1 hmax, hmt]
     | coe m =>
       have wf : ↑m < x := by simpa using hmt.mp (List.maximum_mem hmax)

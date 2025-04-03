@@ -54,7 +54,7 @@ def typePriority (decl : Lean.Name) (type : Lean.Expr) : MetaM Nat :=
   Lean.Meta.forallTelescope type fun xs t ↦ do
     checkResult t
     xs.foldlM (fun (t : Nat) x ↦ do return t + (← argPriority x)) 0
-  where
+where
   /-- Score the type of argument `x` -/
   argPriority (x : Lean.Expr) : MetaM Nat := do
     hypPriority (← Lean.Meta.inferType x)

@@ -92,7 +92,6 @@ def dividedPowersBot [DecidableEq A] : DividedPowers (⊥ : Ideal A) where
   dpow n a := ite (a = 0 ∧ n = 0) 1 0
   dpow_null {n a} ha := by
     simp only [mem_bot] at ha
-    dsimp
     rw [if_neg]
     exact not_and_of_not_left (n = 0) ha
   dpow_zero ha := by
@@ -134,10 +133,8 @@ def dividedPowersBot [DecidableEq A] : DividedPowers (⊥ : Ideal A) where
   dpow_comp m {n a} hn ha := by
     rw [mem_bot.mp ha]
     simp only [true_and, ite_eq_right_iff, _root_.mul_eq_zero, mul_ite, mul_one, mul_zero]
-    by_cases hm: m = 0
-    · simp only [hm, and_true, true_or, ite_true, uniformBell_zero_left, cast_one]
-      rw [if_pos]
-      exact fun h ↦ False.elim (hn h)
+    by_cases hm : m = 0
+    · simp [hm, uniformBell_zero_left, hn]
     · simp only [hm, and_false, ite_false, false_or, if_neg hn]
 
 instance [DecidableEq A] : Inhabited (DividedPowers (⊥ : Ideal A)) :=
@@ -231,11 +228,10 @@ theorem dpow_eval_zero {n : ℕ} (hn : n ≠ 0) : hI.dpow n 0 = 0 := by
 by some nonzero integer `n`, then its `n`th power is zero.
 
 Proposition 1.2.7 of [Berthelot-1974], part (i). -/
-theorem nilpotent_of_mem_dpIdeal {n : ℕ} (hn : n ≠ 0) (hnI : ∀ {y} (_ : y ∈ I), n • y = 0)
+theorem nilpotent_of_mem_dpIdeal {n : ℕ} (hn : n ≠ 0) (hnI : ∀ {y}, y ∈ I → n • y = 0)
     (hI : DividedPowers I) (ha : a ∈ I) : a ^ n = 0 := by
-  have h_fac : (n ! : A) * hI.dpow n a =
-    n • ((n - 1)! : A) * hI.dpow n a := by
-    rw [nsmul_eq_mul, ← cast_mul, mul_factorial_pred (Nat.pos_of_ne_zero hn)]
+  have h_fac : (n ! : A) * hI.dpow n a = n • ((n - 1)! : A) * hI.dpow n a := by
+    rw [nsmul_eq_mul, ← cast_mul, mul_factorial_pred hn]
   rw [← hI.factorial_mul_dpow_eq_pow ha, h_fac, smul_mul_assoc]
   exact hnI (I.mul_mem_left ((n - 1)! : A) (hI.dpow_mem hn ha))
 
@@ -277,10 +273,10 @@ theorem prod_dpow {ι : Type*} {s : Finset ι} {n : ι → ℕ} (ha : a ∈ I) :
 
 /-- Lemma towards `dpow_sum` when we only have partial information on a divided power ideal -/
 theorem dpow_sum' {M : Type*} [AddCommMonoid M] {I : AddSubmonoid M} (dpow : ℕ → M → A)
-    (dpow_zero : ∀ {x} (_ : x ∈ I), dpow 0 x = 1)
-    (dpow_add : ∀ {n x y} (_ : x ∈ I) (_ : y ∈ I),
+    (dpow_zero : ∀ {x}, x ∈ I → dpow 0 x = 1)
+    (dpow_add : ∀ {n x y}, x ∈ I → y ∈ I →
       dpow n (x + y) = (antidiagonal n).sum fun k ↦ dpow k.1 x * dpow k.2 y)
-    (dpow_eval_zero : ∀ {n : ℕ} (_ : n ≠ 0), dpow n 0 = 0)
+    (dpow_eval_zero : ∀ {n : ℕ}, n ≠ 0 → dpow n 0 = 0)
     {ι : Type*} [DecidableEq ι] {s : Finset ι} {x : ι → M} (hx : ∀ i ∈ s, x i ∈ I) {n : ℕ} :
     dpow n (s.sum x) = (s.sym n).sum fun k ↦ s.prod fun i ↦ dpow (Multiset.count i k) (x i) := by
   simp only [sum_antidiagonal_eq_sum_range_succ_mk] at dpow_add
@@ -352,11 +348,9 @@ def ofRingEquiv (hI : DividedPowers I) : DividedPowers J where
     rw [EmbeddingLike.map_eq_one_iff, hI.dpow_zero]
     rwa [symm_apply_mem_of_equiv_iff, h]
   dpow_one hx := by
-    simp only
     rw [dpow_one, RingEquiv.apply_symm_apply]
     rwa [I.symm_apply_mem_of_equiv_iff, h]
   dpow_mem hn hx := by
-    simp only
     rw [← h, I.apply_mem_of_equiv_iff]
     apply hI.dpow_mem hn
     rwa [I.symm_apply_mem_of_equiv_iff, h]
@@ -364,21 +358,20 @@ def ofRingEquiv (hI : DividedPowers I) : DividedPowers J where
     simp only [map_add]
     rw [hI.dpow_add (symm_apply_mem_of_equiv_iff.mpr (h ▸ hx))
         (symm_apply_mem_of_equiv_iff.mpr (h ▸ hy))]
-    simp only [map_sum, _root_.map_mul]
+    simp only [map_sum, map_mul]
   dpow_mul hx := by
-    simp only [_root_.map_mul]
+    simp only [map_mul]
     rw [hI.dpow_mul (symm_apply_mem_of_equiv_iff.mpr (h ▸ hx))]
-    rw [_root_.map_mul, map_pow]
+    rw [map_mul, map_pow]
     simp only [RingEquiv.apply_symm_apply]
   mul_dpow hx := by
-    simp only
-    rw [← _root_.map_mul, hI.mul_dpow, _root_.map_mul]
+    rw [← map_mul, hI.mul_dpow, map_mul]
     · simp only [map_natCast]
     · rwa [symm_apply_mem_of_equiv_iff, h]
   dpow_comp hn hx := by
     simp only [RingEquiv.symm_apply_apply]
     rw [hI.dpow_comp hn]
-    · simp only [_root_.map_mul, map_natCast]
+    · simp only [map_mul, map_natCast]
     · rwa [symm_apply_mem_of_equiv_iff, h]
 
 @[simp]

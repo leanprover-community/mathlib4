@@ -215,8 +215,6 @@ lemma Measurable.sup_of_right {mα mα' : MeasurableSpace α} {_ : MeasurableSpa
 theorem measurable_id'' {m mα : MeasurableSpace α} (hm : m ≤ mα) : @Measurable α α mα m id :=
   measurable_id.mono le_rfl hm
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add TC `DiscreteMeasurable` + instances
-
 @[measurability]
 theorem measurable_from_top [MeasurableSpace β] {f : α → β} : Measurable[⊤] f := fun _ _ => trivial
 
@@ -1437,7 +1435,7 @@ instance Subtype.instSingleton [MeasurableSingletonClass α] :
 
 instance Subtype.instLawfulSingleton [MeasurableSingletonClass α] :
     LawfulSingleton α (Subtype (MeasurableSet : Set α → Prop)) :=
-  ⟨fun _ => Subtype.eq <| insert_emptyc_eq _⟩
+  ⟨fun _ => Subtype.eq <| insert_empty_eq _⟩
 
 instance Subtype.instHasCompl : HasCompl (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x => ⟨xᶜ, x.prop.compl⟩⟩
