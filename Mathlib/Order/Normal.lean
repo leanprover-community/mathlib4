@@ -9,12 +9,11 @@ import Mathlib.Order.SuccPred.InitialSeg
 # Normal functions
 
 A normal function between well-orders is a strictly monotonic continuous function. Normal functions
-arise chiefly in the context of cardinal and ordinal-valued functions. Unfortunately, Mathlib places
-these earlier in the import chain than the topological notion of continuity.
+arise chiefly in the context of cardinal and ordinal-valued functions.
 
-We instead opt for an alternate but equivalent definition: a normal function is a strictly monotonic
-function `f` such that at successor limits `a`, `f a` is the least upper bound of `f b` with
-`b < a`.
+We opt for an equivalent definition that's both simpler and often more convenient: a normal function
+is a strictly monotonic function `f` such that at successor limits `a`, `f a` is the least upper
+bound of `f b` with `b < a`.
 
 ## TODO
 
@@ -56,21 +55,6 @@ theorem of_succ_lt [SuccOrder α] [WellFoundedLT α]
     exact (IH _ hab' (lt_succ_of_not_isMax hab.not_isMax)).trans_le
       ((hl hb).1 (mem_image_of_mem _ hab'))
 
-theorem lt_iff_lt (hf : IsNormal f) : f a < f b ↔ a < b :=
-  hf.strictMono.lt_iff_lt
-
-theorem le_iff_le (hf : IsNormal f) : f a ≤ f b ↔ a ≤ b :=
-  hf.strictMono.le_iff_le
-
-theorem inj (hf : IsNormal f) : f a = f b ↔ a = b :=
-  hf.strictMono.injective.eq_iff
-
-theorem id_le {f : α → α} (hf : IsNormal f) [WellFoundedLT α] : id ≤ f :=
-  hf.strictMono.id_le
-
-theorem le_apply {f : α → α} (hf : IsNormal f) [WellFoundedLT α] : a ≤ f a :=
-  hf.strictMono.le_apply
-
 theorem isLUB_image_Iio_of_isSuccLimit (hf : IsNormal f) {a : α} (ha : IsSuccLimit a) :
     IsLUB (f '' Iio a) (f a) := by
   refine ⟨?_, mem_lowerBounds_upperBounds hf ha⟩
@@ -91,13 +75,13 @@ theorem map_isSuccLimit (hf : IsNormal f) (ha : IsSuccLimit a) : IsSuccLimit (f 
     exact not_isMin_iff.2 ⟨_, hf.strictMono hb⟩
   · obtain ⟨c, hc, hc'⟩ := (hf.lt_iff_exists_lt ha).1 hb.lt
     have hc' := hb.ge_of_gt hc'
-    rw [hf.le_iff_le] at hc'
+    rw [hf.strictMono.le_iff_le] at hc'
     exact hc.not_le hc'
 
 theorem map_isLUB (hf : IsNormal f) {s : Set α} (hs : IsLUB s a) (hs' : s.Nonempty) :
     IsLUB (f '' s) (f a) := by
   refine ⟨?_, fun b hb ↦ ?_⟩
-  · simp_rw [mem_upperBounds, forall_mem_image, hf.le_iff_le]
+  · simp_rw [mem_upperBounds, forall_mem_image, hf.strictMono.le_iff_le]
     exact hs.1
   · by_cases ha : a ∈ s
     · simp_rw [mem_upperBounds, forall_mem_image] at hb
@@ -125,7 +109,7 @@ theorem _root_.OrderIso.isNormal (f : α ≃o β) : IsNormal f :=
 protected theorem id : IsNormal (@id α) :=
   (OrderIso.refl _).isNormal
 
-theorem trans (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) where
+theorem comp (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) where
   strictMono := hg.strictMono.comp hf.strictMono
   mem_lowerBounds_upperBounds := by
     intro a ha b hb
