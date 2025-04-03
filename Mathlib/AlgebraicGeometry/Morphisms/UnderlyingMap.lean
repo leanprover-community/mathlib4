@@ -17,6 +17,7 @@ of the underlying map of topological spaces, including
 - `Surjective`
 - `IsOpenMap`
 - `IsClosedMap`
+- `GeneralizingMap`
 - `IsEmbedding`
 - `IsOpenEmbedding`
 - `IsClosedEmbedding`
@@ -112,6 +113,9 @@ instance : (topologically IsOpenMap).RespectsIso :=
 
 instance isOpenMap_isLocalAtTarget : IsLocalAtTarget (topologically IsOpenMap) :=
   topologically_isLocalAtTarget' _ fun _ _ _ hU _ ↦ hU.isOpenMap_iff_restrictPreimage
+
+instance : IsLocalAtSource (topologically IsOpenMap) :=
+  topologically_isLocalAtSource' (fun _ ↦ _) fun _ _ _ hU _ ↦ hU.isOpenMap_iff_comp
 
 end IsOpenMap
 
@@ -248,5 +252,20 @@ instance specializingMap_isLocalAtTarget : IsLocalAtTarget (topologically @Speci
     use a.val, ha, hay
 
 end SpecializingMap
+
+section GeneralizingMap
+
+instance : (topologically GeneralizingMap).RespectsIso :=
+  topologically_respectsIso _ (fun f ↦ f.isOpenEmbedding.generalizingMap
+    f.isOpenEmbedding.isOpen_range.stableUnderGeneralization) (fun _ _ hf hg ↦ hf.comp hg)
+
+instance : IsLocalAtSource (topologically GeneralizingMap) :=
+  topologically_isLocalAtSource' (fun _ ↦ _) fun _ _ _ hU _ ↦ hU.generalizingMap_iff_comp
+
+instance : IsLocalAtTarget (topologically GeneralizingMap) :=
+  topologically_isLocalAtTarget' (fun _ ↦ _) fun _ _ _ hU _ ↦
+    hU.generalizingMap_iff_restrictPreimage
+
+end GeneralizingMap
 
 end AlgebraicGeometry

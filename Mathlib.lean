@@ -1120,6 +1120,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.SurjectiveOnStalks
 import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
+import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 import Mathlib.AlgebraicGeometry.Noetherian
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.Over
