@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
   Heather Macbeth
 -/
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # The span of a set of vectors, as a submodule
@@ -364,6 +365,12 @@ theorem sup_toAddSubmonoid : (p ⊔ p').toAddSubmonoid = p.toAddSubmonoid ⊔ p'
   ext x
   rw [mem_toAddSubmonoid, mem_sup, AddSubmonoid.mem_sup]
   rfl
+
+theorem sup_eq_top_iff : p ⊔ p' = ⊤ ↔ ∀ m : M, ∃ u ∈ p, ∃ v ∈ p', m = u + v := by
+  rw [eq_top_iff']
+  refine forall_congr' fun m ↦ ?_
+  rw [mem_sup]
+  tauto
 
 end
 

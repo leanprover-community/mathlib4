@@ -543,7 +543,7 @@ theorem Finset.sum_apply' : (∑ k ∈ s, f k) i = ∑ k ∈ s, f k i :=
 theorem Finsupp.sum_apply' : g.sum k x = g.sum fun i b => k i b x :=
   Finset.sum_apply _ _ _
 
-/-- Version of `Finsupp.apply'` that applies in large generality to linear combinations
+/-- Version of `Finsupp.sum_apply'` that applies in large generality to linear combinations
 of functions in any `FunLike` type on which addition is defined pointwise.
 
 At the time of writing Mathlib does not have a typeclass to express the condition

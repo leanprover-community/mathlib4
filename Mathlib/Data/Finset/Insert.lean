@@ -278,8 +278,6 @@ theorem cons_empty (a : α) : cons a ∅ (not_mem_empty _) = {a} := rfl
 theorem cons_nonempty (h : a ∉ s) : (cons a s h).Nonempty :=
   ⟨a, mem_cons.2 <| Or.inl rfl⟩
 
-@[deprecated (since := "2024-09-19")] alias nonempty_cons := cons_nonempty
-
 @[simp] theorem cons_ne_empty (h : a ∉ s) : cons a s h ≠ ∅ := (cons_nonempty _).ne_empty
 
 @[simp]
@@ -385,7 +383,7 @@ theorem mem_of_mem_insert_of_ne (h : b ∈ insert a s) : b ≠ a → b ∈ s :=
 theorem eq_of_mem_insert_of_not_mem (ha : b ∈ insert a s) (hb : b ∉ s) : b = a :=
   (mem_insert.1 ha).resolve_right hb
 
-/-- A version of `LawfulSingleton.insert_emptyc_eq` that works with `dsimp`. -/
+/-- A version of `LawfulSingleton.insert_empty_eq` that works with `dsimp`. -/
 @[simp] lemma insert_empty : insert a (∅ : Finset α) = {a} := rfl
 
 @[simp]
@@ -621,7 +619,7 @@ theorem toFinset_cons (a : α) (s : Multiset α) : toFinset (a ::ₘ s) = insert
 
 @[simp]
 theorem toFinset_singleton (a : α) : toFinset ({a} : Multiset α) = {a} := by
-  rw [← cons_zero, toFinset_cons, toFinset_zero, LawfulSingleton.insert_emptyc_eq]
+  rw [← cons_zero, toFinset_cons, toFinset_zero, LawfulSingleton.insert_empty_eq]
 
 end Multiset
 

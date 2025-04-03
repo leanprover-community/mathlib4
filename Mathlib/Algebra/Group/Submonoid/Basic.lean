@@ -297,6 +297,20 @@ theorem disjoint_def' {p₁ p₂ : Submonoid M} :
     Disjoint p₁ p₂ ↔ ∀ {x y : M}, x ∈ p₁ → y ∈ p₂ → x = y → x = 1 :=
   disjoint_def.trans ⟨fun h _ _ hx hy hxy => h hx <| hxy.symm ▸ hy, fun h _ hx hx' => h hx hx' rfl⟩
 
+variable {t : Set M}
+
+@[to_additive (attr := simp)]
+lemma closure_sdiff_eq_closure (hts : t ⊆ closure (s \ t)) : closure (s \ t) = closure s := by
+  refine (closure_mono Set.diff_subset).antisymm <| closure_le.mpr <| fun x hxs ↦ ?_
+  by_cases hxt : x ∈ t
+  · exact hts hxt
+  · rw [SetLike.mem_coe, Submonoid.mem_closure]
+    exact fun N hN ↦ hN <| Set.mem_diff_of_mem hxs hxt
+
+@[to_additive (attr := simp)]
+lemma closure_sdiff_singleton_one (s : Set M) : closure (s \ {1}) = closure s :=
+  closure_sdiff_eq_closure <| by simp [one_mem]
+
 end Submonoid
 
 namespace MonoidHom
