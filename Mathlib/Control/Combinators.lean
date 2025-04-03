@@ -42,12 +42,7 @@ export List (mapM mapM' filterM foldlM)
 
 namespace Monad
 
-/--
-Applies the monadic action f on every element in the list, left-to-right,
-and returns the list of results.
-
-See also `List.mapM`.
--/
+@[inherit_doc List.mapM]
 def mapM :=
   @List.mapM
 
