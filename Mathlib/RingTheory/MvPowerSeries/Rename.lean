@@ -3,8 +3,7 @@ Copyright (c) 2025 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.MvPowerSeries.Evaluation
-import Mathlib.RingTheory.MvPowerSeries.LinearTopology
+import Mathlib.RingTheory.MvPowerSeries.Substitution
 
 /-!
 # Renaming variables of power series.
@@ -48,38 +47,40 @@ namespace MvPowerSeries
 
 section Rename
 
-open WithPiTopology Function Filter
+open Function Filter
 
 variable [CommRing R] {f : σ → τ} (hf : Tendsto f cofinite cofinite)
 
 include hf
 
-variable [UniformSpace R] [IsTopologicalRing R] [IsUniformAddGroup R] [CompleteSpace R]
-  [T2Space R] [IsLinearTopology R R]
-
 /-- Rename all the variables in a multivariable power series. -/
 def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R :=
-  aeval (hasEval_X_comp hf)
+  substAlgHom (hasSubst_X_comp hf)
 
 theorem rename_C (r : R) : rename hf (C σ R r) = C τ R r := by
-  simp [rename, coe_aeval, ← c_eq_algebraMap]
+  simp [rename, c_eq_algebraMap]
 
 @[simp]
 theorem rename_X (i : σ) : rename hf (X i : MvPowerSeries σ R) = X (f i) := by
-  simpa using aeval_coe (hasEval_X_comp hf) (MvPolynomial.X i)
+  simp [rename, hasSubst_X_comp hf]
 
 @[simp]
 theorem rename_monomial (n : σ →₀ ℕ) (r : R) :
     rename hf (monomial R n r : MvPowerSeries σ R) = monomial R (n.mapDomain f) r := by
-  rw [← mul_one r, ← smul_eq_mul, map_smul, map_smul, map_smul]
-  congr
-  induction n using Finsupp.induction_linear with
-  | h0 => simp [rename_C]
-  | hadd n m hn hm =>
-      rw [← one_mul 1, ← monomial_mul_monomial, map_mul, hn, hm, monomial_mul_monomial,
-        Finsupp.mapDomain_add]
-  | hsingle i n =>
-    rw [← X_pow_eq, map_pow, rename_X, X_pow_eq, Finsupp.mapDomain_single]
+  dsimp only [rename]
+  rw [substAlgHom_monomial]
+
+
+  sorry
+  -- rw [← mul_one r, ← smul_eq_mul, map_smul, map_smul, map_smul]
+  -- congr
+  -- induction n using Finsupp.induction_linear with
+  -- | h0 => simp [rename_C]
+  -- | hadd n m hn hm =>
+  --     rw [← one_mul 1, ← monomial_mul_monomial, map_mul, hn, hm, monomial_mul_monomial,
+  --       Finsupp.mapDomain_add]
+  -- | hsingle i n =>
+  --   rw [← X_pow_eq, map_pow, rename_X, X_pow_eq, Finsupp.mapDomain_single]
 
 @[fun_prop]
 theorem continuous_rename : Continuous (rename (R := R) hf) :=
