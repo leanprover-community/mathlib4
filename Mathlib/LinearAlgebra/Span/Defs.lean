@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
   Heather Macbeth
 -/
 import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # The span of a set of vectors, as a submodule
@@ -183,7 +184,7 @@ theorem closure_induction {p : (x : M) → x ∈ span R s → Prop}
     (smul_mem : ∀ (r x) (h : x ∈ s), p (r • x) (Submodule.smul_mem _ _ <| subset_span h)) {x}
     (hx : x ∈ span R s) : p x hx := by
   have key {v} : v ∈ span R s ↔ v ∈ closure (@univ R • s) := by simp [← span_eq_closure]
-  refine AddSubmonoid.closure_induction (p := fun x hx ↦ p x (key.mpr hx))
+  refine AddSubmonoid.closure_induction (motive := fun x hx ↦ p x (key.mpr hx))
     ?_ zero (by simpa only [key] using add) (key.mp hx)
   rintro - ⟨r, -, x, hx, rfl⟩
   exact smul_mem r x hx
@@ -364,6 +365,12 @@ theorem sup_toAddSubmonoid : (p ⊔ p').toAddSubmonoid = p.toAddSubmonoid ⊔ p'
   ext x
   rw [mem_toAddSubmonoid, mem_sup, AddSubmonoid.mem_sup]
   rfl
+
+theorem sup_eq_top_iff : p ⊔ p' = ⊤ ↔ ∀ m : M, ∃ u ∈ p, ∃ v ∈ p', m = u + v := by
+  rw [eq_top_iff']
+  refine forall_congr' fun m ↦ ?_
+  rw [mem_sup]
+  tauto
 
 end
 

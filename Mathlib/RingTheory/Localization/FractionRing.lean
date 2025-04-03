@@ -128,6 +128,7 @@ See note [reducible non-instances]. -/
 @[stacks 09FJ]
 noncomputable abbrev toField : Field K where
   __ := IsFractionRing.isDomain A
+  inv := IsFractionRing.inv A
   mul_inv_cancel := IsFractionRing.mul_inv_cancel A
   inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
   nnqsmul := _
@@ -436,7 +437,7 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
   delta IsFractionRing
   convert isLocalization_iff_of_base_ringEquiv (nonZeroDivisors R) S h
   ext x
-  erw [Submonoid.map_equiv_eq_comap_symm]
+  rw [← Submonoid.map_coe_toMulEquiv, Submonoid.map_equiv_eq_comap_symm]
   simp only [MulEquiv.coe_toMonoidHom, RingEquiv.toMulEquiv_eq_coe, Submonoid.mem_comap]
   constructor
   · rintro hx z (hz : z * h.symm x = 0)
