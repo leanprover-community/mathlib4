@@ -126,12 +126,8 @@ theorem toSignedMeasure_restrict_eq_restrict_toSigned (hs : MeasurableSet s) :
   simp [toSignedMeasure_apply, hA, hs, MeasurableSet.inter, ↓reduceIte, restrict_apply]
 
 @[simp]
-theorem toSignedMeasure_le_iff : μ ≤ ν ↔ μ.toSignedMeasure ≤ ν.toSignedMeasure := by
+theorem toSignedMeasure_le_iff : μ.toSignedMeasure ≤ ν.toSignedMeasure ↔ μ ≤ ν   := by
   constructor
-  · intro h A hA
-    simp only [toSignedMeasure_apply, hA, ↓reduceIte, ne_eq, measure_ne_top, not_false_eq_true,
-      ENNReal.toReal_le_toReal]
-    exact h A
   · intro h
     rw [Measure.le_iff]
     intro A hA
@@ -139,6 +135,10 @@ theorem toSignedMeasure_le_iff : μ ≤ ν ↔ μ.toSignedMeasure ≤ ν.toSigne
     simp only [toSignedMeasure_apply, hA, ↓reduceIte, ne_eq, measure_ne_top,
       not_false_eq_true, ENNReal.toReal_le_toReal] at h
     exact h
+  · intro h A hA
+    simp only [toSignedMeasure_apply, hA, ↓reduceIte, ne_eq, measure_ne_top, not_false_eq_true,
+      ENNReal.toReal_le_toReal]
+    exact h A
 
 @[simp]
 theorem sub_zero {μ : Measure α} : μ - 0 = μ := by
@@ -159,11 +159,11 @@ lemma sub_eq_zero_of_ge_on {μ ν : Measure α} (hs : SetWhereGe μ ν s) : (ν 
 lemma ofSignedMeasure_setWhereGe (hs : SignedMeasure.SetWhereGe μ ν s) : SetWhereGe μ ν s := by
   constructor
   · exact hs.measurable
-  · rw [toSignedMeasure_le_iff, ← sub_nonneg,
+  · rw [toSignedMeasure_le_iff.symm, ← sub_nonneg,
         ← toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable,
         ← toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable]
     simp [hs.ge_on]
-  · rw [toSignedMeasure_le_iff, ← sub_nonneg,
+  · rw [toSignedMeasure_le_iff.symm, ← sub_nonneg,
         ← toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable.compl,
         ← toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable.compl]
     simp [hs.ge_on_compl]
@@ -173,10 +173,10 @@ lemma toSignedMeasure_setWhereGe (hs : SetWhereGe μ ν s) : SignedMeasure.SetWh
   · exact hs.measurable
   · rw [toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable,
         toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable]
-    exact toSignedMeasure_le_iff.mp hs.ge_on
+    exact toSignedMeasure_le_iff.mpr hs.ge_on
   · rw [toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable.compl,
         toSignedMeasure_restrict_eq_restrict_toSigned hs.measurable.compl]
-    exact toSignedMeasure_le_iff.mp hs.ge_on_compl
+    exact toSignedMeasure_le_iff.mpr hs.ge_on_compl
 
 @[simp]
 theorem setWhereGe_iff_setWhereGeSignedMeasure :
@@ -198,7 +198,7 @@ lemma toSignedMeasure_restrict_sub (hs : SignedMeasure.SetWhereGe μ ν s) :
       μ.toSignedMeasure.restrict s - ν.toSignedMeasure.restrict s := by
   have hmeas := hs.measurable
   have hle : ν.restrict s ≤ μ.restrict s := by
-    rw [toSignedMeasure_le_iff]
+    rw [toSignedMeasure_le_iff.symm]
     rw [← toSignedMeasure_restrict_eq_restrict_toSigned hmeas,
         ← toSignedMeasure_restrict_eq_restrict_toSigned hmeas]
     exact hs.ge_on
