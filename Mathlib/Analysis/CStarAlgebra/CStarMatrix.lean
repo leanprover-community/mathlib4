@@ -344,16 +344,36 @@ lemma ofMatrix_eq_ofMatrixStarAlgEquiv [Fintype n] [SMul ℂ A] [Semiring A] [St
     (ofMatrix : Matrix n n A → CStarMatrix n n A)
       = (ofMatrixStarAlgEquiv : Matrix n n A → CStarMatrix n n A) := rfl
 
-def reindexₐ [Fintype m] [Fintype n] [AddCommMonoid A] [Mul A] [SMul R A] [Star A] (e : n ≃ m) :
-    CStarMatrix n n A ≃⋆ₐ[R] CStarMatrix m m A where
-  toFun := sorry
-  invFun := sorry
-  left_inv := by sorry
-  right_inv := by sorry
-  map_mul' := by sorry
-  map_add' := by sorry
-  map_star' := by sorry
-  map_smul' := by sorry
+/-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
+equivalence. -/
+def reindexₗ {l o : Type*} [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A]
+    [Module R A] [Star A] (eₘ : m ≃ l) (eₙ : n ≃ o) :
+    CStarMatrix m n A ≃ₗ[R] CStarMatrix l o A :=
+  { Matrix.reindex eₘ eₙ with
+    map_add' M N := by ext; simp
+    map_smul' r M := by ext; simp }
+
+/-- The natural map that reindexes a matrix's rows and columns with equivalent types is an
+equivalence. -/
+def reindexₐ [Fintype m] [Fintype n] [Semiring R] [AddCommMonoid A] [Mul A] [Module R A] [Star A]
+    (e : m ≃ n) : CStarMatrix m m A ≃⋆ₐ[R] CStarMatrix n n A :=
+  { reindexₗ e e with
+    map_mul' M N := by
+      ext i j
+      dsimp
+      unfold reindexₗ
+      simp only [Equiv.toFun_as_coe, Equiv.invFun_as_coe, Matrix.reindex_symm, LinearEquiv.coe_mk,
+        Matrix.reindex_apply, Matrix.submatrix_apply, mul_apply]
+      refine Fintype.sum_equiv e _ _ ?_
+      intro k
+      simp
+    map_star' M := by
+      ext
+      dsimp
+      unfold reindexₗ
+      dsimp
+      rw [Matrix.star_apply, Matrix.star_apply]
+      simp [Matrix.submatrix_apply] }
 
 end basic
 
@@ -792,5 +812,15 @@ lemma ofMatrix_eq_ofMatrixL :
       = (ofMatrixL : Matrix m n A → CStarMatrix m n A) := rfl
 
 end
+
+section block_inequalities
+
+variable {𝓐 : Type*} [NonUnitalCStarAlgebra 𝓐] [PartialOrder 𝓐] [StarOrderedRing 𝓐]
+variable {m n : Type*} [Fintype m] [Fintype n]
+
+
+
+
+end block_inequalities
 
 end CStarMatrix
