@@ -93,8 +93,7 @@ theorem map_isLUB (hf : IsNormal f) {s : Set α} (hs : IsLUB s a) (hs' : s.Nonem
 
 theorem _root_.InitialSeg.isNormal (f : α ≤i β) : IsNormal f where
   strictMono := f.strictMono
-  isLUB_image_Iio_of_isSuccLimit := by
-    intro a ha
+  isLUB_image_Iio_of_isSuccLimit a ha := by
     rw [f.image_Iio]
     exact (f.map_isSuccLimit ha).isLUB_Iio
 
