@@ -192,9 +192,6 @@ theorem IsTrail.length_le_card_edgeFinset [Fintype G.edgeSet] {u v : V}
     simpa [edges] using h
   exact Finset.card_le_card this
 
-lemma IsTrail.darts_nodup {u v : V} {w : G.Walk u v} (h : w.IsTrail) : w.darts.Nodup :=
-    h.edges_nodup.of_map
-
 theorem IsPath.nil {u : V} : (nil : G.Walk u u).IsPath := by constructor <;> simp
 
 theorem IsPath.of_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} :
@@ -226,8 +223,8 @@ theorem concat_isPath_iff {u v w : V} (p : G.Walk u v) (h : G.Adj v w)  :
   rw [← isPath_reverse_iff, reverse_concat]
   simp
 
-protected lemma IsPath.concat {p : G.Walk u v} {h : G.Adj v w} (hp : p.IsPath) (hu : w ∉ p.support)
-    : (p.concat h).IsPath := (concat_isPath_iff _ _).2 ⟨hp, hu⟩
+protected lemma IsPath.concat {p : G.Walk u v} (hp : p.IsPath) (hu : w ∉ p.support)
+    {h : G.Adj v w} : (p.concat h).IsPath := (concat_isPath_iff _ _).2 ⟨hp, hu⟩
 
 theorem IsPath.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w} :
     (p.append q).IsPath → p.IsPath := by
@@ -385,12 +382,12 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
   rwa [getVert_eq_support_get (Nat.le_of_lt_succ <| i.2.trans_le p.length_support.le),
         getVert_eq_support_get (Nat.le_of_lt_succ <| j.2.trans_le p.length_support.le)]
 
-lemma IsPath.not_mem_tail_support_of_not_nil {p : G.Walk u v} (hp : p.IsPath) (hn : ¬p.Nil) :
+lemma IsPath.not_start_mem_tail_support_of_not_nil {p : G.Walk u v} (hp : p.IsPath) (hn : ¬ p.Nil) :
     u ∉ p.tail.support :=
   fun h ↦ ((cons_isPath_iff ..).1 ((cons_tail_eq _ hn) ▸ hp)).2 h
 
-lemma IsPath.not_mem_dropLast_support_of_not_nil {p : G.Walk u v} (hp : p.IsPath) (hn : ¬p.Nil) :
-    v ∉ p.dropLast.support :=
+lemma IsPath.not_end_mem_dropLast_support_of_not_nil {p : G.Walk u v} (hp : p.IsPath)
+    (hn : ¬ p.Nil) : v ∉ p.dropLast.support :=
   fun h ↦ ((concat_isPath_iff _ _).1 ((concat_dropLast_eq _ hn) ▸ hp)).2 h
 
 /-! ### About cycles -/
@@ -466,6 +463,7 @@ lemma IsPath.eq_penultimate_of_end_mem_edge (hp : p.IsPath) (hs : s(x, v) ∈ p.
      x = p.penultimate :=
   p.snd_reverse.symm ▸
     hp.reverse.eq_snd_of_start_mem_edge (p.edges_reverse ▸ (List.mem_reverse.mpr hs))
+
 lemma IsPath.cons_drop_isCycle (hp : p.IsPath) (ha : G.Adj v (p.getVert n))
     (hs : p.getVert n ≠ p.penultimate) : ((p.drop n).cons ha).IsCycle :=
   cons_isCycle_iff _ ha|>.2 ⟨hp.drop _, fun hf ↦ (fun hf ↦ hs
@@ -542,7 +540,6 @@ lemma IsPath.cons_dropUntil_isCycle (hp : p.IsPath) (ha : G.Adj v x) (hx : x ∈
   cons_isCycle_iff _ ha|>.2 ⟨hp.dropUntil _, fun hf ↦ (fun hf ↦ hs
     <| hp.eq_penultimate_of_end_mem_edge hf) <| (edges_dropUntil_subset ..) (Sym2.eq_swap ▸ hf)⟩
 
-
 lemma IsPath.support_takeUntil_disjoint_dropUntil_tail (hp : p.IsPath) (hx : x ∈ p.support) :
     List.Disjoint (p.takeUntil x hx).support (p.dropUntil x hx).support.tail := by
   rw [← p.take_spec hx, append_isPath_iff] at hp
@@ -597,74 +594,6 @@ lemma IsCycle.snd_eq_snd_of_rotate_fst_dart [DecidableEq V] {c : G.Walk u u} {d 
   rw [(hc.rotate (c.dart_fst_mem_support_of_mem_darts hd)).snd_eq_snd_of_start_eq_fst
         ((c.rotate_darts (c.dart_fst_mem_support_of_mem_darts hd)).mem_iff.2 hd)]
   rfl
-
-@[simp]
-lemma IsPath.getVert_succ_of_mem_darts {p : G.Walk u v} {d : G.Dart} {n : ℕ} (hp : p.IsPath)
-    (hd : d ∈ p.darts) (hn : p.getVert n = d.toProd.1) : p.getVert (n + 1) = d.toProd.2 := by
-  induction p generalizing n with
-  | nil => simp_all
-  | cons h p ih =>
-    rw [getVert_cons_succ, darts_cons] at *
-    cases n with
-    | zero =>
-      cases hd with
-      | head as => simp_all
-      | tail _ hd =>
-        exfalso
-        rw [getVert_zero] at hn
-        exact cons_isPath_iff ..|>.1 hp |>.2 (hn ▸ ((dart_fst_mem_support_of_mem_darts _ hd)))
-    | succ n =>
-      cases hd with
-      | head as =>
-        dsimp only at hn
-        exact (cons_isPath_iff ..|>.1 hp |>.2 <| hn ▸ (getVert_mem_support p n)).elim
-      | tail _ hd => exact ih hp.of_cons hd hn
-
-@[simp]
-lemma IsCycle.getVert_succ_of_mem_darts {p : G.Walk u u} {d : G.Dart} {n : ℕ} (hp : p.IsCycle)
-    (hd : d ∈ p.darts) (hn : p.getVert n = d.toProd.1) (hn2 : n < p.length) :
-    p.getVert (n + 1) = d.toProd.2 := by
-  cases p  with
-  | nil => simp_all
-  | cons h p =>
-    rw [getVert_cons_succ] at *
-    cases n with
-    | zero => exact hp.snd_eq_snd_of_start_eq_fst hd hn
-    | succ n =>
-      cases hd with
-      | head as =>
-        dsimp only at *
-        simp_all only [length_cons, Nat.add_lt_add_iff_right, getVert_cons_succ]
-        rw [cons_isCycle_iff] at hp
-        exfalso
-        have : p.getVert p.length = p.getVert n := hn.symm ▸ p.getVert_length
-        apply not_lt.2 (hp.1.getVert_injOn hn2.le (by simp) this.symm).ge hn2
-      | tail _ hd =>
-        rw [getVert_cons_succ] at hn
-        rw [cons_isCycle_iff] at hp
-        exact hp.1.getVert_succ_of_mem_darts hd hn
-
-/-- If a path `q : G.Walk u v` is contained in a Finset `s` then we can extend it to a path `p ++ q`
-contained in `s`, where `p : G.Walk x u` and `x` has no neighbors in `s` outside of `p ++ q`. -/
-lemma exists_maximal_path_subset {q : G.Walk u v} (s : Finset V) (hq : q.IsPath)
-    (hs : ∀ y , y ∈ q.support → y ∈ s) :
-    ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧ (∀ y, y ∈ (p.append q).support → y ∈ s) ∧
-    ∀ y, G.Adj x y → y ∈ s → y ∈ (p.append q).support := by
-  classical
-  by_contra! hf
-  have : ∀ n, ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧ (∀ x, x ∈ (p.append q).support → x ∈ s) ∧
-    n ≤ (p.append q).length := by
-    intro n
-    induction n with
-    | zero => exact ⟨u, .nil, by simpa using ⟨hq, hs⟩⟩
-    | succ n ih =>
-      obtain ⟨x, p, hp, hs, hc⟩ := ih
-      obtain ⟨y, hy⟩ := hf x p hp hs
-      exact ⟨y, p.cons hy.1.symm, by aesop⟩
-  obtain ⟨_, _, hp, hc1, hc2⟩ := this s.card
-  simp_rw [← List.mem_toFinset] at hc1
-  have := length_support _ ▸ (List.toFinset_card_of_nodup hp.2) ▸ (Finset.card_le_card hc1)
-  exact hc2.not_lt this
 
 end Walk
 
@@ -989,7 +918,7 @@ theorem toDeleteEdges_copy {v u u' v' : V} (s : Set (Sym2 V))
 variable {G}
 lemma IsCycle.snd_not_mem_tail_tail_support {u} {c : G.Walk u u} (hc : c.IsCycle) :
     c.snd ∉ c.tail.tail.support :=
-  hc.isPath_tail.not_mem_tail_support_of_not_nil hc.tail_not_nil
+  hc.isPath_tail.not_start_mem_tail_support_of_not_nil hc.tail_not_nil
 
 lemma mem_tail_support_iff_not_nil {u v} {c : G.Walk u u} (hc : ¬ c.Nil) :
     v ∈ c.tail.support ↔ v ∈ c.support := by

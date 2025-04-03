@@ -2,7 +2,7 @@ import Mathlib.Combinatorics.SimpleGraph.Brooks.PartialColoring
 set_option linter.style.header false
 namespace SimpleGraph
 variable {α : Type*} {G : SimpleGraph α}
-open Finset
+open List Walk Finset
 
 
 /-!
@@ -57,7 +57,29 @@ We consider two cases:
    `w` and `vₘ₊₁`.
 --------------------------------------------/
 
-open PartialColoring Walk List
+
+
+/-- If a path `q : G.Walk u v` is contained in a Finset `s` then we can extend it to a path `p ++ q`
+contained in `s`, where `p : G.Walk x u` and `x` has no neighbors in `s` outside of `p ++ q`. -/
+lemma Walk.exists_maximal_path_subset {u v : α} {q : G.Walk u v} (s : Finset α) (hq : q.IsPath)
+    (hs : ∀ y , y ∈ q.support → y ∈ s) :
+    ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧ (∀ y, y ∈ (p.append q).support → y ∈ s) ∧
+    ∀ y, G.Adj x y → y ∈ s → y ∈ (p.append q).support := by
+  classical
+  by_contra! hf
+  have : ∀ n, ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧ (∀ x, x ∈ (p.append q).support → x ∈ s) ∧
+    n ≤ (p.append q).length := by
+    intro n
+    induction n with
+    | zero => exact ⟨u, .nil, by simpa using ⟨hq, hs⟩⟩
+    | succ n ih =>
+      obtain ⟨x, p, hp, hs, hc⟩ := ih
+      obtain ⟨y, hy⟩ := hf x p hp hs
+      exact ⟨y, p.cons hy.1.symm, by aesop⟩
+  obtain ⟨_, _, hp, hc1, hc2⟩ := this s.card
+  simp_rw [← List.mem_toFinset] at hc1
+  have := length_support _ ▸ (toFinset_card_of_nodup hp.2) ▸ (card_le_card hc1)
+  exact hc2.not_lt this
 
 lemma Walk.IsCycle.support_rotate_tail_tail_eq [DecidableEq α] {u : α} {c : G.Walk u u} {d : G.Dart}
     (hc : c.IsCycle) (hd : d ∈ c.darts) :
@@ -68,6 +90,7 @@ lemma Walk.IsCycle.support_rotate_tail_tail_eq [DecidableEq α] {u : α} {c : G.
   rw [Finset.mem_erase, mem_toFinset, mem_toFinset, hc.snd_eq_snd_of_rotate_fst_dart hd,
       (hc.rotate hr).mem_tail_tail_support_iff, mem_support_rotate_iff]
 
+open PartialColoring
 variable {k : ℕ} [Fintype α] [DecidableRel G.Adj] [DecidableEq α]
 
 theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k)

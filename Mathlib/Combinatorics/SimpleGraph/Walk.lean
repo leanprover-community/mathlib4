@@ -257,11 +257,6 @@ theorem exists_concat_eq_cons {u v w : V} :
   | nil, h => ⟨_, h, nil, rfl⟩
   | cons h' p, h => ⟨_, h', Walk.concat p h, concat_cons _ _ _⟩
 
-theorem exists_eq_concat_of_ne {u v : V} (hne : u ≠ v) :
-    ∀ (p : G.Walk u v), ∃ (w : V) (p' : G.Walk u w) (h : G.Adj w v) , p = p'.concat h
-  | nil => (hne rfl).elim
-  | cons h p => exists_cons_eq_concat h p
-
 @[simp]
 theorem reverse_nil {u : V} : (nil : G.Walk u u).reverse = nil := rfl
 
@@ -870,7 +865,7 @@ def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
   | .cons _ q, (n + 1) => q.drop n
 
 @[simp]
-lemma drop_nil {u : V} {n : ℕ} : (nil : G.Walk u u).drop n = nil := by
+lemma drop_nil {u : V} (n : ℕ) : (nil : G.Walk u u).drop n = nil := by
   cases n <;> rfl
 
 @[simp]
@@ -887,19 +882,6 @@ lemma drop_not_nil_iff {p : G.Walk v w} {n : ℕ} : ¬ (p.drop n).Nil ↔ n < p.
   induction p generalizing n with
   | nil => simp
   | cons h p ih => cases n <;> simp [ih]
-
-@[simp]
-lemma drop_length_le {u v : V} {n : ℕ} (p : G.Walk u v) (hn : p.length ≤ n ) :
-    p.drop n = (nil : G.Walk v v).copy (by simp [hn]) rfl := by
-  induction p generalizing n with
-  | nil => simp
-  | cons h p ih =>
-    rw [length_cons] at hn
-    cases n with
-    | zero => omega
-    | succ n =>
-      rw [Nat.add_le_add_iff_right] at hn
-      simp [ih hn]
 
 /-- The second vertex of a walk, or the only vertex in a nil walk. -/
 abbrev snd (p : G.Walk u v) : V := p.getVert 1
@@ -923,12 +905,12 @@ lemma take_nil {u : V} {n : ℕ} : (nil : G.Walk u u).take n = nil := by
   cases n <;> rfl
 
 @[simp]
-lemma take_zero {u v : V} (p : G.Walk u v) :
+lemma take_zero {u v : V} {p : G.Walk u v} :
     p.take 0 = (nil : G.Walk u u).copy rfl (getVert_zero p).symm := by
   cases p <;> rfl
 
 @[simp]
-lemma take_cons_succ {u v w : V} {h : G.Adj u v} {n : ℕ} {p : G.Walk v w} :
+lemma take_cons_succ {u v w : V} {h : G.Adj u v} {p : G.Walk v w} {n : ℕ} :
   (cons h p).take (n + 1) = cons h (p.take n) := rfl
 
 @[simp]
@@ -937,32 +919,6 @@ theorem take_append_drop {u v : V} (p : G.Walk u v) (n : ℕ)  :
   induction p generalizing n with
   | nil => cases n <;> rfl
   | cons h p ih => cases n <;> simp [ih]
-
-@[simp]
-theorem take_append_cons_drop_succ {u v : V} (p : G.Walk u v) {n : ℕ} (hn : n < p.length)  :
-    (p.take n).append (cons (p.adj_getVert_succ hn) (p.drop (n + 1))) = p := by
-  induction p generalizing n with
-  | nil => simp at hn
-  | cons h p ih =>
-    cases n with
-    | zero => simp
-    | succ n =>
-      rw [ take_cons_succ, drop_cons_succ]
-      rw [length_cons, Nat.add_lt_add_iff_right] at hn
-      simpa using ih hn
-
-@[simp]
-lemma take_length_le {u v : V} {n : ℕ} (p : G.Walk u v) (hn : p.length ≤ n ) :
-    p.take n = p.copy rfl (by simp [hn]) := by
-  induction p generalizing n with
-  | nil => simp
-  | cons h p ih =>
-    rw [length_cons] at hn
-    cases n with
-    | zero => omega
-    | succ n =>
-      rw [Nat.add_le_add_iff_right] at hn
-      simp [ih hn]
 
 theorem length_take_le_length {u v : V} (p : G.Walk u v) (n : ℕ) :
     (p.take n).length ≤ p.length := by
@@ -975,7 +931,7 @@ theorem length_take_le {u v : V} (p : G.Walk u v) (n : ℕ) : (p.take n).length 
   | zero => simp
   | succ _ ih => cases p <;> simp [ih _]
 
-theorem length_take {u v : V} {n : ℕ} (p : G.Walk u v) (hn : n ≤ p.length) :
+theorem length_take_of_le_length {u v : V} {n : ℕ} (p : G.Walk u v) (hn : n ≤ p.length) :
     (p.take n).length = n := by
   induction n generalizing u v with
   | zero => simp
@@ -990,22 +946,24 @@ theorem length_take {u v : V} {n : ℕ} (p : G.Walk u v) (hn : n ≤ p.length) :
 
 theorem length_take_eq_iff {u v : V} {n : ℕ} (p : G.Walk u v) :
     (p.take n).length = n ↔ n ≤ p.length :=
-  ⟨fun h ↦ h.symm ▸ length_take_le_length .., fun h ↦ length_take p h⟩
+  ⟨fun h ↦ h.symm ▸ length_take_le_length .., fun h ↦ length_take_of_le_length _ h⟩
 
 theorem length_drop {u v : V} {n : ℕ} (p : G.Walk u v) (hn : n ≤ p.length) :
     (p.drop n).length = p.length - n := by
   have := congr_arg Walk.length (take_append_drop p n)
-  rw [length_append, length_take _ hn] at this
+  rw [length_append, length_take_of_le_length _ hn] at this
   omega
 
 lemma getVert_eq_support_get {u v : V} {p : G.Walk u v} {n : ℕ} (hn : n ≤ p.length) :
 p.getVert n = p.support.get ⟨n, p.length_support ▸ (Nat.lt_add_one_of_le hn)⟩ :=
   (List.get_eq_getElem ..) ▸ (List.getElem_eq_iff.mpr (getVert_eq_support_get? p hn).symm).symm
 
+@[simp]
 lemma getVert_take_of_ge {u v : V} {m n : ℕ} (p : G.Walk u v) (h : m ≤ n)  :
    (p.take m).getVert n = p.getVert m := by
   rw [getVert_of_length_le _ ((p.length_take_le m).trans h)]
 
+@[simp]
 lemma getVert_take_of_le {u v : V} {m n : ℕ} (p : G.Walk u v) (h : n ≤ m)  :
     (p.take m).getVert n = p.getVert n := by
   induction m generalizing n u with
@@ -1026,6 +984,7 @@ lemma getVert_take {u v : V} (p : G.Walk u v) (m n : ℕ) :
   · exact getVert_take_of_ge p h
   · exact getVert_take_of_le p (Nat.le_of_not_le h)
 
+@[simp]
 lemma getVert_drop {u v : V} (p : G.Walk u v) (m n : ℕ) :
    (p.drop m).getVert n = p.getVert (m + n) := by
   induction m generalizing n u with
@@ -1039,62 +998,6 @@ lemma getVert_drop {u v : V} (p : G.Walk u v) (m n : ℕ) :
       | succ n =>
         simp_rw [Nat.succ_add, getVert_cons_succ, drop_cons_succ] at *
         exact ih _ _
-
-/-- The walk obtained by rotating `n` darts around a closed walk. -/
-def rotate' {u : V} (p : G.Walk u u) (n : ℕ) : G.Walk (p.getVert n) (p.getVert n) :=
-  (p.drop n).append (p.take n)
-
-@[simp]
-theorem rotate'_copy {u v} {n : ℕ} (p : G.Walk u u) (hv : u = v)  :
-    (p.copy hv hv).rotate' n = (p.rotate' n).copy (by simp [hv]) (by simp [hv]) := by
-  subst_vars
-  rfl
-
-@[simp]
-theorem rotate'_zero {v} (p : G.Walk v v)  :
-    p.rotate' 0 = p.copy (getVert_zero p).symm (getVert_zero p).symm := by
-  cases p <;> simp [rotate']
-
-@[simp]
-theorem rotate'_not_nil_iff {v} {n : ℕ} {p : G.Walk v v} :  ¬ p.Nil ↔ ¬ (p.rotate' n).Nil := by
-  nth_rw 1 [← p.take_append_drop n]
-  rw [rotate', nil_append_iff, nil_append_iff, and_comm]
-
-theorem support_rotate' {v : V} {n : ℕ} (c : G.Walk v v) :
-    (c.rotate' n).support.tail ~r c.support.tail := by
-  simp only [rotate', tail_support_append]
-  apply List.IsRotated.trans List.isRotated_append
-  rw [← tail_support_append, take_append_drop]
-
-theorem rotate'_darts {v : V} {n : ℕ} (c : G.Walk v v) :
-    (c.rotate' n).darts ~r c.darts := by
-  simp only [rotate', darts_append]
-  apply List.IsRotated.trans List.isRotated_append
-  rw [← darts_append, take_append_drop]
-
-theorem rotate'_edges {v : V} {n : ℕ} (c : G.Walk v v)  :
-    (c.rotate' n).edges ~r c.edges :=
-  (rotate'_darts c).map _
-
-@[simp]
-lemma length_rotate' {v : V} {n : ℕ} {c : G.Walk v v} :
-    (c.rotate' n).length = c.length := by
-  rw [← congr_arg Walk.length (take_append_drop c n),
-      rotate', length_append, add_comm, length_append]
-
-@[simp]
-theorem rotate'_length {v} (p : G.Walk v v)  :
-    p.rotate' p.length = p.copy (getVert_length p).symm (getVert_length p).symm := by
-  cases p <;> simp [rotate']
-
-lemma getVert_rotate' {m n : ℕ} {c : G.Walk v v} (hm : m ≤ c.length) (hn : n ≤ c.length) :
-    (c.rotate' m).getVert n = if (n < c.length - m) then c.getVert (m + n)
-                                    else c.getVert (m + n - c.length) := by
-  rw [rotate', getVert_append, getVert_drop, getVert_take, c.length_drop hm] at *
-  split_ifs at * <;> try rfl
-  all_goals
-  · congr! 1
-    omega
 
 theorem support_take_subset {v w : V} (p : G.Walk v w) (n : ℕ) :
     (p.take n).support ⊆ p.support := fun x hx => by
@@ -1152,8 +1055,8 @@ lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) :
   rw [nil_iff_length_eq] at hp
   convert adj_getVert_succ _ _ <;> omega
 
-@[simp]
-lemma penultimate_mem_support (p : G.Walk u v) : p.penultimate ∈ p.support := getVert_mem_support ..
+-- @[simp]
+-- lemma penultimate_mem_support (p : G.Walk u v) : p.penultimate ∈ p.support := getVert_mem_support ..
 
 @[simp]
 lemma snd_reverse (p : G.Walk u v) : p.reverse.snd = p.penultimate := by
@@ -1215,6 +1118,7 @@ lemma dropLast_concat_eq {u v w} (p : G.Walk u v) (h : G.Adj v w) :
     · simp [*]
     · simp [concat, nil_iff_length_eq]
 
+@[simp]
 lemma concat_dropLast_eq {u v} (p : G.Walk u v) (h : ¬ p.Nil) :
     concat p.dropLast (p.adj_penultimate h) = p := by
   induction p with
