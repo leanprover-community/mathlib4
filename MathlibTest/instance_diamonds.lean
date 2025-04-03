@@ -261,12 +261,3 @@ example {A : Type*} [Ring A] [Algebra ℝ A]:
   rfl
 
 end complexToReal
-
-/-! ## Instances on `ℚ≥0`
--/
-
-/-- This diamond arose because the semifield structure on `NNRat` needs to be defined as early as
-possible, before `Nonneg.zpow` becomes available; `Nonneg.zpow` is used to then define the
-`LinearOrderedCommGroupWithZero` instance. -/
-example : (inferInstanceAs (Semifield ℚ≥0)).toCommGroupWithZero =
-    (inferInstanceAs (LinearOrderedCommGroupWithZero ℚ≥0)).toCommGroupWithZero := rfl
