@@ -25,7 +25,9 @@ yields a not-necessarily-unital, not-necessarily-associative algebra.
 `k`-linear combinations of terms of `G`, endowed with a skewed convolution product.
 
 ## TODO
-- misc theorems
+- some rewrite statements for single, coeff and others (see #10541)
+- the algebra instance (see #10541)
+- lifting lemmas (see #10541)
 -/
 
 
