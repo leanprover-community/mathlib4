@@ -45,8 +45,12 @@ lemma Functor.isFinitelyAccessible_iff_preservesFilteredColimits {F : C ⥤ D} :
 abbrev IsFinitelyPresentable (X : C) : Prop :=
   IsCardinalPresentable.{w} X ℵ₀
 
+lemma isFinitelyPresentable_iff_preservesFilteredColimitsOfSize {X : C} :
+    IsFinitelyPresentable.{w} X ↔ PreservesFilteredColimitsOfSize.{w, w} (coyoneda.obj (op X)) :=
+  Functor.IsFinitelyAccessible_iff_preservesFilteredColimitsOfSize
+
 lemma isFinitelyPresentable_iff_preservesFilteredColimits {X : C} :
-    IsFinitelyPresentable X ↔ PreservesFilteredColimits (coyoneda.obj (op X)) :=
+    IsFinitelyPresentable.{v} X ↔ PreservesFilteredColimits (coyoneda.obj (op X)) :=
   Functor.IsFinitelyAccessible_iff_preservesFilteredColimitsOfSize
 
 lemma HasCardinalFilteredColimits_iff_hasFilteredColimitsOfSize :
