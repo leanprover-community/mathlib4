@@ -288,6 +288,7 @@ provided independence is determined by its behaviour on finite sets. -/
       obtain ⟨f, hfJ, hfI₀, hfi⟩ := indep_aug (indep_subset hI hI₀I) hI₀fin hJ hJfin hcard
       exact hI₀ f ⟨Or.elim (hJss hfJ) (fun hfe ↦ (heJ <| hfe ▸ hfJ).elim) (by aesop), hfI₀⟩ hfi )
   (subset_ground := subset_ground)
+
 @[simp] theorem ofFinitaryCardAugment_indep (E : Set α) (Indep : Set α → Prop)
     indep_empty indep_subset indep_aug indep_compact subset_ground :
     (IndepMatroid.ofFinitaryCardAugment
