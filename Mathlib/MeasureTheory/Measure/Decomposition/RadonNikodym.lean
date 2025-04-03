@@ -41,7 +41,7 @@ Radon-Nikodym theorem
 -/
 
 assert_not_exists InnerProductSpace
-assert_not_exists VectorMeasure
+assert_not_exists MeasureTheory.VectorMeasure
 
 noncomputable section
 
