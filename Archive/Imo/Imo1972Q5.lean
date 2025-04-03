@@ -33,7 +33,7 @@ theorem imo1972_q5 (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y
   let k : ℝ := sSup S
   -- Show that `‖f x‖ ≤ k`.
   have hk₁ : ∀ x, ‖f x‖ ≤ k := by
-    have h : BddAbove S := ⟨1, Set.forall_range_iff.mpr hf2⟩
+    have h : BddAbove S := ⟨1, Set.forall_mem_range.mpr hf2⟩
     intro x
     exact le_csSup h (Set.mem_range_self x)
   -- Show that `2 * (‖f x‖ * ‖g y‖) ≤ 2 * k`.
@@ -82,7 +82,7 @@ This is a more concise version of the proof proposed by Ruben Van de Velde.
 -/
 theorem imo1972_q5' (f g : ℝ → ℝ) (hf1 : ∀ x, ∀ y, f (x + y) + f (x - y) = 2 * f x * g y)
     (hf2 : BddAbove (Set.range fun x => ‖f x‖)) (hf3 : ∃ x, f x ≠ 0) (y : ℝ) : ‖g y‖ ≤ 1 := by
-  -- porting note: moved `by_contra!` up to avoid a bug
+  -- Porting note: moved `by_contra!` up to avoid a bug
   by_contra! H
   obtain ⟨x, hx⟩ := hf3
   set k := ⨆ x, ‖f x‖

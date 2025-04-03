@@ -65,13 +65,13 @@ def castRingHom : ℕ →+* α :=
 lemma _root_.nsmul_eq_mul' (a : α) (n : ℕ) : n • a = a * n := by
   induction n with
   | zero => rw [zero_nsmul, Nat.cast_zero, mul_zero]
-  | succ n ih => rw [succ_nsmul', ih, Nat.cast_succ, mul_add, mul_one]
+  | succ n ih => rw [succ_nsmul, ih, Nat.cast_succ, mul_add, mul_one]
 #align nsmul_eq_mul' nsmul_eq_mul'
 
 @[simp] lemma _root_.nsmul_eq_mul (n : ℕ) (a : α) : n • a = n * a := by
   induction n with
   | zero => rw [zero_nsmul, Nat.cast_zero, zero_mul]
-  | succ n ih => rw [succ_nsmul', ih, Nat.cast_succ, add_mul, one_mul]
+  | succ n ih => rw [succ_nsmul, ih, Nat.cast_succ, add_mul, one_mul]
 #align nsmul_eq_mul nsmul_eq_mul
 
 end NonAssocSemiring
@@ -85,10 +85,10 @@ lemma cast_pow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n) = (m ^ n : α)
   | n + 1 => by rw [_root_.pow_succ', _root_.pow_succ', cast_mul, cast_pow m n]
 #align nat.cast_pow Nat.cast_pow
 
-lemma coe_nat_dvd (h : m ∣ n) : (m : α) ∣ (n : α) := map_dvd (Nat.castRingHom α) h
-#align nat.coe_nat_dvd Nat.coe_nat_dvd
+lemma cast_dvd_cast (h : m ∣ n) : (m : α) ∣ (n : α) := map_dvd (Nat.castRingHom α) h
+#align nat.coe_nat_dvd Nat.cast_dvd_cast
 
-alias _root_.Dvd.dvd.natCast := coe_nat_dvd
+alias _root_.Dvd.dvd.natCast := cast_dvd_cast
 
 end Semiring
 end Nat
@@ -175,7 +175,7 @@ theorem map_natCast [FunLike F R S] [RingHomClass F R S] (f : F) : ∀ n : ℕ, 
   map_natCast' f <| map_one f
 #align map_nat_cast map_natCast
 
---Porting note: new theorem
+-- Porting note (#10756): new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
@@ -235,7 +235,7 @@ def multiplesHom : α ≃ (ℕ →+ α) where
 
 /-- Monoid homomorphisms from `Multiplicative ℕ` are defined by the image
 of `Multiplicative.ofAdd 1`. -/
-@[to_additive existing multiplesHom]
+@[to_additive existing]
 def powersHom : α ≃ (Multiplicative ℕ →* α) :=
   Additive.ofMul.trans <| (multiplesHom _).trans <| AddMonoidHom.toMultiplicative''
 
@@ -246,7 +246,7 @@ variable {α}
 lemma multiplesHom_apply (x : α) (n : ℕ) : multiplesHom α x n = n • x := rfl
 #align multiples_hom_apply multiplesHom_apply
 
-@[to_additive existing (attr := simp) multiplesHom_apply]
+@[to_additive existing (attr := simp)]
 lemma powersHom_apply (x : α) (n : Multiplicative ℕ) :
     powersHom α x n = x ^ Multiplicative.toAdd n := rfl
 #align powers_hom_apply powersHom_apply
@@ -254,7 +254,7 @@ lemma powersHom_apply (x : α) (n : Multiplicative ℕ) :
 lemma multiplesHom_symm_apply (f : ℕ →+ α) : (multiplesHom α).symm f = f 1 := rfl
 #align multiples_hom_symm_apply multiplesHom_symm_apply
 
-@[to_additive existing (attr := simp) multiplesHom_symm_apply]
+@[to_additive existing (attr := simp)]
 lemma powersHom_symm_apply (f : Multiplicative ℕ →* α) :
     (powersHom α).symm f = f (Multiplicative.ofAdd 1) := rfl
 #align powers_hom_symm_apply powersHom_symm_apply

@@ -240,7 +240,7 @@ theorem hasMFDerivAt_fst (x : M × M') :
     rw [extChartAt_prod] at hy
     exact (extChartAt I x.1).right_inv hy.1
   apply HasFDerivWithinAt.congr_of_eventuallyEq hasFDerivWithinAt_fst this
-  -- porting note: next line was `simp only [mfld_simps]`
+  -- Porting note: next line was `simp only [mfld_simps]`
   exact (extChartAt I x.1).right_inv <| (extChartAt I x.1).map_source (mem_extChartAt_source _ _)
 #align has_mfderiv_at_fst hasMFDerivAt_fst
 
@@ -284,7 +284,7 @@ theorem mfderivWithin_fst {s : Set (M × M')} {x : M × M'}
 @[simp, mfld_simps]
 theorem tangentMap_prod_fst {p : TangentBundle (I.prod I') (M × M')} :
     tangentMap (I.prod I') I Prod.fst p = ⟨p.proj.1, p.2.1⟩ := by
-  -- porting note: `rfl` wasn't needed
+  -- Porting note: `rfl` wasn't needed
   simp [tangentMap]; rfl
 #align tangent_map_prod_fst tangentMap_prod_fst
 
@@ -312,7 +312,7 @@ theorem hasMFDerivAt_snd (x : M × M') :
     rw [extChartAt_prod] at hy
     exact (extChartAt I' x.2).right_inv hy.2
   apply HasFDerivWithinAt.congr_of_eventuallyEq hasFDerivWithinAt_snd this
-  -- porting note: the next line was `simp only [mfld_simps]`
+  -- Porting note: the next line was `simp only [mfld_simps]`
   exact (extChartAt I' x.2).right_inv <| (extChartAt I' x.2).map_source (mem_extChartAt_source _ _)
 #align has_mfderiv_at_snd hasMFDerivAt_snd
 
@@ -356,7 +356,7 @@ theorem mfderivWithin_snd {s : Set (M × M')} {x : M × M'}
 @[simp, mfld_simps]
 theorem tangentMap_prod_snd {p : TangentBundle (I.prod I') (M × M')} :
     tangentMap (I.prod I') I' Prod.snd p = ⟨p.proj.2, p.2.2⟩ := by
-  -- porting note: `rfl` wasn't needed
+  -- Porting note: `rfl` wasn't needed
   simp [tangentMap]; rfl
 #align tangent_map_prod_snd tangentMap_prod_snd
 
@@ -448,7 +448,7 @@ theorem MDifferentiable.add (hf : MDifferentiable I 𝓘(𝕜, E') f)
   (hf x).add (hg x)
 #align mdifferentiable.add MDifferentiable.add
 
--- porting note: forcing types using `by exact`
+-- Porting note: forcing types using `by exact`
 theorem mfderiv_add (hf : MDifferentiableAt I 𝓘(𝕜, E') f z)
     (hg : MDifferentiableAt I 𝓘(𝕜, E') g z) :
     (by exact mfderiv I 𝓘(𝕜, E') (f + g) z : TangentSpace I z →L[𝕜] E') =

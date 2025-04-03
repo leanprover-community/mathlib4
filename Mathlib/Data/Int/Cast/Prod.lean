@@ -19,8 +19,9 @@ variable {α β : Type*} [AddGroupWithOne α] [AddGroupWithOne β]
 instance : AddGroupWithOne (α × β) :=
   { Prod.instAddMonoidWithOne, Prod.instAddGroup with
     intCast := fun n => (n, n)
-    intCast_ofNat := fun _ => by simp; rfl
-    intCast_negSucc := fun _ => by simp; rfl }
+    intCast_ofNat := fun _ => by simp only [Int.cast_ofNat]; rfl
+    intCast_negSucc := fun _ => by simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one,
+                                    neg_add_rev]; rfl }
 
 @[simp]
 theorem fst_intCast (n : ℤ) : (n : α × β).fst = n :=

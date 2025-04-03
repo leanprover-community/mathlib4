@@ -38,9 +38,7 @@ namespace IsScalarTower
 section Semiring
 
 variable [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
-
 variable [Algebra R S] [Algebra S A] [Algebra S B] [Algebra R A] [Algebra R B]
-
 variable [IsScalarTower R S A] [IsScalarTower R S B]
 
 
@@ -64,7 +62,6 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-
 variable [Algebra R A] [Algebra A B] [Algebra R B] [IsScalarTower R A B]
 
 end CommSemiring
@@ -74,9 +71,7 @@ end IsScalarTower
 section AlgebraMapCoeffs
 
 variable {R} {ι M : Type*} [CommSemiring R] [Semiring A] [AddCommMonoid M]
-
 variable [Algebra R A] [Module A M] [Module R M] [IsScalarTower R A M]
-
 variable (b : Basis ι R M) (h : Function.Bijective (algebraMap R A))
 
 /-- If `R` and `A` have a bijective `algebraMap R A` and act identically on `M`,
@@ -102,14 +97,13 @@ section Semiring
 
 open Finsupp
 
-open BigOperators Classical
+open scoped Classical
+open BigOperators
 
 universe v₁ w₁
 
 variable {R S A}
-
 variable [Semiring R] [Semiring S] [AddCommMonoid A]
-
 variable [Module R S] [Module S A] [Module R A] [IsScalarTower R S A]
 
 theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁} {c : ι' → A}
@@ -154,7 +148,8 @@ noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R 
 
 @[simp]
 theorem Basis.smul_repr {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
-    (b.smul c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by simp [Basis.smul]; rfl
+    (b.smul c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by
+  simp [Basis.smul]
 #align basis.smul_repr Basis.smul_repr
 
 theorem Basis.smul_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A)
@@ -181,7 +176,6 @@ end Semiring
 section Ring
 
 variable {R S}
-
 variable [CommRing R] [Ring S] [Algebra R S]
 
 -- Porting note: Needed to add Algebra.toModule below

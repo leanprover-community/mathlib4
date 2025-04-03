@@ -61,9 +61,7 @@ open IsLocalization Pointwise nonZeroDivisors
 section Defs
 
 variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
-
 variable [Algebra R P]
-
 variable (S)
 
 /-- A submodule `I` is a fractional ideal if `a I ⊆ R` for some `a ≠ 0`. -/
@@ -90,7 +88,6 @@ namespace FractionalIdeal
 open Set Submodule
 
 variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
-
 variable [Algebra R P] [loc : IsLocalization S P]
 
 /-- Map a fractional ideal `I` to a submodule by forgetting that `∃ a, a I ⊆ R`.
@@ -525,7 +522,7 @@ theorem _root_.IsFractional.nsmul {I : Submodule R P} :
     simp
   | n + 1, h => by
     rw [succ_nsmul]
-    exact h.sup (IsFractional.nsmul n h)
+    exact (IsFractional.nsmul n h).sup h
 #align is_fractional.nsmul IsFractional.nsmul
 
 instance : SMul ℕ (FractionalIdeal S P) where smul n I := ⟨n • ↑I, I.isFractional.nsmul n⟩
@@ -554,7 +551,7 @@ theorem _root_.IsFractional.mul {I J : Submodule R P} :
 theorem _root_.IsFractional.pow {I : Submodule R P} (h : IsFractional S I) :
     ∀ n : ℕ, IsFractional S (I ^ n : Submodule R P)
   | 0 => isFractional_of_le_one _ (pow_zero _).le
-  | n + 1 => (pow_succ I n).symm ▸ h.mul (IsFractional.pow h n)
+  | n + 1 => (pow_succ I n).symm ▸ (IsFractional.pow h n).mul h
 #align is_fractional.pow IsFractional.pow
 
 /-- `FractionalIdeal.mul` is the product of two fractional ideals,

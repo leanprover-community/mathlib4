@@ -46,7 +46,7 @@ theorem IsSubfield.pow_mem {a : F} {n : ℤ} {s : Set F} (hs : IsSubfield s) (h 
     a ^ n ∈ s := by
   cases' n with n n
   · suffices a ^ (n : ℤ) ∈ s by exact this
-    rw [zpow_coe_nat]
+    rw [zpow_natCast]
     exact hs.toIsSubring.toIsSubmonoid.pow_mem h
   · rw [zpow_negSucc]
     exact hs.inv_mem (hs.toIsSubring.toIsSubmonoid.pow_mem h)

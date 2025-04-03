@@ -237,7 +237,7 @@ protected theorem mono (f : α →o β) : Monotone f :=
 projection directly instead. -/
 def Simps.coe (f : α →o β) : α → β := f
 
-/- Porting note: TODO: all other DFunLike classes use `apply` instead of `coe`
+/- Porting note (#11215): TODO: all other DFunLike classes use `apply` instead of `coe`
 for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
@@ -935,6 +935,40 @@ theorem symm_trans (e₁ : α ≃o β) (e₂ : β ≃o γ) : (e₁.trans e₂).s
   rfl
 #align order_iso.symm_trans OrderIso.symm_trans
 
+@[simp]
+theorem self_trans_symm (e : α ≃o β) : e.trans e.symm = OrderIso.refl α :=
+  RelIso.self_trans_symm e
+
+@[simp]
+theorem symm_trans_self (e : α ≃o β) : e.symm.trans e = OrderIso.refl β :=
+  RelIso.symm_trans_self e
+
+/-- An order isomorphism between the domains and codomains of two prosets of
+order homomorphisms gives an order isomorphism between the two function prosets. -/
+@[simps apply symm_apply]
+def arrowCongr {α β γ δ} [Preorder α] [Preorder β] [Preorder γ] [Preorder δ]
+    (f : α ≃o γ) (g : β ≃o δ) : (α →o β) ≃o (γ →o δ) where
+  toFun  p := .comp g <| .comp p f.symm
+  invFun p := .comp g.symm <| .comp p f
+  left_inv p := DFunLike.coe_injective <| by
+    change (g.symm ∘ g) ∘ p ∘ (f.symm ∘ f) = p
+    simp only [← DFunLike.coe_eq_coe_fn, ← OrderIso.coe_trans, Function.id_comp,
+               OrderIso.self_trans_symm, OrderIso.coe_refl, Function.comp_id]
+  right_inv p := DFunLike.coe_injective <| by
+    change (g ∘ g.symm) ∘ p ∘ (f ∘ f.symm) = p
+    simp only [← DFunLike.coe_eq_coe_fn, ← OrderIso.coe_trans, Function.id_comp,
+               OrderIso.symm_trans_self, OrderIso.coe_refl, Function.comp_id]
+  map_rel_iff' {p q} := by
+    simp only [Equiv.coe_fn_mk, OrderHom.le_def, OrderHom.comp_coe,
+               OrderHomClass.coe_coe, Function.comp_apply, map_le_map_iff]
+    exact Iff.symm f.forall_congr_left'
+
+/-- If `α` and `β` are order-isomorphic then the two orders of order-homomorphisms
+from `α` and `β` to themselves are order-isomorphic. -/
+@[simps! apply symm_apply]
+def conj {α β} [Preorder α] [Preorder β] (f : α ≃o β) : (α →o α) ≃ (β →o β) :=
+  arrowCongr f f
+
 /-- `Prod.swap` as an `OrderIso`. -/
 def prodComm : α × β ≃o β × α where
   toEquiv := Equiv.prodComm α β
@@ -1147,7 +1181,6 @@ end Equiv
 namespace StrictMono
 
 variable [LinearOrder α] [Preorder β]
-
 variable (f : α → β) (h_mono : StrictMono f) (h_surj : Function.Surjective f)
 
 /-- A strictly monotone function with a right inverse is an order isomorphism. -/

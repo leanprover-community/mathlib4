@@ -3,9 +3,9 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.MvPolynomial.Basic
-import Mathlib.RingTheory.Algebraic
+import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Data.Fintype.Card
+import Mathlib.RingTheory.Algebraic
 
 #align_import field_theory.ax_grothendieck from "leanprover-community/mathlib"@"4e529b03dd62b7b7d13806c3fb974d9d4848910e"
 

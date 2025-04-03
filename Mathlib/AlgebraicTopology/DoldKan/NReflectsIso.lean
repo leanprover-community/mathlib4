@@ -108,7 +108,7 @@ instance : ReflectsIsomorphisms (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi
     let F₄ := Functor.mapHomologicalComplex (KaroubiKaroubi.equivalence C).inverse
       (ComplexShape.down ℕ)
     let F := F₁ ⋙ F₂ ⋙ F₃ ⋙ F₄
-    -- porting note: we have to help Lean4 find the `ReflectsIsomorphisms` instances
+    -- Porting note: we have to help Lean4 find the `ReflectsIsomorphisms` instances
     -- could this be fixed by setting better instance priorities?
     haveI : ReflectsIsomorphisms F₁ := reflectsIsomorphisms_of_full_and_faithful _
     haveI : ReflectsIsomorphisms F₂ := by infer_instance

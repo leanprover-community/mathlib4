@@ -3,7 +3,7 @@ Copyright (c) 2023 Luke Mantle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Mantle
 -/
-import Mathlib.Data.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
@@ -155,7 +155,7 @@ theorem coeff_hermite_explicit :
   | 0, _ => by simp
   | n + 1, 0 => by
     convert coeff_hermite_succ_zero (2 * n + 1) using 1
-    -- porting note: ring_nf did not solve the goal on line 165
+    -- Porting note: ring_nf did not solve the goal on line 165
     rw [coeff_hermite_explicit n 1, (by rw [Nat.left_distrib, mul_one, Nat.add_one_sub_one] :
       2 * (n + 1) - 1 = 2 * n + 1), Nat.doubleFactorial_add_one, Nat.choose_zero_right,
       Nat.choose_one_right, pow_succ]
@@ -173,11 +173,11 @@ theorem coeff_hermite_explicit :
       -- Factor out (-1)'s.
       rw [mul_comm (↑k + _ : ℤ), sub_eq_add_neg]
       nth_rw 3 [neg_eq_neg_one_mul]
-      simp only [mul_assoc, ← mul_add, pow_succ]
+      simp only [mul_assoc, ← mul_add, pow_succ']
       congr 2
       -- Factor out double factorials.
       norm_cast
-      -- porting note: ring_nf did not solve the goal on line 186
+      -- Porting note: ring_nf did not solve the goal on line 186
       rw [(by rw [Nat.left_distrib, mul_one, Nat.add_one_sub_one] : 2 * (n + 1) - 1 = 2 * n + 1),
         Nat.doubleFactorial_add_one, mul_comm (2 * n + 1)]
       simp only [mul_assoc, ← mul_add]
@@ -193,8 +193,6 @@ theorem coeff_hermite_explicit :
     congr
     · rw [coeff_hermite_explicit (n + 1) k]
     · rw [(by ring : 2 * (n + 1) + k = 2 * n + (k + 2)), coeff_hermite_explicit n (k + 2)]
--- porting note: Lean 3 worked this out automatically
-termination_by n k => (n, k)
 #align polynomial.coeff_hermite_explicit Polynomial.coeff_hermite_explicit
 
 theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
@@ -202,8 +200,8 @@ theorem coeff_hermite_of_even_add {n k : ℕ} (hnk : Even (n + k)) :
   rcases le_or_lt k n with h_le | h_lt
   · rw [Nat.even_add, ← Nat.even_sub h_le] at hnk
     obtain ⟨m, hm⟩ := hnk
-    -- porting note: linarith failed to find a contradiction by itself
-    rw [(by linarith [by rwa [Nat.sub_eq_iff_eq_add h_le] at hm] : n = 2 * m + k),
+    -- Porting note: linarith failed to find a contradiction by itself
+    rw [(by omega : n = 2 * m + k),
       Nat.add_sub_cancel, Nat.mul_div_cancel_left _ (Nat.succ_pos 1), coeff_hermite_explicit]
   · simp [Nat.choose_eq_zero_of_lt h_lt, coeff_hermite_of_lt h_lt]
 #align polynomial.coeff_hermite_of_even_add Polynomial.coeff_hermite_of_even_add

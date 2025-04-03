@@ -64,9 +64,7 @@ open TopologicalSpace
 open Opposite
 
 variable {C : Type u} [Category.{v} C]
-
 variable [HasColimits.{v} C]
-
 variable {X Y Z : TopCat.{v}}
 
 namespace TopCat.Presheaf
@@ -388,14 +386,13 @@ end stalkSpecializes
 section Concrete
 
 variable {C}
-
 variable [ConcreteCategory.{v} C]
 
 attribute [local instance] ConcreteCategory.hasCoeToSort
 -- Porting note: The following does not seem to be needed.
 -- ConcreteCategory.hasCoeToFun
 
--- Porting note: Todo: @[ext] attribute only applies to structures or lemmas proving x = y
+-- Porting note (#11215): TODO: @[ext] attribute only applies to structures or lemmas proving x = y
 -- @[ext]
 theorem germ_ext (F : X.Presheaf C) {U V : Opens X} {x : X} {hxU : x ∈ U} {hxV : x ∈ V}
     (W : Opens X) (hxW : x ∈ W) (iWU : W ⟶ U) (iWV : W ⟶ V) {sU : F.obj (op U)} {sV : F.obj (op V)}

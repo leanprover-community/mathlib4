@@ -186,7 +186,7 @@ def BinaryFan.associatorOfLimitCone (L : ∀ X Y : C, LimitCone (pair X Y)) (X Y
 /-- Construct a left unitor from specified limit cones.
 -/
 @[simps]
-def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s)
+def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{0} C)} (P : IsLimit s)
     {t : BinaryFan s.pt X} (Q : IsLimit t) : t.pt ≅ X where
   hom := t.snd
   inv := Q.lift <| BinaryFan.mk (P.lift ⟨_, fun x => x.as.elim, fun {x} => x.as.elim⟩) (𝟙 _)
@@ -201,7 +201,7 @@ def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s
 /-- Construct a right unitor from specified limit cones.
 -/
 @[simps]
-def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s)
+def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{0} C)} (P : IsLimit s)
     {t : BinaryFan X s.pt} (Q : IsLimit t) : t.pt ≅ X where
   hom := t.fst
   inv := Q.lift <| BinaryFan.mk (𝟙 _) <| P.lift ⟨_, fun x => x.as.elim, fun {x} => x.as.elim⟩
@@ -225,9 +225,7 @@ section
 -- attribute [local tidy] tactic.case_bash
 
 variable {C}
-
-variable (𝒯 : LimitCone (Functor.empty.{v} C))
-
+variable (𝒯 : LimitCone (Functor.empty.{0} C))
 variable (ℬ : ∀ X Y : C, LimitCone (pair X Y))
 
 namespace MonoidalOfChosenFiniteProducts
@@ -349,7 +347,7 @@ This is an implementation detail for `SymmetricOfChosenFiniteProducts`.
 -- Porting note: no `has_nonempty_instance` linter.
 -- @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
-def MonoidalOfChosenFiniteProductsSynonym (_𝒯 : LimitCone (Functor.empty.{v} C))
+def MonoidalOfChosenFiniteProductsSynonym (_𝒯 : LimitCone (Functor.empty.{0} C))
     (_ℬ : ∀ X Y : C, LimitCone (pair X Y)) :=
   C
 #align category_theory.monoidal_of_chosen_finite_products.monoidal_of_chosen_finite_products_synonym CategoryTheory.MonoidalOfChosenFiniteProducts.MonoidalOfChosenFiniteProductsSynonym

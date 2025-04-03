@@ -31,7 +31,6 @@ open Set Filter Metric MeasureTheory TopologicalSpace
 open scoped NNReal ENNReal Topology
 
 variable {α : Type*} [MetricSpace α] [SecondCountableTopology α] [MeasurableSpace α] [BorelSpace α]
-
 variable (μ : Measure α) [IsLocallyFiniteMeasure μ] [IsUnifLocDoublingMeasure μ]
 
 /-- This is really an auxiliary result en route to `blimsup_cthickening_ae_le_of_eventually_mul_le`
@@ -138,7 +137,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
   rw [ENNReal.coe_sub, ENNReal.coe_one, ENNReal.sub_mul fun _ _ => hB, one_mul]
   replace hB : ↑C⁻¹ * μ (B j) ≠ ∞ := by
     refine ENNReal.mul_ne_top ?_ hB
-    rwa [ENNReal.coe_inv hC, Ne.def, ENNReal.inv_eq_top, ENNReal.coe_eq_zero]
+    rwa [ENNReal.coe_inv hC, Ne, ENNReal.inv_eq_top, ENNReal.coe_eq_zero]
   obtain ⟨hj₁ : Disjoint (b j) (W ∩ B j), hj₂ : μ (B j) ≤ C * μ (b j)⟩ := hj₀
   replace hj₂ : ↑C⁻¹ * μ (B j) ≤ μ (b j) := by
     rw [ENNReal.coe_inv hC, ← ENNReal.div_eq_inv_mul]

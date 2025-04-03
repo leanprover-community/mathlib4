@@ -155,7 +155,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
     (∀ᶠ x in atTop, 0 ≤ f x) ∨ (∀ᶠ x in atTop, f x ≤ 0) := by
   obtain ⟨c₁, _, c₂, _, h⟩ := hf (1/2) (by norm_num)
   match lt_trichotomy c₁ c₂ with
-  | .inl hlt =>  -- c₁ < c₂
+  | .inl hlt => -- c₁ < c₂
     left
     filter_upwards [h, eventually_ge_atTop 0] with x hx hx_nonneg
     have h' : 3 / 4 * x ∈ Set.Icc (1 / 2 * x) x := by
@@ -166,7 +166,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
     rw [Set.nonempty_Icc] at hu
     have hu' : 0 ≤ (c₂ - c₁) * f x := by linarith
     exact nonneg_of_mul_nonneg_right hu' (by linarith)
-  | .inr (.inr hgt) =>   -- c₂ < c₁
+  | .inr (.inr hgt) => -- c₂ < c₁
     right
     filter_upwards [h, eventually_ge_atTop 0] with x hx hx_nonneg
     have h' : 3 / 4 * x ∈ Set.Icc (1 / 2 * x) x := by
@@ -177,7 +177,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
     rw [Set.nonempty_Icc] at hu
     have hu' : (c₁ - c₂) * f x ≤ 0 := by linarith
     exact nonpos_of_mul_nonpos_right hu' (by linarith)
-  | .inr (.inl heq) =>   -- c₁ = c₂
+  | .inr (.inl heq) => -- c₁ = c₂
     have hmain : ∃ c, ∀ᶠ x in atTop, f x = c := by
       simp only [heq, Set.Icc_self, Set.mem_singleton_iff, one_mul] at h
       rw [eventually_atTop] at h
@@ -197,6 +197,7 @@ lemma eventually_atTop_nonneg_or_nonpos (hf : GrowsPolynomially f) :
         intro n hn hyp_ind z hz
         have z_nonneg : 0 ≤ z := by
           calc (0:ℝ) ≤ (2:ℝ)^n * max n₀ 2 := by
+                        set_option tactic.skipAssignedInstances false in
                         exact mul_nonneg (pow_nonneg (by norm_num) _) (by norm_num)
                   _ ≤ z := by exact_mod_cast hz.1
         have le_2n : max n₀ 2 ≤ (2:ℝ)^n * max n₀ 2 := by
@@ -297,7 +298,7 @@ lemma growsPolynomially_id : GrowsPolynomially (fun x => x) := by
   intro b hb
   refine ⟨b, hb.1, ?_⟩
   refine ⟨1, by norm_num, ?_⟩
-  refine eventually_of_forall fun x u hu => ?_
+  filter_upwards with x u hu
   simp only [one_mul, ge_iff_le, gt_iff_lt, not_le, Set.mem_Icc]
   exact ⟨hu.1, hu.2⟩
 
@@ -405,7 +406,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
   have hb_ub := hb.2
   rw [isLittleO_iff] at hfg
   cases hf.eventually_atTop_nonneg_or_nonpos with
-  | inl hf' =>  -- f is eventually nonneg
+  | inl hf' => -- f is eventually non-negative
     have hf := hf b hb
     obtain ⟨c₁, hc₁_mem : 0 < c₁, c₂, hc₂_mem : 0 < c₂, hf⟩ := hf
     specialize hfg (c := 1/2) (by norm_num)
@@ -567,7 +568,7 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
   have hc₁p : 0 < c₁ ^ p := Real.rpow_pos_of_pos hc₁_mem _
   have hc₂p : 0 < c₂ ^ p := Real.rpow_pos_of_pos hc₂_mem _
   cases le_or_lt 0 p with
-  | inl =>    -- 0 ≤ p
+  | inl => -- 0 ≤ p
     refine ⟨c₁^p, hc₁p, ?_⟩
     refine ⟨c₂^p, hc₂p, ?_⟩
     filter_upwards [eventually_gt_atTop 0, hfnew, hf_nonneg,
@@ -582,7 +583,7 @@ protected lemma GrowsPolynomially.rpow (p : ℝ) (hf : GrowsPolynomially f)
     case ub => calc
       (f u)^p ≤ (c₂ * f x)^p := by gcongr; exact (hf₁ u hu).2
         _ = _ := by rw [← mul_rpow (le_of_lt hc₂_mem) hf_nonneg]
-  | inr hp =>   -- p < 0
+  | inr hp => -- p < 0
     match hf.eventually_atTop_zero_or_pos_or_neg with
     | .inl hzero => -- eventually zero
       refine ⟨1, by norm_num, 1, by norm_num, ?_⟩

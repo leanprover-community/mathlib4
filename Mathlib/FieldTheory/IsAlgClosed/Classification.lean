@@ -3,11 +3,11 @@ Copyright (c) 2022 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.RingTheory.AlgebraicIndependent
-import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.Data.Polynomial.Cardinal
-import Mathlib.Data.MvPolynomial.Cardinal
+import Mathlib.Algebra.Polynomial.Cardinal
+import Mathlib.Algebra.MvPolynomial.Cardinal
 import Mathlib.Data.ZMod.Algebra
+import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.RingTheory.AlgebraicIndependent
 
 #align_import field_theory.is_alg_closed.classification from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
@@ -36,7 +36,6 @@ section AlgebraicClosure
 namespace Algebra.IsAlgebraic
 
 variable (R L : Type u) [CommRing R] [CommRing L] [IsDomain L] [Algebra R L]
-
 variable [NoZeroSMulDivisors R L] (halg : Algebra.IsAlgebraic R L)
 
 theorem cardinal_mk_le_sigma_polynomial :
@@ -47,7 +46,7 @@ theorem cardinal_mk_le_sigma_polynomial :
       ⟨p.1, x, by
         dsimp
         have h : p.1.map (algebraMap R L) ≠ 0 := by
-          rw [Ne.def, ← Polynomial.degree_eq_bot,
+          rw [Ne, ← Polynomial.degree_eq_bot,
             Polynomial.degree_map_eq_of_injective (NoZeroSMulDivisors.algebraMap_injective R L),
             Polynomial.degree_eq_bot]
           exact p.2.1
@@ -88,15 +87,10 @@ section Classification
 noncomputable section
 
 variable {R L K : Type*} [CommRing R]
-
 variable [Field K] [Algebra R K]
-
 variable [Field L] [Algebra R L]
-
 variable {ι : Type*} (v : ι → K)
-
 variable {κ : Type*} (w : κ → L)
-
 variable (hv : AlgebraicIndependent R v)
 
 theorem isAlgClosure_of_transcendence_basis [IsAlgClosed K] (hv : IsTranscendenceBasis R v) :
@@ -132,11 +126,8 @@ end Classification
 section Cardinal
 
 variable {R L K : Type u} [CommRing R]
-
 variable [Field K] [Algebra R K] [IsAlgClosed K]
-
 variable {ι : Type u} (v : ι → K)
-
 variable (hv : IsTranscendenceBasis R v)
 
 theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :

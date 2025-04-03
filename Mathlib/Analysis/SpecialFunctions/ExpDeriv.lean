@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
 import Mathlib.Analysis.Complex.RealDeriv
-import Mathlib.Analysis.Calculus.ContDiff.IsROrC
+import Mathlib.Analysis.Calculus.ContDiff.RCLike
 import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 
 #align_import analysis.special_functions.exp_deriv from "leanprover-community/mathlib"@"6a5c85000ab93fe5dcfdf620676f614ba8e18c26"
@@ -62,7 +62,7 @@ theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
 #align complex.iter_deriv_exp Complex.iter_deriv_exp
 
 theorem contDiff_exp : ∀ {n}, ContDiff 𝕜 n exp := by
-  -- porting note: added `@` due to `∀ {n}` weirdness above
+  -- Porting note: added `@` due to `∀ {n}` weirdness above
   refine' @(contDiff_all_iff_nat.2 fun n => ?_)
   have : ContDiff ℂ (↑n) exp := by
     induction' n with n ihn

@@ -61,7 +61,6 @@ open scoped Pointwise ENNReal NNReal ComplexOrder
 open WeakDual WeakDual.CharacterSpace elementalStarAlgebra
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra ℂ A]
-
 variable [StarRing A] [CstarRing A] [StarModule ℂ A]
 
 instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [StarRing A]
@@ -70,7 +69,7 @@ instance {R A : Type*} [CommRing R] [StarRing R] [NormedRing A] [Algebra R A] [S
   { SubringClass.toNormedRing (elementalStarAlgebra R a) with
     mul_comm := mul_comm }
 
--- porting note: these hack instances no longer seem to be necessary
+-- Porting note: these hack instances no longer seem to be necessary
 #noalign elemental_star_algebra.complex.normed_algebra
 
 variable [CompleteSpace A] (a : A) [IsStarNormal a] (S : StarSubalgebra ℂ A)
@@ -92,9 +91,7 @@ theorem spectrum_star_mul_self_of_isStarNormal :
     rintro - ⟨φ, rfl⟩
     rw [gelfandTransform_apply_apply ℂ _ (star a' * a') φ, map_mul φ, map_star φ]
     rw [Complex.eq_coe_norm_of_nonneg (star_mul_self_nonneg _), ← map_star, ← map_mul]
-    exact
-      ⟨Complex.zero_le_real.2 (norm_nonneg _),
-        Complex.real_le_real.2 (AlgHom.norm_apply_le_self φ (star a' * a'))⟩
+    exact ⟨by positivity, Complex.real_le_real.2 (AlgHom.norm_apply_le_self φ (star a' * a'))⟩
 #align spectrum_star_mul_self_of_is_star_normal spectrum_star_mul_self_of_isStarNormal
 
 variable {a}
@@ -173,7 +170,7 @@ theorem elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal (h : IsUnit a) :
         refine' (IsSelfAdjoint.spectralRadius_eq_nnnorm _).symm
         rw [IsSelfAdjoint, star_sub, star_mul, star_star, ← algebraMap_star_comm]
         congr!
-        exact IsROrC.conj_ofReal _
+        exact RCLike.conj_ofReal _
       _ < ‖star a * a‖₊ := spectrum.spectralRadius_lt_of_forall_lt _ h₂)
 #align elemental_star_algebra.is_unit_of_is_unit_of_is_star_normal elementalStarAlgebra.isUnit_of_isUnit_of_isStarNormal
 

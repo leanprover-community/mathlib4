@@ -18,7 +18,8 @@ values in a group with zero. Other instances are then deduced from this.
 -/
 
 
-open Classical Topology uniformity
+open scoped Classical
+open Topology uniformity
 
 open Set Valuation
 

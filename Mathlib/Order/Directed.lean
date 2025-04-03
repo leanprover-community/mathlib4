@@ -56,21 +56,22 @@ def DirectedOn (s : Set α) :=
 variable {r r'}
 
 theorem directedOn_iff_directed {s} : @DirectedOn α r s ↔ Directed r (Subtype.val : s → α) := by
-  simp [Directed, DirectedOn]; refine' ball_congr fun x _ => by simp [And.comm, and_assoc]
+  simp only [DirectedOn, Directed, Subtype.exists, exists_and_left, exists_prop, Subtype.forall]
+  exact ball_congr fun x _ => by simp [And.comm, and_assoc]
 #align directed_on_iff_directed directedOn_iff_directed
 
 alias ⟨DirectedOn.directed_val, _⟩ := directedOn_iff_directed
 #align directed_on.directed_coe DirectedOn.directed_val
 
 theorem directedOn_range {f : ι → α} : Directed r f ↔ DirectedOn r (Set.range f) := by
-  simp_rw [Directed, DirectedOn, Set.forall_range_iff, Set.exists_range_iff]
+  simp_rw [Directed, DirectedOn, Set.forall_mem_range, Set.exists_range_iff]
 #align directed_on_range directedOn_range
 
--- porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
+-- Porting note: This alias was misplaced in `order/compactly_generated.lean` in mathlib3
 alias ⟨Directed.directedOn_range, _⟩ := directedOn_range
 #align directed.directed_on_range Directed.directedOn_range
 
--- porting note: `attribute [protected]` doesn't work
+-- Porting note: `attribute [protected]` doesn't work
 -- attribute [protected] Directed.directedOn_range
 
 theorem directedOn_image {s : Set β} {f : β → α} :
@@ -311,7 +312,7 @@ theorem exists_lt_of_directed_le [IsDirected β (· ≤ ·)] [Nontrivial β] : �
   ⟨b, a, h⟩
 #align exists_lt_of_directed_le exists_lt_of_directed_le
 
-variable [PartialOrder β] {f : α → β} {s : Set α}
+variable {f : α → β} {s : Set α}
 
 -- TODO: Generalise the following two lemmas to connected orders
 

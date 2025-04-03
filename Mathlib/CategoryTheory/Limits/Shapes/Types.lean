@@ -86,7 +86,7 @@ theorem pi_map_π_apply' {β : Type v} {f g : β → Type v} (α : ∀ j, f j �
 
 /-- The category of types has `PUnit` as a terminal object. -/
 def terminalLimitCone : Limits.LimitCone (Functor.empty (Type u)) where
-  -- porting note: tidy was able to fill the structure automatically
+  -- Porting note: tidy was able to fill the structure automatically
   cone :=
     { pt := PUnit
       π := (Functor.uniqueFromEmpty _).hom }
@@ -108,7 +108,7 @@ noncomputable def isTerminalPunit : IsTerminal (PUnit : Type u) :=
   terminalIsTerminal.ofIso terminalIso
 #align category_theory.limits.types.is_terminal_punit CategoryTheory.Limits.Types.isTerminalPunit
 
--- porting note: the following three instances have been added to ease
+-- Porting note: the following three instances have been added to ease
 -- the automation in a definition in `AlgebraicTopology.SimplicialSet`
 noncomputable instance : Inhabited (⊤_ (Type u)) :=
   ⟨@terminal.from (Type u) _ _ (ULift (Fin 1)) (ULift.up 0)⟩
@@ -134,7 +134,7 @@ noncomputable def isTerminalEquivIsoPUnit (X : Type u) : IsTerminal X ≃ (X ≅
 
 /-- The category of types has `PEmpty` as an initial object. -/
 def initialColimitCocone : Limits.ColimitCocone (Functor.empty (Type u)) where
-  -- porting note: tidy was able to fill the structure automatically
+  -- Porting note: tidy was able to fill the structure automatically
   cocone :=
     { pt := PEmpty
       ι := (Functor.uniqueFromEmpty _).inv }
@@ -227,7 +227,7 @@ theorem binaryProductIso_inv_comp_snd (X Y : Type u) :
   limit.isoLimitCone_inv_π (binaryProductLimitCone X Y) ⟨WalkingPair.right⟩
 #align category_theory.limits.types.binary_product_iso_inv_comp_snd CategoryTheory.Limits.Types.binaryProductIso_inv_comp_snd
 
--- porting note: it was originally @[simps (config := { typeMd := reducible })]
+-- Porting note: it was originally @[simps (config := { typeMd := reducible })]
 -- We add the option `type_md` to tell `@[simps]` to not treat homomorphisms `X ⟶ Y` in `Type*` as
 -- a function type
 /-- The functor which sends `X, Y` to the product type `X × Y`. -/
@@ -473,7 +473,7 @@ theorem coproductIso_ι_comp_hom {J : Type v} (F : J → TypeMax.{v, u}) (j : J)
   colimit.isoColimitCocone_ι_hom (coproductColimitCocone F) ⟨j⟩
 #align category_theory.limits.types.coproduct_iso_ι_comp_hom CategoryTheory.Limits.Types.coproductIso_ι_comp_hom
 
--- porting note: was @[elementwise (attr := simp)], but it produces a trivial lemma
+-- Porting note: was @[elementwise (attr := simp)], but it produces a trivial lemma
 -- removed simp attribute because it seems it never applies
 theorem coproductIso_mk_comp_inv {J : Type v} (F : J → TypeMax.{v, u}) (j : J) :
     (↾fun x : F j => (⟨j, x⟩ : Σj, F j)) ≫ (coproductIso F).inv = Sigma.ι F j :=
@@ -538,7 +538,7 @@ noncomputable def equalizerIso : equalizer g h ≅ { x : Y // g x = h x } :=
   limit.isoLimitCone equalizerLimit
 #align category_theory.limits.types.equalizer_iso CategoryTheory.Limits.Types.equalizerIso
 
--- porting note: was @[elementwise], but it produces a trivial lemma
+-- Porting note: was @[elementwise], but it produces a trivial lemma
 @[simp]
 theorem equalizerIso_hom_comp_subtype : (equalizerIso g h).hom ≫ Subtype.val = equalizer.ι g h := by
   rfl
@@ -585,7 +585,7 @@ theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ �
     rintro _ _ ⟨x⟩
     change x ∈ f ⁻¹' U ↔ x ∈ g ⁻¹' U
     rw [H]
-  -- porting note: tidy was able to fill the structure automatically
+  -- Porting note: tidy was able to fill the structure automatically
   have eqv : _root_.Equivalence fun x y => x ∈ U ↔ y ∈ U :=
     { refl := by tauto
       symm := by tauto
@@ -617,7 +617,7 @@ theorem coequalizerIso_π_comp_hom :
   colimit.isoColimitCocone_ι_hom (coequalizerColimit f g) WalkingParallelPair.one
 #align category_theory.limits.types.coequalizer_iso_π_comp_hom CategoryTheory.Limits.Types.coequalizerIso_π_comp_hom
 
--- porting note: was @[elementwise], but it produces a trivial lemma
+-- Porting note: was @[elementwise], but it produces a trivial lemma
 @[simp]
 theorem coequalizerIso_quot_comp_inv :
     ↾Quot.mk (CoequalizerRel f g) ≫ (coequalizerIso f g).inv = coequalizer.π f g :=
@@ -641,8 +641,10 @@ instance : HasPullbacks.{u} (Type u) :=
   -- inferInstance
   hasPullbacks_of_hasWidePullbacks.{u} (Type u)
 
-variable {W X Y Z : Type u}
+instance : HasPushouts.{u} (Type u) :=
+  hasPushouts_of_hasWidePushouts.{u} (Type u)
 
+variable {W X Y Z : Type u}
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
 -- porting note (#10927): removed @[nolint has_nonempty_instance]

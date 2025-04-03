@@ -65,7 +65,7 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
       map_id := fun X => rfl
       map_comp := fun f g => by
         --unfold_projs
-        --Porting note: Need these instances for some lemmas below.
+        -- Porting note: Need these instances for some lemmas below.
         --Should they be added as actual instances elsewhere?
         letI : _root_.Monad (ofTypeMonad m).obj :=
           show _root_.Monad m from inferInstance

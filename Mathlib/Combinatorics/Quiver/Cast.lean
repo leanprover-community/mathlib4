@@ -32,7 +32,7 @@ namespace Quiver
 
 /-- Change the endpoints of an arrow using equalities. -/
 def Hom.cast {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) : u' ⟶ v' :=
-  Eq.ndrec (motive := λ x => x ⟶ v') (Eq.ndrec e hv) hu
+  Eq.ndrec (motive := (· ⟶ v')) (Eq.ndrec e hv) hu
 #align quiver.hom.cast Quiver.Hom.cast
 
 theorem Hom.cast_eq_cast {u v u' v' : U} (hu : u = u') (hv : v = v') (e : u ⟶ v) :
@@ -81,7 +81,7 @@ open Path
 
 /-- Change the endpoints of a path using equalities. -/
 def Path.cast {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v) : Path u' v' :=
-  Eq.ndrec (motive := λ x => Path x v') (Eq.ndrec p hv) hu
+  Eq.ndrec (motive := (Path · v')) (Eq.ndrec p hv) hu
 #align quiver.path.cast Quiver.Path.cast
 
 theorem Path.cast_eq_cast {u v u' v' : U} (hu : u = u') (hv : v = v') (p : Path u v) :

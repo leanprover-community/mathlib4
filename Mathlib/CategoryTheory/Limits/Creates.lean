@@ -29,7 +29,6 @@ variable {C : Type u₁} [Category.{v₁} C]
 section Creates
 
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {J : Type w} [Category.{w'} J] {K : J ⥤ C}
 
 /-- Define the lift of a cone: For a cone `c` for `K ⋙ F`, give a cone for `K`
@@ -279,6 +278,16 @@ def createsLimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphisms 
         exact IsLimit.ofIsoLimit hd' (asIso f).symm }
 #align category_theory.creates_limit_of_reflects_iso CategoryTheory.createsLimitOfReflectsIso
 
+/-- If `F` reflects isomorphisms and we can lift a single limit cone to a limit cone, then `F`
+    creates limits. Note that unlike `createsLimitOfReflectsIso`, to apply this result it is
+    necessary to know that `K ⋙ F` actually has a limit. -/
+def createsLimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphisms F]
+    {c : Cone (K ⋙ F)} (hc : IsLimit c) (h : LiftsToLimit K F c hc) : CreatesLimit K F :=
+  createsLimitOfReflectsIso fun _ t =>
+    { liftedCone := h.liftedCone
+      validLift := h.validLift ≪≫ IsLimit.uniqueUpToIso hc t
+      makesLimit := h.makesLimit }
+
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cone maps,
 -- so the constructed limits may not be ideal, definitionally.
@@ -390,6 +399,16 @@ def createsColimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphism
         haveI := isIso_of_reflects_iso f (Cocones.functoriality K F)
         exact IsColimit.ofIsoColimit hd' (asIso f) }
 #align category_theory.creates_colimit_of_reflects_iso CategoryTheory.createsColimitOfReflectsIso
+
+/-- If `F` reflects isomorphisms and we can lift a single colimit cocone to a colimit cocone, then
+    `F` creates limits. Note that unlike `createsColimitOfReflectsIso`, to apply this result it is
+    necessary to know that `K ⋙ F` actually has a colimit. -/
+def createsColimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphisms F]
+    {c : Cocone (K ⋙ F)} (hc : IsColimit c) (h : LiftsToColimit K F c hc) : CreatesColimit K F :=
+  createsColimitOfReflectsIso fun _ t =>
+    { liftedCocone := h.liftedCocone
+      validLift := h.validLift ≪≫ IsColimit.uniqueUpToIso hc t
+      makesColimit := h.makesColimit }
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
 -- this construction will insert additional identity morphisms in the cocone maps,
@@ -636,7 +655,6 @@ instance inhabitedLiftsToColimit (K : J ⥤ C) (F : C ⥤ D) [CreatesColimit K F
 section Comp
 
 variable {E : Type u₃} [ℰ : Category.{v₃} E]
-
 variable (F : C ⥤ D) (G : D ⥤ E)
 
 instance compCreatesLimit [CreatesLimit K F] [CreatesLimit (K ⋙ F) G] :

@@ -61,9 +61,7 @@ instance (priority := 100) NonarchimedeanRing.to_nonarchimedeanAddGroup (R : Typ
 namespace NonarchimedeanGroup
 
 variable {G : Type*} [Group G] [TopologicalSpace G] [NonarchimedeanGroup G]
-
 variable {H : Type*} [Group H] [TopologicalSpace H] [TopologicalGroup H]
-
 variable {K : Type*} [Group K] [TopologicalSpace K] [NonarchimedeanGroup K]
 
 /-- If a topological group embeds into a nonarchimedean group, then it is nonarchimedean. -/
@@ -124,9 +122,7 @@ open NonarchimedeanRing
 open NonarchimedeanAddGroup
 
 variable {R S : Type*}
-
 variable [Ring R] [TopologicalSpace R] [NonarchimedeanRing R]
-
 variable [Ring S] [TopologicalSpace S] [NonarchimedeanRing S]
 
 /-- The cartesian product of two nonarchimedean rings is nonarchimedean. -/

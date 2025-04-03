@@ -688,71 +688,57 @@ theorem coe_smul' [SMul M β] (c : α → M) (f : α → β) : ↑(c • f) = (c
 
 @[to_additive]
 instance mulAction [Monoid M] [MulAction M β] : MulAction M (Germ l β) where
-  -- Porting note: `rfl` required.
   one_smul f :=
     inductionOn f fun f => by
       norm_cast
-      simp only [one_smul]
-      rfl
+      simp [one_smul]
   mul_smul c₁ c₂ f :=
     inductionOn f fun f => by
       norm_cast
-      simp only [mul_smul]
-      rfl
+      simp [mul_smul]
 
 @[to_additive]
 instance mulAction' [Monoid M] [MulAction M β] : MulAction (Germ l M) (Germ l β) where
-  -- Porting note: `rfl` required.
   one_smul f := inductionOn f fun f => by simp only [← coe_one, ← coe_smul', one_smul]
   mul_smul c₁ c₂ f :=
     inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by
       norm_cast
-      simp only [mul_smul]
-      rfl
+      simp [mul_smul]
 #align filter.germ.mul_action' Filter.Germ.mulAction'
 #align filter.germ.add_action' Filter.Germ.addAction'
 
 instance distribMulAction [Monoid M] [AddMonoid N] [DistribMulAction M N] :
     DistribMulAction M (Germ l N) where
-  -- Porting note: `rfl` required.
   smul_add c f g :=
     inductionOn₂ f g fun f g => by
       norm_cast
-      simp only [smul_add]
-      rfl
+      simp [smul_add]
   smul_zero c := by simp only [← coe_zero, ← coe_smul, smul_zero]
 
 instance distribMulAction' [Monoid M] [AddMonoid N] [DistribMulAction M N] :
     DistribMulAction (Germ l M) (Germ l N) where
-  -- Porting note: `rfl` required.
   smul_add c f g :=
     inductionOn₃ c f g fun c f g => by
       norm_cast
-      simp only [smul_add]
-      rfl
+      simp [smul_add]
   smul_zero c := inductionOn c fun c => by simp only [← coe_zero, ← coe_smul', smul_zero]
 #align filter.germ.distrib_mul_action' Filter.Germ.distribMulAction'
 
 instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (Germ l M) where
-  -- Porting note: `rfl` required.
   add_smul c₁ c₂ f :=
     inductionOn f fun f => by
       norm_cast
-      simp only [add_smul]
-      rfl
+      simp [add_smul]
   zero_smul f :=
     inductionOn f fun f => by
       norm_cast
-      simp only [zero_smul, coe_zero]
-      rfl
+      simp [zero_smul, coe_zero]
 
 instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module (Germ l R) (Germ l M) where
-  -- Porting note: `rfl` required.
   add_smul c₁ c₂ f :=
     inductionOn₃ c₁ c₂ f fun c₁ c₂ f => by
       norm_cast
-      simp only [add_smul]
-      rfl
+      simp [add_smul]
   zero_smul f := inductionOn f fun f => by simp only [← coe_zero, ← coe_smul', zero_smul]
 #align filter.germ.module' Filter.Germ.module'
 

@@ -3,9 +3,9 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Chris Hughes
 -/
-import Mathlib.Data.Polynomial.RingDivision
-import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Algebra.GeomSum
+import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 #align_import ring_theory.integral_domain from "leanprover-community/mathlib"@"6e70e0d419bf686784937d64ed4bfde866ff229e"
 
@@ -64,7 +64,7 @@ theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsD
   refine' exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one _) h
   obtain ⟨x, y, hxy⟩ := cp
   rw [← hxy]
-  exact  -- porting note: added `GCDMonoid.` twice
+  exact  -- Porting note: added `GCDMonoid.` twice
     dvd_add (dvd_mul_of_dvd_right (GCDMonoid.gcd_dvd_left _ _) _)
       (dvd_mul_of_dvd_right (GCDMonoid.gcd_dvd_right _ _) _)
 #align exists_eq_pow_of_mul_eq_pow_of_coprime exists_eq_pow_of_mul_eq_pow_of_coprime
@@ -96,13 +96,14 @@ variable [Ring R] [IsDomain R] [Fintype R]
 `Mathlib.RingTheory.LittleWedderburn`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R :=
-  { show GroupWithZero R from Fintype.groupWithZeroOfCancel R, ‹Ring R› with }
+  { show GroupWithZero R from Fintype.groupWithZeroOfCancel R, ‹Ring R› with
+    qsmul := qsmulRec _}
 #align fintype.division_ring_of_is_domain Fintype.divisionRingOfIsDomain
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
 can be found in `Mathlib.RingTheory.LittleWedderburn`. -/
 def Fintype.fieldOfDomain (R) [CommRing R] [IsDomain R] [DecidableEq R] [Fintype R] : Field R :=
-  { Fintype.groupWithZeroOfCancel R, ‹CommRing R› with }
+  { Fintype.divisionRingOfIsDomain R, ‹CommRing R› with }
 #align fintype.field_of_domain Fintype.fieldOfDomain
 
 theorem Finite.isField_of_domain (R) [CommRing R] [IsDomain R] [Finite R] : IsField R := by
@@ -114,7 +115,7 @@ end Ring
 
 variable [CommRing R] [IsDomain R] [Group G]
 
--- porting note: Finset doesn't seem to have `{g ∈ univ | g^n = g₀}` notation anymore,
+-- Porting note: Finset doesn't seem to have `{g ∈ univ | g^n = g₀}` notation anymore,
 -- so we have to use `Finset.filter` instead
 theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) (hf : Injective f)
     {n : ℕ} (hn : 0 < n) (g₀ : G) :
@@ -152,7 +153,7 @@ variable (S : Subgroup Rˣ) [Finite S]
 
 /-- A finite subgroup of the units of an integral domain is cyclic. -/
 instance subgroup_units_cyclic : IsCyclic S := by
-  -- porting note: the original proof used a `coe`, but I was not able to get it to work.
+  -- Porting note: the original proof used a `coe`, but I was not able to get it to work.
   apply isCyclic_of_subgroup_isDomain (R := R) (G := S) _ _
   · exact MonoidHom.mk (OneHom.mk (fun s => ↑s.val) rfl) (by simp)
   · exact Units.ext.comp Subtype.val_injective
@@ -175,10 +176,10 @@ theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
   refine' ⟨f /ₘ g, f %ₘ g, _, _⟩
   · exact degree_modByMonic_lt _ hg
   · have hg' : algebraMap R[X] K g ≠ 0 :=
-      -- porting note: the proof was `by exact_mod_cast Monic.ne_zero hg`
+      -- Porting note: the proof was `by exact_mod_cast Monic.ne_zero hg`
       (map_ne_zero_iff _ (IsFractionRing.injective R[X] K)).mpr (Monic.ne_zero hg)
     field_simp [hg']
-    -- porting note: `norm_cast` was here, but does nothing.
+    -- Porting note: `norm_cast` was here, but does nothing.
     rw [add_comm, mul_comm, ← map_mul, ← map_add, modByMonic_add_div f hg]
 
 #align polynomial.div_eq_quo_add_rem_div Polynomial.div_eq_quo_add_rem_div
@@ -191,7 +192,7 @@ variable [Fintype G]
 
 theorem card_fiber_eq_of_mem_range {H : Type*} [Group H] [DecidableEq H] (f : G →* H) {x y : H}
     (hx : x ∈ Set.range f) (hy : y ∈ Set.range f) :
-    -- porting note: the `filter` had an index `ₓ` that I removed.
+    -- Porting note: the `filter` had an index `ₓ` that I removed.
     (univ.filter fun g => f g = x).card = (univ.filter fun g => f g = y).card := by
   rcases hx with ⟨x, rfl⟩
   rcases hy with ⟨y, rfl⟩
@@ -199,14 +200,14 @@ theorem card_fiber_eq_of_mem_range {H : Type*} [Group H] [DecidableEq H] (f : G 
   · simp (config := { contextual := true }) only [*, mem_filter, one_mul, MonoidHom.map_mul,
       mem_univ, mul_right_inv, eq_self_iff_true, MonoidHom.map_mul_inv, and_self_iff,
       forall_true_iff]
-    -- porting note: added the following `simp`
+    -- Porting note: added the following `simp`
     simp only [true_and, map_inv, mul_right_inv, one_mul, and_self, implies_true, forall_const]
   · simp only [mul_left_inj, imp_self, forall₂_true_iff]
   · simp only [true_and_iff, mem_filter, mem_univ] at hg
     simp only [hg, mem_filter, one_mul, MonoidHom.map_mul, mem_univ, mul_right_inv,
       eq_self_iff_true, exists_prop_of_true, MonoidHom.map_mul_inv, and_self_iff,
       mul_inv_cancel_right, inv_mul_cancel_right]
-    -- porting note: added the next line.  It is weird!
+    -- Porting note: added the next line.  It is weird!
     simp only [map_inv, mul_right_inv, one_mul, and_self, exists_prop]
 #align card_fiber_eq_of_mem_range card_fiber_eq_of_mem_range
 
@@ -214,10 +215,9 @@ theorem card_fiber_eq_of_mem_range {H : Type*} [Group H] [DecidableEq H] (f : G 
 -/
 theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0 := by
   classical
-    obtain ⟨x, hx⟩ :
-      ∃ x : MonoidHom.range f.toHomUnits,
-        ∀ y : MonoidHom.range f.toHomUnits, y ∈ Submonoid.powers x
-    exact IsCyclic.exists_monoid_generator
+    obtain ⟨x, hx⟩ : ∃ x : MonoidHom.range f.toHomUnits,
+        ∀ y : MonoidHom.range f.toHomUnits, y ∈ Submonoid.powers x :=
+      IsCyclic.exists_monoid_generator
     have hx1 : x ≠ 1 := by
       rintro rfl
       apply hf
@@ -226,7 +226,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       cases' hx ⟨f.toHomUnits g, g, rfl⟩ with n hn
       rwa [Subtype.ext_iff, Units.ext_iff, Subtype.coe_mk, MonoidHom.coe_toHomUnits, one_pow,
         eq_comm] at hn
-    replace hx1 : (x.val : R) - 1 ≠ 0 := -- porting note: was `(x : R)`
+    replace hx1 : (x.val : R) - 1 ≠ 0 := -- Porting note: was `(x : R)`
       fun h => hx1 (Subtype.eq (Units.ext (sub_eq_zero.1 h)))
     let c := (univ.filter fun g => f.toHomUnits g = 1).card
     calc
@@ -277,7 +277,7 @@ theorem sum_hom_units (f : G →* R) [Decidable (f = 1)] :
     ∑ g : G, f g = if f = 1 then Fintype.card G else 0 := by
   split_ifs with h
   · simp [h, card_univ]
-  · rw [cast_zero] -- porting note: added
+  · rw [cast_zero] -- Porting note: added
     exact sum_hom_units_eq_zero f h
 #align sum_hom_units sum_hom_units
 

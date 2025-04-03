@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Devon Tuma
 -/
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.AlgebraMap
 
 #align_import ring_theory.polynomial.scale_roots from "leanprover-community/mathlib"@"40ac1b258344e0c2b4568dc37bfad937ec35a727"
 
@@ -168,9 +168,10 @@ theorem scaleRoots_aeval_eq_zero [Algebra R A] {p : R[X]} {a : A} {r : R} (ha : 
 theorem scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero {p : S[X]} {f : S →+* K}
     (hf : Function.Injective f) {r s : S} (hr : eval₂ f (f r / f s) p = 0)
     (hs : s ∈ nonZeroDivisors S) : eval₂ f (f r) (scaleRoots p s) = 0 := by
+  set_option tactic.skipAssignedInstances false in
   nontriviality S using Subsingleton.eq_zero
   convert @scaleRoots_eval₂_eq_zero _ _ _ _ p f _ s hr
-  rw [← mul_div_assoc, mul_comm, mul_div_cancel]
+  rw [← mul_div_assoc, mul_comm, mul_div_cancel_right₀]
   exact map_ne_zero_of_mem_nonZeroDivisors _ hf hs
 #align polynomial.scale_roots_eval₂_eq_zero_of_eval₂_div_eq_zero Polynomial.scaleRoots_eval₂_eq_zero_of_eval₂_div_eq_zero
 
@@ -227,10 +228,15 @@ lemma add_scaleRoots_of_natDegree_eq (p q : R[X]) (r : R) (h : natDegree p = nat
     r ^ (natDegree p - natDegree (p + q)) • (p + q).scaleRoots r =
       p.scaleRoots r + q.scaleRoots r := by
   ext n; simp only [coeff_smul, coeff_scaleRoots, coeff_add, smul_eq_mul,
-    mul_comm (r ^ _), mul_assoc, ← pow_add, ← h, ← add_mul, add_comm (_ - n)]
+    mul_comm (r ^ _), ← pow_add, ← h, ← add_mul, add_comm (_ - n)]
+  -- Adaptation note: v4.7.0-rc1
+  -- Previously `mul_assoc` was part of the `simp only` above, and this `rw` was not needed.
+  -- but this now causes a max rec depth error.
+  rw [mul_assoc, ← pow_add]
   cases lt_or_le (natDegree (p + q)) n with
   | inl hn => simp only [← coeff_add, coeff_eq_zero_of_natDegree_lt hn, zero_mul]
-  | inr hn => rw [tsub_add_tsub_cancel (natDegree_add_le_of_degree_le le_rfl h.ge) hn]
+  | inr hn =>
+      rw [add_comm (_ - n), tsub_add_tsub_cancel (natDegree_add_le_of_degree_le le_rfl h.ge) hn]
 
 lemma scaleRoots_dvd' (p q : R[X]) {r : R} (hr : IsUnit r)
     (hpq : p ∣ q) : p.scaleRoots r ∣ q.scaleRoots r := by
@@ -261,7 +267,7 @@ lemma isCoprime_scaleRoots (p q : R[X]) (r : R) (hr : IsUnit r) (h : IsCoprime p
     rw [e, natDegree_one]
   use s ^ natDegree (a * p) • s ^ (natDegree a + natDegree p - natDegree (a * p)) • a.scaleRoots r
   use s ^ natDegree (a * p) • s ^ (natDegree b + natDegree q - natDegree (b * q)) • b.scaleRoots r
-  simp only [smul_mul_assoc, ← mul_scaleRoots, smul_smul, Units.smul_def, mul_assoc,
+  simp only [s, smul_mul_assoc, ← mul_scaleRoots, smul_smul, Units.smul_def, mul_assoc,
     ← mul_pow, IsUnit.val_inv_mul, one_pow, mul_one, ← smul_add, one_smul, e, natDegree_one,
     one_scaleRoots, ← add_scaleRoots_of_natDegree_eq _ _ _ this, tsub_zero]
 alias _root_.IsCoprime.scaleRoots := isCoprime_scaleRoots

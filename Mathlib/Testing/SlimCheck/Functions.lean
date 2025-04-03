@@ -7,8 +7,10 @@ import Mathlib.Data.List.Sigma
 import Mathlib.Data.Int.Range
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finsupp.ToDFinsupp
+import Std.Data.LazyList
 import Mathlib.Testing.SlimCheck.Sampleable
 import Mathlib.Testing.SlimCheck.Testable
+import Std.Data.LazyList
 import Std.Data.List.Perm
 
 #align_import testing.slim_check.functions from "leanprover-community/mathlib"@"f9c300047a57aeda7c2fe15a3ac2455eb05ec225"
@@ -77,7 +79,7 @@ instance TotalFunction.inhabited [Inhabited β] : Inhabited (TotalFunction α β
 
 namespace TotalFunction
 
--- porting note: new
+-- Porting note: new
 /-- Compose a total function with a regular function on the left -/
 def comp {γ : Type w} (f : β → γ) : TotalFunction α β → TotalFunction α γ
   | TotalFunction.withDefault m y => TotalFunction.withDefault
@@ -120,7 +122,7 @@ section
 universe ua ub
 variable [SampleableExt.{_,u} α] [SampleableExt.{_,ub} β]
 
--- porting note: removed, there is no `sizeof` in the new `Sampleable`
+-- Porting note: removed, there is no `sizeof` in the new `Sampleable`
 
 -- /-- Redefine `sizeof` to follow the structure of `sampleable` instances. -/
 -- def Total.sizeof : TotalFunction α β → ℕ
@@ -183,7 +185,7 @@ def applyFinsupp (tf : TotalFunction α β) : α →₀ β where
     intro a
     rcases tf with ⟨A, y⟩
     simp only [apply, zeroDefaultSupp, List.mem_map, List.mem_filter, exists_and_right,
-      List.mem_toFinset, exists_eq_right, Sigma.exists, Ne.def, zeroDefault]
+      List.mem_toFinset, exists_eq_right, Sigma.exists, Ne, zeroDefault]
     constructor
     · rintro ⟨od, hval, hod⟩
       have := List.mem_dlookup (List.nodupKeys_dedupKeys A) hval
@@ -320,13 +322,13 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
     · injection h₂ with h₀; subst h₀
       cases ys
       · cases h₁
-      · -- porting note: `open List` no longer makes `zip_cons_cons` visible
+      · -- Porting note: `open List` no longer makes `zip_cons_cons` visible
         simp only [List.applyId, Prod.toSigma, Option.getD_some, List.get?, List.dlookup_cons_eq,
           List.zip_cons_cons, List.map, Option.some_inj]
     · cases ys
       · cases h₁
       · cases' h₀ with _ _ h₀ h₁
-        -- porting note: `open List` no longer makes `zip_cons_cons` visible
+        -- Porting note: `open List` no longer makes `zip_cons_cons` visible
         simp only [List.get?, List.zip_cons_cons, List.applyId_cons] at h₂ ⊢
         rw [if_neg]
         · apply xs_ih <;> solve_by_elim [Nat.succ.inj]
@@ -447,7 +449,7 @@ protected def shrinkPerm {α : Type} [DecidableEq α] :
 #align slim_check.injective_function.shrink_perm SlimCheck.InjectiveFunction.shrinkPerm
 
 
--- porting note: removed, there is no `sizeof` in the new `Sampleable`
+-- Porting note: removed, there is no `sizeof` in the new `Sampleable`
 -- instance [SizeOf α] : SizeOf (InjectiveFunction α) :=
 --   ⟨fun ⟨xs, _, _⟩ => SizeOf.sizeOf (xs.map Sigma.fst)⟩
 #noalign slim_check.injective_function.has_sizeof

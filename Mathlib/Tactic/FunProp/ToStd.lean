@@ -5,8 +5,6 @@ Authors: Tomas Skrivan
 -/
 import Lean
 
-import Std.Data.Array.Init.Basic
-
 /-!
 ## `funProp` missing function from standard library
 -/
@@ -38,7 +36,7 @@ def isOrderedSubsetOf {α} [Inhabited α] [DecidableEq α] (a b : Array α) : Bo
 private def letTelescopeImpl {α} (e : Expr) (k : Array Expr → Expr → MetaM α) :
     MetaM α :=
   lambdaLetTelescope e λ xs b => do
-    if let .some i ← xs.findIdxM? (λ x => do pure ¬(← x.fvarId!.isLetVar)) then
+    if let .some i ← xs.findIdxM? (fun x ↦ do pure ¬(← x.fvarId!.isLetVar)) then
       k xs[0:i] (← mkLambdaFVars xs[i:] b)
     else
       k xs b
@@ -111,7 +109,7 @@ def mkUncurryFun (n : Nat) (f : Expr) : MetaM Expr := do
       do return (n ++ toString (← x.fvarId!.getUserName).eraseMacroScopes)
     let xProdType ← inferType (← mkProdElem xs)
 
-    withLocalDecl xProdName default xProdType λ xProd => do
+    withLocalDecl (.mkSimple xProdName) default xProdType λ xProd => do
       let xs' ← mkProdSplitElem xProd n
       mkLambdaFVars #[xProd] (← mkAppM' f xs').headBeta
 

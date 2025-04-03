@@ -33,7 +33,7 @@ theorem pow_dvd_of_le_of_pow_dvd {p m n : ℕ} {k : ℤ} (hmn : m ≤ n) (hdiv :
 #align int.pow_dvd_of_le_of_pow_dvd Int.pow_dvd_of_le_of_pow_dvd
 
 theorem dvd_of_pow_dvd {p k : ℕ} {m : ℤ} (hk : 1 ≤ k) (hpk : ↑(p ^ k) ∣ m) : ↑p ∣ m :=
-  (dvd_pow_self _ <| pos_iff_ne_zero.1 hk).natCast.trans hpk
+  (dvd_pow_self _ <| Nat.ne_of_gt hk).natCast.trans hpk
 #align int.dvd_of_pow_dvd Int.dvd_of_pow_dvd
 
 end Int

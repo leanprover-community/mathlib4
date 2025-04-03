@@ -36,39 +36,22 @@ section Semiring
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {R : Type*} [Semiring R] {S : Type*} [Semiring S]
-
 variable {R₂ : Type*} [Semiring R₂] {S₂ : Type*} [Semiring S₂]
-
 variable {M : Type*} {N : Type*} {P : Type*}
-
 variable {M₂ : Type*} {N₂ : Type*} {P₂ : Type*}
-
 variable {Nₗ : Type*} {Pₗ : Type*}
-
 variable {M' : Type*} {N' : Type*} {P' : Type*}
-
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-
 variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂]
-
 variable [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
-
 variable [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup P']
-
 variable [Module R M] [Module S N] [Module R₂ P] [Module S₂ P]
-
 variable [Module R M₂] [Module S N₂] [Module R P₂] [Module S₂ P₂]
-
 variable [Module R Pₗ] [Module S Pₗ]
-
 variable [Module R M'] [Module S N'] [Module R₂ P'] [Module S₂ P']
-
 variable [SMulCommClass S₂ R₂ P] [SMulCommClass S R Pₗ] [SMulCommClass S₂ R₂ P']
-
 variable [SMulCommClass S₂ R P₂]
-
 variable {ρ₁₂ : R →+* R₂} {σ₁₂ : S →+* S₂}
-
 variable (ρ₁₂ σ₁₂)
 
 /-- Create a bilinear map from a function that is semilinear in each component.
@@ -208,34 +191,54 @@ theorem domRestrict₁₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂]
     (x : p) (y : q) : f.domRestrict₁₂ p q x y = f x y := rfl
 #align linear_map.dom_restrict₁₂_apply LinearMap.domRestrict₁₂_apply
 
+section restrictScalars
+
+variable (R' S' : Type*)
+variable [Semiring R'] [Semiring S'] [Module R' M] [Module S' N] [Module R' Pₗ] [Module S' Pₗ]
+variable [SMulCommClass S' R' Pₗ]
+variable [SMul S' S] [IsScalarTower S' S N] [IsScalarTower S' S Pₗ]
+variable [SMul R' R] [IsScalarTower R' R M] [IsScalarTower R' R Pₗ]
+
+/-- If `B : M → N → Pₗ` is `R`-`S` bilinear and `R'` and `S'` are compatible scalar multiplications,
+then the restriction of scalars is a `R'`-`S'` bilinear map.-/
+@[simps!]
+def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N →ₗ[S'] Pₗ :=
+  LinearMap.mk₂' R' S'
+    (B · ·)
+    B.map_add₂
+    (fun r' m _ ↦ by
+      dsimp only
+      rw [← smul_one_smul R r' m, map_smul₂, smul_one_smul])
+    (fun _ ↦ map_add _)
+    (fun _ x ↦ (B x).map_smul_of_tower _)
+
+theorem restrictScalars₁₂_injective : Function.Injective
+    (LinearMap.restrictScalars₁₂ R' S' : (M →ₗ[R] N →ₗ[S] Pₗ) → (M →ₗ[R'] N →ₗ[S'] Pₗ)) :=
+  fun _ _ h ↦ ext₂ (congr_fun₂ h : _)
+
+@[simp]
+theorem restrictScalars₁₂_inj {B B' : M →ₗ[R] N →ₗ[S] Pₗ} :
+    B.restrictScalars₁₂ R' S' = B'.restrictScalars₁₂ R' S' ↔ B = B' :=
+  (restrictScalars₁₂_injective R' S').eq_iff
+
+end restrictScalars
+
 end Semiring
 
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] {R₂ : Type*} [CommSemiring R₂]
-
 variable {R₃ : Type*} [CommSemiring R₃] {R₄ : Type*} [CommSemiring R₄]
-
 variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
-
 variable {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
-
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
-
 variable [AddCommMonoid Mₗ] [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
-
 variable [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
-
 variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
-
 variable [Module R Mₗ] [Module R Nₗ] [Module R Pₗ] [Module R Qₗ] [Module R Qₗ']
-
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-
 variable {σ₄₂ : R₄ →+* R₂} {σ₄₃ : R₄ →+* R₃}
-
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₄₂ σ₂₃ σ₄₃]
-
 variable (R)
 
 /-- Create a bilinear map from a function that is linear in each component.
@@ -415,15 +418,12 @@ end CommSemiring
 section CommRing
 
 variable {R R₂ S S₂ M N P : Type*}
-
 variable {Mₗ Nₗ Pₗ : Type*}
-
 variable [CommRing R] [CommRing S] [CommRing R₂] [CommRing S₂]
 
 section AddCommGroup
 
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
-
 variable [Module R M] [Module S N] [Module R₂ P] [Module S₂ P]
 
 theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :

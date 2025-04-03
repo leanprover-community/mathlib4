@@ -226,20 +226,11 @@ theorem toList_injective : Function.Injective (@CompositionSeries.toList X _ _) 
   have h₁ : s₁.length = s₂.length :=
     Nat.succ_injective
       ((List.length_ofFn s₁).symm.trans <| (congr_arg List.length h).trans <| List.length_ofFn s₂)
-  have h₂ : ∀ i : Fin s₁.length.succ, s₁ i = s₂ (Fin.cast (congr_arg Nat.succ h₁) i) :=
-    -- Porting note: `List.nthLe_ofFn` has been deprecated but `List.get_ofFn` has a
-    --               different type, so we do golf here.
-    congr_fun <| List.ofFn_injective <| h.trans <| List.ofFn_congr (congr_arg Nat.succ h₁).symm _
-  cases s₁
-  cases s₂
-  -- Porting note: `dsimp at *` doesn't work. Why?
-  dsimp at h h₁ h₂
-  subst h₁
-  -- Porting note: `[heq_iff_eq, eq_self_iff_true, true_and_iff]`
-  --             → `[mk.injEq, heq_eq_eq, true_and]`
-  simp only [mk.injEq, heq_eq_eq, true_and]
-  simp only [Fin.cast_refl] at h₂
-  exact funext h₂
+  apply ext_fun h₁
+  -- Porting note: `List.nthLe_ofFn` has been deprecated but `List.get_ofFn` has a
+  --               different type, so we do golf here.
+  exact congr_fun <|
+          List.ofFn_injective <| h.trans <| List.ofFn_congr (congr_arg Nat.succ h₁).symm _
 #align composition_series.to_list_injective CompositionSeries.toList_injective
 
 theorem chain'_toList (s : CompositionSeries X) : List.Chain' IsMaximal s.toList :=
@@ -726,7 +717,7 @@ theorem length_pos_of_bot_eq_bot_of_top_eq_top_of_length_pos {s₁ s₂ : Compos
     (hb : s₁.bot = s₂.bot) (ht : s₁.top = s₂.top) : 0 < s₁.length → 0 < s₂.length :=
   not_imp_not.1
     (by
-      simp only [pos_iff_ne_zero, Ne.def, not_iff_not, Classical.not_not]
+      simp only [pos_iff_ne_zero, Ne, not_iff_not, Classical.not_not]
       exact length_eq_zero_of_bot_eq_bot_of_top_eq_top_of_length_eq_zero hb.symm ht.symm)
 #align composition_series.length_pos_of_bot_eq_bot_of_top_eq_top_of_length_pos CompositionSeries.length_pos_of_bot_eq_bot_of_top_eq_top_of_length_pos
 

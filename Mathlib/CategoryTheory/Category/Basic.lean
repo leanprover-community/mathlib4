@@ -42,13 +42,13 @@ specified explicitly, as `Category.{v} C`.
 Typically any concrete example will either be a `SmallCategory`, where `v = u`,
 which can be introduced as
 ```
-universes u
-variables {C : Type u} [SmallCategory C]
+universe u
+variable {C : Type u} [SmallCategory C]
 ```
 or a `LargeCategory`, where `u = v+1`, which can be introduced as
 ```
-universes u
-variables {C : Type (u+1)} [LargeCategory C]
+universe u
+variable {C : Type (u+1)} [LargeCategory C]
 ```
 
 In order for the library to handle these cases uniformly,
@@ -61,11 +61,11 @@ can not be automatically inferred, through the category theory library
 we introduce universe parameters with morphism levels listed first,
 as in
 ```
-universes v u
+universe v u
 ```
 or
 ```
-universes v₁ v₂ u₁ u₂
+universe v₁ v₂ u₁ u₂
 ```
 when multiple independent universes are needed.
 
@@ -111,14 +111,15 @@ scoped infixr:80 " ≫ " => CategoryStruct.comp -- type as \gg
 /--
 A thin wrapper for `aesop` which adds the `CategoryTheory` rule set and
 allows `aesop` to look through semireducible definitions when calling `intros`.
+It also turns on `zetaDelta` in the `simp` config, allowing `aesop_cat` to unfold any `let`s.
 This tactic fails when it is unable to solve the goal, making it suitable for
 use in auto-params.
 -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   aesop $c* (config := { introsTransparency? := some .default, terminal := true })
-            (simp_config := { decide := true })
-  (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
+            (simp_config := { decide := true, zetaDelta := true })
+            (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 
 /--
 We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop_cat`
@@ -126,7 +127,8 @@ We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop
 macro (name := aesop_cat?) "aesop_cat?" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
   aesop? $c* (config := { introsTransparency? := some .default, terminal := true })
-  (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
+             (simp_config := { decide := true, zetaDelta := true })
+             (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 /--
 A variant of `aesop_cat` which does not fail when it is unable to solve the
 goal. Use this only for exploration! Nonterminal `aesop` is even worse than
@@ -135,7 +137,8 @@ nonterminal `simp`.
 macro (name := aesop_cat_nonterminal) "aesop_cat_nonterminal" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
     aesop $c* (config := { introsTransparency? := some .default, warnOnNonterminal := false })
-    (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
+              (simp_config := { decide := true, zetaDelta := true })
+              (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
 
 
 -- We turn on `ext` inside `aesop_cat`.
@@ -360,7 +363,6 @@ end
 section
 
 variable (C : Type u)
-
 variable [Category.{v} C]
 
 universe u'

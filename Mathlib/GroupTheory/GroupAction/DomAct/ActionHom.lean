@@ -22,7 +22,7 @@ set_option autoImplicit true
 
 namespace DomMulAct
 
-section MulActionHom
+section MulActionSemiHom
 
 section SMul
 
@@ -48,7 +48,7 @@ instance [Monoid M] [MulAction M α] [SMul N α] [SMulCommClass M N α] [SMul N 
     MulAction Mᵈᵐᵃ (α →[N] β) :=
   DFunLike.coe_injective.mulAction _ fun _ _ ↦ rfl
 
-end MulActionHom
+end MulActionSemiHom
 
 section DistribMulActionHom
 

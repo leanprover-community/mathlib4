@@ -119,7 +119,7 @@ theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] 
   rfl
 #align fintype.pi_finset_univ Fintype.piFinset_univ
 
--- porting note: this instance used to be computable in Lean3 and used `decidable_eq`, but
+-- Porting note: this instance used to be computable in Lean3 and used `decidable_eq`, but
 -- it makes things a lot harder to work with here. in some ways that was because in Lean3
 -- we could make this instance irreducible when needed and in the worst case use `congr/convert`,
 -- but those don't work with subsingletons in lean4 as-is so we cannot do this here.

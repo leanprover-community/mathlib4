@@ -174,7 +174,7 @@ Ring Theory:
     characteristic p: 'CharP'
     Subfields: 'field_theory/subfield.html'
     Frobenius morphisms: 'frobenius'
-    field $\Q$ of rational numbers: 'Rat.field'
+    field $\Q$ of rational numbers: 'Rat.instField'
     field $\R$ of real numbers: 'Real.field'
     field $\C$ of complex numbers: 'Complex.instField'
     $\C$ is algebraically closed: 'Complex.exists_root'
@@ -426,8 +426,8 @@ Topology:
     continuous linear maps: 'ContinuousLinearMap'
     norm of a continuous linear map: 'LinearMap.mkContinuous'
     uniform convergence norm (sup-norm): 'EMetric.tendstoUniformlyOn_iff'
-    normed space of bounded continuous functions: 'BoundedContinuousFunction.normedSpace'
-    its completeness: 'BoundedContinuousFunction.instCompleteSpaceBoundedContinuousFunctionToUniformSpaceInstPseudoMetricSpaceBoundedContinuousFunction'
+    normed space of bounded continuous functions: 'BoundedContinuousFunction.instNormedSpace'
+    completeness of the space of bounded continuous functions: 'BoundedContinuousFunction.instCompleteSpace'
     Heine-Borel theorem (closed bounded subsets are compact in finite dimension): 'FiniteDimensional.proper'
     Riesz' lemma (unit-ball characterization of finite dimension): 'FiniteDimensional.of_isCompact_closedBall'
     Arzela-Ascoli theorem: 'BoundedContinuousFunction.arzela_ascoli'
@@ -437,9 +437,9 @@ Topology:
     dual space: 'NormedSpace.Dual'
     Riesz representation theorem: 'InnerProductSpace.toDual'
     inner product space $l^2$: 'lp.instInnerProductSpace'
-    its completeness: 'lp.instCompleteSpace'
+    completeness of $l^2$: 'lp.completeSpace'
     inner product space $L^2$: 'MeasureTheory.L2.innerProductSpace'
-    its completeness: 'MeasureTheory.Lp.instCompleteSpace'
+    completeness of $L^2$: 'MeasureTheory.Lp.instCompleteSpace'
     Hilbert bases: 'HilbertBasis' # the document specifies "in the separable case" but we don't require this
     example, the Hilbert basis of trigonometric polynomials: 'fourierBasis'
     example, classical Hilbert bases of orthogonal polynomials: ''
@@ -532,8 +532,10 @@ Measures and integral calculus:
     Dirichlet theorem: ''
     Fejer theorem: ''
     Parseval theorem: 'tsum_sq_fourierCoeff'
-    Fourier transforms on $\mathrm{L}^1(\R^d)$ and $\mathrm{L}^2(\R^d)$: ''
+    Fourier transform on $\mathrm{L}^1(\R^d)$: 'Real.fourierIntegral'
+    Fourier transform on $\mathrm{L}^2(\R^d)$: ''
     Plancherel’s theorem: ''
+    Fourier inversion formula: 'Continuous.fourier_inversion'
 
 # 11.
 Probability Theory:

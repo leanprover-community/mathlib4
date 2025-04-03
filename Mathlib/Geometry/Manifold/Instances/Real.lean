@@ -79,24 +79,26 @@ instance [Zero (Fin n)] : Inhabited (EuclideanHalfSpace n) :=
 instance : Inhabited (EuclideanQuadrant n) :=
   ⟨⟨0, fun _ => le_rfl⟩⟩
 
-@[ext] -- porting note: new theorem
+@[ext] -- Porting note (#10756): new theorem
 theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
   Subtype.eq h
 
-@[ext] -- porting note: new theorem
+@[ext] -- Porting note (#10756): new theorem
 theorem EuclideanHalfSpace.ext [Zero (Fin n)] (x y : EuclideanHalfSpace n)
     (h : x.1 = y.1) : x = y :=
   Subtype.eq h
 
-theorem range_half_space (n : ℕ) [Zero (Fin n)] :
+theorem range_euclideanHalfSpace (n : ℕ) [Zero (Fin n)] :
     (range fun x : EuclideanHalfSpace n => x.val) = { y | 0 ≤ y 0 } :=
   Subtype.range_val
-#align range_half_space range_half_space
+#align range_half_space range_euclideanHalfSpace
+@[deprecated] alias range_half_space := range_euclideanHalfSpace -- 2024-04-05
 
-theorem range_quadrant (n : ℕ) :
+theorem range_euclideanQuadrant (n : ℕ) :
     (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
-#align range_quadrant range_quadrant
+#align range_quadrant range_euclideanQuadrant
+@[deprecated] alias range_quadrant := range_euclideanQuadrant -- 2024-04-05
 
 end
 
@@ -150,13 +152,13 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
     (continuous_pi fun i => (continuous_id.max continuous_const).comp (continuous_apply i)) _
 #align model_with_corners_euclidean_quadrant modelWithCornersEuclideanQuadrant
 
--- mathport name: model_with_corners_self.euclidean
+/-- The model space used to define `n`-dimensional real manifolds without boundary. -/
 scoped[Manifold]
   notation "𝓡 " n =>
     (modelWithCornersSelf ℝ (EuclideanSpace ℝ (Fin n)) :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanSpace ℝ (Fin n)))
 
--- mathport name: model_with_corners_euclidean_half_space.euclidean
+/-- The model space used to define `n`-dimensional real manifolds with boundary. -/
 scoped[Manifold]
   notation "𝓡∂ " n =>
     (modelWithCornersEuclideanHalfSpace n :
@@ -186,7 +188,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     dsimp at hz h'z
     have A : x + z 0 ≤ y := by linarith
     rw [Subsingleton.elim i 0]
-    simp only [A, add_comm, add_sub_cancel', min_eq_left]
+    simp only [A, add_comm, add_sub_cancel_left, min_eq_left]
   open_source :=
     haveI : IsOpen { z : ℝ | z < y } := isOpen_Iio
     this.preimage continuous_subtype_val

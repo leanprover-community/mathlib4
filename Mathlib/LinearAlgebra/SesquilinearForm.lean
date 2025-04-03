@@ -437,21 +437,13 @@ section AdjointPair
 section AddCommMonoid
 
 variable [CommSemiring R]
-
 variable [AddCommMonoid M] [Module R M]
-
 variable [AddCommMonoid M₁] [Module R M₁]
-
 variable [AddCommMonoid M₂] [Module R M₂]
-
 variable [AddCommMonoid M₃] [Module R M₃]
-
 variable {I : R →+* R}
-
 variable {B F : M →ₗ[R] M →ₛₗ[I] M₃} {B' : M₁ →ₗ[R] M₁ →ₛₗ[I] M₃} {B'' : M₂ →ₗ[R] M₂ →ₛₗ[I] M₃}
-
 variable {f f' : M →ₗ[R] M₁} {g g' : M₁ →ₗ[R] M}
-
 variable (B B' f g)
 
 /-- Given a pair of modules equipped with bilinear maps, this is the condition for a pair of
@@ -497,15 +489,10 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [CommRing R]
-
 variable [AddCommGroup M] [Module R M]
-
 variable [AddCommGroup M₁] [Module R M₁]
-
 variable [AddCommGroup M₂] [Module R M₂]
-
 variable {B F : M →ₗ[R] M →ₗ[R] M₂} {B' : M₁ →ₗ[R] M₁ →ₗ[R] M₂}
-
 variable {f f' : M →ₗ[R] M₁} {g g' : M₁ →ₗ[R] M}
 
 theorem IsAdjointPair.sub (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
@@ -530,13 +517,9 @@ section SelfadjointPair
 section AddCommMonoid
 
 variable [CommSemiring R]
-
 variable [AddCommMonoid M] [Module R M]
-
 variable [AddCommMonoid M₁] [Module R M₁]
-
 variable {I : R →+* R}
-
 variable (B F : M →ₗ[R] M →ₛₗ[I] M₁)
 
 /-- The condition for an endomorphism to be "self-adjoint" with respect to a pair of bilinear maps
@@ -558,9 +541,7 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [CommRing R]
-
 variable [AddCommGroup M] [Module R M] [AddCommGroup M₁] [Module R M₁]
-
 variable [AddCommGroup M₂] [Module R M₂] (B F : M →ₗ[R] M →ₗ[R] M₂)
 
 /-- The set of pair-self-adjoint endomorphisms are a submodule of the type of all endomorphisms. -/
@@ -673,10 +654,8 @@ theorem SeparatingLeft.ne_zero [Nontrivial M₁] {B : M₁ →ₛₗ[I₁] M₂ 
 section Linear
 
 variable [AddCommMonoid Mₗ₁] [AddCommMonoid Mₗ₂] [AddCommMonoid Mₗ₁'] [AddCommMonoid Mₗ₂']
-  [AddCommMonoid M]
 
-variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂'] [Module R M]
-
+variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂']
 variable {B : Mₗ₁ →ₗ[R] Mₗ₂ →ₗ[R] M} (e₁ : Mₗ₁ ≃ₗ[R] Mₗ₁') (e₂ : Mₗ₂ ≃ₗ[R] Mₗ₂')
 
 theorem SeparatingLeft.congr (h : B.SeparatingLeft) :

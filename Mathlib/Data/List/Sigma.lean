@@ -162,7 +162,7 @@ variable [DecidableEq α]
 /-! ### `dlookup` -/
 
 
---Porting note: renaming to `dlookup` since `lookup` already exists
+-- Porting note: renaming to `dlookup` since `lookup` already exists
 /-- `dlookup a l` is the first value in `l` corresponding to the key `a`,
   or `none` if no such element exists. -/
 def dlookup (a : α) : List (Sigma β) → Option (β a)
@@ -223,8 +223,7 @@ theorem map_dlookup_eq_find (a : α) :
     by_cases h : a = a'
     · subst a'
       simp
-    · simp [h]
-      exact map_dlookup_eq_find a l
+    · simpa [h] using map_dlookup_eq_find a l
 #align list.map_lookup_eq_find List.map_dlookup_eq_find
 
 theorem mem_dlookup_iff {a : α} {b : β a} {l : List (Sigma β)} (nd : l.NodupKeys) :
@@ -391,7 +390,7 @@ def kerase (a : α) : List (Sigma β) → List (Sigma β) :=
   eraseP fun s => a = s.1
 #align list.kerase List.kerase
 
---Porting note: removing @[simp], `simp` can prove it
+-- Porting note (#10618): removing @[simp], `simp` can prove it
 theorem kerase_nil {a} : @kerase _ β _ a [] = [] :=
   rfl
 #align list.kerase_nil List.kerase_nil
@@ -433,7 +432,7 @@ theorem exists_of_kerase {a : α} {l : List (Sigma β)} (h : a ∈ l.keys) :
     by_cases e : a = hd.1
     · subst e
       exact ⟨hd.2, [], tl, by simp, by cases hd; rfl, by simp⟩
-    · simp at h
+    · simp only [keys_cons, mem_cons] at h
       cases' h with h h
       exact absurd h e
       rcases ih h with ⟨b, tl₁, tl₂, h₁, h₂, h₃⟩
@@ -532,7 +531,9 @@ theorem kerase_append_left {a} :
 theorem kerase_append_right {a} :
     ∀ {l₁ l₂ : List (Sigma β)}, a ∉ l₁.keys → kerase a (l₁ ++ l₂) = l₁ ++ kerase a l₂
   | [], _, _ => rfl
-  | _ :: l₁, l₂, h => by simp [not_or] at h; simp [h.1, kerase_append_right h.2]
+  | _ :: l₁, l₂, h => by
+    simp only [keys_cons, mem_cons, not_or] at h
+    simp [h.1, kerase_append_right h.2]
 #align list.kerase_append_right List.kerase_append_right
 
 theorem kerase_comm (a₁ a₂) (l : List (Sigma β)) :
@@ -616,7 +617,7 @@ theorem kextract_eq_dlookup_kerase (a : α) :
     ∀ l : List (Sigma β), kextract a l = (dlookup a l, kerase a l)
   | [] => rfl
   | ⟨a', b⟩ :: l => by
-    simp [kextract]; dsimp; split_ifs with h
+    simp only [kextract]; dsimp; split_ifs with h
     · subst a'
       simp [kerase]
     · simp [kextract, Ne.symm h, kextract_eq_dlookup_kerase a l, kerase]
@@ -648,7 +649,7 @@ theorem nodupKeys_dedupKeys (l : List (Sigma β)) : NodupKeys (dedupKeys l) := b
   · cases x
     simp only [foldr_cons, kinsert_def, nodupKeys_cons, ne_eq, not_true]
     constructor
-    · simp [keys_kerase]
+    · simp only [keys_kerase]
       apply l_ih.not_mem_erase
     · exact l_ih.kerase _
 #align list.nodupkeys_dedupkeys List.nodupKeys_dedupKeys
@@ -668,7 +669,7 @@ theorem sizeOf_dedupKeys {α} {β : α → Type*} [DecidableEq α] [SizeOf (Sigm
   simp only [SizeOf.sizeOf, _sizeOf_1]
   induction' xs with x xs
   · simp [dedupKeys]
-  · simp only [dedupKeys_cons, kinsert_def, add_le_add_iff_left, Sigma.eta]
+  · simp only [dedupKeys_cons, kinsert_def, Nat.add_le_add_iff_left, Sigma.eta]
     trans
     apply sizeOf_kerase
     assumption
@@ -763,10 +764,10 @@ theorem dlookup_kunion_right {a} {l₁ l₂ : List (Sigma β)} (h : a ∉ l₁.k
     dlookup a (kunion l₁ l₂) = dlookup a l₂ := by
   induction l₁ generalizing l₂ with
   | nil => simp
-  | cons _ _ ih => simp [not_or] at h; simp [h.1, ih h.2]
+  | cons _ _ ih => simp_all [not_or]
 #align list.lookup_kunion_right List.dlookup_kunion_right
 
---Porting note: removing simp, LHS not in normal form, added new version
+-- Porting note: removing simp, LHS not in normal form, added new version
 theorem mem_dlookup_kunion {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
     b ∈ dlookup a (kunion l₁ l₂) ↔ b ∈ dlookup a l₁ ∨ a ∉ l₁.keys ∧ b ∈ dlookup a l₂ := by
   induction l₁ generalizing l₂ with
@@ -782,7 +783,7 @@ theorem mem_dlookup_kunion {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
       simp [h₁, h₂]
 #align list.mem_lookup_kunion List.mem_dlookup_kunion
 
---Porting note: New theorem, alternative version of `mem_dlookup_kunion` for simp
+-- Porting note (#10756): new theorem, alternative version of `mem_dlookup_kunion` for simp
 @[simp]
 theorem dlookup_kunion_eq_some {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
     dlookup a (kunion l₁ l₂) = some b ↔

@@ -70,7 +70,7 @@ namespace YoungDiagram
 
 instance : SetLike YoungDiagram (ℕ × ℕ)
     where
-  -- porting note: TODO: figure out how to do this correctly
+  -- Porting note (#11215): TODO: figure out how to do this correctly
   coe := fun y => y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
@@ -169,7 +169,7 @@ theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
   rfl
 #align young_diagram.cells_bot YoungDiagram.cells_bot
 
--- porting note: removed `↑`, added `.cells` and changed proof
+-- Porting note: removed `↑`, added `.cells` and changed proof
 -- @[simp] -- Porting note (#10618): simp can prove this
 @[norm_cast]
 theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by

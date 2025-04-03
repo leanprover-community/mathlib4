@@ -46,6 +46,9 @@ protected theorem Function.isEmpty [IsEmpty β] (f : α → β) : IsEmpty α :=
   ⟨fun x ↦ IsEmpty.false (f x)⟩
 #align function.is_empty Function.isEmpty
 
+theorem Function.Surjective.isEmpty [IsEmpty α] {f : α → β} (hf : f.Surjective) : IsEmpty β :=
+  ⟨fun y ↦ let ⟨x, _⟩ := hf y; IsEmpty.false x⟩
+
 instance {p : α → Sort*} [h : Nonempty α] [∀ x, IsEmpty (p x)] : IsEmpty (∀ x, p x) :=
   h.elim fun x ↦ Function.isEmpty <| Function.eval x
 
@@ -60,6 +63,12 @@ instance Prod.isEmpty_left {α β} [IsEmpty α] : IsEmpty (α × β) :=
 
 instance Prod.isEmpty_right {α β} [IsEmpty β] : IsEmpty (α × β) :=
   Function.isEmpty Prod.snd
+
+instance Quot.instIsEmpty {α : Sort*} [IsEmpty α] {r : α → α → Prop} : IsEmpty (Quot r) :=
+  Function.Surjective.isEmpty Quot.exists_rep
+
+instance Quotient.instIsEmpty {α : Sort*} [IsEmpty α] {s : Setoid α} : IsEmpty (Quotient s) :=
+  Quot.instIsEmpty
 
 instance [IsEmpty α] [IsEmpty β] : IsEmpty (PSum α β) :=
   ⟨fun x ↦ PSum.rec IsEmpty.false IsEmpty.false x⟩

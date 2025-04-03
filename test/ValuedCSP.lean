@@ -54,15 +54,18 @@ private def Bool_add_le_add_left (a b : Bool) :
   cases a <;> cases b <;> cases c <;> trivial
 
 -- For simpler implementation, we treat `false` as "satisfied" and `true` as "wrong" here.
+private instance crispCodomainZero : Zero Bool where zero := false
+
+private instance crispCodomainAdd : Add Bool where add a b := a || b
+
 private instance crispCodomain : LinearOrderedAddCommMonoid Bool where
   __ := Bool.linearOrder
-  add (a b : Bool) := a || b
   add_assoc := Bool.or_assoc
-  zero := false
   zero_add (_ : Bool) := rfl
   add_zero := Bool.or_false
   add_comm := Bool.or_comm
   add_le_add_left := Bool_add_le_add_left
+  nsmul := nsmulRec
 
 private def beqBool : (Fin 2 → Fin 3) → Bool :=
   Function.OfArity.uncurry (fun (a b : Fin 3) => a == b)

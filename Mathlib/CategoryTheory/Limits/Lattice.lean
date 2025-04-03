@@ -28,7 +28,6 @@ namespace CategoryTheory.Limits.CompleteLattice
 section Semilattice
 
 variable {α : Type u}
-
 variable {J : Type w} [SmallCategory J] [FinCategory J]
 
 /-- The limit cone over any functor from a finite diagram into a `SemilatticeInf` with `OrderTop`.
@@ -179,7 +178,6 @@ theorem pushout_eq_sup [SemilatticeSup α] [OrderBot α] (x y z : α) (f : z ⟶
 end Semilattice
 
 variable {α : Type u} [CompleteLattice α]
-
 variable {J : Type u} [SmallCategory J]
 
 /-- The limit cone over any functor into a complete lattice.

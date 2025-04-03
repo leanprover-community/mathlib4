@@ -47,11 +47,9 @@ def s : Multiset ℕ := {0, 0, 0}
   For `PNat`, we will recover the set of divisors of a strictly positive integer.
 -/
 
-namespace Finset
-
-open scoped BigOperators
-
 open Function
+
+namespace Finset
 
 /-- The class of additive monoids with an antidiagonal -/
 class HasAntidiagonal (A : Type*) [AddMonoid A] where

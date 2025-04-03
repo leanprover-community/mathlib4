@@ -97,7 +97,7 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
         simp_all only [add_comm, self_eq_add_left, Nat.add_succ, enumerate_eq_none_of_sel _ h]
       | some =>
         simp_all only [add_comm, self_eq_add_left, enumerate, Option.some.injEq,
-                       Nat.add_succ, enumerate._eq_2, Nat.succ.injEq]
+                       Nat.add_succ, Nat.succ.injEq]
         exact ih h₁ h₂
 #align set.enumerate_inj Set.enumerate_inj
 

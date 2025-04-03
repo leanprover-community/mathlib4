@@ -233,7 +233,6 @@ macro (name := witt_truncateFun_tac) "witt_truncateFun_tac" : tactic =>
 namespace WittVector
 
 variable (p n R)
-
 variable [CommRing R]
 
 theorem truncateFun_surjective : Surjective (@truncateFun p n R) :=
@@ -271,11 +270,11 @@ theorem truncateFun_sub (x y : 𝕎 R) :
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_sub WittVector.truncateFun_sub
 
-theorem truncateFun_nsmul (x : 𝕎 R) (m : ℕ) : truncateFun n (m • x) = m • truncateFun n x := by
+theorem truncateFun_nsmul (m : ℕ) (x : 𝕎 R) : truncateFun n (m • x) = m • truncateFun n x := by
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_nsmul WittVector.truncateFun_nsmul
 
-theorem truncateFun_zsmul (x : 𝕎 R) (m : ℤ) : truncateFun n (m • x) = m • truncateFun n x := by
+theorem truncateFun_zsmul (m : ℤ) (x : 𝕎 R) : truncateFun n (m • x) = m • truncateFun n x := by
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_zsmul WittVector.truncateFun_zsmul
 
@@ -296,7 +295,6 @@ namespace TruncatedWittVector
 open WittVector
 
 variable (p n R)
-
 variable [CommRing R]
 
 instance instCommRing : CommRing (TruncatedWittVector p n R) :=
@@ -312,7 +310,6 @@ namespace WittVector
 open TruncatedWittVector
 
 variable (n)
-
 variable [CommRing R]
 
 /-- `truncate n` is a ring homomorphism that truncates `x` to its first `n` entries
@@ -444,11 +441,8 @@ open TruncatedWittVector hiding truncate coeff
 section lift
 
 variable [CommRing R]
-
 variable {S : Type*} [Semiring S]
-
 variable (f : ∀ k : ℕ, S →+* TruncatedWittVector p k R)
-
 variable
   (f_compat : ∀ (k₁ k₂ : ℕ) (hk : k₁ ≤ k₂), (TruncatedWittVector.truncate hk).comp (f k₂) = f k₁)
 

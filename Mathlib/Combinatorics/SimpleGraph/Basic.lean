@@ -38,13 +38,13 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
   look like.
 -/
 
--- porting note: using `aesop` for automation
+-- Porting note: using `aesop` for automation
 
--- porting note: These attributes are needed to use `aesop` as a replacement for `obviously`
+-- Porting note: These attributes are needed to use `aesop` as a replacement for `obviously`
 attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Symmetric
 attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Irreflexive
 
--- porting note: a thin wrapper around `aesop` for graph lemmas, modelled on `aesop_cat`
+-- Porting note: a thin wrapper around `aesop` for graph lemmas, modelled on `aesop_cat`
 /--
 A variant of the `aesop` tactic for use in the graph library. Changes relative
 to standard `aesop`:
@@ -96,7 +96,7 @@ structure SimpleGraph (V : Type u) where
   symm : Symmetric Adj := by aesop_graph
   loopless : Irreflexive Adj := by aesop_graph
 #align simple_graph SimpleGraph
--- porting note: changed `obviously` to `aesop` in the `structure`
+-- Porting note: changed `obviously` to `aesop` in the `structure`
 
 initialize_simps_projections SimpleGraph (Adj → adj)
 
@@ -140,7 +140,7 @@ theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
   Iff.rfl
 #align simple_graph.from_rel_adj SimpleGraph.fromRel_adj
 
--- porting note: attributes needed for `completeGraph`
+-- Porting note: attributes needed for `completeGraph`
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.symm
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.irrefl
 
@@ -317,7 +317,7 @@ theorem sInf_adj_of_nonempty {s : Set (SimpleGraph V)} (hs : s.Nonempty) :
 
 theorem iInf_adj_of_nonempty [Nonempty ι] {f : ι → SimpleGraph V} :
     (⨅ i, f i).Adj a b ↔ ∀ i, (f i).Adj a b := by
-  rw [iInf, sInf_adj_of_nonempty (Set.range_nonempty _), Set.forall_range_iff]
+  rw [iInf, sInf_adj_of_nonempty (Set.range_nonempty _), Set.forall_mem_range]
 #align simple_graph.infi_adj_of_nonempty SimpleGraph.iInf_adj_of_nonempty
 
 /-- For graphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
@@ -456,7 +456,7 @@ variable {G₁ G₂ : SimpleGraph V}
 The way `edgeSet` is defined is such that `mem_edgeSet` is proved by `refl`.
 (That is, `s(v, w) ∈ G.edgeSet` is definitionally equal to `G.Adj v w`.)
 -/
--- porting note: We need a separate definition so that dot notation works.
+-- Porting note: We need a separate definition so that dot notation works.
 def edgeSetEmbedding (V : Type*) : SimpleGraph V ↪o Set (Sym2 V) :=
   OrderEmbedding.ofMapLEIff (fun G => Sym2.fromRel G.symm) fun _ _ =>
     ⟨fun h a b => @h s(a, b), fun h e => Sym2.ind @h e⟩
@@ -662,7 +662,7 @@ theorem fromEdgeSet_univ : fromEdgeSet (Set.univ : Set (Sym2 V)) = ⊤ := by
 theorem fromEdgeSet_inf (s t : Set (Sym2 V)) :
     fromEdgeSet s ⊓ fromEdgeSet t = fromEdgeSet (s ∩ t) := by
   ext v w
-  simp only [fromEdgeSet_adj, Set.mem_inter_iff, Ne.def, inf_adj]
+  simp only [fromEdgeSet_adj, Set.mem_inter_iff, Ne, inf_adj]
   tauto
 #align simple_graph.from_edge_set_inf SimpleGraph.fromEdgeSet_inf
 
@@ -683,7 +683,7 @@ theorem fromEdgeSet_sdiff (s t : Set (Sym2 V)) :
 @[mono]
 theorem fromEdgeSet_mono {s t : Set (Sym2 V)} (h : s ⊆ t) : fromEdgeSet s ≤ fromEdgeSet t := by
   rintro v w
-  simp (config := { contextual := true }) only [fromEdgeSet_adj, Ne.def, not_false_iff,
+  simp (config := { contextual := true }) only [fromEdgeSet_adj, Ne, not_false_iff,
     and_true_iff, and_imp]
   exact fun vws _ => h vws
 #align simple_graph.from_edge_set_mono SimpleGraph.fromEdgeSet_mono
@@ -916,7 +916,7 @@ See also: `SimpleGraph.Subgraph.deleteEdges`. -/
 def deleteEdges (s : Set (Sym2 V)) : SimpleGraph V where
   Adj := G.Adj \ Sym2.ToRel s
   symm a b := by simp [adj_comm, Sym2.eq_swap]
-  loopless a := by simp [SDiff.sdiff] -- porting note: used to be handled by `obviously`
+  loopless a := by simp [SDiff.sdiff] -- Porting note: used to be handled by `obviously`
 #align simple_graph.delete_edges SimpleGraph.deleteEdges
 
 @[simp]

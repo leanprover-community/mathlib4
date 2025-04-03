@@ -63,7 +63,7 @@ theorem floor_int_div_nat_eq_div {n : ℤ} {d : ℕ} : ⌊(↑n : ℚ) / (↑d :
     rw [q_eq]
     exact mod_cast @Rat.exists_eq_mul_div_num_and_eq_mul_div_den n d (mod_cast hd.ne')
   rw [n_eq_c_mul_num, d_eq_c_mul_denom]
-  refine' (Int.mul_ediv_mul_of_pos _ _ <| pos_of_mul_pos_left _ <| Int.coe_nat_nonneg q.den).symm
+  refine' (Int.mul_ediv_mul_of_pos _ _ <| pos_of_mul_pos_left _ <| Int.natCast_nonneg q.den).symm
   rwa [← d_eq_c_mul_denom, Int.coe_nat_pos]
 #align rat.floor_int_div_nat_eq_div Rat.floor_int_div_nat_eq_div
 
@@ -85,7 +85,7 @@ theorem round_cast (x : ℚ) : round (x : α) = round x := by
 
 @[simp, norm_cast]
 theorem cast_fract (x : ℚ) : (↑(fract x) : α) = fract (x : α) := by
-  simp only [fract, cast_sub, cast_coe_int, floor_cast]
+  simp only [fract, cast_sub, cast_intCast, floor_cast]
 #align rat.cast_fract Rat.cast_fract
 
 end Rat

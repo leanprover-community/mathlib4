@@ -44,11 +44,8 @@ section Field
 open Polynomial
 
 variable {K : Type*} [Field K]
-
 variable [Invertible (2 : K)] [Invertible (3 : K)]
-
 variable (a b c d : K)
-
 variable {ω p q r s t : K}
 
 theorem cube_root_of_unity_sum (hω : IsPrimitiveRoot ω 3) : 1 + ω + ω ^ 2 = 0 := by
@@ -101,7 +98,6 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
     a * x ^ 3 + b * x ^ 2 + c * x + d = 0 ↔
       x = s - t - b / (3 * a) ∨
         x = s * ω - t * ω ^ 2 - b / (3 * a) ∨ x = s * ω ^ 2 - t * ω - b / (3 * a) := by
-  have hi2 : (2 : K) ≠ 0 := nonzero_of_invertible _
   have hi3 : (3 : K) ≠ 0 := nonzero_of_invertible _
   have h9 : (9 : K) = 3 ^ 2 := by norm_num
   have h54 : (54 : K) = 2 * 3 ^ 3 := by norm_num
@@ -110,7 +106,9 @@ theorem cubic_eq_zero_iff (ha : a ≠ 0) (hω : IsPrimitiveRoot ω 3)
   have h₂ : ∀ x, a * x = 0 ↔ x = 0 := by intro x; simp [ha]
   have hp' : p = (3 * (c / a) - (b / a) ^ 2) / 9 := by field_simp [hp, h9]; ring_nf
   have hq' : q = (9 * (b / a) * (c / a) - 2 * (b / a) ^ 3 - 27 * (d / a)) / 54 := by
-    field_simp [hq, h54]; ring_nf
+    rw [hq, h54]
+    simp [field_simps, ha]
+    ring_nf
   rw [h₁, h₂, cubic_monic_eq_zero_iff (b / a) (c / a) (d / a) hω hp' hp_nonzero hq' hr hs3 ht x]
   have h₄ :=
     calc

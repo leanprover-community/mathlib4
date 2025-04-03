@@ -33,8 +33,8 @@ pseudofunctors can be defined by using the composition of oplax functors as foll
 ```lean
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
   mkOfOplax ((F : OplaxFunctor B C).comp G)
-  { mapIdIso := λ a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a),
-    mapCompIso := λ f g =>
+  { mapIdIso := fun a ↦ (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a),
+    mapCompIso := fun f g ↦
       (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
 ```
 although the composition of pseudofunctors in this file is defined by using the default constructor
@@ -71,9 +71,7 @@ universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 section
 
 variable {B : Type u₁} [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)]
-
 variable {C : Type u₂} [Quiver.{v₂ + 1} C] [∀ a b : C, Quiver.{w₂ + 1} (a ⟶ b)]
-
 variable {D : Type u₃} [Quiver.{v₃ + 1} D] [∀ a b : D, Quiver.{w₃ + 1} (a ⟶ b)]
 
 /-- A prelax functor between bicategories consists of functions between objects,
@@ -101,7 +99,7 @@ instance hasCoeToPrefunctor : Coe (PrelaxFunctor B C) (Prefunctor B C) :=
 
 variable (F : PrelaxFunctor B C)
 
--- porting note: deleted syntactic tautologies `toPrefunctor_eq_coe : F.toPrefunctor = F`
+-- Porting note: deleted syntactic tautologies `toPrefunctor_eq_coe : F.toPrefunctor = F`
 -- and `to_prefunctor_obj : (F : Prefunctor B C).obj = F.obj`
 -- and `to_prefunctor_map`
 #noalign category_theory.prelax_functor.to_prefunctor_eq_coe
@@ -117,7 +115,7 @@ def id (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a 
 instance : Inhabited (PrelaxFunctor B B) :=
   ⟨PrelaxFunctor.id B⟩
 
--- porting note: `by exact` was not necessary in mathlib3
+-- Porting note: `by exact` was not necessary in mathlib3
 /-- Composition of prelax functors. -/
 @[simps]
 def comp (F : PrelaxFunctor B C) (G : PrelaxFunctor C D) : PrelaxFunctor B D :=
@@ -131,10 +129,9 @@ end
 section
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-
 variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
 
--- porting note: in Lean 3 the below auxiliary definition was only used once, in the definition
+-- Porting note: in Lean 3 the below auxiliary definition was only used once, in the definition
 -- of oplax functor, with a comment that it had to be used to fix a timeout. The timeout is
 -- not present in Lean 4, however Lean 4 is not as good at seeing through the definition,
 -- meaning that `simp` wasn't functioning as well as it should. I have hence removed
@@ -174,7 +171,7 @@ structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u�
   map₂_comp :
     ∀ {a b : B} {f g h : a ⟶ b} (η : f ⟶ g) (θ : g ⟶ h), map₂ (η ≫ θ) = map₂ η ≫ map₂ θ := by
     aesop_cat
-  -- porting note: `map₂_associator_aux` was used here in lean 3, but this was a hack
+  -- Porting note: `map₂_associator_aux` was used here in lean 3, but this was a hack
   -- to avoid a timeout; we revert this hack here (because it was causing other problems
   -- and was not necessary in lean 4)
   map₂_associator :
@@ -212,11 +209,11 @@ namespace OplaxFunctor
 /- Porting note: removed primes from field names and remove `restate_axiom` since
 that is no longer needed in Lean 4 -/
 
--- porting note: more stuff was tagged `simp` here in lean 3 but `reassoc (attr := simp)`
+-- Porting note: more stuff was tagged `simp` here in lean 3 but `reassoc (attr := simp)`
 -- is doing this job a couple of lines below this.
 attribute [simp] map₂_id
 
--- porting note: was auto-ported as `attribute [reassoc.1]` for some reason
+-- Porting note: was auto-ported as `attribute [reassoc.1]` for some reason
 attribute [reassoc (attr := simp)]
   mapComp_naturality_left mapComp_naturality_right map₂_associator
 
@@ -245,16 +242,16 @@ instance hasCoeToPrelax : Coe (OplaxFunctor B C) (PrelaxFunctor B C) :=
 
 variable (F : OplaxFunctor B C)
 
--- porting note: `to_prelax_eq_coe` and `to_prelaxFunctor_obj` are
+-- Porting note: `to_prelax_eq_coe` and `to_prelaxFunctor_obj` are
 -- syntactic tautologies in lean 4
 #noalign category_theory.oplax_functor.to_prelax_eq_coe
 #noalign category_theory.oplax_functor.to_prelax_functor_obj
 
---porting note: removed lemma `to_prelaxFunctor_map` relating the now
+-- Porting note: removed lemma `to_prelaxFunctor_map` relating the now
 -- nonexistent `PrelaxFunctor.map` and `OplaxFunctor.map`
 #noalign CategoryTheory.OplaxFunctor.to_prelaxFunctor_map
 
---porting note: removed lemma `to_prelaxFunctor_map₂` relating
+-- Porting note: removed lemma `to_prelaxFunctor_map₂` relating
 -- `PrelaxFunctor.map₂` to nonexistent `OplaxFunctor.map₂`
 #noalign category_theory.oplax_functor.to_prelax_functor_map₂
 
@@ -297,7 +294,7 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
         assoc]
     map₂_associator := fun f g h => by
       dsimp
-      -- porting note: if you use the `map₂_associator_aux` hack in the definition of
+      -- Porting note: if you use the `map₂_associator_aux` hack in the definition of
       -- `map₂_associator` then the `simp only` call below does not seem to apply `map₂_associator`
       simp only [map₂_associator, ← map₂_comp_assoc, ← mapComp_naturality_right_assoc,
         whiskerLeft_comp, assoc]
@@ -316,9 +313,9 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
 /-- A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.
 See `Pseudofunctor.mkOfOplax`.
 -/
--- porting note: removing no lint for nonempty_instance
+-- Porting note: removing no lint for nonempty_instance
 --@[nolint has_nonempty_instance]
--- porting note: removing primes in structure name because
+-- Porting note: removing primes in structure name because
 -- my understanding is that they're no longer needed
 structure PseudoCore (F : OplaxFunctor B C) where
   mapIdIso (a : B) : F.map (𝟙 a) ≅ 𝟙 (F.obj a)
@@ -339,7 +336,7 @@ end
 
 end OplaxFunctor
 
--- porting note: this auxiliary def was introduced in Lean 3 and only used once, in this file,
+-- Porting note: this auxiliary def was introduced in Lean 3 and only used once, in this file,
 -- to avoid a timeout. In Lean 4 the timeout isn't present and the definition causes other
 -- things to break (simp proofs) so I removed it.
 -- def Pseudofunctor.Map₂AssociatorAux (obj : B → C) (map : ∀ {X Y : B}, (X ⟶ Y) → (obj X ⟶ obj Y))
@@ -399,7 +396,7 @@ initialize_simps_projections Pseudofunctor (+toPrelaxFunctor, -obj, -map, -map�
 
 namespace Pseudofunctor
 
--- porting note: was `[reassoc.1]` for some reason?
+-- Porting note: was `[reassoc.1]` for some reason?
 attribute [reassoc]
   map₂_comp map₂_whisker_left map₂_whisker_right map₂_associator map₂_left_unitor map₂_right_unitor
 
@@ -431,16 +428,16 @@ instance hasCoeToPrelaxFunctor : Coe (Pseudofunctor B C) (PrelaxFunctor B C) :=
 
 variable (F : Pseudofunctor B C)
 
--- porting note: `toPrelaxFunctor_eq_coe` and `to_prelaxFunctor_obj`
+-- Porting note: `toPrelaxFunctor_eq_coe` and `to_prelaxFunctor_obj`
 -- are syntactic tautologies in lean 4
 #noalign category_theory.pseudofunctor.to_prelax_functor_eq_coe
 #noalign category_theory.pseudofunctor.to_prelax_functor_obj
 
---porting note: removed lemma `to_prelaxFunctor_map` relating the now
+-- Porting note: removed lemma `to_prelaxFunctor_map` relating the now
 -- nonexistent `PrelaxFunctor.map` and the now nonexistent `Pseudofunctor.map`
 #noalign category_theory.pseudofunctor.to_prelax_functor_map
 
---porting note: removed lemma `to_prelaxFunctor_map₂` relating
+-- Porting note: removed lemma `to_prelaxFunctor_map₂` relating
 -- `PrelaxFunctor.map₂` to nonexistent `Pseudofunctor.map₂`
 #noalign category_theory.pseudofunctor.to_prelax_functor_map₂
 
@@ -455,7 +452,7 @@ instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
   ⟨toOplax⟩
 #align category_theory.pseudofunctor.has_coe_to_oplax CategoryTheory.Pseudofunctor.hasCoeToOplax
 
--- porting note: `toOplax_eq_coe` is a syntactic tautology in lean 4
+-- Porting note: `toOplax_eq_coe` is a syntactic tautology in lean 4
 #noalign category_theory.pseudofunctor.to_oplax_eq_coe
 
 @[simp]
@@ -463,11 +460,11 @@ theorem to_oplax_obj : (F : OplaxFunctor B C).obj = F.obj :=
   rfl
 #align category_theory.pseudofunctor.to_oplax_obj CategoryTheory.Pseudofunctor.to_oplax_obj
 
--- porting note: to_oplax_map related `OplaxFunctor.map` to `Pseudofunctor.map` but neither
+-- Porting note: to_oplax_map related `OplaxFunctor.map` to `Pseudofunctor.map` but neither
 -- of these exist
 #noalign category_theory.pseudofunctor.to_oplax_map
 
--- porting note: to_oplax_map₂ related `OplaxFunctor.map₂` to `Pseudofunctor.map₂` but neither
+-- Porting note: to_oplax_map₂ related `OplaxFunctor.map₂` to `Pseudofunctor.map₂` but neither
 -- of these exist
 #noalign category_theory.pseudofunctor.to_oplax_map₂
 
@@ -482,7 +479,7 @@ theorem to_oplax_mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) :
   rfl
 #align category_theory.pseudofunctor.to_oplax_map_comp CategoryTheory.Pseudofunctor.to_oplax_mapComp
 
--- porting note: I changed `simps` to `simps!` without understanding what I was doing
+-- Porting note: I changed `simps` to `simps!` without understanding what I was doing
 -- (lean 4 told me to do this)
 /-- Function on 1-morphisms as a functor. -/
 @[simps!]

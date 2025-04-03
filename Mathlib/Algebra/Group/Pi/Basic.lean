@@ -40,7 +40,6 @@ variable {α β γ : Type*}
 
 -- The families of types already equipped with instances
 variable {f : I → Type v₁} {g : I → Type v₂} {h : I → Type v₃}
-
 variable (x y : ∀ i, f i) (i : I)
 
 namespace Pi
@@ -246,7 +245,7 @@ instance mulOneClass [∀ i, MulOneClass (f i)] : MulOneClass (∀ i, f i) where
 
 @[to_additive]
 instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
-  inv_one := by intros; ext; exact inv_one
+  inv_one := by ext; exact inv_one
 
 @[to_additive]
 instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
@@ -352,7 +351,6 @@ instance cancelCommMonoid [∀ i, CancelCommMonoid (f i)] : CancelCommMonoid (�
 section
 
 variable [DecidableEq I]
-
 variable [∀ i, One (f i)] [∀ i, One (g i)] [∀ i, One (h i)]
 
 /-- The function supported at `i`, with value `x` there, and `1` elsewhere. -/
@@ -547,6 +545,20 @@ theorem bijective_pi_map {F : ∀ i, f i → g i} (hF : ∀ i, Bijective (F i)) 
     Bijective fun x : ∀ i, f i => fun i => F i (x i) :=
   ⟨injective_pi_map fun i => (hF i).injective, surjective_pi_map fun i => (hF i).surjective⟩
 #align function.bijective_pi_map Function.bijective_pi_map
+
+lemma comp_eq_const_iff (b : β) (f : α → β) {g : β → γ} (hg : Injective g) :
+    g ∘ f = Function.const _ (g b) ↔ f = Function.const _ b :=
+  hg.comp_left.eq_iff' rfl
+
+@[to_additive]
+lemma comp_eq_one_iff [One β] [One γ] (f : α → β) {g : β → γ} (hg : Injective g) (hg0 : g 1 = 1) :
+    g ∘ f = 1 ↔ f = 1 := by
+  simpa [hg0, const_one] using comp_eq_const_iff 1 f hg
+
+@[to_additive]
+lemma comp_ne_one_iff [One β] [One γ] (f : α → β) {g : β → γ} (hg : Injective g) (hg0 : g 1 = 1) :
+    g ∘ f ≠ 1 ↔ f ≠ 1 :=
+  (comp_eq_one_iff f hg hg0).ne
 
 end Function
 

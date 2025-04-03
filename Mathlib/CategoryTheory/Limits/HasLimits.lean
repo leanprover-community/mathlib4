@@ -67,9 +67,7 @@ namespace CategoryTheory.Limits
 universe v₁ u₁ v₂ u₂ v₃ u₃ v v' v'' u u' u''
 
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
-
 variable {C : Type u} [Category.{v} C]
-
 variable {F : J ⥤ C}
 
 section Limit
@@ -414,7 +412,6 @@ theorem limit.lift_pre (c : Cone F) :
 #align category_theory.limits.limit.lift_pre CategoryTheory.Limits.limit.lift_pre
 
 variable {L : Type u₃} [Category.{v₃} L]
-
 variable (D : L ⥤ K) [HasLimit (D ⋙ E ⋙ F)]
 
 @[simp]
@@ -441,7 +438,6 @@ end Pre
 section Post
 
 variable {D : Type u'} [Category.{v'} D]
-
 variable (F) [HasLimit F] (G : C ⥤ D) [HasLimit (F ⋙ G)]
 
 /-- The canonical morphism from `G` applied to the limit of `F` to the limit of `F ⋙ G`.
@@ -1008,7 +1004,6 @@ theorem colimit.pre_desc (c : Cocone F) :
 #align category_theory.limits.colimit.pre_desc CategoryTheory.Limits.colimit.pre_desc
 
 variable {L : Type u₃} [Category.{v₃} L]
-
 variable (D : L ⥤ K) [HasColimit (D ⋙ E ⋙ F)]
 
 @[simp]
@@ -1039,7 +1034,6 @@ end Pre
 section Post
 
 variable {D : Type u'} [Category.{v'} D]
-
 variable (F) [HasColimit F] (G : C ⥤ D) [HasColimit (F ⋙ G)]
 
 /-- The canonical morphism from `G` applied to the colimit of `F ⋙ G`

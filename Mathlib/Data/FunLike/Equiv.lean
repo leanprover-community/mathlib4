@@ -14,37 +14,33 @@ This typeclass is primarily for use by isomorphisms like `MonoidEquiv` and `Line
 
 ## Basic usage of `EquivLike`
 
-A typical type of morphisms should be declared as:
+A typical type of isomorphisms should be declared as:
 ```
-structure MyIso (A B : Type*) [MyClass A] [MyClass B]
-  extends Equiv A B :=
-(map_op' : ∀ {x y : A}, toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
+structure MyIso (A B : Type*) [MyClass A] [MyClass B] extends Equiv A B :=
+  (map_op' : ∀ (x y : A), toFun (MyClass.op x y) = MyClass.op (toFun x) (toFun y))
 
 namespace MyIso
 
-variables (A B : Type*) [MyClass A] [MyClass B]
+variable (A B : Type*) [MyClass A] [MyClass B]
 
--- This instance is optional if you follow the "Isomorphism class" design below:
-instance : EquivLike (MyIso A B) A (λ _, B) :=
-  { coe := MyIso.toEquiv.toFun,
-    inv := MyIso.toEquiv.invFun,
-    left_inv := MyIso.toEquiv.left_inv,
-    right_inv := MyIso.toEquiv.right_inv,
-    coe_injective' := λ f g h, by cases f; cases g; congr' }
-
-/-- Helper instance for when there's too many metavariables to apply `EquivLike.coe` directly. -/
-instance : CoeFun (MyIso A B) := DFunLike.instCoeFunForAll
+instance instEquivLike : EquivLike (MyIso A B) A B where
+  coe f := f.toFun
+  inv f := f.invFun
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
+  coe_injective' f g h₁ h₂ := by cases f; cases g; congr; exact EquivLike.coe_injective' _ _ h₁ h₂
 
 @[ext] theorem ext {f g : MyIso A B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
 
 /-- Copy of a `MyIso` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-protected def copy (f : MyIso A B) (f' : A → B) (f_inv : B → A) (h : f' = ⇑f) : MyIso A B :=
-  { toFun := f',
-    invFun := f_inv,
-    left_inv := h.symm ▸ f.left_inv,
-    right_inv := h.symm ▸ f.right_inv,
-    map_op' := h.symm ▸ f.map_op' }
+protected def copy (f : MyIso A B) (f' : A → B) (f_inv : B → A)
+    (h₁ : f' = f) (h₂ : f_inv = f.invFun) : MyIso A B where
+  toFun := f'
+  invFun := f_inv
+  left_inv := h₁.symm ▸ h₂.symm ▸ f.left_inv
+  right_inv := h₁.symm ▸ h₂.symm ▸ f.right_inv
+  map_op' := h₁.symm ▸ f.map_op'
 
 end MyIso
 ```
@@ -60,61 +56,67 @@ the axioms of your new type of isomorphisms.
 Continuing the example above:
 
 ```
-
 /-- `MyIsoClass F A B` states that `F` is a type of `MyClass.op`-preserving morphisms.
 You should extend this class when you extend `MyIso`. -/
 class MyIsoClass (F : Type*) (A B : outParam <| Type*) [MyClass A] [MyClass B]
-  extends EquivLike F A (λ _, B), MyHomClass F A B
+    [EquivLike F A B]
+    extends MyHomClass F A B
 
-end
+namespace MyIso
 
--- You can replace `MyIso.EquivLike` with the below instance:
-instance : MyIsoClass (MyIso A B) A B :=
-  { coe := MyIso.toFun,
-    inv := MyIso.invFun,
-    left_inv := MyIso.left_inv,
-    right_inv := MyIso.right_inv,
-    coe_injective' := λ f g h, by cases f; cases g; congr',
-    map_op := MyIso.map_op' }
+variable {A B : Type*} [MyClass A] [MyClass B]
 
--- [Insert `CoeFun`, `ext` and `copy` here]
+-- This goes after `MyIsoClass.instEquivLike`:
+instance : MyIsoClass (MyIso A B) A B where
+  map_op := MyIso.map_op'
+
+-- [Insert `ext` and `copy` here]
+
+end MyIso
 ```
 
 The second step is to add instances of your new `MyIsoClass` for all types extending `MyIso`.
 Typically, you can just declare a new class analogous to `MyIsoClass`:
 
 ```
-structure CoolerIso (A B : Type*) [CoolClass A] [CoolClass B]
-  extends MyIso A B :=
-(map_cool' : toFun CoolClass.cool = CoolClass.cool)
-
-section
-set_option old_structure_cmd true
+structure CoolerIso (A B : Type*) [CoolClass A] [CoolClass B] extends MyIso A B :=
+  (map_cool' : toFun CoolClass.cool = CoolClass.cool)
 
 class CoolerIsoClass (F : Type*) (A B : outParam <| Type*) [CoolClass A] [CoolClass B]
-  extends MyIsoClass F A B :=
-(map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
+    [EquivLike F A B]
+    extends MyIsoClass F A B :=
+  (map_cool : ∀ (f : F), f CoolClass.cool = CoolClass.cool)
 
-end
+@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B]
+    [EquivLike F A B] [CoolerIsoClass F A B] (f : F) :
+    f CoolClass.cool = CoolClass.cool :=
+  CoolerIsoClass.map_cool _
 
-@[simp] lemma map_cool {F A B : Type*} [CoolClass A] [CoolClass B] [CoolerIsoClass F A B]
-  (f : F) : f CoolClass.cool = CoolClass.cool :=
-CoolerIsoClass.map_cool
+namespace CoolerIso
 
-instance : CoolerIsoClass (CoolerIso A B) A B :=
-  { coe := CoolerIso.toFun,
-    coe_injective' := λ f g h, by cases f; cases g; congr',
-    map_op := CoolerIso.map_op',
-    map_cool := CoolerIso.map_cool' }
+variable {A B : Type*} [CoolClass A] [CoolClass B]
 
--- [Insert `CoeFun`, `ext` and `copy` here]
+instance : EquivLike (CoolerIso A B) A B where
+  coe f := f.toFun
+  inv f := f.invFun
+  left_inv f := f.left_inv
+  right_inv f := f.right_inv
+  coe_injective' f g h₁ h₂ := by cases f; cases g; congr; exact EquivLike.coe_injective' _ _ h₁ h₂
+
+instance : CoolerIsoClass (CoolerIso A B) A B where
+  map_op f := f.map_op'
+  map_cool f := f.map_cool'
+
+-- [Insert `ext` and `copy` here]
+
+end CoolerIso
 ```
 
 Then any declaration taking a specific type of morphisms as parameter can instead take the
 class you just defined:
 ```
 -- Compare with: lemma do_something (f : MyIso A B) : sorry := sorry
-lemma do_something {F : Type*} [MyIsoClass F A B] (f : F) : sorry := sorry
+lemma do_something {F : Type*} [EquivLike F A B] [MyIsoClass F A B] (f : F) : sorry := sorry
 ```
 
 This means anything set up for `MyIso`s will automatically work for `CoolerIsoClass`es,
@@ -130,7 +132,7 @@ injective coercion to bijections between `α` and `β`.
 Note that this does not directly extend `FunLike`, nor take `FunLike` as a parameter,
 so we can state `coe_injective'` in a nicer way.
 
-This typeclass is used in the definition of the homomorphism typeclasses,
+This typeclass is used in the definition of the isomorphism (or equivalence) typeclasses,
 such as `ZeroEquivClass`, `MulEquivClass`, `MonoidEquivClass`, ....
 -/
 class EquivLike (E : Sort*) (α β : outParam (Sort*)) where

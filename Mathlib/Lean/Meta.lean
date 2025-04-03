@@ -3,10 +3,13 @@ Copyright (c) 2022 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Lean.Elab.Term
+import Lean.Elab.Tactic.Basic
+import Lean.Meta.Tactic.Apply
 import Lean.Meta.Tactic.Assert
 import Lean.Meta.Tactic.Clear
-import Std.Data.Option.Basic
 import Std.Data.List.Basic
+import Std.Logic
 
 /-! ## Additional utilities in `Lean.MVarId` -/
 
@@ -24,7 +27,7 @@ def «let» (g : MVarId) (h : Name) (v : Expr) (t : Option Expr := .none) :
 /-- Has the effect of `refine ⟨e₁,e₂,⋯, ?_⟩`.
 -/
 def existsi (mvar : MVarId) (es : List Expr) : MetaM MVarId := do
-  es.foldlM (λ mv e => do
+  es.foldlM (fun mv e ↦ do
       let (subgoals,_) ← Elab.Term.TermElabM.run <| Elab.Tactic.run mv do
         Elab.Tactic.evalTactic (← `(tactic| refine ⟨?_,?_⟩))
       let [sg1, sg2] := subgoals | throwError "expected two subgoals"

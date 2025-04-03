@@ -48,7 +48,7 @@ instance : CartesianClosed (Type v₁) :=
   CartesianClosed.mk _
     (fun X => Adjunction.leftAdjointOfNatIso (Types.binaryProductIsoProd.app X))
 
--- porting note: in mathlib3, the assertion was for `(C ⥤ Type u₁)`, but then Lean4 was
+-- Porting note: in mathlib3, the assertion was for `(C ⥤ Type u₁)`, but then Lean4 was
 -- confused with universes. It makes no harm to relax the universe assumptions here.
 instance {C : Type u₁} [Category.{v₁} C] : HasFiniteProducts (C ⥤ Type u₂) :=
   hasFiniteProducts_of_hasProducts _

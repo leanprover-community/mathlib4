@@ -43,7 +43,6 @@ Instances of these typeclasses mostly involving `RingHom.id` are also provided:
 
 
 variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 
 /-- Class that expresses that a ring homomorphism is in fact the identity. -/
@@ -197,5 +196,7 @@ theorem comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective �
       have := σ₂₃.surjective.comp σ₁₂.surjective
       rwa [← RingHom.coe_comp, RingHomCompTriple.comp_eq] at this }
 #align ring_hom_surjective.comp RingHomSurjective.comp
+
+instance (σ : R₁ ≃+* R₂) : RingHomSurjective (σ : R₁ →+* R₂) := ⟨σ.surjective⟩
 
 end RingHomSurjective

@@ -77,11 +77,7 @@ theorem terminates_parallel.aux :
     cases' m with e m
     · rw [← e]
       simp only [parallel.aux2, rmap, List.foldr_cons, destruct_pure]
-      cases' List.foldr (fun c o =>
-        match o with
-        | Sum.inl a => Sum.inl a
-        | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c)) (Sum.inr List.nil) l with a' ls
-      exacts [⟨a', rfl⟩, ⟨a, rfl⟩]
+      split <;> simp
     · cases' IH m with a' e
       simp only [parallel.aux2, rmap, List.foldr_cons]
       simp? [parallel.aux2] at e says simp only [parallel.aux2, rmap] at e
@@ -94,13 +90,11 @@ theorem terminates_parallel.aux :
       · rw [← e] at e'
         -- Porting note: `revert e'` & `intro e'` are required.
         revert e'
-        cases' List.foldr (fun c o =>
-            match o with
-            | Sum.inl a => Sum.inl a
-            | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c))
-          (Sum.inr []) l with a' ls <;> intro e' <;> [injection e'; injection e' with e']
-        rw [← e']
-        simp
+        split
+        · simp
+        · simp only [destruct_think, Sum.inr.injEq]
+          rintro rfl
+          simp
       · induction' e : List.foldr (fun c o =>
             match o with
             | Sum.inl a => Sum.inl a
@@ -108,7 +102,6 @@ theorem terminates_parallel.aux :
           (Sum.inr List.nil) l with a' ls <;> erw [e] at e'
         · contradiction
         have := IH' m _ e
-        simp [parallel.aux2] at e'
         -- Porting note: `revert e'` & `intro e'` are required.
         revert e'
         cases destruct c <;> intro e' <;> [injection e'; injection e' with h']
@@ -141,7 +134,7 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
     have H : Seq.destruct S = some (some c, _) := by
       dsimp [Seq.destruct, (· <$> ·)]
       rw [← a]
-      simp
+      simp only [Option.map_some', Option.some.injEq]
       rfl
     induction' h : parallel.aux2 l with a l'
     · have C : corec parallel.aux1 (l, S) = pure a := by
@@ -297,12 +290,9 @@ theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map 
         simp only [parallel.aux2, rmap, lmap]
         induction' l with c l IH <;> simp
         rw [IH]
-        cases List.foldr (fun c o =>
-            match o with
-            | Sum.inl a => Sum.inl a
-            | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c)) (Sum.inr List.nil) l <;>
-          simp [parallel.aux2]
-        cases destruct c <;> simp
+        cases List.foldr _ _ _
+        · simp
+        · cases destruct c <;> simp
       simp only [BisimO, destruct_map, lmap, rmap, corec_eq, parallel.aux1._eq_1]
       rw [this]
       cases' parallel.aux2 l with a l' <;> simp

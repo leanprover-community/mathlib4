@@ -44,9 +44,7 @@ open scoped Pointwise Classical BigOperators
 universe u
 
 variable {R S : Type u} [CommRing R] [CommRing S] (M : Submonoid R)
-
 variable (N : Submonoid S) (R' S' : Type u) [CommRing R'] [CommRing S'] (f : R →+* S)
-
 variable [Algebra R R'] [Algebra S S']
 
 section Properties
@@ -319,7 +317,7 @@ theorem localization_isReduced : LocalizationPreserves fun R hR => IsReduced R :
   obtain ⟨m', hm'⟩ := (IsLocalization.eq_iff_exists M S).mp hx'
   apply_fun (· * (m' : R) ^ n) at hm'
   simp only [mul_assoc, zero_mul, mul_zero] at hm'
-  rw [← mul_left_comm, ← pow_succ, ← mul_pow] at hm'
+  rw [← mul_left_comm, ← pow_succ', ← mul_pow] at hm'
   replace hm' := IsNilpotent.eq_zero ⟨_, hm'.symm⟩
   rw [← (IsLocalization.map_units S m).mul_left_inj, hx, zero_mul,
     IsLocalization.map_eq_zero_iff M]

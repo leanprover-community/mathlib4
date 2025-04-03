@@ -24,7 +24,7 @@ We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat
 -/
 
 
-open Classical
+open scoped Classical
 
 open CategoryTheory
 

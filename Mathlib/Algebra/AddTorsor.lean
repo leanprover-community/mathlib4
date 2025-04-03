@@ -39,9 +39,6 @@ multiplicative group actions).
 
 -/
 
-set_option autoImplicit true
-
-
 /-- An `AddTorsor G P` gives a structure to the nonempty type `P`,
 acted on by an `AddGroup G` with a transitive and free action given
 by the `+ᵥ` operation and a corresponding subtraction given by the
@@ -56,9 +53,9 @@ class AddTorsor (G : outParam (Type*)) (P : Type*) [outParam <| AddGroup G] exte
   vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
 #align add_torsor AddTorsor
 
-attribute [instance 100] AddTorsor.nonempty -- porting note: removers `nolint instance_priority`
+attribute [instance 100] AddTorsor.nonempty -- Porting note: removers `nolint instance_priority`
 
---Porting note: removed
+-- Porting note: removed
 --attribute [nolint dangerous_instance] AddTorsor.toVSub
 
 /-- An `AddGroup G` is a torsor for itself. -/
@@ -67,7 +64,7 @@ instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G
     where
   vsub := Sub.sub
   vsub_vadd' := sub_add_cancel
-  vadd_vsub' := add_sub_cancel
+  vadd_vsub' := add_sub_cancel_right
 #align add_group_is_add_torsor addGroupIsAddTorsor
 
 /-- Simplify subtraction for a torsor for an `AddGroup G` over
@@ -256,7 +253,7 @@ theorem vsub_sub_vsub_cancel_left (p₁ p₂ p₃ : P) : p₃ -ᵥ p₂ - (p₃ 
 
 @[simp]
 theorem vadd_vsub_vadd_cancel_left (v : G) (p₁ p₂ : P) : v +ᵥ p₁ -ᵥ (v +ᵥ p₂) = p₁ -ᵥ p₂ := by
-  rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub_cancel']
+  rw [vsub_vadd_eq_vsub_sub, vadd_vsub_assoc, add_sub_cancel_left]
 #align vadd_vsub_vadd_cancel_left vadd_vsub_vadd_cancel_left
 
 theorem vsub_vadd_comm (p₁ p₂ p₃ : P) : (p₁ -ᵥ p₂ : G) +ᵥ p₃ = p₃ -ᵥ p₂ +ᵥ p₁ := by
@@ -277,7 +274,7 @@ end comm
 
 namespace Prod
 
-variable {G : Type*} [AddGroup G] [AddGroup G'] [AddTorsor G P] [AddTorsor G' P']
+variable {G G' P P' : Type*} [AddGroup G] [AddGroup G'] [AddTorsor G P] [AddTorsor G' P']
 
 instance instAddTorsor : AddTorsor (G × G') (P × P') where
   vadd v p := (v.1 +ᵥ p.1, v.2 +ᵥ p.2)

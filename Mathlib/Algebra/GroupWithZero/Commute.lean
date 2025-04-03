@@ -16,12 +16,11 @@ import Mathlib.Tactic.Nontriviality
 
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
-
 variable [MonoidWithZero M₀]
 
 namespace Ring
 
-open Classical
+open scoped Classical
 
 theorem mul_inverse_rev' {a b : M₀} (h : Commute a b) :
     inverse (a * b) = inverse b * inverse a := by

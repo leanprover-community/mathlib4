@@ -184,7 +184,7 @@ namespace Rack
 
 variable {R : Type*} [Rack R]
 
---porting note: No longer a need for `Rack.self_distrib`
+-- Porting note: No longer a need for `Rack.self_distrib`
 export Shelf (self_distrib)
 
 -- porting note, changed name to `act'` to not conflict with `Shelf.act`
@@ -425,7 +425,7 @@ instance oppositeQuandle : Quandle Qᵐᵒᵖ where
 /-- The conjugation quandle of a group.  Each element of the group acts by
 the corresponding inner automorphism.
 -/
---porting note: no need for `nolint` and added `reducible`
+-- Porting note: no need for `nolint` and added `reducible`
 @[reducible]
 def Conj (G : Type*) := G
 #align quandle.conj Quandle.Conj
@@ -464,7 +464,7 @@ def Conj.map {G : Type*} {H : Type*} [Group G] [Group H] (f : G →* H) : Conj G
   map_act' := by simp
 #align quandle.conj.map Quandle.Conj.map
 
--- porting note: I don't think HasLift exists
+-- Porting note: I don't think HasLift exists
 -- instance {G : Type*} {H : Type*} [Group G] [Group H] : HasLift (G →* H) (Conj G →◃ Conj H)
 --     where lift := Conj.map
 
@@ -472,7 +472,7 @@ def Conj.map {G : Type*} {H : Type*} [Group G] [Group H] (f : G →* H) : Conj G
 
 Used for Fox n-colorings of knots.
 -/
--- porting note: Removed nolint
+-- Porting note: Removed nolint
 def Dihedral (n : ℕ) :=
   ZMod n
 #align quandle.dihedral Quandle.Dihedral

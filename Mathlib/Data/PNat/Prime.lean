@@ -18,7 +18,7 @@ This file extends the theory of `ℕ+` with `gcd`, `lcm` and `Prime` functions, 
 
 namespace Nat.Primes
 
--- Porting note: new definition
+-- Porting note (#11445): new definition
 /-- The canonical map from `Nat.Primes` to `ℕ+` -/
 @[coe] def toPNat : Nat.Primes → ℕ+ :=
   fun p => ⟨(p : ℕ), p.property.pos⟩
@@ -122,6 +122,23 @@ theorem Prime.one_lt {p : ℕ+} : p.Prime → 1 < p :=
 theorem prime_two : (2 : ℕ+).Prime :=
   Nat.prime_two
 #align pnat.prime_two PNat.prime_two
+
+instance {p : ℕ+} [h : Fact p.Prime] : Fact (p : ℕ).Prime := h
+
+instance fact_prime_two : Fact (2 : ℕ+).Prime :=
+  ⟨prime_two⟩
+
+theorem prime_three : (3 : ℕ+).Prime :=
+  Nat.prime_three
+
+instance fact_prime_three : Fact (3 : ℕ+).Prime :=
+  ⟨prime_three⟩
+
+theorem prime_five : (5 : ℕ+).Prime :=
+  Nat.prime_five
+
+instance fact_prime_five : Fact (5 : ℕ+).Prime :=
+  ⟨prime_five⟩
 
 theorem dvd_prime {p m : ℕ+} (pp : p.Prime) : m ∣ p ↔ m = 1 ∨ m = p := by
   rw [PNat.dvd_iff]

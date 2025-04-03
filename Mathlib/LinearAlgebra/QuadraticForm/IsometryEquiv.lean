@@ -28,9 +28,7 @@ variable {ι R K M M₁ M₂ M₃ V : Type*}
 namespace QuadraticForm
 
 variable [CommSemiring R]
-
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
-
 variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃]
 
 /-- An isometric equivalence between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,

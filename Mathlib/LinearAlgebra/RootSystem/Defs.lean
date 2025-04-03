@@ -28,9 +28,9 @@ This file contains basic definitions for root systems and root data.
 ## Todo
 
 * Introduce the Weyl Group
-* Coxeter weights of pairs
-* Properties of pairs of roots, e.g., parallel, ultraparallel, definite, orthogonal, imaginary,
-non-symmetrizable
+* Base change of root pairings.
+* Isomorphism of root pairings.
+* Crystallographic root systems are isomorphic to base changes of root systems over ℤ?
 
 ## Implementation details
 
@@ -110,9 +110,10 @@ always an integer.-/
 def IsCrystallographic : Prop :=
   ∀ i, MapsTo (P.toLin (P.root i)) (range P.coroot) (zmultiples (1 : R))
 
-/-- A root pairing is said to be reduced if it never contains the double of a root.-/
+/-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
+sign. -/
 def IsReduced : Prop :=
-  ∀ i, 2 • P.root i ∉ range P.root
+  ∀ i j, ¬ LinearIndependent R ![P.root i, P.root j] → (P.root i = P.root j ∨ P.root i = - P.root j)
 
 /-- If we interchange the roles of `M` and `N`, we still have a root pairing. -/
 protected def flip : RootPairing ι R N M :=
@@ -130,3 +131,17 @@ def reflection : M ≃ₗ[R] M :=
 /-- The reflection associated to a coroot. -/
 def coreflection : N ≃ₗ[R] N :=
   Module.reflection (P.root_coroot_two i)
+
+section pairs
+
+variable (j : ι)
+
+/-- This is the pairing between roots and coroots. -/
+def pairing : R := P.toLin (P.root i) (P.coroot j)
+
+/-- The Coxeter Weight of a pair gives the weight of an edge in a Coxeter diagram, when it is
+finite.  It is `4 cos² θ`, where `θ` describes the dihedral angle between hyperplanes. -/
+def coxeterWeight : R := pairing P i j * pairing P j i
+
+/-- Two roots are orthogonal when they are fixed by each others' reflections. -/
+def IsOrthogonal : Prop := pairing P i j = 0 ∧ pairing P j i = 0

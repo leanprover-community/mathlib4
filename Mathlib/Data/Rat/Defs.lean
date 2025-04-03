@@ -61,7 +61,7 @@ theorem coe_int_den (n : ℤ) : (n : ℚ).den = 1 :=
 
 #noalign rat.mk_pnat
 
--- Porting note: TODO Should this be namespaced?
+-- Porting note (#11215): TODO Should this be namespaced?
 #align rat.mk_nat mkRat
 
 #noalign rat.mk_pnat_eq
@@ -89,6 +89,8 @@ lemma num_eq_zero {q : ℚ} : q.num = 0 ↔ q = 0 := by
   · exact congr_arg num
 
 lemma num_ne_zero {q : ℚ} : q.num ≠ 0 ↔ q ≠ 0 := num_eq_zero.not
+
+@[simp] lemma den_ne_zero (q : ℚ) : q.den ≠ 0 := q.den_pos.ne'
 
 @[simp]
 theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
@@ -202,7 +204,7 @@ theorem inv_def' {a b : ℤ} : (a /. b)⁻¹ = b /. a := inv_divInt ..
 
 variable (a b c : ℚ)
 
--- Porting note: TODO this is a workaround.
+-- Porting note (#11215): TODO this is a workaround.
 attribute [-simp] divInt_ofNat
 
 protected theorem add_zero : a + 0 = a :=
@@ -245,7 +247,9 @@ theorem divInt_zero_one : 0 /. 1 = 0 :=
 theorem divInt_one_one : 1 /. 1 = 1 :=
   show divInt _ _ = _ by
     rw [divInt]
-    simp [mkRat, normalize]
+    simp only [inline, mkRat, one_ne_zero, ↓reduceDite, normalize, Int.natAbs_one, Nat.gcd_self,
+      maybeNormalize_eq, Nat.cast_one, ne_eq, not_false_eq_true, Int.div_self, zero_lt_one,
+      Nat.div_self, mk_den_one]
     rfl
 #align rat.mk_one_one Rat.divInt_one_one
 
@@ -253,7 +257,9 @@ theorem divInt_one_one : 1 /. 1 = 1 :=
 theorem divInt_neg_one_one : -1 /. 1 = -1 :=
   show divInt _ _ = _ by
     rw [divInt]
-    simp [mkRat, normalize]
+    simp only [inline, mkRat, one_ne_zero, ↓reduceDite, normalize, Int.reduceNeg, Int.natAbs_neg,
+      Int.natAbs_one, Nat.gcd_self, maybeNormalize_eq, Nat.cast_one, Int.div_one, zero_lt_one,
+      Nat.div_self, mk_den_one, intCast_neg]
     rfl
 #align rat.mk_neg_one_one Rat.divInt_neg_one_one
 
@@ -282,7 +288,7 @@ protected theorem add_mul : (a + b) * c = a * c + b * c :=
       numDenCasesOn' c fun n₃ d₃ h₃ => by
         simp only [ne_eq, Nat.cast_eq_zero, h₁, not_false_eq_true, h₂, add_def'', mul_eq_zero,
           or_self, h₃, mul_def']
-        rw [← divInt_mul_right (Int.coe_nat_ne_zero.2 h₃), add_mul, add_mul]
+        rw [← divInt_mul_right (Int.natCast_ne_zero.2 h₃), add_mul, add_mul]
         ac_rfl
 #align rat.add_mul Rat.add_mul
 
@@ -309,7 +315,7 @@ protected theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
 
 /-! At this point in the import hierarchy we have not defined the `Field` typeclass.
 Instead we'll instantiate `CommRing` and `CommGroupWithZero` at this point.
-The `Rat.field` instance and any field-specific lemmas can be found in `Mathlib.Data.Rat.Basic`.
+The `Rat.instField` instance and any field-specific lemmas can be found in `Mathlib.Data.Rat.Basic`.
 -/
 
 instance commRing : CommRing ℚ where
@@ -332,6 +338,8 @@ instance commRing : CommRing ℚ where
   left_distrib := Rat.mul_add
   right_distrib := Rat.add_mul
   sub_eq_add_neg := Rat.sub_eq_add_neg
+  nsmul := nsmulRec
+  zsmul := zsmulRec
   intCast := fun n => n
   natCast n := Int.cast n
   natCast_zero := rfl
@@ -451,11 +459,9 @@ theorem divInt_ne_zero_of_ne_zero {n d : ℤ} (h : n ≠ 0) (hd : d ≠ 0) : n /
 #align rat.mk_ne_zero_of_ne_zero Rat.divInt_ne_zero_of_ne_zero
 
 theorem mul_num_den (q r : ℚ) : q * r = q.num * r.num /. ↑(q.den * r.den) := by
-  have hq' : (↑q.den : ℤ) ≠ 0 := by have := den_nz q; simpa
-  have hr' : (↑r.den : ℤ) ≠ 0 := by have := den_nz r; simpa
   suffices q.num /. ↑q.den * (r.num /. ↑r.den) = q.num * r.num /. ↑(q.den * r.den) by
     simpa [num_den] using this
-  simp [mul_def' hq' hr']
+  simp [mul_def']
 #align rat.mul_num_denom Rat.mul_num_den
 
 theorem div_num_den (q r : ℚ) : q / r = q.num * r.den /. (q.den * r.num) :=
@@ -467,7 +473,7 @@ theorem div_num_den (q r : ℚ) : q / r = q.num * r.den /. (q.den * r.num) :=
       q / r = q * r⁻¹ := div_eq_mul_inv q r
       _ = q.num /. q.den * (r.num /. r.den)⁻¹ := by simp [num_den]
       _ = q.num /. q.den * (r.den /. r.num) := by rw [inv_def']
-      _ = q.num * r.den /. (q.den * r.num) := mul_def' (by simpa using den_nz q) hr
+      _ = q.num * r.den /. (q.den * r.num) := mul_def' (by simp) hr
 #align rat.div_num_denom Rat.div_num_den
 
 section Casts
@@ -557,7 +563,7 @@ theorem mkRat_eq_div {n : ℤ} {d : ℕ} : mkRat n d = n / d := by
   simp only [mkRat, zero_mk]
   by_cases h : d = 0
   · simp [h]
-  · simp [h, HDiv.hDiv, Rat.div, Div.div]
+  · simp only [h, ↓reduceDite, HDiv.hDiv, Div.div, Rat.div]
     unfold Rat.inv
     have h₁ : 0 < d := Nat.pos_iff_ne_zero.2 h
     have h₂ : ¬ (d : ℤ) < 0 := of_decide_eq_false rfl

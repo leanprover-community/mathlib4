@@ -212,7 +212,7 @@ lemma sumLexLift_nonempty :
           ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (f₂ a₂ b₂).Nonempty := by
   -- porting note (#10745): was `simp [nonempty_iff_ne_empty, sumLexLift_eq_empty, not_and_or]`.
   -- Could add `-exists_and_left, -not_and, -exists_and_right` but easier to squeeze.
-  simp only [nonempty_iff_ne_empty, Ne.def, sumLexLift_eq_empty, not_and_or, exists_prop,
+  simp only [nonempty_iff_ne_empty, Ne, sumLexLift_eq_empty, not_and_or, exists_prop,
     not_forall]
 #align finset.sum_lex_lift_nonempty Finset.sumLexLift_nonempty
 
@@ -232,7 +232,7 @@ section Disjoint
 
 variable [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
 
-instance : LocallyFiniteOrder (Sum α β)
+instance instLocallyFiniteOrder : LocallyFiniteOrder (Sum α β)
     where
   finsetIcc := sumLift₂ Icc Icc
   finsetIco := sumLift₂ Ico Ico
@@ -336,7 +336,7 @@ local elab "simp_lex" : tactic => do
         mem_Iic, mem_Iio, Equiv.coe_toEmbedding, toLex_inj, exists_false, and_false, false_and,
         map_empty, not_mem_empty, true_and, inl_mem_disjSum, inr_mem_disjSum, and_true, ofLex_toLex,
         mem_map, Embedding.coeFn_mk, exists_prop, exists_eq_right, Embedding.inl_apply,
-        -- porting note: added
+        -- Porting note: added
         inl.injEq, inr.injEq]
   )
 

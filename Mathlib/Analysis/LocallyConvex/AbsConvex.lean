@@ -38,18 +38,15 @@ disks, convex, balanced
 
 open NormedField Set
 
-open BigOperators NNReal Pointwise Topology
+open NNReal Pointwise Topology
 
 variable {𝕜 E F G ι : Type*}
 
 section NontriviallyNormedField
 
 variable (𝕜 E) {s : Set E}
-
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
-
 variable [TopologicalSpace E] [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]
 
 theorem nhds_basis_abs_convex :
@@ -82,9 +79,7 @@ end NontriviallyNormedField
 section AbsolutelyConvexSets
 
 variable [TopologicalSpace E] [AddCommMonoid E] [Zero E] [SeminormedRing 𝕜]
-
 variable [SMul 𝕜 E] [SMul ℝ E]
-
 variable (𝕜 E)
 
 /-- The type of absolutely convex open sets. -/
@@ -130,14 +125,10 @@ instance AbsConvexOpenSets.instNonempty : Nonempty (AbsConvexOpenSets 𝕜 E) :=
 
 end AbsolutelyConvexSets
 
-variable [IsROrC 𝕜]
-
+variable [RCLike 𝕜]
 variable [AddCommGroup E] [TopologicalSpace E]
-
 variable [Module 𝕜 E] [Module ℝ E] [IsScalarTower ℝ 𝕜 E]
-
 variable [ContinuousSMul ℝ E]
-
 variable (𝕜 E)
 
 /-- The family of seminorms defined by the gauges of absolute convex open sets. -/
@@ -156,7 +147,6 @@ theorem gaugeSeminormFamily_ball (s : AbsConvexOpenSets 𝕜 E) :
 #align gauge_seminorm_family_ball gaugeSeminormFamily_ball
 
 variable [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
-
 variable [SMulCommClass ℝ 𝕜 E] [LocallyConvexSpace ℝ E]
 
 /-- The topology of a locally convex space is induced by the gauge seminorm family. -/

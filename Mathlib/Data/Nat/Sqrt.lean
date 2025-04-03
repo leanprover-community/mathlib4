@@ -83,7 +83,7 @@ theorem sqrt_le_add (n : ℕ) : n ≤ sqrt n * sqrt n + sqrt n + sqrt n := by
 
 theorem le_sqrt {m n : ℕ} : m ≤ sqrt n ↔ m * m ≤ n :=
   ⟨fun h => le_trans (mul_self_le_mul_self h) (sqrt_le n),
-   fun h => le_of_lt_succ <| mul_self_lt_mul_self_iff.2 <| lt_of_le_of_lt h (lt_succ_sqrt n)⟩
+    fun h => le_of_lt_succ <| Nat.mul_self_lt_mul_self_iff.1 <| lt_of_le_of_lt h (lt_succ_sqrt n)⟩
 #align nat.le_sqrt Nat.le_sqrt
 
 theorem le_sqrt' {m n : ℕ} : m ≤ sqrt n ↔ m ^ 2 ≤ n := by simpa only [pow_two] using le_sqrt
@@ -201,8 +201,8 @@ theorem succ_le_succ_sqrt' (n : ℕ) : n + 1 ≤ (sqrt n + 1) ^ 2 :=
 theorem not_exists_sq {n m : ℕ} (hl : m * m < n) (hr : n < (m + 1) * (m + 1)) :
     ¬∃ t, t * t = n := by
   rintro ⟨t, rfl⟩
-  have h1 : m < t := Nat.mul_self_lt_mul_self_iff.mpr hl
-  have h2 : t < m + 1 := Nat.mul_self_lt_mul_self_iff.mpr hr
+  have h1 : m < t := Nat.mul_self_lt_mul_self_iff.1 hl
+  have h2 : t < m + 1 := Nat.mul_self_lt_mul_self_iff.1 hr
   exact (not_lt_of_ge <| le_of_lt_succ h2) h1
 #align nat.not_exists_sq Nat.not_exists_sq
 

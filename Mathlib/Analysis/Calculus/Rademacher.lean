@@ -99,14 +99,14 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul
     Tendsto (fun (t : ℝ) ↦ ∫ x, (t⁻¹ • (f (x + t • v) - f x)) * g x ∂μ) (𝓝[>] 0)
       (𝓝 (∫ x, lineDeriv ℝ f x v * g x ∂μ)) := by
   apply tendsto_integral_filter_of_dominated_convergence (fun x ↦ (C * ‖v‖) * ‖g x‖)
-  · apply eventually_of_forall (fun t ↦ ?_)
+  · filter_upwards with t
     apply AEStronglyMeasurable.mul ?_ hg.aestronglyMeasurable
     apply aestronglyMeasurable_const.smul
     apply AEStronglyMeasurable.sub _ hf.continuous.measurable.aestronglyMeasurable
     apply AEMeasurable.aestronglyMeasurable
     exact hf.continuous.measurable.comp_aemeasurable' (aemeasurable_id'.add_const _)
   · filter_upwards [self_mem_nhdsWithin] with t (ht : 0 < t)
-    apply eventually_of_forall (fun x ↦ ?_)
+    filter_upwards with x
     calc ‖t⁻¹ • (f (x + t • v) - f x) * g x‖
       = (t⁻¹ * ‖f (x + t • v) - f x‖) * ‖g x‖ := by simp [norm_mul, ht.le]
     _ ≤ (t⁻¹ * (C * ‖(x + t • v) - x‖)) * ‖g x‖ := by
@@ -124,7 +124,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
   have K_compact : IsCompact K := IsCompact.cthickening h'f
   apply tendsto_integral_filter_of_dominated_convergence
       (K.indicator (fun x ↦ (C * ‖v‖) * ‖g x‖))
-  · apply eventually_of_forall (fun t ↦ ?_)
+  · filter_upwards with t
     apply AEStronglyMeasurable.mul ?_ hg.aestronglyMeasurable
     apply aestronglyMeasurable_const.smul
     apply AEStronglyMeasurable.sub _ hf.continuous.measurable.aestronglyMeasurable
@@ -132,7 +132,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
     exact hf.continuous.measurable.comp_aemeasurable' (aemeasurable_id'.add_const _)
   · filter_upwards [Ioc_mem_nhdsWithin_Ioi' zero_lt_one] with t ht
     have t_pos : 0 < t := ht.1
-    apply eventually_of_forall (fun x ↦ ?_)
+    filter_upwards with x
     by_cases hx : x ∈ K
     · calc ‖t⁻¹ • (f (x + t • v) - f x) * g x‖
         = (t⁻¹ * ‖f (x + t • v) - f x‖) * ‖g x‖ := by simp [norm_mul, t_pos.le]
@@ -148,7 +148,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
         rw [← Function.nmem_support]
         contrapose! hx
         apply mem_cthickening_of_dist_le _ _ (‖v‖) (tsupport f) (subset_tsupport _ hx)
-        simp only [dist_eq_norm, sub_add_cancel', norm_neg, norm_smul, Real.norm_eq_abs,
+        simp only [dist_eq_norm, sub_add_cancel_left, norm_neg, norm_smul, Real.norm_eq_abs,
           abs_of_nonneg t_pos.le, norm_pos_iff]
         exact mul_le_of_le_one_left (norm_nonneg v) ht.2
       simp only [B, A, _root_.sub_self, smul_eq_mul, mul_zero, zero_mul, norm_zero]
@@ -220,7 +220,7 @@ theorem ae_lineDeriv_sum_eq
       ContDiff.lipschitzWith_of_hasCompactSupport g_comp g_smooth le_top
     simp_rw [integral_lineDeriv_mul_eq hf g_lip g_comp]
     simp_rw [(g_smooth.differentiable le_top).differentiableAt.lineDeriv_eq_fderiv]
-    simp only [map_neg, _root_.map_sum, SMulHomClass.map_smul, smul_eq_mul, neg_mul]
+    simp only [map_neg, _root_.map_sum, _root_.map_smul, smul_eq_mul, neg_mul]
     simp only [integral_neg, mul_neg, Finset.sum_neg_distrib, neg_inj]
     exact S2
   suffices B : ∀ i ∈ s, Integrable (fun x ↦ a i * (fderiv ℝ g x (v i) * f x)) μ by
@@ -261,7 +261,7 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
   rw [hasFDerivAt_iff_isLittleO_nhds_zero, isLittleO_iff]
   intro ε εpos
   obtain ⟨δ, δpos, hδ⟩ : ∃ δ, 0 < δ ∧ (C + ‖L‖ + 1) * δ = ε :=
-    ⟨ε / (C + ‖L‖ + 1), by positivity, mul_div_cancel' ε (by positivity)⟩
+    ⟨ε / (C + ‖L‖ + 1), by positivity, mul_div_cancel₀ ε (by positivity)⟩
   obtain ⟨q, hqs, q_fin, hq⟩ : ∃ q, q ⊆ s ∧ q.Finite ∧ sphere 0 1 ⊆ ⋃ y ∈ q, ball y δ := by
     have : sphere 0 1 ⊆ ⋃ y ∈ s, ball y δ := by
       apply hs.trans (fun z hz ↦ ?_)
@@ -270,7 +270,7 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure {f : E → F}
     exact (isCompact_sphere 0 1).elim_finite_subcover_image (fun y _hy ↦ isOpen_ball) this
   have I : ∀ᶠ t in 𝓝 (0 : ℝ), ∀ v ∈ q, ‖f (x + t • v) - f x - t • L v‖ ≤ δ * ‖t‖ := by
     apply (Finite.eventually_all q_fin).2 (fun v hv ↦ ?_)
-    apply Asymptotics.IsLittleO.def ?_ δpos
+    apply Asymptotics.IsLittleO.definition ?_ δpos
     exact hasLineDerivAt_iff_isLittleO_nhds_zero.1 (hL v (hqs hv))
   obtain ⟨r, r_pos, hr⟩ : ∃ (r : ℝ), 0 < r ∧ ∀ (t : ℝ), ‖t‖ < r →
       ∀ v ∈ q, ‖f (x + t • v) - f x - t • L v‖ ≤ δ * ‖t‖ := by

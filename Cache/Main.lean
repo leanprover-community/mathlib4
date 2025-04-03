@@ -73,6 +73,7 @@ def main (args : List String) : IO Unit := do
   if args.isEmpty then
     println help
     Process.exit 0
+  CacheM.run do
   let hashMemo ← getHashMemo extraRoots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl

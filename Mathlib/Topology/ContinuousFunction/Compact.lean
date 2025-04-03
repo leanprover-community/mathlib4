@@ -29,7 +29,8 @@ you should restate it here. You can also use
 
 noncomputable section
 
-open Topology Classical NNReal BoundedContinuousFunction BigOperators
+open scoped Classical
+open Topology NNReal BoundedContinuousFunction BigOperators
 
 open Set Filter Metric
 
@@ -76,19 +77,19 @@ theorem uniformEmbedding_equivBoundedOfCompact : UniformEmbedding (equivBoundedO
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ 𝕜` are
 additively equivalent to `C(α, 𝕜)`.
 -/
--- porting note: the following `simps` received a "maximum recursion depth" error
+-- Porting note: the following `simps` received a "maximum recursion depth" error
 -- @[simps! (config := .asFn) apply symm_apply]
 def addEquivBoundedOfCompact [AddMonoid β] [LipschitzAdd β] : C(α, β) ≃+ (α →ᵇ β) :=
   ({ toContinuousMapAddHom α β, (equivBoundedOfCompact α β).symm with } : (α →ᵇ β) ≃+ C(α, β)).symm
 #align continuous_map.add_equiv_bounded_of_compact ContinuousMap.addEquivBoundedOfCompact
 
--- porting note: added this `simp` lemma manually because of the `simps` error above
+-- Porting note: added this `simp` lemma manually because of the `simps` error above
 @[simp]
 theorem addEquivBoundedOfCompact_symm_apply [AddMonoid β] [LipschitzAdd β] :
     ⇑((addEquivBoundedOfCompact α β).symm) = toContinuousMapAddHom α β :=
   rfl
 
--- porting note: added this `simp` lemma manually because of the `simps` error above
+-- Porting note: added this `simp` lemma manually because of the `simps` error above
 @[simp]
 theorem addEquivBoundedOfCompact_apply [AddMonoid β] [LipschitzAdd β] :
     ⇑(addEquivBoundedOfCompact α β) = mkOfCompact :=
@@ -312,7 +313,7 @@ theorem linearIsometryBoundedOfCompact_toIsometryEquiv :
   rfl
 #align continuous_map.linear_isometry_bounded_of_compact_to_isometry_equiv ContinuousMap.linearIsometryBoundedOfCompact_toIsometryEquiv
 
-@[simp] -- porting note: adjusted LHS because `simpNF` complained it simplified.
+@[simp] -- Porting note: adjusted LHS because `simpNF` complained it simplified.
 theorem linearIsometryBoundedOfCompact_toAddEquiv :
     ((linearIsometryBoundedOfCompact α E 𝕜).toLinearEquiv : C(α, E) ≃+ (α →ᵇ E)) =
       addEquivBoundedOfCompact α E :=
@@ -343,7 +344,6 @@ namespace ContinuousMap
 section UniformContinuity
 
 variable {α β : Type*}
-
 variable [MetricSpace α] [CompactSpace α] [MetricSpace β]
 
 /-!
@@ -480,7 +480,6 @@ of `C(X, E)` (i.e. locally uniform convergence). -/
 open TopologicalSpace
 
 variable {X : Type*} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X]
-
 variable {E : Type*} [NormedAddCommGroup E] [CompleteSpace E]
 
 theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
@@ -512,7 +511,6 @@ Furthermore, if `α` is compact and `β` is a C⋆-ring, then `C(α, β)` is a C
 section NormedSpace
 
 variable {α : Type*} {β : Type*}
-
 variable [TopologicalSpace α] [NormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
 theorem _root_.BoundedContinuousFunction.mkOfCompact_star [CompactSpace α] (f : C(α, β)) :
@@ -530,7 +528,6 @@ end NormedSpace
 section CstarRing
 
 variable {α : Type*} {β : Type*}
-
 variable [TopologicalSpace α] [NormedRing β] [StarRing β]
 
 instance [CompactSpace α] [CstarRing β] : CstarRing C(α, β) where

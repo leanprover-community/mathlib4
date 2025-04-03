@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Star.SelfAdjoint
-import Mathlib.GroupTheory.Submonoid.Basic
+import Mathlib.GroupTheory.Submonoid.Operations
 
 #align_import algebra.star.order from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -34,6 +34,9 @@ positive cone which is the _closure_ of the sums of elements `star r * r`. A wea
 the advantage of not requiring a topology.
 -/
 
+open Set
+open scoped NNRat
+
 universe u
 
 variable {R : Type u}
@@ -46,7 +49,7 @@ convenient to declare instances using `StarOrderedRing.ofNonnegIff'`.
 
 Porting note: dropped an unneeded assumption
 `add_le_add_left : ∀ {x y}, x ≤ y → ∀ z, z + x ≤ z + y` -/
-class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R] extends StarRing R where
+class StarOrderedRing (R : Type u) [NonUnitalSemiring R] [PartialOrder R] [StarRing R] : Prop where
   /-- characterization of the order in terms of the `StarRing` structure. -/
   le_iff :
     ∀ x y : R, x ≤ y ↔ ∃ p, p ∈ AddSubmonoid.closure (Set.range fun s => star s * s) ∧ y = x + p
@@ -56,7 +59,7 @@ namespace StarOrderedRing
 
 -- see note [lower instance priority]
 instance (priority := 100) toOrderedAddCommMonoid [NonUnitalSemiring R] [PartialOrder R]
-    [StarOrderedRing R] : OrderedAddCommMonoid R where
+    [StarRing R] [StarOrderedRing R] : OrderedAddCommMonoid R where
   add_le_add_left := fun x y hle z ↦ by
     rw [StarOrderedRing.le_iff] at hle ⊢
     refine hle.imp fun s hs ↦ ?_
@@ -66,7 +69,7 @@ instance (priority := 100) toOrderedAddCommMonoid [NonUnitalSemiring R] [Partial
 
 -- see note [lower instance priority]
 instance (priority := 100) toExistsAddOfLE [NonUnitalSemiring R] [PartialOrder R]
-    [StarOrderedRing R] : ExistsAddOfLE R where
+    [StarRing R] [StarOrderedRing R] : ExistsAddOfLE R where
   exists_add_of_le h :=
     match (le_iff _ _).mp h with
     | ⟨p, _, hp⟩ => ⟨p, hp⟩
@@ -74,12 +77,11 @@ instance (priority := 100) toExistsAddOfLE [NonUnitalSemiring R] [PartialOrder R
 
 -- see note [lower instance priority]
 instance (priority := 100) toOrderedAddCommGroup [NonUnitalRing R] [PartialOrder R]
-    [StarOrderedRing R] : OrderedAddCommGroup R where
+    [StarRing R] [StarOrderedRing R] : OrderedAddCommGroup R where
   add_le_add_left := @add_le_add_left _ _ _ _
 
 #align star_ordered_ring.to_ordered_add_comm_group StarOrderedRing.toOrderedAddCommGroup
 
--- set note [reducible non-instances]
 /-- To construct a `StarOrderedRing` instance it suffices to show that `x ≤ y` if and only if
 `y = x + star s * s` for some `s : R`.
 
@@ -89,8 +91,7 @@ and obviates the hassle of `AddSubmonoid.closure_induction` when creating those 
 If you are working with a `NonUnitalRing` and not a `NonUnitalSemiring`, see
 `StarOrderedRing.ofNonnegIff` for a more convenient version.
  -/
-@[reducible]
-def ofLEIff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
+lemma ofLEIff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
     (h_le_iff : ∀ x y : R, x ≤ y ↔ ∃ s, y = x + star s * s) : StarOrderedRing R where
   le_iff x y := by
     refine' ⟨fun h => _, _⟩
@@ -106,12 +107,10 @@ def ofLEIff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
         exact (ha _ _ rfl).trans (hb _ _ rfl)
 #align star_ordered_ring.of_le_iff StarOrderedRing.ofLEIffₓ
 
--- set note [reducible non-instances]
 /-- When `R` is a non-unital ring, to construct a `StarOrderedRing` instance it suffices to
 show that the nonnegative elements are precisely those elements in the `AddSubmonoid` generated
 by `star s * s` for `s : R`. -/
-@[reducible]
-def ofNonnegIff [NonUnitalRing R] [PartialOrder R] [StarRing R]
+lemma ofNonnegIff [NonUnitalRing R] [PartialOrder R] [StarRing R]
     (h_add : ∀ {x y : R}, x ≤ y → ∀ z, z + x ≤ z + y)
     (h_nonneg_iff : ∀ x : R, 0 ≤ x ↔ x ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s)) :
     StarOrderedRing R where
@@ -120,7 +119,6 @@ def ofNonnegIff [NonUnitalRing R] [PartialOrder R] [StarRing R]
     simpa only [← sub_eq_iff_eq_add', sub_nonneg, exists_eq_right'] using h_nonneg_iff (y - x)
 #align star_ordered_ring.of_nonneg_iff StarOrderedRing.ofNonnegIff
 
--- set note [reducible non-instances]
 /-- When `R` is a non-unital ring, to construct a `StarOrderedRing` instance it suffices to
 show that the nonnegative elements are precisely those elements of the form `star s * s`
 for `s : R`.
@@ -128,8 +126,7 @@ for `s : R`.
 This is provided for convenience because it holds in many common scenarios (e.g.,`ℝ`, `ℂ`, or
 any C⋆-algebra), and obviates the hassle of `AddSubmonoid.closure_induction` when creating those
 instances. -/
-@[reducible]
-def ofNonnegIff' [NonUnitalRing R] [PartialOrder R] [StarRing R]
+lemma ofNonnegIff' [NonUnitalRing R] [PartialOrder R] [StarRing R]
     (h_add : ∀ {x y : R}, x ≤ y → ∀ z, z + x ≤ z + y)
     (h_nonneg_iff : ∀ x : R, 0 ≤ x ↔ ∃ s, x = star s * s) : StarOrderedRing R :=
   ofLEIff <| by
@@ -137,7 +134,7 @@ def ofNonnegIff' [NonUnitalRing R] [PartialOrder R] [StarRing R]
     simpa [sub_eq_iff_eq_add', sub_nonneg] using fun x y => h_nonneg_iff (y - x)
 #align star_ordered_ring.of_nonneg_iff' StarOrderedRing.ofNonnegIff'
 
-theorem nonneg_iff [NonUnitalSemiring R] [PartialOrder R] [StarOrderedRing R] {x : R} :
+theorem nonneg_iff [NonUnitalSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R] {x : R} :
     0 ≤ x ↔ x ∈ AddSubmonoid.closure (Set.range fun s : R => star s * s) := by
   simp only [le_iff, zero_add, exists_eq_right']
 #align star_ordered_ring.nonneg_iff StarOrderedRing.nonneg_iff
@@ -146,7 +143,7 @@ end StarOrderedRing
 
 section NonUnitalSemiring
 
-variable [NonUnitalSemiring R] [PartialOrder R] [StarOrderedRing R]
+variable [NonUnitalSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 
 theorem star_mul_self_nonneg (r : R) : 0 ≤ star r * r :=
   StarOrderedRing.nonneg_iff.mpr <| AddSubmonoid.subset_closure ⟨r, rfl⟩
@@ -238,7 +235,7 @@ lemma IsSelfAdjoint.of_nonneg {x : R} (hx : 0 ≤ x) : IsSelfAdjoint x :=
 end NonUnitalSemiring
 
 section Semiring
-variable [Semiring R] [PartialOrder R] [StarOrderedRing R]
+variable [Semiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 
 @[simp]
 lemma one_le_star_iff {x : R} : 1 ≤ star x ↔ 1 ≤ x := by
@@ -260,8 +257,8 @@ end Semiring
 
 section OrderClass
 
-variable {F R S : Type*} [NonUnitalSemiring R] [PartialOrder R] [StarOrderedRing R]
-variable [NonUnitalSemiring S] [PartialOrder S] [StarOrderedRing S]
+variable {F R S : Type*} [NonUnitalSemiring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
+variable [NonUnitalSemiring S] [PartialOrder S] [StarRing S] [StarOrderedRing S]
 
 -- we prove this auxiliary lemma in order to avoid duplicating the proof twice below.
 lemma NonUnitalRingHom.map_le_map_of_map_star (f : R →ₙ+* S) (hf : ∀ r, f (star r) = star (f r))
@@ -294,3 +291,11 @@ instance (priority := 100) StarRingHomClass.instOrderIsoClass [EquivLike F R S] 
     exact f_inv.map_le_map_of_map_star f_inv_star h
 
 end OrderClass
+
+instance Nat.instStarOrderedRing : StarOrderedRing ℕ where
+  le_iff a b := by
+    have : AddSubmonoid.closure (range fun x : ℕ ↦ x * x) = ⊤ :=
+      eq_top_mono
+        (AddSubmonoid.closure_mono <| singleton_subset_iff.2 <| mem_range.2 ⟨1, one_mul _⟩)
+        Nat.addSubmonoid_closure_one
+    simp [this, le_iff_exists_add]

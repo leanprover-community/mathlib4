@@ -76,7 +76,7 @@ def firstObjEqFamily : FirstObj P R ≅ R.FamilyOfElements P where
 instance : Inhabited (FirstObj P (⊥ : Presieve X)) :=
   (firstObjEqFamily P _).toEquiv.inhabited
 
--- porting note: was not needed in mathlib
+-- Porting note: was not needed in mathlib
 instance : Inhabited (FirstObj P ((⊥ : Sieve X) : Presieve X)) :=
   (inferInstance : Inhabited (FirstObj P (⊥ : Presieve X)))
 

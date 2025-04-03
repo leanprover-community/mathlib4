@@ -54,7 +54,7 @@ map to `Q`, i.e. in the following diagram, if `f` is injective then there is an 
   Q
   ```
 -/
-class Module.Injective : Prop where
+@[mk_iff] class Module.Injective : Prop where
   out : ∀ ⦃X Y : Type v⦄ [AddCommGroup X] [AddCommGroup Y] [Module R X] [Module R Y]
     (f : X →ₗ[R] Y) (_ : Function.Injective f) (g : X →ₗ[R] Q),
     ∃ h : Y →ₗ[R] Q, ∀ x, h (f x) = g x
@@ -93,7 +93,6 @@ set_option linter.uppercaseLean3 false in
 namespace Module.Baer
 
 variable {R Q} {M N : Type*} [AddCommGroup M] [AddCommGroup N]
-
 variable [Module R M] [Module R N] (i : M →ₗ[R] N) (f : M →ₗ[R] Q)
 
 /-- If we view `M` as a submodule of `N` via the injective linear map `i : M ↪ N`, then a submodule
@@ -292,12 +291,12 @@ set_option linter.uppercaseLean3 false in
 def ExtensionOfMaxAdjoin.idealTo (y : N) : ExtensionOfMaxAdjoin.ideal i f y →ₗ[R] Q where
   toFun (z : { x // x ∈ ideal i f y }) := (extensionOfMax i f).toLinearPMap ⟨(↑z : R) • y, z.prop⟩
   map_add' (z1 z2 : { x // x ∈ ideal i f y }) := by
-    -- porting note: a single simp took care of the goal before reenableeta
+    -- Porting note: a single simp took care of the goal before reenableeta
     simp_rw [← (extensionOfMax i f).toLinearPMap.map_add]
     congr
     apply add_smul
   map_smul' z1 (z2 : {x // x ∈ ideal i f y}) := by
-    -- porting note: a single simp took care of the goal before reenableeta
+    -- Porting note: a single simp took care of the goal before reenableeta
     simp_rw [← (extensionOfMax i f).toLinearPMap.map_smul]
     congr 2
     apply mul_smul
@@ -343,7 +342,7 @@ set_option linter.uppercaseLean3 false in
 theorem ExtensionOfMaxAdjoin.extendIdealTo_eq (h : Module.Baer R Q) {y : N} (r : R)
     (hr : r • y ∈ (extensionOfMax i f).domain) : ExtensionOfMaxAdjoin.extendIdealTo i f h y r =
     (extensionOfMax i f).toLinearPMap ⟨r • y, hr⟩ := by
-    -- porting note: in mathlib3 `AddHom.coe_mk` was not needed
+    -- Porting note: in mathlib3 `AddHom.coe_mk` was not needed
   simp only [ExtensionOfMaxAdjoin.extendIdealTo_is_extension i f h _ _ hr,
     ExtensionOfMaxAdjoin.idealTo, LinearMap.coe_mk, Subtype.coe_mk, AddHom.coe_mk]
 set_option linter.uppercaseLean3 false in
@@ -445,7 +444,7 @@ protected theorem extension_property (h : Module.Baer R Q)
     { toFun := ((extensionOfMax f g).toLinearPMap
         ⟨·, (extensionOfMax_to_submodule_eq_top f g h).symm ▸ ⟨⟩⟩)
       map_add' := fun x y ↦ by rw [← LinearPMap.map_add]; congr
-      map_smul' := fun r x ↦  by rw [← LinearPMap.map_smul]; dsimp } <|
+      map_smul' := fun r x ↦ by rw [← LinearPMap.map_smul]; dsimp } <|
     LinearMap.ext fun x ↦ ((extensionOfMax f g).is_extension x).symm
 
 theorem extension_property_addMonoidHom (h : Module.Baer ℤ Q)
@@ -462,7 +461,7 @@ protected theorem injective (h : Module.Baer R Q) : Module.Injective R Q where
 set_option linter.uppercaseLean3 false in
 #align module.Baer.injective Module.Baer.injective
 
-protected theorem of_injective [UnivLE.{u, v}] (inj : Module.Injective R Q) : Module.Baer R Q := by
+protected theorem of_injective [Small.{v} R] (inj : Module.Injective R Q) : Module.Baer R Q := by
   intro I g
   let eI := Shrink.linearEquiv I R
   let eR := Shrink.linearEquiv R R
@@ -470,7 +469,7 @@ protected theorem of_injective [UnivLE.{u, v}] (inj : Module.Injective R Q) : Mo
     (eR.symm.injective.comp <| Subtype.val_injective.comp eI.injective) (g ∘ₗ eI.toLinearMap)
   exact ⟨g' ∘ₗ eR.symm.toLinearMap, fun x mx ↦ by simpa [eI,eR] using hg' (equivShrink I ⟨x, mx⟩)⟩
 
-protected theorem iff_injective [UnivLE.{u, v}] : Module.Baer R Q ↔ Module.Injective R Q :=
+protected theorem iff_injective [Small.{v} R] : Module.Baer R Q ↔ Module.Injective R Q :=
   ⟨Module.Baer.injective, Module.Baer.of_injective⟩
 
 end Module.Baer
@@ -479,7 +478,7 @@ section ULift
 
 variable {M : Type v} [AddCommGroup M] [Module R M]
 
-lemma Module.ulift_injective_of_injective [UnivLE.{u, v}]
+lemma Module.ulift_injective_of_injective [Small.{v} R]
     (inj : Module.Injective R M) :
     Module.Injective R (ULift.{v'} M) := Module.Baer.injective fun I g ↦
   have ⟨g', hg'⟩ := Module.Baer.iff_injective.mpr inj I (ULift.moduleEquiv.toLinearMap ∘ₗ g)
@@ -496,7 +495,7 @@ lemma Module.injective_of_ulift_injective
     ⟨ULift.moduleEquiv.toLinearMap ∘ₗ g' ∘ₗ ULift.moduleEquiv.symm.toLinearMap,
       fun x ↦ by exact congr(ULift.down $(hg' ⟨x⟩))⟩
 
-variable (M) [UnivLE.{u, v}]
+variable (M) [Small.{v} R]
 
 lemma Module.injective_iff_ulift_injective :
     Module.Injective R M ↔ Module.Injective R (ULift.{v'} M) :=
@@ -516,8 +515,7 @@ section lifting_property
 
 universe uR uM uP uP'
 
-variable [UnivLE.{uR, uM}]
-variable (R : Type uR) [Ring R]
+variable (R : Type uR) [Ring R] [Small.{uM} R]
 variable (M : Type uM) [AddCommGroup M] [Module R M] [inj : Module.Injective R M]
 variable (P : Type uP) [AddCommGroup P] [Module R P]
 variable (P' : Type uP') [AddCommGroup P'] [Module R P']

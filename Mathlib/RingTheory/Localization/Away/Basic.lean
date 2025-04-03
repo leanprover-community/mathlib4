@@ -3,7 +3,6 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baanen
 -/
-import Mathlib.Init.Data.Int.CompLemmas
 import Mathlib.RingTheory.UniqueFactorizationDomain
 import Mathlib.RingTheory.Localization.Basic
 
@@ -32,7 +31,6 @@ commutative ring, field of fractions
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) {S : Type*} [CommSemiring S]
-
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 namespace IsLocalization
@@ -176,10 +174,9 @@ variable {R : Type*} [CommRing R]
 
 section NumDen
 
-open UniqueFactorizationMonoid IsLocalization
+open IsLocalization
 
 variable (x : R)
-
 variable (B : Type*) [CommRing B] [Algebra R B] [IsLocalization.Away x B]
 
 /-- `selfZPow x (m : ℤ)` is `x ^ m` as an element of the localization away from `x`. -/
@@ -193,7 +190,7 @@ theorem selfZPow_of_nonneg {n : ℤ} (hn : 0 ≤ n) : selfZPow x B n = algebraMa
 
 @[simp]
 theorem selfZPow_coe_nat (d : ℕ) : selfZPow x B d = algebraMap R B x ^ d :=
-  selfZPow_of_nonneg _ _ (Int.coe_nat_nonneg d)
+  selfZPow_of_nonneg _ _ (Int.natCast_nonneg d)
 #align self_zpow_coe_nat selfZPow_coe_nat
 
 @[simp]
@@ -215,7 +212,7 @@ theorem selfZPow_of_nonpos {n : ℤ} (hn : n ≤ 0) :
 
 @[simp]
 theorem selfZPow_neg_coe_nat (d : ℕ) : selfZPow x B (-d) = mk' _ (1 : R) (Submonoid.pow x d) := by
-  simp [selfZPow_of_nonpos _ _ (neg_nonpos.mpr (Int.coe_nat_nonneg d))]
+  simp [selfZPow_of_nonpos _ _ (neg_nonpos.mpr (Int.natCast_nonneg d))]
 #align self_zpow_neg_coe_nat selfZPow_neg_coe_nat
 
 @[simp]
@@ -233,7 +230,7 @@ theorem selfZPow_sub_cast_nat {n m : ℕ} :
 theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZPow x B m := by
   rcases le_or_lt 0 n with hn | hn <;> rcases le_or_lt 0 m with hm | hm
   · rw [selfZPow_of_nonneg _ _ hn, selfZPow_of_nonneg _ _ hm,
-      selfZPow_of_nonneg _ _ (add_nonneg hn hm), Int.natAbs_add_nonneg hn hm, pow_add]
+      selfZPow_of_nonneg _ _ (add_nonneg hn hm), Int.natAbs_add_of_nonneg hn hm, pow_add]
   · have : n + m = n.natAbs - m.natAbs := by
       rw [Int.natAbs_of_nonneg hn, Int.ofNat_natAbs_of_nonpos hm.le, sub_neg_eq_add]
     rw [selfZPow_of_nonneg _ _ hn, selfZPow_of_neg _ _ hm, this, selfZPow_sub_cast_nat,
@@ -243,7 +240,7 @@ theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZ
     rw [selfZPow_of_nonneg _ _ hm, selfZPow_of_neg _ _ hn, this, selfZPow_sub_cast_nat,
       IsLocalization.mk'_eq_mul_mk'_one, map_pow, mul_comm]
   · rw [selfZPow_of_neg _ _ hn, selfZPow_of_neg _ _ hm, selfZPow_of_neg _ _ (add_neg hn hm),
-      Int.natAbs_add_neg hn hm, ← mk'_mul, one_mul]
+      Int.natAbs_add_of_nonpos hn.le hm.le, ← mk'_mul, one_mul]
     congr
     ext
     simp [pow_add]
@@ -281,7 +278,7 @@ theorem selfZPow_pow_sub (a : R) (b : B) (m d : ℤ) :
     rwa [mul_comm _ b, mul_assoc b _ _, selfZPow_mul_neg, mul_one] at this
 #align self_zpow_pow_sub selfZPow_pow_sub
 
-variable [IsDomain R] [NormalizationMonoid R] [UniqueFactorizationMonoid R]
+variable [IsDomain R] [WfDvdMonoid R]
 
 theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
     ∃ (a : R) (n : ℤ), ¬x ∣ a ∧ selfZPow x B n * algebraMap R B a = b := by
@@ -301,8 +298,7 @@ theorem exists_reduced_fraction' {b : B} (hb : b ≠ 0) (hx : Irreducible x) :
         (mem_nonZeroDivisors_iff_ne_zero.mpr hx.ne_zero)
     exact IsLocalization.injective B (powers_le_nonZeroDivisors_of_noZeroDivisors hx.ne_zero)
   simp only [← hy] at H
-  classical
-  obtain ⟨m, a, hyp1, hyp2⟩ := max_power_factor ha₀ hx
+  obtain ⟨m, a, hyp1, hyp2⟩ := WfDvdMonoid.max_power_factor ha₀ hx
   refine' ⟨a, m - d, _⟩
   rw [← mk'_one (M := Submonoid.powers x) B, selfZPow_pow_sub, selfZPow_coe_nat, selfZPow_coe_nat,
     ← map_pow _ _ d, mul_comm _ b, H, hyp2, map_mul, map_pow _ _ m]

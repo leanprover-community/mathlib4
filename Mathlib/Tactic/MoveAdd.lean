@@ -435,7 +435,7 @@ In this case the syntax requires providing first a term whose head symbol is the
 E.g. `move_oper HAdd.hAdd [...]` is the same as `move_add`, while `move_oper Max.max [...]`
 rearranges `max`s.
 -/
-elab (name := moveOperTac) "move_oper" id:ident rws:rwRuleSeq : tactic => do
+elab (name := moveOperTac) "move_oper" id:ident rws:rwRuleSeq : tactic => withMainContext do
   -- parse the operation
   let op := id.getId
   -- parse the list of terms

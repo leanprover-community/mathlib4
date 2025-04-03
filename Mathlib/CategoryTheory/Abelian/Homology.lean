@@ -41,7 +41,6 @@ noncomputable section
 universe v u
 
 variable {A : Type u} [Category.{v} A] [Abelian A]
-
 variable {X Y Z : A} (f : X ⟶ Y) (g : Y ⟶ Z) (w : f ≫ g = 0)
 
 namespace CategoryTheory.Abelian
@@ -87,8 +86,8 @@ instance : Epi (homologyCToK f g w) := by
   apply Pseudoelement.epi_of_pseudo_surjective
   intro a
   let b := kernel.ι (cokernel.desc f g w) a
-  obtain ⟨c, hc⟩ : ∃ c, cokernel.π f c = b
-  apply Pseudoelement.pseudo_surjective_of_epi (cokernel.π f)
+  obtain ⟨c, hc⟩ : ∃ c, cokernel.π f c = b := by
+    apply Pseudoelement.pseudo_surjective_of_epi (cokernel.π f)
   have : g c = 0 := by
     rw [show g = cokernel.π f ≫ cokernel.desc f g w by simp, Pseudoelement.comp_apply, hc]
     simp [b, ← Pseudoelement.comp_apply]

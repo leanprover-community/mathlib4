@@ -74,6 +74,10 @@ section SMul
 variable [SMul M X] [ContinuousSMul M X]
 
 @[to_additive]
+instance : ContinuousSMul (ULift M) X :=
+  ⟨(continuous_smul (M := M)).comp₂ (continuous_uLift_down.comp continuous_fst) continuous_snd⟩
+
+@[to_additive]
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
   continuous_const_smul _ := continuous_smul.comp (continuous_const.prod_mk continuous_id)
 #align has_continuous_smul.has_continuous_const_smul ContinuousSMul.continuousConstSMul
@@ -239,10 +243,10 @@ variable {ι : Sort*} {M X : Type*} [TopologicalSpace M] [SMul M X]
 @[to_additive]
 theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
     (h : ∀ t ∈ ts, @ContinuousSMul M X _ _ t) : @ContinuousSMul M X _ _ (sInf ts) :=
-  -- porting note: {} doesn't work because `sInf ts` isn't found by TC search. `(_)` finds it by
+  -- Porting note: {} doesn't work because `sInf ts` isn't found by TC search. `(_)` finds it by
   -- unification instead.
   @ContinuousSMul.mk M X _ _ (_) <| by
-      -- porting note: needs `( :)`
+      -- Porting note: needs `( :)`
       rw [← (@sInf_singleton _ _ ‹TopologicalSpace M›:)]
       exact
         continuous_sInf_rng.2 fun t ht =>
@@ -254,7 +258,7 @@ theorem continuousSMul_sInf {ts : Set (TopologicalSpace X)}
 @[to_additive]
 theorem continuousSMul_iInf {ts' : ι → TopologicalSpace X}
     (h : ∀ i, @ContinuousSMul M X _ _ (ts' i)) : @ContinuousSMul M X _ _ (⨅ i, ts' i) :=
-  continuousSMul_sInf <| Set.forall_range_iff.mpr h
+  continuousSMul_sInf <| Set.forall_mem_range.mpr h
 #align has_continuous_smul_infi continuousSMul_iInf
 #align has_continuous_vadd_infi continuousVAdd_iInf
 
@@ -272,7 +276,6 @@ end LatticeOps
 section AddTorsor
 
 variable (G : Type*) (P : Type*) [AddGroup G] [AddTorsor G P] [TopologicalSpace G]
-
 variable [PreconnectedSpace G] [TopologicalSpace P] [ContinuousVAdd G P]
 
 /-- An `AddTorsor` for a connected space is a connected space. This is not an instance because

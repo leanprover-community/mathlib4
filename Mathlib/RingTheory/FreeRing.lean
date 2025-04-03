@@ -64,7 +64,7 @@ protected theorem induction_on {C : FreeRing α → Prop} (z : FreeRing α) (hn1
   have h1 : C 1 := neg_neg (1 : FreeRing α) ▸ hn _ hn1
   FreeAbelianGroup.induction_on z (add_left_neg (1 : FreeRing α) ▸ ha _ _ hn1 h1)
     (fun m => List.recOn m h1 fun a m ih => by
-      -- porting note: in mathlib, convert was not necessary, `exact hm _ _ (hb a) ih` worked fine
+      -- Porting note: in mathlib, convert was not necessary, `exact hm _ _ (hb a) ih` worked fine
       convert hm _ _ (hb a) ih
       rw [of, ← FreeAbelianGroup.of_mul]
       rfl)

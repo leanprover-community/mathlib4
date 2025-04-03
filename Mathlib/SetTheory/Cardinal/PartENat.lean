@@ -37,7 +37,7 @@ theorem partENatOfENat_toENat (c : Cardinal) : (toENat c : PartENat) = toPartENa
 
 @[simp]
 theorem toPartENat_natCast (n : ℕ) : toPartENat n = n := by
-  simp only [← partENatOfENat_toENat, toENat_nat]; rfl
+  simp only [← partENatOfENat_toENat, toENat_nat, PartENat.ofENat_coe]
 #align cardinal.to_part_enat_cast Cardinal.toPartENat_natCast
 
 theorem toPartENat_apply_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) : toPartENat c = toNat c := by
@@ -48,7 +48,7 @@ theorem toPartENat_eq_top {c : Cardinal} :
     toPartENat c = ⊤ ↔ ℵ₀ ≤ c := by
   rw [← partENatOfENat_toENat, ← PartENat.withTopEquiv_symm_top, ← toENat_eq_top,
     ← PartENat.withTopEquiv.symm.injective.eq_iff]
-  rfl
+  simp
 #align to_part_enat_eq_top_iff_le_aleph_0 Cardinal.toPartENat_eq_top
 
 theorem toPartENat_apply_of_aleph0_le {c : Cardinal} (h : ℵ₀ ≤ c) : toPartENat c = ⊤ :=
@@ -80,17 +80,15 @@ theorem toPartENat_strictMonoOn : StrictMonoOn toPartENat (Set.Iic ℵ₀) :=
 lemma toPartENat_le_iff_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
     toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
   lift c to ℕ∞ using h
-  simp only [← partENatOfENat_toENat, toENat_ofENat, enat_gc _,
-   ← PartENat.withTopOrderIso.symm.le_iff_le]
-  rfl
+  simp_rw [← partENatOfENat_toENat, toENat_ofENat, enat_gc _,
+   ← PartENat.withTopOrderIso.symm.le_iff_le, PartENat.ofENat_le, map_le_map_iff]
 #align to_part_enat_le_iff_le_of_le_aleph_0 Cardinal.toPartENat_le_iff_of_le_aleph0
 
 lemma toPartENat_le_iff_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
     toPartENat c ≤ toPartENat c' ↔ c ≤ c' := by
   lift c' to ℕ using hc'
-  simp only [← partENatOfENat_toENat, toENat_nat, ← toENat_le_nat,
-   ← PartENat.withTopOrderIso.symm.le_iff_le]
-  rfl
+  simp_rw [← partENatOfENat_toENat, toENat_nat, ← toENat_le_nat,
+   ← PartENat.withTopOrderIso.symm.le_iff_le, PartENat.ofENat_le, map_le_map_iff]
 #align to_part_enat_le_iff_le_of_lt_aleph_0 Cardinal.toPartENat_le_iff_of_lt_aleph0
 
 lemma toPartENat_eq_iff_of_le_aleph0 {c c' : Cardinal} (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) :

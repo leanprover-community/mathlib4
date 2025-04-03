@@ -99,7 +99,7 @@ namespace SemiNormedGroupCat
 
 section EqualizersAndKernels
 
--- porting note: these weren't needed in Lean 3
+-- Porting note: these weren't needed in Lean 3
 instance {V W : SemiNormedGroupCat.{u}} : Sub (V ⟶ W) :=
   (inferInstance : Sub (NormedAddGroupHom V W))
 noncomputable instance {V W : SemiNormedGroupCat.{u}} : Norm (V ⟶ W) :=
@@ -110,7 +110,7 @@ noncomputable instance {V W : SemiNormedGroupCat.{u}} : NNNorm (V ⟶ W) :=
 def fork {V W : SemiNormedGroupCat.{u}} (f g : V ⟶ W) : Fork f g :=
   @Fork.ofι _ _ _ _ _ _ (of (f - g : NormedAddGroupHom V W).ker)
     (NormedAddGroupHom.incl (f - g).ker) <| by
-    -- porting note: not needed in mathlib3
+    -- Porting note: not needed in mathlib3
     change NormedAddGroupHom V W at f g
     ext v
     have : v.1 ∈ (f - g).ker := v.2
@@ -132,7 +132,7 @@ instance hasLimit_parallelPair {V W : SemiNormedGroupCat.{u}} (f g : V ⟶ W) :
                 show NormedAddGroupHom.compHom (f - g) c.ι = 0 by
                   rw [AddMonoidHom.map_sub, AddMonoidHom.sub_apply, sub_eq_zero]; exact c.condition)
             (fun c => NormedAddGroupHom.ker.incl_comp_lift _ _ _) fun c g h => by
-        -- porting note: the `simp_rw` was was `rw [← h]` but motive is not type correct in mathlib4
+        -- Porting note: the `simp_rw` was was `rw [← h]` but motive is not type correct in mathlib4
               ext x; dsimp; simp_rw [← h]; rfl}
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.has_limit_parallel_pair SemiNormedGroupCat.hasLimit_parallelPair
@@ -154,13 +154,13 @@ def cokernelCocone {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) : Cofork f 0 :=
     (by
       ext a
       simp only [comp_apply, Limits.zero_comp]
-      -- porting note: `simp` not firing on the below
+      -- Porting note: `simp` not firing on the below
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [comp_apply, NormedAddGroupHom.zero_apply]
-      -- porting note: Lean 3 didn't need this instance
+      -- Porting note: Lean 3 didn't need this instance
       letI : SeminormedAddCommGroup ((forget SemiNormedGroupCat).obj Y) :=
         (inferInstance : SeminormedAddCommGroup Y)
-      -- porting note: again simp doesn't seem to be firing in the below line
+      -- Porting note: again simp doesn't seem to be firing in the below line
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [← NormedAddGroupHom.mem_ker, f.range.ker_normedMk, f.mem_range]
     -- This used to be `simp only [exists_apply_eq_apply]` before leanprover/lean4#2644
@@ -246,7 +246,7 @@ theorem comp_explicitCokernelπ {X Y : SemiNormedGroupCat.{u}} (f : X ⟶ Y) :
 set_option linter.uppercaseLean3 false in
 #align SemiNormedGroup.comp_explicit_cokernel_π SemiNormedGroupCat.comp_explicitCokernelπ
 
--- porting note: wasn't necessary in Lean 3. Is this a bug?
+-- Porting note: wasn't necessary in Lean 3. Is this a bug?
 attribute [simp] comp_explicitCokernelπ_assoc
 
 @[simp]

@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.Tactic.FinCases
-import Std.Tactic.Omega
 
 /-!
 # Composable arrows

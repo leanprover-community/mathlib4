@@ -28,7 +28,7 @@ noncomputable def preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
     (P : C) [hP : Projective P] :
     PreservesFiniteColimits (preadditiveCoyonedaObj (op P)) := by
   haveI := (projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj' P).mp hP
-  -- porting note: this next instance wasn't necessary in Lean 3
+  -- Porting note: this next instance wasn't necessary in Lean 3
   haveI := @Functor.preservesEpimorphisms_of_preserves_of_reflects _ _ _ _ _ _ _ _ this _
   apply Functor.preservesFiniteColimitsOfPreservesEpisAndKernels
 #align category_theory.preserves_finite_colimits_preadditive_coyoneda_obj_of_projective CategoryTheory.preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
@@ -37,7 +37,7 @@ noncomputable def preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
 theorem projective_of_preservesFiniteColimits_preadditiveCoyonedaObj (P : C)
     [hP : PreservesFiniteColimits (preadditiveCoyonedaObj (op P))] : Projective P := by
   rw [projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj']
-  -- porting note: this next line wasn't necessary in Lean 3
+  -- Porting note: this next line wasn't necessary in Lean 3
   dsimp only [preadditiveCoyoneda]
   infer_instance
 #align category_theory.projective_of_preserves_finite_colimits_preadditive_coyoneda_obj CategoryTheory.projective_of_preservesFiniteColimits_preadditiveCoyonedaObj

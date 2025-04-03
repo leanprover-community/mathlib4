@@ -14,7 +14,6 @@ import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 
 variable {n m : Type*} [Fintype n] [DecidableEq n] [Fintype m] [DecidableEq m]
-
 variable {R : Type*} [Semiring R] [InvariantBasisNumber R]
 
 open Matrix

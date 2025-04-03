@@ -178,20 +178,17 @@ def rnDeriv (s : SignedMeasure α) (μ : Measure α) : α → ℝ := fun x =>
     (s.toJordanDecomposition.negPart.rnDeriv μ x).toReal
 #align measure_theory.signed_measure.rn_deriv MeasureTheory.SignedMeasure.rnDeriv
 
--- Porting note: The generated equation theorem is the form of `rnDeriv s μ x`.
-
+-- The generated equation theorem is the form of `rnDeriv s μ x = ...`.
 theorem rnDeriv_def (s : SignedMeasure α) (μ : Measure α) : rnDeriv s μ = fun x =>
     (s.toJordanDecomposition.posPart.rnDeriv μ x).toReal -
       (s.toJordanDecomposition.negPart.rnDeriv μ x).toReal :=
   rfl
 
-attribute [eqns rnDeriv_def] rnDeriv
-
 variable {s t : SignedMeasure α}
 
 @[measurability]
 theorem measurable_rnDeriv (s : SignedMeasure α) (μ : Measure α) : Measurable (rnDeriv s μ) := by
-  rw [rnDeriv]
+  rw [rnDeriv_def]
   measurability
 #align measure_theory.signed_measure.measurable_rn_deriv MeasureTheory.SignedMeasure.measurable_rnDeriv
 
@@ -213,7 +210,7 @@ theorem singularPart_add_withDensity_rnDeriv_eq [s.HaveLebesgueDecomposition μ]
     s.singularPart μ + μ.withDensityᵥ (s.rnDeriv μ) = s := by
   conv_rhs =>
     rw [← toSignedMeasure_toJordanDecomposition s, JordanDecomposition.toSignedMeasure]
-  rw [singularPart, rnDeriv,
+  rw [singularPart, rnDeriv_def,
     withDensityᵥ_sub' (integrable_toReal_of_lintegral_ne_top _ _)
       (integrable_toReal_of_lintegral_ne_top _ _),
     withDensityᵥ_toReal, withDensityᵥ_toReal, sub_eq_add_neg, sub_eq_add_neg,
@@ -501,14 +498,14 @@ theorem singularPart_add_withDensity_rnDeriv_eq [c.HaveLebesgueDecomposition μ]
   ext i hi : 1
   rw [VectorMeasure.add_apply, SignedMeasure.toComplexMeasure_apply]
   apply Complex.ext
-  · rw [Complex.add_re, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← IsROrC.re_eq_complex_re,
-      ← integral_re (c.integrable_rnDeriv μ).integrableOn, IsROrC.re_eq_complex_re,
+  · rw [Complex.add_re, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← RCLike.re_eq_complex_re,
+      ← integral_re (c.integrable_rnDeriv μ).integrableOn, RCLike.re_eq_complex_re,
       ← withDensityᵥ_apply _ hi]
     · change (c.re.singularPart μ + μ.withDensityᵥ (c.re.rnDeriv μ)) i = _
       rw [c.re.singularPart_add_withDensity_rnDeriv_eq μ]
     · exact SignedMeasure.integrable_rnDeriv _ _
-  · rw [Complex.add_im, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← IsROrC.im_eq_complex_im,
-      ← integral_im (c.integrable_rnDeriv μ).integrableOn, IsROrC.im_eq_complex_im,
+  · rw [Complex.add_im, withDensityᵥ_apply (c.integrable_rnDeriv μ) hi, ← RCLike.im_eq_complex_im,
+      ← integral_im (c.integrable_rnDeriv μ).integrableOn, RCLike.im_eq_complex_im,
       ← withDensityᵥ_apply _ hi]
     · change (c.im.singularPart μ + μ.withDensityᵥ (c.im.rnDeriv μ)) i = _
       rw [c.im.singularPart_add_withDensity_rnDeriv_eq μ]

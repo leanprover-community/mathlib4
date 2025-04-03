@@ -55,7 +55,7 @@ protected theorem nonneg_add {a b} : Rat.Nonneg a → Rat.Nonneg b → Rat.Nonne
     numDenCasesOn' b fun n₂ d₂ h₂ => by
       have d₁0 : 0 < (d₁ : ℤ) := Int.coe_nat_pos.2 (Nat.pos_of_ne_zero h₁)
       have d₂0 : 0 < (d₂ : ℤ) := Int.coe_nat_pos.2 (Nat.pos_of_ne_zero h₂)
-      simp only [d₁0, d₂0, h₁, h₂, mul_pos, divInt_nonneg, add_def'', Ne.def,
+      simp only [d₁0, d₂0, h₁, h₂, mul_pos, divInt_nonneg, add_def'', Ne,
         Nat.cast_eq_zero, not_false_iff]
       intro n₁0 n₂0
       apply add_nonneg <;> apply mul_nonneg <;> · first |assumption|apply Int.ofNat_zero_le
@@ -96,7 +96,7 @@ protected def le' (a b : ℚ) := Rat.Nonneg (b - a)
 
 /-- Define a (dependent) function or prove `∀ r : ℚ, p r` by dealing with rational
 numbers of the form `mk' n d` with `d ≠ 0`. -/
--- Porting note: TODO move
+-- Porting note (#11215): TODO move
 @[elab_as_elim]
 def numDenCasesOn''.{u} {C : ℚ → Sort u} (a : ℚ)
     (H : ∀ (n : ℤ) (d : ℕ) (nz red), C (mk' n d nz red)) :
@@ -105,7 +105,7 @@ def numDenCasesOn''.{u} {C : ℚ → Sort u} (a : ℚ)
     rw [← mk_eq_divInt _ _ h.ne' h']
     exact H n d h.ne' _
 
--- Porting note: TODO can this be shortened?
+-- Porting note (#11215): TODO can this be shortened?
 protected theorem le_iff_Nonneg (a b : ℚ) : a ≤ b ↔ Rat.Nonneg (b - a) :=
   numDenCasesOn'' a fun na da ha hared =>
     numDenCasesOn'' b fun nb db hb hbred => by
@@ -128,7 +128,7 @@ protected theorem le_iff_Nonneg (a b : ℚ) : a ≤ b ↔ Rat.Nonneg (b - a) :=
           apply mul_pos <;> rwa [pos_iff_ne_zero]
       · simp only [divInt_ofNat, ← zero_iff_num_zero, mkRat_eq_zero hb] at h'
         simp [h', Rat.Nonneg]
-      · simp [Rat.Nonneg, Rat.sub_def, normalize_eq]
+      · simp only [Rat.Nonneg, sub_def, normalize_eq]
         refine ⟨fun H => ?_, fun H _ => ?_⟩
         · refine Int.ediv_nonneg ?_ (Nat.cast_nonneg _)
           rw [sub_nonneg]
@@ -239,7 +239,7 @@ theorem nonneg_iff_zero_le {a} : Rat.Nonneg a ↔ 0 ≤ a := by
   simp
 #align rat.nonneg_iff_zero_le Rat.nonneg_iff_zero_le
 
-theorem num_nonneg : ∀ {a : ℚ}, 0 ≤ a.num ↔ 0 ≤ a
+@[simp] lemma num_nonneg : ∀ {a : ℚ}, 0 ≤ a.num ↔ 0 ≤ a
   | ⟨n, d, h, c⟩ => @nonneg_iff_zero_le ⟨n, d, h, c⟩
 #align rat.num_nonneg_iff_zero_le Rat.num_nonneg
 
@@ -275,10 +275,13 @@ instance : OrderedCancelAddCommMonoid ℚ := by infer_instance
 
 instance : OrderedAddCommMonoid ℚ := by infer_instance
 
-theorem num_pos {a : ℚ} : 0 < a.num ↔ 0 < a :=
-  lt_iff_lt_of_le_iff_le <| by
-    simpa [(by cases a; rfl : (-a).num = -a.num)] using @num_nonneg (-a)
+@[simp] lemma num_nonpos {a : ℚ} : a.num ≤ 0 ↔ a ≤ 0 := by simpa using @num_nonneg (-a)
+@[simp] lemma num_pos {a : ℚ} : 0 < a.num ↔ 0 < a := lt_iff_lt_of_le_iff_le num_nonpos
 #align rat.num_pos_iff_pos Rat.num_pos
+@[simp] lemma num_neg {a : ℚ} : a.num < 0 ↔ a < 0 := lt_iff_lt_of_le_iff_le num_nonneg
+
+@[deprecated] alias num_nonneg_iff_zero_le := num_nonneg -- 2024-02-16
+@[deprecated] alias num_pos_iff_pos := num_pos -- 2024-02-16
 
 theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
     (a : ℚ) / b < c / d ↔ a * d < c * b := by
@@ -313,6 +316,3 @@ assert_not_exists Fintype
 assert_not_exists Set.Icc
 
 assert_not_exists GaloisConnection
-
--- These are less significant, but should not be relaxed until at least after port to Lean 4.
-assert_not_exists LinearOrderedCommGroupWithZero

@@ -35,7 +35,6 @@ open CategoryTheory.Limits
 universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {X Y : C}
 
 section

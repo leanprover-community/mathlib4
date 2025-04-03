@@ -3,7 +3,7 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Scott Morrison
 -/
-import Mathlib.CategoryTheory.FinCategory
+import Mathlib.CategoryTheory.FinCategory.Basic
 import Mathlib.CategoryTheory.Limits.Cones
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Adjunction.Basic
@@ -139,7 +139,7 @@ section AllowEmpty
 variable {C}
 variable [IsFilteredOrEmpty C]
 
--- porting note: the following definitions were removed because the names are invalid,
+-- Porting note: the following definitions were removed because the names are invalid,
 -- direct references to `IsFilteredOrEmpty` have been added instead
 --
 -- theorem cocone_objs : ∀ X Y : C, ∃ (Z : _) (f : X ⟶ Z) (g : Y ⟶ Z), True :=
@@ -189,7 +189,7 @@ noncomputable def coeqHom {j j' : C} (f f' : j ⟶ j') : j' ⟶ coeq f f' :=
   (IsFilteredOrEmpty.cocone_maps f f').choose_spec.choose
 #align category_theory.is_filtered.coeq_hom CategoryTheory.IsFiltered.coeqHom
 
--- porting note: the simp tag has been removed as the linter complained
+-- Porting note: the simp tag has been removed as the linter complained
 /-- `coeq_condition f f'`, for morphisms `f f' : j ⟶ j'`, is the proof that
 `f ≫ coeqHom f f' = f' ≫ coeqHom f f'`.
 -/
@@ -387,6 +387,15 @@ theorem of_cocone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory 
       have h₂ := c.ι.naturality ⟨WalkingParallelPairHom.right⟩
       simp_all
   apply IsFiltered.mk
+
+theorem of_hasFiniteColimits [HasFiniteColimits C] : IsFiltered C :=
+  of_cocone_nonempty.{v} C fun F => ⟨colimit.cocone F⟩
+
+theorem of_isTerminal {X : C} (h : IsTerminal X) : IsFiltered C :=
+  of_cocone_nonempty.{v} _ fun {_} _ _ _ => ⟨⟨X, ⟨fun _ => h.from _, fun _ _ _ => h.hom_ext _ _⟩⟩⟩
+
+instance (priority := 100) of_hasTerminal [HasTerminal C] : IsFiltered C :=
+  of_isTerminal _ terminalIsTerminal
 
 /-- For every universe `w`, `C` is filtered if and only if every finite diagram in `C` with shape
     in `w` admits a cocone. -/
@@ -598,7 +607,7 @@ section AllowEmpty
 variable {C}
 variable [IsCofilteredOrEmpty C]
 
--- porting note: the following definitions were removed because the names are invalid,
+-- Porting note: the following definitions were removed because the names are invalid,
 -- direct references to `IsCofilteredOrEmpty` have been added instead
 --
 --theorem cone_objs : ∀ X Y : C, ∃ (W : _) (f : W ⟶ X) (g : W ⟶ Y), True :=
@@ -648,7 +657,7 @@ noncomputable def eqHom {j j' : C} (f f' : j ⟶ j') : eq f f' ⟶ j :=
   (IsCofilteredOrEmpty.cone_maps f f').choose_spec.choose
 #align category_theory.is_cofiltered.eq_hom CategoryTheory.IsCofiltered.eqHom
 
--- porting note: the simp tag has been removed as the linter complained
+-- Porting note: the simp tag has been removed as the linter complained
 /-- `eq_condition f f'`, for morphisms `f f' : j ⟶ j'`, is the proof that
 `eqHom f f' ≫ f = eqHom f f' ≫ f'`.
 -/
@@ -865,6 +874,19 @@ theorem of_cone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J]
       have h₂ := c.π.naturality ⟨WalkingParallelPairHom.right⟩
       simp_all
   apply IsCofiltered.mk
+
+theorem of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
+  of_cone_nonempty.{v} C fun F => ⟨limit.cone F⟩
+#align category_theory.cofiltered_of_has_finite_limits CategoryTheory.IsCofiltered.of_hasFiniteLimits
+
+theorem of_isInitial {X : C} (h : IsInitial X) : IsCofiltered C :=
+  of_cone_nonempty.{v} _ fun {_} _ _ _ => ⟨⟨X, ⟨fun _ => h.to _, fun _ _ _ => h.hom_ext _ _⟩⟩⟩
+
+instance (priority := 100) of_hasInitial [HasInitial C] : IsCofiltered C :=
+  of_isInitial _ initialIsInitial
+
+@[deprecated] -- 2024-03-11
+alias _root_.CategoryTheory.cofiltered_of_hasFiniteLimits := of_hasFiniteLimits
 
 /-- For every universe `w`, `C` is filtered if and only if every finite diagram in `C` with shape
     in `w` admits a cocone. -/

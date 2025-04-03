@@ -3,9 +3,9 @@ Copyright (c) 2020 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang, Johan Commelin
 -/
-import Mathlib.Data.MvPolynomial.Rename
-import Mathlib.Data.MvPolynomial.CommRing
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.MvPolynomial.Rename
+import Mathlib.Algebra.MvPolynomial.CommRing
 
 #align_import ring_theory.mv_polynomial.symmetric from "leanprover-community/mathlib"@"2f5b500a507264de86d666a5f87ddb976e2d8de4"
 
@@ -73,7 +73,6 @@ end Multiset
 namespace MvPolynomial
 
 variable {σ : Type*} {R : Type*}
-
 variable {τ : Type*} {S : Type*}
 
 /-- A `MvPolynomial φ` is symmetric if it is invariant under
@@ -139,6 +138,16 @@ theorem map (hφ : IsSymmetric φ) (f : R →+* S) : IsSymmetric (map f φ) := f
   rw [← map_rename, hφ]
 #align mv_polynomial.is_symmetric.map MvPolynomial.IsSymmetric.map
 
+protected theorem rename (hφ : φ.IsSymmetric) (e : σ ≃ τ) : (rename e φ).IsSymmetric := fun _ => by
+  apply rename_injective _ e.symm.injective
+  simp_rw [rename_rename, ← Equiv.coe_trans, Equiv.self_trans_symm, Equiv.coe_refl, rename_id]
+  rw [hφ]
+
+@[simp]
+theorem _root_.MvPolynomial.isSymmetric_rename {e : σ ≃ τ} :
+    (MvPolynomial.rename e φ).IsSymmetric ↔ φ.IsSymmetric :=
+  ⟨fun h => by simpa using (IsSymmetric.rename (R := R) h e.symm), (IsSymmetric.rename · e)⟩
+
 end CommSemiring
 
 section CommRing
@@ -157,6 +166,16 @@ end CommRing
 
 end IsSymmetric
 
+/-- `MvPolynomial.rename` induces an isomorphism between the symmetric subalgebras. -/
+@[simps!]
+def renameSymmetricSubalgebra [CommSemiring R] (e : σ ≃ τ) :
+    symmetricSubalgebra σ R ≃ₐ[R] symmetricSubalgebra τ R :=
+  AlgEquiv.ofAlgHom
+    (((rename e).comp (symmetricSubalgebra σ R).val).codRestrict _ <| fun x => x.2.rename e)
+    (((rename e.symm).comp <| Subalgebra.val _).codRestrict _ <| fun x => x.2.rename e.symm)
+    (AlgHom.ext <| fun p => Subtype.ext <| by simp)
+    (AlgHom.ext <| fun p => Subtype.ext <| by simp)
+
 section ElementarySymmetric
 
 open Finset
@@ -170,13 +189,13 @@ def esymm (n : ℕ) : MvPolynomial σ R :=
 
 /-- The `n`th elementary symmetric `MvPolynomial σ R` is obtained by evaluating the
 `n`th elementary symmetric at the `Multiset` of the monomials -/
-theorem esymm_eq_multiset_esymm : esymm σ R = (Finset.univ.val.map X).esymm := by
-  exact funext fun n => (Finset.esymm_map_val X _ n).symm
+theorem esymm_eq_multiset_esymm : esymm σ R = (univ.val.map X).esymm := by
+  exact funext fun n => (esymm_map_val X _ n).symm
 #align mv_polynomial.esymm_eq_multiset_esymm MvPolynomial.esymm_eq_multiset_esymm
 
 theorem aeval_esymm_eq_multiset_esymm [Algebra R S] (f : σ → S) (n : ℕ) :
-    aeval f (esymm σ R n) = (Finset.univ.val.map f).esymm n := by
-  simp_rw [esymm, aeval_sum, aeval_prod, aeval_X, Finset.esymm_map_val]
+    aeval f (esymm σ R n) = (univ.val.map f).esymm n := by
+  simp_rw [esymm, aeval_sum, aeval_prod, aeval_X, esymm_map_val]
 #align mv_polynomial.aeval_esymm_eq_multiset_esymm MvPolynomial.aeval_esymm_eq_multiset_esymm
 
 /-- We can define `esymm σ R n` by summing over a subtype instead of over `powerset_len`. -/
@@ -206,11 +225,11 @@ theorem rename_esymm (n : ℕ) (e : σ ≃ τ) : rename e (esymm σ R n) = esymm
     rename e (esymm σ R n) = ∑ x in powersetCard n univ, ∏ i in x, X (e i) := by
       simp_rw [esymm, map_sum, map_prod, rename_X]
     _ = ∑ t in powersetCard n (univ.map e.toEmbedding), ∏ i in t, X i := by
-      simp [Finset.powersetCard_map, -Finset.map_univ_equiv]
-      --Porting note: Why did `mapEmbedding_apply` not work?
+      simp [powersetCard_map, -map_univ_equiv]
+      -- Porting note: Why did `mapEmbedding_apply` not work?
       dsimp [mapEmbedding, OrderEmbedding.ofMapLEIff]
       simp
-    _ = ∑ t in powersetCard n univ, ∏ i in t, X i := by rw [Finset.map_univ_equiv]
+    _ = ∑ t in powersetCard n univ, ∏ i in t, X i := by rw [map_univ_equiv]
 #align mv_polynomial.rename_esymm MvPolynomial.rename_esymm
 
 theorem esymm_isSymmetric (n : ℕ) : IsSymmetric (esymm σ R n) := by
@@ -226,7 +245,7 @@ theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
   simp only [← single_eq_monomial]
   refine' Finsupp.support_sum_eq_biUnion (powersetCard n (univ : Finset σ)) _
   intro s t hst
-  rw [Finset.disjoint_left, Finsupp.support_single_ne_zero _ one_ne_zero]
+  rw [disjoint_left, Finsupp.support_single_ne_zero _ one_ne_zero]
   rw [Finsupp.support_single_ne_zero _ one_ne_zero]
   simp only [one_ne_zero, mem_singleton, Finsupp.mem_support_iff]
   rintro a h rfl
@@ -263,7 +282,7 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
     (esymm σ R n).degrees = (univ : Finset σ).val := by
   classical
     have :
-      (Finsupp.toMultiset ∘ fun t : Finset σ => ∑ i : σ in t, Finsupp.single i 1) = Finset.val := by
+      (Finsupp.toMultiset ∘ fun t : Finset σ => ∑ i : σ in t, Finsupp.single i 1) = val := by
       funext
       simp [Finsupp.toMultiset_sum_single]
     rw [degrees_def, support_esymm, sup_image, this]

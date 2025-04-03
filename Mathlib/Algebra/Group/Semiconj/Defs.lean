@@ -123,7 +123,7 @@ theorem pow_right {a x y : M} (h : SemiconjBy a x y) (n : ℕ) : SemiconjBy a (x
   · rw [pow_zero, pow_zero]
     exact SemiconjBy.one_right _
   · rw [pow_succ, pow_succ]
-    exact h.mul_right ih
+    exact ih.mul_right h
 #align semiconj_by.pow_right SemiconjBy.pow_right
 #align add_semiconj_by.nsmul_right AddSemiconjBy.nsmul_right
 

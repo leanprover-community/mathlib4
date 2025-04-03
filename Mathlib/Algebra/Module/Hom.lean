@@ -34,7 +34,6 @@ instance instDistribSMul [AddZeroClass A] [AddCommMonoid B] [DistribSMul M B] :
   smul_add _ _ _ := ext fun _ => smul_add _ _ _
 
 variable [Monoid R] [Monoid S] [AddMonoid A] [AddCommMonoid B]
-
 variable [DistribMulAction R B] [DistribMulAction S B]
 
 instance instDistribMulAction : DistribMulAction R (A →+ B) where

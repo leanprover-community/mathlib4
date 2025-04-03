@@ -3,7 +3,7 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Data.Polynomial.Degree.Definitions
+import Mathlib.Algebra.Polynomial.Degree.Definitions
 
 #align_import ring_theory.polynomial.opposites from "leanprover-community/mathlib"@"63417e01fbc711beaf25fa73b6edb395c0cfddd0"
 
@@ -110,7 +110,7 @@ theorem support_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).support = (u
 theorem natDegree_opRingEquiv (p : R[X]ᵐᵒᵖ) : (opRingEquiv R p).natDegree = (unop p).natDegree := by
   by_cases p0 : p = 0
   · simp only [p0, _root_.map_zero, natDegree_zero, unop_zero]
-  · simp only [p0, natDegree_eq_support_max', Ne.def, AddEquivClass.map_eq_zero_iff, not_false_iff,
+  · simp only [p0, natDegree_eq_support_max', Ne, AddEquivClass.map_eq_zero_iff, not_false_iff,
       support_opRingEquiv, unop_eq_zero_iff]
 #align polynomial.nat_degree_op_ring_equiv Polynomial.natDegree_opRingEquiv
 

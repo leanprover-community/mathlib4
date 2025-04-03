@@ -43,9 +43,7 @@ section Limits
 universe w v u z z'
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-
 variable {D : Type w} [Category.{max v u} D]
-
 variable {K : Type z} [Category.{z'} K]
 
 noncomputable section
@@ -187,22 +185,15 @@ section Colimits
 universe w v u z z'
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-
 variable {D : Type w} [Category.{max v u} D]
-
 variable {K : Type z} [Category.{z'} K]
 
 -- Now we need a handful of instances to obtain sheafification...
 variable [ConcreteCategory.{max v u} D]
-
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-
 variable [PreservesLimits (forget D)]
-
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
-
 variable [ReflectsIsomorphisms (forget D)]
 
 /-- Construct a cocone by sheafifying a cocone point of a cocone `E` of presheaves

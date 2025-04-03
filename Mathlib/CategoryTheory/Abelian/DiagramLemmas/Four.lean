@@ -117,7 +117,7 @@ theorem epi_of_epi_of_epi_of_mono'
   rw [assoc, assoc, assoc, add_comp, assoc, assoc, assoc, NatTrans.naturality,
     ← reassoc_of% h₆, ← h₅, comp_sub]
   dsimp
-  rw [add_sub_cancel'_right]
+  rw [add_sub_cancel]
 #align category_theory.abelian.epi_of_epi_of_epi_of_mono CategoryTheory.Abelian.epi_of_epi_of_epi_of_mono'
 
 theorem epi_of_epi_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)

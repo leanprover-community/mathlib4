@@ -240,10 +240,9 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (
     _ ≤ ε := by
       rw [Box.Icc_def, Real.volume_Icc_pi_toReal ((J k).face i).lower_le_upper,
         ← le_div_iff (hvol_pos _)]
-      refine' div_le_div_of_le_left εpos.le (hvol_pos _)
-        (prod_le_prod (fun j _ => _) fun j _ => _)
-      exacts [sub_nonneg.2 (Box.lower_le_upper _ _),
-        sub_le_sub ((hJ_sub' _ (J _).upper_mem_Icc).2 _) ((hJ_sub' _ (J _).lower_mem_Icc).1 _)]
+      gcongr
+      exacts [hvol_pos _, fun _ _ ↦ sub_nonneg.2 (Box.lower_le_upper _ _),
+        (hJ_sub' _ (J _).upper_mem_Icc).2 _, (hJ_sub' _ (J _).lower_mem_Icc).1 _]
 #align measure_theory.integral_divergence_of_has_fderiv_within_at_off_countable_aux₂ MeasureTheory.integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂
 
 variable (a b : Fin (n + 1) → ℝ)

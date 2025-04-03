@@ -182,8 +182,8 @@ theorem openSegment_same (x : E) : openSegment 𝕜 x x = {x} :=
       simpa only [← add_smul, mem_singleton_iff, hab, one_smul, eq_comm] using hz,
     fun h : z = x => by
       obtain ⟨a, ha₀, ha₁⟩ := DenselyOrdered.dense (0 : 𝕜) 1 zero_lt_one
-      refine' ⟨a, 1 - a, ha₀, sub_pos_of_lt ha₁, add_sub_cancel'_right _ _, _⟩
-      rw [← add_smul, add_sub_cancel'_right, one_smul, h]⟩
+      refine' ⟨a, 1 - a, ha₀, sub_pos_of_lt ha₁, add_sub_cancel _ _, _⟩
+      rw [← add_smul, add_sub_cancel, one_smul, h]⟩
 #align open_segment_same openSegment_same
 
 end DenselyOrdered
@@ -192,7 +192,7 @@ theorem segment_eq_image (x y : E) :
     [x -[𝕜] y] = (fun θ : 𝕜 => (1 - θ) • x + θ • y) '' Icc (0 : 𝕜) 1 :=
   Set.ext fun z =>
     ⟨fun ⟨a, b, ha, hb, hab, hz⟩ =>
-      ⟨b, ⟨hb, hab ▸ le_add_of_nonneg_left ha⟩, hab ▸ hz ▸ by simp only [add_sub_cancel]⟩,
+      ⟨b, ⟨hb, hab ▸ le_add_of_nonneg_left ha⟩, hab ▸ hz ▸ by simp only [add_sub_cancel_right]⟩,
       fun ⟨θ, ⟨hθ₀, hθ₁⟩, hz⟩ => ⟨1 - θ, θ, sub_nonneg.2 hθ₁, hθ₀, sub_add_cancel _ _, hz⟩⟩
 #align segment_eq_image segment_eq_image
 
@@ -200,7 +200,7 @@ theorem openSegment_eq_image (x y : E) :
     openSegment 𝕜 x y = (fun θ : 𝕜 => (1 - θ) • x + θ • y) '' Ioo (0 : 𝕜) 1 :=
   Set.ext fun z =>
     ⟨fun ⟨a, b, ha, hb, hab, hz⟩ =>
-      ⟨b, ⟨hb, hab ▸ lt_add_of_pos_left _ ha⟩, hab ▸ hz ▸ by simp only [add_sub_cancel]⟩,
+      ⟨b, ⟨hb, hab ▸ lt_add_of_pos_left _ ha⟩, hab ▸ hz ▸ by simp only [add_sub_cancel_right]⟩,
       fun ⟨θ, ⟨hθ₀, hθ₁⟩, hz⟩ => ⟨1 - θ, θ, sub_pos.2 hθ₁, hθ₀, sub_add_cancel _ _, hz⟩⟩
 #align open_segment_eq_image openSegment_eq_image
 
@@ -309,7 +309,7 @@ theorem sameRay_of_mem_segment [StrictOrderedCommRing 𝕜] [AddCommGroup E] [Mo
     (h : x ∈ [y -[𝕜] z]) : SameRay 𝕜 (x - y) (z - x) := by
   rw [segment_eq_image'] at h
   rcases h with ⟨θ, ⟨hθ₀, hθ₁⟩, rfl⟩
-  simpa only [add_sub_cancel', ← sub_sub, sub_smul, one_smul] using
+  simpa only [add_sub_cancel_left, ← sub_sub, sub_smul, one_smul] using
     (SameRay.sameRay_nonneg_smul_left (z - y) hθ₀).nonneg_smul_right (sub_nonneg.2 hθ₁)
 #align same_ray_of_mem_segment sameRay_of_mem_segment
 
@@ -423,7 +423,7 @@ theorem openSegment_subset_union (x y : E) {z : E} (hz : z ∈ range (lineMap x 
     left
     have hc : 0 < c := h₀.trans hac
     refine' ⟨a / c, ⟨div_pos h₀ hc, (div_lt_one hc).2 hac⟩, _⟩
-    simp only [← homothety_eq_lineMap, ← homothety_mul_apply, div_mul_cancel _ hc.ne']
+    simp only [← homothety_eq_lineMap, ← homothety_mul_apply, div_mul_cancel₀ _ hc.ne']
   · left
     rfl
   · right
@@ -434,7 +434,7 @@ theorem openSegment_subset_union (x y : E) {z : E} (hz : z ∈ range (lineMap x 
       ⟨(a - c) / (1 - c), ⟨div_pos (sub_pos.2 hca) hc, (div_lt_one hc).2 <| sub_lt_sub_right h₁ _⟩,
         _⟩
     simp only [← homothety_eq_lineMap, ← homothety_mul_apply, sub_mul, one_mul,
-      div_mul_cancel _ hc.ne', sub_sub_sub_cancel_right]
+      div_mul_cancel₀ _ hc.ne', sub_sub_sub_cancel_right]
 #align open_segment_subset_union openSegment_subset_union
 
 end LinearOrderedField

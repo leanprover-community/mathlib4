@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
 -/
 import Archive.MiuLanguage.DecisionNec
-import Mathlib.Data.Nat.Pow
 import Mathlib.Tactic.Linarith
 
 #align_import miu_language.decision_suf from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
@@ -307,7 +306,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem eq_append_cons_U_of_count_U_pos {k : ℕ} {zs : Miustr} (h : count U zs = succ k) :
     ∃ as bs : Miustr, zs = as ++ ↑(U :: bs) :=
-  mem_split (mem_of_count_U_eq_succ h)
+  append_of_mem (mem_of_count_U_eq_succ h)
 set_option linter.uppercaseLean3 false in
 #align miu.eq_append_cons_U_of_count_U_pos Miu.eq_append_cons_U_of_count_U_pos
 

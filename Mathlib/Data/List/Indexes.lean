@@ -42,7 +42,7 @@ theorem mapIdx_nil {α β} (f : ℕ → α → β) : mapIdx f [] = [] :=
   rfl
 #align list.map_with_index_nil List.mapIdx_nil
 
--- Porting note: new theorem.
+-- Porting note (#10756): new theorem.
 protected theorem oldMapIdxCore_eq (l : List α) (f : ℕ → α → β) (n : ℕ) :
     l.oldMapIdxCore f n = l.oldMapIdx fun i a ↦ f (i + n) a := by
   induction' l with hd tl hl generalizing f n
@@ -56,7 +56,7 @@ protected theorem oldMapIdxCore_eq (l : List α) (f : ℕ → α → β) (n : �
 --   1. Prove that `oldMapIdxCore f (l ++ [e]) = oldMapIdxCore f l ++ [f l.length e]`
 --   2. Prove that `oldMapIdx f (l ++ [e]) = oldMapIdx f l ++ [f l.length e]`
 --   3. Prove list induction using `∀ l e, p [] → (p l → p (l ++ [e])) → p l`
--- Porting note: new theorem.
+-- Porting note (#10756): new theorem.
 theorem list_reverse_induction (p : List α → Prop) (base : p [])
     (ind : ∀ (l : List α) (e : α), p l → p (l ++ [e])) : (∀ (l : List α), p l) := by
   let q := fun l ↦ p (reverse l)
@@ -69,7 +69,7 @@ theorem list_reverse_induction (p : List α → Prop) (base : p [])
   · apply pq; simp only [reverse_nil, base]
   · apply pq; simp only [reverse_cons]; apply ind; apply qp; rw [reverse_reverse]; exact ih
 
--- Porting note: new theorem.
+-- Porting note (#10756): new theorem.
 protected theorem oldMapIdxCore_append : ∀ (f : ℕ → α → β) (n : ℕ) (l₁ l₂ : List α),
     List.oldMapIdxCore f n (l₁ ++ l₂) =
     List.oldMapIdxCore f n l₁ ++ List.oldMapIdxCore f (n + l₁.length) l₂ := by
@@ -90,7 +90,7 @@ protected theorem oldMapIdxCore_append : ∀ (f : ℕ → α → β) (n : ℕ) (
         simp only [length_append, h]
       rw [Nat.add_assoc]; simp only [Nat.add_comm]
 
--- Porting note: new theorem.
+-- Porting note (#10756): new theorem.
 protected theorem oldMapIdx_append : ∀ (f : ℕ → α → β) (l : List α) (e : α),
     List.oldMapIdx f (l ++ [e]) = List.oldMapIdx f l ++ [f l.length e] := by
   intros f l e
@@ -98,7 +98,7 @@ protected theorem oldMapIdx_append : ∀ (f : ℕ → α → β) (l : List α) (
   rw [List.oldMapIdxCore_append f 0 l [e]]
   simp only [zero_add, append_cancel_left_eq]; rfl
 
--- Porting note: new theorem.
+-- Porting note (#10756): new theorem.
 theorem mapIdxGo_append : ∀ (f : ℕ → α → β) (l₁ l₂ : List α) (arr : Array β),
     mapIdx.go f (l₁ ++ l₂) arr = mapIdx.go f l₂ (List.toArray (mapIdx.go f l₁ arr)) := by
   intros f l₁ l₂ arr
@@ -115,7 +115,7 @@ theorem mapIdxGo_append : ∀ (f : ℕ → α → β) (l₁ l₂ : List α) (arr
       · simp only [cons_append, length_cons, length_append, Nat.succ.injEq] at h
         simp only [length_append, h]
 
--- Porting note: new theorem.
+-- Porting note (#10756): new theorem.
 theorem mapIdxGo_length : ∀ (f : ℕ → α → β) (l : List α) (arr : Array β),
     length (mapIdx.go f l arr) = length l + arr.size := by
   intro f l
@@ -124,7 +124,7 @@ theorem mapIdxGo_length : ∀ (f : ℕ → α → β) (l : List α) (arr : Array
   · intro; simp only [mapIdx.go]; rw [ih]; simp only [Array.size_push, length_cons];
     simp only [Nat.add_succ, add_zero, Nat.add_comm]
 
--- Porting note: new theorem.
+-- Porting note (#10756): new theorem.
 theorem mapIdx_append_one : ∀ (f : ℕ → α → β) (l : List α) (e : α),
     mapIdx f (l ++ [e]) = mapIdx f l ++ [f l.length e] := by
   intros f l e
@@ -133,7 +133,7 @@ theorem mapIdx_append_one : ∀ (f : ℕ → α → β) (l : List α) (e : α),
   simp only [mapIdx.go, Array.size_toArray, mapIdxGo_length, length_nil, add_zero, Array.toList_eq,
     Array.push_data, Array.data_toArray]
 
--- Porting note: new theorem.
+-- Porting note (#10756): new theorem.
 protected theorem new_def_eq_old_def :
     ∀ (f : ℕ → α → β) (l : List α), l.mapIdx f = List.oldMapIdx f l := by
   intro f
@@ -252,6 +252,73 @@ theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : 
     map_filter_eq_foldr, findIdxs, uncurry, foldrIdx_eq_foldr_enum, decide_eq_true_eq, comp_apply,
     Bool.cond_decide]
 #align list.find_indexes_eq_map_indexes_values List.findIdxs_eq_map_indexesValues
+
+section FindIdx -- TODO: upstream to Std
+
+theorem findIdx_eq_length {p : α → Bool} {xs : List α} :
+    xs.findIdx p = xs.length ↔ ∀ x ∈ xs, ¬p x := by
+  induction xs with
+  | nil => simp_all
+  | cons x xs ih =>
+    rw [findIdx_cons, length_cons]
+    constructor <;> intro h
+    · have : ¬p x := by contrapose h; simp_all
+      simp_all
+    · simp_rw [h x (mem_cons_self x xs), cond_false, Nat.succ.injEq, ih]
+      exact fun y hy ↦ h y <| mem_cons.mpr (Or.inr hy)
+
+theorem findIdx_le_length (p : α → Bool) {xs : List α} : xs.findIdx p ≤ xs.length := by
+  by_cases e : ∃ x ∈ xs, p x
+  · exact (findIdx_lt_length_of_exists e).le
+  · push_neg at e; exact (findIdx_eq_length.mpr e).le
+
+theorem findIdx_lt_length {p : α → Bool} {xs : List α} :
+    xs.findIdx p < xs.length ↔ ∃ x ∈ xs, p x := by
+  rw [← not_iff_not, not_lt]
+  have := @le_antisymm_iff _ _ (xs.findIdx p) xs.length
+  simp only [findIdx_le_length, true_and] at this
+  rw [← this, findIdx_eq_length, not_exists]
+  simp only [Bool.not_eq_true, not_and]
+
+/-- `p` does not hold for elements with indices less than `xs.findIdx p`. -/
+theorem not_of_lt_findIdx {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.findIdx p) :
+    ¬p (xs.get ⟨i, h.trans_le (findIdx_le_length p)⟩) := by
+  revert i
+  induction xs with
+  | nil => intro i h; rw [findIdx_nil] at h; omega
+  | cons x xs ih =>
+    intro i h
+    have ho := h
+    rw [findIdx_cons] at h
+    have npx : ¬p x := by by_contra y; rw [y, cond_true] at h; omega
+    simp_rw [npx, cond_false] at h
+    cases' i.eq_zero_or_pos with e e
+    · simpa only [e, Fin.zero_eta, get_cons_zero]
+    · have ipm := Nat.succ_pred_eq_of_pos e
+      have ilt := ho.trans_le (findIdx_le_length p)
+      rw [(Fin.mk_eq_mk (h' := ipm ▸ ilt)).mpr ipm.symm, get_cons_succ]
+      rw [← ipm, Nat.succ_lt_succ_iff] at h
+      exact ih h
+
+theorem le_findIdx_of_not {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length)
+    (h2 : ∀ j (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩)) : i ≤ xs.findIdx p := by
+  by_contra! f
+  exact absurd (@findIdx_get _ p xs (f.trans h)) (h2 (xs.findIdx p) f)
+
+theorem lt_findIdx_of_not {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length)
+    (h2 : ∀ j (hji : j ≤ i), ¬p (xs.get ⟨j, hji.trans_lt h⟩)) : i < xs.findIdx p := by
+  by_contra! f
+  exact absurd (@findIdx_get _ p xs (f.trans_lt h)) (h2 (xs.findIdx p) f)
+
+theorem findIdx_eq {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length) :
+    xs.findIdx p = i ↔ p (xs.get ⟨i, h⟩) ∧ ∀ j (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩) := by
+  refine' ⟨fun f ↦ ⟨f ▸ (@findIdx_get _ p xs (f ▸ h)), fun _ hji ↦ not_of_lt_findIdx (f ▸ hji)⟩,
+    fun ⟨h1, h2⟩ ↦ _⟩
+  apply Nat.le_antisymm _ (le_findIdx_of_not h h2)
+  contrapose! h1
+  exact not_of_lt_findIdx h1
+
+end FindIdx
 
 section FoldlIdx
 

@@ -27,7 +27,7 @@ namespace ModuleCat
 
 universe u
 
-open Classical
+open scoped Classical
 
 variable (R : Type u)
 
@@ -88,8 +88,7 @@ def μ (α β : Type u) : (free R).obj α ⊗ (free R).obj β ≅ (free R).obj (
 
 theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
     ((free R).map f ⊗ (free R).map g) ≫ (μ R Y Y').hom = (μ R X X').hom ≫ (free R).map (f ⊗ g) := by
-  intros
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply Finsupp.lhom_ext'
   intro x
@@ -113,8 +112,7 @@ theorem μ_natural {X Y X' Y' : Type u} (f : X ⟶ Y) (g : X' ⟶ Y') :
 theorem left_unitality (X : Type u) :
     (λ_ ((free R).obj X)).hom =
       (ε R ⊗ 𝟙 ((free R).obj X)) ≫ (μ R (𝟙_ (Type u)) X).hom ≫ map (free R).obj (λ_ X).hom := by
-  intros
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply LinearMap.ext_ring
   apply Finsupp.lhom_ext'
@@ -126,7 +124,7 @@ theorem left_unitality (X : Type u) :
   let q : X →₀ R := ((λ_ (of R (X →₀ R))).hom) (1 ⊗ₜ[R] Finsupp.single x 1)
   change q x' = Finsupp.mapDomain (λ_ X).hom (finsuppTensorFinsupp' R (𝟙_ (Type u)) X
     (Finsupp.single PUnit.unit 1 ⊗ₜ[R] Finsupp.single x 1)) x'
-  simp_rw [finsuppTensorFinsupp'_single_tmul_single,
+  simp_rw [q, finsuppTensorFinsupp'_single_tmul_single,
     ModuleCat.MonoidalCategory.leftUnitor_hom_apply, mul_one,
     Finsupp.mapDomain_single, CategoryTheory.leftUnitor_hom_apply, one_smul]
 #align Module.free.left_unitality ModuleCat.Free.left_unitality
@@ -134,8 +132,7 @@ theorem left_unitality (X : Type u) :
 theorem right_unitality (X : Type u) :
     (ρ_ ((free R).obj X)).hom =
       (𝟙 ((free R).obj X) ⊗ ε R) ≫ (μ R X (𝟙_ (Type u))).hom ≫ map (free R).obj (ρ_ X).hom := by
-  intros
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply Finsupp.lhom_ext'
   intro x
@@ -147,7 +144,7 @@ theorem right_unitality (X : Type u) :
   let q : X →₀ R := ((ρ_ (of R (X →₀ R))).hom) (Finsupp.single x 1 ⊗ₜ[R] 1)
   change q x' = Finsupp.mapDomain (ρ_ X).hom (finsuppTensorFinsupp' R X (𝟙_ (Type u))
     (Finsupp.single x 1 ⊗ₜ[R] Finsupp.single PUnit.unit 1)) x'
-  simp_rw [finsuppTensorFinsupp'_single_tmul_single,
+  simp_rw [q, finsuppTensorFinsupp'_single_tmul_single,
     ModuleCat.MonoidalCategory.rightUnitor_hom_apply, mul_one,
     Finsupp.mapDomain_single, CategoryTheory.rightUnitor_hom_apply, one_smul]
 #align Module.free.right_unitality ModuleCat.Free.right_unitality
@@ -156,8 +153,7 @@ theorem associativity (X Y Z : Type u) :
     ((μ R X Y).hom ⊗ 𝟙 ((free R).obj Z)) ≫ (μ R (X ⊗ Y) Z).hom ≫ map (free R).obj (α_ X Y Z).hom =
       (α_ ((free R).obj X) ((free R).obj Y) ((free R).obj Z)).hom ≫
         (𝟙 ((free R).obj X) ⊗ (μ R Y Z).hom) ≫ (μ R X (Y ⊗ Z)).hom := by
-  intros
-  -- Porting note: broken ext
+  -- Porting note (#11041): broken ext
   apply TensorProduct.ext
   apply TensorProduct.ext
   apply Finsupp.lhom_ext'
@@ -198,13 +194,13 @@ instance : LaxMonoidal.{u} (free R).obj := .ofTensorHom
 
 instance : IsIso (@LaxMonoidal.ε _ _ _ _ _ _ (free R).obj _ _) := by
   refine' ⟨⟨Finsupp.lapply PUnit.unit, ⟨_, _⟩⟩⟩
-  · -- Porting note: broken ext
+  · -- Porting note (#11041): broken ext
     apply LinearMap.ext_ring
     -- Porting note (#10959): simp used to be able to close this goal
     dsimp
     erw [ModuleCat.comp_def, LinearMap.comp_apply, ε_apply, Finsupp.lapply_apply,
       Finsupp.single_eq_same, id_apply]
-  · -- Porting note: broken ext
+  · -- Porting note (#11041): broken ext
     apply Finsupp.lhom_ext'
     intro ⟨⟩
     apply LinearMap.ext_ring
@@ -285,7 +281,7 @@ section
 -- accordingly
 
 instance : Preadditive (Free R C) where
-  homGroup X Y := Finsupp.addCommGroup
+  homGroup X Y := Finsupp.instAddCommGroup
   add_comp X Y Z f f' g := by
     dsimp [CategoryTheory.categoryFree]
     rw [Finsupp.sum_add_index'] <;> · simp [add_mul]

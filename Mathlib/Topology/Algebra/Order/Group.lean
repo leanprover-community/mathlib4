@@ -22,7 +22,6 @@ open Set Filter
 open Topology Filter
 
 variable {α G : Type*} [TopologicalSpace G] [LinearOrderedAddCommGroup G] [OrderTopology G]
-
 variable {l : Filter α} {f g : α → G}
 
 -- see Note [lower instance priority]
@@ -41,7 +40,7 @@ instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup : Topol
       calc
         |x - a + (y - b)| ≤ |x - a| + |y - b| := abs_add _ _
         _ < δ + (ε - δ) := add_lt_add hx hy
-        _ = ε := add_sub_cancel'_right _ _
+        _ = ε := add_sub_cancel _ _
     · -- Otherwise `ε`-nhd of each point `a` is `{a}`
       have hε : ∀ {x y}, |x - y| < ε → x = y := by
         intro x y h

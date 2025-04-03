@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Subobject.MonoOver
 
 #align_import category_theory.subterminal from "leanprover-community/mathlib"@"bb103f356534a9a7d3596a672097e375290a4c3a"
 
+
 /-!
 # Subterminal objects
 
@@ -44,9 +45,11 @@ def IsSubterminal (A : C) : Prop :=
   ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g
 #align category_theory.is_subterminal CategoryTheory.IsSubterminal
 
-theorem IsSubterminal.def : IsSubterminal A ↔ ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g :=
+-- Adaptation note: 2024-03-15
+-- Renamed to avoid the reserved name `IsSubterminal.def`.
+theorem IsSubterminal.def' : IsSubterminal A ↔ ∀ ⦃Z : C⦄ (f g : Z ⟶ A), f = g :=
   Iff.rfl
-#align category_theory.is_subterminal.def CategoryTheory.IsSubterminal.def
+#align category_theory.is_subterminal.def CategoryTheory.IsSubterminal.def'
 
 /-- If `A` is subterminal, the unique morphism from it to a terminal object is a monomorphism.
 The converse of `isSubterminal_of_mono_isTerminal_from`.
@@ -96,7 +99,7 @@ The converse of `isSubterminal_of_isIso_diag`.
 theorem IsSubterminal.isIso_diag (hA : IsSubterminal A) [HasBinaryProduct A A] : IsIso (diag A) :=
   ⟨⟨Limits.prod.fst,
       ⟨by simp, by
-        rw [IsSubterminal.def] at hA
+        rw [IsSubterminal.def'] at hA
         aesop_cat⟩⟩⟩
 #align category_theory.is_subterminal.is_iso_diag CategoryTheory.IsSubterminal.isIso_diag
 
@@ -157,17 +160,24 @@ object (which is in turn equivalent to the subobjects of the terminal object).
 def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoOver (⊤_ C) where
   functor :=
     { obj := fun X => ⟨Over.mk (terminal.from X.1), X.2.mono_terminal_from⟩
-      map := fun f => MonoOver.homMk f (by ext1 ⟨⟨⟩⟩) }
+      map := fun f => MonoOver.homMk f (by ext1 ⟨⟨⟩⟩)
+      map_id := fun X => rfl
+      map_comp := fun f g => rfl }
   inverse :=
     { obj := fun X =>
         ⟨X.obj.left, fun Z f g => by
           rw [← cancel_mono X.arrow]
           apply Subsingleton.elim⟩
-      map := fun f => f.1 }
-  -- porting note: the original definition was triggering a timeout, using `NatIso.ofComponents`
+      map := fun f => f.1
+      map_id := fun X => rfl
+      map_comp := fun f g => rfl }
+  -- Porting note: the original definition was triggering a timeout, using `NatIso.ofComponents`
   -- in the definition of the natural isomorphisms makes the situation slightly better
-  unitIso := NatIso.ofComponents fun X => Iso.refl _
-  counitIso := NatIso.ofComponents fun X => MonoOver.isoMk (Iso.refl _)
+  unitIso := NatIso.ofComponents (fun X => Iso.refl X) (fun _ => by apply Subsingleton.elim)
+  counitIso := NatIso.ofComponents (fun X => MonoOver.isoMk (Iso.refl _))
+    (fun _ => by apply Subsingleton.elim)
+  functor_unitIso_comp := fun _ => by apply Subsingleton.elim
+  -- With `aesop` filling the auto-params this was taking 20s or so
 #align category_theory.subterminals_equiv_mono_over_terminal CategoryTheory.subterminalsEquivMonoOverTerminal
 
 @[simp]

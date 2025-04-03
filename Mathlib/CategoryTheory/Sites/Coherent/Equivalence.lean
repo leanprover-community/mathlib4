@@ -3,8 +3,8 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
-import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
+import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
+import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 import Mathlib.CategoryTheory.Sites.Equivalence
 /-!
 
@@ -30,19 +30,9 @@ section Coherent
 variable [Precoherent C]
 
 /-- `Precoherent` is preserved by equivalence of categories. -/
-theorem precoherent : Precoherent D where
-  pullback f α _ X₁ π₁ _ := by
-    obtain ⟨β, x, X₂', π₂', _, i, ι', h'⟩ :=
-      Precoherent.pullback (e.inverse.map f) α (fun i ↦ e.inverse.obj (X₁ i))
-      (fun i ↦ (e.inverse.map (π₁ i))) inferInstance
-    refine ⟨β, x, _, fun b ↦ e.functor.map (π₂' b) ≫ e.counit.app _, ?_, i,
-      fun b ↦ (e.toAdjunction.homEquiv _ _).symm (ι' b), fun b ↦ ?_⟩
-    · have : EffectiveEpiFamily _ fun i ↦ (e.functor.map (π₂' i)) :=
-        ⟨⟨effectiveEpiFamilyStructOfEquivalence e X₂' π₂'⟩⟩
-      infer_instance
-    · simpa using congrArg ((fun f ↦ f ≫ e.counit.app _) ∘ e.functor.map) (h' b)
+theorem precoherent : Precoherent D := e.inverse.reflects_precoherent
 
-instance [EssentiallySmall C] [Precoherent C] :
+instance [EssentiallySmall C] :
     Precoherent (SmallModel C) := (equivSmallModel C).precoherent
 
 /--
@@ -115,14 +105,9 @@ section Regular
 variable [Preregular C]
 
 /-- `Preregular` is preserved by equivalence of categories. -/
-theorem preregular : Preregular D where
-  exists_fac f π _ := by
-    obtain ⟨W, h', _, i', w⟩ := Preregular.exists_fac (e.inverse.map f) (e.inverse.map π)
-    refine ⟨e.functor.obj W, e.functor.map h' ≫ e.counit.app _, inferInstance,
-      e.functor.map i' ≫ e.counit.app _, ?_⟩
-    simpa using congrArg ((fun f ↦ f ≫ e.counit.app _) ∘ e.functor.map) w
+theorem preregular : Preregular D := e.inverse.reflects_preregular
 
-instance [EssentiallySmall C] [Preregular C] :
+instance [EssentiallySmall C] :
     Preregular (SmallModel C) := (equivSmallModel C).preregular
 
 /--

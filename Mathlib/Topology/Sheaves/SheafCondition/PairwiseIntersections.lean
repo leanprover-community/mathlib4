@@ -374,7 +374,7 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
   rcases g with ⟨⟩ <;>
   dsimp [Pairwise.diagram] <;>
   simp only [Category.id_comp, s.condition, CategoryTheory.Functor.map_id, Category.comp_id]
-  · rw [← cancel_mono (F.1.map (eqToHom <| inf_comm : U ⊓ V ⟶ _).op), Category.assoc,
+  · rw [← cancel_mono (F.1.map (eqToHom <| inf_comm U V : U ⊓ V ⟶ _).op), Category.assoc,
       Category.assoc, ← F.1.map_comp, ← F.1.map_comp]
     exact s.condition.symm
 set_option linter.uppercaseLean3 false in

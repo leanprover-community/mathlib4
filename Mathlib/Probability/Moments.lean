@@ -60,14 +60,14 @@ def centralMoment (X : Ω → ℝ) (p : ℕ) (μ : Measure Ω) : ℝ := by
 
 @[simp]
 theorem moment_zero (hp : p ≠ 0) : moment 0 p μ = 0 := by
-  simp only [moment, hp, zero_pow, Ne.def, not_false_iff, Pi.zero_apply, integral_const,
+  simp only [moment, hp, zero_pow, Ne, not_false_iff, Pi.zero_apply, integral_const,
     smul_eq_mul, mul_zero]
 #align probability_theory.moment_zero ProbabilityTheory.moment_zero
 
 @[simp]
 theorem centralMoment_zero (hp : p ≠ 0) : centralMoment 0 p μ = 0 := by
   simp only [centralMoment, hp, Pi.zero_apply, integral_const, smul_eq_mul,
-    mul_zero, zero_sub, Pi.pow_apply, Pi.neg_apply, neg_zero, zero_pow, Ne.def, not_false_iff]
+    mul_zero, zero_sub, Pi.pow_apply, Pi.neg_apply, neg_zero, zero_pow, Ne, not_false_iff]
 #align probability_theory.central_moment_zero ProbabilityTheory.centralMoment_zero
 
 theorem centralMoment_one' [IsFiniteMeasure μ] (h_int : Integrable X μ) :
@@ -143,7 +143,7 @@ theorem cgf_const' [IsFiniteMeasure μ] (hμ : μ ≠ 0) (c : ℝ) :
   simp only [cgf, mgf_const']
   rw [log_mul _ (exp_pos _).ne']
   · rw [log_exp _]
-  · rw [Ne.def, ENNReal.toReal_eq_zero_iff, Measure.measure_univ_eq_zero]
+  · rw [Ne, ENNReal.toReal_eq_zero_iff, Measure.measure_univ_eq_zero]
     simp only [hμ, measure_ne_top μ Set.univ, or_self_iff, not_false_iff]
 #align probability_theory.cgf_const' ProbabilityTheory.cgf_const'
 
@@ -180,10 +180,7 @@ theorem cgf_undef (hX : ¬Integrable (fun ω => exp (t * X ω)) μ) : cgf X μ t
 #align probability_theory.cgf_undef ProbabilityTheory.cgf_undef
 
 theorem mgf_nonneg : 0 ≤ mgf X μ t := by
-  refine' integral_nonneg _
-  intro ω
-  simp only [Pi.zero_apply]
-  exact (exp_pos _).le
+  unfold mgf; positivity
 #align probability_theory.mgf_nonneg ProbabilityTheory.mgf_nonneg
 
 theorem mgf_pos' (hμ : μ ≠ 0) (h_int_X : Integrable (fun ω => exp (t * X ω)) μ) :
@@ -198,8 +195,8 @@ theorem mgf_pos' (hμ : μ ≠ 0) (h_int_X : Integrable (fun ω => exp (t * X ω
       exact (exp_pos _).ne'
     rw [h_eq_univ, Set.inter_univ _]
     refine' Ne.bot_lt _
-    simp only [hμ, ENNReal.bot_eq_zero, Ne.def, Measure.measure_univ_eq_zero, not_false_iff]
-  · refine' eventually_of_forall fun x => _
+    simp only [hμ, ENNReal.bot_eq_zero, Ne, Measure.measure_univ_eq_zero, not_false_iff]
+  · filter_upwards with x
     rw [Pi.zero_apply]
     exact (exp_pos _).le
   · rwa [integrableOn_univ]

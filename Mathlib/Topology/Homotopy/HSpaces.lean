@@ -48,7 +48,7 @@ particular, only has an instance of `MulOneClass`).
 * [J.-P. Serre, *Homologie singulière des espaces fibrés. Applications*,
   Ann. of Math (2) 1951, 54, 425–505][serre1951]
 -/
--- porting note: `H_space` already contains an upper case letter
+-- Porting note: `HSpace` already contains an upper case letter
 set_option linter.uppercaseLean3 false
 universe u v
 
@@ -71,16 +71,16 @@ class HSpace (X : Type u) [TopologicalSpace X] where
     (hmul.comp <| (ContinuousMap.id X).prodMk <| const X e).HomotopyRel (ContinuousMap.id X) {e}
 #align H_space HSpace
 
--- We use the notation `⋀`, typeset as \And, to denote the binary operation `hmul` on an H-space
+/-- The binary operation `hmul` on an `H`-space -/
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
--- porting note: opening `HSpaces` so that the above notation works
+-- Porting note: opening `HSpaces` so that the above notation works
 open HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
     [HSpace Y] : HSpace (X × Y) where
   hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by
-    -- porting note: was `continuity`
+    -- Porting note: was `continuity`
     exact ((map_continuous HSpace.hmul).comp ((continuous_fst.comp continuous_fst).prod_mk
         (continuous_fst.comp continuous_snd))).prod_mk ((map_continuous HSpace.hmul).comp
         ((continuous_snd.comp continuous_fst).prod_mk (continuous_snd.comp continuous_snd)))
@@ -208,7 +208,7 @@ theorem qRight_one_right (t : I) : qRight (t, 1) = t :=
         rw [qRight]
         congr
         norm_num
-        apply mul_div_cancel_left
+        apply mul_div_cancel_left₀
         exact two_ne_zero) <|
     Set.projIcc_val zero_le_one _
 #align unit_interval.Q_right_one_right unitInterval.qRight_one_right

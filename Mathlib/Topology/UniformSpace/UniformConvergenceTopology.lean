@@ -135,7 +135,8 @@ uniform convergence
 
 noncomputable section
 
-open Topology Classical Uniformity Filter
+open scoped Classical
+open Topology Uniformity Filter
 
 open Set Filter
 
@@ -157,11 +158,6 @@ def UniformOnFun (α β : Type*) (_ : Set (Set α)) :=
 @[inherit_doc] scoped[UniformConvergence] notation:25 α " →ᵤ " β:0 => UniformFun α β
 
 @[inherit_doc] scoped[UniformConvergence] notation:25 α " →ᵤ[" 𝔖 "] " β:0 => UniformOnFun α β 𝔖
-
--- Porting note: these are not used anymore
--- scoped[UniformConvergence] notation3 "λᵘ "(...)", "r:(scoped p => UniformFun.ofFun p) => r
-
--- scoped[UniformConvergence] notation3 "λᵘ["𝔖"] "(...)", "r:(scoped p => UniformFun.ofFun p) => r
 
 open UniformConvergence
 
@@ -205,7 +201,6 @@ open UniformConvergence
 namespace UniformFun
 
 variable (α β : Type*) {γ ι : Type*}
-
 variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
 
 /-- Basis sets for the uniformity of uniform convergence: `gen α β V` is the set of pairs `(f, g)`
@@ -240,7 +235,6 @@ protected def filter (𝓕 : Filter <| β × β) : Filter ((α →ᵤ β) × (α
   (UniformFun.basis α β 𝓕).filter
 #align uniform_fun.filter UniformFun.filter
 
--- mathport name: exprΦ
 --local notation "Φ" => fun (α β : Type*) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) =>
   --(uvx.fst.fst uvx.2, uvx.1.2 uvx.2)
 
@@ -304,7 +298,6 @@ instance uniformSpace : UniformSpace (α →ᵤ β) :=
 instance topologicalSpace : TopologicalSpace (α →ᵤ β) :=
   inferInstance
 
--- mathport name: «expr𝒰( , , )»
 local notation "𝒰(" α ", " β ", " u ")" => @UniformFun.uniformSpace α β u
 
 /-- By definition, the uniformity of `α →ᵤ β` admits the family `{(f, g) | ∀ x, (f x, g x) ∈ V}`
@@ -398,7 +391,7 @@ protected theorem postcomp_uniformInducing [UniformSpace γ] {f : γ → β} (hf
     UniformFun.hasBasis_uniformity_of_basis _ _ (hf.basis_uniformity (𝓤 β).basis_sets)⟩
 #align uniform_fun.postcomp_uniform_inducing UniformFun.postcomp_uniformInducing
 
--- porting note: had to add a type annotation at `((f ∘ ·) : ((α → γ) → (α → β)))`
+-- Porting note: had to add a type annotation at `((f ∘ ·) : ((α → γ) → (α → β)))`
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
 `𝒰(α, γ, comap f u) = comap (fun g ↦ f ∘ g) 𝒰(α, γ, u₁)`. -/
 protected theorem comap_eq {f : γ → β} :
@@ -417,7 +410,7 @@ protected theorem postcomp_uniformContinuous [UniformSpace γ] {f : γ → β}
   -- This is a direct consequence of `UniformFun.comap_eq`
     refine uniformContinuous_iff.mpr ?_
     exact (UniformFun.mono (uniformContinuous_iff.mp hf)).trans_eq UniformFun.comap_eq
-    -- porting note: the original calc proof below gives a deterministic timeout
+    -- Porting note: the original calc proof below gives a deterministic timeout
     --calc
     --  𝒰(α, γ, _) ≤ 𝒰(α, γ, ‹UniformSpace β›.comap f) :=
     --    UniformFun.mono (uniformContinuous_iff.mp hf)
@@ -529,15 +522,22 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
 #align uniform_fun.uniform_equiv_Pi_comm UniformFun.uniformEquivPiComm
 
 -- Like in the previous lemma, the diagram actually commutes by definition
+
+/-- The set of continuous functions is closed in the uniform convergence topology.
+This is a simple wrapper over `TendstoUniformly.continuous`. -/
+theorem isClosed_setOf_continuous [TopologicalSpace α] :
+    IsClosed {f : α →ᵤ β | Continuous (toFun f)} := by
+  refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ ?_
+  rw [← tendsto_id', UniformFun.tendsto_iff_tendstoUniformly] at huf
+  exact huf.continuous (le_principal_iff.mp hu)
+
 end UniformFun
 
 namespace UniformOnFun
 
 variable {α β : Type*} {γ ι : Type*}
-
 variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
 
--- mathport name: «expr𝒰( , , )»
 local notation "𝒰(" α ", " β ", " u ")" => @UniformFun.uniformSpace α β u
 
 /-- Basis sets for the uniformity of `𝔖`-convergence: for `S : Set α` and `V : Set (β × β)`,
@@ -651,6 +651,53 @@ protected theorem hasBasis_uniformity (h : 𝔖.Nonempty) (h' : DirectedOn (· �
       UniformOnFun.gen 𝔖 SV.1 SV.2 :=
   UniformOnFun.hasBasis_uniformity_of_basis α β 𝔖 h h' (𝓤 β).basis_sets
 #align uniform_on_fun.has_basis_uniformity UniformOnFun.hasBasis_uniformity
+
+variable {α β}
+
+/-- Let `t i` be a nonempty directed subfamily of `𝔖`
+such that every `s ∈ 𝔖` is included in some `t i`.
+Let `V` bounded by `p` be a basis of entourages of `β`.
+
+Then `UniformOnFun.gen 𝔖 (t i) (V j)` bounded by `p j` is a basis of entourages of `α →ᵤ[𝔖] β`. -/
+protected theorem hasBasis_uniformity_of_covering_of_basis {ι ι' : Type*} [Nonempty ι]
+    {t : ι → Set α} {p : ι' → Prop} {V : ι' → Set (β × β)} (ht : ∀ i, t i ∈ 𝔖)
+    (hdir : Directed (· ⊆ ·) t) (hex : ∀ s ∈ 𝔖, ∃ i, s ⊆ t i) (hb : HasBasis (𝓤 β) p V) :
+    (𝓤 (α →ᵤ[𝔖] β)).HasBasis (fun i : ι × ι' ↦ p i.2) fun i ↦
+      UniformOnFun.gen 𝔖 (t i.1) (V i.2) := by
+  have hne : 𝔖.Nonempty := (range_nonempty t).mono (range_subset_iff.2 ht)
+  have hd : DirectedOn (· ⊆ ·) 𝔖 := fun s₁ hs₁ s₂ hs₂ ↦ by
+    rcases hex s₁ hs₁, hex s₂ hs₂ with ⟨⟨i₁, his₁⟩, i₂, his₂⟩
+    rcases hdir i₁ i₂ with ⟨i, hi₁, hi₂⟩
+    exact ⟨t i, ht _, his₁.trans hi₁, his₂.trans hi₂⟩
+  refine (UniformOnFun.hasBasis_uniformity_of_basis α β 𝔖 hne hd hb).to_hasBasis
+    (fun ⟨s, i'⟩ ⟨hs, hi'⟩ ↦ ?_) fun ⟨i, i'⟩ hi' ↦ ⟨(t i, i'), ⟨ht i, hi'⟩, Subset.rfl⟩
+  rcases hex s hs with ⟨i, hi⟩
+  exact ⟨(i, i'), hi', UniformOnFun.gen_mono hi Subset.rfl⟩
+
+/-- If `t n` is a monotone sequence of sets in `𝔖`
+such that each `s ∈ 𝔖` is included in some `t n`
+and `V n` is an antitone basis of entourages of `β`,
+then `UniformOnFun.gen 𝔖 (t n) (V n)` is an antitone basis of entourages of `α →ᵤ[𝔖] β`. -/
+protected theorem hasAntitoneBasis_uniformity {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)]
+    {t : ι → Set α} {V : ι → Set (β × β)}
+    (ht : ∀ n, t n ∈ 𝔖) (hmono : Monotone t) (hex : ∀ s ∈ 𝔖, ∃ n, s ⊆ t n)
+    (hb : HasAntitoneBasis (𝓤 β) V) :
+    (𝓤 (α →ᵤ[𝔖] β)).HasAntitoneBasis fun n ↦ UniformOnFun.gen 𝔖 (t n) (V n) := by
+  have := hb.nonempty
+  refine ⟨(UniformOnFun.hasBasis_uniformity_of_covering_of_basis 𝔖
+    ht hmono.directed_le hex hb.1).to_hasBasis ?_ fun i _ ↦ ⟨(i, i), trivial, Subset.rfl⟩, ?_⟩
+  · rintro ⟨k, l⟩ -
+    rcases directed_of (· ≤ ·) k l with ⟨n, hkn, hln⟩
+    exact ⟨n, trivial, UniformOnFun.gen_mono (hmono hkn) (hb.2 <| hln)⟩
+  · exact fun k l h ↦ UniformOnFun.gen_mono (hmono h) (hb.2 h)
+
+protected theorem isCountablyGenerated_uniformity [IsCountablyGenerated (𝓤 β)] {t : ℕ → Set α}
+    (ht : ∀ n, t n ∈ 𝔖) (hmono : Monotone t) (hex : ∀ s ∈ 𝔖, ∃ n, s ⊆ t n) :
+    IsCountablyGenerated (𝓤 (α →ᵤ[𝔖] β)) :=
+  let ⟨_V, hV⟩ := exists_antitone_basis (𝓤 β)
+  (UniformOnFun.hasAntitoneBasis_uniformity 𝔖 ht hmono hex hV).isCountablyGenerated
+
+variable (α β)
 
 /-- For `f : α →ᵤ[𝔖] β`, where `𝔖 : Set (Set α)` is nonempty and directed, `𝓝 f` admits the
 family `{g | ∀ x ∈ S, (f x, g x) ∈ V}` for `S ∈ 𝔖` and `V ∈ 𝓑` as a filter basis, for any basis
@@ -908,4 +955,19 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((
 #align uniform_on_fun.uniform_equiv_Pi_comm UniformOnFun.uniformEquivPiComm
 
 -- Like in the previous lemma, the diagram actually commutes by definition
+
+/-- Suppose that the topology on `α` is defined by its restrictions to the sets of `𝔖`.
+
+Then the set of continuous functions is closed
+in the topology of uniform convergence on the sets of `𝔖`. -/
+theorem isClosed_setOf_continuous_of_le [t : TopologicalSpace α]
+    (h : t ≤ ⨆ s ∈ 𝔖, .coinduced (Subtype.val : s → α) inferInstance) :
+    IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
+  refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ ?_
+  rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
+  have hcont : ∀ s ∈ 𝔖, ContinuousOn f s := fun s hs ↦
+    (huf s hs).continuousOn <| hu fun _ ↦ Continuous.continuousOn
+  refine continuous_le_dom h ?_
+  simpa only [continuous_iSup_dom, continuous_coinduced_dom] using fun s hs ↦ (hcont s hs).restrict
+
 end UniformOnFun

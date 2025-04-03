@@ -83,7 +83,7 @@ instance _root_.Module.End.semiring : Semiring (Module.End R M) :=
     right_distrib := fun _ _ _ ↦ add_comp _ _ _
     natCast := fun n ↦ n • (1 : M →ₗ[R] M)
     natCast_zero := zero_smul ℕ (1 : M →ₗ[R] M)
-    natCast_succ := fun n ↦ (AddMonoid.nsmul_succ n (1 : M →ₗ[R] M)).trans (add_comm _ _) }
+    natCast_succ := fun n ↦ AddMonoid.nsmul_succ n (1 : M →ₗ[R] M) }
 #align module.End.semiring Module.End.semiring
 
 /-- See also `Module.End.natCast_def`. -/
@@ -98,7 +98,7 @@ theorem _root_.Module.End.ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
   { Module.End.semiring, LinearMap.addCommGroup with
     intCast := fun z ↦ z • (1 : N₁ →ₗ[R] N₁)
-    intCast_ofNat := coe_nat_zsmul _
+    intCast_ofNat := natCast_zsmul _
     intCast_negSucc := negSucc_zsmul _ }
 #align module.End.ring Module.End.ring
 
@@ -156,8 +156,8 @@ theorem commute_pow_left_of_commute
     (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
   induction' k with k ih
   · simp only [Nat.zero_eq, pow_zero, one_eq_id, id_comp, comp_id]
-  · rw [pow_succ, pow_succ, LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih, ← LinearMap.comp_assoc,
-      h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
+  · rw [pow_succ', pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih,
+    ← LinearMap.comp_assoc, h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
 #align linear_map.commute_pow_left_of_commute LinearMap.commute_pow_left_of_commute
 
 @[simp]
@@ -167,7 +167,7 @@ theorem id_pow (n : ℕ) : (id : M →ₗ[R] M) ^ n = id :=
 
 variable {f' : M →ₗ[R] M}
 
-theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = comp (f' ^ n) f' := by rw [pow_succ', mul_eq_comp]
+theorem iterate_succ (n : ℕ) : f' ^ (n + 1) = comp (f' ^ n) f' := by rw [pow_succ, mul_eq_comp]
 #align linear_map.iterate_succ LinearMap.iterate_succ
 
 theorem iterate_surjective (h : Surjective f') : ∀ n : ℕ, Surjective (f' ^ n)
@@ -199,7 +199,7 @@ theorem injective_of_iterate_injective {n : ℕ} (hn : n ≠ 0) (h : Injective (
 
 theorem surjective_of_iterate_surjective {n : ℕ} (hn : n ≠ 0) (h : Surjective (f' ^ n)) :
     Surjective f' := by
-  rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), pow_succ, coe_mul] at h
+  rw [← Nat.succ_pred_eq_of_pos (pos_iff_ne_zero.mpr hn), pow_succ', coe_mul] at h
   exact Surjective.of_comp h
 #align linear_map.surjective_of_iterate_surjective LinearMap.surjective_of_iterate_surjective
 
@@ -343,7 +343,7 @@ section SMulRight
 variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Module R M₁]
 variable [Semiring S] [Module R S] [Module S M] [IsScalarTower R S M]
 
-/-- When `f` is an `R`-linear map taking values in `S`, then `fun ↦ b, f b • x` is an `R`-linear
+/-- When `f` is an `R`-linear map taking values in `S`, then `fun b ↦ f b • x` is an `R`-linear
 map. -/
 def smulRight (f : M₁ →ₗ[R] S) (x : M) : M₁ →ₗ[R] M where
   toFun b := f b • x
@@ -384,7 +384,6 @@ section Module
 
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R M₂] [Module S M₂] [SMulCommClass R S M₂]
-
 variable (S)
 
 /-- Applying a linear map at `v : M`, seen as `S`-linear map from `M →ₗ[R] M₂` to `M₂`.

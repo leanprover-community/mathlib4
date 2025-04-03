@@ -40,7 +40,8 @@ variable {α ι : Type*}
 
 open Set Metric MeasureTheory TopologicalSpace Filter
 
-open NNReal Classical ENNReal Topology
+open scoped Classical
+open NNReal ENNReal Topology
 
 namespace Vitali
 
@@ -226,19 +227,10 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   the family is assumed to be fine at every point of `s`).
   -/
   -- choose around each `x` a small ball on which the measure is finite
-  have : ∀ x, ∃ R, 0 < R ∧ R ≤ 1 ∧ μ (closedBall x (20 * R)) < ∞ := by
-    intro x
-    obtain ⟨R, Rpos, μR⟩ : ∃ R, 0 < R ∧ μ (closedBall x R) < ∞ :=
-      (μ.finiteAt_nhds x).exists_mem_basis nhds_basis_closedBall
-    refine' ⟨min 1 (R / 20), _, min_le_left _ _, _⟩
-    · simp only [true_and_iff, lt_min_iff, zero_lt_one]
-      linarith
-    · apply lt_of_le_of_lt (measure_mono _) μR
-      apply closedBall_subset_closedBall
-      calc
-        20 * min 1 (R / 20) ≤ 20 * (R / 20) :=
-          mul_le_mul_of_nonneg_left (min_le_right _ _) (by norm_num)
-        _ = R := by ring
+  have : ∀ x, ∃ R, 0 < R ∧ R ≤ 1 ∧ μ (closedBall x (20 * R)) < ∞ := fun x ↦ by
+    refine ((eventually_le_nhds one_pos).and ?_).exists_gt
+    refine (tendsto_closedBall_smallSets x).comp ?_ (μ.finiteAt_nhds x).eventually
+    exact Continuous.tendsto' (by fun_prop) _ _ (mul_zero _)
   choose R hR0 hR1 hRμ using this
   -- we restrict to a subfamily `t'` of `t`, made of elements small enough to ensure that
   -- they only see a finite part of the measure, and with a doubling property
@@ -321,7 +313,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   -- add up to an arbitrarily small number, say `ε / C`.
   obtain ⟨w, hw⟩ : ∃ w : Finset v, (∑' a : { a // a ∉ w }, μ (B a)) < ε / C :=
     haveI : 0 < ε / C := by
-      simp only [ENNReal.div_pos_iff, εpos.ne', ENNReal.coe_ne_top, Ne.def, not_false_iff,
+      simp only [ENNReal.div_pos_iff, εpos.ne', ENNReal.coe_ne_top, Ne, not_false_iff,
         and_self_iff]
     ((tendsto_order.1 (ENNReal.tendsto_tsum_compl_atTop_zero I.ne)).2 _ this).exists
   -- main property: the points `z` of `s` which are not covered by `u` are contained in the
@@ -346,15 +338,15 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
     obtain ⟨d, dpos, hd⟩ : ∃ d, 0 < d ∧ closedBall z d ⊆ ball x (R x) \ k :=
       nhds_basis_closedBall.mem_iff.1 this
     -- choose an element `a` of the family `t` contained in this small ball
-    obtain ⟨a, hat, ad, rfl⟩ : ∃ a ∈ t, r a ≤ min d (R z) ∧ c a = z
-    exact hf z ((mem_diff _).1 (mem_of_mem_inter_left hz)).1 (min d (R z)) (lt_min dpos (hR0 z))
+    obtain ⟨a, hat, ad, rfl⟩ : ∃ a ∈ t, r a ≤ min d (R z) ∧ c a = z :=
+      hf z ((mem_diff _).1 (mem_of_mem_inter_left hz)).1 (min d (R z)) (lt_min dpos (hR0 z))
     have ax : B a ⊆ ball x (R x) := by
       refine' (hB a hat).trans _
       refine' Subset.trans _ (hd.trans (diff_subset (ball x (R x)) k))
       exact closedBall_subset_closedBall (ad.trans (min_le_left _ _))
     -- it intersects an element `b` of `u` with comparable diameter, by definition of `u`
-    obtain ⟨b, bu, ab, bdiam⟩ : ∃ b ∈ u, (B a ∩ B b).Nonempty ∧ r a ≤ 2 * r b
-    exact hu a ⟨hat, ad.trans (min_le_right _ _)⟩
+    obtain ⟨b, bu, ab, bdiam⟩ : ∃ b ∈ u, (B a ∩ B b).Nonempty ∧ r a ≤ 2 * r b :=
+      hu a ⟨hat, ad.trans (min_le_right _ _)⟩
     have bv : b ∈ v := by
       refine' ⟨bu, ab.mono _⟩
       rw [inter_comm]
@@ -384,7 +376,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
     exact subset_iUnion (fun a : { a // a ∉ w } => closedBall (c a) (3 * r a)) b''
   -- now that we have proved our main inclusion, we can use it to estimate the measure of the points
   -- in `ball x (r x)` not covered by `u`.
-  haveI : Encodable v := (u_count.mono vu).toEncodable
+  haveI : Countable v := (u_count.mono vu).to_subtype
   calc
     μ ((s \ ⋃ a ∈ u, B a) ∩ ball x (R x)) ≤ μ (⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a)) :=
       measure_mono M

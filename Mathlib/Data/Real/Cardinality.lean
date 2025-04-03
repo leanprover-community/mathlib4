@@ -87,7 +87,7 @@ theorem cantorFunctionAux_succ (f : ℕ → Bool) :
     (fun n => cantorFunctionAux c f (n + 1)) = fun n =>
       c * cantorFunctionAux c (fun n => f (n + 1)) n := by
   ext n
-  cases h : f (n + 1) <;> simp [h, _root_.pow_succ]
+  cases h : f (n + 1) <;> simp [h, _root_.pow_succ']
 #align cardinal.cantor_function_aux_succ Cardinal.cantorFunctionAux_succ
 
 theorem summable_cantor_function (f : ℕ → Bool) (h1 : 0 ≤ c) (h2 : c < 1) :
@@ -251,7 +251,7 @@ theorem mk_Ici_real (a : ℝ) : #(Ici a) = 𝔠 :=
 theorem mk_Iio_real (a : ℝ) : #(Iio a) = 𝔠 := by
   refine' le_antisymm (mk_real ▸ mk_set_le _) _
   have h2 : (fun x => a + a - x) '' Iio a = Ioi a := by
-    simp only [image_const_sub_Iio, add_sub_cancel]
+    simp only [image_const_sub_Iio, add_sub_cancel_right]
   exact mk_Ioi_real a ▸ h2 ▸ mk_image_le
 #align cardinal.mk_Iio_real Cardinal.mk_Iio_real
 

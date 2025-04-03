@@ -69,7 +69,7 @@ theorem arsinh_zero : arsinh 0 = 0 := by simp [arsinh]
 theorem arsinh_neg (x : ℝ) : arsinh (-x) = -arsinh x := by
   rw [← exp_eq_exp, exp_arsinh, exp_neg, exp_arsinh]
   apply eq_inv_of_mul_eq_one_left
-  rw [neg_sq, neg_add_eq_sub, add_comm x, mul_comm, ← sq_sub_sq, sq_sqrt, add_sub_cancel]
+  rw [neg_sq, neg_add_eq_sub, add_comm x, mul_comm, ← sq_sub_sq, sq_sqrt, add_sub_cancel_right]
   exact add_nonneg zero_le_one (sq_nonneg _)
 #align real.arsinh_neg Real.arsinh_neg
 
@@ -147,6 +147,8 @@ theorem arsinh_inj : arsinh x = arsinh y ↔ x = y :=
 theorem arsinh_le_arsinh : arsinh x ≤ arsinh y ↔ x ≤ y :=
   sinhOrderIso.symm.le_iff_le
 #align real.arsinh_le_arsinh Real.arsinh_le_arsinh
+
+@[gcongr] protected alias ⟨_, GCongr.arsinh_le_arsinh⟩ := arsinh_le_arsinh
 
 @[simp]
 theorem arsinh_lt_arsinh : arsinh x < arsinh y ↔ x < y :=

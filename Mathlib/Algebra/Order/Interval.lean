@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Order.Interval
@@ -310,7 +310,7 @@ variable [OrderedCommMonoid α] (s : Interval α) {n : ℕ}
 @[to_additive]
 theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Interval α) ^ n = ⊥
   | 0, h => (h rfl).elim
-  | Nat.succ n, _ => bot_mul (⊥ ^ n)
+  | Nat.succ n, _ => mul_bot (⊥ ^ n)
 #align interval.bot_pow Interval.bot_pow
 #align interval.bot_nsmul Interval.bot_nsmul
 
@@ -517,7 +517,7 @@ variable [OrderedCommGroup α] {s t : NonemptyInterval α}
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
   refine' ⟨fun h => _, _⟩
-  · rw [ext_iff, Prod.ext_iff] at h
+  · rw [NonemptyInterval.ext_iff, Prod.ext_iff] at h
     have := (mul_le_mul_iff_of_ge s.fst_le_snd t.fst_le_snd).1 (h.2.trans h.1.symm).le
     refine' ⟨s.fst, t.fst, _, _, h.1⟩ <;> apply NonemptyInterval.ext <;> dsimp [pure]
     · nth_rw 2 [this.1]
@@ -541,7 +541,9 @@ instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
       exact neg_add_rev _ _
     neg_eq_of_add := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := NonemptyInterval.add_eq_zero_iff.1 h
-      rw [neg_pure, neg_eq_of_add_eq_zero_right hab] }
+      rw [neg_pure, neg_eq_of_add_eq_zero_right hab]
+    -- TODO: use a better defeq
+    zsmul := zsmulRec }
 
 @[to_additive existing NonemptyInterval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (NonemptyInterval α) :=
@@ -590,7 +592,9 @@ instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
       rintro (_ | s) (_ | t) h <;>
         first
           | cases h
-          | exact congr_arg some (neg_eq_of_add_eq_zero_right <| Option.some_injective _ h) }
+          | exact congr_arg some (neg_eq_of_add_eq_zero_right <| Option.some_injective _ h)
+    -- TODO: use a better defeq
+    zsmul := zsmulRec }
 
 @[to_additive existing Interval.subtractionCommMonoid]
 instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=

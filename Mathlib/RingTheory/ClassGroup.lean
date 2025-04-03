@@ -31,13 +31,9 @@ identical no matter the choice of field of fractions for `R`.
 
 
 variable {R K L : Type*} [CommRing R]
-
 variable [Field K] [Field L] [DecidableEq L]
-
 variable [Algebra R K] [IsFractionRing R K]
-
 variable [Algebra K L] [FiniteDimensional K L]
-
 variable [Algebra R L] [IsScalarTower R K L]
 
 open scoped nonZeroDivisors
@@ -90,7 +86,6 @@ instance PrincipalIdeals.normal : (toPrincipalIdeal R K).range.Normal :=
 end
 
 variable (R)
-
 variable [IsDomain R]
 
 /-- The ideal class group of `R` is the group of invertible fractional ideals

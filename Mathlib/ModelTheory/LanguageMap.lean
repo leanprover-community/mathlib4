@@ -51,7 +51,6 @@ structure LHom where
   onRelation : ∀ ⦃n⦄, L.Relations n → L'.Relations n
 #align first_order.language.Lhom FirstOrder.Language.LHom
 
--- mathport name: «expr →ᴸ »
 @[inherit_doc FirstOrder.Language.LHom]
 infixl:10 " →ᴸ " => LHom
 
@@ -343,7 +342,6 @@ structure LEquiv (L L' : Language) where
   right_inv : toLHom.comp invLHom = LHom.id L'
 #align first_order.lanugage.Lequiv FirstOrder.Language.LEquiv
 
--- mathport name: «expr ≃ᴸ »
 infixl:10 " ≃ᴸ " => LEquiv
 
 -- \^L
@@ -450,7 +448,6 @@ def withConstants : Language.{max u w', v} :=
   L.sum (constantsOn α)
 #align first_order.language.with_constants FirstOrder.Language.withConstants
 
--- mathport name: language.with_constants
 @[inherit_doc FirstOrder.Language.withConstants]
 scoped[FirstOrder] notation:95 L "[[" α "]]" => Language.withConstants L α
 
@@ -461,7 +458,7 @@ theorem card_withConstants :
 #align first_order.language.card_with_constants FirstOrder.Language.card_withConstants
 
 /-- The language map adding constants.  -/
-@[simps!] --Porting note: add `!` to `simps`
+@[simps!] -- Porting note: add `!` to `simps`
 def lhomWithConstants : L →ᴸ L[[α]] :=
   LHom.sumInl
 #align first_order.language.Lhom_with_constants FirstOrder.Language.lhomWithConstants

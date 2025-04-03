@@ -276,7 +276,7 @@ instance commMonoid : CommMonoid (Localization S) where
   npow := Localization.npow S
   npow_zero x := show Localization.npow S 0 x = .one S by
     rw [Localization.npow, Localization.one]; apply (r S).commMonoid.npow_zero
-  npow_succ n x := show .npow S n.succ x = x.mul S (.npow S n x) by
+  npow_succ n x := show Localization.npow S n.succ x = (Localization.npow S n x).mul S x by
     rw [Localization.npow, Localization.mul]; apply (r S).commMonoid.npow_succ
 
 variable {S}
@@ -1979,8 +1979,8 @@ theorem leftCancelMulZero_of_le_isLeftRegular
     exact ha hb
   have main : g (b.1 * (x.2 * y.1)) = g (b.1 * (y.2 * x.1)) :=
     calc
-      g (b.1 * (x.2 * y.1)) = g b.1 * (g x.2 * g y.1) := by rw[map_mul g,map_mul g]
-      _ = a * g b.2 * (g x.2 * (w * g y.2)) := by rw[hb, hy]
+      g (b.1 * (x.2 * y.1)) = g b.1 * (g x.2 * g y.1) := by rw [map_mul g,map_mul g]
+      _ = a * g b.2 * (g x.2 * (w * g y.2)) := by rw [hb, hy]
       _ = a * w * g b.2 * (g x.2 * g y.2) := by
         rw [← mul_assoc, ← mul_assoc _ w, mul_comm _ w, mul_assoc w, mul_assoc,
           ← mul_assoc w, ← mul_assoc w, mul_comm w]
@@ -2102,7 +2102,7 @@ instance partialOrder : PartialOrder (Localization s) where
     induction' b using Localization.rec with b₁ b₂
     simp_rw [mk_le_mk, mk_eq_mk_iff, r_iff_exists]
     exact fun hab hba => ⟨1, by rw [hab.antisymm hba]⟩
-    all_goals intros; rfl
+    all_goals rfl
   lt_iff_le_not_le a b := Localization.induction_on₂ a b fun a b => lt_iff_le_not_le
 
 @[to_additive]
@@ -2154,7 +2154,7 @@ instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
         simp_rw [mk_le_mk]
         exact le_total _ _
     decidableLE := Localization.decidableLE
-    decidableLT := Localization.decidableLT  -- porting note: was wrong in mathlib3
+    decidableLT := Localization.decidableLT  -- Porting note: was wrong in mathlib3
     decidableEq := Localization.decidableEq }
 
 end Localization

@@ -44,7 +44,7 @@ theorem saturated_iff_zpow {H : Subgroup G} :
   constructor
   · intros hH n g hgn
     induction' n with n n
-    · simp only [Int.coe_nat_eq_zero, Int.ofNat_eq_coe, zpow_coe_nat] at hgn ⊢
+    · simp only [Int.natCast_eq_zero, Int.ofNat_eq_coe, zpow_natCast] at hgn ⊢
       exact hH hgn
     · suffices g ^ (n + 1) ∈ H by
         refine' (hH this).imp _ id
@@ -52,7 +52,7 @@ theorem saturated_iff_zpow {H : Subgroup G} :
       simpa only [inv_mem_iff, zpow_negSucc] using hgn
   · intro h n g hgn
     specialize h n g
-    simp only [Int.coe_nat_eq_zero, zpow_coe_nat] at h
+    simp only [Int.natCast_eq_zero, zpow_natCast] at h
     apply h hgn
 #align subgroup.saturated_iff_zpow Subgroup.saturated_iff_zpow
 #align add_subgroup.saturated_iff_zsmul AddSubgroup.saturated_iff_zsmul

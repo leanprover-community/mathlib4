@@ -13,6 +13,8 @@ import Mathlib.Data.Set.Lattice
 This file contains lemmas about intervals that cannot be included into `Data.Set.Intervals.Basic`
 because this would create an `import` cycle. Namely, lemmas in this file can use definitions
 from `Data.Set.Lattice`, including `Disjoint`.
+
+We consider various intersections and unions of half infinite intervals.
 -/
 
 
@@ -149,6 +151,12 @@ theorem Ioc_disjoint_Ioc : Disjoint (Ioc a₁ a₂) (Ioc b₁ b₂) ↔ min a₂
   simpa only [dual_Ico] using h
 #align set.Ioc_disjoint_Ioc Set.Ioc_disjoint_Ioc
 
+@[simp]
+theorem Ioo_disjoint_Ioo [DenselyOrdered α] :
+    Disjoint (Set.Ioo a₁ a₂) (Set.Ioo b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by
+  simp_rw [Set.disjoint_iff_inter_eq_empty, Ioo_inter_Ioo, Ioo_eq_empty_iff, inf_eq_min, sup_eq_max,
+    not_lt]
+
 /-- If two half-open intervals are disjoint and the endpoint of one lies in the other,
   then it must be equal to the endpoint of the other. -/
 theorem eq_of_Ico_disjoint {x₁ x₂ y₁ y₂ : α} (h : Disjoint (Ico x₁ x₂) (Ico y₁ y₂)) (hx : x₁ < x₂)
@@ -214,7 +222,7 @@ theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_not_mem : a ∉ s) :
   refine' (iUnion₂_subset fun x hx => _).antisymm fun x hx => _
   · exact Ici_subset_Ioi.mpr (lt_of_le_of_ne (a_glb.1 hx) fun h => (h ▸ a_not_mem) hx)
   · rcases a_glb.exists_between hx with ⟨y, hys, _, hyx⟩
-    apply mem_iUnion₂.mpr
+    rw [mem_iUnion₂]
     exact ⟨y, hys, hyx.le⟩
 #align is_glb.bUnion_Ici_eq_Ioi IsGLB.biUnion_Ici_eq_Ioi
 
@@ -222,8 +230,7 @@ theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) :
     ⋃ x ∈ s, Ici x = Ici a := by
   refine' (iUnion₂_subset fun x hx => _).antisymm fun x hx => _
   · exact Ici_subset_Ici.mpr (mem_lowerBounds.mp a_glb.1 x hx)
-  · apply mem_iUnion₂.mpr
-    exact ⟨a, a_mem, hx⟩
+  · exact mem_iUnion₂.mpr ⟨a, a_mem, hx⟩
 #align is_glb.bUnion_Ici_eq_Ici IsGLB.biUnion_Ici_eq_Ici
 
 theorem IsLUB.biUnion_Iic_eq_Iio (a_lub : IsLUB s a) (a_not_mem : a ∉ s) :
@@ -256,5 +263,22 @@ theorem iUnion_Iic_eq_Iic_iSup {R : Type*} [CompleteLinearOrder R] {f : ι → R
     (has_greatest_elem : (⨆ i, f i) ∈ range f) : ⋃ i : ι, Iic (f i) = Iic (⨆ i, f i) :=
   @iUnion_Ici_eq_Ici_iInf ι (OrderDual R) _ f has_greatest_elem
 #align Union_Iic_eq_Iic_supr iUnion_Iic_eq_Iic_iSup
+
+theorem iUnion_Iio_eq_univ_iff : ⋃ i, Iio (f i) = univ ↔ (¬ BddAbove (range f)) := by
+  simp [not_bddAbove_iff, Set.eq_univ_iff_forall]
+
+theorem iUnion_Iic_of_not_bddAbove_range (hf : ¬ BddAbove (range f)) : ⋃ i, Iic (f i) = univ := by
+  refine  Set.eq_univ_of_subset ?_ (iUnion_Iio_eq_univ_iff.mpr hf)
+  gcongr
+  exact Iio_subset_Iic_self
+
+theorem iInter_Iic_eq_empty_iff : ⋂ i, Iic (f i) = ∅ ↔ ¬ BddBelow (range f) := by
+  simp [not_bddBelow_iff, Set.eq_empty_iff_forall_not_mem]
+
+theorem iInter_Iio_of_not_bddBelow_range (hf : ¬ BddBelow (range f)) : ⋂ i, Iio (f i) = ∅ := by
+  refine' eq_empty_of_subset_empty _
+  rw [← iInter_Iic_eq_empty_iff.mpr hf]
+  gcongr
+  exact Iio_subset_Iic_self
 
 end UnionIxx

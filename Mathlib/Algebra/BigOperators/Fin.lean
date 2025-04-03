@@ -322,18 +322,18 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       induction' n with n ih
       · simp
       cases m
-      · dsimp only [Nat.zero_eq] at f -- porting note: added, wrong zero
+      · dsimp only [Nat.zero_eq] at f -- Porting note: added, wrong zero
         exact isEmptyElim (f <| Fin.last _)
       simp_rw [Fin.sum_univ_castSucc, Fin.coe_castSucc, Fin.val_last]
       refine' (add_lt_add_of_lt_of_le (ih _) <| mul_le_mul_right' (Fin.is_le _) _).trans_eq _
-      rw [← one_add_mul (_ : ℕ), add_comm, pow_succ]
-      -- porting note: added, wrong `succ`
+      rw [← one_add_mul (_ : ℕ), add_comm, pow_succ']
+      -- Porting note: added, wrong `succ`
       rfl⟩)
     (fun a b => ⟨a / m ^ (b : ℕ) % m, by
       cases' n with n
       · exact b.elim0
       cases' m with m
-      · dsimp only [Nat.zero_eq] at a -- porting note: added, wrong zero
+      · dsimp only [Nat.zero_eq] at a -- Porting note: added, wrong zero
         rw [zero_pow n.succ_ne_zero] at a
         exact a.elim0
       · exact Nat.mod_lt _ m.succ_pos⟩)
@@ -345,11 +345,11 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
       simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
       ext
       simp_rw [Fin.sum_univ_succ, Fin.val_zero, Fin.val_succ, pow_zero, Nat.div_one,
-        mul_one, pow_succ, ← Nat.div_div_eq_div_mul, mul_left_comm _ m, ← mul_sum]
+        mul_one, pow_succ', ← Nat.div_div_eq_div_mul, mul_left_comm _ m, ← mul_sum]
       rw [ih _ (Nat.div_lt_of_lt_mul ?_), Nat.mod_add_div]
-      -- porting note: replaces `a.is_lt` in the wildcard above. Caused by a refactor of the `npow`
+      -- Porting note: replaces `a.is_lt` in the wildcard above. Caused by a refactor of the `npow`
       -- instance for `Fin`.
-      exact a.is_lt.trans_eq (pow_succ _ _)
+      exact a.is_lt.trans_eq (pow_succ' _ _)
 #align fin_function_fin_equiv finFunctionFinEquiv
 
 theorem finFunctionFinEquiv_apply {m n : ℕ} (f : Fin n → Fin m) :
@@ -382,11 +382,11 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         exact this
       intro n nn f fn
       cases nn
-      · dsimp only [Nat.zero_eq] at fn -- porting note: added, wrong zero
+      · dsimp only [Nat.zero_eq] at fn -- Porting note: added, wrong zero
         exact isEmptyElim fn
       refine' (add_lt_add_of_lt_of_le (ih _) <| mul_le_mul_right' (Fin.is_le _) _).trans_eq _
       rw [← one_add_mul (_ : ℕ), mul_comm, add_comm]
-      -- porting note: added, wrong `succ`
+      -- Porting note: added, wrong `succ`
       rfl⟩)
     (fun a b => ⟨(a / ∏ j : Fin b, n (Fin.castLE b.is_lt.le j)) % n b, by
       cases m
@@ -418,10 +418,10 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
         change (_ + ∑ y : _, _ / (x * _) % _ * (x * _)) = _
         simp_rw [← Nat.div_div_eq_div_mul, mul_left_comm (_ % _ : ℕ), ← mul_sum]
         convert Nat.mod_add_div _ _
-        -- porting note: new
+        -- Porting note: new
         refine (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq ?_))
         exact Fin.prod_univ_succ _
-        -- porting note: was:
+        -- Porting note: was:
         /-
         refine' Eq.trans _ (ih (a / x) (Nat.div_lt_of_lt_mul <| a.is_lt.trans_eq _))
         swap

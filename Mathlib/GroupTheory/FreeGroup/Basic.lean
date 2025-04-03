@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.Sublists
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.InsertNth
 import Mathlib.GroupTheory.Subgroup.Basic
 
 #align_import group_theory.free_group from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
@@ -346,7 +346,7 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
   intro L h'
   cases h'
   simp [List.cons_eq_append_iff, List.nil_eq_append] at eq
-  rcases eq with ⟨rfl, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩; subst_vars
+  rcases eq with ⟨rfl, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩
   simp at h
 #align free_group.red.red_iff_irreducible FreeGroup.Red.red_iff_irreducible
 #align free_add_group.red.red_iff_irreducible FreeAddGroup.Red.red_iff_irreducible
@@ -753,8 +753,12 @@ theorem ext_hom {G : Type*} [Group G] (f g : FreeGroup α →* G) (h : ∀ a, f 
 #align free_add_group.ext_hom FreeAddGroup.ext_hom
 
 @[to_additive]
+theorem lift_of_eq_id (α) : lift of = MonoidHom.id (FreeGroup α) :=
+  lift.apply_symm_apply (MonoidHom.id _)
+
+@[to_additive]
 theorem lift.of_eq (x : FreeGroup α) : lift FreeGroup.of x = x :=
-  DFunLike.congr_fun (lift.apply_symm_apply (MonoidHom.id _)) x
+  DFunLike.congr_fun (lift_of_eq_id α) x
 #align free_group.lift.of_eq FreeGroup.lift.of_eq
 #align free_add_group.lift.of_eq FreeAddGroup.lift.of_eq
 
@@ -776,6 +780,14 @@ theorem lift.range_eq_closure : (lift f).range = Subgroup.closure (Set.range f) 
   exact ⟨FreeGroup.of a, by simp only [lift.of]⟩
 #align free_group.lift.range_eq_closure FreeGroup.lift.range_eq_closure
 #align free_add_group.lift.range_eq_closure FreeAddGroup.lift.range_eq_closure
+
+/-- The generators of `FreeGroup α` generate `FreeGroup α`. That is, the subgroup closure of the
+set of generators equals `⊤`. -/
+@[to_additive (attr := simp)]
+theorem closure_range_of (α) :
+    Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
+  rw [← lift.range_eq_closure, lift_of_eq_id]
+  exact MonoidHom.range_top_of_surjective _ Function.surjective_id
 
 end lift
 
@@ -1000,10 +1012,10 @@ def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ
   right_inv x :=
     Int.induction_on x (by simp)
       (fun i ih => by
-        simp only [zpow_coe_nat, map_pow, map.of] at ih
+        simp only [zpow_natCast, map_pow, map.of] at ih
         simp [zpow_add, ih])
       (fun i ih => by
-        simp only [zpow_neg, zpow_coe_nat, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
+        simp only [zpow_neg, zpow_natCast, map_inv, map_pow, map.of, sum.map_inv, neg_inj] at ih
         simp [zpow_add, ih, sub_eq_add_neg])
 #align free_group.free_group_unit_equiv_int FreeGroup.freeGroupUnitEquivInt
 
@@ -1135,14 +1147,13 @@ theorem reduce.red : Red L (reduce L) := by
     | cons hd2 tl2 =>
       dsimp only
       split_ifs with h
-      · trans
-        · cases hd1
-          cases hd2
-          cases h
-          dsimp at *
-          subst_vars
-          apply Red.trans (Red.cons_cons ih)
-          exact Red.Step.cons_not_rev.to_red
+      · cases hd1
+        cases hd2
+        cases h
+        dsimp at *
+        subst_vars
+        apply Red.trans (Red.cons_cons ih)
+        exact Red.Step.cons_not_rev.to_red
       · exact Red.cons_cons ih
 #align free_group.reduce.red FreeGroup.reduce.red
 #align free_add_group.reduce.red FreeAddGroup.reduce.red

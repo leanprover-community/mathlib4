@@ -38,8 +38,8 @@ open Function Set
 
 open Affine
 
-/-- An affine equivalence is an equivalence between affine spaces such that both forward
-and inverse maps are affine.
+/-- An affine equivalence, denoted `P₁ ≃ᵃ[k] P₂`, is an equivalence between affine spaces
+such that both forward and inverse maps are affine.
 
 We define it using an `Equiv` for the map and a `LinearEquiv` for the linear part in order
 to allow affine equivalences with good definitional equalities. -/
@@ -78,7 +78,7 @@ theorem linear_toAffineMap (e : P₁ ≃ᵃ[k] P₂) : e.toAffineMap.linear = e.
 
 theorem toAffineMap_injective : Injective (toAffineMap : (P₁ ≃ᵃ[k] P₂) → P₁ →ᵃ[k] P₂) := by
   rintro ⟨e, el, h⟩ ⟨e', el', h'⟩ H
-  -- porting note: added `AffineMap.mk.injEq`
+  -- Porting note: added `AffineMap.mk.injEq`
   simp only [toAffineMap_mk, AffineMap.mk.injEq, Equiv.coe_inj,
     LinearEquiv.toLinearMap_inj] at H
   congr

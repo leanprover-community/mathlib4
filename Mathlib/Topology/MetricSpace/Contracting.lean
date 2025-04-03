@@ -31,7 +31,8 @@ contracting map, fixed point, Banach fixed point theorem
 -/
 
 
-open NNReal Topology Classical ENNReal Filter Function
+open scoped Classical
+open NNReal Topology ENNReal Filter Function
 
 variable {α : Type*}
 
@@ -299,7 +300,6 @@ theorem dist_fixedPoint_fixedPoint_of_dist_le' (g : α → α) {x y} (hx : IsFix
 #align contracting_with.dist_fixed_point_fixed_point_of_dist_le' ContractingWith.dist_fixedPoint_fixedPoint_of_dist_le'
 
 variable [Nonempty α] [CompleteSpace α]
-
 variable (f)
 
 /-- The unique fixed point of a contracting map in a nonempty complete metric space. -/

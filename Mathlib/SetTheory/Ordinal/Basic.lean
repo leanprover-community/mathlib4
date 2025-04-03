@@ -37,10 +37,11 @@ initial segment (or, equivalently, in any way). This total order is well founded
   universe). In some cases the universe level has to be given explicitly.
 
 * `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
-  every element of `o₁` is smaller than every element of `o₂`. The main properties of addition
-  (and the other operations on ordinals) are stated and proved in `Ordinal/Arithmetic.lean`. Here,
-  we only introduce it and prove its basic properties to deduce the fact that the order on ordinals
-  is total (and well founded).
+  every element of `o₁` is smaller than every element of `o₂`.
+  The main properties of addition (and the other operations on ordinals) are stated and proved in
+  `Mathlib/SetTheory/Ordinal/Arithmetic.lean`.
+  Here, we only introduce it and prove its basic properties to deduce the fact that the order on
+  ordinals is total (and well founded).
 * `succ o` is the successor of the ordinal `o`.
 * `Cardinal.ord c`: when `c` is a cardinal, `ord c` is the smallest ordinal with this cardinality.
   It is the canonical way to represent a cardinal with an ordinal.
@@ -59,7 +60,8 @@ noncomputable section
 
 open Function Cardinal Set Equiv Order
 
-open Classical Cardinal InitialSeg
+open scoped Classical
+open Cardinal InitialSeg
 
 universe u v w
 
@@ -549,7 +551,7 @@ theorem relIso_enum' {α β : Type u} {r : α → α → Prop} {s : β → β �
     [IsWellOrder β s] (f : r ≃r s) (o : Ordinal) :
     ∀ (hr : o < type r) (hs : o < type s), f (enum r o hr) = enum s o hs := by
   refine' inductionOn o _; rintro γ t wo ⟨g⟩ ⟨h⟩
-  skip; rw [enum_type g, enum_type (PrincipalSeg.ltEquiv g f)]; rfl
+  rw [enum_type g, enum_type (PrincipalSeg.ltEquiv g f)]; rfl
 #align ordinal.rel_iso_enum' Ordinal.relIso_enum'
 
 theorem relIso_enum {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
@@ -834,7 +836,6 @@ def omega : Ordinal.{u} :=
   lift <| @type ℕ (· < ·) _
 #align ordinal.omega Ordinal.omega
 
--- mathport name: ordinal.omega
 @[inherit_doc]
 scoped notation "ω" => Ordinal.omega
 
@@ -860,7 +861,7 @@ theorem lift_omega : lift ω = ω :=
 In this paragraph, we introduce the addition on ordinals, and prove just enough properties to
 deduce that the order on ordinals is total (and therefore well-founded). Further properties of
 the addition, together with properties of the other operations, are proved in
-`Ordinal/Arithmetic.lean`.
+`Mathlib/SetTheory/Ordinal/Arithmetic.lean`.
 -/
 
 
@@ -889,6 +890,7 @@ instance addMonoidWithOne : AddMonoidWithOne Ordinal.{u} where
           rcases a with (⟨a | a⟩ | a) <;> rcases b with (⟨b | b⟩ | b) <;>
             simp only [sumAssoc_apply_inl_inl, sumAssoc_apply_inl_inr, sumAssoc_apply_inr,
               Sum.lex_inl_inl, Sum.lex_inr_inr, Sum.Lex.sep, Sum.lex_inr_inl]⟩⟩
+  nsmul := nsmulRec
 
 @[simp]
 theorem card_add (o₁ o₂ : Ordinal) : card (o₁ + o₂) = card o₁ + card o₂ :=
@@ -1338,7 +1340,7 @@ theorem ord_le {c o} : ord c ≤ o ↔ c ≤ o.card :=
   inductionOn c fun α =>
     Ordinal.inductionOn o fun β s _ => by
       let ⟨r, _, e⟩ := ord_eq α
-      skip; simp only [card_type]; constructor <;> intro h
+      simp only [card_type]; constructor <;> intro h
       · rw [e] at h
         exact
           let ⟨f⟩ := h

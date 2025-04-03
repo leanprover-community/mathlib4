@@ -136,7 +136,6 @@ end AssociativeRepresentation
 namespace AlgHom
 
 variable {B : Type w} {C : Type w₁} [Ring B] [Ring C] [Algebra R B] [Algebra R C]
-
 variable (f : A →ₐ[R] B) (g : B →ₐ[R] C)
 
 /-- The map `ofAssociativeAlgebra` associating a Lie algebra to an associative algebra is
@@ -188,9 +187,7 @@ end OfAssociative
 section AdjointAction
 
 variable (R : Type u) (L : Type v) (M : Type w)
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-
 variable [LieRingModule L M] [LieModule R L M]
 
 /-- A Lie module yields a Lie algebra morphism into the linear endomorphisms of the module.
@@ -274,8 +271,8 @@ lemma LieModule.toEndomorphism_pow_lie (x y : L) (z : M) (n : ℕ) :
   | succ n ih =>
     rw [Finset.sum_antidiagonal_choose_succ_nsmul
       (fun i j ↦ ⁅((ad R L x) ^ i) y, ((φ x) ^ j) z⁆) n]
-    simp only [pow_succ, LinearMap.mul_apply, ih, map_sum, map_nsmul, toEndomorphism_lie, nsmul_add,
-      sum_add_distrib]
+    simp only [pow_succ', LinearMap.mul_apply, ih, map_sum, map_nsmul,
+      toEndomorphism_lie, nsmul_add, sum_add_distrib]
     rw [add_comm, add_left_cancel_iff, sum_congr rfl]
     rintro ⟨i, j⟩ hij
     rw [mem_antidiagonal] at hij
@@ -371,9 +368,7 @@ def lieSubalgebraOfSubalgebra (R : Type u) [CommRing R] (A : Type v) [Ring A] [A
 namespace LinearEquiv
 
 variable {R : Type u} {M₁ : Type v} {M₂ : Type w}
-
 variable [CommRing R] [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
-
 variable (e : M₁ ≃ₗ[R] M₂)
 
 /-- A linear equivalence of two modules induces a Lie algebra equivalence of their endomorphisms. -/
@@ -400,9 +395,7 @@ end LinearEquiv
 namespace AlgEquiv
 
 variable {R : Type u} {A₁ : Type v} {A₂ : Type w}
-
 variable [CommRing R] [Ring A₁] [Ring A₂] [Algebra R A₁] [Algebra R A₂]
-
 variable (e : A₁ ≃ₐ[R] A₂)
 
 /-- An equivalence of associative algebras is an equivalence of associated Lie algebras. -/

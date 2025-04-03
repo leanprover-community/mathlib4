@@ -69,7 +69,6 @@ open Function
 section Variants
 
 variable {M N : Type*} (μ : M → N → N) (r : N → N → Prop)
-
 variable (M N)
 
 /-- `Covariant` is useful to formulate succinctly statements about the interactions between an
@@ -244,7 +243,6 @@ end Contravariant
 section Monotone
 
 variable {α : Type*} {M N μ} [Preorder α] [Preorder N]
-
 variable {f : N → α}
 
 /-- The partial application of a constant to a covariant operator is monotone. -/

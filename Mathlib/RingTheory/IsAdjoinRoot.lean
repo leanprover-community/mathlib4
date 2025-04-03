@@ -4,7 +4,7 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.RingTheory.PowerBasis
 
@@ -235,7 +235,7 @@ variable {i x}
 @[simp]
 theorem lift_map (h : IsAdjoinRoot S f) (z : R[X]) : h.lift i x hx (h.map z) = z.eval₂ i x := by
   rw [lift, RingHom.coe_mk]
-  dsimp -- Porting note: added
+  dsimp -- Porting note (#11227):added a `dsimp`
   rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ rfl]
 #align is_adjoin_root.lift_map IsAdjoinRoot.lift_map
 
@@ -264,7 +264,6 @@ theorem eq_lift (h : IsAdjoinRoot S f) (g : S →+* T) (hmap : ∀ a, g (algebra
 #align is_adjoin_root.eq_lift IsAdjoinRoot.eq_lift
 
 variable [Algebra R T] (hx' : aeval x f = 0)
-
 variable (x)
 
 -- To match `AdjoinRoot.liftHom`
@@ -387,7 +386,7 @@ theorem modByMonicHom_map (h : IsAdjoinRootMonic S f) (g : R[X]) :
 @[simp]
 theorem map_modByMonicHom (h : IsAdjoinRootMonic S f) (x : S) : h.map (h.modByMonicHom x) = x := by
   rw [modByMonicHom, LinearMap.coe_mk]
-  dsimp -- Porting note: added
+  dsimp -- Porting note (#11227):added a `dsimp`
   rw [map_modByMonic, map_repr]
 #align is_adjoin_root_monic.map_mod_by_monic_hom IsAdjoinRootMonic.map_modByMonicHom
 
@@ -422,12 +421,12 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         intro i hi
         refine Set.mem_range.mpr ⟨⟨i, ?_⟩, rfl⟩
         contrapose! hi
-        simp only [Polynomial.toFinsupp_apply, Classical.not_not, Finsupp.mem_support_iff, Ne.def,
+        simp only [Polynomial.toFinsupp_apply, Classical.not_not, Finsupp.mem_support_iff, Ne,
           modByMonicHom, LinearMap.coe_mk, Finset.mem_coe]
         by_cases hx : h.toIsAdjoinRoot.repr x %ₘ f = 0
         · simp [hx]
         refine coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le ?_ hi)
-        dsimp -- Porting note: added
+        dsimp -- Porting note (#11227):added a `dsimp`
         rw [natDegree_lt_natDegree_iff hx]
         · exact degree_modByMonic_lt _ h.Monic
       right_inv := fun g => by

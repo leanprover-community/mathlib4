@@ -21,7 +21,7 @@ to a specific `Fin` instance.
 namespace Fin
 
 instance : ∀ {n : ℕ}, SuccOrder (Fin n)
-  | 0 => by constructor <;> first | assumption | intro a; exact elim0 a
+  | 0 => by constructor <;> intro a <;> exact elim0 a
   | n + 1 =>
     SuccOrder.ofCore (fun i => if i < Fin.last n then i + 1 else i)
       (by
@@ -47,7 +47,7 @@ theorem succ_apply {n : ℕ} (a) : SuccOrder.succ a = if a < Fin.last n then a +
 #align fin.succ_apply Fin.succ_apply
 
 instance : ∀ {n : ℕ}, PredOrder (Fin n)
-  | 0 => by constructor <;> first | assumption | intro a; exact elim0 a
+  | 0 => by constructor <;> first | intro a; exact elim0 a
   | n + 1 =>
     PredOrder.ofCore (fun x => if x = 0 then 0 else x - 1)
       (by

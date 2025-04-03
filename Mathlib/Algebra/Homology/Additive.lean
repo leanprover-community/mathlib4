@@ -15,7 +15,6 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 When `V` is preadditive, `HomologicalComplex V c` is also preadditive,
 and `homologyFunctor` is additive.
 
-TODO: similarly for `R`-linear.
 -/
 
 
@@ -24,11 +23,8 @@ universe v u
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits HomologicalComplex
 
 variable {ι : Type*}
-
 variable {V : Type u} [Category.{v} V] [Preadditive V]
-
 variable {c : ComplexShape ι} {C D E : HomologicalComplex V c}
-
 variable (f g : C ⟶ D) (h k : D ⟶ E) (i : ι)
 
 namespace HomologicalComplex
@@ -91,7 +87,7 @@ instance : AddCommGroup (C ⟶ D) :=
   Function.Injective.addCommGroup Hom.f HomologicalComplex.hom_f_injective
     (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat) (by aesop_cat)
 
--- porting note: proofs had to be provided here, otherwise Lean tries to apply
+-- Porting note: proofs had to be provided here, otherwise Lean tries to apply
 -- `Preadditive.add_comp/comp_add` to `HomologicalComplex V c`
 instance : Preadditive (HomologicalComplex V c) where
   add_comp _ _ _ f f' g := by
@@ -252,7 +248,6 @@ end CategoryTheory
 namespace ChainComplex
 
 variable {W : Type*} [Category W] [Preadditive W]
-
 variable {α : Type*} [AddRightCancelSemigroup α] [One α] [DecidableEq α]
 
 theorem map_chain_complex_of (F : V ⥤ W) [F.Additive] (X : α → V) (d : ∀ n, X (n + 1) ⟶ X n)

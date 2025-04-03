@@ -36,7 +36,6 @@ noncomputable section
 universe u v v' v'' u₁' w w'
 
 variable {K R : Type u} {V V₁ V₂ V₃ : Type v} {V' V'₁ : Type v'} {V'' : Type v''}
-
 variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 
 open BigOperators Cardinal Basis Submodule Function Set
@@ -46,11 +45,8 @@ section Module
 section DivisionRing
 
 variable [DivisionRing K]
-
 variable [AddCommGroup V] [Module K V]
-
 variable [AddCommGroup V'] [Module K V']
-
 variable [AddCommGroup V₁] [Module K V₁]
 
 /-- If a vector space has a finite dimension, the index set of `Basis.ofVectorSpace` is finite. -/
@@ -117,7 +113,6 @@ theorem exists_linearIndependent_pair_of_one_lt_rank
 section
 
 variable [AddCommGroup V₂] [Module K V₂]
-
 variable [AddCommGroup V₃] [Module K V₃]
 
 open LinearMap
@@ -181,7 +176,6 @@ end
 end DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V] [AddCommGroup V₁] [Module K V₁]
-
 variable [AddCommGroup V'] [Module K V']
 
 /-- The `ι` indexed basis on `V`, where `ι` is an empty type and `V` is zero-dimensional.
@@ -461,7 +455,6 @@ end Basis
 section Cardinal
 
 variable (K)
-
 variable [DivisionRing K]
 
 /-- Key lemma towards the Erdős-Kaplansky theorem from https://mathoverflow.net/a/168624 -/

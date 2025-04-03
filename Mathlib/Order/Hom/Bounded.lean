@@ -129,9 +129,7 @@ instance (priority := 100) OrderIsoClass.toTopHomClass [LE α] [OrderTop α]
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toBotHomClass [LE α] [OrderBot α]
     [PartialOrder β] [OrderBot β] [OrderIsoClass F α β] : BotHomClass F α β :=
-  { --⟨λ f, le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le⟩
-    show OrderHomClass F α β from inferInstance with
-    map_bot := fun f => le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le }
+  { map_bot := fun f => le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le }
 #align order_iso_class.to_bot_hom_class OrderIsoClass.toBotHomClass
 
 -- See note [lower instance priority]
@@ -182,8 +180,6 @@ def BotHomClass.toBotHom [Bot α] [Bot β] [BotHomClass F α β] (f : F) : BotHo
 
 instance [Bot α] [Bot β] [BotHomClass F α β] : CoeTC F (BotHom α β) :=
   ⟨BotHomClass.toBotHom⟩
-
-variable [FunLike F α β]
 
 /-- Turn an element of a type `F` satisfying `BoundedOrderHomClass F α β` into an actual
 `BoundedOrderHom`. This is declared as the default coercion from `F` to `BoundedOrderHom α β`. -/
@@ -584,7 +580,7 @@ end BotHom
 
 /-! ### Bounded order homomorphisms -/
 
--- Porting note: todo: remove this configuration and use the default configuration.
+-- Porting note (#11215): TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections BoundedOrderHom (+toOrderHom, -toFun)
 

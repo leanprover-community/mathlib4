@@ -183,7 +183,7 @@ def inf : Inf α :=
   ⟨(· * ·)⟩
 #align boolean_ring.has_inf BooleanRing.inf
 
--- Porting note: TODO: add priority 100. lower instance priority
+-- Porting note (#11215): TODO: add priority 100. lower instance priority
 scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.sup
 scoped [BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.inf
 open BooleanAlgebraOfBooleanRing
@@ -263,7 +263,7 @@ def toBooleanAlgebra : BooleanAlgebra α :=
       rw [← add_assoc, add_self] }
 #align boolean_ring.to_boolean_algebra BooleanRing.toBooleanAlgebra
 
--- Porting note: TODO: add priority 100. lower instance priority
+-- Porting note (#11215): TODO: add priority 100. lower instance priority
 scoped[BooleanAlgebraOfBooleanRing] attribute [instance] BooleanRing.toBooleanAlgebra
 
 end BooleanRing
@@ -442,16 +442,18 @@ def GeneralizedBooleanAlgebra.toNonUnitalCommRing [GeneralizedBooleanAlgebra α]
   zero := ⊥
   zero_add := bot_symmDiff
   add_zero := symmDiff_bot
-  zero_mul _ := bot_inf_eq
-  mul_zero _ := inf_bot_eq
+  zero_mul := bot_inf_eq
+  mul_zero := inf_bot_eq
   neg := id
   add_left_neg := symmDiff_self
   add_comm := symmDiff_comm
   mul := (· ⊓ ·)
-  mul_assoc _ _ _ := inf_assoc
-  mul_comm _ _ := inf_comm
+  mul_assoc := inf_assoc
+  mul_comm := inf_comm
   left_distrib := inf_symmDiff_distrib_left
   right_distrib := inf_symmDiff_distrib_right
+  nsmul := letI : Zero α := ⟨⊥⟩; letI : Add α := ⟨(· ∆ ·)⟩; nsmulRec
+  zsmul := letI : Zero α := ⟨⊥⟩; letI : Add α := ⟨(· ∆ ·)⟩; letI : Neg α := ⟨id⟩; zsmulRec
 #align generalized_boolean_algebra.to_non_unital_comm_ring GeneralizedBooleanAlgebra.toNonUnitalCommRing
 
 instance [GeneralizedBooleanAlgebra α] : NonUnitalCommRing (AsBoolRing α) :=
@@ -469,12 +471,12 @@ variable [BooleanAlgebra α] [BooleanAlgebra β] [BooleanAlgebra γ]
 * `1` unfolds to `⊤`
 -/
 @[reducible]
-def BooleanAlgebra.toBooleanRing : BooleanRing α :=
-  { GeneralizedBooleanAlgebra.toNonUnitalCommRing with
-    one := ⊤
-    one_mul := fun _ => top_inf_eq
-    mul_one := fun _ => inf_top_eq
-    mul_self := fun b => inf_idem }
+def BooleanAlgebra.toBooleanRing : BooleanRing α where
+  __ := GeneralizedBooleanAlgebra.toNonUnitalCommRing
+  one := ⊤
+  one_mul := top_inf_eq
+  mul_one := inf_top_eq
+  mul_self := inf_idem
 #align boolean_algebra.to_boolean_ring BooleanAlgebra.toBooleanRing
 
 scoped[BooleanRingOfBooleanAlgebra]
@@ -588,19 +590,25 @@ def RingEquiv.asBoolRingAsBoolAlg (α : Type*) [BooleanRing α] : AsBoolRing (As
 
 open Bool
 
+instance : Zero Bool where zero := false
+
+instance : One Bool where one := true
+
+instance : Add Bool where add := xor
+
+instance : Neg Bool where neg := id
+
+instance : Sub Bool where sub := xor
+
+instance : Mul Bool where mul := and
+
 instance : BooleanRing Bool where
-  add := xor
   add_assoc := xor_assoc
-  zero := false
   zero_add := Bool.false_xor
   add_zero := Bool.xor_false
-  neg := id
-  sub := xor
   sub_eq_add_neg _ _ := rfl
   add_left_neg := Bool.xor_self
   add_comm := xor_comm
-  one := true
-  mul := and
   mul_assoc := and_assoc
   one_mul := Bool.true_and
   mul_one := Bool.and_true
@@ -609,3 +617,5 @@ instance : BooleanRing Bool where
   mul_self := Bool.and_self
   zero_mul a := rfl
   mul_zero a := by cases a <;> rfl
+  nsmul := nsmulRec
+  zsmul := zsmulRec

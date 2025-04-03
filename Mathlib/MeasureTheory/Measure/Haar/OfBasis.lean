@@ -34,7 +34,11 @@ open scoped BigOperators Pointwise
 
 noncomputable section
 
-variable {ι ι' E F : Type*} [Fintype ι] [Fintype ι']
+variable {ι ι' E F : Type*}
+
+section Fintype
+
+variable [Fintype ι] [Fintype ι']
 
 section AddCommGroup
 
@@ -49,6 +53,16 @@ theorem mem_parallelepiped_iff (v : ι → E) (x : E) :
     x ∈ parallelepiped v ↔ ∃ t ∈ Icc (0 : ι → ℝ) 1, x = ∑ i, t i • v i := by
   simp [parallelepiped, eq_comm]
 #align mem_parallelepiped_iff mem_parallelepiped_iff
+
+theorem parallelepiped_basis_eq (b : Basis ι ℝ E) :
+    parallelepiped b = {x | ∀ i, b.repr x i ∈ Set.Icc 0 1} := by
+  classical
+  ext x
+  simp_rw [mem_parallelepiped_iff, mem_setOf_eq, b.ext_elem_iff, _root_.map_sum,
+    _root_.map_smul, Finset.sum_apply', Basis.repr_self, Finsupp.smul_single, smul_eq_mul,
+    mul_one, Finsupp.single_apply, Finset.sum_ite_eq', Finset.mem_univ, ite_true, mem_Icc,
+    Pi.le_def, Pi.zero_apply, Pi.one_apply, ← forall_and]
+  aesop
 
 theorem image_parallelepiped (f : E →ₗ[ℝ] F) (v : ι → E) :
     f '' parallelepiped v = parallelepiped (f ∘ v) := by
@@ -66,7 +80,7 @@ theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
   have : Icc (0 : ι → ℝ) 1 = K '' Icc (0 : ι' → ℝ) 1 := by
     rw [← Equiv.preimage_eq_iff_eq_image]
     ext x
-    simp only [mem_preimage, mem_Icc, Pi.le_def, Pi.zero_apply, Equiv.piCongrLeft'_apply,
+    simp only [K, mem_preimage, mem_Icc, Pi.le_def, Pi.zero_apply, Equiv.piCongrLeft'_apply,
       Pi.one_apply]
     refine'
       ⟨fun h => ⟨fun i => _, fun i => _⟩, fun h =>
@@ -77,7 +91,7 @@ theorem parallelepiped_comp_equiv (v : ι → E) (e : ι' ≃ ι) :
   congr 1 with x
   have := fun z : ι' → ℝ => e.symm.sum_comp fun i => z i • v (e i)
   simp_rw [Equiv.apply_symm_apply] at this
-  simp_rw [Function.comp_apply, mem_image, mem_Icc, Equiv.piCongrLeft'_apply, this]
+  simp_rw [Function.comp_apply, mem_image, mem_Icc, K, Equiv.piCongrLeft'_apply, this]
 #align parallelepiped_comp_equiv parallelepiped_comp_equiv
 
 -- The parallelepiped associated to an orthonormal basis of `ℝ` is either `[0, 1]` or `[-1, 0]`.
@@ -107,7 +121,7 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
       ← image_comp, Function.comp_apply, image_id', ge_iff_le, zero_le_one, not_true, gt_iff_lt]
   · right
     simp_rw [H, parallelepiped, Algebra.id.smul_eq_mul, A]
-    simp only [Finset.univ_unique, Fin.default_eq_zero, mul_neg, mul_one, Finset.sum_neg_distrib,
+    simp only [F, Finset.univ_unique, Fin.default_eq_zero, mul_neg, mul_one, Finset.sum_neg_distrib,
       Finset.sum_singleton, ← image_comp, Function.comp, image_neg, preimage_neg_Icc, neg_zero]
 #align parallelepiped_orthonormal_basis_one_dim parallelepiped_orthonormalBasis_one_dim
 
@@ -164,7 +178,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
       rcases eq_or_ne (a i) 0 with hai | hai
       · rw [hai, inf_idem, sup_idem, ← le_antisymm_iff] at h
         rw [hai, ← h, zero_div, zero_mul]
-      · rw [div_mul_cancel _ hai]
+      · rw [div_mul_cancel₀ _ hai]
 #align parallelepiped_single parallelepiped_single
 
 end AddCommGroup
@@ -214,6 +228,7 @@ theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 #align basis.parallelepiped_map Basis.parallelepiped_map
 
+set_option tactic.skipAssignedInstances false in
 theorem Basis.prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     (v.prod w).parallelepiped = v.parallelepiped.prod w.parallelepiped := by
   ext x
@@ -287,6 +302,8 @@ theorem Basis.prod_addHaar (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
 
 end NormedSpace
 
+end Fintype
+
 /-- A finite dimensional inner product space has a canonical measure, the Lebesgue measure giving
 volume `1` to the parallelepiped spanned by any orthonormal basis. We define the measure using
 some arbitrary choice of orthonormal basis. The fact that it works with any orthonormal basis
@@ -318,7 +335,7 @@ variable (ι)
 -- TODO: do we want these instances for `PiLp` too?
 instance : MeasurableSpace (EuclideanSpace ℝ ι) := MeasurableSpace.pi
 
-instance : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
+instance [Finite ι] : BorelSpace (EuclideanSpace ℝ ι) := Pi.borelSpace
 
 /-- `WithLp.equiv` as a `MeasurableEquiv`. -/
 @[simps toEquiv]

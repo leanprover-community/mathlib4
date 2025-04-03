@@ -32,9 +32,11 @@ giry monad
 
 noncomputable section
 
-open Classical BigOperators ENNReal
+open scoped Classical
+open BigOperators ENNReal
 
-open Classical Set Filter
+open scoped Classical
+open Set Filter
 
 variable {α β : Type*}
 

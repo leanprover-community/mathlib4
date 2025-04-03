@@ -9,13 +9,11 @@ import Mathlib.Data.Array.Defs
 import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
+import Lean.Elab.Tactic.Ext
+import Lean.Meta.Tactic.Symm
 import Std.Lean.NameMapAttribute
-import Std.Data.Option.Basic
-import Std.Tactic.CoeExt -- just to copy the attribute
-import Std.Tactic.Ext.Attr -- just to copy the attribute
 import Std.Tactic.Lint -- useful to lint this file and for for DiscrTree.elements
 import Std.Tactic.Relation.Rfl -- just to copy the attribute
-import Std.Tactic.Relation.Symm -- just to copy the attribute
 import Mathlib.Tactic.Relation.Trans -- just to copy the attribute
 import Mathlib.Tactic.Eqns -- just to copy the attribute
 import Mathlib.Tactic.Simps.Basic
@@ -927,6 +925,7 @@ def nameDict : String → List String
   | "hdiv"        => ["hsub"]
   | "hpow"        => ["hsmul"]
   | "finprod"     => ["finsum"]
+  | "tprod"       => ["tsum"]
   | "pow"         => ["nsmul"]
   | "npow"        => ["nsmul"]
   | "zpow"        => ["zsmul"]
@@ -945,6 +944,9 @@ def nameDict : String → List String
   | "rootable"    => ["divisible"]
   | "commute"     => ["add", "Commute"]
   | "semiconj"    => ["add", "Semiconj"]
+  | "zpowers"     => ["zmultiples"]
+  | "powers"      => ["multiples"]
+  | "multipliable"=> ["summable"]
   | x             => [x]
 
 /--
@@ -1004,6 +1006,10 @@ def fixAbbreviation : List String → List String
   | "Is" :: "Left" :: "Regular" :: s  => "IsAddLeftRegular" :: fixAbbreviation s
   | "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: fixAbbreviation s
   | "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: fixAbbreviation s
+  | "Has" :: "Fundamental" :: "Domain" :: s => "HasAddFundamentalDomain" :: fixAbbreviation s
+  | "has" :: "Fundamental" :: "Domain" :: s => "hasAddFundamentalDomain" :: fixAbbreviation s
+  | "Quotient" :: "Measure" :: s => "AddQuotientMeasure" :: fixAbbreviation s
+  | "quotient" :: "Measure" :: s => "addQuotientMeasure" :: fixAbbreviation s
   -- the capitalization heuristic of `applyNameDict` doesn't work in the following cases
   | "HSmul" :: s                      => "HSMul" :: fixAbbreviation s -- from `HPow`
   | "NSmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `NPow`
@@ -1086,7 +1092,8 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
     else
       return #[]
   aux fun declName ↦ do match (← getEnv).find? declName with
-    | some (ConstantInfo.inductInfo {ctors := ctors, ..}) => return ctors.toArray.map (·.getString)
+    | some (ConstantInfo.inductInfo {ctors := ctors, ..}) =>
+        return ctors.toArray.map (.mkSimple ·.getString)
     | _ => pure #[]
 
 /-- Elaboration of the configuration options for `to_additive`. -/
@@ -1131,12 +1138,12 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
         calling @[{thisAttr}]. The preferred method is to use \
         `@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both \
         {src} and the target declaration {tgt}."
-    warnAttr stx Std.Tactic.Ext.extExtension
+    warnAttr stx Lean.Elab.Tactic.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
     warnAttr stx Std.Tactic.reflExt (·.values.contains ·) thisAttr `refl src tgt
-    warnAttr stx Std.Tactic.symmExt (·.values.contains ·) thisAttr `symm src tgt
+    warnAttr stx Lean.Meta.Symm.symmExt (·.values.contains ·) thisAttr `symm src tgt
     warnAttr stx Mathlib.Tactic.transExt (·.values.contains ·) thisAttr `trans src tgt
-    warnAttr stx Std.Tactic.Coe.coeExt (·.contains ·) thisAttr `coe src tgt
+    warnAttr stx Lean.Meta.coeExt (·.contains ·) thisAttr `coe src tgt
     warnParametricAttr stx Lean.Linter.deprecatedAttr thisAttr `deprecated src tgt
     -- the next line also warns for `@[to_additive, simps]`, because of the application times
     warnParametricAttr stx simpsAttr thisAttr `simps src tgt

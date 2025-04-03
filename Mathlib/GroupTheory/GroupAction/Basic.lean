@@ -106,6 +106,16 @@ theorem orbit.coe_smul {a : α} {m : M} {a' : orbit M a} : ↑(m • a') = m •
 #align mul_action.orbit.coe_smul MulAction.orbit.coe_smul
 #align add_action.orbit.coe_vadd AddAction.orbit.coe_vadd
 
+@[to_additive]
+lemma orbit_submonoid_subset (S : Submonoid M) (a : α) : orbit S a ⊆ orbit M a := by
+  rintro b ⟨g, rfl⟩
+  exact mem_orbit _ _
+
+@[to_additive]
+lemma mem_orbit_of_mem_orbit_submonoid {S : Submonoid M} {a b : α} (h : a ∈ orbit S b) :
+    a ∈ orbit M b :=
+  orbit_submonoid_subset S _ h
+
 variable (M)
 
 @[to_additive]
@@ -355,6 +365,32 @@ theorem smul_mem_orbit_smul (g h : G) (a : α) : g • a ∈ orbit G (h • a) :
 #align mul_action.smul_mem_orbit_smul MulAction.smul_mem_orbit_smul
 #align add_action.vadd_mem_orbit_vadd AddAction.vadd_mem_orbit_vadd
 
+@[to_additive]
+lemma orbit_subgroup_subset (H : Subgroup G) (a : α) : orbit H a ⊆ orbit G a :=
+  orbit_submonoid_subset H.toSubmonoid a
+
+@[to_additive]
+lemma mem_orbit_of_mem_orbit_subgroup {H : Subgroup G} {a b : α} (h : a ∈ orbit H b) :
+    a ∈ orbit G b :=
+  orbit_subgroup_subset H _ h
+
+@[to_additive]
+lemma mem_orbit_symm {a₁ a₂ : α} : a₁ ∈ orbit G a₂ ↔ a₂ ∈ orbit G a₁ := by
+  simp_rw [← orbit_eq_iff, eq_comm]
+
+@[to_additive]
+lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
+    a ∈ MulAction.orbit H b ↔ (a : α) ∈ MulAction.orbit H (b : α) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases h with ⟨g, rfl⟩
+    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, orbit.coe_smul, ← Submonoid.smul_def]
+    exact MulAction.mem_orbit _ g
+  · rcases h with ⟨g, h⟩
+    simp_rw [Submonoid.smul_def, Subgroup.coe_toSubmonoid, ← orbit.coe_smul,
+             ← Submonoid.smul_def, ← Subtype.ext_iff] at h
+    subst h
+    exact MulAction.mem_orbit _ g
+
 variable (G α)
 
 /-- The relation 'in the same orbit'. -/
@@ -374,6 +410,10 @@ theorem orbitRel_apply {a b : α} : (orbitRel G α).Rel a b ↔ a ∈ orbit G b 
   Iff.rfl
 #align mul_action.orbit_rel_apply MulAction.orbitRel_apply
 #align add_action.orbit_rel_apply AddAction.orbitRel_apply
+
+@[to_additive]
+lemma orbitRel_subgroup_le (H : Subgroup G) : orbitRel H α ≤ orbitRel G α :=
+  Setoid.le_def.2 mem_orbit_of_mem_orbit_subgroup
 
 /-- When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `G`. -/
@@ -440,6 +480,8 @@ def orbitRel.Quotient : Type _ :=
 
 /-- An action is pretransitive if and only if the quotient by `MulAction.orbitRel` is a
 subsingleton. -/
+@[to_additive "An additive action is pretransitive if and only if the quotient by
+`AddAction.orbitRel` is a subsingleton."]
 theorem pretransitive_iff_subsingleton_quotient :
     IsPretransitive G α ↔ Subsingleton (orbitRel.Quotient G α) := by
   refine ⟨fun _ ↦ ⟨fun a b ↦ ?_⟩, fun _ ↦ ⟨fun a b ↦ ?_⟩⟩
@@ -450,6 +492,8 @@ theorem pretransitive_iff_subsingleton_quotient :
 
 /-- If `α` is non-empty, an action is pretransitive if and only if the quotient has exactly one
 element. -/
+@[to_additive "If `α` is non-empty, an additive action is pretransitive if and only if the
+quotient has exactly one element."]
 theorem pretransitive_iff_unique_quotient_of_nonempty [Nonempty α] :
     IsPretransitive G α ↔ Nonempty (Unique <| orbitRel.Quotient G α) := by
   rw [unique_iff_subsingleton_and_nonempty, pretransitive_iff_subsingleton_quotient, iff_self_and]
@@ -491,7 +535,6 @@ theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
 
 variable (G) (α)
 
--- mathport name: exprΩ
 local notation "Ω" => orbitRel.Quotient G α
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.

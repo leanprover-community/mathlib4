@@ -28,6 +28,7 @@ cannot be a measure on `m`, hence the definition of `μ.trim hm`.
 
 This notion is related to `OuterMeasure.trim`, see the lemma
 `toOuterMeasure_trim_eq_trim_toOuterMeasure`. -/
+@[pp_dot]
 noncomputable
 def Measure.trim {m m0 : MeasurableSpace α} (μ : @Measure α m0) (hm : m ≤ m0) : @Measure α m :=
   @OuterMeasure.toMeasure α m μ.toOuterMeasure (hm.trans (le_toOuterMeasure_caratheodory μ))

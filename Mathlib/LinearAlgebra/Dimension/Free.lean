@@ -30,11 +30,8 @@ open BigOperators Cardinal Basis Submodule Function Set DirectSum FiniteDimensio
 section Tower
 
 variable (F : Type u) (K : Type v) (A : Type w)
-
 variable [Ring F] [Ring K] [AddCommGroup A]
-
 variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
-
 variable [StrongRankCondition F] [StrongRankCondition K] [Module.Free F K] [Module.Free K A]
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
@@ -73,13 +70,9 @@ theorem FiniteDimensional.finrank_mul_finrank : finrank F K * finrank K A = finr
 end Tower
 
 variable {R : Type u} {M M₁ : Type v} {M' : Type v'}
-
 variable [Ring R] [StrongRankCondition R]
-
 variable [AddCommGroup M] [Module R M] [Module.Free R M]
-
 variable [AddCommGroup M'] [Module R M'] [Module.Free R M']
-
 variable [AddCommGroup M₁] [Module R M₁] [Module.Free R M₁]
 
 namespace Module.Free

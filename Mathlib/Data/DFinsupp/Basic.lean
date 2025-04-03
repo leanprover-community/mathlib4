@@ -51,7 +51,6 @@ universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 open BigOperators
 
 variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
-
 variable (β)
 
 /-- A dependent function `Π i, β i` with finite support, with notation `Π₀ i, β i`.
@@ -68,11 +67,9 @@ structure DFinsupp [∀ i, Zero (β i)] : Type max u v where mk' ::
 
 variable {β}
 
--- mathport name: «exprΠ₀ , »
 /-- `Π₀ i, β i` denotes the type of dependent functions with finite support `DFinsupp β`. -/
 notation3 "Π₀ "(...)", "r:(scoped f => DFinsupp f) => r
 
--- mathport name: «expr →ₚ »
 @[inherit_doc]
 infixl:25 " →ₚ " => DFinsupp
 
@@ -561,17 +558,15 @@ theorem subtypeDomain_sub [∀ i, AddGroup (β i)] {p : ι → Prop} [DecidableP
 
 end FilterAndSubtypeDomain
 
-variable [dec : DecidableEq ι]
+variable [DecidableEq ι]
 
 section Basic
 
 variable [∀ i, Zero (β i)]
 
-theorem finite_support (f : Π₀ i, β i) : Set.Finite { i | f i ≠ 0 } := by
-  classical!
-  exact Trunc.induction_on f.support' fun xs =>
-        (Multiset.toFinset xs.1).finite_toSet.subset fun i H =>
-          Multiset.mem_toFinset.2 ((xs.prop i).resolve_right H)
+theorem finite_support (f : Π₀ i, β i) : Set.Finite { i | f i ≠ 0 } :=
+  Trunc.induction_on f.support' fun xs ↦
+    xs.1.finite_toSet.subset fun i H ↦ ((xs.prop i).resolve_right H)
 #align dfinsupp.finite_support DFinsupp.finite_support
 
 /-- Create an element of `Π₀ i, β i` from a finset `s` and a function `x`
@@ -1136,10 +1131,7 @@ theorem mem_support_toFun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 
   exact and_iff_right_of_imp (s.prop i).resolve_right
 #align dfinsupp.mem_support_to_fun DFinsupp.mem_support_toFun
 
-theorem eq_mk_support (f : Π₀ i, β i) : f = mk f.support fun i => f i := by
-  change f = mk f.support fun i => f i.1
-  ext i
-  by_cases h : f i ≠ 0 <;> [skip; rw [not_not] at h] <;> simp [h]
+theorem eq_mk_support (f : Π₀ i, β i) : f = mk f.support fun i => f i := by aesop
 #align dfinsupp.eq_mk_support DFinsupp.eq_mk_support
 
 /-- Equivalence between dependent functions with finite support `s : Finset ι` and functions
@@ -1238,7 +1230,7 @@ theorem zipWith_def {ι : Type u} {β : ι → Type v} {β₁ : ι → Type v₁
     {f : ∀ i, β₁ i → β₂ i → β i} {hf : ∀ i, f i 0 0 = 0} {g₁ : Π₀ i, β₁ i} {g₂ : Π₀ i, β₂ i} :
     zipWith f hf g₁ g₂ = mk (g₁.support ∪ g₂.support) fun i => f i.1 (g₁ i.1) (g₂ i.1) := by
   ext i
-  by_cases h1 : g₁ i ≠ 0 <;> by_cases h2 : g₂ i ≠ 0 <;> simp only [not_not, Ne.def] at h1 h2 <;>
+  by_cases h1 : g₁ i ≠ 0 <;> by_cases h2 : g₂ i ≠ 0 <;> simp only [not_not, Ne] at h1 h2 <;>
     simp [h1, h2, hf]
 #align dfinsupp.zip_with_def DFinsupp.zipWith_def
 
@@ -2275,7 +2267,6 @@ variable [DecidableEq ι]
 namespace MonoidHom
 
 variable {R S : Type*}
-
 variable [∀ i, Zero (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)]
 
 #align monoid_hom.map_dfinsupp_prod map_dfinsupp_prodₓ

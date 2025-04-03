@@ -185,19 +185,19 @@ def forget₂Monoidal : MonoidalFunctor (FGModuleCat R) (ModuleCat.{u} R) :=
 
 instance forget₂Monoidal_faithful : Faithful (forget₂Monoidal R).toFunctor := by
   dsimp [forget₂Monoidal]
-  -- Porting note: was `infer_instance`
+  -- Porting note (#11187): was `infer_instance`
   exact FullSubcategory.faithful _
 #align fgModule.forget₂_monoidal_faithful FGModuleCat.forget₂Monoidal_faithful
 
 instance forget₂Monoidal_additive : (forget₂Monoidal R).toFunctor.Additive := by
   dsimp [forget₂Monoidal]
-  -- Porting note: was `infer_instance`
+  -- Porting note (#11187): was `infer_instance`
   exact Functor.fullSubcategoryInclusion_additive _
 #align fgModule.forget₂_monoidal_additive FGModuleCat.forget₂Monoidal_additive
 
 instance forget₂Monoidal_linear : (forget₂Monoidal R).toFunctor.Linear R := by
   dsimp [forget₂Monoidal]
-  -- Porting note: was `infer_instance`
+  -- Porting note (#11187): was `infer_instance`
   exact Functor.fullSubcategoryInclusionLinear _ _
 #align fgModule.forget₂_monoidal_linear FGModuleCat.forget₂Monoidal_linear
 
@@ -222,7 +222,7 @@ instance closedPredicateModuleFinite :
 
 instance : MonoidalClosed (FGModuleCat K) := by
   dsimp [FGModuleCat]
-  -- Porting note: was `infer_instance`
+  -- Porting note (#11187): was `infer_instance`
   exact MonoidalCategory.fullMonoidalClosedSubcategory
     (fun V : ModuleCat.{u} K => Module.Finite K V)
 
@@ -269,13 +269,13 @@ theorem FGModuleCatEvaluation_apply (f : FGModuleCatDual K V) (x : V) :
 
 private theorem coevaluation_evaluation :
     letI V' : FGModuleCat K := FGModuleCatDual K V
-    (𝟙 V' ⊗ FGModuleCatCoevaluation K V) ≫ (α_ V' V V').inv ≫ (FGModuleCatEvaluation K V ⊗ 𝟙 V') =
+    V' ◁ FGModuleCatCoevaluation K V ≫ (α_ V' V V').inv ≫ FGModuleCatEvaluation K V ▷ V' =
       (ρ_ V').hom ≫ (λ_ V').inv := by
   apply contractLeft_assoc_coevaluation K V
 
 private theorem evaluation_coevaluation :
-    (FGModuleCatCoevaluation K V ⊗ 𝟙 V) ≫
-        (α_ V (FGModuleCatDual K V) V).hom ≫ (𝟙 V ⊗ FGModuleCatEvaluation K V) =
+    FGModuleCatCoevaluation K V ▷ V ≫
+        (α_ V (FGModuleCatDual K V) V).hom ≫ V ◁ FGModuleCatEvaluation K V =
       (λ_ V).hom ≫ (ρ_ V).inv := by
   apply contractLeft_assoc_coevaluation' K V
 

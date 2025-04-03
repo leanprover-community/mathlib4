@@ -55,7 +55,7 @@ variable {ι R R' E F G : Type*}
 /-- A seminorm on an additive group `G` is a function `f : G → ℝ` that preserves zero, is
 subadditive and such that `f (-x) = f x` for all `x`. -/
 structure AddGroupSeminorm (G : Type*) [AddGroup G] where
-  -- porting note: can't extend `ZeroHom G ℝ` because otherwise `to_additive` won't work since
+  -- Porting note: can't extend `ZeroHom G ℝ` because otherwise `to_additive` won't work since
   -- we aren't using old structures
   /-- The bare function of an `AddGroupSeminorm`. -/
   protected toFun : G → ℝ
@@ -411,7 +411,7 @@ noncomputable instance : Inf (GroupSeminorm E) :=
     { toFun := fun x => ⨅ y, p y + q (x / y)
       map_one' :=
         ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
-          -- porting note: replace `add_nonneg` with `positivity` once we have the extension
+          -- Porting note: replace `add_nonneg` with `positivity` once we have the extension
           (fun x => add_nonneg (apply_nonneg _ _) (apply_nonneg _ _)) fun r hr =>
           ⟨1, by rwa [div_one, map_one_eq_zero p, map_one_eq_zero q, add_zero]⟩
       mul_le' := fun x y =>
@@ -525,7 +525,7 @@ instance nonarchAddGroupSeminormClass : NonarchAddGroupSeminormClass (NonarchAdd
 instance : CoeFun (NonarchAddGroupSeminorm E) fun _ => E → ℝ :=
   ⟨DFunLike.coe⟩
 
--- porting note: `simpNF` said the left hand side simplified to this
+-- Porting note: `simpNF` said the left hand side simplified to this
 @[simp]
 theorem toZeroHom_eq_coe : ⇑p.toZeroHom = p := by
   rfl
@@ -693,7 +693,7 @@ instance [DecidableEq E] : One (NonarchAddGroupSeminorm E) :=
         · simp_rw [if_pos hx, hx, zero_add]
           exact le_max_of_le_right (le_refl _)
         · simp_rw [if_neg hx]
-          split_ifs <;> norm_num
+          split_ifs <;> simp
       neg' := fun x => by simp_rw [neg_eq_zero] }⟩
 
 @[simp]
@@ -771,7 +771,7 @@ directly. -/
 instance : CoeFun (GroupNorm E) fun _ => E → ℝ :=
   DFunLike.hasCoeToFun
 
--- porting note: `simpNF` told me the left-hand side simplified to this
+-- Porting note: `simpNF` told me the left-hand side simplified to this
 @[to_additive (attr := simp)]
 theorem toGroupSeminorm_eq_coe : ⇑p.toGroupSeminorm = p :=
   rfl
@@ -925,7 +925,7 @@ instance nonarchAddGroupNormClass : NonarchAddGroupNormClass (NonarchAddGroupNor
 noncomputable instance : CoeFun (NonarchAddGroupNorm E) fun _ => E → ℝ :=
   DFunLike.hasCoeToFun
 
--- porting note: `simpNF` told me the left-hand side simplified to this
+-- Porting note: `simpNF` told me the left-hand side simplified to this
 @[simp]
 theorem toNonarchAddGroupSeminorm_eq_coe : ⇑p.toNonarchAddGroupSeminorm = p :=
   rfl

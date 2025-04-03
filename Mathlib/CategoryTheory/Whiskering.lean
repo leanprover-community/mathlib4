@@ -226,7 +226,6 @@ namespace Functor
 universe u₅ v₅
 
 variable {A : Type u₁} [Category.{v₁} A]
-
 variable {B : Type u₂} [Category.{v₂} B]
 
 /-- The left unitor, a natural isomorphism `((𝟭 _) ⋙ F) ≅ F`.
@@ -252,7 +251,6 @@ def rightUnitor (F : A ⥤ B) :
 #align category_theory.functor.right_unitor_inv_app CategoryTheory.Functor.rightUnitor_inv_app
 
 variable {C : Type u₃} [Category.{v₃} C]
-
 variable {D : Type u₄} [Category.{v₄} D]
 
 /-- The associator for functors, a natural isomorphism `((F ⋙ G) ⋙ H) ≅ (F ⋙ (G ⋙ H))`.
@@ -280,7 +278,6 @@ theorem triangle (F : A ⥤ B) (G : B ⥤ C) :
 
 -- See note [dsimp, simp].
 variable {E : Type u₅} [Category.{v₅} E]
-
 variable (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) (K : D ⥤ E)
 
 theorem pentagon :

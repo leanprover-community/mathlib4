@@ -66,7 +66,6 @@ def TrivSqZeroExt (R : Type u) (M : Type v) :=
   R × M
 #align triv_sq_zero_ext TrivSqZeroExt
 
--- mathport name: exprtsze
 local notation "tsze" => TrivSqZeroExt
 
 open scoped BigOperators RightActions
@@ -638,7 +637,7 @@ where
     intro n
     induction' n with n ih
     · simp
-    · rw [pow_succ', op_mul, mul_smul, mul_smul, ← h, smul_comm (_ : R) (op x.fst) x.snd, ih]
+    · rw [pow_succ, op_mul, mul_smul, mul_smul, ← h, smul_comm (_ : R) (op x.fst) x.snd, ih]
 #align triv_sq_zero_ext.snd_pow_of_smul_comm TrivSqZeroExt.snd_pow_of_smul_comm
 
 theorem snd_pow_of_smul_comm' [Monoid R] [AddMonoid M] [DistribMulAction R M]
@@ -669,21 +668,15 @@ instance monoid [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulActio
           by simp_rw [smul_add, ← mul_smul, add_assoc, smul_comm, op_mul]
     npow := fun n x => x ^ n
     npow_zero := fun x => ext (pow_zero x.fst) (by simp [snd_pow_eq_sum])
-    npow_succ := fun n x =>
-      ext (pow_succ _ _)
-        (by
-          simp_rw [snd_mul, snd_pow_eq_sum, Nat.pred_succ]
-          cases n
-          · simp [List.range_succ]
-          simp_rw [Nat.pred_succ]
-          rw [List.range_succ, List.map_append, List.sum_append, List.map_singleton,
-            List.sum_singleton, Nat.sub_self, pow_zero, one_smul, List.smul_sum, List.map_map,
-            fst_pow, Function.comp]
-          simp_rw [← smul_comm (_ : R) (_ : Rᵐᵒᵖ), smul_smul, ← pow_succ, Nat.succ_eq_add_one]
-          congr 2
-          refine' List.map_congr fun i hi => _
-          rw [List.mem_range, Nat.lt_succ_iff] at hi
-          rw [Nat.sub_add_comm hi]) }
+    npow_succ := fun n x => ext (pow_succ _ _) (by
+      simp_rw [snd_mul, snd_pow_eq_sum, Nat.pred_succ]
+      cases n
+      · simp [List.range_succ]
+      rw [List.sum_range_succ']
+      simp only [pow_zero, op_one, tsub_zero, one_smul, Nat.succ_sub_succ_eq_sub, fst_pow,
+        Nat.pred_succ, List.smul_sum, List.map_map, Function.comp]
+      simp_rw [← smul_comm (_ : R) (_ : Rᵐᵒᵖ), smul_smul, pow_succ]
+      rfl) }
 
 theorem fst_list_prod [Monoid R] [AddMonoid M] [DistribMulAction R M] [DistribMulAction Rᵐᵒᵖ M]
     [SMulCommClass R Rᵐᵒᵖ M] (l : List (tsze R M)) : l.prod.fst = (l.map fst).prod :=
@@ -748,15 +741,10 @@ end Mul
 section Algebra
 
 variable (S : Type*) (R R' : Type u) (M : Type v)
-
 variable [CommSemiring S] [Semiring R] [CommSemiring R'] [AddCommMonoid M]
-
 variable [Algebra S R] [Algebra S R'] [Module S M]
-
 variable [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
-
 variable [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
-
 variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M] [IsScalarTower S R' M]
 
 instance algebra' : Algebra S (tsze R M) :=

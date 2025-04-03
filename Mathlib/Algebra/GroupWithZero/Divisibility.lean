@@ -147,7 +147,7 @@ theorem dvd_antisymm : a ∣ b → b ∣ a → a = b := by
   obtain ⟨rfl, -⟩ | rfl := hcd <;> simp
 #align dvd_antisymm dvd_antisymm
 
--- porting note: `attribute [protected]` is currently unsupported
+-- Porting note: `attribute [protected]` is currently unsupported
 -- attribute [protected] Nat.dvd_antisymm --This lemma is in core, so we protect it here
 
 theorem dvd_antisymm' : a ∣ b → b ∣ a → b = a :=

@@ -38,11 +38,8 @@ open TensorProduct
 section
 
 variable (R : Type u) [CommSemiring R] {M : Type v} [AddCommMonoid M] [Module R M]
-
 variable {ι : Type w} [DecidableEq ι] [Fintype ι]
-
 variable {κ : Type*} [DecidableEq κ] [Fintype κ]
-
 variable (b : Basis ι R M) (c : Basis κ R M)
 
 /-- The trace of an endomorphism given a basis. -/
@@ -73,7 +70,7 @@ theorem traceAux_eq : traceAux R b = traceAux R c :=
       _ = Matrix.trace (LinearMap.toMatrix c c f) := by rw [LinearMap.comp_id, LinearMap.comp_id]
 #align linear_map.trace_aux_eq LinearMap.traceAux_eq
 
-open Classical
+open scoped Classical
 
 variable (M)
 
@@ -134,9 +131,7 @@ end
 section
 
 variable {R : Type*} [CommRing R] {M : Type*} [AddCommGroup M] [Module R M]
-
 variable (N P : Type*) [AddCommGroup N] [Module R N] [AddCommGroup P] [Module R P]
-
 variable {ι : Type*}
 
 /-- The trace of a linear map correspond to the contraction pairing under the isomorphism
@@ -164,7 +159,6 @@ theorem trace_eq_contract_of_basis' [Fintype ι] [DecidableEq ι] (b : Basis ι 
 #align linear_map.trace_eq_contract_of_basis' LinearMap.trace_eq_contract_of_basis'
 
 variable (R M)
-
 variable [Module.Free R M] [Module.Finite R M] [Module.Free R N] [Module.Finite R N]
   [Module.Free R P] [Module.Finite R P]
 
@@ -260,10 +254,10 @@ theorem trace_comp_comm :
     (compl₁₂_inj (show Surjective (dualTensorHom R N M) from (dualTensorHomEquiv R N M).surjective)
         (show Surjective (dualTensorHom R M N) from (dualTensorHomEquiv R M N).surjective)).1
   ext g m f n
-  simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply, coe_restrictScalars,
-    -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
-    compl₁₂_apply, compr₂_apply, llcomp_apply', comp_dualTensorHom, map_smulₛₗ _, RingHom.id_apply,
-    trace_eq_contract_apply, contractLeft_apply, smul_eq_mul, mul_comm, flip_apply]
+  simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+    coe_restrictScalars, compl₁₂_apply, compr₂_apply, flip_apply, llcomp_apply',
+    comp_dualTensorHom, LinearMapClass.map_smul, trace_eq_contract_apply,
+    contractLeft_apply, smul_eq_mul, mul_comm]
 #align linear_map.trace_comp_comm LinearMap.trace_comp_comm
 
 variable {R M N P}

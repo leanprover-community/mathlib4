@@ -3,7 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Std.Tactic.TryThis
+import Lean.Meta.Tactic.TryThis
 import Std.Linter.UnreachableTactic
 import Std.Control.Nondet.Basic
 import Mathlib.Tactic.FailIfNoProgress
@@ -22,7 +22,7 @@ It would be nice to run the tactics in parallel.
 
 open Lean Elab Tactic
 
-open Std.Tactic.TryThis
+open Lean.Meta.Tactic.TryThis
 
 namespace Mathlib.Tactic.Hint
 

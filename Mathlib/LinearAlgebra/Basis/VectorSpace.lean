@@ -40,7 +40,6 @@ variable {ι : Type*} {ι' : Type*} {K : Type*} {V : Type*} {V' : Type*}
 section DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [AddCommGroup V'] [Module K V] [Module K V']
-
 variable {v : ι → V} {s t : Set V} {x y z : V}
 
 open Submodule

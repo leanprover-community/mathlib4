@@ -53,9 +53,7 @@ namespace StateT
 section
 
 variable {σ : Type u}
-
 variable {m : Type u → Type v}
-
 variable {α : Type u}
 
 /-
@@ -141,9 +139,7 @@ namespace ReaderT
 section
 
 variable {ρ : Type u}
-
 variable {m : Type u → Type v}
-
 variable {α : Type u}
 
 /-

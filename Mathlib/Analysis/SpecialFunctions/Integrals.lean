@@ -351,9 +351,9 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
   have hr : r + 1 ≠ 0 := by
     cases' h with h h
     · apply_fun Complex.re
-      rw [Complex.add_re, Complex.one_re, Complex.zero_re, Ne.def, add_eq_zero_iff_eq_neg]
+      rw [Complex.add_re, Complex.one_re, Complex.zero_re, Ne, add_eq_zero_iff_eq_neg]
       exact h.ne'
-    · rw [Ne.def, ← add_eq_zero_iff_eq_neg] at h; exact h.1
+    · rw [Ne, ← add_eq_zero_iff_eq_neg] at h; exact h.1
   by_cases hab : (0 : ℝ) ∉ [[a, b]]
   · apply integral_eq_sub_of_hasDerivAt (fun x hx => ?_)
       (intervalIntegrable_cpow (r := r) <| Or.inr hab)
@@ -382,14 +382,14 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
   have h' : -1 < (r : ℂ).re ∨ (r : ℂ) ≠ -1 ∧ (0 : ℝ) ∉ [[a, b]] := by
     cases h
     · left; rwa [Complex.ofReal_re]
-    · right; rwa [← Complex.ofReal_one, ← Complex.ofReal_neg, Ne.def, Complex.ofReal_inj]
+    · right; rwa [← Complex.ofReal_one, ← Complex.ofReal_neg, Ne, Complex.ofReal_inj]
   have :
     (∫ x in a..b, (x : ℂ) ^ (r : ℂ)) = ((b : ℂ) ^ (r + 1 : ℂ) - (a : ℂ) ^ (r + 1 : ℂ)) / (r + 1) :=
     integral_cpow h'
   apply_fun Complex.re at this; convert this
   · simp_rw [intervalIntegral_eq_integral_uIoc, Complex.real_smul, Complex.re_ofReal_mul]
     · -- Porting note: was `change ... with ...`
-      have : Complex.re = IsROrC.re := rfl
+      have : Complex.re = RCLike.re := rfl
       rw [this, ← integral_re]; rfl
       refine' intervalIntegrable_iff.mp _
       cases' h' with h' h'
@@ -408,7 +408,7 @@ theorem integral_zpow {n : ℤ} (h : 0 ≤ n ∨ n ≠ -1 ∧ (0 : ℝ) ∉ [[a,
 
 @[simp]
 theorem integral_pow : ∫ x in a..b, x ^ n = (b ^ (n + 1) - a ^ (n + 1)) / (n + 1) := by
-  simpa only [← Int.ofNat_succ, zpow_coe_nat] using integral_zpow (Or.inl (Int.coe_nat_nonneg n))
+  simpa only [← Int.ofNat_succ, zpow_natCast] using integral_zpow (Or.inl n.cast_nonneg)
 #align integral_pow integral_pow
 
 /-- Integral of `|x - a| ^ n` over `Ι a b`. This integral appears in the proof of the
@@ -494,7 +494,7 @@ theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
   have D : ∀ x : ℝ, HasDerivAt (fun y : ℝ => Complex.exp (c * y) / c) (Complex.exp (c * x)) x := by
     intro x
     conv => congr
-    rw [← mul_div_cancel (Complex.exp (c * x)) hc]
+    rw [← mul_div_cancel_right₀ (Complex.exp (c * x)) hc]
     apply ((Complex.hasDerivAt_exp _).comp x _).div_const c
     simpa only [mul_one] using ((hasDerivAt_id (x : ℂ)).const_mul _).comp_ofReal
   rw [integral_deriv_eq_sub' _ (funext fun x => (D x).deriv) fun x _ => (D x).differentiableAt]
@@ -557,7 +557,7 @@ theorem integral_cos_mul_complex {z : ℂ} (hz : z ≠ 0) (a b : ℝ) :
   simp only [mul_comm] at d
   convert d using 1
   conv_rhs => arg 1; rw [mul_comm]
-  rw [mul_div_cancel _ hz]
+  rw [mul_div_cancel_right₀ _ hz]
 #align integral_cos_mul_complex integral_cos_mul_complex
 
 theorem integral_cos_sq_sub_sin_sq :
@@ -629,7 +629,7 @@ theorem integral_mul_rpow_one_add_sq {t : ℝ} (ht : t ≠ -1) :
     rw [ofReal_mul, this x t]
   · simp_rw [ofReal_sub, ofReal_div, this a (t + 1), this b (t + 1)]
     push_cast; rfl
-  · rw [← ofReal_one, ← ofReal_neg, Ne.def, ofReal_inj]
+  · rw [← ofReal_one, ← ofReal_neg, Ne, ofReal_inj]
     exact ht
 #align integral_mul_rpow_one_add_sq integral_mul_rpow_one_add_sq
 
@@ -654,7 +654,7 @@ theorem integral_sin_pow_aux :
   have H := integral_mul_deriv_eq_deriv_mul hu hv ?_ ?_
   calc
     (∫ x in a..b, sin x ^ (n + 2)) = ∫ x in a..b, sin x ^ (n + 1) * sin x := by
-      simp only [_root_.pow_succ']
+      simp only [_root_.pow_succ]
     _ = C + (↑n + 1) * ∫ x in a..b, cos x ^ 2 * sin x ^ n := by simp [H, h, sq]; ring
     _ = C + (↑n + 1) * ∫ x in a..b, sin x ^ n - sin x ^ (n + 2) := by
       simp [cos_sq', sub_mul, ← pow_add, add_comm]
@@ -675,7 +675,7 @@ theorem integral_sin_pow :
     (∫ x in a..b, sin x ^ (n + 2)) =
       (sin a ^ (n + 1) * cos a - sin b ^ (n + 1) * cos b) / (n + 2) +
         (n + 1) / (n + 2) * ∫ x in a..b, sin x ^ n := by
-  have : n + 2 ≠ 0 := by linarith
+  have : n + 2 ≠ 0 := by omega
   have : (n : ℝ) + 2 ≠ 0 := by norm_cast
   field_simp
   convert eq_sub_iff_add_eq.mp (integral_sin_pow_aux n) using 1
@@ -708,7 +708,7 @@ theorem integral_sin_pow_pos : 0 < ∫ x in (0)..π, sin x ^ n := by
   simp only [integral_sin_pow_even, integral_sin_pow_odd] <;>
   refine' mul_pos (by norm_num [pi_pos]) (prod_pos fun n _ => div_pos _ _) <;>
   norm_cast <;>
-  linarith
+  omega
 #align integral_sin_pow_pos integral_sin_pow_pos
 
 theorem integral_sin_pow_succ_le : (∫ x in (0)..π, sin x ^ (n + 1)) ≤ ∫ x in (0)..π, sin x ^ n := by
@@ -739,15 +739,13 @@ theorem integral_cos_pow_aux :
   have H := integral_mul_deriv_eq_deriv_mul hu hv ?_ ?_
   calc
     (∫ x in a..b, cos x ^ (n + 2)) = ∫ x in a..b, cos x ^ (n + 1) * cos x := by
-      simp only [_root_.pow_succ']
+      simp only [_root_.pow_succ]
     _ = C + (n + 1) * ∫ x in a..b, sin x ^ 2 * cos x ^ n := by simp [H, h, sq, -neg_add_rev]
     _ = C + (n + 1) * ∫ x in a..b, cos x ^ n - cos x ^ (n + 2) := by
       simp [sin_sq, sub_mul, ← pow_add, add_comm]
     _ = (C + (n + 1) * ∫ x in a..b, cos x ^ n) - (n + 1) * ∫ x in a..b, cos x ^ (n + 2) := by
-      rw [integral_sub, mul_sub, add_sub_assoc] <;> apply Continuous.intervalIntegrable
-      -- Porting note: was `... <;> continuity`
-      · exact continuous_cos_pow n
-      · exact continuous_cos_pow (n + 2)
+      rw [integral_sub, mul_sub, add_sub_assoc] <;>
+        apply Continuous.intervalIntegrable <;> continuity
   all_goals apply Continuous.intervalIntegrable; continuity
 #align integral_cos_pow_aux integral_cos_pow_aux
 
@@ -756,7 +754,7 @@ theorem integral_cos_pow :
     (∫ x in a..b, cos x ^ (n + 2)) =
       (cos b ^ (n + 1) * sin b - cos a ^ (n + 1) * sin a) / (n + 2) +
         (n + 1) / (n + 2) * ∫ x in a..b, cos x ^ n := by
-  have : n + 2 ≠ 0 := by linarith
+  have : n + 2 ≠ 0 := by omega
   have : (n : ℝ) + 2 ≠ 0 := by norm_cast
   field_simp
   convert eq_sub_iff_add_eq.mp (integral_cos_pow_aux n) using 1
@@ -779,7 +777,7 @@ theorem integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :
   calc
     (∫ x in a..b, sin x ^ m * cos x ^ (2 * n + 1)) =
         ∫ x in a..b, sin x ^ m * (↑1 - sin x ^ 2) ^ n * cos x := by
-      simp only [_root_.pow_zero, _root_.pow_succ', mul_assoc, pow_mul, one_mul]
+      simp only [_root_.pow_zero, _root_.pow_succ, mul_assoc, pow_mul, one_mul]
       congr! 5
       rw [← sq, ← sq, cos_sq']
     _ = ∫ u in sin a..sin b, u ^ m * (1 - u ^ 2) ^ n := by
@@ -818,7 +816,7 @@ theorem integral_sin_pow_odd_mul_cos_pow (m n : ℕ) :
         -∫ x in b..a, sin x ^ (2 * m + 1) * cos x ^ n :=
       by rw [integral_symm]
     _ = ∫ x in b..a, (↑1 - cos x ^ 2) ^ m * -sin x * cos x ^ n := by
-      simp only [_root_.pow_succ', pow_mul, _root_.pow_zero, one_mul, mul_neg, neg_mul,
+      simp only [_root_.pow_succ, pow_mul, _root_.pow_zero, one_mul, mul_neg, neg_mul,
         integral_neg, neg_inj]
       congr! 5
       rw [← sq, ← sq, sin_sq]

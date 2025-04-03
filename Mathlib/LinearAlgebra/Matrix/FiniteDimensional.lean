@@ -48,9 +48,7 @@ end Matrix
 namespace LinearMap
 
 variable {K : Type*} [Field K]
-
 variable {V : Type*} [AddCommGroup V] [Module K V] [FiniteDimensional K V]
-
 variable {W : Type*} [AddCommGroup W] [Module K W] [FiniteDimensional K W]
 
 instance finiteDimensional : FiniteDimensional K (V →ₗ[K] W) :=

@@ -46,15 +46,17 @@ universe u v w
 
 variable {α : Type u} {β : Type v} {X ι : Type*}
 
+theorem UniformSpace.ofDist_aux (ε : ℝ) (hε : 0 < ε) : ∃ δ > (0 : ℝ), ∀ x < δ, ∀ y < δ, x + y < ε :=
+  ⟨ε / 2, half_pos hε, fun _x hx _y hy => add_halves ε ▸ add_lt_add hx hy⟩
+
 /-- Construct a uniform structure from a distance function and metric space axioms -/
 def UniformSpace.ofDist (dist : α → α → ℝ) (dist_self : ∀ x : α, dist x x = 0)
     (dist_comm : ∀ x y : α, dist x y = dist y x)
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z) : UniformSpace α :=
-  .ofFun dist dist_self dist_comm dist_triangle fun ε ε0 =>
-    ⟨ε / 2, half_pos ε0, fun _x hx _y hy => add_halves ε ▸ add_lt_add hx hy⟩
+  .ofFun dist dist_self dist_comm dist_triangle ofDist_aux
 #align uniform_space_of_dist UniformSpace.ofDist
 
--- porting note: dropped the `dist_self` argument
+-- Porting note: dropped the `dist_self` argument
 /-- Construct a bornology from a distance function and metric space axioms. -/
 @[reducible]
 def Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀ x y, dist x y = dist y x)
@@ -98,7 +100,7 @@ private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     _ = 2 * dist x y := by rw [two_mul, dist_comm]
   nonneg_of_mul_nonneg_right this two_pos
 
-#noalign pseudo_metric_space.edist_dist_tac -- porting note: todo: restore
+#noalign pseudo_metric_space.edist_dist_tac -- Porting note (#11215): TODO: restore
 
 /-- Pseudo metric and Metric spaces
 
@@ -115,7 +117,8 @@ class PseudoMetricSpace (α : Type u) extends Dist α : Type u where
   dist_comm : ∀ x y : α, dist x y = dist y x
   dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z
   edist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal ⟨dist x y, dist_nonneg' _ ‹_› ‹_› ‹_›⟩
-  edist_dist : ∀ x y : α, edist x y = ENNReal.ofReal (dist x y) -- porting note: todo: add := by _
+  edist_dist : ∀ x y : α, edist x y = ENNReal.ofReal (dist x y)
+  -- Porting note (#11215): TODO: add := by _
   toUniformSpace : UniformSpace α := .ofDist dist dist_self dist_comm dist_triangle
   uniformity_dist : 𝓤 α = ⨅ ε > 0, 𝓟 { p : α × α | dist p.1 p.2 < ε } := by intros; rfl
   toBornology : Bornology α := Bornology.ofDist dist dist_comm dist_triangle
@@ -161,10 +164,10 @@ def PseudoMetricSpace.ofDistTopology {α : Type u} [TopologicalSpace α] (dist :
     dist_triangle := dist_triangle
     edist_dist := fun x y => by exact ENNReal.coe_nnreal_eq _
     toUniformSpace :=
-      { toCore := (UniformSpace.ofDist dist dist_self dist_comm dist_triangle).toCore
-        isOpen_uniformity := fun s => (H s).trans <| forall₂_congr fun x _ =>
-          ((UniformSpace.hasBasis_ofFun (exists_gt (0 : ℝ)) dist _ _ _ _).comap
-            (Prod.mk x)).mem_iff.symm.trans mem_comap_prod_mk }
+      (UniformSpace.ofDist dist dist_self dist_comm dist_triangle).replaceTopology <|
+        TopologicalSpace.ext_iff.2 fun s ↦ (H s).trans <| forall₂_congr fun x _ ↦
+          ((UniformSpace.hasBasis_ofFun (exists_gt (0 : ℝ)) dist dist_self dist_comm dist_triangle
+            UniformSpace.ofDist_aux).comap (Prod.mk x)).mem_iff.symm
     uniformity_dist := rfl
     toBornology := Bornology.ofDist dist dist_comm dist_triangle
     cobounded_sets := rfl }
@@ -342,7 +345,7 @@ theorem edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
 @[simp] theorem nndist_self (a : α) : nndist a a = 0 := NNReal.coe_eq_zero.1 (dist_self a)
 #align nndist_self nndist_self
 
--- porting note: `dist_nndist` and `coe_nndist` moved up
+-- Porting note: `dist_nndist` and `coe_nndist` moved up
 
 @[simp, norm_cast]
 theorem dist_lt_coe {x y : α} {c : ℝ≥0} : dist x y < c ↔ nndist x y < c :=
@@ -663,7 +666,7 @@ theorem iUnion_inter_closedBall_nat (s : Set α) (x : α) : ⋃ n : ℕ, s ∩ c
 #align metric.Union_inter_closed_ball_nat Metric.iUnion_inter_closedBall_nat
 
 theorem ball_subset (h : dist x y ≤ ε₂ - ε₁) : ball x ε₁ ⊆ ball y ε₂ := fun z zx => by
-  rw [← add_sub_cancel'_right ε₁ ε₂]
+  rw [← add_sub_cancel ε₁ ε₂]
   exact lt_of_le_of_lt (dist_triangle z x y) (add_lt_add_of_lt_of_le zx h)
 #align metric.ball_subset Metric.ball_subset
 
@@ -1151,7 +1154,7 @@ open Metric
 we need to show that the uniform structure coming from the edistance and the
 distance coincide. -/
 
--- porting note: new
+-- Porting note (#10756): new theorem
 theorem Metric.uniformity_edist_aux {α} (d : α → α → ℝ≥0) :
     ⨅ ε > (0 : ℝ), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } =
       ⨅ ε > (0 : ℝ≥0∞), 𝓟 { p : α × α | ↑(d p.1 p.2) < ε } := by
@@ -1394,13 +1397,13 @@ theorem Real.closedBall_eq_Icc {x r : ℝ} : closedBall x r = Icc (x - r) (x + r
 #align real.closed_ball_eq_Icc Real.closedBall_eq_Icc
 
 theorem Real.Ioo_eq_ball (x y : ℝ) : Ioo x y = ball ((x + y) / 2) ((y - x) / 2) := by
-  rw [Real.ball_eq_Ioo, ← sub_div, add_comm, ← sub_add, add_sub_cancel', add_self_div_two,
-    ← add_div, add_assoc, add_sub_cancel'_right, add_self_div_two]
+  rw [Real.ball_eq_Ioo, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,
+    ← add_div, add_assoc, add_sub_cancel, add_self_div_two]
 #align real.Ioo_eq_ball Real.Ioo_eq_ball
 
 theorem Real.Icc_eq_closedBall (x y : ℝ) : Icc x y = closedBall ((x + y) / 2) ((y - x) / 2) := by
-  rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel', add_self_div_two, ←
-    add_div, add_assoc, add_sub_cancel'_right, add_self_div_two]
+  rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,
+    ← add_div, add_assoc, add_sub_cancel, add_self_div_two]
 #align real.Icc_eq_closed_ball Real.Icc_eq_closedBall
 
 section MetricOrdered
@@ -1481,6 +1484,9 @@ theorem eventually_closedBall_subset {x : α} {u : Set α} (hu : u ∈ 𝓝 x) :
   filter_upwards [this] with _ hr using Subset.trans (closedBall_subset_closedBall hr) hε
 #align eventually_closed_ball_subset eventually_closedBall_subset
 
+theorem tendsto_closedBall_smallSets (x : α) : Tendsto (closedBall x) (𝓝 0) (𝓝 x).smallSets :=
+  tendsto_smallSets_iff.2 fun _ ↦ eventually_closedBall_subset
+
 end Real
 
 /-- Pseudometric space structure pulled back by a function. -/
@@ -1497,7 +1503,7 @@ def PseudoMetricSpace.induced {α β} (f : α → β) (m : PseudoMetricSpace β)
   uniformity_dist := (uniformity_basis_dist.comap _).eq_biInf
   toBornology := Bornology.induced f
   cobounded_sets := Set.ext fun s => mem_comap_iff_compl.trans <| by
-    simp only [← isBounded_def, isBounded_iff, ball_image_iff, mem_setOf]
+    simp only [← isBounded_def, isBounded_iff, forall_mem_image, mem_setOf]
 #align pseudo_metric_space.induced PseudoMetricSpace.induced
 
 /-- Pull back a pseudometric space structure by an inducing map. This is a version of
@@ -1617,7 +1623,7 @@ section Prod
 
 variable [PseudoMetricSpace β]
 
--- porting note: added `let`, otherwise `simp` failed
+-- Porting note: added `let`, otherwise `simp` failed
 instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y : α × β => dist x.1 y.1 ⊔ dist x.2 y.2)
@@ -1625,7 +1631,7 @@ instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
       simp only [sup_eq_max, dist_edist, ← ENNReal.toReal_max (edist_ne_top _ _) (edist_ne_top _ _),
         Prod.edist_eq]
   i.replaceBornology fun s => by
-    simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, ball_image_iff, ←
+    simp only [← isBounded_image_fst_and_snd, isBounded_iff_eventually, forall_mem_image, ←
       eventually_and, ← forall_and, ← max_le_iff]
     rfl
 #align prod.pseudo_metric_space_max Prod.pseudoMetricSpaceMax
@@ -1667,7 +1673,7 @@ theorem sphere_prod (x : α × β) (r : ℝ) :
 
 end Prod
 
--- porting note: 3 new lemmas
+-- Porting note: 3 new lemmas
 theorem dist_dist_dist_le_left (x y z : α) : dist (dist x z) (dist y z) ≤ dist x y :=
   abs_dist_sub_le ..
 
@@ -1839,7 +1845,7 @@ theorem denseRange_iff {f : β → α} : DenseRange f ↔ ∀ x, ∀ r > 0, ∃ 
   forall_congr' fun x => by simp only [mem_closure_iff, exists_range_iff]
 #align metric.dense_range_iff Metric.denseRange_iff
 
--- porting note: `TopologicalSpace.IsSeparable.separableSpace` moved to `EMetricSpace`
+-- Porting note: `TopologicalSpace.IsSeparable.separableSpace` moved to `EMetricSpace`
 
 /-- The preimage of a separable set by an inducing map is separable. -/
 protected theorem _root_.Inducing.isSeparable_preimage {f : β → α} [TopologicalSpace β]
@@ -1890,11 +1896,11 @@ instance pseudoMetricSpacePi : PseudoMetricSpace (∀ b, π b) := by
       simp only [edist_pi_def, edist_nndist, ← ENNReal.coe_finset_sup, ENNReal.coe_toReal])
   refine i.replaceBornology fun s => ?_
   simp only [← isBounded_def, isBounded_iff_eventually, ← forall_isBounded_image_eval_iff,
-    ball_image_iff, ← Filter.eventually_all, Function.eval_apply, @dist_nndist (π _)]
+    forall_mem_image, ← Filter.eventually_all, Function.eval_apply, @dist_nndist (π _)]
   refine' eventually_congr ((eventually_ge_atTop 0).mono fun C hC => _)
   lift C to ℝ≥0 using hC
-  refine' ⟨fun H x hx y hy => NNReal.coe_le_coe.2 <| Finset.sup_le fun b _ => H b x hx y hy,
-    fun H b x hx y hy => NNReal.coe_le_coe.2 _⟩
+  refine ⟨fun H x hx y hy ↦ NNReal.coe_le_coe.2 <| Finset.sup_le fun b _ ↦ H b hx hy,
+    fun H b x hx y hy ↦ NNReal.coe_le_coe.2 ?_⟩
   simpa only using Finset.sup_le_iff.1 (NNReal.coe_le_coe.1 <| H hx hy) b (Finset.mem_univ b)
 #align pseudo_metric_space_pi pseudoMetricSpacePi
 
@@ -2089,10 +2095,9 @@ end SecondCountable
 end Metric
 
 theorem lebesgue_number_lemma_of_metric {s : Set α} {ι : Sort*} {c : ι → Set α} (hs : IsCompact s)
-    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, ball x δ ⊆ c i :=
-  let ⟨_n, en, hn⟩ := lebesgue_number_lemma hs hc₁ hc₂
-  let ⟨δ, δ0, hδ⟩ := mem_uniformity_dist.1 en
-  ⟨δ, δ0, fun x hx => let ⟨i, hi⟩ := hn x hx; ⟨i, fun _y hy => hi (hδ (mem_ball'.mp hy))⟩⟩
+    (hc₁ : ∀ i, IsOpen (c i)) (hc₂ : s ⊆ ⋃ i, c i) : ∃ δ > 0, ∀ x ∈ s, ∃ i, ball x δ ⊆ c i := by
+  simpa only [ball, UniformSpace.ball, preimage_setOf_eq, dist_comm]
+    using uniformity_basis_dist.lebesgue_number_lemma hs hc₁ hc₂
 #align lebesgue_number_lemma_of_metric lebesgue_number_lemma_of_metric
 
 theorem lebesgue_number_lemma_of_metric_sUnion {s : Set α} {c : Set (Set α)} (hs : IsCompact s)

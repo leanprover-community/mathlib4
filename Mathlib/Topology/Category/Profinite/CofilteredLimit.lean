@@ -90,18 +90,18 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   refine' ⟨j0, ⋃ (s : S) (_ : s ∈ G), W s, _, _⟩
   · apply isClopen_biUnion_finset
     intro s hs
-    dsimp
+    dsimp [W]
     rw [dif_pos hs]
     exact ⟨(hV s).1.1.preimage (F.map _).continuous, (hV s).1.2.preimage (F.map _).continuous⟩
   · ext x
     constructor
     · intro hx
-      simp_rw [Set.preimage_iUnion, Set.mem_iUnion]
+      simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion]
       obtain ⟨_, ⟨s, rfl⟩, _, ⟨hs, rfl⟩, hh⟩ := hG hx
       refine' ⟨s, hs, _⟩
       rwa [dif_pos hs, ← Set.preimage_comp, ← Profinite.coe_comp, ← Functor.map_comp, C.w]
     · intro hx
-      simp_rw [Set.preimage_iUnion, Set.mem_iUnion] at hx
+      simp_rw [W, Set.preimage_iUnion, Set.mem_iUnion] at hx
       obtain ⟨s, hs, hx⟩ := hx
       rw [h]
       refine' ⟨s.1, s.2, _⟩
@@ -157,7 +157,7 @@ theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit
   ext1 x
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [LocallyConstant.coe_comap _ _ (C.π.app (j a)).continuous]
-  dsimp [LocallyConstant.flip, LocallyConstant.unflip]
+  dsimp [ggg, LocallyConstant.flip, LocallyConstant.unflip]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [LocallyConstant.coe_comap _ _ (C.π.app j0).continuous]
   dsimp
@@ -183,7 +183,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
   ext x
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [LocallyConstant.coe_comap _ _ (C.π.app j).continuous]
-  dsimp
+  dsimp [σ]
   have h1 : ι (f x) = gg (C.π.app j x) := by
     change f.map (fun a b => if a = b then (0 : Fin 2) else 1) x = _
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
@@ -197,7 +197,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
     exact h1
   · intro a b hh
     have hhh := congr_fun hh a
-    dsimp at hhh
+    dsimp [ι] at hhh
     rw [if_pos rfl] at hhh
     split_ifs at hhh with hh1
     · exact hh1.symm

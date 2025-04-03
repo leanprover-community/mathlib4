@@ -89,11 +89,19 @@ def getLeanTar : IO String := do
 
 abbrev PackageDirs := Lean.RBMap String FilePath compare
 
+structure CacheM.Context where
+  mathlibDepPath : FilePath
+  packageDirs : PackageDirs
+
+abbrev CacheM := ReaderT CacheM.Context IO
+
 /-- Whether this is running on Mathlib repo or not -/
 def isMathlibRoot : IO Bool :=
   FilePath.mk "Mathlib" |>.pathExists
 
-def parseMathlibDepPath (json : Lean.Json) : Except String (Option FilePath) := do
+section
+
+private def parseMathlibDepPath (json : Lean.Json) : Except String (Option FilePath) := do
   let deps ← (← json.getObjVal? "packages").getArr?
   for d in deps do
     let n := ← (← d.getObjVal? "name").getStr?
@@ -106,7 +114,7 @@ def parseMathlibDepPath (json : Lean.Json) : Except String (Option FilePath) := 
       return LAKEPACKAGESDIR / "mathlib"
   return none
 
-def mathlibDepPath : IO FilePath := do
+private def CacheM.mathlibDepPath : IO FilePath := do
   let raw ← IO.FS.readFile "lake-manifest.json"
   match (Lean.Json.parse raw >>= parseMathlibDepPath) with
   | .ok (some p) => return p
@@ -118,9 +126,9 @@ def mathlibDepPath : IO FilePath := do
   | .error e => throw <| IO.userError s!"Cannot parse lake-manifest.json: {e}"
 
 -- TODO this should be generated automatically from the information in `lakefile.lean`.
-def getPackageDirs : IO PackageDirs := do
-  let root ← mathlibDepPath
-  return .ofList [
+private def CacheM.getContext : IO CacheM.Context := do
+  let root ← CacheM.mathlibDepPath
+  return ⟨root, .ofList [
     ("Mathlib", root),
     ("MathlibExtras", root),
     ("Archive", root),
@@ -131,14 +139,20 @@ def getPackageDirs : IO PackageDirs := do
     ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
     ("Qq", LAKEPACKAGESDIR / "Qq"),
     ("ImportGraph", LAKEPACKAGESDIR / "importGraph")
-  ]
+  ]⟩
 
-initialize pkgDirs : PackageDirs ← getPackageDirs
+def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
-def getPackageDir (path : FilePath) : IO FilePath :=
+end
+
+def mathlibDepPath : CacheM FilePath := return (← read).mathlibDepPath
+
+def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
+
+def getPackageDir (path : FilePath) : CacheM FilePath := do
   match path.withExtension "" |>.components.head? with
   | none => throw <| IO.userError "Can't find package directory for empty path"
-  | some pkg => match pkgDirs.find? pkg with
+  | some pkg => match (← getPackageDirs).find? pkg with
     | none => throw <| IO.userError s!"Unknown package directory for {pkg}"
     | some path => return path
 
@@ -270,7 +284,7 @@ def mkDir (path : FilePath) : IO Unit := do
 Given a path to a Lean file, concatenates the paths to its build files.
 Each build file also has a `Bool` indicating whether that file is required for caching to proceed.
 -/
-def mkBuildPaths (path : FilePath) : IO <| List (FilePath × Bool) := do
+def mkBuildPaths (path : FilePath) : CacheM <| List (FilePath × Bool) := do
   let packageDir ← getPackageDir path
   return [
     -- Note that `packCache` below requires that the `.trace` file is first in this list.
@@ -292,7 +306,7 @@ def allExist (paths : List (FilePath × Bool)) : IO Bool := do
 /-- Compresses build files into the local cache and returns an array with the compressed files -/
 def packCache (hashMap : HashMap) (overwrite verbose unpackedOnly : Bool)
     (comment : Option String := none) :
-    IO <| Array String := do
+    CacheM <| Array String := do
   mkDir CACHEDIR
   IO.println "Compressing cache"
   let mut acc := #[]
@@ -335,7 +349,7 @@ def isPathFromMathlib (path : FilePath) : Bool :=
   | _ => false
 
 /-- Decompresses build files into their respective folders -/
-def unpackCache (hashMap : HashMap) (force : Bool) : IO Unit := do
+def unpackCache (hashMap : HashMap) (force : Bool) : CacheM Unit := do
   let hashMap ← hashMap.filterExists true
   let size := hashMap.size
   if size > 0 then

@@ -33,7 +33,7 @@ dual, Lax-Milgram
 
 noncomputable section
 
-open IsROrC LinearMap ContinuousLinearMap InnerProductSpace
+open RCLike LinearMap ContinuousLinearMap InnerProductSpace
 
 open LinearMap (ker range)
 
@@ -44,7 +44,6 @@ universe u
 namespace IsCoercive
 
 variable {V : Type u} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
-
 variable {B : V →L[ℝ] V →L[ℝ] ℝ}
 
 local postfix:1024 "♯" => @continuousLinearMapOfBilin ℝ V _ _ _ _
@@ -78,13 +77,15 @@ theorem ker_eq_bot (coercive : IsCoercive B) : ker B♯ = ⊥ := by
   exact antilipschitz.injective
 #align is_coercive.ker_eq_bot IsCoercive.ker_eq_bot
 
-theorem closed_range (coercive : IsCoercive B) : IsClosed (range B♯ : Set V) := by
+theorem isClosed_range (coercive : IsCoercive B) : IsClosed (range B♯ : Set V) := by
   rcases coercive.antilipschitz with ⟨_, _, antilipschitz⟩
   exact antilipschitz.isClosed_range B♯.uniformContinuous
-#align is_coercive.closed_range IsCoercive.closed_range
+#align is_coercive.closed_range IsCoercive.isClosed_range
+
+@[deprecated] alias closed_range := isClosed_range
 
 theorem range_eq_top (coercive : IsCoercive B) : range B♯ = ⊤ := by
-  haveI := coercive.closed_range.completeSpace_coe
+  haveI := coercive.isClosed_range.completeSpace_coe
   rw [← (range B♯).orthogonal_orthogonal]
   rw [Submodule.eq_top_iff']
   intro v w mem_w_orthogonal

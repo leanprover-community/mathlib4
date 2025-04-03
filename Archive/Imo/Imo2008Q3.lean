@@ -41,8 +41,8 @@ theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) 
   let m := ZMod.valMinAbs y
   let n := Int.natAbs m
   have hnat₁ : p ∣ n ^ 2 + 1 := by
-    refine' Int.coe_nat_dvd.mp _
-    simp only [n, Int.natAbs_sq, Int.coe_nat_pow, Int.ofNat_succ, Int.coe_nat_dvd.mp]
+    refine' Int.natCast_dvd_natCast.mp _
+    simp only [n, Int.natAbs_sq, Int.coe_nat_pow, Int.ofNat_succ, Int.natCast_dvd_natCast.mp]
     refine' (ZMod.int_cast_zmod_eq_zero_iff_dvd (m ^ 2 + 1) p).mp _
     simp only [m, Int.cast_pow, Int.cast_add, Int.cast_one, ZMod.coe_valMinAbs]
     rw [pow_two, ← hy]; exact add_left_neg 1
@@ -82,6 +82,6 @@ theorem imo2008_q3 : ∀ N : ℕ, ∃ n : ℕ, n ≥ N ∧
   obtain ⟨n, hnat, hreal⟩ := p_lemma p hpp hpmod4 (by linarith [hineq₁, Nat.zero_le (N ^ 2)])
   have hineq₂ : n ^ 2 + 1 ≥ p := Nat.le_of_dvd (n ^ 2).succ_pos hnat
   have hineq₃ : n * n ≥ N * N := by linarith [hineq₁, hineq₂]
-  have hn_ge_N : n ≥ N := Nat.mul_self_le_mul_self_iff.mpr hineq₃
+  have hn_ge_N : n ≥ N := Nat.mul_self_le_mul_self_iff.1 hineq₃
   exact ⟨n, hn_ge_N, p, hpp, hnat, hreal⟩
 #align imo2008_q3 imo2008_q3

@@ -217,7 +217,7 @@ theorem polynomialFunctions.eq_adjoin_X (s : Set R) :
     exact Subalgebra.algebraMap_mem _ r
   · rw [map_add]
     exact add_mem hf hg
-  · rw [pow_succ', ← mul_assoc, map_mul]
+  · rw [pow_succ, ← mul_assoc, map_mul]
     exact mul_mem hn (Algebra.subset_adjoin <| Set.mem_singleton _)
 
 theorem polynomialFunctions.le_equalizer {A : Type*} [Semiring A] [Algebra R A] (s : Set R)
@@ -227,7 +227,7 @@ theorem polynomialFunctions.le_equalizer {A : Type*} [Semiring A] [Algebra R A] 
   rw [polynomialFunctions.eq_adjoin_X s]
   exact φ.adjoin_le_equalizer ψ fun x hx => (Set.mem_singleton_iff.1 hx).symm ▸ h
 
-open StarSubalgebra
+open StarAlgebra
 
 theorem polynomialFunctions.starClosure_eq_adjoin_X [StarRing R] [ContinuousStar R] (s : Set R) :
     (polynomialFunctions s).starClosure = adjoin R {toContinuousMapOnAlgHom s X} := by

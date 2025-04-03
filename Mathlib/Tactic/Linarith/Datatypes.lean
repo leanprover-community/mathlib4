@@ -164,7 +164,7 @@ end Ineq
 The main datatype for FM elimination.
 Variables are represented by natural numbers, each of which has an integer coefficient.
 Index 0 is reserved for constants, i.e. `coeffs.find 0` is the coefficient of 1.
-The represented term is `coeffs.sum (λ ⟨k, v⟩, v * Var[k])`.
+The represented term is `coeffs.sum (fun ⟨k, v⟩ ↦ v * Var[k])`.
 str determines the strength of the comparison -- is it < 0, ≤ 0, or = 0?
 -/
 structure Comp : Type where

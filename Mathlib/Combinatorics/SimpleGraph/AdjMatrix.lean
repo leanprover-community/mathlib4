@@ -148,7 +148,6 @@ open Matrix
 namespace SimpleGraph
 
 variable (G : SimpleGraph V) [DecidableRel G.Adj]
-
 variable (α)
 
 /-- `adjMatrix G α` is the matrix `A` such that `A i j = (1 : α)` if `i` and `j` are
@@ -293,12 +292,17 @@ theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] :
     · repeat rw [if_pos heq, add_zero]
     · rw [if_neg heq, if_neg heq, zero_add, zero_add, if_pos (refl 0)]
 
+theorem dotProduct_mulVec_adjMatrix [Ring α] (vec : V → α) :
+    vec ⬝ᵥ (G.adjMatrix α).mulVec vec =
+    ∑ i : V, ∑ j : V, if G.Adj i j then vec i * vec j else 0 := by
+  simp only [dotProduct, mulVec, adjMatrix_apply, ite_mul, one_mul, zero_mul, mul_sum, mul_ite,
+    mul_zero]
+
 end SimpleGraph
 
 namespace Matrix.IsAdjMatrix
 
 variable [MulZeroOneClass α] [Nontrivial α]
-
 variable {A : Matrix V V α} (h : IsAdjMatrix A)
 
 /-- If `A` is qualified as an adjacency matrix,

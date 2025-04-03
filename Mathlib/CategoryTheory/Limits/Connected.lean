@@ -63,9 +63,7 @@ instance parallel_pair_connected : IsConnected WalkingParallelPair := by
 end Examples
 
 variable {C : Type u₂} [Category.{v₂} C]
-
 variable [HasBinaryProducts C]
-
 variable {J : Type v₂} [SmallCategory J]
 
 namespace ProdPreservesConnectedLimits

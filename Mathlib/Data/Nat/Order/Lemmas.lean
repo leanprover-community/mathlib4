@@ -36,7 +36,7 @@ instance Subtype.orderBot (s : Set ℕ) [DecidablePred (· ∈ s)] [h : Nonempty
 #align nat.subtype.order_bot Nat.Subtype.orderBot
 
 instance Subtype.semilatticeSup (s : Set ℕ) : SemilatticeSup s :=
-  { Subtype.linearOrder s, LinearOrder.toLattice with }
+  { Subtype.instLinearOrder s, LinearOrder.toLattice with }
 #align nat.subtype.semilattice_sup Nat.Subtype.semilatticeSup
 
 theorem Subtype.coe_bot {s : Set ℕ} [DecidablePred (· ∈ s)] [h : Nonempty s] :
@@ -55,13 +55,13 @@ protected theorem lt_div_iff_mul_lt {n d : ℕ} (hnd : d ∣ n) (a : ℕ) : a < 
   rw [← mul_lt_mul_left hd0, ← Nat.eq_mul_of_div_eq_right hnd rfl]
 #align nat.lt_div_iff_mul_lt Nat.lt_div_iff_mul_lt
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem mul_div_eq_iff_dvd {n d : ℕ} : d * (n / d) = n ↔ d ∣ n :=
   calc
     d * (n / d) = n ↔ d * (n / d) = d * (n / d) + (n % d) := by rw [div_add_mod]
     _ ↔ d ∣ n := by rw [self_eq_add_right, dvd_iff_mod_eq_zero]
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem mul_div_lt_iff_not_dvd {n d : ℕ} : d * (n / d) < n ↔ ¬(d ∣ n) :=
   (mul_div_le _ _).lt_iff_ne.trans mul_div_eq_iff_dvd.not
 
@@ -212,7 +212,7 @@ theorem eq_zero_of_dvd_of_lt {a b : ℕ} (w : a ∣ b) (h : b < a) : b = 0 :=
 
 theorem le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
-  -- porting note: Needed to give an explicit argument to `mul_add_one`
+  -- Porting note: Needed to give an explicit argument to `mul_add_one`
   rw [← mul_add_one n] at h
   exact mul_le_mul_left' (Nat.lt_succ_iff.1 <| lt_of_mul_lt_mul_left h bot_le) _
 #align nat.le_of_lt_add_of_dvd Nat.le_of_lt_add_of_dvd

@@ -79,8 +79,6 @@ so that the resulting instance uses the compact-open topology.
 
 ## TODO
 
-* When `α` is compact and `β` is a metric space,
-  the compact-convergence topology (and thus also the compact-open topology) is metrisable.
 * Results about uniformly continuous functions `γ → C(α, β)`
   and uniform limits of sequences `ι → γ → C(α, β)`.
 -/
@@ -93,7 +91,6 @@ open scoped Uniformity Topology UniformConvergence
 open UniformSpace Set Filter
 
 variable {α : Type u₁} {β : Type u₂} [TopologicalSpace α] [UniformSpace β]
-
 variable (K : Set α) (V : Set (β × β)) (f : C(α, β))
 
 namespace ContinuousMap
@@ -166,7 +163,7 @@ and replace the topology with `compactOpen` to avoid non-defeq diamonds,
 see Note [forgetful inheritance].  -/
 instance compactConvergenceUniformSpace : UniformSpace C(α, β) :=
   .replaceTopology (.comap toUniformOnFunIsCompact inferInstance) <| by
-    refine eq_of_nhds_eq_nhds fun f ↦ eq_of_forall_le_iff fun l ↦ ?_
+    refine TopologicalSpace.ext_nhds fun f ↦ eq_of_forall_le_iff fun l ↦ ?_
     simp_rw [← tendsto_id', tendsto_iff_forall_compact_tendstoUniformlyOn,
       nhds_induced, tendsto_comap_iff, UniformOnFun.tendsto_iff_tendstoUniformlyOn]
     rfl
@@ -222,6 +219,34 @@ theorem mem_compactConvergence_entourage_iff (X : Set (C(α, β) × C(α, β))) 
         { fg : C(α, β) × C(α, β) | ∀ x ∈ K, (fg.1 x, fg.2 x) ∈ V } ⊆ X := by
   simp [hasBasis_compactConvergenceUniformity.mem_iff, and_assoc]
 #align continuous_map.mem_compact_convergence_entourage_iff ContinuousMap.mem_compactConvergence_entourage_iff
+
+/-- If `K` is a compact exhaustion of `α`
+and `V i` bounded by `p i` is a basis of entourages of `β`,
+then `fun (n, i) ↦ {(f, g) | ∀ x ∈ K n, (f x, g x) ∈ V i}` bounded by `p i`
+is a basis of entourages of `C(α, β)`. -/
+theorem _root_.CompactExhaustion.hasBasis_compactConvergenceUniformity {ι : Type*}
+    {p : ι → Prop} {V : ι → Set (β × β)} (K : CompactExhaustion α) (hb : (𝓤 β).HasBasis p V) :
+    HasBasis (𝓤 C(α, β)) (fun i : ℕ × ι ↦ p i.2) fun i ↦
+      {fg | ∀ x ∈ K i.1, (fg.1 x, fg.2 x) ∈ V i.2} :=
+  (UniformOnFun.hasBasis_uniformity_of_covering_of_basis {K | IsCompact K} K.isCompact
+    (Monotone.directed_le K.subset) (fun _ ↦ K.exists_superset_of_isCompact) hb).comap _
+
+theorem _root_.CompactExhaustion.hasAntitoneBasis_compactConvergenceUniformity
+    {V : ℕ → Set (β × β)} (K : CompactExhaustion α) (hb : (𝓤 β).HasAntitoneBasis V) :
+    HasAntitoneBasis (𝓤 C(α, β)) fun n ↦ {fg | ∀ x ∈ K n, (fg.1 x, fg.2 x) ∈ V n} :=
+  (UniformOnFun.hasAntitoneBasis_uniformity {K | IsCompact K} K.isCompact
+    K.subset (fun _ ↦ K.exists_superset_of_isCompact) hb).comap _
+
+/-- If `α` is a weakly locally compact σ-compact space
+(e.g., a proper pseudometric space or a compact spaces)
+and the uniformity on `β` is pseudometrizable,
+then the uniformity on `C(α, β)` is pseudometrizable too.
+-/
+instance [WeaklyLocallyCompactSpace α] [SigmaCompactSpace α] [IsCountablyGenerated (𝓤 β)] :
+    IsCountablyGenerated (𝓤 (C(α, β))) :=
+  let ⟨_V, hV⟩ := exists_antitone_basis (𝓤 β)
+  ((CompactExhaustion.choice α).hasAntitoneBasis_compactConvergenceUniformity
+    hV).isCountablyGenerated
 
 variable {ι : Type u₃} {p : Filter ι} {F : ι → C(α, β)} {f}
 

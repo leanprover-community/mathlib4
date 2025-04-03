@@ -41,7 +41,6 @@ namespace CategoryTheory.Limits
 universe w v v₂ u u₂
 
 variable {C : Type u} [Category.{v} C]
-
 variable {J : Type w} [SmallCategory J]
 
 -- We hide the "implementation details" inside a namespace

@@ -42,11 +42,8 @@ universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 open CategoryTheory
 
 variable {J : Type u₁} [Category.{v₁} J]
-
 variable {K : Type u₂} [Category.{v₂} K]
-
 variable {C : Type u₃} [Category.{v₃} C]
-
 variable {D : Type u₄} [Category.{v₄} D]
 
 open CategoryTheory
@@ -338,6 +335,31 @@ theorem cone_iso_of_hom_iso {K : J ⥤ C} {c d : Cone K} (f : c ⟶ d) [i : IsIs
         w := fun j => (asIso f.hom).inv_comp_eq.2 (f.w j).symm }, by aesop_cat⟩⟩
 #align category_theory.limits.cones.cone_iso_of_hom_iso CategoryTheory.Limits.Cones.cone_iso_of_hom_iso
 
+/-- There is a morphism from an extended cone to the original cone. -/
+@[simps]
+def extend (s : Cone F) {X : C} (f : X ⟶ s.pt) : s.extend f ⟶ s where
+  hom := f
+
+/-- Extending a cone by the identity does nothing. -/
+@[simps!]
+def extendId (s : Cone F) : s.extend (𝟙 s.pt) ≅ s :=
+  Cones.ext (Iso.refl _)
+
+/-- Extending a cone by a composition is the same as extending the cone twice. -/
+@[simps!]
+def extendComp (s : Cone F) {X Y : C} (f : X ⟶ Y) (g : Y ⟶ s.pt) :
+    s.extend (f ≫ g) ≅ (s.extend g).extend f :=
+  Cones.ext (Iso.refl _)
+
+/-- A cone extended by an isomorphism is isomorphic to the original cone. -/
+@[simps]
+def extendIso (s : Cone F) {X : C} (f : X ≅ s.pt) : s.extend f.hom ≅ s where
+  hom := { hom := f.hom }
+  inv := { hom := f.inv }
+
+instance {s : Cone F} {X : C} (f : X ⟶ s.pt) [IsIso f] : IsIso (Cones.extend s f) :=
+  ⟨(extendIso s (asIso f)).inv, by aesop_cat⟩
+
 /--
 Functorially postcompose a cone for `F` by a natural transformation `F ⟶ G` to give a cone for `G`.
 -/
@@ -438,12 +460,10 @@ instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) wher
       w := fun j => G.map_injective (by simpa using t.w j) }
 #align category_theory.limits.cones.functoriality_full CategoryTheory.Limits.Cones.functorialityFull
 
-instance functorialityFaithful [Faithful G] : Faithful (Cones.functoriality F G) where
-  map_injective {c} {c'} f g e := by
-    apply ConeMorphism.ext f g
-    let f := ConeMorphism.mk.inj e
-    apply G.map_injective f
-#align category_theory.limits.cones.functoriality_faithful CategoryTheory.Limits.Cones.functorialityFaithful
+instance functoriality_faithful [Faithful G] : Faithful (Cones.functoriality F G) where
+  map_injective {_X} {_Y} f g h :=
+    ConeMorphism.ext f g <| G.map_injective <| congr_arg ConeMorphism.hom h
+#align category_theory.limits.cones.functoriality_faithful CategoryTheory.Limits.Cones.functoriality_faithful
 
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an
 equivalence between cones over `F` and cones over `F ⋙ e.functor`.
@@ -536,6 +556,31 @@ theorem cocone_iso_of_hom_iso {K : J ⥤ C} {c d : Cocone K} (f : c ⟶ d) [i : 
   ⟨⟨{ hom := inv f.hom
       w := fun j => (asIso f.hom).comp_inv_eq.2 (f.w j).symm }, by aesop_cat⟩⟩
 #align category_theory.limits.cocones.cocone_iso_of_hom_iso CategoryTheory.Limits.Cocones.cocone_iso_of_hom_iso
+
+/-- There is a morphism from a cocone to its extension. -/
+@[simps]
+def extend (s : Cocone F) {X : C} (f : s.pt ⟶ X) : s ⟶ s.extend f where
+  hom := f
+
+/-- Extending a cocone by the identity does nothing. -/
+@[simps!]
+def extendId (s : Cocone F) : s ≅ s.extend (𝟙 s.pt) :=
+  Cocones.ext (Iso.refl _)
+
+/-- Extending a cocone by a composition is the same as extending the cone twice. -/
+@[simps!]
+def extendComp (s : Cocone F) {X Y : C} (f : s.pt ⟶ X) (g : X ⟶ Y) :
+    s.extend (f ≫ g) ≅ (s.extend f).extend g :=
+  Cocones.ext (Iso.refl _)
+
+/-- A cocone extended by an isomorphism is isomorphic to the original cone. -/
+@[simps]
+def extendIso (s : Cocone F) {X : C} (f : s.pt ≅ X) : s ≅ s.extend f.hom where
+  hom := { hom := f.hom }
+  inv := { hom := f.inv }
+
+instance {s : Cocone F} {X : C} (f : s.pt ⟶ X) [IsIso f] : IsIso (Cocones.extend s f) :=
+  ⟨(extendIso s (asIso f)).inv, by aesop_cat⟩
 
 /-- Functorially precompose a cocone for `F` by a natural transformation `G ⟶ F` to give a cocone
 for `G`. -/
@@ -635,10 +680,8 @@ instance functorialityFull [Full G] [Faithful G] : Full (functoriality F G) wher
 #align category_theory.limits.cocones.functoriality_full CategoryTheory.Limits.Cocones.functorialityFull
 
 instance functoriality_faithful [Faithful G] : Faithful (functoriality F G) where
-  map_injective {X} {Y} f g e := by
-    apply CoconeMorphism.ext
-    let h := CoconeMorphism.mk.inj e
-    apply G.map_injective h
+  map_injective {_X} {_Y} f g h :=
+    CoconeMorphism.ext f g <| G.map_injective <| congr_arg CoconeMorphism.hom h
 #align category_theory.limits.cocones.functoriality_faithful CategoryTheory.Limits.Cocones.functoriality_faithful
 
 /-- If `e : C ≌ D` is an equivalence of categories, then `functoriality F e.functor` induces an

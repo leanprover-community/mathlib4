@@ -52,7 +52,7 @@ free group, free groupoid, Nielsen-Schreier
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 universe v u
 

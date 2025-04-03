@@ -39,7 +39,7 @@ assert_not_exists Module
 assert_not_exists Submonoid
 assert_not_exists FloorRing
 
-set_option autoImplicit true
+variable {α β : Type*}
 
 open IsAbsoluteValue
 
@@ -66,7 +66,7 @@ theorem rat_mul_continuous_lemma {ε K₁ K₂ : α} (ε0 : 0 < ε) :
   set M := max 1 (max K₁ K₂)
   have : abv (a₁ - b₁) * abv b₂ + abv (a₂ - b₂) * abv a₁ < ε / 2 / M * M + ε / 2 / M * M := by
     gcongr
-  rw [← abv_mul abv, mul_comm, div_mul_cancel _ (ne_of_gt K0), ← abv_mul abv, add_halves] at this
+  rw [← abv_mul abv, mul_comm, div_mul_cancel₀ _ (ne_of_gt K0), ← abv_mul abv, add_halves] at this
   simpa [sub_eq_add_neg, mul_add, add_mul, add_left_comm] using
     lt_of_le_of_lt (abv_add abv _ _) this
 #align rat_mul_continuous_lemma rat_mul_continuous_lemma
@@ -181,8 +181,8 @@ theorem mk_to_fun (f) (hf : IsCauSeq abv f) : @coeFn (CauSeq β abv) _ _ ⟨f, h
   rfl -/
 #noalign cau_seq.mk_to_fun
 
-theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g :=
-  Subtype.eq (funext h)
+@[ext]
+theorem ext {f g : CauSeq β abv} (h : ∀ i, f i = g i) : f = g := Subtype.eq (funext h)
 #align cau_seq.ext CauSeq.ext
 
 theorem isCauSeq (f : CauSeq β abv) : IsCauSeq abv f :=
@@ -349,7 +349,7 @@ theorem const_sub (x y : β) : const (x - y) = const x - const y :=
 
 section SMul
 
-variable [SMul G β] [IsScalarTower G β β]
+variable {G : Type*} [SMul G β] [IsScalarTower G β β]
 
 instance : SMul G (CauSeq β abv) :=
   ⟨fun a f => (ofEq (const (a • (1 : β)) * f) (a • (f : ℕ → β))) fun _ => smul_one_mul _ _⟩
@@ -432,7 +432,7 @@ theorem mul_limZero_right (f : CauSeq β abv) {g} (hg : LimZero g) : LimZero (f 
     let ⟨F, F0, hF⟩ := f.bounded' 0
     (hg _ <| div_pos ε0 F0).imp fun i H j ij => by
       have := mul_lt_mul' (le_of_lt <| hF j) (H _ ij) (abv_nonneg abv _) F0
-      rwa [mul_comm F, div_mul_cancel _ (ne_of_gt F0), ← abv_mul] at this
+      rwa [mul_comm F, div_mul_cancel₀ _ (ne_of_gt F0), ← abv_mul] at this
 #align cau_seq.mul_lim_zero_right CauSeq.mul_limZero_right
 
 theorem mul_limZero_left {f} (g : CauSeq β abv) (hg : LimZero f) : LimZero (f * g)
@@ -440,7 +440,7 @@ theorem mul_limZero_left {f} (g : CauSeq β abv) (hg : LimZero f) : LimZero (f *
     let ⟨G, G0, hG⟩ := g.bounded' 0
     (hg _ <| div_pos ε0 G0).imp fun i H j ij => by
       have := mul_lt_mul'' (H _ ij) (hG j) (abv_nonneg abv _) (abv_nonneg abv _)
-      rwa [div_mul_cancel _ (ne_of_gt G0), ← abv_mul] at this
+      rwa [div_mul_cancel₀ _ (ne_of_gt G0), ← abv_mul] at this
 #align cau_seq.mul_lim_zero_left CauSeq.mul_limZero_left
 
 theorem neg_limZero {f : CauSeq β abv} (hf : LimZero f) : LimZero (-f) := by
@@ -580,7 +580,7 @@ theorem mul_equiv_mul {f1 f2 g1 g2 : CauSeq β abv} (hf : f1 ≈ f2) (hg : g1 �
   -/
 #align cau_seq.mul_equiv_mul CauSeq.mul_equiv_mul
 
-theorem smul_equiv_smul [SMul G β] [IsScalarTower G β β] {f1 f2 : CauSeq β abv} (c : G)
+theorem smul_equiv_smul {G : Type*} [SMul G β] [IsScalarTower G β β] {f1 f2 : CauSeq β abv} (c : G)
     (hf : f1 ≈ f2) : c • f1 ≈ c • f2 := by
   simpa [const_smul, smul_one_mul _ _] using
     mul_equiv_mul (const_equiv.mpr <| Eq.refl <| c • (1 : β)) hf
@@ -589,7 +589,7 @@ theorem smul_equiv_smul [SMul G β] [IsScalarTower G β β] {f1 f2 : CauSeq β a
 theorem pow_equiv_pow {f1 f2 : CauSeq β abv} (hf : f1 ≈ f2) (n : ℕ) : f1 ^ n ≈ f2 ^ n := by
   induction' n with n ih
   · simp only [Nat.zero_eq, pow_zero, Setoid.refl]
-  · simpa only [pow_succ] using mul_equiv_mul hf ih
+  · simpa only [pow_succ'] using mul_equiv_mul hf ih
 #align cau_seq.pow_equiv_pow CauSeq.pow_equiv_pow
 
 end Ring
@@ -904,21 +904,17 @@ protected theorem lt_inf {a b c : CauSeq α abs} (hb : a < b) (hc : a < c) : a <
 #align cau_seq.lt_inf CauSeq.lt_inf
 
 @[simp]
-protected theorem sup_idem (a : CauSeq α abs) : a ⊔ a = a :=
-  Subtype.ext sup_idem
+protected theorem sup_idem (a : CauSeq α abs) : a ⊔ a = a := Subtype.ext (sup_idem _)
 #align cau_seq.sup_idem CauSeq.sup_idem
 
 @[simp]
-protected theorem inf_idem (a : CauSeq α abs) : a ⊓ a = a :=
-  Subtype.ext inf_idem
+protected theorem inf_idem (a : CauSeq α abs) : a ⊓ a = a := Subtype.ext (inf_idem _)
 #align cau_seq.inf_idem CauSeq.inf_idem
 
-protected theorem sup_comm (a b : CauSeq α abs) : a ⊔ b = b ⊔ a :=
-  Subtype.ext sup_comm
+protected theorem sup_comm (a b : CauSeq α abs) : a ⊔ b = b ⊔ a := Subtype.ext (sup_comm _ _)
 #align cau_seq.sup_comm CauSeq.sup_comm
 
-protected theorem inf_comm (a b : CauSeq α abs) : a ⊓ b = b ⊓ a :=
-  Subtype.ext inf_comm
+protected theorem inf_comm (a b : CauSeq α abs) : a ⊓ b = b ⊓ a := Subtype.ext (inf_comm _ _)
 #align cau_seq.inf_comm CauSeq.inf_comm
 
 protected theorem sup_eq_right {a b : CauSeq α abs} (h : a ≤ b) : a ⊔ b ≈ b := by
@@ -998,11 +994,11 @@ protected theorem le_inf {a b c : CauSeq α abs} (hb : a ≤ b) (hc : a ≤ c) :
 
 
 protected theorem sup_inf_distrib_left (a b c : CauSeq α abs) : a ⊔ b ⊓ c = (a ⊔ b) ⊓ (a ⊔ c) :=
-  Subtype.ext <| funext fun _ => max_min_distrib_left
+  ext fun _ ↦ max_min_distrib_left _ _ _
 #align cau_seq.sup_inf_distrib_left CauSeq.sup_inf_distrib_left
 
 protected theorem sup_inf_distrib_right (a b c : CauSeq α abs) : a ⊓ b ⊔ c = (a ⊔ c) ⊓ (b ⊔ c) :=
-  Subtype.ext <| funext fun _ => max_min_distrib_right
+  ext fun _ ↦ max_min_distrib_right _ _ _
 #align cau_seq.sup_inf_distrib_right CauSeq.sup_inf_distrib_right
 
 end Abs

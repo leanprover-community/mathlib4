@@ -321,12 +321,12 @@ instance Pi.nonUnitalSeminormedRing {π : ι → Type*} [Fintype ι]
            }
 #align pi.non_unital_semi_normed_ring Pi.nonUnitalSeminormedRing
 
-instance MulOpposite.nonUnitalSeminormedRing : NonUnitalSeminormedRing αᵐᵒᵖ :=
-  { MulOpposite.seminormedAddCommGroup, MulOpposite.nonUnitalRing α with
-    norm_mul :=
-      MulOpposite.rec' fun x =>
-        MulOpposite.rec' fun y => (norm_mul_le y x).trans_eq (mul_comm _ _) }
-#align mul_opposite.non_unital_semi_normed_ring MulOpposite.nonUnitalSeminormedRing
+instance MulOpposite.instNonUnitalSeminormedRing : NonUnitalSeminormedRing αᵐᵒᵖ where
+  __ := instNonUnitalRing
+  __ := instSeminormedAddCommGroup
+  norm_mul := MulOpposite.rec' fun x ↦ MulOpposite.rec' fun y ↦
+    (norm_mul_le y x).trans_eq (mul_comm _ _)
+#align mul_opposite.non_unital_semi_normed_ring MulOpposite.instNonUnitalSeminormedRing
 
 end NonUnitalSeminormedRing
 
@@ -406,7 +406,7 @@ See also `nnnorm_pow_le`. -/
 theorem nnnorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ ‖a‖₊ ^ n
   | 1, _ => by simp only [pow_one, le_rfl]
   | n + 2, _ => by
-    simpa only [pow_succ _ (n + 1)] using
+    simpa only [pow_succ' _ (n + 1)] using
       le_trans (nnnorm_mul_le _ _) (mul_le_mul_left' (nnnorm_pow_le' a n.succ_pos) _)
 #align nnnorm_pow_le' nnnorm_pow_le'
 
@@ -448,9 +448,10 @@ instance Pi.seminormedRing {π : ι → Type*} [Fintype ι] [∀ i, SeminormedRi
   { Pi.nonUnitalSeminormedRing, Pi.ring with }
 #align pi.semi_normed_ring Pi.seminormedRing
 
-instance MulOpposite.seminormedRing : SeminormedRing αᵐᵒᵖ :=
-  { MulOpposite.nonUnitalSeminormedRing, MulOpposite.ring α with }
-#align mul_opposite.semi_normed_ring MulOpposite.seminormedRing
+instance MulOpposite.instSeminormedRing : SeminormedRing αᵐᵒᵖ where
+  __ := instRing
+  __ := instNonUnitalSeminormedRing
+#align mul_opposite.semi_normed_ring MulOpposite.instSeminormedRing
 
 end SeminormedRing
 
@@ -474,9 +475,11 @@ instance Pi.nonUnitalNormedRing {π : ι → Type*} [Fintype ι] [∀ i, NonUnit
   { Pi.nonUnitalSeminormedRing, Pi.normedAddCommGroup with }
 #align pi.non_unital_normed_ring Pi.nonUnitalNormedRing
 
-instance MulOpposite.nonUnitalNormedRing : NonUnitalNormedRing αᵐᵒᵖ :=
-  { MulOpposite.nonUnitalSeminormedRing, MulOpposite.normedAddCommGroup with }
-#align mul_opposite.non_unital_normed_ring MulOpposite.nonUnitalNormedRing
+instance MulOpposite.instNonUnitalNormedRing : NonUnitalNormedRing αᵐᵒᵖ where
+  __ := instNonUnitalRing
+  __ := instNonUnitalSeminormedRing
+  __ := instNormedAddCommGroup
+#align mul_opposite.non_unital_normed_ring MulOpposite.instNonUnitalNormedRing
 
 end NonUnitalNormedRing
 
@@ -506,9 +509,11 @@ instance Pi.normedRing {π : ι → Type*} [Fintype ι] [∀ i, NormedRing (π i
   { Pi.seminormedRing, Pi.normedAddCommGroup with }
 #align pi.normed_ring Pi.normedRing
 
-instance MulOpposite.normedRing : NormedRing αᵐᵒᵖ :=
-  { MulOpposite.seminormedRing, MulOpposite.normedAddCommGroup with }
-#align mul_opposite.normed_ring MulOpposite.normedRing
+instance MulOpposite.instNormedRing : NormedRing αᵐᵒᵖ where
+  __ := instRing
+  __ := instSeminormedRing
+  __ := instNormedAddCommGroup
+#align mul_opposite.normed_ring MulOpposite.instNormedRing
 
 end NormedRing
 
@@ -531,8 +536,9 @@ instance Pi.nonUnitalSeminormedCommRing {π : ι → Type*} [Fintype ι]
     [∀ i, NonUnitalSeminormedCommRing (π i)] : NonUnitalSeminormedCommRing (∀ i, π i) :=
   { Pi.nonUnitalSeminormedRing, Pi.nonUnitalCommRing with }
 
-instance MulOpposite.nonUnitalSeminormedCommRing : NonUnitalSeminormedCommRing αᵐᵒᵖ :=
-  { MulOpposite.nonUnitalSeminormedRing, MulOpposite.nonUnitalCommRing α with }
+instance MulOpposite.instNonUnitalSeminormedCommRing : NonUnitalSeminormedCommRing αᵐᵒᵖ where
+  __ := instNonUnitalSeminormedRing
+  __ := instNonUnitalCommRing
 
 end NonUnitalSeminormedCommRing
 
@@ -569,8 +575,9 @@ instance Pi.nonUnitalNormedCommRing {π : ι → Type*} [Fintype ι]
     [∀ i, NonUnitalNormedCommRing (π i)] : NonUnitalNormedCommRing (∀ i, π i) :=
   { Pi.nonUnitalSeminormedCommRing, Pi.normedAddCommGroup with }
 
-instance MulOpposite.nonUnitalNormedCommRing : NonUnitalNormedCommRing αᵐᵒᵖ :=
-  { MulOpposite.nonUnitalSeminormedCommRing, MulOpposite.normedAddCommGroup with }
+instance MulOpposite.instNonUnitalNormedCommRing : NonUnitalNormedCommRing αᵐᵒᵖ where
+  __ := instNonUnitalNormedRing
+  __ := instNonUnitalSeminormedCommRing
 
 end NonUnitalNormedCommRing
 
@@ -592,8 +599,9 @@ instance Pi.seminormedCommRing {π : ι → Type*} [Fintype ι] [∀ i, Seminorm
     SeminormedCommRing (∀ i, π i) :=
   { Pi.nonUnitalSeminormedCommRing, Pi.ring with }
 
-instance MulOpposite.seminormedCommRing : SeminormedCommRing αᵐᵒᵖ :=
-  { MulOpposite.nonUnitalSeminormedCommRing, MulOpposite.ring α with }
+instance MulOpposite.instSeminormedCommRing : SeminormedCommRing αᵐᵒᵖ where
+  __ := instSeminormedRing
+  __ := instNonUnitalSeminormedCommRing
 
 end SeminormedCommRing
 
@@ -627,8 +635,9 @@ instance Pi.normedCommutativeRing {π : ι → Type*} [Fintype ι] [∀ i, Norme
     NormedCommRing (∀ i, π i) :=
   { Pi.seminormedCommRing, Pi.normedAddCommGroup with }
 
-instance MulOpposite.normedCommRing : NormedCommRing αᵐᵒᵖ :=
-  { MulOpposite.seminormedCommRing, MulOpposite.normedAddCommGroup with }
+instance MulOpposite.instNormedCommRing : NormedCommRing αᵐᵒᵖ where
+  __ := instNormedRing
+  __ := instSeminormedCommRing
 
 end NormedCommRing
 
@@ -643,7 +652,7 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
           calc
             ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1 * (e.2 - x.2) + (e.1 - x.1) * x.2‖ := by
               rw [_root_.mul_sub, _root_.sub_mul, sub_add_sub_cancel]
-            -- porting note: `ENNReal.{mul_sub, sub_mul}` should be protected
+            -- Porting note: `ENNReal.{mul_sub, sub_mul}` should be protected
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
         refine squeeze_zero (fun e => norm_nonneg _) this ?_
@@ -859,7 +868,7 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
       ‖e⁻¹ - r⁻¹‖ = ‖r‖⁻¹ * ‖r - e‖ * ‖e‖⁻¹ := by
         rw [← norm_inv, ← norm_inv, ← norm_mul, ← norm_mul, _root_.mul_sub, _root_.sub_mul,
           mul_assoc _ e, inv_mul_cancel r0, mul_inv_cancel e0, one_mul, mul_one]
-      -- porting note: `ENNReal.{mul_sub, sub_mul}` should be `protected`
+      -- Porting note: `ENNReal.{mul_sub, sub_mul}` should be `protected`
       _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field_simp [mul_comm]
       _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
   refine' squeeze_zero' (eventually_of_forall fun _ => norm_nonneg _) this _
@@ -975,7 +984,7 @@ theorem punctured_nhds_neBot (x : α) : NeBot (𝓝[≠] x) := by
   rintro ε ε0
   rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
   refine' ⟨x + b, mt (Set.mem_singleton_iff.trans add_right_eq_self).1 <| norm_pos_iff.1 hb0, _⟩
-  rwa [dist_comm, dist_eq_norm, add_sub_cancel']
+  rwa [dist_comm, dist_eq_norm, add_sub_cancel_left]
 #align normed_field.punctured_nhds_ne_bot NormedField.punctured_nhds_neBot
 
 @[instance]
@@ -1075,7 +1084,7 @@ theorem nnnorm_eq (x : ℝ≥0) : ‖(x : ℝ)‖₊ = x :=
 
 end NNReal
 
-@[simp 1001] -- porting note: increase priority so that the LHS doesn't simplify
+@[simp 1001] -- Porting note: increase priority so that the LHS doesn't simplify
 theorem norm_norm [SeminormedAddCommGroup α] (x : α) : ‖‖x‖‖ = ‖x‖ :=
   Real.norm_of_nonneg (norm_nonneg _)
 #align norm_norm norm_norm
@@ -1110,7 +1119,7 @@ instance Int.normOneClass : NormOneClass ℤ :=
   ⟨by simp [← Int.norm_cast_real]⟩
 
 instance Rat.normedField : NormedField ℚ :=
-  { Rat.normedAddCommGroup, Rat.field with
+  { Rat.normedAddCommGroup, Rat.instField with
     norm_mul' := fun r₁ r₂ => by simp only [norm, Rat.cast_mul, abs_mul] }
 
 instance Rat.denselyNormedField : DenselyNormedField ℚ where
@@ -1256,7 +1265,7 @@ def NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] 
 theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing S]
     [NormOneClass S] [FunLike F R S] [RingHomClass F R S] (f : F) :
     @NormOneClass R (SeminormedRing.induced R S f).toNorm _ :=
-  -- porting note: is this `let` a bad idea somehow?
+  -- Porting note: is this `let` a bad idea somehow?
   let _ : SeminormedRing R := SeminormedRing.induced R S f
   { norm_one := (congr_arg norm (map_one f)).trans norm_one }
 #align norm_one_class.induced NormOneClass.induced

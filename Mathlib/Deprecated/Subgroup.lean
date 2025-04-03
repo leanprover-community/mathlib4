@@ -185,7 +185,7 @@ theorem Additive.isNormalAddSubgroup [Group G] {s : Set G} (hs : IsNormalSubgrou
     @IsNormalAddSubgroup (Additive G) _ s :=
   @IsNormalAddSubgroup.mk (Additive G) _ _ (Additive.isAddSubgroup hs.toIsSubgroup)
     (@IsNormalSubgroup.normal _ ‹Group (Additive G)› _ hs)
-    -- porting note: Lean needs help synthesising
+    -- Porting note: Lean needs help synthesising
 #align additive.is_normal_add_subgroup Additive.isNormalAddSubgroup
 
 theorem Additive.isNormalAddSubgroup_iff [Group G] {s : Set G} :

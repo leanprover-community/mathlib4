@@ -40,6 +40,9 @@ alternating group permutation
 
 -/
 
+-- An example on how to determine the order of an element of a finite group.
+example : orderOf (-1 : ℤˣ) = 2 :=
+  orderOf_eq_prime (Int.units_sq _) (by decide)
 
 open Equiv Equiv.Perm Subgroup Fintype
 
@@ -243,7 +246,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
           normalClosure _ :=
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
-        --Porting note: added `: _`
+        -- Porting note: added `: _`
         ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) : _))
 #align alternating_group.normal_closure_fin_rotate_five alternatingGroup.normalClosure_finRotate_five
 
@@ -288,8 +291,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
   rw [isConj_iff_cycleType_eq, h2]
   interval_cases h_1 : Multiset.card g.cycleType
   · exact (h1 (card_cycleType_eq_zero.1 h_1)).elim
-  · contrapose! ha
-    simp [h_1]
+  · simp at ha
   · have h04 : (0 : Fin 5) ≠ 4 := by decide
     have h13 : (1 : Fin 5) ≠ 3 := by decide
     rw [Disjoint.cycleType, (isCycle_swap h04).cycleType, (isCycle_swap h13).cycleType,
@@ -297,8 +299,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
     · rfl
     · rw [disjoint_iff_disjoint_support, support_swap h04, support_swap h13]
       decide
-  · contrapose! ha
-    decide
+  · contradiction
 #align alternating_group.is_conj_swap_mul_swap_of_cycle_type_two alternatingGroup.isConj_swap_mul_swap_of_cycleType_two
 
 /-- Shows that $A_5$ is simple by taking an arbitrary non-identity element and showing by casework
@@ -317,7 +318,7 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
     by_cases h2 : ∀ n ∈ g.cycleType, n = 2
     -- If the cycle decomposition of `g` consists entirely of swaps, then the cycle type is $(2,2)$.
     -- This means that it is conjugate to $(04)(13)$, whose normal closure is $A_5$.
-    · rw [Ne.def, Subtype.ext_iff] at g1
+    · rw [Ne, Subtype.ext_iff] at g1
       exact
         (isConj_swap_mul_swap_of_cycleType_two gA g1 h2).normalClosure_eq_top_of
           normalClosure_swap_mul_swap_five
@@ -344,9 +345,9 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
       exact mul_mem h h
     · -- The case `n = 4` leads to contradiction, as no element of $A_5$ includes a 4-cycle.
       have con := mem_alternatingGroup.1 gA
-      contrapose! con
-      rw [sign_of_cycleType, cycleType_of_card_le_mem_cycleType_add_two (by decide) ng]
-      decide
+      rw [sign_of_cycleType, cycleType_of_card_le_mem_cycleType_add_two (by decide) ng] at con
+      have : Odd 5 := by decide
+      simp [this] at con
     · -- If `n = 5`, then `g` is itself a 5-cycle, conjugate to `finRotate 5`.
       refine' (isConj_iff_cycleType_eq.2 _).normalClosure_eq_top_of normalClosure_finRotate_five
       rw [cycleType_of_card_le_mem_cycleType_add_two (by decide) ng, cycleType_finRotate]⟩

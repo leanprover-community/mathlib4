@@ -65,7 +65,6 @@ open Matrix BigOperators Equiv Equiv.Perm Finset
 section Invertible
 
 variable [Fintype n] [DecidableEq n] [CommRing α]
-
 variable (A : Matrix n n α) (B : Matrix n n α)
 
 /-- If `A.det` has a constructive inverse, produce one for `A`. -/
@@ -194,8 +193,9 @@ theorem det_ne_zero_of_right_inverse [Nontrivial α] (h : A * B = 1) : A.det ≠
 
 end Invertible
 
-variable [Fintype n] [DecidableEq n] [CommRing α]
+section Inv
 
+variable [Fintype n] [DecidableEq n] [CommRing α]
 variable (A : Matrix n n α) (B : Matrix n n α)
 
 theorem isUnit_det_transpose (h : IsUnit A.det) : IsUnit Aᵀ.det := by
@@ -354,13 +354,15 @@ lemma mul_right_inj_of_invertible [Invertible A] {x y : Matrix n m α} : A * x =
 lemma mul_left_inj_of_invertible [Invertible A] {x y : Matrix m n α} : x * A = y * A ↔ x = y :=
   (mul_left_injective_of_invertible A).eq_iff
 
+end Inv
+
 section InjectiveMul
-variable [Fintype m] [DecidableEq m]
+variable [Fintype n] [Fintype m] [DecidableEq m] [CommRing α]
 variable [Fintype l] [DecidableEq l]
 
 lemma mul_left_injective_of_inv (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1) :
-    Function.Injective (fun x : Matrix l m α => x * A) :=
-  fun _ _ g => by simpa only [Matrix.mul_assoc, Matrix.mul_one, h] using congr_arg (· * B) g
+    Function.Injective (fun x : Matrix l m α => x * A) := fun _ _ g => by
+  simpa only [Matrix.mul_assoc, Matrix.mul_one, h] using congr_arg (· * B) g
 
 lemma mul_right_injective_of_inv (A : Matrix m n α) (B : Matrix n m α) (h : A * B = 1) :
     Function.Injective (fun x : Matrix m l α => B * x) :=
@@ -370,29 +372,39 @@ end InjectiveMul
 
 section vecMul
 
-variable [Fintype m] [DecidableEq m] {K R : Type*} [Field K]
+variable [DecidableEq m] [DecidableEq n]
 
-theorem vecMul_surjective_iff_exists_left_inverse [Semiring R] {A : Matrix m n R} :
+section Semiring
+
+variable {R : Type*} [Semiring R]
+
+theorem vecMul_surjective_iff_exists_left_inverse [Fintype m] [Finite n] {A : Matrix m n R} :
     Function.Surjective A.vecMul ↔ ∃ B : Matrix n m R, B * A = 1 := by
+  cases nonempty_fintype n
   refine ⟨fun h ↦ ?_, fun ⟨B, hBA⟩ y ↦ ⟨y ᵥ* B, by simp [hBA]⟩⟩
   choose rows hrows using (h <| Pi.single · 1)
   refine ⟨Matrix.of rows, Matrix.ext fun i j => ?_⟩
   rw [mul_apply_eq_vecMul, one_eq_pi_single, ← hrows]
   rfl
 
-theorem mulVec_surjective_iff_exists_right_inverse [Semiring R] {A : Matrix m n R} :
+theorem mulVec_surjective_iff_exists_right_inverse [Finite m] [Fintype n] {A : Matrix m n R} :
     Function.Surjective A.mulVec ↔ ∃ B : Matrix n m R, A * B = 1 := by
+  cases nonempty_fintype m
   refine ⟨fun h ↦ ?_, fun ⟨B, hBA⟩ y ↦ ⟨B *ᵥ y, by simp [hBA]⟩⟩
   choose cols hcols using (h <| Pi.single · 1)
   refine ⟨(Matrix.of cols)ᵀ, Matrix.ext fun i j ↦ ?_⟩
   rw [one_eq_pi_single, Pi.single_comm, ← hcols j]
   rfl
 
-theorem vecMul_surjective_iff_isUnit {A : Matrix m m α} :
+end Semiring
+
+variable {R K : Type*} [CommRing R] [Field K] [Fintype m]
+
+theorem vecMul_surjective_iff_isUnit {A : Matrix m m R} :
     Function.Surjective A.vecMul ↔ IsUnit A := by
   rw [vecMul_surjective_iff_exists_left_inverse, exists_left_inverse_iff_isUnit]
 
-theorem mulVec_surjective_iff_isUnit {A : Matrix m m α} :
+theorem mulVec_surjective_iff_isUnit {A : Matrix m m R} :
     Function.Surjective A.mulVec ↔ IsUnit A := by
   rw [mulVec_surjective_iff_exists_right_inverse, exists_right_inverse_iff_isUnit]
 
@@ -422,11 +434,11 @@ theorem linearIndependent_cols_iff_isUnit {A : Matrix m m K} :
   rw [← transpose_transpose A, isUnit_transpose, linearIndependent_rows_iff_isUnit,
     transpose_transpose]
 
-theorem vecMul_surjective_of_invertible (A : Matrix m m α) [Invertible A] :
+theorem vecMul_surjective_of_invertible (A : Matrix m m R) [Invertible A] :
     Function.Surjective A.vecMul :=
   vecMul_surjective_iff_isUnit.2 <| isUnit_of_invertible A
 
-theorem mulVec_surjective_of_invertible (A : Matrix m m α) [Invertible A] :
+theorem mulVec_surjective_of_invertible (A : Matrix m m R) [Invertible A] :
     Function.Surjective A.mulVec :=
   mulVec_surjective_iff_isUnit.2 <| isUnit_of_invertible A
 
@@ -447,6 +459,9 @@ theorem linearIndependent_cols_of_invertible (A : Matrix m m K) [Invertible A] :
   linearIndependent_cols_iff_isUnit.2 <| isUnit_of_invertible A
 
 end vecMul
+
+variable [Fintype n] [DecidableEq n] [CommRing α]
+variable (A : Matrix n n α) (B : Matrix n n α)
 
 theorem nonsing_inv_cancel_or_zero : A⁻¹ * A = 1 ∧ A * A⁻¹ = 1 ∨ A⁻¹ = 0 := by
   by_cases h : IsUnit A.det
@@ -690,7 +705,6 @@ results about only the latter.
 section Submatrix
 
 variable [Fintype m]
-
 variable [DecidableEq m]
 
 /-- `A.submatrix e₁ e₂` is invertible if `A` is -/
@@ -763,7 +777,7 @@ end Submatrix
 
 section Det
 
-variable [Fintype m] [DecidableEq m]
+variable [Fintype m] [DecidableEq m] [CommRing α]
 
 /-- A variant of `Matrix.det_units_conj`. -/
 theorem det_conj {M : Matrix m m α} (h : IsUnit M) (N : Matrix m m α) : det (M * N * M⁻¹) = det N :=

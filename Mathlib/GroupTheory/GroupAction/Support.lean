@@ -59,7 +59,7 @@ theorem Supports.smul (g : H) (h : Supports G s b) : Supports G (g • s) (g •
   rintro g' hg'
   rw [smul_comm, h]
   rintro a ha
-  have := Set.ball_image_iff.1 hg' a ha
+  have := Set.forall_mem_image.1 hg' ha
   rwa [smul_comm, smul_left_cancel_iff] at this
 #align mul_action.supports.smul MulAction.Supports.smul
 #align add_action.supports.vadd AddAction.Supports.vadd

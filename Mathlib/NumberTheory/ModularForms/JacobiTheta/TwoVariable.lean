@@ -48,7 +48,7 @@ lemma jacobiTheta₂_term_bound {S T : ℝ} (hT : 0 < T) {z τ : ℂ}
 lemma summable_jacobiTheta₂_term_bound (S : ℝ) {T : ℝ} (hT : 0 < T) :
     Summable (fun n : ℤ ↦ Real.exp (-π * (T * n ^ 2 - 2 * S * |n|))) := by
   suffices Summable (fun n : ℕ ↦ Real.exp (-π * (T * n ^ 2 - 2 * S * n))) by
-    apply summable_int_of_summable_nat <;>
+    apply Summable.of_nat_of_neg <;>
     simpa only [Int.cast_neg, neg_sq, abs_neg, Int.cast_ofNat, Nat.abs_cast]
   apply summable_of_isBigO_nat summable_exp_neg_nat
   refine Real.isBigO_exp_comp_exp_comp.mpr (Tendsto.isBoundedUnder_le_atBot ?_)

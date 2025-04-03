@@ -105,7 +105,7 @@ lemma norm_tsum_smoothNumbers_sub_tsum_lt (hsum : Summable f) (hf₀ : f 0 = 0)
   refine ⟨N₀, fun N hN₁ ↦ ?_⟩
   convert hN₀ _ <| N.smoothNumbers_compl.trans fun _ ↦ hN₁.le.trans
   simp_rw [← tsum_subtype_add_tsum_subtype_compl hsum N.smoothNumbers,
-    add_sub_cancel', tsum_eq_tsum_diff_singleton (N.smoothNumbers)ᶜ hf₀]
+    add_sub_cancel_left, tsum_eq_tsum_diff_singleton (N.smoothNumbers)ᶜ hf₀]
 
 open Filter
 

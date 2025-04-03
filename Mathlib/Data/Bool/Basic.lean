@@ -22,24 +22,24 @@ bool, boolean, Bool, De Morgan
 namespace Bool
 
 theorem decide_True {h} : @decide True h = true :=
-  decide_eq_true True.intro
+  _root_.decide_eq_true True.intro
 #align bool.to_bool_true Bool.decide_True
 
 theorem decide_False {h} : @decide False h = false :=
-  decide_eq_false id
+  _root_.decide_eq_false id
 #align bool.to_bool_false Bool.decide_False
 
 @[simp]
 theorem decide_coe (b : Bool) {h} : @decide b h = b := by
   cases b
-  · exact decide_eq_false <| λ j => by cases j
-  · exact decide_eq_true <| rfl
+  · exact _root_.decide_eq_false <| fun j ↦ by cases j
+  · exact _root_.decide_eq_true <| rfl
 #align bool.to_bool_coe Bool.decide_coe
 
 theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
   match d with
-  | isTrue hp => ⟨λ _ => hp, λ _ => rfl⟩
-  | isFalse hnp => ⟨λ h => Bool.noConfusion h, λ hp => (hnp hp).elim⟩
+  | isTrue hp => ⟨fun _ ↦ hp, fun _ ↦ rfl⟩
+  | isFalse hnp => ⟨fun h ↦ Bool.noConfusion h, fun hp ↦ (hnp hp).elim⟩
 #align bool.coe_to_bool Bool.coe_decide
 
 theorem of_decide_iff {p : Prop} [Decidable p] : decide p ↔ p :=
@@ -65,14 +65,14 @@ theorem decide_or (p q : Prop) [Decidable p] [Decidable q] : decide (p ∨ q) = 
 
 #align bool.to_bool_eq decide_eq_decide
 
-theorem not_false' : ¬false := fun.
+theorem not_false' : ¬false := nofun
 #align bool.not_ff Bool.not_false'
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem eq_iff_eq_true_iff {a b : Bool} : a = b ↔ ((a = true) ↔ (b = true)) := by
   cases a <;> cases b <;> simp
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 /- Even though `DecidableEq α` implies an instance of (`Lawful`)`BEq α`, we keep the seemingly
 redundant typeclass assumptions so that the theorem is also applicable for types that have
 overridden this default instance of `LawfulBEq α` -/
@@ -82,7 +82,7 @@ theorem beq_eq_decide_eq {α} [BEq α] [LawfulBEq α] [DecidableEq α]
   · simp [ne_of_beq_false h]
   · simp [eq_of_beq h]
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem beq_comm {α} [BEq α] [LawfulBEq α] {a b : α} : (a == b) = (b == a) :=
   eq_iff_eq_true_iff.2 (by simp [@eq_comm α])
 
@@ -321,10 +321,10 @@ def ofNat (n : Nat) : Bool :=
 theorem ofNat_le_ofNat {n m : Nat} (h : n ≤ m) : ofNat n ≤ ofNat m := by
   simp only [ofNat, ne_eq, _root_.decide_not]
   cases Nat.decEq n 0 with
-  | isTrue hn => rw [decide_eq_true hn]; exact Bool.false_le _
+  | isTrue hn => rw [_root_.decide_eq_true hn]; exact Bool.false_le _
   | isFalse hn =>
     cases Nat.decEq m 0 with
-    | isFalse hm => rw [decide_eq_false hm]; exact Bool.le_true _
+    | isFalse hm => rw [_root_.decide_eq_false hm]; exact Bool.le_true _
     | isTrue hm => subst hm; have h := le_antisymm h (Nat.zero_le n); contradiction
 #align bool.of_nat_le_of_nat Bool.ofNat_le_ofNat
 

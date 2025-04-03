@@ -197,8 +197,8 @@ noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass
     rw [selfAdjoint.val_re_map_spectrum s] at this
     rcases this with ⟨⟨_, _⟩, _, heq⟩
     simp only [Function.comp_apply] at heq
-    rw [← heq, IsROrC.star_def]
-    exact IsROrC.conj_ofReal _
+    rw [← heq, RCLike.star_def]
+    exact RCLike.conj_ofReal _
 
 /-- This is not an instance to avoid type class inference loops. See
 `WeakDual.Complex.instStarHomClass`. -/

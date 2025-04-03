@@ -3,7 +3,7 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Polynomial.Taylor
+import Mathlib.Algebra.Polynomial.Taylor
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.LinearAlgebra.AdicCompletion
 
@@ -204,7 +204,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         haveI := isLocalRingHom_of_le_jacobson_bot I (IsAdicComplete.le_jacobson_bot I)
         apply isUnit_of_map_unit (Ideal.Quotient.mk I)
         convert h₂ using 1
-        exact SModEq.def.mp ((hc_mod n).eval _)
+        exact SModEq.def'.mp ((hc_mod n).eval _)
       have hfcI : ∀ n, f.eval (c n) ∈ I ^ (n + 1) := by
         intro n
         induction' n with n ih

@@ -84,7 +84,7 @@ def equivSigma : WType β ≃ Σa : α, β a → WType β
 
 variable {β}
 
--- porting note: Universes have a different order than mathlib3 definition
+-- Porting note: Universes have a different order than mathlib3 definition
 /-- The canonical map from `WType β` into any type `γ` given a map `(Σ a : α, β a → γ) → γ`. -/
 def elim (γ : Type*) (fγ : (Σa : α, β a → γ) → γ) : WType β → γ
   | ⟨a, f⟩ => fγ ⟨a, fun b => elim γ fγ (f b)⟩

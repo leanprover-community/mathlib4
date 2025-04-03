@@ -18,7 +18,7 @@ computer science such as the POSIX standard.
 
 * Show that this regular expressions and DFA/NFA's are equivalent. -/
 
--- porting note: this has been commented out
+-- Porting note: this has been commented out
 -- * `attribute [pattern] has_mul.mul` has been added into this file, it could be moved.
 
 
@@ -50,7 +50,7 @@ inductive RegularExpression (α : Type u) : Type u
 #align regular_expression RegularExpression
 
 
--- porting note: `simpNF` gets grumpy about how the `foo_def`s below can simplify these..
+-- Porting note: `simpNF` gets grumpy about how the `foo_def`s below can simplify these..
 attribute [nolint simpNF] RegularExpression.zero.sizeOf_spec
 attribute [nolint simpNF] RegularExpression.epsilon.sizeOf_spec
 attribute [nolint simpNF] RegularExpression.plus.sizeOf_spec
@@ -80,7 +80,7 @@ instance : Zero (RegularExpression α) :=
 instance : Pow (RegularExpression α) ℕ :=
   ⟨fun n r => npowRec r n⟩
 
--- porting note: declaration in an imported module
+-- Porting note: declaration in an imported module
 --attribute [match_pattern] Mul.mul
 
 @[simp]
@@ -103,16 +103,18 @@ theorem comp_def (P Q : RegularExpression α) : comp P Q = P * Q :=
   rfl
 #align regular_expression.comp_def RegularExpression.comp_def
 
--- porting note: `matches` is reserved, moved to `matches'`
+-- Porting note: `matches` is reserved, moved to `matches'`
 /-- `matches' P` provides a language which contains all strings that `P` matches -/
--- porting note: was '@[simp] but removed based on
+-- Porting note: was '@[simp] but removed based on
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simpNF.20issues.20in.20Computability.2ERegularExpressions.20!4.232306/near/328355362
 def matches' : RegularExpression α → Language α
   | 0 => 0
   | 1 => 1
   | char a => {[a]}
   | P + Q => P.matches' + Q.matches'
-  | P * Q => P.matches' * Q.matches'
+  -- Adaptation note: around nightly-2024-02-25, we need to write `comp x y` in the pattern here,
+  -- instead of `x * y`.
+  | comp P Q => P.matches' * Q.matches'
   | star P => P.matches'∗
 #align regular_expression.matches RegularExpression.matches'
 
@@ -144,8 +146,9 @@ theorem matches'_mul (P Q : RegularExpression α) : (P * Q).matches' = P.matches
 @[simp]
 theorem matches'_pow (P : RegularExpression α) : ∀ n : ℕ, (P ^ n).matches' = P.matches' ^ n
   | 0 => matches'_epsilon
-  | n + 1 => (matches'_mul _ _).trans <|
-      Eq.trans (congr_arg _ (matches'_pow P n)) (pow_succ _ _).symm
+  | n + 1 => (matches'_mul _ _).trans <| Eq.trans
+      (congrFun (congrArg HMul.hMul (matches'_pow P n)) (matches' P))
+      (pow_succ _ n).symm
 #align regular_expression.matches_pow RegularExpression.matches'_pow
 
 @[simp]
@@ -159,7 +162,9 @@ def matchEpsilon : RegularExpression α → Bool
   | 1 => true
   | char _ => false
   | P + Q => P.matchEpsilon || Q.matchEpsilon
-  | P * Q => P.matchEpsilon && Q.matchEpsilon
+  -- Adaptation note: around nightly-2024-02-25, we need to write `comp x y` in the pattern here,
+  -- instead of `x * y`.
+  | comp P Q => P.matchEpsilon && Q.matchEpsilon
   | star _P => true
 #align regular_expression.match_epsilon RegularExpression.matchEpsilon
 
@@ -171,7 +176,9 @@ def deriv : RegularExpression α → α → RegularExpression α
   | 1, _ => 0
   | char a₁, a₂ => if a₁ = a₂ then 1 else 0
   | P + Q, a => deriv P a + deriv Q a
-  | P * Q, a => if P.matchEpsilon then deriv P a * Q + deriv Q a else deriv P a * Q
+  -- Adaptation note: around nightly-2024-02-25, we need to write `comp x y` in the pattern here,
+  -- instead of `x * y`.
+  | comp P Q, a => if P.matchEpsilon then deriv P a * Q + deriv Q a else deriv P a * Q
   | star P, a => deriv P a * star P
 #align regular_expression.deriv RegularExpression.deriv
 
@@ -328,7 +335,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · exact ⟨[], [], by tauto⟩
         · cases' t' with b t
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
-            simp only [eq_self_iff_true, not_true, Ne.def, false_and_iff] at helem
+            simp only [eq_self_iff_true, not_true, Ne, false_and_iff] at helem
           simp only [List.join, List.cons_append, List.cons_eq_cons] at hsum
           refine' ⟨t, U.join, hsum.2, _, _⟩
           · specialize helem (b :: t) (by simp)
@@ -343,7 +350,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
             refine' ⟨U, rfl, fun t h => helem t _⟩
             right
             assumption
-  termination_by t => (P,t.length)
+  termination_by t => (P, t.length)
 #align regular_expression.star_rmatch_iff RegularExpression.star_rmatch_iff
 
 @[simp]
@@ -378,7 +385,9 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
   | 1 => 1
   | char a => char (f a)
   | R + S => map f R + map f S
-  | R * S => map f R * map f S
+  -- Adaptation note: around nightly-2024-02-25, we need to write `comp x y` in the pattern here,
+  -- instead of `x * y`.
+  | comp R S => map f R * map f S
   | star R => star (map f R)
 #align regular_expression.map RegularExpression.map
 
@@ -386,7 +395,7 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
 protected theorem map_pow (f : α → β) (P : RegularExpression α) :
     ∀ n : ℕ, map f (P ^ n) = map f P ^ n
   | 0 => by dsimp; rfl
-  | n + 1 => (congr_arg (map f P * ·) (RegularExpression.map_pow f P n) : _)
+  | n + 1 => (congr_arg (· * map f P) (RegularExpression.map_pow f P n) : _)
 #align regular_expression.map_pow RegularExpression.map_pow
 
 @[simp]
@@ -395,7 +404,9 @@ theorem map_id : ∀ P : RegularExpression α, P.map id = P
   | 1 => rfl
   | char a => rfl
   | R + S => by simp_rw [map, map_id]
-  | R * S => by simp_rw [map, map_id]
+  -- Adaptation note: around nightly-2024-02-25, we need to write `comp x y` in the pattern here,
+  -- instead of `x * y`.
+  | comp R S => by simp_rw [map, map_id]; rfl
   | star R => by simp_rw [map, map_id]
 #align regular_expression.map_id RegularExpression.map_id
 
@@ -405,7 +416,9 @@ theorem map_map (g : β → γ) (f : α → β) : ∀ P : RegularExpression α, 
   | 1 => rfl
   | char a => rfl
   | R + S => by simp only [map, Function.comp_apply, map_map]
-  | R * S => by simp only [map, Function.comp_apply, map_map]
+  -- Adaptation note: around nightly-2024-02-25, we need to write `comp x y` in the pattern here,
+  -- instead of `x * y`.
+  | comp R S => by simp only [map, Function.comp_apply, map_map]
   | star R => by simp only [map, Function.comp_apply, map_map]
 #align regular_expression.map_map RegularExpression.map_map
 
@@ -418,9 +431,11 @@ theorem matches'_map (f : α → β) :
   | char a => by
     rw [eq_comm]
     exact image_singleton
-  -- porting note: the following close with last `rw` but not with `simp`?
+  -- Porting note: the following close with last `rw` but not with `simp`?
   | R + S => by simp only [matches'_map, map, matches'_add]; rw [map_add]
-  | R * S => by simp only [matches'_map, map, matches'_mul]; rw [map_mul]
+  -- Adaptation note: around nightly-2024-02-25, we need to write `comp x y` in the pattern here,
+  -- instead of `x * y` (and the `erw` was just `rw`).
+  | comp R S => by simp only [matches'_map, map, matches'_mul]; erw [map_mul]
   | star R => by
     simp_rw [map, matches', matches'_map]
     rw [Language.kstar_eq_iSup_pow, Language.kstar_eq_iSup_pow]

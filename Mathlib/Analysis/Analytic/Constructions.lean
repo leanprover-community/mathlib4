@@ -19,20 +19,18 @@ We show that the following are analytic:
 
 noncomputable section
 
-open Topology Classical BigOperators NNReal Filter ENNReal
+open scoped Classical
+open Topology BigOperators NNReal Filter ENNReal
 
 open Set Filter Asymptotics
 
 variable {α : Type*}
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
   [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H]
   [NormedSpace 𝕜 H]
 
 variable {𝕝 : Type*} [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝]
-
 variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 
 /-!
@@ -48,19 +46,19 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
     rw [le_min_iff]
     have := (p.prod q).isLittleO_one_of_lt_radius hr
     constructor
-    all_goals { -- kludge, there is no "work_on_goal" in Lean 4?
+    all_goals
       apply FormalMultilinearSeries.le_radius_of_isBigO
       refine (isBigO_of_le _ fun n ↦ ?_).trans this.isBigO
       rw [norm_mul, norm_norm, norm_mul, norm_norm]
       refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
       rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
-      try apply le_max_left
-      try apply le_max_right }
+    · apply le_max_left
+    · apply le_max_right
   · refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
     rw [lt_min_iff] at hr
     have := ((p.isLittleO_one_of_lt_radius hr.1).add
       (q.isLittleO_one_of_lt_radius hr.2)).isBigO
-    refine (p.prod q).le_radius_of_isBigO ((isBigO_of_le _ λ n ↦ ?_).trans this)
+    refine (p.prod q).le_radius_of_isBigO ((isBigO_of_le _ fun n ↦ ?_).trans this)
     rw [norm_mul, norm_norm, ← add_mul, norm_mul]
     refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
     rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
@@ -118,24 +116,28 @@ theorem AnalyticOn.comp₂ {h : F × G → H} {f : E → F} {g : E → G} {s : S
   fun _ xt ↦ (ha _ (m _ xt)).comp₂ (fa _ xt) (ga _ xt)
 
 /-- Analytic functions on products are analytic in the first coordinate -/
-theorem AnalyticAt.along_fst {f : E × F → G} {p : E × F} (fa : AnalyticAt 𝕜 f p) :
+theorem AnalyticAt.curry_left {f : E × F → G} {p : E × F} (fa : AnalyticAt 𝕜 f p) :
     AnalyticAt 𝕜 (fun x ↦ f (x, p.2)) p.1 :=
   AnalyticAt.comp₂ fa (analyticAt_id _ _) analyticAt_const
+alias AnalyticAt.along_fst := AnalyticAt.curry_left
 
 /-- Analytic functions on products are analytic in the second coordinate -/
-theorem AnalyticAt.along_snd {f : E × F → G} {p : E × F} (fa : AnalyticAt 𝕜 f p) :
+theorem AnalyticAt.curry_right {f : E × F → G} {p : E × F} (fa : AnalyticAt 𝕜 f p) :
     AnalyticAt 𝕜 (fun y ↦ f (p.1, y)) p.2 :=
   AnalyticAt.comp₂ fa analyticAt_const (analyticAt_id _ _)
+alias AnalyticAt.along_snd := AnalyticAt.curry_right
 
 /-- Analytic functions on products are analytic in the first coordinate -/
-theorem AnalyticOn.along_fst {f : E × F → G} {s : Set (E × F)} {y : F} (fa : AnalyticOn 𝕜 f s) :
+theorem AnalyticOn.curry_left {f : E × F → G} {s : Set (E × F)} {y : F} (fa : AnalyticOn 𝕜 f s) :
     AnalyticOn 𝕜 (fun x ↦ f (x, y)) {x | (x, y) ∈ s} :=
   fun x m ↦ (fa (x, y) m).along_fst
+alias AnalyticOn.along_fst := AnalyticOn.curry_left
 
 /-- Analytic functions on products are analytic in the second coordinate -/
-theorem AnalyticOn.along_snd {f : E × F → G} {x : E} {s : Set (E × F)} (fa : AnalyticOn 𝕜 f s) :
+theorem AnalyticOn.curry_right {f : E × F → G} {x : E} {s : Set (E × F)} (fa : AnalyticOn 𝕜 f s) :
     AnalyticOn 𝕜 (fun y ↦ f (x, y)) {y | (x, y) ∈ s} :=
   fun y m ↦ (fa (x, y) m).along_snd
+alias AnalyticOn.along_snd := AnalyticOn.curry_right
 
 /-!
 ### Arithmetic on analytic functions
@@ -185,7 +187,7 @@ lemma AnalyticAt.pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) 
     apply analyticAt_const
   | succ m hm =>
     simp only [pow_succ]
-    exact hf.mul hm
+    exact hm.mul hf
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticOn.pow {f : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (n : ℕ) :

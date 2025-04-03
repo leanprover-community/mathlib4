@@ -147,7 +147,6 @@ theorem count_lt_card {n : ℕ} (hp : (setOf p).Finite) (hpn : p n) : count p n 
 #align nat.count_lt_card Nat.count_lt_card
 
 variable {q : ℕ → Prop}
-
 variable [DecidablePred q]
 
 theorem count_mono_left {n : ℕ} (hpq : ∀ k, p k → q k) : count p n ≤ count q n := by

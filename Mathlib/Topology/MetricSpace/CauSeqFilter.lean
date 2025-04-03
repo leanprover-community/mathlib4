@@ -20,7 +20,8 @@ universe u v
 
 open Set Filter
 
-open Topology Classical
+open scoped Classical
+open Topology
 
 variable {β : Type v}
 

@@ -58,11 +58,11 @@ theorem abs_eq_natAbs : ∀ a : ℤ, |a| = natAbs a
   | -[_+1] => abs_of_nonpos <| le_of_lt <| negSucc_lt_zero _
 #align int.abs_eq_nat_abs Int.abs_eq_natAbs
 
-@[simp, norm_cast] lemma coe_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
-#align int.coe_nat_abs Int.coe_natAbs
+@[simp, norm_cast] lemma natCast_natAbs (n : ℤ) : (n.natAbs : ℤ) = |n| := n.abs_eq_natAbs.symm
+#align int.coe_nat_abs Int.natCast_natAbs
 
-lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| :=
-  by rw [← coe_natAbs, Int.cast_ofNat]
+lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| := by
+  rw [← natCast_natAbs, Int.cast_ofNat]
 #align nat.cast_nat_abs Nat.cast_natAbs
 
 theorem natAbs_abs (a : ℤ) : natAbs |a| = natAbs a := by rw [abs_eq_natAbs]; rfl
@@ -92,26 +92,26 @@ lemma le_self_sq (b : ℤ) : b ≤ b ^ 2 := le_trans le_natAbs (natAbs_le_self_s
 alias le_self_pow_two := le_self_sq
 #align int.le_self_pow_two Int.le_self_pow_two
 
-theorem coe_nat_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 :=
+theorem natCast_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 :=
   Nat.cast_eq_zero
-#align int.coe_nat_eq_zero Int.coe_nat_eq_zero
+#align int.coe_nat_eq_zero Int.natCast_eq_zero
 
-theorem coe_nat_ne_zero {n : ℕ} : (n : ℤ) ≠ 0 ↔ n ≠ 0 := by simp
-#align int.coe_nat_ne_zero Int.coe_nat_ne_zero
+theorem natCast_ne_zero {n : ℕ} : (n : ℤ) ≠ 0 ↔ n ≠ 0 := by simp
+#align int.coe_nat_ne_zero Int.natCast_ne_zero
 
-theorem coe_nat_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
-  ⟨fun h => Nat.pos_of_ne_zero (coe_nat_ne_zero.1 h),
+theorem natCast_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n :=
+  ⟨fun h => Nat.pos_of_ne_zero (natCast_ne_zero.1 h),
    fun h => (_root_.ne_of_lt (ofNat_lt.2 h)).symm⟩
-#align int.coe_nat_ne_zero_iff_pos Int.coe_nat_ne_zero_iff_pos
+#align int.coe_nat_ne_zero_iff_pos Int.natCast_ne_zero_iff_pos
 
-@[norm_cast] lemma abs_coe_nat (n : ℕ) : |(n : ℤ)| = n := abs_of_nonneg (coe_nat_nonneg n)
-#align int.abs_coe_nat Int.abs_coe_nat
+@[norm_cast] lemma abs_natCast (n : ℕ) : |(n : ℤ)| = n := abs_of_nonneg (natCast_nonneg n)
+#align int.abs_coe_nat Int.abs_natCast
 
 theorem sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
   have : (1 : ℤ) ≠ -1 := by decide
   rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm, Int.negSucc_add_negSucc]
   rw [Int.sign_eq_one_iff_pos]
-  apply Int.add_pos <;> · exact zero_lt_one.trans_le (le_add_of_nonneg_left <| coe_nat_nonneg _)
+  apply Int.add_pos <;> · exact zero_lt_one.trans_le (le_add_of_nonneg_left <| natCast_nonneg _)
 #align int.sign_add_eq_of_sign_eq Int.sign_add_eq_of_sign_eq
 
 /-- Note this holds in marginally more generality than `Int.cast_mul` -/
@@ -307,7 +307,7 @@ theorem add_emod_eq_add_mod_right {m n k : ℤ} (i : ℤ) (H : m % n = k % n) :
 
 #align int.sub_mod Int.sub_emod
 
--- porting note: this should be a doc comment, but the lemma isn't here any more!
+-- Porting note: this should be a doc comment, but the lemma isn't here any more!
 /- See also `Int.divModEquiv` for a similar statement as an `Equiv`. -/
 #align int.div_mod_unique Int.ediv_emod_unique
 
@@ -418,7 +418,7 @@ theorem exists_lt_and_lt_iff_not_dvd (m : ℤ) {n : ℤ} (hn : 0 < n) :
     rw [lt_add_one_iff, ← not_lt] at h2k
     exact h2k h1k
   · intro h
-    rw [dvd_iff_emod_eq_zero, ← Ne.def] at h
+    rw [dvd_iff_emod_eq_zero, ← Ne] at h
     have := (emod_nonneg m hn.ne.symm).lt_of_ne h.symm
     rw [← emod_add_ediv m n]
     refine' ⟨m / n, lt_add_of_pos_left _ this, _⟩
@@ -487,10 +487,10 @@ theorem lt_toNat {n : ℕ} {a : ℤ} : n < toNat a ↔ (n : ℤ) < a :=
 #align int.lt_to_nat Int.lt_toNat
 
 @[simp]
-theorem coe_nat_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 :=
+theorem natCast_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 :=
   ⟨fun h => le_antisymm (Int.ofNat_le.mp (h.trans Int.ofNat_zero.le)) n.zero_le,
-   fun h => (coe_nat_eq_zero.mpr h).le⟩
-#align int.coe_nat_nonpos_iff Int.coe_nat_nonpos_iff
+   fun h => (natCast_eq_zero.mpr h).le⟩
+#align int.coe_nat_nonpos_iff Int.natCast_nonpos_iff
 
 theorem toNat_le_toNat {a b : ℤ} (h : a ≤ b) : toNat a ≤ toNat b := by
   rw [toNat_le]; exact le_trans h (self_le_toNat b)
@@ -514,8 +514,8 @@ theorem toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ
 theorem toNat_eq_zero : ∀ {n : ℤ}, n.toNat = 0 ↔ n ≤ 0
   | (n : ℕ) =>
     calc
-      _ ↔ n = 0 := ⟨(toNat_coe_nat n).symm.trans, (toNat_coe_nat n).trans⟩
-      _ ↔ _ := coe_nat_nonpos_iff.symm
+      _ ↔ n = 0 := ⟨(toNat_natCast n).symm.trans, (toNat_natCast n).trans⟩
+      _ ↔ _ := natCast_nonpos_iff.symm
 
   | -[n+1] =>
     show (-((n : ℤ) + 1)).toNat = 0 ↔ (-(n + 1) : ℤ) ≤ 0 from
@@ -537,7 +537,7 @@ variable {G : Type*} [Group G]
 
 @[to_additive (attr := simp) abs_zsmul_eq_zero]
 lemma zpow_abs_eq_one (a : G) (n : ℤ) : a ^ |n| = 1 ↔ a ^ n = 1 := by
-  rw [← Int.coe_natAbs, zpow_coe_nat, pow_natAbs_eq_one]
+  rw [← Int.natCast_natAbs, zpow_natCast, pow_natAbs_eq_one]
 
 end Group
 
@@ -566,7 +566,7 @@ variable [NonAssocRing R] (n r : R)
 lemma bit1_mul : bit1 n * r = (2 : ℤ) • (n * r) + r := by rw [bit1, add_mul, bit0_mul, one_mul]
 #align bit1_mul bit1_mul
 
-lemma mul_bit1 [NonAssocRing R] {n r : R} : r * bit1 n = (2 : ℤ) • (r * n) + r := by
+lemma mul_bit1 {n r : R} : r * bit1 n = (2 : ℤ) • (r * n) + r := by
   rw [bit1, mul_add, mul_bit0, mul_one]
 #align mul_bit1 mul_bit1
 

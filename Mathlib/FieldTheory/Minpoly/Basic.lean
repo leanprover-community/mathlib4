@@ -17,7 +17,8 @@ such as irreducibility under the assumption `B` is a domain.
 -/
 
 
-open Classical Polynomial Set Function
+open scoped Classical
+open Polynomial Set Function
 
 variable {A B B' : Type*}
 
@@ -45,7 +46,6 @@ namespace minpoly
 section Ring
 
 variable [CommRing A] [Ring B] [Ring B'] [Algebra A B] [Algebra A B']
-
 variable {x : B}
 
 /-- A minimal polynomial is monic. -/
@@ -144,7 +144,7 @@ theorem unique' {p : A[X]} (hm : p.Monic) (hp : Polynomial.aeval x p = 0)
   obtain h | h := hl _ ((minpoly A x).degree_modByMonic_lt hm)
   swap
   · exact (h <| (aeval_modByMonic_eq_self_of_root hm hp).trans <| aeval A x).elim
-  obtain ⟨r, hr⟩ := (dvd_iff_modByMonic_eq_zero hm).1 h
+  obtain ⟨r, hr⟩ := (modByMonic_eq_zero_iff_dvd hm).1 h
   rw [hr]
   have hlead := congr_arg leadingCoeff hr
   rw [mul_comm, leadingCoeff_mul_monic hm, (monic hx).leadingCoeff] at hlead
@@ -181,7 +181,6 @@ variable [CommRing A]
 section Ring
 
 variable [Ring B] [Algebra A B]
-
 variable {x : B}
 
 /-- The degree of a minimal polynomial, as a natural number, is positive. -/
@@ -248,7 +247,6 @@ end Ring
 section IsDomain
 
 variable [Ring B] [Algebra A B]
-
 variable {x : B}
 
 /-- If `a` strictly divides the minimal polynomial of `x`, then `x` cannot be a root for `a`. -/

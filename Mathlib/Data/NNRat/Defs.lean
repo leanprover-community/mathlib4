@@ -39,7 +39,6 @@ def NNRat := { q : ℚ // 0 ≤ q } deriving
 -- instead of `deriving` them
 instance : OrderedSub NNRat := Nonneg.orderedSub
 
--- mathport name: nnrat
 scoped[NNRat] notation "ℚ≥0" => NNRat
 
 namespace NNRat
@@ -87,6 +86,9 @@ theorem ne_iff {x y : ℚ≥0} : (x : ℚ) ≠ (y : ℚ) ↔ x ≠ y :=
 theorem coe_mk (q : ℚ) (hq) : ((⟨q, hq⟩ : ℚ≥0) : ℚ) = q :=
   rfl
 #align nnrat.coe_mk NNRat.coe_mk
+
+lemma «forall» {p : ℚ≥0 → Prop} : (∀ q, p q) ↔ ∀ q hq, p ⟨q, hq⟩ := Subtype.forall
+lemma «exists» {p : ℚ≥0 → Prop} : (∃ q, p q) ↔ ∃ q hq, p ⟨q, hq⟩ := Subtype.exists
 
 /-- Reinterpret a rational number `q` as a non-negative rational number. Returns `0` if `q ≤ 0`. -/
 def _root_.Rat.toNNRat (q : ℚ) : ℚ≥0 :=

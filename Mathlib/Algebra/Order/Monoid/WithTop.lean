@@ -487,7 +487,7 @@ lemma one_eq_coe : 1 = (a : WithBot α) ↔ a = 1 := eq_comm.trans coe_eq_one
 @[to_additive (attr := simp)] lemma one_ne_bot : (1 : WithBot α) ≠ ⊥ := coe_ne_bot
 
 @[to_additive (attr := simp)]
-theorem unbot_one [One α] : (1 : WithBot α).unbot coe_ne_bot = 1 :=
+theorem unbot_one : (1 : WithBot α).unbot coe_ne_bot = 1 :=
   rfl
 #align with_bot.unbot_one WithBot.unbot_one
 #align with_bot.unbot_zero WithBot.unbot_zero

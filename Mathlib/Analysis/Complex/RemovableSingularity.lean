@@ -158,7 +158,7 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable {U : 
       zero_smul, sub_zero]
   · refine' circleIntegral.integral_congr (pos_of_mem_ball hw₀).le fun z hz => _
     simp only [dslope_of_ne, Metric.sphere_disjoint_ball.ne_of_mem hz hw₀, slope, ← smul_assoc, sq,
-      mul_inv, Ne.def, not_false_iff, vsub_eq_sub, Algebra.id.smul_eq_mul]
+      mul_inv, Ne, not_false_iff, vsub_eq_sub, Algebra.id.smul_eq_mul]
 set_option linter.uppercaseLean3 false in
 #align complex.two_pi_I_inv_smul_circle_integral_sub_sq_inv_smul_of_differentiable Complex.two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable
 

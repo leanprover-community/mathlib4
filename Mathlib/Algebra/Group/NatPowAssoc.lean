@@ -95,7 +95,7 @@ section Monoid
 
 variable [Monoid M]
 
-instance Monoid.PowAssoc [Monoid M] : NatPowAssoc M where
+instance Monoid.PowAssoc : NatPowAssoc M where
   npow_add _ _ _ := pow_add _ _ _
   npow_zero _ := pow_zero _
   npow_one _ := pow_one _

@@ -261,7 +261,7 @@ lemma weightSpace_zero_normalizer_eq_self :
   intro y
   obtain ⟨k, hk⟩ := hm y y
   use k + 1
-  simpa [pow_succ', LinearMap.mul_eq_comp]
+  simpa [pow_succ, LinearMap.mul_eq_comp]
 
 lemma iSup_ucs_le_weightSpace_zero :
     ⨆ k, (⊥ : LieSubmodule R L M).ucs k ≤ weightSpace M (0 : L → R) := by
@@ -320,7 +320,7 @@ lemma mem_posFittingCompOf (x : L) (m : M) :
     exact this n k
   intro m l
   induction' l with l ih; simp
-  simp only [lowerCentralSeries_succ, pow_succ, LinearMap.mul_apply]
+  simp only [lowerCentralSeries_succ, pow_succ', LinearMap.mul_apply]
   exact LieSubmodule.lie_mem_lie _ ⊤ (LieSubmodule.mem_top x) ih
 
 @[simp] lemma posFittingCompOf_eq_bot_of_isNilpotent

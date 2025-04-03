@@ -43,7 +43,6 @@ structure Basis {R : Type*} (A : Type*) [CommRing R] [Ring A] [Algebra R A] (c�
 #align quaternion_algebra.basis QuaternionAlgebra.Basis
 
 variable {R : Type*} {A B : Type*} [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
-
 variable {c₁ c₂ : R}
 
 namespace Basis
