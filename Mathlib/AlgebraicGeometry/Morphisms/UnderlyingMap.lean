@@ -117,7 +117,6 @@ instance isOpenMap_isLocalAtTarget : IsLocalAtTarget (topologically IsOpenMap) :
 instance : IsLocalAtSource (topologically IsOpenMap) :=
   topologically_isLocalAtSource' (fun _ ↦ _) fun _ _ _ hU _ ↦ hU.isOpenMap_iff_comp
 
-
 end IsOpenMap
 
 section IsClosedMap

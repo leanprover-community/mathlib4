@@ -121,7 +121,7 @@ lemma isOpenMap_of_generalizingMap [LocallyOfFinitePresentation f]
   · apply (HasRingHomProperty.Spec_iff (P := @LocallyOfFinitePresentation)).mp inferInstance
 
 /-- Any flat morphism is generalizing. -/
-lemma Flat.generalizingMap [hf : Flat f] : GeneralizingMap f.base := by
+lemma Flat.generalizingMap [Flat f] : GeneralizingMap f.base := by
   have := HasRingHomProperty.of_isLocalAtSource_of_isLocalAtTarget.{u}
     (topologically GeneralizingMap)
   show topologically GeneralizingMap f
@@ -130,7 +130,7 @@ lemma Flat.generalizingMap [hf : Flat f] : GeneralizingMap f.base := by
   algebraize [(f.appLE U V e).hom]
   apply Algebra.HasGoingDown.iff_generalizingMap_primeSpectrumComap.mp
   convert Algebra.HasGoingDown.of_flat
-  exact hf.1 U V e
+  exact HasRingHomProperty.appLE @Flat f ‹_› U V e
 
 /-- A flat morphism, locally of finite presentation is universally open. -/
 @[stacks 01UA]
