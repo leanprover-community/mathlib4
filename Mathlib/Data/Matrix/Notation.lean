@@ -121,7 +121,7 @@ def delabMatrixNotation : Delab := whenNotPPOption getPPExplicit <| whenPPOption
     withAppArg do
       if m = 0 then
         guard <| (← getExpr).isAppOfArity ``vecEmpty 1
-        let commas := mkArray n (mkAtom ",")
+        let commas := .replicate n (mkAtom ",")
         `(!![$[,%$commas]*])
       else
         if n = 0 then
@@ -190,21 +190,30 @@ section ColRow
 variable {ι : Type*}
 
 @[simp]
-theorem col_empty (v : Fin 0 → α) : col ι v = vecEmpty :=
+theorem replicateCol_empty (v : Fin 0 → α) : replicateCol ι v = vecEmpty :=
   empty_eq _
 
+@[deprecated (since := "2025-03-20")] alias col_empty := replicateCol_empty
+
 @[simp]
-theorem col_cons (x : α) (u : Fin m → α) :
-    col ι (vecCons x u) = of (vecCons (fun _ => x) (col ι u)) := by
+theorem replicateCol_cons (x : α) (u : Fin m → α) :
+    replicateCol ι (vecCons x u) = of (vecCons (fun _ => x) (replicateCol ι u)) := by
   ext i j
   refine Fin.cases ?_ ?_ i <;> simp [vecHead, vecTail]
 
-@[simp]
-theorem row_empty : row ι (vecEmpty : Fin 0 → α) = of fun _ => vecEmpty := rfl
+@[deprecated (since := "2025-03-20")] alias col_cons := replicateCol_cons
 
 @[simp]
-theorem row_cons (x : α) (u : Fin m → α) : row ι (vecCons x u) = of fun _ => vecCons x u :=
+theorem replicateRow_empty : replicateRow ι (vecEmpty : Fin 0 → α) = of fun _ => vecEmpty := rfl
+
+@[deprecated (since := "2025-03-20")] alias row_empty := replicateRow_empty
+
+@[simp]
+theorem replicateRow_cons (x : α) (u : Fin m → α) :
+    replicateRow ι (vecCons x u) = of fun _ => vecCons x u :=
   rfl
+
+@[deprecated (since := "2025-03-20")] alias row_cons := replicateRow_cons
 
 end ColRow
 

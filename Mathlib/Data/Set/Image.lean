@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Batteries.Tactic.Congr
 import Mathlib.Data.Option.Basic
+import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Data.Set.SymmDiff
 import Mathlib.Data.Set.Inclusion
@@ -1118,12 +1119,6 @@ theorem Injective.mem_range_iff_existsUnique (hf : Injective f) {b : β} :
   ⟨fun ⟨a, h⟩ => ⟨a, h, fun _ ha => hf (ha.trans h.symm)⟩, ExistsUnique.exists⟩
 
 alias ⟨Injective.existsUnique_of_mem_range, _⟩ := Injective.mem_range_iff_existsUnique
-
-@[deprecated (since := "2024-09-25")]
-alias Injective.mem_range_iff_exists_unique := Injective.mem_range_iff_existsUnique
-
-@[deprecated (since := "2024-09-25")]
-alias Injective.exists_unique_of_mem_range := Injective.existsUnique_of_mem_range
 
 theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
     (f '' s)ᶜ = f '' sᶜ ∪ (range f)ᶜ := by

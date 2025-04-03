@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Arthur Paulino. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Arthur Paulino
+Authors: Arthur Paulino, Jon Eugster
 -/
 
 import Cache.Requests
@@ -33,18 +33,20 @@ Commands:
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
 
-# The arguments for 'get', 'get!' and 'get-'
+# The arguments for 'get', 'get!', 'get-' and 'lookup'
 
-'get', 'get!' and 'get-' can process a list of paths, allowing the user to be more
-specific about what should be downloaded. For example, with automatic glob
-expansion in shell, one can call:
+'get', 'get!', 'get-' and 'lookup' can process a list of module names or file names.
 
-$ lake exe cache get Mathlib/Algebra/Field/*.lean Mathlib/Data/*.lean
+'get [ARGS]' will only get the cache for the specified Lean files and all files imported by one.
 
-Which will download the cache for:
-* Every Lean file inside 'Mathlib/Algebra/Field/'
-* Every Lean file inside 'Mathlib/Data/'
-* Everything that's needed for the above"
+Valid arguments are:
+
+* Module names like 'Mathlib.Init'
+* File names like 'Mathlib/Init.lean'
+* Folder names like 'Mathlib/Data/' (find all Lean files inside `Mathlib/Data/`)
+* With bash's automatic glob expansion one can also write things like
+  'Mathlib/**/Order/*.lean'.
+"
 
 open Lean System in
 /-- Note that this normalizes the path strings, which is needed when running from a unix shell
@@ -71,15 +73,25 @@ def main (args : List String) : IO Unit := do
     println "Unfortunately, you have a broken Lean v4.8.0-rc1 installation."
     println "Please run `elan toolchain uninstall leanprover/lean4:v4.8.0-rc1` and try again."
     Process.exit 1
-  -- We pass any following arguments to `getHashMemo`,
-  -- so we can use the cache on `Archive` or `Counterexamples`.
-  let extraRoots := match args with
-  | [] => #[]
-  | _ :: t => t.toArray.map FilePath.mk
   if args.isEmpty then
     println help
     Process.exit 0
   CacheM.run do
+
+  let mut roots : Std.HashMap Lean.Name FilePath ← parseArgs args
+  if roots.isEmpty then do
+    -- No arguments means to start from `Mathlib.lean`
+    -- TODO: could change this to the default-target of a downstream project
+    let mod := `Mathlib
+    let sp := (← read).srcSearchPath
+    let sourceFile ← Lean.findLean sp mod
+    roots := roots.insert mod sourceFile
+
+  -- We pass any following arguments to `getHashMemo`,
+  -- so we can use the cache on `Archive` or `Counterexamples`.
+  let extraRoots : Array FilePath :=
+    roots.keys.toArray.map (·.components.map toString |> mkFilePath |>.withExtension "lean")
+
   let hashMemo ← getHashMemo extraRoots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl

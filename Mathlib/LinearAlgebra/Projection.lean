@@ -262,7 +262,7 @@ variable {R₁ : Type*} [CommRing R₁] [Module R₁ E] [Module R₁ F]
 def ofIsComplProd {p q : Submodule R₁ E} (h : IsCompl p q) :
     (p →ₗ[R₁] F) × (q →ₗ[R₁] F) →ₗ[R₁] E →ₗ[R₁] F where
   toFun φ := ofIsCompl h φ.1 φ.2
-  map_add' := by intro φ ψ; dsimp only; rw [Prod.snd_add, Prod.fst_add, ofIsCompl_add]
+  map_add' := by intro φ ψ; rw [Prod.snd_add, Prod.fst_add, ofIsCompl_add]
   map_smul' := by intro c φ; simp [Prod.smul_snd, Prod.smul_fst, ofIsCompl_smul]
 
 @[simp]
@@ -287,6 +287,7 @@ def ofIsComplProdEquiv {p q : Submodule R₁ E} (h : IsCompl p q) :
 end
 
 @[simp, nolint simpNF] -- Porting note: linter claims that LHS doesn't simplify, but it does
+-- It seems the side condition `hf` is not applied by `simpNF`.
 theorem linearProjOfIsCompl_of_proj (f : E →ₗ[R] p) (hf : ∀ x : p, f x = x) :
     p.linearProjOfIsCompl (ker f) (isCompl_of_proj hf) = f := by
   ext x

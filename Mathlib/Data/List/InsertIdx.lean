@@ -52,7 +52,7 @@ theorem eq_or_mem_of_mem_insertIdx {l : List α} {n : ℕ} {a b : α} (h : a ∈
     a = b ∨ a ∈ l := by
   cases Nat.lt_or_ge (length l) n with
   | inl hn =>
-    rw [insertIdx_of_length_lt _ _ _ hn] at h
+    rw [insertIdx_of_length_lt hn] at h
     exact .inr h
   | inr hn =>
     rwa [mem_insertIdx hn] at h
@@ -74,7 +74,7 @@ theorem map_insertIdx (f : α → β) (l : List α) (n : ℕ) (a : α) :
   simpa only [pmap_eq_map] using (insertIdx_pmap (fun a _ ↦ f a) (fun _ _ ↦ trivial) trivial).symm
 
 theorem eraseIdx_pmap {p : α → Prop} (f : ∀ a, p a → β) {l : List α} (hl : ∀ a ∈ l, p a) (n : ℕ) :
-    (pmap f l hl).eraseIdx n = (l.eraseIdx n).pmap f fun a ha ↦ hl a (eraseIdx_subset _ _ ha) :=
+    (pmap f l hl).eraseIdx n = (l.eraseIdx n).pmap f fun a ha ↦ hl a (eraseIdx_subset ha) :=
   match l, hl, n with
   | [], _, _ => rfl
   | a :: _, _, 0 => rfl
@@ -86,7 +86,7 @@ theorem eraseIdx_map (f : α → β) (l : List α) (n : ℕ) :
   simpa only [pmap_eq_map] using eraseIdx_pmap (fun a _ ↦ f a) (fun _ _ ↦ trivial) n
 
 theorem get_insertIdx_of_lt (l : List α) (x : α) (n k : ℕ) (hn : k < n) (hk : k < l.length)
-    (hk' : k < (l.insertIdx n x).length := hk.trans_le (length_le_length_insertIdx _ _ _)) :
+    (hk' : k < (l.insertIdx n x).length := hk.trans_le length_le_length_insertIdx) :
     (l.insertIdx n x).get ⟨k, hk'⟩ = l.get ⟨k, hk⟩ := by
   simp_all [getElem_insertIdx_of_lt]
 
@@ -112,9 +112,9 @@ theorem get_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k <
 set_option linter.unnecessarySimpa false in
 theorem insertIdx_injective (n : ℕ) (x : α) :
     Function.Injective (fun l : List α => l.insertIdx n x) := by
-  induction' n with n IH
-  · simp
-  · rintro (_ | ⟨a, as⟩) (_ | ⟨b, bs⟩) h <;> simpa [IH.eq_iff] using h
+  induction n with
+  | zero => simp
+  | succ n IH => rintro (_ | ⟨a, as⟩) (_ | ⟨b, bs⟩) h <;> simpa [IH.eq_iff] using h
 
 @[deprecated (since := "2024-10-21")] alias insertNth_zero := insertIdx_zero
 @[deprecated (since := "2024-10-21")] alias insertNth_succ_nil := insertIdx_succ_nil

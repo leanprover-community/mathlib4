@@ -103,7 +103,7 @@ def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (mot
                patterns }
   let mres ← Term.mkMatcher { matcherName
                               matchType
-                              discrInfos := mkArray (indices.length + 1) {}
+                              discrInfos := .replicate (indices.length + 1) {}
                               lhss }
   mres.addMatcher
   let rhss ← lhss.mapM fun altLHS => do

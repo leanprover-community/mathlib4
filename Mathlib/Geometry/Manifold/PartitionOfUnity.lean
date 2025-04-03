@@ -439,8 +439,7 @@ def toBumpCovering : BumpCovering ι M s where
   le_one' i _ := (fs i).le_one
   eventuallyEq_one' := fs.eventuallyEq_one'
 
--- Porting note: `simpNF` says that `simp` can't simplify LHS but it can.
-@[simp, nolint simpNF]
+@[simp]
 theorem isSubordinate_toBumpCovering {f : SmoothBumpCovering ι I M s} {U : M → Set M} :
     (f.toBumpCovering.IsSubordinate fun i => U (f.c i)) ↔ f.IsSubordinate U :=
   Iff.rfl
@@ -458,15 +457,14 @@ theorem toSmoothPartitionOfUnity_apply (i : ι) (x : M) :
 open Classical in
 theorem toSmoothPartitionOfUnity_eq_mul_prod (i : ι) (x : M) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → fs j x ≠ 0 → j ∈ t) :
-    fs.toSmoothPartitionOfUnity i x =
-      fs i x * ∏ j ∈ t.filter fun j => WellOrderingRel j i, (1 - fs j x) :=
+    fs.toSmoothPartitionOfUnity i x = fs i x * ∏ j ∈ t with WellOrderingRel j i, (1 - fs j x) :=
   fs.toBumpCovering.toPartitionOfUnity_eq_mul_prod i x t ht
 
 open Classical in
 theorem exists_finset_toSmoothPartitionOfUnity_eventuallyEq (i : ι) (x : M) :
     ∃ t : Finset ι,
       fs.toSmoothPartitionOfUnity i =ᶠ[𝓝 x]
-        fs i * ∏ j ∈ t.filter fun j => WellOrderingRel j i, ((1 : M → ℝ) - fs j) := by
+        fs i * ∏ j ∈ t with WellOrderingRel j i, ((1 : M → ℝ) - fs j) := by
   -- Porting note: was defeq, now the continuous lemma uses bundled homs
   simpa using fs.toBumpCovering.exists_finset_toPartitionOfUnity_eventuallyEq i x
 

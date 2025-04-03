@@ -101,7 +101,7 @@ def getRootHash : CacheM UInt64 := do
     mathlibDepPath / "lake-manifest.json"]
   let hashes ← rootFiles.mapM fun path =>
     hashFileContents <$> IO.FS.readFile path
-  return hash (hash Lean.githash :: hashes)
+  return hash (rootHashGeneration :: hash Lean.githash :: hashes)
 
 /--
 Computes the hash of a file, which mixes:
@@ -118,7 +118,8 @@ partial def getHash (filePath : FilePath) (visited : Std.HashSet FilePath := ∅
   match (← get).cache[filePath]? with
   | some hash? => return hash?
   | none =>
-    let fixedPath := (← IO.getSrcDir filePath) / filePath
+    let sp := (← read).srcSearchPath
+    let fixedPath := (← IO.getSrcDir sp filePath) / filePath
     if !(← fixedPath.pathExists) then
       IO.println s!"Warning: {fixedPath} not found. Skipping all files that depend on it."
       if fixedPath.extension != "lean" then

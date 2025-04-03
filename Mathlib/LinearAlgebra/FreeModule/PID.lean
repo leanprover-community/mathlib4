@@ -605,7 +605,7 @@ is a square diagonal matrix; this is the basis for `M`. See:
   forms a square diagonal matrix.
 -/
 noncomputable def Submodule.smithNormalFormTopBasis (b : Basis ι R M)
-  (h : Module.finrank R N = Module.finrank R M) : Basis ι R M :=
+    (h : Module.finrank R N = Module.finrank R M) : Basis ι R M :=
   (exists_smith_normal_form_of_rank_eq b h).choose
 
 /--
@@ -618,7 +618,7 @@ is a square diagonal matrix; this is the basis for `N`. See:
   forms a square diagonal matrix.
 -/
 noncomputable def Submodule.smithNormalFormBotBasis (b : Basis ι R M)
-  (h : Module.finrank R N = Module.finrank R M) : Basis ι R N :=
+    (h : Module.finrank R N = Module.finrank R M) : Basis ι R N :=
   (exists_smith_normal_form_of_rank_eq b h).choose_spec.choose_spec.choose
 
 /--
@@ -643,7 +643,7 @@ theorem Submodule.smithNormalFormBotBasis_def (b : Basis ι R M)
 
 @[simp]
 theorem Submodule.smithNormalFormCoeffs_ne_zero (b : Basis ι R M)
-    (h : Module.finrank R N = Module.finrank R M) (i : ι ) :
+    (h : Module.finrank R N = Module.finrank R M) (i : ι) :
     smithNormalFormCoeffs b h i ≠ 0 := by
   intro hi
   apply Basis.ne_zero (smithNormalFormBotBasis b h) i

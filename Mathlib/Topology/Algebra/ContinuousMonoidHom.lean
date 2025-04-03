@@ -3,7 +3,8 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Nailin Guan
 -/
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 
@@ -23,7 +24,6 @@ assert_not_exists ContinuousLinearEquiv
 section
 
 open Function Topology
-open scoped Pointwise
 
 variable (F A B C D E : Type*)
 variable [Monoid A] [Monoid B] [Monoid C] [Monoid D]

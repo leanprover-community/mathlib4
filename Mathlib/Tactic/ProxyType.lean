@@ -106,8 +106,8 @@ def defaultMkProxyType (ctors : Array (Name × Expr × Term))
     TermElabM (Expr × Array Term × TSyntax `tactic) := do
   let mut types := #[]
   let mut patts := #[]
-  for i in [0:ctors.size] do
-    let (_ctorName, ty, patt) := ctors[i]!
+  for h : i in [0:ctors.size] do
+    let (_ctorName, ty, patt) := ctors[i]
     types := types.push ty
     patts := patts.push <| ← wrapSumAccess i ctors.size patt
   let (type, pf) ← mkCType types.toList
@@ -164,7 +164,7 @@ def ensureProxyEquiv (config : ProxyEquivConfig) (indVal : InductiveVal) : TermE
         forallBoundedTelescope ctorType ctorInfo.numFields fun xs _itype => do
           let names ← xs.mapM (fun _ => mkFreshUserName `a)
           let (ty, ppatt) ← config.mkCtorProxyType (xs.zip names).toList
-          let places := mkArray ctorInfo.numParams (← `(term| _))
+          let places := .replicate ctorInfo.numParams (← `(term| _))
           let argNames := names.map mkIdent
           let cpatt ← `(term| @$(mkIdent ctorName) $places* $argNames*)
           return (ctorName, ty, ppatt, cpatt)

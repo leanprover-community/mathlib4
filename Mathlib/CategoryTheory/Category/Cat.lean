@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Bicategory.Strict
 
@@ -174,9 +174,7 @@ This ought to be modelled as a 2-functor!
 @[simps]
 def typeToCat : Type u ⥤ Cat where
   obj X := Cat.of (Discrete X)
-  map := fun {X} {Y} f => by
-    dsimp
-    exact Discrete.functor (Discrete.mk ∘ f)
+  map := fun f => Discrete.functor (Discrete.mk ∘ f)
   map_id X := by
     apply Functor.ext
     · intro X Y f
