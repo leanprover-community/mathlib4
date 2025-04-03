@@ -84,10 +84,10 @@ lemma preparation_lift_triv {n : ℕ} (neq0 : n = 0) [hmax : m.IsMaximal] (f : (
 lemma PowerSeries.order_eq_of_eq_zero_iff {R S : Type*} [Semiring R] [Semiring S]
     {φ : PowerSeries R} {ψ : PowerSeries S} (h : ∀ i, coeff _ i φ = 0 ↔ coeff _ i ψ = 0) :
     φ.order = ψ.order := by
-  rw [PowerSeries.order_eq]
-  refine ⟨fun i hi ↦ ?_, fun i hi ↦ by rw [h i, PowerSeries.coeff_of_lt_order i hi]⟩
-  have : ψ.order < ⊤ := by simp [← hi]
-  simpa [(h i).not, ← hi] using PowerSeries.coeff_order this
+  have : φ = 0 ↔ ψ = 0 := by simp only [PowerSeries.ext_iff, map_zero, h]
+  simp only [order]
+  congr!
+  exact h _
 
 lemma ne_top {n : ℕ} (npos : n > 0) (mne : m ≠ ⊤): m.map (Ideal.Quotient.mk (m ^ n)) ≠ ⊤ := by
   apply (Ideal.ne_top_iff_one _).mpr
