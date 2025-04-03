@@ -46,45 +46,23 @@ namespace Monad
 def mapM :=
   @List.mapM
 
-/--
-Alternate (non-tail-recursive) form of mapM for proofs.
-
-See also `List.mapM'`.
--/
+@[inherit_doc List.mapM']
 def mapM' :=
   @List.mapM'
 
-/--
-Collapses two layers of monadic structure into a single one,
-passing the effects of the inner monad through the outer one.
-
-See also `joinM`.
--/
+@[inherit_doc joinM]
 def join :=
   @joinM
 
-/--
-Applies the monadic predicate p on every element in the list, left-to-right,
-and returns those elements x for which p x returns true.
-
-See also `List.filterM`.
--/
+@[inherit_doc List.filterM]
 def filter :=
   @filterM
 
-/--
-Folds a monadic function over a list from left to right.
-
-See also `List.foldlM`.
--/
+@[inherit_doc List.foldlM]
 def foldl :=
   @List.foldlM
 
-/--
-Executes one of two monadic actions depending on the computed value of a boolean.
-
-See also `condM`.
--/
+@[inherit_doc condM]
 def cond :=
   @condM
 
