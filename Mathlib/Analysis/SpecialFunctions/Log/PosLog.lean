@@ -23,11 +23,12 @@ namespace Real
 /-!
 ## Definition, Notation and Reformulations
 -/
+
 /-- Definition: the positive part of the logarithm. -/
-noncomputable def posLog : ℝ → ℝ := fun r ↦ max 0 (log r)
+@[pp_nodot] noncomputable def posLog : ℝ → ℝ := fun r ↦ max 0 (log r)
 
 /-- Notation `log⁺` for the positive part of the logarithm. -/
-scoped notation "log⁺" => posLog
+notation "log⁺" => posLog
 
 /-- Definition of the positive part of the logarithm, formulated as a theorem. -/
 theorem posLog_def {r : ℝ} : log⁺ r = max 0 (log r) := rfl
@@ -35,6 +36,7 @@ theorem posLog_def {r : ℝ} : log⁺ r = max 0 (log r) := rfl
 /-!
 ## Elementary Properties
 -/
+
 /-- Presentation of `log` in terms of its positive part. -/
 theorem posLog_sub_posLog_inv {r : ℝ} : log⁺ r - log⁺ r⁻¹ = log r := by
   rw [posLog_def, posLog_def, log_inv]
@@ -90,6 +92,7 @@ theorem monotoneOn_posLog : MonotoneOn log⁺ (Set.Ici 0) := by
 /-!
 ## Estimates for Products
 -/
+
 /-- Estimate for `log⁺` of a product. See `Real.posLog_prod` for a variant involving
 multiple factors. -/
 theorem posLog_mul {a b : ℝ} :
@@ -128,6 +131,7 @@ theorem posLog_prod {α : Type*} (s : Finset α) (f : α → ℝ) :
 /-!
 ## Estimates for Sums
 -/
+
 /-- Estimate for `log⁺` of a sum. See `Real.posLog_add` for a variant involving
 just two summands. -/
 theorem posLog_sum {α : Type*} (s : Finset α) (f : α → ℝ) :
