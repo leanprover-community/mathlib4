@@ -817,8 +817,9 @@ lemma height_eq_krullDim_Iic (x : α) : (height x : ℕ∞) = krullDim (Set.Iic 
   rw [← height_top_eq_krullDim, height, height, WithBot.coe_inj]
   apply le_antisymm
   · apply iSup_le; intro p; apply iSup_le; intro hp
-    let q := LTSeries.mk p.length (fun i ↦ (⟨p.toFun i, le_trans (p.monotone (Fin.le_last _)) hp⟩
-     : Set.Iic x)) (fun _ _ h ↦ p.strictMono h)
+    let q := LTSeries.mk p.length
+      (fun i ↦ (⟨p.toFun i, le_trans (p.monotone (Fin.le_last _)) hp⟩: Set.Iic x))
+      (fun _ _ h ↦ p.strictMono h)
     simp only [le_top, iSup_pos, ge_iff_le]
     exact le_iSup (fun p ↦ (p.length : ℕ∞)) q
   · apply iSup_le; intro p; apply iSup_le; intro _

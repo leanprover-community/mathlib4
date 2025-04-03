@@ -215,8 +215,8 @@ lemma delete_empty (M : Matroid α) : M ＼ ∅ = M := by
   exact empty_disjoint _
 
 lemma delete_delete_eq_delete_diff (M : Matroid α) (D₁ D₂ : Set α) :
-    M ＼ D₁ ＼ D₂ = M ＼ D₁ ＼ (D₂ \ D₁) :=
-  by simp
+    M ＼ D₁ ＼ D₂ = M ＼ D₁ ＼ (D₂ \ D₁) := by
+  simp
 
 instance delete_finitary (M : Matroid α) [Finitary M] (D : Set α) : Finitary (M ＼ D) := by
   change Finitary (M ↾ (M.E \ D)); infer_instance

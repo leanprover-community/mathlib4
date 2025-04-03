@@ -722,8 +722,8 @@ lemma IsBase.mem_fundCocircuit_iff_mem_fundCircuit {e f : α} (hB : M.IsBase B) 
   obtain hfB | hfB := em' <| f ∈ B
   · rw [fundCocircuit, fundCircuit_eq_of_mem (by simp [hfE, hfB])] at he
     contradiction
-  obtain ⟨heE, heB⟩ : e ∈ M.E \ B :=
-    by simpa [hne] using (M.fundCocircuit_subset_insert_compl f B) he
+  obtain ⟨heE, heB⟩ : e ∈ M.E \ B := by
+    simpa [hne] using (M.fundCocircuit_subset_insert_compl f B) he
   -- Use basis exchange to argue the equivalence.
   rw [fundCocircuit, hB'.indep.mem_fundCircuit_iff (by rwa [hB'.closure_eq]) (by simp [hfB])] at he
   rw [hB.indep.mem_fundCircuit_iff (by rwa [hB.closure_eq]) heB]

@@ -31,15 +31,6 @@ open System
 
 namespace Mathlib.Linter.TextBased
 
-/-- Different kinds of "broad imports" that are linted against. -/
-inductive BroadImports
-  /-- Importing the entire "Mathlib.Tactic" folder -/
-  | TacticFolder
-  /-- Importing any module in `Lake`, unless carefully measured
-  This has caused unexpected regressions in the past. -/
-  | Lake
-deriving BEq
-
 /-- Possible errors that text-based linters can report. -/
 -- We collect these in one inductive type to centralise error reporting.
 inductive StyleError where
@@ -52,6 +43,12 @@ inductive StyleError where
   | trailingWhitespace
   /-- A line contains a space before a semicolon -/
   | semicolon
+  /-- A line begins with a colon -/
+  | leadingColon
+  /-- A line is an isolated "where" -/
+  | isolatedWhere
+  /-- A line begins with the string "by" -/
+  | leadingBy
 deriving BEq
 
 /-- How to format style errors -/
@@ -70,10 +67,16 @@ inductive ErrorFormat
 def StyleError.errorMessage (err : StyleError) : String := match err with
   | StyleError.adaptationNote =>
     "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
-  | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
+  | StyleError.windowsLineEnding =>
+    "This line ends with a windows line ending (\r\n): please use Unix line\
     endings (\n) instead"
-  | trailingWhitespace => "This line ends with some whitespace: please remove this"
-  | semicolon => "This line contains a space before a semicolon"
+  | StyleError.trailingWhitespace => "This line ends with some whitespace: please remove this"
+  | StyleError.semicolon => "This line contains a space before a semicolon"
+  | StyleError.leadingColon =>
+    "This line begins with a colon: put : and := before line breaks, not after"
+  | StyleError.isolatedWhere =>
+    "This line is an isolated where: please put it on the previous line instead"
+  | StyleError.leadingBy => "This line starts with a by: please put it on the previous line instead"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -83,6 +86,9 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.windowsLineEnding => "ERR_WIN"
   | StyleError.trailingWhitespace => "ERR_TWS"
   | StyleError.semicolon => "ERR_SEM"
+  | StyleError.leadingColon => "ERR_CLN"
+  | StyleError.isolatedWhere => "ERR_IWH"
+  | StyleError.leadingBy => "ERR_LBY"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -163,6 +169,9 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_SEM" => some (StyleError.semicolon)
         | "ERR_TWS" => some (StyleError.trailingWhitespace)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
+        | "ERR_CLN" => some (StyleError.leadingColon)
+        | "ERR_IWH" => some (StyleError.isolatedWhere)
+        | "ERR_LBY" => some (StyleError.leadingBy)
         | _ => none
       match String.toNat? lineNumber with
       | some n => err.map fun e ↦ (ErrorContext.mk e n path)
@@ -231,6 +240,73 @@ def semicolonLinter : TextbasedLinter := fun lines ↦ Id.run do
       fixedLines := fixedLines.set! idx (line.replace (⟨[' ', ';']⟩ : String) ";")
    return (errors, if errors.size > 0 then some fixedLines else none)
 
+-- add to Batteries.Data.String.Matcher
+/-- Count the number of occurrences of `pattern` in `s` -/
+def _root_.String.countSubstr (s : String) (pattern: Substring) : ℕ :=
+  (s.findAllSubstr pattern).size
+
+/-- Take a list of tuples of enumerated lines of the form `(line, lineNumber)`
+and return a list of `(line, lineNumber, true/false)` where lines have `true` attached
+when they are in a single or multi-line Lean comment. -/
+def annotate_comments (enumeratedLines: Array (String × ℕ)) : Array (String × ℕ × Bool) := Id.run do
+  let mut res := #[]
+  -- We're in a comment when `nesting_depth > 0`.
+  let mut nestingDepth := 0
+  -- Whether we're in a comment when starting the line.
+  let mut startsInComment := false
+
+  for (line, number) in enumeratedLines do
+    -- We assume multiline comments do not begin or end within single-line comments.
+    -- Hence, a single-line comment always means we're in a comment, and we do not need to update
+    -- any counter.
+    if /-line == "\n" ||-/ line.trimLeft.startsWith "--" then
+      res := res.push (line, number, true)
+      continue
+    -- We assume that "/-/" and "-/-" never occur outside of "--" comments.
+    -- We assume that we do not encounter "... -/ <term> /- ...".
+    -- We also don't account for "/-" and "-/" appearing in strings.
+    startsInComment := (nestingDepth > 0)
+    nestingDepth := nestingDepth + line.countSubstr "/-" - line.countSubstr "-/"
+    let inComment := (startsInComment || line.trimLeft.startsWith "/-") &&
+        (nestingDepth > 0 || line.trimLeft.endsWith "-/")
+    res := res.push (line, number, inComment)
+  return res
+
+/-- Lint a collection of input strings for a few miscellaneous formatting tweaks
+- an "isolated by", i.e. "by" on a single line (or at the beginning of a line)
+- "where" being put on a single line (it should be on the preceding line)
+- a line starting with a colon (it should be on the preceding line). -/
+def miscFormattingLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let mut errors := Array.mkEmpty 0
+  let mut fixedLines := lines
+  let annotated := annotate_comments lines.zipIdx
+  for (line, idx, is_in_comment) in annotated do
+    if is_in_comment then continue
+    let indent := line.takeWhile (·.isWhitespace)
+    let mut stripped := line.trimLeft
+    if stripped.startsWith ":" then
+      errors := errors.push (StyleError.leadingColon, idx + 1)
+    else if stripped == "where" then
+      -- We purposefully don't check if the line starts with it, as that would have false positives
+      -- with function doc-strings.
+      -- We also allow lines starting with "where", as this could also denote the keyword:
+      -- indented "where"s are linted (because they should be changed regardless).
+      if indent != "" then errors := errors.push (StyleError.isolatedWhere, idx + 1)
+    else if stripped == "by" then
+      if stripped == "by" && !(lines[idx - 1]!.trimRight.endsWith ",") then
+        errors := errors.push (StyleError.leadingBy, idx + 1)
+    else if stripped.startsWith "by " then
+      let prev := lines[idx - 1]!.trimRight
+      if prev.endsWith ":=" then
+        -- If the previous line is short enough, we can suggest an auto-fix.
+        -- Future: error also if it is not: currently, mathlib contains about 30 such
+        -- instances which are not obvious to fix.
+        if fixedLines[idx - 1]!.length <= 97 then
+          errors := errors.push (StyleError.leadingBy, idx + 1)
+          fixedLines := fixedLines.set! (idx - 1) (s!"{prev} by")
+          let indent := line.takeWhile (·.isWhitespace)
+          fixedLines := fixedLines.set! idx (s!"{indent}{stripped.drop 3}")
+   return (errors, if errors.size > 0 then some fixedLines else none)
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
@@ -243,7 +319,7 @@ end
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    adaptationNoteLinter, semicolonLinter, trailingWhitespaceLinter
+    adaptationNoteLinter, semicolonLinter, trailingWhitespaceLinter, miscFormattingLinter,
   ]
 
 

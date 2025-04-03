@@ -53,8 +53,7 @@ theorem not_nodup_pair (a : α) : ¬Nodup [a, a] :=
   not_nodup_cons_of_mem <| mem_singleton_self _
 
 theorem nodup_iff_sublist {l : List α} : Nodup l ↔ ∀ a, ¬[a, a] <+ l :=
-  ⟨fun d a h => not_nodup_pair a (d.sublist h),
-    by
+  ⟨fun d a h => not_nodup_pair a (d.sublist h), by
       induction l <;> intro h; · exact nodup_nil
       case cons a l IH =>
         exact (IH fun a s => h a <| sublist_cons_of_sublist _ s).cons
