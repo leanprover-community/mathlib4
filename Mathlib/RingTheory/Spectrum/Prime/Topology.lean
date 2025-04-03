@@ -410,8 +410,9 @@ theorem range_comap_of_surjective (hf : Surjective f) :
     Set.range (comap f) = zeroLocus (ker f) :=
   range_specComap_of_surjective _ f hf
 
-lemma comap_quotientMk_surjective_of_le_nilradical (I : Ideal R) (hle : I ≤ nilradical R) :
-    Function.Surjective (comap <| Ideal.Quotient.mk I) := by
+lemma comap_quotientMk_bijective_of_le_nilradical (I : Ideal R) (hle : I ≤ nilradical R) :
+    Function.Bijective (comap <| Ideal.Quotient.mk I) := by
+  refine ⟨comap_injective_of_surjective _ Ideal.Quotient.mk_surjective, ?_⟩
   simpa [← Set.range_eq_univ, range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
     zeroLocus_eq_univ_iff]
 

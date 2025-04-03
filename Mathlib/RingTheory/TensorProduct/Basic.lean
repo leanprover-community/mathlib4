@@ -648,10 +648,7 @@ variable [Semiring D] [Algebra R D]
 lemma _root_.LinearMap.map_mul_of_map_mul_tmul {f : A ⊗[R] B →ₗ[S] C}
     (hf : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂))
     (x y : A ⊗[R] B) : f (x * y) = f x * f y :=
-  #adaptation_note /-- https://github.com/leanprover/lean4/pull/4119
-  we either need to specify the `(R := S) (A := A ⊗[R] B)` arguments,
-  or use `set_option maxSynthPendingDepth 2 in`. -/
-  (f.map_mul_iff (R := S) (A := A ⊗[R] B)).2 (by
+  f.map_mul_iff.2 (by
     -- these instances are needed by the statement of `ext`, but not by the current definition.
     letI : Algebra R C := RestrictScalars.algebra R S C
     letI : IsScalarTower R S C := RestrictScalars.isScalarTower R S C
@@ -1164,7 +1161,7 @@ This is just a special case of `Algebra.TensorProduct.lift` for when `C` is comm
 abbrev productLeftAlgHom (f : A →ₐ[S] C) (g : B →ₐ[R] C) : A ⊗[R] B →ₐ[S] C :=
   lift f g (fun _ _ => Commute.all _ _)
 
-lemma tmul_comm (r : R) : algebraMap R A r ⊗ₜ[R] 1 = 1 ⊗ₜ algebraMap R B r := by
+lemma tmul_one_eq_one_tmul (r : R) : algebraMap R A r ⊗ₜ[R] 1 = 1 ⊗ₜ algebraMap R B r := by
   rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, smul_tmul]
 
 end

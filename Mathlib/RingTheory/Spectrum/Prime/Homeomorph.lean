@@ -53,7 +53,7 @@ lemma PrimeSpectrum.isHomeomorph_comap (f : R →+* S) (H : ∀ (x : S), ∃ n >
     apply Polynomial.monic_X_pow_add
     simpa using lt_of_le_of_lt Polynomial.degree_C_le (by simpa using hn)
   have hbij : Function.Bijective (PrimeSpectrum.comap f) :=
-    ⟨h1, (PrimeSpectrum.comap_quotientMk_surjective_of_le_nilradical _ hker).comp <|
+    ⟨h1, (PrimeSpectrum.comap_quotientMk_bijective_of_le_nilradical _ hker).2.comp <|
       hint.specComap_surjective f.kerLift_injective⟩
   refine ⟨(PrimeSpectrum.comap f).continuous, ?_, h1, hbij.2⟩
   · rw [PrimeSpectrum.isTopologicalBasis_basic_opens.isOpenMap_iff]
@@ -112,7 +112,7 @@ lemma PrimeSpectrum.isHomeomorph_comap_of_isPurelyInseparable [IsPurelyInseparab
           rw [TensorProduct.tmul_pow, this]
           refine Subring.mul_mem _ ⟨x ^ q ^ (n + 1), rfl⟩ ⟨algebraMap k R (a ^ q), ?_⟩
           rw [pow_add, pow_mul, ← IsScalarTower.algebraMap_apply, TensorProduct.algebraMap_apply,
-            TensorProduct.tmul_comm, map_pow, ha, pow_one]
+            TensorProduct.tmul_one_eq_one_tmul, map_pow, ha, pow_one]
       exact ⟨q ^ n, Nat.pow_pos hq.pos, hr⟩
     · have : ExpChar k 1 := ringExpChar.of_eq hq
       have : CharZero k := charZero_of_expChar_one' k
