@@ -33,11 +33,11 @@ namespace Computability
 
 /-- An encoding of a type in a certain alphabet, together with a decoding. -/
 structure Encoding (α : Type u) where
-  /-- The alphabet of the encoding. -/
+  /-- The alphabet of the encoding -/
   Γ : Type v
-  /-- The encoding function. -/
+  /-- The encoding function -/
   encode : α → List Γ
-  /-- The decoding function, which can return `none` for invalid encodings. -/
+  /-- The decoding function, which can return `none` for invalid encodings -/
   decode : List Γ → Option α
   /-- The encoding and decoding are inverse functions. -/
   decode_encode : ∀ x, decode (encode x) = some x
