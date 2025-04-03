@@ -3,9 +3,9 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Decomposition.Lebesgue
+import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
 import Mathlib.MeasureTheory.Measure.Complex
-import Mathlib.MeasureTheory.Decomposition.Jordan
+import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
 import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 
 /-!
@@ -160,7 +160,7 @@ end
 `rnDeriv s μ` satisfies `μ.withDensityᵥ (s.rnDeriv μ) = s`
 if and only if `s` is absolutely continuous with respect to `μ` and this fact is known as
 `MeasureTheory.SignedMeasure.absolutelyContinuous_iff_withDensity_rnDeriv_eq`
-and can be found in `MeasureTheory.Decomposition.RadonNikodym`. -/
+and can be found in `MeasureTheory.Measure.Decomposition.RadonNikodym`. -/
 def rnDeriv (s : SignedMeasure α) (μ : Measure α) : α → ℝ := fun x =>
   (s.toJordanDecomposition.posPart.rnDeriv μ x).toReal -
     (s.toJordanDecomposition.negPart.rnDeriv μ x).toReal

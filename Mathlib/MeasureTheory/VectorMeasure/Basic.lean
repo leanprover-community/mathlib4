@@ -334,7 +334,7 @@ theorem toSignedMeasure_apply_measurable {μ : Measure α} [IsFiniteMeasure μ] 
     (hi : MeasurableSet i) : μ.toSignedMeasure i = (μ i).toReal :=
   if_pos hi
 
--- Without this lemma, `singularPart_neg` in `MeasureTheory.Decomposition.Lebesgue` is
+-- Without this lemma, `singularPart_neg` in `MeasureTheory.Measure.Decomposition.Lebesgue` is
 -- extremely slow
 theorem toSignedMeasure_congr {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (h : μ = ν) : μ.toSignedMeasure = ν.toSignedMeasure := by
