@@ -648,7 +648,7 @@ end fitting_decomposition
 
 lemma disjoint_genWeightSpaceOf [NoZeroSMulDivisors R M] {x : L} {φ₁ φ₂ : R} (h : φ₁ ≠ φ₂) :
     Disjoint (genWeightSpaceOf M φ₁ x) (genWeightSpaceOf M φ₂ x) := by
-  rw [LieSubmodule.disjoint_iff_toSubmodule]
+  rw [← LieSubmodule.disjoint_toSubmodule]
   dsimp [genWeightSpaceOf]
   exact Module.End.disjoint_genEigenspace _ h _ _
 
@@ -669,7 +669,7 @@ lemma injOn_genWeightSpace [NoZeroSMulDivisors R M] :
 See also `LieModule.iSupIndep_genWeightSpace'`. -/
 lemma iSupIndep_genWeightSpace [NoZeroSMulDivisors R M] :
     iSupIndep fun χ : L → R ↦ genWeightSpace M χ := by
-  simp only [LieSubmodule.iSupIndep_iff_toSubmodule, genWeightSpace,
+  simp only [← LieSubmodule.iSupIndep_toSubmodule, genWeightSpace,
     LieSubmodule.iInf_toSubmodule]
   exact Module.End.independent_iInf_maxGenEigenspace_of_forall_mapsTo (toEnd R L M)
     (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem)
@@ -685,7 +685,7 @@ lemma iSupIndep_genWeightSpace' [NoZeroSMulDivisors R M] :
 
 lemma iSupIndep_genWeightSpaceOf [NoZeroSMulDivisors R M] (x : L) :
     iSupIndep fun (χ : R) ↦ genWeightSpaceOf M χ x := by
-  rw [LieSubmodule.iSupIndep_iff_toSubmodule]
+  rw [← LieSubmodule.iSupIndep_toSubmodule]
   dsimp [genWeightSpaceOf]
   exact (toEnd R L M x).independent_genEigenspace _
 
