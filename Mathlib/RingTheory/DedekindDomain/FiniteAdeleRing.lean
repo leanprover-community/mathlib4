@@ -43,9 +43,10 @@ variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K] [Algebra R K]
 /-- The product of all `adicCompletionIntegers`, where `v` runs over the maximal ideals of `R`. -/
 def FiniteIntegralAdeles : Type _ :=
   ∀ v : HeightOneSpectrum R, v.adicCompletionIntegers K
--- deriving CommRing, TopologicalSpace, Inhabited
+-- The `CommRing, TopologicalSpace, Inhabited` instances should be constructed by a deriving
+-- handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
 section DerivedInstances
 
 instance : CommRing (FiniteIntegralAdeles R K) :=
@@ -108,8 +109,7 @@ def Coe.addMonoidHom : AddMonoidHom (R_hat R K) (K_hat R K) where
   map_add' x y := by
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext v`
     refine funext fun v => ?_
-    simp only [coe_apply, Pi.add_apply, Subring.coe_add]
-    rfl
+    simp only [coe_apply, (Pi.add_apply), (Subring.coe_add)]
 
 /-- The inclusion of `R_hat` in `K_hat` as a ring homomorphism. -/
 @[simps]
@@ -120,8 +120,7 @@ def Coe.ringHom : RingHom (R_hat R K) (K_hat R K) :=
     map_mul' := fun x y => by
       -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): was `ext p`
       refine funext fun p => ?_
-      simp only [Pi.mul_apply, Subring.coe_mul]
-      rfl }
+      simp only [(Pi.mul_apply), (Subring.coe_mul)] }
 
 end FiniteIntegralAdeles
 

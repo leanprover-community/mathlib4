@@ -36,7 +36,7 @@ In the following, `{α : Type*} [Fintype α] [DecidableEq α]`.
 ## Implementation details
 
 The forward direction of `Equiv.Perm.isoCycle'` uses `Fintype.choose` of the uniqueness
-result, relying on the `Fintype` instance of a `Cycle.nodup` subtype.
+result, relying on the `Fintype` instance of a `Cycle.Nodup` subtype.
 It is unclear if this works faster than the `Equiv.Perm.toCycle`, which relies
 on recursion over `Finset.univ`.
 
@@ -72,7 +72,7 @@ theorem isCycle_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) : IsCycle (formPer
   · norm_num at hn
   · use x
     constructor
-    · rwa [formPerm_apply_mem_ne_self_iff _ hl _ (mem_cons_self _ _)]
+    · rwa [formPerm_apply_mem_ne_self_iff _ hl _ mem_cons_self]
     · intro w hw
       have : w ∈ x::y::l := mem_of_formPerm_ne_self _ _ hw
       obtain ⟨k, hk, rfl⟩ := getElem_of_mem this

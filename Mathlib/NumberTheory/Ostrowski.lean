@@ -110,7 +110,7 @@ def padic (p : ℕ) [Fact p.Prime] : AbsoluteValue ℚ ℝ where
   eq_zero' x :=
     ⟨fun H ↦ padicNorm.zero_of_padicNorm_eq_zero <| cast_eq_zero.mp H,
       fun H ↦ cast_eq_zero.mpr <| H ▸ padicNorm.zero (p := p)⟩
-  add_le' x y := by simp only; exact_mod_cast padicNorm.triangle_ineq x y
+  add_le' x y := by exact_mod_cast padicNorm.triangle_ineq x y
 
 @[simp] lemma padic_eq_padicNorm (p : ℕ) [Fact p.Prime] (r : ℚ) :
     padic p r = padicNorm p r := rfl

@@ -106,22 +106,22 @@ section Function
 variable {w : ι → ℝ} {f g : ι → 𝕜}
 
 lemma wInner_const_left (a : 𝕜) (f : ι → 𝕜) :
-    ⟪const _ a, f⟫_[𝕜, w] = conj a * ∑ i, w i • f i := by simp [wInner, const_apply, mul_sum]
+    ⟪const _ a, f⟫_[𝕜, w] = (∑ i, w i • f i) * conj a := by simp [wInner, const_apply, sum_mul]
 
 lemma wInner_const_right (f : ι → 𝕜) (a : 𝕜) :
-    ⟪f, const _ a⟫_[𝕜, w] = (∑ i, w i • conj (f i)) * a := by simp [wInner, const_apply, sum_mul]
+    ⟪f, const _ a⟫_[𝕜, w] = a * (∑ i, w i • conj (f i)) := by simp [wInner, const_apply, mul_sum]
 
 @[simp] lemma wInner_one_const_left (a : 𝕜) (f : ι → 𝕜) :
-    ⟪const _ a, f⟫_[𝕜] = conj a * ∑ i, f i := by simp [wInner_one_eq_sum, mul_sum]
+    ⟪const _ a, f⟫_[𝕜] = (∑ i, f i) * conj a := by simp [wInner_one_eq_sum, sum_mul]
 
 @[simp] lemma wInner_one_const_right (f : ι → 𝕜) (a : 𝕜) :
-    ⟪f, const _ a⟫_[𝕜] = (∑ i, conj (f i)) * a := by simp [wInner_one_eq_sum, sum_mul]
+    ⟪f, const _ a⟫_[𝕜] = a * (∑ i, conj (f i)) := by simp [wInner_one_eq_sum, mul_sum]
 
 @[simp] lemma wInner_cWeight_const_left (a : 𝕜) (f : ι → 𝕜) :
-    ⟪const _ a, f⟫ₙ_[𝕜] = conj a * 𝔼 i, f i := by simp [wInner_cWeight_eq_expect, mul_expect]
+    ⟪const _ a, f⟫ₙ_[𝕜] = 𝔼 i, f i * conj a := by simp [wInner_cWeight_eq_expect]
 
 @[simp] lemma wInner_cWeight_const_right (f : ι → 𝕜) (a : 𝕜) :
-    ⟪f, const _ a⟫ₙ_[𝕜] = (𝔼 i, conj (f i)) * a := by simp [wInner_cWeight_eq_expect, expect_mul]
+    ⟪f, const _ a⟫ₙ_[𝕜] = a * (𝔼 i, conj (f i)) := by simp [wInner_cWeight_eq_expect, mul_expect]
 
 lemma wInner_one_eq_inner (f g : ι → 𝕜) :
     ⟪f, g⟫_[𝕜, 1] = inner ((WithLp.equiv 2 _).symm f) ((WithLp.equiv 2 _).symm g) := by
@@ -145,7 +145,7 @@ lemma linearIndependent_of_ne_zero_of_wInner_cWeight_eq_zero {f : κ → ι → 
       simpa [wInner_cWeight_eq_smul_wInner_one, ← NNRat.cast_smul_eq_nnqsmul 𝕜] using hinner
 
 lemma wInner_nonneg (hw : 0 ≤ w) (hf : 0 ≤ f) (hg : 0 ≤ g) : 0 ≤ ⟪f, g⟫_[𝕜, w] :=
-  sum_nonneg fun _ _ ↦ smul_nonneg (hw _) <| mul_nonneg (star_nonneg_iff.2 (hf _)) (hg _)
+  sum_nonneg fun _ _ ↦ smul_nonneg (hw _) <| mul_nonneg (hg _) (star_nonneg_iff.2 (hf _))
 
 lemma norm_wInner_le (hw : 0 ≤ w) : ‖⟪f, g⟫_[𝕜, w]‖ ≤ ⟪fun i ↦ ‖f i‖, fun i ↦ ‖g i‖⟫_[ℝ, w] :=
   (norm_sum_le ..).trans_eq <| sum_congr rfl fun i _ ↦ by

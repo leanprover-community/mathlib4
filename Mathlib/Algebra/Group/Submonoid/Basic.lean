@@ -268,6 +268,11 @@ theorem closure_iUnion {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i, c
 theorem closure_singleton_le_iff_mem (m : M) (p : Submonoid M) : closure {m} ≤ p ↔ m ∈ p := by
   rw [closure_le, singleton_subset_iff, SetLike.mem_coe]
 
+@[to_additive (attr := simp)]
+theorem closure_insert_one (s : Set M) : closure (insert 1 s) = closure s := by
+  rw [insert_eq, closure_union, sup_eq_right, closure_singleton_le_iff_mem]
+  apply one_mem
+
 @[to_additive]
 theorem mem_iSup {ι : Sort*} (p : ι → Submonoid M) {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∀ N, (∀ i, p i ≤ N) → m ∈ N := by
@@ -288,6 +293,20 @@ theorem disjoint_def {p₁ p₂ : Submonoid M} :
 theorem disjoint_def' {p₁ p₂ : Submonoid M} :
     Disjoint p₁ p₂ ↔ ∀ {x y : M}, x ∈ p₁ → y ∈ p₂ → x = y → x = 1 :=
   disjoint_def.trans ⟨fun h _ _ hx hy hxy => h hx <| hxy.symm ▸ hy, fun h _ hx hx' => h hx hx' rfl⟩
+
+variable {t : Set M}
+
+@[to_additive (attr := simp)]
+lemma closure_sdiff_eq_closure (hts : t ⊆ closure (s \ t)) : closure (s \ t) = closure s := by
+  refine (closure_mono Set.diff_subset).antisymm <| closure_le.mpr <| fun x hxs ↦ ?_
+  by_cases hxt : x ∈ t
+  · exact hts hxt
+  · rw [SetLike.mem_coe, Submonoid.mem_closure]
+    exact fun N hN ↦ hN <| Set.mem_diff_of_mem hxs hxt
+
+@[to_additive (attr := simp)]
+lemma closure_sdiff_singleton_one (s : Set M) : closure (s \ {1}) = closure s :=
+  closure_sdiff_eq_closure <| by simp [one_mem]
 
 end Submonoid
 

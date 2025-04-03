@@ -227,10 +227,6 @@ instance isIso_whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) [IsIso 
 
 variable {B : Type u₄} [Category.{v₄} B]
 
--- Porting note: it was `attribute [local elab_without_expected_type]`,
--- but now `elab_without_expected-type` must be global
-attribute [elab_without_expected_type] whiskerLeft whiskerRight
-
 @[simp]
 theorem whiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H ⟶ K) :
     whiskerLeft F (whiskerLeft G α) = whiskerLeft (F ⋙ G) α :=
@@ -304,7 +300,6 @@ end Functor
 
 variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
   [Category D₁] [Category D₂] [Category D₃] (E : Type*) [Category E]
-
 
 /-- The obvious functor `(C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (D₁ ⥤ D₂ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ E)`. -/
 @[simps!]

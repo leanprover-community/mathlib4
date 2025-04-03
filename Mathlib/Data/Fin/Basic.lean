@@ -99,26 +99,6 @@ lemma size_positive' [Nonempty (Fin n)] : 0 < n :=
 protected theorem prop (a : Fin n) : a.val < n :=
   a.2
 
-section Order
-variable {a b c : Fin n}
-
-protected lemma lt_of_le_of_lt : a ≤ b → b < c → a < c := Nat.lt_of_le_of_lt
-protected lemma lt_of_lt_of_le : a < b → b ≤ c → a < c := Nat.lt_of_lt_of_le
-protected lemma le_rfl : a ≤ a := Nat.le_refl _
-protected lemma lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b := by
-  rw [← val_ne_iff]; exact Nat.lt_iff_le_and_ne
-protected lemma lt_or_lt_of_ne (h : a ≠ b) : a < b ∨ b < a := Nat.lt_or_lt_of_ne <| val_ne_iff.2 h
-protected lemma lt_or_le (a b : Fin n) : a < b ∨ b ≤ a := Nat.lt_or_ge _ _
-protected lemma le_or_lt (a b : Fin n) : a ≤ b ∨ b < a := (b.lt_or_le a).symm
-protected lemma le_of_eq (hab : a = b) : a ≤ b := Nat.le_of_eq <| congr_arg val hab
-protected lemma ge_of_eq (hab : a = b) : b ≤ a := Fin.le_of_eq hab.symm
-protected lemma eq_or_lt_of_le : a ≤ b → a = b ∨ a < b := by
-  rw [Fin.ext_iff]; exact Nat.eq_or_lt_of_le
-protected lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := by
-  rw [Fin.ext_iff]; exact Nat.lt_or_eq_of_le
-
-end Order
-
 lemma lt_last_iff_ne_last {a : Fin (n + 1)} : a < last n ↔ a ≠ last n := by
   simp [Fin.lt_iff_le_and_ne, le_last]
 
@@ -148,7 +128,6 @@ theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
 theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
   Fin.ext_iff.not
 
-@[simp, nolint simpNF]
 theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
   Fin.ext_iff
 
@@ -231,8 +210,6 @@ instance {n : ℕ} : WellFoundedRelation (Fin n) :=
 @[deprecated Fin.ofNat' (since := "2024-10-15")]
 def ofNat'' [NeZero n] (i : ℕ) : Fin n :=
   ⟨i % n, mod_lt _ n.pos_of_neZero⟩
--- Porting note: `Fin.ofNat'` conflicts with something in core (there the hypothesis is `n > 0`),
--- so for now we make this double-prime `''`. This is also the reason for the dubious translation.
 
 @[deprecated (since := "2025-02-24")]
 alias val_zero' := val_zero
@@ -348,7 +325,7 @@ section Add
 theorem val_one' (n : ℕ) [NeZero n] : ((1 : Fin n) : ℕ) = 1 % n :=
   rfl
 
--- Porting note: Delete this lemma after porting
+@[deprecated val_one' (since := "2025-03-10")]
 theorem val_one'' {n : ℕ} : ((1 : Fin (n + 1)) : ℕ) = 1 % (n + 1) :=
   rfl
 
@@ -390,6 +367,17 @@ lemma intCast_val_sub_eq_sub_add_ite {n : ℕ} (a b : Fin n) :
     ((a - b).val : ℤ) = a.val - b.val + if b ≤ a then 0 else n := by
   split <;> fin_omega
 
+lemma one_le_of_ne_zero {n : ℕ} [NeZero n] {k : Fin n} (hk : k ≠ 0) : 1 ≤ k := by
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
+  cases n with
+  | zero => simp only [Nat.reduceAdd, Fin.isValue, Fin.zero_le]
+  | succ n => rwa [Fin.le_iff_val_le_val, Fin.val_one, Nat.one_le_iff_ne_zero, val_ne_zero_iff]
+
+lemma val_sub_one_of_ne_zero [NeZero n] {i : Fin n} (hi : i ≠ 0) : (i - 1).val = i - 1 := by
+  obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (NeZero.ne n)
+  rw [Fin.sub_val_of_le (one_le_of_ne_zero hi), Fin.val_one', Nat.mod_eq_of_lt
+    (Nat.succ_le_iff.mpr (nontrivial_iff_two_le.mp <| nontrivial_of_ne i 0 hi))]
+
 section OfNatCoe
 
 @[simp]
@@ -398,7 +386,6 @@ theorem ofNat'_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : Fin.ofNat' n a = a :=
 
 @[simp] lemma val_natCast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
 
--- Porting note: is this the right name for things involving `Nat.cast`?
 /-- Converting an in-range number to `Fin (n + 1)` produces a result
 whose value is the original number. -/
 theorem val_cast_of_lt {n : ℕ} [NeZero n] {a : ℕ} (h : a < n) : (a : Fin n).val = a :=
@@ -823,11 +810,27 @@ theorem castPred_mk (i : ℕ) (h₁ : i < n) (h₂ := h₁.trans (Nat.lt_succ_se
     (h₃ : ⟨i, h₂⟩ ≠ last _ := (ne_iff_vne _ _).mpr (val_last _ ▸ h₁.ne)) :
   castPred ⟨i, h₂⟩ h₃ = ⟨i, h₁⟩ := rfl
 
+@[simp]
 theorem castPred_le_castPred_iff {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n} :
     castPred i hi ≤ castPred j hj ↔ i ≤ j := Iff.rfl
 
+/-- A version of the right-to-left implication of `castPred_le_castPred_iff`
+that deduces `i ≠ last n` from `i ≤ j` and `j ≠ last n`. -/
+@[gcongr]
+theorem castPred_le_castPred {i j : Fin (n + 1)} (h : i ≤ j) (hj : j ≠ last n) :
+    castPred i (by rw [← lt_last_iff_ne_last] at hj ⊢; exact Fin.lt_of_le_of_lt h hj) ≤
+      castPred j hj :=
+  h
+
+@[simp]
 theorem castPred_lt_castPred_iff {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n} :
     castPred i hi < castPred j hj ↔ i < j := Iff.rfl
+
+/-- A version of the right-to-left implication of `castPred_lt_castPred_iff`
+that deduces `i ≠ last n` from `i < j`. -/
+@[gcongr]
+theorem castPred_lt_castPred {i j : Fin (n + 1)} (h : i < j) (hj : j ≠ last n) :
+    castPred i (ne_last_of_lt h) < castPred j hj := h
 
 theorem castPred_lt_iff {j : Fin n} {i : Fin (n + 1)} (hi : i ≠ last n) :
     castPred i hi < j ↔ i < castSucc j := by
@@ -845,6 +848,7 @@ theorem le_castPred_iff {j : Fin n} {i : Fin (n + 1)} (hi : i ≠ last n) :
     j ≤ castPred i hi ↔ castSucc j ≤ i := by
   rw [← castSucc_le_castSucc_iff, castSucc_castPred]
 
+@[simp]
 theorem castPred_inj {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n} :
     castPred i hi = castPred j hj ↔ i = j := by
   simp_rw [Fin.ext_iff, le_antisymm_iff, ← le_def, castPred_le_castPred_iff]
@@ -852,8 +856,13 @@ theorem castPred_inj {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n}
 theorem castPred_zero' [NeZero n] (h := Fin.ext_iff.not.2 last_pos'.ne) :
     castPred (0 : Fin (n + 1)) h = 0 := rfl
 
-theorem castPred_zero (h := Fin.ext_iff.not.2 last_pos.ne)  :
+theorem castPred_zero (h := Fin.ext_iff.not.2 last_pos.ne) :
     castPred (0 : Fin (n + 2)) h = 0 := rfl
+
+@[simp]
+theorem castPred_eq_zero [NeZero n] {i : Fin (n + 1)} (h : i ≠ last n) :
+    Fin.castPred i h = 0 ↔ i = 0 := by
+  rw [← castPred_zero', castPred_inj]
 
 @[simp]
 theorem castPred_one [NeZero n] (h := Fin.ext_iff.not.2 one_lt_last.ne) :
@@ -1134,7 +1143,6 @@ lemma castPred_succAbove_castPred {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a �
   simp_rw [← castSucc_inj (b := (a.succAbove b).castPred hk), ← castSucc_succAbove_castSucc,
     castSucc_castPred]
 
---@[simp] -- Porting note: can be proved by `simp`
 lemma one_succAbove_zero {n : ℕ} : (1 : Fin (n + 2)).succAbove 0 = 0 := by
   rfl
 
@@ -1376,9 +1384,6 @@ protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
   rfl
 
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
-
-@[deprecated val_eq_zero (since := "2024-09-18")]
-theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]
 
 lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by
   fin_omega

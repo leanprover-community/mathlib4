@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
 import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Topology.Homeomorph.Defs
 import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -111,6 +112,12 @@ theorem continuous_of_mulTSupport [TopologicalSpace β] {f : α → β}
     (hf : ∀ x ∈ mulTSupport f, ContinuousAt f x) : Continuous f :=
   continuous_iff_continuousAt.2 fun x => (em _).elim (hf x) fun hx =>
     (@continuousAt_const _ _ _ _ _ 1).congr (not_mem_mulTSupport_iff_eventuallyEq.mp hx).symm
+
+@[to_additive]
+lemma ContinuousOn.continuous_of_mulTSupport_subset [TopologicalSpace β] {f : α → β}
+    {s : Set α} (hs : ContinuousOn f s) (h's : IsOpen s) (h''s : mulTSupport f ⊆ s) :
+    Continuous f :=
+  continuous_of_mulTSupport fun _ hx ↦ h's.continuousOn_iff.mp hs <| h''s hx
 
 end
 
@@ -372,7 +379,7 @@ section LocallyFinite
 
 variable {ι : Type*} [TopologicalSpace X]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: reformulate for any locally finite family of sets
+-- TODO: reformulate for any locally finite family of sets
 /-- If a family of functions `f` has locally-finite multiplicative support, subordinate to a family
 of open sets, then for any point we can find a neighbourhood on which only finitely-many members of
 `f` are not equal to 1. -/
@@ -386,8 +393,8 @@ theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [On
       ∀ z ∈ n, (mulSupport fun i => f i z) ⊆ is := by
   obtain ⟨n, hn, hnf⟩ := hlf x
   classical
-    let is := hnf.toFinset.filter fun i => x ∈ U i
-    let js := hnf.toFinset.filter fun j => x ∉ U j
+    let is := {i ∈ hnf.toFinset | x ∈ U i}
+    let js := {j ∈ hnf.toFinset | x ∉ U j}
     refine
       ⟨is, (n ∩ ⋂ j ∈ js, (mulTSupport (f j))ᶜ) ∩ ⋂ i ∈ is, U i, inter_mem (inter_mem hn ?_) ?_,
         inter_subset_right, fun z hz => ?_⟩
@@ -425,3 +432,14 @@ theorem LocallyFinite.smul_right [Zero M] [SMulZeroClass R M]
   h.subset fun i x ↦ mt <| fun h ↦ by rw [Pi.smul_apply', h, smul_zero]
 
 end LocallyFinite
+
+section Homeomorph
+
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+
+@[to_additive]
+theorem HasCompactMulSupport.comp_homeomorph {M} [One M] {f : Y → M}
+    (hf : HasCompactMulSupport f) (φ : X ≃ₜ Y) : HasCompactMulSupport (f ∘ φ) :=
+  hf.comp_isClosedEmbedding φ.isClosedEmbedding
+
+end Homeomorph

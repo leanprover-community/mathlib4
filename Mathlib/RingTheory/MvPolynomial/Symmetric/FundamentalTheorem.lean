@@ -62,7 +62,7 @@ section accumulate
 @[simps] def accumulate (n m : ℕ) : (Fin n → ℕ) →+ (Fin m → ℕ) where
   toFun t j := ∑ i : Fin n with j.val ≤ i.val, t i
   map_zero' := funext <| fun _ ↦ sum_eq_zero <| fun _ _ ↦ rfl
-  map_add' t₁ t₂ := funext <| fun j ↦ by dsimp only; exact sum_add_distrib
+  map_add' _ _ := funext <| fun _ ↦ sum_add_distrib
 
 /-- The `i`th entry of `invAccumulate n m s` is `s i - s (i+1)`, where `s j = 0` if `j ≥ m`. -/
 def invAccumulate (n m : ℕ) (s : Fin m → ℕ) (i : Fin n) : ℕ :=
@@ -316,9 +316,9 @@ lemma esymmAlgHom_fin_surjective (h : m ≤ n) :
   obtain ⟨q, rfl⟩ := (esymmAlgHom_fin_bijective R m).2 p
   rw [← AlgHom.mem_range]
   induction q using MvPolynomial.induction_on with
-  | h_C r => rw [← algebraMap_eq, AlgHom.commutes]; apply Subalgebra.algebraMap_mem
-  | h_add p q hp hq => rw [map_add]; exact Subalgebra.add_mem _ hp hq
-  | h_X p i hp =>
+  | C r => rw [← algebraMap_eq, AlgHom.commutes]; apply Subalgebra.algebraMap_mem
+  | add p q hp hq => rw [map_add]; exact Subalgebra.add_mem _ hp hq
+  | mul_X p i hp =>
     rw [map_mul]
     apply Subalgebra.mul_mem _ hp
     rw [AlgHom.mem_range]

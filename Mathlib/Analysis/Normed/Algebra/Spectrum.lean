@@ -446,7 +446,7 @@ theorem algebraMap_eq_of_mem {a : A} {z : ℂ} (h : z ∈ σ a) : algebraMap ℂ
 is an algebra isomorphism whose inverse is given by selecting the (unique) element of
 `spectrum ℂ a`. In addition, `algebraMap_isometry` guarantees this map is an isometry.
 
-Note: because `NormedDivisionRing` requires the field `norm_mul' : ∀ a b, ‖a * b‖ = ‖a‖ * ‖b‖`, we
+Note: because `NormedDivisionRing` requires the field `norm_mul : ∀ a b, ‖a * b‖ = ‖a‖ * ‖b‖`, we
 don't use this type class and instead opt for a `NormedRing` in which the nonzero elements are
 precisely the units. This allows for the application of this isomorphism in broader contexts, e.g.,
 to the quotient of a complex Banach algebra by a maximal ideal. In the case when `A` is actually a
