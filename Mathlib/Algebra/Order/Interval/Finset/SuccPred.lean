@@ -139,10 +139,10 @@ lemma insert_Icc_eq_Icc_sub_one_left (h : a - 1 ≤ b) :
   simpa [← pred_eq_sub_one] using insert_Icc_eq_Icc_pred_left (pred_eq_sub_one a ▸ h)
 
 lemma insert_Ioc_left_eq_Ioc_sub_one_left_of_not_isMin (h : a ≤ b) (ha : ¬ IsMin a) :
-    insert a (Ioc a b) = Ioc (pred a) b := by
+    insert a (Ioc a b) = Ioc (a - 1) b := by
   simpa [pred_eq_sub_one] using insert_Ioc_left_eq_Ioc_pred_left_of_not_isMin h ha
 
-lemma insert_Ioc_sub_one_right_eq_Ioc (h : a < b) : insert b (Ioc a (pred b)) = Ioc a b := by
+lemma insert_Ioc_sub_one_right_eq_Ioc (h : a < b) : insert b (Ioc a (b - 1)) = Ioc a b := by
   simpa [pred_eq_sub_one] using insert_Ioc_pred_right_eq_Ioc h
 
 /-!
@@ -167,7 +167,7 @@ lemma Ioc_sub_one_sub_one_eq_Ico (a b : α) : Ioc (a - 1) (b - 1) = Ico a b := b
 
 /-! ##### Comparing the same intervals -/
 
-lemma insert_Ioc_left_eq_Ioc_sub_one_left (h : a ≤ b) : insert a (Ioc a b) = Ioc (pred a) b := by
+lemma insert_Ioc_left_eq_Ioc_sub_one_left (h : a ≤ b) : insert a (Ioc a b) = Ioc (a - 1) b := by
   simpa [pred_eq_sub_one] using insert_Ioc_left_eq_Ioc_pred_left h
 
 end PredSubOrder
