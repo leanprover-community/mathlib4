@@ -94,7 +94,7 @@ def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
 /--
 Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each other.
 -/
-def toMopOrderIso : (TwoSidedIdeal R) ≃o (TwoSidedIdeal Rᵐᵒᵖ) :=
+def opOrderIso : TwoSidedIdeal R ≃o TwoSidedIdeal Rᵐᵒᵖ :=
   orderIsoRingCon.trans <| RingCon.opOrderIso.trans orderIsoRingCon.symm
 
 lemma ringCon_injective : Function.Injective (TwoSidedIdeal.ringCon (R := R)) := by
