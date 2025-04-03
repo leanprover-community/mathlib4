@@ -248,7 +248,7 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
       · simp only [h, hs, decide_false, Bool.not_false, decide_true]
       · simp only [h, decide_true, Bool.not_true, false_eq_decide_iff]
         exact fun H ↦ hs <| H ▸ h
-    refine prod_eq <| (filter_eq m.primeFactorsList p).symm ▸ this ▸ perm_append_comm.trans ?_
+    refine prod_eq <| (filter_eq p).symm ▸ this ▸ perm_append_comm.trans ?_
     simp only [decide_not]
     exact filter_append_perm (· ∈ s) (primeFactorsList m)
 
