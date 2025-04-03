@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Hom
 import Mathlib.RingTheory.Ideal.Quotient
@@ -75,42 +75,42 @@ theorem Rel.smul {r : A → A → Prop} (k : S) ⦃a b : A⦄ (h : Rel r a b) : 
 
 /-- `EqvGen (RingQuot.Rel r)` is a ring congruence. -/
 def ringCon (r : R → R → Prop) : RingCon R where
-  r := EqvGen (Rel r)
-  iseqv := EqvGen.is_equivalence _
+  r := Relation.EqvGen (Rel r)
+  iseqv := Relation.EqvGen.is_equivalence _
   add' {a b c d} hab hcd := by
     induction hab generalizing c d with
     | rel _ _ hab =>
-      refine (EqvGen.rel _ _ hab.add_left).trans _ _ _ ?_
+      refine (Relation.EqvGen.rel _ _ hab.add_left).trans _ _ _ ?_
       induction hcd with
-      | rel _ _ hcd => exact EqvGen.rel _ _ hcd.add_right
-      | refl => exact EqvGen.refl _
+      | rel _ _ hcd => exact Relation.EqvGen.rel _ _ hcd.add_right
+      | refl => exact Relation.EqvGen.refl _
       | symm _ _ _ h => exact h.symm _ _
       | trans _ _ _ _ _ h h' => exact h.trans _ _ _ h'
     | refl => induction hcd with
-      | rel _ _ hcd => exact EqvGen.rel _ _ hcd.add_right
-      | refl => exact EqvGen.refl _
+      | rel _ _ hcd => exact Relation.EqvGen.rel _ _ hcd.add_right
+      | refl => exact Relation.EqvGen.refl _
       | symm _ _ _ h => exact h.symm _ _
       | trans _ _ _ _ _ h h' => exact h.trans _ _ _ h'
     | symm x y _ hxy => exact (hxy hcd.symm).symm
-    | trans x y z _ _ h h' => exact (h hcd).trans _ _ _ (h' <| EqvGen.refl _)
+    | trans x y z _ _ h h' => exact (h hcd).trans _ _ _ (h' <| Relation.EqvGen.refl _)
   mul' {a b c d} hab hcd := by
     induction hab generalizing c d with
     | rel _ _ hab =>
-      refine (EqvGen.rel _ _ hab.mul_left).trans _ _ _ ?_
+      refine (Relation.EqvGen.rel _ _ hab.mul_left).trans _ _ _ ?_
       induction hcd with
-      | rel _ _ hcd => exact EqvGen.rel _ _ hcd.mul_right
-      | refl => exact EqvGen.refl _
+      | rel _ _ hcd => exact Relation.EqvGen.rel _ _ hcd.mul_right
+      | refl => exact Relation.EqvGen.refl _
       | symm _ _ _ h => exact h.symm _ _
       | trans _ _ _ _ _ h h' => exact h.trans _ _ _ h'
     | refl => induction hcd with
-      | rel _ _ hcd => exact EqvGen.rel _ _ hcd.mul_right
-      | refl => exact EqvGen.refl _
+      | rel _ _ hcd => exact Relation.EqvGen.rel _ _ hcd.mul_right
+      | refl => exact Relation.EqvGen.refl _
       | symm _ _ _ h => exact h.symm _ _
       | trans _ _ _ _ _ h h' => exact h.trans _ _ _ h'
     | symm x y _ hxy => exact (hxy hcd.symm).symm
-    | trans x y z _ _ h h' => exact (h hcd).trans _ _ _ (h' <| EqvGen.refl _)
+    | trans x y z _ _ h h' => exact (h hcd).trans _ _ _ (h' <| Relation.EqvGen.refl _)
 
-theorem eqvGen_rel_eq (r : R → R → Prop) : EqvGen (Rel r) = RingConGen.Rel r := by
+theorem eqvGen_rel_eq (r : R → R → Prop) : Relation.EqvGen (Rel r) = RingConGen.Rel r := by
   ext x₁ x₂
   constructor
   · intro h
@@ -125,7 +125,7 @@ theorem eqvGen_rel_eq (r : R → R → Prop) : EqvGen (Rel r) = RingConGen.Rel r
     | trans => exact RingConGen.Rel.trans ‹_› ‹_›
   · intro h
     induction h with
-    | of => exact EqvGen.rel _ _ (Rel.of ‹_›)
+    | of => exact Relation.EqvGen.rel _ _ (Rel.of ‹_›)
     | refl => exact (RingQuot.ringCon r).refl _
     | symm => exact (RingQuot.ringCon r).symm ‹_›
     | trans => exact (RingQuot.ringCon r).trans ‹_› ‹_›

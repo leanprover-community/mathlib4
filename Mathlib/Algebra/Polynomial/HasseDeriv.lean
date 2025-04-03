@@ -179,7 +179,7 @@ theorem natDegree_hasseDeriv_le (p : R[X]) (n : ℕ) :
     refine (natDegree_sum_le _ _).trans ?_
     simp_rw [Function.comp, natDegree_monomial]
     rw [Finset.fold_ite, Finset.fold_const]
-    · simp only [ite_self, max_eq_right, zero_le', Finset.fold_max_le, true_and_iff, and_imp,
+    · simp only [ite_self, max_eq_right, zero_le', Finset.fold_max_le, true_and, and_imp,
         tsub_le_iff_right, mem_support_iff, Ne, Finset.mem_filter]
       intro x hx hx'
       have hxp : x ≤ p.natDegree := le_natDegree_of_ne_zero hx

@@ -249,7 +249,7 @@ theorem lift'_cong (hh : ∀ s ∈ f, h₁ s = h₂ s) : f.lift' h₁ = f.lift' 
 theorem map_lift'_eq {m : β → γ} (hh : Monotone h) : map m (f.lift' h) = f.lift' (image m ∘ h) :=
   calc
     map m (f.lift' h) = f.lift (map m ∘ 𝓟 ∘ h) := map_lift_eq <| monotone_principal.comp hh
-    _ = f.lift' (image m ∘ h) := by simp only [comp, Filter.lift', map_principal]
+    _ = f.lift' (image m ∘ h) := by simp only [comp_def, Filter.lift', map_principal]
 
 theorem lift'_map_le {g : Set β → Set γ} {m : α → β} : (map m f).lift' g ≤ f.lift' (g ∘ image m) :=
   lift_map_le
@@ -259,7 +259,7 @@ theorem map_lift'_eq2 {g : Set β → Set γ} {m : α → β} (hg : Monotone g) 
   map_lift_eq2 <| monotone_principal.comp hg
 
 theorem comap_lift'_eq {m : γ → β} : comap m (f.lift' h) = f.lift' (preimage m ∘ h) := by
-  simp only [Filter.lift', comap_lift_eq, (· ∘ ·), comap_principal]
+  simp only [Filter.lift', comap_lift_eq, comp_def, comap_principal]
 
 theorem comap_lift'_eq2 {m : β → α} {g : Set β → Set γ} (hg : Monotone g) :
     (comap m f).lift' g = f.lift' (g ∘ preimage m) :=
@@ -362,7 +362,7 @@ theorem prod_same_eq : f ×ˢ f = f.lift' fun t : Set α => t ×ˢ t :=
 
 theorem tendsto_prod_self_iff {f : α × α → β} {x : Filter α} {y : Filter β} :
     Filter.Tendsto f (x ×ˢ x) y ↔ ∀ W ∈ y, ∃ U ∈ x, ∀ x x' : α, x ∈ U → x' ∈ U → f (x, x') ∈ W := by
-  simp only [tendsto_def, mem_prod_same_iff, prod_sub_preimage_iff, exists_prop, iff_self_iff]
+  simp only [tendsto_def, mem_prod_same_iff, prod_sub_preimage_iff, exists_prop]
 
 variable {α₁ : Type*} {α₂ : Type*} {β₁ : Type*} {β₂ : Type*}
 

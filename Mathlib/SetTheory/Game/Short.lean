@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 
 import Mathlib.Data.Fintype.Basic
@@ -234,21 +234,25 @@ def leLFDecidable : ∀ (x y : PGame.{u}) [Short x] [Short y], Decidable (x ≤ 
   | mk xl xr xL xR, mk yl yr yL yR, shortx, shorty => by
     constructor
     · refine @decidable_of_iff' _ _ mk_le_mk (id ?_)
-      apply @And.decidable _ _ ?_ ?_
-      · apply @Fintype.decidableForallFintype xl _ ?_ _
+      have : Decidable (∀ (i : xl), xL i ⧏ mk yl yr yL yR) := by
+        apply @Fintype.decidableForallFintype xl _ ?_ _
         intro i
         apply (leLFDecidable _ _).2
-      · apply @Fintype.decidableForallFintype yr _ ?_ _
+      have : Decidable (∀ (j : yr), mk xl xr xL xR ⧏ yR j) := by
+        apply @Fintype.decidableForallFintype yr _ ?_ _
         intro i
         apply (leLFDecidable _ _).2
+      exact inferInstanceAs (Decidable (_ ∧ _))
     · refine @decidable_of_iff' _ _ mk_lf_mk (id ?_)
-      apply @Or.decidable _ _ ?_ ?_
-      · apply @Fintype.decidableExistsFintype yl _ ?_ _
+      have : Decidable (∃ i, mk xl xr xL xR ≤ yL i) := by
+        apply @Fintype.decidableExistsFintype yl _ ?_ _
         intro i
         apply (leLFDecidable _ _).1
-      · apply @Fintype.decidableExistsFintype xr _ ?_ _
+      have : Decidable (∃ j, xR j ≤ mk yl yr yL yR) := by
+        apply @Fintype.decidableExistsFintype xr _ ?_ _
         intro i
         apply (leLFDecidable _ _).1
+      exact inferInstanceAs (Decidable (_ ∨ _))
 termination_by x y => (x, y)
 
 instance leDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x ≤ y) :=
@@ -258,10 +262,10 @@ instance lfDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x ⧏ y)
   (leLFDecidable x y).2
 
 instance ltDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x < y) :=
-  And.decidable
+  inferInstanceAs (Decidable (_ ∧ _))
 
 instance equivDecidable (x y : PGame.{u}) [Short x] [Short y] : Decidable (x ≈ y) :=
-  And.decidable
+  inferInstanceAs (Decidable (_ ∧ _))
 
 example : Short 0 := by infer_instance
 

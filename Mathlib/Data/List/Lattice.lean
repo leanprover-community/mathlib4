@@ -2,7 +2,7 @@
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro,
-Scott Morrison
+Kim Morrison
 -/
 import Mathlib.Data.List.Basic
 
@@ -178,13 +178,13 @@ theorem cons_bagInter_of_neg (l₁ : List α) (h : a ∉ l₂) :
 
 @[simp]
 theorem mem_bagInter {a : α} : ∀ {l₁ l₂ : List α}, a ∈ l₁.bagInter l₂ ↔ a ∈ l₁ ∧ a ∈ l₂
-  | [], l₂ => by simp only [nil_bagInter, not_mem_nil, false_and_iff]
+  | [], l₂ => by simp only [nil_bagInter, not_mem_nil, false_and]
   | b :: l₁, l₂ => by
     by_cases h : b ∈ l₂
     · rw [cons_bagInter_of_pos _ h, mem_cons, mem_cons, mem_bagInter]
       by_cases ba : a = b
-      · simp only [ba, h, eq_self_iff_true, true_or_iff, true_and_iff]
-      · simp only [mem_erase_of_ne ba, ba, false_or_iff]
+      · simp only [ba, h, eq_self_iff_true, true_or, true_and]
+      · simp only [mem_erase_of_ne ba, ba, false_or]
     · rw [cons_bagInter_of_neg _ h, mem_bagInter, mem_cons, or_and_right]
       symm
       apply or_iff_right_of_imp

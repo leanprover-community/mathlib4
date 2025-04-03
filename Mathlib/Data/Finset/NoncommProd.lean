@@ -39,16 +39,16 @@ namespace Multiset
 on all elements `x ∈ s`. -/
 def noncommFoldr (s : Multiset α)
     (comm : { x | x ∈ s }.Pairwise fun x y => ∀ b, f x (f y b) = f y (f x b)) (b : β) : β :=
-  s.attach.foldr (f ∘ Subtype.val)
-    (fun ⟨_, hx⟩ ⟨_, hy⟩ =>
+  letI : LeftCommutative (α := { x // x ∈ s }) (f ∘ Subtype.val) :=
+    ⟨fun ⟨_, hx⟩ ⟨_, hy⟩ =>
       haveI : IsRefl α fun x y => ∀ b, f x (f y b) = f y (f x b) := ⟨fun _ _ => rfl⟩
-      comm.of_refl hx hy)
-    b
+      comm.of_refl hx hy⟩
+  s.attach.foldr (f ∘ Subtype.val) b
 
 @[simp]
 theorem noncommFoldr_coe (l : List α) (comm) (b : β) :
     noncommFoldr f (l : Multiset α) comm b = l.foldr f b := by
-  simp only [noncommFoldr, coe_foldr, coe_attach, List.attach, List.attachWith, Function.comp]
+  simp only [noncommFoldr, coe_foldr, coe_attach, List.attach, List.attachWith, Function.comp_def]
   rw [← List.foldr_map]
   simp [List.map_pmap]
 
@@ -61,8 +61,8 @@ theorem noncommFoldr_cons (s : Multiset α) (a : α) (h h') (b : β) :
   induction s using Quotient.inductionOn
   simp
 
-theorem noncommFoldr_eq_foldr (s : Multiset α) (h : LeftCommutative f) (b : β) :
-    noncommFoldr f s (fun x _ y _ _ => h x y) b = foldr f h b s := by
+theorem noncommFoldr_eq_foldr (s : Multiset α) [h : LeftCommutative f] (b : β) :
+    noncommFoldr f s (fun x _ y _ _ => h.left_comm x y) b = foldr f b s := by
   induction s using Quotient.inductionOn
   simp
 

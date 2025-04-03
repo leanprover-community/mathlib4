@@ -91,9 +91,9 @@ theorem StableUnderInverse.unop {P : MorphismProperty Cᵒᵖ} (h : StableUnderI
 
 theorem respectsIso_of_isStableUnderComposition {P : MorphismProperty C}
     [P.IsStableUnderComposition] (hP : isomorphisms C ≤ P) :
-    RespectsIso P :=
-  ⟨fun _ _ hf => P.comp_mem _ _ (hP _ (isomorphisms.infer_property _)) hf,
-    fun _ _ hf => P.comp_mem _ _ hf (hP _ (isomorphisms.infer_property _))⟩
+    RespectsIso P := RespectsIso.mk _
+  (fun _ _ hf => P.comp_mem _ _ (hP _ (isomorphisms.infer_property _)) hf)
+    (fun _ _ hf => P.comp_mem _ _ hf (hP _ (isomorphisms.infer_property _)))
 
 instance IsStableUnderComposition.inverseImage {P : MorphismProperty D} [P.IsStableUnderComposition]
     (F : C ⥤ D) : (P.inverseImage F).IsStableUnderComposition where

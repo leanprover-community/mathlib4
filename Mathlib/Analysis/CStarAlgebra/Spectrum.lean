@@ -199,7 +199,7 @@ lemma coe_isUnit {a : S} : IsUnit (a : A) ↔ IsUnit a := by
   have ha₂ := ha.mul ha.star
   have spec_eq {x : S} (hx : IsSelfAdjoint x) : spectrum ℂ x = spectrum ℂ (x : A) :=
     Subalgebra.spectrum_eq_of_isPreconnected_compl S _ <|
-      (hx.starHom_apply S.subtype).isConnected_spectrum_compl.isPreconnected
+      (hx.map S.subtype).isConnected_spectrum_compl.isPreconnected
   rw [← StarMemClass.coe_star, ← MulMemClass.coe_mul, ← spectrum.zero_not_mem_iff ℂ, ← spec_eq,
     spectrum.zero_not_mem_iff] at ha₁ ha₂
   · have h₁ : ha₁.unit⁻¹ * star a * a = 1 := mul_assoc _ _ a ▸ ha₁.val_inv_mul
@@ -227,7 +227,7 @@ variable [NonUnitalNormedRing A] [CompleteSpace A] [StarRing A] [CStarRing A]
 variable [NormedSpace ℂ A] [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
 variable [NonUnitalNormedRing B] [CompleteSpace B] [StarRing B] [CStarRing B]
 variable [NormedSpace ℂ B] [IsScalarTower ℂ B B] [SMulCommClass ℂ B B] [StarModule ℂ B]
-variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [NonUnitalStarAlgHomClass F ℂ A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F ℂ A B] [StarHomClass F A B]
 
 open Unitization
 
@@ -242,7 +242,7 @@ lemma nnnorm_apply_le (φ : F) (a : A) : ‖φ a‖₊ ≤ ‖a‖₊ := by
     intro s hs
     suffices this : spectralRadius ℂ (ψ s) ≤ spectralRadius ℂ s by
       -- changing the order of `rw`s below runs into https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/weird.20type.20class.20synthesis.20error/near/421224482
-      rwa [(hs.starHom_apply ψ).spectralRadius_eq_nnnorm, hs.spectralRadius_eq_nnnorm, coe_le_coe]
+      rwa [(hs.map ψ).spectralRadius_eq_nnnorm, hs.spectralRadius_eq_nnnorm, coe_le_coe]
         at this
     exact iSup_le_iSup_of_subset (AlgHom.spectrum_apply_subset ψ s)
   simpa [nnnorm_inr] using h (starLift (inrNonUnitalStarAlgHom ℂ B |>.comp (φ : A →⋆ₙₐ[ℂ] B))) a
@@ -264,11 +264,11 @@ end NonUnitalStarAlgHom
 
 namespace StarAlgEquiv
 
-variable {F A B : Type*} [NormedRing A] [NormedSpace ℂ A] [SMulCommClass ℂ A A]
+variable {F A B : Type*} [NonUnitalNormedRing A] [NormedSpace ℂ A] [SMulCommClass ℂ A A]
 variable [IsScalarTower ℂ A A] [CompleteSpace A] [StarRing A] [CStarRing A] [StarModule ℂ A]
-variable [NormedRing B] [NormedSpace ℂ B] [SMulCommClass ℂ B B] [IsScalarTower ℂ B B]
+variable [NonUnitalNormedRing B] [NormedSpace ℂ B] [SMulCommClass ℂ B B] [IsScalarTower ℂ B B]
 variable [CompleteSpace B] [StarRing B] [CStarRing B] [StarModule ℂ B] [EquivLike F A B]
-variable [NonUnitalAlgEquivClass F ℂ A B] [StarAlgEquivClass F ℂ A B]
+variable [NonUnitalAlgEquivClass F ℂ A B] [StarHomClass F A B]
 
 lemma nnnorm_map (φ : F) (a : A) : ‖φ a‖₊ = ‖a‖₊ :=
   le_antisymm (NonUnitalStarAlgHom.nnnorm_apply_le φ a) <| by
@@ -293,7 +293,7 @@ open scoped ComplexStarModule
 variable {F A : Type*} [NormedRing A] [NormedAlgebra ℂ A] [CompleteSpace A] [StarRing A]
   [CStarRing A] [StarModule ℂ A] [FunLike F A ℂ] [hF : AlgHomClass F ℂ A ℂ]
 
-/-- This instance is provided instead of `StarAlgHomClass` to avoid type class inference loops.
+/-- This instance is provided instead of `StarHomClass` to avoid type class inference loops.
 See note [lower instance priority] -/
 noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass F A ℂ where
   map_star φ a := by
@@ -310,13 +310,13 @@ noncomputable instance (priority := 100) Complex.instStarHomClass : StarHomClass
 
 /-- This is not an instance to avoid type class inference loops. See
 `WeakDual.Complex.instStarHomClass`. -/
-lemma _root_.AlgHomClass.instStarAlgHomClass : StarAlgHomClass F ℂ A ℂ :=
+lemma _root_.AlgHomClass.instStarHomClass : StarHomClass F A ℂ :=
   { WeakDual.Complex.instStarHomClass, hF with }
 
 namespace CharacterSpace
 
-noncomputable instance instStarAlgHomClass : StarAlgHomClass (characterSpace ℂ A) ℂ A ℂ :=
-  { AlgHomClass.instStarAlgHomClass with }
+noncomputable instance instStarHomClass : StarHomClass (characterSpace ℂ A) A ℂ :=
+  { AlgHomClass.instStarHomClass with }
 
 end CharacterSpace
 

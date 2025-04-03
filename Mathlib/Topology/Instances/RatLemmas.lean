@@ -39,7 +39,7 @@ namespace Rat
 variable {p q : ℚ} {s t : Set ℚ}
 
 theorem interior_compact_eq_empty (hs : IsCompact s) : interior s = ∅ :=
-  denseEmbedding_coe_real.toDenseInducing.interior_compact_eq_empty dense_irrational hs
+  isDenseEmbedding_coe_real.toIsDenseInducing.interior_compact_eq_empty dense_irrational hs
 
 theorem dense_compl_compact (hs : IsCompact s) : Dense sᶜ :=
   interior_eq_empty_iff_dense_compl.1 (interior_compact_eq_empty hs)

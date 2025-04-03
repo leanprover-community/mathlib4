@@ -48,14 +48,14 @@ def derivationOfSectionOfKerSqZero (f : P →ₐ[R] S) (hf' : (RingHom.ker f) ^ 
     (hg : f.comp g = AlgHom.id R S) : Derivation R P (RingHom.ker f) where
   toFun x := ⟨x - g (f x), by
     simpa [RingHom.mem_ker, sub_eq_zero] using AlgHom.congr_fun hg.symm (f x)⟩
-  map_add' x y := by simp only [map_add, AddSubmonoid.mk_add_mk, Subtype.mk.injEq]; ring
+  map_add' x y := by simp only [map_add, AddMemClass.mk_add_mk, Subtype.mk.injEq]; ring
   map_smul' x y := by
     ext
     simp only [Algebra.smul_def, map_mul, ← IsScalarTower.algebraMap_apply, AlgHom.commutes,
       RingHom.id_apply, Submodule.coe_smul_of_tower]
     ring
   map_one_eq_zero' := by simp only [LinearMap.coe_mk, AddHom.coe_mk, map_one, sub_self,
-    AddSubmonoid.mk_eq_zero]
+    Submodule.mk_eq_zero]
   leibniz' a b := by
     have : (a - g (f a)) * (b - g (f b)) = 0 := by
       rw [← Ideal.mem_bot, ← hf', pow_two]
@@ -66,7 +66,7 @@ def derivationOfSectionOfKerSqZero (f : P →ₐ[R] S) (hf' : (RingHom.ker f) ^ 
     rw [← sub_eq_zero]
     conv_rhs => rw [← neg_zero, ← this]
     simp only [LinearMap.coe_mk, AddHom.coe_mk, map_mul, SetLike.mk_smul_mk, smul_eq_mul, mul_sub,
-      AddSubmonoid.mk_add_mk, sub_mul, neg_sub]
+      AddMemClass.mk_add_mk, sub_mul, neg_sub]
     ring
 
 variable (hf' : (RingHom.ker (algebraMap P S)) ^ 2 = ⊥)
@@ -112,7 +112,7 @@ lemma retractionOfSectionOfKerSqZero_tmul_D (s : S) (t : P) :
 
 lemma retractionOfSectionOfKerSqZero_comp_kerToTensor :
     (retractionOfSectionOfKerSqZero g hf' hg).comp (kerToTensor R P S) = LinearMap.id := by
-  ext x; simp [(RingHom.mem_ker _).mp x.2]
+  ext x; simp [RingHom.mem_ker.mp x.2]
 
 end ofSection
 
@@ -149,12 +149,12 @@ def sectionOfRetractionKerToTensorAux : S →ₐ[R] P where
     have (x y) : (l x).1 * (l y).1 = 0 := by
       rw [← Ideal.mem_bot, ← hf', pow_two]; exact Ideal.mul_mem_mul (l x).2 (l y).2
     simp only [sectionOfRetractionKerToTensorAux_prop l hl (σ (a * b)) (σ a * σ b) (by simp [hσ]),
-      Derivation.leibniz, tmul_add, tmul_smul, map_add, map_smul, AddSubmonoid.coe_add, this,
-      Submodule.coe_toAddSubmonoid, SetLike.val_smul, smul_eq_mul, mul_sub, sub_mul, sub_zero]
+      Derivation.leibniz, tmul_add, tmul_smul, map_add, map_smul, Submodule.coe_add,
+      SetLike.val_smul, smul_eq_mul, mul_sub, sub_mul, this, sub_zero]
     ring
   map_add' a b := by
     simp only [sectionOfRetractionKerToTensorAux_prop l hl (σ (a + b)) (σ a + σ b) (by simp [hσ]),
-      map_add, tmul_add, AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, add_sub_add_comm]
+      map_add, tmul_add, Submodule.coe_add, add_sub_add_comm]
   map_zero' := by simp [sectionOfRetractionKerToTensorAux_prop l hl (σ 0) 0 (by simp [hσ])]
   commutes' r := by
     simp [sectionOfRetractionKerToTensorAux_prop l hl
@@ -172,7 +172,7 @@ lemma toAlgHom_comp_sectionOfRetractionKerToTensorAux :
       (sectionOfRetractionKerToTensorAux l hl σ hσ hf') = AlgHom.id _ _ := by
   ext x
   obtain ⟨x, rfl⟩ := hf x
-  simp [sectionOfRetractionKerToTensorAux_algebraMap, (RingHom.mem_ker _).mp]
+  simp [sectionOfRetractionKerToTensorAux_algebraMap, RingHom.mem_ker.mp]
 
 /--
 Given a surjective algebra homomorphism `f : P →ₐ[R] S` with square-zero kernel `I`.

@@ -35,21 +35,17 @@ def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣
       ((h.homEquiv (Opposite.op Y) (Opposite.op X)).trans (opEquiv _ _)).symm.trans
         (opEquiv _ _)
     homEquiv_naturality_left_symm := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3.
-      intros X' X Y f g
-      dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [homEquiv_unit, homEquiv_unit]
-      simp
+      -- Porting note: This proof was handled by `obviously` in mathlib3. The only obstruction to
+      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` and
+      -- `homEquiv` aren't firing.
+      intros
+      simp [opEquiv, homEquiv]
     homEquiv_naturality_right := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3.
-      intros X Y Y' f g
-      dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [homEquiv_counit, homEquiv_counit]
-      simp }
+      -- Porting note: This proof was handled by `obviously` in mathlib3. The only obstruction to
+      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` and
+      -- `homEquiv` aren't firing.
+      intros
+      simp [opEquiv, homEquiv] }
 
 /-- If `G` is adjoint to `F.op` then `F` is adjoint to `G.unop`. -/
 def adjointUnopOfAdjointOp (F : C ⥤ D) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G ⊣ F.op) : F ⊣ G.unop :=

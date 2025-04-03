@@ -15,9 +15,9 @@ topological group. We also prove continuity of `abs : G → G` and provide conve
 -/
 
 
-open Set Filter
+open Set Filter Function
 
-open Topology Filter
+open scoped Topology
 
 variable {α G : Type*} [TopologicalSpace G] [LinearOrderedAddCommGroup G] [OrderTopology G]
 variable {l : Filter α} {f g : α → G}
@@ -88,3 +88,39 @@ protected theorem ContinuousOn.abs (h : ContinuousOn f s) : ContinuousOn (fun x 
 theorem tendsto_abs_nhdsWithin_zero : Tendsto (abs : G → G) (𝓝[≠] 0) (𝓝[>] 0) :=
   (continuous_abs.tendsto' (0 : G) 0 abs_zero).inf <|
     tendsto_principal_principal.2 fun _x => abs_pos.2
+
+/-- In a linearly ordered additive group, the integer multiples of an element are dense
+iff they are the whole group. -/
+theorem denseRange_zsmul_iff_surjective {a : G} :
+    DenseRange (· • a : ℤ → G) ↔ Surjective (· • a : ℤ → G) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.denseRange⟩
+  wlog ha₀ : 0 < a generalizing a
+  · simp only [← range_iff_surjective, DenseRange] at *
+    rcases (not_lt.1 ha₀).eq_or_lt with rfl | hlt
+    · simpa only [smul_zero, range_const, dense_iff_closure_eq, closure_singleton] using h
+    · have H : range (· • -a : ℤ → G) = range (· • a : ℤ → G) := by
+        simpa only [smul_neg, ← neg_smul] using neg_surjective.range_comp (· • a)
+      rw [← H]
+      apply this <;> simpa only [H, neg_pos]
+  intro b
+  obtain ⟨m, hm, hm'⟩ : ∃ m : ℤ, m • a ∈ Ioo b (b + a + a) := by
+    have hne : (Ioo b (b + a + a)).Nonempty := ⟨b + a, by simpa⟩
+    simpa using h.exists_mem_open isOpen_Ioo hne
+  rcases eq_or_ne b ((m - 1) • a) with rfl | hne; · simp
+  suffices (Ioo (m • a) ((m + 1) • a)).Nonempty by
+    rcases h.exists_mem_open isOpen_Ioo this with ⟨l, hl⟩
+    have : m < l ∧ l < m + 1 := by simpa [zsmul_lt_zsmul_iff ha₀] using hl
+    omega
+  rcases hne.lt_or_lt with hlt | hlt
+  · refine ⟨b + a + a, hm', ?_⟩
+    simpa only [add_smul, sub_smul, one_smul, lt_sub_iff_add_lt, add_lt_add_iff_right] using hlt
+  · use b + a
+    simp only [mem_Ioo, add_smul, sub_smul, one_smul, add_lt_add_iff_right] at hlt ⊢
+    exact ⟨sub_lt_iff_lt_add.1 hlt, hm⟩
+
+/-- In a nontrivial densely linearly ordered additive group,
+the integer multiples of an element can't be dense. -/
+theorem not_denseRange_zsmul [Nontrivial G] [DenselyOrdered G] {a : G} :
+    ¬DenseRange (· • a : ℤ → G) :=
+  denseRange_zsmul_iff_surjective.not.mpr fun h ↦
+    not_isAddCyclic_of_denselyOrdered G ⟨⟨a, h⟩⟩

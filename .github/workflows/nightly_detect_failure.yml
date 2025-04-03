@@ -210,7 +210,7 @@ jobs:
             bump_branch_suffix = bump_branch.replace('bump/', '')
             payload = f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
             payload += "To do so semi-automatically, run the following script from mathlib root:\n\n"
-            payload += f"```bash\n./scripts/create-adaptation-pr.sh {bump_branch_suffix} {current_version}\n```\n"
+            payload += f"```bash\n./scripts/create-adaptation-pr.sh --bumpversion={bump_branch_suffix} --nightlydate={current_version} --nightlysha={sha}\n```\n"
             # Only post if the message is different
             # We compare the first 160 characters, since that includes the date and bump version
             if not messages or messages[0]['content'][:160] != payload[:160]:

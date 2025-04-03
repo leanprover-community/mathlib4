@@ -151,7 +151,7 @@ and nothing on the other. -/
 def BalancedSz (l r : ℕ) : Prop :=
   l + r ≤ 1 ∨ l ≤ delta * r ∧ r ≤ delta * l
 
-instance BalancedSz.dec : DecidableRel BalancedSz := fun _ _ => Or.decidable
+instance BalancedSz.dec : DecidableRel BalancedSz := fun _ _ => inferInstanceAs (Decidable (_ ∨ _))
 
 /-- The `Balanced t` asserts that the tree `t` satisfies the balance invariants
 (at every level). -/
@@ -1556,7 +1556,7 @@ def find (x : α) (s : Ordset α) : Option α :=
   Ordnode.find x s.val
 
 instance instMembership : Membership α (Ordset α) :=
-  ⟨fun x s => mem x s⟩
+  ⟨fun s x => mem x s⟩
 
 instance mem.decidable (x : α) (s : Ordset α) : Decidable (x ∈ s) :=
   instDecidableEqBool _ _

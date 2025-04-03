@@ -5,6 +5,7 @@ Authors: Alexander Bentkamp
 -/
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
 # Triangularizable linear endomorphisms
@@ -52,7 +53,7 @@ theorem exists_hasEigenvalue_of_iSup_genEigenspace_eq_top [Nontrivial M] {f : En
   intro μ
   replace contra : ∀ k, f.genEigenspace μ k = ⊥ := fun k ↦ by
     have hk : ¬ f.HasGenEigenvalue μ k := fun hk ↦ contra μ (f.hasEigenvalue_of_hasGenEigenvalue hk)
-    rwa [HasGenEigenvalue, not_not] at hk
+    rwa [hasGenEigenvalue_iff, not_not] at hk
   simp [contra]
 
 -- This is Lemma 5.21 of [axler2015], although we are no longer following that proof.
@@ -98,6 +99,8 @@ theorem iSup_genEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f : E
       apply pos_finrank_genEigenspace_of_hasEigenvalue hμ₀ (Nat.zero_lt_succ n)
     -- and the dimensions of `ES` and `ER` add up to `finrank K V`.
     have h_dim_add : finrank K ER + finrank K ES = finrank K V := by
+      dsimp only [ER, ES]
+      rw [Module.End.genEigenspace_def, Module.End.genEigenrange_def]
       apply LinearMap.finrank_range_add_finrank_ker
     -- Therefore the dimension `ER` mus be smaller than `finrank K V`.
     have h_dim_ER : finrank K ER < n.succ := by linarith
@@ -167,7 +170,8 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     · rw [hμμ']
     replace hm₂ : ((f - algebraMap K (End K V) μ') ^ finrank K V) (m μ') = 0 := by
       obtain ⟨k, hk⟩ := (mem_iSup_of_chain _ _).mp (hm₂ μ')
-      exact Module.End.genEigenspace_le_genEigenspace_finrank _ _ k hk
+      simpa only [End.mem_genEigenspace] using
+        Module.End.genEigenspace_le_genEigenspace_finrank _ _ k hk
     have : _ = g := (m.support.erase μ).noncommProd_erase_mul (Finset.mem_erase.mpr ⟨hμμ', hμ'⟩)
       (fun μ ↦ (f - algebraMap K (End K V) μ) ^ finrank K V) (fun μ₁ _ μ₂ _ _ ↦ h_comm μ₁ μ₂)
     rw [← this, LinearMap.mul_apply, hm₂, _root_.map_zero]
@@ -184,9 +188,10 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
     apply LinearMap.injOn_of_disjoint_ker (subset_refl _)
     have this := f.independent_genEigenspace
     simp_rw [f.iSup_genEigenspace_eq_genEigenspace_finrank] at this ⊢
-    rw [LinearMap.ker_noncommProd_eq_of_supIndep_ker _ _ <| this.supIndep' (m.support.erase μ),
-      ← Finset.sup_eq_iSup]
-    exact Finset.supIndep_iff_disjoint_erase.mp (this.supIndep' m.support) μ hμ
+    rw [LinearMap.ker_noncommProd_eq_of_supIndep_ker, ← Finset.sup_eq_iSup]
+    · simpa only [End.genEigenspace_def] using
+        Finset.supIndep_iff_disjoint_erase.mp (this.supIndep' m.support) μ hμ
+    · simpa only [End.genEigenspace_def] using this.supIndep' (m.support.erase μ)
   have hg₄ : SurjOn g
       ↑(p ⊓ ⨆ k, f.genEigenspace μ k) ↑(p ⊓ ⨆ k, f.genEigenspace μ k) := by
     have : MapsTo g

@@ -63,7 +63,8 @@ section General
 
 variable {𝕜₁ 𝕜₂ : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂] (σ : 𝕜₁ →+* 𝕜₂) {E F : Type*}
   [AddCommGroup E] [Module 𝕜₁ E] [TopologicalSpace E]
-  [AddCommGroup F] [Module 𝕜₂ F] (F)
+  [AddCommGroup F] [Module 𝕜₂ F]
+variable (F)
 
 /-- Given `E` and `F` two topological vector spaces and `𝔖 : Set (Set E)`, then
 `UniformConvergenceCLM σ F 𝔖` is a type synonym of `E →SL[σ] F` equipped with the "topology of

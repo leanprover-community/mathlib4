@@ -39,12 +39,12 @@ attribute [local simp] cmpUsing
 
 @[simp]
 theorem cmpUsing_eq_lt (a b : α) : (cmpUsing lt a b = Ordering.lt) = lt a b := by
-  simp only [cmpUsing, Ordering.ite_eq_lt_distrib, ite_self, if_false_right, and_true]
+  simp only [cmpUsing, Ordering.ite_eq_lt_distrib, ite_self, if_false_right, and_true, reduceCtorEq]
 
 @[simp]
 theorem cmpUsing_eq_gt [IsStrictOrder α lt] (a b : α) : cmpUsing lt a b = Ordering.gt ↔ lt b a := by
   simp only [cmpUsing, Ordering.ite_eq_gt_distrib, if_false_right, and_true, if_false_left,
-    and_iff_right_iff_imp]
+    and_iff_right_iff_imp, reduceCtorEq]
   exact fun hba hab ↦ (irrefl a) (_root_.trans hab hba)
 
 @[simp]

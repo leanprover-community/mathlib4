@@ -18,7 +18,7 @@ such that `M^~(U)` is the set of dependent functions that are locally fractions.
 
 ## Main definitions
 
-* `ModuleCat.tildeInAddCommGrp` : `M^~` as a sheaf of abelian groups.
+* `ModuleCat.tildeInType` : `M^~` as a sheaf of types groups.
 * `ModuleCat.tilde` : `M^~` as a sheaf of `𝒪_{Spec R}`-modules.
 
 -/
@@ -138,27 +138,8 @@ instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     AddCommGroup (M.tildeInType.1.obj U) :=
   inferInstanceAs <| AddCommGroup (Tilde.sectionsSubmodule M U)
 
-/--
-`M^~` as a presheaf of abelian groups over `Spec R`
--/
-def preTildeInAddCommGrp : Presheaf AddCommGrp (PrimeSpectrum.Top R) where
-  obj U := .of ((M.tildeInType).1.obj U)
-  map {U V} i :=
-    { toFun := M.tildeInType.1.map i
-      map_zero' := rfl
-      map_add' := fun x y => rfl}
-
-/--
-`M^~` as a sheaf of abelian groups over `Spec R`
--/
-def tildeInAddCommGrp : Sheaf AddCommGrp (PrimeSpectrum.Top R) :=
-  ⟨M.preTildeInAddCommGrp,
-    TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrp) _ |>.mpr
-      (TopCat.Presheaf.isSheaf_of_iso (NatIso.ofComponents (fun _ => Iso.refl _) fun _ => rfl)
-        M.tildeInType.2)⟩
-
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
-    Module ((Spec (.of R)).ringCatSheaf.1.obj U) (M.tildeInAddCommGrp.1.obj U) :=
+    Module ((Spec (.of R)).ringCatSheaf.1.obj U) (M.tildeInType.1.obj U) :=
   inferInstanceAs <| Module _ (Tilde.sectionsSubmodule M U)
 
 /--
@@ -166,9 +147,12 @@ noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
 -/
 noncomputable def tilde : (Spec (CommRingCat.of R)).Modules where
   val :=
-  { presheaf := M.tildeInAddCommGrp.1
-    module := inferInstance
-    map_smul := fun _ _ _ => rfl }
-  isSheaf := M.tildeInAddCommGrp.2
+    { obj := fun U ↦ ModuleCat.of _ (M.tildeInType.val.obj U)
+      map := fun {U V} i ↦
+        { toFun := M.tildeInType.val.map i
+          map_smul' := by intros; rfl
+          map_add' := by intros; rfl } }
+  isSheaf := (TopCat.Presheaf.isSheaf_iff_isSheaf_comp (forget AddCommGrp) _ ).2
+    M.tildeInType.2
 
 end ModuleCat

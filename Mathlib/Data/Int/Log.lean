@@ -122,6 +122,16 @@ theorem log_zero_right (b : ℕ) : log b (0 : R) = 0 :=
 theorem log_one_right (b : ℕ) : log b (1 : R) = 0 := by
   rw [log_of_one_le_right _ le_rfl, Nat.floor_one, Nat.log_one_right, Int.ofNat_zero]
 
+@[simp]
+theorem log_zero_left (r : R) : log 0 r = 0 := by
+  simp only [log, Nat.log_zero_left, Nat.cast_zero, Nat.clog_zero_left, neg_zero, ite_self]
+
+@[simp]
+theorem log_one_left (r : R) : log 1 r = 0 := by
+  by_cases hr : 1 ≤ r
+  · simp_all only [log, ↓reduceIte, Nat.log_one_left, Nat.cast_zero]
+  · simp only [log, Nat.log_one_left, Nat.cast_zero, Nat.clog_one_left, neg_zero, ite_self]
+
 -- Porting note: needed to replace b ^ z with (b : R) ^ z in the below
 theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b ((b : R) ^ z : R) = z := by
   obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg z
@@ -242,6 +252,16 @@ theorem clog_zero_right (b : ℕ) : clog b (0 : R) = 0 :=
 @[simp]
 theorem clog_one_right (b : ℕ) : clog b (1 : R) = 0 := by
   rw [clog_of_one_le_right _ le_rfl, Nat.ceil_one, Nat.clog_one_right, Int.ofNat_zero]
+
+@[simp]
+theorem clog_zero_left (r : R) : clog 0 r = 0 := by
+  by_cases hr : 1 ≤ r
+  · simp only [clog, Nat.clog_zero_left, Nat.cast_zero, Nat.log_zero_left, neg_zero, ite_self]
+  · simp only [clog, hr, ite_cond_eq_false, Nat.log_zero_left, Nat.cast_zero, neg_zero]
+
+@[simp]
+theorem clog_one_left (r : R) : clog 1 r = 0 := by
+  simp only [clog, Nat.log_one_left, Nat.cast_zero, Nat.clog_one_left, neg_zero, ite_self]
 
 -- Porting note: needed to replace b ^ z with (b : R) ^ z in the below
 theorem clog_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : clog b ((b : R) ^ z : R) = z := by

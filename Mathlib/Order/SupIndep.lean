@@ -131,14 +131,14 @@ theorem supIndep_pair [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
       have : ({i, k} : Finset ι).erase k = {i} := by
         ext
         rw [mem_erase, mem_insert, mem_singleton, mem_singleton, and_or_left, Ne,
-          not_and_self_iff, or_false_iff, and_iff_right_of_imp]
+          not_and_self_iff, or_false, and_iff_right_of_imp]
         rintro rfl
         exact hij
       rw [this, Finset.sup_singleton]⟩
 
 theorem supIndep_univ_bool (f : Bool → α) :
     (Finset.univ : Finset Bool).SupIndep f ↔ Disjoint (f false) (f true) :=
-  haveI : true ≠ false := by simp only [Ne, not_false_iff]
+  haveI : true ≠ false := by simp only [Ne, not_false_iff, reduceCtorEq]
   (supIndep_pair this).trans disjoint_comm
 
 @[simp]
@@ -174,7 +174,7 @@ theorem supIndep_attach : (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := b
   convert h (filter_subset (fun (i : { x // x ∈ s }) => (i : ι) ∈ t) _) (mem_attach _ ⟨i, ‹_›⟩)
     fun hi => hit <| by simpa using hi using 1
   refine eq_of_forall_ge_iff ?_
-  simp only [Finset.sup_le_iff, mem_filter, mem_attach, true_and_iff, Function.comp_apply,
+  simp only [Finset.sup_le_iff, mem_filter, mem_attach, true_and, Function.comp_apply,
     Subtype.forall, Subtype.coe_mk]
   exact fun a => forall_congr' fun j => ⟨fun h _ => h, fun h hj => h (ht hj) hj⟩
 

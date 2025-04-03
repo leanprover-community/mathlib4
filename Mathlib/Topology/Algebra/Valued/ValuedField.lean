@@ -187,14 +187,14 @@ open WithZeroTopology
 
 /-- The extension of the valuation of a valued field to the completion of the field. -/
 noncomputable def extension : hat K → Γ₀ :=
-  Completion.denseInducing_coe.extend (v : K → Γ₀)
+  Completion.isDenseInducing_coe.extend (v : K → Γ₀)
 
 theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) := by
-  refine Completion.denseInducing_coe.continuous_extend ?_
+  refine Completion.isDenseInducing_coe.continuous_extend ?_
   intro x₀
   rcases eq_or_ne x₀ 0 with (rfl | h)
   · refine ⟨0, ?_⟩
-    erw [← Completion.denseInducing_coe.toInducing.nhds_eq_comap]
+    erw [← Completion.isDenseInducing_coe.toInducing.nhds_eq_comap]
     exact Valued.continuous_valuation.tendsto' 0 0 (map_zero v)
   · have preimage_one : v ⁻¹' {(1 : Γ₀)} ∈ 𝓝 (1 : K) := by
       have : (v (1 : K) : Γ₀) ≠ 0 := by
@@ -204,7 +204,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       ext x
       rw [Valuation.map_one, mem_preimage, mem_singleton_iff, mem_setOf_eq]
     obtain ⟨V, V_in, hV⟩ : ∃ V ∈ 𝓝 (1 : hat K), ∀ x : K, (x : hat K) ∈ V → (v x : Γ₀) = 1 := by
-      rwa [Completion.denseInducing_coe.nhds_eq_comap, mem_comap] at preimage_one
+      rwa [Completion.isDenseInducing_coe.nhds_eq_comap, mem_comap] at preimage_one
     have : ∃ V' ∈ 𝓝 (1 : hat K), (0 : hat K) ∉ V' ∧ ∀ (x) (_ : x ∈ V') (y) (_ : y ∈ V'),
       x * y⁻¹ ∈ V := by
       have : Tendsto (fun p : hat K × hat K => p.1 * p.2⁻¹) ((𝓝 1) ×ˢ (𝓝 1)) (𝓝 1) := by
@@ -265,8 +265,8 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
 
 @[simp, norm_cast]
 theorem extension_extends (x : K) : extension (x : hat K) = v x := by
-  refine Completion.denseInducing_coe.extend_eq_of_tendsto ?_
-  rw [← Completion.denseInducing_coe.nhds_eq_comap]
+  refine Completion.isDenseInducing_coe.extend_eq_of_tendsto ?_
+  rw [← Completion.isDenseInducing_coe.nhds_eq_comap]
   exact Valued.continuous_valuation.continuousAt
 
 /-- the extension of a valuation on a division ring to its completion. -/
@@ -313,9 +313,9 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   suffices γ₀ ≠ 0 → (x ∈ closure ((↑) '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀)) by
     rcases eq_or_ne γ₀ 0 with h | h
     · simp only [h, (Valuation.zero_iff _).mp h, mem_setOf_eq, Valuation.map_zero, Units.zero_lt,
-        iff_true_iff]
+        iff_true]
       apply subset_closure
-      exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and_iff]; rfl⟩
+      exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and]; rfl⟩
     · exact this h
   intro h
   have hγ₀ : extension ⁻¹' {γ₀} ∈ 𝓝 x :=
@@ -339,7 +339,7 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
       rw [this.mem_iff]
       exact exists_congr fun γ => by simp
     simp_rw [← closure_coe_completion_v_lt]
-    exact (hasBasis_nhds_zero K Γ₀).hasBasis_of_denseInducing Completion.denseInducing_coe
+    exact (hasBasis_nhds_zero K Γ₀).hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
 
 -- Porting note: removed @[norm_cast] attribute due to error:
 -- norm_cast: badly shaped lemma, rhs can't start with coe

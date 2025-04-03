@@ -142,7 +142,7 @@ lemma nhds_inv₀ (hx : x ≠ 0) : 𝓝 x⁻¹ = (𝓝 x)⁻¹ := by
 
 lemma tendsto_inv_iff₀ {l : Filter α} {f : α → G₀} (hx : x ≠ 0) :
     Tendsto (fun x ↦ (f x)⁻¹) l (𝓝 x⁻¹) ↔ Tendsto f l (𝓝 x) := by
-  simp only [nhds_inv₀ hx, ← Filter.comap_inv, tendsto_comap_iff, (· ∘ ·), inv_inv]
+  simp only [nhds_inv₀ hx, ← Filter.comap_inv, tendsto_comap_iff, Function.comp_def, inv_inv]
 
 end NhdsInv
 
@@ -300,7 +300,7 @@ theorem HasContinuousInv₀.of_nhds_one (h : Tendsto Inv.inv (𝓝 (1 : G₀)) (
     have hx' := inv_ne_zero hx
     rw [ContinuousAt, ← map_mul_left_nhds_one₀ hx, ← nhds_translation_mul_inv₀ hx',
       tendsto_map'_iff, tendsto_comap_iff]
-    simpa only [(· ∘ ·), mul_inv_rev, mul_inv_cancel_right₀ hx']
+    simpa only [Function.comp_def, mul_inv_rev, mul_inv_cancel_right₀ hx']
 
 end map_comap
 

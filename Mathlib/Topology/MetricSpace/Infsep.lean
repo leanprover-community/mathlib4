@@ -171,7 +171,7 @@ end EDist
 
 section PseudoEMetricSpace
 
-variable [PseudoEMetricSpace α] {x y z : α} {s t : Set α}
+variable [PseudoEMetricSpace α] {x y z : α} {s : Set α}
 
 theorem einfsep_pair (hxy : x ≠ y) : ({x, y} : Set α).einfsep = edist x y := by
   nth_rw 1 [← min_self (edist x y)]
@@ -238,7 +238,7 @@ end PseudoMetricSpace
 
 section EMetricSpace
 
-variable [EMetricSpace α] {x y z : α} {s t : Set α} {C : ℝ≥0∞} {sC : Set ℝ≥0∞}
+variable [EMetricSpace α] {s : Set α}
 
 theorem einfsep_pos_of_finite [Finite s] : 0 < s.einfsep := by
   cases nonempty_fintype s
@@ -312,7 +312,7 @@ end EDist
 
 section PseudoEMetricSpace
 
-variable [PseudoEMetricSpace α] {x y : α} {s : Set α}
+variable [PseudoEMetricSpace α] {x y : α}
 
 theorem infsep_pair_eq_toReal : ({x, y} : Set α).infsep = (edist x y).toReal := by
   by_cases hxy : x = y

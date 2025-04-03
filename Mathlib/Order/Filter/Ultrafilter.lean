@@ -50,7 +50,7 @@ instance : CoeTC (Ultrafilter α) (Filter α) :=
   ⟨Ultrafilter.toFilter⟩
 
 instance : Membership (Set α) (Ultrafilter α) :=
-  ⟨fun s f => s ∈ (f : Filter α)⟩
+  ⟨fun f s => s ∈ (f : Filter α)⟩
 
 theorem unique (f : Ultrafilter α) {g : Filter α} (h : g ≤ f) (hne : NeBot g := by infer_instance) :
     g = f :=

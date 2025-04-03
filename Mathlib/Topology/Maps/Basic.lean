@@ -521,7 +521,7 @@ theorem openEmbedding_iff_embedding_open :
 
 theorem openEmbedding_of_continuous_injective_open
     (h₁ : Continuous f) (h₂ : Injective f) (h₃ : IsOpenMap f) : OpenEmbedding f := by
-  simp only [openEmbedding_iff_embedding_open, embedding_iff, inducing_iff_nhds, *, and_true_iff]
+  simp only [openEmbedding_iff_embedding_open, embedding_iff, inducing_iff_nhds, *, and_true]
   exact fun x =>
     le_antisymm (h₁.tendsto _).le_comap (@comap_map _ _ (𝓝 x) _ h₂ ▸ comap_mono (h₃.nhds_le _))
 

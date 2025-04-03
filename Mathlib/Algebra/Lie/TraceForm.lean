@@ -302,7 +302,10 @@ variable [IsDomain R] [IsPrincipalIdealRing R]
 lemma trace_eq_trace_restrict_of_le_idealizer
     (hy' : ∀ m ∈ N, (φ x ∘ₗ φ y) m ∈ N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)) :
     trace R M (φ x ∘ₗ φ y) = trace R N ((φ x ∘ₗ φ y).restrict hy') := by
-  suffices ∀ m, ⁅x, ⁅y, m⁆⁆ ∈ N by simp [(φ x ∘ₗ φ y).trace_restrict_eq_of_forall_mem _ this]
+  suffices ∀ m, ⁅x, ⁅y, m⁆⁆ ∈ N by
+    have : (trace R { x // x ∈ N }) ((φ x ∘ₗ φ y).restrict _) = (trace R M) (φ x ∘ₗ φ y) :=
+      (φ x ∘ₗ φ y).trace_restrict_eq_of_forall_mem _ this
+    simp [this]
   exact fun m ↦ N.lie_mem (h hy m)
 
 include h in
@@ -322,7 +325,7 @@ lemma traceForm_eq_zero_of_isTrivial [LieModule.IsTrivial I N] :
   let hy' : ∀ m ∈ N, (φ x ∘ₗ φ y) m ∈ N := fun m _ ↦ N.lie_mem (N.mem_idealizer.mp (h hy) m)
   suffices (φ x ∘ₗ φ y).restrict hy' = 0 by
     simp [this, N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
-  ext n
+  ext (n : N)
   suffices ⁅y, (n : M)⁆ = 0 by simp [this]
   exact Submodule.coe_eq_zero.mpr (LieModule.IsTrivial.trivial (⟨y, hy⟩ : I) n)
 

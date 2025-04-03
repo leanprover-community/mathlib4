@@ -230,7 +230,6 @@ theorem vadd_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s
   rw [hv]
   convert s.smul_vsub_vadd_mem 1 hp1 hp2 hp
   rw [one_smul]
-  exact s.mem_coe k P _
 
 /-- Subtracting two points in the subspace produces a vector in the direction. -/
 theorem vsub_mem_direction {s : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s) (hp2 : p2 ∈ s) :
@@ -732,8 +731,10 @@ theorem card_pos_of_affineSpan_eq_top {ι : Type*} [Fintype ι] {p : ι → P}
 
 attribute [local instance] toAddTorsor
 
-/-- The top affine subspace is linearly equivalent to the affine space.
+-- An instance with better keys for the context
+instance : Nonempty (⊤ : AffineSubspace k P) := inferInstanceAs (Nonempty (⊤ : Set P))
 
+/-- The top affine subspace is linearly equivalent to the affine space.
 This is the affine version of `Submodule.topEquiv`. -/
 @[simps! linear apply symm_apply_coe]
 def topEquiv : (⊤ : AffineSubspace k P) ≃ᵃ[k] P where

@@ -109,10 +109,10 @@ def MGen.runMAbs {α : Type} (mx : MAbs α) : MGen (α × Array (Expr × Expr)) 
 Finds a proof of `prop` by looking at `propToFVar` and `propToProof`.
 -/
 def MAbs.findProof? (prop : Expr) : MAbs (Option Expr) := do
-  if let some pf := (← read).propToFVar.find? prop then
+  if let some pf := (← read).propToFVar[prop]? then
     return pf
   else
-    return (← get).propToProof.find? prop
+    return (← get).propToProof[prop]?
 
 /--
 Generalize `prop`, where `proof` is its proof.
@@ -341,7 +341,7 @@ This continuation `k` is passed
 
 The `propToFVar` map is updated with the new proposition fvars.
 -/
-partial def withGeneralizedProofs {α : Type} [Inhabited α] (e : Expr) (ty? : Option Expr)
+partial def withGeneralizedProofs {α : Type} [Nonempty α] (e : Expr) (ty? : Option Expr)
     (k : Array Expr → Array Expr → Expr → MGen α) :
     MGen α := do
   let propToFVar := (← get).propToFVar
@@ -351,18 +351,18 @@ partial def withGeneralizedProofs {α : Type} [Inhabited α] (e : Expr) (ty? : O
     post-abstracted{indentD e}\nnew generalizations: {generalizations}"
   let rec
     /-- Core loop for `withGeneralizedProofs`, adds generalizations one at a time. -/
-    go [Inhabited α] (i : Nat) (fvars pfs : Array Expr)
+    go [Nonempty α] (i : Nat) (fvars pfs : Array Expr)
         (proofToFVar propToFVar : ExprMap Expr) : MGen α := do
       if h : i < generalizations.size then
         let (ty, pf) := generalizations[i]
-        let ty := (← instantiateMVars (ty.replace proofToFVar.find?)).cleanupAnnotations
+        let ty := (← instantiateMVars (ty.replace proofToFVar.get?)).cleanupAnnotations
         withLocalDeclD (← mkFreshUserName `pf) ty fun fvar => do
           go (i + 1) (fvars := fvars.push fvar) (pfs := pfs.push pf)
             (proofToFVar := proofToFVar.insert pf fvar)
             (propToFVar := propToFVar.insert ty fvar)
       else
         withNewLocalInstances fvars 0 do
-          let e' := e.replace proofToFVar.find?
+          let e' := e.replace proofToFVar.get?
           trace[Tactic.generalize_proofs] "after: e' = {e}"
           modify fun s => { s with propToFVar }
           k fvars pfs e'
@@ -395,7 +395,7 @@ where
           let g' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
           g.assign <| .app g' tgt.letValue!
           return ← go g'.mvarId! i hs
-        if let some pf := (← get).propToFVar.find? ty then
+        if let some pf := (← get).propToFVar[ty]? then
           -- Eliminate this local hypothesis using the pre-existing proof, using proof irrelevance
           let tgt' := tgt.bindingBody!.instantiate1 pf
           let g' ← mkFreshExprSyntheticOpaqueMVar tgt' tag

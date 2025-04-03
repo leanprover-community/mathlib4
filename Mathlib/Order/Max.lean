@@ -332,11 +332,31 @@ protected theorem IsMax.eq_of_le (ha : IsMax a) (h : a ≤ b) : a = b :=
 protected theorem IsMax.eq_of_ge (ha : IsMax a) (h : a ≤ b) : b = a :=
   h.antisymm' <| ha h
 
+protected theorem IsBot.lt_of_ne (ha : IsBot a) (h : a ≠ b) : a < b :=
+  (ha b).lt_of_ne h
+
+protected theorem IsTop.lt_of_ne (ha : IsTop a) (h : b ≠ a) : b < a :=
+  (ha b).lt_of_ne h
+
+protected theorem IsBot.not_isMax [Nontrivial α] (ha : IsBot a) : ¬ IsMax a := by
+  intro ha'
+  obtain ⟨b, hb⟩ := exists_ne a
+  exact hb <| ha'.eq_of_ge (ha.lt_of_ne hb.symm).le
+
+protected theorem IsTop.not_isMin [Nontrivial α] (ha : IsTop a) : ¬ IsMin a :=
+  ha.toDual.not_isMax
+
+protected theorem IsBot.not_isTop [Nontrivial α] (ha : IsBot a) : ¬ IsTop a :=
+  mt IsTop.isMax ha.not_isMax
+
+protected theorem IsTop.not_isBot [Nontrivial α] (ha : IsTop a) : ¬ IsBot a :=
+  ha.toDual.not_isTop
+
 end PartialOrder
 
 section Prod
 
-variable [Preorder α] [Preorder β] {a a₁ a₂ : α} {b b₁ b₂ : β} {x y : α × β}
+variable [Preorder α] [Preorder β] {a : α} {b : β} {x : α × β}
 
 theorem IsBot.prod_mk (ha : IsBot a) (hb : IsBot b) : IsBot (a, b) := fun _ => ⟨ha _, hb _⟩
 

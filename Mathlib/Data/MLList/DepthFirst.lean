@@ -1,11 +1,11 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Lean.Data.HashSet
 import Batteries.Data.MLList.Basic
 import Mathlib.Control.Combinators
+import Std.Data.HashSet.Basic
 
 /-!
 # Depth first search
@@ -17,7 +17,13 @@ or a lazy list `α → MLList MetaM α`.
 This is useful in meta code for searching for solutions in the presence of alternatives.
 It can be nice to represent the choices via a lazy list,
 so the later choices don't need to be evaluated while we do depth first search on earlier choices.
+
+## Deprecation
+
+This material has been moved out of Mathlib to https://github.com/semorrison/lean-monadic-list.
 -/
+
+set_option linter.deprecated false
 
 universe u
 variable {α : Type u} {m : Type u → Type u}
@@ -28,6 +34,7 @@ variable [Monad m] [Alternative m]
 
 /-- A generalisation of `depthFirst`, which allows the generation function to know the current
 depth, and to count the depth starting from a specified value. -/
+@[deprecated "See deprecation note in module documentation." (since := "2024-08-22")]
 partial def depthFirst' (f : Nat → α → m α) (n : Nat) (a : α) : m α :=
 pure a <|> joinM ((f n a) <&> (depthFirst' f (n+1)))
 
@@ -43,6 +50,7 @@ The option `maxDepth` limits the search depth.
 Note that if the graph is not a tree then elements will be visited multiple times.
 (See `depthFirstRemovingDuplicates`)
 -/
+@[deprecated "See deprecation note in module documentation." (since := "2024-08-22")]
 def depthFirst (f : α → m α) (a : α) (maxDepth : Option Nat := none) : m α :=
   match maxDepth with
   | some d => depthFirst' (fun n a => if n ≤ d then f a else failure) 0 a
@@ -66,15 +74,16 @@ avoiding duplication up to equality or isomorphism,
 use Brendan McKay's method of "generation by canonical construction path".
 -/
 -- TODO can you make this work in `List` and `MLList m` simultaneously, by being tricky with monads?
+@[deprecated "See deprecation note in module documentation." (since := "2024-08-22")]
 def depthFirstRemovingDuplicates {α : Type u} [BEq α] [Hashable α]
     (f : α → MLList m α) (a : α) (maxDepth : Option Nat := none) : MLList m α :=
-let f' : α → MLList (StateT.{u} (HashSet α) m) α := fun a =>
+let f' : α → MLList (StateT.{u} (Std.HashSet α) m) α := fun a =>
   (f a).liftM >>= fun b => do
     let s ← get
     if s.contains b then failure
     set <| s.insert b
     pure b
-(depthFirst f' a maxDepth).runState' (HashSet.empty.insert a)
+(depthFirst f' a maxDepth).runState' (Std.HashSet.empty.insert a)
 
 /--
 Variant of `depthFirst`,
@@ -82,6 +91,7 @@ using an internal `HashSet` to record and avoid already visited nodes.
 
 This version describes the graph using `α → List α`, and returns the list of nodes visited in order.
 -/
+@[deprecated "See deprecation note in module documentation." (since := "2024-08-22")]
 def depthFirstRemovingDuplicates' [BEq α] [Hashable α]
     (f : α → List α) (a : α) (maxDepth : Option Nat := none) : List α :=
 depthFirstRemovingDuplicates

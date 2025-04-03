@@ -1,12 +1,12 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.NaturalTransformation
 import Mathlib.CategoryTheory.Monoidal.Opposite
-import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 import Mathlib.CategoryTheory.CommSq
 
 /-!
@@ -153,7 +153,7 @@ theorem yang_baxter' (X Y Z : C) :
       𝟙 _ ⊗≫ (X ◁ (β_ Y Z).hom ⊗≫ (β_ X Z).hom ▷ Y ⊗≫ Z ◁ (β_ X Y).hom) ⊗≫ 𝟙 _ := by
   rw [← cancel_epi (α_ X Y Z).inv, ← cancel_mono (α_ Z Y X).hom]
   convert yang_baxter X Y Z using 1
-  all_goals coherence
+  all_goals monoidal
 
 theorem yang_baxter_iso (X Y Z : C) :
     (α_ X Y Z).symm ≪≫ whiskerRightIso (β_ X Y) Z ≪≫ α_ Y X Z ≪≫
@@ -256,20 +256,20 @@ I couldn't find a detailed proof in print, but this is discussed in:
   "Tensor categories", vol 25, Mathematical Surveys and Monographs (2015), AMS.
 -/
 
-variable (C : Type u₁) [Category.{v₁} C] [MonoidalCategory C] [BraidedCategory C]
+variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C] [BraidedCategory C]
 
 theorem braiding_leftUnitor_aux₁ (X : C) :
     (α_ (𝟙_ C) (𝟙_ C) X).hom ≫
         (𝟙_ C ◁ (β_ X (𝟙_ C)).inv) ≫ (α_ _ X _).inv ≫ ((λ_ X).hom ▷ _) =
       ((λ_ _).hom ▷ X) ≫ (β_ X (𝟙_ C)).inv := by
-  coherence
+  monoidal
 
 theorem braiding_leftUnitor_aux₂ (X : C) :
     ((β_ X (𝟙_ C)).hom ▷ 𝟙_ C) ≫ ((λ_ X).hom ▷ 𝟙_ C) = (ρ_ X).hom ▷ 𝟙_ C :=
   calc
     ((β_ X (𝟙_ C)).hom ▷ 𝟙_ C) ≫ ((λ_ X).hom ▷ 𝟙_ C) =
       ((β_ X (𝟙_ C)).hom ▷ 𝟙_ C) ≫ (α_ _ _ _).hom ≫ (α_ _ _ _).inv ≫ ((λ_ X).hom ▷ 𝟙_ C) := by
-      coherence
+      monoidal
     _ = ((β_ X (𝟙_ C)).hom ▷ 𝟙_ C) ≫ (α_ _ _ _).hom ≫ (_ ◁ (β_ X _).hom) ≫
           (_ ◁ (β_ X _).inv) ≫ (α_ _ _ _).inv ≫ ((λ_ X).hom ▷ 𝟙_ C) := by
       simp
@@ -291,14 +291,14 @@ theorem braiding_rightUnitor_aux₁ (X : C) :
     (α_ X (𝟙_ C) (𝟙_ C)).inv ≫
         ((β_ (𝟙_ C) X).inv ▷ 𝟙_ C) ≫ (α_ _ X _).hom ≫ (_ ◁ (ρ_ X).hom) =
       (X ◁ (ρ_ _).hom) ≫ (β_ (𝟙_ C) X).inv := by
-  coherence
+  monoidal
 
 theorem braiding_rightUnitor_aux₂ (X : C) :
     (𝟙_ C ◁ (β_ (𝟙_ C) X).hom) ≫ (𝟙_ C ◁ (ρ_ X).hom) = 𝟙_ C ◁ (λ_ X).hom :=
   calc
     (𝟙_ C ◁ (β_ (𝟙_ C) X).hom) ≫ (𝟙_ C ◁ (ρ_ X).hom) =
       (𝟙_ C ◁ (β_ (𝟙_ C) X).hom) ≫ (α_ _ _ _).inv ≫ (α_ _ _ _).hom ≫ (𝟙_ C ◁ (ρ_ X).hom) := by
-      coherence
+      monoidal
     _ = (𝟙_ C ◁ (β_ (𝟙_ C) X).hom) ≫ (α_ _ _ _).inv ≫ ((β_ _ X).hom ▷ _) ≫
           ((β_ _ X).inv ▷ _) ≫ (α_ _ _ _).hom ≫ (𝟙_ C ◁ (ρ_ X).hom) := by
       simp
@@ -324,7 +324,7 @@ theorem braiding_tensorUnit_left (X : C) : (β_ (𝟙_ C) X).hom = (λ_ X).hom �
 theorem braiding_inv_tensorUnit_left (X : C) : (β_ (𝟙_ C) X).inv = (ρ_ X).hom ≫ (λ_ X).inv := by
   rw [Iso.inv_ext]
   rw [braiding_tensorUnit_left]
-  coherence
+  monoidal
 
 @[reassoc]
 theorem leftUnitor_inv_braiding (X : C) : (λ_ X).inv ≫ (β_ (𝟙_ C) X).hom = (ρ_ X).inv := by
@@ -343,7 +343,7 @@ theorem braiding_tensorUnit_right (X : C) : (β_ X (𝟙_ C)).hom = (ρ_ X).hom 
 theorem braiding_inv_tensorUnit_right (X : C) : (β_ X (𝟙_ C)).inv = (λ_ X).hom ≫ (ρ_ X).inv := by
   rw [Iso.inv_ext]
   rw [braiding_tensorUnit_right]
-  coherence
+  monoidal
 
 end
 
@@ -455,8 +455,6 @@ def id : BraidedFunctor C C :=
 instance : Inhabited (BraidedFunctor C C) :=
   ⟨id C⟩
 
-variable {C D E}
-
 /-- The composition of braided monoidal functors. -/
 @[simps!]
 def comp (F : BraidedFunctor C D) (G : BraidedFunctor D E) : BraidedFunctor C E :=
@@ -504,18 +502,21 @@ end CommMonoid
 
 section Tensor
 
-/-- The strength of the tensor product functor from `C × C` to `C`. -/
-def tensor_μ (X Y : C × C) : (X.1 ⊗ X.2) ⊗ Y.1 ⊗ Y.2 ⟶ (X.1 ⊗ Y.1) ⊗ X.2 ⊗ Y.2 :=
-  (α_ X.1 X.2 (Y.1 ⊗ Y.2)).hom ≫
-    (X.1 ◁ (α_ X.2 Y.1 Y.2).inv) ≫
-      (X.1 ◁ (β_ X.2 Y.1).hom ▷ Y.2) ≫
-        (X.1 ◁ (α_ Y.1 X.2 Y.2).hom) ≫ (α_ X.1 Y.1 (X.2 ⊗ Y.2)).inv
+variable {C}
+
+/-- Swap the second and third objects in `(X₁ ⊗ X₂) ⊗ (Y₁ ⊗ Y₂)`. This is used to strength the
+tensor product functor from `C × C` to `C` as a monoidal functor. -/
+def tensor_μ (X₁ X₂ Y₁ Y₂ : C) : (X₁ ⊗ X₂) ⊗ Y₁ ⊗ Y₂ ⟶ (X₁ ⊗ Y₁) ⊗ X₂ ⊗ Y₂ :=
+  (α_ X₁ X₂ (Y₁ ⊗ Y₂)).hom ≫
+    (X₁ ◁ (α_ X₂ Y₁ Y₂).inv) ≫
+      (X₁ ◁ (β_ X₂ Y₁).hom ▷ Y₂) ≫
+        (X₁ ◁ (α_ Y₁ X₂ Y₂).hom) ≫ (α_ X₁ Y₁ (X₂ ⊗ Y₂)).inv
 
 @[reassoc]
 theorem tensor_μ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : U₁ ⟶ V₁)
     (g₂ : U₂ ⟶ V₂) :
-    ((f₁ ⊗ f₂) ⊗ g₁ ⊗ g₂) ≫ tensor_μ C (Y₁, Y₂) (V₁, V₂) =
-      tensor_μ C (X₁, X₂) (U₁, U₂) ≫ ((f₁ ⊗ g₁) ⊗ f₂ ⊗ g₂) := by
+    ((f₁ ⊗ f₂) ⊗ g₁ ⊗ g₂) ≫ tensor_μ Y₁ Y₂ V₁ V₂ =
+      tensor_μ X₁ X₂ U₁ U₂ ≫ ((f₁ ⊗ g₁) ⊗ f₂ ⊗ g₂) := by
   dsimp only [tensor_μ]
   simp_rw [← id_tensorHom, ← tensorHom_id]
   slice_lhs 1 2 => rw [associator_naturality]
@@ -530,27 +531,27 @@ theorem tensor_μ_natural {X₁ X₂ Y₁ Y₂ U₁ U₂ V₁ V₂ : C} (f₁ : 
 
 @[reassoc]
 theorem tensor_μ_natural_left {X₁ X₂ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (Z₁ Z₂ : C) :
-    (f₁ ⊗ f₂) ▷ (Z₁ ⊗ Z₂) ≫ tensor_μ C (Y₁, Y₂) (Z₁, Z₂) =
-      tensor_μ C (X₁, X₂) (Z₁, Z₂) ≫ (f₁ ▷ Z₁ ⊗ f₂ ▷ Z₂) := by
-  convert tensor_μ_natural C f₁ f₂ (𝟙 Z₁) (𝟙 Z₂) using 1 <;> simp
+    (f₁ ⊗ f₂) ▷ (Z₁ ⊗ Z₂) ≫ tensor_μ Y₁ Y₂ Z₁ Z₂ =
+      tensor_μ X₁ X₂ Z₁ Z₂ ≫ (f₁ ▷ Z₁ ⊗ f₂ ▷ Z₂) := by
+  convert tensor_μ_natural f₁ f₂ (𝟙 Z₁) (𝟙 Z₂) using 1 <;> simp
 
 @[reassoc]
 theorem tensor_μ_natural_right (Z₁ Z₂ : C) {X₁ X₂ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) :
-    (Z₁ ⊗ Z₂) ◁ (f₁ ⊗ f₂) ≫ tensor_μ C (Z₁, Z₂) (Y₁, Y₂) =
-      tensor_μ C (Z₁, Z₂) (X₁, X₂) ≫ (Z₁ ◁ f₁ ⊗ Z₂ ◁ f₂) := by
-  convert tensor_μ_natural C (𝟙 Z₁) (𝟙 Z₂) f₁ f₂ using 1 <;> simp
+    (Z₁ ⊗ Z₂) ◁ (f₁ ⊗ f₂) ≫ tensor_μ Z₁ Z₂ Y₁ Y₂ =
+      tensor_μ Z₁ Z₂ X₁ X₂ ≫ (Z₁ ◁ f₁ ⊗ Z₂ ◁ f₂) := by
+  convert tensor_μ_natural (𝟙 Z₁) (𝟙 Z₂) f₁ f₂ using 1 <;> simp
 
 @[reassoc]
 theorem tensor_left_unitality (X₁ X₂ : C) :
     (λ_ (X₁ ⊗ X₂)).hom =
       ((λ_ (𝟙_ C)).inv ▷ (X₁ ⊗ X₂)) ≫
-        tensor_μ C (𝟙_ C, 𝟙_ C) (X₁, X₂) ≫ ((λ_ X₁).hom ⊗ (λ_ X₂).hom) := by
+        tensor_μ (𝟙_ C) (𝟙_ C) X₁ X₂ ≫ ((λ_ X₁).hom ⊗ (λ_ X₂).hom) := by
   dsimp only [tensor_μ]
   have :
     ((λ_ (𝟙_ C)).inv ▷ (X₁ ⊗ X₂)) ≫
         (α_ (𝟙_ C) (𝟙_ C) (X₁ ⊗ X₂)).hom ≫ (𝟙_ C ◁ (α_ (𝟙_ C) X₁ X₂).inv) =
       𝟙_ C ◁ (λ_ X₁).inv ▷ X₂ := by
-    coherence
+    monoidal
   slice_rhs 1 3 => rw [this]
   clear this
   slice_rhs 1 2 => rw [← MonoidalCategory.whiskerLeft_comp, ← comp_whiskerRight,
@@ -561,97 +562,92 @@ theorem tensor_left_unitality (X₁ X₂ : C) :
 theorem tensor_right_unitality (X₁ X₂ : C) :
     (ρ_ (X₁ ⊗ X₂)).hom =
       ((X₁ ⊗ X₂) ◁ (λ_ (𝟙_ C)).inv) ≫
-        tensor_μ C (X₁, X₂) (𝟙_ C, 𝟙_ C) ≫ ((ρ_ X₁).hom ⊗ (ρ_ X₂).hom) := by
+        tensor_μ X₁ X₂ (𝟙_ C) (𝟙_ C) ≫ ((ρ_ X₁).hom ⊗ (ρ_ X₂).hom) := by
   dsimp only [tensor_μ]
   have :
     ((X₁ ⊗ X₂) ◁ (λ_ (𝟙_ C)).inv) ≫
         (α_ X₁ X₂ (𝟙_ C ⊗ 𝟙_ C)).hom ≫ (X₁ ◁ (α_ X₂ (𝟙_ C) (𝟙_ C)).inv) =
       (α_ X₁ X₂ (𝟙_ C)).hom ≫ (X₁ ◁ (ρ_ X₂).inv ▷ 𝟙_ C) := by
-    coherence
+    monoidal
   slice_rhs 1 3 => rw [this]
   clear this
   slice_rhs 2 3 => rw [← MonoidalCategory.whiskerLeft_comp, ← comp_whiskerRight,
     rightUnitor_inv_braiding]
   simp [tensorHom_id, id_tensorHom, tensorHom_def]
 
+@[reassoc]
 theorem tensor_associativity (X₁ X₂ Y₁ Y₂ Z₁ Z₂ : C) :
-    (tensor_μ C (X₁, X₂) (Y₁, Y₂) ▷ (Z₁ ⊗ Z₂)) ≫
-        tensor_μ C (X₁ ⊗ Y₁, X₂ ⊗ Y₂) (Z₁, Z₂) ≫ ((α_ X₁ Y₁ Z₁).hom ⊗ (α_ X₂ Y₂ Z₂).hom) =
+    (tensor_μ X₁ X₂ Y₁ Y₂ ▷ (Z₁ ⊗ Z₂)) ≫
+        tensor_μ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂) Z₁ Z₂ ≫ ((α_ X₁ Y₁ Z₁).hom ⊗ (α_ X₂ Y₂ Z₂).hom) =
       (α_ (X₁ ⊗ X₂) (Y₁ ⊗ Y₂) (Z₁ ⊗ Z₂)).hom ≫
-        ((X₁ ⊗ X₂) ◁ tensor_μ C (Y₁, Y₂) (Z₁, Z₂)) ≫ tensor_μ C (X₁, X₂) (Y₁ ⊗ Z₁, Y₂ ⊗ Z₂) := by
+        ((X₁ ⊗ X₂) ◁ tensor_μ Y₁ Y₂ Z₁ Z₂) ≫ tensor_μ X₁ X₂ (Y₁ ⊗ Z₁) (Y₂ ⊗ Z₂) := by
   dsimp only [tensor_obj, prodMonoidal_tensorObj, tensor_μ]
-  simp only [whiskerRight_tensor, comp_whiskerRight, whisker_assoc, assoc, Iso.inv_hom_id_assoc,
-    tensor_whiskerLeft, braiding_tensor_left, MonoidalCategory.whiskerLeft_comp,
-    braiding_tensor_right]
+  simp only [braiding_tensor_left, braiding_tensor_right]
   calc
     _ = 𝟙 _ ⊗≫
       X₁ ◁ ((β_ X₂ Y₁).hom ▷ (Y₂ ⊗ Z₁) ≫ (Y₁ ⊗ X₂) ◁ (β_ Y₂ Z₁).hom) ▷ Z₂ ⊗≫
-        X₁ ◁ Y₁ ◁ (β_ X₂ Z₁).hom ▷ Y₂ ▷ Z₂ ⊗≫ 𝟙 _ := by coherence
-    _ = _ := by rw [← whisker_exchange]; coherence
-
--- We got a timeout if `reassoc` was at the declaration, so we put it here instead.
-attribute [reassoc] tensor_associativity
+        X₁ ◁ Y₁ ◁ (β_ X₂ Z₁).hom ▷ Y₂ ▷ Z₂ ⊗≫ 𝟙 _ := by monoidal
+    _ = _ := by rw [← whisker_exchange]; monoidal
 
 /-- The tensor product functor from `C × C` to `C` as a monoidal functor. -/
 @[simps!]
 def tensorMonoidal : MonoidalFunctor (C × C) C :=
   { tensor C with
     ε := (λ_ (𝟙_ C)).inv
-    μ := tensor_μ C
+    μ := fun X Y ↦ tensor_μ X.1 X.2 Y.1 Y.2
     μ_natural_left := fun f Z => by
       -- `simpa` will be not needed when we define `μ_natural_left` in terms of the whiskerings.
-      simpa using tensor_μ_natural_left C f.1 f.2 Z.1 Z.2
+      simpa using tensor_μ_natural_left f.1 f.2 Z.1 Z.2
     μ_natural_right := fun Z f => by
-      simpa using tensor_μ_natural_right C Z.1 Z.2 f.1 f.2
+      simpa using tensor_μ_natural_right Z.1 Z.2 f.1 f.2
     associativity := fun X Y Z => by
-      simpa using tensor_associativity C X.1 X.2 Y.1 Y.2 Z.1 Z.2
+      simpa using tensor_associativity X.1 X.2 Y.1 Y.2 Z.1 Z.2
     left_unitality := fun ⟨X₁, X₂⟩ => by
-      simpa using tensor_left_unitality C X₁ X₂
+      simpa using tensor_left_unitality X₁ X₂
     right_unitality := fun ⟨X₁, X₂⟩ => by
-      simpa using tensor_right_unitality C X₁ X₂
+      simpa using tensor_right_unitality X₁ X₂
     μ_isIso := by dsimp [tensor_μ]; infer_instance }
 
 @[reassoc]
 theorem leftUnitor_monoidal (X₁ X₂ : C) :
     (λ_ X₁).hom ⊗ (λ_ X₂).hom =
-      tensor_μ C (𝟙_ C, X₁) (𝟙_ C, X₂) ≫ ((λ_ (𝟙_ C)).hom ▷ (X₁ ⊗ X₂)) ≫ (λ_ (X₁ ⊗ X₂)).hom := by
+      tensor_μ (𝟙_ C) X₁ (𝟙_ C) X₂ ≫ ((λ_ (𝟙_ C)).hom ▷ (X₁ ⊗ X₂)) ≫ (λ_ (X₁ ⊗ X₂)).hom := by
   dsimp only [tensor_μ]
   have :
     (λ_ X₁).hom ⊗ (λ_ X₂).hom =
       (α_ (𝟙_ C) X₁ (𝟙_ C ⊗ X₂)).hom ≫
         (𝟙_ C ◁ (α_ X₁ (𝟙_ C) X₂).inv) ≫ (λ_ ((X₁ ⊗ 𝟙_ C) ⊗ X₂)).hom ≫ ((ρ_ X₁).hom ▷ X₂) := by
-    coherence
+    monoidal
   rw [this]; clear this
   rw [← braiding_leftUnitor]
-  dsimp only [tensor_obj, prodMonoidal_tensorObj]
-  coherence
+  monoidal
 
 @[reassoc]
 theorem rightUnitor_monoidal (X₁ X₂ : C) :
     (ρ_ X₁).hom ⊗ (ρ_ X₂).hom =
-      tensor_μ C (X₁, 𝟙_ C) (X₂, 𝟙_ C) ≫ ((X₁ ⊗ X₂) ◁ (λ_ (𝟙_ C)).hom) ≫ (ρ_ (X₁ ⊗ X₂)).hom := by
+      tensor_μ X₁ (𝟙_ C) X₂ (𝟙_ C) ≫ ((X₁ ⊗ X₂) ◁ (λ_ (𝟙_ C)).hom) ≫ (ρ_ (X₁ ⊗ X₂)).hom := by
   dsimp only [tensor_μ]
   have :
     (ρ_ X₁).hom ⊗ (ρ_ X₂).hom =
       (α_ X₁ (𝟙_ C) (X₂ ⊗ 𝟙_ C)).hom ≫
         (X₁ ◁ (α_ (𝟙_ C) X₂ (𝟙_ C)).inv) ≫ (X₁ ◁ (ρ_ (𝟙_ C ⊗ X₂)).hom) ≫ (X₁ ◁ (λ_ X₂).hom) := by
-    coherence
+    monoidal
   rw [this]; clear this
   rw [← braiding_rightUnitor]
-  dsimp only [tensor_obj, prodMonoidal_tensorObj]
-  coherence
+  monoidal
 
 theorem associator_monoidal (X₁ X₂ X₃ Y₁ Y₂ Y₃ : C) :
-    tensor_μ C (X₁ ⊗ X₂, X₃) (Y₁ ⊗ Y₂, Y₃) ≫
-        (tensor_μ C (X₁, X₂) (Y₁, Y₂) ▷ (X₃ ⊗ Y₃)) ≫ (α_ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂) (X₃ ⊗ Y₃)).hom =
+    tensor_μ (X₁ ⊗ X₂) X₃ (Y₁ ⊗ Y₂) Y₃ ≫
+        (tensor_μ X₁ X₂ Y₁ Y₂ ▷ (X₃ ⊗ Y₃)) ≫ (α_ (X₁ ⊗ Y₁) (X₂ ⊗ Y₂) (X₃ ⊗ Y₃)).hom =
       ((α_ X₁ X₂ X₃).hom ⊗ (α_ Y₁ Y₂ Y₃).hom) ≫
-        tensor_μ C (X₁, X₂ ⊗ X₃) (Y₁, Y₂ ⊗ Y₃) ≫ ((X₁ ⊗ Y₁) ◁ tensor_μ C (X₂, X₃) (Y₂, Y₃)) := by
+        tensor_μ X₁ (X₂ ⊗ X₃) Y₁ (Y₂ ⊗ Y₃) ≫ ((X₁ ⊗ Y₁) ◁ tensor_μ X₂ X₃ Y₂ Y₃) := by
   dsimp only [tensor_μ]
   calc
     _ = 𝟙 _ ⊗≫ X₁ ◁ X₂ ◁ (β_ X₃ Y₁).hom ▷ Y₂ ▷ Y₃ ⊗≫
       X₁ ◁ ((X₂ ⊗ Y₁) ◁ (β_ X₃ Y₂).hom ≫
-        (β_ X₂ Y₁).hom ▷ (Y₂ ⊗ X₃)) ▷ Y₃ ⊗≫ 𝟙 _ := by simp; coherence
-    _ = _ := by rw [whisker_exchange]; simp; coherence
+        (β_ X₂ Y₁).hom ▷ (Y₂ ⊗ X₃)) ▷ Y₃ ⊗≫ 𝟙 _ := by
+          rw [braiding_tensor_right]; monoidal
+    _ = _ := by rw [whisker_exchange, braiding_tensor_left]; monoidal
 
 -- We got a timeout if `reassoc` was at the declaration, so we put it here instead.
 attribute [reassoc] associator_monoidal

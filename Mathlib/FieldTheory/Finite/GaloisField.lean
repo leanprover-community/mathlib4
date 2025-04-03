@@ -3,10 +3,10 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Alex J. Best, Johan Commelin, Eric Rodriguez, Ruben Van de Velde
 -/
+import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Algebra.CharP.Algebra
-import Mathlib.Data.ZMod.Algebra
 import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.FieldTheory.Galois
+import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 
 /-!

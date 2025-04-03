@@ -79,9 +79,9 @@ theorem nodup_sup_iff {α : Type*} [DecidableEq α] {m : Multiset (Multiset α)}
     m.sup.Nodup ↔ ∀ a : Multiset α, a ∈ m → a.Nodup := by
   -- Porting note: this was originally `apply m.induction_on`, which failed due to
   -- `failed to elaborate eliminator, expected type is not available`
-  induction' m using Multiset.induction_on with _ _ h
-  · simp
-  · simp [h]
+  induction m using Multiset.induction_on with
+  | empty => simp
+  | cons _ _ h => simp [h]
 
 end Sup
 

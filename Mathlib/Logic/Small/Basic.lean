@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Logic.Small.Defs
 import Mathlib.Logic.Equiv.Set
@@ -16,6 +16,10 @@ universe u w v v'
 
 section
 
+
+-- TODO(timotree3): lower the priority on this instance?
+-- This instance applies to every synthesis problem of the form `Small ↥s` for some set `s`,
+-- but we have lots of instances of `Small` for specific set constructions.
 instance small_subtype (α : Type v) [Small.{w} α] (P : α → Prop) : Small.{w} { x // P x } :=
   small_map (equivShrink α).subtypeEquivOfSubtype'
 

@@ -198,11 +198,11 @@ namespace LieAlgebra
 class IsSolvable : Prop where
   solvable : ∃ k, derivedSeries R L k = ⊥
 
-instance isSolvableBot : IsSolvable R (↥(⊥ : LieIdeal R L)) :=
+instance isSolvableBot : IsSolvable R (⊥ : LieIdeal R L) :=
   ⟨⟨0, Subsingleton.elim _ ⊥⟩⟩
 
 instance isSolvableAdd {I J : LieIdeal R L} [hI : IsSolvable R I] [hJ : IsSolvable R J] :
-    IsSolvable R (↥(I + J)) := by
+    IsSolvable R (I + J) := by
   obtain ⟨k, hk⟩ := id hI; obtain ⟨l, hl⟩ := id hJ
   exact ⟨⟨k + l, LieIdeal.derivedSeries_add_eq_bot hk hl⟩⟩
 
@@ -287,7 +287,9 @@ instance [IsSolvable R L] : IsSolvable R (⊤ : LieSubalgebra R L) := by
 
 @[simp] lemma radical_eq_top_of_isSolvable [IsSolvable R L] :
     radical R L = ⊤ := by
-  rw [eq_top_iff]; exact le_sSup <| inferInstanceAs (IsSolvable R (⊤ : LieIdeal R L))
+  rw [eq_top_iff]
+  have h : IsSolvable R (⊤ : LieSubalgebra R L) := inferInstance
+  exact le_sSup h
 
 /-- Given a solvable Lie ideal `I` with derived series `I = D₀ ≥ D₁ ≥ ⋯ ≥ Dₖ = ⊥`, this is the
 natural number `k` (the number of inclusions).
@@ -333,11 +335,14 @@ noncomputable def derivedAbelianOfIdeal (I : LieIdeal R L) : LieIdeal R L :=
   | 0 => ⊥
   | k + 1 => derivedSeriesOfIdeal R L k I
 
+instance : Unique {x // x ∈ (⊥ : LieIdeal R L)} :=
+  inferInstanceAs <| Unique {x // x ∈ (⊥ : Submodule R L)}
+
 theorem abelian_derivedAbelianOfIdeal (I : LieIdeal R L) :
     IsLieAbelian (derivedAbelianOfIdeal I) := by
   dsimp only [derivedAbelianOfIdeal]
   cases' h : derivedLengthOfIdeal R L I with k
-  · infer_instance
+  · dsimp; infer_instance
   · rw [derivedSeries_of_derivedLength_succ] at h; exact h.1
 
 theorem derivedLength_zero (I : LieIdeal R L) [hI : IsSolvable R I] :

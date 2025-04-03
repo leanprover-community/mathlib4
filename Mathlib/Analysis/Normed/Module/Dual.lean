@@ -160,6 +160,13 @@ theorem mem_polar_iff {x' : Dual 𝕜 E} (s : Set E) : x' ∈ polar 𝕜 s ↔ �
   Iff.rfl
 
 @[simp]
+theorem zero_mem_polar (s : Set E) : (0 : Dual 𝕜 E) ∈ polar 𝕜 s :=
+  LinearMap.zero_mem_polar _ s
+
+theorem polar_nonempty (s : Set E) : Set.Nonempty (polar 𝕜 s) :=
+  LinearMap.polar_nonempty _ _
+
+@[simp]
 theorem polar_univ : polar 𝕜 (univ : Set E) = {(0 : Dual 𝕜 E)} :=
   (dualPairing 𝕜 E).flip.polar_univ
     (LinearMap.flip_separatingRight.mpr (dualPairing_separatingLeft 𝕜 E))
@@ -229,6 +236,23 @@ theorem polar_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [
   refine ContinuousLinearMap.opNorm_le_of_ball hr (inv_nonneg.mpr hr.le) fun z _ => ?_
   simpa only [one_div] using LinearMap.bound_of_ball_bound' hr 1 x'.toLinearMap h z
 
+theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {r : ℝ}
+    (hr : 0 < r) : polar 𝕜 (ball (0 : E) r) = closedBall (0 : Dual 𝕜 E) r⁻¹ := by
+  apply le_antisymm
+  · intro x hx
+    rw [mem_closedBall_zero_iff]
+    apply le_of_forall_le_of_dense
+    intro a ha
+    rw [← mem_closedBall_zero_iff, ← (mul_div_cancel_left₀ a (Ne.symm (ne_of_lt hr)))]
+    rw [← RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
+      (le_of_lt ((inv_pos_lt_iff_one_lt_mul' hr).mp ha)))]
+    apply polar_ball_subset_closedBall_div _ hr hx
+    rw [RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
+      (le_of_lt ((inv_pos_lt_iff_one_lt_mul' hr).mp ha)))]
+    exact (inv_pos_lt_iff_one_lt_mul' hr).mp ha
+  · rw [← polar_closedBall hr]
+    exact LinearMap.polar_antitone _ ball_subset_closedBall
+
 /-- Given a neighborhood `s` of the origin in a normed space `E`, the dual norms
 of all elements of the polar `polar 𝕜 s` are bounded by a constant. -/
 theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)) :
@@ -240,11 +264,18 @@ theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)
       polar_ball_subset_closedBall_div ha r_pos)
 
 @[simp]
+theorem polar_empty : polar 𝕜 (∅ : Set E) = Set.univ :=
+  LinearMap.polar_empty _
+
+@[simp]
 theorem polar_singleton {a : E} : polar 𝕜 {a} = { x | ‖x a‖ ≤ 1 } := by
   simp only [polar, LinearMap.polar_singleton, LinearMap.flip_apply, dualPairing_apply]
 
 theorem mem_polar_singleton {a : E} (y : Dual 𝕜 E) : y ∈ polar 𝕜 {a} ↔ ‖y a‖ ≤ 1 := by
   simp only [polar_singleton, mem_setOf_eq]
+
+theorem polar_zero : polar 𝕜 ({0} : Set E) = Set.univ :=
+  LinearMap.polar_zero _
 
 theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {r : ℝ} (hr : 0 < r) :

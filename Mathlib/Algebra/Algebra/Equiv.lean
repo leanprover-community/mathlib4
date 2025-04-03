@@ -86,6 +86,8 @@ variable [Algebra R A₁] [Algebra R A₂] [Algebra R A₃]
 variable [Algebra R A₁'] [Algebra R A₂'] [Algebra R A₃']
 variable (e : A₁ ≃ₐ[R] A₂)
 
+section coe
+
 instance : EquivLike (A₁ ≃ₐ[R] A₂) A₁ A₂ where
   coe f := f.toFun
   inv f := f.invFun
@@ -106,22 +108,6 @@ instance : AlgEquivClass (A₁ ≃ₐ[R] A₂) R A₁ A₂ where
   map_mul f := f.map_mul'
   commutes f := f.commutes'
 
--- Porting note: the default simps projection was `e.toEquiv.toFun`, it should be `FunLike.coe`
-/-- See Note [custom simps projection] -/
-def Simps.apply (e : A₁ ≃ₐ[R] A₂) : A₁ → A₂ :=
-  e
-
--- Porting note: the default simps projection was `e.toEquiv`, it should be `EquivLike.toEquiv`
-/-- See Note [custom simps projection] -/
-def Simps.toEquiv (e : A₁ ≃ₐ[R] A₂) : A₁ ≃ A₂ :=
-  e
-
--- Porting note: `protected` used to be an attribute below
-@[simp]
-protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂] (f : F) :
-    ⇑(f : A₁ ≃ₐ[R] A₂) = f :=
-  rfl
-
 @[ext]
 theorem ext {f g : A₁ ≃ₐ[R] A₂} (h : ∀ a, f a = g a) : f = g :=
   DFunLike.ext f g h
@@ -131,13 +117,6 @@ protected theorem congr_arg {f : A₁ ≃ₐ[R] A₂} {x x' : A₁} : x = x' →
 
 protected theorem congr_fun {f g : A₁ ≃ₐ[R] A₂} (h : f = g) (x : A₁) : f x = g x :=
   DFunLike.congr_fun h x
-
-theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e => (e : A₁ → A₂) :=
-  DFunLike.coe_injective
-
--- Porting note: Made to CoeOut instance from Coe, not dangerous anymore
-instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
-  ⟨AlgEquiv.toRingEquiv⟩
 
 @[simp]
 theorem coe_mk {toEquiv map_mul map_add commutes} :
@@ -149,11 +128,24 @@ theorem mk_coe (e : A₁ ≃ₐ[R] A₂) (e' h₁ h₂ h₃ h₄ h₅) :
     (⟨⟨e, e', h₁, h₂⟩, h₃, h₄, h₅⟩ : A₁ ≃ₐ[R] A₂) = e :=
   ext fun _ => rfl
 
--- Porting note: `toFun_eq_coe` no longer needed in Lean4
-
 @[simp]
 theorem toEquiv_eq_coe : e.toEquiv = e :=
   rfl
+
+-- Porting note: `protected` used to be an attribute below
+@[simp]
+protected theorem coe_coe {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂] (f : F) :
+    ⇑(f : A₁ ≃ₐ[R] A₂) = f :=
+  rfl
+
+theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → A₂) fun e => (e : A₁ → A₂) :=
+  DFunLike.coe_injective
+
+-- Porting note: Made to CoeOut instance from Coe, not dangerous anymore
+instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
+  ⟨AlgEquiv.toRingEquiv⟩
+
+-- Porting note: `toFun_eq_coe` no longer needed in Lean4
 
 @[simp]
 theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
@@ -172,41 +164,6 @@ theorem coe_ringEquiv' : (e.toRingEquiv : A₁ → A₂) = e :=
 
 theorem coe_ringEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
   fun _ _ h => ext <| RingEquiv.congr_fun h
-
-@[deprecated map_add (since := "2024-06-20")]
-protected theorem map_add : ∀ x y, e (x + y) = e x + e y :=
-  map_add e
-
-@[deprecated map_zero (since := "2024-06-20")]
-protected theorem map_zero : e 0 = 0 :=
-  map_zero e
-
-@[deprecated map_mul (since := "2024-06-20")]
-protected theorem map_mul : ∀ x y, e (x * y) = e x * e y :=
-  map_mul e
-
-@[deprecated map_one (since := "2024-06-20")]
-protected theorem map_one : e 1 = 1 :=
-  map_one e
-
-@[simp]
-theorem commutes : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r :=
-  e.commutes'
-
--- @[simp] -- Porting note (#10618): simp can prove this
-@[deprecated map_smul (since := "2024-06-20")]
-protected theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x :=
-  map_smul _ _ _
-
-@[deprecated map_sum (since := "2023-12-26")]
-protected theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
-    e (∑ x ∈ s, f x) = ∑ x ∈ s, e (f x) :=
-  map_sum e f s
-
-@[deprecated map_finsupp_sum (since := "2024-06-20")]
-protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
-    e (f.sum g) = f.sum fun i b => e (g i b) :=
-  map_finsupp_sum _ _ _
 
 -- Porting note: Added [coe] attribute
 /-- Interpret an algebra equivalence as an algebra homomorphism.
@@ -238,9 +195,55 @@ lemma toAlgHom_toRingHom : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = e :=
 theorem coe_ringHom_commutes : ((e : A₁ →ₐ[R] A₂) : A₁ →+* A₂) = ((e : A₁ ≃+* A₂) : A₁ →+* A₂) :=
   rfl
 
+@[simp]
+theorem commutes : ∀ r : R, e (algebraMap R A₁ r) = algebraMap R A₂ r :=
+  e.commutes'
+
+end coe
+
+section map
+
+@[deprecated map_add (since := "2024-06-20")]
+protected theorem map_add : ∀ x y, e (x + y) = e x + e y :=
+  map_add e
+
+@[deprecated map_zero (since := "2024-06-20")]
+protected theorem map_zero : e 0 = 0 :=
+  map_zero e
+
+@[deprecated map_mul (since := "2024-06-20")]
+protected theorem map_mul : ∀ x y, e (x * y) = e x * e y :=
+  map_mul e
+
+@[deprecated map_one (since := "2024-06-20")]
+protected theorem map_one : e 1 = 1 :=
+  map_one e
+
+-- @[simp] -- Porting note (#10618): simp can prove this
+@[deprecated map_smul (since := "2024-06-20")]
+protected theorem map_smul (r : R) (x : A₁) : e (r • x) = r • e x :=
+  map_smul _ _ _
+
 @[deprecated map_pow (since := "2024-06-20")]
 protected theorem map_pow : ∀ (x : A₁) (n : ℕ), e (x ^ n) = e x ^ n :=
   map_pow _
+
+@[deprecated map_sum (since := "2023-12-26")]
+protected theorem map_sum {ι : Type*} (f : ι → A₁) (s : Finset ι) :
+    e (∑ x ∈ s, f x) = ∑ x ∈ s, e (f x) :=
+  map_sum e f s
+
+@[deprecated map_finsupp_sum (since := "2024-06-20")]
+protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A₁) :
+    e (f.sum g) = f.sum fun i b => e (g i b) :=
+  map_finsupp_sum _ _ _
+
+end map
+
+section bijective
+
+protected theorem bijective : Function.Bijective e :=
+  EquivLike.bijective e
 
 protected theorem injective : Function.Injective e :=
   EquivLike.injective e
@@ -248,8 +251,9 @@ protected theorem injective : Function.Injective e :=
 protected theorem surjective : Function.Surjective e :=
   EquivLike.surjective e
 
-protected theorem bijective : Function.Bijective e :=
-  EquivLike.bijective e
+end bijective
+
+section refl
 
 /-- Algebra equivalences are reflexive. -/
 @[refl]
@@ -267,6 +271,10 @@ theorem refl_toAlgHom : ↑(refl : A₁ ≃ₐ[R] A₁) = AlgHom.id R A₁ :=
 theorem coe_refl : ⇑(refl : A₁ ≃ₐ[R] A₁) = id :=
   rfl
 
+end refl
+
+section symm
+
 /-- Algebra equivalences are symmetric. -/
 @[symm]
 def symm (e : A₁ ≃ₐ[R] A₂) : A₂ ≃ₐ[R] A₁ :=
@@ -277,11 +285,8 @@ def symm (e : A₁ ≃ₐ[R] A₂) : A₂ ≃ₐ[R] A₁ :=
       change _ = e _
       rw [e.commutes] }
 
-/-- See Note [custom simps projection] -/
-def Simps.symm_apply (e : A₁ ≃ₐ[R] A₂) : A₂ → A₁ :=
-  e.symm
-
-initialize_simps_projections AlgEquiv (toFun → apply, invFun → symm_apply)
+theorem invFun_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.invFun = e.symm :=
+  rfl
 
 --@[simp] -- Porting note (#10618): simp can prove this once symm_mk is introduced
 theorem coe_apply_coe_coe_symm_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEquivClass F R A₁ A₂]
@@ -298,9 +303,6 @@ theorem coe_coe_symm_apply_coe_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEqu
 -- Porting note: `simp` normal form of `invFun_eq_symm`
 @[simp]
 theorem symm_toEquiv_eq_symm {e : A₁ ≃ₐ[R] A₂} : (e : A₁ ≃ A₂).symm = e.symm :=
-  rfl
-
-theorem invFun_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.invFun = e.symm :=
   rfl
 
 @[simp]
@@ -338,12 +340,6 @@ theorem toRingEquiv_symm (f : A₁ ≃ₐ[R] A₁) : (f : A₁ ≃+* A₁).symm 
 theorem symm_toRingEquiv : (e.symm : A₂ ≃+* A₁) = (e : A₁ ≃+* A₂).symm :=
   rfl
 
-/-- Algebra equivalences are transitive. -/
-@[trans]
-def trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) : A₁ ≃ₐ[R] A₃ :=
-  { e₁.toRingEquiv.trans e₂.toRingEquiv with
-    commutes' := fun r => show e₂.toFun (e₁.toFun _) = _ by rw [e₁.commutes', e₂.commutes'] }
-
 @[simp]
 theorem apply_symm_apply (e : A₁ ≃ₐ[R] A₂) : ∀ x, e (e.symm x) = x :=
   e.toEquiv.apply_symm_apply
@@ -352,18 +348,11 @@ theorem apply_symm_apply (e : A₁ ≃ₐ[R] A₂) : ∀ x, e (e.symm x) = x :=
 theorem symm_apply_apply (e : A₁ ≃ₐ[R] A₂) : ∀ x, e.symm (e x) = x :=
   e.toEquiv.symm_apply_apply
 
-@[simp]
-theorem symm_trans_apply (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) (x : A₃) :
-    (e₁.trans e₂).symm x = e₁.symm (e₂.symm x) :=
-  rfl
+theorem symm_apply_eq (e : A₁ ≃ₐ[R] A₂) {x y} : e.symm x = y ↔ x = e y :=
+  e.toEquiv.symm_apply_eq
 
-@[simp]
-theorem coe_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) : ⇑(e₁.trans e₂) = e₂ ∘ e₁ :=
-  rfl
-
-@[simp]
-theorem trans_apply (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) (x : A₁) : (e₁.trans e₂) x = e₂ (e₁ x) :=
-  rfl
+theorem eq_symm_apply (e : A₁ ≃ₐ[R] A₂) {x y} : y = e.symm x ↔ e y = x :=
+  e.toEquiv.eq_symm_apply
 
 @[simp]
 theorem comp_symm (e : A₁ ≃ₐ[R] A₂) : AlgHom.comp (e : A₁ →ₐ[R] A₂) ↑e.symm = AlgHom.id R A₂ := by
@@ -380,6 +369,51 @@ theorem leftInverse_symm (e : A₁ ≃ₐ[R] A₂) : Function.LeftInverse e.symm
 
 theorem rightInverse_symm (e : A₁ ≃ₐ[R] A₂) : Function.RightInverse e.symm e :=
   e.right_inv
+
+end symm
+
+section simps
+
+-- Porting note: the default simps projection was `e.toEquiv.toFun`, it should be `FunLike.coe`
+/-- See Note [custom simps projection] -/
+def Simps.apply (e : A₁ ≃ₐ[R] A₂) : A₁ → A₂ :=
+  e
+
+-- Porting note: the default simps projection was `e.toEquiv`, it should be `EquivLike.toEquiv`
+/-- See Note [custom simps projection] -/
+def Simps.toEquiv (e : A₁ ≃ₐ[R] A₂) : A₁ ≃ A₂ :=
+  e
+
+/-- See Note [custom simps projection] -/
+def Simps.symm_apply (e : A₁ ≃ₐ[R] A₂) : A₂ → A₁ :=
+  e.symm
+
+initialize_simps_projections AlgEquiv (toFun → apply, invFun → symm_apply)
+
+end simps
+
+section trans
+
+/-- Algebra equivalences are transitive. -/
+@[trans]
+def trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) : A₁ ≃ₐ[R] A₃ :=
+  { e₁.toRingEquiv.trans e₂.toRingEquiv with
+    commutes' := fun r => show e₂.toFun (e₁.toFun _) = _ by rw [e₁.commutes', e₂.commutes'] }
+
+@[simp]
+theorem coe_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) : ⇑(e₁.trans e₂) = e₂ ∘ e₁ :=
+  rfl
+
+@[simp]
+theorem trans_apply (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) (x : A₁) : (e₁.trans e₂) x = e₂ (e₁ x) :=
+  rfl
+
+@[simp]
+theorem symm_trans_apply (e₁ : A₁ ≃ₐ[R] A₂) (e₂ : A₂ ≃ₐ[R] A₃) (x : A₃) :
+    (e₁.trans e₂).symm x = e₁.symm (e₂.symm x) :=
+  rfl
+
+end trans
 
 /-- If `A₁` is equivalent to `A₁'` and `A₂` is equivalent to `A₂'`, then the type of maps
 `A₁ →ₐ[R] A₂` is equivalent to the type of maps `A₁' →ₐ[R] A₂'`. -/

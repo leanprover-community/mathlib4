@@ -11,6 +11,11 @@ import Lean.Meta.Tactic.Simp.Types
 
 This monad is used by tactics like `ring` and `abel` to keep uninterpreted atoms in a consistent
 order, and also to allow unifying atoms up to a specified transparency mode.
+
+Note: this can become very expensive because it is using `isDefEq`.
+For performance reasons, consider whether `Lean.Meta.Canonicalizer.canon` can be used instead.
+After canonicalizing, a `HashMap Expr Nat` suffices to keep track of previously seen atoms,
+and is much faster as it uses `Expr` equality rather than `isDefEq`.
 -/
 
 namespace Mathlib.Tactic

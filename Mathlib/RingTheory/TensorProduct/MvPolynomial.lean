@@ -229,6 +229,15 @@ lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
     nth_rw 2 [← mul_one a]
     rw [Algebra.TensorProduct.tmul_mul_tmul]
 
+lemma aeval_one_tmul (f : σ → S) (p : MvPolynomial σ R) :
+    (aeval fun x ↦ (1 ⊗ₜ[R] f x : N ⊗[R] S)) p = 1 ⊗ₜ[R] (aeval f) p := by
+  induction' p using MvPolynomial.induction_on with a p q hp hq p i h
+  · simp only [map_C, algHom_C, Algebra.TensorProduct.algebraMap_apply,
+      RingHomCompTriple.comp_apply]
+    rw [← mul_one ((algebraMap R N) a), ← Algebra.smul_def, smul_tmul, Algebra.smul_def, mul_one]
+  · simp [hp, hq, tmul_add]
+  · simp [h]
+
 end Algebra
 
 end MvPolynomial

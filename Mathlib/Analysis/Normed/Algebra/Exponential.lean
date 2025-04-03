@@ -3,12 +3,9 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Eric Wieser
 -/
-import Mathlib.Analysis.Analytic.Basic
+import Mathlib.Analysis.Analytic.ChangeOrigin
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Normed.Field.InfiniteSum
 import Mathlib.Data.Nat.Choose.Cast
-import Mathlib.Data.Finset.NoncommProd
-import Mathlib.Topology.Algebra.Algebra
 
 
 /-!
@@ -161,6 +158,7 @@ theorem star_exp [Algebra ℚ 𝔸] [T2Space 𝔸] [StarRing 𝔸] [ContinuousSt
 
 variable (𝕂)
 
+@[aesop safe apply]
 theorem _root_.IsSelfAdjoint.exp [Algebra ℚ 𝔸] [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] {x : 𝔸}
     (h : IsSelfAdjoint x) : IsSelfAdjoint (exp x) :=
   (star_exp x).trans <| h.symm ▸ rfl

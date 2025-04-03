@@ -63,6 +63,9 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
 protected def closure (s : Set α) : Closeds α :=
   ⟨closure s, isClosed_closure⟩
 
+@[simp]
+theorem mem_closure {s : Set α} {x : α} : x ∈ Closeds.closure s ↔ x ∈ closure s := .rfl
+
 theorem gc : GaloisConnection Closeds.closure ((↑) : Closeds α → Set α) := fun _ U =>
   ⟨subset_closure.trans, fun h => closure_minimal h U.closed⟩
 

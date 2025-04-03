@@ -33,12 +33,16 @@ variable [∀ X, Small.{v} ((F ⋙ evaluation R X) ⋙ forget _).sections]
 of the functors `evaluation R X` for all `X`. -/
 def evaluationJointlyReflectsLimits (c : Cone F)
     (hc : ∀ (X : Cᵒᵖ), IsLimit ((evaluation R X).mapCone c)) : IsLimit c where
-  lift s := Hom.mk'' (fun X => (hc X).lift ((evaluation R X).mapCone s)) (fun X Y f => by
-    apply (isLimitOfPreserves (ModuleCat.restrictScalars (R.map f)) (hc Y)).hom_ext
-    intro j
-    rw [Functor.mapCone_π_app, assoc, assoc, ← Functor.map_comp]
-    erw [restrictionApp_naturality, IsLimit.fac, restrictionApp_naturality, IsLimit.fac_assoc]
-    rfl)
+  lift s :=
+    { app := fun X => (hc X).lift ((evaluation R X).mapCone s)
+      naturality := fun {X Y} f ↦ by
+        apply (isLimitOfPreserves (ModuleCat.restrictScalars (R.map f)) (hc Y)).hom_ext
+        intro j
+        have h₁ := (c.π.app j).naturality f
+        have h₂ := (hc X).fac ((evaluation R X).mapCone s) j
+        rw [Functor.mapCone_π_app, assoc, assoc, ← Functor.map_comp, IsLimit.fac]
+        dsimp at h₁ h₂ ⊢
+        rw [h₁, reassoc_of% h₂, Hom.naturality] }
   fac s j := by
     ext1 X
     exact (hc X).fac ((evaluation R X).mapCone s) j
@@ -47,19 +51,17 @@ def evaluationJointlyReflectsLimits (c : Cone F)
     apply (hc X).uniq ((evaluation R X).mapCone s)
     intro j
     dsimp
-    rw [← hm]
-    rfl
+    rw [← hm, comp_app]
 
 instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     HasLimit (F ⋙ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f)) := by
   change HasLimit ((F ⋙ evaluation R Y) ⋙ ModuleCat.restrictScalars (R.map f))
   infer_instance
 
-set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
-/-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the `BundledCorePresheafOfModules R` which
-corresponds to the presheaf of modules which sends `X` to the limit of `F ⋙ evaluation R X`. -/
+/-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the presheaf of modules obtained by
+taking a limit in the category of modules over `R.obj X` for all `X`. -/
 @[simps]
-noncomputable def limitBundledCore : BundledCorePresheafOfModules R where
+noncomputable def limitPresheafOfModules : PresheafOfModules R where
   obj X := limit (F ⋙ evaluation R X)
   map {X Y} f := limMap (whiskerLeft F (restriction R f)) ≫
     (preservesLimitIso (ModuleCat.restrictScalars (R.map f)) (F ⋙ evaluation R Y)).inv
@@ -72,7 +74,8 @@ noncomputable def limitBundledCore : BundledCorePresheafOfModules R where
     simp only [limMap_π, Functor.comp_obj, evaluation_obj, whiskerLeft_app,
       restriction_app, assoc]
     erw [preservesLimitsIso_hom_π]
-    rw [← ModuleCat.restrictScalarsId'App_inv_naturality, restrictionApp_id]
+    rw [← ModuleCat.restrictScalarsId'App_inv_naturality, map_id,
+      ModuleCat.restrictScalarsId'_inv_app]
     dsimp
   map_comp {X Y Z} f g := by
     dsimp
@@ -81,8 +84,9 @@ noncomputable def limitBundledCore : BundledCorePresheafOfModules R where
     apply limit.hom_ext
     intro j
     simp only [Functor.comp_obj, evaluation_obj, limMap_π, whiskerLeft_app, restriction_app,
-      Functor.map_comp, assoc, restrictionApp_comp]
-    erw [preservesLimitsIso_hom_π, ← ModuleCat.restrictScalarsComp'App_inv_naturality]
+      map_comp, ModuleCat.restrictScalarsComp'_inv_app, Functor.map_comp, assoc]
+    erw [preservesLimitsIso_hom_π]
+    rw [← ModuleCat.restrictScalarsComp'App_inv_naturality]
     dsimp
     rw [← Functor.map_comp_assoc, ← Functor.map_comp_assoc, assoc,
       preservesLimitsIso_inv_π]
@@ -92,27 +96,21 @@ noncomputable def limitBundledCore : BundledCorePresheafOfModules R where
     erw [limMap_π_assoc]
     dsimp
 
-/-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the canonical map
-`(limitBundledCore F).toPresheafOfModules ⟶ F.obj j` for all `j : J`. -/
-noncomputable def limitConeπApp (j : J) :
-    (limitBundledCore F).toPresheafOfModules ⟶ F.obj j :=
-  PresheafOfModules.Hom.mk'' (fun X => limit.π (F ⋙ evaluation R X) j) (fun X Y f => by
-    dsimp
-    simp only [assoc, preservesLimitsIso_inv_π]
-    apply limMap_π)
-
-@[reassoc (attr := simp)]
-lemma limitConeπApp_naturality {i j : J} (f : i ⟶ j) :
-    limitConeπApp F i ≫ F.map f = limitConeπApp F j := by
-  ext1 X
-  exact limit.w (F ⋙ evaluation R X) f
-
-/-- The (limit) cone for `F : J ⥤ PresheafOfModules.{v} R` that is constructed for the limit
+/-- The (limit) cone for `F : J ⥤ PresheafOfModules.{v} R` that is constructed from the limit
 of `F ⋙ evaluation R X` for all `X`. -/
 @[simps]
 noncomputable def limitCone : Cone F where
-  pt := (limitBundledCore F).toPresheafOfModules
-  π := { app := limitConeπApp F }
+  pt := limitPresheafOfModules F
+  π :=
+    { app := fun j ↦
+        { app := fun X ↦ limit.π (F ⋙ evaluation R X) j
+          naturality := fun {X Y} f ↦ by
+            dsimp
+            simp only [assoc, preservesLimitsIso_inv_π]
+            apply limMap_π }
+      naturality := fun {j j'} f ↦ by
+        ext1 X
+        simpa using (limit.w (F ⋙ evaluation R X) f).symm }
 
 /-- The cone `limitCone F` is limit for any `F : J ⥤ PresheafOfModules.{v} R`. -/
 noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=

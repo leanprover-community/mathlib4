@@ -46,11 +46,142 @@ theorem Set.Finite.csSup_lt_iff (hs : s.Finite) (h : s.Nonempty) : sSup s < a �
 theorem Set.Finite.lt_csInf_iff (hs : s.Finite) (h : s.Nonempty) : a < sInf s ↔ ∀ x ∈ s, a < x :=
   @Set.Finite.csSup_lt_iff αᵒᵈ _ _ _ hs h
 
+variable (f : ι → α)
+
+theorem Finset.ciSup_eq_max'_image {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ ≤ f x)
+    (h' : (s.image f).Nonempty := by classical exact image_nonempty.mpr (h.imp fun _ ↦ And.left)) :
+    ⨆ i ∈ s, f i = (s.image f).max' h' := by
+  classical
+  rw [iSup, ← h'.csSup_eq_max', coe_image]
+  refine csSup_eq_csSup_of_forall_exists_le ?_ ?_
+  · simp only [ciSup_eq_ite, dite_eq_ite, Set.mem_range, Set.mem_image, mem_coe,
+      exists_exists_and_eq_and, forall_exists_index, forall_apply_eq_imp_iff]
+    intro i
+    split_ifs
+    · exact ⟨_, by assumption, le_rfl⟩
+    · obtain ⟨a, ha, ha'⟩ := h
+      exact ⟨a, ha, ha'⟩
+  · simp only [Set.mem_image, mem_coe, ciSup_eq_ite, dite_eq_ite, Set.mem_range,
+      exists_exists_eq_and, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    intro i hi
+    refine ⟨i, ?_⟩
+    simp [hi]
+
+theorem Finset.ciInf_eq_min'_image {s : Finset ι} (h : ∃ x ∈ s, f x ≤ sInf ∅)
+    (h' : (s.image f).Nonempty := by classical exact image_nonempty.mpr (h.imp fun _ ↦ And.left)) :
+    ⨅ i ∈ s, f i = (s.image f).min' h' := by
+  classical
+  rw [← OrderDual.toDual_inj, toDual_min', toDual_iInf]
+  simp only [Function.comp_apply, toDual_iInf]
+  rw [ciSup_eq_max'_image _ h]
+  simp only [image_image]
+  congr
+
+theorem Finset.ciSup_mem_image {s : Finset ι} (h : ∃ x ∈ s, sSup ∅ ≤ f x) :
+    ⨆ i ∈ s, f i ∈ s.image f := by
+  rw [ciSup_eq_max'_image _ h]
+  exact max'_mem (image f s) _
+
+theorem Finset.ciInf_mem_image {s : Finset ι} (h : ∃ x ∈ s, f x ≤ sInf ∅) :
+    ⨅ i ∈ s, f i ∈ s.image f := by
+  rw [ciInf_eq_min'_image _ h]
+  exact min'_mem (image f s) _
+
+theorem Set.Finite.ciSup_mem_image {s : Set ι} (hs : s.Finite) (h : ∃ x ∈ s, sSup ∅ ≤ f x) :
+    ⨆ i ∈ s, f i ∈ f '' s := by
+  lift s to Finset ι using hs
+  simp only [Finset.mem_coe] at h
+  simpa using Finset.ciSup_mem_image f h
+
+theorem Set.Finite.ciInf_mem_image {s : Set ι} (hs : s.Finite) (h : ∃ x ∈ s, f x ≤ sInf ∅) :
+    ⨅ i ∈ s, f i ∈ f '' s := by
+  lift s to Finset ι using hs
+  simp only [Finset.mem_coe] at h
+  simpa using Finset.ciInf_mem_image f h
+
+theorem Set.Finite.ciSup_lt_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
+    (h : ∃ x ∈ s, sSup ∅ ≤ f x) :
+    ⨆ i ∈ s, f i < a ↔ ∀ x ∈ s, f x < a := by
+  constructor
+  · intro h x hx
+    refine h.trans_le' (le_csSup ?_ ?_)
+    · classical
+      refine (((hs.image f).union (finite_singleton (sSup ∅))).subset ?_).bddAbove
+      intro
+      simp only [ciSup_eq_ite, dite_eq_ite, mem_range, union_singleton, mem_insert_iff, mem_image,
+        forall_exists_index]
+      intro x hx
+      split_ifs at hx
+      · exact Or.inr ⟨_, by assumption, hx⟩
+      · simp_all
+    · simp only [mem_range]
+      refine ⟨x, ?_⟩
+      simp [hx]
+  · intro H
+    have := hs.ciSup_mem_image _ h
+    simp only [mem_image] at this
+    obtain ⟨_, hmem, hx⟩ := this
+    rw [← hx]
+    exact H _ hmem
+
+theorem Set.Finite.lt_ciInf_iff {s : Set ι} {f : ι → α} (hs : s.Finite)
+    (h : ∃ x ∈ s, f x ≤ sInf ∅) :
+    a < ⨅ i ∈ s, f i ↔ ∀ x ∈ s, a < f x := by
+  constructor
+  · intro h x hx
+    refine h.trans_le (csInf_le ?_ ?_)
+    · classical
+      refine (((hs.image f).union (finite_singleton (sInf ∅))).subset ?_).bddBelow
+      intro
+      simp only [ciInf_eq_ite, dite_eq_ite, mem_range, union_singleton, mem_insert_iff, mem_image,
+        forall_exists_index]
+      intro x hx
+      split_ifs at hx
+      · exact Or.inr ⟨_, by assumption, hx⟩
+      · simp_all
+    · simp only [mem_range]
+      refine ⟨x, ?_⟩
+      simp [hx]
+  · intro H
+    have := hs.ciInf_mem_image _ h
+    simp only [mem_image] at this
+    obtain ⟨_, hmem, hx⟩ := this
+    rw [← hx]
+    exact H _ hmem
+
+section ListMultiset
+
+lemma List.iSup_mem_map_of_exists_sSup_empty_le {l : List ι} (f : ι → α)
+    (h : ∃ x ∈ l, sSup ∅ ≤ f x) :
+    ⨆ x ∈ l, f x ∈ l.map f := by
+  classical
+  simpa using l.toFinset.ciSup_mem_image f (by simpa using h)
+
+lemma List.iInf_mem_map_of_exists_le_sInf_empty {l : List ι} (f : ι → α)
+    (h : ∃ x ∈ l, f x ≤ sInf ∅) :
+    ⨅ x ∈ l, f x ∈ l.map f := by
+  classical
+  simpa using l.toFinset.ciInf_mem_image f (by simpa using h)
+
+lemma Multiset.iSup_mem_map_of_exists_sSup_empty_le {s : Multiset ι} (f : ι → α)
+    (h : ∃ x ∈ s, sSup ∅ ≤ f x) :
+    ⨆ x ∈ s, f x ∈ s.map f := by
+  classical
+  simpa using s.toFinset.ciSup_mem_image f (by simpa using h)
+
+lemma Multiset.iInf_mem_map_of_exists_le_sInf_empty {s : Multiset ι} (f : ι → α)
+    (h : ∃ x ∈ s, f x ≤ sInf ∅) :
+    ⨅ x ∈ s, f x ∈ s.map f := by
+  classical
+  simpa using s.toFinset.ciInf_mem_image f (by simpa using h)
+
 theorem exists_eq_ciSup_of_finite [Nonempty ι] [Finite ι] {f : ι → α} : ∃ i, f i = ⨆ i, f i :=
   Nonempty.csSup_mem (range_nonempty f) (finite_range f)
 
 theorem exists_eq_ciInf_of_finite [Nonempty ι] [Finite ι] {f : ι → α} : ∃ i, f i = ⨅ i, f i :=
   Nonempty.csInf_mem (range_nonempty f) (finite_range f)
+
+end ListMultiset
 
 end ConditionallyCompleteLinearOrder
 
@@ -102,3 +233,38 @@ lemma sup_univ_eq_ciSup [Fintype ι] (f : ι → α) : univ.sup f = ⨆ i, f i :
 end ConditionallyCompleteLinearOrderBot
 
 end Finset
+
+section ConditionallyCompleteLinearOrderBot
+
+variable [ConditionallyCompleteLinearOrderBot α] (f : ι → α)
+
+theorem Finset.Nonempty.ciSup_eq_max'_image {s : Finset ι} (h : s.Nonempty)
+    (h' : (s.image f).Nonempty := h.image f) :
+    ⨆ i ∈ s, f i = (s.image f).max' h' :=
+  s.ciSup_eq_max'_image _ (h.imp (by simp)) _
+
+theorem Finset.Nonempty.ciSup_mem_image {s : Finset ι} (h : s.Nonempty) :
+    ⨆ i ∈ s, f i ∈ s.image f :=
+  s.ciSup_mem_image _ (h.imp (by simp))
+
+theorem Set.Nonempty.ciSup_mem_image {s : Set ι} (h : s.Nonempty) (hs : s.Finite) :
+    ⨆ i ∈ s, f i ∈ f '' s :=
+  hs.ciSup_mem_image _ (h.imp (by simp))
+
+theorem Set.Nonempty.ciSup_lt_iff {s : Set ι} {a : α} {f : ι → α} (h : s.Nonempty) (hs : s.Finite) :
+    ⨆ i ∈ s, f i < a ↔ ∀ x ∈ s, f x < a :=
+  hs.ciSup_lt_iff (h.imp (by simp))
+
+section ListMultiset
+
+lemma List.iSup_mem_map_of_ne_nil {l : List ι} (f : ι → α) (h : l ≠ []) :
+    ⨆ x ∈ l, f x ∈ l.map f :=
+  l.iSup_mem_map_of_exists_sSup_empty_le _ (by simpa using exists_mem_of_ne_nil _ h)
+
+lemma Multiset.iSup_mem_map_of_ne_zero {s : Multiset ι} (f : ι → α) (h : s ≠ 0) :
+    ⨆ x ∈ s, f x ∈ s.map f :=
+  s.iSup_mem_map_of_exists_sSup_empty_le _ (by simpa using exists_mem_of_ne_zero h)
+
+end ListMultiset
+
+end ConditionallyCompleteLinearOrderBot

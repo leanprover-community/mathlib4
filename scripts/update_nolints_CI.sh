@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 
-# Check if there are changes to `nolints.json` or `style-exceptions.txt`,
-# and file a PR updating these files otherwise.
+# Check if there are changes to `nolints.json` and file a PR updating it if necessary.
 # DO NOT run this as a human; this is meant only for automation usage!
 
-set -e
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
 set -x
 
 remote_name=origin-bot
@@ -16,13 +19,13 @@ git fetch --quiet "$remote_name"
 git rev-parse --verify --quiet "refs/remotes/${remote_name}/${branch_name}" && exit 0
 
 # Exit if there are no changes relative to master
-git diff-index --quiet "refs/remotes/${remote_name}/master" -- scripts/nolints.json scripts/style-exceptions.txt && exit 0
+git diff-index --quiet "refs/remotes/${remote_name}/master" -- scripts/nolints.json && exit 0
 
-pr_title='chore(scripts): update nolints.json and style-exceptions.txt'
+pr_title='chore(scripts): update nolints.json'
 pr_body='I am happy to remove some nolints for you!'
 
 git checkout -b "$branch_name"
-git add scripts/nolints.json scripts/style-exceptions.txt
+git add scripts/nolints.json
 git commit -m "$pr_title"
 
 gh_api() {

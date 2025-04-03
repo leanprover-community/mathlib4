@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Scott Morrison, Chris Hughes, Anne Baanen
+Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison, Chris Hughes, Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.Algebra.Module.Torsion
@@ -70,7 +70,7 @@ theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
   refine ciSup_le fun ⟨s, hs⟩ ↦ ciSup_le fun ⟨t, ht⟩ ↦ ?_
   choose f hf using Quotient.mk_surjective M'
   simpa [add_comm] using (LinearIndependent.sum_elim_of_quotient ht (fun (i : s) ↦ f i)
-    (by simpa [Function.comp, hf] using hs)).cardinal_le_rank
+    (by simpa [Function.comp_def, hf] using hs)).cardinal_le_rank
 
 theorem rank_quotient_le (p : Submodule R M) : Module.rank R (M ⧸ p) ≤ Module.rank R M :=
   (mkQ p).rank_le_of_surjective (surjective_quot_mk _)

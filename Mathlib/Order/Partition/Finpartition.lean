@@ -257,6 +257,15 @@ theorem parts_top_subsingleton (a : α) [Decidable (a = ⊥)] :
     ((⊤ : Finpartition a).parts : Set α).Subsingleton :=
   Set.subsingleton_of_subset_singleton fun _ hb ↦ mem_singleton.1 <| parts_top_subset _ hb
 
+-- TODO: this instance takes double-exponential time to generate all partitions, find a faster way
+instance [DecidableEq α] {s : Finset α} : Fintype (Finpartition s) where
+  elems := s.powerset.powerset.image
+    fun ps ↦ if h : ps.sup id = s ∧ ⊥ ∉ ps ∧ ps.SupIndep id then ⟨ps, h.2.2, h.1, h.2.1⟩ else ⊤
+  complete P := by
+    refine mem_image.mpr ⟨P.parts, ?_, ?_⟩
+    · rw [mem_powerset]; intro p hp; rw [mem_powerset]; exact P.le hp
+    · simp only [P.supIndep, P.sup_parts, P.not_bot_mem]; rfl
+
 end Order
 
 end Lattice
@@ -465,7 +474,8 @@ def part (a : α) : Finset α := if ha : a ∈ s then choose (hp := P.existsUniq
 
 lemma part_mem (ha : a ∈ s) : P.part a ∈ P.parts := by simp [part, ha, choose_mem]
 
-lemma mem_part (ha : a ∈ s) : a ∈ P.part a := by simp [part, ha, choose_property]
+lemma mem_part (ha : a ∈ s) : a ∈ P.part a := by
+  simp [part, ha, choose_property (p := fun s => a ∈ s) P.parts (P.existsUnique_mem ha)]
 
 lemma part_eq_of_mem (ht : t ∈ P.parts) (hat : a ∈ t) : P.part a = t := by
   apply P.eq_of_mem_parts (P.part_mem _) ht (P.mem_part _) hat <;> exact mem_of_subset (P.le ht) hat
@@ -547,6 +557,8 @@ lemma card_mod_card_parts_le : s.card % P.parts.card ≤ P.parts.card := by
     rw [h, h']
   · exact (Nat.mod_lt _ h).le
 
+section Setoid
+
 variable [Fintype α]
 
 /-- A setoid over a finite type induces a finpartition of the type's elements,
@@ -585,6 +597,8 @@ theorem mem_part_ofSetoid_iff_rel {s : Setoid α} [DecidableRel s.r] {b : α} :
   obtain ⟨⟨_, hc⟩, this⟩ := this
   simp only [← hc, mem_univ, mem_filter, true_and] at this ⊢
   exact ⟨s.trans (s.symm this), s.trans this⟩
+
+end Setoid
 
 section Atomise
 

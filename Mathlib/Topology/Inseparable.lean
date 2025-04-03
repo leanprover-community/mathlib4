@@ -53,20 +53,15 @@ theorem specializes_TFAE (x y : X) :
       y ∈ closure ({ x } : Set X),
       closure ({ y } : Set X) ⊆ closure { x },
       ClusterPt y (pure x)] := by
-  tfae_have 1 → 2
-  · exact (pure_le_nhds _).trans
-  tfae_have 2 → 3
-  · exact fun h s hso hy => h (hso.mem_nhds hy)
-  tfae_have 3 → 4
-  · exact fun h s hsc hx => of_not_not fun hy => h sᶜ hsc.isOpen_compl hy hx
-  tfae_have 4 → 5
-  · exact fun h => h _ isClosed_closure (subset_closure <| mem_singleton _)
-  tfae_have 6 ↔ 5
-  · exact isClosed_closure.closure_subset_iff.trans singleton_subset_iff
-  tfae_have 5 ↔ 7
-  · rw [mem_closure_iff_clusterPt, principal_singleton]
-  tfae_have 5 → 1
-  · refine fun h => (nhds_basis_opens _).ge_iff.2 ?_
+  tfae_have 1 → 2 := (pure_le_nhds _).trans
+  tfae_have 2 → 3 := fun h s hso hy => h (hso.mem_nhds hy)
+  tfae_have 3 → 4 := fun h s hsc hx => of_not_not fun hy => h sᶜ hsc.isOpen_compl hy hx
+  tfae_have 4 → 5 := fun h => h _ isClosed_closure (subset_closure <| mem_singleton _)
+  tfae_have 6 ↔ 5 := isClosed_closure.closure_subset_iff.trans singleton_subset_iff
+  tfae_have 5 ↔ 7 := by
+    rw [mem_closure_iff_clusterPt, principal_singleton]
+  tfae_have 5 → 1 := by
+    refine fun h => (nhds_basis_opens _).ge_iff.2 ?_
     rintro s ⟨hy, ho⟩
     rcases mem_closure_iff.1 h s ho hy with ⟨z, hxs, rfl : z = x⟩
     exact ho.mem_nhds hxs
@@ -552,6 +547,9 @@ theorem preimage_image_mk_open (hs : IsOpen s) : mk ⁻¹' (mk '' s) = s := by
 
 theorem isOpenMap_mk : IsOpenMap (mk : X → SeparationQuotient X) := fun s hs =>
   quotientMap_mk.isOpen_preimage.1 <| by rwa [preimage_image_mk_open hs]
+
+theorem isOpenQuotientMap_mk : IsOpenQuotientMap (mk : X → SeparationQuotient X) :=
+  ⟨surjective_mk, continuous_mk, isOpenMap_mk⟩
 
 theorem preimage_image_mk_closed (hs : IsClosed s) : mk ⁻¹' (mk '' s) = s := by
   refine Subset.antisymm ?_ (subset_preimage_image _ _)

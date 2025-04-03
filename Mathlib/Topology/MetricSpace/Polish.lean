@@ -3,11 +3,12 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Topology.Instances.Nat
 import Mathlib.Topology.MetricSpace.PiNat
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Gluing
 import Mathlib.Topology.Sets.Opens
-import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
 # Polish spaces
@@ -255,6 +256,8 @@ theorem dist_val_le_dist (x y : CompleteCopy s) : dist x.1 y.1 ≤ dist x y :=
   le_add_of_nonneg_right (abs_nonneg _)
 
 instance : TopologicalSpace (CompleteCopy s) := inferInstanceAs (TopologicalSpace s)
+instance [SecondCountableTopology α] : SecondCountableTopology (CompleteCopy s) :=
+  inferInstanceAs (SecondCountableTopology s)
 instance : T0Space (CompleteCopy s) := inferInstanceAs (T0Space s)
 
 /-- A metric space structure on a subset `s` of a metric space, designed to make it complete
@@ -328,7 +331,6 @@ theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpac
     (hs : IsOpen s) : PolishSpace s := by
   letI := upgradePolishSpace α
   lift s to Opens α using hs
-  have : SecondCountableTopology s.CompleteCopy := inferInstanceAs (SecondCountableTopology s)
   exact inferInstanceAs (PolishSpace s.CompleteCopy)
 
 end CompleteCopy
@@ -365,7 +367,13 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
   · rw [← f.induced_symm]
     exact f.symm.polishSpace_induced
   · rw [isOpen_coinduced, isOpen_sum_iff]
-    simp [f, preimage_preimage]
+    simp only [preimage_preimage, f]
+    have inl (x : s) : (Equiv.Set.sumCompl s) (Sum.inl x) = x := Equiv.Set.sumCompl_apply_inl ..
+    have inr (x : ↑sᶜ) : (Equiv.Set.sumCompl s) (Sum.inr x) = x := Equiv.Set.sumCompl_apply_inr ..
+    simp_rw [inl, inr, Subtype.coe_preimage_self]
+    simp only [isOpen_univ, true_and]
+    rw [Subtype.preimage_coe_compl']
+    simp
 
 theorem IsClopenable.compl [TopologicalSpace α] {s : Set α} (hs : IsClopenable s) :
     IsClopenable sᶜ := by

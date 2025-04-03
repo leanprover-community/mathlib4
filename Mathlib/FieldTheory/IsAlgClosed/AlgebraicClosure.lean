@@ -250,8 +250,7 @@ theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
     apply @RingHom.IsIntegral.trans (Step k 0) (Step k a) (Step k (a + 1)) _ _ _
         (toStepOfLE k 0 a (a.zero_le : 0 ≤ a)) (toStepSucc k a) _
     · intro z
-      have := AdjoinMonic.isIntegral (Step k a) (z : Step k (a + 1))
-      convert this
+      convert AdjoinMonic.isIntegral (Step k a) (z : Step k (a + 1))
     · convert h -- Porting note: This times out at 500000
 
 instance toStepOfLE.directedSystem : DirectedSystem (Step k) fun i j h => toStepOfLE k i j h :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.Algebra.Algebra.Field
-import Mathlib.Algebra.Star.Order
+import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Analysis.CStarAlgebra.Basic
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Data.Real.Sqrt
@@ -317,16 +317,14 @@ open List in
 /-- There are several equivalent ways to say that a number `z` is in fact a real number. -/
 theorem is_real_TFAE (z : K) : TFAE [conj z = z, ∃ r : ℝ, (r : K) = z, ↑(re z) = z, im z = 0] := by
   tfae_have 1 → 4
-  · intro h
+  | h => by
     rw [← @ofReal_inj K, im_eq_conj_sub, h, sub_self, mul_zero, zero_div,
       ofReal_zero]
   tfae_have 4 → 3
-  · intro h
+  | h => by
     conv_rhs => rw [← re_add_im z, h, ofReal_zero, zero_mul, add_zero]
-  tfae_have 3 → 2
-  · exact fun h => ⟨_, h⟩
-  tfae_have 2 → 1
-  · exact fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
+  tfae_have 3 → 2 := fun h => ⟨_, h⟩
+  tfae_have 2 → 1 := fun ⟨r, hr⟩ => hr ▸ conj_ofReal _
   tfae_finish
 
 theorem conj_eq_iff_real {z : K} : conj z = z ↔ ∃ r : ℝ, z = (r : K) :=
@@ -1058,3 +1056,64 @@ lemma map_neg_eq_conj [AddCommGroup G] (ψ : AddChar G K) (x : G) : ψ (-x) = co
   rw [map_neg_eq_inv, inv_apply_eq_conj]
 
 end AddChar
+
+section
+
+/-- A mixin over a normed field, saying that the norm field structure is the same as `ℝ` or `ℂ`.
+To endow such a field with a compatible `RCLike` structure in a proof, use
+`letI := IsRCLikeNormedField.rclike 𝕜`.-/
+class IsRCLikeNormedField (𝕜 : Type*) [hk : NormedField 𝕜] : Prop :=
+  out : ∃ h : RCLike 𝕜, hk = h.toNormedField
+
+instance (priority := 100) (𝕜 : Type*) [h : RCLike 𝕜] : IsRCLikeNormedField 𝕜 := ⟨⟨h, rfl⟩⟩
+
+/-- A copy of an `RCLike` field in which the `NormedField` field is adjusted to be become defeq
+to a propeq one. -/
+noncomputable def RCLike.copy_of_normedField {𝕜 : Type*} (h : RCLike 𝕜) (hk : NormedField 𝕜)
+    (h'' : hk = h.toNormedField) : RCLike 𝕜 where
+  __ := hk
+  toPartialOrder := h.toPartialOrder
+  toDecidableEq := h.toDecidableEq
+  complete := by subst h''; exact h.complete
+  lt_norm_lt := by subst h''; exact h.lt_norm_lt
+  -- star fields
+  star := (@StarMul.toInvolutiveStar _ (_) (@StarRing.toStarMul _ (_) h.toStarRing)).star
+  star_involutive := by subst h''; exact h.star_involutive
+  star_mul := by subst h''; exact h.star_mul
+  star_add := by subst h''; exact h.star_add
+  -- algebra fields
+  smul := (@Algebra.toSMul _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)).smul
+  toFun := @Algebra.toRingHom _ _ _ (_) (@NormedAlgebra.toAlgebra _ _ _ (_) h.toNormedAlgebra)
+  map_one' := by subst h''; exact h.map_one'
+  map_mul' := by subst h''; exact h.map_mul'
+  map_zero' := by subst h''; exact h.map_zero'
+  map_add' := by subst h''; exact h.map_add'
+  commutes' := by subst h''; exact h.commutes'
+  smul_def' := by subst h''; exact h.smul_def'
+  norm_smul_le := by subst h''; exact h.norm_smul_le
+  -- RCLike fields
+  re := by subst h''; exact h.re
+  im := by subst h''; exact h.im
+  I := h.I
+  I_re_ax := by subst h''; exact h.I_re_ax
+  I_mul_I_ax := by subst h''; exact h.I_mul_I_ax
+  re_add_im_ax := by subst h''; exact h.re_add_im_ax
+  ofReal_re_ax := by subst h''; exact h.ofReal_re_ax
+  ofReal_im_ax := by subst h''; exact h.ofReal_im_ax
+  mul_re_ax := by subst h''; exact h.mul_re_ax
+  mul_im_ax := by subst h''; exact h.mul_im_ax
+  conj_re_ax := by subst h''; exact h.conj_re_ax
+  conj_im_ax := by subst h''; exact h.conj_im_ax
+  conj_I_ax := by subst h''; exact h.conj_I_ax
+  norm_sq_eq_def_ax := by subst h''; exact h.norm_sq_eq_def_ax
+  mul_im_I_ax := by subst h''; exact h.mul_im_I_ax
+  le_iff_re_im := by subst h''; exact h.le_iff_re_im
+
+/-- Given a normed field `𝕜` satisfying `IsRCLikeNormedField 𝕜`, build an associated `RCLike 𝕜`
+structure on `𝕜` which is definitionally compatible with the given normed field structure. -/
+noncomputable def IsRCLikeNormedField.rclike (𝕜 : Type*)
+    [hk : NormedField 𝕜] [h : IsRCLikeNormedField 𝕜] : RCLike 𝕜 := by
+  choose p hp using h.out
+  exact p.copy_of_normedField hk hp
+
+end

@@ -122,7 +122,7 @@ theorem SmoothFiberwiseLinear.locality_aux₁ (e : PartialHomeomorph (B × F) (B
   have hu' : ∀ p : e.source, (p : B × F).fst ∈ u p := by
     intro p
     have : (p : B × F) ∈ e.source ∩ s p := ⟨p.prop, hsp p⟩
-    simpa only [hesu, mem_prod, mem_univ, and_true_iff] using this
+    simpa only [hesu, mem_prod, mem_univ, and_true] using this
   have heu : ∀ p : e.source, ∀ q : B × F, q.fst ∈ u p → q ∈ e.source := by
     intro p q hq
     have : q ∈ u p ×ˢ (univ : Set F) := ⟨hq, trivial⟩

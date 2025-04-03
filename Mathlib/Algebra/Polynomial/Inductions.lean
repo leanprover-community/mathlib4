@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Damiano Testa, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Damiano Testa, Jens Wagemaker
 -/
 import Mathlib.Algebra.MonoidAlgebra.Division
 import Mathlib.Algebra.Polynomial.Degree.Definitions

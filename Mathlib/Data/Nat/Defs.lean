@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.PushNeg
 import Mathlib.Util.AssertExists
 
@@ -140,6 +140,18 @@ lemma le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 1 
 @[simp] lemma lt_one_iff : n < 1 ↔ n = 0 := Nat.lt_succ_iff.trans <| by rw [le_zero_eq]
 
 lemma one_le_of_lt (h : a < b) : 1 ≤ b := Nat.lt_of_le_of_lt (Nat.zero_le _) h
+
+protected lemma min_left_comm (a b c : ℕ) : min a (min b c) = min b (min a c) := by
+  rw [← Nat.min_assoc, ← Nat.min_assoc, b.min_comm]
+
+protected lemma max_left_comm (a b c : ℕ) : max a (max b c) = max b (max a c) := by
+  rw [← Nat.max_assoc, ← Nat.max_assoc, b.max_comm]
+
+protected lemma min_right_comm (a b c : ℕ) : min (min a b) c = min (min a c) b := by
+  rw [Nat.min_assoc, Nat.min_assoc, b.min_comm]
+
+protected lemma max_right_comm (a b c : ℕ) : max (max a b) c = max (max a c) b := by
+  rw [Nat.max_assoc, Nat.max_assoc, b.max_comm]
 
 @[simp] lemma min_eq_zero_iff : min m n = 0 ↔ m = 0 ∨ n = 0 := by omega
 @[simp] lemma max_eq_zero_iff : max m n = 0 ↔ m = 0 ∧ n = 0 := by omega
@@ -823,6 +835,22 @@ This is an alias of `Nat.leRec`, specialized to `Prop`. -/
 lemma le_induction {m : ℕ} {P : ∀ n, m ≤ n → Prop} (base : P m m.le_refl)
     (succ : ∀ n hmn, P n hmn → P (n + 1) (le_succ_of_le hmn)) : ∀ n hmn, P n hmn :=
   @Nat.leRec (motive := P) base succ
+
+/-- Induction principle deriving the next case from the two previous ones. -/
+def twoStepInduction {P : ℕ → Sort*} (zero : P 0) (one : P 1)
+    (more : ∀ n, P n → P (n + 1) → P (n + 2)) : ∀ a, P a
+  | 0 => zero
+  | 1 => one
+  | _ + 2 => more _ (twoStepInduction zero one more _) (twoStepInduction zero one more _)
+
+@[elab_as_elim]
+protected theorem strong_induction_on {p : ℕ → Prop} (n : ℕ)
+    (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
+  Nat.strongRecOn n h
+
+protected theorem case_strong_induction_on {p : ℕ → Prop} (a : ℕ) (hz : p 0)
+    (hi : ∀ n, (∀ m, m ≤ n → p m) → p (n + 1)) : p a :=
+  Nat.caseStrongRecOn a hz hi
 
 /-- Decreasing induction: if `P (k+1)` implies `P k` for all `k < n`, then `P n` implies `P m` for
 all `m ≤ n`.

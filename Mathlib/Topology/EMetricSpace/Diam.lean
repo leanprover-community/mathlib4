@@ -3,7 +3,7 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.EMetricSpace.Basic
+import Mathlib.Topology.EMetricSpace.Pi
 import Mathlib.Data.ENNReal.Real
 
 /-!
@@ -74,7 +74,7 @@ theorem diam_iUnion_mem_option {ι : Type*} (o : Option ι) (s : ι → Set α) 
 theorem diam_insert : diam (insert x s) = max (⨆ y ∈ s, edist x y) (diam s) :=
   eq_of_forall_ge_iff fun d => by
     simp only [diam_le_iff, forall_mem_insert, edist_self, edist_comm x, max_le_iff, iSup_le_iff,
-      zero_le, true_and_iff, forall_and, and_self_iff, ← and_assoc]
+      zero_le, true_and, forall_and, and_self_iff, ← and_assoc]
 
 theorem diam_pair : diam ({x, y} : Set α) = edist x y := by
   simp only [iSup_singleton, diam_insert, diam_singleton, ENNReal.max_zero_right]

@@ -125,14 +125,12 @@ theorem tfae_equational_criterion : List.TFAE [
         ∃ (κ : Type u) (_ : Fintype κ) (a : N →ₗ[R] (κ →₀ R)) (y : (κ →₀ R) →ₗ[R] M),
           x = y ∘ₗ a ∧ a f = 0] := by
   classical
-  tfae_have 1 ↔ 2
-  · exact iff_rTensor_injective' R M
-  tfae_have 3 ↔ 2
-  · exact forall_vanishesTrivially_iff_forall_rTensor_injective R
-  tfae_have 3 ↔ 4
-  · simp [(TensorProduct.lid R M).injective.eq_iff.symm, isTrivialRelation_iff_vanishesTrivially]
+  tfae_have 1 ↔ 2 := iff_rTensor_injective' R M
+  tfae_have 3 ↔ 2 := forall_vanishesTrivially_iff_forall_rTensor_injective R
+  tfae_have 3 ↔ 4 := by
+    simp [(TensorProduct.lid R M).injective.eq_iff.symm, isTrivialRelation_iff_vanishesTrivially]
   tfae_have 4 → 5
-  · intro h₄ ι hι f x hfx
+  | h₄, ι, hι, f, x, hfx => by
     let f' : ι → R := f
     let x' : ι → M := fun i ↦ x (single i 1)
     have := calc
@@ -154,7 +152,7 @@ theorem tfae_equational_criterion : List.TFAE [
       simp only [linearCombination_apply, zero_smul, implies_true, sum_fintype, finset_sum_apply]
       exact ha' j
   tfae_have 5 → 4
-  · intro h₅ ι hi f x hfx
+  | h₅, ι, hi, f, x, hfx => by
     let f' : ι →₀ R := equivFunOnFinite.symm f
     let x' : (ι →₀ R) →ₗ[R] M := Finsupp.linearCombination R x
     have : x' f' = 0 := by simpa [x', f', linearCombination_apply, sum_fintype] using hfx
@@ -167,7 +165,7 @@ theorem tfae_equational_criterion : List.TFAE [
         ← (fun _ ↦ equivFunOnFinite_symm_apply_toFun _ _ : ∀ x, f' x = f x), univ_sum_single]
       simpa using DFunLike.congr_fun ha' j
   tfae_have 5 → 6
-  · intro h₅ N _ _ _ _ f x hfx
+  | h₅, N, _, _, _, _, f, x, hfx => by
     have ϕ := Module.Free.repr R N
     have : (x ∘ₗ ϕ.symm) (ϕ f) = 0 := by simpa
     obtain ⟨κ, hκ, a', y, ha'y, ha'⟩ := h₅ this
@@ -175,8 +173,7 @@ theorem tfae_equational_criterion : List.TFAE [
     · simpa [LinearMap.comp_assoc] using congrArg (fun g ↦ (g ∘ₗ ϕ : N →ₗ[R] M)) ha'y
     · simpa using ha'
   tfae_have 6 → 5
-  · intro h₆ _ _ _ _ hfx
-    exact h₆ hfx
+  | h₆, _, _, _, _, hfx => h₆ hfx
   tfae_finish
 
 /-- **Equational criterion for flatness** [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK).

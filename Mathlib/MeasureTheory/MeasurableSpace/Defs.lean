@@ -539,7 +539,7 @@ variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α] 
 @[deprecated MeasurableSet.of_discrete (since := "2024-08-25")]
 lemma measurableSet_discrete (s : Set α) : MeasurableSet s := .of_discrete
 
-@[deprecated MeasurableSet.of_discrete (since := "2024-08-25")]
+@[deprecated Measurable.of_discrete (since := "2024-08-25")]
 lemma measurable_discrete (f : α → β) : Measurable f := .of_discrete
 
 /-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.

@@ -52,7 +52,7 @@ instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X) w
     let g'' : ContinuousMap Y Z := g
     have : g'' ∘ g' = id := hg'.comp_eq_id
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [comp.assoc, ultrafilter_extend_extends, ← comp.assoc, this, id_comp]
+    erw [comp_assoc, ultrafilter_extend_extends, ← comp_assoc, this, id_comp]
 
 /-- For any compact Hausdorff space `X`,
   the natural map `Ultrafilter X → X` is a projective presentation. -/

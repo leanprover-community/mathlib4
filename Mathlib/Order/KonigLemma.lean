@@ -79,8 +79,9 @@ theorem GradeMinOrder.exists_nat_orderEmbedding_of_forall_covby_finite
     ∃ f : ℕ ↪o α, f 0 = ⊥ ∧ (∀ i, f i ⋖ f (i+1)) ∧ ∀ i, grade ℕ (f i) = i := by
   obtain ⟨f, h0, hf⟩ := exists_orderEmbedding_covby_of_forall_covby_finite_of_bot hfin
   refine ⟨f, h0, hf, fun i ↦ ?_⟩
-  induction' i with i ih; simp [h0]
-  simpa [Nat.covBy_iff_succ_eq, ih, eq_comm] using CovBy.grade ℕ <| hf i
+  induction' i with i ih
+  · simp [h0]
+  · simpa [Order.covBy_iff_add_one_eq, ih, eq_comm] using CovBy.grade ℕ <| hf i
 
 end Sequence
 

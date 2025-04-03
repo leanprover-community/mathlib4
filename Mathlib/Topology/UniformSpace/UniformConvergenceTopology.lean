@@ -6,7 +6,7 @@ Authors: Anatole Dedecker
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Equiv
-import Mathlib.Topology.RestrictGenTopology
+import Mathlib.Topology.RestrictGen
 
 /-!
 # Topology and uniform structure of uniform convergence

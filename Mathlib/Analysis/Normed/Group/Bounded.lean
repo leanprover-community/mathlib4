@@ -59,7 +59,7 @@ lemma tendsto_norm_cocompact_atTop' [ProperSpace E] : Tendsto norm (cocompact E)
 
 @[to_additive (attr := simp)]
 lemma Filter.inv_cobounded : (cobounded E)⁻¹ = cobounded E := by
-  simp only [← comap_norm_atTop', ← Filter.comap_inv, comap_comap, (· ∘ ·), norm_inv']
+  simp only [← comap_norm_atTop', ← Filter.comap_inv, comap_comap, Function.comp_def, norm_inv']
 
 /-- In a (semi)normed group, inversion `x ↦ x⁻¹` tends to infinity at infinity. -/
 @[to_additive "In a (semi)normed group, negation `x ↦ -x` tends to infinity at infinity."]

@@ -250,7 +250,8 @@ theorem cocompact_eq_atTop [NoMaxOrder α] [OrderBot α]
 theorem IsCompact.exists_isMinOn [ClosedIicTopology α] {s : Set β} (hs : IsCompact s)
     (ne_s : s.Nonempty) {f : β → α} (hf : ContinuousOn f s) : ∃ x ∈ s, IsMinOn f s x := by
   rcases (hs.image_of_continuousOn hf).exists_isLeast (ne_s.image f) with ⟨_, ⟨x, hxs, rfl⟩, hx⟩
-  exact ⟨x, hxs, forall_mem_image.1 hx⟩
+  refine ⟨x, hxs, forall_mem_image.1 (fun _ hb => hx <| mem_image_of_mem f ?_)⟩
+  rwa [(image_id' s).symm]
 
 /-- If a continuous function lies strictly above `a` on a compact set,
   it has a lower bound strictly above `a`. -/

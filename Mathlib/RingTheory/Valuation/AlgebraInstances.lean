@@ -25,14 +25,14 @@ of a field with a valuation, as well as their unit balls.
 
 open Function Valuation
 
-open scoped DiscreteValuation
+open scoped Multiplicative
 
 variable {K : Type*} [Field K] (v : Valuation K ℤₘ₀) (L : Type*) [Field L] [Algebra K L]
 
 namespace ValuationSubring
 
 -- Implementation note : this instance was automatic in Lean3
-instance smul : SMul v.valuationSubring (integralClosure v.valuationSubring L) := Algebra.toSMul
+instance : Algebra v.valuationSubring L := Algebra.ofSubring v.valuationSubring.toSubring
 
 theorem algebraMap_injective : Injective (algebraMap v.valuationSubring L) :=
   (NoZeroSMulDivisors.algebraMap_injective K L).comp (IsFractionRing.injective _ _)
@@ -49,6 +49,8 @@ theorem isIntegral_of_mem_ringOfIntegers' {x : (integralClosure v.valuationSubri
   apply isIntegral_of_mem_ringOfIntegers
 
 variable (E : Type _) [Field E] [Algebra K E] [Algebra L E] [IsScalarTower K L E]
+
+instance : IsScalarTower v.valuationSubring L E := Subring.instIsScalarTowerSubtypeMem _
 
 /-- Given an algebra between two field extensions `L` and `E` of a field `K` with a valuation `v`,
   create an algebra between their two rings of integers. -/

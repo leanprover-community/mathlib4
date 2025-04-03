@@ -323,19 +323,17 @@ theorem Exact.split_tfae' (h : Function.Exact f g) :
       Function.Surjective g ∧ ∃ l, l ∘ₗ f = LinearMap.id,
       ∃ e : N ≃ₗ[R] M × P, f = e.symm ∘ₗ LinearMap.inl R M P ∧ g = LinearMap.snd R M P ∘ₗ e] := by
   tfae_have 1 → 3
-  · rintro ⟨hf, l, hl⟩
-    exact ⟨_, (h.splitSurjectiveEquiv hf ⟨l, hl⟩).2⟩
+  | ⟨hf, l, hl⟩ => ⟨_, (h.splitSurjectiveEquiv hf ⟨l, hl⟩).2⟩
   tfae_have 2 → 3
-  · rintro ⟨hg, l, hl⟩
-    exact ⟨_, (h.splitInjectiveEquiv hg ⟨l, hl⟩).2⟩
+  | ⟨hg, l, hl⟩ => ⟨_, (h.splitInjectiveEquiv hg ⟨l, hl⟩).2⟩
   tfae_have 3 → 1
-  · rintro ⟨e, e₁, e₂⟩
+  | ⟨e, e₁, e₂⟩ => by
     have : Function.Injective f := e₁ ▸ e.symm.injective.comp LinearMap.inl_injective
-    refine ⟨this, ⟨_, ((h.splitSurjectiveEquiv this).symm ⟨e, e₁, e₂⟩).2⟩⟩
+    exact ⟨this, ⟨_, ((h.splitSurjectiveEquiv this).symm ⟨e, e₁, e₂⟩).2⟩⟩
   tfae_have 3 → 2
-  · rintro ⟨e, e₁, e₂⟩
+  | ⟨e, e₁, e₂⟩ => by
     have : Function.Surjective g := e₂ ▸ Prod.snd_surjective.comp e.surjective
-    refine ⟨this, ⟨_, ((h.splitInjectiveEquiv this).symm ⟨e, e₁, e₂⟩).2⟩⟩
+    exact ⟨this, ⟨_, ((h.splitInjectiveEquiv this).symm ⟨e, e₁, e₂⟩).2⟩⟩
   tfae_finish
 
 /-- Equivalent characterizations of split exact sequences. Also known as the **Splitting lemma**. -/
@@ -347,10 +345,10 @@ theorem Exact.split_tfae
       ∃ l, g ∘ₗ l = LinearMap.id,
       ∃ l, l ∘ₗ f = LinearMap.id,
       ∃ e : N ≃ₗ[R] M × P, f = e.symm ∘ₗ LinearMap.inl R M P ∧ g = LinearMap.snd R M P ∘ₗ e] := by
-  tfae_have 1 ↔ 3
-  · simpa using (h.splitSurjectiveEquiv hf).nonempty_congr
-  tfae_have 2 ↔ 3
-  · simpa using (h.splitInjectiveEquiv hg).nonempty_congr
+  tfae_have 1 ↔ 3 := by
+    simpa using (h.splitSurjectiveEquiv hf).nonempty_congr
+  tfae_have 2 ↔ 3 := by
+    simpa using (h.splitInjectiveEquiv hg).nonempty_congr
   tfae_finish
 
 end split

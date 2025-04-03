@@ -223,7 +223,7 @@ theorem antipode_comul₂ (A : Hopf_ C) :
     MonoidalCategory.whiskerRight_id, whiskerLeft_rightUnitor, Category.assoc, Iso.hom_inv_id_assoc,
     Iso.inv_hom_id_assoc, whiskerLeft_inv_hom_assoc, antipode_right_assoc]
   rw [rightUnitor_inv_naturality_assoc, tensorHom_def]
-  coherence
+  monoidal
 
 theorem antipode_comul (A : Hopf_ C) :
     A.antipode ≫ A.X.comul.hom = A.X.comul.hom ≫ (β_ _ _).hom ≫ (A.antipode ⊗ A.antipode) := by
@@ -400,7 +400,7 @@ theorem mul_antipode₂ (A : Hopf_ C) :
   slice_lhs 2 3 =>
     rw [rightUnitor_naturality]
   simp only [Mon_.tensorUnit_X]
-  coherence
+  monoidal
 
 theorem mul_antipode (A : Hopf_ C) :
     A.X.X.mul ≫ A.antipode = (A.antipode ⊗ A.antipode) ≫ (β_ _ _).hom ≫ A.X.X.mul := by

@@ -243,7 +243,7 @@ theorem absolutelyContinuous_of_isMulLeftInvariant [IsMulLeftInvariant ν] (hν 
   refine AbsolutelyContinuous.mk fun s sm hνs => ?_
   have h1 := measure_mul_lintegral_eq μ ν sm 1 measurable_one
   simp_rw [Pi.one_apply, lintegral_one, mul_one, (measure_mul_right_null ν _).mpr hνs,
-    lintegral_zero, mul_eq_zero (M₀ := ℝ≥0∞), measure_univ_eq_zero.not.mpr hν, or_false_iff] at h1
+    lintegral_zero, mul_eq_zero (M₀ := ℝ≥0∞), measure_univ_eq_zero.not.mpr hν, or_false] at h1
   exact h1
 
 section SigmaFinite
@@ -455,7 +455,7 @@ theorem quasiMeasurePreserving_mul_left [IsMulRightInvariant μ] (g : G) :
   have :=
     (quasiMeasurePreserving_inv_of_right_invariant μ).comp
       (this.comp (quasiMeasurePreserving_inv_of_right_invariant μ))
-  simp_rw [Function.comp, mul_inv_rev, inv_inv] at this
+  simp_rw [Function.comp_def, mul_inv_rev, inv_inv] at this
   exact this
 
 end QuasiMeasurePreserving

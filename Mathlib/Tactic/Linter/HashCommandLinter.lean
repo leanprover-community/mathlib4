@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
+import Batteries.Lean.HashSet
 
 /-!
 # `#`-command linter
@@ -50,8 +51,8 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
   else
     cmd stx
 
-/-- `allowed_commands` is the `Array` of `#`-commands that are allowed in 'Mathlib'. -/
-private abbrev allowed_commands : Array String := #["#adaptation_note"]
+/-- `allowed_commands` is the `HashSet` of `#`-commands that are allowed in 'Mathlib'. -/
+private abbrev allowed_commands : Std.HashSet String := { "#adaptation_note" }
 
 /-- Checks that no command beginning with `#` is present in 'Mathlib',
 except for the ones in `allowed_commands`.

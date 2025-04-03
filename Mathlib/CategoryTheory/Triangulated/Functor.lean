@@ -71,8 +71,12 @@ section Additive
 
 variable [Preadditive C] [Preadditive D] [F.Additive]
 
+#adaptation_note
+/--
+At nightly-2024-08-08 we needed to increase the maxHeartbeats here.
+-/
+set_option maxHeartbeats 400000 in
 /-- The functor `F.mapTriangle` commutes with the shift. -/
-@[simps!]
 noncomputable def mapTriangleCommShiftIso (n : ℤ) :
     Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=
   NatIso.ofComponents (fun T => Triangle.isoMk _ _
@@ -84,6 +88,8 @@ noncomputable def mapTriangleCommShiftIso (n : ℤ) :
       rw [F.map_shiftFunctorComm_hom_app T.obj₁ 1 n]
       simp only [comp_obj, assoc, Iso.inv_hom_id_app_assoc,
         ← Functor.map_comp, Iso.inv_hom_id_app, map_id, comp_id])) (by aesop_cat)
+
+attribute [simps!] mapTriangleCommShiftIso
 
 attribute [local simp] map_zsmul comp_zsmul zsmul_comp
   commShiftIso_zero commShiftIso_add commShiftIso_comp_hom_app

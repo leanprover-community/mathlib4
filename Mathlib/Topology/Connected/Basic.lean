@@ -506,7 +506,7 @@ theorem isConnected_connectedComponent {x : α} : IsConnected (connectedComponen
 theorem isConnected_connectedComponentIn_iff {x : α} {F : Set α} :
     IsConnected (connectedComponentIn F x) ↔ x ∈ F := by
   simp_rw [← connectedComponentIn_nonempty_iff, IsConnected, isPreconnected_connectedComponentIn,
-    and_true_iff]
+    and_true]
 
 theorem IsPreconnected.subset_connectedComponent {x : α} {s : Set α} (H1 : IsPreconnected s)
     (H2 : x ∈ s) : s ⊆ connectedComponent x := fun _z hz => mem_sUnion_of_mem hz ⟨H1, H2⟩

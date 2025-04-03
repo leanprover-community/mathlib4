@@ -1,11 +1,10 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Kenny Lau, Scott Morrison
+Authors: Mario Carneiro, Kenny Lau, Kim Morrison
 -/
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Pairwise
 
 /-!
 # Ranges of naturals as lists
@@ -35,8 +34,7 @@ theorem chain'_range_succ (r : ℕ → ℕ → Prop) (n : ℕ) :
   induction' n with n hn
   · simp
   · rw [range_succ]
-    simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton,
-      and_true_iff]
+    simp only [append_assoc, singleton_append, chain'_append_cons_cons, chain'_singleton, and_true]
     rw [hn, forall_lt_succ]
 
 theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :

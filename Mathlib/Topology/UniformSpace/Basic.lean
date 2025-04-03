@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Order.Filter.SmallSets
-import Mathlib.Tactic.Monotonicity
+import Mathlib.Tactic.Monotonicity.Basic
 import Mathlib.Topology.Compactness.Compact
 import Mathlib.Topology.NhdsSet
 import Mathlib.Algebra.Group.Defs
@@ -367,33 +367,6 @@ theorem UniformSpace.replaceTopology_eq {α : Type*} [i : TopologicalSpace α] (
     (h : i = u.toTopologicalSpace) : u.replaceTopology h = u :=
   UniformSpace.ext rfl
 
--- Porting note: rfc: use `UniformSpace.Core.mkOfBasis`? This will change defeq here and there
-/-- Define a `UniformSpace` using a "distance" function. The function can be, e.g., the
-distance in a (usual or extended) metric space or an absolute value on a ring. -/
-def UniformSpace.ofFun {α : Type u} {β : Type v} [OrderedAddCommMonoid β]
-    (d : α → α → β) (refl : ∀ x, d x x = 0) (symm : ∀ x y, d x y = d y x)
-    (triangle : ∀ x y z, d x z ≤ d x y + d y z)
-    (half : ∀ ε > (0 : β), ∃ δ > (0 : β), ∀ x < δ, ∀ y < δ, x + y < ε) :
-    UniformSpace α :=
-  .ofCore
-    { uniformity := ⨅ r > 0, 𝓟 { x | d x.1 x.2 < r }
-      refl := le_iInf₂ fun r hr => principal_mono.2 <| idRel_subset.2 fun x => by simpa [refl]
-      symm := tendsto_iInf_iInf fun r => tendsto_iInf_iInf fun _ => tendsto_principal_principal.2
-        fun x hx => by rwa [mem_setOf, symm]
-      comp := le_iInf₂ fun r hr => let ⟨δ, h0, hδr⟩ := half r hr; le_principal_iff.2 <|
-        mem_of_superset
-          (mem_lift' <| mem_iInf_of_mem δ <| mem_iInf_of_mem h0 <| mem_principal_self _)
-          fun (x, z) ⟨y, h₁, h₂⟩ => (triangle _ _ _).trans_lt (hδr _ h₁ _ h₂) }
-
-theorem UniformSpace.hasBasis_ofFun {α : Type u} {β : Type v} [LinearOrderedAddCommMonoid β]
-    (h₀ : ∃ x : β, 0 < x) (d : α → α → β) (refl : ∀ x, d x x = 0) (symm : ∀ x y, d x y = d y x)
-    (triangle : ∀ x y z, d x z ≤ d x y + d y z)
-    (half : ∀ ε > (0 : β), ∃ δ > (0 : β), ∀ x < δ, ∀ y < δ, x + y < ε) :
-    𝓤[.ofFun d refl symm triangle half].HasBasis ((0 : β) < ·) (fun ε => { x | d x.1 x.2 < ε }) :=
-  hasBasis_biInf_principal'
-    (fun ε₁ h₁ ε₂ h₂ => ⟨min ε₁ ε₂, lt_min h₁ h₂, fun _x hx => lt_of_lt_of_le hx (min_le_left _ _),
-      fun _x hx => lt_of_lt_of_le hx (min_le_right _ _)⟩) h₀
-
 section UniformSpace
 
 variable [UniformSpace α]
@@ -743,12 +716,12 @@ theorem tendsto_left_nhds_uniformity {a : α} : Tendsto (fun a' => (a, a')) (�
 theorem lift_nhds_left {x : α} {g : Set α → Filter β} (hg : Monotone g) :
     (𝓝 x).lift g = (𝓤 α).lift fun s : Set (α × α) => g (ball x s) := by
   rw [nhds_eq_comap_uniformity, comap_lift_eq2 hg]
-  simp_rw [ball, Function.comp]
+  simp_rw [ball, Function.comp_def]
 
 theorem lift_nhds_right {x : α} {g : Set α → Filter β} (hg : Monotone g) :
     (𝓝 x).lift g = (𝓤 α).lift fun s : Set (α × α) => g { y | (y, x) ∈ s } := by
   rw [nhds_eq_comap_uniformity', comap_lift_eq2 hg]
-  simp_rw [Function.comp, preimage]
+  simp_rw [Function.comp_def, preimage]
 
 theorem nhds_nhds_eq_uniformity_uniformity_prod {a b : α} :
     𝓝 a ×ˢ 𝓝 b = (𝓤 α).lift fun s : Set (α × α) =>
@@ -1113,7 +1086,7 @@ abbrev UniformSpace.comap (f : α → β) (u : UniformSpace β) : UniformSpace �
     (comap_mono u.comp)
   toTopologicalSpace := u.toTopologicalSpace.induced f
   nhds_eq_comap_uniformity x := by
-    simp only [nhds_induced, nhds_eq_comap_uniformity, comap_comap, Function.comp]
+    simp only [nhds_induced, nhds_eq_comap_uniformity, comap_comap, Function.comp_def]
 
 theorem uniformity_comap {_ : UniformSpace β} (f : α → β) :
     𝓤[UniformSpace.comap f ‹_›] = comap (Prod.map f f) (𝓤 β) :=

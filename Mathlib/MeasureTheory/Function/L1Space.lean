@@ -442,6 +442,9 @@ theorem Integrable.of_finite [Finite α] [MeasurableSpace α] [MeasurableSinglet
     (μ : Measure α) [IsFiniteMeasure μ] (f : α → β) : Integrable (fun a ↦ f a) μ :=
   ⟨(StronglyMeasurable.of_finite f).aestronglyMeasurable, .of_finite⟩
 
+lemma Integrable.of_isEmpty [IsEmpty α] (f : α → β) (μ : Measure α) :
+    Integrable f μ := Integrable.of_finite μ f
+
 @[deprecated (since := "2024-02-05")] alias integrable_of_fintype := Integrable.of_finite
 
 theorem Memℒp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
@@ -878,8 +881,7 @@ theorem integrable_withDensity_iff_integrable_coe_smul {f : α → ℝ≥0} (hf 
     {g : α → E} :
     Integrable g (μ.withDensity fun x => f x) ↔ Integrable (fun x => (f x : ℝ) • g x) μ := by
   by_cases H : AEStronglyMeasurable (fun x : α => (f x : ℝ) • g x) μ
-  · simp only [Integrable, aestronglyMeasurable_withDensity_iff hf, HasFiniteIntegral, H,
-      true_and_iff]
+  · simp only [Integrable, aestronglyMeasurable_withDensity_iff hf, HasFiniteIntegral, H]
     rw [lintegral_withDensity_eq_lintegral_mul₀' hf.coe_nnreal_ennreal.aemeasurable]
     · rw [iff_iff_eq]
       congr
@@ -889,7 +891,7 @@ theorem integrable_withDensity_iff_integrable_coe_smul {f : α → ℝ≥0} (hf 
       convert H.ennnorm using 1
       ext1 x
       simp only [nnnorm_smul, NNReal.nnnorm_eq, coe_mul]
-  · simp only [Integrable, aestronglyMeasurable_withDensity_iff hf, H, false_and_iff]
+  · simp only [Integrable, aestronglyMeasurable_withDensity_iff hf, H, false_and]
 
 theorem integrable_withDensity_iff_integrable_smul {f : α → ℝ≥0} (hf : Measurable f) {g : α → E} :
     Integrable g (μ.withDensity fun x => f x) ↔ Integrable (fun x => f x • g x) μ :=

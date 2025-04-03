@@ -89,17 +89,41 @@ lemma coe_sub_one (a : Fin (n + 1)) : ↑(a - 1) = if a = 0 then n else a - 1 :=
   rwa [Fin.ext_iff] at h
 
 @[simp]
+lemma lt_sub_iff {n : ℕ} {a b : Fin n} : a < a - b ↔ a < b := by
+  cases' n with n
+  · exact a.elim0
+  constructor
+  · contrapose!
+    intro h
+    obtain ⟨l, hl⟩ := Nat.exists_eq_add_of_le (Fin.not_lt.mp h)
+    simpa only [Fin.not_lt, le_iff_val_le_val, sub_def, hl, ← Nat.add_assoc, Nat.add_mod_left,
+      Nat.mod_eq_of_lt, Nat.sub_add_cancel b.is_lt.le] using
+        (le_trans (mod_le _ _) (le_add_left _ _))
+  · intro h
+    rw [lt_iff_val_lt_val, sub_def]
+    simp only
+    obtain ⟨k, hk⟩ := Nat.exists_eq_add_of_lt b.is_lt
+    have : n + 1 - b = k + 1 := by
+      simp_rw [hk, Nat.add_assoc, Nat.add_sub_cancel_left]
+      -- simp_rw because, otherwise, rw tries to rewrite inside `b : Fin (n + 1)`
+    rw [this, Nat.mod_eq_of_lt (hk.ge.trans_lt' ?_), Nat.lt_add_left_iff_pos] <;>
+    omega
+
+@[simp]
+lemma sub_le_iff {n : ℕ} {a b : Fin n} : a - b ≤ a ↔ b ≤ a := by
+  rw [← not_iff_not, Fin.not_le, Fin.not_le, lt_sub_iff]
+
+@[simp]
+lemma lt_one_iff {n : ℕ} (x : Fin (n + 2)) : x < 1 ↔ x = 0 := by
+  simp [lt_iff_val_lt_val, Fin.ext_iff]
+
 lemma lt_sub_one_iff {k : Fin (n + 2)} : k < k - 1 ↔ k = 0 := by
-  rcases k with ⟨_ | k, hk⟩
-  · simp only [zero_eta, zero_sub, lt_iff_val_lt_val, val_zero, coe_neg_one, zero_lt_succ]
-  have : (n + 1 + (k + 1)) % (n + 2) = k % (n + 2) := by
-    rw [Nat.add_comm, Nat.add_right_comm, Nat.add_assoc, Nat.add_assoc, add_mod_right]
-  simp [lt_iff_val_lt_val, Fin.ext_iff, Fin.coe_sub, this, mod_eq_of_lt ((lt_succ_self _).trans hk)]
+  simp
 
 @[simp] lemma le_sub_one_iff {k : Fin (n + 1)} : k ≤ k - 1 ↔ k = 0 := by
   cases n
   · simp [fin_one_eq_zero k]
-  simp [-val_fin_le, le_def]
+  simp only [le_def]
   rw [← lt_sub_one_iff, le_iff_lt_or_eq, val_fin_lt, val_inj, lt_sub_one_iff, or_iff_left_iff_imp,
     eq_comm, sub_eq_iff_eq_add]
   simp
@@ -111,5 +135,16 @@ lemma sub_one_lt_iff {k : Fin (n + 1)} : k - 1 < k ↔ 0 < k :=
 
 lemma neg_natCast_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
   simp only [natCast_eq_last, neg_last]
+
+lemma rev_add (a b : Fin n) : rev (a + b) = rev a - b := by
+  cases' n
+  · exact a.elim0
+  rw [← last_sub, ← last_sub, sub_add_eq_sub_sub]
+
+lemma rev_sub (a b : Fin n) : rev (a - b) = rev a + b := by
+  rw [rev_eq_iff, rev_add, rev_rev]
+
+lemma add_lt_left_iff {n : ℕ} {a b : Fin n} : a + b < a ↔ rev b < a := by
+  rw [← rev_lt_rev, Iff.comm, ← rev_lt_rev, rev_add, lt_sub_iff, rev_rev]
 
 end Fin

@@ -105,9 +105,9 @@ def recOn {C : WSeq α → Sort v} (s : WSeq α) (h1 : C nil) (h2 : ∀ x s, C (
     (h3 : ∀ s, C (think s)) : C s :=
   Seq.recOn s h1 fun o => Option.recOn o h3 h2
 
-/-- membership for weak sequences -/
-protected def Mem (a : α) (s : WSeq α) :=
-  Seq.Mem (some a) s
+/-- membership for weak sequences-/
+protected def Mem (s : WSeq α) (a : α) :=
+  Seq.Mem s (some a)
 
 instance membership : Membership α (WSeq α) :=
   ⟨WSeq.Mem⟩
@@ -394,6 +394,7 @@ def LiftRelO (R : α → β → Prop) (C : WSeq α → WSeq β → Prop) :
   | none, none => True
   | some (a, s), some (b, t) => R a b ∧ C s t
   | _, _ => False
+attribute [nolint simpNF] LiftRelO.eq_3
 
 theorem LiftRelO.imp {R S : α → β → Prop} {C D : WSeq α → WSeq β → Prop} (H1 : ∀ a b, R a b → S a b)
     (H2 : ∀ s t, C s t → D s t) : ∀ {o p}, LiftRelO R C o p → LiftRelO S D o p
@@ -816,7 +817,7 @@ theorem eq_or_mem_iff_mem {s : WSeq α} {a a' s'} :
   · cases' this with i1 i2
     rw [i1, i2]
     cases' s' with f al
-    dsimp only [cons, (· ∈ ·), WSeq.Mem, Seq.Mem, Seq.cons]
+    dsimp only [cons, Membership.mem, WSeq.Mem, Seq.Mem, Seq.cons]
     have h_a_eq_a' : a = a' ↔ some (some a) = some (some a') := by simp
     rw [h_a_eq_a']
     refine ⟨Stream'.eq_or_mem_of_mem_cons, fun o => ?_⟩
@@ -1407,7 +1408,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
           U s1 s2)
     {a} (ma : a ∈ destruct (join S)) : ∃ b, b ∈ destruct (join T) ∧ LiftRelO R U a b := by
   cases' exists_results_of_mem ma with n h; clear ma; revert S T ST a
-  induction' n using Nat.strongInductionOn with n IH
+  induction' n using Nat.strongRecOn with n IH
   intro S T ST a ra; simp only [destruct_join] at ra
   exact
     let ⟨o, m, k, rs1, rs2, en⟩ := of_results_bind ra

@@ -195,14 +195,14 @@ applying the action of `L` on `M`, we obtain morphism of Lie modules `f : I ⊗ 
 
 This lemma states that `⁅I, N⁆ = range f`. -/
 theorem lieIdeal_oper_eq_tensor_map_range :
-    ⁅I, N⁆ = ((toModuleHom R L M).comp (mapIncl I N : (↥I) ⊗[R] (↥N) →ₗ⁅R,L⁆ L ⊗[R] M)).range := by
+    ⁅I, N⁆ = ((toModuleHom R L M).comp (mapIncl I N : I ⊗[R] N →ₗ⁅R,L⁆ L ⊗[R] M)).range := by
   rw [← coe_toSubmodule_eq_iff, lieIdeal_oper_eq_linear_span, LieModuleHom.coeSubmodule_range,
     LieModuleHom.coe_linearMap_comp, LinearMap.range_comp, mapIncl_def, coe_linearMap_map,
     TensorProduct.map_range_eq_span_tmul, Submodule.map_span]
   congr; ext m; constructor
   · rintro ⟨⟨x, hx⟩, ⟨n, hn⟩, rfl⟩; use x ⊗ₜ n; constructor
-    · use ⟨x, hx⟩, ⟨n, hn⟩; simp
+    · use ⟨x, hx⟩, ⟨n, hn⟩; rfl
     · simp
-  · rintro ⟨t, ⟨⟨x, hx⟩, ⟨n, hn⟩, rfl⟩, h⟩; rw [← h]; use ⟨x, hx⟩, ⟨n, hn⟩; simp
+  · rintro ⟨t, ⟨⟨x, hx⟩, ⟨n, hn⟩, rfl⟩, h⟩; rw [← h]; use ⟨x, hx⟩, ⟨n, hn⟩; rfl
 
 end LieSubmodule

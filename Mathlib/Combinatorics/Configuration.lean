@@ -3,10 +3,9 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Combinatorics.Hall.Basic
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Data.Matrix.Rank
+import Mathlib.LinearAlgebra.Projectivization.Constructions
 
 /-!
 # Configurations of Points and lines
@@ -57,7 +56,7 @@ instance [h : Fintype P] : Fintype (Dual P) :=
 -- Porting note (#11215): TODO: figure out if this is needed.
 set_option synthInstance.checkSynthOrder false in
 instance : Membership (Dual L) (Dual P) :=
-  ⟨Function.swap (Membership.mem : P → L → Prop)⟩
+  ⟨Function.swap (Membership.mem : L → P → Prop)⟩
 
 /-- A configuration is nondegenerate if:
   1) there does not exist a line that passes through all of the points,
@@ -196,9 +195,8 @@ theorem HasLines.pointCount_le_lineCount [HasLines P L] {p : P} {l : L} (h : p �
   exact
     Fintype.card_le_of_injective (fun p' => ⟨mkLine (this p'), (mkLine_ax (this p')).1⟩)
       fun p₁ p₂ hp =>
-      Subtype.ext
-        ((eq_or_eq p₁.2 p₂.2 (mkLine_ax (this p₁)).2
-              ((congr_arg _ (Subtype.ext_iff.mp hp)).mpr (mkLine_ax (this p₂)).2)).resolve_right
+      Subtype.ext ((eq_or_eq p₁.2 p₂.2 (mkLine_ax (this p₁)).2
+            ((congr_arg (_ ∈ ·) (Subtype.ext_iff.mp hp)).mpr (mkLine_ax (this p₂)).2)).resolve_right
           fun h' => (congr_arg (¬p ∈ ·) h').mp h (mkLine_ax (this p₁)).1)
 
 theorem HasPoints.lineCount_le_pointCount [HasPoints P L] {p : P} {l : L} (h : p ∉ l)
@@ -222,7 +220,7 @@ theorem HasLines.card_le [HasLines P L] [Fintype P] [Fintype L] :
       _ < ∑ p, lineCount L p := by
         obtain ⟨p, hp⟩ := not_forall.mp (mt (Fintype.card_le_of_surjective f) hc₂)
         refine sum_lt_sum_of_subset (subset_univ _) (mem_univ p) ?_ ?_ fun p _ _ ↦ zero_le _
-        · simpa only [Finset.mem_map, exists_prop, Finset.mem_univ, true_and_iff]
+        · simpa only [Finset.mem_map, exists_prop, Finset.mem_univ, true_and]
         · rw [lineCount, Nat.card_eq_fintype_card, Fintype.card_pos_iff]
           obtain ⟨l, _⟩ := @exists_line P L _ _ p
           exact
@@ -263,7 +261,7 @@ theorem HasLines.lineCount_eq_pointCount [HasLines P L] [Fintype P] [Fintype L]
           simp_rw [hf2, sum_const, Set.toFinset_card, ← Nat.card_eq_fintype_card]
           change pointCount P l • _ = lineCount L (f l) • _
           rw [hf2]
-      all_goals simp_rw [s, Finset.mem_univ, true_and_iff, Set.mem_toFinset]; exact fun p => Iff.rfl
+      all_goals simp_rw [s, Finset.mem_univ, true_and, Set.mem_toFinset]; exact fun p => Iff.rfl
     have step3 : ∑ i ∈ sᶜ, lineCount L i.1 = ∑ i ∈ sᶜ, pointCount P i.2 := by
       rwa [← s.sum_add_sum_compl, ← s.sum_add_sum_compl, step2, add_left_cancel_iff] at step1
     rw [← Set.toFinset_compl] at step3
@@ -301,13 +299,12 @@ noncomputable def HasLines.hasPoints [HasLines P L] [Fintype P] [Fintype L]
       let f : { q : P // q ∈ l₂ } → { l : L // p ∈ l } := fun q =>
         ⟨mkLine (this q), (mkLine_ax (this q)).1⟩
       have hf : Function.Injective f := fun q₁ q₂ hq =>
-        Subtype.ext
-          ((eq_or_eq q₁.2 q₂.2 (mkLine_ax (this q₁)).2
-                ((congr_arg _ (Subtype.ext_iff.mp hq)).mpr (mkLine_ax (this q₂)).2)).resolve_right
+        Subtype.ext ((eq_or_eq q₁.2 q₂.2 (mkLine_ax (this q₁)).2
+            ((congr_arg (_ ∈ ·) (Subtype.ext_iff.mp hq)).mpr (mkLine_ax (this q₂)).2)).resolve_right
             fun h => (congr_arg (¬p ∈ ·) h).mp hl₂ (mkLine_ax (this q₁)).1)
       have key' := ((Fintype.bijective_iff_injective_and_card f).mpr ⟨hf, key'⟩).2
       obtain ⟨q, hq⟩ := key' ⟨l₁, hl₁⟩
-      exact ⟨q, (congr_arg _ (Subtype.ext_iff.mp hq)).mp (mkLine_ax (this q)).2, q.2⟩
+      exact ⟨q, (congr_arg (_ ∈ ·) (Subtype.ext_iff.mp hq)).mp (mkLine_ax (this q)).2, q.2⟩
   { ‹HasLines P L› with
     mkPoint := fun {l₁ l₂} hl => Classical.choose (this l₁ l₂ hl)
     mkPoint_ax := fun {l₁ l₂} hl => Classical.choose_spec (this l₁ l₂ hl) }
@@ -368,7 +365,7 @@ theorem lineCount_eq_lineCount [Finite P] [Finite L] (p q : P) : lineCount L p =
     or_not.elim (fun h₂ => ?_) fun h₂ => (HasLines.lineCount_eq_pointCount h h₂).trans hl₂
   refine or_not.elim (fun h₃ => ?_) fun h₃ => (HasLines.lineCount_eq_pointCount h h₃).trans hl₃
   rw [(eq_or_eq h₂ h₂₂ h₃ h₂₃).resolve_right fun h =>
-      h₃₃ ((congr_arg (Membership.mem p₃) h).mp h₃₂)]
+      h₃₃ ((congr_arg (p₃ ∈ ·) h).mp h₃₂)]
 
 variable (P) {L}
 
@@ -414,7 +411,7 @@ theorem one_lt_order [Finite P] [Finite L] : 1 < order P L := by
   rw [← add_lt_add_iff_right 1, ← pointCount_eq _ l₂, pointCount, Nat.card_eq_fintype_card,
     Fintype.two_lt_card_iff]
   simp_rw [Ne, Subtype.ext_iff]
-  have h := mkPoint_ax fun h => h₂₁ ((congr_arg _ h).mpr h₂₂)
+  have h := mkPoint_ax (P := P) (L := L) fun h => h₂₁ ((congr_arg (p₂ ∈ ·) h).mpr h₂₂)
   exact
     ⟨⟨mkPoint _, h.2⟩, ⟨p₂, h₂₂⟩, ⟨p₃, h₃₂⟩, ne_of_mem_of_not_mem h.1 h₂₁,
       ne_of_mem_of_not_mem h.1 h₃₁, ne_of_mem_of_not_mem h₂₃ h₃₃⟩
@@ -463,5 +460,64 @@ theorem card_lines [Finite P] [Fintype L] : Fintype.card L = order P L ^ 2 + ord
   (card_points (Dual L) (Dual P)).trans (congr_arg (fun n => n ^ 2 + n + 1) (Dual.order P L))
 
 end ProjectivePlane
+
+namespace ofField
+
+variable {K : Type*} [Field K]
+
+open scoped LinearAlgebra.Projectivization
+
+open Matrix Projectivization
+
+instance : Membership (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
+  ⟨Function.swap orthogonal⟩
+
+lemma mem_iff (v w : ℙ K (Fin 3 → K)) : v ∈ w ↔ orthogonal v w :=
+  Iff.rfl
+
+-- This lemma can't be moved to the crossProduct file due to heavy imports
+lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : Fin 3 → K} (hac : dotProduct a c = 0)
+    (hbc : dotProduct b c = 0) (had : dotProduct a d = 0) (hbd : dotProduct b d = 0) :
+    crossProduct a b = 0 ∨ crossProduct c d = 0 := by
+  by_contra h
+  simp_rw [not_or, ← ne_eq, crossProduct_ne_zero_iff_linearIndependent] at h
+  let A : Matrix (Fin 2) (Fin 3) K := ![a, b]
+  let B : Matrix (Fin 2) (Fin 3) K := ![c, d]
+  have hAB : A * B.transpose = 0 := by
+    ext i j
+    fin_cases i <;> fin_cases j <;> assumption
+  replace hAB := rank_add_rank_le_card_of_mul_eq_zero hAB
+  rw [rank_transpose, h.1.rank_matrix, h.2.rank_matrix, Fintype.card_fin, Fintype.card_fin] at hAB
+  contradiction
+
+lemma eq_or_eq_of_orthogonal {a b c d : ℙ K (Fin 3 → K)} (hac : a.orthogonal c)
+    (hbc : b.orthogonal c) (had : a.orthogonal d) (hbd : b.orthogonal d) :
+    a = b ∨ c = d := by
+  induction' a with a ha
+  induction' b with b hb
+  induction' c with c hc
+  induction' d with d hd
+  rw [mk_eq_mk_iff_crossProduct_eq_zero, mk_eq_mk_iff_crossProduct_eq_zero]
+  exact crossProduct_eq_zero_of_dotProduct_eq_zero hac hbc had hbd
+
+instance : Nondegenerate (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
+  { exists_point := exists_not_orthogonal_self
+    exists_line := exists_not_self_orthogonal
+    eq_or_eq := eq_or_eq_of_orthogonal }
+
+noncomputable instance [DecidableEq K] : ProjectivePlane (ℙ K (Fin 3 → K)) (ℙ K (Fin 3 → K)) :=
+  { mkPoint := by
+      intro v w _
+      exact cross v w
+    mkPoint_ax := fun h ↦ ⟨cross_orthogonal_left h, cross_orthogonal_right h⟩
+    mkLine := by
+      intro v w _
+      exact cross v w
+    mkLine_ax := fun h ↦ ⟨orthogonal_cross_left h, orthogonal_cross_right h⟩
+    exists_config := by
+      refine ⟨mk K ![0, 1, 1] ?_, mk K ![1, 0, 0] ?_, mk K ![1, 0, 1] ?_, mk K ![1, 0, 0] ?_,
+        mk K ![0, 1, 0] ?_, mk K ![0, 0, 1] ?_, ?_⟩ <;> simp [mem_iff, orthogonal_mk] }
+
+end ofField
 
 end Configuration

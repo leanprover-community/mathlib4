@@ -146,7 +146,9 @@ Over a perfect field a much stronger result is true, see
 `LieAlgebra.IsKilling.isSemisimple_ad_of_mem_isCartanSubalgebra`. -/
 lemma eq_zero_of_isNilpotent_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H)
     (hx' : _root_.IsNilpotent (ad K L x)) : x = 0 := by
-  suffices ⟨x, hx⟩ ∈ LinearMap.ker (traceForm K H L) by simpa using this
+  suffices ⟨x, hx⟩ ∈ LinearMap.ker (traceForm K H L) by
+    simp at this
+    exact (AddSubmonoid.mk_eq_zero H.toAddSubmonoid).mp this
   simp only [LinearMap.mem_ker]
   ext y
   have comm : Commute (toEnd K H L ⟨x, hx⟩) (toEnd K H L y) := by
@@ -340,7 +342,8 @@ lemma coe_corootSpace_eq_span_singleton' (α : Weight K H L) :
     rw [Submodule.mem_span_singleton] at this ⊢
     obtain ⟨t, rfl⟩ := this
     use t
-    simp [Subtype.ext_iff]
+    simp only [Subtype.ext_iff]
+    rw [Submodule.coe_smul_of_tower]
   · simp only [Submodule.span_singleton_le_iff_mem, LieSubmodule.mem_coeSubmodule]
     exact cartanEquivDual_symm_apply_mem_corootSpace α
 
@@ -484,7 +487,9 @@ lemma exists_isSl2Triple_of_weight_isNonZero {α : Weight K H L} (hα : α.IsNon
   have hef := lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg heα hfα
   let h : H := ⟨⁅e, f'⁆, hef ▸ Submodule.smul_mem _ _ (Submodule.coe_mem _)⟩
   have hh : α h ≠ 0 := by
-    have : h = killingForm K L e f' • (cartanEquivDual H).symm α := by simp [Subtype.ext_iff, hef]
+    have : h = killingForm K L e f' • (cartanEquivDual H).symm α := by
+      simp only [Subtype.ext_iff, hef]
+      rw [Submodule.coe_smul_of_tower]
     rw [this, map_smul, smul_eq_mul, ne_eq, mul_eq_zero, not_or]
     exact ⟨hf, root_apply_cartanEquivDual_symm_ne_zero hα⟩
   let f := (2 * (α h)⁻¹) • f'
@@ -517,7 +522,8 @@ lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
     rwa [this, one_smul] at hs
   set α' := (cartanEquivDual H).symm α with hα'
   have h_eq : h = killingForm K L e f • α' := by
-    simp only [hα', Subtype.ext_iff, Submodule.coe_smul_of_tower, ← ht.lie_e_f, hef]
+    simp only [hα', Subtype.ext_iff, ← ht.lie_e_f, hef]
+    rw [Submodule.coe_smul_of_tower]
   use (2 • (α α')⁻¹) * (killingForm K L e f)⁻¹
   have hef₀ : killingForm K L e f ≠ 0 := by
     have := ht.h_ne_zero
@@ -528,7 +534,9 @@ lemma _root_.IsSl2Triple.h_eq_coroot {α : Weight K H L} (hα : α.IsNonZero)
 lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     finrank K (rootSpace H α) = 1 := by
   suffices ¬ 1 < finrank K (rootSpace H α) by
-    have h₀ : finrank K (rootSpace H α) ≠ 0 := by simpa using α.genWeightSpace_ne_bot
+    have h₀ : finrank K (rootSpace H α) ≠ 0 := by
+      convert_to finrank K (rootSpace H α).toSubmodule ≠ 0
+      simpa using α.genWeightSpace_ne_bot
     omega
   intro contra
   obtain ⟨h, e, f, ht, heα, hfα⟩ := exists_isSl2Triple_of_weight_isNonZero hα
@@ -539,7 +547,7 @@ lemma finrank_rootSpace_eq_one (α : Weight K H L) (hα : α.IsNonZero) :
     have : killingForm K L y f = 0 := by simpa [F, traceForm_comm] using hy
     simpa [this] using lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg hyα hfα
   have P : ht.symm.HasPrimitiveVectorWith y (-2 : K) :=
-    { ne_zero := by simpa using hy₀
+    { ne_zero := by simpa [LieSubmodule.mk_eq_zero] using hy₀
       lie_h := by simp only [neg_smul, neg_lie, neg_inj, ht.h_eq_coroot hα heα hfα,
         ← H.coe_bracket_of_module, lie_eq_smul_of_mem_rootSpace hyα (coroot α),
         root_apply_coroot hα]

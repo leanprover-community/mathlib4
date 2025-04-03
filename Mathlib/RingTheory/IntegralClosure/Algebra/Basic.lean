@@ -185,3 +185,7 @@ def integralClosure : Subalgebra R A where
   algebraMap_mem' _ := isIntegral_algebraMap
 
 end
+
+theorem mem_integralClosure_iff (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] {a : A} :
+    a ∈ integralClosure R A ↔ IsIntegral R a :=
+  Iff.rfl

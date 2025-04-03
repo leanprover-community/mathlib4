@@ -620,8 +620,8 @@ theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
   refine ⟨fun h => ?_, ?_⟩
   · have hab : a ≤ b := nonempty_Icc.1 (h.symm.subst <| singleton_nonempty c)
     exact
-      ⟨eq_of_mem_singleton <| h.subst <| left_mem_Icc.2 hab,
-        eq_of_mem_singleton <| h.subst <| right_mem_Icc.2 hab⟩
+      ⟨eq_of_mem_singleton <| h ▸ left_mem_Icc.2 hab,
+        eq_of_mem_singleton <| h ▸ right_mem_Icc.2 hab⟩
   · rintro ⟨rfl, rfl⟩
     exact Icc_self _
 
@@ -1650,5 +1650,22 @@ instance : NoMaxOrder (Set.Iio x) :=
     exact ⟨⟨b, hb₂⟩, hb₁⟩⟩
 
 end Dense
+
+/-!
+### Intervals in `Prop`
+-/
+
+namespace Set
+
+@[simp] lemma Iic_False : Iic False = {False} := by aesop
+@[simp] lemma Iic_True : Iic True = univ := by aesop
+@[simp] lemma Ici_False : Ici False = univ := by aesop
+@[simp] lemma Ici_True : Ici True = {True} := by aesop
+@[simp] lemma Iio_False : Iio False = ∅ := by aesop
+@[simp] lemma Iio_True : Iio True = {False} := by aesop (add simp [Ioi, lt_iff_le_not_le])
+@[simp] lemma Ioi_False : Ioi False = {True} := by aesop (add simp [Ioi, lt_iff_le_not_le])
+@[simp] lemma Ioi_True : Ioi True = ∅ := by aesop
+
+end Set
 
 set_option linter.style.longFile 1800

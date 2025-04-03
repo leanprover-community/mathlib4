@@ -257,7 +257,7 @@ theorem surjOn_closedBall_of_nonlinearRightInverse
   -- It remains to check that `f x = y`. This follows from continuity of `f` on `closedBall b ε`
   -- and from the fact that `f uₙ` is converging to `y` by construction.
   have hx' : Tendsto u atTop (𝓝[closedBall b ε] x) := by
-    simp only [nhdsWithin, tendsto_inf, hx, true_and_iff, tendsto_principal]
+    simp only [nhdsWithin, tendsto_inf, hx, true_and, tendsto_principal]
     exact Eventually.of_forall fun n => C n _ (D n).2
   have T1 : Tendsto (f ∘ u) atTop (𝓝 (f x)) :=
     (hf.continuousOn.mono hε x xmem).tendsto.comp hx'

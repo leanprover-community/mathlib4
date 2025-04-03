@@ -182,7 +182,7 @@ theorem mem_foldr_permutationsAux2 {t : α} {ts : List α} {r L : List (List α)
 theorem length_foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
     length (foldr (fun y r => (permutationsAux2 t ts r y id).2) r L) =
       Nat.sum (map length L) + length r := by
-  simp [foldr_permutationsAux2, (· ∘ ·), length_permutationsAux2, length_bind']
+  simp [foldr_permutationsAux2, Function.comp_def, length_permutationsAux2, length_bind']
 
 theorem length_foldr_permutationsAux2' (t : α) (ts : List α) (r L : List (List α)) (n)
     (H : ∀ l ∈ L, length l = n) :

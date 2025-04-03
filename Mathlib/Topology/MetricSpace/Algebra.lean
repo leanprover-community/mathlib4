@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.MetricSpace.Lipschitz
 
 /-!
@@ -142,6 +143,11 @@ instance (priority := 100) BoundedSMul.continuousSMul : ContinuousSMul α β whe
           have : dist b' 0 ≤ δ + dist b 0 := (dist_triangle _ _ _).trans <| add_le_add_right hb.le _
           gcongr
       _ < ε := hδε
+
+instance (priority := 100) BoundedSMul.toUniformContinuousConstSMul :
+    UniformContinuousConstSMul α β :=
+  ⟨fun c => ((lipschitzWith_iff_dist_le_mul (K := nndist c 0)).2 fun _ _ =>
+    dist_smul_pair c _ _).uniformContinuous⟩
 
 -- this instance could be deduced from `NormedSpace.boundedSMul`, but we prove it separately
 -- here so that it is available earlier in the hierarchy

@@ -88,20 +88,6 @@ def ByteSliceT.toSlice : ByteSliceT → ByteSlice
 /-- Convert a byte array into a byte slice. -/
 def ByteArray.toSlice (arr : ByteArray) : ByteSlice := ⟨arr, 0, arr.size⟩
 
-/-- Convert a string of assumed-ASCII characters into a byte array.
-(If any characters are non-ASCII they will be reduced modulo 256.) -/
-@[deprecated (since := "2024-08-19")]
-def String.toAsciiByteArray (s : String) : ByteArray :=
-  let rec loop (p : Pos) (out : ByteArray) : ByteArray :=
-    if h : s.atEnd p then out else
-    let c := s.get p
-    have : utf8ByteSize s - (next s p).byteIdx < utf8ByteSize s - p.byteIdx :=
-      Nat.sub_lt_sub_left (Nat.lt_of_not_le <| mt decide_eq_true h)
-        (Nat.lt_add_of_pos_right (Char.utf8Size_pos _))
-    loop (s.next p) (out.push c.toUInt8)
-    termination_by utf8ByteSize s - p.byteIdx
-  loop 0 ByteArray.empty
-
 /-- Convert a byte slice into a string. This does not handle non-ASCII characters correctly:
 every byte will become a unicode character with codepoint < 256. -/
 def ByteSlice.toString (bs : ByteSlice) : String := Id.run do

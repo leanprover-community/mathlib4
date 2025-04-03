@@ -24,22 +24,13 @@ namespace Nat
 
 /-! multiplication -/
 
-theorem eq_zero_of_mul_eq_zero {n m : ℕ} (h : n * m = 0) : n = 0 ∨ m = 0 :=
-  mul_eq_zero.mp h
-
-/-! properties of inequality -/
-
-protected def ltGeByCases {a b : ℕ} {C : Sort u} (h₁ : a < b → C) (h₂ : b ≤ a → C) : C :=
-  Decidable.byCases h₁ fun h => h₂ (Or.elim (Nat.lt_or_ge a b) (fun a => absurd a h) fun a => a)
-
-protected def ltByCases {a b : ℕ} {C : Sort u} (h₁ : a < b → C) (h₂ : a = b → C) (h₃ : b < a → C) :
-    C :=
-  Nat.ltGeByCases h₁ fun h₁ => Nat.ltGeByCases h₃ fun h => h₂ (Nat.le_antisymm h h₁)
+@[deprecated (since := "2024-08-23")] alias ⟨eq_zero_of_mul_eq_zero, _⟩ := mul_eq_zero
 
 -- TODO: there are four variations, depending on which variables we assume to be nonneg
 
 /-! successor and predecessor -/
 
+@[deprecated (since := "2024-08-23")]
 def discriminate {B : Sort u} {n : ℕ} (H1 : n = 0 → B) (H2 : ∀ m, n = succ m → B) : B := by
   induction n with
   | zero => exact H1 rfl
@@ -53,12 +44,6 @@ theorem one_eq_succ_zero : 1 = succ 0 :=
 
 /-! induction principles -/
 
-def twoStepInduction {P : ℕ → Sort u} (H1 : P 0) (H2 : P 1)
-    (H3 : ∀ (n : ℕ) (_IH1 : P n) (_IH2 : P (succ n)), P (succ (succ n))) : ∀ a : ℕ, P a
-  | 0 => H1
-  | 1 => H2
-  | succ (succ _n) => H3 _ (twoStepInduction H1 H2 H3 _) (twoStepInduction H1 H2 H3 _)
-
 -- Unused in Mathlib;
 -- if downstream projects find this essential please copy it or remove the deprecation.
 @[deprecated (since := "2024-07-27")]
@@ -67,19 +52,6 @@ def subInduction {P : ℕ → ℕ → Sort u} (H1 : ∀ m, P 0 m) (H2 : ∀ n, P
   | 0, _m => H1 _
   | succ _n, 0 => H2 _
   | succ n, succ m => H3 _ _ (subInduction H1 H2 H3 n m)
-
--- Porting note: added `elab_as_elim`
-@[elab_as_elim]
-protected theorem strong_induction_on {p : Nat → Prop} (n : Nat)
-    (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=
-  Nat.strongRecOn n h
-
-protected theorem case_strong_induction_on {p : Nat → Prop} (a : Nat) (hz : p 0)
-    (hi : ∀ n, (∀ m, m ≤ n → p m) → p (succ n)) : p a :=
-  Nat.strong_induction_on a fun n =>
-    match n with
-    | 0 => fun _ => hz
-    | n + 1 => fun h₁ => hi n fun _m h₂ => h₁ _ (lt_succ_of_le h₂)
 
 /-! mod -/
 

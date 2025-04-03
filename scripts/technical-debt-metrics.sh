@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
 # `./scripts/technical-debt-metrics.sh` returns a tally of some technical debts in current Mathlib,
 # reporting also the change with respect to the same counts in
 # Mathlib from last week.
@@ -7,18 +12,8 @@
 # the script takes two optional arguments `<optCurrCommit> <optReferenceCommit>`
 # and tallies the same technical debts on `<optCurrCommit>` using `<optReferenceCommit>`
 # as a reference.
-
-if [ -n "${1}" ]; then
-  currCommit="${1}"
-else
-  currCommit="$(git rev-parse HEAD)"
-fi
-
-if [ -n "${2}" ]; then
-  refCommit="${2}"
-else
-  refCommit="$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)"
-fi
+currCommit="${1:-"$(git rev-parse HEAD)"}"
+refCommit="${2:-"$(git log --pretty=%H --since="$(date -I -d 'last week')" | tail -n -1)"}"
 
 # `tdc` produces a semi-formatted output of the form
 # ...
@@ -54,12 +49,9 @@ for i in ${!titlesAndRegexes[@]}; do
 done
 
 printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
-# the exceptions for files exceeding the 1500 line limit are split between the `longFile` and
-# the text-based linters.
-printf '%s|%s\n' "$(grep -c '^set_option linter.style.longFile [0-9]*' $(git ls-files '*.lean'))" "large files"
+# We count the number of large files, making sure to avoid counting the test file `test/Lint.lean`.
+printf '%s|%s\n' "$(git grep '^set_option linter.style.longFile [0-9]*' Mathlib | wc -l)" "large files"
 printf '%s|%s\n' "$(git grep "^open .*Classical" | grep -v " in$" -c)" "bare open (scoped) Classical"
-# We print the number of files, not the number of matches --- hence, the nested grep.
-printf '%s|%s\n' "$(git grep -c 'autoImplicit true' | grep -c -v 'test')" "non-test files with autoImplicit true"
 
 deprecatedFiles="$(git ls-files '**/Deprecated/*.lean' | xargs wc -l | sed 's=^ *==')"
 

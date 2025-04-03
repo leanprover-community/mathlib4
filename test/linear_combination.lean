@@ -120,9 +120,52 @@ example {α} [h : CommRing α] {a b c d e f : α} (h1 : a * d = b * c) (h2 : c *
 example (x y z w : ℚ) (hzw : z = w) : x * z + 2 * y * z = x * w + 2 * y * w := by
   linear_combination (x + 2 * y) * hzw
 
-example (x : ℤ) : x ^ 2 = x ^ 2 := by linear_combination x ^ 2
-
 example (x y : ℤ) (h : x = 0) : y ^ 2 * x = 0 := by linear_combination y ^ 2 * h
+
+/-! ### Tests in semirings -/
+
+example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
+  linear_combination h1
+
+example {a b : ℕ} (h1 : a = b + 4) (h2 : b = 2) : a = 6 := by
+  linear_combination h1 + h2
+
+example {a : ℕ} (h : a = 3) : 3 = a := by linear_combination -h
+
+example {a b : ℕ} (h1 : 3 * a = b + 5) (h2 : 2 * a = b + 3) : a = 2 := by
+  linear_combination h1 - h2
+
+/- Note: currently negation/subtraction is handled differently in "constants" than in "proofs", so
+in particular negation/subtraction does not "distribute". The following four tests record the
+current behaviour, without taking a stance on whether this should be considered a feature or a bug.
+-/
+
+example {a : ℕ}  (h : a = 3) : a ^ 2 + 3 = 4 * a := by
+  linear_combination a * h - h
+
+/--
+error: ring failed, ring expressions not equal
+a b : ℕ
+h : a = 3
+⊢ 3 + a ^ 2 + (a - 1) * 3 = a * 4 + a * (a - 1)
+-/
+#guard_msgs in
+example {a b : ℕ}  (h : a = 3) : a ^ 2 + 3 = 4 * a := by
+  linear_combination (a - 1) * h
+
+example {a b c : ℕ} (h1 : c = 1) (h2 : a - b = 4) : (a - b) * c = 4 := by
+  linear_combination (a - b) * h1 + h2
+
+/--
+error: ring failed, ring expressions not equal
+a b c : ℕ
+h1 : c = 1
+h2 : a - b = 4
+⊢ 4 + (a - b) * c + c * b + a = 4 + (a - b) + c * a + b
+-/
+#guard_msgs in
+example {a b c : ℕ} (h1 : c = 1) (h2 : a - b = 4) : (a - b) * c = 4 := by
+  linear_combination a * h1 - b * h1 + h2
 
 /-! ### Cases that explicitly use a config -/
 
@@ -153,6 +196,8 @@ example (x y : ℤ) (h1 : x = -3) (_h2 : y = 10) : 2 * x = -6 := by
 -- the corner case is "just apply the normalization procedure".
 example {x y z w : ℤ} (_h₁ : 3 * x = 4 + y) (_h₂ : x + 2 * y = 1) : z + w = w + z := by
   linear_combination
+
+example (x : ℤ) : x ^ 2 = x ^ 2 := by linear_combination
 
 -- this interacts as expected with options
 example {x y z w : ℤ} (_h₁ : 3 * x = 4 + y) (_h₂ : x + 2 * y = 1) : z + w = w + z := by
@@ -211,16 +256,30 @@ but is expected to have type
 example (x y : ℤ) (h1 : x * y + 2 * x = 1) (h2 : x = y) : x * y + 2 * x = 1 := by
   linear_combination h1 + (0 : ℝ) * h2
 
--- This fails because the linear_combination tactic requires the equations
---   and coefficients to use a type that fulfills the add_group condition,
---   and ℕ does not.
-example (a _b : ℕ) (h1 : a = 3) : a = 3 := by
-  fail_if_success linear_combination h1
-  linear_combination2 h1
-
 example (a b : ℤ) (x y : ℝ) (hab : a = b) (hxy : x = y) : 2 * x = 2 * y := by
   fail_if_success linear_combination 2 * hab
   linear_combination 2 * hxy
+
+/--
+warning: this constant has no effect on the linear combination; it can be dropped from the term
+-/
+#guard_msgs in
+example (x y : ℤ) (h1 : 3 * x + 2 * y = 10) : 3 * x + 2 * y = 10 := by
+  linear_combination h1 + 3
+
+/--
+warning: this constant has no effect on the linear combination; it can be dropped from the term
+-/
+#guard_msgs in
+example (x : ℤ) : x ^ 2 = x ^ 2 := by linear_combination x ^ 2
+
+/-- error: 'linear_combination' supports only linear operations -/
+#guard_msgs in
+example {x y : ℤ} (h : x = y) : x ^ 2 = y ^ 2 := by linear_combination h * h
+
+/-- error: 'linear_combination' supports only linear operations -/
+#guard_msgs in
+example {x y : ℤ} (h : x = y) : 3 / x = 3 / y := by linear_combination 3 / h
 
 /-! ### Cases with exponent -/
 

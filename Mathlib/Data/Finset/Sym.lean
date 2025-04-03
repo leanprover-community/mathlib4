@@ -109,11 +109,12 @@ theorem sym2_empty : (∅ : Finset α).sym2 = ∅ := rfl
 theorem sym2_eq_empty : s.sym2 = ∅ ↔ s = ∅ := by
   rw [← val_eq_zero, sym2_val, Multiset.sym2_eq_zero_iff, val_eq_zero]
 
-@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
+@[simp]
 theorem sym2_nonempty : s.sym2.Nonempty ↔ s.Nonempty := by
   rw [← not_iff_not]
   simp_rw [not_nonempty_iff_eq_empty, sym2_eq_empty]
 
+@[aesop safe apply (rule_sets := [finsetNonempty])]
 protected alias ⟨_, Nonempty.sym2⟩ := sym2_nonempty
 
 @[simp]

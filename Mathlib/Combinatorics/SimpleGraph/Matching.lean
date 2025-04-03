@@ -193,14 +193,21 @@ namespace ConnectedComponent
 
 section Finite
 
-variable [Fintype V]
-
-lemma even_card_of_isPerfectMatching [DecidableEq V] [DecidableRel G.Adj]
+lemma even_card_of_isPerfectMatching [Fintype V] [DecidableEq V] [DecidableRel G.Adj]
     (c : ConnectedComponent G) (hM : M.IsPerfectMatching) :
     Even (Fintype.card c.supp) := by
-  classical simpa using (hM.induce_connectedComponent_isMatching c).even_card
+  #adaptation_note
+  /--
+  After lean4#5020, some instances that use the chain of coercions
+  `[SetLike X], X → Set α → Sort _` are
+  blocked by the discrimination tree. This can be fixed by redeclaring the instance for `X`
+  using the double coercion but the proper fix seems to avoid the double coercion.
+  -/
+  letI : DecidablePred fun x ↦ x ∈ (M.induce c.supp).verts := fun a ↦ G.instDecidableMemSupp c a
+  simpa using (hM.induce_connectedComponent_isMatching c).even_card
 
-lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.deleteVerts ⊤ u).coe}
+lemma odd_matches_node_outside [Finite V] {u : Set V}
+    {c : ConnectedComponent (Subgraph.deleteVerts ⊤ u).coe}
     (hM : M.IsPerfectMatching) (codd : Odd (Nat.card c.supp)) :
     ∃ᵉ (w ∈ u) (v : ((⊤ : G.Subgraph).deleteVerts u).verts), M.Adj v w ∧ v ∈ c.supp := by
   by_contra! h
@@ -216,7 +223,6 @@ lemma odd_matches_node_outside {u : Set V} {c : ConnectedComponent (Subgraph.del
       Subgraph.induce_adj, hwnu, not_false_eq_true, and_self, Subgraph.top_adj, M.adj_sub hw.1,
       and_true] at hv' ⊢
     trivial
-
   apply Nat.not_even_iff_odd.2 codd
   haveI : Fintype ↑(Subgraph.induce M (Subtype.val '' supp c)).verts := Fintype.ofFinite _
   classical
@@ -246,9 +252,9 @@ lemma IsMatchingFree.mono {G G' : SimpleGraph V} (h : G ≤ G') (hmf : G'.IsMatc
   simp only [Subgraph.map_verts, Hom.coe_ofLE, id_eq, Set.image_id']
   exact hc.2 v
 
-lemma exists_maximal_isMatchingFree [Fintype V] [DecidableEq V]
-    (h : G.IsMatchingFree) : ∃ Gmax : SimpleGraph V,
-    G ≤ Gmax ∧ Gmax.IsMatchingFree ∧ ∀ G', G' > Gmax → ∃ M : Subgraph G', M.IsPerfectMatching := by
+lemma exists_maximal_isMatchingFree [Finite V] (h : G.IsMatchingFree) :
+    ∃ Gmax : SimpleGraph V, G ≤ Gmax ∧ Gmax.IsMatchingFree ∧
+      ∀ G', G' > Gmax → ∃ M : Subgraph G', M.IsPerfectMatching := by
   simp_rw [← @not_forall_not _ Subgraph.IsPerfectMatching]
   obtain ⟨Gmax, hGmax⟩ := Finite.exists_le_maximal h
   exact ⟨Gmax, ⟨hGmax.1, ⟨hGmax.2.prop, fun _ h' ↦ hGmax.2.not_prop_of_gt h'⟩⟩⟩

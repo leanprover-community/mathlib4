@@ -487,7 +487,7 @@ def pullbackComp {X Y Z : C} (S : J.Cover X) (f : Z ⟶ Y) (g : Y ⟶ X) :
 /-- Combine a family of covers over a cover. -/
 def bind {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : J.Cover X :=
   ⟨Sieve.bind S fun Y f hf => T ⟨Y, f, hf⟩,
-    J.bind_covering S.condition fun _ _ _ => (T _).condition⟩
+    J.bind_covering S.condition fun _ _ _ => (T { Y := _, f := _, hf := _ }).condition⟩
 
 /-- The canonical morphism from `S.bind T` to `T`. -/
 def bindToBase {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : S.bind T ⟶ S :=

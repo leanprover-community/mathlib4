@@ -7,6 +7,7 @@ import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Tower
 import Mathlib.FieldTheory.Minpoly.Basic
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Results on finite dimensionality and algebraicity of intermediate fields.

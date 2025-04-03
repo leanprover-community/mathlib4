@@ -101,7 +101,7 @@ theorem updateRow_eq_transvection [Finite n] (c : R) :
         StdBasisMatrix.apply_of_ne]
   · simp only [updateRow_ne, transvection, ha, Ne.symm ha, StdBasisMatrix.apply_of_ne, add_zero,
       Algebra.id.smul_eq_mul, Ne, not_false_iff, DMatrix.add_apply, Pi.smul_apply,
-      mul_zero, false_and_iff, add_apply]
+      mul_zero, false_and, add_apply]
 
 variable [Fintype n]
 
@@ -424,7 +424,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       rcases le_or_lt (n + 1) i with (hi | hi)
       · simp only [hi, n.le_succ.trans hi, if_true]
       · rw [if_neg, if_neg]
-        · simpa only [hni.symm, not_le, or_false_iff] using Nat.lt_succ_iff_lt_or_eq.1 hi
+        · simpa only [hni.symm, not_le, or_false] using Nat.lt_succ_iff_lt_or_eq.1 hi
         · simpa only [not_le] using hi
   | self =>
     simp only [length_listTransvecCol, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
@@ -447,7 +447,7 @@ theorem mul_listTransvecRow_last_col_take (i : Fin r ⊕ Unit) {k : ℕ} (hk : k
     simp only [List.take_succ, ← Matrix.mul_assoc, this, List.prod_append, Matrix.mul_one,
       List.prod_cons, List.prod_nil, Option.toList_some]
     rw [mul_transvection_apply_of_ne, IH hkr.le]
-    simp only [Ne, not_false_iff]
+    simp only [Ne, not_false_iff, reduceCtorEq]
 
 /-- Multiplying by all the matrices in `listTransvecRow M` does not change the last column. -/
 theorem mul_listTransvecRow_last_col (i : Fin r ⊕ Unit) :
@@ -500,7 +500,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       · simp [hi, n.le_succ.trans hi, if_true]
       · rw [if_neg, if_neg]
         · simpa only [not_le] using hi
-        · simpa only [hni.symm, not_le, or_false_iff] using Nat.lt_succ_iff_lt_or_eq.1 hi
+        · simpa only [hni.symm, not_le, or_false] using Nat.lt_succ_iff_lt_or_eq.1 hi
 
 /-- Multiplying by all the matrices either in `listTransvecCol M` and `listTransvecRow M` kills
 all the coefficients in the last row but the last one. -/
@@ -549,8 +549,8 @@ theorem exists_isTwoBlockDiagonal_of_ne_zero (hM : M (inr unit) (inr unit) ≠ 0
     List.ofFn fun i : Fin r =>
       ⟨inr unit, inl i, by simp, -M (inr unit) (inl i) / M (inr unit) (inr unit)⟩
   refine ⟨L, L', ?_⟩
-  have A : L.map toMatrix = listTransvecCol M := by simp [L, listTransvecCol, (· ∘ ·)]
-  have B : L'.map toMatrix = listTransvecRow M := by simp [L', listTransvecRow, (· ∘ ·)]
+  have A : L.map toMatrix = listTransvecCol M := by simp [L, listTransvecCol, Function.comp_def]
+  have B : L'.map toMatrix = listTransvecRow M := by simp [L', listTransvecRow, Function.comp_def]
   rw [A, B]
   exact isTwoBlockDiagonal_listTransvecCol_mul_mul_listTransvecRow M hM
 

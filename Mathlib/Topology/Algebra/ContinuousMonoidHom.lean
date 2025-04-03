@@ -5,7 +5,7 @@ Authors: Thomas Browning
 -/
 import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.Algebra.Group.Compact
-import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.UniformSpace.Ascoli
 
 /-!

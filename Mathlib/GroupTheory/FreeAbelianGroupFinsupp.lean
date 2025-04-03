@@ -153,7 +153,7 @@ theorem support_zsmul (k : ℤ) (h : k ≠ 0) (a : FreeAbelianGroup X) :
     support (k • a) = support a := by
   ext x
   simp only [mem_support_iff, AddMonoidHom.map_zsmul]
-  simp only [h, zsmul_int_int, false_or_iff, Ne, mul_eq_zero]
+  simp only [h, zsmul_int_int, false_or, Ne, mul_eq_zero]
 
 @[simp]
 theorem support_nsmul (k : ℕ) (h : k ≠ 0) (a : FreeAbelianGroup X) :

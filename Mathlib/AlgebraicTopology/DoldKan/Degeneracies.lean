@@ -49,7 +49,7 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
     linarith
   · intro hj'
     simp only [hnbq, add_comm b, add_assoc, hj', Fin.val_zero, zero_add, add_le_iff_nonpos_right,
-      nonpos_iff_eq_zero, add_eq_zero, false_and] at hj
+      nonpos_iff_eq_zero, add_eq_zero, false_and, reduceCtorEq] at hj
 
 theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1)) (hi : n + 1 ≤ i + q) :
     X.σ i ≫ (P q).f (n + 1) = 0 := by
@@ -95,7 +95,7 @@ theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1))
           comp_id, v.comp_Hσ_eq hi, assoc, SimplicialObject.δ_comp_σ_succ_assoc, Fin.eta,
           decomposition_Q n q, sum_comp, sum_comp, Finset.sum_eq_zero, add_zero, add_neg_eq_zero]
         intro j hj
-        simp only [true_and_iff, Finset.mem_univ, Finset.mem_filter] at hj
+        simp only [Finset.mem_univ, Finset.mem_filter] at hj
         obtain ⟨k, hk⟩ := Nat.le.dest (Nat.lt_succ_iff.mp (Fin.is_lt j))
         rw [add_comm] at hk
         have hi' : i = Fin.castSucc ⟨i, by omega⟩ := by

@@ -326,7 +326,7 @@ theorem respectsIso_mk {P : AffineTargetMorphismProperty}
     (h₂ : ∀ {X Y Z} (e : Y ≅ Z) (f : X ⟶ Y) [h : IsAffine Y],
       P f → @P _ _ (f ≫ e.hom) (isAffine_of_isIso e.inv)) :
     P.toProperty.RespectsIso := by
-  constructor
+  apply MorphismProperty.RespectsIso.mk
   · rintro X Y Z e f ⟨a, h⟩; exact ⟨a, h₁ e f h⟩
   · rintro X Y Z e f ⟨a, h⟩; exact ⟨isAffine_of_isIso e.inv, h₂ e f h⟩
 
@@ -398,7 +398,7 @@ theorem of_targetAffineLocally_of_isPullback
 
 instance (P : AffineTargetMorphismProperty) [P.toProperty.RespectsIso] :
     (targetAffineLocally P).RespectsIso := by
-  constructor
+  apply MorphismProperty.RespectsIso.mk
   · introv H U
     rw [morphismRestrict_comp, P.cancel_left_of_respectsIso]
     exact H U

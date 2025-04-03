@@ -204,7 +204,7 @@ protected theorem Multipliable.map_iff_of_leftInverse [CommMonoid γ] [Topologic
     Multipliable (g ∘ f) ↔ Multipliable f :=
   ⟨fun h ↦ by
     have := h.map _ hg'
-    rwa [← Function.comp.assoc, hinv.id] at this, fun h ↦ h.map _ hg⟩
+    rwa [← Function.comp_assoc, hinv.id] at this, fun h ↦ h.map _ hg⟩
 
 @[to_additive]
 theorem Multipliable.map_tprod [CommMonoid γ] [TopologicalSpace γ] [T2Space γ] (hf : Multipliable f)

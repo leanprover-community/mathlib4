@@ -3,6 +3,7 @@ Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
+import Mathlib.Algebra.BigOperators.Expect
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
@@ -105,6 +106,7 @@ less than or equal to the sum of the maximum values of the summands.
 universe u v
 
 open Finset NNReal ENNReal
+open scoped BigOperators
 
 noncomputable section
 
@@ -353,8 +355,8 @@ theorem young_inequality (a b : ℝ≥0∞) {p q : ℝ} (hpq : p.IsConjExponent 
     cases' h with h h <;> rw [h] <;> simp [h, hpq.pos, hpq.symm.pos]
   push_neg at h
   -- if a ≠ ⊤ and b ≠ ⊤, use the nnreal version: nnreal.young_inequality_real
-  rw [← coe_toNNReal h.left, ← coe_toNNReal h.right, ← coe_mul, coe_rpow_of_nonneg _ hpq.nonneg,
-    coe_rpow_of_nonneg _ hpq.symm.nonneg, ENNReal.ofReal, ENNReal.ofReal, ←
+  rw [← coe_toNNReal h.left, ← coe_toNNReal h.right, ← coe_mul, ← coe_rpow_of_nonneg _ hpq.nonneg,
+    ← coe_rpow_of_nonneg _ hpq.symm.nonneg, ENNReal.ofReal, ENNReal.ofReal, ←
     @coe_div (Real.toNNReal p) _ (by simp [hpq.pos]), ←
     @coe_div (Real.toNNReal q) _ (by simp [hpq.symm.pos]), ← coe_add, coe_le_coe]
   exact NNReal.young_inequality_real a.toNNReal b.toNNReal hpq
@@ -520,7 +522,7 @@ theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExponent q
         simp [h, hpq.ne_zero]
       simp only [Set.mem_setOf_eq, div_rpow, ← sum_div, ← rpow_mul,
         div_mul_cancel₀ _ hpq.symm.ne_zero, rpow_one, div_le_iff₀ hf, one_mul, hpq.mul_eq_add, ←
-        rpow_sub' _ A, add_sub_cancel_right, le_refl, true_and_iff, ← mul_div_assoc, B]
+        rpow_sub' A, add_sub_cancel_right, le_refl, true_and, ← mul_div_assoc, B]
       rw [div_eq_iff, ← rpow_add hf.ne', one_div, one_div, hpq.inv_add_inv_conj, rpow_one]
       simpa [hpq.symm.ne_zero] using hf.ne'
   · rintro _ ⟨g, hg, rfl⟩
@@ -660,6 +662,18 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   norm_cast at *
   exact NNReal.inner_le_weight_mul_Lp _ hp _ _
 
+/-- **Weighted Hölder inequality** in terms of `Finset.expect`. -/
+lemma compact_inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) {w f : ι → ℝ}
+    (hw : ∀ i, 0 ≤ w i) (hf : ∀ i, 0 ≤ f i) :
+    𝔼 i ∈ s, w i * f i ≤ (𝔼 i ∈ s, w i) ^ (1 - p⁻¹) * (𝔼 i ∈ s, w i * f i ^ p) ^ p⁻¹ := by
+  simp_rw [expect_eq_sum_div_card]
+  rw [div_rpow, div_rpow, div_mul_div_comm, ← rpow_add', sub_add_cancel, rpow_one]
+  gcongr
+  · exact inner_le_weight_mul_Lp_of_nonneg s hp _ _ hw hf
+  any_goals simp
+  · exact sum_nonneg fun i _ ↦ by have := hw i; have := hf i; positivity
+  · exact sum_nonneg fun i _ ↦ by have := hw i; positivity
+
 /-- **Hölder inequality**: the scalar product of two functions is bounded by the product of their
 `L^p` and `L^q` norms when `p` and `q` are conjugate exponents. A version for `ℝ`-valued functions.
 For an alternative version, convenient if the infinite sums are already expressed as `p`-th powers,
@@ -795,8 +809,8 @@ theorem inner_le_Lp_mul_Lq (hpq : p.IsConjExponent q) :
       ENNReal.sum_eq_top, not_or] using H'
   have := ENNReal.coe_le_coe.2 (@NNReal.inner_le_Lp_mul_Lq _ s (fun i => ENNReal.toNNReal (f i))
     (fun i => ENNReal.toNNReal (g i)) _ _ hpq)
-  simp [← ENNReal.coe_rpow_of_nonneg, le_of_lt hpq.pos, le_of_lt hpq.one_div_pos,
-    le_of_lt hpq.symm.pos, le_of_lt hpq.symm.one_div_pos] at this
+  simp [ENNReal.coe_rpow_of_nonneg, hpq.pos.le, hpq.one_div_pos.le, hpq.symm.pos.le,
+    hpq.symm.one_div_pos.le] at this
   convert this using 1 <;> [skip; congr 2] <;> [skip; skip; simp; skip; simp] <;>
     · refine Finset.sum_congr rfl fun i hi => ?_
       simp [H'.1 i hi, H'.2 i hi, -WithZero.coe_mul]
@@ -821,9 +835,9 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   have := coe_le_coe.2 <| NNReal.inner_le_weight_mul_Lp s hp.le (fun i ↦ ENNReal.toNNReal (w i))
     fun i ↦ ENNReal.toNNReal (f i)
   rw [coe_mul] at this
-  simp_rw [← coe_rpow_of_nonneg _ <| inv_nonneg.2 hp₀.le, coe_finset_sum, ENNReal.toNNReal_rpow,
+  simp_rw [coe_rpow_of_nonneg _ <| inv_nonneg.2 hp₀.le, coe_finset_sum, ← ENNReal.toNNReal_rpow,
     ← ENNReal.toNNReal_mul, sum_congr rfl fun i hi ↦ coe_toNNReal (H'.2 i hi)] at this
-  simp [← ENNReal.coe_rpow_of_nonneg, hp₀.le, hp₁.le] at this
+  simp [ENNReal.coe_rpow_of_nonneg, hp₀.le, hp₁.le] at this
   convert this using 2 with i hi
   · obtain hw | hw := eq_or_ne (w i) 0
     · simp [hw]
@@ -864,7 +878,7 @@ theorem Lp_add_le (hp : 1 ≤ p) :
     ENNReal.coe_le_coe.2
       (@NNReal.Lp_add_le _ s (fun i => ENNReal.toNNReal (f i)) (fun i => ENNReal.toNNReal (g i)) _
         hp)
-  push_cast [← ENNReal.coe_rpow_of_nonneg, le_of_lt pos, le_of_lt (one_div_pos.2 pos)] at this
+  push_cast [ENNReal.coe_rpow_of_nonneg, le_of_lt pos, le_of_lt (one_div_pos.2 pos)] at this
   convert this using 2 <;> [skip; congr 1; congr 1] <;>
     · refine Finset.sum_congr rfl fun i hi => ?_
       simp [H'.1 i hi, H'.2 i hi]

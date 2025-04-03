@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison, Apurva Nakade
+Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Apurva Nakade
 -/
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Ring.Int
@@ -77,6 +77,9 @@ instance instAddCommGroupWithOneGame : AddCommGroupWithOne Game where
 
 instance : Inhabited Game :=
   ⟨0⟩
+
+theorem zero_def : (0 : Game) = ⟦0⟧ :=
+  rfl
 
 instance instPartialOrderGame : PartialOrder Game where
   le := Quotient.lift₂ (· ≤ ·) fun x₁ y₁ x₂ y₂ hx hy => propext (le_congr hx hy)
@@ -219,23 +222,24 @@ end Game
 
 namespace PGame
 
-@[simp]
-theorem quot_neg (a : PGame) : (⟦-a⟧ : Game) = -⟦a⟧ :=
-  rfl
+@[simp] theorem quot_zero : (⟦0⟧ : Game) = 0 := rfl
+@[simp] theorem quot_one : (⟦1⟧ : Game) = 1 := rfl
+@[simp] theorem quot_neg (a : PGame) : (⟦-a⟧ : Game) = -⟦a⟧ := rfl
+@[simp] theorem quot_add (a b : PGame) : ⟦a + b⟧ = (⟦a⟧ : Game) + ⟦b⟧ := rfl
+@[simp] theorem quot_sub (a b : PGame) : ⟦a - b⟧ = (⟦a⟧ : Game) - ⟦b⟧ := rfl
 
 @[simp]
-theorem quot_add (a b : PGame) : ⟦a + b⟧ = (⟦a⟧ : Game) + ⟦b⟧ :=
-  rfl
-
-@[simp]
-theorem quot_sub (a b : PGame) : ⟦a - b⟧ = (⟦a⟧ : Game) - ⟦b⟧ :=
-  rfl
+theorem quot_natCast : ∀ n : ℕ, ⟦(n : PGame)⟧ = (n : Game)
+  | 0 => rfl
+  | n + 1 => by
+    rw [PGame.nat_succ, quot_add, Nat.cast_add, Nat.cast_one, quot_natCast]
+    rfl
 
 theorem quot_eq_of_mk'_quot_eq {x y : PGame} (L : x.LeftMoves ≃ y.LeftMoves)
     (R : x.RightMoves ≃ y.RightMoves) (hl : ∀ i, (⟦x.moveLeft i⟧ : Game) = ⟦y.moveLeft (L i)⟧)
-    (hr : ∀ j, (⟦x.moveRight j⟧ : Game) = ⟦y.moveRight (R j)⟧) : (⟦x⟧ : Game) = ⟦y⟧ := by
-  exact Quot.sound (equiv_of_mk_equiv L R (fun _ => equiv_iff_game_eq.2 (hl _))
-                                          (fun _ => equiv_iff_game_eq.2 (hr _)))
+    (hr : ∀ j, (⟦x.moveRight j⟧ : Game) = ⟦y.moveRight (R j)⟧) : (⟦x⟧ : Game) = ⟦y⟧ :=
+  game_eq (.of_equiv L R (fun _ => equiv_iff_game_eq.2 (hl _))
+    (fun _ => equiv_iff_game_eq.2 (hr _)))
 
 /-! Multiplicative operations can be defined at the level of pre-games,
 but to prove their properties we need to use the abelian group structure of games.
@@ -246,8 +250,8 @@ Hence we define them here. -/
 `{xL*y + x*yL - xL*yL, xR*y + x*yR - xR*yR | xL*y + x*yR - xL*yR, x*yL + xR*y - xR*yL }`. -/
 instance : Mul PGame.{u} :=
   ⟨fun x y => by
-    induction' x with xl xr _ _ IHxl IHxr generalizing y
-    induction' y with yl yr yL yR IHyl IHyr
+    induction x generalizing y with | mk xl xr _ _ IHxl IHxr => _
+    induction y with | mk yl yr yL yR IHyl IHyr => _
     have y := mk yl yr yL yR
     refine ⟨(xl × yl) ⊕ (xr × yr), (xl × yr) ⊕ (xr × yl), ?_, ?_⟩ <;> rintro (⟨i, j⟩ | ⟨i, j⟩)
     · exact IHxl i y + IHyl j - IHxl i (yL j)
@@ -392,7 +396,7 @@ def mulCommRelabelling (x y : PGame.{u}) : x * y ≡r y * x :=
   termination_by (x, y)
 
 theorem quot_mul_comm (x y : PGame.{u}) : (⟦x * y⟧ : Game) = ⟦y * x⟧ :=
-  Quot.sound (mulCommRelabelling x y).equiv
+  game_eq (mulCommRelabelling x y).equiv
 
 /-- `x * y` is equivalent to `y * x`. -/
 theorem mul_comm_equiv (x y : PGame) : x * y ≈ y * x :=
@@ -421,8 +425,8 @@ theorem mul_zero_equiv (x : PGame) : x * 0 ≈ 0 :=
   (mulZeroRelabelling x).equiv
 
 @[simp]
-theorem quot_mul_zero (x : PGame) : (⟦x * 0⟧ : Game) = ⟦0⟧ :=
-  @Quotient.sound _ _ (x * 0) _ x.mul_zero_equiv
+theorem quot_mul_zero (x : PGame) : (⟦x * 0⟧ : Game) = 0 :=
+  game_eq x.mul_zero_equiv
 
 /-- `0 * x` has exactly the same moves as `0`. -/
 def zeroMulRelabelling (x : PGame) : 0 * x ≡r 0 :=
@@ -433,8 +437,8 @@ theorem zero_mul_equiv (x : PGame) : 0 * x ≈ 0 :=
   (zeroMulRelabelling x).equiv
 
 @[simp]
-theorem quot_zero_mul (x : PGame) : (⟦0 * x⟧ : Game) = ⟦0⟧ :=
-  @Quotient.sound _ _ (0 * x) _ x.zero_mul_equiv
+theorem quot_zero_mul (x : PGame) : (⟦0 * x⟧ : Game) = 0 :=
+  game_eq x.zero_mul_equiv
 
 /-- `-x * y` and `-(x * y)` have the same moves. -/
 def negMulRelabelling (x y : PGame.{u}) : -x * y ≡r -(x * y) :=
@@ -457,7 +461,7 @@ def negMulRelabelling (x y : PGame.{u}) : -x * y ≡r -(x * y) :=
 
 @[simp]
 theorem quot_neg_mul (x y : PGame) : (⟦-x * y⟧ : Game) = -⟦x * y⟧ :=
-  Quot.sound (negMulRelabelling x y).equiv
+  game_eq (negMulRelabelling x y).equiv
 
 /-- `x * -y` and `-(x * y)` have the same moves. -/
 def mulNegRelabelling (x y : PGame) : x * -y ≡r -(x * y) :=
@@ -465,7 +469,7 @@ def mulNegRelabelling (x y : PGame) : x * -y ≡r -(x * y) :=
 
 @[simp]
 theorem quot_mul_neg (x y : PGame) : ⟦x * -y⟧ = (-⟦x * y⟧ : Game) :=
-  Quot.sound (mulNegRelabelling x y).equiv
+  game_eq (mulNegRelabelling x y).equiv
 
 theorem quot_neg_mul_neg (x y : PGame) : ⟦-x * -y⟧ = (⟦x * y⟧ : Game) := by simp
 
@@ -601,13 +605,13 @@ def mulOneRelabelling : ∀ x : PGame.{u}, x * 1 ≡r x
     (try rintro (⟨i, ⟨⟩⟩ | ⟨i, ⟨⟩⟩)) <;>
     { dsimp
       apply (Relabelling.subCongr (Relabelling.refl _) (mulZeroRelabelling _)).trans
-      rw [sub_zero]
+      rw [sub_zero_eq_add_zero]
       exact (addZeroRelabelling _).trans <|
         (((mulOneRelabelling _).addCongr (mulZeroRelabelling _)).trans <| addZeroRelabelling _) }
 
 @[simp]
 theorem quot_mul_one (x : PGame) : (⟦x * 1⟧ : Game) = ⟦x⟧ :=
-  Quot.sound <| PGame.Relabelling.equiv <| mulOneRelabelling x
+  game_eq <| PGame.Relabelling.equiv <| mulOneRelabelling x
 
 /-- `x * 1` is equivalent to `x`. -/
 theorem mul_one_equiv (x : PGame) : x * 1 ≈ x :=
@@ -619,7 +623,7 @@ def oneMulRelabelling (x : PGame) : 1 * x ≡r x :=
 
 @[simp]
 theorem quot_one_mul (x : PGame) : (⟦1 * x⟧ : Game) = ⟦x⟧ :=
-  Quot.sound <| PGame.Relabelling.equiv <| oneMulRelabelling x
+  game_eq <| PGame.Relabelling.equiv <| oneMulRelabelling x
 
 /-- `1 * x` is equivalent to `x`. -/
 theorem one_mul_equiv (x : PGame) : 1 * x ≈ x :=

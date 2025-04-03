@@ -4,6 +4,7 @@ name: lean4checker Workflow
 on:
   schedule:
     - cron: '0 0 * * *'   # Runs at 00:00 UTC every day
+  workflow_dispatch:
 
 jobs:
   check-lean4checker:
@@ -69,7 +70,7 @@ jobs:
         run: |
           git clone https://github.com/leanprover/lean4checker
           cd lean4checker
-          git checkout v4.11.0
+          git checkout v4.12.0-rc1
           # Now that the git hash is embedded in each olean,
           # we need to compile lean4checker on the same toolchain
           cp ../lean-toolchain .

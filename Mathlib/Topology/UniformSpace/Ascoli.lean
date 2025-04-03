@@ -89,7 +89,7 @@ theorem Equicontinuous.comap_uniformFun_eq [CompactSpace X] (F_eqcont : Equicont
   refine le_antisymm (UniformSpace.comap_mono UniformFun.uniformContinuous_toFun) ?_
   -- A bit of rewriting to get a nice intermediate statement.
   change comap _ _ ≤ comap _ _
-  simp_rw [Pi.uniformity, Filter.comap_iInf, comap_comap, Function.comp]
+  simp_rw [Pi.uniformity, Filter.comap_iInf, comap_comap, Function.comp_def]
   refine ((UniformFun.hasBasis_uniformity X α).comap (Prod.map F F)).ge_iff.mpr ?_
   -- Core of the proof: we need to show that, for any entourage `U` in `α`,
   -- the set `𝐓(U) := {(i,j) : ι × ι | ∀ x : X, (F i x, F j x) ∈ U}` belongs to the filter
@@ -220,7 +220,7 @@ theorem EquicontinuousOn.comap_uniformOnFun_eq {𝔖 : Set (Set X)} (𝔖_compac
   have H1 : (UniformOnFun.uniformSpace X α 𝔖).comap F =
       ⨅ (K ∈ 𝔖), (UniformFun.uniformSpace _ _).comap (K.restrict ∘ F) := by
     simp_rw [UniformOnFun.uniformSpace, UniformSpace.comap_iInf, ← UniformSpace.comap_comap,
-      UniformFun.ofFun, Equiv.coe_fn_mk, UniformOnFun.toFun, UniformOnFun.ofFun, Function.comp,
+      UniformFun.ofFun, Equiv.coe_fn_mk, UniformOnFun.toFun, UniformOnFun.ofFun, Function.comp_def,
       UniformFun, Equiv.coe_fn_symm_mk]
   -- Now, note that a similar fact is true for the uniform structure on `X → α` induced by
   -- the map `(⋃₀ 𝔖).restrict : (X → α) → ((⋃₀ 𝔖) → α)`: it is equal to the one induced by

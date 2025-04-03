@@ -5,9 +5,9 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Algebra.Algebra.Spectrum
-import Mathlib.Algebra.Star.Order
+import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
@@ -224,6 +224,10 @@ noncomputable def cfcHom : C(spectrum R a, R) →⋆ₐ[R] A :=
 lemma cfcHom_closedEmbedding :
     ClosedEmbedding <| (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
   (ContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.1
+
+@[fun_prop]
+lemma cfcHom_continuous : Continuous (cfcHom ha : C(spectrum R a, R) →⋆ₐ[R] A) :=
+  cfcHom_closedEmbedding ha |>.continuous
 
 lemma cfcHom_id :
     cfcHom ha ((ContinuousMap.id R).restrict <| spectrum R a) = a :=
@@ -653,6 +657,7 @@ lemma cfc_algebraMap (r : R) (f : R → R) : cfc f (algebraMap R A r) = algebraM
 @[simp] lemma cfc_apply_one {f : R → R} : cfc f (1 : A) = algebraMap R A (f 1) := by
   simpa using cfc_algebraMap (A := A) 1 f
 
+@[simp]
 instance IsStarNormal.cfc_map (f : R → R) (a : A) : IsStarNormal (cfc f a) where
   star_comm_self := by
     rw [Commute, SemiconjBy]
@@ -661,6 +666,17 @@ instance IsStarNormal.cfc_map (f : R → R) (a : A) : IsStarNormal (cfc f a) whe
       congr! 2
       exact mul_comm _ _
     · simp [cfc_apply_of_not_continuousOn a h]
+
+-- The following two lemmas are just `cfc_predicate`, but specific enough for the `@[simp]` tag.
+@[simp]
+protected lemma IsSelfAdjoint.cfc [ContinuousFunctionalCalculus R (IsSelfAdjoint : A → Prop)]
+    {f : R → R} {a : A} : IsSelfAdjoint (cfc f a) :=
+  cfc_predicate _ _
+
+@[simp]
+lemma cfc_nonneg_of_predicate [PartialOrder A]
+    [ContinuousFunctionalCalculus R (fun (a : A) => 0 ≤ a)] {f : R → R} {a : A} : 0 ≤ cfc f a :=
+  cfc_predicate _ _
 
 variable (R) in
 /-- In an `R`-algebra with a continuous functional calculus, every element satisfying the predicate

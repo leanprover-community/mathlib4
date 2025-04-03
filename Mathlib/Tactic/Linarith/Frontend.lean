@@ -92,7 +92,7 @@ disequality hypotheses, since this would lead to a number of runs exponential in
 disequalities in the context.
 
 The oracle is very modular. It can easily be replaced with another function of type
-`List Comp → ℕ → MetaM ((Batteries.HashMap ℕ ℕ))`,
+`List Comp → ℕ → MetaM ((Std.HashMap ℕ ℕ))`,
 which takes a list of comparisons and the largest variable
 index appearing in those comparisons, and returns a map from comparison indices to coefficients.
 An alternate oracle can be specified in the `LinarithConfig` object.

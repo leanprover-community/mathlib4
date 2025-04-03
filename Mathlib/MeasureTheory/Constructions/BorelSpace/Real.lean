@@ -480,7 +480,7 @@ theorem exists_spanning_measurableSet_le {α : Type*} {m : MeasurableSpace α} {
   let norm_sets := fun n : ℕ => { x | f x ≤ n }
   have norm_sets_spanning : ⋃ n, norm_sets n = Set.univ := by
     ext1 x
-    simp only [Set.mem_iUnion, Set.mem_setOf_eq, Set.mem_univ, iff_true_iff]
+    simp only [Set.mem_iUnion, Set.mem_setOf_eq, Set.mem_univ, iff_true]
     exact exists_nat_ge (f x)
   let sets n := sigma_finite_sets n ∩ norm_sets n
   have h_meas : ∀ n, MeasurableSet (sets n) := by
@@ -505,7 +505,7 @@ variable (μ : Measure ℝ) [IsFiniteMeasureOnCompacts μ]
 lemma tendsto_measure_Icc_nhdsWithin_right' (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[>] (0 : ℝ)) (𝓝 (μ {b})) := by
   rw [Real.singleton_eq_inter_Icc]
-  apply tendsto_measure_biInter_gt (fun r hr ↦ measurableSet_Icc.nullMeasurableSet)
+  apply tendsto_measure_biInter_gt (fun r hr ↦ nullMeasurableSet_Icc)
   · intro r s _rpos hrs
     exact Icc_subset_Icc (by linarith) (by linarith)
   · exact ⟨1, zero_lt_one, isCompact_Icc.measure_ne_top⟩

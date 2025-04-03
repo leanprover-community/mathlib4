@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Batteries.Classes.Order
-import Mathlib.Init.Logic
 import Mathlib.Data.Ordering.Basic
+import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.TypeStar
 
 /-!
 # Orders
@@ -17,8 +19,8 @@ and proves some basic lemmas about them.
 
 /-! ### Unbundled classes -/
 
-universe u
-variable {α : Type u}
+/-- An empty relation does not relate any elements. -/
+@[nolint unusedArguments] def EmptyRelation {α : Sort*} := fun _ _ : α ↦ False
 
 /-- `IsIrrefl X r` means the binary relation `r` on `X` is irreflexive (that is, `r x x` never
 holds). -/
@@ -71,7 +73,7 @@ class IsPartialOrder (α : Sort*) (r : α → α → Prop) extends IsPreorder α
 
 /-- `IsLinearOrder X r` means that the binary relation `r` on `X` is a linear order, that is,
 `IsPartialOrder X r` and `IsTotal X r`. -/
-class IsLinearOrder (α : Sort u) (r : α → α → Prop) extends IsPartialOrder α r, IsTotal α r : Prop
+class IsLinearOrder (α : Sort*) (r : α → α → Prop) extends IsPartialOrder α r, IsTotal α r : Prop
 
 /-- `IsEquiv X r` means that the binary relation `r` on `X` is an equivalence relation, that
 is, `IsPreorder X r` and `IsSymm X r`. -/
@@ -83,7 +85,7 @@ class IsStrictOrder (α : Sort*) (r : α → α → Prop) extends IsIrrefl α r,
 
 /-- `IsStrictWeakOrder X lt` means that the binary relation `lt` on `X` is a strict weak order,
 that is, `IsStrictOrder X lt` and `¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a`. -/
-class IsStrictWeakOrder (α : Sort u) (lt : α → α → Prop) extends IsStrictOrder α lt : Prop where
+class IsStrictWeakOrder (α : Sort*) (lt : α → α → Prop) extends IsStrictOrder α lt : Prop where
   incomp_trans : ∀ a b c, ¬lt a b ∧ ¬lt b a → ¬lt b c ∧ ¬lt c b → ¬lt a c ∧ ¬lt c a
 
 /-- `IsTrichotomous X lt` means that the binary relation `lt` on `X` is trichotomous, that is,
@@ -106,6 +108,7 @@ section
 
 variable {α : Sort*} {r : α → α → Prop} {a b c : α}
 
+/-- Local notation for an arbitrary binary relation `r`. -/
 local infixl:50 " ≺ " => r
 
 lemma irrefl [IsIrrefl α r] (a : α) : ¬a ≺ a := IsIrrefl.irrefl a
@@ -136,9 +139,54 @@ lemma total_of [IsTotal α r] (a b : α) : a ≺ b ∨ b ≺ a := IsTotal.total 
 @[elab_without_expected_type]
 lemma trichotomous_of [IsTrichotomous α r] : ∀ a b : α, a ≺ b ∨ a = b ∨ b ≺ a := trichotomous
 
+section
+
+/-- `IsRefl` as a definition, suitable for use in proofs. -/
+def Reflexive := ∀ x, x ≺ x
+
+/-- `IsSymm` as a definition, suitable for use in proofs. -/
+def Symmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x
+
+/-- `IsTrans` as a definition, suitable for use in proofs. -/
+def Transitive := ∀ ⦃x y z⦄, x ≺ y → y ≺ z → x ≺ z
+
+/-- `IsIrrefl` as a definition, suitable for use in proofs. -/
+def Irreflexive := ∀ x, ¬x ≺ x
+
+/-- `IsAntisymm` as a definition, suitable for use in proofs. -/
+def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
+
+/-- `IsTotal` as a definition, suitable for use in proofs. -/
+def Total := ∀ x y, x ≺ y ∨ y ≺ x
+
+@[deprecated Equivalence.refl (since := "2024-09-13")]
+theorem Equivalence.reflexive (h : Equivalence r) : Reflexive r := h.refl
+
+@[deprecated Equivalence.symm (since := "2024-09-13")]
+theorem Equivalence.symmetric (h : Equivalence r) : Symmetric r :=
+  fun _ _ ↦ h.symm
+
+@[deprecated Equivalence.trans (since := "2024-09-13")]
+theorem Equivalence.transitive (h : Equivalence r) : Transitive r :=
+  fun _ _ _ ↦ h.trans
+
+variable {β : Sort*} (r : β → β → Prop) (f : α → β)
+
+@[deprecated (since := "2024-09-13")]
+theorem InvImage.trans (h : Transitive r) : Transitive (InvImage r f) :=
+  fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
+
+@[deprecated (since := "2024-09-13")]
+theorem InvImage.irreflexive (h : Irreflexive r) : Irreflexive (InvImage r f) :=
+  fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
+
+end
+
 end
 
 /-! ### Bundled classes -/
+
+variable {α : Type*}
 
 section Preorder
 
@@ -147,7 +195,7 @@ section Preorder
 -/
 
 /-- A preorder is a reflexive, transitive relation `≤` with `a < b` defined in the obvious way. -/
-class Preorder (α : Type u) extends LE α, LT α where
+class Preorder (α : Type*) extends LE α, LT α where
   le_refl : ∀ a : α, a ≤ a
   le_trans : ∀ a b c : α, a ≤ b → b ≤ c → a ≤ c
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
@@ -235,7 +283,7 @@ section PartialOrder
 -/
 
 /-- A partial order is a reflexive, transitive, antisymmetric relation `≤`. -/
-class PartialOrder (α : Type u) extends Preorder α where
+class PartialOrder (α : Type*) extends Preorder α where
   le_antisymm : ∀ a b : α, a ≤ b → b ≤ a → a = b
 
 variable [PartialOrder α] {a b : α}
@@ -286,11 +334,11 @@ section LinearOrder
 -/
 
 /-- Default definition of `max`. -/
-def maxDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
+def maxDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
   if a ≤ b then b else a
 
 /-- Default definition of `min`. -/
-def minDefault {α : Type u} [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
+def minDefault [LE α] [DecidableRel ((· ≤ ·) : α → α → Prop)] (a b : α) :=
   if a ≤ b then a else b
 
 /-- This attempts to prove that a given instance of `compare` is equal to `compareOfLessAndEq` by
@@ -309,7 +357,7 @@ macro "compareOfLessAndEq_rfl" : tactic =>
 
 /-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
 We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
-class LinearOrder (α : Type u) extends PartialOrder α, Min α, Max α, Ord α :=
+class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α :=
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
@@ -390,6 +438,22 @@ def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (
   if h : x < y then h₁ h
   else if h' : y < x then h₃ h' else h₂ (le_antisymm (le_of_not_gt h') (le_of_not_gt h))
 
+namespace Nat
+
+/-! Deprecated properties of inequality on `Nat` -/
+
+@[deprecated (since := "2024-08-23")]
+protected def ltGeByCases {a b : Nat} {C : Sort*} (h₁ : a < b → C) (h₂ : b ≤ a → C) : C :=
+  Decidable.byCases h₁ fun h => h₂ (Or.elim (Nat.lt_or_ge a b) (fun a => absurd a h) fun a => a)
+
+set_option linter.deprecated false in
+@[deprecated ltByCases (since := "2024-08-23")]
+protected def ltByCases {a b : Nat} {C : Sort*} (h₁ : a < b → C) (h₂ : a = b → C)
+    (h₃ : b < a → C) : C :=
+  Nat.ltGeByCases h₁ fun h₁ => Nat.ltGeByCases h₃ fun h => h₂ (Nat.le_antisymm h h₁)
+
+end Nat
+
 theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
   le_of_not_lt fun h' => not_le_of_gt (H h') h
@@ -442,8 +506,8 @@ lemma min_assoc (a b c : α) : min (min a b) c = min a (min b c) := by
   · intro d h₁ h₂; apply le_min; apply le_min h₁; apply le_trans h₂; apply min_le_left
     apply le_trans h₂; apply min_le_right
 
-lemma min_left_comm : ∀ a b c : α, min a (min b c) = min b (min a c) :=
-  left_comm (@min α _) (@min_comm α _) (@min_assoc α _)
+lemma min_left_comm (a b c : α) : min a (min b c) = min b (min a c) := by
+  rw [← min_assoc, min_comm a, min_assoc]
 
 @[simp] lemma min_self (a : α) : min a a = a := by simp [min_def]
 
@@ -466,8 +530,8 @@ lemma max_assoc (a b c : α) : max (max a b) c = max a (max b c) := by
   · intro d h₁ h₂; apply max_le; apply max_le h₁; apply le_trans (le_max_left _ _) h₂
     apply le_trans (le_max_right _ _) h₂
 
-lemma max_left_comm : ∀ a b c : α, max a (max b c) = max b (max a c) :=
-  left_comm (@max α _) (@max_comm α _) (@max_assoc α _)
+lemma max_left_comm (a b c : α) : max a (max b c) = max b (max a c) := by
+  rw [← max_assoc, max_comm a, max_assoc]
 
 @[simp] lemma max_self (a : α) : max a a = a := by simp [max_def]
 
@@ -488,25 +552,24 @@ lemma max_lt (h₁ : a < c) (h₂ : b < c) : max a b < c := by
   cases le_total a b <;> simp [max_eq_left, max_eq_right, *]
 
 section Ord
-variable {o : Ordering}
 
 lemma compare_lt_iff_lt : compare a b = .lt ↔ a < b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> simp only [*, lt_irrefl]
+  split_ifs <;> simp only [*, lt_irrefl, reduceCtorEq]
 
 lemma compare_gt_iff_gt : compare a b = .gt ↔ a > b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> simp only [*, lt_irrefl, not_lt_of_gt]
+  split_ifs <;> simp only [*, lt_irrefl, not_lt_of_gt, reduceCtorEq]
   case _ h₁ h₂ =>
     have h : b < a := lt_trichotomy a b |>.resolve_left h₁ |>.resolve_left h₂
-    exact true_iff_iff.2 h
+    rwa [true_iff]
 
 lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
   rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
-  split_ifs <;> try simp only
-  case _ h   => exact false_iff_iff.2 <| ne_iff_lt_or_gt.2 <| .inl h
-  case _ _ h => exact true_iff_iff.2 h
-  case _ _ h => exact false_iff_iff.2 h
+  split_ifs <;> try simp only [reduceCtorEq]
+  case _ h   => rw [false_iff]; exact ne_iff_lt_or_gt.2 <| .inl h
+  case _ _ h => rwa [true_iff]
+  case _ _ h => rwa [false_iff]
 
 lemma compare_le_iff_le : compare a b ≠ .gt ↔ a ≤ b := by
   cases h : compare a b <;> simp
@@ -520,8 +583,8 @@ lemma compare_ge_iff_ge : compare a b ≠ .lt ↔ a ≥ b := by
   · exact le_of_eq <| (·.symm) <| compare_eq_iff_eq.1 h
   · exact le_of_lt <| compare_gt_iff_gt.1 h
 
-lemma compare_iff (a b : α) : compare a b = o ↔ o.toRel a b := by
-  cases o <;> simp only [Ordering.toRel]
+lemma compare_iff (a b : α) {o : Ordering} : compare a b = o ↔ o.Compares a b := by
+  cases o <;> simp only [Ordering.Compares]
   · exact compare_lt_iff_lt
   · exact compare_eq_iff_eq
   · exact compare_gt_iff_gt

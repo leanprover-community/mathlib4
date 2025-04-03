@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.TensorProduct.Graded.External
 import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
 # Graded tensor products over graded algebras

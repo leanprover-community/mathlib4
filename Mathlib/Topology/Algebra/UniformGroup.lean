@@ -93,6 +93,33 @@ theorem UniformContinuous.mul [UniformSpace β] {f : β → α} {g : β → α} 
 theorem uniformContinuous_mul : UniformContinuous fun p : α × α => p.1 * p.2 :=
   uniformContinuous_fst.mul uniformContinuous_snd
 
+@[to_additive]
+theorem UniformContinuous.mul_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f)
+    (a : α) : UniformContinuous fun x ↦ f x * a :=
+  hf.mul uniformContinuous_const
+
+@[to_additive]
+theorem UniformContinuous.const_mul [UniformSpace β] {f : β → α} (hf : UniformContinuous f)
+    (a : α) : UniformContinuous fun x ↦ a * f x :=
+  uniformContinuous_const.mul hf
+
+@[to_additive]
+theorem uniformContinuous_mul_left (a : α) : UniformContinuous fun b : α => a * b :=
+  uniformContinuous_id.const_mul _
+
+@[to_additive]
+theorem uniformContinuous_mul_right (a : α) : UniformContinuous fun b : α => b * a :=
+  uniformContinuous_id.mul_const _
+
+@[to_additive]
+theorem UniformContinuous.div_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f)
+    (a : α) : UniformContinuous fun x ↦ f x / a :=
+  hf.div uniformContinuous_const
+
+@[to_additive]
+theorem uniformContinuous_div_const (a : α) : UniformContinuous fun b : α => b / a :=
+  uniformContinuous_id.div_const _
+
 @[to_additive UniformContinuous.const_nsmul]
 theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℕ, UniformContinuous fun x => f x ^ n
@@ -146,7 +173,7 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
     (calc
       𝓤 α =
           ((𝓤 α).map fun x : α × α => (x.1 * a⁻¹, x.2 * a⁻¹)).map fun x : α × α =>
-            (x.1 * a, x.2 * a) := by simp [Filter.map_map, (· ∘ ·)]
+            (x.1 * a, x.2 * a) := by simp [Filter.map_map, Function.comp_def]
       _ ≤ (𝓤 α).map fun x : α × α => (x.1 * a, x.2 * a) :=
         Filter.map_mono (uniformContinuous_id.mul uniformContinuous_const)
       )
@@ -270,7 +297,7 @@ theorem uniformity_eq_comap_inv_mul_nhds_one :
     𝓤 α = comap (fun x : α × α => x.1⁻¹ * x.2) (𝓝 (1 : α)) := by
   rw [← comap_uniformity_mulOpposite, uniformity_eq_comap_nhds_one, ← op_one, ← comap_unop_nhds,
     comap_comap, comap_comap]
-  simp [(· ∘ ·)]
+  simp [Function.comp_def]
 
 @[to_additive]
 theorem uniformity_eq_comap_inv_mul_nhds_one_swapped :
@@ -464,7 +491,7 @@ def TopologicalGroup.toUniformSpace : UniformSpace G where
     refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)
     rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
     simpa using V_mul _ hz₂ _ hz₁
-  nhds_eq_comap_uniformity _ := by simp only [comap_comap, (· ∘ ·), nhds_translation_div]
+  nhds_eq_comap_uniformity _ := by simp only [comap_comap, Function.comp_def, nhds_translation_div]
 
 attribute [local instance] TopologicalGroup.toUniformSpace
 
@@ -568,7 +595,7 @@ theorem comm_topologicalGroup_is_uniform : UniformGroup G := by
   constructor
   rw [UniformContinuous, uniformity_prod_eq_prod, tendsto_map'_iff, uniformity_eq_comap_nhds_one' G,
     tendsto_comap_iff, prod_comap_comap_eq]
-  simp only [Function.comp, div_eq_mul_inv, mul_inv_rev, inv_inv, mul_comm, mul_left_comm] at *
+  simp only [Function.comp_def, div_eq_mul_inv, mul_inv_rev, inv_inv, mul_comm, mul_left_comm] at *
   simp only [inv_one, mul_one, ← mul_assoc] at this
   simp_rw [← mul_assoc, mul_comm]
   assumption
@@ -597,7 +624,7 @@ variable [TopologicalSpace β] [Group β]
 variable [FunLike hom β α] [MonoidHomClass hom β α] {e : hom}
 
 @[to_additive]
-theorem tendsto_div_comap_self (de : DenseInducing e) (x₀ : α) :
+theorem tendsto_div_comap_self (de : IsDenseInducing e) (x₀ : α) :
     Tendsto (fun t : β × β => t.2 / t.1) ((comap fun p : β × β => (e p.1, e p.2)) <| 𝓝 (x₀, x₀))
       (𝓝 1) := by
   have comm : ((fun x : α × α => x.2 / x.1) ∘ fun t : β × β => (e t.1, e t.2)) =
@@ -611,7 +638,7 @@ theorem tendsto_div_comap_self (de : DenseInducing e) (x₀ : α) :
 
 end
 
-namespace DenseInducing
+namespace IsDenseInducing
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 variable {G : Type*}
@@ -623,8 +650,8 @@ variable [TopologicalSpace β] [AddCommGroup β]
 variable [TopologicalSpace γ] [AddCommGroup γ] [TopologicalAddGroup γ]
 variable [TopologicalSpace δ] [AddCommGroup δ]
 variable [UniformSpace G] [AddCommGroup G]
-variable {e : β →+ α} (de : DenseInducing e)
-variable {f : δ →+ γ} (df : DenseInducing f)
+variable {e : β →+ α} (de : IsDenseInducing e)
+variable {f : δ →+ γ} (df : IsDenseInducing f)
 variable {φ : β →+ δ →+ G}
 variable (hφ : Continuous (fun p : β × δ => φ p.1 p.2))
 variable {W' : Set G} (W'_nhd : W' ∈ 𝓝 (0 : G))
@@ -698,7 +725,7 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
   have h₄ := H x₁ x₁_in x xU₁ y yV₁ y' y'V₁
   exact W4 h₁ h₂ h₃ h₄
 
-open DenseInducing
+open IsDenseInducing
 
 variable [T0Space G] [CompleteSpace G]
 
@@ -740,7 +767,7 @@ theorem extend_Z_bilin : Continuous (extend (de.prod df) (fun p : β × δ => φ
       rcases p with ⟨⟨x, y⟩, ⟨x', y'⟩⟩
       apply h <;> tauto
 
-end DenseInducing
+end IsDenseInducing
 
 section CompleteQuotient
 

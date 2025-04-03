@@ -60,7 +60,7 @@ namespace Prepartition
 variable {I J J₁ J₂ : Box ι} (π : Prepartition I) {π₁ π₂ : Prepartition I} {x : ι → ℝ}
 
 instance : Membership (Box ι) (Prepartition I) :=
-  ⟨fun J π => J ∈ π.boxes⟩
+  ⟨fun π J => J ∈ π.boxes⟩
 
 @[simp]
 theorem mem_boxes : J ∈ π.boxes ↔ J ∈ π := Iff.rfl
@@ -541,7 +541,8 @@ theorem filter_true : (π.filter fun _ => True) = π :=
 theorem iUnion_filter_not (π : Prepartition I) (p : Box ι → Prop) :
     (π.filter fun J => ¬p J).iUnion = π.iUnion \ (π.filter p).iUnion := by
   simp only [Prepartition.iUnion]
-  convert (@Set.biUnion_diff_biUnion_eq (ι → ℝ) (Box ι) π.boxes (π.filter p).boxes (↑) _).symm
+  convert
+    (@Set.biUnion_diff_biUnion_eq (ι → ℝ) (Box ι) π.boxes (π.filter p).boxes (↑) _).symm using 4
   · simp (config := { contextual := true })
   · rw [Set.PairwiseDisjoint]
     convert π.pairwiseDisjoint
@@ -622,7 +623,7 @@ def IsPartition (π : Prepartition I) :=
   ∀ x ∈ I, ∃ J ∈ π, x ∈ J
 
 theorem isPartition_iff_iUnion_eq {π : Prepartition I} : π.IsPartition ↔ π.iUnion = I := by
-  simp_rw [IsPartition, Set.Subset.antisymm_iff, π.iUnion_subset, true_and_iff, Set.subset_def,
+  simp_rw [IsPartition, Set.Subset.antisymm_iff, π.iUnion_subset, true_and, Set.subset_def,
     mem_iUnion, Box.mem_coe]
 
 @[simp]

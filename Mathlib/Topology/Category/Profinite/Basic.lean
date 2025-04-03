@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kevin Buzzard, Calle Sönne
+Authors: Kevin Buzzard, Calle Sönne, Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.Topology.Category.CompHaus.Basic
@@ -22,6 +22,9 @@ is called `Profinite.toTop`.
 
 A profinite type is defined to be a topological space which is
 compact, Hausdorff and totally disconnected.
+
+The category `Profinite` is defined using the structure `CompHausLike`. See the file
+`CompHausLike.Basic` for more information.
 
 ## TODO
 
@@ -246,5 +249,8 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
       exact top_ne_bot H
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget Profinite).epi_of_epi_map
+
+/-- The pi-type of profinite spaces is profinite. -/
+def pi {α : Type u} (β : α → Profinite) : Profinite := .of (Π (a : α), β a)
 
 end Profinite

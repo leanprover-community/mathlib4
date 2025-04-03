@@ -29,6 +29,7 @@ universe v₁ v₂ u₁ u₂
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable {T : Type u₁} [Category.{v₁} T]
+variable {D : Type u₂} [Category.{v₂} D]
 
 /-- The over category has as objects arrows in `T` with codomain `X` and as morphisms commutative
 triangles.
@@ -311,10 +312,6 @@ theorem iteratedSliceBackward_forget_forget :
 
 end IteratedSlice
 
-section
-
-variable {D : Type u₂} [Category.{v₂} D]
-
 /-- A functor `F : T ⥤ D` induces a functor `Over X ⥤ Over (F.obj X)` in the obvious way. -/
 @[simps]
 def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X) where
@@ -322,13 +319,9 @@ def post (F : T ⥤ D) : Over X ⥤ Over (F.obj X) where
   map f := Over.homMk (F.map f.left)
     (by simp only [Functor.id_obj, mk_left, Functor.const_obj_obj, mk_hom, ← F.map_comp, w])
 
-end
-
 end Over
 
 namespace CostructuredArrow
-
-variable {D : Type u₂} [Category.{v₂} D]
 
 /-- Reinterpreting an `F`-costructured arrow `F.obj d ⟶ X` as an arrow over `X` induces a functor
     `CostructuredArrow F X ⥤ Over X`. -/
@@ -572,18 +565,12 @@ instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right :=
   suffices l' = (homMk m : g ⟶ mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
   rw [← cancel_epi k]; ext; apply a
 
-section
-
-variable {D : Type u₂} [Category.{v₂} D]
-
 /-- A functor `F : T ⥤ D` induces a functor `Under X ⥤ Under (F.obj X)` in the obvious way. -/
 @[simps]
 def post {X : T} (F : T ⥤ D) : Under X ⥤ Under (F.obj X) where
   obj Y := mk <| F.map Y.hom
   map f := Under.homMk (F.map f.right)
     (by simp only [Functor.id_obj, Functor.const_obj_obj, mk_right, mk_hom, ← F.map_comp, w])
-
-end
 
 end Under
 
@@ -656,5 +643,137 @@ lemma toUnder_comp_forget (F : S ⥤ T) (X : T) (f : (Y : S) → X ⟶ F.obj Y)
   rfl
 
 end Functor
+
+namespace StructuredArrow
+
+/-- A functor from the structured arrow category on the projection functor for any structured
+arrow category. -/
+@[simps!]
+def ofStructuredArrowProjEquivalence.functor (F : D ⥤ T) (Y : T) (X : D) :
+    StructuredArrow X (StructuredArrow.proj Y F) ⥤ StructuredArrow Y (Under.forget X ⋙ F) :=
+  Functor.toStructuredArrow
+    (Functor.toUnder (StructuredArrow.proj X _ ⋙ StructuredArrow.proj Y _) _
+      (fun g => by exact g.hom) (fun m => by have := m.w; aesop_cat)) _ _
+    (fun f => f.right.hom) (by simp)
+
+/-- The inverse functor of `ofStructuredArrowProjEquivalence.functor`. -/
+@[simps!]
+def ofStructuredArrowProjEquivalence.inverse (F : D ⥤ T) (Y : T) (X : D) :
+    StructuredArrow Y (Under.forget X ⋙ F) ⥤ StructuredArrow X (StructuredArrow.proj Y F) :=
+  Functor.toStructuredArrow
+    (Functor.toStructuredArrow (StructuredArrow.proj Y _ ⋙ Under.forget X) _ _
+      (fun g => by exact g.hom) (fun m => by have := m.w; aesop_cat)) _ _
+    (fun f => f.right.hom) (by simp)
+
+/-- Characterization of the structured arrow category on the projection functor of any
+structured arrow category. -/
+def ofStructuredArrowProjEquivalence (F : D ⥤ T) (Y : T) (X : D) :
+    StructuredArrow X (StructuredArrow.proj Y F) ≌ StructuredArrow Y (Under.forget X ⋙ F) where
+  functor := ofStructuredArrowProjEquivalence.functor F Y X
+  inverse := ofStructuredArrowProjEquivalence.inverse F Y X
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+
+/-- The canonical functor from the structured arrow category on the diagonal functor
+`T ⥤ T × T` to the the structured arrow category on `Under.forget`. -/
+@[simps!]
+def ofDiagEquivalence.functor (X : T × T) :
+    StructuredArrow X (Functor.diag _) ⥤ StructuredArrow X.2 (Under.forget X.1) :=
+  Functor.toStructuredArrow
+    (Functor.toUnder (StructuredArrow.proj X _) _
+      (fun f => by exact f.hom.1) (fun m => by have := m.w; aesop_cat)) _ _
+    (fun f => f.hom.2) (fun m => by have := m.w; aesop_cat)
+
+/-- The inverse functor of `ofDiagEquivalence.functor`. -/
+@[simps!]
+def ofDiagEquivalence.inverse (X : T × T) :
+    StructuredArrow X.2 (Under.forget X.1) ⥤ StructuredArrow X (Functor.diag _) :=
+  Functor.toStructuredArrow (StructuredArrow.proj _ _ ⋙ Under.forget _) _ _
+    (fun f => (f.right.hom, f.hom)) (fun m => by have := m.w; aesop_cat)
+
+/-- Characterization of the structured arrow category on the diagonal functor `T ⥤ T × T`. -/
+def ofDiagEquivalence (X : T × T) :
+    StructuredArrow X (Functor.diag _) ≌ StructuredArrow X.2 (Under.forget X.1) where
+  functor := ofDiagEquivalence.functor X
+  inverse := ofDiagEquivalence.inverse X
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+
+/-- A version of `StructuredArrow.ofDiagEquivalence` with the roles of the first and second
+projection swapped. -/
+def ofDiagEquivalence' (X : T × T) :
+    StructuredArrow X (Functor.diag _) ≌ StructuredArrow X.1 (Under.forget X.2) :=
+  (ofDiagEquivalence X).trans <|
+    (ofStructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans <|
+    StructuredArrow.mapNatIso (Under.forget X.2).rightUnitor
+
+end StructuredArrow
+
+namespace CostructuredArrow
+
+/-- A functor from the costructured arrow category on the projection functor for any costructured
+arrow category. -/
+@[simps!]
+def ofCostructuredArrowProjEquivalence.functor (F : T ⥤ D) (Y : D) (X : T) :
+    CostructuredArrow (CostructuredArrow.proj F Y) X ⥤ CostructuredArrow (Over.forget X ⋙ F) Y :=
+  Functor.toCostructuredArrow
+    (Functor.toOver (CostructuredArrow.proj _ X ⋙ CostructuredArrow.proj F Y) _
+      (fun g => by exact g.hom) (fun m => by have := m.w; aesop_cat)) _ _
+    (fun f => f.left.hom) (by simp)
+
+/-- The inverse functor of `ofCostructuredArrowProjEquivalence.functor`. -/
+@[simps!]
+def ofCostructuredArrowProjEquivalence.inverse (F : T ⥤ D) (Y : D) (X : T) :
+    CostructuredArrow (Over.forget X ⋙ F) Y ⥤ CostructuredArrow (CostructuredArrow.proj F Y) X :=
+  Functor.toCostructuredArrow
+    (Functor.toCostructuredArrow (CostructuredArrow.proj _ Y ⋙ Over.forget X) _ _
+      (fun g => by exact g.hom) (fun m => by have := m.w; aesop_cat)) _ _
+    (fun f => f.left.hom) (by simp)
+
+/-- Characterization of the costructured arrow category on the projection functor of any
+costructured arrow category. -/
+def ofCostructuredArrowProjEquivalence (F : T ⥤ D) (Y : D) (X : T) :
+    CostructuredArrow (CostructuredArrow.proj F Y) X
+      ≌ CostructuredArrow (Over.forget X ⋙ F) Y where
+  functor := ofCostructuredArrowProjEquivalence.functor F Y X
+  inverse := ofCostructuredArrowProjEquivalence.inverse F Y X
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+
+/-- The canonical functor from the costructured arrow category on the diagonal functor
+`T ⥤ T × T` to the the costructured arrow category on `Under.forget`. -/
+@[simps!]
+def ofDiagEquivalence.functor (X : T × T) :
+    CostructuredArrow (Functor.diag _) X ⥤ CostructuredArrow (Over.forget X.1) X.2 :=
+  Functor.toCostructuredArrow
+    (Functor.toOver (CostructuredArrow.proj _ X) _
+      (fun g => by exact g.hom.1) (fun m => by have := congrArg (·.1) m.w; aesop_cat))
+    _ _
+    (fun f => f.hom.2) (fun m => by have := congrArg (·.2) m.w; aesop_cat)
+
+/-- The inverse functor of `ofDiagEquivalence.functor`. -/
+@[simps!]
+def ofDiagEquivalence.inverse (X : T × T) :
+    CostructuredArrow (Over.forget X.1) X.2 ⥤ CostructuredArrow (Functor.diag _) X :=
+  Functor.toCostructuredArrow (CostructuredArrow.proj _ _ ⋙ Over.forget _) _ X
+    (fun f => (f.left.hom, f.hom)) (fun m => by have := m.w; aesop_cat)
+
+/-- Characterization of the costructured arrow category on the diagonal functor `T ⥤ T × T`. -/
+def ofDiagEquivalence (X : T × T) :
+    CostructuredArrow (Functor.diag _) X ≌ CostructuredArrow (Over.forget X.1) X.2 where
+  functor := ofDiagEquivalence.functor X
+  inverse := ofDiagEquivalence.inverse X
+  unitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by simp)
+  counitIso := NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat)
+
+/-- A version of `CostructuredArrow.ofDiagEquivalence` with the roles of the first and second
+projection swapped. -/
+def ofDiagEquivalence' (X : T × T) :
+    CostructuredArrow (Functor.diag _) X ≌ CostructuredArrow (Over.forget X.2) X.1 :=
+  (ofDiagEquivalence X).trans <|
+    (ofCostructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans <|
+    CostructuredArrow.mapNatIso (Over.forget X.2).rightUnitor
+
+end CostructuredArrow
 
 end CategoryTheory

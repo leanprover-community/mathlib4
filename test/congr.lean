@@ -343,3 +343,16 @@ example
     {α : Type} (inst1 : BEq α) [LawfulBEq α] (inst2 : BEq α) [LawfulBEq α] (xs : List α) (x : α) :
     @List.erase _ inst1 xs x = @List.erase _ inst2 xs x := by
   congr! (config := { beqEq := false })
+
+
+/-!
+Check that congruence theorem generator operates at default transparency.
+Fixes error reported on Zulip:
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/congr!.20internal.20error/near/464820779
+-/
+
+def F := ∀ x : ℕ, x = 0 → ℕ
+def F.A (_ : F) : ℕ := 0
+def F.B (_ : F) : ℕ := 0
+theorem bug (H : F) (hp : H.A = 0) (hp' : H.B = 0) :
+  H H.A hp = H H.B hp' := by with_reducible congr!

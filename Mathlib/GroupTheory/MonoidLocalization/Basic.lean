@@ -548,7 +548,7 @@ theorem mk'_spec' (x) (y : S) : f.toMap y * f.mk' x y = f.toMap x := by rw [mul_
 
 @[to_additive]
 theorem eq_mk'_iff_mul_eq {x} {y : S} {z} : z = f.mk' x y ↔ z * f.toMap y = f.toMap x :=
-  ⟨fun H ↦ by rw [H, mk'_spec], fun H ↦ by erw [mul_inv_right, H]⟩
+  ⟨fun H ↦ by rw [H, mk'_spec], fun H ↦ by rw [mk', mul_inv_right, H]⟩
 
 @[to_additive]
 theorem mk'_eq_iff_eq_mul {x} {y : S} {z} : f.mk' x y = z ↔ f.toMap x = z * f.toMap y := by
@@ -773,9 +773,7 @@ theorem lift_comp : (f.lift hg).comp f.toMap = g := by ext; exact f.lift_eq hg _
 @[to_additive (attr := simp)]
 theorem lift_of_comp (j : N →* P) : f.lift (f.isUnit_comp j) = j := by
   ext
-  rw [lift_spec]
-  show j _ = j _ * _
-  erw [← j.map_mul, sec_spec']
+  simp_rw [lift_spec, MonoidHom.comp_apply, ← j.map_mul, sec_spec']
 
 @[to_additive]
 theorem epic_of_localizationMap {j k : N →* P} (h : ∀ a, j.comp f.toMap a = k.comp f.toMap a) :
@@ -834,8 +832,8 @@ theorem lift_surjective_iff :
     obtain ⟨z, hz⟩ := H v
     obtain ⟨x, hx⟩ := f.surj z
     use x
-    rw [← hz, f.eq_mk'_iff_mul_eq.2 hx, lift_mk', mul_assoc, mul_comm _ (g ↑x.2)]
-    erw [IsUnit.mul_liftRight_inv (g.restrict S) hg, mul_one]
+    rw [← hz, f.eq_mk'_iff_mul_eq.2 hx, lift_mk', mul_assoc, mul_comm _ (g ↑x.2),
+      ← MonoidHom.restrict_apply, IsUnit.mul_liftRight_inv (g.restrict S) hg, mul_one]
   · intro H v
     obtain ⟨x, hx⟩ := H v
     use f.mk' x.1 x.2
@@ -1131,9 +1129,9 @@ of `AddCommMonoid`s, `k ∘ f` is a Localization map for `M` at `S`."]
 def ofMulEquivOfLocalizations (k : N ≃* P) : LocalizationMap S P :=
   (k.toMonoidHom.comp f.toMap).toLocalizationMap (fun y ↦ isUnit_comp f k.toMonoidHom y)
     (fun v ↦
-      let ⟨z, hz⟩ := k.toEquiv.surjective v
+      let ⟨z, hz⟩ := k.surjective v
       let ⟨x, hx⟩ := f.surj z
-      ⟨x, show v * k _ = k _ by rw [← hx, map_mul, ← hz]; rfl⟩)
+      ⟨x, show v * k _ = k _ by rw [← hx, map_mul, ← hz]⟩)
     fun x y ↦ (k.apply_eq_iff_eq.trans f.eq_iff_exists).1
 
 @[to_additive (attr := simp)]
@@ -1203,18 +1201,17 @@ def ofMulEquivOfDom {k : P ≃* M} (H : T.map k.toMonoidHom = S) : LocalizationM
       ⟨z, hz⟩)
     (fun z ↦
       let ⟨x, hx⟩ := f.surj z
-      let ⟨v, hv⟩ := k.toEquiv.surjective x.1
-      let ⟨w, hw⟩ := k.toEquiv.surjective x.2
-      ⟨(v, ⟨w, H' ▸ show k w ∈ S from hw.symm ▸ x.2.2⟩),
-        show z * f.toMap (k.toEquiv w) = f.toMap (k.toEquiv v) by erw [hv, hw, hx]⟩)
-    fun x y ↦
-    show f.toMap _ = f.toMap _ → _ by
-      erw [f.eq_iff_exists]
-      exact
-        fun ⟨c, hc⟩ ↦
-          let ⟨d, hd⟩ := k.toEquiv.surjective c
-          ⟨⟨d, H' ▸ show k d ∈ S from hd.symm ▸ c.2⟩, by
-            erw [← hd, ← map_mul k, ← map_mul k] at hc; exact k.toEquiv.injective hc⟩
+      let ⟨v, hv⟩ := k.surjective x.1
+      let ⟨w, hw⟩ := k.surjective x.2
+      ⟨(v, ⟨w, H' ▸ show k w ∈ S from hw.symm ▸ x.2.2⟩), by
+        simp_rw [MonoidHom.comp_apply, MulEquiv.toMonoidHom_eq_coe, MonoidHom.coe_coe, hv, hw, hx]⟩)
+    fun x y ↦ by
+      rw [MonoidHom.comp_apply, MonoidHom.comp_apply, MulEquiv.toMonoidHom_eq_coe,
+        MonoidHom.coe_coe, f.eq_iff_exists]
+      rintro ⟨c, hc⟩
+      let ⟨d, hd⟩ := k.surjective c
+      refine ⟨⟨d, H' ▸ show k d ∈ S from hd.symm ▸ c.2⟩, ?_⟩
+      rw [← hd, ← map_mul k, ← map_mul k] at hc; exact k.injective hc
 
 @[to_additive (attr := simp)]
 theorem ofMulEquivOfDom_apply {k : P ≃* M} (H : T.map k.toMonoidHom = S) (x) :

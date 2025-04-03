@@ -3,14 +3,10 @@ Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
-import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.Limits.EssentiallySmall
 import Mathlib.CategoryTheory.Limits.Opposites
-import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Subobject.Lattice
-import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.Data.Set.Opposite
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Separating and detecting sets

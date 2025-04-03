@@ -7,6 +7,11 @@ These are the commands to generate a "root" `Mathlib/Init.lean` file, imported b
 
 BASH_MODULE_DOC
 
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
 # `mathlibNonImportingFiles` generates the list of `Mathlib` files that do not have Mathlib imports.
 # The output of `lake exe graph` are many lines like
 # `  "Mathlib..." -> "Mathlib...";`

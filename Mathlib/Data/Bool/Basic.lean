@@ -3,9 +3,8 @@ Copyright (c) 2014 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad
 -/
-import Batteries.Tactic.Init
+import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Defs
-import Mathlib.Order.Defs
 
 /-!
 # Booleans
@@ -120,21 +119,6 @@ alias of_decide_iff := decide_eq_true_iff
 
 theorem dichotomy (b : Bool) : b = false ∨ b = true := by cases b <;> simp
 
-theorem forall_bool' {p : Bool → Prop} (b : Bool) : (∀ x, p x) ↔ p b ∧ p !b :=
-  ⟨fun h ↦ ⟨h _, h _⟩, fun ⟨h₁, h₂⟩ x ↦ by cases b <;> cases x <;> assumption⟩
-
-@[simp]
-theorem forall_bool {p : Bool → Prop} : (∀ b, p b) ↔ p false ∧ p true :=
-  forall_bool' false
-
-theorem exists_bool' {p : Bool → Prop} (b : Bool) : (∃ x, p x) ↔ p b ∨ p !b :=
-  ⟨fun ⟨x, hx⟩ ↦ by cases x <;> cases b <;> first | exact .inl ‹_› | exact .inr ‹_›,
-    fun h ↦ by cases h <;> exact ⟨_, ‹_›⟩⟩
-
-@[simp]
-theorem exists_bool {p : Bool → Prop} : (∃ b, p b) ↔ p false ∨ p true :=
-  exists_bool' false
-
 theorem not_ne_id : not ≠ id := fun h ↦ false_ne_true <| congrFun h true
 
 @[deprecated (since := "2024-06-07")] alias eq_true_of_ne_false := eq_true_of_ne_false
@@ -243,7 +227,10 @@ theorem ofNat_toNat (b : Bool) : ofNat (toNat b) = b := by
 theorem injective_iff {α : Sort*} {f : Bool → α} : Function.Injective f ↔ f false ≠ f true :=
   ⟨fun Hinj Heq ↦ false_ne_true (Hinj Heq), fun H x y hxy ↦ by
     cases x <;> cases y
-    exacts [rfl, (H hxy).elim, (H hxy.symm).elim, rfl]⟩
+    · rfl
+    · exact (H hxy).elim
+    · exact (H hxy.symm).elim
+    · rfl⟩
 
 /-- **Kaminski's Equation** -/
 theorem apply_apply_apply (f : Bool → Bool) (x : Bool) : f (f (f x)) = f x := by

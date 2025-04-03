@@ -283,7 +283,7 @@ lemma ker_restrict_eq_of_codisjoint {p q : Submodule R M} (hpq : Codisjoint p q)
     {B : LinearMap.BilinForm R M} (hB : ∀ x ∈ p, ∀ y ∈ q, B x y = 0) :
     LinearMap.ker (B.restrict p) = (LinearMap.ker B).comap p.subtype := by
   ext ⟨z, hz⟩
-  simp only [LinearMap.mem_ker, Submodule.mem_comap, Submodule.coeSubtype]
+  simp only [LinearMap.mem_ker, Submodule.mem_comap, Submodule.coe_subtype]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext w
     obtain ⟨x, hx, y, hy, rfl⟩ := Submodule.exists_add_eq_of_codisjoint hpq w
@@ -294,7 +294,7 @@ lemma ker_restrict_eq_of_codisjoint {p q : Submodule R M} (hpq : Codisjoint p q)
 lemma inf_orthogonal_self_le_ker_restrict {W : Submodule R M} (b₁ : B.IsRefl) :
     W ⊓ B.orthogonal W ≤ (LinearMap.ker <| B.restrict W).map W.subtype := by
   rintro v ⟨hv : v ∈ W, hv' : v ∈ B.orthogonal W⟩
-  simp only [Submodule.mem_map, mem_ker, restrict_apply, Submodule.coeSubtype, Subtype.exists,
+  simp only [Submodule.mem_map, mem_ker, restrict_apply, Submodule.coe_subtype, Subtype.exists,
     exists_and_left, exists_prop, exists_eq_right_right]
   refine ⟨?_, hv⟩
   ext ⟨w, hw⟩

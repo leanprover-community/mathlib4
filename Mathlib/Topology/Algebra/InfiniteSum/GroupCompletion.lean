@@ -17,13 +17,13 @@ variable {α β : Type*} [AddCommGroup α] [UniformSpace α] [UniformAddGroup α
 /-- A function `f` has a sum in an uniform additive group `α` if and only if it has that sum in the
 completion of `α`. -/
 theorem hasSum_iff_hasSum_compl (f : β → α) (a : α) :
-    HasSum (toCompl ∘ f) a ↔ HasSum f a := (denseInducing_toCompl α).hasSum_iff f a
+    HasSum (toCompl ∘ f) a ↔ HasSum f a := (isDenseInducing_toCompl α).hasSum_iff f a
 
 /-- A function `f` is summable in a uniform additive group `α` if and only if it is summable in
 `Completion α` and its sum in `Completion α` lies in the range of `toCompl : α →+ Completion α`. -/
 theorem summable_iff_summable_compl_and_tsum_mem (f : β → α) :
     Summable f ↔ Summable (toCompl ∘ f) ∧ ∑' i, toCompl (f i) ∈ Set.range toCompl :=
-  (denseInducing_toCompl α).summable_iff_tsum_comp_mem_range f
+  (isDenseInducing_toCompl α).summable_iff_tsum_comp_mem_range f
 
 /-- A function `f` is summable in a uniform additive group `α` if and only if the net of its partial
 sums is Cauchy and its sum in `Completion α` lies in the range of `toCompl : α →+ Completion α`.

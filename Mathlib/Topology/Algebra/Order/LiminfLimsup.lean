@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Order.LiminfLimsup
-import Mathlib.Order.Filter.Archimedean
+import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Data.Set.Lattice
@@ -167,8 +167,8 @@ theorem limsSup_nhds (a : α) : limsSup (𝓝 a) = a :=
       | Or.inl ⟨c, hac, hcb⟩ => ⟨c, ge_mem_nhds hac, hcb⟩
       | Or.inr ⟨_, h⟩ => ⟨a, (𝓝 a).sets_of_superset (gt_mem_nhds hba) h, hba⟩
 
-theorem limsInf_nhds : ∀ a : α, limsInf (𝓝 a) = a :=
-  limsSup_nhds (α := αᵒᵈ)
+theorem limsInf_nhds (a : α) : limsInf (𝓝 a) = a :=
+  limsSup_nhds (α := αᵒᵈ) a
 
 /-- If a filter is converging, its limsup coincides with its limit. -/
 theorem limsInf_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝 a) : f.limsInf = a :=
@@ -184,8 +184,8 @@ theorem limsInf_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝
       _ ≤ f.limsInf := limsInf_le_limsInf_of_le h (isBounded_ge_nhds a) hb_le.isCobounded_flip)
 
 /-- If a filter is converging, its liminf coincides with its limit. -/
-theorem limsSup_eq_of_le_nhds : ∀ {f : Filter α} {a : α} [NeBot f], f ≤ 𝓝 a → f.limsSup = a :=
-  limsInf_eq_of_le_nhds (α := αᵒᵈ)
+theorem limsSup_eq_of_le_nhds {f : Filter α} {a : α} [NeBot f] (h : f ≤ 𝓝 a) : f.limsSup = a :=
+  limsInf_eq_of_le_nhds (α := αᵒᵈ) h
 
 /-- If a function has a limit, then its limsup coincides with its limit. -/
 theorem Filter.Tendsto.limsup_eq {f : Filter β} {u : β → α} {a : α} [NeBot f]
@@ -209,12 +209,9 @@ and is greater than or equal to the `limsup` of `f`, then `f` tends to `a` along
 theorem tendsto_of_le_liminf_of_limsup_le {f : Filter β} {u : β → α} {a : α} (hinf : a ≤ liminf u f)
     (hsup : limsup u f ≤ a) (h : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault)
     (h' : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault) : Tendsto u f (𝓝 a) := by
-  classical
-  by_cases hf : f = ⊥
-  · rw [hf]
-    exact tendsto_bot
-  · haveI : NeBot f := ⟨hf⟩
-    exact tendsto_of_liminf_eq_limsup (le_antisymm (le_trans (liminf_le_limsup h h') hsup) hinf)
+  rcases f.eq_or_neBot with rfl | _
+  · exact tendsto_bot
+  · exact tendsto_of_liminf_eq_limsup (le_antisymm (le_trans (liminf_le_limsup h h') hsup) hinf)
       (le_antisymm hsup (le_trans hinf (liminf_le_limsup h h'))) h h'
 
 /-- Assume that, for any `a < b`, a sequence can not be infinitely many times below `a` and
@@ -559,20 +556,41 @@ lemma liminf_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
     (fun _ _ h ↦ add_le_add_right h c) (continuous_add_right c).continuousAt cobdd bdd_below).symm
 
 /-- `limsup (c - xᵢ) = c - liminf xᵢ`. -/
-lemma limsup_const_sub (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [ContinuousSub R]
-    [OrderedSub R] [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
+lemma limsup_const_sub (F : Filter ι) [AddCommSemigroup R] [Sub R] [ContinuousSub R] [OrderedSub R]
+    [CovariantClass R R (fun x y ↦ x + y) fun x y ↦ x ≤ y] (f : ι → R) (c : R)
     (cobdd : F.IsCoboundedUnder (· ≥ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :
-    Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F :=
-  (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c - x)
+    Filter.limsup (fun i ↦ c - f i) F = c - Filter.liminf f F := by
+  rcases F.eq_or_neBot with rfl | _
+  · simp only [liminf, limsInf, limsup, limsSup, map_bot, eventually_bot, Set.setOf_true]
+    simp only [IsCoboundedUnder, IsCobounded, map_bot, eventually_bot, true_implies] at cobdd
+    rcases cobdd with ⟨x, hx⟩
+    refine (csInf_le ?_ (Set.mem_univ _)).antisymm
+      (tsub_le_iff_tsub_le.1 (le_csSup ?_ (Set.mem_univ _)))
+    · refine ⟨x - x, mem_lowerBounds.2 fun y ↦ ?_⟩
+      simp only [Set.mem_univ, true_implies]
+      exact tsub_le_iff_tsub_le.1 (hx (x - y))
+    · refine ⟨x, mem_upperBounds.2 fun y ↦ ?_⟩
+      simp only [Set.mem_univ, hx y, implies_true]
+  · exact (Antitone.map_limsInf_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c).continuousAt cobdd bdd_below).symm
 
 /-- `limsup (xᵢ - c) = (limsup xᵢ) - c`. -/
-lemma limsup_sub_const (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [ContinuousSub R]
-    [OrderedSub R] (f : ι → R) (c : R)
+lemma limsup_sub_const (F : Filter ι) [AddCommSemigroup R] [Sub R] [ContinuousSub R] [OrderedSub R]
+    (f : ι → R) (c : R)
     (bdd_above : F.IsBoundedUnder (· ≤ ·) f) (cobdd : F.IsCoboundedUnder (· ≤ ·) f) :
-    Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c :=
-  (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x - c)
-    (fun _ _ h ↦ tsub_le_tsub_right h c) (continuous_sub_right c).continuousAt bdd_above cobdd).symm
+    Filter.limsup (fun i ↦ f i - c) F = Filter.limsup f F - c := by
+  rcases F.eq_or_neBot with rfl | _
+  · have {a : R} : sInf Set.univ ≤ a := by
+      apply csInf_le _ (Set.mem_univ a)
+      simp only [IsCoboundedUnder, IsCobounded, map_bot, eventually_bot, true_implies] at cobdd
+      rcases cobdd with ⟨x, hx⟩
+      refine ⟨x, mem_lowerBounds.2 fun y ↦ ?_⟩
+      simp only [Set.mem_univ, hx y, implies_true]
+    simp only [limsup, limsSup, map_bot, eventually_bot, Set.setOf_true]
+    exact this.antisymm (tsub_le_iff_right.2 this)
+  · apply (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x - c) _ _).symm
+    · exact fun _ _ h ↦ tsub_le_tsub_right h c
+    · exact (continuous_sub_right c).continuousAt
 
 /-- `liminf (c - xᵢ) = c - limsup xᵢ`. -/
 lemma liminf_const_sub (F : Filter ι) [NeBot F] [AddCommSemigroup R] [Sub R] [ContinuousSub R]

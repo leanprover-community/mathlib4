@@ -186,7 +186,7 @@ end
 
 namespace Eq
 
-variable [Preorder α] {x y z : α}
+variable [Preorder α] {x y : α}
 
 /-- If `x = y` then `y ≤ x`. Note: this lemma uses `y ≤ x` instead of `x ≥ y`, because `le` is used
 almost exclusively in mathlib. -/
@@ -308,7 +308,7 @@ alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 protected theorem Decidable.eq_iff_le_not_lt [@DecidableRel α (· ≤ ·)] :
     a = b ↔ a ≤ b ∧ ¬a < b :=
   ⟨fun h ↦ ⟨h.le, h ▸ lt_irrefl _⟩, fun ⟨h₁, h₂⟩ ↦
-    h₁.antisymm <| Decidable.by_contradiction fun h₃ ↦ h₂ (h₁.lt_of_not_le h₃)⟩
+    h₁.antisymm <| Decidable.byContradiction fun h₃ ↦ h₂ (h₁.lt_of_not_le h₃)⟩
 
 theorem eq_iff_le_not_lt : a = b ↔ a ≤ b ∧ ¬a < b :=
   haveI := Classical.dec
@@ -463,11 +463,12 @@ theorem commutative_of_le {f : β → β → α} (comm : ∀ a b, f a b ≤ f b 
 
 /-- To prove associativity of a commutative binary operation `○`, we only to check
 `(a ○ b) ○ c ≤ a ○ (b ○ c)` for all `a`, `b`, `c`. -/
-theorem associative_of_commutative_of_le {f : α → α → α} (comm : Commutative f)
-    (assoc : ∀ a b c, f (f a b) c ≤ f a (f b c)) : Associative f := fun a b c ↦
-  le_antisymm (assoc _ _ _) <| by
-    rw [comm, comm b, comm _ c, comm a]
-    exact assoc _ _ _
+theorem associative_of_commutative_of_le {f : α → α → α} (comm : Std.Commutative f)
+    (assoc : ∀ a b c, f (f a b) c ≤ f a (f b c)) : Std.Associative f where
+  assoc a b c :=
+    le_antisymm (assoc _ _ _) <| by
+      rw [comm.comm, comm.comm b, comm.comm _ c, comm.comm a]
+      exact assoc _ _ _
 
 end PartialOrder
 
@@ -709,6 +710,10 @@ instance instLinearOrder (α : Type*) [LinearOrder α] : LinearOrder αᵒᵈ wh
   max_def := fun a b ↦ show (min .. : α) = _ by rw [min_comm, min_def]; rfl
   decidableLE := (inferInstance : DecidableRel (fun a b : α ↦ b ≤ a))
   decidableLT := (inferInstance : DecidableRel (fun a b : α ↦ b < a))
+
+/-- The opposite linear order to a given linear order -/
+def _root_.LinearOrder.swap (α : Type*) (_ : LinearOrder α) : LinearOrder α :=
+  inferInstanceAs <| LinearOrder (OrderDual α)
 
 instance : ∀ [Inhabited α], Inhabited αᵒᵈ := fun [x : Inhabited α] => x
 
@@ -1100,7 +1105,8 @@ instance (α β : Type*) [LE α] [LE β] : LE (α × β) :=
 
 -- Porting note (#10754): new instance
 instance instDecidableLE (α β : Type*) [LE α] [LE β] (x y : α × β)
-    [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) := And.decidable
+    [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) :=
+  inferInstanceAs (Decidable (x.1 ≤ y.1 ∧ x.2 ≤ y.2))
 
 theorem le_def [LE α] [LE β] {x y : α × β} : x ≤ y ↔ x.1 ≤ y.1 ∧ x.2 ≤ y.2 :=
   Iff.rfl
@@ -1189,6 +1195,12 @@ instance OrderDual.denselyOrdered (α : Type*) [LT α] [h : DenselyOrdered α] :
 @[simp]
 theorem denselyOrdered_orderDual [LT α] : DenselyOrdered αᵒᵈ ↔ DenselyOrdered α :=
   ⟨by convert @OrderDual.denselyOrdered αᵒᵈ _, @OrderDual.denselyOrdered α _⟩
+
+/-- Any ordered subsingleton is densely ordered. Not an instance to avoid a heavy subsingleton
+typeclass search. -/
+lemma Subsingleton.instDenselyOrdered {X : Type*} [Subsingleton X] [Preorder X] :
+    DenselyOrdered X :=
+  ⟨fun _ _ h ↦ (not_lt_of_subsingleton h).elim⟩
 
 instance [Preorder α] [Preorder β] [DenselyOrdered α] [DenselyOrdered β] : DenselyOrdered (α × β) :=
   ⟨fun a b ↦ by

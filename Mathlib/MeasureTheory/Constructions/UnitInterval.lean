@@ -25,7 +25,7 @@ theorem volume_def : (volume : Measure I) = volume.comap Subtype.val := rfl
 
 instance : IsProbabilityMeasure (volume : Measure I) where
   measure_univ := by
-    rw [Measure.Subtype.volume_univ measurableSet_Icc.nullMeasurableSet, Real.volume_Icc, sub_zero,
+    rw [Measure.Subtype.volume_univ nullMeasurableSet_Icc, Real.volume_Icc, sub_zero,
       ENNReal.ofReal_one]
 
 @[measurability]

@@ -346,7 +346,7 @@ theorem mem_support_ofMultiset_iff (a : α) : a ∈ (ofMultiset s hs).support �
 
 theorem ofMultiset_apply_of_not_mem {a : α} (ha : a ∉ s) : ofMultiset s hs a = 0 := by
   simpa only [ofMultiset_apply, ENNReal.div_eq_zero_iff, Nat.cast_eq_zero, Multiset.count_eq_zero,
-    ENNReal.natCast_ne_top, or_false_iff] using ha
+    ENNReal.natCast_ne_top, or_false] using ha
 
 section Measure
 

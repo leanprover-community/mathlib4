@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Shing Tak Lam, Mario Carneiro
+Authors: Kim Morrison, Shing Tak Lam, Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.Ring.List
@@ -246,9 +246,7 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
       · rfl
       · rw [Nat.zero_add] at ih ⊢
         simp only [ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
-    · apply Nat.strongInductionOn n _
-      clear n
-      intro n h
+    · induction n using Nat.strongRecOn with | ind n h => ?_
       cases n
       · rw [digits_zero]
         rfl
@@ -258,9 +256,9 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
         rw [Nat.mod_add_div]
 
 theorem ofDigits_one (L : List ℕ) : ofDigits 1 L = L.sum := by
-  induction' L with _ _ ih
-  · rfl
-  · simp [ofDigits, List.sum_cons, ih]
+  induction L with
+  | nil => rfl
+  | cons _ _ ih => simp [ofDigits, List.sum_cons, ih]
 
 /-!
 ### Properties
@@ -328,8 +326,8 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
     simp only [zero_add, digits_one, List.getLast_replicate_succ m 1]
     exact Nat.one_ne_zero
   revert hm
-  apply Nat.strongInductionOn m
-  intro n IH hn
+  induction m using Nat.strongRecOn with | ind n IH => ?_
+  intro hn
   by_cases hnb : n < b + 2
   · simpa only [digits_of_lt (b + 2) n hn hnb]
   · rw [digits_getLast n (le_add_left 2 b)]
@@ -362,8 +360,8 @@ theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 
 
 /-- The digits in the base b+2 expansion of n are all less than b+2 -/
 theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b + 2 := by
-  apply Nat.strongInductionOn m
-  intro n IH d hd
+  induction m using Nat.strongRecOn with | ind n IH => ?_
+  intro d hd
   cases' n with n
   · rw [digits_zero] at hd
     cases hd
@@ -440,9 +438,10 @@ theorem le_digits_len_le (b n m : ℕ) (h : n ≤ m) : (digits b n).length ≤ (
 
 @[mono]
 theorem ofDigits_monotone {p q : ℕ} (L : List ℕ) (h : p ≤ q) : ofDigits p L ≤ ofDigits q L := by
-  induction' L with _ _ hi
-  · rfl
-  · simp only [ofDigits, cast_id, add_le_add_iff_left]
+  induction L with
+  | nil => rfl
+  | cons _ _ hi =>
+    simp only [ofDigits, cast_id, add_le_add_iff_left]
     exact Nat.mul_le_mul h hi
 
 theorem sum_le_ofDigits {p : ℕ} (L : List ℕ) (h : 1 ≤ p) : L.sum ≤ ofDigits p L :=

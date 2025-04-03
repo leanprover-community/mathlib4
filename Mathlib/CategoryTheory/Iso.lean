@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
+Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 import Mathlib.Tactic.CategoryTheory.Reassoc
 
@@ -355,7 +355,7 @@ theorem inv_id : inv (𝟙 X) = 𝟙 X := by
   apply inv_eq_of_hom_inv_id
   simp
 
-@[simp]
+@[simp, reassoc]
 theorem inv_comp [IsIso f] [IsIso h] : inv (f ≫ h) = inv h ≫ inv f := by
   apply inv_eq_of_hom_inv_id
   simp

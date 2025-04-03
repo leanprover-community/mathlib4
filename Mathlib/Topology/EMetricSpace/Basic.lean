@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébas
 -/
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Topology.EMetricSpace.Defs
-import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.UniformConvergence
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 
@@ -138,61 +137,14 @@ end EMetric
 
 open EMetric
 
-section Pi
-
-open Finset
-
-variable {π : β → Type*} [Fintype β]
-
--- Porting note: reordered instances
-instance [∀ b, EDist (π b)] : EDist (∀ b, π b) where
-  edist f g := Finset.sup univ fun b => edist (f b) (g b)
-
-theorem edist_pi_def [∀ b, EDist (π b)] (f g : ∀ b, π b) :
-    edist f g = Finset.sup univ fun b => edist (f b) (g b) :=
-  rfl
-
-theorem edist_le_pi_edist [∀ b, EDist (π b)] (f g : ∀ b, π b) (b : β) :
-    edist (f b) (g b) ≤ edist f g :=
-  le_sup (f := fun b => edist (f b) (g b)) (Finset.mem_univ b)
-
-theorem edist_pi_le_iff [∀ b, EDist (π b)] {f g : ∀ b, π b} {d : ℝ≥0∞} :
-    edist f g ≤ d ↔ ∀ b, edist (f b) (g b) ≤ d :=
-  Finset.sup_le_iff.trans <| by simp only [Finset.mem_univ, forall_const]
-
-theorem edist_pi_const_le (a b : α) : (edist (fun _ : β => a) fun _ => b) ≤ edist a b :=
-  edist_pi_le_iff.2 fun _ => le_rfl
-
-@[simp]
-theorem edist_pi_const [Nonempty β] (a b : α) : (edist (fun _ : β => a) fun _ => b) = edist a b :=
-  Finset.sup_const univ_nonempty (edist a b)
-
-/-- The product of a finite number of pseudoemetric spaces, with the max distance, is still
-a pseudoemetric space.
-This construction would also work for infinite products, but it would not give rise
-to the product topology. Hence, we only formalize it in the good situation of finitely many
-spaces. -/
-instance pseudoEMetricSpacePi [∀ b, PseudoEMetricSpace (π b)] : PseudoEMetricSpace (∀ b, π b) where
-  edist_self f := bot_unique <| Finset.sup_le <| by simp
-  edist_comm f g := by simp [edist_pi_def, edist_comm]
-  edist_triangle f g h := edist_pi_le_iff.2 fun b => le_trans (edist_triangle _ (g b) _)
-    (add_le_add (edist_le_pi_edist _ _ _) (edist_le_pi_edist _ _ _))
-  toUniformSpace := Pi.uniformSpace _
-  uniformity_edist := by
-    simp only [Pi.uniformity, PseudoEMetricSpace.uniformity_edist, comap_iInf, gt_iff_lt,
-      preimage_setOf_eq, comap_principal, edist_pi_def]
-    rw [iInf_comm]; congr; funext ε
-    rw [iInf_comm]; congr; funext εpos
-    simp [setOf_forall, εpos]
-
-end Pi
-
 namespace EMetric
 
 variable {x y z : α} {ε ε₁ ε₂ : ℝ≥0∞} {s t : Set α}
 
 theorem inseparable_iff : Inseparable x y ↔ edist x y = 0 := by
   simp [inseparable_iff_mem_closure, mem_closure_iff, edist_comm, forall_lt_iff_le']
+
+alias ⟨_root_.Inseparable.edist_eq_zero, _⟩ := EMetric.inseparable_iff
 
 -- see Note [nolint_ge]
 /-- In a pseudoemetric space, Cauchy sequences are characterized by the fact that, eventually,
@@ -298,22 +250,6 @@ metric spaces. We make sure that the uniform structure thus constructed is the o
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
 instance Prod.emetricSpaceMax [EMetricSpace β] : EMetricSpace (γ × β) :=
   .ofT0PseudoEMetricSpace _
-
-section Pi
-
-open Finset
-
-variable {π : β → Type*} [Fintype β]
-
-/-- The product of a finite number of emetric spaces, with the max distance, is still
-an emetric space.
-This construction would also work for infinite products, but it would not give rise
-to the product topology. Hence, we only formalize it in the good situation of finitely many
-spaces. -/
-instance emetricSpacePi [∀ b, EMetricSpace (π b)] : EMetricSpace (∀ b, π b) :=
-  .ofT0PseudoEMetricSpace _
-
-end Pi
 
 namespace EMetric
 

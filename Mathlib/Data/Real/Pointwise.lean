@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Eric Wieser
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Pointwise
 import Mathlib.Data.Real.Archimedean
+import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # Pointwise operations on sets of reals

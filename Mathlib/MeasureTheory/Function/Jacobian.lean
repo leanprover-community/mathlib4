@@ -377,7 +377,7 @@ theorem addHaar_image_le_mul_of_det_lt (A : E →L[ℝ] E) {m : ℝ≥0}
   have L : Tendsto (fun a => (m : ℝ≥0∞) * (μ s + a)) (𝓝[>] 0) (𝓝 (m * (μ s + 0))) := by
     apply Tendsto.mono_left _ nhdsWithin_le_nhds
     apply ENNReal.Tendsto.const_mul (tendsto_const_nhds.add tendsto_id)
-    simp only [ENNReal.coe_ne_top, Ne, or_true_iff, not_false_iff]
+    simp only [ENNReal.coe_ne_top, Ne, or_true, not_false_iff]
   rw [add_zero] at L
   exact ge_of_tendsto L J
 
@@ -420,10 +420,10 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
   -- record smallness conditions for `δ` that will be needed to apply `hδ₀` below.
   have L1 : ∀ᶠ δ in 𝓝 (0 : ℝ≥0), Subsingleton E ∨ δ < ‖(B.symm : E →L[ℝ] E)‖₊⁻¹ := by
     by_cases h : Subsingleton E
-    · simp only [h, true_or_iff, eventually_const]
-    simp only [h, false_or_iff]
+    · simp only [h, true_or, eventually_const]
+    simp only [h, false_or]
     apply Iio_mem_nhds
-    simpa only [h, false_or_iff, inv_pos] using B.subsingleton_or_nnnorm_symm_pos
+    simpa only [h, false_or, inv_pos] using B.subsingleton_or_nnnorm_symm_pos
   have L2 :
     ∀ᶠ δ in 𝓝 (0 : ℝ≥0), ‖(B.symm : E →L[ℝ] E)‖₊ * (‖(B.symm : E →L[ℝ] E)‖₊⁻¹ - δ)⁻¹ * δ < δ₀ := by
     have :
@@ -448,7 +448,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
       mul_comm, ← ENNReal.coe_inv mpos.ne']
     · apply Or.inl
       simpa only [ENNReal.coe_eq_zero, Ne] using mpos.ne'
-    · simp only [ENNReal.coe_ne_top, true_or_iff, Ne, not_false_iff]
+    · simp only [ENNReal.coe_ne_top, true_or, Ne, not_false_iff]
   -- as `f⁻¹` is well approximated by `B⁻¹`, the conclusion follows from `hδ₀`
   -- and our choice of `δ`.
   exact hδ₀ _ _ ((hf'.to_inv h1δ).mono_num h2δ.le)
@@ -806,7 +806,7 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv_aux1 (hs : MeasurableSet s)
       rw [dist_eq_norm]
       calc
         ‖B - A‖ ≤ (min δ δ'' : ℝ≥0) := hB
-        _ ≤ δ'' := by simp only [le_refl, NNReal.coe_min, min_le_iff, or_true_iff]
+        _ ≤ δ'' := by simp only [le_refl, NNReal.coe_min, min_le_iff, or_true]
         _ < δ' := half_lt_self δ'pos
     · intro t g htg
       exact h t g (htg.mono_num (min_le_left _ _))
@@ -941,7 +941,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux1 (hs : MeasurableSet s)
     refine ⟨min δ δ'', lt_min δpos (half_pos δ'pos), ?_, ?_⟩
     · intro B hB
       apply I'' _ (hB.trans _)
-      simp only [le_refl, NNReal.coe_min, min_le_iff, or_true_iff]
+      simp only [le_refl, NNReal.coe_min, min_le_iff, or_true]
     · intro t g htg
       rcases eq_or_ne (μ t) ∞ with (ht | ht)
       · simp only [ht, εpos.ne', ENNReal.mul_top, ENNReal.coe_eq_zero, le_top, Ne,
@@ -1155,7 +1155,7 @@ theorem integrableOn_image_iff_integrableOn_abs_det_fderiv_smul (hs : Measurable
     IntegrableOn g (f '' s) μ ↔ IntegrableOn (fun x => |(f' x).det| • g (f x)) s μ := by
   rw [IntegrableOn, ← restrict_map_withDensity_abs_det_fderiv_eq_addHaar μ hs hf' hf,
     (measurableEmbedding_of_fderivWithin hs hf' hf).integrable_map_iff]
-  simp only [Set.restrict_eq, ← Function.comp.assoc, ENNReal.ofReal]
+  simp only [Set.restrict_eq, ← Function.comp_assoc, ENNReal.ofReal]
   rw [← (MeasurableEmbedding.subtype_coe hs).integrable_map_iff, map_comap_subtype_coe hs,
     restrict_withDensity hs, integrable_withDensity_iff_integrable_coe_smul₀]
   · simp_rw [IntegrableOn, Real.coe_toNNReal _ (abs_nonneg _), Function.comp_apply]

@@ -3,15 +3,14 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
-import Mathlib.MeasureTheory.Integral.DivergenceTheorem
-import Mathlib.MeasureTheory.Integral.CircleIntegral
-import Mathlib.Analysis.Calculus.Dslope
-import Mathlib.Analysis.Analytic.Basic
-import Mathlib.Analysis.Complex.ReImTopology
+import Mathlib.Analysis.Analytic.Uniqueness
 import Mathlib.Analysis.Calculus.DiffContOnCl
+import Mathlib.Analysis.Calculus.Dslope
 import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Data.Real.Cardinality
+import Mathlib.Analysis.Complex.ReImTopology
+import Mathlib.MeasureTheory.Integral.CircleIntegral
+import Mathlib.MeasureTheory.Integral.DivergenceTheorem
+import Mathlib.MeasureTheory.Measure.Lebesgue.Complex
 
 /-!
 # Cauchy integral formula
@@ -569,14 +568,18 @@ protected theorem _root_.DifferentiableOn.analyticAt {s : Set ℂ} {f : ℂ → 
   lift R to ℝ≥0 using hR0.le
   exact ((hd.mono hRs).hasFPowerSeriesOnBall hR0).analyticAt
 
+theorem _root_.DifferentiableOn.analyticOnNhd {s : Set ℂ} {f : ℂ → E} (hd : DifferentiableOn ℂ f s)
+    (hs : IsOpen s) : AnalyticOnNhd ℂ f s := fun _z hz => hd.analyticAt (hs.mem_nhds hz)
+
 theorem _root_.DifferentiableOn.analyticOn {s : Set ℂ} {f : ℂ → E} (hd : DifferentiableOn ℂ f s)
-    (hs : IsOpen s) : AnalyticOn ℂ f s := fun _z hz => hd.analyticAt (hs.mem_nhds hz)
+    (hs : IsOpen s) : AnalyticOn ℂ f s :=
+  (hd.analyticOnNhd hs).analyticOn
 
 /-- If `f : ℂ → E` is complex differentiable on some open set `s`, then it is continuously
 differentiable on `s`. -/
 protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → E} {n : ℕ}
     (hd : DifferentiableOn ℂ f s) (hs : IsOpen s) : ContDiffOn ℂ n f s :=
-  (hd.analyticOn hs).contDiffOn
+  (hd.analyticOnNhd hs).contDiffOn
 
 /-- A complex differentiable function `f : ℂ → E` is analytic at every point. -/
 protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differentiable ℂ f) (z : ℂ) :
@@ -596,15 +599,26 @@ protected theorem _root_.Differentiable.hasFPowerSeriesOnBall {f : ℂ → E} (h
     ⟨_, h.differentiableOn.hasFPowerSeriesOnBall hr⟩
 
 /-- On an open set, `f : ℂ → E` is analytic iff it is differentiable -/
+theorem analyticOnNhd_iff_differentiableOn {f : ℂ → E} {s : Set ℂ} (o : IsOpen s) :
+    AnalyticOnNhd ℂ f s ↔ DifferentiableOn ℂ f s :=
+  ⟨AnalyticOnNhd.differentiableOn, fun d _ zs ↦ d.analyticAt (o.mem_nhds zs)⟩
+
+/-- On an open set, `f : ℂ → E` is analytic iff it is differentiable -/
 theorem analyticOn_iff_differentiableOn {f : ℂ → E} {s : Set ℂ} (o : IsOpen s) :
-    AnalyticOn ℂ f s ↔ DifferentiableOn ℂ f s :=
-  ⟨AnalyticOn.differentiableOn, fun d _ zs ↦ d.analyticAt (o.mem_nhds zs)⟩
+    AnalyticOn ℂ f s ↔ DifferentiableOn ℂ f s := by
+  rw [o.analyticOn_iff_analyticOnNhd]
+  exact analyticOnNhd_iff_differentiableOn o
 
 /-- `f : ℂ → E` is entire iff it's differentiable -/
+theorem analyticOnNhd_univ_iff_differentiable {f : ℂ → E} :
+    AnalyticOnNhd ℂ f univ ↔ Differentiable ℂ f := by
+  simp only [← differentiableOn_univ]
+  exact analyticOnNhd_iff_differentiableOn isOpen_univ
+
 theorem analyticOn_univ_iff_differentiable {f : ℂ → E} :
     AnalyticOn ℂ f univ ↔ Differentiable ℂ f := by
-  simp only [← differentiableOn_univ]
-  exact analyticOn_iff_differentiableOn isOpen_univ
+  rw [analyticOn_univ]
+  exact analyticOnNhd_univ_iff_differentiable
 
 /-- `f : ℂ → E` is analytic at `z` iff it's differentiable near `z` -/
 theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
@@ -615,8 +629,8 @@ theorem analyticAt_iff_eventually_differentiableAt {f : ℂ → E} {c : ℂ} :
     apply AnalyticAt.differentiableAt
   · intro d
     rcases _root_.eventually_nhds_iff.mp d with ⟨s, d, o, m⟩
-    have h : AnalyticOn ℂ f s := by
-      refine DifferentiableOn.analyticOn ?_ o
+    have h : AnalyticOnNhd ℂ f s := by
+      refine DifferentiableOn.analyticOnNhd ?_ o
       intro z m
       exact (d z m).differentiableWithinAt
     exact h _ m

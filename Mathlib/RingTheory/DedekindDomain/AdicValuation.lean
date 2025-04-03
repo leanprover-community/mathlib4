@@ -58,7 +58,7 @@ dedekind domain, dedekind ring, adic valuation
 
 noncomputable section
 
-open scoped Classical DiscreteValuation
+open scoped Classical Multiplicative
 
 open Multiplicative IsDedekindDomain
 
@@ -458,11 +458,11 @@ instance : Algebra R (v.adicCompletionIntegers K) where
   map_one' := by simp only [map_one]; rfl
   map_mul' x y := by
     ext
-    simp_rw [RingHom.map_mul, Subring.coe_mul, UniformSpace.Completion.coe_mul]
+    simp only [map_mul, UniformSpace.Completion.coe_mul, MulMemClass.mk_mul_mk]
   map_zero' := by simp only [map_zero]; rfl
   map_add' x y := by
     ext
-    simp_rw [RingHom.map_add, Subring.coe_add, UniformSpace.Completion.coe_add]
+    simp only [map_add, UniformSpace.Completion.coe_add, AddMemClass.mk_add_mk]
   commutes' r x := by
     rw [mul_comm]
   smul_def' r x := by

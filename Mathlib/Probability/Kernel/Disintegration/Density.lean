@@ -656,11 +656,8 @@ lemma tendsto_integral_density_of_monotone (hκν : fst κ ≤ ν) [IsFiniteKern
     · simp only [mem_Iio]
       exact ENNReal.lt_add_right (measure_ne_top _ _) one_ne_zero
   refine h_cont.tendsto.comp ?_
-  have h := tendsto_measure_iUnion (s := fun m ↦ univ ×ˢ seq m) (μ := κ a) ?_
-  swap; · intro n m hnm x; simp only [mem_prod, mem_univ, true_and]; exact fun h ↦ hseq hnm h
-  convert h
-  rw [← prod_iUnion, hseq_iUnion]
-  simp only [univ_prod_univ, measure_univ]
+  convert tendsto_measure_iUnion_atTop (monotone_const.set_prod hseq)
+  rw [← prod_iUnion, hseq_iUnion, univ_prod_univ]
 
 lemma tendsto_integral_density_of_antitone (hκν : fst κ ≤ ν) [IsFiniteKernel ν] (a : α)
     (seq : ℕ → Set β) (hseq : Antitone seq) (hseq_iInter : ⋂ i, seq i = ∅)
@@ -776,13 +773,7 @@ lemma tendsto_densityProcess_fst_atTop_univ_of_monotone (κ : Kernel α (γ × �
     simp only [mem_prod, mem_setOf_eq, and_imp]
     exact fun h _ ↦ h
   refine ENNReal.Tendsto.div_const ?_ ?_
-  · have h := tendsto_measure_iUnion (μ := κ a)
-      (s := fun m ↦ countablePartitionSet n x ×ˢ seq m) ?_
-    swap
-    · intro m m' hmm'
-      simp only [le_eq_subset, prod_subset_prod_iff, subset_rfl, true_and]
-      exact Or.inl <| hseq hmm'
-    convert h
+  · convert tendsto_measure_iUnion_atTop (monotone_const.set_prod hseq)
     rw [← prod_iUnion, hseq_iUnion]
   · exact Or.inr h0
 

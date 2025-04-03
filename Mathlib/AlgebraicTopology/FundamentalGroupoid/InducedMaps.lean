@@ -96,7 +96,7 @@ private theorem end_path : f x₁ = g x₃ := by convert hfg 1 <;> simp only [Pa
 
 theorem eq_path_of_eq_image :
     (πₘ f).map ⟦p⟧ = hcast (start_path hfg) ≫ (πₘ g).map ⟦q⟧ ≫ hcast (end_path hfg).symm := by
-  rw [Functor.conj_eqToHom_iff_heq
+  rw [conj_eqToHom_iff_heq
     ((πₘ f).map ⟦p⟧) ((πₘ g).map ⟦q⟧)
     (FundamentalGroupoid.ext <| start_path hfg)
     (FundamentalGroupoid.ext <| end_path hfg)]
@@ -178,7 +178,7 @@ theorem evalAt_eq (x : X) : ⟦H.evalAt x⟧ = hcast (H.apply_zero x).symm ≫
     (πₘ H.uliftMap).map (prodToProdTopI uhpath01 (𝟙 (fromTop x))) ≫
       hcast (H.apply_one x).symm.symm := by
   dsimp only [prodToProdTopI, uhpath01, hcast]
-  refine (@Functor.conj_eqToHom_iff_heq (πₓ Y) _ _ _ _ _ _ _ _
+  refine (@conj_eqToHom_iff_heq (πₓ Y) _ _ _ _ _ _ _ _
     (FundamentalGroupoid.ext <| H.apply_one x).symm).mpr ?_
   simp only [id_eq_path_refl, prodToProdTop_map, Path.Homotopic.prod_lift, map_eq, ←
     Path.Homotopic.map_lift]

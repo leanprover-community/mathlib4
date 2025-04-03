@@ -47,9 +47,10 @@ lemma all_one_of_le_one_le_of_prod_eq_one :
 
 @[to_additive]
 lemma prod_le_prod_of_rel_le (h : s.Rel (· ≤ ·) t) : s.prod ≤ t.prod := by
-  induction' h with _ _ _ _ rh _ rt
-  · rfl
-  · rw [prod_cons, prod_cons]
+  induction h with
+  | zero => rfl
+  | cons rh _ rt =>
+    rw [prod_cons, prod_cons]
     exact mul_le_mul' rh rt
 
 @[to_additive]

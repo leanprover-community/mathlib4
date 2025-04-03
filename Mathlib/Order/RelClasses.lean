@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Data.Nat.Defs
+import Mathlib.Init.Algebra.Classes
 import Mathlib.Logic.IsEmpty
 import Mathlib.Order.Basic
 import Mathlib.Tactic.MkIffOfInductiveProp
@@ -170,7 +171,7 @@ abbrev partialOrderOfSO (r) [IsStrictOrder α r] : PartialOrder α where
     | _, _, Or.inl rfl => rfl
     | _, Or.inr h₁, Or.inr h₂ => (asymm h₁ h₂).elim
   lt_iff_le_not_le x y :=
-    ⟨fun h => ⟨Or.inr h, not_or_of_not (fun e => by rw [e] at h; exact irrefl _ h) (asymm h)⟩,
+    ⟨fun h => ⟨Or.inr h, not_or_intro (fun e => by rw [e] at h; exact irrefl _ h) (asymm h)⟩,
       fun ⟨h₁, h₂⟩ => h₁.resolve_left fun e => h₂ <| e ▸ Or.inl rfl⟩
 
 /-- Construct a linear order from an `IsStrictTotalOrder` relation.

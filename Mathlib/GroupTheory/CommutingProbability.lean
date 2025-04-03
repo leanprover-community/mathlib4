@@ -75,12 +75,12 @@ theorem commProb_le_one : commProb M ≤ 1 := by
 variable {M}
 
 theorem commProb_eq_one_iff [h : Nonempty M] :
-    commProb M = 1 ↔ Commutative ((· * ·) : M → M → M) := by
+    commProb M = 1 ↔ Std.Commutative ((· * ·) : M → M → M) := by
   haveI := Fintype.ofFinite M
   rw [commProb, ← Set.coe_setOf, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   rw [div_eq_one_iff_eq, ← Nat.cast_pow, Nat.cast_inj, sq, ← card_prod,
     set_fintype_card_eq_univ_iff, Set.eq_univ_iff_forall]
-  · exact ⟨fun h x y ↦ h (x, y), fun h x ↦ h x.1 x.2⟩
+  · exact ⟨fun h ↦ ⟨fun x y ↦ h (x, y)⟩, fun h x ↦ h.comm x.1 x.2⟩
   · exact pow_ne_zero 2 (Nat.cast_ne_zero.mpr card_ne_zero)
 
 variable (G : Type*) [Group G]
@@ -119,7 +119,7 @@ variable (G)
 
 theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ ≤ commProb G :=
   (inv_pos_le_iff_one_le_mul (Nat.cast_pos.mpr Finite.card_pos)).mpr
-    (le_trans (ge_of_eq (commProb_eq_one_iff.mpr (Abelianization.commGroup G).mul_comm))
+    (le_trans (ge_of_eq (commProb_eq_one_iff.mpr ⟨(Abelianization.commGroup G).mul_comm⟩))
       (commutator G).commProb_quotient_le)
 
 -- Construction of group with commuting probability 1/n

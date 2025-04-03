@@ -149,7 +149,9 @@ theorem finitePresentation_ofLocalizationSpanTarget :
     exact ⟨{∑ g ∈ s.attach, g' g * h' g - 1}, by simp⟩
   have Ht (g : t) : Algebra.FinitePresentation R (Localization.Away (f' g)) := by
     have : ∃ (a : S) (hb : a ∈ s), (Ideal.Quotient.mk I) (g' ⟨a, hb⟩) = g.val := by
-      simpa [t] using g.property
+      obtain ⟨g, hg⟩ := g
+      convert hg
+      simp [t]
     obtain ⟨r, hr, hrr⟩ := this
     simp only [f']
     rw [← hrr, Ideal.Quotient.liftₐ_apply, Ideal.Quotient.lift_mk]
@@ -161,8 +163,9 @@ theorem finitePresentation_ofLocalizationSpanTarget :
 /-- Being finitely-presented is a local property of rings. -/
 theorem finitePresentation_isLocal : PropertyIsLocal @FinitePresentation :=
   ⟨finitePresentation_localizationPreserves,
-    finitePresentation_ofLocalizationSpanTarget, finitePresentation_stableUnderComposition,
-    finitePresentation_holdsForLocalizationAway⟩
+    finitePresentation_ofLocalizationSpanTarget,
+    finitePresentation_stableUnderComposition.stableUnderCompositionWithLocalizationAway
+      finitePresentation_holdsForLocalizationAway⟩
 
 /-- Being finitely-presented respects isomorphisms. -/
 theorem finitePresentation_respectsIso : RingHom.RespectsIso @RingHom.FinitePresentation :=

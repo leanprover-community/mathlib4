@@ -5,8 +5,8 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.List.Infix
 import Mathlib.Order.Fin.Basic
+import Batteries.Data.List.Perm
 
 /-!
 # Sorting algorithms on lists
@@ -14,7 +14,25 @@ import Mathlib.Order.Fin.Basic
 In this file we define `List.Sorted r l` to be an alias for `List.Pairwise r l`.
 This alias is preferred in the case that `r` is a `<` or `≤`-like relation.
 Then we define two sorting algorithms:
-`List.insertionSort` and `List.mergeSort`, and prove their correctness.
+`List.insertionSort` and `List.mergeSort'`, and prove their correctness.
+-/
+
+#adaptation_note
+/--
+`List.mergeSort` has now been implemented in Lean4.
+It improves on the one here by being a "stable" sort
+(in the sense that a sorted sublist of the original list remains a sublist of the result),
+and is also marginally faster.
+
+However we haven't yet replaced `List.mergeSort'` here.
+The obstacle is that `mergeSort'` is written using `r : α → α → Prop` with `[DecidableRel r]`,
+while `mergeSort` uses `r : α → α → Bool`. This is hardly insurmountable,
+but it's a bit of work that hasn't been done yet.
+
+`List.mergeSort'` is only used in Mathlib to sort multisets for printing, so this is not critical.
+
+A pull request cleaning up here, and ideally deprecating or deleting `List.mergeSort'`,
+would be welcome.
 -/
 
 
@@ -131,7 +149,7 @@ theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {
     (hx : x ∈ List.take k l) (hy : y ∈ List.drop k l) : r x y := by
   obtain ⟨iy, hiy, rfl⟩ := getElem_of_mem hy
   obtain ⟨ix, hix, rfl⟩ := getElem_of_mem hx
-  rw [getElem_take', getElem_drop']
+  rw [getElem_take', getElem_drop]
   rw [length_take] at hix
   exact h.rel_get_of_lt (Nat.lt_add_right _ (Nat.lt_min.mp hix).left)
 
@@ -327,6 +345,40 @@ theorem sublist_orderedInsert (x : α) (xs : List α) : xs <+ xs.orderedInsert r
   refine Sublist.trans ?_ (.append_left (.cons _ (.refl _)) _)
   rw [takeWhile_append_dropWhile]
 
+theorem cons_sublist_orderedInsert {l c : List α} {a : α} (hl : c <+ l) (ha : ∀ a' ∈ c, a ≼ a') :
+    a :: c <+ orderedInsert r a l := by
+  induction l with
+  | nil         => simp_all only [sublist_nil, orderedInsert, Sublist.refl]
+  | cons _ _ ih =>
+    unfold orderedInsert
+    split_ifs with hr
+    · exact .cons₂ _ hl
+    · cases hl with
+      | cons _ h => exact .cons _ <| ih h
+      | cons₂    => exact absurd (ha _ <| mem_cons_self ..) hr
+
+theorem Sublist.orderedInsert_sublist [IsTrans α r] {as bs} (x) (hs : as <+ bs) (hb : bs.Sorted r) :
+    orderedInsert r x as <+ orderedInsert r x bs := by
+  cases as with
+  | nil => simp
+  | cons a as =>
+    cases bs with
+    | nil => contradiction
+    | cons b bs =>
+      unfold orderedInsert
+      cases hs <;> split_ifs with hr
+      · exact .cons₂ _ <| .cons _ ‹a :: as <+ bs›
+      · have ih := orderedInsert_sublist x ‹a :: as <+ bs›  hb.of_cons
+        simp only [hr, orderedInsert, ite_true] at ih
+        exact .trans ih <| .cons _ (.refl _)
+      · have hba := pairwise_cons.mp hb |>.left _ (mem_of_cons_sublist ‹a :: as <+ bs›)
+        exact absurd (trans_of _ ‹r x b› hba) hr
+      · have ih := orderedInsert_sublist x ‹a :: as <+ bs› hb.of_cons
+        rw [orderedInsert, if_neg hr] at ih
+        exact .cons _ ih
+      · simp_all only [sorted_cons, cons_sublist_cons]
+      · exact .cons₂ _ <| orderedInsert_sublist x ‹as <+ bs› hb.of_cons
+
 section TotalAndTransitive
 
 variable [IsTotal α r] [IsTrans α r]
@@ -355,6 +407,59 @@ theorem sorted_insertionSort : ∀ l, Sorted r (insertionSort r l)
   | a :: l => (sorted_insertionSort l).orderedInsert a _
 
 end TotalAndTransitive
+
+/--
+If `c` is a sorted sublist of `l`, then `c` is still a sublist of `insertionSort r l`.
+-/
+theorem sublist_insertionSort {l c : List α} (hr : c.Pairwise r) (hc : c <+ l) :
+    c <+ insertionSort r l := by
+  induction l generalizing c with
+  | nil         => simp_all only [sublist_nil, insertionSort, Sublist.refl]
+  | cons _ _ ih =>
+    cases hc with
+    | cons  _ h => exact ih hr h |>.trans (sublist_orderedInsert ..)
+    | cons₂ _ h =>
+      obtain ⟨hr, hp⟩ := pairwise_cons.mp hr
+      exact cons_sublist_orderedInsert (ih hp h) hr
+
+/--
+Another statement of stability of insertion sort.
+If a pair `[a, b]` is a sublist of `l` and `r a b`,
+then `[a, b]` is still a sublist of `insertionSort r l`.
+-/
+theorem pair_sublist_insertionSort {a b : α} {l : List α} (hab : r a b) (h : [a, b] <+ l) :
+    [a, b] <+ insertionSort r l :=
+  sublist_insertionSort (pairwise_pair.mpr hab) h
+
+variable [IsAntisymm α r] [IsTotal α r] [IsTrans α r]
+
+/--
+A version of `insertionSort_stable` which only assumes `c <+~ l` (instead of `c <+ l`), but
+additionally requires `IsAntisymm α r`, `IsTotal α r` and `IsTrans α r`.
+-/
+theorem sublist_insertionSort' {l c : List α} (hs : c.Sorted r) (hc : c <+~ l) :
+    c <+ insertionSort r l := by
+  classical
+  obtain ⟨d, hc, hd⟩ := hc
+  induction l generalizing c d with
+  | nil         => simp_all only [sublist_nil, insertionSort, nil_perm]
+  | cons a _ ih =>
+    cases hd with
+    | cons  _ h => exact ih hs _ hc h |>.trans (sublist_orderedInsert ..)
+    | cons₂ _ h =>
+      specialize ih (hs.erase _) _ (erase_cons_head a ‹List _› ▸ hc.erase a) h
+      have hm := hc.mem_iff.mp <| mem_cons_self ..
+      have he := orderedInsert_erase _ _ hm hs
+      exact he ▸ Sublist.orderedInsert_sublist _ ih (sorted_insertionSort ..)
+
+/--
+Another statement of stability of insertion sort.
+If a pair `[a, b]` is a sublist of a permutation of `l` and `a ≼ b`,
+then `[a, b]` is still a sublist of `insertionSort r l`.
+-/
+theorem pair_sublist_insertionSort' {a b : α} {l : List α} (hab : a ≼ b) (h : [a, b] <+~ l) :
+    [a, b] <+ insertionSort r l :=
+  sublist_insertionSort' (pairwise_pair.mpr hab) h
 
 end Correctness
 
@@ -421,7 +526,7 @@ theorem perm_split : ∀ {l l₁ l₂ : List α}, split l = (l₁, l₂) → l ~
     exact ((perm_split e).trans perm_append_comm).cons a
 
 /-- Implementation of a merge sort algorithm to sort a list. -/
-def mergeSort : List α → List α
+def mergeSort' : List α → List α
   | [] => []
   | [a] => [a]
   | a :: b :: l => by
@@ -429,35 +534,35 @@ def mergeSort : List α → List α
     let ls := (split (a :: b :: l))
     have := length_split_fst_le l
     have := length_split_snd_le l
-    exact merge (r · ·) (mergeSort ls.1) (mergeSort ls.2)
+    exact merge (r · ·) (mergeSort' ls.1) (mergeSort' ls.2)
   termination_by l => length l
 
 @[nolint unusedHavesSuffices] -- Porting note: false positive
-theorem mergeSort_cons_cons {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
-    mergeSort r (a :: b :: l) = merge (r · ·) (mergeSort r l₁) (mergeSort r l₂) := by
-  simp only [mergeSort, h]
+theorem mergeSort'_cons_cons {a b} {l l₁ l₂ : List α} (h : split (a :: b :: l) = (l₁, l₂)) :
+    mergeSort' r (a :: b :: l) = merge (r · ·) (mergeSort' r l₁) (mergeSort' r l₂) := by
+  simp only [mergeSort', h]
 
 section Correctness
 
-theorem perm_mergeSort : ∀ l : List α, mergeSort r l ~ l
-  | [] => by simp [mergeSort]
-  | [a] => by simp [mergeSort]
+theorem perm_mergeSort' : ∀ l : List α, mergeSort' r l ~ l
+  | [] => by simp [mergeSort']
+  | [a] => by simp [mergeSort']
   | a :: b :: l => by
     cases' e : split (a :: b :: l) with l₁ l₂
     cases' length_split_lt e with h₁ h₂
-    rw [mergeSort_cons_cons r e]
+    rw [mergeSort'_cons_cons r e]
     apply (perm_merge (r · ·) _ _).trans
     exact
-      ((perm_mergeSort l₁).append (perm_mergeSort l₂)).trans (perm_split e).symm
+      ((perm_mergeSort' l₁).append (perm_mergeSort' l₂)).trans (perm_split e).symm
   termination_by l => length l
 
 @[simp]
-theorem mem_mergeSort {l : List α} {x : α} : x ∈ l.mergeSort r ↔ x ∈ l :=
-  (perm_mergeSort r l).mem_iff
+theorem mem_mergeSort' {l : List α} {x : α} : x ∈ l.mergeSort' r ↔ x ∈ l :=
+  (perm_mergeSort' r l).mem_iff
 
 @[simp]
-theorem length_mergeSort (l : List α) : (mergeSort r l).length = l.length :=
-  (perm_mergeSort r _).length_eq
+theorem length_mergeSort' (l : List α) : (mergeSort' r l).length = l.length :=
+  (perm_mergeSort' r _).length_eq
 
 section TotalAndTransitive
 
@@ -492,33 +597,33 @@ theorem Sorted.merge : ∀ {l l' : List α}, Sorted r l → Sorted r l' → Sort
 
 variable (r)
 
-theorem sorted_mergeSort : ∀ l : List α, Sorted r (mergeSort r l)
-  | [] => by simp [mergeSort]
-  | [a] => by simp [mergeSort]
+theorem sorted_mergeSort' : ∀ l : List α, Sorted r (mergeSort' r l)
+  | [] => by simp [mergeSort']
+  | [a] => by simp [mergeSort']
   | a :: b :: l => by
     cases' e : split (a :: b :: l) with l₁ l₂
     cases' length_split_lt e with h₁ h₂
-    rw [mergeSort_cons_cons r e]
-    exact (sorted_mergeSort l₁).merge (sorted_mergeSort l₂)
+    rw [mergeSort'_cons_cons r e]
+    exact (sorted_mergeSort' l₁).merge (sorted_mergeSort' l₂)
   termination_by l => length l
 
-theorem mergeSort_eq_self [IsAntisymm α r] {l : List α} : Sorted r l → mergeSort r l = l :=
-  eq_of_perm_of_sorted (perm_mergeSort _ _) (sorted_mergeSort _ _)
+theorem mergeSort'_eq_self [IsAntisymm α r] {l : List α} : Sorted r l → mergeSort' r l = l :=
+  eq_of_perm_of_sorted (perm_mergeSort' _ _) (sorted_mergeSort' _ _)
 
-theorem mergeSort_eq_insertionSort [IsAntisymm α r] (l : List α) :
-    mergeSort r l = insertionSort r l :=
-  eq_of_perm_of_sorted ((perm_mergeSort r l).trans (perm_insertionSort r l).symm)
-    (sorted_mergeSort r l) (sorted_insertionSort r l)
+theorem mergeSort'_eq_insertionSort [IsAntisymm α r] (l : List α) :
+    mergeSort' r l = insertionSort r l :=
+  eq_of_perm_of_sorted ((perm_mergeSort' r l).trans (perm_insertionSort r l).symm)
+    (sorted_mergeSort' r l) (sorted_insertionSort r l)
 
 end TotalAndTransitive
 
 end Correctness
 
 @[simp]
-theorem mergeSort_nil : [].mergeSort r = [] := by rw [List.mergeSort]
+theorem mergeSort'_nil : [].mergeSort' r = [] := by rw [List.mergeSort']
 
 @[simp]
-theorem mergeSort_singleton (a : α) : [a].mergeSort r = [a] := by rw [List.mergeSort]
+theorem mergeSort'_singleton (a : α) : [a].mergeSort' r = [a] := by rw [List.mergeSort']
 
 theorem map_merge (f : α → β) (r : α → α → Bool) (s : β → β → Bool) (l l' : List α)
     (hl : ∀ a ∈ l, ∀ b ∈ l', r a b = s (f a) (f b)) :
@@ -538,8 +643,8 @@ theorem map_merge (f : α → β) (r : α → α → Bool) (s : β → β → Bo
       simp_rw [List.forall_mem_cons]
       exact ⟨hl.1.2, hl.2.2⟩
 
-theorem map_mergeSort (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
-    (l.mergeSort r).map f = (l.map f).mergeSort s :=
+theorem map_mergeSort' (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
+    (l.mergeSort' r).map f = (l.map f).mergeSort' s :=
   match l with
   | [] => by simp
   | [x] => by simp
@@ -553,9 +658,9 @@ theorem map_mergeSort (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b ∈
     have := length_split_fst_le l
     have := length_split_snd_le l
     simp_rw [List.map]
-    rw [List.mergeSort_cons_cons _ e, List.mergeSort_cons_cons _ fe,
-      map_merge _ (r · ·) (s · ·), map_mergeSort _ l₁ hl.1.1, map_mergeSort _ l₂ hl.2.2]
-    simp_rw [mem_mergeSort, decide_eq_decide]
+    rw [List.mergeSort'_cons_cons _ e, List.mergeSort'_cons_cons _ fe,
+      map_merge _ (r · ·) (s · ·), map_mergeSort' _ l₁ hl.1.1, map_mergeSort' _ l₂ hl.2.2]
+    simp_rw [mem_mergeSort', decide_eq_decide]
     exact hl.1.2
   termination_by length l
 
@@ -565,5 +670,5 @@ end sort
 
 -- try them out!
 --#eval insertionSort (fun m n : ℕ => m ≤ n) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12]
---#eval mergeSort     (fun m n : ℕ => m ≤ n) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12]
+--#eval mergeSort'    (fun m n : ℕ => m ≤ n) [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12]
 end List

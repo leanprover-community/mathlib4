@@ -134,9 +134,9 @@ structure GCongrLemma where
 
 /-- Environment extension for "generalized congruence" (`gcongr`) lemmas. -/
 initialize gcongrExt : SimpleScopedEnvExtension ((Name × Name × Array Bool) × GCongrLemma)
-    (HashMap (Name × Name × Array Bool) (Array GCongrLemma)) ←
+    (Std.HashMap (Name × Name × Array Bool) (Array GCongrLemma)) ←
   registerSimpleScopedEnvExtension {
-    addEntry := fun m (n, lem) => m.insert n ((m.findD n #[]).push lem)
+    addEntry := fun m (n, lem) => m.insert n ((m.getD n #[]).push lem)
     initial := {}
   }
 
@@ -363,7 +363,7 @@ partial def _root_.Lean.MVarId.gcongr
   -- Look up the `@[gcongr]` lemmas whose conclusion has the same relation and head function as
   -- the goal and whether the boolean-array of varying/nonvarying arguments of such
   -- a lemma matches `varyingArgs`.
-  for lem in (gcongrExt.getState (← getEnv)).findD (relName, lhsHead, varyingArgs) #[] do
+  for lem in (gcongrExt.getState (← getEnv)).getD (relName, lhsHead, varyingArgs) #[] do
     let gs ← try
       -- Try `apply`-ing such a lemma to the goal.
       Except.ok <$> g.apply (← mkConstWithFreshMVarLevels lem.declName)
@@ -406,8 +406,13 @@ partial def _root_.Lean.MVarId.gcongr
       -- by the `apply`.
       for g in gs do
         if !(← g.isAssigned) && !subgoals.contains g then
-          try sideGoalDischarger g
-          catch _ => out := out.push g
+          let s ← saveState
+          try
+            let (_, g') ← g.intros
+            sideGoalDischarger g'
+          catch _ =>
+            s.restore
+            out := out.push g
       -- Return all unresolved subgoals, "main" or "side"
       return (true, names, out ++ subgoals)
   -- A. If there is no template, and there was no `@[gcongr]` lemma which matched the goal,

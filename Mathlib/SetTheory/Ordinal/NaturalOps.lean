@@ -27,13 +27,13 @@ The natural addition of two ordinals corresponds to adding their Cantor normal f
 polynomials in `ω`. Likewise, their natural multiplication corresponds to multiplying the Cantor
 normal forms as polynomials.
 
-# Implementation notes
+## Implementation notes
 
 Given the rich algebraic structure of these two operations, we choose to create a type synonym
 `NatOrdinal`, where we provide the appropriate instances. However, to avoid casting back and forth
 between both types, we attempt to prove and state most results on `Ordinal`.
 
-# Todo
+## Todo
 
 - Prove the characterizations of natural addition and multiplication in terms of the Cantor normal
   form.
@@ -54,8 +54,9 @@ def NatOrdinal : Type _ :=
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
 
 instance NatOrdinal.linearOrder : LinearOrder NatOrdinal := {Ordinal.linearOrder with}
-
-instance NatOrdinal.succOrder : SuccOrder NatOrdinal := {Ordinal.succOrder with}
+instance NatOrdinal.instSuccOrder : SuccOrder NatOrdinal := {Ordinal.instSuccOrder with}
+instance NatOrdinal.orderBot : OrderBot NatOrdinal := {Ordinal.orderBot with}
+instance NatOrdinal.noMaxOrder : NoMaxOrder NatOrdinal := {Ordinal.noMaxOrder with}
 
 /-- The identity function between `Ordinal` and `NatOrdinal`. -/
 @[match_pattern]
@@ -87,7 +88,14 @@ instance : WellFoundedLT NatOrdinal :=
   Ordinal.wellFoundedLT
 
 instance : IsWellOrder NatOrdinal (· < ·) :=
-  Ordinal.isWellOrder
+  { }
+
+instance : ConditionallyCompleteLinearOrderBot NatOrdinal :=
+  WellFoundedLT.conditionallyCompleteLinearOrderBot _
+
+@[simp]
+theorem bot_eq_zero : ⊥ = 0 :=
+  rfl
 
 @[simp]
 theorem toOrdinal_zero : toOrdinal 0 = 0 :=
@@ -98,19 +106,19 @@ theorem toOrdinal_one : toOrdinal 1 = 1 :=
   rfl
 
 @[simp]
-theorem toOrdinal_eq_zero (a) : toOrdinal a = 0 ↔ a = 0 :=
+theorem toOrdinal_eq_zero {a} : toOrdinal a = 0 ↔ a = 0 :=
   Iff.rfl
 
 @[simp]
-theorem toOrdinal_eq_one (a) : toOrdinal a = 1 ↔ a = 1 :=
+theorem toOrdinal_eq_one {a} : toOrdinal a = 1 ↔ a = 1 :=
   Iff.rfl
 
 @[simp]
-theorem toOrdinal_max {a b : NatOrdinal} : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
+theorem toOrdinal_max (a b : NatOrdinal) : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
   rfl
 
 @[simp]
-theorem toOrdinal_min {a b : NatOrdinal} : toOrdinal (min a b) = min (toOrdinal a) (toOrdinal b) :=
+theorem toOrdinal_min (a b : NatOrdinal) : toOrdinal (min a b) = min (toOrdinal a) (toOrdinal b) :=
   rfl
 
 theorem succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
@@ -162,7 +170,7 @@ theorem toNatOrdinal_max (a b : Ordinal) :
 
 @[simp]
 theorem toNatOrdinal_min (a b : Ordinal) :
-    toNatOrdinal (linearOrder.min a b) = linearOrder.min (toNatOrdinal a) (toNatOrdinal b) :=
+    toNatOrdinal (min a b) = min (toNatOrdinal a) (toNatOrdinal b) :=
   rfl
 
 /-! We place the definitions of `nadd` and `nmul` before actually developing their API, as this
@@ -184,7 +192,7 @@ scoped[NaturalOps] infixl:65 " ♯ " => Ordinal.nadd
 open NaturalOps
 
 /-- Natural multiplication on ordinals `a ⨳ b`, also known as the Hessenberg product, is recursively
-defined as the least ordinal such that `a ⨳ b + a' ⨳ b'` is greater than `a' ⨳ b + a ⨳ b'` for all
+defined as the least ordinal such that `a ⨳ b ♯ a' ⨳ b'` is greater than `a' ⨳ b ♯ a ⨳ b'` for all
 `a' < a` and `b < b'`. In contrast to normal ordinal multiplication, it is commutative and
 distributive (over natural addition).
 
@@ -308,8 +316,8 @@ namespace NatOrdinal
 
 open Ordinal NaturalOps
 
-instance : Add NatOrdinal :=
-  ⟨nadd⟩
+instance : Add NatOrdinal := ⟨nadd⟩
+instance : SuccAddOrder NatOrdinal := ⟨fun x => (nadd_one x).symm⟩
 
 instance add_covariantClass_lt : CovariantClass NatOrdinal.{u} NatOrdinal.{u} (· + ·) (· < ·) :=
   ⟨fun a _ _ h => nadd_lt_nadd_left h a⟩
@@ -338,9 +346,9 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid NatOrdinal :=
 instance addMonoidWithOne : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
 
-@[simp]
-theorem add_one_eq_succ : ∀ a : NatOrdinal, a + 1 = succ a :=
-  nadd_one
+@[deprecated Order.succ_eq_add_one (since := "2024-09-04")]
+theorem add_one_eq_succ (a : NatOrdinal) : a + 1 = succ a :=
+  (Order.succ_eq_add_one a).symm
 
 @[simp]
 theorem toOrdinal_cast_nat (n : ℕ) : toOrdinal n = n := by
@@ -438,7 +446,7 @@ theorem nmul_def (a b : Ordinal) :
     a ⨳ b = sInf {c | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'} := by rw [nmul]
 
 /-- The set in the definition of `nmul` is nonempty. -/
-theorem nmul_nonempty (a b : Ordinal.{u}) :
+private theorem nmul_nonempty (a b : Ordinal.{u}) :
     {c : Ordinal.{u} | ∀ a' < a, ∀ b' < b, a' ⨳ b ♯ a ⨳ b' < c ♯ a' ⨳ b'}.Nonempty :=
   ⟨_, fun _ ha _ hb => (lt_blsub₂.{u, u, u} _ ha hb).trans_le le_self_nadd⟩
 

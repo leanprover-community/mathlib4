@@ -52,8 +52,8 @@ supremum to the indexed supremum of the composition. -/
 theorem Monotone.map_ciSup_of_continuousAt {ι : Sort*} [Nonempty ι] {f : α → β} {g : ι → α}
     (Cf : ContinuousAt f (iSup g)) (Mf : Monotone f)
     (bdd : BddAbove (range g) := by bddDefault) : f (⨆ i, g i) = ⨆ i, f (g i) := by
-  rw [iSup, Monotone.map_csSup_of_continuousAt Cf Mf (range_nonempty g) bdd, ← range_comp, iSup]
-  rfl
+  rw [iSup, Monotone.map_csSup_of_continuousAt Cf Mf (range_nonempty g) bdd, ← range_comp, iSup,
+    comp_def]
 
 @[deprecated (since := "2024-08-26")] alias Monotone.map_iSup_of_continuousAt' :=
   Monotone.map_ciSup_of_continuousAt
@@ -81,8 +81,8 @@ infimum to the indexed infimum of the composition. -/
 theorem Monotone.map_ciInf_of_continuousAt {ι : Sort*} [Nonempty ι] {f : α → β} {g : ι → α}
     (Cf : ContinuousAt f (iInf g)) (Mf : Monotone f)
     (bdd : BddBelow (range g) := by bddDefault) : f (⨅ i, g i) = ⨅ i, f (g i) := by
-  rw [iInf, Monotone.map_csInf_of_continuousAt Cf Mf (range_nonempty g) bdd, ← range_comp, iInf]
-  rfl
+  rw [iInf, Monotone.map_csInf_of_continuousAt Cf Mf (range_nonempty g) bdd, ← range_comp, iInf,
+    comp_def]
 
 @[deprecated (since := "2024-08-26")] alias Monotone.map_iInf_of_continuousAt' :=
   Monotone.map_ciInf_of_continuousAt
@@ -110,8 +110,8 @@ infimum to the indexed supremum of the composition. -/
 theorem Antitone.map_ciInf_of_continuousAt {ι : Sort*} [Nonempty ι] {f : α → β} {g : ι → α}
     (Cf : ContinuousAt f (iInf g)) (Af : Antitone f)
     (bdd : BddBelow (range g) := by bddDefault) : f (⨅ i, g i) = ⨆ i, f (g i) := by
-  rw [iInf, Antitone.map_csInf_of_continuousAt Cf Af (range_nonempty g) bdd, ← range_comp, iSup]
-  rfl
+  rw [iInf, Antitone.map_csInf_of_continuousAt Cf Af (range_nonempty g) bdd, ← range_comp, iSup,
+    comp_def]
 
 @[deprecated (since := "2024-08-26")] alias Antitone.map_iInf_of_continuousAt' :=
   Antitone.map_ciInf_of_continuousAt
@@ -139,8 +139,8 @@ indexed supremum to the indexed infimum of the composition. -/
 theorem Antitone.map_ciSup_of_continuousAt {ι : Sort*} [Nonempty ι] {f : α → β} {g : ι → α}
     (Cf : ContinuousAt f (iSup g)) (Af : Antitone f)
     (bdd : BddAbove (range g) := by bddDefault) : f (⨆ i, g i) = ⨅ i, f (g i) := by
-  rw [iSup, Antitone.map_csSup_of_continuousAt Cf Af (range_nonempty g) bdd, ← range_comp, iInf]
-  rfl
+  rw [iSup, Antitone.map_csSup_of_continuousAt Cf Af (range_nonempty g) bdd, ← range_comp, iInf,
+    comp_def]
 
 @[deprecated (since := "2024-08-26")] alias Antitone.map_iSup_of_continuousAt' :=
   Antitone.map_ciSup_of_continuousAt
@@ -184,7 +184,7 @@ a `Sort`, then it sends this indexed supremum to the indexed supremum of the com
 theorem Monotone.map_iSup_of_continuousAt {ι : Sort*} {f : α → β} {g : ι → α}
     (Cf : ContinuousAt f (iSup g)) (Mf : Monotone f) (fbot : f ⊥ = ⊥) :
     f (⨆ i, g i) = ⨆ i, f (g i) := by
-  rw [iSup, Mf.map_sSup_of_continuousAt Cf fbot, ← range_comp, iSup]; rfl
+  rw [iSup, Mf.map_sSup_of_continuousAt Cf fbot, ← range_comp, iSup, comp_def]
 
 /-- A monotone function `f` sending `top` to `top` and continuous at the infimum of a set sends
 this infimum to the infimum of the image of this set. -/

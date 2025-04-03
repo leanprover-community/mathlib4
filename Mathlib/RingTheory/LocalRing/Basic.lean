@@ -63,7 +63,7 @@ theorem isUnit_or_isUnit_of_isUnit_add {a b : R} (h : IsUnit (a + b)) : IsUnit a
   apply Or.imp _ _ (isUnit_or_isUnit_of_add_one hu) <;> exact isUnit_of_mul_isUnit_right
 
 theorem nonunits_add {a b : R} (ha : a ∈ nonunits R) (hb : b ∈ nonunits R) : a + b ∈ nonunits R :=
-  fun H => not_or_of_not ha hb (isUnit_or_isUnit_of_isUnit_add H)
+  fun H => not_or_intro ha hb (isUnit_or_isUnit_of_isUnit_add H)
 
 end LocalRing
 

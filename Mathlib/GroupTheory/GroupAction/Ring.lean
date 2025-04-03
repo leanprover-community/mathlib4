@@ -3,8 +3,8 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.SMulWithZero
 
 /-!
 # Commutativity and associativity of action of integers on rings
@@ -20,6 +20,9 @@ file they could go to. This is unfortunate and should be fixed by reorganising f
 open scoped Int
 
 variable {α : Type*}
+
+instance NonUnitalNonAssocSemiring.toDistribSMul [NonUnitalNonAssocSemiring α] :
+    DistribSMul α α where smul_add := mul_add
 
 /-- Note that `AddMonoid.nat_smulCommClass` requires stronger assumptions on `α`. -/
 instance NonUnitalNonAssocSemiring.nat_smulCommClass [NonUnitalNonAssocSemiring α] :

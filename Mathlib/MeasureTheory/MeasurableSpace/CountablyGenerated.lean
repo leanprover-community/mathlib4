@@ -208,6 +208,17 @@ instance (priority := 100) separatesPoints_of_measurableSingletonClass [Measurab
   simp_rw [mem_singleton_iff, forall_true_left] at h
   exact h.symm
 
+instance (priority := 50) MeasurableSingletonClass.of_separatesPoints [MeasurableSpace α]
+    [Countable α] [SeparatesPoints α] : MeasurableSingletonClass α where
+  measurableSet_singleton x := by
+    choose s hsm hxs hys using fun y (h : x ≠ y) ↦ exists_measurableSet_of_ne h
+    convert MeasurableSet.iInter fun y ↦ .iInter fun h ↦ hsm y h
+    ext y
+    rcases eq_or_ne x y with rfl | h
+    · simpa
+    · simp only [mem_singleton_iff, h.symm, false_iff, mem_iInter, not_forall]
+      exact ⟨y, h, hys y h⟩
+
 instance hasCountableSeparatingOn_of_countablySeparated_subtype
     [MeasurableSpace α] {s : Set α} [h : CountablySeparated s] :
     HasCountableSeparatingOn _ MeasurableSet s := CountablySeparated.subtype_iff.mp h

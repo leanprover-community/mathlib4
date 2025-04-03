@@ -190,7 +190,7 @@ def extend : Fₗ →SL[σ₁₂] F :=
   have cont := (uniformContinuous_uniformly_extend h_e h_dense f.uniformContinuous).continuous
   -- extension of `f` agrees with `f` on the domain of the embedding `e`
   have eq := uniformly_extend_of_ind h_e h_dense f.uniformContinuous
-  { toFun := (h_e.denseInducing h_dense).extend f
+  { toFun := (h_e.isDenseInducing h_dense).extend f
     map_add' := by
       refine h_dense.induction_on₂ ?_ ?_
       · exact isClosed_eq (cont.comp continuous_add)
@@ -208,10 +208,10 @@ def extend : Fₗ →SL[σ₁₂] F :=
         exact ContinuousLinearMap.map_smulₛₗ _ _ _
     cont }
 
--- Porting note: previously `(h_e.denseInducing h_dense)` was inferred.
+-- Porting note: previously `(h_e.isDenseInducing h_dense)` was inferred.
 @[simp]
 theorem extend_eq (x : E) : extend f e h_dense h_e (e x) = f x :=
-  DenseInducing.extend_eq (h_e.denseInducing h_dense) f.cont _
+  IsDenseInducing.extend_eq (h_e.isDenseInducing h_dense) f.cont _
 
 theorem extend_unique (g : Fₗ →SL[σ₁₂] F) (H : g.comp e = f) : extend f e h_dense h_e = g :=
   ContinuousLinearMap.coeFn_injective <|

@@ -166,7 +166,7 @@ theorem mgf_pos' (hμ : μ ≠ 0) (h_int_X : Integrable (fun ω => exp (t * X ω
   rw [this, setIntegral_pos_iff_support_of_nonneg_ae _ _]
   · have h_eq_univ : (Function.support fun x : Ω => exp (t * X x)) = Set.univ := by
       ext1 x
-      simp only [Function.mem_support, Set.mem_univ, iff_true_iff]
+      simp only [Function.mem_support, Set.mem_univ, iff_true]
       exact (exp_pos _).ne'
     rw [h_eq_univ, Set.inter_univ _]
     refine Ne.bot_lt ?_

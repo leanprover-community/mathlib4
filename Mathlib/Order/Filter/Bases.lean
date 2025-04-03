@@ -100,7 +100,7 @@ instance FilterBasis.nonempty_sets (B : FilterBasis α) : Nonempty B.sets :=
 /-- If `B` is a filter basis on `α`, and `U` a subset of `α` then we can write `U ∈ B` as
 on paper. -/
 instance {α : Type*} : Membership (Set α) (FilterBasis α) :=
-  ⟨fun U B => U ∈ B.sets⟩
+  ⟨fun B U => U ∈ B.sets⟩
 
 @[simp] theorem FilterBasis.mem_sets {s : Set α} {B : FilterBasis α} : s ∈ B.sets ↔ s ∈ B := Iff.rfl
 
@@ -543,7 +543,7 @@ theorem hasBasis_iSup {ι : Sort*} {ι' : ι → Type*} {l : ι → Filter α} {
 theorem HasBasis.sup_principal (hl : l.HasBasis p s) (t : Set α) :
     (l ⊔ 𝓟 t).HasBasis p fun i => s i ∪ t :=
   ⟨fun u => by
-    simp only [(hl.sup' (hasBasis_principal t)).mem_iff, PProd.exists, exists_prop, and_true_iff,
+    simp only [(hl.sup' (hasBasis_principal t)).mem_iff, PProd.exists, exists_prop, and_true,
       Unique.exists_iff]⟩
 
 theorem HasBasis.sup_pure (hl : l.HasBasis p s) (x : α) :

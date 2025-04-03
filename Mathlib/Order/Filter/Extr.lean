@@ -577,3 +577,34 @@ theorem IsMinOn.iInf_eq (hx₀ : x₀ ∈ s) (h : IsMinOn f s x₀) : ⨅ x : s,
   @IsMaxOn.iSup_eq αᵒᵈ β _ _ _ _ hx₀ h
 
 end ConditionallyCompleteLinearOrder
+
+/-! ### Value of `Finset.sup` / `Finset.inf` -/
+
+section SemilatticeSup
+
+variable [SemilatticeSup β] [OrderBot β] {D : α → β} {s : Finset α}
+
+theorem sup_eq_of_isMaxOn {a : α} (hmem : a ∈ s) (hmax : IsMaxOn D s a) : s.sup D = D a :=
+  (Finset.sup_le hmax).antisymm (Finset.le_sup hmem)
+
+theorem sup_eq_of_max [Nonempty α] {b : β} (hb : b ∈ Set.range D) (hmem : D.invFun b ∈ s)
+    (hmax : ∀ a ∈ s, D a ≤ b) : s.sup D = b := by
+  obtain ⟨a, rfl⟩ := hb
+  rw [← Function.apply_invFun_apply (f := D)]
+  apply sup_eq_of_isMaxOn hmem; intro
+  rw [Function.apply_invFun_apply (f := D)]; apply hmax
+
+end SemilatticeSup
+
+section SemilatticeInf
+
+variable [SemilatticeInf β] [OrderTop β] {D : α → β} {s : Finset α}
+
+theorem inf_eq_of_isMinOn {a : α} (hmem : a ∈ s) (hmax : IsMinOn D s a) : s.inf D = D a :=
+  sup_eq_of_isMaxOn (α := αᵒᵈ) (β := βᵒᵈ) hmem hmax.dual
+
+theorem inf_eq_of_min [Nonempty α] {b : β} (hb : b ∈ Set.range D) (hmem : D.invFun b ∈ s)
+    (hmin : ∀ a ∈ s, b ≤ D a) : s.inf D = b :=
+  sup_eq_of_max (α := αᵒᵈ) (β := βᵒᵈ) hb hmem hmin
+
+end SemilatticeInf

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Zhouhang Zhou
 -/
 import Mathlib.MeasureTheory.Integral.Lebesgue
 import Mathlib.Order.Filter.Germ.Basic
-import Mathlib.Topology.ContinuousFunction.Algebra
+import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
 
 /-!
@@ -576,7 +576,7 @@ theorem coeFn_const (b : β) : (const α b : α →ₘ[μ] β) =ᵐ[μ] Function
 @[simp]
 theorem coeFn_const_eq [NeZero μ] (b : β) (x : α) : (const α b : α →ₘ[μ] β) x = b := by
   simp only [cast]
-  split_ifs with h; swap; exact h.elim ⟨b, rfl⟩
+  split_ifs with h; swap; · exact h.elim ⟨b, rfl⟩
   have := Classical.choose_spec h
   set b' := Classical.choose h
   simp_rw [const, mk_eq_mk, EventuallyEq, ← const_def, eventually_const] at this

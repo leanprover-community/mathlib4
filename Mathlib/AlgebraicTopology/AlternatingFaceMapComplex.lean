@@ -80,7 +80,7 @@ theorem d_squared (n : ℕ) : objD X (n + 1) ≫ objD X n = 0 := by
   apply Finset.sum_bij φ
   · -- φ(S) is contained in Sᶜ
     intro ij hij
-    simp only [S, Finset.mem_univ, Finset.compl_filter, Finset.mem_filter, true_and_iff,
+    simp only [S, Finset.mem_univ, Finset.compl_filter, Finset.mem_filter, true_and,
       Fin.val_succ, Fin.coe_castLT] at hij ⊢
     linarith
   · -- φ : S → Sᶜ is injective

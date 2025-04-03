@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Justus Springer
+Authors: Kim Morrison, Justus Springer
 -/
 import Mathlib.Order.CompleteLattice
 import Mathlib.Data.Finset.Lattice

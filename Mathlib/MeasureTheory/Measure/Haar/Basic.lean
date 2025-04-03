@@ -199,7 +199,7 @@ theorem index_union_le (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
   apply Nat.sInf_le; refine ⟨_, ?_, rfl⟩; rw [mem_setOf_eq]
   apply union_subset <;> refine Subset.trans (by assumption) ?_ <;>
     apply biUnion_subset_biUnion_left <;> intro g hg <;> simp only [mem_def] at hg <;>
-    simp only [mem_def, Multiset.mem_union, Finset.union_val, hg, or_true_iff, true_or_iff]
+    simp only [mem_def, Multiset.mem_union, Finset.union_val, hg, or_true, true_or]
 
 @[to_additive addIndex_union_eq]
 theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).Nonempty)
@@ -216,7 +216,7 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
     intro g hg; rcases hK hg with ⟨_, ⟨g₀, rfl⟩, _, ⟨h1g₀, rfl⟩, h2g₀⟩
     simp only [mem_preimage] at h2g₀
     simp only [mem_iUnion]; use g₀; constructor; swap
-    · simp only [Finset.mem_filter, h1g₀, true_and_iff]; use g
+    · simp only [Finset.mem_filter, h1g₀, true_and]; use g
       simp only [hg, h2g₀, mem_inter_iff, mem_preimage, and_self_iff]
     exact h2g₀
   refine
@@ -432,7 +432,7 @@ theorem chaar_sup_eq {K₀ : PositiveCompacts G}
     mem_of_subset_of_mem _
       (chaar_mem_clPrehaar K₀
         ⟨⟨V⁻¹, (h2V₁.inter h2V₂).preimage continuous_inv⟩, by
-          simp only [V, mem_inv, inv_one, h3V₁, h3V₂, mem_inter_iff, true_and_iff]⟩)
+          simp only [V, mem_inv, inv_one, h3V₁, h3V₂, mem_inter_iff, true_and]⟩)
   unfold clPrehaar; rw [IsClosed.closure_subset_iff]
   · rintro _ ⟨U, ⟨h1U, h2U, h3U⟩, rfl⟩
     simp only [eval, mem_preimage, sub_eq_zero, mem_singleton_iff]; rw [eq_comm]
