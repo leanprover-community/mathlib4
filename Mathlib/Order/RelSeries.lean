@@ -91,7 +91,7 @@ def toList (x : RelSeries r) : List α := List.ofFn x
 
 @[simp]
 lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 :=
-  List.length_ofFn _
+  List.length_ofFn
 
 lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
   rw [List.chain'_iff_get]
@@ -99,7 +99,7 @@ lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
   convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
 
 lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
-  List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
+  List.eq_nil_iff_forall_not_mem.mp m (x 0) <| List.mem_ofFn.mpr ⟨_, rfl⟩
 
 /-- Every nonempty list satisfying the chain condition gives a relation series -/
 @[simps]
@@ -328,6 +328,7 @@ is another `r`-series
 @[simps]
 def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     (prev_connect : r (p (Fin.castSucc i)) a) (connect_next : r a (p i.succ)) : RelSeries r where
+  length := p.length + 1
   toFun := (Fin.castSucc i.succ).insertNth a p
   step m := by
     set x := _; set y := _; change r x y
@@ -532,7 +533,6 @@ def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
     else q ⟨i.1 - p.length,
       Nat.sub_lt_left_of_lt_add (by rwa [not_lt] at H) (by rw [← add_assoc]; exact i.2)⟩
   step i := by
-    dsimp only
     by_cases h₂ : i.1 + 1 < p.length
     · have h₁ : i.1 < p.length := lt_trans (lt_add_one _) h₂
       simp only [Fin.coe_castSucc, Fin.val_succ]
@@ -770,6 +770,7 @@ lemma head_le_last (x : LTSeries α) : x.head ≤ x.last :=
 @[simps]
 def mk (length : ℕ) (toFun : Fin (length + 1) → α) (strictMono : StrictMono toFun) :
     LTSeries α where
+  length := length
   toFun := toFun
   step i := strictMono <| lt_add_one i.1
 
