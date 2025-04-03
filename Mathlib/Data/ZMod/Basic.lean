@@ -79,11 +79,19 @@ theorem val_mul' {m n : ZMod 0} : (m * n).val = m.val * n.val :=
   Int.natAbs_mul m n
 
 @[simp]
-theorem val_natCast {n : ℕ} (a : ℕ) : (a : ZMod n).val = a % n := by
+theorem val_natCast (n a : ℕ) : (a : ZMod n).val = a % n := by
   cases n
   · rw [Nat.mod_zero]
     exact Int.natAbs_ofNat a
   · apply Fin.val_natCast
+
+lemma val_natCast_of_lt {n a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
+  rwa [val_natCast, Nat.mod_eq_of_lt]
+
+lemma val_ofNat (n a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ZMod n).val = ofNat(a) % n := val_natCast ..
+
+lemma val_ofNat_of_lt {n a : ℕ} [a.AtLeastTwo] (han : a < n) : (ofNat(a) : ZMod n).val = ofNat(a) :=
+  val_natCast_of_lt han
 
 theorem val_unit' {n : ZMod 0} : IsUnit n ↔ n.val = 1 := by
   simp only [val]
@@ -91,9 +99,6 @@ theorem val_unit' {n : ZMod 0} : IsUnit n ↔ n.val = 1 := by
 
 lemma eq_one_of_isUnit_natCast {n : ℕ} (h : IsUnit (n : ZMod 0)) : n = 1 := by
   rw [← Nat.mod_zero n, ← val_natCast, val_unit'.mp h]
-
-theorem val_natCast_of_lt {n a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
-  rwa [val_natCast, Nat.mod_eq_of_lt]
 
 instance charP (n : ℕ) : CharP (ZMod n) n where
   cast_eq_zero_iff' := by
@@ -780,7 +785,7 @@ theorem val_coe_unit_coprime {n : ℕ} (u : (ZMod n)ˣ) : Nat.Coprime (u : ZMod 
 lemma isUnit_iff_coprime (m n : ℕ) : IsUnit (m : ZMod n) ↔ m.Coprime n := by
   refine ⟨fun H ↦ ?_, fun H ↦ (unitOfCoprime m H).isUnit⟩
   have H' := val_coe_unit_coprime H.unit
-  rw [IsUnit.unit_spec, val_natCast m, Nat.coprime_iff_gcd_eq_one] at H'
+  rw [IsUnit.unit_spec, val_natCast, Nat.coprime_iff_gcd_eq_one] at H'
   rw [Nat.coprime_iff_gcd_eq_one, Nat.gcd_comm, ← H']
   exact Nat.gcd_rec n m
 

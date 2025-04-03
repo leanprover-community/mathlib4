@@ -806,7 +806,7 @@ theorem stoppedValue_eq_of_mem_finset [AddCommMonoid E] {s : Finset ι} (hbdd : 
   ext y
   classical
   rw [stoppedValue, Finset.sum_apply, Finset.sum_indicator_eq_sum_filter]
-  suffices Finset.filter (fun i => y ∈ {ω : Ω | τ ω = i}) s = ({τ y} : Finset ι) by
+  suffices {i ∈ s | y ∈ {ω : Ω | τ ω = i}} = ({τ y} : Finset ι) by
     rw [this, Finset.sum_singleton]
   ext1 ω
   simp only [Set.mem_setOf_eq, Finset.mem_filter, Finset.mem_singleton]
@@ -821,7 +821,7 @@ theorem stoppedValue_eq' [Preorder ι] [LocallyFiniteOrderBot ι] [AddCommMonoid
 
 theorem stoppedProcess_eq_of_mem_finset [LinearOrder ι] [AddCommMonoid E] {s : Finset ι} (n : ι)
     (hbdd : ∀ ω, τ ω < n → τ ω ∈ s) : stoppedProcess u τ n = Set.indicator {a | n ≤ τ a} (u n) +
-      ∑ i ∈ s.filter (· < n), Set.indicator {ω | τ ω = i} (u i) := by
+      ∑ i ∈ s with i < n, Set.indicator {ω | τ ω = i} (u i) := by
   ext ω
   rw [Pi.add_apply, Finset.sum_apply]
   rcases le_or_lt n (τ ω) with h | h
@@ -891,7 +891,7 @@ theorem memLp_stoppedProcess_of_mem_finset (hτ : IsStoppingTime ℱ τ) (hu : �
   rw [stoppedProcess_eq_of_mem_finset n hbdd]
   refine MemLp.add ?_ ?_
   · exact MemLp.indicator (ℱ.le n {a : Ω | n ≤ τ a} (hτ.measurableSet_ge n)) (hu n)
-  · suffices MemLp (fun ω => ∑ i ∈ s.filter (· < n), {a : Ω | τ a = i}.indicator (u i) ω) p μ by
+  · suffices MemLp (fun ω => ∑ i ∈ s with i < n, {a : Ω | τ a = i}.indicator (u i) ω) p μ by
       convert this using 1; ext1 ω; simp only [Finset.sum_apply]
     refine memLp_finset_sum _ fun i _ => MemLp.indicator ?_ (hu i)
     exact ℱ.le i {a : Ω | τ a = i} (hτ.measurableSet_eq i)

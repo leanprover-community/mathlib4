@@ -438,7 +438,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
     -- to show that the closure of `D` contains constant indicators which are in `Lᵖ` (i. e. the
     -- set has finite measure), is closed by sum and closed.
     -- This is given by `Lp.induction`.
-    refine Lp.induction p_ne_top.elim (P := fun f ↦ f ∈ closure D) ?_ ?_ isClosed_closure
+    refine Lp.induction p_ne_top.elim (motive := fun f ↦ f ∈ closure D) ?_ ?_ isClosed_closure
     · intro a s ms hμs
       -- We want to approximate `a • 𝟙ₛ`.
       apply ne_of_lt at hμs
