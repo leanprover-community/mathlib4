@@ -307,6 +307,7 @@ theorem ofFinsupp_eq_one {a} :
 
 theorem single_one_one  : single 1 (1 : k) = 1 := rfl
 
+@[simp]
 theorem one_def : (1 : SkewMonoidAlgebra k G) = single 1 1 := rfl
 
 @[simp]
@@ -703,8 +704,7 @@ instance instNonAssocRing [Ring k] [Monoid G] [MulSemiringAction G k] :
   intCast_negSucc n := by
     simp only [Int.cast_negSucc, Nat.cast_add, Nat.cast_one, neg_add_rev, single_add]
     rw [single]; rw [single];
-    simp only [Finsupp.single_neg, ofFinsupp_neg, ofFinsupp_single, ofFinsupp_one, add_right_inj]
-    rfl
+    simp [Finsupp.single_neg, ofFinsupp_neg, ofFinsupp_single, ofFinsupp_one, add_right_inj]
 
 theorem intCast_def [Ring k] [Monoid G] [MulSemiringAction G k] (z : ℤ) :
     (z : SkewMonoidAlgebra k G) = single (1 : G) (z : k) :=
