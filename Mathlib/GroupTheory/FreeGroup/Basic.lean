@@ -386,7 +386,7 @@ then this function is the composite of `FreeGroup.of` and a unique group homomor
 `FreeGroup.lift f : FreeGroup α →* G`.
 
 A typical element of `FreeGroup α` is a formal product of
-elements of `α` and their formal inverses.
+elements of `α` and their formal inverses, quotient by reduction.
 For example if `x` and `y` are terms of type `α` then `x⁻¹ * y * y * x * y⁻¹` is a
 "typical" element of `FreeGroup α`. In particular if `α` is empty
 then `FreeGroup α` is isomorphic to the trivial group, and if `α` has one term
@@ -402,7 +402,7 @@ then this function is the composite of `FreeAddGroup.of` and a unique group homo
 `FreeAddGroup.lift f : FreeAddGroup α →+ G`.
 
 A typical element of `FreeAddGroup α` is a formal sum of
-elements of `α` and their formal inverses.
+elements of `α` and their formal inverses, quotient by reduction.
 For example if `x` and `y` are terms of type `α` then `-x + y + y + x + -y` is a
 \"typical\" element of `FreeAddGroup α`. In particular if `α` is empty
 then `FreeAddGroup α` is isomorphic to the trivial group, and if `α` has one term
