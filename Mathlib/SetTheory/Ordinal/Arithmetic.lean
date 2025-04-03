@@ -204,16 +204,10 @@ theorem isLimit_iff {o} : IsLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o := by
 theorem IsLimit.isSuccPrelimit {o} (h : IsLimit o) : IsSuccPrelimit o :=
   IsSuccLimit.isSuccPrelimit h
 
-@[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
-alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
-
 theorem IsLimit.succ_lt {o a : Ordinal} (h : IsLimit o) : a < o → succ a < o :=
   IsSuccLimit.succ_lt h
 
 theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_bot
-
-@[deprecated isSuccPrelimit_zero (since := "2024-09-05")]
-alias isSuccLimit_zero := isSuccPrelimit_zero
 
 theorem not_zero_isLimit : ¬IsLimit 0 :=
   not_isSuccLimit_bot
@@ -360,11 +354,6 @@ theorem mk_Iio_ordinal (o : Ordinal.{u}) :
   rw [lift_card, ← typein_ordinal]
   rfl
 
-@[deprecated mk_Iio_ordinal (since := "2024-09-19")]
-theorem mk_initialSeg (o : Ordinal.{u}) :
-    #{ o' : Ordinal | o' < o } = Cardinal.lift.{u + 1} o.card := mk_Iio_ordinal o
-
-
 /-! ### Normal ordinal functions -/
 
 
@@ -412,17 +401,12 @@ theorem IsNormal.id_le {f} (H : IsNormal f) : id ≤ f :=
 theorem IsNormal.le_apply {f} (H : IsNormal f) {a} : a ≤ f a :=
   H.strictMono.le_apply
 
-@[deprecated IsNormal.le_apply (since := "2024-09-11")]
-theorem IsNormal.self_le {f} (H : IsNormal f) (a) : a ≤ f a :=
-  H.strictMono.le_apply
-
 theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
   H.le_apply.le_iff_eq
 
 theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempty) (b)
     (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f a ≤ o :=
   ⟨fun h _ pa => (H.le_iff.2 ((H₂ _).1 le_rfl _ pa)).trans h, fun h => by
-    -- Porting note: `refine'` didn't work well so `induction` is used
     induction b using limitRecOn with
     | H₁ =>
       obtain ⟨x, px⟩ := p0
@@ -1150,14 +1134,8 @@ theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
 theorem lt_omega0 {o : Ordinal} : o < ω ↔ ∃ n : ℕ, o = n := by
   simp_rw [← Cardinal.ord_aleph0, Cardinal.lt_ord, lt_aleph0, card_eq_nat]
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-30")]
-alias lt_omega := lt_omega0
-
 theorem nat_lt_omega0 (n : ℕ) : ↑n < ω :=
   lt_omega0.2 ⟨_, rfl⟩
-
-@[deprecated "No deprecation message was provided." (since := "2024-09-30")]
-alias nat_lt_omega := nat_lt_omega0
 
 theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o := by
   obtain ho | ho := lt_or_le o ω
@@ -1170,13 +1148,7 @@ theorem omega0_pos : 0 < ω :=
 theorem omega0_ne_zero : ω ≠ 0 :=
   omega0_pos.ne'
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-30")]
-alias omega_ne_zero := omega0_ne_zero
-
 theorem one_lt_omega0 : 1 < ω := by simpa only [Nat.cast_one] using nat_lt_omega0 1
-
-@[deprecated "No deprecation message was provided." (since := "2024-09-30")]
-alias one_lt_omega := one_lt_omega0
 
 theorem isLimit_omega0 : IsLimit ω := by
   rw [isLimit_iff, isSuccPrelimit_iff_succ_lt]
@@ -1187,17 +1159,11 @@ theorem isLimit_omega0 : IsLimit ω := by
 @[deprecated "No deprecation message was provided." (since := "2024-10-14")]
 alias omega0_isLimit := isLimit_omega0
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-30")]
-alias omega_isLimit := isLimit_omega0
-
 theorem omega0_le {o : Ordinal} : ω ≤ o ↔ ∀ n : ℕ, ↑n ≤ o :=
   ⟨fun h n => (nat_lt_omega0 _).le.trans h, fun H =>
     le_of_forall_lt fun a h => by
       let ⟨n, e⟩ := lt_omega0.1 h
       rw [e, ← succ_le_iff]; exact H (n + 1)⟩
-
-@[deprecated "No deprecation message was provided." (since := "2024-09-30")]
-alias omega_le := omega0_le
 
 theorem nat_lt_limit {o} (h : IsLimit o) : ∀ n : ℕ, ↑n < o
   | 0 => h.pos
@@ -1205,9 +1171,6 @@ theorem nat_lt_limit {o} (h : IsLimit o) : ∀ n : ℕ, ↑n < o
 
 theorem omega0_le_of_isLimit {o} (h : IsLimit o) : ω ≤ o :=
   omega0_le.2 fun n => le_of_lt <| nat_lt_limit h n
-
-@[deprecated "No deprecation message was provided." (since := "2024-09-30")]
-alias omega_le_of_isLimit := omega0_le_of_isLimit
 
 theorem natCast_add_omega0 (n : ℕ) : n + ω = ω := by
   refine le_antisymm (le_of_forall_lt fun a ha ↦ ?_) (le_add_left _ _)
@@ -1219,15 +1182,9 @@ theorem natCast_add_omega0 (n : ℕ) : n + ω = ω := by
 theorem one_add_omega0 : 1 + ω = ω :=
   mod_cast natCast_add_omega0 1
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-30")]
-alias one_add_omega := one_add_omega0
-
 theorem add_omega0 {a : Ordinal} (h : a < ω) : a + ω = ω := by
   obtain ⟨n, rfl⟩ := lt_omega0.1 h
   exact natCast_add_omega0 n
-
-@[deprecated (since := "2024-09-30")]
-alias add_omega := add_omega0
 
 @[simp]
 theorem natCast_add_of_omega0_le {o} (h : ω ≤ o) (n : ℕ) : n + o = o := by
@@ -1236,9 +1193,6 @@ theorem natCast_add_of_omega0_le {o} (h : ω ≤ o) (n : ℕ) : n + o = o := by
 @[simp]
 theorem one_add_of_omega0_le {o} (h : ω ≤ o) : 1 + o = o :=
   mod_cast natCast_add_of_omega0_le h 1
-
-@[deprecated "No deprecation message was provided." (since := "2024-09-30")]
-alias one_add_of_omega_le := one_add_of_omega0_le
 
 open Ordinal
 
@@ -1256,9 +1210,6 @@ theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ 
     refine isLimit_mul_left isLimit_omega0 (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
     intro e
     simp only [e, mul_zero]
-
-@[deprecated "No deprecation message was provided." (since := "2024-09-30")]
-alias isLimit_iff_omega_dvd := isLimit_iff_omega0_dvd
 
 @[simp]
 theorem natCast_mod_omega0 (n : ℕ) : n % ω = n :=

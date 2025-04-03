@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
+Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn, Sabbir Rahman
 -/
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.Order.Field.Basic
@@ -86,7 +86,7 @@ end LinearOrderedSemifield
 
 section LinearOrderedField
 
-variable [LinearOrderedField α] {a : α} {n : ℤ}
+variable [LinearOrderedField α] {a b : α} {n : ℤ}
 
 protected theorem Even.zpow_nonneg (hn : Even n) (a : α) : 0 ≤ a ^ n := by
   obtain ⟨k, rfl⟩ := hn; rw [zpow_add' (by simp [em'])]; exact mul_self_nonneg _
@@ -126,6 +126,37 @@ alias ⟨_, Odd.zpow_nonpos⟩ := Odd.zpow_nonpos_iff
 
 theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
   rcases abs_choice a with h | h <;> simp only [h, hp.neg_zpow _]
+
+lemma zpow_eq_zpow_iff_of_ne_zero₀ (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b ∨ a = -b ∧ Even n :=
+  match n with
+  | Int.ofNat m => by
+    simp only [Int.ofNat_eq_coe, ne_eq, Nat.cast_eq_zero, zpow_natCast, Int.even_coe_nat] at *
+    exact pow_eq_pow_iff_of_ne_zero hn
+  | Int.negSucc m => by
+    rw [show Int.negSucc m = -↑(m + 1) by rfl] at *
+    simp only [ne_eq, neg_eq_zero, Nat.cast_eq_zero, zpow_neg, zpow_natCast, inv_inj, even_neg,
+      Int.even_coe_nat] at *
+    exact pow_eq_pow_iff_of_ne_zero hn
+
+lemma zpow_eq_zpow_iff_cases₀ : a ^ n = b ^ n ↔ n = 0 ∨ a = b ∨ a = -b ∧ Even n := by
+  rcases eq_or_ne n 0 with rfl | hn <;> simp [zpow_eq_zpow_iff_of_ne_zero₀, *]
+
+lemma zpow_eq_one_iff_of_ne_zero₀ (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 ∨ a = -1 ∧ Even n := by
+  simp [← zpow_eq_zpow_iff_of_ne_zero₀ hn]
+
+lemma zpow_eq_one_iff_cases₀ : a ^ n = 1 ↔ n = 0 ∨ a = 1 ∨ a = -1 ∧ Even n := by
+  simp [← zpow_eq_zpow_iff_cases₀]
+
+lemma zpow_eq_neg_zpow_iff₀ (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd n :=
+  match n with
+  | Int.ofNat m => by
+    simp [pow_eq_neg_pow_iff, hb]
+  | Int.negSucc m => by
+    rw [show Int.negSucc m = -↑(m + 1) by rfl]
+    simp [-Nat.cast_add, -Int.natCast_add, neg_inv, pow_eq_neg_pow_iff, hb]
+
+lemma zpow_eq_neg_one_iff₀ : a ^ n = -1 ↔ a = -1 ∧ Odd n := by
+  simpa using zpow_eq_neg_zpow_iff₀ (α := α) one_ne_zero
 
 /-! ### Bernoulli's inequality -/
 

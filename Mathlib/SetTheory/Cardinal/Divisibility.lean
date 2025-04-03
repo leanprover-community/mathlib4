@@ -35,7 +35,7 @@ universe u
 
 variable {a b : Cardinal.{u}} {n m : ℕ}
 
-@[simp]
+/-- Alias of `isUnit_iff_eq_one` for discoverability. -/
 theorem isUnit_iff : IsUnit a ↔ a = 1 := by
   refine
     ⟨fun h => ?_, by

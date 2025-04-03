@@ -525,10 +525,10 @@ theorem map_id : map (fun i ↦ (LinearMap.id : s i →ₗ[R] s i)) = .id := by
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, LinearMap.id_coe, id_eq]
 
 @[simp]
-theorem map_one : map (fun (i : ι) ↦ (1 : s i →ₗ[R] s i)) = 1 :=
+protected theorem map_one : map (fun (i : ι) ↦ (1 : s i →ₗ[R] s i)) = 1 :=
   map_id
 
-theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
+protected theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
     map (fun i ↦ f₁ i * f₂ i) = map f₁ * map f₂ :=
   map_comp f₁ f₂
 
@@ -536,8 +536,8 @@ theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
 @[simps]
 def mapMonoidHom : (Π i, s i →ₗ[R] s i) →* ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, s i) where
   toFun := map
-  map_one' := map_one
-  map_mul' := map_mul
+  map_one' := PiTensorProduct.map_one
+  map_mul' := PiTensorProduct.map_mul
 
 @[simp]
 protected theorem map_pow (f : Π i, s i →ₗ[R] s i) (n : ℕ) :
@@ -809,7 +809,6 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
   right_inv t := by simp
   map_add' := LinearMap.map_add _
   map_smul' := fun r x => by
-    simp only
     exact LinearMap.map_smul _ r x
 
 @[simp]
@@ -841,7 +840,6 @@ def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[
   right_inv t := by simp only [ofSubsingleton_apply_apply, LinearMap.id_apply, lift.tprod]
   map_add' := LinearMap.map_add _
   map_smul' := fun r x => by
-    simp only
     exact LinearMap.map_smul _ r x
 
 @[simp]

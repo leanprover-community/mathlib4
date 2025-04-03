@@ -157,7 +157,7 @@ def mkFintypeEnum (declName : Name) : CommandElabM Unit := do
                   apply List.Nodup.of_map $(mkIdent toCtorIdxName)
                   have h : List.map $(mkIdent toCtorIdxName) $(mkIdent enumListName)
                             = List.range $n := rfl
-                  exact h ▸ List.nodup_range $n)) goal
+                  exact h ▸ List.nodup_range)) goal
       Term.synthesizeSyntheticMVarsNoPostponing
       addAndCompile <| Declaration.thmDecl
         { name := enumListNodupName
@@ -178,14 +178,15 @@ def mkFintypeEnum (declName : Name) : CommandElabM Unit := do
   elabCommand cmd
 
 def mkFintypeInstanceHandler (declNames : Array Name) : CommandElabM Bool := do
-  if declNames.size != 1 then
+  if h : declNames.size ≠ 1 then
     return false -- mutually inductive types are not supported
-  let declName := declNames[0]!
-  if ← isEnumType declName then
-    mkFintypeEnum declName
-    return true
   else
-    mkFintype declName
+    let declName := declNames[0]
+    if ← isEnumType declName then
+      mkFintypeEnum declName
+      return true
+    else
+      mkFintype declName
 
 initialize
   registerDerivingHandler ``Fintype mkFintypeInstanceHandler

@@ -693,7 +693,7 @@ lemma eLpNorm_indicator_const_le (p : ℝ≥0∞) :
   obtain rfl | hp := eq_or_ne p 0
   · simp only [eLpNorm_exponent_zero, zero_le']
   obtain rfl | h'p := eq_or_ne p ∞
-  · simp only [eLpNorm_exponent_top, ENNReal.top_toReal, _root_.div_zero, ENNReal.rpow_zero,
+  · simp only [eLpNorm_exponent_top, ENNReal.toReal_top, _root_.div_zero, ENNReal.rpow_zero,
       mul_one]
     exact eLpNormEssSup_indicator_const_le _ _
   let t := toMeasurable μ s
