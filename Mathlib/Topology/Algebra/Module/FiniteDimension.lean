@@ -7,7 +7,7 @@ import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Determinant
-import Mathlib.RingTheory.Ideal.LocalRing
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Finite dimensional topological vector spaces over complete fields
@@ -30,7 +30,7 @@ When `E` is a normed space, this gets us the equivalence of norms in finite dime
 
 ## TODO
 
-Generalize more of `Mathlib.Analysis.NormedSpace.FiniteDimension` to general TVSs.
+Generalize more of `Mathlib.Analysis.Normed.Module.FiniteDimension` to general TVSs.
 
 ## Implementation detail
 

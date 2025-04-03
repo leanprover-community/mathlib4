@@ -322,7 +322,7 @@ protected theorem congr_arg {x x' : M} : x = x' → f x = f x' :=
 protected theorem congr_fun (h : f = g) (x : M) : f x = g x :=
   DFunLike.congr_fun h x
 
-theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
+protected theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 
 @[simp]
@@ -484,21 +484,22 @@ variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMonoid M₃]
 variable {module_M₁ : Module R₁ M₁} {module_M₂ : Module R₂ M₂} {module_M₃ : Module R₃ M₃}
 variable {σ₁₂ : R₁ →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R₁ →+* R₃}
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-variable (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂)
 
 /-- Composition of two linear maps is a linear map -/
-def comp : M₁ →ₛₗ[σ₁₃] M₃ where
+def comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂) :
+    M₁ →ₛₗ[σ₁₃] M₃ where
   toFun := f ∘ g
   map_add' := by simp only [map_add, forall_const, Function.comp_apply]
   -- Note that #8386 changed `map_smulₛₗ` to `map_smulₛₗ _`
   map_smul' r x := by simp only [Function.comp_apply, map_smulₛₗ _, RingHomCompTriple.comp_apply]
 
+variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
+variable (f : M₂ →ₛₗ[σ₂₃] M₃) (g : M₁ →ₛₗ[σ₁₂] M₂)
+
 /-- `∘ₗ` is notation for composition of two linear (not semilinear!) maps into a linear map.
 This is useful when Lean is struggling to infer the `RingHomCompTriple` instance. -/
 notation3:80 (name := compNotation) f:81 " ∘ₗ " g:80 =>
-  @LinearMap.comp _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
-    RingHomCompTriple.ids f g
+  LinearMap.comp (σ₁₂ := RingHom.id _) (σ₂₃ := RingHom.id _) (σ₁₃ := RingHom.id _) f g
 
 theorem comp_apply (x : M₁) : f.comp g x = f (g x) :=
   rfl
@@ -528,7 +529,7 @@ variable {f g} {f' : M₂ →ₛₗ[σ₂₃] M₃} {g' : M₁ →ₛₗ[σ₁�
 /-- The linear map version of `Function.Surjective.injective_comp_right` -/
 lemma _root_.Function.Surjective.injective_linearMapComp_right (hg : Surjective g) :
     Injective fun f : M₂ →ₛₗ[σ₂₃] M₃ ↦ f.comp g :=
-  fun _ _ h ↦ ext <| hg.forall.2 (ext_iff.1 h)
+  fun _ _ h ↦ ext <| hg.forall.2 (LinearMap.ext_iff.1 h)
 
 @[simp]
 theorem cancel_right (hg : Surjective g) : f.comp g = f'.comp g ↔ f = f' :=
@@ -653,13 +654,13 @@ variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R M₂]
 
 /-- Convert an `IsLinearMap` predicate to a `LinearMap` -/
-def mk' (f : M → M₂) (H : IsLinearMap R f) : M →ₗ[R] M₂ where
+def mk' (f : M → M₂) (lin : IsLinearMap R f) : M →ₗ[R] M₂ where
   toFun := f
-  map_add' := H.1
-  map_smul' := H.2
+  map_add' := lin.1
+  map_smul' := lin.2
 
 @[simp]
-theorem mk'_apply {f : M → M₂} (H : IsLinearMap R f) (x : M) : mk' f H x = f x :=
+theorem mk'_apply {f : M → M₂} (lin : IsLinearMap R f) (x : M) : mk' f lin x = f x :=
   rfl
 
 theorem isLinearMap_smul {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] (c : R) :
@@ -672,9 +673,7 @@ theorem isLinearMap_smul' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R
     IsLinearMap R fun c : R ↦ c • a :=
   IsLinearMap.mk (fun x y ↦ add_smul x y a) fun x y ↦ mul_smul x y a
 
-variable {f : M → M₂} (lin : IsLinearMap R f)
-
-theorem map_zero : f (0 : M) = (0 : M₂) :=
+theorem map_zero {f : M → M₂} (lin : IsLinearMap R f) : f (0 : M) = (0 : M₂) :=
   (lin.mk' f).map_zero
 
 end AddCommMonoid
@@ -687,12 +686,10 @@ variable [Module R M] [Module R M₂]
 theorem isLinearMap_neg : IsLinearMap R fun z : M ↦ -z :=
   IsLinearMap.mk neg_add fun x y ↦ (smul_neg x y).symm
 
-variable {f : M → M₂} (lin : IsLinearMap R f)
-
-theorem map_neg (x : M) : f (-x) = -f x :=
+theorem map_neg {f : M → M₂} (lin : IsLinearMap R f) (x : M) : f (-x) = -f x :=
   (lin.mk' f).map_neg x
 
-theorem map_sub (x y) : f (x - y) = f x - f y :=
+theorem map_sub {f : M → M₂} (lin : IsLinearMap R f) (x y : M) : f (x - y) = f x - f y :=
   (lin.mk' f).map_sub x y
 
 end AddCommGroup
@@ -890,6 +887,11 @@ def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂ where
   toFun := toAddMonoidHom
   map_zero' := by ext; rfl
   map_add' := by intros; ext; rfl
+
+/-- If `M` is the zero module, then  the identity map of `M` is the zero map. -/
+@[simp]
+theorem identityMapOfZeroModuleIsZero [Subsingleton M] : id (R := R₁) (M := M) = 0 :=
+  Subsingleton.eq_zero id
 
 end Arithmetic
 

@@ -112,8 +112,20 @@ namespace Fintype
 @[simp] lemma card_piFinset (s : ∀ i, Finset (α i)) :
     (piFinset s).card = ∏ i, (s i).card := by simp [piFinset, card_map]
 
+/-- This lemma is specifically designed to be used backwards, whence the specialisation to `Fin n`
+as the indexing type doesn't matter in practice. The more general forward direction lemma here is
+`Fintype.card_piFinset`. -/
+lemma card_piFinset_const {α : Type*} (s : Finset α) (n : ℕ) :
+    (piFinset fun _ : Fin n ↦ s).card = s.card ^ n := by simp
+
 @[simp] lemma card_pi [DecidableEq ι] [∀ i, Fintype (α i)] : card (∀ i, α i) = ∏ i, card (α i) :=
   card_piFinset _
+
+/-- This lemma is specifically designed to be used backwards, whence the specialisation to `Fin n`
+as the indexing type doesn't matter in practice. The more general forward direction lemma here is
+`Fintype.card_pi`. -/
+lemma card_pi_const (α : Type*) [Fintype α] (n : ℕ) : card (Fin n → α) = card α ^ n :=
+  card_piFinset_const _ _
 
 @[simp] nonrec lemma card_sigma [Fintype ι] [∀ i, Fintype (α i)] :
     card (Sigma α) = ∑ i, card (α i) := card_sigma _ _
@@ -206,7 +218,7 @@ theorem Fintype.prod_sum_elim (f : α₁ → M) (g : α₂ → M) :
   prod_disj_sum _ _ _
 
 @[to_additive (attr := simp)]
-theorem Fintype.prod_sum_type (f : Sum α₁ α₂ → M) :
+theorem Fintype.prod_sum_type (f : α₁ ⊕ α₂ → M) :
     ∏ x, f x = (∏ a₁, f (Sum.inl a₁)) * ∏ a₂, f (Sum.inr a₂) :=
   prod_disj_sum _ _ _
 

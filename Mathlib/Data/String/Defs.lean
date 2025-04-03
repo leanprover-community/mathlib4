@@ -5,7 +5,6 @@ Authors: Simon Hudon, Keeley Hoek, Floris van Doorn, Chris Bailey
 -/
 import Batteries.Data.List.Basic
 import Batteries.Data.String.Basic
-import Mathlib.Mathport.Rename
 
 /-!
 # Definitions for `String`

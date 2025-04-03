@@ -340,6 +340,13 @@ instance fintypeBiUnion' [DecidableEq α] {ι : Type*} (s : Set ι) [Fintype s] 
     [∀ i, Fintype (t i)] : Fintype (⋃ x ∈ s, t x) :=
   Fintype.ofFinset (s.toFinset.biUnion fun x => (t x).toFinset) <| by simp
 
+lemma toFinset_iUnion [Fintype β] [DecidableEq α] (f : β → Set α)
+    [∀ w, Fintype (f w)] :
+    Set.toFinset (⋃ (x : β), f x) =
+    Finset.biUnion (Finset.univ : Finset β) (fun x => (f x).toFinset) := by
+  ext v
+  simp only [mem_toFinset, mem_iUnion, Finset.mem_biUnion, Finset.mem_univ, true_and]
+
 section monad
 attribute [local instance] Set.monad
 
@@ -761,6 +768,11 @@ theorem Finite.of_preimage (h : (f ⁻¹' s).Finite) (hf : Surjective f) : s.Fin
 theorem Finite.preimage (I : Set.InjOn f (f ⁻¹' s)) (h : s.Finite) : (f ⁻¹' s).Finite :=
   (h.subset (image_preimage_subset f s)).of_finite_image I
 
+theorem Finite.preimage'  (h : s.Finite) (hf : ∀ b ∈ s, (f ⁻¹' {b}).Finite) :
+    (f ⁻¹' s).Finite := by
+  rw [← Set.biUnion_preimage_singleton]
+  exact Set.Finite.biUnion h hf
+
 protected lemma Infinite.preimage (hs : s.Infinite) (hf : s ⊆ range f) : (f ⁻¹' s).Infinite :=
   fun h ↦ hs <| finite_of_finite_preimage h hf
 
@@ -780,14 +792,16 @@ theorem finite_le_nat (n : ℕ) : Set.Finite { i | i ≤ n } :=
 
 section MapsTo
 
-variable {s : Set α} {f : α → α} (hs : s.Finite) (hm : MapsTo f s s)
+variable {s : Set α} {f : α → α}
 
-theorem Finite.surjOn_iff_bijOn_of_mapsTo : SurjOn f s s ↔ BijOn f s s := by
+theorem Finite.surjOn_iff_bijOn_of_mapsTo (hs : s.Finite) (hm : MapsTo f s s) :
+    SurjOn f s s ↔ BijOn f s s := by
   refine ⟨fun h ↦ ⟨hm, ?_, h⟩, BijOn.surjOn⟩
   have : Finite s := finite_coe_iff.mpr hs
   exact hm.restrict_inj.mp (Finite.injective_iff_surjective.mpr <| hm.restrict_surjective_iff.mpr h)
 
-theorem Finite.injOn_iff_bijOn_of_mapsTo : InjOn f s ↔ BijOn f s s := by
+theorem Finite.injOn_iff_bijOn_of_mapsTo (hs : s.Finite) (hm : MapsTo f s s) :
+    InjOn f s ↔ BijOn f s s := by
   refine ⟨fun h ↦ ⟨hm, h, ?_⟩, BijOn.injOn⟩
   have : Finite s := finite_coe_iff.mpr hs
   exact hm.restrict_surjective_iff.mp (Finite.injective_iff_surjective.mp <| hm.restrict_inj.mpr h)
@@ -856,7 +870,7 @@ theorem Subsingleton.finite {s : Set α} (h : s.Subsingleton) : s.Finite :=
 theorem Infinite.nontrivial {s : Set α} (hs : s.Infinite) : s.Nontrivial :=
   not_subsingleton_iff.1 <| mt Subsingleton.finite hs
 
-theorem finite_preimage_inl_and_inr {s : Set (Sum α β)} :
+theorem finite_preimage_inl_and_inr {s : Set (α ⊕ β)} :
     (Sum.inl ⁻¹' s).Finite ∧ (Sum.inr ⁻¹' s).Finite ↔ s.Finite :=
   ⟨fun h => image_preimage_inl_union_image_preimage_inr s ▸ (h.1.image _).union (h.2.image _),
     fun h => ⟨h.preimage Sum.inl_injective.injOn, h.preimage Sum.inr_injective.injOn⟩⟩
@@ -1172,10 +1186,10 @@ theorem Infinite.exists_subset_card_eq {s : Set α} (hs : s.Infinite) (n : ℕ) 
   ⟨((Finset.range n).map (hs.natEmbedding _)).map (Embedding.subtype _), by simp⟩
 
 theorem infinite_of_finite_compl [Infinite α] {s : Set α} (hs : sᶜ.Finite) : s.Infinite := fun h =>
-  Set.infinite_univ (by simpa using hs.union h)
+  Set.infinite_univ (α := α) (by simpa using hs.union h)
 
 theorem Finite.infinite_compl [Infinite α] {s : Set α} (hs : s.Finite) : sᶜ.Infinite := fun h =>
-  Set.infinite_univ (by simpa using hs.union h)
+  Set.infinite_univ (α := α) (by simpa using hs.union h)
 
 theorem Infinite.diff {s t : Set α} (hs : s.Infinite) (ht : t.Finite) : (s \ t).Infinite := fun h =>
   hs <| h.of_diff ht
@@ -1271,7 +1285,7 @@ theorem infinite_of_forall_exists_gt (h : ∀ a, ∃ b ∈ s, a < b) : s.Infinit
     (strictMono_nat_of_lt_succ fun n => (h _).choose_spec.2).injective hf
 
 theorem infinite_of_forall_exists_lt (h : ∀ a, ∃ b ∈ s, b < a) : s.Infinite :=
-  @infinite_of_forall_exists_gt αᵒᵈ _ _ _ h
+  infinite_of_forall_exists_gt (α := αᵒᵈ) h
 
 end Preorder
 
@@ -1461,12 +1475,12 @@ variable [Preorder α] [IsDirected α (· ≥ ·)] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded below. -/
 protected theorem Finite.bddBelow (hs : s.Finite) : BddBelow s :=
-  @Finite.bddAbove αᵒᵈ _ _ _ _ hs
+  Finite.bddAbove (α := αᵒᵈ) hs
 
 /-- A finite union of sets which are all bounded below is still bounded below. -/
 theorem Finite.bddBelow_biUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
     BddBelow (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddBelow (S i) :=
-  @Finite.bddAbove_biUnion αᵒᵈ _ _ _ _ _ _ H
+  Finite.bddAbove_biUnion (α := αᵒᵈ) H
 
 theorem infinite_of_not_bddBelow : ¬BddBelow s → s.Infinite := mt Finite.bddBelow
 

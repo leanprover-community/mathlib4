@@ -210,7 +210,7 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
     intro s
     constructor
     · intro H V i hi
-      dsimp only [x'', show x'' = fun V i hi => F.map (i₁ V i hi).op (x _ (hi₂ V i hi)) from rfl]
+      dsimp only [x'']
       conv_lhs => rw [← h₂ _ _ hi]
       rw [← H _ (hi₂ _ _ hi)]
       exact FunctorToTypes.map_comp_apply F (i₂ _ _ hi).op (i₁ _ _ hi).op _

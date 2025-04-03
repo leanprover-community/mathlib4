@@ -212,7 +212,7 @@ theorem iso_of_countable_dense [Countable α] [DenselyOrdered α] [NoMinOrder α
     Nonempty (α ≃o β) := by
   cases nonempty_encodable α
   cases nonempty_encodable β
-  let to_cofinal : Sum α β → Cofinal (PartialIso α β) := fun p ↦
+  let to_cofinal : α ⊕ β → Cofinal (PartialIso α β) := fun p ↦
     Sum.recOn p (definedAtLeft β) (definedAtRight α)
   let our_ideal : Ideal (PartialIso α β) := idealOfCofinals default to_cofinal
   let F a := funOfIdeal a our_ideal (cofinal_meets_idealOfCofinals _ to_cofinal (Sum.inl a))

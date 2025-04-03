@@ -6,7 +6,7 @@ Authors: Paul Reichert
 import Mathlib.CategoryTheory.Limits.Types
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.CategoryTheory.Conj
+import Mathlib.CategoryTheory.HomCongr
 
 /-!
 # Colimits of connected index categories

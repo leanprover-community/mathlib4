@@ -63,10 +63,13 @@ noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) 
   inv_zero := dif_pos rfl
   mul_inv_cancel a ha := by convert Classical.choose_spec (h.mul_inv_cancel ha); exact dif_neg ha
   nnqsmul := _
+  nnqsmul_def q a := rfl
 
 /-- Transferring from `IsField` to `Field`. -/
 noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field R :=
-  { ‹Ring R›, IsField.toSemifield h with qsmul := _ }
+  { ‹Ring R›, IsField.toSemifield h with
+    qsmul := _
+    qsmul_def := fun q a => rfl }
 
 /-- For each field, and for each nonzero element of said field, there is a unique inverse.
 Since `IsField` doesn't remember the data of an `inv` function and as such,

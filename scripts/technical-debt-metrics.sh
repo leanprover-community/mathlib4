@@ -54,7 +54,6 @@ for i in ${!titlesAndRegexes[@]}; do
 done
 
 printf '%s|%s\n' "$(grep -c 'docBlame' scripts/nolints.json)" "documentation nolint entries"
-printf '%s|%s\n' "$(grep -c 'ERR_MOD' scripts/style-exceptions.txt)" "missing module docstrings"
 printf '%s|%s\n' "$(grep -c 'ERR_NUM_LIN' scripts/style-exceptions.txt)" "large files"
 # We print the number of files, not the number of matches --- hence, the nested grep.
 printf '%s|%s\n' "$(git grep -c 'autoImplicit true' | grep -c -v 'test')" "non-test files with autoImplicit true"

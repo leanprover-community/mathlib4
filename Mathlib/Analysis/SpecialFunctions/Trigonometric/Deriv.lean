@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Benjamin Davidson
 -/
 import Mathlib.Order.Monotone.Odd
+import Mathlib.Analysis.Calculus.LogDeriv
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
@@ -967,6 +968,50 @@ theorem ContDiffOn.sinh {n} (hf : ContDiffOn ℝ n f s) :
 theorem ContDiffWithinAt.sinh {n} (hf : ContDiffWithinAt ℝ n f s x) :
     ContDiffWithinAt ℝ n (fun x => Real.sinh (f x)) s x :=
   Real.contDiff_sinh.contDiffAt.comp_contDiffWithinAt x hf
+
+section LogDeriv
+
+@[simp]
+theorem Complex.logDeriv_sin : logDeriv (Complex.sin) = Complex.cot := by
+  ext
+  rw [logDeriv, Complex.deriv_sin, Pi.div_apply, Complex.cot]
+
+@[simp]
+theorem Real.logDeriv_sin : logDeriv (Real.sin) = Real.cot := by
+  ext
+  rw [logDeriv, Real.deriv_sin, Pi.div_apply, Real.cot_eq_cos_div_sin]
+
+@[simp]
+theorem Complex.logDeriv_cos : logDeriv (Complex.cos) = -Complex.tan := by
+  ext
+  rw [logDeriv, Complex.deriv_cos', Pi.div_apply, Pi.neg_apply, Complex.tan, neg_div]
+
+@[simp]
+theorem Real.logDeriv_cos : logDeriv (Real.cos) = -Real.tan := by
+  ext
+  rw [logDeriv, Real.deriv_cos', Pi.div_apply, Pi.neg_apply, neg_div, Real.tan_eq_sin_div_cos ]
+
+@[simp]
+theorem Complex.logDeriv_cosh : logDeriv (Complex.cosh) = Complex.tanh := by
+  ext
+  rw [logDeriv, Complex.deriv_cosh, Pi.div_apply, Complex.tanh]
+
+@[simp]
+theorem Real.logDeriv_cosh : logDeriv (Real.cosh) = Real.tanh := by
+  ext
+  rw [logDeriv, Real.deriv_cosh, Pi.div_apply, Real.tanh_eq_sinh_div_cosh]
+
+@[simp]
+theorem Complex.LogDeriv_exp : logDeriv (Complex.exp) = 1 := by
+  ext
+  rw [logDeriv, Complex.deriv_exp, Pi.div_apply, ← exp_sub, sub_self, exp_zero, Pi.one_apply]
+
+@[simp]
+theorem Real.LogDeriv_exp : logDeriv (Real.exp) = 1 := by
+  ext
+  rw [logDeriv, Real.deriv_exp, Pi.div_apply, ← exp_sub, sub_self, exp_zero, Pi.one_apply]
+
+end LogDeriv
 
 end
 

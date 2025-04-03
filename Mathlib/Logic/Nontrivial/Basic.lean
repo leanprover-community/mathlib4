@@ -3,13 +3,13 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Init.Order.Defs
-import Mathlib.Logic.Nontrivial.Defs
-import Mathlib.Tactic.Attr.Register
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Logic.Function.Basic
+import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Logic.Unique
+import Mathlib.Order.Defs
+import Mathlib.Tactic.Attr.Register
 
 /-!
 # Nontrivial types
@@ -39,7 +39,7 @@ theorem Subtype.nontrivial_iff_exists_ne (p : α → Prop) (x : Subtype p) :
 
 /-- An inhabited type is either nontrivial, or has a unique element. -/
 noncomputable def nontrivialPSumUnique (α : Type*) [Inhabited α] :
-    PSum (Nontrivial α) (Unique α) :=
+    Nontrivial α ⊕' Unique α :=
   if h : Nontrivial α then PSum.inl h
   else
     PSum.inr

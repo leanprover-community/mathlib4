@@ -142,7 +142,7 @@ def diagram.isoOfIso (α : F ≅ G) : diagram F U ≅ diagram.{v'} G U :=
           NatTrans.naturality, limMap_π_assoc]
       · simp)
 
-/-- If `F G : presheaf C X` are isomorphic presheaves,
+/-- If `F G : Presheaf C X` are isomorphic presheaves,
 then the `fork F U`, the canonical cone of the sheaf condition diagram for `F`,
 is isomorphic to `fork F G` postcomposed with the corresponding isomorphism between
 sheaf condition diagrams.
@@ -162,7 +162,7 @@ def fork.isoOfIso (α : F ≅ G) :
 
 end SheafConditionEqualizerProducts
 
-/-- The sheaf condition for a `F : presheaf C X` requires that the morphism
+/-- The sheaf condition for a `F : Presheaf C X` requires that the morphism
 `F.obj U ⟶ ∏ᶜ F.obj (U i)` (where `U` is some open set which is the union of the `U i`)
 is the equalizer of the two morphisms
 `∏ᶜ F.obj (U i) ⟶ ∏ᶜ F.obj (U i) ⊓ (U j)`.

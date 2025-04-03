@@ -116,7 +116,8 @@ theorem comp_inj {p₁ p₂ : Path a b} {q₁ q₂ : Path b c} (hq : q₁.length
 
 theorem comp_inj' {p₁ p₂ : Path a b} {q₁ q₂ : Path b c} (h : p₁.length = p₂.length) :
     p₁.comp q₁ = p₂.comp q₂ ↔ p₁ = p₂ ∧ q₁ = q₂ :=
-  ⟨fun h_eq => (comp_inj <| Nat.add_left_cancel <| by simpa [h] using congr_arg length h_eq).1 h_eq,
+  ⟨fun h_eq => (comp_inj <| Nat.add_left_cancel (n := p₂.length) <|
+    by simpa [h] using congr_arg length h_eq).1 h_eq,
    by rintro ⟨rfl, rfl⟩; rfl⟩
 
 theorem comp_injective_left (q : Path b c) : Injective fun p : Path a b => p.comp q :=

@@ -71,13 +71,15 @@ protected lemma id {p : 𝒳 ⥤ 𝒮} {R : 𝒮} {a : 𝒳} (ha : p.obj a = R) 
 
 section
 
-variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ]
+variable {R S : 𝒮} {a b : 𝒳}
 
-lemma domain_eq : p.obj a = R := by
+lemma domain_eq (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ] : p.obj a = R := by
   subst_hom_lift p f φ; rfl
 
-lemma codomain_eq : p.obj b = S := by
+lemma codomain_eq (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ] : p.obj b = S := by
   subst_hom_lift p f φ; rfl
+
+variable (f : R ⟶ S) (φ : a ⟶ b) [p.IsHomLift f φ]
 
 lemma fac : f = eqToHom (domain_eq p f φ).symm ≫ p.map φ ≫ eqToHom (codomain_eq p f φ) := by
   subst_hom_lift p f φ; simp
@@ -113,7 +115,8 @@ lemma of_commSq {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b) (ha : p.o
 instance comp {R S T : 𝒮} {a b c : 𝒳} (f : R ⟶ S) (g : S ⟶ T) (φ : a ⟶ b)
     (ψ : b ⟶ c) [p.IsHomLift f φ] [p.IsHomLift g ψ] : p.IsHomLift (f ≫ g) (φ ≫ ψ) := by
   apply of_commSq
-  rw [p.map_comp]
+  -- This line transforms the first goal in suitable form; the last line closes all three goals.
+  on_goal 1 => rw [p.map_comp]
   apply CommSq.horiz_comp (commSq p f φ) (commSq p g ψ)
 
 /-- If `φ : a ⟶ b` and `ψ : b ⟶ c` lift `𝟙 R`, then so does `φ ≫ ψ` -/

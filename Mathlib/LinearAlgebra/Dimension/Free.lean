@@ -42,8 +42,8 @@ theorem lift_rank_mul_lift_rank :
   let b := Module.Free.chooseBasis F K
   let c := Module.Free.chooseBasis K A
   rw [← (Module.rank F K).lift_id, ← b.mk_eq_rank, ← (Module.rank K A).lift_id, ← c.mk_eq_rank,
-    ← lift_umax.{w, v}, ← (b.smul c).mk_eq_rank, mk_prod, lift_mul, lift_lift, lift_lift, lift_lift,
-    lift_lift, lift_umax.{v, w}]
+    ← lift_umax.{w, v}, ← (b.smulTower c).mk_eq_rank, mk_prod, lift_mul, lift_lift, lift_lift,
+    lift_lift, lift_lift, lift_umax.{v, w}]
 
 /-- Tower law: if `A` is a `K`-module and `K` is an extension of `F` then
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.

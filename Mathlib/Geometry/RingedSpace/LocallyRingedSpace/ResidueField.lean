@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.Geometry.RingedSpace.LocallyRingedSpace
+import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 
 /-!
 
@@ -38,10 +39,10 @@ variable (X : LocallyRingedSpace.{u}) {U : Opens X}
 /-- The residue field of `X` at a point `x` is the residue field of the stalk of `X`
 at `x`. -/
 def residueField (x : X) : CommRingCat :=
-  CommRingCat.of <| LocalRing.ResidueField (X.stalk x)
+  CommRingCat.of <| LocalRing.ResidueField (X.presheaf.stalk x)
 
 instance (x : X) : Field (X.residueField x) :=
-  inferInstanceAs <| Field (LocalRing.ResidueField (X.stalk x))
+  inferInstanceAs <| Field (LocalRing.ResidueField (X.presheaf.stalk x))
 
 /--
 If `U` is an open of `X` containing `x`, we have a canonical ring map from the sections
@@ -81,31 +82,26 @@ variable {X Y : LocallyRingedSpace.{u}} (f : X ⟶ Y)
 /-- If `X ⟶ Y` is a morphism of locally ringed spaces and `x` a point of `X`, we obtain
 a morphism of residue fields in the other direction. -/
 def residueFieldMap (x : X) : Y.residueField (f.val.base x) ⟶ X.residueField x :=
-  LocalRing.ResidueField.map (LocallyRingedSpace.stalkMap f x)
+  LocalRing.ResidueField.map (f.stalkMap x)
 
 lemma residue_comp_residueFieldMap_eq_stalkMap_comp_residue (x : X) :
-    LocalRing.residue _ ≫ residueFieldMap f x = stalkMap f x ≫ LocalRing.residue _ := by
+    LocalRing.residue _ ≫ residueFieldMap f x = f.stalkMap x ≫ LocalRing.residue _ := by
   simp [residueFieldMap]
   rfl
 
 @[simp]
 lemma residueFieldMap_id (x : X) :
     residueFieldMap (𝟙 X) x = 𝟙 (X.residueField x) := by
-  simp only [id_val', SheafedSpace.id_base, TopCat.coe_id, id_eq, residueFieldMap, stalkMap]
-  have : PresheafedSpace.stalkMap (𝟙 X.toSheafedSpace) x = 𝟙 (X.stalk x) :=
-    PresheafedSpace.stalkMap.id _ _
-  simp_rw [this]
+  simp only [id_val', SheafedSpace.id_base, TopCat.coe_id, id_eq, residueFieldMap, stalkMap_id]
   apply LocalRing.ResidueField.map_id
 
 @[simp]
 lemma residueFieldMap_comp {Z : LocallyRingedSpace.{u}} (g : Y ⟶ Z) (x : X) :
     residueFieldMap (f ≫ g) x = residueFieldMap g (f.val.base x) ≫ residueFieldMap f x := by
-  simp only [comp_val, SheafedSpace.comp_base, Function.comp_apply, residueFieldMap, stalkMap]
-  convert_to LocalRing.ResidueField.map
-      (PresheafedSpace.stalkMap g.val (f.val.base x) ≫ PresheafedSpace.stalkMap f.val x) = _
-  · congr
-    apply PresheafedSpace.stalkMap.comp
-  · apply LocalRing.ResidueField.map_comp
+  simp only [comp_val, SheafedSpace.comp_base, Function.comp_apply, residueFieldMap]
+  simp_rw [stalkMap_comp]
+  haveI : IsLocalRingHom (g.stalkMap (f.val.base x)) := inferInstance
+  apply LocalRing.ResidueField.map_comp
 
 @[reassoc]
 lemma evaluation_naturality {V : Opens Y} (x : (Opens.map f.1.base).obj V) :

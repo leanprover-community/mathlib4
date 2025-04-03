@@ -508,6 +508,8 @@ end CharEq
 
 end UniversalProperty
 
+variable {m n : ℕ}
+
 theorem intCast_eq_intCast_iff (a b : ℤ) (c : ℕ) : (a : ZMod c) = (b : ZMod c) ↔ a ≡ b [ZMOD c] :=
   CharP.intCast_eq_intCast (ZMod c) c
 
@@ -559,13 +561,25 @@ theorem val_intCast {n : ℕ} (a : ℤ) [NeZero n] : ↑(a : ZMod n).val = a % n
 @[deprecated (since := "2024-04-17")]
 alias val_int_cast := val_intCast
 
-theorem coe_intCast {n : ℕ} (a : ℤ) : cast (a : ZMod n) = a % n := by
+theorem coe_intCast (a : ℤ) : cast (a : ZMod n) = a % n := by
   cases n
   · rw [Int.ofNat_zero, Int.emod_zero, Int.cast_id]; rfl
   · rw [← val_intCast, val]; rfl
 
 @[deprecated (since := "2024-04-17")]
 alias coe_int_cast := coe_intCast
+
+lemma intCast_cast_add (x y : ZMod n) : (cast (x + y) : ℤ) = (cast x + cast y) % n := by
+  rw [← ZMod.coe_intCast, Int.cast_add, ZMod.intCast_zmod_cast, ZMod.intCast_zmod_cast]
+
+lemma intCast_cast_mul (x y : ZMod n) : (cast (x * y) : ℤ) = cast x * cast y % n := by
+  rw [← ZMod.coe_intCast, Int.cast_mul, ZMod.intCast_zmod_cast, ZMod.intCast_zmod_cast]
+
+lemma intCast_cast_sub (x y : ZMod n) : (cast (x - y) : ℤ) = (cast x - cast y) % n := by
+  rw [← ZMod.coe_intCast, Int.cast_sub, ZMod.intCast_zmod_cast, ZMod.intCast_zmod_cast]
+
+lemma intCast_cast_neg (x : ZMod n) : (cast (-x) : ℤ) = -cast x % n := by
+  rw [← ZMod.coe_intCast, Int.cast_neg, ZMod.intCast_zmod_cast]
 
 @[simp]
 theorem val_neg_one (n : ℕ) : (-1 : ZMod n.succ).val = n := by
@@ -676,6 +690,13 @@ theorem val_one (n : ℕ) [Fact (1 < n)] : (1 : ZMod n).val = 1 := by
   rw [val_one_eq_one_mod]
   exact Nat.mod_eq_of_lt Fact.out
 
+lemma val_one'' : ∀ {n}, n ≠ 1 → (1 : ZMod n).val = 1
+  | 0, _ => rfl
+  | 1, hn => by cases hn rfl
+  | n + 2, _ =>
+    haveI : Fact (1 < n + 2) := ⟨by simp⟩
+    ZMod.val_one _
+
 theorem val_add {n : ℕ} [NeZero n] (a b : ZMod n) : (a + b).val = (a.val + b.val) % n := by
   cases n
   · cases NeZero.ne 0 rfl
@@ -764,6 +785,11 @@ theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := 
         rfl
       _ = Nat.gcd a.val n.succ := by rw [← Nat.gcd_eq_gcd_ab a.val n.succ]; rfl
 
+@[simp] protected lemma inv_one (n : ℕ) : (1⁻¹ : ZMod n) = 1 := by
+  obtain rfl | hn := eq_or_ne n 1
+  · exact Subsingleton.elim _ _
+  · simpa [ZMod.val_one'' hn] using mul_inv_eq_gcd (1 : ZMod n)
+
 @[simp]
 theorem natCast_mod (a : ℕ) (n : ℕ) : ((a % n : ℕ) : ZMod n) = a := by
   conv =>
@@ -784,6 +810,15 @@ theorem coe_mul_inv_eq_one {n : ℕ} (x : ℕ) (h : Nat.Coprime x n) :
     ((x : ZMod n) * (x : ZMod n)⁻¹) = 1 := by
   rw [Nat.Coprime, Nat.gcd_comm, Nat.gcd_rec] at h
   rw [mul_inv_eq_gcd, val_natCast, h, Nat.cast_one]
+
+lemma mul_val_inv (hmn : m.Coprime n) : (m * (m⁻¹ : ZMod n).val : ZMod n) = 1 := by
+  obtain rfl | hn := eq_or_ne n 0
+  · simp [m.coprime_zero_right.1 hmn]
+  haveI : NeZero n := ⟨hn⟩
+  rw [ZMod.natCast_zmod_val, ZMod.coe_mul_inv_eq_one _ hmn]
+
+lemma val_inv_mul (hmn : m.Coprime n) : ((m⁻¹ : ZMod n).val * m : ZMod n) = 1 := by
+  rw [mul_comm, mul_val_inv hmn]
 
 /-- `unitOfCoprime` makes an element of `(ZMod n)ˣ` given
   a natural number `x` and a proof that `x` is coprime to `n`  -/
@@ -980,7 +1015,7 @@ theorem neg_val' {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = (n - a.val) % n 
   calc
     (-a).val = val (-a) % n := by rw [Nat.mod_eq_of_lt (-a).val_lt]
     _ = (n - val a) % n :=
-      Nat.ModEq.add_right_cancel' _
+      Nat.ModEq.add_right_cancel' (val a)
         (by
           rw [Nat.ModEq, ← val_add, add_left_neg, tsub_add_cancel_of_le a.val_le, Nat.mod_self,
             val_zero])
@@ -1231,7 +1266,9 @@ instance instField : Field (ZMod p) where
   mul_inv_cancel := mul_inv_cancel_aux p
   inv_zero := inv_zero p
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun a x => rfl
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
 instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by
@@ -1321,9 +1358,46 @@ theorem lift_comp_coe : ZMod.lift n f ∘ ((↑) : ℤ → _) = f :=
 theorem lift_comp_castAddHom : (ZMod.lift n f).comp (Int.castAddHom (ZMod n)) = f :=
   AddMonoidHom.ext <| lift_castAddHom _ _
 
+lemma lift_injective {f : {f : ℤ →+ A // f n = 0}} :
+    Injective (lift n f) ↔ ∀ m, f.1 m = 0 → (m : ZMod n) = 0 := by
+  simp only [← AddMonoidHom.ker_eq_bot_iff, eq_bot_iff, SetLike.le_def,
+    ZMod.intCast_surjective.forall, ZMod.lift_coe, AddMonoidHom.mem_ker, AddSubgroup.mem_bot]
+
 end lift
 
 end ZMod
+
+section AddGroup
+variable {α : Type*} [AddGroup α] {n : ℕ}
+
+@[simp]
+lemma nsmul_zmod_val_inv_nsmul (hn : (Nat.card α).Coprime n) (a : α) :
+    n • (n⁻¹ : ZMod (Nat.card α)).val • a = a := by
+  rw [← mul_nsmul', ← mod_natCard_nsmul, ← ZMod.val_natCast, Nat.cast_mul,
+    ZMod.mul_val_inv hn.symm, ZMod.val_one_eq_one_mod, mod_natCard_nsmul, one_nsmul]
+
+@[simp]
+lemma zmod_val_inv_nsmul_nsmul (hn : (Nat.card α).Coprime n) (a : α) :
+    (n⁻¹ : ZMod (Nat.card α)).val • n • a = a := by
+  rw [nsmul_left_comm, nsmul_zmod_val_inv_nsmul hn]
+
+end AddGroup
+
+section Group
+variable {α : Type*} [Group α] {n : ℕ}
+
+-- TODO: Without the `existing`, `to_additive` chokes on `Inv (ZMod n)`.
+@[to_additive (attr := simp) existing nsmul_zmod_val_inv_nsmul]
+lemma pow_zmod_val_inv_pow (hn : (Nat.card α).Coprime n) (a : α) :
+    (a ^ (n⁻¹ : ZMod (Nat.card α)).val) ^ n = a := by
+  rw [← pow_mul', ← pow_mod_natCard, ← ZMod.val_natCast, Nat.cast_mul, ZMod.mul_val_inv hn.symm,
+    ZMod.val_one_eq_one_mod, pow_mod_natCard, pow_one]
+
+@[to_additive (attr := simp) existing zmod_val_inv_nsmul_nsmul]
+lemma pow_pow_zmod_val_inv (hn : (Nat.card α).Coprime n) (a : α) :
+    (a ^ n) ^ (n⁻¹ : ZMod (Nat.card α)).val = a := by rw [pow_right_comm, pow_zmod_val_inv_pow hn]
+
+end Group
 
 /-- The range of `(m * · + k)` on natural numbers is the set of elements `≥ k` in the
 residue class of `k` mod `m`. -/

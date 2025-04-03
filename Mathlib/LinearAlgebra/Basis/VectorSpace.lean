@@ -78,7 +78,7 @@ noncomputable def sumExtend (hs : LinearIndependent K v) : Basis (ι ⊕ sumExte
   (Basis.extend hs.to_subtype_range).reindex <|
     Equiv.symm <|
       calc
-        Sum ι (b \ s : Set V) ≃ Sum s (b \ s : Set V) := Equiv.sumCongr e (Equiv.refl _)
+        ι ⊕ (b \ s : Set V) ≃ s ⊕ (b \ s : Set V) := Equiv.sumCongr e (Equiv.refl _)
         _ ≃ b :=
           haveI := Classical.decPred (· ∈ s)
           Equiv.Set.sumDiffSubset (hs.to_subtype_range.subset_extend _)

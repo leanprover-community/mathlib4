@@ -9,13 +9,9 @@ import Batteries.Data.MLList.Basic
 # Reading from handles, files, and processes as lazy lists.
 -/
 
-set_option autoImplicit true
-
 open System IO.FS
 
 namespace MLList
-
-variable [Monad m]
 
 /-- Read lines of text from a handle, as a lazy list in `IO`. -/
 def linesFromHandle (h : Handle) : MLList IO String :=

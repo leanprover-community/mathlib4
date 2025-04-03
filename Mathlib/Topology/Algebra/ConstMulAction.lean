@@ -304,7 +304,7 @@ theorem closure_smul₀ {E} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpac
 /-- `smul` is a closed map in the second argument.
 
 The lemma that `smul` is a closed map in the first argument (for a normed space over a complete
-normed field) is `isClosedMap_smul_left` in `Analysis.NormedSpace.FiniteDimension`. -/
+normed field) is `isClosedMap_smul_left` in `Analysis.Normed.Module.FiniteDimension`. -/
 theorem isClosedMap_smul_of_ne_zero {c : G₀} (hc : c ≠ 0) : IsClosedMap fun x : α => c • x :=
   (Homeomorph.smulOfNeZero c hc).isClosedMap
 
@@ -315,7 +315,7 @@ theorem IsClosed.smul_of_ne_zero {c : G₀} {s : Set α} (hs : IsClosed s) (hc :
 /-- `smul` is a closed map in the second argument.
 
 The lemma that `smul` is a closed map in the first argument (for a normed space over a complete
-normed field) is `isClosedMap_smul_left` in `Analysis.NormedSpace.FiniteDimension`. -/
+normed field) is `isClosedMap_smul_left` in `Analysis.Normed.Module.FiniteDimension`. -/
 theorem isClosedMap_smul₀ {E : Type*} [Zero E] [MulActionWithZero G₀ E] [TopologicalSpace E]
     [T1Space E] [ContinuousConstSMul G₀ E] (c : G₀) : IsClosedMap fun x : E => c • x := by
   rcases eq_or_ne c 0 with (rfl | hne)

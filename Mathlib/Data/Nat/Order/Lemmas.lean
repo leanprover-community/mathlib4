@@ -11,11 +11,9 @@ import Mathlib.Data.Set.Basic
 # Further lemmas about the natural numbers
 
 The distinction between this file and `Mathlib.Algebra.Order.Ring.Nat` is not particularly clear.
-They are separated for now to minimize the porting requirements for tactics during the transition to
-mathlib4. After `Mathlib.Algebra.Order.Ring.Rat` has been ported,
-please feel free to reorganize these two files.
+They were separated for now to minimize the porting requirements for tactics
+during the transition to mathlib4. Please feel free to reorganize these two files.
 -/
-
 
 universe u v
 

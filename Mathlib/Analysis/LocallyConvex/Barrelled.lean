@@ -15,7 +15,7 @@ Banach-Steinhaus theorem for maps from a barrelled space to a space equipped wit
 of seminorms generating the topology (i.e `WithSeminorms q` for some family of seminorms `q`).
 
 The more standard Banach-Steinhaus theorem for normed spaces is then deduced from that in
-`Analysis.NormedSpace.BanachSteinhaus`.
+`Analysis.Normed.Operator.BanachSteinhaus`.
 
 ## Main definitions
 

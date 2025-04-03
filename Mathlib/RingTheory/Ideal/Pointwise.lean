@@ -5,7 +5,6 @@ Authors: Eric Wieser
 -/
 import Mathlib.RingTheory.Ideal.Maps
 
-
 /-! # Pointwise instances on `Ideal`s
 
 This file provides the action `Ideal.pointwiseMulAction` which morally matches the action of

@@ -72,13 +72,13 @@ universe u
     - derangements on `α`
     - derangements on `α` minus `a`. -/
 def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
-    { f : Perm α // fixedPoints f ⊆ {a} } ≃ Sum (derangements ({a}ᶜ : Set α)) (derangements α) :=
+    { f : Perm α // fixedPoints f ⊆ {a} } ≃ (derangements ({a}ᶜ : Set α)) ⊕ (derangements α) :=
   calc
     { f : Perm α // fixedPoints f ⊆ {a} } ≃
-        Sum { f : { f : Perm α // fixedPoints f ⊆ {a} } // a ∈ fixedPoints f }
+        { f : { f : Perm α // fixedPoints f ⊆ {a} } // a ∈ fixedPoints f } ⊕
           { f : { f : Perm α // fixedPoints f ⊆ {a} } // a ∉ fixedPoints f } :=
       (Equiv.sumCompl _).symm
-    _ ≃ Sum { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∈ fixedPoints f }
+    _ ≃ { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∈ fixedPoints f } ⊕
           { f : Perm α // fixedPoints f ⊆ {a} ∧ a ∉ fixedPoints f } := by
       -- Porting note: `subtypeSubtypeEquivSubtypeInter` no longer works with placeholder `_`s.
       refine Equiv.sumCongr ?_ ?_
@@ -88,13 +88,13 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
       · exact subtypeSubtypeEquivSubtypeInter
           (fun x : Perm α => fixedPoints x ⊆ {a})
           (¬a ∈ fixedPoints ·)
-    _ ≃ Sum { f : Perm α // fixedPoints f = {a} } { f : Perm α // fixedPoints f = ∅ } := by
+    _ ≃ { f : Perm α // fixedPoints f = {a} } ⊕ { f : Perm α // fixedPoints f = ∅ } := by
       refine Equiv.sumCongr (subtypeEquivRight fun f => ?_) (subtypeEquivRight fun f => ?_)
       · rw [Set.eq_singleton_iff_unique_mem, and_comm]
         rfl
       · rw [Set.eq_empty_iff_forall_not_mem]
         exact ⟨fun h x hx => h.2 (h.1 hx ▸ hx), fun h => ⟨fun x hx => (h _ hx).elim, h _⟩⟩
-    _ ≃ Sum (derangements ({a}ᶜ : Set α)) (derangements α) := by
+    _ ≃ derangements ({a}ᶜ : Set α) ⊕ derangements α := by
       -- Porting note: was `subtypeEquiv _` but now needs the placeholder to be provided explicitly
       refine
         Equiv.sumCongr ((derangements.subtypeEquiv (· ∈ ({a}ᶜ : Set α))).trans <|
@@ -185,7 +185,7 @@ def derangementsOptionEquivSigmaAtMostOneFixedPoint :
     "derangements on `α` ⊕ derangements on `{a}ᶜ`". -/
 def derangementsRecursionEquiv :
     derangements (Option α) ≃
-      Σa : α, Sum (derangements (({a}ᶜ : Set α) : Type _)) (derangements α) :=
+      Σa : α, derangements (({a}ᶜ : Set α) : Type _) ⊕ derangements α :=
   derangementsOptionEquivSigmaAtMostOneFixedPoint.trans
     (sigmaCongrRight atMostOneFixedPointEquivSum_derangements)
 

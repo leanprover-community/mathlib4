@@ -201,7 +201,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
       · intro x hx
         have : x ∈ ⋃ y ∈ s, ball y δ := hs (by simp)
         rcases mem_iUnion₂.1 this with ⟨y, ys, dy⟩
-        have : edist y x < δ := by simp at dy; rwa [edist_comm] at dy
+        have : edist y x < δ := by simpa [edist_comm]
         exact ⟨y, ⟨ys, ⟨x, hx, this⟩⟩, le_of_lt dy⟩
       · rintro x ⟨_, ⟨y, yu, hy⟩⟩
         exact ⟨y, yu, le_of_lt hy⟩
@@ -342,7 +342,7 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
       have tc : ∀ x ∈ t, ∃ y ∈ c, edist x y ≤ δ := by
         intro x hx
         rcases tb x hx with ⟨y, yv, Dxy⟩
-        have : y ∈ c := by simp [c, -mem_image]; exact ⟨yv, ⟨x, hx, Dxy⟩⟩
+        have : y ∈ c := by simpa [c, -mem_image] using ⟨yv, ⟨x, hx, Dxy⟩⟩
         exact ⟨y, this, le_of_lt Dxy⟩
       -- points in `c` are well approximated by points in `t`
       have ct : ∀ y ∈ c, ∃ x ∈ t, edist y x ≤ δ := by

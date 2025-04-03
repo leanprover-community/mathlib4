@@ -70,6 +70,10 @@ theorem eventuallyConst_set {s : Set α} :
     EventuallyConst s l ↔ (∀ᶠ x in l, x ∈ s) ∨ (∀ᶠ x in l, x ∉ s) :=
   eventuallyConst_pred
 
+theorem eventuallyConst_preimage {s : Set β} {f : α → β} :
+    EventuallyConst (f ⁻¹' s) l ↔ EventuallyConst s (map f l) :=
+  .rfl
+
 theorem EventuallyEq.eventuallyConst_iff {g : α → β} (h : f =ᶠ[l] g) :
     EventuallyConst f l ↔ EventuallyConst g l := by
   simp only [EventuallyConst, map_congr h]

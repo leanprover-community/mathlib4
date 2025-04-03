@@ -7,7 +7,6 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Analysis.Normed.Field.Basic
 
-
 /-!
 # Sums over residue classes
 

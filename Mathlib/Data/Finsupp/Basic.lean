@@ -6,10 +6,7 @@ Authors: Johannes Hölzl, Scott Morrison
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Regular.SMul
-import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Rat.BigOperators
-import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Miscellaneous definitions, lemmas, and constructions using finsupp
@@ -1124,7 +1121,7 @@ end CurryUncurry
 section Sum
 
 /-- `Finsupp.sumElim f g` maps `inl x` to `f x` and `inr y` to `g y`. -/
-def sumElim {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) : Sum α β →₀ γ :=
+def sumElim {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) : α ⊕ β →₀ γ :=
   onFinset
     (by
       haveI := Classical.decEq α
@@ -1142,7 +1139,7 @@ theorem coe_sumElim {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →�
     ⇑(sumElim f g) = Sum.elim f g :=
   rfl
 
-theorem sumElim_apply {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) (x : Sum α β) :
+theorem sumElim_apply {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) (x : α ⊕ β) :
     sumElim f g x = Sum.elim f g x :=
   rfl
 
@@ -1158,7 +1155,7 @@ theorem sumElim_inr {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →�
 
 This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`. -/
 @[simps apply symm_apply]
-def sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] : (Sum α β →₀ γ) ≃ (α →₀ γ) × (β →₀ γ) where
+def sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] : (α ⊕ β →₀ γ) ≃ (α →₀ γ) × (β →₀ γ) where
   toFun f :=
     ⟨f.comapDomain Sum.inl Sum.inl_injective.injOn,
       f.comapDomain Sum.inr Sum.inr_injective.injOn⟩
@@ -1168,11 +1165,11 @@ def sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] : (Sum α β →₀ 
     cases' ab with a b <;> simp
   right_inv fg := by ext <;> simp
 
-theorem fst_sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] (f : Sum α β →₀ γ) (x : α) :
+theorem fst_sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] (f : α ⊕ β →₀ γ) (x : α) :
     (sumFinsuppEquivProdFinsupp f).1 x = f (Sum.inl x) :=
   rfl
 
-theorem snd_sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] (f : Sum α β →₀ γ) (y : β) :
+theorem snd_sumFinsuppEquivProdFinsupp {α β γ : Type*} [Zero γ] (f : α ⊕ β →₀ γ) (y : β) :
     (sumFinsuppEquivProdFinsupp f).2 y = f (Sum.inr y) :=
   rfl
 
@@ -1190,7 +1187,7 @@ variable [AddMonoid M]
 
 This is the `Finsupp` version of `Equiv.sum_arrow_equiv_prod_arrow`. -/
 @[simps! apply symm_apply]
-def sumFinsuppAddEquivProdFinsupp {α β : Type*} : (Sum α β →₀ M) ≃+ (α →₀ M) × (β →₀ M) :=
+def sumFinsuppAddEquivProdFinsupp {α β : Type*} : (α ⊕ β →₀ M) ≃+ (α →₀ M) × (β →₀ M) :=
   { sumFinsuppEquivProdFinsupp with
     map_add' := by
       intros
@@ -1198,11 +1195,11 @@ def sumFinsuppAddEquivProdFinsupp {α β : Type*} : (Sum α β →₀ M) ≃+ (�
         simp only [Equiv.toFun_as_coe, Prod.fst_add, Prod.snd_add, add_apply,
           snd_sumFinsuppEquivProdFinsupp, fst_sumFinsuppEquivProdFinsupp] }
 
-theorem fst_sumFinsuppAddEquivProdFinsupp {α β : Type*} (f : Sum α β →₀ M) (x : α) :
+theorem fst_sumFinsuppAddEquivProdFinsupp {α β : Type*} (f : α ⊕ β →₀ M) (x : α) :
     (sumFinsuppAddEquivProdFinsupp f).1 x = f (Sum.inl x) :=
   rfl
 
-theorem snd_sumFinsuppAddEquivProdFinsupp {α β : Type*} (f : Sum α β →₀ M) (y : β) :
+theorem snd_sumFinsuppAddEquivProdFinsupp {α β : Type*} (f : α ⊕ β →₀ M) (y : β) :
     (sumFinsuppAddEquivProdFinsupp f).2 y = f (Sum.inr y) :=
   rfl
 

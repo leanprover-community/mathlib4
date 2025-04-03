@@ -718,11 +718,11 @@ lemma KaehlerDifferential.ker_map_of_surjective (h : Function.Surjective (algebr
     LinearMap.ker (map R R A B) =
       (LinearMap.ker finsupp_map).map (Finsupp.total A _ A (D R A)) := by
   rw [ker_map, ← kerTotal_map' R A B h, Submodule.comap_map_eq, Submodule.map_sup,
-    Submodule.map_sup, ← kerTotal_eq, ← Submodule.comap_bot, Submodule.map_comap_eq_of_surjective,
+    Submodule.map_sup, ← kerTotal_eq, ← Submodule.comap_bot,
+    Submodule.map_comap_eq_of_surjective (total_surjective _ _),
     bot_sup_eq, Submodule.map_span, ← Set.range_comp]
   convert bot_sup_eq _
   rw [Submodule.span_eq_bot]; simp
-  exact total_surjective _ _
 
 open IsScalarTower (toAlgHom)
 

@@ -114,11 +114,17 @@ protected theorem sigmaFinite {f : α → β} (hf : MeasurePreserving f μa μb)
   SigmaFinite.of_map μa hf.aemeasurable (by rwa [hf.map_eq])
 
 theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
-    (hs : MeasurableSet s) : μa (f ⁻¹' s) = μb s := by rw [← hf.map_eq, map_apply hf.1 hs]
+    (hs : NullMeasurableSet s μb) : μa (f ⁻¹' s) = μb s := by
+  rw [← hf.map_eq] at hs ⊢
+  rw [map_apply₀ hf.1.aemeasurable hs]
 
 theorem measure_preimage_emb {f : α → β} (hf : MeasurePreserving f μa μb)
     (hfe : MeasurableEmbedding f) (s : Set β) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq, hfe.map_apply]
+
+theorem measure_preimage_equiv {f : α ≃ᵐ β} (hf : MeasurePreserving f μa μb) (s : Set β) :
+    μa (f ⁻¹' s) = μb s :=
+  measure_preimage_emb hf f.measurableEmbedding s
 
 protected theorem iterate {f : α → α} (hf : MeasurePreserving f μa μa) :
     ∀ n, MeasurePreserving f^[n] μa μa
@@ -129,20 +135,22 @@ variable {μ : Measure α} {f : α → α} {s : Set α}
 
 open scoped symmDiff in
 lemma measure_symmDiff_preimage_iterate_le
-    (hf : MeasurePreserving f μ μ) (hs : MeasurableSet s) (n : ℕ) :
+    (hf : MeasurePreserving f μ μ) (hs : NullMeasurableSet s μ) (n : ℕ) :
     μ (s ∆ (f^[n] ⁻¹' s)) ≤ n • μ (s ∆ (f ⁻¹' s)) := by
   induction' n with n ih; · simp
   simp only [add_smul, one_smul, ← n.add_one]
   refine le_trans (measure_symmDiff_le s (f^[n] ⁻¹' s) (f^[n+1] ⁻¹' s)) (add_le_add ih ?_)
-  replace hs : MeasurableSet (s ∆ (f ⁻¹' s)) := hs.symmDiff <| hf.measurable hs
+  replace hs : NullMeasurableSet (s ∆ (f ⁻¹' s)) μ :=
+    hs.symmDiff <| hs.preimage hf.quasiMeasurePreserving
   rw [iterate_succ', preimage_comp, ← preimage_symmDiff, (hf.iterate n).measure_preimage hs]
 
 /-- If `μ univ < n * μ s` and `f` is a map preserving measure `μ`,
 then for some `x ∈ s` and `0 < m < n`, `f^[m] x ∈ s`. -/
 theorem exists_mem_iterate_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f μ μ)
-    (hs : MeasurableSet s) {n : ℕ} (hvol : μ (Set.univ : Set α) < n * μ s) :
+    (hs : NullMeasurableSet s μ) {n : ℕ} (hvol : μ (Set.univ : Set α) < n * μ s) :
     ∃ x ∈ s, ∃ m ∈ Set.Ioo 0 n, f^[m] x ∈ s := by
-  have A : ∀ m, MeasurableSet (f^[m] ⁻¹' s) := fun m ↦ (hf.iterate m).measurable hs
+  have A : ∀ m, NullMeasurableSet (f^[m] ⁻¹' s) μ := fun m ↦
+    hs.preimage (hf.iterate m).quasiMeasurePreserving
   have B : ∀ m, μ (f^[m] ⁻¹' s) = μ s := fun m ↦ (hf.iterate m).measure_preimage hs
   have : μ (univ : Set α) < ∑ m ∈ Finset.range n, μ (f^[m] ⁻¹' s) := by simpa [B]
   obtain ⟨i, hi, j, hj, hij, x, hxi : f^[i] x ∈ s, hxj : f^[j] x ∈ s⟩ :
@@ -158,7 +166,7 @@ theorem exists_mem_iterate_mem_of_volume_lt_mul_volume (hf : MeasurePreserving f
 infinitely many times, see `MeasureTheory.MeasurePreserving.conservative` and theorems about
 `MeasureTheory.Conservative`. -/
 theorem exists_mem_iterate_mem [IsFiniteMeasure μ] (hf : MeasurePreserving f μ μ)
-    (hs : MeasurableSet s) (hs' : μ s ≠ 0) : ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s := by
+    (hs : NullMeasurableSet s μ) (hs' : μ s ≠ 0) : ∃ x ∈ s, ∃ m ≠ 0, f^[m] x ∈ s := by
   rcases ENNReal.exists_nat_mul_gt hs' (measure_ne_top μ (Set.univ : Set α)) with ⟨N, hN⟩
   rcases hf.exists_mem_iterate_mem_of_volume_lt_mul_volume hs hN with ⟨x, hx, m, hm, hmx⟩
   exact ⟨x, hx, m, hm.1.ne', hmx⟩

@@ -118,12 +118,12 @@ variable [Fintype ι] {s t : Set (ι → ℝ)} {a₁ a₂ b₁ b₂ x y : ι →
 
 -- TODO: Generalise those lemmas so that they also apply to `ℝ` and `EuclideanSpace ι ℝ`
 lemma dist_inf_sup_pi (x y : ι → ℝ) : dist (x ⊓ y) (x ⊔ y) = dist x y := by
-  refine' congr_arg NNReal.toReal (Finset.sup_congr rfl fun i _ ↦ _)
+  refine congr_arg NNReal.toReal (Finset.sup_congr rfl fun i _ ↦ ?_)
   simp only [Real.nndist_eq', sup_eq_max, inf_eq_min, max_sub_min_eq_abs, Pi.inf_apply,
     Pi.sup_apply, Real.nnabs_of_nonneg, abs_nonneg, Real.toNNReal_abs]
 
 lemma dist_mono_left_pi : MonotoneOn (dist · y) (Ici y) := by
-  refine' fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ _)
+  refine fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ ?_)
   rw [Real.nndist_eq, Real.nnabs_of_nonneg (sub_nonneg_of_le (‹y ≤ _› i : y i ≤ y₁ i)),
     Real.nndist_eq, Real.nnabs_of_nonneg (sub_nonneg_of_le (‹y ≤ _› i : y i ≤ y₂ i))]
   exact Real.toNNReal_mono (sub_le_sub_right (hy _) _)
@@ -132,7 +132,7 @@ lemma dist_mono_right_pi : MonotoneOn (dist x) (Ici x) := by
   simpa only [dist_comm _ x] using dist_mono_left_pi (y := x)
 
 lemma dist_anti_left_pi : AntitoneOn (dist · y) (Iic y) := by
-  refine' fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ _)
+  refine fun y₁ hy₁ y₂ hy₂ hy ↦ NNReal.coe_le_coe.2 (Finset.sup_mono_fun fun i _ ↦ ?_)
   rw [Real.nndist_eq', Real.nnabs_of_nonneg (sub_nonneg_of_le (‹_ ≤ y› i : y₂ i ≤ y i)),
     Real.nndist_eq', Real.nnabs_of_nonneg (sub_nonneg_of_le (‹_ ≤ y› i : y₁ i ≤ y i))]
   exact Real.toNNReal_mono (sub_le_sub_left (hy _) _)
@@ -197,7 +197,7 @@ are comparable and both in the closure/frontier.
 protected lemma IsClosed.upperClosure_pi (hs : IsClosed s) (hs' : BddBelow s) :
     IsClosed (upperClosure s : Set (ι → ℝ)) := by
   cases nonempty_fintype ι
-  refine' IsSeqClosed.isClosed fun f x hf hx ↦ _
+  refine IsSeqClosed.isClosed fun f x hf hx ↦ ?_
   choose g hg hgf using hf
   obtain ⟨a, ha⟩ := hx.bddAbove_range
   obtain ⟨b, hb, φ, hφ, hbf⟩ := tendsto_subseq_of_bounded (hs'.isBounded_inter bddAbove_Iic) fun n ↦

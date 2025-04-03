@@ -845,7 +845,7 @@ theorem mul_eq_one_iff {x y : Associates α} : x * y = 1 ↔ x = 1 ∧ y = 1 :=
     (Quotient.inductionOn₂ x y fun a b h =>
       have : a * b ~ᵤ 1 := Quotient.exact h
       ⟨Quotient.sound <| associated_one_of_associated_mul_one this,
-        Quotient.sound <| associated_one_of_associated_mul_one <| by rwa [mul_comm] at this⟩)
+        Quotient.sound <| associated_one_of_associated_mul_one (b := a) (by rwa [mul_comm])⟩)
     (by simp (config := { contextual := true }))
 
 theorem units_eq_one (u : (Associates α)ˣ) : u = 1 :=

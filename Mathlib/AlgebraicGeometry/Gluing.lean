@@ -358,13 +358,11 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
     rfl
 
 instance fromGlued_stalk_iso (x : 𝒰.gluedCover.glued.carrier) :
-    IsIso (PresheafedSpace.stalkMap 𝒰.fromGlued.val x) := by
+    IsIso (𝒰.fromGlued.stalkMap x) := by
   obtain ⟨i, x, rfl⟩ := 𝒰.gluedCover.ι_jointly_surjective x
-  have :=
-    PresheafedSpace.stalkMap.congr_hom _ _
-      (congr_arg LocallyRingedSpace.Hom.val <| 𝒰.ι_fromGlued i) x
-  erw [PresheafedSpace.stalkMap.comp] at this
-  rw [← IsIso.eq_comp_inv] at this
+  have := stalkMap_congr_hom _ _ (𝒰.ι_fromGlued i) x
+  rw [stalkMap_comp, ← IsIso.eq_comp_inv,
+    ← TopCat.Presheaf.stalkCongr_hom _ (Inseparable.of_eq <| by simp)] at this
   rw [this]
   infer_instance
 
@@ -398,7 +396,7 @@ instance : Epi 𝒰.fromGlued.val.base := by
   exact h
 
 instance fromGlued_open_immersion : IsOpenImmersion 𝒰.fromGlued :=
-  SheafedSpace.IsOpenImmersion.of_stalk_iso _ 𝒰.fromGlued_openEmbedding
+  IsOpenImmersion.of_stalk_iso _ 𝒰.fromGlued_openEmbedding
 
 instance : IsIso 𝒰.fromGlued :=
   let F := Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToSheafedSpace ⋙

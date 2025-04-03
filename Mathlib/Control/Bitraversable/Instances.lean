@@ -48,7 +48,7 @@ instance : LawfulBitraversable Prod := by
 open Functor
 
 /-- The bitraverse function for `α ⊕ β`. -/
-def Sum.bitraverse {α α' β β'} (f : α → F α') (f' : β → F β') : Sum α β → F (Sum α' β')
+def Sum.bitraverse {α α' β β'} (f : α → F α') (f' : β → F β') : α ⊕ β → F (α' ⊕ β')
   | Sum.inl x => Sum.inl <$> f x
   | Sum.inr x => Sum.inr <$> f' x
 

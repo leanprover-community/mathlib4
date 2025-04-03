@@ -283,9 +283,9 @@ lemma mem_corootSpace' {x : H} :
   suffices H.subtype '' s = {⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} by
     obtain ⟨x, hx⟩ := x
     erw [← (H : Submodule R L).injective_subtype.mem_set_image (s := Submodule.span R s)]
-    change _ ↔ x ∈ (Submodule.span R s).map H.subtype
-    rw [Submodule.map_span, mem_corootSpace, ← this]
-    rfl
+    rw [mem_image]
+    simp_rw [SetLike.mem_coe]
+    rw [← Submodule.mem_map, Submodule.coeSubtype, Submodule.map_span, mem_corootSpace, ← this]
   ext u
   simp only [Submodule.coeSubtype, mem_image, Subtype.exists, LieSubalgebra.mem_coe_submodule,
     exists_and_right, exists_eq_right, mem_setOf_eq, s]

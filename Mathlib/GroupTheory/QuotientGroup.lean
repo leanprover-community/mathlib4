@@ -43,7 +43,6 @@ open Function
 open scoped Pointwise
 
 universe u v w x
-
 namespace QuotientGroup
 
 variable {G : Type u} [Group G] (N : Subgroup G) [nN : N.Normal] {H : Type v} [Group H]
@@ -133,7 +132,7 @@ theorem eq_iff_div_mem {N : Subgroup G} [nN : N.Normal] {x y : G} :
 
 @[to_additive]
 instance Quotient.commGroup {G : Type*} [CommGroup G] (N : Subgroup G) : CommGroup (G ⧸ N) :=
-  { toGroup := @QuotientGroup.Quotient.group _ _ N N.normal_of_comm
+  { toGroup := have := N.normal_of_comm; QuotientGroup.Quotient.group N
     mul_comm := fun a b => Quotient.inductionOn₂' a b fun a b => congr_arg mk (mul_comm a b) }
 
 local notation " Q " => G ⧸ N

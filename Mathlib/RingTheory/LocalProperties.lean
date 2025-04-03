@@ -162,6 +162,15 @@ theorem RingHom.ofLocalizationSpanTarget_iff_finite :
     obtain ⟨s', h₁, h₂⟩ := (Ideal.span_eq_top_iff_finite s).mp hs
     exact h s' h₂ fun x => hs' ⟨_, h₁ x.prop⟩
 
+theorem RingHom.HoldsForLocalizationAway.of_bijective
+    (H : RingHom.HoldsForLocalizationAway P) (hf : Function.Bijective f) :
+    P f := by
+  letI := f.toAlgebra
+  have := IsLocalization.at_units (.powers (1 : R)) (by simp)
+  have := IsLocalization.isLocalization_of_algEquiv (.powers (1 : R))
+    (AlgEquiv.ofBijective (Algebra.ofId R S) hf)
+  exact H _ 1
+
 variable {P f R' S'}
 
 theorem RingHom.PropertyIsLocal.respectsIso (hP : RingHom.PropertyIsLocal @P) :

@@ -3,7 +3,7 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Init.Order.Defs
+import Mathlib.Order.Defs
 
 /-!
 # Note about `Mathlib/Init/`
@@ -12,10 +12,6 @@ The files in `Mathlib/Init` are leftovers from the port from Mathlib3.
 
 We intend to move all the content of these files out into the main `Mathlib` directory structure.
 Contributions assisting with this are appreciated.
-
-`#align` statements without corresponding declarations
-(i.e. because the declaration is in Batteries or Lean) can be left here.
-These will be deleted soon so will not significantly delay deleting otherwise empty `Init` files.
 
 # Basic lemmas about linear orders.
 

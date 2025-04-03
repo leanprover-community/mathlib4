@@ -53,7 +53,7 @@ noncomputable def mapBifunctorObjSingle₀ObjIsInitial (a : I × J) (ha : a.1 �
 `p : I × J → J` such that `p ⟨0, j⟩ = j` for all `j`,
 this is the (colimit) cofan which shall be used to construct the isomorphism
 `mapBifunctorMapObj F p ((single₀ I).obj X) Y ≅ Y`, see `mapBifunctorLeftUnitor`. -/
-noncomputable def mapBifunctorLeftUnitorCofan (j : J) :
+noncomputable def mapBifunctorLeftUnitorCofan (hp : ∀ (j : J), p ⟨0, j⟩ = j) (Y) (j : J) :
     (((mapBifunctor F I J).obj ((single₀ I).obj X)).obj Y).CofanMapObjFun p j :=
   CofanMapObjFun.mk _ _ _ (Y j) (fun a ha =>
     if ha : a.1 = 0 then
@@ -164,7 +164,7 @@ noncomputable def mapBifunctorObjObjSingle₀IsInitial (a : J × I) (ha : a.2 �
 `p : J × I → J` such that `p ⟨j, 0⟩ = j` for all `j`,
 this is the (colimit) cofan which shall be used to construct the isomorphism
 `mapBifunctorMapObj F p X ((single₀ I).obj Y) ≅ X`, see `mapBifunctorRightUnitor`. -/
-noncomputable def mapBifunctorRightUnitorCofan (j : J) :
+noncomputable def mapBifunctorRightUnitorCofan (hp : ∀ (j : J), p ⟨j, 0⟩ = j) (X) (j : J) :
     (((mapBifunctor F J I).obj X).obj ((single₀ I).obj Y)).CofanMapObjFun p j :=
   CofanMapObjFun.mk _ _ _ (X j) (fun a ha =>
     if ha : a.2 = 0 then

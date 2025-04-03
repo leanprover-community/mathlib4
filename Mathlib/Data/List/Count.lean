@@ -42,6 +42,11 @@ end CountP
 
 section Count
 
+@[simp]
+theorem count_map_of_injective {β} [DecidableEq α] [DecidableEq β] (l : List α) (f : α → β)
+    (hf : Function.Injective f) (x : α) : count (f x) (map f l) = count x l := by
+  simp only [count, countP_map, (· ∘ ·), hf.beq_eq]
+
 variable [DecidableEq α]
 
 @[deprecated (since := "2023-08-23")]
@@ -53,11 +58,6 @@ theorem count_cons' (a b : α) (l : List α) :
 @[simp]
 lemma count_attach (a : {x // x ∈ l}) : l.attach.count a = l.count ↑a :=
   Eq.trans (countP_congr fun _ _ => by simp [Subtype.ext_iff]) <| countP_attach _ _
-
-@[simp]
-theorem count_map_of_injective {β} [DecidableEq α] [DecidableEq β] (l : List α) (f : α → β)
-    (hf : Function.Injective f) (x : α) : count (f x) (map f l) = count x l := by
-  simp only [count, countP_map, (· ∘ ·), hf.beq_eq]
 
 end Count
 

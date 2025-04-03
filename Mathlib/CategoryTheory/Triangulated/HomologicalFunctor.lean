@@ -196,7 +196,7 @@ attribute [local simp] smul_smul
 
 lemma homologySequence_exact₂ :
     (ShortComplex.mk _ _ (F.homologySequence_comp T hT n₀)).Exact := by
-  refine' ShortComplex.exact_of_iso _ (F.map_distinguished_exact _
+  refine ShortComplex.exact_of_iso ?_ (F.map_distinguished_exact _
     (Triangle.shift_distinguished _ hT n₀))
   exact ShortComplex.isoMk ((F.isoShift n₀).app _)
     (n₀.negOnePow • ((F.isoShift n₀).app _)) ((F.isoShift n₀).app _) (by simp) (by simp)
@@ -209,9 +209,9 @@ lemma homologySequence_exact₃ :
 
 lemma homologySequence_exact₁ :
     (ShortComplex.mk _ _ (F.homologySequenceδ_comp T hT _ _ h)).Exact := by
-  refine' ShortComplex.exact_of_iso _ (F.homologySequence_exact₂ _ (inv_rot_of_distTriang _ hT) n₁)
-  refine' ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by linarith)).app _))
-    (Iso.refl _) (Iso.refl _) _ (by simp)
+  refine ShortComplex.exact_of_iso ?_ (F.homologySequence_exact₂ _ (inv_rot_of_distTriang _ hT) n₁)
+  refine ShortComplex.isoMk (-((F.shiftIso (-1) n₁ n₀ (by linarith)).app _))
+    (Iso.refl _) (Iso.refl _) ?_ (by simp)
   dsimp
   simp only [homologySequenceδ, neg_comp, map_neg, comp_id,
     F.shiftIso_hom_app_comp_shiftMap_of_add_eq_zero T.mor₃ (-1) (neg_add_self 1) n₀ n₁ (by omega)]

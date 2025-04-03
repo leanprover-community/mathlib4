@@ -355,13 +355,13 @@ theorem Fintype.card_lex (α : Type*) [Fintype α] : Fintype.card (Lex α) = Fin
 
 /-- Given that `α ⊕ β` is a fintype, `α` is also a fintype. This is non-computable as it uses
 that `Sum.inl` is an injection, but there's no clear inverse if `α` is empty. -/
-noncomputable def Fintype.sumLeft {α β} [Fintype (Sum α β)] : Fintype α :=
-  Fintype.ofInjective (Sum.inl : α → Sum α β) Sum.inl_injective
+noncomputable def Fintype.sumLeft {α β} [Fintype (α ⊕ β)] : Fintype α :=
+  Fintype.ofInjective (Sum.inl : α → α ⊕ β) Sum.inl_injective
 
 /-- Given that `α ⊕ β` is a fintype, `β` is also a fintype. This is non-computable as it uses
 that `Sum.inr` is an injection, but there's no clear inverse if `β` is empty. -/
-noncomputable def Fintype.sumRight {α β} [Fintype (Sum α β)] : Fintype β :=
-  Fintype.ofInjective (Sum.inr : β → Sum α β) Sum.inr_injective
+noncomputable def Fintype.sumRight {α β} [Fintype (α ⊕ β)] : Fintype β :=
+  Fintype.ofInjective (Sum.inr : β → α ⊕ β) Sum.inr_injective
 
 /-!
 ### Relation to `Finite`
@@ -431,7 +431,8 @@ theorem card_lt_of_injective_of_not_mem (f : α → β) (h : Function.Injective 
   calc
     card α = (univ.map ⟨f, h⟩).card := (card_map _).symm
     _ < card β :=
-      Finset.card_lt_univ_of_not_mem <| by rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
+      Finset.card_lt_univ_of_not_mem (x := b) <| by
+        rwa [← mem_coe, coe_map, coe_univ, Set.image_univ]
 
 theorem card_lt_of_injective_not_surjective (f : α → β) (h : Function.Injective f)
     (h' : ¬Function.Surjective f) : card α < card β :=
@@ -755,7 +756,7 @@ theorem Fintype.card_subtype_le [Fintype α] (p : α → Prop) [DecidablePred p]
 
 theorem Fintype.card_subtype_lt [Fintype α] {p : α → Prop} [DecidablePred p] {x : α} (hx : ¬p x) :
     Fintype.card { x // p x } < Fintype.card α :=
-  Fintype.card_lt_of_injective_of_not_mem (↑) Subtype.coe_injective <| by
+  Fintype.card_lt_of_injective_of_not_mem (b := x) (↑) Subtype.coe_injective <| by
     rwa [Subtype.range_coe_subtype]
 
 theorem Fintype.card_subtype [Fintype α] (p : α → Prop) [DecidablePred p] :
@@ -854,7 +855,7 @@ open scoped Classical
 
 One can obtain the relevant typeclasses via `cases fintypeOrInfinite α`.
 -/
-noncomputable def fintypeOrInfinite (α : Type*) : PSum (Fintype α) (Infinite α) :=
+noncomputable def fintypeOrInfinite (α : Type*) : Fintype α ⊕' Infinite α :=
   if h : Infinite α then PSum.inr h else PSum.inl (fintypeOfNotInfinite h)
 
 end
@@ -941,10 +942,10 @@ instance [Infinite α] : Infinite (Finset α) :=
 instance [Infinite α] : Infinite (Option α) :=
   Infinite.of_injective some (Option.some_injective α)
 
-instance Sum.infinite_of_left [Infinite α] : Infinite (Sum α β) :=
+instance Sum.infinite_of_left [Infinite α] : Infinite (α ⊕ β) :=
   Infinite.of_injective Sum.inl Sum.inl_injective
 
-instance Sum.infinite_of_right [Infinite β] : Infinite (Sum α β) :=
+instance Sum.infinite_of_right [Infinite β] : Infinite (α ⊕ β) :=
   Infinite.of_injective Sum.inr Sum.inr_injective
 
 instance Prod.infinite_of_right [Nonempty α] [Infinite β] : Infinite (α × β) :=

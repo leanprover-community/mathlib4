@@ -1486,7 +1486,8 @@ lemma liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
   simp_rw [liminf_congr aux, aux']
   have key := Monotone.map_liminf_of_continuousAt (F := F) (monotone_truncateToReal b_ne_top) xs
           (continuous_truncateToReal b_ne_top).continuousAt
-          ⟨b, by simpa only [eventually_map] using le_b⟩ ⟨0, eventually_of_forall (by simp)⟩
+          (IsBoundedUnder.isCoboundedUnder_ge ⟨b, by simpa only [eventually_map] using le_b⟩)
+          ⟨0, eventually_of_forall (by simp)⟩
   rw [key]
   rfl
 
@@ -1502,7 +1503,8 @@ lemma limsup_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
   simp_rw [limsup_congr aux, aux']
   have key := Monotone.map_limsup_of_continuousAt (F := F) (monotone_truncateToReal b_ne_top) xs
           (continuous_truncateToReal b_ne_top).continuousAt
-          ⟨b, by simpa only [eventually_map] using le_b⟩ ⟨0, eventually_of_forall (by simp)⟩
+          ⟨b, by simpa only [eventually_map] using le_b⟩
+          (IsBoundedUnder.isCoboundedUnder_le ⟨0, eventually_of_forall (by simp)⟩)
   rw [key]
   rfl
 

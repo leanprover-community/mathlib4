@@ -252,7 +252,7 @@ namespace Prod
 
 instance instIdemSemiring [IdemSemiring α] [IdemSemiring β] : IdemSemiring (α × β) :=
   { Prod.instSemiring, Prod.instSemilatticeSup _ _, Prod.instOrderBot _ _ with
-    add_eq_sup := fun _ _ ↦ ext (add_eq_sup _ _) (add_eq_sup _ _) }
+    add_eq_sup := fun _ _ ↦ Prod.ext (add_eq_sup _ _) (add_eq_sup _ _) }
 
 instance [IdemCommSemiring α] [IdemCommSemiring β] : IdemCommSemiring (α × β) :=
   { Prod.instCommSemiring, Prod.instIdemSemiring with }

@@ -206,7 +206,7 @@ variable {R M N P}
 
 theorem trace_prodMap' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
     trace R (M × N) (prodMap f g) = trace R M f + trace R N g := by
-  have h := ext_iff.1 (trace_prodMap R M N) (f, g)
+  have h := LinearMap.ext_iff.1 (trace_prodMap R M N) (f, g)
   simp only [coe_comp, Function.comp_apply, prodMap_apply, coprod_apply, id_coe, id,
     prodMapLinear_apply] at h
   exact h
@@ -246,14 +246,14 @@ theorem trace_transpose' (f : M →ₗ[R] M) :
 
 theorem trace_tensorProduct' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
     trace R (M ⊗ N) (map f g) = trace R M f * trace R N g := by
-  have h := ext_iff.1 (ext_iff.1 (trace_tensorProduct R M N) f) g
+  have h := LinearMap.ext_iff.1 (LinearMap.ext_iff.1 (trace_tensorProduct R M N) f) g
   simp only [compr₂_apply, mapBilinear_apply, compl₁₂_apply, lsmul_apply,
     Algebra.id.smul_eq_mul] at h
   exact h
 
 theorem trace_comp_comm' (f : M →ₗ[R] N) (g : N →ₗ[R] M) :
     trace R M (g ∘ₗ f) = trace R N (f ∘ₗ g) := by
-  have h := ext_iff.1 (ext_iff.1 (trace_comp_comm R M N) g) f
+  have h := LinearMap.ext_iff.1 (LinearMap.ext_iff.1 (trace_comp_comm R M N) g) f
   simp only [llcomp_apply', compr₂_apply, flip_apply] at h
   exact h
 

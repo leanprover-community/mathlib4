@@ -60,7 +60,7 @@ variable {X : Type u} {Y : Type v} {Z : Type w}
 variable [MetricSpace X] [MetricSpace Y] {Φ : Z → X} {Ψ : Z → Y} {ε : ℝ}
 
 /-- Define a predistance on `X ⊕ Y`, for which `Φ p` and `Ψ p` are at distance `ε` -/
-def glueDist (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) : Sum X Y → Sum X Y → ℝ
+def glueDist (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) : X ⊕ Y → X ⊕ Y → ℝ
   | .inl x, .inl y => dist x y
   | .inr x, .inr y => dist x y
   | .inl x, .inr y => (⨅ p, dist x (Φ p) + dist y (Ψ p)) + ε
@@ -146,7 +146,7 @@ private theorem glueDist_triangle (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ)
     simpa only [abs_sub_comm]
 
 private theorem eq_of_glueDist_eq_zero (Φ : Z → X) (Ψ : Z → Y) (ε : ℝ) (ε0 : 0 < ε) :
-    ∀ p q : Sum X Y, glueDist Φ Ψ ε p q = 0 → p = q
+    ∀ p q : X ⊕ Y, glueDist Φ Ψ ε p q = 0 → p = q
   | .inl x, .inl y, h => by rw [eq_of_dist_eq_zero h]
   | .inl x, .inr y, h => by exfalso; linarith [le_glueDist_inl_inr Φ Ψ ε x y]
   | .inr x, .inl y, h => by exfalso; linarith [le_glueDist_inr_inl Φ Ψ ε x y]
@@ -205,7 +205,7 @@ We embed isometrically each factor, set the basepoints at distance 1,
 arbitrarily, and say that the distance from `a` to `b` is the sum of the distances of `a` and `b` to
 their respective basepoints, plus the distance 1 between the basepoints.
 Since there is an arbitrary choice in this construction, it is not an instance by default. -/
-protected def Sum.dist : Sum X Y → Sum X Y → ℝ
+protected def Sum.dist : X ⊕ Y → X ⊕ Y → ℝ
   | .inl a, .inl a' => dist a a'
   | .inr b, .inr b' => dist b b'
   | .inl a, .inr b => dist a (Nonempty.some ⟨a⟩) + 1 + dist (Nonempty.some ⟨b⟩) b
@@ -227,7 +227,7 @@ theorem Sum.one_le_dist_inl_inr {x : X} {y : Y} : 1 ≤ Sum.dist (.inl x) (.inr 
 theorem Sum.one_le_dist_inr_inl {x : X} {y : Y} : 1 ≤ Sum.dist (.inr y) (.inl x) := by
   rw [Sum.dist_comm]; exact Sum.one_le_dist_inl_inr
 
-private theorem Sum.mem_uniformity (s : Set (Sum X Y × Sum X Y)) :
+private theorem Sum.mem_uniformity (s : Set ((X ⊕ Y) × (X ⊕ Y))) :
     s ∈ 𝓤 (X ⊕ Y) ↔ ∃ ε > 0, ∀ a b, Sum.dist a b < ε → (a, b) ∈ s := by
   constructor
   · rintro ⟨hsX, hsY⟩
@@ -273,14 +273,14 @@ def metricSpaceSum : MetricSpace (X ⊕ Y) where
 
 attribute [local instance] metricSpaceSum
 
-theorem Sum.dist_eq {x y : Sum X Y} : dist x y = Sum.dist x y := rfl
+theorem Sum.dist_eq {x y : X ⊕ Y} : dist x y = Sum.dist x y := rfl
 
 /-- The left injection of a space in a disjoint union is an isometry -/
-theorem isometry_inl : Isometry (Sum.inl : X → Sum X Y) :=
+theorem isometry_inl : Isometry (Sum.inl : X → X ⊕ Y) :=
   Isometry.of_dist_eq fun _ _ => rfl
 
 /-- The right injection of a space in a disjoint union is an isometry -/
-theorem isometry_inr : Isometry (Sum.inr : Y → Sum X Y) :=
+theorem isometry_inr : Isometry (Sum.inr : Y → X ⊕ Y) :=
   Isometry.of_dist_eq fun _ _ => rfl
 
 end Sum

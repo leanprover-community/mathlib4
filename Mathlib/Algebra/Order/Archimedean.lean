@@ -168,7 +168,7 @@ theorem exists_floor (x : α) : ∃ fl : ℤ, ∀ z : ℤ, z ≤ fl ↔ (z : α)
 end StrictOrderedRing
 
 section LinearOrderedSemiring
-variable [LinearOrderedSemiring α] [Archimedean α] [ ExistsAddOfLE α] {x y : α}
+variable [LinearOrderedSemiring α] [Archimedean α] [ExistsAddOfLE α] {x y : α}
 
 /-- Every x greater than or equal to 1 is between two successive
 natural-number powers of every y greater than one. -/

@@ -5,8 +5,8 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
 /-!
 # Prime elements in rings

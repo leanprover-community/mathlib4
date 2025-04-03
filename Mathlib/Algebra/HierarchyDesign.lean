@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Eric Wieser
 -/
 import Batteries.Util.LibraryNote
-import Mathlib.Mathport.Rename
 
 /-!
 # Documentation of the algebraic hierarchy

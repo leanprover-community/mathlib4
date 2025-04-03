@@ -169,7 +169,6 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
   -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/ring.20vs.20Ring/near/322876462
   zero_mul := Nat.casesOn n (@zero_mul Int _) fun n => @zero_mul (Fin n.succ) _
   mul_zero := Nat.casesOn n (@mul_zero Int _) fun n => @mul_zero (Fin n.succ) _
-  -- Porting note: all npow fields are new, but probably should be backported
   npow := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).npow fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow
   npow_zero := Nat.casesOn n

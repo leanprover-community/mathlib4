@@ -42,50 +42,6 @@ open Filter Set MeasureTheory
 
 open scoped Nat ENNReal Topology Real
 
-section Convexity
-
--- Porting note: move the following lemmas to `Analysis.Convex.Function`
-variable {𝕜 E β : Type*} {s : Set E} {f g : E → β} [OrderedSemiring 𝕜] [SMul 𝕜 E] [AddCommMonoid E]
-  [OrderedAddCommMonoid β]
-
-theorem ConvexOn.congr [SMul 𝕜 β] (hf : ConvexOn 𝕜 s f) (hfg : EqOn f g s) : ConvexOn 𝕜 s g :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab => by
-    simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha hb hab)] using hf.2 hx hy ha hb hab⟩
-
-theorem ConcaveOn.congr [SMul 𝕜 β] (hf : ConcaveOn 𝕜 s f) (hfg : EqOn f g s) : ConcaveOn 𝕜 s g :=
-  ⟨hf.1, fun x hx y hy a b ha hb hab => by
-    simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha hb hab)] using hf.2 hx hy ha hb hab⟩
-
-theorem StrictConvexOn.congr [SMul 𝕜 β] (hf : StrictConvexOn 𝕜 s f) (hfg : EqOn f g s) :
-    StrictConvexOn 𝕜 s g :=
-  ⟨hf.1, fun x hx y hy hxy a b ha hb hab => by
-    simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha.le hb.le hab)] using
-      hf.2 hx hy hxy ha hb hab⟩
-
-theorem StrictConcaveOn.congr [SMul 𝕜 β] (hf : StrictConcaveOn 𝕜 s f) (hfg : EqOn f g s) :
-    StrictConcaveOn 𝕜 s g :=
-  ⟨hf.1, fun x hx y hy hxy a b ha hb hab => by
-    simpa only [← hfg hx, ← hfg hy, ← hfg (hf.1 hx hy ha.le hb.le hab)] using
-      hf.2 hx hy hxy ha hb hab⟩
-
-theorem ConvexOn.add_const [Module 𝕜 β] (hf : ConvexOn 𝕜 s f) (b : β) :
-    ConvexOn 𝕜 s (f + fun _ => b) :=
-  hf.add (convexOn_const _ hf.1)
-
-theorem ConcaveOn.add_const [Module 𝕜 β] (hf : ConcaveOn 𝕜 s f) (b : β) :
-    ConcaveOn 𝕜 s (f + fun _ => b) :=
-  hf.add (concaveOn_const _ hf.1)
-
-theorem StrictConvexOn.add_const {γ : Type*} {f : E → γ} [OrderedCancelAddCommMonoid γ]
-    [Module 𝕜 γ] (hf : StrictConvexOn 𝕜 s f) (b : γ) : StrictConvexOn 𝕜 s (f + fun _ => b) :=
-  hf.add_convexOn (convexOn_const _ hf.1)
-
-theorem StrictConcaveOn.add_const {γ : Type*} {f : E → γ} [OrderedCancelAddCommMonoid γ]
-    [Module 𝕜 γ] (hf : StrictConcaveOn 𝕜 s f) (b : γ) : StrictConcaveOn 𝕜 s (f + fun _ => b) :=
-  hf.add_concaveOn (concaveOn_const _ hf.1)
-
-end Convexity
-
 namespace Real
 
 section Convexity

@@ -153,10 +153,8 @@ theorem ext [T : TopologicalSpace α] {σ : Type*} {F : Ctop α σ} (H₁ : ∀ 
 
 variable [TopologicalSpace α]
 
--- Porting note: add non-computable : because
--- > ... it depends on `Inter.inter`, and it does not have executable code.
 /-- The topological space realizer made of the open sets. -/
-protected noncomputable def id : Realizer α :=
+protected def id : Realizer α :=
   ⟨{ x : Set α // IsOpen x },
     { f := Subtype.val
       top := fun _ ↦ ⟨univ, isOpen_univ⟩

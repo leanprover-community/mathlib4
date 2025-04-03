@@ -426,8 +426,9 @@ def ofMonotone [IsTrichotomous α r] [IsAsymm β s] (f : α → β) (H : ∀ a b
     r ↪r s := by
   haveI := @IsAsymm.isIrrefl β s _
   refine ⟨⟨f, fun a b e => ?_⟩, @fun a b => ⟨fun h => ?_, H _ _⟩⟩
-  · refine ((@trichotomous _ r _ a b).resolve_left ?_).resolve_right ?_ <;>
-      exact fun h => @irrefl _ s _ _ (by simpa [e] using H _ _ h)
+  · refine ((@trichotomous _ r _ a b).resolve_left ?_).resolve_right ?_
+    · exact fun h => irrefl (r := s) (f a) (by simpa [e] using H _ _ h)
+    · exact fun h => irrefl (r := s) (f b) (by simpa [e] using H _ _ h)
   · refine (@trichotomous _ r _ a b).resolve_right (Or.rec (fun e => ?_) fun h' => ?_)
     · subst e
       exact irrefl _ h

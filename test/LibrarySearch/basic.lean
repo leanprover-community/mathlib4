@@ -143,7 +143,8 @@ example (a : ℕ) (h : P a) : a < 0 := by apply?
 example (a b : ℕ) (h1 : a < b) (h2 : P a) : False := by apply?
 
 -- TODO this no longer works:
--- example (a b : ℕ) (h1 : a < b) : ¬ (P a) := by apply? -- says `exact lemma_with_false_in_head a b h1`
+-- example (a b : ℕ) (h1 : a < b) : ¬ (P a) := by
+--  apply? -- says `exact lemma_with_false_in_head a b h1`
 
 end synonym
 
@@ -222,7 +223,8 @@ example (P Q : Prop) (h : P → Q) (h' : ¬Q) : ¬P := by
 -- -- Example from https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Exact.3F.20fails.20on.20le_antisymm/near/388993167
 -- set_option linter.unreachableTactic false in
 -- example {x y : ℝ} (hxy : x ≤ y) (hyx : y ≤ x) : x = y := by
---   -- This example non-deterministically picks between `le_antisymm hxy hyx` and `ge_antisymm hyx hxy`.
+--   -- This example non-deterministically picks between `le_antisymm hxy hyx` and
+--   -- `ge_antisymm hyx hxy`.
 --   first
 --   | exact? says exact le_antisymm hxy hyx
 --   | exact? says exact ge_antisymm hyx hxy

@@ -69,7 +69,7 @@ lemma changeLevel_injective {m : ℕ} [NeZero m] (hm : n ∣ m) :
   intro _ _ h
   ext1 y
   obtain ⟨z, rfl⟩ := ZMod.unitsMap_surjective hm y
-  rw [ext_iff] at h
+  rw [MulChar.ext_iff] at h
   simpa [changeLevel_def] using h z
 
 @[simp]

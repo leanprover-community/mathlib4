@@ -44,7 +44,7 @@ variable [Semiring R] [AddCommMonoid M] [AddCommGroup N₁] [Module R M] [Module
 
 instance : One (Module.End R M) := ⟨LinearMap.id⟩
 
-instance : Mul (Module.End R M) := ⟨LinearMap.comp⟩
+instance : Mul (Module.End R M) := ⟨fun f g => LinearMap.comp f g⟩
 
 theorem one_eq_id : (1 : Module.End R M) = id := rfl
 
@@ -364,7 +364,7 @@ variable (f g : M →ₗ[R] M₂)
 /-- Composition by `f : M₂ → M₃` is a linear map from the space of linear maps `M → M₂`
 to the space of linear maps `M → M₃`. -/
 def compRight (f : M₂ →ₗ[R] M₃) : (M →ₗ[R] M₂) →ₗ[R] M →ₗ[R] M₃ where
-  toFun := f.comp
+  toFun g := f.comp g
   map_add' _ _ := LinearMap.ext fun _ => map_add f _ _
   map_smul' _ _ := LinearMap.ext fun _ => map_smul f _ _
 

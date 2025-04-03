@@ -77,7 +77,7 @@ See `inclusion`.
 def preinclusion (B : Type u) [Quiver.{v + 1} B] :
     PrelaxFunctor (LocallyDiscrete (Paths B)) (FreeBicategory B) where
   obj a := a.as
-  map := @fun a b f => (@inclusionPath B _ a.as b.as).obj f
+  map {a b} f := (@inclusionPath B _ a.as b.as).obj f
   map₂ η := (inclusionPath _ _).map η
 
 @[simp]

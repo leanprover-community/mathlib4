@@ -78,6 +78,10 @@ theorem univ_sigma_univ : (@univ ι).sigma (fun _ ↦ @univ (α i)) = univ := ex
 theorem sigma_univ : s.sigma (fun _ ↦ univ : ∀ i, Set (α i)) = Sigma.fst ⁻¹' s :=
   ext fun _ ↦ and_true_iff _
 
+@[simp] theorem univ_sigma_preimage_mk (s : Set (Σ i, α i)) :
+    (univ : Set ι).sigma (fun i ↦ Sigma.mk i ⁻¹' s) = s :=
+  ext <| by simp
+
 @[simp]
 theorem singleton_sigma : ({i} : Set ι).sigma t = Sigma.mk i '' t i :=
   ext fun x ↦ by

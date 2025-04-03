@@ -112,7 +112,7 @@ instance : HasInitial Scheme.{u} :=
 instance initial_isEmpty : IsEmpty (⊥_ Scheme) :=
   ⟨fun x => ((initial.to Scheme.empty : _).1.base x).elim⟩
 
-theorem isAffineOpen_bot (X : Scheme) : IsAffineOpen (⊥ : Opens X) :=
+theorem isAffineOpen_bot (X : Scheme) : IsAffineOpen (⊥ : X.Opens) :=
   @isAffine_of_isEmpty _ (inferInstanceAs (IsEmpty (∅ : Set X)))
 
 instance : HasStrictInitialObjects Scheme :=

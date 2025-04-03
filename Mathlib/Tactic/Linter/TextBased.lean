@@ -299,12 +299,11 @@ def broadImportsLinter : TextbasedLinter := fun lines ↦ Id.run do
   return errors
 
 /-- Iterates over a collection of strings, finding all lines which are longer than 101 chars.
-We allow #aligns or URLs to be longer, though.
+We allow URLs to be longer, though.
 -/
 def lineLengthLinter : TextbasedLinter := fun lines ↦ Id.run do
   let errors := (lines.toList.enumFrom 1).filterMap (fun (line_number, line) ↦
-    if line.length > 101 &&
-      !(line.startsWith "#align" || line.containsSubstr "http" || line.startsWith "-- #align")  then
+    if line.length > 101 && !line.containsSubstr "http" then
       some (StyleError.lineLength line.length, line_number)
     else none)
   errors.toArray

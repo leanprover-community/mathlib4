@@ -8,7 +8,7 @@ import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.ApplyFun
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Dual
-import Mathlib.Analysis.NormedSpace.Basic
+import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Real.Sqrt
 
 /-!

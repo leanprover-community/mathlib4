@@ -9,7 +9,7 @@ import Mathlib.Combinatorics.Additive.FreimanHom
 # Corners
 
 This file defines corners, namely triples of the form `(x, y), (x, y + d), (x + d, y)`, and the
-property of being corner-free the corners theorem and Roth's theorem.
+property of being corner-free.
 
 ## References
 

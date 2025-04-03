@@ -229,7 +229,6 @@ protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToE
 -- unsafe def _root_.pi_fin.to_pexpr : ∀ {n}, (Fin n → pexpr) → pexpr
 --   | 0, v => ``(![])
 --   | n + 1, v => ``(vecCons $(v 0) $(_root_.pi_fin.to_pexpr <| vecTail v))
--- #align pi_fin.to_pexpr pi_fin.to_pexpr
 
 /-! ### `bit0` and `bit1` indices
 The following definitions and `simp` lemmas are used to allow

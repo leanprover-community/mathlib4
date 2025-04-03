@@ -112,9 +112,9 @@ theorem isReduced_of_isAffine_isReduced [IsAffine X] [_root_.IsReduced Γ(X, ⊤
 3. `P` holds for the entire space of an affine scheme.
 -/
 @[elab_as_elim]
-theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : Opens X), Prop)
-    {X : Scheme} (U : Opens X)
-    (h₁ : ∀ (X : Scheme) (U : Opens X),
+theorem reduce_to_affine_global (P : ∀ {X : Scheme} (_ : X.Opens), Prop)
+    {X : Scheme} (U : X.Opens)
+    (h₁ : ∀ (X : Scheme) (U : X.Opens),
       (∀ x : U, ∃ (V : _) (_ : x.1 ∈ V) (_ : V ⟶ U), P V) → P U)
     (h₂ : ∀ (X Y) (f : X ⟶ Y) [hf : IsOpenImmersion f],
       ∃ (U : Set X) (V : Set Y) (hU : U = ⊤) (hV : V = Set.range f.1.base),
@@ -141,7 +141,7 @@ theorem reduce_to_affine_nbhd (P : ∀ (X : Scheme) (_ : X), Prop)
   · rw [e]
   apply h₁
 
-theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X}
+theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : X.Opens}
     (s : Γ(X, U)) (hs : X.basicOpen s = ⊥) : s = 0 := by
   apply TopCat.Presheaf.section_ext X.sheaf U
   intro x
@@ -164,7 +164,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X
     specialize H (f.app _ s) _ ⟨x, by rw [Opens.mem_mk, e]; trivial⟩
     · rw [← Scheme.preimage_basicOpen, hs]; ext1; simp [Opens.map]
     · erw [← PresheafedSpace.stalkMap_germ_apply f.1 ⟨_, _⟩ ⟨x, _⟩] at H
-      apply_fun inv <| PresheafedSpace.stalkMap f.val x at H
+      apply_fun inv <| f.stalkMap x at H
       erw [CategoryTheory.IsIso.hom_inv_id_apply, map_zero] at H
       exact H
   | h₃ R =>
@@ -174,7 +174,7 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X
     rw [hs, map_zero]
 
 @[simp]
-theorem basicOpen_eq_bot_iff {X : Scheme} [IsReduced X] {U : Opens X}
+theorem basicOpen_eq_bot_iff {X : Scheme} [IsReduced X] {U : X.Opens}
     (s : Γ(X, U)) : X.basicOpen s = ⊥ ↔ s = 0 := by
   refine ⟨eq_zero_of_basicOpen_eq_bot s, ?_⟩
   rintro rfl
@@ -184,13 +184,12 @@ theorem basicOpen_eq_bot_iff {X : Scheme} [IsReduced X] {U : Opens X}
 and `𝒪ₓ(U)` is an integral domain for each `U ≠ ∅`. -/
 class IsIntegral : Prop where
   nonempty : Nonempty X := by infer_instance
-  component_integral : ∀ (U : Opens X) [Nonempty U], IsDomain Γ(X, U) := by infer_instance
+  component_integral : ∀ (U : X.Opens) [Nonempty U], IsDomain Γ(X, U) := by infer_instance
 
 attribute [instance] IsIntegral.component_integral IsIntegral.nonempty
 
-instance [h : IsIntegral X] : IsDomain Γ(X, ⊤) :=
-  @IsIntegral.component_integral _ _ _ (by
-    simp only [Set.univ_nonempty, Opens.nonempty_coeSort, Opens.coe_top])
+instance [IsIntegral X] : IsDomain Γ(X, ⊤) :=
+  @IsIntegral.component_integral _ _ _ ⟨Nonempty.some inferInstance, trivial⟩
 
 instance (priority := 900) isReduced_of_isIntegral [IsIntegral X] : IsReduced X := by
   constructor
@@ -203,6 +202,10 @@ instance (priority := 900) isReduced_of_isIntegral [IsIntegral X] : IsReduced X 
   · haveI : Nonempty U := by simpa
     infer_instance
 
+instance Scheme.component_nontrivial (X : Scheme.{u}) (U : X.Opens) [Nonempty U] :
+    Nontrivial Γ(X, U) :=
+  LocallyRingedSpace.component_nontrivial (hU := ‹_›)
+
 instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := by
   by_contra H
   replace H : ¬IsPreirreducible (⊤ : Set X) := fun h =>
@@ -212,17 +215,16 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
   rcases H with ⟨S, T, hS, hT, h₁, h₂, h₃⟩
   erw [not_forall] at h₂ h₃
   simp_rw [not_forall] at h₂ h₃
-  haveI : Nonempty (⟨Sᶜ, hS.1⟩ : Opens X) := ⟨⟨_, h₂.choose_spec.choose_spec⟩⟩
-  haveI : Nonempty (⟨Tᶜ, hT.1⟩ : Opens X) := ⟨⟨_, h₃.choose_spec.choose_spec⟩⟩
-  haveI : Nonempty (⟨Sᶜ, hS.1⟩ ⊔ ⟨Tᶜ, hT.1⟩ : Opens X) :=
+  haveI : Nonempty (⟨Sᶜ, hS.1⟩ : X.Opens) := ⟨⟨_, h₂.choose_spec.choose_spec⟩⟩
+  haveI : Nonempty (⟨Tᶜ, hT.1⟩ : X.Opens) := ⟨⟨_, h₃.choose_spec.choose_spec⟩⟩
+  haveI : Nonempty (⟨Sᶜ, hS.1⟩ ⊔ ⟨Tᶜ, hT.1⟩ : X.Opens) :=
     ⟨⟨_, Or.inl h₂.choose_spec.choose_spec⟩⟩
   let e : Γ(X, _) ≅ CommRingCat.of _ :=
     (X.sheaf.isProductOfDisjoint ⟨_, hS.1⟩ ⟨_, hT.1⟩ ?_).conePointUniqueUpToIso
       (CommRingCat.prodFanIsLimit _ _)
-  · apply (config := { allowSynthFailures := true }) false_of_nontrivial_of_product_domain
-    · exact e.symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
-    · apply X.toLocallyRingedSpace.component_nontrivial
-    · apply X.toLocallyRingedSpace.component_nontrivial
+  · have : IsDomain (Γ(X, ⟨Sᶜ, hS.1⟩) × Γ(X, ⟨Tᶜ, hT.1⟩)) :=
+      e.symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
+    exact false_of_nontrivial_of_product_domain Γ(X, ⟨Sᶜ, hS.1⟩) Γ(X, ⟨Tᶜ, hT.1⟩)
   · ext x
     constructor
     · rintro ⟨hS, hT⟩
@@ -284,7 +286,7 @@ theorem isIntegral_of_isAffine_of_isDomain [IsAffine X] [Nonempty X] [IsDomain �
     IsIntegral X :=
   isIntegral_of_isOpenImmersion X.isoSpec.hom
 
-theorem map_injective_of_isIntegral [IsIntegral X] {U V : Opens X} (i : U ⟶ V)
+theorem map_injective_of_isIntegral [IsIntegral X] {U V : X.Opens} (i : U ⟶ V)
     [H : Nonempty U] : Function.Injective (X.presheaf.map i.op) := by
   rw [injective_iff_map_eq_zero]
   intro x hx

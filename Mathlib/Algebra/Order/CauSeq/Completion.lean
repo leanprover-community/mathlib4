@@ -133,10 +133,10 @@ theorem ofRat_mul (x y : β) :
     ofRat (x * y) = (ofRat x * ofRat y : Cauchy abv) :=
   congr_arg mk (const_mul _ _)
 
-private theorem zero_def : 0 = @mk _ _ _ _ abv _ 0 :=
+private theorem zero_def : 0 = mk (abv := abv) 0 :=
   rfl
 
-private theorem one_def : 1 = @mk _ _ _ _ abv _ 1 :=
+private theorem one_def : 1 = mk (abv := abv) 1 :=
   rfl
 
 instance Cauchy.ring : Ring (Cauchy abv) :=
@@ -205,12 +205,12 @@ theorem inv_zero : (0 : (Cauchy abv))⁻¹ = 0 :=
   congr_arg mk <| by rw [dif_pos] <;> [rfl; exact zero_limZero]
 
 @[simp]
-theorem inv_mk {f} (hf) : (@mk α _ β _ abv _ f)⁻¹ = mk (inv f hf) :=
+theorem inv_mk {f} (hf) : (mk (abv := abv) f)⁻¹ = mk (inv f hf) :=
   congr_arg mk <| by rw [dif_neg]
 
 theorem cau_seq_zero_ne_one : ¬(0 : CauSeq _ abv) ≈ 1 := fun h =>
   have : LimZero (1 - 0 : CauSeq _ abv) := Setoid.symm h
-  have : LimZero 1 := by simpa
+  have : LimZero (1 : CauSeq _ abv) := by simpa
   by apply one_ne_zero <| const_limZero.1 this
 
 theorem zero_ne_one : (0 : (Cauchy abv)) ≠ 1 := fun h => cau_seq_zero_ne_one <| mk_eq.1 h

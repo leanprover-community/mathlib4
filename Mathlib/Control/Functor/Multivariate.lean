@@ -176,8 +176,7 @@ theorem LiftP_PredLast_iff {β} (P : β → Prop) (x : F (α ::: β)) :
   · intros
     rw [MvFunctor.map_map]
     dsimp (config := { unfoldPartialApp := true }) [(· ⊚ ·)]
-    suffices (fun i => Subtype.val) = (fun i x => (MvFunctor.f P n α i x).val)
-      by rw [this]
+    suffices (fun i => Subtype.val) = (fun i x => (MvFunctor.f P n α i x).val) by rw [this]
     ext i ⟨x, _⟩
     cases i <;> rfl
 
@@ -210,14 +209,13 @@ theorem LiftR_RelLast_iff (x y : F (α ::: β)) :
   · ext i ⟨x, _⟩ : 2
     cases i <;> rfl
   · intros
-    simp (config := { unfoldPartialApp := true }) [MvFunctor.map_map, (· ⊚ ·)]
+    simp (config := { unfoldPartialApp := true }) only [map_map, TypeVec.comp]
     -- Porting note: proof was
     -- rw [MvFunctor.map_map, MvFunctor.map_map, (· ⊚ ·), (· ⊚ ·)]
     -- congr <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
     suffices  (fun i t => t.val.fst) = ((fun i x => (MvFunctor.f' rr n α i x).val.fst))
-            ∧ (fun i t => t.val.snd) = ((fun i x => (MvFunctor.f' rr n α i x).val.snd))
-    by  rcases this with ⟨left, right⟩
-        rw [left, right]
+            ∧ (fun i t => t.val.snd) = ((fun i x => (MvFunctor.f' rr n α i x).val.snd)) by
+      rw [this.1, this.2]
     constructor <;> ext i ⟨x, _⟩ <;> cases i <;> rfl
 
 end LiftPLastPredIff

@@ -149,7 +149,7 @@ theorem map_aeval (P : R[X]) (x : A) :
   induction P using Polynomial.induction_on
   · simp
   · simp [add_smul, *]
-  · simp [mul_smul, nsmul_eq_smul_cast A]
+  · simp [mul_smul, ← Nat.cast_smul_eq_nsmul A]
 
 theorem eqOn_adjoin {s : Set A} (h : Set.EqOn D1 D2 s) : Set.EqOn D1 D2 (adjoin R s) := fun x hx =>
   Algebra.adjoin_induction hx h (fun r => (D1.map_algebraMap r).trans (D2.map_algebraMap r).symm)
@@ -291,6 +291,16 @@ def _root_.LinearEquiv.compDer : Derivation R A M ≃ₗ[R] Derivation R A N :=
     left_inv := fun D => by ext a; exact e.symm_apply_apply (D a)
     right_inv := fun D => by ext a; exact e.apply_symm_apply (D a) }
 
+@[simp]
+theorem linearEquiv_coe_to_linearMap_comp :
+    (e.compDer D : A →ₗ[R] N) = (e.toLinearMap : M →ₗ[R] N).comp (D : A →ₗ[R] M) :=
+  rfl
+
+@[simp]
+theorem linearEquiv_coe_comp :
+    (e.compDer D : A → N) = (e.toLinearMap : M →ₗ[R] N).comp (D : A →ₗ[R] M) :=
+  rfl
+
 end PushForward
 
 variable (A) in
@@ -413,7 +423,8 @@ lemma leibniz_zpow (a : K) (n : ℤ) : D (a ^ n) = n • a ^ (n - 1) • D a := 
     congr
     omega
   · rw [h, zpow_neg, zpow_natCast, leibniz_inv, leibniz_pow, inv_pow, ← pow_mul, ← zpow_natCast,
-      ← zpow_natCast, nsmul_eq_smul_cast K, zsmul_eq_smul_cast K, smul_smul, smul_smul, smul_smul]
+      ← zpow_natCast, ← Nat.cast_smul_eq_nsmul K, ← Int.cast_smul_eq_nsmul K, smul_smul, smul_smul,
+      smul_smul]
     trans (-n.natAbs * (a ^ ((n.natAbs - 1 : ℕ) : ℤ) / (a ^ ((n.natAbs * 2 : ℕ) : ℤ)))) • D a
     · ring_nf
     rw [← zpow_sub₀ ha]

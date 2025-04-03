@@ -605,8 +605,6 @@ lemma pow_add (a : M) (m : ℕ) : ∀ n, a ^ (m + n) = a ^ m * a ^ n
 @[to_additive mul_nsmul] lemma pow_mul (a : M) (m : ℕ) : ∀ n, a ^ (m * n) = (a ^ m) ^ n
   | 0 => by rw [Nat.mul_zero, pow_zero, pow_zero]
   | n + 1 => by rw [Nat.mul_succ, pow_add, pow_succ, pow_mul]
--- Porting note: we are taking the opportunity to swap the names `mul_nsmul` and `mul_nsmul'`
--- using #align, so that in mathlib4 they will match the multiplicative ones.
 
 @[to_additive mul_nsmul']
 lemma pow_mul' (a : M) (m n : ℕ) : a ^ (m * n) = (a ^ n) ^ m := by rw [Nat.mul_comm, pow_mul]

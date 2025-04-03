@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Simps.NotationClass
-import Mathlib.Mathport.Rename
 
 /-!
 # Notation classes for lattice operations

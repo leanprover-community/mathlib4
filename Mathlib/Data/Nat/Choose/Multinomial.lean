@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.Order.Antidiag.Pi
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Fin.VecNotation
@@ -196,16 +197,58 @@ theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 :=
 end Multiset
 
 namespace Finset
+open _root_.Nat
 
 /-! ### Multinomial theorem -/
 
-variable {α : Type*} [DecidableEq α] (s : Finset α) {R : Type*}
+variable {α R : Type*} [DecidableEq α]
 
-/-- The multinomial theorem
+section Semiring
+variable [Semiring R]
 
-  Proof is by induction on the number of summands.
--/
-theorem sum_pow_of_commute [Semiring R] (x : α → R)
+-- TODO: Can we prove one of the following two from the other one?
+/-- The **multinomial theorem**. -/
+lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
+    (hc : (s : Set α).Pairwise fun i j ↦ Commute (f i) (f j)) (n : ℕ) :
+    (∑ i in s, f i) ^ n = ∑ k in piAntidiag s n, multinomial s k *
+      s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun i j h ↦ h.pow_pow ..) := by
+  classical
+  induction' s using Finset.cons_induction with a s has ih generalizing n
+  · cases n <;> simp
+  rw [Finset.sum_cons, piAntidiag_cons, sum_disjiUnion]
+  simp only [sum_map, Function.Embedding.coeFn_mk, Pi.add_apply, multinomial_cons,
+    Pi.add_apply, eq_self_iff_true, if_true, Nat.cast_mul, noncommProd_cons, eq_self_iff_true,
+    if_true, sum_add_distrib, sum_ite_eq', has, if_false, add_zero,
+    addLeftEmbedding_eq_addRightEmbedding, addRightEmbedding_apply]
+  suffices ∀ p : ℕ × ℕ, p ∈ antidiagonal n →
+    ∑ g in piAntidiag s p.2, ((g a + p.1 + s.sum g).choose (g a + p.1) : R) *
+      multinomial s (g + fun i ↦ ite (i = a) p.1 0) *
+        (f a ^ (g a + p.1) * s.noncommProd (fun i ↦ f i ^ (g i + ite (i = a) p.1 0))
+          ((hc.mono (by simp)).mono' fun i j h ↦ h.pow_pow ..)) =
+      ∑ g in piAntidiag s p.2, n.choose p.1 * multinomial s g * (f a ^ p.1 *
+        s.noncommProd (fun i ↦ f i ^ g i) ((hc.mono (by simp)).mono' fun i j h ↦ h.pow_pow ..)) by
+    rw [sum_congr rfl this]
+    simp only [Nat.antidiagonal_eq_map, sum_map, Function.Embedding.coeFn_mk]
+    rw [(Commute.sum_right _ _ _ fun i hi ↦ hc (by simp) (by simp [hi])
+      (by simpa [eq_comm] using ne_of_mem_of_not_mem hi has)).add_pow]
+    simp only [ih (hc.mono (by simp)), sum_mul, mul_sum]
+    refine sum_congr rfl fun i _ ↦ sum_congr rfl fun g _ ↦ ?_
+    rw [← Nat.cast_comm, (Nat.commute_cast (f a ^ i) _).left_comm, mul_assoc]
+  refine fun p hp ↦ sum_congr rfl fun f hf ↦ ?_
+  rw [mem_piAntidiag] at hf
+  rw [not_imp_comm.1 (hf.2 _) has, zero_add, hf.1]
+  congr 2
+  · rw [mem_antidiagonal.1 hp]
+  · rw [multinomial_congr]
+    intro t ht
+    rw [Pi.add_apply, if_neg, add_zero]
+    exact ne_of_mem_of_not_mem ht has
+  refine noncommProd_congr rfl (fun t ht ↦ ?_) _
+  rw [if_neg, add_zero]
+  exact ne_of_mem_of_not_mem ht has
+
+/-- The **multinomial theorem**. -/
+theorem sum_pow_of_commute [Semiring R] (x : α → R) (s : Finset α)
     (hc : (s : Set α).Pairwise fun i j => Commute (x i) (x j)) :
     ∀ n,
       s.sum x ^ n =
@@ -243,13 +286,23 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
     rw [Multiset.card_replicate, Nat.cast_mul, mul_assoc, Nat.cast_comm]
     congr 1; simp_rw [← mul_assoc, Nat.cast_comm]; rfl
 
+end Semiring
+
+section CommSemiring
+variable [CommSemiring R] {f : α → R} {s : Finset α}
+
+lemma sum_pow_eq_sum_piAntidiag (s : Finset α) (f : α → R) (n : ℕ) :
+    (∑ i in s, f i) ^ n = ∑ k in piAntidiag s n, multinomial s k * ∏ i in s, f i ^ k i := by
+  simp_rw [← noncommProd_eq_prod]
+  rw [← sum_pow_eq_sum_piAntidiag_of_commute _ _ fun _ _ _ _ _ ↦ Commute.all ..]
 
 theorem sum_pow [CommSemiring R] (x : α → R) (n : ℕ) :
     s.sum x ^ n = ∑ k ∈ s.sym n, k.val.multinomial * (k.val.map x).prod := by
   conv_rhs => rw [← sum_coe_sort]
-  convert sum_pow_of_commute s x (fun _ _ _ _ _ => mul_comm _ _) n
+  convert sum_pow_of_commute x s (fun _ _ _ _ _ ↦ Commute.all ..) n
   rw [Multiset.noncommProd_eq_prod]
 
+end CommSemiring
 end Finset
 
 namespace Sym

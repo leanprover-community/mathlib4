@@ -238,13 +238,13 @@ theorem comap_comap {P : Type*} [Group P] [TopologicalSpace P] (K : OpenSubgroup
   rfl
 
 end OpenSubgroup
-
 namespace Subgroup
 
-variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousMul G] (H : Subgroup G)
+variable {G : Type*} [Group G] [TopologicalSpace G]
 
 @[to_additive]
-theorem isOpen_of_mem_nhds {g : G} (hg : (H : Set G) ∈ 𝓝 g) : IsOpen (H : Set G) := by
+theorem isOpen_of_mem_nhds [ContinuousMul G] (H : Subgroup G) {g : G} (hg : (H : Set G) ∈ 𝓝 g) :
+    IsOpen (H : Set G) := by
   refine isOpen_iff_mem_nhds.2 fun x hx => ?_
   have hg' : g ∈ H := SetLike.mem_coe.1 (mem_of_mem_nhds hg)
   have : Filter.Tendsto (fun y => y * (x⁻¹ * g)) (𝓝 x) (𝓝 g) :=
@@ -253,19 +253,20 @@ theorem isOpen_of_mem_nhds {g : G} (hg : (H : Set G) ∈ 𝓝 g) : IsOpen (H : S
     H.mul_mem_cancel_right (H.mul_mem (H.inv_mem hx) hg')] using this hg
 
 @[to_additive]
-theorem isOpen_mono {H₁ H₂ : Subgroup G} (h : H₁ ≤ H₂) (h₁ : IsOpen (H₁ : Set G)) :
-    IsOpen (H₂ : Set G) :=
+theorem isOpen_mono [ContinuousMul G] {H₁ H₂ : Subgroup G} (h : H₁ ≤ H₂)
+    (h₁ : IsOpen (H₁ : Set G)) : IsOpen (H₂ : Set G) :=
   isOpen_of_mem_nhds _ <| Filter.mem_of_superset (h₁.mem_nhds <| one_mem H₁) h
 
 @[to_additive]
-theorem isOpen_of_openSubgroup {U : OpenSubgroup G} (h : ↑U ≤ H) : IsOpen (H : Set G) :=
+theorem isOpen_of_openSubgroup [ContinuousMul G] (H: Subgroup G) {U : OpenSubgroup G} (h : ↑U ≤ H) :
+    IsOpen (H : Set G) :=
   isOpen_mono h U.isOpen
 
 /-- If a subgroup of a topological group has `1` in its interior, then it is open. -/
 @[to_additive "If a subgroup of an additive topological group has `0` in its interior, then it is
 open."]
-theorem isOpen_of_one_mem_interior (h_1_int : (1 : G) ∈ interior (H : Set G)) :
-    IsOpen (H : Set G) :=
+theorem isOpen_of_one_mem_interior [ContinuousMul G] (H: Subgroup G)
+    (h_1_int : (1 : G) ∈ interior (H : Set G)) : IsOpen (H : Set G) :=
   isOpen_of_mem_nhds H <| mem_interior_iff_mem_nhds.1 h_1_int
 
 end Subgroup

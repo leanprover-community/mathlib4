@@ -3,8 +3,8 @@ Copyright (c) 2022 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
+import Mathlib.Algebra.Group.Submonoid.DistribMulAction
 import Mathlib.RingTheory.OreLocalization.OreSet
-import Mathlib.Algebra.Group.Submonoid.Operations
 
 /-!
 
@@ -459,13 +459,12 @@ section UMP
 
 variable {T : Type*} [Monoid T]
 variable (f : R →* T) (fS : S →* Units T)
-variable (hf : ∀ s : S, f s = fS s)
 
 /-- The universal lift from a morphism `R →* T`, which maps elements of `S` to units of `T`,
 to a morphism `R[S⁻¹] →* T`. -/
 @[to_additive "The universal lift from a morphism `R →+ T`, which maps elements of `S` to
   additive-units of `T`, to a morphism `AddOreLocalization R S →+ T`."]
-def universalMulHom : R[S⁻¹] →* T where
+def universalMulHom (hf : ∀ s : S, f s = fS s) : R[S⁻¹] →* T where
   -- Porting note(#12129): additional beta reduction needed
   toFun x :=
     x.liftExpand (fun r s => ((fS s)⁻¹ : Units T) * f r) fun r t s ht => by
@@ -488,6 +487,8 @@ def universalMulHom : R[S⁻¹] →* T where
       Units.val_mul, mul_assoc, ← mul_assoc (fS s₁ : T), ← mul_assoc (fS s₁ : T), Units.mul_inv,
       one_mul, ← hf, ← mul_assoc, ← map_mul _ _ r₁, ha, map_mul, hf s₂, mul_assoc,
       ← mul_assoc (fS s₂ : T), (fS s₂).mul_inv, one_mul]
+
+variable (hf : ∀ s : S, f s = fS s)
 
 @[to_additive]
 theorem universalMulHom_apply {r : R} {s : S} :

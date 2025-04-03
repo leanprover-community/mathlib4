@@ -97,8 +97,8 @@ end
 
 /-- Given a cartesian morphism `φ : a ⟶ b` lying over `f : R ⟶ S` in `𝒳`, and two morphisms
 `ψ ψ' : a' ⟶ a` such that `ψ ≫ φ = ψ' ≫ φ`. Then we must have `ψ = ψ'`. -/
-protected lemma ext {a' : 𝒳} (ψ ψ' : a' ⟶ a) [IsHomLift p (𝟙 R) ψ] [IsHomLift p (𝟙 R) ψ']
-    (h : ψ ≫ φ = ψ' ≫ φ) : ψ = ψ' := by
+protected lemma ext (φ : a ⟶ b) [IsCartesian p f φ] {a' : 𝒳} (ψ ψ' : a' ⟶ a)
+    [IsHomLift p (𝟙 R) ψ] [IsHomLift p (𝟙 R) ψ'] (h : ψ ≫ φ = ψ' ≫ φ) : ψ = ψ' := by
   rw [map_uniq p f φ (ψ ≫ φ) ψ rfl, map_uniq p f φ (ψ ≫ φ) ψ' h.symm]
 
 @[simp]
@@ -212,8 +212,8 @@ R' --g--> R --f--> S
 ```
 such that `φ` is strongly cartesian, and morphisms `ψ ψ' : a' ⟶ a` such that
 `g ≫ ψ = φ' = g ≫ ψ'`. Then we have that `ψ = ψ'`. -/
-protected lemma ext {R' : 𝒮} {a' : 𝒳} (g : R' ⟶ R) {ψ ψ' : a' ⟶ a} [IsHomLift p g ψ]
-    [IsHomLift p g ψ'] (h : ψ ≫ φ = ψ' ≫ φ) : ψ = ψ' := by
+protected lemma ext (φ : a ⟶ b) [IsStronglyCartesian p f φ] {R' : 𝒮} {a' : 𝒳} (g : R' ⟶ R)
+    {ψ ψ' : a' ⟶ a} [IsHomLift p g ψ] [IsHomLift p g ψ'] (h : ψ ≫ φ = ψ' ≫ φ) : ψ = ψ' := by
   rw [map_uniq p f φ (g := g) rfl (ψ ≫ φ) ψ rfl, map_uniq p f φ (g := g) rfl (ψ ≫ φ) ψ' h.symm]
 
 @[simp]

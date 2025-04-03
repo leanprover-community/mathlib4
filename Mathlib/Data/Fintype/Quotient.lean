@@ -32,10 +32,10 @@ def Quotient.finChoiceAux {ι : Type*} [DecidableEq ι] {α : ι → Type*} [S :
     · exact fun a l => ⟦fun j h =>
         if e : j = i then by rw [e]; exact a else l _ ((List.mem_cons.1 h).resolve_left e)⟧
     refine fun a₁ l₁ a₂ l₂ h₁ h₂ => Quotient.sound fun j h => ?_
-    by_cases e : j = i <;> simp [e]
-    · subst j
+    by_cases e : j = i
+    · simp [e]; subst j
       exact h₁
-    · exact h₂ _ _
+    · simpa [e] using h₂ _ _
 
 theorem Quotient.finChoiceAux_eq {ι : Type*} [DecidableEq ι] {α : ι → Type*}
     [S : ∀ i, Setoid (α i)] :

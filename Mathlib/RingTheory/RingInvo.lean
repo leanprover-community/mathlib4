@@ -94,7 +94,6 @@ theorem involution (f : RingInvo R) (x : R) : (f (f x).unop).unop = x :=
 -- Porting note: remove Coe instance, not needed
 -- instance hasCoeToRingEquiv : Coe (RingInvo R) (R ≃+* Rᵐᵒᵖ) :=
 --   ⟨RingInvo.toRingEquiv⟩
--- #align ring_invo.has_coe_to_ring_equiv RingInvo.hasCoeToRingEquiv
 
 @[norm_cast]
 theorem coe_ringEquiv (f : RingInvo R) (a : R) : (f : R ≃+* Rᵐᵒᵖ) a = f a :=

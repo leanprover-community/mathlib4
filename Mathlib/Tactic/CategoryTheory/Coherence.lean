@@ -3,7 +3,7 @@ Copyright (c) 2022. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
 -/
-import Mathlib.CategoryTheory.Monoidal.Free.Basic
+import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
@@ -22,9 +22,6 @@ in a monoidal category which are built out of associators and unitors
 are equal.
 
 -/
-
--- Porting note: restore when ported
--- import Mathlib.CategoryTheory.Bicategory.CoherenceTactic
 
 universe v u
 

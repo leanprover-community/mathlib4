@@ -122,7 +122,7 @@ theorem map_comp : (c.map f).map g = c.map (g.comp f) :=
 
 @[mono]
 theorem map_le_map {g : α →o β} (h : f ≤ g) : c.map f ≤ c.map g :=
-  fun i => by simp [mem_map_iff]; exists i; apply h
+  fun i => by simp only [map_coe, Function.comp_apply]; exists i; apply h
 
 /-- `OmegaCompletePartialOrder.Chain.zip` pairs up the elements of two chains
 that have the same index. -/
@@ -571,11 +571,11 @@ def Simps.apply (h : α →𝒄 β) : α → β :=
 
 initialize_simps_projections ContinuousHom (toFun → apply)
 
-theorem congr_fun {f g : α →𝒄 β} (h : f = g) (x : α) : f x = g x :=
+protected theorem congr_fun {f g : α →𝒄 β} (h : f = g) (x : α) : f x = g x :=
   DFunLike.congr_fun h x
 
-theorem congr_arg (f : α →𝒄 β) {x y : α} (h : x = y) : f x = f y :=
-  _root_.congr_arg f h
+protected theorem congr_arg (f : α →𝒄 β) {x y : α} (h : x = y) : f x = f y :=
+  congr_arg f h
 
 protected theorem monotone (f : α →𝒄 β) : Monotone f :=
   f.monotone'

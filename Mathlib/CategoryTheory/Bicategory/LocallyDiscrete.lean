@@ -59,8 +59,8 @@ instance [Inhabited C] : Inhabited (LocallyDiscrete C) :=
   ⟨⟨default⟩⟩
 
 instance categoryStruct [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C) where
-  Hom := fun a b => Discrete (a.as ⟶ b.as)
-  id := fun a => ⟨𝟙 a.as⟩
+  Hom a b := Discrete (a.as ⟶ b.as)
+  id a := ⟨𝟙 a.as⟩
   comp f g := ⟨f.as ≫ g.as⟩
 
 variable [CategoryStruct.{v} C]

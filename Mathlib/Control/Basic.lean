@@ -166,7 +166,7 @@ namespace Sum
 variable {e : Type v}
 
 /-- The monadic `bind` operation for `Sum`. -/
-protected def bind {α β} : Sum e α → (α → Sum e β) → Sum e β
+protected def bind {α β} : e ⊕ α → (α → e ⊕ β) → e ⊕ β
   | inl x, _ => inl x
   | inr x, f => f x
 -- incorrectly marked as a bad translation by mathport, so we do not mark with `ₓ`.

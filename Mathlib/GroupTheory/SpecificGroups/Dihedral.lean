@@ -91,7 +91,7 @@ theorem sr_mul_sr (i j : ZMod n) : sr i * sr j = r (j - i) :=
 theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 
-private def fintypeHelper : Sum (ZMod n) (ZMod n) ≃ DihedralGroup n where
+private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
   invFun i := match i with
     | r j => Sum.inl j
     | sr j => Sum.inr j

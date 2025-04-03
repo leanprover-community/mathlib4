@@ -1246,7 +1246,7 @@ section
 
 open Function
 
-variable (s : Set β) {f : α → β} {U : ι → Set β} (hU : iUnion U = univ)
+variable {f : α → β} {U : ι → Set β} (hU : iUnion U = univ)
 
 theorem injective_iff_injective_of_iUnion_eq_univ :
     Injective f ↔ ∀ i, Injective ((U i).restrictPreimage f) := by

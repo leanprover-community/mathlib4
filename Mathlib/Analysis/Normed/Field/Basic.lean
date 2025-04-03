@@ -196,7 +196,7 @@ instance Prod.normOneClass [SeminormedAddCommGroup α] [One α] [NormOneClass α
 instance Pi.normOneClass {ι : Type*} {α : ι → Type*} [Nonempty ι] [Fintype ι]
     [∀ i, SeminormedAddCommGroup (α i)] [∀ i, One (α i)] [∀ i, NormOneClass (α i)] :
     NormOneClass (∀ i, α i) :=
-  ⟨by simp [Pi.norm_def]; exact Finset.sup_const Finset.univ_nonempty 1⟩
+  ⟨by simpa [Pi.norm_def] using Finset.sup_const Finset.univ_nonempty 1⟩
 
 instance MulOpposite.normOneClass [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
     NormOneClass αᵐᵒᵖ :=

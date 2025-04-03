@@ -156,7 +156,7 @@ theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
           π :=
             { app := fun p => p.as.elim } }
       isLimit :=
-        { lift := fun s => Over.homMk _
+        { lift := fun s => Over.homMk s.pt.hom
           fac := fun _ j => j.as.elim
           uniq := fun s m _ => by
             simp only

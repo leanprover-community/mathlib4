@@ -90,7 +90,7 @@ theorem mem_posTangentConeAt_of_frequently_mem (h : ∃ᶠ t : ℝ in 𝓝[>] 0,
 
 /-- If `[x -[ℝ] x + y] ⊆ s`, then `y` belongs to the positive tangnet cone of `s`.
 
-Before 2024-07-13, this lemma used to be callsed `mem_posTangentConeAt_of_segment_subset`.
+Before 2024-07-13, this lemma used to be called `mem_posTangentConeAt_of_segment_subset`.
 See also `sub_mem_posTangentConeAt_of_segment_subset`
 for the lemma that used to be called `mem_posTangentConeAt_of_segment_subset`. -/
 theorem mem_posTangentConeAt_of_segment_subset (h : [x -[ℝ] x + y] ⊆ s) :
@@ -242,7 +242,7 @@ lemma one_mem_posTangentConeAt_iff_frequently :
     1 ∈ posTangentConeAt s a ↔ ∃ᶠ x in 𝓝[>] a, x ∈ s := by
   rw [one_mem_posTangentConeAt_iff_mem_closure, mem_closure_iff_frequently,
     frequently_nhdsWithin_iff, inter_comm]
-  rfl
+  simp_rw [mem_inter_iff]
 
 /-- **Fermat's Theorem**: the derivative of a function at a local minimum equals zero. -/
 theorem IsLocalMin.hasDerivAt_eq_zero (h : IsLocalMin f a) (hf : HasDerivAt f f' a) : f' = 0 := by

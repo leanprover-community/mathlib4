@@ -141,10 +141,9 @@ theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
   simpa only [compClosure_eq_self r] using h.equivalence
 
 variable {D : Type _} [Category D] (F : C ⥤ D)
-  (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂)
 
 /-- The induced functor on the quotient category. -/
-def lift : Quotient r ⥤ D where
+def lift (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂) : Quotient r ⥤ D where
   obj a := F.obj a.as
   map := @fun a b hf ↦
     Quot.liftOn hf (fun f ↦ F.map f)
@@ -155,6 +154,8 @@ def lift : Quotient r ⥤ D where
   map_comp := by
     rintro a b c ⟨f⟩ ⟨g⟩
     exact F.map_comp f g
+
+variable (H : ∀ (x y : C) (f₁ f₂ : x ⟶ y), r f₁ f₂ → F.map f₁ = F.map f₂)
 
 theorem lift_spec : functor r ⋙ lift r F H = F := by
   apply Functor.ext; rotate_left

@@ -580,8 +580,8 @@ protected instance SigmaFinite.withDensity [SigmaFinite μ] (f : α → ℝ≥0)
     · exact ⟨n, forall_mem_image.2 fun x hx ↦ hx.2⟩
   · rw [iUnion_eq_univ_iff]
     refine fun x ↦ ⟨max (spanningSetsIndex μ x) ⌈f x⌉₊, ?_, ?_⟩
-    exact mem_spanningSets_of_index_le _ _ (le_max_left ..)
-    simp [Nat.le_ceil]
+    · exact mem_spanningSets_of_index_le _ _ (le_max_left ..)
+    · simp [Nat.le_ceil]
 
 lemma SigmaFinite.withDensity_of_ne_top [SigmaFinite μ] {f : α → ℝ≥0∞}
     (hf_ne_top : ∀ᵐ x ∂μ, f x ≠ ∞) : SigmaFinite (μ.withDensity f) := by

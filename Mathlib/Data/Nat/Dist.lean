@@ -18,8 +18,6 @@ namespace Nat
 def dist (n m : ℕ) :=
   n - m + (m - n)
 
--- Should be aligned to `Nat.dist.eq_def`, but that is generated on demand and isn't present yet.
-
 theorem dist_comm (n m : ℕ) : dist n m = dist m n := by simp [dist, add_comm]
 
 @[simp]

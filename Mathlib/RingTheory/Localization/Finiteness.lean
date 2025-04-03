@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.Algebra.Module.LocalizedModuleIntegers
+import Mathlib.RingTheory.Localization.Algebra
 import Mathlib.RingTheory.LocalProperties
 
 /-!
@@ -149,3 +150,33 @@ theorem of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
 end Finite
 
 end Module
+
+namespace Ideal
+
+variable {R : Type u} [CommRing R]
+
+/-- If `I` is an ideal such that there exists a set `{ r }` of `R` such
+that the image of `I` in `Rᵣ` is finitely generated for each `r`, then `I` is finitely
+generated. -/
+lemma fg_of_localizationSpan {I : Ideal R} (t : Set R) (ht : Ideal.span t = ⊤)
+    (H : ∀ (g : t), (I.map (algebraMap R (Localization.Away g.val))).FG) : I.FG := by
+  apply Module.Finite.iff_fg.mp
+  let k (g : t) : I →ₗ[R] (I.map (algebraMap R (Localization.Away g.val))) :=
+    Algebra.idealMap I (S := Localization.Away g.val)
+  exact Module.Finite.of_localizationSpan' t ht k (fun g ↦ Module.Finite.iff_fg.mpr (H g))
+
+end Ideal
+
+variable {R : Type u} [CommRing R] {S : Type v} [CommRing S] {f : R →+* S}
+
+/--
+To check that the kernel of a ring homomorphism is finitely generated,
+it suffices to check this after localizing at a spanning set of the source.
+-/
+lemma RingHom.ker_fg_of_localizationSpan (t : Set R) (ht : Ideal.span t = ⊤)
+    (H : ∀ g : t, (RingHom.ker (Localization.awayMap f g.val)).FG) :
+    (RingHom.ker f).FG := by
+  apply Ideal.fg_of_localizationSpan t ht
+  intro g
+  rw [← IsLocalization.ker_map (Localization.Away (f g.val)) f (Submonoid.map_powers f g.val)]
+  exact H g

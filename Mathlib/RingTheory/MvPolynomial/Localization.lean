@@ -60,7 +60,7 @@ instance isLocalization : IsLocalization (M.map <| C (σ := σ))
       ring
   exists_of_eq {p q} := by
     intro h
-    simp_rw [algebraMap_def, ext_iff, coeff_map] at h
+    simp_rw [algebraMap_def, MvPolynomial.ext_iff, coeff_map] at h
     choose c hc using (fun m ↦ IsLocalization.exists_of_eq (M := M) (h m))
     simp only [Subtype.exists, Submonoid.mem_map, exists_prop, exists_exists_and_eq_and]
     refine ⟨Finset.prod (p.support ∪ q.support) (fun m ↦ c m), ?_, ?_⟩

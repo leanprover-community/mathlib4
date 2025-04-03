@@ -178,7 +178,7 @@ theorem orbit_subgroup_one_eq_self : MulAction.orbit s (1 : α) = s :=
 
 @[to_additive eq_addCosets_of_normal]
 theorem eq_cosets_of_normal (N : s.Normal) (g : α) : g • (s : Set α) = op g • s :=
-  Set.ext fun a => by simp [mem_leftCoset_iff, mem_rightCoset_iff]; rw [N.mem_comm_iff]
+  Set.ext fun a => by simp [mem_leftCoset_iff, mem_rightCoset_iff, N.mem_comm_iff]
 
 @[to_additive normal_of_eq_addCosets]
 theorem normal_of_eq_cosets (h : ∀ g : α, g • (s : Set α) = op g • s) : s.Normal :=
@@ -656,8 +656,11 @@ variable [Group α] {H : Type*} [Group H]
 /-- An equivalence between any non-empty fiber of a `MonoidHom` and its kernel. -/
 @[to_additive "An equivalence between any non-empty fiber of an `AddMonoidHom` and its kernel."]
 def fiberEquivKer (f : α →* H) (a : α) : f ⁻¹' {f a} ≃ f.ker :=
-  (Equiv.setCongr <| Set.ext fun _ => by erw [mem_singleton_iff, mem_smul_set_iff_inv_smul_mem,
-    mem_ker, map_mul, map_inv, inv_mul_eq_one, eq_comm]).trans <| Subgroup.leftCosetEquivSubgroup a
+  .trans
+    (Equiv.setCongr <| Set.ext fun _ => by
+      rw [mem_preimage, mem_singleton_iff, mem_smul_set_iff_inv_smul_mem, SetLike.mem_coe, mem_ker,
+        smul_eq_mul, map_mul, map_inv, inv_mul_eq_one, eq_comm])
+    (Subgroup.leftCosetEquivSubgroup a)
 
 @[to_additive (attr := simp)]
 lemma fiberEquivKer_apply (f : α →* H) (a : α) (g : f ⁻¹' {f a}) : f.fiberEquivKer a g = a⁻¹ * g :=

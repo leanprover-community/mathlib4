@@ -636,11 +636,16 @@ theorem mem_of_mem_nsmul {a : α} {s : Multiset α} {n : ℕ} (h : a ∈ n • s
     exact h.elim ih id
 
 @[simp]
-theorem mem_nsmul {a : α} {s : Multiset α} {n : ℕ} (h0 : n ≠ 0) : a ∈ n • s ↔ a ∈ s := by
-  refine ⟨mem_of_mem_nsmul, fun h => ?_⟩
-  obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero h0
+theorem mem_nsmul {a : α} {s : Multiset α} {n : ℕ} : a ∈ n • s ↔ n ≠ 0 ∧ a ∈ s := by
+  refine ⟨fun ha ↦ ⟨?_, mem_of_mem_nsmul ha⟩, fun h => ?_⟩
+  · rintro rfl
+    simp [zero_nsmul] at ha
+  obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero h.1
   rw [succ_nsmul, mem_add]
-  exact Or.inr h
+  exact Or.inr h.2
+
+lemma mem_nsmul_of_ne_zero {a : α} {s : Multiset α} {n : ℕ} (h0 : n ≠ 0) : a ∈ n • s ↔ a ∈ s := by
+  simp [*]
 
 theorem nsmul_cons {s : Multiset α} (n : ℕ) (a : α) :
     n • (a ::ₘ s) = n • ({a} : Multiset α) + n • s := by
@@ -1141,7 +1146,7 @@ theorem map_const (s : Multiset α) (b : β) : map (const α b) s = replicate (c
 
 theorem eq_of_mem_map_const {b₁ b₂ : β} {l : List α} (h : b₁ ∈ map (Function.const α b₂) l) :
     b₁ = b₂ :=
-  eq_of_mem_replicate <| by rwa [map_const] at h
+  eq_of_mem_replicate (n := card (l : Multiset α)) <| by rwa [map_const] at h
 
 @[simp]
 theorem map_le_map {f : α → β} {s t : Multiset α} (h : s ≤ t) : map f s ≤ map f t :=
@@ -1650,7 +1655,8 @@ theorem sub_add_inter (s t : Multiset α) : s - t + s ∩ t = s := by
   · rw [cons_inter_of_neg _ h, sub_cons, erase_of_not_mem h, IH]
 
 theorem sub_inter (s t : Multiset α) : s - s ∩ t = s - t :=
-  add_right_cancel <| by rw [sub_add_inter s t, tsub_add_cancel_of_le (inter_le_left s t)]
+  add_right_cancel (b := s ∩ t) <| by
+    rw [sub_add_inter s t, tsub_add_cancel_of_le (inter_le_left s t)]
 
 end
 
@@ -2198,6 +2204,9 @@ theorem ext {s t : Multiset α} : s = t ↔ ∀ a, count a s = count a t :=
 @[ext]
 theorem ext' {s t : Multiset α} : (∀ a, count a s = count a t) → s = t :=
   ext.2
+
+lemma count_injective : Injective fun (s : Multiset α) a ↦ s.count a :=
+  fun _s _t hst ↦ ext' $ congr_fun hst
 
 @[simp]
 theorem coe_inter (s t : List α) : (s ∩ t : Multiset α) = (s.bagInter t : List α) := by ext; simp

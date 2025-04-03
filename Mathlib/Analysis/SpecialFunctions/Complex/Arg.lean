@@ -358,9 +358,9 @@ lemma neg_pi_div_two_lt_arg_iff {z : ℂ} : -(π / 2) < arg z ↔ 0 < re z ∨ 0
 lemma arg_lt_pi_div_two_iff {z : ℂ} : arg z < π / 2 ↔ 0 < re z ∨ im z < 0 ∨ z = 0 := by
   rw [lt_iff_le_and_ne, arg_le_pi_div_two_iff, Ne, arg_eq_pi_div_two_iff]
   rcases lt_trichotomy z.re 0 with hre | hre | hre
-  · have : z ≠ 0 := by simp [ext_iff, hre.ne]
+  · have : z ≠ 0 := by simp [Complex.ext_iff, hre.ne]
     simp [hre.ne, hre.not_le, hre.not_lt, this]
-  · have : z = 0 ↔ z.im = 0 := by simp [ext_iff, hre]
+  · have : z = 0 ↔ z.im = 0 := by simp [Complex.ext_iff, hre]
     simp [hre, this, or_comm, le_iff_eq_or_lt]
   · simp [hre, hre.le, hre.ne']
 
@@ -561,16 +561,12 @@ theorem tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re
       (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 (-π)) by
     refine H.congr' ?_
     have : ∀ᶠ x : ℂ in 𝓝 z, x.re < 0 := continuous_re.tendsto z (gt_mem_nhds hre)
-    -- Porting note: need to specify the `nhdsWithin` set
-    filter_upwards [self_mem_nhdsWithin (s := { z : ℂ | z.im < 0 }),
-      mem_nhdsWithin_of_mem_nhds this] with _ him hre
+    filter_upwards [self_mem_nhdsWithin, mem_nhdsWithin_of_mem_nhds this] with _ him hre
     rw [arg, if_neg hre.not_le, if_neg him.not_le]
   convert (Real.continuousAt_arcsin.comp_continuousWithinAt
-          ((continuous_im.continuousAt.comp_continuousWithinAt continuousWithinAt_neg).div
-            -- Porting note: added type hint to assist in goal state below
-            continuous_abs.continuousWithinAt (s := { z : ℂ | z.im < 0 }) (_ : abs z ≠ 0))
-          -- Porting note: specify constant precisely to assist in goal below
-          ).sub_const π using 1
+    ((continuous_im.continuousAt.comp_continuousWithinAt continuousWithinAt_neg).div
+      continuous_abs.continuousWithinAt _)
+    ).sub_const π using 1
   · simp [him]
   · lift z to ℝ using him
     simpa using hre.ne
@@ -618,7 +614,7 @@ theorem continuousAt_arg_coe_angle (h : x ≠ 0) : ContinuousAt ((↑) ∘ arg :
       (Real.Angle.continuous_coe.continuousAt.comp (continuousAt_arg (Or.inl ?_))).add
         continuousAt_const
     rw [neg_re, neg_pos]
-    exact hs.1.lt_of_ne fun h0 => h (ext_iff.2 ⟨h0, hs.2⟩)
+    exact hs.1.lt_of_ne fun h0 => h (Complex.ext_iff.2 ⟨h0, hs.2⟩)
 
 end Continuity
 

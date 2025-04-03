@@ -66,8 +66,9 @@ theorem cantorFunctionAux_false (h : f n = false) : cantorFunctionAux c f n = 0 
   simp [cantorFunctionAux, h]
 
 theorem cantorFunctionAux_nonneg (h : 0 ≤ c) : 0 ≤ cantorFunctionAux c f n := by
-  cases h' : f n <;> simp [h']
-  apply pow_nonneg h
+  cases h' : f n
+  · simp [h']
+  · simpa [h'] using pow_nonneg h _
 
 theorem cantorFunctionAux_eq (h : f n = g n) :
     cantorFunctionAux c f n = cantorFunctionAux c g n := by simp [cantorFunctionAux, h]

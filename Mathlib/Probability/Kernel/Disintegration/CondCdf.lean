@@ -211,7 +211,7 @@ lemma integrable_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] (x : ℚ
 
 lemma isRatCondKernelCDFAux_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
     IsRatCondKernelCDFAux (fun p r ↦ (preCDF ρ r p.2).toReal)
-      (kernel.const Unit ρ) (kernel.const Unit ρ.fst) where
+      (Kernel.const Unit ρ) (Kernel.const Unit ρ.fst) where
   measurable := measurable_preCDF'.comp measurable_snd
   mono' a r r' hrr' := by
     filter_upwards [monotone_preCDF ρ, preCDF_le_one ρ] with a h1 h2
@@ -220,30 +220,30 @@ lemma isRatCondKernelCDFAux_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure �
     exact h1 hrr'
   nonneg' _ q := by simp
   le_one' a q := by
-    simp only [kernel.const_apply, forall_const]
+    simp only [Kernel.const_apply, forall_const]
     filter_upwards [preCDF_le_one ρ] with a ha
     refine ENNReal.toReal_le_of_le_ofReal zero_le_one ?_
     simp [ha]
   tendsto_integral_of_antitone a s _ hs_tendsto := by
-    simp_rw [kernel.const_apply, integral_preCDF_fst ρ]
+    simp_rw [Kernel.const_apply, integral_preCDF_fst ρ]
     have h := ρ.tendsto_IicSnd_atBot MeasurableSet.univ
     rw [← ENNReal.zero_toReal]
     have h0 : Tendsto ENNReal.toReal (𝓝 0) (𝓝 0) :=
       ENNReal.continuousAt_toReal ENNReal.zero_ne_top
     exact h0.comp (h.comp hs_tendsto)
   tendsto_integral_of_monotone a s _ hs_tendsto := by
-    simp_rw [kernel.const_apply, integral_preCDF_fst ρ]
+    simp_rw [Kernel.const_apply, integral_preCDF_fst ρ]
     have h := ρ.tendsto_IicSnd_atTop MeasurableSet.univ
     have h0 : Tendsto ENNReal.toReal (𝓝 (ρ.fst univ)) (𝓝 (ρ.fst univ).toReal) :=
       ENNReal.continuousAt_toReal (measure_ne_top _ _)
     exact h0.comp (h.comp hs_tendsto)
   integrable _ q := integrable_preCDF ρ q
-  setIntegral a s hs q := by rw [kernel.const_apply, kernel.const_apply,
+  setIntegral a s hs q := by rw [Kernel.const_apply, Kernel.const_apply,
     setIntegral_preCDF_fst _ _ hs, Measure.IicSnd_apply _ _ hs]
 
 lemma isRatCondKernelCDF_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
     IsRatCondKernelCDF (fun p r ↦ (preCDF ρ r p.2).toReal)
-      (kernel.const Unit ρ) (kernel.const Unit ρ.fst) :=
+      (Kernel.const Unit ρ) (Kernel.const Unit ρ.fst) :=
   (isRatCondKernelCDFAux_preCDF ρ).isRatCondKernelCDF
 
 /-! ### Conditional cdf -/
@@ -259,8 +259,8 @@ lemma condCDF_eq_stieltjesOfMeasurableRat_unit_prod (ρ : Measure (α × ℝ)) (
   rw [condCDF, ← stieltjesOfMeasurableRat_unit_prod]
 
 lemma isCondKernelCDF_condCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure ρ] :
-    IsCondKernelCDF (fun p : Unit × α ↦ condCDF ρ p.2) (kernel.const Unit ρ)
-      (kernel.const Unit ρ.fst) := by
+    IsCondKernelCDF (fun p : Unit × α ↦ condCDF ρ p.2) (Kernel.const Unit ρ)
+      (Kernel.const Unit ρ.fst) := by
   simp_rw [condCDF_eq_stieltjesOfMeasurableRat_unit_prod ρ]
   exact isCondKernelCDF_stieltjesOfMeasurableRat (isRatCondKernelCDF_preCDF ρ)
 

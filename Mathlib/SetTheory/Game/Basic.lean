@@ -240,7 +240,7 @@ instance : Mul PGame.{u} :=
     induction' x with xl xr _ _ IHxl IHxr generalizing y
     induction' y with yl yr yL yR IHyl IHyr
     have y := mk yl yr yL yR
-    refine ⟨Sum (xl × yl) (xr × yr), Sum (xl × yr) (xr × yl), ?_, ?_⟩ <;> rintro (⟨i, j⟩ | ⟨i, j⟩)
+    refine ⟨(xl × yl) ⊕ (xr × yr), (xl × yr) ⊕ (xr × yl), ?_, ?_⟩ <;> rintro (⟨i, j⟩ | ⟨i, j⟩)
     · exact IHxl i y + IHyl j - IHxl i (yL j)
     · exact IHxr i y + IHyr j - IHxr i (yR j)
     · exact IHxl i y + IHyr j - IHxl i (yR j)
@@ -248,12 +248,12 @@ instance : Mul PGame.{u} :=
 
 theorem leftMoves_mul :
     ∀ x y : PGame.{u},
-      (x * y).LeftMoves = Sum (x.LeftMoves × y.LeftMoves) (x.RightMoves × y.RightMoves)
+      (x * y).LeftMoves = (x.LeftMoves × y.LeftMoves ⊕ x.RightMoves × y.RightMoves)
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩ => rfl
 
 theorem rightMoves_mul :
     ∀ x y : PGame.{u},
-      (x * y).RightMoves = Sum (x.LeftMoves × y.RightMoves) (x.RightMoves × y.LeftMoves)
+      (x * y).RightMoves = (x.LeftMoves × y.RightMoves ⊕ x.RightMoves × y.LeftMoves)
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩ => rfl
 
 /-- Turns two left or right moves for `x` and `y` into a left move for `x * y` and vice versa.
@@ -261,7 +261,7 @@ theorem rightMoves_mul :
 Even though these types are the same (not definitionally so), this is the preferred way to convert
 between them. -/
 def toLeftMovesMul {x y : PGame} :
-    Sum (x.LeftMoves × y.LeftMoves) (x.RightMoves × y.RightMoves) ≃ (x * y).LeftMoves :=
+    (x.LeftMoves × y.LeftMoves) ⊕ (x.RightMoves × y.RightMoves) ≃ (x * y).LeftMoves :=
   Equiv.cast (leftMoves_mul x y).symm
 
 /-- Turns a left and a right move for `x` and `y` into a right move for `x * y` and vice versa.
@@ -269,7 +269,7 @@ def toLeftMovesMul {x y : PGame} :
 Even though these types are the same (not definitionally so), this is the preferred way to convert
 between them. -/
 def toRightMovesMul {x y : PGame} :
-    Sum (x.LeftMoves × y.RightMoves) (x.RightMoves × y.LeftMoves) ≃ (x * y).RightMoves :=
+    (x.LeftMoves × y.RightMoves) ⊕ (x.RightMoves × y.LeftMoves) ≃ (x * y).RightMoves :=
   Equiv.cast (rightMoves_mul x y).symm
 
 @[simp]
@@ -782,7 +782,7 @@ lemma mulOption_neg_neg {x} (y) {i j} :
     mulOption x y i j = mulOption x (-(-y)) i (toLeftMovesNeg <| toRightMovesNeg j) := by
   dsimp only [mulOption]
   congr 2
-  rw [neg_neg]
+  · rw [neg_neg]
   iterate 2 rw [moveLeft_neg, moveRight_neg, neg_neg]
 
 /-- The left options of `x * y` agree with that of `y * x` up to equivalence. -/
@@ -806,7 +806,7 @@ lemma leftMoves_mul_iff {x y : PGame} (P : Game → Prop) :
     convert h (Sum.inr (i, j)) using 1
   on_goal 2 =>
     rintro (⟨i, j⟩ | ⟨i, j⟩)
-    exact h.1 i j
+    · exact h.1 i j
     convert h.2 i j using 1
   all_goals
     dsimp only [mk_mul_moveLeft_inr, quot_sub, quot_add, neg_def, mulOption, moveLeft_mk]
@@ -824,11 +824,11 @@ lemma rightMoves_mul_iff {x y : PGame} (P : Game → Prop) :
   constructor <;> intro h
   on_goal 1 =>
     constructor <;> intros i j
-    convert h (Sum.inl (i, j))
+    on_goal 1 => convert h (Sum.inl (i, j))
   on_goal 2 => convert h (Sum.inr (i, j))
   on_goal 3 =>
     rintro (⟨i, j⟩ | ⟨i, j⟩)
-    convert h.1 i j using 1
+    on_goal 1 => convert h.1 i j using 1
     on_goal 2 => convert h.2 i j using 1
   all_goals
     dsimp [mulOption]

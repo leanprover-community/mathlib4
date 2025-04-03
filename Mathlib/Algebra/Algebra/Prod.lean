@@ -94,4 +94,10 @@ def prodEquiv : (A →ₐ[R] B) × (A →ₐ[R] C) ≃ (A →ₐ[R] B × C) wher
   left_inv f := by ext <;> rfl
   right_inv f := by ext <;> rfl
 
+/-- `Prod.map` of two algebra homomorphisms. -/
+def prodMap {D : Type*} [Semiring D] [Algebra R D] (f : A →ₐ[R] B) (g : C →ₐ[R] D) :
+    A × C →ₐ[R] B × D :=
+  { toRingHom := f.toRingHom.prodMap g.toRingHom
+    commutes' := fun r => by simp [commutes] }
+
 end AlgHom

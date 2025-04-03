@@ -21,8 +21,15 @@ jobs:
         with:
           python-version: 3.8
 
+      - name: install elan
+        run: |
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
       - name: lint
-        continue-on-error: true
+        continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
           ./scripts/lint-style.sh --fix
 
@@ -37,7 +44,7 @@ jobs:
           sudo apt-get install -y bibtool
 
       - name: lint references.bib
-        continue-on-error: true
+        continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: |
           ./scripts/lint-bib.sh
 
@@ -65,6 +72,7 @@ jobs:
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
+        continue-on-error: true  # allows the following `reviewdog` step to add GitHub suggestions
         run: lake exe mk_all
 
       - name: suggester / import list

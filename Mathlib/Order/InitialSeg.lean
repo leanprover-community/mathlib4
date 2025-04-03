@@ -158,7 +158,7 @@ theorem eq_or_principal [IsWellOrder β s] (f : r ≼i s) :
         h
           ⟨x, fun y =>
             ⟨IH _, fun ⟨a, e⟩ => by
-              rw [← e];
+              rw [← e]
               exact (trichotomous _ _).resolve_right
                 (not_or_of_not (hn a) fun hl => not_exists.2 hn (f.init hl))⟩⟩
 
@@ -423,7 +423,7 @@ theorem wellFounded_iff_principalSeg.{u} {β : Type u} {s : β → β → Prop} 
 /-- To an initial segment taking values in a well order, one can associate either a principal
 segment (if the range is not everything, hence one can take as top the minimum of the complement
 of the range) or an order isomorphism (if the range is everything). -/
-noncomputable def InitialSeg.ltOrEq [IsWellOrder β s] (f : r ≼i s) : Sum (r ≺i s) (r ≃r s) := by
+noncomputable def InitialSeg.ltOrEq [IsWellOrder β s] (f : r ≼i s) : (r ≺i s) ⊕ (r ≃r s) := by
   by_cases h : Surjective f
   · exact Sum.inr (RelIso.ofSurjective f h)
   · have h' : _ := (InitialSeg.eq_or_principal f).resolve_left h

@@ -47,6 +47,12 @@ open Function OrderDual Set
 
 variable {α β β₂ γ : Type*} {ι ι' : Sort*} {κ : ι → Sort*} {κ' : ι' → Sort*}
 
+@[simp] lemma iSup_ulift {ι : Type*} [SupSet α] (f : ULift ι → α) :
+    ⨆ i : ULift ι, f i = ⨆ i, f (.up i) := by simp [iSup]; congr with x; simp
+
+@[simp] lemma iInf_ulift {ι : Type*} [InfSet α] (f : ULift ι → α) :
+    ⨅ i : ULift ι, f i = ⨅ i, f (.up i) := by simp [iInf]; congr with x; simp
+
 instance OrderDual.supSet (α) [InfSet α] : SupSet αᵒᵈ :=
   ⟨(sInf : Set α → α)⟩
 
@@ -424,7 +430,7 @@ theorem sSup_eq_bot : sSup s = ⊥ ↔ ∀ a ∈ s, a = ⊥ :=
 theorem sInf_eq_top : sInf s = ⊤ ↔ ∀ a ∈ s, a = ⊤ :=
   @sSup_eq_bot αᵒᵈ _ _
 
-lemma sSup_eq_bot' [CompleteLattice α] {s : Set α} : sSup s = ⊥ ↔ s = ∅ ∨ s = {⊥} := by
+lemma sSup_eq_bot' {s : Set α} : sSup s = ⊥ ↔ s = ∅ ∨ s = {⊥} := by
   rw [sSup_eq_bot, ← subset_singleton_iff_eq, subset_singleton_iff]
 
 theorem eq_singleton_bot_of_sSup_eq_bot_of_nonempty {s : Set α} (h_sup : sSup s = ⊥)
@@ -837,6 +843,12 @@ theorem iSup_const [Nonempty ι] : ⨆ _ : ι, a = a := by rw [iSup, range_const
 
 theorem iInf_const [Nonempty ι] : ⨅ _ : ι, a = a :=
   @iSup_const αᵒᵈ _ _ a _
+
+lemma iSup_unique [Unique ι] (f : ι → α) : ⨆ i, f i = f default := by
+  simp only [congr_arg f (Unique.eq_default _), iSup_const]
+
+lemma iInf_unique [Unique ι] (f : ι → α) : ⨅ i, f i = f default := by
+  simp only [congr_arg f (Unique.eq_default _), iInf_const]
 
 @[simp]
 theorem iSup_bot : (⨆ _ : ι, ⊥ : α) = ⊥ :=
@@ -1289,10 +1301,10 @@ theorem biInf_prod {f : β × γ → α} {s : Set β} {t : Set γ} :
     ⨅ x ∈ s ×ˢ t, f x = ⨅ (a ∈ s) (b ∈ t), f (a, b) :=
   @biSup_prod αᵒᵈ _ _ _ _ _ _
 
-theorem iSup_sum {f : Sum β γ → α} : ⨆ x, f x = (⨆ i, f (Sum.inl i)) ⊔ ⨆ j, f (Sum.inr j) :=
+theorem iSup_sum {f : β ⊕ γ → α} : ⨆ x, f x = (⨆ i, f (Sum.inl i)) ⊔ ⨆ j, f (Sum.inr j) :=
   eq_of_forall_ge_iff fun c => by simp only [sup_le_iff, iSup_le_iff, Sum.forall]
 
-theorem iInf_sum {f : Sum β γ → α} : ⨅ x, f x = (⨅ i, f (Sum.inl i)) ⊓ ⨅ j, f (Sum.inr j) :=
+theorem iInf_sum {f : β ⊕ γ → α} : ⨅ x, f x = (⨅ i, f (Sum.inl i)) ⊓ ⨅ j, f (Sum.inr j) :=
   @iSup_sum αᵒᵈ _ _ _ _
 
 theorem iSup_option (f : Option β → α) : ⨆ o, f o = f none ⊔ ⨆ b, f (Option.some b) :=
@@ -1543,8 +1555,8 @@ theorem snd_sInf [InfSet α] [InfSet β] (s : Set (α × β)) : (sInf s).snd = s
   rfl
 
 theorem swap_sInf [InfSet α] [InfSet β] (s : Set (α × β)) : (sInf s).swap = sInf (Prod.swap '' s) :=
-  ext (congr_arg sInf <| image_comp Prod.fst swap s : _)
-    (congr_arg sInf <| image_comp Prod.snd swap s : _)
+  Prod.ext (congr_arg sInf <| image_comp Prod.fst swap s)
+    (congr_arg sInf <| image_comp Prod.snd swap s)
 
 theorem fst_sSup [SupSet α] [SupSet β] (s : Set (α × β)) : (sSup s).fst = sSup (Prod.fst '' s) :=
   rfl
@@ -1553,8 +1565,8 @@ theorem snd_sSup [SupSet α] [SupSet β] (s : Set (α × β)) : (sSup s).snd = s
   rfl
 
 theorem swap_sSup [SupSet α] [SupSet β] (s : Set (α × β)) : (sSup s).swap = sSup (Prod.swap '' s) :=
-  ext (congr_arg sSup <| image_comp Prod.fst swap s : _)
-    (congr_arg sSup <| image_comp Prod.snd swap s : _)
+  Prod.ext (congr_arg sSup <| image_comp Prod.fst swap s)
+    (congr_arg sSup <| image_comp Prod.snd swap s)
 
 theorem fst_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).fst = ⨅ i, (f i).fst :=
   congr_arg sInf (range_comp _ _).symm
@@ -1692,11 +1704,18 @@ end ULift
 
 namespace PUnit
 
-instance instCompleteLinearOrder : CompleteLinearOrder PUnit := by
-  refine'
-    { instBooleanAlgebra, instLinearOrder with
-      sSup := fun _ => unit
-      sInf := fun _ => unit
-      .. } <;> intros <;> trivial
+instance instCompleteLinearOrder : CompleteLinearOrder PUnit where
+  __ := instBooleanAlgebra
+  __ := instLinearOrder
+  sSup := fun _ => unit
+  sInf := fun _ => unit
+  le_sSup := by intros; trivial
+  sSup_le := by intros; trivial
+  sInf_le := by intros; trivial
+  le_sInf := by intros; trivial
+  le_himp_iff := by intros; trivial
+  himp_bot := by intros; trivial
+  sdiff_le_iff := by intros; trivial
+  top_sdiff := by intros; trivial
 
 end PUnit

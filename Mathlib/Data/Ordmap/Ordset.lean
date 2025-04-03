@@ -1375,7 +1375,7 @@ theorem Valid'.map_aux {β} [Preorder β] {f : α → β} (f_strict_mono : Stric
     Valid' (Option.map f a₁) (map f t) (Option.map f a₂) ∧ (map f t).size = t.size := by
   induction t generalizing a₁ a₂ with
   | nil =>
-    simp [map]; apply valid'_nil
+    simp only [map, size_nil, and_true]; apply valid'_nil
     cases a₁; · trivial
     cases a₂; · trivial
     simp only [Bounded]
@@ -1408,7 +1408,7 @@ theorem Valid'.erase_aux [@DecidableRel α (· ≤ ·)] (x : α) {t a₁ a₂} (
     Valid' a₁ (erase x t) a₂ ∧ Raised (erase x t).size t.size := by
   induction t generalizing a₁ a₂ with
   | nil =>
-    simp [erase, Raised]; exact h
+    simpa [erase, Raised]
   | node _ t_l t_x t_r t_ih_l t_ih_r =>
     simp only [erase, size_node]
     have t_ih_l' := t_ih_l h.left

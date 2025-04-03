@@ -486,7 +486,7 @@ variable {p a b : ℕ} [hp : Fact p.Prime]
 
 /-- A rewrite lemma for `padicValNat p (a * b)` with conditions `a ≠ 0`, `b ≠ 0`. -/
 protected theorem mul : a ≠ 0 → b ≠ 0 → padicValNat p (a * b) = padicValNat p a + padicValNat p b :=
-  mod_cast @padicValRat.mul p _ a b
+  mod_cast padicValRat.mul (p := p) (q := a) (r := b)
 
 protected theorem div_of_dvd (h : b ∣ a) :
     padicValNat p (a / b) = padicValNat p a - padicValNat p b := by

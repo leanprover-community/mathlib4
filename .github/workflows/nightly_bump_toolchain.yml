@@ -1,8 +1,9 @@
 name: Bump lean-toolchain on nightly-testing
 
 on:
+  workflow_dispatch:
   schedule:
-    - cron: '0 10 * * *'  # 11AM CET/2AM PT, 3 hours after lean4 starts building the nightly.
+    - cron: '0 10/3 * * *'  # Run every three hours, starting at 11AM CET/2AM PT.
 
 jobs:
   update-toolchain:
@@ -30,5 +31,6 @@ jobs:
         git config user.name "leanprover-community-mathlib4-bot"
         git config user.email "leanprover-community-mathlib4-bot@users.noreply.github.com"
         git add lean-toolchain
-        git commit -m "chore: bump to ${RELEASE_TAG}"
+        # Don't fail if there's nothing to commit
+        git commit -m "chore: bump to ${RELEASE_TAG}" || true
         git push origin nightly-testing

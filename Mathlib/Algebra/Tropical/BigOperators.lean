@@ -99,14 +99,12 @@ theorem Multiset.untrop_sum [LinearOrder R] [OrderTop R] (s : Multiset (Tropical
     untrop s.sum = Multiset.inf (s.map untrop) := by
   induction' s using Multiset.induction with s x IH
   · simp
-  · simp only [sum_cons, untrop_add, untrop_le_iff, map_cons, inf_cons, ← IH]
-    rfl
+  · simp only [sum_cons, untrop_add, untrop_le_iff, map_cons, inf_cons, ← IH, inf_eq_min]
 
 theorem Finset.untrop_sum' [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → Tropical R) :
     untrop (∑ i ∈ s, f i) = s.inf (untrop ∘ f) := by
   convert Multiset.untrop_sum (s.val.map f)
-  simp only [Multiset.map_map, Function.comp_apply]
-  rfl
+  simp only [Multiset.map_map, Function.comp_apply, inf_def]
 
 theorem untrop_sum_eq_sInf_image [ConditionallyCompleteLinearOrder R] (s : Finset S)
     (f : S → Tropical (WithTop R)) : untrop (∑ i ∈ s, f i) = sInf (untrop ∘ f '' s) := by
@@ -116,8 +114,7 @@ theorem untrop_sum_eq_sInf_image [ConditionallyCompleteLinearOrder R] (s : Finse
 
 theorem untrop_sum [ConditionallyCompleteLinearOrder R] [Fintype S] (f : S → Tropical (WithTop R)) :
     untrop (∑ i : S, f i) = ⨅ i : S, untrop (f i) := by
-  rw [iInf,← Set.image_univ,← coe_univ, untrop_sum_eq_sInf_image]
-  rfl
+  rw [iInf, ← Set.image_univ, ← coe_univ, untrop_sum_eq_sInf_image, Function.comp_def]
 
 /-- Note we cannot use `i ∈ s` instead of `i : s` here
 as it is simply not true on conditionally complete lattices! -/

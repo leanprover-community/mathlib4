@@ -3,8 +3,10 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Algebra.BigOperators.Ring.Nat
+import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
+import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Counting walks of a given length
@@ -169,6 +171,19 @@ instance : Decidable G.Connected := by
 instance instDecidableMemSupp (c : G.ConnectedComponent) (v : V) : Decidable (v ∈ c.supp) :=
   c.recOn (fun w ↦ decidable_of_iff (G.Reachable v w) $ by simp)
     (fun _ _ _ _ ↦ Subsingleton.elim _ _)
+
+lemma odd_card_iff_odd_components : Odd (Nat.card V) ↔
+    Odd (Nat.card ({(c : ConnectedComponent G) | Odd (Nat.card c.supp)})) := by
+  rw [Nat.card_eq_fintype_card]
+  simp only [← (set_fintype_card_eq_univ_iff _).mpr G.iUnion_connectedComponentSupp,
+    ConnectedComponent.mem_supp_iff, Fintype.card_subtype_compl,
+    ← Set.toFinset_card, Set.toFinset_iUnion ConnectedComponent.supp]
+  rw [Finset.card_biUnion
+    (fun x _ y _ hxy ↦ Set.disjoint_toFinset.mpr (pairwise_disjoint_supp_connectedComponent _ hxy))]
+  simp_rw [Set.toFinset_card, ← Nat.card_eq_fintype_card]
+  rw [Nat.card_eq_fintype_card, Fintype.card_ofFinset]
+  exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ Nat.card x.supp))
+
 end Finite
 
 end WalkCounting

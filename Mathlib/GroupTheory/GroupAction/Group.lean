@@ -3,11 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Aut
 import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.Algebra.Group.Aut
 import Mathlib.Algebra.Group.Invertible.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.GroupTheory.GroupAction.Units
 
 /-!
 # Group actions applied to various types of group

@@ -70,12 +70,13 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
         apply measure_symmDiff_le
       _ ≤ ε / 3 + ε / 3 + ε / 3 := by
         gcongr
-        · rwa [← preimage_symmDiff, hfa.measure_preimage (hs.symmDiff hmU), symmDiff_comm]
-        · rwa [← preimage_symmDiff, hg.measure_preimage (hmU.symmDiff hs)]
+        · rwa [← preimage_symmDiff, hfa.measure_preimage (hs.symmDiff hmU).nullMeasurableSet,
+            symmDiff_comm]
+        · rwa [← preimage_symmDiff, hg.measure_preimage (hmU.symmDiff hs).nullMeasurableSet]
       _ = ε := by simp
   -- Take a compact closed subset `K ⊆ g ⁻¹' s` of almost full measure,
   -- `μ (g ⁻¹' s \ K) < ε / 2`.
-  have hνs' : μ (g ⁻¹' s) ≠ ∞ := by rwa [hg.measure_preimage hs]
+  have hνs' : μ (g ⁻¹' s) ≠ ∞ := by rwa [hg.measure_preimage hs.nullMeasurableSet]
   obtain ⟨K, hKg, hKco, hKcl, hKμ⟩ :
       ∃ K, MapsTo g K s ∧ IsCompact K ∧ IsClosed K ∧ μ (g ⁻¹' s \ K) < ε / 2 :=
     (hs.preimage hg.measurable).exists_isCompact_isClosed_diff_lt hνs' <| by simp [hε.ne']
@@ -90,8 +91,9 @@ theorem tendsto_measure_symmDiff_preimage_nhds_zero
   rw [symmDiff_of_ge ha.subset_preimage, symmDiff_of_le hKg.subset_preimage]
   gcongr
   have hK' : μ K ≠ ∞ := ne_top_of_le_ne_top hνs' <| measure_mono hKg.subset_preimage
-  rw [measure_diff_le_iff_le_add hKm ha.subset_preimage hK', hfa.measure_preimage hs,
-    ← hg.measure_preimage hs, ← measure_diff_le_iff_le_add hKm hKg.subset_preimage hK']
+  rw [measure_diff_le_iff_le_add hKm ha.subset_preimage hK',
+    hfa.measure_preimage hs.nullMeasurableSet, ← hg.measure_preimage hs.nullMeasurableSet,
+    ← measure_diff_le_iff_le_add hKm hKg.subset_preimage hK']
   exact hKμ.le
 
 namespace Lp

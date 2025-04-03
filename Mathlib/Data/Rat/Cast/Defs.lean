@@ -10,7 +10,6 @@ import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Rat.Lemmas
 
-
 /-!
 # Casts for Rational Numbers
 

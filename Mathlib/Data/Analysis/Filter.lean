@@ -276,7 +276,6 @@ protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : 
           let ⟨f', h'⟩ := Classical.axiom_of_choice fun i : F s ↦ (G i).mem_sets.1 (f i (h i.2))
           ⟨s, fun i h ↦ f' ⟨i, h⟩, fun _ H _ m ↦ h' ⟨_, H⟩ m⟩⟩⟩
 
--- Porting note: `iSup` had a long dubious translation message. I added `ₓ` to be safe.
 /-- Construct a realizer for indexed supremum -/
 protected def iSup {f : α → Filter β} (F : ∀ i, (f i).Realizer) : (⨆ i, f i).Realizer :=
   let F' : (⨆ i, f i).Realizer :=

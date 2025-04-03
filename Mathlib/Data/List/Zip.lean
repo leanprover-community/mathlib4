@@ -197,7 +197,7 @@ theorem reverse_revzip (l : List α) : reverse l.revzip = revzip l.reverse := by
 
 theorem revzip_swap (l : List α) : (revzip l).map Prod.swap = revzip l.reverse := by simp [revzip]
 
-theorem getElem?_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
+theorem getElem?_zipWith' (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
     (zipWith f l₁ l₂)[i]? = (l₁[i]?.map f).bind fun g => l₂[i]?.map g := by
   induction' l₁ with head tail generalizing l₂ i
   · rw [zipWith] <;> simp
@@ -205,26 +205,34 @@ theorem getElem?_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List �
     · simp
     · cases i <;> simp_all
 
-theorem get?_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
-    (zipWith f l₁ l₂).get? i = ((l₁.get? i).map f).bind fun g => (l₂.get? i).map g := by
-  simp [getElem?_zip_with]
+@[deprecated (since := "2024-07-29")] alias getElem?_zip_with := getElem?_zipWith'
 
-theorem getElem?_zip_with_eq_some (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
+theorem get?_zipWith' (f : α → β → γ) (l₁ : List α) (l₂ : List β) (i : ℕ) :
+    (zipWith f l₁ l₂).get? i = ((l₁.get? i).map f).bind fun g => (l₂.get? i).map g := by
+  simp [getElem?_zipWith']
+
+@[deprecated (since := "2024-07-29")] alias get?_zip_with := get?_zipWith'
+
+theorem getElem?_zipWith_eq_some (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
     (zipWith f l₁ l₂)[i]? = some z ↔
       ∃ x y, l₁[i]? = some x ∧ l₂[i]? = some y ∧ f x y = z := by
   induction l₁ generalizing l₂ i
   · simp
   · cases l₂ <;> cases i <;> simp_all
 
-theorem get?_zip_with_eq_some (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
+@[deprecated (since := "2024-07-29")] alias getElem?_zip_with_eq_some := getElem?_zipWith_eq_some
+
+theorem get?_zipWith_eq_some (f : α → β → γ) (l₁ : List α) (l₂ : List β) (z : γ) (i : ℕ) :
     (zipWith f l₁ l₂).get? i = some z ↔
       ∃ x y, l₁.get? i = some x ∧ l₂.get? i = some y ∧ f x y = z := by
-  simp [getElem?_zip_with_eq_some]
+  simp [getElem?_zipWith_eq_some]
+
+@[deprecated (since := "2024-07-29")] alias get?_zip_with_eq_some := get?_zipWith_eq_some
 
 theorem getElem?_zip_eq_some (l₁ : List α) (l₂ : List β) (z : α × β) (i : ℕ) :
     (zip l₁ l₂)[i]? = some z ↔ l₁[i]? = some z.1 ∧ l₂[i]? = some z.2 := by
   cases z
-  rw [zip, getElem?_zip_with_eq_some]; constructor
+  rw [zip, getElem?_zipWith_eq_some]; constructor
   · rintro ⟨x, y, h₀, h₁, h₂⟩
     simpa [h₀, h₁] using h₂
   · rintro ⟨h₀, h₁⟩
@@ -240,7 +248,7 @@ theorem getElem_zipWith {f : α → β → γ} {l : List α} {l' : List β}
     (zipWith f l l')[i] =
       f (l[i]'(lt_length_left_of_zipWith h))
         (l'[i]'(lt_length_right_of_zipWith h)) := by
-  rw [← Option.some_inj, ← getElem?_eq_getElem, getElem?_zip_with_eq_some]
+  rw [← Option.some_inj, ← getElem?_eq_getElem, getElem?_zipWith_eq_some]
   exact
     ⟨l[i]'(lt_length_left_of_zipWith h), l'[i]'(lt_length_right_of_zipWith h),
       by rw [getElem?_eq_getElem], by rw [getElem?_eq_getElem]; exact ⟨rfl, rfl⟩⟩
@@ -264,7 +272,7 @@ theorem nthLe_zipWith {f : α → β → γ} {l : List α} {l' : List β} {i : �
 theorem getElem_zip {l : List α} {l' : List β} {i : Nat} {h : i < (zip l l').length} :
     (zip l l')[i] =
       (l[i]'(lt_length_left_of_zip h), l'[i]'(lt_length_right_of_zip h)) :=
-  getElem_zipWith
+  getElem_zipWith (h := h)
 
 @[deprecated getElem_zip (since := "2024-06-12")]
 theorem get_zip {l : List α} {l' : List β} {i : Fin (zip l l').length} :
@@ -306,7 +314,7 @@ theorem map_uncurry_zip_eq_zipWith (f : α → β → γ) (l : List α) (l' : Li
 
 section Distrib
 
-/-! ### Operations that can be applied before or after a `zip_with` -/
+/-! ### Operations that can be applied before or after a `zipWith` -/
 
 
 variable (f : α → β → γ) (l : List α) (l' : List β) (n : ℕ)

@@ -172,7 +172,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
 
 lemma of_mono_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥ m, |f n| ≤ a)
     (hnm : ∀ n ≥ m, f n ≤ f n.succ) : IsCauSeq abs f :=
-  (of_decreasing_bounded _ (by simpa using ham) $ by simpa using hnm).of_neg
+  (of_decreasing_bounded (-f) (a := a) (m := m) (by simpa using ham) $ by simpa using hnm).of_neg
 
 lemma geo_series [Nontrivial β] (x : β) (hx1 : abv x < 1) :
     IsCauSeq abv fun n ↦ ∑ m ∈ range n, x ^ m := by

@@ -481,14 +481,13 @@ abbrev δlast (F : ComposableArrows C (n + 1)) := δlastFunctor.obj F
 section
 
 variable {F G : ComposableArrows C (n + 1)}
-  (α : F.obj' 0 ⟶ G.obj' 0)
-  (β : F.δ₀ ⟶ G.δ₀)
-  (w : F.map' 0 1 ≫ app' β 0 = α ≫ G.map' 0 1)
+
 
 /-- Inductive construction of morphisms in `ComposableArrows C (n + 1)`: in order to construct
 a morphism `F ⟶ G`, it suffices to provide `α : F.obj' 0 ⟶ G.obj' 0` and `β : F.δ₀ ⟶ G.δ₀`
 such that `F.map' 0 1 ≫ app' β 0 = α ≫ G.map' 0 1`. -/
-def homMkSucc : F ⟶ G :=
+def homMkSucc (α : F.obj' 0 ⟶ G.obj' 0) (β : F.δ₀ ⟶ G.δ₀)
+    (w : F.map' 0 1 ≫ app' β 0 = α ≫ G.map' 0 1) : F ⟶ G :=
   homMk
     (fun i => match i with
       | ⟨0, _⟩ => α
@@ -497,6 +496,9 @@ def homMkSucc : F ⟶ G :=
       obtain _ | i := i
       · exact w
       · exact naturality' β i (i + 1))
+
+variable (α : F.obj' 0 ⟶ G.obj' 0) (β : F.δ₀ ⟶ G.δ₀)
+  (w : F.map' 0 1 ≫ app' β 0 = α ≫ G.map' 0 1)
 
 @[simp]
 lemma homMkSucc_app_zero : (homMkSucc α β w).app 0 = α := rfl

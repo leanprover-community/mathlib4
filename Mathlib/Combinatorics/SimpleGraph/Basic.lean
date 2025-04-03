@@ -63,7 +63,7 @@ Use `aesop_graph?` to pass along a `Try this` suggestion when using `aesop_graph
 -/
 macro (name := aesop_graph?) "aesop_graph?" c:Aesop.tactic_clause* : tactic =>
   `(tactic|
-    aesop $c*
+    aesop? $c*
       (config := { introsTransparency? := some .default, terminal := true })
       (rule_sets := [$(Lean.mkIdent `SimpleGraph):ident]))
 
@@ -150,7 +150,7 @@ def emptyGraph (V : Type u) : SimpleGraph V where Adj _ _ := False
 if and only if they are not from the same side.
 Any bipartite graph may be regarded as a subgraph of one of these. -/
 @[simps]
-def completeBipartiteGraph (V W : Type*) : SimpleGraph (Sum V W) where
+def completeBipartiteGraph (V W : Type*) : SimpleGraph (V ⊕ W) where
   Adj v w := v.isLeft ∧ w.isRight ∨ v.isRight ∧ w.isLeft
   symm v w := by cases v <;> cases w <;> simp
   loopless v := by cases v <;> simp

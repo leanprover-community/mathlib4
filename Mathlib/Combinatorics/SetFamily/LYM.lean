@@ -99,8 +99,7 @@ theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
     rw [tsub_add_eq_add_tsub hr', add_tsub_add_eq_tsub_right] at h𝒜
     apply le_of_mul_le_mul_right _ (pos_iff_ne_zero.2 hr)
     convert Nat.mul_le_mul_right ((Fintype.card α).choose r) h𝒜 using 1
-    · simp [mul_assoc, Nat.choose_succ_right_eq]
-      exact Or.inl (mul_comm _ _)
+    · simpa [mul_assoc, Nat.choose_succ_right_eq] using Or.inl (mul_comm _ _)
     · simp only [mul_assoc, choose_succ_right_eq, mul_eq_mul_left_iff]
       exact Or.inl (mul_comm _ _)
   · exact Nat.choose_pos hr'

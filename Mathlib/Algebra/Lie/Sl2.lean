@@ -154,8 +154,8 @@ lemma pow_toEnd_f_ne_zero_of_eq_nat
   · next i IH =>
     have : ((i + 1) * (n - i) : ℤ) • (toEnd R L M f ^ i) m = 0 := by
       have := congr_arg (⁅e, ·⁆) H
-      simpa [zsmul_eq_smul_cast R, P.lie_e_pow_succ_toEnd_f, hn] using this
-    rw [zsmul_eq_smul_cast R, smul_eq_zero, Int.cast_eq_zero, mul_eq_zero, sub_eq_zero,
+      simpa [← Int.cast_smul_eq_nsmul R, P.lie_e_pow_succ_toEnd_f, hn] using this
+    rw [← Int.cast_smul_eq_nsmul R, smul_eq_zero, Int.cast_eq_zero, mul_eq_zero, sub_eq_zero,
       Nat.cast_inj, ← @Nat.cast_one ℤ, ← Nat.cast_add, Nat.cast_eq_zero] at this
     simp only [add_eq_zero, one_ne_zero, and_false, false_or] at this
     exact (hi.trans_eq (this.resolve_right (IH (i.le_succ.trans hi)))).not_lt i.lt_succ_self

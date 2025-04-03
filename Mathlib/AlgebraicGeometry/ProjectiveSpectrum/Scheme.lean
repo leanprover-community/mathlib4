@@ -598,6 +598,7 @@ lemma awayToSection_germ (f x) :
   ext z
   apply (Proj.stalkIso' 𝒜 x).eq_symm_apply.mpr
   apply Proj.stalkIso'_germ
+
 /--
 The ring map from `A⁰_ f` to the global sections of the structure sheaf of the projective spectrum
 of `A` restricted to the basic open set `D(f)`.
@@ -609,14 +610,13 @@ def awayToΓ (f) : CommRingCat.of (A⁰_ f) ⟶ LocallyRingedSpace.Γ.obj (op <|
     (homOfLE (Opens.openEmbedding_obj_top _).le).op
 
 lemma awayToΓ_ΓToStalk (f) (x) :
-    awayToΓ 𝒜 f ≫ LocallyRingedSpace.ΓToStalk (Proj| pbo f) x =
+    awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x =
       HomogeneousLocalization.mapId 𝒜 (Submonoid.powers_le.mpr x.2) ≫
       (Proj.stalkIso' 𝒜 x.1).toCommRingCatIso.inv ≫
       ((Proj.toLocallyRingedSpace 𝒜).restrictStalkIso (Opens.openEmbedding _) x).inv := by
-  rw [awayToΓ, Category.assoc, LocallyRingedSpace.ΓToStalk, ← Category.assoc _ (Iso.inv _),
-    Iso.eq_comp_inv, Category.assoc, Category.assoc]
-  simp only [LocallyRingedSpace.restrict, SheafedSpace.restrict]
-  rw [PresheafedSpace.restrictStalkIso_hom_eq_germ]
+  rw [awayToΓ, Category.assoc, ← Category.assoc _ (Iso.inv _),
+    Iso.eq_comp_inv, Category.assoc, Category.assoc, Presheaf.Γgerm]
+  rw [LocallyRingedSpace.restrictStalkIso_hom_eq_germ]
   simp only [Proj.toLocallyRingedSpace, Proj.toSheafedSpace]
   rw [Presheaf.germ_res, awayToSection_germ]
   rfl
@@ -634,7 +634,7 @@ open HomogeneousLocalization LocalRing
 lemma toSpec_base_apply_eq_comap {f} (x : Proj| pbo f) :
     (toSpec 𝒜 f).1.base x = PrimeSpectrum.comap (mapId 𝒜 (Submonoid.powers_le.mpr x.2))
       (closedPoint (AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)) := by
-  show PrimeSpectrum.comap (awayToΓ 𝒜 f ≫ LocallyRingedSpace.ΓToStalk (Proj| pbo f) x)
+  show PrimeSpectrum.comap (awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x)
         (LocalRing.closedPoint ((Proj| pbo f).presheaf.stalk x)) = _
   rw [awayToΓ_ΓToStalk, CommRingCat.comp_eq_ring_hom_comp, PrimeSpectrum.comap_comp]
   exact congr(PrimeSpectrum.comap _ $(@LocalRing.comap_closedPoint
@@ -665,7 +665,8 @@ lemma mk_mem_toSpec_base_apply {f} (x : Proj| pbo f)
 
 lemma toSpec_preimage_basicOpen {f}
     (t : NumDenSameDeg 𝒜 (.powers f)) :
-    toSpec 𝒜 f ⁻¹ᵁ (sbo (.mk t)) = Opens.comap ⟨_, continuous_subtype_val⟩ (pbo t.num.1) :=
+    (Opens.map (toSpec 𝒜 f).1.base).obj (sbo (.mk t)) =
+      Opens.comap ⟨_, continuous_subtype_val⟩ (pbo t.num.1) :=
   Opens.ext <| Opens.map_coe _ _ ▸ by
   convert (ProjIsoSpecTopComponent.ToSpec.preimage_basicOpen f t)
   exact funext fun _ => toSpec_base_apply_eq _ _
@@ -678,8 +679,8 @@ lemma toOpen_toSpec_val_c_app (f) (U) :
 
 @[reassoc]
 lemma toStalk_stalkMap_toSpec (f) (x) :
-    StructureSheaf.toStalk _ _ ≫ PresheafedSpace.stalkMap (toSpec 𝒜 f).1 x =
-      awayToΓ 𝒜 f ≫ (Proj| pbo f).ΓToStalk x := by
+    StructureSheaf.toStalk _ _ ≫ (toSpec 𝒜 f).stalkMap x =
+      awayToΓ 𝒜 f ≫ (Proj| pbo f).presheaf.Γgerm x := by
   rw [StructureSheaf.toStalk, Category.assoc]
   simp_rw [CommRingCat.coe_of]
   erw [PresheafedSpace.stalkMap_germ']
@@ -775,7 +776,7 @@ lemma toStalk_specStalkEquiv (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 
     (Q := AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)).toAlgHom.comp_algebraMap
 
 lemma stalkMap_toSpec (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
-    LocallyRingedSpace.stalkMap (toSpec 𝒜 f) x =
+    (toSpec 𝒜 f).stalkMap x =
       (specStalkEquiv 𝒜 f x f_deg hm).hom ≫ (Proj.stalkIso' 𝒜 x.1).toCommRingCatIso.inv ≫
       ((Proj.toLocallyRingedSpace 𝒜).restrictStalkIso (Opens.openEmbedding _) x).inv :=
   IsLocalization.ringHom_ext (R := A⁰_ f) ((toSpec 𝒜 f).1.base x).asIdeal.primeCompl
@@ -786,7 +787,7 @@ lemma stalkMap_toSpec (f) (x : pbo f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
 lemma isIso_toSpec (f) {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) :
     IsIso (toSpec 𝒜 f) := by
   haveI : IsIso (toSpec 𝒜 f).1.base := toSpec_base_isIso 𝒜 f_deg hm
-  haveI (x) : IsIso (LocallyRingedSpace.stalkMap (toSpec 𝒜 f) x) := by
+  haveI (x) : IsIso ((toSpec 𝒜 f).stalkMap x) := by
     rw [stalkMap_toSpec 𝒜 f x f_deg hm]; infer_instance
   haveI : LocallyRingedSpace.IsOpenImmersion (toSpec 𝒜 f) :=
     LocallyRingedSpace.IsOpenImmersion.of_stalk_iso (toSpec 𝒜 f)

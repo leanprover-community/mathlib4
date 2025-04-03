@@ -967,20 +967,17 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast, ZeroMemClass.coe_zero,
           AddSubmonoid.mk_add_mk, Set.inclusion_mk]
         apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· * ·))
-        on_goal 3 => rw [coe_iSup_of_directed dir]
         all_goals simp
       map_add' := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]
         apply Set.iUnionLift_binary (coe_iSup_of_directed dir) dir _ (fun _ => (· + ·))
-        on_goal 3 => rw [coe_iSup_of_directed dir]
         all_goals simp
       map_smul' := fun r => by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]
         apply Set.iUnionLift_unary (coe_iSup_of_directed dir) _ (fun _ x => r • x)
           (fun _ _ => rfl)
-        on_goal 2 => rw [coe_iSup_of_directed dir]
         all_goals simp
       map_star' := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalStarAlgHom.comp_apply, inclusion_mk, Eq.ndrec,
@@ -990,7 +987,6 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
           NonUnitalAlgHom.coe_mk]
         apply Set.iUnionLift_unary (coe_iSup_of_directed dir) _ (fun _ x => star x)
           (fun _ _ => rfl)
-        on_goal 2 => rw [coe_iSup_of_directed dir]
         all_goals simp [map_star] }
 
 variable [Nonempty ι] {K : ι → NonUnitalStarSubalgebra R A} {dir : Directed (· ≤ ·) K}

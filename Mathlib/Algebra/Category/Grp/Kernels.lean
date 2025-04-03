@@ -42,6 +42,6 @@ def cokernelIsColimit : IsColimit <| cokernelCocone f :=
     (fun s => lift _ _ <| (range_le_ker_iff _ _).mpr <| CokernelCofork.condition s)
     (fun _ => rfl)
     (fun _ _ h => have : Epi (cokernelCocone f).π := (epi_iff_surjective _).mpr <| mk'_surjective _
-      (cancel_epi _).mp <| by simpa only [parallelPair_obj_one] using h)
+      (cancel_epi (cokernelCocone f).π).mp <| by simpa only [parallelPair_obj_one] using h)
 
 end AddCommGrp

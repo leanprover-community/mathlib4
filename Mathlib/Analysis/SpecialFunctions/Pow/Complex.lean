@@ -252,11 +252,9 @@ end Complex
 
 -- theorem cpow_pos (a b : ℂ) (b' : ℕ) (c : ℂ) (hb : b = b') (h : a ^ b' = c) : a ^ b = c := by
 --   rw [← h, hb, Complex.cpow_natCast]
--- #align norm_num.cpow_pos NormNum.cpow_pos
 
 -- theorem cpow_neg (a b : ℂ) (b' : ℕ) (c c' : ℂ) (hb : b = b') (h : a ^ b' = c) (hc : c⁻¹ = c') :
 --     a ^ (-b) = c' := by rw [← hc, ← h, hb, Complex.cpow_neg, Complex.cpow_natCast]
--- #align norm_num.cpow_neg NormNum.cpow_neg
 
 -- open Tactic
 
@@ -279,12 +277,10 @@ end Complex
 --       let (icβ, nc, b', hb) ← prove_nat_uncast icβ nc b
 --       let (icα, c, h) ← prove_pow a na icα b'
 --       pure (c, (expr.const Pos []).mk_app [a, b, b', c, hb, h])
--- #align norm_num.prove_rpow' norm_num.prove_rpow'
 
 -- /-- Evaluate `Complex.cpow a b` where `a` is a rational numeral and `b` is an integer. -/
 -- unsafe def prove_cpow : expr → expr → tactic (expr × expr) :=
 --   prove_rpow' `` cpow_pos `` cpow_neg `` Complex.cpow_zero q(ℂ) q(ℂ) q((1 : ℂ))
--- #align norm_num.prove_cpow norm_num.prove_cpow
 
 -- /-- Evaluates expressions of the form `cpow a b` and `a ^ b` in the special case where
 -- `b` is an integer and `a` is a positive rational (so it's really just a rational power). -/
@@ -293,7 +289,6 @@ end Complex
 --   | q(@Pow.pow _ _ Complex.hasPow $(a) $(b)) => b.to_int >> prove_cpow a b
 --   | q(Complex.cpow $(a) $(b)) => b.to_int >> prove_cpow a b
 --   | _ => tactic.failed
--- #align norm_num.eval_cpow norm_num.eval_cpow
 
 -- end NormNum
 

@@ -115,15 +115,6 @@ attribute [nolint docBlame] CategoryTheory.Pseudofunctor.mapId
 
 variable (F : Pseudofunctor B C)
 
--- Porting note: `toPrelaxFunctor_eq_coe` and `to_prelaxFunctor_obj`
--- are syntactic tautologies in lean 4
-
--- Porting note: removed lemma `to_prelaxFunctor_map` relating the now
--- nonexistent `PrelaxFunctor.map` and the now nonexistent `Pseudofunctor.map`
-
--- Porting note: removed lemma `to_prelaxFunctor_map₂` relating
--- `PrelaxFunctor.map₂` to nonexistent `Pseudofunctor.map₂`
-
 /-- The oplax functor associated with a pseudofunctor. -/
 @[simps]
 def toOplax : OplaxFunctor B C where
@@ -133,8 +124,6 @@ def toOplax : OplaxFunctor B C where
 
 instance hasCoeToOplax : Coe (Pseudofunctor B C) (OplaxFunctor B C) :=
   ⟨toOplax⟩
-
--- Porting note: `toOplax_eq_coe` is a syntactic tautology in lean 4
 
 /-- The Lax functor associated with a pseudofunctor. -/
 @[simps]
@@ -151,7 +140,6 @@ def toLax : LaxFunctor B C where
 
 instance hasCoeToLax : Coe (Pseudofunctor B C) (LaxFunctor B C) :=
   ⟨toLax⟩
-
 
 /-- The identity pseudofunctor. -/
 @[simps]
@@ -175,6 +163,96 @@ def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D whe
   map₂_associator f g h := by dsimp; simp
   map₂_left_unitor f := by dsimp; simp
   map₂_right_unitor f := by dsimp; simp
+
+section
+
+variable (F : Pseudofunctor B C) {a b : B}
+
+@[reassoc]
+lemma mapComp_assoc_right_hom {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    (F.mapComp f (g ≫ h)).hom ≫ F.map f ◁ (F.mapComp g h).hom = F.map₂ (α_ f g h).inv ≫
+    (F.mapComp (f ≫ g) h).hom ≫ (F.mapComp f g).hom ▷ F.map h ≫
+    (α_ (F.map f) (F.map g) (F.map h)).hom :=
+  F.toOplax.mapComp_assoc_right _ _ _
+
+@[reassoc]
+lemma mapComp_assoc_left_hom {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    (F.mapComp (f ≫ g) h).hom ≫ (F.mapComp f g).hom ▷ F.map h =
+    F.map₂ (α_ f g h).hom ≫ (F.mapComp f (g ≫ h)).hom ≫ F.map f ◁ (F.mapComp g h).hom
+    ≫ (α_ (F.map f) (F.map g) (F.map h)).inv :=
+  F.toOplax.mapComp_assoc_left _ _ _
+
+@[reassoc]
+lemma mapComp_assoc_right_inv {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    F.map f ◁ (F.mapComp g h).inv ≫ (F.mapComp f (g ≫ h)).inv =
+    (α_ (F.map f) (F.map g) (F.map h)).inv ≫ (F.mapComp f g).inv ▷ F.map h ≫
+    (F.mapComp (f ≫ g) h).inv ≫ F.map₂ (α_ f g h).hom :=
+  F.toLax.mapComp_assoc_right _ _ _
+
+@[reassoc]
+lemma mapComp_assoc_left_inv {c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    (F.mapComp f g).inv ▷ F.map h ≫ (F.mapComp (f ≫ g) h).inv =
+    (α_ (F.map f) (F.map g) (F.map h)).hom ≫ F.map f ◁ (F.mapComp g h).inv ≫
+    (F.mapComp f (g ≫ h)).inv ≫ F.map₂ (α_ f g h).inv :=
+  F.toLax.mapComp_assoc_left _ _ _
+
+@[reassoc]
+lemma mapComp_id_left_hom (f : a ⟶ b) : (F.mapComp (𝟙 a) f).hom =
+    F.map₂ (λ_ f).hom ≫ (λ_ (F.map f)).inv ≫ (F.mapId a).inv ▷ F.map f := by
+  simp
+
+lemma mapComp_id_left (f : a ⟶ b) : (F.mapComp (𝟙 a) f) = F.map₂Iso (λ_ f) ≪≫
+    (λ_ (F.map f)).symm ≪≫ (whiskerRightIso (F.mapId a) (F.map f)).symm :=
+  Iso.ext <| F.mapComp_id_left_hom f
+
+@[reassoc]
+lemma mapComp_id_left_inv (f : a ⟶ b) : (F.mapComp (𝟙 a) f).inv =
+    (F.mapId a).hom ▷ F.map f ≫ (λ_ (F.map f)).hom ≫ F.map₂ (λ_ f).inv := by
+  simp [mapComp_id_left]
+
+lemma whiskerRightIso_mapId (f : a ⟶ b) : whiskerRightIso (F.mapId a) (F.map f) =
+    (F.mapComp (𝟙 a) f).symm ≪≫ F.map₂Iso (λ_ f) ≪≫ (λ_ (F.map f)).symm := by
+  simp [mapComp_id_left]
+
+@[reassoc]
+lemma whiskerRight_mapId_hom (f : a ⟶ b) : (F.mapId a).hom ▷ F.map f =
+    (F.mapComp (𝟙 a) f).inv ≫ F.map₂ (λ_ f).hom ≫ (λ_ (F.map f)).inv := by
+  simp [whiskerRightIso_mapId]
+
+@[reassoc]
+lemma whiskerRight_mapId_inv (f : a ⟶ b) : (F.mapId a).inv ▷ F.map f =
+    (λ_ (F.map f)).hom ≫ F.map₂ (λ_ f).inv ≫ (F.mapComp (𝟙 a) f).hom := by
+  simpa using congrArg (·.inv) (F.whiskerRightIso_mapId f)
+
+@[reassoc]
+lemma mapComp_id_right_hom (f : a ⟶ b) : (F.mapComp f (𝟙 b)).hom =
+    F.map₂ (ρ_ f).hom ≫ (ρ_ (F.map f)).inv ≫ F.map f ◁ (F.mapId b).inv := by
+  simp
+
+lemma mapComp_id_right (f : a ⟶ b) : (F.mapComp f (𝟙 b)) = F.map₂Iso (ρ_ f) ≪≫
+    (ρ_ (F.map f)).symm ≪≫ (whiskerLeftIso (F.map f) (F.mapId b)).symm :=
+  Iso.ext <| F.mapComp_id_right_hom f
+
+@[reassoc]
+lemma mapComp_id_right_inv (f : a ⟶ b) : (F.mapComp f (𝟙 b)).inv =
+    F.map f ◁ (F.mapId b).hom ≫ (ρ_ (F.map f)).hom ≫ F.map₂ (ρ_ f).inv := by
+  simp [mapComp_id_right]
+
+lemma whiskerLeftIso_mapId (f : a ⟶ b) : whiskerLeftIso (F.map f) (F.mapId b) =
+    (F.mapComp f (𝟙 b)).symm ≪≫ F.map₂Iso (ρ_ f) ≪≫ (ρ_ (F.map f)).symm := by
+  simp [mapComp_id_right]
+
+@[reassoc]
+lemma whiskerLeft_mapId_hom (f : a ⟶ b) : F.map f ◁ (F.mapId b).hom =
+    (F.mapComp f (𝟙 b)).inv ≫ F.map₂ (ρ_ f).hom ≫ (ρ_ (F.map f)).inv := by
+  simp [whiskerLeftIso_mapId]
+
+@[reassoc]
+lemma whiskerLeft_mapId_inv (f : a ⟶ b) : F.map f ◁ (F.mapId b).inv =
+    (ρ_ (F.map f)).hom ≫ F.map₂ (ρ_ f).inv ≫ (F.mapComp f (𝟙 b)).hom := by
+  simpa using congrArg (·.inv) (F.whiskerLeftIso_mapId f)
+
+end
 
 /-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms. -/
 @[simps]

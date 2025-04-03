@@ -49,7 +49,8 @@ We want to show that the computation of a continued fraction `GenContFract.of v`
 terminates if and only if `v ∈ ℚ`. In this section, we show the implication from left to right.
 
 We first show that every finite convergent corresponds to a rational number `q` and then use the
-finite correctness proof (`of_correctness_of_terminates`) of `GenContFract.of` to show that `v = ↑q`.
+finite correctness proof (`of_correctness_of_terminates`) of `GenContFract.of` to show that
+`v = ↑q`.
 -/
 
 

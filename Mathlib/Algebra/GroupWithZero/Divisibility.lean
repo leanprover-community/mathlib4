@@ -129,7 +129,10 @@ end MonoidWithZero
 
 section CancelCommMonoidWithZero
 
-variable [CancelCommMonoidWithZero α] [Subsingleton αˣ] {a b : α} {m n : ℕ}
+variable [CancelCommMonoidWithZero α] {a b : α} {m n : ℕ}
+
+section Subsingleton
+variable [Subsingleton αˣ]
 
 theorem dvd_antisymm : a ∣ b → b ∣ a → a = b := by
   rintro ⟨c, rfl⟩ ⟨d, hcd⟩
@@ -151,6 +154,8 @@ theorem eq_of_forall_dvd (h : ∀ c, a ∣ c ↔ b ∣ c) : a = b :=
 
 theorem eq_of_forall_dvd' (h : ∀ c, c ∣ a ↔ c ∣ b) : a = b :=
   ((h _).1 dvd_rfl).antisymm <| (h _).2 dvd_rfl
+
+end Subsingleton
 
 lemma pow_dvd_pow_iff (ha₀ : a ≠ 0) (ha : ¬IsUnit a) : a ^ n ∣ a ^ m ↔ n ≤ m := by
   constructor

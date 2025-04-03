@@ -5,7 +5,6 @@ Authors: Thomas Browning
 -/
 import Mathlib.GroupTheory.Complement
 import Mathlib.GroupTheory.Sylow
-import Mathlib.GroupTheory.Subgroup.Center
 
 /-!
 # The Transfer Homomorphism
@@ -132,7 +131,7 @@ theorem transfer_eq_pow_aux (g : G)
   letI := fintypeOfIndexNeZero hH
   classical
     replace key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g ^ k ∈ H := fun k g₀ hk =>
-      (_root_.congr_arg (· ∈ H) (key k g₀ hk)).mp hk
+      (congr_arg (· ∈ H) (key k g₀ hk)).mp hk
     replace key : ∀ q : G ⧸ H, g ^ Function.minimalPeriod (g • ·) q ∈ H := fun q =>
       key (Function.minimalPeriod (g • ·) q) q.out'
         (QuotientGroup.out'_conj_pow_minimalPeriod_mem H g q)

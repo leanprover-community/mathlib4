@@ -280,7 +280,7 @@ theorem exp_add_of_commute_of_mem_ball [Algebra ℚ 𝔸] {x y : 𝔸} (hxy : Co
     ext
     rw [hxy.add_pow' _, Finset.smul_sum]
   refine tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => ?_
-  rw [nsmul_eq_smul_cast ℚ, smul_smul, smul_mul_smul, ← Finset.mem_antidiagonal.mp hkl,
+  rw [← Nat.cast_smul_eq_nsmul ℚ, smul_smul, smul_mul_smul, ← Finset.mem_antidiagonal.mp hkl,
     Nat.cast_add_choose, Finset.mem_antidiagonal.mp hkl]
   congr 1
   have : (n ! : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr n.factorial_ne_zero

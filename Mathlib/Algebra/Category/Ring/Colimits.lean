@@ -38,8 +38,11 @@ variable {J : Type v} [SmallCategory J] (F : J ⥤ RingCat.{v})
 /-- An inductive type representing all ring expressions (without Relations)
 on a collection of types indexed by the objects of `J`.
 -/
-inductive Prequotient -- There's always `of`
-  | of : ∀ (j : J) (_ : F.obj j), Prequotient -- Then one generator for each operation
+inductive Prequotient
+  -- There's always `of`
+  | of : ∀ (j : J) (_ : F.obj j), Prequotient
+
+  -- Then one generator for each operation
   | zero : Prequotient
   | one : Prequotient
   | neg : Prequotient → Prequotient

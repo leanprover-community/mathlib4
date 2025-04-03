@@ -129,7 +129,7 @@ lemma comp_hom {a b : ℕ} (α : Ext X Y a) (β : Ext Y Z b) {c : ℕ} (h : a + 
 lemma ext {n : ℕ} {α β : Ext X Y n} (h : α.hom = β.hom) : α = β :=
   homEquiv.injective h
 
-lemma ext_iff {n : ℕ} {α β : Ext X Y n} : α = β ↔ α.hom = β.hom :=
+protected lemma ext_iff {n : ℕ} {α β : Ext X Y n} : α = β ↔ α.hom = β.hom :=
   ⟨fun h ↦ by rw [h], ext⟩
 
 end
@@ -258,7 +258,7 @@ lemma biprod_ext {X₁ X₂ : C} {α β : Ext (X₁ ⊞ X₂) Y n}
     (h₂ : (mk₀ biprod.inr).comp α (zero_add n) = (mk₀ biprod.inr).comp β (zero_add n)) :
     α = β := by
   letI := HasDerivedCategory.standard C
-  rw [ext_iff] at h₁ h₂ ⊢
+  rw [Ext.ext_iff] at h₁ h₂ ⊢
   simp only [comp_hom, mk₀_hom, ShiftedHom.mk₀_comp] at h₁ h₂
   apply BinaryCofan.IsColimit.hom_ext
     (isBinaryBilimitOfPreserves (DerivedCategory.singleFunctor C 0)
@@ -303,7 +303,58 @@ lemma homAddEquiv_apply (α : Ext X Y n) : homAddEquiv α = α.hom := rfl
 
 end
 
+variable (X Y Z) in
+/-- The composition of `Ext`, as a bilinear map. -/
+@[simps!]
+noncomputable def bilinearComp (a b c : ℕ) (h : a + b = c) :
+    Ext X Y a →+ Ext Y Z b →+ Ext X Z c :=
+  AddMonoidHom.mk' (fun α ↦ AddMonoidHom.mk' (fun β ↦ α.comp β h) (by simp)) (by aesop)
+
+/-- The postcomposition `Ext X Y a →+ Ext X Z b` with `β : Ext Y Z n` when `a + n = b`. -/
+noncomputable abbrev postcomp (β : Ext Y Z n) (X : C) {a b : ℕ} (h : a + n = b) :
+    Ext X Y a →+ Ext X Z b :=
+  (bilinearComp X Y Z a n b h).flip β
+
+/-- The precomposition `Ext Y Z a →+ Ext X Z b` with `α : Ext X Y n` when `n + a = b`. -/
+noncomputable abbrev precomp (α : Ext X Y n) (Z : C) {a b : ℕ} (h : n + a = b) :
+    Ext Y Z a →+ Ext X Z b :=
+  bilinearComp X Y Z n a b h α
+
 end Ext
+
+/-- Auxiliary definition for `extFunctor`. -/
+@[simps]
+noncomputable def extFunctorObj (X : C) (n : ℕ) : C ⥤ AddCommGrp.{w} where
+  obj Y := AddCommGrp.of (Ext X Y n)
+  map f := AddCommGrp.ofHom ((Ext.mk₀ f).postcomp _ (add_zero n))
+  map_comp f f' := by
+    ext α
+    dsimp [AddCommGrp.ofHom]
+    rw [← Ext.mk₀_comp_mk₀]
+    symm
+    apply Ext.comp_assoc
+    omega
+
+/-- The functor `Cᵒᵖ ⥤ C ⥤ AddCommGrp` which sends `X : C` and `Y : C`
+to `Ext X Y n`. -/
+@[simps]
+noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
+  obj X := extFunctorObj X.unop n
+  map {X₁ X₂} f :=
+    { app := fun Y ↦ AddCommGrp.ofHom (AddMonoidHom.mk'
+        (fun α ↦ (Ext.mk₀ f.unop).comp α (zero_add _)) (by simp))
+      naturality := fun {Y₁ Y₂} g ↦ by
+        ext α
+        dsimp
+        symm
+        apply Ext.comp_assoc
+        all_goals omega }
+  map_comp {X₁ X₂ X₃} f f'  := by
+    ext Y α
+    dsimp
+    rw [← Ext.mk₀_comp_mk₀]
+    apply Ext.comp_assoc
+    all_goals omega
 
 end Abelian
 

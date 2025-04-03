@@ -424,8 +424,7 @@ theorem convexHull_prod (s : Set E) (t : Set F) :
     prod_subset_iff.2 fun _ hx _ => mk_mem_convexHull_prod hx
 
 theorem convexHull_add (s t : Set E) : convexHull R (s + t) = convexHull R s + convexHull R t := by
-  simp_rw [← image2_add, ← image_prod, ← IsLinearMap.isLinearMap_add.image_convexHull,
-    convexHull_prod]
+  simp_rw [← add_image_prod, ← IsLinearMap.isLinearMap_add.image_convexHull, convexHull_prod]
 
 variable (R E)
 
@@ -549,13 +548,14 @@ lemma AffineIndependent.convexHull_inter' (hs : AffineIndependent R ((↑) : ↑
 end
 
 section pi
-variable {𝕜 ι : Type*} {E : ι → Type*} [Fintype ι] [LinearOrderedField 𝕜]
+variable {𝕜 ι : Type*} {E : ι → Type*} [Finite ι] [LinearOrderedField 𝕜]
   [Π i, AddCommGroup (E i)] [Π i, Module 𝕜 (E i)] {s : Set ι} {t : Π i, Set (E i)} {x : Π i, E i}
 
 open Finset Fintype
 
 lemma mem_convexHull_pi (h : ∀ i ∈ s, x i ∈ convexHull 𝕜 (t i)) : x ∈ convexHull 𝕜 (s.pi t) := by
-  wlog hs : s = Set.univ
+  cases nonempty_fintype ι
+  wlog hs : s = Set.univ generalizing s t
   · rw [← pi_univ_ite]
     refine this (fun i _ ↦ ?_) rfl
     split_ifs with hi

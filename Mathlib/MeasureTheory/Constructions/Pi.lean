@@ -891,7 +891,7 @@ theorem measurePreserving_pi {β : ι → Type*} [∀ i, MeasurableSpace (β i)]
     haveI : ∀ i, SigmaFinite (μ i) := fun i ↦ (hf i).sigmaFinite
     refine (Measure.pi_eq fun s hs ↦ ?_).symm
     rw [Measure.map_apply, Set.preimage_pi, Measure.pi_pi]
-    simp_rw [← MeasurePreserving.measure_preimage (hf _) (hs _)]
+    · simp_rw [← MeasurePreserving.measure_preimage (hf _) (hs _).nullMeasurableSet]
     · exact measurable_pi_iff.mpr <| fun i ↦ (hf i).measurable.comp (measurable_pi_apply i)
     · exact MeasurableSet.univ_pi hs
 

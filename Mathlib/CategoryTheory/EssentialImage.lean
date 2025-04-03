@@ -117,6 +117,11 @@ instance EssSurj.toEssImage : EssSurj F.toEssImage where
   mem_essImage := fun ⟨_, hY⟩ =>
     ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
 
+theorem essSurj_of_surj (h : Function.Surjective F.obj) : EssSurj F where
+  mem_essImage Y := by
+    obtain ⟨X, rfl⟩ := h Y
+    apply obj_mem_essImage
+
 variable (F)
 variable [F.EssSurj]
 
@@ -141,11 +146,6 @@ instance Full.toEssImage (F : C ⥤ D) [Full F] : Full F.toEssImage :=
 
 instance instEssSurjId : EssSurj (𝟭 C) where
   mem_essImage Y := ⟨Y, ⟨Iso.refl _⟩⟩
-
-theorem essSurj_of_surj (h : Function.Surjective F.obj) : EssSurj F where
-  mem_essImage Y := by
-    obtain ⟨X, rfl⟩ := h Y
-    apply obj_mem_essImage
 
 lemma essSurj_of_iso {F G : C ⥤ D} [EssSurj F] (α : F ≅ G) : EssSurj G where
   mem_essImage Y := Functor.essImage.ofNatIso α (EssSurj.mem_essImage Y)

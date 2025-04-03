@@ -819,8 +819,8 @@ instance (α : Type*) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyCon
   intro hc
   ext x
   apply mul_right_injective₀ hc
-  simp [LocallyConstant.ext_iff] at h ⊢
-  exact h x
+  simp [LocallyConstant.ext_iff] at h
+  simpa [LocallyConstant.ext_iff] using h x
 
 theorem GoodProducts.linearIndependentSingleton :
     LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) := by

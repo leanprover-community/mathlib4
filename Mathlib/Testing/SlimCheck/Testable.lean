@@ -81,7 +81,7 @@ namespace SlimCheck
 
 /-- Result of trying to disprove `p`
 The constructors are:
-* `success : (PSum Unit p) → TestResult p`
+* `success : (Unit ⊕' p) → TestResult p`
   succeed when we find another example satisfying `p`
   In `success h`, `h` is an optional proof of the proposition.
   Without the proof, all we know is that we found one example
@@ -99,7 +99,7 @@ The constructors are:
   is the number of times that the counter-example was shrunk.
 -/
 inductive TestResult (p : Prop) where
-  | success : PSum Unit p → TestResult p
+  | success : Unit ⊕' p → TestResult p
   | gaveUp : Nat → TestResult p
   | failure : ¬ p → List String → Nat → TestResult p
   deriving Inhabited
@@ -163,7 +163,7 @@ def toString : TestResult p → String
 instance : ToString (TestResult p) := ⟨toString⟩
 
 /-- Applicative combinator proof carrying test results. -/
-def combine {p q : Prop} : PSum Unit (p → q) → PSum Unit p → PSum Unit q
+def combine {p q : Prop} : Unit ⊕' (p → q) → Unit ⊕' p → Unit ⊕' q
   | PSum.inr f, PSum.inr proof => PSum.inr <| f proof
   | _, _ => PSum.inl ()
 
@@ -193,7 +193,7 @@ def or : TestResult p → TestResult q → TestResult (p ∨ q)
 /-- If `q → p`, then `¬ p → ¬ q` which means that testing `p` can allow us
 to find counter-examples to `q`. -/
 def imp (h : q → p) (r : TestResult p)
-    (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q :=
+    (p : Unit ⊕' (p → q) := PSum.inl ()) : TestResult q :=
   match r with
   | failure h2 xs n => failure (mt h h2) xs n
   | success h2 => success <| combine p h2
@@ -207,7 +207,7 @@ def iff (h : q ↔ p) (r : TestResult p) : TestResult q :=
 we record that value using this function so that our counter-examples
 can be informative. -/
 def addInfo (x : String) (h : q → p) (r : TestResult p)
-    (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q :=
+    (p : Unit ⊕' (p → q) := PSum.inl ()) : TestResult q :=
   if let failure h2 xs n := r then
     failure (mt h h2) (x :: xs) n
   else
@@ -215,7 +215,7 @@ def addInfo (x : String) (h : q → p) (r : TestResult p)
 
 /-- Add some formatting to the information recorded by `addInfo`. -/
 def addVarInfo {γ : Type*} [Repr γ] (var : String) (x : γ) (h : q → p) (r : TestResult p)
-    (p : PSum Unit (p → q) := PSum.inl ()) : TestResult q :=
+    (p : Unit ⊕' (p → q) := PSum.inl ()) : TestResult q :=
   addInfo s!"{var} := {repr x}" h r p
 
 def isFailure : TestResult p → Bool

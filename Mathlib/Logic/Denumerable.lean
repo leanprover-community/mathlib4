@@ -123,7 +123,7 @@ instance option : Denumerable (Option α) :=
 
 set_option linter.deprecated false in
 /-- If `α` and `β` are denumerable, then so is their sum. -/
-instance sum : Denumerable (Sum α β) :=
+instance sum : Denumerable (α ⊕ β) :=
   ⟨fun n => by
     suffices ∃ a ∈ @decodeSum α β _ _ n, encodeSum a = bit (bodd n) (div2 n) by simpa [bit_decomp]
     simp only [decodeSum, boddDiv2_eq, decode_eq_ofNat, Option.some.injEq, Option.map_some',
@@ -276,7 +276,8 @@ theorem coe_comp_ofNat_range : Set.range ((↑) ∘ ofNat s : ℕ → ℕ) = s :
 private def toFunAux (x : s) : ℕ :=
   (List.range x).countP (· ∈ s)
 
-private theorem toFunAux_eq (x : s) : toFunAux x = ((Finset.range x).filter (· ∈ s)).card := by
+private theorem toFunAux_eq {s : Set ℕ} [DecidablePred (· ∈ s)] (x : s) :
+    toFunAux x = ((Finset.range x).filter (· ∈ s)).card := by
   rw [toFunAux, List.countP_eq_length_filter]
   rfl
 

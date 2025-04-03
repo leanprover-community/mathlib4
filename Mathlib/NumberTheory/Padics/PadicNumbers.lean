@@ -280,7 +280,7 @@ theorem ne_zero_iff_nequiv_zero (f : PadicSeq p) : mk f ≠ 0 ↔ ¬f ≈ 0 :=
 
 theorem norm_const (q : ℚ) : norm (const (padicNorm p) q) = padicNorm p q :=
   if hq : q = 0 then by
-    have : const (padicNorm p) q ≈ 0 := by simp [hq]; apply Setoid.refl (const (padicNorm p) 0)
+    have : const (padicNorm p) q ≈ 0 := by simpa [hq] using Setoid.refl (const (padicNorm p) 0)
     subst hq; simp [norm, this]
   else by
     have : ¬const (padicNorm p) q ≈ 0 := not_equiv_zero_const_of_nonzero hq

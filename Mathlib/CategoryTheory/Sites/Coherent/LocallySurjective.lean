@@ -96,8 +96,7 @@ lemma extensiveTopology.presheafIsLocallySurjective_iff [FinitaryPreExtensive C]
     obtain ⟨x, hx⟩ := h X y
     convert (extensiveTopology C).top_mem' X
     rw [← Sieve.id_mem_iff_eq_top]
-    simp [Presheaf.imageSieve]
-    exact ⟨x, hx⟩
+    simpa [Presheaf.imageSieve] using ⟨x, hx⟩
 
 lemma extensiveTopology.isLocallySurjective_iff [FinitaryExtensive C]
     {F G : Sheaf (extensiveTopology C) D} (f : F ⟶ G)

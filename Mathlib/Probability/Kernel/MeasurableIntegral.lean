@@ -16,10 +16,10 @@ is strongly measurable.
 ## Main statements
 
 * `Measurable.lintegral_kernel_prod_right`: the function `a ↦ ∫⁻ b, f a b ∂(κ a)` is measurable,
-  for an s-finite kernel `κ : kernel α β` and a function `f : α → β → ℝ≥0∞` such that `uncurry f`
+  for an s-finite kernel `κ : Kernel α β` and a function `f : α → β → ℝ≥0∞` such that `uncurry f`
   is measurable.
 * `MeasureTheory.StronglyMeasurable.integral_kernel_prod_right`: the function
-  `a ↦ ∫ b, f a b ∂(κ a)` is measurable, for an s-finite kernel `κ : kernel α β` and a function
+  `a ↦ ∫ b, f a b ∂(κ a)` is measurable, for an s-finite kernel `κ : Kernel α β` and a function
   `f : α → β → E` such that `uncurry f` is measurable.
 
 -/
@@ -30,11 +30,11 @@ open MeasureTheory ProbabilityTheory Function Set Filter
 open scoped MeasureTheory ENNReal Topology
 
 variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
-  {κ : kernel α β} {η : kernel (α × β) γ} {a : α}
+  {κ : Kernel α β} {η : Kernel (α × β) γ} {a : α}
 
 namespace ProbabilityTheory
 
-namespace kernel
+namespace Kernel
 
 /-- This is an auxiliary lemma for `measurable_kernel_prod_mk_left`. -/
 theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : MeasurableSet t)
@@ -58,7 +58,7 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
       split_ifs
       exacts [rfl, measure_empty]
     rw [h_eq_ite]
-    exact Measurable.ite ht₁ (kernel.measurable_coe κ ht₂) measurable_const
+    exact Measurable.ite ht₁ (Kernel.measurable_coe κ ht₂) measurable_const
   · -- we assume that the result is true for `t` and we prove it for `tᶜ`
     intro t' ht' h_meas
     have h_eq_sdiff : ∀ a, Prod.mk a ⁻¹' t'ᶜ = Set.univ \ Prod.mk a ⁻¹' t' := by
@@ -74,7 +74,7 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
       · exact (@measurable_prod_mk_left α β _ _ a) ht'
       · exact measure_ne_top _ _
     rw [this]
-    exact Measurable.sub (kernel.measurable_coe κ MeasurableSet.univ) h_meas
+    exact Measurable.sub (Kernel.measurable_coe κ MeasurableSet.univ) h_meas
   · -- we assume that the result is true for a family of disjoint sets and prove it for their union
     intro f h_disj hf_meas hf
     have h_Union :
@@ -98,10 +98,10 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
 
 theorem measurable_kernel_prod_mk_left [IsSFiniteKernel κ] {t : Set (α × β)}
     (ht : MeasurableSet t) : Measurable fun a => κ a (Prod.mk a ⁻¹' t) := by
-  rw [← kernel.kernel_sum_seq κ]
-  have : ∀ a, kernel.sum (kernel.seq κ) a (Prod.mk a ⁻¹' t) =
-      ∑' n, kernel.seq κ n a (Prod.mk a ⁻¹' t) := fun a =>
-    kernel.sum_apply' _ _ (measurable_prod_mk_left ht)
+  rw [← Kernel.kernel_sum_seq κ]
+  have : ∀ a, Kernel.sum (Kernel.seq κ) a (Prod.mk a ⁻¹' t) =
+      ∑' n, Kernel.seq κ n a (Prod.mk a ⁻¹' t) := fun a =>
+    Kernel.sum_apply' _ _ (measurable_prod_mk_left ht)
   simp_rw [this]
   refine Measurable.ennreal_tsum fun n => ?_
   exact measurable_kernel_prod_mk_left_of_finite ht inferInstance
@@ -118,16 +118,16 @@ theorem measurable_kernel_prod_mk_right [IsSFiniteKernel κ] {s : Set (β × α)
     (hs : MeasurableSet s) : Measurable fun y => κ y ((fun x => (x, y)) ⁻¹' s) :=
   measurable_kernel_prod_mk_left (measurableSet_swap_iff.mpr hs)
 
-end kernel
+end Kernel
 
-open ProbabilityTheory.kernel
+open ProbabilityTheory.Kernel
 
 section Lintegral
 
 variable [IsSFiniteKernel κ] [IsSFiniteKernel η]
 
 /-- Auxiliary lemma for `Measurable.lintegral_kernel_prod_right`. -/
-theorem kernel.measurable_lintegral_indicator_const {t : Set (α × β)} (ht : MeasurableSet t)
+theorem Kernel.measurable_lintegral_indicator_const {t : Set (α × β)} (ht : MeasurableSet t)
     (c : ℝ≥0∞) : Measurable fun a => ∫⁻ b, t.indicator (Function.const (α × β) c) (a, b) ∂κ a := by
   -- Porting note: was originally by
   -- `simp_rw [lintegral_indicator_const_comp measurable_prod_mk_left ht _]`
@@ -159,7 +159,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
   · intro c t ht
     simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
       SimpleFunc.coe_zero, Set.piecewise_eq_indicator]
-    exact kernel.measurable_lintegral_indicator_const (κ := κ) ht c
+    exact Kernel.measurable_lintegral_indicator_const (κ := κ) ht c
   · intro g₁ g₂ _ hm₁ hm₂
     simp only [SimpleFunc.coe_add, Pi.add_apply]
     have h_add :
@@ -241,7 +241,7 @@ theorem measurableSet_kernel_integrable ⦃f : α → β → E⦄ (hf : Strongly
 
 end ProbabilityTheory
 
-open ProbabilityTheory ProbabilityTheory.kernel
+open ProbabilityTheory.Kernel
 
 namespace MeasureTheory
 
@@ -270,7 +270,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
     refine Finset.stronglyMeasurable_sum _ fun x _ => ?_
     refine (Measurable.ennreal_toReal ?_).stronglyMeasurable.smul_const _
     simp only [s', SimpleFunc.coe_comp, preimage_comp]
-    apply kernel.measurable_kernel_prod_mk_left
+    apply Kernel.measurable_kernel_prod_mk_left
     exact (s n).measurableSet_fiber x
   have h2f' : Tendsto f' atTop (𝓝 fun x : α => ∫ y : β, f x y ∂κ x) := by
     rw [tendsto_pi_nhds]; intro x

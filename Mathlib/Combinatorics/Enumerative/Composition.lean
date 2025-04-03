@@ -8,8 +8,6 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Set.Subsingleton
 
-
-
 /-!
 # Compositions
 
@@ -88,7 +86,6 @@ Composition, partition
 
 <https://en.wikipedia.org/wiki/Composition_(combinatorics)>
 -/
-
 
 open List
 
@@ -261,7 +258,7 @@ theorem orderEmbOfFin_boundaries :
 def embedding (i : Fin c.length) : Fin (c.blocksFun i) ↪o Fin n :=
   (Fin.natAddOrderEmb <| c.sizeUpTo i).trans <| Fin.castLEOrderEmb <|
     calc
-      c.sizeUpTo i + c.blocksFun i = c.sizeUpTo (i + 1) := (c.sizeUpTo_succ _).symm
+      c.sizeUpTo i + c.blocksFun i = c.sizeUpTo (i + 1) := (c.sizeUpTo_succ i.2).symm
       _ ≤ c.sizeUpTo c.length := monotone_sum_take _ i.2
       _ = n := c.sizeUpTo_length
 
@@ -624,7 +621,7 @@ theorem sum_take_map_length_splitWrtComposition (l : List α) (c : Composition l
 
 theorem getElem_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ}
     (hi : i < (l.splitWrtCompositionAux ns).length) :
-    (l.splitWrtCompositionAux ns)[i]  =
+    (l.splitWrtCompositionAux ns)[i] =
       (l.take (ns.take (i + 1)).sum).drop (ns.take i).sum := by
   induction' ns with n ns IH generalizing l i
   · cases hi
@@ -641,13 +638,13 @@ block of the composition. -/
 theorem getElem_splitWrtComposition' (l : List α) (c : Composition n) {i : ℕ}
     (hi : i < (l.splitWrtComposition c).length) :
     (l.splitWrtComposition c)[i] = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) :=
-  getElem_splitWrtCompositionAux _ _ _
+  getElem_splitWrtCompositionAux _ _ hi
 
 -- Porting note: restatement of `get_splitWrtComposition`
 theorem getElem_splitWrtComposition (l : List α) (c : Composition n)
     (i : Nat) (h : i < (l.splitWrtComposition c).length) :
     (l.splitWrtComposition c)[i] = (l.take (c.sizeUpTo (i + 1))).drop (c.sizeUpTo i) :=
-  getElem_splitWrtComposition' _ _ _
+  getElem_splitWrtComposition' _ _ h
 
 @[deprecated getElem_splitWrtCompositionAux (since := "2024-06-12")]
 theorem get_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ} (hi) :

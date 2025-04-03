@@ -94,17 +94,20 @@ theorem norm_condexpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) : ‖condexpL2 E
   ((@condexpL2 _ E 𝕜 _ _ _ _ _ _ μ hm).le_opNorm f).trans
     (mul_le_of_le_one_left (norm_nonneg _) (norm_condexpL2_le_one hm))
 
-theorem snorm_condexpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) :
-    snorm (F := E) (condexpL2 E 𝕜 hm f) 2 μ ≤ snorm f 2 μ := by
-  rw [lpMeas_coe, ← ENNReal.toReal_le_toReal (Lp.snorm_ne_top _) (Lp.snorm_ne_top _), ←
+theorem eLpNorm_condexpL2_le (hm : m ≤ m0) (f : α →₂[μ] E) :
+    eLpNorm (F := E) (condexpL2 E 𝕜 hm f) 2 μ ≤ eLpNorm f 2 μ := by
+  rw [lpMeas_coe, ← ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top _) (Lp.eLpNorm_ne_top _), ←
     Lp.norm_def, ← Lp.norm_def, Submodule.norm_coe]
   exact norm_condexpL2_le hm f
+
+@[deprecated (since := "2024-07-27")]
+alias snorm_condexpL2_le := eLpNorm_condexpL2_le
 
 theorem norm_condexpL2_coe_le (hm : m ≤ m0) (f : α →₂[μ] E) :
     ‖(condexpL2 E 𝕜 hm f : α →₂[μ] E)‖ ≤ ‖f‖ := by
   rw [Lp.norm_def, Lp.norm_def, ← lpMeas_coe]
-  refine (ENNReal.toReal_le_toReal ?_ (Lp.snorm_ne_top _)).mpr (snorm_condexpL2_le hm f)
-  exact Lp.snorm_ne_top _
+  refine (ENNReal.toReal_le_toReal ?_ (Lp.eLpNorm_ne_top _)).mpr (eLpNorm_condexpL2_le hm f)
+  exact Lp.eLpNorm_ne_top _
 
 theorem inner_condexpL2_left_eq_right (hm : m ≤ m0) {f g : α →₂[μ] E} :
     ⟪(condexpL2 E 𝕜 hm f : α →₂[μ] E), g⟫₂ = ⟪f, (condexpL2 E 𝕜 hm g : α →₂[μ] E)⟫₂ :=

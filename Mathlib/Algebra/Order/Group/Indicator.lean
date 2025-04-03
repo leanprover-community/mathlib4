@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.Order.Group.Abs
-import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.Synonym
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
 # Support of a function in an order

@@ -151,7 +151,9 @@ instance instField : Field (hat K) where
   inv_zero := by simp only [Inv.inv, ite_true]
   -- TODO: use a better defeq
   nnqsmul := _
+  nnqsmul_def := fun q a => rfl
   qsmul := _
+  qsmul_def := fun a x => rfl
 
 instance : TopologicalDivisionRing (hat K) :=
   { Completion.topologicalRing with

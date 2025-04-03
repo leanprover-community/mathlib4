@@ -11,7 +11,6 @@ import Mathlib.RingTheory.Finiteness
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.RingTheory.Noetherian
 
-
 /-!
 # Local cohomology.
 

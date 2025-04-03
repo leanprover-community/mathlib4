@@ -16,11 +16,13 @@ import ImportGraph.Imports
 -- Hopefully `lake` will be able to handle tests later.
 import ProofWidgets
 
+-- Import common Batteries tactics and commands
+import Batteries.Tactic.Where
+
 -- Import Mathlib-specific linters.
 import Mathlib.Tactic.Linter.Lint
 
 -- Now import all tactics defined in Mathlib that do not require theory files.
-import Mathlib.Mathport.Rename
 import Mathlib.Tactic.ApplyCongr
 -- ApplyFun imports `Mathlib.Order.Monotone.Basic`
 -- import Mathlib.Tactic.ApplyFun

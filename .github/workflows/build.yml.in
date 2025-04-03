@@ -222,7 +222,7 @@ jobs:
       - name: check declarations in db files
         run: |
           python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
-          lake exe checkYaml
+          lake exe check-yaml
 
       - name: verify `lake exe graph` works
         run: |

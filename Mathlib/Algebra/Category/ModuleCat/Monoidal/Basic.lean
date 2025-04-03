@@ -119,8 +119,6 @@ private theorem associator_naturality_aux {X₁ X₂ X₃ : Type*} [AddCommMonoi
   apply TensorProduct.ext_threefold
   intro x y z
   rfl
--- Porting note: private so hopeful never used outside this file
--- #align Module.monoidal_category.associator_naturality_aux ModuleCat.MonoidalCategory.associator_naturality_aux
 
 variable (R)
 
@@ -133,8 +131,6 @@ private theorem pentagon_aux (W X Y Z : Type*) [AddCommMonoid W] [AddCommMonoid 
   apply TensorProduct.ext_fourfold
   intro w x y z
   rfl
--- Porting note: private so hopeful never used outside this file
--- #align Module.monoidal_category.pentagon_aux Module.monoidal_category.pentagon_aux
 
 end
 

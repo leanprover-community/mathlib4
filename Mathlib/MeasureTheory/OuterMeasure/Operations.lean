@@ -73,7 +73,7 @@ variable {R' : Type*} [SMul R' ℝ≥0∞] [IsScalarTower R' ℝ≥0∞ ℝ≥0�
 instance instSMul : SMul R (OuterMeasure α) :=
   ⟨fun c m =>
     { measureOf := fun s => c • m s
-      empty := by simp; rw [← smul_one_mul c]; simp
+      empty := by simp only [measure_empty]; rw [← smul_one_mul c]; simp
       mono := fun {s t} h => by
         simp only
         rw [← smul_one_mul c, ← smul_one_mul c (m t)]

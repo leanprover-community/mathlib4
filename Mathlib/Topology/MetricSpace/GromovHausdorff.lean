@@ -279,11 +279,11 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
           gcongr
           -- apply add_le_add (add_le_add le_rfl (le_of_lt dy)) le_rfl
         _ = 2 * diam (univ : Set X) + 1 + 2 * diam (univ : Set Y) := by ring
-    let f : Sum X Y → ℓ_infty_ℝ := fun x =>
+    let f : X ⊕ Y → ℓ_infty_ℝ := fun x =>
       match x with
       | inl y => Φ y
       | inr z => Ψ z
-    let F : Sum X Y × Sum X Y → ℝ := fun p => dist (f p.1) (f p.2)
+    let F : (X ⊕ Y) × (X ⊕ Y) → ℝ := fun p => dist (f p.1) (f p.2)
     -- check that the induced "distance" is a candidate
     have Fgood : F ∈ candidates X Y := by
       simp only [F, candidates, forall_const, and_true_iff, add_comm, eq_self_iff_true,
@@ -304,7 +304,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
       · exact fun x y =>
           calc
             F (x, y) ≤ diam (range Φ ∪ range Ψ) := by
-              have A : ∀ z : Sum X Y, f z ∈ range Φ ∪ range Ψ := by
+              have A : ∀ z : X ⊕ Y, f z ∈ range Φ ∪ range Ψ := by
                 intro z
                 cases z
                 · apply mem_union_left; apply mem_range_self
@@ -562,7 +562,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
       |dist p q - dist (Φ p) (Φ q)| ≤ ε₂ := H p q
       _ ≤ 2 * (ε₂ / 2 + δ) := by linarith
   -- glue `X` and `Y` along the almost matching subsets
-  letI : MetricSpace (Sum X Y) :=
+  letI : MetricSpace (X ⊕ Y) :=
     glueMetricApprox (fun x : s => (x : X)) (fun x => Φ x) (ε₂ / 2 + δ) (by linarith) this
   let Fl := @Sum.inl X Y
   let Fr := @Sum.inr X Y

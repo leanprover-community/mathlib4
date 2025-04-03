@@ -611,13 +611,12 @@ variable {D : Type*} [Category.{v₁} D] (F : C ⥤ D)
 
 /-- The natural transformation `yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X)`
 when `F : C ⥤ D` and `X : C`. -/
-def yonedaMap (X : C) : yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X) :=
-  yonedaEquiv.symm (𝟙 _)
+def yonedaMap (X : C) : yoneda.obj X ⟶ F.op ⋙ yoneda.obj (F.obj X) where
+  app X f := F.map f
 
 @[simp]
 lemma yonedaMap_app_apply {Y : C} {X : Cᵒᵖ} (f : X.unop ⟶ Y) :
-    (yonedaMap F Y).app X f = F.map f := by
-  simp [yonedaMap, yonedaEquiv]
+    (yonedaMap F Y).app X f = F.map f := rfl
 
 end
 

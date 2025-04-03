@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Set.Function
-import Mathlib.Logic.Relation
 import Mathlib.Logic.Pairwise
 
 /-!
@@ -293,6 +292,10 @@ lemma pairwiseDisjoint_range_iff {α β : Type*} {f : α → (Set β)} :
     apply h.eq_or_disjoint (Set.mem_range_self x) (Set.mem_range_self y)
   · rintro h _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ hxy
     exact (h x y).resolve_left hxy
+
+/-- If the range of `f` is pairwise disjoint, then the image of any set `s` under `f` is as well. -/
+lemma _root_.Pairwise.pairwiseDisjoint (h : Pairwise (Disjoint on f)) (s : Set ι) :
+    s.PairwiseDisjoint f := h.set_pairwise s
 
 end PartialOrderBot
 

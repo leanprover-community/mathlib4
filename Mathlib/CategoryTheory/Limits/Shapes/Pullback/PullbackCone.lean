@@ -51,8 +51,8 @@ Various ways of constructing pullback cones:
 Interaction with `IsLimit`:
 * `PullbackCone.isLimitAux` and `PullbackCone.isLimitAux'` provide two convenient ways to show that
   a given `PullbackCone` is a limit cone.
-* `PullbackCone.isLimit.mk` provides a convenient way to show that a `PullbackCone` constructed using
-  `PullbackCone.mk` is a limit cone.
+* `PullbackCone.isLimit.mk` provides a convenient way to show that a `PullbackCone` constructed
+  using `PullbackCone.mk` is a limit cone.
 * `PullbackCone.IsLimit.lift` and `PullbackCone.IsLimit.lift'` provides convenient ways for
   constructing the morphisms to the point of a limit `PullbackCone` from the universal property.
 * `PullbackCone.IsLimit.hom_ext` provides a convenient way to show that two morphisms to the point

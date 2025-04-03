@@ -752,7 +752,7 @@ theorem mem_stabilizer_of_finite_iff_smul_le (s : Set α) (hs : s.Finite) (g : G
   haveI : Fintype (g • s : Set α) := Fintype.ofFinite _
   rw [mem_stabilizer_iff]
   constructor
-  exact Eq.subset
+  · exact Eq.subset
   · rw [← Set.toFinset_inj, ← Set.toFinset_subset_toFinset]
     intro h
     apply Finset.eq_of_subset_of_card_le h

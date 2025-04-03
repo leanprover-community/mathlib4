@@ -25,14 +25,7 @@ open Opposite
 
 open MonoidalCategory
 
--- Porting note: made it noncomputable.
--- `failed to compile definition, consider marking it as 'noncomputable' because it`
--- `depends on 'CategoryTheory.typesMonoidal', and it does not have executable code`
--- I don't know if that is a problem, might need to change it back in the future, but
--- if so it might be better to fix then instead of at the moment of porting.
-
 /-- `(𝟙_ C ⟶ -)` is a lax monoidal functor to `Type`. -/
-noncomputable
 def coyonedaTensorUnit (C : Type u) [Category.{v} C] [MonoidalCategory C] :
     LaxMonoidalFunctor C (Type v) := .ofTensorHom
     (F := coyoneda.obj (op (𝟙_ C)))

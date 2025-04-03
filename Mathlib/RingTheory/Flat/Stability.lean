@@ -6,6 +6,8 @@ Authors: Christian Merten
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.Algebra.Module.LocalizedModule
 
 /-!
 # Flatness is stable under composition and base change
@@ -18,7 +20,9 @@ We show that flatness is stable under composition and base change.
                       then `M` is a flat `R`-module
 * `Module.Flat.baseChange`: if `M` is a flat `R`-module and `S` is any `R`-algebra,
                             then `S ⊗[R] M` is `S`-flat.
-
+* `Module.Flat.of_isLocalizedModule`: if `M` is a flat `R`-module and `S` is a submonoid of `R`
+                                          then the localization of `M` at `S` is flat as a module
+                                          for the localzation of `R` at `S`.
 -/
 
 universe u v w t
@@ -144,5 +148,25 @@ theorem isBaseChange [Module.Flat R M] (N : Type t) [AddCommGroup N] [Module R N
   of_linearEquiv S (S ⊗[R] M) N (IsBaseChange.equiv h).symm
 
 end BaseChange
+
+section Localization
+
+variable {R : Type u} {M Mp : Type*} (Rp : Type v)
+  [CommRing R] [AddCommGroup M] [Module R M] [CommRing Rp] [Algebra R Rp]
+  [AddCommGroup Mp] [Module R Mp] [Module Rp Mp] [IsScalarTower R Rp Mp] (f : M →ₗ[R] Mp)
+
+instance localizedModule [Module.Flat R M] (S : Submonoid R) : Module.Flat (Localization S)
+    (LocalizedModule S M) := by
+  fapply Module.Flat.isBaseChange (R := R) (M := M) (S := Localization S)
+  exact LocalizedModule.mkLinearMap S M
+  rw [← isLocalizedModule_iff_isBaseChange S]
+  exact localizedModuleIsLocalizedModule S
+
+theorem of_isLocalizedModule [Module.Flat R M] (S : Submonoid R) [IsLocalization S Rp]
+    (f : M →ₗ[R] Mp) [h : IsLocalizedModule S f] : Module.Flat Rp Mp := by
+  fapply Module.Flat.isBaseChange (R := R) (M := M) (S := Rp) (N := Mp)
+  exact (isLocalizedModule_iff_isBaseChange S Rp f).mp h
+
+end Localization
 
 end Module.Flat

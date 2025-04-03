@@ -63,7 +63,6 @@ variable {I A : Type*} {X : I → Type*} [∀ i, TopologicalSpace (X i)] [Topolo
 --   toFun t i := homotopies i t
 --   map_zero_left t := by ext i; simp only [pi_eval, Homotopy.apply_zero]
 --   map_one_left t := by ext i; simp only [pi_eval, Homotopy.apply_one]
--- #align continuous_map.homotopy.pi ContinuousMap.Homotopy.pi
 
 /-- The relative product homotopy of `homotopies` between functions `f` and `g` -/
 @[simps!]
@@ -131,11 +130,9 @@ theorem pi_lift (γ : ∀ i, Path (as i) (bs i)) :
 /-- Composition and products commute.
   This is `Path.trans_pi_eq_pi_trans` descended to path homotopy classes. -/
 theorem comp_pi_eq_pi_comp (γ₀ : ∀ i, Path.Homotopic.Quotient (as i) (bs i))
-    (γ₁ : ∀ i, Path.Homotopic.Quotient (bs i) (cs i)) : pi γ₀ ⬝ pi γ₁ = pi fun i => γ₀ i ⬝ γ₁ i := by
-  apply Quotient.induction_on_pi (p := _) γ₁
-  intro a
-  apply Quotient.induction_on_pi (p := _) γ₀
-  intros
+    (γ₁ : ∀ i, Path.Homotopic.Quotient (bs i) (cs i)) : pi γ₀ ⬝ pi γ₁ = pi fun i ↦ γ₀ i ⬝ γ₁ i := by
+  induction γ₁ using Quotient.induction_on_pi with | _ a =>
+  induction γ₀ using Quotient.induction_on_pi
   simp only [pi_lift]
   rw [← Path.Homotopic.comp_lift, Path.trans_pi_eq_pi_trans, ← pi_lift]
   rfl
@@ -148,16 +145,14 @@ abbrev proj (i : ι) (p : Path.Homotopic.Quotient as bs) : Path.Homotopic.Quotie
 @[simp]
 theorem proj_pi (i : ι) (paths : ∀ i, Path.Homotopic.Quotient (as i) (bs i)) :
     proj i (pi paths) = paths i := by
-  apply Quotient.induction_on_pi (p := _) paths
-  intro; unfold proj
-  rw [pi_lift, ← Path.Homotopic.map_lift]
+  induction paths using Quotient.induction_on_pi
+  rw [proj, pi_lift, ← Path.Homotopic.map_lift]
   congr
 
 @[simp]
 theorem pi_proj (p : Path.Homotopic.Quotient as bs) : (pi fun i => proj i p) = p := by
-  apply Quotient.inductionOn (motive := _) p
-  intro; unfold proj
-  simp_rw [← Path.Homotopic.map_lift]
+  induction p using Quotient.inductionOn
+  simp_rw [proj, ← Path.Homotopic.map_lift]
   erw [pi_lift]
   congr
 
@@ -190,10 +185,8 @@ variable (r₁ : Path.Homotopic.Quotient a₂ a₃) (r₂ : Path.Homotopic.Quoti
 /-- Products commute with path composition.
     This is `trans_prod_eq_prod_trans` descended to the quotient. -/
 theorem comp_prod_eq_prod_comp : prod q₁ q₂ ⬝ prod r₁ r₂ = prod (q₁ ⬝ r₁) (q₂ ⬝ r₂) := by
-  apply Quotient.inductionOn₂ (motive := _) q₁ q₂
-  intro a b
-  apply Quotient.inductionOn₂ (motive := _) r₁ r₂
-  intros
+  induction q₁, q₂ using Quotient.inductionOn₂
+  induction r₁, r₂ using Quotient.inductionOn₂
   simp only [prod_lift, ← Path.Homotopic.comp_lift, Path.trans_prod_eq_prod_trans]
 
 variable {c₁ c₂ : α × β}
@@ -209,27 +202,21 @@ abbrev projRight (p : Path.Homotopic.Quotient c₁ c₂) : Path.Homotopic.Quotie
 /-- Lemmas showing projection is the inverse of product. -/
 @[simp]
 theorem projLeft_prod : projLeft (prod q₁ q₂) = q₁ := by
-  apply Quotient.inductionOn₂ (motive := _) q₁ q₂
-  intro p₁ p₂
-  unfold projLeft
-  rw [prod_lift, ← Path.Homotopic.map_lift]
+  induction q₁, q₂ using Quotient.inductionOn₂
+  rw [projLeft, prod_lift, ← Path.Homotopic.map_lift]
   congr
 
 @[simp]
 theorem projRight_prod : projRight (prod q₁ q₂) = q₂ := by
-  apply Quotient.inductionOn₂ (motive := _) q₁ q₂
-  intro p₁ p₂
-  unfold projRight
-  rw [prod_lift, ← Path.Homotopic.map_lift]
+  induction q₁, q₂ using Quotient.inductionOn₂
+  rw [projRight, prod_lift, ← Path.Homotopic.map_lift]
   congr
 
 @[simp]
 theorem prod_projLeft_projRight (p : Path.Homotopic.Quotient (a₁, b₁) (a₂, b₂)) :
     prod (projLeft p) (projRight p) = p := by
-  apply Quotient.inductionOn (motive := _) p
-  intro p'
-  unfold projLeft; unfold projRight
-  simp only [← Path.Homotopic.map_lift, prod_lift]
+  induction p using Quotient.inductionOn
+  simp only [projLeft, projRight, ← Path.Homotopic.map_lift, prod_lift]
   congr
 
 end Prod

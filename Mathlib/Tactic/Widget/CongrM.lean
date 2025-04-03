@@ -7,7 +7,6 @@ Authors: Patrick Massot
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.CongrM
 
-
 /-! # CongrM widget
 
 This file defines a `congrm?` tactic that displays a widget panel allowing to generate

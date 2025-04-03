@@ -265,7 +265,7 @@ lemma weightSpace_chainTopCoeff_add_one_nsmul_add :
 
 lemma weightSpace_chainTopCoeff_add_one_zsmul_add :
     weightSpace M ((chainTopCoeff α β + 1 : ℤ) • α + β : L → R) = ⊥ := by
-  rw [← weightSpace_chainTopCoeff_add_one_nsmul_add α β hα, nsmul_eq_smul_cast ℤ,
+  rw [← weightSpace_chainTopCoeff_add_one_nsmul_add α β hα, ← Nat.cast_smul_eq_nsmul ℤ,
     Nat.cast_add, Nat.cast_one]
 
 lemma weightSpace_nsmul_add_ne_bot_of_le {n} (hn : n ≤ chainTopCoeff α β) :
@@ -285,10 +285,10 @@ lemma weightSpace_zsmul_add_ne_bot {n : ℤ}
     (hn : -chainBotCoeff α β ≤ n) (hn' : n ≤ chainTopCoeff α β) :
       weightSpace M (n • α + β : L → R) ≠ ⊥ := by
   rcases n with (n | n)
-  · simp only [Int.ofNat_eq_coe, Nat.cast_le, ← nsmul_eq_smul_cast] at hn' ⊢
+  · simp only [Int.ofNat_eq_coe, Nat.cast_le, Nat.cast_smul_eq_nsmul] at hn' ⊢
     exact weightSpace_nsmul_add_ne_bot_of_le α β hn'
   · simp only [Int.negSucc_eq, ← Nat.cast_succ, neg_le_neg_iff, Nat.cast_le] at hn ⊢
-    rw [neg_smul, ← smul_neg, ← nsmul_eq_smul_cast]
+    rw [neg_smul, ← smul_neg, Nat.cast_smul_eq_nsmul]
     exact weightSpace_nsmul_add_ne_bot_of_le (-α) β hn
 
 lemma weightSpace_neg_zsmul_add_ne_bot {n : ℕ} (hn : n ≤ chainBotCoeff α β) :
@@ -308,7 +308,7 @@ def chainBot (α : L → R) (β : Weight R L M) : Weight R L M :=
 lemma coe_chainTop' : (chainTop α β : L → R) = chainTopCoeff α β • α + β := rfl
 
 @[simp] lemma coe_chainTop : (chainTop α β : L → R) = (chainTopCoeff α β : ℤ) • α + β := by
-  rw [← nsmul_eq_smul_cast ℤ]; rfl
+  rw [Nat.cast_smul_eq_nsmul ℤ]; rfl
 @[simp] lemma coe_chainBot : (chainBot α β : L → R) = (-chainBotCoeff α β : ℤ) • α + β := rfl
 
 @[simp] lemma chainTop_neg : chainTop (-α) β = chainBot α β := by ext; simp

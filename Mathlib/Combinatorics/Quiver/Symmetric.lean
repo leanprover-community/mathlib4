@@ -31,7 +31,7 @@ namespace Quiver
 def Symmetrify (V : Type*) := V
 
 instance symmetrifyQuiver (V : Type u) [Quiver V] : Quiver (Symmetrify V) :=
-  ⟨fun a b : V ↦ Sum (a ⟶ b) (b ⟶ a)⟩
+  ⟨fun a b : V ↦ (a ⟶ b) ⊕ (b ⟶ a)⟩
 
 variable (U V W : Type*) [Quiver.{u + 1} U] [Quiver.{v + 1} V] [Quiver.{w + 1} W]
 

@@ -63,15 +63,15 @@ variable {Ω F : Type*} {m : MeasurableSpace Ω} [mΩ : MeasurableSpace Ω]
 It is defined as the conditional distribution of the identity given the identity, where the second
 identity is understood as a map from `Ω` with the σ-algebra `mΩ` to `Ω` with σ-algebra `m ⊓ mΩ`.
 We use `m ⊓ mΩ` instead of `m` to ensure that it is a sub-σ-algebra of `mΩ`. We then use
-`kernel.comap` to get a kernel from `m` to `mΩ` instead of from `m ⊓ mΩ` to `mΩ`. -/
+`Kernel.comap` to get a kernel from `m` to `mΩ` instead of from `m ⊓ mΩ` to `mΩ`. -/
 noncomputable irreducible_def condexpKernel (μ : Measure Ω) [IsFiniteMeasure μ]
-    (m : MeasurableSpace Ω) : @kernel Ω Ω m mΩ :=
-  kernel.comap (@condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _) id
+    (m : MeasurableSpace Ω) : @Kernel Ω Ω m mΩ :=
+  Kernel.comap (@condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _) id
     (measurable_id'' (inf_le_left : m ⊓ mΩ ≤ m))
 
 lemma condexpKernel_apply_eq_condDistrib {ω : Ω} :
     condexpKernel μ m ω = @condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _ (id ω) := by
-  simp_rw [condexpKernel, kernel.comap_apply]
+  simp_rw [condexpKernel, Kernel.comap_apply]
 
 instance : IsMarkovKernel (condexpKernel μ m) := by simp only [condexpKernel]; infer_instance
 

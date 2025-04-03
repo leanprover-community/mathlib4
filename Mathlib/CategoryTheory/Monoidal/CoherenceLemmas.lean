@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta, Jakob von Raumer
 -/
 import Mathlib.Tactic.CategoryTheory.Coherence
-import Mathlib.CategoryTheory.Monoidal.Free.Coherence
 
 /-!
 # Lemmas which are consequences of monoidal coherence

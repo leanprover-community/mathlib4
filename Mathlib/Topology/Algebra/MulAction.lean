@@ -61,6 +61,8 @@ export ContinuousVAdd (continuous_vadd)
 
 attribute [to_additive] ContinuousSMul
 
+attribute [continuity, fun_prop] continuous_smul continuous_vadd
+
 section Main
 
 variable {M X Y α : Type*} [TopologicalSpace M] [TopologicalSpace X] [TopologicalSpace Y]
@@ -76,6 +78,15 @@ instance : ContinuousSMul (ULift M) X :=
 @[to_additive]
 instance (priority := 100) ContinuousSMul.continuousConstSMul : ContinuousConstSMul M X where
   continuous_const_smul _ := continuous_smul.comp (continuous_const.prod_mk continuous_id)
+
+theorem ContinuousSMul.induced {R : Type*} {α : Type*} {β : Type*} {F : Type*} [FunLike F α β]
+    [Semiring R] [AddCommMonoid α] [AddCommMonoid β] [Module R α] [Module R β]
+    [TopologicalSpace R] [LinearMapClass F R α β] [tβ : TopologicalSpace β] [ContinuousSMul R β]
+    (f : F) : @ContinuousSMul R α _ _ (tβ.induced f) := by
+  let tα := tβ.induced f
+  refine ⟨continuous_induced_rng.2 ?_⟩
+  simp only [Function.comp, map_smul]
+  fun_prop
 
 @[to_additive]
 theorem Filter.Tendsto.smul {f : α → M} {g : α → X} {l : Filter α} {c : M} {a : X}

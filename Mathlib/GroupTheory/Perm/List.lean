@@ -68,7 +68,7 @@ theorem mem_or_mem_of_zipWith_swap_prod_ne : ∀ {l l' : List α} {x : α},
   | _, [], _ => by simp
   | a::l, b::l', x => fun hx ↦
     if h : (zipWith swap l l').prod x = x then
-      (eq_or_eq_of_swap_apply_ne_self (by simpa [h] using hx)).imp
+      (eq_or_eq_of_swap_apply_ne_self (a := a) (b := b) (x := x) (by simpa [h] using hx)).imp
         (by rintro rfl; exact .head _) (by rintro rfl; exact .head _)
     else
      (mem_or_mem_of_zipWith_swap_prod_ne h).imp (.tail _) (.tail _)
@@ -241,7 +241,7 @@ theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α,
     specialize h H
     rcases (Nat.succ_le_of_lt hn).eq_or_lt with hn' | hn'
     · simp only [← hn', Nat.mod_self] at h
-      refine' not_exists.mpr h' _
+      refine not_exists.mpr h' ?_
       rw [← length_eq_one, ← hn', (Fin.mk.inj_iff.mp h).symm]
     · simp [Nat.mod_eq_of_lt hn'] at h
 

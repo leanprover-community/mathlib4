@@ -189,6 +189,20 @@ theorem filter_eq_iInf (p : SeminormFamily 𝕜 E ι) :
         ⟨Metric.ball 0 r, Metric.ball_mem_nhds 0 hr,
           Eq.subset (p i).ball_zero_eq_preimage_ball.symm⟩
 
+/-- If a family of seminorms is continuous, then their basis sets are neighborhoods of zero. -/
+lemma basisSets_mem_nhds {𝕜 E ι : Type*} [NormedField 𝕜]
+    [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] (p : SeminormFamily 𝕜 E ι)
+    (hp : ∀ i, Continuous (p i)) (U : Set E) (hU : U ∈ p.basisSets) : U ∈ 𝓝 (0 : E) := by
+  obtain ⟨s, r, hr, rfl⟩ := p.basisSets_iff.mp hU
+  clear hU
+  refine Seminorm.ball_mem_nhds ?_ hr
+  classical
+  induction s using Finset.induction_on
+  case empty => simpa using continuous_zero
+  case insert a s _ hs =>
+    simp only [Finset.sup_insert, coe_sup]
+    exact Continuous.max (hp a) hs
+
 end SeminormFamily
 
 end FilterBasis

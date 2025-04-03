@@ -83,7 +83,7 @@ open Sum PUnit
 This is useful when considering the associated polynomial endofunctor.
 -/
 @[simps]
-def NatαEquivPUnitSumPUnit : Natα ≃ Sum PUnit.{u + 1} PUnit where
+def NatαEquivPUnitSumPUnit : Natα ≃ PUnit.{u + 1} ⊕ PUnit where
   toFun c :=
     match c with
     | Natα.zero => inl unit
@@ -167,7 +167,7 @@ def equivList : WType (Listβ γ) ≃ List γ where
 /-- `WType.Listα` is equivalent to `γ` with an extra point.
 This is useful when considering the associated polynomial endofunctor
 -/
-def ListαEquivPUnitSum : Listα γ ≃ Sum PUnit.{v + 1} γ where
+def ListαEquivPUnitSum : Listα γ ≃ PUnit.{v + 1} ⊕ γ where
   toFun c :=
     match c with
     | Listα.nil => Sum.inl PUnit.unit

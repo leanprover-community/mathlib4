@@ -1208,7 +1208,7 @@ continuous multilinear map of `k` vectors `v₁, ..., vₖ`, mapping them
 to `f (x₁, (v_{e.symm 2})₂, x₃, ...)`, where at indices `i` in `s` one uses the `i`-th coordinate of
 the vector `v_{e.symm i}` and otherwise one uses the `i`-th coordinate of a reference vector `x`.
 This is continuous multilinear in the components of `x` outside of `s`, and in the `v_j`. -/
-noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α] [DecidableEq ι]
+noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)] :
     ContinuousMultilinearMap 𝕜 (fun (i : {a : ι // a ∉ s}) ↦ E₁ i)
       (ContinuousMultilinearMap 𝕜 (fun (_ : α) ↦ (∀ i, E₁ i)) G) :=
@@ -1217,6 +1217,7 @@ noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α] [DecidableEq
     simp only [MultilinearMap.iteratedFDerivComponent, MultilinearMap.domDomRestrictₗ,
       MultilinearMap.coe_mk, MultilinearMap.domDomRestrict_apply, coe_coe]
     apply (f.le_opNorm _).trans _
+    classical
     rw [← prod_compl_mul_prod s.toFinset, mul_assoc]
     gcongr
     · apply le_of_eq
@@ -1228,7 +1229,7 @@ noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α] [DecidableEq
       apply Finset.prod_le_prod (fun i _ ↦ norm_nonneg _) (fun i _ ↦ ?_)
       simpa only [i.2, ↓reduceDIte, Subtype.coe_eta] using norm_le_pi_norm (m (e.symm i)) ↑i
 
-@[simp] lemma iteratedFDerivComponent_apply {α : Type*} [Fintype α] [DecidableEq ι]
+@[simp] lemma iteratedFDerivComponent_apply {α : Type*} [Fintype α]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)]
     (v : ∀ i : {a : ι // a ∉ s}, E₁ i) (w : α → (∀ i, E₁ i)) :
     f.iteratedFDerivComponent e v w =
@@ -1236,7 +1237,7 @@ noncomputable def iteratedFDerivComponent {α : Type*} [Fintype α] [DecidableEq
   simp [iteratedFDerivComponent, MultilinearMap.iteratedFDerivComponent,
     MultilinearMap.domDomRestrictₗ]
 
-lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α] [DecidableEq ι]
+lemma norm_iteratedFDerivComponent_le {α : Type*} [Fintype α]
     (f : ContinuousMultilinearMap 𝕜 E₁ G) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)]
     (x : (i : ι) → E₁ i) :
     ‖f.iteratedFDerivComponent e (x ·)‖ ≤ ‖f‖ * ‖x‖ ^ (Fintype.card ι - Fintype.card α) := calc
@@ -1300,7 +1301,7 @@ variable (f : ContinuousMultilinearMap 𝕜 E G)
 
 /-- A continuous linear map is zero iff its norm vanishes. -/
 theorem opNorm_zero_iff : ‖f‖ = 0 ↔ f = 0 := by
-  simp [← (opNorm_nonneg f).le_iff_eq, opNorm_le_iff f le_rfl, ext_iff]
+  simp [← (opNorm_nonneg f).le_iff_eq, opNorm_le_iff f le_rfl, ContinuousMultilinearMap.ext_iff]
 
 @[deprecated (since := "2024-02-02")] alias op_norm_zero_iff := opNorm_zero_iff
 

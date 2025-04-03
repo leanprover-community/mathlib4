@@ -389,9 +389,11 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
   rfl
 
 /-- Equivalent characterizations of a Galois extension of finite degree-/
-theorem tfae [FiniteDimensional F E] :
-    List.TFAE [IsGalois F E, IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥,
-      Fintype.card (E ≃ₐ[F] E) = finrank F E, ∃ p : F[X], p.Separable ∧ p.IsSplittingField F E] := by
+theorem tfae [FiniteDimensional F E] : List.TFAE [
+    IsGalois F E,
+    IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥,
+    Fintype.card (E ≃ₐ[F] E) = finrank F E,
+    ∃ p : F[X], p.Separable ∧ p.IsSplittingField F E] := by
   tfae_have 1 → 2
   · exact fun h => OrderIso.map_bot (@intermediateFieldEquivSubgroup F _ E _ _ _ h).symm
   tfae_have 1 → 3

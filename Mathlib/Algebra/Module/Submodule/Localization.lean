@@ -144,8 +144,8 @@ lemma LinearMap.localized'_ker_eq_ker_localizedMap (g : M →ₗ[R] P) :
 lemma LinearMap.ker_localizedMap_eq_localized'_ker (g : M →ₗ[R] P) :
     LinearMap.ker (IsLocalizedModule.map p f f' g) =
       ((LinearMap.ker g).localized' S p f).restrictScalars _ := by
-  rw [localized'_ker_eq_ker_localizedMap S p f f']
-  rfl
+  ext
+  simp [localized'_ker_eq_ker_localizedMap S p f f']
 
 /--
 The canonical map from the kernel of `g` to the kernel of `g` localized at a submonoid.

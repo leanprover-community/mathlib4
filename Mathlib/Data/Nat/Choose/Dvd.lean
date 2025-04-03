@@ -31,7 +31,7 @@ lemma dvd_choose (hp : Prime p) (ha : a < p) (hab : b - a < p) (h : p ≤ b) : p
   this ▸ hp.dvd_choose_add ha hab (this.symm ▸ h)
 
 lemma dvd_choose_self (hp : Prime p) (hk : k ≠ 0) (hkp : k < p) : p ∣ choose p k :=
-  hp.dvd_choose hkp (sub_lt ((zero_le _).trans_lt hkp) hk.bot_lt) le_rfl
+  hp.dvd_choose hkp (sub_lt ((zero_le _).trans_lt hkp) <| zero_lt_of_ne_zero hk) le_rfl
 
 end Prime
 

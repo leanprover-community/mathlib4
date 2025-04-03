@@ -1052,38 +1052,57 @@ end Pi
 
 section Lift
 variable {γ : Type*} [Zero α] [Preorder α] [Zero β] [Preorder β] [Zero γ] [Preorder γ]
-  [SMul α β] [SMul α γ] (f : β → γ) (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
-  (smul : ∀ (a : α) b, f (a • b) = a • f b) (zero : f 0 = 0)
+  [SMul α β] [SMul α γ] (f : β → γ)
 
-lemma PosSMulMono.lift [PosSMulMono α γ] : PosSMulMono α β where
+lemma PosSMulMono.lift [PosSMulMono α γ]
+    (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
+    (smul : ∀ (a : α) b, f (a • b) = a • f b) : PosSMulMono α β where
   elim a ha b₁ b₂ hb := by simp only [← hf, smul] at *; exact smul_le_smul_of_nonneg_left hb ha
 
-lemma PosSMulStrictMono.lift [PosSMulStrictMono α γ] : PosSMulStrictMono α β where
+lemma PosSMulStrictMono.lift [PosSMulStrictMono α γ]
+    (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
+    (smul : ∀ (a : α) b, f (a • b) = a • f b) : PosSMulStrictMono α β where
   elim a ha b₁ b₂ hb := by
     simp only [← lt_iff_lt_of_le_iff_le' hf hf, smul] at *; exact smul_lt_smul_of_pos_left hb ha
 
-lemma PosSMulReflectLE.lift [PosSMulReflectLE α γ] : PosSMulReflectLE α β where
+lemma PosSMulReflectLE.lift [PosSMulReflectLE α γ]
+    (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
+    (smul : ∀ (a : α) b, f (a • b) = a • f b) : PosSMulReflectLE α β where
   elim a ha b₁ b₂ h := hf.1 <| le_of_smul_le_smul_left (by simpa only [smul] using hf.2 h) ha
 
-lemma PosSMulReflectLT.lift [PosSMulReflectLT α γ] : PosSMulReflectLT α β where
+lemma PosSMulReflectLT.lift [PosSMulReflectLT α γ]
+    (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
+    (smul : ∀ (a : α) b, f (a • b) = a • f b) : PosSMulReflectLT α β where
   elim a ha b₁ b₂ h := by
     simp only [← lt_iff_lt_of_le_iff_le' hf hf, smul] at *; exact lt_of_smul_lt_smul_left h ha
 
-lemma SMulPosMono.lift [SMulPosMono α γ] : SMulPosMono α β where
+lemma SMulPosMono.lift [SMulPosMono α γ]
+    (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
+    (smul : ∀ (a : α) b, f (a • b) = a • f b)
+    (zero : f 0 = 0) : SMulPosMono α β where
   elim b hb a₁ a₂ ha := by
     simp only [← hf, zero, smul] at *; exact smul_le_smul_of_nonneg_right ha hb
 
-lemma SMulPosStrictMono.lift [SMulPosStrictMono α γ] : SMulPosStrictMono α β where
+lemma SMulPosStrictMono.lift [SMulPosStrictMono α γ]
+    (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
+    (smul : ∀ (a : α) b, f (a • b) = a • f b)
+    (zero : f 0 = 0) : SMulPosStrictMono α β where
   elim b hb a₁ a₂ ha := by
     simp only [← lt_iff_lt_of_le_iff_le' hf hf, zero, smul] at *
     exact smul_lt_smul_of_pos_right ha hb
 
-lemma SMulPosReflectLE.lift [SMulPosReflectLE α γ] : SMulPosReflectLE α β where
+lemma SMulPosReflectLE.lift [SMulPosReflectLE α γ]
+    (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
+    (smul : ∀ (a : α) b, f (a • b) = a • f b)
+    (zero : f 0 = 0) : SMulPosReflectLE α β where
   elim b hb a₁ a₂ h := by
     simp only [← hf, ← lt_iff_lt_of_le_iff_le' hf hf, zero, smul] at *
     exact le_of_smul_le_smul_right h hb
 
-lemma SMulPosReflectLT.lift [SMulPosReflectLT α γ] : SMulPosReflectLT α β where
+lemma SMulPosReflectLT.lift [SMulPosReflectLT α γ]
+    (hf : ∀ {b₁ b₂}, f b₁ ≤ f b₂ ↔ b₁ ≤ b₂)
+    (smul : ∀ (a : α) b, f (a • b) = a • f b)
+    (zero : f 0 = 0) : SMulPosReflectLT α β where
   elim b hb a₁ a₂ h := by
     simp only [← hf, ← lt_iff_lt_of_le_iff_le' hf hf, zero, smul] at *
     exact lt_of_smul_lt_smul_right h hb

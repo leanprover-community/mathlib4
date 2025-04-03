@@ -547,12 +547,13 @@ lemma sum_cons' [AddCommMonoid M] [AddCommMonoid N] (n : ℕ) (σ : Fin n →₀
   congr
 
 @[to_additive]
-lemma prod_mul_eq_prod_mul_of_exists [DecidableEq α] [Zero M] [CommMonoid N]
+lemma prod_mul_eq_prod_mul_of_exists [Zero M] [CommMonoid N]
     {f : α →₀ M} {g : α → M → N} {n₁ n₂ : N}
     (a : α) (ha : a ∈ f.support)
     (h : g a (f a) * n₁ = g a (f a) * n₂) :
-    f.prod g * n₁ = f.prod g * n₂ :=
-  Finset.prod_mul_eq_prod_mul_of_exists a ha h
+    f.prod g * n₁ = f.prod g * n₂ := by
+  classical
+  exact Finset.prod_mul_eq_prod_mul_of_exists a ha h
 
 end Finsupp
 
@@ -564,10 +565,9 @@ theorem Finsupp.sum_apply' : g.sum k x = g.sum fun i b => k i b x :=
 
 section
 
-open scoped Classical
-
-theorem Finsupp.sum_sum_index' : (∑ x ∈ s, f x).sum t = ∑ x ∈ s, (f x).sum t :=
-  Finset.induction_on s rfl fun a s has ih => by
+theorem Finsupp.sum_sum_index' : (∑ x ∈ s, f x).sum t = ∑ x ∈ s, (f x).sum t := by
+  classical
+  exact Finset.induction_on s rfl fun a s has ih => by
     simp_rw [Finset.sum_insert has, Finsupp.sum_add_index' h0 h1, ih]
 
 end

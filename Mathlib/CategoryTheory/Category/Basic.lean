@@ -311,6 +311,18 @@ theorem epi_of_epi_fac {X Y Z : C} {f : X ⟶ Y} {g : Y ⟶ Z} {h : X ⟶ Z} [Ep
     (w : f ≫ g = h) : Epi g := by
   subst h; exact epi_of_epi f g
 
+section
+
+variable [Quiver.IsThin C] (f : X ⟶ Y)
+
+instance : Mono f where
+  right_cancellation _ _ _ := Subsingleton.elim _ _
+
+instance : Epi f where
+  left_cancellation _ _ _ := Subsingleton.elim _ _
+
+end
+
 end
 
 section

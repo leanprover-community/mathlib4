@@ -156,7 +156,7 @@ theorem ext {f g : X →ₑ[φ] Y} :
     (∀ x, f x = g x) → f = g :=
   DFunLike.ext f g
 
-theorem ext_iff  {f g : X →ₑ[φ] Y} :
+protected theorem ext_iff  {f g : X →ₑ[φ] Y} :
     f = g ↔ ∀ x, f x = g x :=
   DFunLike.ext_iff
 
@@ -279,7 +279,7 @@ theorem comp_inverse' {f : X →ₑ[φ] Y} {g : Y → X}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     (inverse' f g k₂ h₁ h₂).comp f (κ := CompTriple.comp_inv k₁)
       = MulActionHom.id M := by
-  rw [ext_iff]
+  rw [MulActionHom.ext_iff]
   intro x
   simp only [comp_apply, inverse_apply, id_apply]
   exact h₁ x
@@ -288,7 +288,7 @@ theorem inverse'_comp {f : X →ₑ[φ] Y} {g : Y → X}
     {k₂ : Function.RightInverse φ' φ}
     {h₁ : Function.LeftInverse g f} {h₂ : Function.RightInverse g f} :
     f.comp (inverse' f g k₂ h₁ h₂) (κ := CompTriple.comp_inv k₂) = MulActionHom.id N := by
-  rw [ext_iff]
+  rw [MulActionHom.ext_iff]
   intro x
   simp only [comp_apply, inverse_apply, id_apply]
   exact h₂ x
@@ -370,11 +370,9 @@ namespace DistribMulActionHom
 Coercion is already handled by all the HomClass constructions I believe -/
 -- instance coe : Coe (A →+[M] B) (A →+ B) :=
 --   ⟨toAddMonoidHom⟩
--- #align distrib_mul_action_hom.has_coe DistribMulActionHom.coe
 
 -- instance coe' : Coe (A →+[M] B) (A →[M] B) :=
 --   ⟨toMulActionHom⟩
--- #align distrib_mul_action_hom.has_coe' DistribMulActionHom.coe'
 
 instance : FunLike (A →ₑ+[φ] B) A B where
   coe m := m.toFun
@@ -626,12 +624,10 @@ Coercion is already handled by all the HomClass constructions I believe -/
 -- @[coe]
 -- instance coe : Coe (R →+*[M] S) (R →+* S) :=
 --   ⟨toRingHom⟩
--- #align mul_semiring_action_hom.has_coe MulSemiringActionHom.coe
 
 -- @[coe]
 -- instance coe' : Coe (R →+*[M] S) (R →+[M] S) :=
 --   ⟨toDistribMulActionHom⟩
--- #align mul_semiring_action_hom.has_coe' MulSemiringActionHom.coe'
 
 -- Porting note: removed has_coe_to_fun instance, coercions handled differently now
 

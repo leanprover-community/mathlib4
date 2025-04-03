@@ -174,6 +174,13 @@ theorem unbot_coe (x : α) (h : (x : WithBot α) ≠ ⊥ := coe_ne_bot) : (x : W
 instance canLift : CanLift (WithBot α) α (↑) fun r => r ≠ ⊥ where
   prf x h := ⟨x.unbot h, coe_unbot _ _⟩
 
+instance instTop [Top α] : Top (WithBot α) where
+  top := (⊤ : α)
+
+@[simp, norm_cast] lemma coe_top [Top α] : ((⊤ : α) : WithBot α) = ⊤ := rfl
+@[simp, norm_cast] lemma coe_eq_top [Top α] {a : α} : (a : WithBot α) = ⊤ ↔ a = ⊤ := coe_eq_coe
+@[simp, norm_cast] lemma top_eq_coe [Top α] {a : α} : ⊤ = (a : WithBot α) ↔ ⊤ = a := coe_eq_coe
+
 section LE
 
 variable [LE α]
@@ -194,13 +201,6 @@ theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔
 
 @[simp, deprecated bot_le "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem none_le {a : WithBot α} : @LE.le (WithBot α) _ none a := bot_le
-
-instance instTop [Top α] : Top (WithBot α) where
-  top := (⊤ : α)
-
-@[simp, norm_cast] lemma coe_top [Top α] : ((⊤ : α) : WithBot α) = ⊤ := rfl
-@[simp, norm_cast] lemma coe_eq_top [Top α] {a : α} : (a : WithBot α) = ⊤ ↔ a = ⊤ := coe_eq_coe
-@[simp, norm_cast] lemma top_eq_coe [Top α] {a : α} : ⊤ = (a : WithBot α) ↔ ⊤ = a := coe_eq_coe
 
 instance orderTop [OrderTop α] : OrderTop (WithBot α) where
   le_top o a ha := by cases ha; exact ⟨_, rfl, le_top⟩
@@ -752,6 +752,13 @@ theorem untop_coe (x : α) (h : (x : WithTop α) ≠ ⊤ := coe_ne_top) : (x : W
 instance canLift : CanLift (WithTop α) α (↑) fun r => r ≠ ⊤ where
   prf x h := ⟨x.untop h, coe_untop _ _⟩
 
+instance instBot [Bot α] : Bot (WithTop α) where
+  bot := (⊥ : α)
+
+@[simp, norm_cast] lemma coe_bot [Bot α] : ((⊥ : α) : WithTop α) = ⊥ := rfl
+@[simp, norm_cast] lemma coe_eq_bot [Bot α] {a : α} : (a : WithTop α) = ⊥ ↔ a = ⊥ := coe_eq_coe
+@[simp, norm_cast] lemma bot_eq_coe [Bot α] {a : α} : (⊥ : WithTop α) = a ↔ ⊥ = a := coe_eq_coe
+
 section LE
 
 variable [LE α]
@@ -796,13 +803,6 @@ instance orderTop : OrderTop (WithTop α) where
 
 @[simp, deprecated le_top "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem le_none {a : WithTop α} : @LE.le (WithTop α) _ a none := le_top
-
-instance instBot [Bot α] : Bot (WithTop α) where
-  bot := (⊥ : α)
-
-@[simp, norm_cast] lemma coe_bot [Bot α] : ((⊥ : α) : WithTop α) = ⊥ := rfl
-@[simp, norm_cast] lemma coe_eq_bot [Bot α] {a : α} : (a : WithTop α) = ⊥ ↔ a = ⊥ := coe_eq_coe
-@[simp, norm_cast] lemma bot_eq_coe [Bot α] {a : α} : (⊥ : WithTop α) = a ↔ ⊥ = a := coe_eq_coe
 
 instance orderBot [OrderBot α] : OrderBot (WithTop α) where
   bot_le o a ha := by cases ha; exact ⟨_, rfl, bot_le⟩

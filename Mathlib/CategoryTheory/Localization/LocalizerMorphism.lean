@@ -33,7 +33,7 @@ open Localization
 variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃}
   {D₁ : Type u₄} {D₂ : Type u₅} {D₃ : Type u₆}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃]
-  [Category.{v₄} D₁] [Category.{v₅} D₂] [Category.{v₆} D₂]
+  [Category.{v₄} D₁] [Category.{v₅} D₂] [Category.{v₆} D₃]
   (W₁ : MorphismProperty C₁) (W₂ : MorphismProperty C₂) (W₃ : MorphismProperty C₃)
 
 /-- If `W₁ : MorphismProperty C₁` and `W₂ : MorphismProperty C₂`, a `LocalizerMorphism W₁ W₂`
@@ -81,7 +81,8 @@ localized categories. --/
 noncomputable def localizedFunctor : D₁ ⥤ D₂ :=
   lift (Φ.functor ⋙ L₂) (Φ.inverts _) L₁
 
-noncomputable instance : Lifting L₁ W₁ (Φ.functor ⋙ L₂) (Φ.localizedFunctor L₁ L₂) := by
+noncomputable instance liftingLocalizedFunctor :
+    Lifting L₁ W₁ (Φ.functor ⋙ L₂) (Φ.localizedFunctor L₁ L₂) := by
   dsimp [localizedFunctor]
   infer_instance
 
@@ -102,7 +103,7 @@ variable [CatCommSq Φ.functor L₁ L₂ G]
 
 /-- If a localizer morphism induces an equivalence on some choice of localized categories,
 it will be so for any choice of localized categoriees. -/
-lemma isEquivalence_imp [G.IsEquivalence] : G'.IsEquivalence := by
+lemma isEquivalence_imp [G.IsEquivalence] : G'.IsEquivalence :=
   let E₁ := Localization.uniq L₁ L₁' W₁
   let E₂ := Localization.uniq L₂ L₂' W₂
   let e : L₁ ⋙ G ⋙ E₂.functor ≅ L₁ ⋙ E₁.functor ⋙ G' :=
@@ -117,7 +118,7 @@ lemma isEquivalence_imp [G.IsEquivalence] : G'.IsEquivalence := by
             isoWhiskerRight (compUniqFunctor L₁ L₁' W₁).symm G' ≪≫ Functor.associator _ _ _
   have := Functor.isEquivalence_of_iso
     (liftNatIso L₁ W₁ _ _ (G ⋙ E₂.functor) (E₁.functor ⋙ G') e)
-  exact Functor.isEquivalence_of_comp_left E₁.functor G'
+  Functor.isEquivalence_of_comp_left E₁.functor G'
 
 lemma isEquivalence_iff : G.IsEquivalence ↔ G'.IsEquivalence :=
   ⟨fun _ => Φ.isEquivalence_imp L₁ L₂ G L₁' L₂' G',
