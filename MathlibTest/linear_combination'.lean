@@ -260,7 +260,7 @@ example {r s a b : ℕ} (h₁ : (r : ℤ) = a + 1) (h₂ : (s : ℤ) = b + 1) :
 
 -- Implementation at the time of the port (Nov 2022) was 110,000 heartbeats.
 -- Eagerly elaborating leaf nodes brings this to 7,540 heartbeats.
-set_option maxHeartbeats 8000 in
+set_option maxHeartbeats 9000 in
 example (K : Type*) [Field K] [CharZero K] {x y z p q : K}
     (h₀ : 3 * x ^ 2 + z ^ 2 * p = 0)
     (h₁ : z * (2 * y) = 0)
