@@ -227,19 +227,6 @@ theorem subst_X (ha : HasSubst a) :
     subst a (X : R⟦X⟧) = a := by
   rw [← coe_substAlgHom ha, substAlgHom_X]
 
--- TODO: remove
-/-
-theorem comp_substAlgHom
-    {T : Type*} [CommRing T] [Algebra R T] {ε : S →ₐ[R] T} :
-    (MvPowerSeries.mapAlgHom τ ε).comp (substAlgHom ha) = substAlgHom (ha.map ε)  :=
-  MvPowerSeries.comp_subst ha.const ε
-
-theorem comp_substAlgHom
-    {T : Type*} [CommRing T] [Algebra R T] (ε : S →ₐ[R] T) :
-    (MvPowerSeries.mapAlgHom τ ε).comp (substAlgHom ha) = substAlgHom (ha.map ε)  :=
-  MvPowerSeries.comp_substAlgHom ha.const ε
--/
-
 theorem HasSubst.comp {a : PowerSeries S} (ha : HasSubst a)
     {b : MvPowerSeries υ T} (hb : HasSubst b):
     HasSubst (substAlgHom hb a) :=
