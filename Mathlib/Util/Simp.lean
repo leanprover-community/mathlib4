@@ -27,7 +27,8 @@ on the proof expression returned by `Methods.discharge?`
 def Methods.dischargeQ? (M : Methods) (a : Q(Prop)) : SimpM <| Option Q($a) := do
   match ← M.discharge? a with
   | some pf =>
-    let ⟨0, ~q($a), pf⟩ ← inferTypeQ pf | return none
+    let pf : Q($a) := pf
+    pf.check
     return some pf
   | none => return none
 
