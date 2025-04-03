@@ -548,8 +548,7 @@ def embDomain (s : SummableFamily Γ R α) (f : α ↪ β) : SummableFamily Γ R
   isPWO_iUnion_support' := by
     refine s.isPWO_iUnion_support.mono (Set.iUnion_subset fun b g h => ?_)
     by_cases hb : b ∈ Set.range f
-    · dsimp only at h
-      rw [dif_pos hb] at h
+    · rw [dif_pos hb] at h
       exact Set.mem_iUnion.2 ⟨Classical.choose hb, h⟩
     · simp [-Set.mem_range, dif_neg hb] at h
   finite_co_support' g :=
