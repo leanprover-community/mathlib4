@@ -481,13 +481,13 @@ lemma invtSubmodule_reflection:
       intro a
       have r31 : i.1 = -j.1 := by
         have tt : i.1.1 + j.1.1 = 0 := by
-          simp_all [S, r]
-          obtain ⟨val, property⟩ := i
-          obtain ⟨val_1, property_1⟩ := j
-          simp_all only [S]
-          sorry
-        sorry
-
+          have h_toFun_eq : r.toFun = 0 := by
+            rw [a]
+            exact rfl
+          exact h_toFun_eq
+        have tt2 : i.1.1 = -j.1.1 := by
+          exact eq_neg_of_add_eq_zero_left tt
+        exact LieModule.Weight.ext (congrFun tt2)
         --dsimp [r] at a
         --search_proof
 
@@ -495,8 +495,7 @@ lemma invtSubmodule_reflection:
       rw [r31] at r32
       simp at r32
       have t : j.1.IsNonZero := by
-        have tt := j.2
-        sorry
+        sorry--apply?
       have r33 := LieAlgebra.IsKilling.root_apply_coroot (K := K) (H := H) (L := L) t
       rw [r33] at r32
       field_simp at r32
