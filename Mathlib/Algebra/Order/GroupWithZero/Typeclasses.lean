@@ -6,7 +6,8 @@ Authors: Damiano Testa, Yuyang Zhao
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Notation.Pi
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
-import Mathlib.Data.Quot
+import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Util.Notation3
 
 /-!
 # Monotonicity of multiplication by positive elements

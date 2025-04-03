@@ -792,6 +792,7 @@ import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.GroupWithZero.Finset
 import Mathlib.Algebra.Order.GroupWithZero.Submonoid
 import Mathlib.Algebra.Order.GroupWithZero.Synonym
+import Mathlib.Algebra.Order.GroupWithZero.Typeclasses
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Lemmas
 import Mathlib.Algebra.Order.GroupWithZero.WithZero
@@ -836,6 +837,7 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Monoid.WithTop
+import Mathlib.Algebra.Order.MonoidWithZero.Unbundled
 import Mathlib.Algebra.Order.Monovary
 import Mathlib.Algebra.Order.Nonneg.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
