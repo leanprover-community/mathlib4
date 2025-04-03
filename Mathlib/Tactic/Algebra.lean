@@ -34,16 +34,36 @@ set_option linter.style.longLine false
 
 open Ring in
 /-- A polynomial expression, which is a sum of monomials. -/
-inductive ExSum : ∀ {v: Lean.Level} (A : Q(Type v)), (e : Q($A)) → Type
+inductive ExSum : ∀ {v: Lean.Level} (A : Q(Type v)), (a : Q($A)) → Type
+  -- | unsafeCast {u v : Lean.Level} {A : Q(Type u)} (B : Q(Type v))
+  --   {a : Q($A)} (va : ExSum A a) : ExSum q($B) (q($a):)
   | zero {w : Lean.Level} {A : Q(Type w)} (sA : Q(CommSemiring $A)) : ExSum  A q(((nat_lit 0).rawCast:$A))
   | one : ExSum q(ℕ) q((1 : ℕ))
   /-- A sum `a + b` is a polynomial if `a` is a monomial and `b` is another polynomial. -/
   | add {v w: Lean.Level} {R : Q(Type v)} {A : Q(Type w)}
     {sR : Q(CommSemiring $R)} {sA : Q(CommSemiring $A)} {r : Q($R)}
     {a b : Q($A)} (sAlg : Q(Algebra $R $A)) :
-    ExSum R q($r) → ExProd sA q($a) → ExSum A q($b) →
-      ExSum A q($r • $a + $b)
+    ExSum q($R) q($r) → ExProd sA q($a) → ExSum q($A) q($b) →
+      ExSum q($A) q($r • $a + $b)
 
+def Ring.ExProd.unsafeCast : sorry := sorry
+
+-- unsafe def ExSum.unsafeCast {u v : Level} {A₁ : Q(Type u)} (A₂ : Q(Type v)) {a₁ : Q($A₁)}
+--   (vr₁ : ExSum q($A₁) q($a₁)) : (a₂ : Q($A₂)) × ExSum A₂ a₂ :=
+--   match vr₁ with
+--   | zero sA =>
+--     have sA₂ : Q(CommSemiring $A₂) := sA
+--     ⟨_, .zero (A := A₂) sA₂⟩
+--   | one =>
+--   /- what do what do? -/
+--     ⟨(q($a₁):), .one⟩
+--   | @add v' w' R A sR sA r a t sAlg vr va vt  =>
+--     have sA : Q(CommSemiring $A₂) := sA
+--     have sAlg' : Q(Algebra $R $A₂) := sAlg
+--     let ⟨t, vt⟩ := vt.unsafeCast A₂
+--     let a' : Q($A₂) := sorry
+--     let va : Ring.ExProd sA a' := sorry
+--     ⟨_, .add sAlg' vr va vt ⟩
 
 def sℕ : Q(CommSemiring ℕ) := q(Nat.instCommSemiring)
 
@@ -111,14 +131,18 @@ def evalAtom {v : Level}  {A : Q(Type v)} (sA : Q(CommSemiring $A)) (e : Q($A)) 
 
 mutual
 
-partial def evalMul {v : Level} {A : Q(Type v)} (sA : Q(CommSemiring $A)) {a₁ a₂ : Q($A)}
-    (va₁ : ExSum A a₁) (va₂ : ExSum A a₂) :
-    MetaM <| Result (ExSum A) q($a₁ * $a₂) := do
+partial def evalHMul {u v : Level} {A₁ : Q(Type u)} {A₂ : Q(Type v)}
+    (sA₁ : Q(CommSemiring $A₁)) (sA₂ : Q(CommSemiring $A₂)) {a₁ : Q($A₁)} {a₂ : Q($A₂)}
+    (va₁ : ExSum A₁ a₁) (va₂ : ExSum A₂ a₂) :
+      let a₁' : Q($A₂) := a₁
+    MetaM <| Result (ExSum A₂) q($a₁' * $a₂) := do
   match va₂ with
   | .zero sA => sorry
   | .one =>
-    assumeInstancesCommute
-    return ⟨a₁, va₁, q(Nat.mul_one $a₁)⟩
+    -- assumeInstancesCommute
+    sorry
+    -- return ⟨sorry, sorry, sorry⟩
+    -- return ⟨a₁, va₁, q(Nat.mul_one $a₁)⟩
   | .add (R := R) (sR := sR) (sAlg := sRA) .. => sorry
 
 
