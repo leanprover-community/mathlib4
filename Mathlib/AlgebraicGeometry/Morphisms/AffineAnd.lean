@@ -262,8 +262,6 @@ lemma HasAffineProperty.SpecMap_iff_of_affineAnd {P : MorphismProperty Scheme.{u
   rw [HasAffineProperty.iff_of_isAffine (P := P), affineAnd, and_iff_right]
   exacts [MorphismProperty.arrow_mk_iso_iff (RingHom.toMorphismProperty Q)
     (arrowIsoΓSpecOfIsAffine f).symm, inferInstance]
-
-
 variable {Q' : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
 
 lemma HasAffineProperty.affineAnd_le_affineAnd {P P' : MorphismProperty Scheme.{u}}
