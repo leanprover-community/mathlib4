@@ -56,7 +56,7 @@ theorem of_succ_lt [SuccOrder α] [WellFoundedLT α]
     · exact hs a
     · exact (IH h).trans (hs b)
   | hl b hb IH =>
-  · intro hab
+    intro hab
     have hab' := hb.succ_lt hab
     exact (IH _ hab' (lt_succ_of_not_isMax hab.not_isMax)).trans_le
       ((hl hb).1 (mem_image_of_mem _ hab'))
