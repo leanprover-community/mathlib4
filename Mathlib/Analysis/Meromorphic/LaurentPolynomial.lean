@@ -10,9 +10,9 @@ import Mathlib.Analysis.Meromorphic.NormalForm
 # Laurent Polynomials
 
 This file discusses Laurent polynomials as examples of meromorphic functions in normal form. Laurent
-polynomials are functions on a non-trivially normed field `𝕜` of the form `(∏ᶠ u, fun z ↦ (z - u) ^
-d u)`, where `d : 𝕜 → ℤ` has finite support. We show that Laurent polynomials are meromorphic in
-normal form, with divisor equal to `d`.
+polynomials are functions on a non-trivially normed field `𝕜` of the form
+`(∏ᶠ u, fun z ↦ (z - u) ^ d u)`, where `d : 𝕜 → ℤ` has finite support. We show that Laurent
+polynomials are meromorphic in normal form, with divisor equal to `d`.
 
 ## Implementation Notice
 
@@ -20,7 +20,7 @@ For simplicity of notation, we use the abbreviation `LaurentPolynomial d` to des
 `∏ᶠ u, fun z ↦ (z - u) ^ d u`.
 -/
 
-open Real Topology
+open Function
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -32,7 +32,7 @@ variable
 Laurent polynomials are functions on a non-trivially normed field `𝕜` of the form
 `(∏ᶠ u, fun z ↦ (z - u) ^ d u)`.
 -/
-noncomputable abbrev LaurentPolynomial (d : 𝕜 → ℤ) := (∏ᶠ u, (· - u) ^ d u)
+noncomputable abbrev Function.LaurentPolynomial (d : 𝕜 → ℤ) := (∏ᶠ u, (· - u) ^ d u)
 
 private lemma analyticAt_finLaurentPolynomial_off_support (d : 𝕜 → ℤ) (P : Finset 𝕜)
     (hz : z ∉ P) :
