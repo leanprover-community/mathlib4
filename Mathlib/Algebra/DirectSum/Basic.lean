@@ -73,10 +73,14 @@ namespace DirectSum
 variable {ι}
 
 /-- Coercion from a `DirectSum` to a pi type is an `AddMonoidHom`. -/
-@[simps!]
 def coeFnAddMonoidHom [∀ i, AddCommMonoid (β i)] : (⨁ i, β i) →+ (Π i, β i) where
   toFun x := x
   __ := DFinsupp.coeFnAddMonoidHom
+
+@[simp]
+lemma coeFnAddMonoidHom_apply [∀ i, AddCommMonoid (β i)] (v : ⨁ i, β i) :
+    coeFnAddMonoidHom β v = v :=
+  rfl
 
 section AddCommGroup
 
