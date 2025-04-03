@@ -262,7 +262,7 @@ private theorem lambdaSquared_eq_zero_of_not_le_height_aux {w : ℕ → ℝ} {he
   apply le_trans _ hyp
   norm_cast
   calc _ ≤ d1.lcm d2 := by rw [h]
-      _ ≤ d1 * d2 := Nat.div_le_self _ _
+      _ ≤ d1 * d2 := Nat.lcm_le_mul _ _
       _ ≤ _       := ?_
   · rw [sq]; gcongr
 

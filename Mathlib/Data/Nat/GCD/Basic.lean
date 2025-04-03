@@ -82,6 +82,9 @@ theorem lcm_mul_left {m n k : ℕ} : (m * n).lcm (m * k) = m * n.lcm k := by
 theorem lcm_mul_right {m n k : ℕ} : (m * n).lcm (k * n) = m.lcm k * n := by
  rw [mul_comm, mul_comm k n, lcm_mul_left, mul_comm]
 
+theorem lcm_le_mul (m n : ℕ) : lcm m n ≤ m * n :=
+  div_le_self _ _
+
 /-!
 ### `Coprime`
 
