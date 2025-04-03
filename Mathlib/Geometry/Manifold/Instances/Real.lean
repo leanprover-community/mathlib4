@@ -200,16 +200,12 @@ theorem frontier_quadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
   simp only [mem_diff, mem_setOf_eq, not_forall, not_lt, and_congr_right_iff]
   exact fun aux ↦ exists_congr fun i ↦ ⟨fun h ↦ by linarith [aux i], fun h ↦ by linarith⟩
 
--- Can this proof be golfed further?
 lemma aux {a b c d : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) (hc : 0 < c) (hd : 0 < d) :
     0 < a * c + b * d := by
-  by_cases ha: 0 < a
-  · by_cases hb: 0 < b
-    · positivity
-    · have : b = 0 := by linarith
-      simp_all
-  · have : a = 0 := by linarith
-    simp_all
+  have : 0 < a ∨ 0 < b := by
+    by_contra!
+    linarith
+  cases this <;> positivity
 
 theorem EuclideanHalfSpace.interior_convex [NeZero n] :
     Convex ℝ (interior { x : EuclideanSpace ℝ (Fin n) | 0 ≤ x 0 }) := by
