@@ -12,7 +12,6 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 Basic properties, relationship with `exp`.
 -/
 
-
 noncomputable section
 
 namespace Complex
@@ -295,12 +294,3 @@ lemma Complex.cexp_tsum_eq_tprod (f : ι →  ℂ) (hfn : ∀ n, f n ≠ 0)
   (Complex.hasProd_of_hasSum_log _ hfn hf.hasSum).tprod_eq.symm
 
 end tsum_tprod
-
-open Complex in
-theorem Set.Countable.preimage_circleMap {s : Set ℂ} (hs : s.Countable) (c : ℂ) {R : ℝ}
-    (hR : R ≠ 0) : (circleMap c R ⁻¹' s).Countable :=
-  show (((↑) : ℝ → ℂ) ⁻¹' ((· * I) ⁻¹'
-      (exp ⁻¹' ((R * ·) ⁻¹' ((c + ·) ⁻¹' s))))).Countable from
-    (((hs.preimage (add_right_injective _)).preimage <|
-      mul_right_injective₀ <| ofReal_ne_zero.2 hR).preimage_cexp.preimage <|
-        mul_left_injective₀ I_ne_zero).preimage ofReal_injective
