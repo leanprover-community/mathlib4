@@ -32,7 +32,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 open CategoryTheory.MorphismProperty
 
 /-- A morphism of schemes `f : X ⟶ Y` is universally open if the base change `X ×[Y] Y' ⟶ Y'`
-along any morphism `Y' ⟶ Y` is (topologically) a open map.
+along any morphism `Y' ⟶ Y` is (topologically) an open map.
 -/
 @[mk_iff]
 class UniversallyOpen (f : X ⟶ Y) : Prop where
