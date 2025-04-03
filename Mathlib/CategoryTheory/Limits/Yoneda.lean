@@ -47,7 +47,6 @@ def colimitCoconeIsColimit (X : Cᵒᵖ) : IsColimit (colimitCocone X) where
       coyoneda_obj_map, Category.id_comp]
   uniq s m w := by
     apply funext; rintro ⟨⟩
-    dsimp
     rw [← w]
     simp
 

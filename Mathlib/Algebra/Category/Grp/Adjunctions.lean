@@ -136,13 +136,11 @@ def abelianize : Grp.{u} ⥤ CommGrp.{u} where
   map f := CommGrp.ofHom (Abelianization.lift (Abelianization.of.comp f.hom))
   map_id := by
     intros
-    simp only [coe_id]
     ext : 1
     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
     rfl
   map_comp := by
     intros
-    simp only [coe_comp]
     ext : 1
     apply (Equiv.apply_eq_iff_eq_symm_apply Abelianization.lift).mpr
     rfl
