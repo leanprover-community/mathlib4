@@ -47,14 +47,16 @@ theorem of_mem_lowerBounds_upperBounds {f : α → β} (hf : StrictMono f)
 theorem of_succ_lt [SuccOrder α] [WellFoundedLT α]
     (hs : ∀ a, f a < f (succ a)) (hl : ∀ {a}, IsSuccLimit a → IsLUB (f '' Iio a) (f a)) :
     IsNormal f := by
-  refine ⟨fun a b ↦ SuccOrder.limitRecOn b ?_ ?_ ?_, hl⟩
-  · intro b hb hb'
-    cases hb.not_lt hb'
-  · intro b hb IH hab
+  refine ⟨fun a b ↦ ?_, hl⟩
+  induction b using SuccOrder.limitRecOn with
+  | hm b hb => exact hb.not_lt.elim
+  | hs b hb IH =>
+    intro hab
     obtain rfl | h := (lt_succ_iff_eq_or_lt_of_not_isMax hb).1 hab
     · exact hs a
     · exact (IH h).trans (hs b)
-  · intro b hb IH hab
+  | hl b hb IH =>
+  · intro hab
     have hab' := hb.succ_lt hab
     exact (IH _ hab' (lt_succ_of_not_isMax hab.not_isMax)).trans_le
       ((hl hb).1 (mem_image_of_mem _ hab'))
@@ -126,7 +128,8 @@ theorem map_iSup {ι} [Nonempty ι] {g : ι → α} (hf : IsNormal f) (hg : BddA
     f (⨆ i, g i) = ⨆ i, f (g i) := by
   unfold iSup
   convert map_sSup hf (range_nonempty g) hg
-  ext; simp
+  ext
+  simp
 
 end ConditionallyCompleteLinearOrder
 
