@@ -133,44 +133,12 @@ lemma divisorsAntidiagonalList_coe {n : ℕ} :
   rw [divisorsAntidiagonalList, divisorsAntidiagonal, List.toFinset_filterMap (f_inj := by aesop),
     List.toFinset_range'_1_1]
 
-lemma List.Sorted.filterMap {α β : Type*} [DecidableEq α] [DecidableEq β]
-    (p : α → Option β) (l : List α)
-    (r : α → α → Prop) (r' : β → β → Prop) (hl : l.Sorted r)
-    (hp : ∀ (a b : α) (c d : β), p a = some c → p b = some d → r a b → r' c d) :
-    (l.filterMap p).Sorted r' := by
-  induction l with
-  | nil => simp
-  | cons a l ih =>
-    simp [List.filterMap_cons]
-    obtain H | ⟨b, hb⟩ := Option.eq_none_or_eq_some (p a)
-    · exact H ▸ ih (List.sorted_cons.mp hl).right
-    · rw [hb, List.sorted_cons]
-      refine ⟨fun x hx ↦ ?_, ih (List.sorted_cons.mp hl).right⟩
-      rw [List.mem_filterMap] at hx
-      obtain ⟨u, hu, hu'⟩ := hx
-      apply hp a u b x hb hu'
-      apply (List.sorted_cons.mp hl).left u hu
-
-lemma List.left_le_of_mem_range' {a b s x : ℕ}
-    (hx : x ∈ List.range' a b s) : a ≤ x := by
-  sorry
-
-lemma List.sorted_lt_range' {a b s} (hs : s ≠ 0) :
-    List.Sorted (· < ·) (List.range' a b s) := by
-  induction b generalizing a with
-  | zero => simp
-  | succ n ih =>
-    rw [List.range'_succ]
-    refine List.sorted_cons.mpr ⟨fun b hb ↦ ?_, @ih (a + s)⟩
-    apply lt_of_lt_of_le (Nat.lt_add_of_pos_right (Nat.zero_lt_of_ne_zero hs))
-      (List.left_le_of_mem_range' hb)
-
 lemma divisorsAntidiagonalList_sorted {n : ℕ} :
     n.divisorsAntidiagonalList.Sorted (Prod.Lex (· < ·) (· < ·)) := by
-  apply List.Sorted.filterMap _ _ _ _ (List.sorted_lt_range' (Nat.one_ne_zero))
+  apply List.Sorted.filterMap (List.sorted_lt_range' (Nat.one_ne_zero))
   intro a b c d h h' ha
-  simp at h h'
   apply Prod.Lex.left
+  rw [Option.ite_none_right_eq_some, Option.some.injEq] at h h'
   simpa [←h.right, ←h'.right]
 
 @[simp]
