@@ -242,46 +242,6 @@ theorem instIsUniformAddGroup [AddGroup R] [IsUniformAddGroup R] :
 
 end Uniformity
 
-section ext
-
-variable {σ τ R S : Type*} [TopologicalSpace R] [TopologicalSpace S]
-
-lemma continuous_linearMap_ext [CommSemiring R] [AddCommMonoid S] [Module R S] [T2Space R]
-    [T2Space S] {f g : MvPowerSeries σ R →ₗ[R] S}
-    (hf : Continuous f) (hg : Continuous g) (h : ∀ i, f (monomial R i 1) = g (monomial R i 1))
-    (P : MvPowerSeries σ R) : f P = g P := by
-  rw [as_tsum P, Summable.map_tsum ⟨_, hasSum_of_monomials_self _⟩ _ hf,
-    Summable.map_tsum ⟨_, hasSum_of_monomials_self _⟩ _ hg]
-  congr 1
-  ext1 n
-  rw [← mul_one (coeff R n P), ← smul_eq_mul, map_smul, map_smul, h, map_smul]
-
-lemma continuous_ringHom_ext [Semiring R] [Semiring S] [T2Space R] [T2Space S]
-    {f g : MvPowerSeries σ R →+* S}
-    (hf : Continuous f) (hg : Continuous g) (h : ∀ i, f (X i) = g (X i))
-    (hC : ∀ r, f (C _ _ r) = g (C _ _ r)) (P : MvPowerSeries σ R) : f P = g P := by
-  rw [as_tsum P, Summable.map_tsum ⟨_, hasSum_of_monomials_self _⟩ _ hf,
-    Summable.map_tsum ⟨_, hasSum_of_monomials_self _⟩ _ hg]
-  congr 1
-  ext1 n
-  rw [← C_mul_monomial, ← C_mul_monomial, map_mul f, map_mul g, hC, map_mul f, map_mul g, hC]
-  congr 2
-  induction n using Finsupp.induction_linear with
-  | h0 => simp
-  | hadd n m hn hm =>
-      rw [← one_mul 1, ← monomial_mul_monomial, map_mul, hn, hm, monomial_mul_monomial,
-        ← monomial_mul_monomial]
-      simp
-  | hsingle a b => rw [← X_pow_eq, map_pow, map_pow, h]
-
-lemma continuous_algHom_ext [CommSemiring R] [Semiring S] [Algebra R S] [T2Space R] [T2Space S]
-    {f g : MvPowerSeries σ R →ₐ[R] S}
-    (hf : Continuous f) (hg : Continuous g) (h : ∀ i, f (X i) = g (X i))
-    (P : MvPowerSeries σ R) : f P = g P := by
-  apply continuous_ringHom_ext hf hg h (fun _ ↦ by simp [c_eq_algebraMap])
-
-end ext
-
 end WithPiTopology
 
 end MvPowerSeries
