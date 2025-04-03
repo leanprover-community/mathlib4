@@ -246,7 +246,6 @@ instance : SetLike ZFSet ZFSet where
   coe := toSet
   coe_injective' := toSet_injective
 
--- TODO: add lemmas relating `⊂` to `∈`.
 instance : HasSSubset ZFSet := ⟨(· < ·)⟩
 
 @[simp]
@@ -259,6 +258,9 @@ theorem lt_def (x y : ZFSet) : x < y ↔ x ⊂ y :=
 
 instance : IsAntisymm ZFSet (· ⊆ ·) :=
   ⟨@le_antisymm ZFSet _⟩
+
+instance : IsNonstrictStrictOrder ZFSet (· ⊆ ·) (· ⊂ ·) :=
+  ⟨fun _ _ ↦ Iff.rfl⟩
 
 /-- The empty ZFC set -/
 protected def empty : ZFSet :=

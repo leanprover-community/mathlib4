@@ -163,7 +163,6 @@ instance : Preorder PSet where
   le_refl := refl_of (· ⊆ ·)
   le_trans _ _ _ := trans_of (· ⊆ ·)
 
--- TODO: add lemmas relating `⊂` to `∈`.
 instance : HasSSubset PSet := ⟨(· < ·)⟩
 
 @[simp]
@@ -173,6 +172,9 @@ theorem le_def (x y : PSet) : x ≤ y ↔ x ⊆ y :=
 @[simp]
 theorem lt_def (x y : PSet) : x < y ↔ x ⊂ y :=
   Iff.rfl
+
+instance : IsNonstrictStrictOrder PSet (· ⊆ ·) (· ⊂ ·) :=
+  ⟨fun _ _ ↦ Iff.rfl⟩
 
 /-- `x ∈ y` as pre-sets if `x` is extensionally equivalent to a member of the family `y`. -/
 protected def Mem (y x : PSet.{u}) : Prop :=
