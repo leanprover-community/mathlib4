@@ -98,6 +98,11 @@ theorem hasSubst_X : HasSubst (fun (s : σ) ↦ (X s : MvPowerSeries σ S)) := b
   letI : UniformSpace S := ⊥
   simpa [hasSubst_iff_hasEval_of_discreteTopology] using HasEval.X
 
+theorem hasSubst_X_comp {f : σ → τ} (hf : Filter.Tendsto f Filter.cofinite Filter.cofinite) :
+    HasSubst (fun (s : σ) ↦ (X (f s) : MvPowerSeries τ S)) := by
+  letI : UniformSpace S := ⊥
+  exact hasSubst_iff_hasEval_of_discreteTopology.2 <| hasEval_X_comp hf
+
 theorem hasSubst_zero : HasSubst (fun (_ : σ) ↦ (0 : MvPowerSeries τ S)) := by
   letI : UniformSpace S := ⊥
   simpa [hasSubst_iff_hasEval_of_discreteTopology] using HasEval.zero
