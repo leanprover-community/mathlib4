@@ -164,6 +164,60 @@ theorem range_euclideanQuadrant (n : ℕ) :
     (range fun x : EuclideanQuadrant n => x.val) = { y | ∀ i : Fin n, 0 ≤ y i } :=
   Subtype.range_val
 
+open ENNReal in
+theorem interior_quadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
+    interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
+      { y | ∀ i : Fin n, a < y i } := by
+  let f : (Fin n) → (Π _ : Fin n, ℝ) →L[ℝ] ℝ := fun i ↦ ContinuousLinearMap.proj i
+  have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i )⁻¹' Ici a := by
+    ext; simp; rfl
+  have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i )⁻¹' Ioi a := by
+    ext; simp; rfl
+  rw [h, h', interior_iInter_of_finite]
+  apply iInter_congr fun i ↦ ?_
+  rw [(f i).interior_preimage, interior_Ici]
+  apply Function.surjective_eval
+
+open ENNReal in
+theorem closure_quadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
+    closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
+      { y | ∀ i : Fin n, a ≤ y i } := by
+  let f : (Fin n) → (Π _ : Fin n, ℝ) →L[ℝ] ℝ := fun i ↦ ContinuousLinearMap.proj i
+  have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i )⁻¹' Ici a := by
+    ext; simp; rfl
+  rw [h]
+  exact (isClosed_iInter fun i ↦ isClosed_Ici.preimage (f i).continuous).closure_eq
+
+open ENNReal in
+theorem frontier_quadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
+    frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
+      { y | (∀ i : Fin n, a ≤ y i) ∧ ∃ i : Fin n, (a = y i) } := by
+  rw [frontier, closure_quadrant, interior_quadrant]
+  ext y
+  simp only [mem_diff, mem_setOf_eq, not_forall, not_lt, and_congr_right_iff]
+  exact fun aux ↦ exists_congr fun i ↦ ⟨fun h ↦ by linarith [aux i], fun h ↦ by linarith⟩
+
+lemma aux {a b c d : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) (hc : 0 < c) (hd : 0 < d) :
+    0 < a * c + b * d := by
+  have : 0 < a ∨ 0 < b := by
+    by_contra!
+    linarith
+  cases this <;> positivity
+
+theorem EuclideanHalfSpace.convex_interior [NeZero n] :
+    Convex ℝ (interior { x : EuclideanSpace ℝ (Fin n) | 0 ≤ x 0 }) := by
+  rw [interior_halfSpace]
+  intro x hx y hy a b ha hb hab
+  dsimp at hx hy ⊢
+  exact aux ha hb hab hx hy
+
+theorem EuclideanQuadrant.convex_interior :
+    Convex ℝ (interior { x : EuclideanSpace ℝ (Fin n) | ∀ i, 0 ≤ x i }) := by
+  rw [interior_quadrant]
+  intro x hx y hy a b ha hb hab
+  dsimp at hx hy ⊢
+  exact fun i ↦ aux ha hb hab (hx i) (hy i)
+
 end
 
 /--
