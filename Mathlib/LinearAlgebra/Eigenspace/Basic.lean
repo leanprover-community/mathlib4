@@ -5,11 +5,11 @@ Authors: Alexander Bentkamp
 -/
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.Tactic.Peel
 
 /-!

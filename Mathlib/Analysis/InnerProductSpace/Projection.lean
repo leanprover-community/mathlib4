@@ -636,7 +636,6 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
   { reflectionLinearEquiv K with
     norm_map' := by
       intro x
-      dsimp only
       let w : K := orthogonalProjection K x
       let v := x - w
       have : ⟪v, w⟫ = 0 := orthogonalProjection_inner_eq_zero x w w.2
@@ -913,8 +912,7 @@ theorem Submodule.topologicalClosure_eq_top_iff [CompleteSpace E] :
 
 namespace Dense
 
-/- Porting note: unneeded assumption `[CompleteSpace E]` was removed from all theorems in this
-section. TODO: Move to another file? -/
+/- TODO: Move to another file? -/
 open Submodule
 
 variable {x y : E}
@@ -1005,7 +1003,6 @@ theorem linearEquiv_det_reflection : (reflection K).det = (-1) ^ finrank 𝕜 K�
 
 end FiniteDimensional
 
--- Porting note: relax assumptions, swap LHS with RHS
 /-- If the orthogonal projection to `K` is well-defined, then a vector splits as the sum of its
 orthogonal projections onto a complete submodule `K` and onto the orthogonal complement of `K`. -/
 theorem orthogonalProjection_add_orthogonalProjection_orthogonal [HasOrthogonalProjection K]
@@ -1233,8 +1230,6 @@ open DirectSum
 theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Submodule 𝕜 E}
     [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
     (x : E) (hx : x ∈ iSup V) : (∑ i, (orthogonalProjection (V i) x : E)) = x := by
-  -- Porting note: switch to the better `induction _ using`. Need the primed induction principle,
-  -- the unprimed one doesn't work with `induction` (as it isn't as syntactically general)
   induction hx using Submodule.iSup_induction' with
   | mem i x hx =>
     refine

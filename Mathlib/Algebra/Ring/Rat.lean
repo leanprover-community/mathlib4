@@ -17,7 +17,7 @@ This file contains the commutative ring instance on the rational numbers.
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists OrderedCommMonoid Field PNat Nat.dvd_mul IsDomain.toCancelMonoidWithZero
+assert_not_exists OrderedCommMonoid Field PNat Nat.gcd_greatest IsDomain.toCancelMonoidWithZero
 
 namespace Rat
 
@@ -59,7 +59,7 @@ These also prevent non-computable instances being used to construct these instan
 -/
 
 instance commSemiring : CommSemiring ℚ := by infer_instance
-instance semiring     : Semiring ℚ     := by infer_instance
+instance semiring : Semiring ℚ := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 

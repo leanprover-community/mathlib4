@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Interval.Set.Monoid
+import Mathlib.Order.Interval.Set.UnorderedInterval
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # (Pre)images of intervals

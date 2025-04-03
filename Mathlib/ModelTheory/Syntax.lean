@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 -/
 import Mathlib.Data.Set.Prod
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.ModelTheory.LanguageMap
 import Mathlib.Algebra.Order.Ring.Nat
 
@@ -269,13 +269,16 @@ end LHom
 
 /-- Maps a term's symbols along a language equivalence. -/
 @[simps]
-def Lequiv.onTerm (φ : L ≃ᴸ L') : L.Term α ≃ L'.Term α where
+def LEquiv.onTerm (φ : L ≃ᴸ L') : L.Term α ≃ L'.Term α where
   toFun := φ.toLHom.onTerm
   invFun := φ.invLHom.onTerm
   left_inv := by
     rw [Function.leftInverse_iff_comp, ← LHom.comp_onTerm, φ.left_inv, LHom.id_onTerm]
   right_inv := by
     rw [Function.rightInverse_iff_comp, ← LHom.comp_onTerm, φ.right_inv, LHom.id_onTerm]
+
+/-- Maps a term's symbols along a language equivalence. Deprecated in favor of `LEquiv.onTerm`. -/
+@[deprecated LEquiv.onTerm (since := "2025-03-31")] alias Lequiv.onTerm := LEquiv.onTerm
 
 variable (L) (α)
 
