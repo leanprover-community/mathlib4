@@ -113,6 +113,18 @@ theorem isClosed_iff_coe_preimage_of_iSup_eq_top (s : Set β) :
   simpa using isOpen_iff_coe_preimage_of_iSup_eq_top hU sᶜ
 #align is_closed_iff_coe_preimage_of_supr_eq_top isClosed_iff_coe_preimage_of_iSup_eq_top
 
+theorem isOpenMap_iff_isOpenMap_of_iSup_eq_top :
+    IsOpenMap f ↔ ∀ i, IsOpenMap ((U i).1.restrictPreimage f) := by
+  refine ⟨fun h i => h.restrictPreimage _, ?_⟩
+  rintro H s hs
+  rw [isOpen_iff_coe_preimage_of_iSup_eq_top hU]
+  intro i
+  convert H i _ (hs.preimage continuous_subtype_val)
+  ext ⟨x, hx⟩
+  suffices (∃ y, y ∈ s ∧ f y = x) ↔ ∃ y, y ∈ s ∧ f y ∈ U i ∧ f y = x by
+    simpa [Set.restrictPreimage, ← Subtype.coe_inj]
+  exact ⟨fun ⟨a, b, c⟩ => ⟨a, b, c.symm ▸ hx, c⟩, fun ⟨a, b, _, c⟩ => ⟨a, b, c⟩⟩
+
 theorem isClosedMap_iff_isClosedMap_of_iSup_eq_top :
     IsClosedMap f ↔ ∀ i, IsClosedMap ((U i).1.restrictPreimage f) := by
   refine ⟨fun h i => h.restrictPreimage _, ?_⟩

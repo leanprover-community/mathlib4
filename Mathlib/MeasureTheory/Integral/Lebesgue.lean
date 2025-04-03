@@ -1601,6 +1601,51 @@ theorem setLIntegral_subtype {s : Set α} (hs : MeasurableSet s) (t : Set s) (f 
   rw [(MeasurableEmbedding.subtype_coe hs).restrict_comap, lintegral_subtype_comap hs,
     restrict_restrict hs, inter_eq_right.2 (Subtype.coe_image_subset _ _)]
 
+section UnifTight
+
+/-- If `f : α → ℝ≥0∞` has finite integral, then there exists a measurable set `s` of finite measure
+such that the integral of `f` over `sᶜ` is less than a given positive number.
+
+Also used to prove an `Lᵖ`-norm version in `MeasureTheory.Memℒp.exists_snorm_indicator_compl_le`. -/
+theorem exists_setLintegral_compl_lt {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞)
+    {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧ ∫⁻ a in sᶜ, f a ∂μ < ε := by
+  by_cases hf₀ : ∫⁻ a, f a ∂μ = 0
+  · exact ⟨∅, .empty, by simp, by simpa [hf₀, pos_iff_ne_zero]⟩
+  obtain ⟨g, hgf, hg_meas, hgsupp, hgε⟩ :
+      ∃ g ≤ f, Measurable g ∧ μ (support g) < ∞ ∧ ∫⁻ a, f a ∂μ - ε < ∫⁻ a, g a ∂μ := by
+    obtain ⟨g, hgf, hgε⟩ : ∃ (g : α →ₛ ℝ≥0∞) (_ : g ≤ f), ∫⁻ a, f a ∂μ - ε < g.lintegral μ := by
+      simpa only [← lt_iSup_iff, ← lintegral_def] using ENNReal.sub_lt_self hf hf₀ hε
+    refine ⟨g, hgf, g.measurable, ?_, by rwa [g.lintegral_eq_lintegral]⟩
+    exact SimpleFunc.FinMeasSupp.of_lintegral_ne_top <| ne_top_of_le_ne_top hf <|
+      g.lintegral_eq_lintegral μ ▸ lintegral_mono hgf
+  refine ⟨_, measurableSet_support hg_meas, hgsupp, ?_⟩
+  calc
+    ∫⁻ a in (support g)ᶜ, f a ∂μ
+      = ∫⁻ a in (support g)ᶜ, f a - g a ∂μ := setLIntegral_congr_fun
+      (measurableSet_support hg_meas).compl <| ae_of_all _ <| by intro; simp_all
+    _ ≤ ∫⁻ a, f a - g a ∂μ := setLIntegral_le_lintegral _ _
+    _ = ∫⁻ a, f a ∂μ - ∫⁻ a, g a ∂μ :=
+      lintegral_sub hg_meas (ne_top_of_le_ne_top hf <| lintegral_mono hgf) (ae_of_all _ hgf)
+    _ < ε := ENNReal.sub_lt_of_lt_add (lintegral_mono hgf) <|
+      ENNReal.lt_add_of_sub_lt_left (.inl hf) hgε
+
+/-- For any function `f : α → ℝ≥0∞`, there exists a measurable function `g ≤ f` with the same
+integral over any measurable set. -/
+theorem exists_measurable_le_setLintegral_eq_of_integrable {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞) :
+    ∃ (g : α → ℝ≥0∞), Measurable g ∧ g ≤ f ∧ ∀ s : Set α, MeasurableSet s →
+      ∫⁻ a in s, f a ∂μ = ∫⁻ a in s, g a ∂μ := by
+  obtain ⟨g, hmg, hgf, hifg⟩ := exists_measurable_le_lintegral_eq (μ := μ) f
+  use g, hmg, hgf
+  refine fun s hms ↦ le_antisymm ?_ (lintegral_mono hgf)
+  rw [← compl_compl s, setLintegral_compl hms.compl, setLintegral_compl hms.compl, hifg]
+  · gcongr; apply hgf
+  · rw [hifg] at hf
+    exact ne_top_of_le_ne_top hf (setLIntegral_le_lintegral _ _)
+  · exact ne_top_of_le_ne_top hf (setLIntegral_le_lintegral _ _)
+
+end UnifTight
+
 @[deprecated (since := "2024-06-29")]
 alias set_lintegral_subtype := setLIntegral_subtype
 

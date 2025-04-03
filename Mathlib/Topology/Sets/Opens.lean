@@ -190,6 +190,9 @@ theorem coe_bot : ((⊥ : Opens α) : Set α) = ∅ :=
 theorem coe_eq_empty {U : Opens α} : (U : Set α) = ∅ ↔ U = ⊥ :=
   SetLike.coe_injective.eq_iff' rfl
 
+@[simp]
+lemma mem_top (x : α) : x ∈ (⊤ : Opens α) := trivial
+
 @[simp, norm_cast]
 theorem coe_top : ((⊤ : Opens α) : Set α) = Set.univ :=
   rfl

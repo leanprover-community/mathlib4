@@ -3,12 +3,9 @@ Copyright (c) 2023 Jonas van der Schaaf. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Christian Merten, Jonas van der Schaaf
 -/
-import Mathlib.AlgebraicGeometry.OpenImmersion
-import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
-import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.RingTheory.LocalProperties
-import Mathlib.Topology.LocalAtTarget
+import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 
 /-!
 
@@ -132,16 +129,6 @@ instance {X Y : Scheme} (f : X ⟶ Y) [IsClosedImmersion f] : QuasiCompact f whe
   isCompact_preimage _ _ hU' := base_closed.isCompact_preimage hU'
 
 end IsClosedImmersion
-
-instance : (topologically ClosedEmbedding).RespectsIso :=
-  topologically_respectsIso _ (fun e ↦ Homeomorph.closedEmbedding e)
-    (fun _ _ hf hg ↦ ClosedEmbedding.comp hg hf)
-
-/-- Being topologically a closed embedding is local at the target. -/
-instance closedEmbedding_isLocalAtTarget : IsLocalAtTarget (topologically ClosedEmbedding) :=
-  topologically_isLocalAtTarget _
-    (fun _ s hf ↦ ClosedEmbedding.restrictPreimage s hf)
-    (fun _ _ _ hU hfcont hf ↦ (closedEmbedding_iff_closedEmbedding_of_iSup_eq_top hU hfcont).mpr hf)
 
 /-- Being surjective on stalks is local at the target. -/
 instance isSurjectiveOnStalks_isLocalAtTarget : IsLocalAtTarget
