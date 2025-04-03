@@ -583,7 +583,7 @@ lemma iteratedDeriv_of_R : iteratedDeriv k (fun x => R K α β σ α' β' γ' q 
     simp only at hk
     conv => enter [1]; rw [hk]
     ext x
-    apply?
+
 
     sorry
   }
