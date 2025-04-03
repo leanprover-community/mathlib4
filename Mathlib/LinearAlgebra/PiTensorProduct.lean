@@ -888,14 +888,11 @@ def tmulEquiv : ((⨂[R] _ : ι, M) ⊗[R] ⨂[R] _ : ι₂, M) ≃ₗ[R] ⨂[R]
   LinearEquiv.ofLinear tmul tmulSymm
     (by
       ext x
-      show tmul (tmulSymm (tprod R x)) = tprod R x -- Speed up the call to `simp`.
-      simp only [tmulSymm_apply, tmul_apply]
-      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5026):
-      -- was part of `simp only` above
-      erw [Sum.elim_comp_inl_inr])
+      dsimp
+      simp only [tmulSymm_apply, tmul_apply, ← Function.comp_def x, Sum.elim_comp_inl_inr])
     (by
       ext x y
-      show tmulSymm (tmul (tprod R x ⊗ₜ[R] tprod R y)) = tprod R x ⊗ₜ[R] tprod R y
+      dsimp
       simp only [tmul_apply, tmulSymm_apply, Sum.elim_inl, Sum.elim_inr])
 
 @[simp]
