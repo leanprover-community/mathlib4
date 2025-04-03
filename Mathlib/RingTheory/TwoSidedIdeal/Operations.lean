@@ -123,7 +123,23 @@ lemma _root_.RingEquiv.mapTwoSidedIdeal_symm (e : R ≃+* S) :
 lemma span_le {s : Set R} {I : TwoSidedIdeal R} : span s ≤ I ↔ s ⊆ I := by
   rw [TwoSidedIdeal.ringCon_le_iff, RingCon.gi _ |>.gc]
   exact ⟨fun h x hx ↦ by aesop, fun h x y hxy ↦ (rel_iff I x y).mpr (h hxy)⟩
-
+@[elab_as_elim]
+theorem span_induction {s : Set R}
+    {p : R → Prop}
+    (mem : ∀ (x), x ∈ s → p x)
+    (zero : p 0)
+    (add : ∀ {x y}, p x → p y → p (x + y))
+    (neg : ∀ {x}, p (-x))
+    (left_absorb : ∀ {a x}, p (a * x))
+    (right_absorb : ∀ {b x}, p (x * b))
+    {x : R} (hx : x ∈ span s) : p x := by
+  set J : TwoSidedIdeal R := .mk' {x | p x} zero add (fun _ => neg)
+    (fun _ => left_absorb) (fun _ => right_absorb) with hJ
+  suffices x ∈ J by
+    simp [hJ] at this
+    exact this
+  apply ((span_le (I := J)).mpr ?_) hx
+  simpa [hJ, mem]
 /-- An induction principle for span membership. If `J` holds for 0 and all elements of `s`, and is
 preserved under addition and left and right multiplication, then `p` holds for all elements of
 the span of `s`. -/
