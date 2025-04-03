@@ -25,23 +25,17 @@ exists because nerves of categories are 2-coskeletal.
 
 We also prove that `nerveFunctor` is fully faithful, demonstrating that `nerveAdjunction` is
 reflective. Since the category of simplicial sets is cocomplete, we conclude in
-`CategoryTheory.Category.Cat.Colimit` that the category of categories has colimits.
+`Mathlib.CategoryTheory.Category.Cat.Colimit` that the category of categories has colimits.
 
 -/
 
 namespace CategoryTheory
 
-open Category Functor Limits Opposite SimplexCategory Simplicial SSet Nerve Truncated
+open Category Functor Limits Opposite SimplexCategory Simplicial SSet Nerve
+open SSet.Truncated SimplexCategory.Truncated SimplicialObject.Truncated
 universe v u v' u'
 
 section
-
-set_option quotPrecheck false
-local macro:max (priority := high) "⦋" n:term "⦌₂" : term =>
-  `((⟨SimplexCategory.mk $n, by decide⟩ : SimplexCategory.Truncated 2))
-
-local macro:1000 (priority := high) X:term " _⦋" n:term "⦌₂" : term =>
-    `(($X : SSet.Truncated 2).obj (Opposite.op ⟨SimplexCategory.mk $n, by decide⟩))
 
 /-- The components of the counit of `nerve₂Adj`. -/
 @[simps!]
@@ -49,11 +43,11 @@ def nerve₂Adj.counit.app (C : Type u) [SmallCategory C] :
     (nerveFunctor₂.obj (Cat.of C)).HomotopyCategory ⥤ C := by
   fapply Quotient.lift
   · exact
-      (whiskerRight (OneTruncation₂.ofNerve₂.natIso).hom _ ≫ ReflQuiv.adj.{u}.counit).app (Cat.of C)
+    (whiskerRight (OneTruncation₂.ofNerve₂.natIso).hom _ ≫ ReflQuiv.adj.{u}.counit).app (Cat.of C)
   · intro x y f g rel
     obtain ⟨φ⟩ := rel
     simpa [ReflQuiv.adj, Quot.liftOn, Cat.FreeRefl.quotientFunctor, Quotient.functor,
-        Quiv.adj, OneTruncation₂.nerveHomEquiv] using
+        pathComposition, Quiv.adj, OneTruncation₂.nerveHomEquiv] using
       φ.map_comp (X := 0) (Y := 1) (Z := 2) (homOfLE (by decide)) (homOfLE (by decide))
 
 @[simp]
@@ -297,12 +291,13 @@ theorem oneTruncation₂_toNerve₂Mk' : oneTruncation₂.map (toNerve₂.mk' F 
 
 end
 
-/-- An equality between maps into the 2-truncated nerve is detected by an equality beteween their
+/-- An equality between maps into the 2-truncated nerve is detected by an equality between their
 underlying refl prefunctors. -/
 theorem toNerve₂.ext (F G : X ⟶ nerveFunctor₂.obj (Cat.of C))
     (hyp : SSet.oneTruncation₂.map F = SSet.oneTruncation₂.map G) : F = G := by
-  have eq₀ x : F.app (op ⦋0⦌₂) x = G.app (op ⦋0⦌₂) x := congr(($hyp).obj x)
-  have eq₁ x : F.app (op ⦋1⦌₂) x = G.app (op ⦋1⦌₂) x := congr((($hyp).map ⟨x, rfl, rfl⟩).1)
+  have eq₀ (x : X _⦋0⦌₂) : F.app (op ⦋0⦌₂) x = G.app (op ⦋0⦌₂) x := congr(($hyp).obj x)
+  have eq₁ (x : X _⦋1⦌₂) : F.app (op ⦋1⦌₂) x = G.app (op ⦋1⦌₂) x :=
+    congr((($hyp).map ⟨x, rfl, rfl⟩).1)
   ext ⟨⟨n, hn⟩⟩ x
   induction' n using SimplexCategory.rec with n
   match n with
@@ -412,8 +407,8 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ :=
       simp [reassoc_of% this]
   }
 
-instance nerveFunctor₂.faithful : nerveFunctor₂.{u, u}.Faithful := by
-  exact Functor.Faithful.of_comp_iso
+instance nerveFunctor₂.faithful : nerveFunctor₂.{u, u}.Faithful :=
+  Functor.Faithful.of_comp_iso
     (G := oneTruncation₂) (H := ReflQuiv.forget) OneTruncation₂.ofNerve₂.natIso
 
 instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where

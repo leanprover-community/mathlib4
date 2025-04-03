@@ -38,6 +38,8 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
         · exact (hx rfl).elim
         · assumption)
 
+@[simp] theorem takeUntil_nil {u : V} {h} : takeUntil (nil : G.Walk u u) u h = nil := rfl
+
 lemma takeUntil_cons {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u ≠ w)
     (hadj : G.Adj u v') :
     (p.cons hadj).takeUntil w (List.mem_of_mem_tail hwp) = (p.takeUntil w hwp).cons hadj := by
@@ -218,12 +220,17 @@ lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
     (hx : x ∈ (p.takeUntil w hw).support) :
     (p.takeUntil w hw).takeUntil x hx = p.takeUntil x (p.support_takeUntil_subset hw hx) := by
   induction p, w, hw using takeUntil.induct with
-  | case1 => aesop
-  | case2 _ _ q _ hadj hu' _ =>
+  | case1 u v h =>
+    #adaptation_note
+    /-- Prior to `nightly-2025-02-24` this was just `aesop`. -/
+    simp at h
+    subst h
+    simp
+  | case2 _ _ q _ hadj hu' =>
     simp only [takeUntil_first, support_nil, List.mem_singleton] at hx
     subst hx
     simp
-  | case3 a w' v' hadj q u' hu' hau' _ ih =>
+  | case3 a w' v' hadj q u' hu' hau' ih =>
     rw [← Ne.eq_def] at hau'
     simp only [support_cons, List.mem_cons, hau'.symm, false_or] at hu'
     simp only [takeUntil_cons hu' hau' hadj, support_cons, List.mem_cons] at hx

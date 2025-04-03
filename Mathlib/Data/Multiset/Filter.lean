@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Multiset.MapFold
+import Mathlib.Data.Set.Function
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Filtering multisets by a predicate
@@ -399,5 +401,30 @@ lemma filter_attach' (s : Multiset α) (p : {a // a ∈ s} → Prop) [DecidableE
     exists_and_right, exists_eq_right, attach_map_val, map_map, map_coe, id]
 
 end Map
+
+section Nodup
+
+variable {s : Multiset α}
+
+theorem Nodup.filter (p : α → Prop) [DecidablePred p] {s} : Nodup s → Nodup (filter p s) :=
+  Quot.induction_on s fun _ => List.Nodup.filter (p ·)
+
+theorem Nodup.erase_eq_filter [DecidableEq α] (a : α) {s} :
+    Nodup s → s.erase a = Multiset.filter (· ≠ a) s :=
+  Quot.induction_on s fun _ d =>
+    congr_arg ((↑) : List α → Multiset α) <| by simpa using List.Nodup.erase_eq_filter d a
+
+protected theorem Nodup.filterMap (f : α → Option β) (H : ∀ a a' b, b ∈ f a → b ∈ f a' → a = a') :
+    Nodup s → Nodup (filterMap f s) :=
+  Quot.induction_on s fun _ => List.Nodup.filterMap H
+
+theorem Nodup.mem_erase_iff [DecidableEq α] {a b : α} {l} (d : Nodup l) :
+    a ∈ l.erase b ↔ a ≠ b ∧ a ∈ l := by
+  rw [d.erase_eq_filter b, mem_filter, and_comm]
+
+theorem Nodup.not_mem_erase [DecidableEq α] {a : α} {s} (h : Nodup s) : a ∉ s.erase a := fun ha =>
+  (h.mem_erase_iff.1 ha).1 rfl
+
+end Nodup
 
 end Multiset

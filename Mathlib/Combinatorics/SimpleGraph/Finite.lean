@@ -214,6 +214,12 @@ theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v
 theorem degree_pos_iff_exists_adj : 0 < G.degree v ↔ ∃ w, G.Adj v w := by
   simp only [degree, card_pos, Finset.Nonempty, mem_neighborFinset]
 
+theorem degree_pos_iff_mem_support : 0 < G.degree v ↔ v ∈ G.support := by
+  rw [G.degree_pos_iff_exists_adj v, mem_support]
+
+theorem degree_eq_zero_iff_not_mem_support : G.degree v = 0 ↔ v ∉ G.support := by
+  rw [← G.degree_pos_iff_mem_support v, Nat.pos_iff_ne_zero, not_ne_iff]
+
 theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     Gᶜ.degree v = Fintype.card V - 1 - G.degree v := by
   classical
@@ -305,10 +311,11 @@ theorem neighborFinset_compl [DecidableEq V] [DecidableRel G.Adj] (v : V) :
 @[simp]
 theorem complete_graph_degree [DecidableEq V] (v : V) :
     (⊤ : SimpleGraph V).degree v = Fintype.card V - 1 := by
-  erw [degree, neighborFinset_eq_filter, filter_ne, card_erase_of_mem (mem_univ v), card_univ]
+  simp_rw [degree, neighborFinset_eq_filter, top_adj, filter_ne]
+  rw [card_erase_of_mem (mem_univ v), card_univ]
 
 theorem bot_degree (v : V) : (⊥ : SimpleGraph V).degree v = 0 := by
-  erw [degree, neighborFinset_eq_filter, filter_False]
+  simp_rw [degree, neighborFinset_eq_filter, bot_adj, filter_False]
   exact Finset.card_empty
 
 theorem IsRegularOfDegree.top [DecidableEq V] :

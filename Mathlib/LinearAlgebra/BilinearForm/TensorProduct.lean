@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.LinearAlgebra.BilinearForm.Hom
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # The bilinear form on a tensor product

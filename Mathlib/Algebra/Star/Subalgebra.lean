@@ -3,13 +3,10 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Jireh Loreaux
 -/
-import Mathlib.Algebra.Star.Center
-import Mathlib.Algebra.Star.NonUnitalSubalgebra
-import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Star.Pointwise
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.Star.Module
-import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.Star.NonUnitalSubalgebra
 
 /-!
 # Star subalgebras
@@ -19,12 +16,11 @@ A *-subalgebra is a subalgebra of a *-algebra which is closed under *.
 The centralizer of a *-closed set is a *-subalgebra.
 -/
 
-
 universe u v
 
 /-- A *-subalgebra is a subalgebra of a *-algebra which is closed under *. -/
 structure StarSubalgebra (R : Type u) (A : Type v) [CommSemiring R] [StarRing R] [Semiring A]
-  [StarRing A] [Algebra R A] [StarModule R A] extends Subalgebra R A : Type v where
+    [StarRing A] [Algebra R A] [StarModule R A] : Type v extends Subalgebra R A where
   /-- The `carrier` is closed under the `star` operation. -/
   star_mem' {a} : a ∈ carrier → star a ∈ carrier
 

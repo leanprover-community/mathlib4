@@ -9,7 +9,6 @@ import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
 import Batteries.Tactic.Lint.Basic
 import Batteries.Data.List.Lemmas
-import Batteries.Data.RBMap.Basic
 import Batteries.Logic
 
 /-!
@@ -154,10 +153,9 @@ def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List �
     let (us, zs) := permutationsAux2 t ts r ys (fun x : List α => f (y :: x))
     (y :: us, f (t :: y :: us) :: zs)
 
--- Porting note: removed `[elab_as_elim]` per Mario C
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Status.20of.20data.2Elist.2Edefs.3F/near/313571979
 /-- A recursor for pairs of lists. To have `C l₁ l₂` for all `l₁`, `l₂`, it suffices to have it for
 `l₂ = []` and to be able to pour the elements of `l₁` into `l₂`. -/
+@[elab_as_elim]
 def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] is)
     (H1 : ∀ t ts is, C ts (t :: is) → C is [] → C (t :: ts) is) : ∀ l₁ l₂, C l₁ l₂
   | [], is => H0 is
@@ -261,9 +259,6 @@ def destutter' (R : α → α → Prop) [DecidableRel R] : α → List α → Li
 def destutter (R : α → α → Prop) [DecidableRel R] : List α → List α
   | h :: l => destutter' R h l
   | [] => []
--- Porting note: replace ilast' by getLastD
--- Porting note: remove last' from Batteries
-
 
 section Choose
 
@@ -375,7 +370,6 @@ map₂Right f as bs = (map₂Right' f as bs).fst
 def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : List γ :=
   map₂Left (flip f) bs as
 
--- porting note -- was `unsafe` but removed for Lean 4 port
 -- TODO: naming is awkward...
 /-- Asynchronous version of `List.map`.
 -/
@@ -484,21 +478,6 @@ theorem length_mapAccumr₂ :
 
 end MapAccumr
 
-section Deprecated
-
-@[deprecated List.mem_cons (since := "2024-08-10")]
-theorem mem_cons_eq (a y : α) (l : List α) : (a ∈ y :: l) = (a = y ∨ a ∈ l) :=
-  propext List.mem_cons
-
 alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
-
-@[deprecated List.not_mem_nil (since := "2024-08-10")]
-theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
-  fun ⟨_, hx, _⟩ => List.not_mem_nil _ hx
-
-
-@[deprecated (since := "2024-08-10")] alias length_le_of_sublist := Sublist.length_le
-
-end Deprecated
 
 end List

@@ -14,6 +14,8 @@ import Mathlib.Data.Set.Image
 
 -/
 
+assert_not_exists WithTop
+
 universe u v w x
 
 open Set Set.Notation
@@ -42,10 +44,10 @@ def optionElim {α β} (f : α ↪ β) (x : β) (h : x ∉ Set.range f) : Option
 /-- Equivalence between embeddings of `Option α` and a sigma type over the embeddings of `α`. -/
 @[simps]
 def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range f)ᶜ where
-  toFun f := ⟨coeWithTop.trans f, f none, fun ⟨x, hx⟩ ↦ Option.some_ne_none x <| f.injective hx⟩
+  toFun f := ⟨Embedding.some.trans f, f none, fun ⟨x, hx⟩ ↦ Option.some_ne_none x <| f.injective hx⟩
   invFun f := f.1.optionElim f.2 f.2.2
-  left_inv f := ext <| by rintro (_ | _) <;> simp [Option.coe_def]; rfl
-  right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp [Option.coe_def]; rfl
+  left_inv f := ext <| by rintro (_ | _) <;> simp [Option.coe_def]
+  right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp [Option.coe_def]
 
 /-- Restrict the codomain of an embedding. -/
 def codRestrict {α β} (p : Set β) (f : α ↪ β) (H : ∀ a, f a ∈ p) : α ↪ p :=

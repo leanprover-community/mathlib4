@@ -105,7 +105,7 @@ lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
 @[simps]
 def fromListChain' (x : List α) (x_ne_nil : x ≠ []) (hx : x.Chain' r) : RelSeries r where
   length := x.length - 1
-  toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_nil) i]
+  toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x_ne_nil) i]
   step i := List.chain'_iff_get.mp hx i i.2
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
@@ -116,7 +116,7 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} wh
   left_inv x := ext (by simp [toList]) <| by ext; dsimp; apply List.get_ofFn
   right_inv x := by
     refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => by dsimp; apply List.get_ofFn)
-    have := Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1
+    have := Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x.2.1
     simp_all [toList]
 
 lemma toList_injective : Function.Injective (RelSeries.toList (r := r)) :=
@@ -421,6 +421,14 @@ def cons (p : RelSeries r) (newHead : α) (rel : r newHead p.head) : RelSeries r
   delta cons
   rw [last_append]
 
+lemma cons_cast_succ (s : RelSeries r) (a : α) (h : r a s.head) (i : Fin (s.length + 1)) :
+    (s.cons a h) (.cast (by simp) (.succ i)) = s i := by
+  dsimp [cons]
+  convert append_apply_right (singleton r a) s h i
+  ext
+  show i.1 + 1 = _ % _
+  simpa using (Nat.mod_eq_of_lt (by simp)).symm
+
 /--
 Given a series `a₀ -r→ a₁ -r→ ... -r→ aₙ` and an `a` such that `aₙ -r→ a` holds, there is
 a series of length `n+1`: `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ a`.
@@ -435,6 +443,10 @@ def snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) : RelSeries r
 
 @[simp] lemma last_snoc (p : RelSeries r) (newLast : α) (rel : r p.last newLast) :
     (p.snoc newLast rel).last = newLast := last_append _ _ _
+
+lemma snoc_cast_castSucc (s : RelSeries r) (a : α) (h : r s.last a) (i : Fin (s.length + 1)) :
+    (s.snoc a h) (.cast (by simp) (.castSucc i)) = s i :=
+  append_apply_left s (singleton r a) h i
 
 -- This lemma is useful because `last_snoc` is about `Fin.last (p.snoc _ _).length`, but we often
 -- see `Fin.last (p.length + 1)` in practice. They are equal by definition, but sometimes simplifier
@@ -656,6 +668,36 @@ lemma Rel.finiteDimensional_or_infiniteDimensional [Nonempty α] :
   rw [← not_finiteDimensional_iff]
   exact em r.FiniteDimensional
 
+instance Rel.FiniteDimensional.swap [FiniteDimensional r] : FiniteDimensional (Function.swap r) :=
+  ⟨.reverse (.longestOf r), fun s ↦ s.reverse.length_le_length_longestOf⟩
+
+variable {r} in
+@[simp]
+lemma Rel.finiteDimensional_swap_iff :
+    FiniteDimensional (Function.swap r) ↔ FiniteDimensional r :=
+  ⟨fun _ ↦ .swap _, fun _ ↦ .swap _⟩
+
+instance Rel.InfiniteDimensional.swap [InfiniteDimensional r] :
+    InfiniteDimensional (Function.swap r) :=
+  ⟨fun n ↦ ⟨.reverse (.withLength r n), RelSeries.length_withLength r n⟩⟩
+
+variable {r} in
+@[simp]
+lemma Rel.infiniteDimensional_swap_iff :
+    InfiniteDimensional (Function.swap r) ↔ InfiniteDimensional r :=
+  ⟨fun _ ↦ .swap _, fun _ ↦ .swap _⟩
+
+lemma Rel.wellFounded_swap_of_finiteDimensional [Rel.FiniteDimensional r] :
+    WellFounded (Function.swap r) := by
+  rw [WellFounded.wellFounded_iff_no_descending_seq]
+  refine ⟨fun ⟨f, hf⟩ ↦ ?_⟩
+  let s := RelSeries.mk (r := r) ((RelSeries.longestOf r).length + 1) (f ·) (hf ·)
+  exact (RelSeries.longestOf r).length.lt_succ_self.not_le s.length_le_length_longestOf
+
+lemma Rel.wellFounded_of_finiteDimensional [Rel.FiniteDimensional r] : WellFounded r :=
+  have : (Rel.FiniteDimensional (Function.swap r)) := Rel.finiteDimensional_swap_iff.mp ‹_›
+  wellFounded_swap_of_finiteDimensional (Function.swap r)
+
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
   Rel.FiniteDimensional ((· < ·) : γ → γ → Prop)
@@ -844,7 +886,7 @@ lemma length_lt_card (s : LTSeries α) : s.length < Fintype.card α := by
   · exact this j i hn.symm he.symm (by omega)
   exact absurd he (s.strictMono hl).ne
 
-instance [DecidableRel ((· < ·) : α → α → Prop)] : Fintype (LTSeries α) where
+instance [DecidableLT α] : Fintype (LTSeries α) where
   elems := Finset.univ.map (injStrictMono (Fintype.card α))
   complete s := by
     have bl := s.length_lt_card

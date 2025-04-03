@@ -91,16 +91,16 @@ example (n : ℕ) : 0 < factorial n := by
     apply mul_pos (succ_pos n) ih
 ```
 -/
-elab (name := induction') "induction' " tgts:(Parser.Tactic.casesTarget,+)
+elab (name := induction') "induction' " tgts:(Parser.Tactic.elimTarget,+)
     usingArg:((" using " ident)?)
     withArg:((" with" (ppSpace colGt binderIdent)+)?)
     genArg:((" generalizing" (ppSpace colGt ident)+)?) : tactic => do
-  let (targets, toTag) ← elabCasesTargets tgts.1.getSepArgs
+  let (targets, toTag) ← elabElimTargets tgts.1.getSepArgs
   let g :: gs ← getUnsolvedGoals | throwNoGoalsToBeSolved
   g.withContext do
     let elimInfo ← getElimNameInfo usingArg targets (induction := true)
     let targets ← addImplicitTargets elimInfo targets
-    evalInduction.checkTargets targets
+    checkInductionTargets targets
     let targetFVarIds := targets.map (·.fvarId!)
     g.withContext do
       let genArgs ← if genArg.1.isNone then pure #[] else getFVarIds genArg.1[1].getArgs
@@ -146,9 +146,9 @@ example (h : p ∨ q) : q ∨ p := by
 
 Prefer `cases` or `rcases` when possible, because these tactics promote structured proofs.
 -/
-elab (name := cases') "cases' " tgts:(Parser.Tactic.casesTarget,+) usingArg:((" using " ident)?)
+elab (name := cases') "cases' " tgts:(Parser.Tactic.elimTarget,+) usingArg:((" using " ident)?)
   withArg:((" with" (ppSpace colGt binderIdent)+)?) : tactic => do
-  let (targets, toTag) ← elabCasesTargets tgts.1.getSepArgs
+  let (targets, toTag) ← elabElimTargets tgts.1.getSepArgs
   let g :: gs ← getUnsolvedGoals | throwNoGoalsToBeSolved
   g.withContext do
     let elimInfo ← getElimNameInfo usingArg targets (induction := false)

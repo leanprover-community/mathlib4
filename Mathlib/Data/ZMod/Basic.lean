@@ -79,11 +79,19 @@ theorem val_mul' {m n : ZMod 0} : (m * n).val = m.val * n.val :=
   Int.natAbs_mul m n
 
 @[simp]
-theorem val_natCast {n : ℕ} (a : ℕ) : (a : ZMod n).val = a % n := by
+theorem val_natCast (n a : ℕ) : (a : ZMod n).val = a % n := by
   cases n
   · rw [Nat.mod_zero]
     exact Int.natAbs_ofNat a
   · apply Fin.val_natCast
+
+lemma val_natCast_of_lt {n a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
+  rwa [val_natCast, Nat.mod_eq_of_lt]
+
+lemma val_ofNat (n a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ZMod n).val = ofNat(a) % n := val_natCast ..
+
+lemma val_ofNat_of_lt {n a : ℕ} [a.AtLeastTwo] (han : a < n) : (ofNat(a) : ZMod n).val = ofNat(a) :=
+  val_natCast_of_lt han
 
 theorem val_unit' {n : ZMod 0} : IsUnit n ↔ n.val = 1 := by
   simp only [val]
@@ -91,9 +99,6 @@ theorem val_unit' {n : ZMod 0} : IsUnit n ↔ n.val = 1 := by
 
 lemma eq_one_of_isUnit_natCast {n : ℕ} (h : IsUnit (n : ZMod 0)) : n = 1 := by
   rw [← Nat.mod_zero n, ← val_natCast, val_unit'.mp h]
-
-theorem val_natCast_of_lt {n a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
-  rwa [val_natCast, Nat.mod_eq_of_lt]
 
 instance charP (n : ℕ) : CharP (ZMod n) n where
   cast_eq_zero_iff' := by
@@ -588,9 +593,6 @@ theorem cast_zmod_eq_zero_iff_of_le {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ZM
   rw [← ZMod.cast_zero (n := m)]
   exact Injective.eq_iff' (cast_injective_of_le h) rfl
 
--- Porting note: commented
--- unseal Int.NonNeg
-
 @[simp]
 theorem natCast_toNat (p : ℕ) : ∀ {z : ℤ} (_h : 0 ≤ z), (z.toNat : ZMod p) = z
   | (n : ℕ), _h => by simp only [Int.cast_natCast, Int.toNat_natCast]
@@ -680,6 +682,9 @@ instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
 instance nontrivial' : Nontrivial (ZMod 0) := by
   delta ZMod; infer_instance
 
+lemma one_eq_zero_iff {n : ℕ} : (1 : ZMod n) = 0 ↔ n = 1 := by
+  rw [← Nat.cast_one, natCast_zmod_eq_zero_iff_dvd, Nat.dvd_one]
+
 /-- The inversion on `ZMod n`.
 It is setup in such a way that `a * a⁻¹` is equal to `gcd a.val n`.
 In particular, if `a` is coprime to `n`, and hence a unit, `a * a⁻¹ = 1`. -/
@@ -703,7 +708,7 @@ theorem mul_inv_eq_gcd {n : ℕ} (a : ZMod n) : a * a⁻¹ = Nat.gcd a.val n := 
   · dsimp [ZMod] at a ⊢
     calc
       _ = a * Int.sign a := rfl
-      _ = a.natAbs := by rw [Int.mul_sign]
+      _ = a.natAbs := by rw [Int.mul_sign_self]
       _ = a.natAbs.gcd 0 := by rw [Nat.gcd_zero_right]
   · calc
       a * a⁻¹ = a * a⁻¹ + n.succ * Nat.gcdB (val a) n.succ := by
@@ -780,7 +785,7 @@ theorem val_coe_unit_coprime {n : ℕ} (u : (ZMod n)ˣ) : Nat.Coprime (u : ZMod 
 lemma isUnit_iff_coprime (m n : ℕ) : IsUnit (m : ZMod n) ↔ m.Coprime n := by
   refine ⟨fun H ↦ ?_, fun H ↦ (unitOfCoprime m H).isUnit⟩
   have H' := val_coe_unit_coprime H.unit
-  rw [IsUnit.unit_spec, val_natCast m, Nat.coprime_iff_gcd_eq_one] at H'
+  rw [IsUnit.unit_spec, val_natCast, Nat.coprime_iff_gcd_eq_one] at H'
   rw [Nat.coprime_iff_gcd_eq_one, Nat.gcd_comm, ← H']
   exact Nat.gcd_rec n m
 
@@ -907,6 +912,7 @@ theorem ne_neg_self {n : ℕ} (hn : Odd n) {a : ZMod n} (ha : a ≠ 0) : a ≠ -
 theorem neg_one_ne_one {n : ℕ} [Fact (2 < n)] : (-1 : ZMod n) ≠ 1 :=
   CharP.neg_one_ne_one (ZMod n) n
 
+@[simp]
 theorem neg_eq_self_mod_two (a : ZMod 2) : -a = a := by
   fin_cases a <;> apply Fin.ext <;> simp [Fin.coe_neg, Int.natMod]; rfl
 
@@ -1024,7 +1030,7 @@ theorem val_pow {m n : ℕ} {a : ZMod n} [ilt : Fact (1 < n)] (h : a.val ^ m < n
         · cases hm; simp [ilt.out]
         · simp only [val_zero, ne_eq, hm, not_false_eq_true, zero_pow, Nat.zero_lt_of_lt h]
       · exact lt_of_le_of_lt
-         (Nat.pow_le_pow_of_le_right (by rwa [gt_iff_lt, ZMod.val_pos]) (Nat.le_succ m)) h
+         (Nat.pow_le_pow_right (by rwa [gt_iff_lt, ZMod.val_pos]) (Nat.le_succ m)) h
     rw [pow_succ, ZMod.val_mul, ih this, ← pow_succ, Nat.mod_eq_of_lt h]
 
 theorem val_pow_le {m n : ℕ} [Fact (1 < n)] {a : ZMod n} : (a ^ m).val ≤ a.val ^ m := by
@@ -1102,7 +1108,6 @@ section lift
 variable (n) {A : Type*} [AddGroup A]
 
 /-- The map from `ZMod n` induced by `f : ℤ →+ A` that maps `n` to `0`. -/
---@[simps] -- Porting note: removed, simplified LHS of `lift_coe` to something worse.
 def lift : { f : ℤ →+ A // f n = 0 } ≃ (ZMod n →+ A) :=
   (Equiv.subtypeEquivRight <| by
         intro f
@@ -1262,7 +1267,7 @@ lemma Nat.range_mul_add (m k : ℕ) :
   refine ⟨fun ⟨a, ha⟩ ↦ ⟨?_, le_iff_exists_add.mpr ⟨_, ha⟩⟩, fun ⟨H₁, H₂⟩ ↦ ?_⟩
   · simpa using congr_arg ((↑) : ℕ → ZMod m) ha
   · obtain ⟨a, ha⟩ := le_iff_exists_add.mp H₂
-    simp only [ha, Nat.cast_add, add_right_eq_self, ZMod.natCast_zmod_eq_zero_iff_dvd] at H₁
+    simp only [ha, Nat.cast_add, add_eq_left, ZMod.natCast_zmod_eq_zero_iff_dvd] at H₁
     obtain ⟨b, rfl⟩ := H₁
     exact ⟨b, ha⟩
 

@@ -41,7 +41,7 @@ theorem dvd_geom_sum₂_iff_of_dvd_sub {x y p : R} (h : p ∣ x - y) :
     (p ∣ ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) ↔ p ∣ n * y ^ (n - 1) := by
   rw [← mem_span_singleton, ← Ideal.Quotient.eq] at h
   simp only [← mem_span_singleton, ← eq_zero_iff_mem, RingHom.map_geom_sum₂, h, geom_sum₂_self,
-    _root_.map_mul, map_pow, map_natCast]
+    map_mul, map_pow, map_natCast]
 
 theorem dvd_geom_sum₂_iff_of_dvd_sub' {x y p : R} (h : p ∣ x - y) :
     (p ∣ ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) ↔ p ∣ n * x ^ (n - 1) := by
@@ -90,7 +90,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
     (Ideal.Quotient.mk (span {s})) (∑ i ∈ range p, (a + (p : R) * b) ^ i * a ^ (p - 1 - i)) =
         ∑ i ∈ Finset.range p,
         mk (span {s}) ((a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) * a ^ (p - 1 - i)) := by
-      simp_rw [s, RingHom.map_geom_sum₂, ← map_pow, h1, ← _root_.map_mul]
+      simp_rw [s, RingHom.map_geom_sum₂, ← map_pow, h1, ← map_mul]
     _ =
         mk (span {s})
             (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
@@ -129,11 +129,11 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
     _ = mk (span {s}) (↑p * a ^ (p - 1)) := by
       have : Finset.sum (range p) (fun (x : ℕ) ↦ (x : R)) =
           ((Finset.sum (range p) (fun (x : ℕ) ↦ (x : ℕ)))) := by simp only [Nat.cast_sum]
-      simp only [add_left_eq_self, ← Finset.mul_sum, this]
+      simp only [add_eq_right, ← Finset.mul_sum, this]
       norm_cast
       simp only [Finset.sum_range_id]
       norm_cast
-      simp only [Nat.cast_mul, _root_.map_mul,
+      simp only [Nat.cast_mul, map_mul,
           Nat.mul_div_assoc p (even_iff_two_dvd.mp (Nat.Odd.sub_odd hp odd_one))]
       ring_nf
       rw [mul_assoc, mul_assoc]
@@ -274,7 +274,6 @@ theorem pow_two_pow_sub_pow_two_pow [CommRing R] {x y : R} (n : ℕ) :
     rw [Nat.succ_eq_add_one]
     ring
 
--- Porting note: simplified proof because `fin_cases` was not available in that case
 theorem Int.sq_mod_four_eq_one_of_odd {x : ℤ} : Odd x → x ^ 2 % 4 = 1 := by
   intro hx
   unfold Odd at hx

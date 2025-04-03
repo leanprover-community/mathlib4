@@ -346,13 +346,6 @@ theorem listTransvecCol_getElem {i : ℕ} (h : i < (listTransvecCol M).length) :
       transvection (inl i') (inr unit) <| -M (inl i') (inr unit) / M (inr unit) (inr unit) := by
   simp [listTransvecCol]
 
-@[deprecated listTransvecCol_getElem (since := "2024-08-03")]
-theorem listTransvecCol_get (i : Fin (listTransvecCol M).length) :
-    (listTransvecCol M).get i =
-      letI i' := Fin.cast (length_listTransvecCol M) i
-      transvection (inl i') (inr unit) <| -M (inl i') (inr unit) / M (inr unit) (inr unit) :=
-  listTransvecCol_getElem _ i.isLt
-
 @[simp]
 theorem length_listTransvecRow : (listTransvecRow M).length = r := by simp [listTransvecRow]
 
@@ -361,13 +354,6 @@ theorem listTransvecRow_getElem {i : ℕ} (h : i < (listTransvecRow M).length) :
       letI i' : Fin r := ⟨i, length_listTransvecRow M ▸ h⟩
       transvection (inr unit) (inl i') <| -M (inr unit) (inl i') / M (inr unit) (inr unit) := by
   simp [listTransvecRow, Fin.cast]
-
-@[deprecated listTransvecRow_getElem (since := "2024-08-03")]
-theorem listTransvecRow_get (i : Fin (listTransvecRow M).length) :
-    (listTransvecRow M).get i =
-      letI i' := Fin.cast (length_listTransvecRow M) i
-      transvection (inr unit) (inl i') <| -M (inr unit) (inl i') / M (inr unit) (inr unit) :=
-  listTransvecRow_getElem _ i.isLt
 
 /-- Multiplying by some of the matrices in `listTransvecCol M` does not change the last row. -/
 theorem listTransvecCol_mul_last_row_drop (i : Fin r ⊕ Unit) {k : ℕ} (hk : k ≤ r) :
@@ -619,7 +605,6 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction
       diagonal (Sum.elim D₀ fun _ => c) by
     simpa [M', c, Matrix.mul_assoc]
   have : M' = fromBlocks M'' 0 0 (diagonal fun _ => c) := by
-    -- Porting note: simplified proof, because `congr` didn't work anymore
     rw [← fromBlocks_toBlocks M', hM.1, hM.2]
     rfl
   rw [this]

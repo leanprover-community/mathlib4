@@ -7,7 +7,7 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.ContinuousMonoidHom
 import Mathlib.LinearAlgebra.Projection
-import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
 /-!
 # Continuous linear maps
@@ -49,8 +49,8 @@ and `f (c • x) = (σ c) • f x`. -/
 class ContinuousSemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
     (σ : outParam <| R →+* S) (M : outParam Type*) [TopologicalSpace M] [AddCommMonoid M]
     (M₂ : outParam Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
-    [Module S M₂] [FunLike F M M₂]
-    extends SemilinearMapClass F σ M M₂, ContinuousMapClass F M M₂ : Prop
+    [Module S M₂] [FunLike F M M₂] : Prop
+    extends SemilinearMapClass F σ M M₂, ContinuousMapClass F M M₂
 
 /-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
 `R`-linear maps `M → M₂`.  This is an abbreviation for
@@ -107,8 +107,8 @@ protected theorem continuous (f : M₁ →SL[σ₁₂] M₂) : Continuous f :=
   f.2
 
 protected theorem uniformContinuous {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
-    [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [UniformAddGroup E₁]
-    [UniformAddGroup E₂] (f : E₁ →SL[σ₁₂] E₂) : UniformContinuous f :=
+    [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [IsUniformAddGroup E₁]
+    [IsUniformAddGroup E₂] (f : E₁ →SL[σ₁₂] E₂) : UniformContinuous f :=
   uniformContinuous_addMonoidHom_of_continuous f.continuous
 
 @[simp, norm_cast]
@@ -1021,7 +1021,7 @@ def restrictScalars (f : M →L[A] M₂) : M →L[R] M₂ :=
 
 variable {R}
 
-@[simp] -- @[norm_cast] -- Porting note: This theorem can't be a `norm_cast` theorem.
+@[simp]
 theorem coe_restrictScalars (f : M →L[A] M₂) :
     (f.restrictScalars R : M →ₗ[R] M₂) = (f : M →ₗ[A] M₂).restrictScalars R :=
   rfl

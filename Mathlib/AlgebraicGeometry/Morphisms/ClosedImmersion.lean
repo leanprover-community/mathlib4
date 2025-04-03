@@ -39,7 +39,7 @@ namespace AlgebraicGeometry
 /-- A morphism of schemes `X ⟶ Y` is a closed immersion if the underlying
 topological map is a closed embedding and the induced stalk maps are surjective. -/
 @[mk_iff]
-class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) extends SurjectiveOnStalks f : Prop where
+class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop extends SurjectiveOnStalks f where
   base_closed : IsClosedEmbedding f.base
 
 lemma Scheme.Hom.isClosedEmbedding {X Y : Scheme} (f : X.Hom Y)
@@ -247,7 +247,7 @@ theorem isAffine_surjective_of_isAffine [IsClosedImmersion f] :
   haveI := IsClosedImmersion.of_comp_isClosedImmersion (affineTargetImageFactorization f)
     (affineTargetImageInclusion f)
   haveI := isIso_of_injective_of_isAffine (affineTargetImageFactorization_app_injective f)
-  exact ⟨isAffine_of_isIso (affineTargetImageFactorization f),
+  exact ⟨.of_isIso (affineTargetImageFactorization f),
     (ConcreteCategory.bijective_of_isIso
       ((affineTargetImageFactorization f).appTop)).surjective.comp <|
       affineTargetImageInclusion_app_surjective f⟩

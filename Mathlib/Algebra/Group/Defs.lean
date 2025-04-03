@@ -3,10 +3,9 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
+import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
-import Mathlib.Data.One.Defs
-import Mathlib.Algebra.Group.Operations
 import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.OfNat
@@ -68,7 +67,7 @@ class IsRightCancelMul (G : Type u) [Mul G] : Prop where
   /-- Multiplication is right cancellative. -/
   protected mul_right_cancel : ∀ a b c : G, a * b = c * b → a = c
 /-- A mixin for cancellative multiplication. -/
-class IsCancelMul (G : Type u) [Mul G] extends IsLeftCancelMul G, IsRightCancelMul G : Prop
+class IsCancelMul (G : Type u) [Mul G] : Prop extends IsLeftCancelMul G, IsRightCancelMul G
 
 /-- A mixin for left cancellative addition. -/
 class IsLeftCancelAdd (G : Type u) [Add G] : Prop where
@@ -85,7 +84,7 @@ class IsRightCancelAdd (G : Type u) [Add G] : Prop where
 attribute [to_additive IsRightCancelAdd] IsRightCancelMul
 
 /-- A mixin for cancellative addition. -/
-class IsCancelAdd (G : Type u) [Add G] extends IsLeftCancelAdd G, IsRightCancelAdd G : Prop
+class IsCancelAdd (G : Type u) [Add G] : Prop extends IsLeftCancelAdd G, IsRightCancelAdd G
 
 attribute [to_additive IsCancelAdd] IsCancelMul
 
@@ -458,7 +457,7 @@ def nsmulRec' {M : Type*} [Zero M] [Add M] : ℕ → M → M
 attribute [to_additive existing] npowRec'
 
 @[to_additive]
-theorem npowRec'_succ {M : Type*} [Semigroup M] [One M] {k : ℕ} (_ : k ≠ 0) (m : M) :
+theorem npowRec'_succ {M : Type*} [Mul M] [One M] {k : ℕ} (_ : k ≠ 0) (m : M) :
     npowRec' (k + 1) m = npowRec' k m * m :=
   match k with
   | _ + 1 => rfl
@@ -1083,15 +1082,6 @@ theorem mul_inv_cancel (a : G) : a * a⁻¹ = 1 := by
 
 @[to_additive (attr := simp) sub_self]
 theorem div_self' (a : G) : a / a = 1 := by rw [div_eq_mul_inv, mul_inv_cancel a]
-
-@[deprecated (since := "2024-08-12")] alias mul_left_inv := inv_mul_cancel
-@[deprecated (since := "2024-08-12")] alias mul_right_inv := mul_inv_cancel
-@[deprecated (since := "2024-08-12")] alias add_left_neg := neg_add_cancel
-@[deprecated (since := "2024-08-12")] alias add_right_neg := add_neg_cancel
-@[deprecated (since := "2024-08-12")] alias inv_mul_self := inv_mul_cancel
-@[deprecated (since := "2024-08-12")] alias mul_inv_self := mul_inv_cancel
-@[deprecated (since := "2024-08-12")] alias neg_add_self := neg_add_cancel
-@[deprecated (since := "2024-08-12")] alias add_right_self := add_neg_cancel
 
 @[to_additive (attr := simp)]
 theorem inv_mul_cancel_left (a b : G) : a⁻¹ * (a * b) = b := by

@@ -73,10 +73,10 @@ protected lemma add_comm (s t : Multiset α) : s + t = t + s :=
 protected lemma add_assoc (s t u : Multiset α) : s + t + u = s + (t + u) :=
   Quotient.inductionOn₃ s t u fun _ _ _ ↦ congr_arg _ <| append_assoc ..
 
-@[simp, nolint simpNF] -- We want to use this lemma earlier than `zero_add`
+@[simp high]
 protected lemma zero_add (s : Multiset α) : 0 + s = s := Quotient.inductionOn s fun _ ↦ rfl
 
-@[simp, nolint simpNF] -- We want to use this lemma earlier than `add_zero`
+@[simp high]
 protected lemma add_zero (s : Multiset α) : s + 0 = s :=
   Quotient.inductionOn s fun l ↦ congr_arg _ <| append_nil l
 
@@ -283,7 +283,7 @@ lemma coe_sub (s t : List α) : (s - t : Multiset α) = s.diff t :=
 
 /-- This is a special case of `tsub_zero`, which should be used instead of this.
 This is needed to prove `OrderedSub (Multiset α)`. -/
-@[simp, nolint simpNF] -- We want to use this lemma earlier than the lemma simp can prove it with
+@[simp high]
 protected lemma sub_zero (s : Multiset α) : s - 0 = s :=
   Quot.inductionOn s fun _l => rfl
 
@@ -389,5 +389,28 @@ theorem rel_add_right {as bs₀ bs₁} :
   rw [← rel_flip, rel_add_left]; simp [rel_flip]
 
 end Rel
+
+section Nodup
+
+@[simp]
+theorem nodup_singleton : ∀ a : α, Nodup ({a} : Multiset α) :=
+  List.nodup_singleton
+
+theorem not_nodup_pair : ∀ a : α, ¬Nodup (a ::ₘ a ::ₘ 0) :=
+  List.not_nodup_pair
+
+theorem Nodup.erase [DecidableEq α] (a : α) {l} : Nodup l → Nodup (l.erase a) :=
+  nodup_of_le (erase_le _ _)
+
+theorem mem_sub_of_nodup [DecidableEq α] {a : α} {s t : Multiset α} (d : Nodup s) :
+    a ∈ s - t ↔ a ∈ s ∧ a ∉ t :=
+  ⟨fun h =>
+    ⟨mem_of_le (Multiset.sub_le_self ..) h, fun h' => by
+      refine count_eq_zero.1 ?_ h
+      rw [count_sub a s t, Nat.sub_eq_zero_iff_le]
+      exact le_trans (nodup_iff_count_le_one.1 d _) (count_pos.2 h')⟩,
+    fun ⟨h₁, h₂⟩ => Or.resolve_right (mem_add.1 <| mem_of_le Multiset.le_sub_add h₁) h₂⟩
+
+end Nodup
 
 end Multiset

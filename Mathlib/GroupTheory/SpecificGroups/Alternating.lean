@@ -8,6 +8,7 @@ import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Subgroup.Simple
+import Mathlib.Logic.Equiv.Fin.Rotate
 import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -166,7 +167,7 @@ theorem closure_three_cycles_eq_alternating :
       exact hind n l hl hn
     intro n
     induction' n with n ih <;> intro l hl hn
-    · simp [List.length_eq_zero.1 hn, one_mem]
+    · simp [List.length_eq_zero_iff.1 hn, one_mem]
     rw [Nat.mul_succ] at hn
     obtain ⟨a, l, rfl⟩ := l.exists_of_length_succ hn
     rw [List.length_cons, Nat.succ_inj'] at hn
