@@ -836,6 +836,13 @@ theorem coe_injective : Function.Injective (Coe.coe : MvPolynomial σ R → MvPo
   simp_rw [← coeff_coe]
   congr
 
+theorem coe_map {S : Type*} [CommSemiring S] (f : R →+* S) (p : MvPolynomial σ R) :
+    MvPolynomial.map f p  = MvPowerSeries.map _ f (p : MvPowerSeries σ R) := by
+  induction p using MvPolynomial.induction_on with
+  | C a => simp
+  | add p q hp hq => simp [hp, hq]
+  | mul_X p n hp => simp [hp]
+
 variable {σ R φ ψ}
 
 @[simp, norm_cast]
