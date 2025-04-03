@@ -29,6 +29,8 @@ variable {α : Type*}
 section NNRat
 variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] {a : α}
 
+-- TODO: Now `Data.Rat.Cast.Order` has to import this file because of this lemma.
+-- These files need to be reorganized.
 lemma NNRat.cast_nonneg (q : ℚ≥0) : 0 ≤ (q : α) := by
   rw [cast_def]; exact div_nonneg q.num.cast_nonneg q.den.cast_nonneg
 
