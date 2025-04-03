@@ -35,7 +35,12 @@ we can write `map F f : F X ⟶ F Y` for the action of `F` on a morphism `f : X 
 def map (F : C → D) [Functorial.{v₁, v₂} F] {X Y : C} (f : X ⟶ Y) : F X ⟶ F Y :=
   Functorial.map'.{v₁, v₂} f
 
-@[simp]
+def _root_.CategoryTheory.Functorial.Simps.map
+    (F : C → D) (h : Functorial F) {X Y : C} : (X ⟶ Y) → (F X ⟶ F Y) :=
+  CategoryTheory.map F
+
+initialize_simps_projections Functorial (map' → map)
+
 theorem map'_as_map {F : C → D} [Functorial.{v₁, v₂} F] {X Y : C} {f : X ⟶ Y} :
     Functorial.map'.{v₁, v₂} f = map F f :=
   rfl
