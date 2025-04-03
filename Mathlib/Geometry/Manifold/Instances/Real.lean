@@ -198,7 +198,7 @@ theorem frontier_quadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
   rw [frontier, closure_quadrant, interior_quadrant]
   ext y
   simp only [mem_diff, mem_setOf_eq, not_forall, not_lt, and_congr_right_iff]
-  exact fun aux ↦ ⟨fun ⟨i, hi⟩ ↦ ⟨i, by linarith [aux i]⟩, fun ⟨i, hi⟩ ↦ ⟨i, by linarith⟩⟩
+  exact fun aux ↦ exists_congr fun i ↦ ⟨fun h ↦ by linarith [aux i], fun h ↦ by linarith⟩
 
 -- Can this proof be golfed further?
 lemma aux {a b c d : ℝ} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 1) (hc : 0 < c) (hd : 0 < d) :
