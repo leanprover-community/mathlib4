@@ -1422,8 +1422,8 @@ theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
   constructor
   · rintro ⟨p⟩
     use p.map (.ofLE (by simp))
-    simp_rw [Walk.edges_map, Hom.coe_ofLE, Sym2.map_id, List.map_id_fun, id_eq] at *
-    intro h
+    simp_rw [Walk.edges_map, List.mem_map, Hom.ofLE_apply, Sym2.map_id', id]
+    rintro ⟨e, h, rfl⟩
     simpa using p.edges_subset_edgeSet h
   · rintro ⟨p, h⟩
     refine ⟨p.transfer _ fun e ep => ?_⟩
