@@ -39,7 +39,7 @@ section Uniqueness
 
 open ContinuousMultilinearMap
 
-theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p : E[×n]→L[𝕜] F}
+theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p : E [×n]→L[𝕜] F}
     (h : (fun y => p fun _ => y) =O[𝓝 0] fun y => ‖y‖ ^ (n + 1)) (y : E) : (p fun _ => y) = 0 := by
   obtain ⟨c, c_pos, hc⟩ := h.exists_pos
   obtain ⟨t, ht, t_open, z_mem⟩ := eventually_nhds_iff.mp (isBigOWith_iff.mp hc)
@@ -47,9 +47,6 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
   clear h hc z_mem
   rcases n with - | n
   · exact norm_eq_zero.mp (by
-      -- Porting note: the symmetric difference of the `simpa only` sets:
-      -- added `zero_add, pow_one`
-      -- removed `zero_pow, Ne.def, Nat.one_ne_zero, not_false_iff`
       simpa only [fin0_apply_norm, norm_eq_zero, norm_zero, zero_add, pow_one,
         mul_zero, norm_le_zero_iff] using ht 0 (δε (Metric.mem_ball_self δ_pos)))
   · refine Or.elim (Classical.em (y = 0))
@@ -70,9 +67,7 @@ theorem Asymptotics.IsBigO.continuousMultilinearMap_apply_eq_zero {n : ℕ} {p :
           simpa only [norm_pow, _root_.norm_norm] using ht (k • y) (δε (mem_ball_zero_iff.mpr h₁))
           --simpa only [norm_pow, norm_norm] using ht (k • y) (δε (mem_ball_zero_iff.mpr h₁))
         _ = ‖k‖ ^ n.succ * (‖k‖ * (c * ‖y‖ ^ (n.succ + 1))) := by
-          -- Porting note: added `Nat.succ_eq_add_one` since otherwise `ring` does not conclude.
-          simp only [norm_smul, mul_pow, Nat.succ_eq_add_one]
-          -- Porting note: removed `rw [pow_succ]`, since it now becomes superfluous.
+          simp only [norm_smul, mul_pow]
           ring
     have h₃ : ‖k‖ * (c * ‖y‖ ^ (n.succ + 1)) < ε :=
       inv_mul_cancel_right₀ h₀.ne.symm ε ▸

@@ -58,6 +58,7 @@ theorem prod_flatten {l : List (List M)} : l.flatten.prod = (l.map List.prod).pr
 @[deprecated (since := "2024-10-15")] alias prod_join := prod_flatten
 @[deprecated (since := "2024-10-15")] alias sum_join := sum_flatten
 
+open scoped Relator in
 @[to_additive]
 theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
     (Forall₂ R ⇒ R) prod prod :=
@@ -72,7 +73,7 @@ theorem prod_hom_nonempty {l : List M} {F : Type*} [FunLike F M N] [MulHomClass 
 theorem prod_hom (l : List M) {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F) :
     (l.map f).prod = f l.prod := by
   simp only [prod, foldr_map, ← map_one f]
-  exact l.foldr_hom f (· * ·) (f · * ·) 1 (fun x y => (map_mul f x y).symm)
+  exact l.foldr_hom f (fun x y => (map_mul f x y).symm)
 
 @[to_additive]
 theorem prod_hom₂_nonempty {l : List ι} (f : M → N → P)
@@ -188,7 +189,7 @@ lemma prod_range_succ' (f : ℕ → M) (n : ℕ) :
   | nil => rfl
   | cons i l hil =>
     rw [List.prod_cons, hil fun x hx ↦ hl _ (mem_cons_of_mem i hx),
-      hl _ (mem_cons_self i l), one_mul]
+      hl _ mem_cons_self, one_mul]
 
 @[to_additive] lemma exists_mem_ne_one_of_prod_ne_one (h : l.prod ≠ 1) :
     ∃ x ∈ l, x ≠ (1 : M) := by simpa only [not_forall, exists_prop] using mt prod_eq_one h
@@ -202,7 +203,7 @@ lemma prod_erase_of_comm [DecidableEq M] (ha : a ∈ l) (comm : ∀ x ∈ l, ∀
     obtain rfl | ⟨ne, h⟩ := List.eq_or_ne_mem_of_mem ha
     · simp only [erase_cons_head, prod_cons]
     rw [List.erase, beq_false_of_ne ne.symm, List.prod_cons, List.prod_cons, ← mul_assoc,
-      comm a ha b (l.mem_cons_self b), mul_assoc,
+      comm a ha b mem_cons_self, mul_assoc,
       ih h fun x hx y hy ↦ comm _ (List.mem_cons_of_mem b hx) _ (List.mem_cons_of_mem b hy)]
 
 @[to_additive]
@@ -216,7 +217,7 @@ lemma prod_map_eq_pow_single [DecidableEq α] {l : List α} (a : α) (f : α →
     simp only [beq_iff_eq]
     split_ifs with ha'
     · rw [ha', _root_.pow_succ']
-    · rw [hf a' ha' (List.mem_cons_self a' as), one_mul, add_zero]
+    · rw [hf a' ha' mem_cons_self, one_mul, add_zero]
 
 @[to_additive]
 lemma prod_eq_pow_single [DecidableEq M] (a : M) (h : ∀ a', a' ≠ a → a' ∈ l → a' = 1) :
@@ -243,7 +244,8 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
 
 @[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.foldr_op_eq
 
-@[to_additive] lemma prod_reverse (l : List M) : prod l.reverse = prod l := (reverse_perm l).prod_eq
+@[to_additive (attr := simp)]
+lemma prod_reverse (l : List M) : prod l.reverse = prod l := (reverse_perm l).prod_eq
 
 @[to_additive]
 lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
@@ -520,6 +522,6 @@ theorem length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.le
   | nil => simp
   | cons j L IH =>
     rw [sum_cons, length, add_comm]
-    exact Nat.add_le_add (h _ (mem_cons_self _ _)) (IH fun i hi => h i (mem_cons.2 (Or.inr hi)))
+    exact Nat.add_le_add (h _ mem_cons_self) (IH fun i hi => h i (mem_cons.2 (Or.inr hi)))
 
 end List

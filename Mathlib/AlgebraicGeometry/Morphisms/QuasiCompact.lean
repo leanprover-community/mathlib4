@@ -151,6 +151,12 @@ theorem compactSpace_iff_quasiCompact (X : Scheme) :
     CompactSpace X ↔ QuasiCompact (terminal.from X) := by
   rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
 
+lemma QuasiCompact.compactSpace_of_compactSpace {X Y : Scheme.{u}} (f : X ⟶ Y) [QuasiCompact f]
+    [CompactSpace Y] : CompactSpace X := by
+  constructor
+  rw [← Set.preimage_univ (f := f.base)]
+  exact QuasiCompact.isCompact_preimage _ isOpen_univ CompactSpace.isCompact_univ
+
 instance quasiCompact_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @QuasiCompact where
   comp_mem _ _ _ _ := inferInstance
@@ -253,7 +259,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Sch
   `(hU.isLocalization_basicOpen f).exists_of_eq H`
   This is no longer possible;
   likely changing the signature of `IsLocalization.Away.exists_of_eq` is in order.
-  -/
+-/
   obtain ⟨n, e⟩ :=
     @IsLocalization.Away.exists_of_eq _ _ _ _ _ _ (hU.isLocalization_basicOpen f) _ _ H
   exact ⟨n, by simpa [mul_comm x] using e⟩

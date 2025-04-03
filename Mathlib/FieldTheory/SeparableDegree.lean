@@ -473,7 +473,7 @@ theorem natSepDegree_le_of_dvd (g : F[X]) (h1 : f ∣ g) (h2 : g ≠ 0) :
 and `f` have the same separable degree. -/
 theorem natSepDegree_expand (q : ℕ) [hF : ExpChar F q] {n : ℕ} :
     (expand F (q ^ n) f).natSepDegree = f.natSepDegree := by
-  cases' hF with _ _ hprime _
+  obtain - | hprime := hF
   · simp only [one_pow, expand_one]
   haveI := Fact.mk hprime
   classical
@@ -599,7 +599,7 @@ theorem eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one (q : ℕ) [ExpChar F 
   obtain ⟨c, hf, H⟩ := hF.exists_eq_pow_mul_and_not_dvd
   rw [hf, natSepDegree_mul_of_isCoprime _ c <| IsCoprime.pow_left <|
     (hI.isCoprime_or_dvd c).resolve_right H, natSepDegree_pow_of_ne_zero _ hne, hD,
-    add_right_eq_self, natSepDegree_eq_zero_iff] at h
+    add_eq_left, natSepDegree_eq_zero_iff] at h
   simpa only [eq_one_of_monic_natDegree_zero ((hM.pow _).of_mul_monic_left (hf ▸ hm)) h,
     mul_one, ← hp] using hf
 

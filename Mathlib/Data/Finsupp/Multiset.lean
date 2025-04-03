@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.Group.Finset
 import Mathlib.Data.Finsupp.Order
+import Mathlib.Data.Sym.Basic
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions
@@ -29,8 +30,9 @@ Under the additional assumption of `[DecidableEq α]`, this is available as
 is only needed for one direction. -/
 def toMultiset : (α →₀ ℕ) →+ Multiset α where
   toFun f := Finsupp.sum f fun a n => n • {a}
-  -- Porting note: times out if h is not specified
-  map_add' _f _g := sum_add_index' (h := fun a n => n • ({a} : Multiset α))
+  -- Porting note: have to specify `h` or add a `dsimp only` before `sum_add_index'`.
+  -- see also: https://github.com/leanprover-community/mathlib4/issues/12129
+  map_add' _f _g := sum_add_index' (h := fun _ n => n • _)
     (fun _ ↦ zero_nsmul _) (fun _ ↦ add_nsmul _)
   map_zero' := sum_zero_index
 

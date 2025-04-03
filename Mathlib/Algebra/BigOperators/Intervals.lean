@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Algebra.Order.Interval.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Algebra.Order.Interval.Finset.Basic
 import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Tactic.Linarith
 
@@ -161,8 +161,7 @@ theorem prod_Ico_eq_div {δ : Type*} [CommGroup δ] (f : ℕ → δ) {m n : ℕ}
 
 @[to_additive]
 theorem prod_range_div_prod_range {α : Type*} [CommGroup α] {f : ℕ → α} {n m : ℕ} (hnm : n ≤ m) :
-    ((∏ k ∈ range m, f k) / ∏ k ∈ range n, f k) =
-    ∏ k ∈ (range m).filter fun k => n ≤ k, f k := by
+    ((∏ k ∈ range m, f k) / ∏ k ∈ range n, f k) = ∏ k ∈ range m with n ≤ k, f k := by
   rw [← prod_Ico_eq_div f hnm]
   congr
   apply Finset.ext

@@ -105,8 +105,8 @@ protected lemma Connected.sup {H K : G.Subgraph}
   · exact Reachable.map (Subgraph.inclusion (le_sup_right : K ≤ H ⊔ K)) (hK ⟨u, hu'⟩ ⟨v, hv⟩)
 
 /--
-  This lemma establishes a condition under which a subgraph is the same as a connected component.
-  Note the asymmetry in the hypothesis `h`: `v` is in `H.verts`, but `w` is not required to be.
+This lemma establishes a condition under which a subgraph is the same as a connected component.
+Note the asymmetry in the hypothesis `h`: `v` is in `H.verts`, but `w` is not required to be.
 -/
 lemma Connected.exists_verts_eq_connectedComponentSupp {H : Subgraph G}
     (hc : H.Connected) (h : ∀ v ∈ H.verts, ∀ w, G.Adj v w → H.Adj v w) :
@@ -192,9 +192,8 @@ theorem toSubgraph_map (f : G →g G') (p : G.Walk u v) :
 lemma adj_toSubgraph_mapLe {G' : SimpleGraph V} {w x : V} {p : G.Walk u v} (h : G ≤ G') :
     (p.mapLe h).toSubgraph.Adj w x ↔ p.toSubgraph.Adj w x := by
   simp only [toSubgraph_map, Subgraph.map_adj]
-  nth_rewrite 1 [← Hom.mapSpanningSubgraphs_apply h w, ← Hom.mapSpanningSubgraphs_apply h x]
-  rw [Relation.map_apply_apply (Hom.mapSpanningSubgraphs_injective h)
-    (Hom.mapSpanningSubgraphs_injective h)]
+  nth_rewrite 1 [← Hom.ofLE_apply h w, ← Hom.ofLE_apply h x]
+  simp
 
 @[simp]
 theorem finite_neighborSet_toSubgraph (p : G.Walk u v) : (p.toSubgraph.neighborSet w).Finite := by

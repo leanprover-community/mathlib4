@@ -169,7 +169,8 @@ theorem Measure.MeasureDense.of_generateFrom_isSetAlgebra_finite [IsFiniteMeasur
     -- enough to show that such sets constitute a `σ`-algebra containing `𝒜`. This is contained in
     -- the theorem `generateFrom_induction`.
     have : MeasurableSet s ∧ ∀ (ε : ℝ), 0 < ε → ∃ t ∈ 𝒜, (μ (s ∆ t)).toReal < ε := by
-      induction s, hgen ▸ ms using generateFrom_induction with
+      rw [hgen] at ms
+      induction s, ms using generateFrom_induction with
       -- If `t ∈ 𝒜`, then `μ (t ∆ t) = 0` which is less than any `ε > 0`.
       | hC t t_mem _ =>
         exact ⟨hgen ▸ measurableSet_generateFrom t_mem, fun ε ε_pos ↦ ⟨t, t_mem, by simpa⟩⟩
@@ -437,7 +438,7 @@ instance Lp.SecondCountableTopology [IsSeparable μ] [TopologicalSpace.Separable
     -- to show that the closure of `D` contains constant indicators which are in `Lᵖ` (i. e. the
     -- set has finite measure), is closed by sum and closed.
     -- This is given by `Lp.induction`.
-    refine Lp.induction p_ne_top.elim (P := fun f ↦ f ∈ closure D) ?_ ?_ isClosed_closure
+    refine Lp.induction p_ne_top.elim (motive := fun f ↦ f ∈ closure D) ?_ ?_ isClosed_closure
     · intro a s ms hμs
       -- We want to approximate `a • 𝟙ₛ`.
       apply ne_of_lt at hμs

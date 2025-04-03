@@ -92,7 +92,7 @@ theorem Red.trans : Red L₁ L₂ → Red L₂ L₃ → Red L₁ L₃ :=
 namespace Red
 
 /-- Predicate asserting that the word `w₁` can be reduced to `w₂` in one step, i.e. there are words
-`w₃ w₄` and letter `x` such that `w₁ = w₃xx⁻¹w₄` and `w₂ = w₃w₄`  -/
+`w₃ w₄` and letter `x` such that `w₁ = w₃xx⁻¹w₄` and `w₂ = w₃w₄` -/
 @[to_additive "Predicate asserting that the word `w₁` can be reduced to `w₂` in one step, i.e. there
   are words `w₃ w₄` and letter `x` such that `w₁ = w₃ + x + (-x) + w₄` and `w₂ = w₃w₄`"]
 theorem Step.length : ∀ {L₁ L₂ : List (α × Bool)}, Step L₁ L₂ → L₂.length + 2 = L₁.length
@@ -408,6 +408,7 @@ theorem quot_liftOn_mk (β : Type v) (f : List (α × Bool) → β)
     (H : ∀ L₁ L₂, Red.Step L₁ L₂ → f L₁ = f L₂) : Quot.liftOn (mk L) f H = f L :=
   rfl
 
+open scoped Relator in
 @[to_additive (attr := simp)]
 theorem quot_map_mk (β : Type v) (f : List (α × Bool) → List (β × Bool))
     (H : (Red.Step ⇒ Red.Step) f f) : Quot.map f H (mk L) = mk (f L) :=
@@ -690,9 +691,7 @@ theorem map_eq_lift : map f x = lift (of ∘ f) x :=
 
 /-- Equivalent types give rise to multiplicatively equivalent free groups.
 
-The converse can be found in `GroupTheory.FreeAbelianGroupFinsupp`,
-as `Equiv.of_freeGroupEquiv`
--/
+The converse can be found in `GroupTheory.FreeGroup.GeneratorEquiv`, as `Equiv.ofFreeGroupEquiv`. -/
 @[to_additive (attr := simps apply)
   "Equivalent types give rise to additively equivalent additive free groups."]
 def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β where

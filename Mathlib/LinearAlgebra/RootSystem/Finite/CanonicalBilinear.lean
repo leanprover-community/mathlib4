@@ -36,9 +36,6 @@ Weyl group.
  * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
  * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
-## TODO (possibly in other files)
- * Weyl-invariance
- * Faithfulness of Weyl group action, and finiteness of Weyl group, for finite root systems.
 -/
 
 open Set Function
@@ -208,7 +205,7 @@ theorem range_polarization_domRestrict_le_span_coroot :
   intro y hy
   obtain ⟨x, hx⟩ := hy
   rw [← hx, LinearMap.domRestrict_apply, Polarization_apply]
-  refine (mem_span_range_iff_exists_fun R).mpr ?_
+  refine (Submodule.mem_span_range_iff_exists_fun R).mpr ?_
   use fun i => (P.toPerfectPairing x) (P.coroot i)
   simp
 
@@ -239,11 +236,11 @@ end Fintype
 section IsValuedInOrdered
 
 variable (S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R]
-  [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] [Fintype ι]
+  [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] {i j : ι}
 
 /-- The bilinear form of a finite root pairing taking values in a linearly-ordered ring, as a
 root-positive form. -/
-def posRootForm : P.RootPositiveForm S where
+def posRootForm [Fintype ι] : P.RootPositiveForm S where
   form := P.RootForm
   symm := P.rootForm_symmetric
   isOrthogonal_reflection := P.rootForm_reflection_reflection_apply
@@ -252,7 +249,7 @@ def posRootForm : P.RootPositiveForm S where
     refine ⟨∑ k, P.pairingIn S i k ^ 2, ?_, by simp [sq, rootForm_apply_apply]⟩
     exact Finset.sum_pos' (fun j _ ↦ sq_nonneg _) ⟨i, by simp⟩
 
-theorem exists_ge_zero_eq_rootForm (x : M) (hx : x ∈ span S (range P.root)) :
+theorem exists_ge_zero_eq_rootForm [Fintype ι] (x : M) (hx : x ∈ span S (range P.root)) :
     ∃ s ≥ 0, algebraMap S R s = P.RootForm x x := by
   refine ⟨(P.posRootForm S).posForm ⟨x, hx⟩ ⟨x, hx⟩, IsSumSq.nonneg ?_, by simp [posRootForm]⟩
   choose s hs using P.coroot'_apply_apply_mem_of_mem_span S hx
@@ -261,6 +258,11 @@ theorem exists_ge_zero_eq_rootForm (x : M) (hx : x ∈ span S (range P.root)) :
   apply FaithfulSMul.algebraMap_injective S R
   simp only [posRootForm, RootPositiveForm.algebraMap_posForm, map_sum, map_mul]
   simp [← Algebra.linearMap_apply, hs, rootForm_apply_apply]
+
+lemma zero_lt_pairingIn_iff' [Finite ι] :
+    0 < P.pairingIn S i j ↔ 0 < P.pairingIn S j i :=
+  let _i : Fintype ι := Fintype.ofFinite ι
+  zero_lt_pairingIn_iff (P.posRootForm S) i j
 
 end IsValuedInOrdered
 

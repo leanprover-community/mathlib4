@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Order.AbsoluteValue.Basic
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.GroupTopology
 
 /-!
 
@@ -41,8 +42,11 @@ The `IsTopologicalSemiring` class should *only* be instantiated in the presence 
 then `IsTopologicalRing` should be used. Note: in the presence of `NonAssocRing`, these classes are
 mathematically equivalent (see `IsTopologicalSemiring.continuousNeg_of_mul` or
 `IsTopologicalSemiring.toIsTopologicalRing`). -/
-class IsTopologicalSemiring [TopologicalSpace α] [NonUnitalNonAssocSemiring α] extends
-  ContinuousAdd α, ContinuousMul α : Prop
+class IsTopologicalSemiring [TopologicalSpace α] [NonUnitalNonAssocSemiring α] : Prop
+    extends ContinuousAdd α, ContinuousMul α
+
+@[deprecated (since := "2025-02-14")] alias TopologicalSemiring :=
+  IsTopologicalSemiring
 
 /-- A topological ring is a ring `R` where addition, multiplication and negation are continuous.
 
@@ -50,8 +54,11 @@ If `R` is a (unital) ring, then continuity of negation can be derived from conti
 multiplication as it is multiplication with `-1`. (See
 `IsTopologicalSemiring.continuousNeg_of_mul` and
 `topological_semiring.to_topological_add_group`) -/
-class IsTopologicalRing [TopologicalSpace α] [NonUnitalNonAssocRing α]
-    extends IsTopologicalSemiring α, ContinuousNeg α : Prop
+class IsTopologicalRing [TopologicalSpace α] [NonUnitalNonAssocRing α] : Prop
+    extends IsTopologicalSemiring α, ContinuousNeg α
+
+@[deprecated (since := "2025-02-14")] alias TopologicalRing :=
+  IsTopologicalRing
 
 variable {α}
 
@@ -68,6 +75,9 @@ proving `continuous_neg`. -/
 theorem IsTopologicalSemiring.toIsTopologicalRing [TopologicalSpace α] [NonAssocRing α]
     (_ : IsTopologicalSemiring α) : IsTopologicalRing α where
   toContinuousNeg := IsTopologicalSemiring.continuousNeg_of_mul
+
+@[deprecated (since := "2025-02-14")] alias TopologicalSemiring.toTopologicalRing :=
+  IsTopologicalSemiring.toIsTopologicalRing
 
 -- See note [lower instance priority]
 instance (priority := 100) IsTopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing α]
@@ -126,7 +136,6 @@ instance : IsTopologicalSemiring (ULift α) where
 
 namespace Subsemiring
 
--- Porting note: named instance because generated name was huge
 instance topologicalSemiring (S : Subsemiring α) : IsTopologicalSemiring S :=
   { S.toSubmonoid.continuousMul, S.toAddSubmonoid.continuousAdd with }
 
@@ -357,8 +366,8 @@ universe u v
 
 /-- A ring topology on a ring `α` is a topology for which addition, negation and multiplication
 are continuous. -/
-structure RingTopology (α : Type u) [Ring α]
-    extends TopologicalSpace α, IsTopologicalRing α : Type u
+structure RingTopology (α : Type u) [Ring α] : Type u
+  extends TopologicalSpace α, IsTopologicalRing α
 
 namespace RingTopology
 

@@ -227,8 +227,7 @@ theorem cofan_inj_eq {Δ : SimplexCategoryᵒᵖ} (A : IndexSet Δ) :
     (s.cofan Δ).inj  A = s.ι A.1.unop.len ≫ X.map A.e.op := rfl
 
 theorem cofan_inj_id (n : ℕ) : (s.cofan _).inj (IndexSet.id (op ⦋n⦌)) = s.ι n := by
-  erw [cofan_inj_eq, X.map_id, comp_id]
-  rfl
+  simp [IndexSet.id, IndexSet.e, cofan_inj_eq]
 
 /-- As it is stated in `Splitting.hom_ext`, a morphism `f : X ⟶ Y` from a split
 simplicial object to any simplicial object is determined by its restrictions
@@ -257,7 +256,7 @@ theorem hom_ext (f g : X ⟶ Y) (h : ∀ n : ℕ, s.φ f n = s.φ g n) : f = g :
   simp only [s.cofan_inj_comp_app, h]
 
 /-- The map `X.obj Δ ⟶ Z` obtained by providing a family of morphisms on all the
-terms of decomposition given by a splitting `s : Splitting X`  -/
+terms of decomposition given by a splitting `s : Splitting X` -/
 def desc {Z : C} (Δ : SimplexCategoryᵒᵖ) (F : ∀ A : IndexSet Δ, s.N A.1.unop.len ⟶ Z) :
     X.obj Δ ⟶ Z :=
   Cofan.IsColimit.desc (s.isColimit Δ) F

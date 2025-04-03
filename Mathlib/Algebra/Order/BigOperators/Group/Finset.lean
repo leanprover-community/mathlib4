@@ -3,11 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Data.Fintype.Card
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Algebra.BigOperators.Group.Finset.Sigma
+import Mathlib.Data.Multiset.Powerset
 
 /-!
 # Big operators on a finset in ordered groups
@@ -360,10 +362,6 @@ See also `Finset.single_le_sum`."]
 lemma _root_.CanonicallyOrderedCommMonoid.single_le_prod {i : ι} (hi : i ∈ s) :
     f i ≤ ∏ j ∈ s, f j :=
   single_le_prod' (fun _ _ ↦ one_le _) hi
-
-@[to_additive (attr := simp) sum_eq_zero_iff]
-theorem prod_eq_one_iff' : ∏ x ∈ s, f x = 1 ↔ ∀ x ∈ s, f x = 1 :=
-  prod_eq_one_iff_of_one_le' fun x _ ↦ one_le (f x)
 
 @[to_additive sum_le_sum_of_subset]
 theorem prod_le_prod_of_subset' (h : s ⊆ t) : ∏ x ∈ s, f x ≤ ∏ x ∈ t, f x :=

@@ -482,6 +482,9 @@ variable [S.HasRightHomology]
 given by the `H` field of a chosen right homology data. -/
 noncomputable def rightHomology : C := S.rightHomologyData.H
 
+-- `S.rightHomology` is the simp normal form.
+@[simp] lemma rightHomologyData_H : S.rightHomologyData.H = S.rightHomology := rfl
+
 /-- The "opcycles" of a short complex, given by the `Q` field of a chosen right homology data.
 This is the dual notion to cycles. -/
 noncomputable def opcycles : C := S.rightHomologyData.Q
@@ -1288,7 +1291,7 @@ lemma hasKernel [S.HasRightHomology] [HasCokernel S.f] :
   let e : parallelPair (cokernel.desc S.f S.g S.zero) 0 ≅ parallelPair h.g' 0 :=
     parallelPair.ext (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) h.hp)
       (Iso.refl _) (coequalizer.hom_ext (by simp)) (by simp)
-  exact hasLimitOfIso e.symm
+  exact hasLimit_of_iso e.symm
 
 end HasRightHomology
 

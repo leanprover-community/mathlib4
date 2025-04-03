@@ -30,7 +30,6 @@ The type synonym `Lex (α →₀ N)` has an order given by `Finsupp.Lex (· < ·
 protected def Lex (r : α → α → Prop) (s : N → N → Prop) (x y : α →₀ N) : Prop :=
   Pi.Lex r s x y
 
--- Porting note: Added `_root_` to better align with Lean 3.
 theorem _root_.Pi.lex_eq_finsupp_lex {r : α → α → Prop} {s : N → N → Prop} (a b : α →₀ N) :
     Pi.Lex r s a b = Finsupp.Lex r s a b :=
   rfl

@@ -56,11 +56,10 @@ end UniversalEnvelopingAlgebra
 /-- The universal enveloping algebra of a Lie algebra. -/
 def UniversalEnvelopingAlgebra :=
   RingQuot (UniversalEnvelopingAlgebra.Rel R L)
+-- The `Inhabited, Ring, Algebra R` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 namespace UniversalEnvelopingAlgebra
-
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): the next three
--- instances were derived automatically in mathlib3.
 
 instance instInhabited : Inhabited (UniversalEnvelopingAlgebra R L) :=
   inferInstanceAs (Inhabited (RingQuot (UniversalEnvelopingAlgebra.Rel R L)))
@@ -109,8 +108,8 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
     --   RingQuot.liftAlgHom_mkAlgHom_apply]
     simp only [LieHom.coe_comp, Function.comp_apply, AlgHom.coe_toLieHom,
       UniversalEnvelopingAlgebra.ι_apply, mkAlgHom]
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [RingQuot.liftAlgHom_mkAlgHom_apply]
+    dsimp [UniversalEnvelopingAlgebra]
+    rw [RingQuot.liftAlgHom_mkAlgHom_apply]
     simp only [TensorAlgebra.lift_ι_apply, LieHom.coe_toLinearMap]
   right_inv F := by
     apply RingQuot.ringQuot_ext'
