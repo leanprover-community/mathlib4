@@ -55,65 +55,66 @@ include hf
 
 /-- Rename all the variables in a multivariable power series. -/
 def rename : MvPowerSeries σ R →ₐ[R] MvPowerSeries τ R :=
-  substAlgHom (hasSubst_X_comp hf)
+  substAlgHom (HasSubst.X_comp hf)
 
 theorem rename_C (r : R) : rename hf (C σ R r) = C τ R r := by
   simp [rename, c_eq_algebraMap]
 
 @[simp]
 theorem rename_X (i : σ) : rename hf (X i : MvPowerSeries σ R) = X (f i) := by
-  simp [rename, hasSubst_X_comp hf]
+  simp [rename, HasSubst.X_comp hf]
 
-@[simp]
+theorem rename_coe (P : MvPolynomial σ R) : rename hf (P : MvPowerSeries σ R) = P.rename f := by
+  induction P using MvPolynomial.induction_on with
+  | C a => simp [rename_C]
+  | add P Q hP hQ => simp [hP, hQ]
+  | mul_X P n hP => simp [hP]
+
 theorem rename_monomial (n : σ →₀ ℕ) (r : R) :
     rename hf (monomial R n r : MvPowerSeries σ R) = monomial R (n.mapDomain f) r := by
-  dsimp only [rename]
-  rw [substAlgHom_monomial]
+  rw [← MvPolynomial.coe_monomial, rename_coe, MvPolynomial.rename_monomial,
+    MvPolynomial.coe_monomial]
 
-
-  sorry
-  -- rw [← mul_one r, ← smul_eq_mul, map_smul, map_smul, map_smul]
-  -- congr
-  -- induction n using Finsupp.induction_linear with
-  -- | h0 => simp [rename_C]
-  -- | hadd n m hn hm =>
-  --     rw [← one_mul 1, ← monomial_mul_monomial, map_mul, hn, hm, monomial_mul_monomial,
-  --       Finsupp.mapDomain_add]
-  -- | hsingle i n =>
-  --   rw [← X_pow_eq, map_pow, rename_X, X_pow_eq, Finsupp.mapDomain_single]
-
+open WithPiTopology in
 @[fun_prop]
-theorem continuous_rename : Continuous (rename (R := R) hf) :=
-  continuous_aeval _
+theorem continuous_rename [UniformSpace R] [DiscreteUniformity R] :
+    Continuous (rename (R := R) hf) := by
+  simp [rename, HasSubst.X_comp hf, continuous_subst (R := R) (S := R) (HasSubst.X_comp hf)]
 
-variable [CommRing S] [UniformSpace S] [IsTopologicalRing S] [IsUniformAddGroup S] [CompleteSpace S]
-  [T2Space S] [IsLinearTopology S S] {φ : R →+* S}
+variable [CommRing S] (φ : R →+* S)
 
-theorem map_rename (hφ : Continuous φ) (F : MvPowerSeries σ R) :
+open WithPiTopology in
+theorem map_rename (F : MvPowerSeries σ R) :
     map τ φ (rename hf F) = rename hf (map σ φ F) := by
   have h1 := RingHom.comp_apply (map τ φ) (rename hf).toRingHom F
   have h2 := RingHom.comp_apply (rename hf).toRingHom (map σ φ) F
   simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe] at h1 h2
   rw [← h1, ← h2]
-  apply continuous_ringHom_ext
+  let _ : UniformSpace R := ⊥
+  let _ : UniformSpace S := ⊥
+  congr
+  apply RingHom.coe_inj
+  apply Continuous.ext_on (MvPolynomial.toMvPowerSeries_isDenseInducing ).dense
   · simp only [RingHom.coe_comp, RingHom.coe_coe]
     fun_prop
   · simp only [RingHom.coe_comp, RingHom.coe_coe]
     fun_prop
-  · simp
-  · intro r
-    simp only [RingHom.coe_comp, RingHom.coe_coe, comp_apply, map_C]
-    rw [rename_C, map_C, rename_C]
+  · simp only [RingHom.coe_comp, RingHom.coe_coe, Set.eqOn_range]
+    ext1 F
+    simp [rename_coe, ← MvPolynomial.coe_map, MvPolynomial.map_rename]
 
-lemma map_comp_rename (hφ : Continuous φ) :
+lemma map_comp_rename :
     (map τ φ).comp (rename hf).toRingHom = (rename hf).toRingHom.comp (map σ φ) :=
-  RingHom.ext fun p ↦ map_rename hf hφ p
+  RingHom.ext fun p ↦ map_rename hf φ p
 
+open WithPiTopology in
 @[simp]
 theorem rename_rename {g : τ → α} (hg : Tendsto g cofinite cofinite) (F : MvPowerSeries σ R) :
     rename hg (rename hf F) = rename (hg.comp hf) F := by
-    rw [← AlgHom.comp_apply]
-    apply continuous_algHom_ext (by simp only [AlgHom.coe_comp]; fun_prop) (by fun_prop) (by simp)
+  have := congr_fun
+    (subst_comp_subst (S := R) (T := R) (HasSubst.X_comp hf) (HasSubst.X_comp hg)) F
+  simp only [comp_apply] at this
+  simp [rename, this, HasSubst.X_comp hg]
 
 lemma rename_comp_rename {g : τ → α} (hg : Tendsto g cofinite cofinite) :
     (rename (R := R) hg).comp (rename hf) = rename (hg.comp hf) :=
@@ -124,11 +125,12 @@ omit hf
 @[simp]
 theorem rename_id : rename tendsto_id = AlgHom.id R (MvPowerSeries σ R) := by
   ext1 F
-  apply continuous_algHom_ext (by fun_prop) (by simp only [AlgHom.coe_id]; fun_prop) (by simp)
+  simp [rename, ← MvPowerSeries.map_algebraMap_eq_subst_X]
 
 lemma rename_id_apply (F : MvPowerSeries σ R) : rename tendsto_id F = F := by
   simp
 
+open WithPiTopology in
 theorem coeff_rename_mapDomain (hf : Function.Injective f) (F : MvPowerSeries σ R) (n : σ →₀ ℕ) :
     coeff R (n.mapDomain f) (rename hf.tendsto_cofinite F) = coeff R n F := by
   classical
@@ -136,16 +138,18 @@ theorem coeff_rename_mapDomain (hf : Function.Injective f) (F : MvPowerSeries σ
     (rename hf.tendsto_cofinite).toLinearMap F
   simp only [AlgHom.toLinearMap_apply] at h1
   rw [← h1]
-  apply continuous_linearMap_ext
-  · exact (continuous_coeff R _).comp (continuous_rename hf.tendsto_cofinite)
+  congr
+  apply LinearMap.coe_injective
+  let _ : UniformSpace R := ⊥
+  apply Continuous.ext_on (MvPolynomial.toMvPowerSeries_isDenseInducing ).dense
+  · simp only [LinearMap.coe_comp]
+    apply Continuous.comp
+    · fun_prop
+    · exact continuous_rename hf.tendsto_cofinite
   · fun_prop
-  · intro m
-    rw [LinearMap.comp_apply]
-    by_cases h : n = m
-    · simp [coeff_monomial, h]
-    · simp only [AlgHom.toLinearMap_apply, rename_monomial, coeff_monomial, h, reduceIte,
-        ite_eq_right_iff]
-      exact fun H ↦ by simpa using h <| Finsupp.mapDomain_injective hf H
+  · simp only [LinearMap.coe_comp, Set.eqOn_range]
+    ext F
+    simp [rename_coe, hf]
 
 theorem rename_injective (hf : Function.Injective f) :
     Function.Injective (rename hf.tendsto_cofinite : MvPowerSeries σ R → MvPowerSeries τ R) := by
