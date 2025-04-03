@@ -409,7 +409,7 @@ lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
   classical
   have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
     (LieSubmodule.iSupIndep_toSubmodule.mpr <| iSupIndep_genWeightSpace' K L M)
-    (LieSubmodule.iSup_eq_top_toSubmodule.mpr <| iSup_genWeightSpace_eq_top' K L M)
+    (LieSubmodule.iSup_toSubmodule_eq_top.mpr <| iSup_genWeightSpace_eq_top' K L M)
   simp_rw [traceForm_apply_apply, LinearMap.trace_eq_sum_trace_restrict hds hxy,
     ← traceForm_genWeightSpace_eq K L M _ x y]
   rfl

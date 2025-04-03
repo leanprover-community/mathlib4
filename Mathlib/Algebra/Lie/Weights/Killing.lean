@@ -114,7 +114,7 @@ lemma killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero {α β : H → K
   classical
   have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
     (LieSubmodule.iSupIndep_toSubmodule.mpr <| iSupIndep_genWeightSpace K H L)
-    (LieSubmodule.iSup_eq_top_toSubmodule.mpr <| iSup_genWeightSpace_eq_top K H L)
+    (LieSubmodule.iSup_toSubmodule_eq_top.mpr <| iSup_genWeightSpace_eq_top K H L)
   exact LinearMap.trace_eq_zero_of_mapsTo_ne hds σ hσ hf
 
 /-- Elements of the `α` root space which are Killing-orthogonal to the `-α` root space are
