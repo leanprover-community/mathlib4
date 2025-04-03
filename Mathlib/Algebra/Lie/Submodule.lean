@@ -552,14 +552,25 @@ theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {C : (x : M) → (x
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     exact ⟨_, hadd _ _ _ _ Cx Cy⟩
 
--- TODO(Yaël): turn around
-theorem disjoint_iff_toSubmodule :
-    Disjoint N N' ↔ Disjoint (N : Submodule R M) (N' : Submodule R M) := by
+variable {N N'}
+
+@[simp] lemma disjoint_toSubmodule :
+    Disjoint (N : Submodule R M) (N' : Submodule R M) ↔ Disjoint N N' := by
   rw [disjoint_iff, disjoint_iff, ← toSubmodule_inj, inf_toSubmodule, bot_toSubmodule,
     ← disjoint_iff]
 
+@[deprecated disjoint_toSubmodule (since := "2025-04-03")]
+theorem disjoint_iff_toSubmodule :
+    Disjoint N N' ↔ Disjoint (N : Submodule R M) (N' : Submodule R M) := disjoint_toSubmodule.symm
+
 @[deprecated (since := "2024-12-30")] alias disjoint_iff_coe_toSubmodule := disjoint_iff_toSubmodule
 
+@[simp] lemma codisjoint_toSubmodule :
+    Codisjoint (N : Submodule R M) (N' : Submodule R M) ↔ Codisjoint N N' := by
+  rw [codisjoint_iff, codisjoint_iff, ← toSubmodule_inj, sup_toSubmodule,
+    top_toSubmodule, ← codisjoint_iff]
+
+@[deprecated codisjoint_toSubmodule (since := "2025-04-03")]
 theorem codisjoint_iff_toSubmodule :
     Codisjoint N N' ↔ Codisjoint (N : Submodule R M) (N' : Submodule R M) := by
   rw [codisjoint_iff, codisjoint_iff, ← toSubmodule_inj, sup_toSubmodule,
@@ -568,15 +579,23 @@ theorem codisjoint_iff_toSubmodule :
 @[deprecated (since := "2024-12-30")]
 alias codisjoint_iff_coe_toSubmodule := codisjoint_iff_toSubmodule
 
+@[simp] lemma isCompl_toSubmodule :
+    IsCompl (N : Submodule R M) (N' : Submodule R M) ↔ IsCompl N N' := by
+  simp [isCompl_iff]
+
+@[deprecated isCompl_toSubmodule (since := "2025-04-03")]
 theorem isCompl_iff_toSubmodule :
-    IsCompl N N' ↔ IsCompl (N : Submodule R M) (N' : Submodule R M) := by
-  simp only [isCompl_iff, disjoint_iff_toSubmodule, codisjoint_iff_toSubmodule]
+    IsCompl N N' ↔ IsCompl (N : Submodule R M) (N' : Submodule R M) := isCompl_toSubmodule.symm
 
 @[deprecated (since := "2024-12-30")] alias isCompl_iff_coe_toSubmodule := isCompl_iff_toSubmodule
 
+@[simp] lemma iSupIndep_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
+    iSupIndep (fun i ↦ (N i : Submodule R M)) ↔ iSupIndep N := by
+  simp [iSupIndep_def, ← disjoint_toSubmodule]
+
+@[deprecated iSupIndep_toSubmodule (since := "2025-04-03")]
 theorem iSupIndep_iff_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
-    iSupIndep N ↔ iSupIndep fun i ↦ (N i : Submodule R M) := by
-  simp [iSupIndep_def, disjoint_iff_toSubmodule]
+    iSupIndep N ↔ iSupIndep fun i ↦ (N i : Submodule R M) := iSupIndep_toSubmodule.symm
 
 @[deprecated (since := "2024-12-30")]
 alias iSupIndep_iff_coe_toSubmodule := iSupIndep_iff_toSubmodule
@@ -587,9 +606,13 @@ alias independent_iff_toSubmodule := iSupIndep_iff_toSubmodule
 @[deprecated (since := "2024-12-30")]
 alias independent_iff_coe_toSubmodule := independent_iff_toSubmodule
 
-theorem iSup_eq_top_iff_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R L M} :
-    ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
+@[simp] lemma iSup_toSubmodule_eq_top {ι : Sort*} {N : ι → LieSubmodule R L M} :
+    ⨆ i, (N i : Submodule R M) = ⊤ ↔ ⨆ i, N i = ⊤ := by
   rw [← iSup_toSubmodule, ← top_toSubmodule (L := L), toSubmodule_inj]
+
+@[deprecated iSup_toSubmodule_eq_top (since := "2025-04-03")]
+theorem iSup_eq_top_iff_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R L M} :
+    ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := iSup_toSubmodule_eq_top.symm
 
 @[deprecated (since := "2024-12-30")]
 alias iSup_eq_top_iff_coe_toSubmodule := iSup_eq_top_iff_toSubmodule
@@ -604,6 +627,8 @@ instance : AddCommMonoid (LieSubmodule R L M) where
   add_zero := sup_bot_eq
   add_comm := sup_comm
   nsmul := nsmulRec
+
+variable (N N')
 
 @[simp]
 theorem add_eq_sup : N + N' = N ⊔ N' :=
@@ -1488,3 +1513,6 @@ theorem LieIdeal.topEquiv_apply (x : (⊤ : LieIdeal R L)) : LieIdeal.topEquiv x
   rfl
 
 end TopEquiv
+
+-- Pushed over the limits by deprecations
+set_option linter.style.longFile 1700
