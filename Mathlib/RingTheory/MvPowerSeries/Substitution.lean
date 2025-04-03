@@ -518,18 +518,10 @@ theorem rescaleAlgHom_apply (a : σ → R) (f : MvPowerSeries σ R) :
     rescaleAlgHom a f = rescale a f := by
   simp only [rescaleAlgHom, substAlgHom_apply, rescale_eq_subst]
 
-theorem rescaleAlgHom_comp_rescaleAlgHom_apply (a b : σ → R) (f : MvPowerSeries σ R) :
-    (rescaleAlgHom a) ((rescaleAlgHom b) f) = rescaleAlgHom (a * b) f := by
-  simp only [rescaleAlgHom_apply, rescale_rescale, mul_comm]
-
-theorem rescaleAlgHom_comp_rescaleAlgHom (a b : σ → R) :
-    (rescaleAlgHom a).comp (rescaleAlgHom b) = rescaleAlgHom (a * b) := by
+theorem rescaleAlgHom_mul (a b : σ → R) :
+    rescaleAlgHom (a * b) = (rescaleAlgHom b).comp (rescaleAlgHom a) := by
   ext1 f
-  apply rescaleAlgHom_comp_rescaleAlgHom_apply
-
-theorem rescale_comp_rescale (a b : σ → R) :
-    (rescale a).comp (rescale b) = rescale (a * b) := by
-  simp [rescale, rescaleAlgHom_comp_rescaleAlgHom, ← AlgHom.comp_toRingHom]
+  simp only [AlgHom.coe_comp, Function.comp_apply, rescaleAlgHom_apply, rescale_rescale]
 
 theorem rescaleAlgHom_one :
     rescaleAlgHom 1 = AlgHom.id R (MvPowerSeries σ R):= by
