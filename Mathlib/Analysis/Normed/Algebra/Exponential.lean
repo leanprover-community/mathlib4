@@ -127,20 +127,23 @@ theorem expSeries_sum_eq (x : 𝔸) : (expSeries 𝕂 𝔸).sum x = ∑' n : ℕ
   tsum_congr fun n => expSeries_apply_eq x n
 
 theorem expSeries_sum_eq_rat [Algebra ℚ 𝔸] : (expSeries 𝕂 𝔸).sum = (expSeries ℚ 𝔸).sum := by
-  ext; simp_rw [expSeries_sum_eq, inv_nat_cast_smul_eq 𝕂 ℚ]
+  ext; simp_rw [expSeries_sum_eq, inv_natCast_smul_eq 𝕂 ℚ]
 
 variable (𝕂) in
 theorem expSeries_eq_expSeries_rat [Algebra ℚ 𝔸] (n : ℕ) :
-    ⇑(expSeries 𝕂 𝔸 n) = expSeries ℚ 𝔸 n:= by
+    ⇑(expSeries 𝕂 𝔸 n) = expSeries ℚ 𝔸 n := by
   ext c
-  simp [expSeries, inv_nat_cast_smul_eq 𝕂 ℚ]
+  simp [expSeries, inv_natCast_smul_eq 𝕂 ℚ]
 
 theorem exp_eq_tsum [Algebra ℚ 𝔸] : exp = fun x : 𝔸 => ∑' n : ℕ, (n !⁻¹ : ℚ) • x ^ n :=
   funext expSeries_sum_eq
 
 /-- The exponential sum as an `ofScalarsSum`. -/
-theorem exp_eq_ofScalarsSum : exp 𝕂 = ofScalarsSum (E := 𝔸) fun n ↦ (n !⁻¹ : 𝕂) := by
+theorem exp_eq_ofScalarsSum [Algebra ℚ 𝔸] :
+    exp  = ofScalarsSum (E := 𝔸) fun n ↦ (n !⁻¹ : 𝕂) := by
+  ext x
   rw [exp_eq_tsum, ofScalarsSum_eq_tsum]
+  simp [inv_natCast_smul_eq 𝕂 ℚ]
 
 theorem expSeries_apply_zero (n : ℕ) :
     (expSeries 𝕂 𝔸 n fun _ => (0 : 𝔸)) = Pi.single (f := fun _ => 𝔸) 0 1 n := by
@@ -165,7 +168,7 @@ theorem exp_unop [Algebra ℚ 𝔸] [T2Space 𝔸] (x : 𝔸ᵐᵒᵖ) :
 
 theorem star_exp [Algebra ℚ 𝔸] [T2Space 𝔸] [StarRing 𝔸] [ContinuousStar 𝔸] (x : 𝔸) :
     star (exp x) = exp (star x) := by
-  simp_rw [exp_eq_tsum, ← star_pow, ← star_inv_nat_cast_smul, ← tsum_star]
+  simp_rw [exp_eq_tsum, ← star_pow, ← star_inv_natCast_smul, ← tsum_star]
 
 variable (𝕂)
 
@@ -314,8 +317,8 @@ noncomputable def invertibleExpOfMemBall [Algebra ℚ 𝔸] {x : 𝔸}
     have hnx : -x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius := by
       rw [EMetric.mem_ball, ← neg_zero, edist_neg_neg]
       exact hx
-    rw [← exp_add_of_commute_of_mem_ball _ (Commute.neg_right <| Commute.refl x) hx hnx, add_neg_self,
-      exp_zero]
+    rw [← exp_add_of_commute_of_mem_ball _ (Commute.neg_right <| Commute.refl x) hx hnx,
+      add_neg_cancel, exp_zero]
 
 theorem isUnit_exp_of_mem_ball [Algebra ℚ 𝔸] {x : 𝔸}
     (hx : x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius) : IsUnit (exp x) :=
@@ -418,14 +421,12 @@ variable {𝕂 𝔸 𝔹}
 theorem norm_expSeries_summable (x : 𝔸) : Summable fun n => ‖expSeries 𝕂 𝔸 n fun _ => x‖ :=
   norm_expSeries_summable_of_mem_ball x ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 
-variable (𝕂)
-
+variable (𝕂) in
+include 𝕂 in
 theorem norm_expSeries_summable' [Algebra ℚ 𝔸] (x : 𝔸) : Summable fun n => ‖(n !⁻¹ : ℚ) • x ^ n‖ :=
   norm_expSeries_summable_of_mem_ball' x
     (show x ∈ EMetric.ball (0 : 𝔸) (expSeries 𝕂 𝔸).radius from
       (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
-
-variable {𝕂}
 
 section CompleteAlgebra
 
@@ -435,6 +436,7 @@ theorem expSeries_summable (x : 𝔸) : Summable fun n => expSeries 𝕂 𝔸 n 
   (norm_expSeries_summable x).of_norm
 
 variable (𝕂) in
+include 𝕂 in
 theorem expSeries_summable' [Algebra ℚ 𝔸] (x : 𝔸) : Summable fun n => (n !⁻¹ : ℚ) • x ^ n :=
   (norm_expSeries_summable' 𝕂 x).of_norm
 
@@ -454,6 +456,7 @@ theorem exp_hasFPowerSeriesAt_zero : HasFPowerSeriesAt exp (expSeries 𝕂 𝔸)
 
 section
 variable (𝕂)
+include 𝕂
 
 @[continuity]
 theorem exp_continuous : Continuous (exp : 𝔸 → 𝔸) := by
@@ -474,6 +477,7 @@ theorem exp_analytic (x : 𝔸) : AnalyticAt 𝕂 exp x :=
 
 variable (𝕂)
 
+include 𝕂 in
 /-- In a Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, if `x` and `y` commute, then
 `NormedSpace.exp (x+y) = (NormedSpace.exp x) * (NormedSpace.exp y)`. -/
 theorem exp_add_of_commute {x y : 𝔸} (hxy : Commute x y) : exp (x + y) = exp x * exp y :=
@@ -481,10 +485,11 @@ theorem exp_add_of_commute {x y : 𝔸} (hxy : Commute x y) : exp (x + y) = exp 
     ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 
 section
+include 𝕂
 
 /-- `NormedSace.exp x` has explicit two-sided inverse `NormedSace.exp  𝕂 (-x)`. -/
-noncomputable def invertibleExp (x : 𝔸) : Invertible (exp 𝕂 x) :=
-  invertibleExpOfMemBall <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
+noncomputable def invertibleExp (x : 𝔸) : Invertible (exp x) :=
+  invertibleExpOfMemBall 𝕂 <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
 theorem invOf_exp (x : 𝔸) [Invertible (exp x)] : ⅟ (exp x) = exp (-x) :=
   invOf_exp_of_mem_ball 𝕂 <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
@@ -502,6 +507,7 @@ theorem exp_mem_unitary_of_mem_skewAdjoint [StarRing 𝔸] [ContinuousStar 𝔸]
 
 end
 
+include 𝕂 in
 open scoped Function in -- required for scoped `on` notation
 /-- In a Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, if a family of elements `f i` mutually
 commute then `NormedSpace.exp (∑ i, f i) = ∏ i, NormedSpace.exp (f i)`. -/
@@ -517,23 +523,28 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     refine Commute.sum_right _ _ _ fun i hi => ?_
     exact h.of_refl (Finset.mem_insert_self _ _) (Finset.mem_insert_of_mem hi)
 
+include 𝕂 in
 theorem exp_nsmul (n : ℕ) (x : 𝔸) : exp (n • x) = exp x ^ n := by
   induction n with
   | zero => rw [zero_smul, pow_zero, exp_zero]
   | succ n ih => rw [succ_nsmul, pow_succ, exp_add_of_commute 𝕂 ((Commute.refl x).smul_left n), ih]
 
+include 𝕂 in
 /-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
 theorem map_exp {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continuous f) (x : 𝔸) :
     f (exp x) = exp (f x) :=
   map_exp_of_mem_ball 𝕂 f hf x <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 
+include 𝕂 in
 theorem exp_smul {G} [Monoid G] [MulSemiringAction G 𝔸] [ContinuousConstSMul G 𝔸] (g : G) (x : 𝔸) :
     exp (g • x) = g • exp x :=
   (map_exp 𝕂 (MulSemiringAction.toRingHom G 𝔸 g) (continuous_const_smul g) x).symm
 
+include 𝕂 in
 theorem exp_units_conj (y : 𝔸ˣ) (x : 𝔸) : exp (y * x * ↑y⁻¹ : 𝔸) = y * exp x * ↑y⁻¹ :=
   exp_smul 𝕂 (ConjAct.toConjAct y) x
 
+include 𝕂 in
 theorem exp_units_conj' (y : 𝔸ˣ) (x : 𝔸) : exp (↑y⁻¹ * x * y) = ↑y⁻¹ * exp x * y :=
   exp_units_conj 𝕂 _ _
 
@@ -618,12 +629,14 @@ variable {𝕂 𝔸 : Type _} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra
 
 variable [Algebra ℚ 𝔸]
 
+include 𝕂 in
 /-- In a commutative Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`,
 `NormedSpace.exp (x+y) = (NormedSpace.exp x) * (NormedSpace.exp y)`. -/
 theorem exp_add {x y : 𝔸} : exp (x + y) = exp x * exp y :=
   exp_add_of_mem_ball 𝕂 ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
     ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 
+include 𝕂 in
 /-- A version of `NormedSpace.exp_sum_of_commute` for a commutative Banach-algebra. -/
 theorem exp_sum {ι} (s : Finset ι) (f : ι → 𝔸) : exp (∑ i ∈ s, f i) = ∏ i ∈ s, exp (f i) := by
   rw [exp_sum_of_commute 𝕂, Finset.noncommProd_eq_prod]
