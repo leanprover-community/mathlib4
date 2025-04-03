@@ -419,6 +419,8 @@ def lemma82_bound :=
   ((lemma82 K α β hirr htriv σ hdec α' β' γ' habc q h2mq u t hq0).choose_spec).2.2
 
 --def c1 := house.c₁ K
+#check NumberField.house.c₁ K
+
 
 def c₄ := max 1 (house.c₁ K *
   ((house.c₁ K) * ↑(q * q : ℝ) *

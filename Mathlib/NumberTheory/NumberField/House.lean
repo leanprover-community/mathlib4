@@ -246,7 +246,7 @@ private theorem asiegel_remark : ‖asiegel K a‖ ≤ c₂ K * A := by
   · rw [mul_nonneg_iff]; left; exact ⟨c₂_nonneg K, Apos⟩
 
 /-- `c₁ K` is the product of `finrank ℚ K` and  `c₂ K` and depends on `K`. -/
-private def c₁ := finrank ℚ K * c₂ K
+def c₁ := finrank ℚ K * c₂ K
 
 include habs Apos hxbound hpq in
 private theorem house_le_bound : ∀ l, house (ξ K x l).1 ≤ (c₁ K) *
