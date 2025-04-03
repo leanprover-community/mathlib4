@@ -177,7 +177,7 @@ theorem ofMatricesOver_rel [DecidableEq n] {c : RingCon (Matrix n n R)} {i j : n
 
 @[simp] theorem ofMatricesOver_matricesOver (c : RingCon R) (i j : n) :
     ofMatricesOver (matricesOver n c) i j = c := by
-  refine RingCon.ext fun x y => ?_
+  ext x y
   classical
   constructor
   · intro h
@@ -198,7 +198,7 @@ open Matrix
 @[simp]
 theorem matricesOver_ofMatricesOver (c : RingCon (Matrix n n R)) (i j : n) :
     matricesOver n (ofMatricesOver c i j) = c := by
-  refine RingCon.ext fun x y => ?_
+  ext x y
   classical
   constructor
   · intro h
