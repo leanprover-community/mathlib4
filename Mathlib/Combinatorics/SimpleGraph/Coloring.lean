@@ -147,12 +147,12 @@ private def finColoringFintype {n m} {G : SimpleGraph (Fin n)} [DecidableRel G.A
       · -- valid, so add
         apply some
         apply Coloring.mk (snoc p.fst p.snd)
-        intro v w hAdj
+        intro v w hadj
         cases v using lastCases <;> cases w using lastCases
-        · simp at hAdj
-        · simp [h _ hAdj.symm |>.symm]
-        · simp [h _ hAdj]
-        · simp [p.fst.valid hAdj]
+        · simp at hadj
+        · simp [h _ hadj.symm |>.symm]
+        · simp [h _ hadj]
+        · simp [p.fst.valid hadj]
       · -- not valid, so drop
         exact none
     · -- show this map is injective
