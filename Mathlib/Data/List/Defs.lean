@@ -268,7 +268,7 @@ variable (p : α → Prop) [DecidablePred p] (l : List α)
 choose the first element with this property. This version returns both `a` and proofs
 of `a ∈ l` and `p a`. -/
 def chooseX : ∀ l : List α, ∀ _ : ∃ a, a ∈ l ∧ p a, { a // a ∈ l ∧ p a }
-  | [], hp => False.elim (Exists.elim hp fun a h => not_mem_nil a h.left)
+  | [], hp => False.elim (Exists.elim hp fun _ h => not_mem_nil h.left)
   | l :: ls, hp =>
     if pl : p l then ⟨l, ⟨mem_cons.mpr <| Or.inl rfl, pl⟩⟩
     else

@@ -85,7 +85,7 @@ theorem Subset.union_eq_right {xs ys : List α} (h : xs ⊆ ys) : xs ∪ ys = ys
   induction xs with
   | nil => simp
   | cons x xs ih =>
-    rw [cons_union, insert_of_mem <| mem_union_right _ <| h <| mem_cons_self _ _,
+    rw [cons_union, insert_of_mem <| mem_union_right _ <| h mem_cons_self,
       ih <| subset_of_cons_subset h]
 
 end Union
@@ -210,7 +210,7 @@ theorem count_bagInter {a : α} :
       by_cases ab : a = b
       · rw [← ab] at hb
         rw [count_eq_zero.2 hb, Nat.min_zero, Nat.min_zero]
-      · rw [count_cons_of_ne ab]
+      · rw [count_cons_of_ne (Ne.symm ab)]
 
 theorem bagInter_sublist_left : ∀ l₁ l₂ : List α, l₁.bagInter l₂ <+ l₁
   | [], l₂ => by simp

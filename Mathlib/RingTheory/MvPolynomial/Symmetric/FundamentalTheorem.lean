@@ -62,7 +62,7 @@ section accumulate
 @[simps] def accumulate (n m : ℕ) : (Fin n → ℕ) →+ (Fin m → ℕ) where
   toFun t j := ∑ i : Fin n with j.val ≤ i.val, t i
   map_zero' := funext <| fun _ ↦ sum_eq_zero <| fun _ _ ↦ rfl
-  map_add' t₁ t₂ := funext <| fun j ↦ by dsimp only; exact sum_add_distrib
+  map_add' _ _ := funext <| fun _ ↦ sum_add_distrib
 
 /-- The `i`th entry of `invAccumulate n m s` is `s i - s (i+1)`, where `s j = 0` if `j ≥ m`. -/
 def invAccumulate (n m : ℕ) (s : Fin m → ℕ) (i : Fin n) : ℕ :=

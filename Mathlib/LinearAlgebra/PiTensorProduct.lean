@@ -809,7 +809,6 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
   right_inv t := by simp
   map_add' := LinearMap.map_add _
   map_smul' := fun r x => by
-    simp only
     exact LinearMap.map_smul _ r x
 
 @[simp]
@@ -841,7 +840,6 @@ def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[
   right_inv t := by simp only [ofSubsingleton_apply_apply, LinearMap.id_apply, lift.tprod]
   map_add' := LinearMap.map_add _
   map_smul' := fun r x => by
-    simp only
     exact LinearMap.map_smul _ r x
 
 @[simp]

@@ -194,9 +194,7 @@ This ought to be modelled as a 2-functor!
 @[simps]
 def typeToCat : Type u ⥤ Cat where
   obj X := Cat.of (Discrete X)
-  map := fun {X} {Y} f => by
-    dsimp
-    exact Discrete.functor (Discrete.mk ∘ f)
+  map := fun f => Discrete.functor (Discrete.mk ∘ f)
   map_id X := by
     apply Functor.ext
     · intro X Y f
