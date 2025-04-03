@@ -305,9 +305,9 @@ theorem ofFinsupp_eq_one {a} :
     (⟨a⟩ : SkewMonoidAlgebra k G) = 1 ↔ a = Finsupp.single 1 1 := by
   rw [← ofFinsupp_one, ofFinsupp_inj]
 
-theorem single_one_one  : single 1 (1 : k) = 1 := rfl
-
 @[simp]
+theorem single_one_one  : single (1 : G) (1 : k) = 1 := rfl
+
 theorem one_def : (1 : SkewMonoidAlgebra k G) = single 1 1 := rfl
 
 @[simp]
@@ -648,11 +648,11 @@ instance : NonAssocSemiring (SkewMonoidAlgebra k G) where
   natCast_succ _ := by simp only [Nat.cast_add, Nat.cast_one, single_add]; rfl
   one_mul f := by
     induction f using induction_on' with
-    | hM g a => simp [one_def, mul_def]
+    | hM g a => rw [one_def, mul_def, sum_single_index] <;> simp
     | hadd f g _ _ => simp_all [mul_add]
   mul_one f := by
     induction f using induction_on' with
-    | hM g a => simp [one_def, mul_def]
+    | hM g a => rw [one_def, mul_def, sum_single_index, sum_single_index] <;> simp
     | hadd f g _ _ => simp_all [add_mul]
 
 theorem natCast_def (n : ℕ) : (n : SkewMonoidAlgebra k G) = single (1 : G) (n : k) := rfl
