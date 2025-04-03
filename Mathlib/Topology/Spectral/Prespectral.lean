@@ -37,7 +37,8 @@ lemma PrespectralSpace.of_isTopologicalBasis {B : Set (Set X)}
   isTopologicalBasis.eq_generateFrom := (le_generateFrom fun _ h ↦ h.1).antisymm (le_trans
     (generateFrom_anti fun s hs ↦ ⟨basis.isOpen hs, isCompact_basis s hs⟩) basis.eq_generateFrom.ge)
 
-/-- A variant with an indexed basis instead. -/
+/-- A space is prespectral if it has a basis consisting of compact opens.
+This is the variant with an indexed basis instead. -/
 lemma PrespectralSpace.of_isTopologicalBasis' {ι : Type*} {b : ι → Set X}
     (basis : IsTopologicalBasis (Set.range b)) (isCompact_basis : ∀ i, IsCompact (b i)) :
     PrespectralSpace X :=
