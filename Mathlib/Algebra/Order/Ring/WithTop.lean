@@ -343,8 +343,7 @@ instance instCommSemiring [CommSemiring α] [PartialOrder α] [CanonicallyOrdere
 
 instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot α) where
   elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only [Subtype.coe_mk]
+    intro x x0 a b h
     rcases eq_or_ne x 0 with rfl | x0'
     · simp
     lift x to α
@@ -360,8 +359,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulMono α] : PosMulMono (WithBot �
 
 instance [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot α) where
   elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only [Subtype.coe_mk]
+    intro x x0 a b h
     rcases eq_or_ne x 0 with rfl | x0'
     · simp
     lift x to α
@@ -377,8 +375,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosMono α] : MulPosMono (WithBot �
 
 instance [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMono (WithBot α) where
   elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only [Subtype.coe_mk]
+    intro x x0 a b h
     lift x to α using x0.ne_bot
     induction b
     · exact absurd h not_lt_bot
@@ -390,8 +387,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulStrictMono α] : PosMulStrictMon
 
 instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMono (WithBot α) where
   elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only [Subtype.coe_mk]
+    intro x x0 a b h
     lift x to α using x0.ne_bot
     induction b
     · exact absurd h not_lt_bot
@@ -403,8 +399,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosStrictMono α] : MulPosStrictMon
 
 instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT (WithBot α) where
   elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only [Subtype.coe_mk] at h
+    intro x x0 a b h
     rcases eq_or_ne x 0 with rfl | x0'
     · simp at h
     lift x to α
@@ -421,8 +416,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulReflectLT α] : PosMulReflectLT 
 
 instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT (WithBot α) where
   elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only [Subtype.coe_mk] at h
+    intro x x0 a b h
     rcases eq_or_ne x 0 with rfl | x0'
     · simp at h
     lift x to α
@@ -439,8 +433,7 @@ instance [MulZeroClass α] [Preorder α] [MulPosReflectLT α] : MulPosReflectLT 
 
 instance [MulZeroClass α] [Preorder α] [PosMulReflectLE α] : PosMulReflectLE (WithBot α) where
   elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only [Subtype.coe_mk] at h
+    intro x x0 a b h
     lift x to α using x0.ne_bot
     induction a
     · exact bot_le
@@ -453,8 +446,7 @@ instance [MulZeroClass α] [Preorder α] [PosMulReflectLE α] : PosMulReflectLE 
 
 instance [MulZeroClass α] [Preorder α] [MulPosReflectLE α] : MulPosReflectLE (WithBot α) where
   elim := by
-    intro ⟨x, x0⟩ a b h
-    simp only [Subtype.coe_mk] at h
+    intro x x0 a b h
     lift x to α using x0.ne_bot
     induction a
     · exact bot_le

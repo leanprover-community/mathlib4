@@ -19,7 +19,7 @@ and the actions
 * `Submodule.pointwiseDistribMulAction`
 * `Submodule.pointwiseMulActionWithZero`
 
-which matches the action of `Set.mulActionSet`.
+which matches the action of ` Set.mulActionSet`.
 
 This file also provides:
 * `Submodule.pointwiseSetSMulSubmodule`: for `R`-module `M`, a `s : Set R` can act on
@@ -216,8 +216,8 @@ theorem mem_smul_pointwise_iff_exists (m : M) (a : α) (S : Submodule R M) :
 theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submodule R M) : m ∈ S → a • m ∈ a • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 
-instance : CovariantClass α (Submodule R M) HSMul.hSMul LE.le :=
-  ⟨fun _ _ => map_mono⟩
+instance : SMulLeftMono α (Submodule R M) :=
+  ⟨fun _ _ _ => map_mono⟩
 
 /-- See also `Submodule.smul_bot`. -/
 @[simp]
@@ -348,7 +348,7 @@ lemma set_smul_eq_of_le (p : Submodule R M)
     s • N = p :=
   le_antisymm (set_smul_le s N p closed_under_smul) le
 
-instance : CovariantClass (Set S) (Submodule R M) HSMul.hSMul LE.le :=
+instance : SMulLeftMono (Set S) (Submodule R M) :=
   ⟨fun _ _ _ le => set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr)
     (mem2 := le hm)⟩
 

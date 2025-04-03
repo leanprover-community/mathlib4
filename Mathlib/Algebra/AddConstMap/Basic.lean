@@ -239,10 +239,9 @@ open scoped Relator in
 We formulate it for any relation so that the proof works both for `Monotone` and `StrictMono`. -/
 protected theorem rel_map_of_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [AddGroup H]
     [AddConstMapClass F G H a b] {f : F} {R : H → H → Prop} [IsTrans H R]
-    [hR : CovariantClass H H (fun x y ↦ y + x) R] (ha : 0 < a) {l : G}
+    (hR : Covariant H H (fun x y ↦ y + x) R) (ha : 0 < a) {l : G}
     (hf : ∀ x ∈ Icc l (l + a), ∀ y ∈ Icc l (l + a), x < y → R (f x) (f y)) :
     ((· < ·) ⇒ R) f f := fun x y hxy ↦ by
-  replace hR := hR.elim
   have ha' : 0 ≤ a := ha.le
   -- Shift both points by `m • a` so that `l ≤ x < l + a`
   wlog hx : x ∈ Ico l (l + a) generalizing x y
@@ -282,7 +281,7 @@ theorem monotone_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedA
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     Monotone f ↔ MonotoneOn f (Icc l (l + a)) :=
   ⟨(Monotone.monotoneOn · _), fun hf ↦ monotone_iff_forall_lt.2 <|
-    AddConstMapClass.rel_map_of_Icc ha fun _x hx _y hy hxy ↦ hf hx hy hxy.le⟩
+    AddConstMapClass.rel_map_of_Icc AddRightMono.elim ha fun _x hx _y hy hxy ↦ hf hx hy hxy.le⟩
 
 theorem antitone_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
@@ -292,7 +291,7 @@ theorem antitone_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedA
 theorem strictMono_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :
     StrictMono f ↔ StrictMonoOn f (Icc l (l + a)) :=
-  ⟨(StrictMono.strictMonoOn · _), AddConstMapClass.rel_map_of_Icc ha⟩
+  ⟨(StrictMono.strictMonoOn · _), AddConstMapClass.rel_map_of_Icc AddRightStrictMono.elim ha⟩
 
 theorem strictAnti_iff_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [OrderedAddCommGroup H]
     [AddConstMapClass F G H a b] {f : F} (ha : 0 < a) (l : G) :

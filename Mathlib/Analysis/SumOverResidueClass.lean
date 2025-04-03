@@ -63,7 +63,7 @@ lemma not_summable_indicator_mod_of_antitone_of_neg {m : ℕ} [hm : NeZero m] {f
     ¬ Summable ({n : ℕ | (n : ZMod m) = k}.indicator f) := by
   rw [← ZMod.natCast_zmod_val k, summable_indicator_mod_iff_summable]
   exact not_summable_of_antitone_of_neg
-    (hf.comp_monotone <| (Covariant.monotone_of_const m).add_const k.val) <|
+    (hf.comp_monotone <| (Covariant.monotone_of_const MulLeftMono.elim m).add_const k.val) <|
     (hf <| (Nat.le_mul_of_pos_left n Fin.pos').trans <| Nat.le_add_right ..).trans_lt hn
 
 /-- If a decreasing sequence of real numbers is summable on one residue class

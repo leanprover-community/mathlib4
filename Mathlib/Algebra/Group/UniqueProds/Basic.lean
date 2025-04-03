@@ -610,7 +610,7 @@ instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
     TwoUniqueProds G :=
   let _ := LinearOrder.lift' (unop : Gᵐᵒᵖ → G) unop_injective
   let _ : MulLeftStrictMono Gᵐᵒᵖ :=
-    { elim := fun _ _ _ bc ↦ mul_lt_mul_right' (α := G) bc (unop _) }
+    { elim := fun _ _ _ bc ↦ mul_lt_mul_right' (M := G) bc (unop _) }
   of_mulOpposite of_covariant_right
 
 end TwoUniqueProds

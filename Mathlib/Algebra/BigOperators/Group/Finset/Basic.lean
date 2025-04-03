@@ -919,7 +919,7 @@ theorem sum_range_tsub [AddCommMonoid α] [PartialOrder α] [Sub α] [OrderedSub
     rw [tsub_add_eq_add_tsub h₂, add_tsub_cancel_of_le h₁]
 
 theorem sum_tsub_distrib [AddCommMonoid α] [PartialOrder α] [ExistsAddOfLE α]
-    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)] [Sub α]
+    [AddLeftMono α] [AddLeftReflectLE α] [Sub α]
     [OrderedSub α] (s : Finset ι) {f g : ι → α} (hfg : ∀ x ∈ s, g x ≤ f x) :
     ∑ x ∈ s, (f x - g x) = ∑ x ∈ s, f x - ∑ x ∈ s, g x := sum_map_tsub _ hfg
 

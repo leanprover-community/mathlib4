@@ -65,7 +65,7 @@ instance (priority := 200) OrderedCancelCommMonoid.toMulLeftReflectLE :
 @[to_additive]
 instance OrderedCancelCommMonoid.toMulLeftReflectLT :
     MulLeftReflectLT α where
-  elim := contravariant_lt_of_contravariant_le α α _ ContravariantClass.elim
+  elim := contravariant_lt_of_contravariant_le MulLeftReflectLE.elim
 
 @[to_additive]
 theorem OrderedCancelCommMonoid.toMulRightReflectLT :
@@ -77,7 +77,7 @@ theorem OrderedCancelCommMonoid.toMulRightReflectLT :
 instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCommMonoid α :=
   { ‹OrderedCancelCommMonoid α› with
     mul_left_cancel :=
-      fun _ _ _ h => (le_of_mul_le_mul_left' h.le).antisymm <| le_of_mul_le_mul_left' h.ge }
+      fun a b c h => (le_of_mul_le_mul_left' h.le).antisymm <| le_of_mul_le_mul_left' h.ge }
 
 end OrderedCancelCommMonoid
 

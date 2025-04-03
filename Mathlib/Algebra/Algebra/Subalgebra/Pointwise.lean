@@ -99,7 +99,7 @@ theorem pointwise_smul_toSubring {R' R A : Type*} [Semiring R'] [CommRing R] [Ri
 theorem smul_mem_pointwise_smul (m : R') (r : A) (S : Subalgebra R A) : r ∈ S → m • r ∈ m • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set A))
 
-instance : CovariantClass R' (Subalgebra R A) HSMul.hSMul LE.le :=
+instance : SMulLeftMono R' (Subalgebra R A) :=
   ⟨fun _ _ => map_mono⟩
 
 end Pointwise

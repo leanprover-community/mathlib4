@@ -217,7 +217,7 @@ theorem prod_int_mod (s : Multiset ℤ) (n : ℤ) : s.prod % n = (s.map (· % n)
 section OrderedSub
 
 theorem sum_map_tsub [AddCommMonoid α] [PartialOrder α] [ExistsAddOfLE α]
-    [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)] [Sub α]
+    [AddLeftMono α] [AddLeftReflectLE α] [Sub α]
     [OrderedSub α] (l : Multiset ι) {f g : ι → α} (hfg : ∀ x ∈ l, g x ≤ f x) :
     (l.map fun x ↦ f x - g x).sum = (l.map f).sum - (l.map g).sum :=
   eq_tsub_of_add_eq <| by

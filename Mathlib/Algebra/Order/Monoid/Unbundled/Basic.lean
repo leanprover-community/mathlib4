@@ -57,44 +57,17 @@ section LE
 
 variable [LE α]
 
-/- The prime on this lemma is present only on the multiplicative version.  The unprimed version
-is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
-@[to_additive (attr := gcongr) add_le_add_left]
-theorem mul_le_mul_left' [MulLeftMono α] {b c : α} (bc : b ≤ c) (a : α) :
-    a * b ≤ a * c :=
-  CovariantClass.elim _ bc
-
-@[to_additive le_of_add_le_add_left]
-theorem le_of_mul_le_mul_left' [MulLeftReflectLE α] {a b c : α}
-    (bc : a * b ≤ a * c) :
-    b ≤ c :=
-  ContravariantClass.elim _ bc
-
-/- The prime on this lemma is present only on the multiplicative version.  The unprimed version
-is taken by the analogous lemma for semiring, with an extra non-negativity assumption. -/
-@[to_additive (attr := gcongr) add_le_add_right]
-theorem mul_le_mul_right' [i : MulRightMono α] {b c : α} (bc : b ≤ c)
-    (a : α) :
-    b * a ≤ c * a :=
-  i.elim a bc
-
-@[to_additive le_of_add_le_add_right]
-theorem le_of_mul_le_mul_right' [i : MulRightReflectLE α] {a b c : α}
-    (bc : b * a ≤ c * a) :
-    b ≤ c :=
-  i.elim a bc
-
 @[to_additive (attr := simp)]
 theorem mul_le_mul_iff_left [MulLeftMono α]
     [MulLeftReflectLE α] (a : α) {b c : α} :
     a * b ≤ a * c ↔ b ≤ c :=
-  rel_iff_cov α α (· * ·) (· ≤ ·) a
+  rel_iff_cov MulLeftMono.elim MulLeftReflectLE.elim a
 
 @[to_additive (attr := simp)]
 theorem mul_le_mul_iff_right [MulRightMono α]
     [MulRightReflectLE α] (a : α) {b c : α} :
     b * a ≤ c * a ↔ b ≤ c :=
-  rel_iff_cov α α (swap (· * ·)) (· ≤ ·) a
+  rel_iff_cov MulRightMono.elim MulRightReflectLE.elim a
 
 end LE
 
@@ -106,36 +79,13 @@ variable [LT α]
 theorem mul_lt_mul_iff_left [MulLeftStrictMono α]
     [MulLeftReflectLT α] (a : α) {b c : α} :
     a * b < a * c ↔ b < c :=
-  rel_iff_cov α α (· * ·) (· < ·) a
+  rel_iff_cov MulLeftStrictMono.elim MulLeftReflectLT.elim a
 
 @[to_additive (attr := simp)]
 theorem mul_lt_mul_iff_right [MulRightStrictMono α]
     [MulRightReflectLT α] (a : α) {b c : α} :
     b * a < c * a ↔ b < c :=
-  rel_iff_cov α α (swap (· * ·)) (· < ·) a
-
-@[to_additive (attr := gcongr) add_lt_add_left]
-theorem mul_lt_mul_left' [MulLeftStrictMono α] {b c : α} (bc : b < c) (a : α) :
-    a * b < a * c :=
-  CovariantClass.elim _ bc
-
-@[to_additive lt_of_add_lt_add_left]
-theorem lt_of_mul_lt_mul_left' [MulLeftReflectLT α] {a b c : α}
-    (bc : a * b < a * c) :
-    b < c :=
-  ContravariantClass.elim _ bc
-
-@[to_additive (attr := gcongr) add_lt_add_right]
-theorem mul_lt_mul_right' [i : MulRightStrictMono α] {b c : α} (bc : b < c)
-    (a : α) :
-    b * a < c * a :=
-  i.elim a bc
-
-@[to_additive lt_of_add_lt_add_right]
-theorem lt_of_mul_lt_mul_right' [i : MulRightReflectLT α] {a b c : α}
-    (bc : b * a < c * a) :
-    b < c :=
-  i.elim a bc
+  rel_iff_cov MulRightStrictMono.elim MulRightReflectLT.elim a
 
 end LT
 
@@ -219,7 +169,7 @@ theorem mul_lt_of_mul_lt_left [MulLeftMono α] {a b c d : α} (h : a * b < c)
 theorem mul_le_of_mul_le_left [MulLeftMono α] {a b c d : α} (h : a * b ≤ c)
     (hle : d ≤ b) :
     a * d ≤ c :=
-  @act_rel_of_rel_of_act_rel _ _ _ (· ≤ ·) _ _ a _ _ _ hle h
+  covariant_mul_le.act_rel_of_rel_of_act_rel a hle h
 
 @[to_additive]
 theorem mul_lt_of_mul_lt_right [MulRightMono α] {a b c d : α}
@@ -243,7 +193,7 @@ theorem lt_mul_of_lt_mul_left [MulLeftMono α] {a b c d : α} (h : a < b * c)
 theorem le_mul_of_le_mul_left [MulLeftMono α] {a b c d : α} (h : a ≤ b * c)
     (hle : c ≤ d) :
     a ≤ b * d :=
-  @rel_act_of_rel_of_rel_act _ _ _ (· ≤ ·) _ _ b _ _ _ hle h
+  covariant_mul_le.rel_act_of_rel_of_rel_act b hle h
 
 @[to_additive]
 theorem lt_mul_of_lt_mul_right [MulRightMono α] {a b c d : α}
@@ -315,19 +265,19 @@ section LinearOrder
 variable [LinearOrder α] {a b c d : α}
 
 @[to_additive]
-lemma mul_max [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
+lemma mul_max [MulLeftMono α] (a b c : α) :
     a * max b c = max (a * b) (a * c) := mul_left_mono.map_max
 
 @[to_additive]
-lemma max_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
+lemma max_mul [MulRightMono α] (a b c : α) :
     max a b * c = max (a * c) (b * c) := mul_right_mono.map_max
 
 @[to_additive]
-lemma mul_min [CovariantClass α α (· * ·) (· ≤ ·)] (a b c : α) :
+lemma mul_min [MulLeftMono α] (a b c : α) :
     a * min b c = min (a * b) (a * c) := mul_left_mono.map_min
 
 @[to_additive]
-lemma min_mul [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b c : α) :
+lemma min_mul [MulRightMono α] (a b c : α) :
     min a b * c = min (a * c) (b * c) := mul_right_mono.map_min
 
 @[to_additive] lemma min_lt_max_of_mul_lt_mul

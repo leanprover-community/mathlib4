@@ -65,7 +65,7 @@ class IsOrderedSMul (G P : Type*) [LE G] [LE P] [SMul G P] : Prop where
   protected smul_le_smul_right : ∀ c d : G, c ≤ d → ∀ a : P, c • a ≤ d • a
 
 @[to_additive]
-instance [LE G] [LE P] [SMul G P] [IsOrderedSMul G P] : CovariantClass G P (· • ·) (· ≤ ·) where
+instance [LE G] [LE P] [SMul G P] [IsOrderedSMul G P] : SMulLeftMono G P where
   elim := fun a _ _ bc ↦ IsOrderedSMul.smul_le_smul_left _ _ bc a
 
 @[to_additive]
@@ -124,9 +124,9 @@ instance [OrderedCancelCommMonoid G] : IsOrderedCancelSMul G G where
   le_of_smul_le_smul_right _ _ _ := le_of_mul_le_mul_right'
 
 @[to_additive]
-instance (priority := 200) [LE G] [LE P] [SMul G P] [IsOrderedCancelSMul G P] :
-    ContravariantClass G P (· • ·) (· ≤ ·) :=
-  ⟨IsOrderedCancelSMul.le_of_smul_le_smul_left⟩
+lemma IsOrderedCancelSMul.contravariant_le [LE G] [LE P] [SMul G P] [IsOrderedCancelSMul G P] :
+    Contravariant G P (· • ·) (· ≤ ·) :=
+  IsOrderedCancelSMul.le_of_smul_le_smul_left
 
 namespace SMul
 
