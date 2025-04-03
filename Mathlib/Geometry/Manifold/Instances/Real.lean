@@ -165,7 +165,7 @@ theorem range_euclideanQuadrant (n : ℕ) :
   Subtype.range_val
 
 open ENNReal in
-theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
+theorem interior_quadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | ∀ i : Fin n, a < y i } := by
   let f : (Fin n) → (Π _ : Fin n, ℝ) →L[ℝ] ℝ := fun i ↦ ContinuousLinearMap.proj i
@@ -179,7 +179,7 @@ theorem interior_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
   apply Function.surjective_eval
 
 open ENNReal in
-theorem closure_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
+theorem closure_quadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | ∀ i : Fin n, a ≤ y i } := by
   let f : (Fin n) → (Π _ : Fin n, ℝ) →L[ℝ] ℝ := fun i ↦ ContinuousLinearMap.proj i
@@ -192,10 +192,10 @@ theorem closure_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
   apply Function.surjective_eval -/
 
 open ENNReal in
-theorem frontier_euclideanQuadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
+theorem frontier_quadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
     frontier { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | (∀ i : Fin n, a ≤ y i) ∧ ∃ i : Fin n, (a = y i) } := by
-  rw [frontier, closure_euclideanQuadrant, interior_euclideanQuadrant]
+  rw [frontier, closure_quadrant, interior_quadrant]
   ext y
   simp only [mem_diff, mem_setOf_eq, not_forall, not_lt, and_congr_right_iff]
   exact fun aux ↦ ⟨fun ⟨i, hi⟩ ↦ ⟨i, by linarith [aux i]⟩, fun ⟨i, hi⟩ ↦ ⟨i, by linarith⟩⟩
@@ -220,7 +220,7 @@ theorem EuclideanHalfSpace.interior_convex [NeZero n] :
 
 theorem EuclideanQuadrant.interior_convex :
     Convex ℝ (interior { x : EuclideanSpace ℝ (Fin n) | ∀ i, 0 ≤ x i }) := by
-  rw [interior_euclideanQuadrant]
+  rw [interior_quadrant]
   intro x hx y hy a b ha hb hab
   dsimp at hx hy ⊢
   intro i
@@ -251,10 +251,9 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
         uniqueDiffOn_Ici 0
     simpa only [singleton_pi] using this
   convex_interior_range h := by
-    dsimp
-    have : Convex ℝ (interior ({x : EuclideanSpace ℝ (Fin n) | 0 ≤ x 0})) :=
-      EuclideanHalfSpace.interior_convex
-    sorry -- argue why `this` proves what we want
+    rw [range_euclideanHalfSpace]
+    convert EuclideanHalfSpace.interior_convex (n := n)
+    sorry -- not sure yet why this comes up
   target_subset_closure_interior := by simp
   continuous_toFun := continuous_subtype_val
   continuous_invFun := by
@@ -286,9 +285,9 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
     rw [closure_pi_set]
     simp
   convex_interior_range h := by
-    have : Convex ℝ (interior ({x : EuclideanSpace ℝ (Fin n) | ∀ (i : Fin n), 0 ≤ x i})) :=
-      EuclideanQuadrant.interior_convex
-    sorry -- argue why `this` is the statement we want
+    rw [range_euclideanQuadrant]
+    convert EuclideanQuadrant.interior_convex
+    sorry -- not sure why this comes up
   continuous_toFun := continuous_subtype_val
   continuous_invFun := Continuous.subtype_mk
     (continuous_pi fun i => (continuous_id.max continuous_const).comp (continuous_apply i)) _
