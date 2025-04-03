@@ -93,9 +93,10 @@ theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
 
 @[simp]
 theorem dedup_eq_nil (l : List α) : l.dedup = [] ↔ l = [] := by
-  induction' l with a l hl
-  · exact Iff.rfl
-  · by_cases h : a ∈ l
+  induction l with
+  | nil => exact Iff.rfl
+  | cons a l hl =>
+    by_cases h : a ∈ l
     · simp only [List.dedup_cons_of_mem h, hl, List.ne_nil_of_mem h, reduceCtorEq]
     · simp only [List.dedup_cons_of_not_mem h, List.cons_ne_nil]
 
@@ -107,7 +108,7 @@ theorem dedup_idem {l : List α} : dedup (dedup l) = dedup l :=
   pwFilter_idem
 
 theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ dedup l₂ := by
-  induction' l₁ with a l₁ IH; · rfl
+  induction l₁ with | nil => rfl | cons a l₁ IH => ?_
   simp only [cons_union] at *
   rw [← IH, cons_append]
   by_cases h : a ∈ dedup (l₁ ++ l₂)
@@ -159,5 +160,12 @@ theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = 
 
 theorem count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1 else 0 := by
   simp_rw [count_eq_of_nodup <| nodup_dedup l, mem_dedup]
+
+theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup l₂ :=
+  perm_iff_count.2 fun a =>
+    if h : a ∈ l₁ then by
+      simp [h, nodup_dedup, p.subset h]
+    else by
+      simp [h, count_eq_zero_of_not_mem, mt p.mem_iff.2]
 
 end List

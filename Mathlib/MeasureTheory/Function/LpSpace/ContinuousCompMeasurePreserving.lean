@@ -24,7 +24,7 @@ Finally, we provide dot notation convenience lemmas.
 open Filter Set MeasureTheory
 open scoped ENNReal Topology symmDiff
 
-variable {α X Y : Type*}
+variable {X Y : Type*}
   [TopologicalSpace X] [MeasurableSpace X] [BorelSpace X] [R1Space X]
   [TopologicalSpace Y] [MeasurableSpace Y] [BorelSpace Y] [R1Space Y]
   {μ : Measure X} {ν : Measure Y} [μ.InnerRegularCompactLTTop] [IsLocallyFiniteMeasure ν]
@@ -76,7 +76,7 @@ theorem Filter.Tendsto.compMeasurePreservingLp {α : Type*} {l : Filter α}
   replace hg : Tendsto (fun a ↦ ⟨g a, hgm a⟩ : α → {g : C(X, Y) // MeasurePreserving g μ ν})
       l (𝓝 ⟨g₀, hgm₀⟩) :=
     tendsto_subtype_rng.2 hg
-  convert this.comp (hf.prod_mk_nhds hg)
+  convert this.comp (hf.prodMk_nhds hg)
 
 variable {Z : Type*} [TopologicalSpace Z] {f : Z → Lp E p ν} {g : Z → C(X, Y)} {s : Set Z} {z : Z}
 

@@ -109,13 +109,13 @@ lemma hasDerivAt_log_sub_logTaylor (n : ℕ) {z : ℂ} (hz : 1 + z ∈ slitPlane
 lemma norm_one_add_mul_inv_le {t : ℝ} (ht : t ∈ Set.Icc 0 1) {z : ℂ} (hz : ‖z‖ < 1) :
     ‖(1 + t * z)⁻¹‖ ≤ (1 - ‖z‖)⁻¹ := by
   rw [Set.mem_Icc] at ht
-  rw [norm_inv, norm_eq_abs]
+  rw [norm_inv]
   refine inv_anti₀ (by linarith) ?_
   calc 1 - ‖z‖
     _ ≤ 1 - t * ‖z‖ := by
       nlinarith [norm_nonneg z]
     _ = 1 - ‖t * z‖ := by
-      rw [norm_mul, norm_eq_abs (t : ℂ), abs_of_nonneg ht.1]
+      rw [norm_mul, Complex.norm_of_nonneg ht.1]
     _ ≤ ‖1 + t * z‖ := by
       rw [← norm_neg (t * z), ← sub_neg_eq_add]
       convert norm_sub_norm_le 1 (-(t * z))
@@ -148,8 +148,9 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
   have H : f z = z * ∫ t in (0 : ℝ)..1, (-(t * z)) ^ n * (1 + t * z)⁻¹ := by
     convert (integral_unitInterval_deriv_eq_sub hcont hderiv).symm using 1
     · simp only [f, zero_add, add_zero, log_one, logTaylor_at_zero, sub_self, sub_zero]
-    · simp only [add_zero, log_one, logTaylor_at_zero, sub_self, real_smul, zero_add, smul_eq_mul]
-  unfold_let f at H
+    · simp only [f', add_zero, log_one, logTaylor_at_zero, sub_self, real_smul, zero_add,
+        smul_eq_mul]
+  unfold f at H
   simp only [H, norm_mul]
   simp_rw [neg_pow (_ * z) n, mul_assoc, intervalIntegral.integral_const_mul, mul_pow,
     mul_comm _ (z ^ n), mul_assoc, intervalIntegral.integral_const_mul, norm_mul, norm_pow,
@@ -161,7 +162,7 @@ lemma norm_log_sub_logTaylor_le (n : ℕ) {z : ℂ} (hz : ‖z‖ < 1) :
     _ = ∫ t in (0 : ℝ)..1, t ^ n * ‖(1 + t * z)⁻¹‖ := by
         refine intervalIntegral.integral_congr <| fun t ht ↦ ?_
         rw [Set.uIcc_of_le zero_le_one, Set.mem_Icc] at ht
-        simp_rw [norm_mul, norm_pow, norm_eq_abs, abs_of_nonneg ht.1]
+        simp_rw [norm_mul, norm_pow, Complex.norm_of_nonneg ht.1]
     _ ≤ ∫ t in (0 : ℝ)..1, t ^ n * (1 - ‖z‖)⁻¹ :=
         intervalIntegral.integral_mono_on zero_le_one
           (integrable_pow_mul_norm_one_add_mul_inv n hz) help <|
@@ -180,11 +181,11 @@ lemma norm_log_one_add_sub_self_le {z : ℂ} (hz : ‖z‖ < 1) :
 
 lemma norm_log_one_add_le {z : ℂ} (hz : ‖z‖ < 1) :
     ‖log (1 + z)‖ ≤ ‖z‖ ^ 2 * (1 - ‖z‖)⁻¹ / 2 + ‖z‖ := by
-  rw [Eq.symm (sub_add_cancel (log (1 + z)) z)]
+  rw [← sub_add_cancel (log (1 + z)) z]
   apply le_trans (norm_add_le _ _)
   exact add_le_add_right (Complex.norm_log_one_add_sub_self_le hz) ‖z‖
 
-/--For `‖z‖ ≤ 1/2`, the complex logarithm is bounded by `(3/2) * ‖z‖`. -/
+/-- For `‖z‖ ≤ 1/2`, the complex logarithm is bounded by `(3/2) * ‖z‖`. -/
 lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖(log (1 + z))‖ ≤ (3/2) * ‖z‖ := by
   apply le_trans (norm_log_one_add_le (lt_of_le_of_lt hz one_half_lt_one))
   have hz3 : (1 - ‖z‖)⁻¹ ≤ 2 := by
@@ -196,9 +197,8 @@ lemma norm_log_one_add_half_le_self {z : ℂ} (hz : ‖z‖ ≤ 1/2) : ‖(log (
     · rw [inv_nonneg]
       linarith
     · rw [sq, div_eq_mul_one_div]
-      apply mul_le_mul (by simp only [norm_eq_abs, mul_one, le_refl])
-        (by simpa only [norm_eq_abs, one_div] using hz) (norm_nonneg z)
-        (by simp only [norm_eq_abs, mul_one, apply_nonneg])
+      apply mul_le_mul (by simp only [mul_one, le_refl])
+        (by simpa only [one_div] using hz) (norm_nonneg z) (by simp only [mul_one, norm_nonneg])
   simp only [isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
     IsUnit.div_mul_cancel] at hz4
   linarith

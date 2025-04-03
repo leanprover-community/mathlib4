@@ -17,7 +17,7 @@ jobs:
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
           token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
@@ -25,7 +25,8 @@ jobs:
       - name: Get sha of branch
         id: sha
         run: |
-          echo "sha=$(git rev-parse --verify origin/update-dependencies-bot-use-only)" >> "$GITHUB_OUTPUT"
+          SHA="$(git rev-parse --verify origin/update-dependencies-bot-use-only)"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
 
       - name: Get PR and labels
         if: ${{ steps.sha.outputs.sha }}
@@ -38,6 +39,13 @@ jobs:
           sha: ${{ steps.sha.outputs.sha }}
           # Only return if PR is still open
           filterOutClosed: true
+
+      - name: Print PR, if found
+        run: echo "Found PR ${prNumber} at ${prUrl}"
+        if: steps.PR.outputs.pr_found == 'true'
+        env:
+          prNumber: ${{ steps.PR.outputs.number }}
+          prUrl: ${{ steps.PR.outputs.pr_url }}
 
       - name: Configure Git User
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
@@ -57,7 +65,7 @@ jobs:
 
       - name: Create Pull Request
         if: ${{ !contains(steps.PR.outputs.pr_labels, 'ready-to-merge') }}
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           token: "${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}"
           commit-message: "chore: update Mathlib dependencies ${{ env.timestamp }}"

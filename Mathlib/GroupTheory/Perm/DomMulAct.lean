@@ -3,15 +3,14 @@ Copyright (c) 2023 Junyan Xu, Antoine Chambert-Loir. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.GroupTheory.GroupAction.DomAct.Basic
-import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Set.Card
-import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
-/-!  Subgroup of `Equiv.Perm α` preserving a function
+/-!
+# Subgroup of `Equiv.Perm α` preserving a function
 
 Let `α` and `ι` by types and let `f : α → ι`
 
@@ -33,9 +32,11 @@ Let `α` and `ι` by types and let `f : α → ι`
   formula, where the product is restricted to `Finset.univ.image f`.
 -/
 
-variable {α ι : Type*} {f : α → ι}
+assert_not_exists Field
 
 open Equiv MulAction
+
+variable {α ι : Type*} {f : α → ι}
 
 namespace DomMulAct
 
@@ -66,8 +67,7 @@ def stabilizerEquiv_invFun_aux (g : ∀ i, Perm {a // f a = i}) : Perm α where
     rw [stabilizerEquiv_invFun_eq _ (comp_stabilizerEquiv_invFun _ a)]
     exact congr_arg Subtype.val ((g <| f a).right_inv _)
 
-variable (f)
-
+variable (f) in
 /-- The `MulEquiv` from the `MulOpposite` of `MulAction.stabilizer (Perm α)ᵈᵐᵃ f`
   to the product of the `Equiv.Perm {a // f a = i}` -/
 def stabilizerMulEquiv : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ ≃* (∀ i, Perm {a // f a = i}) where
@@ -80,8 +80,6 @@ def stabilizerMulEquiv : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ ≃* (∀ i,
   left_inv _ := rfl
   right_inv g := by ext i a; apply stabilizerEquiv_invFun_eq
   map_mul' _ _ := rfl
-
-variable {f}
 
 lemma stabilizerMulEquiv_apply (g : (stabilizer (Perm α)ᵈᵐᵃ f)ᵐᵒᵖ) {a : α} {i : ι} (h : f a = i) :
     ((stabilizerMulEquiv f)) g i ⟨a, h⟩ = (mk.symm g.unop : Equiv.Perm α) a := rfl
@@ -105,20 +103,22 @@ theorem stabilizer_card [DecidableEq α] [DecidableEq ι] [Fintype ι] :
   · exact Finset.prod_congr rfl fun i _ ↦ by rw [Nat.card_eq_fintype_card, Fintype.card_perm]
   · rfl
 
+omit [Fintype α] in
 /-- The cardinality of the set of permutations preserving a function -/
-theorem stabilizer_ncard [Fintype ι] :
+theorem stabilizer_ncard [Finite α] [Fintype ι] :
     Set.ncard {g : Perm α | f ∘ g = f} = ∏ i, (Set.ncard {a | f a = i})! := by
   classical
+  cases nonempty_fintype α
   simp only [← Set.Nat.card_coe_set_eq, Set.coe_setOf, card_eq_fintype_card]
   exact stabilizer_card f
 
 variable [DecidableEq α] [DecidableEq ι]
 
 /-- The cardinality of the type of permutations preserving a function
-  (without the finiteness assumption on target)-/
+  (without the finiteness assumption on target) -/
 theorem stabilizer_card':
     Fintype.card {g : Perm α // f ∘ g = f} =
-      ∏ i in Finset.univ.image f, (Fintype.card ({a // f a = i}))! := by
+      ∏ i ∈ Finset.univ.image f, (Fintype.card ({a // f a = i}))! := by
   set φ : α → Finset.univ.image f :=
     Set.codRestrict f (Finset.univ.image f) (fun a => by simp)
   suffices ∀ g : Perm α, f ∘ g = f ↔ φ ∘ g = φ by

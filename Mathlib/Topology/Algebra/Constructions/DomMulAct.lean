@@ -3,7 +3,7 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 
 /-!
@@ -20,8 +20,7 @@ since the types aren't definitionally equal.
 topological space, group action, domain action
 -/
 
-open Filter TopologicalSpace
-open scoped Topology
+open Filter TopologicalSpace Topology
 
 namespace DomMulAct
 
@@ -47,12 +46,17 @@ def mkHomeomorph : M ≃ₜ Mᵈᵐᵃ where
 @[to_additive (attr := simp)]
 theorem coe_mkHomeomorph_symm : ⇑(mkHomeomorph : M ≃ₜ Mᵈᵐᵃ).symm = mk.symm := rfl
 
-@[to_additive] theorem inducing_mk : Inducing (@mk M) := mkHomeomorph.inducing
-@[to_additive] theorem embedding_mk : Embedding (@mk M) := mkHomeomorph.embedding
+@[to_additive] theorem isInducing_mk : IsInducing (@mk M) := mkHomeomorph.isInducing
+@[to_additive] theorem isEmbedding_mk : IsEmbedding (@mk M) := mkHomeomorph.isEmbedding
 @[to_additive] theorem isOpenEmbedding_mk : IsOpenEmbedding (@mk M) := mkHomeomorph.isOpenEmbedding
 @[to_additive] theorem isClosedEmbedding_mk : IsClosedEmbedding (@mk M) :=
   mkHomeomorph.isClosedEmbedding
 @[to_additive] theorem isQuotientMap_mk : IsQuotientMap (@mk M) := mkHomeomorph.isQuotientMap
+
+@[deprecated (since := "2024-10-28")] alias inducing_mk := isInducing_mk
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_mk := isEmbedding_mk
 
 @[deprecated (since := "2024-10-22")]
 alias quotientMap_mk := isQuotientMap_mk
@@ -63,14 +67,17 @@ alias closedEmbedding_mk := isClosedEmbedding_mk
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_mk := isOpenEmbedding_mk
 
-@[to_additive] theorem inducing_mk_symm : Inducing (@mk M).symm := mkHomeomorph.symm.inducing
-@[to_additive] theorem embedding_mk_symm : Embedding (@mk M).symm := mkHomeomorph.symm.embedding
+@[to_additive] theorem isInducing_mk_symm : IsInducing (@mk M).symm := mkHomeomorph.symm.isInducing
+@[to_additive] theorem isEmbedding_mk_symm : IsEmbedding (@mk M).symm :=
+  mkHomeomorph.symm.isEmbedding
+
+@[deprecated (since := "2024-10-28")] alias inducing_mk_symm := isInducing_mk_symm
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_mk_symm := isEmbedding_mk_symm
 
 @[to_additive]
 theorem isOpenEmbedding_mk_symm : IsOpenEmbedding (@mk M).symm := mkHomeomorph.symm.isOpenEmbedding
-
-@[deprecated (since := "2024-10-18")]
-alias openEmbedding_mk_symm := isOpenEmbedding_mk_symm
 
 @[to_additive]
 theorem isClosedEmbedding_mk_symm : IsClosedEmbedding (@mk M).symm :=
@@ -85,30 +92,30 @@ theorem isQuotientMap_mk_symm : IsQuotientMap (@mk M).symm := mkHomeomorph.symm.
 @[deprecated (since := "2024-10-22")]
 alias quotientMap_mk_symm := isQuotientMap_mk_symm
 
-@[to_additive] instance instT0Space [T0Space M] : T0Space Mᵈᵐᵃ := embedding_mk_symm.t0Space
-@[to_additive] instance instT1Space [T1Space M] : T1Space Mᵈᵐᵃ := embedding_mk_symm.t1Space
-@[to_additive] instance instT2Space [T2Space M] : T2Space Mᵈᵐᵃ := embedding_mk_symm.t2Space
-@[to_additive] instance instT25Space [T25Space M] : T25Space Mᵈᵐᵃ := embedding_mk_symm.t25Space
-@[to_additive] instance instT3Space [T3Space M] : T3Space Mᵈᵐᵃ := embedding_mk_symm.t3Space
-@[to_additive] instance instT4Space [T4Space M] : T4Space Mᵈᵐᵃ := isClosedEmbedding_mk_symm.t4Space
-@[to_additive] instance instT5Space [T5Space M] : T5Space Mᵈᵐᵃ := isClosedEmbedding_mk_symm.t5Space
+@[to_additive] instance instT0Space [T0Space M] : T0Space Mᵈᵐᵃ := mkHomeomorph.t0Space
+@[to_additive] instance instT1Space [T1Space M] : T1Space Mᵈᵐᵃ := mkHomeomorph.t1Space
+@[to_additive] instance instT2Space [T2Space M] : T2Space Mᵈᵐᵃ := mkHomeomorph.t2Space
+@[to_additive] instance instT25Space [T25Space M] : T25Space Mᵈᵐᵃ := mkHomeomorph.t25Space
+@[to_additive] instance instT3Space [T3Space M] : T3Space Mᵈᵐᵃ := mkHomeomorph.t3Space
+@[to_additive] instance instT4Space [T4Space M] : T4Space Mᵈᵐᵃ := mkHomeomorph.t4Space
+@[to_additive] instance instT5Space [T5Space M] : T5Space Mᵈᵐᵃ := mkHomeomorph.t5Space
 
-@[to_additive] instance instR0Space [R0Space M] : R0Space Mᵈᵐᵃ := embedding_mk_symm.r0Space
-@[to_additive] instance instR1Space [R1Space M] : R1Space Mᵈᵐᵃ := embedding_mk_symm.r1Space
-
-@[to_additive]
-instance instRegularSpace [RegularSpace M] : RegularSpace Mᵈᵐᵃ := embedding_mk_symm.regularSpace
+@[to_additive] instance instR0Space [R0Space M] : R0Space Mᵈᵐᵃ := isEmbedding_mk_symm.r0Space
+@[to_additive] instance instR1Space [R1Space M] : R1Space Mᵈᵐᵃ := isEmbedding_mk_symm.r1Space
 
 @[to_additive]
-instance instNormalSpace [NormalSpace M] : NormalSpace Mᵈᵐᵃ := isClosedEmbedding_mk_symm.normalSpace
+instance instRegularSpace [RegularSpace M] : RegularSpace Mᵈᵐᵃ := isEmbedding_mk_symm.regularSpace
+
+@[to_additive]
+instance instNormalSpace [NormalSpace M] : NormalSpace Mᵈᵐᵃ := mkHomeomorph.normalSpace
 
 @[to_additive]
 instance instCompletelyNormalSpace [CompletelyNormalSpace M] : CompletelyNormalSpace Mᵈᵐᵃ :=
-  isClosedEmbedding_mk_symm.completelyNormalSpace
+  isEmbedding_mk_symm.completelyNormalSpace
 
 @[to_additive]
 instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mᵈᵐᵃ :=
-  embedding_mk_symm.discreteTopology
+  isEmbedding_mk_symm.discreteTopology
 
 @[to_additive]
 instance instSeparableSpace [SeparableSpace M] : SeparableSpace Mᵈᵐᵃ :=
@@ -116,11 +123,11 @@ instance instSeparableSpace [SeparableSpace M] : SeparableSpace Mᵈᵐᵃ :=
 
 @[to_additive]
 instance instFirstCountableTopology [FirstCountableTopology M] : FirstCountableTopology Mᵈᵐᵃ :=
-  inducing_mk_symm.firstCountableTopology
+  isInducing_mk_symm.firstCountableTopology
 
 @[to_additive]
 instance instSecondCountableTopology [SecondCountableTopology M] : SecondCountableTopology Mᵈᵐᵃ :=
-  inducing_mk_symm.secondCountableTopology
+  isInducing_mk_symm.secondCountableTopology
 
 @[to_additive]
 instance instCompactSpace [CompactSpace M] : CompactSpace Mᵈᵐᵃ :=

@@ -29,7 +29,6 @@ def keys (s : Multiset (Sigma β)) : Multiset α :=
 theorem coe_keys {l : List (Sigma β)} : keys (l : Multiset (Sigma β)) = (l.keys : Multiset α) :=
   rfl
 
--- Porting note: Fixed Nodupkeys -> NodupKeys
 /-- `NodupKeys s` means that `s` has no duplicate keys. -/
 def NodupKeys (s : Multiset (Sigma β)) : Prop :=
   Quot.liftOn s List.NodupKeys fun _ _ p => propext <| perm_nodupKeys p
@@ -96,7 +95,6 @@ def liftOn {γ} (s : Finmap β) (f : AList β → γ)
       (fun l₁ l₂ p => Part.ext' (perm_nodupKeys p) ?_) : Part γ).get ?_
   · exact fun h1 h2 => H _ _ p
   · have := s.nodupKeys
-    -- Porting note: `revert` required because `rcases` behaves differently
     revert this
     rcases s.entries with ⟨l⟩
     exact id
@@ -230,7 +228,6 @@ def lookup (a : α) (s : Finmap β) : Option (β a) :=
 theorem lookup_toFinmap (a : α) (s : AList β) : lookup a ⟦s⟧ = s.lookup a :=
   rfl
 
--- Porting note: renaming to `List.dlookup` since `List.lookup` already exists
 @[simp]
 theorem dlookup_list_toFinmap (a : α) (s : List (Sigma β)) : lookup a s.toFinmap = s.dlookup a := by
   rw [List.toFinmap, lookup_toFinmap, lookup_to_alist]
@@ -296,7 +293,7 @@ def keysLookupEquiv :
     dsimp only at hf
     ext
     · simp [keys, Multiset.keys, ← hf, Option.isSome_iff_exists]
-    · simp (config := { contextual := true }) [lookup_eq_some_iff, ← hf]
+    · simp +contextual [lookup_eq_some_iff, ← hf]
 
 @[simp] lemma keysLookupEquiv_symm_apply_keys :
     ∀ f : {f : Finset α × (∀ a, Option (β a)) // ∀ i, (f.2 i).isSome ↔ i ∈ f.1},
@@ -318,7 +315,6 @@ def replace (a : α) (b : β a) (s : Finmap β) : Finmap β :=
   (liftOn s fun t => AList.toFinmap (AList.replace a b t))
     fun _ _ p => toFinmap_eq.2 <| perm_replace p
 
--- Porting note: explicit type required because of the ambiguity
 @[simp]
 theorem replace_toFinmap (a : α) (b : β a) (s : AList β) :
     replace a b ⟦s⟧ = (⟦s.replace a b⟧ : Finmap β) := by
@@ -417,11 +413,12 @@ theorem insert_toFinmap (a : α) (b : β a) (s : AList β) :
     insert a b (AList.toFinmap s) = AList.toFinmap (s.insert a b) := by
   simp [insert]
 
-theorem insert_entries_of_neg {a : α} {b : β a} {s : Finmap β} :
+theorem entries_insert_of_not_mem {a : α} {b : β a} {s : Finmap β} :
     a ∉ s → (insert a b s).entries = ⟨a, b⟩ ::ₘ s.entries :=
   induction_on s fun s h => by
-    -- Porting note: `-insert_entries` required
-    simp [AList.insert_entries_of_neg (mt mem_toFinmap.1 h), -insert_entries]
+    simp [AList.entries_insert_of_not_mem (mt mem_toFinmap.1 h), -entries_insert]
+
+@[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := entries_insert_of_not_mem
 
 @[simp]
 theorem mem_insert {a a' : α} {b' : β a'} {s : Finmap β} : a ∈ insert a' b' s ↔ a = a' ∨ a ∈ s :=
@@ -452,11 +449,9 @@ theorem toFinmap_cons (a : α) (b : β a) (xs : List (Sigma β)) :
 
 theorem mem_list_toFinmap (a : α) (xs : List (Sigma β)) :
     a ∈ xs.toFinmap ↔ ∃ b : β a, Sigma.mk a b ∈ xs := by
-  -- Porting note: golfed
   induction' xs with x xs
   · simp only [toFinmap_nil, not_mem_empty, find?, not_mem_nil, exists_false]
-  cases' x with fst_i snd_i
-  -- Porting note: `Sigma.mk.inj_iff` required because `simp` behaves differently
+  obtain ⟨fst_i, snd_i⟩ := x
   simp only [toFinmap_cons, *, exists_or, mem_cons, mem_insert, exists_and_left, Sigma.mk.inj_iff]
   refine (or_congr_left <| and_iff_left_of_imp ?_).symm
   rintro rfl

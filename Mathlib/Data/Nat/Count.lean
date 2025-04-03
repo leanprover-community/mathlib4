@@ -3,7 +3,8 @@ Copyright (c) 2021 Vladimir Goryachev. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodriguez
 -/
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Algebra.Group.Nat.Range
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Counting on ℕ
@@ -15,6 +16,8 @@ objects, and helping to evaluate it for specific `k`.
 
 -/
 
+assert_not_imported Mathlib.Dynamics.FixedPoints.Basic
+assert_not_exists Ring
 
 open Finset
 
@@ -54,6 +57,10 @@ theorem count_eq_card_fintype (n : ℕ) : count p n = Fintype.card { k : ℕ // 
   rw [count_eq_card_filter_range, ← Fintype.card_ofFinset, ← CountSet.fintype]
   rfl
 
+theorem count_le {n : ℕ} : count p n ≤ n := by
+  rw [count_eq_card_filter_range]
+  exact (card_filter_le _ _).trans_eq (card_range _)
+
 theorem count_succ (n : ℕ) : count p (n + 1) = count p n + if p n then 1 else 0 := by
   split_ifs with h <;> simp [count, List.range_succ, h]
 
@@ -67,7 +74,7 @@ theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p
     rw [Finset.disjoint_left]
     simp_rw [mem_map, mem_range, addLeftEmbedding_apply]
     rintro x hx ⟨c, _, rfl⟩
-    exact (self_le_add_right _ _).not_lt hx
+    exact (Nat.le_add_right _ _).not_lt hx
   simp_rw [count_eq_card_filter_range, range_add, filter_union, card_union_of_disjoint this,
     filter_map, addLeftEmbedding, card_map]
   rfl
@@ -98,10 +105,6 @@ alias ⟨_, count_succ_eq_succ_count⟩ := count_succ_eq_succ_count_iff
 
 alias ⟨_, count_succ_eq_count⟩ := count_succ_eq_count_iff
 
-theorem count_le_cardinal (n : ℕ) : (count p n : Cardinal) ≤ Cardinal.mk { k | p k } := by
-  rw [count_eq_card_fintype, ← Cardinal.mk_fintype]
-  exact Cardinal.mk_subtype_mono fun x hx ↦ hx.2
-
 theorem lt_of_count_lt_count {a b : ℕ} (h : count p a < count p b) : a < b :=
   (count_monotone p).reflect_lt h
 
@@ -121,15 +124,19 @@ theorem count_le_card (hp : (setOf p).Finite) (n : ℕ) : count p n ≤ #hp.toFi
 theorem count_lt_card {n : ℕ} (hp : (setOf p).Finite) (hpn : p n) : count p n < #hp.toFinset :=
   (count_lt_count_succ_iff.2 hpn).trans_le (count_le_card hp _)
 
-theorem count_of_forall {n : ℕ} (hp : ∀ n' < n, p n') : count p n = n := by
-  rw [count_eq_card_filter_range, filter_true_of_mem, card_range]
-  · simpa only [Finset.mem_range]
+theorem count_iff_forall {n : ℕ} : count p n = n ↔ ∀ n' < n, p n' := by
+  simpa [count_eq_card_filter_range, card_range, mem_range] using
+    card_filter_eq_iff (p := p) (s := range n)
+
+alias ⟨_, count_of_forall⟩ := count_iff_forall
 
 @[simp] theorem count_true (n : ℕ) : count (fun _ ↦ True) n = n := count_of_forall fun _ _ ↦ trivial
 
-theorem count_of_forall_not {n : ℕ} (hp : ∀ n' < n, ¬p n') : count p n = 0 := by
-  rw [count_eq_card_filter_range, filter_false_of_mem, card_empty]
-  · simpa only [Finset.mem_range]
+theorem count_iff_forall_not {n : ℕ} : count p n = 0 ↔ ∀ m < n, ¬p m := by
+  simpa [count_eq_card_filter_range, mem_range] using
+    card_filter_eq_zero_iff (p := p) (s := range n)
+
+alias ⟨_, count_of_forall_not⟩ := count_iff_forall_not
 
 @[simp] theorem count_false (n : ℕ) : count (fun _ ↦ False) n = 0 :=
   count_of_forall_not fun _ _ ↦ id

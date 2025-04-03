@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Topological group with zero
@@ -23,7 +23,7 @@ and `Continuous`. As a special case, we provide `*.div_const` operations that re
 `DivInvMonoid` and `ContinuousMul` instances.
 
 All lemmas about `(⁻¹)` use `inv₀` in their names because lemmas without `₀` are used for
-`TopologicalGroup`s. We also use `'` in the typeclass name `HasContinuousInv₀` for the sake of
+`IsTopologicalGroup`s. We also use `'` in the typeclass name `HasContinuousInv₀` for the sake of
 consistency of notation.
 
 On a `GroupWithZero` with continuous multiplication, we also define left and right multiplication
@@ -129,9 +129,12 @@ end Inv₀
 
 /-- If `G₀` is a group with zero with topology such that `x ↦ x⁻¹` is continuous at all nonzero
 points. Then the coercion `G₀ˣ → G₀` is a topological embedding. -/
-theorem Units.embedding_val₀ [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] :
-    Embedding (val : G₀ˣ → G₀) :=
+theorem Units.isEmbedding_val₀ [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] :
+    IsEmbedding (val : G₀ˣ → G₀) :=
   embedding_val_mk <| (continuousOn_inv₀ (G₀ := G₀)).mono fun _ ↦ IsUnit.ne_zero
+
+@[deprecated (since := "2024-10-26")]
+alias Units.embedding_val₀ := Units.isEmbedding_val₀
 
 section NhdsInv
 
@@ -219,8 +222,8 @@ theorem ContinuousAt.comp_div_cases {f g : α → G₀} (h : α → G₀ → β)
   by_cases hga : g a = 0
   · rw [ContinuousAt]
     simp_rw [comp_apply, hga, div_zero]
-    exact (h2h hga).comp (continuousAt_id.prod_mk tendsto_top)
-  · exact ContinuousAt.comp (hh hga) (continuousAt_id.prod (hf.div hg hga))
+    exact (h2h hga).comp (continuousAt_id.tendsto.prodMk tendsto_top)
+  · fun_prop (disch := assumption)
 
 /-- `h x (f x / g x)` is continuous under certain conditions, even if the denominator is sometimes
   `0`. See docstring of `ContinuousAt.comp_div_cases`. -/
@@ -311,7 +314,7 @@ variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀]
 
 theorem continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
     ContinuousAt (fun x => x ^ m) x := by
-  cases' m with m m
+  rcases m with m | m
   · simpa only [Int.ofNat_eq_coe, zpow_natCast] using continuousAt_pow x m
   · simp only [zpow_negSucc]
     have hx : x ≠ 0 := h.resolve_right (Int.negSucc_lt_zero m).not_le

@@ -32,12 +32,6 @@ where possible, try to keep them in sync -/
 
 universe v u
 
-/-
-Previously, this had accidentally been made a global instance,
-and we now turn it on locally when convenient.
--/
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
-
 open CategoryTheory Limits Opposite FintypeCat Topology TopologicalSpace CompHausLike
 
 /-- `LightProfinite` is the category of second countable profinite spaces. -/
@@ -68,12 +62,6 @@ instance {X : LightProfinite} : TotallyDisconnectedSpace X :=
 instance {X : LightProfinite} : SecondCountableTopology X :=
   X.prop.2
 
-instance {X : LightProfinite} : TotallyDisconnectedSpace ((forget LightProfinite).obj X) :=
-  X.prop.1
-
-instance {X : LightProfinite} : SecondCountableTopology ((forget LightProfinite).obj X) :=
-  X.prop.2
-
 end LightProfinite
 
 /-- The fully faithful embedding of `LightProfinite` in `Profinite`. -/
@@ -100,12 +88,10 @@ attribute [local instance] FintypeCat.discreteTopology
 
 /-- The natural functor from `Fintype` to `LightProfinite`, endowing a finite type with the
 discrete topology. -/
-@[simps! map_apply]
+@[simps! -isSimp map_hom_apply]
 def FintypeCat.toLightProfinite : FintypeCat ⥤ LightProfinite where
   obj A := LightProfinite.of A
-  map f := ⟨f, by continuity⟩
-
-attribute [nolint simpNF] FintypeCat.toLightProfinite_map_apply
+  map f := CompHausLike.ofHom _ ⟨f, by continuity⟩
 
 /-- `FintypeCat.toLightProfinite` is fully faithful. -/
 def FintypeCat.toLightProfiniteFullyFaithful : toLightProfinite.FullyFaithful where
@@ -145,7 +131,7 @@ def limitCone {J : Type v} [SmallCategory J] [CountableCategory J]
         constructor
         · infer_instance
         · change SecondCountableTopology ({ u : ∀ j : J, F.obj j | _ } : Type _)
-          apply inducing_subtype_val.secondCountableTopology }
+          apply IsInducing.subtypeVal.secondCountableTopology }
   π :=
   { app := (CompHaus.limitCone.{v, u} (F ⋙ lightProfiniteToCompHaus)).π.app
     naturality := by
@@ -165,7 +151,6 @@ def limitConeIsLimit {J : Type v} [SmallCategory J] [CountableCategory J]
 noncomputable instance createsCountableLimits {J : Type v} [SmallCategory J] [CountableCategory J] :
     CreatesLimitsOfShape J lightToProfinite.{max v u} where
   CreatesLimit {F} :=
-    have : HasLimitsOfSize Profinite := hasLimitsOfSizeShrink _
     createsLimitOfFullyFaithfulOfIso (limitCone.{v, u} F).pt <|
       (Profinite.limitConeIsLimit.{v, u} (F ⋙ lightToProfinite)).conePointUniqueUpToIso
         (limit.isLimit _)
@@ -173,8 +158,8 @@ noncomputable instance createsCountableLimits {J : Type v} [SmallCategory J] [Co
 instance : HasCountableLimits LightProfinite where
   out _ := { has_limit := fun F ↦ ⟨limitCone F, limitConeIsLimit F⟩ }
 
-noncomputable instance : PreservesLimitsOfShape ℕᵒᵖ (forget LightProfinite.{u}) :=
-  have : PreservesLimitsOfSize.{0, 0} (forget Profinite.{u}) := preservesLimitsOfSizeShrink _
+instance : PreservesLimitsOfShape ℕᵒᵖ (forget LightProfinite.{u}) :=
+  have : PreservesLimitsOfSize.{0, 0} (forget Profinite.{u}) := preservesLimitsOfSize_shrink _
   inferInstanceAs (PreservesLimitsOfShape ℕᵒᵖ (lightToProfinite ⋙ forget Profinite))
 
 variable {X Y : LightProfinite.{u}} (f : X ⟶ Y)
@@ -196,7 +181,8 @@ noncomputable def isoOfBijective (bij : Function.Bijective f) : X ≅ Y :=
 instance forget_reflectsIsomorphisms : (forget LightProfinite).ReflectsIsomorphisms := by
   constructor
   intro A B f hf
-  exact LightProfinite.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)
+  rw [isIso_iff_bijective] at hf
+  exact LightProfinite.isIso_of_bijective _ hf
 
 theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     Epi f ↔ Function.Surjective f := by
@@ -206,7 +192,7 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     contrapose!
     rintro ⟨y, hy⟩ hf
     let C := Set.range f
-    have hC : IsClosed C := (isCompact_range f.continuous).isClosed
+    have hC : IsClosed C := (isCompact_range f.hom.continuous).isClosed
     let U := Cᶜ
     have hyU : y ∈ U := by
       refine Set.mem_compl ?_
@@ -216,22 +202,20 @@ theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_isClopen.mem_nhds_iff.mp hUy
     classical
       let Z := of (ULift.{u} <| Fin 2)
-      let g : Y ⟶ Z := ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
-      let h : Y ⟶ Z := ⟨fun _ => ⟨1⟩, continuous_const⟩
+      let g : Y ⟶ Z := CompHausLike.ofHom _
+        ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
+      let h : Y ⟶ Z := CompHausLike.ofHom _ ⟨fun _ => ⟨1⟩, continuous_const⟩
       have H : h = g := by
         rw [← cancel_epi f]
         ext x
-        apply ULift.ext
         dsimp [g, LocallyConstant.ofIsClopen]
-        -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-        erw [CategoryTheory.comp_apply, ContinuousMap.coe_mk,
-          CategoryTheory.comp_apply, ContinuousMap.coe_mk, Function.comp_apply, if_neg]
+        rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, hom_ofHom, ContinuousMap.coe_mk,
+          Function.comp_apply, if_neg]
         refine mt (fun α => hVU α) ?_
-        simp only [U, C, Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
+        simp [U, C]
       apply_fun fun e => (e y).down at H
       dsimp [g, LocallyConstant.ofIsClopen] at H
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
+      rw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H
   · rw [← CategoryTheory.epi_iff_surjective]
     apply (forget LightProfinite).epi_of_epi_map
@@ -258,7 +242,8 @@ def toProfinite (S : LightDiagram) : Profinite := S.cone.pt
 @[simps!]
 instance : Category LightDiagram := InducedCategory.category toProfinite
 
-instance concreteCategory : ConcreteCategory LightDiagram := InducedCategory.concreteCategory _
+instance hasForget : ConcreteCategory LightDiagram (fun X Y => C(X.toProfinite, Y.toProfinite)) :=
+  InducedCategory.concreteCategory toProfinite
 
 end LightDiagram
 
@@ -270,34 +255,23 @@ instance : lightDiagramToProfinite.Faithful := show (inducedFunctor _).Faithful 
 
 instance : lightDiagramToProfinite.Full := show (inducedFunctor _).Full from inferInstance
 
-instance {X : LightDiagram} : TopologicalSpace ((forget LightDiagram).obj X) :=
-  (inferInstance : TopologicalSpace X.cone.pt)
-
-instance {X : LightDiagram} : TotallyDisconnectedSpace ((forget LightDiagram).obj X) :=
-  (inferInstance : TotallyDisconnectedSpace X.cone.pt)
-
-instance {X : LightDiagram} : CompactSpace ((forget LightDiagram).obj X) :=
-  (inferInstance : CompactSpace X.cone.pt )
-
-instance {X : LightDiagram} : T2Space ((forget LightDiagram).obj X) :=
-  (inferInstance : T2Space X.cone.pt )
-
 namespace LightProfinite
 
 instance (S : LightProfinite) : Countable (Clopens S) := by
-  rw [TopologicalSpace.Clopens.countable_iff_second_countable]
+  rw [TopologicalSpace.Clopens.countable_iff_secondCountable]
   infer_instance
 
-instance instCountableDiscreteQuotient (S : LightProfinite)  :
+instance instCountableDiscreteQuotient (S : LightProfinite) :
     Countable (DiscreteQuotient ((lightToProfinite.obj S))) :=
   (DiscreteQuotient.finsetClopens_inj S).countable
 
 /-- A profinite space which is light gives rise to a light profinite space. -/
 noncomputable def toLightDiagram (S : LightProfinite.{u}) : LightDiagram.{u} where
-  diagram := sequentialFunctor _ ⋙ (lightToProfinite.obj S).fintypeDiagram
-  cone := (Functor.Initial.limitConeComp (sequentialFunctor _) (lightToProfinite.obj S).lim).cone
-  isLimit :=
-    (Functor.Initial.limitConeComp (sequentialFunctor _) (lightToProfinite.obj S).lim).isLimit
+  diagram := IsCofiltered.sequentialFunctor _ ⋙ (lightToProfinite.obj S).fintypeDiagram
+  cone := (Functor.Initial.limitConeComp (IsCofiltered.sequentialFunctor _)
+    (lightToProfinite.obj S).lim).cone
+  isLimit := (Functor.Initial.limitConeComp (IsCofiltered.sequentialFunctor _)
+    (lightToProfinite.obj S).lim).isLimit
 
 end LightProfinite
 
@@ -309,7 +283,7 @@ noncomputable def lightProfiniteToLightDiagram : LightProfinite.{u} ⥤ LightDia
 
 open scoped Classical in
 instance (S : LightDiagram.{u}) : SecondCountableTopology S.cone.pt := by
-  rw [← TopologicalSpace.Clopens.countable_iff_second_countable]
+  rw [← TopologicalSpace.Clopens.countable_iff_secondCountable]
   refine @Countable.of_equiv _ _ ?_ (LocallyConstant.equivClopens (X := S.cone.pt))
   refine @Function.Surjective.countable
     (Σ (n : ℕ), LocallyConstant ((S.diagram ⋙ FintypeCat.toProfinite).obj ⟨n⟩) (Fin 2)) _ ?_ ?_ ?_
@@ -321,13 +295,13 @@ instance (S : LightDiagram.{u}) : SecondCountableTopology S.cone.pt := by
     refine @Pi.finite _ _ ?_ _
     simp only [Functor.comp_obj]
     exact show (Finite (S.diagram.obj _)) from inferInstance
-  · exact fun a ↦ a.snd.comap (S.cone.π.app ⟨a.fst⟩)
+  · exact fun a ↦ a.snd.comap (S.cone.π.app ⟨a.fst⟩).hom
   · intro a
     obtain ⟨n, g, h⟩ := Profinite.exists_locallyConstant S.cone S.isLimit a
     exact ⟨⟨unop n, g⟩, h.symm⟩
 
 /-- The inverse part of the equivalence `LightProfinite ≌ LightDiagram` -/
-@[simps]
+@[simps obj map]
 def lightDiagramToLightProfinite : LightDiagram.{u} ⥤ LightProfinite.{u} where
   obj X := LightProfinite.of X.cone.pt
   map f := f

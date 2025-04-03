@@ -3,7 +3,7 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov
 -/
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Extra lemmas about intervals
@@ -43,6 +43,10 @@ theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
   (Iic_disjoint_Ioi h).mono le_rfl Ioc_subset_Ioi_self
 
 @[simp]
+theorem Ioc_disjoint_Ioc_of_le {d : α} (h : b ≤ c) : Disjoint (Ioc a b) (Ioc c d) :=
+  (Iic_disjoint_Ioc h).mono Ioc_subset_Iic_self le_rfl
+
+@[deprecated Ioc_disjoint_Ioc_of_le (since := "2025-03-04")]
 theorem Ioc_disjoint_Ioc_same : Disjoint (Ioc a b) (Ioc b c) :=
   (Iic_disjoint_Ioc le_rfl).mono Ioc_subset_Iic_self le_rfl
 
@@ -121,8 +125,7 @@ variable [LinearOrder α] {a₁ a₂ b₁ b₂ : α}
 
 @[simp]
 theorem Ico_disjoint_Ico : Disjoint (Ico a₁ a₂) (Ico b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by
-  simp_rw [Set.disjoint_iff_inter_eq_empty, Ico_inter_Ico, Ico_eq_empty_iff, inf_eq_min, sup_eq_max,
-    not_lt]
+  simp_rw [Set.disjoint_iff_inter_eq_empty, Ico_inter_Ico, Ico_eq_empty_iff, not_lt]
 
 @[simp]
 theorem Ioc_disjoint_Ioc : Disjoint (Ioc a₁ a₂) (Ioc b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by
@@ -132,8 +135,7 @@ theorem Ioc_disjoint_Ioc : Disjoint (Ioc a₁ a₂) (Ioc b₁ b₂) ↔ min a₂
 @[simp]
 theorem Ioo_disjoint_Ioo [DenselyOrdered α] :
     Disjoint (Set.Ioo a₁ a₂) (Set.Ioo b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by
-  simp_rw [Set.disjoint_iff_inter_eq_empty, Ioo_inter_Ioo, Ioo_eq_empty_iff, inf_eq_min, sup_eq_max,
-    not_lt]
+  simp_rw [Set.disjoint_iff_inter_eq_empty, Ioo_inter_Ioo, Ioo_eq_empty_iff, not_lt]
 
 /-- If two half-open intervals are disjoint and the endpoint of one lies in the other,
   then it must be equal to the endpoint of the other. -/

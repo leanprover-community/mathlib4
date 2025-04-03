@@ -3,9 +3,11 @@ Copyright (c) 2021 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Yaël Dillies
 -/
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Finset.Order
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Finite.Range
 import Mathlib.Order.Atoms
-import Mathlib.Data.Set.Finite
 import Mathlib.Order.Minimal
 
 /-!
@@ -64,7 +66,6 @@ abbrev toOrderBot [SemilatticeInf α] : OrderBot α where
 /-- Constructs the `⊤` of a finite nonempty `SemilatticeSup` -/
 abbrev toOrderTop [SemilatticeSup α] : OrderTop α where
   top := univ.sup' univ_nonempty id
-  -- Porting note: needed to make `id` explicit
   le_top a := le_sup' id <| mem_univ a
 
 -- See note [reducible non-instances]
@@ -78,8 +79,7 @@ section BoundedOrder
 
 variable (α)
 
-open scoped Classical
-
+open scoped Classical in
 -- See note [reducible non-instances]
 /-- A finite bounded lattice is complete. -/
 noncomputable abbrev toCompleteLattice [Lattice α] [BoundedOrder α] : CompleteLattice α where
@@ -124,6 +124,8 @@ noncomputable abbrev toCompleteLinearOrder
 noncomputable abbrev toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBooleanAlgebra α where
   __ := ‹BooleanAlgebra α›
   __ := Fintype.toCompleteDistribLattice α
+  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 -- See note [reducible non-instances]
 /-- A finite boolean algebra is complete and atomic. -/
@@ -247,9 +249,3 @@ theorem Finite.bddBelow_range [IsDirected α (· ≥ ·)] (f : β → α) : BddB
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
-
-@[deprecated (since := "2024-01-16")] alias Directed.fintype_le := Directed.finite_le
-@[deprecated (since := "2024-01-16")] alias Fintype.exists_le := Finite.exists_le
-@[deprecated (since := "2024-01-16")] alias Fintype.exists_ge := Finite.exists_ge
-@[deprecated (since := "2024-01-16")] alias Fintype.bddAbove_range := Finite.bddAbove_range
-@[deprecated (since := "2024-01-16")] alias Fintype.bddBelow_range := Finite.bddBelow_range

@@ -37,7 +37,7 @@ noncomputable abbrev tensorObj (X Y : AlgebraCat.{u} R) : AlgebraCat.{u} R :=
 `AlgebraCat.instMonoidalCategory`. -/
 noncomputable abbrev tensorHom {W X Y Z : AlgebraCat.{u} R} (f : W ⟶ X) (g : Y ⟶ Z) :
     tensorObj W Y ⟶ tensorObj X Z :=
-  Algebra.TensorProduct.map f g
+  ofHom <| Algebra.TensorProduct.map f.hom g.hom
 
 open MonoidalCategory
 
@@ -60,18 +60,13 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (AlgebraCat.{u} R
     (forget₂ (AlgebraCat R) (ModuleCat R))
     { μIso := fun _ _ => Iso.refl _
       εIso := Iso.refl _
-      associator_eq := fun _ _ _ => TensorProduct.ext_threefold (fun _ _ _ => rfl)
-      leftUnitor_eq := fun _ => TensorProduct.ext' (fun _ _ => rfl)
-      rightUnitor_eq := fun _ => TensorProduct.ext' (fun _ _ => rfl) }
+      associator_eq := fun _ _ _ =>
+        ModuleCat.hom_ext <| TensorProduct.ext_threefold (fun _ _ _ => rfl)
+      leftUnitor_eq := fun _ => ModuleCat.hom_ext <| TensorProduct.ext' (fun _ _ => rfl)
+      rightUnitor_eq := fun _ => ModuleCat.hom_ext <| TensorProduct.ext' (fun _ _ => rfl) }
 
-variable (R) in
 /-- `forget₂ (AlgebraCat R) (ModuleCat R)` as a monoidal functor. -/
-def toModuleCatMonoidalFunctor : MonoidalFunctor (AlgebraCat.{u} R) (ModuleCat.{u} R) := by
-  unfold instMonoidalCategory
-  exact Monoidal.fromInduced (forget₂ (AlgebraCat R) (ModuleCat R)) _
-
-instance : (toModuleCatMonoidalFunctor R).Faithful :=
-  forget₂_faithful _ _
+example : (forget₂ (AlgebraCat R) (ModuleCat R)).Monoidal := inferInstance
 
 end
 

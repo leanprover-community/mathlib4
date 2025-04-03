@@ -42,24 +42,32 @@ section CLMCompApply
 variable {H : Type*} [NormedAddCommGroup H] [NormedSpace 𝕜 H] {c : E → G →L[𝕜] H}
   {c' : E →L[𝕜] G →L[𝕜] H} {d : E → F →L[𝕜] G} {d' : E →L[𝕜] F →L[𝕜] G} {u : E → G} {u' : E →L[𝕜] G}
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  split proof term into steps to solve unification issues. -/
 @[fun_prop]
 theorem HasStrictFDerivAt.clm_comp (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
     HasStrictFDerivAt (fun y => (c y).comp (d y))
-      ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x :=
-  (isBoundedBilinearMap_comp.hasStrictFDerivAt (c x, d x) :).comp x <| hc.prod hd
+      ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x := by
+  have := isBoundedBilinearMap_comp.hasStrictFDerivAt (c x, d x)
+  have := this.comp x (hc.prodMk hd)
+  exact this
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivWithinAt.clm_comp (hc : HasFDerivWithinAt c c' s x)
     (hd : HasFDerivWithinAt d d' s x) :
     HasFDerivWithinAt (fun y => (c y).comp (d y))
-      ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') s x :=
-  (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x) :).comp_hasFDerivWithinAt x <| hc.prod hd
+      ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') s x := by
+  exact (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x) :).comp_hasFDerivWithinAt x (hc.prodMk hd)
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivAt.clm_comp (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
     HasFDerivAt (fun y => (c y).comp (d y))
-      ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x :=
-  (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x) :).comp x <| hc.prod hd
+      ((compL 𝕜 F G H (c x)).comp d' + ((compL 𝕜 F G H).flip (d x)).comp c') x := by
+  exact (isBoundedBilinearMap_comp.hasFDerivAt (c x, d x) :).comp x <| hc.prodMk hd
 
 @[fun_prop]
 theorem DifferentiableWithinAt.clm_comp (hc : DifferentiableWithinAt 𝕜 c s x)
@@ -97,18 +105,23 @@ theorem fderiv_clm_comp (hc : DifferentiableAt 𝕜 c x) (hd : DifferentiableAt 
 theorem HasStrictFDerivAt.clm_apply (hc : HasStrictFDerivAt c c' x)
     (hu : HasStrictFDerivAt u u' x) :
     HasStrictFDerivAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) x :=
-  (isBoundedBilinearMap_apply.hasStrictFDerivAt (c x, u x)).comp x (hc.prod hu)
+  (isBoundedBilinearMap_apply.hasStrictFDerivAt (c x, u x)).comp x (hc.prodMk hu)
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivWithinAt.clm_apply (hc : HasFDerivWithinAt c c' s x)
     (hu : HasFDerivWithinAt u u' s x) :
-    HasFDerivWithinAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) s x :=
-  (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x) :).comp_hasFDerivWithinAt x (hc.prod hu)
+    HasFDerivWithinAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) s x := by
+  exact (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x) :).comp_hasFDerivWithinAt x
+    (hc.prodMk hu)
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivAt.clm_apply (hc : HasFDerivAt c c' x) (hu : HasFDerivAt u u' x) :
-    HasFDerivAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) x :=
-  (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x) :).comp x (hc.prod hu)
+    HasFDerivAt (fun y => (c y) (u y)) ((c x).comp u' + c'.flip (u x)) x := by
+  exact (isBoundedBilinearMap_apply.hasFDerivAt (c x, u x) :).comp x (hc.prodMk hu)
 
 @[fun_prop]
 theorem DifferentiableWithinAt.clm_apply (hc : DifferentiableWithinAt 𝕜 c s x)
@@ -230,18 +243,22 @@ variable {c : E → 𝕜'} {c' : E →L[𝕜] 𝕜'}
 @[fun_prop]
 theorem HasStrictFDerivAt.smul (hc : HasStrictFDerivAt c c' x) (hf : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) x :=
-  (isBoundedBilinearMap_smul.hasStrictFDerivAt (c x, f x)).comp x <| hc.prod hf
+  (isBoundedBilinearMap_smul.hasStrictFDerivAt (c x, f x)).comp x <| hc.prodMk hf
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivWithinAt.smul (hc : HasFDerivWithinAt c c' s x) (hf : HasFDerivWithinAt f f' s x) :
-    HasFDerivWithinAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) s x :=
-  (isBoundedBilinearMap_smul.hasFDerivAt (𝕜 := 𝕜) (c x, f x) :).comp_hasFDerivWithinAt x <|
-    hc.prod hf
+    HasFDerivWithinAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) s x := by
+  exact (isBoundedBilinearMap_smul.hasFDerivAt (𝕜 := 𝕜) (c x, f x) :).comp_hasFDerivWithinAt x <|
+    hc.prodMk hf
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivAt.smul (hc : HasFDerivAt c c' x) (hf : HasFDerivAt f f' x) :
-    HasFDerivAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) x :=
-  (isBoundedBilinearMap_smul.hasFDerivAt (𝕜 := 𝕜) (c x, f x) :).comp x <| hc.prod hf
+    HasFDerivAt (fun y => c y • f y) (c x • f' + c'.smulRight (f x)) x := by
+  exact (isBoundedBilinearMap_smul.hasFDerivAt (𝕜 := 𝕜) (c x, f x) :).comp x <| hc.prodMk hf
 
 @[fun_prop]
 theorem DifferentiableWithinAt.smul (hc : DifferentiableWithinAt 𝕜 c s x)
@@ -328,7 +345,7 @@ theorem HasStrictFDerivAt.mul' {x : E} (ha : HasStrictFDerivAt a a' x)
     (hb : HasStrictFDerivAt b b' x) :
     HasStrictFDerivAt (fun y => a y * b y) (a x • b' + a'.smulRight (b x)) x :=
   ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasStrictFDerivAt (a x, b x)).comp x
-    (ha.prod hb)
+    (ha.prodMk hb)
 
 @[fun_prop]
 theorem HasStrictFDerivAt.mul (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDerivAt d d' x) :
@@ -337,11 +354,13 @@ theorem HasStrictFDerivAt.mul (hc : HasStrictFDerivAt c c' x) (hd : HasStrictFDe
   ext z
   apply mul_comm
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivWithinAt.mul' (ha : HasFDerivWithinAt a a' s x) (hb : HasFDerivWithinAt b b' s x) :
-    HasFDerivWithinAt (fun y => a y * b y) (a x • b' + a'.smulRight (b x)) s x :=
-  ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasFDerivAt (a x, b x)).comp_hasFDerivWithinAt
-    x (ha.prod hb)
+    HasFDerivWithinAt (fun y => a y * b y) (a x • b' + a'.smulRight (b x)) s x := by
+  exact ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasFDerivAt
+    (a x, b x)).comp_hasFDerivWithinAt x (ha.prodMk hb)
 
 @[fun_prop]
 theorem HasFDerivWithinAt.mul (hc : HasFDerivWithinAt c c' s x) (hd : HasFDerivWithinAt d d' s x) :
@@ -350,10 +369,13 @@ theorem HasFDerivWithinAt.mul (hc : HasFDerivWithinAt c c' s x) (hd : HasFDerivW
   ext z
   apply mul_comm
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  `by exact` to solve unification issues. -/
 @[fun_prop]
 theorem HasFDerivAt.mul' (ha : HasFDerivAt a a' x) (hb : HasFDerivAt b b' x) :
-    HasFDerivAt (fun y => a y * b y) (a x • b' + a'.smulRight (b x)) x :=
-  ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasFDerivAt (a x, b x)).comp x (ha.prod hb)
+    HasFDerivAt (fun y => a y * b y) (a x • b' + a'.smulRight (b x)) x := by
+  exact ((ContinuousLinearMap.mul 𝕜 𝔸).isBoundedBilinearMap.hasFDerivAt
+    (a x, b x)).comp x (ha.prodMk hb)
 
 @[fun_prop]
 theorem HasFDerivAt.mul (hc : HasFDerivAt c c' x) (hd : HasFDerivAt d d' x) :
@@ -564,12 +586,12 @@ theorem hasStrictFDerivAt_list_prod_finRange' {n : ℕ} {x : Fin n → 𝔸} :
     Finset.sum_equiv (finCongr (List.length_finRange n)) (by simp) (by simp [Fin.forall_iff])
 
 @[fun_prop]
-theorem hasStrictFDerivAt_list_prod_attach' [DecidableEq ι] {l : List ι} {x : {i // i ∈ l} → 𝔸} :
+theorem hasStrictFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} → 𝔸} :
     HasStrictFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.attach.map x).prod)
       (∑ i : Fin l.length, ((l.attach.take i).map x).prod •
         smulRight (proj l.attach[i.cast List.length_attach.symm])
-          ((l.attach.drop (.succ i)).map x).prod) x :=
-  hasStrictFDerivAt_list_prod'.congr_fderiv <| Eq.symm <|
+          ((l.attach.drop (.succ i)).map x).prod) x := by
+  classical exact hasStrictFDerivAt_list_prod'.congr_fderiv <| Eq.symm <|
     Finset.sum_equiv (finCongr List.length_attach.symm) (by simp) (by simp)
 
 @[fun_prop]
@@ -587,12 +609,12 @@ theorem hasFDerivAt_list_prod_finRange' {n : ℕ} {x : Fin n → 𝔸} :
   (hasStrictFDerivAt_list_prod_finRange').hasFDerivAt
 
 @[fun_prop]
-theorem hasFDerivAt_list_prod_attach' [DecidableEq ι] {l : List ι} {x : {i // i ∈ l} → 𝔸} :
+theorem hasFDerivAt_list_prod_attach' {l : List ι} {x : {i // i ∈ l} → 𝔸} :
     HasFDerivAt (𝕜 := 𝕜) (fun x ↦ (l.attach.map x).prod)
       (∑ i : Fin l.length, ((l.attach.take i).map x).prod •
         smulRight (proj l.attach[i.cast List.length_attach.symm])
-          ((l.attach.drop (.succ i)).map x).prod) x :=
-  hasStrictFDerivAt_list_prod_attach'.hasFDerivAt
+          ((l.attach.drop (.succ i)).map x).prod) x := by
+  classical exact hasStrictFDerivAt_list_prod_attach'.hasFDerivAt
 
 /--
 Auxiliary lemma for `hasStrictFDerivAt_multiset_prod`.
@@ -640,11 +662,14 @@ theorem HasStrictFDerivAt.list_prod' {l : List ι} {x : E}
     HasStrictFDerivAt (fun x ↦ (l.map (f · x)).prod)
       (∑ i : Fin l.length, ((l.take i).map (f · x)).prod •
         smulRight (f' l[i]) ((l.drop (.succ i)).map (f · x)).prod) x := by
-  simp only [← List.finRange_map_get l, List.map_map]
+  simp_rw [Fin.getElem_fin, ← l.get_eq_getElem, ← List.finRange_map_get l, List.map_map]
+  -- After #19108, we have to be optimistic with `:)`s; otherwise Lean decides it need to find
+  -- `NormedAddCommGroup (List 𝔸)` which is nonsense.
   refine .congr_fderiv (hasStrictFDerivAt_list_prod_finRange'.comp x
-    (hasStrictFDerivAt_pi.mpr fun i ↦ h l[i] (List.getElem_mem ..))) ?_
+    (hasStrictFDerivAt_pi.mpr fun i ↦ h (l.get i) (List.getElem_mem ..)) :) ?_
   ext m
-  simp [← List.map_map]
+  simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, sum_apply, smul_apply,
+    smulRight_apply, proj_apply, pi_apply, Function.comp_def]
 
 /--
 Unlike `HasFDerivAt.finset_prod`, supports non-commutative multiply and duplicate elements.
@@ -655,11 +680,12 @@ theorem HasFDerivAt.list_prod' {l : List ι} {x : E}
     HasFDerivAt (fun x ↦ (l.map (f · x)).prod)
       (∑ i : Fin l.length, ((l.take i).map (f · x)).prod •
         smulRight (f' l[i]) ((l.drop (.succ i)).map (f · x)).prod) x := by
-  simp only [← List.finRange_map_get l, List.map_map]
+  simp_rw [Fin.getElem_fin, ← l.get_eq_getElem, ← List.finRange_map_get l, List.map_map]
   refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp x
-    (hasFDerivAt_pi.mpr fun i ↦ h l[i] (List.getElem_mem i.isLt))) ?_
+    (hasFDerivAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i)) :) ?_
   ext m
-  simp [← List.map_map]
+  simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, sum_apply, smul_apply,
+    smulRight_apply, proj_apply, pi_apply, Function.comp_def]
 
 @[fun_prop]
 theorem HasFDerivWithinAt.list_prod' {l : List ι} {x : E}
@@ -667,11 +693,12 @@ theorem HasFDerivWithinAt.list_prod' {l : List ι} {x : E}
     HasFDerivWithinAt (fun x ↦ (l.map (f · x)).prod)
       (∑ i : Fin l.length, ((l.take i).map (f · x)).prod •
         smulRight (f' l[i]) ((l.drop (.succ i)).map (f · x)).prod) s x := by
-  simp only [← List.finRange_map_get l, List.map_map]
+  simp_rw [Fin.getElem_fin, ← l.get_eq_getElem, ← List.finRange_map_get l, List.map_map]
   refine .congr_fderiv (hasFDerivAt_list_prod_finRange'.comp_hasFDerivWithinAt x
-    (hasFDerivWithinAt_pi.mpr fun i ↦ h l[i] (l.get_mem i i.isLt))) ?_
+    (hasFDerivWithinAt_pi.mpr fun i ↦ h (l.get i) (l.get_mem i)) :) ?_
   ext m
-  simp [← List.map_map]
+  simp_rw [List.map_take, List.map_drop, List.map_map, comp_apply, sum_apply, smul_apply,
+    smulRight_apply, proj_apply, pi_apply, Function.comp_def]
 
 theorem fderiv_list_prod' {l : List ι} {x : E}
     (h : ∀ i ∈ l, DifferentiableAt 𝕜 (f i ·) x) :
@@ -694,7 +721,8 @@ theorem HasStrictFDerivAt.multiset_prod [DecidableEq ι] {u : Multiset ι} {x : 
       (u.map fun i ↦ ((u.erase i).map (g · x)).prod • g' i).sum x := by
   simp only [← Multiset.attach_map_val u, Multiset.map_map]
   exact .congr_fderiv
-    (hasStrictFDerivAt_multiset_prod.comp x <| hasStrictFDerivAt_pi.mpr fun i ↦ h i i.prop)
+    (hasStrictFDerivAt_multiset_prod.comp x <|
+      hasStrictFDerivAt_pi.mpr fun i ↦ h (Subtype.val i) i.prop :)
     (by ext; simp [Finset.sum_multiset_map_count, u.erase_attach_map (g · x)])
 
 /--
@@ -707,7 +735,7 @@ theorem HasFDerivAt.multiset_prod [DecidableEq ι] {u : Multiset ι} {x : E}
       (u.map fun i ↦ ((u.erase i).map (g · x)).prod • g' i).sum x := by
   simp only [← Multiset.attach_map_val u, Multiset.map_map]
   exact .congr_fderiv
-    (hasFDerivAt_multiset_prod.comp x <| hasFDerivAt_pi.mpr fun i ↦ h i i.prop)
+    (hasFDerivAt_multiset_prod.comp x <| hasFDerivAt_pi.mpr fun i ↦ h (Subtype.val i) i.prop :)
     (by ext; simp [Finset.sum_multiset_map_count, u.erase_attach_map (g · x)])
 
 @[fun_prop]
@@ -718,7 +746,7 @@ theorem HasFDerivWithinAt.multiset_prod [DecidableEq ι] {u : Multiset ι} {x : 
   simp only [← Multiset.attach_map_val u, Multiset.map_map]
   exact .congr_fderiv
     (hasFDerivAt_multiset_prod.comp_hasFDerivWithinAt x <|
-      hasFDerivWithinAt_pi.mpr fun i ↦ h i i.prop)
+      hasFDerivWithinAt_pi.mpr fun i ↦ h (Subtype.val i) i.prop :)
     (by ext; simp [Finset.sum_multiset_map_count, u.erase_attach_map (g · x)])
 
 theorem fderiv_multiset_prod [DecidableEq ι] {u : Multiset ι} {x : E}
@@ -744,7 +772,7 @@ theorem HasFDerivAt.finset_prod [DecidableEq ι] {x : E}
     (hg : ∀ i ∈ u, HasFDerivAt (g i) (g' i) x) :
     HasFDerivAt (∏ i ∈ u, g i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, g j x) • g' i) x := by
   simpa [← Finset.prod_attach u] using .congr_fderiv
-    (hasFDerivAt_finset_prod.comp x <| hasFDerivAt_pi.mpr fun i ↦ hg i i.prop)
+    (hasFDerivAt_finset_prod.comp x <| hasFDerivAt_pi.mpr fun i ↦ hg (Subtype.val i) i.prop :)
     (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
 
 theorem HasFDerivWithinAt.finset_prod [DecidableEq ι] {x : E}
@@ -752,7 +780,7 @@ theorem HasFDerivWithinAt.finset_prod [DecidableEq ι] {x : E}
     HasFDerivWithinAt (∏ i ∈ u, g i ·) (∑ i ∈ u, (∏ j ∈ u.erase i, g j x) • g' i) s x := by
   simpa [← Finset.prod_attach u] using .congr_fderiv
     (hasFDerivAt_finset_prod.comp_hasFDerivWithinAt x <|
-      hasFDerivWithinAt_pi.mpr fun i ↦ hg i i.prop)
+      hasFDerivWithinAt_pi.mpr fun i ↦ hg (Subtype.val i) i.prop :)
     (by ext; simp [Finset.prod_erase_attach (g · x), ← u.sum_attach])
 
 theorem fderiv_finset_prod [DecidableEq ι] {x : E} (hg : ∀ i ∈ u, DifferentiableAt 𝕜 (g i) x) :

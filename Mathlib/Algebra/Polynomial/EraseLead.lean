@@ -5,6 +5,7 @@ Authors: Damiano Testa, Alex Meiburg
 -/
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Degree.Monomial
 
 /-!
 # Erase the leading term of a univariate polynomial

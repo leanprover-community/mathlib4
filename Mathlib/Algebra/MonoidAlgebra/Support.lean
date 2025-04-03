@@ -3,8 +3,10 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.Algebra.Group.Embedding
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.MonoidAlgebra.Defs
+import Mathlib.LinearAlgebra.Finsupp.Supported
 
 /-!
 #  Lemmas about the support of a finitely supported function

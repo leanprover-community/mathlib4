@@ -302,7 +302,7 @@ theorem equicontinuousWithinAt_iff_pair {F : ι → X → α} {S : Set X} {x₀ 
       ∀ U ∈ 𝓤 α, ∃ V ∈ 𝓝[S] x₀, ∀ x ∈ V, ∀ y ∈ V, ∀ i, (F i x, F i y) ∈ U := by
   constructor <;> intro H U hU
   · rcases comp_symm_mem_uniformity_sets hU with ⟨V, hV, hVsymm, hVU⟩
-    refine ⟨_, H V hV, fun x hx y hy i => hVU (prod_mk_mem_compRel ?_ (hy i))⟩
+    refine ⟨_, H V hV, fun x hx y hy i => hVU (prodMk_mem_compRel ?_ (hy i))⟩
     exact hVsymm.mk_mem_comm.mp (hx i)
   · rcases H U hU with ⟨V, hV, hVU⟩
     filter_upwards [hV] using fun x hx i => hVU x₀ (mem_of_mem_nhdsWithin hx₀ hV) x hx i
@@ -706,7 +706,7 @@ theorem Filter.HasBasis.uniformEquicontinuousOn_iff {κ₁ κ₂ : Type*} {p₁ 
 equicontinuous at `x₀`. -/
 theorem IsUniformInducing.equicontinuousAt_iff {F : ι → X → α} {x₀ : X} {u : α → β}
     (hu : IsUniformInducing u) : EquicontinuousAt F x₀ ↔ EquicontinuousAt ((u ∘ ·) ∘ F) x₀ := by
-  have := (UniformFun.postcomp_isUniformInducing (α := ι) hu).inducing
+  have := (UniformFun.postcomp_isUniformInducing (α := ι) hu).isInducing
   rw [equicontinuousAt_iff_continuousAt, equicontinuousAt_iff_continuousAt, this.continuousAt_iff]
   rfl
 
@@ -719,7 +719,7 @@ of `𝓕` by `u`, is equicontinuous at `x₀` within `S`. -/
 lemma IsUniformInducing.equicontinuousWithinAt_iff {F : ι → X → α} {S : Set X} {x₀ : X} {u : α → β}
     (hu : IsUniformInducing u) : EquicontinuousWithinAt F S x₀ ↔
       EquicontinuousWithinAt ((u ∘ ·) ∘ F) S x₀ := by
-  have := (UniformFun.postcomp_isUniformInducing (α := ι) hu).inducing
+  have := (UniformFun.postcomp_isUniformInducing (α := ι) hu).isInducing
   simp only [equicontinuousWithinAt_iff_continuousWithinAt, this.continuousWithinAt_iff]
   rfl
 
@@ -791,7 +791,7 @@ theorem EquicontinuousWithinAt.closure' {A : Set Y} {u : Y → X → α} {S : Se
   filter_upwards [hA V hV, eventually_mem_nhdsWithin] with x hx hxS
   rw [SetCoe.forall] at *
   change A ⊆ (fun f => (u f x₀, u f x)) ⁻¹' V at hx
-  refine (closure_minimal hx <| hVclosed.preimage <| hu₂.prod_mk ?_).trans (preimage_mono hVU)
+  refine (closure_minimal hx <| hVclosed.preimage <| hu₂.prodMk ?_).trans (preimage_mono hVU)
   exact (continuous_apply ⟨x, hxS⟩).comp hu₁
 
 /-- If a set of functions is equicontinuous at some `x₀`, the same is true for its closure in *any*
@@ -862,7 +862,7 @@ theorem UniformEquicontinuousOn.closure' {A : Set Y} {u : Y → β → α} {S : 
   rintro ⟨x, y⟩ hxy ⟨hxS, hyS⟩
   rw [SetCoe.forall] at *
   change A ⊆ (fun f => (u f x, u f y)) ⁻¹' V at hxy
-  refine (closure_minimal hxy <| hVclosed.preimage <| .prod_mk ?_ ?_).trans (preimage_mono hVU)
+  refine (closure_minimal hxy <| hVclosed.preimage <| .prodMk ?_ ?_).trans (preimage_mono hVU)
   · exact (continuous_apply ⟨x, hxS⟩).comp hu
   · exact (continuous_apply ⟨y, hyS⟩).comp hu
 
@@ -922,7 +922,7 @@ theorem Filter.Tendsto.continuousWithinAt_of_equicontinuousWithinAt {l : Filter 
   rcases UniformSpace.mem_nhds_iff.mp hU with ⟨V, hV, hVU⟩
   rcases mem_uniformity_isClosed hV with ⟨W, hW, hWclosed, hWV⟩
   filter_upwards [h₃ W hW, eventually_mem_nhdsWithin] with x hx hxS using
-    hVU <| ball_mono hWV (f x₀) <| hWclosed.mem_of_tendsto (h₂.prod_mk_nhds (h₁ x hxS)) <|
+    hVU <| ball_mono hWV (f x₀) <| hWclosed.mem_of_tendsto (h₂.prodMk_nhds (h₁ x hxS)) <|
     Eventually.of_forall hx
 
 /-- If `𝓕 : ι → X → α` tends to `f : X → α` *pointwise* along some nontrivial filter, and if the
@@ -957,7 +957,7 @@ theorem Filter.Tendsto.uniformContinuousOn_of_uniformEquicontinuousOn {l : Filte
   rcases mem_uniformity_isClosed hU with ⟨V, hV, hVclosed, hVU⟩
   filter_upwards [h₂ V hV, mem_inf_of_right (mem_principal_self _)]
   rintro ⟨x, y⟩ hxy ⟨hxS, hyS⟩
-  exact hVU <| hVclosed.mem_of_tendsto ((h₁ x hxS).prod_mk_nhds (h₁ y hyS)) <|
+  exact hVU <| hVclosed.mem_of_tendsto ((h₁ x hxS).prodMk_nhds (h₁ y hyS)) <|
     Eventually.of_forall hxy
 
 /-- If `𝓕 : ι → β → α` tends to `f : β → α` *pointwise* along some nontrivial filter, and if the

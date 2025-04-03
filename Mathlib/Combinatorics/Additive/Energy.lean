@@ -58,7 +58,7 @@ def mulEnergy (s t : Finset α) : ℕ :=
 scoped[Combinatorics.Additive] notation3:max "Eₘ[" s ", " t "]" => Finset.mulEnergy s t
 
 /-- The additive energy of two finsets `s` and `t` in a group is the number of quadruples
-`(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`.-/
+`(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`. -/
 scoped[Combinatorics.Additive] notation3:max "E[" s ", " t "]" => Finset.addEnergy s t
 
 /-- The multiplicative energy of a finset `s` in a group is the number of quadruples
@@ -84,11 +84,8 @@ lemma mulEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : Eₘ[s₁, t₁
 @[to_additive] lemma le_mulEnergy : s.card * t.card ≤ Eₘ[s, t] := by
   rw [← card_product]
   refine
-    card_le_card_of_injOn (@fun x => ((x.1, x.1), x.2, x.2)) (by
-    -- Porting note: changed this from a `simp` proof without `only` because of a timeout
-      simp only [← and_imp, mem_product, Prod.forall, mem_filter, and_self, and_true, imp_self,
-        implies_true]) fun a _ b _ => ?_
-  simp only [Prod.mk.inj_iff, and_self_iff, and_imp]
+    card_le_card_of_injOn (@fun x => ((x.1, x.1), x.2, x.2)) (by simp) fun a _ b _ => ?_
+  simp only [Prod.mk_inj, and_self_iff, and_imp]
   exact Prod.ext
 
 @[to_additive] lemma mulEnergy_pos (hs : s.Nonempty) (ht : t.Nonempty) : 0 < Eₘ[s, t] :=
@@ -178,7 +175,7 @@ lemma mulEnergy_univ_left : Eₘ[univ, t] = Fintype.card α * t.card ^ 2 := by
   let f : α × α × α → (α × α) × α × α := fun x => ((x.1 * x.2.2, x.1 * x.2.1), x.2)
   have : (↑((univ : Finset α) ×ˢ t ×ˢ t) : Set (α × α × α)).InjOn f := by
     rintro ⟨a₁, b₁, c₁⟩ _ ⟨a₂, b₂, c₂⟩ h₂ h
-    simp_rw [Prod.ext_iff] at h
+    simp_rw [f, Prod.ext_iff] at h
     obtain ⟨h, rfl, rfl⟩ := h
     rw [mul_right_cancel h.1]
   rw [← card_image_of_injOn this]
@@ -187,7 +184,7 @@ lemma mulEnergy_univ_left : Eₘ[univ, t] = Fintype.card α * t.card ^ 2 := by
     Prod.exists]
   refine ⟨fun h => ⟨a.1.1 * a.2.2⁻¹, _, _, h.1, by simp [f, mul_right_comm, h.2]⟩, ?_⟩
   rintro ⟨b, c, d, hcd, rfl⟩
-  simpa [mul_right_comm]
+  simpa [f, mul_right_comm]
 
 @[to_additive (attr := simp)]
 lemma mulEnergy_univ_right : Eₘ[s, univ] = Fintype.card α * s.card ^ 2 := by

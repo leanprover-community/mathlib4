@@ -59,13 +59,11 @@ structure Kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] where
   Do not use this lemma directly. Use `Kernel.measurable` instead. -/
   measurable' : Measurable toFun
 
-@[deprecated (since := "2024-07-22")] alias kernel := Kernel
-
 /-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain. -/
-scoped notation "Kernel[" mα "]" α:arg β:arg => @Kernel α β mα _
+scoped notation "Kernel[" mα "] " α:arg β:arg => @Kernel α β mα _
 
 /-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain and codomain. -/
-scoped notation "Kernel[" mα ", " mβ "]" α:arg β:arg => @Kernel α β mα mβ
+scoped notation "Kernel[" mα ", " mβ "] " α:arg β:arg => @Kernel α β mα mβ
 
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
@@ -75,7 +73,9 @@ instance instFunLike : FunLike (Kernel α β) α (Measure β) where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
+@[fun_prop]
 lemma measurable (κ : Kernel α β) : Measurable κ := κ.measurable'
+
 @[simp, norm_cast] lemma coe_mk (f : α → Measure β) (hf) : mk f hf = f := rfl
 
 initialize_simps_projections Kernel (toFun → apply)
@@ -116,6 +116,10 @@ def coeAddHom (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
   map_add' := coe_add
 
 @[simp]
+theorem coeAddHom_apply (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] (κ : Kernel α β) :
+    coeAddHom α β κ = ⇑κ := rfl
+
+@[simp]
 theorem coe_finset_sum (I : Finset ι) (κ : ι → Kernel α β) : ⇑(∑ i ∈ I, κ i) = ∑ i ∈ I, ⇑(κ i) :=
   map_sum (coeAddHom α β) _ _
 
@@ -147,7 +151,7 @@ theorem eq_zero_or_isMarkovKernel
 /-- A constant `C : ℝ≥0∞` such that `C < ∞` (`ProbabilityTheory.IsFiniteKernel.bound_lt_top κ`) and
 for all `a : α` and `s : Set β`, `κ a s ≤ C` (`ProbabilityTheory.Kernel.measure_le_bound κ a s`).
 
-Porting note (#11215): TODO: does it make sense to
+Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: does it make sense to
 -- make `ProbabilityTheory.IsFiniteKernel.bound` the least possible bound?
 -- Should it be an `NNReal` number? -/
 noncomputable def IsFiniteKernel.bound (κ : Kernel α β) [h : IsFiniteKernel κ] : ℝ≥0∞ :=
@@ -234,6 +238,16 @@ lemma apply_congr_of_mem_measurableAtom (κ : Kernel α β) {y' y : α} (hy' : y
     κ y' = κ y := by
   ext s hs
   exact mem_of_mem_measurableAtom hy' (κ.measurable_coe hs (measurableSet_singleton (κ y s))) rfl
+
+@[nontriviality]
+lemma eq_zero_of_isEmpty_left (κ : Kernel α β) [h : IsEmpty α] : κ = 0 := by
+  ext a
+  exact h.elim a
+
+@[nontriviality]
+lemma eq_zero_of_isEmpty_right (κ : Kernel α β) [IsEmpty β] : κ = 0 := by
+  ext a
+  simp [Measure.eq_zero_of_isEmpty (κ a)]
 
 section Sum
 
@@ -341,8 +355,8 @@ theorem isSFiniteKernel_sum_of_denumerable [Denumerable ι] {κs : ι → Kernel
   rw [e.tsum_eq (fun im : ι × ℕ => seq (κs im.fst) im.snd a s),
     tsum_prod' ENNReal.summable fun _ => ENNReal.summable]
 
-theorem isSFiniteKernel_sum [Countable ι] {κs : ι → Kernel α β}
-    (hκs : ∀ n, IsSFiniteKernel (κs n)) : IsSFiniteKernel (Kernel.sum κs) := by
+instance isSFiniteKernel_sum [Countable ι] {κs : ι → Kernel α β}
+    [hκs : ∀ n, IsSFiniteKernel (κs n)] : IsSFiniteKernel (Kernel.sum κs) := by
   cases fintypeOrInfinite ι
   · rw [sum_fintype]
     exact IsSFiniteKernel.finset_sum Finset.univ fun i _ => hκs i

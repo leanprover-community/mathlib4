@@ -3,12 +3,13 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.Trace.Defs
-import Mathlib.LinearAlgebra.Determinant
 import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.FieldTheory.Minpoly.MinpolyDiv
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Vandermonde
-import Mathlib.FieldTheory.Minpoly.MinpolyDiv
+import Mathlib.RingTheory.Trace.Defs
 
 /-!
 # Trace for (finite) ring extensions.
@@ -118,10 +119,21 @@ open IntermediateField
 variable (K)
 
 theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
-    Algebra.trace K L x = finrank K⟮x⟯ L • trace K K⟮x⟯ (AdjoinSimple.gen K x) := by
+    trace K L x = finrank K⟮x⟯ L • trace K K⟮x⟯ (AdjoinSimple.gen K x) := by
   rw [← trace_trace (S := K⟮x⟯)]
-  conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
+  conv in x => rw [← AdjoinSimple.algebraMap_gen K x]
   rw [trace_algebraMap, LinearMap.map_smul_of_tower]
+
+variable {K} in
+/-- Trace of the generator of a simple adjoin equals negative of the next coefficient of
+its minimal polynomial coefficient. -/
+theorem trace_adjoinSimpleGen {x : L} (hx : IsIntegral K x) :
+    trace K K⟮x⟯ (AdjoinSimple.gen K x) = -(minpoly K x).nextCoeff := by
+  simpa [minpoly_gen K x] using PowerBasis.trace_gen_eq_nextCoeff_minpoly <| adjoin.powerBasis hx
+
+theorem trace_eq_finrank_mul_minpoly_nextCoeff [FiniteDimensional K L] (x : L) :
+    trace K L x = finrank K⟮x⟯ L * -(minpoly K x).nextCoeff := by
+  rw [trace_eq_trace_adjoin, trace_adjoinSimpleGen (.of_finite K x), Algebra.smul_def]; rfl
 
 variable {K}
 
@@ -251,7 +263,7 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
 
 theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L] :
     algebraMap K L (Algebra.trace K L x) = ∑ σ : L ≃ₐ[K] L, σ x := by
-  apply NoZeroSMulDivisors.algebraMap_injective L (AlgebraicClosure L)
+  apply FaithfulSMul.algebraMap_injective L (AlgebraicClosure L)
   rw [_root_.map_sum (algebraMap L (AlgebraicClosure L))]
   rw [← Fintype.sum_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
   · rw [← trace_eq_sum_embeddings (AlgebraicClosure L) (x := x)]
@@ -276,7 +288,7 @@ open Finset
 noncomputable def traceMatrix (b : κ → B) : Matrix κ κ A :=
   of fun i j => traceForm A B (b i) (b j)
 
--- TODO: set as an equation lemma for `traceMatrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `traceMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem traceMatrix_apply (b : κ → B) (i j) : traceMatrix A b i j = traceForm A B (b i) (b j) :=
   rfl
@@ -347,7 +359,7 @@ variable (A)
 def embeddingsMatrix (b : κ → B) : Matrix κ (B →ₐ[A] C) C :=
   of fun i (σ : B →ₐ[A] C) => σ (b i)
 
--- TODO: set as an equation lemma for `embeddingsMatrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `embeddingsMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem embeddingsMatrix_apply (b : κ → B) (i) (σ : B →ₐ[A] C) :
     embeddingsMatrix A C b i σ = σ (b i) :=
@@ -432,6 +444,9 @@ theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [DecidableEq ι] (b : Ba
 
 variable (K L)
 
+/-- Let $L/K$ be a finite extension of fields. If $L/K$ is separable,
+then `traceForm` is nondegenerate. -/
+@[stacks 0BIL "(1) => (3)"]
 theorem traceForm_nondegenerate [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     (traceForm K L).Nondegenerate :=
   BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _
@@ -483,3 +498,16 @@ lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [Algebra.IsSepar
   ring
 
 end DetNeZero
+
+section isNilpotent
+
+namespace Algebra
+
+/-- The trace of a nilpotent element is nilpotent. -/
+lemma trace_isNilpotent_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
+    (hx : IsNilpotent x) : IsNilpotent (trace R S x) :=
+  LinearMap.isNilpotent_trace_of_isNilpotent (hx.map (lmul R S))
+
+end Algebra
+
+end isNilpotent

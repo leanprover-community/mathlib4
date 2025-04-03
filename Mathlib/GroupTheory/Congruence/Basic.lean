@@ -3,9 +3,7 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Congruence.Hom
 
@@ -69,13 +67,65 @@ protected def congr {c d : Con M} (h : c = d) : c.Quotient ≃* d.Quotient :=
   { Quotient.congr (Equiv.refl M) <| by apply Con.ext_iff.mp h with
     map_mul' := fun x y => by rcases x with ⟨⟩; rcases y with ⟨⟩; rfl }
 
+@[to_additive (attr := simp)]
+theorem congr_mk {c d : Con M} (h : c = d) (a : M) :
+    Con.congr h (a : c.Quotient) = (a : d.Quotient) := rfl
+
+@[to_additive]
+theorem le_comap_conGen {M N : Type*} [Mul M] [Mul N] (f : M → N)
+    (H : ∀ (x y : M), f (x * y) = f x * f y) (rel : N → N → Prop) :
+    conGen (fun x y ↦ rel (f x) (f y)) ≤ Con.comap f H (conGen rel) := by
+  intro x y h
+  simp only [Con.comap_rel]
+  exact .rec (fun x y h ↦ .of (f x) (f y) h) (fun x ↦ .refl (f x))
+    (fun _ h ↦ .symm h) (fun _ _ h1 h2 ↦ h1.trans h2) (fun {w x y z} _ _ h1 h2 ↦
+    (congrArg (fun a ↦ conGen rel a (f (x * z))) (H w y)).mpr
+    (((congrArg (fun a ↦ conGen rel (f w * f y) a) (H x z))).mpr
+    (.mul h1 h2))) h
+
+@[to_additive]
+theorem comap_conGen_equiv {M N : Type*} [Mul M] [Mul N] (f : MulEquiv M N) (rel : N → N → Prop) :
+    Con.comap f (map_mul f) (conGen rel) = conGen (fun x y ↦ rel (f x) (f y)) := by
+  apply le_antisymm _ (le_comap_conGen f (map_mul f) rel)
+  intro a b h
+  simp only [Con.comap_rel] at h
+  have H : ∀ n1 n2, (conGen rel) n1 n2 → ∀ a b, f a = n1 → f b = n2 →
+      (conGen fun x y ↦ rel (f x) (f y)) a b := by
+    intro n1 n2 h
+    induction h with
+    | of x y h =>
+      intro _ _ fa fb
+      apply ConGen.Rel.of
+      rwa [fa, fb]
+    | refl x =>
+      intro _ _ fc fd
+      rw [f.injective (fc.trans fd.symm)]
+      exact ConGen.Rel.refl _
+    | symm _ h => exact fun a b fs fb ↦ ConGen.Rel.symm (h b a fb fs)
+    | trans _ _ ih ih1 =>
+      exact fun a b fa fb ↦ Exists.casesOn (f.surjective _) fun c' hc' ↦
+      ConGen.Rel.trans (ih a c' fa hc') (ih1 c' b hc' fb)
+    | mul _ _ ih ih1 =>
+      rename_i w x y z _ _
+      intro a b fa fb
+      rw [← f.eq_symm_apply, map_mul] at fa fb
+      rw [fa, fb]
+      exact ConGen.Rel.mul (ih (f.symm w) (f.symm x) (by simp) (by simp))
+        (ih1 (f.symm y) (f.symm z) (by simp) (by simp))
+  exact H (f a) (f b) h a b (refl _) (refl _)
+
+@[to_additive]
+theorem comap_conGen_of_bijective {M N : Type*} [Mul M] [Mul N] (f : M → N)
+    (hf : Function.Bijective f) (H : ∀ (x y : M), f (x * y) = f x * f y) (rel : N → N → Prop) :
+    Con.comap f H (conGen rel) = conGen (fun x y ↦ rel (f x) (f y)) :=
+  comap_conGen_equiv (MulEquiv.ofBijective (MulHom.mk f H) hf) rel
+
 end
 
 section MulOneClass
 
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P] (c : Con M)
 
--- Porting note: made M implicit
 /-- The submonoid of `M × M` defined by a congruence relation on a monoid `M`. -/
 @[to_additive (attr := coe) "The `AddSubmonoid` of `M × M` defined by an additive congruence
 relation on an `AddMonoid` `M`."]
@@ -120,7 +170,7 @@ variable (x y : M)
 @[to_additive (attr := simp)]
 -- Porting note: removed dot notation
 theorem mrange_mk' : MonoidHom.mrange c.mk' = ⊤ :=
-  MonoidHom.mrange_top_iff_surjective.2 mk'_surjective
+  MonoidHom.mrange_eq_top.2 mk'_surjective
 
 variable {f : M →* P}
 
@@ -181,6 +231,31 @@ noncomputable def quotientKerEquivOfSurjective (f : M →* P) (hf : Surjective f
     (ker f).Quotient ≃* P :=
   quotientKerEquivOfRightInverse _ _ hf.hasRightInverse.choose_spec
 
+/-- If e : M →* N is surjective then (c.comap e).Quotient ≃* c.Quotient with c : Con N -/
+@[to_additive "If e : M →* N is surjective then (c.comap e).Quotient ≃* c.Quotient with c :
+AddCon N"]
+noncomputable def comapQuotientEquivOfSurj (c : Con M) (f : N →* M) (hf : Function.Surjective f) :
+    (Con.comap f f.map_mul c).Quotient ≃* c.Quotient :=
+  (Con.congr Con.comap_eq).trans <| Con.quotientKerEquivOfSurjective (c.mk'.comp f) <|
+    Con.mk'_surjective.comp hf
+
+@[to_additive (attr := simp)]
+lemma comapQuotientEquivOfSurj_mk (c : Con M) {f : N →* M} (hf : Function.Surjective f) (x : N) :
+    comapQuotientEquivOfSurj c f hf x = f x := rfl
+
+@[to_additive (attr := simp)]
+lemma comapQuotientEquivOfSurj_symm_mk (c : Con M) {f : N →* M} (hf) (x : N) :
+    (comapQuotientEquivOfSurj c f hf).symm (f x) = x :=
+  (MulEquiv.symm_apply_eq (c.comapQuotientEquivOfSurj f hf)).mpr rfl
+
+/-- This version infers the surjectivity of the function from a MulEquiv function -/
+@[to_additive (attr := simp) "This version infers the surjectivity of the function from a
+MulEquiv function"]
+lemma comapQuotientEquivOfSurj_symm_mk' (c : Con M) (f : N ≃* M) (x : N) :
+    ((@MulEquiv.symm (Con.Quotient (comap ⇑f _ c)) _ _ _
+      (comapQuotientEquivOfSurj c (f : N →* M) f.surjective)) ⟦f x⟧) = ↑x :=
+  (MulEquiv.symm_apply_eq (@comapQuotientEquivOfSurj M N _ _ c f _)).mpr rfl
+
 /-- The **second isomorphism theorem for monoids**. -/
 @[to_additive "The second isomorphism theorem for `AddMonoid`s."]
 noncomputable def comapQuotientEquiv (f : N →* M) :
@@ -219,6 +294,21 @@ instance instSMul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M
 theorem coe_smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M M] (c : Con M)
     (a : α) (x : M) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
   rfl
+
+instance instSMulCommClass {α β M : Type*} [MulOneClass M] [SMul α M] [SMul β M]
+    [IsScalarTower α M M] [IsScalarTower β M M] [SMulCommClass α β M] (c : Con M) :
+    SMulCommClass α β c.Quotient where
+  smul_comm a b := Quotient.ind' fun m => congr_arg Quotient.mk'' <| smul_comm a b m
+
+instance instIsScalarTower {α β M : Type*} [MulOneClass M] [SMul α β] [SMul α M] [SMul β M]
+    [IsScalarTower α M M] [IsScalarTower β M M] [IsScalarTower α β M] (c : Con M) :
+    IsScalarTower α β c.Quotient where
+  smul_assoc a b := Quotient.ind' fun m => congr_arg Quotient.mk'' <| smul_assoc a b m
+
+instance instIsCentralScalar {α M : Type*} [MulOneClass M] [SMul α M] [SMul αᵐᵒᵖ M]
+    [IsScalarTower α M M] [IsScalarTower αᵐᵒᵖ M M] [IsCentralScalar α M] (c : Con M) :
+    IsCentralScalar α c.Quotient where
+  op_smul_eq_smul a := Quotient.ind' fun m => congr_arg Quotient.mk'' <| op_smul_eq_smul a m
 
 @[to_additive]
 instance mulAction {α M : Type*} [Monoid α] [MulOneClass M] [MulAction α M] [IsScalarTower α M M]

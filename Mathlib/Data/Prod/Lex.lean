@@ -3,7 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Minchao Wu
 -/
-import Mathlib.Order.BoundedOrder
+import Mathlib.Data.Prod.Basic
+import Mathlib.Order.Lattice
+import Mathlib.Order.BoundedOrder.Basic
+import Mathlib.Tactic.Tauto
 
 /-!
 # Lexicographic order
@@ -42,15 +45,27 @@ instance instLE (α β : Type*) [LT α] [LE β] : LE (α ×ₗ β) where le := P
 
 instance instLT (α β : Type*) [LT α] [LT β] : LT (α ×ₗ β) where lt := Prod.Lex (· < ·) (· < ·)
 
-theorem le_iff [LT α] [LE β] (a b : α × β) :
-    toLex a ≤ toLex b ↔ a.1 < b.1 ∨ a.1 = b.1 ∧ a.2 ≤ b.2 :=
+theorem toLex_le_toLex [LT α] [LE β] {x y : α × β} :
+    toLex x ≤ toLex y ↔ x.1 < y.1 ∨ x.1 = y.1 ∧ x.2 ≤ y.2 :=
   Prod.lex_def
 
-theorem lt_iff [LT α] [LT β] (a b : α × β) :
-    toLex a < toLex b ↔ a.1 < b.1 ∨ a.1 = b.1 ∧ a.2 < b.2 :=
+theorem toLex_lt_toLex [LT α] [LT β] {x y : α × β} :
+    toLex x < toLex y ↔ x.1 < y.1 ∨ x.1 = y.1 ∧ x.2 < y.2 :=
   Prod.lex_def
 
-example (x : α) (y : β) : toLex (x, y) = toLex (x, y) := rfl
+lemma le_iff [LT α] [LE β] {x y : α ×ₗ β} :
+    x ≤ y ↔ (ofLex x).1 < (ofLex y).1 ∨ (ofLex x).1 = (ofLex y).1 ∧ (ofLex x).2 ≤ (ofLex y).2 :=
+  Prod.lex_def
+
+lemma lt_iff [LT α] [LT β] {x y : α ×ₗ β} :
+    x < y ↔ (ofLex x).1 < (ofLex y).1 ∨ (ofLex x).1 = (ofLex y).1 ∧ (ofLex x).2 < (ofLex y).2 :=
+  Prod.lex_def
+
+instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedLT (α ×ₗ β) :=
+  instIsWellFounded
+
+instance [LT α] [LT β] [WellFoundedLT α] [WellFoundedLT β] : WellFoundedRelation (α ×ₗ β) :=
+  ⟨(· < ·), wellFounded_lt⟩
 
 /-- Dictionary / lexicographic preorder for pairs. -/
 instance preorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×ₗ β) :=
@@ -91,19 +106,37 @@ instance preorder (α β : Type*) [Preorder α] [Preorder β] : Preorder (α ×�
 
 theorem monotone_fst [Preorder α] [LE β] (t c : α ×ₗ β) (h : t ≤ c) :
     (ofLex t).1 ≤ (ofLex c).1 := by
-  cases (Prod.Lex.le_iff t c).mp h with
+  cases toLex_le_toLex.mp h with
   | inl h' => exact h'.le
   | inr h' => exact h'.1.le
 
 section Preorder
 
-variable [PartialOrder α] [Preorder β]
+variable [PartialOrder α] [Preorder β] {x y : α × β}
 
-theorem toLex_mono : Monotone (toLex : α × β → α ×ₗ β) := by
-  rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ ⟨ha, hb⟩
-  obtain rfl | ha : a₁ = a₂ ∨ _ := ha.eq_or_lt
-  · exact right _ hb
-  · exact left _ _ ha
+/-- Variant of `Prod.Lex.toLex_le_toLex` for partial orders. -/
+lemma toLex_le_toLex' : toLex x ≤ toLex y ↔ x.1 ≤ y.1 ∧ (x.1 = y.1 → x.2 ≤ y.2) := by
+  simp only [toLex_le_toLex, lt_iff_le_not_le, le_antisymm_iff]
+  tauto
+
+/-- Variant of `Prod.Lex.toLex_lt_toLex` for partial orders. -/
+lemma toLex_lt_toLex' : toLex x < toLex y ↔ x.1 ≤ y.1 ∧ (x.1 = y.1 → x.2 < y.2) := by
+  rw [toLex_lt_toLex]
+  simp only [lt_iff_le_not_le, le_antisymm_iff]
+  tauto
+
+/-- Variant of `Prod.Lex.le_iff` for partial orders. -/
+lemma le_iff' {x y : α ×ₗ β} :
+    x ≤ y ↔ (ofLex x).1 ≤ (ofLex y).1 ∧ ((ofLex x).1 = (ofLex y).1 → (ofLex x).2 ≤ (ofLex y).2) :=
+  toLex_le_toLex'
+
+/-- Variant of `Prod.Lex.lt_iff` for partial orders. -/
+lemma lt_iff' {x y : α ×ₗ β} :
+    x < y ↔ (ofLex x).1 ≤ (ofLex y).1 ∧ ((ofLex x).1 = (ofLex y).1 → (ofLex x).2 < (ofLex y).2) :=
+  toLex_lt_toLex'
+
+theorem toLex_mono : Monotone (toLex : α × β → α ×ₗ β) :=
+  fun _x _y hxy ↦ toLex_le_toLex'.2 ⟨hxy.1, fun _ ↦ hxy.2⟩
 
 theorem toLex_strictMono : StrictMono (toLex : α × β → α ×ₗ β) := by
   rintro ⟨a₁, b₁⟩ ⟨a₂, b₂⟩ h
@@ -143,11 +176,11 @@ instance linearOrder (α β : Type*) [LinearOrder α] [LinearOrder β] : LinearO
     decidableLT := Prod.Lex.decidable _ _
     decidableEq := instDecidableEqLex _
     compare_eq_compareOfLessAndEq := fun a b => by
-      have : DecidableRel (· < · : α ×ₗ β → α ×ₗ β → Prop) := Prod.Lex.decidable _ _
+      have : DecidableLT (α ×ₗ β) := Prod.Lex.decidable _ _
       have : BEqOrd (α ×ₗ β) := ⟨by
         simp [compare_def, compareLex, compareOn, Ordering.then_eq_eq, compare_eq_iff_eq]⟩
       have : LTOrd (α ×ₗ β) := ⟨by
-        simp [compare_def, compareLex, compareOn, Ordering.then_eq_lt, lt_iff,
+        simp [compare_def, compareLex, compareOn, Ordering.then_eq_lt, toLex_lt_toLex,
           compare_lt_iff_lt, compare_eq_iff_eq]⟩
       convert LTCmp.eq_compareOfLessAndEq (cmp := compare) a b }
 

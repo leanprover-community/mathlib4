@@ -104,7 +104,7 @@ def toNormedField : NormedField L :=
         (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _))
     eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (norm_eq_zero hxy)
     dist_eq := fun x y => rfl
-    norm_mul' := fun x y => by simp only [norm, ← NNReal.coe_mul, _root_.map_mul]
+    norm_mul := fun x y => by simp only [norm, ← NNReal.coe_mul, _root_.map_mul]
     toUniformSpace := Valued.toUniformSpace
     uniformity_dist := by
       haveI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype
@@ -159,5 +159,55 @@ instance : IsUltrametricDist L :=
 lemma coe_valuation_eq_rankOne_hom_comp_valuation : ⇑NormedField.valuation = hv.hom ∘ val.v := rfl
 
 end NormedField
+
+variable {L} {Γ₀}
+
+namespace toNormedField
+
+variable {x x' : L}
+
+@[simp]
+theorem norm_le_iff : ‖x‖ ≤ ‖x'‖ ↔ val.v x ≤ val.v x' :=
+  (Valuation.RankOne.strictMono val.v).le_iff_le
+
+@[simp]
+theorem norm_lt_iff : ‖x‖ < ‖x'‖ ↔ val.v x < val.v x' :=
+  (Valuation.RankOne.strictMono val.v).lt_iff_lt
+
+@[simp]
+theorem norm_le_one_iff : ‖x‖ ≤ 1 ↔ val.v x ≤ 1 := by
+  simpa only [_root_.map_one] using (Valuation.RankOne.strictMono val.v).le_iff_le (b := 1)
+
+@[simp]
+theorem norm_lt_one_iff : ‖x‖ < 1 ↔ val.v x < 1 := by
+  simpa only [_root_.map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (b := 1)
+
+@[simp]
+theorem one_le_norm_iff : 1 ≤ ‖x‖ ↔ 1 ≤ val.v x := by
+  simpa only [_root_.map_one] using (Valuation.RankOne.strictMono val.v).le_iff_le (a := 1)
+
+@[simp]
+theorem one_lt_norm_iff : 1 < ‖x‖ ↔ 1 < val.v x := by
+  simpa only [_root_.map_one] using (Valuation.RankOne.strictMono val.v).lt_iff_lt (a := 1)
+
+end toNormedField
+
+/--
+The nontrivially normed field structure determined by a rank one valuation.
+-/
+def toNontriviallyNormedField: NontriviallyNormedField L := {
+  val.toNormedField with
+  non_trivial := by
+    obtain ⟨x, hx⟩ := Valuation.RankOne.nontrivial val.v
+    rcases Valuation.val_le_one_or_val_inv_le_one val.v x with h | h
+    · use x⁻¹
+      simp only [toNormedField.one_lt_norm_iff, map_inv₀, one_lt_inv₀ (zero_lt_iff.mpr hx.1),
+          lt_of_le_of_ne h hx.2]
+    · use x
+      simp only [map_inv₀, inv_le_one₀ <| zero_lt_iff.mpr hx.1] at h
+      simp only [toNormedField.one_lt_norm_iff, lt_of_le_of_ne h hx.2.symm]
+}
+
+scoped[Valued] attribute [instance] Valued.toNontriviallyNormedField
 
 end Valued

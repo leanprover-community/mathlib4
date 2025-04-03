@@ -18,19 +18,23 @@ on:
 
 name: continuous integration (mathlib forks)
 
-jobs:
-  # Cancels previous runs of jobs in this file
-  cancel:
-    if: github.repository == 'leanprover-community/mathlib4'
-    name: 'Cancel Previous Runs (CI)'
-    runs-on: ubuntu-latest
-    # timeout-minutes: 3
-    steps:
-      - uses: styfle/cancel-workflow-action@0.12.1
-        with:
-          all_but_latest: true
-          access_token: ${{ github.token }}
+env:
+  # Disable Lake's automatic fetching of cloud builds.
+  # Lake's cache is currently incompatible with Mathlib's `lake exe cache`.
+  # This is because Mathlib's Cache assumes all build artifacts present in the build directory
+  # are valid by-products of the Mathlib build. Build artifacts fetched from Lake's cache do
+  # not necessarily satisfy this property.
+  LAKE_NO_CACHE: true
 
+concurrency:
+  # label each workflow run; only the latest with each label will run
+  # workflows on master get more expressive labels
+  group: ${{ github.workflow }}-${{ github.ref }}.
+    ${{ ( contains(fromJSON( '["refs/heads/master", "refs/heads/staging"]'), github.ref ) && github.run_id) || ''}}
+  # cancel any running workflow with the same label
+  cancel-in-progress: true
+
+jobs:
   style_lint:
     if: github.repository != 'leanprover-community/mathlib4'
     name: Lint style (fork)
@@ -40,14 +44,14 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       # Run the case checker action
       - name: Check Case Sensitivity
-        uses: credfeto/action-case-checker@v1.3.0
+        uses: credfeto/action-case-checker@cb652aeab29ed363bbdb7d9ee1bfcc010c46cac5 # v1.3.0
 
       - name: Look for ignored files
-        uses: credfeto/action-no-ignored-files@v1.2.0
+        uses: credfeto/action-no-ignored-files@4fccae50720d89bef0cd9dc99a85a19b765d2e70 # v1.2.0
 
       - name: "Check for Lean files with the executable bit set"
         shell: bash
@@ -62,7 +66,7 @@ jobs:
 
       - name: install Python
         if: ${{ 'ubuntu-latest' == 'ubuntu-latest' }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
         with:
           python-version: 3.8
 
@@ -106,7 +110,7 @@ jobs:
 
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
-        uses: dcarbone/install-jq-action@v2.1.0
+        uses: dcarbone/install-jq-action@e397bd87438d72198f81efd21f876461183d383a # v3.0.1
 
       - name: install elan
         run: |
@@ -115,7 +119,7 @@ jobs:
           ./elan-init -y --default-toolchain none
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: If using a lean-pr-release toolchain, uninstall
         run: |
@@ -129,26 +133,40 @@ jobs:
           lean --version
           lake --version
 
+      - name: cleanup .cache/mathlib
+        run: |
+          # Define the cache directory path
+          CACHE_DIR="$HOME/.cache/mathlib"
+
+          # Check if directory exists
+          if [ ! -d "$CACHE_DIR" ]; then
+            echo "::warning::Cache directory does not exist: $CACHE_DIR"
+            exit 0
+          fi
+
+          # Calculate directory size in bytes
+          DIR_SIZE=$(du -sb "$CACHE_DIR" | cut -f1)
+          printf 'Cache size (in bytes): %s\n' "$DIR_SIZE"
+
+          # Check if size exceeds 10GB
+          if [ "$DIR_SIZE" -gt "10737418240" ]; then
+            echo "Cache size exceeds threshold, running lake exe cache clean"
+            lake exe cache clean || echo "lake did not work"
+          fi
+
       - name: build cache
         run: |
           lake build cache
 
-      - name: prune ProofWidgets .lake
-        run: |
-          # The ProofWidgets release contains not just the `.js` (which we need in order to build)
-          # but also `.oleans`, which may have been built with the wrong toolchain.
-          # This removes them.
-          # See discussion at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/nightly-testing/near/411225235
-          rm -rf .lake/packages/proofwidgets/.lake/build/lib
-          rm -rf .lake/packages/proofwidgets/.lake/build/ir
-
       - name: get cache
         id: get
         run: |
+          rm -rf .lake/build/lib/lean/Mathlib
+          # useful pre v4.18: the following command is only present for compatibility reasons
           rm -rf .lake/build/lib/Mathlib/
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
-          lake exe cache get #Mathlib.Init
-          #lake build --no-build Mathlib.Init && lake exe cache get || echo "No cache for 'Mathlib.Init' available"
+          lake exe cache get Mathlib/Init.lean
+          lake build --no-build Mathlib.Init && lake exe cache get || echo "No cache for 'Mathlib.Init' available"
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
         id: mk_all
@@ -164,11 +182,17 @@ jobs:
 
       - name: build mathlib
         id: build
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3.0.0
         with:
           linters: gcc
           run: |
             bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail -KCI"
+
+      - name: print the sizes of the oleans
+        run: |
+          du .lake/build/lib/lean/Mathlib ||
+            # This path was the correct path before v4.18: it is here just for compatibility reasons
+            du .lake/build/lib/Mathlib || echo "This code should be unreachable"
 
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
@@ -191,10 +215,12 @@ jobs:
           # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
           # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
           if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-            lake exe cache clean!
-            rm -rf .lake/build/lib/Mathlib
+            cd DownstreamTest
+            cp ../lean-toolchain .
+            MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
             lake exe cache get || (sleep 1; lake exe cache get)
-            lake build --no-build
+            lake build Plausible ProofWidgets
+            lake build --no-build Mathlib
           fi
 
       - name: build archive
@@ -251,30 +277,40 @@ jobs:
 
       - name: check declarations in db files
         run: |
-          python3 scripts/yaml_check.py docs/100.yaml docs/overview.yaml docs/undergrad.yaml
+          python3 scripts/yaml_check.py docs/100.yaml docs/1000.yaml docs/overview.yaml docs/undergrad.yaml
           lake exe check-yaml
 
-      - name: verify `lake exe graph` works
-        run: |
-          lake exe graph
-          rm import_graph.dot
+      - name: generate our import graph
+        run: lake exe graph
+
+      - name: upload the import graph
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: import-graph
+          path: import_graph.dot
+          ## the default is 90, but we build often, so unless there's a reason
+          ## to care about old copies in the future, just say 7 days for now
+          retention-days: 7
+
+      - name: clean up the import graph file
+        run: rm import_graph.dot
 
       - name: build everything
         # make sure everything is available for test/import_all.lean
         run: |
-          lake build Batteries Qq Aesop ProofWidgets
+          lake build Batteries Qq Aesop ProofWidgets Plausible
 
       - name: test mathlib
         id: test
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3.0.0
         with:
           linters: gcc
           run:
-            lake test
+            lake --iofail test
 
       - name: check for unused imports
         id: shake
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3.0.0
         with:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe shake --gh-style
@@ -282,7 +318,7 @@ jobs:
       - name: lint mathlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3.0.0
         with:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe runLinter Mathlib
@@ -301,12 +337,29 @@ jobs:
           BUILD_OUTCOME: ${{ steps.build.outcome }}
           NOISY_OUTCOME: ${{ steps.noisy.outcome }}
           ARCHIVE_OUTCOME: ${{ steps.archive.outcome }}
-          COUNTEREXAMPLE_OUTCOME: ${{ steps.counterexamples.outcome }}
+          COUNTEREXAMPLES_OUTCOME: ${{ steps.counterexamples.outcome }}
           LINT_OUTCOME: ${{ steps.lint.outcome }}
           TEST_OUTCOME: ${{ steps.test.outcome }}
         run: |
           scripts/lean-pr-testing-comments.sh lean
           scripts/lean-pr-testing-comments.sh batteries
+
+      - name: build lean4checker, but don't run it
+        if: ${{ (always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
+        run: |
+          git clone https://github.com/leanprover/lean4checker
+          cd lean4checker
+          # Read lean-toolchain file and checkout appropriate branch
+          TOOLCHAIN=$(cat ../lean-toolchain)
+          if [[ "$TOOLCHAIN" =~ ^leanprover/lean4:v ]]; then
+            VERSION=${TOOLCHAIN#leanprover/lean4:}
+            git checkout "$VERSION"
+          else
+            git checkout master
+          fi
+          # Build lean4checker using the same toolchain
+          cp ../lean-toolchain .
+          lake build
 
   final:
     name: Post-CI job (fork)
@@ -314,7 +367,7 @@ jobs:
     needs: [style_lint, build]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - id: PR
         uses: 8BitJonny/gh-get-current-pr@3.0.0
@@ -324,6 +377,15 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           # Only return if PR is still open
           filterOutClosed: true
+
+      - if: contains(steps.PR.outputs.pr_labels, 'bench-after-CI')
+        name: If `bench-after-CI` is present, add a `!bench` comment.
+        uses: GrantBirki/comment@f524ee31407667c05061bad41e1758b40298bd82 # v2.1.0
+        with:
+          token: ${{ secrets.AUTO_MERGE_TOKEN }}
+          issue-number: ${{ steps.PR.outputs.number }}
+          body: |
+            !bench
 
       - id: remove_labels
         name: Remove "awaiting-CI"
@@ -336,7 +398,7 @@ jobs:
 
       - if: contains(steps.PR.outputs.pr_labels, 'auto-merge-after-CI')
         name: If `auto-merge-after-CI` is present, add a `bors merge` comment.
-        uses: GrantBirki/comment@v2
+        uses: GrantBirki/comment@f524ee31407667c05061bad41e1758b40298bd82 # v2.1.0
         with:
           token: ${{ secrets.AUTO_MERGE_TOKEN }}
           issue-number: ${{ steps.PR.outputs.number }}

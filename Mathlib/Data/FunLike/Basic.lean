@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Util.CompileInductive
+import Mathlib.Tactic.Simps.NotationClass
 
 /-!
 # Typeclass for a type `F` with an injective map to `A → B`
@@ -117,19 +118,13 @@ instead of linearly increasing the work per `MyHom`-related declaration.
 
 ## Design rationale
 
-The current form of FunLike was set up in pull request #8386:
+The current form of FunLike was set up in pull request https://github.com/leanprover-community/mathlib4/pull/8386:
 https://github.com/leanprover-community/mathlib4/pull/8386
 We made `FunLike` *unbundled*: child classes don't extend `FunLike`, they take a `[FunLike F A B]`
 parameter instead. This suits the instance synthesis algorithm better: it's easy to verify a type
 does **not** have a `FunLike` instance by checking the discrimination tree once instead of searching
 the entire `extends` hierarchy.
 -/
-
--- This instance should have low priority, to ensure we follow the chain
--- `DFunLike → CoeFun`
--- Porting note: this is an elaboration detail from Lean 3, we are going to disable it
--- until it is clearer what the Lean 4 elaborator needs.
--- attribute [instance, priority 10] coe_fn_trans
 
 /-- The class `DFunLike F α β` expresses that terms of type `F` have an
 injective coercion to (dependent) functions from `α` to `β`.
@@ -174,7 +169,6 @@ run_cmd Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``DFunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
--- @[simp] -- Porting note: this loops in lean 4
 theorem coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f => ↑f) := rfl
 
 theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=

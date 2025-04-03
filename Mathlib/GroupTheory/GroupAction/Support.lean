@@ -15,6 +15,8 @@ Given an action of a group `G` on a type `α`, we say that a set `s : Set α` su
 This is crucial in Fourier-Motzkin constructions.
 -/
 
+assert_not_exists MonoidWithZero
+
 open Pointwise
 
 variable {G H α β : Type*}
@@ -44,7 +46,7 @@ theorem Supports.mono (h : s ⊆ t) (hs : Supports G s b) : Supports G t b := fu
 end SMul
 
 variable [Group H] [SMul G α] [SMul G β] [MulAction H α] [SMul H β] [SMulCommClass G H β]
-  [SMulCommClass G H α] {s t : Set α} {b : β}
+  [SMulCommClass G H α] {s : Set α} {b : β}
 
 -- TODO: This should work without `SMulCommClass`
 @[to_additive]

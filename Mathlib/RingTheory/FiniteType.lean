@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.FreeAlgebra
+import Mathlib.RingTheory.Adjoin.Polynomial
 import Mathlib.RingTheory.Adjoin.Tower
-import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Noetherian.Orzech
 
 /-!
 # Finiteness conditions in commutative algebra
@@ -73,10 +75,10 @@ protected theorem polynomial : FiniteType R R[X] :=
       rw [Finset.coe_singleton]
       exact Polynomial.adjoin_X⟩⟩
 
-open scoped Classical
 
 protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgebra R ι) := by
   cases nonempty_fintype ι
+  classical
   exact
     ⟨⟨Finset.univ.image (FreeAlgebra.ι R), by
         rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
@@ -84,6 +86,7 @@ protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgeb
 
 protected theorem mvPolynomial (ι : Type*) [Finite ι] : FiniteType R (MvPolynomial ι R) := by
   cases nonempty_fintype ι
+  classical
   exact
     ⟨⟨Finset.univ.image MvPolynomial.X, by
         rw [Finset.coe_image, Finset.coe_univ, Set.image_univ]
@@ -195,7 +198,7 @@ theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
   apply
     isNoetherianRing_of_surjective (MvPolynomial s R) S
       (MvPolynomial.aeval (↑) : MvPolynomial s R →ₐ[R] S).toRingHom
-  erw [← Set.range_iff_surjective, ← AlgHom.coe_range, ←
+  erw [← Set.range_eq_univ, ← AlgHom.coe_range, ←
     Algebra.adjoin_range_eq_range_aeval, Subtype.range_coe_subtype, Finset.setOf_mem, hs]
   rfl
 
@@ -226,12 +229,9 @@ end Finite
 
 namespace FiniteType
 
-variable (A)
-
+variable (A) in
 theorem id : FiniteType (RingHom.id A) :=
   Algebra.FiniteType.self A
-
-variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg : Surjective g) :
     (g.comp f).FiniteType := by
@@ -310,6 +310,11 @@ theorem of_comp_finiteType {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp 
 end FiniteType
 
 end AlgHom
+
+theorem algebraMap_finiteType_iff_algebra_finiteType {R A : Type*} [CommRing R] [CommRing A]
+    [Algebra R A] : (algebraMap R A).FiniteType ↔ Algebra.FiniteType R A := by
+  dsimp [RingHom.FiniteType]
+  constructor <;> (intro h; convert h; apply Algebra.algebra_ext; exact congrFun rfl)
 
 section MonoidAlgebra
 
@@ -729,20 +734,3 @@ instance (priority := 100) CommRing.orzechProperty
   | smul a x _ hx => exact smul_mem _ a hx
 
 end Orzech
-
-section Vasconcelos
-
-/-- A theorem by Vasconcelos, given a finite module `M` over a commutative ring, any
-surjective endomorphism of `M` is also injective.
-It is a consequence of the fact `CommRing.orzechProperty`
-that any commutative ring `R` satisfies the `OrzechProperty`;
-please use `OrzechProperty.injective_of_surjective_endomorphism` instead.
-This is similar to `IsNoetherian.injective_of_surjective_endomorphism` but only applies in the
-commutative case, but does not use a Noetherian hypothesis. -/
-@[deprecated OrzechProperty.injective_of_surjective_endomorphism (since := "2024-05-30")]
-theorem Module.Finite.injective_of_surjective_endomorphism {R : Type*} [CommRing R] {M : Type*}
-    [AddCommGroup M] [Module R M] [Module.Finite R M] (f : M →ₗ[R] M)
-    (f_surj : Function.Surjective f) : Function.Injective f :=
-  OrzechProperty.injective_of_surjective_endomorphism f f_surj
-
-end Vasconcelos

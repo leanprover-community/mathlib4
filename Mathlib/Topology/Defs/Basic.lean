@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.FunProp
+import Mathlib.Tactic.MkIffOfInductiveProp
 /-!
 # Basic definitions about topological spaces
 
@@ -52,6 +53,8 @@ other than `Mathlib.Data.Set.Lattice`.
 We introduce notation `IsOpen[t]`, `IsClosed[t]`, `closure[t]`, `Continuous[t₁, t₂]`
 that allow passing custom topologies to these predicates and functions without using `@`.
 -/
+
+assert_not_exists Monoid
 
 universe u v
 open Set
@@ -100,7 +103,7 @@ def IsClopen (s : Set X) : Prop :=
 
 /--
 A set is locally closed if it is the intersection of some open set and some closed set.
-Also see `isLocallyClosed_tfae` and other lemmas in `Mathlib/Topology/LocallyClosed`.
+Also see `isLocallyClosed_tfae` and other lemmas in `Mathlib/Topology/LocallyClosed.lean`.
 -/
 def IsLocallyClosed (s : Set X) : Prop := ∃ (U Z : Set X), IsOpen U ∧ IsClosed Z ∧ s = U ∩ Z
 

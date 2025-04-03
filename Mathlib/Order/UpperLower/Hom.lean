@@ -43,17 +43,14 @@ variable [CompleteLattice α]
 /-- `UpperSet.Ici` as a `sSupHom`. -/
 def icisSupHom : sSupHom α (UpperSet α) :=
   ⟨Ici, fun s => (Ici_sSup s).trans sSup_image.symm⟩
--- Porting note: `ₓ` because typeclass assumption changed
 
 @[simp]
 theorem coe_icisSupHom : (icisSupHom : α → UpperSet α) = Ici :=
   rfl
--- Porting note: `ₓ` because typeclass assumption changed
 
 @[simp]
 theorem icisSupHom_apply (a : α) : icisSupHom a = Ici a :=
   rfl
--- Porting note: `ₓ` because typeclass assumption changed
 
 end UpperSet
 
@@ -82,16 +79,13 @@ variable [CompleteLattice α]
 /-- `LowerSet.Iic` as an `sInfHom`. -/
 def iicsInfHom : sInfHom α (LowerSet α) :=
   ⟨Iic, fun s => (Iic_sInf s).trans sInf_image.symm⟩
--- Porting note: `ₓ` because typeclass assumption changed
 
 @[simp]
 theorem coe_iicsInfHom : (iicsInfHom : α → LowerSet α) = Iic :=
   rfl
--- Porting note: `ₓ` because typeclass assumption changed
 
 @[simp]
 theorem iicsInfHom_apply (a : α) : iicsInfHom a = Iic a :=
   rfl
--- Porting note: `ₓ` because typeclass assumption changed
 
 end LowerSet

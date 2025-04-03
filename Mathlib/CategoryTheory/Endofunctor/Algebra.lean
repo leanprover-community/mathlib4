@@ -3,7 +3,7 @@ Copyright (c) 2022 Joseph Hua. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta, Johan Commelin, Reid Barton, Robert Y. Lewis, Joseph Hua
 -/
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 
 /-!
 
@@ -17,7 +17,6 @@ coalgebras over `G`.
 
 ## TODO
 
-* Prove the dual result about the structure map of the terminal coalgebra of an endofunctor.
 * Prove that if the countable infinite product over the powers of the endofunctor exists, then
   algebras over the endofunctor coincide with algebras over the free monad on the endofunctor.
 -/
@@ -158,13 +157,11 @@ def functorOfNatTrans {F G : C ⥤ C} (α : G ⟶ F) : Algebra F ⥤ Algebra G w
   map f := { f := f.1 }
 
 /-- The identity transformation induces the identity endofunctor on the category of algebras. -/
--- Porting note: removed @[simps (config := { rhsMd := semireducible })] and replaced with
 @[simps!]
 def functorOfNatTransId : functorOfNatTrans (𝟙 F) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 
 /-- A composition of natural transformations gives the composition of corresponding functors. -/
--- Porting note: removed @[simps (config := { rhsMd := semireducible })] and replaced with
 @[simps!]
 def functorOfNatTransComp {F₀ F₁ F₂ : C ⥤ C} (α : F₀ ⟶ F₁) (β : F₁ ⟶ F₂) :
     functorOfNatTrans (α ≫ β) ≅ functorOfNatTrans β ⋙ functorOfNatTrans α :=
@@ -176,7 +173,6 @@ are isomorphic.
 We define it like this as opposed to using `eq_to_iso` so that the components are nicer to prove
 lemmas about.
 -/
--- Porting note: removed @[simps (config := { rhsMd := semireducible })] and replaced with
 @[simps!]
 def functorOfNatTransEq {F G : C ⥤ C} {α β : F ⟶ G} (h : α = β) :
     functorOfNatTrans α ≅ functorOfNatTrans β :=
@@ -196,7 +192,7 @@ def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Algebra F ≌ Algebra G where
 
 namespace Initial
 
-variable {A} (h : @Limits.IsInitial (Algebra F) _ A)
+variable {A : Algebra F} (h : Limits.IsInitial A)
 /-- The inverse of the structure map of an initial algebra -/
 @[simp]
 def strInv : A.1 ⟶ F.obj A.1 :=
@@ -353,13 +349,11 @@ def functorOfNatTrans {F G : C ⥤ C} (α : F ⟶ G) : Coalgebra F ⥤ Coalgebra
       h := by rw [Category.assoc, ← α.naturality, ← Category.assoc, f.h, Category.assoc] }
 
 /-- The identity transformation induces the identity endofunctor on the category of coalgebras. -/
--- Porting note: removed @[simps (config := { rhsMd := semireducible })] and replaced with
 @[simps!]
 def functorOfNatTransId : functorOfNatTrans (𝟙 F) ≅ 𝟭 _ :=
   NatIso.ofComponents fun X => isoMk (Iso.refl _)
 
 /-- A composition of natural transformations gives the composition of corresponding functors. -/
--- Porting note: removed @[simps (config := { rhsMd := semireducible })] and replaced with
 @[simps!]
 def functorOfNatTransComp {F₀ F₁ F₂ : C ⥤ C} (α : F₀ ⟶ F₁) (β : F₁ ⟶ F₂) :
     functorOfNatTrans (α ≫ β) ≅ functorOfNatTrans α ⋙ functorOfNatTrans β :=
@@ -370,7 +364,6 @@ them are isomorphic.
 We define it like this as opposed to using `eq_to_iso` so that the components are nicer to prove
 lemmas about.
 -/
--- Porting note: removed @[simps (config := { rhsMd := semireducible })] and replaced with
 @[simps!]
 def functorOfNatTransEq {F G : C ⥤ C} {α β : F ⟶ G} (h : α = β) :
     functorOfNatTrans α ≅ functorOfNatTrans β :=
@@ -387,6 +380,35 @@ def equivOfNatIso {F G : C ⥤ C} (α : F ≅ G) : Coalgebra F ≌ Coalgebra G w
   unitIso := functorOfNatTransId.symm ≪≫ functorOfNatTransEq (by simp) ≪≫ functorOfNatTransComp _ _
   counitIso :=
     (functorOfNatTransComp _ _).symm ≪≫ functorOfNatTransEq (by simp) ≪≫ functorOfNatTransId
+
+namespace Terminal
+
+variable {A : Coalgebra F} (h : Limits.IsTerminal A)
+
+/-- The inverse of the structure map of an terminal coalgebra -/
+@[simp]
+def strInv : F.obj A.1 ⟶ A.1 :=
+  (h.from ⟨F.obj A.V, F.map A.str⟩).f
+
+theorem right_inv' :
+    ⟨A.str ≫ strInv h, by rw [Category.assoc, F.map_comp, strInv, ← Hom.h] ⟩ = 𝟙 A :=
+  Limits.IsTerminal.hom_ext h _ (𝟙 A)
+
+theorem right_inv : A.str ≫ strInv h = 𝟙 _ :=
+  congr_arg Hom.f (right_inv' h)
+
+theorem left_inv : strInv h ≫ A.str = 𝟙 _ := by
+  rw [strInv, ← (h.from ⟨F.obj A.V, F.map A.str⟩).h, ← F.map_id, ← F.map_comp]
+  congr
+  exact right_inv h
+
+/-- The structure map of the terminal coalgebra is an isomorphism,
+hence endofunctors preserve their terminal coalgebras
+-/
+theorem str_isIso (h : Limits.IsTerminal A) : IsIso A.str :=
+  { out := ⟨strInv h, right_inv _, left_inv _⟩  }
+
+end Terminal
 
 end Coalgebra
 

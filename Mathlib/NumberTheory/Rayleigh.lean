@@ -55,7 +55,7 @@ noncomputable def beattySeq' (r : ℝ) : ℤ → ℤ :=
 
 namespace Beatty
 
-variable {r s : ℝ} {j k : ℤ}
+variable {r s : ℝ} {j : ℤ}
 
 /-- Let `r > 1` and `1/r + 1/s = 1`. Then `B_r` and `B'_s` are disjoint (i.e. no collision exists).
 -/

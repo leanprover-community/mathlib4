@@ -4,23 +4,17 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.OrderIso
-import Mathlib.Data.Set.Lattice
 
 /-!
 # Up-sets and down-sets
 
-This file defines upper and lower sets in an order.
+This file proves results on the upper and lower sets in an order.
 
 ## Main declarations
 
-* `IsUpperSet`: Predicate for a set to be an upper set. This means every element greater than a
-  member of the set is in the set itself.
-* `IsLowerSet`: Predicate for a set to be a lower set. This means every element less than a member
-  of the set is in the set itself.
-* `UpperSet`: The type of upper sets.
-* `LowerSet`: The type of lower sets.
 * `upperClosure`: The greatest upper set containing a set.
 * `lowerClosure`: The least lower set containing a set.
 * `UpperSet.Ici`: Principal upper set. `Set.Ici` as an upper set.
@@ -46,24 +40,14 @@ open Function OrderDual Set
 
 variable {α β γ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
+attribute [aesop norm unfold] IsUpperSet IsLowerSet
+
 /-! ### Unbundled upper/lower sets -/
 
 
 section LE
 
 variable [LE α] {s t : Set α} {a : α}
-
-/-- An upper set in an order `α` is a set such that any element greater than one of its members is
-also a member. Also called up-set, upward-closed set. -/
-@[aesop norm unfold]
-def IsUpperSet (s : Set α) : Prop :=
-  ∀ ⦃a b : α⦄, a ≤ b → a ∈ s → b ∈ s
-
-/-- A lower set in an order `α` is a set such that any element less than one of its members is also
-a member. Also called down-set, downward-closed set. -/
-@[aesop norm unfold]
-def IsLowerSet (s : Set α) : Prop :=
-  ∀ ⦃a b : α⦄, b ≤ a → a ∈ s → b ∈ s
 
 theorem isUpperSet_empty : IsUpperSet (∅ : Set α) := fun _ _ _ => id
 
@@ -432,28 +416,9 @@ end LinearOrder
 
 /-! ### Bundled upper/lower sets -/
 
-
 section LE
 
 variable [LE α]
-
-@[inherit_doc IsUpperSet]
-structure UpperSet (α : Type*) [LE α] where
-  /-- The carrier of an `UpperSet`. -/
-  carrier : Set α
-  /-- The carrier of an `UpperSet` is an upper set. -/
-  upper' : IsUpperSet carrier
-
-extend_docs UpperSet before "The type of upper sets of an order."
-
-@[inherit_doc IsLowerSet]
-structure LowerSet (α : Type*) [LE α] where
-  /-- The carrier of a `LowerSet`. -/
-  carrier : Set α
-  /-- The carrier of a `LowerSet` is a lower set. -/
-  lower' : IsLowerSet carrier
-
-extend_docs LowerSet before "The type of lower sets of an order."
 
 namespace UpperSet
 
@@ -464,7 +429,7 @@ instance : SetLike (UpperSet α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : UpperSet α) : Set α := s
 
-initialize_simps_projections UpperSet (carrier → coe)
+initialize_simps_projections UpperSet (carrier → coe, as_prefix coe)
 
 @[ext]
 theorem ext {s t : UpperSet α} : (s : Set α) = t → s = t :=
@@ -490,7 +455,7 @@ instance : SetLike (LowerSet α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : LowerSet α) : Set α := s
 
-initialize_simps_projections LowerSet (carrier → coe)
+initialize_simps_projections LowerSet (carrier → coe, as_prefix coe)
 
 @[ext]
 theorem ext {s t : LowerSet α} : (s : Set α) = t → s = t :=
@@ -513,10 +478,10 @@ namespace UpperSet
 
 variable {S : Set (UpperSet α)} {s t : UpperSet α} {a : α}
 
-instance : Sup (UpperSet α) :=
+instance : Max (UpperSet α) :=
   ⟨fun s t => ⟨s ∩ t, s.upper.inter t.upper⟩⟩
 
-instance : Inf (UpperSet α) :=
+instance : Min (UpperSet α) :=
   ⟨fun s t => ⟨s ∪ t, s.upper.union t.upper⟩⟩
 
 instance : Top (UpperSet α) :=
@@ -588,13 +553,13 @@ theorem coe_iSup (f : ι → UpperSet α) : (↑(⨆ i, f i) : Set α) = ⋂ i, 
 @[simp, norm_cast]
 theorem coe_iInf (f : ι → UpperSet α) : (↑(⨅ i, f i) : Set α) = ⋃ i, f i := by simp [iInf]
 
-@[norm_cast] -- Porting note: no longer a `simp`
+@[norm_cast]
 theorem coe_iSup₂ (f : ∀ i, κ i → UpperSet α) :
-    (↑(⨆ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j := by simp_rw [coe_iSup]
+    (↑(⨆ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j := by simp
 
-@[norm_cast] -- Porting note: no longer a `simp`
+@[norm_cast]
 theorem coe_iInf₂ (f : ∀ i, κ i → UpperSet α) :
-    (↑(⨅ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp_rw [coe_iInf]
+    (↑(⨅ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp
 
 @[simp]
 theorem not_mem_top : a ∉ (⊤ : UpperSet α) :=
@@ -630,13 +595,11 @@ theorem mem_iInf_iff {f : ι → UpperSet α} : (a ∈ ⨅ i, f i) ↔ ∃ i, a 
   rw [← SetLike.mem_coe, coe_iInf]
   exact mem_iUnion
 
--- Porting note: no longer a @[simp]
 theorem mem_iSup₂_iff {f : ∀ i, κ i → UpperSet α} : (a ∈ ⨆ (i) (j), f i j) ↔ ∀ i j, a ∈ f i j := by
-  simp_rw [mem_iSup_iff]
+  simp
 
--- Porting note: no longer a @[simp]
 theorem mem_iInf₂_iff {f : ∀ i, κ i → UpperSet α} : (a ∈ ⨅ (i) (j), f i j) ↔ ∃ i j, a ∈ f i j := by
-  simp_rw [mem_iInf_iff]
+  simp
 
 @[simp, norm_cast]
 theorem codisjoint_coe : Codisjoint (s : Set α) t ↔ Disjoint s t := by
@@ -648,10 +611,10 @@ namespace LowerSet
 
 variable {S : Set (LowerSet α)} {s t : LowerSet α} {a : α}
 
-instance : Sup (LowerSet α) :=
+instance : Max (LowerSet α) :=
   ⟨fun s t => ⟨s ∪ t, fun _ _ h => Or.imp (s.lower h) (t.lower h)⟩⟩
 
-instance : Inf (LowerSet α) :=
+instance : Min (LowerSet α) :=
   ⟨fun s t => ⟨s ∩ t, fun _ _ h => And.imp (s.lower h) (t.lower h)⟩⟩
 
 instance : Top (LowerSet α) :=
@@ -722,13 +685,13 @@ theorem coe_iSup (f : ι → LowerSet α) : (↑(⨆ i, f i) : Set α) = ⋃ i, 
 theorem coe_iInf (f : ι → LowerSet α) : (↑(⨅ i, f i) : Set α) = ⋂ i, f i := by
   simp_rw [iInf, coe_sInf, mem_range, iInter_exists, iInter_iInter_eq']
 
-@[norm_cast] -- Porting note: no longer a `simp`
+@[norm_cast]
 theorem coe_iSup₂ (f : ∀ i, κ i → LowerSet α) :
-    (↑(⨆ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp_rw [coe_iSup]
+    (↑(⨆ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp
 
-@[norm_cast] -- Porting note: no longer a `simp`
+@[norm_cast]
 theorem coe_iInf₂ (f : ∀ i, κ i → LowerSet α) :
-    (↑(⨅ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j := by simp_rw [coe_iInf]
+    (↑(⨅ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j := by simp
 
 @[simp]
 theorem mem_top : a ∈ (⊤ : LowerSet α) :=
@@ -764,13 +727,11 @@ theorem mem_iInf_iff {f : ι → LowerSet α} : (a ∈ ⨅ i, f i) ↔ ∀ i, a 
   rw [← SetLike.mem_coe, coe_iInf]
   exact mem_iInter
 
--- Porting note: no longer a @[simp]
 theorem mem_iSup₂_iff {f : ∀ i, κ i → LowerSet α} : (a ∈ ⨆ (i) (j), f i j) ↔ ∃ i j, a ∈ f i j := by
-  simp_rw [mem_iSup_iff]
+  simp
 
--- Porting note: no longer a @[simp]
 theorem mem_iInf₂_iff {f : ∀ i, κ i → LowerSet α} : (a ∈ ⨅ (i) (j), f i j) ↔ ∀ i j, a ∈ f i j := by
-  simp_rw [mem_iInf_iff]
+  simp
 
 @[simp, norm_cast]
 theorem disjoint_coe : Disjoint (s : Set α) t ↔ Disjoint s t := by
@@ -840,13 +801,11 @@ protected theorem compl_iSup (f : ι → UpperSet α) : (⨆ i, f i).compl = ⨆
 protected theorem compl_iInf (f : ι → UpperSet α) : (⨅ i, f i).compl = ⨅ i, (f i).compl :=
   LowerSet.ext <| by simp only [coe_compl, coe_iInf, compl_iUnion, LowerSet.coe_iInf]
 
--- Porting note: no longer a @[simp]
 theorem compl_iSup₂ (f : ∀ i, κ i → UpperSet α) :
-    (⨆ (i) (j), f i j).compl = ⨆ (i) (j), (f i j).compl := by simp_rw [UpperSet.compl_iSup]
+    (⨆ (i) (j), f i j).compl = ⨆ (i) (j), (f i j).compl := by simp
 
--- Porting note: no longer a @[simp]
 theorem compl_iInf₂ (f : ∀ i, κ i → UpperSet α) :
-    (⨅ (i) (j), f i j).compl = ⨅ (i) (j), (f i j).compl := by simp_rw [UpperSet.compl_iInf]
+    (⨅ (i) (j), f i j).compl = ⨅ (i) (j), (f i j).compl := by simp
 
 end UpperSet
 
@@ -1127,9 +1086,8 @@ theorem Ici_sSup (S : Set α) : Ici (sSup S) = ⨆ a ∈ S, Ici a :=
 theorem Ici_iSup (f : ι → α) : Ici (⨆ i, f i) = ⨆ i, Ici (f i) :=
   SetLike.ext fun c => by simp only [mem_Ici_iff, mem_iSup_iff, iSup_le_iff]
 
--- Porting note: no longer a @[simp]
 theorem Ici_iSup₂ (f : ∀ i, κ i → α) : Ici (⨆ (i) (j), f i j) = ⨆ (i) (j), Ici (f i j) := by
-  simp_rw [Ici_iSup]
+  simp
 
 end CompleteLattice
 
@@ -1221,9 +1179,8 @@ theorem Iic_sInf (S : Set α) : Iic (sInf S) = ⨅ a ∈ S, Iic a :=
 theorem Iic_iInf (f : ι → α) : Iic (⨅ i, f i) = ⨅ i, Iic (f i) :=
   SetLike.ext fun c => by simp only [mem_Iic_iff, mem_iInf_iff, le_iInf_iff]
 
--- Porting note: no longer a @[simp]
 theorem Iic_iInf₂ (f : ∀ i, κ i → α) : Iic (⨅ (i) (j), f i j) = ⨅ (i) (j), Iic (f i j) := by
-  simp_rw [Iic_iInf]
+  simp
 
 end CompleteLattice
 
@@ -1241,7 +1198,7 @@ def upperClosure (s : Set α) : UpperSet α :=
 def lowerClosure (s : Set α) : LowerSet α :=
   ⟨{ x | ∃ a ∈ s, x ≤ a }, fun _ _ hle h => h.imp fun _x hx => ⟨hx.1, hle.trans hx.2⟩⟩
 
--- Porting note (#11215): TODO: move `GaloisInsertion`s up, use them to prove lemmas
+-- TODO: move `GaloisInsertion`s up, use them to prove lemmas
 
 @[simp]
 theorem mem_upperClosure : x ∈ upperClosure s ↔ ∃ a ∈ s, a ≤ x :=

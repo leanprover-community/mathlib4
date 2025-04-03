@@ -91,7 +91,7 @@ lemma image_subset_sups_left : b ∈ t → s.image (· ⊔ b) ⊆ s ⊻ t := ima
 lemma image_subset_sups_right : a ∈ s → t.image (a ⊔ ·) ⊆ s ⊻ t := image_subset_image₂_right
 
 theorem forall_sups_iff {p : α → Prop} : (∀ c ∈ s ⊻ t, p c) ↔ ∀ a ∈ s, ∀ b ∈ t, p (a ⊔ b) :=
-  forall_image₂_iff
+  forall_mem_image₂
 
 @[simp]
 theorem sups_subset_iff : s ⊻ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a ⊔ b ∈ u :=
@@ -159,7 +159,7 @@ lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed (s : Set α) := sups_subset
 
 @[simp] lemma univ_sups_univ [Fintype α] : (univ : Finset α) ⊻ univ = univ := by simp
 
-lemma filter_sups_le [@DecidableRel α (· ≤ ·)] (s t : Finset α) (a : α) :
+lemma filter_sups_le [DecidableLE α] (s t : Finset α) (a : α) :
     {b ∈ s ⊻ t | b ≤ a} = {b ∈ s | b ≤ a} ⊻ {b ∈ t | b ≤ a} := by
   simp only [← coe_inj, coe_filter, coe_sups, ← mem_coe, Set.sep_sups_le]
 
@@ -169,7 +169,6 @@ lemma biUnion_image_sup_left : s.biUnion (fun a ↦ t.image (a ⊔ ·)) = s ⊻ 
 
 lemma biUnion_image_sup_right : t.biUnion (fun b ↦ s.image (· ⊔ b)) = s ⊻ t := biUnion_image_right
 
--- Porting note: simpNF linter doesn't like @[simp]
 theorem image_sup_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊔ ·)) = s ⊻ t :=
   image_uncurry_product _ _ _
 
@@ -236,7 +235,7 @@ lemma image_subset_infs_left : b ∈ t → s.image (· ⊓ b) ⊆ s ⊼ t := ima
 lemma image_subset_infs_right : a ∈ s → t.image (a ⊓ ·) ⊆ s ⊼ t := image_subset_image₂_right
 
 theorem forall_infs_iff {p : α → Prop} : (∀ c ∈ s ⊼ t, p c) ↔ ∀ a ∈ s, ∀ b ∈ t, p (a ⊓ b) :=
-  forall_image₂_iff
+  forall_mem_image₂
 
 @[simp]
 theorem infs_subset_iff : s ⊼ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a ⊓ b ∈ u :=
@@ -304,7 +303,7 @@ lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed (s : Set α) := infs_subset
 
 @[simp] lemma univ_infs_univ [Fintype α] : (univ : Finset α) ⊼ univ = univ := by simp
 
-lemma filter_infs_le [@DecidableRel α (· ≤ ·)] (s t : Finset α) (a : α) :
+lemma filter_infs_le [DecidableLE α] (s t : Finset α) (a : α) :
     {b ∈ s ⊼ t | a ≤ b} = {b ∈ s | a ≤ b} ⊼ {b ∈ t | a ≤ b} := by
   simp only [← coe_inj, coe_filter, coe_infs, ← mem_coe, Set.sep_infs_le]
 
@@ -314,7 +313,6 @@ lemma biUnion_image_inf_left : s.biUnion (fun a ↦ t.image (a ⊓ ·)) = s ⊼ 
 
 lemma biUnion_image_inf_right : t.biUnion (fun b ↦ s.image (· ⊓ b)) = s ⊼ t := biUnion_image_right
 
--- Porting note: simpNF linter doesn't like @[simp]
 theorem image_inf_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊓ ·)) = s ⊼ t :=
   image_uncurry_product _ _ _
 
@@ -356,7 +354,7 @@ end DistribLattice
 
 section Finset
 variable [DecidableEq α]
-variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α}
+variable {𝒜 ℬ : Finset (Finset α)} {s t : Finset α}
 
 @[simp] lemma powerset_union (s t : Finset α) : (s ∪ t).powerset = s.powerset ⊻ t.powerset := by
   ext u
@@ -388,7 +386,8 @@ end Finset
 section DisjSups
 
 variable [DecidableEq α]
-variable [SemilatticeSup α] [OrderBot α] [@DecidableRel α Disjoint] (s s₁ s₂ t t₁ t₂ u : Finset α)
+variable [SemilatticeSup α] [OrderBot α] [DecidableRel (α := α) Disjoint]
+  (s s₁ s₂ t t₁ t₂ u : Finset α)
 
 /-- The finset of elements of the form `a ⊔ b` where `a ∈ s`, `b ∈ t` and `a` and `b` are disjoint.
 -/
@@ -468,14 +467,7 @@ theorem disjSups_inter_subset_right : s ○ (t₁ ∩ t₂) ⊆ s ○ t₁ ∩ s
 variable (s t)
 
 theorem disjSups_comm : s ○ t = t ○ s := by
-  ext
-  rw [mem_disjSups, mem_disjSups]
-  -- Porting note: `exists₂_comm` no longer works with `∃ _ ∈ _, ∃ _ ∈ _, _`
-  constructor <;>
-  · rintro ⟨a, ha, b, hb, hd, hs⟩
-    rw [disjoint_comm] at hd
-    rw [sup_comm] at hs
-    exact ⟨b, hb, a, ha, hd, hs⟩
+  aesop (add simp disjoint_comm, simp sup_comm)
 
 instance : @Std.Commutative (Finset α) (· ○ ·) := ⟨disjSups_comm⟩
 
@@ -486,7 +478,7 @@ open FinsetFamily
 section DistribLattice
 
 variable [DecidableEq α]
-variable [DistribLattice α] [OrderBot α] [@DecidableRel α Disjoint] (s t u v : Finset α)
+variable [DistribLattice α] [OrderBot α] [DecidableRel (α := α) Disjoint] (s t u v : Finset α)
 
 theorem disjSups_assoc : ∀ s t u : Finset α, s ○ t ○ u = s ○ (t ○ u) := by
   refine (associative_of_commutative_of_le inferInstance ?_).assoc
@@ -508,7 +500,7 @@ theorem disjSups_disjSups_disjSups_comm : s ○ t ○ (u ○ v) = s ○ u ○ (t
 end DistribLattice
 section Diffs
 variable [DecidableEq α]
-variable [GeneralizedBooleanAlgebra α] (s s₁ s₂ t t₁ t₂ u v : Finset α)
+variable [GeneralizedBooleanAlgebra α] (s s₁ s₂ t t₁ t₂ u : Finset α)
 
 /-- `s \\ t` is the finset of elements of the form `a \ b` where `a ∈ s`, `b ∈ t`. -/
 def diffs : Finset α → Finset α → Finset α := image₂ (· \ ·)
@@ -547,7 +539,7 @@ lemma image_subset_diffs_left : b ∈ t → s.image (· \ b) ⊆ s \\ t := image
 lemma image_subset_diffs_right : a ∈ s → t.image (a \ ·) ⊆ s \\ t := image_subset_image₂_right
 
 lemma forall_mem_diffs {p : α → Prop} : (∀ c ∈ s \\ t, p c) ↔ ∀ a ∈ s, ∀ b ∈ t, p (a \ b) :=
-  forall_image₂_iff
+  forall_mem_image₂
 
 @[simp] lemma diffs_subset_iff : s \\ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a \ b ∈ u := image₂_subset_iff
 
@@ -592,7 +584,7 @@ lemma diffs_right_comm : s \\ t \\ u = s \\ u \\ t := image₂_right_comm sdiff_
 end Diffs
 
 section Compls
-variable [BooleanAlgebra α] (s s₁ s₂ t t₁ t₂ u v : Finset α)
+variable [BooleanAlgebra α] (s s₁ s₂ t : Finset α)
 
 /-- `sᶜˢ` is the finset of elements of the form `aᶜ` where `a ∈ s`. -/
 def compls : Finset α → Finset α := map ⟨compl, compl_injective⟩
@@ -602,7 +594,7 @@ scoped[FinsetFamily] postfix:max "ᶜˢ" => Finset.compls
 
 open FinsetFamily
 
-variable {s t} {a b c : α}
+variable {s t} {a : α}
 
 @[simp] lemma mem_compls : a ∈ sᶜˢ ↔ aᶜ ∈ s := by
   rw [Iff.comm, ← mem_map' ⟨compl, compl_injective⟩, Embedding.coeFn_mk, compl_compl, compls]
@@ -615,7 +607,7 @@ variable (s t)
 
 @[simp] lemma card_compls : #sᶜˢ = #s := card_map _
 
-variable {s s₁ s₂ t t₁ t₂ u}
+variable {s s₁ s₂ t}
 
 lemma compl_mem_compls : a ∈ s → aᶜ ∈ sᶜˢ := mem_map_of_mem _
 @[simp] lemma compls_subset_compls : s₁ᶜˢ ⊆ s₂ᶜˢ ↔ s₁ ⊆ s₂ := map_subset_map

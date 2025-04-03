@@ -5,7 +5,6 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Topology.ContinuousMap.Compact
-import Mathlib.Topology.ContinuousMap.ContinuousMapZero
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
@@ -27,11 +26,11 @@ vanish at zero. More precisely, it is a continuous star algebra homomorphism
 `C(quasispectrum R a, R)₀ →⋆ₙₐ[R] A` that sends `(ContinuousMap.id R).restrict (quasispectrum R a)`
 to `a`. In all cases of interest (e.g., when `quasispectrum R a` is compact and `R` is `ℝ≥0`, `ℝ`,
 or `ℂ`), this is sufficient to uniquely determine the continuous functional calculus which is
-encoded in the `UniqueNonUnitalContinuousFunctionalCalculus` class.
+encoded in the `ContinuousMapZero.UniqueHom` class.
 
 ## Main declarations
 
-+ `NonUnitalContinuousFunctionalCalculus R (p : A → Prop)`: a class stating that every `a : A`
++ `NonUnitalContinuousFunctionalCalculus R A (p : A → Prop)`: a class stating that every `a : A`
   satisfying `p a` has a non-unital star algebra homomorphism from the continuous `R`-valued
   functions on the `R`-quasispectrum of `a` vanishing at zero into the algebra `A`. This map is a
   closed embedding, and satisfies the **spectral mapping theorem**.
@@ -47,7 +46,7 @@ encoded in the `UniqueNonUnitalContinuousFunctionalCalculus` class.
 -/
 local notation "σₙ" => quasispectrum
 
-open scoped ContinuousMapZero
+open Topology ContinuousMapZero
 
 /-- A non-unital star `R`-algebra `A` has a *continuous functional calculus* for elements
 satisfying the property `p : A → Prop` if
@@ -68,8 +67,8 @@ The property `p` is marked as an `outParam` so that the user need not specify it
 Instead of directly providing the data we opt instead for a `Prop` class. In all relevant cases,
 the continuous functional calculus is uniquely determined, and utilizing this approach
 prevents diamonds or problems arising from multiple instances. -/
-class NonUnitalContinuousFunctionalCalculus (R : Type*) {A : Type*} (p : outParam (A → Prop))
-    [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [TopologicalSemiring R]
+class NonUnitalContinuousFunctionalCalculus (R A : Type*) (p : outParam (A → Prop))
+    [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R] [IsTopologicalSemiring R]
     [ContinuousStar R] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [Module R A]
     [IsScalarTower R A A] [SMulCommClass R A A] : Prop where
   predicate_zero : p 0
@@ -90,28 +89,35 @@ and the more common variant `cfcₙ_comp`.
 
 This class will have instances in each of the common cases `ℂ`, `ℝ` and `ℝ≥0` as a consequence of
 the Stone-Weierstrass theorem. -/
-class UniqueNonUnitalContinuousFunctionalCalculus (R A : Type*) [CommSemiring R] [StarRing R]
-    [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
+class ContinuousMapZero.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
+    [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
     [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] : Prop where
   eq_of_continuous_of_map_id (s : Set R) [CompactSpace s] [Zero s] (h0 : (0 : s) = (0 : R))
     (φ ψ : C(s, R)₀ →⋆ₙₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (⟨.restrict s <| .id R, h0⟩) = ψ (⟨.restrict s <| .id R, h0⟩)) :
     φ = ψ
-  compactSpace_quasispectrum (a : A) : CompactSpace (σₙ R a)
+
+@[deprecated (since := "2025-01-10")] alias UniqueNonUnitalContinuousFunctionalCalculus :=
+  ContinuousMapZero.UniqueHom
 
 section Main
 
 variable {R A : Type*} {p : A → Prop} [CommSemiring R] [Nontrivial R] [StarRing R] [MetricSpace R]
-variable [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
+variable [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
 variable [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-variable [instCFCₙ : NonUnitalContinuousFunctionalCalculus R p]
+variable [instCFCₙ : NonUnitalContinuousFunctionalCalculus R A p]
 
-lemma NonUnitalStarAlgHom.ext_continuousMap [UniqueNonUnitalContinuousFunctionalCalculus R A]
-    (a : A) (φ ψ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
+include instCFCₙ in
+lemma NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum (a : A) :
+    IsCompact (σₙ R a) :=
+  isCompact_iff_compactSpace.mpr inferInstance
+
+lemma NonUnitalStarAlgHom.ext_continuousMap [UniqueHom R A]
+    (a : A) [CompactSpace (σₙ R a)] (φ ψ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A)
+    (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ ⟨.restrict (σₙ R a) <| .id R, rfl⟩ = ψ ⟨.restrict (σₙ R a) <| .id R, rfl⟩) :
     φ = ψ :=
-  have := UniqueNonUnitalContinuousFunctionalCalculus.compactSpace_quasispectrum (R := R) a
-  UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id _ (by simp) φ ψ hφ hψ h
+  UniqueHom.eq_of_continuous_of_map_id _ (by simp) φ ψ hφ hψ h
 
 section cfcₙHom
 
@@ -152,13 +158,14 @@ lemma cfcₙHom_predicate (f : C(σₙ R a, R)₀) :
     p (cfcₙHom ha f) :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.2 f
 
-lemma cfcₙHom_eq_of_continuous_of_map_id [UniqueNonUnitalContinuousFunctionalCalculus R A]
+open scoped NonUnitalContinuousFunctionalCalculus in
+lemma cfcₙHom_eq_of_continuous_of_map_id [UniqueHom R A]
     (φ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) (hφ₁ : Continuous φ)
     (hφ₂ : φ ⟨.restrict (σₙ R a) <| .id R, rfl⟩ = a) : cfcₙHom ha = φ :=
   (cfcₙHom ha).ext_continuousMap a φ (cfcₙHom_isClosedEmbedding ha).continuous hφ₁ <| by
     rw [cfcₙHom_id ha, hφ₂]
 
-theorem cfcₙHom_comp [UniqueNonUnitalContinuousFunctionalCalculus R A] (f : C(σₙ R a, R)₀)
+theorem cfcₙHom_comp [UniqueHom R A] (f : C(σₙ R a, R)₀)
     (f' : C(σₙ R a, σₙ R (cfcₙHom ha f))₀)
     (hff' : ∀ x, f x = f' x) (g : C(σₙ R (cfcₙHom ha f), R)₀) :
     cfcₙHom ha (g.comp f') = cfcₙHom (cfcₙHom_predicate ha f) g := by
@@ -173,7 +180,7 @@ theorem cfcₙHom_comp [UniqueNonUnitalContinuousFunctionalCalculus R A] (f : C(
   suffices cfcₙHom (cfcₙHom_predicate ha f) = φ from DFunLike.congr_fun this.symm g
   refine cfcₙHom_eq_of_continuous_of_map_id (cfcₙHom_predicate ha f) φ ?_ ?_
   · refine (cfcₙHom_isClosedEmbedding ha).continuous.comp <| continuous_induced_rng.mpr ?_
-    exact f'.toContinuousMap.continuous_comp_left.comp continuous_induced_dom
+    exact f'.toContinuousMap.continuous_precomp.comp continuous_induced_dom
   · simp only [φ, ψ, NonUnitalStarAlgHom.comp_apply, NonUnitalStarAlgHom.coe_mk',
       NonUnitalAlgHom.coe_mk]
     congr
@@ -267,6 +274,11 @@ lemma cfcₙ_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
     · rwa [cfcₙ_apply_of_not_map_zero _ h]
     · rwa [cfcₙ_apply_of_not_predicate _ h]
 
+lemma cfcₙ_commute_cfcₙ (f g : R → R) (a : A) : Commute (cfcₙ f a) (cfcₙ g a) := by
+  refine cfcₙ_cases (fun x ↦ Commute x (cfcₙ g a)) a f (by simp) fun hf hf0 ha ↦ ?_
+  refine cfcₙ_cases (fun x ↦ Commute _ x) a g (by simp) fun hg hg0 _ ↦ ?_
+  exact Commute.all _ _ |>.map _
+
 variable (R) in
 include ha in
 lemma cfcₙ_id : cfcₙ (id : R → R) a = a :=
@@ -309,7 +321,7 @@ lemma eqOn_of_cfcₙ_eq_cfcₙ {f g : R → R} {a : A} (h : cfcₙ f a = cfcₙ 
     (hg : ContinuousOn g (σₙ R a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac) :
     (σₙ R a).EqOn f g := by
   rw [cfcₙ_apply f a, cfcₙ_apply g a] at h
-  have := (cfcₙHom_isClosedEmbedding (show p a from ha) (R := R)).inj h
+  have := (cfcₙHom_isClosedEmbedding (show p a from ha) (R := R)).injective h
   intro x hx
   congrm($(this) ⟨x, hx⟩)
 
@@ -351,7 +363,7 @@ open Finset in
 lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
     (hf : ∀ i ∈ s, ContinuousOn (f i) (σₙ R a) := by cfc_cont_tac)
     (hf0 : ∀ i ∈ s, f i 0 = 0 := by cfc_zero_tac) :
-    cfcₙ (∑ i in s, f i) a = ∑ i in s, cfcₙ (f i) a := by
+    cfcₙ (∑ i ∈ s, f i) a = ∑ i ∈ s, cfcₙ (f i) a := by
   by_cases ha : p a
   · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
     have hf' : ContinuousOn (∑ i : s, f i) (σₙ R a) := by
@@ -415,7 +427,7 @@ lemma cfcₙ_star_id : cfcₙ (star · : R → R) a = star a := by
 
 section Comp
 
-variable [UniqueNonUnitalContinuousFunctionalCalculus R A]
+variable [UniqueHom R A]
 
 lemma cfcₙ_comp (g f : R → R) (a : A)
     (hg : ContinuousOn g (f '' σₙ R a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac)
@@ -493,13 +505,13 @@ instance IsStarNormal.cfcₙ_map (f : R → R) (a : A) : IsStarNormal (cfcₙ f 
 -- The following two lemmas are just `cfcₙ_predicate`, but specific enough for the `@[simp]` tag.
 @[simp]
 protected lemma IsSelfAdjoint.cfcₙ
-    [NonUnitalContinuousFunctionalCalculus R (IsSelfAdjoint : A → Prop)] {f : R → R} {a : A} :
+    [NonUnitalContinuousFunctionalCalculus R A IsSelfAdjoint] {f : R → R} {a : A} :
     IsSelfAdjoint (cfcₙ f a) :=
   cfcₙ_predicate _ _
 
 @[simp]
-lemma cfcₙ_nonneg_of_predicate [PartialOrder A]
-    [NonUnitalContinuousFunctionalCalculus R (fun (a : A) => 0 ≤ a)] {f : R → R} {a : A} :
+lemma cfcₙ_nonneg_of_predicate [LE A]
+    [NonUnitalContinuousFunctionalCalculus R A (0 ≤ ·)] {f : R → R} {a : A} :
     0 ≤ cfcₙ f a :=
   cfcₙ_predicate _ _
 
@@ -510,9 +522,9 @@ end Main
 section Neg
 
 variable {R A : Type*} {p : A → Prop} [CommRing R] [Nontrivial R] [StarRing R] [MetricSpace R]
-variable [TopologicalRing R] [ContinuousStar R] [TopologicalSpace A] [NonUnitalRing A] [StarRing A]
-variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-variable [NonUnitalContinuousFunctionalCalculus R p]
+variable [IsTopologicalRing R] [ContinuousStar R] [TopologicalSpace A] [NonUnitalRing A]
+variable [StarRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+variable [NonUnitalContinuousFunctionalCalculus R A p]
 variable (f g : R → R) (a : A)
 variable (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
 variable (hg : ContinuousOn g (σₙ R a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac)
@@ -541,7 +553,7 @@ lemma cfcₙ_neg_id (ha : p a := by cfc_tac) :
     cfcₙ (- · : R → R) a = -a := by
   rw [cfcₙ_neg .., cfcₙ_id' R a]
 
-variable [UniqueNonUnitalContinuousFunctionalCalculus R A]
+variable [UniqueHom R A]
 
 lemma cfcₙ_comp_neg (hf : ContinuousOn f ((- ·) '' (σₙ R a)) := by cfc_cont_tac)
     (h0 : f 0 = 0 := by cfc_zero_tac) (ha : p a := by cfc_tac) :
@@ -555,11 +567,11 @@ section Order
 section Semiring
 
 variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [Nontrivial R]
-variable [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
-variable [∀ (α) [Zero α] [TopologicalSpace α], StarOrderedRing C(α, R)₀]
+variable [StarRing R] [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
+variable [ContinuousSqrt R] [StarOrderedRing R] [NoZeroDivisors R]
 variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-variable [NonUnitalContinuousFunctionalCalculus R p]
+variable [NonUnitalContinuousFunctionalCalculus R A p]
 
 lemma cfcₙHom_mono {a : A} (ha : p a) {f g : C(σₙ R a, R)₀} (hfg : f ≤ g) :
     cfcₙHom ha f ≤ cfcₙHom ha g :=
@@ -621,11 +633,11 @@ end Semiring
 section Ring
 
 variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [Nontrivial R]
-variable [StarRing R] [MetricSpace R] [TopologicalRing R] [ContinuousStar R]
-variable [∀ (α) [Zero α] [TopologicalSpace α], StarOrderedRing C(α, R)₀]
+variable [StarRing R] [MetricSpace R] [IsTopologicalRing R] [ContinuousStar R]
+variable [ContinuousSqrt R] [StarOrderedRing R] [NoZeroDivisors R]
 variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-variable [NonUnitalContinuousFunctionalCalculus R p] [NonnegSpectrumClass R A]
+variable [NonUnitalContinuousFunctionalCalculus R A p] [NonnegSpectrumClass R A]
 
 lemma cfcₙHom_le_iff {a : A} (ha : p a) {f g : C(σₙ R a, R)₀} :
     cfcₙHom ha f ≤ cfcₙHom ha g ↔ f ≤ g := by
@@ -648,6 +660,50 @@ end Ring
 
 end Order
 
+/-! ### `cfcₙHom` on a superset of the quasispectrum -/
+
+section Superset
+
+open ContinuousMapZero
+
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [Nontrivial R] [StarRing R]
+    [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
+    [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+    [instCFCₙ : NonUnitalContinuousFunctionalCalculus R A p]
+
+/-- The composition of `cfcₙHom` with the natural embedding `C(s, R)₀ → C(quasispectrum R a, R)₀`
+whenever `quasispectrum R a ⊆ s`.
+
+This is sometimes necessary in order to consider the same continuous functions applied to multiple
+distinct elements, with the added constraint that `cfcₙ` does not suffice. This can occur, for
+example, if it is necessary to use uniqueness of this continuous functional calculus. A practical
+example can be found in the proof of `CFC.posPart_negPart_unique`. -/
+@[simps!]
+noncomputable def cfcₙHomSuperset {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
+    letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+    C(s, R)₀ →⋆ₙₐ[R] A :=
+  letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+  cfcₙHom ha (R := R) |>.comp <| ContinuousMapZero.nonUnitalStarAlgHom_precomp R <|
+    ⟨⟨_, continuous_id.subtype_map hs⟩, rfl⟩
+
+lemma cfcₙHomSuperset_continuous {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
+    Continuous (cfcₙHomSuperset ha hs) :=
+  letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+  (cfcₙHom_continuous ha).comp <| ContinuousMapZero.continuous_comp_left _
+
+lemma cfcₙHomSuperset_id {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
+    letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+    cfcₙHomSuperset ha hs ⟨.restrict s <| .id R, rfl⟩ = a :=
+  cfcₙHom_id ha
+
+/-- this version uses `ContinuousMapZero.id`. -/
+lemma cfcₙHomSuperset_id' {a : A} (ha : p a) {s : Set R} (hs : σₙ R a ⊆ s) :
+    letI : Zero s := ⟨0, hs (quasispectrum.zero_mem R a)⟩
+    cfcₙHomSuperset ha hs (.id rfl) = a :=
+  cfcₙHom_id ha
+
+end Superset
+
 /-! ### Obtain a non-unital continuous functional calculus from a unital one -/
 
 section UnitalToNonUnital
@@ -655,8 +711,8 @@ section UnitalToNonUnital
 open ContinuousMapZero Set Uniformity ContinuousMap
 
 variable {R A : Type*} {p : A → Prop} [Semifield R] [StarRing R] [MetricSpace R]
-variable [TopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
-variable [Algebra R A] [ContinuousFunctionalCalculus R p]
+variable [IsTopologicalSemiring R] [ContinuousStar R] [Ring A] [StarRing A] [TopologicalSpace A]
+variable [Algebra R A] [ContinuousFunctionalCalculus R A p]
 
 variable (R) in
 /-- The non-unital continuous functional calculus obtained by restricting a unital calculus
@@ -703,7 +759,7 @@ lemma isClosedEmbedding_cfcₙHom_of_cfcHom {a : A} (ha : p a) :
   let f : C(spectrum R a, σₙ R a) :=
     ⟨_, continuous_inclusion <| spectrum_subset_quasispectrum R a⟩
   refine (cfcHom_isClosedEmbedding ha).comp <|
-    (IsUniformInducing.isUniformEmbedding ⟨?_⟩).toIsClosedEmbedding
+    (IsUniformInducing.isUniformEmbedding ⟨?_⟩).isClosedEmbedding
   have := uniformSpace_eq_inf_precomp_of_cover (β := R) f (0 : C(Unit, σₙ R a))
     (map_continuous f).isProperMap (map_continuous 0).isProperMap <| by
       simp only [← Subtype.val_injective.image_injective.eq_iff, f, ContinuousMap.coe_mk,
@@ -721,7 +777,8 @@ lemma isClosedEmbedding_cfcₙHom_of_cfcHom {a : A} (ha : p a) :
 @[deprecated (since := "2024-10-20")]
 alias closedEmbedding_cfcₙHom_of_cfcHom := isClosedEmbedding_cfcₙHom_of_cfcHom
 
-instance ContinuousFunctionalCalculus.toNonUnital : NonUnitalContinuousFunctionalCalculus R p where
+instance ContinuousFunctionalCalculus.toNonUnital :
+    NonUnitalContinuousFunctionalCalculus R A p where
   predicate_zero := cfc_predicate_zero R
   compactSpace_quasispectrum a := by
     have h_cpct : CompactSpace (spectrum R a) := inferInstance
@@ -735,9 +792,9 @@ instance ContinuousFunctionalCalculus.toNonUnital : NonUnitalContinuousFunctiona
       fun _ ↦ cfcHom_predicate ha _⟩
 
 open scoped NonUnitalContinuousFunctionalCalculus in
-lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [UniqueNonUnitalContinuousFunctionalCalculus R A] {a : A}
+lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [ContinuousMapZero.UniqueHom R A] {a : A}
     (ha : p a) : cfcₙHom (R := R) ha = cfcₙHom_of_cfcHom R ha := by
-  refine UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id
+  refine ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id
       (σₙ R a) ?_ _ _ ?_ ?_ ?_
   · simp
   · exact (cfcₙHom_isClosedEmbedding (R := R) ha).continuous
@@ -746,7 +803,7 @@ lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [UniqueNonUnitalContinuousFunctionalCalcu
 
 /-- When `cfc` is applied to a function that maps zero to zero, it is equivalent to using
 `cfcₙ`. -/
-lemma cfcₙ_eq_cfc [UniqueNonUnitalContinuousFunctionalCalculus R A] {f : R → R} {a : A}
+lemma cfcₙ_eq_cfc [ContinuousMapZero.UniqueHom R A] {f : R → R} {a : A}
     (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac) :
     cfcₙ f a = cfc f a := by
   by_cases ha : p a

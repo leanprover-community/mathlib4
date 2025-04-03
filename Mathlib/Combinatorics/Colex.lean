@@ -7,6 +7,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Nat.BitIndices
 import Mathlib.Order.SupClosed
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Colexigraphic order
@@ -219,18 +220,19 @@ variable [DecidableEq α]
 instance instDecidableEq : DecidableEq (Colex α) := fun s t ↦
   decidable_of_iff' (s.ofColex = t.ofColex) Colex.ext_iff
 
-instance instDecidableLE [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· ≤ ·) := fun s t ↦
-  decidable_of_iff'
+instance instDecidableLE [DecidableLE α] : DecidableLE (Colex α) :=
+  fun s t ↦ decidable_of_iff'
     (∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b) Iff.rfl
 
-instance instDecidableLT [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· < ·) :=
+instance instDecidableLT [DecidableLE α] : DecidableLT (Colex α) :=
   decidableLTOfDecidableLE
 
 /-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_le_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
     toColex (s \ u) ≤ toColex (t \ u) ↔ toColex s ≤ toColex t := by
   simp_rw [toColex_le_toColex, ← and_imp, ← and_assoc, ← mem_sdiff,
-    sdiff_sdiff_sdiff_cancel_right hus, sdiff_sdiff_sdiff_cancel_right hut]
+    sdiff_sdiff_sdiff_cancel_right (show u ≤ s from hus),
+    sdiff_sdiff_sdiff_cancel_right (show u ≤ t from hut)]
 
 /-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_lt_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
@@ -316,7 +318,8 @@ lemma toColex_le_toColex_iff_max'_mem :
   refine ⟨fun h hst ↦ ?_, fun h a has hat ↦ ?_⟩
   · set m := (s ∆ t).max' (symmDiff_nonempty.2 hst)
     by_contra hmt
-    have hms : m ∈ s := by simpa [mem_symmDiff, hmt] using max'_mem _ <| symmDiff_nonempty.2 hst
+    have hms : m ∈ s := by
+      simpa [m, mem_symmDiff, hmt] using max'_mem _ <| symmDiff_nonempty.2 hst
     have ⟨b, hbt, hbs, hmb⟩ := h hms hmt
     exact lt_irrefl _ <| (max'_lt_iff _ _).1 (hmb.lt_of_ne <| ne_of_mem_of_not_mem hms hbs) _ <|
       mem_symmDiff.2 <| Or.inr ⟨hbt, hbs⟩
@@ -526,26 +529,26 @@ lemma geomSum_lt_geomSum_iff_toColex_lt_toColex (hn : 2 ≤ n) :
   (geomSum_ofColex_strictMono hn).lt_iff_lt
 
 theorem geomSum_injective {n : ℕ} (hn : 2 ≤ n) :
-    Function.Injective (fun s : Finset ℕ ↦ ∑ i in s, n ^ i) := by
+    Function.Injective (fun s : Finset ℕ ↦ ∑ i ∈ s, n ^ i) := by
   intro _ _ h
   rwa [le_antisymm_iff, geomSum_le_geomSum_iff_toColex_le_toColex hn,
     geomSum_le_geomSum_iff_toColex_le_toColex hn, ← le_antisymm_iff, Colex.toColex.injEq] at h
 
-theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i in s, n ^ i :=
-  (Nat.lt_pow_self hn a).trans_le <| single_le_sum (by simp) hi
+theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i ∈ s, n ^ i :=
+  (a.lt_pow_self hn).trans_le <| single_le_sum (by simp) hi
 
 @[simp] theorem toFinset_bitIndices_twoPowSum (s : Finset ℕ) :
-    (∑ i in s, 2 ^ i).bitIndices.toFinset = s := by
+    (∑ i ∈ s, 2 ^ i).bitIndices.toFinset = s := by
   simp [← (geomSum_injective rfl.le).eq_iff, List.sum_toFinset _ Nat.bitIndices_sorted.nodup]
 
 @[simp] theorem twoPowSum_toFinset_bitIndices (n : ℕ) :
-    ∑ i in n.bitIndices.toFinset, 2 ^ i = n := by
+    ∑ i ∈ n.bitIndices.toFinset, 2 ^ i = n := by
   simp [List.sum_toFinset _ Nat.bitIndices_sorted.nodup]
 
-/-- The equivalence between `ℕ` and `Finset ℕ` that maps `∑ i in s, 2^i` to `s`. -/
+/-- The equivalence between `ℕ` and `Finset ℕ` that maps `∑ i ∈ s, 2^i` to `s`. -/
 @[simps] def equivBitIndices : ℕ ≃ Finset ℕ where
   toFun n := n.bitIndices.toFinset
-  invFun s := ∑ i in s, 2^i
+  invFun s := ∑ i ∈ s, 2^i
   left_inv := twoPowSum_toFinset_bitIndices
   right_inv := toFinset_bitIndices_twoPowSum
 

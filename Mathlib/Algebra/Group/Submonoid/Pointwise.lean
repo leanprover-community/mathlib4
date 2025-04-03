@@ -5,8 +5,10 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Order.WellFoundedSet
 
 /-! # Pointwise instances on `Submonoid`s and `AddSubmonoid`s
@@ -22,6 +24,9 @@ and the actions
 * `AddSubmonoid.pointwiseMulAction`
 
 which matches the action of `Set.mulActionSet`.
+
+`SMul (AddSubmonoid R) (AddSubmonoid A)` is also provided given `DistribSMul R A`,
+and when `R = A` it is definitionally equal to the multiplication on `AddSubmonoid R`.
 
 These are all available in the `Pointwise` locale.
 
@@ -40,13 +45,29 @@ While the statements of these lemmas are defeq, we repeat them here due to them 
 syntactically equal. Before adding new lemmas here, consider if they would also apply to the action
 on `Set`s.
 
+Many results about multiplication is derived from the corresponding results about
+scalar multiplication, but results requiring right distributivity do not have
+SMul versions, due to the lack of a suitable typeclass (unless one goes all the
+way to `Module`).
+
 -/
 
 
 open Set Pointwise
 
-variable {α : Type*} {G : Type*} {M : Type*} {R : Type*} {A : Type*}
+variable {α G M R A S : Type*}
 variable [Monoid M] [AddMonoid A]
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_mul_coe [SetLike S M] [SubmonoidClass S M] (H : S) : H * H = (H : Set M) := by
+  aesop (add simp mem_mul)
+
+set_option linter.unusedVariables false in
+@[to_additive (attr := simp)]
+lemma coe_set_pow [SetLike S M] [SubmonoidClass S M] :
+    ∀ {n} (hn : n ≠ 0) (H : S), (H ^ n : Set M) = H
+  | 1, _, H => by simp
+  | n + 2, _, H => by rw [pow_succ, coe_set_pow n.succ_ne_zero, coe_mul_coe]
 
 /-! Some lemmas about pointwise multiplication and submonoids. Ideally we put these in
   `GroupTheory.Submonoid.Basic`, but currently we cannot because that file is imported by this. -/
@@ -77,6 +98,21 @@ theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure
       (SetLike.le_def.mp le_sup_right <| subset_closure ht)
 
 @[to_additive]
+lemma closure_pow_le : ∀ {n}, n ≠ 0 → closure (s ^ n) ≤ closure s
+  | 1, _ => by simp
+  | n + 2, _ =>
+    calc
+      closure (s ^ (n + 2))
+      _ = closure (s ^ (n + 1) * s) := by rw [pow_succ]
+      _ ≤ closure (s ^ (n + 1)) ⊔ closure s := closure_mul_le ..
+      _ ≤ closure s ⊔ closure s := by gcongr ?_ ⊔ _; exact closure_pow_le n.succ_ne_zero
+      _ = closure s := sup_idem _
+
+@[to_additive]
+lemma closure_pow {n : ℕ} (hs : 1 ∈ s) (hn : n ≠ 0) : closure (s ^ n) = closure s :=
+  (closure_pow_le hn).antisymm <| by gcongr; exact subset_pow hs hn
+
+@[to_additive]
 theorem sup_eq_closure_mul (H K : Submonoid M) : H ⊔ K = closure ((H : Set M) * (K : Set M)) :=
   le_antisymm
     (sup_le (fun h hh => subset_closure ⟨h, hh, 1, K.one_mem, mul_one h⟩) fun k hk =>
@@ -98,7 +134,7 @@ theorem pow_smul_mem_closure_smul {N : Type*} [CommMonoid N] [MulAction M N] [Is
 variable [Group G]
 
 /-- The submonoid with every element inverted. -/
-@[to_additive " The additive submonoid with every element negated. "]
+@[to_additive "The additive submonoid with every element negated."]
 protected def inv : Inv (Submonoid G) where
   inv S :=
     { carrier := (S : Set G)⁻¹
@@ -240,13 +276,13 @@ theorem mem_inv_pointwise_smul_iff {a : α} {S : Submonoid M} {x : M} : x ∈ a�
 
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff {a : α} {S T : Submonoid M} : a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff
+  smul_set_subset_smul_set_iff
 
 theorem pointwise_smul_subset_iff {a : α} {S T : Submonoid M} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff
+  smul_set_subset_iff_subset_inv_smul_set
 
 theorem subset_pointwise_smul_iff {a : α} {S T : Submonoid M} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff
+  subset_smul_set_iff
 
 end Group
 
@@ -270,13 +306,13 @@ theorem mem_inv_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) (S : Submonoid M) 
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : Submonoid M} :
     a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff₀ ha
+  smul_set_subset_smul_set_iff₀ ha
 
 theorem pointwise_smul_le_iff₀ {a : α} (ha : a ≠ 0) {S T : Submonoid M} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff₀ ha
+  smul_set_subset_iff₀ ha
 
 theorem le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : Submonoid M} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff₀ ha
+  subset_smul_set_iff₀ ha
 
 end GroupWithZero
 
@@ -354,13 +390,13 @@ theorem mem_inv_pointwise_smul_iff {a : α} {S : AddSubmonoid A} {x : A} : x ∈
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff {a : α} {S T : AddSubmonoid A} :
     a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff
+  smul_set_subset_smul_set_iff
 
 theorem pointwise_smul_le_iff {a : α} {S T : AddSubmonoid A} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff
+  smul_set_subset_iff_subset_inv_smul_set
 
 theorem le_pointwise_smul_iff {a : α} {S T : AddSubmonoid A} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff
+  subset_smul_set_iff
 
 end Group
 
@@ -384,15 +420,15 @@ theorem mem_inv_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) (S : AddSubmonoid 
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubmonoid A} :
     a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff₀ ha
+  smul_set_subset_smul_set_iff₀ ha
 
 theorem pointwise_smul_le_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubmonoid A} :
     a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff₀ ha
+  smul_set_subset_iff₀ ha
 
 theorem le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubmonoid A} :
     S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff₀ ha
+  subset_smul_set_iff₀ ha
 
 end GroupWithZero
 
@@ -436,6 +472,69 @@ theorem one_eq_closure_one_set : (1 : AddSubmonoid R) = closure 1 :=
 
 end AddMonoidWithOne
 
+section SMul
+
+variable [AddMonoid R] [DistribSMul R A]
+
+/-- For `M : Submonoid R` and `N : AddSubmonoid A`, `M • N` is the additive submonoid
+generated by all `m • n` where `m ∈ M` and `n ∈ N`. -/
+protected def smul : SMul (AddSubmonoid R) (AddSubmonoid A) where
+  smul M N := ⨆ s : M, N.map (DistribSMul.toAddMonoidHom A s.1)
+
+scoped[Pointwise] attribute [instance] AddSubmonoid.smul
+
+variable {M M' : AddSubmonoid R} {N P : AddSubmonoid A} {m : R} {n : A}
+
+theorem smul_mem_smul (hm : m ∈ M) (hn : n ∈ N) : m • n ∈ M • N :=
+  (le_iSup _ ⟨m, hm⟩ : _ ≤ M • N) ⟨n, hn, by rfl⟩
+
+theorem smul_le : M • N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m • n ∈ P :=
+  ⟨fun H _m hm _n hn => H <| smul_mem_smul hm hn, fun H =>
+    iSup_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
+
+@[elab_as_elim]
+protected theorem smul_induction_on {C : A → Prop} {a : A} (ha : a ∈ M • N)
+    (hm : ∀ m ∈ M, ∀ n ∈ N, C (m • n)) (hadd : ∀ x y, C x → C y → C (x + y)) : C a :=
+  (@smul_le _ _ _ _ _ _ _ ⟨⟨setOf C, hadd _ _⟩, by
+    simpa only [smul_zero] using hm _ (zero_mem _) _ (zero_mem _)⟩).2 hm ha
+
+@[simp]
+theorem addSubmonoid_smul_bot (S : AddSubmonoid R) : S • (⊥ : AddSubmonoid A) = ⊥ :=
+  eq_bot_iff.2 <| smul_le.2 fun m _ n hn => by
+    rw [AddSubmonoid.mem_bot] at hn ⊢; rw [hn, smul_zero]
+
+theorem smul_le_smul (h : M ≤ M') (hnp : N ≤ P) : M • N ≤ M' • P :=
+  smul_le.2 fun _m hm _n hn => smul_mem_smul (h hm) (hnp hn)
+
+theorem smul_le_smul_left (h : M ≤ M') : M • P ≤ M' • P :=
+  smul_le_smul h le_rfl
+
+theorem smul_le_smul_right (h : N ≤ P) : M • N ≤ M • P :=
+  smul_le_smul le_rfl h
+
+theorem smul_subset_smul : (↑M : Set R) • (↑N : Set A) ⊆ (↑(M • N) : Set A) :=
+  smul_subset_iff.2 fun _i hi _j hj ↦ smul_mem_smul hi hj
+
+theorem addSubmonoid_smul_sup : M • (N ⊔ P) = M • N ⊔ M • P :=
+  le_antisymm (smul_le.mpr fun m hm np hnp ↦ by
+    refine closure_induction (p := (fun _ ↦ _ • · ∈ _)) ?_ ?_ ?_ (sup_eq_closure N P ▸ hnp)
+    · rintro x (hx | hx)
+      exacts [le_sup_left (a := M • N) (smul_mem_smul hm hx),
+        le_sup_right (a := M • N) (smul_mem_smul hm hx)]
+    · apply (smul_zero (A := A) m).symm ▸ (M • N ⊔ M • P).zero_mem
+    · intros _ _ _ _ h1 h2; rw [smul_add]; exact add_mem h1 h2)
+  (sup_le (smul_le_smul_right le_sup_left) <| smul_le_smul_right le_sup_right)
+
+variable {ι : Sort*}
+
+theorem smul_iSup (T : AddSubmonoid R) (S : ι → AddSubmonoid A) : (T • ⨆ i, S i) = ⨆ i, T • S i :=
+  le_antisymm (smul_le.mpr fun t ht s hs ↦ iSup_induction _ (C := (t • · ∈ _)) hs
+    (fun i s hs ↦ mem_iSup_of_mem i <| smul_mem_smul ht hs)
+    (by simp_rw [smul_zero]; apply zero_mem) fun x y ↦ by simp_rw [smul_add]; apply add_mem)
+  (iSup_le fun i ↦ smul_le_smul_right <| le_iSup _ i)
+
+end SMul
+
 section NonUnitalNonAssocSemiring
 
 variable [NonUnitalNonAssocSemiring R]
@@ -447,20 +546,17 @@ protected def mul : Mul (AddSubmonoid R) :=
 scoped[Pointwise] attribute [instance] AddSubmonoid.mul
 
 theorem mul_mem_mul {M N : AddSubmonoid R} {m n : R} (hm : m ∈ M) (hn : n ∈ N) : m * n ∈ M * N :=
-  (le_iSup _ ⟨m, hm⟩ : _ ≤ M * N) ⟨n, hn, by rfl⟩
+  smul_mem_smul hm hn
 
 theorem mul_le {M N P : AddSubmonoid R} : M * N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m * n ∈ P :=
-  ⟨fun H _m hm _n hn => H <| mul_mem_mul hm hn, fun H =>
-    iSup_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
+  smul_le
 
 @[elab_as_elim]
 protected theorem mul_induction_on {M N : AddSubmonoid R} {C : R → Prop} {r : R} (hr : r ∈ M * N)
     (hm : ∀ m ∈ M, ∀ n ∈ N, C (m * n)) (ha : ∀ x y, C x → C y → C (x + y)) : C r :=
-  (@mul_le _ _ _ _ ⟨⟨setOf C, ha _ _⟩, by
-    simpa only [zero_mul] using hm _ (zero_mem _) _ (zero_mem _)⟩).2 hm hr
+  AddSubmonoid.smul_induction_on hr hm ha
 
--- this proof is copied directly from `Submodule.span_mul_span`
--- Porting note: proof rewritten
+-- need `add_smul` to generalize to `SMul`
 theorem closure_mul_closure (S T : Set R) : closure S * closure T = closure (S * T) := by
   apply le_antisymm
   · refine mul_le.2 fun a ha b hb => ?_
@@ -480,9 +576,9 @@ theorem mul_eq_closure_mul_set (M N : AddSubmonoid R) :
 
 @[simp]
 theorem mul_bot (S : AddSubmonoid R) : S * ⊥ = ⊥ :=
-  eq_bot_iff.2 <| mul_le.2 fun m _ n hn => by
-    rw [AddSubmonoid.mem_bot] at hn ⊢; rw [hn, mul_zero]
+  addSubmonoid_smul_bot S
 
+-- need `zero_smul` to generalize to `SMul`
 @[simp]
 theorem bot_mul (S : AddSubmonoid R) : ⊥ * S = ⊥ :=
   eq_bot_iff.2 <| mul_le.2 fun m hm n _ => by
@@ -490,25 +586,18 @@ theorem bot_mul (S : AddSubmonoid R) : ⊥ * S = ⊥ :=
 
 variable {M N P Q : AddSubmonoid R}
 
-@[mono]
-theorem mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q :=
-  mul_le.2 fun _m hm _n hn => mul_mem_mul (hmp hm) (hnq hn)
+@[mono, gcongr] lemma mul_le_mul (hmp : M ≤ P) (hnq : N ≤ Q) : M * N ≤ P * Q := smul_le_smul hmp hnq
 
-theorem mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P :=
-  mul_le_mul h (le_refl P)
-
-theorem mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P :=
-  mul_le_mul (le_refl M) h
+@[gcongr] lemma mul_le_mul_left (h : M ≤ N) : M * P ≤ N * P := smul_le_smul_left h
+@[gcongr] lemma mul_le_mul_right (h : N ≤ P) : M * N ≤ M * P := smul_le_smul_right h
 
 theorem mul_subset_mul : (↑M : Set R) * (↑N : Set R) ⊆ (↑(M * N) : Set R) :=
-  mul_subset_iff.2 fun _i hi _j hj ↦ mul_mem_mul hi hj
+  smul_subset_smul
 
 theorem mul_sup : M * (N ⊔ P) = M * N ⊔ M * P :=
-  le_antisymm (mul_le.mpr fun m hm np hnp ↦ by
-    obtain ⟨n, hn, p, hp, rfl⟩ := mem_sup.mp hnp
-    rw [left_distrib]; exact add_mem_sup (mul_mem_mul hm hn) <| mul_mem_mul hm hp)
-    (sup_le (mul_le_mul_right le_sup_left) <| mul_le_mul_right le_sup_right)
+  addSubmonoid_smul_sup
 
+-- need `zero_smul` and `add_smul` to generalize to `SMul`
 theorem sup_mul : (M ⊔ N) * P = M * P ⊔ N * P :=
   le_antisymm (mul_le.mpr fun mn hmn p hp ↦ by
     obtain ⟨m, hm, n, hn, rfl⟩ := mem_sup.mp hmn
@@ -517,6 +606,7 @@ theorem sup_mul : (M ⊔ N) * P = M * P ⊔ N * P :=
 
 variable {ι : Sort*}
 
+-- need `zero_smul` and `add_smul` to generalize to `SMul`
 theorem iSup_mul (S : ι → AddSubmonoid R) (T : AddSubmonoid R) : (⨆ i, S i) * T = ⨆ i, S i * T :=
   le_antisymm (mul_le.mpr fun s hs t ht ↦ iSup_induction _ (C := (· * t ∈ _)) hs
       (fun i s hs ↦ mem_iSup_of_mem i <| mul_mem_mul hs ht) (by simp_rw [zero_mul]; apply zero_mem)
@@ -524,10 +614,11 @@ theorem iSup_mul (S : ι → AddSubmonoid R) (T : AddSubmonoid R) : (⨆ i, S i)
     iSup_le fun i ↦ mul_le_mul_left (le_iSup _ i)
 
 theorem mul_iSup (T : AddSubmonoid R) (S : ι → AddSubmonoid R) : (T * ⨆ i, S i) = ⨆ i, T * S i :=
-  le_antisymm (mul_le.mpr fun t ht s hs ↦ iSup_induction _ (C := (t * · ∈ _)) hs
-      (fun i s hs ↦ mem_iSup_of_mem i <| mul_mem_mul ht hs) (by simp_rw [mul_zero]; apply zero_mem)
-      fun _ _ ↦ by simp_rw [left_distrib]; apply add_mem) <|
-    iSup_le fun i ↦ mul_le_mul_right (le_iSup _ i)
+  smul_iSup T S
+
+theorem mul_comm_of_commute (h : ∀ m ∈ M, ∀ n ∈ N, Commute m n) : M * N = N * M :=
+  le_antisymm (mul_le.mpr fun m hm n hn ↦ h m hm n hn ▸ mul_mem_mul hn hm)
+    (mul_le.mpr fun n hn m hm ↦ h m hm n hn ▸ mul_mem_mul hm hn)
 
 end NonUnitalNonAssocSemiring
 
@@ -580,17 +671,14 @@ variable [NonUnitalSemiring R]
 /-- Semigroup structure on additive submonoids of a (possibly, non-unital) semiring. -/
 protected def semigroup : Semigroup (AddSubmonoid R) where
   mul := (· * ·)
-  mul_assoc M N P :=
+  mul_assoc _M _N _P :=
     le_antisymm
-      (mul_le.2 fun _mn hmn p hp =>
-        suffices M * N ≤ (M * (N * P)).comap (AddMonoidHom.mulRight p) from this hmn
-        mul_le.2 fun m hm n hn =>
-          show m * n * p ∈ M * (N * P) from
-            (mul_assoc m n p).symm ▸ mul_mem_mul hm (mul_mem_mul hn hp))
-      (mul_le.2 fun m hm _np hnp =>
-        suffices N * P ≤ (M * N * P).comap (AddMonoidHom.mulLeft m) from this hnp
-        mul_le.2 fun n hn p hp =>
-          show m * (n * p) ∈ M * N * P from mul_assoc m n p ▸ mul_mem_mul (mul_mem_mul hm hn) hp)
+      (mul_le.2 fun _mn hmn p hp => AddSubmonoid.mul_induction_on hmn
+        (fun m hm n hn ↦ mul_assoc m n p ▸ mul_mem_mul hm <| mul_mem_mul hn hp)
+        fun x y ↦ (add_mul x y p).symm ▸ add_mem)
+      (mul_le.2 fun m hm _np hnp => AddSubmonoid.mul_induction_on hnp
+        (fun n hn p hp ↦ mul_assoc m n p ▸ mul_mem_mul (mul_mem_mul hm hn) hp)
+        fun x y ↦ (mul_add m x y) ▸ add_mem)
 scoped[Pointwise] attribute [instance] AddSubmonoid.semigroup
 end NonUnitalSemiring
 
@@ -615,39 +703,6 @@ theorem pow_subset_pow {s : AddSubmonoid R} {n : ℕ} : (↑s : Set R) ^ n ⊆ �
   (pow_eq_closure_pow_set s n).symm ▸ subset_closure
 
 end Semiring
-
-section SMul
-
-variable [AddMonoid R] [DistribSMul R A]
-
-/-- For `M : Submonoid R` and `N : AddSubmonoid A`, `M • N` is the additive submonoid
-generated by all `m • n` where `m ∈ M` and `n ∈ N`. -/
-protected def smul : SMul (AddSubmonoid R) (AddSubmonoid A) where
-  smul M N := ⨆ s : M, N.map (DistribSMul.toAddMonoidHom A s.1)
-
-scoped[Pointwise] attribute [instance] AddSubmonoid.smul
-
-example {R} [Semiring R] : Mul.toSMul (AddSubmonoid R) = AddSubmonoid.smul := rfl
-
-variable {M M' : AddSubmonoid R} {N P : AddSubmonoid A} {m : R} {n : A}
-
-theorem smul_mem_smul (hm : m ∈ M) (hn : n ∈ N) : m • n ∈ M • N :=
-  (le_iSup _ ⟨m, hm⟩ : _ ≤ M • N) ⟨n, hn, by rfl⟩
-
-theorem smul_le : M • N ≤ P ↔ ∀ m ∈ M, ∀ n ∈ N, m • n ∈ P :=
-  ⟨fun H _m hm _n hn => H <| smul_mem_smul hm hn, fun H =>
-    iSup_le fun ⟨m, hm⟩ => map_le_iff_le_comap.2 fun n hn => H m hm n hn⟩
-
-@[elab_as_elim]
-protected theorem smul_induction_on {C : A → Prop} {a : A} (ha : a ∈ M • N)
-    (hm : ∀ m ∈ M, ∀ n ∈ N, C (m • n)) (hadd : ∀ x y, C x → C y → C (x + y)) : C a :=
-  (@smul_le _ _ _ _ _ _ _ ⟨⟨setOf C, hadd _ _⟩, by
-    simpa only [smul_zero] using hm _ (zero_mem _) _ (zero_mem _)⟩).2 hm ha
-
-theorem smul_le_smul (h : M ≤ M') (hnp : N ≤ P) : M • N ≤ M' • P :=
-  smul_le.2 fun _m hm _n hn => smul_mem_smul (h hm) (hnp hn)
-
-end SMul
 
 end AddSubmonoid
 

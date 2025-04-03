@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.DFinsupp.BigOperators
 import Mathlib.Data.DFinsupp.Order
 import Mathlib.Order.Interval.Finset.Basic
 
@@ -43,7 +44,7 @@ variable [∀ i, DecidableEq (α i)]
 theorem mem_dfinsupp_iff : f ∈ s.dfinsupp t ↔ f.support ⊆ s ∧ ∀ i ∈ s, f i ∈ t i := by
   refine mem_map.trans ⟨?_, ?_⟩
   · rintro ⟨f, hf, rfl⟩
-    rw [Function.Embedding.coeFn_mk] -- Porting note: added to avoid heartbeat timeout
+    rw [Function.Embedding.coeFn_mk]
     refine ⟨support_mk_subset, fun i hi => ?_⟩
     convert mem_pi.1 hf i hi
     exact mk_of_mem hi
@@ -182,7 +183,8 @@ end Lattice
 section CanonicallyOrdered
 
 variable [DecidableEq ι] [∀ i, DecidableEq (α i)]
-variable [∀ i, CanonicallyOrderedAddCommMonoid (α i)] [∀ i, LocallyFiniteOrder (α i)]
+variable [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
+  [∀ i, LocallyFiniteOrder (α i)]
 variable (f : Π₀ i, α i)
 
 lemma card_Iic : #(Iic f) = ∏ i ∈ f.support, #(Iic (f i)) := by

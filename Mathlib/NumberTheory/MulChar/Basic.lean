@@ -71,7 +71,7 @@ instance MulChar.instFunLike : FunLike (MulChar R R') R R' :=
 
 /-- This is the corresponding extension of `MonoidHomClass`. -/
 class MulCharClass (F : Type*) (R R' : outParam Type*) [CommMonoid R]
-  [CommMonoidWithZero R'] [FunLike F R R'] extends MonoidHomClass F R R' : Prop where
+    [CommMonoidWithZero R'] [FunLike F R R'] : Prop extends MonoidHomClass F R R' where
   map_nonunit : ∀ (χ : F) {a : R} (_ : ¬IsUnit a), χ a = 0
 
 initialize_simps_projections MulChar (toFun → apply, -toMonoidHom)
@@ -337,9 +337,9 @@ noncomputable instance commGroup : CommGroup (MulChar R R') :=
 
 /-- If `a` is a unit and `n : ℕ`, then `(χ ^ n) a = (χ a) ^ n`. -/
 theorem pow_apply_coe (χ : MulChar R R') (n : ℕ) (a : Rˣ) : (χ ^ n) a = χ a ^ n := by
-  induction' n with n ih
-  · rw [pow_zero, pow_zero, one_apply_coe]
-  · rw [pow_succ, pow_succ, mul_apply, ih]
+  induction n with
+  | zero => rw [pow_zero, pow_zero, one_apply_coe]
+  | succ n ih => rw [pow_succ, pow_succ, mul_apply, ih]
 
 /-- If `n` is positive, then `(χ ^ n) a = (χ a) ^ n`. -/
 theorem pow_apply' (χ : MulChar R R') {n : ℕ} (hn : n ≠ 0) (a : R) : (χ ^ n) a = χ a ^ n := by
@@ -389,17 +389,6 @@ lemma eq_one_iff {χ : MulChar R R'} : χ = 1 ↔ ∀ a : Rˣ, χ a = 1 := by
 
 lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := by
   simp only [Ne, eq_one_iff, not_forall]
-
-/-- A multiplicative character is *nontrivial* if it takes a value `≠ 1` on a unit. -/
-@[deprecated (since := "2024-06-16")]
-def IsNontrivial (χ : MulChar R R') : Prop :=
-  ∃ a : Rˣ, χ a ≠ 1
-
-set_option linter.deprecated false in
-/-- A multiplicative character is nontrivial iff it is not the trivial character. -/
-@[deprecated (since := "2024-06-16")]
-theorem isNontrivial_iff (χ : MulChar R R') : χ.IsNontrivial ↔ χ ≠ 1 := by
-  simp only [IsNontrivial, Ne, MulChar.ext_iff, not_forall, one_apply_coe]
 
 end nontrivial
 
@@ -461,23 +450,13 @@ lemma ringHomComp_ne_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ 
     χ.ringHomComp f ≠ 1 ↔ χ ≠ 1 :=
   (ringHomComp_eq_one_iff hf).not
 
-set_option linter.deprecated false in
-/-- Composition with an injective ring homomorphism preserves nontriviality. -/
-@[deprecated ringHomComp_ne_one_iff (since := "2024-06-16")]
-theorem IsNontrivial.comp {χ : MulChar R R'} (hχ : χ.IsNontrivial) {f : R' →+* R''}
-    (hf : Function.Injective f) : (χ.ringHomComp f).IsNontrivial := by
-  obtain ⟨a, ha⟩ := hχ
-  use a
-  simp_rw [ringHomComp_apply, ← RingHom.map_one f]
-  exact fun h => ha (hf h)
-
 /-- Composition with a ring homomorphism preserves the property of being a quadratic character. -/
 theorem IsQuadratic.comp {χ : MulChar R R'} (hχ : χ.IsQuadratic) (f : R' →+* R'') :
     (χ.ringHomComp f).IsQuadratic := by
   intro a
   rcases hχ a with (ha | ha | ha) <;> simp [ha]
 
-/-- The inverse of a quadratic character is itself. →  -/
+/-- The inverse of a quadratic character is itself. → -/
 theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = χ := by
   ext x
   rw [inv_apply_eq_inv]
@@ -515,6 +494,22 @@ theorem IsQuadratic.pow_odd {χ : MulChar R R'} (hχ : χ.IsQuadratic) {n : ℕ}
     χ ^ n = χ := by
   obtain ⟨n, rfl⟩ := hn
   rw [pow_add, pow_one, hχ.pow_even (even_two_mul _), one_mul]
+
+/-- A multiplicative character `χ` into an integral domain is quadratic
+if and only if `χ^2 = 1`. -/
+lemma isQuadratic_iff_sq_eq_one {M R : Type*} [CommMonoid M] [CommRing R] [NoZeroDivisors R]
+    [Nontrivial R] {χ : MulChar M R} :
+    IsQuadratic χ ↔ χ ^ 2 = 1:= by
+  refine ⟨fun h ↦ ext (fun x ↦ ?_), fun h x ↦ ?_⟩
+  · rw [one_apply_coe, χ.pow_apply_coe]
+    rcases h x with H | H | H
+    · exact (not_isUnit_zero <| H ▸ IsUnit.map χ <| x.isUnit).elim
+    · simp only [H, one_pow]
+    · simp only [H, even_two, Even.neg_pow, one_pow]
+  · by_cases hx : IsUnit x
+    · refine .inr <| sq_eq_one_iff.mp ?_
+      rw [← χ.pow_apply' two_ne_zero, h, MulChar.one_apply hx]
+    · exact .inl <| map_nonunit χ hx
 
 end quadratic_and_comp
 
@@ -555,12 +550,6 @@ theorem sum_eq_zero_of_ne_one [IsDomain R'] {χ : MulChar R R'} (hχ : χ ≠ 1)
   rcases ne_one_iff.mp hχ with ⟨b, hb⟩
   refine eq_zero_of_mul_eq_self_left hb ?_
   simpa only [Finset.mul_sum, ← map_mul] using b.mulLeft_bijective.sum_comp _
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-06-16")]
-lemma IsNontrivial.sum_eq_zero [IsDomain R'] {χ : MulChar R R'} (hχ : χ.IsNontrivial) :
-    ∑ a, χ a = 0 :=
-  sum_eq_zero_of_ne_one ((isNontrivial_iff _).mp hχ)
 
 /-- The sum over all values of the trivial multiplicative character on a finite ring is
 the cardinality of its unit group. -/

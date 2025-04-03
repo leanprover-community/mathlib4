@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Bases
-import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.Copy
@@ -55,16 +54,13 @@ variable {ι α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [Topo
 
 namespace TopologicalSpace
 
-variable (α)
-
+variable (α) in
 /-- The type of open subsets of a topological space. -/
 structure Opens where
   /-- The underlying set of a bundled `TopologicalSpace.Opens` object. -/
   carrier : Set α
   /-- The `TopologicalSpace.Opens.carrier _` is an open set. -/
   is_open' : IsOpen carrier
-
-variable {α}
 
 namespace Opens
 
@@ -91,7 +87,6 @@ theorem coe_mk {U : Set α} {hU : IsOpen U} : ↑(⟨U, hU⟩ : Opens α) = U :=
 @[simp]
 theorem mem_mk {x : α} {U : Set α} {h : IsOpen U} : x ∈ mk U h ↔ x ∈ U := Iff.rfl
 
--- Porting note: removed @[simp] because LHS simplifies to `∃ x, x ∈ U`
 protected theorem nonempty_coeSort {U : Opens α} : Nonempty U ↔ (U : Set α).Nonempty :=
   Set.nonempty_coe_sort
 
@@ -99,11 +94,10 @@ protected theorem nonempty_coeSort {U : Opens α} : Nonempty U ↔ (U : Set α).
 protected theorem nonempty_coe {U : Opens α} : (U : Set α).Nonempty ↔ ∃ x, x ∈ U :=
   Iff.rfl
 
-@[ext] -- Porting note (#11215): TODO: replace with `∀ x, x ∈ U ↔ x ∈ V`
+@[ext] -- TODO: replace with `∀ x, x ∈ U ↔ x ∈ V`?
 theorem ext {U V : Opens α} (h : (U : Set α) = V) : U = V :=
   SetLike.coe_injective h
 
--- Porting note: removed @[simp], simp can prove it
 theorem coe_inj {U V : Opens α} : (U : Set α) = V ↔ U = V :=
   SetLike.ext'_iff.symm
 
@@ -118,7 +112,7 @@ protected theorem isOpen (U : Opens α) : IsOpen (U : Set α) :=
 /-- See Note [custom simps projection]. -/
 def Simps.coe (U : Opens α) : Set α := U
 
-initialize_simps_projections Opens (carrier → coe)
+initialize_simps_projections Opens (carrier → coe, as_prefix coe)
 
 /-- The interior of a set, as an element of `Opens`. -/
 @[simps]
@@ -166,6 +160,9 @@ theorem mk_inf_mk {U V : Set α} {hU : IsOpen U} {hV : IsOpen V} :
 theorem coe_inf (s t : Opens α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
   rfl
 
+@[simp]
+lemma mem_inf {s t : Opens α} {x : α} : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t := Iff.rfl
+
 @[simp, norm_cast]
 theorem coe_sup (s t : Opens α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
   rfl
@@ -173,6 +170,9 @@ theorem coe_sup (s t : Opens α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
 @[simp, norm_cast]
 theorem coe_bot : ((⊥ : Opens α) : Set α) = ∅ :=
   rfl
+
+@[simp]
+lemma mem_bot {x : α} : x ∈ (⊥ : Opens α) ↔ False := Iff.rfl
 
 @[simp] theorem mk_empty : (⟨∅, isOpen_empty⟩ : Opens α) = ⊥ := rfl
 
@@ -207,11 +207,9 @@ theorem coe_finset_inf (f : ι → Opens α) (s : Finset ι) : (↑(s.inf f) : S
 
 instance : Inhabited (Opens α) := ⟨⊥⟩
 
--- porting note (#10754): new instance
 instance [IsEmpty α] : Unique (Opens α) where
   uniq _ := ext <| Subsingleton.elim _ _
 
--- porting note (#10754): new instance
 instance [Nonempty α] : Nontrivial (Opens α) where
   exists_pair_ne := ⟨⊥, ⊤, mt coe_inj.2 empty_ne_univ⟩
 
@@ -250,11 +248,11 @@ theorem isOpenEmbedding' (U : Opens α) : IsOpenEmbedding (Subtype.val : U → �
 alias openEmbedding' := isOpenEmbedding'
 
 theorem isOpenEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
-    IsOpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) :=
-  { toEmbedding := embedding_inclusion i
-    isOpen_range := by
-      rw [Set.range_inclusion i]
-      exact U.isOpen.preimage continuous_subtype_val }
+    IsOpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) where
+  toIsEmbedding := .inclusion i
+  isOpen_range := by
+    rw [Set.range_inclusion i]
+    exact U.isOpen.preimage continuous_subtype_val
 
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_of_le := isOpenEmbedding_of_le
@@ -271,7 +269,6 @@ theorem eq_bot_or_top {α} [t : TopologicalSpace α] (h : t = ⊤) (U : Opens α
   rw [← coe_eq_empty, ← coe_eq_univ, ← isOpen_top_iff]
   exact U.2
 
--- porting note (#10754): new instance
 instance [Nonempty α] [Subsingleton α] : IsSimpleOrder (Opens α) where
   eq_bot_or_eq_top := eq_bot_or_top <| Subsingleton.elim _ _
 
@@ -378,12 +375,12 @@ theorem comap_injective [T0Space β] : Injective (comap : C(α, β) → FrameHom
   fun f g h =>
   ContinuousMap.ext fun a =>
     Inseparable.eq <|
-      inseparable_iff_forall_open.2 fun s hs =>
+      inseparable_iff_forall_isOpen.2 fun s hs =>
         have : comap f ⟨s, hs⟩ = comap g ⟨s, hs⟩ := DFunLike.congr_fun h ⟨_, hs⟩
         show a ∈ f ⁻¹' s ↔ a ∈ g ⁻¹' s from Set.ext_iff.1 (coe_inj.2 this) a
 
 /-- A homeomorphism induces an order-preserving equivalence on open sets, by taking comaps. -/
-@[simps (config := .asFn) apply]
+@[simps -fullyApplied apply]
 def _root_.Homeomorph.opensCongr (f : α ≃ₜ β) : Opens α ≃o Opens β where
   toFun := Opens.comap (f.symm : C(β, α))
   invFun := Opens.comap (f : C(α, β))
@@ -431,10 +428,9 @@ instance : OrderTop (OpenNhdsOf x) where
   le_top _ := subset_univ _
 
 instance : Inhabited (OpenNhdsOf x) := ⟨⊤⟩
-instance : Inf (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊓ V.1, U.2, V.2⟩⟩
-instance : Sup (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊔ V.1, Or.inl U.2⟩⟩
+instance : Min (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊓ V.1, U.2, V.2⟩⟩
+instance : Max (OpenNhdsOf x) := ⟨fun U V => ⟨U.1 ⊔ V.1, Or.inl U.2⟩⟩
 
--- porting note (#10754): new instance
 instance [Subsingleton α] : Unique (OpenNhdsOf x) where
   uniq U := SetLike.ext' <| Subsingleton.eq_univ_of_nonempty ⟨x, U.mem⟩
 
@@ -455,7 +451,7 @@ end OpenNhdsOf
 
 end TopologicalSpace
 
--- Porting note (#11215): TODO: once we port `auto_cases`, port this
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: once we port `auto_cases`, port this
 -- namespace Tactic
 
 -- namespace AutoCases

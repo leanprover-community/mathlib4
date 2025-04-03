@@ -51,7 +51,7 @@ instance : MeasurableSingletonClass (Fin m) :=
 
 /- We then endow the space with a canonical measure, which is called ℙ.
 We define this to be the conditional counting measure. -/
-noncomputable instance : MeasureSpace (Fin n → Fin m) :=
+noncomputable instance measureSpace : MeasureSpace (Fin n → Fin m) :=
   ⟨uniformOn Set.univ⟩
 
 -- The canonical measure on `Fin n → Fin m` is a probability measure (except on an empty space).
@@ -60,7 +60,7 @@ instance : IsProbabilityMeasure (ℙ : Measure (Fin n → Fin (m + 1))) :=
 
 theorem FinFin.measure_apply {s : Set <| Fin n → Fin m} :
     ℙ s = |s.toFinite.toFinset| / ‖Fin n → Fin m‖ := by
-  erw [uniformOn_univ, Measure.count_apply_finite]
+  rw [volume, measureSpace, uniformOn_univ, Measure.count_apply_finite]
 
 /-- **Birthday Problem**: first probabilistic interpretation. -/
 theorem birthday_measure :
@@ -76,12 +76,9 @@ theorem birthday_measure :
     · rw [Fintype.card_embedding_eq, Fintype.card_fin, Fintype.card_fin]
       rfl
   rw [this, ENNReal.lt_div_iff_mul_lt, mul_comm, mul_div, ENNReal.div_lt_iff]
-  rotate_left
-  iterate 2 right; norm_num
-  · decide
-  iterate 2 left; norm_num
-  simp only [Fintype.card_pi]
-  norm_num
+  all_goals
+    simp only [Fintype.card_pi, Fintype.card_fin, Finset.prod_const, Finset.card_univ]
+    norm_num
 
 end MeasureTheory
 

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 -/
 import Mathlib.Algebra.Group.Subsemigroup.Defs
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Subsemigroups: `CompleteLattice` structure
@@ -43,12 +43,11 @@ subsemigroup, subsemigroups
 assert_not_exists MonoidWithZero
 
 -- Only needed for notation
-variable {M : Type*} {N : Type*} {A : Type*}
+variable {M : Type*} {N : Type*}
 
 section NonAssoc
 
 variable [Mul M] {s : Set M}
-variable [Add A] {t : Set A}
 
 namespace Subsemigroup
 
@@ -125,8 +124,8 @@ theorem closure_le : closure s ≤ S ↔ s ⊆ S :=
 
 /-- subsemigroup closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
-@[to_additive "Additive subsemigroup closure of a set is monotone in its argument: if `s ⊆ t`,
-  then `closure s ≤ closure t`"]
+@[to_additive (attr := gcongr) "Additive subsemigroup closure of a set is monotone in its argument:
+if `s ⊆ t`, then `closure s ≤ closure t`"]
 theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Subset.trans h subset_closure
 

@@ -41,7 +41,7 @@ Currently, the string diagram widget provided in this file deals with equalities
 in monoidal categories. It displays string diagrams corresponding to the morphisms for the
 left-hand and right-hand sides of the equality.
 
-Some examples can be found in `test/StringDiagram.lean`.
+Some examples can be found in `MathlibTest/StringDiagram.lean`.
 
 When drawing string diagrams, it is common to ignore associators and unitors. We follow this
 convention. To do this, we need to extract non-structural morphisms that are not associators
@@ -50,7 +50,7 @@ function.
 
 A monoidal category can be viewed as a bicategory with a single object. The program in this
 file can also be used to display the string diagram for general bicategories (see the wip
-PR #12107). With this in mind we will sometimes refer to objects and morphisms in monoidal
+PR https://github.com/leanprover-community/mathlib4/pull/12107). With this in mind we will sometimes refer to objects and morphisms in monoidal
 categories as 1-morphisms and 2-morphisms respectively, borrowing the terminology of bicategories.
 Note that the relation between monoidal categories and bicategories is formalized in
 `Mathlib.CategoryTheory.Bicategory.SingleObj`, although the string diagram widget does not use
@@ -157,8 +157,8 @@ def WhiskerRight.nodes (v h₁ h₂ : ℕ) : WhiskerRight → List Node
   | WhiskerRight.of η => [.atom ⟨v, h₁, h₂, η⟩]
   | WhiskerRight.whisker _ η f =>
     let ηs := η.nodes v h₁ h₂
-    let k₁ := (ηs.map (fun n ↦ n.srcList)).join.length
-    let k₂ := (ηs.map (fun n ↦ n.tarList)).join.length
+    let k₁ := (ηs.map (fun n ↦ n.srcList)).flatten.length
+    let k₂ := (ηs.map (fun n ↦ n.tarList)).flatten.length
     let s : Node := .id ⟨v, h₁ + k₁, h₂ + k₂, f⟩
     ηs ++ [s]
 
@@ -168,8 +168,8 @@ def HorizontalComp.nodes (v h₁ h₂ : ℕ) : HorizontalComp → List Node
   | HorizontalComp.of η => η.nodes v h₁ h₂
   | HorizontalComp.cons _ η ηs =>
     let s₁ := η.nodes v h₁ h₂
-    let k₁ := (s₁.map (fun n ↦ n.srcList)).join.length
-    let k₂ := (s₁.map (fun n ↦ n.tarList)).join.length
+    let k₁ := (s₁.map (fun n ↦ n.srcList)).flatten.length
+    let k₂ := (s₁.map (fun n ↦ n.tarList)).flatten.length
     let s₂ := ηs.nodes v (h₁ + k₁) (h₂ + k₂)
     s₁ ++ s₂
 
@@ -182,16 +182,16 @@ def WhiskerLeft.nodes (v h₁ h₂ : ℕ) : WhiskerLeft → List Node
     let ss := η.nodes v (h₁ + 1) (h₂ + 1)
     s :: ss
 
-variable {ρ : Type} [Context ρ] [MonadMor₁ (CoherenceM ρ)]
+variable {ρ : Type} [MonadMor₁ (CoherenceM ρ)]
 
 /-- The list of nodes at the top of a string diagram. -/
 def topNodes (η : WhiskerLeft) : CoherenceM ρ (List Node) := do
-  return (← η.srcM).toList.enum.map (fun (i, f) => .id ⟨0, i, i, f⟩)
+  return (← η.srcM).toList.mapIdx fun i f => .id ⟨0, i, i, f⟩
 
 /-- The list of nodes at the top of a string diagram. The position is counted from the
 specified natural number. -/
 def NormalExpr.nodesAux (v : ℕ) : NormalExpr → CoherenceM ρ (List (List Node))
-  | NormalExpr.nil _ α => return [(← α.srcM).toList.enum.map (fun (i, f) => .id ⟨v, i, i, f⟩)]
+  | NormalExpr.nil _ α => return [(← α.srcM).toList.mapIdx fun i f => .id ⟨v, i, i, f⟩]
   | NormalExpr.cons _ _ η ηs => do
     let s₁ := η.nodes v 0 0
     let s₂ ← ηs.nodesAux (v + 1)
@@ -211,12 +211,12 @@ def pairs {α : Type} : List α → List (α × α) :=
 def NormalExpr.strands (e : NormalExpr) : CoherenceM ρ (List (List Strand)) := do
   let l ← e.nodes
   (pairs l).mapM fun (x, y) ↦ do
-    let xs := (x.map (fun n ↦ n.tarList)).join
-    let ys := (y.map (fun n ↦ n.srcList)).join
+    let xs := (x.map (fun n ↦ n.tarList)).flatten
+    let ys := (y.map (fun n ↦ n.srcList)).flatten
     -- sanity check
     if xs.length ≠ ys.length then
       throwError "The number of the start and end points of a string does not match."
-    (xs.zip ys).enum.mapM fun (k, (n₁, f₁), (n₂, _)) => do
+    (xs.zip ys).mapIdxM fun k ((n₁, f₁), (n₂, _)) => do
       return ⟨n₁.hPosTar + k, n₁, n₂, f₁⟩
 
 end BicategoryLike
@@ -266,7 +266,7 @@ display as labels in the diagram. -/
 def mkStringDiagram (nodes : List (List Node)) (strands : List (List Strand)) :
     DiagramBuilderM PUnit := do
   /- Add 2-morphisms. -/
-  for x in nodes.join do
+  for x in nodes.flatten do
     match x with
     | .atom _ => do addPenroseVar "Atom" x.toPenroseVar
     | .id _ => do addPenroseVar "Id" x.toPenroseVar

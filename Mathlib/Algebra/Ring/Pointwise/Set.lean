@@ -17,20 +17,20 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-assert_not_exists OrderedAddCommMonoid
+assert_not_exists MulAction OrderedAddCommMonoid Field
 
 open Function
 open scoped Pointwise
 
-variable {F α β γ : Type*}
+variable {α : Type*}
 
 namespace Set
 
 /-- `Set α` has distributive negation if `α` has. -/
 protected noncomputable def hasDistribNeg [Mul α] [HasDistribNeg α] : HasDistribNeg (Set α) where
   __ := Set.involutiveNeg
-  neg_mul _ _ := by simp_rw [← image_neg]; exact image2_image_left_comm neg_mul
-  mul_neg _ _ := by simp_rw [← image_neg]; exact image_image2_right_comm mul_neg
+  neg_mul _ _ := by simp_rw [← image_neg_eq_neg]; exact image2_image_left_comm neg_mul
+  mul_neg _ _ := by simp_rw [← image_neg_eq_neg]; exact image_image2_right_comm mul_neg
 
 scoped[Pointwise] attribute [instance] Set.hasDistribNeg
 

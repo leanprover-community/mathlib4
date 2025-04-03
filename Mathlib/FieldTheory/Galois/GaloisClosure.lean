@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yuyang Zhao
 -/
 
-import Mathlib.FieldTheory.NormalClosure
+import Mathlib.FieldTheory.Normal.Closure
 import Mathlib.FieldTheory.SeparableClosure
 
 /-!
@@ -24,6 +24,8 @@ In a field extension `K/k`
 * `FiniteGaloisIntermediateField` should be a `ConditionallyCompleteLattice` but isn't proved yet.
 
 -/
+
+open IntermediateField
 
 variable (k K : Type*) [Field k] [Field K] [Algebra k K]
 
@@ -58,13 +60,13 @@ instance (L₁ L₂ : IntermediateField k K) [IsGalois k L₁] [IsGalois k L₂]
 
 instance (L₁ L₂ : IntermediateField k K) [FiniteDimensional k L₁] :
     FiniteDimensional k ↑(L₁ ⊓ L₂) :=
-  .of_injective (IntermediateField.inclusion inf_le_left).toLinearMap
-    (IntermediateField.inclusion inf_le_left).injective
+  .of_injective (IntermediateField.inclusion (E := L₁ ⊓ L₂) (F := L₁) inf_le_left).toLinearMap
+    (IntermediateField.inclusion (E := L₁ ⊓ L₂) (F := L₁) inf_le_left).toRingHom.injective
 
 instance (L₁ L₂ : IntermediateField k K) [FiniteDimensional k L₂] :
     FiniteDimensional k ↑(L₁ ⊓ L₂) :=
-  .of_injective (IntermediateField.inclusion inf_le_right).toLinearMap
-    (IntermediateField.inclusion inf_le_right).injective
+  .of_injective (IntermediateField.inclusion (E := L₁ ⊓ L₂) (F := L₂) inf_le_right).toLinearMap
+    (IntermediateField.inclusion (E := L₁ ⊓ L₂) (F := L₂) inf_le_right).injective
 
 instance (L₁ L₂ : IntermediateField k K) [Algebra.IsSeparable k L₁] :
     Algebra.IsSeparable k ↑(L₁ ⊓ L₂) :=
@@ -77,11 +79,11 @@ instance (L₁ L₂ : IntermediateField k K) [Algebra.IsSeparable k L₂] :
 instance (L₁ L₂ : IntermediateField k K) [IsGalois k L₁] [IsGalois k L₂] :
     IsGalois k ↑(L₁ ⊓ L₂) where
 
-instance : Sup (FiniteGaloisIntermediateField k K) where
-  sup L₁ L₂ := .mk <| L₁ ⊔ L₂
+instance : Max (FiniteGaloisIntermediateField k K) where
+  max L₁ L₂ := .mk <| L₁ ⊔ L₂
 
-instance : Inf (FiniteGaloisIntermediateField k K) where
-  inf L₁ L₂ := .mk <| L₁ ⊓ L₂
+instance : Min (FiniteGaloisIntermediateField k K) where
+  min L₁ L₂ := .mk <| L₁ ⊓ L₂
 
 instance : Lattice (FiniteGaloisIntermediateField k K) :=
   val_injective.lattice _ (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
@@ -140,5 +142,10 @@ theorem adjoin_simple_map_algHom [IsGalois k K] (f : K →ₐ[k] K) (x : K) :
 theorem adjoin_simple_map_algEquiv [IsGalois k K] (f : K ≃ₐ[k] K) (x : K) :
     adjoin k {f x} = adjoin k {x} :=
   adjoin_simple_map_algHom (f : K →ₐ[k] K) x
+
+nonrec lemma mem_fixingSubgroup_iff (α : K ≃ₐ[k] K) (L : FiniteGaloisIntermediateField k K) :
+    α ∈ L.fixingSubgroup ↔ α.restrictNormalHom L = 1 := by
+  simp [IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff, AlgEquiv.ext_iff, Subtype.ext_iff,
+    AlgEquiv.restrictNormalHom_apply]
 
 end FiniteGaloisIntermediateField

@@ -61,7 +61,7 @@ See the sections *Main theorems on weak FE-pairs* and
 `f (N / x) = (const) • x ^ k • g x` for a real parameter `0 < N`. This could be done either by
 generalising the existing proofs in situ, or by a separate wrapper `FEPairWithLevel` which just
 applies a scaling factor to `f` and `g` to reduce to the `N = 1` case.
- -/
+-/
 
 noncomputable section
 
@@ -103,7 +103,7 @@ section symmetry
 /-- Reformulated functional equation with `f` and `g` interchanged. -/
 lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
     P.g (1 / x) = (P.ε⁻¹ * ↑(x ^ P.k)) • P.f x := by
-  rw [(div_div_cancel' (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx):), ← mul_smul]
+  rw [(div_div_cancel₀ (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx):), ← mul_smul]
   convert (one_smul ℂ (P.g (1 / x))).symm using 2
   rw [one_div, inv_rpow hx.le, ofReal_inv]
   field_simp [P.hε, (rpow_pos_of_pos hx _).ne']
@@ -135,7 +135,7 @@ namespace WeakFEPair
 /-- As `x → 0`, we have `f x = x ^ (-P.k) • constant` up to a rapidly decaying error. -/
 lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
     (fun x ↦ P.f x - (P.ε * ↑(x ^ (-P.k))) • P.g₀) =O[𝓝[>] 0] (· ^ r) := by
-  have := (P.hg_top (-(r + P.k))).comp_tendsto tendsto_inv_zero_atTop
+  have := (P.hg_top (-(r + P.k))).comp_tendsto tendsto_inv_nhdsGT_zero
   simp_rw [IsBigO, IsBigOWith, eventually_nhdsWithin_iff] at this ⊢
   obtain ⟨C, hC⟩ := this
   use ‖P.ε‖ * C
@@ -177,12 +177,11 @@ variable (P : StrongFEPair E)
 
 /-- As `x → ∞`, `f x` decays faster than any power of `x`. -/
 lemma hf_top' (r : ℝ) : P.f =O[atTop] (· ^ r) := by
-  simpa only [P.hf₀, sub_zero] using P.hf_top r
+  simpa [P.hf₀] using P.hf_top r
 
 /-- As `x → 0`, `f x` decays faster than any power of `x`. -/
 lemma hf_zero' (r : ℝ) : P.f =O[𝓝[>] 0] (· ^ r) := by
-  have := P.hg₀ ▸ P.hf_zero r
-  simpa only [smul_zero, sub_zero]
+  simpa using (P.hg₀ ▸ P.hf_zero r :)
 
 /-!
 ## Main theorems on strong FE-pairs
@@ -231,8 +230,7 @@ theorem functional_equation (s : ℂ) :
   simp_rw [P.h_feq' t ht, ← mul_smul]
   -- some simple `cpow` arithmetic to finish
   rw [cpow_neg, ofReal_cpow (le_of_lt ht)]
-  have : (t : ℂ) ^ (P.k : ℂ) ≠ 0 := by
-    simpa only [← ofReal_cpow (le_of_lt ht), ofReal_ne_zero] using (rpow_pos_of_pos ht _).ne'
+  have : (t : ℂ) ^ (P.k : ℂ) ≠ 0 := by simpa [← ofReal_cpow ht.le] using (rpow_pos_of_pos ht _).ne'
   field_simp [P.hε]
 
 end StrongFEPair
@@ -261,7 +259,7 @@ lemma hf_modif_int :
     LocallyIntegrableOn P.f_modif (Ioi 0) := by
   have : LocallyIntegrableOn (fun x : ℝ ↦ (P.ε * ↑(x ^ (-P.k))) • P.g₀) (Ioi 0) := by
     refine ContinuousOn.locallyIntegrableOn ?_ measurableSet_Ioi
-    refine ContinuousAt.continuousOn (fun x (hx : 0 < x) ↦ ?_)
+    refine continuousOn_of_forall_continuousAt (fun x (hx : 0 < x) ↦ ?_)
     refine (continuousAt_const.mul ?_).smul continuousAt_const
     exact continuous_ofReal.continuousAt.comp (continuousAt_rpow_const _ _ (Or.inl hx.ne'))
   refine LocallyIntegrableOn.add (fun x hx ↦ ?_) (fun x hx ↦ ?_)
@@ -397,13 +395,13 @@ theorem differentiableAt_Λ {s : ℂ} (hs : s ≠ 0 ∨ P.f₀ = 0) (hs' : s ≠
     DifferentiableAt ℂ P.Λ s := by
   refine ((P.differentiable_Λ₀ s).sub ?_).sub ?_
   · rcases hs with hs | hs
-    · simpa only [one_div] using (differentiableAt_inv hs).smul_const P.f₀
-    · simpa only [hs, smul_zero] using differentiableAt_const (0 : E)
+    · simpa using (differentiableAt_inv hs).smul_const _
+    · simp [hs]
   · rcases hs' with hs' | hs'
     · apply DifferentiableAt.smul_const
       apply (differentiableAt_const _).div ((differentiableAt_const _).sub (differentiable_id _))
-      rwa [sub_ne_zero, ne_comm]
-    · simpa only [hs', smul_zero] using differentiableAt_const (0 : E)
+      simpa [sub_eq_zero, eq_comm]
+    · simp [hs']
 
 /-- Relation between `Λ s` and the Mellin transform of `f - f₀`, where the latter is defined. -/
 theorem hasMellin [CompleteSpace E]

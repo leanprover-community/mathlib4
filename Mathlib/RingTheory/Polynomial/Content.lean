@@ -30,8 +30,6 @@ Let `p : R[X]`.
 
 namespace Polynomial
 
-open Polynomial
-
 section Primitive
 
 variable {R : Type*} [CommSemiring R]
@@ -97,7 +95,7 @@ theorem content_X_mul {p : R[X]} : content (X * p) = content p := by
   have h : (X * p).support = p.support.map ⟨Nat.succ, Nat.succ_injective⟩ := by
     ext a
     simp only [exists_prop, Finset.mem_map, Function.Embedding.coeFn_mk, Ne, mem_support_iff]
-    cases' a with a
+    rcases a with - | a
     · simp [coeff_X_mul_zero, Nat.succ_ne_zero]
     rw [mul_comm, coeff_mul_X]
     constructor
@@ -266,7 +264,7 @@ theorem aeval_primPart_eq_zero {S : Type*} [Ring S] [IsDomain S] [Algebra R S]
     aeval s p.primPart = 0 := by
   rw [eq_C_content_mul_primPart p, map_mul, aeval_C] at hp
   have hcont : p.content ≠ 0 := fun h => hpzero (content_eq_zero_iff.1 h)
-  replace hcont := Function.Injective.ne (NoZeroSMulDivisors.algebraMap_injective R S) hcont
+  replace hcont := Function.Injective.ne (FaithfulSMul.algebraMap_injective R S) hcont
   rw [map_zero] at hcont
   exact eq_zero_of_ne_zero_of_mul_left_eq_zero hcont hp
 
@@ -289,7 +287,7 @@ theorem gcd_content_eq_of_dvd_sub {a : R} {p q : R[X]} (h : C a ∣ p - q) :
       (lt_of_le_of_lt (le_max_right _ _) (Nat.lt_succ_self _))]
   apply Finset.gcd_eq_of_dvd_sub
   intro x _
-  cases' h with w hw
+  obtain ⟨w, hw⟩ := h
   use w.coeff x
   rw [← coeff_sub, hw, coeff_C_mul]
 

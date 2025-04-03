@@ -78,7 +78,7 @@ instance : CStarModule A A where
   inner_smul_right_complex := mul_smul_comm ..
   star_inner x y := by simp
   norm_eq_sqrt_norm_inner_self {x} := by
-    rw [← sq_eq_sq (norm_nonneg _) (by positivity)]
+    rw [← sq_eq_sq₀ (norm_nonneg _) (by positivity)]
     simpa [sq] using Eq.symm <| CStarRing.norm_star_mul_self
 
 open scoped InnerProductSpace in
@@ -249,7 +249,7 @@ lemma inner_single_right [DecidableEq ι] (x : C⋆ᵐᵒᵈ (Π i, E i)) {i : �
 lemma norm_single [DecidableEq ι] (i : ι) (y : E i) :
     ‖equiv _ |>.symm <| Pi.single i y‖ = ‖y‖ := by
   let _ : NormedAddCommGroup (C⋆ᵐᵒᵈ (Π i, E i)) := normedAddCommGroup
-  rw [← sq_eq_sq (by positivity) (by positivity)]
+  rw [← sq_eq_sq₀ (by positivity) (by positivity)]
   simp [norm_sq_eq]
 
 lemma norm_apply_le_norm (x : C⋆ᵐᵒᵈ (Π i, E i)) (i : ι) : ‖x i‖ ≤ ‖x‖ := by
@@ -296,6 +296,13 @@ private lemma isBounded_pi_iff_aux (s : Set (C⋆ᵐᵒᵈ (Π i, E i))) :
 
 end Aux
 
+noncomputable instance : PseudoMetricSpace (C⋆ᵐᵒᵈ (Π i, E i)) :=
+  .ofSeminormedAddCommGroupCoreReplaceAll
+    normedSpaceCore.toCore uniformity_pi_eq_aux isBounded_pi_iff_aux
+
+noncomputable instance : SeminormedAddCommGroup (C⋆ᵐᵒᵈ (Π i, E i)) :=
+  .ofCoreReplaceAll normedSpaceCore.toCore uniformity_pi_eq_aux isBounded_pi_iff_aux
+
 noncomputable instance : NormedAddCommGroup (C⋆ᵐᵒᵈ (Π i, E i)) :=
   .ofCoreReplaceAll normedSpaceCore uniformity_pi_eq_aux isBounded_pi_iff_aux
 
@@ -334,13 +341,18 @@ instance instCStarModuleComplex : CStarModule ℂ E where
   norm_eq_sqrt_norm_inner_self {x} := by
     simpa only [← inner_self_re_eq_norm] using norm_eq_sqrt_inner x
 
+/- With the recent change to the defeq of `Inner ℂ ℂ`, these examples are no longer valid.
+However, the purpose behind that change is to allow the removal of `ᵐᵒᵖ` in the definition of
+`CStarModule` in so as to preserve exactly these defeqs. When that further change is instituted,
+we will be able to restore these defeq checks. -/
 -- Ensures that the two ways to obtain `CStarModule ℂ ℂ` are definitionally equal.
-example : instCStarModule (A := ℂ) = instCStarModuleComplex := by with_reducible_and_instances rfl
+-- example : instCStarModule (A := ℂ) = instCStarModuleComplex := by
+--   with_reducible_and_instances rfl
 
 /- Ensures that the two `Inner ℂ ℂ` instances are definitionally equal. Note that this cannot be at
 reducible and instances transparency because the one from `InnerProductSpace` uses `StarRingEnd`
 whereas `WithCStarModule.instCStarModule.toInner` uses `star` since `A` may not be commutative. -/
-example : (toInner : Inner ℂ ℂ) = WithCStarModule.instCStarModule.toInner := rfl
+-- example : (toInner : Inner ℂ ℂ) = WithCStarModule.instCStarModule.toInner := rfl
 
 end InnerProductSpace
 

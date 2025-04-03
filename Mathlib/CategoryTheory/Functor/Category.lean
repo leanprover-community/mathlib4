@@ -22,7 +22,7 @@ this is a small category at the next higher level.
 namespace CategoryTheory
 
 -- declare the `v`'s first; see note [CategoryTheory universes].
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 open NatTrans Category CategoryTheory.Functor
 
@@ -31,6 +31,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 attribute [local simp] vcomp_app
 
 variable {C D} {E : Type u₃} [Category.{v₃} E]
+variable {E' : Type u₄} [Category.{v₄} E']
 variable {F G H I : C ⥤ D}
 
 /-- `Functor.category C D` gives the category structure on functors and natural transformations
@@ -77,6 +78,13 @@ theorem naturality_app {F G : C ⥤ D ⥤ E} (T : F ⟶ G) (Z : D) {X Y : C} (f 
     (F.map f).app Z ≫ (T.app Y).app Z = (T.app X).app Z ≫ (G.map f).app Z :=
   congr_fun (congr_arg app (T.naturality f)) Z
 
+@[reassoc]
+theorem naturality_app_app {F G : C ⥤ D ⥤ E ⥤ E'}
+    (α : F ⟶ G) {X₁ Y₁ : C} (f : X₁ ⟶ Y₁) (X₂ : D) (X₃ : E) :
+    ((F.map f).app X₂).app X₃ ≫ ((α.app Y₁).app X₂).app X₃ =
+      ((α.app X₁).app X₂).app X₃ ≫ ((G.map f).app X₂).app X₃ :=
+  congr_app (NatTrans.naturality_app α X₂ f) X₃
+
 /-- A natural transformation is a monomorphism if each component is. -/
 theorem mono_of_mono_app (α : F ⟶ G) [∀ X : C, Mono (α.app X)] : Mono α :=
   ⟨fun g h eq => by
@@ -89,7 +97,7 @@ theorem epi_of_epi_app (α : F ⟶ G) [∀ X : C, Epi (α.app X)] : Epi α :=
     ext X
     rw [← cancel_epi (α.app X), ← comp_app, eq, comp_app]⟩
 
-/-- The monoid of natural transformations of the identity is commutative.-/
+/-- The monoid of natural transformations of the identity is commutative. -/
 lemma id_comm (α β : (𝟭 C) ⟶ (𝟭 C)) : α ≫ β = β ≫ α := by
   ext X
   exact (α.naturality (β.app X)).symm
@@ -134,6 +142,18 @@ protected def flip (F : C ⥤ D ⥤ E) : D ⥤ C ⥤ E where
 
 end Functor
 
+variable (C D E) in
+/-- The functor `(C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E` which flips the variables. -/
+@[simps]
+def flipFunctor : (C ⥤ D ⥤ E) ⥤ D ⥤ C ⥤ E where
+  obj F := F.flip
+  map {F₁ F₂} φ :=
+    { app := fun Y =>
+        { app := fun X => (φ.app X).app Y
+          naturality := fun X₁ X₂ f => by
+            dsimp
+            simp only [← NatTrans.comp_app, naturality] } }
+
 namespace Iso
 
 @[reassoc (attr := simp)]
@@ -147,10 +167,5 @@ theorem map_inv_hom_id_app {X Y : C} (e : X ≅ Y) (F : C ⥤ D ⥤ E) (Z : D) :
   simp [← NatTrans.comp_app, ← Functor.map_comp]
 
 end Iso
-
-@[deprecated (since := "2024-06-09")] alias map_hom_inv_app := Iso.map_hom_inv_id_app
-@[deprecated (since := "2024-06-09")] alias map_inv_hom_app := Iso.map_inv_hom_id_app
-@[deprecated (since := "2024-06-09")] alias map_hom_inv_app_assoc := Iso.map_hom_inv_id_app_assoc
-@[deprecated (since := "2024-06-09")] alias map_inv_hom_app_assoc := Iso.map_inv_hom_id_app_assoc
 
 end CategoryTheory

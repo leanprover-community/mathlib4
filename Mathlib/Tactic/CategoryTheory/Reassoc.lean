@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.Lean.Meta.Simp
+import Mathlib.Tactic.Simps.Basic
 import Mathlib.Util.AddRelatedDecl
 
 /-!
@@ -63,9 +65,9 @@ that are already right associated.
 Note that if you want both the lemma and the reassociated lemma to be
 `simp` lemmas, you should tag the lemma `@[reassoc (attr := simp)]`.
 The variant `@[simp, reassoc]` on a lemma `F` will tag `F` with `@[simp]`,
-but not `F_apply` (this is sometimes useful).
+but not `F_assoc` (this is sometimes useful).
 -/
-syntax (name := reassoc) "reassoc" (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+syntax (name := reassoc) "reassoc" (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
 
 initialize registerBuiltinAttribute {
   name := `reassoc

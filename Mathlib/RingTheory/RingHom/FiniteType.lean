@@ -19,14 +19,14 @@ Let `R` be a commutative ring, `S` is an `R`-algebra, `M` be a submonoid of `R`.
   finite type `R' = M⁻¹R`-algebra.
 * `finiteType_ofLocalizationSpan` : `S` is a finite type `R`-algebra if there exists
   a set `{ r }` that spans `R` such that `Sᵣ` is a finite type `Rᵣ`-algebra.
-*`RingHom.finiteType_is_local`: `RingHom.FiniteType` is a local property.
+*`RingHom.finiteType_isLocal`: `RingHom.FiniteType` is a local property.
 
 -/
 
 
 namespace RingHom
 
-open scoped Pointwise TensorProduct Classical
+open scoped Pointwise TensorProduct
 
 universe u
 
@@ -40,6 +40,7 @@ theorem finiteType_stableUnderComposition : StableUnderComposition @FiniteType :
 
 /-- If `S` is a finite type `R`-algebra, then `S' = M⁻¹S` is a finite type `R' = M⁻¹R`-algebra. -/
 theorem finiteType_localizationPreserves : RingHom.LocalizationPreserves @RingHom.FiniteType := by
+  classical
   introv R hf
   -- mirrors the proof of `localization_map_finite`
   letI := f.toAlgebra
@@ -71,10 +72,11 @@ theorem finiteType_localizationPreserves : RingHom.LocalizationPreserves @RingHo
 theorem localization_away_map_finiteType (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.FiniteType) :
     (IsLocalization.Away.map R' S' f r).FiniteType :=
-  finiteType_localizationPreserves.away r hf
+  finiteType_localizationPreserves.away _ r _ _ hf
 
 variable {S'}
 
+open scoped Classical in
 /-- Let `S` be an `R`-algebra, `M` a submonoid of `S`, `S' = M⁻¹S`.
 Suppose the image of some `x : S` falls in the adjoin of some finite `s ⊆ S'` over `R`,
 and `A` is an `R`-subalgebra of `S` containing both `M` and the numerators of `s`.
@@ -100,6 +102,7 @@ theorem IsLocalization.exists_smul_mem_of_mem_adjoin [Algebra R S] [Algebra R S'
   rw [Submonoid.smul_def, smul_eq_mul, Submonoid.coe_mul, SubmonoidClass.coe_pow, mul_assoc, ← ha₂,
     mul_comm]
 
+open scoped Classical in
 /-- Let `S` be an `R`-algebra, `M` a submonoid of `R`, and `S' = M⁻¹S`.
 If the image of some `x : S` falls in the adjoin of some finite `s ⊆ S'` over `R`,
 then there exists some `m : M` such that `m • x` falls in the
@@ -118,6 +121,7 @@ theorem IsLocalization.lift_mem_adjoin_finsetIntegerMultiple [Algebra R S] [Alge
   simpa only [Submonoid.smul_def, algebraMap_smul] using e
 
 theorem finiteType_ofLocalizationSpan : RingHom.OfLocalizationSpan @RingHom.FiniteType := by
+  classical
   rw [RingHom.ofLocalizationSpan_iff_finite]
   introv R hs H
   -- mirrors the proof of `finite_ofLocalizationSpan`
@@ -215,16 +219,23 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
       exact Or.inl (Or.inr r.2)
     · rw [ht]; trivial
 
-theorem finiteType_is_local : PropertyIsLocal @FiniteType :=
-  ⟨finiteType_localizationPreserves, finiteType_ofLocalizationSpanTarget,
-    finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
-      finiteType_holdsForLocalizationAway⟩
+theorem finiteType_isLocal : PropertyIsLocal @FiniteType :=
+  ⟨finiteType_localizationPreserves.away,
+    finiteType_ofLocalizationSpanTarget,
+    finiteType_ofLocalizationSpanTarget.ofLocalizationSpan
+      (finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
+        finiteType_holdsForLocalizationAway).left,
+    (finiteType_stableUnderComposition.stableUnderCompositionWithLocalizationAway
+      finiteType_holdsForLocalizationAway).right⟩
+
+@[deprecated (since := "2025-03-01")]
+alias finiteType_is_local := finiteType_isLocal
 
 theorem finiteType_respectsIso : RingHom.RespectsIso @RingHom.FiniteType :=
-  RingHom.finiteType_is_local.respectsIso
+  RingHom.finiteType_isLocal.respectsIso
 
-theorem finiteType_stableUnderBaseChange : StableUnderBaseChange @FiniteType := by
-  apply StableUnderBaseChange.mk
+theorem finiteType_isStableUnderBaseChange : IsStableUnderBaseChange @FiniteType := by
+  apply IsStableUnderBaseChange.mk
   · exact finiteType_respectsIso
   · introv h
     replace h : Algebra.FiniteType R T := by

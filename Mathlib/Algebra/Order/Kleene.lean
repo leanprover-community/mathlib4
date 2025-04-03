@@ -127,11 +127,18 @@ variable [IdemSemiring α] {a b c : α}
 theorem add_eq_sup (a b : α) : a + b = a ⊔ b :=
   IdemSemiring.add_eq_sup _ _
 
--- Porting note: This simp theorem often leads to timeout when `α` has rich structure.
---               So, this theorem should be scoped.
 scoped[Computability] attribute [simp] add_eq_sup
 
 theorem add_idem (a : α) : a + a = a := by simp
+
+lemma natCast_eq_one {n : ℕ} (nezero : n ≠ 0) : (n : α) = 1 := by
+  rw [← Nat.one_le_iff_ne_zero] at nezero
+  induction n, nezero using Nat.le_induction with
+  | base => exact Nat.cast_one
+  | succ x _ hx => rw [Nat.cast_add, hx, Nat.cast_one, add_idem 1]
+
+lemma ofNat_eq_one {n : ℕ} [n.AtLeastTwo] : (ofNat(n) : α) = 1 :=
+  natCast_eq_one <| Nat.ne_zero_of_lt Nat.AtLeastTwo.prop
 
 theorem nsmul_eq_self : ∀ {n : ℕ} (_ : n ≠ 0) (a : α), n • a = a
   | 0, h => (h rfl).elim
@@ -152,13 +159,17 @@ theorem add_le (ha : a ≤ c) (hb : b ≤ c) : a + b ≤ c :=
   add_le_iff.2 ⟨ha, hb⟩
 
 -- See note [lower instance priority]
-instance (priority := 100) IdemSemiring.toCanonicallyOrderedAddCommMonoid :
-    CanonicallyOrderedAddCommMonoid α :=
+instance (priority := 100) IdemSemiring.toOrderedAddCommMonoid :
+    OrderedAddCommMonoid α :=
   { ‹IdemSemiring α› with
     add_le_add_left := fun a b hbc c ↦ by
       simp_rw [add_eq_sup]
-      exact sup_le_sup_left hbc _
-    exists_add_of_le := fun h ↦ ⟨_, h.add_eq_right.symm⟩
+      exact sup_le_sup_left hbc _ }
+
+-- See note [lower instance priority]
+instance (priority := 100) IdemSemiring.toCanonicallyOrderedAdd :
+    CanonicallyOrderedAdd α :=
+  { exists_add_of_le := fun h ↦ ⟨_, h.add_eq_right.symm⟩
     le_self_add := fun a b ↦ add_eq_right_iff_le.1 <| by rw [← add_assoc, add_idem] }
 
 -- See note [lower instance priority]
@@ -312,7 +323,7 @@ namespace Function.Injective
 -- See note [reducible non-instances]
 /-- Pullback an `IdemSemiring` instance along an injective function. -/
 protected abbrev idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β]
-    [NatCast β] [Sup β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
+    [NatCast β] [Max β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
@@ -326,7 +337,7 @@ protected abbrev idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul
 -- See note [reducible non-instances]
 /-- Pullback an `IdemCommSemiring` instance along an injective function. -/
 protected abbrev idemCommSemiring [IdemCommSemiring α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ]
-    [SMul ℕ β] [NatCast β] [Sup β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
+    [SMul ℕ β] [NatCast β] [Max β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
@@ -337,7 +348,7 @@ protected abbrev idemCommSemiring [IdemCommSemiring α] [Zero β] [One β] [Add 
 -- See note [reducible non-instances]
 /-- Pullback a `KleeneAlgebra` instance along an injective function. -/
 protected abbrev kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ]
-    [SMul ℕ β] [NatCast β] [Sup β] [Bot β] [KStar β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
+    [SMul ℕ β] [NatCast β] [Max β] [Bot β] [KStar β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥)

@@ -79,10 +79,6 @@ lemma FiniteDimensional.of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
-@[deprecated (since := "2024-02-02")]
-alias FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two :=
-  FiniteDimensional.of_fact_finrank_eq_two
-
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [Fact (finrank ℝ E = 2)]
   (o : Orientation ℝ E (Fin 2))
 
@@ -176,7 +172,6 @@ irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
 
 @[simp]
 theorem inner_rightAngleRotationAux₁_left (x y : E) : ⟪o.rightAngleRotationAux₁ x, y⟫ = ω x y := by
-  -- Porting note: split `simp only` for greater proof control
   simp only [rightAngleRotationAux₁, LinearEquiv.trans_symm, LinearIsometryEquiv.toLinearEquiv_symm,
     LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply, LinearEquiv.trans_apply,
     LinearIsometryEquiv.coe_toLinearEquiv]
@@ -196,7 +191,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
     norm_map' := fun x => by
       dsimp
       refine le_antisymm ?_ ?_
-      · cases' eq_or_lt_of_le (norm_nonneg (o.rightAngleRotationAux₁ x)) with h h
+      · rcases eq_or_lt_of_le (norm_nonneg (o.rightAngleRotationAux₁ x)) with h | h
         · rw [← h]
           positivity
         refine le_of_mul_le_mul_right ?_ h
@@ -211,7 +206,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
           have : Finset.card {x} = 1 := Finset.card_singleton x
           have : finrank ℝ K + finrank ℝ Kᗮ = finrank ℝ E := K.finrank_add_finrank_orthogonal
           have : finrank ℝ E = 2 := Fact.out
-          linarith
+          omega
         obtain ⟨w, hw₀⟩ : ∃ w : Kᗮ, w ≠ 0 := exists_ne 0
         have hw' : ⟪x, (w : E)⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
         have hw : (w : E) ≠ 0 := fun h => hw₀ (Submodule.coe_eq_zero.mp h)
@@ -346,7 +341,7 @@ theorem coe_basisRightAngleRotation (x : E) (hx : x ≠ 0) :
   coe_basisOfLinearIndependentOfCardEqFinrank _ _
 
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ⟪a, y⟫ + ω a x * ω a y = ‖a‖ ^ 2 * ⟪x, y⟫`. (See
-`Orientation.inner_mul_inner_add_areaForm_mul_areaForm` for the "applied" form.)-/
+`Orientation.inner_mul_inner_add_areaForm_mul_areaForm` for the "applied" form.) -/
 theorem inner_mul_inner_add_areaForm_mul_areaForm' (a x : E) :
     ⟪a, x⟫ • innerₛₗ ℝ a + ω a x • ω a = ‖a‖ ^ 2 • innerₛₗ ℝ x := by
   by_cases ha : a = 0
@@ -354,14 +349,16 @@ theorem inner_mul_inner_add_areaForm_mul_areaForm' (a x : E) :
   apply (o.basisRightAngleRotation a ha).ext
   intro i
   fin_cases i
-  · simp only [Fin.mk_zero, coe_basisRightAngleRotation, Matrix.cons_val_zero, LinearMap.add_apply,
-      LinearMap.smul_apply, innerₛₗ_apply, real_inner_self_eq_norm_sq, smul_eq_mul,
-      areaForm_apply_self, mul_zero, add_zero, Real.rpow_two, real_inner_comm]
+  · simp only [Fin.zero_eta, Fin.isValue, id_eq, coe_basisRightAngleRotation, Nat.succ_eq_add_one,
+      Nat.reduceAdd, Matrix.cons_val_zero, LinearMap.add_apply, LinearMap.smul_apply, innerₛₗ_apply,
+      real_inner_self_eq_norm_sq, smul_eq_mul, areaForm_apply_self, mul_zero, add_zero,
+      real_inner_comm]
     ring
-  · simp only [Fin.mk_one, coe_basisRightAngleRotation, Matrix.cons_val_one, Matrix.head_cons,
-      LinearMap.add_apply, LinearMap.smul_apply, innerₛₗ_apply, inner_rightAngleRotation_right,
-      areaForm_apply_self, neg_zero, smul_eq_mul, mul_zero, areaForm_rightAngleRotation_right,
-      real_inner_self_eq_norm_sq, zero_add, Real.rpow_two, mul_neg]
+  · simp only [Fin.mk_one, Fin.isValue, id_eq, coe_basisRightAngleRotation, Nat.succ_eq_add_one,
+      Nat.reduceAdd, Matrix.cons_val_one, Matrix.head_cons, LinearMap.add_apply,
+      LinearMap.smul_apply, innerₛₗ_apply, inner_rightAngleRotation_right, areaForm_apply_self,
+      neg_zero, smul_eq_mul, mul_zero, areaForm_rightAngleRotation_right,
+      real_inner_self_eq_norm_sq, zero_add, mul_neg]
     rw [o.areaForm_swap]
     ring
 
@@ -381,15 +378,16 @@ theorem inner_mul_areaForm_sub' (a x : E) : ⟪a, x⟫ • ω a - ω a x • inn
   apply (o.basisRightAngleRotation a ha).ext
   intro i
   fin_cases i
-  · simp only [o.areaForm_swap a x, neg_smul, sub_neg_eq_add, Fin.mk_zero,
-      coe_basisRightAngleRotation, Matrix.cons_val_zero, LinearMap.add_apply, LinearMap.smul_apply,
-      areaForm_apply_self, smul_eq_mul, mul_zero, innerₛₗ_apply, real_inner_self_eq_norm_sq,
-      zero_add, Real.rpow_two]
+  · simp only [o.areaForm_swap a x, neg_smul, sub_neg_eq_add, Fin.zero_eta, Fin.isValue, id_eq,
+      coe_basisRightAngleRotation, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.cons_val_zero,
+      LinearMap.add_apply, LinearMap.smul_apply, areaForm_apply_self, smul_eq_mul, mul_zero,
+      innerₛₗ_apply, real_inner_self_eq_norm_sq, zero_add]
     ring
-  · simp only [Fin.mk_one, coe_basisRightAngleRotation, Matrix.cons_val_one, Matrix.head_cons,
-      LinearMap.sub_apply, LinearMap.smul_apply, areaForm_rightAngleRotation_right,
-      real_inner_self_eq_norm_sq, smul_eq_mul, innerₛₗ_apply, inner_rightAngleRotation_right,
-      areaForm_apply_self, neg_zero, mul_zero, sub_zero, Real.rpow_two, real_inner_comm]
+  · simp only [Fin.mk_one, Fin.isValue, id_eq, coe_basisRightAngleRotation, Nat.succ_eq_add_one,
+      Nat.reduceAdd, Matrix.cons_val_one, Matrix.head_cons, LinearMap.sub_apply,
+      LinearMap.smul_apply, areaForm_rightAngleRotation_right, real_inner_self_eq_norm_sq,
+      smul_eq_mul, innerₛₗ_apply, inner_rightAngleRotation_right, areaForm_apply_self, neg_zero,
+      mul_zero, sub_zero, real_inner_comm]
     ring
 
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ω a y - ω a x * ⟪a, y⟫ = ‖a‖ ^ 2 * ω x y`. -/
@@ -486,17 +484,17 @@ theorem kahler_mul (a x y : E) : o.kahler x a * o.kahler a y = ‖a‖ ^ 2 * o.k
 theorem normSq_kahler (x y : E) : Complex.normSq (o.kahler x y) = ‖x‖ ^ 2 * ‖y‖ ^ 2 := by
   simpa [kahler_apply_apply, Complex.normSq, sq] using o.inner_sq_add_areaForm_sq x y
 
-theorem abs_kahler (x y : E) : Complex.abs (o.kahler x y) = ‖x‖ * ‖y‖ := by
-  rw [← sq_eq_sq, Complex.sq_abs]
+theorem norm_kahler (x y : E) : ‖o.kahler x y‖ = ‖x‖ * ‖y‖ := by
+  rw [← sq_eq_sq₀, Complex.sq_norm]
   · linear_combination o.normSq_kahler x y
   · positivity
   · positivity
 
-theorem norm_kahler (x y : E) : ‖o.kahler x y‖ = ‖x‖ * ‖y‖ := by simpa using o.abs_kahler x y
+@[deprecated (since := "2025-02-17")] alias abs_kahler := norm_kahler
 
 theorem eq_zero_or_eq_zero_of_kahler_eq_zero {x y : E} (hx : o.kahler x y = 0) : x = 0 ∨ y = 0 := by
   have : ‖x‖ * ‖y‖ = 0 := by simpa [hx] using (o.norm_kahler x y).symm
-  cases' eq_zero_or_eq_zero_of_mul_eq_zero this with h h
+  rcases eq_zero_or_eq_zero_of_mul_eq_zero this with h | h
   · left
     simpa using h
   · right
@@ -537,10 +535,10 @@ attribute [local instance] Complex.finrank_real_complex_fact
 @[simp]
 protected theorem areaForm (w z : ℂ) : Complex.orientation.areaForm w z = (conj w * z).im := by
   let o := Complex.orientation
-  simp only [o.areaForm_to_volumeForm, o.volumeForm_robust Complex.orthonormalBasisOneI rfl,
-    Basis.det_apply, Matrix.det_fin_two, Basis.toMatrix_apply, toBasis_orthonormalBasisOneI,
-    Matrix.cons_val_zero, coe_basisOneI_repr, Matrix.cons_val_one, Matrix.head_cons, mul_im,
-    conj_re, conj_im]
+  simp only [o, o.areaForm_to_volumeForm,
+    o.volumeForm_robust Complex.orthonormalBasisOneI rfl, Basis.det_apply, Matrix.det_fin_two,
+    Basis.toMatrix_apply, toBasis_orthonormalBasisOneI, Matrix.cons_val_zero, coe_basisOneI_repr,
+    Matrix.cons_val_one, Matrix.head_cons, mul_im, conj_re, conj_im]
   ring
 
 @[simp]
@@ -554,9 +552,9 @@ protected theorem rightAngleRotation (z : ℂ) :
   ring
 
 @[simp]
-protected theorem kahler (w z : ℂ) : Complex.orientation.kahler w z = conj w * z := by
+protected theorem kahler (w z : ℂ) : Complex.orientation.kahler w z = z * conj w := by
   rw [Orientation.kahler_apply_apply]
-  apply Complex.ext <;> simp
+  apply Complex.ext <;> simp [mul_comm]
 
 end Complex
 
@@ -593,7 +591,7 @@ theorem rightAngleRotation_map_complex (f : E ≃ₗᵢ[ℝ] ℂ)
 of a complex-number representation of the space. -/
 theorem kahler_map_complex (f : E ≃ₗᵢ[ℝ] ℂ)
     (hf : Orientation.map (Fin 2) f.toLinearEquiv o = Complex.orientation) (x y : E) :
-    o.kahler x y = conj (f x) * f y := by
+    o.kahler x y = f y * conj (f x) := by
   rw [← Complex.kahler, ← hf, kahler_map (hF := _)]
   iterate 2 rw [LinearIsometryEquiv.symm_apply_apply]
 

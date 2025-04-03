@@ -3,8 +3,9 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.RingTheory.Finiteness
 import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.Matrix.StdBasis
+import Mathlib.RingTheory.Finiteness.Cardinality
 
 /-!
 # Finite and free modules
@@ -16,7 +17,6 @@ We provide some instances for finite and free modules.
 * `Module.Free.ChooseBasisIndex.fintype` : If a free module is finite, then any basis is finite.
 * `Module.Finite.of_basis` : A free module with a basis indexed by a `Fintype` is finite.
 -/
-
 
 universe u v w
 
@@ -39,9 +39,13 @@ theorem Module.Finite.of_basis {R M ι : Type*} [Semiring R] [AddCommMonoid M] [
     refine ⟨⟨Finset.univ.image b, ?_⟩⟩
     simp only [Set.image_univ, Finset.coe_univ, Finset.coe_image, Basis.span_eq]
 
-instance Module.Finite.matrix {R : Type u} [Semiring R]
-    {ι₁ ι₂ : Type*} [_root_.Finite ι₁] [_root_.Finite ι₂] :
-    Module.Finite R (Matrix ι₁ ι₂ R) := by
+instance Module.Finite.matrix {R ι₁ ι₂ M : Type*}
+    [Semiring R] [AddCommMonoid M] [Module R M] [Module.Free R M] [Module.Finite R M]
+    [_root_.Finite ι₁] [_root_.Finite ι₂] :
+    Module.Finite R (Matrix ι₁ ι₂ M) := by
   cases nonempty_fintype ι₁
   cases nonempty_fintype ι₂
-  exact Module.Finite.of_basis (Pi.basis fun _ => Pi.basisFun R _)
+  exact Module.Finite.of_basis <| (Free.chooseBasis _ _).matrix _ _
+
+example {ι₁ ι₂ R : Type*} [Semiring R] [Finite ι₁] [Finite ι₂] :
+    Module.Finite R (Matrix ι₁ ι₂ R) := inferInstance

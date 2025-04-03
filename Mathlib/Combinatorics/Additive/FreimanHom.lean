@@ -3,10 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.ZMod.Defs
@@ -60,6 +60,8 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 * Affine maps are Freiman homs.
 -/
 
+assert_not_exists Field Ideal TwoSidedIdeal
+
 open Multiset Set
 open scoped Pointwise
 
@@ -67,7 +69,7 @@ variable {F α β γ : Type*}
 
 section CommMonoid
 variable [CommMonoid α] [CommMonoid β] [CommMonoid γ] {A A₁ A₂ : Set α}
-  {B B₁ B₂ : Set β} {C : Set γ} {f f₁ f₂ : α → β} {g : β → γ} {m n : ℕ}
+  {B B₁ B₂ : Set β} {C : Set γ} {f f₁ f₂ : α → β} {g : β → γ} {n : ℕ}
 
 /-- An additive `n`-Freiman homomorphism from a set `A` to a set `B` is a map which preserves sums
 of `n` elements. -/
@@ -234,8 +236,7 @@ lemma isMulFreimanIso_empty : IsMulFreimanIso n (∅ : Set α) (∅ : Set β) f 
 
 @[to_additive] lemma IsMulFreimanHom.mul (h₁ : IsMulFreimanHom n A B₁ f₁)
     (h₂ : IsMulFreimanHom n A B₂ f₂) : IsMulFreimanHom n A (B₁ * B₂) (f₁ * f₂) where
-  -- TODO: Extract `Set.MapsTo.mul` from this proof
-  mapsTo _ ha := mul_mem_mul (h₁.mapsTo ha) (h₂.mapsTo ha)
+  mapsTo := h₁.mapsTo.mul h₂.mapsTo
   map_prod_eq_map_prod s t hsA htA hs ht h := by
     rw [Pi.mul_def, prod_map_mul, prod_map_mul, h₁.map_prod_eq_map_prod hsA htA hs ht h,
       h₂.map_prod_eq_map_prod hsA htA hs ht h]
@@ -284,8 +285,8 @@ lemma IsMulFreimanHom.mono (hmn : m ≤ n) (hf : IsMulFreimanHom n A B f) :
       obtain ha | ha := ha
       · exact htA ha
       · rwa [eq_of_mem_replicate ha]
-    · rw [_root_.map_add, card_replicate, hs, Nat.add_sub_cancel' hmn]
-    · rw [_root_.map_add, card_replicate, ht, Nat.add_sub_cancel' hmn]
+    · rw [card_add, card_replicate, hs, Nat.add_sub_cancel' hmn]
+    · rw [card_add, card_replicate, ht, Nat.add_sub_cancel' hmn]
     · rw [prod_add, prod_add, h]
 
 end CancelCommMonoid
@@ -317,26 +318,24 @@ lemma IsMulFreimanIso.mono {hmn : m ≤ n} (hf : IsMulFreimanIso n A B f) :
       obtain ha | ha := ha
       · exact htA ha
       · rwa [eq_of_mem_replicate ha]
-    · rw [_root_.map_add, card_replicate, hs, Nat.add_sub_cancel' hmn]
-    · rw [_root_.map_add, card_replicate, ht, Nat.add_sub_cancel' hmn]
+    · rw [card_add, card_replicate, hs, Nat.add_sub_cancel' hmn]
+    · rw [card_add, card_replicate, ht, Nat.add_sub_cancel' hmn]
 
 end CancelCommMonoid
 
 section DivisionCommMonoid
-variable [CommMonoid α] [DivisionCommMonoid β] {A : Set α} {B : Set β} {f : α → β} {m n : ℕ}
+variable [CommMonoid α] [DivisionCommMonoid β] {A : Set α} {B : Set β} {f : α → β} {n : ℕ}
 
 @[to_additive]
 lemma IsMulFreimanHom.inv (hf : IsMulFreimanHom n A B f) : IsMulFreimanHom n A B⁻¹ f⁻¹ where
-  -- TODO: Extract `Set.MapsTo.inv` from this proof
-  mapsTo _ ha := inv_mem_inv.2 (hf.mapsTo ha)
+  mapsTo := hf.mapsTo.inv
   map_prod_eq_map_prod s t hsA htA hs ht h := by
     rw [Pi.inv_def, prod_map_inv, prod_map_inv, hf.map_prod_eq_map_prod hsA htA hs ht h]
 
 @[to_additive] lemma IsMulFreimanHom.div {β : Type*} [DivisionCommMonoid β] {B₁ B₂ : Set β}
     {f₁ f₂ : α → β} (h₁ : IsMulFreimanHom n A B₁ f₁) (h₂ : IsMulFreimanHom n A B₂ f₂) :
     IsMulFreimanHom n A (B₁ / B₂) (f₁ / f₂) where
-  -- TODO: Extract `Set.MapsTo.div` from this proof
-  mapsTo _ ha := div_mem_div (h₁.mapsTo ha) (h₂.mapsTo ha)
+  mapsTo := h₁.mapsTo.div h₂.mapsTo
   map_prod_eq_map_prod s t hsA htA hs ht h := by
     rw [Pi.div_def, prod_map_div, prod_map_div, h₁.map_prod_eq_map_prod hsA htA hs ht h,
       h₂.map_prod_eq_map_prod hsA htA hs ht h]
@@ -347,8 +346,8 @@ section Prod
 variable {α₁ α₂ β₁ β₂ : Type*} [CommMonoid α₁] [CommMonoid α₂] [CommMonoid β₁] [CommMonoid β₂]
   {A₁ : Set α₁} {A₂ : Set α₂} {B₁ : Set β₁} {B₂ : Set β₂} {f₁ : α₁ → β₁} {f₂ : α₂ → β₂} {n : ℕ}
 
-@[to_additive]
-lemma IsMulFreimanHom.prod (h₁ : IsMulFreimanHom n A₁ B₁ f₁) (h₂ : IsMulFreimanHom n A₂ B₂ f₂) :
+@[to_additive prodMap]
+lemma IsMulFreimanHom.prodMap (h₁ : IsMulFreimanHom n A₁ B₁ f₁) (h₂ : IsMulFreimanHom n A₂ B₂ f₂) :
     IsMulFreimanHom n (A₁ ×ˢ A₂) (B₁ ×ˢ B₂) (Prod.map f₁ f₂) where
   mapsTo := h₁.mapsTo.prodMap h₂.mapsTo
   map_prod_eq_map_prod s t hsA htA hs ht h := by
@@ -360,8 +359,14 @@ lemma IsMulFreimanHom.prod (h₁ : IsMulFreimanHom n A₁ B₁ f₁) (h₂ : IsM
       (by simpa) h.1, h₂.map_prod_eq_map_prod (by simpa [@forall_swap α₁] using hsA.2)
       (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa) h.2⟩
 
-@[to_additive]
-lemma IsMulFreimanIso.prod (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : IsMulFreimanIso n A₂ B₂ f₂) :
+@[deprecated (since := "2025-03-11")]
+alias IsAddFreimanHom.sum := IsAddFreimanHom.prodMap
+
+@[to_additive existing, deprecated (since := "2025-03-11")]
+alias IsMulFreimanHom.prod := IsMulFreimanHom.prodMap
+
+@[to_additive prodMap]
+lemma IsMulFreimanIso.prodMap (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : IsMulFreimanIso n A₂ B₂ f₂) :
     IsMulFreimanIso n (A₁ ×ˢ A₂) (B₁ ×ˢ B₂) (Prod.map f₁ f₂) where
   bijOn := h₁.bijOn.prodMap h₂.bijOn
   map_prod_eq_map_prod s t hsA htA hs ht := by
@@ -371,7 +376,13 @@ lemma IsMulFreimanIso.prod (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : IsM
     rw [← Function.comp_def, ← map_map, ← map_map, ← Function.comp_def f₂, ← map_map, ← map_map,
       h₁.map_prod_eq_map_prod (by simpa using hsA.1) (by simpa using htA.1) (by simpa) (by simpa),
       h₂.map_prod_eq_map_prod (by simpa [@forall_swap α₁] using hsA.2)
-      (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa)]
+        (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa)]
+
+@[deprecated (since := "2025-03-11")]
+alias IsAddFreimanIso.sum := IsAddFreimanIso.prodMap
+
+@[to_additive existing, deprecated (since := "2025-03-11")]
+alias IsMulFreimanIso.prod := IsMulFreimanIso.prodMap
 
 end Prod
 

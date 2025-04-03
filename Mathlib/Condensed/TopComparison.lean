@@ -23,9 +23,7 @@ We apply this API to `CompHaus` and define the functor
 
 universe w w' v u
 
-open CategoryTheory Opposite Limits regularTopology ContinuousMap
-
-attribute [local instance] ConcreteCategory.instFunLike
+open CategoryTheory Opposite Limits regularTopology ContinuousMap Topology
 
 variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{w})
   (X : Type w') [TopologicalSpace X]
@@ -89,8 +87,8 @@ the extensive topology.
 -/
 noncomputable instance [PreservesFiniteCoproducts G] :
     PreservesFiniteProducts (yonedaPresheaf G X) :=
-  have := preservesFiniteProductsOp G
-  ⟨fun _ ↦ compPreservesLimitsOfShape G.op (yonedaPresheaf' X)⟩
+  have := preservesFiniteProducts_op G
+  ⟨fun _ ↦ comp_preservesLimitsOfShape G.op (yonedaPresheaf' X)⟩
 
 section
 
@@ -109,11 +107,11 @@ def TopCat.toSheafCompHausLike :
   cond := by
     have := CompHausLike.preregular hs
     rw [Presheaf.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
-    refine ⟨⟨inferInstance⟩, ?_⟩
+    refine ⟨inferInstance, ?_⟩
     apply (config := { allowSynthFailures := true }) equalizerCondition_yonedaPresheaf
       (CompHausLike.compHausLikeToTop.{u} P) X
     intro Z B π he
-    apply IsQuotientMap.of_surjective_continuous (hs _ he) π.continuous
+    apply IsQuotientMap.of_surjective_continuous (hs _ he) π.hom.continuous
 
 /--
 `TopCat.toSheafCompHausLike` yields a functor from `TopCat.{max u w}` to
@@ -124,7 +122,7 @@ noncomputable def topCatToSheafCompHausLike :
     have := CompHausLike.preregular hs
     TopCat.{max u w} ⥤ Sheaf (coherentTopology (CompHausLike.{u} P)) (Type (max u w)) where
   obj X := X.toSheafCompHausLike P hs
-  map f := ⟨⟨fun _ g ↦ f.comp g, by aesop⟩⟩
+  map f := ⟨⟨fun _ g ↦ f.hom.comp g, by aesop⟩⟩
 
 end
 

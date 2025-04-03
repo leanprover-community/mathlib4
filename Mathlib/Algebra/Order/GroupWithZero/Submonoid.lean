@@ -5,11 +5,13 @@ Authors: Chris Birkbeck
 -/
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
-import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # The submonoid of positive elements
 -/
+
+assert_not_exists RelIso Ring
 
 namespace Submonoid
 variable (α) [MulZeroOneClass α] [PartialOrder α] [PosMulStrictMono α] [ZeroLEOneClass α]

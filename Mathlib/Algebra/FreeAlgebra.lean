@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Adam Topaz, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 
 /-!
 # Free Algebras
@@ -96,9 +95,7 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
   Pre.hasZero Pre.hasOne Pre.hasSMul
 
 /-- Given a function from `X` to an `R`-algebra `A`, `lift_fun` provides a lift of `f` to a function
-from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`.
--/
--- Porting note: recOn was replaced to preserve computability, see lean4#2049
+from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`. -/
 def liftFun {A : Type*} [Semiring A] [Algebra R A] (f : X → A) :
     Pre R X → A
   | .of t => f t
@@ -241,7 +238,7 @@ instance : Inhabited (FreeAlgebra R X) :=
   ⟨0⟩
 
 instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra A X) where
-  toRingHom := ({
+  algebraMap := ({
       toFun := fun r => Quot.mk _ r
       map_one' := rfl
       map_mul' := fun _ _ => Quot.sound Rel.mul_scalar
@@ -254,7 +251,7 @@ instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra
   smul_def' _ _ := rfl
 
 -- verify there is no diamond at `default` transparency but we will need
--- `reducible_and_instances` which currently fails #10906
+-- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
 variable (S : Type) [CommSemiring S] in
 example : (Semiring.toNatAlgebra : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
@@ -276,7 +273,7 @@ instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
   Algebra.semiringToRing S
 
 -- verify there is no diamond but we will need
--- `reducible_and_instances` which currently fails #10906
+-- `reducible_and_instances` which currently fails https://github.com/leanprover-community/mathlib4/issues/10906
 variable (S : Type) [CommRing S] in
 example : (Ring.toIntAlgebra _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
@@ -343,8 +340,7 @@ private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   commutes' := by tauto
 
 /-- Given a function `f : X → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
-of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`.
--/
+of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`. -/
 @[irreducible]
 def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
   { toFun := liftAux R

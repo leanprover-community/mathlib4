@@ -23,7 +23,7 @@ It contains
 * an integer `diff` representing the change in number of instructions for `file`;
 * a float `reldiff` representing the percentage change in number of instructions for `file`.
 -/
-structure Bench :=
+structure Bench where
   file    : String
   diff    : Int
   reldiff : Float
@@ -55,16 +55,17 @@ def formatPercent (reldiff : Float) : String :=
   let sgn : Int := if reldiff < 0 then -1 else 1
   let reldiff := (.ofInt sgn) * reldiff
   let (sgn, intDigs, decDigs) := intDecs (sgn * reldiff.toUInt32.val) 0 2
-  s!"({sgn}{intDigs}.{decDigs}%)"
+  -- the `if ... then ... else ...` makes sure that the output includes leading `0`s
+  s!"({sgn}{intDigs}.{if decDigs < 10 then "0" else ""}{decDigs}%)"
 
 /--
-info: [(+0.0%), (+14.28%), (+0.20%), (-0.60%)]
+info: [(+0.00%), (+14.28%), (+0.20%), (-0.60%), (-0.08%), (+1.02%)]
 ---
 info: [+0.0⬝10⁹, +1.0⬝10⁹, +30.200⬝10⁹, -0.460⬝10⁹]
 -/
 #guard_msgs in
 run_cmd
-  let floats : Array Float := #[0, 1/7, 0.002, -0.006]
+  let floats : Array Float := #[0, 1/7, 0.002, -0.006, -8.253600406145226E-4, 0.0102]
   logInfo m!"{floats.map formatPercent}"
   let ints : Array Int := #[0, 10^9, 302*10^8, -460000000]
   logInfo m!"{ints.map formatDiff}"
@@ -124,8 +125,8 @@ def benchOutput (jsonInput : String) : IO String := do
   -- The `boundᵢ` entry becomes `none` for the collapsed entries, so that we know that these
   -- should be printed individually instead of inside a `<details><summary>`-block.
   -- A single bin with just a single file is also marked with `none`, for the same reason.
-  let ts1 := togetherSorted.groupBy (·.2.size == 1 && ·.2.size == 1)
-  let ts2 := List.join <| ts1.map fun l ↦
+  let ts1 := togetherSorted.splitBy (·.2.size == 1 && ·.2.size == 1)
+  let ts2 := List.flatten <| ts1.map fun l ↦
     if (l.getD 0 default).2.size == 1 then
       [(none, l.foldl (· ++ ·.2) #[])]
     else
@@ -146,6 +147,9 @@ open Lean Elab Command in
 as a comment to a pull request.  It takes as input
 * the number `PR` and the name `repo` as a `String` containing the relevant pull-request
   (it reads and posts comments there)
+* the optional `jobID` numeral for reporting the action that produced the output
+  (`jobID` is a natural number, even though it gets converted to a `String` -- this is mostly
+  due to the fact that it is easier to get CI to pass a number, than a string with quotations)
 * the `String` `tempFile` of a temporary file where the command stores transient information.
 
 The code itself interfaces with the shell to retrieve and process json data and eventually
@@ -161,10 +165,14 @@ Here is a summary of the steps:
 * process the final string to produce a summary (using `benchOutput`),
 * finally post the resulting output to the PR (using `gh pr comment ...`).
 -/
-def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "benchOutput.json") :
+def addBenchSummaryComment (PR : Nat) (repo : String) (jobID : Nat := 0)
+    (author : String := "leanprover-bot") (tempFile : String := "benchOutput.json") :
     CommandElabM Unit := do
+  let job_msg := s!"\n[CI run](https://github.com/{repo}/actions/runs/{jobID})"
   let PR := s!"{PR}"
-  let jq := ".comments | last | select(.author.login==\"leanprover-bot\") | .body"
+  let jq := s!".comments | last | select(.author.login==\"{author}\") | .body"
+
+  -- retrieve the relevant comment
   let gh_pr_comments : IO.Process.SpawnArgs :=
     { cmd := "gh", args := #["pr", "view", PR, "--repo", repo, "--json", "comments", "--jq", jq] }
   -- This is the content of the last comment made by `leanprover-bot` to the PR `PR`.
@@ -182,19 +190,28 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
     logInfo m!"Found\nsource: '{source}'\ntarget: '{target}'\ninstead of two commit hashes."
     return
   dbg_trace s!"Using commits\nsource: '{source}'\ntarget: '{target}'\n"
+
+  -- retrieve the data from the speed-center
   let curlSpeedCenter : IO.Process.SpawnArgs :=
     { cmd := "curl"
-      args := #[s!"http://speed.lean-fro.org/mathlib4/api/compare/{source}/to/{target}?all_values=true"] }
+      args := #[s!"https://speed.lean-lang.org/mathlib4/api/compare/{source}/to/{target}?all_values=true"] }
+  dbg_trace "\n#running\n\
+    curl https://speed.lean-lang.org/mathlib4/api/compare/{source}/to/{target}?all_values=true > {tempFile}.src"
   let bench ← IO.Process.run curlSpeedCenter
   IO.FS.writeFile (tempFile ++ ".src") bench
+
   -- Extract all instruction changes whose magnitude is larger than `threshold`.
-  let threshold := s!"{10 ^ 9}"
+  let threshold := 10 ^ 9
   let jq1 : IO.Process.SpawnArgs :=
     { cmd := "jq"
-      args := #["-r", "--arg", "thr", threshold,
+      args := #["-r", "--arg", "thr", s!"{threshold}",
         ".differences | .[] | ($thr|tonumber) as $th |
         select(.dimension.metric == \"instructions\" and ((.diff >= $th) or (.diff <= -$th)))",
         (tempFile ++ ".src")] }
+  dbg_trace "\n#running\n\
+    jq -r --arg thr {threshold} '.differences | .[] | ($thr|tonumber) as $th |\n  \
+      select(.dimension.metric == \"instructions\" and ((.diff >= $th) or (.diff <= -$th)))' \
+      {tempFile}.src > {tempFile}"
   let firstFilter ← IO.Process.run jq1
   -- we leave `tempFile.src` unchanged and we switch to updating `tempfile`: this is useful for
   -- debugging, as it preserves the original data downloaded from the speed-center
@@ -203,16 +220,27 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (tempFile : String := "ben
   let jq2 : IO.Process.SpawnArgs :=
     { cmd := "jq"
       args := #["-c", "[{file: .dimension.benchmark, diff: .diff, reldiff: .reldiff}]", tempFile] }
+  dbg_trace "\n#running\n\
+    jq -c '[\{file: .dimension.benchmark, diff: .diff, reldiff: .reldiff}]' {tempFile} > \
+      {tempFile}.2"
   let secondFilter ← IO.Process.run jq2
+  if secondFilter == "" then
+    let _ ← IO.Process.run
+      { cmd := "gh", args := #["pr", "comment", PR, "--repo", repo, "--body",
+        s!"No benchmark entry differed by at least {formatDiff threshold} instructions." ++
+          job_msg] }
+  else
   IO.FS.writeFile tempFile secondFilter
   let jq3 : IO.Process.SpawnArgs :=
     { cmd := "jq", args := #["-n", "reduce inputs as $in (null; . + $in)", tempFile] }
+  dbg_trace "\n#running\n\
+    jq -n 'reduce inputs as $in (null; . + $in)' {tempFile}.2 > {tempFile}.3"
   let thirdFilter ← IO.Process.run jq3
   let report ← benchOutput thirdFilter
   IO.println report
   -- Post the computed summary as a github comment.
   let add_comment : IO.Process.SpawnArgs :=
-    { cmd := "gh", args := #["pr", "comment", PR, "--repo", repo, "--body", report] }
+    { cmd := "gh", args := #["pr", "comment", PR, "--repo", repo, "--body", report ++ job_msg] }
   let _ ← IO.Process.run add_comment
 
 end BenchAction

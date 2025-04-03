@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
-import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Data.DFinsupp.Sigma
+import Mathlib.Data.DFinsupp.Submonoid
 
 /-!
 # Direct sum
@@ -31,16 +32,14 @@ variable (ι : Type v) (β : ι → Type w)
 
 Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`. -/
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
-  -- Porting note: Failed to synthesize
-  -- Π₀ i, β i deriving AddCommMonoid, Inhabited
-  -- See https://github.com/leanprover-community/mathlib4/issues/5020
   Π₀ i, β i
 
--- Porting note (#10754): Added inhabited instance manually
+-- The `AddCommMonoid, Inhabited` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
 instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
   inferInstanceAs (Inhabited (Π₀ i, β i))
 
--- Porting note (#10754): Added addCommMonoid instance manually
 instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
   inferInstanceAs (AddCommMonoid (Π₀ i, β i))
 
@@ -88,6 +87,9 @@ theorem sub_apply (g₁ g₂ : ⨁ i, β i) (i : ι) : (g₁ - g₂) i = g₁ i 
 end AddCommGroup
 
 variable [∀ i, AddCommMonoid (β i)]
+
+@[ext] theorem ext {x y : DirectSum ι β} (w : ∀ i, x i = y i) : x = y :=
+  DFunLike.ext _ _ w
 
 @[simp]
 theorem zero_apply (i : ι) : (0 : ⨁ i, β i) i = 0 :=
@@ -210,7 +212,7 @@ theorem toAddMonoid_of (i) (x : β i) : toAddMonoid φ (of β i x) = φ i x :=
 
 theorem toAddMonoid.unique (f : ⨁ i, β i) : ψ f = toAddMonoid (fun i => ψ.comp (of β i)) f := by
   congr
-  -- Porting note (#11041): `ext` applies addHom_ext' here, which isn't what we want.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` applies addHom_ext' here, which isn't what we want.
   apply DFinsupp.addHom_ext'
   simp [toAddMonoid, of]
 
@@ -366,15 +368,15 @@ theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S
 `M` is said to be internal if the canonical map `(⨁ i, A i) →+ M` is bijective.
 
 For the alternate statement in terms of independence and spanning, see
-`DirectSum.subgroup_isInternal_iff_independent_and_supr_eq_top` and
-`DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top`. -/
+`DirectSum.subgroup_isInternal_iff_iSupIndep_and_supr_eq_top` and
+`DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top`. -/
 def IsInternal {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) : Prop :=
   Function.Bijective (DirectSum.coeAddMonoidHom A)
 
 theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCommMonoid M]
     (A : ι → AddSubmonoid M) (h : IsInternal A) : iSup A = ⊤ := by
-  rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_top_iff_surjective]
+  rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_eq_top]
   exact Function.Bijective.surjective h
 
 variable {M S : Type*} [AddCommMonoid M] [SetLike S M] [AddSubmonoidClass S M]
@@ -390,4 +392,47 @@ theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
   classical
   exact (DFinsupp.support x).finite_toSet.subset (DirectSum.support_subset _ x)
 
+section map
+
+variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommMonoid (α i)]
+variable [∀ i, AddCommMonoid (β i)] (f : ∀ (i : ι), α i →+ β i)
+
+/-- create a homomorphism from `⨁ i, α i` to `⨁ i, β i` by giving the component-wise map `f`. -/
+def map : (⨁ i, α i) →+ ⨁ i, β i := DFinsupp.mapRange.addMonoidHom f
+
+@[simp] lemma map_of [DecidableEq ι] (i : ι) (x : α i) : map f (of α i x) = of β i (f i x) :=
+  DFinsupp.mapRange_single (hf := fun _ => map_zero _)
+
+@[simp] lemma map_apply (i : ι) (x : ⨁ i, α i) : map f x i = f i (x i) :=
+  DFinsupp.mapRange_apply (hf := fun _ => map_zero _) _ _ _
+
+@[simp] lemma map_id :
+    (map (fun i ↦ AddMonoidHom.id (α i))) = AddMonoidHom.id (⨁ i, α i) :=
+  DFinsupp.mapRange.addMonoidHom_id
+
+@[simp] lemma map_comp {γ : ι → Type*} [∀ i, AddCommMonoid (γ i)]
+    (g : ∀ (i : ι), β i →+ γ i) :
+    (map (fun i ↦ (g i).comp (f i))) = (map g).comp (map f) :=
+  DFinsupp.mapRange.addMonoidHom_comp _ _
+
+lemma map_injective : Function.Injective (map f) ↔ ∀ i, Function.Injective (f i) := by
+  classical exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+
+lemma map_surjective : Function.Surjective (map f) ↔ (∀ i, Function.Surjective (f i)) := by
+  classical exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
+
+lemma map_eq_iff (x y : ⨁ i, α i) :
+    map f x = map f y ↔ ∀ i, f i (x i) = f i (y i) := by
+  simp_rw [DirectSum.ext_iff, map_apply]
+
+end map
+
 end DirectSum
+
+/-- The canonical isomorphism of a finite direct sum of additive commutative monoids
+and the corresponding finite product. -/
+def DirectSum.addEquivProd {ι : Type*} [Fintype ι] (G : ι → Type*) [(i : ι) → AddCommMonoid (G i)] :
+    DirectSum ι G ≃+ ((i : ι) → G i) :=
+  ⟨DFinsupp.equivFunOnFintype, fun g h ↦ funext fun _ ↦ by
+    simp only [DFinsupp.equivFunOnFintype, Equiv.toFun_as_coe, Equiv.coe_fn_mk, add_apply,
+      Pi.add_apply]⟩

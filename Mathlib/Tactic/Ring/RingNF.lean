@@ -19,7 +19,7 @@ such as `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 -/
 
 namespace Mathlib.Tactic
-open Lean hiding Rat
+open Lean
 open Qq Meta
 
 namespace Ring
@@ -60,6 +60,8 @@ inductive RingMode where
 structure Config where
   /-- the reducibility setting to use when comparing atoms for defeq -/
   red := TransparencyMode.reducible
+  /-- if true, local let variables can be unfolded -/
+  zetaDelta := false
   /-- if true, atoms inside ring expressions will be reduced recursively -/
   recursive := true
   /-- The normalization style. -/
@@ -133,10 +135,9 @@ Runs a tactic in the `RingNF.M` monad, given initial data:
 -/
 partial def M.run
     {α : Type} (s : IO.Ref AtomM.State) (cfg : RingNF.Config) (x : M α) : MetaM α := do
-  let ctx := {
-    simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}]
-    congrTheorems := ← getSimpCongrTheorems
-    config.singlePass := cfg.mode matches .raw }
+  let ctx ← Simp.mkContext { singlePass := cfg.mode matches .raw, zetaDelta := cfg.zetaDelta }
+    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
+    (congrTheorems := ← getSimpCongrTheorems)
   let simp ← match cfg.mode with
   | .raw => pure pure
   | .SOP =>
@@ -145,7 +146,7 @@ partial def M.run
       ``_root_.pow_one, ``mul_neg, ``add_neg].foldlM (·.addConst ·) thms
     let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
       ``rat_rawCast_neg, ``rat_rawCast_pos].foldlM (·.addConst · (post := false)) thms
-    let ctx' := { ctx with simpTheorems := #[thms] }
+    let ctx' := ctx.setSimpTheorems #[thms]
     pure fun r' : Simp.Result ↦ do
       r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
   let nctx := { ctx, simp }
@@ -157,7 +158,7 @@ partial def M.run
     evalAtom := if cfg.recursive
       then fun e ↦ rewrite e false nctx rctx s
       else fun e ↦ pure { expr := e }
-  x nctx rctx s
+  withConfig ({ · with zetaDelta := cfg.zetaDelta }) <| x nctx rctx s
 
 /-- Overrides the default error message in `ring1` to use a prettified version of the goal. -/
 initialize ringCleanupRef.set fun e => do
@@ -193,6 +194,7 @@ which rewrites all ring expressions into a normal form.
 * `ring_nf!` will use a more aggressive reducibility setting to identify atoms.
 * `ring_nf (config := cfg)` allows for additional configuration:
   * `red`: the reducibility setting (overridden by `!`)
+  * `zetaDelta`: if true, local let variables can be unfolded (overridden by `!`)
   * `recursive`: if true, `ring_nf` will also recurse into atoms
 * `ring_nf` works as both a tactic and a conv tactic.
   In tactic mode, `ring_nf at h` can be used to rewrite in a hypothesis.
@@ -202,18 +204,18 @@ This can be used non-terminally to normalize ring expressions in the goal such a
 `ring` cannot because they involve ring reasoning inside a subterm, such as
 `sin (x + y) + sin (y + x) = 2 * sin (x + y)`.
 -/
-elab (name := ringNF) "ring_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic => do
+elab (name := ringNF) "ring_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic => do
   let mut cfg ← elabConfig cfg
-  if tk.isSome then cfg := { cfg with red := .default }
+  if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   withLocation loc (ringNFLocalDecl s cfg) (ringNFTarget s cfg)
     fun _ ↦ throwError "ring_nf failed"
 
-@[inherit_doc ringNF] macro "ring_nf!" cfg:(config)? loc:(location)? : tactic =>
-  `(tactic| ring_nf ! $(cfg)? $(loc)?)
+@[inherit_doc ringNF] macro "ring_nf!" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| ring_nf ! $cfg:optConfig $(loc)?)
 
-@[inherit_doc ringNF] syntax (name := ringNFConv) "ring_nf" "!"? (config)? : conv
+@[inherit_doc ringNF] syntax (name := ringNFConv) "ring_nf" "!"? optConfig : conv
 
 /--
 Tactic for solving equations of *commutative* (semi)rings, allowing variables in the exponent.
@@ -222,24 +224,26 @@ Tactic for solving equations of *commutative* (semi)rings, allowing variables in
 * The variant `ring1_nf!` will use a more aggressive reducibility setting
   to determine equality of atoms.
 -/
-elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:(config ?) : tactic => do
+elab (name := ring1NF) "ring1_nf" tk:"!"? cfg:optConfig : tactic => do
   let mut cfg ← elabConfig cfg
-  if tk.isSome then cfg := { cfg with red := .default }
+  if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
   let s ← IO.mkRef {}
   liftMetaMAtMain fun g ↦ M.run s cfg <| proveEq g
 
-@[inherit_doc ring1NF] macro "ring1_nf!" cfg:(config)? : tactic => `(tactic| ring1_nf ! $(cfg)?)
+@[inherit_doc ring1NF] macro "ring1_nf!" cfg:optConfig : tactic =>
+  `(tactic| ring1_nf ! $cfg:optConfig)
 
 /-- Elaborator for the `ring_nf` tactic. -/
 @[tactic ringNFConv] def elabRingNFConv : Tactic := fun stx ↦ match stx with
-  | `(conv| ring_nf $[!%$tk]? $(_cfg)?) => withMainContext do
-    let mut cfg ← elabConfig stx[2]
-    if tk.isSome then cfg := { cfg with red := .default }
+  | `(conv| ring_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
+    let mut cfg ← elabConfig cfg
+    if tk.isSome then cfg := { cfg with red := .default, zetaDelta := true }
     let s ← IO.mkRef {}
     Conv.applySimpResult (← M.run s cfg <| rewrite (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
-@[inherit_doc ringNF] macro "ring_nf!" cfg:(config)? : conv => `(conv| ring_nf ! $(cfg)?)
+@[inherit_doc ringNF] macro "ring_nf!" cfg:optConfig : conv =>
+  `(conv| ring_nf ! $cfg:optConfig)
 
 /--
 Tactic for evaluating expressions in *commutative* (semi)rings, allowing for variables in the
@@ -258,9 +262,17 @@ example (x : ℕ) (h : x * 2 > 5): x + x > 5 := by ring; assumption -- suggests 
 ```
 -/
 macro (name := ring) "ring" : tactic =>
-  `(tactic| first | ring1 | try_this ring_nf)
+  `(tactic| first | ring1 | try_this ring_nf
+  "\n\nThe `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+  \nNote that `ring` works primarily in *commutative* rings. \
+  If you have a noncommutative ring, abelian group or module, consider using \
+  `noncomm_ring`, `abel` or `module` instead.")
 @[inherit_doc ring] macro "ring!" : tactic =>
-  `(tactic| first | ring1! | try_this ring_nf!)
+  `(tactic| first | ring1! | try_this ring_nf!
+  "\n\nThe `ring!` tactic failed to close the goal. Use `ring_nf!` to obtain a normal form.
+  \nNote that `ring!` works primarily in *commutative* rings. \
+  If you have a noncommutative ring, abelian group or module, consider using \
+  `noncomm_ring`, `abel` or `module` instead.")
 
 /--
 The tactic `ring` evaluates expressions in *commutative* (semi)rings.
@@ -269,9 +281,17 @@ This is the conv tactic version, which rewrites a target which is a ring equalit
 See also the `ring` tactic.
 -/
 macro (name := ringConv) "ring" : conv =>
-  `(conv| first | discharge => ring1 | try_this ring_nf)
+  `(conv| first | discharge => ring1 | try_this ring_nf
+  "\n\nThe `ring` tactic failed to close the goal. Use `ring_nf` to obtain a normal form.
+  \nNote that `ring` works primarily in *commutative* rings. \
+  If you have a noncommutative ring, abelian group or module, consider using \
+  `noncomm_ring`, `abel` or `module` instead.")
 @[inherit_doc ringConv] macro "ring!" : conv =>
-  `(conv| first | discharge => ring1! | try_this ring_nf!)
+  `(conv| first | discharge => ring1! | try_this ring_nf!
+  "\n\nThe `ring!` tactic failed to close the goal. Use `ring_nf!` to obtain a normal form.
+  \nNote that `ring!` works primarily in *commutative* rings. \
+  If you have a noncommutative ring, abelian group or module, consider using \
+  `noncomm_ring`, `abel` or `module` instead.")
 
 end RingNF
 

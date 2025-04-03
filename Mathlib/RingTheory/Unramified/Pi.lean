@@ -31,7 +31,7 @@ theorem pi_iff :
   · intro _ i
     exact FormallyUnramified.of_surjective (Pi.evalAlgHom R f i) (Function.surjective_eval i)
   · intro H
-    constructor
+    rw [iff_comp_injective]
     intros B _ _ J hJ f₁ f₂ e
     ext g
     rw [← Finset.univ_sum_single g, map_sum, map_sum]
@@ -94,5 +94,8 @@ theorem pi_iff :
         LinearMap.coe_single, Function.comp_apply, AlgHom.toLinearMap_apply,
         Ideal.Quotient.mkₐ_eq_mk]
       exact Ideal.mem_map_of_mem (Ideal.Quotient.mk J') (hf (Pi.single x r))
+
+instance [∀ i, FormallyUnramified R (f i)] : FormallyUnramified R (Π i, f i) :=
+  (pi_iff _).mpr ‹_›
 
 end Algebra.FormallyUnramified

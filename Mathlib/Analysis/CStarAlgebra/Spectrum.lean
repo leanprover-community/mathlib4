@@ -3,8 +3,8 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
 import Mathlib.Analysis.CStarAlgebra.Unitization
+import Mathlib.Analysis.Complex.Convex
 import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Algebra.Star.StarAlgHom
@@ -86,6 +86,16 @@ theorem spectrum.subset_circle_of_unitary {u : E} (h : u ∈ unitary E) :
 
 end UnitarySpectrum
 
+section Quasispectrum
+
+open scoped NNReal in
+lemma CStarAlgebra.le_nnnorm_of_mem_quasispectrum {A : Type*} [NonUnitalCStarAlgebra A]
+    {a : A} {x : ℝ≥0} (hx : x ∈ quasispectrum ℝ≥0 a) : x ≤ ‖a‖₊ := by
+  rw [Unitization.quasispectrum_eq_spectrum_inr' ℝ≥0 ℂ] at hx
+  simpa [Unitization.nnnorm_inr] using spectrum.le_nnnorm_of_mem hx
+
+end Quasispectrum
+
 section ComplexScalars
 
 open Complex
@@ -114,7 +124,7 @@ lemma IsSelfAdjoint.toReal_spectralRadius_complex_eq_norm {a : A} (ha : IsSelfAd
 
 theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
     spectralRadius ℂ a = ‖a‖₊ := by
-  refine (ENNReal.pow_strictMono two_ne_zero).injective ?_
+  refine (ENNReal.pow_right_strictMono two_ne_zero).injective ?_
   have heq :
     (fun n : ℕ => (‖(a⋆ * a) ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ)) =
       (fun x => x ^ 2) ∘ fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
@@ -139,8 +149,8 @@ theorem IsSelfAdjoint.mem_spectrum_eq_re {a : A} (ha : IsSelfAdjoint a) {z : ℂ
     simpa only [Units.smul_def, Units.val_mk0] using
       spectrum.exp_mem_exp (Iu • a) (smul_mem_smul_iff.mpr hz)
   exact Complex.ext (ofReal_re _) <| by
-    simpa only [← Complex.exp_eq_exp_ℂ, mem_sphere_zero_iff_norm, norm_eq_abs, abs_exp,
-      Real.exp_eq_one_iff, smul_eq_mul, I_mul, neg_eq_zero] using
+    simpa only [← Complex.exp_eq_exp_ℂ, mem_sphere_zero_iff_norm, norm_exp, Real.exp_eq_one_iff,
+      smul_eq_mul, I_mul, neg_eq_zero] using
       spectrum.subset_circle_of_unitary hu this
 
 /-- Any element of the spectrum of a selfadjoint is real. -/

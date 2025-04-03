@@ -3,6 +3,7 @@ Copyright (c) 2022 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Data.Int.Log
 
@@ -47,11 +48,13 @@ theorem logb_zero : logb b 0 = 0 := by simp [logb]
 @[simp]
 theorem logb_one : logb b 1 = 0 := by simp [logb]
 
-@[simp]
 theorem logb_zero_left : logb 0 x = 0 := by simp only [← log_div_log, log_zero, div_zero]
 
-@[simp]
+@[simp] theorem logb_zero_left_eq_zero : logb 0 = 0 := by ext; rw [logb_zero_left, Pi.zero_apply]
+
 theorem logb_one_left : logb 1 x = 0 := by simp only [← log_div_log, log_one, div_zero]
+
+@[simp] theorem logb_one_left_eq_zero : logb 1 = 0 := by ext; rw [logb_one_left, Pi.zero_apply]
 
 @[simp]
 lemma logb_self_eq_one (hb : 1 < b) : logb b b = 1 :=
@@ -104,8 +107,8 @@ theorem div_logb {a b c : ℝ} (h₁ : c ≠ 0) (h₂ : c ≠ 1) (h₃ : c ≠ -
 theorem logb_rpow_eq_mul_logb_of_pos (hx : 0 < x) : logb b (x ^ y) = y * logb b x := by
   rw [logb, log_rpow hx, logb, mul_div_assoc]
 
-theorem logb_pow {k : ℕ} (hx : 0 < x) : logb b (x ^ k) = k * logb b x := by
-  rw [← rpow_natCast, logb_rpow_eq_mul_logb_of_pos hx]
+theorem logb_pow (b x : ℝ) (k : ℕ) : logb b (x ^ k) = k * logb b x := by
+  rw [logb, logb, log_pow, mul_div_assoc]
 
 section BPosAndNeOne
 
@@ -170,12 +173,12 @@ include hb
 
 private theorem b_pos : 0 < b := by linarith
 
--- Porting note: prime added to avoid clashing with `b_ne_one` further down the file
+-- Name has a prime added to avoid clashing with `b_ne_one` further down the file
 private theorem b_ne_one' : b ≠ 1 := by linarith
 
 @[simp]
 theorem logb_le_logb (h : 0 < x) (h₁ : 0 < y) : logb b x ≤ logb b y ↔ x ≤ y := by
-  rw [logb, logb, div_le_div_right (log_pos hb), log_le_log_iff h h₁]
+  rw [logb, logb, div_le_div_iff_of_pos_right (log_pos hb), log_le_log_iff h h₁]
 
 @[gcongr]
 theorem logb_le_logb_of_le (h : 0 < x) (hxy : x ≤ y) : logb b x ≤ logb b y :=
@@ -183,12 +186,12 @@ theorem logb_le_logb_of_le (h : 0 < x) (hxy : x ≤ y) : logb b x ≤ logb b y :
 
 @[gcongr]
 theorem logb_lt_logb (hx : 0 < x) (hxy : x < y) : logb b x < logb b y := by
-  rw [logb, logb, div_lt_div_right (log_pos hb)]
+  rw [logb, logb, div_lt_div_iff_of_pos_right (log_pos hb)]
   exact log_lt_log hx hxy
 
 @[simp]
 theorem logb_lt_logb_iff (hx : 0 < x) (hy : 0 < y) : logb b x < logb b y ↔ x < y := by
-  rw [logb, logb, div_lt_div_right (log_pos hb)]
+  rw [logb, logb, div_lt_div_iff_of_pos_right (log_pos hb)]
   exact log_lt_log_iff hx hy
 
 theorem logb_le_iff_le_rpow (hx : 0 < x) : logb b x ≤ y ↔ x ≤ b ^ y := by
@@ -348,6 +351,7 @@ theorem tendsto_logb_atTop_of_base_lt_one : Tendsto (logb b) atTop atBot := by
 
 end BPosAndBLtOne
 
+@[norm_cast]
 theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     ⌊logb b r⌋ = Int.log b r := by
   obtain rfl | hr := hr.eq_or_lt
@@ -365,9 +369,7 @@ theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     · simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.floor_zero, Int.log_zero_left]
     · simp_all only [Nat.cast_one, logb_one_left, Int.floor_zero, Int.log_one_left]
 
-@[deprecated (since := "2024-04-17")]
-alias floor_logb_nat_cast := floor_logb_natCast
-
+@[norm_cast]
 theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     ⌈logb b r⌉ = Int.clog b r := by
   obtain rfl | hr := hr.eq_or_lt
@@ -385,8 +387,27 @@ theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hr : 0 ≤ r) :
     · simp_all only [CharP.cast_eq_zero, logb_zero_left, Int.ceil_zero, Int.clog_zero_left]
     · simp_all only [Nat.cast_one, logb_one_left, Int.ceil_zero, Int.clog_one_left]
 
-@[deprecated (since := "2024-04-17")]
-alias ceil_logb_nat_cast := ceil_logb_natCast
+@[norm_cast]
+theorem natFloor_logb_natCast (b : ℕ) (n : ℕ) : ⌊logb b n⌋₊ = Nat.log b n := by
+  obtain _ | _ | b := b
+  · simp [Real.logb]
+  · simp [Real.logb]
+  obtain rfl | hn := eq_or_ne n 0
+  · simp
+  rw [← Nat.cast_inj (R := ℤ), Int.natCast_floor_eq_floor, floor_logb_natCast (by simp),
+    Int.log_natCast]
+  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by omega))
+
+@[norm_cast]
+theorem natCeil_logb_natCast (b : ℕ) (n : ℕ) : ⌈logb b n⌉₊ = Nat.clog b n := by
+  obtain _ | _ | b := b
+  · simp [Real.logb]
+  · simp [Real.logb]
+  obtain rfl | hn := eq_or_ne n 0
+  · simp
+  rw [← Nat.cast_inj (R := ℤ), Int.natCast_ceil_eq_ceil, ceil_logb_natCast (by simp),
+    Int.clog_natCast]
+  exact logb_nonneg (by simp [Nat.cast_add_one_pos]) (Nat.one_le_cast.2 (by omega))
 
 lemma natLog_le_logb (a b : ℕ) : Nat.log b a ≤ Real.logb b a := by
   apply le_trans _ (Int.floor_le ((b : ℝ).logb a))
@@ -397,7 +418,58 @@ theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨
   simp_rw [logb, div_eq_zero_iff, log_eq_zero]
   tauto
 
--- TODO add other limits and continuous API lemmas analogous to those in Log.lean
+theorem tendsto_logb_nhdsNE_zero (hb : 1 < b) : Tendsto (logb b) (𝓝[≠] 0) atBot :=
+  tendsto_log_nhdsNE_zero.atBot_div_const (log_pos hb)
+
+@[deprecated (since := "2025-03-18")]
+alias tendsto_logb_nhdsWithin_zero := tendsto_logb_nhdsNE_zero
+
+theorem tendsto_logb_nhdsNE_zero_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
+    Tendsto (logb b) (𝓝[≠] 0) atTop :=
+  tendsto_log_nhdsNE_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
+
+@[deprecated (since := "2025-03-18")]
+alias tendsto_logb_nhdsWithin_zero_of_base_lt_one := tendsto_logb_nhdsNE_zero_of_base_lt_one
+
+lemma tendsto_logb_nhdsGT_zero (hb : 1 < b) : Tendsto (logb b) (𝓝[>] 0) atBot :=
+  tendsto_log_nhdsGT_zero.atBot_div_const (log_pos hb)
+
+@[deprecated (since := "2025-03-18")]
+alias tendsto_logb_nhdsWithin_zero_right := tendsto_logb_nhdsGT_zero
+
+lemma tendsto_logb_nhdsGT_zero_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
+    Tendsto (logb b) (𝓝[>] 0) atTop :=
+  tendsto_log_nhdsGT_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
+
+@[deprecated (since := "2025-03-18")]
+alias tendsto_logb_nhdsWithin_zero_right_of_base_lt_one := tendsto_logb_nhdsGT_zero_of_base_lt_one
+
+theorem continuousOn_logb : ContinuousOn (logb b) {0}ᶜ := continuousOn_log.div_const _
+
+/-- The real logarithm base b is continuous as a function from nonzero reals. -/
+@[fun_prop]
+theorem continuous_logb : Continuous fun x : { x : ℝ // x ≠ 0 } => logb b x :=
+  continuous_log.div_const _
+
+/-- The real logarithm base b is continuous as a function from positive reals. -/
+@[fun_prop]
+theorem continuous_logb' : Continuous fun x : { x : ℝ // 0 < x } => logb b x :=
+  continuous_log'.div_const _
+
+theorem continuousAt_logb (hx : x ≠ 0) : ContinuousAt (logb b) x :=
+  (continuousAt_log hx).div_const _
+
+@[simp]
+theorem continuousAt_logb_iff (hb₀ : 0 < b) (hb : b ≠ 1) : ContinuousAt (logb b) x ↔ x ≠ 0 := by
+  refine ⟨?_, continuousAt_logb⟩
+  rintro h rfl
+  cases lt_or_gt_of_ne hb with
+  | inl hb₁ =>
+      exact not_tendsto_nhds_of_tendsto_atTop (tendsto_logb_nhdsNE_zero_of_base_lt_one hb₀ hb₁)
+        _ (h.tendsto.mono_left inf_le_left)
+  | inr hb₁ =>
+      exact not_tendsto_nhds_of_tendsto_atBot (tendsto_logb_nhdsNE_zero hb₁)
+        _ (h.tendsto.mono_left inf_le_left)
 
 theorem logb_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
     logb b (∏ i ∈ s, f i) = ∑ i ∈ s, logb b (f i) := by
@@ -406,6 +478,16 @@ theorem logb_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ 
     · simp
     simp only [Finset.mem_insert, forall_eq_or_imp] at hf
     simp [ha, ih hf.2, logb_mul hf.1 (Finset.prod_ne_zero_iff.2 hf.2)]
+
+protected theorem _root_.Finsupp.logb_prod {α β : Type*} [Zero β] (f : α →₀ β) (g : α → β → ℝ)
+    (hg : ∀ a, g a (f a) = 0 → f a = 0) : logb b (f.prod g) = f.sum fun a c ↦ logb b (g a c) :=
+  logb_prod _ _ fun _x hx h₀ ↦ Finsupp.mem_support_iff.1 hx <| hg _ h₀
+
+theorem logb_nat_eq_sum_factorization (n : ℕ) :
+    logb b n = n.factorization.sum fun p t => t * logb b p := by
+  simp only [logb, mul_div_assoc', log_nat_eq_sum_factorization n, Finsupp.sum, Finset.sum_div]
+
+-- TODO add other limits and continuous API lemmas analogous to those in Log.lean
 
 end Real
 

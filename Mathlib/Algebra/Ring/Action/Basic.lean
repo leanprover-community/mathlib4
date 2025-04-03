@@ -3,7 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.Ring.Hom.Defs
 
 /-!
@@ -25,8 +26,7 @@ group action, invariant subring
 
 -/
 
-assert_not_exists Equiv.Perm.equivUnitsEnd
-assert_not_exists Prod.fst_mul
+assert_not_exists Equiv.Perm.equivUnitsEnd Prod.fst_mul
 
 universe u v
 

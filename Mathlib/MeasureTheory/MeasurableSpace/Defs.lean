@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Countable
-import Mathlib.Order.Disjointed
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Tactic.FunProp.Attr
 import Mathlib.Tactic.Measurability
 
@@ -35,6 +35,7 @@ contains all of them.
 measurable space, σ-algebra, measurable function
 -/
 
+assert_not_exists Covariant MonoidWithZero
 
 open Set Encodable Function Equiv
 
@@ -59,13 +60,9 @@ instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
 def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
   ‹MeasurableSpace α›.MeasurableSet' s
 
--- Porting note (#11215): TODO: `scoped[MeasureTheory]` doesn't work for unknown reason
-namespace MeasureTheory
-set_option quotPrecheck false in
 /-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
-scoped notation "MeasurableSet[" m "]" => @MeasurableSet _ m
+scoped[MeasureTheory] notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
-end MeasureTheory
 open MeasureTheory
 
 section
@@ -205,11 +202,6 @@ protected theorem MeasurableSet.cond {s₁ s₂ : Set α} (h₁ : MeasurableSet 
   cases i
   exacts [h₂, h₁]
 
-@[simp, measurability]
-protected theorem MeasurableSet.disjointed {f : ℕ → Set α} (h : ∀ i, MeasurableSet (f i)) (n) :
-    MeasurableSet (disjointed f n) :=
-  disjointedRec (fun _ _ ht => MeasurableSet.diff ht <| h _) (h n)
-
 protected theorem MeasurableSet.const (p : Prop) : MeasurableSet { _a : α | p } := by
   by_cases p <;> simp [*]
 
@@ -264,7 +256,7 @@ theorem Set.Subsingleton.measurableSet {s : Set α} (hs : s.Subsingleton) : Meas
   hs.induction_on .empty .singleton
 
 theorem Set.Finite.measurableSet {s : Set α} (hs : s.Finite) : MeasurableSet s :=
-  Finite.induction_on hs MeasurableSet.empty fun _ _ hsm => hsm.insert _
+  Finite.induction_on _ hs .empty fun _ _ hsm => hsm.insert _
 
 @[measurability]
 protected theorem Finset.measurableSet (s : Finset α) : MeasurableSet (↑s : Set α) :=
@@ -327,12 +319,14 @@ theorem measurableSet_generateFrom {s : Set (Set α)} {t : Set α} (ht : t ∈ s
   .basic t ht
 
 @[elab_as_elim]
-theorem generateFrom_induction (p : Set α → Prop) (C : Set (Set α)) (hC : ∀ t ∈ C, p t)
-    (h_empty : p ∅) (h_compl : ∀ t, p t → p tᶜ)
-    (h_Union : ∀ f : ℕ → Set α, (∀ n, p (f n)) → p (⋃ i, f i)) {s : Set α}
-    (hs : MeasurableSet[generateFrom C] s) : p s := by
+theorem generateFrom_induction (C : Set (Set α))
+    (p : ∀ s : Set α, MeasurableSet[generateFrom C] s → Prop) (hC : ∀ t ∈ C, ∀ ht, p t ht)
+    (empty : p ∅ (measurableSet_empty _)) (compl : ∀ t ht, p t ht → p tᶜ ht.compl)
+    (iUnion : ∀ (s : ℕ → Set α) (hs : ∀ n, MeasurableSet[generateFrom C] (s n)),
+      (∀ n, p (s n) (hs n)) → p (⋃ i, s i) (.iUnion hs)) (s : Set α)
+    (hs : MeasurableSet[generateFrom C] s) : p s hs := by
   induction hs
-  exacts [hC _ ‹_›, h_empty, h_compl _ ‹_›, h_Union ‹_› ‹_›]
+  exacts [hC _ ‹_› _, empty, compl _ ‹_› ‹_›, iUnion ‹_› ‹_› ‹_›]
 
 theorem generateFrom_le {s : Set (Set α)} {m : MeasurableSpace α}
     (h : ∀ t ∈ s, MeasurableSet[m] t) : generateFrom s ≤ m :=
@@ -352,10 +346,10 @@ theorem forall_generateFrom_mem_iff_mem_iff {S : Set (Set α)} {x y : α} :
     (∀ s, MeasurableSet[generateFrom S] s → (x ∈ s ↔ y ∈ s)) ↔ (∀ s ∈ S, x ∈ s ↔ y ∈ s) := by
   refine ⟨fun H s hs ↦ H s (.basic s hs), fun H s ↦ ?_⟩
   apply generateFrom_induction
-  · exact H
+  · exact fun s hs _ ↦ H s hs
   · rfl
-  · exact fun _ ↦ Iff.not
-  · intro f hf
+  · exact fun _ _ ↦ Iff.not
+  · intro f _ hf
     simp only [mem_iUnion, hf]
 
 /-- If `g` is a collection of subsets of `α` such that the `σ`-algebra generated from `g` contains
@@ -417,7 +411,7 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
   let b : MeasurableSpace α :=
     { MeasurableSet' := fun s => s = ∅ ∨ s = univ
       measurableSet_empty := Or.inl rfl
-      measurableSet_compl := by simp (config := { contextual := true }) [or_imp]
+      measurableSet_compl := by simp +contextual [or_imp]
       measurableSet_iUnion := fun _ hf => sUnion_mem_empty_univ (forall_mem_range.2 hf) }
   have : b = ⊥ :=
     bot_unique fun _ hs =>
@@ -427,7 +421,7 @@ theorem measurableSet_bot_iff {s : Set α} : MeasurableSet[⊥] s ↔ s = ∅ �
 
 @[simp, measurability] theorem measurableSet_top {s : Set α} : MeasurableSet[⊤] s := trivial
 
-@[simp, nolint simpNF] -- Porting note (#11215): TODO: `simpNF` claims that
+@[simp, nolint simpNF] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simpNF` claims that
 -- this lemma doesn't simplify LHS
 theorem measurableSet_inf {m₁ m₂ : MeasurableSpace α} {s : Set α} :
     MeasurableSet[m₁ ⊓ m₂] s ↔ MeasurableSet[m₁] s ∧ MeasurableSet[m₂] s :=
@@ -535,12 +529,6 @@ variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α] 
   DiscreteMeasurableSpace.forall_measurableSet _
 
 @[measurability, fun_prop] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
-
-@[deprecated MeasurableSet.of_discrete (since := "2024-08-25")]
-lemma measurableSet_discrete (s : Set α) : MeasurableSet s := .of_discrete
-
-@[deprecated Measurable.of_discrete (since := "2024-08-25")]
-lemma measurable_discrete (f : α → β) : Measurable f := .of_discrete
 
 /-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.
 To be monitored. -/

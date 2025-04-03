@@ -10,8 +10,7 @@ import Mathlib.Algebra.Group.Units.Hom
 # Multiplicative and additive equivalence acting on units.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {F α M N G : Type*}
 
@@ -50,7 +49,7 @@ theorem coe_mapEquiv (h : M ≃* N) (x : Mˣ) : (mapEquiv h x : N) = h x :=
   rfl
 
 /-- Left multiplication by a unit of a monoid is a permutation of the underlying type. -/
-@[to_additive (attr := simps (config := .asFn) apply)
+@[to_additive (attr := simps -fullyApplied apply)
   "Left addition of an additive unit is a permutation of the underlying type."]
 def mulLeft (u : Mˣ) : Equiv.Perm M where
   toFun x := u * x
@@ -67,7 +66,7 @@ theorem mulLeft_bijective (a : Mˣ) : Function.Bijective ((a * ·) : M → M) :=
   (mulLeft a).bijective
 
 /-- Right multiplication by a unit of a monoid is a permutation of the underlying type. -/
-@[to_additive (attr := simps (config := .asFn) apply)
+@[to_additive (attr := simps -fullyApplied apply)
 "Right addition of an additive unit is a permutation of the underlying type."]
 def mulRight (u : Mˣ) : Equiv.Perm M where
   toFun x := x * u
@@ -100,11 +99,8 @@ protected def mulLeft (a : G) : Perm G :=
 theorem coe_mulLeft (a : G) : ⇑(Equiv.mulLeft a) = (a * ·) :=
   rfl
 
--- Porting note: we don't put `@[simp]` on the additive version;
--- mysteriously simp can already prove that one (although not the multiplicative one)!
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/
-@[to_additive "Extra simp lemma that `dsimp` can use. `simp` will never use this.",
-  simp, nolint simpNF]
+@[to_additive (attr := simp) "Extra simp lemma that `dsimp` can use. `simp` will never use this."]
 theorem mulLeft_symm_apply (a : G) : ((Equiv.mulLeft a).symm : G → G) = (a⁻¹ * ·) :=
   rfl
 
@@ -130,8 +126,7 @@ theorem mulRight_symm (a : G) : (Equiv.mulRight a).symm = Equiv.mulRight a⁻¹ 
   ext fun _ => rfl
 
 /-- Extra simp lemma that `dsimp` can use. `simp` will never use this. -/
-@[to_additive "Extra simp lemma that `dsimp` can use. `simp` will never use this.",
-  simp, nolint simpNF]
+@[to_additive (attr := simp) "Extra simp lemma that `dsimp` can use. `simp` will never use this."]
 theorem mulRight_symm_apply (a : G) : ((Equiv.mulRight a).symm : G → G) = fun x => x * a⁻¹ :=
   rfl
 
@@ -177,10 +172,6 @@ def unitsEquivProdSubtype [Monoid α] : αˣ ≃ {p : α × α // p.1 * p.2 = 1 
   left_inv _ := Units.ext rfl
   right_inv _ := Subtype.ext <| Prod.ext rfl rfl
 
--- Porting note: we don't put `@[simp]` on the additive version;
--- mysteriously simp can already prove that one (although not the multiplicative one)!
--- Porting note: `@[simps apply]` removed because right now it's generating lemmas which
--- aren't in simp normal form (they contain a `toFun`)
 /-- In a `DivisionCommMonoid`, `Equiv.inv` is a `MulEquiv`. There is a variant of this
 `MulEquiv.inv' G : G ≃* Gᵐᵒᵖ` for the non-commutative case. -/
 @[to_additive (attr := simps apply)

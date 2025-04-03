@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser, Zhangir Azerbayev
 -/
 import Mathlib.GroupTheory.Perm.Sign
-import Mathlib.Data.Fintype.Perm
+import Mathlib.LinearAlgebra.LinearIndependent.Defs
 import Mathlib.LinearAlgebra.Multilinear.Basis
-import Mathlib.LinearAlgebra.LinearIndependent
 
 /-!
 # Alternating Maps
@@ -153,23 +152,32 @@ These are expressed in terms of `⇑f` instead of `f.toFun`.
 
 
 @[simp]
-theorem map_add [DecidableEq ι] (i : ι) (x y : M) :
+theorem map_update_add [DecidableEq ι] (i : ι) (x y : M) :
     f (update v i (x + y)) = f (update v i x) + f (update v i y) :=
-  f.toMultilinearMap.map_add' v i x y
+  f.map_update_add' v i x y
+
+@[deprecated (since := "2024-11-03")] protected alias map_add := map_update_add
 
 @[simp]
-theorem map_sub [DecidableEq ι] (i : ι) (x y : M') :
+theorem map_update_sub [DecidableEq ι] (i : ι) (x y : M') :
     g' (update v' i (x - y)) = g' (update v' i x) - g' (update v' i y) :=
-  g'.toMultilinearMap.map_sub v' i x y
+  g'.toMultilinearMap.map_update_sub v' i x y
+
+@[deprecated (since := "2024-11-03")] protected alias map_sub := map_update_sub
 
 @[simp]
-theorem map_neg [DecidableEq ι] (i : ι) (x : M') : g' (update v' i (-x)) = -g' (update v' i x) :=
-  g'.toMultilinearMap.map_neg v' i x
+theorem map_update_neg [DecidableEq ι] (i : ι) (x : M') :
+    g' (update v' i (-x)) = -g' (update v' i x) :=
+  g'.toMultilinearMap.map_update_neg v' i x
+
+@[deprecated (since := "2024-11-03")] protected alias map_neg := map_update_neg
 
 @[simp]
-theorem map_smul [DecidableEq ι] (i : ι) (r : R) (x : M) :
+theorem map_update_smul [DecidableEq ι] (i : ι) (r : R) (x : M) :
     f (update v i (r • x)) = r • f (update v i x) :=
-  f.toMultilinearMap.map_smul' v i r x
+  f.map_update_smul' v i r x
+
+@[deprecated (since := "2024-11-03")] protected alias map_smul := map_update_smul
 
 @[simp]
 theorem map_eq_zero_of_eq (v : ι → M) {i j : ι} (h : v i = v j) (hij : i ≠ j) : f v = 0 :=
@@ -378,7 +386,7 @@ def ofSubsingleton [Subsingleton ι] (i : ι) : (M →ₗ[R] N) ≃ (M [⋀^ι]�
 variable (ι) {N}
 
 /-- The constant map is alternating when `ι` is empty. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def constOfIsEmpty [IsEmpty ι] (m : N) : M [⋀^ι]→ₗ[R] N :=
   { MultilinearMap.constOfIsEmpty R _ m with
     toFun := Function.const _ m
@@ -426,7 +434,7 @@ theorem compAlternatingMap_zero (g : N →ₗ[R] N₂) :
   AlternatingMap.ext fun _ => map_zero g
 
 @[simp]
-theorem zero_compAlternatingMap (f: M [⋀^ι]→ₗ[R] N) :
+theorem zero_compAlternatingMap (f : M [⋀^ι]→ₗ[R] N) :
     (0 : N →ₗ[R] N₂).compAlternatingMap f = 0 := rfl
 
 @[simp]
@@ -435,7 +443,7 @@ theorem compAlternatingMap_add (g : N →ₗ[R] N₂) (f₁ f₂ : M [⋀^ι]→
   AlternatingMap.ext fun _ => map_add g _ _
 
 @[simp]
-theorem add_compAlternatingMap (g₁ g₂ : N →ₗ[R] N₂) (f: M [⋀^ι]→ₗ[R] N) :
+theorem add_compAlternatingMap (g₁ g₂ : N →ₗ[R] N₂) (f : M [⋀^ι]→ₗ[R] N) :
     (g₁ + g₂).compAlternatingMap f = g₁.compAlternatingMap f + g₂.compAlternatingMap f := rfl
 
 @[simp]
@@ -604,12 +612,12 @@ Various properties of reordered and repeated inputs which follow from
 
 theorem map_update_self [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     f (Function.update v i (v j)) = 0 :=
-  f.map_eq_zero_of_eq _ (by rw [Function.update_same, Function.update_noteq hij.symm]) hij
+  f.map_eq_zero_of_eq _ (by rw [Function.update_self, Function.update_of_ne hij.symm]) hij
 
 theorem map_update_update [DecidableEq ι] {i j : ι} (hij : i ≠ j) (m : M) :
     f (Function.update (Function.update v i m) j m) = 0 :=
   f.map_eq_zero_of_eq _
-    (by rw [Function.update_same, Function.update_noteq hij, Function.update_same]) hij
+    (by rw [Function.update_self, Function.update_of_ne hij, Function.update_self]) hij
 
 theorem map_swap_add [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     f (v ∘ Equiv.swap i j) + f v = 0 := by
@@ -628,10 +636,11 @@ theorem map_swap [DecidableEq ι] {i j : ι} (hij : i ≠ j) : g (v ∘ Equiv.sw
 
 theorem map_perm [DecidableEq ι] [Fintype ι] (v : ι → M) (σ : Equiv.Perm ι) :
     g (v ∘ σ) = Equiv.Perm.sign σ • g v := by
-  -- Porting note: `apply` → `induction'`
-  induction' σ using Equiv.Perm.swap_induction_on' with s x y hxy hI
+  -- Porting note: `apply` → `induction`
+  induction σ using Equiv.Perm.swap_induction_on'
   · simp
-  · -- Porting note: `← Function.comp_assoc` & `-Equiv.Perm.sign_swap'` are required.
+  · rename_i s x y hxy hI
+    -- Porting note: `← Function.comp_assoc` & `-Equiv.Perm.sign_swap'` are required.
     simpa [← Function.comp_assoc, g.map_swap (v ∘ s) hxy,
       Equiv.Perm.sign_swap hxy, -Equiv.Perm.sign_swap'] using hI
 
@@ -747,16 +756,16 @@ theorem map_linearDependent {K : Type*} [Ring K] {M : Type*} [AddCommGroup M] [M
   obtain ⟨s, g, h, i, hi, hz⟩ := not_linearIndependent_iff.mp h
   letI := Classical.decEq ι
   suffices f (update v i (g i • v i)) = 0 by
-    rw [f.map_smul, Function.update_eq_self, smul_eq_zero] at this
+    rw [f.map_update_smul, Function.update_eq_self, smul_eq_zero] at this
     exact Or.resolve_left this hz
   -- Porting note: Was `conv at h in .. => ..`.
   rw [← (funext fun x => ite_self (c := i = x) (d := Classical.decEq ι i x) (g x • v x))] at h
   rw [Finset.sum_ite, Finset.filter_eq, Finset.filter_ne, if_pos hi, Finset.sum_singleton,
     add_eq_zero_iff_eq_neg] at h
-  rw [h, f.map_neg, f.map_update_sum, neg_eq_zero]; apply Finset.sum_eq_zero
+  rw [h, f.map_update_neg, f.map_update_sum, neg_eq_zero]; apply Finset.sum_eq_zero
   intro j hj
   obtain ⟨hij, _⟩ := Finset.mem_erase.mp hj
-  rw [f.map_smul, f.map_update_self _ hij.symm, smul_zero]
+  rw [f.map_update_smul, f.map_update_self _ hij.symm, smul_zero]
 
 section Fin
 
@@ -811,11 +820,11 @@ def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→�
       zero_apply, smul_zero, Finset.sum_const_zero, AlternatingMap.zero_apply]
 
 theorem alternatization_def (m : MultilinearMap R (fun _ : ι => M) N') :
-    ⇑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ : _) :=
+    ⇑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) :=
   rfl
 
 theorem alternatization_coe (m : MultilinearMap R (fun _ : ι => M) N') :
-    ↑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ : _) :=
+    ↑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ :) :=
   coe_injective rfl
 
 theorem alternatization_apply (m : MultilinearMap R (fun _ : ι => M) N') (v : ι → M) :

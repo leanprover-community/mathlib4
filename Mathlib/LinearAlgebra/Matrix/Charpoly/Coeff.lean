@@ -5,6 +5,7 @@ Authors: Aaron Anderson, Jalex Stark
 -/
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.Algebra.Polynomial.Laurent
+import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.RingTheory.Polynomial.Nilpotent
@@ -243,7 +244,7 @@ end Matrix
 
 variable {p : ℕ} [Fact p.Prime]
 
-theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [Field K] (M : Matrix n n K) :
+theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [CommRing K] (M : Matrix n n K) :
     matPolyEquiv ((expand K k : K[X] →+* K[X]).mapMatrix (charmatrix (M ^ k))) =
       X ^ k - C (M ^ k) := by
   -- Porting note: `i` and `j` are used later on, but were not mentioned in mathlib3
@@ -316,9 +317,9 @@ lemma reverse_charpoly (M : Matrix n n R) :
   let q : R[T;T⁻¹] := det (1 - scalar n t * M.map LaurentPolynomial.C)
   have ht : t_inv * t = 1 := by rw [← T_add, neg_add_cancel, T_zero]
   have hp : toLaurentAlg M.charpoly = p := by
-    simp [p, charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
+    simp [p, t, charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
   have hq : toLaurentAlg M.charpolyRev = q := by
-    simp [q, charpolyRev, AlgHom.map_det, map_sub, map_smul', smul_eq_diagonal_mul]
+    simp [q, t, charpolyRev, AlgHom.map_det, map_sub, map_smul', smul_eq_diagonal_mul]
   suffices t_inv ^ Fintype.card n * p = invert q by
     apply toLaurent_injective
     rwa [toLaurent_reverse, ← coe_toLaurentAlg, hp, hq, ← involutive_invert.injective.eq_iff,
@@ -326,7 +327,7 @@ lemma reverse_charpoly (M : Matrix n n R) :
       ← mul_one (Fintype.card n : ℤ), ← T_pow, map_pow, invert_T, mul_comm]
   rw [← det_smul, smul_sub, scalar_apply, ← diagonal_smul, Pi.smul_def, smul_eq_mul, ht,
     diagonal_one, invert.map_det]
-  simp [map_sub, _root_.map_one, _root_.map_mul, t, map_smul', smul_eq_diagonal_mul]
+  simp [t_inv, map_sub, _root_.map_one, _root_.map_mul, t, map_smul', smul_eq_diagonal_mul]
 
 
 @[simp] lemma eval_charpolyRev :
@@ -373,7 +374,7 @@ lemma isNilpotent_charpoly_sub_pow_of_isNilpotent (hM : IsNilpotent M) :
   have aux : (M.charpoly - X ^ (Fintype.card n)).natDegree ≤ M.charpoly.natDegree :=
     le_trans (natDegree_sub_le _ _) (by simp)
   rw [← isNilpotent_reflect_iff aux, reflect_sub, ← reverse, M.reverse_charpoly]
-  simpa [hp]
+  simpa [p, hp]
 
 end reverse
 

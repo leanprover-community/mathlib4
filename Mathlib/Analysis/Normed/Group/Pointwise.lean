@@ -22,9 +22,9 @@ variable {E : Type*}
 
 section SeminormedGroup
 
-variable [SeminormedGroup E] {ε δ : ℝ} {s t : Set E} {x y : E}
+variable [SeminormedGroup E] {s t : Set E}
 
--- note: we can't use `LipschitzOnWith.isBounded_image2` here without adding `[IsometricSMul E E]`
+-- note: we can't use `LipschitzOnWith.isBounded_image2` here without adding `[IsIsometricSMul E E]`
 @[to_additive]
 theorem Bornology.IsBounded.mul (hs : IsBounded s) (ht : IsBounded t) : IsBounded (s * t) := by
   obtain ⟨Rs, hRs⟩ : ∃ R, ∀ x ∈ s, ‖x‖ ≤ R := hs.exists_norm_le'
@@ -39,7 +39,7 @@ theorem Bornology.IsBounded.of_mul (hst : IsBounded (s * t)) : IsBounded s ∨ I
 
 @[to_additive]
 theorem Bornology.IsBounded.inv : IsBounded s → IsBounded s⁻¹ := by
-  simp_rw [isBounded_iff_forall_norm_le', ← image_inv, forall_mem_image, norm_inv']
+  simp_rw [isBounded_iff_forall_norm_le', ← image_inv_eq_inv, forall_mem_image, norm_inv']
   exact id
 
 @[to_additive]
@@ -50,7 +50,7 @@ end SeminormedGroup
 
 section SeminormedCommGroup
 
-variable [SeminormedCommGroup E] {ε δ : ℝ} {s t : Set E} {x y : E}
+variable [SeminormedCommGroup E] {δ : ℝ} {s : Set E} {x y : E}
 
 section EMetric
 
@@ -58,7 +58,7 @@ open EMetric
 
 @[to_additive (attr := simp)]
 theorem infEdist_inv_inv (x : E) (s : Set E) : infEdist x⁻¹ s⁻¹ = infEdist x s := by
-  rw [← image_inv, infEdist_image isometry_inv]
+  rw [← image_inv_eq_inv, infEdist_image isometry_inv]
 
 @[to_additive]
 theorem infEdist_inv (x : E) (s : Set E) : infEdist x⁻¹ s = infEdist x s⁻¹ := by
@@ -73,7 +73,7 @@ theorem ediam_mul_le (x y : Set E) : EMetric.diam (x * y) ≤ EMetric.diam x + E
 
 end EMetric
 
-variable (ε δ s t x y)
+variable (δ s x y)
 
 @[to_additive (attr := simp)]
 theorem inv_thickening : (thickening δ s)⁻¹ = thickening δ s⁻¹ := by
@@ -188,7 +188,7 @@ theorem ball_mul : ball x δ * s = x • thickening δ s := by rw [mul_comm, mul
 @[to_additive (attr := simp)]
 theorem ball_div : ball x δ / s = x • thickening δ s⁻¹ := by simp [div_eq_mul_inv]
 
-variable {ε δ s t x y}
+variable {δ s x y}
 
 @[to_additive]
 theorem IsCompact.mul_closedBall_one (hs : IsCompact s) (hδ : 0 ≤ δ) :

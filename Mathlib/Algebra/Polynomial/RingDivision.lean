@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker, Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Algebra.Polynomial.Div
+import Mathlib.RingTheory.Coprime.Basic
 
 /-!
 # Theory of univariate polynomials
@@ -13,6 +13,8 @@ import Mathlib.Algebra.Polynomial.Div
 We prove basic results about univariate polynomials.
 
 -/
+
+assert_not_exists Ideal.map
 
 noncomputable section
 
@@ -42,9 +44,11 @@ theorem degree_pos_of_aeval_root [Algebra R S] {p : R[X]} (hp : p ≠ 0) {z : S}
     (inj : ∀ x : R, algebraMap R S x = 0 → x = 0) : 0 < p.degree :=
   natDegree_pos_iff_degree_pos.mp (natDegree_pos_of_aeval_root hp hz inj)
 
+end
+
 theorem smul_modByMonic (c : R) (p : R[X]) : c • p %ₘ q = c • (p %ₘ q) := by
   by_cases hq : q.Monic
-  · cases' subsingleton_or_nontrivial R with hR hR
+  · rcases subsingleton_or_nontrivial R with hR | hR
     · simp only [eq_iff_true_of_subsingleton]
     · exact
       (div_modByMonic_unique (c • (p /ₘ q)) (c • (p %ₘ q)) hq
@@ -59,7 +63,9 @@ def modByMonicHom (q : R[X]) : R[X] →ₗ[R] R[X] where
   map_add' := add_modByMonic
   map_smul' := smul_modByMonic
 
-end
+theorem mem_ker_modByMonic (hq : q.Monic) {p : R[X]} :
+    p ∈ LinearMap.ker (modByMonicHom q) ↔ q ∣ p :=
+  LinearMap.mem_ker.trans (modByMonic_eq_zero_iff_dvd hq)
 
 section
 
@@ -213,6 +219,7 @@ theorem isCoprime_X_sub_C_of_isUnit_sub {R} [CommRing R] {a b : R} (h : IsUnit (
     congr
     exact h.val_inv_mul⟩
 
+open scoped Function in -- required for scoped `on` notation
 theorem pairwise_coprime_X_sub_C {K} [Field K] {I : Type v} {s : I → K} (H : Function.Injective s) :
     Pairwise (IsCoprime on fun i : I => X - C (s i)) := fun _ _ hij =>
   isCoprime_X_sub_C_of_isUnit_sub (sub_ne_zero_of_ne <| H.ne hij).isUnit
@@ -224,10 +231,9 @@ theorem rootMultiplicity_mul {p q : R[X]} {x : R} (hpq : p * q ≠ 0) :
   have hq : q ≠ 0 := right_ne_zero_of_mul hpq
   rw [rootMultiplicity_eq_multiplicity (p * q), if_neg hpq, rootMultiplicity_eq_multiplicity p,
     if_neg hp, rootMultiplicity_eq_multiplicity q, if_neg hq,
-    multiplicity_mul (prime_X_sub_C x) (multiplicity_X_sub_C_finite _ hpq)]
+    multiplicity_mul (prime_X_sub_C x) (finiteMultiplicity_X_sub_C _ hpq)]
 
 open Multiset in
-set_option linter.unusedVariables false in
 theorem exists_multiset_roots [DecidableEq R] :
     ∀ {p : R[X]} (_ : p ≠ 0), ∃ s : Multiset R,
       (Multiset.card s : WithBot ℕ) ≤ degree p ∧ ∀ a, s.count a = rootMultiplicity a p
@@ -238,11 +244,6 @@ theorem exists_multiset_roots [DecidableEq R] :
       have hpd : 0 < degree p := degree_pos_of_root hp hx
       have hd0 : p /ₘ (X - C x) ≠ 0 := fun h => by
         rw [← mul_divByMonic_eq_iff_isRoot.2 hx, h, mul_zero] at hp; exact hp rfl
-      #adaptation_note
-      /--
-      Since https://github.com/leanprover/lean4/pull/5338, this is considered unused,
-      because it is only used in the decreasing_by clause.
-      -/
       have wf : degree (p /ₘ (X - C x)) < degree p :=
         degree_divByMonic_lt _ (monic_X_sub_C x) hp ((degree_X_sub_C x).symm ▸ by decide)
       let ⟨t, htd, htr⟩ := @exists_multiset_roots _ (p /ₘ (X - C x)) hd0
@@ -261,7 +262,6 @@ theorem exists_multiset_roots [DecidableEq R] :
             rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm]
             exact add_le_add (le_refl (1 : WithBot ℕ)) htd,
         by
-          change ∀ (a : R), count a (x ::ₘ t) = rootMultiplicity a p
           intro a
           conv_rhs => rw [← mul_divByMonic_eq_iff_isRoot.mpr hx]
           rw [rootMultiplicity_mul (mul_ne_zero (X_sub_C_ne_zero x) hdiv0),

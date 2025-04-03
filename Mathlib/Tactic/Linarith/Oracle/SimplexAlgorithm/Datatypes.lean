@@ -57,8 +57,8 @@ instance : UsableInSimplexAlgorithm DenseMatrix where
   getElem mat i j := mat.data[i]![j]!
   setElem mat i j v := ⟨mat.data.modify i fun row => row.set! j v⟩
   getValues mat :=
-    mat.data.zipWithIndex.foldl (init := []) fun acc (row, i) =>
-      let rowVals := Array.toList <| row.zipWithIndex.filterMap fun (v, j) =>
+    mat.data.zipIdx.foldl (init := []) fun acc (row, i) =>
+      let rowVals := Array.toList <| row.zipIdx.filterMap fun (v, j) =>
         if v != 0 then
           .some (i, j, v)
         else
@@ -69,10 +69,10 @@ instance : UsableInSimplexAlgorithm DenseMatrix where
     for ⟨i, j, v⟩ in vals do
       data := data.modify i fun row => row.set! j v
     return ⟨data⟩
-  swapRows mat i j := ⟨mat.data.swap! i j⟩
+  swapRows mat i j := ⟨mat.data.swapIfInBounds i j⟩
   subtractRow mat i j coef :=
     let newData : Array (Array Rat) := mat.data.modify j fun row =>
-      row.zipWith mat.data[i]! fun x y => x - coef * y
+      Array.zipWith (fun x y => x - coef * y) row mat.data[i]!
     ⟨newData⟩
   divideRow mat i coef := ⟨mat.data.modify i (·.map (· / coef))⟩
 
@@ -92,7 +92,7 @@ instance : UsableInSimplexAlgorithm SparseMatrix where
     else
       ⟨mat.data.modify i fun row => row.insert j v⟩
   getValues mat :=
-    mat.data.zipWithIndex.foldl (init := []) fun acc (row, i) =>
+    mat.data.zipIdx.foldl (init := []) fun acc (row, i) =>
       let rowVals := row.toList.map fun (j, v) => (i, j, v)
       rowVals ++ acc
   ofValues {n _ : Nat} vals := Id.run do
@@ -101,7 +101,7 @@ instance : UsableInSimplexAlgorithm SparseMatrix where
       if v != 0 then
         data := data.modify i fun row => row.insert j v
     return ⟨data⟩
-  swapRows mat i j := ⟨mat.data.swap! i j⟩
+  swapRows mat i j := ⟨mat.data.swapIfInBounds i j⟩
   subtractRow mat i j coef :=
     let newData := mat.data.modify j fun row =>
       mat.data[i]!.fold (fun cur k val =>

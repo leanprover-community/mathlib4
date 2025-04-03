@@ -3,8 +3,8 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.LinearAlgebra.Dual
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
+import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.Topology.Algebra.Module.WeakDual
 
 /-! # Closures of convex sets in locally convex spaces
@@ -20,8 +20,10 @@ creating two separate topologies on the same space.
 variable {𝕜 E F : Type*}
 variable [RCLike 𝕜] [AddCommGroup E] [Module 𝕜 E] [AddCommGroup F] [Module 𝕜 F]
 variable [Module ℝ E] [IsScalarTower ℝ 𝕜 E] [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
-variable [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul 𝕜 E] [LocallyConvexSpace ℝ E]
-variable [TopologicalSpace F] [TopologicalAddGroup F] [ContinuousSMul 𝕜 F] [LocallyConvexSpace ℝ F]
+variable [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+  [LocallyConvexSpace ℝ E]
+variable [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F]
+  [LocallyConvexSpace ℝ F]
 
 variable (𝕜) in
 /-- If `E` is a locally convex space over `𝕜` (with `RCLike 𝕜`), and `s : Set E` is `ℝ`-convex, then
@@ -57,7 +59,7 @@ theorem LinearMap.image_closure_of_convex {s : Set E} (hs : Convex ℝ s) (e : E
     (he : ∀ f : F →L[𝕜] 𝕜, Continuous (e.dualMap f)) :
     e '' (closure s) ⊆ closure (e '' s) := by
   suffices he' : Continuous (toWeakSpace 𝕜 F <| e <| (toWeakSpace 𝕜 E).symm ·) by
-    have h_convex : Convex ℝ (e '' s) := hs.linear_image e
+    have h_convex : Convex ℝ (e '' s) := hs.linear_image (F := F) e
     rw [← Set.image_subset_image_iff (toWeakSpace 𝕜 F).injective, h_convex.toWeakSpace_closure 𝕜]
     simpa only [Set.image_image, ← hs.toWeakSpace_closure 𝕜, LinearEquiv.symm_apply_apply]
       using he'.continuousOn.image_closure (s := toWeakSpace 𝕜 E '' s)

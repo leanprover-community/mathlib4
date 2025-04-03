@@ -77,7 +77,7 @@ variable (d : M.Derivation φ)
 /-- The postcomposition of a derivation by a morphism of presheaves of modules. -/
 @[simps! d_apply]
 def postcomp (f : M ⟶ N) : N.Derivation φ where
-  d := (f.app _).toAddMonoidHom.comp d.d
+  d := (f.app _).hom.toAddMonoidHom.comp d.d
   d_map {X Y} g x := by simpa using naturality_apply f g (d.d x)
   d_app {X} a := by
     dsimp
@@ -177,13 +177,15 @@ namespace DifferentialsConstruction
 
 /-- The presheaf of relative differentials of a morphism of presheaves of
 commutative rings. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 noncomputable def relativeDifferentials' :
     PresheafOfModules.{u} (R ⋙ forget₂ _ _) where
   obj X := CommRingCat.KaehlerDifferential (φ'.app X)
-  map f := CommRingCat.KaehlerDifferential.map (φ'.naturality f)
-  map_id _ := by ext; simp; rfl
-  map_comp _ _ := by ext; simp; rfl
+  -- Have to hint `g' := R.map f` below, or it gets unfolded weirdly.
+  map f := CommRingCat.KaehlerDifferential.map (g' := R.map f) (φ'.naturality f)
+  -- Without `dsimp`, `ext` doesn't pick up the right lemmas.
+  map_id _ := by dsimp; ext; simp
+  map_comp _ _ := by dsimp; ext; simp
 
 attribute [simp] relativeDifferentials'_obj
 
@@ -191,7 +193,8 @@ attribute [simp] relativeDifferentials'_obj
 lemma relativeDifferentials'_map_d {X Y : Dᵒᵖ} (f : X ⟶ Y) (x : R.obj X) :
     DFunLike.coe (α := CommRingCat.KaehlerDifferential (φ'.app X))
       (β := fun _ ↦ CommRingCat.KaehlerDifferential (φ'.app Y))
-      ((relativeDifferentials' φ').map f) (CommRingCat.KaehlerDifferential.d x) =
+      (ModuleCat.Hom.hom (R := ↑(R.obj X)) ((relativeDifferentials' φ').map f))
+        (CommRingCat.KaehlerDifferential.d x) =
         CommRingCat.KaehlerDifferential.d (R.map f x) :=
   CommRingCat.KaehlerDifferential.map_d (φ'.naturality f) _
 

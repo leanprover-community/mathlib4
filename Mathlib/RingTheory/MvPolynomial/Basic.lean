@@ -5,8 +5,8 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.MvPolynomial.Degrees
-import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.LinearAlgebra.FinsuppVectorSpace
+import Mathlib.Data.Fintype.Pi
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 
 /-!
@@ -38,8 +38,6 @@ Generalise to noncommutative (semi)rings
 noncomputable section
 
 open Set LinearMap Submodule
-
-open Polynomial
 
 universe u v
 
@@ -184,16 +182,3 @@ instance : IsScalarTower R (MvPolynomial σ R) (MvPolynomial σ S) :=
 end Algebra
 
 end MvPolynomial
-
--- this is here to avoid import cycle issues
-namespace Polynomial
-
-/-- The monomials form a basis on `R[X]`. -/
-noncomputable def basisMonomials : Basis ℕ R R[X] :=
-  Basis.ofRepr (toFinsuppIsoAlg R).toLinearEquiv
-
-@[simp]
-theorem coe_basisMonomials : (basisMonomials R : ℕ → R[X]) = fun s => monomial s 1 :=
-  funext fun _ => ofFinsupp_single _ _
-
-end Polynomial

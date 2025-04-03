@@ -6,7 +6,6 @@ Authors: Simon Hudon, Kim Morrison
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.Products.Basic
-import Batteries.Data.Sum.Basic
 
 /-!
 # Categories of indexed families of objects.
@@ -110,7 +109,7 @@ def comapComp (f : K → J) (g : J → I) : comap C g ⋙ comap (C ∘ g) f ≅ 
 /-- The natural isomorphism between pulling back then evaluating, and just evaluating. -/
 @[simps!]
 def comapEvalIsoEval (h : J → I) (j : J) : comap C h ⋙ eval (C ∘ h) j ≅ eval C (h j) :=
-  NatIso.ofComponents (fun _ => Iso.refl _) (by simp only [Iso.refl]; aesop_cat)
+  NatIso.ofComponents (fun _ => Iso.refl _) (by simp only [Iso.refl]; simp)
 
 end
 

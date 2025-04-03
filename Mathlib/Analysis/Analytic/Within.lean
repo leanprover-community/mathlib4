@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Constructions
+import Mathlib.Analysis.Analytic.ChangeOrigin
 
 /-!
 # Properties of analyticity restricted to a set
@@ -28,9 +29,8 @@ open Set Filter
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
-variable {E F G H : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G] [NormedAddCommGroup H]
-  [NormedSpace 𝕜 H]
+variable {E F : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-!
 ### Basic properties
@@ -41,13 +41,13 @@ lemma analyticWithinAt_of_singleton_mem {f : E → F} {s : Set E} {x : E} (h : {
     AnalyticWithinAt 𝕜 f s x := by
   rcases mem_nhdsWithin.mp h with ⟨t, ot, xt, st⟩
   rcases Metric.mem_nhds_iff.mp (ot.mem_nhds xt) with ⟨r, r0, rt⟩
-  exact ⟨constFormalMultilinearSeries 𝕜 E (f x), .ofReal r, {
-    r_le := by simp only [FormalMultilinearSeries.constFormalMultilinearSeries_radius, le_top]
+  exact ⟨constFormalMultilinearSeries 𝕜 E (f x), .ofReal r,
+  { r_le := by simp only [FormalMultilinearSeries.constFormalMultilinearSeries_radius, le_top]
     r_pos := by positivity
     hasSum := by
       intro y ys yr
       simp only [subset_singleton_iff, mem_inter_iff, and_imp] at st
-      simp only [mem_insert_iff, add_right_eq_self] at ys
+      simp only [mem_insert_iff, add_eq_left] at ys
       have : x + y = x := by
         rcases ys with rfl | ys
         · simp
@@ -64,17 +64,17 @@ lemma analyticOn_of_locally_analyticOn {f : E → F} {s : Set E}
   rcases h x m with ⟨u, ou, xu, fu⟩
   rcases Metric.mem_nhds_iff.mp (ou.mem_nhds xu) with ⟨r, r0, ru⟩
   rcases fu x ⟨m, xu⟩ with ⟨p, t, fp⟩
-  exact ⟨p, min (.ofReal r) t, {
-    r_pos := lt_min (by positivity) fp.r_pos
-    r_le := min_le_of_right_le fp.r_le
-    hasSum := by
+  exact ⟨p, min (.ofReal r) t,
+    { r_pos := lt_min (by positivity) fp.r_pos
+      r_le := min_le_of_right_le fp.r_le
+      hasSum := by
         intro y ys yr
         simp only [EMetric.mem_ball, lt_min_iff, edist_lt_ofReal, dist_zero_right] at yr
         apply fp.hasSum
-        · simp only [mem_insert_iff, add_right_eq_self] at ys
+        · simp only [mem_insert_iff, add_eq_left] at ys
           rcases ys with rfl | ys
           · simp
-          · simp only [mem_insert_iff, add_right_eq_self, mem_inter_iff, ys, true_and]
+          · simp only [mem_insert_iff, add_eq_left, mem_inter_iff, ys, true_and]
             apply Or.inr (ru ?_)
             simp only [Metric.mem_ball, dist_self_add_left, yr]
         · simp only [EMetric.mem_ball, yr] }⟩
@@ -89,8 +89,8 @@ lemma IsOpen.analyticOn_iff_analyticOnNhd {f : E → F} {s : Set E} (hs : IsOpen
   intro hf x m
   rcases Metric.mem_nhds_iff.mp (hs.mem_nhds m) with ⟨r, r0, rs⟩
   rcases hf x m with ⟨p, t, fp⟩
-  exact ⟨p, min (.ofReal r) t, {
-    r_pos := lt_min (by positivity) fp.r_pos
+  exact ⟨p, min (.ofReal r) t,
+  { r_pos := lt_min (by positivity) fp.r_pos
     r_le := min_le_of_right_le fp.r_le
     hasSum := by
       intro y ym
@@ -124,14 +124,14 @@ lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpac
   · intro h
     refine ⟨fun y ↦ p.sum (y - x), ?_, ?_⟩
     · intro y ⟨ys,yb⟩
-      simp only [EMetric.mem_ball, edist_eq_coe_nnnorm_sub] at yb
+      simp only [EMetric.mem_ball, edist_eq_enorm_sub] at yb
       have e0 := p.hasSum (x := y - x) ?_
       have e1 := (h.hasSum (y := y - x) ?_ ?_)
       · simp only [add_sub_cancel] at e1
         exact e1.unique e0
       · simpa only [add_sub_cancel]
-      · simpa only [EMetric.mem_ball, edist_eq_coe_nnnorm]
-      · simp only [EMetric.mem_ball, edist_eq_coe_nnnorm]
+      · simpa only [EMetric.mem_ball, edist_zero_eq_enorm]
+      · simp only [EMetric.mem_ball, edist_zero_eq_enorm]
         exact lt_of_lt_of_le yb h.r_le
     · refine ⟨h.r_le, h.r_pos, ?_⟩
       intro y lt
@@ -145,7 +145,7 @@ lemma hasFPowerSeriesWithinOnBall_iff_exists_hasFPowerSeriesOnBall [CompleteSpac
     rw [hfg]
     · exact hg.hasSum lt
     · refine ⟨ys, ?_⟩
-      simpa only [EMetric.mem_ball, edist_eq_coe_nnnorm_sub, add_sub_cancel_left, sub_zero] using lt
+      simpa only [EMetric.mem_ball, edist_eq_enorm_sub, add_sub_cancel_left, sub_zero] using lt
 
 /-- `f` has power series `p` at `x` iff some local extension of `f` has that series -/
 lemma hasFPowerSeriesWithinAt_iff_exists_hasFPowerSeriesAt [CompleteSpace F] {f : E → F}
@@ -201,3 +201,15 @@ lemma analyticWithinAt_iff_exists_analyticAt' [CompleteSpace F] {f : E → F} {s
     exact ⟨g, by filter_upwards [self_mem_nhdsWithin] using hf, hg⟩
 
 alias ⟨AnalyticWithinAt.exists_analyticAt, _⟩ := analyticWithinAt_iff_exists_analyticAt'
+
+lemma AnalyticWithinAt.exists_mem_nhdsWithin_analyticOn
+    [CompleteSpace F] {f : E → F} {s : Set E} {x : E} (h : AnalyticWithinAt 𝕜 f s x) :
+    ∃ u ∈ 𝓝[insert x s] x, AnalyticOn 𝕜 f u := by
+  obtain ⟨g, -, h'g, hg⟩ : ∃ g, f x = g x ∧ EqOn f g (insert x s) ∧ AnalyticAt 𝕜 g x :=
+    h.exists_analyticAt
+  let u := insert x s ∩ {y | AnalyticAt 𝕜 g y}
+  refine ⟨u, ?_, ?_⟩
+  · exact inter_mem_nhdsWithin _ ((isOpen_analyticAt 𝕜 g).mem_nhds hg)
+  · intro y hy
+    have : AnalyticWithinAt 𝕜 g u y := hy.2.analyticWithinAt
+    exact this.congr (h'g.mono (inter_subset_left)) (h'g (inter_subset_left hy))

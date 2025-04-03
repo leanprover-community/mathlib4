@@ -21,7 +21,7 @@ noncomputable section
 universe v u v' u'
 
 open Opposite CategoryTheory CategoryTheory.Category CategoryTheory.Functor CategoryTheory.Limits
-  AlgebraicGeometry TopologicalSpace
+  AlgebraicGeometry TopologicalSpace Topology
 
 variable {C : Type u} [Category.{v} C] [HasColimits C]
 
@@ -48,9 +48,6 @@ theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Op
       X.presheaf.germ ((Opens.map α.base).obj U) x hx := by
   rw [Hom.stalkMap, stalkFunctor_map_germ_assoc, stalkPushforward_germ]
 
-@[deprecated (since := "2024-07-30")] alias stalkMap_germ' := stalkMap_germ
-@[deprecated (since := "2024-07-30")] alias stalkMap_germ'_assoc := stalkMap_germ
-
 section Restrict
 
 /-- For an open embedding `f : U ⟶ X` and a point `x : U`, we get an isomorphism between the stalk
@@ -64,7 +61,7 @@ def restrictStalkIso {U : TopCat} (X : PresheafedSpace.{_, _, v} C) {f : U ⟶ (
   -- Typeclass resolution knows that the opposite of an initial functor is final. The result
   -- follows from the general fact that postcomposing with a final functor doesn't change colimits.
 
--- Porting note (#11119): removed `simp` attribute, for left hand side is not in simple normal form.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute, for left hand side is not in simple normal form.
 @[elementwise, reassoc]
 theorem restrictStalkIso_hom_eq_germ {U : TopCat} (X : PresheafedSpace.{_, _, v} C)
     {f : U ⟶ (X : TopCat.{v})} (h : IsOpenEmbedding f) (V : Opens U) (x : U) (hx : x ∈ V) :
@@ -169,7 +166,7 @@ instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x 
     -- `X.stalk x ⟶ X.stalk ((α ≫ β).base x)`.
     refine
       ⟨eqToHom (show X.presheaf.stalk x = X.presheaf.stalk ((α ≫ β).base x) by rw [h_eq]) ≫
-          (β.stalkMap (α.base x) : _),
+          (β.stalkMap (α.base x) :),
         ?_, ?_⟩
     · rw [← Category.assoc, congr_point α x ((α ≫ β).base x) h_eq.symm, Category.assoc]
       erw [← stalkMap.comp β α (α.base x)]
@@ -184,10 +181,11 @@ def stalkIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ≅ Y) (x : X) :
     Y.presheaf.stalk (α.hom.base x) ≅ X.presheaf.stalk x :=
   asIso (α.hom.stalkMap x)
 
-@[reassoc, elementwise, simp, nolint simpNF] -- see std4#365 for the simpNF issue
+-- See https://github.com/leanprover-community/batteries/issues/365 for the simpNF issue.
+@[reassoc, elementwise, simp, nolint simpNF]
 theorem stalkSpecializes_stalkMap {X Y : PresheafedSpace.{_, _, v} C}
     (f : X ⟶ Y) {x y : X} (h : x ⤳ y) :
-    Y.presheaf.stalkSpecializes (f.base.map_specializes h) ≫ f.stalkMap x =
+    Y.presheaf.stalkSpecializes (f.base.hom.map_specializes h) ≫ f.stalkMap x =
       f.stalkMap y ≫ X.presheaf.stalkSpecializes h := by
   -- Porting note: the original one liner `dsimp [stalkMap]; simp [stalkMap]` doesn't work,
   -- I had to uglify this

@@ -25,7 +25,8 @@ variable [Monoid M] [TopologicalSpace M] [ContinuousMul M]
 
 /-- Equivalence between continuous maps into the units of a monoid with continuous multiplication
 and the units of the monoid of continuous maps. -/
--- Porting note: `simps` made bad `simp` lemmas (LHS simplifies) so we add them manually below
+-- `simps` generates some lemmas here with LHS not in simp normal form,
+-- so we write them out manually below.
 @[to_additive (attr := simps apply_val_apply symm_apply_apply_val)
 "Equivalence between continuous maps into the additive units of an additive monoid with continuous
 addition and the additive units of the additive monoid of continuous maps."]
@@ -40,18 +41,16 @@ def unitsLift : C(X, Mˣ) ≃ C(X, M)ˣ where
         ⟨(f : C(X, M)) x, (↑f⁻¹ : C(X, M)) x,
           ContinuousMap.congr_fun f.mul_inv x, ContinuousMap.congr_fun f.inv_mul x⟩
       continuous_toFun := continuous_induced_rng.2 <|
-        (f : C(X, M)).continuous.prod_mk <|
+        (f : C(X, M)).continuous.prodMk <|
         MulOpposite.continuous_op.comp (↑f⁻¹ : C(X, M)).continuous }
   left_inv f := by ext; rfl
   right_inv f := by ext; rfl
 
--- Porting note: add manually because `simps` used `inv` and `simpNF` complained
 @[to_additive (attr := simp)]
 lemma unitsLift_apply_inv_apply (f : C(X, Mˣ)) (x : X) :
     (↑(ContinuousMap.unitsLift f)⁻¹ : C(X, M)) x = (f x)⁻¹ :=
   rfl
 
--- Porting note: add manually because `simps` used `inv` and `simpNF` complained
 @[to_additive (attr := simp)]
 lemma unitsLift_symm_apply_apply_inv' (f : C(X, M)ˣ) (x : X) :
     (ContinuousMap.unitsLift.symm f x)⁻¹ = (↑f⁻¹ : C(X, M)) x := by
@@ -67,13 +66,12 @@ theorem continuous_isUnit_unit {f : C(X, R)} (h : ∀ x, IsUnit (f x)) :
     Continuous fun x => (h x).unit := by
   refine
     continuous_induced_rng.2
-      (Continuous.prod_mk f.continuous
+      (Continuous.prodMk f.continuous
         (MulOpposite.continuous_op.comp (continuous_iff_continuousAt.mpr fun x => ?_)))
   have := NormedRing.inverse_continuousAt (h x).unit
   simp only
   simp only [← Ring.inverse_unit, IsUnit.unit_spec] at this ⊢
   exact this.comp (f.continuousAt x)
--- Porting note: this had the worst namespace: `NormedRing`
 
 /-- Construct a continuous map into the group of units of a normed ring from a function into the
 normed ring and a proof that every element of the range is a unit. -/

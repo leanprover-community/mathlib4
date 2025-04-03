@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.SMulWithZero
 
 /-!
 # Pointwise order on finitely supported functions
@@ -208,9 +209,9 @@ instance instSMulPosReflectLT [SMulPosReflectLT α β] : SMulPosReflectLT α (ι
 
 end SMulWithZero
 
-section CanonicallyOrderedAddCommMonoid
+section PartialOrder
 
-variable [CanonicallyOrderedAddCommMonoid α] {f g : ι →₀ α}
+variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α] {f g : ι →₀ α}
 
 instance orderBot : OrderBot (ι →₀ α) where
   bot := 0
@@ -236,10 +237,10 @@ lemma support_monotone : Monotone (support (α := ι) (M := α)) :=
 
 lemma support_mono (hfg : f ≤ g) : f.support ⊆ g.support := support_monotone hfg
 
-instance decidableLE [DecidableRel (@LE.le α _)] : DecidableRel (@LE.le (ι →₀ α) _) := fun f g =>
+instance decidableLE [DecidableLE α] : DecidableLE (ι →₀ α) := fun f g =>
   decidable_of_iff _ (le_iff f g).symm
 
-instance decidableLT [DecidableRel (@LE.le α _)] : DecidableRel (@LT.lt (ι →₀ α) _) :=
+instance decidableLT [DecidableLE α] : DecidableLT (ι →₀ α) :=
   decidableLTOfDecidableLE
 
 @[simp]
@@ -256,11 +257,9 @@ instance tsub : Sub (ι →₀ α) :=
 instance orderedSub : OrderedSub (ι →₀ α) :=
   ⟨fun _n _m _k => forall_congr' fun _x => tsub_le_iff_right⟩
 
-instance : CanonicallyOrderedAddCommMonoid (ι →₀ α) :=
-  { Finsupp.orderBot,
-    Finsupp.orderedAddCommMonoid with
-    exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
-    le_self_add := fun _f _g _x => le_self_add }
+instance [CovariantClass α α (· + ·) (· ≤ ·)] : CanonicallyOrderedAdd (ι →₀ α) where
+  exists_add_of_le := fun {f g} h => ⟨g - f, ext fun x => (add_tsub_cancel_of_le <| h x).symm⟩
+  le_self_add := fun _f _g _x => le_self_add
 
 @[simp, norm_cast] lemma coe_tsub (f g : ι →₀ α) : ⇑(f - g) = f - g := rfl
 
@@ -275,25 +274,25 @@ theorem single_tsub : single i (a - b) = single i a - single i b := by
   · rw [tsub_apply, single_eq_of_ne h, single_eq_of_ne h, single_eq_of_ne h, tsub_self]
 
 theorem support_tsub {f1 f2 : ι →₀ α} : (f1 - f2).support ⊆ f1.support := by
-  simp (config := { contextual := true }) only [subset_iff, tsub_eq_zero_iff_le, mem_support_iff,
+  simp +contextual only [subset_iff, tsub_eq_zero_iff_le, mem_support_iff,
     Ne, coe_tsub, Pi.sub_apply, not_imp_not, zero_le, imp_true_iff]
 
 theorem subset_support_tsub [DecidableEq ι] {f1 f2 : ι →₀ α} :
     f1.support \ f2.support ⊆ (f1 - f2).support := by
-  simp (config := { contextual := true }) [subset_iff]
+  simp +contextual [subset_iff]
 
-end CanonicallyOrderedAddCommMonoid
+end PartialOrder
 
-section CanonicallyLinearOrderedAddCommMonoid
+section LinearOrder
 
-variable [CanonicallyLinearOrderedAddCommMonoid α]
+variable [AddCommMonoid α] [LinearOrder α] [CanonicallyOrderedAdd α]
 
 @[simp]
 theorem support_inf [DecidableEq ι] (f g : ι →₀ α) : (f ⊓ g).support = f.support ∩ g.support := by
   ext
   simp only [inf_apply, mem_support_iff, Ne, Finset.mem_union, Finset.mem_filter,
     Finset.mem_inter]
-  simp only [inf_eq_min, ← nonpos_iff_eq_zero, min_le_iff, not_or]
+  simp only [← nonpos_iff_eq_zero, min_le_iff, not_or]
 
 @[simp]
 theorem support_sup [DecidableEq ι] (f g : ι →₀ α) : (f ⊔ g).support = f.support ∪ g.support := by
@@ -307,7 +306,7 @@ nonrec theorem disjoint_iff {f g : ι →₀ α} : Disjoint f g ↔ Disjoint f.s
       Finsupp.support_inf]
     rfl
 
-end CanonicallyLinearOrderedAddCommMonoid
+end LinearOrder
 
 /-! ### Some lemmas about `ℕ` -/
 
@@ -321,6 +320,10 @@ theorem sub_single_one_add {a : ι} {u u' : ι →₀ ℕ} (h : u a ≠ 0) :
 theorem add_sub_single_one {a : ι} {u u' : ι →₀ ℕ} (h : u' a ≠ 0) :
     u + (u' - single a 1) = u + u' - single a 1 :=
   (add_tsub_assoc_of_le (single_le_iff.mpr <| Nat.one_le_iff_ne_zero.mpr h) _).symm
+
+lemma sub_add_single_one_cancel {u : ι →₀ ℕ} {i : ι} (h : u i ≠ 0) :
+    u - single i 1 + single i 1 = u := by
+  rw [sub_single_one_add h, add_tsub_cancel_right]
 
 end Nat
 

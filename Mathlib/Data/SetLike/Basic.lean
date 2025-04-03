@@ -3,9 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.SetLike
+import Mathlib.Data.Set.Basic
 
 /-!
 # Typeclass for types with a set-like extensionality property
@@ -70,6 +70,7 @@ While this is equivalent, `SetLike` conveniently uses a carrier set projection d
 subobjects
 -/
 
+assert_not_exists RelIso
 
 /-- A class to indicate that there is a canonical injection between `A` and `Set B`.
 
@@ -117,7 +118,7 @@ open Lean PrettyPrinter.Delaborator SubExpr
 /-- For terms that match the `CoeSort` instance's body, pretty print as `↥S`
 rather than as `{ x // x ∈ S }`. The discriminating feature is that membership
 uses the `SetLike.instMembership` instance. -/
-@[delab app.Subtype]
+@[app_delab Subtype]
 def delabSubtypeSetLike : Delab := whenPPOption getPPNotation do
   let #[_, .lam n _ body _] := (← getExpr).getAppArgs | failure
   guard <| body.isAppOf ``Membership.mem
@@ -172,8 +173,6 @@ theorem mem_coe {x : B} : x ∈ (p : Set B) ↔ x ∈ p :=
 theorem coe_eq_coe {x y : p} : (x : B) = y ↔ x = y :=
   Subtype.ext_iff_val.symm
 
--- Porting note: this is not necessary anymore due to the way coercions work
-
 @[simp]
 theorem coe_mem (x : p) : (x : B) ∈ p :=
   x.2
@@ -181,8 +180,10 @@ theorem coe_mem (x : p) : (x : B) ∈ p :=
 @[aesop 5% apply (rule_sets := [SetLike])]
 lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p := hp hx
 
--- Porting note: removed `@[simp]` because `simpNF` linter complained
+@[simp]
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
+
+@[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
 
 instance (priority := 100) instPartialOrder : PartialOrder A :=
   { PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with
@@ -211,5 +212,15 @@ theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p :=
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_le, not_le_iff_exists]
+
+/-- membership is inherited from `Set X` -/
+abbrev instSubtypeSet {X} {p : Set X → Prop} : SetLike {s // p s} X where
+  coe := (↑)
+  coe_injective' := Subtype.val_injective
+
+/-- membership is inherited from `S` -/
+abbrev instSubtype {X S} [SetLike S X] {p : S → Prop} : SetLike {s // p s} X where
+  coe := (↑)
+  coe_injective' := SetLike.coe_injective.comp Subtype.val_injective
 
 end SetLike

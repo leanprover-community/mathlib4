@@ -6,8 +6,8 @@ Authors: Anatole Dedecker, Sébastien Gouëzel, Yury Kudryashov, Dylan MacKenzie
 import Mathlib.Algebra.BigOperators.Module
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Algebra.Polynomial.Monic
-import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Analysis.Normed.Field.InfiniteSum
+import Mathlib.Analysis.Asymptotics.Lemmas
+import Mathlib.Analysis.Normed.Ring.InfiniteSum
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Data.List.TFAE
@@ -27,7 +27,7 @@ noncomputable section
 
 open Set Function Filter Finset Metric Asymptotics Topology Nat NNReal ENNReal
 
-variable {α β ι : Type*}
+variable {α : Type*}
 
 /-! ### Powers -/
 
@@ -107,9 +107,8 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
   tfae_have 8 → 7 := fun ⟨a, ha, H⟩ ↦ ⟨a, ha.2, H⟩
   tfae_have 7 → 3
   | ⟨a, ha, H⟩ => by
-    have : 0 ≤ a := nonneg_of_eventually_pow_nonneg (H.mono fun n ↦ (abs_nonneg _).trans)
-    refine ⟨a, A ⟨this, ha⟩, IsBigO.of_bound 1 ?_⟩
-    simpa only [Real.norm_eq_abs, one_mul, abs_pow, abs_of_nonneg this]
+    refine ⟨a, A ⟨?_, ha⟩, .of_norm_eventuallyLE H⟩
+    exact nonneg_of_eventually_pow_nonneg (H.mono fun n ↦ (abs_nonneg _).trans)
   tfae_finish
 
 /-- For any natural `k` and a real `r > 1` we have `n ^ k = o(r ^ n)` as `n → ∞`. -/
@@ -147,7 +146,7 @@ theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type*} [Norm
     isLittleO_pow_const_const_pow_of_one_lt k ((one_lt_div h0).2 h)
   suffices (fun n ↦ r₁ ^ n) =O[atTop] fun n ↦ ‖r₁‖ ^ n by
     simpa [div_mul_cancel₀ _ (pow_pos h0 _).ne', div_pow] using A.mul_isBigO this
-  exact IsBigO.of_bound 1 (by simpa using eventually_norm_pow_le r₁)
+  exact .of_norm_eventuallyLE <| eventually_norm_pow_le r₁
 
 theorem tendsto_pow_const_div_const_pow_of_one_lt (k : ℕ) {r : ℝ} (hr : 1 < r) :
     Tendsto (fun n ↦ (n : ℝ) ^ k / r ^ n : ℕ → ℝ) atTop (𝓝 0) :=
@@ -162,6 +161,12 @@ theorem tendsto_pow_const_mul_const_pow_of_abs_lt_one (k : ℕ) {r : ℝ} (hr : 
   have hr' : 1 < |r|⁻¹ := (one_lt_inv₀ (abs_pos.2 h0)).2 hr
   rw [tendsto_zero_iff_norm_tendsto_zero]
   simpa [div_eq_mul_inv] using tendsto_pow_const_div_const_pow_of_one_lt k hr'
+
+/-- For `k ≠ 0` and a constant `r` the function `r / n ^ k` tends to zero. -/
+lemma tendsto_const_div_pow (r : ℝ) (k : ℕ) (hk : k ≠ 0) :
+    Tendsto (fun n : ℕ => r / n ^ k) atTop (𝓝 0) := by
+  simpa using Filter.Tendsto.const_div_atTop (tendsto_natCast_atTop_atTop (R := ℝ).comp
+    (tendsto_pow_atTop hk) ) r
 
 /-- If `0 ≤ r < 1`, then `n ^ k r ^ n` tends to zero for any natural `k`.
 This is a specialized version of `tendsto_pow_const_mul_const_pow_of_abs_lt_one`, singled out
@@ -187,14 +192,10 @@ theorem tendsto_pow_atTop_nhds_zero_of_norm_lt_one {R : Type*} [NormedRing R] {x
     Tendsto (fun n : ℕ ↦ x ^ n) atTop (𝓝 0) := by
   apply squeeze_zero_norm' (eventually_norm_pow_le x)
   exact tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _) h
-@[deprecated (since := "2024-01-31")]
-alias tendsto_pow_atTop_nhds_0_of_norm_lt_1 := tendsto_pow_atTop_nhds_zero_of_norm_lt_one
 
 theorem tendsto_pow_atTop_nhds_zero_of_abs_lt_one {r : ℝ} (h : |r| < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) :=
   tendsto_pow_atTop_nhds_zero_of_norm_lt_one h
-@[deprecated (since := "2024-01-31")]
-alias tendsto_pow_atTop_nhds_0_of_abs_lt_1 := tendsto_pow_atTop_nhds_zero_of_abs_lt_one
 
 /-! ### Geometric series -/
 
@@ -240,12 +241,6 @@ theorem tsum_geometric_le_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
     linarith
 
 variable [HasSummableGeomSeries R]
-
-@[deprecated (since := "2024-01-31")]
-alias NormedRing.tsum_geometric_of_norm_lt_1 := tsum_geometric_le_of_norm_lt_one
-
-@[deprecated (since := "2024-07-27")]
-alias NormedRing.tsum_geometric_of_norm_lt_one := tsum_geometric_le_of_norm_lt_one
 
 theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * (1 - x) = 1 := by
   have := (summable_geometric_of_norm_lt_one h).hasSum.mul_right (1 - x)
@@ -300,12 +295,6 @@ lemma isUnit_one_sub_of_norm_lt_one {x : R} (h : ‖x‖ < 1) : IsUnit (1 - x) :
 
 end HasSummableGeometricSeries
 
-@[deprecated (since := "2024-01-31")]
-alias NormedRing.summable_geometric_of_norm_lt_1 := summable_geometric_of_norm_lt_one
-
-@[deprecated (since := "2024-07-27")]
-alias NormedRing.summable_geometric_of_norm_lt_one := summable_geometric_of_norm_lt_one
-
 section Geometric
 
 variable {K : Type*} [NormedDivisionRing K] {ξ : K}
@@ -320,39 +309,21 @@ theorem hasSum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : HasSum (fun n : ℕ
   · simpa [geom_sum_eq, xi_ne_one, neg_inv, div_eq_mul_inv] using A
   · simp [norm_pow, summable_geometric_of_lt_one (norm_nonneg _) h]
 
-@[deprecated (since := "2024-01-31")]
-alias hasSum_geometric_of_norm_lt_1 := hasSum_geometric_of_norm_lt_one
-
 instance : HasSummableGeomSeries K :=
   ⟨fun _ h ↦ (hasSum_geometric_of_norm_lt_one h).summable⟩
 
-@[deprecated (since := "2024-01-31")]
-alias summable_geometric_of_norm_lt_1 := summable_geometric_of_norm_lt_one
-
 theorem tsum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : ∑' n : ℕ, ξ ^ n = (1 - ξ)⁻¹ :=
   (hasSum_geometric_of_norm_lt_one h).tsum_eq
-
-@[deprecated (since := "2024-01-31")]
-alias tsum_geometric_of_norm_lt_1 := tsum_geometric_of_norm_lt_one
 
 theorem hasSum_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) :
     HasSum (fun n : ℕ ↦ r ^ n) (1 - r)⁻¹ :=
   hasSum_geometric_of_norm_lt_one h
 
-@[deprecated (since := "2024-01-31")]
-alias hasSum_geometric_of_abs_lt_1 := hasSum_geometric_of_abs_lt_one
-
 theorem summable_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) : Summable fun n : ℕ ↦ r ^ n :=
   summable_geometric_of_norm_lt_one h
 
-@[deprecated (since := "2024-01-31")]
-alias summable_geometric_of_abs_lt_1 := summable_geometric_of_abs_lt_one
-
 theorem tsum_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   tsum_geometric_of_norm_lt_one h
-
-@[deprecated (since := "2024-01-31")]
-alias tsum_geometric_of_abs_lt_1 := tsum_geometric_of_abs_lt_one
 
 /-- A geometric series in a normed field is summable iff the norm of the common ratio is less than
 one. -/
@@ -363,10 +334,7 @@ theorem summable_geometric_iff_norm_lt_one : (Summable fun n : ℕ ↦ ξ ^ n) �
     (h.tendsto_cofinite_zero.eventually (ball_mem_nhds _ zero_lt_one)).exists
   simp only [norm_pow, dist_zero_right] at hk
   rw [← one_pow k] at hk
-  exact lt_of_pow_lt_pow_left _ zero_le_one hk
-
-@[deprecated (since := "2024-01-31")]
-alias summable_geometric_iff_norm_lt_1 := summable_geometric_iff_norm_lt_one
+  exact lt_of_pow_lt_pow_left₀ _ zero_le_one hk
 
 end Geometric
 
@@ -484,12 +452,6 @@ theorem summable_pow_mul_geometric_of_norm_lt_one (k : ℕ) {r : R} (hr : ‖r�
   ext n
   simp [ha n, add_mul, sum_mul]
 
-@[deprecated (since := "2024-01-31")]
-alias summable_norm_pow_mul_geometric_of_norm_lt_1 := summable_norm_pow_mul_geometric_of_norm_lt_one
-
-@[deprecated (since := "2024-01-31")]
-alias summable_pow_mul_geometric_of_norm_lt_1 := summable_pow_mul_geometric_of_norm_lt_one
-
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version in a general ring
 with summable geometric series. For a version in a field, using division instead of `Ring.inverse`,
 see `hasSum_coe_mul_geometric_of_norm_lt_one`. -/
@@ -522,16 +484,10 @@ theorem hasSum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
   convert hasSum_coe_mul_geometric_of_norm_lt_one' hr using 1
   simp [div_eq_mul_inv]
 
-@[deprecated (since := "2024-01-31")]
-alias hasSum_coe_mul_geometric_of_norm_lt_1 := hasSum_coe_mul_geometric_of_norm_lt_one
-
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`. -/
 theorem tsum_coe_mul_geometric_of_norm_lt_one {r : 𝕜} (hr : ‖r‖ < 1) :
     (∑' n : ℕ, n * r ^ n : 𝕜) = r / (1 - r) ^ 2 :=
   (hasSum_coe_mul_geometric_of_norm_lt_one hr).tsum_eq
-
-@[deprecated (since := "2024-01-31")]
-alias tsum_coe_mul_geometric_of_norm_lt_1 := tsum_coe_mul_geometric_of_norm_lt_one
 
 end MulGeometric
 
@@ -638,7 +594,7 @@ theorem summable_of_ratio_test_tendsto_lt_one {α : Type*} [NormedAddCommGroup �
     (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) : Summable f := by
   rcases exists_between hl₁ with ⟨r, hr₀, hr₁⟩
   refine summable_of_ratio_norm_eventually_le hr₁ ?_
-  filter_upwards [eventually_le_of_tendsto_lt hr₀ h, hf] with _ _ h₁
+  filter_upwards [h.eventually_le_const hr₀, hf] with _ _ h₁
   rwa [← div_le_iff₀ (norm_pos_iff.mpr h₁)]
 
 theorem not_summable_of_ratio_norm_eventually_ge {α : Type*} [SeminormedAddCommGroup α] {f : ℕ → α}
@@ -666,12 +622,12 @@ theorem not_summable_of_ratio_test_tendsto_gt_one {α : Type*} [SeminormedAddCom
     {f : ℕ → α} {l : ℝ} (hl : 1 < l) (h : Tendsto (fun n ↦ ‖f (n + 1)‖ / ‖f n‖) atTop (𝓝 l)) :
     ¬Summable f := by
   have key : ∀ᶠ n in atTop, ‖f n‖ ≠ 0 := by
-    filter_upwards [eventually_ge_of_tendsto_gt hl h] with _ hn hc
+    filter_upwards [h.eventually_const_le hl] with _ hn hc
     rw [hc, _root_.div_zero] at hn
     linarith
   rcases exists_between hl with ⟨r, hr₀, hr₁⟩
   refine not_summable_of_ratio_norm_eventually_ge hr₀ key.frequently ?_
-  filter_upwards [eventually_ge_of_tendsto_gt hr₁ h, key] with _ _ h₁
+  filter_upwards [h.eventually_const_le hr₁, key] with _ _ h₁
   rwa [← le_div_iff₀ (lt_of_le_of_ne (norm_nonneg _) h₁.symm)]
 
 section NormedDivisionRing

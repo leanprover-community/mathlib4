@@ -3,7 +3,7 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Field.Subfield
+import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.UniformRing
 
@@ -47,7 +47,7 @@ which does not have a cluster point at 0 is a Cauchy filter
 (with respect to the additive uniform structure). This ensures the completion is
 a field.
 -/
-class CompletableTopField extends T0Space K : Prop where
+class CompletableTopField : Prop extends T0Space K where
   nice : ∀ F : Filter K, Cauchy F → 𝓝 0 ⊓ F = ⊥ → Cauchy (map (fun x => x⁻¹) F)
 
 namespace UniformSpace
@@ -55,7 +55,7 @@ namespace UniformSpace
 namespace Completion
 
 instance (priority := 100) [T0Space K] : Nontrivial (hat K) :=
-  ⟨⟨0, 1, fun h => zero_ne_one <| (isUniformEmbedding_coe K).inj h⟩⟩
+  ⟨⟨0, 1, fun h => zero_ne_one <| (isUniformEmbedding_coe K).injective h⟩⟩
 
 variable {K}
 
@@ -63,6 +63,7 @@ variable {K}
 def hatInv : hat K → hat K :=
   isDenseInducing_coe.extend fun x : K => (↑x⁻¹ : hat K)
 
+@[fun_prop]
 theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
     ContinuousAt hatInv x := by
   refine isDenseInducing_coe.continuousAt_extend ?_
@@ -83,7 +84,9 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
   · have eq_bot : 𝓝 (0 : hat K) ⊓ 𝓝 y = ⊥ := by
       by_contra h
       exact y_ne (eq_of_nhds_neBot <| neBot_iff.mpr h).symm
-    erw [isDenseInducing_coe.nhds_eq_comap (0 : K), ← Filter.comap_inf, eq_bot]
+    rw [isDenseInducing_coe.nhds_eq_comap (0 : K), ← Filter.comap_inf]
+    norm_cast
+    rw [eq_bot]
     exact comap_bot
 
 open Classical in
@@ -111,7 +114,7 @@ theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
   · conv_lhs => dsimp [Inv.inv]
     rw [if_neg]
     · exact hatInv_extends h
-    · exact fun H => h (isDenseEmbedding_coe.inj H)
+    · exact fun H => h (isDenseEmbedding_coe.injective H)
 
 variable [UniformAddGroup K]
 
@@ -121,10 +124,7 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   let c := (fun (x : K) => (x : hat K))
   change f x = 1
   have cont : ContinuousAt f x := by
-    letI : TopologicalSpace (hat K × hat K) := instTopologicalSpaceProd
-    have : ContinuousAt (fun y : hat K => ((y, hatInv y) : hat K × hat K)) x :=
-      continuous_id.continuousAt.prod (continuous_hatInv x_ne)
-    exact (_root_.continuous_mul.continuousAt.comp this : _)
+    fun_prop (disch := assumption)
   have clo : x ∈ closure (c '' {0}ᶜ) := by
     have := isDenseInducing_coe.dense x
     rw [← image_univ, show (univ : Set K) = {0} ∪ {0}ᶜ from (union_compl_self _).symm,
@@ -145,7 +145,7 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   rwa [closure_singleton, mem_singleton_iff] at fxclo
 
 instance instField : Field (hat K) where
-  exists_pair_ne := ⟨0, 1, fun h => zero_ne_one ((isUniformEmbedding_coe K).inj h)⟩
+  exists_pair_ne := ⟨0, 1, fun h => zero_ne_one ((isUniformEmbedding_coe K).injective h)⟩
   mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
   inv_zero := by simp only [Inv.inv, ite_true]
   -- TODO: use a better defeq
@@ -180,7 +180,7 @@ instance Subfield.completableTopField (K : Subfield L) : CompletableTopField K w
     rw [← hi.cauchy_map_iff] at F_cau ⊢
     rw [map_comm (show (i ∘ fun x => x⁻¹) = (fun x => x⁻¹) ∘ i by ext; rfl)]
     apply CompletableTopField.nice _ F_cau
-    rw [← Filter.push_pull', ← map_zero i, ← hi.inducing.nhds_eq_comap, inf_F, Filter.map_bot]
+    rw [← Filter.push_pull', ← map_zero i, ← hi.isInducing.nhds_eq_comap, inf_F, Filter.map_bot]
 
 instance (priority := 100) completableTopField_of_complete (L : Type*) [Field L] [UniformSpace L]
     [TopologicalDivisionRing L] [T0Space L] [CompleteSpace L] : CompletableTopField L where
@@ -211,4 +211,4 @@ theorem IsUniformInducing.completableTopField
     ext; simp only [Function.comp_apply, map_inv₀, Subfield.coe_inv]
   rw [Filter.map_comm h_comm]
   apply CompletableTopField.nice _ F_cau
-  rw [← Filter.push_pull', ← map_zero f, ← hf.inducing.nhds_eq_comap, inf_F, Filter.map_bot]
+  rw [← Filter.push_pull', ← map_zero f, ← hf.isInducing.nhds_eq_comap, inf_F, Filter.map_bot]

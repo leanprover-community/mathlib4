@@ -3,9 +3,9 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import Mathlib.Order.BoundedOrder
+import Mathlib.Algebra.Group.TypeTags.Basic
+import Mathlib.Order.BoundedOrder.Basic
 
 /-! # Ordered monoid structures on `Multiplicative α` and `Additive α`. -/
 
@@ -79,12 +79,17 @@ theorem ofMul_lt {a b : α} : ofMul a < ofMul b ↔ a < b :=
   Iff.rfl
 
 @[simp]
-theorem toMul_le {a b : Additive α} : toMul a ≤ toMul b ↔ a ≤ b :=
+theorem toMul_le {a b : Additive α} : a.toMul ≤ b.toMul ↔ a ≤ b :=
   Iff.rfl
 
 @[simp]
-theorem toMul_lt {a b : Additive α} : toMul a < toMul b ↔ a < b :=
+theorem toMul_lt {a b : Additive α} : a.toMul < b.toMul ↔ a < b :=
   Iff.rfl
+
+@[gcongr] alias ⟨_, toMul_mono⟩ := toMul_le
+@[gcongr] alias ⟨_, ofMul_mono⟩ := ofMul_le
+@[gcongr] alias ⟨_, toMul_strictMono⟩ := toMul_lt
+@[gcongr] alias ⟨_, foMul_strictMono⟩ := ofMul_lt
 
 end Additive
 
@@ -101,11 +106,16 @@ theorem ofAdd_lt {a b : α} : ofAdd a < ofAdd b ↔ a < b :=
   Iff.rfl
 
 @[simp]
-theorem toAdd_le {a b : Multiplicative α} : toAdd a ≤ toAdd b ↔ a ≤ b :=
+theorem toAdd_le {a b : Multiplicative α} : a.toAdd ≤ b.toAdd ↔ a ≤ b :=
   Iff.rfl
 
 @[simp]
-theorem toAdd_lt {a b : Multiplicative α} : toAdd a < toAdd b ↔ a < b :=
+theorem toAdd_lt {a b : Multiplicative α} : a.toAdd < b.toAdd ↔ a < b :=
   Iff.rfl
+
+@[gcongr] alias ⟨_, toAdd_mono⟩ := toAdd_le
+@[gcongr] alias ⟨_, ofAdd_mono⟩ := ofAdd_le
+@[gcongr] alias ⟨_, toAdd_strictMono⟩ := toAdd_lt
+@[gcongr] alias ⟨_, ofAdd_strictMono⟩ := ofAdd_lt
 
 end Multiplicative

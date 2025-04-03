@@ -3,7 +3,7 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.Over
+import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
@@ -46,14 +46,14 @@ open WalkingPair
 /-- The equivalence swapping left and right.
 -/
 def WalkingPair.swap : WalkingPair ≃ WalkingPair where
-  toFun j := match j with
+  toFun
     | left => right
     | right => left
-  invFun j := match j with
+  invFun
     | left => right
     | right => left
-  left_inv j := by cases j; repeat rfl
-  right_inv j := by cases j; repeat rfl
+  left_inv j := by cases j <;> rfl
+  right_inv j := by cases j <;> rfl
 
 @[simp]
 theorem WalkingPair.swap_apply_left : WalkingPair.swap left = right :=
@@ -74,13 +74,13 @@ theorem WalkingPair.swap_symm_apply_ff : WalkingPair.swap.symm right = left :=
 /-- An equivalence from `WalkingPair` to `Bool`, sometimes useful when reindexing limits.
 -/
 def WalkingPair.equivBool : WalkingPair ≃ Bool where
-  toFun j := match j with
+  toFun
     | left => true
     | right => false
   -- to match equiv.sum_equiv_sigma_bool
   invFun b := Bool.recOn b right left
-  left_inv j := by cases j; repeat rfl
-  right_inv b := by cases b; repeat rfl
+  left_inv j := by cases j <;> rfl
+  right_inv b := by cases b <;> rfl
 
 @[simp]
 theorem WalkingPair.equivBool_apply_left : WalkingPair.equivBool left = true :=
@@ -136,7 +136,7 @@ attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
 /-- The natural transformation between two functors out of the
  walking pair, specified by its components. -/
 def mapPair : F ⟶ G where
-  app j := match j with
+  app
     | ⟨left⟩ => f
     | ⟨right⟩ => g
   naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨u⟩⟩ => by aesop_cat
@@ -306,11 +306,11 @@ theorem BinaryCofan.mk_inr {P : C} (ι₁ : X ⟶ P) (ι₂ : Y ⟶ P) : (Binary
 
 /-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/
 def isoBinaryFanMk {X Y : C} (c : BinaryFan X Y) : c ≅ BinaryFan.mk c.fst c.snd :=
-    Cones.ext (Iso.refl _) fun j => by cases' j with l; cases l; repeat simp
+    Cones.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
 
 /-- Every `BinaryFan` is isomorphic to an application of `BinaryFan.mk`. -/
 def isoBinaryCofanMk {X Y : C} (c : BinaryCofan X Y) : c ≅ BinaryCofan.mk c.inl c.inr :=
-    Cocones.ext (Iso.refl _) fun j => by cases' j with l; cases l; repeat simp
+    Cocones.ext (Iso.refl _) fun ⟨l⟩ => by cases l; repeat simp
 
 /-- This is a more convenient formulation to show that a `BinaryFan` constructed using
 `BinaryFan.mk` is a limit cone.
@@ -346,16 +346,16 @@ def BinaryCofan.isColimitMk {W : C} {inl : X ⟶ W} {inr : Y ⟶ W}
     uniq := fun s m w => uniq s m (w ⟨WalkingPair.left⟩) (w ⟨WalkingPair.right⟩) }
 
 /-- If `s` is a limit binary fan over `X` and `Y`, then every pair of morphisms `f : W ⟶ X` and
-    `g : W ⟶ Y` induces a morphism `l : W ⟶ s.pt` satisfying `l ≫ s.fst = f` and `l ≫ s.snd = g`.
-    -/
+`g : W ⟶ Y` induces a morphism `l : W ⟶ s.pt` satisfying `l ≫ s.fst = f` and `l ≫ s.snd = g`.
+-/
 @[simps]
 def BinaryFan.IsLimit.lift' {W X Y : C} {s : BinaryFan X Y} (h : IsLimit s) (f : W ⟶ X)
     (g : W ⟶ Y) : { l : W ⟶ s.pt // l ≫ s.fst = f ∧ l ≫ s.snd = g } :=
   ⟨h.lift <| BinaryFan.mk f g, h.fac _ _, h.fac _ _⟩
 
 /-- If `s` is a colimit binary cofan over `X` and `Y`,, then every pair of morphisms `f : X ⟶ W` and
-    `g : Y ⟶ W` induces a morphism `l : s.pt ⟶ W` satisfying `s.inl ≫ l = f` and `s.inr ≫ l = g`.
-    -/
+`g : Y ⟶ W` induces a morphism `l : s.pt ⟶ W` satisfying `s.inl ≫ l = f` and `s.inr ≫ l = g`.
+-/
 @[simps]
 def BinaryCofan.IsColimit.desc' {W X Y : C} {s : BinaryCofan X Y} (h : IsColimit s) (f : X ⟶ W)
     (g : Y ⟶ W) : { l : s.pt ⟶ W // s.inl ≫ l = f ∧ s.inr ≫ l = g } :=
@@ -569,15 +569,11 @@ theorem prod.lift_snd {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W �
     prod.lift f g ≫ prod.snd = g :=
   limit.lift_π _ _
 
--- The simp linter says simp can prove the reassoc version of this lemma.
--- Porting note: it can also prove the og version
 @[reassoc]
 theorem coprod.inl_desc {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : Y ⟶ W) :
     coprod.inl ≫ coprod.desc f g = f :=
   colimit.ι_desc _ _
 
--- The simp linter says simp can prove the reassoc version of this lemma.
--- Porting note: it can also prove the og version
 @[reassoc]
 theorem coprod.inr_desc {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : Y ⟶ W) :
     coprod.inr ≫ coprod.desc f g = g :=
@@ -728,16 +724,10 @@ end ProdLemmas
 
 noncomputable section CoprodLemmas
 
--- @[reassoc (attr := simp)]
-@[simp] -- Porting note: removing reassoc tag since result is not hygienic (two h's)
+@[reassoc, simp]
 theorem coprod.desc_comp {V W X Y : C} [HasBinaryCoproduct X Y] (f : V ⟶ W) (g : X ⟶ V)
     (h : Y ⟶ V) : coprod.desc g h ≫ f = coprod.desc (g ≫ f) (h ≫ f) := by
   ext <;> simp
-
--- Porting note: hand generated reassoc here. Simp can prove it
-theorem coprod.desc_comp_assoc {C : Type u} [Category C] {V W X Y : C}
-    [HasBinaryCoproduct X Y] (f : V ⟶ W) (g : X ⟶ V) (h : Y ⟶ V) {Z : C} (l : W ⟶ Z) :
-    coprod.desc g h ≫ f ≫ l = coprod.desc (g ≫ f) (h ≫ f) ≫ l := by simp
 
 theorem coprod.diag_comp {X Y : C} [HasBinaryCoproduct X X] (f : X ⟶ Y) :
     codiag X ≫ f = coprod.desc f f := by simp
@@ -819,21 +809,15 @@ instance coprod.map_epi {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g 
     · rw [← cancel_epi g]
       simpa using congr_arg (fun f => coprod.inr ≫ f) h⟩
 
--- The simp linter says simp can prove the reassoc version of this lemma.
--- Porting note: and the og version too
 @[reassoc]
 theorem coprod.map_codiag {X Y : C} (f : X ⟶ Y) [HasBinaryCoproduct X X] [HasBinaryCoproduct Y Y] :
     coprod.map f f ≫ codiag Y = codiag X ≫ f := by simp
 
--- The simp linter says simp can prove the reassoc version of this lemma.
--- Porting note: and the og version too
 @[reassoc]
 theorem coprod.map_inl_inr_codiag {X Y : C} [HasBinaryCoproduct X Y]
     [HasBinaryCoproduct (X ⨿ Y) (X ⨿ Y)] :
     coprod.map coprod.inl coprod.inr ≫ codiag (X ⨿ Y) = 𝟙 (X ⨿ Y) := by simp
 
--- The simp linter says simp can prove the reassoc version of this lemma.
--- Porting note: and the og version too
 @[reassoc]
 theorem coprod.map_comp_inl_inr_codiag [HasColimitsOfShape (Discrete WalkingPair) C] {X X' Y Y' : C}
     (g : X ⟶ Y) (g' : X' ⟶ Y') :
@@ -843,29 +827,25 @@ end CoprodLemmas
 
 variable (C)
 
-/-- `HasBinaryProducts` represents a choice of product for every pair of objects.
-
-See <https://stacks.math.columbia.edu/tag/001T>.
--/
+/-- `HasBinaryProducts` represents a choice of product for every pair of objects. -/
+@[stacks 001T]
 abbrev HasBinaryProducts :=
   HasLimitsOfShape (Discrete WalkingPair) C
 
-/-- `HasBinaryCoproducts` represents a choice of coproduct for every pair of objects.
-
-See <https://stacks.math.columbia.edu/tag/04AP>.
--/
+/-- `HasBinaryCoproducts` represents a choice of coproduct for every pair of objects. -/
+@[stacks 04AP]
 abbrev HasBinaryCoproducts :=
   HasColimitsOfShape (Discrete WalkingPair) C
 
 /-- If `C` has all limits of diagrams `pair X Y`, then it has all binary products -/
 theorem hasBinaryProducts_of_hasLimit_pair [∀ {X Y : C}, HasLimit (pair X Y)] :
     HasBinaryProducts C :=
-  { has_limit := fun F => hasLimitOfIso (diagramIsoPair F).symm }
+  { has_limit := fun F => hasLimit_of_iso (diagramIsoPair F).symm }
 
 /-- If `C` has all colimits of diagrams `pair X Y`, then it has all binary coproducts -/
 theorem hasBinaryCoproducts_of_hasColimit_pair [∀ {X Y : C}, HasColimit (pair X Y)] :
     HasBinaryCoproducts C :=
-  { has_colimit := fun F => hasColimitOfIso (diagramIsoPair F) }
+  { has_colimit := fun F => hasColimit_of_iso (diagramIsoPair F) }
 
 noncomputable section
 
@@ -1023,7 +1003,6 @@ end
 
 noncomputable section ProdFunctor
 
--- Porting note (#10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryProducts C]
 
 /-- The binary product functor. -/
@@ -1044,7 +1023,7 @@ end ProdFunctor
 
 noncomputable section CoprodFunctor
 
--- Porting note (#10754): added category instance as it did not propagate
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 
 /-- The binary coproduct functor. -/
@@ -1130,7 +1109,6 @@ theorem prodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (prodCom
 /-- The natural isomorphism `F(A ⨯ -) ≅ FA ⨯ F-`, provided each `prodComparison F A B` is an
 isomorphism (as `B` changes).
 -/
--- @[simps (config := { rhsMd := semireducible })] -- Porting note: no config for semireducible
 @[simps]
 def prodComparisonNatIso [HasBinaryProducts C] [HasBinaryProducts D] (A : C)
     [∀ B, IsIso (prodComparison F A B)] :
@@ -1208,13 +1186,11 @@ theorem coprodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (copro
 /-- The natural isomorphism `FA ⨿ F- ≅ F(A ⨿ -)`, provided each `coprodComparison F A B` is an
 isomorphism (as `B` changes).
 -/
--- @[simps (config := { rhsMd := semireducible })] -- Porting note: no config for semireducible
 @[simps]
 def coprodComparisonNatIso [HasBinaryCoproducts C] [HasBinaryCoproducts D] (A : C)
     [∀ B, IsIso (coprodComparison F A B)] :
-    F ⋙ coprod.functor.obj (F.obj A) ≅ coprod.functor.obj A ⋙ F := by
-  refine { @asIso _ _ _ _ _ (?_) with hom := coprodComparisonNatTrans F A }
-  apply NatIso.isIso_of_isIso_app -- Porting note: this did not work inside { }
+    F ⋙ coprod.functor.obj (F.obj A) ≅ coprod.functor.obj A ⋙ F :=
+  { @asIso _ _ _ _ _ (NatIso.isIso_of_isIso_app ..) with hom := coprodComparisonNatTrans F A }
 
 end CoprodComparison
 

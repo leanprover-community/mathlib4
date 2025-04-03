@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
 import Mathlib.Logic.Relation
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.CompleteLattice.Basic
+import Mathlib.Order.GaloisConnection.Defs
 
 /-!
 # Equivalence relations
@@ -19,7 +20,7 @@ The complete lattice instance for equivalence relations could have been defined 
 the Galois insertion of equivalence relations on α into binary relations on α, and then using
 `CompleteLattice.copy` to define a complete lattice instance with more appropriate
 definitional equalities (a similar example is `Filter.CompleteLattice` in
-`Order/Filter/Basic.lean`). This does not save space, however, and is less clear.
+`Mathlib/Order/Filter/Basic.lean`). This does not save space, however, and is less clear.
 
 Partitions are not defined as a separate structure here; users are encouraged to
 reason about them using the existing `Setoid` and its infrastructure.
@@ -29,19 +30,19 @@ reason about them using the existing `Setoid` and its infrastructure.
 setoid, equivalence, iseqv, relation, equivalence relation
 -/
 
-attribute [refl] Setoid.refl
+attribute [refl, simp] Setoid.refl
 attribute [symm] Setoid.symm
 attribute [trans] Setoid.trans
 
 variable {α : Type*} {β : Type*}
 
 /-- A version of `Setoid.r` that takes the equivalence relation as an explicit argument. -/
-@[deprecated (since := "2024-08-29")]
+@[deprecated "No deprecation message was provided."  (since := "2024-10-09")]
 def Setoid.Rel (r : Setoid α) : α → α → Prop :=
   @Setoid.r _ r
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-09")]
+@[deprecated "No deprecation message was provided."  (since := "2024-10-09")]
 instance Setoid.decidableRel (r : Setoid α) [h : DecidableRel r.r] : DecidableRel r.Rel :=
   h
 
@@ -89,6 +90,8 @@ theorem trans' (r : Setoid α) : ∀ {x y z}, r x y → r y z → r x z := r.ise
 theorem comm' (s : Setoid α) {x y} : s x y ↔ s y x :=
   ⟨s.symm', s.symm'⟩
 
+open scoped Function -- required for scoped `on` notation
+
 /-- The kernel of a function is an equivalence relation. -/
 def ker (f : α → β) : Setoid α :=
   ⟨(· = ·) on f, eq_equivalence.comap f⟩
@@ -101,6 +104,8 @@ theorem ker_mk_eq (r : Setoid α) : ker (@Quotient.mk'' _ r) = r :=
 theorem ker_apply_mk_out {f : α → β} (a : α) : f (⟦a⟧ : Quotient (Setoid.ker f)).out = f a :=
   @Quotient.mk_out _ (Setoid.ker f) a
 
+set_option linter.deprecated false in
+@[deprecated ker_apply_mk_out (since := "2024-10-19")]
 theorem ker_apply_mk_out' {f : α → β} (a : α) :
     f (Quotient.mk _ a : Quotient <| Setoid.ker f).out' = f a :=
   @Quotient.mk_out' _ (Setoid.ker f) a
@@ -131,13 +136,13 @@ equivalence relations. -/
 @[simps]
 def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     Quotient r × Quotient s ≃ Quotient (r.prod s) where
-  toFun := fun (x, y) ↦ Quotient.map₂' Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
-  invFun := fun q ↦ Quotient.liftOn' q (fun xy ↦ (Quotient.mk'' xy.1, Quotient.mk'' xy.2))
+  toFun | (x, y) => Quotient.map₂ Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
+  invFun q := Quotient.liftOn' q (fun xy ↦ (Quotient.mk'' xy.1, Quotient.mk'' xy.2))
     fun x y hxy ↦ Prod.ext (by simpa using hxy.1) (by simpa using hxy.2)
-  left_inv := fun q ↦ by
+  left_inv q := by
     rcases q with ⟨qa, qb⟩
     exact Quotient.inductionOn₂' qa qb fun _ _ ↦ rfl
-  right_inv := fun q ↦ by
+  right_inv q := by
     simp only
     refine Quotient.inductionOn' q fun _ ↦ rfl
 
@@ -146,14 +151,14 @@ equivalence relations. -/
 @[simps]
 noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, Setoid (α i)) :
     (∀ i, Quotient (r i)) ≃ Quotient (@piSetoid _ _ r) where
-  toFun := fun x ↦ Quotient.mk'' fun i ↦ (x i).out'
-  invFun := fun q ↦ Quotient.liftOn' q (fun x i ↦ Quotient.mk'' (x i)) fun x y hxy ↦ by
+  toFun x := Quotient.mk'' fun i ↦ (x i).out
+  invFun q := Quotient.liftOn' q (fun x i ↦ Quotient.mk'' (x i)) fun x y hxy ↦ by
     ext i
     simpa using hxy i
-  left_inv := fun q ↦ by
+  left_inv q := by
     ext i
     simp
-  right_inv := fun q ↦ by
+  right_inv q := by
     refine Quotient.inductionOn' q fun _ ↦ ?_
     simp only [Quotient.liftOn'_mk'', Quotient.eq'']
     intro i
@@ -162,7 +167,7 @@ noncomputable def piQuotientEquiv {ι : Sort*} {α : ι → Sort*} (r : ∀ i, S
     simp
 
 /-- The infimum of two equivalence relations. -/
-instance : Inf (Setoid α) :=
+instance : Min (Setoid α) :=
   ⟨fun r s =>
     ⟨fun x y => r x y ∧ s x y,
       ⟨fun x => ⟨r.refl' x, s.refl' x⟩, fun h => ⟨r.symm' h.1, s.symm' h.2⟩, fun h1 h2 =>
@@ -203,7 +208,7 @@ instance : PartialOrder (Setoid α) where
 instance completeLattice : CompleteLattice (Setoid α) :=
   { (completeLatticeOfInf (Setoid α)) fun _ =>
       ⟨fun _ hr _ _ h => h _ hr, fun _ hr _ _ h _ hr' => hr hr' h⟩ with
-    inf := Inf.inf
+    inf := Min.min
     inf_le_left := fun _ _ _ _ h => h.1
     inf_le_right := fun _ _ _ _ h => h.2
     le_inf := fun _ _ _ h1 h2 _ _ h => ⟨h1 h, h2 h⟩
@@ -341,8 +346,7 @@ def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r
 theorem lift_unique {r : Setoid α} {f : α → β} (H : r ≤ ker f) (g : Quotient r → β)
     (Hg : f = g ∘ Quotient.mk'') : Quotient.lift f H = g := by
   ext ⟨x⟩
-  erw [Quotient.lift_mk f H, Hg]
-  rfl
+  rw [← Quotient.mk, Quotient.lift_mk f H, Hg, Function.comp_apply, Quotient.mk''_eq_mk]
 
 /-- Given a map f from α to β, the natural map from the quotient of α by the kernel of f is
     injective. -/
@@ -393,19 +397,13 @@ variable {r f}
     closure of the relation on `f`'s image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are
     related to the elements of `f⁻¹(y)` by `r`.' -/
 def map (r : Setoid α) (f : α → β) : Setoid β :=
-  Relation.EqvGen.setoid fun x y => ∃ a b, f a = x ∧ f b = y ∧ r a b
+  Relation.EqvGen.setoid (Relation.Map r f f)
 
 /-- Given a surjective function f whose kernel is contained in an equivalence relation r, the
     equivalence relation on f's codomain defined by x ≈ y ↔ the elements of f⁻¹(x) are related to
     the elements of f⁻¹(y) by r. -/
-def mapOfSurjective (r) (f : α → β) (h : ker f ≤ r) (hf : Surjective f) : Setoid β :=
-  ⟨fun x y => ∃ a b, f a = x ∧ f b = y ∧ r a b,
-    ⟨fun x =>
-      let ⟨y, hy⟩ := hf x
-      ⟨y, y, hy, hy, r.refl' y⟩,
-      fun ⟨x, y, hx, hy, h⟩ => ⟨y, x, hy, hx, r.symm' h⟩,
-      fun ⟨x, y, hx, hy, h₁⟩ ⟨y', z, hy', hz, h₂⟩ =>
-      ⟨x, z, hx, hz, r.trans' h₁ <| r.trans' (h <| by rwa [← hy'] at hy) h₂⟩⟩⟩
+def mapOfSurjective (r : Setoid α) (f : α → β) (h : ker f ≤ r) (hf : Surjective f) : Setoid β :=
+  ⟨Relation.Map r f f, Relation.map_equivalence r.iseqv f hf h⟩
 
 /-- A special case of the equivalence closure of an equivalence relation r equalling r. -/
 theorem mapOfSurjective_eq_map (h : ker f ≤ r) (hf : Surjective f) :
@@ -459,8 +457,8 @@ def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) w
   toFun s := ⟨Quotient.lift₂ s.1.1 fun _ _ _ _ h₁ h₂ ↦ Eq.propIntro
       (fun h ↦ s.1.trans' (s.1.trans' (s.1.symm' (s.2 h₁)) h) (s.2 h₂))
       (fun h ↦ s.1.trans' (s.1.trans' (s.2 h₁) h) (s.1.symm' (s.2 h₂))),
-    ⟨Quotient.ind s.1.2.1, @fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.2.2,
-      @fun x y z ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.2.3⟩⟩
+    ⟨Quotient.ind s.1.2.1, fun {x y} ↦ Quotient.inductionOn₂ x y fun _ _ ↦ s.1.2.2,
+      fun {x y z} ↦ Quotient.inductionOn₃ x y z fun _ _ _ ↦ s.1.2.3⟩⟩
   invFun s := ⟨comap Quotient.mk' s, fun x y h => by rw [comap_rel, Quotient.eq'.2 h]⟩
   left_inv _ := rfl
   right_inv _ := ext fun x y ↦ Quotient.inductionOn₂ x y fun _ _ ↦ Iff.rfl
@@ -482,14 +480,14 @@ end Setoid
 theorem Quotient.subsingleton_iff {s : Setoid α} : Subsingleton (Quotient s) ↔ s = ⊤ := by
   simp only [_root_.subsingleton_iff, eq_top_iff, Setoid.le_def, Setoid.top_def, Pi.top_apply,
     forall_const]
-  refine (surjective_quotient_mk' _).forall.trans (forall_congr' fun a => ?_)
-  refine (surjective_quotient_mk' _).forall.trans (forall_congr' fun b => ?_)
+  refine Quotient.mk'_surjective.forall.trans (forall_congr' fun a => ?_)
+  refine Quotient.mk'_surjective.forall.trans (forall_congr' fun b => ?_)
   simp_rw [Prop.top_eq_true, true_implies, Quotient.eq']
 
 theorem Quot.subsingleton_iff (r : α → α → Prop) :
     Subsingleton (Quot r) ↔ Relation.EqvGen r = ⊤ := by
   simp only [_root_.subsingleton_iff, _root_.eq_top_iff, Pi.le_def, Pi.top_apply, forall_const]
-  refine (surjective_quot_mk _).forall.trans (forall_congr' fun a => ?_)
-  refine (surjective_quot_mk _).forall.trans (forall_congr' fun b => ?_)
+  refine Quot.mk_surjective.forall.trans (forall_congr' fun a => ?_)
+  refine Quot.mk_surjective.forall.trans (forall_congr' fun b => ?_)
   rw [Quot.eq]
   simp only [forall_const, le_Prop_eq, Pi.top_apply, Prop.top_eq_true, true_implies]

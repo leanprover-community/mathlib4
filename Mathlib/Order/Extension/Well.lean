@@ -68,40 +68,6 @@ theorem exists_well_order_ge : ∃ s, r ≤ s ∧ IsWellOrder α s :=
 
 end IsWellFounded
 
-namespace WellFounded
-
-set_option linter.deprecated false
-
-variable (hwf : WellFounded r)
-
-/-- An arbitrary well order on `α` that extends `r`.
-
-The construction maps `r` into two well-orders: the first map is `WellFounded.rank`, which is not
-necessarily injective but respects the order `r`; the other map is the identity (with an arbitrarily
-chosen well-order on `α`), which is injective but doesn't respect `r`.
-
-By taking the lexicographic product of the two, we get both properties, so we can pull it back and
-get a well-order that extend our original order `r`. Another way to view this is that we choose an
-arbitrary well-order to serve as a tiebreak between two elements of same rank.
--/
-@[deprecated IsWellFounded.wellOrderExtension (since := "2024-09-07")]
-noncomputable def wellOrderExtension : LinearOrder α :=
-  @LinearOrder.lift' α (Ordinal ×ₗ Cardinal) _ (fun a : α => (hwf.rank a, embeddingToCardinal a))
-    fun _ _ h => embeddingToCardinal.injective <| congr_arg Prod.snd h
-
-@[deprecated IsWellFounded.wellOrderExtension.isWellFounded_lt (since := "2024-09-07")]
-instance wellOrderExtension.isWellFounded_lt : IsWellFounded α hwf.wellOrderExtension.lt :=
-  ⟨InvImage.wf (fun a : α => (hwf.rank a, embeddingToCardinal a)) <|
-    Ordinal.lt_wf.prod_lex Cardinal.lt_wf⟩
-
-include hwf in
-/-- Any well-founded relation can be extended to a well-ordering on that type. -/
-@[deprecated IsWellFounded.exists_well_order_ge (since := "2024-09-07")]
-theorem exists_well_order_ge : ∃ s, r ≤ s ∧ IsWellOrder α s :=
-  ⟨hwf.wellOrderExtension.lt, fun _ _ h => Prod.Lex.left _ _ (hwf.rank_lt_of_rel h), ⟨⟩⟩
-
-end WellFounded
-
 /-- A type alias for `α`, intended to extend a well-founded order on `α` to a well-order. -/
 def WellOrderExtension (α : Type*) : Type _ := α
 

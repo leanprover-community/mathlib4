@@ -25,7 +25,7 @@ would be the degree `i+n`-th term of `C`.
 
 ## Implementation Notes
 
-`[HasShift C A]` is implemented using `MonoidalFunctor (Discrete A) (C ⥤ C)`.
+`[HasShift C A]` is implemented using monoidal functors from `Discrete A` to `C ⥤ C`.
 However, the API of monoidal functors is used only internally: one should use the API of
 shifts functors which includes `shiftFunctor C a : C ⥤ C` for `a : A`,
 `shiftFunctorZero C A : shiftFunctor C (0 : A) ≅ 𝟭 C` and
@@ -57,9 +57,10 @@ variable (A C) [AddMonoid A]
 if there is a monoidal functor from `A` to `C ⥤ C`. -/
 class HasShift (C : Type u) (A : Type*) [Category.{v} C] [AddMonoid A] where
   /-- a shift is a monoidal functor from `A` to `C ⥤ C` -/
-  shift : MonoidalFunctor (Discrete A) (C ⥤ C)
+  shift : Discrete A ⥤ C ⥤ C
+  /-- `shift` is monoidal -/
+  shiftMonoidal : shift.Monoidal := by infer_instance
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- A helper structure to construct the shift functor `(Discrete A) ⥤ (C ⥤ C)`. -/
 structure ShiftMkCore where
   /-- the family of shift functors -/
@@ -116,18 +117,16 @@ section
 
 attribute [local simp] eqToHom_map
 
-/-- Constructs a `HasShift C A` instance from `ShiftMkCore`. -/
-@[simps]
-def hasShiftMk (h : ShiftMkCore C A) : HasShift C A :=
-  ⟨{ Discrete.functor h.F with
-      ε := h.zero.inv
-      μ := fun m n => (h.add m.as n.as).inv
-      μ_natural_left := by
+instance (h : ShiftMkCore C A) : (Discrete.functor h.F).Monoidal :=
+  Functor.CoreMonoidal.toMonoidal
+    { εIso := h.zero.symm
+      μIso := fun m n ↦ (h.add m.as n.as).symm
+      μIso_hom_natural_left := by
         rintro ⟨X⟩ ⟨Y⟩ ⟨⟨⟨rfl⟩⟩⟩ ⟨X'⟩
         ext
         dsimp
         simp
-      μ_natural_right := by
+      μIso_hom_natural_right := by
         rintro ⟨X⟩ ⟨Y⟩ ⟨X'⟩ ⟨⟨⟨rfl⟩⟩⟩
         ext
         dsimp
@@ -143,7 +142,11 @@ def hasShiftMk (h : ShiftMkCore C A) : HasShift C A :=
       right_unitality := by
         rintro ⟨n⟩
         ext X
-        simp [endofunctorMonoidalCategory, h.add_zero_inv_app]}⟩
+        simp [endofunctorMonoidalCategory, h.add_zero_inv_app] }
+
+/-- Constructs a `HasShift C A` instance from `ShiftMkCore`. -/
+def hasShiftMk (h : ShiftMkCore C A) : HasShift C A where
+  shift := Discrete.functor h.F
 
 end
 
@@ -151,10 +154,14 @@ section
 variable [HasShift C A]
 
 /-- The monoidal functor from `A` to `C ⥤ C` given a `HasShift` instance. -/
-def shiftMonoidalFunctor : MonoidalFunctor (Discrete A) (C ⥤ C) :=
+def shiftMonoidalFunctor : Discrete A ⥤ C ⥤ C :=
   HasShift.shift
 
+instance : (shiftMonoidalFunctor C A).Monoidal := HasShift.shiftMonoidal
+
 variable {A}
+
+open Functor.Monoidal
 
 /-- The shift autoequivalence, moving objects and morphisms 'up'. -/
 def shiftFunctor (i : A) : C ⥤ C :=
@@ -162,7 +169,7 @@ def shiftFunctor (i : A) : C ⥤ C :=
 
 /-- Shifting by `i + j` is the same as shifting by `i` and then shifting by `j`. -/
 def shiftFunctorAdd (i j : A) : shiftFunctor C (i + j) ≅ shiftFunctor C i ⋙ shiftFunctor C j :=
-  ((shiftMonoidalFunctor C A).μIso ⟨i⟩ ⟨j⟩).symm
+  (μIso (shiftMonoidalFunctor C A) ⟨i⟩ ⟨j⟩).symm
 
 /-- When `k = i + j`, shifting by `k` is the same as shifting by `i` and then shifting by `j`. -/
 def shiftFunctorAdd' (i j k : A) (h : i + j = k) :
@@ -177,7 +184,7 @@ lemma shiftFunctorAdd'_eq_shiftFunctorAdd (i j : A) :
 variable (A) in
 /-- Shifting by zero is the identity functor. -/
 def shiftFunctorZero : shiftFunctor C (0 : A) ≅ 𝟭 C :=
-  (shiftMonoidalFunctor C A).εIso.symm
+  (εIso (shiftMonoidalFunctor C A)).symm
 
 /-- Shifting by `a` such that `a = 0` identifies to the identity functor. -/
 def shiftFunctorZero' (a : A) (ha : a = 0) : shiftFunctor C a ≅ 𝟭 C :=
@@ -189,27 +196,15 @@ variable {C A}
 
 lemma ShiftMkCore.shiftFunctor_eq (h : ShiftMkCore C A) (a : A) :
     letI := hasShiftMk C A h
-    shiftFunctor C a = h.F a := by
-  rfl
+    shiftFunctor C a = h.F a := rfl
 
 lemma ShiftMkCore.shiftFunctorZero_eq (h : ShiftMkCore C A) :
     letI := hasShiftMk C A h
-    shiftFunctorZero C A = h.zero := by
-  letI := hasShiftMk C A h
-  dsimp [shiftFunctorZero]
-  change (shiftFunctorZero C A).symm.symm = h.zero.symm.symm
-  congr 1
-  ext
-  rfl
+    shiftFunctorZero C A = h.zero := rfl
 
 lemma ShiftMkCore.shiftFunctorAdd_eq (h : ShiftMkCore C A) (a b : A) :
     letI := hasShiftMk C A h
-    shiftFunctorAdd C a b = h.add a b := by
-  letI := hasShiftMk C A h
-  change (shiftFunctorAdd C a b).symm.symm = (h.add a b).symm.symm
-  congr 1
-  ext
-  rfl
+    shiftFunctorAdd C a b = h.add a b := rfl
 
 set_option quotPrecheck false in
 /-- shifting an object `X` by `n` is obtained by the notation `X⟦n⟧` -/
@@ -256,7 +251,7 @@ lemma shiftFunctorAdd'_assoc (a₁ a₂ a₃ a₁₂ a₂₃ a₁₂₃ : A)
   dsimp [shiftFunctorAdd, shiftFunctor]
   simp only [obj_μ_inv_app, Discrete.addMonoidal_associator, eqToIso.hom, eqToHom_map,
     eqToHom_app]
-  erw [Iso.inv_hom_id_app_assoc, Category.assoc]
+  erw [δ_μ_app_assoc, Category.assoc]
   rfl
 
 lemma shiftFunctorAdd_assoc (a₁ a₂ a₃ : A) :
@@ -350,9 +345,9 @@ section AddMonoid
 
 variable [AddMonoid A] [HasShift C A] (X Y : C) (f : X ⟶ Y)
 
-@[simp]
-theorem HasShift.shift_obj_obj (n : A) (X : C) : (HasShift.shift.obj ⟨n⟩).obj X = X⟦n⟧ :=
-  rfl
+--@[simp]
+--theorem HasShift.shift_obj_obj (n : A) (X : C) : (HasShift.shift.obj ⟨n⟩).obj X = X⟦n⟧ :=
+--  rfl
 
 /-- Shifting by `i + j` is the same as shifting by `i` and then shifting by `j`. -/
 abbrev shiftAdd (i j : A) : X⟦i + j⟧ ≅ X⟦i⟧⟦j⟧ :=
@@ -361,7 +356,7 @@ abbrev shiftAdd (i j : A) : X⟦i + j⟧ ≅ X⟦i⟧⟦j⟧ :=
 theorem shift_shift' (i j : A) :
     f⟦i⟧'⟦j⟧' = (shiftAdd X i j).inv ≫ f⟦i + j⟧' ≫ (shiftAdd Y i j).hom := by
   symm
-  rw [← Functor.comp_map, NatIso.app_inv]
+  rw [← Functor.comp_map, Iso.app_inv]
   apply NatIso.naturality_1
 
 variable (A)
@@ -372,7 +367,7 @@ abbrev shiftZero : X⟦(0 : A)⟧ ≅ X :=
 
 theorem shiftZero' : f⟦(0 : A)⟧' = (shiftZero A X).hom ≫ f ≫ (shiftZero A Y).inv := by
   symm
-  rw [NatIso.app_inv, NatIso.app_hom]
+  rw [Iso.app_inv, Iso.app_hom]
   apply NatIso.naturality_2
 
 variable (C) {A}

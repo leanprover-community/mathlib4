@@ -63,9 +63,8 @@ instances for:
 * `A : ι → Submodule S`:
   `DirectSum.GSemiring.ofSubmodules`, `DirectSum.GCommSemiring.ofSubmodules`.
 
-If `CompleteLattice.independent (Set.range A)`, these provide a gradation of `⨆ i, A i`, and the
-mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
-`DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
+If `sSupIndep A`, these provide a gradation of `⨆ i, A i`, and the mapping `⨁ i, A i →+ ⨆ i, A i`
+can be obtained as `DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
 ## Tags
 
@@ -236,7 +235,7 @@ private theorem mul_assoc (a b c : ⨁ i, A i) : a * b * c = a * (b * c) := by
       simpa only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
         AddMonoidHom.flipHom_apply]
         using DFunLike.congr_fun (DFunLike.congr_fun (DFunLike.congr_fun this a) b) c
-  ext ai ax bi bx ci cx
+  ext ai ax bi bx ci cx : 6
   dsimp only [coe_comp, Function.comp_apply, AddMonoidHom.compHom_apply_apply, flip_apply,
     AddMonoidHom.flipHom_apply]
   simp_rw [mulHom_of_of]
@@ -288,15 +287,15 @@ theorem mul_eq_dfinsupp_sum [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' 
   -- simpa only [mul_hom, to_add_monoid, dfinsupp.lift_add_hom_apply, dfinsupp.sum_add_hom_apply,
   -- add_monoid_hom.dfinsupp_sum_apply, flip_apply, add_monoid_hom.dfinsupp_sum_add_hom_apply],
   rw [mulHom, toAddMonoid, DFinsupp.liftAddHom_apply]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [DFinsupp.sumAddHom_apply]
-  rw [AddMonoidHom.dfinsupp_sum_apply]
+  dsimp only [DirectSum]
+  rw [DFinsupp.sumAddHom_apply, AddMonoidHom.dfinsupp_sum_apply]
   apply congrArg _
-  funext x
   simp_rw [flip_apply]
+  funext x
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [DFinsupp.sumAddHom_apply]
   simp only [gMulHom, AddMonoidHom.dfinsupp_sum_apply, flip_apply, coe_comp, AddMonoidHom.coe_mk,
-  ZeroHom.coe_mk, Function.comp_apply, AddMonoidHom.compHom_apply_apply]
+    ZeroHom.coe_mk, Function.comp_apply, AddMonoidHom.compHom_apply_apply]
 
 /-- A heavily unfolded version of the definition of multiplication -/
 theorem mul_eq_sum_support_ghas_mul [∀ (i : ι) (x : A i), Decidable (x ≠ 0)] (a a' : ⨁ i, A i) :
@@ -425,9 +424,8 @@ instance : NatCast (A 0) :=
 theorem of_natCast (n : ℕ) : of A 0 n = n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 ofNat(n) = ofNat(n) :=
   of_natCast A n
 
 /-- The `Semiring` structure derived from `GSemiring A`. -/
@@ -553,7 +551,6 @@ def toSemiring (f : ∀ i, A i →+ R) (hone : f _ GradedMonoid.GOne.one = 1)
       simp_rw [of_mul_of, toAddMonoid_of]
       exact hmul _ _ }
 
--- Porting note (#10618): removed @[simp] as simp can prove this
 theorem toSemiring_of (f : ∀ i, A i →+ R) (hone hmul) (i : ι) (x : A i) :
     toSemiring f hone hmul (of _ i x) = f _ x :=
   toAddMonoid_of f i x

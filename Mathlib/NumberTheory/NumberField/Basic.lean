@@ -3,9 +3,10 @@ Copyright (c) 2021 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan, Anne Baanen
 -/
-import Mathlib.Algebra.Ring.Int
-import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Algebra.Ring.Int.Units
+import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 
 /-!
 # Number fields
@@ -24,7 +25,7 @@ but are independent of that choice.
 ## References
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
-* [P. Samuel, *Algebraic Theory of Numbers*][samuel1970algebraic]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
 number field, ring of integers
@@ -33,6 +34,7 @@ number field, ring of integers
 
 /-- A number field is a field which has characteristic zero and is finite
 dimensional over ℚ. -/
+@[stacks 09GA]
 class NumberField (K : Type*) [Field K] : Prop where
   [to_charZero : CharZero K]
   [to_finiteDimensional : FiniteDimensional ℚ K]
@@ -175,7 +177,7 @@ end RingOfIntegers
 instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
   (RingOfIntegers.mapRingHom (algebraMap K L)).toAlgebra
 
--- diamond at `reducible_and_instances` #10906
+-- diamond at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example : Algebra.id (𝓞 K) = inst_ringOfIntegersAlgebra K K := rfl
 
 namespace RingOfIntegers
@@ -204,15 +206,15 @@ variable {K}
 
 /-- The canonical map from `𝓞 K` to `K` is injective.
 
-This is a convenient abbreviation for `NoZeroSMulDivisors.algebraMap_injective`.
+This is a convenient abbreviation for `FaithfulSMul.algebraMap_injective`.
 -/
 lemma coe_injective : Function.Injective (algebraMap (𝓞 K) K) :=
-  NoZeroSMulDivisors.algebraMap_injective _ _
+  FaithfulSMul.algebraMap_injective _ _
 
 /-- The canonical map from `𝓞 K` to `K` is injective.
 
 This is a convenient abbreviation for `map_eq_zero_iff` applied to
-`NoZeroSMulDivisors.algebraMap_injective`.
+`FaithfulSMul.algebraMap_injective`.
 -/
 lemma coe_eq_zero_iff {x : 𝓞 K} : algebraMap _ K x = 0 ↔ x = 0 :=
   map_eq_zero_iff _ coe_injective
@@ -220,7 +222,7 @@ lemma coe_eq_zero_iff {x : 𝓞 K} : algebraMap _ K x = 0 ↔ x = 0 :=
 /-- The canonical map from `𝓞 K` to `K` is injective.
 
 This is a convenient abbreviation for `map_ne_zero_iff` applied to
-`NoZeroSMulDivisors.algebraMap_injective`.
+`FaithfulSMul.algebraMap_injective`.
 -/
 lemma coe_ne_zero_iff {x : 𝓞 K} : algebraMap _ K x ≠ 0 ↔ x ≠ 0 :=
   map_ne_zero_iff _ coe_injective
@@ -338,10 +340,10 @@ theorem algebraMap.injective : Function.Injective (algebraMap (𝓞 K) (𝓞 L))
   (RingHom.injective_iff_ker_eq_bot (algebraMap (𝓞 K) (𝓞 L))).mpr (ker_algebraMap_eq_bot K L)
 
 instance : NoZeroSMulDivisors (𝓞 K) (𝓞 L) :=
-  NoZeroSMulDivisors.of_algebraMap_injective (algebraMap.injective K L)
+  NoZeroSMulDivisors.iff_algebraMap_injective.mpr <| algebraMap.injective K L
 
 instance : NoZeroSMulDivisors (𝓞 K) L :=
-  NoZeroSMulDivisors.trans (𝓞 K) (𝓞 L) L
+  NoZeroSMulDivisors.trans_faithfulSMul (𝓞 K) (𝓞 L) L
 
 end extension
 
@@ -390,6 +392,12 @@ instance numberField : NumberField ℚ where
 /-- The ring of integers of `ℚ` as a number field is just `ℤ`. -/
 noncomputable def ringOfIntegersEquiv : 𝓞 ℚ ≃+* ℤ :=
   RingOfIntegers.equiv ℤ
+
+@[simp]
+theorem coe_ringOfIntegersEquiv (z : 𝓞 ℚ) :
+    (Rat.ringOfIntegersEquiv z : ℚ) = algebraMap (𝓞 ℚ) ℚ z := by
+  obtain ⟨z, rfl⟩ := Rat.ringOfIntegersEquiv.symm.surjective z
+  simp
 
 end Rat
 

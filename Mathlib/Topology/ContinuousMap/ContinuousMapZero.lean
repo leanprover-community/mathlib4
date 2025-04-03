@@ -20,7 +20,7 @@ the purpose of this type.
 
 assert_not_exists StarOrderedRing
 
-open Set Function
+open Function Set Topology
 
 /-- The type of continuous maps which map zero to zero.
 
@@ -80,27 +80,30 @@ lemma le_def [PartialOrder R] (f g : C(X, R)₀) : f ≤ g ↔ ∀ x, f x ≤ g 
 protected instance instTopologicalSpace : TopologicalSpace C(X, R)₀ :=
   TopologicalSpace.induced ((↑) : C(X, R)₀ → C(X, R)) inferInstance
 
-lemma embedding_toContinuousMap : Embedding ((↑) : C(X, R)₀ → C(X, R)) where
-  induced := rfl
-  inj _ _ h := ext fun x ↦ congr($(h) x)
+lemma isEmbedding_toContinuousMap : IsEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
+  eq_induced := rfl
+  injective _ _ h := ext fun x ↦ congr($(h) x)
 
-instance [T0Space R] : T0Space C(X, R)₀ := embedding_toContinuousMap.t0Space
-instance [R0Space R] : R0Space C(X, R)₀ := embedding_toContinuousMap.r0Space
-instance [T1Space R] : T1Space C(X, R)₀ := embedding_toContinuousMap.t1Space
-instance [R1Space R] : R1Space C(X, R)₀ := embedding_toContinuousMap.r1Space
-instance [T2Space R] : T2Space C(X, R)₀ := embedding_toContinuousMap.t2Space
-instance [RegularSpace R] : RegularSpace C(X, R)₀ := embedding_toContinuousMap.regularSpace
-instance [T3Space R] : T3Space C(X, R)₀ := embedding_toContinuousMap.t3Space
+@[deprecated (since := "2024-10-26")]
+alias embedding_toContinuousMap := isEmbedding_toContinuousMap
+
+instance [T0Space R] : T0Space C(X, R)₀ := isEmbedding_toContinuousMap.t0Space
+instance [R0Space R] : R0Space C(X, R)₀ := isEmbedding_toContinuousMap.r0Space
+instance [T1Space R] : T1Space C(X, R)₀ := isEmbedding_toContinuousMap.t1Space
+instance [R1Space R] : R1Space C(X, R)₀ := isEmbedding_toContinuousMap.r1Space
+instance [T2Space R] : T2Space C(X, R)₀ := isEmbedding_toContinuousMap.t2Space
+instance [RegularSpace R] : RegularSpace C(X, R)₀ := isEmbedding_toContinuousMap.regularSpace
+instance [T3Space R] : T3Space C(X, R)₀ := isEmbedding_toContinuousMap.t3Space
 
 instance instContinuousEvalConst : ContinuousEvalConst C(X, R)₀ X R :=
-  .of_continuous_forget embedding_toContinuousMap.continuous
+  .of_continuous_forget isEmbedding_toContinuousMap.continuous
 
 instance instContinuousEval [LocallyCompactPair X R] : ContinuousEval C(X, R)₀ X R :=
-  .of_continuous_forget embedding_toContinuousMap.continuous
+  .of_continuous_forget isEmbedding_toContinuousMap.continuous
 
 lemma isClosedEmbedding_toContinuousMap [T1Space R] :
     IsClosedEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
-  toEmbedding := embedding_toContinuousMap
+  toIsEmbedding := isEmbedding_toContinuousMap
   isClosed_range := by
     rw [range_toContinuousMap]
     exact isClosed_singleton.preimage <| continuous_eval_const 0
@@ -157,7 +160,7 @@ instance instSMul {M : Type*} [Zero R] [SMulZeroClass M R] [ContinuousConstSMul 
 
 section Semiring
 
-variable [CommSemiring R] [TopologicalSemiring R]
+variable [CommSemiring R] [IsTopologicalSemiring R]
 
 instance instNonUnitalCommSemiring : NonUnitalCommSemiring C(X, R)₀ :=
   toContinuousMap_injective.nonUnitalCommSemiring
@@ -227,19 +230,22 @@ def toContinuousMapCLM (M : Type*) [Semiring M] [Module M R] [ContinuousConstSMu
   map_smul' _ _ := rfl
 
 /-- The evaluation at a point, as a continuous linear map from `C(X, R)₀` to `R`. -/
-def evalCLM (𝕜 : Type*) {R : Type*} [CompactSpace X] [NormedField 𝕜] [NormedCommRing R]
-    [NormedSpace 𝕜 R] (x : X) : C(X, R)₀ →L[𝕜] R :=
-  (ContinuousMap.evalCLM 𝕜 x).comp (toContinuousMapCLM 𝕜 : C(X, R)₀ →L[𝕜] C(X, R))
+def evalCLM (𝕜 : Type*) [Semiring 𝕜] [Module 𝕜 R] [ContinuousConstSMul 𝕜 R] (x : X) :
+    C(X, R)₀ →L[𝕜] R :=
+  (ContinuousMap.evalCLM 𝕜 x).comp (toContinuousMapCLM 𝕜)
 
 @[simp]
-lemma evalCLM_apply {𝕜 : Type*} {R : Type*} [CompactSpace X] [NormedField 𝕜] [NormedCommRing R]
-    [NormedSpace 𝕜 R] (x : X) (f : C(X, R)₀) : evalCLM 𝕜 x f = f x := rfl
+lemma evalCLM_apply {𝕜 : Type*} [Semiring 𝕜] [Module 𝕜 R] [ContinuousConstSMul 𝕜 R]
+    (x : X) (f : C(X, R)₀) : evalCLM 𝕜 x f = f x := rfl
 
 /-- Coercion to a function as an `AddMonoidHom`. Similar to `ContinuousMap.coeFnAddMonoidHom`. -/
 def coeFnAddMonoidHom : C(X, R)₀ →+ X → R where
   toFun f := f
   map_zero' := coe_zero
   map_add' f g := by simp
+
+@[simp]
+lemma coeFnAddMonoidHom_apply (f : C(X, R)₀) : coeFnAddMonoidHom f = f := rfl
 
 @[simp] lemma coe_sum {ι : Type*} (s : Finset ι)
     (f : ι → C(X, R)₀) : ⇑(s.sum f) = s.sum (fun i => ⇑(f i)) :=
@@ -250,7 +256,7 @@ end Semiring
 section Ring
 
 variable {X R : Type*} [Zero X] [TopologicalSpace X]
-variable [CommRing R] [TopologicalSpace R] [TopologicalRing R]
+variable [CommRing R] [TopologicalSpace R] [IsTopologicalRing R]
 
 instance instSub : Sub C(X, R)₀ where
   sub f g := ⟨f - g, by simp⟩
@@ -284,7 +290,7 @@ protected instance instUniformSpace : UniformSpace C(X, R)₀ := .comap toContin
 lemma isUniformEmbedding_toContinuousMap :
     IsUniformEmbedding ((↑) : C(X, R)₀ → C(X, R)) where
   comap_uniformity := rfl
-  inj _ _ h := ext fun x ↦ congr($(h) x)
+  injective _ _ h := ext fun x ↦ congr($(h) x)
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_toContinuousMap := isUniformEmbedding_toContinuousMap
@@ -323,8 +329,8 @@ section CompHoms
 
 variable {X Y M R S : Type*} [Zero X] [Zero Y] [CommSemiring M]
   [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace R] [TopologicalSpace S]
-  [CommSemiring R] [StarRing R] [TopologicalSemiring R] [ContinuousStar R]
-  [CommSemiring S] [StarRing S] [TopologicalSemiring S] [ContinuousStar S]
+  [CommSemiring R] [StarRing R] [IsTopologicalSemiring R] [ContinuousStar R]
+  [CommSemiring S] [StarRing S] [IsTopologicalSemiring S] [ContinuousStar S]
   [Module M R] [Module M S] [ContinuousConstSMul M R] [ContinuousConstSMul M S]
 
 variable (R) in
@@ -364,9 +370,12 @@ noncomputable instance [MetricSpace R] [Zero R]: MetricSpace C(α, R)₀ :=
 noncomputable instance [NormedAddCommGroup R] : Norm C(α, R)₀ where
   norm f := ‖(f : C(α, R))‖
 
+lemma norm_def [NormedAddCommGroup R] (f : C(α, R)₀) : ‖f‖ = ‖(f : C(α, R))‖ :=
+  rfl
+
 noncomputable instance [NormedCommRing R] : NonUnitalNormedCommRing C(α, R)₀ where
   dist_eq f g := NormedAddGroup.dist_eq (f : C(α, R)) g
-  norm_mul f g := NormedRing.norm_mul (f : C(α, R)) g
+  norm_mul_le f g := norm_mul_le (f : C(α, R)) g
   mul_comm f g := mul_comm f g
 
 instance [NormedField 𝕜] [NormedCommRing R] [NormedAlgebra 𝕜 R] : NormedSpace 𝕜 C(α, R)₀ where

@@ -41,6 +41,11 @@ theorem Algebra.IsIntegral.of_injective (f : A →ₐ[R] B) (hf : Function.Injec
     [Algebra.IsIntegral R B] : Algebra.IsIntegral R A :=
   ⟨fun _ ↦ (isIntegral_algHom_iff f hf).mp (isIntegral _)⟩
 
+/-- Homomorphic image of an integral algebra is an integral algebra. -/
+theorem Algebra.IsIntegral.of_surjective [Algebra.IsIntegral R A]
+    (f : A →ₐ[R] B) (hf : Function.Surjective f) : Algebra.IsIntegral R B :=
+  isIntegral_def.mpr fun b ↦ let ⟨a, ha⟩ := hf b; ha ▸ (isIntegral_def.mp ‹_› a).map f
+
 theorem AlgEquiv.isIntegral_iff (e : A ≃ₐ[R] B) : Algebra.IsIntegral R A ↔ Algebra.IsIntegral R B :=
   ⟨fun h ↦ h.of_injective e.symm e.symm.injective, fun h ↦ h.of_injective e e.injective⟩
 
@@ -190,7 +195,7 @@ nonrec theorem IsIntegral.mul {x y : A} (hx : IsIntegral R x) (hy : IsIntegral R
   hx.mul (algebraMap R A) hy
 
 theorem IsIntegral.smul {R} [CommSemiring R] [Algebra R B] [Algebra S B] [Algebra R S]
-    [IsScalarTower R S B] {x : B} (r : R)(hx : IsIntegral S x) : IsIntegral S (r • x) :=
+    [IsScalarTower R S B] {x : B} (r : R) (hx : IsIntegral S x) : IsIntegral S (r • x) :=
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ <| by
     rw [← algebraMap_smul S]; apply Subalgebra.smul_mem; exact Algebra.subset_adjoin rfl
 
@@ -205,8 +210,15 @@ def integralClosure : Subalgebra R A where
   mul_mem' := IsIntegral.mul
   algebraMap_mem' _ := isIntegral_algebraMap
 
-end
-
-theorem mem_integralClosure_iff (R A : Type*) [CommRing R] [CommRing A] [Algebra R A] {a : A} :
-    a ∈ integralClosure R A ↔ IsIntegral R a :=
+theorem mem_integralClosure_iff {a : A} : a ∈ integralClosure R A ↔ IsIntegral R a :=
   Iff.rfl
+
+variable {R} {A B : Type*} [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+
+/-- Product of two integral algebras is an integral algebra. -/
+instance Algebra.IsIntegral.prod [Algebra.IsIntegral R A] [Algebra.IsIntegral R B] :
+    Algebra.IsIntegral R (A × B) :=
+  Algebra.isIntegral_def.mpr fun x ↦
+    (Algebra.isIntegral_def.mp ‹_› x.1).pair (Algebra.isIntegral_def.mp ‹_› x.2)
+
+end

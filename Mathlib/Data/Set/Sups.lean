@@ -62,8 +62,7 @@ protected def hasSups : HasSups (Set α) :=
   ⟨image2 (· ⊔ ·)⟩
 
 scoped[SetFamily] attribute [instance] Set.hasSups
--- Porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
--- instance
+
 open SetFamily
 
 variable {s s₁ s₂ t t₁ t₂ u} {a b c : α}
@@ -90,7 +89,7 @@ theorem image_subset_sups_right : a ∈ s → (· ⊔ ·) a '' t ⊆ s ⊻ t :=
   image_subset_image2_right
 
 theorem forall_sups_iff {p : α → Prop} : (∀ c ∈ s ⊻ t, p c) ↔ ∀ a ∈ s, ∀ b ∈ t, p (a ⊔ b) :=
-  forall_image2_iff
+  forall_mem_image2
 
 @[simp]
 theorem sups_subset_iff : s ⊻ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a ⊔ b ∈ u :=
@@ -192,8 +191,7 @@ protected def hasInfs : HasInfs (Set α) :=
   ⟨image2 (· ⊓ ·)⟩
 
 scoped[SetFamily] attribute [instance] Set.hasInfs
--- Porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
--- instance
+
 open SetFamily
 
 variable {s s₁ s₂ t t₁ t₂ u} {a b c : α}
@@ -220,7 +218,7 @@ theorem image_subset_infs_right : a ∈ s → (a ⊓ ·) '' t ⊆ s ⊼ t :=
   image_subset_image2_right
 
 theorem forall_infs_iff {p : α → Prop} : (∀ c ∈ s ⊼ t, p c) ↔ ∀ a ∈ s, ∀ b ∈ t, p (a ⊓ b) :=
-  forall_image2_iff
+  forall_mem_image2
 
 @[simp]
 theorem infs_subset_iff : s ⊼ t ⊆ u ↔ ∀ a ∈ s, ∀ b ∈ t, a ⊓ b ∈ u :=

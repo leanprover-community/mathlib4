@@ -6,8 +6,11 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.Algebra.Squarefree.Basic
+import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.FieldTheory.Minpoly.Field
+import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.PowerBasis
+import Mathlib.Data.ENat.Lattice
 
 /-!
 
@@ -38,6 +41,7 @@ section CommSemiring
 variable {R : Type u} [CommSemiring R] {S : Type v} [CommSemiring S]
 
 /-- A polynomial is separable iff it is coprime with its derivative. -/
+@[stacks 09H1 "first part"]
 def Separable (f : R[X]) : Prop :=
   IsCoprime f (derivative f)
 
@@ -181,7 +185,7 @@ See `PerfectField.separable_iff_squarefree` for the converse when the coefficien
 field. -/
 theorem Separable.squarefree {p : R[X]} (hsep : Separable p) : Squarefree p := by
   classical
-  rw [multiplicity.squarefree_iff_emultiplicity_le_one p]
+  rw [squarefree_iff_emultiplicity_le_one p]
   exact fun f => or_iff_not_imp_right.mpr fun hunit => emultiplicity_le_one_of_separable hunit hsep
 
 end CommSemiring
@@ -209,6 +213,7 @@ theorem separable_prod' {ι : Sort _} {f : ι → R[X]} {s : Finset ι} :
       h2.1.mul (ih h1.2.2 h2.2)
         (IsCoprime.prod_right fun i his => h1.1.2 i his <| Ne.symm <| ne_of_mem_of_not_mem his has)
 
+open scoped Function in -- required for scoped `on` notation
 theorem separable_prod {ι : Sort _} [Fintype ι] {f : ι → R[X]} (h1 : Pairwise (IsCoprime on f))
     (h2 : ∀ x, (f x).Separable) : (∏ x, f x).Separable :=
   separable_prod' (fun _x _hx _y _hy hxy => h1 hxy) fun x _hx => h2 x
@@ -258,11 +263,10 @@ theorem separable_C_mul_X_pow_add_C_mul_X_add_C
     {n : ℕ} (a b c : R) (hn : (n : R) = 0) (hb : IsUnit b) :
     (C a * X ^ n + C b * X + C c).Separable := by
   set f := C a * X ^ n + C b * X + C c
-  have hderiv : derivative f = C b := by
-    simp_rw [f, map_add derivative, derivative_C]
-    simp [hn]
   obtain ⟨e, hb⟩ := hb.exists_left_inv
   refine ⟨-derivative f, f + C e, ?_⟩
+  have hderiv : derivative f = C b := by
+    simp [hn, f, map_add derivative, derivative_C, derivative_X_pow]
   rw [hderiv, right_distrib, ← add_assoc, neg_mul, mul_comm, neg_add_cancel, zero_add,
     ← map_mul, hb, map_one]
 
@@ -279,7 +283,7 @@ theorem rootMultiplicity_le_one_of_separable [Nontrivial R] {p : R[X]} (hsep : S
   by_cases hp : p = 0
   · simp [hp]
   rw [rootMultiplicity_eq_multiplicity, if_neg hp, ← Nat.cast_le (α := ℕ∞),
-    Nat.cast_one, ← (multiplicity_X_sub_C_finite x hp).emultiplicity_eq_multiplicity]
+    Nat.cast_one, ← (finiteMultiplicity_X_sub_C x hp).emultiplicity_eq_multiplicity]
   apply emultiplicity_le_one_of_separable (not_isUnit_X_sub_C _) hsep
 
 end CommRing
@@ -365,7 +369,7 @@ theorem exists_separable_of_irreducible {f : F[X]} (hf : Irreducible f) (hp : p 
   rcases separable_or p hf with (h | ⟨h1, g, hg, hgf⟩)
   · refine ⟨0, f, h, ?_⟩
     rw [pow_zero, expand_one]
-  · cases' N with N
+  · rcases N with - | N
     · rw [natDegree_eq_zero_iff_degree_le_zero, degree_le_zero_iff] at hn
       rw [hn, separable_C, isUnit_iff_ne_zero, Classical.not_not] at h1
       have hf0 : f ≠ 0 := hf.ne_zero
@@ -432,7 +436,7 @@ theorem separable_X_pow_sub_C' (p n : ℕ) (a : F) [CharP F p] (hn : ¬p ∣ n) 
 -- bi-implication, but it is nontrivial!
 /-- In a field `F`, `X ^ n - 1` is separable iff `↑n ≠ 0`. -/
 theorem X_pow_sub_one_separable_iff {n : ℕ} : (X ^ n - 1 : F[X]).Separable ↔ (n : F) ≠ 0 := by
-  refine ⟨?_, fun h => separable_X_pow_sub_C_unit 1 (IsUnit.mk0 (↑n) h)⟩
+  refine ⟨?_, fun h => separable_X_pow_sub_C_unit 1 (IsUnit.mk0 _ h)⟩
   rw [separable_def', derivative_sub, derivative_X_pow, derivative_one, sub_zero]
   -- Suppose `(n : F) = 0`, then the derivative is `0`, so `X ^ n - 1` is a unit, contradiction.
   rintro (h : IsCoprime _ _) hn'
@@ -461,6 +465,7 @@ theorem nodup_roots_iff_of_splits {f : F[X]} (hf : f ≠ 0) (h : f.Splits (RingH
 
 /-- If a non-zero polynomial over `F` splits in `K`, then it has no repeated roots on `K`
 if and only if it is separable. -/
+@[stacks 09H3 "Here we only require `f` splits instead of `K` is algebraically closed."]
 theorem nodup_aroots_iff_of_splits [Algebra F K] {f : F[X]} (hf : f ≠ 0)
     (h : f.Splits (algebraMap F K)) : (f.aroots K).Nodup ↔ f.Separable := by
   rw [← (algebraMap F K).id_comp, ← splits_map_iff] at h
@@ -538,6 +543,7 @@ An element `x` of an algebra `K` over a commutative ring `F` is said to be *sepa
 minimal polynomial over `K` is separable. Note that the minimal polynomial of any element not
 integral over `F` is defined to be `0`, which is not a separable polynomial.
 -/
+@[stacks 09H1 "second part"]
 def IsSeparable (x : K) : Prop := Polynomial.Separable (minpoly F x)
 
 /-- Typeclass for separable field extension: `K` is a separable field extension of `F` iff
@@ -546,9 +552,9 @@ extension, because the minimal polynomial of a non-integral element is `0`, whic
 separable.
 
 We define this for general (commutative) rings and only assume `F` and `K` are fields if this
-is needed for a proof.
--/
-@[mk_iff isSeparable_def] protected class Algebra.IsSeparable : Prop where
+is needed for a proof. -/
+@[mk_iff isSeparable_def, stacks 09H1 "third part"]
+protected class Algebra.IsSeparable : Prop where
   isSeparable' : ∀ x : K, IsSeparable F x
 
 variable {K}
@@ -595,9 +601,6 @@ theorem AlgEquiv.isSeparable_iff {x : K} : IsSeparable F (e x) ↔ IsSeparable F
 theorem AlgEquiv.Algebra.isSeparable [Algebra.IsSeparable F K] : Algebra.IsSeparable F E :=
   ⟨fun _ ↦ e.symm.isSeparable_iff.mp (Algebra.IsSeparable.isSeparable _ _)⟩
 
-@[deprecated (since := "2024-08-06")]
-alias AlgEquiv.isSeparable := AlgEquiv.Algebra.isSeparable
-
 theorem AlgEquiv.Algebra.isSeparable_iff : Algebra.IsSeparable F K ↔ Algebra.IsSeparable F E :=
   ⟨fun _ ↦ AlgEquiv.Algebra.isSeparable e, fun _ ↦ AlgEquiv.Algebra.isSeparable e.symm⟩
 
@@ -605,22 +608,23 @@ end AlgEquiv
 
 section IsScalarTower
 
-variable [Field L] [CommRing E] [Algebra F L]
+variable [Field L] [Ring E] [Algebra F L]
     [Algebra F E] [Algebra L E] [IsScalarTower F L E]
 
 /-- If `E / L / F` is a scalar tower and `x : E` is separable over `F`, then it's also separable
 over `L`. -/
+@[stacks 09H2 "first part"]
 theorem IsSeparable.tower_top
     {x : E} (h : IsSeparable F x) : IsSeparable L x :=
   h.map.of_dvd (minpoly.dvd_map_of_isScalarTower _ _ _)
 
 variable (F E) in
+/-- If `E / K / F` is an extension tower, `E` is separable over `F`, then it's also separable
+over `K`. -/
+@[stacks 09H2 "second part"]
 theorem Algebra.isSeparable_tower_top_of_isSeparable [Algebra.IsSeparable F E] :
     Algebra.IsSeparable L E :=
   ⟨fun x ↦ IsSeparable.tower_top _ (Algebra.IsSeparable.isSeparable F x)⟩
-
-@[deprecated (since := "2024-08-06")]
-alias IsSeparable.of_isScalarTower := Algebra.isSeparable_tower_top_of_isSeparable
 
 end IsScalarTower
 
@@ -662,7 +666,6 @@ variable [Field K] [Ring E] [Algebra F K] [Algebra F E] [Algebra K E]
 
 variable {F} in
 /-- If `E / K / F` is a scalar tower and `algebraMap K E x` is separable over `F`, then `x` is
-``
 also separable over `F`. -/
 theorem IsSeparable.tower_bot {x : K} (h : IsSeparable F (algebraMap K E x)) : IsSeparable F x :=
     have ⟨_q, hq⟩ :=
@@ -696,29 +699,45 @@ theorem Algebra.IsSeparable.of_algHom [Algebra.IsSeparable F E'] : Algebra.IsSep
 
 end
 
+namespace IntermediateField
+
+variable [Field K] [Algebra F K] (M : IntermediateField F K)
+
+instance isSeparable_tower_bot [Algebra.IsSeparable F K] : Algebra.IsSeparable F M :=
+  Algebra.isSeparable_tower_bot_of_isSeparable F M K
+
+instance isSeparable_tower_top [Algebra.IsSeparable F K] : Algebra.IsSeparable M K :=
+  Algebra.isSeparable_tower_top_of_isSeparable F M K
+
+end IntermediateField
+
 end Field
 
 section AlgEquiv
 
-variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Field B₁]
-    [Field A₂] [Field B₂] [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
+open RingHom RingEquiv
+
+variable {A₁ B₁ A₂ B₂ : Type*} [Field A₁] [Ring B₁] [Field A₂] [Ring B₂]
+    [Algebra A₁ B₁] [Algebra A₂ B₂] (e₁ : A₁ ≃+* A₂) (e₂ : B₁ ≃+* B₂)
     (he : RingHom.comp (algebraMap A₂ B₂) ↑e₁ = RingHom.comp ↑e₂ (algebraMap A₁ B₁))
-include e₁ e₂ he
+include he
 
 lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparable A₂ (e₂ x) :=
   letI := e₁.toRingHom.toAlgebra
-  letI := ((algebraMap A₁ B₁).comp e₁.symm.toRingHom).toAlgebra
-  haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq
-    (fun x ↦ by simp [RingHom.algebraMap_toAlgebra])
+  letI : Algebra A₂ B₁ :=
+    { (algebraMap A₁ B₁).comp e₁.symm.toRingHom with
+        smul := fun a b ↦ ((algebraMap A₁ B₁).comp e₁.symm.toRingHom a) * b
+        commutes' := fun r x ↦ (Algebra.commutes) (e₁.symm.toRingHom r) x
+        smul_def' := fun _ _ ↦ rfl }
+  haveI : IsScalarTower A₁ A₂ B₁ := IsScalarTower.of_algebraMap_eq <| fun x ↦
+      (algebraMap A₁ B₁).congr_arg <| id ((e₁.symm_apply_apply x).symm)
   let e : B₁ ≃ₐ[A₂] B₂ :=
     { e₂ with
-      commutes' := fun r ↦ by
-        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm r) }
-  have := IsSeparable.tower_top A₂ h
-  IsSeparable.of_algHom e.symm ((e₂.symm_apply_apply x).symm ▸ this)
+      commutes' := fun x ↦ by
+        simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun he.symm (e₁.symm x) }
+  (AlgEquiv.isSeparable_iff e).mpr <| IsSeparable.tower_top A₂ h
 
-lemma Algebra.IsSeparable.of_equiv_equiv
-    [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
+lemma Algebra.IsSeparable.of_equiv_equiv [Algebra.IsSeparable A₁ B₁] : Algebra.IsSeparable A₂ B₂ :=
   ⟨fun x ↦ (e₂.apply_symm_apply x) ▸ _root_.IsSeparable.of_equiv_equiv e₁ e₂ he
     (Algebra.IsSeparable.isSeparable _ _)⟩
 

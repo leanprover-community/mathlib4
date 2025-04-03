@@ -205,25 +205,29 @@ theorem cauchySeq_iff_tendsto_dist_atTop_0 [Nonempty β] [SemilatticeSup β] {u 
 
 end Real
 
-namespace Metric
-
--- Porting note: `TopologicalSpace.IsSeparable.separableSpace` moved to `EMetricSpace`
+namespace Topology
 
 /-- The preimage of a separable set by an inducing map is separable. -/
-protected theorem _root_.Inducing.isSeparable_preimage {f : β → α} [TopologicalSpace β]
-    (hf : Inducing f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) := by
+protected lemma IsInducing.isSeparable_preimage {f : β → α} [TopologicalSpace β]
+    (hf : IsInducing f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) := by
   have : SeparableSpace s := hs.separableSpace
   have : SecondCountableTopology s := UniformSpace.secondCountable_of_separable _
-  have : Inducing ((mapsTo_preimage f s).restrict _ _ _) :=
-    (hf.comp inducing_subtype_val).codRestrict _
+  have : IsInducing ((mapsTo_preimage f s).restrict _ _ _) :=
+    (hf.comp IsInducing.subtypeVal).codRestrict _
   have := this.secondCountableTopology
   exact .of_subtype _
 
-protected theorem _root_.Embedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
-    (hf : Embedding f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) :=
-  hf.toInducing.isSeparable_preimage hs
+@[deprecated (since := "2024-10-28")]
+alias _root_.Inducing.isSeparable_preimage := IsInducing.isSeparable_preimage
 
-end Metric
+protected theorem IsEmbedding.isSeparable_preimage {f : β → α} [TopologicalSpace β]
+    (hf : IsEmbedding f) {s : Set α} (hs : IsSeparable s) : IsSeparable (f ⁻¹' s) :=
+  hf.isInducing.isSeparable_preimage hs
+
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.isSeparable_preimage := IsEmbedding.isSeparable_preimage
+
+end Topology
 
 /-- A compact set is separable. -/
 theorem IsCompact.isSeparable {s : Set α} (hs : IsCompact s) : IsSeparable s :=
@@ -250,3 +254,32 @@ theorem secondCountable_of_almost_dense_set
 end SecondCountable
 
 end Metric
+
+section Compact
+variable {X : Type*} [PseudoMetricSpace X] {s : Set X} {ε : ℝ}
+
+/-- Any compact set in a pseudometric space can be covered by finitely many balls of a given
+positive radius -/
+theorem finite_cover_balls_of_compact (hs : IsCompact s) {e : ℝ} (he : 0 < e) :
+    ∃ t ⊆ s, t.Finite ∧ s ⊆ ⋃ x ∈ t, ball x e :=
+  let ⟨t, hts, ht⟩ := hs.elim_nhds_subcover _ (fun x _ => ball_mem_nhds x he)
+  ⟨t, hts, t.finite_toSet, ht⟩
+
+alias IsCompact.finite_cover_balls := finite_cover_balls_of_compact
+
+/-- Any relatively compact set in a pseudometric space can be covered by finitely many balls of a
+given positive radius. -/
+lemma exists_finite_cover_balls_of_isCompact_closure (hs : IsCompact (closure s)) (hε : 0 < ε) :
+    ∃ t ⊆ s, t.Finite ∧ s ⊆ ⋃ x ∈ t, ball x ε := by
+  obtain ⟨t, hst⟩ := hs.elim_finite_subcover (fun x : s ↦ ball x ε) (fun _ ↦ isOpen_ball) fun x hx ↦
+    let ⟨y, hy, hxy⟩ := Metric.mem_closure_iff.1 hx _ hε; mem_iUnion.2 ⟨⟨y, hy⟩, hxy⟩
+  refine ⟨t.map ⟨Subtype.val, Subtype.val_injective⟩, by simp, Finset.finite_toSet _, ?_⟩
+  simpa using subset_closure.trans hst
+
+end Compact
+
+/-- If a map is continuous on a separable set `s`, then the image of `s` is also separable. -/
+theorem ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → β} {s : Set α}
+    (hf : ContinuousOn f s) (hs : IsSeparable s) : IsSeparable (f '' s) := by
+  rw [image_eq_range, ← image_univ]
+  exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict

@@ -3,8 +3,8 @@ Copyright (c) 2021 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä, Moritz Doll
 -/
-import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
+import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Weak dual topology
@@ -66,7 +66,9 @@ def WeakBilin [CommSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] [AddCommMono
 
 namespace WeakBilin
 
--- Porting note: the next two instances should be derived from the definition
+-- The following instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
 instance instAddCommMonoid [CommSemiring 𝕜] [a : AddCommMonoid E] [Module 𝕜 E] [AddCommMonoid F]
     [Module 𝕜 F] (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) : AddCommMonoid (WeakBilin B) := a
 
@@ -98,6 +100,7 @@ instance instTopologicalSpace : TopologicalSpace (WeakBilin B) :=
 theorem coeFn_continuous : Continuous fun (x : WeakBilin B) y => B x y :=
   continuous_induced_dom
 
+@[fun_prop]
 theorem eval_continuous (y : F) : Continuous fun x : WeakBilin B => B x y :=
   (continuous_pi_iff.mp (coeFn_continuous B)) y
 
@@ -106,14 +109,17 @@ theorem continuous_of_continuous_eval [TopologicalSpace α] {g : α → WeakBili
   continuous_induced_rng.2 (continuous_pi_iff.mpr h)
 
 /-- The coercion `(fun x y => B x y) : E → (F → 𝕜)` is an embedding. -/
-theorem embedding {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (hB : Function.Injective B) :
-    Embedding fun (x : WeakBilin B) y => B x y :=
-  Function.Injective.embedding_induced <| LinearMap.coe_injective.comp hB
+theorem isEmbedding {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (hB : Function.Injective B) :
+    IsEmbedding fun (x : WeakBilin B) y => B x y :=
+  Function.Injective.isEmbedding_induced <| LinearMap.coe_injective.comp hB
+
+@[deprecated (since := "2024-10-26")]
+alias embedding := isEmbedding
 
 theorem tendsto_iff_forall_eval_tendsto {l : Filter α} {f : α → WeakBilin B} {x : WeakBilin B}
     (hB : Function.Injective B) :
     Tendsto f l (𝓝 x) ↔ ∀ y, Tendsto (fun i => B (f i) y) l (𝓝 (B x y)) := by
-  rw [← tendsto_pi_nhds, Embedding.tendsto_nhds_iff (embedding hB)]
+  rw [← tendsto_pi_nhds, (isEmbedding hB).tendsto_nhds_iff]
   rfl
 
 /-- Addition in `WeakBilin B` is continuous. -/
@@ -133,6 +139,15 @@ instance instContinuousSMul [ContinuousSMul 𝕜 𝕜] : ContinuousSMul 𝕜 (We
   simp only [Function.comp_apply, Pi.smul_apply, LinearMap.map_smulₛₗ, RingHom.id_apply,
     LinearMap.smul_apply]
 
+/--
+Map `F` into the topological dual of `E` with the weak topology induced by `F`
+-/
+def eval [ContinuousAdd 𝕜] [ContinuousConstSMul 𝕜 𝕜] :
+    F →ₗ[𝕜] WeakBilin B →L[𝕜] 𝕜 where
+  toFun f := ⟨B.flip f, by fun_prop⟩
+  map_add' _ _ := by ext; simp
+  map_smul' _ _ := by ext; simp
+
 end Semiring
 
 section Ring
@@ -144,9 +159,9 @@ variable [AddCommGroup F] [Module 𝕜 F]
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
-/-- `WeakBilin B` is a `TopologicalAddGroup`, meaning that addition and negation are
+/-- `WeakBilin B` is a `IsTopologicalAddGroup`, meaning that addition and negation are
 continuous. -/
-instance instTopologicalAddGroup [ContinuousAdd 𝕜] : TopologicalAddGroup (WeakBilin B) where
+instance instIsTopologicalAddGroup [ContinuousAdd 𝕜] : IsTopologicalAddGroup (WeakBilin B) where
   toContinuousAdd := by infer_instance
   continuous_neg := by
     refine continuous_induced_rng.2 (continuous_pi_iff.mpr fun y => ?_)

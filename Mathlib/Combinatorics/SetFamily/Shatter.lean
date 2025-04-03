@@ -3,10 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Combinatorics.SetFamily.Compression.Down
+import Mathlib.Data.Fintype.Powerset
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Order.UpperLower.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Shattering families
@@ -28,7 +28,7 @@ This file defines the shattering property and VC-dimension of set families.
 open scoped FinsetFamily
 
 namespace Finset
-variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α} {n : ℕ}
+variable {α : Type*} [DecidableEq α] {𝒜 ℬ : Finset (Finset α)} {s t : Finset α} {a : α}
 
 /-- A set family `𝒜` shatters a set `s` if all subsets of `s` can be obtained as the intersection
 of `s` and some element of the set family, and we denote this `𝒜.Shatters s`. We also say that `s`
@@ -137,7 +137,7 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : #𝒜 ≤ #𝒜.shatt
     rw [mem_memberSubfamily] at hv
     rw [← singleton_subset_iff (a := a), ← hsv] at hv
     exact hv.2 inter_subset_right
-  · refine forall_image.2 fun s hs ↦ mem_shatterer.2 fun t ht ↦ ?_
+  · refine forall_mem_image.2 fun s hs ↦ mem_shatterer.2 fun t ht ↦ ?_
     simp only [mem_inter, mem_shatterer] at hs
     rw [subset_insert_iff] at ht
     by_cases ha : a ∈ t

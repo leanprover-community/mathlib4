@@ -5,6 +5,7 @@ Authors: Damiano Testa, Ruben Van de Velde
 -/
 import Mathlib.Order.Atoms
 import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
@@ -41,7 +42,7 @@ variable {G : Type*} [Group G] (H : Subgroup G)
 /-- In a group that satisfies the normalizer condition, every maximal subgroup is normal -/
 theorem NormalizerCondition.normal_of_coatom (hnc : NormalizerCondition G) (hmax : IsCoatom H) :
     H.Normal :=
-  normalizer_eq_top.mp (hmax.2 _ (hnc H (lt_top_iff_ne_top.mpr hmax.1)))
+  normalizer_eq_top_iff.mp (hmax.2 _ (hnc H (lt_top_iff_ne_top.mpr hmax.1)))
 
 @[simp]
 theorem isCoatom_comap {H : Type*} [Group H] (f : G ≃* H) {K : Subgroup H} :

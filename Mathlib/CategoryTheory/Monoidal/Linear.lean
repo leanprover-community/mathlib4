@@ -49,17 +49,17 @@ instance tensoringRight_linear (X : C) : ((tensoringRight C).obj X).Linear R whe
 /-- A faithful linear monoidal functor to a linear monoidal category
 ensures that the domain is linear monoidal. -/
 theorem monoidalLinearOfFaithful {D : Type*} [Category D] [Preadditive D] [Linear R D]
-    [MonoidalCategory D] [MonoidalPreadditive D] (F : MonoidalFunctor D C) [F.Faithful]
-    [F.toFunctor.Additive] [F.toFunctor.Linear R] : MonoidalLinear R D :=
+    [MonoidalCategory D] [MonoidalPreadditive D] (F : D ⥤ C) [F.Monoidal] [F.Faithful]
+    [F.Linear R] : MonoidalLinear R D :=
   { whiskerLeft_smul := by
       intros X Y Z r f
-      apply F.toFunctor.map_injective
-      rw [F.map_whiskerLeft]
+      apply F.map_injective
+      rw [Functor.Monoidal.map_whiskerLeft]
       simp
     smul_whiskerRight := by
       intros r X Y f Z
-      apply F.toFunctor.map_injective
-      rw [F.map_whiskerRight]
+      apply F.map_injective
+      rw [Functor.Monoidal.map_whiskerRight]
       simp }
 
 end CategoryTheory

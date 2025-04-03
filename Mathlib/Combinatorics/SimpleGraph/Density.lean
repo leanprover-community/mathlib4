@@ -90,7 +90,8 @@ section DecidableEq
 variable [DecidableEq α] [DecidableEq β]
 
 lemma interedges_eq_biUnion :
-    interedges r s t = s.biUnion fun x ↦ {y ∈ t | r x y}.map ⟨(x, ·), Prod.mk.inj_left x⟩ := by
+    interedges r s t =
+      s.biUnion fun x ↦ {y ∈ t | r x y}.map ⟨(x, ·), Prod.mk_right_injective x⟩ := by
   ext ⟨x, y⟩; simp [mem_interedges_iff]
 
 theorem interedges_biUnion_left (s : Finset ι) (t : Finset β) (f : ι → Finset α) :
@@ -222,7 +223,7 @@ densities is at most `2 * δ`. -/
 theorem abs_edgeDensity_sub_edgeDensity_le_two_mul (hs : s₂ ⊆ s₁) (ht : t₂ ⊆ t₁) (hδ : 0 ≤ δ)
     (hscard : (1 - δ) * #s₁ ≤ #s₂) (htcard : (1 - δ) * #t₁ ≤ #t₂) :
     |(edgeDensity r s₂ t₂ : 𝕜) - edgeDensity r s₁ t₁| ≤ 2 * δ := by
-  cases' lt_or_le δ 1 with h h
+  rcases lt_or_le δ 1 with h | h
   · exact (abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq r hs ht hδ h hscard htcard).trans
       ((sub_le_self_iff _).2 <| sq_nonneg δ)
   rw [two_mul]
@@ -235,7 +236,7 @@ end Asymmetric
 
 section Symmetric
 
-variable {r : α → α → Prop} [DecidableRel r] {s s₁ s₂ t t₁ t₂ : Finset α} {a b : α}
+variable {r : α → α → Prop} [DecidableRel r] {s t : Finset α} {a b : α}
 
 @[simp]
 theorem swap_mem_interedges_iff (hr : Symmetric r) {x : α × α} :
@@ -338,8 +339,7 @@ theorem edgeDensity_add_edgeDensity_compl (hs : s.Nonempty) (ht : t.Nonempty) (h
     G.edgeDensity s t + Gᶜ.edgeDensity s t = 1 := by
   rw [edgeDensity_def, edgeDensity_def, div_add_div_same, div_eq_one_iff_eq]
   · exact mod_cast card_interedges_add_card_interedges_compl _ h
-  -- Porting note: Wrote a workaround for `positivity` tactic.
-  · apply mul_ne_zero <;> exact mod_cast Nat.pos_iff_ne_zero.1 (Nonempty.card_pos ‹_›)
+  · positivity
 
 end DecidableEq
 

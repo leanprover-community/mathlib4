@@ -53,6 +53,8 @@ the colors.
   * develop API for partial colorings, likely as colorings of subgraphs (`H.coe.Coloring α`)
 -/
 
+assert_not_exists Field
+
 open Fintype Function
 
 universe u v
@@ -103,8 +105,6 @@ theorem Coloring.colorClasses_finite [Finite α] : C.colorClasses.Finite :=
 theorem Coloring.card_colorClasses_le [Fintype α] [Fintype C.colorClasses] :
     Fintype.card C.colorClasses ≤ Fintype.card α := by
   simp only [colorClasses]
-  -- Porting note: brute force instance declaration `[Fintype (Setoid.classes (Setoid.ker C))]`
-  haveI : Fintype (Setoid.classes (Setoid.ker C)) := by assumption
   convert Setoid.card_classes_ker_le C
 
 theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colorClass c)
@@ -136,6 +136,10 @@ theorem isEmpty_of_colorable_zero (h : G.Colorable 0) : IsEmpty V := by
   intro v
   obtain ⟨i, hi⟩ := h.some v
   exact Nat.not_lt_zero _ hi
+
+@[simp]
+lemma colorable_zero_iff : G.Colorable 0 ↔ IsEmpty V :=
+   ⟨G.isEmpty_of_colorable_zero, fun _ ↦ G.colorable_of_isEmpty 0⟩
 
 /-- The "tautological" coloring of a graph, using the vertices of the graph as colors. -/
 def selfColoring : G.Coloring V := Coloring.mk id fun {_ _} => G.ne_of_adj
@@ -226,8 +230,7 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     let f := Embedding.completeGraph (@Fin.valEmbedding n)
     use f.toHom.comp C
     intro v
-    cases' C with color valid
-    exact Fin.is_lt (color v)
+    exact Fin.is_lt (C.1 v)
   · rintro ⟨C, Cf⟩
     refine ⟨Coloring.mk ?_ ?_⟩
     · exact fun v => ⟨C v, Cf v⟩
@@ -264,10 +267,6 @@ theorem chromaticNumber_le_iff_colorable {n : ℕ} : G.chromaticNumber ≤ n ↔
   have := Nat.sInf_mem (⟨m, hm⟩ : {n' | G.Colorable n'}.Nonempty)
   rw [Set.mem_setOf_eq] at this
   exact this.mono h
-
-@[deprecated Colorable.chromaticNumber_le (since := "2024-03-21")]
-theorem chromaticNumber_le_card [Fintype α] (C : G.Coloring α) :
-    G.chromaticNumber ≤ Fintype.card α := C.colorable.chromaticNumber_le
 
 theorem colorable_chromaticNumber {m : ℕ} (hc : G.Colorable m) :
     G.Colorable (ENat.toNat G.chromaticNumber) := by
@@ -318,7 +317,7 @@ theorem colorable_of_chromaticNumber_ne_top (h : G.chromaticNumber ≠ ⊤) :
 
 theorem Colorable.mono_left {G' : SimpleGraph V} (h : G ≤ G') {n : ℕ} (hc : G'.Colorable n) :
     G.Colorable n :=
-  ⟨hc.some.comp (Hom.mapSpanningSubgraphs h)⟩
+  ⟨hc.some.comp (.ofLE h)⟩
 
 theorem chromaticNumber_le_of_forall_imp {V' : Type*} {G' : SimpleGraph V'}
     (h : ∀ n, G'.Colorable n → G.Colorable n) :

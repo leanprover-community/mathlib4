@@ -3,8 +3,8 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Interval.Finset
-import Mathlib.Algebra.SMulWithZero
+import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Order.Interval.Finset.Basic
 import Mathlib.Combinatorics.Additive.FreimanHom
 import Mathlib.Order.Interval.Finset.Fin
 
@@ -43,10 +43,12 @@ the size of the biggest 3AP-free subset of `{0, ..., n - 1}`.
 3AP-free, Salem-Spencer, Roth, arithmetic progression, average, three-free
 -/
 
+assert_not_exists Field Ideal TwoSidedIdeal
+
 open Finset Function
 open scoped Pointwise
 
-variable {F α β 𝕜 E : Type*}
+variable {F α β : Type*}
 
 section ThreeAPFree
 
@@ -101,7 +103,7 @@ theorem threeGPFree_pi {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i)] {
 end Monoid
 
 section CommMonoid
-variable [CommMonoid α] [CommMonoid β] {s A : Set α} {t B : Set β} {f : α → β} {a : α}
+variable [CommMonoid α] [CommMonoid β] {s A : Set α} {t : Set β} {f : α → β}
 
 /-- Geometric progressions of length three are reflected under `2`-Freiman homomorphisms. -/
 @[to_additive
@@ -119,7 +121,7 @@ lemma threeGPFree_image (hf : IsMulFreimanIso 2 s t f) (hAs : A ⊆ s) :
     ThreeGPFree (f '' A) ↔ ThreeGPFree A := by
   rw [ThreeGPFree, ThreeGPFree]
   have := (hf.bijOn.injOn.mono hAs).bijOn_image (f := f)
-  simp (config := { contextual := true }) only
+  simp +contextual only
     [((hf.bijOn.injOn.mono hAs).bijOn_image (f := f)).forall,
     hf.mul_eq_mul (hAs _) (hAs _) (hAs _) (hAs _), this.injOn.eq_iff]
 
@@ -388,7 +390,7 @@ end RothNumber
 
 section rothNumberNat
 
-variable {s : Finset ℕ} {k n : ℕ}
+variable {k n : ℕ}
 
 /-- The Roth number of a natural `N` is the largest integer `m` for which there is a subset of
 `range N` of size `m` with no arithmetic progression of length 3.
@@ -431,7 +433,7 @@ theorem rothNumberNat_zero : rothNumberNat 0 = 0 :=
 
 theorem addRothNumber_Ico (a b : ℕ) : addRothNumber (Ico a b) = rothNumberNat (b - a) := by
   obtain h | h := le_total b a
-  · rw [tsub_eq_zero_of_le h, Ico_eq_empty_of_le h, rothNumberNat_zero, addRothNumber_empty]
+  · rw [Nat.sub_eq_zero_of_le h, Ico_eq_empty_of_le h, rothNumberNat_zero, addRothNumber_empty]
   convert addRothNumber_map_add_left _ a
   rw [range_eq_Ico, map_eq_image]
   convert (image_add_left_Ico 0 (b - a) _).symm

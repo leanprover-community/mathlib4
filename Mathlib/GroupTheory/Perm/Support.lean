@@ -3,9 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Aaron Anderson, Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Data.Fintype.Card
-import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Algebra.Group.Commute.Basic
+import Mathlib.Algebra.Group.End
+import Mathlib.Data.Finset.NoncommProd
 
 /-!
 # support of a permutation
@@ -28,7 +29,7 @@ Assume `α` is a Fintype:
 -/
 
 
-open Equiv Finset
+open Equiv Finset Function
 
 namespace Equiv.Perm
 
@@ -77,7 +78,7 @@ theorem disjoint_iff_eq_or_eq : Disjoint f g ↔ ∀ x : α, f x = x ∨ g x = x
 theorem disjoint_refl_iff : Disjoint f f ↔ f = 1 := by
   refine ⟨fun h => ?_, fun h => h.symm ▸ disjoint_one_left 1⟩
   ext x
-  cases' h x with hx hx <;> simp [hx]
+  rcases h x with hx | hx <;> simp [hx]
 
 theorem Disjoint.inv_left (h : Disjoint f g) : Disjoint f⁻¹ g := by
   intro x
@@ -103,7 +104,7 @@ theorem Disjoint.mul_right (H1 : Disjoint f g) (H2 : Disjoint f h) : Disjoint f 
   rw [disjoint_comm]
   exact H1.symm.mul_left H2.symm
 
--- Porting note (#11215): TODO: make it `@[simp]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it `@[simp]`
 theorem disjoint_conj (h : Perm α) : Disjoint (h * f * h⁻¹) (h * g * h⁻¹) ↔ Disjoint f g :=
   (h⁻¹).forall_congr fun {_} ↦ by simp only [mul_apply, eq_inv_iff_eq]
 
@@ -116,6 +117,12 @@ theorem disjoint_prod_right (l : List (Perm α)) (h : ∀ g ∈ l, Disjoint f g)
   · exact disjoint_one_right _
   · rw [List.prod_cons]
     exact (h _ (List.mem_cons_self _ _)).mul_right (ih fun g hg => h g (List.mem_cons_of_mem _ hg))
+
+theorem disjoint_noncommProd_right {ι : Type*} {k : ι → Perm α} {s : Finset ι}
+    (hs : Set.Pairwise s fun i j ↦ Commute (k i) (k j))
+    (hg : ∀ i ∈ s, g.Disjoint (k i)) :
+    Disjoint g (s.noncommProd k (hs)) :=
+  noncommProd_induction s k hs g.Disjoint (fun _ _ ↦ Disjoint.mul_right) (disjoint_one_right g) hg
 
 open scoped List in
 theorem disjoint_prod_perm {l₁ l₂ : List (Perm α)} (hl : l₁.Pairwise Disjoint) (hp : l₁ ~ l₂) :
@@ -159,7 +166,7 @@ theorem zpow_apply_eq_of_apply_apply_eq_self {x : α} (hffx : f (f x) = x) :
 theorem Disjoint.mul_apply_eq_iff {σ τ : Perm α} (hστ : Disjoint σ τ) {a : α} :
     (σ * τ) a = a ↔ σ a = a ∧ τ a = a := by
   refine ⟨fun h => ?_, fun h => by rw [mul_apply, h.2, h.1]⟩
-  cases' hστ a with hσ hτ
+  rcases hστ a with hσ | hτ
   · exact ⟨hσ, σ.injective (h.trans hσ.symm)⟩
   · exact ⟨(congr_arg σ hτ).symm.trans h, hτ⟩
 
@@ -361,6 +368,30 @@ lemma ofSubtype_eq_iff {g c : Equiv.Perm α} {s : Finset α}
     · rw [ofSubtype_apply_of_not_mem (p := (· ∈ s)) _ ha, eq_comm, ← not_mem_support]
       exact Finset.not_mem_mono hc ha
 
+theorem support_ofSubtype {p : α → Prop} [DecidablePred p] (u : Perm (Subtype p)) :
+    (ofSubtype u).support = u.support.map (Function.Embedding.subtype p) := by
+  ext x
+  simp only [mem_support, ne_eq, Finset.mem_map, Function.Embedding.coe_subtype, Subtype.exists,
+    exists_and_right, exists_eq_right, not_iff_comm, not_exists, not_not]
+  by_cases hx : p x
+  · simp only [forall_prop_of_true hx, ofSubtype_apply_of_mem u hx, ← Subtype.coe_inj]
+  · simp only [forall_prop_of_false hx, true_iff, ofSubtype_apply_of_not_mem u hx]
+
+theorem mem_support_of_mem_noncommProd_support {α β : Type*} [DecidableEq β] [Fintype β]
+    {s : Finset α} {f : α → Perm β}
+    {comm : (s : Set α).Pairwise (Commute on f)} {x : β} (hx : x ∈ (s.noncommProd f comm).support) :
+    ∃ a ∈ s, x ∈ (f a).support := by
+  contrapose! hx
+  classical
+  revert hx comm s
+  apply Finset.induction
+  · simp
+  · intro a s ha ih comm hs
+    rw [Finset.noncommProd_insert_of_not_mem s a f comm ha]
+    apply mt (Finset.mem_of_subset (support_mul_le _ _))
+    rw [Finset.sup_eq_union, Finset.not_mem_union]
+    exact ⟨hs a (s.mem_insert_self a), ih (fun a ha ↦ hs a (Finset.mem_insert_of_mem ha))⟩
+
 theorem pow_apply_mem_support {n : ℕ} {x : α} : (f ^ n) x ∈ f.support ↔ x ∈ f.support := by
   simp only [mem_support, ne_eq, apply_pow_apply_eq_iff]
 
@@ -396,6 +427,23 @@ theorem support_prod_of_pairwise_disjoint (l : List (Perm α)) (h : l.Pairwise D
   · rw [List.pairwise_cons] at h
     have : Disjoint hd tl.prod := disjoint_prod_right _ h.left
     simp [this.support_mul, hl h.right]
+
+theorem support_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
+    (hs : Set.Pairwise s fun i j ↦ Disjoint (k i) (k j)) :
+    (s.noncommProd k (hs.imp (fun _ _ ↦ Perm.Disjoint.commute))).support =
+      s.biUnion fun i ↦ (k i).support := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | @insert i s hi hrec =>
+    have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
+      hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
+    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Finset.biUnion_insert]
+    rw [Equiv.Perm.Disjoint.support_mul, hrec hs']
+    apply disjoint_noncommProd_right
+    intro j hj
+    apply hs _ _ (ne_of_mem_of_not_mem hj hi).symm <;>
+      simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
 
 theorem support_prod_le (l : List (Perm α)) : l.prod.support ≤ (l.map support).foldr (· ⊔ ·) ⊥ := by
   induction' l with hd tl hl
