@@ -54,8 +54,8 @@ lemma Subgraph.IsMatching.exists_of_universalVerts [Finite V] {s : Set V}
 
 lemma disjoint_image_val_universalVerts (s : Set G.deleteUniversalVerts.verts) :
     Disjoint (Subtype.val '' s) G.universalVerts := by
-  simpa [deleteUniversalVerts, Subgraph.deleteVerts_verts, ← Set.disjoint_compl_right_iff_subset,
-    Set.compl_eq_univ_diff] using Subtype.coe_image_subset _ s
+  simpa [← Set.disjoint_compl_right_iff_subset, Set.compl_eq_univ_diff] using
+    Subtype.coe_image_subset _ s
 
 /-- A component of the graph with universal vertices is even if we remove a set of representatives
 of odd components and a subset of universal vertices.
