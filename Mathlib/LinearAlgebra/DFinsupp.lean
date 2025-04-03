@@ -185,10 +185,33 @@ The names should match the equivalent bundled `Finsupp.mapRange` definitions.
 -/
 
 section mapRange
-
 variable {β β₁ β₂ : ι → Type*}
+
+section AddCommMonoid
 variable [∀ i, AddCommMonoid (β i)] [∀ i, AddCommMonoid (β₁ i)] [∀ i, AddCommMonoid (β₂ i)]
 variable [∀ i, Module R (β i)] [∀ i, Module R (β₁ i)] [∀ i, Module R (β₂ i)]
+
+lemma mker_mapRangeAddMonoidHom (f : ∀ i, β₁ i →+ β₂ i) :
+    AddMonoidHom.mker (mapRange.addMonoidHom f) =
+      (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mker (f i))).comap coeFnAddMonoidHom := by
+  ext
+  simp [AddSubmonoid.pi, DFinsupp.ext_iff]
+
+lemma mrange_mapRangeAddMonoidHom (f : ∀ i, β₁ i →+ β₂ i) :
+    AddMonoidHom.mrange (mapRange.addMonoidHom f) =
+      (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mrange (f i))).comap coeFnAddMonoidHom := by
+  classical
+  ext x
+  simp only [AddSubmonoid.mem_comap, mapRange.addMonoidHom_apply, coeFnAddMonoidHom_apply]
+  refine ⟨fun ⟨y, hy⟩ i hi ↦ ?_, fun h ↦ ?_⟩
+  · simp [← hy]
+  · choose g hg using fun i => h i (Set.mem_univ _)
+    use DFinsupp.mk x.support (g ·)
+    ext i
+    simp only [Finset.coe_sort_coe, mapRange.addMonoidHom_apply, mapRange_apply]
+    by_cases mem : i ∈ x.support
+    · rw [mk_of_mem mem, hg]
+    · rw [DFinsupp.not_mem_support_iff.mp mem, mk_of_not_mem mem, map_zero]
 
 theorem mapRange_smul (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) (r : R)
     (hf' : ∀ i x, f i (r • x) = r • f i x) (g : Π₀ i, β₁ i) :
@@ -220,6 +243,16 @@ theorem sum_mapRange_index.linearMap [DecidableEq ι] {f : ∀ i, β₁ i →ₗ
     DFinsupp.lsum ℕ h (mapRange.linearMap f l) = DFinsupp.lsum ℕ (fun i => (h i).comp (f i)) l := by
   classical simpa [DFinsupp.sumAddHom_apply] using sum_mapRange_index fun i => by simp
 
+lemma ker_mapRangeLinearMap (f : ∀ i, β₁ i →ₗ[R] β₂ i) :
+    LinearMap.ker (mapRange.linearMap f) =
+      (Submodule.pi Set.univ (fun i ↦ LinearMap.ker (f i))).comap (coeFnLinearMap R) :=
+  Submodule.toAddSubmonoid_injective <| mker_mapRangeAddMonoidHom (f · |>.toAddMonoidHom)
+
+lemma range_mapRangeLinearMap (f : ∀ i, β₁ i →ₗ[R] β₂ i) :
+    LinearMap.range (mapRange.linearMap f) =
+      (Submodule.pi Set.univ (LinearMap.range <| f ·)).comap (coeFnLinearMap R) :=
+  Submodule.toAddSubmonoid_injective <| mrange_mapRangeAddMonoidHom (f · |>.toAddMonoidHom)
+
 /-- `DFinsupp.mapRange.linearMap` as a `LinearEquiv`. -/
 @[simps apply]
 def mapRange.linearEquiv (e : ∀ i, β₁ i ≃ₗ[R] β₂ i) : (Π₀ i, β₁ i) ≃ₗ[R] Π₀ i, β₂ i :=
@@ -243,6 +276,24 @@ theorem mapRange.linearEquiv_trans (f : ∀ i, β i ≃ₗ[R] β₁ i) (f₂ : �
 theorem mapRange.linearEquiv_symm (e : ∀ i, β₁ i ≃ₗ[R] β₂ i) :
     (mapRange.linearEquiv e).symm = mapRange.linearEquiv fun i => (e i).symm :=
   rfl
+
+end AddCommMonoid
+
+section AddCommGroup
+
+lemma ker_mapRangeAddMonoidHom
+    [∀ i, AddCommGroup (β₁ i)] [∀ i, AddCommMonoid (β₂ i)] (f : ∀ i, β₁ i →+ β₂ i) :
+    (mapRange.addMonoidHom f).ker =
+      (AddSubgroup.pi Set.univ (f · |>.ker)).comap coeFnAddMonoidHom :=
+  AddSubgroup.toAddSubmonoid_injective <| mker_mapRangeAddMonoidHom f
+
+lemma range_mapRangeAddMonoidHom
+    [∀ i, AddCommGroup (β₁ i)] [∀ i, AddCommGroup (β₂ i)] (f : ∀ i, β₂ i →+ β₁ i) :
+    (mapRange.addMonoidHom f).range =
+      (AddSubgroup.pi Set.univ (f · |>.range)).comap coeFnAddMonoidHom :=
+  AddSubgroup.toAddSubmonoid_injective <| mrange_mapRangeAddMonoidHom f
+
+end AddCommGroup
 
 end mapRange
 
