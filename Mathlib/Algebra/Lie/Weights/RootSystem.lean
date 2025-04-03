@@ -495,11 +495,81 @@ lemma invtSubmodule_reflection:
       rw [r31] at r32
       simp at r32
       have t : j.1.IsNonZero := by
-        sorry--apply?
+        clear r32
+        clear r31
+        clear r2
+        --clear r
+        clear a
+        clear r
+        clear this
+        clear h1
+        clear h2
+        clear hhh4
+        clear hhh3
+        clear hhh2
+        clear hhh1
+        clear rr2
+        clear rr
+        --refine LieModule.Weight.isNonZero_iff_ne_zero.mpr ?_
+        --simp_all [S]
+        obtain ⟨val, property⟩ := i
+        obtain ⟨val_1, property_1⟩ := j
+        simp_all only [Finset.mem_filter, Finset.mem_univ, true_and, S]
+        simp_all only [Finset.mem_filter, Finset.mem_univ, true_and, S]
+        exact property_1
       have r33 := LieAlgebra.IsKilling.root_apply_coroot (K := K) (H := H) (L := L) t
       rw [r33] at r32
       field_simp at r32
-    sorry
+    have r43 : r ∈ H.root := by
+      rcases r2 with h1 | h1
+      · exact h1
+      exact False.elim (r3 h1)
+    have r44 : ⟨r, r43⟩ ∈ Φ ∨ ⟨r, r43⟩ ∉ Φ  := by
+      exact Classical.em (⟨r, r43⟩ ∈ Φ)
+    rcases r44 with h111 | h1111
+    have r32 := rr2 ⟨r, r43⟩ j h111 h2
+    simp at r32
+    have z1 : (i.1.1 + j.1.1) (LieAlgebra.IsKilling.coroot j) = 0 := by
+      exact r32
+    have z2 : (i.1.1 + j.1.1) (LieAlgebra.IsKilling.coroot j) =
+      i.1.1 (LieAlgebra.IsKilling.coroot j) + j.1.1 (LieAlgebra.IsKilling.coroot j) := by
+      exact rfl
+    rw [z2] at z1
+    have z3 : i.1.1 (LieAlgebra.IsKilling.coroot j) = 0 := by
+      exact rr2 i j h1 h2
+    have z4 : j.1.1 (LieAlgebra.IsKilling.coroot j) = 2 := by
+      have t : j.1.IsNonZero := by
+        clear r32
+        --clear r31
+        clear r2
+        --clear r
+        --clear a
+        --clear r
+        --clear this
+        clear h1
+        clear h2
+        clear hhh4
+        clear hhh3
+        clear hhh2
+        clear hhh1
+        clear rr2
+        clear rr
+        --refine LieModule.Weight.isNonZero_iff_ne_zero.mpr ?_
+        --simp_all [S]
+        obtain ⟨val, property⟩ := i
+        obtain ⟨val_1, property_1⟩ := j
+        simp_all only [Finset.mem_filter, Finset.mem_univ, true_and, S]
+        --exact property_1
+        --search_proof
+        sorry
+      exact LieAlgebra.IsKilling.root_apply_coroot (K := K) (H := H) (L := L) t
+    rw [z3, z4] at z1
+    field_simp at z1
+
+
+
+
+
   have rr4 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : LieAlgebra.rootSpace H i.1.1) (lj : LieAlgebra.rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
     --lie_mem_genWeightSpace_of_mem_genWeightSpace
     sorry
