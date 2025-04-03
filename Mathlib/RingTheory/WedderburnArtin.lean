@@ -9,7 +9,6 @@ import Mathlib.LinearAlgebra.Matrix.IsDiag
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.FiniteLength
 import Mathlib.RingTheory.TwoSidedIdeal.SpanAsSum
-import Mathlib.LinearAlgebra.Matrix.Ideal
 
 /-!
 # Wedderburn-Artin Theorem (for simple rings)
@@ -31,20 +30,7 @@ open MulOpposite
 
 variable (K D : Type*) [Field K] [IsSimpleRing A] [Algebra K A] [DivisionRing D]
 
--- /--
--- Division rings are a simple ring
--- -/
--- instance : IsSimpleOrder (TwoSidedIdeal D) where
---   eq_bot_or_eq_top r := by
---     obtain h | h := _root_.forall_or_exists_not (fun x ↦ x ∈ r ↔ x = 0)
---     · left
---       exact SetLike.ext fun x ↦ (h x).trans (by rfl)
---     · right
---       obtain ⟨x, hx⟩ := h
---       refine SetLike.ext fun y ↦ ⟨fun _ ↦ trivial, fun _ ↦ ?_⟩
---       have hx' : x ≠ 0 := by rintro rfl; simp [r.zero_mem] at hx
---       rw [show y = y * x * x⁻¹ by field_simp]
---       refine r.mul_mem_right _ _ <| r.mul_mem_left _ _ (by tauto)
+
 namespace TwoSidedIdeal
 variable {R : Type*} [Ring R]
 /--
@@ -52,28 +38,28 @@ Any two-sided-ideal in `A` corresponds to a two-sided-ideal in `Aᵒᵖ`.
 -/
 @[simps]
 def toMop (rel : TwoSidedIdeal R) : (TwoSidedIdeal Rᵐᵒᵖ) :=
-.mk
-{ r := fun a b ↦ rel.ringCon b.unop a.unop
-  iseqv :=
-  { refl := fun a ↦ rel.ringCon.refl a.unop
-    symm := rel.ringCon.symm
-    trans := fun h1 h2 ↦ rel.ringCon.trans h2 h1 }
-  mul' := fun h1 h2 ↦ rel.ringCon.mul h2 h1
-  add' := rel.ringCon.add }
+  .mk
+  { r := fun a b ↦ rel.ringCon b.unop a.unop
+    iseqv :=
+    { refl := fun a ↦ rel.ringCon.refl a.unop
+      symm := rel.ringCon.symm
+      trans := fun h1 h2 ↦ rel.ringCon.trans h2 h1 }
+    mul' := fun h1 h2 ↦ rel.ringCon.mul h2 h1
+    add' := rel.ringCon.add }
 
 /--
 Any two-sided-ideal in `Aᵒᵖ` corresponds to a two-sided-ideal in `A`.
 -/
 @[simps]
 def fromMop (rel : TwoSidedIdeal Rᵐᵒᵖ) : (TwoSidedIdeal R) :=
-.mk
-{ r := fun a b ↦ rel.ringCon (op b) (op a)
-  iseqv :=
-  { refl := fun a ↦ rel.ringCon.refl (op a)
-    symm := rel.ringCon.symm
-    trans := fun h1 h2 ↦ rel.ringCon.trans h2 h1 }
-  mul' := fun h1 h2 ↦ rel.ringCon.mul h2 h1
-  add' := rel.ringCon.add }
+  .mk
+  { r := fun a b ↦ rel.ringCon (op b) (op a)
+    iseqv :=
+    { refl := fun a ↦ rel.ringCon.refl (op a)
+      symm := rel.ringCon.symm
+      trans := fun h1 h2 ↦ rel.ringCon.trans h2 h1 }
+    mul' := fun h1 h2 ↦ rel.ringCon.mul h2 h1
+    add' := rel.ringCon.add }
 
 /--
 Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each other.
