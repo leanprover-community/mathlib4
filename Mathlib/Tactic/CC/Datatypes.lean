@@ -70,7 +70,6 @@ scoped instance : Ord Expr where
 /-- Red-black maps whose keys are `Expr`s.
 
 TODO: the choice between `TreeMap` and `HashMap` is not obvious:
-the current version follows the Lean 3 C++ implementation.
 Once the `cc` tactic is used a lot in Mathlib, we should profile and see
 if `HashMap` could be more optimal. -/
 abbrev ExprMap (α : Type u) := Std.TreeMap Expr α compare
