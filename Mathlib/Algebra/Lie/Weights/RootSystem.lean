@@ -452,8 +452,42 @@ lemma invtSubmodule_reflection:
     --obtain ⟨j1, j2⟩ := j
     have t1 := hhh2 j h2
     have t2 := hhh1 i h1
+    have : S.root i ∈ LinearMap.ker (S.coroot' j) := by
+      exact t1 t2
+    simp at this
+    simp_all only [Subtype.forall, Finset.mem_filter, Finset.mem_univ, true_and, ne_eq,
+      LieAlgebra.IsKilling.rootSystem_root_apply, LieAlgebra.IsKilling.rootSystem_pairing_apply,
+      LieAlgebra.IsKilling.rootSystem_coroot_apply, LieModule.Weight.toLinear_apply, S]
+
+  have rr2 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) : i.1 (LieAlgebra.IsKilling.coroot j) = 0 := by
+    apply rr
+    apply h1
+    apply h2
+
+  have rr3 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) : LieModule.genWeightSpace L (i.1.1 + j.1.1) = ⊥ := by
     sorry
-  sorry
+
+  have rr4 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : LieAlgebra.rootSpace H i.1.1) (lj : LieAlgebra.rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
+    --lie_mem_genWeightSpace_of_mem_genWeightSpace
+    sorry
+  --lieSpan_induction
+  --iSup_genWeightSpace_eq_top'
+  have help : ⨆ χ : LieModule.Weight K H L, LieModule.genWeightSpace L χ = ⊤ := by
+    exact LieModule.iSup_genWeightSpace_eq_top' K H L
+  let gg := ⋃ i ∈ Φ, (LieAlgebra.rootSpace H i : Set L)
+  let I := LieSubmodule.lieSpan K L gg
+  have rr5 : I ≠ ⊤ := by
+    sorry
+  have rr6 : I ≠ ⊥ := by
+    sorry
+  have rr7 : LieAlgebra.IsSimple K L := inferInstance
+  have := rr7.eq_bot_or_eq_top I
+  rcases this with h_bot | h_top
+  · contradiction
+  contradiction
+
+
+
       --search_proof
       --simp_all
       --search_proof
