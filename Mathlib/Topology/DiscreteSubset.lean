@@ -111,7 +111,7 @@ lemma mem_codiscreteWithin {S T : Set X} :
 /--
 Any set is codiscrete within itself.
 -/
-@[simp] theorem Filter.codiscreteWithin_self {X : Type*} [TopologicalSpace X] (U : Set X) :
+@[simp] theorem Filter.mem_codiscreteWithin_self {X : Type*} [TopologicalSpace X] (U : Set X) :
     U ∈ Filter.codiscreteWithin U := by simp [mem_codiscreteWithin]
 
 lemma mem_codiscreteWithin_accPt {S T : Set X} :

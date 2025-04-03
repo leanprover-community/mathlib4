@@ -34,7 +34,7 @@ private lemma analyticAt_finLaurentPolynomial_off_support (d : 𝕜 → ℤ) (P 
   exact ne_of_mem_of_not_mem hu hz
 
 /-- Laurent polynomials are meromorphic in normal form on `⊤`. -/
-theorem meromorphicNF_LaurentPolynomial (d : 𝕜 → ℤ) :
+theorem meromorphicNFOn_laurentPolynomial_top (d : 𝕜 → ℤ) :
     MeromorphicNFOn (∏ᶠ u, fun z ↦ (z - u) ^ d u) ⊤ := by
   classical
   by_cases hd : (Function.mulSupport fun u z => (z - u) ^ d u).Finite
@@ -61,7 +61,7 @@ theorem meromorphicNF_LaurentPolynomial (d : 𝕜 → ℤ) :
     apply analyticOnNhd_const.meromorphicNFOn
 
 /-- Laurent polynomials are meromorphic in normal form on arbitrary subsets of `𝕜`. -/
-theorem MeromorphicNFOn_LaurentPolynomial (d : 𝕜 → ℤ) (U : Set 𝕜) :
+theorem meromorphicNFOn_laurentPolynomial (d : 𝕜 → ℤ) (U : Set 𝕜) :
     MeromorphicNFOn (∏ᶠ u, fun z ↦ (z - u) ^ d u) U := by
   intro z hz
   exact meromorphicNF_LaurentPolynomial d (trivial)
@@ -70,7 +70,7 @@ theorem MeromorphicNFOn_LaurentPolynomial (d : 𝕜 → ℤ) (U : Set 𝕜) :
 Helper Lemma: Identifying the support of `d` as the mulsupport of the product defining the Laurent
 polynomial.
 -/
-lemma mulsupport_LaurentPolynomial (d : 𝕜 → ℤ) :
+lemma mulSupport_laurentPolynomial (d : 𝕜 → ℤ) :
     (Function.mulSupport fun u z ↦ (z - u) ^ d u) = d.support := by
   ext u
   constructor
@@ -89,7 +89,7 @@ lemma mulsupport_LaurentPolynomial (d : 𝕜 → ℤ) :
     tauto
 
 /-- The order of the Laurent polynomial `(∏ᶠ u, fun z ↦ (z - u) ^ d u)` at z equals `d z`. -/
-theorem order_LaurentPolynomial {z : 𝕜} (d : 𝕜 → ℤ) (h₁d : Set.Finite d.support) :
+theorem order_laurentPolynomial {z : 𝕜} (d : 𝕜 → ℤ) (h₁d : Set.Finite d.support) :
     (((meromorphicNF_LaurentPolynomial d).meromorphicOn) z trivial).order = d z := by
   classical
   rw [MeromorphicAt.order_eq_int_iff]
@@ -157,7 +157,7 @@ theorem divisor_LaurentPolynomial [CompleteSpace 𝕜] (d : 𝕜 → ℤ)
 If `D` is a divisor, then the function associated with the divisor of the Laurent polynomial equals
 `D`.
 -/
-theorem divisor_LaurentPolynomial_within [CompleteSpace 𝕜] {U : Set 𝕜}
+theorem divisor_laurentPolynomial_within [CompleteSpace 𝕜] {U : Set 𝕜}
     (D : Function.locallyFinsuppWithin U ℤ) (hD : Set.Finite D.support) :
     MeromorphicOn.divisor (∏ᶠ u, fun z ↦ (z - u) ^ D u) U = D := by
   ext z
