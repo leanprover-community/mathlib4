@@ -276,7 +276,7 @@ theorem eq_univ_of_powerset_subset {A : Class} (hA : powerset A ⊆ A) : A = uni
 
 /-- The definite description operator, which is `{x}` if `{y | A y} = {x}` and `∅` otherwise. -/
 def iota (A : Class) : Class :=
-  ⋃₀ { x | ∀ y, A y ↔ y = x }
+  ⋃₀ ({ x | ∀ y, A y ↔ y = x } : Class)
 
 theorem iota_val (A : Class) (x : ZFSet) (H : ∀ y, A y ↔ y = x) : iota A = ↑x :=
   ext fun y =>
