@@ -82,7 +82,6 @@ def comp {M : C ⥤ D} (f : HomObj F G A) (g : HomObj G M A) : HomObj F M A wher
 def map {A' : C ⥤ Type w} (f : A' ⟶ A) (x : HomObj F G A) : HomObj F G A' where
   app Δ a := x.app Δ (f.app Δ a)
   naturality {Δ Δ'} φ a := by
-    dsimp
     rw [← x.naturality φ (f.app Δ a), FunctorToTypes.naturality _ _ f φ a]
 
 end HomObj
@@ -94,7 +93,6 @@ def homObjFunctor : (C ⥤ Type w)ᵒᵖ ⥤ Type max w v' u where
   map {A A'} f x :=
     { app := fun X a ↦ x.app X (f.unop.app _ a)
       naturality := fun {X Y} φ a ↦ by
-        dsimp
         rw [← HomObj.naturality]
         congr 2
         exact congr_fun (f.unop.naturality φ) a }
