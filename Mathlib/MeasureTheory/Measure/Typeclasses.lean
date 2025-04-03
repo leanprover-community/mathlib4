@@ -1138,6 +1138,42 @@ instance [SigmaFinite (μ.restrict s)] : SigmaFinite (μ.restrict (s ∩ t)) :=
 instance [SigmaFinite (μ.restrict t)] : SigmaFinite (μ.restrict (s ∩ t)) :=
   sigmaFinite_of_le (μ.restrict t) (restrict_mono_ae (ae_of_all _ Set.inter_subset_right))
 
+lemma sigmaFinite_iUnion_of_measurableSet (μ : Measure α) {s : ℕ → Set α}
+    (h_meas : MeasurableSet (⋃ n, s n)) [∀ n, SigmaFinite (μ.restrict (s n))] :
+    SigmaFinite (μ.restrict (⋃ n, s n)) := by
+  let f : ℕ × ℕ → Set α := fun p : ℕ × ℕ ↦ (⋃ n, s n)ᶜ
+    ∪ (spanningSets (μ.restrict (s p.1)) p.2 ∩ (s p.1))
+  suffices (μ.restrict (⋃ n, s n)).FiniteSpanningSetsIn (Set.range f) from this.sigmaFinite
+  refine ⟨fun n ↦ f (Nat.pairEquiv.symm n), fun _ ↦ by simp, fun n ↦ ?_, ?_⟩
+  · simp only [Nat.pairEquiv_symm_apply, gt_iff_lt, measure_union_lt_top_iff, f]
+    rw [Measure.restrict_apply' h_meas, Set.compl_inter_self]
+    simp only [measure_empty, ENNReal.zero_lt_top, true_and]
+    refine (Measure.restrict_apply_le _ _).trans_lt ?_
+    exact (Measure.le_restrict_apply _ _).trans_lt (measure_spanningSets_lt_top _ _)
+  · simp only [Nat.pairEquiv_symm_apply, f]
+    rw [← Set.union_iUnion]
+    suffices ⋃ n, (spanningSets (μ.restrict (s (Nat.unpair n).1)) n.unpair.2 ∩ s n.unpair.1)
+        = ⋃ n, s n by
+      rw [this, Set.compl_union_self]
+    calc ⋃ n, (spanningSets (μ.restrict (s (Nat.unpair n).1)) n.unpair.2 ∩ s n.unpair.1)
+      = ⋃ n, ⋃ m, (spanningSets (μ.restrict (s n)) m ∩ s n) :=
+          Set.iUnion_unpair (fun n m ↦ spanningSets (μ.restrict (s n)) m ∩ s n)
+    _ = ⋃ n, s n := by
+        refine Set.iUnion_congr (fun n ↦ ?_)
+        rw [← Set.iUnion_inter, iUnion_spanningSets, Set.univ_inter]
+
+instance [SFinite μ] {s : ℕ → Set α} [∀ n, SigmaFinite (μ.restrict (s n))] :
+    SigmaFinite (μ.restrict (⋃ n, s n)) := by
+  have : ∀ n, SigmaFinite (μ.restrict (toMeasurable μ (s n))) := fun n ↦ by
+    rw [restrict_toMeasurable_of_sFinite]
+    infer_instance
+  have : SigmaFinite (μ.restrict (⋃ n, toMeasurable μ (s n))) := by
+    refine sigmaFinite_iUnion_of_measurableSet μ ?_
+    exact MeasurableSet.iUnion (fun _ ↦ measurableSet_toMeasurable _ _)
+  refine sigmaFinite_of_le (μ.restrict (⋃ n, toMeasurable μ (s n))) ?_
+  gcongr with n
+  exact subset_toMeasurable _ _
+
 theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable f μ)
     (h : SigmaFinite (μ.map f)) : SigmaFinite μ :=
   ⟨⟨⟨fun n => f ⁻¹' spanningSets (μ.map f) n, fun _ => trivial, fun n => by
