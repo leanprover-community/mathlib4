@@ -266,6 +266,7 @@ import Mathlib.Algebra.Field.Subfield.Defs
 import Mathlib.Algebra.Field.ULift
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Free
+import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.Algebra.FreeAlgebra.Cardinality
 import Mathlib.Algebra.FreeMonoid.Basic
@@ -3555,8 +3556,8 @@ import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.FixedPointFree
 import Mathlib.GroupTheory.Frattini
 import Mathlib.GroupTheory.FreeAbelianGroup
-import Mathlib.GroupTheory.FreeAbelianGroupFinsupp
 import Mathlib.GroupTheory.FreeGroup.Basic
+import Mathlib.GroupTheory.FreeGroup.GeneratorEquiv
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.GroupTheory.FreeGroup.NielsenSchreier
 import Mathlib.GroupTheory.FreeGroup.Reduce
