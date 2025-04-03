@@ -837,7 +837,6 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.TypeTags
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Algebra.Order.MonoidWithZero.Unbundled
 import Mathlib.Algebra.Order.Monovary
 import Mathlib.Algebra.Order.Nonneg.Basic
 import Mathlib.Algebra.Order.Nonneg.Field

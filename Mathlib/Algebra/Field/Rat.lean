@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.MonoidWithZero.Unbundled
+import Mathlib.Algebra.Order.GroupWithZero.Unbundled
 import Mathlib.Data.NNRat.Defs
 
 /-!
