@@ -253,16 +253,16 @@ def lambdaSquared (weights : ℕ → ℝ) : ℕ → ℝ := fun d =>
   ∑ d1 ∈ d.divisors, ∑ d2 ∈ d.divisors, if d = Nat.lcm d1 d2 then weights d1 * weights d2 else 0
 
 private theorem lambdaSquared_eq_zero_of_not_le_height_aux {w : ℕ → ℝ} {height : ℝ}
-  (hw : ∀ (d : ℕ), ¬d ^ 2 ≤ height → w d = 0) {d : ℕ} (hd : ¬↑d ≤ height) (d1 : ℕ) (d2 : ℕ)
-  (h : d = Nat.lcm d1 d2) (hle : d1 ≤ d2) :
+    (hw : ∀ (d : ℕ), ¬d ^ 2 ≤ height → w d = 0) {d : ℕ} (hd : ¬↑d ≤ height) (d1 : ℕ) (d2 : ℕ)
+    (h : d = Nat.lcm d1 d2) (hle : d1 ≤ d2) :
     w d1 * w d2 = 0 := by
   rw [hw d2]
   · ring
   by_contra hyp; apply hd
   apply le_trans _ hyp
   norm_cast
-  calc _ ≤ (d1.lcm d2) := by rw [h]
-      _ ≤ (d1*d2) := Nat.div_le_self _ _
+  calc _ ≤ d1.lcm d2 := by rw [h]
+      _ ≤ d1 * d2 := Nat.div_le_self _ _
       _ ≤ _       := ?_
   · rw [sq]; gcongr
 
@@ -287,7 +287,7 @@ theorem lambdaSquared_eq_zero_of_not_le_height (w : ℕ → ℝ) (height : ℝ)
   · rfl
   rcases Nat.le_or_le d1 d2 with hle | hle
   · apply lambdaSquared_eq_zero_of_not_le_height_aux hw hd d1 d2 h hle
-  · rw[mul_comm]
+  · rw [mul_comm]
     apply lambdaSquared_eq_zero_of_not_le_height_aux hw hd d2 d1 (Nat.lcm_comm d1 d2 ▸ h) hle
 
 private theorem conv_lambda_sq_larger_sum (f : ℕ → ℕ → ℕ → ℝ) (n : ℕ) :
@@ -369,7 +369,8 @@ theorem selbergTerms_isMultiplicative : ArithmeticFunction.IsMultiplicative g :=
   arith_mult
 
 theorem one_div_selbergTerms_eq_conv_moebius_nu (l : ℕ) (hl : Squarefree l)
-    (hnu_nonzero : ν l ≠ 0) : 1 / g l = ∑ ⟨d, e⟩ ∈ l.divisorsAntidiagonal, (μ <| d) * (ν e)⁻¹ :=
+    (hnu_nonzero : ν l ≠ 0) :
+    1 / g l = ∑ ⟨d, e⟩ ∈ l.divisorsAntidiagonal, (μ d) * (ν e)⁻¹ :=
   by
   simp only [selbergTerms_apply, one_div, mul_inv, inv_div, inv_inv, Finset.prod_congr,
     Finset.prod_inv_distrib, (nu_mult).prodPrimeFactors_one_sub_of_squarefree _ hl, mul_sum]
@@ -473,7 +474,7 @@ theorem lambdaSquared_mainSum_eq_diag_quad_form  (w : ℕ → ℝ) :
     congr with l
     ring
   case caseB =>
-    apply symm; rw [sum_comm, sum_congr rfl]; intro d1 _; rw[sum_comm];
+    apply symm; rw [sum_comm, sum_congr rfl]; intro d1 _; rw [sum_comm];
   case caseC =>
     congr with l
     simp_rw [← sum_filter, sq, sum_mul, mul_sum, sum_filter, ite_sum_zero, ← ite_and, dvd_gcd_iff]
