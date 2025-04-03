@@ -116,7 +116,7 @@ noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder 
 -- See note [reducible non-instances]
 /-- A finite bounded linear order is complete.
 
-If the `α` is already a `BiheytingAlgebra`, then prefer to constrct this instance manually using
+If the `α` is already a `BiheytingAlgebra`, then prefer to construct this instance manually using
 `Fintype.toCompleteLattice` instead, to avoid creating a diamond with
 `LinearOrder.toBiheytingAlgebra`. -/
 noncomputable abbrev toCompleteLinearOrder
