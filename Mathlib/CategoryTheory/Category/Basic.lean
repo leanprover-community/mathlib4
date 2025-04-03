@@ -330,6 +330,10 @@ section
 
 variable [Quiver.IsThin C] (f : X ⟶ Y)
 
+-- We turn this on in the `CategoryTheory` namespace
+scoped instance {C : Type*} {X Y : C} [CategoryStruct C] [Quiver.IsThin C] :
+    Subsingleton (X ⟶ Y) := Quiver.IsThin.subsingleton_hom ..
+
 instance : Mono f where
   right_cancellation _ _ _ := Subsingleton.elim _ _
 
