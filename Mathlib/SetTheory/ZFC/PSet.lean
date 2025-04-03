@@ -158,6 +158,22 @@ theorem Subset.congr_right : ∀ {x y z : PSet}, Equiv x y → (z ⊆ x ↔ z �
       let ⟨a, ab⟩ := βα b
       ⟨a, cb.trans (Equiv.symm ab)⟩⟩
 
+instance : Preorder PSet where
+  le := (· ⊆ ·)
+  le_refl := refl_of (· ⊆ ·)
+  le_trans _ _ _ := trans_of (· ⊆ ·)
+
+-- TODO: add lemmas relating `⊂` to `∈`.
+instance : HasSSubset PSet := ⟨(· < ·)⟩
+
+@[simp]
+theorem le_def (x y : PSet) : x ≤ y ↔ x ⊆ y :=
+  Iff.rfl
+
+@[simp]
+theorem lt_def (x y : PSet) : x < y ↔ x ⊂ y :=
+  Iff.rfl
+
 /-- `x ∈ y` as pre-sets if `x` is extensionally equivalent to a member of the family `y`. -/
 protected def Mem (y x : PSet.{u}) : Prop :=
   ∃ b, Equiv x (y.Func b)

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.SetLike.Basic
 import Mathlib.Logic.Small.Basic
 import Mathlib.SetTheory.ZFC.PSet
 
@@ -241,14 +242,9 @@ theorem toSet_injective : Function.Injective toSet := fun _ _ h => ext <| Set.ex
 theorem toSet_inj {x y : ZFSet} : x.toSet = y.toSet ↔ x = y :=
   toSet_injective.eq_iff
 
-instance : IsAntisymm ZFSet (· ⊆ ·) :=
-  ⟨fun _ _ hab hba => ext fun c => ⟨@hab c, @hba c⟩⟩
-
-instance : PartialOrder ZFSet where
-  le := (· ⊆ ·)
-  le_refl := refl_of (· ⊆ ·)
-  le_trans _ _ _ := trans_of (· ⊆ ·)
-  le_antisymm _ _ := antisymm_of (· ⊆ ·)
+instance : SetLike ZFSet ZFSet where
+  coe := toSet
+  coe_injective' := toSet_injective
 
 -- TODO: add lemmas relating `⊂` to `∈`.
 instance : HasSSubset ZFSet := ⟨(· < ·)⟩
@@ -260,6 +256,9 @@ theorem le_def (x y : ZFSet) : x ≤ y ↔ x ⊆ y :=
 @[simp]
 theorem lt_def (x y : ZFSet) : x < y ↔ x ⊂ y :=
   Iff.rfl
+
+instance : IsAntisymm ZFSet (· ⊆ ·) :=
+  ⟨@le_antisymm ZFSet _⟩
 
 /-- The empty ZFC set -/
 protected def empty : ZFSet :=
