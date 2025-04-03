@@ -35,6 +35,7 @@ The `SelbergSieve.Notation` namespace includes common shorthand for the variable
  * `y` for `level`
  * `R d` for `rem d`
  * `g d` for `selbergTerms d`
+ * `γ d` for `selbergWeights d` - the weights associated with Selberg's lambda squared sieve.
 
 ## References
 
@@ -481,5 +482,150 @@ theorem lambdaSquared_mainSum_eq_diag_quad_form  (w : ℕ → ℝ) :
     ring
 
 end QuadForm
+
+section Selberg
+
+variable [s : SelbergSieve]
+
+/-- The sum that appears in the main term of the fundamental theorem -/
+@[simp]
+def selbergBoundingSum : ℝ :=
+  ∑ l ∈ divisors P, if l ^ 2 ≤ y then g l else 0
+
+scoped [SelbergSieve.Notation] notation3 "S" => selbergBoundingSum
+
+lemma selbergBoundingSum_def :
+  S = ∑ l ∈ divisors P, if l ^ 2 ≤ y then g l else 0 := rfl
+
+theorem selbergBoundingSum_pos :
+    0 < S := by
+  dsimp only [selbergBoundingSum]
+  rw [← sum_filter]
+  apply sum_pos;
+  · intro l hl
+    rw [mem_filter, mem_divisors] at hl
+    · apply selbergTerms_pos _ (hl.1.1)
+  · simp_rw [Finset.Nonempty, mem_filter]; use 1
+    constructor
+    · apply one_mem_divisors.mpr prodPrimes_ne_zero
+    rw [cast_one, one_pow]
+    exact s.one_le_level
+
+/-- The weights associated with Selberg's Lambda squared sieve. These weights are optimal amoung
+  all sets of weights supported on `d ≤ √y`. -/
+def selbergWeights : ℕ → ℝ := fun d =>
+  if d ∣ P then
+    (ν d)⁻¹ * g d * μ d * S⁻¹ *
+      ∑ m ∈ divisors P, if (d * m) ^ 2 ≤ y ∧ m.Coprime d then g m else 0
+  else 0
+
+-- This notation traditionally uses λ, which is unavailable in lean
+@[inherit_doc SelbergSieve.selbergWeights]
+scoped [SelbergSieve.Notation] notation3 "γ" => SelbergSieve.selbergWeights
+
+theorem selbergWeights_eq_zero_of_not_dvd {d : ℕ} (hd : ¬ d ∣ P) :
+    γ d = 0 := by
+  rw [selbergWeights, if_neg hd]
+
+theorem selbergWeights_eq_zero (d : ℕ) (hd : ¬d ^ 2 ≤ y) :
+    γ d = 0 := by
+  dsimp only [selbergWeights]
+  split_ifs with h
+  · rw [mul_eq_zero_of_right _]
+    apply Finset.sum_eq_zero
+    refine fun m hm => if_neg ?_
+    intro hyp
+    have : (d^2:ℝ) ≤ (d*m)^2 := by
+      norm_cast;
+      refine Nat.pow_le_pow_left ?h 2
+      exact Nat.le_mul_of_pos_right _ (Nat.pos_of_mem_divisors hm)
+    linarith [hyp.1]
+  · rfl
+
+theorem selbergWeights_mul_mu_nonneg (d : ℕ) (hdP : d ∣ P) :
+    0 ≤ γ d * μ d := by
+  dsimp only [selbergWeights]
+  rw [if_pos hdP, mul_assoc]
+  trans ((μ d :ℝ)^2 * (ν d)⁻¹ * g d * S⁻¹ * ∑ m ∈ divisors P,
+          if (d * m) ^ 2 ≤ y ∧ Coprime m d then g m else 0)
+  · apply mul_nonneg;
+    · have := selbergBoundingSum_pos.le
+      have := nu_pos_of_dvd_prodPrimes hdP
+      have := selbergTerms_pos d hdP
+      positivity
+    apply sum_nonneg;
+    intro m hm
+    split_ifs with h
+    · exact le_of_lt <| selbergTerms_pos m (dvd_of_mem_divisors hm)
+    · rfl
+  · apply le_of_eq; ring
+
+omit s in
+private lemma sum_mul_subst (k n: ℕ) {f : ℕ → ℝ} (h : ∀ l, l ∣ n → ¬ k ∣ l → f l = 0) :
+      ∑ l ∈ n.divisors, f l
+    = ∑ m ∈ n.divisors, if k*m ∣ n then f (k*m) else 0 := by
+  by_cases hn : n = 0
+  · simp [hn]
+  by_cases hk : k = 0
+  · simp [hk, hn] at h ⊢
+    apply sum_eq_zero
+    simp +contextual [mem_divisors, ne_eq, and_imp, ne_zero_of_dvd_ne_zero hn, h]
+  trans ∑ l ∈ image (fun x ↦ k * x) n.divisors, if l ∣ n then f l else 0
+  · rw [divisors_image_mul _ hk, ← sum_filter, filter_comm, divisors_filter_dvd_of_dvd, eq_comm]
+    · apply sum_subset
+      · exact filter_subset (fun k_1 ↦ k ∣ k_1) n.divisors
+      · simp only [mem_divisors, ne_eq, mem_filter, not_and, and_imp]
+        intro l hl hn h'
+        apply h l hl (h' hl hn)
+    · positivity
+    · exact Nat.dvd_mul_left n k
+  · rw [sum_image]
+    intro _ _ _ _ h;
+    exact (Nat.mul_right_inj hk).mp h
+
+theorem sum_selbergTerms_dvd_eq_mul_sum_coprime (d : ℕ) (hd : d ∣ P) :
+    ∑ l ∈ divisors P, (if d ∣ l ∧ ↑l ^ 2 ≤ y then g l else 0)
+    = g d * ∑ m ∈ divisors P, if (↑d * ↑m) ^ 2 ≤ y ∧ m.Coprime d then g m else 0 := by
+  rw [sum_mul_subst d P (by simp +contextual)]
+  simp_rw [← sum_filter, mul_sum]
+  apply sum_congr _
+  · intro m
+    simp only [mem_filter, mem_divisors, ne_eq, and_imp]
+    intro x _ _ h
+    refine selbergTerms_isMultiplicative.map_mul_of_coprime h.symm
+  · ext m
+    simp only [dvd_mul_right, cast_mul, true_and, mem_filter, mem_divisors, ne_eq, and_assoc,
+      and_congr_right_iff]
+    rw [and_comm, and_congr_right_iff]
+    intro hmP hP _
+    constructor
+    · intro h
+      apply Coprime.symm <| coprime_of_squarefree_mul _
+      apply prodPrimes_squarefree.squarefree_of_dvd h
+    · intro h
+      refine Coprime.mul_dvd_of_dvd_of_dvd h.symm hd hmP
+
+/-- Important facts about the selberg weights. Note the `ν d * w d` in the diagonalisation of the
+  main sum. -/
+theorem selbergWeights_eq_dvds_sum (d : ℕ) :
+    ν d * γ d = S⁻¹ * μ d * ∑ l ∈ divisors P, if d ∣ l ∧ l ^ 2 ≤ y then g l else 0 := by
+  by_cases h_dvd : d ∣ P
+  swap
+  · dsimp only [selbergWeights]; rw [if_neg h_dvd]
+    rw [sum_eq_zero]
+    · ring
+    intro l hl; rw [mem_divisors] at hl
+    rw [if_neg]; push_neg; intro h
+    exfalso; exact h_dvd (dvd_trans h hl.left)
+  dsimp only [selbergWeights]
+  rw [if_pos h_dvd]
+  repeat rw [mul_sum]
+  apply symm
+  simp_rw [← mul_sum, sum_selbergTerms_dvd_eq_mul_sum_coprime _ h_dvd, ← mul_assoc, ]
+  rw [mul_inv_cancel₀ (nu_ne_zero h_dvd)]
+  ring
+
+end Selberg
+
 
 end SelbergSieve
