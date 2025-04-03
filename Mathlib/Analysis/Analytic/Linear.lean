@@ -136,6 +136,7 @@ end ContinuousLinearMap
 
 variable {s : Set E} {z : E} {t : Set (E × F)} {p : E × F}
 
+@[fun_prop]
 lemma analyticAt_id : AnalyticAt 𝕜 (id : E → E) z :=
   (ContinuousLinearMap.id 𝕜 E).analyticAt z
 

@@ -25,6 +25,7 @@ it. We generally put such theorems into the `SetTheory.Cardinal.Finite` module.
 
 -/
 
+assert_not_exists Field
 
 noncomputable section
 
@@ -105,7 +106,7 @@ theorem card_eq_zero_iff [Finite α] : Nat.card α = 0 ↔ IsEmpty α := by
   `Nat.card β = 0 → Nat.card α = 0` since `Nat.card` is defined to be `0` for infinite types. -/
 theorem card_le_of_injective' {f : α → β} (hf : Function.Injective f)
     (h : Nat.card β = 0 → Nat.card α = 0) : Nat.card α ≤ Nat.card β :=
-  (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h zero_le') fun h =>
+  (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h (Nat.zero_le _)) fun h =>
     @card_le_of_injective α β (Nat.finite_of_card_ne_zero h) f hf
 
 /-- If `f` is an embedding, then `Nat.card α ≤ Nat.card β`. We must also assume
@@ -118,7 +119,7 @@ theorem card_le_of_embedding' (f : α ↪ β) (h : Nat.card β = 0 → Nat.card 
   `Nat.card α = 0 → Nat.card β = 0` since `Nat.card` is defined to be `0` for infinite types. -/
 theorem card_le_of_surjective' {f : α → β} (hf : Function.Surjective f)
     (h : Nat.card α = 0 → Nat.card β = 0) : Nat.card β ≤ Nat.card α :=
-  (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h zero_le') fun h =>
+  (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h (Nat.zero_le _)) fun h =>
     @card_le_of_surjective α β (Nat.finite_of_card_ne_zero h) f hf
 
 /-- NB: `Nat.card` is defined to be `0` for infinite types. -/

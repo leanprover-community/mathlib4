@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.TensorProduct
+import Mathlib.RingTheory.Spectrum.Prime.TensorProduct
 import Mathlib.Topology.LocalAtTarget
 
 /-!
@@ -39,7 +39,7 @@ theorem Scheme.Hom.stalkMap_surjective (f : X.Hom Y) [SurjectiveOnStalks f] (x) 
 namespace SurjectiveOnStalks
 
 instance (priority := 900) [IsOpenImmersion f] : SurjectiveOnStalks f :=
-  ⟨fun _ ↦ (ConcreteCategory.bijective_of_isIso (C := CommRingCat) _).2⟩
+  ⟨fun _ ↦ (ConcreteCategory.bijective_of_isIso _).2⟩
 
 instance : MorphismProperty.IsMultiplicative @SurjectiveOnStalks where
   id_mem _ := inferInstance
@@ -129,7 +129,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
       (continuous_fst.1 _ ((𝒱 ijk.1).map ijk.2.1 ≫
       (𝒰.pullbackCover f).map ijk.1).opensRange.2).inter (continuous_snd.1 _
       ((𝒲 ijk.1).map ijk.2.2 ≫ (𝒰.pullbackCover g).map ijk.1).opensRange.2)⟩
-  have : Set.range L ⊆ (iSup U : _) := by
+  have : Set.range L ⊆ (iSup U :) := by
     simp only [Scheme.Cover.pullbackCover_J, Scheme.Cover.pullbackCover_obj, Set.range_subset_iff]
     intro z
     simp only [SetLike.mem_coe, TopologicalSpace.Opens.mem_iSup, Sigma.exists, Prod.exists]

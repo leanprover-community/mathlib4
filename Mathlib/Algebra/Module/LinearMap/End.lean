@@ -89,7 +89,7 @@ theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R
 
 @[simp]
 theorem _root_.Module.End.ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
-    (no_index (OfNat.ofNat n) : Module.End R M) m = OfNat.ofNat n • m := rfl
+    (ofNat(n) : Module.End R M) m = ofNat(n) • m := rfl
 
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
   { Module.End.semiring, LinearMap.addCommGroup with

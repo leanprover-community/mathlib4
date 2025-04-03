@@ -19,8 +19,7 @@ Definitions and results that require fewer imports are in
 
 -/
 
-assert_not_exists Monoid.exponent
-assert_not_exists Module.IsTorsion
+assert_not_exists Monoid.exponent Module.IsTorsion
 
 
 universe u v v'
@@ -226,10 +225,6 @@ theorem LinearIndependent.span_eq_top_of_card_eq_finrank {ι : Type*} [Nonempty 
     (card_eq : Fintype.card ι = finrank K V) : span K (Set.range b) = ⊤ :=
   have : FiniteDimensional K V := .of_finrank_pos <| card_eq ▸ Fintype.card_pos
   lin_ind.span_eq_top_of_card_eq_finrank' card_eq
-
-@[deprecated (since := "2024-02-14")]
-alias span_eq_top_of_linearIndependent_of_card_eq_finrank :=
-  LinearIndependent.span_eq_top_of_card_eq_finrank
 
 /-- A linear independent family of `finrank K V` vectors forms a basis. -/
 @[simps! repr_apply]

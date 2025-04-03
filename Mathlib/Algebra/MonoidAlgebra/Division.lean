@@ -95,13 +95,13 @@ noncomputable def divOfHom : Multiplicative G →* AddMonoid.End k[G] where
 theorem of'_mul_divOf (a : G) (x : k[G]) : of' k G a * x /ᵒᶠ a = x := by
   refine Finsupp.ext fun _ => ?_  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` doesn't work
   rw [AddMonoidAlgebra.divOf_apply, of'_apply, single_mul_apply_aux, one_mul]
-  intro c
+  intro c hc
   exact add_right_inj _
 
 theorem mul_of'_divOf (x : k[G]) (a : G) : x * of' k G a /ᵒᶠ a = x := by
   refine Finsupp.ext fun _ => ?_  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` doesn't work
   rw [AddMonoidAlgebra.divOf_apply, of'_apply, mul_single_apply_aux, mul_one]
-  intro c
+  intro c hc
   rw [add_comm]
   exact add_right_inj _
 
@@ -160,7 +160,7 @@ theorem divOf_add_modOf (x : k[G]) (g : G) :
       zero_add]
   · rw [modOf_apply_self_add, add_zero]
     rw [of'_apply, single_mul_apply_aux _ _ _, one_mul, divOf_apply]
-    intro a
+    intro a ha
     exact add_right_inj _
 
 theorem modOf_add_divOf (x : k[G]) (g : G) : x %ᵒᶠ g + of' k G g * (x /ᵒᶠ g) = x := by

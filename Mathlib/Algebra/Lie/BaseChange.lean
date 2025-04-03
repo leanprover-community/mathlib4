@@ -135,7 +135,7 @@ variable [CommRing A] [LieAlgebra A L]
 
 instance lieAlgebra [CommRing R] [Algebra R A] : LieAlgebra R (RestrictScalars R A L) where
   lie_smul t x y := (lie_smul (algebraMap R A t) (RestrictScalars.addEquiv R A L x)
-    (RestrictScalars.addEquiv R A L y) : _)
+    (RestrictScalars.addEquiv R A L y) :)
 
 end RestrictScalars
 

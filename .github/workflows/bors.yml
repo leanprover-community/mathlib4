@@ -22,19 +22,15 @@ env:
   # not necessarily satisfy this property.
   LAKE_NO_CACHE: true
 
-jobs:
-  # Cancels previous runs of jobs in this file
-  cancel:
-    if: github.repository == 'leanprover-community/mathlib4'
-    name: 'Cancel Previous Runs (CI)'
-    runs-on: ubuntu-latest
-    # timeout-minutes: 3
-    steps:
-      - uses: styfle/cancel-workflow-action@0.12.1
-        with:
-          all_but_latest: true
-          access_token: ${{ github.token }}
+concurrency:
+  # label each workflow run; only the latest with each label will run
+  # workflows on master get more expressive labels
+  group: ${{ github.workflow }}-${{ github.ref }}.
+    ${{ ( contains(fromJSON( '["refs/heads/master", "refs/heads/staging"]'), github.ref ) && github.run_id) || ''}}
+  # cancel any running workflow with the same label
+  cancel-in-progress: true
 
+jobs:
   style_lint:
     if: github.repository == 'leanprover-community/mathlib4'
     name: Lint style
@@ -142,7 +138,7 @@ jobs:
         run: |
           rm -rf .lake/build/lib/Mathlib/
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
-          lake exe cache get Mathlib.Init
+          lake exe cache get Mathlib/Init.lean
           lake build --no-build Mathlib.Init && lake exe cache get || echo "No cache for 'Mathlib.Init' available"
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
@@ -190,10 +186,12 @@ jobs:
           # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
           # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
           if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-            lake exe cache clean!
-            rm -rf .lake/build/lib/Mathlib
+            cd DownstreamTest
+            cp ../lean-toolchain .
+            MATHLIB_NO_CACHE_ON_UPDATE=1 lake update
             lake exe cache get || (sleep 1; lake exe cache get)
-            lake build --no-build
+            lake build Plausible ProofWidgets
+            lake build --no-build Mathlib
           fi
 
       - name: build archive

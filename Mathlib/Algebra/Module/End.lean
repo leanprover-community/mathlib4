@@ -14,10 +14,7 @@ In this file, we define `Module.toAddMonoidEnd`, which is `(•)` as a monoid ho
 We use this to prove some results on scalar multiplication by integers.
 -/
 
-assert_not_exists Multiset
-assert_not_exists Set.indicator
-assert_not_exists Pi.single_smul₀
-assert_not_exists Field
+assert_not_exists Multiset Set.indicator Pi.single_smul₀ Field
 
 open Function Set
 
@@ -98,12 +95,6 @@ lemma Int.cast_smul_eq_zsmul (n : ℤ) (b : M) : (n : R) • b = n • b :=
     apply AddMonoidHom.ext_int
     simp
   DFunLike.congr_fun this n
-
-@[deprecated (since := "2024-07-23")] alias intCast_smul := Int.cast_smul_eq_zsmul
-
-/-- `zsmul` is equal to any other module structure via a cast. -/
-@[deprecated Int.cast_smul_eq_zsmul (since := "2024-07-23")]
-theorem zsmul_eq_smul_cast (n : ℤ) (b : M) : n • b = (n : R) • b := (Int.cast_smul_eq_zsmul ..).symm
 
 end
 

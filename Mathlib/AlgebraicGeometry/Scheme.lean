@@ -248,16 +248,16 @@ unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
   forgetToTop.obj X ≟ (X : TopCat)
 
 @[simp]
-theorem id.base (X : Scheme) : (𝟙 X : _).base = 𝟙 _ :=
+theorem id.base (X : Scheme) : (𝟙 X :).base = 𝟙 _ :=
   rfl
 
 @[simp]
 theorem id_app {X : Scheme} (U : X.Opens) :
-    (𝟙 X : _).app U = 𝟙 _ := rfl
+    (𝟙 X :).app U = 𝟙 _ := rfl
 
 @[simp]
 theorem id_appTop {X : Scheme} :
-    (𝟙 X : _).appTop = 𝟙 _ :=
+    (𝟙 X :).appTop = 𝟙 _ :=
   rfl
 
 @[reassoc]
@@ -289,9 +289,6 @@ theorem comp_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
 theorem comp_appTop {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).appTop = g.appTop ≫ f.appTop :=
   rfl
-
-@[deprecated (since := "2024-06-23")] alias comp_val_c_app := comp_app
-@[deprecated (since := "2024-06-23")] alias comp_val_c_app_assoc := comp_app_assoc
 
 theorem appLE_comp_appLE {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U V W e₁ e₂) :
     g.appLE U V e₁ ≫ f.appLE V W e₂ =
@@ -548,8 +545,7 @@ theorem basicOpen_le : X.basicOpen f ≤ U :=
 
 @[sheaf_restrict]
 lemma basicOpen_restrict (i : V ⟶ U) (f : Γ(X, U)) :
-    -- Help `restrict` to infer which forgetful functor we're taking
-    X.basicOpen (TopCat.Presheaf.restrict (C := CommRingCat) f i) ≤ X.basicOpen f :=
+    X.basicOpen (TopCat.Presheaf.restrict f i) ≤ X.basicOpen f :=
   (Scheme.basicOpen_res _ _ _).trans_le inf_le_right
 
 @[simp]
@@ -578,8 +574,20 @@ theorem basicOpen_mul : X.basicOpen (f * g) = X.basicOpen f ⊓ X.basicOpen g :=
 lemma basicOpen_pow {n : ℕ} (h : 0 < n) : X.basicOpen (f ^ n) = X.basicOpen f :=
   RingedSpace.basicOpen_pow _ _ _ h
 
+lemma basicOpen_add_le :
+    X.basicOpen (f + g) ≤ X.basicOpen f ⊔ X.basicOpen g := by
+  intro x hx
+  have hxU : x ∈ U := X.basicOpen_le _ hx
+  simp only [SetLike.mem_coe, Scheme.mem_basicOpen _ _ _ hxU, map_add, Opens.coe_sup,
+    Set.mem_union] at hx ⊢
+  exact IsLocalRing.isUnit_or_isUnit_of_isUnit_add hx
+
 theorem basicOpen_of_isUnit {f : Γ(X, U)} (hf : IsUnit f) : X.basicOpen f = U :=
   RingedSpace.basicOpen_of_isUnit _ hf
+
+@[simp]
+theorem basicOpen_one : X.basicOpen (1 : Γ(X, U)) = U :=
+  X.basicOpen_of_isUnit isUnit_one
 
 instance algebra_section_section_basicOpen {X : Scheme} {U : X.Opens} (f : Γ(X, U)) :
     Algebra Γ(X, U) Γ(X, X.basicOpen f) :=
@@ -618,6 +626,51 @@ lemma zeroLocus_empty_eq_univ {U : X.Opens} :
 lemma mem_zeroLocus_iff {U : X.Opens} (s : Set Γ(X, U)) (x : X) :
     x ∈ X.zeroLocus s ↔ ∀ f ∈ s, x ∉ X.basicOpen f :=
   X.toRingedSpace.mem_zeroLocus_iff s x
+
+lemma codisjoint_zeroLocus {U : X.Opens}
+    (s : Set Γ(X, U)) : Codisjoint (X.zeroLocus s) U := by
+  have (x : X) : ∀ f ∈ s, x ∈ X.basicOpen f → x ∈ U := fun _ _ h ↦ X.basicOpen_le _ h
+  simpa [codisjoint_iff_le_sup, Set.ext_iff, or_iff_not_imp_left]
+
+lemma zeroLocus_span {U : X.Opens} (s : Set Γ(X, U)) :
+    X.zeroLocus (U := U) (Ideal.span s) = X.zeroLocus s := by
+  ext x
+  simp only [Scheme.mem_zeroLocus_iff, SetLike.mem_coe]
+  refine ⟨fun H f hfs ↦ H f (Ideal.subset_span hfs), fun H f ↦ Submodule.span_induction H ?_ ?_ ?_⟩
+  · simp only [Scheme.basicOpen_zero]; exact not_false
+  · exact fun a b _ _ ha hb H ↦ (X.basicOpen_add_le a b H).elim ha hb
+  · simp +contextual
+
+lemma zeroLocus_map {U V : X.Opens} (i : U ≤ V) (s : Set Γ(X, V)) :
+    X.zeroLocus ((X.presheaf.map (homOfLE i).op).hom '' s) = X.zeroLocus s ∪ Uᶜ := by
+  ext x
+  suffices (∀ f ∈ s, x ∈ U → x ∉ X.basicOpen f) ↔ x ∈ U → (∀ f ∈ s, x ∉ X.basicOpen f) by
+    simpa [or_iff_not_imp_right]
+  conv_lhs => enter [i]; rw [forall_comm (β := x ∈ U)] -- why doesn't simp fire on this
+  rw [forall_comm (β := x ∈ U)]
+
+lemma zeroLocus_map_of_eq {U V : X.Opens} (i : U = V) (s : Set Γ(X, V)) :
+    X.zeroLocus ((X.presheaf.map (eqToHom i).op).hom '' s) = X.zeroLocus s := by
+  ext; simp
+
+lemma zeroLocus_mono {U : X.Opens} {s t : Set Γ(X, U)} (h : s ⊆ t) :
+    X.zeroLocus t ⊆ X.zeroLocus s := by
+  simp only [Set.subset_def, Scheme.mem_zeroLocus_iff]
+  exact fun x H f hf hxf ↦ H f (h hf) hxf
+
+lemma preimage_zeroLocus {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (s : Set Γ(Y, U)) :
+    f.base ⁻¹' Y.zeroLocus s = X.zeroLocus ((f.app U).hom '' s) := by
+  ext
+  simp [← Scheme.preimage_basicOpen]
+  rfl
+
+@[simp]
+lemma zeroLocus_univ {U : X.Opens} :
+    X.zeroLocus (U := U) Set.univ = (↑U)ᶜ := by
+  ext x
+  simp only [Scheme.mem_zeroLocus_iff, Set.mem_univ, forall_const, Set.mem_compl_iff,
+    SetLike.mem_coe, ← not_exists, not_iff_not]
+  exact ⟨fun ⟨f, hf⟩ ↦ X.basicOpen_le f hf, fun _ ↦ ⟨1, by rwa [X.basicOpen_of_isUnit isUnit_one]⟩⟩
 
 end ZeroLocus
 
@@ -679,6 +732,19 @@ lemma Scheme.iso_inv_base_hom_base_apply {X Y : Scheme.{u}} (e : X ≅ Y) (y : Y
   show (e.inv.base ≫ e.hom.base) y = 𝟙 Y.toPresheafedSpace y
   simp
 
+theorem Spec_zeroLocus_eq_zeroLocus {R : CommRingCat} (s : Set R) :
+    (Spec R).zeroLocus ((Scheme.ΓSpecIso R).inv '' s) = PrimeSpectrum.zeroLocus s := by
+  ext x
+  suffices (∀ a ∈ s, x ∉ PrimeSpectrum.basicOpen a) ↔ x ∈ PrimeSpectrum.zeroLocus s by simpa
+  simp [Spec_carrier, PrimeSpectrum.mem_zeroLocus, Set.subset_def,
+    PrimeSpectrum.mem_basicOpen _ x]
+
+@[simp]
+theorem Spec_zeroLocus {R : CommRingCat} (s : Set Γ(Spec R, ⊤)) :
+    (Spec R).zeroLocus s = PrimeSpectrum.zeroLocus ((Scheme.ΓSpecIso R).inv ⁻¹' s) := by
+  convert Spec_zeroLocus_eq_zeroLocus ((Scheme.ΓSpecIso R).inv ⁻¹' s)
+  rw [Set.image_preimage_eq]
+  exact (ConcreteCategory.bijective_of_isIso (C := CommRingCat) _).2
 section Stalks
 
 namespace Scheme
@@ -760,6 +826,15 @@ lemma stalkMap_germ_apply (U : Y.Opens) (x : X) (hx : f.base x ∈ U) (y) :
     f.stalkMap x (Y.presheaf.germ _ (f.base x) hx y) =
       X.presheaf.germ (f ⁻¹ᵁ U) x hx (f.app U y) :=
   PresheafedSpace.stalkMap_germ_apply f.toPshHom U x hx y
+
+/-- If `x = y`, the stalk maps are isomorphic. -/
+noncomputable def arrowStalkMapIsoOfEq {x y : X}
+    (h : x = y) : Arrow.mk (f.stalkMap x) ≅ Arrow.mk (f.stalkMap y) :=
+  Arrow.isoMk (Y.presheaf.stalkCongr <| (Inseparable.of_eq h).map f.continuous)
+      (X.presheaf.stalkCongr <| Inseparable.of_eq h) <| by
+    simp only [Arrow.mk_left, Arrow.mk_right, Functor.id_obj, TopCat.Presheaf.stalkCongr_hom,
+      Arrow.mk_hom]
+    rw [Scheme.stalkSpecializes_stalkMap]
 
 end Scheme
 

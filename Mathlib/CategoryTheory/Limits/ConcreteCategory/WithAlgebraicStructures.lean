@@ -47,7 +47,7 @@ theorem colimit_rep_eq_zero
     ∃ (j' : J) (i : j ⟶ j'), (F.map i).hom x = 0 := by
   -- Break the abstraction barrier between homs and functions for `colimit_rep_eq_iff_exists`.
   have : ∀ (X Y : ModuleCat R) (f : X ⟶ Y),
-    DFunLike.coe f.hom = DFunLike.coe (self := ConcreteCategory.instFunLike) f := fun _ _ _ => rfl
+    DFunLike.coe f.hom = DFunLike.coe (self := HasForget.instFunLike) f := fun _ _ _ => rfl
   rw [show 0 = colimit.ι F j 0 by simp, this, colimit_rep_eq_iff_exists] at hx
   obtain ⟨j', i, y, g⟩ := hx
   exact ⟨j', i, g ▸ by simp [← this]⟩
@@ -68,13 +68,13 @@ lemma colimit_no_zero_smul_divisor
 
   -- Break the abstraction barrier between homs and functions for `Concrete.colimit_exists_rep`.
   have : ∀ (X Y : ModuleCat R) (f : X ⟶ Y),
-    DFunLike.coe f.hom = DFunLike.coe (self := ConcreteCategory.instFunLike) f := fun _ _ _ => rfl
+    DFunLike.coe f.hom = DFunLike.coe (self := HasForget.instFunLike) f := fun _ _ _ => rfl
   classical
   obtain ⟨j, x, rfl⟩ := Concrete.colimit_exists_rep F x
   rw [← this, ← map_smul (colimit.ι F j).hom] at hx
   obtain ⟨j', i, h⟩ := Concrete.colimit_rep_eq_zero (hx := hx)
   obtain ⟨j'', H⟩ := H
-  simpa [elementwise_of% (colimit.w F), this, map_zero] using congr(colimit.ι F _
+  simpa [elementwise_of% (colimit.w F), ← this, map_zero] using congr(colimit.ι F _
     $(H (IsFiltered.sup {j, j', j''} { ⟨j, j', by simp, by simp, i⟩ })
       (IsFiltered.toSup _ _ <| by simp)
       (F.map (IsFiltered.toSup _ _ <| by simp) x)

@@ -36,7 +36,7 @@ namespace RingCon
 
 instance (c : RingCon A) : Algebra S c.Quotient where
   smul := (· • ·)
-  toRingHom := c.mk'.comp (algebraMap S A)
+  algebraMap := c.mk'.comp (algebraMap S A)
   commutes' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.commutes _ _
   smul_def' _ := Quotient.ind' fun _ ↦ congr_arg Quotient.mk'' <| Algebra.smul_def _ _
 
@@ -378,11 +378,12 @@ instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
 
 instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
   smul := (· • ·)
-  toFun r := ⟨Quot.mk _ (algebraMap S R r)⟩
-  map_one' := by simp [← one_quot]
-  map_mul' := by simp [mul_quot]
-  map_zero' := by simp [← zero_quot]
-  map_add' := by simp [add_quot]
+  algebraMap :=
+  { toFun r := ⟨Quot.mk _ (algebraMap S R r)⟩
+    map_one' := by simp [← one_quot]
+    map_mul' := by simp [mul_quot]
+    map_zero' := by simp [← zero_quot]
+    map_add' := by simp [add_quot] }
   commutes' r := by
     rintro ⟨⟨a⟩⟩
     simp [Algebra.commutes, mul_quot]
@@ -412,7 +413,7 @@ theorem ringQuot_ext [Semiring T] {r : R → R → Prop} (f g : RingQuot r →+*
     (w : f.comp (mkRingHom r) = g.comp (mkRingHom r)) : f = g := by
   ext x
   rcases mkRingHom_surjective r x with ⟨x, rfl⟩
-  exact (RingHom.congr_fun w x : _)
+  exact (RingHom.congr_fun w x :)
 
 variable [Semiring T]
 

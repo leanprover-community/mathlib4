@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Rémi Bottinelli
 -/
 import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Data.Set.Card
 
 /-!
 # Connectivity of subgraphs and induced graphs
@@ -190,11 +191,20 @@ theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.leng
   | cons hxy i' ih =>
     cases i
     · simp only [Walk.toSubgraph, Walk.getVert_zero, zero_add, getVert_cons_succ, Subgraph.sup_adj,
-      subgraphOfAdj_adj, true_or]
+        subgraphOfAdj_adj, true_or]
     · simp only [Walk.toSubgraph, getVert_cons_succ, Subgraph.sup_adj, subgraphOfAdj_adj, Sym2.eq,
-      Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
+        Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
       right
       exact ih (Nat.succ_lt_succ_iff.mp hi)
+
+theorem toSubgraph_adj_snd {u v} (w : G.Walk u v) (h : ¬ w.Nil) : w.toSubgraph.Adj u w.snd := by
+  simpa using w.toSubgraph_adj_getVert (not_nil_iff_lt_length.mp h)
+
+theorem toSubgraph_adj_penultimate {u v} (w : G.Walk u v) (h : ¬ w.Nil) :
+    w.toSubgraph.Adj w.penultimate v := by
+  rw [not_nil_iff_lt_length] at h
+  simpa [show w.length - 1 + 1 = w.length from by omega]
+    using w.toSubgraph_adj_getVert (by omega : w.length - 1 < w.length)
 
 theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
     w.toSubgraph.Adj u' v' ↔ ∃ i, s(w.getVert i, w.getVert (i + 1)) =
@@ -227,6 +237,57 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
   · rintro ⟨i, hi⟩
     rw [← Subgraph.mem_edgeSet, ← hi.1, Subgraph.mem_edgeSet]
     exact toSubgraph_adj_getVert _ hi.2
+
+namespace IsCycle
+
+lemma neighborSet_toSubgraph_endpoint {u} {p : G.Walk u u} (hpc : p.IsCycle) :
+    p.toSubgraph.neighborSet u = {p.snd, p.penultimate} := by
+  have hadj1 := p.toSubgraph_adj_snd hpc.not_nil
+  have hadj2 := (p.toSubgraph_adj_penultimate hpc.not_nil).symm
+  ext v
+  simp_all only [Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
+    SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
+  refine ⟨?_, by aesop⟩
+  rintro ⟨i, (hl | hr)⟩
+  · rw [hpc.getVert_endpoint_iff (by omega)] at hl
+    cases hl.1 <;> aesop
+  · cases' (hpc.getVert_endpoint_iff (by omega)).mp hr.2 with h1 h2
+    · contradiction
+    · simp only [penultimate, ← h2, add_tsub_cancel_right]
+      aesop
+
+lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
+    (h : i ≠ 0) (h' : i < p.length) :
+    p.toSubgraph.neighborSet (p.getVert i) = {p.getVert (i - 1), p.getVert (i + 1)} := by
+  have hadj1 := ((show i - 1 + 1 = i from by omega) ▸
+    p.toSubgraph_adj_getVert (by omega : (i - 1) < p.length)).symm
+  have hadj2 := p.toSubgraph_adj_getVert (by omega : i < p.length)
+  ext v
+  simp_all only [ne_eq, Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
+    SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
+    Prod.swap_prod_mk]
+  refine ⟨?_, by aesop⟩
+  rintro ⟨i', (⟨hl1, hl2⟩ | ⟨hr1, hr2⟩)⟩
+  · apply hpc.getVert_injOn' (by rw [Set.mem_setOf_eq]; omega)
+      (by rw [Set.mem_setOf_eq]; omega) at hl1
+    aesop
+  · apply hpc.getVert_injOn (by rw [Set.mem_setOf_eq]; omega)
+      (by rw [Set.mem_setOf_eq]; omega) at hr2
+    aesop
+
+lemma ncard_neighborSet_toSubgraph_eq_two {u v} {p : G.Walk u u} (hpc : p.IsCycle)
+    (h : v ∈ p.support) : (p.toSubgraph.neighborSet v).ncard = 2 := by
+  simp only [SimpleGraph.Walk.mem_support_iff_exists_getVert] at h ⊢
+  obtain ⟨i, hi⟩ := h
+  by_cases he : i = 0 ∨ i = p.length
+  · have huv : u = v := by aesop
+    rw [← huv, hpc.neighborSet_toSubgraph_endpoint]
+    exact Set.ncard_pair hpc.snd_ne_penultimate
+  push_neg at he
+  rw [← hi.1, hpc.neighborSet_toSubgraph_internal he.1 (by omega)]
+  exact Set.ncard_pair (hpc.getVert_sub_one_neq_getVert_add_one (by omega))
+
+end IsCycle
 
 end Walk
 

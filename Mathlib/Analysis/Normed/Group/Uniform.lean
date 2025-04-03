@@ -159,7 +159,7 @@ end NNNorm
 
 @[to_additive lipschitzWith_one_norm]
 theorem lipschitzWith_one_norm' : LipschitzWith 1 (norm : E → ℝ) := by
-  simpa only [dist_one_left] using LipschitzWith.dist_right (1 : E)
+  simpa using LipschitzWith.dist_right (1 : E)
 
 @[to_additive lipschitzWith_one_nnnorm]
 theorem lipschitzWith_one_nnnorm' : LipschitzWith 1 (NNNorm.nnnorm : E → ℝ≥0) :=

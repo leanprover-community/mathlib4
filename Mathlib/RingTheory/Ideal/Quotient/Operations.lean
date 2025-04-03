@@ -188,11 +188,11 @@ def quotientInfToPiQuotient (I : ι → Ideal R) : (R ⧸ ⨅ i, I i) →+* ∀ 
 
 lemma quotientInfToPiQuotient_mk (I : ι → Ideal R) (x : R) :
     quotientInfToPiQuotient I (Quotient.mk _ x) = fun i : ι ↦ Quotient.mk (I i) x :=
-rfl
+  rfl
 
 lemma quotientInfToPiQuotient_mk' (I : ι → Ideal R) (x : R) (i : ι) :
     quotientInfToPiQuotient I (Quotient.mk _ x) i = Quotient.mk (I i) x :=
-rfl
+  rfl
 
 lemma quotientInfToPiQuotient_inj (I : ι → Ideal R) : Injective (quotientInfToPiQuotient I) := by
   rw [quotientInfToPiQuotient, injective_lift_iff, ker_Pi_Quotient_mk]
@@ -325,12 +325,12 @@ variable [CommSemiring R₁] [CommSemiring R₂] [CommRing A]
 variable [Algebra R₁ A] [Algebra R₂ A]
 
 /-- The `R₁`-algebra structure on `A/I` for an `R₁`-algebra `A` -/
-instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) :=
-  { toRingHom := (Ideal.Quotient.mk I).comp (algebraMap R₁ A)
-    smul_def' := fun _ x =>
-      Quotient.inductionOn' x fun _ =>
-        ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (RingHom.map_mul _ _ _)
-    commutes' := fun _ _ => mul_comm _ _ }
+instance Quotient.algebra {I : Ideal A} : Algebra R₁ (A ⧸ I) where
+  algebraMap := (Ideal.Quotient.mk I).comp (algebraMap R₁ A)
+  smul_def' := fun _ x =>
+    Quotient.inductionOn' x fun _ =>
+      ((Quotient.mk I).congr_arg <| Algebra.smul_def _ _).trans (RingHom.map_mul _ _ _)
+  commutes' := fun _ _ => mul_comm _ _
 
 -- Lean can struggle to find this instance later if we don't provide this shortcut
 -- Porting note: this can probably now be deleted
@@ -409,7 +409,7 @@ theorem Quotient.liftₐ_apply (I : Ideal A) (f : A →ₐ[R₁] B) (hI : ∀ a 
 
 theorem Quotient.liftₐ_comp (I : Ideal A) (f : A →ₐ[R₁] B) (hI : ∀ a : A, a ∈ I → f a = 0) :
     (Ideal.Quotient.liftₐ I f hI).comp (Ideal.Quotient.mkₐ R₁ I) = f :=
-  AlgHom.ext fun _ => (Ideal.Quotient.lift_mk I (f : A →+* B) hI : _)
+  AlgHom.ext fun _ => (Ideal.Quotient.lift_mk I (f : A →+* B) hI :)
 
 theorem KerLift.map_smul (f : A →ₐ[R₁] B) (r : R₁) (x : A ⧸ (RingHom.ker f)) :
     f.kerLift (r • x) = r • f.kerLift x := by
@@ -444,11 +444,6 @@ def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}
     (hf : Function.RightInverse g f) : (A ⧸ RingHom.ker f) ≃ₐ[R₁] B :=
   { RingHom.quotientKerEquivOfRightInverse hf,
     kerLiftAlg f with }
-
-@[deprecated (since := "2024-02-27")]
-alias quotientKerAlgEquivOfRightInverse.apply := quotientKerAlgEquivOfRightInverse_apply
-@[deprecated (since := "2024-02-27")]
-alias QuotientKerAlgEquivOfRightInverseSymm.apply := quotientKerAlgEquivOfRightInverse_symm_apply
 
 /-- The **first isomorphism theorem** for algebras. -/
 @[simps!]
@@ -593,7 +588,7 @@ end
 /-- If `P` lies over `p`, then `R / p` has a canonical map to `A / P`. -/
 abbrev Quotient.algebraQuotientOfLEComap [Algebra R A] {p : Ideal R} {P : Ideal A}
     (h : p ≤ comap (algebraMap R A) P) : Algebra (R ⧸ p) (A ⧸ P) where
-  toRingHom := quotientMap P (algebraMap R A) h
+  algebraMap := quotientMap P (algebraMap R A) h
   smul := Quotient.lift₂ (⟦· • ·⟧) fun r₁ a₁ r₂ a₂ hr ha ↦ Quotient.sound <| by
     have := h (p.quotientRel_def.mp hr)
     rw [mem_comap, map_sub] at this

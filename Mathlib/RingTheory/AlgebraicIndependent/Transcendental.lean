@@ -88,7 +88,7 @@ theorem algebraicIndependent_of_finite_type'
       ∀ i : ι, i ∉ t → Transcendental (adjoin R (x '' t)) (x i)) :
     AlgebraicIndependent R x := by
   classical
-  refine algebraicIndependent_of_finite_type fun t hfin ↦ hfin.induction_on'
+  refine algebraicIndependent_of_finite_type fun t hfin ↦ hfin.induction_on_subset _
     (algebraicIndependent_empty_type_iff.mpr hinj) fun {a u} ha hu ha' h ↦ ?_
   convert ((Set.image_eq_range _ _ ▸ h.option_iff <| x a).2 <| H u (hfin.subset hu) h _ ha').comp _
     (Set.subtypeInsertEquivOption ha').injective with x

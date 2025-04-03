@@ -3,8 +3,7 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
-import Mathlib.Topology.Algebra.Support
-import Mathlib.Topology.ContinuousMap.CocompactMap
+import Mathlib.Topology.Algebra.Order.Support
 import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 /-!
@@ -124,6 +123,29 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
   left_inv _ := rfl
   right_inv _ := rfl
 
+variable {γ : Type*} [TopologicalSpace γ] [Zero γ]
+
+/-- Composition of a continuous function `f` with compact support with another continuous function
+`g` sending `0` to `0` from the left yields another continuous function `g ∘ f` with compact
+support.
+
+If `g` doesn't send `0` to `0`, `f.compLeft g` defaults to `0`. -/
+noncomputable def compLeft (g : C(β, γ)) (f : C_c(α, β)) : C_c(α, γ) where
+  toContinuousMap := by classical exact if g 0 = 0 then g.comp f else 0
+  hasCompactSupport' := by
+    split_ifs with hg
+    · exact f.hasCompactSupport'.comp_left hg
+    · exact .zero
+
+lemma toContinuousMap_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) :
+    (f.compLeft g).toContinuousMap = g.comp f := if_pos hg
+
+lemma coe_compLeft {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) : f.compLeft g = g ∘ f := by
+  simp [compLeft, if_pos hg]
+
+lemma compLeft_apply {g : C(β, γ)} (hg : g 0 = 0) (f : C_c(α, β)) (a : α) :
+    f.compLeft g a = g (f a) := by simp [coe_compLeft hg f]
+
 end Basics
 
 /-! ### Algebraic structure
@@ -231,11 +253,11 @@ instance [AddCommMonoid β] [ContinuousAdd β] : AddCommMonoid C_c(α, β) :=
 
 @[simp]
 theorem coe_sum [AddCommMonoid β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β)) :
-    ⇑(∑ i in s, f i) = ∑ i in s, (f i : α → β) :=
+    ⇑(∑ i ∈ s, f i) = ∑ i ∈ s, (f i : α → β) :=
   map_sum coeFnMonoidHom f s
 
 theorem sum_apply [AddCommMonoid β] [ContinuousAdd β] {ι : Type*} (s : Finset ι) (f : ι → C_c(α, β))
-    (a : α) : (∑ i in s, f i) a = ∑ i in s, f i a := by simp
+    (a : α) : (∑ i ∈ s, f i) a = ∑ i ∈ s, f i a := by simp
 
 section AddGroup
 
@@ -398,6 +420,84 @@ instance : StarRing C_c(α, β) :=
     star_mul := fun f g => ext fun x => star_mul (f x) (g x) }
 
 end StarRing
+
+section PartialOrder
+
+/-! ### The partial order in `C_c`
+When `β` is equipped with a partial order, `C_c(α, β)` is given the pointwise partial order.
+-/
+
+variable {β : Type*} [TopologicalSpace β] [Zero β] [PartialOrder β]
+
+instance partialOrder : PartialOrder C_c(α, β) := PartialOrder.lift (⇑) DFunLike.coe_injective
+
+theorem le_def {f g : C_c(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a := Pi.le_def
+
+theorem lt_def {f g : C_c(α, β)} : f < g ↔ (∀ a, f a ≤ g a) ∧ ∃ a, f a < g a := Pi.lt_def
+
+end PartialOrder
+
+section SemilatticeSup
+
+variable [SemilatticeSup β] [Zero β] [TopologicalSpace β] [ContinuousSup β]
+
+instance instSup : Max C_c(α, β) where max f g :=
+  { toFun := f ⊔ g
+    continuous_toFun := Continuous.sup f.continuous g.continuous
+    hasCompactSupport' := f.hasCompactSupport.sup g.hasCompactSupport }
+
+@[simp, norm_cast] lemma coe_sup (f g : C_c(α, β)) : ⇑(f ⊔ g) = ⇑f ⊔ g := rfl
+
+@[simp] lemma sup_apply (f g : C_c(α, β)) (a : α) : (f ⊔ g) a = f a ⊔ g a := rfl
+
+instance semilatticeSup : SemilatticeSup C_c(α, β) :=
+  DFunLike.coe_injective.semilatticeSup _ coe_sup
+
+lemma finsetSup'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
+    s.sup' H f a = s.sup' H fun i ↦ f i a :=
+  Finset.comp_sup'_eq_sup'_comp H (fun g : C_c(α, β) ↦ g a) fun _ _ ↦ rfl
+
+@[simp, norm_cast]
+lemma coe_finsetSup' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) :
+    ⇑(s.sup' H f) = s.sup' H fun i ↦ ⇑(f i) := by ext; simp [finsetSup'_apply]
+
+end SemilatticeSup
+
+section SemilatticeInf
+
+variable [SemilatticeInf β] [Zero β] [TopologicalSpace β] [ContinuousInf β]
+
+instance instInf : Min C_c(α, β) where min f g :=
+  { toFun := f ⊓ g
+    continuous_toFun := Continuous.inf f.continuous g.continuous
+    hasCompactSupport' := f.hasCompactSupport.inf g.hasCompactSupport }
+
+@[simp, norm_cast] lemma coe_inf (f g : C_c(α, β)) : ⇑(f ⊓ g) = ⇑f ⊓ g := rfl
+
+@[simp] lemma inf_apply (f g : C_c(α, β)) (a : α) : (f ⊓ g) a = f a ⊓ g a := rfl
+
+instance semilatticeInf : SemilatticeInf C_c(α, β) :=
+  DFunLike.coe_injective.semilatticeInf _ coe_inf
+
+lemma finsetInf'_apply {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) (a : α) :
+    s.inf' H f a = s.inf' H fun i ↦ f i a :=
+  Finset.comp_inf'_eq_inf'_comp H (fun g : C_c(α, β) ↦ g a) fun _ _ ↦ rfl
+
+@[simp, norm_cast]
+lemma coe_finsetInf' {ι : Type*} {s : Finset ι} (H : s.Nonempty) (f : ι → C_c(α, β)) :
+    ⇑(s.inf' H f) = s.inf' H fun i ↦ ⇑(f i) := by ext; simp [finsetInf'_apply]
+
+end SemilatticeInf
+
+section Lattice
+
+instance [Lattice β] [TopologicalSpace β] [TopologicalLattice β] [Zero β] :
+    Lattice C_c(α, β) :=
+  DFunLike.coe_injective.lattice _ coe_sup coe_inf
+
+-- TODO transfer this lattice structure to `BoundedContinuousFunction`
+
+end Lattice
 
 /-! ### `C_c` as a functor
 

@@ -390,17 +390,6 @@ lemma eq_one_iff {χ : MulChar R R'} : χ = 1 ↔ ∀ a : Rˣ, χ a = 1 := by
 lemma ne_one_iff {χ : MulChar R R'} : χ ≠ 1 ↔ ∃ a : Rˣ, χ a ≠ 1 := by
   simp only [Ne, eq_one_iff, not_forall]
 
-/-- A multiplicative character is *nontrivial* if it takes a value `≠ 1` on a unit. -/
-@[deprecated "No deprecation message was provided." (since := "2024-06-16")]
-def IsNontrivial (χ : MulChar R R') : Prop :=
-  ∃ a : Rˣ, χ a ≠ 1
-
-set_option linter.deprecated false in
-/-- A multiplicative character is nontrivial iff it is not the trivial character. -/
-@[deprecated "No deprecation message was provided." (since := "2024-06-16")]
-theorem isNontrivial_iff (χ : MulChar R R') : χ.IsNontrivial ↔ χ ≠ 1 := by
-  simp only [IsNontrivial, Ne, MulChar.ext_iff, not_forall, one_apply_coe]
-
 end nontrivial
 
 section quadratic_and_comp
@@ -460,16 +449,6 @@ lemma ringHomComp_eq_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ 
 lemma ringHomComp_ne_one_iff {f : R' →+* R''} (hf : Function.Injective f) {χ : MulChar R R'} :
     χ.ringHomComp f ≠ 1 ↔ χ ≠ 1 :=
   (ringHomComp_eq_one_iff hf).not
-
-set_option linter.deprecated false in
-/-- Composition with an injective ring homomorphism preserves nontriviality. -/
-@[deprecated ringHomComp_ne_one_iff (since := "2024-06-16")]
-theorem IsNontrivial.comp {χ : MulChar R R'} (hχ : χ.IsNontrivial) {f : R' →+* R''}
-    (hf : Function.Injective f) : (χ.ringHomComp f).IsNontrivial := by
-  obtain ⟨a, ha⟩ := hχ
-  use a
-  simp_rw [ringHomComp_apply, ← RingHom.map_one f]
-  exact fun h => ha (hf h)
 
 /-- Composition with a ring homomorphism preserves the property of being a quadratic character. -/
 theorem IsQuadratic.comp {χ : MulChar R R'} (hχ : χ.IsQuadratic) (f : R' →+* R'') :
@@ -571,12 +550,6 @@ theorem sum_eq_zero_of_ne_one [IsDomain R'] {χ : MulChar R R'} (hχ : χ ≠ 1)
   rcases ne_one_iff.mp hχ with ⟨b, hb⟩
   refine eq_zero_of_mul_eq_self_left hb ?_
   simpa only [Finset.mul_sum, ← map_mul] using b.mulLeft_bijective.sum_comp _
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided." (since := "2024-06-16")]
-lemma IsNontrivial.sum_eq_zero [IsDomain R'] {χ : MulChar R R'} (hχ : χ.IsNontrivial) :
-    ∑ a, χ a = 0 :=
-  sum_eq_zero_of_ne_one ((isNontrivial_iff _).mp hχ)
 
 /-- The sum over all values of the trivial multiplicative character on a finite ring is
 the cardinality of its unit group. -/

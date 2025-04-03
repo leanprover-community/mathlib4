@@ -5,6 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 
@@ -57,6 +58,8 @@ instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) M where
 instance smulMemClass : SMulMemClass (Submodule R M) R M where
   smul_mem {s} c _ h := SubMulAction.smul_mem' s.toSubMulAction c h
 
+initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
+
 @[simp]
 theorem mem_toAddSubmonoid (p : Submodule R M) (x : M) : x ∈ p.toAddSubmonoid ↔ x ∈ p :=
   Iff.rfl
@@ -91,15 +94,12 @@ theorem carrier_inj : p.carrier = q.carrier ↔ p = q :=
 
 /-- Copy of a submodule with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
+@[simps]
 protected def copy (p : Submodule R M) (s : Set M) (hs : s = ↑p) : Submodule R M where
   carrier := s
   zero_mem' := by simpa [hs] using p.zero_mem'
   add_mem' := hs.symm ▸ p.add_mem'
   smul_mem' := by simpa [hs] using p.smul_mem'
-
-@[simp]
-theorem coe_copy (S : Submodule R M) (s : Set M) (hs : s = ↑S) : (S.copy s hs : Set M) = s :=
-  rfl
 
 theorem copy_eq (S : Submodule R M) (s : Set M) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
@@ -138,7 +138,7 @@ variable [Semiring R] [AddCommMonoid M] [Module R M] {A : Type*} [SetLike A M]
 
 -- Prefer subclasses of `Module` over `SMulMemClass`.
 /-- A submodule of a `Module` is a `Module`. -/
-instance (priority := 75) toModule : Module R S' :=
+instance (priority := 75) toModule : Module R S' := fast_instance%
   Subtype.coe_injective.module R (AddSubmonoidClass.subtype S') (SetLike.val_smul S')
 
 /-- This can't be an instance because Lean wouldn't know how to find `R`, but we can still use
@@ -247,10 +247,11 @@ theorem coe_mem (x : p) : (x : M) ∈ p :=
 
 variable (p)
 
-instance addCommMonoid : AddCommMonoid p :=
+instance addCommMonoid : AddCommMonoid p := fast_instance%
   { p.toAddSubmonoid.toAddCommMonoid with }
 
-instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Module S p :=
+instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] :
+    Module S p := fast_instance%
   { (show MulAction S p from p.toSubMulAction.mulAction') with
     smul_zero := fun a => by ext; simp
     zero_smul := fun a => by ext; simp
@@ -288,7 +289,7 @@ theorem mem_toAddSubgroup : x ∈ p.toAddSubgroup ↔ x ∈ p :=
   Iff.rfl
 
 theorem toAddSubgroup_injective : Injective (toAddSubgroup : Submodule R M → AddSubgroup M)
-  | _, _, h => SetLike.ext (SetLike.ext_iff.1 h : _)
+  | _, _, h => SetLike.ext (SetLike.ext_iff.1 h :)
 
 @[simp]
 theorem toAddSubgroup_inj : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
@@ -320,7 +321,7 @@ theorem sub_mem_iff_left (hy : y ∈ p) : x - y ∈ p ↔ x ∈ p := by
 theorem sub_mem_iff_right (hx : x ∈ p) : x - y ∈ p ↔ y ∈ p := by
   rw [sub_eq_add_neg, p.add_mem_iff_right hx, p.neg_mem_iff]
 
-instance addCommGroup : AddCommGroup p :=
+instance addCommGroup : AddCommGroup p := fast_instance%
   { p.toAddSubgroup.toAddCommGroup with }
 
 end AddCommGroup

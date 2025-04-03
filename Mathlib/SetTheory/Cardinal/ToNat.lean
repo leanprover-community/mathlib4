@@ -13,6 +13,8 @@ sending all infinite cardinals to zero.
 We also prove basic lemmas about this definition.
 -/
 
+assert_not_exists Field
+
 universe u v
 open Function Set
 
@@ -82,24 +84,12 @@ theorem toNat_lt_iff_lt_of_lt_aleph0 (hc : c < ℵ₀) (hd : d < ℵ₀) :
 theorem toNat_le_toNat (hcd : c ≤ d) (hd : d < ℵ₀) : toNat c ≤ toNat d :=
   toNat_monotoneOn (hcd.trans_lt hd) hd hcd
 
-@[deprecated toNat_le_toNat (since := "2024-02-15")]
-theorem toNat_le_of_le_of_lt_aleph0 (hd : d < ℵ₀) (hcd : c ≤ d) :
-    toNat c ≤ toNat d :=
-  toNat_le_toNat hcd hd
-
 theorem toNat_lt_toNat (hcd : c < d) (hd : d < ℵ₀) : toNat c < toNat d :=
   toNat_strictMonoOn (hcd.trans hd) hd hcd
 
-@[deprecated toNat_lt_toNat (since := "2024-02-15")]
-theorem toNat_lt_of_lt_of_lt_aleph0 (hd : d < ℵ₀) (hcd : c < d) : toNat c < toNat d :=
-  toNat_lt_toNat hcd hd
-
-@[deprecated (since := "2024-02-15")] alias toNat_cast := toNat_natCast
-
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] :
-    Cardinal.toNat (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+    Cardinal.toNat ofNat(n) = OfNat.ofNat n :=
   toNat_natCast n
 
 /-- `toNat` has a right-inverse: coercion. -/
@@ -148,11 +138,6 @@ theorem toNat_congr {β : Type v} (e : α ≃ β) : toNat #α = toNat #β := by
 
 theorem toNat_mul (x y : Cardinal) : toNat (x * y) = toNat x * toNat y := map_mul toNat x y
 
-@[deprecated map_prod (since := "2024-02-15")]
-theorem toNat_finset_prod (s : Finset α) (f : α → Cardinal) :
-    toNat (∏ i ∈ s, f i) = ∏ i ∈ s, toNat (f i) :=
-  map_prod toNat _ _
-
 @[simp]
 theorem toNat_add (hc : c < ℵ₀) (hd : d < ℵ₀) : toNat (c + d) = toNat c + toNat d := by
   lift c to ℕ using hc
@@ -163,8 +148,5 @@ theorem toNat_add (hc : c < ℵ₀) (hd : d < ℵ₀) : toNat (c + d) = toNat c 
 theorem toNat_lift_add_lift {a : Cardinal.{u}} {b : Cardinal.{v}} (ha : a < ℵ₀) (hb : b < ℵ₀) :
     toNat (lift.{v} a + lift.{u} b) = toNat a + toNat b := by
   simp [*]
-
-@[deprecated (since := "2024-02-15")]
-alias toNat_add_of_lt_aleph0 := toNat_lift_add_lift
 
 end Cardinal

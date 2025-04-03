@@ -74,7 +74,6 @@ add more properties if they are useful and satisfied in the examples of inner pr
 and finite dimensional vector spaces, notably derivative norm control in terms of `R - 1`.
 
 TODO: do we ever need `f x = 1 ↔ ‖x‖ ≤ 1`? -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not yet ported; was @[nolint has_nonempty_instance]
 structure ContDiffBumpBase (E : Type*) [NormedAddCommGroup E] [NormedSpace ℝ E] where
   /-- The function underlying this family of bump functions -/
   toFun : ℝ → E → ℝ

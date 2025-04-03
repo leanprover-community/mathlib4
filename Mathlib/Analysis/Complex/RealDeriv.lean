@@ -14,8 +14,7 @@ then its restriction to `ℝ` is differentiable over `ℝ`, with derivative the 
 complex derivative.
 -/
 
-assert_not_exists IsConformalMap
-assert_not_exists Conformal
+assert_not_exists IsConformalMap Conformal
 
 section RealDerivOfComplex
 

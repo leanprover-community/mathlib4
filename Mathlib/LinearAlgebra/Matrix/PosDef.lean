@@ -108,9 +108,8 @@ protected theorem natCast [StarOrderedRing R] [DecidableEq n] (d : ℕ) :
     rw [Nat.cast_smul_eq_nsmul]
     exact nsmul_nonneg (dotProduct_star_self_nonneg _) _⟩
 
--- See note [no_index around OfNat.ofNat]
 protected theorem ofNat [StarOrderedRing R] [DecidableEq n] (d : ℕ) [d.AtLeastTwo] :
-    PosSemidef (no_index (OfNat.ofNat d) : Matrix n n R) :=
+    PosSemidef (ofNat(d) : Matrix n n R) :=
   .natCast d
 
 protected theorem intCast [StarOrderedRing R] [DecidableEq n] (d : ℤ) (hd : 0 ≤ d) :
@@ -364,8 +363,8 @@ theorem _root_.Matrix.posDef_diagonal_iff
     PosDef (diagonal d) ↔ ∀ i, 0 < d i := by
   refine ⟨fun h i => ?_, .diagonal⟩
   have := h.2 (Pi.single i 1)
-  simp only [mulVec_single, mul_one, dotProduct_diagonal', Pi.star_apply, Pi.single_eq_same,
-    star_one, one_mul, Function.ne_iff, Pi.zero_apply] at this
+  simp_rw [mulVec_single_one, ← Pi.single_star, star_one, single_dotProduct, one_mul,
+    transpose_apply, diagonal_apply_eq, Function.ne_iff] at this
   exact this ⟨i, by simp⟩
 
 protected theorem one [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R] :
@@ -386,10 +385,9 @@ theorem _root_.Matrix.posDef_natCast_iff [StarOrderedRing R] [DecidableEq n] [No
     PosDef (d : Matrix n n R) ↔ 0 < d :=
   posDef_diagonal_iff.trans <| by simp
 
--- See note [no_index around OfNat.ofNat]
 protected theorem ofNat [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     (d : ℕ) [d.AtLeastTwo] :
-    PosDef (no_index (OfNat.ofNat d) : Matrix n n R) :=
+    PosDef (ofNat(d) : Matrix n n R) :=
   .natCast d (NeZero.ne _)
 
 protected theorem intCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]

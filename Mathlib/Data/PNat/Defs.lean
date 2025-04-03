@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Neil Strickland
 -/
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.PNat.Notation
+import Mathlib.Data.One.Defs
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Lift

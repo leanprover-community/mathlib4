@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Data.List.Basic
+import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
 
 /-!
@@ -82,5 +83,15 @@ theorem length_sigma' (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
   induction' l₁ with x l₁ IH
   · rfl
   · simp only [map, sigma_cons, length_append, length_map, IH, Nat.sum_cons]
+
+/-! ### Miscellaneous lemmas -/
+
+@[simp 1100]
+theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
+    (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
+  induction' xs with x xs xs_ih
+  · simp only [not_mem_nil, map_nil]
+  · cases' x with a b
+    simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm]
 
 end List

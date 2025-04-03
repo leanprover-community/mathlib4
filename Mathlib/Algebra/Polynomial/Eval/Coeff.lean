@@ -157,9 +157,6 @@ theorem eval_natCast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
   | h_monomial n r =>
     simp only [map_natCast f, eval_monomial, map_monomial, f.map_pow, f.map_mul]
 
-@[deprecated (since := "2024-04-17")]
-alias eval_nat_cast_map := eval_natCast_map
-
 @[simp]
 theorem eval_intCast_map {R S : Type*} [Ring R] [Ring S] (f : R →+* S) (p : R[X]) (i : ℤ) :
     (p.map f).eval (i : S) = f (p.eval i) := by
@@ -168,9 +165,6 @@ theorem eval_intCast_map {R S : Type*} [Ring R] [Ring S] (f : R →+* S) (p : R[
     simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
   | h_monomial n r =>
     simp only [map_intCast, eval_monomial, map_monomial, map_pow, map_mul]
-
-@[deprecated (since := "2024-04-17")]
-alias eval_int_cast_map := eval_intCast_map
 
 end Map
 

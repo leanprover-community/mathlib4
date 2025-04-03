@@ -100,7 +100,7 @@ theorem exists_finite_submodule_of_finite (s : Set (M ⊗[R] N)) (hs : s.Finite)
     ∃ (M' : Submodule R M) (N' : Submodule R N), Module.Finite R M' ∧ Module.Finite R N' ∧
       s ⊆ LinearMap.range (mapIncl M' N') := by
   simp_rw [Module.Finite.iff_fg]
-  refine hs.induction_on ⟨_, _, fg_bot, fg_bot, Set.empty_subset _⟩ ?_
+  refine hs.induction_on _ ⟨_, _, fg_bot, fg_bot, Set.empty_subset _⟩ ?_
   rintro a s - - ⟨M', N', hM', hN', h⟩
   refine TensorProduct.induction_on a ?_ (fun x y ↦ ?_) fun x y hx hy ↦ ?_
   · exact ⟨M', N', hM', hN', Set.insert_subset (zero_mem _) h⟩

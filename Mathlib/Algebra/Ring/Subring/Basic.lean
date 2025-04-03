@@ -384,6 +384,15 @@ theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
 instance : CommRing (center R) :=
   { inferInstanceAs (CommSemiring (Subsemiring.center R)), (center R).toRing with }
 
+/-- The center of isomorphic (not necessarily associative) rings are isomorphic. -/
+@[simps!] def centerCongr (e : R ≃+* S) : center R ≃+* center S :=
+  NonUnitalSubsemiring.centerCongr e
+
+/-- The center of a (not necessarily associative) ring
+is isomorphic to the center of its opposite. -/
+@[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
+  NonUnitalSubsemiring.centerToMulOpposite
+
 end
 
 section DivisionRing
@@ -606,6 +615,7 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
 variable {R}
 
 /-- Closure of a subring `S` equals `S`. -/
+@[simp]
 theorem closure_eq (s : Subring R) : closure (s : Set R) = s :=
   (Subring.gi R).l_u_eq s
 
@@ -872,13 +882,8 @@ theorem ofLeftInverse_symm_apply {g : S → R} {f : R →+* S} (h : Function.Lef
 
 /-- Given an equivalence `e : R ≃+* S` of rings and a subring `s` of `R`,
 `subringMap e s` is the induced equivalence between `s` and `s.map e` -/
-@[simps!]
 def subringMap (e : R ≃+* S) : s ≃+* s.map e.toRingHom :=
   e.subsemiringMap s.toSubsemiring
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] RingEquiv.subringMap_symm_apply_coe
-  RingEquiv.subringMap_apply_coe
 
 end RingEquiv
 

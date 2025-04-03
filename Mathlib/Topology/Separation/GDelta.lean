@@ -35,7 +35,6 @@ section Separation
 theorem IsGδ.compl_singleton (x : X) [T1Space X] : IsGδ ({x}ᶜ : Set X) :=
   isOpen_compl_singleton.isGδ
 
-@[deprecated (since := "2024-02-15")] alias isGδ_compl_singleton := IsGδ.compl_singleton
 
 theorem Set.Countable.isGδ_compl {s : Set X} [T1Space X] (hs : s.Countable) : IsGδ sᶜ := by
   rw [← biUnion_of_singleton s, compl_iUnion₂]
@@ -56,11 +55,10 @@ protected theorem IsGδ.singleton [FirstCountableTopology X] [T1Space X] (x : X)
   rw [← biInter_basis_nhds h_basis.toHasBasis]
   exact .biInter (to_countable _) fun n _ => (hU n).2.isGδ
 
-@[deprecated (since := "2024-02-15")] alias isGδ_singleton := IsGδ.singleton
 
 theorem Set.Finite.isGδ [FirstCountableTopology X] {s : Set X} [T1Space X] (hs : s.Finite) :
     IsGδ s :=
-  Finite.induction_on hs .empty fun _ _ ↦ .union (.singleton _)
+  Finite.induction_on _ hs .empty fun _ _ ↦ .union (.singleton _)
 
 
 section PerfectlyNormal

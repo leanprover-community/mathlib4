@@ -50,7 +50,7 @@ deriving instance LargeCategory for HeytAlg
 
 -- Porting note: deriving failed.
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory HeytAlg := by
+instance : HasForget HeytAlg := by
   dsimp [HeytAlg]
   infer_instance
 

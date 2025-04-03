@@ -3,7 +3,7 @@ Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Data.Set.Operations
+import Mathlib.Data.Set.CoeSort
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Set
 import Mathlib.Util.AssertExists
@@ -58,9 +58,7 @@ instances since they do not compute anything.
 finite, fintype, finite sets
 -/
 
-assert_not_exists Finset
-assert_not_exists MonoidWithZero
-assert_not_exists OrderedRing
+assert_not_exists Finset MonoidWithZero OrderedRing
 
 universe u v
 

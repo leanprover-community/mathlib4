@@ -79,9 +79,9 @@ theorem isBigO_sub_exp_rpow {a : ℝ} {f g : ℂ → E} {l : Filter ℂ}
     ∃ c < a, ∃ B, (f - g) =O[cobounded ℂ ⊓ l] fun z => expR (B * abs z ^ c) := by
   have : ∀ {c₁ c₂ B₁ B₂ : ℝ}, c₁ ≤ c₂ → 0 ≤ B₂ → B₁ ≤ B₂ →
       (fun z : ℂ => expR (B₁ * abs z ^ c₁)) =O[cobounded ℂ ⊓ l]
-        fun z => expR (B₂ * abs z ^ c₂) := fun hc hB₀ hB ↦ .of_bound 1 <| by
+        fun z => expR (B₂ * abs z ^ c₂) := fun hc hB₀ hB ↦ .of_norm_eventuallyLE <| by
     filter_upwards [(eventually_cobounded_le_norm 1).filter_mono inf_le_left] with z hz
-    simp only [one_mul, Real.norm_eq_abs, Real.abs_exp]
+    simp only [Real.norm_eq_abs, Real.abs_exp]
     gcongr; assumption
   rcases hBf with ⟨cf, hcf, Bf, hOf⟩; rcases hBg with ⟨cg, hcg, Bg, hOg⟩
   refine ⟨max cf cg, max_lt hcf hcg, max 0 (max Bf Bg), ?_⟩
@@ -116,7 +116,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
   cases' hza with hza hza; · exact hle_a _ hza.symm
   cases' hzb with hzb hzb; · exact hle_b _ hzb
   wlog hC₀ : 0 < C generalizing C
-  · refine le_of_forall_le_of_dense fun C' hC' => this (fun w hw => ?_) (fun w hw => ?_) ?_
+  · refine le_of_forall_gt_imp_ge_of_dense fun C' hC' => this (fun w hw => ?_) (fun w hw => ?_) ?_
     · exact (hle_a _ hw).trans hC'.le
     · exact (hle_b _ hw).trans hC'.le
     · refine ((norm_nonneg (f (a * I))).trans (hle_a _ ?_)).trans_lt hC'
@@ -367,8 +367,8 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
     refine ⟨c, hc, max B 0, ?_⟩
     rw [← comap_comap, comap_abs_atTop, comap_sup, inf_sup_right]
     -- We prove separately the estimates as `ζ.re → ∞` and as `ζ.re → -∞`
-    refine IsBigO.sup ?_
-      ((hO.comp_tendsto <| tendsto_exp_comap_re_atTop.inf H.tendsto).trans <| .of_bound 1 ?_)
+    refine IsBigO.sup ?_ <| (hO.comp_tendsto <| tendsto_exp_comap_re_atTop.inf H.tendsto).trans <|
+      .of_norm_eventuallyLE ?_
     · -- For the estimate as `ζ.re → -∞`, note that `f` is continuous within the first quadrant at
       -- zero, hence `f (exp ζ)` has a limit as `ζ.re → -∞`, `0 < ζ.im < π / 2`.
       have hc : ContinuousWithinAt f (Ioi 0 ×ℂ Ioi 0) 0 := by
@@ -379,9 +379,9 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
       rw [norm_one, Real.norm_of_nonneg (Real.exp_pos _).le, Real.one_le_exp_iff]
       positivity
     · -- For the estimate as `ζ.re → ∞`, we reuse the upper estimate on `f`
-      simp only [eventually_inf_principal, eventually_comap, comp_apply, one_mul,
+      simp only [EventuallyLE, eventually_inf_principal, eventually_comap, comp_apply, one_mul,
         Real.norm_of_nonneg (Real.exp_pos _).le, abs_exp, ← Real.exp_mul, Real.exp_le_exp]
-      refine (eventually_ge_atTop 0).mono fun x hx z hz _ => ?_
+      filter_upwards [eventually_ge_atTop 0] with x hx z hz _
       rw [hz, _root_.abs_of_nonneg hx, mul_comm _ c]
       gcongr; apply le_max_left
   · -- If `ζ.im = 0`, then `Complex.exp ζ` is a positive real number
@@ -732,9 +732,9 @@ theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.
     rw [norm_smul, norm_eq_abs, abs_exp, re_ofReal_mul]
   refine right_half_plane_of_tendsto_zero_on_real hd ?_ ?_ (fun y => ?_) hz
   · rcases hexp with ⟨c, hc, B, hO⟩
-    refine ⟨c, hc, B, (IsBigO.of_bound 1 ?_).trans hO⟩
+    refine ⟨c, hc, B, .trans (.of_bound' ?_) hO⟩
     refine eventually_inf_principal.2 <| Eventually.of_forall fun z hz => ?_
-    rw [hgn, one_mul]
+    rw [hgn]
     refine mul_le_of_le_one_left (norm_nonneg _) (Real.exp_le_one_iff.2 ?_)
     exact mul_nonpos_of_nonpos_of_nonneg ε₀.le (le_of_lt hz)
   · simp_rw [g, ← ofReal_mul, ← ofReal_exp, coe_smul]
@@ -783,9 +783,9 @@ theorem eq_zero_on_right_half_plane_of_superexponential_decay (hd : DiffContOnCl
   · rcases hexp with ⟨c, hc, B, hO⟩
     refine ⟨max c 1, max_lt hc one_lt_two, n + max B 0, .of_norm_left ?_⟩
     simp only [hg]
-    refine ((isBigO_refl (fun z : ℂ => expR z.re ^ n) _).mul hO.norm_left).trans (.of_bound 1 ?_)
+    refine ((isBigO_refl (fun z : ℂ => expR z.re ^ n) _).mul hO.norm_left).trans (.of_bound' ?_)
     filter_upwards [(eventually_cobounded_le_norm 1).filter_mono inf_le_left] with z hz
-    simp only [← Real.exp_nat_mul, ← Real.exp_add, Real.norm_eq_abs, Real.abs_exp, add_mul, one_mul]
+    simp only [← Real.exp_nat_mul, ← Real.exp_add, Real.norm_eq_abs, Real.abs_exp, add_mul]
     gcongr
     · calc
         z.re ≤ abs z := re_le_abs _

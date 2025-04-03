@@ -63,11 +63,8 @@ theorem insertIdx_injective (n : ℕ) (x : α) : Function.Injective (insertIdx n
 @[deprecated (since := "2024-10-21")] alias insertNth_succ_cons := insertIdx_succ_cons
 @[deprecated (since := "2024-10-21")] alias length_insertNth := length_insertIdx
 @[deprecated (since := "2024-10-21")] alias removeNth_insertIdx := eraseIdx_insertIdx
-@[deprecated (since := "2024-05-04")] alias removeNth_insertNth := eraseIdx_insertIdx
 @[deprecated (since := "2024-10-21")] alias insertNth_eraseIdx_of_ge := insertIdx_eraseIdx_of_ge
-@[deprecated (since := "2024-05-04")] alias insertNth_removeNth_of_ge := insertIdx_eraseIdx_of_ge
 @[deprecated (since := "2024-10-21")] alias insertNth_eraseIdx_of_le := insertIdx_eraseIdx_of_le
-@[deprecated (since := "2024-05-04")] alias insertIdx_removeNth_of_le := insertIdx_eraseIdx_of_le
 @[deprecated (since := "2024-10-21")] alias insertNth_comm := insertIdx_comm
 @[deprecated (since := "2024-10-21")] alias mem_insertNth := mem_insertIdx
 @[deprecated (since := "2024-10-21")] alias insertNth_of_length_lt := insertIdx_of_length_lt

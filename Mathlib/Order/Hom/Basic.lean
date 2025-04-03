@@ -529,6 +529,11 @@ def uliftMap (f : α →o β) : ULift α →o ULift β :=
 
 end OrderHom
 
+-- See note [lower instance priority]
+instance (priority := 90) OrderHomClass.toOrderHomClassOrderDual [LE α] [LE β]
+    [FunLike F α β] [OrderHomClass F α β] : OrderHomClass F αᵒᵈ βᵒᵈ where
+  map_rel f := map_rel f
+
 /-- Embeddings of partial orders that preserve `<` also preserve `≤`. -/
 def RelEmbedding.orderEmbeddingOfLTEmbedding [PartialOrder α] [PartialOrder β]
     (f : ((· < ·) : α → α → Prop) ↪r ((· < ·) : β → β → Prop)) : α ↪o β :=
@@ -1034,6 +1039,15 @@ theorem funUnique_symm_apply {α β : Type*} [Unique α] [Preorder β] :
     ((funUnique α β).symm : β → α → β) = Function.const α :=
   rfl
 
+/-- The order isomorphism `α ≃o β` when `α` and `β` are preordered types
+containing unique elements. -/
+@[simps!]
+noncomputable def ofUnique
+    (α β : Type*) [Unique α] [Unique β] [Preorder α] [Preorder β] :
+    α ≃o β where
+  toEquiv := Equiv.ofUnique α β
+  map_rel_iff' := by simp
+
 end OrderIso
 
 namespace Equiv
@@ -1293,6 +1307,11 @@ theorem OrderIso.complementedLattice_iff (f : α ≃o β) :
 end BoundedOrder
 
 end LatticeIsos
+
+-- See note [lower instance priority]
+instance (priority := 90) OrderIsoClass.toOrderIsoClassOrderDual [LE α] [LE β]
+    [EquivLike F α β] [OrderIsoClass F α β] : OrderIsoClass F αᵒᵈ βᵒᵈ where
+  map_le_map_iff f := map_le_map_iff f
 
 section DenselyOrdered
 

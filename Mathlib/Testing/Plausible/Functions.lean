@@ -312,10 +312,6 @@ protected def shrinkPerm {α : Type} [DecidableEq α] :
     pure <| Perm.slice (i * n) n xs
 
 
--- Porting note: removed, there is no `sizeof` in the new `Sampleable`
--- instance [SizeOf α] : SizeOf (InjectiveFunction α) :=
---   ⟨fun ⟨xs, _, _⟩ => SizeOf.sizeOf (xs.map Sigma.fst)⟩
-
 /-- Shrink an injective function slicing a segment in the middle of the domain and removing
 the corresponding elements in the codomain, hence maintaining the property that
 one is a permutation of the other.

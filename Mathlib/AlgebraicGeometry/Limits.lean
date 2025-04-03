@@ -38,6 +38,11 @@ noncomputable def specZIsTerminal : IsTerminal (Spec (CommRingCat.of ℤ)) :=
   @IsTerminal.isTerminalObj _ _ _ _ Scheme.Spec _ inferInstance
     (terminalOpOfInitial CommRingCat.zIsInitial)
 
+/-- `Spec ℤ` is the terminal object in the category of schemes. -/
+noncomputable def specULiftZIsTerminal : IsTerminal (Spec (.of (ULift.{u} ℤ))) :=
+  @IsTerminal.isTerminalObj _ _ _ _ Scheme.Spec _ inferInstance
+    (terminalOpOfInitial CommRingCat.isInitial)
+
 instance : HasTerminal Scheme :=
   hasTerminal_of_hasTerminal_of_preservesLimit Scheme.Spec
 
@@ -115,7 +120,7 @@ instance : HasInitial Scheme.{u} :=
   hasInitial_of_unique ∅
 
 instance initial_isEmpty : IsEmpty (⊥_ Scheme) :=
-  ⟨fun x => ((initial.to Scheme.empty : _).base x).elim⟩
+  ⟨fun x => ((initial.to Scheme.empty :).base x).elim⟩
 
 theorem isAffineOpen_bot (X : Scheme) : IsAffineOpen (⊥ : X.Opens) :=
   @isAffine_of_isEmpty _ (inferInstanceAs (IsEmpty (∅ : Set X)))
@@ -260,8 +265,7 @@ lemma sigmaι_eq_iff (i j : ι) (x y) :
     · subst h
       simp only [Sigma.mk.inj_iff, heq_eq_eq, true_and]
       exact ((disjointGlueData f).ι i).isOpenEmbedding.injective H
-    · obtain (e | ⟨z, _⟩) := (Scheme.GlueData.ι_eq_iff _ _ _ _ _).mp H
-      · exact (h (Sigma.mk.inj_iff.mp e).1).elim
+    · obtain ⟨z, _⟩ := (Scheme.GlueData.ι_eq_iff _ _ _ _ _).mp H
       · simp only [disjointGlueData_J, disjointGlueData_V, h, ↓reduceIte] at z
         cases z
   · rintro ⟨rfl⟩
@@ -276,7 +280,7 @@ lemma disjoint_opensRange_sigmaι (i j : ι) (h : i ≠ j) :
   obtain ⟨rfl⟩ := (sigmaι_eq_iff _ _ _ _ _).mp hy
   cases h rfl
 
-lemma exists_sigmaι_eq (x : (∐ f : _)) : ∃ i y, (Sigma.ι f i).base y = x := by
+lemma exists_sigmaι_eq (x : (∐ f :)) : ∃ i y, (Sigma.ι f i).base y = x := by
   obtain ⟨i, y, e⟩ := (disjointGlueData f).ι_jointly_surjective ((sigmaIsoGlued f).hom.base x)
   refine ⟨i, y, (sigmaIsoGlued f).hom.isOpenEmbedding.injective ?_⟩
   rwa [← Scheme.comp_base_apply, ι_sigmaIsoGlued_hom]
@@ -296,7 +300,7 @@ def sigmaOpenCover : (∐ f).OpenCover where
 
 /-- The underlying topological space of the coproduct is homeomorphic to the disjoint union. -/
 noncomputable
-def sigmaMk : (Σ i, f i) ≃ₜ (∐ f : _) :=
+def sigmaMk : (Σ i, f i) ≃ₜ (∐ f :) :=
   TopCat.homeoOfIso ((colimit.isoColimitCocone ⟨_, TopCat.sigmaCofanIsColimit _⟩).symm ≪≫
     (PreservesCoproduct.iso Scheme.forgetToTop f).symm)
 
@@ -309,6 +313,36 @@ lemma sigmaMk_mk (i) (x : f i) :
   congr 1
   refine (colimit.isoColimitCocone_ι_inv_assoc ⟨_, TopCat.sigmaCofanIsColimit _⟩ _ _).trans ?_
   exact ι_comp_sigmaComparison Scheme.forgetToTop _ _
+
+open scoped Function in
+lemma isOpenImmersion_sigmaDesc
+    {X : Scheme} (α : ∀ i, f i ⟶ X) [∀ i, IsOpenImmersion (α i)]
+    (hα : Pairwise (Disjoint on (Set.range <| α · |>.base))) :
+    IsOpenImmersion (Sigma.desc α) := by
+  rw [IsOpenImmersion.iff_stalk_iso]
+  constructor
+  · suffices Topology.IsOpenEmbedding ((Sigma.desc α).base ∘ sigmaMk f) by
+      convert this.comp (sigmaMk f).symm.isOpenEmbedding; ext; simp
+    refine .of_continuous_injective_isOpenMap ?_ ?_ ?_
+    · fun_prop
+    · rintro ⟨ix, x⟩ ⟨iy, y⟩ e
+      have : (α ix).base x = (α iy).base y := by
+        simpa [← Scheme.comp_base_apply] using e
+      obtain rfl : ix = iy := by
+        by_contra h
+        exact Set.disjoint_iff_forall_ne.mp (hα h) ⟨x, rfl⟩ ⟨y, this.symm⟩ rfl
+      rw [(α ix).isOpenEmbedding.injective this]
+    · rw [isOpenMap_sigma]
+      intro i
+      simpa [← Scheme.comp_base_apply] using (α i).isOpenEmbedding.isOpenMap
+  · intro x
+    have ⟨y, hy⟩ := (sigmaOpenCover f).covers x
+    rw [← hy]
+    refine IsIso.of_isIso_fac_right (g := ((sigmaOpenCover f).map _).stalkMap y)
+      (h := (X.presheaf.stalkCongr (.of_eq ?_)).hom ≫ (α _).stalkMap _) ?_
+    · simp [← Scheme.comp_base_apply]
+    · simp [← Scheme.stalkMap_comp, Scheme.stalkMap_congr_hom _ _ (Sigma.ι_desc _ _)]
+
 
 variable (X Y : Scheme.{u})
 
@@ -493,10 +527,35 @@ noncomputable
 def sigmaSpec (R : ι → CommRingCat) : (∐ fun i ↦ Spec (R i)) ⟶ Spec (.of (Π i, R i)) :=
   Sigma.desc (fun i ↦ Spec.map (CommRingCat.ofHom (Pi.evalRingHom _ i)))
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma ι_sigmaSpec (R : ι → CommRingCat) (i) :
     Sigma.ι _ i ≫ sigmaSpec R = Spec.map (CommRingCat.ofHom (Pi.evalRingHom _ i)) :=
   Sigma.ι_desc _ _
+
+instance (i) (R : ι → Type _) [∀ i, CommRing (R i)] :
+    IsOpenImmersion (Spec.map (CommRingCat.ofHom (Pi.evalRingHom (R ·) i))) := by
+  classical
+  letI := (Pi.evalRingHom R i).toAlgebra
+  have : IsLocalization.Away (Function.update (β := R) 0 i 1) (R i) := by
+    apply IsLocalization.away_of_isIdempotentElem_of_mul
+    · ext j; by_cases h : j = i <;> aesop
+    · intro x y
+      constructor
+      · intro e; ext j; by_cases h : j = i <;> aesop
+      · intro e; simpa using congr_fun e i
+    · exact Function.surjective_eval _
+  exact IsOpenImmersion.of_isLocalization (Function.update 0 i 1)
+
+instance (R : ι → CommRingCat) : IsOpenImmersion (sigmaSpec R) := by
+  classical
+  apply isOpenImmersion_sigmaDesc
+  intro ix iy h
+  refine Set.disjoint_iff_forall_ne.mpr ?_
+  rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ e
+  have : DFinsupp.single (β := (R ·)) iy 1 iy ∈ y.asIdeal :=
+    (PrimeSpectrum.ext_iff.mp e).le (x := DFinsupp.single iy 1)
+      (show DFinsupp.single (β := (R ·)) iy 1 ix ∈ x.asIdeal by simp [h.symm])
+  simp [← Ideal.eq_top_iff_one, y.2.ne_top] at this
 
 instance [Finite ι] (R : ι → CommRingCat) : IsIso (sigmaSpec R) := by
   have : sigmaSpec R =

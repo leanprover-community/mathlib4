@@ -219,7 +219,6 @@ noncomputable def factors (a : Associates α) : FactorSet α := by
 theorem factors_zero : (0 : Associates α).factors = ⊤ :=
   dif_pos rfl
 
-@[deprecated (since := "2024-03-16")] alias factors_0 := factors_zero
 
 @[simp]
 theorem factors_mk (a : α) (h : a ≠ 0) : (Associates.mk a).factors = factors' a := by
@@ -247,8 +246,6 @@ theorem factors_subsingleton [Subsingleton α] {a : Associates α} : a.factors =
 theorem factors_eq_top_iff_zero {a : Associates α} : a.factors = ⊤ ↔ a = 0 := by
   nontriviality α
   exact ⟨fun h ↦ by rwa [← factors_prod a, FactorSet.prod_eq_zero_iff], fun h ↦ h ▸ factors_zero⟩
-
-@[deprecated (since := "2024-04-16")] alias factors_eq_none_iff_zero := factors_eq_top_iff_zero
 
 theorem factors_eq_some_iff_ne_zero {a : Associates α} :
     (∃ s : Multiset { p : Associates α // Irreducible p }, a.factors = s) ↔ a ≠ 0 := by

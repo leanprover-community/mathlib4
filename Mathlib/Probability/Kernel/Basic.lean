@@ -86,17 +86,11 @@ theorem setLIntegral_deterministic' {f : β → ℝ≥0∞} {g : α → β} {a :
     ∫⁻ x in s, f x ∂deterministic g hg a = if g a ∈ s then f (g a) else 0 := by
   rw [deterministic_apply, setLIntegral_dirac' hf hs]
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_deterministic' := setLIntegral_deterministic'
-
 @[simp]
 theorem setLIntegral_deterministic {f : β → ℝ≥0∞} {g : α → β} {a : α} (hg : Measurable g)
     [MeasurableSingletonClass β] (s : Set β) [Decidable (g a ∈ s)] :
     ∫⁻ x in s, f x ∂deterministic g hg a = if g a ∈ s then f (g a) else 0 := by
   rw [deterministic_apply, setLIntegral_dirac f s]
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_deterministic := setLIntegral_deterministic
 
 end Deterministic
 
@@ -216,9 +210,6 @@ theorem lintegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} :
 theorem setLIntegral_const {f : β → ℝ≥0∞} {μ : Measure β} {a : α} {s : Set β} :
     ∫⁻ x in s, f x ∂const α μ a = ∫⁻ x in s, f x ∂μ := by rw [const_apply]
 
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_const := setLIntegral_const
-
 end Const
 
 /-- In a countable space with measurable singletons, every function `α → MeasureTheory.Measure β`
@@ -261,9 +252,6 @@ theorem lintegral_restrict (κ : Kernel α β) (hs : MeasurableSet s) (a : α) (
 theorem setLIntegral_restrict (κ : Kernel α β) (hs : MeasurableSet s) (a : α) (f : β → ℝ≥0∞)
     (t : Set β) : ∫⁻ b in t, f b ∂κ.restrict hs a = ∫⁻ b in t ∩ s, f b ∂κ a := by
   rw [restrict_apply, Measure.restrict_restrict' hs]
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_restrict := setLIntegral_restrict
 
 
 instance IsFiniteKernel.restrict (κ : Kernel α β) [IsFiniteKernel κ] (hs : MeasurableSet s) :
@@ -385,9 +373,6 @@ theorem setLIntegral_piecewise (a : α) (g : β → ℝ≥0∞) (t : Set β) :
     ∫⁻ b in t, g b ∂piecewise hs κ η a =
       if a ∈ s then ∫⁻ b in t, g b ∂κ a else ∫⁻ b in t, g b ∂η a := by
   simp_rw [piecewise_apply]; split_ifs <;> rfl
-
-@[deprecated (since := "2024-06-29")]
-alias set_lintegral_piecewise := setLIntegral_piecewise
 
 end Piecewise
 

@@ -3,8 +3,9 @@ Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
-import Mathlib.RingTheory.AdicCompletion.Basic
 import Mathlib.Algebra.Module.Torsion
+import Mathlib.Algebra.Algebra.Pi
+import Mathlib.RingTheory.AdicCompletion.Basic
 
 /-!
 # Algebra instance on adic completion
@@ -88,13 +89,14 @@ instance : CommRing (AdicCompletion I R) :=
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 instance [Algebra S R] : Algebra S (AdicCompletion I R) where
-  toFun r := ⟨algebraMap S (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) r, by
-    simp [-Ideal.Quotient.mk_algebraMap,
-      IsScalarTower.algebraMap_apply S R (R ⧸ (I ^ _ • ⊤ : Ideal R))]⟩
-  map_one' := Subtype.ext <| map_one _
-  map_mul' x y := Subtype.ext <| map_mul _ x y
-  map_zero' := Subtype.ext <| map_zero _
-  map_add' x y := Subtype.ext <| map_add _ x y
+  algebraMap :=
+  { toFun r := ⟨algebraMap S (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) r, by
+      simp [-Ideal.Quotient.mk_algebraMap,
+        IsScalarTower.algebraMap_apply S R (R ⧸ (I ^ _ • ⊤ : Ideal R))]⟩
+    map_one' := Subtype.ext <| map_one _
+    map_mul' x y := Subtype.ext <| map_mul _ x y
+    map_zero' := Subtype.ext <| map_zero _
+    map_add' x y := Subtype.ext <| map_add _ x y }
   commutes' r x := Subtype.ext <| Algebra.commutes' r x.val
   smul_def' r x := Subtype.ext <| Algebra.smul_def' r x.val
 
@@ -155,11 +157,12 @@ instance : CommRing (AdicCauchySequence I R) :=
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 instance : Algebra R (AdicCauchySequence I R) where
-  toFun r := ⟨algebraMap R (∀ _, R) r, fun _ ↦ rfl⟩
-  map_one' := Subtype.ext <| map_one _
-  map_mul' x y := Subtype.ext <| map_mul _ x y
-  map_zero' := Subtype.ext <| map_zero _
-  map_add' x y := Subtype.ext <| map_add _ x y
+  algebraMap :=
+  { toFun r := ⟨algebraMap R (∀ _, R) r, fun _ ↦ rfl⟩
+    map_one' := Subtype.ext <| map_one _
+    map_mul' x y := Subtype.ext <| map_mul _ x y
+    map_zero' := Subtype.ext <| map_zero _
+    map_add' x y := Subtype.ext <| map_add _ x y }
   commutes' r x := Subtype.ext <| Algebra.commutes' r x.val
   smul_def' r x := Subtype.ext <| Algebra.smul_def' r x.val
 

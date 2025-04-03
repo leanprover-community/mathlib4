@@ -82,6 +82,8 @@ universe uR uS uι v v' v₁ v₂ v₃
 variable {R : Type uR} {S : Type uS} {ι : Type uι} {n : ℕ}
   {M : Fin n.succ → Type v} {M₁ : ι → Type v₁} {M₂ : Type v₂} {M₃ : Type v₃} {M' : Type v'}
 
+-- Don't generate injectivity lemmas, which the `simpNF` linter will time out on.
+set_option genInjectivity false in
 /-- Multilinear maps over the ring `R`, from `∀ i, M₁ i` to `M₂` where `M₁ i` and `M₂` are modules
 over `R`. -/
 structure MultilinearMap (R : Type uR) {ι : Type uι} (M₁ : ι → Type v₁) (M₂ : Type v₂) [Semiring R]
@@ -96,9 +98,6 @@ structure MultilinearMap (R : Type uR) {ι : Type uι} (M₁ : ι → Type v₁)
   map_update_smul' :
     ∀ [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i),
       toFun (update m i (c • x)) = c • toFun (update m i x)
-
--- Porting note: added to avoid a linter timeout.
-attribute [nolint simpNF] MultilinearMap.mk.injEq
 
 namespace MultilinearMap
 
@@ -195,20 +194,18 @@ theorem zero_apply (m : ∀ i, M₁ i) : (0 : MultilinearMap R M₁ M₂) m = 0 
 
 section SMul
 
-variable {R' A : Type*} [Monoid R'] [Semiring A] [∀ i, Module A (M₁ i)] [DistribMulAction R' M₂]
-  [Module A M₂] [SMulCommClass A R' M₂]
+variable [DistribSMul S M₂] [SMulCommClass R S M₂]
 
-instance : SMul R' (MultilinearMap A M₁ M₂) :=
+instance : SMul S (MultilinearMap R M₁ M₂) :=
   ⟨fun c f =>
     ⟨fun m => c • f m, fun m i x y => by simp [smul_add], fun l i x d => by
       simp [← smul_comm x c (_ : M₂)]⟩⟩
 
 @[simp]
-theorem smul_apply (f : MultilinearMap A M₁ M₂) (c : R') (m : ∀ i, M₁ i) : (c • f) m = c • f m :=
+theorem smul_apply (f : MultilinearMap R M₁ M₂) (c : S) (m : ∀ i, M₁ i) : (c • f) m = c • f m :=
   rfl
 
-theorem coe_smul (c : R') (f : MultilinearMap A M₁ M₂) : ⇑(c • f) = c • (⇑ f) :=
-  rfl
+theorem coe_smul (c : S) (f : MultilinearMap R M₁ M₂) : ⇑(c • f) = c • (⇑ f) := rfl
 
 end SMul
 
@@ -276,7 +273,6 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
 variable (M₁) {M₂}
 
 /-- The constant map is multilinear when `ι` is empty. -/
--- Porting note: Removed [simps] & added simpNF-approved version of the generated lemma manually.
 @[simps (config := .asFn)]
 def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
   toFun := Function.const _ m
@@ -1081,8 +1077,8 @@ map from `Π i, M₁ᵢ ⟶ M₁ᵢ'` to `M ⟶ M₂` via `(fᵢ) ↦ v ↦ g(f�
     MultilinearMap R M₁' M₂ →ₗ[R]
     MultilinearMap R (fun i ↦ M₁ i →ₗ[R] M₁' i) (MultilinearMap R M₁ M₂) where
   toFun g := (LinearMap.applyₗ g).compMultilinearMap compLinearMapMultilinear
-  map_add' := by aesop
-  map_smul' := by aesop
+  map_add' := by simp
+  map_smul' := by simp
 
 end
 
@@ -1159,13 +1155,13 @@ protected def mkPiAlgebraFin : MultilinearMap R (fun _ : Fin n => A) A where
   map_update_add' {dec} m i x y := by
     rw [Subsingleton.elim dec (by infer_instance)]
     have : (List.finRange n).indexOf i < n := by
-      simpa using List.indexOf_lt_length.2 (List.mem_finRange i)
+      simpa using List.indexOf_lt_length_iff.2 (List.mem_finRange i)
     simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, add_mul, this,
       mul_add, add_mul]
   map_update_smul' {dec} m i c x := by
     rw [Subsingleton.elim dec (by infer_instance)]
     have : (List.finRange n).indexOf i < n := by
-      simpa using List.indexOf_lt_length.2 (List.mem_finRange i)
+      simpa using List.indexOf_lt_length_iff.2 (List.mem_finRange i)
     simp [List.ofFn_eq_map, (List.nodup_finRange n).map_update, List.prod_set, this]
 
 variable {R A n}
@@ -1555,13 +1551,11 @@ def MultilinearMap.curryRight (f : MultilinearMap R M M₂) :
   map_update_add' := @fun dec m i x y => by
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     ext z
-    change f (snoc (update m i (x + y)) z) = f (snoc (update m i x) z) + f (snoc (update m i y) z)
-    rw [snoc_update, snoc_update, snoc_update, f.map_update_add]
+    simp
   map_update_smul' := @fun dec m i c x => by
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     ext z
-    change f (snoc (update m i (c • x)) z) = c • f (snoc (update m i x) z)
-    rw [snoc_update, snoc_update, f.map_update_smul]
+    simp
 
 @[simp]
 theorem MultilinearMap.curryRight_apply (f : MultilinearMap R M M₂)

@@ -42,7 +42,8 @@ variable {R R₂ R₃ R₄ E E₂ E₃ E₄ F 𝓕 : Type*} [Semiring R] [Semiri
   [SeminormedAddCommGroup E₄] [Module R E] [Module R₂ E₂] [Module R₃ E₃] [Module R₄ E₄]
   [NormedAddCommGroup F] [Module R F]
 
-/-- A `σ₁₂`-semilinear isometric embedding of a normed `R`-module into an `R₂`-module. -/
+/-- A `σ₁₂`-semilinear isometric embedding of a normed `R`-module into an `R₂`-module,
+denoted as `f : E →ₛₗᵢ[σ₁₂] E₂`. -/
 structure LinearIsometry (σ₁₂ : R →+* R₂) (E E₂ : Type*) [SeminormedAddCommGroup E]
   [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] extends E →ₛₗ[σ₁₂] E₂ where
   norm_map' : ∀ x, ‖toLinearMap x‖ = ‖x‖
@@ -309,7 +310,7 @@ theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] {g : α → E} :
 def id : E →ₗᵢ[R] E :=
   ⟨LinearMap.id, fun _ => rfl⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ((id : E →ₗᵢ[R] E) : E → E) = _root_.id :=
   rfl
 
@@ -402,7 +403,8 @@ theorem subtypeₗᵢ_toContinuousLinearMap : p.subtypeₗᵢ.toContinuousLinear
 
 end Submodule
 
-/-- A semilinear isometric equivalence between two normed vector spaces. -/
+/-- A semilinear isometric equivalence between two normed vector spaces,
+denoted as `f : E ≃ₛₗᵢ[σ₁₂] E₂`. -/
 structure LinearIsometryEquiv (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHomInvPair σ₁₂ σ₂₁]
   [RingHomInvPair σ₂₁ σ₁₂] (E E₂ : Type*) [SeminormedAddCommGroup E] [SeminormedAddCommGroup E₂]
   [Module R E] [Module R₂ E₂] extends E ≃ₛₗ[σ₁₂] E₂ where

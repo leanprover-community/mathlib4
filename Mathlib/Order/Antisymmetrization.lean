@@ -3,8 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.Basic
 import Mathlib.Logic.Relation
+import Mathlib.Order.Hom.Basic
+import Mathlib.Tactic.Tauto
 
 /-!
 # Turning a preorder into a partial order
@@ -27,42 +28,61 @@ such that `a ≤ b` and `b ≤ a`.
 
 open Function OrderDual
 
-variable {α β : Type*}
+variable {α β : Type*} {a b c d : α}
 
 section Relation
 
 variable (r : α → α → Prop)
 
-/-- The antisymmetrization relation. -/
+/-- The antisymmetrization relation `AntisymmRel r` is defined so that
+`AntisymmRel r a b ↔ r a b ∧ r b a`. -/
 def AntisymmRel (a b : α) : Prop :=
   r a b ∧ r b a
 
 theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
-  funext fun _ => funext fun _ => propext and_comm
+  funext₂ fun _ _ ↦ propext and_comm
 
 @[refl]
 theorem antisymmRel_refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
   ⟨refl _, refl _⟩
 
+variable {r} in
+lemma AntisymmRel.rfl [IsRefl α r] (a : α) : AntisymmRel r a a := antisymmRel_refl ..
+
+instance [IsRefl α r] : IsRefl α (AntisymmRel r) where
+  refl := antisymmRel_refl r
+
 variable {r}
 
 @[symm]
-theorem AntisymmRel.symm {a b : α} : AntisymmRel r a b → AntisymmRel r b a :=
+theorem AntisymmRel.symm : AntisymmRel r a b → AntisymmRel r b a :=
   And.symm
 
+instance : IsSymm α (AntisymmRel r) where
+  symm _ _ := AntisymmRel.symm
+
+theorem antisymmRel_comm : AntisymmRel r a b ↔ AntisymmRel r b a :=
+  And.comm
+
 @[trans]
-theorem AntisymmRel.trans [IsTrans α r] {a b c : α} (hab : AntisymmRel r a b)
-    (hbc : AntisymmRel r b c) : AntisymmRel r a c :=
+theorem AntisymmRel.trans [IsTrans α r] (hab : AntisymmRel r a b) (hbc : AntisymmRel r b c) :
+    AntisymmRel r a c :=
   ⟨_root_.trans hab.1 hbc.1, _root_.trans hbc.2 hab.2⟩
 
-instance AntisymmRel.decidableRel [DecidableRel r] : DecidableRel (AntisymmRel r) := fun _ _ =>
-  instDecidableAnd
+instance [IsTrans α r] : IsTrans α (AntisymmRel r) where
+  trans _ _ _ := .trans
+
+instance AntisymmRel.decidableRel [DecidableRel r] : DecidableRel (AntisymmRel r) :=
+  fun _ _ ↦ instDecidableAnd
 
 @[simp]
-theorem antisymmRel_iff_eq [IsRefl α r] [IsAntisymm α r] {a b : α} : AntisymmRel r a b ↔ a = b :=
+theorem antisymmRel_iff_eq [IsRefl α r] [IsAntisymm α r] : AntisymmRel r a b ↔ a = b :=
   antisymm_iff
 
 alias ⟨AntisymmRel.eq, _⟩ := antisymmRel_iff_eq
+
+theorem AntisymmRel.le [LE α] (h : AntisymmRel (· ≤ ·) a b) : a ≤ b := h.1
+theorem AntisymmRel.ge [LE α] (h : AntisymmRel (· ≤ ·) a b) : b ≤ a := h.2
 
 end Relation
 
@@ -112,9 +132,82 @@ end IsPreorder
 
 section Preorder
 
-variable [Preorder α] [Preorder β] {a b : α}
+variable [Preorder α] [Preorder β]
 
-theorem AntisymmRel.image {a b : α} (h : AntisymmRel (· ≤ ·) a b) {f : α → β} (hf : Monotone f) :
+theorem le_iff_lt_or_antisymmRel : a ≤ b ↔ a < b ∨ AntisymmRel (· ≤ ·) a b := by
+  rw [lt_iff_le_not_le, AntisymmRel]
+  tauto
+
+@[trans]
+theorem le_of_le_of_antisymmRel (h₁ : a ≤ b) (h₂ : AntisymmRel (· ≤ ·) b c) : a ≤ c :=
+  h₁.trans h₂.le
+
+@[trans]
+theorem le_of_antisymmRel_of_le (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : b ≤ c) : a ≤ c :=
+  h₁.le.trans h₂
+
+@[trans]
+theorem lt_of_lt_of_antisymmRel (h₁ : a < b) (h₂ : AntisymmRel (· ≤ ·) b c) : a < c :=
+  h₁.trans_le h₂.le
+
+@[trans]
+theorem lt_of_antisymmRel_of_lt (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : b < c) : a < c :=
+  h₁.le.trans_lt h₂
+
+alias ⟨LE.le.lt_or_antisymmRel, _⟩ := le_iff_lt_or_antisymmRel
+alias LE.le.trans_antisymmRel := le_of_le_of_antisymmRel
+alias AntisymmRel.trans_le := le_of_antisymmRel_of_le
+alias LT.lt.trans_antisymmRel := lt_of_lt_of_antisymmRel
+alias AntisymmRel.trans_lt := lt_of_antisymmRel_of_lt
+
+instance : @Trans α α α (· ≤ ·) (AntisymmRel (· ≤ ·)) (· ≤ ·) where
+  trans := le_of_le_of_antisymmRel
+
+instance : @Trans α α α (AntisymmRel (· ≤ ·)) (· ≤ ·) (· ≤ ·) where
+  trans := le_of_antisymmRel_of_le
+
+instance : @Trans α α α (· < ·) (AntisymmRel (· ≤ ·)) (· < ·) where
+  trans := lt_of_lt_of_antisymmRel
+
+instance : @Trans α α α (AntisymmRel (· ≤ ·)) (· < ·) (· < ·) where
+  trans := lt_of_antisymmRel_of_lt
+
+theorem AntisymmRel.le_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
+    a ≤ c ↔ b ≤ d where
+  mp h := (h₁.symm.trans_le h).trans_antisymmRel h₂
+  mpr h := (h₁.trans_le h).trans_antisymmRel h₂.symm
+
+theorem AntisymmRel.le_congr_left (h : AntisymmRel (· ≤ ·) a b) : a ≤ c ↔ b ≤ c :=
+  h.le_congr (antisymmRel_refl _ c)
+
+theorem AntisymmRel.le_congr_right (h : AntisymmRel (· ≤ ·) b c) : a ≤ b ↔ a ≤ c :=
+  (antisymmRel_refl _ a).le_congr h
+
+theorem AntisymmRel.lt_congr (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
+    a < c ↔ b < d where
+  mp h := (h₁.symm.trans_lt h).trans_antisymmRel h₂
+  mpr h := (h₁.trans_lt h).trans_antisymmRel h₂.symm
+
+theorem AntisymmRel.lt_congr_left (h : AntisymmRel (· ≤ ·) a b) : a < c ↔ b < c :=
+  h.lt_congr (antisymmRel_refl _ c)
+
+theorem AntisymmRel.lt_congr_right (h : AntisymmRel (· ≤ ·) b c) : a < b ↔ a < c :=
+  (antisymmRel_refl _ a).lt_congr h
+
+theorem AntisymmRel.antisymmRel_congr
+    (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
+    AntisymmRel (· ≤ ·) a c ↔ AntisymmRel (· ≤ ·) b d :=
+  rel_congr h₁ h₂
+
+theorem AntisymmRel.antisymmRel_congr_left (h : AntisymmRel (· ≤ ·) a b) :
+    AntisymmRel (· ≤ ·) a c ↔ AntisymmRel (· ≤ ·) b c :=
+  rel_congr_left h
+
+theorem AntisymmRel.antisymmRel_congr_right (h : AntisymmRel (· ≤ ·) b c) :
+    AntisymmRel (· ≤ ·) a b ↔ AntisymmRel (· ≤ ·) a c :=
+  rel_congr_right h
+
+theorem AntisymmRel.image (h : AntisymmRel (· ≤ ·) a b) {f : α → β} (hf : Monotone f) :
     AntisymmRel (· ≤ ·) (f a) (f b) :=
   ⟨hf h.1, hf h.2⟩
 

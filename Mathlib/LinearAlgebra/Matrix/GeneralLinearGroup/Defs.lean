@@ -130,6 +130,7 @@ end CoeLemmas
 variable {S T : Type*} [CommRing S] [CommRing T]
 
 /-- A ring homomorphism ``f : R →+* S`` induces a homomorphism ``GLₙ(f) : GLₙ(R) →* GLₙ(S)``. -/
+@[simps! apply_val]
 def map (f : R →+* S) : GL n R →* GL n S := Units.map <| (RingHom.mapMatrix f).toMonoidHom
 
 @[simp]

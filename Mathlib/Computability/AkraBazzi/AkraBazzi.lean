@@ -843,7 +843,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_sub_smoothingFn {p : ℝ} (hp : p ≠ 0)
           (fun z => z ^ (p-1) / (log z ^ 2)) =o[atTop] fun z => z ^ (p-1) / 1 := by
                       simp_rw [div_eq_mul_inv]
                       refine IsBigO.mul_isLittleO (isBigO_refl _ _)
-                        (IsLittleO.inv_rev ?_ (by aesop (add safe Eventually.of_forall)))
+                        (IsLittleO.inv_rev ?_ (by simp))
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)
@@ -867,7 +867,7 @@ lemma isEquivalent_deriv_rpow_p_mul_one_add_smoothingFn {p : ℝ} (hp : p ≠ 0)
           (fun z => -(z ^ (p-1) / (log z ^ 2))) =o[atTop] fun z => z ^ (p-1) / 1 := by
                       simp_rw [isLittleO_neg_left, div_eq_mul_inv]
                       refine IsBigO.mul_isLittleO (isBigO_refl _ _)
-                        (IsLittleO.inv_rev ?_ (by aesop (add safe Eventually.of_forall)))
+                        (IsLittleO.inv_rev ?_ (by simp))
                       rw [isLittleO_const_left]
                       refine Or.inr <| Tendsto.comp tendsto_norm_atTop_atTop ?_
                       exact Tendsto.comp (g := fun z => z ^ 2)

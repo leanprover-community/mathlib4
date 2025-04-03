@@ -238,7 +238,7 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
       rcases M.bisim_lemma P e₂ with ⟨g₂', e₂', e₃, rfl⟩
       cases h'.symm.trans e₁'
       cases h'.symm.trans e₂'
-  · exact (congr_fun (congr_fun e₃ i) c : _)
+  · exact (congr_fun (congr_fun e₃ i) c :)
   · exact IH _ _ (h'' _)
 
 theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equivalence R)
@@ -284,7 +284,7 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     induction Hr
     · rw [← Quot.factor_mk_eq R (Relation.EqvGen R) this]
       rwa [appendFun_comp_id, ← MvFunctor.map_map, ← MvFunctor.map_map, h]
-    all_goals aesop
+    all_goals simp_all
 
 theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
     M.dest P (g <$$> x) = (appendFun g fun x => g <$$> x) <$$> M.dest P x := by

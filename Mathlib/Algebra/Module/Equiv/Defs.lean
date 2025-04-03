@@ -33,8 +33,7 @@ The group structure on automorphisms, `LinearEquiv.automorphismGroup`, is provid
 linear equiv, linear equivalences, linear isomorphism, linear isomorphic
 -/
 
-assert_not_exists Field
-assert_not_exists Pi.module
+assert_not_exists Field Pi.module
 
 open Function
 
@@ -67,11 +66,11 @@ add_decl_doc LinearEquiv.right_inv
 /-- `LinearEquiv.invFun` is a left inverse to the linear equivalence's underlying function. -/
 add_decl_doc LinearEquiv.left_inv
 
-/-- The notation `M ≃ₛₗ[σ] M₂` denotes the type of linear equivalences between `M` and `M₂` over a
+/-- `M ≃ₛₗ[σ] M₂` denotes the type of linear equivalences between `M` and `M₂` over a
 ring homomorphism `σ`. -/
 notation:50 M " ≃ₛₗ[" σ "] " M₂ => LinearEquiv σ M M₂
 
-/-- The notation `M ≃ₗ [R] M₂` denotes the type of linear equivalences between `M` and `M₂` over
+/-- `M ≃ₗ [R] M₂` denotes the type of linear equivalences between `M` and `M₂` over
 a plain linear map `M →ₗ M₂`. -/
 notation:50 M " ≃ₗ[" R "] " M₂ => LinearEquiv (RingHom.id R) M M₂
 
@@ -298,7 +297,7 @@ def trans
     (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃) : M₁ ≃ₛₗ[σ₁₃] M₃ :=
   { e₂₃.toLinearMap.comp e₁₂.toLinearMap, e₁₂.toEquiv.trans e₂₃.toEquiv with }
 
-/-- The notation `e₁ ≪≫ₗ e₂` denotes the composition of the linear equivalences `e₁` and `e₂`. -/
+/-- `e₁ ≪≫ₗ e₂` denotes the composition of the linear equivalences `e₁` and `e₂`. -/
 notation3:80 (name := transNotation) e₁:80 " ≪≫ₗ " e₂:81 =>
   @LinearEquiv.trans _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
     (RingHom.id _) (RingHom.id _) (RingHom.id _) RingHomCompTriple.ids RingHomCompTriple.ids

@@ -286,7 +286,7 @@ composing with `diagramIsoCospan`. -/
 def PullbackCone.isoMk {F : WalkingCospan ⥤ C} (t : Cone F) :
     (Cones.postcompose (diagramIsoCospan.{v} _).hom).obj t ≅
       PullbackCone.mk (t.π.app WalkingCospan.left) (t.π.app WalkingCospan.right)
-        ((t.π.naturality inl).symm.trans (t.π.naturality inr : _)) :=
+        ((t.π.naturality inl).symm.trans (t.π.naturality inr :)) :=
   Cones.ext (Iso.refl _) <| by
     rintro (_ | (_ | _)) <;>
       · dsimp

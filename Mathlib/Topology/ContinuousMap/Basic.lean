@@ -71,7 +71,7 @@ variable (α)
 protected def id : C(α, α) where
   toFun := id
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(ContinuousMap.id α) = id :=
   rfl
 

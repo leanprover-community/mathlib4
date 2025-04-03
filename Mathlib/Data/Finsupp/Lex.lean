@@ -46,6 +46,16 @@ theorem lex_eq_invImage_dfinsupp_lex (r : α → α → Prop) (s : N → N → P
 instance [LT α] [LT N] : LT (Lex (α →₀ N)) :=
   ⟨fun f g ↦ Finsupp.Lex (· < ·) (· < ·) (ofLex f) (ofLex g)⟩
 
+theorem lex_lt_iff [LT α] [LT N] {a b : Lex (α →₀ N)} :
+    a < b ↔ ∃ i, (∀ j, j < i → ofLex a j = ofLex b j) ∧ ofLex a i < ofLex b i :=
+  Finsupp.lex_def
+
+theorem lex_lt_iff_of_unique [Preorder α] [LT N] [Unique α] {a b : Lex (α →₀ N)} :
+    a < b ↔ ofLex a default < ofLex b default := by
+  simp only [lex_lt_iff, Unique.exists_iff, and_iff_right_iff_imp]
+  refine fun _ j hj ↦ False.elim (lt_irrefl j ?_)
+  simpa only [Unique.uniq] using hj
+
 theorem lex_lt_of_lt_of_preorder [Preorder N] (r) [IsStrictOrder α r] {x y : α →₀ N} (hlt : x < y) :
     ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i :=
   DFinsupp.lex_lt_of_lt_of_preorder r (id hlt : x.toDFinsupp < y.toDFinsupp)
@@ -104,6 +114,13 @@ theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
     (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
   fun h1 h2 ↦ ⟨i, h1, h2⟩
 
+theorem lex_le_iff_of_unique [Unique α] {a b : Lex (α →₀ N)} :
+    a ≤ b ↔ ofLex a default ≤ ofLex b default := by
+  simp only [le_iff_eq_or_lt, EmbeddingLike.apply_eq_iff_eq]
+  apply or_congr _ lex_lt_iff_of_unique
+  conv_lhs => rw [← toLex_ofLex a, ← toLex_ofLex b, toLex_inj]
+  simp only [Finsupp.ext_iff, Unique.forall_iff]
+
 end NHasZero
 
 section Covariants
@@ -149,7 +166,8 @@ section OrderedAddMonoid
 
 variable [LinearOrder α]
 
-instance Lex.orderBot [CanonicallyOrderedAddCommMonoid N] : OrderBot (Lex (α →₀ N)) where
+instance Lex.orderBot [AddCommMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N] :
+    OrderBot (Lex (α →₀ N)) where
   bot := 0
   bot_le _ := Finsupp.toLex_monotone bot_le
 

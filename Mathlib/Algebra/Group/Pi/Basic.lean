@@ -23,10 +23,7 @@ comment `--pi_instance` is inserted before all fields which were previously deri
 -/
 
 -- We enforce to only import `Algebra.Group.Defs` and basic logic
-assert_not_exists Set.range
-assert_not_exists MonoidHom
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists Set.range MonoidHom MonoidWithZero DenselyOrdered
 
 open Function
 

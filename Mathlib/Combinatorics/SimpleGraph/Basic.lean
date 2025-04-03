@@ -37,13 +37,9 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
   look like.
 -/
 
--- Porting note: using `aesop` for automation
-
--- Porting note: These attributes are needed to use `aesop` as a replacement for `obviously`
 attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Symmetric
 attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Irreflexive
 
--- Porting note: a thin wrapper around `aesop` for graph lemmas, modelled on `aesop_cat`
 /--
 A variant of the `aesop` tactic for use in the graph library. Changes relative
 to standard `aesop`:
@@ -93,7 +89,6 @@ structure SimpleGraph (V : Type u) where
   Adj : V → V → Prop
   symm : Symmetric Adj := by aesop_graph
   loopless : Irreflexive Adj := by aesop_graph
--- Porting note: changed `obviously` to `aesop` in the `structure`
 
 initialize_simps_projections SimpleGraph (Adj → adj)
 
@@ -139,7 +134,6 @@ theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
     (SimpleGraph.fromRel r).Adj v w ↔ v ≠ w ∧ (r v w ∨ r w v) :=
   Iff.rfl
 
--- Porting note: attributes needed for `completeGraph`
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.symm
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.irrefl
 
@@ -196,6 +190,12 @@ theorem adj_injective : Injective (Adj : SimpleGraph V → V → V → Prop) :=
 @[simp]
 theorem adj_inj {G H : SimpleGraph V} : G.Adj = H.Adj ↔ G = H :=
   adj_injective.eq_iff
+
+theorem adj_congr_of_sym2 {u v w x : V} (h : s(u, v) = s(w, x)) : G.Adj u v ↔ G.Adj w x := by
+  simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at h
+  cases' h with hl hr
+  · rw [hl.1, hl.2]
+  · rw [hr.1, hr.2, adj_comm]
 
 section Order
 

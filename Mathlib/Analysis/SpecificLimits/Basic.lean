@@ -8,7 +8,7 @@ import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.InfiniteSum.Real
-import Mathlib.Topology.Instances.EReal
+import Mathlib.Topology.Instances.EReal.Lemmas
 
 /-!
 # A collection of specific limit computations
@@ -109,7 +109,7 @@ theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*} [LinearOrderedSe
     {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) :
     (fun x ↦ f x / g x * g x) =ᶠ[l] fun x ↦ f x :=
   div_mul_cancel <| hg.mono_right <| le_principal_iff.mpr <|
-    mem_of_superset (Ioi_mem_atTop 0) <| by aesop
+    mem_of_superset (Ioi_mem_atTop 0) <| by simp
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/

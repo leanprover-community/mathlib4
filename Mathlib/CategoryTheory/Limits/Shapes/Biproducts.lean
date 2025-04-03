@@ -67,7 +67,6 @@ open scoped Classical in
 * morphisms `π j : pt ⟶ F j` and `ι j : F j ⟶ pt` for each `j`,
 * such that `ι j ≫ π j'` is the identity when `j = j'` and zero otherwise.
 -/
--- @[nolint has_nonempty_instance] Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed
 structure Bicone (F : J → C) where
   pt : C
   π : ∀ j, pt ⟶ F j
@@ -245,7 +244,6 @@ theorem π_of_isColimit {f : J → C} {t : Bicone f} (ht : IsColimit t.toCocone)
     simp [t.ι_π]
 
 /-- Structure witnessing that a bicone is both a limit cone and a colimit cocone. -/
--- @[nolint has_nonempty_instance] Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed
 structure IsBilimit {F : J → C} (B : Bicone F) where
   isLimit : IsLimit B.toCone
   isColimit : IsColimit B.toCocone
@@ -280,7 +278,7 @@ def whiskerToCone {f : J → C} (c : Bicone f) (g : K ≃ J) :
     (c.whisker g).toCone ≅
       (Cones.postcompose (Discrete.functorComp f g).inv).obj
         (c.toCone.whisker (Discrete.functor (Discrete.mk ∘ g))) :=
-  Cones.ext (Iso.refl _) (by aesop_cat)
+  Cones.ext (Iso.refl _) (by simp)
 
 /-- Taking the cocone of a whiskered bicone results in a cone isomorphic to one gained
 by whiskering the cocone and precomposing with a suitable isomorphism. -/
@@ -288,7 +286,7 @@ def whiskerToCocone {f : J → C} (c : Bicone f) (g : K ≃ J) :
     (c.whisker g).toCocone ≅
       (Cocones.precompose (Discrete.functorComp f g).hom).obj
         (c.toCocone.whisker (Discrete.functor (Discrete.mk ∘ g))) :=
-  Cocones.ext (Iso.refl _) (by aesop_cat)
+  Cocones.ext (Iso.refl _) (by simp)
 
 /-- Whiskering a bicone with an equivalence between types preserves being a bilimit bicone. -/
 noncomputable def whiskerIsBilimitIff {f : J → C} (c : Bicone f) (g : K ≃ J) :
@@ -313,7 +311,6 @@ end Bicone
 
 /-- A bicone over `F : J → C`, which is both a limit cone and a colimit cocone.
 -/
--- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed; linter not ported yet
 structure LimitBicone (F : J → C) where
   bicone : Bicone F
   isBilimit : bicone.IsBilimit
@@ -579,7 +576,7 @@ theorem biproduct.map_eq_map' {f g : J → C} [HasBiproduct f] [HasBiproduct g] 
   dsimp
   rw [biproduct.ι_π_assoc, biproduct.ι_π]
   split_ifs with h
-  · subst h; rw [eqToHom_refl, Category.id_comp]; erw [Category.comp_id]
+  · subst h; simp
   · simp
 
 @[reassoc (attr := simp)]
@@ -625,7 +622,7 @@ instance biproduct.map_epi {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p 
       ι_colimMap_assoc, Discrete.functor_obj_eq_as, Discrete.natTrans_app, colimit.ι_desc_assoc,
       Cofan.mk_pt, Cofan.mk_ι_app, ι_π, ι_π_assoc]
     split
-    all_goals aesop
+    all_goals simp_all
   rw [this]
   infer_instance
 
@@ -1103,7 +1100,6 @@ variable {C}
 maps from `X` to both `P` and `Q`, and maps from both `P` and `Q` to `X`,
 so that `inl ≫ fst = 𝟙 P`, `inl ≫ snd = 0`, `inr ≫ fst = 0`, and `inr ≫ snd = 𝟙 Q`
 -/
--- @[nolint has_nonempty_instance] Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed
 structure BinaryBicone (P Q : C) where
   pt : C
   fst : pt ⟶ P
@@ -1353,7 +1349,6 @@ def toBinaryBiconeIsColimit {X Y : C} (b : Bicone (pairFunction X Y)) :
 end Bicone
 
 /-- Structure witnessing that a binary bicone is a limit cone and a limit cocone. -/
--- @[nolint has_nonempty_instance] Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed
 structure BinaryBicone.IsBilimit {P Q : C} (b : BinaryBicone P Q) where
   isLimit : IsLimit b.toCone
   isColimit : IsColimit b.toCocone
@@ -1380,7 +1375,6 @@ def Bicone.toBinaryBiconeIsBilimit {X Y : C} (b : Bicone (pairFunction X Y)) :
 
 /-- A bicone over `P Q : C`, which is both a limit cone and a colimit cocone.
 -/
--- @[nolint has_nonempty_instance] Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed
 structure BinaryBiproductData (P Q : C) where
   bicone : BinaryBicone P Q
   isBilimit : bicone.IsBilimit
@@ -1757,7 +1751,7 @@ instance biprod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
 instance prod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     [Epi g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Epi (prod.map f g) := by
   rw [show prod.map f g = (biprod.isoProd _ _).inv ≫ biprod.map f g ≫
-    (biprod.isoProd _ _).hom by aesop]
+    (biprod.isoProd _ _).hom by simp]
   infer_instance
 
 instance biprod.map_mono {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
@@ -1769,7 +1763,7 @@ instance biprod.map_mono {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
 instance coprod.map_mono {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
     [Mono g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Mono (coprod.map f g) := by
   rw [show coprod.map f g = (biprod.isoCoprod _ _).inv ≫ biprod.map f g ≫
-    (biprod.isoCoprod _ _).hom by aesop]
+    (biprod.isoCoprod _ _).hom by simp]
   infer_instance
 
 section BiprodKernel

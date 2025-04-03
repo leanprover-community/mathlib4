@@ -468,7 +468,7 @@ theorem mem_toSubtype_iff {p : β → Prop} {f : α → β} {a : α} {b : Subtyp
 protected def id (α : Type*) : α →. α :=
   Part.some
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id (α : Type*) : ((id : α → α) : α →. α) = PFun.id α :=
   rfl
 

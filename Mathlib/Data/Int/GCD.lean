@@ -3,13 +3,13 @@ Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
 import Mathlib.Order.Bounds.Defs
+import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Extended GCD and divisibility over ℤ
@@ -152,8 +152,6 @@ namespace Int
 theorem gcd_def (i j : ℤ) : gcd i j = Nat.gcd i.natAbs j.natAbs := rfl
 
 @[simp, norm_cast] protected lemma gcd_natCast_natCast (m n : ℕ) : gcd ↑m ↑n = m.gcd n := rfl
-
-@[deprecated (since := "2024-05-25")] alias coe_nat_gcd := Int.gcd_natCast_natCast
 
 /-- The extended GCD `a` value in the equation `gcd x y = x * a + y * b`. -/
 def gcdA : ℤ → ℤ → ℤ

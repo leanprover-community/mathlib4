@@ -42,9 +42,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid
-assert_not_exists Multiset
-assert_not_exists Ring
+assert_not_exists OrderedAddCommMonoid Multiset Ring
 
 open Function
 open scoped Int

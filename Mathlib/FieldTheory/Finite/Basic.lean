@@ -3,10 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Joey van Langen, Casper Putz
 -/
+import Mathlib.Algebra.CharP.Reduced
+import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
-import Mathlib.Algebra.CharP.Reduced
-import Mathlib.Tactic.ApplyFun
 
 /-!
 # Finite fields
@@ -248,6 +248,10 @@ theorem card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : 
 theorem card' : ∃ (p : ℕ) (n : ℕ+), Nat.Prime p ∧ Fintype.card K = p ^ (n : ℕ) :=
   let ⟨p, hc⟩ := CharP.exists K
   ⟨p, @FiniteField.card K _ _ p hc⟩
+
+lemma isPrimePow_card : IsPrimePow (Fintype.card K) := by
+  obtain ⟨p, n, hp, hn⟩ := card' K
+  exact ⟨p, n, Nat.prime_iff.mp hp, n.prop, hn.symm⟩
 
 -- Porting note: this was a `simp` lemma with a 5 lines proof.
 theorem cast_card_eq_zero : (q : K) = 0 := by

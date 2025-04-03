@@ -77,8 +77,6 @@ class SeqCompactSpace : Prop where
 
 export SeqCompactSpace (isSeqCompact_univ)
 
-@[deprecated (since := "2024-07-25")] alias seq_compact_univ := isSeqCompact_univ
-
 /-- A topological space is called a *Fréchet-Urysohn space*, if the sequential closure of any set
 is equal to its closure. Since one of the inclusions is trivial, we require only the non-trivial one
 in the definition. -/

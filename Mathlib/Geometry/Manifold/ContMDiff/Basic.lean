@@ -6,15 +6,15 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-!
-## Basic properties of smooth functions between manifolds
+## Basic properties of `C^n` functions between manifolds
 
-In this file, we show that standard operations on smooth maps between smooth manifolds are smooth:
+In this file, we show that standard operations on `C^n` maps between manifolds are `C^n` :
 * `ContMDiffOn.comp` gives the invariance of the `Cⁿ` property under composition
 * `contMDiff_id` gives the smoothness of the identity
 * `contMDiff_const` gives the smoothness of constant functions
-* `contMDiff_inclusion` shows that the inclusion between open sets of a topological space is smooth
+* `contMDiff_inclusion` shows that the inclusion between open sets of a topological space is `C^n`
 * `contMDiff_isOpenEmbedding` shows that if `M` has a `ChartedSpace` structure induced by an open
-embedding `e : M → H`, then `e` is smooth.
+embedding `e : M → H`, then `e` is `C^n`.
 
 ## Tags
 chain rule, manifolds, higher derivative
@@ -22,7 +22,7 @@ chain rule, manifolds, higher derivative
 -/
 
 open Filter Function Set Topology
-open scoped Manifold
+open scoped Manifold ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare the prerequisites for a charted space `M` over the pair `(E, H)`.
@@ -41,9 +41,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 section ChartedSpace
 variable [ChartedSpace H M] [ChartedSpace H' M'] [ChartedSpace H'' M'']
   -- declare functions, sets, points and smoothness indices
-  {f : M → M'} {s : Set M} {x : M} {n : ℕ∞}
+  {f : M → M'} {s : Set M} {x : M} {n : WithTop ℕ∞}
 
-/-! ### Smoothness of the composition of smooth functions between manifolds -/
+/-! ### Regularity of the composition of `C^n` functions between manifolds -/
 
 section Composition
 
@@ -151,7 +151,7 @@ theorem ContMDiffOn.comp_contMDiff {t : Set M'} {g : M' → M''} (hg : ContMDiff
 
 end Composition
 
-/-! ### The identity is smooth -/
+/-! ### The identity is `C^n` -/
 
 section id
 
@@ -178,7 +178,7 @@ theorem contMDiffWithinAt_id : ContMDiffWithinAt I I n (id : M → M) s x :=
 
 end id
 
-/-! ### Constants are smooth -/
+/-! ### Constants are `C^n` -/
 
 section id
 variable {c : M'}
@@ -251,7 +251,7 @@ theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
 
 @[to_additive contMDiffWithinAt_of_not_mem]
 theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
-    (hx : x ∉ mulTSupport f) (n : ℕ∞) (s : Set M) : ContMDiffWithinAt I I' n f s x := by
+    (hx : x ∉ mulTSupport f) (n : WithTop ℕ∞) (s : Set M) : ContMDiffWithinAt I I' n f s x := by
   apply contMDiffWithinAt_const.congr_of_eventuallyEq
     (eventually_nhdsWithin_of_eventually_nhds <| not_mem_mulTSupport_iff_eventuallyEq.mp hx)
     (image_eq_one_of_nmem_mulTSupport hx)
@@ -259,27 +259,28 @@ theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
 /-- `f` is continuously differentiable at each point outside of its `mulTSupport`. -/
 @[to_additive contMDiffAt_of_not_mem]
 theorem contMDiffAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
-    (hx : x ∉ mulTSupport f) (n : ℕ∞) : ContMDiffAt I I' n f x :=
+    (hx : x ∉ mulTSupport f) (n : WithTop ℕ∞) : ContMDiffAt I I' n f x :=
   contMDiffWithinAt_of_not_mem_mulTSupport hx n univ
 
 
-/-! ### The inclusion map from one open set to another is smooth -/
+/-! ### The inclusion map from one open set to another is `C^n` -/
 
 section Inclusion
 
 open TopologicalSpace
 
-theorem contMDiffAt_subtype_iff {n : ℕ∞} {U : Opens M} {f : M → M'} {x : U} :
+theorem contMDiffAt_subtype_iff {n : WithTop ℕ∞} {U : Opens M} {f : M → M'} {x : U} :
     ContMDiffAt I I' n (fun x : U ↦ f x) x ↔ ContMDiffAt I I' n f x :=
   ((contDiffWithinAt_localInvariantProp n).liftPropAt_iff_comp_subtype_val _ _).symm
 
 @[deprecated (since := "2024-11-20")] alias contMdiffAt_subtype_iff := contMDiffAt_subtype_iff
 
-theorem contMDiff_subtype_val {n : ℕ∞} {U : Opens M} : ContMDiff I I n (Subtype.val : U → M) :=
+theorem contMDiff_subtype_val {n : WithTop ℕ∞} {U : Opens M} :
+    ContMDiff I I n (Subtype.val : U → M) :=
   fun _ ↦ contMDiffAt_subtype_iff.mpr contMDiffAt_id
 
 @[to_additive]
-theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f : U → M'}
+theorem ContMDiff.extend_one [T2Space M] [One M'] {n : WithTop ℕ∞} {U : Opens M} {f : U → M'}
     (supp : HasCompactMulSupport f) (diff : ContMDiff I I' n f) :
     ContMDiff I I' n (Subtype.val.extend f 1) := fun x ↦ by
   refine contMDiff_of_mulTSupport (fun x h ↦ ?_) _
@@ -290,7 +291,7 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f 
   rw [extend_comp Subtype.val_injective]
   exact diff.contMDiffAt
 
-theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
+theorem contMDiff_inclusion {n : WithTop ℕ∞} {U V : Opens M} (h : U ≤ V) :
     ContMDiff I I n (Opens.inclusion h : U → V) := by
   rintro ⟨x, hx : x ∈ U⟩
   apply (contDiffWithinAt_localInvariantProp n).liftProp_inclusion
@@ -312,17 +313,17 @@ end Inclusion
 
 end ChartedSpace
 
-/-! ### Open embeddings and their inverses are smooth -/
+/-! ### Open embeddings and their inverses are `C^n` -/
 
 section
 
-variable {e : M → H} (h : IsOpenEmbedding e) {n : WithTop ℕ}
+variable {e : M → H} (h : IsOpenEmbedding e) {n : WithTop ℕ∞}
 
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
-then `e` is smooth. -/
+then `e` is `C^n`. -/
 lemma contMDiff_isOpenEmbedding [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiff I I n e := by
-  haveI := h.singleton_smoothManifoldWithCorners (I := I)
+  haveI := h.isManifold_singleton (I := I) (n := ω)
   rw [@contMDiff_iff _ _ _ _ _ _ _ _ _ _ h.singletonChartedSpace]
   use h.continuous
   intros x y
@@ -347,11 +348,11 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
 alias contMDiff_openEmbedding := contMDiff_isOpenEmbedding
 
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
-then the inverse of `e` is smooth. -/
+then the inverse of `e` is `C^n`. -/
 lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiffOn I I
       n (IsOpenEmbedding.toPartialHomeomorph e h).symm (range e) := by
-  haveI := h.singleton_smoothManifoldWithCorners (I := I)
+  haveI := h.isManifold_singleton (I := I) (n := ω)
   rw [@contMDiffOn_iff]
   constructor
   · rw [← h.toPartialHomeomorph_target]
@@ -376,7 +377,7 @@ variable [ChartedSpace H M]
 variable [Nonempty M'] {e' : M' → H'} (h' : IsOpenEmbedding e')
 
 /-- Let `M'` be a manifold whose chart structure is given by an open embedding `e'` into its model
-space `H'`. Then the smoothness of `e' ∘ f : M → H'` implies the smoothness of `f`.
+space `H'`. If `e' ∘ f : M → H'` is `C^n`, then `f` is `C^n`.
 
 This is useful, for example, when `e' ∘ f = g ∘ e` for smooth maps `e : M → X` and `g : X → H'`. -/
 lemma ContMDiff.of_comp_isOpenEmbedding {f : M → M'} (hf : ContMDiff I I' n (e' ∘ f)) :

@@ -621,7 +621,6 @@ variable (M)
 /-- A `NeWord M i j` is a representation of a non-empty reduced words where the first letter comes
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
 concatenation, and thus provides a useful induction principle. -/
---@[nolint has_nonempty_instance] Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): commented out
 inductive NeWord : ι → ι → Type _
   | singleton : ∀ {i : ι} (x : M i), x ≠ 1 → NeWord i i
   | append : ∀ {i j k l} (_w₁ : NeWord i j) (_hne : j ≠ k) (_w₂ : NeWord k l), NeWord i l
@@ -812,6 +811,8 @@ open Pointwise
 
 open Cardinal
 
+open scoped Function -- required for scoped `on` notation
+
 variable {G : Type*} [Group G]
 variable {H : ι → Type*} [∀ i, Group (H i)]
 variable (f : ∀ i, H i →* G)
@@ -834,7 +835,7 @@ theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
   · calc
       lift f (NeWord.append w₁ hne w₂).prod • X k = lift f w₁.prod • lift f w₂.prod • X k := by
         simp [MulAction.mul_smul]
-      _ ⊆ lift f w₁.prod • X _ := set_smul_subset_set_smul_iff.mpr (hIw₂ hk)
+      _ ⊆ lift f w₁.prod • X _ := smul_set_subset_smul_set_iff.mpr (hIw₂ hk)
       _ ⊆ X i := hIw₁ hne
 
 include hXnonempty hXdisj
@@ -892,15 +893,7 @@ theorem lift_word_prod_nontrivial_of_not_empty {i j} (w : NeWord H i j) :
         simpa using heq
       · change i ≠ k at hh
         change j ≠ k at hl
-        obtain ⟨h, hn1, -⟩ := Cardinal.three_le hcard 1 1
-        let w' : NeWord H k k :=
-          NeWord.append (NeWord.append (NeWord.singleton h hn1) hh.symm w) hl
-            (NeWord.singleton h⁻¹ (inv_ne_one.mpr hn1))
-        have hw' : lift f w'.prod ≠ 1 :=
-          lift_word_prod_nontrivial_of_head_eq_last f X hXnonempty hXdisj hpp w'
-        intro heq1
-        apply hw'
-        simp [w', heq1]
+        exact lift_word_prod_nontrivial_of_other_i f X hXnonempty hXdisj hpp w hh.symm hl.symm
 
 include hcard in
 theorem empty_of_word_prod_eq_one {w : Word H} (h : lift f w.prod = 1) :
@@ -965,6 +958,8 @@ def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
 section PingPongLemma
 
 open Pointwise Cardinal
+
+open scoped Function -- required for scoped `on` notation
 
 variable [Nontrivial ι]
 variable {G : Type u_1} [Group G] (a : ι → G)

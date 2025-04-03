@@ -21,12 +21,11 @@ Furthermore, we say that `f` has compact support if the topological support of `
 * `mulTSupport` & `tsupport`
 * `HasCompactMulSupport` & `HasCompactSupport`
 
-## Implementation Notes
+## TODO
 
-* We write all lemmas for multiplicative functions, and use `@[to_additive]` to get the more common
-  additive versions.
-* We do not put the definitions in the `Function` namespace, following many other topological
-  definitions that are in the root namespace (compare `Embedding` vs `Function.Embedding`).
+The definitions have been put in the root namespace following many other topological definitions,
+like `Embedding`. Since then, `Embedding` was renamed to `Topology.IsEmbedding`, so it might be
+worth reconsidering namespacing the definitions here.
 -/
 
 
@@ -339,9 +338,6 @@ variable {f : α → R} {f' : α → M}
 theorem HasCompactSupport.smul_right (hf : HasCompactSupport f) : HasCompactSupport (f • f') := by
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
   exact hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, zero_smul]
-
-@[deprecated (since := "2024-06-05")]
-alias HasCompactSupport.smul_left' := HasCompactSupport.smul_left
 
 end SMulWithZero
 

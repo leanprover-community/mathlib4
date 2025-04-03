@@ -32,26 +32,6 @@ open Denumerable Encodable Function
 
 namespace Nat
 
--- Porting note: elim is no longer required because lean 4 is better
--- at inferring motive types (I think this is the reason)
--- and worst case, we can always explicitly write (motive := fun _ => C)
--- without having to then add all the other underscores
-
--- /-- The non-dependent recursor on naturals. -/
--- def elim {C : Sort*} : C → (ℕ → C → C) → ℕ → C :=
---   @Nat.rec fun _ => C
--- example {C : Sort*} (base : C) (succ : ℕ → C → C) (a : ℕ) :
---   a.elim base succ = a.rec base succ := rfl
-
--- Porting note: cases is no longer required because lean 4 is better
--- at inferring motive types (I think this is the reason)
-
--- /-- Cases on whether the input is 0 or a successor. -/
--- def cases {C : Sort*} (a : C) (f : ℕ → C) : ℕ → C :=
---   Nat.elim a fun n _ => f n
--- example {C : Sort*} (a : C) (f : ℕ → C) (n : ℕ) :
---   n.cases a f = n.casesOn a f := rfl
-
 /-- Calls the given function on a pair of entries `n`, encoded via the pairing function. -/
 @[simp, reducible]
 def unpaired {α} (f : ℕ → ℕ → α) (n : ℕ) : α :=
@@ -353,7 +333,7 @@ theorem const (x : σ) : Primrec₂ fun (_ : α) (_ : β) => x :=
   Primrec.const _
 
 protected theorem pair : Primrec₂ (@Prod.mk α β) :=
-  .pair .fst .snd
+  Primrec.pair .fst .snd
 
 theorem left : Primrec₂ fun (a : α) (_ : β) => a :=
   .fst
@@ -574,7 +554,7 @@ theorem nat_le : PrimrecRel ((· ≤ ·) : ℕ → ℕ → Prop) :=
   (nat_casesOn nat_sub (const true) (const false).to₂).of_eq fun p => by
     dsimp [swap]
     cases' e : p.1 - p.2 with n
-    · simp [tsub_eq_zero_iff_le.1 e]
+    · simp [Nat.sub_eq_zero_iff_le.1 e]
     · simp [not_le.2 (Nat.lt_of_sub_eq_succ e)]
 
 theorem nat_min : Primrec₂ (@min ℕ _) :=
@@ -611,10 +591,6 @@ theorem _root_.PrimrecPred.or {p q : α → Prop} [DecidablePred p] [DecidablePr
     (hp : PrimrecPred p) (hq : PrimrecPred q) : PrimrecPred fun a => p a ∨ q a :=
   (Primrec.or.comp hp hq).of_eq fun n => by simp
 
--- Porting note: It is unclear whether we want to boolean versions
--- of these lemmas, just the prop versions, or both
--- The boolean versions are often actually easier to use
--- but did not exist in Lean 3
 protected theorem beq [DecidableEq α] : Primrec₂ (@BEq.beq α _) :=
   have : PrimrecRel fun a b : ℕ => a = b :=
     (PrimrecPred.and nat_le nat_le.swap).of_eq fun a => by simp [le_antisymm_iff]
@@ -1107,9 +1083,6 @@ instance vector {n} : Primcodable (List.Vector α n) :=
 instance finArrow {n} : Primcodable (Fin n → α) :=
   ofEquiv _ (Equiv.vectorEquivFin _ _).symm
 
--- Porting note: Equiv.arrayEquivFin is not ported yet
--- instance array {n} : Primcodable (Array' n α) :=
---   ofEquiv _ (Equiv.arrayEquivFin _ _)
 
 section ULower
 
@@ -1344,7 +1317,7 @@ theorem if_lt {n a b f g} (ha : @Primrec' n a) (hb : @Primrec' n b) (hf : @Primr
     (hg : @Primrec' n g) : @Primrec' n fun v => if a v < b v then f v else g v :=
   (prec' (sub.comp₂ _ hb ha) hg (tail <| tail hf)).of_eq fun v => by
     cases e : b v - a v
-    · simp [not_lt.2 (tsub_eq_zero_iff_le.mp e)]
+    · simp [not_lt.2 (Nat.sub_eq_zero_iff_le.mp e)]
     · simp [Nat.lt_of_sub_eq_succ e]
 
 theorem natPair : @Primrec' 2 fun v => v.head.pair v.tail.head :=

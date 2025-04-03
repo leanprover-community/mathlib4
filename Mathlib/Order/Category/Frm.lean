@@ -5,8 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Order.Category.Lat
 import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Topology.Category.CompHaus.Basic
-import Mathlib.Topology.Sets.Opens
+import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 
 /-!
 # The category of frames
@@ -21,7 +20,7 @@ This file defines `Frm`, the category of frames.
 
 universe u
 
-open CategoryTheory Opposite Order TopologicalSpace
+open CategoryTheory Order
 
 
 /-- The category of frames. -/
@@ -57,11 +56,11 @@ instance bundledHom : BundledHom Hom where
   comp _ _ _ := FrameHom.comp
   hom_ext _ _ := DFunLike.coe_injective
 
--- Porting note: Originally `deriving instance LargeCategory, ConcreteCategory for Frm`
+-- Porting note: Originally `deriving instance LargeCategory, HasForget for Frm`
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
 deriving instance LargeCategory, Category for Frm
 
-instance : ConcreteCategory Frm := by
+instance : HasForget Frm := by
   unfold Frm
   infer_instance
 
@@ -83,14 +82,3 @@ def Iso.mk {α β : Frm.{u}} (e : α ≃o β) : α ≅ β where
     exact e.apply_symm_apply _
 
 end Frm
-
-/-- The forgetful functor from `TopCatᵒᵖ` to `Frm`. -/
-@[simps]
-def topCatOpToFrm : TopCatᵒᵖ ⥤ Frm where
-  obj X := Frm.of (Opens (unop X : TopCat))
-  map f := Opens.comap <| Quiver.Hom.unop f
-  map_id _ := Opens.comap_id
-
--- Note, `CompHaus` is too strong. We only need `T0Space`.
-instance CompHausOpToFrame.faithful : (compHausToTop.op ⋙ topCatOpToFrm.{u}).Faithful :=
-  ⟨fun h => Quiver.Hom.unop_inj <| Opens.comap_injective h⟩

@@ -75,7 +75,7 @@ theorem Spec.topMap_comp {R S T : CommRingCat.{u}} (f : R ⟶ S) (g : S ⟶ T) :
 -- if more is needed, add them here
 /-- The spectrum, as a contravariant functor from commutative rings to topological spaces.
 -/
-@[simps! obj map]
+@[simps!]
 def Spec.toTop : CommRingCat.{u}ᵒᵖ ⥤ TopCat where
   obj R := Spec.topObj (unop R)
   map {_ _} f := Spec.topMap f.unop
@@ -280,12 +280,8 @@ section SpecΓ
 open AlgebraicGeometry.LocallyRingedSpace
 
 /-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`. -/
-@[simps!]
 def toSpecΓ (R : CommRingCat.{u}) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
   StructureSheaf.toOpen R ⊤
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] AlgebraicGeometry.toSpecΓ_hom_apply_coe
 
 instance isIso_toSpecΓ (R : CommRingCat.{u}) : IsIso (toSpecΓ R) := by
   cases R; apply StructureSheaf.isIso_to_global
@@ -424,7 +420,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
     change PrimeSpectrum.basicOpen r ≤ U at hrU
     apply_fun (Spec.topMap (CommRingCat.ofHom (algebraMap R S)) _* (structureSheaf S).1).map
         (homOfLE hrU).op at e
-    simp only [Functor.op_map, map_zero, ← comp_apply, toOpen_res] at e
+    simp only [Functor.op_map, map_zero, ← CategoryTheory.comp_apply, toOpen_res] at e
     have : toOpen S (PrimeSpectrum.basicOpen <| algebraMap R S r) x = 0 := by
       refine Eq.trans ?_ e; rfl
     have :=

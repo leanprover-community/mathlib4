@@ -68,12 +68,18 @@ theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * 
   mul_comm b a ▸ mul_comm c a ▸ ENNReal.mul_left_strictMono h0 hinf bc
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
-theorem mul_eq_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
+protected theorem mul_right_inj (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b = a * c ↔ b = c :=
   (mul_left_strictMono h0 hinf).injective.eq_iff
 
+@[deprecated (since := "2025-01-20")]
+alias mul_eq_mul_left := ENNReal.mul_right_inj
+
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
-theorem mul_eq_mul_right : c ≠ 0 → c ≠ ∞ → (a * c = b * c ↔ a = b) :=
-  mul_comm c a ▸ mul_comm c b ▸ mul_eq_mul_left
+protected theorem mul_left_inj (h0 : c ≠ 0) (hinf : c ≠ ∞) : a * c = b * c ↔ a = b :=
+  mul_comm c a ▸ mul_comm c b ▸ ENNReal.mul_right_inj h0 hinf
+
+@[deprecated (since := "2025-01-20")]
+alias mul_eq_mul_right := ENNReal.mul_left_inj
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
 theorem mul_le_mul_left (h0 : a ≠ 0) (hinf : a ≠ ∞) : a * b ≤ a * c ↔ b ≤ c :=
@@ -92,17 +98,17 @@ theorem mul_lt_mul_right : c ≠ 0 → c ≠ ∞ → (a * c < b * c ↔ a < b) :
   mul_comm c a ▸ mul_comm c b ▸ mul_lt_mul_left
 
 protected lemma mul_eq_left (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * b = a ↔ b = 1 := by
-  simpa using ENNReal.mul_eq_mul_left ha₀ ha (c := 1)
+  simpa using ENNReal.mul_right_inj ha₀ ha (c := 1)
 
 protected lemma mul_eq_right (hb₀ : b ≠ 0) (hb : b ≠ ∞) : a * b = b ↔ a = 1 := by
-  simpa using ENNReal.mul_eq_mul_right hb₀ hb (b := 1)
+  simpa using ENNReal.mul_left_inj hb₀ hb (b := 1)
 
 end Mul
 
 section OperationsAndOrder
 
 protected theorem pow_pos : 0 < a → ∀ n : ℕ, 0 < a ^ n :=
-  CanonicallyOrderedCommSemiring.pow_pos
+  CanonicallyOrderedAdd.pow_pos
 
 protected theorem pow_ne_zero : a ≠ 0 → ∀ n : ℕ, a ^ n ≠ 0 := by
   simpa only [pos_iff_ne_zero] using ENNReal.pow_pos
@@ -213,7 +219,7 @@ theorem mul_self_lt_top_iff {a : ℝ≥0∞} : a * a < ⊤ ↔ a < ⊤ := by
   exact zero_lt_top
 
 theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b :=
-  CanonicallyOrderedCommSemiring.mul_pos
+  CanonicallyOrderedAdd.mul_pos
 
 theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=
   mul_pos_iff.2 ⟨pos_iff_ne_zero.2 ha, pos_iff_ne_zero.2 hb⟩
@@ -318,9 +324,6 @@ theorem sub_ne_top (ha : a ≠ ∞) : a - b ≠ ∞ := mt sub_eq_top_iff.mp <| m
 @[simp, norm_cast]
 theorem natCast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℝ≥0∞) := by
   rw [← coe_natCast, Nat.cast_tsub, coe_sub, coe_natCast, coe_natCast]
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_sub := natCast_sub
 
 /-- See `ENNReal.sub_eq_of_eq_add'` for a version assuming that `a = c + b` itself is finite rather
 than `b`. -/
@@ -512,13 +515,13 @@ theorem smul_def {M : Type*} [MulAction ℝ≥0∞ M] (c : ℝ≥0) (x : M) : c 
   rfl
 
 instance {M N : Type*} [MulAction ℝ≥0∞ M] [MulAction ℝ≥0∞ N] [SMul M N] [IsScalarTower ℝ≥0∞ M N] :
-    IsScalarTower ℝ≥0 M N where smul_assoc r := (smul_assoc (r : ℝ≥0∞) : _)
+    IsScalarTower ℝ≥0 M N where smul_assoc r := smul_assoc (r : ℝ≥0∞)
 
 instance smulCommClass_left {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass ℝ≥0∞ M N] :
-    SMulCommClass ℝ≥0 M N where smul_comm r := (smul_comm (r : ℝ≥0∞) : _)
+    SMulCommClass ℝ≥0 M N where smul_comm r := smul_comm (r : ℝ≥0∞)
 
 instance smulCommClass_right {M N : Type*} [MulAction ℝ≥0∞ N] [SMul M N] [SMulCommClass M ℝ≥0∞ N] :
-    SMulCommClass M ℝ≥0 N where smul_comm m r := (smul_comm m (r : ℝ≥0∞) : _)
+    SMulCommClass M ℝ≥0 N where smul_comm m r := smul_comm m (r : ℝ≥0∞)
 
 /-- A `DistribMulAction` over `ℝ≥0∞` restricts to a `DistribMulAction` over `ℝ≥0`. -/
 noncomputable instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ≥0∞ M] :
@@ -534,7 +537,7 @@ noncomputable instance {A : Type*} [Semiring A] [Algebra ℝ≥0∞ A] : Algebra
   smul := (· • ·)
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ≥0∞) x, smul_def]
-  toRingHom := (algebraMap ℝ≥0∞ A).comp (ofNNRealHom : ℝ≥0 →+* ℝ≥0∞)
+  algebraMap := (algebraMap ℝ≥0∞ A).comp (ofNNRealHom : ℝ≥0 →+* ℝ≥0∞)
 
 -- verify that the above produces instances we might care about
 noncomputable example : Algebra ℝ≥0 ℝ≥0∞ := inferInstance

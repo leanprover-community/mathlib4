@@ -16,8 +16,7 @@ This file proves that ℚ is denumerable.
 The fact that ℚ has cardinality ℵ₀ is proved in `Mathlib.Data.Rat.Cardinal`
 -/
 
-assert_not_exists Module
-assert_not_exists Field
+assert_not_exists Module Field
 
 namespace Rat
 

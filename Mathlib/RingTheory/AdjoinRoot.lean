@@ -48,8 +48,6 @@ The main definitions are in the `AdjoinRoot` namespace.
 
 noncomputable section
 
-open scoped Classical
-
 open Polynomial
 
 universe u v w
@@ -506,7 +504,7 @@ def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := b
     rw [natDegree_mul hf, natDegree_C, add_zero]
     · rwa [Ne, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
   have minpoly_eq : minpoly K (root f) = f' := minpoly_root hf
-  apply @Basis.mk _ _ _ fun i : Fin f.natDegree => root f ^ i.val
+  apply Basis.mk (v := fun i : Fin f.natDegree ↦ root f ^ i.val)
   · rw [← deg_f', ← minpoly_eq]
     exact linearIndependent_pow (root f)
   · rintro y -
@@ -519,7 +517,7 @@ def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := b
 
 /-- The power basis `1, root f, ..., root f ^ (d - 1)` for `AdjoinRoot f`,
 where `f` is an irreducible polynomial over a field of degree `d`. -/
-@[simps!]  -- Porting note: was `[simps]`
+@[simps!]
 def powerBasis (hf : f ≠ 0) : PowerBasis K (AdjoinRoot f) where
   gen := root f
   dim := f.natDegree

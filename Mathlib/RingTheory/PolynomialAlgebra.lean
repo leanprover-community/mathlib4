@@ -46,7 +46,6 @@ namespace PolyEquivTensor
 The function underlying `A ⊗[R] R[X] →ₐ[R] A[X]`,
 as a bilinear function of two arguments.
 -/
--- Porting note: was  `@[simps apply_apply]`
 @[simps! apply_apply]
 def toFunBilinear : A →ₗ[A] R[X] →ₗ[R] A[X] :=
   LinearMap.toSpanSingleton A _ (aeval (Polynomial.X : A[X])).toLinearMap
@@ -184,6 +183,23 @@ theorem polyEquivTensor_apply (p : A[X]) :
 theorem polyEquivTensor_symm_apply_tmul (a : A) (p : R[X]) :
     (polyEquivTensor R A).symm (a ⊗ₜ p) = p.sum fun n r => monomial n (a * algebraMap R A r) :=
   toFunAlgHom_apply_tmul _ _ _ _
+
+section
+
+variable (A : Type*) [CommSemiring A] [Algebra R A]
+
+/-- The `A`-algebra isomorphism `A[X] ≃ₐ[A] A ⊗[R] R[X]` (when `A` is commutative). -/
+def polyEquivTensor' : A[X] ≃ₐ[A] A ⊗[R] R[X] where
+  __ := polyEquivTensor R A
+  commutes' a := by simp
+
+/-- `polyEquivTensor' R A` is the same as `polyEquivTensor R A` as a function. -/
+@[simp] theorem coe_polyEquivTensor' : ⇑(polyEquivTensor' R A) = polyEquivTensor R A := rfl
+
+@[simp] theorem coe_polyEquivTensor'_symm :
+    ⇑(polyEquivTensor' R A).symm = (polyEquivTensor R A).symm := rfl
+
+end
 
 open DMatrix Matrix
 

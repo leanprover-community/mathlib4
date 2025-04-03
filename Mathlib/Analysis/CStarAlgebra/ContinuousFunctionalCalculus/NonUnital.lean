@@ -27,7 +27,7 @@ vanish at zero. More precisely, it is a continuous star algebra homomorphism
 `C(quasispectrum R a, R)₀ →⋆ₙₐ[R] A` that sends `(ContinuousMap.id R).restrict (quasispectrum R a)`
 to `a`. In all cases of interest (e.g., when `quasispectrum R a` is compact and `R` is `ℝ≥0`, `ℝ`,
 or `ℂ`), this is sufficient to uniquely determine the continuous functional calculus which is
-encoded in the `UniqueNonUnitalContinuousFunctionalCalculus` class.
+encoded in the `ContinuousMapZero.UniqueHom` class.
 
 ## Main declarations
 
@@ -47,8 +47,7 @@ encoded in the `UniqueNonUnitalContinuousFunctionalCalculus` class.
 -/
 local notation "σₙ" => quasispectrum
 
-open Topology
-open scoped ContinuousMapZero
+open Topology ContinuousMapZero
 
 /-- A non-unital star `R`-algebra `A` has a *continuous functional calculus* for elements
 satisfying the property `p : A → Prop` if
@@ -91,14 +90,16 @@ and the more common variant `cfcₙ_comp`.
 
 This class will have instances in each of the common cases `ℂ`, `ℝ` and `ℝ≥0` as a consequence of
 the Stone-Weierstrass theorem. -/
-class UniqueNonUnitalContinuousFunctionalCalculus (R A : Type*) [CommSemiring R] [StarRing R]
+class ContinuousMapZero.UniqueHom (R A : Type*) [CommSemiring R] [StarRing R]
     [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R] [NonUnitalRing A] [StarRing A]
     [TopologicalSpace A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] : Prop where
   eq_of_continuous_of_map_id (s : Set R) [CompactSpace s] [Zero s] (h0 : (0 : s) = (0 : R))
     (φ ψ : C(s, R)₀ →⋆ₙₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (⟨.restrict s <| .id R, h0⟩) = ψ (⟨.restrict s <| .id R, h0⟩)) :
     φ = ψ
-  compactSpace_quasispectrum (a : A) : CompactSpace (σₙ R a)
+
+@[deprecated (since := "2025-01-10")] alias UniqueNonUnitalContinuousFunctionalCalculus :=
+  ContinuousMapZero.UniqueHom
 
 section Main
 
@@ -112,12 +113,12 @@ lemma NonUnitalContinuousFunctionalCalculus.isCompact_quasispectrum (a : A) :
     IsCompact (σₙ R a) :=
   isCompact_iff_compactSpace.mpr inferInstance
 
-lemma NonUnitalStarAlgHom.ext_continuousMap [UniqueNonUnitalContinuousFunctionalCalculus R A]
-    (a : A) (φ ψ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) (hφ : Continuous φ) (hψ : Continuous ψ)
+lemma NonUnitalStarAlgHom.ext_continuousMap [UniqueHom R A]
+    (a : A) [CompactSpace (σₙ R a)] (φ ψ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A)
+    (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ ⟨.restrict (σₙ R a) <| .id R, rfl⟩ = ψ ⟨.restrict (σₙ R a) <| .id R, rfl⟩) :
     φ = ψ :=
-  have := UniqueNonUnitalContinuousFunctionalCalculus.compactSpace_quasispectrum (R := R) a
-  UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id _ (by simp) φ ψ hφ hψ h
+  UniqueHom.eq_of_continuous_of_map_id _ (by simp) φ ψ hφ hψ h
 
 section cfcₙHom
 
@@ -158,13 +159,14 @@ lemma cfcₙHom_predicate (f : C(σₙ R a, R)₀) :
     p (cfcₙHom ha f) :=
   (NonUnitalContinuousFunctionalCalculus.exists_cfc_of_predicate a ha).choose_spec.2.2.2 f
 
-lemma cfcₙHom_eq_of_continuous_of_map_id [UniqueNonUnitalContinuousFunctionalCalculus R A]
+open scoped NonUnitalContinuousFunctionalCalculus in
+lemma cfcₙHom_eq_of_continuous_of_map_id [UniqueHom R A]
     (φ : C(σₙ R a, R)₀ →⋆ₙₐ[R] A) (hφ₁ : Continuous φ)
     (hφ₂ : φ ⟨.restrict (σₙ R a) <| .id R, rfl⟩ = a) : cfcₙHom ha = φ :=
   (cfcₙHom ha).ext_continuousMap a φ (cfcₙHom_isClosedEmbedding ha).continuous hφ₁ <| by
     rw [cfcₙHom_id ha, hφ₂]
 
-theorem cfcₙHom_comp [UniqueNonUnitalContinuousFunctionalCalculus R A] (f : C(σₙ R a, R)₀)
+theorem cfcₙHom_comp [UniqueHom R A] (f : C(σₙ R a, R)₀)
     (f' : C(σₙ R a, σₙ R (cfcₙHom ha f))₀)
     (hff' : ∀ x, f x = f' x) (g : C(σₙ R (cfcₙHom ha f), R)₀) :
     cfcₙHom ha (g.comp f') = cfcₙHom (cfcₙHom_predicate ha f) g := by
@@ -362,7 +364,7 @@ open Finset in
 lemma cfcₙ_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
     (hf : ∀ i ∈ s, ContinuousOn (f i) (σₙ R a) := by cfc_cont_tac)
     (hf0 : ∀ i ∈ s, f i 0 = 0 := by cfc_zero_tac) :
-    cfcₙ (∑ i in s, f i) a = ∑ i in s, cfcₙ (f i) a := by
+    cfcₙ (∑ i ∈ s, f i) a = ∑ i ∈ s, cfcₙ (f i) a := by
   by_cases ha : p a
   · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
     have hf' : ContinuousOn (∑ i : s, f i) (σₙ R a) := by
@@ -426,7 +428,7 @@ lemma cfcₙ_star_id : cfcₙ (star · : R → R) a = star a := by
 
 section Comp
 
-variable [UniqueNonUnitalContinuousFunctionalCalculus R A]
+variable [UniqueHom R A]
 
 lemma cfcₙ_comp (g f : R → R) (a : A)
     (hg : ContinuousOn g (f '' σₙ R a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac)
@@ -552,7 +554,7 @@ lemma cfcₙ_neg_id (ha : p a := by cfc_tac) :
     cfcₙ (- · : R → R) a = -a := by
   rw [cfcₙ_neg .., cfcₙ_id' R a]
 
-variable [UniqueNonUnitalContinuousFunctionalCalculus R A]
+variable [UniqueHom R A]
 
 lemma cfcₙ_comp_neg (hf : ContinuousOn f ((- ·) '' (σₙ R a)) := by cfc_cont_tac)
     (h0 : f 0 = 0 := by cfc_zero_tac) (ha : p a := by cfc_tac) :
@@ -790,9 +792,9 @@ instance ContinuousFunctionalCalculus.toNonUnital : NonUnitalContinuousFunctiona
       fun _ ↦ cfcHom_predicate ha _⟩
 
 open scoped NonUnitalContinuousFunctionalCalculus in
-lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [UniqueNonUnitalContinuousFunctionalCalculus R A] {a : A}
+lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [ContinuousMapZero.UniqueHom R A] {a : A}
     (ha : p a) : cfcₙHom (R := R) ha = cfcₙHom_of_cfcHom R ha := by
-  refine UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id
+  refine ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id
       (σₙ R a) ?_ _ _ ?_ ?_ ?_
   · simp
   · exact (cfcₙHom_isClosedEmbedding (R := R) ha).continuous
@@ -801,7 +803,7 @@ lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [UniqueNonUnitalContinuousFunctionalCalcu
 
 /-- When `cfc` is applied to a function that maps zero to zero, it is equivalent to using
 `cfcₙ`. -/
-lemma cfcₙ_eq_cfc [UniqueNonUnitalContinuousFunctionalCalculus R A] {f : R → R} {a : A}
+lemma cfcₙ_eq_cfc [ContinuousMapZero.UniqueHom R A] {f : R → R} {a : A}
     (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac) :
     cfcₙ f a = cfc f a := by
   by_cases ha : p a

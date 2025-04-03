@@ -249,8 +249,7 @@ def directLimitIsColimit : IsColimit (directLimitCocone G f) where
       rfl
   fac s i := by
     ext
-    dsimp only [directLimitCocone, CategoryStruct.comp]
-    rw [LinearMap.comp_apply]
+    dsimp only [hom_comp, directLimitCocone, hom_ofHom, LinearMap.comp_apply]
     apply DirectLimit.lift_of
   uniq s m h := by
     have :

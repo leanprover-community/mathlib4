@@ -24,7 +24,7 @@ namespace Action
 /-- Bundles a type `H` with a multiplicative action of `G` as an `Action`. -/
 def ofMulAction (G H : Type u) [Monoid G] [MulAction G H] : Action (Type u) (MonCat.of G) where
   V := H
-  ρ := @MulAction.toEndHom _ _ _ (by assumption)
+  ρ := MonCat.ofHom <| @MulAction.toEndHom _ _ _ (by assumption)
 
 @[simp]
 theorem ofMulAction_apply {G H : Type u} [Monoid G] [MulAction G H] (g : G) (x : H) :
@@ -80,7 +80,7 @@ instance (G : Type*) (X : Type*) [Monoid G] [MulAction G X] [Fintype X] :
 def ofMulAction (G : Type u) (H : FintypeCat.{u}) [Monoid G] [MulAction G H] :
     Action FintypeCat (MonCat.of G) where
   V := H
-  ρ := @MulAction.toEndHom _ _ _ (by assumption)
+  ρ := MonCat.ofHom <| @MulAction.toEndHom _ _ _ (by assumption)
 
 @[simp]
 theorem ofMulAction_apply {G : Type u} {H : FintypeCat.{u}} [Monoid G] [MulAction G H]
@@ -167,19 +167,18 @@ end FintypeCat
 
 section ToMulAction
 
-variable {V : Type (u + 1)} [LargeCategory V] [ConcreteCategory V]
+variable {V : Type (u + 1)} [LargeCategory V] [HasForget V]
 
 instance instMulAction {G : MonCat.{u}} (X : Action V G) :
     MulAction G ((CategoryTheory.forget _).obj X) where
   smul g x := ((CategoryTheory.forget _).map (X.ρ g)) x
   one_smul x := by
     show ((CategoryTheory.forget _).map (X.ρ 1)) x = x
-    simp only [Action.ρ_one, FunctorToTypes.map_id_apply]
+    simp
   mul_smul g h x := by
     show (CategoryTheory.forget V).map (X.ρ (g * h)) x =
       ((CategoryTheory.forget V).map (X.ρ h) ≫ (CategoryTheory.forget V).map (X.ρ g)) x
-    rw [← Functor.map_comp, map_mul]
-    rfl
+    simp
 
 /- Specialize `instMulAction` to assist typeclass inference. -/
 instance {G : MonCat.{u}} (X : Action FintypeCat G) : MulAction G X.V := Action.instMulAction X

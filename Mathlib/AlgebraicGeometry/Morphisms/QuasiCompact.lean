@@ -245,12 +245,11 @@ theorem compact_open_induction_on {P : X.Opens → Prop} (S : X.Opens)
 
 theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Scheme)
     {U : X.Opens} (hU : IsAffineOpen U) (x f : Γ(X, U))
-    (H : x |_ᵣ (X.basicOpen f) = 0) :
+    (H : x |_ (X.basicOpen f) = 0) :
     ∃ n : ℕ, f ^ n * x = 0 := by
   rw [← map_zero (X.presheaf.map (homOfLE <| X.basicOpen_le f : X.basicOpen f ⟶ U).op).hom] at H
-  #adaptation_note
-  /--
-  Prior to nightly-2024-09-29, we could use dot notation here:
+  #adaptation_note /-- nightly-2024-09-29
+  we could use dot notation here:
   `(hU.isLocalization_basicOpen f).exists_of_eq H`
   This is no longer possible;
   likely changing the signature of `IsLocalization.Away.exists_of_eq` is in order.
@@ -263,7 +262,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Sch
 `f ^ n * x = 0` for some `n`. -/
 theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact (X : Scheme.{u})
     {U : X.Opens} (hU : IsCompact U.1) (x f : Γ(X, U))
-    (H : x |_ᵣ (X.basicOpen f) = 0) :
+    (H : x |_ (X.basicOpen f) = 0) :
     ∃ n : ℕ, f ^ n * x = 0 := by
   obtain ⟨s, hs, e⟩ := (isCompactOpen_iff_eq_finset_affine_union U.1).mp ⟨hU, U.2⟩
   replace e : U = iSup fun i : s => (i : X.Opens) := by
@@ -311,12 +310,12 @@ lemma Scheme.isNilpotent_iff_basicOpen_eq_bot_of_isCompact {X : Scheme.{u}}
     {U : X.Opens} (hU : IsCompact (U : Set X)) (f : Γ(X, U)) :
     IsNilpotent f ↔ X.basicOpen f = ⊥ := by
   refine ⟨X.basicOpen_eq_bot_of_isNilpotent U f, fun hf ↦ ?_⟩
-  have h : (1 : Γ(X, U)) |_ᵣ (X.basicOpen f) = 0 := by
+  have h : (1 : Γ(X, U)) |_ (X.basicOpen f) = 0 := by
     have e : X.basicOpen f ≤ ⊥ := by rw [hf]
-    rw [← CommRingCat.presheaf_restrict_restrict X e bot_le]
+    rw [← TopCat.Presheaf.restrict_restrict e bot_le]
     have : Subsingleton Γ(X, ⊥) :=
       CommRingCat.subsingleton_of_isTerminal X.sheaf.isTerminalOfEmpty
-    rw [Subsingleton.eq_zero (1 |_ᵣ ⊥)]
+    rw [Subsingleton.eq_zero (1 |_ ⊥)]
     show X.presheaf.map _ 0 = 0
     rw [map_zero]
   obtain ⟨n, hn⟩ := exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isCompact X hU 1 f h

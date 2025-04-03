@@ -29,10 +29,9 @@ We also prove trivial `simp` lemmas, and define the following operations on `Mon
 * `divMonoidHom`: Division bundled as a monoid homomorphism.
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists MonoidWithZero DenselyOrdered
 -- TODO:
 -- assert_not_exists AddMonoidWithOne
-assert_not_exists DenselyOrdered
 
 variable {G : Type*} {H : Type*} {M : Type*} {N : Type*} {P : Type*}
 
@@ -261,7 +260,7 @@ theorem Prod.semiconjBy_iff {x y z : M × N} :
 
 @[to_additive AddCommute.prod]
 theorem Commute.prod {x y : M × N} (hm : Commute x.1 y.1) (hn : Commute x.2 y.2) : Commute x y :=
-  .prod hm hn
+  SemiconjBy.prod hm hn
 
 @[to_additive]
 theorem Prod.commute_iff {x y : M × N} :
@@ -697,7 +696,7 @@ def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
 
 @[to_additive]
 theorem embedProduct_injective (α : Type*) [Monoid α] : Function.Injective (embedProduct α) :=
-  fun _ _ h => Units.ext <| (congr_arg Prod.fst h : _)
+  fun _ _ h => Units.ext <| (congr_arg Prod.fst h :)
 
 end Units
 

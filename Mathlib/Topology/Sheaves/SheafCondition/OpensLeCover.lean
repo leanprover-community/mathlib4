@@ -154,7 +154,7 @@ def generateEquivalenceOpensLe (hY : Y = iSup U) :
   inverse := generateEquivalenceOpensLe_inverse' _ hY
   unitIso := eqToIso <| CategoryTheory.Functor.ext
     (by rintro ⟨⟨_, _⟩, _⟩; dsimp; congr)
-    (by intros; refine Over.OverMorphism.ext ?_; aesop_cat)
+    (by intros; refine Over.OverMorphism.ext ?_; simp)
   counitIso := eqToIso <| CategoryTheory.Functor.hext
     (by intro; refine FullSubcategory.ext ?_; rfl) (by intros; rfl)
 

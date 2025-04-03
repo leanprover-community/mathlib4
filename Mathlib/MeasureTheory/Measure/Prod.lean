@@ -226,7 +226,7 @@ instance prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [Topologic
   rintro U U_open ⟨⟨x, y⟩, hxy⟩
   rcases isOpen_prod_iff.1 U_open x y hxy with ⟨u, v, u_open, v_open, xu, yv, huv⟩
   refine ne_of_gt (lt_of_lt_of_le ?_ (measure_mono huv))
-  simp only [prod_prod, CanonicallyOrderedCommSemiring.mul_pos]
+  simp only [prod_prod, CanonicallyOrderedAdd.mul_pos]
   constructor
   · exact u_open.measure_pos μ ⟨x, xu⟩
   · exact v_open.measure_pos ν ⟨y, yv⟩
@@ -308,7 +308,7 @@ theorem measure_ae_null_of_prod_null {s : Set (α × β)} (h : μ.prod ν s = 0)
   rw [measure_prod_null mt] at ht
   rw [eventuallyLE_antisymm_iff]
   exact
-    ⟨EventuallyLE.trans_eq (Eventually.of_forall fun x => (measure_mono (preimage_mono hst) : _))
+    ⟨EventuallyLE.trans_eq (Eventually.of_forall fun x => measure_mono (preimage_mono hst))
         ht,
       Eventually.of_forall fun x => zero_le _⟩
 
@@ -851,6 +851,13 @@ instance fst.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityM
     rw [fst_univ]
     exact measure_univ
 
+instance fst.instIsZeroOrProbabilityMeasure [IsZeroOrProbabilityMeasure ρ] :
+    IsZeroOrProbabilityMeasure ρ.fst := by
+  rcases eq_zero_or_isProbabilityMeasure ρ with h | h
+  · simp only [h, fst_zero]
+    infer_instance
+  · infer_instance
+
 @[simp]
 lemma fst_prod [IsProbabilityMeasure ν] : (μ.prod ν).fst = μ := by
   ext1 s hs
@@ -908,6 +915,13 @@ instance snd.instIsProbabilityMeasure [IsProbabilityMeasure ρ] : IsProbabilityM
   measure_univ := by
     rw [snd_univ]
     exact measure_univ
+
+instance snd.instIsZeroOrProbabilityMeasure [IsZeroOrProbabilityMeasure ρ] :
+    IsZeroOrProbabilityMeasure ρ.snd := by
+  rcases eq_zero_or_isProbabilityMeasure ρ with h | h
+  · simp only [h, snd_zero]
+    infer_instance
+  · infer_instance
 
 @[simp]
 lemma snd_prod [IsProbabilityMeasure μ] : (μ.prod ν).snd = ν := by

@@ -38,7 +38,7 @@ def argAux (a : Option α) (b : α) : Option α :=
 @[simp]
 theorem foldl_argAux_eq_none : l.foldl (argAux r) o = none ↔ l = [] ∧ o = none :=
   List.reverseRecOn l (by simp) fun tl hd => by
-    simp only [foldl_append, foldl_cons, argAux, foldl_nil, append_eq_nil, and_false, false_and,
+    simp only [foldl_append, foldl_cons, argAux, foldl_nil, append_eq_nil_iff, and_false, false_and,
       iff_false]
     cases foldl (argAux r) o tl
     · simp
@@ -281,15 +281,9 @@ theorem minimum_mem {l : List α} {m : α} : (minimum l : WithBot α) = m → m 
 theorem maximum_eq_bot {l : List α} : l.maximum = ⊥ ↔ l = [] :=
   argmax_eq_none
 
-@[simp, deprecated maximum_eq_bot "Don't mix Option and WithBot" (since := "2024-05-27")]
-theorem maximum_eq_none {l : List α} : l.maximum = none ↔ l = [] := maximum_eq_bot
-
 @[simp]
 theorem minimum_eq_top {l : List α} : l.minimum = ⊤ ↔ l = [] :=
   argmin_eq_none
-
-@[simp, deprecated minimum_eq_top "Don't mix Option and WithTop" (since := "2024-05-27")]
-theorem minimum_eq_none {l : List α} : l.minimum = none ↔ l = [] := minimum_eq_top
 
 theorem not_maximum_lt_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a :=
   not_lt_of_mem_argmax
@@ -449,7 +443,7 @@ lemma getD_max?_eq_unbot'_maximum (l : List α) (d : α) :
     cases hz : l.max? with
     | none => simp [List.max?_eq_none_iff.mp hz] at hy
     | some z =>
-      have : Std.Antisymm (α := α) (· ≤ ·) := ⟨_root_.le_antisymm⟩
+      have : Std.Antisymm (α := α) (· ≤ ·) := ⟨fun _ _ => _root_.le_antisymm⟩
       rw [List.max?_eq_some_iff] at hz
       · rw [Option.getD_some]
         exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)

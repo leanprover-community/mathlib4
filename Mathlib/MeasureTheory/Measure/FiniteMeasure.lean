@@ -209,7 +209,6 @@ instance instSMul : SMul R (FiniteMeasure Ω) where
 @[simp, norm_cast]
 theorem toMeasure_zero : ((↑) : FiniteMeasure Ω → Measure Ω) 0 = 0 := rfl
 
--- Porting note: with `simp` here the `coeFn` lemmas below fall prey to `simpNF`: the LHS simplifies
 @[norm_cast]
 theorem toMeasure_add (μ ν : FiniteMeasure Ω) : ↑(μ + ν) = (↑μ + ↑ν : Measure Ω) := rfl
 

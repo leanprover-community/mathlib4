@@ -50,7 +50,7 @@ namespace LieModule
 
 section IsNilpotent
 
-variable [LieAlgebra.IsNilpotent R L] (χ₁ χ₂ : L → R) (p q : ℤ)
+variable [LieRing.IsNilpotent L] (χ₁ χ₂ : L → R) (p q : ℤ)
 
 section
 
@@ -121,7 +121,7 @@ open LieAlgebra
 
 variable {H : LieSubalgebra R L} (α χ : H → R) (p q : ℤ)
 
-lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieAlgebra.IsNilpotent R H]
+lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieRing.IsNilpotent H]
     (hq : genWeightSpace M (q • α + χ) = ⊥)
     {x : L} (hx : x ∈ rootSpace H α)
     {y : M} (hy : y ∈ genWeightSpaceChain M α χ p q) :
@@ -144,7 +144,7 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieAlgebra.IsN
   | h0 => simp
   | hadd _ _ _ _ hz₁ hz₂ => rw [lie_add]; exact add_mem hz₁ hz₂
 
-lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_left [LieAlgebra.IsNilpotent R H]
+lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_left [LieRing.IsNilpotent H]
     (hp : genWeightSpace M (p • α + χ) = ⊥)
     {x : L} (hx : x ∈ rootSpace H (-α))
     {y : M} (hy : y ∈ genWeightSpaceChain M α χ p q) :
@@ -234,7 +234,7 @@ end LieSubalgebra
 section
 
 variable {M}
-variable [LieAlgebra.IsNilpotent R L]
+variable [LieRing.IsNilpotent L]
 variable [NoZeroSMulDivisors ℤ R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
 variable (α : L → R) (β : Weight R L M)
 

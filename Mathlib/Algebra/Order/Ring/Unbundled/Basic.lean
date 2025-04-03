@@ -113,8 +113,7 @@ TODO: the mixin assumptiosn can be relaxed in most cases
 
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidHom
+assert_not_exists OrderedCommMonoid MonoidHom
 
 open Function
 
@@ -589,24 +588,7 @@ theorem mul_nonneg_of_three [ExistsAddOfLE α] [MulPosStrictMono α] [PosMulStri
   have or_a := le_total 0 a
   have or_b := le_total 0 b
   have or_c := le_total 0 c
-  -- Porting note used to be by `itauto` from here
-  exact Or.elim or_c
-    (fun (h0 : 0 ≤ c) =>
-      Or.elim or_b
-        (fun (h1 : 0 ≤ b) =>
-            Or.elim or_a (fun (h2 : 0 ≤ a) => Or.inl (Or.inl ⟨h2, h1⟩))
-              (fun (_ : a ≤ 0) => Or.inr (Or.inl (Or.inl ⟨h1, h0⟩))))
-        (fun (h1 : b ≤ 0) =>
-            Or.elim or_a (fun (h3 : 0 ≤ a) => Or.inr (Or.inr (Or.inl ⟨h0, h3⟩)))
-              (fun (h3 : a ≤ 0) => Or.inl (Or.inr ⟨h3, h1⟩))))
-    (fun (h0 : c ≤ 0) =>
-      Or.elim or_b
-        (fun (h4 : 0 ≤ b) =>
-            Or.elim or_a (fun (h5 : 0 ≤ a) => Or.inl (Or.inl ⟨h5, h4⟩))
-              (fun (h5 : a ≤ 0) => Or.inr (Or.inr (Or.inr ⟨h0, h5⟩))))
-        (fun (h4 : b ≤ 0) =>
-            Or.elim or_a (fun (_ : 0 ≤ a) => Or.inr (Or.inl (Or.inr ⟨h4, h0⟩)))
-              (fun (h6 : a ≤ 0) => Or.inl (Or.inr ⟨h6, h4⟩))))
+  aesop
 
 lemma mul_nonneg_iff_pos_imp_nonneg [ExistsAddOfLE α] [PosMulStrictMono α] [MulPosStrictMono α]
     [AddLeftMono α] [AddLeftReflectLE α] :

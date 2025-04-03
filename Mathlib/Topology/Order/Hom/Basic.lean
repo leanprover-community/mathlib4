@@ -132,7 +132,7 @@ protected def id : α →Co α :=
 instance : Inhabited (α →Co α) :=
   ⟨ContinuousOrderHom.id _⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(ContinuousOrderHom.id α) = id :=
   rfl
 

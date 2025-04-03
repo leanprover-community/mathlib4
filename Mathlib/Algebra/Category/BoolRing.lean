@@ -71,7 +71,7 @@ lemma hom_ext {R S : BoolRing} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
 abbrev ofHom {R S : Type u} [BooleanRing R] [BooleanRing S] (f : R →+* S) : of R ⟶ of S :=
   ⟨f⟩
 
-instance : ConcreteCategory BoolRing where
+instance : HasForget BoolRing where
   forget :=
     { obj := fun R ↦ R
       map := fun f ↦ f.hom }

@@ -93,7 +93,6 @@ lemma comp_apply
     ψ (φ x) = χ x := by
   rw [← h.comp_eq, MonoidHom.comp_apply]
 
-@[simp]
 theorem comp_assoc {Q : Type*} [Monoid Q]
     {φ₁ : M →* N} {φ₂ : N →* P} {φ₁₂ : M →* P}
     (κ : CompTriple φ₁ φ₂ φ₁₂)

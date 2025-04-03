@@ -42,18 +42,15 @@ variable (P L : Type*) [Membership P L]
 def Dual :=
   P
 
--- Porting note: was `this` instead of `h`
 instance [h : Inhabited P] : Inhabited (Dual P) :=
   h
 
 instance [Finite P] : Finite (Dual P) :=
   ‹Finite P›
 
--- Porting note: was `this` instead of `h`
 instance [h : Fintype P] : Fintype (Dual P) :=
   h
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: figure out if this is needed.
 set_option synthInstance.checkSynthOrder false in
 instance : Membership (Dual L) (Dual P) :=
   ⟨Function.swap (Membership.mem : L → P → Prop)⟩

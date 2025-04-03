@@ -5,7 +5,7 @@ Authors: Peter Nelson
 -/
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.List.Sort
 import Mathlib.Data.Nat.Bitwise
@@ -14,7 +14,7 @@ import Mathlib.Data.Nat.Bitwise
 # Bit Indices
 
 Given `n : ℕ`, we define `Nat.bitIndices n`, which is the `List` of indices of `1`s in the
-binary expansion of `n`. If `s : Finset ℕ` and `n = ∑ i in s, 2^i`, then
+binary expansion of `n`. If `s : Finset ℕ` and `n = ∑ i ∈ s, 2^i`, then
 `Nat.bitIndices n` is the sorted list of elements of `s`.
 
 The lemma `twoPowSum_bitIndices` proves that summing `2 ^ i` over this list gives `n`.
@@ -30,7 +30,7 @@ namespace Nat
 
 variable {a n : ℕ}
 
-/-- The function which maps each natural number `∑ i in s, 2^i` to the list of
+/-- The function which maps each natural number `∑ i ∈ s, 2^i` to the list of
 elements of `s` in increasing order. -/
 def bitIndices (n : ℕ) : List ℕ :=
   @binaryRec (fun _ ↦ List ℕ) [] (fun b _ s ↦ b.casesOn (s.map (· + 1)) (0 :: s.map (· + 1))) n

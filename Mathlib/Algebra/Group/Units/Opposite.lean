@@ -10,8 +10,7 @@ import Mathlib.Algebra.Group.Units.Defs
 # Units in multiplicative and additive opposites
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {α : Type*}
 

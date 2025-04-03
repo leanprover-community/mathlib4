@@ -124,6 +124,7 @@ nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact exp_add_of_commute 𝕂 h
 
+open scoped Function in -- required for scoped `on` notation
 nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
     (h : (s : Set ι).Pairwise (Commute on f)) :
     exp (∑ i ∈ s, f i) =

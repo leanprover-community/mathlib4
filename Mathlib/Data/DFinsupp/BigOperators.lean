@@ -307,7 +307,6 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
 -- This applies to roughly the remainder of the file.
 
 /-- The `DFinsupp` version of `Finsupp.liftAddHom_singleAddHom`,-/
-@[simp, nolint simpNF] -- Porting note: linter claims that simp can prove this, but it can not
 theorem liftAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :
     liftAddHom (β := β) (singleAddHom β) = AddMonoidHom.id (Π₀ i, β i) :=
   (liftAddHom (β := β)).toEquiv.apply_eq_iff_eq_symm_apply.2 rfl

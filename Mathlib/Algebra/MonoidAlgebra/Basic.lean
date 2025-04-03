@@ -8,7 +8,7 @@ import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Algebra.MonoidAlgebra.Defs
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.SMul
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
@@ -106,16 +106,16 @@ section Algebra
 In particular this provides the instance `Algebra k (MonoidAlgebra k G)`.
 -/
 instance algebra {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G] :
-    Algebra k (MonoidAlgebra A G) :=
-  { singleOneRingHom.comp (algebraMap k A) with
-    smul_def' := fun r a => by
-      ext
-      -- Porting note: Newly required.
-      rw [Finsupp.coe_smul]
-      simp [single_one_mul_apply, Algebra.smul_def, Pi.smul_apply]
-    commutes' := fun r f => by
-      refine Finsupp.ext fun _ => ?_
-      simp [single_one_mul_apply, mul_single_one_apply, Algebra.commutes] }
+    Algebra k (MonoidAlgebra A G) where
+  algebraMap := singleOneRingHom.comp (algebraMap k A)
+  smul_def' := fun r a => by
+    ext
+    -- Porting note: Newly required.
+    rw [Finsupp.coe_smul]
+    simp [single_one_mul_apply, Algebra.smul_def, Pi.smul_apply]
+  commutes' := fun r f => by
+    refine Finsupp.ext fun _ => ?_
+    simp [single_one_mul_apply, mul_single_one_apply, Algebra.commutes]
 
 /-- `Finsupp.single 1` as an `AlgHom` -/
 @[simps! apply]
@@ -138,6 +138,17 @@ theorem single_eq_algebraMap_mul_of [CommSemiring k] [Monoid G] (a : G) (b : k) 
 theorem single_algebraMap_eq_algebraMap_mul_of {A : Type*} [CommSemiring k] [Semiring A]
     [Algebra k A] [Monoid G] (a : G) (b : k) :
     single a (algebraMap k A b) = algebraMap k (MonoidAlgebra A G) b * of A G a := by simp
+
+instance isLocalHom_singleOneAlgHom
+    {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G] :
+    IsLocalHom (singleOneAlgHom : A →ₐ[k] MonoidAlgebra A G) where
+  map_nonunit := isLocalHom_singleOneRingHom.map_nonunit
+
+instance isLocalHom_algebraMap
+    {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G]
+    [IsLocalHom (algebraMap k A)] :
+    IsLocalHom (algebraMap k (MonoidAlgebra A G)) where
+  map_nonunit _ hx := .of_map _ _ <| isLocalHom_singleOneAlgHom (k := k).map_nonunit _ hx
 
 end Algebra
 
@@ -323,8 +334,8 @@ def equivariantOfLinearOfComm
     · intro g r c' _nm _nz w
       dsimp at *
       simp only [add_smul, f.map_add, w, add_left_inj, single_eq_algebraMap_mul_of, ← smul_smul]
-      erw [algebraMap_smul (MonoidAlgebra k G) r, algebraMap_smul (MonoidAlgebra k G) r, f.map_smul,
-        h g v, of_apply]
+      rw [algebraMap_smul (MonoidAlgebra k G) r, algebraMap_smul (MonoidAlgebra k G) r, f.map_smul,
+        of_apply, h g v]
 
 variable (h : ∀ (g : G) (v : V), f (single g (1 : k) • v) = single g (1 : k) • f v)
 
@@ -369,7 +380,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
     (Multiplicative G →ₙ* A) ≃ (k[G] →ₙₐ[k] A) :=
   { (MonoidAlgebra.liftMagma k : (Multiplicative G →ₙ* A) ≃ (_ →ₙₐ[k] A)) with
     toFun := fun f =>
-      { (MonoidAlgebra.liftMagma k f : _) with
+      { (MonoidAlgebra.liftMagma k f :) with
         toFun := fun a => sum a fun m t => t • f (Multiplicative.ofAdd m) }
     invFun := fun F => F.toMulHom.comp (ofMagma k G) }
 
@@ -385,16 +396,16 @@ section Algebra
 In particular this provides the instance `Algebra k k[G]`.
 -/
 instance algebra [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
-    Algebra R k[G] :=
-  { singleZeroRingHom.comp (algebraMap R k) with
-    smul_def' := fun r a => by
-      ext
-      -- Porting note: Newly required.
-      rw [Finsupp.coe_smul]
-      simp [single_zero_mul_apply, Algebra.smul_def, Pi.smul_apply]
-    commutes' := fun r f => by
-      refine Finsupp.ext fun _ => ?_
-      simp [single_zero_mul_apply, mul_single_zero_apply, Algebra.commutes] }
+    Algebra R k[G] where
+  algebraMap := singleZeroRingHom.comp (algebraMap R k)
+  smul_def' := fun r a => by
+    ext
+    -- Porting note: Newly required.
+    rw [Finsupp.coe_smul]
+    simp [single_zero_mul_apply, Algebra.smul_def, Pi.smul_apply]
+  commutes' := fun r f => by
+    refine Finsupp.ext fun _ => ?_
+    simp [single_zero_mul_apply, mul_single_zero_apply, Algebra.commutes]
 
 /-- `Finsupp.single 0` as an `AlgHom` -/
 @[simps! apply]
@@ -409,6 +420,15 @@ def singleZeroAlgHom [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
 theorem coe_algebraMap [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
     (algebraMap R k[G] : R → k[G]) = single 0 ∘ algebraMap R k :=
   rfl
+
+instance isLocalHom_singleZeroAlgHom [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
+    IsLocalHom (singleZeroAlgHom : k →ₐ[R] k[G]) where
+  map_nonunit := isLocalHom_singleZeroRingHom.map_nonunit
+
+instance isLocalHom_algebraMap [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G]
+    [IsLocalHom (algebraMap R k)] :
+    IsLocalHom (algebraMap R k[G]) where
+  map_nonunit _ hx := .of_map _ _ <| isLocalHom_singleZeroAlgHom (R := R).map_nonunit _ hx
 
 end Algebra
 

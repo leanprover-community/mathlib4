@@ -76,10 +76,8 @@ class IsFilteredOrEmpty : Prop where
 1. for every pair of objects there exists another object "to the right",
 2. for every pair of parallel morphisms there exists a morphism to the right so the compositions
    are equal, and
-3. there exists some object.
-
-See <https://stacks.math.columbia.edu/tag/002V>. (They also define a diagram being filtered.)
--/
+3. there exists some object. -/
+@[stacks 002V "They also define a diagram being filtered."]
 class IsFiltered extends IsFilteredOrEmpty C : Prop where
   /-- a filtered category must be non empty -/
   [nonempty : Nonempty C]
@@ -504,10 +502,8 @@ class IsCofilteredOrEmpty : Prop where
 1. for every pair of objects there exists another object "to the left",
 2. for every pair of parallel morphisms there exists a morphism to the left so the compositions
    are equal, and
-3. there exists some object.
-
-See <https://stacks.math.columbia.edu/tag/04AZ>.
--/
+3. there exists some object. -/
+@[stacks 04AZ]
 class IsCofiltered extends IsCofilteredOrEmpty C : Prop where
   /-- a cofiltered category must be non empty -/
   [nonempty : Nonempty C]
@@ -828,9 +824,6 @@ theorem of_isInitial {X : C} (h : IsInitial X) : IsCofiltered C :=
 
 instance (priority := 100) of_hasInitial [HasInitial C] : IsCofiltered C :=
   of_isInitial _ initialIsInitial
-
-@[deprecated (since := "2024-03-11")]
-alias _root_.CategoryTheory.cofiltered_of_hasFiniteLimits := of_hasFiniteLimits
 
 /-- For every universe `w`, `C` is filtered if and only if every finite diagram in `C` with shape
     in `w` admits a cocone. -/

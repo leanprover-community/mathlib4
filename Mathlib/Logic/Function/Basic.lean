@@ -844,13 +844,13 @@ protected theorem uncurry {α β γ : Type*} {f : α → β → γ} (hf : Inject
 /-- As a map from the left argument to a unary function, `f` is injective. -/
 theorem left' (hf : Injective2 f) [Nonempty β] : Function.Injective f := fun _ _ h ↦
   let ⟨b⟩ := ‹Nonempty β›
-  hf.left b <| (congr_fun h b : _)
+  hf.left b <| (congr_fun h b :)
 
 /-- As a map from the right argument to a unary function, `f` is injective. -/
 theorem right' (hf : Injective2 f) [Nonempty α] : Function.Injective fun b a ↦ f a b :=
   fun _ _ h ↦
     let ⟨a⟩ := ‹Nonempty α›
-    hf.right a <| (congr_fun h a : _)
+    hf.right a <| (congr_fun h a :)
 
 theorem eq_iff (hf : Injective2 f) {a₁ a₂ b₁ b₂} : f a₁ b₁ = f a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
   ⟨fun h ↦ hf h, fun ⟨h1, h2⟩ ↦ congr_arg₂ f h1 h2⟩

@@ -59,17 +59,11 @@ theorem setIntegral_deterministic' (hg : Measurable g)
     ∫ x in s, f x ∂deterministic g hg a = if g a ∈ s then f (g a) else 0 := by
   rw [deterministic_apply, setIntegral_dirac' hf _ hs]
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_deterministic' := setIntegral_deterministic'
-
 @[simp]
 theorem setIntegral_deterministic [MeasurableSingletonClass β] (hg : Measurable g)
     (s : Set β) [Decidable (g a ∈ s)] :
     ∫ x in s, f x ∂deterministic g hg a = if g a ∈ s then f (g a) else 0 := by
   rw [deterministic_apply, setIntegral_dirac f _ s]
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_deterministic := setIntegral_deterministic
 
 end Deterministic
 
@@ -82,9 +76,6 @@ theorem integral_const {μ : Measure β} : ∫ x, f x ∂const α μ a = ∫ x, 
 @[simp]
 theorem setIntegral_const {μ : Measure β} {s : Set β} :
     ∫ x in s, f x ∂const α μ a = ∫ x in s, f x ∂μ := by rw [const_apply]
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_const := setIntegral_const
 
 end Const
 
@@ -102,9 +93,6 @@ theorem setIntegral_restrict (hs : MeasurableSet s) (t : Set β) :
     ∫ x in t, f x ∂κ.restrict hs a = ∫ x in t ∩ s, f x ∂κ a := by
   rw [restrict_apply, Measure.restrict_restrict' hs]
 
-@[deprecated (since := "2024-04-17")]
-alias set_integral_restrict := setIntegral_restrict
-
 end Restrict
 
 section Piecewise
@@ -119,9 +107,6 @@ theorem setIntegral_piecewise (a : α) (g : β → E) (t : Set β) :
     ∫ b in t, g b ∂piecewise hs κ η a =
       if a ∈ s then ∫ b in t, g b ∂κ a else ∫ b in t, g b ∂η a := by
   simp_rw [piecewise_apply]; split_ifs <;> rfl
-
-@[deprecated (since := "2024-04-17")]
-alias set_integral_piecewise := setIntegral_piecewise
 
 end Piecewise
 

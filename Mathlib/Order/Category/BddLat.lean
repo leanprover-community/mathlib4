@@ -62,7 +62,7 @@ instance : LargeCategory.{u} BddLat where
 instance instFunLike (X Y : BddLat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (BoundedLatticeHom X Y) X Y from inferInstance
 
-instance : ConcreteCategory BddLat where
+instance : HasForget BddLat where
   forget :=
   { obj := (↑)
     map := DFunLike.coe }
@@ -199,15 +199,6 @@ def latToBddLatForgetAdjunction : latToBddLat.{u} ⊣ forget₂ BddLat Lat :=
       homEquiv_naturality_right := fun _ _ => LatticeHom.ext fun _ => rfl }
 
 /-- `latToBddLat` and `OrderDual` commute. -/
--- Porting note: the `simpNF` linter is not happy as it simplifies something that does not
--- have prettyprinting effects.
--- It seems like it is simplifying for example the first type
--- `(↑(BddLat.dualEquiv.functor.obj (latToBddLat.obj X.op.unop)).toLat)`
--- to
--- `(↑(latToBddLat.obj X).toLat)ᵒᵈ`
--- Interestingly, the linter is silent, if the proof is `sorry`-ed out...
--- see https://github.com/leanprover-community/mathlib4/issues/5049
--- @[simps!]
 def latToBddLatCompDualIsoDualCompLatToBddLat :
     latToBddLat.{u} ⋙ BddLat.dual ≅ Lat.dual ⋙ latToBddLat :=
   Adjunction.leftAdjointUniq (latToBddLatForgetAdjunction.comp BddLat.dualEquiv.toAdjunction)

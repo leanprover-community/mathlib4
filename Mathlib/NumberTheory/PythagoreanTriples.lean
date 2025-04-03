@@ -3,13 +3,10 @@ Copyright (c) 2020 Paul van Wamelen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul van Wamelen
 -/
-import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.RingTheory.Int.Basic
-import Mathlib.Tactic.Ring
-import Mathlib.Tactic.FieldSimp
 import Mathlib.Data.Int.NatPrime
 import Mathlib.Data.ZMod.Basic
+import Mathlib.RingTheory.Int.Basic
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Pythagorean Triples
@@ -25,6 +22,7 @@ analyze the parity of `x`, `y`, `m` and `n` and eliminate all the impossible cas
 the bulk of the proof below.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 theorem sq_ne_two_fin_zmod_four (z : ZMod 4) : z * z ≠ 2 := by
   change Fin 4 at z

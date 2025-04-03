@@ -703,7 +703,7 @@ theorem onFormula_symm (φ : L ≃ᴸ L') :
   rfl
 
 /-- Maps a sentence's symbols along a language equivalence. -/
-@[simps!] -- Porting note: add `!` to `simps`
+@[simps!]
 def onSentence (φ : L ≃ᴸ L') : L.Sentence ≃ L'.Sentence :=
   φ.onFormula
 

@@ -187,25 +187,17 @@ nonrec
 theorem ContinuousWithinAt.rexp (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun y ↦ exp (f y)) s x :=
   h.rexp
-@[deprecated (since := "2024-05-09")] alias ContinuousWithinAt.exp := ContinuousWithinAt.rexp
-
 @[fun_prop]
 nonrec
 theorem ContinuousAt.rexp (h : ContinuousAt f x) : ContinuousAt (fun y ↦ exp (f y)) x :=
   h.rexp
-@[deprecated (since := "2024-05-09")] alias ContinuousAt.exp := ContinuousAt.rexp
-
 @[fun_prop]
 theorem ContinuousOn.rexp (h : ContinuousOn f s) :
     ContinuousOn (fun y ↦ exp (f y)) s :=
   fun x hx ↦ (h x hx).rexp
-@[deprecated (since := "2024-05-09")] alias ContinuousOn.exp := ContinuousOn.rexp
-
 @[fun_prop]
 theorem Continuous.rexp (h : Continuous f) : Continuous fun y ↦ exp (f y) :=
   continuous_iff_continuousAt.2 fun _ ↦ h.continuousAt.rexp
-@[deprecated (since := "2024-05-09")] alias Continuous.exp := Continuous.rexp
-
 end RealContinuousExpComp
 
 namespace Real

@@ -34,7 +34,7 @@ hence Dirichlet L-functions, etc).
   `∞`.
 -/
 
-open Set Filter Topology Asymptotics Real Classical
+open Set Filter Topology Asymptotics Real
 
 noncomputable section
 

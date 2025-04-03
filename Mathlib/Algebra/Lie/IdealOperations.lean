@@ -69,19 +69,18 @@ variable [LieAlgebra R L] [LieModule R L M₂] (I J : LieIdeal R L)
 /-- Given a Lie module `M` over a Lie algebra `L`, the set of Lie ideals of `L` acts on the set
 of submodules of `M`. -/
 instance hasBracket : Bracket (LieIdeal R L) (LieSubmodule R L M) :=
-  ⟨fun I N => lieSpan R L { m | ∃ (x : I) (n : N), ⁅(x : L), (n : M)⁆ = m }⟩
+  ⟨fun I N => lieSpan R L { ⁅(x : L), (n : M)⁆ | (x : I) (n : N) }⟩
 
 theorem lieIdeal_oper_eq_span :
-    ⁅I, N⁆ = lieSpan R L { m | ∃ (x : I) (n : N), ⁅(x : L), (n : M)⁆ = m } :=
+    ⁅I, N⁆ = lieSpan R L { ⁅(x : L), (n : M)⁆ | (x : I) (n : N) } :=
   rfl
 
 /-- See also `LieSubmodule.lieIdeal_oper_eq_linear_span'` and
 `LieSubmodule.lieIdeal_oper_eq_tensor_map_range`. -/
 theorem lieIdeal_oper_eq_linear_span [LieModule R L M] :
-    (↑⁅I, N⁆ : Submodule R M) =
-      Submodule.span R { m | ∃ (x : I) (n : N), ⁅(x : L), (n : M)⁆ = m } := by
+    (↑⁅I, N⁆ : Submodule R M) = Submodule.span R { ⁅(x : L), (n : M)⁆ | (x : I) (n : N) } := by
   apply le_antisymm
-  · let s := { m : M | ∃ (x : ↥I) (n : ↥N), ⁅(x : L), (n : M)⁆ = m }
+  · let s := { ⁅(x : L), (n : M)⁆ | (x : I) (n : N) }
     have aux : ∀ (y : L), ∀ m' ∈ Submodule.span R s, ⁅y, m'⁆ ∈ Submodule.span R s := by
       intro y m' hm'
       refine Submodule.span_induction (R := R) (M := M) (s := s)
@@ -99,7 +98,7 @@ theorem lieIdeal_oper_eq_linear_span [LieModule R L M] :
   · rw [lieIdeal_oper_eq_span]; apply submodule_span_le_lieSpan
 
 theorem lieIdeal_oper_eq_linear_span' [LieModule R L M] :
-    (↑⁅I, N⁆ : Submodule R M) = Submodule.span R { m | ∃ x ∈ I, ∃ n ∈ N, ⁅x, n⁆ = m } := by
+    (↑⁅I, N⁆ : Submodule R M) = Submodule.span R { ⁅x, n⁆ | (x ∈ I) (n ∈ N) } := by
   rw [lieIdeal_oper_eq_linear_span]
   congr
   ext m

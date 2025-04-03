@@ -275,9 +275,6 @@ theorem mul_le_mul_of_nonneg [PosMulMono α] [MulPosMono α]
     (h₁ : a ≤ b) (h₂ : c ≤ d) (a0 : 0 ≤ a) (d0 : 0 ≤ d) : a * c ≤ b * d :=
   (mul_le_mul_of_nonneg_left h₂ a0).trans (mul_le_mul_of_nonneg_right h₁ d0)
 
-@[deprecated (since := "2024-07-13")]
-alias mul_le_mul_of_le_of_le := mul_le_mul_of_nonneg
-
 theorem mul_le_mul_of_nonneg' [PosMulMono α] [MulPosMono α]
     (h₁ : a ≤ b) (h₂ : c ≤ d) (c0 : 0 ≤ c) (b0 : 0 ≤ b) : a * c ≤ b * d :=
   (mul_le_mul_of_nonneg_right h₁ c0).trans (mul_le_mul_of_nonneg_left h₂ b0)
@@ -294,9 +291,6 @@ theorem mul_lt_mul_of_le_of_lt_of_nonneg_of_pos [PosMulStrictMono α] [MulPosMon
 
 alias mul_lt_mul_of_nonneg_of_pos' := mul_lt_mul_of_le_of_lt_of_nonneg_of_pos
 
-@[deprecated (since := "2024-07-13")]
-alias mul_lt_mul_of_le_of_le' := mul_lt_mul_of_le_of_lt_of_nonneg_of_pos
-
 theorem mul_lt_mul_of_lt_of_le_of_nonneg_of_pos [PosMulMono α] [MulPosStrictMono α]
     (h₁ : a < b) (h₂ : c ≤ d) (a0 : 0 ≤ a) (d0 : 0 < d) : a * c < b * d :=
   (mul_le_mul_of_nonneg_left h₂ a0).trans_lt (mul_lt_mul_of_pos_right h₁ d0)
@@ -309,22 +303,13 @@ theorem mul_lt_mul_of_lt_of_le_of_pos_of_nonneg [PosMulMono α] [MulPosStrictMon
 
 alias mul_lt_mul_of_pos_of_nonneg' := mul_lt_mul_of_lt_of_le_of_pos_of_nonneg
 
-@[deprecated (since := "2024-07-13")]
-alias mul_lt_mul_of_le_of_lt' := mul_lt_mul_of_lt_of_le_of_pos_of_nonneg
-
 theorem mul_lt_mul_of_pos [PosMulStrictMono α] [MulPosStrictMono α]
     (h₁ : a < b) (h₂ : c < d) (a0 : 0 < a) (d0 : 0 < d) : a * c < b * d :=
   (mul_lt_mul_of_pos_left h₂ a0).trans (mul_lt_mul_of_pos_right h₁ d0)
 
-@[deprecated (since := "2024-07-13")]
-alias mul_lt_mul_of_pos_of_pos := mul_lt_mul_of_pos
-
 theorem mul_lt_mul_of_pos' [PosMulStrictMono α] [MulPosStrictMono α]
     (h₁ : a < b) (h₂ : c < d) (c0 : 0 < c) (b0 : 0 < b) : a * c < b * d :=
   (mul_lt_mul_of_pos_right h₁ c0).trans (mul_lt_mul_of_pos_left h₂ b0)
-
-@[deprecated (since := "2024-07-13")]
-alias mul_lt_mul_of_lt_of_lt' := mul_lt_mul_of_pos'
 
 alias mul_le_mul := mul_le_mul_of_nonneg'
 attribute [gcongr] mul_le_mul
@@ -957,6 +942,21 @@ end LinearOrder
 
 end MulOneClass
 
+section MulZero
+
+variable [Mul M₀] [Zero M₀] [Preorder M₀] [Preorder α] {f g : α → M₀}
+
+lemma Monotone.mul [PosMulMono M₀] [MulPosMono M₀] (hf : Monotone f) (hg : Monotone g)
+    (hf₀ : ∀ x, 0 ≤ f x) (hg₀ : ∀ x, 0 ≤ g x) : Monotone (f * g) :=
+  fun _ _ h ↦ mul_le_mul (hf h) (hg h) (hg₀ _) (hf₀ _)
+
+lemma MonotoneOn.mul [PosMulMono M₀] [MulPosMono M₀] {s : Set α } (hf : MonotoneOn f s)
+    (hg : MonotoneOn g s) (hf₀ : ∀ x ∈ s, 0 ≤ f x) (hg₀ : ∀ x ∈ s, 0 ≤ g x) :
+    MonotoneOn (f * g) s :=
+  fun _ ha _ hb h ↦ mul_le_mul (hf ha hb h) (hg ha hb h) (hg₀ _ ha) (hf₀ _ hb)
+
+end MulZero
+
 section MonoidWithZero
 variable [MonoidWithZero M₀]
 
@@ -1084,10 +1084,6 @@ lemma Antitone.mul_const [MulPosMono M₀] (hf : Antitone f) (ha : 0 ≤ a) :
 
 lemma Antitone.const_mul [PosMulMono M₀] (hf : Antitone f) (ha : 0 ≤ a) :
     Antitone fun x ↦ a * f x := (monotone_mul_left_of_nonneg ha).comp_antitone hf
-
-lemma Monotone.mul [PosMulMono M₀] [MulPosMono M₀] (hf : Monotone f) (hg : Monotone g)
-    (hf₀ : ∀ x, 0 ≤ f x) (hg₀ : ∀ x, 0 ≤ g x) : Monotone (f * g) :=
-  fun _ _ h ↦ mul_le_mul (hf h) (hg h) (hg₀ _) (hf₀ _)
 
 end Preorder
 

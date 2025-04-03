@@ -90,7 +90,10 @@ partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
   | none =>
     let fixedPath := (← IO.getPackageDir filePath) / filePath
     if !(← fixedPath.pathExists) then
-      IO.println s!"Warning: {fixedPath} not found. Skipping all files that depend on it"
+      IO.println s!"Warning: {fixedPath} not found. Skipping all files that depend on it."
+      if fixedPath.extension != "lean" then
+        IO.println s!"Note that `lake exe cache get ...` expects file names \
+          (e.g. `Mathlib/Init.lean`), not module names (e.g. `Mathlib.Init`)."
       modify fun stt => { stt with cache := stt.cache.insert filePath none }
       return none
     let content ← IO.FS.readFile fixedPath

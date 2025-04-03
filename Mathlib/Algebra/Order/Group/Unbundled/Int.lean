@@ -3,8 +3,8 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Facts about `ℤ` as an (unbundled) ordered group
@@ -22,16 +22,13 @@ See note [foundational algebra order theory].
 -/
 
 -- We should need only a minimal development of sets in order to get here.
-assert_not_exists Set.Subsingleton
-assert_not_exists Ring
+assert_not_exists Set.Subsingleton Ring
 
 open Function Nat
 
 namespace Int
 
 theorem natCast_strictMono : StrictMono (· : ℕ → ℤ) := fun _ _ ↦ Int.ofNat_lt.2
-
-@[deprecated (since := "2024-05-25")] alias coe_nat_strictMono := natCast_strictMono
 
 /-! ### Miscellaneous lemmas -/
 

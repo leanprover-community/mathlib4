@@ -44,7 +44,7 @@ def cokernelCocone {X Y : SemiNormedGrp₁.{u}} (f : X ⟶ Y) : Cofork f 0 :=
       --   SemiNormedGrp₁.mkHom_apply, SemiNormedGrp₁.zero_apply,
       --   ← NormedAddGroupHom.mem_ker, f.1.range.ker_normedMk, f.1.mem_range]
       -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      erw [Limits.zero_comp, comp_apply, SemiNormedGrp₁.mkHom_apply,
+      erw [Limits.zero_comp, CategoryTheory.comp_apply, SemiNormedGrp₁.mkHom_apply,
         SemiNormedGrp₁.zero_apply, ← NormedAddGroupHom.mem_ker, f.1.range.ker_normedMk,
         f.1.mem_range]
       use x
@@ -80,7 +80,7 @@ instance : HasCokernels SemiNormedGrp₁.{u} where
               erw [zero_apply])
             fun _ _ w =>
             Subtype.eq
-              (NormedAddGroupHom.lift_unique f.1.range _ _ _ (congr_arg Subtype.val w : _)) }
+              (NormedAddGroupHom.lift_unique f.1.range _ _ _ (congr_arg Subtype.val w :)) }
 
 -- Sanity check
 example : HasCokernels SemiNormedGrp₁ := by infer_instance
@@ -143,16 +143,10 @@ def cokernelCocone {X Y : SemiNormedGrp.{u}} (f : X ⟶ Y) : Cofork f 0 :=
   @Cofork.ofπ _ _ _ _ _ _ (SemiNormedGrp.of (Y ⧸ NormedAddGroupHom.range f)) f.range.normedMk
     (by
       ext a
-      simp only [comp_apply, Limits.zero_comp]
-      -- Porting note: `simp` not firing on the below
-      rw [comp_apply, NormedAddGroupHom.zero_apply]
-      -- Porting note: Lean 3 didn't need this instance
-      letI : SeminormedAddCommGroup ((forget SemiNormedGrp).obj Y) :=
-        (inferInstance : SeminormedAddCommGroup Y)
-      -- Porting note: again simp doesn't seem to be firing in the below line
+      simp only [coe_comp, Function.comp_apply, Limits.zero_comp, zero_apply]
+      -- Porting note: simp doesn't seem to be firing in the below line
       rw [← NormedAddGroupHom.mem_ker, f.range.ker_normedMk, f.mem_range]
-    -- This used to be `simp only [exists_apply_eq_apply]` before https://github.com/leanprover/lean4/pull/2644
-      convert exists_apply_eq_apply f a)
+      simp only [exists_apply_eq_apply])
 
 /-- Auxiliary definition for `HasCokernels SemiNormedGrp`. -/
 noncomputable

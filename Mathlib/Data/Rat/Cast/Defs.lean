@@ -114,8 +114,6 @@ theorem cast_intCast (n : ℤ) : ((n : ℚ) : α) = n :=
 theorem cast_natCast (n : ℕ) : ((n : ℚ) : α) = n := by
   rw [← Int.cast_natCast, cast_intCast, Int.cast_natCast]
 
-@[deprecated (since := "2024-03-21")] alias cast_coe_int := cast_intCast
-@[deprecated (since := "2024-03-21")] alias cast_coe_nat := cast_natCast
 
 @[simp, norm_cast] lemma cast_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((ofNat(n) : ℚ) : α) = (ofNat(n) : α) := by

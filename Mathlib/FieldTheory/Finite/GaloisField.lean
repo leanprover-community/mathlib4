@@ -112,7 +112,9 @@ theorem finrank {n} (h : n ≠ 0) : Module.finrank (ZMod p) (GaloisField p n) = 
   intro x hx
   -- We discharge the `p = 0` separately, to avoid typeclass issues on `ZMod p`.
   cases p; cases hp
-  refine Subring.closure_induction ?_ ?_ ?_ ?_ ?_ ?_ hx <;> simp_rw [mem_rootSet_of_ne aux]
+  simp only [g_poly] at aux
+  refine Subring.closure_induction ?_ ?_ ?_ ?_ ?_ ?_ hx
+    <;> simp_rw [mem_rootSet_of_ne aux]
   · rintro x (⟨r, rfl⟩ | hx)
     · simp only [g_poly, map_sub, map_pow, aeval_X]
       rw [← map_pow, ZMod.pow_card_pow, sub_self]

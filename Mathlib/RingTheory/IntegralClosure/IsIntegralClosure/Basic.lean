@@ -56,7 +56,7 @@ theorem IsIntegral.inv_mem_adjoin (int : IsIntegral R x) : x⁻¹ ∈ adjoin R {
 /-- The inverse of an integral element in a subalgebra of a division ring over a field
   also lies in that subalgebra. -/
 theorem IsIntegral.inv_mem (int : IsIntegral R x) (hx : x ∈ A) : x⁻¹ ∈ A :=
-  adjoin_le_iff.mpr (Set.singleton_subset_iff.mpr hx) int.inv_mem_adjoin
+  adjoin_le (Set.singleton_subset_iff.mpr hx) int.inv_mem_adjoin
 
 /-- An integral subalgebra of a division ring over a field is closed under inverses. -/
 theorem Algebra.IsIntegral.inv_mem [Algebra.IsIntegral R A] (hx : x ∈ A) : x⁻¹ ∈ A :=
@@ -132,8 +132,8 @@ theorem le_integralClosure_iff_isIntegral {S : Subalgebra R A} :
       Algebra.isIntegral_def.symm
 
 theorem Algebra.IsIntegral.adjoin {S : Set A} (hS : ∀ x ∈ S, IsIntegral R x) :
-    Algebra.IsIntegral R (Algebra.adjoin R S) :=
-  le_integralClosure_iff_isIntegral.mp <| adjoin_le_iff.mpr hS
+    Algebra.IsIntegral R (adjoin R S) :=
+  le_integralClosure_iff_isIntegral.mp <| adjoin_le hS
 
 theorem integralClosure_eq_top_iff : integralClosure R A = ⊤ ↔ Algebra.IsIntegral R A := by
   rw [← top_le_iff, le_integralClosure_iff_isIntegral,

@@ -105,7 +105,7 @@ variable {C : Type v₁} [SmallCategory C] {D : Type v₁} [SmallCategory D] (G 
   (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 
 -- The favourable assumptions under which we have sheafification
-variable [ConcreteCategory.{v₁} A] [PreservesLimits (forget A)] [HasColimits A] [HasLimits A]
+variable [HasForget.{v₁} A] [PreservesLimits (forget A)] [HasColimits A] [HasLimits A]
   [PreservesFilteredColimits (forget A)] [(forget A).ReflectsIsomorphisms]
   [Functor.IsContinuous.{v₁} G J K]
 

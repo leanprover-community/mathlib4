@@ -28,7 +28,7 @@ universe u v
 
 open CategoryTheory Limits
 
-variable (V : Type (u + 1)) [LargeCategory V] [ConcreteCategory V] [HasForget₂ V TopCat]
+variable (V : Type (u + 1)) [LargeCategory V] [HasForget V] [HasForget₂ V TopCat]
 variable (G : MonCat.{u}) [TopologicalSpace G]
 
 namespace Action
@@ -68,8 +68,8 @@ namespace ContAction
 instance : Category (ContAction V G) :=
   FullSubcategory.category (IsContinuous (V := V) (G := G))
 
-instance : ConcreteCategory (ContAction V G) :=
-  FullSubcategory.concreteCategory (IsContinuous (V := V) (G := G))
+instance : HasForget (ContAction V G) :=
+  FullSubcategory.hasForget (IsContinuous (V := V) (G := G))
 
 instance : HasForget₂ (ContAction V G) (Action V G) :=
   FullSubcategory.hasForget₂ (IsContinuous (V := V) (G := G))
@@ -102,8 +102,8 @@ namespace DiscreteContAction
 instance : Category (DiscreteContAction V G) :=
   FullSubcategory.category (IsDiscrete (V := V) (G := G))
 
-instance : ConcreteCategory (DiscreteContAction V G) :=
-  FullSubcategory.concreteCategory (IsDiscrete (V := V) (G := G))
+instance : HasForget (DiscreteContAction V G) :=
+  FullSubcategory.hasForget (IsDiscrete (V := V) (G := G))
 
 instance : HasForget₂ (DiscreteContAction V G) (ContAction V G) :=
   FullSubcategory.hasForget₂ (IsDiscrete (V := V) (G := G))

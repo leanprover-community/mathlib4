@@ -8,6 +8,7 @@ import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Order.Iterate
 import Mathlib.Order.SemiconjSup
 import Mathlib.Topology.Order.MonotoneContinuity
+import Mathlib.Algebra.CharP.Defs
 
 /-!
 # Translation number of a monotone real map that commutes with `x ↦ x + 1`

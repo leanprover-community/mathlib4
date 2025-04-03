@@ -172,7 +172,8 @@ section OrderedAddMonoid
 
 variable [LinearOrder ι]
 
-instance Lex.orderBot [∀ i, CanonicallyOrderedAddCommMonoid (α i)] :
+instance Lex.orderBot [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)]
+    [∀ i, CanonicallyOrderedAdd (α i)] :
     OrderBot (Lex (Π₀ i, α i)) where
   bot := 0
   bot_le _ := DFinsupp.toLex_monotone bot_le

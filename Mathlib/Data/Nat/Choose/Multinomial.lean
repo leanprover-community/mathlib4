@@ -51,8 +51,6 @@ theorem multinomial_spec : (∏ i ∈ s, (f i)!) * multinomial s f = (∑ i ∈ 
 
 @[simp] lemma multinomial_empty : multinomial ∅ f = 1 := by simp [multinomial]
 
-@[deprecated (since := "2024-06-01")] alias multinomial_nil := multinomial_empty
-
 variable {s f}
 
 lemma multinomial_cons (ha : a ∉ s) (f : α → ℕ) :
@@ -207,11 +205,13 @@ variable {α R : Type*} [DecidableEq α]
 section Semiring
 variable [Semiring R]
 
+open scoped Function -- required for scoped `on` notation
+
 -- TODO: Can we prove one of the following two from the other one?
 /-- The **multinomial theorem**. -/
 lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
     (hc : (s : Set α).Pairwise (Commute on f)) (n : ℕ) :
-    (∑ i in s, f i) ^ n = ∑ k in piAntidiag s n, multinomial s k *
+    (∑ i ∈ s, f i) ^ n = ∑ k ∈ piAntidiag s n, multinomial s k *
       s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun _ _ h ↦ h.pow_pow ..) := by
   classical
   induction' s using Finset.cons_induction with a s has ih generalizing n
@@ -222,11 +222,11 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
     if_true, sum_add_distrib, sum_ite_eq', has, if_false, add_zero,
     addLeftEmbedding_eq_addRightEmbedding, addRightEmbedding_apply]
   suffices ∀ p : ℕ × ℕ, p ∈ antidiagonal n →
-    ∑ g in piAntidiag s p.2, ((g a + p.1 + s.sum g).choose (g a + p.1) : R) *
+    ∑ g ∈ piAntidiag s p.2, ((g a + p.1 + s.sum g).choose (g a + p.1) : R) *
       multinomial s (g + fun i ↦ ite (i = a) p.1 0) *
         (f a ^ (g a + p.1) * s.noncommProd (fun i ↦ f i ^ (g i + ite (i = a) p.1 0))
           ((hc.mono (by simp)).mono' fun i j h ↦ h.pow_pow ..)) =
-      ∑ g in piAntidiag s p.2, n.choose p.1 * multinomial s g * (f a ^ p.1 *
+      ∑ g ∈ piAntidiag s p.2, n.choose p.1 * multinomial s g * (f a ^ p.1 *
         s.noncommProd (fun i ↦ f i ^ g i) ((hc.mono (by simp)).mono' fun i j h ↦ h.pow_pow ..)) by
     rw [sum_congr rfl this]
     simp only [Nat.antidiagonal_eq_map, sum_map, Function.Embedding.coeFn_mk]
@@ -293,7 +293,7 @@ section CommSemiring
 variable [CommSemiring R] {f : α → R} {s : Finset α}
 
 lemma sum_pow_eq_sum_piAntidiag (s : Finset α) (f : α → R) (n : ℕ) :
-    (∑ i in s, f i) ^ n = ∑ k in piAntidiag s n, multinomial s k * ∏ i in s, f i ^ k i := by
+    (∑ i ∈ s, f i) ^ n = ∑ k ∈ piAntidiag s n, multinomial s k * ∏ i ∈ s, f i ^ k i := by
   simp_rw [← noncommProd_eq_prod]
   rw [← sum_pow_eq_sum_piAntidiag_of_commute _ _ fun _ _ _ _ _ ↦ Commute.all ..]
 
@@ -310,7 +310,7 @@ namespace Nat
 variable {ι : Type*} {s : Finset ι} {f : ι → ℕ}
 
 lemma multinomial_two_mul_le_mul_multinomial :
-    multinomial s (fun i ↦ 2 * f i) ≤ ((∑ i in s, f i) ^ ∑ i in s, f i) * multinomial s f := by
+    multinomial s (fun i ↦ 2 * f i) ≤ ((∑ i ∈ s, f i) ^ ∑ i ∈ s, f i) * multinomial s f := by
   rw [multinomial, multinomial, ← mul_sum,
     ← Nat.mul_div_assoc _ (prod_factorial_dvd_factorial_sum ..)]
   refine Nat.div_le_div_of_mul_le_mul (by positivity)

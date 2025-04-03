@@ -480,9 +480,6 @@ theorem TotallyBounded.subset {s₁ s₂ : Set α} (hs : s₁ ⊆ s₂) (h : Tot
   let ⟨t, ht₁, ht₂⟩ := h d hd
   ⟨t, ht₁, Subset.trans hs ht₂⟩
 
-@[deprecated (since := "2024-06-01")]
-alias totallyBounded_subset := TotallyBounded.subset
-
 /-- The closure of a totally bounded set is totally bounded. -/
 theorem TotallyBounded.closure {s : Set α} (h : TotallyBounded s) : TotallyBounded (closure s) :=
   uniformity_hasBasis_closed.totallyBounded_iff.2 fun V hV =>
@@ -644,6 +641,34 @@ theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) :
   rw [mem_iUnion₂]
   rcases le_total m n with hm | hm
   exacts [⟨m, hm, refl_mem_uniformity ha⟩, ⟨n, le_refl n, hn m hm n le_rfl⟩]
+
+/-- Given a family of points `xs n`, a family of entourages `V n` of the diagonal and a family of
+natural numbers `u n`, the intersection over `n` of the `V n`-neighborhood of `xs 1, ..., xs (u n)`.
+Designed to be relatively compact when `V n` tends to the diagonal. -/
+def interUnionBalls (xs : ℕ → α) (u : ℕ → ℕ) (V : ℕ → Set (α × α)) : Set α :=
+  ⋂ n, ⋃ m ≤ u n, UniformSpace.ball (xs m) (Prod.swap ⁻¹' V n)
+
+lemma totallyBounded_interUnionBalls {p : ℕ → Prop} {U : ℕ → Set (α × α)}
+    (H : (uniformity α).HasBasis p U) (xs : ℕ → α) (u : ℕ → ℕ) :
+    TotallyBounded (interUnionBalls xs u U) := by
+  rw [Filter.HasBasis.totallyBounded_iff H]
+  intro i _
+  have h_subset : interUnionBalls xs u U
+      ⊆ ⋃ m ≤ u i, UniformSpace.ball (xs m) (Prod.swap ⁻¹' U i) :=
+    fun x hx ↦ Set.mem_iInter.1 hx i
+  classical
+  refine ⟨Finset.image xs (Finset.range (u i + 1)), Finset.finite_toSet _, fun x hx ↦ ?_⟩
+  simp only [Finset.coe_image, Finset.coe_range, mem_image, mem_Iio, iUnion_exists, biUnion_and',
+    iUnion_iUnion_eq_right, Nat.lt_succ_iff]
+  exact h_subset hx
+
+/-- The construction `interUnionBalls` is used to have a relatively compact set. -/
+theorem isCompact_closure_interUnionBalls {p : ℕ → Prop} {U : ℕ → Set (α × α)}
+    (H : (uniformity α).HasBasis p U) [CompleteSpace α] (xs : ℕ → α) (u : ℕ → ℕ) :
+    IsCompact (closure (interUnionBalls xs u U)) := by
+  rw [isCompact_iff_totallyBounded_isComplete]
+  refine ⟨TotallyBounded.closure ?_, isClosed_closure.isComplete⟩
+  exact totallyBounded_interUnionBalls H xs u
 
 /-!
 ### Sequentially complete space

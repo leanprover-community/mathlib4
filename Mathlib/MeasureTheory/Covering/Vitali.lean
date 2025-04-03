@@ -198,12 +198,14 @@ theorem exists_disjoint_subfamily_covering_enlargement_closedBall
 alias exists_disjoint_subfamily_covering_enlargment_closedBall :=
   exists_disjoint_subfamily_covering_enlargement_closedBall
 
-/-- The measurable Vitali covering theorem. Assume one is given a family `t` of closed sets with
-nonempty interior, such that each `a ∈ t` is included in a ball `B (x, r)` and covers a definite
-proportion of the ball `B (x, 3 r)` for a given measure `μ` (think of the situation where `μ` is
-a doubling measure and `t` is a family of balls). Consider a (possibly non-measurable) set `s`
-at which the family is fine, i.e., every point of `s` belongs to arbitrarily small elements of `t`.
-Then one can extract from `t` a disjoint subfamily that covers almost all `s`.
+/-- The measurable **Vitali covering theorem**.
+
+Assume one is given a family `t` of closed sets with nonempty interior, such that each `a ∈ t` is
+included in a ball `B (x, r)` and covers a definite proportion of the ball `B (x, 3 r)` for a given
+measure `μ` (think of the situation where `μ` is a doubling measure and `t` is a family of balls).
+Consider a (possibly non-measurable) set `s` at which the family is fine, i.e., every point of `s`
+belongs to arbitrarily small elements of `t`. Then one can extract from `t` a disjoint subfamily
+that covers almost all `s`.
 
 For more flexibility, we give a statement with a parameterized family of sets.
 -/
@@ -308,7 +310,7 @@ theorem exists_disjoint_covering_ae
         linarith [Idist_v b ⟨bu, hbx⟩]
   -- we will show that, in `ball x (R x)`, almost all `s` is covered by the family `u`.
   refine ⟨_ ∩ ball x (R x), inter_mem_nhdsWithin _ (ball_mem_nhds _ (hR0 _)),
-    nonpos_iff_eq_zero.mp (le_of_forall_le_of_dense fun ε εpos => ?_)⟩
+    nonpos_iff_eq_zero.mp (le_of_forall_gt_imp_ge_of_dense fun ε εpos => ?_)⟩
   -- the elements of `v` are disjoint and all contained in a finite volume ball, hence the sum
   -- of their measures is finite.
   have I : (∑' a : v, μ (B a)) < ∞ := by

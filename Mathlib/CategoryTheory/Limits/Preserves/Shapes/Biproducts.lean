@@ -237,7 +237,7 @@ theorem biproductComparison'_comp_biproductComparison :
 @[simps]
 def splitEpiBiproductComparison : SplitEpi (biproductComparison F f) where
   section_ := biproductComparison' F f
-  id := by aesop
+  id := by simp
 
 instance : IsSplitEpi (biproductComparison F f) :=
   IsSplitEpi.mk' (splitEpiBiproductComparison F f)
@@ -246,7 +246,7 @@ instance : IsSplitEpi (biproductComparison F f) :=
 @[simps]
 def splitMonoBiproductComparison' : SplitMono (biproductComparison' F f) where
   retraction := biproductComparison F f
-  id := by aesop
+  id := by simp
 
 instance : IsSplitMono (biproductComparison' F f) :=
   IsSplitMono.mk' (splitMonoBiproductComparison' F f)
@@ -321,7 +321,7 @@ theorem biprodComparison'_comp_biprodComparison :
 @[simps]
 def splitEpiBiprodComparison : SplitEpi (biprodComparison F X Y) where
   section_ := biprodComparison' F X Y
-  id := by aesop
+  id := by simp
 
 instance : IsSplitEpi (biprodComparison F X Y) :=
   IsSplitEpi.mk' (splitEpiBiprodComparison F X Y)
@@ -330,7 +330,7 @@ instance : IsSplitEpi (biprodComparison F X Y) :=
 @[simps]
 def splitMonoBiprodComparison' : SplitMono (biprodComparison' F X Y) where
   retraction := biprodComparison F X Y
-  id := by aesop
+  id := by simp
 
 instance : IsSplitMono (biprodComparison' F X Y) :=
   IsSplitMono.mk' (splitMonoBiprodComparison' F X Y)

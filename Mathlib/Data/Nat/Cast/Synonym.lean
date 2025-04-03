@@ -74,7 +74,7 @@ theorem toLex_natCast [NatCast α] (n : ℕ) : toLex (n : α) = n :=
 
 @[simp]
 theorem toLex_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    (toLex (no_index (OfNat.ofNat n : α))) = OfNat.ofNat n :=
+    toLex (ofNat(n) : α) = OfNat.ofNat n :=
   rfl
 
 @[simp]
@@ -83,5 +83,5 @@ theorem ofLex_natCast [NatCast α] (n : ℕ) : (ofLex n : α) = n :=
 
 @[simp]
 theorem ofLex_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    (ofLex (no_index (OfNat.ofNat n : Lex α))) = OfNat.ofNat n :=
+    ofLex (ofNat(n) : Lex α) = OfNat.ofNat n :=
   rfl

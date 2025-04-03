@@ -29,6 +29,7 @@ interval.
 * `toIocMod hp a b` (where `hp : 0 < p`): Reduce `b` to the interval `Ioc a (a + p)`.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 noncomputable section
 
@@ -945,42 +946,24 @@ theorem iUnion_Ioc_add_intCast : ⋃ n : ℤ, Ioc (a + n) (a + n + 1) = Set.univ
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Ioc_add_zsmul zero_lt_one a
 
-@[deprecated (since := "2024-04-17")]
-alias iUnion_Ioc_add_int_cast := iUnion_Ioc_add_intCast
-
 theorem iUnion_Ico_add_intCast : ⋃ n : ℤ, Ico (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Ico_add_zsmul zero_lt_one a
 
-@[deprecated (since := "2024-04-17")]
-alias iUnion_Ico_add_int_cast := iUnion_Ico_add_intCast
-
 theorem iUnion_Icc_add_intCast : ⋃ n : ℤ, Icc (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Icc_add_zsmul zero_lt_one a
-
-@[deprecated (since := "2024-04-17")]
-alias iUnion_Icc_add_int_cast := iUnion_Icc_add_intCast
 
 variable (α)
 
 theorem iUnion_Ioc_intCast : ⋃ n : ℤ, Ioc (n : α) (n + 1) = Set.univ := by
   simpa only [zero_add] using iUnion_Ioc_add_intCast (0 : α)
 
-@[deprecated (since := "2024-04-17")]
-alias iUnion_Ioc_int_cast := iUnion_Ioc_intCast
-
 theorem iUnion_Ico_intCast : ⋃ n : ℤ, Ico (n : α) (n + 1) = Set.univ := by
   simpa only [zero_add] using iUnion_Ico_add_intCast (0 : α)
 
-@[deprecated (since := "2024-04-17")]
-alias iUnion_Ico_int_cast := iUnion_Ico_intCast
-
 theorem iUnion_Icc_intCast : ⋃ n : ℤ, Icc (n : α) (n + 1) = Set.univ := by
   simpa only [zero_add] using iUnion_Icc_add_intCast (0 : α)
-
-@[deprecated (since := "2024-04-17")]
-alias iUnion_Icc_int_cast := iUnion_Icc_intCast
 
 end LinearOrderedRing
 

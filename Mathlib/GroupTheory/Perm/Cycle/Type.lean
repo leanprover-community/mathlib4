@@ -406,8 +406,8 @@ theorem zero_eq : vectorsProdEqOne G 0 = {Vector.nil} :=
   Set.eq_singleton_iff_unique_mem.mpr ⟨Eq.refl (1 : G), fun v _ => v.eq_nil⟩
 
 theorem one_eq : vectorsProdEqOne G 1 = {Vector.nil.cons 1} := by
-  simp_rw [Set.eq_singleton_iff_unique_mem, mem_iff, Vector.toList_singleton, List.prod_singleton,
-    Vector.head_cons, true_and]
+  simp_rw [Set.eq_singleton_iff_unique_mem, mem_iff, List.Vector.toList_singleton,
+    List.prod_singleton, List.Vector.head_cons, true_and]
   exact fun v hv => v.cons_head_tail.symm.trans (congr_arg₂ Vector.cons hv v.tail.eq_nil)
 
 instance zeroUnique : Unique (vectorsProdEqOne G 0) := by

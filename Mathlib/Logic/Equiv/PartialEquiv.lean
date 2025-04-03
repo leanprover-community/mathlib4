@@ -493,6 +493,8 @@ theorem restr_coe_symm (s : Set α) : ((e.restr s).symm : β → α) = e.symm :=
 theorem restr_source (s : Set α) : (e.restr s).source = e.source ∩ s :=
   rfl
 
+theorem source_restr_subset_source (s : Set α) : (e.restr s).source ⊆ e.source := inter_subset_left
+
 @[simp, mfld_simps]
 theorem restr_target (s : Set α) : (e.restr s).target = e.target ∩ e.symm ⁻¹' s :=
   rfl
@@ -525,11 +527,9 @@ theorem refl_coe : (PartialEquiv.refl α : α → α) = id :=
 theorem refl_symm : (PartialEquiv.refl α).symm = PartialEquiv.refl α :=
   rfl
 
--- Porting note: removed `simp` because `simp` can prove this
 @[mfld_simps]
 theorem refl_restr_source (s : Set α) : ((PartialEquiv.refl α).restr s).source = s := by simp
 
--- Porting note: removed `simp` because `simp` can prove this
 @[mfld_simps]
 theorem refl_restr_target (s : Set α) : ((PartialEquiv.refl α).restr s).target = s := by
   change univ ∩ id ⁻¹' s = s
@@ -562,6 +562,19 @@ theorem ofSet_coe (s : Set α) : (PartialEquiv.ofSet s : α → α) = id :=
 theorem ofSet_symm (s : Set α) : (PartialEquiv.ofSet s).symm = PartialEquiv.ofSet s :=
   rfl
 
+/-- `Function.const` as a `PartialEquiv`.
+It consists of two constant maps in opposite directions. -/
+@[simps]
+def single (a : α) (b : β) : PartialEquiv α β where
+  toFun := Function.const α b
+  invFun := Function.const β a
+  source := {a}
+  target := {b}
+  map_source' _ _ := rfl
+  map_target' _ _ := rfl
+  left_inv' a' ha' := by rw [eq_of_mem_singleton ha', const_apply]
+  right_inv' b' hb' := by rw [eq_of_mem_singleton hb', const_apply]
+
 /-- Composing two partial equivs if the target of the first coincides with the source of the
 second. -/
 @[simps]
@@ -576,7 +589,9 @@ protected def trans' (e' : PartialEquiv β γ) (h : e.target = e'.source) : Part
   right_inv' y hy := by simp [hy, h]
 
 /-- Composing two partial equivs, by restricting to the maximal domain where their composition
-is well defined. -/
+is well defined.
+Within the `Manifold` namespace, there is the notation `e ≫ f` for this.
+-/
 @[trans]
 protected def trans : PartialEquiv α γ :=
   PartialEquiv.trans' (e.symm.restr e'.source).symm (e'.restr e.target) (inter_comm _ _)

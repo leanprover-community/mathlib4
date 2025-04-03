@@ -11,6 +11,8 @@ import Mathlib.SetTheory.Cardinal.Finite
 # Cardinalities of pointwise operations on sets
 -/
 
+assert_not_exists Field
+
 open scoped Cardinal Pointwise
 
 namespace Set

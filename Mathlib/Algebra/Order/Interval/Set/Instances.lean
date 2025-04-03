@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Algebraic instances for unit intervals
@@ -118,20 +119,20 @@ theorem mul_le_left {x y : Icc (0 : α) 1} : x * y ≤ x :=
 theorem mul_le_right {x y : Icc (0 : α) 1} : x * y ≤ y :=
   (mul_le_mul_of_nonneg_right x.2.2 y.2.1).trans_eq (one_mul _)
 
-instance monoidWithZero : MonoidWithZero (Icc (0 : α) 1) :=
+instance monoidWithZero : MonoidWithZero (Icc (0 : α) 1) := fast_instance%
   Subtype.coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 instance commMonoidWithZero {α : Type*} [OrderedCommSemiring α] :
-    CommMonoidWithZero (Icc (0 : α) 1) :=
+    CommMonoidWithZero (Icc (0 : α) 1) := fast_instance%
   Subtype.coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 instance cancelMonoidWithZero {α : Type*} [OrderedRing α] [NoZeroDivisors α] :
-    CancelMonoidWithZero (Icc (0 : α) 1) :=
+    CancelMonoidWithZero (Icc (0 : α) 1) := fast_instance%
   @Function.Injective.cancelMonoidWithZero α _ NoZeroDivisors.toCancelMonoidWithZero _ _ _ _
     (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
 
 instance cancelCommMonoidWithZero {α : Type*} [OrderedCommRing α] [NoZeroDivisors α] :
-    CancelCommMonoidWithZero (Icc (0 : α) 1) :=
+    CancelCommMonoidWithZero (Icc (0 : α) 1) := fast_instance%
   @Function.Injective.cancelCommMonoidWithZero α _ NoZeroDivisors.toCancelCommMonoidWithZero _ _ _ _
     (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
 
@@ -191,10 +192,11 @@ instance mul : Mul (Ico (0 : α) 1) where
 theorem coe_mul (x y : Ico (0 : α) 1) : ↑(x * y) = (x * y : α) :=
   rfl
 
-instance semigroup : Semigroup (Ico (0 : α) 1) :=
+instance semigroup : Semigroup (Ico (0 : α) 1) := fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 
-instance commSemigroup {α : Type*} [OrderedCommSemiring α] : CommSemigroup (Ico (0 : α) 1) :=
+instance commSemigroup {α : Type*} [OrderedCommSemiring α] :
+    CommSemigroup (Ico (0 : α) 1) := fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 
 end Set.Ico
@@ -250,26 +252,27 @@ theorem coe_mul (x y : Ioc (0 : α) 1) : ↑(x * y) = (x * y : α) :=
 theorem coe_pow (x : Ioc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = ((x : α) ^ n) :=
   rfl
 
-instance semigroup : Semigroup (Ioc (0 : α) 1) :=
+instance semigroup : Semigroup (Ioc (0 : α) 1) := fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 
-instance monoid : Monoid (Ioc (0 : α) 1) :=
+instance monoid : Monoid (Ioc (0 : α) 1) := fast_instance%
   Subtype.coe_injective.monoid _ coe_one coe_mul coe_pow
 
-instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioc (0 : α) 1) :=
+instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] :
+    CommSemigroup (Ioc (0 : α) 1) := fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 
 instance commMonoid {α : Type*} [StrictOrderedCommSemiring α] :
-    CommMonoid (Ioc (0 : α) 1) :=
+    CommMonoid (Ioc (0 : α) 1) := fast_instance%
   Subtype.coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
 instance cancelMonoid {α : Type*} [StrictOrderedRing α] [IsDomain α] :
     CancelMonoid (Ioc (0 : α) 1) :=
   { Set.Ioc.monoid with
     mul_left_cancel := fun a _ _ h =>
-      Subtype.ext <| mul_left_cancel₀ a.prop.1.ne' <| (congr_arg Subtype.val h : _)
+      Subtype.ext <| mul_left_cancel₀ a.prop.1.ne' <| (congr_arg Subtype.val h :)
     mul_right_cancel := fun _ b _ h =>
-      Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' <| (congr_arg Subtype.val h : _) }
+      Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' <| (congr_arg Subtype.val h :) }
 
 instance cancelCommMonoid {α : Type*} [StrictOrderedCommRing α] [IsDomain α] :
     CancelCommMonoid (Ioc (0 : α) 1) :=
@@ -296,10 +299,11 @@ instance mul : Mul (Ioo (0 : α) 1) where
 theorem coe_mul (x y : Ioo (0 : α) 1) : ↑(x * y) = (x * y : α) :=
   rfl
 
-instance semigroup : Semigroup (Ioo (0 : α) 1) :=
+instance semigroup : Semigroup (Ioo (0 : α) 1) := fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 
-instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioo (0 : α) 1) :=
+instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] :
+    CommSemigroup (Ioo (0 : α) 1) := fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 
 variable {β : Type*} [OrderedRing β]

@@ -195,7 +195,6 @@ noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) B
   ⟨map Aₚ Bₚ f.toRingHom a, fun r ↦ by
     dsimp only [AlgHom.toRingHom_eq_coe, map, RingHom.coe_coe, OneHom.toFun_eq_coe]
     rw [IsScalarTower.algebraMap_apply R A Aₚ, IsScalarTower.algebraMap_eq R B Bₚ]
-    erw [IsLocalization.map_eq]
     simp⟩
 
 @[simp]
@@ -502,10 +501,6 @@ theorem selfZPow_sub_natCast {n m : ℕ} :
   · rw [← neg_sub, ← Int.ofNat_sub (le_of_not_le h), selfZPow_neg_natCast,
       IsLocalization.mk'_eq_iff_eq]
     simp [Submonoid.pow_apply, ← pow_add, Nat.sub_add_cancel (le_of_not_le h)]
-
-@[deprecated (since := "2024-04-05")] alias selfZPow_coe_nat := selfZPow_natCast
-@[deprecated (since := "2024-04-05")] alias selfZPow_neg_coe_nat := selfZPow_neg_natCast
-@[deprecated (since := "2024-04-05")] alias selfZPow_sub_cast_nat := selfZPow_sub_natCast
 
 @[simp]
 theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZPow x B m := by

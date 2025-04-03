@@ -29,11 +29,8 @@ universe v v₁ v₂ u₁ u₂
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable {C : Type u₁} [Category.{v₁} C]
 
-/-- The Yoneda embedding, as a functor from `C` into presheaves on `C`.
-
-See <https://stacks.math.columbia.edu/tag/001O>.
--/
-@[simps]
+/-- The Yoneda embedding, as a functor from `C` into presheaves on `C`. -/
+@[simps, stacks 001O]
 def yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁ where
   obj X :=
     { obj := fun Y => unop Y ⟶ X
@@ -70,17 +67,13 @@ def fullyFaithful : (yoneda (C := C)).FullyFaithful where
 lemma fullyFaithful_preimage {X Y : C} (f : yoneda.obj X ⟶ yoneda.obj Y) :
     fullyFaithful.preimage f = f.app (op X) (𝟙 X) := rfl
 
-/-- The Yoneda embedding is full.
-
-See <https://stacks.math.columbia.edu/tag/001P>.
--/
+/-- The Yoneda embedding is full. -/
+@[stacks 001P]
 instance yoneda_full : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Full :=
   fullyFaithful.full
 
-/-- The Yoneda embedding is faithful.
-
-See <https://stacks.math.columbia.edu/tag/001P>.
--/
+/-- The Yoneda embedding is faithful. -/
+@[stacks 001P]
 instance yoneda_faithful : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Faithful :=
   fullyFaithful.faithful
 
@@ -254,10 +247,8 @@ def CorepresentableBy.toIso {F : C ⥤ Type v₁} {X : C} (e : F.Corepresentable
 
 /-- A functor `F : Cᵒᵖ ⥤ Type v` is representable if there is an object `Y` with a structure
 `F.RepresentableBy Y`, i.e. there is a natural bijection `(X ⟶ Y) ≃ F.obj (op X)`,
-which may also be rephrased as a natural isomorphism `yoneda.obj X ≅ F` when `Category.{v} C`.
-
-See <https://stacks.math.columbia.edu/tag/001Q>.
--/
+which may also be rephrased as a natural isomorphism `yoneda.obj X ≅ F` when `Category.{v} C`. -/
+@[stacks 001Q]
 class IsRepresentable (F : Cᵒᵖ ⥤ Type v) : Prop where
   has_representation : ∃ (Y : C), Nonempty (F.RepresentableBy Y)
 
@@ -277,9 +268,8 @@ instance {X : C} : IsRepresentable (yoneda.obj X) :=
   IsRepresentable.mk' (Iso.refl _)
 
 /-- A functor `F : C ⥤ Type v₁` is corepresentable if there is object `X` so `F ≅ coyoneda.obj X`.
-
-See <https://stacks.math.columbia.edu/tag/001Q>.
 -/
+@[stacks 001Q]
 class IsCorepresentable (F : C ⥤ Type v) : Prop where
   has_corepresentation : ∃ (X : C), Nonempty (F.CorepresentableBy X)
 
@@ -523,14 +513,12 @@ def yonedaCompUliftFunctorEquiv (F : Cᵒᵖ ⥤ Type max v₁ w) (X : C) :
     dsimp
     rw [Category.comp_id]
     rfl
-  right_inv f := by aesop_cat
+  right_inv f := by simp
 
 /-- The Yoneda lemma asserts that the Yoneda pairing
 `(X : Cᵒᵖ, F : Cᵒᵖ ⥤ Type) ↦ (yoneda.obj (unop X) ⟶ F)`
-is naturally isomorphic to the evaluation `(X, F) ↦ F.obj X`.
-
-See <https://stacks.math.columbia.edu/tag/001P>.
--/
+is naturally isomorphic to the evaluation `(X, F) ↦ F.obj X`. -/
+@[stacks 001P]
 def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C :=
   NatIso.ofComponents
     (fun _ ↦ Equiv.toIso (yonedaEquiv.trans Equiv.ulift.symm))
@@ -705,14 +693,12 @@ def coyonedaCompUliftFunctorEquiv (F : C ⥤ Type max v₁ w) (X : Cᵒᵖ) :
     dsimp
     rw [Category.id_comp]
     rfl
-  right_inv f := by aesop_cat
+  right_inv f := by simp
 
 /-- The Coyoneda lemma asserts that the Coyoneda pairing
 `(X : C, F : C ⥤ Type) ↦ (coyoneda.obj X ⟶ F)`
-is naturally isomorphic to the evaluation `(X, F) ↦ F.obj X`.
-
-See <https://stacks.math.columbia.edu/tag/001P>.
--/
+is naturally isomorphic to the evaluation `(X, F) ↦ F.obj X`. -/
+@[stacks 001P]
 def coyonedaLemma : coyonedaPairing C ≅ coyonedaEvaluation C :=
   NatIso.ofComponents
     (fun _ ↦ Equiv.toIso (coyonedaEquiv.trans Equiv.ulift.symm))

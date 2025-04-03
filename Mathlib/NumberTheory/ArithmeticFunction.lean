@@ -568,6 +568,7 @@ theorem map_mul_of_coprime {f : ArithmeticFunction R} (hf : f.IsMultiplicative) 
 
 end MonoidWithZero
 
+open scoped Function in -- required for scoped `on` notation
 theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) (s : Finset ι) (hs : (s : Set ι).Pairwise (Coprime on g)) :
     f (∏ i ∈ s, g i) = ∏ i ∈ s, f (g i) := by
@@ -602,17 +603,11 @@ theorem natCast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicativ
                                  -- Porting note: was `by simp [cop, h]`
   ⟨by simp [h], fun {m n} cop => by simp [h.2 cop]⟩
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast := natCast
-
 @[arith_mult]
 theorem intCast {f : ArithmeticFunction ℤ} [Ring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
                                  -- Porting note: was `by simp [cop, h]`
   ⟨by simp [h], fun {m n} cop => by simp [h.2 cop]⟩
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast := intCast
 
 @[arith_mult]
 theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
@@ -837,13 +832,13 @@ theorem sigma_apply {k n : ℕ} : σ k n = ∑ d ∈ divisors n, d ^ k :=
   rfl
 
 theorem sigma_apply_prime_pow {k p i : ℕ} (hp : p.Prime) :
-    σ k (p ^ i) = ∑ j in .range (i + 1), p ^ (j * k) := by
+    σ k (p ^ i) = ∑ j ∈ .range (i + 1), p ^ (j * k) := by
   simp [sigma_apply, divisors_prime_pow hp, Nat.pow_mul]
 
 theorem sigma_one_apply (n : ℕ) : σ 1 n = ∑ d ∈ divisors n, d := by simp [sigma_apply]
 
 theorem sigma_one_apply_prime_pow {p i : ℕ} (hp : p.Prime) :
-    σ 1 (p ^ i) = ∑ k in .range (i + 1), p ^ k := by
+    σ 1 (p ^ i) = ∑ k ∈ .range (i + 1), p ^ k := by
   simp [sigma_apply_prime_pow hp]
 
 theorem sigma_zero_apply (n : ℕ) : σ 0 n = #n.divisors := by simp [sigma_apply]
@@ -1314,10 +1309,6 @@ theorem _root_.Nat.card_divisors {n : ℕ} (hn : n ≠ 0) :
   rw [← sigma_zero_apply, isMultiplicative_sigma.multiplicative_factorization _ hn]
   exact Finset.prod_congr n.support_factorization fun _ h =>
     sigma_zero_apply_prime_pow <| Nat.prime_of_mem_primeFactors h
-
-@[deprecated "No deprecation message was provided." (since := "2024-06-09")]
-theorem card_divisors (n : ℕ) (hn : n ≠ 0) :
-    #n.divisors = n.primeFactors.prod (n.factorization · + 1) := Nat.card_divisors hn
 
 theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :
     ∑ d ∈ n.divisors, d = ∏ p ∈ n.primeFactors, ∑ k ∈ .range (n.factorization p + 1), p ^ k := by

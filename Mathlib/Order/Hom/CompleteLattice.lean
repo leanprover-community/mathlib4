@@ -36,7 +36,7 @@ be satisfied by itself and all stricter types.
 
 Frame homs are Heyting homs.
 -/
-
+assert_not_exists Monoid
 
 open Function OrderDual Set
 
@@ -271,7 +271,7 @@ protected def id : sSupHom α α :=
 instance : Inhabited (sSupHom α α) :=
   ⟨sSupHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(sSupHom.id α) = id :=
   rfl
 
@@ -392,7 +392,7 @@ protected def id : sInfHom α α :=
 instance : Inhabited (sInfHom α α) :=
   ⟨sInfHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(sInfHom.id α) = id :=
   rfl
 
@@ -519,7 +519,7 @@ protected def id : FrameHom α α :=
 instance : Inhabited (FrameHom α α) :=
   ⟨FrameHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(FrameHom.id α) = id :=
   rfl
 
@@ -626,7 +626,7 @@ protected def id : CompleteLatticeHom α α :=
 instance : Inhabited (CompleteLatticeHom α α) :=
   ⟨CompleteLatticeHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(CompleteLatticeHom.id α) = id :=
   rfl
 

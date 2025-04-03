@@ -31,7 +31,7 @@ instance : BundledHom.ParentProjection @AlexandrovDiscreteSpace.toTopologicalSpa
 
 deriving instance LargeCategory for AlexDisc
 
-instance instConcreteCategory : ConcreteCategory AlexDisc := BundledHom.concreteCategory _
+instance instHasForget : HasForget AlexDisc := BundledHom.hasForget _
 instance instHasForgetToTop : HasForget₂ AlexDisc TopCat := BundledHom.forget₂ _ _
 instance forgetToTop_full : (forget₂ AlexDisc TopCat).Full := BundledHom.forget₂_full _ _
 instance forgetToTop_faithful : (forget₂ AlexDisc TopCat).Faithful where
@@ -46,7 +46,7 @@ def of (α : Type*) [TopologicalSpace α] [AlexandrovDiscrete α] : AlexDisc := 
   (forget₂ AlexDisc TopCat).obj (of α) = TopCat.of α := rfl
 
 -- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
-attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
+attribute [local instance] CategoryTheory.HasForget.instFunLike
 
 /-- Constructs an equivalence between preorders from an order isomorphism between them. -/
 @[simps]

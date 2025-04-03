@@ -122,8 +122,8 @@ theorem equivalence₂CounitIso_eq :
     (equivalence₂ eB hF).counitIso = equivalence₂CounitIso eB hF := by
   ext Y'
   dsimp [equivalence₂, Iso.refl]
-  simp only [equivalence₁CounitIso_eq, equivalence₂CounitIso_hom_app,
-    equivalence₁CounitIso_hom_app, Functor.map_comp, assoc]
+  simp only [equivalence₁CounitIso_eq, equivalence₁CounitIso_hom_app, comp_id, id_comp,
+    Functor.map_comp, assoc, equivalence₂CounitIso_hom_app]
 
 /-- The unit isomorphism of the equivalence `equivalence₂` between `A` and `B`. -/
 @[simps!]
@@ -138,8 +138,8 @@ def equivalence₂UnitIso : 𝟭 A ≅ (F ⋙ eB.inverse) ⋙ eB.functor ⋙ e'.
 theorem equivalence₂UnitIso_eq : (equivalence₂ eB hF).unitIso = equivalence₂UnitIso eB hF := by
   ext X
   dsimp [equivalence₂]
-  simp only [equivalence₂UnitIso_hom_app, equivalence₁UnitIso_eq, equivalence₁UnitIso_hom_app,
-      assoc, NatIso.cancel_natIso_hom_left]
+  simp only [equivalence₁UnitIso_eq, equivalence₁UnitIso_hom_app, comp_id, id_comp, assoc,
+    equivalence₂UnitIso_hom_app]
   rfl
 
 variable {eB}

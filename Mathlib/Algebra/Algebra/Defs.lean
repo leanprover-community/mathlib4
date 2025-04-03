@@ -80,9 +80,7 @@ the second approach only when you need to weaken a condition on either `R` or `A
 
 -/
 
-assert_not_exists Field
-assert_not_exists Finset
-assert_not_exists Module.End
+assert_not_exists Field Finset Module.End
 
 universe u v w u₁ v₁
 
@@ -97,17 +95,18 @@ section Prio
 
 See the implementation notes in this file for discussion of the details of this definition.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): unsupported @[nolint has_nonempty_instance]
-class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A,
-  R →+* A where
-  commutes' : ∀ r x, toRingHom r * x = x * toRingHom r
-  smul_def' : ∀ r x, r • x = toRingHom r * x
+class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A where
+  /-- Embedding `R →+* A` given by `Algebra` structure.
+  Use `algebraMap` from the root namespace instead.-/
+  protected algebraMap : R →+* A
+  commutes' : ∀ r x, algebraMap r * x = x * algebraMap r
+  smul_def' : ∀ r x, r • x = algebraMap r * x
 
 end Prio
 
 /-- Embedding `R →+* A` given by `Algebra` structure. -/
 def algebraMap (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] [Algebra R A] : R →+* A :=
-  Algebra.toRingHom
+  Algebra.algebraMap
 
 /-- Coercion from a commutative semiring to an algebra over this semiring. -/
 @[coe, reducible]
@@ -173,7 +172,7 @@ def RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
   smul c x := i c * x
   commutes' := h
   smul_def' _ _ := rfl
-  toRingHom := i
+  algebraMap := i
 
 -- just simple lemmas for a declaration that is itself primed, no need for docstrings
 set_option linter.docPrime false in
@@ -208,11 +207,12 @@ See note [reducible non-instances]. -/
 abbrev ofModule' [CommSemiring R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x : A), r • (1 : A) * x = r • x)
     (h₂ : ∀ (r : R) (x : A), x * r • (1 : A) = r • x) : Algebra R A where
-  toFun r := r • (1 : A)
-  map_one' := one_smul _ _
-  map_mul' r₁ r₂ := by simp only [h₁, mul_smul]
-  map_zero' := zero_smul _ _
-  map_add' r₁ r₂ := add_smul r₁ r₂ 1
+  algebraMap :=
+  { toFun r := r • (1 : A)
+    map_one' := one_smul _ _
+    map_mul' r₁ r₂ := by simp only [h₁, mul_smul]
+    map_zero' := zero_smul _ _
+    map_add' r₁ r₂ := add_smul r₁ r₂ 1 }
   commutes' r x := by simp [h₁, h₂]
   smul_def' r x := by simp [h₁]
 
@@ -241,7 +241,7 @@ it suffices to check the `algebraMap`s agree.
 theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q : Algebra R A)
     (h : ∀ r : R, (haveI := P; algebraMap R A r) = haveI := Q; algebraMap R A r) :
     P = Q := by
-  replace h : P.toRingHom = Q.toRingHom := DFunLike.ext _ _ h
+  replace h : P.algebraMap = Q.algebraMap := DFunLike.ext _ _ h
   have h' : (haveI := P; (· • ·) : R → A → A) = (haveI := Q; (· • ·) : R → A → A) := by
     funext r a
     rw [P.smul_def', Q.smul_def', h]
@@ -335,7 +335,7 @@ This is the algebra version of `Module.compHom`.
 -/
 abbrev compHom : Algebra S A where
   smul s a := f s • a
-  toRingHom := (algebraMap R A).comp f
+  algebraMap := (algebraMap R A).comp f
   commutes' _ _ := Algebra.commutes _ _
   smul_def' _ _ := Algebra.smul_def _ _
 
@@ -374,9 +374,8 @@ instance (priority := 1100) id : Algebra R R where
   -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
   -- be made so without a significant performance hit.
   -- see library note [reducible non-instances].
-  toFun x := x
   toSMul := Mul.toSMul _
-  __ := (RingHom.id R).toAlgebra
+  __ := ({RingHom.id R with toFun x := x}).toAlgebra
 
 variable {R A}
 

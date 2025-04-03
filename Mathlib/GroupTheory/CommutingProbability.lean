@@ -3,6 +3,7 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
+import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.GroupAction.CardCommute
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
@@ -21,9 +22,9 @@ This file introduces the commuting probability of finite groups.
 * Neumann's theorem.
 -/
 
-noncomputable section
+assert_not_exists Ideal TwoSidedIdeal
 
-open scoped Classical
+noncomputable section
 
 open Fintype
 
@@ -76,6 +77,7 @@ variable {M}
 
 theorem commProb_eq_one_iff [h : Nonempty M] :
     commProb M = 1 ↔ Std.Commutative ((· * ·) : M → M → M) := by
+  classical
   haveI := Fintype.ofFinite M
   rw [commProb, ← Set.coe_setOf, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   rw [div_eq_one_iff_eq, ← Nat.cast_pow, Nat.cast_inj, sq, ← card_prod,

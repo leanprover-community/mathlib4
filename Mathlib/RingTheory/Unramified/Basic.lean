@@ -39,18 +39,15 @@ namespace Algebra
 
 section
 
-variable (R : Type v) [CommRing R]
-variable (A : Type u) [CommRing A] [Algebra R A]
+variable (R : Type v) (A : Type u) [CommRing R] [CommRing A] [Algebra R A]
 
 /--
 An `R`-algebra `A` is formally unramified if `Ω[A⁄R]` is trivial.
 
 This is equivalent to "for every `R`-algebra, every square-zero ideal
 `I : Ideal B` and `f : A →ₐ[R] B ⧸ I`, there exists at most one lift `A →ₐ[R] B`".
-See `Algebra.FormallyUnramified.iff_comp_injective`.
-
-See <https://stacks.math.columbia.edu/tag/00UM>. -/
-@[mk_iff]
+See `Algebra.FormallyUnramified.iff_comp_injective`. -/
+@[mk_iff, stacks 00UM]
 class FormallyUnramified : Prop where
   subsingleton_kaehlerDifferential : Subsingleton (Ω[A⁄R])
 
@@ -285,12 +282,9 @@ section
 variable (R : Type*) [CommRing R]
 variable (A : Type*) [CommRing A] [Algebra R A]
 
-/-- An `R`-algebra `A` is unramified if it is formally unramified and of finite type.
-
-Note that the Stacks project has a different definition of unramified, and tag
-<https://stacks.math.columbia.edu/tag/00UU> shows that their definition is the
-same as this one.
--/
+/-- An `R`-algebra `A` is unramified if it is formally unramified and of finite type. -/
+@[stacks 00UT "Note that the Stacks project has a different definition of unramified, and tag
+<https://stacks.math.columbia.edu/tag/00UU> shows that their definition is the same as this one."]
 class Unramified : Prop where
   formallyUnramified : FormallyUnramified R A := by infer_instance
   finiteType : FiniteType R A := by infer_instance

@@ -345,7 +345,7 @@ protected theorem map_sum {ι} [DecidableEq ι] (Q : QuadraticMap R M N) (s : Fi
 
 protected theorem map_sum' {ι} (Q : QuadraticMap R M N) (s : Finset ι) (f : ι → M) :
     Q (∑ i ∈ s, f i) =
-      ∑ ij in s.sym2,
+      ∑ ij ∈ s.sym2,
         Sym2.lift ⟨fun i j => polar Q (f i) (f j), fun _ _ => polar_comm _ _ _⟩ ij
       - ∑ i ∈ s, Q (f i) := by
   induction s using Finset.cons_induction with
@@ -896,9 +896,13 @@ theorem associated_apply (x y : M) :
   rw [← LinearMap.smul_apply, nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', LinearMap.one_apply,
     polar]
 
-theorem associated_isSymm (Q : QuadraticForm R M) [Invertible (2 : R)] :
-    (associatedHom S Q).IsSymm := fun x y ↦ by
-  simp only [associated_apply, sub_eq_add_neg, add_assoc, RingHom.id_apply, add_comm, add_left_comm]
+theorem associated_isSymm (Q : QuadraticMap R M N) (x y : M) :
+    associatedHom S Q x y = associatedHom S Q y x := by
+  simp only [associated_apply, sub_eq_add_neg, add_assoc, add_comm, add_left_comm]
+
+theorem _root_.QuadraticForm.associated_isSymm (Q : QuadraticForm R M) [Invertible (2 : R)] :
+    (associatedHom S Q).IsSymm :=
+  QuadraticMap.associated_isSymm S Q
 
 /-- A version of `QuadraticMap.associated_isSymm` for general targets
 (using `flip` because `IsSymm` does not apply here). -/
@@ -919,11 +923,10 @@ theorem associated_toQuadraticMap (B : BilinMap R M N) (x y : M) :
     LinearMap.smul_def, _root_.map_sub]
   abel_nf
 
-theorem associated_left_inverse [Invertible (2 : R)] {B₁ : BilinMap R M R} (h : B₁.IsSymm) :
+theorem associated_left_inverse {B₁ : BilinMap R M N} (h : ∀ x y, B₁ x y = B₁ y x) :
     associatedHom S B₁.toQuadraticMap = B₁ :=
   LinearMap.ext₂ fun x y ↦ by
-    rw [associated_toQuadraticMap, ← h.eq x y, RingHom.id_apply, ← two_mul, ← smul_eq_mul,
-      invOf_smul_eq_iff, two_smul, two_smul]
+    rw [associated_toQuadraticMap, ← h x y, ← two_smul R, invOf_smul_eq_iff, two_smul, two_smul]
 
 /-- A version of `QuadraticMap.associated_left_inverse` for general targets. -/
 lemma associated_left_inverse' {B₁ : BilinMap R M N} (hB₁ : B₁.flip = B₁) :
@@ -1190,10 +1193,10 @@ theorem QuadraticMap.toMatrix'_smul (a : R) (Q : QuadraticMap R (n → R) R) :
     (a • Q).toMatrix' = a • Q.toMatrix' := by
   simp only [toMatrix', LinearEquiv.map_smul, LinearMap.map_smul]
 
-theorem QuadraticMap.isSymm_toMatrix' (Q : QuadraticMap R (n → R) R) : Q.toMatrix'.IsSymm := by
+theorem QuadraticMap.isSymm_toMatrix' (Q : QuadraticForm R (n → R)) : Q.toMatrix'.IsSymm := by
   ext i j
   rw [toMatrix', Matrix.transpose_apply, LinearMap.toMatrix₂'_apply, LinearMap.toMatrix₂'_apply,
-    ← associated_isSymm, RingHom.id_apply, associated_apply]
+    ← associated_isSymm]
 
 end
 

@@ -44,7 +44,7 @@ instance : BundledHom @LocallyBoundedMap where
 instance : LargeCategory.{u} Born :=
   BundledHom.category LocallyBoundedMap
 
-instance : ConcreteCategory Born :=
-  BundledHom.concreteCategory LocallyBoundedMap
+instance : HasForget Born :=
+  BundledHom.hasForget LocallyBoundedMap
 
 end Born

@@ -80,8 +80,6 @@ and `AdjoinRoot` which constructs a new type.
 
 This is not a typeclass because the choice of root given `S` and `f` is not unique.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure IsAdjoinRoot {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
     (f : R[X]) : Type max u v where
   map : R[X] →+* S

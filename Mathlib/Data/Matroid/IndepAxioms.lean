@@ -61,6 +61,9 @@ for the inverse of `e`).
   in the special case where independence of a set is determined only by that of its
   finite subsets. This construction uses Zorn's lemma.
 
+* `IndepMatroid.ofFinitaryCardAugment` is a variant of `IndepMatroid.ofFinitary` where the
+  augmentation axiom resembles the finite augmentation axiom.
+
 * `IndepMatroid.ofBdd` constructs an `IndepMatroid` in the case where there is some known
   absolute upper bound on the size of an independent set. This uses the infinite version of
   the augmentation axiom; the corresponding `Matroid` is `FiniteRk`.
@@ -81,6 +84,8 @@ for the inverse of `e`).
 
 * `Matroid.ofBaseOfFinite` constructs a `Finite` matroid from its bases.
 -/
+
+assert_not_exists Field
 
 open Set Matroid
 
@@ -137,88 +142,23 @@ namespace IndepMatroid
 @[simp] theorem matroid_indep_iff {M : IndepMatroid α} {I : Set α} :
     M.matroid.Indep I ↔ M.Indep I := Iff.rfl
 
-/-- An independence predicate satisfying the finite matroid axioms determines a matroid,
-  provided independence is determined by its behaviour on finite sets.
-  This fundamentally needs choice, since it can be used to prove that every vector space
-  has a basis. -/
+/-- If `Indep` has the 'compactness' property that each set `I` satisfies `Indep I` if and only if
+`Indep J` for every finite subset `J` of `I`,
+then an `IndepMatroid` can be constructed without proving the maximality axiom.
+This needs choice, since it can be used to prove that every vector space has a basis. -/
 @[simps E] protected def ofFinitary (E : Set α) (Indep : Set α → Prop)
     (indep_empty : Indep ∅)
     (indep_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
-    (indep_aug : ∀ ⦃I J⦄, Indep I → I.Finite → Indep J → J.Finite → I.ncard < J.ncard →
-      ∃ e ∈ J, e ∉ I ∧ Indep (insert e I))
+    (indep_aug : ∀ ⦃I B⦄, Indep I → ¬ Maximal Indep I → Maximal Indep B →
+      ∃ x ∈ B \ I, Indep (insert x I))
     (indep_compact : ∀ I, (∀ J, J ⊆ I → J.Finite → Indep J) → Indep I)
-    (subset_ground : ∀ I, Indep I → I ⊆ E) : IndepMatroid α :=
-  have htofin : ∀ I e, Indep I → ¬ Indep (insert e I) →
-    ∃ I₀, I₀ ⊆ I ∧ I₀.Finite ∧ ¬ Indep (insert e I₀) := by
-      by_contra h; push_neg at h
-      obtain ⟨I, e, -, hIe, h⟩ := h
-      refine hIe <| indep_compact _ fun J hJss hJfin ↦ ?_
-      exact indep_subset (h (J \ {e}) (by rwa [diff_subset_iff]) (hJfin.diff _)) (by simp)
-  IndepMatroid.mk
-  (E := E)
-  (Indep := Indep)
-  (indep_empty := indep_empty)
-  (indep_subset := indep_subset)
-  (indep_aug := by
-    intro I B hI hImax hBmax
-    obtain ⟨e, heI, hins⟩ := exists_insert_of_not_maximal indep_subset hI hImax
-    by_cases heB : e ∈ B
-    · exact ⟨e, ⟨heB, heI⟩, hins⟩
-    by_contra hcon; push_neg at hcon
-
-    have heBdep := hBmax.not_prop_of_ssuperset (ssubset_insert heB)
-
-    -- There is a finite subset `B₀` of `B` so that `B₀ + e` is dependent
-    obtain ⟨B₀, hB₀B, hB₀fin, hB₀e⟩ := htofin B e hBmax.1 heBdep
-    have hB₀ := indep_subset hBmax.1 hB₀B
-
-    -- `I` has a finite subset `I₀` that doesn't extend into `B₀`
-    have hexI₀ : ∃ I₀, I₀ ⊆ I ∧ I₀.Finite ∧ ∀ x, x ∈ B₀ \ I₀ → ¬Indep (insert x I₀) := by
-      have hchoose : ∀ (b : ↑(B₀ \ I)), ∃ Ib, Ib ⊆ I ∧ Ib.Finite ∧ ¬Indep (insert (b : α) Ib) := by
-        rintro ⟨b, hb⟩; exact htofin I b hI (hcon b ⟨hB₀B hb.1, hb.2⟩)
-      choose! f hf using hchoose
-      have := (hB₀fin.diff I).to_subtype
-      refine ⟨iUnion f ∪ (B₀ ∩ I),
-        union_subset (iUnion_subset (fun i ↦ (hf i).1)) inter_subset_right,
-        (finite_iUnion fun i ↦ (hf i).2.1).union (hB₀fin.subset inter_subset_left),
-        fun x ⟨hxB₀, hxn⟩ hi ↦ ?_⟩
-      have hxI : x ∉ I := fun hxI ↦ hxn <| Or.inr ⟨hxB₀, hxI⟩
-      refine (hf ⟨x, ⟨hxB₀, hxI⟩⟩).2.2 (indep_subset hi <| insert_subset_insert ?_)
-      apply subset_union_of_subset_left
-      apply subset_iUnion
-
-    obtain ⟨I₀, hI₀I, hI₀fin, hI₀⟩ := hexI₀
-
-    set E₀ := insert e (I₀ ∪ B₀)
-    have hE₀fin : E₀.Finite := (hI₀fin.union hB₀fin).insert e
-
-    -- Extend `B₀` to a maximal independent subset of `I₀ ∪ B₀ + e`
-    obtain ⟨J, ⟨hB₀J, hJ, hJss⟩, hJmax⟩ := Finite.exists_maximal_wrt (f := id)
-      (s := {J | B₀ ⊆ J ∧ Indep J ∧ J ⊆ E₀})
-      (hE₀fin.finite_subsets.subset (by simp))
-      ⟨B₀, Subset.rfl, hB₀, subset_union_right.trans (subset_insert _ _)⟩
-
-    have heI₀ : e ∉ I₀ := not_mem_subset hI₀I heI
-    have heI₀i : Indep (insert e I₀) := indep_subset hins (insert_subset_insert hI₀I)
-
-    have heJ : e ∉ J := fun heJ ↦ hB₀e (indep_subset hJ <| insert_subset heJ hB₀J)
-
-    have hJfin := hE₀fin.subset hJss
-
-    -- We have `|I₀ + e| ≤ |J|`, since otherwise we could extend the maximal set `J`
-    have hcard : (insert e I₀).ncard ≤ J.ncard := by
-      refine not_lt.1 fun hlt ↦ ?_
-      obtain ⟨f, hfI, hfJ, hfi⟩ := indep_aug hJ hJfin heI₀i (hI₀fin.insert e) hlt
-      have hfE₀ : f ∈ E₀ := mem_of_mem_of_subset hfI (insert_subset_insert subset_union_left)
-      refine hfJ (insert_eq_self.1 <| Eq.symm (hJmax _
-        ⟨hB₀J.trans <| subset_insert _ _,hfi,insert_subset hfE₀ hJss⟩ (subset_insert _ _)))
-
-    -- But this means `|I₀| < |J|`, and extending `I₀` into `J` gives a contradiction
-    rw [ncard_insert_of_not_mem heI₀ hI₀fin, ← Nat.lt_iff_add_one_le] at hcard
-
-    obtain ⟨f, hfJ, hfI₀, hfi⟩ := indep_aug (indep_subset hI hI₀I) hI₀fin hJ hJfin hcard
-    exact hI₀ f ⟨Or.elim (hJss hfJ) (fun hfe ↦ (heJ <| hfe ▸ hfJ).elim) (by aesop), hfI₀⟩ hfi)
-  (indep_maximal := by
+    (subset_ground : ∀ I, Indep I → I ⊆ E) : IndepMatroid α where
+  E := E
+  Indep := Indep
+  indep_empty := indep_empty
+  indep_subset := indep_subset
+  indep_aug := indep_aug
+  indep_maximal := by
     refine fun X _ I hI hIX ↦ zorn_subset_nonempty {Y | Indep Y ∧ Y ⊆ X} ?_ I ⟨hI, hIX⟩
     refine fun Is hIs hchain _ ↦
       ⟨⋃₀ Is, ⟨?_, sUnion_subset fun Y hY ↦ (hIs hY).2⟩, fun _ ↦ subset_sUnion_of_mem⟩
@@ -230,17 +170,111 @@ namespace IndepMatroid
     refine indep_subset (hIs (hf x hxJ).1).1 fun y hyJ ↦ ?_
     obtain (hle | hle) := hchain.total (hf _ hxJ).1 (hf _ hyJ).1
     · rw [hxmax _ hyJ hle]; exact (hf _ hyJ).2
-    exact hle (hf _ hyJ).2)
-
-  (subset_ground := subset_ground)
+    exact hle (hf _ hyJ).2
+  subset_ground := subset_ground
 
 @[simp] theorem ofFinitary_indep (E : Set α) (Indep : Set α → Prop)
-    indep_empty indep_subset indep_aug indep_compact subset_ground : (IndepMatroid.ofFinitary
+    indep_empty indep_subset indep_aug indep_compact subset_ground :
+    (IndepMatroid.ofFinitary
       E Indep indep_empty indep_subset indep_aug indep_compact subset_ground).Indep = Indep := rfl
 
 instance ofFinitary_finitary (E : Set α) (Indep : Set α → Prop)
     indep_empty indep_subset indep_aug indep_compact subset_ground : Finitary
     (IndepMatroid.ofFinitary
+      E Indep indep_empty indep_subset indep_aug indep_compact subset_ground).matroid :=
+  ⟨by simpa⟩
+
+/-- An independence predicate satisfying the finite matroid axioms determines a matroid,
+provided independence is determined by its behaviour on finite sets. -/
+@[simps! E] protected def ofFinitaryCardAugment (E : Set α) (Indep : Set α → Prop)
+    (indep_empty : Indep ∅)
+    (indep_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
+    (indep_aug : ∀ ⦃I J⦄, Indep I → I.Finite → Indep J → J.Finite → I.ncard < J.ncard →
+      ∃ e ∈ J, e ∉ I ∧ Indep (insert e I))
+    (indep_compact : ∀ I, (∀ J, J ⊆ I → J.Finite → Indep J) → Indep I)
+    (subset_ground : ∀ I, Indep I → I ⊆ E) : IndepMatroid α :=
+  IndepMatroid.ofFinitary
+    (E := E)
+    (Indep := Indep)
+    (indep_empty := indep_empty)
+    (indep_subset := indep_subset)
+    (indep_compact := indep_compact)
+    (indep_aug := by
+      have htofin : ∀ I e, Indep I → ¬ Indep (insert e I) →
+        ∃ I₀, I₀ ⊆ I ∧ I₀.Finite ∧ ¬ Indep (insert e I₀) := by
+        by_contra h; push_neg at h
+        obtain ⟨I, e, -, hIe, h⟩ := h
+        refine hIe <| indep_compact _ fun J hJss hJfin ↦ ?_
+        exact indep_subset (h (J \ {e}) (by rwa [diff_subset_iff]) hJfin.diff) (by simp)
+
+      intro I B hI hImax hBmax
+      obtain ⟨e, heI, hins⟩ := exists_insert_of_not_maximal indep_subset hI hImax
+      by_cases heB : e ∈ B
+      · exact ⟨e, ⟨heB, heI⟩, hins⟩
+      by_contra hcon; push_neg at hcon
+
+      have heBdep := hBmax.not_prop_of_ssuperset (ssubset_insert heB)
+
+      -- There is a finite subset `B₀` of `B` so that `B₀ + e` is dependent
+      obtain ⟨B₀, hB₀B, hB₀fin, hB₀e⟩ := htofin B e hBmax.1 heBdep
+      have hB₀ := indep_subset hBmax.1 hB₀B
+
+      -- `I` has a finite subset `I₀` that doesn't extend into `B₀`
+      have hexI₀ : ∃ I₀, I₀ ⊆ I ∧ I₀.Finite ∧ ∀ x, x ∈ B₀ \ I₀ → ¬Indep (insert x I₀) := by
+        have hch : ∀ (b : ↑(B₀ \ I)), ∃ Ib, Ib ⊆ I ∧ Ib.Finite ∧ ¬Indep (insert (b : α) Ib) := by
+          rintro ⟨b, hb⟩; exact htofin I b hI (hcon b ⟨hB₀B hb.1, hb.2⟩)
+        choose! f hf using hch
+        have : Finite ↑(B₀ \ I) := hB₀fin.diff.to_subtype
+        refine ⟨iUnion f ∪ (B₀ ∩ I),
+          union_subset (iUnion_subset (fun i ↦ (hf i).1)) inter_subset_right,
+          (finite_iUnion fun i ↦ (hf i).2.1).union (hB₀fin.subset inter_subset_left),
+          fun x ⟨hxB₀, hxn⟩ hi ↦ ?_⟩
+        have hxI : x ∉ I := fun hxI ↦ hxn <| Or.inr ⟨hxB₀, hxI⟩
+        refine (hf ⟨x, ⟨hxB₀, hxI⟩⟩).2.2 (indep_subset hi <| insert_subset_insert ?_)
+        apply subset_union_of_subset_left
+        apply subset_iUnion
+
+      obtain ⟨I₀, hI₀I, hI₀fin, hI₀⟩ := hexI₀
+
+      set E₀ := insert e (I₀ ∪ B₀)
+      have hE₀fin : E₀.Finite := (hI₀fin.union hB₀fin).insert e
+
+      -- Extend `B₀` to a maximal independent subset of `I₀ ∪ B₀ + e`
+      obtain ⟨J, ⟨hB₀J, hJ, hJss⟩, hJmax⟩ := Finite.exists_maximal_wrt (f := id)
+        (s := {J | B₀ ⊆ J ∧ Indep J ∧ J ⊆ E₀})
+        (hE₀fin.finite_subsets.subset (by simp))
+        ⟨B₀, Subset.rfl, hB₀, subset_union_right.trans (subset_insert _ _)⟩
+
+      have heI₀ : e ∉ I₀ := not_mem_subset hI₀I heI
+      have heI₀i : Indep (insert e I₀) := indep_subset hins (insert_subset_insert hI₀I)
+
+      have heJ : e ∉ J := fun heJ ↦ hB₀e (indep_subset hJ <| insert_subset heJ hB₀J)
+
+      have hJfin := hE₀fin.subset hJss
+
+      -- We have `|I₀ + e| ≤ |J|`, since otherwise we could extend the maximal set `J`
+      have hcard : (insert e I₀).ncard ≤ J.ncard := by
+        refine not_lt.1 fun hlt ↦ ?_
+        obtain ⟨f, hfI, hfJ, hfi⟩ := indep_aug hJ hJfin heI₀i (hI₀fin.insert e) hlt
+        have hfE₀ : f ∈ E₀ := mem_of_mem_of_subset hfI (insert_subset_insert subset_union_left)
+        refine hfJ (insert_eq_self.1 <| Eq.symm (hJmax _
+          ⟨hB₀J.trans <| subset_insert _ _,hfi,insert_subset hfE₀ hJss⟩ (subset_insert _ _)))
+
+      -- But this means `|I₀| < |J|`, and extending `I₀` into `J` gives a contradiction
+      rw [ncard_insert_of_not_mem heI₀ hI₀fin, ← Nat.lt_iff_add_one_le] at hcard
+
+      obtain ⟨f, hfJ, hfI₀, hfi⟩ := indep_aug (indep_subset hI hI₀I) hI₀fin hJ hJfin hcard
+      exact hI₀ f ⟨Or.elim (hJss hfJ) (fun hfe ↦ (heJ <| hfe ▸ hfJ).elim) (by aesop), hfI₀⟩ hfi )
+  (subset_ground := subset_ground)
+
+@[simp] theorem ofFinitaryCardAugment_indep (E : Set α) (Indep : Set α → Prop)
+    indep_empty indep_subset indep_aug indep_compact subset_ground :
+    (IndepMatroid.ofFinitaryCardAugment
+      E Indep indep_empty indep_subset indep_aug indep_compact subset_ground).Indep = Indep := rfl
+
+instance ofFinitaryCardAugment_finitary (E : Set α) (Indep : Set α → Prop)
+    indep_empty indep_subset indep_aug indep_compact subset_ground : Finitary
+    (IndepMatroid.ofFinitaryCardAugment
       E Indep indep_empty indep_subset indep_aug indep_compact subset_ground).matroid :=
   ⟨by simpa⟩
 
@@ -378,7 +412,7 @@ protected def ofFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Prop
     (indep_subset : ∀ ⦃I J⦄, Indep J → I ⊆ J → Indep I)
     (indep_aug : ∀ ⦃I J⦄, Indep I → Indep J → I.card < J.card → ∃ e ∈ J, e ∉ I ∧ Indep (insert e I))
     (subset_ground : ∀ ⦃I⦄, Indep I → (I : Set α) ⊆ E) : IndepMatroid α :=
-  IndepMatroid.ofFinitary
+  IndepMatroid.ofFinitaryCardAugment
     (E := E)
     (Indep := (fun I ↦ (∀ (J : Finset α), (J : Set α) ⊆ I → Indep J)))
     (indep_empty := by simpa [subset_empty_iff])
@@ -400,7 +434,7 @@ protected def ofFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Prop
 @[simp] theorem ofFinset_indep [DecidableEq α] (E : Set α) Indep indep_empty indep_subset indep_aug
     subset_ground {I : Finset α} : (IndepMatroid.ofFinset
       E Indep indep_empty indep_subset indep_aug subset_ground).Indep I ↔ Indep I := by
-  simp only [IndepMatroid.ofFinset, ofFinitary_indep, Finset.coe_subset]
+  simp only [IndepMatroid.ofFinset, ofFinitaryCardAugment_indep, Finset.coe_subset]
   exact ⟨fun h ↦ h _ Subset.rfl, fun h J hJI ↦ indep_subset h hJI⟩
 
 /-- This can't be `@[simp]`, because it would cause the more useful
@@ -409,7 +443,7 @@ theorem ofFinset_indep' [DecidableEq α] (E : Set α) Indep indep_empty indep_su
     subset_ground {I : Set α} : (IndepMatroid.ofFinset
       E Indep indep_empty indep_subset indep_aug subset_ground).Indep I ↔
         ∀ (J : Finset α), (J : Set α) ⊆ I → Indep J := by
-  simp only [IndepMatroid.ofFinset, ofFinitary_indep]
+  simp only [IndepMatroid.ofFinset, ofFinitaryCardAugment_indep]
 
 end IndepMatroid
 

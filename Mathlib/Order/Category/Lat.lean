@@ -57,8 +57,8 @@ instance : BundledHom @LatticeHom where
 instance : LargeCategory.{u} Lat :=
   BundledHom.category LatticeHom
 
-instance : ConcreteCategory Lat :=
-  BundledHom.concreteCategory LatticeHom
+instance : HasForget Lat :=
+  BundledHom.hasForget LatticeHom
 
 instance hasForgetToPartOrd : HasForget₂ Lat PartOrd where
   forget₂ :=

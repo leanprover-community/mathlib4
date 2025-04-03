@@ -190,12 +190,9 @@ theorem derivative_natCast {n : ℕ} : derivative (n : R[X]) = 0 := by
   rw [← map_natCast C n]
   exact derivative_C
 
-@[deprecated (since := "2024-04-17")]
-alias derivative_nat_cast := derivative_natCast
-
 @[simp]
 theorem derivative_ofNat (n : ℕ) [n.AtLeastTwo] :
-    derivative (no_index (OfNat.ofNat n) : R[X]) = 0 :=
+    derivative (ofNat(n) : R[X]) = 0 :=
   derivative_natCast
 
 theorem iterate_derivative_eq_zero {p : R[X]} {x : ℕ} (hx : p.natDegree < x) :
@@ -286,16 +283,10 @@ theorem derivative_natCast_mul {n : ℕ} {f : R[X]} :
     derivative ((n : R[X]) * f) = n * derivative f := by
   simp
 
-@[deprecated (since := "2024-04-17")]
-alias derivative_nat_cast_mul := derivative_natCast_mul
-
 @[simp]
 theorem iterate_derivative_natCast_mul {n k : ℕ} {f : R[X]} :
     derivative^[k] ((n : R[X]) * f) = n * derivative^[k] f := by
   induction' k with k ih generalizing f <;> simp [*]
-
-@[deprecated (since := "2024-04-17")]
-alias iterate_derivative_nat_cast_mul := iterate_derivative_natCast_mul
 
 theorem mem_support_derivative [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
     n ∈ (derivative p).support ↔ n + 1 ∈ p.support := by
@@ -496,9 +487,6 @@ theorem iterate_derivative_X_pow_eq_natCast_mul (n k : ℕ) :
       Nat.descFactorial_succ, Nat.sub_sub, Nat.cast_mul]
     simp [mul_comm, mul_assoc, mul_left_comm]
 
-@[deprecated (since := "2024-04-17")]
-alias iterate_derivative_X_pow_eq_nat_cast_mul := iterate_derivative_X_pow_eq_natCast_mul
-
 theorem iterate_derivative_X_pow_eq_C_mul (n k : ℕ) :
     derivative^[k] (X ^ n : R[X]) = C (Nat.descFactorial n k : R) * X ^ (n - k) := by
   rw [iterate_derivative_X_pow_eq_natCast_mul n k, C_eq_natCast]
@@ -587,23 +575,14 @@ theorem derivative_intCast {n : ℤ} : derivative (n : R[X]) = 0 := by
   rw [← C_eq_intCast n]
   exact derivative_C
 
-@[deprecated (since := "2024-04-17")]
-alias derivative_int_cast := derivative_intCast
-
 theorem derivative_intCast_mul {n : ℤ} {f : R[X]} : derivative ((n : R[X]) * f) =
     n * derivative f := by
   simp
-
-@[deprecated (since := "2024-04-17")]
-alias derivative_int_cast_mul := derivative_intCast_mul
 
 @[simp]
 theorem iterate_derivative_intCast_mul {n : ℤ} {k : ℕ} {f : R[X]} :
     derivative^[k] ((n : R[X]) * f) = n * derivative^[k] f := by
   induction' k with k ih generalizing f <;> simp [*]
-
-@[deprecated (since := "2024-04-17")]
-alias iterate_derivative_int_cast_mul := iterate_derivative_intCast_mul
 
 end Ring
 

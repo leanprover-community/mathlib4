@@ -264,7 +264,7 @@ theorem Set.Subsingleton.measurableSet {s : Set α} (hs : s.Subsingleton) : Meas
   hs.induction_on .empty .singleton
 
 theorem Set.Finite.measurableSet {s : Set α} (hs : s.Finite) : MeasurableSet s :=
-  Finite.induction_on hs MeasurableSet.empty fun _ _ hsm => hsm.insert _
+  Finite.induction_on _ hs .empty fun _ _ hsm => hsm.insert _
 
 @[measurability]
 protected theorem Finset.measurableSet (s : Finset α) : MeasurableSet (↑s : Set α) :=

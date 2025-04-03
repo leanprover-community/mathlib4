@@ -3,22 +3,21 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Data.ZMod.Basic
-import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Ring.Subsemiring.Order
+import Mathlib.Data.ZMod.Basic
 
 /-!
 
-A `CanonicallyOrderedCommSemiring` with two different elements `a` and `b` such that
+A canonically ordered commutative semiring with two different elements `a` and `b` such that
 `a ≠ b` and `2 * a = 2 * b`.  Thus, multiplication by a fixed non-zero element of a canonically
 ordered semiring need not be injective.  In particular, multiplying by a strictly positive element
 need not be strictly monotone.
 
-Recall that a `CanonicallyOrderedCommSemiring` is a commutative semiring with a partial ordering
-that is "canonical" in the sense that the inequality `a ≤ b` holds if and only if there is a `c`
-such that `a + c = b`.  There are several compatibility conditions among addition/multiplication
-and the order relation.  The point of the counterexample is to show that monotonicity of
-multiplication cannot be strengthened to **strict** monotonicity.
+Recall that a canonically ordered commutative semiring is a commutative semiring with a partial
+ordering that is "canonical" in the sense that the inequality `a ≤ b` holds if and only if there is
+a `c` such that `a + c = b`.  There are several compatibility conditions among
+addition/multiplication and the order relation.  The point of the counterexample is to show that
+monotonicity of multiplication cannot be strengthened to **strict** monotonicity.
 
 Reference:
 https://leanprover.zulipchat.com/#narrow/stream/113489-new-members/topic/canonically_ordered.20pathology
@@ -201,13 +200,14 @@ theorem eq_zero_or_eq_zero_of_mul_eq_zero : ∀ a b : L, a * b = 0 → a = 0 ∨
     · rfl
     · exact (hb rfl).elim
 
-instance can : CanonicallyOrderedCommSemiring L :=
-  { (inferInstance : OrderBot L),
-    (inferInstance :
-      OrderedCommSemiring L) with
-    exists_add_of_le := @(exists_add_of_le)
-    le_self_add := le_self_add
-    eq_zero_or_eq_zero_of_mul_eq_zero := @(eq_zero_or_eq_zero_of_mul_eq_zero) }
+instance : OrderedCommSemiring L := inferInstance
+
+instance : CanonicallyOrderedAdd L where
+  exists_add_of_le := @(exists_add_of_le)
+  le_self_add := le_self_add
+
+instance : NoZeroDivisors L where
+  eq_zero_or_eq_zero_of_mul_eq_zero := @(eq_zero_or_eq_zero_of_mul_eq_zero)
 
 /-- The elements `(1,0)` and `(1,1)` of `L` are different, but their doubles coincide.
 -/

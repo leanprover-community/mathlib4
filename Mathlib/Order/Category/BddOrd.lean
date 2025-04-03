@@ -59,7 +59,7 @@ instance largeCategory : LargeCategory.{u} BddOrd where
 instance instFunLike (X Y : BddOrd) : FunLike (X ⟶ Y) X Y :=
   show FunLike (BoundedOrderHom X Y) X Y from inferInstance
 
-instance concreteCategory : ConcreteCategory BddOrd where
+instance hasForget : HasForget BddOrd where
   forget :=
     { obj := (↥)
       map := DFunLike.coe }

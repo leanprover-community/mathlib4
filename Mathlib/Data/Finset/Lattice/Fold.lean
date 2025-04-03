@@ -22,8 +22,7 @@ See also `Mathlib/Order/CompleteLattice/Finset.lean`, which is instead concerned
 lattice or set operations behave when indexed by a finset.
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidWithZero
+assert_not_exists OrderedCommMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 
@@ -144,7 +143,7 @@ protected theorem sup_comm (s : Finset β) (t : Finset γ) (f : β → γ → α
     (s.sup fun b => t.sup (f b)) = t.sup fun c => s.sup fun b => f b c :=
   eq_of_forall_ge_iff fun a => by simpa using forall₂_swap
 
-@[simp, nolint simpNF] -- Porting note: linter claims that LHS does not simplify
+@[simp]
 theorem sup_attach (s : Finset β) (f : β → α) : (s.attach.sup fun x => f x) = s.sup f :=
   (s.attach.sup_map (Function.Embedding.subtype _) f).symm.trans <| congr_arg _ attach_map_val
 
@@ -250,6 +249,11 @@ theorem sup_mem (s : Set α) (w₁ : ⊥ ∈ s) (w₂ : ∀ᵉ (x ∈ s) (y ∈ 
 @[simp]
 protected theorem sup_eq_bot_iff (f : β → α) (S : Finset β) : S.sup f = ⊥ ↔ ∀ s ∈ S, f s = ⊥ := by
   classical induction' S using Finset.induction with a S _ hi <;> simp [*]
+
+@[simp]
+theorem sup_eq_bot_of_isEmpty [IsEmpty β] (f : β → α) (S : Finset β) : S.sup f = ⊥ := by
+  rw [Finset.sup_eq_bot_iff]
+  exact fun x _ => False.elim <| IsEmpty.false x
 
 end Sup
 

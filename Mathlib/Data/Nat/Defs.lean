@@ -102,7 +102,6 @@ lemma succ_injective : Injective Nat.succ := @succ.inj
 
 lemma succ_ne_succ : succ m ≠ succ n ↔ m ≠ n := succ_injective.ne_iff
 
--- Porting note: no longer a simp lemma, as simp can prove this
 lemma succ_succ_ne_one (n : ℕ) : n.succ.succ ≠ 1 := by simp
 
 lemma one_lt_succ_succ (n : ℕ) : 1 < n.succ.succ := succ_lt_succ <| succ_pos n
@@ -223,12 +222,6 @@ attribute [simp] le_add_left le_add_right Nat.lt_add_left_iff_pos Nat.lt_add_rig
 -- We want to use these two lemmas earlier than the lemmas simp can prove them with
 @[simp, nolint simpNF] protected alias add_left_inj := Nat.add_right_cancel_iff
 @[simp, nolint simpNF] protected alias add_right_inj := Nat.add_left_cancel_iff
-
--- Sometimes a bare `Nat.add` or similar appears as a consequence of unfolding during pattern
--- matching. These lemmas package them back up as typeclass mediated operations.
-@[deprecated (since := "2024-04-05")] alias add_def := add_eq
-
--- We want to use these two lemmas earlier than the lemmas simp can prove them with
 @[simp, nolint simpNF] protected lemma add_eq_left : a + b = a ↔ b = 0 := by omega
 @[simp, nolint simpNF] protected lemma add_eq_right : a + b = b ↔ a = 0 := by omega
 
@@ -395,6 +388,9 @@ protected lemma add_le_mul {a : ℕ} (ha : 2 ≤ a) : ∀ {b : ℕ} (_ : 2 ≤ b
 
 /-! ### `div` -/
 
+lemma le_div_two_iff_mul_two_le {n m : ℕ} : m ≤ n / 2 ↔ (m : ℤ) * 2 ≤ n := by
+  rw [Nat.le_div_iff_mul_le Nat.zero_lt_two, ← Int.ofNat_le, Int.ofNat_mul]; rfl
+
 attribute [simp] Nat.div_self
 
 lemma div_le_iff_le_mul_add_pred (hb : 0 < b) : a / b ≤ c ↔ a ≤ b * c + (b - 1) := by
@@ -476,8 +472,6 @@ lemma div_mul_div_comm : b ∣ a → d ∣ c → (a / b) * (c / d) = (a * c) / (
 protected lemma mul_div_mul_comm (hba : b ∣ a) (hdc : d ∣ c) : a * c / (b * d) = a / b * (c / d) :=
   (div_mul_div_comm hba hdc).symm
 
-@[deprecated (since := "2024-05-29")] alias mul_div_mul_comm_of_dvd_dvd := Nat.mul_div_mul_comm
-
 lemma eq_zero_of_le_div (hn : 2 ≤ n) (h : m ≤ m / n) : m = 0 :=
   eq_zero_of_mul_le hn <| by
     rw [Nat.mul_comm]; exact (Nat.le_div_iff_mul_le (Nat.lt_of_lt_of_le (by decide) hn)).1 h
@@ -494,16 +488,10 @@ lemma div_mul_div_le_div (a b c : ℕ) : a / c * b / a ≤ b / c := by
 lemma eq_zero_of_le_half (h : n ≤ n / 2) : n = 0 := eq_zero_of_le_div (Nat.le_refl _) h
 
 lemma le_half_of_half_lt_sub (h : a / 2 < a - b) : b ≤ a / 2 := by
-  rw [Nat.le_div_iff_mul_le Nat.two_pos]
-  rw [Nat.div_lt_iff_lt_mul Nat.two_pos, Nat.sub_mul, Nat.lt_sub_iff_add_lt,
-    Nat.mul_two a] at h
-  exact Nat.le_of_lt (Nat.lt_of_add_lt_add_left h)
+  omega
 
 lemma half_le_of_sub_le_half (h : a - b ≤ a / 2) : a / 2 ≤ b := by
-  rw [Nat.le_div_iff_mul_le Nat.two_pos, Nat.sub_mul, Nat.sub_le_iff_le_add,
-    Nat.mul_two, Nat.add_le_add_iff_left] at h
-  rw [← Nat.mul_div_left b Nat.two_pos]
-  exact Nat.div_le_div_right h
+  omega
 
 protected lemma div_le_of_le_mul' (h : m ≤ k * n) : m / k ≤ n := by
   obtain rfl | hk := k.eq_zero_or_pos
@@ -749,14 +737,6 @@ lemma leRec_succ_left {motive : (m : ℕ) → n ≤ m → Sort*}
       leRec (motive := motive) refl le_succ_of_le h1 := by
   rw [leRec_trans _ _ (le_succ n) h2, leRec_succ']
 
-/-- Recursion starting at a non-zero number: given a map `C k → C (k+1)` for each `k ≥ n`,
-there is a map from `C n` to each `C m`, `n ≤ m`.
-
-Prefer `Nat.leRec`, which can be used as `induction h using Nat.leRec`. -/
-@[elab_as_elim, deprecated Nat.leRec (since := "2024-07-05")]
-def leRecOn' {C : ℕ → Sort*} : ∀ {m}, n ≤ m → (∀ ⦃k⦄, n ≤ k → C k → C (k + 1)) → C n → C m :=
-  fun h of_succ self => Nat.leRec self of_succ h
-
 /-- Recursion starting at a non-zero number: given a map `C k → C (k + 1)` for each `k`,
 there is a map from `C n` to each `C m`, `n ≤ m`. For a version where the assumption is only made
 when `k ≥ n`, see `Nat.leRec`. -/
@@ -974,18 +954,11 @@ attribute [simp] Nat.dvd_zero
 lemma mod_two_ne_one : n % 2 ≠ 1 ↔ n % 2 = 0 := mod_two_not_eq_one
 lemma mod_two_ne_zero : n % 2 ≠ 0 ↔ n % 2 = 1 := mod_two_not_eq_zero
 
-@[deprecated mod_mul_right_div_self (since := "2024-05-29")]
-lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
-  (mod_mul_right_div_self a b c).symm
-
-/-- Variant of `Nat.lt_div_iff_mul_lt` (added in Lean 4.16) that assumes `d ∣ n`. -/
+/-- Variant of `Nat.lt_div_iff_mul_lt` that assumes `d ∣ n`. -/
 protected lemma lt_div_iff_mul_lt' (hdn : d ∣ n) (a : ℕ) : a < n / d ↔ d * a < n := by
   obtain rfl | hd := d.eq_zero_or_pos
   · simp [Nat.zero_dvd.1 hdn]
   · rw [← Nat.mul_lt_mul_left hd, ← Nat.eq_mul_of_div_eq_right hdn rfl]
-
-@[deprecated Nat.lt_div_iff_mul_lt' (since := "2024-12-29")]
-protected alias lt_div_iff_mul_lt := Nat.lt_div_iff_mul_lt'
 
 lemma mul_div_eq_iff_dvd {n d : ℕ} : d * (n / d) = n ↔ d ∣ n :=
   calc
@@ -1233,8 +1206,6 @@ lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a :=
 
 @[simp] lemma dvd_div_iff_mul_dvd (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b :=
   ⟨fun h => mul_dvd_of_dvd_div hbc h, fun h => dvd_div_of_mul_dvd h⟩
-
-@[deprecated (since := "2024-06-18")] alias dvd_div_iff := dvd_div_iff_mul_dvd
 
 lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c := by
   obtain ⟨e, rfl⟩ := hdiv

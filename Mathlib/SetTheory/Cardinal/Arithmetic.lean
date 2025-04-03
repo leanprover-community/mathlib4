@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.SetTheory.Cardinal.Aleph
 import Mathlib.SetTheory.Ordinal.Principal
-import Mathlib.Tactic.Linarith
 
 /-!
 # Cardinal arithmetic
@@ -25,8 +24,7 @@ ordinal numbers. This is done within this file.
 cardinal arithmetic (for infinite cardinals)
 -/
 
-assert_not_exists Module
-assert_not_exists Finsupp
+assert_not_exists Module Finsupp
 
 noncomputable section
 
@@ -221,7 +219,7 @@ theorem mul_eq_left_iff {a b : Cardinal} : a * b = a ↔ max ℵ₀ b ≤ a ∧ 
     rw [← not_lt]
     apply fun h2b => ne_of_gt _ h
     conv_rhs => left; rw [← mul_one n]
-    rw [mul_lt_mul_left]
+    rw [Nat.mul_lt_mul_left]
     · exact id
     apply Nat.lt_of_succ_le h2a
   · rintro (⟨⟨ha, hab⟩, hb⟩ | rfl | rfl)
@@ -259,6 +257,9 @@ theorem add_mk_eq_max {α β : Type u} [Infinite α] : #α + #β = max #α #β :
 @[simp]
 theorem add_mk_eq_max' {α β : Type u} [Infinite β] : #α + #β = max #α #β :=
   add_eq_max' (aleph0_le_mk β)
+
+theorem add_mk_eq_self {α : Type*} [Infinite α] : #α + #α = #α := by
+  simp
 
 theorem add_le_max (a b : Cardinal) : a + b ≤ max (max a b) ℵ₀ := by
   rcases le_or_lt ℵ₀ a with ha | ha
@@ -430,14 +431,6 @@ section aleph
 theorem aleph_add_aleph (o₁ o₂ : Ordinal) : ℵ_ o₁ + ℵ_ o₂ = ℵ_ (max o₁ o₂) := by
   rw [Cardinal.add_eq_max (aleph0_le_aleph o₁), aleph_max]
 
-theorem principal_add_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Ordinal.Principal (· + ·) c.ord :=
-  fun a b ha hb => by
-  rw [lt_ord, Ordinal.card_add] at *
-  exact add_lt_of_lt hc ha hb
-
-theorem principal_add_aleph (o : Ordinal) : Ordinal.Principal (· + ·) (ℵ_ o).ord :=
-  principal_add_ord <| aleph0_le_aleph o
-
 theorem add_right_inj_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < aleph0) : α + γ = β + γ ↔ α = β :=
   ⟨fun h => Cardinal.eq_of_add_eq_add_right h γ₀, fun h => congr_arg (· + γ) h⟩
 
@@ -460,15 +453,9 @@ theorem add_le_add_iff_of_lt_aleph0 {α β γ : Cardinal} (γ₀ : γ < ℵ₀) 
 theorem add_nat_le_add_nat_iff {α β : Cardinal} (n : ℕ) : α + n ≤ β + n ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 (nat_lt_aleph0 n)
 
-@[deprecated (since := "2024-02-12")]
-alias add_nat_le_add_nat_iff_of_lt_aleph_0 := add_nat_le_add_nat_iff
-
 @[simp]
 theorem add_one_le_add_one_iff {α β : Cardinal} : α + 1 ≤ β + 1 ↔ α ≤ β :=
   add_le_add_iff_of_lt_aleph0 one_lt_aleph0
-
-@[deprecated (since := "2024-02-12")]
-alias add_one_le_add_one_iff_of_lt_aleph_0 := add_one_le_add_one_iff
 
 end aleph
 
@@ -531,6 +518,9 @@ theorem power_nat_le_max {c : Cardinal.{u}} {n : ℕ} : c ^ (n : Cardinal.{u}) �
   rcases le_or_lt ℵ₀ c with hc | hc
   · exact le_max_of_le_left (power_nat_le hc)
   · exact le_max_of_le_right (power_lt_aleph0 hc (nat_lt_aleph0 _)).le
+
+lemma power_le_aleph0 {a b : Cardinal.{u}} (ha : a ≤ ℵ₀) (hb : b < ℵ₀) : a ^ b ≤ ℵ₀ := by
+  lift b to ℕ using hb; simpa [ha] using power_nat_le_max (c := a)
 
 theorem powerlt_aleph0 {c : Cardinal} (h : ℵ₀ ≤ c) : c ^< ℵ₀ = c := by
   apply le_antisymm
@@ -958,5 +948,39 @@ theorem IsInitial.principal_opow {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o)
 theorem principal_opow_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Principal (· ^ ·) c.ord := by
   apply (isInitial_ord c).principal_opow
   rwa [omega0_le_ord]
+
+/-! ### Initial ordinals are principal -/
+
+theorem principal_add_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Principal (· + ·) c.ord := by
+  intro a b ha hb
+  rw [lt_ord, card_add] at *
+  exact add_lt_of_lt hc ha hb
+
+theorem IsInitial.principal_add {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o) :
+    Principal (· + ·) o := by
+  rw [← h.ord_card]
+  apply principal_add_ord
+  rwa [aleph0_le_card]
+
+theorem principal_add_omega (o : Ordinal) : Principal (· + ·) (ω_ o) :=
+  (isInitial_omega o).principal_add (omega0_le_omega o)
+
+theorem principal_mul_ord {c : Cardinal} (hc : ℵ₀ ≤ c) : Principal (· * ·) c.ord := by
+  intro a b ha hb
+  rw [lt_ord, card_mul] at *
+  exact mul_lt_of_lt hc ha hb
+
+theorem IsInitial.principal_mul {o : Ordinal} (h : IsInitial o) (ho : ω ≤ o) :
+    Principal (· * ·) o := by
+  rw [← h.ord_card]
+  apply principal_mul_ord
+  rwa [aleph0_le_card]
+
+theorem principal_mul_omega (o : Ordinal) : Principal (· * ·) (ω_ o) :=
+  (isInitial_omega o).principal_mul (omega0_le_omega o)
+
+@[deprecated principal_add_omega (since := "2024-11-08")]
+theorem _root_.Cardinal.principal_add_aleph (o : Ordinal) : Principal (· + ·) (ℵ_ o).ord :=
+  principal_add_ord <| aleph0_le_aleph o
 
 end Ordinal

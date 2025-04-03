@@ -29,6 +29,7 @@ import Mathlib.GroupTheory.GroupAction.Hom
 
 open Set Pointwise
 
+@[to_additive]
 theorem MulAction.smul_bijective_of_is_unit
     {M : Type*} [Monoid M] {α : Type*} [MulAction M α] {m : M} (hm : IsUnit m) :
     Function.Bijective (fun (a : α) ↦ m • a) := by
@@ -54,11 +55,13 @@ variable [FunLike F M N] [MulActionSemiHomClass F σ M N]
 -- "Left-hand side does not simplify, when using the simp lemma on itself."
 -- For now we will have to manually add `image_smul_setₛₗ _` to the `simp` argument list.
 -- TODO: when https://github.com/leanprover/lean4/issues/3107 is fixed, mark this as `@[simp]`.
+@[to_additive]
 theorem image_smul_setₛₗ :
     h '' (c • s) = σ c • h '' s := by
   simp only [← image_smul, image_image, map_smulₛₗ h]
 
 /-- Translation of preimage is contained in preimage of translation -/
+@[to_additive]
 theorem smul_preimage_set_leₛₗ :
     c • h ⁻¹' t ⊆ h ⁻¹' (σ c • t) := by
   rintro x ⟨y, hy, rfl⟩
@@ -67,6 +70,7 @@ theorem smul_preimage_set_leₛₗ :
 variable {c}
 
 /-- General version of `preimage_smul_setₛₗ` -/
+@[to_additive]
 theorem preimage_smul_setₛₗ'
     (hc : Function.Surjective (fun (m : M) ↦ c • m))
     (hc' : Function.Injective (fun (n : N) ↦ σ c • n)) :
@@ -82,6 +86,7 @@ theorem preimage_smul_setₛₗ'
   · exact smul_preimage_set_leₛₗ M N σ h c t
 
 /-- `preimage_smul_setₛₗ` when both scalars act by unit -/
+@[to_additive]
 theorem preimage_smul_setₛₗ_of_units (hc : IsUnit c) (hc' : IsUnit (σ c)) :
     h ⁻¹' (σ c • t) = c • h ⁻¹' t := by
   apply preimage_smul_setₛₗ'
@@ -90,6 +95,7 @@ theorem preimage_smul_setₛₗ_of_units (hc : IsUnit c) (hc' : IsUnit (σ c)) :
 
 
 /-- `preimage_smul_setₛₗ` in the context of a `MonoidHom` -/
+@[to_additive]
 theorem MonoidHom.preimage_smul_setₛₗ (σ : R →* S)
     {F : Type*} [FunLike F M N] [MulActionSemiHomClass F ⇑σ M N] (h : F)
     {c : R} (hc : IsUnit c) (t : Set N) :
@@ -97,6 +103,7 @@ theorem MonoidHom.preimage_smul_setₛₗ (σ : R →* S)
   preimage_smul_setₛₗ_of_units M N σ h t hc (IsUnit.map σ hc)
 
 /-- `preimage_smul_setₛₗ` in the context of a `MonoidHomClass` -/
+@[to_additive]
 theorem preimage_smul_setₛₗ
     {G : Type*} [FunLike G R S] [MonoidHomClass G R S] (σ : G)
     {F : Type*} [FunLike F M N] [MulActionSemiHomClass F σ M N] (h : F)
@@ -105,6 +112,7 @@ theorem preimage_smul_setₛₗ
  MonoidHom.preimage_smul_setₛₗ M N (σ : R →* S) h hc t
 
 /-- `preimage_smul_setₛₗ` in the context of a groups -/
+@[to_additive]
 theorem Group.preimage_smul_setₛₗ
     {R S : Type*} [Group R] [Group S] (σ : R → S)
     [MulAction R M] [MulAction S N]
@@ -121,21 +129,25 @@ variable (R)
 variable [FunLike F M₁ M₂] [MulActionHomClass F R M₁ M₂]
     (c : R) (s : Set M₁) (t : Set M₂)
 
-@[simp] -- This can be safely removed as a `@[simp]` lemma if `image_smul_setₛₗ` is readded.
+-- This can be safely removed as a `@[simp]` lemma if `image_smul_setₛₗ` is readded.
+@[to_additive (attr := simp)]
 theorem image_smul_set :
     h '' (c • s) = c • h '' s :=
   image_smul_setₛₗ _ _ _ h c s
 
+@[to_additive]
 theorem smul_preimage_set_le :
     c • h ⁻¹' t ⊆ h ⁻¹' (c • t) :=
   smul_preimage_set_leₛₗ _ _ _ h c t
 
 variable {c}
 
+@[to_additive]
 theorem preimage_smul_set (hc : IsUnit c) :
     h ⁻¹' (c • t) = c • h ⁻¹' t :=
   preimage_smul_setₛₗ_of_units _ _ _ h t hc hc
 
+@[to_additive]
 theorem Group.preimage_smul_set
     {R : Type*} [Group R] (M₁ M₂ : Type*)
     [MulAction R M₁] [MulAction R M₂]

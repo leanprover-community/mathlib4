@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Group.Multiset
 import Mathlib.Data.Multiset.Nodup
 
 /-!
@@ -29,11 +30,11 @@ def disjSum : Multiset (α ⊕ β) :=
 
 @[simp]
 theorem zero_disjSum : (0 : Multiset α).disjSum t = t.map inr :=
-  zero_add _
+  Multiset.zero_add _
 
 @[simp]
 theorem disjSum_zero : s.disjSum (0 : Multiset β) = s.map inl :=
-  add_zero _
+  Multiset.add_zero _
 
 @[simp]
 theorem card_disjSum : Multiset.card (s.disjSum t) = Multiset.card s + Multiset.card t := by
@@ -64,11 +65,11 @@ theorem disjSum_mono (hs : s₁ ≤ s₂) (ht : t₁ ≤ t₂) : s₁.disjSum t�
   add_le_add (map_le_map hs) (map_le_map ht)
 
 theorem disjSum_mono_left (t : Multiset β) : Monotone fun s : Multiset α => s.disjSum t :=
-  fun _ _ hs => add_le_add_right (map_le_map hs) _
+  fun _ _ hs => Multiset.add_le_add_right (map_le_map hs)
 
 theorem disjSum_mono_right (s : Multiset α) :
     Monotone (s.disjSum : Multiset β → Multiset (α ⊕ β)) := fun _ _ ht =>
-  add_le_add_left (map_le_map ht) _
+  Multiset.add_le_add_left (map_le_map ht)
 
 theorem disjSum_lt_disjSum_of_lt_of_le (hs : s₁ < s₂) (ht : t₁ ≤ t₂) :
     s₁.disjSum t₁ < s₂.disjSum t₂ :=

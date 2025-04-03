@@ -528,9 +528,6 @@ theorem Function.LeftInverse.isClosed_range [T2Space X] {f : X → Y} {g : Y →
     h.rightInvOn_range.eqOn.closure (hg.comp hf) continuous_id
   isClosed_of_closure_subset fun x hx => ⟨f x, this hx⟩
 
-@[deprecated (since := "2024-03-17")]
-alias Function.LeftInverse.closed_range := Function.LeftInverse.isClosed_range
-
 theorem Function.LeftInverse.isClosedEmbedding [T2Space X] {f : X → Y} {g : Y → X}
     (h : Function.LeftInverse f g) (hf : Continuous f) (hg : Continuous g) : IsClosedEmbedding g :=
   ⟨.of_leftInverse h hf hg, h.isClosed_range hf hg⟩

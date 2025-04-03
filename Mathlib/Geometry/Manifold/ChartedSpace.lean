@@ -120,9 +120,9 @@ variable {H : Type u} {H' : Type*} {M : Type*} {M' : Type*} {M'' : Type*}
 `PartialHomeomorph.trans` and `PartialEquiv.trans`.
 Note that, as is usual for equivs, the composition is from left to right, hence the direction of
 the arrow. -/
-scoped[Manifold] infixr:100 " ≫ₕ " => PartialHomeomorph.trans
+@[inherit_doc] scoped[Manifold] infixr:100 " ≫ₕ " => PartialHomeomorph.trans
 
-scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
+@[inherit_doc] scoped[Manifold] infixr:100 " ≫ " => PartialEquiv.trans
 
 open Set PartialHomeomorph Manifold  -- Porting note: Added `Manifold`
 
@@ -628,7 +628,7 @@ theorem ChartedSpace.isOpen_iff (s : Set M) :
   simp only [(chartAt H _).isOpen_image_iff_of_subset_source inter_subset_left]
 
 /-- `achart H x` is the chart at `x`, considered as an element of the atlas.
-Especially useful for working with `BasicSmoothVectorBundleCore`. -/
+Especially useful for working with `BasicContMDiffVectorBundleCore`. -/
 def achart (x : M) : atlas H M :=
   ⟨chartAt H x, chart_mem_atlas H x⟩
 
@@ -777,9 +777,8 @@ instance (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H'] :
     TopologicalSpace (ModelProd H H') :=
   instTopologicalSpaceProd
 
--- Porting note: simpNF false positive
--- Next lemma shows up often when dealing with derivatives, register it as simp.
-@[simp, mfld_simps, nolint simpNF]
+-- Next lemma shows up often when dealing with derivatives, so we register it as simp lemma.
+@[simp, mfld_simps]
 theorem modelProd_range_prod_id {H : Type*} {H' : Type*} {α : Type*} (f : H → α) :
     (range fun p : ModelProd H H' ↦ (f p.1, p.2)) = range f ×ˢ (univ : Set H') := by
   rw [prod_range_univ_eq]
@@ -849,6 +848,57 @@ theorem piChartedSpace_chartAt {ι : Type*} [Finite ι] (H : ι → Type*)
     chartAt (H := ModelPi H) f = PartialHomeomorph.pi fun i ↦ chartAt (H i) (f i) :=
   rfl
 
+section sum
+
+variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
+    [cm : ChartedSpace H M] [cm' : ChartedSpace H M'] [Nonempty H]
+
+/-- The disjoint union of two charted spaces on `H` is a charted space over `H`. -/
+instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') where
+  atlas := ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inl) '' cm.atlas) ∪
+    ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inr) '' cm'.atlas)
+  -- At `x : M`, the chart is the chart in `M`; at `x' ∈ M'`, it is the chart in `M'`.
+  chartAt := Sum.elim (fun x ↦ (cm.chartAt x).lift_openEmbedding IsOpenEmbedding.inl)
+    (fun x ↦ (cm'.chartAt x).lift_openEmbedding IsOpenEmbedding.inr)
+  mem_chart_source p := by
+    cases p with
+    | inl x =>
+      rw [Sum.elim_inl, lift_openEmbedding_source,
+        ← PartialHomeomorph.lift_openEmbedding_source _ IsOpenEmbedding.inl]
+      use x, cm.mem_chart_source x
+    | inr x =>
+      rw [Sum.elim_inr, lift_openEmbedding_source,
+        ← PartialHomeomorph.lift_openEmbedding_source _ IsOpenEmbedding.inr]
+      use x, cm'.mem_chart_source x
+  chart_mem_atlas p := by
+    cases p with
+    | inl x =>
+      rw [Sum.elim_inl]
+      left
+      use ChartedSpace.chartAt x, cm.chart_mem_atlas x
+    | inr x =>
+      rw [Sum.elim_inr]
+      right
+      use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
+
+lemma ChartedSpace.sum_chartAt_inl (x : M) :
+    chartAt H (Sum.inl x) = (chartAt H x).lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inl :=
+  rfl
+
+lemma ChartedSpace.sum_chartAt_inr (x' : M') :
+    chartAt H (Sum.inr x') = (chartAt H x').lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inr :=
+  rfl
+
+lemma ChartedSpace.mem_atlas_sum {e : PartialHomeomorph (M ⊕ M') H} (he : e ∈ atlas H (M ⊕ M')) :
+    (∃ f : PartialHomeomorph M H, f ∈ (atlas H M) ∧ e = (f.lift_openEmbedding IsOpenEmbedding.inl))
+    ∨ (∃ f' : PartialHomeomorph M' H, f' ∈ (atlas H M') ∧
+      e = (f'.lift_openEmbedding IsOpenEmbedding.inr)) := by
+    obtain (⟨x, hx, hxe⟩ | ⟨x, hx, hxe⟩) := he
+    · rw [← hxe]; left; use x
+    · rw [← hxe]; right; use x
+
+end sum
+
 end ChartedSpace
 
 /-! ### Constructing a topology from an atlas -/
@@ -858,8 +908,6 @@ end ChartedSpace
 have a topological structure, where the topology would come from the charts. For this, one needs
 charts that are only partial equivalences, and continuity properties for their composition.
 This is formalised in `ChartedSpaceCore`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure ChartedSpaceCore (H : Type*) [TopologicalSpace H] (M : Type*) where
   /-- An atlas of charts, which are only `PartialEquiv`s -/
   atlas : Set (PartialEquiv M H)
@@ -1230,8 +1278,6 @@ lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
 /-- A `G`-diffeomorphism between two charted spaces is a homeomorphism which, when read in the
 charts, belongs to `G`. We avoid the word diffeomorph as it is too related to the smooth category,
 and use structomorph instead. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure Structomorph (G : StructureGroupoid H) (M : Type*) (M' : Type*) [TopologicalSpace M]
   [TopologicalSpace M'] [ChartedSpace H M] [ChartedSpace H M'] extends Homeomorph M M' where
   mem_groupoid : ∀ c : PartialHomeomorph M H, ∀ c' : PartialHomeomorph M' H, c ∈ atlas H M →

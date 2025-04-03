@@ -336,6 +336,28 @@ theorem bot_lt_ker_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f
 lemma det_mulLeft (a : R) : (mulLeft R a).det = a := by simp
 lemma det_mulRight (a : R) : (mulRight R a).det = a := by simp
 
+omit [DecidableEq ι] in
+theorem det_pi [Module.Free R M] [Module.Finite R M] (f : ι → M →ₗ[R] M) :
+    (LinearMap.pi (fun i ↦ (f i).comp (LinearMap.proj i))).det = ∏ i, (f i).det := by
+  classical
+  let b := Module.Free.chooseBasis R M
+  let B := (Pi.basis (fun _ : ι ↦ b)).reindex <|
+    (Equiv.sigmaEquivProd _ _).trans (Equiv.prodComm _ _)
+  simp_rw [← LinearMap.det_toMatrix B, ← LinearMap.det_toMatrix b]
+  have : ((LinearMap.toMatrix B B) (LinearMap.pi fun i ↦ f i ∘ₗ LinearMap.proj i)) =
+      Matrix.blockDiagonal (fun i ↦ LinearMap.toMatrix b b (f i)) := by
+    ext ⟨i₁, i₂⟩ ⟨j₁, j₂⟩
+    unfold B
+    simp_rw [LinearMap.toMatrix_apply', Matrix.blockDiagonal_apply, Basis.coe_reindex,
+      Function.comp_apply, Basis.repr_reindex_apply, Equiv.symm_trans_apply, Equiv.prodComm_symm,
+      Equiv.prodComm_apply, Equiv.sigmaEquivProd_symm_apply, Prod.swap_prod_mk, Pi.basis_apply,
+      Pi.basis_repr, LinearMap.pi_apply, LinearMap.coe_comp, Function.comp_apply,
+      LinearMap.toMatrix_apply', LinearMap.coe_proj, Function.eval, Pi.single_apply]
+    split_ifs with h
+    · rw [h]
+    · simp only [map_zero, Finsupp.coe_zero, Pi.zero_apply]
+  rw [this, Matrix.det_blockDiagonal]
+
 end LinearMap
 
 

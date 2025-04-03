@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
 import Mathlib.Data.Option.Defs
-import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.CC.MkProof
 
 /-!
@@ -199,12 +198,11 @@ def pushSubsingletonEq (a b : Expr) : CCM Unit := do
   let B ← normalize (← inferType b)
   -- TODO(Leo): check if the following test is a performance bottleneck
   if ← pureIsDefEq A B then
-    -- TODO(Leo): to improve performance we can create the following proof lazily
-    let proof ← mkAppM ``Subsingleton.elim #[a, b]
+    let proof ← mkAppM ``FastSubsingleton.elim #[a, b]
     pushEq a b proof
   else
     let some AEqB ← getEqProof A B | failure
-    let proof ← mkAppM ``Subsingleton.helim #[AEqB, a, b]
+    let proof ← mkAppM ``FastSubsingleton.helim #[AEqB, a, b]
     pushHEq a b proof
 
 /-- Given the equivalent expressions `oldRoot` and `newRoot` the root of `oldRoot` is
@@ -398,8 +396,8 @@ equality `r*a = s*b`. -/
 def superposeAC (ts a : ACApps) (tsEqa : DelayedExpr) : CCM Unit := do
   let .apps op args := ts | return
   for hi : i in [:args.size] do
-    if i == 0 || (args[i]'hi.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2)) then
-      let some ent := (← get).acEntries.find? (args[i]'hi.2) | failure
+    if i == 0 || args[i] != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2.1)) then
+      let some ent := (← get).acEntries.find? args[i] | failure
       let occs := ent.RLHSOccs
       for tr in occs do
         let .apps optr _ := tr | continue
@@ -607,7 +605,7 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
       pinfo := (← getFunInfoNArgs fn apps.size).paramInfo.toList
     if state.hoFns.isSome && fn.isConst && !(state.hoFns.iget.contains fn.constName) then
       for h : i in [:apps.size] do
-        let arg := (apps[i]'h.2).appArg!
+        let arg := apps[i].appArg!
         addOccurrence e arg false
         if pinfo.head?.any ParamInfo.isInstImplicit then
           -- We do not recurse on instances when `(← get).config.ignoreInstances` is `true`.
@@ -625,13 +623,13 @@ partial def internalizeAppLit (e : Expr) : CCM Unit := do
       -- Expensive case where we store a quadratic number of occurrences,
       -- as described in the paper "Congruence Closure in Internsional Type Theory"
       for h : i in [:apps.size] do
-        let curr := apps[i]'h.2
+        let curr := apps[i]
         let .app currFn currArg := curr | unreachable!
         if i < apps.size - 1 then
           mkEntry curr false
         for h : j in [i:apps.size] do
-          addOccurrence (apps[j]'h.2) currArg false
-          addOccurrence (apps[j]'h.2) currFn false
+          addOccurrence apps[j] currArg false
+          addOccurrence apps[j] currFn false
         if pinfo.head?.any ParamInfo.isInstImplicit then
           -- We do not recurse on instances when `(← get).config.ignoreInstances` is `true`.
           mkEntry currArg false
@@ -940,9 +938,7 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
 to the todo list or register `e` as the canonical form of itself. -/
 partial def processSubsingletonElem (e : Expr) : CCM Unit := do
   let type ← inferType e
-  -- TODO: this is likely to become a bottleneck. See e.g.
-  -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/convert.20is.20often.20slow/near/433830798
-  let ss ← synthInstance? (← mkAppM ``Subsingleton #[type])
+  let ss ← synthInstance? (← mkAppM ``FastSubsingleton #[type])
   if ss.isNone then return -- type is not a subsingleton
   let type ← normalize type
   -- Make sure type has been internalized

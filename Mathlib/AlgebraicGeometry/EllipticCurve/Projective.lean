@@ -450,7 +450,7 @@ lemma equiv_zero_of_Z_eq_zero {P : Fin 3 → F} (hP : W.Nonsingular P) (hPz : P 
   equiv_of_Z_eq_zero hP nonsingular_zero hPz rfl
 
 lemma comp_equiv_comp {K : Type v} [Field K] (f : F →+* K) {P Q : Fin 3 → F} (hP : W.Nonsingular P)
-    (hQ : W.Nonsingular Q): f ∘ P ≈ f ∘ Q ↔ P ≈ Q := by
+    (hQ : W.Nonsingular Q) : f ∘ P ≈ f ∘ Q ↔ P ≈ Q := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · by_cases hz : f (P z) = 0
     · exact equiv_of_Z_eq_zero hP hQ ((map_eq_zero_iff f f.injective).mp hz) <|
@@ -1863,7 +1863,7 @@ lemma baseChange_negY (P : Fin 3 → A) :
     (W'.baseChange B).toProjective.negY (f ∘ P) = f ((W'.baseChange A).toProjective.negY P) := by
   rw [← RingHom.coe_coe, ← map_negY, map_baseChange]
 
-protected lemma baseChange_neg (P : Fin 3 → A) :
+lemma baseChange_neg (P : Fin 3 → A) :
     (W'.baseChange B).toProjective.neg (f ∘ P) = f ∘ (W'.baseChange A).toProjective.neg P := by
   rw [← RingHom.coe_coe, ← WeierstrassCurve.Projective.map_neg, map_baseChange]
 

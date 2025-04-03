@@ -184,10 +184,8 @@ theorem exists_nnnorm_eq_spectralRadius_of_nonempty [ProperSpace 𝕜] {a : A} (
 
 theorem spectralRadius_lt_of_forall_lt_of_nonempty [ProperSpace 𝕜] {a : A} (ha : (σ a).Nonempty)
     {r : ℝ≥0} (hr : ∀ k ∈ σ a, ‖k‖₊ < r) : spectralRadius 𝕜 a < r :=
-  sSup_image.symm.trans_lt <|
-    ((spectrum.isCompact a).sSup_lt_iff_of_continuous ha
-          (ENNReal.continuous_coe.comp continuous_nnnorm).continuousOn (r : ℝ≥0∞)).mpr
-      (by dsimp only [(· ∘ ·)]; exact mod_cast hr)
+  sSup_image.symm.trans_lt <| ((spectrum.isCompact a).sSup_lt_iff_of_continuous ha
+    continuous_enorm.continuousOn (r : ℝ≥0∞)).mpr (by simpa using hr)
 
 open ENNReal Polynomial
 

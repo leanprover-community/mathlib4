@@ -53,7 +53,7 @@ def incl : FintypeCat ⥤ Type* :=
 instance : incl.Full := InducedCategory.full _
 instance : incl.Faithful := InducedCategory.faithful _
 
-instance concreteCategoryFintype : ConcreteCategory FintypeCat :=
+instance hasForgetFintype : HasForget FintypeCat :=
   ⟨incl⟩
 
 /- Help typeclass inference infer fullness of forgetful functor. -/

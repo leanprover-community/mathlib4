@@ -325,10 +325,7 @@ theorem normalizer_le_centralizer (hP : IsCyclic P) : P.normalizer ≤ centraliz
     apply Nat.coprime_one_right
   rw [hP.card_mulAut, hk, Nat.totient_prime_pow Fact.out h0]
   refine (Nat.Coprime.pow_right _ ?_).mul_right ?_
-  · replace key : P.IsCommutative := by
-      let h := hP.commGroup
-      exact ⟨⟨CommGroup.mul_comm⟩⟩
-    apply Nat.Coprime.coprime_dvd_left (relindex_dvd_of_le_left P.normalizer P.le_centralizer)
+  · apply Nat.Coprime.coprime_dvd_left (relindex_dvd_of_le_left P.normalizer P.le_centralizer)
     apply Nat.Coprime.coprime_dvd_left (relindex_dvd_index_of_le P.le_normalizer)
     rw [Nat.coprime_comm, Nat.Prime.coprime_iff_not_dvd Fact.out]
     exact P.not_dvd_index

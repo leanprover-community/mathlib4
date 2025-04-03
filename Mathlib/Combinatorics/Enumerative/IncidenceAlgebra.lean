@@ -297,24 +297,25 @@ instance moduleRight [Preorder α] [Semiring 𝕜] [AddCommMonoid 𝕝] [Module 
 
 instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α] [CommSemiring 𝕜]
     [CommSemiring 𝕝] [Algebra 𝕜 𝕝] : Algebra 𝕜 (IncidenceAlgebra 𝕝 α) where
-  toFun c := algebraMap 𝕜 𝕝 c • (1 : IncidenceAlgebra 𝕝 α)
-  map_one' := by
-    ext; simp only [mul_boole, one_apply, Algebra.id.smul_eq_mul, constSMul_apply, map_one]
-  map_mul' c d := by
-      ext a b
-      obtain rfl | h := eq_or_ne a b
-      · simp only [one_apply, Algebra.id.smul_eq_mul, mul_apply, Algebra.mul_smul_comm,
-          boole_smul, constSMul_apply, ← ite_and, map_mul, Algebra.smul_mul_assoc,
-          if_pos rfl, eq_comm, and_self_iff, Icc_self]
-        simp
-      · simp only [true_and, ite_self, le_rfl, one_apply, mul_one, Algebra.id.smul_eq_mul,
-          mul_apply, Algebra.mul_smul_comm, MulZeroClass.zero_mul, constSMul_apply,
-          ← ite_and, ite_mul, mul_ite, map_mul, mem_Icc, sum_ite_eq,
-          MulZeroClass.mul_zero, smul_zero, Algebra.smul_mul_assoc, if_pos rfl, if_neg h]
-        refine (sum_eq_zero fun x _ ↦ ?_).symm
-        exact if_neg fun hx ↦ h <| hx.2.trans hx.1
-  map_zero' := by dsimp; rw [map_zero, zero_smul]
-  map_add' c d := by dsimp; rw [map_add, add_smul]
+  algebraMap :=
+  { toFun c := algebraMap 𝕜 𝕝 c • (1 : IncidenceAlgebra 𝕝 α)
+    map_one' := by
+      ext; simp only [mul_boole, one_apply, Algebra.id.smul_eq_mul, constSMul_apply, map_one]
+    map_mul' c d := by
+        ext a b
+        obtain rfl | h := eq_or_ne a b
+        · simp only [one_apply, Algebra.id.smul_eq_mul, mul_apply, Algebra.mul_smul_comm,
+            boole_smul, constSMul_apply, ← ite_and, map_mul, Algebra.smul_mul_assoc,
+            if_pos rfl, eq_comm, and_self_iff, Icc_self]
+          simp
+        · simp only [true_and, ite_self, le_rfl, one_apply, mul_one, Algebra.id.smul_eq_mul,
+            mul_apply, Algebra.mul_smul_comm, MulZeroClass.zero_mul, constSMul_apply,
+            ← ite_and, ite_mul, mul_ite, map_mul, mem_Icc, sum_ite_eq,
+            MulZeroClass.mul_zero, smul_zero, Algebra.smul_mul_assoc, if_pos rfl, if_neg h]
+          refine (sum_eq_zero fun x _ ↦ ?_).symm
+          exact if_neg fun hx ↦ h <| hx.2.trans hx.1
+    map_zero' := by dsimp; rw [map_zero, zero_smul]
+    map_add' c d := by dsimp; rw [map_add, add_smul] }
   commutes' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, mul_comm]
   smul_def' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, Algebra.smul_def]
 
@@ -371,7 +372,7 @@ private def muFun (a : α) : α → 𝕜
   | b =>
     if a = b then 1
     else
-      -∑ x in (Ico a b).attach,
+      -∑ x ∈ (Ico a b).attach,
           let h := mem_Ico.1 x.2
           have : (Icc a x).card < (Icc a b).card :=
             card_lt_card (Icc_ssubset_Icc_right (h.1.trans h.2.le) le_rfl h.2)
@@ -379,7 +380,7 @@ private def muFun (a : α) : α → 𝕜
 termination_by b => (Icc a b).card
 
 private lemma muFun_apply (a b : α) :
-    muFun 𝕜 a b = if a = b then 1 else -∑ x in (Ico a b).attach, muFun 𝕜 a x := by rw [muFun]
+    muFun 𝕜 a b = if a = b then 1 else -∑ x ∈ (Ico a b).attach, muFun 𝕜 a x := by rw [muFun]
 
 /-- The Möbius function which inverts `zeta` as an element of the incidence algebra. -/
 def mu : IncidenceAlgebra 𝕜 α :=
@@ -400,6 +401,10 @@ lemma mu_apply (a b : α) : mu 𝕜 a b = if a = b then 1 else -∑ x ∈ Ico a 
 
 lemma mu_eq_neg_sum_Ico_of_ne (hab : a ≠ b) :
     mu 𝕜 a b = -∑ x ∈ Ico a b, mu 𝕜 a x := by rw [mu_apply, if_neg hab]
+
+variable (𝕜 α)
+/-- The Euler characteristic of a finite bounded order. -/
+def eulerChar [BoundedOrder α] : 𝕜 := mu 𝕜 (⊥ : α) ⊤
 
 end Mu
 
@@ -424,7 +429,7 @@ private def muFun' (b : α) : α → 𝕜
   | a =>
     if a = b then 1
     else
-      -∑ x in (Ioc a b).attach,
+      -∑ x ∈ (Ioc a b).attach,
           let h := mem_Ioc.1 x.2
           have : (Icc ↑x b).card < (Icc a b).card :=
             card_lt_card (Icc_ssubset_Icc_left (h.1.le.trans h.2) h.1 le_rfl)
@@ -432,7 +437,7 @@ private def muFun' (b : α) : α → 𝕜
 termination_by a => (Icc a b).card
 
 private lemma muFun'_apply (a b : α) :
-    muFun' 𝕜 b a = if a = b then 1 else -∑ x in (Ioc a b).attach, muFun' 𝕜 b x := by
+    muFun' 𝕜 b a = if a = b then 1 else -∑ x ∈ (Ioc a b).attach, muFun' 𝕜 b x := by
   rw [muFun']
 
 /-- This is the reversed definition of `mu`, which is equal to `mu` but easiest to prove equal by
@@ -535,6 +540,10 @@ lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
     _ = if a = b then 1 else 0 := by simp [eq_comm]
 
 @[simp] lemma mu_ofDual (a b : αᵒᵈ) : mu 𝕜 (ofDual a) (ofDual b) = mu 𝕜 b a := (mu_toDual ..).symm
+
+@[simp]
+lemma eulerChar_orderDual [BoundedOrder α] : eulerChar 𝕜 αᵒᵈ = eulerChar 𝕜 α := by
+  simp [eulerChar, ← mu_toDual 𝕜 (α := α)]
 
 end OrderDual
 
@@ -655,6 +664,10 @@ lemma mu_prod_mu : (mu 𝕜).prod (mu 𝕜) = (mu 𝕜 : IncidenceAlgebra 𝕜 (
   refine left_inv_eq_right_inv ?_ zeta_mul_mu
   rw [← zeta_prod_zeta, prod_mul_prod', mu_mul_zeta, mu_mul_zeta, one_prod_one]
   exact fun _ _ _ _ _ _ ↦ Commute.mul_mul_mul_comm (by simp : _ = _) _ _
+
+@[simp]
+lemma eulerChar_prod [BoundedOrder α] [BoundedOrder β] :
+    eulerChar 𝕜 (α × β) = eulerChar 𝕜 α * eulerChar 𝕜 β := by simp [eulerChar, ← mu_prod_mu]
 
 end PartialOrder
 end Prod

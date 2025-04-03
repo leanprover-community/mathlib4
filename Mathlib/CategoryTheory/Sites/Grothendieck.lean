@@ -66,9 +66,8 @@ three axioms:
 
 A sieve `S` on `X` is referred to as `J`-covering, (or just covering), if `S ∈ J X`.
 
-See <https://stacks.math.columbia.edu/tag/00Z4>, or [nlab], or [MM92][] Chapter III, Section 2,
-Definition 1.
--/
+See also [nlab] or [MM92] Chapter III, Section 2, Definition 1. -/
+@[stacks 00Z4]
 structure GrothendieckTopology where
   /-- A Grothendieck topology on `C` consists of a set of sieves for each object `X`,
     which satisfy some axioms. -/
@@ -132,9 +131,8 @@ theorem covering_of_eq_top : S = ⊤ → S ∈ J X := fun h => h.symm ▸ J.top_
 
 /-- If `S` is a subset of `R`, and `S` is covering, then `R` is covering as well.
 
-See <https://stacks.math.columbia.edu/tag/00Z5> (2), or discussion after [MM92] Chapter III,
-Section 2, Definition 1.
--/
+See also discussion after [MM92] Chapter III, Section 2, Definition 1. -/
+@[stacks 00Z5 "(2)"]
 theorem superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X := by
   apply J.transitive sjx R fun Y f hf => _
   intros Y f hf
@@ -144,9 +142,8 @@ theorem superset_covering (Hss : S ≤ R) (sjx : S ∈ J X) : R ∈ J X := by
 
 /-- The intersection of two covering sieves is covering.
 
-See <https://stacks.math.columbia.edu/tag/00Z5> (1), or [MM92] Chapter III,
-Section 2, Definition 1 (iv).
--/
+See also [MM92] Chapter III, Section 2, Definition 1 (iv). -/
+@[stacks 00Z5 "(1)"]
 theorem intersection_covering (rj : R ∈ J X) (sj : S ∈ J X) : R ⊓ S ∈ J X := by
   apply J.transitive rj _ fun Y f Hf => _
   intros Y f hf
@@ -231,21 +228,21 @@ variable {C}
 theorem trivial_covering : S ∈ trivial C X ↔ S = ⊤ :=
   Set.mem_singleton_iff
 
-/-- See <https://stacks.math.columbia.edu/tag/00Z6> -/
+@[stacks 00Z6]
 instance instLEGrothendieckTopology : LE (GrothendieckTopology C) where
   le J₁ J₂ := (J₁ : ∀ X : C, Set (Sieve X)) ≤ (J₂ : ∀ X : C, Set (Sieve X))
 
 theorem le_def {J₁ J₂ : GrothendieckTopology C} : J₁ ≤ J₂ ↔ (J₁ : ∀ X : C, Set (Sieve X)) ≤ J₂ :=
   Iff.rfl
 
-/-- See <https://stacks.math.columbia.edu/tag/00Z6> -/
+@[stacks 00Z6]
 instance : PartialOrder (GrothendieckTopology C) :=
   { instLEGrothendieckTopology with
     le_refl := fun _ => le_def.mpr le_rfl
     le_trans := fun _ _ _ h₁₂ h₂₃ => le_def.mpr (le_trans h₁₂ h₂₃)
     le_antisymm := fun _ _ h₁₂ h₂₁ => GrothendieckTopology.ext (le_antisymm h₁₂ h₂₁) }
 
-/-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
+@[stacks 00Z7]
 instance : InfSet (GrothendieckTopology C) where
   sInf T :=
     { sieves := sInf (sieves '' T)
@@ -265,16 +262,10 @@ lemma mem_sInf (s : Set (GrothendieckTopology C)) {X : C} (S : Sieve X) :
   show S ∈ sInf (sieves '' s) X ↔ _
   simp
 
-/-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
+@[stacks 00Z7]
 theorem isGLB_sInf (s : Set (GrothendieckTopology C)) : IsGLB s (sInf s) := by
   refine @IsGLB.of_image _ _ _ _ sieves ?_ _ _ ?_
-  · #adaptation_note
-    /--
-    This proof used to be `rfl`,
-    but has been temporarily broken by https://github.com/leanprover/lean4/pull/5329.
-    It can hopefully be restored after https://github.com/leanprover/lean4/pull/5359
-    -/
-    exact Iff.rfl
+  · rfl
   · exact _root_.isGLB_sInf _
 
 /-- Construct a complete lattice from the `Inf`, but make the trivial and discrete topologies
@@ -413,8 +404,6 @@ instance : Inhabited (J.Cover X) :=
   ⟨⊤⟩
 
 /-- An auxiliary structure, used to define `S.index`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 @[ext]
 structure Arrow (S : J.Cover X) where
   /-- The source of the arrow. -/
@@ -551,8 +540,6 @@ theorem Arrow.middle_spec {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover 
   I.hf.choose_spec.choose_spec.choose_spec.choose_spec.2
 
 /-- An auxiliary structure, used to define `S.index`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance, ext]
 @[ext]
 structure Relation (S : J.Cover X) where
   /-- The first arrow. -/

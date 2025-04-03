@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Yuyang Zhao
 -/
 
-import Mathlib.FieldTheory.NormalClosure
+import Mathlib.FieldTheory.Normal.Closure
 import Mathlib.FieldTheory.SeparableClosure
 
 /-!

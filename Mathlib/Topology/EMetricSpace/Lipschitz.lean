@@ -84,8 +84,6 @@ lemma LocallyLipschitzOn.mono (hf : LocallyLipschitzOn t f) (h : s ⊆ t) : Loca
 @[simp] lemma lipschitzOnWith_univ : LipschitzOnWith K f univ ↔ LipschitzWith K f := by
   simp [LipschitzOnWith, LipschitzWith]
 
-@[deprecated (since := "2024-07-17")] alias lipschitzOn_univ := lipschitzOnWith_univ
-
 @[simp] lemma locallyLipschitzOn_univ : LocallyLipschitzOn univ f ↔ LocallyLipschitz f := by
   simp [LocallyLipschitzOn, LocallyLipschitz]
 

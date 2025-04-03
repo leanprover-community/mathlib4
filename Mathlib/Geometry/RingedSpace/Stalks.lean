@@ -48,9 +48,6 @@ theorem stalkMap_germ {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) (U : Op
       X.presheaf.germ ((Opens.map α.base).obj U) x hx := by
   rw [Hom.stalkMap, stalkFunctor_map_germ_assoc, stalkPushforward_germ]
 
-@[deprecated (since := "2024-07-30")] alias stalkMap_germ' := stalkMap_germ
-@[deprecated (since := "2024-07-30")] alias stalkMap_germ'_assoc := stalkMap_germ
-
 section Restrict
 
 /-- For an open embedding `f : U ⟶ X` and a point `x : U`, we get an isomorphism between the stalk
@@ -169,7 +166,7 @@ instance isIso {X Y : PresheafedSpace.{_, _, v} C} (α : X ⟶ Y) [IsIso α] (x 
     -- `X.stalk x ⟶ X.stalk ((α ≫ β).base x)`.
     refine
       ⟨eqToHom (show X.presheaf.stalk x = X.presheaf.stalk ((α ≫ β).base x) by rw [h_eq]) ≫
-          (β.stalkMap (α.base x) : _),
+          (β.stalkMap (α.base x) :),
         ?_, ?_⟩
     · rw [← Category.assoc, congr_point α x ((α ≫ β).base x) h_eq.symm, Category.assoc]
       erw [← stalkMap.comp β α (α.base x)]

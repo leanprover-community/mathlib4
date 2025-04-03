@@ -109,10 +109,8 @@ def toEssImageCompEssentialImageInclusion (F : C ⥤ D) : F.toEssImage ⋙ F.ess
   FullSubcategory.lift_comp_inclusion _ _ _
 
 /-- A functor `F : C ⥤ D` is essentially surjective if every object of `D` is in the essential
-image of `F`. In other words, for every `Y : D`, there is some `X : C` with `F.obj X ≅ Y`.
-
-See <https://stacks.math.columbia.edu/tag/001C>.
--/
+image of `F`. In other words, for every `Y : D`, there is some `X : C` with `F.obj X ≅ Y`. -/
+@[stacks 001C]
 class EssSurj (F : C ⥤ D) : Prop where
   /-- All the objects of the target category are in the essential image. -/
   mem_essImage (Y : D) : Y ∈ F.essImage
@@ -163,8 +161,5 @@ lemma essSurj_of_comp_fully_faithful (F : C ⥤ D) (G : D ⥤ E) [(F ⋙ G).EssS
   mem_essImage X := ⟨_, ⟨G.preimageIso ((F ⋙ G).objObjPreimageIso (G.obj X))⟩⟩
 
 end Functor
-
-@[deprecated (since := "2024-04-06")] alias EssSurj := Functor.EssSurj
-@[deprecated (since := "2024-04-06")] alias Iso.map_essSurj := Functor.essSurj_of_iso
 
 end CategoryTheory

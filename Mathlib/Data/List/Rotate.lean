@@ -39,8 +39,7 @@ theorem rotate_nil (n : ℕ) : ([] : List α).rotate n = [] := by simp [rotate]
 @[simp]
 theorem rotate_zero (l : List α) : l.rotate 0 = l := by simp [rotate]
 
--- Porting note: removing simp, simp can prove it
-theorem rotate'_nil (n : ℕ) : ([] : List α).rotate' n = [] := by cases n <;> rfl
+theorem rotate'_nil (n : ℕ) : ([] : List α).rotate' n = [] := by simp
 
 @[simp]
 theorem rotate'_zero (l : List α) : l.rotate' 0 = l := by cases l <;> rfl
@@ -100,7 +99,7 @@ theorem rotate_eq_rotate' (l : List α) (n : ℕ) : l.rotate n = l.rotate' n :=
         rotate'_eq_drop_append_take (le_of_lt (Nat.mod_lt _ (Nat.pos_of_ne_zero h)))]
     simp [rotate]
 
-theorem rotate_cons_succ (l : List α) (a : α) (n : ℕ) :
+@[simp] theorem rotate_cons_succ (l : List α) (a : α) (n : ℕ) :
     (a :: l : List α).rotate (n + 1) = (l ++ [a]).rotate n := by
   rw [rotate_eq_rotate', rotate_eq_rotate', rotate'_cons_succ]
 
@@ -183,9 +182,6 @@ theorem zipWith_rotate_distrib {β γ : Type*} (f : α → β → γ) (l : List 
     take_zipWith, List.length_zipWith, h, min_self]
   rw [length_drop, length_drop, h]
 
-attribute [local simp] rotate_cons_succ
-
--- Porting note: removing @[simp], simp can prove it
 theorem zipWith_rotate_one {β : Type*} (f : α → α → β) (x y : α) (l : List α) :
     zipWith f (x :: y :: l) ((x :: y :: l).rotate 1) = f x y :: zipWith f (y :: l) (l ++ [x]) := by
   simp

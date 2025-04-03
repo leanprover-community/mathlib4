@@ -136,9 +136,6 @@ theorem fourierIntegral_convergent_iff (he : Continuous e)
     e.map_zero_eq_one, one_smul] at this -- the `(e _)` speeds up elaboration considerably
   exact this
 
-@[deprecated (since := "2024-03-29")]
-alias fourier_integral_convergent_iff := VectorFourier.fourierIntegral_convergent_iff
-
 theorem fourierIntegral_add (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     {f g : V → E} (hf : Integrable f μ) (hg : Integrable g μ) :
     fourierIntegral e μ L (f + g) = fourierIntegral e μ L f + fourierIntegral e μ L g := by
@@ -301,7 +298,8 @@ open scoped Real
 
 namespace Real
 
-/-- The standard additive character of `ℝ`, given by `fun x ↦ exp (2 * π * x * I)`. -/
+/-- The standard additive character of `ℝ`, given by `fun x ↦ exp (2 * π * x * I)`.
+Denoted as `𝐞` within the `Real.FourierTransform` namespace. -/
 def fourierChar : AddChar ℝ 𝕊 where
   toFun z := .exp (2 * π * z)
   map_zero_eq_one' := by simp only; rw [mul_zero, Circle.exp_zero]
@@ -375,12 +373,14 @@ open scoped RealInnerProductSpace
 variable [FiniteDimensional ℝ V]
 
 /-- The Fourier transform of a function on an inner product space, with respect to the standard
-additive character `ω ↦ exp (2 i π ω)`. -/
+additive character `ω ↦ exp (2 i π ω)`.
+Denoted as `𝓕` within the `Real.FourierTransform` namespace. -/
 def fourierIntegral (f : V → E) (w : V) : E :=
   VectorFourier.fourierIntegral 𝐞 volume (innerₗ V) f w
 
 /-- The inverse Fourier transform of a function on an inner product space, defined as the Fourier
-transform but with opposite sign in the exponential. -/
+transform but with opposite sign in the exponential.
+Denoted as `𝓕⁻¹` within the `Real.FourierTransform` namespace. -/
 def fourierIntegralInv (f : V → E) (w : V) : E :=
   VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
 
@@ -431,15 +431,10 @@ theorem fourierIntegral_real_eq (f : ℝ → E) (w : ℝ) :
     fourierIntegral f w = ∫ v : ℝ, 𝐞 (-(v * w)) • f v :=
   rfl
 
-@[deprecated (since := "2024-02-21")] alias fourierIntegral_def := fourierIntegral_real_eq
-
 theorem fourierIntegral_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :
     𝓕 f w = ∫ v : ℝ, Complex.exp (↑(-2 * π * v * w) * Complex.I) • f v := by
   simp_rw [fourierIntegral_real_eq, Circle.smul_def, Real.fourierChar_apply, mul_neg, neg_mul,
     mul_assoc]
-
-@[deprecated (since := "2024-02-21")]
-alias fourierIntegral_eq_integral_exp_smul := fourierIntegral_real_eq_integral_exp_smul
 
 theorem fourierIntegral_continuousLinearMap_apply
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]

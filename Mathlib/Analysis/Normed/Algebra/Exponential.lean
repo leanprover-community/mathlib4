@@ -3,6 +3,7 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Eric Wieser
 -/
+import Mathlib.Algebra.Ring.Action.ConjAct
 import Mathlib.Analysis.Analytic.ChangeOrigin
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Nat.Choose.Cast
@@ -501,6 +502,7 @@ theorem exp_mem_unitary_of_mem_skewAdjoint [StarRing 𝔸] [ContinuousStar 𝔸]
 
 end
 
+open scoped Function in -- required for scoped `on` notation
 /-- In a Banach-algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, if a family of elements `f i` mutually
 commute then `NormedSpace.exp (∑ i, f i) = ∏ i, NormedSpace.exp (f i)`. -/
 theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)

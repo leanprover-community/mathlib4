@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 
 /-! # C⋆-algebraic facts about `a⁺` and `a⁻`. -/
 

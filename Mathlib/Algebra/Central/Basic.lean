@@ -23,7 +23,8 @@ universe u v
 
 namespace Algebra.IsCentral
 
-variable (K : Type u) [CommSemiring K] (D : Type v) [Semiring D] [Algebra K D] [IsCentral K D]
+variable (K : Type u) [CommSemiring K] (D D': Type v) [Semiring D] [Algebra K D]
+  [h : IsCentral K D] [Semiring D'] [Algebra K D']
 
 @[simp]
 lemma center_eq_bot : Subalgebra.center K D = ⊥ := eq_bot_iff.2 IsCentral.out
@@ -52,5 +53,20 @@ lemma baseField_essentially_unique
   simp only [center_eq_bot, coe_bot, Set.mem_range] at H
   obtain ⟨x', H⟩ := H
   exact ⟨x', (algebraMap K D).injective <| by simp [← H, algebraMap_eq_smul_one]⟩
+
+lemma of_algEquiv (e : D ≃ₐ[K] D') : IsCentral K D' where
+  out x hx :=
+    have ⟨k, hk⟩ := h.1 ((MulEquivClass.apply_mem_center_iff e.symm).mpr hx)
+    ⟨k, by simpa [ofId] using congr(e $hk)⟩
+
+open MulOpposite in
+/-- Opposite algebra of a central algebra is central. This instance combined with the coming
+  `IsSimpleRing` instance for the opposite of central simple algebra will be an
+  inverse for an element in `BrauerGroup`, find out more about this in
+  `Mathlib.Algebra.BrauerGroup.Basic`. -/
+instance : IsCentral K Dᵐᵒᵖ where
+  out z hz :=
+    have ⟨k, hk⟩ := h.1 (MulOpposite.unop_mem_center_iff.mpr hz)
+    ⟨k, by simpa using congr(op $hk)⟩
 
 end Algebra.IsCentral

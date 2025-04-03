@@ -23,9 +23,7 @@ and unique types.
 The results here should be used to golf the basic `Group` lemmas.
 -/
 
-assert_not_exists Multiplicative
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists Multiplicative MonoidWithZero DenselyOrdered
 
 open Function
 
@@ -465,14 +463,3 @@ end IsUnit
 
 -- namespace
 end IsUnit
-
-attribute [deprecated div_mul_cancel_right (since := "2024-03-20")] IsUnit.div_mul_left
-attribute [deprecated sub_add_cancel_right (since := "2024-03-20")] IsAddUnit.sub_add_left
-attribute [deprecated div_mul_cancel_left (since := "2024-03-20")] IsUnit.div_mul_right
-attribute [deprecated sub_add_cancel_left (since := "2024-03-20")] IsAddUnit.sub_add_right
--- The names `IsUnit.mul_div_cancel` and `IsAddUnit.add_sub_cancel` have been reused
--- @[deprecated (since := "2024-03-20")] alias IsUnit.mul_div_cancel := IsUnit.mul_div_cancel_right
--- @[deprecated (since := "2024-03-20")]
--- alias IsAddUnit.add_sub_cancel := IsAddUnit.add_sub_cancel_right
-@[deprecated (since := "2024-03-20")] alias IsUnit.mul_div_cancel' := IsUnit.mul_div_cancel
-@[deprecated (since := "2024-03-20")] alias IsAddUnit.add_sub_cancel' := IsAddUnit.add_sub_cancel

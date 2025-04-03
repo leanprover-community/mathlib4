@@ -5,6 +5,7 @@ Authors: PFR contributors
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Clopen
 
 /-!
 # Continuity of indicator functions
@@ -36,3 +37,8 @@ theorem ContinuousOn.continuousAt_mulIndicator (hf : ContinuousOn f (interior s)
       ⟨interior s, hs, Set.eqOn_mulIndicator.symm.mono interior_subset⟩
   · exact ContinuousAt.congr continuousAt_const <| Filter.eventuallyEq_iff_exists_mem.mpr
       ⟨sᶜ, mem_interior_iff_mem_nhds.mp h, Set.eqOn_mulIndicator'.symm⟩
+
+@[to_additive]
+lemma IsClopen.continuous_mulIndicator (hs : IsClopen s) (hf : Continuous f) :
+    Continuous (s.mulIndicator f) :=
+  hf.mulIndicator (by simp [isClopen_iff_frontier_eq_empty.mp hs])

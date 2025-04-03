@@ -337,14 +337,8 @@ instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α
 theorem coe_natCast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id α) :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := coe_natCast
-
 theorem natCast_apply (n : ℕ) (m : α) : (n : CentroidHom α) m = n • m :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_apply := natCast_apply
 
 @[simp]
 theorem toEnd_one : (1 : CentroidHom α).toEnd = 1 :=
@@ -361,9 +355,6 @@ theorem toEnd_pow (x : CentroidHom α) (n : ℕ) : (x ^ n).toEnd = x.toEnd ^ n :
 @[simp, norm_cast]
 theorem toEnd_natCast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias toEnd_nat_cast := toEnd_natCast
 
 -- cf `add_monoid.End.semiring`
 instance : Semiring (CentroidHom α) :=
@@ -574,14 +565,8 @@ instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α
 theorem coe_intCast (z : ℤ) : ⇑(z : CentroidHom α) = z • (CentroidHom.id α) :=
   rfl
 
-@[deprecated (since := "2024-04-17")]
-alias coe_int_cast := coe_intCast
-
 theorem intCast_apply (z : ℤ) (m : α) : (z : CentroidHom α) m = z • m :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_apply := intCast_apply
 
 @[simp]
 theorem toEnd_neg (x : CentroidHom α) : (-x).toEnd = -x.toEnd :=
@@ -614,9 +599,6 @@ theorem sub_apply (f g : CentroidHom α) (a : α) : (f - g) a = f a - g a :=
 @[simp, norm_cast]
 theorem toEnd_intCast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
   rfl
-
-@[deprecated (since := "2024-04-17")]
-alias toEnd_int_cast := toEnd_intCast
 
 instance instRing : Ring (CentroidHom α) :=
   toEnd_injective.ring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_neg toEnd_sub

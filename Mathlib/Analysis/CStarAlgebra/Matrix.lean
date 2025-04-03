@@ -171,24 +171,16 @@ scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedAddCommGroup
 lemma l2_opNorm_def (A : Matrix m n 𝕜) :
     ‖A‖ = ‖(toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap A‖ := rfl
 
-@[deprecated (since := "2024-02-02")] alias l2_op_norm_def := l2_opNorm_def
-
 lemma l2_opNNNorm_def (A : Matrix m n 𝕜) :
     ‖A‖₊ = ‖(toEuclideanLin (𝕜 := 𝕜) (m := m) (n := n)).trans toContinuousLinearMap A‖₊ := rfl
-
-@[deprecated (since := "2024-02-02")] alias l2_op_nnnorm_def := l2_opNNNorm_def
 
 lemma l2_opNorm_conjTranspose [DecidableEq m] (A : Matrix m n 𝕜) : ‖Aᴴ‖ = ‖A‖ := by
   rw [l2_opNorm_def, toEuclideanLin_eq_toLin_orthonormal, LinearEquiv.trans_apply,
     toLin_conjTranspose, adjoint_toContinuousLinearMap]
   exact ContinuousLinearMap.adjoint.norm_map _
 
-@[deprecated (since := "2024-02-02")] alias l2_op_norm_conjTranspose := l2_opNorm_conjTranspose
-
 lemma l2_opNNNorm_conjTranspose [DecidableEq m] (A : Matrix m n 𝕜) : ‖Aᴴ‖₊ = ‖A‖₊ :=
   Subtype.ext <| l2_opNorm_conjTranspose _
-
-@[deprecated (since := "2024-02-02")] alias l2_op_nnnorm_conjTranspose := l2_opNNNorm_conjTranspose
 
 lemma l2_opNorm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖ = ‖A‖ * ‖A‖ := by
   classical
@@ -196,27 +188,17 @@ lemma l2_opNorm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖ = 
     Matrix.toLin_mul (v₂ := (EuclideanSpace.basisFun m 𝕜).toBasis), toLin_conjTranspose]
   exact ContinuousLinearMap.norm_adjoint_comp_self _
 
-@[deprecated (since := "2024-02-02")]
-alias l2_op_norm_conjTranspose_mul_self := l2_opNorm_conjTranspose_mul_self
-
 lemma l2_opNNNorm_conjTranspose_mul_self (A : Matrix m n 𝕜) : ‖Aᴴ * A‖₊ = ‖A‖₊ * ‖A‖₊ :=
   Subtype.ext <| l2_opNorm_conjTranspose_mul_self _
-
-@[deprecated (since := "2024-02-02")]
-alias l2_op_nnnorm_conjTranspose_mul_self := l2_opNNNorm_conjTranspose_mul_self
 
 -- note: with only a type ascription in the left-hand side, Lean picks the wrong norm.
 lemma l2_opNorm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ‖(EuclideanSpace.equiv m 𝕜).symm <| A *ᵥ x‖ ≤ ‖A‖ * ‖x‖ :=
   toEuclideanLin (n := n) (m := m) (𝕜 := 𝕜) |>.trans toContinuousLinearMap A |>.le_opNorm x
 
-@[deprecated (since := "2024-02-02")] alias l2_op_norm_mulVec := l2_opNorm_mulVec
-
 lemma l2_opNNNorm_mulVec (A : Matrix m n 𝕜) (x : EuclideanSpace 𝕜 n) :
     ‖(EuclideanSpace.equiv m 𝕜).symm <| A *ᵥ x‖₊ ≤ ‖A‖₊ * ‖x‖₊ :=
   A.l2_opNorm_mulVec x
-
-@[deprecated (since := "2024-02-02")] alias l2_op_nnnorm_mulVec := l2_opNNNorm_mulVec
 
 lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
     ‖A * B‖ ≤ ‖A‖ * ‖B‖ := by
@@ -227,12 +209,8 @@ lemma l2_opNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) :
   ext1 x
   exact congr($(Matrix.toLin'_mul A B) x)
 
-@[deprecated (since := "2024-02-02")] alias l2_op_norm_mul := l2_opNorm_mul
-
 lemma l2_opNNNorm_mul (A : Matrix m n 𝕜) (B : Matrix n l 𝕜) : ‖A * B‖₊ ≤ ‖A‖₊ * ‖B‖₊ :=
   l2_opNorm_mul A B
-
-@[deprecated (since := "2024-02-02")] alias l2_op_nnnorm_mul := l2_opNNNorm_mul
 
 /-- The normed algebra structure on `Matrix n n 𝕜` arising from the operator norm given by the
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/

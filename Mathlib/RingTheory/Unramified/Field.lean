@@ -3,7 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.FieldTheory.PurelyInseparable
+import Mathlib.FieldTheory.PurelyInseparable.Basic
 import Mathlib.RingTheory.Artinian.Ring
 import Mathlib.RingTheory.LocalProperties.Basic
 import Mathlib.Algebra.Polynomial.Taylor

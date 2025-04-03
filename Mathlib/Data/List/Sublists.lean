@@ -184,11 +184,6 @@ theorem map_pure_sublist_sublists (l : List α) : map pure l <+ sublists l := by
               singleton_sublist.2 <| mem_map.2 ⟨[], mem_sublists.2 (nil_sublist _), by rfl⟩).trans
           ((append_sublist_append_right _).2 ih)
 
-set_option linter.deprecated false in
-@[deprecated map_pure_sublist_sublists (since := "2024-03-24")]
-theorem map_ret_sublist_sublists (l : List α) : map List.ret l <+ sublists l :=
-  map_pure_sublist_sublists l
-
 /-! ### sublistsLen -/
 
 /-- Auxiliary function to construct the list of all sublists of a given length. Given an

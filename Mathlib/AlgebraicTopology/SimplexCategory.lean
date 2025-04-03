@@ -82,7 +82,6 @@ theorem mk_len (n : SimplexCategory) : ([n.len] : SimplexCategory) = n :=
 protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
   h n.len
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Morphisms in the `SimplexCategory`. -/
 protected def Hom (a b : SimplexCategory) :=
   Fin (a.len + 1) →o Fin (b.len + 1)
@@ -747,7 +746,7 @@ end Truncated
 
 section Concrete
 
-instance : ConcreteCategory.{0} SimplexCategory where
+instance : HasForget.{0} SimplexCategory where
   forget :=
     { obj := fun i => Fin (i.len + 1)
       map := fun f => f.toOrderHom }
@@ -904,14 +903,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
       rw [Fin.succAbove_of_le_castSucc i.succ _]
       simp only [Fin.lt_iff_val_lt_val, Fin.le_iff_val_le_val, Fin.val_succ, Fin.coe_castSucc,
         Nat.lt_succ_iff, Fin.ext_iff] at h' h'' ⊢
-      cases' Nat.le.dest h' with c hc
-      cases c
-      · exfalso
-        simp only [add_zero, len_mk, Fin.coe_pred] at hc
-        rw [hc] at h''
-        exact h'' rfl
-      · rw [← hc]
-        simp only [add_le_add_iff_left, Nat.succ_eq_add_one, le_add_iff_nonneg_left, zero_le]
+      omega
 
 theorem eq_σ_comp_of_not_injective {n : ℕ} {Δ' : SimplexCategory} (θ : mk (n + 1) ⟶ Δ')
     (hθ : ¬Function.Injective θ.toOrderHom) :

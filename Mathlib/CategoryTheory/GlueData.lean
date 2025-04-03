@@ -43,8 +43,6 @@ such that
     `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 10. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 structure GlueData where
   J : Type v
   U : J → C
@@ -443,9 +441,9 @@ def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
   else
     haveI := Ne.symm hij
     pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by rw [dif_neg hik]))
-        (eqToHom (by aesop)) (by delta f'; aesop) (by delta f'; aesop) ≫
+        (eqToHom (by simp)) (by delta f'; aesop) (by delta f'; aesop) ≫
       D.t' i j k hij hik hjk ≫
-      pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by aesop)) (eqToHom (by aesop))
+      pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by aesop)) (eqToHom (by simp))
         (by delta f'; aesop) (by delta f'; aesop)
 
 open scoped Classical in

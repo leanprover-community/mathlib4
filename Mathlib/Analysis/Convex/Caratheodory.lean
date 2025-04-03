@@ -100,17 +100,17 @@ variable {s : Set E} {x : E}
 /-- Given a point `x` in the convex hull of a set `s`, this is a finite subset of `s` of minimum
 cardinality, whose convex hull contains `x`. -/
 noncomputable def minCardFinsetOfMemConvexHull (hx : x ∈ convexHull 𝕜 s) : Finset E :=
-  Function.argminOn Finset.card Nat.lt_wfRel.2 { t | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } <| by
+  Function.argminOn Finset.card { t | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } <| by
     simpa only [convexHull_eq_union_convexHull_finite_subsets s, exists_prop, mem_iUnion] using hx
 
 variable (hx : x ∈ convexHull 𝕜 s)
 
 theorem minCardFinsetOfMemConvexHull_subseteq : ↑(minCardFinsetOfMemConvexHull hx) ⊆ s :=
-  (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } _).1
+  (Function.argminOn_mem _ { t : Finset E | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } _).1
 
 theorem mem_minCardFinsetOfMemConvexHull :
     x ∈ convexHull 𝕜 (minCardFinsetOfMemConvexHull hx : Set E) :=
-  (Function.argminOn_mem _ _ { t : Finset E | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } _).2
+  (Function.argminOn_mem _ { t : Finset E | ↑t ⊆ s ∧ x ∈ convexHull 𝕜 (t : Set E) } _).2
 
 theorem minCardFinsetOfMemConvexHull_nonempty : (minCardFinsetOfMemConvexHull hx).Nonempty := by
   rw [← Finset.coe_nonempty, ← @convexHull_nonempty_iff 𝕜]
@@ -118,7 +118,7 @@ theorem minCardFinsetOfMemConvexHull_nonempty : (minCardFinsetOfMemConvexHull hx
 
 theorem minCardFinsetOfMemConvexHull_card_le_card {t : Finset E} (ht₁ : ↑t ⊆ s)
     (ht₂ : x ∈ convexHull 𝕜 (t : Set E)) : #(minCardFinsetOfMemConvexHull hx) ≤ #t :=
-  Function.argminOn_le _ _ _ (by exact ⟨ht₁, ht₂⟩)
+  Function.argminOn_le _ _ (by exact ⟨ht₁, ht₂⟩)
 
 theorem affineIndependent_minCardFinsetOfMemConvexHull :
     AffineIndependent 𝕜 ((↑) : minCardFinsetOfMemConvexHull hx → E) := by

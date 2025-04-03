@@ -315,7 +315,7 @@ variable [CommRing R] [IsDomain R]
 theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
   classical
   simp only [order_eq_emultiplicity_X]
-  rw [emultiplicity_mul X_prime]
+  exact emultiplicity_mul X_prime
 
 -- Dividing `X` by the maximal power of `X` dividing it leaves `1`.
 @[simp]

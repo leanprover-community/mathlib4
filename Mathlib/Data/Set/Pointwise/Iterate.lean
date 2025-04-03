@@ -32,7 +32,7 @@ theorem smul_eq_self_of_preimage_zpow_eq_self {G : Type*} [CommGroup G] {n : ℤ
     refine le_antisymm (this hg) ?_
     conv_lhs => rw [← smul_inv_smul g s]
     replace hg : g⁻¹ ^ n ^ j = 1 := by rw [inv_zpow, hg, inv_one]
-    simpa only [le_eq_subset, set_smul_subset_set_smul_iff] using this hg
+    simpa only [le_eq_subset, smul_set_subset_smul_set_iff] using this hg
   rw [(IsFixedPt.preimage_iterate hs j : (zpowGroupHom n)^[j] ⁻¹' s = s).symm]
   rintro g' hg' - ⟨y, hy, rfl⟩
   change (zpowGroupHom n)^[j] (g' * y) ∈ s

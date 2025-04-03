@@ -43,6 +43,10 @@ instance instSProd : SProd (Finset α) (Finset β) (Finset (α × β)) where
   sprod := Finset.product
 
 @[simp]
+theorem product_eq_sprod : Finset.product s t = s ×ˢ t :=
+  rfl
+
+@[simp]
 theorem product_val : (s ×ˢ t).1 = s.1 ×ˢ t.1 :=
   rfl
 

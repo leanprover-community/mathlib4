@@ -13,7 +13,6 @@ import Plausible
 import ImportGraph.Imports
 
 -- Import common Batteries tactics and commands
-import Batteries.Tactic.Where
 import Batteries.Tactic.Basic
 import Batteries.Tactic.HelpCmd
 
@@ -47,7 +46,6 @@ import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.DefEqTransformations
 import Mathlib.Tactic.DeprecateTo
-import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.ExistsI
 import Mathlib.Tactic.ExtractGoal

@@ -207,24 +207,18 @@ alias ⟨_, ofReal_of_nonpos⟩ := ofReal_eq_zero
 lemma ofReal_lt_natCast {p : ℝ} {n : ℕ} (hn : n ≠ 0) : ENNReal.ofReal p < n ↔ p < n := by
   exact mod_cast ofReal_lt_ofReal_iff (Nat.cast_pos.2 hn.bot_lt)
 
-@[deprecated (since := "2024-04-17")]
-alias ofReal_lt_nat_cast := ofReal_lt_natCast
-
 @[simp]
 lemma ofReal_lt_one {p : ℝ} : ENNReal.ofReal p < 1 ↔ p < 1 := by
   exact mod_cast ofReal_lt_natCast one_ne_zero
 
 @[simp]
 lemma ofReal_lt_ofNat {p : ℝ} {n : ℕ} [n.AtLeastTwo] :
-    ENNReal.ofReal p < no_index (OfNat.ofNat n) ↔ p < OfNat.ofNat n :=
+    ENNReal.ofReal p < ofNat(n) ↔ p < OfNat.ofNat n :=
   ofReal_lt_natCast (NeZero.ne n)
 
 @[simp]
 lemma natCast_le_ofReal {n : ℕ} {p : ℝ} (hn : n ≠ 0) : n ≤ ENNReal.ofReal p ↔ n ≤ p := by
   simp only [← not_lt, ofReal_lt_natCast hn]
-
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_le_ofReal := natCast_le_ofReal
 
 @[simp]
 lemma one_le_ofReal {p : ℝ} : 1 ≤ ENNReal.ofReal p ↔ 1 ≤ p := by
@@ -232,15 +226,12 @@ lemma one_le_ofReal {p : ℝ} : 1 ≤ ENNReal.ofReal p ↔ 1 ≤ p := by
 
 @[simp]
 lemma ofNat_le_ofReal {n : ℕ} [n.AtLeastTwo] {p : ℝ} :
-    no_index (OfNat.ofNat n) ≤ ENNReal.ofReal p ↔ OfNat.ofNat n ≤ p :=
+    ofNat(n) ≤ ENNReal.ofReal p ↔ OfNat.ofNat n ≤ p :=
   natCast_le_ofReal (NeZero.ne n)
 
 @[simp, norm_cast]
 lemma ofReal_le_natCast {r : ℝ} {n : ℕ} : ENNReal.ofReal r ≤ n ↔ r ≤ n :=
   coe_le_coe.trans Real.toNNReal_le_natCast
-
-@[deprecated (since := "2024-04-17")]
-alias ofReal_le_nat_cast := ofReal_le_natCast
 
 @[simp]
 lemma ofReal_le_one {r : ℝ} : ENNReal.ofReal r ≤ 1 ↔ r ≤ 1 :=
@@ -248,30 +239,24 @@ lemma ofReal_le_one {r : ℝ} : ENNReal.ofReal r ≤ 1 ↔ r ≤ 1 :=
 
 @[simp]
 lemma ofReal_le_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
-    ENNReal.ofReal r ≤ no_index (OfNat.ofNat n) ↔ r ≤ OfNat.ofNat n :=
+    ENNReal.ofReal r ≤ ofNat(n) ↔ r ≤ OfNat.ofNat n :=
   ofReal_le_natCast
 
 @[simp]
 lemma natCast_lt_ofReal {n : ℕ} {r : ℝ} : n < ENNReal.ofReal r ↔ n < r :=
   coe_lt_coe.trans Real.natCast_lt_toNNReal
 
-@[deprecated (since := "2024-04-17")]
-alias nat_cast_lt_ofReal := natCast_lt_ofReal
-
 @[simp]
 lemma one_lt_ofReal {r : ℝ} : 1 < ENNReal.ofReal r ↔ 1 < r := coe_lt_coe.trans Real.one_lt_toNNReal
 
 @[simp]
 lemma ofNat_lt_ofReal {n : ℕ} [n.AtLeastTwo] {r : ℝ} :
-    no_index (OfNat.ofNat n) < ENNReal.ofReal r ↔ OfNat.ofNat n < r :=
+    ofNat(n) < ENNReal.ofReal r ↔ OfNat.ofNat n < r :=
   natCast_lt_ofReal
 
 @[simp]
 lemma ofReal_eq_natCast {r : ℝ} {n : ℕ} (h : n ≠ 0) : ENNReal.ofReal r = n ↔ r = n :=
   ENNReal.coe_inj.trans <| Real.toNNReal_eq_natCast h
-
-@[deprecated (since := "2024-04-17")]
-alias ofReal_eq_nat_cast := ofReal_eq_natCast
 
 @[simp]
 lemma ofReal_eq_one {r : ℝ} : ENNReal.ofReal r = 1 ↔ r = 1 :=
@@ -279,7 +264,7 @@ lemma ofReal_eq_one {r : ℝ} : ENNReal.ofReal r = 1 ↔ r = 1 :=
 
 @[simp]
 lemma ofReal_eq_ofNat {r : ℝ} {n : ℕ} [n.AtLeastTwo] :
-    ENNReal.ofReal r = no_index (OfNat.ofNat n) ↔ r = OfNat.ofNat n :=
+    ENNReal.ofReal r = ofNat(n) ↔ r = OfNat.ofNat n :=
   ofReal_eq_natCast (NeZero.ne n)
 
 theorem ofReal_sub (p : ℝ) {q : ℝ} (hq : 0 ≤ q) :
@@ -560,13 +545,8 @@ theorem iInf_sum {α : Type*} {f : ι → α → ℝ≥0∞} {s : Finset α} [No
 
 end iInf
 
-section iSup
 theorem sup_eq_zero {a b : ℝ≥0∞} : a ⊔ b = 0 ↔ a = 0 ∧ b = 0 :=
   sup_eq_bot_iff
-
-@[deprecated (since := "2024-04-05")] alias iSup_coe_nat := iSup_natCast
-
-end iSup
 
 end ENNReal
 

@@ -148,7 +148,6 @@ end Sigma
 instance prod : Denumerable (α × β) :=
   ofEquiv _ (Equiv.sigmaEquivProd α β).symm
 
--- Porting note: removed @[simp] - simp can prove it
 theorem prod_ofNat_val (n : ℕ) :
     ofNat (α × β) n = (ofNat α (unpair n).1, ofNat β (unpair n).2) := by simp
 

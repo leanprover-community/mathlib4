@@ -269,7 +269,6 @@ theorem hasProd_prod {f : γ → β → α} {a : γ → α} {s : Finset γ} :
     (∀ i ∈ s, HasProd (f i) (a i)) → HasProd (fun b ↦ ∏ i ∈ s, f i b) (∏ i ∈ s, a i) := by
   classical
   exact Finset.induction_on s (by simp only [hasProd_one, prod_empty, forall_true_iff]) <| by
-    -- Porting note: with some help, `simp` used to be able to close the goal
     simp +contextual only [mem_insert, forall_eq_or_imp, not_false_iff,
       prod_insert, and_imp]
     exact fun x s _ IH hx h ↦ hx.mul (IH h)

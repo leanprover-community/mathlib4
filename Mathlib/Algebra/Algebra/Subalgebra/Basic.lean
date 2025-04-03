@@ -5,6 +5,7 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.Algebra.Algebra.Operations
+import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 
 /-!
 # Subalgebras over Commutative Semiring
@@ -146,6 +147,14 @@ protected theorem prod_mem {R : Type u} {A : Type v} [CommSemiring R] [CommSemir
     (∏ x ∈ t, f x) ∈ S :=
   prod_mem h
 
+/-- Turn a `Subalgebra` into a `NonUnitalSubalgebra` by forgetting that it contains `1`. -/
+def toNonUnitalSubalgebra (S : Subalgebra R A) : NonUnitalSubalgebra R A where
+  __ := S
+  smul_mem' r _x hx := S.smul_mem hx r
+
+lemma one_mem_toNonUnitalSubalgebra (S : Subalgebra R A) : (1 : A) ∈ S.toNonUnitalSubalgebra :=
+  S.one_mem
+
 instance {R A : Type*} [CommRing R] [Ring A] [Algebra R A] : SubringClass (Subalgebra R A) A :=
   { Subalgebra.SubsemiringClass with
     neg_mem := fun {S x} hx => neg_one_smul R x ▸ S.smul_mem hx _ }
@@ -165,9 +174,6 @@ protected theorem zsmul_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Alg
 protected theorem intCast_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     (S : Subalgebra R A) (n : ℤ) : (n : A) ∈ S :=
   intCast_mem S n
-
-@[deprecated natCast_mem (since := "2024-04-05")] alias coe_nat_mem := Subalgebra.natCast_mem
-@[deprecated intCast_mem (since := "2024-04-05")] alias coe_int_mem := Subalgebra.intCast_mem
 
 /-- The projection from a subalgebra of `A` to an additive submonoid of `A`. -/
 @[simps coe]
@@ -275,14 +281,13 @@ which can quickly get expensive.
 -/
 instance (priority := 500) algebra' [CommSemiring R'] [SMul R' R] [Algebra R' A]
     [IsScalarTower R' R A] :
-    Algebra R' S :=
-  { (algebraMap R' A).codRestrict S fun x => by
-      rw [Algebra.algebraMap_eq_smul_one, ← smul_one_smul R x (1 : A), ←
-        Algebra.algebraMap_eq_smul_one]
-      exact algebraMap_mem S
-          _ with
-    commutes' := fun _ _ => Subtype.eq <| Algebra.commutes _ _
-    smul_def' := fun _ _ => Subtype.eq <| Algebra.smul_def _ _ }
+    Algebra R' S where
+  algebraMap := (algebraMap R' A).codRestrict S fun x => by
+    rw [Algebra.algebraMap_eq_smul_one, ← smul_one_smul R x (1 : A), ←
+      Algebra.algebraMap_eq_smul_one]
+    exact algebraMap_mem S _
+  commutes' := fun _ _ => Subtype.eq <| Algebra.commutes _ _
+  smul_def' := fun _ _ => Subtype.eq <| Algebra.smul_def _ _
 
 instance algebra : Algebra R S := S.algebra'
 
@@ -416,11 +421,12 @@ variable {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 variable [SetLike S A] [SubsemiringClass S A] [hSR : SMulMemClass S R A] (s : S)
 
 instance (priority := 75) toAlgebra : Algebra R s where
-  toFun r := ⟨algebraMap R A r, algebraMap_mem s r⟩
-  map_one' := Subtype.ext <| by simp
-  map_mul' _ _ := Subtype.ext <| by simp
-  map_zero' := Subtype.ext <| by simp
-  map_add' _ _ := Subtype.ext <| by simp
+  algebraMap := {
+    toFun r := ⟨algebraMap R A r, algebraMap_mem s r⟩
+    map_one' := Subtype.ext <| by simp
+    map_mul' _ _ := Subtype.ext <| by simp
+    map_zero' := Subtype.ext <| by simp
+    map_add' _ _ := Subtype.ext <| by simp}
   commutes' r x := Subtype.ext <| Algebra.commutes r (x : A)
   smul_def' r x := Subtype.ext <| (algebraMap_smul A r (x : A)).symm
 
@@ -459,8 +465,6 @@ def toSubalgebra (p : Submodule R A) (h_one : (1 : A) ∈ p)
 theorem mem_toSubalgebra {p : Submodule R A} {h_one h_mul} {x} :
     x ∈ p.toSubalgebra h_one h_mul ↔ x ∈ p := Iff.rfl
 
--- Porting note: changed statement to reflect new structures
--- @[simp] -- Porting note: as a result, it is no longer a great simp lemma
 theorem toSubalgebra_mk (s : Submodule R A) (h1 hmul) :
     s.toSubalgebra h1 hmul =
       Subalgebra.mk ⟨⟨⟨s, @hmul⟩, h1⟩, s.add_mem, s.zero_mem⟩
@@ -520,7 +524,7 @@ theorem coe_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f 
 
 theorem injective_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f x ∈ S) :
     Function.Injective (f.codRestrict S hf) ↔ Function.Injective f :=
-  ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy : _)⟩
+  ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
 
 /-- Restrict the codomain of an `AlgHom` `f` to `f.range`.
 
@@ -759,6 +763,43 @@ theorem iSup_toSubsemiring {ι : Sort*} [Nonempty ι] (S : ι → Subalgebra R A
     (iSup S).toSubsemiring = ⨆ i, (S i).toSubsemiring := by
   simp only [iSup, Set.range_nonempty, sSup_toSubsemiring, ← Set.range_comp, Function.comp_def]
 
+lemma mem_iSup_of_mem {ι : Sort*} {S : ι → Subalgebra R A} (i : ι) {x : A} (hx : x ∈ S i) :
+    x ∈ iSup S :=
+  le_iSup S i hx
+
+@[elab_as_elim]
+lemma iSup_induction {ι : Sort*} (S : ι → Subalgebra R A) {motive : A → Prop}
+    {x : A} (mem : x ∈ ⨆ i, S i)
+    (basic : ∀ i, ∀ a ∈ S i, motive a)
+    (zero : motive 0) (one : motive 1)
+    (add : ∀ a b, motive a → motive b → motive (a + b))
+    (mul : ∀ a b, motive a → motive b → motive (a * b))
+    (algebraMap : ∀ r, motive (algebraMap R A r)) : motive x := by
+  let T : Subalgebra R A :=
+  { carrier := {x | motive x}
+    mul_mem' {a b} := mul a b
+    one_mem' := one
+    add_mem' {a b} := add a b
+    zero_mem' := zero
+    algebraMap_mem' := algebraMap }
+  suffices iSup S ≤ T from this mem
+  rwa [iSup_le_iff]
+
+/-- A dependent version of `Subalgebra.iSup_induction`. -/
+@[elab_as_elim]
+theorem iSup_induction' {ι : Sort*} (S : ι → Subalgebra R A) {motive : ∀ x, (x ∈ ⨆ i, S i) → Prop}
+    {x : A} (mem : x ∈ ⨆ i, S i)
+    (basic : ∀ (i) (x) (hx : x ∈ S i), motive x (mem_iSup_of_mem i hx))
+    (zero : motive 0 (zero_mem _)) (one : motive 1 (one_mem _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem ‹_› ‹_›))
+    (mul : ∀ x y hx hy, motive x hx → motive y hy → motive (x * y) (mul_mem ‹_› ‹_›))
+    (algebraMap : ∀ r, motive (algebraMap R A r) (Subalgebra.algebraMap_mem _ ‹_›)) :
+    motive x mem := by
+  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, S i) (hc : motive x hx) ↦ hc
+  exact iSup_induction S (motive := fun x' ↦ ∃ h, motive x' h) mem
+    (fun _ _ h ↦ ⟨_, basic _ _ h⟩) ⟨_, zero⟩ ⟨_, one⟩ (fun _ _ h h' ↦ ⟨_, add _ _ _ _ h.2 h'.2⟩)
+    (fun _ _ h h' ↦ ⟨_, mul _ _ _ _ h.2 h'.2⟩) fun _ ↦ ⟨_, algebraMap _⟩
+
 instance : Inhabited (Subalgebra R A) := ⟨⊥⟩
 
 theorem mem_bot {x : A} : x ∈ (⊥ : Subalgebra R A) ↔ x ∈ Set.range (algebraMap R A) := Iff.rfl
@@ -779,6 +820,9 @@ theorem _root_.AlgHom.range_eq_top (f : A →ₐ[R] B) :
   Algebra.eq_top_iff
 
 @[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := AlgHom.range_eq_top
+
+@[simp]
+theorem range_ofId : (Algebra.ofId R A).range = ⊥ := rfl
 
 @[simp]
 theorem range_id : (AlgHom.id R A).range = ⊤ :=
@@ -819,7 +863,7 @@ noncomputable def botEquivOfInjective (h : Function.Injective (algebraMap R A)) 
     (⊥ : Subalgebra R A) ≃ₐ[R] R :=
   AlgEquiv.symm <|
     AlgEquiv.ofBijective (Algebra.ofId R _)
-      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy : _), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.eq hx⟩⟩
+      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy :), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.eq hx⟩⟩
 
 /-- The bottom subalgebra is isomorphic to the field. -/
 @[simps! symm_apply]
@@ -995,7 +1039,7 @@ instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower 
 instance isScalarTower_mid {R S T : Type*} [CommSemiring R] [Semiring S] [AddCommMonoid T]
     [Algebra R S] [Module R T] [Module S T] [IsScalarTower R S T] (S' : Subalgebra R S) :
     IsScalarTower R S' T :=
-  ⟨fun _x y _z => (smul_assoc _ (y : S) _ : _)⟩
+  ⟨fun _x y _z => smul_assoc _ (y : S) _⟩
 
 instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α :=
   inferInstanceAs (FaithfulSMul S.toSubsemiring α)
@@ -1245,3 +1289,20 @@ theorem comap_map_eq_self_of_injective
 end Subalgebra
 
 end MapComap
+
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+
+/-- Turn a non-unital subalgebra containing `1` into a subalgebra. -/
+def NonUnitalSubalgebra.toSubalgebra (S : NonUnitalSubalgebra R A) (h1 : (1 : A) ∈ S) :
+    Subalgebra R A :=
+  { S with
+    one_mem' := h1
+    algebraMap_mem' := fun r =>
+      (Algebra.algebraMap_eq_smul_one (R := R) (A := A) r).symm ▸ SMulMemClass.smul_mem r h1 }
+
+lemma Subalgebra.toNonUnitalSubalgebra_toSubalgebra (S : Subalgebra R A) :
+    S.toNonUnitalSubalgebra.toSubalgebra S.one_mem = S := by cases S; rfl
+
+lemma NonUnitalSubalgebra.toSubalgebra_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A)
+    (h1 : (1 : A) ∈ S) : (NonUnitalSubalgebra.toSubalgebra S h1).toNonUnitalSubalgebra = S := by
+  cases S; rfl

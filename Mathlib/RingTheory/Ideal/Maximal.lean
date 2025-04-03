@@ -51,16 +51,8 @@ theorem IsMaximal.ne_top {I : Ideal α} (h : I.IsMaximal) : I ≠ ⊤ :=
   (isMaximal_def.1 h).1
 
 theorem isMaximal_iff {I : Ideal α} :
-    I.IsMaximal ↔ (1 : α) ∉ I ∧ ∀ (J : Ideal α) (x), I ≤ J → x ∉ I → x ∈ J → (1 : α) ∈ J :=
-  isMaximal_def.trans <|
-    and_congr I.ne_top_iff_one <|
-      forall_congr' fun J => by
-        rw [lt_iff_le_not_le]
-        exact
-          ⟨fun H x h hx₁ hx₂ => J.eq_top_iff_one.1 <| H ⟨h, not_subset.2 ⟨_, hx₂, hx₁⟩⟩,
-            fun H ⟨h₁, h₂⟩ =>
-            let ⟨x, xJ, xI⟩ := not_subset.1 h₂
-            J.eq_top_iff_one.2 <| H x h₁ xI xJ⟩
+    I.IsMaximal ↔ (1 : α) ∉ I ∧ ∀ (J : Ideal α) (x), I ≤ J → x ∉ I → x ∈ J → (1 : α) ∈ J := by
+  simp_rw [isMaximal_def, SetLike.isCoatom_iff, Ideal.ne_top_iff_one, ← Ideal.eq_top_iff_one]
 
 theorem IsMaximal.eq_of_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) (IJ : I ≤ J) : I = J :=
   eq_iff_le_not_lt.2 ⟨IJ, fun h => hJ (hI.1.2 _ h)⟩

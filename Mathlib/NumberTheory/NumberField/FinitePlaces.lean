@@ -25,7 +25,7 @@ into a completion of `K` associated to a non-zero prime ideal of `𝓞 K`.
 number field, places, finite places
 -/
 
-open Ideal IsDedekindDomain HeightOneSpectrum NumberField WithZeroMulInt
+open Ideal IsDedekindDomain HeightOneSpectrum WithZeroMulInt
 
 namespace NumberField
 
@@ -33,9 +33,8 @@ section absoluteValue
 
 variable {K : Type*} [Field K] [NumberField K] (v : HeightOneSpectrum (𝓞 K))
 
-/-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1`  -/
-lemma one_lt_norm : 1 < (absNorm v.asIdeal : NNReal) := by
-  norm_cast
+/-- The norm of a maximal ideal is `> 1`  -/
+lemma one_lt_norm : 1 < absNorm v.asIdeal := by
   by_contra! h
   apply IsPrime.ne_top v.isPrime
   rw [← absNorm_eq_one_iff]
@@ -44,7 +43,12 @@ lemma one_lt_norm : 1 < (absNorm v.asIdeal : NNReal) := by
     exact (v.asIdeal.fintypeQuotientOfFreeOfNeBot v.ne_bot).finite
   omega
 
-private lemma norm_ne_zero : (absNorm v.asIdeal : NNReal) ≠ 0 := ne_zero_of_lt (one_lt_norm v)
+/-- The norm of a maximal ideal as an element of `ℝ≥0` is `> 1`  -/
+lemma one_lt_norm_nnreal : 1 < (absNorm v.asIdeal : NNReal) := mod_cast one_lt_norm v
+
+/-- The norm of a maximal ideal as an element of `ℝ≥0` is `≠ 0`  -/
+lemma norm_ne_zero : (absNorm v.asIdeal : NNReal) ≠ 0 :=
+  ne_zero_of_lt (one_lt_norm_nnreal v)
 
 /-- The `v`-adic absolute value on `K` defined as the norm of `v` raised to negative `v`-adic
 valuation.-/
@@ -57,7 +61,7 @@ noncomputable def vadicAbv : AbsoluteValue K ℝ where
     -- the triangle inequality is implied by the ultrametric one
     apply le_trans _ <| max_le_add_of_nonneg (zero_le ((toNNReal (norm_ne_zero v)) (v.valuation x)))
       (zero_le ((toNNReal (norm_ne_zero v)) (v.valuation y)))
-    have h_mono := (toNNReal_strictMono (one_lt_norm v)).monotone
+    have h_mono := (toNNReal_strictMono (one_lt_norm_nnreal v)).monotone
     rw [← h_mono.map_max] --max goes inside withZeroMultIntToNNReal
     exact h_mono (v.valuation.map_add x y)
 
@@ -80,10 +84,11 @@ noncomputable instance instRankOneValuedAdicCompletion :
     map_one' := rfl
     map_mul' := MonoidWithZeroHom.map_mul (toNNReal (norm_ne_zero v))
   }
-  strictMono' := toNNReal_strictMono (one_lt_norm v)
+  strictMono' := toNNReal_strictMono (one_lt_norm_nnreal v)
   nontrivial' := by
     rcases Submodule.exists_mem_ne_zero_of_ne_bot v.ne_bot with ⟨x, hx1, hx2⟩
     use (x : K)
+    dsimp [adicCompletion]
     rw [valuedAdicCompletion_eq_valuation' v (x : K)]
     constructor
     · simpa only [ne_eq, map_eq_zero, NoZeroSMulDivisors.algebraMap_eq_zero_iff]
@@ -110,10 +115,11 @@ lemma toNNReal_Valued_eq_vadicAbv (x : K) :
 /-- The norm of the image after the embedding associated to `v` is equal to the `v`-adic absolute
 value. -/
 theorem FinitePlace.norm_def (x : K) : ‖embedding v x‖ = vadicAbv v x := by
-  simp only [NormedField.toNorm, instNormedFieldValuedAdicCompletion, Valued.toNormedField,
-    instFieldAdicCompletion, Valued.norm, Valuation.RankOne.hom, MonoidWithZeroHom.coe_mk,
-    ZeroHom.coe_mk, embedding, UniformSpace.Completion.coeRingHom, RingHom.coe_mk, MonoidHom.coe_mk,
-    OneHom.coe_mk, Valued.valuedCompletion_apply, toNNReal_Valued_eq_vadicAbv]
+  simp only [adicCompletion, NormedField.toNorm, instNormedFieldValuedAdicCompletion,
+    Valued.toNormedField, instFieldAdicCompletion, Valued.norm, Valuation.RankOne.hom,
+    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, embedding, UniformSpace.Completion.coeRingHom,
+    RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Valued.valuedCompletion_apply,
+    toNNReal_Valued_eq_vadicAbv]
 
 /-- The norm of the image after the embedding associated to `v` is equal to the norm of `v` raised
 to the power of the `v`-adic valuation. -/
@@ -131,19 +137,19 @@ open FinitePlace
 
 /-- The `v`-adic norm of an integer is at most 1. -/
 theorem norm_le_one (x : 𝓞 K) : ‖embedding v x‖ ≤ 1 := by
-  rw [norm_def', NNReal.coe_le_one, toNNReal_le_one_iff (one_lt_norm v)]
+  rw [norm_def', NNReal.coe_le_one, toNNReal_le_one_iff (one_lt_norm_nnreal v)]
   exact valuation_le_one v x
 
 /-- The `v`-adic norm of an integer is 1 if and only if it is not in the ideal. -/
 theorem norm_eq_one_iff_not_mem (x : 𝓞 K) : ‖(embedding v) x‖ = 1 ↔ x ∉ v.asIdeal := by
   rw [norm_def_int, NNReal.coe_eq_one, toNNReal_eq_one_iff (v.intValuationDef x)
-    (norm_ne_zero v) (one_lt_norm v).ne', ← dvd_span_singleton,
+    (norm_ne_zero v) (one_lt_norm_nnreal v).ne', ← dvd_span_singleton,
     ← intValuation_lt_one_iff_dvd, not_lt]
   exact (intValuation_le_one v x).ge_iff_eq.symm
 
 /-- The `v`-adic norm of an integer is less than 1 if and only if it is in the ideal. -/
 theorem norm_lt_one_iff_mem (x : 𝓞 K) : ‖embedding v x‖ < 1 ↔ x ∈ v.asIdeal := by
-  rw [norm_def_int, NNReal.coe_lt_one, toNNReal_lt_one_iff (one_lt_norm v),
+  rw [norm_def_int, NNReal.coe_lt_one, toNNReal_lt_one_iff (one_lt_norm_nnreal v),
     intValuation_lt_one_iff_dvd]
   exact dvd_span_singleton
 
@@ -263,9 +269,9 @@ lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 K} (h_x_n
     WithZeroMulInt.toNNReal_neg_apply _
       (v.valuation.ne_zero_iff.mpr (RingOfIntegers.coe_ne_zero_iff.mpr h_x_nezero))]
   push_cast
-  rw [← zpow_natCast, ← zpow_add₀ <| mod_cast (zero_lt_one.trans (one_lt_norm v)).ne']
+  rw [← zpow_natCast, ← zpow_add₀ <| mod_cast (zero_lt_one.trans (one_lt_norm_nnreal v)).ne']
   norm_cast
-  rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_norm v).ne')]
+  rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_norm_nnreal v).ne')]
   simp [valuation_eq_intValuationDef, intValuationDef_if_neg, h_x_nezero]
 
 end IsDedekindDomain.HeightOneSpectrum

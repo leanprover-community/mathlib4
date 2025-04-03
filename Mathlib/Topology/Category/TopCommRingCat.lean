@@ -48,7 +48,7 @@ instance : Category TopCommRingCat.{u} where
       cases g
       dsimp; apply Continuous.comp <;> assumption⟩
 
-instance : ConcreteCategory TopCommRingCat.{u} where
+instance : HasForget TopCommRingCat.{u} where
   forget :=
     { obj := fun R => R
       map := fun f => f.val }

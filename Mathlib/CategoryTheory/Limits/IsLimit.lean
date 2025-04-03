@@ -46,11 +46,8 @@ variable {C : Type u₃} [Category.{v₃} C]
 variable {F : J ⥤ C}
 
 /-- A cone `t` on `F` is a limit cone if each cone on `F` admits a unique
-cone morphism to `t`.
-
-See <https://stacks.math.columbia.edu/tag/002E>.
-  -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
+cone morphism to `t`. -/
+@[stacks 002E]
 structure IsLimit (t : Cone F) where
   /-- There is a morphism from any cone point to `t.pt` -/
   lift : ∀ s : Cone F, s.pt ⟶ t.pt
@@ -263,8 +260,8 @@ def conePointsIsoOfNatIso {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit
     (w : F ≅ G) : s.pt ≅ t.pt where
   hom := Q.map s w.hom
   inv := P.map t w.inv
-  hom_inv_id := P.hom_ext (by aesop_cat)
-  inv_hom_id := Q.hom_ext (by aesop_cat)
+  hom_inv_id := P.hom_ext (by simp)
+  inv_hom_id := Q.hom_ext (by simp)
 
 @[reassoc]
 theorem conePointsIsoOfNatIso_hom_comp {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit s)
@@ -404,7 +401,7 @@ def ofFaithful {t : Cone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [G
 -/
 def mapConeEquiv {D : Type u₄} [Category.{v₄} D] {K : J ⥤ C} {F G : C ⥤ D} (h : F ≅ G) {c : Cone K}
     (t : IsLimit (mapCone F c)) : IsLimit (mapCone G c) := by
-  apply postcomposeInvEquiv (isoWhiskerLeft K h : _) (mapCone G c) _
+  apply postcomposeInvEquiv (isoWhiskerLeft K h :) (mapCone G c) _
   apply t.ofIsoLimit (postcomposeWhiskerLeftMapCone h.symm c).symm
 
 /-- A cone is a limit cone exactly if
@@ -442,7 +439,7 @@ theorem coneOfHom_homOfCone (s : Cone F) : coneOfHom h (homOfCone h s) = s := by
 
 @[simp]
 theorem homOfCone_coneOfHom {Y : C} (f : Y ⟶ X) : homOfCone h (coneOfHom h f) = f :=
-  congrArg ULift.down (congrFun (congrFun (congrArg NatTrans.app h.hom_inv_id) (op Y)) ⟨f⟩ : _)
+  congrArg ULift.down (congrFun (congrFun (congrArg NatTrans.app h.hom_inv_id) (op Y)) ⟨f⟩ :)
 
 /-- If `F.cones` is represented by `X`, the cone corresponding to the identity morphism on `X`
 will be a limit cone. -/
@@ -496,11 +493,8 @@ end
 end IsLimit
 
 /-- A cocone `t` on `F` is a colimit cocone if each cocone on `F` admits a unique
-cocone morphism from `t`.
-
-See <https://stacks.math.columbia.edu/tag/002F>.
--/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
+cocone morphism from `t`. -/
+@[stacks 002F]
 structure IsColimit (t : Cocone F) where
   /-- `t.pt` maps to all other cocone covertices -/
   desc : ∀ s : Cocone F, t.pt ⟶ s.pt
@@ -643,14 +637,10 @@ theorem hom_desc (h : IsColimit t) {W : C} (m : t.pt ⟶ W) :
     m =
       h.desc
         { pt := W
-          ι :=
-            { app := fun b => t.ι.app b ≫ m
-              naturality := by intros; erw [← assoc, t.ι.naturality, comp_id, comp_id] } } :=
+          ι := { app := fun b => t.ι.app b ≫ m } } :=
   h.uniq
     { pt := W
-      ι :=
-        { app := fun b => t.ι.app b ≫ m
-          naturality := _ } }
+      ι := { app := fun b => t.ι.app b ≫ m } }
     m fun _ => rfl
 
 /-- Two morphisms out of a colimit are equal if their compositions with
@@ -723,8 +713,8 @@ def coconePointsIsoOfNatIso {F G : J ⥤ C} {s : Cocone F} {t : Cocone G} (P : I
     (Q : IsColimit t) (w : F ≅ G) : s.pt ≅ t.pt where
   hom := P.map t w.hom
   inv := Q.map s w.inv
-  hom_inv_id := P.hom_ext (by aesop_cat)
-  inv_hom_id := Q.hom_ext (by aesop_cat)
+  hom_inv_id := P.hom_ext (by simp)
+  inv_hom_id := Q.hom_ext (by simp)
 
 @[reassoc]
 theorem comp_coconePointsIsoOfNatIso_hom {F G : J ⥤ C} {s : Cocone F} {t : Cocone G}
@@ -876,7 +866,7 @@ def ofFaithful {t : Cocone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) 
 def mapCoconeEquiv {D : Type u₄} [Category.{v₄} D] {K : J ⥤ C} {F G : C ⥤ D} (h : F ≅ G)
     {c : Cocone K} (t : IsColimit (mapCocone F c)) : IsColimit (mapCocone G c) := by
   apply IsColimit.ofIsoColimit _ (precomposeWhiskerLeftMapCocone h c)
-  apply (precomposeInvEquiv (isoWhiskerLeft K h : _) _).symm t
+  apply (precomposeInvEquiv (isoWhiskerLeft K h :) _).symm t
 
 /-- A cocone is a colimit cocone exactly if
 there is a unique cocone morphism from any other cocone.
@@ -912,7 +902,7 @@ theorem coconeOfHom_homOfCocone (s : Cocone F) : coconeOfHom h (homOfCocone h s)
 
 @[simp]
 theorem homOfCocone_cooneOfHom {Y : C} (f : X ⟶ Y) : homOfCocone h (coconeOfHom h f) = f :=
-  congrArg ULift.down (congrFun (congrFun (congrArg NatTrans.app h.hom_inv_id) Y) ⟨f⟩ : _)
+  congrArg ULift.down (congrFun (congrFun (congrArg NatTrans.app h.hom_inv_id) Y) ⟨f⟩ :)
 
 /-- If `F.cocones` is corepresented by `X`, the cocone corresponding to the identity morphism on `X`
 will be a colimit cocone. -/

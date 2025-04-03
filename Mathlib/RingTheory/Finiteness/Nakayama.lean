@@ -26,8 +26,8 @@ variable {R : Type*} {M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
 open Set
 
-/-- **Nakayama's Lemma**. Atiyah-Macdonald 2.5, Eisenbud 4.7, Matsumura 2.2,
-[Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV) -/
+/-- **Nakayama's Lemma**. Atiyah-Macdonald 2.5, Eisenbud 4.7, Matsumura 2.2. -/
+@[stacks 00DV]
 theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRing R] {M : Type*}
     [AddCommGroup M] [Module R M] (I : Ideal R) (N : Submodule R M) (hn : N.FG) (hin : N ≤ I • N) :
     ∃ r : R, r - 1 ∈ I ∧ ∀ n ∈ N, r • n = (0 : M) := by
@@ -46,7 +46,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
     · rw [← span_le, hs]
   clear hin hs
   revert this
-  refine Set.Finite.dinduction_on _ hfs (fun H => ?_) @fun i s _ _ ih H => ?_
+  refine Set.Finite.induction_on _ hfs (fun H => ?_) @fun i s _ _ ih H => ?_
   · rcases H with ⟨r, hr1, hrn, _⟩
     refine ⟨r, hr1, fun n hn => ?_⟩
     specialize hrn hn

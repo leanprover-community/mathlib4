@@ -10,6 +10,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.Tactic.Abel
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Basic facts about biproducts in preadditive categories.
@@ -143,7 +144,7 @@ def isBilimitOfIsLimit {f : J → C} (t : Bicone f) (ht : IsLimit t.toCone) : t.
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
 def biconeIsBilimitOfLimitConeOfIsLimit {f : J → C} {t : Cone (Discrete.functor f)}
     (ht : IsLimit t) : (Bicone.ofLimitCone ht).IsBilimit :=
-  isBilimitOfIsLimit _ <| IsLimit.ofIsoLimit ht <| Cones.ext (Iso.refl _) (by aesop_cat)
+  isBilimitOfIsLimit _ <| IsLimit.ofIsoLimit ht <| Cones.ext (Iso.refl _) (by simp)
 
 /-- In a preadditive category, any finite bicone which is a colimit cocone is in fact a bilimit
     bicone. -/

@@ -55,6 +55,8 @@ lemma decomposition_erase_inf [DecidableEq (Ideal R)] {I : Ideal R}
   rw [← Finset.insert_erase hJ] at hs
   simp [← hs, hJ']
 
+open scoped Function -- required for scoped `on` notation
+
 lemma isPrimary_decomposition_pairwise_ne_radical {I : Ideal R}
     {s : Finset (Ideal R)} (hs : s.inf id = I) (hs' : ∀ ⦃J⦄, J ∈ s → J.IsPrimary) :
     ∃ t : Finset (Ideal R), t.inf id = I ∧ (∀ ⦃J⦄, J ∈ t → J.IsPrimary) ∧

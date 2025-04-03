@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Module.Prod
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.SMul
 
 /-!
 # Finsupps and sum/product types
@@ -42,10 +42,7 @@ def sumFinsuppLEquivProdFinsupp {α β : Type*} : (α ⊕ β →₀ M) ≃ₗ[R]
     map_smul' := by
       intros
       ext <;>
-        -- Porting note: `add_equiv.to_fun_eq_coe` →
-        --               `Equiv.toFun_as_coe` & `AddEquiv.toEquiv_eq_coe` & `AddEquiv.coe_toEquiv`
-        simp only [Equiv.toFun_as_coe, AddEquiv.toEquiv_eq_coe, AddEquiv.coe_toEquiv, Prod.smul_fst,
-          Prod.smul_snd, smul_apply,
+        simp only [AddEquiv.toFun_eq_coe, Prod.smul_fst, Prod.smul_snd, smul_apply,
           snd_sumFinsuppAddEquivProdFinsupp, fst_sumFinsuppAddEquivProdFinsupp,
           RingHom.id_apply] }
 

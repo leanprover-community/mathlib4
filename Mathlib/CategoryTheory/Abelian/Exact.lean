@@ -105,7 +105,7 @@ def Exact.isLimitImage (h : S.Exact) :
   rw [exact_iff_kernel_ι_comp_cokernel_π_zero] at h
   exact KernelFork.IsLimit.ofι _ _
     (fun u hu ↦ kernel.lift (cokernel.π S.f) u
-      (by rw [← kernel.lift_ι S.g u hu, Category.assoc, h, comp_zero])) (by aesop_cat)
+      (by rw [← kernel.lift_ι S.g u hu, Category.assoc, h, comp_zero])) (by simp)
     (fun _ _ _ hm => by rw [← cancel_mono (Abelian.image.ι S.f), hm, kernel.lift_ι])
 
 /-- If `(f, g)` is exact, then `image.ι f` is a kernel of `g`. -/
@@ -123,7 +123,7 @@ def Exact.isColimitCoimage (h : S.Exact) :
   refine CokernelCofork.IsColimit.ofπ _ _
     (fun u hu => cokernel.desc (kernel.ι S.g) u
       (by rw [← cokernel.π_desc S.f u hu, ← Category.assoc, h, zero_comp]))
-    (by aesop_cat) ?_
+    (by simp) ?_
   intros _ _ _ _ hm
   ext
   rw [hm, cokernel.π_desc]
@@ -212,9 +212,6 @@ end Functor
 
 namespace Functor
 
-@[deprecated (since := "2024-07-09")] alias CategoryTheory.Functor.map_exact :=
-  ShortComplex.Exact.map
-
 open Limits Abelian
 
 variable {A : Type u₁} {B : Type u₂} [Category.{v₁} A] [Category.{v₂} B]
@@ -263,11 +260,6 @@ lemma preservesHomology_of_map_exact : L.PreservesHomology where
       infer_instance
     exact (hL (ShortComplex.mk _ _ (kernel.condition f))
       (ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel f))).fIsKernel
-
-@[deprecated (since := "2024-07-09")] alias preservesKernelsOfMapExact :=
-  PreservesHomology.preservesKernels
-@[deprecated (since := "2024-07-09")] alias preservesCokernelsOfMapExact :=
-  PreservesHomology.preservesCokernels
 
 end
 

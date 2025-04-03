@@ -35,7 +35,7 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
     rw [this, one_div, inv_cpow _ _ (arg_ofReal_of_nonneg hpi.le ▸ pi_pos.ne), div_eq_inv_mul]
   · -- integrability of terms
     rcases hp i with hai | hpi
-    · simpa only [hai, zero_mul, mul_zero] using integrable_zero _ _ _
+    · simp [hai]
     simp_rw [← mul_assoc, mul_comm _ (a i), mul_assoc]
     have := Complex.GammaIntegral_convergent hs
     rw [← mul_zero (p i), ← integrableOn_Ioi_comp_mul_left_iff _ _ hpi] at this
@@ -51,7 +51,7 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
     simp_rw [← mul_assoc, mul_comm _ (a i), mul_assoc, norm_mul (a i), integral_mul_left]
     rw [← mul_div_assoc, mul_comm (Real.Gamma _), mul_div_assoc, norm_mul ‖a i‖, norm_norm]
     rcases hp i with hai | hpi
-    · simp only [hai, norm_zero, zero_mul]
+    · simp [hai]
     congr 1
     have := Real.integral_rpow_mul_exp_neg_mul_Ioi hs hpi
     simp_rw [← neg_mul (p i), one_div, inv_rpow hpi.le, ← div_eq_inv_mul] at this
@@ -96,7 +96,7 @@ lemma hasSum_mellin_pi_mul₀ {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ
     exact Or.inr (lt_of_le_of_ne (hp i) (Ne.symm h))
   have (i t) : (if p i = 0 then 0 else a i * rexp (-π * p i * t)) =
       a' i * rexp (-π * p i * t) := by
-    simp only [a', ite_mul, zero_mul]
+    simp [a']
   simp_rw [this] at hF
   convert hasSum_mellin_pi_mul hp' hs hF ?_ using 2 with i
   · rcases eq_or_ne (p i) 0 with h | h <;>

@@ -1,4 +1,4 @@
-import Mathlib.Tactic.DeriveToExpr
+import Lean
 
 namespace DeriveToExprTests
 open Lean
@@ -57,7 +57,6 @@ instance {α : Type u} [ToExpr α] [ToLevel.{u+1}] : ToExpr (Bool → α) where
 
 deriving instance ToExpr for Bar
 
-set_option linter.unusedTactic false in
 example : True := by
   run_tac do
     let f : Bool → Nat | false => 0 | true => 1

@@ -205,7 +205,7 @@ theorem dTwo_comp_dOne : dTwo A ∘ₗ dOne A = 0 := by
   show (ModuleCat.ofHom (dOne A) ≫ ModuleCat.ofHom (dTwo A)).hom = _
   have h1 := congr_arg ModuleCat.ofHom (dOne_comp_eq A)
   have h2 := congr_arg ModuleCat.ofHom (dTwo_comp_eq A)
-  simp only [ModuleCat.ofHom_comp, ModuleCat.ofHom_comp, ← LinearEquiv.toModuleIso_hom_hom] at h1 h2
+  simp only [ModuleCat.ofHom_comp, ModuleCat.ofHom_comp, ← LinearEquiv.toModuleIso_hom] at h1 h2
   simp only [(Iso.eq_inv_comp _).2 h2, (Iso.eq_inv_comp _).2 h1, ModuleCat.ofHom_hom,
     ModuleCat.hom_ofHom, Category.assoc, Iso.hom_inv_id_assoc, HomologicalComplex.d_comp_d_assoc,
     zero_comp, comp_zero, ModuleCat.hom_zero]
@@ -797,7 +797,7 @@ def shortComplexH1Iso : (inhomogeneousCochains A).sc' 0 1 2 ≅ shortComplexH1 A
 /-- The 1-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `oneCocycles A`, which is a simpler type. -/
 def isoOneCocycles : cocycles A 1 ≅ ModuleCat.of k (oneCocycles A) :=
-  (inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
+  (inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by simp) (by simp) ≪≫
     cyclesMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatCyclesIso
 
 lemma isoOneCocycles_hom_comp_subtype :
@@ -817,7 +817,7 @@ lemma toCocycles_comp_isoOneCocycles_hom :
 /-- The 1st group cohomology of `A`, defined as the 1st cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `oneCocycles A ⧸ oneCoboundaries A`, which is a simpler type. -/
 def isoH1 : groupCohomology A 1 ≅ ModuleCat.of k (H1 A) :=
-  (inhomogeneousCochains A).homologyIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
+  (inhomogeneousCochains A).homologyIsoSc' _ _ _ (by simp) (by simp) ≪≫
     homologyMapIso (shortComplexH1Iso A) ≪≫ (shortComplexH1 A).moduleCatHomologyIso
 
 lemma groupCohomologyπ_comp_isoH1_hom  :
@@ -846,7 +846,7 @@ def shortComplexH2Iso :
 /-- The 2-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `twoCocycles A`, which is a simpler type. -/
 def isoTwoCocycles : cocycles A 2 ≅ ModuleCat.of k (twoCocycles A) :=
-  (inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
+  (inhomogeneousCochains A).cyclesIsoSc' _ _ _ (by simp) (by simp) ≪≫
     cyclesMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatCyclesIso
 
 lemma isoTwoCocycles_hom_comp_subtype :
@@ -866,7 +866,7 @@ lemma toCocycles_comp_isoTwoCocycles_hom :
 /-- The 2nd group cohomology of `A`, defined as the 2nd cohomology of the complex of inhomogeneous
 cochains, is isomorphic to `twoCocycles A ⧸ twoCoboundaries A`, which is a simpler type. -/
 def isoH2 : groupCohomology A 2 ≅ ModuleCat.of k (H2 A) :=
-  (inhomogeneousCochains A).homologyIsoSc' _ _ _ (by aesop) (by aesop) ≪≫
+  (inhomogeneousCochains A).homologyIsoSc' _ _ _ (by simp) (by simp) ≪≫
     homologyMapIso (shortComplexH2Iso A) ≪≫ (shortComplexH2 A).moduleCatHomologyIso
 
 lemma groupCohomologyπ_comp_isoH2_hom  :

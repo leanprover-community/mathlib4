@@ -9,8 +9,7 @@ import Mathlib.Data.Finset.Lattice.Fold
 # Maximum and minimum of finite sets
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidWithZero
+assert_not_exists OrderedCommMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 

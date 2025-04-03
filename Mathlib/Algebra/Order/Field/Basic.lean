@@ -166,15 +166,6 @@ theorem one_le_inv_iff : 1 ≤ a⁻¹ ↔ 0 < a ∧ a ≤ 1 := one_le_inv_iff₀
 ### Relating two divisions.
 -/
 
-@[deprecated (since := "2024-02-16")] alias div_le_div_of_le_of_nonneg := div_le_div_of_nonneg_right
-@[deprecated (since := "2024-02-16")] alias div_lt_div_of_lt := div_lt_div_of_pos_right
-@[deprecated (since := "2024-02-16")] alias div_le_div_of_le_left := div_le_div_of_nonneg_left
-@[deprecated (since := "2024-02-16")] alias div_lt_div_of_lt_left := div_lt_div_of_pos_left
-
-@[deprecated div_le_div_of_nonneg_right (since := "2024-02-16")]
-lemma div_le_div_of_le (hc : 0 ≤ c) (hab : a ≤ b) : a / c ≤ b / c :=
-  div_le_div_of_nonneg_right hab hc
-
 @[deprecated div_le_div_iff_of_pos_right (since := "2024-11-12")]
 theorem div_le_div_right (hc : 0 < c) : a / c ≤ b / c ↔ a ≤ b := div_le_div_iff_of_pos_right hc
 
@@ -423,7 +414,7 @@ theorem le_iff_forall_one_lt_le_mul₀ {α : Type*} [LinearOrderedSemifield α]
   obtain rfl|hb := hb.eq_or_lt
   · simp_rw [zero_mul] at h
     exact h 2 one_lt_two
-  refine le_of_forall_le_of_dense fun x hbx => ?_
+  refine le_of_forall_gt_imp_ge_of_dense fun x hbx => ?_
   convert h (x / b) ((one_lt_div hb).mpr hbx)
   rw [mul_div_cancel₀ _ hb.ne']
 
@@ -764,14 +755,14 @@ private lemma exists_mul_right_lt₀ {a b c : α} (hc : a * b < c) : ∃ b' > b,
   simp_rw [mul_comm a] at hc ⊢; exact exists_mul_left_lt₀ hc
 
 lemma le_mul_of_forall_lt₀ {a b c : α} (h : ∀ a' > a, ∀ b' > b, c ≤ a' * b') : c ≤ a * b := by
-  refine le_of_forall_le_of_dense fun d hd ↦ ?_
+  refine le_of_forall_gt_imp_ge_of_dense fun d hd ↦ ?_
   obtain ⟨a', ha', hd⟩ := exists_mul_left_lt₀ hd
   obtain ⟨b', hb', hd⟩ := exists_mul_right_lt₀ hd
   exact (h a' ha' b' hb').trans hd.le
 
 lemma mul_le_of_forall_lt_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c)
     (h : ∀ a' ≥ 0, a' < a → ∀ b' ≥ 0, b' < b → a' * b' ≤ c) : a * b ≤ c := by
-  refine le_of_forall_ge_of_dense fun d d_ab ↦ ?_
+  refine le_of_forall_lt_imp_le_of_dense fun d d_ab ↦ ?_
   rcases lt_or_le d 0 with hd | hd
   · exact hd.le.trans hc
   obtain ⟨a', ha', d_ab⟩ := exists_lt_mul_left_of_nonneg ha hd d_ab

@@ -20,7 +20,7 @@ noncomputable section
 
 open CategoryTheory Limits CompHausLike
 
-attribute [local instance] ConcreteCategory.instFunLike
+attribute [local instance] HasForget.instFunLike
 
 namespace LightProfinite
 

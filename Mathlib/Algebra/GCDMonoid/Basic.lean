@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Associated.Basic
+import Mathlib.Algebra.Ring.Associated
 import Mathlib.Algebra.Ring.Regular
 
 /-!
@@ -805,9 +805,6 @@ theorem lcm_eq_of_associated_right [NormalizedGCDMonoid α] {m n : α} (h : Asso
 
 end LCM
 
-@[deprecated (since := "2024-02-12")] alias GCDMonoid.prime_of_irreducible := Irreducible.prime
-@[deprecated (since := "2024-02-12")] alias GCDMonoid.irreducible_iff_prime := irreducible_iff_prime
-
 end GCDMonoid
 
 section UniqueUnit
@@ -1139,7 +1136,8 @@ noncomputable def normalizedGCDMonoidOfLCM [NormalizationMonoid α] [DecidableEq
       conv_lhs =>
         congr
         rw [← normalize_lcm a b]
-      erw [← normalize.map_mul, ← Classical.choose_spec (exists_gcd a b), normalize_idem]
+      rw [← normalize_apply, ← normalize.map_mul,
+        ← Classical.choose_spec (exists_gcd a b), normalize_idem]
     lcm_zero_left := fun _ => eq_zero_of_zero_dvd (dvd_lcm_left _ _)
     lcm_zero_right := fun _ => eq_zero_of_zero_dvd (dvd_lcm_right _ _)
     gcd_dvd_left := fun a b => by

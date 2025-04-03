@@ -427,25 +427,20 @@ theorem natCast_def [NatCast M] (n : ℕ) : ((fun _ ↦ n : α → M) : Germ l M
 @[simp, norm_cast]
 theorem const_nat [NatCast M] (n : ℕ) : ((n : M) : Germ l M) = n := rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem coe_ofNat [NatCast M] (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n : α → M)) : Germ l M) = OfNat.ofNat n :=
+    ((ofNat(n) : α → M) : Germ l M) = OfNat.ofNat n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem const_ofNat [NatCast M] (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n : M)) : Germ l M) = OfNat.ofNat n :=
+    ((ofNat(n) : M) : Germ l M) = OfNat.ofNat n :=
   rfl
 
 instance instIntCast [IntCast M] : IntCast (Germ l M) where intCast n := (n : α → M)
 
 @[simp]
 theorem intCast_def [IntCast M] (n : ℤ) : ((fun _ ↦ n : α → M) : Germ l M) = n := rfl
-
-@[deprecated (since := "2024-04-05")] alias coe_nat := natCast_def
-@[deprecated (since := "2024-04-05")] alias coe_int := intCast_def
 
 instance instAddMonoidWithOne [AddMonoidWithOne M] : AddMonoidWithOne (Germ l M) where
   natCast_zero := congrArg ofFun <| by simp; rfl

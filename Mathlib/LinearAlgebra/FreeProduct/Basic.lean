@@ -64,6 +64,8 @@ end DirectSum
 namespace RingQuot
 universe uS uA uB
 
+open scoped Function -- required for scoped `on` notation
+
 /--If two `R`-algebras are `R`-equivalent and their quotients by a relation `rel` are defined,
 then their quotients are also `R`-equivalent.
 
@@ -135,6 +137,8 @@ inductive rel : FreeTensorAlgebra R A → FreeTensorAlgebra R A → Prop
         (tprod R (⨁ i, A i) 2 (fun | 0 => lof R I A i a₁ | 1 => lof R I A i a₂))
         (ι R <| lof R I A i (a₁ * a₂))
 
+open scoped Function -- required for scoped `on` notation
+
 /--The generating equivalence relation for elements of the power algebra
 that are identified in the free product. -/
 @[reducible, simp] def rel' := rel R A on ofDirectSum
@@ -189,7 +193,7 @@ theorem mul_injections (a₁ a₂ : A i) :
     ι' R A (DirectSum.lof R I A i a₁) * ι' R A (DirectSum.lof R I A i a₂)
       = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
   convert RingQuot.mkAlgHom_rel R <| rel.prod
-  aesop
+  simp
 
 /--The `i`th canonical injection, from `A i` to the free product, as
 a linear map.-/
