@@ -47,8 +47,7 @@ theorem of_mem_lowerBounds_upperBounds {f : α → β} (hf : StrictMono f)
 theorem of_succ_lt [SuccOrder α] [WellFoundedLT α]
     (hs : ∀ a, f a < f (succ a)) (hl : ∀ {a}, IsSuccLimit a → IsLUB (f '' Iio a) (f a)) :
     IsNormal f := by
-  refine .of_mem_lowerBounds_upperBounds (fun a b ↦ SuccOrder.limitRecOn b ?_ ?_ ?_) ?_
-  · exact fun a ha ↦ (hl ha).2
+  refine ⟨fun a b ↦ SuccOrder.limitRecOn b ?_ ?_ ?_, hl⟩
   · intro b hb hb'
     cases hb.not_lt hb'
   · intro b hb IH hab
