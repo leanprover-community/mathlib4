@@ -75,7 +75,7 @@ lemma inverts : W₁.IsInvertedBy (Φ.functor ⋙ L₂) :=
 
 /-- When `Φ : LocalizerMorphism W₁ W₂` and that `L₁` and `L₂` are localization functors
 for `W₁` and `W₂`, then `Φ.localizedFunctor L₁ L₂` is the induced functor on the
-localized categories. --/
+localized categories. -/
 noncomputable def localizedFunctor : D₁ ⥤ D₂ :=
   lift (Φ.functor ⋙ L₂) (Φ.inverts _) L₁
 
@@ -85,7 +85,7 @@ noncomputable instance liftingLocalizedFunctor :
   infer_instance
 
 /-- The 2-commutative square expressing that `Φ.localizedFunctor L₁ L₂` lifts the
-functor `Φ.functor`  -/
+functor `Φ.functor` -/
 noncomputable instance catCommSq : CatCommSq Φ.functor L₁ L₂ (Φ.localizedFunctor L₁ L₂) :=
   CatCommSq.mk (Lifting.iso _ W₁ _ _).symm
 

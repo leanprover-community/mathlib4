@@ -92,7 +92,7 @@ def equivTuple {R : Type*} (c₁ c₂ c₃: R) : ℍ[R,c₁,c₂,c₃] ≃ (Fin 
   right_inv f := by ext ⟨_, _ | _ | _ | _ | _ | ⟨⟩⟩ <;> rfl
 
 @[simp]
-theorem equivTuple_apply {R : Type*} (c₁ c₂ c₃: R) (x : ℍ[R,c₁,c₂,c₃]) :
+theorem equivTuple_apply {R : Type*} (c₁ c₂ c₃ : R) (x : ℍ[R,c₁,c₂,c₃]) :
     equivTuple c₁ c₂ c₃ x = ![x.re, x.imI, x.imJ, x.imK] :=
   rfl
 
@@ -512,28 +512,28 @@ section
 
 variable (c₁ c₂ c₃)
 
-/-- `QuaternionAlgebra.re` as a `LinearMap`-/
+/-- `QuaternionAlgebra.re` as a `LinearMap` -/
 @[simps]
 def reₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
   toFun := re
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- `QuaternionAlgebra.imI` as a `LinearMap`-/
+/-- `QuaternionAlgebra.imI` as a `LinearMap` -/
 @[simps]
 def imIₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
   toFun := imI
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- `QuaternionAlgebra.imJ` as a `LinearMap`-/
+/-- `QuaternionAlgebra.imJ` as a `LinearMap` -/
 @[simps]
 def imJₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
   toFun := imJ
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- `QuaternionAlgebra.imK` as a `LinearMap`-/
+/-- `QuaternionAlgebra.imK` as a `LinearMap` -/
 @[simps]
 def imKₗ : ℍ[R,c₁,c₂,c₃] →ₗ[R] R where
   toFun := imK
@@ -1185,7 +1185,7 @@ section Field
 
 variable [LinearOrderedField R] (a b : ℍ[R])
 
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 instance instInv : Inv ℍ[R] :=
   ⟨fun a => (normSq a)⁻¹ • star a⟩
 

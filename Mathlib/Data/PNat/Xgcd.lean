@@ -137,7 +137,6 @@ theorem isSpecial_iff : u.IsSpecial ↔ u.IsSpecial' := by
     simp only [← coe_inj, mul_coe, mk_coe] at *
   · simp_all [← h]; ring
   · simp [Nat.mul_add, Nat.add_mul, ← Nat.add_assoc] at h; rw [← h]; ring
-  -- Porting note: Old code has been removed as it was much more longer.
 
 /-- `IsReduced` holds if the two entries in the vector are the
  same.  The reduction algorithm will produce a system with this
@@ -287,7 +286,6 @@ theorem step_v (hr : u.r ≠ 0) : u.step.v = u.v.swap := by
     rw [← ha, hr]
     ring
 
--- Porting note: removed 'have' and added decreasing_by to avoid lint errors
 /-- We can now define the full reduction function, which applies
  step as long as possible, and then applies finish. Note that the
  "have" statement puts a fact in the local context, and the

@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Kenny Lau
 import Mathlib.Data.DFinsupp.Submonoid
 import Mathlib.Data.Finsupp.ToDFinsupp
 import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # Properties of the module `Π₀ i, M i`
@@ -70,8 +70,6 @@ theorem lhom_ext' ⦃φ ψ : (Π₀ i, M i) →ₗ[R] N⦄ (h : ∀ i, φ.comp (
     φ = ψ :=
   lhom_ext fun i => LinearMap.congr_fun (h i)
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem lmk_apply (s : Finset ι) (x) : (lmk s : _ →ₗ[R] Π₀ i, M i) x = mk s x :=
   rfl
 
@@ -130,8 +128,6 @@ instance {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     EquivLike (LinearEquiv σ M M₂) M M₂ :=
   inferInstance
 
-/- Porting note: In every application of lsum that follows, the argument M needs to be explicitly
-supplied, lean does not manage to gather that information itself -/
 /-- The `DFinsupp` version of `Finsupp.lsum`.
 
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used. -/
@@ -169,7 +165,7 @@ def lsum [Semiring S] [Module S N] [SMulCommClass R S N] :
 /-- While `simp` can prove this, it is often convenient to avoid unfolding `lsum` into `sumAddHom`
 with `DFinsupp.lsum_apply_apply`. -/
 theorem lsum_single [Semiring S] [Module S N] [SMulCommClass R S N] (F : ∀ i, M i →ₗ[R] N) (i)
-    (x : M i) : lsum S (M := M) F (single i x) = F i x := by
+    (x : M i) : lsum S F (single i x) = F i x := by
   simp
 
 theorem lsum_lsingle [Semiring S] [∀ i, Module S (M i)] [∀ i, SMulCommClass R S (M i)] :
@@ -299,7 +295,7 @@ theorem dfinsupp_sumAddHom_mem {β : ι → Type*} [∀ i, AddZeroClass (β i)] 
 every element in the `iSup` can be produced from taking a finite number of non-zero elements
 of `p i`, coercing them to `N`, and summing them. -/
 theorem iSup_eq_range_dfinsupp_lsum (p : ι → Submodule R N) :
-    iSup p = LinearMap.range (DFinsupp.lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) := by
+    iSup p = LinearMap.range (DFinsupp.lsum ℕ fun i => (p i).subtype) := by
   apply le_antisymm
   · apply iSup_le _
     intro i y hy
@@ -316,7 +312,7 @@ theorem biSup_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι
     ⨆ (i) (_ : p i), S i =
       LinearMap.range
         (LinearMap.comp
-          (DFinsupp.lsum ℕ (M := fun i ↦ ↥(S i)) (fun i => (S i).subtype))
+          (DFinsupp.lsum ℕ (fun i => (S i).subtype))
             (DFinsupp.filterLinearMap R _ p)) := by
   apply le_antisymm
   · refine iSup₂_le fun i hi y hy => ⟨DFinsupp.single i ⟨y, hy⟩, ?_⟩
@@ -334,7 +330,7 @@ theorem biSup_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι
 See also `Submodule.mem_iSup_iff_exists_finsupp`. -/
 theorem mem_iSup_iff_exists_dfinsupp (p : ι → Submodule R N) (x : N) :
     x ∈ iSup p ↔
-      ∃ f : Π₀ i, p i, DFinsupp.lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) f = x :=
+      ∃ f : Π₀ i, p i, DFinsupp.lsum ℕ (fun i => (p i).subtype) f = x :=
   SetLike.ext_iff.mp (iSup_eq_range_dfinsupp_lsum p) x
 
 /-- A variant of `Submodule.mem_iSup_iff_exists_dfinsupp` with the RHS fully unfolded.
@@ -350,7 +346,7 @@ theorem mem_biSup_iff_exists_dfinsupp (p : ι → Prop) [DecidablePred p] (S : �
     (x : N) :
     (x ∈ ⨆ (i) (_ : p i), S i) ↔
       ∃ f : Π₀ i, S i,
-        DFinsupp.lsum ℕ (M := fun i ↦ ↥(S i)) (fun i => (S i).subtype) (f.filter p) = x :=
+        DFinsupp.lsum ℕ (fun i => (S i).subtype) (f.filter p) = x :=
   SetLike.ext_iff.mp (biSup_eq_range_dfinsupp_lsum p S) x
 
 end DecidableEq
@@ -416,7 +412,7 @@ This is an intermediate result used to prove
 theorem iSupIndep_iff_forall_dfinsupp (p : ι → Submodule R N) :
     iSupIndep p ↔
       ∀ (i) (x : p i) (v : Π₀ i : ι, ↥(p i)),
-        lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (erase i v) = x → x = 0 := by
+        lsum ℕ (fun i => (p i).subtype) (erase i v) = x → x = 0 := by
   simp_rw [iSupIndep_def, Submodule.disjoint_def,
     Submodule.mem_biSup_iff_exists_dfinsupp, exists_imp, filter_ne_eq_erase]
   refine forall_congr' fun i => Subtype.forall'.trans ?_
@@ -428,12 +424,12 @@ alias independent_iff_forall_dfinsupp := iSupIndep_iff_forall_dfinsupp
 /- If `DFinsupp.lsum` applied with `Submodule.subtype` is injective then the submodules are
 iSupIndep. -/
 theorem iSupIndep_of_dfinsupp_lsum_injective (p : ι → Submodule R N)
-    (h : Function.Injective (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype)) :
+    (h : Function.Injective (lsum ℕ fun i => (p i).subtype)) :
     iSupIndep p := by
   rw [iSupIndep_iff_forall_dfinsupp]
   intro i x v hv
-  replace hv : lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (erase i v) =
-      lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (single i x) := by
+  replace hv : lsum ℕ (fun i => (p i).subtype) (erase i v) =
+      lsum ℕ (fun i => (p i).subtype) (single i x) := by
     simpa only [lsum_single] using hv
   have := DFunLike.ext_iff.mp (h hv) i
   simpa [eq_comm] using this
@@ -455,7 +451,7 @@ alias independent_of_dfinsupp_sumAddHom_injective := iSupIndep_of_dfinsupp_sumAd
 `Finsupp.linearCombination` -/
 theorem lsum_comp_mapRange_toSpanSingleton [∀ m : R, Decidable (m ≠ 0)] (p : ι → Submodule R N)
     {v : ι → N} (hv : ∀ i : ι, v i ∈ p i) :
-    (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype : _ →ₗ[R] _).comp
+    (lsum ℕ fun i => (p i).subtype : _ →ₗ[R] _).comp
         ((mapRange.linearMap fun i => LinearMap.toSpanSingleton R (↥(p i)) ⟨v i, hv i⟩ :
               _ →ₗ[R] _).comp
           (finsuppLequivDFinsupp R : (ι →₀ R) ≃ₗ[R] _).toLinearMap) =
@@ -487,10 +483,10 @@ Note that this is not generally true for `[Semiring R]`, for instance when `A` i
 
 See `Counterexamples/DirectSumIsInternal.lean` for a proof of this fact. -/
 theorem iSupIndep.dfinsupp_lsum_injective {p : ι → Submodule R N} (h : iSupIndep p) :
-    Function.Injective (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) := by
+    Function.Injective (lsum ℕ fun i => (p i).subtype) := by
   -- simplify everything down to binders over equalities in `N`
   rw [iSupIndep_iff_forall_dfinsupp] at h
-  suffices LinearMap.ker (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) = ⊥ by
+  suffices LinearMap.ker (lsum ℕ fun i => (p i).subtype) = ⊥ by
     -- Lean can't find this without our help
     letI thisI : AddCommGroup (Π₀ i, p i) := inferInstance
     rw [LinearMap.ker_eq_bot] at this
@@ -523,7 +519,7 @@ applied with `Submodule.subtype` is injective.
 Note that this is not generally true for `[Semiring R]`; see
 `iSupIndep.dfinsupp_lsum_injective` for details. -/
 theorem iSupIndep_iff_dfinsupp_lsum_injective (p : ι → Submodule R N) :
-    iSupIndep p ↔ Function.Injective (lsum ℕ (M := fun i ↦ ↥(p i)) fun i => (p i).subtype) :=
+    iSupIndep p ↔ Function.Injective (lsum ℕ fun i => (p i).subtype) :=
   ⟨iSupIndep.dfinsupp_lsum_injective, iSupIndep_of_dfinsupp_lsum_injective p⟩
 
 @[deprecated (since := "2024-11-24")]
@@ -640,7 +636,6 @@ variable [Module R M] [Module R₂ M₂]
 variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
 variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
 variable {γ : ι → Type*} [DecidableEq ι]
-
 
 @[simp]
 theorem map_dfinsupp_sumAddHom [∀ i, AddZeroClass (γ i)] (f : M ≃ₛₗ[τ₁₂] M₂) (t : Π₀ i, γ i)

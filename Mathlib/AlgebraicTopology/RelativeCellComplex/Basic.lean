@@ -13,13 +13,13 @@ In this file, we define a structure `RelativeCellComplex` which expresses
 that a morphism `f : X ⟶ Y` is a transfinite composition of morphisms,
 all of which consists in attaching cells. Here, we allow a different
 family of authorized cells at each step. For example, (relative)
-CW-complexes are defined in the file `Topology.CWComplex.Abstract.Basic`
+CW-complexes are defined in the file `Mathlib.Topology.CWComplex.Abstract.Basic`
 by requiring that at the `n`th step, we attach `n`-disks along their
 boundaries.
 
 This structure `RelativeCellComplex` is also used in the
 formalization of the small object argument,
-see the file `CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument`.
+see the file `Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument`.
 
 ## References
 * https://ncatlab.org/nlab/show/small+object+argument
@@ -83,7 +83,7 @@ lemma hom_ext {Z : C} {φ₁ φ₂ : Y ⟶ Z} (h₀ : f ≫ φ₁ = f ≫ φ₂)
     apply (c.attachCells j hj).hom_ext
     · simpa using hj'
     · intro i
-      simpa only [Category.assoc, Cells.ι] using h ({ hj := hj, k := i })
+      simpa only [Category.assoc, Cells.ι] using h ({ hj := hj, k := i, .. })
   | hl j hj hj' =>
     exact (c.F.isColimitOfIsWellOrderContinuous j hj).hom_ext
       (fun ⟨k, hk⟩ ↦ by simpa using hj' k hk)

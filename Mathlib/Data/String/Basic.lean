@@ -33,8 +33,8 @@ instance LT' : LT String :=
   ⟨fun s₁ s₂ ↦ ltb s₁.iter s₂.iter⟩
 
 /-- This instance has a prime to avoid the name of the corresponding instance in core Lean. -/
-instance decidableLT' : DecidableRel (α := String) (· < ·) := by
-  simp only [LT']
+instance decidableLT' : DecidableLT String := by
+  simp only [DecidableLT, LT']
   infer_instance -- short-circuit type class inference
 
 /-- Induction on `String.ltb`. -/
@@ -92,18 +92,18 @@ theorem lt_iff_toList_lt : ∀ {s₁ s₂ : String}, s₁ < s₂ ↔ s₁.toList
       split_ifs with h
       · subst c₂
         suffices ltb ⟨⟨c₁ :: cs₁⟩, (0 : Pos) + c₁⟩ ⟨⟨c₁ :: cs₂⟩, (0 : Pos) + c₁⟩ =
-          ltb ⟨⟨cs₁⟩, 0⟩ ⟨⟨cs₂⟩, 0⟩ by rw [this]; exact (ih cs₂).trans List.Lex.cons_iff.symm
+          ltb ⟨⟨cs₁⟩, 0⟩ ⟨⟨cs₂⟩, 0⟩ by rw [this]; exact (ih cs₂).trans List.lex_cons_iff.symm
         apply ltb_cons_addChar
       · refine ⟨List.Lex.rel, fun e ↦ ?_⟩
         cases e <;> rename_i h'
-        · contradiction
         · assumption
+        · contradiction
 
 instance LE : LE String :=
   ⟨fun s₁ s₂ ↦ ¬s₂ < s₁⟩
 
-instance decidableLE : DecidableRel (α := String) (· ≤ ·) := by
-  simp only [LE]
+instance decidableLE : DecidableLE String := by
+  simp only [DecidableLE, LE]
   infer_instance -- short-circuit type class inference
 
 @[simp]
@@ -152,8 +152,7 @@ instance : LinearOrder String where
   compare_eq_compareOfLessAndEq a b := by
     simp only [compare, compareOfLessAndEq, instLT, List.instLT, lt_iff_toList_lt, toList]
     split_ifs <;>
-    simp only [List.lt_iff_lex_lt] at * <;>
-    contradiction
+    simp only [List.lt_iff_lex_lt] at *
 
 end String
 

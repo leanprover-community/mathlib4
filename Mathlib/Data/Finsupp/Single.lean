@@ -166,6 +166,9 @@ theorem support_single_disjoint {b' : M} (hb : b ≠ 0) (hb' : b' ≠ 0) {i j : 
 theorem single_eq_zero : single a b = 0 ↔ b = 0 := by
   simp [DFunLike.ext_iff, single_eq_set_indicator]
 
+theorem single_ne_zero : single a b ≠ 0 ↔ b ≠ 0 :=
+  single_eq_zero.not
+
 theorem single_swap (a₁ a₂ : α) (b : M) : single a₁ b a₂ = single a₂ b a₁ := by
   classical simp only [single_apply, eq_comm]
 
@@ -296,8 +299,7 @@ theorem update_self : f.update a (f a) = f := by
 theorem zero_update : update 0 a b = single a b := by
   classical
     ext
-    rw [single_eq_update]
-    rfl
+    rw [single_eq_update, coe_update, coe_zero]
 
 theorem support_update [DecidableEq α] [DecidableEq M] :
     support (f.update a b) = if b = 0 then f.support.erase a else insert a f.support := by
@@ -387,8 +389,7 @@ theorem erase_apply [DecidableEq α] {a a' : α} {f : α →₀ M} :
 @[simp]
 theorem erase_single {a : α} {b : M} : erase a (single a b) = 0 := by
   ext s; by_cases hs : s = a
-  · rw [hs, erase_same]
-    rfl
+  · rw [hs, erase_same, coe_zero, Pi.zero_apply]
   · rw [erase_ne hs]
     exact single_eq_of_ne (Ne.symm hs)
 

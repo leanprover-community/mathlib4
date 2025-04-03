@@ -6,8 +6,9 @@ Authors: Robert Y. Lewis
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.RingTheory.Polynomial.Vieta
+import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Polynomials and limits
@@ -99,10 +100,10 @@ theorem tendsto_abv_eval₂_atTop {R S k α : Type*} [Semiring R] [Ring S] [Line
     simpa [abv_mul abv] using hz.const_mul_atTop ((abv_pos abv).2 hc)
   · intro _ _ ihp hf
     rw [leadingCoeff_mul_X] at hf
-    simpa [abv_mul abv] using (ihp hf).atTop_mul_atTop hz
+    simpa [abv_mul abv] using (ihp hf).atTop_mul_atTop₀ hz
   · intro _ a hd ihp hf
     rw [add_comm, leadingCoeff_add_of_degree_lt (degree_C_le.trans_lt hd)] at hf
-    refine tendsto_atTop_of_add_const_right (abv (-f a)) ?_
+    refine .atTop_of_add_const (abv (-f a)) ?_
     refine tendsto_atTop_mono (fun _ => abv_add abv _ _) ?_
     simpa using ihp hf
 

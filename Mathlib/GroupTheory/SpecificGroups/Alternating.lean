@@ -8,6 +8,7 @@ import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Subgroup.Simple
+import Mathlib.Logic.Equiv.Fin.Rotate
 import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -101,7 +102,7 @@ end Equiv.Perm
 theorem alternatingGroup.index_eq_two [Nontrivial α] :
     (alternatingGroup α).index = 2 := by
   rw [alternatingGroup, index_ker, MonoidHom.range_eq_top.mpr (sign_surjective α)]
-  simp_rw [mem_top, Nat.card_eq_fintype_card]; rfl
+  simp_rw [mem_top, Nat.card_eq_fintype_card, card_subtype_true, card_units_int]
 
 @[nontriviality]
 theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
@@ -166,7 +167,7 @@ theorem closure_three_cycles_eq_alternating :
       exact hind n l hl hn
     intro n
     induction' n with n ih <;> intro l hl hn
-    · simp [List.length_eq_zero.1 hn, one_mem]
+    · simp [List.length_eq_zero_iff.1 hn, one_mem]
     rw [Nat.mul_succ] at hn
     obtain ⟨a, l, rfl⟩ := l.exists_of_length_succ hn
     rw [List.length_cons, Nat.succ_inj'] at hn
@@ -175,8 +176,8 @@ theorem closure_three_cycles_eq_alternating :
     rw [List.length_cons, Nat.succ_inj'] at hn
     exact
       mul_mem
-        (IsSwap.mul_mem_closure_three_cycles (hl a (List.mem_cons_self a _))
-          (hl b (List.mem_cons_of_mem a (l.mem_cons_self b))))
+        (IsSwap.mul_mem_closure_three_cycles (hl a List.mem_cons_self)
+          (hl b (List.mem_cons_of_mem a List.mem_cons_self)))
         (ih _ (fun g hg => hl g (List.mem_cons_of_mem _ (List.mem_cons_of_mem _ hg))) hn)
 
 /-- A key lemma to prove $A_5$ is simple. Shows that any normal subgroup of an alternating group on
@@ -262,8 +263,8 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
         ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) :))
 
 /-- The normal closure of $(04)(13)$ within $A_5$ is the whole group. This will be
-  used to show that the normal closure of any permutation of cycle type $(2,2)$ is the whole group.
-  -/
+used to show that the normal closure of any permutation of cycle type $(2,2)$ is the whole group.
+-/
 theorem normalClosure_swap_mul_swap_five :
     normalClosure
         ({⟨swap 0 4 * swap 1 3, mem_alternatingGroup.2 (by decide)⟩} :
@@ -306,7 +307,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
     have h13 : (1 : Fin 5) ≠ 3 := by decide
     rw [Disjoint.cycleType, (isCycle_swap h04).cycleType, (isCycle_swap h13).cycleType,
       card_support_swap h04, card_support_swap h13]
-    · rfl
+    · simp
     · rw [disjoint_iff_disjoint_support, support_swap h04, support_swap h13]
       decide
   · contradiction

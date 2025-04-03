@@ -3,10 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
-import Mathlib.GroupTheory.GroupAction.Quotient
-import Mathlib.Algebra.Group.Subgroup.Finite
+
 /-!
 # Exterior product of alternating maps
 
@@ -25,7 +27,7 @@ variable {R' : Type*} {Mᵢ N₁ N₂ : Type*} [CommSemiring R'] [AddCommGroup N
 
 namespace Equiv.Perm
 
-/-- Elements which are considered equivalent if they differ only by swaps within α or β  -/
+/-- Elements which are considered equivalent if they differ only by swaps within α or β -/
 abbrev ModSumCongr (α β : Type*) :=
   _ ⧸ (Equiv.Perm.sumCongrHom α β).range
 
@@ -150,7 +152,6 @@ def domCoprod (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] 
   { ∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ with
     toFun := fun v => (⇑(∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ)) v
     map_eq_zero_of_eq' := fun v i j hv hij => by
-      dsimp only
       rw [MultilinearMap.sum_apply]
       exact
         Finset.sum_involution (fun σ _ => Equiv.swap i j • σ)

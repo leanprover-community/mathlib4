@@ -3,10 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.UpperLower.Closure
 /-!
 # Algebraic operations on upper/lower sets
 
@@ -103,15 +104,15 @@ instance : Div (UpperSet α) :=
 instance : SMul α (UpperSet α) :=
   ⟨fun a s ↦ ⟨(a • ·) '' s, s.2.smul⟩⟩
 
-@[to_additive (attr := simp,norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_one : ((1 : UpperSet α) : Set α) = Set.Ici 1 :=
   rfl
 
-@[to_additive (attr := simp,norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (s t : UpperSet α) : (↑(s * t) : Set α) = s * t :=
   rfl
 
-@[to_additive (attr := simp,norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_div (s t : UpperSet α) : (↑(s / t) : Set α) = s / t :=
   rfl
 
@@ -163,11 +164,11 @@ instance : Div (LowerSet α) :=
 instance : SMul α (LowerSet α) :=
   ⟨fun a s ↦ ⟨(a • ·) '' s, s.2.smul⟩⟩
 
-@[to_additive (attr := simp,norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (s t : LowerSet α) : (↑(s * t) : Set α) = s * t :=
   rfl
 
-@[to_additive (attr := simp,norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_div (s t : LowerSet α) : (↑(s / t) : Set α) = s / t :=
   rfl
 

@@ -36,7 +36,7 @@ We provide `Monoid.centralizer`, `AddMonoid.centralizer`, `Subgroup.centralizer`
 `AddSubgroup.centralizer` in other files.
 -/
 
-assert_not_exists Finset MonoidWithZero Subsemigroup
+assert_not_exists RelIso Finset MonoidWithZero Subsemigroup
 
 variable {M : Type*} {S T : Set M}
 

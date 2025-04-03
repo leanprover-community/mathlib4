@@ -225,12 +225,9 @@ class HasLift : Prop where
 
 namespace HasLift
 
-variable {sq}
-
+variable {sq} in
 theorem mk' (l : sq.LiftStruct) : HasLift sq :=
   ⟨Nonempty.intro l⟩
-
-variable (sq)
 
 theorem iff : HasLift sq ↔ Nonempty sq.LiftStruct := by
   constructor
