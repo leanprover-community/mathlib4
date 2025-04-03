@@ -43,6 +43,7 @@ A typical element of `FreeAddMagma α` is a formal sum of elements of `α`.
 For example if `x` and `y` are terms of type `α` then `x + ((y + y) + x)` is a
 "typical" element of `FreeAddMagma α`.
 One can think of `FreeAddMagma α` as the type of binary trees with leaves labelled by `α`.
+In general, no pair of distinct elements in `FreeAddMagma α` will commute.
 -/
 inductive FreeAddMagma (α : Type u) : Type u
   | of : α → FreeAddMagma α
@@ -65,6 +66,7 @@ A typical element of `FreeMagma α` is a formal product of elements of `α`.
 For example if `x` and `y` are terms of type `α` then `x * ((y * y) * x)` is a
 "typical" element of `FreeMagma α`.
 One can think of `FreeMagma α` as the type of binary trees with leaves labelled by `α`.
+In general, no pair of distinct elements in `FreeMagma α` will commute.
 -/
 @[to_additive]
 inductive FreeMagma (α : Type u) : Type u
