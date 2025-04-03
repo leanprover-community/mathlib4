@@ -44,7 +44,6 @@ def Measure.withDensityᵥ {m : MeasurableSpace α} (μ : Measure α) (f : α �
       empty' := by simp
       not_measurable' := fun _ hs => if_neg hs
       m_iUnion' := fun s hs₁ hs₂ => by
-        dsimp only
         convert hasSum_integral_iUnion hs₁ hs₂ hf.integrableOn with n
         · rw [if_pos (hs₁ n)]
         · rw [if_pos (MeasurableSet.iUnion hs₁)] }
