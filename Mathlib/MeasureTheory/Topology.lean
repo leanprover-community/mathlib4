@@ -23,5 +23,4 @@ theorem ae_restrict_le_codiscreteWithin
   intro s hs
   have := discreteTopology_of_codiscreteWithin hs
   rw [mem_ae_iff, Measure.restrict_apply' hU]
-  apply Set.Countable.measure_zero (TopologicalSpace.separableSpace_iff_countable.1
-    TopologicalSpace.SecondCountableTopology.to_separableSpace)
+  apply Set.Countable.measure_zero (TopologicalSpace.separableSpace_iff_countable.1 inferInstance)

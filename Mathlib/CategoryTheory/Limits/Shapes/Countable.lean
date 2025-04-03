@@ -48,7 +48,7 @@ instance (priority := 100) hasCountableLimits_of_hasLimits [HasLimits C] :
   out := inferInstance
 
 universe v in
-instance [Category.{v} J] [CountableCategory J] [HasCountableLimits C] : HasLimitsOfShape J C :=
+instance [HasCountableLimits C] [Category.{v} J] [CountableCategory J] : HasLimitsOfShape J C :=
   have : HasLimitsOfShape (HomAsType J) C := HasCountableLimits.out (HomAsType J)
   hasLimitsOfShape_of_equivalence (homAsTypeEquiv J)
 
@@ -56,7 +56,7 @@ instance [Category.{v} J] [CountableCategory J] [HasCountableLimits C] : HasLimi
 class HasCountableProducts where
   out (J : Type) [Countable J] : HasProductsOfShape J C
 
-instance [HasCountableProducts C] : HasProductsOfShape J C :=
+instance [HasCountableProducts C] (J : Type*) [Countable J] : HasProductsOfShape J C :=
   have : Countable (Shrink.{0} J) := Countable.of_equiv _ (equivShrink.{0} J)
   have : HasLimitsOfShape (Discrete (Shrink.{0} J)) C := HasCountableProducts.out _
   hasLimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{0} J)).symm
