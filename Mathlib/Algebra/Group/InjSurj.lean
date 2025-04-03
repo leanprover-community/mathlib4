@@ -421,9 +421,8 @@ protected abbrev monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (o
   reduceProj% zeta%
   { delta% hf.semigroup f mul, delta% hf.mulOneClass f one mul with
     npow := fun n x => x ^ n,
-    npow_zero := hf.forall.2 fun x => by dsimp only; rw [← npow, pow_zero, ← one],
+    npow_zero := hf.forall.2 fun x => by rw [← npow, pow_zero, ← one],
     npow_succ := fun n => hf.forall.2 fun x => by
-      dsimp only
       rw [← npow, pow_succ, ← npow, ← mul] }
 
 /-- A type endowed with `0`, `1` and `+` is an additive monoid with one, if it admits a surjective
@@ -486,12 +485,10 @@ protected abbrev divInvMonoid [DivInvMonoid M₁] (f : M₁ → M₂) (hf : Surj
   reduceProj% zeta%
   { delta% hf.monoid f one mul npow, ‹Div M₂›, ‹Inv M₂› with
     zpow := fun n x => x ^ n,
-    zpow_zero' := hf.forall.2 fun x => by dsimp only; rw [← zpow, zpow_zero, ← one],
+    zpow_zero' := hf.forall.2 fun x => by rw [← zpow, zpow_zero, ← one],
     zpow_succ' := fun n => hf.forall.2 fun x => by
-      dsimp only
       rw [← zpow, ← zpow, zpow_natCast, zpow_natCast, pow_succ, ← mul],
     zpow_neg' := fun n => hf.forall.2 fun x => by
-      dsimp only
       rw [← zpow, ← zpow, zpow_negSucc, zpow_natCast, inv],
     div_eq_mul_inv := hf.forall₂.2 fun x y => by rw [← inv, ← mul, ← div, div_eq_mul_inv] }
 

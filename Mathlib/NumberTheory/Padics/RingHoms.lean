@@ -218,18 +218,15 @@ def toZModHom (v : ℕ) (f : ℤ_[p] → ℕ) (f_spec : ∀ x, x - f x ∈ (Idea
     ℤ_[p] →+* ZMod v where
   toFun x := f x
   map_zero' := by
-    dsimp only
     rw [f_congr (0 : ℤ_[p]) _ 0, cast_zero]
     · exact f_spec _
     · simp only [sub_zero, cast_zero, Submodule.zero_mem]
   map_one' := by
-    dsimp only
     rw [f_congr (1 : ℤ_[p]) _ 1, cast_one]
     · exact f_spec _
     · simp only [sub_self, cast_one, Submodule.zero_mem]
   map_add' := by
     intro x y
-    dsimp only
     rw [f_congr (x + y) _ (f x + f y), cast_add]
     · exact f_spec _
     · convert Ideal.add_mem _ (f_spec x) (f_spec y) using 1
@@ -237,7 +234,6 @@ def toZModHom (v : ℕ) (f : ℤ_[p] → ℕ) (f_spec : ∀ x, x - f x ∈ (Idea
       ring
   map_mul' := by
     intro x y
-    dsimp only
     rw [f_congr (x * y) _ (f x * f y), cast_mul]
     · exact f_spec _
     · let I : Ideal ℤ_[p] := Ideal.span {↑v}

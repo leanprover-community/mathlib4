@@ -499,7 +499,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
       simp only [σ, coe_fn_mk]) k
   replace hσ : σ ^ p ^ 1 = 1 := Perm.ext fun v => by rw [pow_one, hσ, hf3, one_apply]
   let v₀ : vectorsProdEqOne G p :=
-    ⟨Vector.replicate p 1, (List.prod_replicate p 1).trans (one_pow p)⟩
+    ⟨List.Vector.replicate p 1, (List.prod_replicate p 1).trans (one_pow p)⟩
   have hv₀ : σ v₀ = v₀ := Subtype.ext (Subtype.ext (List.rotate_replicate (1 : G) p 1))
   obtain ⟨v, hv1, hv2⟩ := exists_fixed_point_of_prime' Scard hσ hv₀
   refine
@@ -507,7 +507,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
       (List.rotate_one_eq_self_iff_eq_replicate.mp (Subtype.ext_iff.mp (Subtype.ext_iff.mp hv1)))
   · rw [← List.prod_replicate, ← v.1.2, ← hg, show v.val.val.prod = 1 from v.2]
   · rw [Subtype.ext_iff_val, Subtype.ext_iff_val, hg, hg', v.1.2]
-    simp only [v₀, Vector.replicate]
+    simp only [v₀, List.Vector.replicate]
 
 -- TODO: Make the `Finite` version of this theorem the default
 /-- For every prime `p` dividing the order of a finite additive group `G` there exists an element of

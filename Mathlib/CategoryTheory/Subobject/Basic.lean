@@ -96,9 +96,8 @@ with morphisms becoming inequalities, and isomorphisms becoming equations.
 def Subobject (X : C) :=
   ThinSkeleton (MonoOver X)
 
-instance (X : C) : PartialOrder (Subobject X) := by
-  dsimp only [Subobject]
-  infer_instance
+instance (X : C) : PartialOrder (Subobject X) :=
+  inferInstanceAs <| PartialOrder (ThinSkeleton (MonoOver X))
 
 namespace Subobject
 
