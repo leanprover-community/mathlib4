@@ -527,19 +527,6 @@ protected lemma div_le_self' (m n : ℕ) : m / n ≤ m := by
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
   conv => rhs; rw [← Nat.mod_add_div n 2, hn, Nat.add_sub_cancel_left]
 
-lemma div_eq_self : m / n = m ↔ m = 0 ∨ n = 1 := by
-  constructor
-  · intro
-    match n with
-    | 0 => simp_all
-    | 1 => right; rfl
-    | n+2 =>
-      left
-      have : m / (n + 2) ≤ m / 2 := div_le_div_left (by simp) (by decide)
-      refine eq_zero_of_le_half ?_
-      simp_all
-  · rintro (rfl | rfl) <;> simp
-
 lemma div_eq_sub_mod_div : m / n = (m - m % n) / n := by
   obtain rfl | hn := n.eq_zero_or_pos
   · rw [Nat.div_zero, Nat.div_zero]
@@ -622,14 +609,6 @@ lemma sq_sub_sq (a b : ℕ) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
   simpa [Nat.pow_succ] using Nat.mul_self_sub_mul_self_eq a b
 
 alias pow_two_sub_pow_two := sq_sub_sq
-
-protected lemma div_pow (h : a ∣ b) : (b / a) ^ c = b ^ c / a ^ c := by
-  obtain rfl | hc := c.eq_zero_or_pos
-  · simp
-  obtain rfl | ha := a.eq_zero_or_pos
-  · simp [Nat.zero_pow hc]
-  refine (Nat.div_eq_of_eq_mul_right (Nat.pow_pos ha) ?_).symm
-  rw [← Nat.mul_pow, Nat.mul_div_cancel_left' h]
 
 protected lemma pow_pos_iff : 0 < a ^ n ↔ 0 < a ∨ n = 0 := by
   simp [Nat.pos_iff_ne_zero, Decidable.imp_iff_not_or]
@@ -1036,16 +1015,6 @@ protected lemma dvd_add_left (h : a ∣ c) : a ∣ b + c ↔ a ∣ b := (Nat.dvd
 
 protected lemma dvd_add_right (h : a ∣ b) : a ∣ b + c ↔ a ∣ c := (Nat.dvd_add_iff_right h).symm
 
-/-- special case of `mul_dvd_mul_iff_left` for `ℕ`.
-Duplicated here to keep simple imports for this file. -/
-protected lemma mul_dvd_mul_iff_left (ha : 0 < a) : a * b ∣ a * c ↔ b ∣ c :=
-  exists_congr fun d ↦ by rw [Nat.mul_assoc, Nat.mul_right_inj <| ne_of_gt ha]
-
-/-- special case of `mul_dvd_mul_iff_right` for `ℕ`.
-Duplicated here to keep simple imports for this file. -/
-protected lemma mul_dvd_mul_iff_right (hc : 0 < c) : a * c ∣ b * c ↔ a ∣ b :=
-  exists_congr fun d ↦ by rw [Nat.mul_right_comm, Nat.mul_left_inj <| ne_of_gt hc]
-
 -- Moved to Batteries
 
 lemma add_mod_eq_add_mod_right (c : ℕ) (H : a % d = b % d) : (a + c) % d = (b + c) % d := by
@@ -1117,12 +1086,6 @@ lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c := by
   obtain ⟨e, rfl⟩ := hdiv
   rw [← Nat.mul_assoc, Nat.mul_comm _ (a / b), Nat.div_mul_cancel h]
   exact Nat.dvd_mul_right a e
-
-@[simp] lemma div_dvd_iff_dvd_mul (h : b ∣ a) (hb : b ≠ 0) : a / b ∣ c ↔ a ∣ b * c :=
-  exists_congr <| fun d => by
-  have := Nat.dvd_trans (Nat.dvd_mul_left _ d) (Nat.mul_dvd_mul_left d h)
-  rw [eq_comm, Nat.mul_comm, ← Nat.mul_div_assoc d h,
-    Nat.div_eq_iff_eq_mul_right (Nat.pos_of_ne_zero hb) this, Nat.mul_comm, eq_comm]
 
 @[simp] lemma div_div_div_eq_div (dvd : b ∣ a) (dvd2 : a ∣ c) : c / (a / b) / b = c / a :=
   match a, b, c with
