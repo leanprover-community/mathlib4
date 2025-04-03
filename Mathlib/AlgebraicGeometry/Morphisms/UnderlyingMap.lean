@@ -28,7 +28,7 @@ open CategoryTheory Topology TopologicalSpace
 
 namespace AlgebraicGeometry
 
-universe u
+universe u v
 
 section Injective
 
@@ -95,6 +95,20 @@ lemma range_eq_range_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) 
 lemma mem_range_iff_of_surjective {S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) (e : X ⟶ Y)
     [Surjective e] (hge : e ≫ g = f) (s : S) : s ∈ Set.range f.base ↔ s ∈ Set.range g.base := by
   rw [range_eq_range_of_surjective f g e hge]
+
+lemma Surjective.sigmaDesc_of_union_range_eq_univ {X : Scheme.{u}}
+    {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}} {f : ∀ i, Y i ⟶ X}
+    (H : ⋃ i, Set.range (f i).base = Set.univ) : Surjective (Limits.Sigma.desc f) := by
+  refine ⟨fun x ↦ ?_⟩
+  simp_rw [Set.eq_univ_iff_forall, Set.mem_iUnion] at H
+  obtain ⟨i, x, rfl⟩ := H x
+  use (Limits.Sigma.ι (fun i ↦ Y i) i).base x
+  rw [← Scheme.comp_base_apply, Limits.Sigma.ι_desc]
+
+instance {X : Scheme.{u}} {P : MorphismProperty Scheme.{u}} (𝒰 : X.Cover P) :
+    Surjective (Limits.Sigma.desc fun i ↦ 𝒰.map i) :=
+  Surjective.sigmaDesc_of_union_range_eq_univ 𝒰.iUnion_range
+
 end Surjective
 
 section Injective

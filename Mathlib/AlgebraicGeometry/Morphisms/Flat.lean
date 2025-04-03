@@ -80,6 +80,10 @@ lemma stalkMap [Flat f] (x : X) : (f.stalkMap x).hom.Flat :=
 lemma iff_flat_stalkMap : Flat f ↔ ∀ x, (f.stalkMap x).hom.Flat :=
   ⟨fun _ ↦ stalkMap f, fun H ↦ of_stalkMap f H⟩
 
+instance {X : Scheme.{u}} {ι : Type v} [Small.{u} ι] {Y : ι → Scheme.{u}} {f : ∀ i, Y i ⟶ X}
+    [∀ i, Flat (f i)] : Flat (Sigma.desc f) :=
+  IsLocalAtSource.sigmaDesc (fun _ ↦ inferInstance)
+
 /-- A surjective, quasi-compact, flat morphism is a quotient map. -/
 @[stacks 02JY]
 lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [QuasiCompact f]
@@ -102,13 +106,6 @@ lemma isQuotientMap_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y) [Flat f] [Qua
     let 𝒰 := X.affineCover.finiteSubcover
     let p : ∐ (fun i : 𝒰.J ↦ 𝒰.obj i) ⟶ X := Sigma.desc (fun i ↦ 𝒰.map i)
     have _ (i : 𝒰.J) : IsAffine (𝒰.obj i) := inferInstanceAs <| IsAffine (X.affineCover.obj _)
-    have _ : Flat p := by
-      rw [IsLocalAtSource.iff_of_openCover (P := @Flat) (sigmaOpenCover _)]
-      exact fun i ↦ by simpa [p] using IsLocalAtSource.of_isOpenImmersion _
-    have _ : Surjective p := ⟨fun x ↦ by
-      obtain ⟨i, x, rfl⟩ := X.affineCover.finiteSubcover.exists_eq x
-      use (Sigma.ι (fun i ↦ X.affineCover.finiteSubcover.obj i) i).base x
-      rw [← Scheme.comp_base_apply, Sigma.ι_desc]⟩
     refine this (f := (∐ (fun i : 𝒰.J ↦ 𝒰.obj i)).isoSpec.inv ≫ p ≫ f) _ _ ?_ ⟨_, rfl⟩
     rw [← Category.assoc, Scheme.comp_base, TopCat.coe_comp, Set.preimage_comp]
     exact hs.preimage (_ ≫ p).continuous
