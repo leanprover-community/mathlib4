@@ -509,7 +509,8 @@ theorem vec3_dotProduct' {a₀ a₁ a₂ b₀ b₁ b₂ : α} :
   rw [cons_dotProduct_cons, cons_dotProduct_cons, cons_dotProduct_cons, dotProduct_empty,
     add_zero, add_assoc]
 
-@[simp]
+-- This is not tagged `@[simp]` because it does not mesh well with simp lemmas for
+-- dot and cross products in dimension 3.
 theorem vec3_dotProduct (v w : Fin 3 → α) : v ⬝ᵥ w = v 0 * w 0 + v 1 * w 1 + v 2 * w 2 :=
   vec3_dotProduct'
 

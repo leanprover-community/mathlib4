@@ -188,10 +188,8 @@ theorem det_eq_det_toMatrix_of_finset [DecidableEq M] {s : Finset M} (b : Basis 
 theorem det_toMatrix (b : Basis ι A M) (f : M →ₗ[A] M) :
     Matrix.det (toMatrix b b f) = LinearMap.det f := by
   haveI := Classical.decEq M
-  rw [det_eq_det_toMatrix_of_finset b.reindexFinsetRange]
-  -- Porting note: moved out of `rw` due to error
-  -- typeclass instance problem is stuck, it is often due to metavariables `DecidableEq ?m.628881`
-  apply det_toMatrix_eq_det_toMatrix b
+  rw [det_eq_det_toMatrix_of_finset b.reindexFinsetRange,
+    det_toMatrix_eq_det_toMatrix b b.reindexFinsetRange]
 
 @[simp]
 theorem det_toMatrix' {ι : Type*} [Fintype ι] [DecidableEq ι] (f : (ι → A) →ₗ[A] ι → A) :
@@ -212,12 +210,13 @@ theorem det_toLin' (f : Matrix ι ι R) : LinearMap.det (Matrix.toLin' f) = Matr
 theorem det_cases [DecidableEq M] {P : A → Prop} (f : M →ₗ[A] M)
     (hb : ∀ (s : Finset M) (b : Basis s A M), P (Matrix.det (toMatrix b b f))) (h1 : P 1) :
     P (LinearMap.det f) := by
-  rw [LinearMap.det_def]
-  split_ifs with h
-  · convert hb _ h.choose_spec.some
-    -- Porting note: was `apply det_aux_def'`
-    convert detAux_def'' (Trunc.mk h.choose_spec.some) h.choose_spec.some f
-  · exact h1
+  classical
+  if H : ∃ s : Finset M, Nonempty (Basis s A M) then
+    obtain ⟨s, ⟨b⟩⟩ := H
+    rw [← det_toMatrix b]
+    exact hb s b
+  else
+    rwa [LinearMap.det_def, dif_neg H]
 
 @[simp]
 theorem det_comp (f g : M →ₗ[A] M) :
@@ -493,17 +492,16 @@ multilinear map. -/
 nonrec def Basis.det : M [⋀^ι]→ₗ[R] R where
   toFun v := det (e.toMatrix v)
   map_update_add' := by
+    rename_i hι _
     intro inst v i x y
-    cases Subsingleton.elim inst ‹_›
-    simp only [e.toMatrix_update, LinearEquiv.map_add, Finsupp.coe_add]
-    -- Porting note: was `exact det_update_column_add _ _ _ _`
-    convert det_updateCol_add (e.toMatrix v) i (e.repr x) (e.repr y)
+    cases Subsingleton.elim inst hι
+    simp only [e.toMatrix_update, LinearEquiv.map_add, Finsupp.coe_add, det_updateCol_add]
   map_update_smul' := by
+    rename_i hι _
     intro inst u i c x
-    cases Subsingleton.elim inst ‹_›
+    cases Subsingleton.elim inst hι
     simp only [e.toMatrix_update, Algebra.id.smul_eq_mul, LinearEquiv.map_smul]
-    -- Porting note: was `apply det_update_column_smul`
-    convert det_updateCol_smul (e.toMatrix u) i c (e.repr x)
+    apply det_updateCol_smul
   map_eq_zero_of_eq' := by
     intro v i j h hij
     rw [← Function.update_eq_self i v, h, ← det_transpose, e.toMatrix_update, ← updateRow_transpose,
