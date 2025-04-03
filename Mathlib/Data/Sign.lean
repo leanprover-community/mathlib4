@@ -212,8 +212,12 @@ def cast : SignType → α
   | pos => 1
   | neg => -1
 
-/-- This is a `Coe` since the type on the right (trivially) determines the type on the left. -/
-instance : Coe SignType α :=
+/-- This is a `CoeTail` since the type on the right (trivially) determines the type on the left.
+
+`outParam`-wise it could be a `Coe`, but we don't want to try applying this instance for a
+coercion to any `α`.
+-/
+instance : CoeTail SignType α :=
   ⟨cast⟩
 
 /-- Casting out of `SignType` respects composition with functions preserving `0, 1, -1`. -/
@@ -290,7 +294,7 @@ open SignType
 
 section Preorder
 
-variable [Zero α] [Preorder α] [DecidableRel ((· < ·) : α → α → Prop)] {a : α}
+variable [Zero α] [Preorder α] [DecidableLT α] {a : α}
 
 /-- The sign of an element is 1 if it's positive, -1 if negative, 0 otherwise. -/
 def SignType.sign : α →o SignType :=
@@ -332,7 +336,7 @@ section LinearOrder
 variable [Zero α] [LinearOrder α] {a : α}
 
 /-- `SignType.sign` respects strictly monotone zero-preserving maps. -/
-lemma StrictMono.sign_comp {β F : Type*} [Zero β] [Preorder β] [DecidableRel ((· < ·) : β → β → _)]
+lemma StrictMono.sign_comp {β F : Type*} [Zero β] [Preorder β] [DecidableLT β]
     [FunLike F α β] [ZeroHomClass F α β] {f : F} (hf : StrictMono f) (a : α) :
     sign (f a) = sign a := by
   simp only [sign_apply, ← map_zero f, hf.lt_iff_lt]
@@ -366,7 +370,7 @@ end LinearOrder
 
 section OrderedSemiring
 
-variable [OrderedSemiring α] [DecidableRel ((· < ·) : α → α → Prop)] [Nontrivial α]
+variable [OrderedSemiring α] [DecidableLT α] [Nontrivial α]
 
 theorem sign_one : sign (1 : α) = 1 :=
   sign_pos zero_lt_one
@@ -376,8 +380,7 @@ end OrderedSemiring
 section OrderedRing
 
 @[simp]
-lemma sign_intCast {α : Type*} [OrderedRing α] [Nontrivial α]
-    [DecidableRel ((· < ·) : α → α → Prop)] (n : ℤ) :
+lemma sign_intCast {α : Type*} [OrderedRing α] [Nontrivial α] [DecidableLT α] (n : ℤ) :
     sign (n : α) = sign n := by
   simp only [sign_apply, Int.cast_pos, Int.cast_lt_zero]
 
@@ -422,7 +425,7 @@ end LinearOrderedRing
 
 section AddGroup
 
-variable [AddGroup α] [Preorder α] [DecidableRel ((· < ·) : α → α → Prop)]
+variable [AddGroup α] [Preorder α] [DecidableLT α]
 
 theorem Left.sign_neg [AddLeftStrictMono α] (a : α) : sign (-a) = -sign a := by
   simp_rw [sign_apply, Left.neg_pos_iff, Left.neg_neg_iff]

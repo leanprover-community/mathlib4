@@ -43,8 +43,8 @@ variable {x : X} {U V W : OpenNhds x}
 
 instance partialOrder (x : X) : PartialOrder (OpenNhds x) where
   le U V := U.1 ≤ V.1
-  le_refl _ := by dsimp [LE.le]; exact le_rfl
-  le_trans _ _ _ := by dsimp [LE.le]; exact le_trans
+  le_refl _ := le_rfl
+  le_trans _ _ _ := le_trans
   le_antisymm _ _ i j := ObjectProperty.FullSubcategory.ext <| le_antisymm i j
 
 instance (x : X) : Lattice (OpenNhds x) :=

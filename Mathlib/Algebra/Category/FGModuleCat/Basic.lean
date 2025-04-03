@@ -33,7 +33,7 @@ and then as a right-rigid monoidal category.
 
 noncomputable section
 
-open CategoryTheory ModuleCat.monoidalCategory
+open CategoryTheory
 
 universe u
 

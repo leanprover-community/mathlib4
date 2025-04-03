@@ -49,6 +49,7 @@ This isn't an instance because it's not usually how we want to construct interna
 we'll usually prove all objects are closed uniformly.
 -/
 def tensorClosed {X Y : C} (hX : Closed X) (hY : Closed Y) : Closed (X ⊗ Y) where
+  rightAdj := Closed.rightAdj X ⋙ Closed.rightAdj Y
   adj := (hY.adj.comp hX.adj).ofNatIsoLeft (MonoidalCategory.tensorLeftTensor X Y).symm
 
 /-- The unit object is always closed.
@@ -496,6 +497,5 @@ lemma curry'_comp {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y) (g : Y ⟶ Z) 
 end OrdinaryEnriched
 
 end MonoidalClosed
-attribute [nolint simpNF] CategoryTheory.MonoidalClosed.homEquiv_apply_eq
-  CategoryTheory.MonoidalClosed.homEquiv_symm_apply_eq
+
 end CategoryTheory

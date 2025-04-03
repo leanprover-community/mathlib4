@@ -326,7 +326,7 @@ theorem IsSt.map₂ {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) {
   rcases ofSeq_surjective x with ⟨x, rfl⟩
   rcases ofSeq_surjective y with ⟨y, rfl⟩
   rw [isSt_ofSeq_iff_tendsto] at hxr hys
-  exact isSt_ofSeq_iff_tendsto.2 <| hf.tendsto.comp (hxr.prod_mk_nhds hys)
+  exact isSt_ofSeq_iff_tendsto.2 <| hf.tendsto.comp (hxr.prodMk_nhds hys)
 
 theorem IsSt.add {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) :
     IsSt (x + y) (r + s) := hxr.map₂ hys continuous_add.continuousAt

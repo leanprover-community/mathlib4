@@ -125,7 +125,8 @@ instance (j : ConnectedComponents J) : IsConnected j.Component := by
   refine ⟨l.pmap f hf, ?_, ?_⟩
   · refine @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => ?_) _ _ hl₁ h₁₂ _
     exact zag_of_zag_obj (ConnectedComponents.ι _) h
-  · have := List.getLast_pmap f (j₁ :: l) (by simpa [h₁₂] using hf) (List.cons_ne_nil _ _)
+  · have := List.getLast_pmap (f := f) (xs := j₁ :: l) (by simpa [h₁₂] using hf)
+      (List.cons_ne_nil _ _)
     simp only [List.pmap_cons] at this
     rw [this]
     exact ObjectProperty.FullSubcategory.ext hl₂

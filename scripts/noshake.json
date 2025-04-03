@@ -213,7 +213,7 @@
   "Mathlib.Tactic.Widget.SelectPanelUtils":
   ["ProofWidgets.Component.OfRpcMethod"],
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
-  "Mathlib.Tactic.Use": ["Batteries.Logic"],
+  "Mathlib.Tactic.Use": ["Batteries.Logic", "Mathlib.Tactic.WithoutCDot"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.TautoSet":
   ["Mathlib.Data.Set.Disjoint", "Mathlib.Data.Set.SymmDiff"],
@@ -291,6 +291,7 @@
    "Mathlib.Tactic.ProxyType"],
   "Mathlib.Tactic.ContinuousFunctionalCalculus": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Tactic.Continuity": ["Mathlib.Tactic.Continuity.Init"],
+  "Mathlib.Tactic.CongrM": ["Mathlib.Tactic.WithoutCDot"],
   "Mathlib.Tactic.CongrExclamation": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Choose": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Tactic.CategoryTheory.ToApp":
@@ -327,6 +328,8 @@
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.Tactic.Algebraize": ["Mathlib.Algebra.Algebra.Tower"],
   "Mathlib.RingTheory.SimpleModule.Basic": ["Mathlib.Data.Matrix.Mul"],
+  "Mathlib.RingTheory.PowerSeries.Evaluation":
+  ["Mathlib.RingTheory.PowerSeries.PiTopology"],
   "Mathlib.RingTheory.PowerSeries.Basic":
   ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
   "Mathlib.RingTheory.MvPowerSeries.Basic":
@@ -373,7 +376,8 @@
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Function.Defs": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Logic.Function.Basic": ["Batteries.Tactic.Init"],
-  "Mathlib.Logic.Equiv.Defs": ["Mathlib.Data.Bool.Basic"],
+  "Mathlib.Logic.Equiv.Defs":
+  ["Mathlib.Data.Bool.Basic", "Mathlib.Data.Subtype"],
   "Mathlib.Logic.Basic": ["Batteries.Tactic.Trans"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.LinearAlgebra.DFinsupp": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
@@ -412,6 +416,8 @@
   "Mathlib.Data.Nat.Init": ["Batteries.Tactic.Init"],
   "Mathlib.Data.Nat.Find": ["Batteries.WF"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],
+  "Mathlib.Data.List.Sigma": ["Batteries.Tactic.Congr"],
+  "Mathlib.Data.List.Rotate": ["Mathlib.Data.Quot"],
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],
   "Mathlib.Data.List.ProdSigma":
   ["Batteries.Data.Nat.Lemmas", "Mathlib.Data.List.Basic"],
@@ -500,6 +506,10 @@
   "Mathlib.Algebra.GroupWithZero.Units.Basic": ["Mathlib.Data.Int.Basic"],
   "Mathlib.Algebra.Group.Units.Basic": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.Group.Units": ["Mathlib.Tactic.Subsingleton"],
+  "Mathlib.Algebra.Group.Pointwise.Set.Scalar":
+  ["Mathlib.Algebra.Group.Pointwise.Set.Basic"],
+  "Mathlib.Algebra.Group.Pointwise.Finset.Scalar":
+  ["Mathlib.Algebra.Group.Pointwise.Finset.Basic"],
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.Algebra.Group.Idempotent": ["Mathlib.Data.Subtype"],
   "Mathlib.Algebra.Group.Defs": ["Mathlib.Tactic.OfNat"],
