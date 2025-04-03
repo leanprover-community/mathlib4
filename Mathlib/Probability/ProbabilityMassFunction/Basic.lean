@@ -225,8 +225,8 @@ theorem toOuterMeasure_mono {s t : Set α} (h : s ∩ p.support ⊆ t) :
 
 theorem toOuterMeasure_apply_eq_of_inter_support_eq {s t : Set α}
     (h : s ∩ p.support = t ∩ p.support) : p.toOuterMeasure s = p.toOuterMeasure t :=
-  le_antisymm (p.toOuterMeasure_mono (h.symm ▸ Set.inter_subset_left t p.support))
-    (p.toOuterMeasure_mono (h ▸ Set.inter_subset_left s p.support))
+  le_antisymm (p.toOuterMeasure_mono (h.symm ▸ Set.inter_subset_left))
+    (p.toOuterMeasure_mono (h ▸ Set.inter_subset_left))
 #align pmf.to_outer_measure_apply_eq_of_inter_support_eq PMF.toOuterMeasure_apply_eq_of_inter_support_eq
 
 @[simp]
@@ -283,7 +283,7 @@ theorem toMeasure_apply_inter_support (hs : MeasurableSet s) (hp : MeasurableSet
 #align pmf.to_measure_apply_inter_support PMF.toMeasure_apply_inter_support
 
 @[simp]
-theorem restrict_toMeasure_support [MeasurableSingletonClass α]  (p : PMF α) :
+theorem restrict_toMeasure_support [MeasurableSingletonClass α] (p : PMF α) :
     Measure.restrict (toMeasure p) (support p) = toMeasure p := by
   ext s hs
   apply (MeasureTheory.Measure.restrict_apply hs).trans

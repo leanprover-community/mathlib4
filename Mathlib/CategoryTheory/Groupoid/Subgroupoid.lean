@@ -231,7 +231,6 @@ instance : InfSet (Subgroupoid C) :=
         rw [mem_iInter₂] at hp hq ⊢;
         exact fun S hS => S.mul (hp S hS) (hq S hS) }⟩
 
--- Porting note (#10756): new lemma
 theorem mem_sInf_arrows {s : Set (Subgroupoid C)} {c d : C} {p : c ⟶ d} :
     p ∈ (sInf s).arrows c d ↔ ∀ S ∈ s, p ∈ S.arrows c d :=
   mem_iInter₂

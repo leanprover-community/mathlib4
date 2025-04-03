@@ -172,7 +172,7 @@ end MonModuleEquivalenceAlgebra
 
 open MonModuleEquivalenceAlgebra
 
-set_option maxHeartbeats 500000 in
+set_option maxHeartbeats 400000 in
 /-- The category of internal monoid objects in `ModuleCat R`
 is equivalent to the category of "native" bundled `R`-algebras.
 -/

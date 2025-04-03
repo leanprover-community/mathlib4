@@ -262,13 +262,10 @@ theorem map_eq_lift_desc'_left (α β h) :
             erw [← reassoc_of% α.w]
             simp))
         (by
-          -- Porting note: used to be ext
-          apply homology'.hom_from_ext
+          ext
           simp) := by
   rw [map_eq_desc'_lift_left]
-  -- Porting note: once was known as ext
-  apply homology'.hom_to_ext
-  apply homology'.hom_from_ext
+  ext
   simp
 #align homology.map_eq_lift_desc'_left homology'.map_eq_lift_desc'_left
 
@@ -295,13 +292,10 @@ theorem map_eq_lift_desc'_right (α β h) :
             erw [← reassoc_of% α.w]
             simp))
         (by
-          -- Porting note: once was known as ext
-          apply homology'.hom_from_ext
+          ext
           simp [h]) := by
   rw [map_eq_desc'_lift_right]
-  -- Porting note: once was known as ext
-  apply homology'.hom_to_ext
-  apply homology'.hom_from_ext
+  ext
   simp
 #align homology.map_eq_lift_desc'_right homology'.map_eq_lift_desc'_right
 
@@ -310,8 +304,7 @@ theorem map_ι (α β h) :
     map w w' α β h ≫ ι f' g' w' =
       ι f g w ≫ cokernel.map f f' α.left β.left (by simp [h, β.w.symm]) := by
   rw [map_eq_lift_desc'_left, lift_ι]
-  -- Porting note: once was known as ext
-  apply homology'.hom_from_ext
+  ext
   simp only [← Category.assoc]
   rw [π'_ι, π'_desc', Category.assoc, Category.assoc, cokernel.π_desc]
 #align homology.map_ι homology'.map_ι

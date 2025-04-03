@@ -294,6 +294,12 @@ variable (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac)
 lemma cfc_apply : cfc f a = cfcHom (a := a) ha ⟨_, hf.restrict⟩ := by
   rw [cfc_def, dif_pos ⟨ha, hf⟩]
 
+lemma cfc_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha : p a := by cfc_tac)
+    (hf : ∀ i, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
+    (fun i => cfc (f i) a) = (fun i => cfcHom (a := a) ha ⟨_, (hf i).restrict⟩) := by
+  ext i
+  simp only [cfc_apply (f i) a ha (hf i)]
+
 lemma cfc_apply_of_not_and {f : R → R} (a : A) (ha : ¬ (p a ∧ ContinuousOn f (spectrum R a))) :
     cfc f a = 0 := by
   rw [cfc_def, dif_neg ha]
@@ -409,6 +415,28 @@ lemma cfc_add (f g : R → R) (hf : ContinuousOn f (spectrum R a) := by cfc_cont
   · rw [cfc_apply f a, cfc_apply g a, ← map_add, cfc_apply _ a]
     congr
   · simp [cfc_apply_of_not_predicate a ha]
+
+open Finset in
+lemma cfc_sum {ι : Type*} (f : ι → R → R) (a : A) (s : Finset ι)
+    (hf : ∀ i ∈ s, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
+    cfc (∑ i in s, f i)  a = ∑ i in s, cfc (f i) a := by
+  by_cases ha : p a
+  · have hsum : s.sum f = fun z => ∑ i ∈ s, f i z := by ext; simp
+    have hf' : ContinuousOn (∑ i : s, f i) (spectrum R a) := by
+      rw [sum_coe_sort s, hsum]
+      exact continuousOn_finset_sum s fun i hi => hf i hi
+    rw [← sum_coe_sort s, ← sum_coe_sort s]
+    rw [cfc_apply_pi _ a _ (fun ⟨i, hi⟩ => hf i hi), ← map_sum, cfc_apply _ a ha hf']
+    congr 1
+    ext
+    simp
+  · simp [cfc_apply_of_not_predicate a ha]
+
+open Finset in
+lemma cfc_sum_univ {ι : Type*} [Fintype ι] (f : ι → R → R) (a : A)
+    (hf : ∀ i, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
+    cfc (∑ i, f i) a = ∑ i, cfc (f i) a :=
+  cfc_sum f a _ fun i _ ↦ hf i
 
 lemma cfc_smul {S : Type*} [SMul S R] [ContinuousConstSMul S R]
     [SMulZeroClass S A] [IsScalarTower S R A] [IsScalarTower S R (R → R)]

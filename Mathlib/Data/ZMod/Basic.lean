@@ -3,8 +3,8 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.Ring.Prod
+import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.FinCases
 
 #align_import data.zmod.basic from "leanprover-community/mathlib"@"74ad1c88c77e799d2fea62801d1dbbd698cff1b7"
@@ -491,6 +491,21 @@ noncomputable def ringEquiv [Fintype R] (h : Fintype.card R = n) : ZMod n ≃+* 
   RingEquiv.ofBijective _ (ZMod.castHom_bijective R h)
 #align zmod.ring_equiv ZMod.ringEquiv
 
+/-- The unique ring isomorphism between `ZMod p` and a ring `R` of cardinality a prime `p`.
+
+If you need any property of this isomorphism, first of all use `ringEquivOfPrime_eq_ringEquiv`
+below (after `have : CharP R p := ...`) and deduce it by the results about `ZMod.ringEquiv`.  -/
+noncomputable def ringEquivOfPrime [Fintype R] {p : ℕ} (hp : p.Prime) (hR : Fintype.card R = p) :
+    ZMod p ≃+* R :=
+  have : Nontrivial R := Fintype.one_lt_card_iff_nontrivial.1 (hR ▸ hp.one_lt)
+  -- The following line exists as `charP_of_card_eq_prime` in `Mathlib.Algebra.CharP.CharAndCard`.
+  have : CharP R p := (CharP.charP_iff_prime_eq_zero hp).2 (hR ▸ Nat.cast_card_eq_zero R)
+  ZMod.ringEquiv R hR
+
+@[simp]
+lemma ringEquivOfPrime_eq_ringEquiv [Fintype R] {p : ℕ} [CharP R p] (hp : p.Prime)
+    (hR : Fintype.card R = p) : ringEquivOfPrime R hp hR = ringEquiv R hR := rfl
+
 /-- The identity between `ZMod m` and `ZMod n` when `m = n`, as a ring isomorphism. -/
 def ringEquivCongr {m n : ℕ} (h : m = n) : ZMod m ≃+* ZMod n := by
   cases' m with m <;> cases' n with n
@@ -708,7 +723,7 @@ theorem cast_zmod_eq_zero_iff_of_le {m n : ℕ} [NeZero m] (h : m ≤ n) (a : ZM
   exact Injective.eq_iff' (cast_injective_of_le h) rfl
 
 -- Porting note: commented
--- attribute [local semireducible] Int.NonNeg
+-- unseal Int.NonNeg
 
 @[simp]
 theorem natCast_toNat (p : ℕ) : ∀ {z : ℤ} (_h : 0 ≤ z), (z.toNat : ZMod p) = z

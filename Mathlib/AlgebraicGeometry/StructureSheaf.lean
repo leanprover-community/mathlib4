@@ -167,11 +167,11 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
   carrier := { f | (isLocallyFraction R).pred f }
   zero_mem' := by
     refine fun x => ⟨unop U, x.2, 𝟙 _, 0, 1, fun y => ⟨?_, ?_⟩⟩
-    · rw [← Ideal.ne_top_iff_one]; exact y.1.IsPrime.1
+    · rw [← Ideal.ne_top_iff_one]; exact y.1.isPrime.1
     · simp
   one_mem' := by
     refine fun x => ⟨unop U, x.2, 𝟙 _, 1, 1, fun y => ⟨?_, ?_⟩⟩
-    · rw [← Ideal.ne_top_iff_one]; exact y.1.IsPrime.1
+    · rw [← Ideal.ne_top_iff_one]; exact y.1.isPrime.1
     · simp
   add_mem' := by
     intro a b ha hb x
@@ -182,7 +182,7 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     rcases wa (Opens.infLELeft _ _ y) with ⟨nma, wa⟩
     rcases wb (Opens.infLERight _ _ y) with ⟨nmb, wb⟩
     fconstructor
-    · intro H; cases y.1.IsPrime.mem_or_mem H <;> contradiction
+    · intro H; cases y.1.isPrime.mem_or_mem H <;> contradiction
     · simp only [add_mul, RingHom.map_add, Pi.add_apply, RingHom.map_mul]
       erw [← wa, ← wb]
       simp only [mul_assoc]
@@ -208,7 +208,7 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
     rcases wa (Opens.infLELeft _ _ y) with ⟨nma, wa⟩
     rcases wb (Opens.infLERight _ _ y) with ⟨nmb, wb⟩
     fconstructor
-    · intro H; cases y.1.IsPrime.mem_or_mem H <;> contradiction
+    · intro H; cases y.1.isPrime.mem_or_mem H <;> contradiction
     · simp only [Pi.mul_apply, RingHom.map_mul]
       erw [← wa, ← wb]
       simp only [mul_left_comm, mul_assoc, mul_comm]

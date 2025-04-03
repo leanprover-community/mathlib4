@@ -481,7 +481,6 @@ theorem dist_integralSum_le_of_memBaseSet (h : Integrable I l f vol) (hpos₁ : 
     dist (integralSum f vol π₁) (integralSum f vol π₂) ≤ ε₁ + ε₂ := by
   rcases h₁.exists_common_compl h₂ HU with ⟨π, hπU, hπc₁, hπc₂⟩
   set r : ℝⁿ → Ioi (0 : ℝ) := fun x => min (h.convergenceR ε₁ c₁ x) (h.convergenceR ε₂ c₂ x)
-  have hr : l.RCond r := (h.convergenceR_cond _ c₁).min (h.convergenceR_cond _ c₂)
   set πr := π.toSubordinate r
   have H₁ :
     dist (integralSum f vol (π₁.unionComplToSubordinate π hπU r)) (integral I l f vol) ≤ ε₁ :=

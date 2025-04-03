@@ -251,15 +251,14 @@ theorem IsBlock.iff_subtype_val {C : SubMulAction G X} {B : Set C} :
     ← Set.image_eq_image Subtype.coe_injective]
   apply or_congr Iff.rfl
   simp only [Set.disjoint_iff, Set.subset_empty_iff, Set.image_eq_empty,
-    ← (Set.injOn_of_injective C.inclusion_injective _).image_inter
-        (Set.subset_univ _) (Set.subset_univ _)]
+    ← C.inclusion_injective.injOn.image_inter (Set.subset_univ _) (Set.subset_univ _)]
 
 theorem IsBlock.iff_top (B : Set X) :
     IsBlock G B ↔ IsBlock (⊤ : Subgroup G) B := by
   simp only [IsBlock.def_one]
   constructor
-  intro h g; exact h g
-  intro h g; exact h ⟨g, Subgroup.mem_top g⟩
+  · intro h g; exact h g
+  · intro h g; exact h ⟨g, Subgroup.mem_top g⟩
 
 /-- The intersection of two blocks is a block -/
 theorem IsBlock.inter {B₁ B₂ : Set X} (h₁ : IsBlock G B₁) (h₂ : IsBlock G B₂) :

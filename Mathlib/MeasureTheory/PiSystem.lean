@@ -485,7 +485,7 @@ theorem subset_piiUnionInter {π : ι → Set (Set α)} {S : Set ι} {i : ι} (h
     rwa [hj]
   refine Subset.trans ?_ (piiUnionInter_mono_right h_ss)
   rw [piiUnionInter_singleton]
-  exact subset_union_left _ _
+  exact subset_union_left
 #align subset_pi_Union_Inter subset_piiUnionInter
 
 theorem mem_piiUnionInter_of_measurableSet (m : ι → MeasurableSpace α) {S : Set ι} {i : ι}
@@ -677,12 +677,12 @@ def restrictOn {s : Set α} (h : d.Has s) : DynkinSystem α where
     rw [this]
     exact
       d.has_diff (d.has_compl hts) (d.has_compl h)
-        (compl_subset_compl.mpr <| inter_subset_right _ _)
+        (compl_subset_compl.mpr inter_subset_right)
   has_iUnion_nat {f} hd hf := by
     simp only []
     rw [iUnion_inter]
     refine d.has_iUnion_nat ?_ hf
-    exact hd.mono fun i j => Disjoint.mono (inter_subset_left _ _) (inter_subset_left _ _)
+    exact hd.mono fun i j => Disjoint.mono inter_subset_left inter_subset_left
 #align measurable_space.dynkin_system.restrict_on MeasurableSpace.DynkinSystem.restrictOn
 
 theorem generate_le {s : Set (Set α)} (h : ∀ t ∈ s, d.Has t) : generate s ≤ d := fun _ ht =>

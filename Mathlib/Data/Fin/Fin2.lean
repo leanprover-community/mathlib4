@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Mathport.Rename
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Logic.Function.Basic
 
 #align_import data.fin.fin2 from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -125,6 +126,32 @@ def ofNat' : ∀ {n} (m) [IsLT m n], Fin2 n
   | succ _, 0, _ => fz
   | succ n, succ m, h => fs (@ofNat' n m ⟨lt_of_succ_lt_succ h.h⟩)
 #align fin2.of_nat' Fin2.ofNat'
+
+/-- `castSucc i` embeds `i : Fin2 n` in `Fin2 (n+1)`. -/
+def castSucc {n} : Fin2 n → Fin2 (n + 1)
+  | fz   => fz
+  | fs k => fs <| castSucc k
+
+/-- The greatest value of `Fin2 (n+1)`. -/
+def last : {n : Nat} → Fin2 (n+1)
+  | 0   => fz
+  | n+1 => fs (@last n)
+
+/-- Maps `0` to `n-1`, `1` to `n-2`, ..., `n-1` to `0`. -/
+def rev {n : Nat} : Fin2 n → Fin2 n
+  | .fz   => last
+  | .fs i => i.rev.castSucc
+
+@[simp] lemma rev_last {n} : rev (@last n) = fz := by
+  induction n <;> simp_all [rev, castSucc, last]
+
+@[simp] lemma rev_castSucc {n} (i : Fin2 n) : rev (castSucc i) = fs (rev i) := by
+  induction i <;> simp_all [rev, castSucc, last]
+
+@[simp] lemma rev_rev {n} (i : Fin2 n) : i.rev.rev = i := by
+  induction i <;> simp_all [rev]
+
+theorem rev_involutive {n} : Function.Involutive (@rev n) := rev_rev
 
 @[inherit_doc] local prefix:arg "&" => ofNat'
 

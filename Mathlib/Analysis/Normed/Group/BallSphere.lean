@@ -3,7 +3,7 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
 -/
-import Mathlib.Analysis.Normed.Group.Basic
+import Mathlib.Analysis.Normed.Group.Uniform
 
 #align_import analysis.normed.group.ball_sphere from "leanprover-community/mathlib"@"3339976e2bcae9f1c81e620836d1eb736e3c4700"
 

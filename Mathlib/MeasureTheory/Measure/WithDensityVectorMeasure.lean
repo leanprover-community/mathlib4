@@ -188,7 +188,7 @@ theorem withDensityᵥ_toReal {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) 
   rw [withDensityᵥ_apply hfi hi, toSignedMeasure_apply_measurable hi, withDensity_apply _ hi,
     integral_toReal hfm.restrict]
   refine ae_lt_top' hfm.restrict (ne_top_of_le_ne_top hf ?_)
-  conv_rhs => rw [← set_lintegral_univ]
+  conv_rhs => rw [← setLIntegral_univ]
   exact lintegral_mono_set (Set.subset_univ _)
 #align measure_theory.with_densityᵥ_to_real MeasureTheory.withDensityᵥ_toReal
 

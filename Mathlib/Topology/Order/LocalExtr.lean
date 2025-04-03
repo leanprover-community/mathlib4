@@ -116,15 +116,15 @@ theorem IsLocalExtrOn.on_subset {t : Set α} (hf : IsLocalExtrOn f t a) (h : s �
 #align is_local_extr_on.on_subset IsLocalExtrOn.on_subset
 
 theorem IsLocalMinOn.inter (hf : IsLocalMinOn f s a) (t) : IsLocalMinOn f (s ∩ t) a :=
-  hf.on_subset (inter_subset_left s t)
+  hf.on_subset inter_subset_left
 #align is_local_min_on.inter IsLocalMinOn.inter
 
 theorem IsLocalMaxOn.inter (hf : IsLocalMaxOn f s a) (t) : IsLocalMaxOn f (s ∩ t) a :=
-  hf.on_subset (inter_subset_left s t)
+  hf.on_subset inter_subset_left
 #align is_local_max_on.inter IsLocalMaxOn.inter
 
 theorem IsLocalExtrOn.inter (hf : IsLocalExtrOn f s a) (t) : IsLocalExtrOn f (s ∩ t) a :=
-  hf.on_subset (inter_subset_left s t)
+  hf.on_subset inter_subset_left
 #align is_local_extr_on.inter IsLocalExtrOn.inter
 
 theorem IsMinOn.localize (hf : IsMinOn f s a) : IsLocalMinOn f s a :=

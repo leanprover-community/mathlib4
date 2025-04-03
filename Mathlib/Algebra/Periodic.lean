@@ -194,7 +194,7 @@ theorem Periodic.sub_const [AddCommGroup α] (h : Periodic f c) (a : α) :
 #align function.periodic.sub_const Function.Periodic.sub_const
 
 theorem Periodic.nsmul [AddMonoid α] (h : Periodic f c) (n : ℕ) : Periodic f (n • c) := by
-  induction n <;> simp_all [Nat.succ_eq_add_one, add_nsmul, ← add_assoc, zero_nsmul]
+  induction n <;> simp_all [add_nsmul, ← add_assoc, zero_nsmul]
 #align function.periodic.nsmul Function.Periodic.nsmul
 
 theorem Periodic.nat_mul [Semiring α] (h : Periodic f c) (n : ℕ) : Periodic f (n * c) := by

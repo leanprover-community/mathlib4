@@ -570,11 +570,11 @@ variable [OrderedCommGroup α] {s t : Interval α}
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
   cases s
-  · simp [WithBot.none_eq_bot]
+  · simp
   cases t
-  · simp [WithBot.none_eq_bot]
-  · simp_rw [WithBot.some_eq_coe, ← NonemptyInterval.coe_mul_interval,
-      ← NonemptyInterval.coe_one_interval, WithBot.coe_inj, NonemptyInterval.coe_eq_pure]
+  · simp
+  · simp_rw [← NonemptyInterval.coe_mul_interval, ← NonemptyInterval.coe_one_interval,
+      WithBot.coe_inj, NonemptyInterval.coe_eq_pure]
     exact NonemptyInterval.mul_eq_one_iff
 #align interval.mul_eq_one_iff Interval.mul_eq_one_iff
 #align interval.add_eq_zero_iff Interval.add_eq_zero_iff

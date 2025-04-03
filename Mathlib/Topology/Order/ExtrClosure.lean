@@ -48,7 +48,7 @@ protected theorem IsLocalMaxOn.closure (h : IsLocalMaxOn f s a) (hc : Continuous
   · rwa [mem_closure_iff_nhdsWithin_neBot, nhdsWithin_inter_of_mem, ←
       mem_closure_iff_nhdsWithin_neBot]
     exact nhdsWithin_le_nhds (Uo.mem_nhds hxU)
-  · exact (hc _ hxs).mono ((inter_subset_right _ _).trans subset_closure)
+  · exact (hc _ hxs).mono (inter_subset_right.trans subset_closure)
 #align is_local_max_on.closure IsLocalMaxOn.closure
 
 protected theorem IsLocalMinOn.closure (h : IsLocalMinOn f s a) (hc : ContinuousOn f (closure s)) :

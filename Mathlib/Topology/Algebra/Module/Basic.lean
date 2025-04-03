@@ -29,6 +29,8 @@ Plain linear maps are denoted by `M →L[R] M₂` and star-linear maps by `M →
 The corresponding notation for equivalences is `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 -/
 
+assert_not_exists Star.star
+
 open LinearMap (ker range)
 open Topology Filter Pointwise
 
@@ -253,9 +255,6 @@ notation:25 M " →SL[" σ "] " M₂ => ContinuousLinearMap σ M M₂
 @[inherit_doc]
 notation:25 M " →L[" R "] " M₂ => ContinuousLinearMap (RingHom.id R) M M₂
 
-@[inherit_doc]
-notation:25 M " →L⋆[" R "] " M₂ => ContinuousLinearMap (starRingEnd R) M M₂
-
 /-- `ContinuousSemilinearMapClass F σ M M₂` asserts `F` is a type of bundled continuous
 `σ`-semilinear maps `M → M₂`.  See also `ContinuousLinearMapClass F R M M₂` for the case where
 `σ` is the identity map on `R`.  A map `f` between an `R`-module and an `S`-module over a ring
@@ -301,9 +300,6 @@ notation:50 M " ≃SL[" σ "] " M₂ => ContinuousLinearEquiv σ M M₂
 
 @[inherit_doc]
 notation:50 M " ≃L[" R "] " M₂ => ContinuousLinearEquiv (RingHom.id R) M M₂
-
-@[inherit_doc]
-notation:50 M " ≃L⋆[" R "] " M₂ => ContinuousLinearEquiv (starRingEnd R) M M₂
 
 /-- `ContinuousSemilinearEquivClass F σ M M₂` asserts `F` is a type of bundled continuous
 `σ`-semilinear equivs `M → M₂`.  See also `ContinuousLinearEquivClass F R M M₂` for the case
@@ -437,7 +433,7 @@ theorem coe_mk' (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ → M�
   rfl
 #align continuous_linear_map.coe_mk' ContinuousLinearMap.coe_mk'
 
-@[continuity]
+@[continuity, fun_prop]
 protected theorem continuous (f : M₁ →SL[σ₁₂] M₂) : Continuous f :=
   f.2
 #align continuous_linear_map.continuous ContinuousLinearMap.continuous
@@ -521,7 +517,7 @@ theorem map_smul_of_tower {R S : Type*} [Semiring S] [SMul R M₁] [Module S M�
   LinearMap.CompatibleSMul.map_smul (f : M₁ →ₗ[S] M₂) c x
 #align continuous_linear_map.map_smul_of_tower ContinuousLinearMap.map_smul_of_tower
 
-@[deprecated _root_.map_sum]
+@[deprecated _root_.map_sum (since := "2023-09-16")]
 protected theorem map_sum {ι : Type*} (f : M₁ →SL[σ₁₂] M₂) (s : Finset ι) (g : ι → M₁) :
     f (∑ i ∈ s, g i) = ∑ i ∈ s, f (g i) :=
   map_sum ..
@@ -1471,7 +1467,7 @@ instance addCommGroup : AddCommGroup (M →SL[σ₁₂] M₂) where
   zsmul := (· • ·)
   zsmul_zero' f := by ext; simp
   zsmul_succ' n f := by ext; simp [add_smul, add_comm]
-  zsmul_neg' n f := by ext; simp [Nat.succ_eq_add_one, add_smul]
+  zsmul_neg' n f := by ext; simp [add_smul]
   add_left_neg _ := by ext; apply add_left_neg
 #align continuous_linear_map.add_comm_group ContinuousLinearMap.addCommGroup
 
@@ -2754,7 +2750,7 @@ instance continuousSMul_quotient [TopologicalSpace R] [TopologicalAddGroup M] [C
   have quot : QuotientMap fun au : R × M => (au.1, S.mkQ au.2) :=
     IsOpenMap.to_quotientMap (IsOpenMap.id.prod S.isOpenMap_mkQ)
       (continuous_id.prod_map continuous_quot_mk)
-      (Function.surjective_id.Prod_map <| surjective_quot_mk _)
+      (Function.surjective_id.prodMap <| surjective_quot_mk _)
   rw [quot.continuous_iff]
   exact continuous_quot_mk.comp continuous_smul
 #align submodule.has_continuous_smul_quotient Submodule.continuousSMul_quotient

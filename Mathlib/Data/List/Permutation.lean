@@ -87,7 +87,7 @@ theorem permutationsAux2_comp_append {t : α} {ts ys : List α} {r : List β} (f
   · simp [ys_ih fun xs => f (ys_hd :: xs)]
 #align list.permutations_aux2_comp_append List.permutationsAux2_comp_append
 
-theorem map_permutationsAux2' {α β α' β'} (g : α → α') (g' : β → β') (t : α) (ts ys : List α)
+theorem map_permutationsAux2' {α' β'} (g : α → α') (g' : β → β') (t : α) (ts ys : List α)
     (r : List β) (f : List α → β) (f' : List α' → β') (H : ∀ a, g' (f a) = f' (map g a)) :
     map g' (permutationsAux2 t ts r ys f).2 =
       (permutationsAux2 (g t) (map g ts) (map g' r) (map g ys) f').2 := by
@@ -124,7 +124,7 @@ theorem permutationsAux2_snd_eq (t : α) (ts : List α) (r : List β) (ys : List
   rw [← permutationsAux2_append, map_permutationsAux2, permutationsAux2_comp_append]
 #align list.permutations_aux2_snd_eq List.permutationsAux2_snd_eq
 
-theorem map_map_permutationsAux2 {α α'} (g : α → α') (t : α) (ts ys : List α) :
+theorem map_map_permutationsAux2 {α'} (g : α → α') (t : α) (ts ys : List α) :
     map (map g) (permutationsAux2 t ts [] ys id).2 =
       (permutationsAux2 (g t) (map g ts) [] (map g ys) id).2 :=
   map_permutationsAux2' _ _ _ _ _ _ _ _ fun _ => rfl

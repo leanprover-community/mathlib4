@@ -238,10 +238,10 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         induction' k with k ih
         · rw [add_zero]
         rw [← add_assoc]
-        -- Adaptation note: nightly-2024-03-11
-        -- I'm not sure why the `erw` is now needed here. It looks like it should work.
-        -- It looks like a diamond between `instHAdd` on `Nat` and `AddSemigroup.toAdd` which is
-        -- used by `instHAdd`
+        #adaptation_note /-- nightly-2024-03-11
+        I'm not sure why the `erw` is now needed here. It looks like it should work.
+        It looks like a diamond between `instHAdd` on `Nat` and `AddSemigroup.toAdd` which is
+        used by `instHAdd` -/
         erw [hc]
         rw [← add_zero (c m), sub_eq_add_neg]
         refine ih.add ?_

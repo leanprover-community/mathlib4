@@ -96,7 +96,7 @@ instance : IsPartialOrder (Set E) (IsExtreme 𝕜) where
 
 theorem IsExtreme.inter (hAB : IsExtreme 𝕜 A B) (hAC : IsExtreme 𝕜 A C) :
     IsExtreme 𝕜 A (B ∩ C) := by
-  use Subset.trans (inter_subset_left _ _) hAB.1
+  use Subset.trans inter_subset_left hAB.1
   rintro x₁ hx₁A x₂ hx₂A x ⟨hxB, hxC⟩ hx
   obtain ⟨hx₁B, hx₂B⟩ := hAB.2 hx₁A hx₂A hxB hx
   obtain ⟨hx₁C, hx₂C⟩ := hAC.2 hx₁A hx₂A hxC hx

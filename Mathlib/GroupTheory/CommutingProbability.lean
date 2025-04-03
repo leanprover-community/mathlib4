@@ -105,7 +105,6 @@ theorem commProb_def' : commProb G = Nat.card (ConjClasses G) / Nat.card G := by
 variable {G}
 variable [Finite G] (H : Subgroup G)
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem Subgroup.commProb_subgroup_le : commProb H ≤ commProb G * (H.index : ℚ) ^ 2 := by
   /- After rewriting with `commProb_def`, we reduce to showing that `G` has at least as many
       commuting pairs as `H`. -/
@@ -131,7 +130,6 @@ theorem Subgroup.commProb_quotient_le [H.Normal] : commProb (G ⧸ H) ≤ commPr
 
 variable (G)
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem inv_card_commutator_le_commProb : (↑(Nat.card (commutator G)))⁻¹ ≤ commProb G :=
   (inv_pos_le_iff_one_le_mul (Nat.cast_pos.mpr Finite.card_pos)).mpr
     (le_trans (ge_of_eq (commProb_eq_one_iff.mpr (Abelianization.commGroup G).mul_comm))

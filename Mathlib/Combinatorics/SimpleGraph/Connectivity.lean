@@ -877,6 +877,12 @@ lemma not_nil_iff {p : G.Walk v w} :
     ¬ p.Nil ↔ ∃ (u : V) (h : G.Adj v u) (q : G.Walk u w), p = cons h q := by
   cases p <;> simp [*]
 
+/-- A walk with its endpoints defeq is `Nil` if and only if it is equal to `nil`. -/
+lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
+  | .nil | .cons _ _ => by simp
+
+alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
+
 @[elab_as_elim]
 def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → Sort*}
     (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) → motive (cons h q) not_nil_cons)
@@ -913,7 +919,7 @@ variable {x y : V} -- TODO: rename to u, v, w instead?
     cons (p.adj_sndOfNotNil hp) (p.tail hp) = p :=
   p.notNilRec (fun _ _ => rfl) hp
 
-@[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬ p.Nil) :
+@[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬p.Nil) :
     x :: (p.tail hp).support = p.support := by
   rw [← support_cons, cons_tail_eq]
 
@@ -924,6 +930,10 @@ variable {x y : V} -- TODO: rename to u, v, w instead?
 @[simp] lemma nil_copy {x' y' : V} {p : G.Walk x y} (hx : x = x') (hy : y = y') :
     (p.copy hx hy).Nil = p.Nil := by
   subst_vars; rfl
+
+@[simp] lemma support_tail (p : G.Walk v v) (hp) :
+    (p.tail hp).support = p.support.tail := by
+  rw [← cons_support_tail p hp, List.tail_cons]
 
 /-! ### Trails, paths, circuits, cycles -/
 
@@ -994,6 +1004,8 @@ theorem isCircuit_copy {u u'} (p : G.Walk u u) (hu : u = u') :
   rfl
 #align simple_graph.walk.is_circuit_copy SimpleGraph.Walk.isCircuit_copy
 
+lemma IsCircuit.not_nil {p : G.Walk v v} (hp : IsCircuit p) : ¬ p.Nil := (hp.ne_nil ·.eq_nil)
+
 theorem isCycle_def {u : V} (p : G.Walk u u) :
     p.IsCycle ↔ p.IsTrail ∧ p ≠ nil ∧ p.support.tail.Nodup :=
   Iff.intro (fun h => ⟨h.1.1, h.1.2, h.2⟩) fun h => ⟨⟨h.1, h.2.1⟩, h.2.2⟩
@@ -1005,6 +1017,8 @@ theorem isCycle_copy {u u'} (p : G.Walk u u) (hu : u = u') :
   subst_vars
   rfl
 #align simple_graph.walk.is_cycle_copy SimpleGraph.Walk.isCycle_copy
+
+lemma IsCycle.not_nil {p : G.Walk v v} (hp : IsCycle p) : ¬ p.Nil := (hp.ne_nil ·.eq_nil)
 
 @[simp]
 theorem IsTrail.nil {u : V} : (nil : G.Walk u u).IsTrail :=
@@ -1710,8 +1724,8 @@ theorem map_isCycle_iff_of_injective {p : G.Walk u u} (hinj : Function.Injective
     support_map, ← List.map_tail, List.nodup_map_iff hinj]
 #align simple_graph.walk.map_is_cycle_iff_of_injective SimpleGraph.Walk.map_isCycle_iff_of_injective
 
-alias ⟨_, map_isCycle_of_injective⟩ := map_isCycle_iff_of_injective
-#align simple_graph.walk.map_is_cycle_of_injective SimpleGraph.Walk.map_isCycle_of_injective
+alias ⟨_, IsCycle.map⟩ := map_isCycle_iff_of_injective
+#align simple_graph.walk.map_is_cycle_of_injective SimpleGraph.Walk.IsCycle.map
 
 variable (p f)
 

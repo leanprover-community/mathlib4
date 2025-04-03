@@ -37,7 +37,7 @@ theorem surjective_stableUnderBaseChange : StableUnderBaseChange surjective := b
   refine StableUnderBaseChange.mk _ surjective_respectsIso ?_
   classical
   introv h x
-  induction x using TensorProduct.induction_on with
+  induction x with
   | zero => exact ⟨0, map_zero _⟩
   | tmul x y =>
     obtain ⟨y, rfl⟩ := h y; use y • x; dsimp

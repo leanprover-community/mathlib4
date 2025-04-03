@@ -414,7 +414,7 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set �
         (∀ n, A' n ⊆ s n) ∧ Pairwise (Disjoint on A') ∧ A = ⋃ n, A' n := by
     refine
       ⟨fun n => A ∩ disjointed s n, fun n => hA.inter (MeasurableSet.disjointed hm _), fun n =>
-        (inter_subset_right _ _).trans (disjointed_subset _ _),
+        inter_subset_right.trans (disjointed_subset _ _),
         (disjoint_disjointed s).mono fun k l hkl => hkl.mono inf_le_right inf_le_right, ?_⟩
     rw [← inter_iUnion, iUnion_disjointed, univ_subset_iff.mp h'', inter_univ]
   rcases ENNReal.exists_pos_sum_of_countable' (tsub_pos_iff_lt.2 hr).ne' ℕ with ⟨δ, δ0, hδε⟩
@@ -424,7 +424,7 @@ lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set �
     have H₁ : ∀ t, μ.restrict (s n) t = μ (t ∩ s n) := fun t => restrict_apply' (hm n)
     have Ht : μ.restrict (s n) (A n) ≠ ∞ := by
       rw [H₁]
-      exact ((measure_mono ((inter_subset_left _ _).trans (subset_iUnion A n))).trans_lt HA).ne
+      exact ((measure_mono (inter_subset_left.trans (subset_iUnion A n))).trans_lt HA).ne
     rcases (A n).exists_isOpen_lt_add Ht (δ0 n).ne' with ⟨U, hAU, hUo, hU⟩
     rw [H₁, H₁, inter_eq_self_of_subset_left (hAs _)] at hU
     exact ⟨U ∩ s n, subset_inter hAU (hAs _), hUo.inter (h' n), hU⟩
@@ -596,7 +596,7 @@ theorem isCompact_isClosed {X : Type*} [TopologicalSpace X] [SigmaCompactSpace X
     exact Monotone.directed_le fun m n h => inter_subset_inter_right _ (compactCovering_subset _ h)
   rw [this] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
-  exact ⟨_, inter_subset_left _ _, hBc n, hn⟩
+  exact ⟨_, inter_subset_left, hBc n, hn⟩
 #align measure_theory.measure.inner_regular.is_compact_is_closed MeasureTheory.Measure.InnerRegularWRT.isCompact_isClosed
 
 /-- If `μ` is inner regular for measurable finite measure sets with respect to some class of sets,
@@ -610,21 +610,21 @@ lemma restrict (h : InnerRegularWRT μ p (fun s ↦ MeasurableSet s ∧ μ s ≠
     have : r < μ ((toMeasurable μ (s ∩ A)) ∩ s) := by
       apply hr.trans_le
       rw [restrict_apply s_meas]
-      exact measure_mono <| subset_inter (subset_toMeasurable μ (s ∩ A)) (inter_subset_left _ _)
+      exact measure_mono <| subset_inter (subset_toMeasurable μ (s ∩ A)) inter_subset_left
     refine h ⟨(measurableSet_toMeasurable _ _).inter s_meas, ?_⟩ _ this
     apply (lt_of_le_of_lt _ hs.lt_top).ne
     rw [← measure_toMeasurable (s ∩ A)]
-    exact measure_mono (inter_subset_left _ _)
-  refine ⟨K, K_subs.trans (inter_subset_right _ _), pK, ?_⟩
+    exact measure_mono inter_subset_left
+  refine ⟨K, K_subs.trans inter_subset_right, pK, ?_⟩
   calc
   r < μ K := rK
   _ = μ.restrict (toMeasurable μ (s ∩ A)) K := by
     rw [restrict_apply' (measurableSet_toMeasurable μ (s ∩ A))]
     congr
     apply (inter_eq_left.2 ?_).symm
-    exact K_subs.trans (inter_subset_left _ _)
+    exact K_subs.trans inter_subset_left
   _ = μ.restrict (s ∩ A) K := by rwa [restrict_toMeasurable]
-  _ ≤ μ.restrict A K := Measure.le_iff'.1 (restrict_mono (inter_subset_right _ _) le_rfl) K
+  _ ≤ μ.restrict A K := Measure.le_iff'.1 (restrict_mono inter_subset_right le_rfl) K
 
 /-- If `μ` is inner regular for measurable finite measure sets with respect to some class of sets,
 then its restriction to any finite measure set is also inner regular for measurable sets with
@@ -647,8 +647,8 @@ lemma of_sigmaFinite [SigmaFinite μ] :
     exact Monotone.directed_le fun m n h => inter_subset_inter_right _ (monotone_spanningSets μ h)
   rw [this] at hr
   rcases lt_iSup_iff.1 hr with ⟨n, hn⟩
-  refine ⟨s ∩ B n, inter_subset_left _ _, ⟨hs.inter (measurable_spanningSets μ n), ?_⟩, hn⟩
-  exact ((measure_mono (inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top μ n)).ne
+  refine ⟨s ∩ B n, inter_subset_left, ⟨hs.inter (measurable_spanningSets μ n), ?_⟩, hn⟩
+  exact ((measure_mono inter_subset_right).trans_lt (measure_spanningSets_lt_top μ n)).ne
 
 end InnerRegularWRT
 
@@ -1004,7 +1004,7 @@ theorem restrict_of_measure_ne_top [R1Space α] [BorelSpace α] [Regular μ]
   intro V hV r hr
   have R : restrict μ A V ≠ ∞ := by
     rw [restrict_apply hV.measurableSet]
-    exact ((measure_mono (inter_subset_right _ _)).trans_lt h'A.lt_top).ne
+    exact ((measure_mono inter_subset_right).trans_lt h'A.lt_top).ne
   exact MeasurableSet.exists_lt_isCompact_of_ne_top hV.measurableSet R hr
 
 end Regular

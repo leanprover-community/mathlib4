@@ -193,6 +193,11 @@ def shiftFunctorZero : shiftFunctor C (0 : A) ≅ 𝟭 C :=
   (shiftMonoidalFunctor C A).εIso.symm
 #align category_theory.shift_functor_zero CategoryTheory.shiftFunctorZero
 
+variable {A} in
+/-- Shifting by `a` such that `a = 0` identifies to the identity functor. -/
+def shiftFunctorZero' (a : A) (ha : a = 0) : shiftFunctor C a ≅ 𝟭 C :=
+  eqToIso (by rw [ha]) ≪≫ shiftFunctorZero C A
+
 variable {C A}
 
 lemma ShiftMkCore.shiftFunctor_eq (h : ShiftMkCore C A) (a : A) :

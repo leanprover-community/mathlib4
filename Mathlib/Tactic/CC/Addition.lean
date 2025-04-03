@@ -1449,7 +1449,25 @@ partial def propagateEqUp (e : Expr) : CCM Unit := do
   let rb ← getRoot b
   if ra != rb then
     let mut raNeRb : Option Expr := none
-    if ← isInterpretedValue ra <&&> isInterpretedValue rb then
+    /-
+    We disprove inequality for interpreted values here.
+    The possible types of interpreted values are in `{String, Char, Int, Nat}`.
+    1- `String`
+      `ra` & `rb` are string literals, so if `ra != rb`, `ra.int?.isNone` is `true` and we can
+      prove `$ra ≠ $rb`.
+    2- `Char`
+      `ra` & `rb` are the form of `Char.ofNat (nat_lit n)`, so if `ra != rb`, `ra.int?.isNone` is
+      `true` and we can prove `$ra ≠ $rb` (assuming that `n` is not pathological value, i.e.
+      `n.isValidChar`).
+    3- `Int`, `Nat`
+      `ra` & `rb` are the form of `@OfNat.ofNat ℤ (nat_lit n) i` or
+      `@Neg.neg ℤ i' (@OfNat.ofNat ℤ (nat_lit n) i)`, so even if `ra != rb`, `$ra ≠ $rb` can be
+      false when `i` or `i'` in `ra` & `rb` are not alpha-equivalent but def-eq.
+      If `ra.int? != rb.int?`, we can prove `$ra ≠ $rb` (assuming that `i` & `i'` are not
+      pathological instances).
+    -/
+    if ← isInterpretedValue ra <&&> isInterpretedValue rb <&&>
+        pure (ra.int?.isNone || ra.int? != rb.int?) then
       raNeRb := some
         (Expr.app (.proj ``Iff 0 (← mkAppM ``bne_iff_ne #[ra, rb])) (← mkEqRefl (.const ``true [])))
     else

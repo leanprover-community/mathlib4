@@ -194,7 +194,9 @@ variable {k : Type*} [Field k] [CharP k p] [IsAlgClosed k]
 
 /-- Recursively defines the sequence of coefficients for `WittVector.frobeniusRotation`.
 -/
-noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0)
+-- Constructions by well-founded recursion are by default irreducible.
+-- As we rely on definitional properties below, we mark this `@[semireducible]`.
+@[semireducible] noncomputable def frobeniusRotationCoeff {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 ≠ 0)
     (ha₂ : a₂.coeff 0 ≠ 0) : ℕ → k
   | 0 => solution p a₁ a₂
   | n + 1 => succNthVal p n a₁ a₂ (fun i => frobeniusRotationCoeff ha₁ ha₂ i.val) ha₁ ha₂

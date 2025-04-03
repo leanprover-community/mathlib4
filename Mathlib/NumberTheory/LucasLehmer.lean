@@ -3,12 +3,14 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Scott Morrison, Ainsley Pahljina
 -/
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Order.Ring.Basic
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.RingTheory.Fintype
 import Mathlib.Tactic.IntervalCases
-import Mathlib.Algebra.GroupPower.Order
 
 #align_import number_theory.lucas_lehmer from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
@@ -389,8 +391,7 @@ theorem coe_natCast (n : ℕ) : ((n : ℤ) : X q) = (n : X q) := by ext <;> simp
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.coe_nat LucasLehmer.X.coe_natCast
 
--- 2024-04-05
-@[deprecated] alias coe_nat := coe_natCast
+@[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by

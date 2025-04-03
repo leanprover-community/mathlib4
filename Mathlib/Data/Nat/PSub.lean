@@ -79,7 +79,7 @@ theorem psub_eq_some {m : ℕ} : ∀ {n k}, psub m n = some k ↔ k + n = m
   | n + 1, k => by
     apply Option.bind_eq_some.trans
     simp only [psub_eq_some, ppred_eq_some]
-    simp [add_comm, add_left_comm, Nat.succ_eq_add_one]
+    simp [add_comm, add_left_comm]
 #align nat.psub_eq_some Nat.psub_eq_some
 
 theorem psub_eq_none {m n : ℕ} : psub m n = none ↔ m < n := by

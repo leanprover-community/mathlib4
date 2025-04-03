@@ -39,7 +39,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 described as a presheaf of abelian groups, and the extra data of the action at each object,
 and a condition relating functoriality and scalar multiplication. -/
 structure PresheafOfModules (R : Cᵒᵖ ⥤ RingCat.{u}) where
-  presheaf : Cᵒᵖ ⥤ AddCommGroupCat.{v}
+  presheaf : Cᵒᵖ ⥤ AddCommGrp.{v}
   module : ∀ X : Cᵒᵖ, Module (R.obj X) (presheaf.obj X) := by infer_instance
   map_smul : ∀ {X Y : Cᵒᵖ} (f : X ⟶ Y) (r : R.obj X) (x : presheaf.obj X),
     presheaf.map f (r • x) = R.map f r • presheaf.map f x := by aesop_cat
@@ -115,6 +115,13 @@ namespace Hom
 
 variable {P Q T : PresheafOfModules R}
 
+variable (P) in
+@[simp]
+lemma id_hom : Hom.hom (𝟙 P) = 𝟙 _ := rfl
+
+@[simp, reassoc]
+lemma comp_hom (f : P ⟶ Q) (g : Q ⟶ T) : (f ≫ g).hom = f.hom ≫ g.hom := rfl
+
 /--
 The `(X : Cᵒᵖ)`-component of morphism between presheaves of modules
 over a presheaf of rings `R`, as an `R.obj X`-linear map. -/
@@ -146,7 +153,7 @@ variable {P Q}
 
 instance : Add (P ⟶ Q) := ⟨fun f g => mk (f.hom + g.hom) (by
   intros
-  simp only [NatTrans.app_add, AddCommGroupCat.hom_add_apply, map_smul, smul_add])⟩
+  simp only [NatTrans.app_add, AddCommGrp.hom_add_apply, map_smul, smul_add])⟩
 
 @[simp]
 lemma add_app (f g : P ⟶ Q) (X : Cᵒᵖ) : (f + g).app X = f.app X + g.app X := rfl
@@ -194,7 +201,7 @@ variable (R)
 to presheaves of abelian groups.
 -/
 @[simps obj]
-def toPresheaf : PresheafOfModules.{v} R ⥤ (Cᵒᵖ ⥤ AddCommGroupCat.{v}) where
+def toPresheaf : PresheafOfModules.{v} R ⥤ (Cᵒᵖ ⥤ AddCommGrp.{v}) where
   obj P := P.presheaf
   map f := f.hom
 
@@ -342,9 +349,9 @@ variable (M : CorePresheafOfModules R)
 
 /-- The presheaf of abelian groups attached to a `CorePresheafOfModules R`. -/
 @[simps]
-def presheaf : Cᵒᵖ ⥤ AddCommGroupCat.{v} where
-  obj X := AddCommGroupCat.of (M.obj X)
-  map f := AddCommGroupCat.ofHom (M.map f).toAddMonoidHom
+def presheaf : Cᵒᵖ ⥤ AddCommGrp.{v} where
+  obj X := AddCommGrp.of (M.obj X)
+  map f := AddCommGrp.ofHom (M.map f).toAddMonoidHom
 
 instance (X : Cᵒᵖ) : Module (R.obj X) (M.presheaf.obj X) := M.module X
 
@@ -377,12 +384,13 @@ structure BundledCorePresheafOfModules where
   map {X Y : Cᵒᵖ} (f : X ⟶ Y) : obj X ⟶ (ModuleCat.restrictScalars (R.map f)).obj (obj Y)
   /-- `map` is compatible with the identities -/
   map_id (X : Cᵒᵖ) :
-    map (𝟙 X) = (ModuleCat.restrictScalarsId' (R.map (𝟙 X)) (R.map_id X)).inv.app (obj X)
+    map (𝟙 X) = (ModuleCat.restrictScalarsId' (R.map (𝟙 X)) (R.map_id X)).inv.app (obj X) := by
+      aesop
   /-- `map` is compatible with the composition -/
   map_comp {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     map (f ≫ g) = map f ≫ (ModuleCat.restrictScalars (R.map f)).map (map g) ≫
       (ModuleCat.restrictScalarsComp' (R.map f) (R.map g) (R.map (f ≫ g))
-        (R.map_comp f g)).inv.app (obj Z)
+        (R.map_comp f g)).inv.app (obj Z) := by aesop
 
 namespace BundledCorePresheafOfModules
 
@@ -440,6 +448,10 @@ variable {R}
 /-- The type of sections of a presheaf of modules. -/
 def sections (M : PresheafOfModules.{v} R) : Type _ := (M.presheaf ⋙ forget _).sections
 
+@[simp]
+lemma sections_property {M : PresheafOfModules.{v} R} (s : M.sections)
+    {X Y : Cᵒᵖ} (f : X ⟶ Y) : M.map f (s.1 X) = s.1 Y := s.2 f
+
 /-- Constructor for sections of a presheaf of modules. -/
 @[simps]
 def sectionsMk {M : PresheafOfModules.{v} R} (s : ∀ X, M.obj X)
@@ -451,6 +463,20 @@ def sectionsMk {M : PresheafOfModules.{v} R} (s : ∀ X, M.obj X)
 lemma sections_ext {M : PresheafOfModules.{v} R} (s t : M.sections)
     (h : ∀ (X : Cᵒᵖ), s.val X = t.val X) : s = t :=
   Subtype.ext (by ext; apply h)
+
+/-- The map `M.sections → N.sections` induced by a morphisms `M ⟶ N` of presheaves of modules. -/
+@[simps!]
+def sectionsMap {M N : PresheafOfModules.{v} R} (f : M ⟶ N) (s : M.sections) : N.sections :=
+  N.sectionsMk (fun X ↦ f.app X (s.1 _))
+    (fun X Y g ↦ by rw [← naturality_apply, sections_property])
+
+@[simp]
+lemma sectionsMap_comp {M N P : PresheafOfModules.{v} R} (f : M ⟶ N) (g : N ⟶ P) (s : M.sections) :
+    sectionsMap (f ≫ g) s = sectionsMap g (sectionsMap f s) := rfl
+
+@[simp]
+lemma sectionsMap_id {M : PresheafOfModules.{v} R} (s : M.sections) :
+    sectionsMap (𝟙 M) s = s := rfl
 
 /-- The bijection `(unit R ⟶ M) ≃ M.sections` for `M : PresheafOfModules R`. -/
 @[simps! apply_coe]

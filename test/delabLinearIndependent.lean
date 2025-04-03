@@ -1,5 +1,6 @@
 import Mathlib.LinearAlgebra.LinearIndependent
 
+set_option linter.setOption false
 set_option pp.unicode.fun true
 
 variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V] {s : Set V} {x : V}

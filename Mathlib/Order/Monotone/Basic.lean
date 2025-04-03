@@ -626,6 +626,13 @@ theorem StrictAnti.isMin_of_apply (hf : StrictAnti f) (ha : IsMax (f a)) : IsMin
     (hf hb).not_isMax ha
 #align strict_anti.is_min_of_apply StrictAnti.isMin_of_apply
 
+lemma StrictMono.add_le_nat {f : ℕ → ℕ} (hf : StrictMono f) (m n : ℕ) : m + f n ≤ f (m + n)  := by
+  rw [Nat.add_comm m, Nat.add_comm m]
+  induction' m with m ih
+  · rw [Nat.add_zero, Nat.add_zero]
+  · rw [← Nat.add_assoc, ← Nat.add_assoc, Nat.succ_le]
+    exact ih.trans_lt (hf (n + m).lt_succ_self)
+
 protected theorem StrictMono.ite' (hf : StrictMono f) (hg : StrictMono g) {p : α → Prop}
     [DecidablePred p]
     (hp : ∀ ⦃x y⦄, x < y → p y → p x) (hfg : ∀ ⦃x y⦄, p x → ¬p y → x < y → f x < g y) :
@@ -940,8 +947,8 @@ variable [LinearOrder β] {f : α → β} {s : Set α} {x y : α}
 /-- A function between linear orders which is neither monotone nor antitone makes a dent upright or
 downright. -/
 lemma not_monotone_not_antitone_iff_exists_le_le :
-    ¬ Monotone f ∧ ¬ Antitone f ↔ ∃ a b c, a ≤ b ∧ b ≤ c ∧
-    (f a < f b ∧ f c < f b ∨ f b < f a ∧ f b < f c) := by
+    ¬ Monotone f ∧ ¬ Antitone f ↔
+      ∃ a b c, a ≤ b ∧ b ≤ c ∧ ((f a < f b ∧ f c < f b) ∨ (f b < f a ∧ f b < f c)) := by
   simp_rw [Monotone, Antitone, not_forall, not_le]
   refine Iff.symm ⟨?_, ?_⟩
   · rintro ⟨a, b, c, hab, hbc, ⟨hfab, hfcb⟩ | ⟨hfba, hfbc⟩⟩

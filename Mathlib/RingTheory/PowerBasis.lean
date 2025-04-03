@@ -79,7 +79,8 @@ theorem coe_basis (pb : PowerBasis R S) : ⇑pb.basis = fun i : Fin pb.dim => pb
 /-- Cannot be an instance because `PowerBasis` cannot be a class. -/
 theorem finite (pb : PowerBasis R S) : Module.Finite R S := .of_basis pb.basis
 #align power_basis.finite_dimensional PowerBasis.finite
-@[deprecated] alias finiteDimensional := PowerBasis.finite
+
+@[deprecated (since := "2024-03-05")] alias finiteDimensional := PowerBasis.finite
 
 theorem finrank [StrongRankCondition R] (pb : PowerBasis R S) :
     FiniteDimensional.finrank R S = pb.dim := by
@@ -461,7 +462,7 @@ noncomputable def map (pb : PowerBasis R S) (e : S ≃ₐ[R] S') : PowerBasis R 
   dim := pb.dim
   basis := pb.basis.map e.toLinearEquiv
   gen := e pb.gen
-  basis_eq_pow i := by rw [Basis.map_apply, pb.basis_eq_pow, e.toLinearEquiv_apply, e.map_pow]
+  basis_eq_pow i := by rw [Basis.map_apply, pb.basis_eq_pow, e.toLinearEquiv_apply, map_pow]
 #align power_basis.map PowerBasis.map
 
 variable [Algebra A S] [Algebra A S']
@@ -472,7 +473,7 @@ theorem minpolyGen_map (pb : PowerBasis A S) (e : S ≃ₐ[A] S') :
   dsimp only [minpolyGen, map_dim]
   -- Turn `Fin (pb.map e).dim` into `Fin pb.dim`
   simp only [LinearEquiv.trans_apply, map_basis, Basis.map_repr, map_gen,
-    AlgEquiv.toLinearEquiv_apply, e.toLinearEquiv_symm, AlgEquiv.map_pow,
+    AlgEquiv.toLinearEquiv_apply, e.toLinearEquiv_symm, map_pow,
     AlgEquiv.symm_apply_apply, sub_right_inj]
 #align power_basis.minpoly_gen_map PowerBasis.minpolyGen_map
 

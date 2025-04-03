@@ -117,8 +117,8 @@ lemma sSup_inter {T₁ T₂ : Set α} (hT₁ : T₁ ⊆ S) (hT₂ : T₂ ⊆ S) 
     sSup (T₁ ∩ T₂) = (sSup T₁) ⊓ (sSup T₂) := by
   apply le_antisymm
   · apply le_inf
-    · apply sSup_le_sSup (Set.inter_subset_left T₁ T₂)
-    · apply sSup_le_sSup (Set.inter_subset_right T₁ T₂)
+    · apply sSup_le_sSup Set.inter_subset_left
+    · apply sSup_le_sSup Set.inter_subset_right
   obtain ⟨X, hX, hX'⟩ := hS.atomistic (sSup T₁ ⊓ sSup T₂) (inf_le_left.trans (sSup_le_sSup hT₁))
   rw [hX']
   apply _root_.sSup_le

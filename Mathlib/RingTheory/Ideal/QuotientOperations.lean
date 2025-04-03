@@ -305,6 +305,40 @@ theorem snd_comp_quotientInfEquivQuotientProd (I J : Ideal R) (coprime : IsCopri
       Ideal.Quotient.factor (I ⊓ J) J inf_le_right := by
   apply Quotient.ringHom_ext; ext; rfl
 #align ideal.snd_comp_quotient_inf_equiv_quotient_prod Ideal.snd_comp_quotientInfEquivQuotientProd
+
+/-- **Chinese remainder theorem**, specialized to two ideals. -/
+noncomputable def quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
+    R ⧸ I * J ≃+* (R ⧸ I) × R ⧸ J :=
+  Ideal.quotEquivOfEq (inf_eq_mul_of_isCoprime coprime).symm |>.trans <|
+    Ideal.quotientInfEquivQuotientProd I J coprime
+#align ideal.quotient_mul_equiv_quotient_prod Ideal.quotientMulEquivQuotientProd
+
+@[simp]
+theorem quotientMulEquivQuotientProd_fst (I J : Ideal R) (coprime : IsCoprime I J) (x : R ⧸ I * J) :
+    (quotientMulEquivQuotientProd I J coprime x).fst =
+      Ideal.Quotient.factor (I * J) I mul_le_right x :=
+  Quot.inductionOn x fun _ => rfl
+
+@[simp]
+theorem quotientMulEquivQuotientProd_snd (I J : Ideal R) (coprime : IsCoprime I J) (x : R ⧸ I * J) :
+    (quotientMulEquivQuotientProd I J coprime x).snd =
+      Ideal.Quotient.factor (I * J) J mul_le_left x :=
+  Quot.inductionOn x fun _ => rfl
+
+@[simp]
+theorem fst_comp_quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
+    (RingHom.fst _ _).comp
+        (quotientMulEquivQuotientProd I J coprime : R ⧸ I * J →+* (R ⧸ I) × R ⧸ J) =
+      Ideal.Quotient.factor (I * J) I mul_le_right := by
+  apply Quotient.ringHom_ext; ext; rfl
+
+@[simp]
+theorem snd_comp_quotientMulEquivQuotientProd (I J : Ideal R) (coprime : IsCoprime I J) :
+    (RingHom.snd _ _).comp
+        (quotientMulEquivQuotientProd I J coprime : R ⧸ I * J →+* (R ⧸ I) × R ⧸ J) =
+      Ideal.Quotient.factor (I * J) J mul_le_left := by
+  apply Quotient.ringHom_ext; ext; rfl
+
 end ChineseRemainder
 
 section QuotientAlgebra
@@ -457,9 +491,9 @@ def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}
 #align ideal.quotient_ker_alg_equiv_of_right_inverse.apply Ideal.quotientKerAlgEquivOfRightInverse_apply
 #align ideal.quotient_ker_alg_equiv_of_right_inverse_symm.apply Ideal.quotientKerAlgEquivOfRightInverse_symm_apply
 
-@[deprecated] -- 2024-02-27
+@[deprecated (since := "2024-02-27")]
 alias quotientKerAlgEquivOfRightInverse.apply := quotientKerAlgEquivOfRightInverse_apply
-@[deprecated] -- 2024-02-27
+@[deprecated (since := "2024-02-27")]
 alias QuotientKerAlgEquivOfRightInverseSymm.apply := quotientKerAlgEquivOfRightInverse_symm_apply
 
 /-- The **first isomorphism theorem** for algebras. -/
@@ -497,7 +531,7 @@ theorem quotientMap_comp_mk {J : Ideal R} {I : Ideal S} {f : R →+* S} (H : J �
   RingHom.ext fun x => by simp only [Function.comp_apply, RingHom.coe_comp, Ideal.quotientMap_mk]
 #align ideal.quotient_map_comp_mk Ideal.quotientMap_comp_mk
 
-/-- The ring equiv `R/I ≃+* S/J` induced by a ring equiv `f : R ≃+** S`, where `J = f(I)`. -/
+/-- The ring equiv `R/I ≃+* S/J` induced by a ring equiv `f : R ≃+* S`, where `J = f(I)`. -/
 @[simps]
 def quotientEquiv (I : Ideal R) (J : Ideal S) (f : R ≃+* S) (hIJ : J = I.map (f : R →+* S)) :
     R ⧸ I ≃+* S ⧸ J :=

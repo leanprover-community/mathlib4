@@ -140,7 +140,7 @@ For many algebraic structures, particularly ones used in representation theory, 
 etc., we also define "bundled" versions, which carry `category` instances.
 
 These bundled versions are usually named by appending `Cat`,
-so for example we have `AddCommGroupCat` as a bundled `AddCommGroup`, and `TopCommRingCat`
+so for example we have `AddCommGrp` as a bundled `AddCommGroup`, and `TopCommRingCat`
 (which bundles together `CommRing`, `TopologicalSpace`, and `TopologicalRing`).
 
 These bundled versions have many appealing features:
@@ -148,9 +148,9 @@ These bundled versions have many appealing features:
 * a uniform notation (and definition) for isomorphisms `X ≅ Y`
 * a uniform API for subobjects, via the partial order `Subobject X`
 * interoperability with unbundled structures, via coercions to `Type`
-  (so if `G : AddCommGroupCat`, you can treat `G` as a type,
+  (so if `G : AddCommGrp`, you can treat `G` as a type,
   and it automatically has an `AddCommGroup` instance)
-  and lifting maps `AddCommGroupCat.of G`, when `G` is a type with an `AddCommGroup` instance.
+  and lifting maps `AddCommGrp.of G`, when `G` is a type with an `AddCommGroup` instance.
 
 If, for example you do the work of proving that a typeclass `Z` has a good notion of tensor product,
 you are strongly encouraged to provide the corresponding `MonoidalCategory` instance

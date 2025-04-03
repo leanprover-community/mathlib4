@@ -146,7 +146,7 @@ theorem exists_disjoint_diff (h : AEDisjoint μ s t) :
 #align measure_theory.ae_disjoint.exists_disjoint_diff MeasureTheory.AEDisjoint.exists_disjoint_diff
 
 theorem of_null_right (h : μ t = 0) : AEDisjoint μ s t :=
-  measure_mono_null (inter_subset_right _ _) h
+  measure_mono_null inter_subset_right h
 #align measure_theory.ae_disjoint.of_null_right MeasureTheory.AEDisjoint.of_null_right
 
 theorem of_null_left (h : μ s = 0) : AEDisjoint μ s t :=

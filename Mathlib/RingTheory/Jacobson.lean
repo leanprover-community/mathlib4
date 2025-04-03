@@ -35,8 +35,6 @@ Let `R` be a commutative ring. Jacobson rings are defined using the first of the
 Jacobson, Jacobson Ring
 -/
 
-set_option autoImplicit true
-
 universe u
 namespace Ideal
 
@@ -634,8 +632,7 @@ instance isJacobson {R : Type*} [CommRing R] {ι : Type*} [Finite ι] [IsJacobso
 
 variable {n : ℕ}
 
--- Porting note: split out `aux_IH` and `quotient_mk_comp_C_isIntegral_of_jacobson'`
--- from the long proof of `Ideal.MvPolynomial.quotient_mk_comp_C_isIntegral_of_jacobson`
+universe v w
 
 /-- The constant coefficient as an R-linear morphism -/
 private noncomputable def Cₐ (R : Type u) (S : Type v)

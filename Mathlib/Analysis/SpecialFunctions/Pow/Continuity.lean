@@ -240,14 +240,18 @@ theorem continuousAt_rpow (p : ℝ × ℝ) (h : p.1 ≠ 0 ∨ 0 < p.2) :
   h.elim (fun h => continuousAt_rpow_of_ne p h) fun h => continuousAt_rpow_of_pos p h
 #align real.continuous_at_rpow Real.continuousAt_rpow
 
-theorem continuousAt_rpow_const (x : ℝ) (q : ℝ) (h : x ≠ 0 ∨ 0 < q) :
+@[fun_prop]
+theorem continuousAt_rpow_const (x : ℝ) (q : ℝ) (h : x ≠ 0 ∨ 0 ≤ q) :
     ContinuousAt (fun x : ℝ => x ^ q) x := by
-  change ContinuousAt ((fun p : ℝ × ℝ => p.1 ^ p.2) ∘ fun y : ℝ => (y, q)) x
-  apply ContinuousAt.comp
-  · exact continuousAt_rpow (x, q) h
-  · exact (continuous_id'.prod_mk continuous_const).continuousAt
+· rw [le_iff_lt_or_eq, ← or_assoc] at h
+  obtain h|rfl := h
+  · exact (continuousAt_rpow (x, q) h).comp₂ continuousAt_id continuousAt_const
+  · simp_rw [rpow_zero]; exact continuousAt_const
 #align real.continuous_at_rpow_const Real.continuousAt_rpow_const
 
+@[fun_prop]
+theorem continuous_rpow_const {q : ℝ} (h : 0 ≤ q) : Continuous (fun x : ℝ => x ^ q) :=
+  continuous_iff_continuousAt.mpr fun x ↦ continuousAt_rpow_const x q (.inr h)
 end Real
 
 section
@@ -456,6 +460,7 @@ theorem continuousAt_rpow_const {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 ≤ y
       tendsto_id.nnrpow tendsto_const_nhds (Or.inr h)
 #align nnreal.continuous_at_rpow_const NNReal.continuousAt_rpow_const
 
+@[fun_prop]
 theorem continuous_rpow_const {y : ℝ} (h : 0 ≤ y) : Continuous fun x : ℝ≥0 => x ^ y :=
   continuous_iff_continuousAt.2 fun _ => continuousAt_rpow_const (Or.inr h)
 #align nnreal.continuous_rpow_const NNReal.continuous_rpow_const
@@ -490,7 +495,7 @@ private theorem continuousAt_rpow_const_of_pos {x : ℝ≥0∞} {y : ℝ} (h : 0
   ext1 x
   simp [coe_rpow_of_nonneg _ h.le]
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_rpow_const {y : ℝ} : Continuous fun a : ℝ≥0∞ => a ^ y := by
   refine continuous_iff_continuousAt.2 fun x => ?_
   rcases lt_trichotomy (0 : ℝ) y with (hy | rfl | hy)

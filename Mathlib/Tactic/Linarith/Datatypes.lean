@@ -302,8 +302,9 @@ A `CertificateOracle` provides a function
 `produceCertificate : List Comp → Nat → MetaM (HashMap Nat Nat)`.
 
 The default `CertificateOracle` used by `linarith` is
-`Linarith.CertificateOracle.simplexAlgorithm`.
-`Linarith.CertificateOracle.fourierMotzkin` is also available (though has some bugs).
+`Linarith.CertificateOracle.simplexAlgorithmSparse`.
+`Linarith.CertificateOracle.simplexAlgorithmDense` and `Linarith.CertificateOracle.fourierMotzkin`
+are also available (though the Fourier-Motzkin oracle has some bugs).
 -/
 structure CertificateOracle : Type where
   /-- `produceCertificate hyps max_var` tries to derive a contradiction from the comparisons in
@@ -311,43 +312,6 @@ structure CertificateOracle : Type where
   If successful, it returns a map `coeff : Nat → Nat` as a certificate.
   This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`. -/
   produceCertificate (hyps : List Comp) (max_var : Nat) : MetaM (Batteries.HashMap Nat Nat)
-
-open Meta
-
-/-- A configuration object for `linarith`. -/
-structure LinarithConfig : Type where
-  /-- Discharger to prove that a candidate linear combination of hypothesis is zero. -/
-  -- TODO There should be a def for this, rather than calling `evalTactic`?
-  discharger : TacticM Unit := do evalTactic (← `(tactic| ring1))
-  -- We can't actually store a `Type` here,
-  -- as we want `LinarithConfig : Type` rather than ` : Type 1`,
-  -- so that we can define `elabLinarithConfig : Lean.Syntax → Lean.Elab.TermElabM LinarithConfig`.
-  -- For now, we simply don't support restricting the type.
-  -- (restrict_type : Option Type := none)
-  /-- Prove goals which are not linear comparisons by first calling `exfalso`. -/
-  exfalso : Bool := true
-  /-- Transparency mode for identifying atomic expressions in comparisons. -/
-  transparency : TransparencyMode := .reducible
-  /-- Split conjunctions in hypotheses. -/
-  splitHypotheses : Bool := true
-  /-- Split `≠` in hypotheses, by branching in cases `<` and `>`. -/
-  splitNe : Bool := false
-  /-- Override the list of preprocessors. -/
-  preprocessors : Option (List GlobalBranchingPreprocessor) := none
-  /-- Specify an oracle for identifying candidate contradictions.
-  `.simplexAlgorithm` and `.fourierMotzkin` are both available. -/
-  oracle : Option CertificateOracle := none
-
-/--
-`cfg.updateReducibility reduce_default` will change the transparency setting of `cfg` to
-`default` if `reduce_default` is true. In this case, it also sets the discharger to `ring!`,
-since this is typically needed when using stronger unification.
--/
-def LinarithConfig.updateReducibility (cfg : LinarithConfig) (reduce_default : Bool) :
-    LinarithConfig :=
-  if reduce_default then
-    { cfg with transparency := .default, discharger := do evalTactic (← `(tactic| ring1!)) }
-  else cfg
 
 /-!
 ### Auxiliary functions

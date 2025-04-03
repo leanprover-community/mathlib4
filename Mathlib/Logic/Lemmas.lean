@@ -6,18 +6,22 @@ Authors: Yaël Dillies
 import Mathlib.Logic.Basic
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.SplitIfs
+import Mathlib.Tactic.Tauto
 
 #align_import logic.lemmas from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
 
 /-!
 # More basic logic properties
 A few more logic lemmas. These are in their own file, rather than `Logic.Basic`, because it is
-convenient to be able to use the `split_ifs` tactic.
+convenient to be able to use the `tauto` or `split_ifs` tactics.
 ## Implementation notes
 We spell those lemmas out with `dite` and `ite` rather than the `if then else` notation because this
 would result in less delta-reduced statements.
 -/
 
+theorem iff_assoc {a b c : Prop} : ((a ↔ b) ↔ c) ↔ (a ↔ (b ↔ c)) := by tauto
+theorem iff_left_comm {a b c : Prop} : (a ↔ (b ↔ c)) ↔ (b ↔ (a ↔ c)) := by tauto
+theorem iff_right_comm {a b c : Prop} : ((a ↔ b) ↔ c) ↔ ((a ↔ c) ↔ b) := by tauto
 
 protected alias ⟨HEq.eq, Eq.heq⟩ := heq_iff_eq
 #align heq.eq HEq.eq

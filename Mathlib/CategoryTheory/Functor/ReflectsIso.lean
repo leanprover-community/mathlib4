@@ -64,12 +64,19 @@ instance (priority := 100) reflectsIsomorphisms_of_full_and_faithful
   (Functor.FullyFaithful.ofFullyFaithful F).reflectsIsomorphisms
 #align category_theory.of_full_and_faithful CategoryTheory.reflectsIsomorphisms_of_full_and_faithful
 
-instance reflectsIsomorphisms_of_comp (F : C ⥤ D) (G : D ⥤ E)
+instance reflectsIsomorphisms_comp (F : C ⥤ D) (G : D ⥤ E)
     [F.ReflectsIsomorphisms] [G.ReflectsIsomorphisms] :
     (F ⋙ G).ReflectsIsomorphisms :=
   ⟨fun f (hf : IsIso (G.map _)) => by
     haveI := isIso_of_reflects_iso (F.map f) G
     exact isIso_of_reflects_iso f F⟩
+
+lemma reflectsIsomorphisms_of_comp (F : C ⥤ D) (G : D ⥤ E)
+    [(F ⋙ G).ReflectsIsomorphisms] : F.ReflectsIsomorphisms where
+  reflects f _ := by
+    rw [← isIso_iff_of_reflects_iso _ (F ⋙ G)]
+    dsimp
+    infer_instance
 
 instance (priority := 100) reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms
     [Balanced C] (F : C ⥤ D) [ReflectsMonomorphisms F] [ReflectsEpimorphisms F] :
@@ -88,6 +95,13 @@ instance (F : D ⥤ E) [F.ReflectsIsomorphisms] :
     rw [← isIso_iff_of_reflects_iso _ F]
     change IsIso ((((whiskeringRight C D E).obj F).map f).app Z)
     infer_instance
+
+lemma Functor.balanced_of_preserves (F : C ⥤ D)
+    [F.ReflectsIsomorphisms] [F.PreservesEpimorphisms] [F.PreservesMonomorphisms] [Balanced D] :
+    Balanced C where
+  isIso_of_mono_of_epi f _ _ := by
+    rw [← isIso_iff_of_reflects_iso (F := F)]
+    exact isIso_of_mono_of_epi _
 
 end ReflectsIso
 

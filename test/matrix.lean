@@ -165,4 +165,21 @@ example {R : Type*} [Semiring R] {a b c d : R} :
   fin_cases j
   simp [Matrix.vecHead, Matrix.vecTail]
 
+/- Check that matrix notation works with `row` and `col` -/
+example : Matrix.row _ ![1, 1] = !![1, 1] := by
+  ext i j
+  simp
+
+example : Matrix.col _ ![1, 1] = !![1; 1] := by
+  ext i j
+  fin_cases i <;> simp
+
+example (ι : Type*) [Inhabited ι] : Matrix.row ι (fun (n : Fin 3) => 0) = 0 := by
+  simp_all
+  rfl
+
+example (ι : Type*) [Inhabited ι] : Matrix.col ι (fun (n : Fin 3) => 0) = 0 := by
+  simp_all
+  rfl
+
 end Matrix

@@ -3,6 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Julian Kuelshammer
 -/
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Data.Int.ModEq
@@ -347,7 +348,7 @@ theorem orderOf_eq_of_pow_and_pow_div_prime (hn : 0 < n) (hx : x ^ n = 1)
     exact Dvd.intro_left (orderOf x * b) ha.symm
   -- Use the minimum prime factor of `a` as `p`.
   refine hd a.minFac (Nat.minFac_prime h) a_min_fac_dvd_p_sub_one ?_
-  rw [← orderOf_dvd_iff_pow_eq_one, Nat.dvd_div_iff a_min_fac_dvd_p_sub_one, ha, mul_comm,
+  rw [← orderOf_dvd_iff_pow_eq_one, Nat.dvd_div_iff_mul_dvd a_min_fac_dvd_p_sub_one, ha, mul_comm,
     Nat.mul_dvd_mul_iff_left (IsOfFinOrder.orderOf_pos _)]
   · exact Nat.minFac_dvd a
   · rw [isOfFinOrder_iff_pow_eq_one]
@@ -512,8 +513,8 @@ theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (hy : IsOfFinOrder y)
   apply orderOf_eq_of_pow_and_pow_div_prime hoy <;> simp only [Ne, ← orderOf_dvd_iff_pow_eq_one]
   · exact h.orderOf_mul_dvd_lcm.trans (lcm_dvd hxy dvd_rfl)
   refine fun p hp hpy hd => hp.ne_one ?_
-  rw [← Nat.dvd_one, ← mul_dvd_mul_iff_right hoy.ne', one_mul, ← dvd_div_iff hpy]
-  refine (orderOf_dvd_lcm_mul h).trans (lcm_dvd ((dvd_div_iff hpy).2 ?_) hd)
+  rw [← Nat.dvd_one, ← mul_dvd_mul_iff_right hoy.ne', one_mul, ← dvd_div_iff_mul_dvd hpy]
+  refine (orderOf_dvd_lcm_mul h).trans (lcm_dvd ((dvd_div_iff_mul_dvd hpy).2 ?_) hd)
   by_cases h : p ∣ orderOf x
   exacts [hdvd p hp h, (hp.coprime_iff_not_dvd.2 h).mul_dvd_of_dvd_of_dvd hpy hxy]
 #align commute.order_of_mul_eq_right_of_forall_prime_mul_dvd Commute.orderOf_mul_eq_right_of_forall_prime_mul_dvd
@@ -596,7 +597,7 @@ theorem infinite_not_isOfFinOrder {x : G} (h : ¬IsOfFinOrder x) :
   have : ¬Injective fun n : ℕ => x ^ n := by
     have := Set.not_injOn_infinite_finite_image (Set.Ioi_infinite 0) (Set.not_infinite.mp h)
     contrapose! this
-    exact Set.injOn_of_injective this _
+    exact Set.injOn_of_injective this
   rwa [injective_pow_iff_not_isOfFinOrder, Classical.not_not] at this
 #align infinite_not_is_of_fin_order infinite_not_isOfFinOrder
 #align infinite_not_is_of_fin_add_order infinite_not_isOfFinAddOrder
@@ -623,14 +624,14 @@ noncomputable def finEquivPowers (x : G) (hx : IsOfFinOrder x) : Fin (orderOf x)
 #align fin_equiv_multiples finEquivMultiples
 
 -- This lemma has always been bad, but the linter only noticed after leanprover/lean4#2644.
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 lemma finEquivPowers_apply (x : G) (hx) {n : Fin (orderOf x)} :
     finEquivPowers x hx n = ⟨x ^ (n : ℕ), n, rfl⟩ := rfl
 #align fin_equiv_powers_apply finEquivPowers_apply
 #align fin_equiv_multiples_apply finEquivMultiples_apply
 
 -- This lemma has always been bad, but the linter only noticed after leanprover/lean4#2644.
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 lemma finEquivPowers_symm_apply (x : G) (hx) (n : ℕ) {hn : ∃ m : ℕ, x ^ m = x ^ n} :
     (finEquivPowers x hx).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
   rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, ← pow_mod_orderOf, Fin.val_mk]
@@ -894,7 +895,7 @@ noncomputable def powersEquivPowers (h : orderOf x = orderOf y) : powers x ≃ p
 
 -- Porting note: the simpNF linter complains that simp can change the LHS to something
 -- that looks the same as the current LHS even with `pp.explicit`
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem powersEquivPowers_apply (h : orderOf x = orderOf y) (n : ℕ) :
     powersEquivPowers h ⟨x ^ n, n, rfl⟩ = ⟨y ^ n, n, rfl⟩ := by
   rw [powersEquivPowers, Equiv.trans_apply, Equiv.trans_apply, finEquivPowers_symm_apply, ←
@@ -1302,6 +1303,48 @@ theorem IsOfFinOrder.prod_mk : IsOfFinOrder a → IsOfFinOrder b → IsOfFinOrde
 #align is_of_fin_order.prod_mk IsOfFinOrder.prod_mk
 #align is_of_fin_add_order.prod_mk IsOfFinAddOrder.prod_mk
 
+@[to_additive]
+lemma Prod.orderOf_mk : orderOf (a, b) = Nat.lcm (orderOf a) (orderOf b) :=
+  (a, b).orderOf
+
 end Prod
 
 -- TODO: Corresponding `pi` lemmas. We cannot currently state them here because of import cycles
+
+@[simp]
+lemma Nat.cast_card_eq_zero (R) [AddGroupWithOne R] [Fintype R] : (Fintype.card R : R) = 0 := by
+  rw [← nsmul_one, card_nsmul_eq_zero]
+#align char_p.cast_card_eq_zero Nat.cast_card_eq_zero
+
+section NonAssocRing
+variable (R : Type*) [NonAssocRing R] [Fintype R] (p : ℕ)
+
+lemma CharP.addOrderOf_one : CharP R (addOrderOf (1 : R)) where
+  cast_eq_zero_iff' n := by rw [← Nat.smul_one_eq_cast, addOrderOf_dvd_iff_nsmul_eq_zero]
+#align char_p.add_order_of_one CharP.addOrderOf_one
+
+variable {R} in
+lemma charP_of_ne_zero (hn : card R = p) (hR : ∀ i < p, (i : R) = 0 → i = 0) : CharP R p where
+  cast_eq_zero_iff' n := by
+    have H : (p : R) = 0 := by rw [← hn, Nat.cast_card_eq_zero]
+    constructor
+    · intro h
+      rw [← Nat.mod_add_div n p, Nat.cast_add, Nat.cast_mul, H, zero_mul, add_zero] at h
+      rw [Nat.dvd_iff_mod_eq_zero]
+      apply hR _ (Nat.mod_lt _ _) h
+      rw [← hn, gt_iff_lt, Fintype.card_pos_iff]
+      exact ⟨0⟩
+    · rintro ⟨n, rfl⟩
+      rw [Nat.cast_mul, H, zero_mul]
+#align char_p_of_ne_zero charP_of_ne_zero
+
+end NonAssocRing
+
+lemma charP_of_prime_pow_injective (R) [Ring R] [Fintype R] (p n : ℕ) [hp : Fact p.Prime]
+    (hn : card R = p ^ n) (hR : ∀ i ≤ n, (p : R) ^ i = 0 → i = n) : CharP R (p ^ n) := by
+  obtain ⟨c, hc⟩ := CharP.exists R
+  have hcpn : c ∣ p ^ n := by rw [← CharP.cast_eq_zero_iff R c, ← hn, Nat.cast_card_eq_zero]
+  obtain ⟨i, hi, rfl⟩ : ∃ i ≤ n, c = p ^ i := by rwa [Nat.dvd_prime_pow hp.1] at hcpn
+  obtain rfl : i = n := hR i hi $ by rw [← Nat.cast_pow, CharP.cast_eq_zero]
+  assumption
+#align char_p_of_prime_pow_injective charP_of_prime_pow_injective

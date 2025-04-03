@@ -4,12 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Group.Hom
+import Mathlib.Analysis.NormedSpace.IndicatorFunction
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.Data.Set.Image
 import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
 import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
 import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 import Mathlib.MeasureTheory.Measure.OpenPos
+import Mathlib.MeasureTheory.Measure.Typeclasses
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Topology.ContinuousFunction.Compact
 import Mathlib.Order.Filter.IndicatorFunction
 
@@ -739,17 +742,37 @@ protected lemma Memℒp.piecewise [DecidablePred (· ∈ s)] {g}
   · have h : ∀ᵐ (x : α) ∂μ, x ∈ s →
         (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) ^ p.toReal = (‖f x‖₊ : ℝ≥0∞) ^ p.toReal := by
       filter_upwards with a ha using by simp [ha]
-    rw [set_lintegral_congr_fun hs h]
+    rw [setLIntegral_congr_fun hs h]
     exact lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp_zero hp_top hf.2
   · have h : ∀ᵐ (x : α) ∂μ, x ∈ sᶜ →
         (‖Set.piecewise s f g x‖₊ : ℝ≥0∞) ^ p.toReal = (‖g x‖₊ : ℝ≥0∞) ^ p.toReal := by
       filter_upwards with a ha
       have ha' : a ∉ s := ha
       simp [ha']
-    rw [set_lintegral_congr_fun hs.compl h]
+    rw [setLIntegral_congr_fun hs.compl h]
     exact lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp_zero hp_top hg.2
 
 end Indicator
+
+section Topology
+variable {X : Type*} [TopologicalSpace X] [MeasurableSpace X]
+  {μ : Measure X} [IsFiniteMeasureOnCompacts μ]
+
+/-- A bounded measurable function with compact support is in L^p. -/
+theorem _root_.HasCompactSupport.memℒp_of_bound {f : X → E} (hf : HasCompactSupport f)
+    (h2f : AEStronglyMeasurable f μ) (C : ℝ) (hfC : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : Memℒp f p μ := by
+  have := memℒp_top_of_bound h2f C hfC
+  exact this.memℒp_of_exponent_le_of_measure_support_ne_top
+    (fun x ↦ image_eq_zero_of_nmem_tsupport) (hf.measure_lt_top.ne) le_top
+
+/-- A continuous function with compact support is in L^p. -/
+theorem _root_.Continuous.memℒp_of_hasCompactSupport [OpensMeasurableSpace X]
+    {f : X → E} (hf : Continuous f) (h'f : HasCompactSupport f) : Memℒp f p μ := by
+  have := hf.memℒp_top_of_hasCompactSupport h'f μ
+  exact this.memℒp_of_exponent_le_of_measure_support_ne_top
+    (fun x ↦ image_eq_zero_of_nmem_tsupport) (h'f.measure_lt_top.ne) le_top
+
+end Topology
 
 section IndicatorConstLp
 
@@ -1254,7 +1277,7 @@ theorem indicatorConstLp_eq_toSpanSingleton_compLp {s : Set α} [NormedSpace ℝ
   dsimp only
   rw [hy]
   simp_rw [ContinuousLinearMap.toSpanSingleton_apply]
-  by_cases hy_mem : y ∈ s <;> simp [hy_mem, ContinuousLinearMap.lsmul_apply]
+  by_cases hy_mem : y ∈ s <;> simp [hy_mem]
 #align measure_theory.indicator_const_Lp_eq_to_span_singleton_comp_Lp MeasureTheory.indicatorConstLp_eq_toSpanSingleton_compLp
 
 namespace Lp

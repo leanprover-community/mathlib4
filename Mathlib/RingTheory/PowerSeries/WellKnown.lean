@@ -85,7 +85,7 @@ theorem mk_one_mul_one_sub_eq_one : (mk 1 : S⟦X⟧) * (1 - X) = 1 := by
   rw [mul_comm, ext_iff]
   intro n
   cases n with
-  | zero => simp [← coeff_zero_eq_constantCoeff]
+  | zero => simp
   | succ n => simp [sub_mul]
 
 /--

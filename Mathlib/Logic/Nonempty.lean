@@ -20,13 +20,8 @@ This file proves a few extra facts about `Nonempty`, which is defined in core Le
   instance.
 -/
 
-variable {α β : Type*} {γ : α → Type*}
-
-instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α :=
-  ⟨0⟩
-
-instance (priority := 20) One.instNonempty [One α] : Nonempty α :=
-  ⟨1⟩
+section
+variable {α β : Sort*}
 
 @[simp]
 theorem Nonempty.forall {α} {p : Nonempty α → Prop} : (∀ h : Nonempty α, p h) ↔ ∀ a, p ⟨a⟩ :=
@@ -55,11 +50,6 @@ theorem not_nonempty_iff_imp_false {α : Sort*} : ¬Nonempty α ↔ α → False
 #align not_nonempty_iff_imp_false not_nonempty_iff_imp_false
 
 @[simp]
-theorem nonempty_sigma : Nonempty (Σa : α, γ a) ↔ ∃ a : α, Nonempty (γ a) :=
-  Iff.intro (fun ⟨⟨a, c⟩⟩ ↦ ⟨a, ⟨c⟩⟩) fun ⟨a, ⟨c⟩⟩ ↦ ⟨⟨a, c⟩⟩
-#align nonempty_sigma nonempty_sigma
-
-@[simp]
 theorem nonempty_psigma {α} {β : α → Sort*} : Nonempty (PSigma β) ↔ ∃ a : α, Nonempty (β a) :=
   Iff.intro (fun ⟨⟨a, c⟩⟩ ↦ ⟨a, ⟨c⟩⟩) fun ⟨a, ⟨c⟩⟩ ↦ ⟨⟨a, c⟩⟩
 #align nonempty_psigma nonempty_psigma
@@ -70,27 +60,9 @@ theorem nonempty_subtype {α} {p : α → Prop} : Nonempty (Subtype p) ↔ ∃ a
 #align nonempty_subtype nonempty_subtype
 
 @[simp]
-theorem nonempty_prod : Nonempty (α × β) ↔ Nonempty α ∧ Nonempty β :=
-  Iff.intro (fun ⟨⟨a, b⟩⟩ ↦ ⟨⟨a⟩, ⟨b⟩⟩) fun ⟨⟨a⟩, ⟨b⟩⟩ ↦ ⟨⟨a, b⟩⟩
-#align nonempty_prod nonempty_prod
-
-@[simp]
 theorem nonempty_pprod {α β} : Nonempty (PProd α β) ↔ Nonempty α ∧ Nonempty β :=
   Iff.intro (fun ⟨⟨a, b⟩⟩ ↦ ⟨⟨a⟩, ⟨b⟩⟩) fun ⟨⟨a⟩, ⟨b⟩⟩ ↦ ⟨⟨a, b⟩⟩
 #align nonempty_pprod nonempty_pprod
-
-@[simp]
-theorem nonempty_sum : Nonempty (Sum α β) ↔ Nonempty α ∨ Nonempty β :=
-  Iff.intro
-    (fun ⟨h⟩ ↦
-      match h with
-      | Sum.inl a => Or.inl ⟨a⟩
-      | Sum.inr b => Or.inr ⟨b⟩)
-    fun h ↦
-    match h with
-    | Or.inl ⟨a⟩ => ⟨Sum.inl a⟩
-    | Or.inr ⟨b⟩ => ⟨Sum.inr b⟩
-#align nonempty_sum nonempty_sum
 
 @[simp]
 theorem nonempty_psum {α β} : Nonempty (PSum α β) ↔ Nonempty α ∨ Nonempty β :=
@@ -104,11 +76,6 @@ theorem nonempty_psum {α β} : Nonempty (PSum α β) ↔ Nonempty α ∨ Nonemp
     | Or.inl ⟨a⟩ => ⟨PSum.inl a⟩
     | Or.inr ⟨b⟩ => ⟨PSum.inr b⟩
 #align nonempty_psum nonempty_psum
-
-@[simp]
-theorem nonempty_ulift : Nonempty (ULift α) ↔ Nonempty α :=
-  Iff.intro (fun ⟨⟨a⟩⟩ ↦ ⟨a⟩) fun ⟨a⟩ ↦ ⟨⟨a⟩⟩
-#align nonempty_ulift nonempty_ulift
 
 @[simp]
 theorem nonempty_plift {α} : Nonempty (PLift α) ↔ Nonempty α :=
@@ -174,3 +141,44 @@ theorem Function.Surjective.nonempty [h : Nonempty β] {f : α → β} (hf : Fun
   let ⟨x, _⟩ := hf y
   ⟨x⟩
 #align function.surjective.nonempty Function.Surjective.nonempty
+
+end
+
+section
+variable {α β : Type*} {γ : α → Type*}
+
+instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α :=
+  ⟨0⟩
+
+instance (priority := 20) One.instNonempty [One α] : Nonempty α :=
+  ⟨1⟩
+
+@[simp]
+theorem nonempty_sigma : Nonempty (Σa : α, γ a) ↔ ∃ a : α, Nonempty (γ a) :=
+  Iff.intro (fun ⟨⟨a, c⟩⟩ ↦ ⟨a, ⟨c⟩⟩) fun ⟨a, ⟨c⟩⟩ ↦ ⟨⟨a, c⟩⟩
+#align nonempty_sigma nonempty_sigma
+
+@[simp]
+theorem nonempty_sum : Nonempty (Sum α β) ↔ Nonempty α ∨ Nonempty β :=
+  Iff.intro
+    (fun ⟨h⟩ ↦
+      match h with
+      | Sum.inl a => Or.inl ⟨a⟩
+      | Sum.inr b => Or.inr ⟨b⟩)
+    fun h ↦
+    match h with
+    | Or.inl ⟨a⟩ => ⟨Sum.inl a⟩
+    | Or.inr ⟨b⟩ => ⟨Sum.inr b⟩
+#align nonempty_sum nonempty_sum
+
+@[simp]
+theorem nonempty_prod : Nonempty (α × β) ↔ Nonempty α ∧ Nonempty β :=
+  Iff.intro (fun ⟨⟨a, b⟩⟩ ↦ ⟨⟨a⟩, ⟨b⟩⟩) fun ⟨⟨a⟩, ⟨b⟩⟩ ↦ ⟨⟨a, b⟩⟩
+#align nonempty_prod nonempty_prod
+
+@[simp]
+theorem nonempty_ulift : Nonempty (ULift α) ↔ Nonempty α :=
+  Iff.intro (fun ⟨⟨a⟩⟩ ↦ ⟨a⟩) fun ⟨a⟩ ↦ ⟨⟨a⟩⟩
+#align nonempty_ulift nonempty_ulift
+
+end

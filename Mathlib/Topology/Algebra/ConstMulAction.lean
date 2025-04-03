@@ -40,9 +40,6 @@ Hausdorff, discrete group, properly discontinuous, quotient space
 
 -/
 
-set_option autoImplicit true
-
-
 open Topology Pointwise Filter Set TopologicalSpace
 
 /-- Class `ContinuousConstSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
@@ -192,7 +189,7 @@ theorem smul_closure_orbit_subset (c : M) (x : α) :
 #align smul_closure_orbit_subset smul_closure_orbit_subset
 #align vadd_closure_orbit_subset vadd_closure_orbit_subset
 
-theorem isClosed_setOf_map_smul [Monoid N] (α β) [MulAction M α] [MulAction N β]
+theorem isClosed_setOf_map_smul {N : Type*} [Monoid N] (α β) [MulAction M α] [MulAction N β]
     [TopologicalSpace β] [T2Space β] [ContinuousConstSMul N β] (σ : M → N) :
     IsClosed { f : α → β | ∀ c x, f (c • x) = σ c • f x } := by
   simp only [Set.setOf_forall]

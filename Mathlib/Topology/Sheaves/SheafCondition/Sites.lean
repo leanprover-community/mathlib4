@@ -26,7 +26,7 @@ induce cover preserving functors, and that open embeddings induce continuous fun
 
 noncomputable section
 
-set_option linter.uppercaseLean3 false -- Porting note: Added because of too many false positives
+set_option linter.uppercaseLean3 false
 
 universe w v u
 

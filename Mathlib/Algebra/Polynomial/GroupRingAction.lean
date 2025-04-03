@@ -81,7 +81,7 @@ theorem smul_eval [MulSemiringAction G S] (g : G) (f : S[X]) (x : S) :
 end Polynomial
 
 section CommRing
-set_option linter.uppercaseLean3 false  -- Porting note: `prod_X_*`
+set_option linter.uppercaseLean3 false
 
 variable (G : Type*) [Group G] [Fintype G]
 variable (R : Type*) [CommRing R] [MulSemiringAction G R]

@@ -200,7 +200,6 @@ theorem eventuallyEq_one : f =ᶠ[𝓝 c] 1 :=
   f.eventuallyEq_one_of_mem_ball (mem_ball_self f.rIn_pos)
 #align cont_diff_bump.eventually_eq_one ContDiffBump.eventuallyEq_one
 
--- Porting note (#10756): new lemma
 /-- `ContDiffBump` is `𝒞ⁿ` in all its arguments. -/
 protected theorem _root_.ContDiffWithinAt.contDiffBump {c g : X → E} {s : Set X}
     {f : ∀ x, ContDiffBump (c x)} {x : X} (hc : ContDiffWithinAt ℝ n c s x)

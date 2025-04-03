@@ -176,8 +176,8 @@ theorem exists_large_model_of_infinite_model (T : L.Theory) (κ : Cardinal.{w}) 
     ∃ N : ModelType.{_, _, max u v w} T, Cardinal.lift.{max u v w} κ ≤ #N := by
   obtain ⟨N⟩ :=
     isSatisfiable_union_distinctConstantsTheory_of_infinite T (Set.univ : Set κ.out) M
-  refine ⟨(N.is_model.mono (Set.subset_union_left _ _)).bundled.reduct _, ?_⟩
-  haveI : N ⊨ distinctConstantsTheory _ _ := N.is_model.mono (Set.subset_union_right _ _)
+  refine ⟨(N.is_model.mono Set.subset_union_left).bundled.reduct _, ?_⟩
+  haveI : N ⊨ distinctConstantsTheory _ _ := N.is_model.mono Set.subset_union_right
   rw [ModelType.reduct_Carrier, coe_of]
   refine _root_.trans (lift_le.2 (le_of_eq (Cardinal.mk_out κ).symm)) ?_
   rw [← mk_univ]
@@ -328,8 +328,8 @@ theorem models_iff_not_satisfiable (φ : L.Sentence) : T ⊨ᵇ φ ↔ ¬IsSatis
     ⟨fun h1 h2 =>
       (Sentence.realize_not _).1
         (realize_sentence_of_mem (T ∪ {Formula.not φ})
-          (Set.subset_union_right _ _ (Set.mem_singleton _)))
-        (h1 (h2.some.subtheoryModel (Set.subset_union_left _ _))),
+          (Set.subset_union_right (Set.mem_singleton _)))
+        (h1 (h2.some.subtheoryModel Set.subset_union_left)),
       fun h M => ?_⟩
   contrapose! h
   rw [← Sentence.realize_not] at h

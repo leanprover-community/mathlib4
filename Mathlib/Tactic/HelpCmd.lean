@@ -121,17 +121,36 @@ elab_rules : command
 that don't start with a string constant. -/
 partial def getHeadTk (e : Expr) : Option String :=
   match e.getAppFnArgs with
-  | (``ParserDescr.node, #[_, _, p]) => getHeadTk p
-  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "withPosition")), p]) => getHeadTk p
-  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "atomic")), p]) => getHeadTk p
-  | (``ParserDescr.binary, #[.app _ (.lit (.strVal "andthen")), p, _]) => getHeadTk p
-  | (``ParserDescr.nonReservedSymbol, #[.lit (.strVal tk), _]) => some tk
-  | (``ParserDescr.symbol, #[.lit (.strVal tk)]) => some tk
-  | (``Parser.withAntiquot, #[_, p]) => getHeadTk p
-  | (``Parser.leadingNode, #[_, _, p]) => getHeadTk p
-  | (``HAndThen.hAndThen, #[_, _, _, _, p, _]) => getHeadTk p
-  | (``Parser.nonReservedSymbol, #[.lit (.strVal tk), _]) => some tk
-  | (``Parser.symbol, #[.lit (.strVal tk)]) => some tk
+  | (``ParserDescr.node, #[_, _, p])
+  | (``ParserDescr.trailingNode, #[_, _, _, p])
+  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "withPosition")), p])
+  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "atomic")), p])
+  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "ppRealGroup")), p])
+  | (``ParserDescr.unary, #[.app _ (.lit (.strVal "ppRealFill")), p])
+  | (``Parser.ppRealFill, #[p])
+  | (``Parser.withAntiquot, #[_, p])
+  | (``Parser.leadingNode, #[_, _, p])
+  | (``Parser.trailingNode, #[_, _, _, p])
+  | (``Parser.group, #[p])
+  | (``Parser.withCache, #[_, p])
+  | (``Parser.withResetCache, #[p])
+  | (``Parser.withPosition, #[p])
+  | (``Parser.withOpen, #[p])
+  | (``Parser.withPositionAfterLinebreak, #[p])
+  | (``Parser.suppressInsideQuot, #[p])
+  | (``Parser.ppRealGroup, #[p])
+  | (``Parser.ppIndent, #[p])
+  | (``Parser.ppDedent, #[p])
+    => getHeadTk p
+  | (``ParserDescr.binary, #[.app _ (.lit (.strVal "andthen")), p, q])
+  | (``HAndThen.hAndThen, #[_, _, _, _, p, .lam _ _ q _])
+    => getHeadTk p <|> getHeadTk q
+  | (``ParserDescr.nonReservedSymbol, #[.lit (.strVal tk), _])
+  | (``ParserDescr.symbol, #[.lit (.strVal tk)])
+  | (``Parser.nonReservedSymbol, #[.lit (.strVal tk), _])
+  | (``Parser.symbol, #[.lit (.strVal tk)])
+  | (``Parser.unicodeSymbol, #[.lit (.strVal tk), _])
+    => pure tk
   | _ => none
 
 /--

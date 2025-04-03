@@ -178,10 +178,13 @@ instance essSurj_comp (F : C ⥤ D) (G : D ⥤ E) [F.EssSurj] [G.EssSurj] :
     (F ⋙ G).EssSurj where
   mem_essImage Z := ⟨_, ⟨G.mapIso (F.objObjPreimageIso _) ≪≫ G.objObjPreimageIso Z⟩⟩
 
+lemma essSurj_of_comp_fully_faithful (F : C ⥤ D) (G : D ⥤ E) [(F ⋙ G).EssSurj]
+    [G.Faithful] [G.Full] : F.EssSurj where
+  mem_essImage X := ⟨_, ⟨G.preimageIso ((F ⋙ G).objObjPreimageIso (G.obj X))⟩⟩
+
 end Functor
 
--- deprecated on 2024-04-06
-@[deprecated] alias EssSurj := Functor.EssSurj
-@[deprecated] alias Iso.map_essSurj := Functor.essSurj_of_iso
+@[deprecated (since := "2024-04-06")] alias EssSurj := Functor.EssSurj
+@[deprecated (since := "2024-04-06")] alias Iso.map_essSurj := Functor.essSurj_of_iso
 
 end CategoryTheory

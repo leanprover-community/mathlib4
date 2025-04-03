@@ -95,16 +95,8 @@ theorem eval₂_add : (p + q).eval₂ f x = p.eval₂ f x + q.eval₂ f x := by
 theorem eval₂_one : (1 : R[X]).eval₂ f x = 1 := by rw [← C_1, eval₂_C, f.map_one]
 #align polynomial.eval₂_one Polynomial.eval₂_one
 
-set_option linter.deprecated false in
-@[simp]
-theorem eval₂_bit0 : (bit0 p).eval₂ f x = bit0 (p.eval₂ f x) := by rw [bit0, eval₂_add, bit0]
-#align polynomial.eval₂_bit0 Polynomial.eval₂_bit0
-
-set_option linter.deprecated false in
-@[simp]
-theorem eval₂_bit1 : (bit1 p).eval₂ f x = bit1 (p.eval₂ f x) := by
-  rw [bit1, eval₂_add, eval₂_bit0, eval₂_one, bit1]
-#align polynomial.eval₂_bit1 Polynomial.eval₂_bit1
+#noalign polynomial.eval₂_bit0
+#noalign polynomial.eval₂_bit1
 
 @[simp]
 theorem eval₂_smul (g : R →+* S) (p : R[X]) (x : S) {s : R} :
@@ -406,17 +398,8 @@ theorem eval_one : (1 : R[X]).eval x = 1 :=
   eval₂_one _ _
 #align polynomial.eval_one Polynomial.eval_one
 
-set_option linter.deprecated false in
-@[simp]
-theorem eval_bit0 : (bit0 p).eval x = bit0 (p.eval x) :=
-  eval₂_bit0 _ _
-#align polynomial.eval_bit0 Polynomial.eval_bit0
-
-set_option linter.deprecated false in
-@[simp]
-theorem eval_bit1 : (bit1 p).eval x = bit1 (p.eval x) :=
-  eval₂_bit1 _ _
-#align polynomial.eval_bit1 Polynomial.eval_bit1
+#noalign polynomial.eval_bit0
+#noalign polynomial.eval_bit1
 
 @[simp]
 theorem eval_smul [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S) (p : R[X])
@@ -582,7 +565,6 @@ theorem natCast_comp {n : ℕ} : (n : R[X]).comp p = n := by rw [← C_eq_natCas
 @[deprecated (since := "2024-04-17")]
 alias nat_cast_comp := natCast_comp
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : R[X]).comp p = n :=
   natCast_comp
@@ -803,24 +785,14 @@ protected theorem map_natCast (n : ℕ) : (n : R[X]).map f = n :=
 @[deprecated (since := "2024-04-17")]
 alias map_nat_cast := map_natCast
 
--- Porting note (#10756): new theorem
 -- See note [no_index around OfNat.ofNat]
 @[simp]
 protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n) : R[X]).map f = OfNat.ofNat n :=
   show (n : R[X]).map f = n by rw [Polynomial.map_natCast]
 
-set_option linter.deprecated false in
-@[simp]
-protected theorem map_bit0 : (bit0 p).map f = bit0 (p.map f) :=
-  map_bit0 (mapRingHom f) p
-#align polynomial.map_bit0 Polynomial.map_bit0
-
-set_option linter.deprecated false in
-@[simp]
-protected theorem map_bit1 : (bit1 p).map f = bit1 (p.map f) :=
-  map_bit1 (mapRingHom f) p
-#align polynomial.map_bit1 Polynomial.map_bit1
+#noalign polynomial.map_bit0
+#noalign polynomial.map_bit1
 
 --TODO rename to `map_dvd_map`
 theorem map_dvd (f : R →+* S) {x y : R[X]} : x ∣ y → x.map f ∣ y.map f :=

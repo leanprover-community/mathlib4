@@ -105,7 +105,7 @@ theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_s
 #align two_smul two_smul
 
 set_option linter.deprecated false in
-@[deprecated]
+@[deprecated (since := "2022-12-31")]
 theorem two_smul' : (2 : R) • x = bit0 x :=
   two_smul R x
 #align two_smul' two_smul'
@@ -634,13 +634,13 @@ end NoZeroSMulDivisors
 
 -- Porting note (#10618): simp can prove this
 --@[simp]
-theorem Nat.smul_one_eq_cast {R : Type*} [Semiring R] (m : ℕ) : m • (1 : R) = ↑m := by
+theorem Nat.smul_one_eq_cast {R : Type*} [NonAssocSemiring R] (m : ℕ) : m • (1 : R) = ↑m := by
   rw [nsmul_eq_mul, mul_one]
 #align nat.smul_one_eq_coe Nat.smul_one_eq_cast
 
 -- Porting note (#10618): simp can prove this
 --@[simp]
-theorem Int.smul_one_eq_cast {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = ↑m := by
+theorem Int.smul_one_eq_cast {R : Type*} [NonAssocRing R] (m : ℤ) : m • (1 : R) = ↑m := by
   rw [zsmul_eq_mul, mul_one]
 #align int.smul_one_eq_coe Int.smul_one_eq_cast
 

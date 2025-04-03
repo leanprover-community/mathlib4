@@ -348,7 +348,7 @@ theorem contMDiffAt_comp_diffeomorph_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : N
 @[simp]
 theorem contMDiff_comp_diffeomorph_iff {m} (h : M ≃ₘ^n⟮I, J⟯ N) {f : N → M'} (hm : m ≤ n) :
     ContMDiff I I' m (f ∘ h) ↔ ContMDiff J I' m f :=
-  h.toEquiv.forall_congr <| h.contMDiffAt_comp_diffeomorph_iff hm
+  h.toEquiv.forall_congr fun _ ↦ h.contMDiffAt_comp_diffeomorph_iff hm
 #align diffeomorph.cont_mdiff_comp_diffeomorph_iff Diffeomorph.contMDiff_comp_diffeomorph_iff
 
 @[simp]

@@ -73,7 +73,7 @@ theorem toFinsupp_apply_fin (n : Fin l.length) : l.toFinsupp n = l.get n :=
   getD_eq_get _ _ _
 
 set_option linter.deprecated false in
-@[deprecated] -- 2023-04-10
+@[deprecated (since := "2023-04-10")]
 theorem toFinsupp_apply_lt' (hn : n < l.length) : l.toFinsupp n = l.nthLe n hn :=
   getD_eq_get _ _ _
 #align list.to_finsupp_apply_lt List.toFinsupp_apply_lt'
@@ -107,7 +107,6 @@ theorem toFinsupp_cons_apply_succ (x : M) (xs : List M) (n : ℕ)
   rfl
 #align list.to_finsupp_cons_apply_succ List.toFinsupp_cons_apply_succ
 
--- Porting note (#10756): new theorem
 theorem toFinsupp_append {R : Type*} [AddZeroClass R] (l₁ l₂ : List R)
     [DecidablePred (getD (l₁ ++ l₂) · 0 ≠ 0)] [DecidablePred (getD l₁ · 0 ≠ 0)]
     [DecidablePred (getD l₂ · 0 ≠ 0)] :

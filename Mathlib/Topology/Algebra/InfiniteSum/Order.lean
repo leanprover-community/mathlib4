@@ -83,11 +83,13 @@ theorem tprod_le_tprod_of_inj {g : κ → α} (e : ι → κ) (he : Injective e)
 
 @[to_additive]
 lemma tprod_subtype_le {κ γ : Type*} [OrderedCommGroup γ] [UniformSpace γ] [UniformGroup γ]
-    [OrderClosedTopology γ] [ CompleteSpace γ] (f : κ → γ) (β : Set κ) (h : ∀ a : κ, 1 ≤ f a)
+    [OrderClosedTopology γ] [CompleteSpace γ] (f : κ → γ) (β : Set κ) (h : ∀ a : κ, 1 ≤ f a)
     (hf : Multipliable f) : (∏' (b : β), f b) ≤ (∏' (a : κ), f a) := by
-  apply tprod_le_tprod_of_inj _ (Subtype.coe_injective) (by simp only [Subtype.range_coe_subtype,
-    Set.setOf_mem_eq, h, implies_true]) (by simp only [le_refl,
-    Subtype.forall, implies_true]) (by apply hf.subtype)
+  apply tprod_le_tprod_of_inj _
+    (Subtype.coe_injective)
+    (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, h, implies_true])
+    (by simp only [le_refl, Subtype.forall, implies_true])
+    (by apply hf.subtype)
   apply hf
 
 @[to_additive]

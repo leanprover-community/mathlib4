@@ -232,7 +232,7 @@ theorem iff_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : S.Nonempty) :
     IsCyclotomicExtension S A B ↔ IsCyclotomicExtension (S ∪ {n}) A B := by
   refine
     ⟨fun H => of_union_of_dvd A B h hS, fun H => (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => ?_, ?_⟩⟩
-  · exact H.exists_prim_root (subset_union_left _ _ hs)
+  · exact H.exists_prim_root (subset_union_left hs)
   · rw [_root_.eq_top_iff, ← ((iff_adjoin_eq_top _ A B).1 H).2]
     refine adjoin_mono fun x hx => ?_
     simp only [union_singleton, mem_insert_iff, mem_setOf_eq] at hx ⊢

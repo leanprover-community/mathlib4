@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
-import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Data.Set.Finite
 
 #align_import order.filter.basic from "leanprover-community/mathlib"@"d4f691b9e5f94cfc64639973f3544c95f8d5d494"
@@ -77,6 +76,8 @@ we do *not* require. This gives `Filter X` better formal properties, in particul
 `⊥` for its lattice structure, at the cost of including the assumption
 `[NeBot f]` in a number of lemmas and definitions.
 -/
+
+assert_not_exists OrderedSemiring
 
 set_option autoImplicit true
 
@@ -163,7 +164,7 @@ theorem inter_mem {s t : Set α} (hs : s ∈ f) (ht : t ∈ f) : s ∩ t ∈ f :
 
 @[simp]
 theorem inter_mem_iff {s t : Set α} : s ∩ t ∈ f ↔ s ∈ f ∧ t ∈ f :=
-  ⟨fun h => ⟨mem_of_superset h (inter_subset_left s t), mem_of_superset h (inter_subset_right s t)⟩,
+  ⟨fun h => ⟨mem_of_superset h inter_subset_left, mem_of_superset h inter_subset_right⟩,
     and_imp.2 inter_mem⟩
 #align filter.inter_mem_iff Filter.inter_mem_iff
 
@@ -235,7 +236,7 @@ theorem exists_mem_and_iff {P : Set α → Prop} {Q : Set α → Prop} (hP : Ant
   constructor
   · rintro ⟨⟨u, huf, hPu⟩, v, hvf, hQv⟩
     exact
-      ⟨u ∩ v, inter_mem huf hvf, hP (inter_subset_left _ _) hPu, hQ (inter_subset_right _ _) hQv⟩
+      ⟨u ∩ v, inter_mem huf hvf, hP inter_subset_left hPu, hQ inter_subset_right hQv⟩
   · rintro ⟨u, huf, hPu, hQu⟩
     exact ⟨⟨u, huf, hPu⟩, u, huf, hQu⟩
 #align filter.exists_mem_and_iff Filter.exists_mem_and_iff
@@ -431,8 +432,8 @@ instance : Inf (Filter α) :=
       sets_of_superset := by
         rintro x y ⟨a, ha, b, hb, rfl⟩ xy
         refine
-          ⟨a ∪ y, mem_of_superset ha (subset_union_left a y), b ∪ y,
-            mem_of_superset hb (subset_union_left b y), ?_⟩
+          ⟨a ∪ y, mem_of_superset ha subset_union_left, b ∪ y,
+            mem_of_superset hb subset_union_left, ?_⟩
         rw [← inter_union_distrib_right, union_eq_self_of_subset_left xy]
       inter_sets := by
         rintro x y ⟨a, ha, b, hb, rfl⟩ ⟨c, hc, d, hd, rfl⟩
@@ -585,7 +586,7 @@ theorem mem_sup {f g : Filter α} {s : Set α} : s ∈ f ⊔ g ↔ s ∈ f ∧ s
 #align filter.mem_sup Filter.mem_sup
 
 theorem union_mem_sup {f g : Filter α} {s t : Set α} (hs : s ∈ f) (ht : t ∈ g) : s ∪ t ∈ f ⊔ g :=
-  ⟨mem_of_superset hs (subset_union_left s t), mem_of_superset ht (subset_union_right s t)⟩
+  ⟨mem_of_superset hs subset_union_left, mem_of_superset ht subset_union_right⟩
 #align filter.union_mem_sup Filter.union_mem_sup
 
 @[simp]
@@ -631,7 +632,7 @@ theorem mem_iInf {ι} {s : ι → Filter α} {U : Set α} :
       have : ⋂₀ σ i ∈ s i := by
         rw [sInter_mem (σfin _)]
         apply σsub
-      exact mem_of_superset this (subset_union_right _ _)
+      exact mem_of_superset this subset_union_right
     refine ⟨I, Ifin, V, V_in, ?_⟩
     rwa [hV, ← union_iInter, union_eq_self_of_subset_right]
   · rintro ⟨I, Ifin, V, V_in, rfl⟩
@@ -761,8 +762,8 @@ theorem _root_.Pairwise.exists_mem_filter_of_disjoint {ι : Type*} [Finite ι] {
   choose! s t hst using this
   refine ⟨fun i => ⋂ j, @s i j ∩ @t j i, fun i => ?_, fun i j hij => ?_⟩
   exacts [iInter_mem.2 fun j => inter_mem (@s i j).2 (@t j i).2,
-    (hst hij).mono ((iInter_subset _ j).trans (inter_subset_left _ _))
-      ((iInter_subset _ i).trans (inter_subset_right _ _))]
+    (hst hij).mono ((iInter_subset _ j).trans inter_subset_left)
+      ((iInter_subset _ i).trans inter_subset_right)]
 #align pairwise.exists_mem_filter_of_disjoint Pairwise.exists_mem_filter_of_disjoint
 
 theorem _root_.Set.PairwiseDisjoint.exists_mem_filter {ι : Type*} {l : ι → Filter α} {t : Set ι}
@@ -899,8 +900,8 @@ instance : DistribLattice (Filter α) :=
       simp only [and_assoc, mem_inf_iff, mem_sup, exists_prop, exists_imp, and_imp]
       rintro hs t₁ ht₁ t₂ ht₂ rfl
       exact
-        ⟨t₁, x.sets_of_superset hs (inter_subset_left t₁ t₂), ht₁, t₂,
-          x.sets_of_superset hs (inter_subset_right t₁ t₂), ht₂, rfl⟩ }
+        ⟨t₁, x.sets_of_superset hs inter_subset_left, ht₁, t₂,
+          x.sets_of_superset hs inter_subset_right, ht₂, rfl⟩ }
 
 -- The dual version does not hold! `Filter α` is not a `CompleteDistribLattice`. -/
 instance : Coframe (Filter α) :=
@@ -1871,29 +1872,6 @@ theorem set_eventuallyEq_iff_inf_principal {s t : Set α} {l : Filter α} :
   simp only [eventuallyLE_antisymm_iff, le_antisymm_iff, set_eventuallyLE_iff_inf_principal_le]
 #align filter.set_eventually_eq_iff_inf_principal Filter.set_eventuallyEq_iff_inf_principal
 
-theorem EventuallyLE.mul_le_mul [MulZeroClass β] [PartialOrder β] [PosMulMono β] [MulPosMono β]
-    {l : Filter α} {f₁ f₂ g₁ g₂ : α → β} (hf : f₁ ≤ᶠ[l] f₂) (hg : g₁ ≤ᶠ[l] g₂) (hg₀ : 0 ≤ᶠ[l] g₁)
-    (hf₀ : 0 ≤ᶠ[l] f₂) : f₁ * g₁ ≤ᶠ[l] f₂ * g₂ := by
-  filter_upwards [hf, hg, hg₀, hf₀] with x using _root_.mul_le_mul
-#align filter.eventually_le.mul_le_mul Filter.EventuallyLE.mul_le_mul
-
-@[to_additive EventuallyLE.add_le_add]
-theorem EventuallyLE.mul_le_mul' [Mul β] [Preorder β] [CovariantClass β β (· * ·) (· ≤ ·)]
-    [CovariantClass β β (swap (· * ·)) (· ≤ ·)] {l : Filter α} {f₁ f₂ g₁ g₂ : α → β}
-    (hf : f₁ ≤ᶠ[l] f₂) (hg : g₁ ≤ᶠ[l] g₂) : f₁ * g₁ ≤ᶠ[l] f₂ * g₂ := by
-  filter_upwards [hf, hg] with x hfx hgx using _root_.mul_le_mul' hfx hgx
-#align filter.eventually_le.mul_le_mul' Filter.EventuallyLE.mul_le_mul'
-#align filter.eventually_le.add_le_add Filter.EventuallyLE.add_le_add
-
-theorem EventuallyLE.mul_nonneg [OrderedSemiring β] {l : Filter α} {f g : α → β} (hf : 0 ≤ᶠ[l] f)
-    (hg : 0 ≤ᶠ[l] g) : 0 ≤ᶠ[l] f * g := by filter_upwards [hf, hg] with x using _root_.mul_nonneg
-#align filter.eventually_le.mul_nonneg Filter.EventuallyLE.mul_nonneg
-
-theorem eventually_sub_nonneg [OrderedRing β] {l : Filter α} {f g : α → β} :
-    0 ≤ᶠ[l] g - f ↔ f ≤ᶠ[l] g :=
-  eventually_congr <| eventually_of_forall fun _ => sub_nonneg
-#align filter.eventually_sub_nonneg Filter.eventually_sub_nonneg
-
 theorem EventuallyLE.sup [SemilatticeSup β] {l : Filter α} {f₁ f₂ g₁ g₂ : α → β} (hf : f₁ ≤ᶠ[l] f₂)
     (hg : g₁ ≤ᶠ[l] g₂) : f₁ ⊔ g₁ ≤ᶠ[l] f₂ ⊔ g₂ := by
   filter_upwards [hf, hg] with x hfx hgx using sup_le_sup hfx hgx
@@ -2078,7 +2056,7 @@ def kernMap (m : α → β) (f : Filter α) : Filter β where
   univ_sets := ⟨univ, f.univ_sets, by simp [kernImage_eq_compl]⟩
   sets_of_superset := by
     rintro _ t ⟨s, hs, rfl⟩ hst
-    refine ⟨s ∪ m ⁻¹' t, mem_of_superset hs (subset_union_left s _), ?_⟩
+    refine ⟨s ∪ m ⁻¹' t, mem_of_superset hs subset_union_left, ?_⟩
     rw [kernImage_union_preimage, union_eq_right.mpr hst]
   inter_sets := by
     rintro _ _ ⟨s₁, h₁, rfl⟩ ⟨s₂, h₂, rfl⟩
@@ -2389,10 +2367,11 @@ theorem comap_mono : Monotone (comap m) :=
 #align filter.comap_mono Filter.comap_mono
 
 /-- Temporary lemma that we can tag with `gcongr` -/
-@[gcongr, deprecated] theorem map_le_map (h : F ≤ G) : map m F ≤ map m G := map_mono h
+@[gcongr] theorem _root_.GCongr.Filter.map_le_map (h : F ≤ G) : map m F ≤ map m G := map_mono h
 
 /-- Temporary lemma that we can tag with `gcongr` -/
-@[gcongr, deprecated] theorem comap_le_comap (h : F ≤ G) : comap m F ≤ comap m G := comap_mono h
+@[gcongr]
+theorem _root_.GCongr.Filter.comap_le_comap (h : F ≤ G) : comap m F ≤ comap m G := comap_mono h
 
 @[simp] theorem map_bot : map m ⊥ = ⊥ := (gc_map_comap m).l_bot
 #align filter.map_bot Filter.map_bot
@@ -2552,7 +2531,7 @@ theorem map_eq_map_iff_of_injOn {f g : Filter α} {m : α → β} {s : Set α} (
 #align filter.map_eq_map_iff_of_inj_on Filter.map_eq_map_iff_of_injOn
 
 theorem map_inj {f g : Filter α} {m : α → β} (hm : Injective m) : map m f = map m g ↔ f = g :=
-  map_eq_map_iff_of_injOn univ_mem univ_mem (hm.injOn _)
+  map_eq_map_iff_of_injOn univ_mem univ_mem hm.injOn
 #align filter.map_inj Filter.map_inj
 
 theorem map_injective {m : α → β} (hm : Injective m) : Injective (map m) := fun _ _ =>

@@ -70,7 +70,7 @@ theorem Convex.convexHull_subset_iff (ht : Convex 𝕜 t) : convexHull 𝕜 s �
   (show (convexHull 𝕜).IsClosed t from ht).closure_le_iff
 #align convex.convex_hull_subset_iff Convex.convexHull_subset_iff
 
-@[mono]
+@[mono, gcongr]
 theorem convexHull_mono (hst : s ⊆ t) : convexHull 𝕜 s ⊆ convexHull 𝕜 t :=
   (convexHull 𝕜).monotone hst
 #align convex_hull_mono convexHull_mono
@@ -153,7 +153,7 @@ theorem Convex.convex_remove_iff_not_mem_convexHull_remove {s : Set E} (hs : Con
     exact convex_convexHull 𝕜 _
   exact
     Subset.antisymm (subset_convexHull 𝕜 _) fun y hy =>
-      ⟨convexHull_min (diff_subset _ _) hs hy, by
+      ⟨convexHull_min diff_subset hs hy, by
         rintro (rfl : y = x)
         exact hx hy⟩
 #align convex.convex_remove_iff_not_mem_convex_hull_remove Convex.convex_remove_iff_not_mem_convexHull_remove

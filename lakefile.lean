@@ -18,13 +18,10 @@ package mathlib where
 ## Mathlib dependencies on upstream projects.
 -/
 
-meta if get_config? doc = some "on" then -- do not download and build doc-gen4 by default
-require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
-
 require batteries from git "https://github.com/leanprover-community/batteries" @ "main"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
-require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.36"
+require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.38"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 require importGraph from git "https://github.com/leanprover-community/import-graph.git" @ "main"
 
@@ -36,7 +33,7 @@ require importGraph from git "https://github.com/leanprover-community/import-gra
 lean_lib Mathlib
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
--- `Mathlib/Util/GetAllModules.lean`.
+-- `scripts/mk_all.lean`.
 lean_lib Cache
 lean_lib LongestPole
 lean_lib Archive
@@ -62,11 +59,17 @@ lean_exe checkYaml where
 lean_exe mk_all where
   srcDir := "scripts"
   supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
 
 /-- `lake exe shake` checks files for unnecessary imports. -/
 lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
+
+/-- `lake exe lint_style` runs text-based style linters. -/
+lean_exe lint_style where
+  srcDir := "scripts"
 
 /--
 `lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
@@ -76,6 +79,8 @@ and then calculates the longest pole
 lean_exe pole where
   root := `LongestPole.Main
   supportInterpreter := true
+  -- Executables which import `Lake` must set `-lLake`.
+  weakLinkArgs := #["-lLake"]
 
 /--
 `lake exe test` is a thin wrapper around `lake exe batteries/test`, until
@@ -83,7 +88,7 @@ https://github.com/leanprover/lean4/issues/4121 is resolved.
 
 You can also use it as e.g. `lake exe test conv eval_elab` to only run the named tests.
 -/
-@[test_runner]
+@[test_driver]
 lean_exe test where
   srcDir := "scripts"
 

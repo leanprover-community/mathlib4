@@ -40,6 +40,7 @@ theorem aemeasurable_zero_measure : AEMeasurable f (0 : Measure α) := by
   exact ⟨fun _ => f default, measurable_const, rfl⟩
 #align ae_measurable_zero_measure aemeasurable_zero_measure
 
+@[fun_prop]
 theorem aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤ m0) :
     @AEMeasurable α α m m0 id μ :=
   @Measurable.aemeasurable α α m0 m id μ (measurable_id'' hm)
@@ -65,6 +66,7 @@ theorem mono_set {s t} (h : s ⊆ t) (ht : AEMeasurable f (μ.restrict t)) :
   ht.mono_measure (restrict_mono h le_rfl)
 #align ae_measurable.mono_set AEMeasurable.mono_set
 
+@[fun_prop]
 protected theorem mono' (h : AEMeasurable f μ) (h' : ν ≪ μ) : AEMeasurable f ν :=
   ⟨h.mk f, h.measurable_mk, h' h.ae_eq_mk⟩
 #align ae_measurable.mono' AEMeasurable.mono'
@@ -168,6 +170,10 @@ theorem comp_aemeasurable {f : α → δ} {g : δ → β} (hg : AEMeasurable g (
     (ae_eq_comp hf hg.ae_eq_mk).trans (hf.ae_eq_mk.fun_comp (mk g hg))⟩
 #align ae_measurable.comp_ae_measurable AEMeasurable.comp_aemeasurable
 
+@[fun_prop]
+theorem comp_aemeasurable' {f : α → δ} {g : δ → β} (hg : AEMeasurable g (μ.map f))
+    (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ g (f x)) μ := comp_aemeasurable hg hf
+
 theorem comp_measurable {f : α → δ} {g : δ → β} (hg : AEMeasurable g (μ.map f))
     (hf : Measurable f) : AEMeasurable (g ∘ f) μ :=
   hg.comp_aemeasurable hf.aemeasurable
@@ -185,7 +191,7 @@ theorem map_map_of_aemeasurable {g : β → γ} {f : α → β} (hg : AEMeasurab
     map_apply_of_aemeasurable (hg.comp_aemeasurable hf) hs, preimage_comp]
 #align ae_measurable.map_map_of_ae_measurable AEMeasurable.map_map_of_aemeasurable
 
-@[measurability]
+@[fun_prop, measurability]
 theorem prod_mk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : AEMeasurable g μ) :
     AEMeasurable (fun x => (f x, g x)) μ :=
   ⟨fun a => (hf.mk f a, hg.mk g a), hf.measurable_mk.prod_mk hg.measurable_mk,

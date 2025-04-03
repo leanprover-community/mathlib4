@@ -239,16 +239,14 @@ noncomputable def lanEvaluationIsoColim (F : C ⥤ D) (X : D)
   NatIso.ofComponents (fun G => colim.mapIso (Iso.refl _))
     (by
       intro G H i
-      -- Porting note: was `ext` in lean 3
+      -- Porting note (#11041): was `ext` in lean 3
       -- Now `ext` can't see that `lan` is a colimit.
       -- Uncertain whether it makes sense to add another `@[ext]` lemma.
-      -- See https://github.com/leanprover-community/mathlib4/issues/5229
       apply colimit.hom_ext
       intro j
       simp only [Functor.comp_map, Functor.mapIso_refl, evaluation_obj_map, whiskeringLeft_obj_map,
         lan_map_app, colimit.ι_desc_assoc, Category.comp_id, Category.assoc]
-      -- Porting note: this deals with the fact that the type of `lan_map_app` has changed
-      -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/change.20in.20behaviour.20with.20.60simps.60/near/354350606
+      -- Porting note (#11041): this deals with the fact that the type of `lan_map_app` has changed
       erw [show ((Lan.equiv F H (Lan.loc F H)) (𝟙 (Lan.loc F H))).app j.left =
         colimit.ι (Lan.diagram F H (F.obj j.left))
         (CostructuredArrow.mk (𝟙 (F.obj j.left))) by apply Category.comp_id]

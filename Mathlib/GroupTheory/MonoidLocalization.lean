@@ -6,8 +6,9 @@ Authors: Amelia Livingston
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Regular.Basic
-import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.Init.Data.Prod
+import Mathlib.RingTheory.OreLocalization.Basic
 
 #align_import group_theory.monoid_localization from "leanprover-community/mathlib"@"10ee941346c27bdb5e87bb3535100c0b1f08ac41"
 
@@ -367,7 +368,7 @@ theorem liftOn_mk {p : Sort u} (f : M → S → p) (H) (a : M) (b : S) :
 #align localization.lift_on_mk Localization.liftOn_mk
 #align add_localization.lift_on_mk AddLocalization.liftOn_mk
 
-@[to_additive (attr := elab_as_elim)]
+@[to_additive (attr := elab_as_elim, induction_eliminator, cases_eliminator)]
 theorem ind {p : Localization S → Prop} (H : ∀ y : M × S, p (mk y.1 y.2)) (x) : p x :=
   rec (fun a b ↦ H (a, b)) (fun _ ↦ rfl) x
 #align localization.ind Localization.ind
@@ -1758,7 +1759,7 @@ noncomputable def mulEquivOfQuotient (f : Submonoid.LocalizationMap S N) : Local
 variable {f}
 
 -- Porting note (#10675): dsimp can not prove this
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem mulEquivOfQuotient_apply (x) : mulEquivOfQuotient f x = (monoidOf S).lift f.map_units x :=
   rfl
 #align localization.mul_equiv_of_quotient_apply Localization.mulEquivOfQuotient_apply
@@ -2015,14 +2016,12 @@ namespace Localization
 
 variable {α : Type*} [CancelCommMonoid α] {s : Submonoid α} {a₁ b₁ : α} {a₂ b₂ : s}
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 @[to_additive]
 theorem mk_left_injective (b : s) : Injective fun a => mk a b := fun c d h => by
   simpa [-mk_eq_monoidOf_mk', mk_eq_mk_iff, r_iff_exists] using h
 #align localization.mk_left_injective Localization.mk_left_injective
 #align add_localization.mk_left_injective AddLocalization.mk_left_injective
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 @[to_additive]
 theorem mk_eq_mk_iff' : mk a₁ a₂ = mk b₁ b₂ ↔ ↑b₂ * a₁ = a₂ * b₁ := by
   simp_rw [mk_eq_mk_iff, r_iff_exists, mul_left_cancel_iff, exists_const]
@@ -2161,3 +2160,36 @@ instance [LinearOrderedCancelCommMonoid α] {s : Submonoid α} :
     decidableEq := Localization.decidableEq }
 
 end Localization
+
+namespace OreLocalization
+
+variable (R) [CommMonoid R] (S : Submonoid R)
+
+/-- The morphism `numeratorHom` is a monoid localization map in the case of commutative `R`. -/
+protected def localizationMap : S.LocalizationMap R[S⁻¹] where
+  toFun := numeratorHom
+  map_one' := rfl
+  map_mul' r₁ r₂ := by simp
+  map_units' := numerator_isUnit
+  surj' z := by
+    induction' z with r s
+    use (r, s); dsimp
+    rw [numeratorHom_apply, numeratorHom_apply, OreLocalization.expand' r 1 s]
+    simp only [mul_div_one, mul_one, Submonoid.smul_def, smul_eq_mul, mul_comm r]
+  exists_of_eq r₁ r₂ := by
+    dsimp
+    intro h
+    rw [numeratorHom_apply, numeratorHom_apply, oreDiv_eq_iff] at h
+    rcases h with ⟨u, v, h₁, h₂⟩
+    dsimp at h₂
+    rw [mul_one, mul_one] at h₂
+    subst h₂
+    exact ⟨u, h₁.symm⟩
+#align ore_localization.localization_map OreLocalization.localizationMap
+
+/-- If `R` is commutative, Ore localization and monoid localization are isomorphic. -/
+protected noncomputable def equivMonoidLocalization : Localization S ≃* R[S⁻¹] :=
+  Localization.mulEquivOfQuotient (OreLocalization.localizationMap R S)
+#align ore_localization.equiv_monoid_localization OreLocalization.equivMonoidLocalization
+
+end OreLocalization

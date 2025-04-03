@@ -7,6 +7,8 @@ import Mathlib.Analysis.InnerProductSpace.Spectrum
 import Mathlib.Data.Matrix.Rank
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Hermitian
+import Mathlib.Analysis.NormedSpace.Star.Matrix
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 #align_import linear_algebra.matrix.spectrum from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
@@ -54,6 +56,21 @@ lemma mulVec_eigenvectorBasis (j : n) :
     RCLike.real_smul_eq_coe_smul (K := 𝕜)] using
       congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
         finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
+
+/-- The spectrum of a Hermitian matrix `A` coincides with the spectrum of `toEuclideanLin A`. -/
+theorem spectrum_toEuclideanLin : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A :=
+  AlgEquiv.spectrum_eq
+    (AlgEquiv.trans
+      ((toEuclideanCLM : Matrix n n 𝕜 ≃⋆ₐ[𝕜] EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n) :
+          Matrix n n 𝕜 ≃ₐ[𝕜] EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n)
+      (Module.End.toContinuousLinearMap (EuclideanSpace 𝕜 n)).symm)
+    _
+
+/-- Eigenvalues of a hermitian matrix A are in the ℝ spectrum of A. -/
+theorem eigenvalues_mem_spectrum_real (i : n) : hA.eigenvalues i ∈ spectrum ℝ A := by
+  apply spectrum.of_algebraMap_mem 𝕜
+  rw [← spectrum_toEuclideanLin]
+  exact LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
 
 /-- Unitary matrix whose columns are `Matrix.IsHermitian.eigenvectorBasis`. -/
 noncomputable def eigenvectorUnitary {𝕜 : Type*} [RCLike 𝕜] {n : Type*}

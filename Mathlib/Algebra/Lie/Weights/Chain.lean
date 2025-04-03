@@ -60,7 +60,7 @@ lemma eventually_weightSpace_smul_add_eq_bot :
     ∀ᶠ (k : ℕ) in Filter.atTop, weightSpace M (k • χ₁ + χ₂) = ⊥ := by
   let f : ℕ → L → R := fun k ↦ k • χ₁ + χ₂
   suffices Injective f by
-    rw [← Nat.cofinite_eq_atTop, Filter.eventually_cofinite, ← finite_image_iff (this.injOn _)]
+    rw [← Nat.cofinite_eq_atTop, Filter.eventually_cofinite, ← finite_image_iff this.injOn]
     apply (finite_weightSpace_ne_bot R L M).subset
     simp [f]
   intro k l hkl

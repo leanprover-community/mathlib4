@@ -72,7 +72,7 @@ def haveLetCore (goal : MVarId) (name : TSyntax ``optBinderIdent)
       | none => mkFreshTypeMVar
       | some stx => withRef stx do
         let e ← Term.elabType stx
-        Term.synthesizeSyntheticMVars false
+        Term.synthesizeSyntheticMVars (postpone := .no)
         instantiateMVars e
       let p ← mkFreshExprMVar t MetavarKind.syntheticOpaque n
       pure (p.mvarId!, ← mkForallFVars es t, ← mkLambdaFVars es p)

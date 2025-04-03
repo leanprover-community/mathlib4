@@ -42,6 +42,7 @@ as well as topology inducing maps, topological embeddings, and quotient maps.
 -/
 
 open Set
+open scoped Topology
 
 namespace TopologicalSpace
 
@@ -64,6 +65,10 @@ def induced (f : X → Y) (t : TopologicalSpace Y) : TopologicalSpace X where
     exact iUnion₂_congr hfg
 #align topological_space.induced TopologicalSpace.induced
 
+instance _root_.instTopologicalSpaceSubtype {p : X → Prop} [t : TopologicalSpace X] :
+    TopologicalSpace (Subtype p) :=
+  induced (↑) t
+
 /-- Given `f : X → Y` and a topology on `X`,
   the coinduced topology on `Y` is defined such that
   `s : Set Y` is open if the preimage of `s` is open.
@@ -78,6 +83,18 @@ def coinduced (f : X → Y) (t : TopologicalSpace X) : TopologicalSpace Y where
 end TopologicalSpace
 
 variable {X Y : Type*} [tX : TopologicalSpace X] [tY : TopologicalSpace Y]
+
+/-- We say that restrictions of the topology on `X` to sets from a family `S`
+generates the original topology,
+if either of the following equivalent conditions hold:
+
+- a set which is relatively open in each `s ∈ S` is open;
+- a set which is relatively closed in each `s ∈ S` is closed;
+- for any topological space `Y`, a function `f : X → Y` is continuous
+  provided that it is continuous on each `s ∈ S`.
+-/
+structure RestrictGenTopology (S : Set (Set X)) : Prop where
+  isOpen_of_forall_induced (u : Set X) : (∀ s ∈ S, IsOpen ((↑) ⁻¹' u : Set s)) → IsOpen u
 
 /-- A function `f : X → Y` between topological spaces is inducing if the topology on `X` is induced
 by the topology on `Y` through `f`, meaning that a set `s : Set X` is open iff it is the preimage

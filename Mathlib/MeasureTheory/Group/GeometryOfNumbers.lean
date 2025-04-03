@@ -55,7 +55,7 @@ theorem exists_pair_mem_lattice_not_disjoint_vadd [AddCommGroup L] [Countable L]
   exact ((fund.measure_eq_tsum _).trans (measure_iUnion₀
     (Pairwise.mono h fun i j hij => (hij.mono inf_le_left inf_le_left).aedisjoint)
       fun _ => (hS.vadd _).inter fund.nullMeasurableSet).symm).trans_le
-      (measure_mono <| Set.iUnion_subset fun _ => Set.inter_subset_right _ _)
+      (measure_mono <| Set.iUnion_subset fun _ => Set.inter_subset_right)
 #align measure_theory.exists_pair_mem_lattice_not_disjoint_vadd MeasureTheory.exists_pair_mem_lattice_not_disjoint_vadd
 
 /-- The **Minkowski Convex Body Theorem**. If `s` is a convex symmetric domain of `E` whose volume

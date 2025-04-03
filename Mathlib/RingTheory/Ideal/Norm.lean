@@ -106,7 +106,7 @@ open Submodule
 /-- Multiplicity of the ideal norm, for coprime ideals.
 This is essentially just a repackaging of the Chinese Remainder Theorem.
 -/
-theorem cardQuot_mul_of_coprime [IsDedekindDomain S] [Module.Free ℤ S] [Module.Finite ℤ S]
+theorem cardQuot_mul_of_coprime [Module.Free ℤ S] [Module.Finite ℤ S]
     {I J : Ideal S} (coprime : IsCoprime I J) : cardQuot (I * J) = cardQuot I * cardQuot J := by
   let b := Module.Free.chooseBasis ℤ S
   cases isEmpty_or_nonempty (Module.Free.ChooseBasisIndex ℤ S)
@@ -460,7 +460,7 @@ theorem finite_setOf_absNorm_eq [CharZero S] {n : ℕ} (hn : 0 < n) :
   refine @Set.Finite.of_finite_image _ _ _ f ?_ ?_
   · suffices Finite (S ⧸ @Ideal.span S _ {↑n}) by
       let g := ((↑) : Ideal (S ⧸ @Ideal.span S _ {↑n}) → Set (S ⧸ @Ideal.span S _ {↑n}))
-      refine @Set.Finite.of_finite_image _ _ _ g ?_ (SetLike.coe_injective.injOn _)
+      refine @Set.Finite.of_finite_image _ _ _ g ?_ SetLike.coe_injective.injOn
       exact Set.Finite.subset (@Set.finite_univ _ (@Set.finite' _ this)) (Set.subset_univ _)
     rw [← absNorm_ne_zero_iff, absNorm_span_singleton]
     simpa only [Ne, Int.natAbs_eq_zero, Algebra.norm_eq_zero_iff, Nat.cast_eq_zero] using

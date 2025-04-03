@@ -182,8 +182,7 @@ theorem abs_natCast_norm (x : ℤ[i]) : (x.norm.natAbs : ℤ) = x.norm :=
   Int.natAbs_of_nonneg (norm_nonneg _)
 #align gaussian_int.abs_coe_nat_norm GaussianInt.abs_natCast_norm
 
--- 2024-04-05
-@[deprecated] alias abs_coe_nat_norm := abs_natCast_norm
+@[deprecated (since := "2024-04-05")] alias abs_coe_nat_norm := abs_natCast_norm
 
 @[simp]
 theorem natCast_natAbs_norm {α : Type*} [Ring α] (x : ℤ[i]) : (x.norm.natAbs : α) = x.norm := by

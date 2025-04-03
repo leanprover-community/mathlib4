@@ -475,14 +475,14 @@ def restrictFreeVar [DecidableEq α] :
     ∀ {n : ℕ} (φ : L.BoundedFormula α n) (_f : φ.freeVarFinset → β), L.BoundedFormula β n
   | _n, falsum, _f => falsum
   | _n, equal t₁ t₂, f =>
-    equal (t₁.restrictVarLeft (f ∘ Set.inclusion (subset_union_left _ _)))
-      (t₂.restrictVarLeft (f ∘ Set.inclusion (subset_union_right _ _)))
+    equal (t₁.restrictVarLeft (f ∘ Set.inclusion subset_union_left))
+      (t₂.restrictVarLeft (f ∘ Set.inclusion subset_union_right))
   | _n, rel R ts, f =>
     rel R fun i => (ts i).restrictVarLeft (f ∘ Set.inclusion
       (subset_biUnion_of_mem (fun i => Term.varFinsetLeft (ts i)) (mem_univ i)))
   | _n, imp φ₁ φ₂, f =>
-    (φ₁.restrictFreeVar (f ∘ Set.inclusion (subset_union_left _ _))).imp
-      (φ₂.restrictFreeVar (f ∘ Set.inclusion (subset_union_right _ _)))
+    (φ₁.restrictFreeVar (f ∘ Set.inclusion subset_union_left)).imp
+      (φ₂.restrictFreeVar (f ∘ Set.inclusion subset_union_right))
   | _n, all φ, f => (φ.restrictFreeVar f).all
 #align first_order.language.bounded_formula.restrict_free_var FirstOrder.Language.BoundedFormula.restrictFreeVar
 

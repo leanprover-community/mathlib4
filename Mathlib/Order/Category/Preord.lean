@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.ConcreteCategory.BundledHom
 import Mathlib.Order.Hom.Basic
+import Mathlib.Order.CompleteBooleanAlgebra
 
 #align_import order.category.Preord from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 

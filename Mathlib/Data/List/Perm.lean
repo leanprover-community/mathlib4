@@ -33,7 +33,7 @@ variable {α β : Type*} {l l₁ l₂ : List α} {a : α}
 
 #align list.perm List.Perm
 
-instance {α : Type*} : Trans (@List.Perm α) (@List.Perm α) List.Perm where
+instance : Trans (@List.Perm α) (@List.Perm α) List.Perm where
   trans := @List.Perm.trans α
 
 open Perm (swap)
@@ -245,14 +245,9 @@ attribute [simp] nil_subperm
 
 @[simp]
 theorem subperm_nil : List.Subperm l [] ↔ l = [] :=
-  match l with
-  | [] => by simp
-  | head :: tail => by
-    simp only [iff_false]
-    intro h
-    have := h.length_le
-    simp only [List.length_cons, List.length_nil, Nat.succ_ne_zero, ← Nat.not_lt, Nat.zero_lt_succ,
-      not_true_eq_false] at this
+  ⟨fun h ↦ length_eq_zero.1 <| Nat.le_zero.1 h.length_le, by rintro rfl; rfl⟩
+
+lemma subperm_cons_self : l <+~ a :: l := ⟨l, Perm.refl _, sublist_cons _ _⟩
 
 #align list.perm.countp_eq List.Perm.countP_eq
 
@@ -575,7 +570,7 @@ theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
 
 #align list.perm.erasep List.Perm.eraseP
 
-theorem Perm.take_inter {α : Type*} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)
+theorem Perm.take_inter [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)
     (h' : ys.Nodup) : xs.take n ~ ys.inter (xs.take n) := by
   simp only [List.inter]
   exact Perm.trans (show xs.take n ~ xs.filter (xs.take n).elem by
@@ -583,7 +578,7 @@ theorem Perm.take_inter {α : Type*} [DecidableEq α] {xs ys : List α} (n : ℕ
     (Perm.filter _ h)
 #align list.perm.take_inter List.Perm.take_inter
 
-theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup) :
+theorem Perm.drop_inter [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys) (h' : ys.Nodup) :
     xs.drop n ~ ys.inter (xs.drop n) := by
   by_cases h'' : n ≤ xs.length
   · let n' := xs.length - n
@@ -603,7 +598,7 @@ theorem Perm.drop_inter {α} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : x
     simp [this, List.inter]
 #align list.perm.drop_inter List.Perm.drop_inter
 
-theorem Perm.dropSlice_inter {α} [DecidableEq α] {xs ys : List α} (n m : ℕ) (h : xs ~ ys)
+theorem Perm.dropSlice_inter [DecidableEq α] {xs ys : List α} (n m : ℕ) (h : xs ~ ys)
     (h' : ys.Nodup) : List.dropSlice n m xs ~ ys ∩ List.dropSlice n m xs := by
   simp only [dropSlice_eq]
   have : n ≤ n + m := Nat.le_add_right _ _
@@ -684,12 +679,12 @@ theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
 #align list.mem_permutations List.mem_permutations
 
 -- Porting note: temporary theorem to solve diamond issue
-private theorem DecEq_eq {α : Type*} [DecidableEq α] :
+private theorem DecEq_eq [DecidableEq α] :
     List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList :=
   congr_arg BEq.mk <| by
     funext l₁ l₂
     show (l₁ == l₂) = _
-    rw [Bool.eq_iff_eq_true_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
+    rw [Bool.eq_iff_iff, @beq_iff_eq _ (_), decide_eq_true_iff]
 
 theorem perm_permutations'Aux_comm (a b : α) (l : List α) :
     (permutations'Aux a l).bind (permutations'Aux b) ~
@@ -779,7 +774,7 @@ theorem get_permutations'Aux (s : List α) (x : α) (n : ℕ)
 #align list.nth_le_permutations'_aux List.get_permutations'Aux
 
 set_option linter.deprecated false in
-@[deprecated get_permutations'Aux] -- 2024-04-23
+@[deprecated get_permutations'Aux (since := "2024-04-23")]
 theorem nthLe_permutations'Aux (s : List α) (x : α) (n : ℕ)
     (hn : n < length (permutations'Aux x s)) :
     (permutations'Aux x s).nthLe n hn = s.insertNth n x :=

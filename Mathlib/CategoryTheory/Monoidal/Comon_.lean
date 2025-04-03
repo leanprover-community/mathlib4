@@ -44,7 +44,7 @@ structure Comon_ where
   comul : X ⟶ X ⊗ X
   counit_comul : comul ≫ (counit ▷ X) = (λ_ X).inv := by aesop_cat
   comul_counit : comul ≫ (X ◁ counit) = (ρ_ X).inv := by aesop_cat
-  comul_assoc : comul ≫ (X ◁ comul) ≫ (α_ X X X).inv = comul ≫ (comul ▷ X) := by aesop_cat
+  comul_assoc : comul ≫ (X ◁ comul) = comul ≫ (comul ▷ X) ≫ (α_ X X X).hom := by aesop_cat
 
 attribute [reassoc (attr := simp)] Comon_.counit_comul Comon_.comul_counit
 
@@ -77,9 +77,9 @@ theorem counit_comul_hom {Z : C} (f : M.X ⟶ Z) : M.comul ≫ (M.counit ⊗ f) 
 theorem comul_counit_hom {Z : C} (f : M.X ⟶ Z) : M.comul ≫ (f ⊗ M.counit) = f ≫ (ρ_ Z).inv := by
   rw [rightUnitor_inv_naturality, tensorHom_def', comul_counit_assoc]
 
-@[reassoc (attr := simp)] theorem comul_assoc_flip :
-    M.comul ≫ (M.comul ▷ M.X) ≫ (α_ M.X M.X M.X).hom = M.comul ≫ (M.X ◁ M.comul) := by
-  simp [← comul_assoc_assoc]
+@[reassoc] theorem comul_assoc_flip :
+    M.comul ≫ (M.comul ▷ M.X) = M.comul ≫ (M.X ◁ M.comul) ≫ (α_ M.X M.X M.X).inv := by
+  simp [← comul_assoc]
 
 /-- A morphism of comonoid objects. -/
 @[ext]
@@ -190,7 +190,7 @@ Turn a comonoid object into a monoid object in the opposite category.
     rfl
   mul_assoc := by
     rw [← op_inv_associator, ← op_whiskerRight, ← op_comp, ← op_whiskerLeft, ← op_comp,
-      ← comul_assoc, op_comp, op_comp_assoc]
+      comul_assoc_flip, op_comp, op_comp_assoc]
     rfl
 
 /--
@@ -213,7 +213,8 @@ Turn a monoid object in the opposite category into a comonoid object.
   counit_comul := by rw [← unop_whiskerRight, ← unop_comp, Mon_.one_mul]; rfl
   comul_counit := by rw [← unop_whiskerLeft, ← unop_comp, Mon_.mul_one]; rfl
   comul_assoc := by
-    rw [← unop_whiskerRight, ← unop_comp, ← unop_whiskerLeft, ← unop_comp_assoc, Mon_.mul_assoc]
+    rw [← unop_whiskerRight, ← unop_whiskerLeft, ← unop_comp_assoc, ← unop_comp,
+      Mon_.mul_assoc_flip]
     rfl
 
 /--
@@ -310,11 +311,8 @@ def mapComon (F : OplaxMonoidalFunctor C D) : Comon_ C ⥤ Comon_ D where
           F.right_unitality, ← F.map_comp_assoc, A.comul_counit]
       comul_assoc := by
         simp_rw [comp_whiskerRight, Category.assoc, F.δ_natural_left_assoc,
-          MonoidalCategory.whiskerLeft_comp, Category.assoc, F.δ_natural_right_assoc,
-          ← F.map_comp_assoc, ← A.comul_assoc_flip, F.map_comp, F.associativity_inv]
-        slice_lhs 3 4 =>
-          rw [← F.map_comp, Iso.hom_inv_id, F.map_id]
-        simp only [Category.id_comp, Category.assoc] }
+          MonoidalCategory.whiskerLeft_comp, F.δ_natural_right_assoc,
+          ← F.map_comp_assoc, Comon_.comul_assoc, Functor.map_comp, Category.assoc, associativity] }
   map f :=
     { hom := F.map f.hom
       hom_counit := by dsimp; rw [← F.map_comp_assoc, f.hom_counit]

@@ -41,7 +41,7 @@ theorem finRange_succ (n : ℕ) :
 
 -- Porting note: `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
 
-theorem ofFn_eq_pmap {α n} {f : Fin n → α} :
+theorem ofFn_eq_pmap {n} {f : Fin n → α} :
     ofFn f = pmap (fun i hi => f ⟨i, hi⟩) (range n) fun _ => mem_range.1 := by
   rw [pmap_eq_map_attach]
   exact ext_get (by simp) fun i hi1 hi2 => by simp [get_ofFn f ⟨i, hi1⟩]
@@ -51,17 +51,17 @@ theorem ofFn_id (n) : ofFn id = finRange n :=
   ofFn_eq_pmap
 #align list.of_fn_id List.ofFn_id
 
-theorem ofFn_eq_map {α n} {f : Fin n → α} : ofFn f = (finRange n).map f := by
+theorem ofFn_eq_map {n} {f : Fin n → α} : ofFn f = (finRange n).map f := by
   rw [← ofFn_id, map_ofFn, Function.comp_id]
 #align list.of_fn_eq_map List.ofFn_eq_map
 
-theorem nodup_ofFn_ofInjective {α n} {f : Fin n → α} (hf : Function.Injective f) :
+theorem nodup_ofFn_ofInjective {n} {f : Fin n → α} (hf : Function.Injective f) :
     Nodup (ofFn f) := by
   rw [ofFn_eq_pmap]
   exact (nodup_range n).pmap fun _ _ _ _ H => Fin.val_eq_of_eq <| hf H
 #align list.nodup_of_fn_of_injective List.nodup_ofFn_ofInjective
 
-theorem nodup_ofFn {α n} {f : Fin n → α} : Nodup (ofFn f) ↔ Function.Injective f := by
+theorem nodup_ofFn {n} {f : Fin n → α} : Nodup (ofFn f) ↔ Function.Injective f := by
   refine ⟨?_, nodup_ofFn_ofInjective⟩
   refine Fin.consInduction ?_ (fun x₀ xs ih => ?_) f
   · intro _

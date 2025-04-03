@@ -11,7 +11,6 @@ import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.Tactic.Monotonicity
 
 #align_import algebra.lie.nilpotent from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
@@ -481,13 +480,12 @@ theorem ucs_add (k l : ℕ) : N.ucs (k + l) = (N.ucs l).ucs k :=
   Function.iterate_add_apply normalizer k l N
 #align lie_submodule.ucs_add LieSubmodule.ucs_add
 
-@[mono]
+@[gcongr, mono]
 theorem ucs_mono (k : ℕ) (h : N₁ ≤ N₂) : N₁.ucs k ≤ N₂.ucs k := by
   induction' k with k ih
   · simpa
   simp only [ucs_succ]
-  -- Porting note: `mono` makes no progress
-  apply monotone_normalizer ih
+  gcongr
 #align lie_submodule.ucs_mono LieSubmodule.ucs_mono
 
 theorem ucs_eq_self_of_normalizer_eq_self (h : N₁.normalizer = N₁) (k : ℕ) : N₁.ucs k = N₁ := by
@@ -504,7 +502,7 @@ An important instance of this situation arises from a Cartan subalgebra `H ⊆ L
 theorem ucs_le_of_normalizer_eq_self (h : N₁.normalizer = N₁) (k : ℕ) :
     (⊥ : LieSubmodule R L M).ucs k ≤ N₁ := by
   rw [← ucs_eq_self_of_normalizer_eq_self h k]
-  mono
+  gcongr
   simp
 #align lie_submodule.ucs_le_of_normalizer_eq_self LieSubmodule.ucs_le_of_normalizer_eq_self
 

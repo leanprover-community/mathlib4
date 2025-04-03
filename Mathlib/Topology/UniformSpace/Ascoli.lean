@@ -3,6 +3,7 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
+import Mathlib.Topology.UniformSpace.CompactConvergence
 import Mathlib.Topology.UniformSpace.Equicontinuity
 import Mathlib.Topology.UniformSpace.Equiv
 
@@ -337,7 +338,7 @@ theorem EquicontinuousOn.tendsto_uniformOnFun_iff_pi'
   -- `K ∈ 𝔖`, where we can apply `Equicontinuous.tendsto_uniformFun_iff_pi`.
   rw [← Filter.tendsto_comap_iff (g := (⋃₀ 𝔖).restrict), ← nhds_induced]
   simp_rw [UniformOnFun.topologicalSpace_eq, Pi.induced_restrict_sUnion 𝔖 (π := fun _ ↦ α),
-    nhds_iInf, nhds_induced, tendsto_iInf, tendsto_comap_iff]
+    _root_.nhds_iInf, nhds_induced, tendsto_iInf, tendsto_comap_iff]
   congrm ∀ K (hK : K ∈ 𝔖), ?_
   have : CompactSpace K := isCompact_iff_compactSpace.mp (𝔖_compact K hK)
   rw [← (equicontinuous_restrict_iff _ |>.mpr <| F_eqcont K hK).tendsto_uniformFun_iff_pi]
@@ -482,3 +483,19 @@ theorem ArzelaAscoli.isCompact_closure_of_closedEmbedding [TopologicalSpace ι] 
   exact ArzelaAscoli.compactSpace_of_closedEmbedding 𝔖_compact
     (F_clemb.comp isClosed_closure.closedEmbedding_subtype_val) cls_eqcont
     fun K hK x hx ↦ (cls_pointwiseCompact K hK x hx).imp fun Q hQ ↦ ⟨hQ.1, by simpa using hQ.2⟩
+
+/-- A version of the **Arzela-Ascoli theorem**.
+
+If an equicontinuous family of continuous functions is compact in the pointwise topology, then it
+is compact in the compact open topology. -/
+theorem ArzelaAscoli.isCompact_of_equicontinuous
+    (S : Set C(X, α)) (hS1 : IsCompact (ContinuousMap.toFun '' S))
+    (hS2 : Equicontinuous ((↑) : S → X → α)) : IsCompact S := by
+  suffices h : Inducing (Equiv.Set.image (↑) S DFunLike.coe_injective) by
+    rw [isCompact_iff_compactSpace] at hS1 ⊢
+    exact (Equiv.toHomeomorphOfInducing _ h).symm.compactSpace
+  rw [← inducing_subtype_val.of_comp_iff, ← EquicontinuousOn.inducing_uniformOnFun_iff_pi _ _ _]
+  · exact ContinuousMap.uniformEmbedding_toUniformOnFunIsCompact.inducing.comp inducing_subtype_val
+  · exact eq_univ_iff_forall.mpr (fun x ↦ mem_sUnion_of_mem (mem_singleton x) isCompact_singleton)
+  · exact fun _ ↦ id
+  · exact fun K _ ↦ hS2.equicontinuousOn K

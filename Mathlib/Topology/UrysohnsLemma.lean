@@ -187,7 +187,6 @@ theorem approx_le_one (c : CU P) (n : ℕ) (x : X) : c.approx n x ≤ 1 := by
   · exact indicator_apply_le' (fun _ => le_rfl) fun _ => zero_le_one
   · simp only [approx, midpoint_eq_smul_add, invOf_eq_inv, smul_eq_mul, ← div_eq_inv_mul]
     have := add_le_add (ihn (left c)) (ihn (right c))
-    set_option tactic.skipAssignedInstances false in
     norm_num at this
     exact Iff.mpr (div_le_one zero_lt_two) this
 #align urysohns.CU.approx_le_one Urysohns.CU.approx_le_one
@@ -433,7 +432,7 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
     intro x hx
     have B n : f n x = 0 := by
       have : mᶜ ⊆ (U n ∩ interior m)ᶜ := by
-        simpa using (inter_subset_right _ _).trans interior_subset
+        simpa using inter_subset_right.trans interior_subset
       exact fm n (this hx)
     simp [g, B]
   have I n x : u n * f n x ≤ u n := mul_le_of_le_one_right (u_pos n).le (f_range n x).2

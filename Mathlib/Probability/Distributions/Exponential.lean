@@ -130,13 +130,13 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
   split_ifs with h
   case neg =>
     simp only [exponentialPDF_eq]
-    rw [set_lintegral_congr_fun measurableSet_Iic, lintegral_zero, ENNReal.ofReal_zero]
+    rw [setLIntegral_congr_fun measurableSet_Iic, lintegral_zero, ENNReal.ofReal_zero]
     exact ae_of_all _ fun a (_ : a ≤ _) ↦ by rw [if_neg (by linarith), ENNReal.ofReal_eq_zero]
   case pos =>
     rw [lintegral_Iic_eq_lintegral_Iio_add_Icc _ h, lintegral_exponentialPDF_of_nonpos (le_refl 0),
       zero_add]
     simp only [exponentialPDF_eq]
-    rw [set_lintegral_congr_fun measurableSet_Icc (ae_of_all _
+    rw [setLIntegral_congr_fun measurableSet_Icc (ae_of_all _
         (by intro a ⟨(hle : _ ≤ a), _⟩; rw [if_pos hle]))]
     rw [← ENNReal.toReal_eq_toReal _ ENNReal.ofReal_ne_top, ← integral_eq_lintegral_of_nonneg_ae
         (eventually_of_forall fun _ ↦ le_of_lt (mul_pos hr (exp_pos _)))]
@@ -145,8 +145,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
       rw [integral_Icc_eq_integral_Ioc, ← uIoc_of_le h, this]
       rw [intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le h
         (f := fun a ↦ -1 * rexp (-(r * a))) _ _]
-      · rw [ENNReal.toReal_ofReal_eq_iff.2
-          (by set_option tactic.skipAssignedInstances false in norm_num; positivity)]
+      · rw [ENNReal.toReal_ofReal_eq_iff.2 (by norm_num; positivity)]
         norm_num; ring
       · simp only [intervalIntegrable_iff, uIoc_of_le h]
         exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
@@ -158,7 +157,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
     · apply Integrable.aestronglyMeasurable (Integrable.const_mul _ _)
       rw [← IntegrableOn, integrableOn_Icc_iff_integrableOn_Ioc]
       exact exp_neg_integrableOn_Ioc hr
-    · refine ne_of_lt (IntegrableOn.set_lintegral_lt_top ?_)
+    · refine ne_of_lt (IntegrableOn.setLIntegral_lt_top ?_)
       rw [integrableOn_Icc_iff_integrableOn_Ioc]
       exact Integrable.const_mul (exp_neg_integrableOn_Ioc hr) _
 

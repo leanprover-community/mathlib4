@@ -90,7 +90,7 @@ theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ �
     s_closed.measurableSet.exists_isOpen_diff_lt hs ηpos.ne'
   let v := u ∩ V
   have hsv : s ⊆ v := subset_inter hsu sV
-  have hμv : μ v < ∞ := (measure_mono (inter_subset_right _ _)).trans_lt h'V
+  have hμv : μ v < ∞ := (measure_mono inter_subset_right).trans_lt h'V
   obtain ⟨g, hgv, hgs, hg_range⟩ :=
     exists_continuous_zero_one_of_isClosed (u_open.inter V_open).isClosed_compl s_closed
       (disjoint_compl_left_iff.2 hsv)
@@ -130,8 +130,8 @@ theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ �
     · simp only [hgv hx, Pi.zero_apply, Real.norm_eq_abs, abs_zero, abs_nonneg]
   refine
     ⟨fun x => g x • c, g.continuous.smul continuous_const, (snorm_mono gc_bd).trans ?_, gc_bd0,
-      gc_support.trans (inter_subset_left _ _), gc_mem⟩
-  exact hη _ ((measure_mono (diff_subset_diff (inter_subset_right _ _) Subset.rfl)).trans hV.le)
+      gc_support.trans inter_subset_left, gc_mem⟩
+  exact hη _ ((measure_mono (diff_subset_diff inter_subset_right Subset.rfl)).trans hV.le)
 #align measure_theory.exists_continuous_snorm_sub_le_of_closed MeasureTheory.exists_continuous_snorm_sub_le_of_closed
 
 /-- In a locally compact space, any function in `ℒp` can be approximated by compactly supported

@@ -87,7 +87,8 @@ namespace WithUpperSet
 lemma toUpperSet_inj {a b : α} : toUpperSet a = toUpperSet b ↔ a = b := Iff.rfl
 lemma ofUpperSet_inj {a b : WithUpperSet α} : ofUpperSet a = ofUpperSet b ↔ a = b := Iff.rfl
 
-/-- A recursor for `WithUpperSet`. Use as `induction x using WithUpperSet.rec`. -/
+/-- A recursor for `WithUpperSet`. Use as `induction x`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : WithUpperSet α → Sort*} (h : ∀ a, β (toUpperSet a)) : ∀ a, β a :=
   fun a => h (ofUpperSet a)
 
@@ -132,7 +133,8 @@ namespace WithLowerSet
 lemma toLowerSet_inj {a b : α} : toLowerSet a = toLowerSet b ↔ a = b := Iff.rfl
 lemma ofLowerSet_inj {a b : WithLowerSet α} : ofLowerSet a = ofLowerSet b ↔ a = b := Iff.rfl
 
-/-- A recursor for `WithLowerSet`. Use as `induction x using WithLowerSet.rec`. -/
+/-- A recursor for `WithLowerSet`. Use as `induction x`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : WithLowerSet α → Sort*} (h : ∀ a, β (toLowerSet a)) : ∀ a, β a :=
   fun a => h (ofLowerSet a)
 

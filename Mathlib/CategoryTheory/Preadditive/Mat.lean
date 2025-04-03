@@ -115,8 +115,7 @@ instance : Category.{v₁} (Mat_ C) where
     simp_rw [Hom.comp, sum_comp, comp_sum, Category.assoc]
     rw [Finset.sum_comm]
 
--- Porting note: added because `DMatrix.ext` is not triggered automatically
--- See https://github.com/leanprover-community/mathlib4/issues/5229
+-- Porting note (#5229): added because `DMatrix.ext` is not triggered automatically
 @[ext]
 theorem hom_ext {M N : Mat_ C} (f g : M ⟶ N) (H : ∀ i j, f i j = g i j) : f = g :=
   DMatrix.ext_iff.mp H
@@ -569,8 +568,7 @@ section
 
 variable {R : Type u} [Semiring R]
 
--- Porting note: added because `Matrix.ext` is not triggered automatically
--- See https://github.com/leanprover-community/mathlib4/issues/5229
+-- Porting note (#5229): added because `Matrix.ext` is not triggered automatically
 @[ext]
 theorem hom_ext {X Y : Mat R} (f g : X ⟶ Y) (h : ∀ i j, f i j = g i j) : f = g :=
   Matrix.ext_iff.mp h

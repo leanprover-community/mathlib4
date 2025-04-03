@@ -48,7 +48,7 @@ theorem HasBasis.mem_lift_iff {ι} {p : ι → Prop} {s : ι → Set α} {f : Fi
     {s : Set γ} : s ∈ f.lift g ↔ ∃ i, p i ∧ ∃ x, pg i x ∧ sg i x ⊆ s := by
   refine (mem_biInf_of_directed ?_ ⟨univ, univ_sets _⟩).trans ?_
   · intro t₁ ht₁ t₂ ht₂
-    exact ⟨t₁ ∩ t₂, inter_mem ht₁ ht₂, gm <| inter_subset_left _ _, gm <| inter_subset_right _ _⟩
+    exact ⟨t₁ ∩ t₂, inter_mem ht₁ ht₂, gm inter_subset_left, gm inter_subset_right⟩
   · simp only [← (hg _).mem_iff]
     exact hf.exists_iff fun t₁ t₂ ht H => gm ht H
 #align filter.has_basis.mem_lift_iff Filter.HasBasis.mem_lift_iffₓ
@@ -162,8 +162,8 @@ theorem lift_lift_same_eq_lift {g : Set α → Set α → Filter β} (hg₁ : �
   lift_lift_same_le_lift.antisymm <|
     le_lift.2 fun s hs => le_lift.2 fun t ht => lift_le (inter_mem hs ht) <|
       calc
-        g (s ∩ t) (s ∩ t) ≤ g s (s ∩ t) := hg₂ (s ∩ t) (inter_subset_left _ _)
-        _ ≤ g s t := hg₁ s (inter_subset_right _ _)
+        g (s ∩ t) (s ∩ t) ≤ g s (s ∩ t) := hg₂ (s ∩ t) inter_subset_left
+        _ ≤ g s t := hg₁ s inter_subset_right
 #align filter.lift_lift_same_eq_lift Filter.lift_lift_same_eq_lift
 
 theorem lift_principal {s : Set α} (hg : Monotone g) : (𝓟 s).lift g = g s :=

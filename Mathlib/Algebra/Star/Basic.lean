@@ -3,14 +3,12 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.Algebra.Field.Opposite
 import Mathlib.Algebra.Group.Invertible.Defs
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.Algebra.Field.Opposite
-import Mathlib.Algebra.Group.Invertible.Defs
-import Mathlib.Data.NNRat.Defs
-import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Algebra.Ring.Opposite
+import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.SetLike.Basic
 import Mathlib.GroupTheory.GroupAction.Opposite
 
@@ -36,6 +34,7 @@ Our star rings are actually star non-unital, non-associative, semirings, but of 
 
 assert_not_exists Finset
 assert_not_exists Subgroup
+assert_not_exists Rat.instField
 
 universe u v w
 
@@ -337,7 +336,6 @@ theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) 
   (congr_arg unop (map_natCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) n)).trans (unop_natCast _)
 #align star_nat_cast star_natCast
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
     star (no_index (OfNat.ofNat n) : R) = OfNat.ofNat n :=
@@ -349,15 +347,6 @@ section
 theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
   (congr_arg unop <| map_intCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) z).trans (unop_intCast _)
 #align star_int_cast star_intCast
-
-@[simp, norm_cast]
-lemma star_nnratCast [DivisionSemiring R] [StarRing R] (q : ℚ≥0) : star (q : R) = q :=
-  (congr_arg unop <| map_nnratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) q).trans (unop_nnratCast _)
-
-@[simp, norm_cast]
-theorem star_ratCast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=
-  (congr_arg unop <| map_ratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) r).trans (unop_ratCast _)
-#align star_rat_cast star_ratCast
 
 end
 
@@ -451,21 +440,8 @@ theorem star_div' [Semifield R] [StarRing R] (x y : R) : star (x / y) = star x /
   rw [division_def, op_div, mul_comm, star_mul, star_inv', op_mul, op_inv]
 #align star_div' star_div'
 
-section
-
-set_option linter.deprecated false
-
-@[simp]
-theorem star_bit0 [AddMonoid R] [StarAddMonoid R] (r : R) : star (bit0 r) = bit0 (star r) := by
-  simp [bit0]
-#align star_bit0 star_bit0
-
-@[simp]
-theorem star_bit1 [Semiring R] [StarRing R] (r : R) : star (bit1 r) = bit1 (star r) := by
-  simp [bit1]
-#align star_bit1 star_bit1
-
-end
+#noalign star_bit0
+#noalign star_bit1
 
 /-- Any commutative semiring admits the trivial `*`-structure.
 
@@ -478,12 +454,8 @@ abbrev starRingOfComm {R : Type*} [CommSemiring R] : StarRing R :=
 
 instance Nat.instStarRing : StarRing ℕ := starRingOfComm
 instance Int.instStarRing : StarRing ℤ := starRingOfComm
-instance Rat.instStarRing : StarRing ℚ := starRingOfComm
-instance NNRat.instStarRing : StarRing ℚ≥0 := starRingOfComm
 instance Nat.instTrivialStar : TrivialStar ℕ := ⟨fun _ ↦ rfl⟩
 instance Int.instTrivialStar : TrivialStar ℤ := ⟨fun _ ↦ rfl⟩
-instance Rat.instTrivialStar : TrivialStar ℚ := ⟨fun _ ↦ rfl⟩
-instance NNRat.instTrivialStar : TrivialStar ℚ≥0 := ⟨fun _ ↦ rfl⟩
 
 /-- A star module `A` over a star ring `R` is a module which is a star add monoid,
 and the two star structures are compatible in the sense
@@ -598,6 +570,39 @@ theorem star_invOf {R : Type*} [Monoid R] [StarMul R] (r : R) [Invertible r]
   have : (star (⅟ r)) * (star r) = star 1 := by rw [← star_mul, mul_invOf_self]
   rw [this, star_one, one_mul]
 #align star_inv_of star_invOf
+
+
+section Regular
+
+protected theorem IsLeftRegular.star [Mul R] [StarMul R] {x : R} (hx : IsLeftRegular x) :
+    IsRightRegular (star x) :=
+  fun a b h => star_injective <| hx <| by simpa using congr_arg Star.star h
+
+protected theorem IsRightRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRightRegular x) :
+    IsLeftRegular (star x) :=
+  fun a b h => star_injective <| hx <| by simpa using congr_arg Star.star h
+
+protected theorem IsRegular.star [Mul R] [StarMul R] {x : R} (hx : IsRegular x) :
+    IsRegular (star x) :=
+  ⟨hx.right.star, hx.left.star⟩
+
+@[simp]
+theorem isRightRegular_star_iff [Mul R] [StarMul R] {x : R} :
+    IsRightRegular (star x) ↔ IsLeftRegular x :=
+  ⟨fun h => star_star x ▸ h.star, (·.star)⟩
+
+@[simp]
+theorem isLeftRegular_star_iff [Mul R] [StarMul R] {x : R} :
+    IsLeftRegular (star x) ↔ IsRightRegular x :=
+  ⟨fun h => star_star x ▸ h.star, (·.star)⟩
+
+@[simp]
+theorem isRegular_star_iff [Mul R] [StarMul R] {x : R} :
+    IsRegular (star x) ↔ IsRegular x := by
+  rw [isRegular_iff, isRegular_iff, isRightRegular_star_iff, isLeftRegular_star_iff, and_comm]
+
+end Regular
+
 
 namespace MulOpposite
 

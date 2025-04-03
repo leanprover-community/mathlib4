@@ -297,7 +297,6 @@ def castHom {α} [MulZeroOneClass α] [HasDistribNeg α] : SignType →*₀ α w
   map_mul' x y := by cases x <;> cases y <;> simp [zero_eq_zero, pos_eq_one, neg_eq_neg_one]
 #align sign_type.cast_hom SignType.castHom
 
--- Porting note (#10756): new theorem
 theorem univ_eq : (Finset.univ : Finset SignType) = {0, -1, 1} := by
   decide
 

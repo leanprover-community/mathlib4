@@ -270,7 +270,7 @@ instance infinite_of_nonempty (σ : Type*) (R : Type*) [Nonempty σ] [CommSemiri
 #align mv_polynomial.infinite_of_nonempty MvPolynomial.infinite_of_nonempty
 
 theorem C_eq_coe_nat (n : ℕ) : (C ↑n : MvPolynomial σ R) = n := by
-  induction n <;> simp [Nat.succ_eq_add_one, *]
+  induction n <;> simp [*]
 #align mv_polynomial.C_eq_coe_nat MvPolynomial.C_eq_coe_nat
 
 theorem C_mul' : MvPolynomial.C a * p = a • p :=
@@ -504,8 +504,8 @@ theorem algHom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : MvPolynomial σ
 #align mv_polynomial.alg_hom_ext MvPolynomial.algHom_ext
 
 @[simp]
-theorem algHom_C {τ : Type*} (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R) (r : R) :
-    f (C r) = C r :=
+theorem algHom_C {A : Type*} [Semiring A] [Algebra R A] (f : MvPolynomial σ R →ₐ[R] A) (r : R) :
+    f (C r) = algebraMap R A r :=
   f.commutes r
 #align mv_polynomial.alg_hom_C MvPolynomial.algHom_C
 
@@ -1539,7 +1539,6 @@ theorem aeval_X (s : σ) : aeval f (X s : MvPolynomial _ R) = f s :=
   eval₂_X _ _ _
 #align mv_polynomial.aeval_X MvPolynomial.aeval_X
 
-@[simp]
 theorem aeval_C (r : R) : aeval f (C r) = algebraMap R S₁ r :=
   eval₂_C _ _ _
 #align mv_polynomial.aeval_C MvPolynomial.aeval_C

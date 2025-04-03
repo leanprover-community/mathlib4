@@ -73,8 +73,7 @@ theorem Int.natCast_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) 
         simp
 #align multiplicity.int.coe_nat_multiplicity multiplicity.Int.natCast_multiplicity
 
--- 2024-04-05
-@[deprecated] alias Int.coe_nat_multiplicity := Int.natCast_multiplicity
+@[deprecated (since := "2024-04-05")] alias Int.coe_nat_multiplicity := Int.natCast_multiplicity
 
 theorem not_finite_iff_forall {a b : α} : ¬Finite a b ↔ ∀ n : ℕ, a ^ n ∣ b :=
   ⟨fun h n =>

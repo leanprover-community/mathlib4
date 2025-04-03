@@ -148,7 +148,6 @@ theorem Filter.Eventually.ratCast_atBot [LinearOrderedField R] [Archimedean R] {
 @[deprecated (since := "2024-04-17")]
 alias Filter.Eventually.rat_cast_atBot := Filter.Eventually.ratCast_atBot
 
--- Porting note (#10756): new lemma
 theorem atTop_hasAntitoneBasis_of_archimedean [OrderedSemiring R] [Archimedean R] :
     (atTop : Filter R).HasAntitoneBasis fun n : ℕ => Ici n :=
   hasAntitoneBasis_atTop.comp_mono Nat.mono_cast tendsto_natCast_atTop_atTop

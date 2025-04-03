@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Miyahara Kō
 -/
 
-import Mathlib.Data.List.Defs
+import Mathlib.Data.List.Range
 import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
@@ -44,5 +44,15 @@ theorem mem_iterate {f : α → α} {a : α} {n : ℕ} {b : α} :
 theorem range_map_iterate (n : ℕ) (f : α → α) (a : α) :
     (List.range n).map (f^[·] a) = List.iterate f a n := by
   apply List.ext_get <;> simp
+
+theorem iterate_add (f : α → α) (a : α) (m n : ℕ) :
+    iterate f a (m + n) = iterate f a m ++ iterate f (f^[m] a) n := by
+  induction m generalizing a with
+  | zero => simp
+  | succ n ih => rw [iterate, add_right_comm, iterate, ih, Nat.iterate, cons_append]
+
+theorem take_iterate (f : α → α) (a : α) (m n : ℕ) :
+    take m (iterate f a n) = iterate f a (min m n) := by
+  rw [← range_map_iterate, ← range_map_iterate, ← map_take, take_range]
 
 end List

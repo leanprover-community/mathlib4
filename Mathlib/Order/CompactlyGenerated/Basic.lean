@@ -156,8 +156,8 @@ theorem IsCompactElement.exists_finset_of_le_iSup {k : α} (hk : IsCompactElemen
     have h1 : DirectedOn (· ≤ ·) (Set.range g) := by
       rintro - ⟨s, rfl⟩ - ⟨t, rfl⟩
       exact
-        ⟨g (s ∪ t), ⟨s ∪ t, rfl⟩, iSup_le_iSup_of_subset (Finset.subset_union_left s t),
-          iSup_le_iSup_of_subset (Finset.subset_union_right s t)⟩
+        ⟨g (s ∪ t), ⟨s ∪ t, rfl⟩, iSup_le_iSup_of_subset Finset.subset_union_left,
+          iSup_le_iSup_of_subset Finset.subset_union_right⟩
     have h2 : k ≤ sSup (Set.range g) :=
       h.trans
         (iSup_le fun i =>
@@ -444,7 +444,7 @@ theorem CompleteLattice.setIndependent_iff_finite {s : Set α} :
       · rwa [Finset.coe_insert, Set.insert_diff_self_of_not_mem] at h'
         exact fun con => ((Set.mem_diff a).1 (ht con)).2 (Set.mem_singleton a)
       · rw [Finset.coe_insert, Set.insert_subset_iff]
-        exact ⟨ha, Set.Subset.trans ht (Set.diff_subset _ _)⟩⟩
+        exact ⟨ha, Set.Subset.trans ht diff_subset⟩⟩
 #align complete_lattice.set_independent_iff_finite CompleteLattice.setIndependent_iff_finite
 
 lemma CompleteLattice.independent_iff_supIndep_of_injOn {ι : Type*} {f : ι → α}
@@ -610,13 +610,13 @@ theorem exists_setIndependent_isCompl_sSup_atoms (h : sSup { a : α | IsAtom a }
   rw [← disjoint_iff] at con
   have a_dis_Sup_s : Disjoint a (sSup s) := con.mono_right le_sup_right
   -- Porting note: The two following `fun x hx => _` are no-op
-  rw [← s_max (s ∪ {a}) ⟨fun x hx => _, _, fun x hx => _⟩ (Set.subset_union_left _ _)]
+  rw [← s_max (s ∪ {a}) ⟨fun x hx => _, _, fun x hx => _⟩ Set.subset_union_left]
   · exact Set.mem_union_right _ (Set.mem_singleton _)
   · intro x hx
     rw [Set.mem_union, Set.mem_singleton_iff] at hx
     obtain rfl | xa := eq_or_ne x a
     · simp only [Set.mem_singleton, Set.insert_diff_of_mem, Set.union_singleton]
-      exact con.mono_right ((sSup_le_sSup <| Set.diff_subset _ _).trans le_sup_right)
+      exact con.mono_right ((sSup_le_sSup Set.diff_subset).trans le_sup_right)
     · have h : (s ∪ {a}) \ {x} = s \ {x} ∪ {a} := by
         simp only [Set.union_singleton]
         rw [Set.insert_diff_of_not_mem]

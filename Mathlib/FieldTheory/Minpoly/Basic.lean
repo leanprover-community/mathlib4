@@ -91,6 +91,11 @@ theorem aeval : aeval x (minpoly A x) = 0 := by
   · exact aeval_zero _
 #align minpoly.aeval minpoly.aeval
 
+/-- Given any `f : B →ₐ[A] B'` and any `x : L`, the minimal polynomial of `x` vanishes at `f x`. -/
+@[simp]
+theorem aeval_algHom (f : B →ₐ[A] B') (x : B) : (Polynomial.aeval (f x)) (minpoly A x) = 0 := by
+  rw [Polynomial.aeval_algHom, AlgHom.coe_comp, comp_apply, aeval, map_zero]
+
 /-- A minimal polynomial is not `1`. -/
 theorem ne_one [Nontrivial B] : minpoly A x ≠ 1 := by
   intro h

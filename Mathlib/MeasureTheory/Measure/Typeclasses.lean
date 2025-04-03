@@ -209,8 +209,8 @@ open scoped symmDiff
 theorem abs_toReal_measure_sub_le_measure_symmDiff'
     (hs : MeasurableSet s) (ht : MeasurableSet t) (hs' : μ s ≠ ∞) (ht' : μ t ≠ ∞) :
     |(μ s).toReal - (μ t).toReal| ≤ (μ (s ∆ t)).toReal := by
-  have hst : μ (s \ t) ≠ ∞ := (measure_lt_top_of_subset (diff_subset s t) hs').ne
-  have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset (diff_subset t s) ht').ne
+  have hst : μ (s \ t) ≠ ∞ := (measure_lt_top_of_subset diff_subset hs').ne
+  have hts : μ (t \ s) ≠ ∞ := (measure_lt_top_of_subset diff_subset ht').ne
   suffices (μ s).toReal - (μ t).toReal = (μ (s \ t)).toReal - (μ (t \ s)).toReal by
     rw [this, measure_symmDiff_eq hs ht, ENNReal.toReal_add hst hts]
     convert abs_sub (μ (s \ t)).toReal (μ (t \ s)).toReal <;> simp
@@ -384,7 +384,7 @@ instance Measure.restrict.instNoAtoms (s : Set α) : NoAtoms (μ.restrict s) := 
   obtain ⟨t, hxt, ht1, ht2⟩ := exists_measurable_superset_of_null (measure_singleton x : μ {x} = 0)
   apply measure_mono_null hxt
   rw [Measure.restrict_apply ht1]
-  apply measure_mono_null (inter_subset_left t s) ht2
+  apply measure_mono_null inter_subset_left ht2
 #align measure_theory.measure.restrict.has_no_atoms MeasureTheory.Measure.restrict.instNoAtoms
 
 theorem _root_.Set.Countable.measure_zero (h : s.Countable) (μ : Measure α) [NoAtoms μ] :
@@ -415,7 +415,7 @@ theorem _root_.Finset.measure_zero (s : Finset α) (μ : Measure α) [NoAtoms μ
 #align finset.measure_zero Finset.measure_zero
 
 theorem insert_ae_eq_self (a : α) (s : Set α) : (insert a s : Set α) =ᵐ[μ] s :=
-  union_ae_eq_right.2 <| measure_mono_null (diff_subset _ _) (measure_singleton _)
+  union_ae_eq_right.2 <| measure_mono_null diff_subset (measure_singleton _)
 #align measure_theory.insert_ae_eq_self MeasureTheory.insert_ae_eq_self
 
 section
@@ -923,7 +923,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
           μ (t ∩ disjointed w n) ≤ μ (t ∩ w n) := by
             gcongr
             exact disjointed_le w n
-          _ ≤ μ (w n) := measure_mono (inter_subset_right _ _)
+          _ ≤ μ (w n) := measure_mono inter_subset_right
           _ < ∞ := hw n
       _ = ∑' n, μ.restrict (t ∩ u) (disjointed w n) := by
         congr 1
@@ -997,8 +997,8 @@ theorem exists_subset_measure_lt_top [SigmaFinite μ] {r : ℝ≥0∞} (hs : Mea
   rcases h's with ⟨n, hn⟩
   simp only [restrict_apply hs] at hn
   refine
-    ⟨s ∩ spanningSets μ n, hs.inter (measurable_spanningSets _ _), inter_subset_left _ _, hn, ?_⟩
-  exact (measure_mono (inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top _ _)
+    ⟨s ∩ spanningSets μ n, hs.inter (measurable_spanningSets _ _), inter_subset_left, hn, ?_⟩
+  exact (measure_mono inter_subset_right).trans_lt (measure_spanningSets_lt_top _ _)
 #align measure_theory.measure.exists_subset_measure_lt_top MeasureTheory.Measure.exists_subset_measure_lt_top
 
 namespace FiniteSpanningSetsIn
@@ -1063,7 +1063,7 @@ theorem sigmaFinite_of_le (μ : Measure α) [hs : SigmaFinite μ] (h : ν ≤ μ
   rw [ext_iff_of_iUnion_eq_univ (iUnion_spanningSets μ)]
   intro i
   ext s hs
-  rw [← ENNReal.add_right_inj (measure_mono (inter_subset_right s _) |>.trans_lt <|
+  rw [← ENNReal.add_right_inj (measure_mono s.inter_subset_right |>.trans_lt <|
     measure_spanningSets_lt_top μ i).ne]
   simp only [ext_iff', coe_add, Pi.add_apply] at h
   simp [hs, h]
@@ -1105,7 +1105,7 @@ instance Restrict.sigmaFinite (μ : Measure α) [SigmaFinite μ] (s : Set α) :
     SigmaFinite (μ.restrict s) := by
   refine ⟨⟨⟨spanningSets μ, fun _ => trivial, fun i => ?_, iUnion_spanningSets μ⟩⟩⟩
   rw [Measure.restrict_apply (measurable_spanningSets μ i)]
-  exact (measure_mono <| inter_subset_left _ _).trans_lt (measure_spanningSets_lt_top μ i)
+  exact (measure_mono inter_subset_left).trans_lt (measure_spanningSets_lt_top μ i)
 #align measure_theory.restrict.sigma_finite MeasureTheory.Restrict.sigmaFinite
 
 instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, SigmaFinite (μ i)] :
@@ -1147,10 +1147,19 @@ theorem SigmaFinite.of_map (μ : Measure α) {f : α → β} (hf : AEMeasurable 
         by rw [← preimage_iUnion, iUnion_spanningSets, preimage_univ]⟩⟩⟩
 #align measure_theory.sigma_finite.of_map MeasureTheory.SigmaFinite.of_map
 
-theorem _root_.MeasurableEquiv.sigmaFinite_map {μ : Measure α} (f : α ≃ᵐ β) (h : SigmaFinite μ) :
+lemma _root_.MeasurableEmbedding.sigmaFinite_map {f : α → β} (hf : MeasurableEmbedding f)
+    [SigmaFinite μ] :
     SigmaFinite (μ.map f) := by
-  refine SigmaFinite.of_map _ f.symm.measurable.aemeasurable ?_
-  rwa [map_map f.symm.measurable f.measurable, f.symm_comp_self, Measure.map_id]
+  refine ⟨fun n ↦ f '' (spanningSets μ n) ∪ (Set.range f)ᶜ, by simp, fun n ↦ ?_, ?_⟩
+  · rw [hf.map_apply, Set.preimage_union]
+    simp only [Set.preimage_compl, Set.preimage_range, Set.compl_univ, Set.union_empty,
+      Set.preimage_image_eq _ hf.injective]
+    exact measure_spanningSets_lt_top μ n
+  · rw [← Set.iUnion_union, ← Set.image_iUnion, iUnion_spanningSets,
+      Set.image_univ, Set.union_compl_self]
+
+theorem _root_.MeasurableEquiv.sigmaFinite_map (f : α ≃ᵐ β) [SigmaFinite μ] :
+    SigmaFinite (μ.map f) := f.measurableEmbedding.sigmaFinite_map
 #align measurable_equiv.sigma_finite_map MeasurableEquiv.sigmaFinite_map
 
 /-- Similar to `ae_of_forall_measure_lt_top_ae_restrict`, but where you additionally get the
@@ -1218,8 +1227,8 @@ protected theorem Measure.isTopologicalBasis_isOpen_lt_top [TopologicalSpace α]
   refine TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds (fun s hs => hs.1) ?_
   intro x s xs hs
   rcases μ.exists_isOpen_measure_lt_top x with ⟨v, xv, hv, μv⟩
-  refine ⟨v ∩ s, ⟨hv.inter hs, lt_of_le_of_lt ?_ μv⟩, ⟨xv, xs⟩, inter_subset_right _ _⟩
-  exact measure_mono (inter_subset_left _ _)
+  refine ⟨v ∩ s, ⟨hv.inter hs, lt_of_le_of_lt ?_ μv⟩, ⟨xv, xs⟩, inter_subset_right⟩
+  exact measure_mono inter_subset_left
 #align measure_theory.measure.is_topological_basis_is_open_lt_top MeasureTheory.Measure.isTopologicalBasis_isOpen_lt_top
 
 /-- A measure `μ` is finite on compacts if any compact set `K` satisfies `μ K < ∞`. -/

@@ -158,8 +158,8 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
     simp [hBu, hBu₀, hfu, hgu]
   -- All norms are preserved by the lifting process.
   have Bu_le : ‖Bu‖ ≤ ‖B‖ := by
-    refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun y => ?_
-    refine ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => ?_
+    refine' ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg B) fun y => _
+    refine' ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => _
     simp only [hBu, hBu₀, compL_apply, coe_comp', Function.comp_apply,
       ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe, flip_apply,
       LinearIsometryEquiv.norm_map]

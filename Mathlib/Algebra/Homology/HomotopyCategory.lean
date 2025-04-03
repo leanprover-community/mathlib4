@@ -262,7 +262,6 @@ def Functor.mapHomotopyCategory (F : V ⥤ W) [F.Additive] (c : ComplexShape ι)
     (fun _ _ _ _ ⟨h⟩ => HomotopyCategory.eq_of_homotopy _ _ (F.mapHomotopy h))
 #align category_theory.functor.map_homotopy_category CategoryTheory.Functor.mapHomotopyCategory
 
--- Porting note (#10756): added lemma because of new definition of `Functor.mapHomotopyCategory`
 @[simp]
 lemma Functor.mapHomotopyCategory_map (F : V ⥤ W) [F.Additive] {c : ComplexShape ι}
     {K L : HomologicalComplex V c} (f : K ⟶ L) :

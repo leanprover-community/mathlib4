@@ -491,7 +491,7 @@ open Lean.Expr.FindImpl in
   and we're not remembering the cache between these calls. -/
 unsafe def additiveTestUnsafe (findTranslation? : Name → Option Name)
   (ignore : Name → Option (List ℕ)) (e : Expr) : Option Name :=
-  let rec visit (e : Expr) (inApp := false) : OptionT (FindM Id) Name := do
+  let rec visit (e : Expr) (inApp := false) : OptionT FindM Name := do
     if e.isConst then
       if inApp || (findTranslation? e.constName).isSome then
         failure
@@ -942,6 +942,8 @@ def nameDict : String → List String
   | "units"       => ["add", "Units"]
   | "cyclic"      => ["add", "Cyclic"]
   | "rootable"    => ["divisible"]
+  | "semigrp"     => ["add", "Semigrp"]
+  | "grp"         => ["add", "Grp"]
   | "commute"     => ["add", "Commute"]
   | "semiconj"    => ["add", "Semiconj"]
   | "zpowers"     => ["zmultiples"]

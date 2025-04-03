@@ -45,7 +45,7 @@ instance instHasAntidiagonal : HasAntidiagonal (α →₀ ℕ) where
 #align finsupp.antidiagonal_filter_snd_eq Finset.filter_snd_eq_antidiagonal
 
 -- nolint as this is for dsimp
-@[simp, nolint simpNF]
+@[simp]
 theorem antidiagonal_zero : antidiagonal (0 : α →₀ ℕ) = singleton (0, 0) := rfl
 #align finsupp.antidiagonal_zero Finsupp.antidiagonal_zero
 
@@ -63,7 +63,7 @@ theorem antidiagonal_single (a : α) (n : ℕ) :
       (Function.Embedding.prodMap ⟨_, single_injective a⟩ ⟨_, single_injective a⟩) := by
   ext ⟨x, y⟩
   simp only [mem_antidiagonal, mem_map, mem_antidiagonal, Function.Embedding.coe_prodMap,
-    Function.Embedding.coeFn_mk, Prod_map, Prod.mk.injEq, Prod.exists]
+    Function.Embedding.coeFn_mk, Prod.map_apply, Prod.mk.injEq, Prod.exists]
   constructor
   · intro h
     refine ⟨x a, y a, DFunLike.congr_fun h a |>.trans single_eq_same, ?_⟩

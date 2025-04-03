@@ -163,16 +163,16 @@ theorem ae_le_set_union {s' t' : Set α} (h : s ≤ᵐ[μ] t) (h' : s' ≤ᵐ[μ
 
 theorem union_ae_eq_right : (s ∪ t : Set α) =ᵐ[μ] t ↔ μ (s \ t) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set, union_diff_right,
-    diff_eq_empty.2 (Set.subset_union_right _ _)]
+    diff_eq_empty.2 Set.subset_union_right]
 #align measure_theory.union_ae_eq_right MeasureTheory.union_ae_eq_right
 
 theorem diff_ae_eq_self : (s \ t : Set α) =ᵐ[μ] s ↔ μ (s ∩ t) = 0 := by
   simp [eventuallyLE_antisymm_iff, ae_le_set, diff_diff_right, diff_diff,
-    diff_eq_empty.2 (Set.subset_union_right _ _)]
+    diff_eq_empty.2 Set.subset_union_right]
 #align measure_theory.diff_ae_eq_self MeasureTheory.diff_ae_eq_self
 
 theorem diff_null_ae_eq_self (ht : μ t = 0) : (s \ t : Set α) =ᵐ[μ] s :=
-  diff_ae_eq_self.mpr (measure_mono_null (inter_subset_right _ _) ht)
+  diff_ae_eq_self.mpr (measure_mono_null inter_subset_right ht)
 #align measure_theory.diff_null_ae_eq_self MeasureTheory.diff_null_ae_eq_self
 
 theorem ae_eq_set {s t : Set α} : s =ᵐ[μ] t ↔ μ (s \ t) = 0 ∧ μ (t \ s) = 0 := by
@@ -256,7 +256,7 @@ theorem _root_.Set.mulIndicator_ae_eq_one {M : Type*} [One M] {f : α → M} {s 
 @[mono]
 theorem measure_mono_ae (H : s ≤ᵐ[μ] t) : μ s ≤ μ t :=
   calc
-    μ s ≤ μ (s ∪ t) := measure_mono <| subset_union_left s t
+    μ s ≤ μ (s ∪ t) := measure_mono subset_union_left
     _ = μ (t ∪ s \ t) := by rw [union_diff_self, Set.union_comm]
     _ ≤ μ t + μ (s \ t) := measure_union_le _ _
     _ = μ t := by rw [ae_le_set.1 H, add_zero]

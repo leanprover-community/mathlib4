@@ -365,9 +365,9 @@ theorem hausdorffEdist_le_ediam (hs : s.Nonempty) (ht : t.Nonempty) :
   rcases ht with ⟨y, yt⟩
   refine hausdorffEdist_le_of_mem_edist ?_ ?_
   · intro z hz
-    exact ⟨y, yt, edist_le_diam_of_mem (subset_union_left _ _ hz) (subset_union_right _ _ yt)⟩
+    exact ⟨y, yt, edist_le_diam_of_mem (subset_union_left hz) (subset_union_right yt)⟩
   · intro z hz
-    exact ⟨x, xs, edist_le_diam_of_mem (subset_union_right _ _ hz) (subset_union_left _ _ xs)⟩
+    exact ⟨x, xs, edist_le_diam_of_mem (subset_union_right hz) (subset_union_left xs)⟩
 #align emetric.Hausdorff_edist_le_ediam EMetric.hausdorffEdist_le_ediam
 
 /-- The Hausdorff distance satisfies the triangle inequality. -/
@@ -507,7 +507,6 @@ theorem infEdist_ne_top (h : s.Nonempty) : infEdist x s ≠ ⊤ := by
   exact ne_top_of_le_ne_top (edist_ne_top _ _) (infEdist_le_edist_of_mem hy)
 #align metric.inf_edist_ne_top Metric.infEdist_ne_top
 
--- Porting note (#10756): new lemma;
 -- Porting note (#11215): TODO: make it a `simp` lemma
 theorem infEdist_eq_top_iff : infEdist x s = ∞ ↔ s = ∅ := by
   rcases s.eq_empty_or_nonempty with rfl | hs <;> simp [*, Nonempty.ne_empty, infEdist_ne_top]
@@ -622,7 +621,6 @@ theorem _root_.IsClosed.not_mem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempt
   simp [h.mem_iff_infDist_zero hs, infDist_nonneg.gt_iff_ne]
 #align is_closed.not_mem_iff_inf_dist_pos IsClosed.not_mem_iff_infDist_pos
 
--- Porting note (#10756): new lemma
 theorem continuousAt_inv_infDist_pt (h : x ∉ closure s) :
     ContinuousAt (fun x ↦ (infDist x s)⁻¹) x := by
   rcases s.eq_empty_or_nonempty with (rfl | hs)
@@ -638,7 +636,7 @@ theorem infDist_image (hΦ : Isometry Φ) : infDist (Φ x) (Φ '' t) = infDist x
 theorem infDist_inter_closedBall_of_mem (h : y ∈ s) :
     infDist x (s ∩ closedBall x (dist y x)) = infDist x s := by
   replace h : y ∈ s ∩ closedBall x (dist y x) := ⟨h, mem_closedBall.2 le_rfl⟩
-  refine le_antisymm ?_ (infDist_le_infDist_of_subset (inter_subset_left _ _) ⟨y, h⟩)
+  refine le_antisymm ?_ (infDist_le_infDist_of_subset inter_subset_left ⟨y, h⟩)
   refine not_lt.1 fun hlt => ?_
   rcases (infDist_lt_iff ⟨y, h.1⟩).mp hlt with ⟨z, hzs, hz⟩
   rcases le_or_lt (dist z x) (dist y x) with hle | hlt
@@ -800,10 +798,10 @@ theorem hausdorffDist_le_diam (hs : s.Nonempty) (bs : IsBounded s) (ht : t.Nonem
   rcases hs with ⟨x, xs⟩
   rcases ht with ⟨y, yt⟩
   refine hausdorffDist_le_of_mem_dist diam_nonneg ?_ ?_
-  · exact fun z hz => ⟨y, yt, dist_le_diam_of_mem (bs.union bt) (subset_union_left _ _ hz)
-      (subset_union_right _ _ yt)⟩
-  · exact fun z hz => ⟨x, xs, dist_le_diam_of_mem (bs.union bt) (subset_union_right _ _ hz)
-      (subset_union_left _ _ xs)⟩
+  · exact fun z hz => ⟨y, yt, dist_le_diam_of_mem (bs.union bt) (subset_union_left hz)
+      (subset_union_right yt)⟩
+  · exact fun z hz => ⟨x, xs, dist_le_diam_of_mem (bs.union bt) (subset_union_right hz)
+      (subset_union_left xs)⟩
 #align metric.Hausdorff_dist_le_diam Metric.hausdorffDist_le_diam
 
 /-- The distance to a set is controlled by the Hausdorff distance. -/

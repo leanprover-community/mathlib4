@@ -991,7 +991,7 @@ theorem HasFiniteIntegral.tendsto_setIntegral_nhds_zero {ι} {f : α → G}
   simp_rw [← coe_nnnorm, ← NNReal.coe_zero, NNReal.tendsto_coe, ← ENNReal.tendsto_coe,
     ENNReal.coe_zero]
   exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
-    (tendsto_set_lintegral_zero (ne_of_lt hf) hs) (fun i => zero_le _)
+    (tendsto_setLIntegral_zero (ne_of_lt hf) hs) (fun i => zero_le _)
     fun i => ennnorm_integral_le_lintegral_ennnorm _
 #align measure_theory.has_finite_integral.tendsto_set_integral_nhds_zero MeasureTheory.HasFiniteIntegral.tendsto_setIntegral_nhds_zero
 
@@ -1574,7 +1574,7 @@ theorem tendsto_integral_norm_approxOn_sub [MeasurableSpace E] [BorelSpace E] {f
   · simp
   · apply (SimpleFunc.aestronglyMeasurable _).sub
     apply (stronglyMeasurable_iff_measurable_separable.2 ⟨fmeas, ?_⟩ ).aestronglyMeasurable
-    exact .mono (.of_subtype (range f ∪ {0})) (subset_union_left _ _)
+    exact .mono (.of_subtype (range f ∪ {0})) subset_union_left
 
 variable {ν : Measure α}
 

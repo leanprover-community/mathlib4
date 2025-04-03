@@ -86,6 +86,9 @@ theorem cutExpand_add_left {t u} (s) : CutExpand r (s + t) (s + u) ↔ CutExpand
   exists₂_congr fun _ _ ↦ and_congr Iff.rfl <| by rw [add_assoc, add_assoc, add_left_cancel_iff]
 #align relation.cut_expand_add_left Relation.cutExpand_add_left
 
+lemma cutExpand_add_right {s' s} (t) : CutExpand r (s' + t) (s + t) ↔ CutExpand r s' s := by
+  convert cutExpand_add_left t using 2 <;> apply add_comm
+
 theorem cutExpand_iff [DecidableEq α] [IsIrrefl α r] {s' s : Multiset α} :
     CutExpand r s' s ↔
       ∃ (t : Multiset α) (a : α), (∀ a' ∈ t, r a' a) ∧ a ∈ s ∧ s' = s.erase a + t := by
@@ -104,6 +107,8 @@ theorem not_cutExpand_zero [IsIrrefl α r] (s) : ¬CutExpand r s 0 := by
   rintro ⟨_, _, _, ⟨⟩, _⟩
 #align relation.not_cut_expand_zero Relation.not_cutExpand_zero
 
+lemma cutExpand_zero {x} : CutExpand r 0 {x} := ⟨0, x, nofun, add_comm 0 _⟩
+
 /-- For any relation `r` on `α`, multiset addition `Multiset α × Multiset α → Multiset α` is a
   fibration between the game sum of `CutExpand r` with itself and `CutExpand r` itself. -/
 theorem cutExpand_fibration (r : α → α → Prop) :
@@ -120,6 +125,32 @@ theorem cutExpand_fibration (r : α → α → Prop) :
     · rw [add_comm, singleton_add, cons_erase h]
     · rw [add_assoc, erase_add_right_pos _ h]
 #align relation.cut_expand_fibration Relation.cutExpand_fibration
+
+/-- `CutExpand` preserves leftward-closedness under a relation. -/
+lemma cutExpand_closed [IsIrrefl α r] (p : α → Prop)
+    (h : ∀ {a' a}, r a' a → p a → p a') :
+    ∀ {s' s}, CutExpand r s' s → (∀ a ∈ s, p a) → ∀ a ∈ s', p a := by
+  intros s' s
+  classical
+  rw [cutExpand_iff]
+  rintro ⟨t, a, hr, ha, rfl⟩ hsp a' h'
+  obtain (h'|h') := mem_add.1 h'
+  exacts [hsp a' (mem_of_mem_erase h'), h (hr a' h') (hsp a ha)]
+
+lemma cutExpand_double {a a₁ a₂} (h₁ : r a₁ a) (h₂ : r a₂ a) : CutExpand r {a₁, a₂} {a} :=
+  cutExpand_singleton <| by
+    simp only [insert_eq_cons, mem_cons, mem_singleton, forall_eq_or_imp, forall_eq]
+    tauto
+
+lemma cutExpand_pair_left {a' a b} (hr : r a' a) : CutExpand r {a', b} {a, b} :=
+  (cutExpand_add_right {b}).2 (cutExpand_singleton_singleton hr)
+
+lemma cutExpand_pair_right {a b' b} (hr : r b' b) : CutExpand r {a, b'} {a, b} :=
+  (cutExpand_add_left {a}).2 (cutExpand_singleton_singleton hr)
+
+lemma cutExpand_double_left {a a₁ a₂ b} (h₁ : r a₁ a) (h₂ : r a₂ a) :
+    CutExpand r {a₁, a₂, b} {a, b} :=
+  (cutExpand_add_right {b}).2 (cutExpand_double h₁ h₂)
 
 /-- A multiset is accessible under `CutExpand` if all its singleton subsets are,
   assuming `r` is irreflexive. -/

@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.SetTheory.Game.Birthday
-import Mathlib.SetTheory.Surreal.Basic
+import Mathlib.SetTheory.Surreal.Multiplication
 
 #align_import set_theory.surreal.dyadic from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
@@ -178,38 +179,38 @@ theorem powHalf_zero : powHalf 0 = 1 :=
 #align surreal.pow_half_zero Surreal.powHalf_zero
 
 @[simp]
-theorem double_powHalf_succ_eq_powHalf (n : ℕ) : 2 • powHalf n.succ = powHalf n := by
-  rw [two_nsmul]; exact Quotient.sound (PGame.add_powHalf_succ_self_eq_powHalf n)
+theorem double_powHalf_succ_eq_powHalf (n : ℕ) : 2 * powHalf (n + 1) = powHalf n := by
+  rw [two_mul]; exact Quotient.sound (PGame.add_powHalf_succ_self_eq_powHalf n)
 #align surreal.double_pow_half_succ_eq_pow_half Surreal.double_powHalf_succ_eq_powHalf
 
 @[simp]
-theorem nsmul_pow_two_powHalf (n : ℕ) : 2 ^ n • powHalf n = 1 := by
+theorem nsmul_pow_two_powHalf (n : ℕ) : 2 ^ n * powHalf n = 1 := by
   induction' n with n hn
-  · simp only [Nat.zero_eq, pow_zero, powHalf_zero, one_smul]
-  · rw [← hn, ← double_powHalf_succ_eq_powHalf n, smul_smul (2 ^ n) 2 (powHalf n.succ), mul_comm,
-      pow_succ']
+  · simp only [pow_zero, powHalf_zero, mul_one]
+  · rw [← hn, ← double_powHalf_succ_eq_powHalf n, ← mul_assoc (2 ^ n) 2 (powHalf (n + 1)),
+      pow_succ', mul_comm 2 (2 ^ n)]
 #align surreal.nsmul_pow_two_pow_half Surreal.nsmul_pow_two_powHalf
 
 @[simp]
-theorem nsmul_pow_two_powHalf' (n k : ℕ) : 2 ^ n • powHalf (n + k) = powHalf k := by
+theorem nsmul_pow_two_powHalf' (n k : ℕ) : 2 ^ n * powHalf (n + k) = powHalf k := by
   induction' k with k hk
   · simp only [add_zero, Surreal.nsmul_pow_two_powHalf, Nat.zero_eq, eq_self_iff_true,
       Surreal.powHalf_zero]
   · rw [← double_powHalf_succ_eq_powHalf (n + k), ← double_powHalf_succ_eq_powHalf k,
-      smul_algebra_smul_comm] at hk
-    rwa [← zsmul_eq_zsmul_iff' two_ne_zero]
+      ← mul_assoc, mul_comm (2 ^ n) 2, mul_assoc] at hk
+    rw [← zsmul_eq_zsmul_iff' two_ne_zero]
+    simpa only [zsmul_eq_mul, Int.cast_ofNat]
 #align surreal.nsmul_pow_two_pow_half' Surreal.nsmul_pow_two_powHalf'
 
 theorem zsmul_pow_two_powHalf (m : ℤ) (n k : ℕ) :
-    (m * 2 ^ n) • powHalf (n + k) = m • powHalf k := by
-  rw [mul_zsmul]
+    (m * 2 ^ n) * powHalf (n + k) = m * powHalf k := by
+  rw [mul_assoc]
   congr
-  norm_cast
   exact nsmul_pow_two_powHalf' n k
 #align surreal.zsmul_pow_two_pow_half Surreal.zsmul_pow_two_powHalf
 
 theorem dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ = m₂ * 2 ^ y₂) :
-    m₁ • powHalf y₂ = m₂ • powHalf y₁ := by
+    m₁ * powHalf y₂ = m₂ * powHalf y₁ := by
   revert m₁ m₂
   wlog h : y₁ ≤ y₂
   · intro m₁ m₂ aux; exact (this (le_of_not_le h) aux.symm).symm
@@ -217,15 +218,16 @@ theorem dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ =
   obtain ⟨c, rfl⟩ := le_iff_exists_add.mp h
   rw [add_comm, pow_add, ← mul_assoc, mul_eq_mul_right_iff] at h₂
   cases' h₂ with h₂ h₂
-  · rw [h₂, add_comm, zsmul_pow_two_powHalf m₂ c y₁]
+  · rw [h₂, add_comm]
+    simp_rw [Int.cast_mul, Int.cast_pow, Int.cast_ofNat, zsmul_pow_two_powHalf m₂ c y₁]
   · have := Nat.one_le_pow y₁ 2 Nat.succ_pos'
     norm_cast at h₂; omega
 #align surreal.dyadic_aux Surreal.dyadic_aux
 
 /-- The additive monoid morphism `dyadicMap` sends ⟦⟨m, 2^n⟩⟧ to m • half ^ n. -/
-def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
+noncomputable def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
   toFun x :=
-    (Localization.liftOn x fun x y => x • powHalf (Submonoid.log y)) <| by
+    (Localization.liftOn x fun x y => x * powHalf (Submonoid.log y)) <| by
       intro m₁ m₂ n₁ n₂ h₁
       obtain ⟨⟨n₃, y₃, hn₃⟩, h₂⟩ := Localization.r_iff_exists.mp h₁
       simp only [Subtype.coe_mk, mul_eq_mul_left_iff] at h₂
@@ -241,7 +243,7 @@ def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
         rwa [ha₁, ha₂, mul_comm, mul_comm m₂]
       · have : (1 : ℤ) ≤ 2 ^ y₃ := mod_cast Nat.one_le_pow y₃ 2 Nat.succ_pos'
         linarith
-  map_zero' := Localization.liftOn_zero _ _
+  map_zero' := by simp_rw [Localization.liftOn_zero _ _, Int.cast_zero, zero_mul]
   map_add' x y :=
     Localization.induction_on₂ x y <| by
       rintro ⟨a, ⟨b, ⟨b', rfl⟩⟩⟩ ⟨c, ⟨d, ⟨d', rfl⟩⟩⟩
@@ -250,18 +252,19 @@ def dyadicMap : Localization.Away (2 : ℤ) →+ Surreal where
       simp_rw [Submonoid.pow_apply] at hpow₂
       simp_rw [Localization.add_mk, Localization.liftOn_mk,
         Submonoid.log_mul (Int.pow_right_injective h₂), hpow₂]
+      simp only [Int.cast_add, Int.cast_mul, Int.cast_pow, Int.cast_ofNat]
       calc
-        (2 ^ b' * c + 2 ^ d' * a) • powHalf (b' + d') =
-            (c * 2 ^ b') • powHalf (b' + d') + (a * 2 ^ d') • powHalf (d' + b') := by
-          simp only [add_smul, mul_comm, add_comm]
-        _ = c • powHalf d' + a • powHalf b' := by simp only [zsmul_pow_two_powHalf]
-        _ = a • powHalf b' + c • powHalf d' := add_comm _ _
+        (2 ^ b' * c + 2 ^ d' * a) * powHalf (b' + d') =
+            (c * 2 ^ b') * powHalf (b' + d') + (a * 2 ^ d') * powHalf (d' + b') := by
+          simp only [right_distrib, mul_comm, add_comm]
+        _ = c * powHalf d' + a * powHalf b' := by simp only [zsmul_pow_two_powHalf]
+        _ = a * powHalf b' + c * powHalf d' := add_comm _ _
 #align surreal.dyadic_map Surreal.dyadicMap
 
 @[simp]
 theorem dyadicMap_apply (m : ℤ) (p : Submonoid.powers (2 : ℤ)) :
     dyadicMap (IsLocalization.mk' (Localization (Submonoid.powers 2)) m p) =
-      m • powHalf (Submonoid.log p) := by
+      m * powHalf (Submonoid.log p) := by
   rw [← Localization.mk_eq_mk']; rfl
 #align surreal.dyadic_map_apply Surreal.dyadicMap_apply
 
@@ -270,11 +273,12 @@ theorem dyadicMap_apply_pow (m : ℤ) (n : ℕ) :
     dyadicMap (IsLocalization.mk' (Localization (Submonoid.powers 2)) m (Submonoid.pow 2 n)) =
       m • powHalf n := by
   rw [dyadicMap_apply, @Submonoid.log_pow_int_eq_self 2 one_lt_two]
+  simp only [zsmul_eq_mul]
 #align surreal.dyadic_map_apply_pow Surreal.dyadicMap_apply_pow
 
 @[simp]
 theorem dyadicMap_apply_pow' (m : ℤ) (n : ℕ) :
-    m • Surreal.powHalf (Submonoid.log (Submonoid.pow (2 : ℤ) n)) = m • powHalf n := by
+    m * Surreal.powHalf (Submonoid.log (Submonoid.pow (2 : ℤ) n)) = m * powHalf n := by
   rw [@Submonoid.log_pow_int_eq_self 2 one_lt_two]
 
 /-- We define dyadic surreals as the range of the map `dyadicMap`. -/

@@ -26,7 +26,6 @@ you should restate it here. You can also use
 
 -/
 
-
 noncomputable section
 
 open scoped Classical
@@ -253,7 +252,7 @@ section
 variable {R : Type*} [NormedRing R]
 
 instance : NormedRing C(α, R) :=
-  { (inferInstance : NormedAddCommGroup C(α, R)), ContinuousMap.instRingContinuousMap with
+  { (inferInstance : NormedAddCommGroup C(α, R)), ContinuousMap.instRing with
     norm_mul := fun f g => norm_mul_le (mkOfCompact f) (mkOfCompact g) }
 
 end

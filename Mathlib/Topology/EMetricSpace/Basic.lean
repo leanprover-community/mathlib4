@@ -302,7 +302,6 @@ theorem uniformContinuous_iff [PseudoEMetricSpace β] {f : α → β} :
   uniformity_basis_edist.uniformContinuous_iff uniformity_basis_edist
 #align emetric.uniform_continuous_iff EMetric.uniformContinuous_iff
 
--- Porting note (#10756): new lemma
 theorem uniformInducing_iff [PseudoEMetricSpace β] {f : α → β} :
     UniformInducing f ↔ UniformContinuous f ∧
       ∀ δ > 0, ∃ ε > 0, ∀ {a b : α}, edist (f a) (f b) < ε → edist a b < δ :=
@@ -844,7 +843,7 @@ theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : Is
     SeparableSpace s := by
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
   lift t to Set s using hts
-  refine ⟨⟨t, countable_of_injective_of_countable_image (Subtype.coe_injective.injOn _) htc, ?_⟩⟩
+  refine ⟨⟨t, countable_of_injective_of_countable_image Subtype.coe_injective.injOn htc, ?_⟩⟩
   rwa [inducing_subtype_val.dense_iff, Subtype.forall]
 #align topological_space.is_separable.separable_space TopologicalSpace.IsSeparable.separableSpace
 
@@ -1202,7 +1201,7 @@ instance [PseudoEMetricSpace X] : EMetricSpace (SeparationQuotient X) :=
       edist_comm := surjective_mk.forall₂.2 edist_comm,
       edist_triangle := surjective_mk.forall₃.2 edist_triangle,
       toUniformSpace := inferInstance,
-      uniformity_edist := comap_injective (surjective_mk.Prod_map surjective_mk) <| by
+      uniformity_edist := comap_injective (surjective_mk.prodMap surjective_mk) <| by
         simp [comap_mk_uniformity, PseudoEMetricSpace.uniformity_edist] } _
 
 /-!

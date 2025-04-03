@@ -5,7 +5,7 @@ Authors: David Wärn, Joachim Breitner
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.GroupTheory.Congruence
+import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.Data.List.Chain
 import Mathlib.SetTheory.Cardinal.Basic
@@ -982,7 +982,7 @@ condition is only needed if `# ι = 2`, and we accept `3 ≤ # ι` as an alterna
 theorem lift_injective_of_ping_pong : Function.Injective (lift f) := by
   classical
     apply (injective_iff_map_eq_one (lift f)).mpr
-    rw [(CoprodI.Word.equiv).forall_congr_left']
+    rw [(CoprodI.Word.equiv).forall_congr_left]
     intro w Heq
     dsimp [Word.equiv] at *
     rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq, Word.prod_empty]
@@ -1077,7 +1077,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   · show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
     rintro i j hij
     -- use free_group unit ≃ ℤ
-    refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left'.mpr ?_
+    refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left.mpr ?_
     intro n hne1
     change FreeGroup.lift (fun _ => a i) (FreeGroup.of () ^ n) • X' j ⊆ X' i
     simp only [map_zpow, FreeGroup.lift.of]
@@ -1108,7 +1108,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
               _ ⊆ a i ^ n • X i := smul_set_mono <| hX i
               _ ⊆ a i ^ n • (Y i)ᶜ := smul_set_mono (hXYdisj i i).subset_compl_right
               _ ⊆ X i := hi
-        _ ⊆ X' i := Set.subset_union_left _ _
+        _ ⊆ X' i := Set.subset_union_left
     · have h1n : n ≤ -1 := by
         apply Int.le_of_lt_add_one
         simpa using hgt
@@ -1128,7 +1128,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
               _ ⊆ a i ^ n • Y i := smul_set_mono <| hY i
               _ ⊆ a i ^ n • (X i)ᶜ := smul_set_mono (hXYdisj i i).symm.subset_compl_right
               _ ⊆ Y i := hi
-        _ ⊆ X' i := Set.subset_union_right _ _
+        _ ⊆ X' i := Set.subset_union_right
   show _ ∨ ∃ i, 3 ≤ #(H i)
   inhabit ι
   right

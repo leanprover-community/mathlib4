@@ -858,6 +858,12 @@ theorem AnalyticAt.comp {g : F → G} {f : E → F} {x : E} (hg : AnalyticAt �
   (hq.comp hp).analyticAt
 #align analytic_at.comp AnalyticAt.comp
 
+/-- Version of `AnalyticAt.comp` where point equality is a separate hypothesis. -/
+theorem AnalyticAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : AnalyticAt 𝕜 g y)
+    (hf : AnalyticAt 𝕜 f x) (hy : f x = y) : AnalyticAt 𝕜 (g ∘ f) x := by
+  rw [← hy] at hg
+  exact hg.comp hf
+
 /-- If two functions `g` and `f` are analytic respectively on `s.image f` and `s`, then `g ∘ f` is
 analytic on `s`. -/
 theorem AnalyticOn.comp' {s : Set E} {g : F → G} {f : E → F} (hg : AnalyticOn 𝕜 g (s.image f))

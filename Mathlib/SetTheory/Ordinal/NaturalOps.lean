@@ -133,7 +133,8 @@ theorem succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
   rfl
 #align nat_ordinal.succ_def NatOrdinal.succ_def
 
-/-- A recursor for `NatOrdinal`. Use as `induction x using NatOrdinal.rec`. -/
+/-- A recursor for `NatOrdinal`. Use as `induction x`. -/
+@[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : NatOrdinal → Sort*} (h : ∀ a, β (toNatOrdinal a)) : ∀ a, β a := fun a =>
   h (toOrdinal a)
 #align nat_ordinal.rec NatOrdinal.rec

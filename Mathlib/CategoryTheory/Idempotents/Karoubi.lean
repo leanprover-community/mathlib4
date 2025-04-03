@@ -176,6 +176,10 @@ instance instNeg [Preadditive C] {P Q : Karoubi C} : Neg (P ⟶ Q) where
 instance instZero [Preadditive C] {P Q : Karoubi C} : Zero (P ⟶ Q) where
   zero := ⟨0, by simp only [comp_zero, zero_comp]⟩
 
+-- dsimp loops when applying this lemma to its LHS,
+-- probably https://github.com/leanprover/lean4/pull/2867
+attribute [nolint simpNF] CategoryTheory.Idempotents.instZero_zero
+
 instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
   zero_add f := by
     ext

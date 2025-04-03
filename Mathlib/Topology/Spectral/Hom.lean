@@ -178,12 +178,11 @@ theorem comp_apply (f : SpectralMap β γ) (g : SpectralMap α β) (a : α) : (f
   rfl
 #align spectral_map.comp_apply SpectralMap.comp_apply
 
-@[simp]
 theorem coe_comp_continuousMap (f : SpectralMap β γ) (g : SpectralMap α β) :
     f ∘ g = (f : ContinuousMap β γ) ∘ (g: ContinuousMap α β) :=
    rfl
 
--- Porting note: removed `simp` from this and added lemma above to address `simpNF` lint
+@[simp]
 theorem coe_comp_continuousMap' (f : SpectralMap β γ) (g : SpectralMap α β) :
     (f.comp g : ContinuousMap α γ) = (f : ContinuousMap β γ).comp g :=
   rfl

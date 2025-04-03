@@ -45,16 +45,10 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
         (isLimitOfPreserves F (limit.isLimit _)).conePointUniqueUpToIso (limit.isLimit _))
     (by
       intro A B f
-      -- Porting note: this used to work with `ext`
-      -- See https://github.com/leanprover-community/mathlib4/issues/5229
-      apply Multiequalizer.hom_ext
+      -- Porting note (#11041): this used to work with `ext`
       dsimp
-      simp only [Functor.mapCone_π_app, Multiequalizer.multifork_π_app_left, Iso.symm_hom,
-        Multiequalizer.lift_ι, eqToHom_refl, Category.comp_id,
-        limit.conePointUniqueUpToIso_hom_comp,
-        GrothendieckTopology.Cover.multicospanComp_hom_inv_left, HasLimit.isoOfNatIso_hom_π,
-        Category.assoc]
-      simp only [← F.map_comp, limit.lift_π, Multifork.ofι_π_app, implies_true])
+      ext g
+      simp [← F.map_comp])
 #align category_theory.grothendieck_topology.diagram_comp_iso CategoryTheory.GrothendieckTopology.diagramCompIso
 
 @[reassoc (attr := simp)]
@@ -120,12 +114,7 @@ theorem ι_plusCompIso_hom (X) (W) :
     Cocones.forget_map, Iso.trans_hom, NatIso.ofComponents_hom_app, Functor.mapIso_hom, ←
     Category.assoc]
   erw [(isColimitOfPreserves F (colimit.isColimit (J.diagram P (unop X)))).fac]
-  simp only [Category.assoc, HasLimit.isoOfNatIso_hom_π, Iso.symm_hom,
-    Cover.multicospanComp_hom_inv_left, eqToHom_refl, Category.comp_id,
-    limit.conePointUniqueUpToIso_hom_comp, Functor.mapCone_π_app,
-    Multiequalizer.multifork_π_app_left, Multiequalizer.lift_ι, Functor.map_comp, eq_self_iff_true,
-    Category.assoc, Iso.trans_hom, Iso.cancel_iso_hom_left, NatIso.ofComponents_hom_app,
-    colimit.cocone_ι, Category.assoc, HasColimit.isoOfNatIso_ι_hom]
+  simp
 #align category_theory.grothendieck_topology.ι_plus_comp_iso_hom CategoryTheory.GrothendieckTopology.ι_plusCompIso_hom
 
 @[reassoc (attr := simp)]
@@ -144,14 +133,12 @@ theorem plusCompIso_whiskerLeft {F G : D ⥤ E} (η : F ⟶ G) (P : Cᵒᵖ ⥤ 
     NatTrans.naturality_assoc, GrothendieckTopology.diagramNatTrans_app]
   simp only [← Category.assoc]
   congr 1
-  -- Porting note: this used to work with `ext`
-  -- See https://github.com/leanprover-community/mathlib4/issues/5229
+  -- Porting note (#11041): this used to work with `ext`
   apply Multiequalizer.hom_ext
   intro a
   dsimp
   simp
   -- Porting note: in mathlib3 `simp` managed to apply this.
-  erw [η.naturality]
 #align category_theory.grothendieck_topology.plus_comp_iso_whisker_left CategoryTheory.GrothendieckTopology.plusCompIso_whiskerLeft
 
 /-- The isomorphism between `P⁺ ⋙ F` and `(P ⋙ F)⁺`, functorially in `F`. -/
@@ -181,8 +168,7 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [Functor.map_comp, Category.assoc, ι_plusCompIso_hom]
   simp only [← Category.assoc]
   congr 1
-  -- Porting note: this used to work with `ext`
-  -- See https://github.com/leanprover-community/mathlib4/issues/5229
+  -- Porting note (#11041): this used to work with `ext`
   apply Multiequalizer.hom_ext
   intro a
   dsimp
@@ -207,7 +193,7 @@ theorem whiskerRight_toPlus_comp_plusCompIso_hom :
   simp only [ι_plusCompIso_hom, Functor.map_comp, Category.assoc]
   simp only [← Category.assoc]
   congr 1
-  -- See https://github.com/leanprover-community/mathlib4/issues/5229
+  -- Porting note (#11041): was ext
   apply Multiequalizer.hom_ext; intro a
   rw [Category.assoc, diagramCompIso_hom_ι, ← F.map_comp]
   simp only [unop_op, limit.lift_π, Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map]

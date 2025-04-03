@@ -206,7 +206,7 @@ end InvMemClass
 
 namespace SubgroupClass
 
-@[to_additive (attr := deprecated)] alias coe_inv := InvMemClass.coe_inv -- 2024-01-15
+@[to_additive (attr := deprecated (since := "2024-01-15"))] alias coe_inv := InvMemClass.coe_inv
 
 -- Here we assume H, K, and L are subgroups, but in fact any one of them
 -- could be allowed to be a subsemigroup.
@@ -406,7 +406,7 @@ theorem mem_mk {s : Set G} {x : G} (h_one) (h_mul) (h_inv) :
 #align subgroup.mem_mk Subgroup.mem_mk
 #align add_subgroup.mem_mk AddSubgroup.mem_mk
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_set_mk {s : Set G} (h_one) (h_mul) (h_inv) :
     (mk ⟨⟨s, h_one⟩, h_mul⟩ h_inv : Set G) = s :=
   rfl

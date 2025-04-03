@@ -146,7 +146,7 @@ theorem coeComplex_one : ((1 : ℂ) : ℍ) = 1 :=
   rfl
 #align quaternion.coe_complex_one Quaternion.coeComplex_one
 
-@[simp, norm_cast, nolint simpNF] -- Porting note (#10959): simp cannot prove this
+@[simp, norm_cast] -- Porting note (#10959): simp cannot prove this
 theorem coe_real_complex_mul (r : ℝ) (z : ℂ) : (r • z : ℍ) = ↑r * ↑z := by ext <;> simp
 #align quaternion.coe_real_complex_mul Quaternion.coe_real_complex_mul
 

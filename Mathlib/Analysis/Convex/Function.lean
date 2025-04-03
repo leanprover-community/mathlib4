@@ -5,7 +5,7 @@ Authors: Alexander Bentkamp, François Dupuis
 -/
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Order.Filter.Extr
-import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.NormNum
 
 #align_import analysis.convex.function from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 

@@ -103,7 +103,7 @@ lemma measure_eq_zero_of_subset_diff_everywherePosSubset
   · intro x hx
     obtain ⟨u, ux, hu⟩ : ∃ u ∈ 𝓝[s] x, μ u = 0 := by
       simpa [everywherePosSubset, (h'k hx).1] using (h'k hx).2
-    exact ⟨u, nhdsWithin_mono x (h'k.trans (diff_subset _ _)) ux, hu⟩
+    exact ⟨u, nhdsWithin_mono x (h'k.trans diff_subset) ux, hu⟩
 
 /-- In a space with an inner regular measure, any measurable set coincides almost everywhere with
 its everywhere positive subset. -/
@@ -120,7 +120,7 @@ lemma everywherePosSubset_ae_eq_of_measure_ne_top
     [OpensMeasurableSpace α] [InnerRegularCompactLTTop μ] (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
     μ.everywherePosSubset s =ᵐ[μ] s := by
   have A : μ (s \ μ.everywherePosSubset s) ≠ ∞ :=
-    ((measure_mono (diff_subset _ _ )).trans_lt h's.lt_top).ne
+    ((measure_mono diff_subset).trans_lt h's.lt_top).ne
   simp only [ae_eq_set, diff_eq_empty.mpr (everywherePosSubset_subset μ s), measure_empty,
     true_and, (hs.diff hs.everywherePosSubset).measure_eq_iSup_isCompact_of_ne_top A,
     ENNReal.iSup_eq_zero]
@@ -176,8 +176,8 @@ lemma IsEverywherePos.of_forall_exists_nhds_eq (hs : IsEverywherePos μ s)
     (h : ∀ x ∈ s, ∃ t ∈ 𝓝 x, ∀ u ⊆ t, ν u = μ u) : IsEverywherePos ν s := by
   intro x hx n hn
   rcases h x hx with ⟨t, t_mem, ht⟩
-  apply lt_of_lt_of_le _ (measure_mono (inter_subset_left n t))
-  rw [ht _ (inter_subset_right n t)]
+  refine lt_of_lt_of_le ?_ (measure_mono (inter_subset_left (t := t)))
+  rw [ht (n ∩ t) inter_subset_right]
   exact hs x hx _ (inter_mem hn (mem_nhdsWithin_of_mem_nhds t_mem))
 
 /-- If two measures coincide locally, then a set is everywhere positive for the former iff it is

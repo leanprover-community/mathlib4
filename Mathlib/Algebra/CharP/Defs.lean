@@ -3,11 +3,13 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Group.Fin
 import Mathlib.Algebra.Group.ULift
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Cast.Prod
 import Mathlib.Data.Nat.Prime
+import Mathlib.Data.ULift
 
 #align_import algebra.char_p.basic from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
@@ -425,7 +427,7 @@ end
 
 namespace NeZero
 
-variable [AddMonoidWithOne R] {r : R} {n p : ℕ} {a : ℕ+}
+variable [AddMonoidWithOne R] {r : R} {n p : ℕ}
 
 lemma of_not_dvd [CharP R p] (h : ¬p ∣ n) : NeZero (n : R) :=
   ⟨(CharP.cast_eq_zero_iff R p n).not.mpr h⟩

@@ -449,3 +449,28 @@ theorem AlgEquiv.spectrum_eq {F R A B : Type*} [CommSemiring R] [Ring A] [Ring B
   Set.Subset.antisymm (AlgHom.spectrum_apply_subset _ _) <| by
     simpa only [AlgEquiv.coe_algHom, AlgEquiv.coe_coe_symm_apply_coe_apply] using
       AlgHom.spectrum_apply_subset (f : A ≃ₐ[R] B).symm (f a)
+
+section ConjugateUnits
+
+variable {R A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
+
+/-- Conjugation by a unit preserves the spectrum, inverse on right. -/
+@[simp]
+lemma spectrum.units_conjugate {a : A} {u : Aˣ} :
+    spectrum R (u * a * u⁻¹) = spectrum R a := by
+  suffices ∀ (b : A) (v : Aˣ), spectrum R (v * b * v⁻¹) ⊆ spectrum R b by
+    refine le_antisymm (this a u) ?_
+    apply le_of_eq_of_le ?_ <| this (u * a * u⁻¹) u⁻¹
+    simp [mul_assoc]
+  intro a u μ hμ
+  rw [spectrum.mem_iff] at hμ ⊢
+  contrapose! hμ
+  simpa [mul_sub, sub_mul, Algebra.right_comm] using u.isUnit.mul hμ |>.mul u⁻¹.isUnit
+
+/-- Conjugation by a unit preserves the spectrum, inverse on left. -/
+@[simp]
+lemma spectrum.units_conjugate' {a : A} {u : Aˣ} :
+    spectrum R (u⁻¹ * a * u) = spectrum R a := by
+  simpa using spectrum.units_conjugate (u := u⁻¹)
+
+end ConjugateUnits

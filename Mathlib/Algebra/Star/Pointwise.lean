@@ -109,7 +109,7 @@ theorem star_subset [InvolutiveStar α] {s t : Set α} : s⋆ ⊆ t ↔ s ⊆ t�
 #align set.star_subset Set.star_subset
 
 theorem Finite.star [InvolutiveStar α] {s : Set α} (hs : s.Finite) : s⋆.Finite :=
-  hs.preimage <| star_injective.injOn _
+  hs.preimage star_injective.injOn
 #align set.finite.star Set.Finite.star
 
 theorem star_singleton {β : Type*} [InvolutiveStar β] (x : β) : ({x} : Set β)⋆ = {x⋆} := by

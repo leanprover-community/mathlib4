@@ -3,9 +3,10 @@ Copyright (c) 2023 Mantas Bakšys, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys, Yaël Dillies
 -/
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Rearrangement
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 
 #align_import algebra.order.chebyshev from "leanprover-community/mathlib"@"b7399344324326918d65d0c74e9571e3a8cb9199"

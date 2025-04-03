@@ -169,7 +169,7 @@ instance Finset.finEnum [FinEnum α] : FinEnum (Finset α) :=
 
 instance Subtype.finEnum [FinEnum α] (p : α → Prop) [DecidablePred p] : FinEnum { x // p x } :=
   ofList ((toList α).filterMap fun x => if h : p x then some ⟨_, h⟩ else none)
-    (by rintro ⟨x, h⟩; simp; exists x; simp [*])
+    (by rintro ⟨x, h⟩; simpa)
 #align fin_enum.subtype.fin_enum FinEnum.Subtype.finEnum
 
 instance (β : α → Type v) [FinEnum α] [∀ a, FinEnum (β a)] : FinEnum (Sigma β) :=

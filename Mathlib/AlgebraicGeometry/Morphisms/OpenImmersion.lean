@@ -50,7 +50,7 @@ theorem isOpenImmersion_respectsIso : MorphismProperty.RespectsIso @IsOpenImmers
   infer_instance
 #align algebraic_geometry.is_open_immersion_respects_iso AlgebraicGeometry.isOpenImmersion_respectsIso
 
-theorem isOpenImmersion_is_local_at_target : PropertyIsLocalAtTarget @IsOpenImmersion := by
+theorem isOpenImmersion_isLocalAtTarget : PropertyIsLocalAtTarget @IsOpenImmersion := by
   constructor
   · exact isOpenImmersion_respectsIso
   · intros; infer_instance
@@ -65,14 +65,14 @@ theorem isOpenImmersion_is_local_at_target : PropertyIsLocalAtTarget @IsOpenImme
       norm_cast
     · intro x
       have := Arrow.iso_w (morphismRestrictStalkMap
-        f (Scheme.Hom.opensRange (𝒰.map <| 𝒰.f <| f.1.base x)) ⟨x, 𝒰.Covers _⟩)
+        f (Scheme.Hom.opensRange (𝒰.map <| 𝒰.f <| f.1.base x)) ⟨x, 𝒰.covers _⟩)
       dsimp only [Arrow.mk_hom] at this
       rw [this]
       haveI : IsOpenImmersion (f ∣_ Scheme.Hom.opensRange (𝒰.map <| 𝒰.f <| f.1.base x)) :=
         (isOpenImmersion_respectsIso.arrow_iso_iff
           (morphismRestrictOpensRange f (𝒰.map _))).mpr (H _)
       infer_instance
-#align algebraic_geometry.is_open_immersion_is_local_at_target AlgebraicGeometry.isOpenImmersion_is_local_at_target
+#align algebraic_geometry.is_open_immersion_is_local_at_target AlgebraicGeometry.isOpenImmersion_isLocalAtTarget
 
 theorem IsOpenImmersion.openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) : List.TFAE
     [IsOpenImmersion f,
@@ -85,13 +85,13 @@ theorem IsOpenImmersion.openCover_TFAE {X Y : Scheme.{u}} (f : X ⟶ Y) : List.T
       IsOpenImmersion (pullback.snd : pullback f g ⟶ _),
     ∃ (ι : Type u) (U : ι → Opens Y.carrier) (_ : iSup U = ⊤),
       ∀ i, IsOpenImmersion (f ∣_ U i)] :=
-  isOpenImmersion_is_local_at_target.openCover_TFAE f
+  isOpenImmersion_isLocalAtTarget.openCover_TFAE f
 #align algebraic_geometry.is_open_immersion.open_cover_tfae AlgebraicGeometry.IsOpenImmersion.openCover_TFAE
 
 theorem IsOpenImmersion.openCover_iff {X Y : Scheme.{u}} (𝒰 : Scheme.OpenCover.{u} Y)
     (f : X ⟶ Y) :
     IsOpenImmersion f ↔ ∀ i, IsOpenImmersion (pullback.snd : pullback f (𝒰.map i) ⟶ _) :=
-  isOpenImmersion_is_local_at_target.openCover_iff f 𝒰
+  isOpenImmersion_isLocalAtTarget.openCover_iff f 𝒰
 #align algebraic_geometry.is_open_immersion.open_cover_iff AlgebraicGeometry.IsOpenImmersion.openCover_iff
 
 theorem isOpenImmersion_stableUnderBaseChange :

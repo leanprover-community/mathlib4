@@ -111,7 +111,7 @@ elab_rules : tactic
         withTheReader Term.Context (fun ctx => { ctx with ignoreTCFailures := true }) do
           let t ← elabTermEnsuringType (mayPostpone := true) term expectedType
           -- Process everything so that tactics get run, but again allow TC failures
-          Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+          Term.synthesizeSyntheticMVars (postpone := .no) (ignoreStuckTC := true)
           -- Use a type hint to ensure we collect goals from the type too
           mkExpectedTypeHint t (← inferType t)
     liftMetaTactic fun g ↦

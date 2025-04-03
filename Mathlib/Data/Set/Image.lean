@@ -312,7 +312,7 @@ theorem image_empty (f : α → β) : f '' ∅ = ∅ := by
 #align set.image_empty Set.image_empty
 
 theorem image_inter_subset (f : α → β) (s t : Set α) : f '' (s ∩ t) ⊆ f '' s ∩ f '' t :=
-  subset_inter (image_subset _ <| inter_subset_left _ _) (image_subset _ <| inter_subset_right _ _)
+  subset_inter (image_subset _ inter_subset_left) (image_subset _ inter_subset_right)
 #align set.image_inter_subset Set.image_inter_subset
 
 theorem image_inter_on {f : α → β} {s t : Set α} (h : ∀ x ∈ t, ∀ y ∈ s, f x = f y → x = y) :
@@ -431,7 +431,7 @@ theorem image_compl_eq {f : α → β} {s : Set α} (H : Bijective f) : f '' s�
 
 theorem subset_image_diff (f : α → β) (s t : Set α) : f '' s \ f '' t ⊆ f '' (s \ t) := by
   rw [diff_subset_iff, ← image_union, union_diff_self]
-  exact image_subset f (subset_union_right t s)
+  exact image_subset f subset_union_right
 #align set.subset_image_diff Set.subset_image_diff
 
 open scoped symmDiff in
@@ -572,9 +572,17 @@ theorem image_eq_image {f : α → β} (hf : Injective f) : f '' s = f '' t ↔ 
 
 theorem subset_image_iff {t : Set β} :
     t ⊆ f '' s ↔ ∃ u, u ⊆ s ∧ f '' u = t := by
-  refine ⟨fun h ↦ ⟨f ⁻¹' t ∩ s, inter_subset_right _ _, ?_⟩,
+  refine ⟨fun h ↦ ⟨f ⁻¹' t ∩ s, inter_subset_right, ?_⟩,
     fun ⟨u, hu, hu'⟩ ↦ hu'.symm ▸ image_mono hu⟩
   rwa [image_preimage_inter, inter_eq_left]
+
+@[simp]
+lemma exists_subset_image_iff {p : Set β → Prop} : (∃ t ⊆ f '' s, p t) ↔ ∃ t ⊆ s, p (f '' t) := by
+  simp [subset_image_iff]
+
+@[simp]
+lemma forall_subset_image_iff {p : Set β → Prop} : (∀ t ⊆ f '' s, p t) ↔ ∀ t ⊆ s, p (f '' t) := by
+  simp [subset_image_iff]
 
 theorem image_subset_image_iff {f : α → β} (hf : Injective f) : f '' s ⊆ f '' t ↔ s ⊆ t := by
   refine Iff.symm <| (Iff.intro (image_subset f)) fun h => ?_
@@ -805,10 +813,12 @@ theorem exists_subset_range_and_iff {f : α → β} {p : Set β → Prop} :
   rw [← exists_range_iff, range_image]; rfl
 #align set.exists_subset_range_and_iff Set.exists_subset_range_and_iff
 
+@[deprecated exists_subset_range_and_iff (since := "2024-06-06")]
 theorem exists_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∃ (s : _) (_ : s ⊆ range f), p s) ↔ ∃ s, p (f '' s) := by simp
 #align set.exists_subset_range_iff Set.exists_subset_range_iff
 
+@[simp]
 theorem forall_subset_range_iff {f : α → β} {p : Set β → Prop} :
     (∀ s, s ⊆ range f → p s) ↔ ∀ s, p (f '' s) := by
   rw [← forall_mem_range, range_image]; rfl
@@ -1002,20 +1012,8 @@ theorem range_const : ∀ [Nonempty ι] {c : α}, (range fun _ : ι => c) = {c}
 theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ x, p x → q (f x)) :
     range (Subtype.map f h) = (↑) ⁻¹' (f '' { x | p x }) := by
   ext ⟨x, hx⟩
-  rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.coe_mk]
-  apply Iff.intro
-  · rintro ⟨a, b, hab⟩
-    rw [Subtype.map, Subtype.mk.injEq] at hab
-    use a
-    trivial
-  · rintro ⟨a, b, hab⟩
-    use a
-    use b
-    rw [Subtype.map, Subtype.mk.injEq]
-    exact hab
-  -- Porting note: `simp_rw` fails here
-  -- simp_rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.map, Subtype.coe_mk,
-  --   mem_set_of, exists_prop]
+  simp_rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.map]
+  simp only [Subtype.mk.injEq, exists_prop, mem_setOf_eq]
 #align set.range_subtype_map Set.range_subtype_map
 
 theorem image_swap_eq_preimage_swap : image (@Prod.swap α β) = preimage Prod.swap :=
@@ -1077,9 +1075,9 @@ theorem range_ite_subset' {p : Prop} [Decidable p] {f g : α → β} :
     range (if p then f else g) ⊆ range f ∪ range g := by
   by_cases h : p
   · rw [if_pos h]
-    exact subset_union_left _ _
+    exact subset_union_left
   · rw [if_neg h]
-    exact subset_union_right _ _
+    exact subset_union_right
 #align set.range_ite_subset' Set.range_ite_subset'
 
 theorem range_ite_subset {p : α → Prop} [DecidablePred p] {f g : α → β} :
@@ -1237,6 +1235,10 @@ theorem nontrivial_of_image (f : α → β) (s : Set α) (hs : (f '' s).Nontrivi
   let ⟨_, ⟨x, hx, rfl⟩, _, ⟨y, hy, rfl⟩, hxy⟩ := hs
   ⟨x, hx, y, hy, mt (congr_arg f) hxy⟩
 #align set.nontrivial_of_image Set.nontrivial_of_image
+
+@[simp]
+theorem image_nontrivial {f : α → β} (hf : f.Injective) : (f '' s).Nontrivial ↔ s.Nontrivial :=
+  ⟨nontrivial_of_image f s, fun h ↦ h.image hf⟩
 
 /-- If the preimage of a set under an injective map is nontrivial, the set is nontrivial. -/
 theorem nontrivial_of_preimage {f : α → β} (hf : Function.Injective f) (s : Set β)

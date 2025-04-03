@@ -644,7 +644,6 @@ theorem map_mk' (x) (y : M) : map Q g hy (mk' S x y) = mk' Q (g x) ⟨g y, hy y.
     (fun y => hy y.2) (k := toLocalizationMap T Q) ..
 #align is_localization.map_mk' IsLocalization.map_mk'
 
--- Porting note (#10756): new theorem
 @[simp]
 theorem map_id_mk' {Q : Type*} [CommSemiring Q] [Algebra R Q] [IsLocalization M Q] (x) (y : M) :
     map Q (RingHom.id R) (le_refl M) (mk' S x y) = mk' Q x y :=
@@ -813,7 +812,7 @@ theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃
   · intro y
     obtain ⟨⟨x, s⟩, e⟩ := IsLocalization.surj M (h.symm y)
     apply_fun (show S → P from h) at e
-    simp only [h.map_mul, h.apply_symm_apply, h.commutes] at e
+    simp only [map_mul, h.apply_symm_apply, h.commutes] at e
     exact ⟨⟨x, s⟩, e⟩
   · intro x y
     rw [← h.symm.toEquiv.injective.eq_iff, ← IsLocalization.eq_iff_exists M S, ← h.symm.commutes, ←

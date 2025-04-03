@@ -31,7 +31,6 @@ discrete topology) in lemmas `nonempty_sections_of_finite_cofiltered_system` and
 (See <https://stacks.math.columbia.edu/tag/086J> for the Set version.)
 -/
 
--- Porting note: every ML3 decl has an uppercase letter
 set_option linter.uppercaseLean3 false
 
 open CategoryTheory

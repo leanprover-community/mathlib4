@@ -310,10 +310,7 @@ instance (priority := 10) of_gt' {M : Type*} [CanonicallyOrderedAddCommMonoid M]
   [Fact (1 < y)] : NeZero y := of_gt <| @Fact.out (1 < y) _
 #align ne_zero.of_gt' NeZero.of_gt'
 
-set_option linter.deprecated false in
-instance bit0 {M} [CanonicallyOrderedAddCommMonoid M] {x : M} [NeZero x] : NeZero (bit0 x) :=
-  of_pos <| bit0_pos <| NeZero.pos x
-#align ne_zero.bit0 NeZero.bit0
+#noalign ne_zero.bit0
 
 end NeZero
 

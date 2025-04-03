@@ -46,22 +46,22 @@ theorem add_left [Distrib R] {a b c : R} : Commute a c → Commute b c → Commu
 section deprecated
 set_option linter.deprecated false
 
-@[deprecated]
+@[deprecated (since := "2022-11-28")]
 theorem bit0_right [Distrib R] {x y : R} (h : Commute x y) : Commute x (bit0 y) :=
   h.add_right h
 #align commute.bit0_right Commute.bit0_right
 
-@[deprecated]
+@[deprecated (since := "2022-11-28")]
 theorem bit0_left [Distrib R] {x y : R} (h : Commute x y) : Commute (bit0 x) y :=
   h.add_left h
 #align commute.bit0_left Commute.bit0_left
 
-@[deprecated]
+@[deprecated (since := "2022-11-28")]
 theorem bit1_right [NonAssocSemiring R] {x y : R} (h : Commute x y) : Commute x (bit1 y) :=
   h.bit0_right.add_right (Commute.one_right x)
 #align commute.bit1_right Commute.bit1_right
 
-@[deprecated]
+@[deprecated (since := "2022-11-28")]
 theorem bit1_left [NonAssocSemiring R] {x y : R} (h : Commute x y) : Commute (bit1 x) y :=
   h.bit0_left.add_left (Commute.one_left y)
 #align commute.bit1_left Commute.bit1_left

@@ -599,7 +599,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     exact this.mono ball_subset_interior_closedBall
   let v : Fin N → Set α := fun i => ⋃ (x : s) (_ : x ∈ u i), closedBall x (r x)
   have A : s = ⋃ i : Fin N, s ∩ v i := by
-    refine Subset.antisymm ?_ (iUnion_subset fun i => inter_subset_left _ _)
+    refine Subset.antisymm ?_ (iUnion_subset fun i => inter_subset_left)
     intro x hx
     obtain ⟨i, y, hxy, h'⟩ :
         ∃ (i : Fin N) (i_1 : ↥s), i_1 ∈ u i ∧ x ∈ ball (↑i_1) (r ↑i_1) := by
@@ -632,7 +632,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     have : o ∩ v i = ⋃ (x : s) (_ : x ∈ u i), o ∩ closedBall x (r x) := by
       simp only [v, inter_iUnion]
     rw [this, measure_biUnion (u_count i)]
-    · exact (hu i).mono fun k => inter_subset_right _ _
+    · exact (hu i).mono fun k => inter_subset_right
     · exact fun b _ => omeas.inter measurableSet_closedBall
   -- A large enough finite subfamily of `u i` will also cover a proportion `> 1/(N+1)` of `s`.
   -- Since `s` might not be measurable, we express this in terms of the measurable superset `o`.
@@ -656,7 +656,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
       rw [Finset.set_biUnion_finset_image]
       exact le_trans (measure_mono (diff_subset_diff so (Subset.refl _))) H
     rw [← diff_inter_self_eq_diff,
-      measure_diff_le_iff_le_add _ (inter_subset_right _ _) (measure_lt_top μ _).ne]
+      measure_diff_le_iff_le_add _ inter_subset_right (measure_lt_top μ _).ne]
     swap
     · apply MeasurableSet.inter _ omeas
       haveI : Encodable (u i) := (u_count i).toEncodable
@@ -673,7 +673,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
         · have : (w : Set (u i)).PairwiseDisjoint
               fun b : u i => closedBall (b : α) (r (b : α)) := by
             intro k _ l _ hkl; exact hu i k.2 l.2 (Subtype.val_injective.ne hkl)
-          exact this.mono fun k => inter_subset_right _ _
+          exact this.mono fun k => inter_subset_right
         · intro b _
           apply omeas.inter measurableSet_closedBall
   -- show that the balls are disjoint
@@ -745,7 +745,7 @@ theorem exists_disjoint_closedBall_covering_ae_of_finiteMeasure_aux (μ : Measur
       haveI rI : ∀ x ∈ s', r x ∈ Ioo (0 : ℝ) 1 := fun x hx => (hr x hx).1.2
       exist_finset_disjoint_balls_large_measure μ hτ hN s' r (fun x hx => (rI x hx).1) fun x hx =>
         (rI x hx).2.le
-    refine ⟨t ∪ Finset.image (fun x => (x, r x)) v, Finset.subset_union_left _ _, ⟨?_, ?_, ?_⟩, ?_⟩
+    refine ⟨t ∪ Finset.image (fun x => (x, r x)) v, Finset.subset_union_left, ⟨?_, ?_, ?_⟩, ?_⟩
     · simp only [Finset.coe_union, pairwiseDisjoint_union, ht.1, true_and_iff, Finset.coe_image]
       constructor
       · intro p hp q hq hpq
@@ -913,7 +913,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SigmaFinit
   -- we have constructed an almost everywhere covering of `s` by disjoint balls. Let `s'` be the
   -- remaining set.
   let s' := s \ ⋃ x ∈ t0, closedBall x (r0 x)
-  have s's : s' ⊆ s := diff_subset _ _
+  have s's : s' ⊆ s := diff_subset
   obtain ⟨N, τ, hτ, H⟩ : ∃ N τ, 1 < τ ∧ IsEmpty (Besicovitch.SatelliteConfig α N τ) :=
     HasBesicovitchCovering.no_satelliteConfig
   obtain ⟨v, s'v, v_open, μv⟩ : ∃ v, v ⊇ s' ∧ IsOpen v ∧ μ v ≤ μ s' + ε / 2 / N :=
@@ -1016,7 +1016,7 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SigmaFinit
       calc
         (∑' x : ((↑) : s' → α) '' S i, μ (closedBall x (r x))) =
             ∑' x : S i, μ (closedBall x (r x)) := by
-          have : InjOn ((↑) : s' → α) (S i) := Subtype.val_injective.injOn _
+          have : InjOn ((↑) : s' → α) (S i) := Subtype.val_injective.injOn
           let F : S i ≃ ((↑) : s' → α) '' S i := this.bijOn_image.equiv _
           exact (F.tsum_eq fun x => μ (closedBall x (r x))).symm
         _ = ∑' x : S i, μ (closedBall x (r1 x)) := by

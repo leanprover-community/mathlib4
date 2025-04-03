@@ -45,7 +45,7 @@ theorem interval_average_eq (f : ℝ → E) (a b : ℝ) :
   rcases le_or_lt a b with h | h
   · rw [setAverage_eq, uIoc_of_le h, Real.volume_Ioc, intervalIntegral.integral_of_le h,
       ENNReal.toReal_ofReal (sub_nonneg.2 h)]
-  · rw [setAverage_eq, uIoc_of_lt h, Real.volume_Ioc, intervalIntegral.integral_of_ge h.le,
+  · rw [setAverage_eq, uIoc_of_ge h.le, Real.volume_Ioc, intervalIntegral.integral_of_ge h.le,
       ENNReal.toReal_ofReal (sub_nonneg.2 h.le), smul_neg, ← neg_smul, ← inv_neg, neg_sub]
 #align interval_average_eq interval_average_eq
 

@@ -30,18 +30,12 @@ Surreal numbers inherit the relations `≤` and `<` from games (`Surreal.instLE`
 
 ## Algebraic operations
 
-We show that the surreals form a linear ordered commutative group.
+In this file, we show that the surreals form a linear ordered commutative group.
+
+In `Mathlib.SetTheory.Surreal.Multiplication`, we define multiplication and show that the
+surreals form a linear ordered commutative ring.
 
 One can also map all the ordinals into the surreals!
-
-### Multiplication of surreal numbers
-
-The proof that multiplication lifts to surreal numbers is surprisingly difficult and is currently
-missing in the library. A sample proof can be found in Theorem 3.8 in the second reference below.
-The difficulty lies in the length of the proof and the number of theorems that need to proven
-simultaneously. This will make for a fun and challenging project.
-
-The branch `surreal_mul` contains some progress on this proof.
 
 ### Todo
 
@@ -49,8 +43,9 @@ The branch `surreal_mul` contains some progress on this proof.
 
 ## References
 
-* [Conway, *On numbers and games*][conway2001]
-* [Schleicher, Stoll, *An introduction to Conway's games and numbers*][schleicher_stoll]
+* [Conway, *On numbers and games*][Conway2001]
+* [Schleicher, Stoll, *An introduction to Conway's games and numbers*][SchleicherStoll]
+
 -/
 
 
@@ -93,6 +88,11 @@ theorem moveLeft {x : PGame} (o : Numeric x) (i : x.LeftMoves) : Numeric (x.move
 theorem moveRight {x : PGame} (o : Numeric x) (j : x.RightMoves) : Numeric (x.moveRight j) := by
   cases x; exact o.2.2 j
 #align pgame.numeric.move_right SetTheory.PGame.Numeric.moveRight
+
+lemma isOption {x' x} (h : IsOption x' x) (hx : Numeric x) : Numeric x' := by
+  cases h
+  · apply hx.moveLeft
+  · apply hx.moveRight
 
 end Numeric
 

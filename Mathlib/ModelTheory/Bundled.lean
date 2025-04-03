@@ -23,7 +23,7 @@ This file bundles types together with their first-order structure.
 
 set_option linter.uppercaseLean3 false
 
-universe u v w w'
+universe u v w w' x
 
 variable {L : FirstOrder.Language.{u, v}}
 
@@ -224,7 +224,7 @@ def ElementarySubstructure.toModel {M : T.ModelType} (S : L.ElementarySubstructu
 #align first_order.language.elementary_substructure.to_Model FirstOrder.Language.ElementarySubstructure.toModel
 
 instance ElementarySubstructure.toModel.instSmall {M : T.ModelType}
-    (S : L.ElementarySubstructure M) [h : Small S] : Small (S.toModel T) :=
+    (S : L.ElementarySubstructure M) [h : Small.{w, x} S] : Small.{w, x} (S.toModel T) :=
   h
 #align first_order.language.to_Model.small FirstOrder.Language.ElementarySubstructure.toModel.instSmall
 

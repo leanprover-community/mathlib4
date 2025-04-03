@@ -152,7 +152,7 @@ theorem Submonoid.FG.map {M' : Type*} [Monoid M'] {P : Submonoid M} (h : P.FG) (
 theorem Submonoid.FG.map_injective {M' : Type*} [Monoid M'] {P : Submonoid M} (e : M →* M')
     (he : Function.Injective e) (h : (P.map e).FG) : P.FG := by
   obtain ⟨s, hs⟩ := h
-  use s.preimage e (he.injOn _)
+  use s.preimage e he.injOn
   apply Submonoid.map_injective_of_injective he
   rw [← hs, MonoidHom.map_mclosure e, Finset.coe_preimage]
   congr
@@ -201,7 +201,7 @@ instance Monoid.powers_fg (r : M) : Monoid.FG (Submonoid.powers r) :=
 
 @[to_additive]
 instance Monoid.closure_finset_fg (s : Finset M) : Monoid.FG (Submonoid.closure (s : Set M)) := by
-  refine ⟨⟨s.preimage Subtype.val (Subtype.coe_injective.injOn _), ?_⟩⟩
+  refine ⟨⟨s.preimage Subtype.val Subtype.coe_injective.injOn, ?_⟩⟩
   rw [Finset.coe_preimage, Submonoid.closure_closure_coe_preimage]
 #align monoid.closure_finset_fg Monoid.closure_finset_fg
 #align add_monoid.closure_finset_fg AddMonoid.closure_finset_fg
@@ -367,7 +367,7 @@ instance Group.fg_range {G' : Type*} [Group G'] [Group.FG G] (f : G →* G') : G
 
 @[to_additive]
 instance Group.closure_finset_fg (s : Finset G) : Group.FG (Subgroup.closure (s : Set G)) := by
-  refine ⟨⟨s.preimage Subtype.val (Subtype.coe_injective.injOn _), ?_⟩⟩
+  refine ⟨⟨s.preimage Subtype.val Subtype.coe_injective.injOn, ?_⟩⟩
   rw [Finset.coe_preimage, ← Subgroup.coeSubtype, Subgroup.closure_preimage_eq_top]
 #align group.closure_finset_fg Group.closure_finset_fg
 #align add_group.closure_finset_fg AddGroup.closure_finset_fg
@@ -442,7 +442,7 @@ theorem rank_congr {H K : Subgroup G} [Group.FG H] [Group.FG K] (h : H = K) :
 @[to_additive]
 theorem rank_closure_finset_le_card (s : Finset G) : Group.rank (closure (s : Set G)) ≤ s.card := by
   classical
-  let t : Finset (closure (s : Set G)) := s.preimage Subtype.val (Subtype.coe_injective.injOn _)
+  let t : Finset (closure (s : Set G)) := s.preimage Subtype.val Subtype.coe_injective.injOn
   have ht : closure (t : Set (closure (s : Set G))) = ⊤ := by
     rw [Finset.coe_preimage]
     exact closure_preimage_eq_top (s : Set G)

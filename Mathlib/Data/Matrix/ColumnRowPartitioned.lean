@@ -140,6 +140,24 @@ lemma transpose_fromRows (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
     transpose (fromRows A₁ A₂) = fromColumns (transpose A₁) (transpose A₂) := by
   ext i (j | j) <;> simp
 
+section Neg
+
+variable [Neg R]
+
+/-- Negating a matrix partitioned by rows is equivalent to negating each of the rows. -/
+@[simp]
+lemma fromRows_neg (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) :
+    -fromRows A₁ A₂ = fromRows (-A₁) (-A₂) := by
+  ext (i | i) j <;> simp
+
+/-- Negating a matrix partitioned by columns is equivalent to negating each of the columns. -/
+@[simp]
+lemma fromColumns_neg (A₁ : Matrix n m₁ R) (A₂ : Matrix n m₂ R) :
+    -fromColumns A₁ A₂ = fromColumns (-A₁) (-A₂) := by
+  ext i (j | j) <;> simp
+
+end Neg
+
 section Semiring
 
 variable [Semiring R]

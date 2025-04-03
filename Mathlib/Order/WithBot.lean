@@ -226,8 +226,14 @@ theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔
 theorem none_le {a : WithBot α} : @LE.le (WithBot α) _ none a := bot_le
 #align with_bot.none_le WithBot.none_le
 
-instance orderTop [OrderTop α] : OrderTop (WithBot α) where
+instance instTop [Top α] : Top (WithBot α) where
   top := (⊤ : α)
+
+@[simp, norm_cast] lemma coe_top [Top α] : ((⊤ : α) : WithBot α) = ⊤ := rfl
+@[simp, norm_cast] lemma coe_eq_top [Top α] {a : α} : (a : WithBot α) = ⊤ ↔ a = ⊤ := coe_eq_coe
+@[simp, norm_cast] lemma top_eq_coe [Top α] {a : α} : ⊤ = (a : WithBot α) ↔ ⊤ = a := coe_eq_coe
+
+instance orderTop [OrderTop α] : OrderTop (WithBot α) where
   le_top o a ha := by cases ha; exact ⟨_, rfl, le_top⟩
 
 instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) :=
@@ -312,7 +318,7 @@ theorem some_lt_some : @LT.lt (WithBot α) _ (Option.some a) (Option.some b) ↔
 theorem none_lt_some (a : α) : @LT.lt (WithBot α) _ none (some a) := bot_lt_coe _
 #align with_bot.none_lt_some WithBot.none_lt_some
 
-@[simp, deprecated not_lt_none "Don't mix Option and WithBot" (since := "2024-05-27")]
+@[simp, deprecated not_lt_bot "Don't mix Option and WithBot" (since := "2024-05-27")]
 theorem not_lt_none (a : WithBot α) : ¬@LT.lt (WithBot α) _ a none := WithBot.not_lt_bot _
 #align with_bot.not_lt_none WithBot.not_lt_none
 
@@ -359,12 +365,10 @@ instance partialOrder [PartialOrder α] : PartialOrder (WithBot α) :=
       cases' o₁ with a
       · cases' o₂ with b
         · rfl
-        have := h₂ b
         rcases h₂ b rfl with ⟨_, ⟨⟩, _⟩
       · rcases h₁ a rfl with ⟨b, ⟨⟩, h₁'⟩
         rcases h₂ b rfl with ⟨_, ⟨⟩, h₂'⟩
-        rw [le_antisymm h₁' h₂']
-         }
+        rw [le_antisymm h₁' h₂'] }
 #align with_bot.partial_order WithBot.partialOrder
 
 section Preorder
@@ -907,8 +911,14 @@ instance orderTop : OrderTop (WithTop α) where
 theorem le_none {a : WithTop α} : @LE.le (WithTop α) _ a none := le_top
 #align with_top.le_none WithTop.le_none
 
-instance orderBot [OrderBot α] : OrderBot (WithTop α) where
+instance instBot [Bot α] : Bot (WithTop α) where
   bot := (⊥ : α)
+
+@[simp, norm_cast] lemma coe_bot [Bot α] : ((⊥ : α) : WithTop α) = ⊥ := rfl
+@[simp, norm_cast] lemma coe_eq_bot [Bot α] {a : α} : (a : WithTop α) = ⊥ ↔ a = ⊥ := coe_eq_coe
+@[simp, norm_cast] lemma bot_eq_coe [Bot α] {a : α} : (⊥ : WithTop α) = a ↔ ⊥ = a := coe_eq_coe
+
+instance orderBot [OrderBot α] : OrderBot (WithTop α) where
   bot_le o a ha := by cases ha; exact ⟨_, rfl, bot_le⟩
 #align with_top.order_bot WithTop.orderBot
 

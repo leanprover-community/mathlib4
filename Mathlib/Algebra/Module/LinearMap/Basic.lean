@@ -7,7 +7,6 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Ring.CompTypeclasses
-import Mathlib.Algebra.Star.Basic
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic
 import Mathlib.GroupTheory.GroupAction.Hom
 
@@ -100,9 +99,6 @@ notation:25 M " →ₛₗ[" σ:25 "] " M₂:0 => LinearMap σ M M₂
 
 /-- `M →ₗ[R] N` is the type of `R`-linear maps from `M` to `N`. -/
 notation:25 M " →ₗ[" R:25 "] " M₂:0 => LinearMap (RingHom.id R) M M₂
-
-/-- `M →ₗ⋆[R] N` is the type of `R`-conjugate-linear maps from `M` to `N`. -/
-notation:25 M " →ₗ⋆[" R:25 "] " M₂:0 => LinearMap (starRingEnd R) M M₂
 
 /-- `SemilinearMapClass F σ M M₂` asserts `F` is a type of bundled `σ`-semilinear maps `M → M₂`.
 
@@ -223,6 +219,11 @@ instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M�
   map_add f := f.map_add'
   map_smulₛₗ := LinearMap.map_smul'
 #align linear_map.semilinear_map_class LinearMap.semilinearMapClass
+
+@[simp, norm_cast]
+lemma coe_coe {F : Type*} [FunLike F M M₃] [SemilinearMapClass F σ M M₃] {f : F} :
+    ⇑(f : M →ₛₗ[σ] M₃) = f :=
+  rfl
 
 -- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
 #noalign LinearMap.has_coe_to_fun

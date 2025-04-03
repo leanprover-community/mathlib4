@@ -105,6 +105,14 @@ lemma reflection_symm (h : f x = 2) :
     (reflection h).symm = reflection h :=
   rfl
 
+lemma invOn_reflection_of_mapsTo {Φ : Set M} (h : f x = 2) :
+    InvOn (reflection h) (reflection h) Φ Φ :=
+  ⟨fun x _ ↦ involutive_reflection h x, fun x _ ↦ involutive_reflection h x⟩
+
+lemma bijOn_reflection_of_mapsTo {Φ : Set M} (h : f x = 2) (h' : MapsTo (reflection h) Φ Φ) :
+    BijOn (reflection h) Φ Φ :=
+  (invOn_reflection_of_mapsTo h).bijOn h' h'
+
 /-- See also `Module.Dual.eq_of_preReflection_mapsTo'` for a variant of this lemma which
 applies when `Φ` does not span.
 
@@ -161,5 +169,50 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
     simp only [Φ', range_inclusion, SetLike.coe_sort_coe, mem_setOf_eq] at hy' ⊢
     exact hF hy'
   exact eq_of_preReflection_mapsTo hx' hΦ'₁ hΦ'₂ hf₁ (this hf₂) hg₁ (this hg₂)
+
+variable {y}
+variable {g : Dual R M}
+
+lemma eq_of_mapsTo_reflection_of_mem [NoZeroSMulDivisors ℤ M] {Φ : Set M} (hΦ : Φ.Finite)
+    (hfx : f x = 2) (hgy : g y = 2) (hgx : g x = 2) (hfy : f y = 2)
+    (hxfΦ : MapsTo (preReflection x f) Φ Φ)
+    (hygΦ : MapsTo (preReflection y g) Φ Φ)
+    (hyΦ : y ∈ Φ) :
+    x = y := by
+  have : _root_.Finite Φ := hΦ
+  set sxy : M ≃ₗ[R] M := (Module.reflection hgy).trans (Module.reflection hfx)
+  have hb : BijOn sxy Φ Φ :=
+    (bijOn_reflection_of_mapsTo hfx hxfΦ).comp (bijOn_reflection_of_mapsTo hgy hygΦ)
+  have hsxy : ∀ n : ℕ, (sxy^[n]) y = y + (2 * n : ℤ) • (x - y) := by
+    intro n
+    induction n with
+    | zero => simp
+    | succ n ih =>
+      simp only [iterate_succ', comp_apply, ih, zsmul_sub, map_add, LinearEquiv.trans_apply,
+        reflection_apply_self, map_neg, reflection_apply, hfy, two_smul, neg_sub, map_sub,
+        map_zsmul, hgx, smul_neg, smul_add, Nat.cast_succ, mul_add, mul_one, add_smul, sxy]
+      abel
+  set f' : ℕ → Φ := fun n ↦ ⟨(sxy^[n]) y, by
+    rw [← IsFixedPt.image_iterate hb.image_eq n]; exact mem_image_of_mem _ hyΦ⟩
+  have : ¬ Injective f' := not_injective_infinite_finite f'
+  contrapose! this
+  intros n m hnm
+  rw [Subtype.mk_eq_mk, hsxy, hsxy, add_right_inj, ← sub_eq_zero, ← sub_smul, smul_eq_zero,
+    sub_eq_zero, sub_eq_zero] at hnm
+  simpa using hnm.resolve_right this
+
+lemma injOn_dualMap_subtype_span_range_range {ι : Type*} [NoZeroSMulDivisors ℤ M]
+    {r : ι ↪ M} {c : ι → Dual R M} (hfin : (range r).Finite)
+    (h_two : ∀ i, c i (r i) = 2)
+    (h_mapsTo : ∀ i, MapsTo (preReflection (r i) (c i)) (range r) (range r)) :
+    InjOn (span R (range r)).subtype.dualMap (range c) := by
+  rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩ hij
+  congr
+  suffices ∀ k, c i (r k) = c j (r k) by
+    rw [← EmbeddingLike.apply_eq_iff_eq r]
+    exact eq_of_mapsTo_reflection_of_mem (f := c i) (g := c j) hfin (h_two i) (h_two j)
+      (by rw [← this, h_two]) (by rw [this, h_two]) (h_mapsTo i) (h_mapsTo j) (mem_range_self j)
+  intro k
+  simpa using LinearMap.congr_fun hij ⟨r k, Submodule.subset_span (mem_range_self k)⟩
 
 end Module

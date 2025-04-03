@@ -127,8 +127,8 @@ theorem support_rangeIcc_subset [DecidableEq ι] [∀ i, DecidableEq (α i)] :
   refine fun x hx => ?_
   by_contra h
   refine not_mem_support_iff.2 ?_ hx
-  rw [rangeIcc_apply, not_mem_support_iff.1 (not_mem_mono (subset_union_left _ _) h),
-    not_mem_support_iff.1 (not_mem_mono (subset_union_right _ _) h)]
+  rw [rangeIcc_apply, not_mem_support_iff.1 (not_mem_mono subset_union_left h),
+    not_mem_support_iff.1 (not_mem_mono subset_union_right h)]
   exact Icc_self _
 #align dfinsupp.support_range_Icc_subset DFinsupp.support_rangeIcc_subset
 

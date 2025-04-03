@@ -217,14 +217,17 @@ at `+∞` -/
 theorem tendsto_exp_neg_atTop_nhds_zero : Tendsto (fun x => exp (-x)) atTop (𝓝 0) :=
   (tendsto_inv_atTop_zero.comp tendsto_exp_atTop).congr fun x => (exp_neg x).symm
 #align real.tendsto_exp_neg_at_top_nhds_0 Real.tendsto_exp_neg_atTop_nhds_zero
-@[deprecated] alias tendsto_exp_neg_atTop_nhds_0 := tendsto_exp_neg_atTop_nhds_zero -- 2024-01-31
+@[deprecated (since := "2024-01-31")]
+alias tendsto_exp_neg_atTop_nhds_0 := tendsto_exp_neg_atTop_nhds_zero
 
 /-- The real exponential function tends to `1` at `0`. -/
 theorem tendsto_exp_nhds_zero_nhds_one : Tendsto exp (𝓝 0) (𝓝 1) := by
   convert continuous_exp.tendsto 0
   simp
 #align real.tendsto_exp_nhds_0_nhds_1 Real.tendsto_exp_nhds_zero_nhds_one
-@[deprecated] alias tendsto_exp_nhds_0_nhds_1 := tendsto_exp_nhds_zero_nhds_one -- 2024-01-31
+
+@[deprecated (since := "2024-01-31")]
+alias tendsto_exp_nhds_0_nhds_1 := tendsto_exp_nhds_zero_nhds_one
 
 theorem tendsto_exp_atBot : Tendsto exp atBot (𝓝 0) :=
   (tendsto_exp_neg_atTop_nhds_zero.comp tendsto_neg_atBot_atTop).congr fun x =>
@@ -379,16 +382,13 @@ theorem tendsto_exp_comp_nhds_zero {f : α → ℝ} :
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero]
 #align real.tendsto_exp_comp_nhds_zero Real.tendsto_exp_comp_nhds_zero
 
--- Porting note (#10756): new lemma
 theorem openEmbedding_exp : OpenEmbedding exp :=
   isOpen_Ioi.openEmbedding_subtype_val.comp expOrderIso.toHomeomorph.openEmbedding
 
--- Porting note (#10756): new lemma;
 -- Porting note (#11215): TODO: backport & make `@[simp]`
 theorem map_exp_nhds (x : ℝ) : map exp (𝓝 x) = 𝓝 (exp x) :=
   openEmbedding_exp.map_nhds_eq x
 
--- Porting note (#10756): new lemma;
 -- Porting note (#11215): TODO: backport & make `@[simp]`
 theorem comap_exp_nhds_exp (x : ℝ) : comap exp (𝓝 (exp x)) = 𝓝 x :=
   (openEmbedding_exp.nhds_eq_comap x).symm

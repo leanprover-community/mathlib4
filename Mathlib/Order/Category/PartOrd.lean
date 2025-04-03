@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Order.Antisymmetrization
 import Mathlib.Order.Category.Preord
+import Mathlib.CategoryTheory.Adjunction.Basic
 
 #align_import order.category.PartOrd from "leanprover-community/mathlib"@"e8ac6315bcfcbaf2d19a046719c3b553206dac75"
 

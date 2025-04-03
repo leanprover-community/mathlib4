@@ -65,14 +65,11 @@ set_option linter.uppercaseLean3 false in
 As an example, we now have everything we need to check the sheaf condition
 for a presheaf of commutative rings, merely by checking the sheaf condition
 for the underlying sheaf of types.
-```lean
-example (X : TopCat) (F : Presheaf CommRingCat X)
-    (h : Presheaf.IsSheaf (F ⋙ (forget CommRingCat))) :
-    F.IsSheaf :=
-(isSheaf_iff_isSheaf_comp (forget CommRingCat) F).mpr h
-```
+
+Note that the universes for `TopCat` and `CommRingCat` must be the same for this argument
+to go through.
 -/
-example (X : TopCat) (F : Presheaf CommRingCat X)
+example (X : TopCat.{u₁}) (F : Presheaf CommRingCat.{u₁} X)
     (h : Presheaf.IsSheaf (F ⋙ (forget CommRingCat))) :
     F.IsSheaf :=
 (isSheaf_iff_isSheaf_comp (forget CommRingCat) F).mpr h

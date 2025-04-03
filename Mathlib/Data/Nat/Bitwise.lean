@@ -3,7 +3,6 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Alex Keizer
 -/
-import Mathlib.Data.Bool.Basic
 import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
 import Mathlib.Algebra.Ring.Nat
@@ -218,7 +217,7 @@ theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
 /-- The ith bit is the ith element of `n.bits`. -/
 theorem testBit_eq_inth (n i : ℕ) : n.testBit i = n.bits.getI i := by
   induction' i with i ih generalizing n
-  · simp only [testBit, zero_eq, shiftRight_zero, and_one_is_mod, mod_two_of_bodd,
+  · simp only [testBit, zero_eq, shiftRight_zero, one_and_eq_mod_two, mod_two_of_bodd,
       bodd_eq_bits_head, List.getI_zero_eq_headI]
     cases List.headI (bits n) <;> rfl
   conv_lhs => rw [← bit_decomp n]

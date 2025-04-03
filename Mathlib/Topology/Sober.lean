@@ -199,7 +199,7 @@ theorem OpenEmbedding.quasiSober {f : α → β} (hf : OpenEmbedding f) [QuasiSo
     rw [image_preimage_eq_inter_range] at hx hS''
     have hxT : x ∈ T := by
       rw [← hT.closure_eq]
-      exact closure_mono (inter_subset_left _ _) hx.mem
+      exact closure_mono inter_subset_left hx.mem
     obtain ⟨y, rfl⟩ : x ∈ range f := by
       rw [hx.mem_open_set_iff hf.isOpen_range]
       refine Nonempty.mono ?_ hS''.1
@@ -210,7 +210,7 @@ theorem OpenEmbedding.quasiSober {f : α → β} (hf : OpenEmbedding f) [QuasiSo
     apply image_injective.mpr hf.inj
     ext z
     simp only [image_preimage_eq_inter_range, mem_inter_iff, and_congr_left_iff]
-    exact fun hy => ⟨fun h => hT.closure_eq ▸ closure_mono (inter_subset_left _ _) h,
+    exact fun hy => ⟨fun h => hT.closure_eq ▸ closure_mono inter_subset_left h,
       fun h => subset_closure ⟨h, hy⟩⟩
 #align open_embedding.quasi_sober OpenEmbedding.quasiSober
 

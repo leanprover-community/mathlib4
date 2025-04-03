@@ -50,7 +50,6 @@ set_option linter.uppercaseLean3 false in
 
 variable {A} (B)
 
-@[simp]
 theorem ACounit_C (a : A) : ACounit A B (C a) = algebraMap A B a :=
   aeval_C _ a
 set_option linter.uppercaseLean3 false in

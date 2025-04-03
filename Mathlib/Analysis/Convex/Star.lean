@@ -3,6 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Module.LinearMap.Prod
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Analysis.Convex.Segment
 import Mathlib.Tactic.GCongr

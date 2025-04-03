@@ -292,13 +292,13 @@ to check that the defining sets are bounded below or above. This is done in the 
 technical lemmas. -/
 theorem HD_below_aux1 {f : Cb X Y} (C : ℝ) {x : X} :
     BddBelow (range fun y : Y => f (inl x, inr y) + C) :=
-  let ⟨cf, hcf⟩ := (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).1
+  let ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
   ⟨cf + C, forall_mem_range.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
 #align Gromov_Hausdorff.HD_below_aux1 GromovHausdorff.HD_below_aux1
 
 private theorem HD_bound_aux1 (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun x : X => ⨅ y, f (inl x, inr y) + C) := by
-  rcases (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).2 with ⟨Cf, hCf⟩
+  obtain ⟨Cf, hCf⟩ := f.isBounded_range.bddAbove
   refine ⟨Cf + C, forall_mem_range.2 fun x => ?_⟩
   calc
     ⨅ y, f (inl x, inr y) + C ≤ f (inl x, inr default) + C := ciInf_le (HD_below_aux1 C) default
@@ -306,13 +306,13 @@ private theorem HD_bound_aux1 (f : Cb X Y) (C : ℝ) :
 
 theorem HD_below_aux2 {f : Cb X Y} (C : ℝ) {y : Y} :
     BddBelow (range fun x : X => f (inl x, inr y) + C) :=
-  let ⟨cf, hcf⟩ := (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).1
+  let ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
   ⟨cf + C, forall_mem_range.2 fun _ => add_le_add_right ((fun x => hcf (mem_range_self x)) _) _⟩
 #align Gromov_Hausdorff.HD_below_aux2 GromovHausdorff.HD_below_aux2
 
 private theorem HD_bound_aux2 (f : Cb X Y) (C : ℝ) :
     BddAbove (range fun y : Y => ⨅ x, f (inl x, inr y) + C) := by
-  rcases (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).2 with ⟨Cf, hCf⟩
+  obtain ⟨Cf, hCf⟩ := f.isBounded_range.bddAbove
   refine ⟨Cf + C, forall_mem_range.2 fun y => ?_⟩
   calc
     ⨅ x, f (inl x, inr y) + C ≤ f (inl default, inr y) + C := ciInf_le (HD_below_aux2 C) default
@@ -347,9 +347,9 @@ theorem HD_candidatesBDist_le :
 prove separately inequalities controlling the two terms (relying too heavily on copy-paste...) -/
 private theorem HD_lipschitz_aux1 (f g : Cb X Y) :
     (⨆ x, ⨅ y, f (inl x, inr y)) ≤ (⨆ x, ⨅ y, g (inl x, inr y)) + dist f g := by
-  rcases (Real.isBounded_iff_bddBelow_bddAbove.1 g.isBounded_range).1 with ⟨cg, hcg⟩
+  obtain ⟨cg, hcg⟩ := g.isBounded_range.bddBelow
   have Hcg : ∀ x, cg ≤ g x := fun x => hcg (mem_range_self x)
-  rcases (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).1 with ⟨cf, hcf⟩
+  obtain ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
   have Hcf : ∀ x, cf ≤ f x := fun x => hcf (mem_range_self x)
   -- prove the inequality but with `dist f g` inside, by using inequalities comparing
   -- iSup to iSup and iInf to iInf
@@ -375,9 +375,9 @@ private theorem HD_lipschitz_aux1 (f g : Cb X Y) :
 
 private theorem HD_lipschitz_aux2 (f g : Cb X Y) :
     (⨆ y, ⨅ x, f (inl x, inr y)) ≤ (⨆ y, ⨅ x, g (inl x, inr y)) + dist f g := by
-  rcases (Real.isBounded_iff_bddBelow_bddAbove.1 g.isBounded_range).1 with ⟨cg, hcg⟩
+  obtain ⟨cg, hcg⟩ := g.isBounded_range.bddBelow
   have Hcg : ∀ x, cg ≤ g x := fun x => hcg (mem_range_self x)
-  rcases (Real.isBounded_iff_bddBelow_bddAbove.1 f.isBounded_range).1 with ⟨cf, hcf⟩
+  obtain ⟨cf, hcf⟩ := f.isBounded_range.bddBelow
   have Hcf : ∀ x, cf ≤ f x := fun x => hcf (mem_range_self x)
   -- prove the inequality but with `dist f g` inside, by using inequalities comparing
   -- iSup to iSup and iInf to iInf

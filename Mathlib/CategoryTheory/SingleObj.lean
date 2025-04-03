@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.FinCategory.Basic
 import Mathlib.CategoryTheory.Category.Cat
 import Mathlib.Algebra.Category.MonCat.Basic
 import Mathlib.Combinatorics.Quiver.SingleObj
+import Mathlib.Algebra.Group.Units.Equiv
 
 #align_import category_theory.single_obj from "leanprover-community/mathlib"@"56adee5b5eef9e734d82272918300fca4f3e7cef"
 

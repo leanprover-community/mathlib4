@@ -15,10 +15,14 @@ import Mathlib.Tactic.IntervalCases
 # Irrational real numbers
 
 In this file we define a predicate `Irrational` on `ℝ`, prove that the `n`-th root of an integer
-number is irrational if it is not integer, and that `sqrt q` is irrational if and only if
-`Rat.sqrt q * Rat.sqrt q ≠ q ∧ 0 ≤ q`.
+number is irrational if it is not integer, and that `√(q : ℚ)` is irrational if and only if
+`¬IsSquare q ∧ 0 ≤ q`.
 
 We also provide dot-style constructors like `Irrational.add_rat`, `Irrational.rat_sub` etc.
+
+With the `Decidable` instances in this file, is possible to prove `Irrational √n` using `decide`,
+when `n` is a numeric literal or cast;
+but this only works if you `unseal Nat.sqrt.iter in` before the theorem where you use this proof.
 -/
 
 
@@ -93,10 +97,46 @@ theorem irrational_sqrt_of_multiplicity_odd (m : ℤ) (hm : 0 < m) (p : ℕ) [hp
     (sq_sqrt (Int.cast_nonneg.2 <| le_of_lt hm)) (by rw [Hpv]; exact one_ne_zero)
 #align irrational_sqrt_of_multiplicity_odd irrational_sqrt_of_multiplicity_odd
 
+@[simp] theorem not_irrational_zero : ¬Irrational 0 := not_not_intro ⟨0, Rat.cast_zero⟩
+@[simp] theorem not_irrational_one : ¬Irrational 1 := not_not_intro ⟨1, Rat.cast_one⟩
+
+theorem irrational_sqrt_ratCast_iff_of_nonneg {q : ℚ} (hq : 0 ≤ q) :
+    Irrational (√q) ↔ ¬IsSquare q := by
+  refine Iff.not (?_ : Exists _ ↔ Exists _)
+  constructor
+  · rintro ⟨y, hy⟩
+    refine ⟨y, Rat.cast_injective (α := ℝ) ?_⟩
+    rw [Rat.cast_mul, hy, mul_self_sqrt (Rat.cast_nonneg.2 hq)]
+  · rintro ⟨q', rfl⟩
+    exact ⟨|q'|, mod_cast (sqrt_mul_self_eq_abs q').symm⟩
+
+theorem irrational_sqrt_ratCast_iff {q : ℚ} :
+    Irrational (√q) ↔ ¬IsSquare q ∧ 0 ≤ q := by
+  obtain hq | hq := le_or_lt 0 q
+  · simp_rw [irrational_sqrt_ratCast_iff_of_nonneg hq, and_iff_left hq]
+  · rw [sqrt_eq_zero_of_nonpos (Rat.cast_nonpos.2 hq.le)]
+    simp_rw [not_irrational_zero, false_iff, not_and, not_le, hq, implies_true]
+
+theorem irrational_sqrt_intCast_iff_of_nonneg {z : ℤ} (hz : 0 ≤ z) :
+    Irrational (√z) ↔ ¬IsSquare z := by
+  rw [← Rat.isSquare_intCast_iff, ← irrational_sqrt_ratCast_iff_of_nonneg (mod_cast hz),
+    Rat.cast_intCast]
+
+theorem irrational_sqrt_intCast_iff {z : ℤ} :
+    Irrational (√z) ↔ ¬IsSquare z ∧ 0 ≤ z := by
+  rw [← Rat.cast_intCast, irrational_sqrt_ratCast_iff, Rat.isSquare_intCast_iff, Int.cast_nonneg]
+
+theorem irrational_sqrt_natCast_iff {n : ℕ} : Irrational (√n) ↔ ¬IsSquare n := by
+  rw [← Rat.isSquare_natCast_iff, ← irrational_sqrt_ratCast_iff_of_nonneg n.cast_nonneg,
+    Rat.cast_natCast]
+
+-- See note [no_index around OfNat.ofNat]
+theorem irrational_sqrt_ofNat_iff {n : ℕ} [n.AtLeastTwo] :
+    Irrational (√(no_index (OfNat.ofNat n))) ↔ ¬IsSquare (OfNat.ofNat n) :=
+  irrational_sqrt_natCast_iff
+
 theorem Nat.Prime.irrational_sqrt {p : ℕ} (hp : Nat.Prime p) : Irrational (√p) :=
-  @irrational_sqrt_of_multiplicity_odd p (Int.natCast_pos.2 hp.pos) p ⟨hp⟩ <| by
-    simp [multiplicity.multiplicity_self
-      (mt isUnit_iff_dvd_one.1 (mt Int.natCast_dvd_natCast.1 hp.not_dvd_one))]
+  irrational_sqrt_natCast_iff.mpr hp.not_square
 #align nat.prime.irrational_sqrt Nat.Prime.irrational_sqrt
 
 /-- **Irrationality of the Square Root of 2** -/
@@ -104,38 +144,31 @@ theorem irrational_sqrt_two : Irrational (√2) := by
   simpa using Nat.prime_two.irrational_sqrt
 #align irrational_sqrt_two irrational_sqrt_two
 
+@[deprecated irrational_sqrt_ratCast_iff (since := "2024-06-16")]
 theorem irrational_sqrt_rat_iff (q : ℚ) :
-    Irrational (√q) ↔ Rat.sqrt q * Rat.sqrt q ≠ q ∧ 0 ≤ q :=
-  if H1 : Rat.sqrt q * Rat.sqrt q = q then
-    iff_of_false
-      (not_not_intro
-        ⟨Rat.sqrt q, by
-          rw [← H1, cast_mul, sqrt_mul_self (cast_nonneg.2 <| Rat.sqrt_nonneg q), sqrt_eq,
-            abs_of_nonneg (Rat.sqrt_nonneg q)]⟩)
-      fun h => h.1 H1
-  else
-    if H2 : 0 ≤ q then
-      iff_of_true
-        (fun ⟨r, hr⟩ =>
-          H1 <|
-            (exists_mul_self _).1
-              ⟨r, by
-                rwa [eq_comm, sqrt_eq_iff_mul_self_eq (cast_nonneg.2 H2), ← cast_mul,
-                      Rat.cast_inj] at hr
-                rw [← hr]
-                exact Real.sqrt_nonneg _⟩)
-        ⟨H1, H2⟩
-    else
-      iff_of_false
-        (not_not_intro
-          ⟨0, by
-            rw [cast_zero]
-            exact (sqrt_eq_zero_of_nonpos (Rat.cast_nonpos.2 <| le_of_not_le H2)).symm⟩)
-        fun h => H2 h.2
+    Irrational (√q) ↔ Rat.sqrt q * Rat.sqrt q ≠ q ∧ 0 ≤ q := by
+  rw [irrational_sqrt_ratCast_iff, ne_eq, ← Rat.exists_mul_self]
+  simp only [eq_comm, IsSquare]
 #align irrational_sqrt_rat_iff irrational_sqrt_rat_iff
 
+/--
+This can be used as
+```lean
+unseal Nat.sqrt.iter in
+example : Irrational √24 := by decide
+```
+-/
+instance {n : ℕ} [n.AtLeastTwo] : Decidable (Irrational (√(no_index (OfNat.ofNat n)))) :=
+  decidable_of_iff' _ irrational_sqrt_ofNat_iff
+
+instance (n : ℕ) : Decidable (Irrational (√n)) :=
+  decidable_of_iff' _ irrational_sqrt_natCast_iff
+
+instance (z : ℤ) : Decidable (Irrational (√z)) :=
+  decidable_of_iff' _ irrational_sqrt_intCast_iff
+
 instance (q : ℚ) : Decidable (Irrational (√q)) :=
-  decidable_of_iff' _ (irrational_sqrt_rat_iff q)
+  decidable_of_iff' _ irrational_sqrt_ratCast_iff
 
 /-!
 ### Dot-style operations on `Irrational`
@@ -171,6 +204,10 @@ theorem ne_zero (h : Irrational x) : x ≠ 0 := mod_cast h.ne_nat 0
 theorem ne_one (h : Irrational x) : x ≠ 1 := by simpa only [Nat.cast_one] using h.ne_nat 1
 #align irrational.ne_one Irrational.ne_one
 
+-- See note [no_index around OfNat.ofNat]
+@[simp] theorem ne_ofNat (h : Irrational x) (n : ℕ) [n.AtLeastTwo] : x ≠ no_index (OfNat.ofNat n) :=
+  h.ne_nat n
+
 end Irrational
 
 @[simp]
@@ -185,6 +222,10 @@ theorem Int.not_irrational (m : ℤ) : ¬Irrational m := fun h => h.ne_int m rfl
 theorem Nat.not_irrational (m : ℕ) : ¬Irrational m := fun h => h.ne_nat m rfl
 #align nat.not_irrational Nat.not_irrational
 
+-- See note [no_index around OfNat.ofNat]
+@[simp] theorem not_irrational_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ¬Irrational (no_index (OfNat.ofNat n)) :=
+  n.not_irrational
 namespace Irrational
 
 variable (q : ℚ) {x y : ℝ}

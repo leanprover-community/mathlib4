@@ -173,8 +173,8 @@ theorem ediam_image_le_of_subset_of_le (hf : HolderOnWith C r f s) (ht : t ⊆ s
 
 theorem ediam_image_inter_le_of_le (hf : HolderOnWith C r f s) {d : ℝ≥0∞}
     (hd : EMetric.diam t ≤ d) : EMetric.diam (f '' (t ∩ s)) ≤ (C : ℝ≥0∞) * d ^ (r : ℝ) :=
-  hf.ediam_image_le_of_subset_of_le (inter_subset_right _ _) <|
-    (EMetric.diam_mono <| inter_subset_left _ _).trans hd
+  hf.ediam_image_le_of_subset_of_le inter_subset_right <|
+    (EMetric.diam_mono inter_subset_left).trans hd
 #align holder_on_with.ediam_image_inter_le_of_le HolderOnWith.ediam_image_inter_le_of_le
 
 theorem ediam_image_inter_le (hf : HolderOnWith C r f s) (t : Set X) :

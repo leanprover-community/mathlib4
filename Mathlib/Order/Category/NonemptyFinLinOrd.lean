@@ -9,6 +9,7 @@ import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.LinOrd
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 import Mathlib.Data.Set.Subsingleton
 
 #align_import order.category.NonemptyFinLinOrd from "leanprover-community/mathlib"@"fa4a805d16a9cd9c96e0f8edeb57dc5a07af1a19"

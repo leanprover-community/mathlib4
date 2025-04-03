@@ -79,7 +79,7 @@ instance Option.instUncountable [Uncountable α] : Uncountable (Option α) :=
 instance [Countable α] [Countable β] : Countable (α × β) := by
   rcases exists_injective_nat α with ⟨f, hf⟩
   rcases exists_injective_nat β with ⟨g, hg⟩
-  exact (Nat.pairEquiv.injective.comp <| hf.Prod_map hg).countable
+  exact (Nat.pairEquiv.injective.comp <| hf.prodMap hg).countable
 
 instance [Uncountable α] [Nonempty β] : Uncountable (α × β) := by
   inhabit β

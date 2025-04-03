@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.CharP.ExpChar
+import Mathlib.GroupTheory.OrderOfElement
 
 #align_import algebra.char_p.two from "leanprover-community/mathlib"@"7f1ba1a333d66eed531ecb4092493cd1b6715450"
 

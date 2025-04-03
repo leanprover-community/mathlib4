@@ -57,7 +57,7 @@ instance Set.instTietzeExtensionUnitClosedBall {𝕜 : Type v} [RCLike 𝕜] {E 
   let g : E → E := fun x ↦ ‖x‖⁻¹ • x
   classical
   suffices this : Continuous (piecewise (Metric.closedBall 0 1) id g) by
-    refine .of_retract ⟨Subtype.val, by continuity⟩ ⟨_, this.codRestrict fun x ↦ ?_⟩ ?_
+    refine .of_retract ⟨Subtype.val, by fun_prop⟩ ⟨_, this.codRestrict fun x ↦ ?_⟩ ?_
     · by_cases hx : x ∈ Metric.closedBall 0 1
       · simpa [piecewise_eq_of_mem (hi := hx)] using hx
       · simp only [g, piecewise_eq_of_not_mem (hi := hx), RCLike.real_smul_eq_coe_smul (K := 𝕜)]

@@ -72,7 +72,7 @@ theorem card_filter_univ_succ (p : Fin (n + 1) → Prop) [DecidablePred p] :
 
 theorem card_filter_univ_eq_vector_get_eq_count [DecidableEq α] (a : α) (v : Vector α n) :
     (univ.filter fun i => a = v.get i).card = v.toList.count a := by
-  induction' v using Vector.inductionOn with n x xs hxs
+  induction' v with n x xs hxs
   · simp
   · simp_rw [card_filter_univ_succ', Vector.get_cons_zero, Vector.toList_cons, Function.comp,
       Vector.get_cons_succ, hxs, List.count_cons, add_comm (ite (a = x) 1 0)]

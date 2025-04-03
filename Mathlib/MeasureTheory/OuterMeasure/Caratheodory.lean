@@ -74,7 +74,7 @@ theorem isCaratheodory_compl_iff : IsCaratheodory m sᶜ ↔ IsCaratheodory m s 
 theorem isCaratheodory_union (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodory m s₂) :
     IsCaratheodory m (s₁ ∪ s₂) := fun t => by
   rw [h₁ t, h₂ (t ∩ s₁), h₂ (t \ s₁), h₁ (t ∩ (s₁ ∪ s₂)), inter_diff_assoc _ _ s₁,
-    Set.inter_assoc _ _ s₁, inter_eq_self_of_subset_right (Set.subset_union_left _ _),
+    Set.inter_assoc _ _ s₁, inter_eq_self_of_subset_right Set.subset_union_left,
     union_diff_left, h₂ (t ∩ s₁)]
   simp [diff_eq, add_assoc]
 #align measure_theory.outer_measure.is_caratheodory_union MeasureTheory.OuterMeasure.isCaratheodory_union

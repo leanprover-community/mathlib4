@@ -64,7 +64,7 @@ lemma zariskiTopology_openCover {Y : Scheme.{u}} (U : OpenCover.{v} Y) :
       obj := fun y => U.obj (U.f y)
       map := fun y => U.map (U.f y)
       f := id
-      Covers := U.Covers
+      covers := U.covers
       IsOpen := fun _ => U.IsOpen _ }
   refine ⟨_, zariskiPretopology_openCover V, ?_⟩
   rintro _ _ ⟨y⟩

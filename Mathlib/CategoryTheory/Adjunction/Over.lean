@@ -52,8 +52,7 @@ def baseChange [HasPullbacks C] {X Y : C} (f : X ⟶ Y) : Over Y ⥤ Over X wher
     · dsimp; simp
 #align category_theory.limits.base_change CategoryTheory.Over.baseChange
 
--- deprecated on 2024-05-15
-@[deprecated] noncomputable alias Limits.baseChange := Over.baseChange
+@[deprecated (since := "2024-05-15")] noncomputable alias Limits.baseChange := Over.baseChange
 
 /-- The adjunction `Over.map ⊣ baseChange` -/
 @[simps! unit_app counit_app]

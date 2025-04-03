@@ -193,7 +193,6 @@ theorem sum_Ico_Ico_comm {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ → 
     (fun _ _ ↦ rfl) <;>
   simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
   rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
-  refine ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
   omega
 #align finset.sum_Ico_Ico_comm Finset.sum_Ico_Ico_comm
 
@@ -206,7 +205,6 @@ theorem sum_Ico_Ico_comm' {M : Type*} [AddCommMonoid M] (a b : ℕ) (f : ℕ →
     (fun _ _ ↦ rfl) <;>
   simp only [Finset.mem_Ico, Sigma.forall, Finset.mem_sigma] <;>
   rintro a b ⟨⟨h₁, h₂⟩, ⟨h₃, h₄⟩⟩ <;>
-  refine ⟨⟨_, _⟩, ⟨_, _⟩⟩ <;>
   omega
 
 @[to_additive]

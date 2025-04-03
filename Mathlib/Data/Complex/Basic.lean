@@ -5,8 +5,10 @@ Authors: Kevin Buzzard, Mario Carneiro
 -/
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
+import Mathlib.Tactic.Ring
 
 #align_import data.complex.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -336,6 +338,15 @@ theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 +
   ext <;> simp [Complex.equivRealProd, ofReal']
 #align complex.equiv_real_prod_symm_apply Complex.equivRealProd_symm_apply
 
+/-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/
+@[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
+def equivRealProdAddHom : ℂ ≃+ ℝ × ℝ :=
+  { equivRealProd with map_add' := by simp }
+#align complex.equiv_real_prod_add_hom Complex.equivRealProdAddHom
+
+theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
+    equivRealProdAddHom.symm p = p.1 + p.2 * I := equivRealProd_symm_apply p
+
 /-! ### Commutative ring instance and lemmas -/
 
 
@@ -615,8 +626,7 @@ theorem star_def : (Star.star : ℂ → ℂ) = conj :=
 
 
 /-- The norm squared function. -/
--- Porting note: `@[pp_nodot]` not found
--- @[pp_nodot]
+@[pp_nodot]
 def normSq : ℂ →*₀ ℝ where
   toFun z := z.re * z.re + z.im * z.im
   map_zero' := by simp
@@ -708,10 +718,10 @@ theorem normSq_pos {z : ℂ} : 0 < normSq z ↔ z ≠ 0 :=
   (normSq_nonneg z).lt_iff_ne.trans <| not_congr (eq_comm.trans normSq_eq_zero)
 #align complex.norm_sq_pos Complex.normSq_pos
 
--- Adaptation note: nightly-2024-04-01
--- The simpNF linter now times out on this lemma.
--- See https://github.com/leanprover-community/mathlib4/issues/12228
-@[simp, nolint simpNF]
+#adaptation_note /-- nightly-2024-04-01
+The simpNF linter now times out on this lemma.
+See https://github.com/leanprover-community/mathlib4/issues/12228 -/
+@[simp]
 theorem normSq_neg (z : ℂ) : normSq (-z) = normSq z := by simp [normSq]
 #align complex.norm_sq_neg Complex.normSq_neg
 

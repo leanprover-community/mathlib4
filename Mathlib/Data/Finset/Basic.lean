@@ -504,7 +504,7 @@ alias ⟨_, Nonempty.coe_sort⟩ := nonempty_coe_sort
 theorem Nonempty.exists_mem {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈ s :=
   h
 #align finset.nonempty.bex Finset.Nonempty.exists_mem
-@[deprecated] alias Nonempty.bex := Nonempty.exists_mem -- 2024-03-23
+@[deprecated (since := "2024-03-23")] alias Nonempty.bex := Nonempty.exists_mem
 
 theorem Nonempty.mono {s t : Finset α} (hst : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
   Set.Nonempty.mono hst hs
@@ -850,7 +850,6 @@ instance (i : α) : Unique ({i} : Finset α) where
   default := ⟨i, mem_singleton_self i⟩
   uniq j := Subtype.ext <| mem_singleton.mp j.2
 
-set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
 
@@ -1131,8 +1130,8 @@ theorem eq_of_not_mem_of_mem_insert (ha : b ∈ insert a s) (hb : b ∉ s) : b =
   (mem_insert.1 ha).resolve_right hb
 #align finset.eq_of_not_mem_of_mem_insert Finset.eq_of_not_mem_of_mem_insert
 
-/-- A version of `IsLawfulSingleton.insert_emptyc_eq` that works with `dsimp`. -/
-@[simp, nolint simpNF] lemma insert_empty : insert a (∅ : Finset α) = {a} := rfl
+/-- A version of `LawfulSingleton.insert_emptyc_eq` that works with `dsimp`. -/
+@[simp] lemma insert_empty : insert a (∅ : Finset α) = {a} := rfl
 
 @[simp]
 theorem cons_eq_insert (a s h) : @cons α a s h = insert a s :=
@@ -1148,7 +1147,7 @@ theorem mem_insert_coe {s : Finset α} {x y : α} : x ∈ insert y s ↔ x ∈ i
   simp
 #align finset.mem_insert_coe Finset.mem_insert_coe
 
-instance : IsLawfulSingleton α (Finset α) :=
+instance : LawfulSingleton α (Finset α) :=
   ⟨fun a => by ext; simp⟩
 
 @[simp]
@@ -1436,10 +1435,10 @@ theorem union_subset (hs : s ⊆ u) : t ⊆ u → s ∪ t ⊆ u :=
   sup_le <| le_iff_subset.2 hs
 #align finset.union_subset Finset.union_subset
 
-theorem subset_union_left (s₁ s₂ : Finset α) : s₁ ⊆ s₁ ∪ s₂ := fun _x => mem_union_left _
+theorem subset_union_left {s₁ s₂ : Finset α} : s₁ ⊆ s₁ ∪ s₂ := fun _x => mem_union_left _
 #align finset.subset_union_left Finset.subset_union_left
 
-theorem subset_union_right (s₁ s₂ : Finset α) : s₂ ⊆ s₁ ∪ s₂ := fun _x => mem_union_right _
+theorem subset_union_right {s₁ s₂ : Finset α} : s₂ ⊆ s₁ ∪ s₂ := fun _x => mem_union_right _
 #align finset.subset_union_right Finset.subset_union_right
 
 @[gcongr]
@@ -1478,11 +1477,11 @@ instance : Std.IdempotentOp (α := Finset α) (· ∪ ·) :=
   ⟨union_idempotent⟩
 
 theorem union_subset_left (h : s ∪ t ⊆ u) : s ⊆ u :=
-  (subset_union_left _ _).trans h
+  subset_union_left.trans h
 #align finset.union_subset_left Finset.union_subset_left
 
 theorem union_subset_right {s t u : Finset α} (h : s ∪ t ⊆ u) : t ⊆ u :=
-  Subset.trans (subset_union_right _ _) h
+  Subset.trans subset_union_right h
 #align finset.union_subset_right Finset.union_subset_right
 
 theorem union_left_comm (s t u : Finset α) : s ∪ (t ∪ u) = t ∪ (s ∪ u) :=
@@ -1509,11 +1508,11 @@ theorem empty_union (s : Finset α) : ∅ ∪ s = s :=
 
 @[aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.inl {s t : Finset α} (h : s.Nonempty) : (s ∪ t).Nonempty :=
-  h.mono <| subset_union_left s t
+  h.mono subset_union_left
 
 @[aesop unsafe apply (rule_sets := [finsetNonempty])]
 theorem Nonempty.inr {s t : Finset α} (h : t.Nonempty) : (s ∪ t).Nonempty :=
-  h.mono <| subset_union_right s t
+  h.mono subset_union_right
 
 theorem insert_eq (a : α) (s : Finset α) : insert a s = {a} ∪ s :=
   rfl
@@ -1620,10 +1619,10 @@ theorem mem_inter_of_mem {a : α} {s₁ s₂ : Finset α} : a ∈ s₁ → a ∈
   and_imp.1 mem_inter.2
 #align finset.mem_inter_of_mem Finset.mem_inter_of_mem
 
-theorem inter_subset_left (s₁ s₂ : Finset α) : s₁ ∩ s₂ ⊆ s₁ := fun _a => mem_of_mem_inter_left
+theorem inter_subset_left {s₁ s₂ : Finset α} : s₁ ∩ s₂ ⊆ s₁ := fun _a => mem_of_mem_inter_left
 #align finset.inter_subset_left Finset.inter_subset_left
 
-theorem inter_subset_right (s₁ s₂ : Finset α) : s₁ ∩ s₂ ⊆ s₂ := fun _a => mem_of_mem_inter_right
+theorem inter_subset_right {s₁ s₂ : Finset α} : s₁ ∩ s₂ ⊆ s₂ := fun _a => mem_of_mem_inter_right
 #align finset.inter_subset_right Finset.inter_subset_right
 
 theorem subset_inter {s₁ s₂ u : Finset α} : s₁ ⊆ s₂ → s₁ ⊆ u → s₁ ⊆ s₂ ∩ u := by
@@ -1788,11 +1787,10 @@ theorem inter_union_distrib_right (s t u : Finset α) : s ∩ t ∪ u = (s ∪ u
   sup_inf_right _ _ _
 #align finset.union_distrib_right Finset.inter_union_distrib_right
 
--- 2024-03-22
-@[deprecated] alias inter_distrib_left := inter_union_distrib_left
-@[deprecated] alias inter_distrib_right := union_inter_distrib_right
-@[deprecated] alias union_distrib_left := union_inter_distrib_left
-@[deprecated] alias union_distrib_right := inter_union_distrib_right
+@[deprecated (since := "2024-03-22")] alias inter_distrib_left := inter_union_distrib_left
+@[deprecated (since := "2024-03-22")] alias inter_distrib_right := union_inter_distrib_right
+@[deprecated (since := "2024-03-22")] alias union_distrib_left := union_inter_distrib_left
+@[deprecated (since := "2024-03-22")] alias union_distrib_right := inter_union_distrib_right
 
 theorem union_union_distrib_left (s t u : Finset α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=
   sup_sup_distrib_left _ _ _
@@ -1903,7 +1901,7 @@ theorem not_mem_erase (a : α) (s : Finset α) : a ∉ erase s a :=
 #align finset.not_mem_erase Finset.not_mem_erase
 
 -- While this can be solved by `simp`, this lemma is eligible for `dsimp`
-@[nolint simpNF, simp]
+@[simp]
 theorem erase_empty (a : α) : erase ∅ a = ∅ :=
   rfl
 #align finset.erase_empty Finset.erase_empty
@@ -2137,7 +2135,7 @@ theorem sdiff_union_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₂
 lemma inter_sdiff_assoc (s t u : Finset α) : (s ∩ t) \ u = s ∩ (t \ u) := by
   ext x; simp [and_assoc]
 
-@[deprecated inter_sdiff_assoc] -- 2024-05-01
+@[deprecated inter_sdiff_assoc (since := "2024-05-01")]
 theorem inter_sdiff (s t u : Finset α) : s ∩ (t \ u) = (s ∩ t) \ u := (inter_sdiff_assoc _ _ _).symm
 #align finset.inter_sdiff Finset.inter_sdiff
 
@@ -2270,9 +2268,7 @@ theorem sdiff_insert_of_not_mem {x : α} (h : x ∉ s) (t : Finset α) : s \ ins
   exact ⟨hy.1, fun hxy => h <| hxy ▸ hy.1, hy.2⟩
 #align finset.sdiff_insert_of_not_mem Finset.sdiff_insert_of_not_mem
 
-@[simp]
-theorem sdiff_subset (s t : Finset α) : s \ t ⊆ s :=
-  le_iff_subset.mp sdiff_le
+@[simp] theorem sdiff_subset {s t : Finset α} : s \ t ⊆ s := le_iff_subset.mp sdiff_le
 #align finset.sdiff_subset Finset.sdiff_subset
 
 theorem sdiff_ssubset (h : t ⊆ s) (ht : t.Nonempty) : s \ t ⊂ s :=
@@ -2441,7 +2437,7 @@ theorem disjoint_sdiff : Disjoint s (t \ s) :=
 #align finset.disjoint_sdiff Finset.disjoint_sdiff
 
 theorem disjoint_sdiff_inter (s t : Finset α) : Disjoint (s \ t) (s ∩ t) :=
-  disjoint_of_subset_right (inter_subset_right _ _) sdiff_disjoint
+  disjoint_of_subset_right inter_subset_right sdiff_disjoint
 #align finset.disjoint_sdiff_inter Finset.disjoint_sdiff_inter
 
 theorem sdiff_eq_self_iff_disjoint : s \ t = s ↔ Disjoint s t :=
@@ -3117,7 +3113,7 @@ theorem toFinset_cons (a : α) (s : Multiset α) : toFinset (a ::ₘ s) = insert
 
 @[simp]
 theorem toFinset_singleton (a : α) : toFinset ({a} : Multiset α) = {a} := by
-  rw [← cons_zero, toFinset_cons, toFinset_zero, IsLawfulSingleton.insert_emptyc_eq]
+  rw [← cons_zero, toFinset_cons, toFinset_zero, LawfulSingleton.insert_emptyc_eq]
 #align multiset.to_finset_singleton Multiset.toFinset_singleton
 
 @[simp]
@@ -3565,10 +3561,11 @@ def proveFinsetNonempty {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
   -- We want this to be fast, so use only the basic and `Finset.Nonempty`-specific rules.
   let rulesets ← Aesop.Frontend.getGlobalRuleSets #[`builtin, `finsetNonempty]
   let options : Aesop.Options' :=
-    { terminal := true, -- Fail if the new goal is not closed.
-      generateScript := false,
-      useDefaultSimpSet := false, -- Avoiding the whole simp set to speed up the tactic.
-      warnOnNonterminal := false } -- Don't show a warning on failure, simply return `none`.
+    { terminal := true -- Fail if the new goal is not closed.
+      generateScript := false
+      useDefaultSimpSet := false -- Avoiding the whole simp set to speed up the tactic.
+      warnOnNonterminal := false -- Don't show a warning on failure, simply return `none`.
+      forwardMaxDepth? := none }
   let rules ← Aesop.mkLocalRuleSet rulesets options
   let (remainingGoals, _) ←
     try Aesop.search (options := options.toOptions) mvar (.some rules)

@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.FieldTheory.Tower
+import Mathlib.RingTheory.Algebraic
+import Mathlib.FieldTheory.Minpoly.Basic
 
 #align_import field_theory.intermediate_field from "leanprover-community/mathlib"@"c596622fccd6e0321979d94931c964054dea2d26"
 
@@ -271,9 +273,8 @@ end InheritedLemmas
 theorem natCast_mem (n : ℕ) : (n : L) ∈ S := by simpa using intCast_mem S n
 #align intermediate_field.coe_nat_mem IntermediateField.natCast_mem
 
--- 2024-04-05
-@[deprecated _root_.natCast_mem] alias coe_nat_mem := natCast_mem
-@[deprecated _root_.intCast_mem] alias coe_int_mem := intCast_mem
+@[deprecated _root_.natCast_mem (since := "2024-04-05")] alias coe_nat_mem := natCast_mem
+@[deprecated _root_.intCast_mem (since := "2024-04-05")] alias coe_int_mem := intCast_mem
 
 end IntermediateField
 

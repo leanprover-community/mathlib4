@@ -116,7 +116,7 @@ theorem range_derivWithin_subset_closure_span_image
   have : Tendsto (slope f x) (𝓝[(s ∩ t) \ {x}] x) (𝓝 (derivWithin f s x)) := by
     apply Tendsto.mono_left (hasDerivWithinAt_iff_tendsto_slope.1 H'.hasDerivWithinAt)
     rw [inter_comm, inter_diff_assoc]
-    exact nhdsWithin_mono _ (inter_subset_right _ _)
+    exact nhdsWithin_mono _ inter_subset_right
   rw [← closure_closure, ← Submodule.topologicalClosure_coe]
   apply mem_closure_of_tendsto this
   filter_upwards [self_mem_nhdsWithin] with y hy
@@ -127,11 +127,11 @@ theorem range_derivWithin_subset_closure_span_image
     exact mem_image_of_mem _ hy.1.2
   · apply Submodule.closure_subset_topologicalClosure_span
     suffices A : f x ∈ closure (f '' (s ∩ t)) from
-      closure_mono (image_subset _ (inter_subset_right _ _)) A
+      closure_mono (image_subset _ inter_subset_right) A
     apply ContinuousWithinAt.mem_closure_image
-    · apply H'.continuousWithinAt.mono (inter_subset_left _ _)
+    · apply H'.continuousWithinAt.mono inter_subset_left
     rw [mem_closure_iff_nhdsWithin_neBot]
-    exact I.mono (nhdsWithin_mono _ (diff_subset _ _))
+    exact I.mono (nhdsWithin_mono _ diff_subset)
 
 /-- Given a dense set `t`, then the range of `deriv f` is contained in the closure of the submodule
 spanned by the image of `t`. -/

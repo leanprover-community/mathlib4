@@ -506,7 +506,7 @@ theorem alternatingProd_eq_finset_prod {G : Type*} [CommGroup G] :
         congr_arg _ (alternatingProd_eq_finset_prod _)
     _ = ∏ i : Fin (L.length + 2), List.get (g::h::L) i ^ (-1 : ℤ) ^ (i : ℕ) := by
         { rw [Fin.prod_univ_succ, Fin.prod_univ_succ, mul_assoc]
-          simp [Nat.succ_eq_add_one, pow_add]}
+          simp [pow_add]}
 #align list.alternating_prod_eq_finset_prod List.alternatingProd_eq_finset_prod
 #align list.alternating_sum_eq_finset_sum List.alternatingSum_eq_finset_sum
 

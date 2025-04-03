@@ -94,7 +94,7 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
   continuousOn_coordChange i j := by
     refine (contDiffOn_fderiv_coord_change I i j).continuousOn.comp
       ((i.1.continuousOn_extend I).mono ?_) ?_
-    · rw [i.1.extend_source]; exact inter_subset_left _ _
+    · rw [i.1.extend_source]; exact inter_subset_left
     simp_rw [← i.1.extend_image_source_inter, mapsTo_image]
   coordChange_comp := by
     rintro i j k x ⟨⟨hxi, hxj⟩, hxk⟩ v

@@ -3,11 +3,7 @@ Copyright (c) 2024 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Batteries.Data.RBMap.Basic
-
 import Mathlib.Tactic.FunProp.FunctionData
-
-import Batteries.Lean.HashSet
 
 /-!
 ## `funProp`

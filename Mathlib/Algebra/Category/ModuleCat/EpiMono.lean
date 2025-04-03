@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.Algebra.Category.ModuleCat.Basic
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 
 #align_import algebra.category.Module.epi_mono from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 

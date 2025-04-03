@@ -274,7 +274,7 @@ theorem prod_set :
         ((L.take n).prod * if n < L.length then a else 1) * (L.drop (n + 1)).prod
   | x :: xs, 0, a => by simp [set]
   | x :: xs, i + 1, a => by
-    simp [set, prod_set xs i a, mul_assoc, Nat.succ_eq_add_one, Nat.add_lt_add_iff_right]
+    simp [set, prod_set xs i a, mul_assoc, Nat.add_lt_add_iff_right]
   | [], _, _ => by simp [set, (Nat.zero_le _).not_lt, Nat.zero_le]
 #align list.prod_update_nth List.prod_set
 #align list.sum_update_nth List.sum_set
@@ -690,13 +690,14 @@ theorem map_list_prod {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F)
 
 namespace MonoidHom
 
--- original lemma deprecated on 2023-01-10; additivised lemma on 2024-05-02
-/-- Deprecated, use `_root_.map_list_prod` instead. -/
-@[to_additive (attr := deprecated) "Deprecated, use `_root_.map_list_sum` instead."]
+@[to_additive]
 protected theorem map_list_prod (f : M →* N) (l : List M) : f l.prod = (l.map f).prod :=
   map_list_prod f l
-#align monoid_hom.map_list_prod MonoidHom.map_list_prod
-#align add_monoid_hom.map_list_sum AddMonoidHom.map_list_sum
+#align monoid_hom.map_list_prod map_list_prod
+#align add_monoid_hom.map_list_sum map_list_sum
+
+attribute [deprecated map_list_prod (since := "2023-01-10")] MonoidHom.map_list_prod
+attribute [deprecated map_list_sum (since := "2024-05-02")] AddMonoidHom.map_list_sum
 
 end MonoidHom
 
@@ -858,7 +859,7 @@ lemma unop_map_list_prod {F : Type*} [FunLike F M Nᵐᵒᵖ] [MonoidHomClass F 
 namespace MonoidHom
 
 /-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. -/
-@[deprecated _root_.unop_map_list_prod]
+@[deprecated _root_.unop_map_list_prod (since := "2023-01-10")]
 protected theorem unop_map_list_prod (f : M →* Nᵐᵒᵖ) (l : List M) :
     (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod :=
   unop_map_list_prod f l

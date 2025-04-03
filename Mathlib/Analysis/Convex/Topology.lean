@@ -94,7 +94,7 @@ variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [TopologicalSpace 𝕜] 
 
 theorem segment_subset_closure_openSegment : [x -[𝕜] y] ⊆ closure (openSegment 𝕜 x y) := by
   rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
-  exact image_closure_subset_closure_image (by continuity)
+  exact image_closure_subset_closure_image (by fun_prop)
 #align segment_subset_closure_open_segment segment_subset_closure_openSegment
 
 end TopologicalSpace
@@ -109,7 +109,7 @@ variable [LinearOrderedRing 𝕜] [DenselyOrdered 𝕜] [PseudoMetricSpace 𝕜]
 theorem closure_openSegment (x y : E) : closure (openSegment 𝕜 x y) = [x -[𝕜] y] := by
   rw [segment_eq_image, openSegment_eq_image, ← closure_Ioo (zero_ne_one' 𝕜)]
   exact (image_closure_of_isCompact (isBounded_Ioo _ _).isCompact_closure <|
-    Continuous.continuousOn <| by continuity).symm
+    Continuous.continuousOn <| by fun_prop).symm
 #align closure_open_segment closure_openSegment
 
 end PseudoMetricSpace
@@ -349,7 +349,7 @@ theorem Convex.subset_interior_image_homothety_of_one_lt {s : Set E} (hs : Conve
 theorem JoinedIn.of_segment_subset {E : Type*} [AddCommGroup E] [Module ℝ E]
     [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
     {x y : E} {s : Set E} (h : [x -[ℝ] y] ⊆ s) : JoinedIn s x y := by
-  have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by continuity
+  have A : Continuous (fun t ↦ (1 - t) • x + t • y : ℝ → E) := by fun_prop
   apply JoinedIn.ofLine A.continuousOn (by simp) (by simp)
   convert h
   rw [segment_eq_image ℝ x y]

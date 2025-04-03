@@ -50,7 +50,7 @@ elab (name := registerHintStx) "register_hint" tac:tactic : command => liftTermE
   addHint tac
 
 initialize
-  Std.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s => s.insert ``registerHintStx
+  Batteries.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s => s.insert ``registerHintStx
 
 /--
 Construct a suggestion for a tactic.

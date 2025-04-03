@@ -154,7 +154,7 @@ theorem smul_nnreal (r : ℝ≥0) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
 lemma restrict (h : μ ⟂ₘ ν) (s : Set α) : μ.restrict s ⟂ₘ ν := by
   refine ⟨h.nullSet, h.measurableSet_nullSet, ?_, h.measure_compl_nullSet⟩
   rw [Measure.restrict_apply h.measurableSet_nullSet]
-  exact measure_mono_null (Set.inter_subset_left _ _) h.measure_nullSet
+  exact measure_mono_null Set.inter_subset_left h.measure_nullSet
 
 end MutuallySingular
 
@@ -163,6 +163,13 @@ lemma eq_zero_of_absolutelyContinuous_of_mutuallySingular {μ ν : Measure α}
     μ = 0 := by
   rw [← Measure.MutuallySingular.self_iff]
   exact h_ms.mono_ac Measure.AbsolutelyContinuous.rfl h_ac
+
+lemma _root_.MeasurableEmbedding.mutuallySingular_map {β : Type*} {_ : MeasurableSpace β}
+    {f : α → β} (hf : MeasurableEmbedding f) (hμν : μ ⟂ₘ ν) :
+    μ.map f ⟂ₘ ν.map f := by
+  refine ⟨f '' hμν.nullSet, hf.measurableSet_image' hμν.measurableSet_nullSet, ?_, ?_⟩
+  · rw [hf.map_apply, hf.injective.preimage_image, hμν.measure_nullSet]
+  · rw [hf.map_apply, Set.preimage_compl, hf.injective.preimage_image, hμν.measure_compl_nullSet]
 
 end Measure
 

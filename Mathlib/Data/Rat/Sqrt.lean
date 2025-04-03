@@ -23,7 +23,7 @@ namespace Rat
 
 /-- Square root function on rational numbers, defined by taking the (integer) square root of the
 numerator and the square root (on natural numbers) of the denominator. -/
--- @[pp_nodot] porting note: unknown attribute
+@[pp_nodot]
 def sqrt (q : ℚ) : ℚ := mkRat (Int.sqrt q.num) (Nat.sqrt q.den)
 #align rat.sqrt Rat.sqrt
 
@@ -42,5 +42,18 @@ lemma sqrt_nonneg (q : ℚ) : 0 ≤ Rat.sqrt q := mkRat_nonneg (Int.sqrt_nonneg 
 instance : DecidablePred (IsSquare : ℚ → Prop) :=
   fun m => decidable_of_iff' (sqrt m * sqrt m = m) <| by
     simp_rw [← exists_mul_self m, IsSquare, eq_comm]
+
+@[simp, norm_cast]
+theorem sqrt_intCast (z : ℤ) : Rat.sqrt (z : ℚ) = Int.sqrt z := by
+  simp only [sqrt, num_intCast, den_intCast, Nat.sqrt_one, mkRat_one]
+
+@[simp, norm_cast]
+theorem sqrt_natCast (n : ℕ) : Rat.sqrt (n : ℚ) = Nat.sqrt n := by
+  rw [← Int.cast_natCast, sqrt_intCast, Int.sqrt_natCast, Int.cast_natCast]
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem sqrt_ofNat (n : ℕ) : Rat.sqrt (no_index (OfNat.ofNat n) : ℚ) = Nat.sqrt (OfNat.ofNat n) :=
+  sqrt_natCast _
 
 end Rat

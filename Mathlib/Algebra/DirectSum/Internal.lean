@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang
+Authors: Eric Wieser, Kevin Buzzard, Jujian Zhang, Fangming Li
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
@@ -34,6 +34,16 @@ When `CompleteLattice.Independent (Set.range A)` (a weaker condition than
 `DirectSum.IsInternal A`), these provide a grading of `⨆ i, A i`, and the
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
 `DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
+
+This file also provides some extra structure on `A 0`, namely:
+* `SetLike.GradeZero.subsemiring`, which leads to
+  * `SetLike.GradeZero.instSemiring`
+  * `SetLike.GradeZero.instCommSemiring`
+* `SetLike.GradeZero.subring`, which leads to
+  * `SetLike.GradeZero.instRing`
+  * `SetLike.GradeZero.instCommRing`
+* `SetLike.GradeZero.subalgebra`, which leads to
+  * `SetLike.GradeZero.instAlgebra`
 
 ## Tags
 
@@ -237,7 +247,7 @@ theorem coe_of_mul_apply_of_not_le {i : ι} (r : A i) (r' : ⨁ i, A i) (n : ι)
     swap
     · simp_rw [ZeroMemClass.coe_zero, zero_mul, ite_self]
       exact DFinsupp.sum_zero
-    · rw [DFinsupp.sum, Finset.sum_ite_of_false _ _ fun x _ H => _, Finset.sum_const_zero]
+    · rw [DFinsupp.sum, Finset.sum_ite_of_false, Finset.sum_const_zero]
       exact fun x _ H => h ((self_le_add_right i x).trans_eq H)
 #align direct_sum.coe_of_mul_apply_of_not_le DirectSum.coe_of_mul_apply_of_not_le
 
@@ -249,7 +259,7 @@ theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι)
     swap
     · simp_rw [ZeroMemClass.coe_zero, mul_zero, ite_self]
       exact DFinsupp.sum_zero
-    · rw [DFinsupp.sum, Finset.sum_ite_of_false _ _ fun x _ H => _, Finset.sum_const_zero]
+    · rw [DFinsupp.sum, Finset.sum_ite_of_false, Finset.sum_const_zero]
       exact fun x _ H => h ((self_le_add_left i x).trans_eq H)
 #align direct_sum.coe_mul_of_apply_of_not_le DirectSum.coe_mul_of_apply_of_not_le
 
@@ -284,7 +294,6 @@ end CanonicallyOrderedAddCommMonoid
 end DirectSum
 
 /-! #### From `Submodule`s -/
-
 
 namespace Submodule
 
@@ -341,6 +350,97 @@ theorem DirectSum.coeAlgHom_of [AddMonoid ι] [CommSemiring S] [Semiring R] [Alg
 #align direct_sum.coe_alg_hom_of DirectSum.coeAlgHom_of
 
 end DirectSum
+
+/-! ### Facts about grade zero -/
+
+namespace SetLike.GradeZero
+
+section Semiring
+variable [Semiring R] [AddMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
+variable (A : ι → σ) [SetLike.GradedMonoid A]
+
+/-- The subsemiring `A 0` of `R`. -/
+def subsemiring : Subsemiring R where
+  carrier := A 0
+  __ := submonoid A
+  add_mem' := add_mem
+  zero_mem' := zero_mem (A 0)
+
+-- TODO: it might be expensive to unify `A` in this instance in practice
+/-- The semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+instance instSemiring : Semiring (A 0) := (subsemiring A).toSemiring
+
+/- The linter message "error: SetLike.GradeZero.coe_natCast.{u_4, u_2, u_1} Left-hand side
+  does not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
+@[nolint simpNF, simp, norm_cast] theorem coe_natCast (n : ℕ) : (n : A 0) = (n : R) := rfl
+
+/- The linter message "error: SetLike.GradeZero.coe_ofNat.{u_4, u_2, u_1} Left-hand side does
+  not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
+@[nolint simpNF, simp, norm_cast] theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+    (no_index (OfNat.ofNat n) : A 0) = (OfNat.ofNat n : R) := rfl
+
+end Semiring
+
+section CommSemiring
+variable [CommSemiring R] [AddCommMonoid ι] [SetLike σ R] [AddSubmonoidClass σ R]
+variable (A : ι → σ) [SetLike.GradedMonoid A]
+
+-- TODO: it might be expensive to unify `A` in this instance in practice
+/--The commutative semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`.-/
+instance instCommSemiring : CommSemiring (A 0) := (subsemiring A).toCommSemiring
+
+end CommSemiring
+
+section Ring
+variable [Ring R] [AddMonoid ι] [SetLike σ R] [AddSubgroupClass σ R]
+variable (A : ι → σ) [SetLike.GradedMonoid A]
+
+/-- The subring `A 0` of `R`. -/
+def subring : Subring R where
+  carrier := A 0
+  __ := subsemiring A
+  neg_mem' := neg_mem
+
+-- TODO: it might be expensive to unify `A` in this instances in practice
+/-- The ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+instance instRing : Ring (A 0) := (subring A).toRing
+
+theorem coe_intCast (z : ℤ) : (z : A 0) = (z : R) := rfl
+
+end Ring
+
+section CommRing
+variable [CommRing R] [AddCommMonoid ι] [SetLike σ R] [AddSubgroupClass σ R]
+variable (A : ι → σ) [SetLike.GradedMonoid A]
+
+-- TODO: it might be expensive to unify `A` in this instances in practice
+/-- The commutative ring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+instance instCommRing : CommRing (A 0) := (subring A).toCommRing
+
+end CommRing
+
+section Algebra
+variable [CommSemiring S] [Semiring R] [Algebra S R] [AddMonoid ι]
+variable (A : ι → Submodule S R) [SetLike.GradedMonoid A]
+
+/-- The subalgebra `A 0` of `R`. -/
+def subalgebra : Subalgebra S R where
+  carrier := A 0
+  __ := subsemiring A
+  algebraMap_mem' := algebraMap_mem_graded A
+
+-- TODO: it might be expensive to unify `A` in this instances in practice
+/-- The `S`-algebra `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
+instance instAlgebra : Algebra S (A 0) := inferInstanceAs <| Algebra S (subalgebra A)
+
+/- The linter message "error: SetLike.GradeZero.coe_algebraMap.{u_4, u_3, u_1} Left-hand side
+  does not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
+@[nolint simpNF, simp, norm_cast] theorem coe_algebraMap (s : S) :
+    ↑(algebraMap _ (A 0) s) = algebraMap _ R s := rfl
+
+end Algebra
+
+end SetLike.GradeZero
 
 section HomogeneousElement
 

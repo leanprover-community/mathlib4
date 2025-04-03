@@ -32,10 +32,7 @@ def elabCheckTactic (tk : Syntax) (ignoreStuckTC : Bool) (term : Term) : TacticM
       try
         for c in (← realizeGlobalConstWithInfos term) do
           addCompletionInfo <| .id term c (danglingDot := false) {} none
-          logInfoAt tk <| .ofPPFormat { pp := fun
-            | some ctx => ctx.runMetaM <| PrettyPrinter.ppSignature c
-            | none     => return f!"{c}"  -- should never happen
-          }
+          logInfoAt tk <| MessageData.signature c
           return
       catch _ => pure ()  -- identifier might not be a constant but constant + projection
     let e ← Term.elabTerm term none

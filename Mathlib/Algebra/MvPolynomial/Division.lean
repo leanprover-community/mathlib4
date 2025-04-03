@@ -55,7 +55,7 @@ theorem coeff_divMonomial (s : σ →₀ ℕ) (x : MvPolynomial σ R) (s' : σ �
 
 @[simp]
 theorem support_divMonomial (s : σ →₀ ℕ) (x : MvPolynomial σ R) :
-    (x /ᵐᵒⁿᵒᵐⁱᵃˡ s).support = x.support.preimage _ ((add_right_injective s).injOn _) :=
+    (x /ᵐᵒⁿᵒᵐⁱᵃˡ s).support = x.support.preimage _ (add_right_injective s).injOn :=
   rfl
 #align mv_polynomial.support_div_monomial MvPolynomial.support_divMonomial
 

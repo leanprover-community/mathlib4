@@ -16,3 +16,6 @@
 # use C locale so that sorting is the same on macOS and Linux
 # see https://unix.stackexchange.com/questions/362728/why-does-gnu-sort-sort-differently-on-my-osx-machine-and-linux-machine
 find Mathlib -name '*.lean' | xargs ./scripts/lint-style.py | LC_ALL=C sort > scripts/style-exceptions.txt
+
+# Append the warnings of the Lean linter, on the file length.
+lake exe lint_style --update >> scripts/style-exceptions.txt

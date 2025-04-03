@@ -26,7 +26,6 @@ In this file, we give the following definitions/theorems:
     preserves all products.
 -/
 
--- Porting note: Plenty declarations in this file already used uppercase in mathlib 3 names
 set_option linter.uppercaseLean3 false
 
 noncomputable section

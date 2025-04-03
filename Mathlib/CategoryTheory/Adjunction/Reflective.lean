@@ -89,12 +89,6 @@ theorem Functor.essImage.unit_isIso [Reflective i] {A : C} (h : A ∈ i.essImage
   rwa [isIso_unit_app_iff_mem_essImage]
 #align category_theory.functor.ess_image.unit_is_iso CategoryTheory.Functor.essImage.unit_isIso
 
-/-- If `η_A` is an isomorphism, then `A` is in the essential image of `i`. -/
-theorem mem_essImage_of_unit_isIso {L : C ⥤ D} (adj : L ⊣ i) (A : C)
-    [IsIso (adj.unit.app A)] : A ∈ i.essImage :=
-  ⟨L.obj A, ⟨(asIso (adj.unit.app A)).symm⟩⟩
-#align category_theory.mem_ess_image_of_unit_is_iso CategoryTheory.mem_essImage_of_unit_isIso
-
 /-- If `η_A` is a split monomorphism, then `A` is in the reflective subcategory. -/
 theorem mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
     [IsSplitMono ((reflectorAdjunction i).unit.app A)] : A ∈ i.essImage := by
@@ -106,7 +100,7 @@ theorem mem_essImage_of_unit_isSplitMono [Reflective i] {A : C}
     rw [show retraction _ ≫ η.app A = _ from η.naturality (retraction (η.app A))]
     apply epi_comp (η.app (i.obj ((reflector i).obj A)))
   haveI := isIso_of_epi_of_isSplitMono (η.app A)
-  exact mem_essImage_of_unit_isIso (reflectorAdjunction i) A
+  exact (reflectorAdjunction i).mem_essImage_of_unit_isIso A
 #align category_theory.mem_ess_image_of_unit_is_split_mono CategoryTheory.mem_essImage_of_unit_isSplitMono
 
 /-- Composition of reflective functors. -/
@@ -227,5 +221,64 @@ def equivEssImageOfReflective [Reflective i] : D ≌ i.EssImageSubcategory where
     erw [Functor.map_comp, equivEssImageOfReflective_map_counitIso_app_hom]
     aesop_cat
 #align category_theory.equiv_ess_image_of_reflective CategoryTheory.equivEssImageOfReflective
+
+/--
+A functor is *coreflective*, or *a coreflective inclusion*, if it is fully faithful and left
+adjoint.
+-/
+class Coreflective (L : C ⥤ D) extends L.Full, L.Faithful where
+  /-- a choice of a right adjoint to `L` -/
+  R : D ⥤ C
+  /-- `L` is a left adjoint -/
+  adj : L ⊣ R
+
+variable (j : C ⥤ D)
+
+/-- The coreflector `D ⥤ C` when `L : C ⥤ D` is coreflective. -/
+def coreflector [Coreflective j] : D ⥤ C := Coreflective.R (L := j)
+
+/-- The adjunction `j ⊣ coreflector j` when `j` is coreflective. -/
+def coreflectorAdjunction [Coreflective j] : j ⊣ coreflector j := Coreflective.adj
+
+instance [Coreflective j] : j.IsLeftAdjoint := ⟨_, ⟨coreflectorAdjunction j⟩⟩
+
+instance [Coreflective j] : (coreflector j).IsRightAdjoint := ⟨_, ⟨coreflectorAdjunction j⟩⟩
+
+/-- A coreflective functor is fully faithful. -/
+def Functor.fullyFaithfulOfCoreflective [Coreflective j] : j.FullyFaithful :=
+  (coreflectorAdjunction j).fullyFaithfulLOfIsIsoUnit
+
+lemma counit_obj_eq_map_counit [Coreflective j] (X : D) :
+    (coreflectorAdjunction j).counit.app (j.obj ((coreflector j).obj X)) =
+      j.map ((coreflector j).map ((coreflectorAdjunction j).counit.app X)) := by
+  rw [← cancel_epi (j.map ((coreflectorAdjunction j).unit.app ((coreflector j).obj X))),
+    ← j.map_comp]
+  simp
+
+example [Coreflective j] {B : C} : IsIso ((coreflectorAdjunction j).counit.app (j.obj B)) :=
+  inferInstance
+
+variable {j}
+
+lemma Functor.essImage.counit_isIso [Coreflective j] {A : D} (h : A ∈ j.essImage) :
+    IsIso ((coreflectorAdjunction j).counit.app A) := by
+  rwa [isIso_counit_app_iff_mem_essImage]
+
+lemma mem_essImage_of_counit_isSplitEpi [Coreflective j] {A : D}
+    [IsSplitEpi ((coreflectorAdjunction j).counit.app A)] : A ∈ j.essImage := by
+  let ε : coreflector j ⋙ j ⟶ 𝟭 D  := (coreflectorAdjunction j).counit
+  haveI : IsIso (ε.app (j.obj ((coreflector j).obj A))) :=
+    Functor.essImage.counit_isIso ((j.obj_mem_essImage _))
+  have : Mono (ε.app A) := by
+    refine @mono_of_mono _ _ _ _ _ (ε.app A) (section_ (ε.app A)) ?_
+    rw [show ε.app A ≫ section_ _ = _ from (ε.naturality (section_ (ε.app A))).symm]
+    apply mono_comp _ (ε.app (j.obj ((coreflector j).obj A)))
+  haveI := isIso_of_mono_of_isSplitEpi (ε.app A)
+  exact (coreflectorAdjunction j).mem_essImage_of_counit_isIso A
+
+instance Coreflective.comp (F : C ⥤ D) (G : D ⥤ E) [Coreflective F] [Coreflective G] :
+    Coreflective (F ⋙ G) where
+  R := coreflector G ⋙ coreflector F
+  adj := (coreflectorAdjunction F).comp (coreflectorAdjunction G)
 
 end CategoryTheory

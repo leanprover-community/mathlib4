@@ -710,7 +710,13 @@ lemma iIndepFun.indepFun_prod_mk_prod_mk (h_indep : iIndepFun m f μ) (hf : ∀ 
   classical
   let g (i j : ι) (v : Π x : ({i, j} : Finset ι), β x) : β i × β j :=
     ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
-  have hg (i j : ι) : Measurable (g i j) := by measurability
+  have hg (i j : ι) : Measurable (g i j) := by
+    -- NB: `measurability proves this, but is slow
+    -- TODO(#13864): reinstate faster automation, e.g. by making `fun_prop` work here
+    simp only [ne_eq, g]
+    apply Measurable.prod
+    · exact measurable_pi_apply _
+    · exact measurable_pi_apply _
   exact (h_indep.indepFun_finset {i, j} {k, l} (by aesop) hf).comp (hg i j) (hg k l)
 
 end iIndepFun

@@ -16,6 +16,12 @@ import Mathlib.Topology.Algebra.Star
 
 set_option linter.uppercaseLean3 false
 
+@[inherit_doc]
+notation:25 M " →L⋆[" R "] " M₂ => ContinuousLinearMap (starRingEnd R) M M₂
+
+@[inherit_doc]
+notation:50 M " ≃L⋆[" R "] " M₂ => ContinuousLinearEquiv (starRingEnd R) M M₂
+
 /-- If `A` is a topological module over a commutative `R` with compatible actions,
 then `star` is a continuous semilinear equivalence. -/
 @[simps!]

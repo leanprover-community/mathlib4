@@ -88,7 +88,7 @@ instance Path.funLike : FunLike (Path x y) I X where
 -- Porting note (#10754): added this instance so that we can use `FunLike.coe` for `CoeFun`
 -- this also fixed very strange `simp` timeout issues
 instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
-  map_continuous := fun γ => show Continuous γ.toContinuousMap by continuity
+  map_continuous γ := show Continuous γ.toContinuousMap by fun_prop
 
 -- Porting note: not necessary in light of the instance above
 /-
@@ -246,7 +246,7 @@ theorem _root_.Continuous.path_extend {γ : Y → Path x y} {f : Y → ℝ} (hγ
 #align continuous.path_extend Continuous.path_extend
 
 /-- A useful special case of `Continuous.path_extend`. -/
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_extend : Continuous γ.extend :=
   γ.continuous.Icc_extend'
 #align path.continuous_extend Path.continuous_extend
@@ -316,7 +316,6 @@ theorem ofLine_mem {f : ℝ → X} (hf : ContinuousOn f I) (h₀ : f 0 = x) (h�
 
 attribute [local simp] Iic_def
 
-set_option tactic.skipAssignedInstances false in
 /-- Concatenation of two paths from `x` to `y` and from `y` to `z`, putting the first
 path on `[0, 1/2]` and the second one on `[1/2, 1]`. -/
 @[trans]
@@ -326,7 +325,7 @@ def trans (γ : Path x y) (γ' : Path y z) : Path x z where
     refine
       (Continuous.if_le ?_ ?_ continuous_id continuous_const (by norm_num)).comp
         continuous_subtype_val <;>
-    continuity
+    fun_prop
   source' := by norm_num
   target' := by norm_num
 #align path.trans Path.trans
@@ -472,7 +471,7 @@ theorem cast_coe (γ : Path x y) {x' y'} (hx : x' = x) (hy : y' = y) : (γ.cast 
   rfl
 #align path.cast_coe Path.cast_coe
 
-@[continuity]
+@[continuity, fun_prop]
 theorem symm_continuous_family {ι : Type*} [TopologicalSpace ι]
     {a b : ι → X} (γ : ∀ t : ι, Path (a t) (b t)) (h : Continuous ↿γ) :
     Continuous ↿fun t => (γ t).symm :=
@@ -666,7 +665,7 @@ theorem truncate_continuous_family {a b : X} (γ : Path a b) :
 @[continuity]
 theorem truncate_const_continuous_family {a b : X} (γ : Path a b)
     (t : ℝ) : Continuous ↿(γ.truncate t) := by
-  have key : Continuous (fun x => (t, x) : ℝ × I → ℝ × ℝ × I) := by continuity
+  have key : Continuous (fun x => (t, x) : ℝ × I → ℝ × ℝ × I) := by fun_prop
   exact γ.truncate_continuous_family.comp key
 #align path.truncate_const_continuous_family Path.truncate_const_continuous_family
 
@@ -709,7 +708,7 @@ path defined by `γ ∘ f`.
 def reparam (γ : Path x y) (f : I → I) (hfcont : Continuous f) (hf₀ : f 0 = 0) (hf₁ : f 1 = 1) :
     Path x y where
   toFun := γ ∘ f
-  continuous_toFun := by continuity
+  continuous_toFun := by fun_prop
   source' := by simp [hf₀]
   target' := by simp [hf₁]
 #align path.reparam Path.reparam
@@ -834,7 +833,7 @@ theorem JoinedIn.somePath_mem (h : JoinedIn F x y) (t : I) : h.somePath t ∈ F 
 theorem JoinedIn.joined_subtype (h : JoinedIn F x y) :
     Joined (⟨x, h.source_mem⟩ : F) (⟨y, h.target_mem⟩ : F) :=
   ⟨{  toFun := fun t => ⟨h.somePath t, h.somePath_mem t⟩
-      continuous_toFun := by continuity
+      continuous_toFun := by fun_prop
       source' := by simp
       target' := by simp }⟩
 #align joined_in.joined_subtype JoinedIn.joined_subtype
@@ -1037,8 +1036,8 @@ theorem IsPathConnected.union {U V : Set X} (hU : IsPathConnected U) (hV : IsPat
   rcases hUV with ⟨x, xU, xV⟩
   use x, Or.inl xU
   rintro y (yU | yV)
-  · exact (hU.joinedIn x xU y yU).mono (subset_union_left U V)
-  · exact (hV.joinedIn x xV y yV).mono (subset_union_right U V)
+  · exact (hU.joinedIn x xU y yU).mono subset_union_left
+  · exact (hV.joinedIn x xV y yV).mono subset_union_right
 #align is_path_connected.union IsPathConnected.union
 
 /-- If a set `W` is path-connected, then it is also path-connected when seen as a set in a smaller
@@ -1202,7 +1201,7 @@ instance Quotient.instPathConnectedSpace {s : Setoid X} [PathConnectedSpace X] :
 /-- This is a special case of `NormedSpace.instPathConnectedSpace` (and
 `TopologicalAddGroup.pathConnectedSpace`). It exists only to simplify dependencies. -/
 instance Real.instPathConnectedSpace : PathConnectedSpace ℝ where
-  joined x y := ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by continuity⟩, by simp, by simp⟩⟩
+  joined x y := ⟨⟨⟨fun (t : I) ↦ (1 - t) * x + t * y, by fun_prop⟩, by simp, by simp⟩⟩
   nonempty := inferInstance
 
 theorem pathConnectedSpace_iff_eq : PathConnectedSpace X ↔ ∃ x : X, pathComponent x = univ := by

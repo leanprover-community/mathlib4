@@ -35,10 +35,7 @@ theorem MonoidAlgebra.mem_ideal_span_of_image [Monoid G] [Semiring k] {s : Set G
         obtain ⟨xm, -, hm⟩ := hm
         replace hm := Finset.mem_biUnion.mp (Finsupp.support_sum hm)
         obtain ⟨ym, hym, hm⟩ := hm
-        replace hm := Finset.mem_singleton.mp (Finsupp.support_single_subset hm)
-        obtain rfl := hm
-        -- Porting note: changed `Exists.imp` to `And.imp_right` due to change in `∃ x ∈ s`
-        -- elaboration
+        obtain rfl := Finset.mem_singleton.mp (Finsupp.support_single_subset hm)
         refine (hy _ hym).imp fun sm p => And.imp_right ?_ p
         rintro ⟨d, rfl⟩
         exact ⟨xm * d, (mul_assoc _ _ _).symm⟩ }

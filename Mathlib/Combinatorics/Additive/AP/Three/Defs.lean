@@ -356,8 +356,8 @@ theorem mulRothNumber_union_le (s t : Finset α) :
     _ = (u ∩ s ∪ u ∩ t).card := by rw [← inter_union_distrib_left, inter_eq_left.2 hus]
     _ ≤ (u ∩ s).card + (u ∩ t).card := card_union_le _ _
     _ ≤ mulRothNumber s + mulRothNumber t := _root_.add_le_add
-      ((hu.mono <| inter_subset_left _ _).le_mulRothNumber <| inter_subset_right _ _)
-      ((hu.mono <| inter_subset_left _ _).le_mulRothNumber <| inter_subset_right _ _)
+      ((hu.mono inter_subset_left).le_mulRothNumber inter_subset_right)
+      ((hu.mono inter_subset_left).le_mulRothNumber inter_subset_right)
 #align mul_roth_number_union_le mulRothNumber_union_le
 #align add_roth_number_union_le addRothNumber_union_le
 
@@ -380,7 +380,7 @@ theorem mulRothNumber_lt_of_forall_not_threeGPFree
   obtain ⟨t, hts, hcard, ht⟩ := mulRothNumber_spec s
   rw [← hcard, ← not_le]
   intro hn
-  obtain ⟨u, hut, rfl⟩ := exists_smaller_set t n hn
+  obtain ⟨u, hut, rfl⟩ := exists_subset_card_eq hn
   exact h _ (mem_powersetCard.2 ⟨hut.trans hts, rfl⟩) (ht.mono hut)
 #align mul_roth_number_lt_of_forall_not_mul_salem_spencer mulRothNumber_lt_of_forall_not_threeGPFree
 #align add_roth_number_lt_of_forall_not_add_salem_spencer addRothNumber_lt_of_forall_not_threeAPFree

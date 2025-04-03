@@ -40,7 +40,7 @@ section BlockMatrices
 
 /-- We can form a single large matrix by flattening smaller 'block' matrices of compatible
 dimensions. -/
--- @[pp_nodot] -- Porting note: removed
+@[pp_nodot]
 def fromBlocks (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α) :
     Matrix (Sum n o) (Sum l m) α :=
   of <| Sum.elim (fun i => Sum.elim (A i) (B i)) fun i => Sum.elim (C i) (D i)
@@ -694,11 +694,7 @@ theorem blockDiagonal'_transpose (M : ∀ i, Matrix (m' i) (n' i) α) :
     (blockDiagonal' M)ᵀ = blockDiagonal' fun k => (M k)ᵀ := by
   ext ⟨ii, ix⟩ ⟨ji, jx⟩
   simp only [transpose_apply, blockDiagonal'_apply]
-  split_ifs with h -- Porting note: was split_ifs <;> cc
-  · subst h; rfl
-  · simp_all only [not_true]
-  · simp_all only [not_true]
-  · rfl
+  split_ifs <;> cc
 #align matrix.block_diagonal'_transpose Matrix.blockDiagonal'_transpose
 
 @[simp]

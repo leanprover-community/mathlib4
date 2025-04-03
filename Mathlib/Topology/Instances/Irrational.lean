@@ -40,7 +40,7 @@ protected theorem IsGδ.setOf_irrational : IsGδ { x | Irrational x } :=
 set_option linter.uppercaseLean3 false in
 #align is_Gδ_irrational IsGδ.setOf_irrational
 
-@[deprecated] alias isGδ_irrational := IsGδ.setOf_irrational
+@[deprecated (since := "2024-02-15")] alias isGδ_irrational := IsGδ.setOf_irrational
 
 theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
   refine Real.isTopologicalBasis_Ioo_rat.dense_iff.2 ?_

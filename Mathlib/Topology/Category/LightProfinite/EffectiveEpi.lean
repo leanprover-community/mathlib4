@@ -51,42 +51,6 @@ def EffectiveEpi.struct {B X : LightProfinite.{u}} (π : X ⟶ B) (hπ : Functio
     simp only [QuotientMap.liftEquiv_symm_apply_coe, ContinuousMap.comp_apply, ← hm]
     rfl
 
-theorem epi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
-    Epi f ↔ Function.Surjective f := by
-  constructor
-  · dsimp [Function.Surjective]
-    contrapose!
-    rintro ⟨y, hy⟩ hf
-    let C := Set.range f
-    have hC : IsClosed C := (isCompact_range f.continuous).isClosed
-    have hyU : y ∈ Cᶜ := by
-      refine Set.mem_compl ?_
-      rintro ⟨y', hy'⟩
-      exact hy y' hy'
-    have hUy : Cᶜ ∈ nhds y := hC.compl_mem_nhds hyU
-    obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_isClopen.mem_nhds_iff.mp hUy
-    classical
-      let Z := (FintypeCat.of (ULift.{u} <| Fin 2)).toLightProfinite
-      let g : Y ⟶ Z := ⟨(LocallyConstant.ofIsClopen hV).map ULift.up, LocallyConstant.continuous _⟩
-      let h : Y ⟶ Z := ⟨fun _ => ⟨1⟩, continuous_const⟩
-      have H : h = g := by
-        rw [← cancel_epi f]
-        ext x
-        apply ULift.ext
-        dsimp [g, LocallyConstant.ofIsClopen]
-        erw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
-          Function.comp_apply, if_neg]
-        refine mt (fun α => hVU α) ?_
-        simp only [C, Set.mem_compl_iff, Set.mem_range, not_exists,
-          not_forall, not_not]
-        exact ⟨x, rfl⟩
-      apply_fun fun e => (e y).down at H
-      dsimp [g, LocallyConstant.ofIsClopen] at H
-      erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
-      exact top_ne_bot H
-  · rw [← CategoryTheory.epi_iff_surjective]
-    apply (forget LightProfinite).epi_of_epi_map
-
 theorem effectiveEpi_iff_surjective {X Y : LightProfinite.{u}} (f : X ⟶ Y) :
     EffectiveEpi f ↔ Function.Surjective f := by
   refine ⟨fun h ↦ ?_, fun h ↦ ⟨⟨EffectiveEpi.struct f h⟩⟩⟩
@@ -102,10 +66,7 @@ instance : Preregular LightProfinite where
     obtain ⟨z,hz⟩ := hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
-instance : FinitaryExtensive LightProfinite :=
-  finitaryExtensive_of_preserves_and_reflects lightToProfinite
-
 -- Was an `example`, but that made the linter complain about unused imports
-instance : Precoherent LightProfinite := inferInstance
+instance : Precoherent LightProfinite.{u} := inferInstance
 
 end LightProfinite

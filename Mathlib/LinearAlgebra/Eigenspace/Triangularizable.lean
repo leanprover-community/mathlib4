@@ -185,7 +185,7 @@ theorem inf_iSup_genEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p, f x ∈
         ↑(p ⊓ ⨆ k, f.genEigenspace μ k) ↑(p ⊓ ⨆ k, f.genEigenspace μ k) :=
       hg₁.inter_inter hg₂
     rw [← LinearMap.injOn_iff_surjOn this]
-    exact hg₃.mono (inter_subset_right _ _)
+    exact hg₃.mono inter_subset_right
   specialize hm₂ μ
   obtain ⟨y, ⟨hy₀ : y ∈ p, hy₁ : y ∈ ⨆ k, f.genEigenspace μ k⟩, hy₂ : g y = g (m μ)⟩ :=
     hg₄ ⟨(hg₀ ▸ hg₁ hm₀), hg₂ hm₂⟩

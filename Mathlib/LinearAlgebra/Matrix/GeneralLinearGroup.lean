@@ -146,6 +146,25 @@ theorem toLinear_apply (v : n → R) : (toLinear A).toLinearEquiv v = Matrix.mul
 
 end CoeLemmas
 
+variable {S T : Type*} [CommRing S] [CommRing T]
+
+/-- A ring homomorphism ``f : R →+* S`` induces a homomorphism ``GLₙ(f) : GLₙ(R) →* GLₙ(S)``. -/
+def map (f : R →+* S) : GL n R →* GL n S := Units.map <| (RingHom.mapMatrix f).toMonoidHom
+
+@[simp]
+theorem map_id : map (RingHom.id R) = MonoidHom.id (GL n R) :=
+  rfl
+
+@[simp]
+theorem map_comp (f : T →+* R) (g : R →+* S) :
+    map (g.comp f) = (map g).comp (map (n := n) f) :=
+  rfl
+
+@[simp]
+theorem map_comp_apply (f : T →+* R) (g : R →+* S) (x : GL n T) :
+    (map g).comp (map f) x = map g (map f x) :=
+  rfl
+
 end GeneralLinearGroup
 
 namespace SpecialLinearGroup

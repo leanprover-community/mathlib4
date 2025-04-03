@@ -295,8 +295,8 @@ instance : SemilatticeSup (Coverage C) where
       · obtain ⟨T, hT⟩ := y.pullback f S hy
         exact ⟨T, Or.inr hT.1, hT.2⟩ }
   toPartialOrder := inferInstance
-  le_sup_left _ _ _ := Set.subset_union_left _ _
-  le_sup_right _ _ _ := Set.subset_union_right _ _
+  le_sup_left _ _ _ := Set.subset_union_left
+  le_sup_right _ _ _ := Set.subset_union_right
   sup_le _ _ _ hx hy X := Set.union_subset_iff.mpr ⟨hx X, hy X⟩
 
 @[simp]

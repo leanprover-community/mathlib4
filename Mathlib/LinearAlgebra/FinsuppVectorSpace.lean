@@ -72,8 +72,7 @@ protected def basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) : Basis (�
             intro b hg
             simp [hg] at b }
       invFun := fun g =>
-        { toFun := fun i =>
-            (b i).repr.symm (g.comapDomain _ (Set.injOn_of_injective sigma_mk_injective _))
+        { toFun := fun i => (b i).repr.symm (g.comapDomain _ sigma_mk_injective.injOn)
           support := g.support.image Sigma.fst
           mem_support_toFun := fun i => by
             rw [Ne, ← (b i).repr.injective.eq_iff, (b i).repr.apply_symm_apply,

@@ -80,9 +80,8 @@ theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
 
 #align list.bex_cons List.exists_mem_cons
 
--- 2024-03-23
-@[deprecated] alias not_bex_nil := not_exists_mem_nil
-@[deprecated] alias bex_cons := exists_mem_cons
+@[deprecated (since := "2024-03-23")] alias not_bex_nil := not_exists_mem_nil
+@[deprecated (since := "2024-03-23")] alias bex_cons := exists_mem_cons
 
 #align list.ball_cons List.forall_mem_consₓ
 

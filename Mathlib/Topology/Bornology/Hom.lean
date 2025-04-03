@@ -188,8 +188,7 @@ theorem id_comp (f : LocallyBoundedMap α β) : (LocallyBoundedMap.id β).comp f
 @[simp]
 theorem cancel_right {g₁ g₂ : LocallyBoundedMap β γ} {f : LocallyBoundedMap α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congrArg (fun x => comp x f)⟩
--- Porting note: unification was not strong enough to do `congrArg _`.
+  ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congrArg (comp · _)⟩
 #align locally_bounded_map.cancel_right LocallyBoundedMap.cancel_right
 
 @[simp]

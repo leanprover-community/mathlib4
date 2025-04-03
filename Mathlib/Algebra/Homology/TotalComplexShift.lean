@@ -25,12 +25,11 @@ for any `x : ℤ` (which does not involve signs) and an isomorphism
 for any `y : ℤ` (which is given by the multiplication by `(p * y).negOnePow` on the
 summand in bidegree `(p, q)` of `K`).
 
-## TODO
-
-- show that the two sorts of shift functors on bicomplexes "commute", but that signs
-appear when we compare the compositions of the two compatibilities with the total complex functor.
-- deduce compatiblities with shifts on both variables of the action of a
-bifunctor on cochain complexes
+Depending on the order of the "composition" of the two isomorphisms
+`totalShift₁Iso` and `totalShift₂Iso`, we get
+two ways to identify `((shiftFunctor₁ C x).obj ((shiftFunctor₂ C y).obj K)).total (up ℤ)`
+and `(K.total (up ℤ))⟦x + y⟧`. The lemma `totalShift₁Iso_trans_totalShift₂Iso` shows that
+these two compositions of isomorphisms differ by the sign `(x * y).negOnePow`.
 
 -/
 
@@ -53,11 +52,77 @@ abbrev shiftFunctor₂ (y : ℤ) :
   (shiftFunctor _ y).mapHomologicalComplex _
 
 variable {C}
-variable (K : HomologicalComplex₂ C (up ℤ) (up ℤ))
+variable (K L : HomologicalComplex₂ C (up ℤ) (up ℤ)) (f : K ⟶ L)
 
-section
+/-- The isomorphism `(((shiftFunctor₁ C x).obj K).X a).X b ≅ (K.X a').X b` when `a' = a + x`. -/
+def shiftFunctor₁XXIso (a x a' : ℤ) (h : a' = a + x) (b : ℤ) :
+    (((shiftFunctor₁ C x).obj K).X a).X b ≅ (K.X a').X b := eqToIso (by subst h; rfl)
 
-variable (x : ℤ) [K.HasTotal (up ℤ)] [((shiftFunctor₁ C x).obj K).HasTotal (up ℤ)]
+/-- The isomorphism `(((shiftFunctor₂ C y).obj K).X a).X b ≅ (K.X a).X b'` when `b' = b + y`. -/
+def shiftFunctor₂XXIso (a b y b' : ℤ) (h : b' = b + y) :
+    (((shiftFunctor₂ C y).obj K).X a).X b ≅ (K.X a).X b' := eqToIso (by subst h; rfl)
+
+@[simp]
+lemma shiftFunctor₁XXIso_refl (a b x : ℤ) :
+    K.shiftFunctor₁XXIso a x (a + x) rfl b = Iso.refl _ := rfl
+
+@[simp]
+lemma shiftFunctor₂XXIso_refl (a b y : ℤ) :
+    K.shiftFunctor₂XXIso a b y (b + y) rfl = Iso.refl _ := rfl
+
+variable (x y : ℤ) [K.HasTotal (up ℤ)]
+
+instance : ((shiftFunctor₁ C x).obj K).HasTotal (up ℤ) := fun n =>
+  hasCoproduct_of_equiv_of_iso (K.toGradedObject.mapObjFun (π (up ℤ) (up ℤ) (up ℤ)) (n + x)) _
+    { toFun := fun ⟨⟨a, b⟩, h⟩ => ⟨⟨a + x, b⟩, by
+        simp only [Set.mem_preimage, instTotalComplexShape_π, Set.mem_singleton_iff] at h ⊢
+        omega⟩
+      invFun := fun ⟨⟨a, b⟩, h⟩ => ⟨(a - x, b), by
+        simp only [Set.mem_preimage, instTotalComplexShape_π, Set.mem_singleton_iff] at h ⊢
+        omega⟩
+      left_inv := by
+        rintro ⟨⟨a, b⟩, h⟩
+        ext
+        · dsimp
+          omega
+        · rfl
+      right_inv := by
+        intro ⟨⟨a, b⟩, h⟩
+        ext
+        · dsimp
+          omega
+        · rfl }
+    (fun _ => Iso.refl _)
+
+instance : ((shiftFunctor₂ C y).obj K).HasTotal (up ℤ) := fun n =>
+  hasCoproduct_of_equiv_of_iso (K.toGradedObject.mapObjFun (π (up ℤ) (up ℤ) (up ℤ)) (n + y)) _
+    { toFun := fun ⟨⟨a, b⟩, h⟩ => ⟨⟨a, b + y⟩, by
+        simp only [Set.mem_preimage, instTotalComplexShape_π, Set.mem_singleton_iff] at h ⊢
+        omega⟩
+      invFun := fun ⟨⟨a, b⟩, h⟩ => ⟨(a, b - y), by
+        simp only [Set.mem_preimage, instTotalComplexShape_π, Set.mem_singleton_iff] at h ⊢
+        omega⟩
+      left_inv := by
+        rintro ⟨⟨a, b⟩, h⟩
+        ext
+        · rfl
+        · dsimp
+          omega
+      right_inv := by
+        intro ⟨⟨a, b⟩, h⟩
+        ext
+        · rfl
+        · dsimp
+          omega }
+    (fun _ => Iso.refl _)
+
+instance : ((shiftFunctor₂ C y ⋙ shiftFunctor₁ C x).obj K).HasTotal (up ℤ) := by
+  dsimp
+  infer_instance
+
+instance : ((shiftFunctor₁ C x ⋙ shiftFunctor₂ C y).obj K).HasTotal (up ℤ) := by
+  dsimp
+  infer_instance
 
 /-- Auxiliary definition for `totalShift₁Iso`. -/
 noncomputable def totalShift₁XIso (n n' : ℤ) (h : n + x = n') :
@@ -127,11 +192,40 @@ noncomputable def totalShift₁Iso :
         Linear.comp_units_smul, K.D₁_totalShift₁XIso_hom x n n' _ _ rfl rfl,
         K.D₂_totalShift₁XIso_hom x n n' _ _ rfl rfl])
 
-end
+@[reassoc]
+lemma ι_totalShift₁Iso_hom_f (a b n : ℤ) (h : a + b = n) (a' : ℤ) (ha' : a' = a + x)
+    (n' : ℤ) (hn' : n' = n + x) :
+    ((shiftFunctor₁ C x).obj K).ιTotal (up ℤ) a b n h ≫ (K.totalShift₁Iso x).hom.f n =
+      (K.shiftFunctor₁XXIso a x a' ha' b).hom ≫ K.ιTotal (up ℤ) a' b n' (by dsimp; omega) ≫
+        (CochainComplex.shiftFunctorObjXIso (K.total (up ℤ)) x n n' hn').inv := by
+  subst ha' hn'
+  simp [totalShift₁Iso, totalShift₁XIso]
 
-section
+@[reassoc]
+lemma ι_totalShift₁Iso_inv_f (a b n : ℤ) (h : a + b = n) (a' n' : ℤ)
+    (ha' : a' + b = n') (hn' : n' = n + x) :
+    K.ιTotal (up ℤ) a' b n' ha' ≫
+      (CochainComplex.shiftFunctorObjXIso (K.total (up ℤ)) x n n' hn').inv ≫
+        (K.totalShift₁Iso x).inv.f n =
+      (K.shiftFunctor₁XXIso a x a' (by omega) b).inv ≫
+        ((shiftFunctor₁ C x).obj K).ιTotal (up ℤ) a b n h := by
+  subst hn'
+  obtain rfl : a = a' - x := by omega
+  dsimp [totalShift₁Iso, totalShift₁XIso, shiftFunctor₁XXIso, XXIsoOfEq]
+  simp only [id_comp, ι_totalDesc]
 
-variable (y : ℤ) [K.HasTotal (up ℤ)] [((shiftFunctor₂ C y).obj K).HasTotal (up ℤ)]
+variable {K L} in
+@[reassoc]
+lemma totalShift₁Iso_hom_naturality [L.HasTotal (up ℤ)] :
+    total.map ((shiftFunctor₁ C x).map f) (up ℤ) ≫ (L.totalShift₁Iso x).hom =
+      (K.totalShift₁Iso x).hom ≫ (total.map f (up ℤ))⟦x⟧' := by
+  ext n i₁ i₂ h
+  dsimp at h
+  dsimp
+  rw [ιTotal_map_assoc, L.ι_totalShift₁Iso_hom_f x i₁ i₂ n h _ rfl _ rfl,
+    K.ι_totalShift₁Iso_hom_f_assoc x i₁ i₂ n h _ rfl _ rfl]
+  dsimp
+  rw [id_comp, id_comp, id_comp, comp_id, ιTotal_map]
 
 attribute [local simp] smul_smul
 
@@ -199,7 +293,7 @@ lemma D₂_totalShift₂XIso_hom (n₀ n₁ n₀' n₁' : ℤ) (h₀ : n₀ + y 
 
 /-- The isomorphism `((shiftFunctor₂ C y).obj K).total (up ℤ) ≅ (K.total (up ℤ))⟦y⟧`
 expressing the compatibility of the total complex with the shift on the second indices.
-This isomorphism involves signs: in the summand in degree `(p, q)` of `K`, it is given by the
+This isomorphism involves signs: on the summand in degree `(p, q)` of `K`, it is given by the
 multiplication by `(p * y).negOnePow`. -/
 noncomputable def totalShift₂Iso :
     ((shiftFunctor₂ C y).obj K).total (up ℤ) ≅ (K.total (up ℤ))⟦y⟧ :=
@@ -210,6 +304,84 @@ noncomputable def totalShift₂Iso :
         Linear.comp_units_smul, K.D₁_totalShift₂XIso_hom y n n' _ _ rfl rfl,
         K.D₂_totalShift₂XIso_hom y n n' _ _ rfl rfl])
 
-end
+@[reassoc]
+lemma ι_totalShift₂Iso_hom_f (a b n : ℤ) (h : a + b = n) (b' : ℤ) (hb' : b' = b + y)
+    (n' : ℤ) (hn' : n' = n + y) :
+    ((shiftFunctor₂ C y).obj K).ιTotal (up ℤ) a b n h ≫ (K.totalShift₂Iso y).hom.f n =
+      (a * y).negOnePow • (K.shiftFunctor₂XXIso a b y b' hb').hom ≫
+        K.ιTotal (up ℤ) a b' n' (by dsimp; omega) ≫
+          (CochainComplex.shiftFunctorObjXIso (K.total (up ℤ)) y n n' hn').inv := by
+  subst hb' hn'
+  simp [totalShift₂Iso, totalShift₂XIso]
+
+@[reassoc]
+lemma ι_totalShift₂Iso_inv_f (a b n : ℤ) (h : a + b = n) (b' n' : ℤ)
+    (hb' : a + b' = n') (hn' : n' = n + y) :
+    K.ιTotal (up ℤ) a b' n' hb' ≫
+      (CochainComplex.shiftFunctorObjXIso (K.total (up ℤ)) y n n' hn').inv ≫
+        (K.totalShift₂Iso y).inv.f n =
+      (a * y).negOnePow • (K.shiftFunctor₂XXIso a b y b' (by omega)).inv ≫
+        ((shiftFunctor₂ C y).obj K).ιTotal (up ℤ) a b n h := by
+  subst hn'
+  obtain rfl : b = b' - y := by omega
+  dsimp [totalShift₂Iso, totalShift₂XIso, shiftFunctor₂XXIso, XXIsoOfEq]
+  simp only [id_comp, ι_totalDesc]
+
+variable {K L} in
+@[reassoc]
+lemma totalShift₂Iso_hom_naturality [L.HasTotal (up ℤ)] :
+    total.map ((shiftFunctor₂ C y).map f) (up ℤ) ≫ (L.totalShift₂Iso y).hom =
+      (K.totalShift₂Iso y).hom ≫ (total.map f (up ℤ))⟦y⟧' := by
+  ext n i₁ i₂ h
+  dsimp at h
+  dsimp
+  rw [ιTotal_map_assoc, L.ι_totalShift₂Iso_hom_f y i₁ i₂ n h _ rfl _ rfl,
+    K.ι_totalShift₂Iso_hom_f_assoc y i₁ i₂ n h _ rfl _ rfl]
+  dsimp
+  rw [id_comp, id_comp, comp_id, comp_id, Linear.comp_units_smul,
+    Linear.units_smul_comp, ιTotal_map]
+
+variable (C) in
+/-- The shift functors `shiftFunctor₁ C x` and `shiftFunctor₂ C y` on bicomplexes
+with respect to both variables commute. -/
+def shiftFunctor₁₂CommIso (x y : ℤ) :
+    shiftFunctor₂ C y ⋙ shiftFunctor₁ C x ≅ shiftFunctor₁ C x ⋙ shiftFunctor₂ C y :=
+  Iso.refl _
+
+/-- The compatibility isomorphisms of the total complex with the shifts
+in both variables "commute" only up to a sign `(x * y).negOnePow`. -/
+lemma totalShift₁Iso_trans_totalShift₂Iso :
+    ((shiftFunctor₂ C y).obj K).totalShift₁Iso x ≪≫
+      (shiftFunctor (CochainComplex C ℤ) x).mapIso (K.totalShift₂Iso y) =
+    (x * y).negOnePow • (total.mapIso ((shiftFunctor₁₂CommIso C x y).app K) (up ℤ)) ≪≫
+      ((shiftFunctor₁ C x).obj K).totalShift₂Iso y ≪≫
+      (shiftFunctor _ y).mapIso (K.totalShift₁Iso x) ≪≫
+      (shiftFunctorComm (CochainComplex C ℤ) x y).app _ := by
+  ext n n₁ n₂ h
+  dsimp at h ⊢
+  rw [Linear.comp_units_smul,ι_totalShift₁Iso_hom_f_assoc _ x n₁ n₂ n h _ rfl _ rfl,
+    ιTotal_map_assoc, ι_totalShift₂Iso_hom_f_assoc _ y n₁ n₂ n h _ rfl _ rfl,
+    Linear.units_smul_comp, Linear.comp_units_smul]
+  dsimp [shiftFunctor₁₂CommIso]
+  rw [id_comp, id_comp, id_comp, id_comp, comp_id,
+    ι_totalShift₂Iso_hom_f _ y (n₁ + x) n₂ (n + x) (by omega) _ rfl _ rfl, smul_smul,
+    ← Int.negOnePow_add, add_mul, add_comm (x * y)]
+  dsimp
+  rw [id_comp, comp_id,
+    ι_totalShift₁Iso_hom_f_assoc _ x n₁ (n₂ + y) (n + y) (by omega) _ rfl (n + x + y) (by omega),
+    CochainComplex.shiftFunctorComm_hom_app_f]
+  dsimp
+  rw [Iso.inv_hom_id, comp_id, id_comp]
+
+/-- The compatibility isomorphisms of the total complex with the shifts
+in both variables "commute" only up to a sign `(x * y).negOnePow`. -/
+@[reassoc]
+lemma totalShift₁Iso_hom_totalShift₂Iso_hom :
+    (((shiftFunctor₂ C y).obj K).totalShift₁Iso x).hom ≫ (K.totalShift₂Iso y).hom⟦x⟧' =
+      (x * y).negOnePow • (total.map ((shiftFunctor₁₂CommIso C x y).hom.app K) (up ℤ) ≫
+          (((shiftFunctor₁ C x).obj K).totalShift₂Iso y).hom ≫
+          (K.totalShift₁Iso x).hom⟦y⟧' ≫
+          (shiftFunctorComm (CochainComplex C ℤ) x y).hom.app _) :=
+  congr_arg Iso.hom (totalShift₁Iso_trans_totalShift₂Iso K x y)
 
 end HomologicalComplex₂

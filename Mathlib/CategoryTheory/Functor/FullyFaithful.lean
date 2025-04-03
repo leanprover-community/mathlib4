@@ -386,27 +386,33 @@ theorem fullyFaithfulCancelRight_inv_app {F G : C ⥤ D} {H : D ⥤ E} [Full H] 
 
 end Functor
 
--- deprecated on 2024-04-06
-@[deprecated] alias Full := Functor.Full
-@[deprecated] alias Faithful := Functor.Faithful
-@[deprecated] alias preimage_id := Functor.preimage_id
-@[deprecated] alias preimage_comp := Functor.preimage_comp
-@[deprecated] alias preimage_map := Functor.preimage_map
-@[deprecated] alias Faithful.of_comp := Functor.Faithful.of_comp
-@[deprecated] alias Full.ofIso := Functor.Full.of_iso
-@[deprecated] alias Faithful.of_iso := Functor.Faithful.of_iso
-@[deprecated] alias Faithful.of_comp_iso := Functor.Faithful.of_comp_iso
-@[deprecated] alias Faithful.of_comp_eq := Functor.Faithful.of_comp_eq
-@[deprecated] alias Faithful.div := Functor.Faithful.div
-@[deprecated] alias Faithful.div_comp := Functor.Faithful.div_comp
-@[deprecated] alias Faithful.div_faithful := Functor.Faithful.div_faithful
-@[deprecated] alias Full.ofCompFaithful := Functor.Full.of_comp_faithful
-@[deprecated] alias Full.ofCompFaithfulIso := Functor.Full.of_comp_faithful_iso
-@[deprecated] alias fullyFaithfulCancelRight := Functor.fullyFaithfulCancelRight
-@[deprecated] alias fullyFaithfulCancelRight_hom_app := Functor.fullyFaithfulCancelRight_hom_app
-@[deprecated] alias fullyFaithfulCancelRight_inv_app := Functor.fullyFaithfulCancelRight_inv_app
+@[deprecated (since := "2024-04-06")] alias Full := Functor.Full
+@[deprecated (since := "2024-04-06")] alias Faithful := Functor.Faithful
+@[deprecated (since := "2024-04-06")] alias preimage_id := Functor.preimage_id
+@[deprecated (since := "2024-04-06")] alias preimage_comp := Functor.preimage_comp
+@[deprecated (since := "2024-04-06")] alias preimage_map := Functor.preimage_map
+@[deprecated (since := "2024-04-06")] alias Faithful.of_comp := Functor.Faithful.of_comp
+@[deprecated (since := "2024-04-06")] alias Full.ofIso := Functor.Full.of_iso
+@[deprecated (since := "2024-04-06")] alias Faithful.of_iso := Functor.Faithful.of_iso
+@[deprecated (since := "2024-04-06")] alias Faithful.of_comp_iso := Functor.Faithful.of_comp_iso
+@[deprecated (since := "2024-04-06")] alias Faithful.of_comp_eq := Functor.Faithful.of_comp_eq
+@[deprecated (since := "2024-04-06")] alias Faithful.div := Functor.Faithful.div
+@[deprecated (since := "2024-04-06")] alias Faithful.div_comp := Functor.Faithful.div_comp
+@[deprecated (since := "2024-04-06")] alias Faithful.div_faithful := Functor.Faithful.div_faithful
+@[deprecated (since := "2024-04-06")] alias Full.ofCompFaithful := Functor.Full.of_comp_faithful
 
--- deprecated on 2024-04-26
-@[deprecated] alias Functor.image_preimage := Functor.map_preimage
+@[deprecated (since := "2024-04-06")]
+alias Full.ofCompFaithfulIso := Functor.Full.of_comp_faithful_iso
+
+@[deprecated (since := "2024-04-06")]
+alias fullyFaithfulCancelRight := Functor.fullyFaithfulCancelRight
+
+@[deprecated (since := "2024-04-06")]
+alias fullyFaithfulCancelRight_hom_app := Functor.fullyFaithfulCancelRight_hom_app
+
+@[deprecated (since := "2024-04-06")]
+alias fullyFaithfulCancelRight_inv_app := Functor.fullyFaithfulCancelRight_inv_app
+
+@[deprecated (since := "2024-04-26")] alias Functor.image_preimage := Functor.map_preimage
 
 end CategoryTheory

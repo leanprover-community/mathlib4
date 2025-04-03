@@ -32,7 +32,7 @@ def effectiveEpiFamilyStructCompOfEffectiveEpiSplitEpi' {α : Type*} {B : C} {X 
   desc e w := EffectiveEpiFamily.desc _ f (fun a ↦ i a ≫ e a) fun a₁ a₂ g₁ g₂ _ ↦ (by
     simp only [← Category.assoc]
     apply w _ _ (g₁ ≫ i a₁) (g₂ ≫ i a₂)
-    simpa [← Category.assoc, hi])
+    simpa [← Category.assoc, Category.assoc, hi])
   fac e w a := by
     simp only [Category.assoc, EffectiveEpiFamily.fac]
     rw [← Category.id_comp (e a), ← Category.assoc, ← Category.assoc]

@@ -69,6 +69,7 @@ noncomputable def f : ℂ ⊗[ℝ] ℂ →ₗ[ℝ] ℝ :=
 theorem f_apply (z w : ℂ) : f (z ⊗ₜ[ℝ] w) = z.re * w.re := by simp [f]
 #align tensor_product.f_apply TensorProduct.f_apply
 
+unseal Algebra.TensorProduct.mul in
 /- `TensorProduct.Algebra.module` forms a diamond with `Mul.toSMul` and
 `algebra.tensor_product.tensor_product.semiring`. Given a commutative semiring `A` over a
 commutative semiring `R`, we get two mathematically different scalar actions of `A ⊗[R] A` on

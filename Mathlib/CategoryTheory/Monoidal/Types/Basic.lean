@@ -79,6 +79,30 @@ theorem associator_inv_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
   rfl
 #align category_theory.associator_inv_apply CategoryTheory.associator_inv_apply
 
+@[simp] theorem associator_hom_apply_1 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z → X ⊗ Y ⊗ Z) x).1 = x.1.1 :=
+  rfl
+
+@[simp] theorem associator_hom_apply_2_1 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z → X ⊗ Y ⊗ Z) x).2.1 = x.1.2 :=
+  rfl
+
+@[simp] theorem associator_hom_apply_2_2 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).hom : (X ⊗ Y) ⊗ Z → X ⊗ Y ⊗ Z) x).2.2 = x.2 :=
+  rfl
+
+@[simp] theorem associator_inv_apply_1_1 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) x).1.1 = x.1 :=
+  rfl
+
+@[simp] theorem associator_inv_apply_1_2 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) x).1.2 = x.2.1 :=
+  rfl
+
+@[simp] theorem associator_inv_apply_2 {X Y Z : Type u} {x} :
+    (((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) x).2 = x.2.2 :=
+  rfl
+
 -- We don't yet have an API for tensor products indexed by finite ordered types,
 -- but it would be nice to state how monoidal functors preserve these.
 /-- If `F` is a monoidal functor out of `Type`, it takes the (n+1)st cartesian power

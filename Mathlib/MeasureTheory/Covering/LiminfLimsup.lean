@@ -115,7 +115,7 @@ theorem blimsup_cthickening_ae_le_of_eventually_mul_le_aux (p : ℕ → Prop) {s
   let B : ℕ → Set α := fun j => closedBall (w j) (r₁ (f j))
   have h₁ : ∀ j, b j ⊆ B j := fun j =>
     closedBall_subset_closedBall (mul_le_of_le_one_left (hrp (f j)) hM'.le)
-  have h₂ : ∀ j, W ∩ B j ⊆ B j := fun j => inter_subset_right W (B j)
+  have h₂ : ∀ j, W ∩ B j ⊆ B j := fun j => inter_subset_right
   have h₃ : ∀ᶠ j in atTop, Disjoint (b j) (W ∩ B j) := by
     apply hMr.mp
     rw [eventually_atTop]

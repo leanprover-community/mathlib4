@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
-import Mathlib.Data.Real.NNReal
+import Mathlib.Data.NNReal.Basic
 import Mathlib.Order.Interval.Set.WithBotTop
 
 #align_import data.real.ennreal from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
@@ -286,14 +286,9 @@ theorem forall_ne_top {p : ℝ≥0∞ → Prop} : (∀ a, a ≠ ∞ → p a) ↔
   Option.ball_ne_none
 #align ennreal.forall_ne_top ENNReal.forall_ne_top
 
-@[deprecated (since := "2023-02-27")]
-theorem exists_ne_top' {p : ℝ≥0∞ → Prop} : (∃ (a : ℝ≥0∞) (_ : a ≠ ∞), p a) ↔ ∃ r : ℝ≥0, p r :=
-  Option.bex_ne_none
-#align ennreal.exists_ne_top ENNReal.exists_ne_top'
-
-set_option linter.deprecated false in
-theorem exists_ne_top {p : ℝ≥0∞ → Prop} : (∃ a ≠ ∞, p a) ↔ ∃ r : ℝ≥0, p r := by
-  simp only [exists_ne_top', ← exists_prop]
+theorem exists_ne_top {p : ℝ≥0∞ → Prop} : (∃ a ≠ ∞, p a) ↔ ∃ r : ℝ≥0, p r :=
+  Option.exists_ne_none
+#align ennreal.exists_ne_top ENNReal.exists_ne_top
 
 theorem toNNReal_eq_zero_iff (x : ℝ≥0∞) : x.toNNReal = 0 ↔ x = 0 ∨ x = ∞ :=
   WithTop.untop'_eq_self_iff
@@ -426,7 +421,7 @@ lemma coe_ne_one : (r : ℝ≥0∞) ≠ 1 ↔ r ≠ 1 := coe_eq_one.not
 #noalign ennreal.coe_bit1
 
 -- See note [no_index around OfNat.ofNat]
-@[simp, norm_cast] -- Porting note (#10756): new theorem
+@[simp, norm_cast]
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
     ((no_index (OfNat.ofNat n) : ℝ≥0) : ℝ≥0∞) = OfNat.ofNat n := rfl
 
@@ -758,8 +753,8 @@ theorem coe_sSup {s : Set ℝ≥0} : BddAbove s → (↑(sSup s) : ℝ≥0∞) =
   WithTop.coe_sSup
 #align ennreal.coe_Sup ENNReal.coe_sSup
 
-theorem coe_sInf {s : Set ℝ≥0} : s.Nonempty → (↑(sInf s) : ℝ≥0∞) = ⨅ a ∈ s, ↑a :=
-  WithTop.coe_sInf
+theorem coe_sInf {s : Set ℝ≥0} (hs : s.Nonempty) : (↑(sInf s) : ℝ≥0∞) = ⨅ a ∈ s, ↑a :=
+  WithTop.coe_sInf hs (OrderBot.bddBelow s)
 #align ennreal.coe_Inf ENNReal.coe_sInf
 
 theorem coe_iSup {ι : Sort*} {f : ι → ℝ≥0} (hf : BddAbove (range f)) :
@@ -769,7 +764,7 @@ theorem coe_iSup {ι : Sort*} {f : ι → ℝ≥0} (hf : BddAbove (range f)) :
 
 @[norm_cast]
 theorem coe_iInf {ι : Sort*} [Nonempty ι] (f : ι → ℝ≥0) : (↑(iInf f) : ℝ≥0∞) = ⨅ a, ↑(f a) :=
-  WithTop.coe_iInf f
+  WithTop.coe_iInf (OrderBot.bddBelow _)
 #align ennreal.coe_infi ENNReal.coe_iInf
 
 theorem coe_mem_upperBounds {s : Set ℝ≥0} :

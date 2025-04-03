@@ -464,8 +464,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
     apply not_disjoint_iff.mpr ⟨(cs i).b, (cs i).b_mem_toSet, this⟩ (h.1 i_i')
   have i_i'' : i ≠ i'' := by intro h; induction h; simpa [p', hx'.2] using hi''.2 j'
   apply Not.elim _ (h.1 i'_i'')
-  -- Porting note: simp regression, `simp_rw` can't use `onFun`
-  rw [onFun]; simp_rw [comp, toSet_disjoint, not_exists, not_disjoint_iff, forall_fin_succ]
+  simp_rw [onFun, comp, toSet_disjoint, not_exists, not_disjoint_iff, forall_fin_succ]
   refine ⟨⟨c.b 0, bottom_mem_side h2i', bottom_mem_side h2i''⟩, ?_⟩
   intro j₂
   by_cases hj₂ : j₂ = j

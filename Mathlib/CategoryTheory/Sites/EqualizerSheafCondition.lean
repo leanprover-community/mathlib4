@@ -156,12 +156,12 @@ theorem compatible_iff (x : FirstObj P S) :
 theorem equalizer_sheaf_condition :
     Presieve.IsSheafFor P (S : Presieve X) ↔ Nonempty (IsLimit (Fork.ofι _ (w P S))) := by
   rw [Types.type_equalizer_iff_unique,
-    ← Equiv.forall_congr_left (firstObjEqFamily P (S : Presieve X)).toEquiv.symm]
+    ← Equiv.forall_congr_right (firstObjEqFamily P (S : Presieve X)).toEquiv.symm]
   simp_rw [← compatible_iff]
   simp only [inv_hom_id_apply, Iso.toEquiv_symm_fun]
   apply forall₂_congr
   intro x _
-  apply exists_unique_congr
+  apply existsUnique_congr
   intro t
   rw [← Iso.toEquiv_symm_fun]
   rw [Equiv.eq_symm_apply]
@@ -245,11 +245,11 @@ See <https://stacks.math.columbia.edu/tag/00VM>.
 -/
 theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P R))) := by
   rw [Types.type_equalizer_iff_unique]
-  erw [← Equiv.forall_congr_left (firstObjEqFamily P R).toEquiv.symm]
+  erw [← Equiv.forall_congr_right (firstObjEqFamily P R).toEquiv.symm]
   simp_rw [← compatible_iff, ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
   apply forall₂_congr
   intro x _
-  apply exists_unique_congr
+  apply existsUnique_congr
   intro t
   rw [Equiv.eq_symm_apply]
   constructor
@@ -344,11 +344,11 @@ See <https://stacks.math.columbia.edu/tag/00VM>.
 theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔
     Nonempty (IsLimit (Fork.ofι (forkMap P X π) (w P X π))) := by
   rw [Types.type_equalizer_iff_unique, isSheafFor_arrows_iff]
-  erw [← Equiv.forall_congr_left (Types.productIso _).toEquiv.symm]
+  erw [← Equiv.forall_congr_right (Types.productIso _).toEquiv.symm]
   simp_rw [← compatible_iff, ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
   apply forall₂_congr
   intro x _
-  apply exists_unique_congr
+  apply existsUnique_congr
   intro t
   erw [Equiv.eq_symm_apply]
   constructor

@@ -220,7 +220,7 @@ theorem IsSubmonoid.powers_subset {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : p
   fun _ ⟨_, hx⟩ => hx ▸ hs.pow_mem h
 #align is_submonoid.power_subset IsSubmonoid.powers_subset
 #align is_add_submonoid.multiples_subset IsAddSubmonoid.multiples_subset
-@[deprecated] alias IsSubmonoid.power_subset := IsSubmonoid.powers_subset -- 2024-02-21
+@[deprecated (since := "2024-02-21")] alias IsSubmonoid.power_subset := IsSubmonoid.powers_subset
 
 end powers
 
@@ -408,8 +408,8 @@ theorem mem_closure_union_iff {M : Type*} [CommMonoid M] {s t : Set M} {x : M} :
         HL1,
     fun ⟨y, hy, z, hz, hyzx⟩ =>
     hyzx ▸
-      (closure.isSubmonoid _).mul_mem (closure_mono (Set.subset_union_left _ _) hy)
-        (closure_mono (Set.subset_union_right _ _) hz)⟩
+      (closure.isSubmonoid _).mul_mem (closure_mono Set.subset_union_left hy)
+        (closure_mono Set.subset_union_right hz)⟩
 #align monoid.mem_closure_union_iff Monoid.mem_closure_union_iff
 #align add_monoid.mem_closure_union_iff AddMonoid.mem_closure_union_iff
 

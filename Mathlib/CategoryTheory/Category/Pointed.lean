@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Adjunction.Basic
 
 #align_import category_theory.category.Pointed from "leanprover-community/mathlib"@"c8ab806ef73c20cab1d87b5157e43a82c205f28e"
 
