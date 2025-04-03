@@ -19,7 +19,7 @@ coalgebras defined in `Mathlib.RingTheory.Coalgebra.TensorProduct` in #11975.
 
 ## Implementation notes
 
-We make the definiton `CoalgebraCat.instMonoidalCategoryAux` in this file, which is the
+We make the definition `CoalgebraCat.instMonoidalCategoryAux` in this file, which is the
 monoidal structure on `CoalgebraCat` induced by the equivalence with `Comon(R-Mod)`. We
 use this to show the comultiplication and counit on a tensor product of coalgebras satisfy
 the coalgebra axioms, but our actual `MonoidalCategory` instance on `CoalgebraCat` is

@@ -22,7 +22,7 @@ noncomputable section
 open Finset Function
 
 variable {α ι γ A B C : Type*} [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C]
-variable {t : ι → A → C} (h0 : ∀ i, t i 0 = 0) (h1 : ∀ i x y, t i (x + y) = t i x + t i y)
+variable {t : ι → A → C}
 variable {s : Finset α} {f : α → ι →₀ A} (i : ι)
 variable (g : ι →₀ A) (k : ι → A → γ → B) (x : γ)
 variable {β M M' N P G H R S : Type*}
@@ -268,9 +268,10 @@ theorem support_sum [DecidableEq β] [Zero M] [AddCommMonoid N] {f : α →₀ M
 theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f : α → β →₀ M} :
     (Finset.sum s f).support ⊆ s.biUnion fun x => (f x).support := by
   rw [← Finset.sup_eq_biUnion]
-  induction' s using Finset.cons_induction_on with a s ha ih
-  · rfl
-  · rw [Finset.sum_cons, Finset.sup_cons]
+  induction s using Finset.cons_induction_on with
+  | h₁ => rfl
+  | h₂ _ ih =>
+    rw [Finset.sum_cons, Finset.sup_cons]
     exact support_add.trans (Finset.union_subset_union (Finset.Subset.refl _) ih)
 
 @[simp]
@@ -563,14 +564,11 @@ theorem Finset.sum_apply' : (∑ k ∈ s, f k) i = ∑ k ∈ s, f k i :=
 theorem Finsupp.sum_apply' : g.sum k x = g.sum fun i b => k i b x :=
   Finset.sum_apply _ _ _
 
-section
-
-theorem Finsupp.sum_sum_index' : (∑ x ∈ s, f x).sum t = ∑ x ∈ s, (f x).sum t := by
+theorem Finsupp.sum_sum_index' (h0 : ∀ i, t i 0 = 0) (h1 : ∀ i x y, t i (x + y) = t i x + t i y) :
+    (∑ x ∈ s, f x).sum t = ∑ x ∈ s, (f x).sum t := by
   classical
   exact Finset.induction_on s rfl fun a s has ih => by
     simp_rw [Finset.sum_insert has, Finsupp.sum_add_index' h0 h1, ih]
-
-end
 
 section
 

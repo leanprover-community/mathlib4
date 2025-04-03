@@ -257,6 +257,10 @@ theorem countable_setOf_finite_subset {s : Set α} (hs : s.Countable) :
   lift t to Finset s using ht.of_finite_image Subtype.val_injective.injOn
   exact mem_range_self _
 
+/-- The set of finite sets in a countable type is countable. -/
+theorem Countable.setOf_finite [Countable α] : {s : Set α | s.Finite}.Countable := by
+  simpa using countable_setOf_finite_subset countable_univ
+
 theorem countable_univ_pi {π : α → Type*} [Finite α] {s : ∀ a, Set (π a)}
     (hs : ∀ a, (s a).Countable) : (pi univ s).Countable :=
   have := fun a ↦ (hs a).to_subtype; .of_equiv _ (Equiv.Set.univPi s).symm

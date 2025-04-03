@@ -40,8 +40,8 @@ section Instances
 variable (e : α ≃ β)
 
 /-- Transfer `One` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `Zero` across an `Equiv`"]
-protected def one [One β] : One α :=
+@[to_additive "Transfer `Zero` across an `Equiv`"]
+protected abbrev one [One β] : One α :=
   ⟨e.symm 1⟩
 
 @[to_additive]
@@ -55,8 +55,8 @@ noncomputable instance [Small.{v} α] [One α] : One (Shrink.{v} α) :=
   (equivShrink α).symm.one
 
 /-- Transfer `Mul` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `Add` across an `Equiv`"]
-protected def mul [Mul β] : Mul α :=
+@[to_additive "Transfer `Add` across an `Equiv`"]
+protected abbrev mul [Mul β] : Mul α :=
   ⟨fun x y => e.symm (e x * e y)⟩
 
 @[to_additive]
@@ -70,8 +70,8 @@ noncomputable instance [Small.{v} α] [Mul α] : Mul (Shrink.{v} α) :=
   (equivShrink α).symm.mul
 
 /-- Transfer `Div` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `Sub` across an `Equiv`"]
-protected def div [Div β] : Div α :=
+@[to_additive "Transfer `Sub` across an `Equiv`"]
+protected abbrev div [Div β] : Div α :=
   ⟨fun x y => e.symm (e x / e y)⟩
 
 @[to_additive]
@@ -87,8 +87,8 @@ noncomputable instance [Small.{v} α] [Div α] : Div (Shrink.{v} α) :=
 -- Porting note: this should be called `inv`,
 -- but we already have an `Equiv.inv` (which perhaps should move to `Perm.inv`?)
 /-- Transfer `Inv` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `Neg` across an `Equiv`"]
-protected def Inv [Inv β] : Inv α :=
+@[to_additive "Transfer `Neg` across an `Equiv`"]
+protected abbrev Inv [Inv β] : Inv α :=
   ⟨fun x => e.symm (e x)⁻¹⟩
 
 @[to_additive]
@@ -190,8 +190,8 @@ noncomputable def _root_.Shrink.ringEquiv [Small.{v} α] [Ring α] : Shrink.{v} 
   (equivShrink α).symm.ringEquiv
 
 /-- Transfer `Semigroup` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `add_semigroup` across an `Equiv`"]
-protected def semigroup [Semigroup β] : Semigroup α := by
+@[to_additive "Transfer `add_semigroup` across an `Equiv`"]
+protected abbrev semigroup [Semigroup β] : Semigroup α := by
   let mul := e.mul
   apply e.injective.semigroup _; intros; exact e.apply_symm_apply _
 
@@ -210,8 +210,8 @@ noncomputable instance [Small.{v} α] [SemigroupWithZero α] : SemigroupWithZero
   (equivShrink α).symm.semigroupWithZero
 
 /-- Transfer `CommSemigroup` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `AddCommSemigroup` across an `Equiv`"]
-protected def commSemigroup [CommSemigroup β] : CommSemigroup α := by
+@[to_additive "Transfer `AddCommSemigroup` across an `Equiv`"]
+protected abbrev commSemigroup [CommSemigroup β] : CommSemigroup α := by
   let mul := e.mul
   apply e.injective.commSemigroup _; intros; exact e.apply_symm_apply _
 
@@ -229,8 +229,8 @@ noncomputable instance [Small.{v} α] [MulZeroClass α] : MulZeroClass (Shrink.{
   (equivShrink α).symm.mulZeroClass
 
 /-- Transfer `MulOneClass` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `AddZeroClass` across an `Equiv`"]
-protected def mulOneClass [MulOneClass β] : MulOneClass α := by
+@[to_additive "Transfer `AddZeroClass` across an `Equiv`"]
+protected abbrev mulOneClass [MulOneClass β] : MulOneClass α := by
   let one := e.one
   let mul := e.mul
   apply e.injective.mulOneClass _ <;> intros <;> exact e.apply_symm_apply _
@@ -250,8 +250,8 @@ noncomputable instance [Small.{v} α] [MulZeroOneClass α] : MulZeroOneClass (Sh
   (equivShrink α).symm.mulZeroOneClass
 
 /-- Transfer `Monoid` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `AddMonoid` across an `Equiv`"]
-protected def monoid [Monoid β] : Monoid α := by
+@[to_additive "Transfer `AddMonoid` across an `Equiv`"]
+protected abbrev monoid [Monoid β] : Monoid α := by
   let one := e.one
   let mul := e.mul
   let pow := e.pow ℕ
@@ -262,8 +262,8 @@ noncomputable instance [Small.{v} α] [Monoid α] : Monoid (Shrink.{v} α) :=
   (equivShrink α).symm.monoid
 
 /-- Transfer `CommMonoid` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `AddCommMonoid` across an `Equiv`"]
-protected def commMonoid [CommMonoid β] : CommMonoid α := by
+@[to_additive "Transfer `AddCommMonoid` across an `Equiv`"]
+protected abbrev commMonoid [CommMonoid β] : CommMonoid α := by
   let one := e.one
   let mul := e.mul
   let pow := e.pow ℕ
@@ -274,8 +274,8 @@ noncomputable instance [Small.{v} α] [CommMonoid α] : CommMonoid (Shrink.{v} �
   (equivShrink α).symm.commMonoid
 
 /-- Transfer `Group` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `AddGroup` across an `Equiv`"]
-protected def group [Group β] : Group α := by
+@[to_additive "Transfer `AddGroup` across an `Equiv`"]
+protected abbrev group [Group β] : Group α := by
   let one := e.one
   let mul := e.mul
   let inv := e.Inv
@@ -289,8 +289,8 @@ noncomputable instance [Small.{v} α] [Group α] : Group (Shrink.{v} α) :=
   (equivShrink α).symm.group
 
 /-- Transfer `CommGroup` across an `Equiv` -/
-@[to_additive (attr := reducible) "Transfer `AddCommGroup` across an `Equiv`"]
-protected def commGroup [CommGroup β] : CommGroup α := by
+@[to_additive "Transfer `AddCommGroup` across an `Equiv`"]
+protected abbrev commGroup [CommGroup β] : CommGroup α := by
   let one := e.one
   let mul := e.mul
   let inv := e.Inv
@@ -462,6 +462,7 @@ protected abbrev commRing [CommRing β] : CommRing α := by
 noncomputable instance [Small.{v} α] [CommRing α] : CommRing (Shrink.{v} α) :=
   (equivShrink α).symm.commRing
 
+include e in
 /-- Transfer `Nontrivial` across an `Equiv` -/
 protected theorem nontrivial [Nontrivial β] : Nontrivial α :=
   e.surjective.nontrivial

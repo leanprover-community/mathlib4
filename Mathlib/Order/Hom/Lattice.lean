@@ -474,6 +474,24 @@ theorem bot_apply [Bot β] (a : α) : (⊥ : SupHom α β) a = ⊥ :=
 theorem top_apply [Top β] (a : α) : (⊤ : SupHom α β) a = ⊤ :=
   rfl
 
+/-- `Subtype.val` as a `SupHom`. -/
+def subtypeVal {P : β → Prop}
+    (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) :
+    letI := Subtype.semilatticeSup Psup
+    SupHom {x : β // P x} β :=
+  letI := Subtype.semilatticeSup Psup
+  .mk Subtype.val (by simp)
+
+@[simp]
+lemma subtypeVal_apply {P : β → Prop}
+    (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) (x : {x : β // P x}) :
+    subtypeVal Psup x = x := rfl
+
+@[simp]
+lemma subtypeVal_coe {P : β → Prop}
+    (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) :
+    ⇑(subtypeVal Psup) = Subtype.val := rfl
+
 end SupHom
 
 /-! ### Infimum homomorphisms -/
@@ -632,6 +650,24 @@ theorem bot_apply [Bot β] (a : α) : (⊥ : InfHom α β) a = ⊥ :=
 theorem top_apply [Top β] (a : α) : (⊤ : InfHom α β) a = ⊤ :=
   rfl
 
+/-- `Subtype.val` as an `InfHom`. -/
+def subtypeVal {P : β → Prop}
+    (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) :
+    letI := Subtype.semilatticeInf Pinf
+    InfHom {x : β // P x} β :=
+  letI := Subtype.semilatticeInf Pinf
+  .mk Subtype.val (by simp)
+
+@[simp]
+lemma subtypeVal_apply {P : β → Prop}
+    (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) (x : {x : β // P x}) :
+    subtypeVal Pinf x = x := rfl
+
+@[simp]
+lemma subtypeVal_coe {P : β → Prop}
+    (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) :
+    ⇑(subtypeVal Pinf) = Subtype.val := rfl
+
 end InfHom
 
 /-! ### Finitary supremum homomorphisms -/
@@ -761,6 +797,26 @@ theorem sup_apply (f g : SupBotHom α β) (a : α) : (f ⊔ g) a = f a ⊔ g a :
 @[simp]
 theorem bot_apply (a : α) : (⊥ : SupBotHom α β) a = ⊥ :=
   rfl
+
+/-- `Subtype.val` as a `SupBotHom`. -/
+def subtypeVal {P : β → Prop}
+    (Pbot : P ⊥) (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) :
+    letI := Subtype.orderBot Pbot
+    letI := Subtype.semilatticeSup Psup
+    SupBotHom {x : β // P x} β :=
+  letI := Subtype.orderBot Pbot
+  letI := Subtype.semilatticeSup Psup
+  .mk (SupHom.subtypeVal Psup) (by simp [Subtype.coe_bot Pbot])
+
+@[simp]
+lemma subtypeVal_apply {P : β → Prop}
+    (Pbot : P ⊥) (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) (x : {x : β // P x}) :
+    subtypeVal Pbot Psup x = x := rfl
+
+@[simp]
+lemma subtypeVal_coe {P : β → Prop}
+    (Pbot : P ⊥) (Psup : ∀ ⦃x y : β⦄, P x → P y → P (x ⊔ y)) :
+    ⇑(subtypeVal Pbot Psup) = Subtype.val := rfl
 
 end SupBotHom
 
@@ -893,6 +949,26 @@ theorem inf_apply (f g : InfTopHom α β) (a : α) : (f ⊓ g) a = f a ⊓ g a :
 theorem top_apply (a : α) : (⊤ : InfTopHom α β) a = ⊤ :=
   rfl
 
+/-- `Subtype.val` as an `InfTopHom`. -/
+def subtypeVal {P : β → Prop}
+    (Ptop : P ⊤) (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) :
+    letI := Subtype.orderTop Ptop
+    letI := Subtype.semilatticeInf Pinf
+    InfTopHom {x : β // P x} β :=
+  letI := Subtype.orderTop Ptop
+  letI := Subtype.semilatticeInf Pinf
+  .mk (InfHom.subtypeVal Pinf) (by simp [Subtype.coe_top Ptop])
+
+@[simp]
+lemma subtypeVal_apply {P : β → Prop}
+    (Ptop : P ⊤) (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) (x : {x : β // P x}) :
+    subtypeVal Ptop Pinf x = x := rfl
+
+@[simp]
+lemma subtypeVal_coe {P : β → Prop}
+    (Ptop : P ⊤) (Pinf : ∀ ⦃x y : β⦄, P x → P y → P (x ⊓ y)) :
+    ⇑(subtypeVal Ptop Pinf) = Subtype.val := rfl
+
 end InfTopHom
 
 /-! ### Lattice homomorphisms -/
@@ -1013,11 +1089,31 @@ theorem cancel_left {g : LatticeHom β γ} {f₁ f₂ : LatticeHom α β} (hg : 
   ⟨fun h => LatticeHom.ext fun a => hg <| by rw [← LatticeHom.comp_apply, h, LatticeHom.comp_apply],
     congr_arg _⟩
 
+/-- `Subtype.val` as a `LatticeHom`. -/
+def subtypeVal {P : β → Prop}
+    (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) :
+    letI := Subtype.lattice Psup Pinf
+    LatticeHom {x : β // P x} β :=
+  letI := Subtype.lattice Psup Pinf
+  .mk (SupHom.subtypeVal Psup) (by simp)
+
+@[simp]
+lemma subtypeVal_apply {P : β → Prop}
+    (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y))
+    (x : {x : β // P x}) :
+    subtypeVal Psup Pinf x = x := rfl
+
+@[simp]
+lemma subtypeVal_coe {P : β → Prop}
+    (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) :
+    ⇑(subtypeVal Psup Pinf) = Subtype.val := rfl
+
 end LatticeHom
 
 namespace OrderHomClass
 
-variable (α β) [LinearOrder α] [Lattice β] [FunLike F α β] [OrderHomClass F α β]
+variable (α β)
+variable [LinearOrder α] [Lattice β] [OrderHomClass F α β]
 
 /-- An order homomorphism from a linear order is a lattice homomorphism. -/
 -- Porting note: made it an `instance` because we're no longer afraid of loops
@@ -1182,6 +1278,27 @@ theorem cancel_right {g₁ g₂ : BoundedLatticeHom β γ} {f : BoundedLatticeHo
 theorem cancel_left {g : BoundedLatticeHom β γ} {f₁ f₂ : BoundedLatticeHom α β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => ext fun a => hg <| by rw [← comp_apply, h, comp_apply], congr_arg _⟩
+
+/-- `Subtype.val` as a `BoundedLatticeHom`. -/
+def subtypeVal {P : β → Prop} (Pbot : P ⊥) (Ptop : P ⊤)
+    (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) :
+    letI := Subtype.lattice Psup Pinf
+    letI := Subtype.boundedOrder Pbot Ptop
+    BoundedLatticeHom {x : β // P x} β :=
+  letI := Subtype.lattice Psup Pinf
+  letI := Subtype.boundedOrder Pbot Ptop
+  .mk (.subtypeVal Psup Pinf) (by simp [Subtype.coe_top Ptop]) (by simp [Subtype.coe_bot Pbot])
+
+@[simp]
+lemma subtypeVal_apply {P : β → Prop}
+    (Pbot : P ⊥) (Ptop : P ⊤) (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y))
+    (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) (x : {x : β // P x}) :
+    subtypeVal Pbot Ptop Psup Pinf x = x := rfl
+
+@[simp]
+lemma subtypeVal_coe {P : β → Prop} (Pbot : P ⊥) (Ptop : P ⊤)
+    (Psup : ∀ ⦃x y⦄, P x → P y → P (x ⊔ y)) (Pinf : ∀ ⦃x y⦄, P x → P y → P (x ⊓ y)) :
+    ⇑(subtypeVal Pbot Ptop Psup Pinf) = Subtype.val := rfl
 
 end BoundedLatticeHom
 
@@ -1659,3 +1776,5 @@ def withTopWithBot' [BoundedOrder β] (f : LatticeHom α β) :
   map_bot' := rfl
 
 end LatticeHom
+
+set_option linter.style.longFile 1800

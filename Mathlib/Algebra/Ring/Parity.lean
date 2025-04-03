@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Data.Set.Defs
+import Mathlib.Data.Set.Operations
 import Mathlib.Logic.Function.Iterate
 
 /-!
@@ -143,7 +143,7 @@ lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
   obtain ⟨k, rfl⟩ := hn
   induction' k with k ih
   · simpa
-  have : a ^ 2 = b ^ 2 := add_right_cancel $
+  have : a ^ 2 = b ^ 2 := add_right_cancel <|
     calc
       a ^ 2 + a * b = 0 := by rw [sq, ← mul_add, hab, mul_zero]
       _ = b ^ 2 + a * b := by rw [sq, ← add_mul, add_comm, hab, zero_mul]
@@ -211,15 +211,20 @@ instance : DecidablePred (Odd : ℕ → Prop) := fun _ ↦ decidable_of_iff _ od
 
 lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by rw [odd_iff, mod_two_ne_one]
 
+@[simp] lemma not_odd_iff_even : ¬Odd n ↔ Even n := by rw [not_odd_iff, even_iff]
+@[simp] lemma not_even_iff_odd : ¬Even n ↔ Odd n := by rw [not_even_iff, odd_iff]
+
+@[deprecated not_odd_iff_even (since := "2024-08-21")]
 lemma even_iff_not_odd : Even n ↔ ¬Odd n := by rw [not_odd_iff, even_iff]
 
-@[simp] lemma odd_iff_not_even : Odd n ↔ ¬Even n := by rw [not_even_iff, odd_iff]
+@[deprecated not_even_iff_odd (since := "2024-08-21")]
+lemma odd_iff_not_even : Odd n ↔ ¬Even n := by rw [not_even_iff, odd_iff]
 
 lemma _root_.Odd.not_two_dvd_nat (h : Odd n) : ¬(2 ∣ n) := by
-  rwa [← even_iff_two_dvd, ← odd_iff_not_even]
+  rwa [← even_iff_two_dvd, not_even_iff_odd]
 
 lemma even_xor_odd (n : ℕ) : Xor' (Even n) (Odd n) := by
-  simp [Xor', odd_iff_not_even, Decidable.em (Even n)]
+  simp [Xor', ← not_even_iff_odd, Decidable.em (Even n)]
 
 lemma even_or_odd (n : ℕ) : Even n ∨ Odd n := (even_xor_odd n).or
 
@@ -242,16 +247,16 @@ lemma mod_two_add_add_odd_mod_two (m : ℕ) {n : ℕ} (hn : Odd n) : m % 2 + (m 
   rw [add_comm, mod_two_add_succ_mod_two]
 
 lemma even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by
-  rw [even_add, even_iff_not_odd, even_iff_not_odd, not_iff_not]
+  rw [even_add, ← not_odd_iff_even, ← not_odd_iff_even, not_iff_not]
 
 set_option linter.deprecated false in
 @[simp] lemma not_even_bit1 (n : ℕ) : ¬Even (2 * n + 1) := by simp [parity_simps]
 
 lemma not_even_two_mul_add_one (n : ℕ) : ¬ Even (2 * n + 1) :=
-  odd_iff_not_even.1 <| odd_two_mul_add_one n
+  not_even_iff_odd.2 <| odd_two_mul_add_one n
 
 lemma even_sub' (h : n ≤ m) : Even (m - n) ↔ (Odd m ↔ Odd n) := by
-  rw [even_sub h, even_iff_not_odd, even_iff_not_odd, not_iff_not]
+  rw [even_sub h, ← not_odd_iff_even, ← not_odd_iff_even, not_iff_not]
 
 lemma Odd.sub_odd (hm : Odd m) (hn : Odd n) : Even (m - n) :=
   (le_total n m).elim (fun h ↦ by simp only [even_sub' h, *]) fun h ↦ by
@@ -259,7 +264,7 @@ lemma Odd.sub_odd (hm : Odd m) (hn : Odd n) : Even (m - n) :=
 
 alias _root_.Odd.tsub_odd := Nat.Odd.sub_odd
 
-lemma odd_mul : Odd (m * n) ↔ Odd m ∧ Odd n := by simp [not_or, even_mul]
+lemma odd_mul : Odd (m * n) ↔ Odd m ∧ Odd n := by simp [not_or, even_mul, ← not_even_iff_odd]
 
 lemma Odd.of_mul_left (h : Odd (m * n)) : Odd m :=
   (odd_mul.mp h).1
@@ -271,20 +276,20 @@ lemma even_div : Even (m / n) ↔ m % (2 * n) / n = 0 := by
   rw [even_iff_two_dvd, dvd_iff_mod_eq_zero, ← Nat.mod_mul_right_div_self, mul_comm]
 
 @[parity_simps] lemma odd_add : Odd (m + n) ↔ (Odd m ↔ Even n) := by
-  rw [odd_iff_not_even, even_add, not_iff, odd_iff_not_even]
+  rw [← not_even_iff_odd, even_add, not_iff, ← not_even_iff_odd]
 
 lemma odd_add' : Odd (m + n) ↔ (Odd n ↔ Even m) := by rw [add_comm, odd_add]
 
-lemma ne_of_odd_add (h : Odd (m + n)) : m ≠ n := fun hnot ↦ by simp [hnot] at h
+lemma ne_of_odd_add (h : Odd (m + n)) : m ≠ n := by rintro rfl; simp [← not_even_iff_odd] at h
 
 @[parity_simps] lemma odd_sub (h : n ≤ m) : Odd (m - n) ↔ (Odd m ↔ Even n) := by
-  rw [odd_iff_not_even, even_sub h, not_iff, odd_iff_not_even]
+  rw [← not_even_iff_odd, even_sub h, not_iff, ← not_even_iff_odd]
 
 lemma Odd.sub_even (h : n ≤ m) (hm : Odd m) (hn : Even n) : Odd (m - n) :=
   (odd_sub h).mpr <| iff_of_true hm hn
 
 lemma odd_sub' (h : n ≤ m) : Odd (m - n) ↔ (Odd n ↔ Even m) := by
-  rw [odd_iff_not_even, even_sub h, not_iff, not_iff_comm, odd_iff_not_even]
+  rw [← not_even_iff_odd, even_sub h, not_iff, not_iff_comm, ← not_even_iff_odd]
 
 lemma Even.sub_odd (h : n ≤ m) (hm : Even m) (hn : Odd n) : Odd (m - n) :=
   (odd_sub' h).mpr <| iff_of_true hn hm
@@ -342,16 +347,16 @@ lemma iterate_odd (hf : Involutive f) (hn : Odd n) : f^[n] = f := by
   rw [iterate_add, hf.iterate_two_mul, id_comp, iterate_one]
 
 lemma iterate_eq_self (hf : Involutive f) (hne : f ≠ id) : f^[n] = f ↔ Odd n :=
-  ⟨fun H ↦ odd_iff_not_even.2 fun hn ↦ hne <| by rwa [hf.iterate_even hn, eq_comm] at H,
+  ⟨fun H ↦ not_even_iff_odd.1 fun hn ↦ hne <| by rwa [hf.iterate_even hn, eq_comm] at H,
     hf.iterate_odd⟩
 
 lemma iterate_eq_id (hf : Involutive f) (hne : f ≠ id) : f^[n] = id ↔ Even n :=
-  ⟨fun H ↦ even_iff_not_odd.2 fun hn ↦ hne <| by rwa [hf.iterate_odd hn] at H, hf.iterate_even⟩
+  ⟨fun H ↦ not_odd_iff_even.1 fun hn ↦ hne <| by rwa [hf.iterate_odd hn] at H, hf.iterate_even⟩
 
 end Involutive
 end Function
 
 lemma neg_one_pow_eq_one_iff_even {R : Type*} [Monoid R] [HasDistribNeg R] {n : ℕ}
     (h : (-1 : R) ≠ 1) : (-1 : R) ^ n = 1 ↔ Even n where
-  mp h' := of_not_not fun hn ↦ h <| (Odd.neg_one_pow <| odd_iff_not_even.mpr hn).symm.trans h'
+  mp h' := of_not_not fun hn ↦ h <| (not_even_iff_odd.1 hn).neg_one_pow.symm.trans h'
   mpr := Even.neg_one_pow

@@ -11,7 +11,7 @@ import Mathlib.Algebra.Module.Opposites
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Order.Kleene
-import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Pointwise.Basic
 import Mathlib.Data.Set.Pointwise.BigOperators
 import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
@@ -359,12 +359,12 @@ theorem mul_smul_mul_eq_smul_mul_smul (x y : R) : (x * y) • (M * N) = (x • M
   · rintro ⟨_, hx, rfl⟩
     rw [DistribMulAction.toLinearMap_apply]
     refine Submodule.mul_induction_on hx (fun m hm n hn ↦ ?_) (fun _ _ hn hm ↦ ?_)
-    · rw [← smul_mul_smul x y m n]
+    · rw [mul_smul_mul_comm]
       exact mul_mem_mul (smul_mem_pointwise_smul m x M hm) (smul_mem_pointwise_smul n y N hn)
     · rw [smul_add]
       exact Submodule.add_mem _ hn hm
   · rintro _ ⟨m, hm, rfl⟩ _ ⟨n, hn, rfl⟩
-    erw [smul_mul_smul x y m n]
+    erw [smul_mul_smul_comm]
     exact smul_mem_pointwise_smul _ _ _ (mul_mem_mul hm hn)
 
 /-- Sub-R-modules of an R-algebra form an idempotent semiring. -/
@@ -398,9 +398,10 @@ theorem pow_mem_pow {x : A} (hx : x ∈ M) (n : ℕ) : x ^ n ∈ M ^ n :=
   pow_subset_pow _ <| Set.pow_mem_pow hx _
 
 theorem pow_toAddSubmonoid {n : ℕ} (h : n ≠ 0) : (M ^ n).toAddSubmonoid = M.toAddSubmonoid ^ n := by
-  induction' n with n ih
-  · exact (h rfl).elim
-  · rw [pow_succ, pow_succ, mul_toAddSubmonoid]
+  induction n with
+  | zero => exact (h rfl).elim
+  | succ n ih =>
+    rw [pow_succ, pow_succ, mul_toAddSubmonoid]
     cases n with
     | zero => rw [pow_zero, pow_zero, one_mul, ← mul_toAddSubmonoid, one_mul]
     | succ n => rw [ih n.succ_ne_zero]
@@ -421,15 +422,15 @@ protected theorem pow_induction_on_left' {C : ∀ (n : ℕ) (x), x ∈ M ^ n →
     -- Porting note: swapped argument order to match order of `C`
     {n : ℕ} {x : A}
     (hx : x ∈ M ^ n) : C n x hx := by
-  induction' n with n n_ih generalizing x
-  · rw [pow_zero] at hx
+  induction n generalizing x with
+  | zero =>
+    rw [pow_zero] at hx
     obtain ⟨r, rfl⟩ := hx
     exact algebraMap r
-  revert hx
-  simp_rw [pow_succ']
-  intro hx
-  exact
-    Submodule.mul_induction_on' (fun m hm x ih => mem_mul _ hm _ _ _ (n_ih ih))
+  | succ n n_ih =>
+    revert hx
+    simp_rw [pow_succ']
+    exact fun hx ↦ Submodule.mul_induction_on' (fun m hm x ih => mem_mul _ hm _ _ _ (n_ih ih))
       (fun x hx y hy Cx Cy => add _ _ _ _ _ Cx Cy) hx
 
 /-- Dependent version of `Submodule.pow_induction_on_right`. -/
@@ -442,15 +443,15 @@ protected theorem pow_induction_on_right' {C : ∀ (n : ℕ) (x), x ∈ M ^ n �
         ∀ m (hm : m ∈ M), C i.succ (x * m) (mul_mem_mul hx hm))
     -- Porting note: swapped argument order to match order of `C`
     {n : ℕ} {x : A} (hx : x ∈ M ^ n) : C n x hx := by
-  induction' n with n n_ih generalizing x
-  · rw [pow_zero] at hx
+  induction n generalizing x with
+  | zero =>
+    rw [pow_zero] at hx
     obtain ⟨r, rfl⟩ := hx
     exact algebraMap r
-  revert hx
-  simp_rw [pow_succ]
-  intro hx
-  exact
-    Submodule.mul_induction_on' (fun m hm x ih => mul_mem _ _ hm (n_ih _) _ ih)
+  | succ n n_ih =>
+    revert hx
+    simp_rw [pow_succ]
+    exact fun hx ↦ Submodule.mul_induction_on' (fun m hm x ih => mul_mem _ _ hm (n_ih _) _ ih)
       (fun x hx y hy Cx Cy => add _ _ _ _ _ Cx Cy) hx
 
 /-- To show a property on elements of `M ^ n` holds, it suffices to show that it holds for scalars,

@@ -46,8 +46,6 @@ instance : CoeSort PartialFun Type* :=
 def of : Type* → PartialFun :=
   id
 
--- Porting note: removed this lemma which is useless because of the expansion of coercions
-
 instance : Inhabited PartialFun :=
   ⟨Type*⟩
 
@@ -109,19 +107,20 @@ noncomputable def partialFunToPointed : PartialFun ⥤ Pointed := by
   exact
     { obj := fun X => ⟨Option X, none⟩
       map := fun f => ⟨Option.elim' none fun a => (f a).toOption, rfl⟩
-      map_id := fun X => Pointed.Hom.ext _ _ <| funext fun o => Option.recOn o rfl fun a => (by
+      map_id := fun X => Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => (by
         dsimp [CategoryStruct.id]
         convert Part.some_toOption a)
-      map_comp := fun f g => Pointed.Hom.ext _ _ <| funext fun o => Option.recOn o rfl fun a => by
+      map_comp := fun f g => Pointed.Hom.ext <| funext fun o => Option.recOn o rfl fun a => by
         dsimp [CategoryStruct.comp]
         rw [Part.bind_toOption g (f a), Option.elim'_eq_elim] }
 
 /-- The equivalence induced by `PartialFunToPointed` and `PointedToPartialFun`.
 `Part.equivOption` made functorial. -/
 @[simps!]
-noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
-  CategoryTheory.Equivalence.mk partialFunToPointed pointedToPartialFun
-    (NatIso.ofComponents (fun X => PartialFun.Iso.mk
+noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed where
+  functor := partialFunToPointed
+  inverse := pointedToPartialFun
+  unitIso := NatIso.ofComponents (fun X => PartialFun.Iso.mk
       { toFun := fun a => ⟨some a, some_ne_none a⟩
         invFun := fun a => Option.get _ (Option.ne_none_iff_isSome.1 a.2)
         left_inv := fun a => Option.get_some _ _
@@ -145,13 +144,19 @@ noncomputable def partialFunEquivPointed : PartialFun.{u} ≌ Pointed :=
             · intro h
               split_ifs at h with ha
               rw [some_inj] at h
-              exact ⟨b, ⟨ha, h.symm⟩, rfl⟩) $
+              exact ⟨b, ⟨ha, h.symm⟩, rfl⟩
+  counitIso :=
     NatIso.ofComponents
       (fun X ↦ Pointed.Iso.mk (by classical exact Equiv.optionSubtypeNe X.point) (by rfl))
-      fun {X Y} f ↦ Pointed.Hom.ext _ _ <| funext fun a ↦ by
+      fun {X Y} f ↦ Pointed.Hom.ext <| funext fun a ↦ by
         obtain _ | ⟨a, ha⟩ := a
         · exact f.map_point.symm
         simp_all [Option.casesOn'_eq_elim, Part.elim_toOption]
+  functor_unitIso_comp X := by
+    ext (_ | x)
+    · rfl
+    · simp
+      rfl
 
 /-- Forgetting that maps are total and making them total again by adding a point is the same as just
 adding a point. -/
@@ -165,7 +170,7 @@ noncomputable def typeToPartialFunIsoPartialFunToPointed :
         hom_inv_id := rfl
         inv_hom_id := rfl })
     fun f =>
-    Pointed.Hom.ext _ _ <|
+    Pointed.Hom.ext <|
       funext fun a => Option.recOn a rfl fun a => by
         convert Part.some_toOption _
         simpa using (Part.get_eq_iff_mem (by trivial)).mp rfl

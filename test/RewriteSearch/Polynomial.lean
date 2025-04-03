@@ -1,6 +1,5 @@
 import Mathlib.Algebra.Polynomial.Eval
 import Mathlib.Algebra.Polynomial.Inductions
-import Mathlib.Init.Core
 import Mathlib.Tactic.RewriteSearch
 
 set_option autoImplicit true

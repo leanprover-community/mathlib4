@@ -24,11 +24,7 @@ This file contains some theorems about cofiltered limits of profinite sets.
 
 namespace Profinite
 
-open scoped Classical
-
-open CategoryTheory
-
-open CategoryTheory.Limits
+open CategoryTheory Limits
 
 -- This was a global instance prior to #13170. We may experiment with removing it.
 attribute [local instance] ConcreteCategory.instFunLike
@@ -84,6 +80,7 @@ theorem exists_isClopen_of_cofiltered {U : Set C.pt} (hC : IsLimit C) (hU : IsCl
   -- Since `J` is cofiltered, we can find a single `j0` dominating all the `j ∈ G`.
   -- Pulling back all of the sets from the previous step to `F.obj j0` and taking a union,
   -- we obtain a clopen set in `F.obj j0` which works.
+  classical
   obtain ⟨j0, hj0⟩ := IsCofiltered.inf_objs_exists (G.image j)
   let f : ∀ s ∈ G, j0 ⟶ j s := fun s hs => (hj0 (Finset.mem_image.mpr ⟨s, hs, rfl⟩)).some
   let W : S → Set (F.obj j0) := fun s => if hs : s ∈ G then F.map (f s hs) ⁻¹' V s else Set.univ
@@ -114,6 +111,7 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
   let U := f ⁻¹' {0}
   have hU : IsClopen U := f.isLocallyConstant.isClopen_fiber _
   obtain ⟨j, V, hV, h⟩ := exists_isClopen_of_cofiltered C hC hU
+  classical
   use j, LocallyConstant.ofIsClopen hV
   apply LocallyConstant.locallyConstant_eq_of_fiber_zero_eq
   simp only [Fin.isValue, Functor.const_obj_obj, LocallyConstant.coe_comap, Set.preimage_comp,
@@ -121,6 +119,7 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [← h]
 
+open Classical in
 theorem exists_locallyConstant_finite_aux {α : Type*} [Finite α] (hC : IsLimit C)
     (f : LocallyConstant C.pt α) : ∃ (j : J) (g : LocallyConstant (F.obj j) (α → Fin 2)),
       (f.map fun a b => if a = b then (0 : Fin 2) else 1) = g.comap (C.π.app _) := by
@@ -159,6 +158,7 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
     ∃ (j : J) (g : LocallyConstant (F.obj j) α), f = g.comap (C.π.app _) := by
   inhabit α
   obtain ⟨j, gg, h⟩ := exists_locallyConstant_finite_aux _ hC f
+  classical
   let ι : α → α → Fin 2 := fun a b => if a = b then 0 else 1
   let σ : (α → Fin 2) → α := fun f => if h : ∃ a : α, ι a = f then h.choose else default
   refine ⟨j, gg.map σ, ?_⟩

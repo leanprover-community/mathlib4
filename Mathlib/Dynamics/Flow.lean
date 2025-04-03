@@ -165,8 +165,8 @@ theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
 def toHomeomorph (t : τ) : (α ≃ₜ α) where
   toFun := ϕ t
   invFun := ϕ (-t)
-  left_inv x := by rw [← map_add, neg_add_self, map_zero_apply]
-  right_inv x := by rw [← map_add, add_neg_self, map_zero_apply]
+  left_inv x := by rw [← map_add, neg_add_cancel, map_zero_apply]
+  right_inv x := by rw [← map_add, add_neg_cancel, map_zero_apply]
 
 theorem image_eq_preimage (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=
   (ϕ.toHomeomorph t).toEquiv.image_eq_preimage s

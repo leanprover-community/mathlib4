@@ -75,7 +75,7 @@ private def directSumNeZeroMulEquiv (ι : Type) [DecidableEq ι] (p : ι → ℕ
     · rw [map_zero, map_zero]
     · rw [DirectSum.toAddMonoid_of]
       split_ifs with h
-      · simp [(ZMod.subsingleton_iff.2 $ by rw [h, pow_zero]).elim x 0]
+      · simp [(ZMod.subsingleton_iff.2 <| by rw [h, pow_zero]).elim x 0]
       · simp_rw [directSumNeZeroMulHom, DirectSum.toAddMonoid_of]
     · rw [map_add, map_add, hx, hy]
   map_add' := map_add (directSumNeZeroMulHom p n)
@@ -131,7 +131,7 @@ theorem equiv_directSum_zmod_of_finite [Finite G] :
   obtain ⟨n, ι, fι, p, hp, e, ⟨f⟩⟩ := equiv_free_prod_directSum_zmod G
   cases' n with n
   · have : Unique (Fin Nat.zero →₀ ℤ) :=
-      { uniq := by simp only [Nat.zero_eq, eq_iff_true_of_subsingleton]; trivial }
+      { uniq := by simp only [eq_iff_true_of_subsingleton]; trivial }
     exact ⟨ι, fι, p, hp, e, ⟨f.trans AddEquiv.uniqueProd⟩⟩
   · haveI := @Fintype.prodLeft _ _ _ (Fintype.ofEquiv G f.toEquiv) _
     exact

@@ -47,13 +47,9 @@ in general), and `ι` is countable.
   the uniformity is definitionally the product uniformity. Not registered as an instance.
 -/
 
-
 noncomputable section
 
-open scoped Classical
-open Topology Filter
-
-open TopologicalSpace Set Metric Filter Function
+open Topology TopologicalSpace Set Metric Filter Function
 
 attribute [local simp] pow_le_pow_iff_right one_lt_two inv_le_inv zero_le_two zero_lt_two
 
@@ -63,6 +59,7 @@ namespace PiNat
 
 /-! ### The firstDiff function -/
 
+open Classical in
 /-- In a product space `Π n, E n`, then `firstDiff x y` is the first index at which `x` and `y`
 differ. If `x = y`, then by convention we set `firstDiff x x = 0`. -/
 irreducible_def firstDiff (x y : ∀ n, E n) : ℕ :=
@@ -71,6 +68,7 @@ irreducible_def firstDiff (x y : ∀ n, E n) : ℕ :=
 theorem apply_firstDiff_ne {x y : ∀ n, E n} (h : x ≠ y) :
     x (firstDiff x y) ≠ y (firstDiff x y) := by
   rw [firstDiff_def, dif_pos h]
+  classical
   exact Nat.find_spec (ne_iff.1 h)
 
 theorem apply_eq_of_lt_firstDiff {x y : ∀ n, E n} {n : ℕ} (hn : n < firstDiff x y) : x n = y n := by
@@ -81,6 +79,7 @@ theorem apply_eq_of_lt_firstDiff {x y : ∀ n, E n} {n : ℕ} (hn : n < firstDif
   · exact (not_lt_zero' hn).elim
 
 theorem firstDiff_comm (x y : ∀ n, E n) : firstDiff x y = firstDiff y x := by
+  classical
   simp only [firstDiff_def, ne_comm]
 
 theorem min_firstDiff_le (x y z : ∀ n, E n) (h : x ≠ z) :
@@ -236,6 +235,7 @@ a `MetricSpace` instance, as other distances may be used on these spaces, but we
 local instances in this section.
 -/
 
+open Classical in
 /-- The distance function on a product space `Π n, E n`, given by `dist x y = (1/2)^n` where `n` is
 the first index at which `x` and `y` differ. -/
 protected def dist : Dist (∀ n, E n) :=
@@ -249,6 +249,7 @@ theorem dist_eq_of_ne {x y : ∀ n, E n} (h : x ≠ y) : dist x y = (1 / 2 : ℝ
 protected theorem dist_self (x : ∀ n, E n) : dist x x = 0 := by simp [dist]
 
 protected theorem dist_comm (x y : ∀ n, E n) : dist x y = dist y x := by
+  classical
   simp [dist, @eq_comm _ x y, firstDiff_comm]
 
 protected theorem dist_nonneg (x y : ∀ n, E n) : 0 ≤ dist x y := by
@@ -452,6 +453,7 @@ theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : �
       exact mem_cylinder_iff_dist_le.1 hy
     _ < infDist x s := hn
 
+open Classical in
 /-- Given a point `x` in a product space `Π (n : ℕ), E n`, and `s` a subset of this space, then
 `shortestPrefixDiff x s` if the smallest `n` for which there is no element of `s` having the same
 prefix of length `n` as `x`. If there is no such `n`, then use `0` by convention. -/
@@ -462,6 +464,7 @@ theorem firstDiff_lt_shortestPrefixDiff {s : Set (∀ n, E n)} (hs : IsClosed s)
     (hx : x ∉ s) (hy : y ∈ s) : firstDiff x y < shortestPrefixDiff x s := by
   have A := exists_disjoint_cylinder hs hx
   rw [shortestPrefixDiff, dif_pos A]
+  classical
   have B := Nat.find_spec A
   contrapose! B
   rw [not_disjoint_iff_nonempty_inter]
@@ -494,6 +497,7 @@ theorem inter_cylinder_longestPrefix_nonempty {s : Set (∀ n, E n)} (hs : IsClo
   have B : longestPrefix x s < shortestPrefixDiff x s :=
     Nat.pred_lt (shortestPrefixDiff_pos hs hne hx).ne'
   rw [longestPrefix, shortestPrefixDiff, dif_pos A] at B ⊢
+  classical
   obtain ⟨y, ys, hy⟩ : ∃ y : ∀ n : ℕ, E n, y ∈ s ∧ x ∈ cylinder y (Nat.find A - 1) := by
     simpa only [not_disjoint_iff, mem_cylinder_comm] using Nat.find_min A B
   refine ⟨y, ys, ?_⟩
@@ -552,6 +556,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
     length is `< n`, then it is also the longest prefix of `y`, and we get `f x = f y = z_w`.
     Otherwise, `f x` remains in the same `n`-cylinder as `x`. Similarly for `y`. Finally, `f x` and
     `f y` are again in the same `n`-cylinder, as desired. -/
+  classical
   set f := fun x => if x ∈ s then x else (inter_cylinder_longestPrefix_nonempty hs hne x).some
   have fs : ∀ x ∈ s, f x = x := fun x xs => by simp [f, xs]
   refine ⟨f, fs, ?_, ?_⟩
@@ -827,6 +832,7 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
     apply le_antisymm
     · simp only [le_iInf_iff, le_principal_iff]
       intro ε εpos
+      classical
       obtain ⟨K, hK⟩ :
         ∃ K : Finset ι, (∑' i : { j // j ∉ K }, (1 / 2 : ℝ) ^ encode (i : ι)) < ε / 2 :=
         ((tendsto_order.1 (tendsto_tsum_compl_atTop_zero fun i : ι => (1 / 2 : ℝ) ^ encode i)).2 _

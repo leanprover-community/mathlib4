@@ -205,7 +205,7 @@ theorem frobenius_frobeniusRotation {a₁ a₂ : 𝕎 k} (ha₁ : a₁.coeff 0 �
   ext n
   cases' n with n
   · simp only [WittVector.mul_coeff_zero, WittVector.coeff_frobenius_charP, frobeniusRotation,
-      frobeniusRotationCoeff, Nat.zero_eq]
+      frobeniusRotationCoeff]
     apply solution_spec' _ ha₁
   · simp only [nthRemainder_spec, WittVector.coeff_frobenius_charP, frobeniusRotationCoeff,
       frobeniusRotation]

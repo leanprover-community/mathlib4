@@ -183,27 +183,27 @@ O(1). Rebalance a tree which was previously balanced but has had its left
 side grow by 1, or its right side shrink by 1. -/
 def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
   -- Porting note: removed `clean`
-  cases' id r with rs
-  · cases' id l with ls ll lx lr
+  rcases id r with _ | rs
+  · rcases id l with _ | ⟨ls, ll, lx, lr⟩
     · exact ι x
-    · cases' id ll with lls
-      · cases' lr with _ _ lrx
+    · rcases id ll with _ | lls
+      · rcases lr with _ | ⟨_, _, lrx⟩
         · exact node 2 l x nil
         · exact node 3 (ι lx) lrx ι x
-      · cases' id lr with lrs lrl lrx lrr
+      · rcases id lr with _ | ⟨lrs, lrl, lrx, lrr⟩
         · exact node 3 ll lx ι x
         · exact
             if lrs < ratio * lls then node (ls + 1) ll lx (node (lrs + 1) lr x nil)
             else
               node (ls + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
                 (node (size lrr + 1) lrr x nil)
-  · cases' id l with ls ll lx lr
+  · rcases id l with _ | ⟨ls, ll, lx, lr⟩
     · exact node (rs + 1) nil x r
     · refine if ls > delta * rs then ?_ else node (ls + rs + 1) l x r
-      cases' id ll with lls
+      rcases id ll with _ | lls
       · exact nil
       --should not happen
-      cases' id lr with lrs lrl lrx lrr
+      rcases id lr with _ | ⟨lrs, lrl, lrx, lrr⟩
       · exact nil
       --should not happen
       exact
@@ -218,27 +218,27 @@ O(1). Rebalance a tree which was previously balanced but has had its right
 side grow by 1, or its left side shrink by 1. -/
 def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
   -- Porting note: removed `clean`
-  cases' id l with ls
-  · cases' id r with rs rl rx rr
+  rcases id l with _ | ls
+  · rcases id r with _ | ⟨rs, rl, rx, rr⟩
     · exact ι x
-    · cases' id rr with rrs
-      · cases' rl with _ _ rlx
+    · rcases id rr with _ | rrs
+      · rcases rl with _ | ⟨_, _, rlx⟩
         · exact node 2 nil x r
         · exact node 3 (ι x) rlx ι rx
-      · cases' id rl with rls rll rlx rlr
+      · rcases id rl with _ | ⟨rls, rll, rlx, rlr⟩
         · exact node 3 (ι x) rx rr
         · exact
             if rls < ratio * rrs then node (rs + 1) (node (rls + 1) nil x rl) rx rr
             else
               node (rs + 1) (node (size rll + 1) nil x rll) rlx
                 (node (size rlr + rrs + 1) rlr rx rr)
-  · cases' id r with rs rl rx rr
+  · rcases id r with _ | ⟨rs, rl, rx, rr⟩
     · exact node (ls + 1) l x nil
     · refine if rs > delta * ls then ?_ else node (ls + rs + 1) l x r
-      cases' id rr with rrs
+      rcases id rr with _ | rrs
       · exact nil
       --should not happen
-      cases' id rl with rls rll rlx rlr
+      rcases id rl with _ | ⟨rls, rll, rlx, rlr⟩
       · exact nil
       --should not happen
       exact
@@ -253,26 +253,26 @@ O(1). Rebalance a tree which was previously balanced but has had one side change
 by at most 1. -/
 def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
   -- Porting note: removed `clean`
-  cases' id l with ls ll lx lr
-  · cases' id r with rs rl rx rr
+  rcases id l with _ | ⟨ls, ll, lx, lr⟩
+  · rcases id r with _ | ⟨rs, rl, rx, rr⟩
     · exact ι x
-    · cases' id rl with rls rll rlx rlr
+    · rcases id rl with _ | ⟨rls, rll, rlx, rlr⟩
       · cases id rr
         · exact node 2 nil x r
         · exact node 3 (ι x) rx rr
-      · cases' id rr with rrs
+      · rcases id rr with _ | rrs
         · exact node 3 (ι x) rlx ι rx
         · exact
             if rls < ratio * rrs then node (rs + 1) (node (rls + 1) nil x rl) rx rr
             else
               node (rs + 1) (node (size rll + 1) nil x rll) rlx
                 (node (size rlr + rrs + 1) rlr rx rr)
-  · cases' id r with rs rl rx rr
-    · cases' id ll with lls
-      · cases' lr with _ _ lrx
+  · rcases id r with _ | ⟨rs, rl, rx, rr⟩
+    · rcases id ll with _ | lls
+      · rcases lr with _ | ⟨_, _, lrx⟩
         · exact node 2 l x nil
         · exact node 3 (ι lx) lrx ι x
-      · cases' id lr with lrs lrl lrx lrr
+      · rcases id lr with _ | ⟨lrs, lrl, lrx, lrr⟩
         · exact node 3 ll lx ι x
         · exact
             if lrs < ratio * lls then node (ls + 1) ll lx (node (lrs + 1) lr x nil)
@@ -281,10 +281,10 @@ def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
                 (node (size lrr + 1) lrr x nil)
     · refine
         if delta * ls < rs then ?_ else if delta * rs < ls then ?_ else node (ls + rs + 1) l x r
-      · cases' id rl with rls rll rlx rlr
+      · rcases id rl with _ | ⟨rls, rll, rlx, rlr⟩
         · exact nil
         --should not happen
-        cases' id rr with rrs
+        rcases id rr with _ | rrs
         · exact nil
         --should not happen
         exact
@@ -292,10 +292,10 @@ def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
           else
             node (ls + rs + 1) (node (ls + size rll + 1) l x rll) rlx
               (node (size rlr + rrs + 1) rlr rx rr)
-      · cases' id ll with lls
+      · rcases id ll with _ | lls
         · exact nil
         --should not happen
-        cases' id lr with lrs lrl lrx lrr
+        rcases id lr with _ | ⟨lrs, lrl, lrx, lrr⟩
         · exact nil
         --should not happen
         exact

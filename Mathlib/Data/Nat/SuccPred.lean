@@ -35,10 +35,6 @@ variable {m n : ℕ}
     cases b
     · exact (a.not_lt_zero h).elim
     · exact le_of_succ_le_succ h
-  le_of_pred_lt {a} {b} h := by
-    cases a
-    · exact b.zero_le
-    · exact h
 
 @[simp]
 theorem succ_eq_succ : Order.succ = succ :=

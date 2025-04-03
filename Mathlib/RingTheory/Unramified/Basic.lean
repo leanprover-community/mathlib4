@@ -70,7 +70,7 @@ theorem lift_unique {B : Type u} [CommRing B] [_RB : Algebra R B]
   revert g₁ g₂
   change Function.Injective (Ideal.Quotient.mkₐ R I).comp
   revert _RB
-  apply Ideal.IsNilpotent.induction_on (R := B) I hI
+  apply Ideal.IsNilpotent.induction_on (S := B) I hI
   · intro B _ I hI _; exact FormallyUnramified.comp_injective I hI
   · intro B _ I J hIJ h₁ h₂ _ g₁ g₂ e
     apply h₁
@@ -181,13 +181,14 @@ variable {R S Rₘ Sₘ : Type u} [CommRing R] [CommRing S] [CommRing Rₘ] [Com
 variable (M : Submonoid R)
 variable [Algebra R S] [Algebra R Sₘ] [Algebra S Sₘ] [Algebra R Rₘ] [Algebra Rₘ Sₘ]
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
-variable [IsLocalization M Rₘ] [IsLocalization (M.map (algebraMap R S)) Sₘ]
+variable [IsLocalization (M.map (algebraMap R S)) Sₘ]
+include M
 
 -- Porting note: no longer supported
 -- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
 
 /-- This holds in general for epimorphisms. -/
-theorem of_isLocalization : FormallyUnramified R Rₘ := by
+theorem of_isLocalization [IsLocalization M Rₘ] : FormallyUnramified R Rₘ := by
   constructor
   intro Q _ _ I _ f₁ f₂ _
   apply AlgHom.coe_ringHom_injective

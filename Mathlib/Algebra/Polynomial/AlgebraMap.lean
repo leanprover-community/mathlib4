@@ -217,7 +217,7 @@ end CommSemiring
 section aeval
 
 variable [CommSemiring R] [Semiring A] [CommSemiring A'] [Semiring B]
-variable [Algebra R A] [Algebra R A'] [Algebra R B]
+variable [Algebra R A] [Algebra R B]
 variable {p q : R[X]} (x : A)
 
 /-- Given a valuation `x` of the variable in an `R`-algebra `A`, `aeval R A x` is
@@ -538,10 +538,10 @@ theorem aeval_endomorphism {M : Type*} [CommRing R] [AddCommGroup M] [Module R M
 section StableSubmodule
 
 variable {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
-  {q : Submodule R M} {m : M} (hm : m ∈ q) (p : R[X])
+  {q : Submodule R M} {m : M}
 
 lemma aeval_apply_smul_mem_of_le_comap'
-    [Semiring A] [Algebra R A] [Module A M] [IsScalarTower R A M] (a : A)
+    [Semiring A] [Algebra R A] [Module A M] [IsScalarTower R A M] (hm : m ∈ q) (p : R[X]) (a : A)
     (hq : q ≤ q.comap (Algebra.lsmul R R M a)) :
     aeval a p • m ∈ q := by
   refine p.induction_on (M := fun f ↦ aeval a f • m ∈ q) (by simpa) (fun f₁ f₂ h₁ h₂ ↦ ?_)
@@ -553,7 +553,8 @@ lemma aeval_apply_smul_mem_of_le_comap'
     rw [← q.map_le_iff_le_comap] at hq
     exact hq ⟨_, hmq, rfl⟩
 
-lemma aeval_apply_smul_mem_of_le_comap (f : Module.End R M) (hq : q ≤ q.comap f) :
+lemma aeval_apply_smul_mem_of_le_comap
+    (hm : m ∈ q) (p : R[X]) (f : Module.End R M) (hq : q ≤ q.comap f) :
     aeval f p m ∈ q :=
   aeval_apply_smul_mem_of_le_comap' hm p f hq
 

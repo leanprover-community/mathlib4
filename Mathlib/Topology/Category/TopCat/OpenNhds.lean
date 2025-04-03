@@ -10,12 +10,12 @@ import Mathlib.Data.Set.Subsingleton
 # The category of open neighborhoods of a point
 
 Given an object `X` of the category `TopCat` of topological spaces and a point `x : X`, this file
-builds the type `OpenNhds x` of open neighborhoods of `x` in `X` and endows it with the partial
+builds the type `OpenNhds x` of open neighborhoods of `x` in `X` and endows it with the partial
 order given by inclusion and the corresponding category structure (as a full subcategory of the
 poset category `Set X`). This is used in `Topology.Sheaves.Stalks` to build the stalk of a sheaf
 at `x` as a limit over `OpenNhds x`.
 
-## Main declarations
+## Main declarations
 
 Besides `OpenNhds`, the main constructions here are:
 
@@ -44,7 +44,7 @@ instance partialOrder (x : X) : PartialOrder (OpenNhds x) where
   le U V := U.1 ≤ V.1
   le_refl _ := by dsimp [LE.le]; exact le_rfl
   le_trans _ _ _ := by dsimp [LE.le]; exact le_trans
-  le_antisymm _ _ i j := FullSubcategory.ext _ _ <| le_antisymm i j
+  le_antisymm _ _ i j := FullSubcategory.ext <| le_antisymm i j
 
 instance (x : X) : Lattice (OpenNhds x) :=
   { OpenNhds.partialOrder x with

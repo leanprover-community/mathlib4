@@ -7,6 +7,8 @@ import Lean.Elab.Tactic.Calc
 
 import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Widget.SelectPanelUtils
+import Batteries.CodeAction.Attr
+import Batteries.Lean.Position
 
 /-! # Calc widget
 
@@ -140,3 +142,5 @@ elab_rules : tactic
     Widget.savePanelWidgetInfo CalcPanel.javascriptHash (pure json) proofTerm
     isFirst := false
   evalCalc (← `(tactic|calc%$calcstx $stx))
+
+end Lean.Elab.Tactic

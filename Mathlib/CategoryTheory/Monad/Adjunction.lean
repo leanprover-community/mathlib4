@@ -73,7 +73,7 @@ def toComonad (h : L ⊣ R) : Comonad D where
     rw [← L.map_comp]
     simp
 
-/-- The monad induced by the Eilenberg-Moore adjunction is the original monad.  -/
+/-- The monad induced by the Eilenberg-Moore adjunction is the original monad. -/
 @[simps!]
 def adjToMonadIso (T : Monad C) : T.adj.toMonad ≅ T :=
   MonadIso.mk (NatIso.ofComponents fun X => Iso.refl _)
@@ -84,7 +84,7 @@ def adjToComonadIso (G : Comonad C) : G.adj.toComonad ≅ G :=
   ComonadIso.mk (NatIso.ofComponents fun X => Iso.refl _)
 
 /--
-Given an adjunction `L ⊣ R`, if `L ⋙ R` is abstractly isomorphic to the identity functor, then the
+Given an adjunction `L ⊣ R`, if `L ⋙ R` is abstractly isomorphic to the identity functor, then the
 unit is an isomorphism.
 -/
 def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : 𝟭 C ≅ L ⋙ R where
@@ -100,11 +100,11 @@ def unitAsIsoOfIso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : 𝟭 C ≅ L ⋙ R
     ext X
     exact (adj.toMonad.transport i).right_unit X
 
-lemma isIso_unit_of_iso  (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : IsIso adj.unit :=
+lemma isIso_unit_of_iso (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : IsIso adj.unit :=
   (inferInstanceAs (IsIso (unitAsIsoOfIso adj i).hom))
 
 /--
-Given an adjunction `L ⊣ R`, if `L ⋙ R` is isomorphic to the identity functor, then `L` is
+Given an adjunction `L ⊣ R`, if `L ⋙ R` is isomorphic to the identity functor, then `L` is
 fully faithful.
 -/
 noncomputable def fullyFaithfulLOfCompIsoId (adj : L ⊣ R) (i : L ⋙ R ≅ 𝟭 C) : L.FullyFaithful :=
@@ -112,7 +112,7 @@ noncomputable def fullyFaithfulLOfCompIsoId (adj : L ⊣ R) (i : L ⋙ R ≅ �
   adj.fullyFaithfulLOfIsIsoUnit
 
 /--
-Given an adjunction `L ⊣ R`, if `R ⋙ L` is abstractly isomorphic to the identity functor, then the
+Given an adjunction `L ⊣ R`, if `R ⋙ L` is abstractly isomorphic to the identity functor, then the
 counit is an isomorphism.
 -/
 def counitAsIsoOfIso (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : R ⋙ L ≅ 𝟭 D where
@@ -132,7 +132,7 @@ lemma isIso_counit_of_iso (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : IsIso adj.c
   inferInstanceAs (IsIso (counitAsIsoOfIso adj j).hom)
 
 /--
-Given an adjunction `L ⊣ R`, if `R ⋙ L` is isomorphic to the identity functor, then `R` is
+Given an adjunction `L ⊣ R`, if `R ⋙ L` is isomorphic to the identity functor, then `R` is
 fully faithful.
 -/
 noncomputable def fullyFaithfulROfCompIsoId (adj : L ⊣ R) (j : R ⋙ L ≅ 𝟭 D) : R.FullyFaithful :=
@@ -268,7 +268,7 @@ from `C` to the category of Eilenberg-Moore algebras for the adjunction is an eq
 class ComonadicLeftAdjoint (L : C ⥤ D) where
   /-- a choice of right adjoint for `L` -/
   R : D ⥤ C
-  /-- `L` is a right adjoint -/
+  /-- `L` is a left adjoint -/
   adj : L ⊣ R
   eqv : (Comonad.comparison adj).IsEquivalence
 

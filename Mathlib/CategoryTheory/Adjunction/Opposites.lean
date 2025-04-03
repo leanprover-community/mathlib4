@@ -28,10 +28,6 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 namespace CategoryTheory.Adjunction
 
 /-- If `G.op` is adjoint to `F.op` then `F` is adjoint to `G`. -/
--- Porting note: in mathlib3 we generated all the default `simps` lemmas.
--- However the `simpNF` linter correctly flags some of these as unsuitable simp lemmas.
--- `unit_app` and `counit_app` appear to suffice (tested in mathlib3).
--- See also the porting note on opAdjointOpOfAdjoint
 @[simps! unit_app counit_app]
 def adjointOfOpAdjointOp (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣ G :=
   Adjunction.mkOfHomEquiv {
@@ -69,30 +65,20 @@ def unopAdjointUnopOfAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ)
 
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
 @[simps! unit_app counit_app]
--- Porting note: in mathlib3 we generated all the default `simps` lemmas.
--- However the `simpNF` linter correctly flags some of these as unsuitable simp lemmas.
--- `unit_app` and `counit_app` appear to suffice (tested in mathlib3).
--- See also the porting note on adjointOfOpAdjointOp
 def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.op :=
   Adjunction.mkOfHomEquiv {
     homEquiv := fun X Y =>
       (opEquiv _ Y).trans ((h.homEquiv _ _).symm.trans (opEquiv X (Opposite.op _)).symm)
     homEquiv_naturality_left_symm := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3.
-      intros X' X Y f g
-      dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [homEquiv_unit, homEquiv_unit]
-      simp
+      -- Porting note: This proof was handled by `obviously` in mathlib3. The only obstruction to
+      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` aren't firing.
+      intros
+      simp [opEquiv]
     homEquiv_naturality_right := by
-      -- Porting note: This proof was handled by `obviously` in mathlib3.
-      intros X' X Y f g
-      dsimp [opEquiv]
-      -- Porting note: Why is `erw` needed here?
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [homEquiv_counit, homEquiv_counit]
-      simp }
+      -- Porting note: This proof was handled by `obviously` in mathlib3. The only obstruction to
+      -- automation fully kicking in here is that the `@[simps]` lemmas of `opEquiv` aren't firing.
+      intros
+      simp [opEquiv] }
 
 /-- If `G` is adjoint to `F.unop` then `F` is adjoint to `G.op`. -/
 def adjointOpOfAdjointUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : D ⥤ C) (h : G ⊣ F.unop) : F ⊣ G.op :=

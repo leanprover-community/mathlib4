@@ -23,46 +23,46 @@ This is used to conclude the Cayley-Hamilton theorem for f.g. modules over arbit
 
 variable {ι : Type*} [Fintype ι]
 variable {M : Type*} [AddCommGroup M] (R : Type*) [CommRing R] [Module R M] (I : Ideal R)
-variable (b : ι → M) (hb : Submodule.span R (Set.range b) = ⊤)
+variable (b : ι → M)
 
 open Polynomial Matrix
 
 /-- The composition of a matrix (as an endomorphism of `ι → R`) with the projection
-`(ι → R) →ₗ[R] M`.  -/
+`(ι → R) →ₗ[R] M`. -/
 def PiToModule.fromMatrix [DecidableEq ι] : Matrix ι ι R →ₗ[R] (ι → R) →ₗ[R] M :=
-  (LinearMap.llcomp R _ _ _ (Fintype.total R R b)).comp algEquivMatrix'.symm.toLinearMap
+  (LinearMap.llcomp R _ _ _ (Fintype.linearCombination R R b)).comp algEquivMatrix'.symm.toLinearMap
 
 theorem PiToModule.fromMatrix_apply [DecidableEq ι] (A : Matrix ι ι R) (w : ι → R) :
-    PiToModule.fromMatrix R b A w = Fintype.total R R b (A *ᵥ w) :=
+    PiToModule.fromMatrix R b A w = Fintype.linearCombination R R b (A *ᵥ w) :=
   rfl
 
 theorem PiToModule.fromMatrix_apply_single_one [DecidableEq ι] (A : Matrix ι ι R) (j : ι) :
     PiToModule.fromMatrix R b A (Pi.single j 1) = ∑ i : ι, A i j • b i := by
-  rw [PiToModule.fromMatrix_apply, Fintype.total_apply, Matrix.mulVec_single]
+  rw [PiToModule.fromMatrix_apply, Fintype.linearCombination_apply, Matrix.mulVec_single]
   simp_rw [mul_one]
 
 /-- The endomorphisms of `M` acts on `(ι → R) →ₗ[R] M`, and takes the projection
 to a `(ι → R) →ₗ[R] M`. -/
 def PiToModule.fromEnd : Module.End R M →ₗ[R] (ι → R) →ₗ[R] M :=
-  LinearMap.lcomp _ _ (Fintype.total R R b)
+  LinearMap.lcomp _ _ (Fintype.linearCombination R R b)
 
 theorem PiToModule.fromEnd_apply (f : Module.End R M) (w : ι → R) :
-    PiToModule.fromEnd R b f w = f (Fintype.total R R b w) :=
+    PiToModule.fromEnd R b f w = f (Fintype.linearCombination R R b w) :=
   rfl
 
 theorem PiToModule.fromEnd_apply_single_one [DecidableEq ι] (f : Module.End R M) (i : ι) :
     PiToModule.fromEnd R b f (Pi.single i 1) = f (b i) := by
   rw [PiToModule.fromEnd_apply]
   congr
-  convert Fintype.total_apply_single (S := R) R b i (1 : R)
+  convert Fintype.linearCombination_apply_single (S := R) R b i (1 : R)
   rw [one_smul]
 
 theorem PiToModule.fromEnd_injective (hb : Submodule.span R (Set.range b) = ⊤) :
     Function.Injective (PiToModule.fromEnd R b) := by
   intro x y e
   ext m
-  obtain ⟨m, rfl⟩ : m ∈ LinearMap.range (Fintype.total R R b) := by
-    rw [(Fintype.range_total R b).trans hb]
+  obtain ⟨m, rfl⟩ : m ∈ LinearMap.range (Fintype.linearCombination R R b) := by
+    rw [(Fintype.range_linearCombination R b).trans hb]
     exact Submodule.mem_top
   exact (LinearMap.congr_fun e m : _)
 
@@ -71,18 +71,19 @@ section
 variable {R} [DecidableEq ι]
 
 /-- We say that a matrix represents an endomorphism of `M` if the matrix acting on `ι → R` is
-equal to `f` via the projection `(ι → R) →ₗ[R] M` given by a fixed (spanning) set.  -/
+equal to `f` via the projection `(ι → R) →ₗ[R] M` given by a fixed (spanning) set. -/
 def Matrix.Represents (A : Matrix ι ι R) (f : Module.End R M) : Prop :=
   PiToModule.fromMatrix R b A = PiToModule.fromEnd R b f
 
 variable {b}
 
 theorem Matrix.Represents.congr_fun {A : Matrix ι ι R} {f : Module.End R M} (h : A.Represents b f)
-    (x) : Fintype.total R R b (A *ᵥ x) = f (Fintype.total R R b x) :=
+    (x) : Fintype.linearCombination R R b (A *ᵥ x) = f (Fintype.linearCombination R R b x) :=
   LinearMap.congr_fun h x
 
 theorem Matrix.represents_iff {A : Matrix ι ι R} {f : Module.End R M} :
-    A.Represents b f ↔ ∀ x, Fintype.total R R b (A *ᵥ x) = f (Fintype.total R R b x) :=
+    A.Represents b f ↔
+      ∀ x, Fintype.linearCombination R R b (A *ᵥ x) = f (Fintype.linearCombination R R b x) :=
   ⟨fun e x => e.congr_fun x, fun H => LinearMap.ext fun x => H x⟩
 
 theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
@@ -130,7 +131,8 @@ theorem Matrix.Represents.algebraMap (r : R) :
     (algebraMap _ (Matrix ι ι R) r).Represents b (algebraMap _ (Module.End R M) r) := by
   simpa only [Algebra.algebraMap_eq_smul_one] using Matrix.Represents.one.smul r
 
-theorem Matrix.Represents.eq {A : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
+theorem Matrix.Represents.eq (hb : Submodule.span R (Set.range b) = ⊤)
+    {A : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : A.Represents b f') : f = f' :=
   PiToModule.fromEnd_injective R b hb (h.symm.trans h')
 
@@ -145,6 +147,9 @@ def Matrix.isRepresentation : Subalgebra R (Matrix ι ι R) where
   add_mem' := fun ⟨f₁, e₁⟩ ⟨f₂, e₂⟩ => ⟨f₁ + f₂, e₁.add e₂⟩
   zero_mem' := ⟨0, Matrix.Represents.zero⟩
   algebraMap_mem' r := ⟨algebraMap _ _ r, .algebraMap _⟩
+
+variable (hb : Submodule.span R (Set.range b) = ⊤)
+include hb
 
 /-- The map sending a matrix to the endomorphism it represents. This is an `R`-algebra morphism. -/
 noncomputable def Matrix.isRepresentation.toEnd :

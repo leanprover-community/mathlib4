@@ -23,8 +23,6 @@ open CategoryTheory CategoryTheory.Limits
 variable {ι : Type*}
 variable {V : Type u} [Category.{v} V] [HasZeroMorphisms V]
 
-open scoped Classical
-
 noncomputable section
 
 section

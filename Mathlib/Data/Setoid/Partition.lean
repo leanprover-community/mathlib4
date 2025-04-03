@@ -301,7 +301,7 @@ This type is primarily useful for definitional control of `s` - if this is not n
 structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
   /-- two indexes are equal if they are equal in membership  -/
   eq_of_mem : ∀ {x i j}, x ∈ s i → x ∈ s j → i = j
-  /-- sends an index to an element of the corresponding set-/
+  /-- sends an index to an element of the corresponding set -/
   some : ι → α
   /-- membership invariance for `some`-/
   some_mem : ∀ i, some i ∈ s i
@@ -324,7 +324,7 @@ namespace IndexedPartition
 
 open Set
 
-variable {ι α : Type*} {s : ι → Set α} (hs : IndexedPartition s)
+variable {ι α : Type*} {s : ι → Set α}
 
 /-- On a unique index set there is the obvious trivial partition -/
 instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun _i : ι => (Set.univ : Set α)) :=
@@ -337,13 +337,18 @@ instance [Unique ι] [Inhabited α] : Inhabited (IndexedPartition fun _i : ι =>
 -- Porting note: `simpNF` complains about `mem_index`
 attribute [simp] some_mem --mem_index
 
+variable (hs : IndexedPartition s)
+
+include hs in
 theorem exists_mem (x : α) : ∃ i, x ∈ s i :=
   ⟨hs.index x, hs.mem_index x⟩
 
+include hs in
 theorem iUnion : ⋃ i, s i = univ := by
   ext x
   simp [hs.exists_mem x]
 
+include hs in
 theorem disjoint : Pairwise fun i j => Disjoint (s i) (s j) := fun {_i _j} h =>
   disjoint_left.mpr fun {_x} hxi hxj => h (hs.eq_of_mem hxi hxj)
 

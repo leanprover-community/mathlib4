@@ -51,7 +51,7 @@ open HomComplex
 
 /-- The left inclusion in the mapping cone, as a cochain of degree `-1`. -/
 noncomputable def inl : Cochain F (mappingCone φ) (-1) :=
-  Cochain.mk (fun p q hpq => homotopyCofiber.inlX φ p q  (by dsimp; omega))
+  Cochain.mk (fun p q hpq => homotopyCofiber.inlX φ p q (by dsimp; omega))
 
 /-- The right inclusion in the mapping cone. -/
 noncomputable def inr : G ⟶ mappingCone φ := homotopyCofiber.inr φ
@@ -91,9 +91,9 @@ lemma inr_f_snd_v (p : ℤ) :
 
 @[simp]
 lemma inl_fst :
-    (inl φ).comp (fst φ).1 (neg_add_self 1) = Cochain.ofHom (𝟙 F) := by
+    (inl φ).comp (fst φ).1 (neg_add_cancel 1) = Cochain.ofHom (𝟙 F) := by
   ext p
-  simp [Cochain.comp_v _ _ (neg_add_self 1) p (p-1) p rfl (by omega)]
+  simp [Cochain.comp_v _ _ (neg_add_cancel 1) p (p-1) p rfl (by omega)]
 
 @[simp]
 lemma inl_snd :
@@ -121,7 +121,7 @@ it is also interesting to have `reassoc` variants of lemmas, like `inl_fst_assoc
 @[simp]
 lemma inl_fst_assoc {K : CochainComplex C ℤ} {d e : ℤ} (γ : Cochain F K d) (he : 1 + d = e) :
     (inl φ).comp ((fst φ).1.comp γ he) (by rw [← he, neg_add_cancel_left]) = γ := by
-  rw [← Cochain.comp_assoc _ _ _ (neg_add_self 1) (by omega) (by omega), inl_fst,
+  rw [← Cochain.comp_assoc _ _ _ (neg_add_cancel 1) (by omega) (by omega), inl_fst,
     Cochain.id_comp]
 
 @[simp]
@@ -220,15 +220,15 @@ lemma ext_cochain_from_iff (i j : ℤ) (hij : i + 1 = j)
     exact ⟨h₁, h₂⟩
 
 lemma id :
-    (fst φ).1.comp (inl φ) (add_neg_self 1) +
+    (fst φ).1.comp (inl φ) (add_neg_cancel 1) +
       (snd φ).comp (Cochain.ofHom (inr φ)) (add_zero 0) = Cochain.ofHom (𝟙 _) := by
-  simp [ext_cochain_from_iff φ (-1) 0 (neg_add_self 1)]
+  simp [ext_cochain_from_iff φ (-1) 0 (neg_add_cancel 1)]
 
 lemma id_X (p q : ℤ) (hpq : p + 1 = q) :
     (fst φ).1.v p q hpq ≫ (inl φ).v q p (by omega) +
       (snd φ).v p p (add_zero p) ≫ (inr φ).f p = 𝟙 ((mappingCone φ).X p) := by
   simpa only [Cochain.add_v, Cochain.comp_zero_cochain_v, Cochain.ofHom_v, id_f,
-    Cochain.comp_v _ _ (add_neg_self 1) p q p hpq (by omega)]
+    Cochain.comp_v _ _ (add_neg_cancel 1) p q p hpq (by omega)]
     using Cochain.congr_v (id φ) p p (add_zero p)
 
 @[reassoc]
@@ -275,7 +275,7 @@ lemma d_snd_v' (n : ℤ) :
 lemma δ_inl :
     δ (-1) 0 (inl φ) = Cochain.ofHom (φ ≫ inr φ) := by
   ext p
-  simp [δ_v (-1) 0 (neg_add_self 1) (inl φ) p p (add_zero p) _ _ rfl rfl,
+  simp [δ_v (-1) 0 (neg_add_cancel 1) (inl φ) p p (add_zero p) _ _ rfl rfl,
     inl_v_d φ p (p - 1) (p + 1) (by omega) (by omega)]
 
 @[simp]
@@ -286,13 +286,15 @@ lemma δ_snd :
 
 section
 
-variable {K : CochainComplex C ℤ} {n m : ℤ} (α : Cochain F K m)
-    (β : Cochain G K n) (h : m + 1 = n)
+variable {K : CochainComplex C ℤ} {n m : ℤ}
 
 /-- Given `φ : F ⟶ G`, this is the cochain in `Cochain (mappingCone φ) K n` that is
 constructed from two cochains `α : Cochain F K m` (with `m + 1 = n`) and `β : Cochain F K n`. -/
-noncomputable def descCochain : Cochain (mappingCone φ) K n :=
+noncomputable def descCochain (α : Cochain F K m) (β : Cochain G K n) (h : m + 1 = n) :
+    Cochain (mappingCone φ) K n :=
   (fst φ).1.comp α (by rw [← h, add_comm]) + (snd φ).comp β (zero_add n)
+
+variable (α : Cochain F K m) (β : Cochain G K n) (h : m + 1 = n)
 
 @[simp]
 lemma inl_descCochain :
@@ -346,18 +348,20 @@ noncomputable def descCocycle {K : CochainComplex C ℤ} {n m : ℤ}
 
 section
 
-variable {K : CochainComplex C ℤ} (α : Cochain F K (-1)) (β : G ⟶ K)
-  (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β))
+variable {K : CochainComplex C ℤ}
 
 /-- Given `φ : F ⟶ G`, this is the morphism `mappingCone φ ⟶ K` that is constructed
 from a cochain `α : Cochain F K (-1)` and a morphism `β : G ⟶ K` such that
 `δ (-1) 0 α = Cochain.ofHom (φ ≫ β)`. -/
-noncomputable def desc : mappingCone φ ⟶ K :=
-  Cocycle.homOf (descCocycle φ α (Cocycle.ofHom β) (neg_add_self 1) (by simp [eq]))
+noncomputable def desc (α : Cochain F K (-1)) (β : G ⟶ K)
+    (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β)) : mappingCone φ ⟶ K :=
+  Cocycle.homOf (descCocycle φ α (Cocycle.ofHom β) (neg_add_cancel 1) (by simp [eq]))
+
+variable (α : Cochain F K (-1)) (β : G ⟶ K) (eq : δ (-1) 0 α = Cochain.ofHom (φ ≫ β))
 
 @[simp]
 lemma ofHom_desc :
-    Cochain.ofHom (desc φ α β eq) = descCochain φ α (Cochain.ofHom β) (neg_add_self 1) := by
+    Cochain.ofHom (desc φ α β eq) = descCochain φ α (Cochain.ofHom β) (neg_add_cancel 1) := by
   simp [desc]
 
 @[reassoc (attr := simp)]
@@ -394,18 +398,20 @@ noncomputable def descHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : mappingCo
     Homotopy f₁ f₂ :=
   (Cochain.equivHomotopy f₁ f₂).symm ⟨descCochain φ γ₁ γ₂ (by norm_num), by
     simp only [Cochain.ofHom_comp] at h₂
-    simp [ext_cochain_from_iff _ _ _ (neg_add_self 1),
-      δ_descCochain _ _ _ _ _ (neg_add_self 1), h₁, h₂]⟩
+    simp [ext_cochain_from_iff _ _ _ (neg_add_cancel 1),
+      δ_descCochain _ _ _ _ _ (neg_add_cancel 1), h₁, h₂]⟩
 
 section
 
 variable {K : CochainComplex C ℤ} {n m : ℤ}
-    (α : Cochain K F m) (β : Cochain K G n) (h : n + 1 = m)
 
 /-- Given `φ : F ⟶ G`, this is the cochain in `Cochain (mappingCone φ) K n` that is
 constructed from two cochains `α : Cochain F K m` (with `m + 1 = n`) and `β : Cochain F K n`. -/
-noncomputable def liftCochain : Cochain K (mappingCone φ) n :=
+noncomputable def liftCochain (α : Cochain K F m) (β : Cochain K G n) (h : n + 1 = m) :
+    Cochain K (mappingCone φ) n :=
   α.comp (inl φ) (by omega) + β.comp (Cochain.ofHom (inr φ)) (add_zero n)
+
+variable (α : Cochain K F m) (β : Cochain K G n) (h : n + 1 = m)
 
 @[simp]
 lemma liftCochain_fst :
@@ -434,7 +440,7 @@ lemma δ_liftCochain (m' : ℤ) (hm' : m + 1 = m') :
       (δ n m β + α.comp (Cochain.ofHom φ) (add_zero m)).comp
         (Cochain.ofHom (inr φ)) (add_zero m) := by
   dsimp only [liftCochain]
-  simp only [δ_add, δ_comp α (inl φ) _ m' _ _ h hm' (neg_add_self 1),
+  simp only [δ_add, δ_comp α (inl φ) _ m' _ _ h hm' (neg_add_cancel 1),
     δ_comp_zero_cochain _ _ _ h, δ_inl, Cochain.ofHom_comp,
     Int.negOnePow_neg, Int.negOnePow_one, Units.neg_smul, one_smul,
     δ_ofHom, Cochain.comp_zero, zero_add, Cochain.add_comp,
@@ -505,7 +511,7 @@ noncomputable def liftHomotopy {K : CochainComplex C ℤ} (f₁ f₂ : K ⟶ map
       δ (-1) 0 β + α.comp (Cochain.ofHom φ) (zero_add 0) +
         (Cochain.ofHom f₂).comp (snd φ) (zero_add 0)) :
     Homotopy f₁ f₂ :=
-  (Cochain.equivHomotopy f₁ f₂).symm ⟨liftCochain φ α β (neg_add_self 1), by
+  (Cochain.equivHomotopy f₁ f₂).symm ⟨liftCochain φ α β (neg_add_cancel 1), by
     simp [δ_liftCochain _ _ _ _ _ (zero_add 1), ext_cochain_to_iff _ _ _ (zero_add 1), h₁, h₂]⟩
 
 section
@@ -538,7 +544,7 @@ lemma lift_desc_f {K L : CochainComplex C ℤ} (α : Cocycle K F 1) (β : Cochai
     (lift φ α β eq).f n ≫ (desc φ α' β' eq').f n =
     α.1.v n n' hnn' ≫ α'.v n' n (by omega) + β.v n n (add_zero n) ≫ β'.f n := by
   simp only [lift, desc, Cocycle.homOf_f, liftCocycle_coe, descCocycle_coe, Cocycle.ofHom_coe,
-    liftCochain_v_descCochain_v φ α.1 β α' (Cochain.ofHom β') (zero_add 1) (neg_add_self 1) 0
+    liftCochain_v_descCochain_v φ α.1 β α' (Cochain.ofHom β') (zero_add 1) (neg_add_cancel 1) 0
     (add_zero 0) n n n (add_zero n) (add_zero n) n' hnn', Cochain.ofHom_v]
 
 

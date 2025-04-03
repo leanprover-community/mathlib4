@@ -768,7 +768,7 @@ theorem Finite.of_preimage (h : (f ⁻¹' s).Finite) (hf : Surjective f) : s.Fin
 theorem Finite.preimage (I : Set.InjOn f (f ⁻¹' s)) (h : s.Finite) : (f ⁻¹' s).Finite :=
   (h.subset (image_preimage_subset f s)).of_finite_image I
 
-theorem Finite.preimage'  (h : s.Finite) (hf : ∀ b ∈ s, (f ⁻¹' {b}).Finite) :
+theorem Finite.preimage' (h : s.Finite) (hf : ∀ b ∈ s, (f ⁻¹' {b}).Finite) :
     (f ⁻¹' s).Finite := by
   rw [← Set.biUnion_preimage_singleton]
   exact Set.Finite.biUnion h hf
@@ -1271,6 +1271,22 @@ theorem not_injOn_infinite_finite_image {f : α → β} {s : Set α} (h_inf : s.
   contrapose! h
   rwa [injective_codRestrict, ← injOn_iff_injective]
 
+theorem infinite_iUnion {ι : Type*} [Infinite ι] {s : ι → Set α} (hs : Function.Injective s) :
+    (⋃ i, s i).Infinite :=
+  fun hfin ↦ @not_injective_infinite_finite ι _ _ hfin.finite_subsets.to_subtype
+    (fun i ↦ ⟨s i, subset_iUnion _ _⟩) fun i j h_eq ↦ hs (by simpa using h_eq)
+
+theorem Infinite.biUnion {ι : Type*} {s : ι → Set α} {a : Set ι} (ha : a.Infinite)
+    (hs : a.InjOn s) : (⋃ i ∈ a, s i).Infinite := by
+  rw [biUnion_eq_iUnion]
+  have _ := ha.to_subtype
+  exact infinite_iUnion fun ⟨i,hi⟩ ⟨j,hj⟩ hij ↦ by simp [hs hi hj hij]
+
+theorem Infinite.sUnion {s : Set (Set α)} (hs : s.Infinite) : (⋃₀ s).Infinite := by
+  rw [sUnion_eq_iUnion]
+  have _ := hs.to_subtype
+  exact infinite_iUnion Subtype.coe_injective
+
 /-! ### Order properties -/
 
 section Preorder
@@ -1547,3 +1563,5 @@ theorem DirectedOn.exists_mem_subset_of_finset_subset_biUnion {α ι : Type*} {f
   rw [Set.biUnion_eq_iUnion] at hs
   haveI := hn.coe_sort
   simpa using (directed_comp.2 hc.directed_val).exists_mem_subset_of_finset_subset_biUnion hs
+
+set_option linter.style.longFile 1700

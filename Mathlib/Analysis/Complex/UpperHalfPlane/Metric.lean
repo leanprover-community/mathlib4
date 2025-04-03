@@ -93,7 +93,7 @@ theorem dist_eq_iff_eq_sq_sinh (hr : 0 ≤ r) :
   all_goals positivity
 
 protected theorem dist_triangle (a b c : ℍ) : dist a c ≤ dist a b + dist b c := by
-  rw [dist_le_iff_le_sinh, sinh_half_dist_add_dist, div_mul_eq_div_div _ _ (dist _ _), le_div_iff,
+  rw [dist_le_iff_le_sinh, sinh_half_dist_add_dist, div_mul_eq_div_div _ _ (dist _ _), le_div_iff₀,
     div_mul_eq_mul_div]
   · gcongr
     exact EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist (a : ℂ) b c (conj (b : ℂ))
@@ -218,11 +218,11 @@ theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
       simpa [sqrt_sq_eq_abs] using Complex.abs_im_le_abs (z - w)
 
 theorem im_le_im_mul_exp_dist (z w : ℍ) : z.im ≤ w.im * Real.exp (dist z w) := by
-  rw [← div_le_iff' w.im_pos, ← exp_log z.im_pos, ← exp_log w.im_pos, ← Real.exp_sub, exp_le_exp]
+  rw [← div_le_iff₀' w.im_pos, ← exp_log z.im_pos, ← exp_log w.im_pos, ← Real.exp_sub, exp_le_exp]
   exact (le_abs_self _).trans (dist_log_im_le z w)
 
 theorem im_div_exp_dist_le (z w : ℍ) : z.im / Real.exp (dist z w) ≤ w.im :=
-  (div_le_iff (exp_pos _)).2 (im_le_im_mul_exp_dist z w)
+  (div_le_iff₀ (exp_pos _)).2 (im_le_im_mul_exp_dist z w)
 
 /-- An upper estimate on the complex distance between two points in terms of the hyperbolic distance
 and the imaginary part of one of the points. -/

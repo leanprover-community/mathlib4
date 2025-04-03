@@ -40,7 +40,7 @@ structure DenseInducing [TopologicalSpace α] [TopologicalSpace β] (i : α → 
 namespace DenseInducing
 
 variable [TopologicalSpace α] [TopologicalSpace β]
-variable {i : α → β} (di : DenseInducing i)
+variable {i : α → β}
 
 theorem nhds_eq_comap (di : DenseInducing i) : ∀ a : α, 𝓝 a = comap i (𝓝 <| i a) :=
   di.toInducing.nhds_eq_comap
@@ -48,7 +48,7 @@ theorem nhds_eq_comap (di : DenseInducing i) : ∀ a : α, 𝓝 a = comap i (�
 protected theorem continuous (di : DenseInducing i) : Continuous i :=
   di.toInducing.continuous
 
-theorem closure_range : closure (range i) = univ :=
+theorem closure_range (di : DenseInducing i) : closure (range i) = univ :=
   di.dense.closure_range
 
 protected theorem preconnectedSpace [PreconnectedSpace α] (di : DenseInducing i) :
@@ -90,7 +90,7 @@ protected theorem prod [TopologicalSpace γ] [TopologicalSpace δ] {e₁ : α �
 open TopologicalSpace
 
 /-- If the domain of a `DenseInducing` map is a separable space, then so is the codomain. -/
-protected theorem separableSpace [SeparableSpace α] : SeparableSpace β :=
+protected theorem separableSpace [SeparableSpace α] (di : DenseInducing i) : SeparableSpace β :=
   di.dense.separableSpace di.continuous
 
 variable [TopologicalSpace δ] {f : γ → α} {g : γ → δ} {h : δ → β}
@@ -127,20 +127,21 @@ variable [TopologicalSpace γ]
 def extend (di : DenseInducing i) (f : α → γ) (b : β) : γ :=
   @limUnder _ _ _ ⟨f (di.dense.some b)⟩ (comap i (𝓝 b)) f
 
-theorem extend_eq_of_tendsto [T2Space γ] {b : β} {c : γ} {f : α → γ}
+theorem extend_eq_of_tendsto [T2Space γ] (di : DenseInducing i) {b : β} {c : γ} {f : α → γ}
     (hf : Tendsto f (comap i (𝓝 b)) (𝓝 c)) : di.extend f b = c :=
   haveI := di.comap_nhds_neBot
   hf.limUnder_eq
 
-theorem extend_eq_at [T2Space γ] {f : α → γ} {a : α} (hf : ContinuousAt f a) :
-    di.extend f (i a) = f a :=
+theorem extend_eq_at [T2Space γ] (di : DenseInducing i) {f : α → γ} {a : α}
+    (hf : ContinuousAt f a) : di.extend f (i a) = f a :=
   extend_eq_of_tendsto _ <| di.nhds_eq_comap a ▸ hf
 
-theorem extend_eq_at' [T2Space γ] {f : α → γ} {a : α} (c : γ) (hf : Tendsto f (𝓝 a) (𝓝 c)) :
-    di.extend f (i a) = f a :=
+theorem extend_eq_at' [T2Space γ] (di : DenseInducing i) {f : α → γ} {a : α} (c : γ)
+    (hf : Tendsto f (𝓝 a) (𝓝 c)) : di.extend f (i a) = f a :=
   di.extend_eq_at (continuousAt_of_tendsto_nhds hf)
 
-theorem extend_eq [T2Space γ] {f : α → γ} (hf : Continuous f) (a : α) : di.extend f (i a) = f a :=
+theorem extend_eq [T2Space γ] (di : DenseInducing i) {f : α → γ} (hf : Continuous f) (a : α) :
+    di.extend f (i a) = f a :=
   di.extend_eq_at hf.continuousAt
 
 /-- Variation of `extend_eq` where we ask that `f` has a limit along `comap i (𝓝 b)` for each
@@ -164,7 +165,7 @@ theorem extend_unique_at [T2Space γ] {b : β} {f : α → γ} {g : β → γ} (
 
 theorem extend_unique [T2Space γ] {f : α → γ} {g : β → γ} (di : DenseInducing i)
     (hf : ∀ x, g (i x) = f x) (hg : Continuous g) : di.extend f = g :=
-  funext fun _ => extend_unique_at di (eventually_of_forall hf) hg.continuousAt
+  funext fun _ => extend_unique_at di (Eventually.of_forall hf) hg.continuousAt
 
 theorem continuousAt_extend [T3Space γ] {b : β} {f : α → γ} (di : DenseInducing i)
     (hf : ∀ᶠ x in 𝓝 b, ∃ c, Tendsto f (comap i <| 𝓝 x) (𝓝 c)) : ContinuousAt (di.extend f) b := by
@@ -216,17 +217,17 @@ namespace DenseEmbedding
 open TopologicalSpace
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
-variable {e : α → β} (de : DenseEmbedding e)
+variable {e : α → β}
 
-theorem inj_iff {x y} : e x = e y ↔ x = y :=
+theorem inj_iff (de : DenseEmbedding e) {x y} : e x = e y ↔ x = y :=
   de.inj.eq_iff
 
-theorem to_embedding : Embedding e :=
+theorem to_embedding (de : DenseEmbedding e) : Embedding e :=
   { induced := de.induced
     inj := de.inj }
 
 /-- If the domain of a `DenseEmbedding` is a separable space, then so is its codomain. -/
-protected theorem separableSpace [SeparableSpace α] : SeparableSpace β :=
+protected theorem separableSpace [SeparableSpace α] (de : DenseEmbedding e) : SeparableSpace β :=
   de.toDenseInducing.separableSpace
 
 /-- The product of two dense embeddings is a dense embedding. -/
@@ -241,7 +242,8 @@ def subtypeEmb {α : Type*} (p : α → Prop) (e : α → β) (x : { x // p x })
     { x // x ∈ closure (e '' { x | p x }) } :=
   ⟨e x, subset_closure <| mem_image_of_mem e x.prop⟩
 
-protected theorem subtype (p : α → Prop) : DenseEmbedding (subtypeEmb p e) :=
+protected theorem subtype (de : DenseEmbedding e) (p : α → Prop) :
+    DenseEmbedding (subtypeEmb p e) :=
   { dense :=
       dense_iff_closure_eq.2 <| by
         ext ⟨x, hx⟩
@@ -253,7 +255,7 @@ protected theorem subtype (p : α → Prop) : DenseEmbedding (subtypeEmb p e) :=
         simp [subtypeEmb, nhds_subtype_eq_comap, de.toInducing.nhds_eq_comap, comap_comap,
           (· ∘ ·)] }
 
-theorem dense_image {s : Set α} : Dense (e '' s) ↔ Dense s :=
+theorem dense_image (de : DenseEmbedding e) {s : Set α} : Dense (e '' s) ↔ Dense s :=
   de.toDenseInducing.dense_image
 
 end DenseEmbedding

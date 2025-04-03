@@ -258,28 +258,65 @@ lemma lipschitzOnWith_inv_iff : LipschitzOnWith K f⁻¹ s ↔ LipschitzOnWith K
 lemma locallyLipschitz_inv_iff : LocallyLipschitz f⁻¹ ↔ LocallyLipschitz f := by
   simp [LocallyLipschitz]
 
+@[to_additive (attr := simp)]
+lemma locallyLipschitzOn_inv_iff : LocallyLipschitzOn s f⁻¹ ↔ LocallyLipschitzOn s f := by
+  simp [LocallyLipschitzOn]
+
 @[to_additive] alias ⟨LipschitzWith.of_inv, LipschitzWith.inv⟩ := lipschitzWith_inv_iff
 @[to_additive] alias ⟨AntilipschitzWith.of_inv, AntilipschitzWith.inv⟩ := antilipschitzWith_inv_iff
 @[to_additive] alias ⟨LipschitzOnWith.of_inv, LipschitzOnWith.inv⟩ := lipschitzOnWith_inv_iff
 @[to_additive] alias ⟨LocallyLipschitz.of_inv, LocallyLipschitz.inv⟩ := locallyLipschitz_inv_iff
+@[to_additive]
+alias ⟨LocallyLipschitzOn.of_inv, LocallyLipschitzOn.inv⟩ := locallyLipschitzOn_inv_iff
 
-namespace LipschitzWith
-
-@[to_additive add]
-theorem mul' (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
-    LipschitzWith (Kf + Kg) fun x => f x * g x := fun x y =>
+@[to_additive]
+lemma LipschitzOnWith.mul (hf : LipschitzOnWith Kf f s) (hg : LipschitzOnWith Kg g s) :
+    LipschitzOnWith (Kf + Kg) (fun x ↦ f x * g x) s := fun x hx y hy ↦
   calc
     edist (f x * g x) (f y * g y) ≤ edist (f x) (f y) + edist (g x) (g y) :=
       edist_mul_mul_le _ _ _ _
-    _ ≤ Kf * edist x y + Kg * edist x y := add_le_add (hf x y) (hg x y)
+    _ ≤ Kf * edist x y + Kg * edist x y := add_le_add (hf hx hy) (hg hx hy)
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
 
 @[to_additive]
-theorem div (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
-    LipschitzWith (Kf + Kg) fun x => f x / g x := by
-  simpa only [div_eq_mul_inv] using hf.mul' hg.inv
+lemma LipschitzWith.mul (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
+    LipschitzWith (Kf + Kg) fun x ↦ f x * g x := by
+  simpa [← lipschitzOnWith_univ] using hf.lipschitzOnWith.mul hg.lipschitzOnWith
 
-end LipschitzWith
+@[deprecated (since := "2024-08-25")] alias LipschitzWith.mul' := LipschitzWith.mul
+
+@[to_additive]
+lemma LocallyLipschitzOn.mul (hf : LocallyLipschitzOn s f) (hg : LocallyLipschitzOn s g) :
+    LocallyLipschitzOn s fun x ↦ f x * g x := fun x hx ↦ by
+  obtain ⟨Kf, t, ht, hKf⟩ := hf hx
+  obtain ⟨Kg, u, hu, hKg⟩ := hg hx
+  exact ⟨Kf + Kg, t ∩ u, inter_mem ht hu,
+    (hKf.mono Set.inter_subset_left).mul (hKg.mono Set.inter_subset_right)⟩
+
+@[to_additive]
+lemma LocallyLipschitz.mul (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
+    LocallyLipschitz fun x ↦ f x * g x := by
+  simpa [← locallyLipschitzOn_univ] using hf.locallyLipschitzOn.mul hg.locallyLipschitzOn
+
+@[to_additive]
+lemma LipschitzOnWith.div (hf : LipschitzOnWith Kf f s) (hg : LipschitzOnWith Kg g s) :
+    LipschitzOnWith (Kf + Kg) (fun x ↦ f x / g x) s := by
+  simpa only [div_eq_mul_inv] using hf.mul hg.inv
+
+@[to_additive]
+theorem LipschitzWith.div (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
+    LipschitzWith (Kf + Kg) fun x => f x / g x := by
+  simpa only [div_eq_mul_inv] using hf.mul hg.inv
+
+@[to_additive]
+lemma LocallyLipschitzOn.div (hf : LocallyLipschitzOn s f) (hg : LocallyLipschitzOn s g) :
+    LocallyLipschitzOn s fun x ↦ f x / g x := by
+  simpa only [div_eq_mul_inv] using hf.mul hg.inv
+
+@[to_additive]
+lemma LocallyLipschitz.div (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) :
+    LocallyLipschitz fun x ↦ f x / g x := by
+  simpa only [div_eq_mul_inv] using hf.mul hg.inv
 
 namespace AntilipschitzWith
 
@@ -289,7 +326,7 @@ theorem mul_lipschitzWith (hf : AntilipschitzWith Kf f) (hg : LipschitzWith Kg g
   letI : PseudoMetricSpace α := PseudoEMetricSpace.toPseudoMetricSpace hf.edist_ne_top
   refine AntilipschitzWith.of_le_mul_dist fun x y => ?_
   rw [NNReal.coe_inv, ← _root_.div_eq_inv_mul]
-  rw [le_div_iff (NNReal.coe_pos.2 <| tsub_pos_iff_lt.2 hK)]
+  rw [le_div_iff₀ (NNReal.coe_pos.2 <| tsub_pos_iff_lt.2 hK)]
   rw [mul_comm, NNReal.coe_sub hK.le, _root_.sub_mul]
   -- Porting note: `ENNReal.sub_mul` should be `protected`?
   calc
@@ -312,7 +349,7 @@ end PseudoEMetricSpace
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) SeminormedCommGroup.to_lipschitzMul : LipschitzMul E :=
-  ⟨⟨1 + 1, LipschitzWith.prod_fst.mul' LipschitzWith.prod_snd⟩⟩
+  ⟨⟨1 + 1, LipschitzWith.prod_fst.mul LipschitzWith.prod_snd⟩⟩
 
 -- See note [lower instance priority]
 /-- A seminormed group is a uniform group, i.e., multiplication and division are uniformly

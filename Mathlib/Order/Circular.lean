@@ -30,7 +30,7 @@ circular preorder is like a circular partial order, but several points can coexi
 
 Note that the relations between `CircularPreorder`, `CircularPartialOrder` and `CircularOrder`
 are subtler than between `Preorder`, `PartialOrder`, `LinearOrder`. In particular, one cannot
-simply extend the `btw` of a `CircularPartialOrder` to make it a `CircularOrder`.
+simply extend the `Btw` of a `CircularPartialOrder` to make it a `CircularOrder`.
 
 One can translate from usual orders to circular ones by "closing the necklace at infinity". See
 `LE.toBtw` and `LT.toSBtw`. Going the other way involves "cutting the necklace" or

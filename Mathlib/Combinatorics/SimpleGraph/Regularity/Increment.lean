@@ -166,7 +166,7 @@ theorem energy_increment (hP : P.IsEquipartition) (hP₇ : 7 ≤ P.parts.card)
     _ = (6/7 * P.parts.card ^ 2) * ε ^ 5 * (7 / 24) := by ring
     _ ≤ P.parts.offDiag.card * ε ^ 5 * (22 / 75) := by
         gcongr ?_ * _ * ?_
-        · rw [← mul_div_right_comm, div_le_iff (by norm_num), offDiag_card]
+        · rw [← mul_div_right_comm, div_le_iff₀ (by norm_num), offDiag_card]
           norm_cast
           rw [tsub_mul]
           refine le_tsub_of_add_le_left ?_

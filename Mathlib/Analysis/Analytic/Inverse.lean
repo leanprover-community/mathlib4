@@ -26,8 +26,7 @@ we prove that they coincide and study their properties (notably convergence).
 
 -/
 
-
-open scoped Classical Topology
+open scoped Topology
 
 open Finset Filter
 
@@ -91,6 +90,7 @@ term is invertible. -/
 theorem leftInv_comp (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[𝕜] F)
     (h : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) : (leftInv p i).comp p = id 𝕜 E := by
   ext (n v)
+  classical
   match n with
   | 0 =>
     simp only [leftInv_coeff_zero, ContinuousMultilinearMap.zero_apply, id_apply_ne_one, Ne,
@@ -192,8 +192,8 @@ theorem comp_rightInv_aux1 {n : ℕ} (hn : 0 < n) (p : FormalMultilinearSeries �
     (q : FormalMultilinearSeries 𝕜 F E) (v : Fin n → F) :
     p.comp q n v =
       ∑ c ∈ {c : Composition n | 1 < c.length}.toFinset,
-          p c.length (q.applyComposition c v) +
-        p 1 fun _ => q n v := by
+          p c.length (q.applyComposition c v) + p 1 fun _ => q n v := by
+  classical
   have A :
     (Finset.univ : Finset (Composition n)) =
       {c | 1 < Composition.length c}.toFinset ∪ {Composition.single n hn} := by
@@ -284,7 +284,8 @@ theorem leftInv_eq_rightInv (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
     (h : p 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm i) : leftInv p i = rightInv p i :=
   calc
     leftInv p i = leftInv p.removeZero i := by rw [leftInv_removeZero]
-    _ = rightInv p.removeZero i := by apply leftInv_eq_rightInv_aux <;> simp; exact h
+    _ = rightInv p.removeZero i := by
+      apply leftInv_eq_rightInv_aux _ _ (by simpa using h) (by simp)
     _ = rightInv p i := by rw [rightInv_removeZero]
 
 /-!
@@ -399,8 +400,8 @@ theorem radius_right_inv_pos_of_radius_pos_aux1 (n : ℕ) (p : ℕ → ℝ) (hp 
     _ = ∑ e ∈ compPartialSumSource 2 (n + 1) n, ∏ j : Fin e.1, r * (a ^ e.2 j * p (e.2 j)) := by
       symm
       apply compChangeOfVariables_sum
-      rintro ⟨k, blocks_fun⟩ H
-      have K : (compChangeOfVariables 2 (n + 1) n ⟨k, blocks_fun⟩ H).snd.length = k := by simp
+      rintro ⟨k, blocksFun⟩ H
+      have K : (compChangeOfVariables 2 (n + 1) n ⟨k, blocksFun⟩ H).snd.length = k := by simp
       congr 2 <;> try rw [K]
       rw [Fin.heq_fun_iff K.symm]
       intro j

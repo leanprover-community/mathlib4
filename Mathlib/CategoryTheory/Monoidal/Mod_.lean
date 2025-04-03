@@ -60,7 +60,7 @@ instance : Category (Mod_ A) where
 -- Porting note (#5229): added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {M N : Mod_ A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) : f₁ = f₂ :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 @[simp]
 theorem id_hom' (M : Mod_ A) : (𝟙 M : M ⟶ M).hom = 𝟙 M.X := by

@@ -901,7 +901,7 @@ theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.s
         simp
       · rw [edges_cons, List.count_cons]
         split_ifs with h''
-        · rw [Sym2.eq_iff] at h''
+        · simp only [beq_iff_eq, Sym2.eq, Sym2.rel_iff'] at h''
           obtain ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩ := h''
           · exact (h' rfl).elim
           · cases p' <;> simp!
@@ -1071,7 +1071,7 @@ theorem map_copy (hu : u = u') (hv : v = v') :
 theorem map_id (p : G.Walk u v) : p.map Hom.id = p := by
   induction p with
   | nil => rfl
-  | cons _ p' ih => simp [ih p']
+  | cons _ p' ih => simp [ih]
 
 @[simp]
 theorem map_map : (p.map f).map f' = p.map (f'.comp f) := by
@@ -1134,7 +1134,7 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
 abbrev mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v) : G'.Walk u v :=
   p.map (Hom.mapSpanningSubgraphs h)
 
-/-! ### Transferring between graphs -/
+/-! ### Transferring between graphs -/
 
 /-- The walk `p` transferred to lie in `H`, given that `H` contains its edges. -/
 @[simp]

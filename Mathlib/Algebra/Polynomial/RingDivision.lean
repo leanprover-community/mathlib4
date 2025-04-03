@@ -130,7 +130,7 @@ theorem natDegree_pow (p : R[X]) (n : ℕ) : natDegree (p ^ n) = n * natDegree p
   classical
   obtain rfl | hp := eq_or_ne p 0
   · obtain rfl | hn := eq_or_ne n 0 <;> simp [*]
-  exact natDegree_pow' $ by
+  exact natDegree_pow' <| by
     rw [← leadingCoeff_pow, Ne, leadingCoeff_eq_zero]; exact pow_ne_zero _ hp
 
 theorem degree_le_mul_left (p : R[X]) (hq : q ≠ 0) : degree p ≤ degree (p * q) := by
@@ -179,7 +179,7 @@ theorem natDegree_eq_zero_of_isUnit (h : IsUnit p) : natDegree p = 0 := by
   nontriviality R
   obtain ⟨q, hq⟩ := h.exists_right_inv
   have := natDegree_mul (left_ne_zero_of_mul_eq_one hq) (right_ne_zero_of_mul_eq_one hq)
-  rw [hq, natDegree_one, eq_comm, add_eq_zero_iff] at this
+  rw [hq, natDegree_one, eq_comm, add_eq_zero] at this
   exact this.1
 
 theorem degree_eq_zero_of_isUnit [Nontrivial R] (h : IsUnit p) : degree p = 0 :=
@@ -311,6 +311,7 @@ variable [CommSemiring R] {a p : R[X]}
 section Monic
 
 variable (hp : p.Monic)
+include hp
 
 theorem Monic.C_dvd_iff_isUnit {a : R} : C a ∣ p ↔ IsUnit a :=
   ⟨fun h => isUnit_iff_dvd_one.mpr <|
@@ -681,7 +682,7 @@ theorem comp_eq_zero_iff : p.comp q = 0 ↔ p = 0 ∨ p.eval (q.coeff 0) = 0 ∧
   · exact fun h =>
       Or.rec (fun h => by rw [h, zero_comp]) (fun h => by rw [h.2, comp_C, h.1, C_0]) h
 
-lemma aeval_ne_zero_of_isCoprime [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
+lemma aeval_ne_zero_of_isCoprime {R} [CommSemiring R] [Nontrivial S] [Semiring S] [Algebra R S]
     {p q : R[X]} (h : IsCoprime p q) (s : S) : aeval s p ≠ 0 ∨ aeval s q ≠ 0 := by
   by_contra! hpq
   rcases h with ⟨_, _, h⟩

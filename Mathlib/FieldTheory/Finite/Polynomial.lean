@@ -45,8 +45,6 @@ namespace MvPolynomial
 
 noncomputable section
 
-open scoped Classical
-
 open Set LinearMap Submodule
 
 variable {K : Type*} {σ : Type*}
@@ -73,6 +71,7 @@ theorem degrees_indicator (c : σ → K) :
     degrees (indicator c) ≤ ∑ s : σ, (Fintype.card K - 1) • {s} := by
   rw [indicator]
   refine le_trans (degrees_prod _ _) (Finset.sum_le_sum fun s _ => ?_)
+  classical
   refine le_trans (degrees_sub _ _) ?_
   rw [degrees_one, ← bot_eq_zero, bot_sup_eq]
   refine le_trans (degrees_pow _ _) (nsmul_le_nsmul_right ?_ _)
@@ -82,6 +81,7 @@ theorem degrees_indicator (c : σ → K) :
 
 theorem indicator_mem_restrictDegree (c : σ → K) :
     indicator c ∈ restrictDegree σ K (Fintype.card K - 1) := by
+  classical
   rw [mem_restrictDegree_iff_sup, indicator]
   intro n
   refine le_trans (Multiset.count_le_of_le _ <| degrees_indicator _) (le_of_eq ?_)
@@ -126,6 +126,7 @@ variable [Field K] [Fintype K] [Finite σ]
 theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).map (evalₗ K σ) = ⊤ := by
   cases nonempty_fintype σ
   refine top_unique (SetLike.le_def.2 fun e _ => mem_map.2 ?_)
+  classical
   refine ⟨∑ n : σ → K, e n • indicator n, ?_, ?_⟩
   · exact sum_mem fun c _ => smul_mem _ _ (indicator_mem_restrictDegree _)
   · ext n
@@ -146,15 +147,14 @@ end MvPolynomial
 
 namespace MvPolynomial
 
-open scoped Classical Cardinal
-
+open scoped Cardinal
 open LinearMap Submodule
 
 universe u
 
 variable (σ : Type u) (K : Type u) [Fintype K]
 
--- Porting note: `@[derive [add_comm_group, module K, inhabited]]` done by hand.
+-- Porting note: `@[derive [AddCommGroup, Module K, Inhabited]]` done by hand.
 /-- The submodule of multivariate polynomials whose degree of each variable is strictly less
 than the cardinality of K. -/
 def R [CommRing K] : Type u :=
@@ -169,7 +169,7 @@ noncomputable instance [CommRing K] : Module K (R σ K) :=
 noncomputable instance [CommRing K] : Inhabited (R σ K) :=
   inferInstanceAs (Inhabited (restrictDegree σ K (Fintype.card K - 1)))
 
-/-- Evaluation in the `mv_polynomial.R` subtype. -/
+/-- Evaluation in the `MvPolynomial.R` subtype. -/
 def evalᵢ [CommRing K] : R σ K →ₗ[K] (σ → K) → K :=
   (evalₗ K σ).comp (restrictDegree σ K (Fintype.card K - 1)).subtype
 
@@ -177,6 +177,8 @@ section CommRing
 
 variable [CommRing K]
 
+-- TODO: would be nice to replace this by suitable decidability assumptions
+open Classical in
 noncomputable instance decidableRestrictDegree (m : ℕ) :
     DecidablePred (· ∈ { n : σ →₀ ℕ | ∀ i, n i ≤ m }) := by
   simp only [Set.mem_setOf_eq]; infer_instance
@@ -185,6 +187,7 @@ end CommRing
 
 variable [Field K]
 
+open Classical in
 theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :=
   calc
     Module.rank K (R σ K) =
@@ -205,11 +208,13 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
 
 instance [Finite σ] : FiniteDimensional K (R σ K) := by
   cases nonempty_fintype σ
+  classical
   exact
     IsNoetherian.iff_fg.1
       (IsNoetherian.iff_rank_lt_aleph0.mpr <| by
         simpa only [rank_R] using Cardinal.nat_lt_aleph0 (Fintype.card (σ → K)))
 
+open Classical in
 theorem finrank_R [Fintype σ] : FiniteDimensional.finrank K (R σ K) = Fintype.card (σ → K) :=
   FiniteDimensional.finrank_eq_of_rank_eq (rank_R σ K)
 
@@ -222,6 +227,7 @@ theorem range_evalᵢ [Finite σ] : range (evalᵢ σ K) = ⊤ := by
 theorem ker_evalₗ [Finite σ] : ker (evalᵢ σ K) = ⊥ := by
   cases nonempty_fintype σ
   refine (ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank ?_).mpr (range_evalᵢ σ K)
+  classical
   rw [FiniteDimensional.finrank_fintype_fun_eq_card, finrank_R]
 
 theorem eq_zero_of_eval_eq_zero [Finite σ] (p : MvPolynomial σ K) (h : ∀ v : σ → K, eval v p = 0)

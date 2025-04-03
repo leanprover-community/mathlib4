@@ -96,6 +96,6 @@ theorem aestronglyMeasurable_withDensity_iff {E : Type*} [NormedAddCommGroup E]
     refine ⟨fun x => (f x : ℝ)⁻¹ • g' x, hf.coe_nnreal_real.inv.stronglyMeasurable.smul g'meas, ?_⟩
     rw [EventuallyEq, ae_withDensity_iff hf.coe_nnreal_ennreal]
     filter_upwards [hg'] with x hx h'x
-    rw [← hx, smul_smul, _root_.inv_mul_cancel, one_smul]
+    rw [← hx, smul_smul, inv_mul_cancel₀, one_smul]
     simp only [Ne, ENNReal.coe_eq_zero] at h'x
     simpa only [NNReal.coe_eq_zero, Ne] using h'x

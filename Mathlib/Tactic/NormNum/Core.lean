@@ -357,3 +357,5 @@ Unlike `norm_num`, this command does not fail when no simplifications are made.
 macro (name := normNumCmd) "#norm_num" cfg:(config)? o:(&" only")?
     args:(Parser.Tactic.simpArgs)? " :"? ppSpace e:term : command =>
   `(command| #conv norm_num $(cfg)? $[only%$o]? $(args)? => $e)
+
+end Mathlib.Tactic

@@ -8,7 +8,7 @@ import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Data.Finsupp.ToDFinsupp
 
 /-!
-# Conversion between `AddMonoidAlgebra` and homogenous `DirectSum`
+# Conversion between `AddMonoidAlgebra` and homogeneous `DirectSum`
 
 This module provides conversions between `AddMonoidAlgebra` and `DirectSum`.
 The latter is essentially a dependent version of the former.
@@ -64,7 +64,7 @@ open DirectSum
 
 section Defs
 
-/-- Interpret an `AddMonoidAlgebra` as a homogenous `DirectSum`. -/
+/-- Interpret an `AddMonoidAlgebra` as a homogeneous `DirectSum`. -/
 def AddMonoidAlgebra.toDirectSum [Semiring M] (f : AddMonoidAlgebra M ι) : ⨁ _ : ι, M :=
   Finsupp.toDFinsupp f
 
@@ -79,7 +79,7 @@ theorem AddMonoidAlgebra.toDirectSum_single (i : ι) (m : M) :
 
 variable [∀ m : M, Decidable (m ≠ 0)]
 
-/-- Interpret a homogenous `DirectSum` as an `AddMonoidAlgebra`. -/
+/-- Interpret a homogeneous `DirectSum` as an `AddMonoidAlgebra`. -/
 def DirectSum.toAddMonoidAlgebra (f : ⨁ _ : ι, M) : AddMonoidAlgebra M ι :=
   DFinsupp.toFinsupp f
 
@@ -191,7 +191,7 @@ def addMonoidAlgebraEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, Dec
     toFun := AddMonoidAlgebra.toDirectSum
     invFun := DirectSum.toAddMonoidAlgebra }
 
-/-- The additive version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`.  -/
+/-- The additive version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`. -/
 @[simps (config := .asFn)]
 def addMonoidAlgebraAddEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, Decidable (m ≠ 0)] :
     AddMonoidAlgebra M ι ≃+ ⨁ _ : ι, M :=
@@ -200,7 +200,7 @@ def addMonoidAlgebraAddEquivDirectSum [DecidableEq ι] [Semiring M] [∀ m : M, 
     invFun := DirectSum.toAddMonoidAlgebra
     map_add' := AddMonoidAlgebra.toDirectSum_add }
 
-/-- The ring version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`.  -/
+/-- The ring version of `AddMonoidAlgebra.addMonoidAlgebraEquivDirectSum`. -/
 @[simps (config := .asFn)]
 def addMonoidAlgebraRingEquivDirectSum [DecidableEq ι] [AddMonoid ι] [Semiring M]
     [∀ m : M, Decidable (m ≠ 0)] : AddMonoidAlgebra M ι ≃+* ⨁ _ : ι, M :=

@@ -28,7 +28,7 @@ This file gathers various results about finite modules over a local ring `(R, �
   `l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/
 
-variable {R S} [CommRing R] [CommRing S] [Algebra R S] [LocalRing R]
+variable {R S} [CommRing R] [CommRing S] [Algebra R S]
 
 section
 
@@ -41,9 +41,10 @@ local notation "k" => ResidueField R
 local notation "𝔪" => maximalIdeal R
 
 variable {P} [AddCommGroup P] [Module R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
-variable (hg : Surjective g) (h : Exact f g)
 
 namespace LocalRing
+
+variable [LocalRing R]
 
 theorem map_mkQ_eq {N₁ N₂ : Submodule R M} (h : N₁ ≤ N₂) (h' : N₂.FG) :
     N₁.map (Submodule.mkQ (𝔪 • N₂)) = N₂.map (Submodule.mkQ (𝔪 • N₂)) ↔ N₁ = N₂ := by
@@ -135,6 +136,8 @@ theorem lTensor_injective_of_exact_of_exact_of_rTensor_injective
 
 namespace Module
 
+variable [LocalRing R]
+
 /--
 If `M` is a finitely presented module over a local ring `(R, 𝔪)` such that `m ⊗ M → M` is
 injective, then `M` is free.
@@ -148,10 +151,10 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
   letI : IsNoetherian k (k ⊗[R] (I →₀ R)) :=
     isNoetherian_of_isNoetherianRing_of_finite k (k ⊗[R] (I →₀ R))
   choose f hf using TensorProduct.mk_surjective R M k Ideal.Quotient.mk_surjective
-  -- By choosing an abitrary lift of `b` to `I → M`, we get a surjection `i : Rᴵ → M`.
-  let i := Finsupp.total I M R (f ∘ b)
+  -- By choosing an arbitrary lift of `b` to `I → M`, we get a surjection `i : Rᴵ → M`.
+  let i := Finsupp.linearCombination R (f ∘ b)
   have hi : Surjective i := by
-    rw [← LinearMap.range_eq_top, Finsupp.range_total]
+    rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
     exact LocalRing.span_eq_top_of_tmul_eq_basis (R := R) (f := f ∘ b) b (fun _ ↦ hf _)
   have : Module.Finite R (LinearMap.ker i) := by
     constructor
@@ -199,7 +202,7 @@ theorem free_of_flat_of_localRing [Module.FinitePresentation R P] [Module.Flat R
 If `M → N → P → 0` is a presentation of `P` over a local ring `(R, 𝔪, k)` with
 `M` finite and `N` finite free, then injectivity of `k ⊗ M → k ⊗ N` implies that `P` is free.
 -/
-theorem free_of_lTensor_residueField_injective
+theorem free_of_lTensor_residueField_injective (hg : Surjective g) (h : Exact f g)
     [Module.Finite R M] [Module.Finite R N] [Module.Free R N]
     (hf : Function.Injective (f.lTensor k)) :
     Module.Free R P := by
@@ -219,7 +222,7 @@ Given a linear map `l : M → N` over a local ring `(R, 𝔪, k)`
 with `M` finite and `N` finite free,
 `l` is a split injection if and only if `k ⊗ l` is a (split) injection.
 -/
-theorem LocalRing.split_injective_iff_lTensor_residueField_injective
+theorem LocalRing.split_injective_iff_lTensor_residueField_injective [LocalRing R]
     [Module.Finite R M] [Module.Finite R N] [Module.Free R N] (l : M →ₗ[R] N) :
     (∃ l', l' ∘ₗ l = LinearMap.id) ↔ Function.Injective (l.lTensor (ResidueField R)) := by
   constructor

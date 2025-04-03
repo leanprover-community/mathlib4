@@ -113,7 +113,7 @@ theorem finitePresentation_ofLocalizationSpanTarget :
     · infer_instance
   rw [RingHom.FinitePresentation]
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.mp hfintype
-  obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_total S (s : Set S) 1).mp
+  obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_linearCombination S (s : Set S) 1).mp
       (show (1 : S) ∈ Ideal.span (s : Set S) by rw [hs]; trivial)
   choose g' hg' using (fun g : s ↦ hf g)
   choose h' hh' using (fun g : s ↦ hf (l g))
@@ -124,7 +124,7 @@ theorem finitePresentation_ofLocalizationSpanTarget :
     simp only [Finset.univ_eq_attach, I, Ideal.mem_span_singleton] at hp
     obtain ⟨q, rfl⟩ := hp
     simp only [map_mul, map_sub, map_sum, map_one, hg', hh']
-    erw [Finsupp.total_apply_of_mem_supported S (s := s.attach)] at hl
+    erw [Finsupp.linearCombination_apply_of_mem_supported S (s := s.attach)] at hl
     · rw [← hl]
       simp only [Finset.coe_sort_coe, smul_eq_mul, mul_comm, sub_self, mul_zero, zero_mul]
     · rintro a -

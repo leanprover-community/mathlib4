@@ -194,8 +194,4 @@ elab_rules : tactic
 
   _ ← simpLocation r.ctx {} dis loc
 
-end FieldSimp
-
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic.FieldSimp

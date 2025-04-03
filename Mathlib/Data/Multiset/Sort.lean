@@ -15,11 +15,12 @@ namespace Multiset
 
 open List
 
-variable {α : Type*}
+variable {α β : Type*}
 
 section sort
 
 variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
+variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
 
 /-- `sort s` constructs a sorted list from the multiset `s`.
   (Uses merge sort algorithm.) -/
@@ -54,6 +55,12 @@ theorem sort_zero : sort r 0 = [] :=
 @[simp]
 theorem sort_singleton (a : α) : sort r {a} = [a] :=
   List.mergeSort_singleton r a
+
+theorem map_sort (f : α → β) (s : Multiset α)
+    (hs : ∀ a ∈ s, ∀ b ∈ s, r a b ↔ r' (f a) (f b)) :
+    (s.sort r).map f = (s.map f).sort r' := by
+  revert s
+  exact Quot.ind fun _ => List.map_mergeSort _ _ _ _
 
 end sort
 

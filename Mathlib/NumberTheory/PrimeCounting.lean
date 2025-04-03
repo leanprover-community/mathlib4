@@ -27,8 +27,8 @@ are not prime, and so only at most `φ(k)/k` fraction of the numbers from `k` to
 
 ## Notation
 
-We use the standard notation `π` to represent the prime counting function (and `π'` to represent
-the reindexed version).
+With `open scoped Nat.Prime`, we use the standard notation `π` to represent the prime counting
+function (and `π'` to represent the reindexed version).
 
 -/
 
@@ -39,17 +39,22 @@ open Finset
 
 /-- A variant of the traditional prime counting function which gives the number of primes
 *strictly* less than the input. More convenient for avoiding off-by-one errors.
--/
+
+With `open scoped Nat.Prime`, this has notation `π'`. -/
 def primeCounting' : ℕ → ℕ :=
   Nat.count Prime
 
-/-- The prime counting function: Returns the number of primes less than or equal to the input. -/
+/-- The prime counting function: Returns the number of primes less than or equal to the input.
+
+With `open scoped Nat.Prime`, this has notation `π`. -/
 def primeCounting (n : ℕ) : ℕ :=
   primeCounting' (n + 1)
 
-@[inherit_doc] scoped notation "π" => Nat.primeCounting
+@[inherit_doc] scoped[Nat.Prime] notation "π" => Nat.primeCounting
 
-@[inherit_doc] scoped notation "π'" => Nat.primeCounting'
+@[inherit_doc] scoped[Nat.Prime] notation "π'" => Nat.primeCounting'
+
+open scoped Nat.Prime
 
 theorem monotone_primeCounting' : Monotone primeCounting' :=
   count_monotone Prime

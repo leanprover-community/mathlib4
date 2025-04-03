@@ -115,12 +115,12 @@ instance : Quiver (Comonad C) where
 -- Porting note (#10688): added to ease automation
 @[ext]
 lemma MonadHom.ext' {T₁ T₂ : Monad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
-  MonadHom.ext f g h
+  MonadHom.ext h
 
 -- Porting note (#10688): added to ease automation
 @[ext]
 lemma ComonadHom.ext' {T₁ T₂ : Comonad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
-  ComonadHom.ext f g h
+  ComonadHom.ext h
 
 instance : Category (Monad C) where
   id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
@@ -129,9 +129,9 @@ instance : Category (Monad C) where
         { app := fun X => f.app X ≫ g.app X
           naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
   -- `aesop_cat` can fill in these proofs, but is unfortunately slightly slow.
-  id_comp _ := MonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, id_comp])
-  comp_id _ := MonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, comp_id])
-  assoc _ _ _ := MonadHom.ext _ _ (by funext; simp only [assoc])
+  id_comp _ := MonadHom.ext (by funext; simp only [NatTrans.id_app, id_comp])
+  comp_id _ := MonadHom.ext (by funext; simp only [NatTrans.id_app, comp_id])
+  assoc _ _ _ := MonadHom.ext (by funext; simp only [assoc])
 
 instance : Category (Comonad C) where
   id M := { toNatTrans := 𝟙 (M : C ⥤ C) }
@@ -140,9 +140,9 @@ instance : Category (Comonad C) where
         { app := fun X => f.app X ≫ g.app X
           naturality := fun X Y h => by rw [assoc, f.1.naturality_assoc, g.1.naturality] } }
   -- `aesop_cat` can fill in these proofs, but is unfortunately slightly slow.
-  id_comp _ := ComonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, id_comp])
-  comp_id _ := ComonadHom.ext _ _ (by funext; simp only [NatTrans.id_app, comp_id])
-  assoc _ _ _ := ComonadHom.ext _ _ (by funext; simp only [assoc])
+  id_comp _ := ComonadHom.ext (by funext; simp only [NatTrans.id_app, id_comp])
+  comp_id _ := ComonadHom.ext (by funext; simp only [NatTrans.id_app, comp_id])
+  assoc _ _ _ := ComonadHom.ext (by funext; simp only [assoc])
 
 instance {T : Monad C} : Inhabited (MonadHom T T) :=
   ⟨𝟙 T⟩
@@ -250,7 +250,7 @@ variable {C}
 -/
 /- Porting note: removed
 `@[simps (config := { rhsMd := semireducible })]`
-and replaced with `@[simps]` in the two declarations below-/
+and replaced with `@[simps]` in the two declarations below -/
 @[simps!]
 def MonadIso.toNatIso {M N : Monad C} (h : M ≅ N) : (M : C ⥤ C) ≅ N :=
   (monadToFunctor C).mapIso h

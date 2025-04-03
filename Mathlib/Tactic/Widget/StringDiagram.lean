@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import ProofWidgets.Component.PenroseDiagram
+import ProofWidgets.Component.Panel.Basic
 import ProofWidgets.Presentation.Expr
 import Mathlib.Tactic.CategoryTheory.Monoidal
 
@@ -214,11 +215,11 @@ structure PenroseVar : Type where
 instance : ToString PenroseVar :=
   ⟨fun v => v.ident ++ v.indices.foldl (fun s x => s ++ s!"_{x}") ""⟩
 
-/-- The penrose variable assciated with a node. -/
+/-- The penrose variable associated with a node. -/
 def Node.toPenroseVar (n : Node) : PenroseVar :=
   ⟨"E", [n.vPos, n.hPosSrc, n.hPosTar], n.e⟩
 
-/-- The penrose variable assciated with a strand. -/
+/-- The penrose variable associated with a strand. -/
 def Strand.toPenroseVar (s : Strand) : PenroseVar :=
   ⟨"f", [s.vPos, s.hPos], s.atom₁.e⟩
 

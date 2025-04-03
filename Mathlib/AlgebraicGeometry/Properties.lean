@@ -22,7 +22,7 @@ We provide some basic properties of schemes
 -/
 
 
--- Explicit universe annotations were used in this file to improve perfomance #12737
+-- Explicit universe annotations were used in this file to improve performance #12737
 
 universe u
 
@@ -230,8 +230,7 @@ instance irreducibleSpace_of_isIntegral [IsIntegral X] : IrreducibleSpace X := b
     · rintro ⟨hS, hT⟩
       cases' h₁ (show x ∈ ⊤ by trivial) with h h
       exacts [hS h, hT h]
-    · intro x
-      exact x.rec (by contradiction)
+    · simp
 
 theorem isIntegral_of_irreducibleSpace_of_isReduced [IsReduced X] [H : IrreducibleSpace X] :
     IsIntegral X := by

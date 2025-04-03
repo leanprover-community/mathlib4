@@ -19,3 +19,5 @@ example : 0 ≤ 2 + 2 := by
 example : 0 ≤ 2 + 2 := by
   apply zero_le_add'
   infer_param
+
+end InferParamTest

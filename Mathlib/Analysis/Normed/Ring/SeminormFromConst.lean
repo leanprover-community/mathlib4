@@ -44,8 +44,7 @@ open scoped Topology
 
 section Ring
 
-variable {R : Type _} [CommRing R] (c : R) (f : RingSeminorm R) (hf1 : f 1 ≤ 1) (hc : f c ≠ 0)
-  (hpm : IsPowMul f)
+variable {R : Type _} [CommRing R] (c : R) (f : RingSeminorm R)
 
 /-- For a ring seminorm `f` on `R` and `c ∈ R`, the sequence given by `(f (x * c^n))/((f c)^n)`. -/
 def seminormFromConst_seq (x : R) : ℕ → ℝ := fun n ↦ f (x * c ^ n) / f c ^ n
@@ -73,11 +72,15 @@ theorem seminormFromConst_seq_zero (hf : f 0 = 0) : seminormFromConst_seq c f 0 
   rw [zero_mul, hf, zero_div, Pi.zero_apply]
 
 variable {c}
+variable (hf1 : f 1 ≤ 1) (hc : f c ≠ 0) (hpm : IsPowMul f)
+include hpm hc
 
 /-- If `1 ≤ n`, then `seminormFromConst_seq c f 1 n = 1`. -/
 theorem seminormFromConst_seq_one (n : ℕ) (hn : 1 ≤ n) : seminormFromConst_seq c f 1 n = 1 := by
   simp only [seminormFromConst_seq]
   rw [one_mul, hpm _ hn, div_self (pow_ne_zero n hc)]
+
+include hf1
 
 /-- `seminormFromConst_seq c f x` is antitone. -/
 theorem seminormFromConst_seq_antitone (x : R) : Antitone (seminormFromConst_seq c f x) := by
@@ -96,7 +99,7 @@ theorem seminormFromConst_seq_antitone (x : R) : Antitone (seminormFromConst_seq
       rw [Nat.one_le_iff_ne_zero, ne_eq, Nat.sub_eq_zero_iff_le, not_le]
       exact lt_of_le_of_ne hmn heq
     rw [hpm c h1, mul_div_assoc, div_eq_mul_inv, pow_sub₀ _ hc hmn, mul_assoc, mul_comm (f c ^ m)⁻¹,
-      ← mul_assoc (f c ^ n), mul_inv_cancel (pow_ne_zero n hc), one_mul, div_eq_mul_inv]
+      ← mul_assoc (f c ^ n), mul_inv_cancel₀ (pow_ne_zero n hc), one_mul, div_eq_mul_inv]
 
 /-- The real-valued function sending `x ∈ R` to the limit of `(f (x * c^n))/((f c)^n)`. -/
 def seminormFromConst' (x : R) : ℝ :=
@@ -252,7 +255,7 @@ theorem seminormFromConst_const_mul (x : R) :
     simp only [seminormFromConst_seq_def]
     ext n
     ring_nf
-    rw [mul_assoc _ (f c), mul_inv_cancel hc, mul_one]
+    rw [mul_assoc _ (f c), mul_inv_cancel₀ hc, mul_one]
   simpa [hterm] using tendsto_const_nhds.mul hlim
 
 end Ring

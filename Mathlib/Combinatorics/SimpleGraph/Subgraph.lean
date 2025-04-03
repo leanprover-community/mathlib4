@@ -245,7 +245,7 @@ def copy (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
 
 theorem copy_eq (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
     (adj' : V → V → Prop) (hadj : adj' = G'.Adj) : G'.copy V'' hV adj' hadj = G' :=
-  Subgraph.ext _ _ hV hadj
+  Subgraph.ext hV hadj
 
 /-- The union of two subgraphs. -/
 instance : Sup G.Subgraph where
@@ -381,7 +381,7 @@ theorem verts_spanningCoe_injective :
     (fun G' : Subgraph G => (G'.verts, G'.spanningCoe)).Injective := by
   intro G₁ G₂ h
   rw [Prod.ext_iff] at h
-  exact Subgraph.ext _ _ h.1 (spanningCoe_inj.1 h.2)
+  exact Subgraph.ext h.1 (spanningCoe_inj.1 h.2)
 
 /-- For subgraphs `G₁`, `G₂`, `G₁ ≤ G₂` iff `G₁.verts ⊆ G₂.verts` and
 `∀ a b, G₁.adj a b → G₂.adj a b`. -/
@@ -419,7 +419,7 @@ def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxio
     le_sInf := fun s G' hG' =>
       ⟨Set.subset_iInter₂ fun H hH => (hG' _ hH).1, fun a b hab =>
         ⟨fun H hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
-    iInf_iSup_eq := fun f => Subgraph.ext _ _ (by simpa using iInf_iSup_eq)
+    iInf_iSup_eq := fun f => Subgraph.ext (by simpa using iInf_iSup_eq)
       (by ext; simp [Classical.skolem]) }
 
 instance : CompletelyDistribLattice G.Subgraph :=
@@ -847,7 +847,7 @@ theorem neighborSet_subgraphOfAdj_of_ne_of_ne {u v w : V} (hvw : G.Adj v w) (hv 
 theorem neighborSet_subgraphOfAdj [DecidableEq V] {u v w : V} (hvw : G.Adj v w) :
     (G.subgraphOfAdj hvw).neighborSet u =
     (if u = v then {w} else ∅) ∪ if u = w then {v} else ∅ := by
-  split_ifs <;> subst_vars <;> simp [*, Set.singleton_def]
+  split_ifs <;> subst_vars <;> simp [*]
 
 theorem singletonSubgraph_fst_le_subgraphOfAdj {u v : V} {h : G.Adj u v} :
     G.singletonSubgraph u ≤ G.subgraphOfAdj h := by

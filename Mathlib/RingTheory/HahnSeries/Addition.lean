@@ -102,7 +102,7 @@ lemma addOppositeEquiv_orderTop (x : HahnSeries Γ (Rᵃᵒᵖ)) :
   simp only [orderTop, AddOpposite.unop_op, mk_eq_zero, AddEquivClass.map_eq_zero_iff,
     addOppositeEquiv_support, ne_eq]
   simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
-  simp_rw [HahnSeries.ext_iff x 0, Function.funext_iff]
+  simp_rw [HahnSeries.ext_iff, Function.funext_iff]
   simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, zero_coeff]
 
 @[simp]
@@ -116,7 +116,7 @@ lemma addOppositeEquiv_leadingCoeff (x : HahnSeries Γ (Rᵃᵒᵖ)) :
   simp only [leadingCoeff, AddOpposite.unop_op, mk_eq_zero, AddEquivClass.map_eq_zero_iff,
     addOppositeEquiv_support, ne_eq]
   simp only [addOppositeEquiv_apply, AddOpposite.unop_op, mk_eq_zero, zero_coeff]
-  simp_rw [HahnSeries.ext_iff x 0, Function.funext_iff]
+  simp_rw [HahnSeries.ext_iff, Function.funext_iff]
   simp only [Pi.zero_apply, AddOpposite.unop_eq_zero_iff, zero_coeff]
   split <;> rfl
 
@@ -244,9 +244,9 @@ instance : Neg (HahnSeries Γ R) where
 instance : AddGroup (HahnSeries Γ R) :=
   { inferInstanceAs (AddMonoid (HahnSeries Γ R)) with
     zsmul := zsmulRec
-    add_left_neg := fun x => by
+    neg_add_cancel := fun x => by
       ext
-      apply add_left_neg }
+      apply neg_add_cancel }
 
 @[simp]
 theorem neg_coeff' {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=

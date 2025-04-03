@@ -99,8 +99,12 @@ section PrincipalIdealDomain
 
 open Submodule.IsPrincipal Set Submodule
 
-variable {ι : Type*} {R : Type*} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+variable {ι : Type*} {R : Type*} [CommRing R]
 variable {M : Type*} [AddCommGroup M] [Module R M] {b : ι → M}
+
+section StrongRankCondition
+
+variable [IsDomain R] [IsPrincipalIdealRing R]
 
 open Submodule.IsPrincipal
 
@@ -401,6 +405,8 @@ theorem Module.free_iff_noZeroSMulDivisors [Module.Finite R M] :
     Module.Free R M ↔ NoZeroSMulDivisors R M :=
   ⟨fun _ ↦ inferInstance, fun _ ↦ inferInstance⟩
 
+end StrongRankCondition
+
 section SmithNormal
 
 /-- A Smith normal form basis for a submodule `N` of a module `M` consists of
@@ -474,6 +480,8 @@ lemma toMatrix_restrict_eq_toMatrix [Fintype ι] [DecidableEq ι]
   simp [snf.snf]
 
 end Basis.SmithNormalForm
+
+variable [IsDomain R] [IsPrincipalIdealRing R]
 
 /-- If `M` is finite free over a PID `R`, then any submodule `N` is free
 and we can find a basis for `M` and `N` such that the inclusion map is a diagonal matrix

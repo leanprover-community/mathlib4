@@ -71,8 +71,6 @@ protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
 protected theorem find_min' {m : ℕ} (h : p m) : Nat.find H ≤ m :=
   Nat.le_of_not_lt fun l => Nat.find_min H l h
 
-variable [DecidablePred p] [DecidablePred q]
-
 lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m, ¬ p n := by
   constructor
   · rintro rfl
@@ -95,6 +93,7 @@ lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m,
 
 @[simp] lemma find_eq_zero (h : ∃ n : ℕ, p n) : Nat.find h = 0 ↔ p 0 := by simp [find_eq_iff]
 
+variable [DecidablePred q] in
 lemma find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} : Nat.find hp ≤ Nat.find hq :=
   Nat.find_min' _ (h _ (Nat.find_spec hq))
 
@@ -151,12 +150,14 @@ lemma findGreatest_of_not (h : ¬ P (n + 1)) : findGreatest P (n + 1) = findGrea
 
 lemma findGreatest_eq_iff :
     Nat.findGreatest P k = m ↔ m ≤ k ∧ (m ≠ 0 → P m) ∧ ∀ ⦃n⦄, m < n → n ≤ k → ¬P n := by
-  induction' k with k ihk generalizing m
-  · rw [eq_comm, Iff.comm]
+  induction k generalizing m with
+  | zero =>
+    rw [eq_comm, Iff.comm]
     simp only [zero_eq, Nat.le_zero, ne_eq, findGreatest_zero, and_iff_left_iff_imp]
     rintro rfl
     exact ⟨fun h ↦ (h rfl).elim, fun n hlt heq ↦ by omega⟩
-  · by_cases hk : P (k + 1)
+  | succ k ihk =>
+    by_cases hk : P (k + 1)
     · rw [findGreatest_eq hk]
       constructor
       · rintro rfl
@@ -197,21 +198,23 @@ lemma le_findGreatest (hmb : m ≤ n) (hm : P m) : m ≤ Nat.findGreatest P n :=
 
 lemma findGreatest_mono_right (P : ℕ → Prop) [DecidablePred P] {m n} (hmn : m ≤ n) :
     Nat.findGreatest P m ≤ Nat.findGreatest P n := by
-  induction' hmn with k hmk ih
-  · simp
-  rw [findGreatest_succ]
-  split_ifs
-  · exact le_trans ih $ le_trans (findGreatest_le _) (le_succ _)
-  · exact ih
+  induction hmn with
+  | refl => simp
+  | step hmk ih =>
+    rw [findGreatest_succ]
+    split_ifs
+    · exact le_trans ih <| le_trans (findGreatest_le _) (le_succ _)
+    · exact ih
 
 lemma findGreatest_mono_left [DecidablePred Q] (hPQ : ∀ n, P n → Q n) (n : ℕ) :
     Nat.findGreatest P n ≤ Nat.findGreatest Q n := by
-  induction' n with n hn
-  · rfl
-  by_cases h : P (n + 1)
-  · rw [findGreatest_eq h, findGreatest_eq (hPQ _ h)]
-  · rw [findGreatest_of_not h]
-    exact le_trans hn (Nat.findGreatest_mono_right _ <| le_succ _)
+  induction n with
+  | zero => rfl
+  | succ n hn =>
+    by_cases h : P (n + 1)
+    · rw [findGreatest_eq h, findGreatest_eq (hPQ _ h)]
+    · rw [findGreatest_of_not h]
+      exact le_trans hn (Nat.findGreatest_mono_right _ <| le_succ _)
 
 lemma findGreatest_mono [DecidablePred Q] (hPQ : ∀ n, P n → Q n) (hmn : m ≤ n) :
     Nat.findGreatest P m ≤ Nat.findGreatest Q n :=
@@ -224,3 +227,5 @@ theorem findGreatest_of_ne_zero (h : Nat.findGreatest P n = m) (h0 : m ≠ 0) : 
   (findGreatest_eq_iff.1 h).2.1 h0
 
 end FindGreatest
+
+end Nat

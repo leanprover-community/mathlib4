@@ -66,10 +66,9 @@ lemma nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndependent 
 
 end
 
-variable [Ring R] [Ring R'] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
-variable [Module R M] [Module R M'] [Module R M₁] [Module R' M'] [Module R' M₁]
 
 namespace LinearIndependent
+variable [Ring R] [AddCommGroup M] [Module R M]
 
 variable [Nontrivial R]
 
@@ -106,6 +105,10 @@ alias cardinal_le_rank_of_linearIndependent' := LinearIndependent.cardinal_le_ra
 section SurjectiveInjective
 
 section Module
+variable [Ring R] [AddCommGroup M] [Module R M] [Ring R']
+
+section
+variable [AddCommGroup M'] [Module R' M']
 
 /-- If `M / R` and `M' / R'` are modules, `i : R' → R` is a map which sends non-zero elements to
 non-zero elements, `j : M →+ M'` is an injective group homomorphism, such that the scalar
@@ -144,6 +147,10 @@ theorem lift_rank_eq_of_equiv_equiv (i : ZeroHom R R') (j : M ≃+ M')
   (lift_rank_le_of_surjective_injective i j hi.2 j.injective hc).antisymm <|
     lift_rank_le_of_injective_injective i j.symm (fun _ _ ↦ hi.1 <| by rwa [i.map_zero])
       j.symm.injective fun _ _ ↦ j.symm_apply_eq.2 <| by erw [hc, j.apply_symm_apply]
+end
+
+section
+variable [AddCommGroup M₁] [Module R' M₁]
 
 /-- The same-universe version of `lift_rank_le_of_injective_injective`. -/
 theorem rank_le_of_injective_injective (i : R' → R) (j : M →+ M₁)
@@ -165,6 +172,7 @@ theorem rank_eq_of_equiv_equiv (i : ZeroHom R R') (j : M ≃+ M₁)
     Module.rank R M = Module.rank R' M₁ := by
   simpa only [lift_id] using lift_rank_eq_of_equiv_equiv i j hi hc
 
+end
 end Module
 
 namespace Algebra
@@ -208,7 +216,7 @@ theorem lift_rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
   simp only [RingEquiv.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply] at this
   simp only [smul_def, RingEquiv.coe_toAddEquiv, map_mul, ZeroHom.coe_coe, this]
 
-variable {S' : Type v} [CommRing R'] [Ring S'] [Algebra R' S']
+variable {S' : Type v} [Ring S'] [Algebra R' S']
 
 /-- The same-universe version of `Algebra.lift_rank_le_of_injective_injective`. -/
 theorem rank_le_of_injective_injective
@@ -233,6 +241,11 @@ theorem rank_eq_of_equiv_equiv (i : R ≃+* R') (j : S ≃+* S')
 end Algebra
 
 end SurjectiveInjective
+
+variable [Ring R] [AddCommGroup M] [Module R M]
+  [Ring R']
+  [AddCommGroup M'] [AddCommGroup M₁]
+  [Module R M'] [Module R M₁] [Module R' M'] [Module R' M₁]
 
 section
 

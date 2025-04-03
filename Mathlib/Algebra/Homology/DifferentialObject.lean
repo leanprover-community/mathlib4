@@ -18,8 +18,6 @@ it's here to check that definitions match up as expected.
 
 open CategoryTheory CategoryTheory.Limits
 
-open scoped Classical
-
 noncomputable section
 
 /-!
@@ -70,6 +68,7 @@ variable (V : Type*) [Category V] [HasZeroMorphisms V]
 theorem d_eqToHom (X : HomologicalComplex V (ComplexShape.up' b)) {x y z : β} (h : y = z) :
     X.d x y ≫ eqToHom (congr_arg X.X h) = X.d x z := by cases h; simp
 
+open Classical in
 set_option maxHeartbeats 400000 in
 /-- The functor from differential graded objects to homological complexes.
 -/

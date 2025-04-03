@@ -81,7 +81,7 @@ variable {M : Type*} [Monoid M]
 
 -- We have a family of monoids
 -- The fintype assumption is not always used, but declared here, to keep things in order
-variable {ι : Type*} [DecidableEq ι] [Fintype ι]
+variable {ι : Type*} [Fintype ι]
 variable {N : ι → Type*} [∀ i, Monoid (N i)]
 
 -- And morphisms ϕ into G
@@ -114,7 +114,7 @@ def noncommPiCoprod : (∀ i : ι, N i) →* M where
 variable {hcomm}
 
 @[to_additive (attr := simp)]
-theorem noncommPiCoprod_mulSingle (i : ι) (y : N i) :
+theorem noncommPiCoprod_mulSingle [DecidableEq ι] (i : ι) (y : N i) :
     noncommPiCoprod ϕ hcomm (Pi.mulSingle i y) = ϕ i y := by
   change Finset.univ.noncommProd (fun j => ϕ j (Pi.mulSingle i y j)) (fun _ _ _ _ h => hcomm h _ _)
     = ϕ i y
@@ -130,7 +130,7 @@ theorem noncommPiCoprod_mulSingle (i : ι) (y : N i) :
 
 /-- The universal property of `MonoidHom.noncommPiCoprod` -/
 @[to_additive "The universal property of `AddMonoidHom.noncommPiCoprod`"]
-def noncommPiCoprodEquiv :
+def noncommPiCoprodEquiv [DecidableEq ι] :
     { ϕ : ∀ i, N i →* M // Pairwise fun i j => ∀ x y, Commute (ϕ i x) (ϕ j y) } ≃
       ((∀ i, N i) →* M) where
   toFun ϕ := noncommPiCoprod ϕ.1 ϕ.2
@@ -164,7 +164,7 @@ end FamilyOfMonoids
 section FamilyOfGroups
 
 variable {G : Type*} [Group G]
-variable {ι : Type*} [hdec : DecidableEq ι] [hfin : Fintype ι]
+variable {ι : Type*}
 variable {H : ι → Type*} [∀ i, Group (H i)]
 variable (ϕ : ∀ i : ι, H i →* G)
 
@@ -174,7 +174,7 @@ variable (f g : ∀ i : ι, H i)
 namespace MonoidHom
 -- The subgroup version of `MonoidHom.noncommPiCoprod_mrange`
 @[to_additive]
-theorem noncommPiCoprod_range
+theorem noncommPiCoprod_range [Fintype ι]
     {hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y)} :
     (noncommPiCoprod ϕ hcomm).range = ⨆ i : ι, (ϕ i).range := by
   letI := Classical.decEq ι
@@ -190,7 +190,7 @@ theorem noncommPiCoprod_range
     exact ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 
 @[to_additive]
-theorem injective_noncommPiCoprod_of_independent
+theorem injective_noncommPiCoprod_of_independent [Fintype ι]
     {hcomm : Pairwise fun i j : ι => ∀ (x : H i) (y : H j), Commute (ϕ i x) (ϕ j y)}
     (hind : CompleteLattice.Independent fun i => (ϕ i).range)
     (hinj : ∀ i, Function.Injective (ϕ i)) : Function.Injective (noncommPiCoprod ϕ hcomm) := by
@@ -249,7 +249,7 @@ namespace Subgroup
 
 -- We have a family of subgroups
 variable {G : Type*} [Group G]
-variable {ι : Type*} [hdec : DecidableEq ι] [hfin : Fintype ι] {H : ι → Subgroup G}
+variable {ι : Type*} {H : ι → Subgroup G}
 
 -- Elements of `Π (i : ι), H i` are called `f` and `g` here
 variable (f g : ∀ i : ι, H i)
@@ -267,6 +267,18 @@ theorem commute_subtype_of_commute
   rintro ⟨x, hx⟩ ⟨y, hy⟩
   exact hcomm hne x y hx hy
 
+@[to_additive]
+theorem independent_of_coprime_order
+    (hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y)
+    [Finite ι] [∀ i, Fintype (H i)]
+    (hcoprime : Pairwise fun i j => Nat.Coprime (Fintype.card (H i)) (Fintype.card (H j))) :
+    CompleteLattice.Independent H := by
+  simpa using
+    MonoidHom.independent_range_of_coprime_order (fun i => (H i).subtype)
+      (commute_subtype_of_commute hcomm) hcoprime
+
+variable [Fintype ι]
+
 /-- The canonical homomorphism from a family of subgroups where elements from different subgroups
 commute -/
 @[to_additive "The canonical homomorphism from a family of additive subgroups where elements from
@@ -276,7 +288,7 @@ def noncommPiCoprod (hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i →
   MonoidHom.noncommPiCoprod (fun i => (H i).subtype) (commute_subtype_of_commute hcomm)
 
 @[to_additive (attr := simp)]
-theorem noncommPiCoprod_mulSingle
+theorem noncommPiCoprod_mulSingle [DecidableEq ι]
     {hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y}(i : ι) (y : H i) :
     noncommPiCoprod hcomm (Pi.mulSingle i y) = y := by apply MonoidHom.noncommPiCoprod_mulSingle
 
@@ -295,16 +307,6 @@ theorem injective_noncommPiCoprod_of_independent
   · simpa using hind
   · intro i
     exact Subtype.coe_injective
-
-@[to_additive]
-theorem independent_of_coprime_order
-    (hcomm : Pairwise fun i j : ι => ∀ x y : G, x ∈ H i → y ∈ H j → Commute x y)
-    [Finite ι] [∀ i, Fintype (H i)]
-    (hcoprime : Pairwise fun i j => Nat.Coprime (Fintype.card (H i)) (Fintype.card (H j))) :
-    CompleteLattice.Independent H := by
-  simpa using
-    MonoidHom.independent_range_of_coprime_order (fun i => (H i).subtype)
-      (commute_subtype_of_commute hcomm) hcoprime
 
 end CommutingSubgroups
 

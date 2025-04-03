@@ -39,9 +39,9 @@ protected theorem induction_on {M : R[X] → Prop} (p : R[X]) (h_C : ∀ a, M (C
     (h_monomial : ∀ (n : ℕ) (a : R), M (C a * X ^ n) → M (C a * X ^ (n + 1))) : M p := by
   have A : ∀ {n : ℕ} {a}, M (C a * X ^ n) := by
     intro n a
-    induction' n with n ih
-    · rw [pow_zero, mul_one]; exact h_C a
-    · exact h_monomial _ _ ih
+    induction n with
+    | zero => rw [pow_zero, mul_one]; exact h_C a
+    | succ n ih => exact h_monomial _ _ ih
   have B : ∀ s : Finset ℕ, M (s.sum fun n : ℕ => C (p.coeff n) * X ^ n) := by
     apply Finset.induction
     · convert h_C 0

@@ -81,7 +81,7 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]
 and `funProp` can't work with such theorem. The theorem should be state where `n` is explicitly
 the smallest possible value i.e. `n=m+1`.
 
-In conjunction with `ContDiff.of_le` we can recover the full power of the original theorem.  -/
+In conjunction with `ContDiff.of_le` we can recover the full power of the original theorem. -/
 theorem ContDiff.differentiable_iteratedDeriv' {m : ℕ} {f : K → F}
     (hf : ContDiff K (m+1) f) : Differentiable K (iteratedDeriv m f) :=
   ContDiff.differentiable_iteratedDeriv m hf (Nat.cast_lt.mpr m.lt_succ_self)

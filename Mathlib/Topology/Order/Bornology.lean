@@ -19,7 +19,7 @@ of order-boundedness (sets that are bounded above and below).
 
 open Bornology Set
 
-variable {α : Type*} [Bornology α] {s t : Set α}
+variable {α : Type*} {s t : Set α}
 
 section Lattice
 variable [Lattice α] [Nonempty α]
@@ -37,6 +37,8 @@ def orderBornology : Bornology α := .ofBounded
   simp [IsBounded, IsCobounded, -isCobounded_compl_iff]
 
 end Lattice
+
+variable [Bornology α]
 
 variable (α) [Preorder α] in
 /-- Predicate for a preorder to be equipped with its order-bornology, namely for its bounded sets
@@ -69,10 +71,10 @@ protected lemma BddAbove.isBounded (hs₀ : BddAbove s) (hs₁ : BddBelow s) : I
   isBounded_iff_bddBelow_bddAbove.2 ⟨hs₁, hs₀⟩
 
 lemma BddBelow.isBounded_inter (hs : BddBelow s) (ht : BddAbove t) : IsBounded (s ∩ t) :=
-  (hs.mono inter_subset_left).isBounded $ ht.mono inter_subset_right
+  (hs.mono inter_subset_left).isBounded <| ht.mono inter_subset_right
 
 lemma BddAbove.isBounded_inter (hs : BddAbove s) (ht : BddBelow t) : IsBounded (s ∩ t) :=
-  (hs.mono inter_subset_left).isBounded $ ht.mono inter_subset_right
+  (hs.mono inter_subset_left).isBounded <| ht.mono inter_subset_right
 
 instance OrderDual.instIsOrderBornology : IsOrderBornology αᵒᵈ where
   isBounded_iff_bddBelow_bddAbove s := by

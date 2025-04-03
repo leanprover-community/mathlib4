@@ -1,12 +1,11 @@
 import Mathlib.Tactic.CategoryTheory.Elementwise
---import Mathlib.Algebra.Category.Mon.Basic
+import Mathlib.Algebra.Category.MonCat.Basic
 
 set_option autoImplicit true
 
 namespace ElementwiseTest
 open CategoryTheory
 
-set_option linter.existingAttributeWarning false in
 attribute [simp] Iso.hom_inv_id Iso.inv_hom_id IsIso.hom_inv_id IsIso.inv_hom_id
 
 attribute [local instance] ConcreteCategory.instFunLike ConcreteCategory.hasCoeToSort
@@ -82,22 +81,20 @@ example {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
   rw [this]
 
 section Mon
--- TODO: switch to actual Mon when it is ported
-variable (Mon : Type _) [Category Mon] [ConcreteCategory Mon]
 
-lemma bar' {M N K : Mon} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
+lemma bar' {M N K : MonCat} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
     g (f x) = h x := by exact foo_apply w x
 
-lemma bar'' {M N K : Mon} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
+lemma bar'' {M N K : MonCat} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
     g (f x) = h x := by apply foo_apply w
 
-lemma bar''' {M N K : Mon} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
+lemma bar''' {M N K : MonCat} {f : M ⟶ N} {g : N ⟶ K} {h : M ⟶ K} (w : f ≫ g = h) (x : M) :
     g (f x) = h x := by apply foo_apply w
 
-example (M N K : Mon) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
-    g (f m) = h m := by rw [elementwise_of% w]
+example (M N K : MonCat) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
+    g (f m) = h m := by erw [elementwise_of% w]; rfl -- Porting note: was `rw`, switched to `erw; rfl`
 
-example (M N K : Mon) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
+example (M N K : MonCat) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
     g (f m) = h m := by
   -- Porting note: did not port `elementwise!` tactic
   replace w := elementwise_of% w

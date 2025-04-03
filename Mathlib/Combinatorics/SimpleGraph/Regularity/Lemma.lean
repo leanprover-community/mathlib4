@@ -104,7 +104,7 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
       exact mul_le_mul_left' (pow_le_pow_left (by norm_num) (by norm_num) _) _
     calc
       (1 : ℝ) = ε ^ 5 / ↑4 * (↑4 / ε ^ 5) := by
-        rw [mul_comm, div_mul_div_cancel 4 (pow_pos hε 5).ne']; norm_num
+        rw [mul_comm, div_mul_div_cancel₀ (pow_pos hε 5).ne']; norm_num
       _ < ε ^ 5 / 4 * (⌊4 / ε ^ 5⌋₊ + 1) :=
         ((mul_lt_mul_left <| by positivity).2 (Nat.lt_floor_add_one _))
       _ ≤ (P.energy G : ℝ) := by rwa [← Nat.cast_add_one]
@@ -131,9 +131,9 @@ theorem szemeredi_regularity (hε : 0 < ε) (hl : l ≤ card α) :
       (mul_le_mul_of_nonneg_right (pow_le_pow_right (by norm_num) hP₂) <| by positivity)
   have hi : (i : ℝ) ≤ 4 / ε ^ 5 := by
     have hi : ε ^ 5 / 4 * ↑i ≤ 1 := hP₄.trans (mod_cast P.energy_le_one G)
-    rw [div_mul_eq_mul_div, div_le_iff (show (0 : ℝ) < 4 by norm_num)] at hi
+    rw [div_mul_eq_mul_div, div_le_iff₀ (show (0 : ℝ) < 4 by norm_num)] at hi
     norm_num at hi
-    rwa [le_div_iff' (pow_pos hε _)]
+    rwa [le_div_iff₀' (pow_pos hε _)]
   have hsize : P.parts.card ≤ stepBound^[⌊4 / ε ^ 5⌋₊] t :=
     hP₃.trans (monotone_iterate_of_id_le le_stepBound (Nat.le_floor hi) _)
   have hPα : P.parts.card * 16 ^ P.parts.card ≤ card α :=

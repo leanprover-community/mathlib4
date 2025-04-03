@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 import Mathlib.Analysis.Convex.Contractible
@@ -127,7 +127,45 @@ scoped notation "↑ₕ" f => f ∘ ofComplex
 lemma ofComplex_apply (z : ℍ) : ofComplex (z : ℂ) = z :=
   OpenEmbedding.toPartialHomeomorph_left_inv ..
 
-lemma comp_ofComplex (f : ℍ → ℂ) (z : ℍ) : (↑ₕ f) z = f z := by
-  rw [Function.comp_apply, ofComplex_apply]
+lemma ofComplex_apply_eq_ite (w : ℂ) :
+    ofComplex w = if hw : 0 < w.im then ⟨w, hw⟩ else Classical.choice inferInstance := by
+  split_ifs with hw
+  · exact ofComplex_apply ⟨w, hw⟩
+  · change (Function.invFunOn UpperHalfPlane.coe Set.univ w) = _
+    simp only [invFunOn, dite_eq_right_iff, mem_univ, true_and]
+    rintro ⟨a, rfl⟩
+    exact (a.prop.not_le (by simpa using hw)).elim
+
+lemma ofComplex_apply_of_im_nonpos {w : ℂ} (hw : w.im ≤ 0) :
+    ofComplex w = Classical.choice inferInstance := by
+  simp [ofComplex_apply_eq_ite w, hw]
+
+lemma ofComplex_apply_eq_of_im_nonpos {w w' : ℂ} (hw : w.im ≤ 0) (hw' : w'.im ≤ 0) :
+    ofComplex w = ofComplex w' := by
+  simp [ofComplex_apply_of_im_nonpos, hw, hw']
+
+lemma comp_ofComplex (f : ℍ → ℂ) (z : ℍ) : (↑ₕ f) z = f z :=
+  congrArg _ <| ofComplex_apply z
+
+lemma comp_ofComplex_of_im_pos (f : ℍ → ℂ) (z : ℂ) (hz : 0 < z.im) : (↑ₕ f) z = f ⟨z, hz⟩ :=
+  congrArg _ <| ofComplex_apply ⟨z, hz⟩
+
+lemma comp_ofComplex_of_im_le_zero (f : ℍ → ℂ) (z z' : ℂ) (hz : z.im ≤ 0) (hz' : z'.im ≤ 0)  :
+    (↑ₕ f) z = (↑ₕ f) z' := by
+  simp [ofComplex_apply_of_im_nonpos, hz, hz']
 
 end UpperHalfPlane
+
+lemma Complex.isConnected_of_upperHalfPlane {s : Set ℂ} (hs₁ : {z | 0 < z.im} ⊆ s)
+    (hs₂ : s ⊆ {z | 0 ≤ z.im}) : IsConnected s := by
+  refine IsConnected.subset_closure ?_ hs₁ (by simpa using hs₂)
+  rw [isConnected_iff_connectedSpace]
+  exact inferInstanceAs (ConnectedSpace UpperHalfPlane)
+
+lemma Complex.isConnected_of_lowerHalfPlane {s : Set ℂ} (hs₁ : {z | z.im < 0} ⊆ s)
+    (hs₂ : s ⊆ {z | z.im ≤ 0}) : IsConnected s := by
+  rw [← Equiv.star.surjective.image_preimage s]
+  refine IsConnected.image (f := Equiv.star) ?_ continuous_star.continuousOn
+  apply Complex.isConnected_of_upperHalfPlane
+  · exact fun z hz ↦ hs₁ <| show star z ∈ _ by simpa
+  · exact fun z hz ↦ by simpa using show (star z).im ≤ 0 from hs₂ hz

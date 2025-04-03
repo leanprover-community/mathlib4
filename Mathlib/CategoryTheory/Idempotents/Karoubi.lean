@@ -52,7 +52,7 @@ variable {C}
 
 attribute [reassoc (attr := simp)] idem
 
-@[ext]
+@[ext (iff := false)]
 theorem ext {P Q : Karoubi C} (h_X : P.X = Q.X) (h_p : P.p ≫ eqToHom h_X = eqToHom h_X ≫ Q.p) :
     P = Q := by
   cases P
@@ -177,9 +177,9 @@ instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P
   add_comm f g := by
     ext
     apply add_comm
-  add_left_neg f := by
+  neg_add_cancel f := by
     ext
-    apply add_left_neg
+    apply neg_add_cancel
   zsmul := zsmulRec
   nsmul := nsmulRec
 

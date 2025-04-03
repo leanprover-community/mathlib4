@@ -5,6 +5,7 @@ Authors: Mitchell Lee
 -/
 import Mathlib.GroupTheory.Coxeter.Length
 import Mathlib.Data.ZMod.Parity
+import Mathlib.Data.List.GetD
 
 /-!
 # Reflections, inversions, and inversion sequences
@@ -64,6 +65,7 @@ namespace IsReflection
 
 variable {cs}
 variable {t : W} (ht : cs.IsReflection t)
+include ht
 
 theorem pow_two : t ^ 2 = 1 := by
   rcases ht with ⟨w, i, rfl⟩
@@ -137,6 +139,7 @@ namespace IsReflection
 
 variable {cs}
 variable {t : W} (ht : cs.IsReflection t)
+include ht
 
 theorem isRightInversion_mul_left_iff {w : W} :
     cs.IsRightInversion (w * t) t ↔ ¬cs.IsRightInversion w t := by
@@ -250,7 +253,7 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
   · dsimp only [rightInvSeq]
     rcases j with _ | j'
     · simp [getD_cons_zero]
-    · simp only [getD_eq_getElem?, get?_eq_getElem?] at ih
+    · simp only [getD_eq_getElem?_getD, get?_eq_getElem?] at ih
       simp [getD_cons_succ, ih j']
 
 theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
@@ -299,11 +302,11 @@ theorem leftInvSeq_take (ω : List B) (j : ℕ) :
     lis (ω.take j) = (lis ω).take j := by
   obtain le | ge := Nat.le_or_ge j ω.length
   · simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse]
-    rw [List.take_reverse j (by simpa)]
+    rw [List.take_reverse (by simpa)]
     nth_rw 1 [← List.reverse_reverse ω]
-    rw [List.take_reverse j (by simpa)]
+    rw [List.take_reverse (by simpa)]
     simp [rightInvSeq_drop]
-  · rw [take_length_le ge, take_length_le (by simpa)]
+  · rw [take_of_length_le ge, take_of_length_le (by simpa)]
 
 theorem isReflection_of_mem_rightInvSeq (ω : List B) {t : W} (ht : t ∈ ris ω) :
     cs.IsReflection t := by
@@ -346,8 +349,8 @@ theorem isRightInversion_of_mem_rightInvSeq {ω : List B} (hω : cs.IsReduced ω
     (ht : t ∈ ris ω) : cs.IsRightInversion (π ω) t := by
   constructor
   · exact cs.isReflection_of_mem_rightInvSeq ω ht
-  · obtain ⟨⟨j, hj⟩, rfl⟩ := List.mem_iff_get.mp ht
-    rw [← List.getD_eq_get _ 1 hj, wordProd_mul_getD_rightInvSeq]
+  · obtain ⟨j, hj, rfl⟩ := List.mem_iff_getElem.mp ht
+    rw [← List.getD_eq_getElem _ 1 hj, wordProd_mul_getD_rightInvSeq]
     rw [cs.length_rightInvSeq] at hj
     calc
       ℓ (π (ω.eraseIdx j))
@@ -359,8 +362,8 @@ theorem isLeftInversion_of_mem_leftInvSeq {ω : List B} (hω : cs.IsReduced ω) 
     (ht : t ∈ lis ω) : cs.IsLeftInversion (π ω) t := by
   constructor
   · exact cs.isReflection_of_mem_leftInvSeq ω ht
-  · obtain ⟨⟨j, hj⟩, rfl⟩ := List.mem_iff_get.mp ht
-    rw [← List.getD_eq_get _ 1 hj, getD_leftInvSeq_mul_wordProd]
+  · obtain ⟨j, hj, rfl⟩ := List.mem_iff_getElem.mp ht
+    rw [← List.getD_eq_getElem _ 1 hj, getD_leftInvSeq_mul_wordProd]
     rw [cs.length_leftInvSeq] at hj
     calc
       ℓ (π (ω.eraseIdx j))
@@ -374,7 +377,7 @@ theorem prod_rightInvSeq (ω : List B) : prod (ris ω) = (π ω)⁻¹ := by
   · simp [rightInvSeq, ih, wordProd_cons]
 
 theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
-  simp [leftInvSeq_eq_reverse_rightInvSeq_reverse, prod_reverse_noncomm]
+  simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse, prod_reverse_noncomm, inv_inj]
   have : List.map (fun x ↦ x⁻¹) (ris ω.reverse) = ris ω.reverse := calc
     List.map (fun x ↦ x⁻¹) (ris ω.reverse)
     _ = List.map id (ris ω.reverse)             := by
@@ -388,19 +391,19 @@ theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
   exact cs.prod_rightInvSeq _
 
 theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (ris ω) := by
-  apply List.nodup_iff_get?_ne_get?.mpr
-  intro j j' j_lt_j' j'_lt_length (dup : get? (rightInvSeq cs ω) j = get? (rightInvSeq cs ω) j')
+  apply List.nodup_iff_getElem?_ne_getElem?.mpr
+  intro j j' j_lt_j' j'_lt_length (dup : (rightInvSeq cs ω)[j]? = (rightInvSeq cs ω)[j']?)
   show False
   replace j'_lt_length : j' < List.length ω := by simpa using j'_lt_length
-  rw [get?_eq_get (by simp; omega), get?_eq_get (by simp; omega)] at dup
+  rw [getElem?_eq_getElem (by simp; omega), getElem?_eq_getElem (by simp; omega)] at dup
   apply Option.some_injective at dup
-  rw [← getD_eq_get _ 1, ← getD_eq_get _ 1] at dup
+  rw [← getD_eq_getElem _ 1, ← getD_eq_getElem _ 1] at dup
   set! t := (ris ω).getD j 1 with h₁
   set! t' := (ris (ω.eraseIdx j)).getD (j' - 1) 1 with h₂
   have h₃ : t' = (ris ω).getD j' 1                    := by
     rw [h₂, cs.getD_rightInvSeq, cs.getD_rightInvSeq,
       (Nat.sub_add_cancel (by omega) : j' - 1 + 1 = j'), eraseIdx_eq_take_drop_succ,
-      drop_append_eq_append_drop, drop_length_le (by simp [j_lt_j'.le]), length_take,
+      drop_append_eq_append_drop, drop_of_length_le (by simp [j_lt_j'.le]), length_take,
       drop_drop, nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), ← add_assoc,
       Nat.sub_add_cancel (by omega), mul_left_inj, mul_right_inj]
     congr 2

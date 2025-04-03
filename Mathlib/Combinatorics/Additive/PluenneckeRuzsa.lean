@@ -3,11 +3,12 @@ Copyright (c) 2022 Yaël Dillies, George Shakan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
 -/
-import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
-import Mathlib.Data.Finset.Pointwise
+import Mathlib.Data.Finset.Pointwise.Basic
 import Mathlib.Tactic.GCongr
+import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Rat
 
 /-!
 # The Plünnecke-Ruzsa inequality
@@ -45,7 +46,7 @@ theorem ruzsa_triangle_inequality_div_div_div (A B C : Finset α) :
   · obtain ⟨a, ha, c, hc, rfl⟩ := mem_div.1 hx
     refine card_le_card_of_injOn (fun b ↦ (a / b, b / c)) (fun b hb ↦ ?_) fun b₁ _ b₂ _ h ↦ ?_
     · rw [mem_bipartiteAbove]
-      exact ⟨mk_mem_product (div_mem_div ha hb) (div_mem_div hb hc), div_mul_div_cancel' _ _ _⟩
+      exact ⟨mk_mem_product (div_mem_div ha hb) (div_mem_div hb hc), div_mul_div_cancel _ _ _⟩
     · exact div_right_injective (Prod.ext_iff.1 h).1
   · exact ((mem_bipartiteBelow _).1 hv).2
 
@@ -128,14 +129,14 @@ theorem ruzsa_triangle_inequality_mul_mul_mul (A B C : Finset α) :
   rw [mem_erase, mem_powerset, ← nonempty_iff_ne_empty] at hU
   refine cast_le.1 (?_ : (_ : ℚ≥0) ≤ _)
   push_cast
-  refine (le_div_iff <| cast_pos.2 hB.card_pos).1 ?_
+  refine (le_div_iff₀ <| cast_pos.2 hB.card_pos).1 ?_
   rw [mul_div_right_comm, mul_comm _ B]
   refine (Nat.cast_le.2 <| card_le_card_mul_left _ hU.1).trans ?_
   refine le_trans ?_
     (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
       (zero_le _) (zero_le _))
   rw [← mul_div_right_comm, ← mul_assoc]
-  refine (le_div_iff <| cast_pos.2 hU.1.card_pos).2 ?_
+  refine (le_div_iff₀ <| cast_pos.2 hU.1.card_pos).2 ?_
   exact mod_cast pluennecke_petridis_inequality_mul C (mul_aux hU.1 hU.2 hUA)
 
 /-- **Ruzsa's triangle inequality**. Mul-div-div version. -/
@@ -168,7 +169,7 @@ private lemma card_mul_pow_le (hAB : ∀ A' ⊆ A, (A * B).card * A'.card ≤ (A
   induction' n with n ih
   · simp
   rw [_root_.pow_succ', ← mul_assoc, _root_.pow_succ', @mul_assoc ℚ≥0, ← mul_div_right_comm,
-    le_div_iff, ← cast_mul]
+    le_div_iff₀, ← cast_mul]
   swap
   · exact cast_pos.2 hA.card_pos
   refine (Nat.cast_le.2 <| pluennecke_petridis_inequality_mul _ hAB).trans ?_
@@ -185,7 +186,7 @@ theorem pluennecke_ruzsa_inequality_pow_div_pow_mul (hA : A.Nonempty) (B : Finse
   obtain ⟨C, hC, hCA⟩ :=
     exists_min_image (A.powerset.erase ∅) (fun C ↦ (C * B).card / C.card : _ → ℚ≥0) ⟨A, hA'⟩
   rw [mem_erase, mem_powerset, ← nonempty_iff_ne_empty] at hC
-  refine (mul_le_mul_right <| cast_pos.2 hC.1.card_pos).1 ?_
+  refine (_root_.mul_le_mul_right <| cast_pos.2 hC.1.card_pos).1 ?_
   norm_cast
   refine (Nat.cast_le.2 <| ruzsa_triangle_inequality_div_mul_mul _ _ _).trans ?_
   push_cast

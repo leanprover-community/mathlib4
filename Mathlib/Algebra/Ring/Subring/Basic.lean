@@ -659,7 +659,7 @@ variable {K : Type u} [DivisionRing K]
 
 instance instField : Field (center K) where
   inv a := ⟨a⁻¹, Set.inv_mem_center a.prop⟩
-  mul_inv_cancel a ha := Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne ha
+  mul_inv_cancel a ha := Subtype.ext <| mul_inv_cancel₀ <| Subtype.coe_injective.ne ha
   div a b := ⟨a / b, Set.div_mem_center a.prop b.prop⟩
   div_eq_mul_inv a b := Subtype.ext <| div_eq_mul_inv _ _
   inv_zero := Subtype.ext inv_zero
@@ -819,7 +819,7 @@ theorem mem_closure_iff {s : Set R} {x} :
           mul_mem hx hy)
       (zero_mem _) (fun x y hx hy => add_mem hx hy) fun x hx => neg_mem hx⟩
 
-/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring.  -/
+/-- If all elements of `s : Set A` commute pairwise, then `closure s` is a commutative ring. -/
 def closureCommRingOfComm {s : Set R} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
     CommRing (closure s) :=
   { (closure s).toRing with
@@ -850,7 +850,7 @@ theorem exists_list_of_mem_closure {s : Set R} {x : R} (h : x ∈ closure s) :
       ⟨l ++ m, fun t ht => (List.mem_append.1 ht).elim (hl1 t) (hm1 t), by simp [hl2, hm2]⟩)
     fun x ⟨L, hL⟩ =>
     ⟨L.map (List.cons (-1)),
-      List.forall_mem_map_iff.2 fun j hj => List.forall_mem_cons.2 ⟨Or.inr rfl, hL.1 j hj⟩,
+      List.forall_mem_map.2 fun j hj => List.forall_mem_cons.2 ⟨Or.inr rfl, hL.1 j hj⟩,
       hL.2 ▸
         List.recOn L (by simp)
           (by simp (config := { contextual := true }) [List.map_cons, add_comm])⟩
@@ -1145,7 +1145,7 @@ variable {s : Set R}
 protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s) (h1 : C 1)
     (hneg1 : C (-1)) (hs : ∀ z ∈ s, ∀ n, C n → C (z * n)) (ha : ∀ {x y}, C x → C y → C (x + y)) :
     C x := by
-  have h0 : C 0 := add_neg_self (1 : R) ▸ ha h1 hneg1
+  have h0 : C 0 := add_neg_cancel (1 : R) ▸ ha h1 hneg1
   rcases exists_list_of_mem_closure hx with ⟨L, HL, rfl⟩
   clear hx
   induction' L with hd tl ih

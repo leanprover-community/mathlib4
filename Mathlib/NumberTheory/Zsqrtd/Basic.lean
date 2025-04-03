@@ -139,7 +139,7 @@ instance addCommGroup : AddCommGroup (ℤ√d) := by
     add_assoc := ?_
     zero_add := ?_
     add_zero := ?_
-    add_left_neg := ?_
+    neg_add_cancel := ?_
     add_comm := ?_ } <;>
   intros <;>
   ext <;>
@@ -217,13 +217,13 @@ theorem star_im (z : ℤ√d) : (star z).im = -z.im :=
   rfl
 
 instance : StarRing (ℤ√d) where
-  star_involutive x := Zsqrtd.ext _ _ rfl (neg_neg _)
+  star_involutive x := Zsqrtd.ext rfl (neg_neg _)
   star_mul a b := by ext <;> simp <;> ring
-  star_add a b := Zsqrtd.ext _ _ rfl (neg_add _ _)
+  star_add a b := Zsqrtd.ext rfl (neg_add _ _)
 
 -- Porting note: proof was `by decide`
 instance nontrivial : Nontrivial (ℤ√d) :=
-  ⟨⟨0, 1, (Zsqrtd.ext_iff 0 1).not.mpr (by simp)⟩⟩
+  ⟨⟨0, 1, Zsqrtd.ext_iff.not.mpr (by simp)⟩⟩
 
 @[simp]
 theorem natCast_re (n : ℕ) : (n : ℤ√d).re = n :=
@@ -330,7 +330,7 @@ theorem coprime_of_dvd_coprime {a b : ℤ√d} (hcoprime : IsCoprime a.re a.im) 
     IsCoprime b.re b.im := by
   apply isCoprime_of_dvd
   · rintro ⟨hre, him⟩
-    obtain rfl : b = 0 := Zsqrtd.ext b 0 hre him
+    obtain rfl : b = 0 := Zsqrtd.ext hre him
     rw [zero_dvd_iff] at hdvd
     simp [hdvd, zero_im, zero_re, not_isCoprime_zero_zero] at hcoprime
   · rintro z hz - hzdvdu hzdvdv
@@ -476,13 +476,13 @@ theorem norm_eq_mul_conj (n : ℤ√d) : (norm n : ℤ√d) = n * star n := by
 theorem norm_neg (x : ℤ√d) : (-x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  Int.cast_inj.1 <| by rw [norm_eq_mul_conj, star_neg, neg_mul_neg, norm_eq_mul_conj]
+  (Int.cast_inj (α := ℤ√d)).1 <| by rw [norm_eq_mul_conj, star_neg, neg_mul_neg, norm_eq_mul_conj]
 
 @[simp]
 theorem norm_conj (x : ℤ√d) : (star x).norm = x.norm :=
   -- Porting note: replaced `simp` with `rw`
   -- See https://github.com/leanprover-community/mathlib4/issues/5026
-  Int.cast_inj.1 <| by rw [norm_eq_mul_conj, star_star, mul_comm, norm_eq_mul_conj]
+  (Int.cast_inj (α := ℤ√d)).1 <| by rw [norm_eq_mul_conj, star_star, mul_comm, norm_eq_mul_conj]
 
 theorem norm_nonneg (hd : d ≤ 0) (n : ℤ√d) : 0 ≤ n.norm :=
   add_nonneg (mul_self_nonneg _)
@@ -521,7 +521,7 @@ theorem norm_eq_zero_iff {d : ℤ} (hd : d < 0) (z : ℤ√d) : z.norm = 0 ↔ z
     rw [norm_def, sub_eq_add_neg, mul_assoc] at h
     have left := mul_self_nonneg z.re
     have right := neg_nonneg.mpr (mul_nonpos_of_nonpos_of_nonneg hd.le (mul_self_nonneg z.im))
-    obtain ⟨ha, hb⟩ := (add_eq_zero_iff' left right).mp h
+    obtain ⟨ha, hb⟩ := (add_eq_zero_iff_of_nonneg left right).mp h
     ext <;> apply eq_zero_of_mul_self_eq_zero
     · exact ha
     · rw [neg_eq_zero, mul_eq_zero] at hb
@@ -883,7 +883,7 @@ instance : OrderedRing (ℤ√d) := by infer_instance
 end
 
 theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ√d) : norm a = 0 ↔ a = 0 := by
-  refine ⟨fun ha => (Zsqrtd.ext_iff _ _).mpr ?_, fun h => by rw [h, norm_zero]⟩
+  refine ⟨fun ha => Zsqrtd.ext_iff.mpr ?_, fun h => by rw [h, norm_zero]⟩
   dsimp only [norm] at ha
   rw [sub_eq_zero] at ha
   by_cases h : 0 ≤ d

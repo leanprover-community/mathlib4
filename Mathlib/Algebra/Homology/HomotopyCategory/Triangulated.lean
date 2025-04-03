@@ -16,7 +16,7 @@ the pretriangulated category `HomotopyCategory C (ComplexShape.up ℤ)` is trian
 
 open CategoryTheory Category Limits Pretriangulated ComposableArrows
 
-variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C] [HasBinaryBiproducts C]
+variable {C : Type*} [Category C] [Preadditive C] [HasBinaryBiproducts C]
   {X₁ X₂ X₃ : CochainComplex C ℤ} (f : X₁ ⟶ X₂) (g : X₂ ⟶ X₃)
 
 namespace CochainComplex
@@ -58,7 +58,7 @@ the mapping cone of the morphism `mappingCone f ⟶ mappingCone (f ≫ g)`. -/
 noncomputable def hom :
     mappingCone g ⟶ mappingCone (mappingConeCompTriangle f g).mor₁ :=
   lift _ (descCocycle g (Cochain.ofHom (inr f)) 0 (zero_add 1) (by dsimp; simp))
-    (descCochain _ 0 (Cochain.ofHom (inr (f ≫ g))) (neg_add_self 1)) (by
+    (descCochain _ 0 (Cochain.ofHom (inr (f ≫ g))) (neg_add_cancel 1)) (by
       ext p _ rfl
       simp [mappingConeCompTriangle, map, ext_from_iff _ _ _ rfl,
         inl_v_d_assoc _ (p+1) p (p+2) (by linarith) (by linarith)])
@@ -72,7 +72,7 @@ noncomputable def inv : mappingCone (mappingConeCompTriangle f g).mor₁ ⟶ map
       ext p
       rw [ext_from_iff _ (p + 1) _ rfl, ext_to_iff _ _ (p + 1) rfl]
       simp [map, δ_zero_cochain_comp,
-        Cochain.comp_v _ _ (add_neg_self 1) p (p+1) p (by linarith) (by linarith)])
+        Cochain.comp_v _ _ (add_neg_cancel 1) p (p+1) p (by linarith) (by linarith)])
 
 @[reassoc (attr := simp)]
 lemma hom_inv_id : hom f g ≫ inv f g = 𝟙 _ := by
@@ -87,7 +87,7 @@ the morphism `mappingCone f ⟶ mappingCone (f ≫ g)`. -/
 noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
   (Cochain.equivHomotopy _ _).symm ⟨-((snd _).comp ((fst (f ≫ g)).1.comp
     ((inl f).comp (inl _) (by linarith)) (show 1 + (-2) = -1 by linarith)) (zero_add (-1))), by
-      rw [δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_self 1),
+      rw [δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
         Int.negOnePow_neg, Int.negOnePow_one, Units.neg_smul, one_smul,
         δ_comp _ _ (show 1 + (-2) = -1 by linarith) 2 (-1) 0 (by linarith)
           (by linarith) (by linarith),
@@ -100,7 +100,7 @@ noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
       rw [ext_from_iff _ (n + 1) n rfl, ext_from_iff _ (n + 1) n rfl,
         ext_from_iff _ (n + 2) (n + 1) (by linarith)]
       simp? [hom, inv, ext_to_iff _ n (n + 1) rfl, map, Cochain.comp_v _ _
-          (add_neg_self 1) n (n + 1) n (by linarith) (by linarith),
+          (add_neg_cancel 1) n (n + 1) n (by linarith) (by linarith),
         Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n + 1) (n + 2) n
           (by linarith) (by linarith),
         Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n + 2) (n + 1) n
@@ -113,13 +113,13 @@ noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
           Cochain.comp_assoc_of_first_is_zero_cochain, Cochain.comp_add, Cochain.comp_neg,
           Cochain.comp_assoc_of_second_is_zero_cochain, neg_add_rev, neg_neg, Cochain.add_v,
           Cochain.neg_v,
-          Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n (by linarith) (by linarith),
+          Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n (by linarith) (by linarith),
           Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n + 1) (n + 2) n (by linarith)
             (by linarith),
           Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n + 2) (n + 1) n (by linarith)
             (by linarith),
           Cochain.ofHom_v, HomologicalComplex.id_f, Preadditive.comp_add, Preadditive.comp_neg,
-          inl_v_fst_v_assoc, neg_zero, add_zero, comp_id, add_left_neg, inr_f_snd_v_assoc,
+          inl_v_fst_v_assoc, neg_zero, add_zero, comp_id, neg_add_cancel, inr_f_snd_v_assoc,
           inr_f_descCochain_v_assoc, inr_f_fst_v_assoc, comp_zero, zero_add,
           ext_to_iff _ n (n + 1) rfl, liftCochain_v_fst_v, inl_v_descCochain_v, inl_v_fst_v,
           liftCochain_v_snd_v, Cochain.zero_v, inl_v_snd_v, and_self, neg_add_cancel_right,
@@ -175,6 +175,8 @@ lemma mappingConeCompTriangleh_comm₁ :
 end CochainComplex
 
 namespace HomotopyCategory
+
+variable [HasZeroObject C]
 
 lemma mappingConeCompTriangleh_distinguished :
     (CochainComplex.mappingConeCompTriangleh f g) ∈

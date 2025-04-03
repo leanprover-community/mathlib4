@@ -56,35 +56,33 @@ theorem mulVec_stdBasisMatrix [Fintype m] (i : n) (j : m) (c : α) (x : m → α
   · simp
   simp [h, h.symm]
 
-theorem matrix_eq_sum_std_basis [Fintype m] [Fintype n] (x : Matrix m n α) :
+theorem matrix_eq_sum_stdBasisMatrix [Fintype m] [Fintype n] (x : Matrix m n α) :
     x = ∑ i : m, ∑ j : n, stdBasisMatrix i j (x i j) := by
   ext i j; symm
   iterate 2 rw [Finset.sum_apply]
-  -- Porting note: was `convert`
-  refine (Fintype.sum_eq_single i ?_).trans ?_; swap
-  · -- Porting note: `simp` seems unwilling to apply `Fintype.sum_apply`
-    simp (config := { unfoldPartialApp := true }) only [stdBasisMatrix]
-    rw [Fintype.sum_apply, Fintype.sum_apply]
-    simp
+  convert (Fintype.sum_eq_single i ?_).trans ?_; swap
+  · -- Porting note(#12717): `simp` seems unwilling to apply `Fintype.sum_apply`
+    simp (config := { unfoldPartialApp := true }) [stdBasisMatrix, (Fintype.sum_apply)]
   · intro j' hj'
-    -- Porting note: `simp` seems unwilling to apply `Fintype.sum_apply`
-    simp (config := { unfoldPartialApp := true }) only [stdBasisMatrix]
-    rw [Fintype.sum_apply, Fintype.sum_apply]
-    simp [hj']
+    -- Porting note(#12717): `simp` seems unwilling to apply `Fintype.sum_apply`
+    simp (config := { unfoldPartialApp := true }) [stdBasisMatrix, (Fintype.sum_apply), hj']
+
+@[deprecated (since := "2024-08-11")] alias matrix_eq_sum_std_basis := matrix_eq_sum_stdBasisMatrix
+
+theorem stdBasisMatrix_eq_single_vecMulVec_single (i : m) (j : n) :
+    stdBasisMatrix i j (1 : α) = vecMulVec (Pi.single i 1) (Pi.single j 1) := by
+  ext i' j'
+  -- Porting note: lean3 didn't apply `mul_ite`.
+  simp [-mul_ite, stdBasisMatrix, vecMulVec, ite_and, Pi.single_apply, eq_comm]
 
 -- TODO: tie this up with the `Basis` machinery of linear algebra
 -- this is not completely trivial because we are indexing by two types, instead of one
--- TODO: add `std_basis_vec`
+@[deprecated stdBasisMatrix_eq_single_vecMulVec_single (since := "2024-08-11")]
 theorem std_basis_eq_basis_mul_basis (i : m) (j : n) :
     stdBasisMatrix i j (1 : α) =
       vecMulVec (fun i' => ite (i = i') 1 0) fun j' => ite (j = j') 1 0 := by
-  ext i' j'
-  -- Porting note: was `norm_num [std_basis_matrix, vec_mul_vec]` though there are no numerals
-  -- involved.
-  simp only [stdBasisMatrix, vecMulVec, mul_ite, mul_one, mul_zero, of_apply]
-  -- Porting note: added next line
-  simp_rw [@and_comm (i = i')]
-  exact ite_and _ _ _ _
+  rw [stdBasisMatrix_eq_single_vecMulVec_single]
+  congr! with i <;> simp only [Pi.single_apply, eq_comm]
 
 -- todo: the old proof used fintypes, I don't know `Finsupp` but this feels generalizable
 @[elab_as_elim]
@@ -92,7 +90,7 @@ protected theorem induction_on' [Finite m] [Finite n] {P : Matrix m n α → Pro
     (h_zero : P 0) (h_add : ∀ p q, P p → P q → P (p + q))
     (h_std_basis : ∀ (i : m) (j : n) (x : α), P (stdBasisMatrix i j x)) : P M := by
   cases nonempty_fintype m; cases nonempty_fintype n
-  rw [matrix_eq_sum_std_basis M, ← Finset.sum_product']
+  rw [matrix_eq_sum_stdBasisMatrix M, ← Finset.sum_product']
   apply Finset.sum_induction _ _ h_add h_zero
   · intros
     apply h_std_basis

@@ -10,10 +10,6 @@ import Mathlib.GroupTheory.Submonoid.Centralizer
 # Centralizers of subgroups
 -/
 
-
-open Function
-open Int
-
 variable {G : Type*} [Group G]
 
 namespace Subgroup

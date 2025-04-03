@@ -177,7 +177,11 @@ theorem ext (h h' : IsAdjoinRoot S f) (eq : h.root = h'.root) : h = h' :=
 
 section lift
 
-variable {T : Type*} [CommRing T] {i : R →+* T} {x : T} (hx : f.eval₂ i x = 0)
+variable {T : Type*} [CommRing T] {i : R →+* T} {x : T}
+
+section
+variable (hx : f.eval₂ i x = 0)
+include hx
 
 /-- Auxiliary lemma for `IsAdjoinRoot.lift` -/
 theorem eval₂_repr_eq_eval₂_of_map_eq (h : IsAdjoinRoot S f) (z : S) (w : R[X])
@@ -191,7 +195,7 @@ variable (i x)
 -- To match `AdjoinRoot.lift`
 /-- Lift a ring homomorphism `R →+* T` to `S →+* T` by specifying a root `x` of `f` in `T`,
 where `S` is given by adjoining a root of `f` to `R`. -/
-def lift (h : IsAdjoinRoot S f) : S →+* T where
+def lift (h : IsAdjoinRoot S f) (hx : f.eval₂ i x = 0) : S →+* T where
   toFun z := (h.repr z).eval₂ i x
   map_zero' := by
     dsimp only -- Porting note (#10752): added `dsimp only`
@@ -235,6 +239,8 @@ theorem apply_eq_lift (h : IsAdjoinRoot S f) (g : S →+* T) (hmap : ∀ a, g (a
 theorem eq_lift (h : IsAdjoinRoot S f) (g : S →+* T) (hmap : ∀ a, g (algebraMap R S a) = i a)
     (hroot : g h.root = x) : g = h.lift i x hx :=
   RingHom.ext (h.apply_eq_lift hx g hmap hroot)
+
+end
 
 variable [Algebra R T] (hx' : aeval x f = 0)
 variable (x)
@@ -364,7 +370,7 @@ Auxiliary definition for `IsAdjoinRootMonic.powerBasis`. -/
 def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
   Basis.ofRepr
     { toFun := fun x => (h.modByMonicHom x).toFinsupp.comapDomain _ Fin.val_injective.injOn
-      invFun := fun g => h.map (ofFinsupp (g.mapDomain _))
+      invFun := fun g => h.map (ofFinsupp (g.mapDomain Fin.val))
       left_inv := fun x => by
         cases subsingleton_or_nontrivial R
         · subsingleton [h.subsingleton]
@@ -572,11 +578,13 @@ def aequiv (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) : S ≃ₐ[R] T :=
 
 @[simp]
 theorem aequiv_map (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) (z : R[X]) :
-    h.aequiv h' (h.map z) = h'.map z := by rw [aequiv, AlgEquiv.coe_mk, liftHom_map, aeval_eq]
+    h.aequiv h' (h.map z) = h'.map z := by
+  rw [aequiv, AlgEquiv.coe_mk, Equiv.coe_fn_mk, liftHom_map, aeval_eq]
 
 @[simp]
 theorem aequiv_root (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) :
-    h.aequiv h' h.root = h'.root := by rw [aequiv, AlgEquiv.coe_mk, liftHom_root]
+    h.aequiv h' h.root = h'.root := by
+  rw [aequiv, AlgEquiv.coe_mk, Equiv.coe_fn_mk, liftHom_root]
 
 @[simp]
 theorem aequiv_self (h : IsAdjoinRoot S f) : h.aequiv h = AlgEquiv.refl := by

@@ -9,7 +9,6 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
-import Mathlib.GroupTheory.GroupAction.Group
 
 /-!
 # Basic properties of group actions
@@ -378,6 +377,25 @@ lemma orbitRel_r_apply {a b : α} : (orbitRel G _).r a b ↔ a ∈ orbit G b :=
 lemma orbitRel_subgroup_le (H : Subgroup G) : orbitRel H α ≤ orbitRel G α :=
   Setoid.le_def.2 mem_orbit_of_mem_orbit_subgroup
 
+@[to_additive]
+lemma orbitRel_subgroupOf (H K : Subgroup G) :
+    orbitRel (H.subgroupOf K) α = orbitRel (H ⊓ K : Subgroup G) α := by
+  rw [← Subgroup.subgroupOf_map_subtype]
+  ext x
+  simp_rw [orbitRel_apply]
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · rcases h with ⟨⟨gv, gp⟩, rfl⟩
+    simp only [Submonoid.mk_smul]
+    refine mem_orbit _ (⟨gv, ?_⟩ : Subgroup.map K.subtype (H.subgroupOf K))
+    simpa using gp
+  · rcases h with ⟨⟨gv, gp⟩, rfl⟩
+    simp only [Submonoid.mk_smul]
+    simp only [Subgroup.subgroupOf_map_subtype, Subgroup.mem_inf] at gp
+    refine mem_orbit _ (⟨⟨gv, ?_⟩, ?_⟩ : H.subgroupOf K)
+    · exact gp.2
+    · simp only [Subgroup.mem_subgroupOf]
+      exact gp.1
+
 /-- When you take a set `U` in `α`, push it down to the quotient, and pull back, you get the union
 of the orbit of `U` under `G`. -/
 @[to_additive
@@ -428,9 +446,9 @@ theorem image_inter_image_iff (U V : Set α) :
 variable (G α)
 
 /-- The quotient by `MulAction.orbitRel`, given a name to enable dot notation. -/
-@[to_additive (attr := reducible)
+@[to_additive
     "The quotient by `AddAction.orbitRel`, given a name to enable dot notation."]
-def orbitRel.Quotient : Type _ :=
+abbrev orbitRel.Quotient : Type _ :=
   _root_.Quotient <| orbitRel G α
 
 /-- An action is pretransitive if and only if the quotient by `MulAction.orbitRel` is a
@@ -646,9 +664,12 @@ lemma le_stabilizer_smul_left [SMul α β] [IsScalarTower G α β] (a : α) (b :
     stabilizer G a ≤ stabilizer G (a • b) := by
   simp_rw [SetLike.le_def, mem_stabilizer_iff, ← smul_assoc]; rintro a h; rw [h]
 
+-- This lemma does not need `MulAction G α`, only `SMul G α`.
+-- We use `G'` instead of `G` to locally reduce the typeclass assumptions.
 @[to_additive]
-lemma le_stabilizer_smul_right [SMul α β] [SMulCommClass G α β] (a : α) (b : β) :
-    stabilizer G b ≤ stabilizer G (a • b) := by
+lemma le_stabilizer_smul_right {G'} [Group G'] [SMul α β] [MulAction G' β]
+    [SMulCommClass G' α β] (a : α) (b : β) :
+    stabilizer G' b ≤ stabilizer G' (a • b) := by
   simp_rw [SetLike.le_def, mem_stabilizer_iff, smul_comm]; rintro a h; rw [h]
 
 @[to_additive (attr := simp)]
@@ -658,7 +679,7 @@ lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b :
   simpa only [mem_stabilizer_iff, ← smul_assoc, h.eq_iff] using ha
 
 @[to_additive (attr := simp)]
-lemma stabilizer_smul_eq_right [Group α] [MulAction α β] [SMulCommClass G α β] (a : α) (b : β) :
+lemma stabilizer_smul_eq_right {α} [Group α] [MulAction α β] [SMulCommClass G α β] (a : α) (b : β) :
     stabilizer G (a • b) = stabilizer G b :=
   (le_stabilizer_smul_right _ _).antisymm' <| (le_stabilizer_smul_right a⁻¹ _).trans_eq <| by
     rw [inv_smul_smul]
@@ -675,8 +696,8 @@ lemma stabilizer_mul_eq_right [Group α] [SMulCommClass G α α] (a b : α) :
 theorem stabilizer_smul_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g • a) = (stabilizer G a).map (MulAut.conj g).toMonoidHom := by
   ext h
-  rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul, mul_left_inv,
-    one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
+  rw [mem_stabilizer_iff, ← smul_left_cancel_iff g⁻¹, smul_smul, smul_smul, smul_smul,
+    inv_mul_cancel, one_smul, ← mem_stabilizer_iff, Subgroup.mem_map_equiv, MulAut.conj_symm_apply]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/
 noncomputable def stabilizerEquivStabilizerOfOrbitRel {a b : α} (h : (orbitRel G α).Rel a b) :
@@ -699,7 +720,7 @@ theorem stabilizer_vadd_eq_stabilizer_map_conj (g : G) (a : α) :
     stabilizer G (g +ᵥ a) = (stabilizer G a).map (AddAut.conj g).toAddMonoidHom := by
   ext h
   rw [mem_stabilizer_iff, ← vadd_left_cancel_iff (-g), vadd_vadd, vadd_vadd, vadd_vadd,
-    add_left_neg, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
+    neg_add_cancel, zero_vadd, ← mem_stabilizer_iff, AddSubgroup.mem_map_equiv,
     AddAut.conj_symm_apply]
 
 /-- A bijection between the stabilizers of two elements in the same orbit. -/

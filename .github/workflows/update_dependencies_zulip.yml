@@ -1,7 +1,5 @@
 name: Monitor Dependency Update Failures
 
-# This action currently uses the NIGHTLY_TESTING secret, but could be moved to a separate secret.
-
 on:
   workflow_run:
     workflows: ["continuous integration"]
@@ -20,7 +18,7 @@ jobs:
         uses: actions/github-script@v7
         id: construct_message
         with:
-          github-token: ${{ secrets.NIGHTLY_TESTING }}
+          github-token: ${{ secrets.UPDATE_DEPENDENCIES_TOKEN }}
           result-encoding: string
           script: |
             const owner = context.repo.owner, repo = context.repo.repo;

@@ -58,8 +58,8 @@ theorem Valuation.inversion_estimate {x y : K} {γ : Γ₀ˣ} (y_ne : y ≠ 0)
     rw [h, v.map_zero] at key
     exact v.zero_iff.1 key.symm
   have decomp : x⁻¹ - y⁻¹ = x⁻¹ * (y - x) * y⁻¹ := by
-    rw [mul_sub_left_distrib, sub_mul, mul_assoc, show y * y⁻¹ = 1 from mul_inv_cancel y_ne,
-      show x⁻¹ * x = 1 from inv_mul_cancel x_ne, mul_one, one_mul]
+    rw [mul_sub_left_distrib, sub_mul, mul_assoc, show y * y⁻¹ = 1 from mul_inv_cancel₀ y_ne,
+      show x⁻¹ * x = 1 from inv_mul_cancel₀ x_ne, mul_one, one_mul]
   calc
     v (x⁻¹ - y⁻¹) = v (x⁻¹ * (y - x) * y⁻¹) := by rw [decomp]
     _ = v x⁻¹ * (v <| y - x) * v y⁻¹ := by repeat' rw [Valuation.map_mul]
@@ -233,13 +233,13 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
     have nhds_right : (fun x => x * x₀) '' V' ∈ 𝓝 x₀ := by
       have l : Function.LeftInverse (fun x : hat K => x * x₀⁻¹) fun x : hat K => x * x₀ := by
         intro x
-        simp only [mul_assoc, mul_inv_cancel h, mul_one]
+        simp only [mul_assoc, mul_inv_cancel₀ h, mul_one]
       have r : Function.RightInverse (fun x : hat K => x * x₀⁻¹) fun x : hat K => x * x₀ := by
         intro x
-        simp only [mul_assoc, inv_mul_cancel h, mul_one]
+        simp only [mul_assoc, inv_mul_cancel₀ h, mul_one]
       have c : Continuous fun x : hat K => x * x₀⁻¹ := continuous_id.mul continuous_const
       rw [image_eq_preimage_of_inverse l r]
-      rw [← mul_inv_cancel h] at V'_in
+      rw [← mul_inv_cancel₀ h] at V'_in
       exact c.continuousAt V'_in
     have : ∃ z₀ : K, ∃ y₀ ∈ V', ↑z₀ = y₀ * x₀ ∧ z₀ ≠ 0 := by
       rcases Completion.denseRange_coe.mem_nhds nhds_right with ⟨z₀, y₀, y₀_in, H : y₀ * x₀ = z₀⟩
@@ -256,10 +256,10 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       apply hV
       have : (z₀⁻¹ : K) = (z₀ : hat K)⁻¹ := map_inv₀ (Completion.coeRingHom : K →+* hat K) z₀
       rw [Completion.coe_mul, this, ha, hz₀, mul_inv, mul_comm y₀⁻¹, ← mul_assoc, mul_assoc y,
-        mul_inv_cancel h, mul_one]
+        mul_inv_cancel₀ h, mul_one]
       solve_by_elim
     calc
-      v a = v (a * z₀⁻¹ * z₀) := by rw [mul_assoc, inv_mul_cancel z₀_ne, mul_one]
+      v a = v (a * z₀⁻¹ * z₀) := by rw [mul_assoc, inv_mul_cancel₀ z₀_ne, mul_one]
       _ = v (a * z₀⁻¹) * v z₀ := Valuation.map_mul _ _ _
       _ = v z₀ := by rw [this, one_mul]
 
@@ -364,7 +364,7 @@ def integer : Subring K := (vK.v).integer
 @[inherit_doc]
 scoped notation "𝒪[" K "]" => Valued.integer K
 
-/-- An abbrevation for `LocalRing.maximalIdeal 𝒪[K]` of a valued field `K`, enabling the notation
+/-- An abbreviation for `LocalRing.maximalIdeal 𝒪[K]` of a valued field `K`, enabling the notation
 `𝓂[K]` for the maximal ideal in `𝒪[K]` of a valued field `K`. -/
 @[reducible]
 def maximalIdeal : Ideal 𝒪[K] := LocalRing.maximalIdeal 𝒪[K]
@@ -372,7 +372,7 @@ def maximalIdeal : Ideal 𝒪[K] := LocalRing.maximalIdeal 𝒪[K]
 @[inherit_doc]
 scoped notation "𝓂[" K "]" => maximalIdeal K
 
-/-- An abbrevation for `LocalRing.ResidueField 𝒪[K]` of a `Valued` instance, enabling the notation
+/-- An abbreviation for `LocalRing.ResidueField 𝒪[K]` of a `Valued` instance, enabling the notation
 `𝓀[K]` for the residue field of a valued field `K`. -/
 @[reducible]
 def ResidueField := LocalRing.ResidueField (𝒪[K])

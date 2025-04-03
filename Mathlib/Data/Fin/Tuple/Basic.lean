@@ -724,9 +724,37 @@ def succAboveCases {α : Fin (n + 1) → Sort u} (i : Fin (n + 1)) (x : α i)
     else @Eq.recOn _ _ (fun x _ ↦ α x) _ (succAbove_pred_of_lt _ _ <|
     (Fin.lt_or_lt_of_ne hj).resolve_left hlt) (p _)
 
-theorem forall_iff_succAbove {p : Fin (n + 1) → Prop} (i : Fin (n + 1)) :
-    (∀ j, p j) ↔ p i ∧ ∀ j, p (i.succAbove j) :=
-  ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ succAboveCases i h.1 h.2⟩
+-- This is a duplicate of `Fin.exists_fin_succ` in Core. We should upstream the name change.
+alias forall_iff_succ := forall_fin_succ
+
+-- This is a duplicate of `Fin.exists_fin_succ` in Core. We should upstream the name change.
+alias exists_iff_succ := exists_fin_succ
+
+lemma forall_iff_castSucc {P : Fin (n + 1) → Prop} :
+    (∀ i, P i) ↔ P (last n) ∧ ∀ i, P (castSucc i) :=
+  ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ lastCases h.1 h.2⟩
+
+lemma exists_iff_castSucc {P : Fin (n + 1) → Prop} :
+    (∃ i, P i) ↔ P (last n) ∨ ∃ i, P (castSucc i) where
+  mp := by
+    rintro ⟨i, hi⟩
+    induction' i using lastCases
+    · exact .inl hi
+    · exact .inr ⟨_, hi⟩
+  mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
+
+theorem forall_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
+    (∀ i, P i) ↔ P p ∧ ∀ i, P (p.succAbove i) :=
+  ⟨fun h ↦ ⟨h _, fun _ ↦ h _⟩, fun h ↦ succAboveCases p h.1 h.2⟩
+
+lemma exists_iff_succAbove {P : Fin (n + 1) → Prop} (p : Fin (n + 1)) :
+    (∃ i, P i) ↔ P p ∨ ∃ i, P (p.succAbove i) where
+  mp := by
+    rintro ⟨i, hi⟩
+    induction' i using p.succAboveCases
+    · exact .inl hi
+    · exact .inr ⟨_, hi⟩
+  mpr := by rintro (h | ⟨i, hi⟩) <;> exact ⟨_, ‹_›⟩
 
 /-- Remove the `p`-th entry of a tuple. -/
 def removeNth (p : Fin (n + 1)) (f : ∀ i, α i) : ∀ i, α (p.succAbove i) := fun i ↦ f (p.succAbove i)

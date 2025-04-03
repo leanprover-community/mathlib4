@@ -9,7 +9,7 @@ import Mathlib.Analysis.Calculus.FDeriv.Analytic
 /-!
 # Properties of analyticity restricted to a set
 
-From `Mathlib.Analysis.Analytic.Basic`, we have the definitons
+From `Mathlib.Analysis.Analytic.Basic`, we have the definitions
 
 1. `AnalyticWithinAt 𝕜 f s x` means a power series at `x` converges to `f` on `𝓝[s] x`, and
     `f` is continuous within `s` at `x`.
@@ -29,8 +29,6 @@ noncomputable section
 open Topology Filter ENNReal
 
 open Set Filter
-
-variable {α : Type*}
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 

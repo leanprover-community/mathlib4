@@ -38,7 +38,7 @@ variable {ι : Type w} {ι' : Type w'} {η : Type u₁'} {φ : η → Type*}
 open Cardinal Basis Submodule Function Set FiniteDimensional DirectSum
 
 variable [Ring R] [CommRing S] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁]
-variable [Module R M] [Module R M'] [Module R M₁]
+variable [Module R M]
 
 section Quotient
 
@@ -106,6 +106,7 @@ end ULift
 section Prod
 
 variable (R M M')
+variable [Module R M₁] [Module R M']
 
 open LinearMap in
 theorem lift_rank_add_lift_rank_le_rank_prod [Nontrivial R] :
@@ -150,7 +151,7 @@ end Prod
 section Finsupp
 
 variable (R M M')
-variable [StrongRankCondition R] [Module.Free R M] [Module.Free R M']
+variable [StrongRankCondition R] [Module.Free R M] [Module R M'] [Module.Free R M']
 
 open Module.Free
 
@@ -205,8 +206,6 @@ theorem rank_matrix' (m n : Type v) [Finite m] [Finite n] :
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem rank_matrix'' (m n : Type u) [Finite m] [Finite n] :
     Module.rank R (Matrix m n R) = #m * #n := by simp
-
-variable [Module.Finite R M] [Module.Finite R M']
 
 open Fintype
 
@@ -322,9 +321,9 @@ section TensorProduct
 open TensorProduct
 
 variable [StrongRankCondition R] [StrongRankCondition S]
-variable [Module S M] [Module.Free S M] [Module S M'] [Module.Free S M']
+variable [Module S M] [Module S M'] [Module.Free S M']
 variable [Module S M₁] [Module.Free S M₁]
-variable [Algebra S R] [Module R M] [IsScalarTower S R M] [Module.Free R M]
+variable [Algebra S R] [IsScalarTower S R M] [Module.Free R M]
 
 open Module.Free
 
@@ -382,7 +381,8 @@ theorem Submodule.finrank_quotient_le [Module.Finite R M] (s : Submodule R M) :
     (rank_lt_aleph0 _ _)
 
 /-- Pushforwards of finite submodules have a smaller finrank. -/
-theorem Submodule.finrank_map_le (f : M →ₗ[R] M') (p : Submodule R M) [Module.Finite R p] :
+theorem Submodule.finrank_map_le
+    [Module R M'] (f : M →ₗ[R] M') (p : Submodule R M) [Module.Finite R p] :
     finrank R (p.map f) ≤ finrank R p :=
   finrank_le_finrank_of_rank_le_rank (lift_rank_map_le _ _) (rank_lt_aleph0 _ _)
 
@@ -402,7 +402,7 @@ section Span
 variable [StrongRankCondition R]
 
 theorem rank_span_le (s : Set M) : Module.rank R (span R s) ≤ #s := by
-  rw [Finsupp.span_eq_range_total, ← lift_strictMono.le_iff_le]
+  rw [Finsupp.span_eq_range_linearCombination, ← lift_strictMono.le_iff_le]
   refine (lift_rank_range_le _).trans ?_
   rw [rank_finsupp_self]
   simp only [lift_lift, le_refl]

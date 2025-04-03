@@ -193,7 +193,7 @@ instance divInvMonoid [∀ i, DivInvMonoid (f i)] : DivInvMonoid (∀ i, f i) wh
   zpow_succ' := by intros; ext; exact DivInvMonoid.zpow_succ' _ _
   zpow_neg' := by intros; ext; exact DivInvMonoid.zpow_neg' _ _
 
-@[to_additive Pi.subNegZeroMonoid]
+@[to_additive]
 instance divInvOneMonoid [∀ i, DivInvOneMonoid (f i)] : DivInvOneMonoid (∀ i, f i) where
   inv_one := by ext; exact inv_one
 
@@ -201,7 +201,7 @@ instance divInvOneMonoid [∀ i, DivInvOneMonoid (f i)] : DivInvOneMonoid (∀ i
 instance involutiveInv [∀ i, InvolutiveInv (f i)] : InvolutiveInv (∀ i, f i) where
   inv_inv := by intros; ext; exact inv_inv _
 
-@[to_additive Pi.subtractionMonoid]
+@[to_additive]
 instance divisionMonoid [∀ i, DivisionMonoid (f i)] : DivisionMonoid (∀ i, f i) where
   __ := divInvMonoid
   __ := involutiveInv
@@ -214,7 +214,7 @@ instance divisionCommMonoid [∀ i, DivisionCommMonoid (f i)] : DivisionCommMono
 
 @[to_additive]
 instance group [∀ i, Group (f i)] : Group (∀ i, f i) where
-  mul_left_inv := by intros; ext; exact mul_left_inv _
+  inv_mul_cancel := by intros; ext; exact inv_mul_cancel _
 
 @[to_additive]
 instance commGroup [∀ i, CommGroup (f i)] : CommGroup (∀ i, f i) := { group, commMonoid with }

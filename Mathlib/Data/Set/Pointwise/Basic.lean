@@ -51,6 +51,8 @@ pointwise subtraction
 -/
 
 
+assert_not_exists OrderedAddCommMonoid
+
 library_note "pointwise nat action"/--
 Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
 `SMul α β → SMul α (Set β)`. When `α` is `ℕ` or `ℤ`, this action conflicts with the
@@ -71,8 +73,6 @@ variable {F α β γ : Type*}
 namespace Set
 
 /-! ### `0`/`1` as sets -/
-
-assert_not_exists OrderedAddCommMonoid
 
 section One
 
@@ -749,14 +749,7 @@ theorem univ_mul_of_one_mem (ht : (1 : α) ∈ t) : univ * t = univ :=
 theorem univ_mul_univ : (univ : Set α) * univ = univ :=
   mul_univ_of_one_mem <| mem_univ _
 
---TODO: `to_additive` trips up on the `1 : ℕ` used in the pattern-matching.
-@[simp]
-theorem nsmul_univ {α : Type*} [AddMonoid α] : ∀ {n : ℕ}, n ≠ 0 → n • (univ : Set α) = univ
-  | 0 => fun h => (h rfl).elim
-  | 1 => fun _ => one_nsmul _
-  | n + 2 => fun _ => by rw [succ_nsmul, nsmul_univ n.succ_ne_zero, univ_add_univ]
-
-@[to_additive existing (attr := simp) nsmul_univ]
+@[to_additive (attr := simp) nsmul_univ]
 theorem univ_pow : ∀ {n : ℕ}, n ≠ 0 → (univ : Set α) ^ n = univ
   | 0 => fun h => (h rfl).elim
   | 1 => fun _ => pow_one _
@@ -796,7 +789,7 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = {a} ∧ t = {b} �
     rw [singleton_mul_singleton, h, singleton_one]
 
 /-- `Set α` is a division monoid under pointwise operations if `α` is. -/
-@[to_additive subtractionMonoid
+@[to_additive
     "`Set α` is a subtraction monoid under pointwise operations if `α` is."]
 protected noncomputable def divisionMonoid : DivisionMonoid (Set α) :=
   { Set.monoid, Set.involutiveInv, Set.div, @Set.ZPow α _ _ _ with

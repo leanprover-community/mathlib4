@@ -29,8 +29,6 @@ divisors, perfect numbers
 
 -/
 
-
-open scoped Classical
 open Finset
 
 namespace Nat
@@ -403,8 +401,7 @@ theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n
       | Nat.succ (Nat.succ n) => simp [succ_le_succ]
     · rw [← mem_singleton, ← h, mem_properDivisors]
       have := Nat.le_of_dvd ?_ hdvd
-      · simp [hdvd, this]
-        exact (le_iff_eq_or_lt.mp this).symm
+      · simpa [hdvd, this] using (le_iff_eq_or_lt.mp this).symm
       · by_contra!
         simp only [nonpos_iff_eq_zero.mp this, this] at h
         contradiction

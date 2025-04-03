@@ -6,7 +6,7 @@ Authors: Eric Rodriguez
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Roots
 import Mathlib.Tactic.ByContra
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.NumberTheory.Padics.PadicVal
+import Mathlib.NumberTheory.Padics.PadicVal.Basic
 import Mathlib.Analysis.Complex.Arg
 
 /-!
@@ -80,7 +80,7 @@ theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R} [LinearOrderedCommRing R] (x :
     cases' h with hk hx
     · refine (ih _ hi.2.2 (Nat.two_lt_of_ne ?_ hi.1 ?_)).le <;> rintro rfl
       · exact hn'.ne' (zero_dvd_iff.mp hi.2.1)
-      · exact even_iff_not_odd.mp (even_iff_two_dvd.mpr hi.2.1) hk
+      · exact not_odd_iff_even.2 (even_iff_two_dvd.mpr hi.2.1) hk
     · rcases eq_or_ne i 2 with (rfl | hk)
       · simpa only [eval_X, eval_one, cyclotomic_two, eval_add] using hx.le
       refine (ih _ hi.2.2 (Nat.two_lt_of_ne ?_ hi.1 hk)).le

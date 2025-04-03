@@ -84,7 +84,7 @@ theorem odd_card_of_involutive (hφ : FixedPointFree φ) (h2 : Function.Involuti
     Odd (Nat.card G) := by
   have := Fintype.ofFinite G
   by_contra h
-  rw [← Nat.even_iff_not_odd, even_iff_two_dvd, Nat.card_eq_fintype_card] at h
+  rw [Nat.not_odd_iff_even, even_iff_two_dvd, Nat.card_eq_fintype_card] at h
   obtain ⟨g, hg⟩ := exists_prime_orderOf_dvd_card 2 h
   exact hφ.orderOf_ne_two_of_involutive h2 g hg
 

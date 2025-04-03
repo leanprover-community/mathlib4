@@ -102,7 +102,7 @@ def unopUnop : Cᵒᵖᵒᵖ ⥤ C where
   obj X := unop (unop X)
   map f := f.unop.unop
 
-/-- The functor from a category to its double-opposite.  -/
+/-- The functor from a category to its double-opposite. -/
 @[simps]
 def opOp : C ⥤ Cᵒᵖᵒᵖ where
   obj X := op (op X)

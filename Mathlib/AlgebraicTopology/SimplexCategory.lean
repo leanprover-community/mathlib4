@@ -520,7 +520,7 @@ theorem epi_iff_surjective {n m : SimplexCategory} {f : n ⟶ m} :
   simp only [skeletalFunctor_obj, skeletalFunctor_map,
     NonemptyFinLinOrd.epi_iff_surjective, NonemptyFinLinOrd.coe_of]
 
-/-- A monomorphism in `SimplexCategory` must increase lengths-/
+/-- A monomorphism in `SimplexCategory` must increase lengths -/
 theorem len_le_of_mono {x y : SimplexCategory} {f : x ⟶ y} : Mono f → x.len ≤ y.len := by
   intro hyp_f_mono
   have f_inj : Function.Injective f.toOrderHom.toFun := mono_iff_injective.1 hyp_f_mono
@@ -529,7 +529,7 @@ theorem len_le_of_mono {x y : SimplexCategory} {f : x ⟶ y} : Mono f → x.len 
 theorem le_of_mono {n m : ℕ} {f : ([n] : SimplexCategory) ⟶ [m]} : CategoryTheory.Mono f → n ≤ m :=
   len_le_of_mono
 
-/-- An epimorphism in `SimplexCategory` must decrease lengths-/
+/-- An epimorphism in `SimplexCategory` must decrease lengths -/
 theorem len_le_of_epi {x y : SimplexCategory} {f : x ⟶ y} : Epi f → y.len ≤ x.len := by
   intro hyp_f_epi
   have f_surj : Function.Surjective f.toOrderHom.toFun := epi_iff_surjective.1 hyp_f_epi
@@ -652,7 +652,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
       cases' Nat.le.dest h' with c hc
       cases c
       · exfalso
-        simp only [Nat.zero_eq, add_zero, len_mk, Fin.coe_pred] at hc
+        simp only [add_zero, len_mk, Fin.coe_pred] at hc
         rw [hc] at h''
         exact h'' rfl
       · rw [← hc]

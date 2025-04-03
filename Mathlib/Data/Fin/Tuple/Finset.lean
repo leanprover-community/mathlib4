@@ -17,11 +17,11 @@ variable {n : ℕ} {α : Fin (n + 1) → Type*}
 
 lemma mem_piFinset_succ {x : ∀ i, α i} {s : ∀ i, Finset (α i)} :
     x ∈ piFinset s ↔ x 0 ∈ s 0 ∧ tail x ∈ piFinset (tail s) := by
-  simp only [mem_piFinset, forall_fin_succ, tail]
+  simp only [mem_piFinset, forall_iff_succ, tail]
 
 lemma mem_piFinset_succ' {x : ∀ i, α i} {s : ∀ i, Finset (α i)} :
-    x ∈ piFinset s ↔ init x ∈ piFinset (init s) ∧ x (last n) ∈ s (last n) := by
-  simp only [mem_piFinset, forall_fin_succ', init]
+    x ∈ piFinset s ↔ x (last n) ∈ s (last n) ∧ init x ∈ piFinset (init s) := by
+  simp only [mem_piFinset, forall_iff_castSucc, init]
 
 lemma cons_mem_piFinset_cons {x₀ : α 0} {x : ∀ i : Fin n, α i.succ}
     {s₀ : Finset (α 0)} {s : ∀ i : Fin n, Finset (α i.succ)} :
@@ -29,8 +29,8 @@ lemma cons_mem_piFinset_cons {x₀ : α 0} {x : ∀ i : Fin n, α i.succ}
   simp_rw [mem_piFinset_succ, cons_zero, tail_cons]
 
 lemma snoc_mem_piFinset_snoc {x : ∀ i : Fin n, α i.castSucc} {xₙ : α (.last n)}
-    {s : ∀ i : Fin n, Finset (α i.castSucc)} {sₙ : Finset (α $ .last n)} :
-    snoc x xₙ ∈ piFinset (snoc s sₙ) ↔ x ∈ piFinset s ∧ xₙ ∈ sₙ := by
+    {s : ∀ i : Fin n, Finset (α i.castSucc)} {sₙ : Finset (α <| .last n)} :
+    snoc x xₙ ∈ piFinset (snoc s sₙ) ↔ xₙ ∈ sₙ ∧ x ∈ piFinset s := by
   simp_rw [mem_piFinset_succ', init_snoc, snoc_last]
 
 end Fin

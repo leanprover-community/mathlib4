@@ -5,8 +5,8 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Analysis.Convex.Function
 import Mathlib.Topology.Algebra.Affine
-import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 import Mathlib.Topology.Order.LocalExtr
+import Mathlib.Topology.MetricSpace.Pseudo.Lemmas
 
 /-!
 # Minima and maxima of convex functions

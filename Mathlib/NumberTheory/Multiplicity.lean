@@ -6,8 +6,9 @@ Authors: Tian Chen, Mantas Bakšys
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Ring.Int
-import Mathlib.NumberTheory.Padics.PadicVal
+import Mathlib.NumberTheory.Padics.PadicVal.Defs
 import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Multiplicity in Number Theory
@@ -51,7 +52,7 @@ theorem dvd_geom_sum₂_self {x y : R} (h : ↑n ∣ x - y) :
 theorem sq_dvd_add_pow_sub_sub (p x : R) (n : ℕ) :
     p ^ 2 ∣ (x + p) ^ n - x ^ (n - 1) * p * n - x ^ n := by
   cases' n with n n
-  · simp only [pow_zero, Nat.cast_zero, sub_zero, sub_self, dvd_zero, Nat.zero_eq, mul_zero]
+  · simp only [pow_zero, Nat.cast_zero, sub_zero, sub_self, dvd_zero, mul_zero]
   · simp only [Nat.succ_sub_succ_eq_sub, tsub_zero, Nat.cast_succ, add_pow, Finset.sum_range_succ,
       Nat.choose_self, Nat.succ_sub _, tsub_self, pow_one, Nat.choose_succ_self_right, pow_zero,
       mul_one, Nat.cast_zero, zero_add, Nat.succ_eq_add_one, add_tsub_cancel_left]
@@ -150,6 +151,7 @@ theorem pow_sub_pow_of_prime {p : R} (hp : Prime p) {x y : R} (hxy : p ∣ x - y
     zero_add]
 
 variable (hp : Prime (p : R)) (hp1 : Odd p) (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x)
+include hp hp1 hxy hx
 
 theorem geom_sum₂_eq_one : multiplicity (↑p) (∑ i ∈ range p, x ^ i * y ^ (p - 1 - i)) = 1 := by
   rw [← Nat.cast_one]
@@ -182,12 +184,13 @@ end IntegralDomain
 section LiftingTheExponent
 
 variable (hp : Nat.Prime p) (hp1 : Odd p)
+include hp hp1
 
 /-- **Lifting the exponent lemma** for odd primes. -/
 theorem Int.pow_sub_pow {x y : ℤ} (hxy : ↑p ∣ x - y) (hx : ¬↑p ∣ x) (n : ℕ) :
     multiplicity (↑p) (x ^ n - y ^ n) = multiplicity (↑p) (x - y) + multiplicity p n := by
   cases' n with n
-  · simp only [multiplicity.zero, add_top, pow_zero, sub_self, Nat.zero_eq]
+  · simp only [multiplicity.zero, add_top, pow_zero, sub_self]
   have h : (multiplicity _ _).Dom := finite_nat_iff.mpr ⟨hp.ne_one, n.succ_pos⟩
   simp only [Nat.succ_eq_add_one] at h
   rcases eq_coe_iff.mp (PartENat.natCast_get h).symm with ⟨⟨k, hk⟩, hpn⟩
@@ -237,7 +240,7 @@ end CommRing
 theorem pow_two_pow_sub_pow_two_pow [CommRing R] {x y : R} (n : ℕ) :
     x ^ 2 ^ n - y ^ 2 ^ n = (∏ i ∈ Finset.range n, (x ^ 2 ^ i + y ^ 2 ^ i)) * (x - y) := by
   induction' n with d hd
-  · simp only [pow_zero, pow_one, range_zero, prod_empty, one_mul, Nat.zero_eq]
+  · simp only [pow_zero, pow_one, range_zero, prod_empty, one_mul]
   · suffices x ^ 2 ^ d.succ - y ^ 2 ^ d.succ = (x ^ 2 ^ d + y ^ 2 ^ d) * (x ^ 2 ^ d - y ^ 2 ^ d) by
       rw [this, hd, Finset.prod_range_succ, ← mul_assoc, mul_comm (x ^ 2 ^ d + y ^ 2 ^ d)]
     rw [Nat.succ_eq_add_one]
@@ -254,7 +257,7 @@ theorem Int.sq_mod_four_eq_one_of_odd {x : ℤ} : Odd x → x ^ 2 % 4 = 1 := by
 
 theorem Int.two_pow_two_pow_add_two_pow_two_pow {x y : ℤ} (hx : ¬2 ∣ x) (hxy : 4 ∣ x - y) (i : ℕ) :
     multiplicity 2 (x ^ 2 ^ i + y ^ 2 ^ i) = ↑(1 : ℕ) := by
-  have hx_odd : Odd x := by rwa [Int.odd_iff_not_even, even_iff_two_dvd]
+  have hx_odd : Odd x := by rwa [← Int.not_even_iff_odd, even_iff_two_dvd]
   have hxy_even : Even (x - y) := even_iff_two_dvd.mpr (dvd_trans (by decide) hxy)
   have hy_odd : Odd y := by simpa using hx_odd.sub_even hxy_even
   refine multiplicity.eq_coe_iff.mpr ⟨?_, ?_⟩
@@ -284,11 +287,11 @@ theorem Int.two_pow_two_pow_sub_pow_two_pow {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x
 
 theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2 ∣ x) :
     multiplicity 2 (x ^ n - y ^ n) = multiplicity 2 (x - y) + multiplicity (2 : ℤ) n := by
-  have hx_odd : Odd x := by rwa [Int.odd_iff_not_even, even_iff_two_dvd]
+  have hx_odd : Odd x := by rwa [← Int.not_even_iff_odd, even_iff_two_dvd]
   have hxy_even : Even (x - y) := even_iff_two_dvd.mpr (dvd_trans (by decide) hxy)
   have hy_odd : Odd y := by simpa using hx_odd.sub_even hxy_even
   cases' n with n
-  · simp only [pow_zero, sub_self, multiplicity.zero, Int.ofNat_zero, Nat.zero_eq, add_top]
+  · simp only [pow_zero, sub_self, multiplicity.zero, Int.ofNat_zero, add_top]
   have h : (multiplicity 2 n.succ).Dom := multiplicity.finite_nat_iff.mpr ⟨by norm_num, n.succ_pos⟩
   simp only [Nat.succ_eq_add_one] at h
   rcases multiplicity.eq_coe_iff.mp (PartENat.natCast_get h).symm with ⟨⟨k, hk⟩, hpn⟩
@@ -297,7 +300,7 @@ theorem Int.two_pow_sub_pow' {x y : ℤ} (n : ℕ) (hxy : 4 ∣ x - y) (hx : ¬2
   · norm_cast
   · exact Int.prime_two
   · simpa only [even_iff_two_dvd] using hx_odd.pow.sub_odd hy_odd.pow
-  · simpa only [even_iff_two_dvd, Int.odd_iff_not_even] using hx_odd.pow
+  · simpa only [even_iff_two_dvd, ← Int.not_even_iff_odd] using hx_odd.pow
   erw [Int.natCast_dvd_natCast]
   -- `erw` to deal with `2 : ℤ` vs `(2 : ℕ) : ℤ`
   contrapose! hpn
@@ -310,7 +313,7 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
     multiplicity 2 (x ^ n - y ^ n) + 1 =
       multiplicity 2 (x + y) + multiplicity 2 (x - y) + multiplicity (2 : ℤ) n := by
   have hy : Odd y := by
-    rw [← even_iff_two_dvd, ← Int.odd_iff_not_even] at hx
+    rw [← even_iff_two_dvd, Int.not_even_iff_odd] at hx
     replace hxy := (@even_neg _ _ (x - y)).mpr (even_iff_two_dvd.mpr hxy)
     convert Even.add_odd hxy hx
     abel
@@ -321,7 +324,7 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
     rw [Int.dvd_iff_emod_eq_zero, Int.sub_emod, Int.sq_mod_four_eq_one_of_odd _,
       Int.sq_mod_four_eq_one_of_odd hy]
     · norm_num
-    · simp only [Int.odd_iff_not_even, even_iff_two_dvd, hx, not_false_iff]
+    · simp only [← Int.not_even_iff_odd, even_iff_two_dvd, hx, not_false_iff]
   rw [Int.two_pow_sub_pow' d hxy4 _, sq_sub_sq, ← Int.ofNat_mul_out, multiplicity.mul Int.prime_two,
     multiplicity.mul Int.prime_two]
   · suffices multiplicity (2 : ℤ) ↑(2 : ℕ) = 1 by rw [this, add_comm (1 : PartENat), ← add_assoc]
@@ -330,9 +333,9 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
     · apply Prime.not_unit
       simp only [← Nat.prime_iff, Nat.prime_two]
     · exact two_ne_zero
-  · rw [← even_iff_two_dvd, ← Int.odd_iff_not_even]
+  · rw [← even_iff_two_dvd, Int.not_even_iff_odd]
     apply Odd.pow
-    simp only [Int.odd_iff_not_even, even_iff_two_dvd, hx, not_false_iff]
+    simp only [← Int.not_even_iff_odd, even_iff_two_dvd, hx, not_false_iff]
 
 theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : ℕ} (hn : Even n) :
     multiplicity 2 (x ^ n - y ^ n) + 1 =
@@ -367,6 +370,7 @@ theorem pow_two_sub_pow (hyx : y < x) (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n : 
   · simp only [tsub_pos_iff_lt, pow_lt_pow_left hyx zero_le' hn]
 
 variable {p : ℕ} [hp : Fact p.Prime] (hp1 : Odd p)
+include hp hp1
 
 theorem pow_sub_pow (hyx : y < x) (hxy : p ∣ x - y) (hx : ¬p ∣ x) {n : ℕ} (hn : n ≠ 0) :
     padicValNat p (x ^ n - y ^ n) = padicValNat p (x - y) + padicValNat p n := by

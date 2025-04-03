@@ -245,11 +245,7 @@ instance preservesLimitsOfShape_presheafToSheaf :
   apply isLimitOfReflects (sheafToPresheaf J D)
   have : ReflectsLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K)) (forget D) :=
     reflectsLimitsOfShapeOfReflectsIsomorphisms
-  -- Porting note: the mathlib proof was by `apply is_limit_of_preserves (J.sheafification D) hS`
-  have : PreservesLimitsOfShape (AsSmall.{max v u} (FinCategory.AsType K))
-      (plusPlusSheaf J D ⋙ sheafToPresheaf J D) :=
-    preservesLimitsOfShapeOfNatIso (J.sheafificationIsoPresheafToSheafCompSheafToPreasheaf D)
-  exact isLimitOfPreserves (plusPlusSheaf J D ⋙ sheafToPresheaf J D) hS
+  apply isLimitOfPreserves (J.sheafification D) hS
 
 instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
     PreservesFiniteLimits (plusPlusSheaf J D) := by
@@ -259,15 +255,15 @@ instance preservesfiniteLimits_presheafToSheaf [HasFiniteLimits D] :
 
 variable (J D)
 
-/-- `plusPlusSheaf` is isomorphic to an arbitrary choice of left adjoint. -/
+/-- `plusPlusSheaf` is isomorphic to an arbitrary choice of left adjoint. -/
 def plusPlusSheafIsoPresheafToSheaf : plusPlusSheaf J D ≅ presheafToSheaf J D :=
   (plusPlusAdjunction J D).leftAdjointUniq (sheafificationAdjunction J D)
 
-/-- `plusPlusFunctor` is isomorphic to `sheafification`. -/
+/-- `plusPlusFunctor` is isomorphic to `sheafification`. -/
 def plusPlusFunctorIsoSheafification : J.sheafification D ≅ sheafification J D :=
   isoWhiskerRight (plusPlusSheafIsoPresheafToSheaf J D) (sheafToPresheaf J D)
 
-/-- `plusPlus` is isomorphic to `sheafify`. -/
+/-- `plusPlus` is isomorphic to `sheafify`. -/
 def plusPlusIsoSheafify (P : Cᵒᵖ ⥤ D) : J.sheafify P ≅ sheafify J P :=
   (sheafToPresheaf J D).mapIso ((plusPlusSheafIsoPresheafToSheaf J D).app P)
 

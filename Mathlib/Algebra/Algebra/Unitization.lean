@@ -561,14 +561,16 @@ variable (S R A : Type*) [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A]
 instance instAlgebra : Algebra S (Unitization R A) :=
   { (Unitization.inlRingHom R A).comp (algebraMap S R) with
     commutes' := fun s x => by
-      induction' x with r a
-      show inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)
-      rw [mul_add, add_mul, inl_mul_inl, inl_mul_inl, inl_mul_inr, inr_mul_inl, mul_comm]
+      induction x with
+      | inl_add_inr =>
+        show inl (algebraMap S R s) * _ = _ * inl (algebraMap S R s)
+        rw [mul_add, add_mul, inl_mul_inl, inl_mul_inl, inl_mul_inr, inr_mul_inl, mul_comm]
     smul_def' := fun s x => by
-      induction' x with r a
-      show _ = inl (algebraMap S R s) * _
-      rw [mul_add, smul_add,Algebra.algebraMap_eq_smul_one, inl_mul_inl, inl_mul_inr, smul_one_mul,
-        inl_smul, inr_smul, smul_one_smul] }
+      induction x with
+      | inl_add_inr =>
+        show _ = inl (algebraMap S R s) * _
+        rw [mul_add, smul_add,Algebra.algebraMap_eq_smul_one, inl_mul_inl, inl_mul_inr,
+          smul_one_mul, inl_smul, inr_smul, smul_one_smul] }
 
 theorem algebraMap_eq_inl_comp : ⇑(algebraMap S (Unitization R A)) = inl ∘ algebraMap S R :=
   rfl
@@ -608,7 +610,7 @@ def inrNonUnitalAlgHom (R A : Type*) [CommSemiring R] [NonUnitalSemiring A] [Mod
   map_add' := inr_add R
   map_mul' := inr_mul R
 
-/-- The coercion from a non-unital `R`-algebra `A` to its unitization `unitization R A`
+/-- The coercion from a non-unital `R`-algebra `A` to its unitization `Unitization R A`
 realized as a non-unital star algebra homomorphism. -/
 @[simps!]
 def inrNonUnitalStarAlgHom (R A : Type*) [CommSemiring R] [StarAddMonoid R]
@@ -668,20 +670,24 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ : A →ₙₐ[R] C) : Unitization R A �
   toFun := fun x => algebraMap R C x.fst + φ x.snd
   map_one' := by simp only [fst_one, map_one, snd_one, φ.map_zero, add_zero]
   map_mul' := fun x y => by
-    induction' x with x_r x_a
-    induction' y with y_r y_a
-    simp only [fst_mul, fst_add, fst_inl, fst_inr, snd_mul, snd_add, snd_inl, snd_inr, add_zero,
-      map_mul, zero_add, map_add, map_smul φ]
-    rw [add_mul, mul_add, mul_add]
-    rw [← Algebra.commutes _ (φ x_a)]
-    simp only [Algebra.algebraMap_eq_smul_one, smul_one_mul, add_assoc]
+    induction x with
+    | inl_add_inr x_r x_a =>
+      induction y with
+      | inl_add_inr =>
+        simp only [fst_mul, fst_add, fst_inl, fst_inr, snd_mul, snd_add, snd_inl, snd_inr, add_zero,
+          map_mul, zero_add, map_add, map_smul φ]
+        rw [add_mul, mul_add, mul_add]
+        rw [← Algebra.commutes _ (φ x_a)]
+        simp only [Algebra.algebraMap_eq_smul_one, smul_one_mul, add_assoc]
   map_zero' := by simp only [fst_zero, map_zero, snd_zero, φ.map_zero, add_zero]
   map_add' := fun x y => by
-    induction' x with x_r x_a
-    induction' y with y_r y_a
-    simp only [fst_add, fst_inl, fst_inr, add_zero, map_add, snd_add, snd_inl, snd_inr,
-      zero_add, φ.map_add]
-    rw [add_add_add_comm]
+    induction x with
+    | inl_add_inr =>
+      induction y with
+      | inl_add_inr =>
+        simp only [fst_add, fst_inl, fst_inr, add_zero, map_add, snd_add, snd_inl, snd_inr,
+          zero_add, φ.map_add]
+        rw [add_add_add_comm]
   commutes' := fun r => by
     simp only [algebraMap_eq_inl, fst_inl, snd_inl, φ.map_zero, add_zero]
 
@@ -710,8 +716,8 @@ end AlgHom
 section StarAlgHom
 
 variable {R A C : Type*} [CommSemiring R] [StarRing R] [NonUnitalSemiring A] [StarRing A]
-variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] [StarModule R A]
-variable [Semiring C] [Algebra R C] [StarRing C] [StarModule R C]
+variable [Module R A] [SMulCommClass R A A] [IsScalarTower R A A]
+variable [Semiring C] [Algebra R C] [StarRing C]
 
 /-- See note [partially-applied ext lemmas] -/
 @[ext]
@@ -720,6 +726,8 @@ theorem starAlgHom_ext {φ ψ : Unitization R A →⋆ₐ[R] C}
       (ψ : Unitization R A →⋆ₙₐ[R] C).comp (Unitization.inrNonUnitalStarAlgHom R A)) :
     φ = ψ :=
   Unitization.algHom_ext'' <| DFunLike.congr_fun h
+
+variable [StarModule R C]
 
 /-- Non-unital star algebra homomorphisms from `A` into a unital star `R`-algebra `C` lift uniquely
 to `Unitization R A →⋆ₐ[R] C`. This is the universal property of the unitization. -/
@@ -737,36 +745,40 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
 
 -- Note (#6057) : tagging simpNF because linter complains
 @[simp high, nolint simpNF]
-theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
-    Unitization.lift.symm φ a = φ a :=
+theorem starLift_symm_apply_apply (φ : Unitization R A →⋆ₐ[R] C) (a : A) :
+    Unitization.starLift.symm φ a = φ a :=
   rfl
 
 end StarAlgHom
 
 section StarNormal
 
-variable {R A : Type*} [Semiring R] [AddCommMonoid A] [Mul A] [SMulWithZero R A]
+variable {R A : Type*} [Semiring R]
 variable [StarAddMonoid R] [Star A] {a : A}
 
-@[simp]
-lemma isStarNormal_inr : IsStarNormal (a : Unitization R A) ↔ IsStarNormal a := by
-  simp only [isStarNormal_iff, commute_iff_eq, ← inr_star, ← inr_mul, inr_injective.eq_iff]
-
-variable (R a) in
-instance instIsStarNormal (a : A) [IsStarNormal a] :
-    IsStarNormal (a : Unitization R A) :=
-  isStarNormal_inr.mpr ‹_›
 
 @[simp]
 lemma isSelfAdjoint_inr : IsSelfAdjoint (a : Unitization R A) ↔ IsSelfAdjoint a := by
   simp only [isSelfAdjoint_iff, ← inr_star, ← inr_mul, inr_injective.eq_iff]
 
+alias ⟨_root_.IsSelfAdjoint.of_inr, _⟩ := isSelfAdjoint_inr
+
 variable (R) in
 lemma _root_.IsSelfAdjoint.inr (ha : IsSelfAdjoint a) : IsSelfAdjoint (a : Unitization R A) :=
   isSelfAdjoint_inr.mpr ha
 
-alias ⟨_root_.IsSelfAdjoint.of_inr, _⟩ := isSelfAdjoint_inr
+variable [AddCommMonoid A] [Mul A] [SMulWithZero R A]
+
+@[simp]
+lemma isStarNormal_inr : IsStarNormal (a : Unitization R A) ↔ IsStarNormal a := by
+  simp only [isStarNormal_iff, commute_iff_eq, ← inr_star, ← inr_mul, inr_injective.eq_iff]
+
 alias ⟨_root_.IsStarNormal.of_inr, _⟩ := isStarNormal_inr
+
+variable (R a) in
+instance instIsStarNormal (a : A) [IsStarNormal a] :
+    IsStarNormal (a : Unitization R A) :=
+  isStarNormal_inr.mpr ‹_›
 
 end StarNormal
 

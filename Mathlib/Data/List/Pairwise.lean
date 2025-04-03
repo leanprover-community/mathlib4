@@ -3,9 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Batteries.Data.List.Pairwise
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
-import Mathlib.Data.List.Basic
 
 /-!
 # Pairwise relations on a list
@@ -90,14 +90,6 @@ theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop
   else
     apply h <;> try (apply hab.subset; simp)
     exact heq
-
-set_option linter.deprecated false in
-@[deprecated pairwise_iff_get (since := "2023-01-10")]
-theorem pairwise_iff_nthLe {R} {l : List α} : Pairwise R l ↔
-    ∀ (i j) (h₁ : j < length l) (h₂ : i < j), R (nthLe l i (lt_trans h₂ h₁)) (nthLe l j h₁) :=
-  pairwise_iff_get.trans
-    ⟨fun h i j _ h₂ => h ⟨i, _⟩ ⟨j, _⟩ h₂,
-     fun h i j hij => h i j _ hij⟩
 
 /-! ### Pairwise filtering -/
 

@@ -151,7 +151,7 @@ namespace FreeAlgebra
 attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre.hasAdd
   Pre.hasZero Pre.hasOne Pre.hasSMul
 
-/-! Define the basic operations-/
+/-! Define the basic operations -/
 
 instance instSMul {A} [CommSemiring A] [Algebra R A] : SMul R (FreeAlgebra A X) where
   smul r := Quot.map (HMul.hMul (algebraMap R A r : Pre A X)) fun _ _ ↦ Rel.mul_compat_right
@@ -255,7 +255,7 @@ instance instAlgebra {A} [CommSemiring A] [Algebra R A] : Algebra R (FreeAlgebra
 -- verify there is no diamond at `default` transparency but we will need
 -- `reducible_and_instances` which currently fails #10906
 variable (S : Type) [CommSemiring S] in
-example : (algebraNat : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
+example : (Semiring.toNatAlgebra : Algebra ℕ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
 instance {R S A} [CommSemiring R] [CommSemiring S] [CommSemiring A]
     [SMul R S] [Algebra R A] [Algebra S A] [IsScalarTower R S A] :
@@ -277,7 +277,7 @@ instance {S : Type*} [CommRing S] : Ring (FreeAlgebra S X) :=
 -- verify there is no diamond but we will need
 -- `reducible_and_instances` which currently fails #10906
 variable (S : Type) [CommRing S] in
-example : (algebraInt _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
+example : (Ring.toIntAlgebra _ : Algebra ℤ (FreeAlgebra S X)) = instAlgebra _ _ := rfl
 
 variable {X}
 
@@ -294,7 +294,7 @@ variable {A : Type*} [Semiring A] [Algebra R A]
 private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   toFun a :=
     Quot.liftOn a (liftFun _ _ f) fun a b h ↦ by
-      induction' h
+      induction h
       · exact (algebraMap R A).map_add _ _
       · exact (algebraMap R A).map_mul _ _
       · apply Algebra.commutes
@@ -526,7 +526,7 @@ namespace FreeAlgebra
 /-- An induction principle for the free algebra.
 
 If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of `x : X`, and is
-preserved under addition and muliplication, then it holds for all of `FreeAlgebra R X`.
+preserved under addition and multiplication, then it holds for all of `FreeAlgebra R X`.
 -/
 @[elab_as_elim, induction_eliminator]
 theorem induction {C : FreeAlgebra R X → Prop}

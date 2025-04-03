@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
 import Mathlib.Data.Finsupp.Multiset
-import Mathlib.NumberTheory.Padics.PadicVal
+import Mathlib.Data.Nat.Prime.Defs
+import Mathlib.Data.Nat.PrimeFin
+import Mathlib.NumberTheory.Padics.PadicVal.Defs
 
 /-!
 # Prime factorizations

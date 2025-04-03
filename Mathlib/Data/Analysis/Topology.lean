@@ -208,7 +208,7 @@ end Ctop.Realizer
 
 /-- A `LocallyFinite.Realizer F f` is a realization that `f` is locally finite, namely it is a
 choice of open sets from the basis of `F` such that they intersect only finitely many of the values
-of `f`.  -/
+of `f`. -/
 structure LocallyFinite.Realizer [TopologicalSpace α] (F : Ctop.Realizer α) (f : β → Set α) where
   bas : ∀ a, { s // a ∈ F.F s }
   sets : ∀ x : α, Fintype { i | (f i ∩ F.F (bas x)).Nonempty }
@@ -237,7 +237,7 @@ instance [TopologicalSpace α] [Finite β] (F : Ctop.Realizer α) (f : β → Se
   (locallyFinite_iff_exists_realizer _).1 <| locallyFinite_of_finite _
 
 /-- A `Compact.Realizer s` is a realization that `s` is compact, namely it is a
-choice of finite open covers for each set family covering `s`.  -/
+choice of finite open covers for each set family covering `s`. -/
 def Compact.Realizer [TopologicalSpace α] (s : Set α) :=
   ∀ {f : Filter α} (F : f.Realizer) (x : F.σ), f ≠ ⊥ → F.F x ⊆ s → { a // a ∈ s ∧ 𝓝 a ⊓ f ≠ ⊥ }
 

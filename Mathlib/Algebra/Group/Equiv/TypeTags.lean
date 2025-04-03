@@ -22,13 +22,13 @@ def AddEquiv.toMultiplicative [AddZeroClass G] [AddZeroClass H] :
     invFun := AddMonoidHom.toMultiplicative f.symm.toAddMonoidHom
     left_inv := f.left_inv
     right_inv := f.right_inv
-    map_mul' := f.map_add }
+    map_mul' := map_add f }
   invFun f :=
   { toFun := AddMonoidHom.toMultiplicative.symm f.toMonoidHom
     invFun := AddMonoidHom.toMultiplicative.symm f.symm.toMonoidHom
     left_inv := f.left_inv
     right_inv := f.right_inv
-    map_add' := f.map_mul }
+    map_add' := map_mul f }
   left_inv x := by ext; rfl
   right_inv x := by ext; rfl
 
@@ -41,13 +41,13 @@ def MulEquiv.toAdditive [MulOneClass G] [MulOneClass H] :
     invFun := MonoidHom.toAdditive f.symm.toMonoidHom
     left_inv := f.left_inv
     right_inv := f.right_inv
-    map_add' := f.map_mul }
+    map_add' := map_mul f }
   invFun f :=
   { toFun := MonoidHom.toAdditive.symm f.toAddMonoidHom
     invFun := MonoidHom.toAdditive.symm f.symm.toAddMonoidHom
     left_inv := f.left_inv
     right_inv := f.right_inv
-    map_mul' := f.map_add }
+    map_mul' := map_add f }
   left_inv x := by ext; rfl
   right_inv x := by ext; rfl
 
@@ -60,13 +60,13 @@ def AddEquiv.toMultiplicative' [MulOneClass G] [AddZeroClass H] :
     invFun := AddMonoidHom.toMultiplicative'' f.symm.toAddMonoidHom
     left_inv := f.left_inv
     right_inv := f.right_inv
-    map_mul' := f.map_add }
+    map_mul' := map_add f }
   invFun f :=
   { toFun := AddMonoidHom.toMultiplicative'.symm f.toMonoidHom
     invFun := AddMonoidHom.toMultiplicative''.symm f.symm.toMonoidHom
     left_inv := f.left_inv
     right_inv := f.right_inv
-    map_add' := f.map_mul }
+    map_add' := map_mul f }
   left_inv x := by ext; rfl
   right_inv x := by ext; rfl
 
@@ -84,13 +84,13 @@ def AddEquiv.toMultiplicative'' [AddZeroClass G] [MulOneClass H] :
     invFun := AddMonoidHom.toMultiplicative' f.symm.toAddMonoidHom
     left_inv := f.left_inv
     right_inv := f.right_inv
-    map_mul' := f.map_add }
+    map_mul' := map_add f }
   invFun f :=
   { toFun := AddMonoidHom.toMultiplicative''.symm f.toMonoidHom
     invFun := AddMonoidHom.toMultiplicative'.symm f.symm.toMonoidHom
     left_inv := f.left_inv
     right_inv := f.right_inv
-    map_add' := f.map_mul }
+    map_add' := map_mul f }
   left_inv x := by ext; rfl
   right_inv x := by ext; rfl
 

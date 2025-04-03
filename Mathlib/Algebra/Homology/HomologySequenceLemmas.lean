@@ -60,7 +60,7 @@ variable (S)
 noncomputable def composableArrows₂ (i : ι) : ComposableArrows C 2 :=
   mk₂ (homologyMap S.f i) (homologyMap S.g i)
 
-lemma composableArrows₂_exact (i : ι) :
+lemma composableArrows₂_exact (hS₁ : S₁.ShortExact) (i : ι) :
     (composableArrows₂ S₁ i).Exact :=
   (hS₁.homology_exact₂ i).exact_toComposableArrows
 
@@ -105,6 +105,8 @@ noncomputable def mapComposableArrows₅ (i j : ι) (hij : c.Rel i j) :
 
 attribute [local instance] epi_comp
 
+include hS₁ hS₂
+
 lemma mono_homologyMap_τ₃ (i : ι)
     (h₁ : Epi (homologyMap φ.τ₁ i))
     (h₂ : Mono (homologyMap φ.τ₂ i))
@@ -145,7 +147,6 @@ lemma epi_homologyMap_τ₃ (i : ι)
     simp only [homologyMap_comp] at eq
     have := epi_homologyMap_of_epi_of_not_rel S₂.g i (by simpa using hi)
     exact epi_of_epi_fac eq.symm
-
 
 lemma isIso_homologyMap_τ₃ (i : ι)
     (h₁ : Epi (homologyMap φ.τ₁ i))

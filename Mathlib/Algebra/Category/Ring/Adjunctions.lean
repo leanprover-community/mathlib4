@@ -22,8 +22,6 @@ open CategoryTheory
 
 namespace CommRingCat
 
-open scoped Classical
-
 /-- The free functor `Type u ⥤ CommRingCat` sending a type `X` to the multivariable (commutative)
 polynomials with variables `x : X`.
 -/

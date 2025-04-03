@@ -30,8 +30,6 @@ element of `G`, where `G` is a group that acts on `F`.
 
 noncomputable section
 
-open scoped Classical
-
 open MulAction Finset FiniteDimensional
 
 universe u v w
@@ -114,13 +112,14 @@ theorem coe_algebraMap :
 theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     (LinearIndependent (FixedPoints.subfield G F) fun i : (s : Set F) => (i : F)) →
       LinearIndependent F fun i : (s : Set F) => MulAction.toFun G F i := by
-  haveI : IsEmpty ((∅ : Finset F) : Set F) := by simp
+  classical
+  have : IsEmpty ((∅ : Finset F) : Set F) := by simp
   refine Finset.induction_on s (fun _ => linearIndependent_empty_type) fun a s has ih hs => ?_
   rw [coe_insert] at hs ⊢
   rw [linearIndependent_insert (mt mem_coe.1 has)] at hs
   rw [linearIndependent_insert' (mt mem_coe.1 has)]; refine ⟨ih hs.1, fun ha => ?_⟩
-  rw [Finsupp.mem_span_image_iff_total] at ha; rcases ha with ⟨l, hl, hla⟩
-  rw [Finsupp.total_apply_of_mem_supported F hl] at hla
+  rw [Finsupp.mem_span_image_iff_linearCombination] at ha; rcases ha with ⟨l, hl, hla⟩
+  rw [Finsupp.linearCombination_apply_of_mem_supported F hl] at hla
   suffices ∀ i ∈ s, l i ∈ FixedPoints.subfield G F by
     replace hla := (sum_apply _ _ fun i => l i • toFun G F i).symm.trans (congr_fun hla 1)
     simp_rw [Pi.smul_apply, toFun_apply, one_smul] at hla
@@ -187,6 +186,7 @@ theorem ne_one : minpoly G F x ≠ (1 : Polynomial (FixedPoints.subfield G F)) :
 theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     (hf : Polynomial.eval₂ (Subfield.subtype <| FixedPoints.subfield G F) x f = 0) :
     minpoly G F x ∣ f := by
+  classical
 -- Porting note: the two `have` below were not needed.
   have : (subfield G F).subtype = (subfield G F).toSubring.subtype := rfl
   have h : Polynomial.map (MulSemiringActionHom.toRingHom (IsInvariantSubring.subtypeHom G
@@ -263,8 +263,9 @@ instance normal : Normal (FixedPoints.subfield G F) F where
         Polynomial.map_toSubring _ (subfield G F).toSubring, prodXSubSMul]
       exact Polynomial.splits_prod _ fun _ _ => Polynomial.splits_X_sub_C _
 
-instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F :=
-  ⟨fun x => by
+instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F := by
+  classical
+  exact ⟨fun x => by
     cases nonempty_fintype G
     -- this was a plain rw when we were using unbundled subrings
     erw [IsSeparable, ← minpoly_eq_minpoly,

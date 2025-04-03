@@ -271,7 +271,7 @@ inversion operation for the definition (but see `AddChar.map_neg_eq_inv` below).
 instance instCommGroup : CommGroup (AddChar A M) :=
   { instCommMonoid with
     inv := fun ψ ↦ ψ.compAddMonoidHom negAddMonoidHom
-    mul_left_inv := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul]}
+    inv_mul_cancel := fun ψ ↦ by ext1 x; simp [negAddMonoidHom, ← map_add_eq_mul]}
 
 @[simp] lemma inv_apply (ψ : AddChar A M) (x : A) : ψ⁻¹ x = ψ (-x) := rfl
 
@@ -292,7 +292,7 @@ variable {A M : Type*} [AddGroup A] [DivisionMonoid M]
 /-- An additive character maps negatives to inverses (when defined) -/
 lemma map_neg_eq_inv (ψ : AddChar A M) (a : A) : ψ (-a) = (ψ a)⁻¹ := by
   apply eq_inv_of_mul_eq_one_left
-  simp only [← map_add_eq_mul, add_left_neg, map_zero_eq_one]
+  simp only [← map_add_eq_mul, neg_add_cancel, map_zero_eq_one]
 
 /-- An additive character maps integer scalar multiples to integer powers. -/
 lemma map_zsmul_eq_zpow (ψ : AddChar A M) (n : ℤ) (a : A) : ψ (n • a) = (ψ a) ^ n :=
@@ -316,6 +316,14 @@ lemma injective_iff {ψ : AddChar A M} : Injective ψ ↔ ∀ ⦃x⦄, ψ x = 1 
   ψ.toMonoidHom.ker_eq_bot_iff.symm.trans eq_bot_iff
 
 end fromAddGrouptoDivisionCommMonoid
+
+section MonoidWithZero
+variable {A M₀ : Type*} [AddGroup A] [MonoidWithZero M₀] [Nontrivial M₀]
+
+@[simp] lemma coe_ne_zero (ψ : AddChar A M₀) : (ψ : A → M₀) ≠ 0 :=
+  ne_iff.2 ⟨0, fun h ↦ by simpa only [h, Pi.zero_apply, zero_ne_one] using map_zero_eq_one ψ⟩
+
+end MonoidWithZero
 
 /-!
 ## Additive characters of rings

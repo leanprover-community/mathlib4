@@ -33,7 +33,7 @@ Then there are corresponding relative notions for `F : Set X`.
 * `LocPathConnectedSpace X` is a predicate class asserting that `X` is locally path-connected:
   each point has a basis of path-connected neighborhoods (we do *not* ask these to be open).
 
-## Main theorems
+## Main theorems
 
 * `Joined` and `JoinedIn F` are transitive relations.
 
@@ -58,10 +58,8 @@ This is used to define `Path.extend` that turns `γ : Path x y` into a continuou
 on `(-∞, 0]` and to `y` on `[1, +∞)`.
 -/
 
-
 noncomputable section
 
-open scoped Classical
 open Topology Filter unitInterval Set Function
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {x y z : X} {ι : Type*}
@@ -458,7 +456,7 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
         (continuous_id.prod_map <|
           (continuous_const.mul continuous_subtype_val).sub continuous_const)
   · rintro st hst
-    simp [hst, mul_inv_cancel (two_ne_zero' ℝ)]
+    simp [hst, mul_inv_cancel₀ (two_ne_zero' ℝ)]
 
 @[continuity]
 theorem _root_.Continuous.path_trans {f : Y → Path x y} {g : Y → Path y z} :
@@ -769,13 +767,13 @@ theorem JoinedIn.refl (h : x ∈ F) : JoinedIn F x x :=
 @[symm]
 theorem JoinedIn.symm (h : JoinedIn F x y) : JoinedIn F y x := by
   cases' h.mem with hx hy
-  simp_all [joinedIn_iff_joined]
+  simp_all only [joinedIn_iff_joined]
   exact h.symm
 
 theorem JoinedIn.trans (hxy : JoinedIn F x y) (hyz : JoinedIn F y z) : JoinedIn F x z := by
   cases' hxy.mem with hx hy
   cases' hyz.mem with hx hy
-  simp_all [joinedIn_iff_joined]
+  simp_all only [joinedIn_iff_joined]
   exact hxy.trans hyz
 
 theorem Specializes.joinedIn (h : x ⤳ y) (hx : x ∈ F) (hy : y ∈ F) : JoinedIn F x y := by

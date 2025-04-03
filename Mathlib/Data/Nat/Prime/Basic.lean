@@ -132,7 +132,7 @@ theorem Prime.not_dvd_mul {p m n : ℕ} (pp : Prime p) (Hm : ¬p ∣ m) (Hn : ¬
   mt pp.dvd_mul.1 <| by simp [Hm, Hn]
 
 @[simp] lemma coprime_two_left : Coprime 2 n ↔ Odd n := by
-  rw [prime_two.coprime_iff_not_dvd, odd_iff_not_even, even_iff_two_dvd]
+  rw [prime_two.coprime_iff_not_dvd, ← not_even_iff_odd, even_iff_two_dvd]
 
 @[simp] lemma coprime_two_right : n.Coprime 2 ↔ Odd n := coprime_comm.trans coprime_two_left
 

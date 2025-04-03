@@ -39,7 +39,7 @@ noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
 variable [HasWeakSheafify J D]
 
 /--
-The functor which maps an object of `D` to the constant sheaf at that object, i.e. the
+The functor which maps an object of `D` to the constant sheaf at that object, i.e. the
 sheafification of the constant presheaf.
 -/
 noncomputable def constantSheaf : D ⥤ Sheaf J D := Functor.const Cᵒᵖ ⋙ (presheafToSheaf J D)

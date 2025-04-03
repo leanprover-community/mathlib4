@@ -294,7 +294,7 @@ lemma StarModule.smul_lt_smul_of_pos {a b : A} {c : R} (hab : a < b) (hc : 0 < c
         obtain ⟨y, hy⟩ := hx
         apply AddSubmonoid.subset_closure
         refine ⟨z • y, ?_⟩
-        simp only [star_smul, smul_mul_smul, hz, hy]
+        simp only [star_smul, smul_mul_smul_comm, hz, hy]
       case zeroc => simpa only [zero_smul] using zero_mem _
       case addc => exact fun c' d ↦ by simpa only [add_smul] using add_mem
     case zero => simpa only [smul_zero] using zero_mem _

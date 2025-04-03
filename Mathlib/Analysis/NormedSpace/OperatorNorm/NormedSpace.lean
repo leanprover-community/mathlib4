@@ -18,7 +18,7 @@ suppress_compilation
 
 open Bornology
 open Filter hiding map_smul
-open scoped Classical NNReal Topology Uniformity
+open scoped NNReal Topology Uniformity
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ 𝕜₃ E Eₗ F Fₗ G Gₗ 𝓕 : Type*}
@@ -59,7 +59,7 @@ theorem bound_of_ball_bound {r : ℝ} (r_pos : 0 < r) (c : ℝ) (f : E →ₗ[�
     _ ≤ c * (‖x‖ * ‖k‖ / r) := le_mul_of_one_le_right ?_ ?_
     _ = _ := by ring
   · exact le_trans (norm_nonneg _) (h 0 (by simp [r_pos]))
-  · rw [div_le_iff (zero_lt_one.trans hk)] at hko
+  · rw [div_le_iff₀ (zero_lt_one.trans hk)] at hko
     exact (one_le_div r_pos).mpr hko
 
 theorem antilipschitz_of_comap_nhds_le [h : RingHomIsometric σ₁₂] (f : E →ₛₗ[σ₁₂] F)
@@ -213,9 +213,9 @@ theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c
   · by_cases h : f = 0
     · simp [h]
     · have : 0 < ‖f‖ := norm_pos_iff.2 h
-      rw [← le_div_iff this]
+      rw [← le_div_iff₀ this]
       refine opNorm_le_bound _ (div_nonneg (norm_nonneg _) (norm_nonneg f)) fun x => ?_
-      rw [div_mul_eq_mul_div, le_div_iff this]
+      rw [div_mul_eq_mul_div, le_div_iff₀ this]
       calc
         ‖c x‖ * ‖f‖ = ‖c x • f‖ := (norm_smul _ _).symm
         _ = ‖smulRight c f x‖ := rfl

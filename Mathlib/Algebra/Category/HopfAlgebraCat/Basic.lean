@@ -75,7 +75,7 @@ instance category : Category (HopfAlgebraCat.{v} R) where
 @[ext]
 lemma hom_ext {X Y : HopfAlgebraCat.{v} R} (f g : X ⟶ Y) (h : f.toBialgHom = g.toBialgHom) :
     f = g :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 /-- Typecheck a `BialgHom` as a morphism in `HopfAlgebraCat R`. -/
 abbrev ofHom {X Y : Type v} [Ring X] [Ring Y]
@@ -129,8 +129,8 @@ variable [HopfAlgebra R X] [HopfAlgebra R Y] [HopfAlgebra R Z]
 def toHopfAlgebraCatIso (e : X ≃ₐc[R] Y) : HopfAlgebraCat.of R X ≅ HopfAlgebraCat.of R Y where
   hom := HopfAlgebraCat.ofHom e
   inv := HopfAlgebraCat.ofHom e.symm
-  hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
-  inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
+  hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
+  inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
 @[simp] theorem toHopfAlgebraCatIso_refl :
     toHopfAlgebraCatIso (BialgEquiv.refl R X) = .refl _ :=

@@ -69,6 +69,7 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E] [
   (μ : Measure E) [IsAddHaarMeasure μ] {g : E → ℝ} (h1 : g 0 = 0) (h2 : ∀ x, g (- x) = g x)
   (h3 : ∀ x y, g (x + y) ≤ g x + g y) (h4 : ∀ {x}, g x = 0 → x = 0)
   (h5 : ∀ r x, g (r • x) ≤ |r| * (g x))
+include h1 h2 h3 h4 h5
 
 theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p) :
     μ {x : E | g x < 1} =
@@ -161,9 +162,9 @@ section LpSpace
 
 open Real Fintype ENNReal FiniteDimensional MeasureTheory MeasureTheory.Measure
 
-variable (ι : Type*) [Fintype ι] {p : ℝ} (hp : 1 ≤ p)
+variable (ι : Type*) [Fintype ι] {p : ℝ}
 
-theorem MeasureTheory.volume_sum_rpow_lt_one :
+theorem MeasureTheory.volume_sum_rpow_lt_one (hp : 1 ≤ p) :
     volume {x : ι → ℝ | ∑ i, |x i| ^ p < 1} =
       .ofReal ((2 * Gamma (1 / p + 1)) ^ card ι / Gamma (card ι / p + 1)) := by
   have h₁ : 0 < p := by linarith

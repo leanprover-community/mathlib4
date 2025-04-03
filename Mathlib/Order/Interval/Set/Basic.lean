@@ -566,11 +566,13 @@ theorem _root_.IsTop.Iic_eq (h : IsTop a) : Iic a = univ :=
 theorem _root_.IsBot.Ici_eq (h : IsBot a) : Ici a = univ :=
   eq_univ_of_forall h
 
-theorem _root_.IsMax.Ioi_eq (h : IsMax a) : Ioi a = ∅ :=
-  eq_empty_of_subset_empty fun _ => h.not_lt
+theorem Ioi_eq_empty_iff : Ioi a = ∅ ↔ IsMax a := by
+  simp only [isMax_iff_forall_not_lt, eq_empty_iff_forall_not_mem, mem_Ioi]
 
-theorem _root_.IsMin.Iio_eq (h : IsMin a) : Iio a = ∅ :=
-  eq_empty_of_subset_empty fun _ => h.not_lt
+theorem Iio_eq_empty_iff : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty_iff (α := αᵒᵈ)
+
+alias ⟨_, _root_.IsMax.Ioi_eq⟩ := Ioi_eq_empty_iff
+alias ⟨_, _root_.IsMin.Iio_eq⟩ := Iio_eq_empty_iff
 
 theorem Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=
   ext fun _ => ⟨fun H => ⟨H.2.1, H.1⟩, fun H => ⟨H.2, H.1, H.2.trans h⟩⟩
@@ -952,7 +954,7 @@ theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a
   ⟨fun e => by
       simp only [Subset.antisymm_iff] at e
       simp only [le_antisymm_iff]
-      cases' h with h h <;>
+      rcases h with h | h <;>
       simp only [gt_iff_lt, not_lt, Ico_subset_Ico_iff h] at e <;>
       [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
       -- Porting note: restore `tauto`
@@ -966,8 +968,6 @@ lemma Ici_eq_singleton_iff_isTop {x : α} : (Ici x = {x}) ↔ IsTop x := by
   have : y ∈ Ici x := H.le
   rw [h, mem_singleton_iff] at this
   exact lt_irrefl y (this.le.trans_lt H)
-
-open scoped Classical
 
 @[simp]
 theorem Ioi_subset_Ioi_iff : Ioi b ⊆ Ioi a ↔ a ≤ b := by
@@ -1123,7 +1123,7 @@ theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := b
 theorem Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) := by
   rcases le_or_lt a b with hab | hab <;> simp [hab] at h
   · exact Icc_union_Ici' h
-  · cases' h with h h
+  · rcases h with h | h
     · simp [*]
     · have hca : c ≤ a := h.trans hab.le
       simp [*]
@@ -1192,7 +1192,7 @@ theorem Iic_union_Ioo_eq_Iio (h : a < b) : Iic a ∪ Ioo a b = Iio b :=
 
 theorem Iio_union_Ioo' (h₁ : c < b) : Iio b ∪ Ioo c d = Iio (max b d) := by
   ext x
-  cases' lt_or_le x b with hba hba
+  rcases lt_or_le x b with hba | hba
   · simp [hba, h₁]
   · simp only [mem_Iio, mem_union, mem_Ioo, lt_max_iff]
     refine or_congr Iff.rfl ⟨And.right, ?_⟩
@@ -1223,7 +1223,7 @@ theorem Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := b
 theorem Iic_union_Icc (h : min c d ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
   rcases le_or_lt c d with hcd | hcd <;> simp [hcd] at h
   · exact Iic_union_Icc' h
-  · cases' h with h h
+  · rcases h with h | h
     · have hdb : d ≤ b := hcd.le.trans h
       simp [*]
     · simp [*]
@@ -1650,3 +1650,5 @@ instance : NoMaxOrder (Set.Iio x) :=
     exact ⟨⟨b, hb₂⟩, hb₁⟩⟩
 
 end Dense
+
+set_option linter.style.longFile 1800

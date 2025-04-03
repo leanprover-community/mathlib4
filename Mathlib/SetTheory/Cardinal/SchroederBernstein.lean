@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Init.Classical
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.Zorn
 
@@ -28,8 +27,6 @@ Cardinals are defined and further developed in the folder `SetTheory.Cardinal`.
 
 open Set Function
 
-open scoped Classical
-
 universe u v
 
 namespace Function
@@ -44,6 +41,7 @@ variable {α : Type u} {β : Type v}
 Given injections `α → β` and `β → α`, we can get a bijection `α → β`. -/
 theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injective f)
     (hg : Function.Injective g) : ∃ h : α → β, Bijective h := by
+  classical
   cases' isEmpty_or_nonempty β with hβ hβ
   · have : IsEmpty α := Function.isEmpty f
     exact ⟨_, ((Equiv.equivEmpty α).trans (Equiv.equivEmpty β).symm).bijective⟩
@@ -94,13 +92,11 @@ private abbrev sets :=
 there is an element that injects into the others.
 See `Cardinal.conditionallyCompleteLinearOrderBot` for (one of) the lattice instances. -/
 theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j) :=
-  let ⟨s, hs, ms⟩ :=
-    show ∃ s ∈ sets β, ∀ a ∈ sets β, s ⊆ a → a = s from
-      zorn_subset (sets β) fun c hc hcc =>
-        ⟨⋃₀c, fun x ⟨p, hpc, hxp⟩ y ⟨q, hqc, hyq⟩ i hi =>
-          (hcc.total hpc hqc).elim (fun h => hc hqc x (h hxp) y hyq i hi) fun h =>
-            hc hpc x hxp y (h hyq) i hi,
-          fun _ => subset_sUnion_of_mem⟩
+  let ⟨s, hs⟩ := show ∃ s, Maximal (· ∈ sets β) s by
+    refine zorn_subset _ fun c hc hcc ↦
+      ⟨⋃₀ c, fun x ⟨p, hpc, hxp⟩ y ⟨q, hqc, hyq⟩ i hi ↦ ?_, fun _ ↦ subset_sUnion_of_mem⟩
+    exact (hcc.total hpc hqc).elim (fun h ↦ hc hqc x (h hxp) y hyq i hi)
+      fun h ↦ hc hpc x hxp y (h hyq) i hi
   let ⟨i, e⟩ :=
     show ∃ i, ∀ y, ∃ x ∈ s, (x : ∀ i, β i) i = y from
       Classical.by_contradiction fun h =>
@@ -114,8 +110,8 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
               exact fun i e => (hf i y hy e.symm).elim
             · subst y
               exact fun i e => (hf i x hx e).elim
-            · exact hs x hx y hy
-          ms _ this (subset_insert f s) ▸ mem_insert _ _
+            · exact hs.prop x hx y hy
+          hs.eq_of_subset this (subset_insert _ _) ▸ mem_insert ..
         let ⟨i⟩ := I
         hf i f this rfl
   let ⟨f, hf⟩ := Classical.axiom_of_choice e
@@ -124,7 +120,7 @@ theorem min_injective [I : Nonempty ι] : ∃ i, Nonempty (∀ j, β i ↪ β j)
       ⟨fun a => f a j, fun a b e' => by
         let ⟨sa, ea⟩ := hf a
         let ⟨sb, eb⟩ := hf b
-        rw [← ea, ← eb, hs _ sa _ sb _ e']⟩⟩⟩
+        rw [← ea, ← eb, hs.prop _ sa _ sb _ e']⟩⟩⟩
 
 end Wo
 

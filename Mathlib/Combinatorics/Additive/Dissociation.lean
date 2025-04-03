@@ -39,7 +39,7 @@ def MulDissociated (s : Set α) : Prop := {t : Finset α | ↑t ⊆ s}.InjOn (�
 
 @[to_additive] lemma mulDissociated_iff_sum_eq_subsingleton :
     MulDissociated s ↔ ∀ a, {t : Finset α | ↑t ⊆ s ∧ ∏ x in t, x = a}.Subsingleton :=
-  ⟨fun hs _ _t ht _u hu ↦ hs ht.1 hu.1 $ ht.2.trans hu.2.symm,
+  ⟨fun hs _ _t ht _u hu ↦ hs ht.1 hu.1 <| ht.2.trans hu.2.symm,
     fun hs _t ht _u hu htu ↦ hs _ ⟨ht, htu⟩ ⟨hu, rfl⟩⟩
 
 @[to_additive] lemma MulDissociated.subset {t : Set α} (hst : s ⊆ t) (ht : MulDissociated t) :
@@ -137,13 +137,13 @@ lemma exists_subset_mulSpan_card_le_of_forall_mulDissociated
   by_cases ha' : a ∈ s'
   · exact subset_mulSpan ha'
   obtain ⟨t, u, ht, hu, htu⟩ := not_mulDissociated_iff_exists_disjoint.1 fun h ↦
-    hs'max _ (insert_subset_iff.2 ⟨ha, hs'.1⟩) h $ ssubset_insert ha'
+    hs'max _ (insert_subset_iff.2 ⟨ha, hs'.1⟩) h <| ssubset_insert ha'
   by_cases hat : a ∈ t
   · have : a = (∏ b in u, b) / ∏ b in t.erase a, b := by
       rw [prod_erase_eq_div hat, htu.2.2, div_div_self']
     rw [this]
     exact prod_div_prod_mem_mulSpan
-      ((subset_insert_iff_of_not_mem $ disjoint_left.1 htu.1 hat).1 hu) (subset_insert_iff.1 ht)
+      ((subset_insert_iff_of_not_mem <| disjoint_left.1 htu.1 hat).1 hu) (subset_insert_iff.1 ht)
   rw [coe_subset, subset_insert_iff_of_not_mem hat] at ht
   by_cases hau : a ∈ u
   · have : a = (∏ b in t, b) / ∏ b in u.erase a, b := by

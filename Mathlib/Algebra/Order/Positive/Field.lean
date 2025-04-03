@@ -5,7 +5,6 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Positive.Ring
-import Mathlib.Algebra.Order.Field.Unbundled.Basic
 
 /-!
 # Algebraic structures on the set of positive numbers
@@ -19,8 +18,7 @@ variable {K : Type*} [LinearOrderedField K]
 
 namespace Positive
 
-instance Subtype.inv : Inv { x : K // 0 < x } :=
-  ⟨fun x => ⟨x⁻¹, inv_pos (α := K)|>.2 x.2⟩⟩
+instance Subtype.inv : Inv { x : K // 0 < x } := ⟨fun x => ⟨x⁻¹, inv_pos.2 x.2⟩⟩
 
 @[simp]
 theorem coe_inv (x : { x : K // 0 < x }) : ↑x⁻¹ = (x⁻¹ : K) :=
@@ -35,6 +33,6 @@ theorem coe_zpow (x : { x : K // 0 < x }) (n : ℤ) : ↑(x ^ n) = (x : K) ^ n :
 
 instance : LinearOrderedCommGroup { x : K // 0 < x } :=
   { Positive.Subtype.inv, Positive.linearOrderedCancelCommMonoid with
-    mul_left_inv := fun a => Subtype.ext <| inv_mul_cancel a.2.ne' }
+    inv_mul_cancel := fun a => Subtype.ext <| inv_mul_cancel₀ a.2.ne' }
 
 end Positive

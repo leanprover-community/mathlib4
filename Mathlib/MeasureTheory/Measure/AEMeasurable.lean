@@ -14,7 +14,6 @@ function. This property, called `AEMeasurable f μ`, is defined in the file `Mea
 We discuss several of its properties that are analogous to properties of measurable functions.
 -/
 
-open scoped Classical
 open MeasureTheory MeasureTheory.Measure Filter Set Function ENNReal
 
 variable {ι α β γ δ R : Type*} {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
@@ -40,7 +39,7 @@ theorem aemeasurable_id'' (μ : Measure α) {m : MeasurableSpace α} (hm : m ≤
     @AEMeasurable α α m m0 id μ :=
   @Measurable.aemeasurable α α m0 m id μ (measurable_id'' hm)
 
-lemma aemeasurable_of_map_neZero {mβ : MeasurableSpace β} {μ : Measure α}
+lemma aemeasurable_of_map_neZero {μ : Measure α}
     {f : α → β} (h : NeZero (μ.map f)) :
     AEMeasurable f μ := by
   by_contra h'
@@ -72,6 +71,7 @@ theorem ae_inf_principal_eq_mk {s} (h : AEMeasurable f (μ.restrict s)) : f =ᶠ
 @[measurability]
 theorem sum_measure [Countable ι] {μ : ι → Measure α} (h : ∀ i, AEMeasurable f (μ i)) :
     AEMeasurable f (sum μ) := by
+  classical
   nontriviality β
   inhabit β
   set s : ι → Set α := fun i => toMeasurable (μ i) { x | f x ≠ (h i).mk f x }
@@ -176,6 +176,7 @@ theorem prod_mk {f : α → β} {g : α → γ} (hf : AEMeasurable f μ) (hg : A
 
 theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀ᵐ x ∂μ, f x ∈ t)
     (h₀ : t.Nonempty) : ∃ g, Measurable g ∧ range g ⊆ t ∧ f =ᵐ[μ] g := by
+  classical
   let s : Set α := toMeasurable μ { x | f x = H.mk f x ∧ f x ∈ t }ᶜ
   let g : α → β := piecewise s (fun _ => h₀.some) (H.mk f)
   refine ⟨g, ?_, ?_, ?_⟩
@@ -207,7 +208,7 @@ theorem subtype_mk (h : AEMeasurable f μ) {s : Set β} {hfs : ∀ x, f x ∈ s}
     AEMeasurable (codRestrict f s hfs) μ := by
   nontriviality α; inhabit α
   obtain ⟨g, g_meas, hg, fg⟩ : ∃ g : α → β, Measurable g ∧ range g ⊆ s ∧ f =ᵐ[μ] g :=
-    h.exists_ae_eq_range_subset (eventually_of_forall hfs) ⟨_, hfs default⟩
+    h.exists_ae_eq_range_subset (Eventually.of_forall hfs) ⟨_, hfs default⟩
   refine ⟨codRestrict g s fun x => hg (mem_range_self _), Measurable.subtype_mk g_meas, ?_⟩
   filter_upwards [fg] with x hx
   simpa [Subtype.ext_iff]
@@ -317,6 +318,7 @@ theorem aemeasurable_indicator_iff₀ {s} (hs : NullMeasurableSet s μ) :
 value `b` on a set `A` and `0` elsewhere. -/
 lemma aemeasurable_indicator_const_iff {s} [MeasurableSingletonClass β] (b : β) [NeZero b] :
     AEMeasurable (s.indicator (fun _ ↦ b)) μ ↔ NullMeasurableSet s μ := by
+  classical
   constructor <;> intro h
   · convert h.nullMeasurable (MeasurableSet.singleton (0 : β)).compl
     rw [indicator_const_preimage_eq_union s {0}ᶜ b]
@@ -358,6 +360,7 @@ theorem MeasureTheory.Measure.map_mono_of_aemeasurable {f : α → δ} (h : μ �
 then the function is a.e.-measurable. -/
 lemma MeasureTheory.NullMeasurable.aemeasurable {f : α → β}
     [hc : MeasurableSpace.CountablyGenerated β] (h : NullMeasurable f μ) : AEMeasurable f μ := by
+  classical
   nontriviality β; inhabit β
   rcases hc.1 with ⟨S, hSc, rfl⟩
   choose! T hTf hTm hTeq using fun s hs ↦ (h <| .basic s hs).exists_measurable_subset_ae_eq

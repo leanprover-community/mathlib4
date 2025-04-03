@@ -38,7 +38,7 @@ error: failed to synthesize
 numerals are polymorphic in Lean, but the numeral `42` cannot be used in a context where the expected type is
   Nat × Nat
 due to the absence of the instance above
-use `set_option diagnostics true` to get diagnostic information
+Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 example : ∃ p : Nat × Nat, p.1 = p.2 := by use 42; sorry
@@ -94,7 +94,7 @@ error: failed to synthesize
 numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
   Option Nat
 due to the absence of the instance above
-use `set_option diagnostics true` to get diagnostic information
+Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 example : Option Nat := by use 1
@@ -105,7 +105,7 @@ error: failed to synthesize
 numerals are polymorphic in Lean, but the numeral `1` cannot be used in a context where the expected type is
   Nat → Nat
 due to the absence of the instance above
-use `set_option diagnostics true` to get diagnostic information
+Additional diagnostic information may be available using the `set_option diagnostics true` command.
 -/
 #guard_msgs in
 example : Nat → Nat := by use 1
@@ -205,8 +205,8 @@ example (α : Type u) : Embedding α α × Unit := by
 -- Note(kmill): mathlib3 `use` would try to rewrite any lingering existentials with
 -- `exists_prop` to turn them into conjunctions. It did not do this recursively.
 
--- example : ∃ (n : Nat) (h : n > 0), n = n :=
--- by
+set_option linter.longLine false in
+-- example : ∃ (n : Nat) (h : n > 0), n = n := by
 --   use 1
 --   -- goal should now be `1 > 0 ∧ 1 = 1`, whereas it would be `∃ (H : 1 > 0), 1 = 1` after existsi 1.
 --   guard_target = 1 > 0 ∧ 1 = 1
@@ -227,3 +227,5 @@ example (h1 : 1 > 0) : ∃ (n : Nat) (_h : n > 0), n = n := by
 example : let P : Nat → Prop := fun _x => ∃ _n : Nat, True; P 1 := by
   intro P
   use 1
+
+end UseTests

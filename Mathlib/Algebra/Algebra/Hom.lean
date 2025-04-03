@@ -39,7 +39,7 @@ infixr:25 " →ₐ " => AlgHom _
 notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
-from `A` to `B`.  -/
+from `A` to `B`. -/
 class AlgHomClass (F : Type*) (R A B : outParam Type*)
   [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
   [FunLike F A B] extends RingHomClass F A B : Prop where
@@ -190,12 +190,9 @@ protected theorem congr_arg (φ : A →ₐ[R] B) {x y : A} (h : x = y) : φ x = 
 theorem ext {φ₁ φ₂ : A →ₐ[R] B} (H : ∀ x, φ₁ x = φ₂ x) : φ₁ = φ₂ :=
   DFunLike.ext _ _ H
 
-theorem ext_iff {φ₁ φ₂ : A →ₐ[R] B} : φ₁ = φ₂ ↔ ∀ x, φ₁ x = φ₂ x :=
-  DFunLike.ext_iff
-
 @[simp]
 theorem mk_coe {f : A →ₐ[R] B} (h₁ h₂ h₃ h₄ h₅) : (⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
-  ext fun _ => rfl
+  rfl
 
 @[simp]
 theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
@@ -288,15 +285,15 @@ theorem comp_toRingHom (φ₁ : B →ₐ[R] C) (φ₂ : A →ₐ[R] B) :
 
 @[simp]
 theorem comp_id : φ.comp (AlgHom.id R A) = φ :=
-  ext fun _x => rfl
+  rfl
 
 @[simp]
 theorem id_comp : (AlgHom.id R B).comp φ = φ :=
-  ext fun _x => rfl
+  rfl
 
 theorem comp_assoc (φ₁ : C →ₐ[R] D) (φ₂ : B →ₐ[R] C) (φ₃ : A →ₐ[R] B) :
     (φ₁.comp φ₂).comp φ₃ = φ₁.comp (φ₂.comp φ₃) :=
-  ext fun _x => rfl
+  rfl
 
 /-- R-Alg ⥤ R-Mod -/
 def toLinearMap : A →ₗ[R] B where
@@ -319,7 +316,7 @@ theorem comp_toLinearMap (f : A →ₐ[R] B) (g : B →ₐ[R] C) :
 
 @[simp]
 theorem toLinearMap_id : toLinearMap (AlgHom.id R A) = LinearMap.id :=
-  LinearMap.ext fun _ => rfl
+  rfl
 
 /-- Promote a `LinearMap` to an `AlgHom` by supplying proofs about the behavior on `1` and `*`. -/
 @[simps]
@@ -333,20 +330,18 @@ def ofLinearMap (f : A →ₗ[R] B) (map_one : f 1 = 1) (map_mul : ∀ x y, f (x
 
 @[simp]
 theorem ofLinearMap_toLinearMap (map_one) (map_mul) :
-    ofLinearMap φ.toLinearMap map_one map_mul = φ := by
-  ext
+    ofLinearMap φ.toLinearMap map_one map_mul = φ :=
   rfl
 
 @[simp]
 theorem toLinearMap_ofLinearMap (f : A →ₗ[R] B) (map_one) (map_mul) :
-    toLinearMap (ofLinearMap f map_one map_mul) = f := by
-  ext
+    toLinearMap (ofLinearMap f map_one map_mul) = f :=
   rfl
 
 @[simp]
 theorem ofLinearMap_id (map_one) (map_mul) :
     ofLinearMap LinearMap.id map_one map_mul = AlgHom.id R A :=
-  ext fun _ => rfl
+  rfl
 
 theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul A B R' R] (r : R')
     (x : A) : φ (r • x) = r • φ x :=
@@ -361,8 +356,8 @@ instance End : Monoid (A →ₐ[R] A) where
   mul := comp
   mul_assoc ϕ ψ χ := rfl
   one := AlgHom.id R A
-  one_mul ϕ := ext fun x => rfl
-  mul_one ϕ := ext fun x => rfl
+  one_mul ϕ := rfl
+  mul_one ϕ := rfl
 
 @[simp]
 theorem one_apply (x : A) : (1 : A →ₐ[R] A) x = x :=
@@ -461,11 +456,11 @@ theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
 section MulDistribMulAction
 
 instance : MulDistribMulAction (A →ₐ[R] A) Aˣ where
-  smul := fun f => Units.map f
-  one_smul := fun x => by ext; rfl
-  mul_smul := fun x y z => by ext; rfl
-  smul_mul := fun x y z => by ext; exact map_mul _ _ _
-  smul_one := fun x => by ext; exact map_one _
+  smul f := Units.map f
+  one_smul _ := by ext; rfl
+  mul_smul _ _ _ := by ext; rfl
+  smul_mul _ _ _ := by ext; exact map_mul _ _ _
+  smul_one _ := by ext; exact map_one _
 
 @[simp]
 theorem smul_units_def (f : A →ₐ[R] A) (x : Aˣ) :

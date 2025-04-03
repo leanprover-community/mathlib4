@@ -3,9 +3,8 @@ Copyright (c) 2024 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
+
 import Lean.Elab.Command
-import Lean.Linter.Util
-import Batteries.Data.List.Basic
 import Batteries.Tactic.Unreachable
 
 /-!
@@ -127,6 +126,7 @@ initialize ignoreTacticKindsRef : IO.Ref NameHashSet ←
     |>.insert `Batteries.Tactic.seq_focus
     |>.insert `Mathlib.Tactic.Hint.registerHintStx
     |>.insert `Mathlib.Tactic.LinearCombination.linearCombination
+    |>.insert `Mathlib.Tactic.LinearCombination'.linearCombination'
     -- the following `SyntaxNodeKind`s play a role in silencing `test`s
     |>.insert ``Lean.Parser.Tactic.failIfSuccess
     |>.insert `Mathlib.Tactic.successIfFailWithMsg
@@ -197,12 +197,9 @@ partial def eraseUsedTactics : InfoTree → M Unit
 
 end
 
-/-- Gets the value of the `linter.unusedTactic` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.unusedTactic o
-
 /-- The main entry point to the unused tactic linter. -/
 def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
-  unless getLinterHash (← getOptions) && (← getInfoState).enabled do
+  unless Linter.getLinterValue linter.unusedTactic (← getOptions) && (← getInfoState).enabled do
     return
   if (← get).messages.hasErrors then
     return
@@ -221,7 +218,7 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
   let key (r : String.Range) := (r.start.byteIdx, (-r.stop.byteIdx : Int))
   let mut last : String.Range := ⟨0, 0⟩
   for (r, stx) in let _ := @lexOrd; let _ := @ltOfOrd.{0}; unused.qsort (key ·.1 < key ·.1) do
-    if stx.getKind ∈ [``Batteries.Tactic.unreachable, ``Batteries.Tactic.unreachableConv] then
+    if stx.getKind ∈ [`Batteries.Tactic.unreachable, `Batteries.Tactic.unreachableConv] then
       continue
     if last.start ≤ r.start && r.stop ≤ last.stop then continue
     Linter.logLint linter.unusedTactic stx m!"'{stx}' tactic does nothing"

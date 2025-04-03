@@ -25,7 +25,7 @@ instance commGroup : CommGroup PUnit where
   mul_assoc := by intros; rfl
   one_mul := by intros; rfl
   mul_one := by intros; rfl
-  mul_left_inv := by intros; rfl
+  inv_mul_cancel := by intros; rfl
   mul_comm := by intros; rfl
 
 -- shortcut instances

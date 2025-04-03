@@ -22,8 +22,6 @@ is the same as being a splitting field (`Normal.of_isSplittingField` and
 
 noncomputable section
 
-open scoped Classical Polynomial
-
 open Polynomial IsScalarTower
 
 variable (F K : Type*) [Field F] [Field K] [Algebra F K]
@@ -57,6 +55,7 @@ instance normal_self : Normal F F where
 
 theorem Normal.exists_isSplittingField [h : Normal F K] [FiniteDimensional F K] :
     ∃ p : F[X], IsSplittingField F K p := by
+  classical
   let s := Basis.ofVectorSpace F K
   refine
     ⟨∏ x, minpoly F (s x), splits_prod _ fun x _ => h.splits (s x),
@@ -90,8 +89,8 @@ theorem Normal.tower_top_of_normal [h : Normal F E] : Normal K E :=
 theorem AlgHom.normal_bijective [h : Normal F E] (ϕ : E →ₐ[F] K) : Function.Bijective ϕ :=
   h.toIsAlgebraic.bijective_of_isScalarTower' ϕ
 
--- Porting note: `[Field F] [Field E] [Algebra F E]` added by hand.
-variable {F E} {E' : Type*} [Field F] [Field E] [Algebra F E] [Field E'] [Algebra F E']
+variable {E F}
+variable {E' : Type*} [Field E'] [Algebra F E']
 
 theorem Normal.of_algEquiv [h : Normal F E] (f : E ≃ₐ[F] E') : Normal F E' := by
   rw [normal_iff] at h ⊢
@@ -175,9 +174,28 @@ instance normal_sup
     Normal F (E ⊔ E' : IntermediateField F K) :=
   iSup_bool_eq (f := Bool.rec E' E) ▸ normal_iSup (h := by rintro (_|_) <;> infer_instance)
 
--- Porting note `[Field F] [Field K] [Algebra F K]` added by hand.
-variable {F K} {L : Type*} [Field F] [Field K] [Field L] [Algebra F L] [Algebra K L]
-  [Algebra F K] [IsScalarTower F K L]
+/-- An intersection of normal extensions is normal -/
+instance normal_iInf {ι : Type*} [hι : Nonempty ι]
+    (t : ι → IntermediateField F K) [h : ∀ i, Normal F (t i)] :
+    Normal F (⨅ i, t i : IntermediateField F K) := by
+  refine { toIsAlgebraic := ?_, splits' := fun x => ?_ }
+  · let f := inclusion (iInf_le t hι.some)
+    exact Algebra.IsAlgebraic.of_injective f f.injective
+  · have hx : ∀ i, Splits (algebraMap F (t i)) (minpoly F x) := by
+      intro i
+      rw [← minpoly.algHom_eq (inclusion (iInf_le t i)) (inclusion (iInf_le t i)).injective]
+      exact (h i).splits' (inclusion (iInf_le t i) x)
+    simp only [splits_iff_mem (splits_of_isScalarTower K (hx hι.some))] at hx ⊢
+    rintro y hy - ⟨-, ⟨i, rfl⟩, rfl⟩
+    exact hx i y hy
+
+instance normal_inf
+    (E E' : IntermediateField F K) [Normal F E] [Normal F E'] :
+    Normal F (E ⊓ E' : IntermediateField F K) :=
+  iInf_bool_eq (f := Bool.rec E' E) ▸ normal_iInf (h := by rintro (_|_) <;> infer_instance)
+
+variable {F K}
+variable {L : Type*} [Field L] [Algebra F L] [Algebra K L] [IsScalarTower F K L]
 
 @[simp]
 theorem restrictScalars_normal {E : IntermediateField K L} :
@@ -186,8 +204,8 @@ theorem restrictScalars_normal {E : IntermediateField K L} :
 
 end IntermediateField
 
--- Porting note `[Field F]` added by hand.
-variable {F} {K} {K₁ K₂ K₃ : Type*} [Field F] [Field K₁] [Field K₂] [Field K₃] [Algebra F K₁]
+variable {F} {K}
+variable {K₁ K₂ K₃ : Type*} [Field K₁] [Field K₂] [Field K₃] [Algebra F K₁]
   [Algebra F K₂] [Algebra F K₃] (ϕ : K₁ →ₐ[F] K₂) (χ : K₁ ≃ₐ[F] K₂) (ψ : K₂ →ₐ[F] K₃)
   (ω : K₂ ≃ₐ[F] K₃)
 
@@ -239,11 +257,8 @@ theorem AlgHom.restrictNormal_comp [Normal F E] :
   AlgHom.ext fun _ =>
     (algebraMap E K₃).injective (by simp only [AlgHom.comp_apply, AlgHom.restrictNormal_commutes])
 
--- Porting note `[Algebra F K]` added by hand.
-theorem AlgHom.fieldRange_of_normal [Algebra F K] {E : IntermediateField F K} [Normal F E]
+theorem AlgHom.fieldRange_of_normal {E : IntermediateField F K} [Normal F E]
     (f : E →ₐ[F] K) : f.fieldRange = E := by
--- Porting note: this was `IsScalarTower F E E := by infer_instance`.
-  letI : Algebra E E := Algebra.id E
   let g := f.restrictNormal' E
   rw [← show E.val.comp ↑g = f from DFunLike.ext_iff.mpr (f.restrictNormal_commutes E),
     ← AlgHom.map_fieldRange, AlgEquiv.fieldRange_eq_top g, ← AlgHom.fieldRange_eq_map,

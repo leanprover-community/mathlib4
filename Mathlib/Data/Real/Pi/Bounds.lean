@@ -8,7 +8,7 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 /-!
 # Pi
 
-This file contains lemmas which establish bounds on `real.pi`.
+This file contains lemmas which establish bounds on `Real.pi`.
 Notably, these include `pi_gt_sqrtTwoAddSeries` and `pi_lt_sqrtTwoAddSeries`,
 which bound `π` using series;
 numerical bounds on `π` such as `pi_gt_314`and `pi_lt_315` (more precise versions are given, too).
@@ -42,19 +42,19 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     rw [← div_lt_iff (by norm_num), ← sin_pi_over_two_pow_succ]
     refine lt_of_lt_of_le (lt_add_of_sub_right_lt (sin_gt_sub_cube ?_ ?_)) ?_
     · apply div_pos pi_pos; apply pow_pos; norm_num
-    · rw [div_le_iff']
+    · rw [div_le_iff₀']
       · refine le_trans pi_le_four ?_
         simp only [show (4 : ℝ) = (2 : ℝ) ^ 2 by norm_num, mul_one]
         apply pow_le_pow_right (by norm_num)
         apply le_add_of_nonneg_left; apply Nat.zero_le
       · apply pow_pos; norm_num
     apply add_le_add_left; rw [div_le_div_right (by norm_num)]
-    rw [le_div_iff (by norm_num), ← mul_pow]
+    rw [le_div_iff₀ (by norm_num), ← mul_pow]
     refine le_trans ?_ (le_of_eq (one_pow 3)); apply pow_le_pow_left
     · apply le_of_lt; apply mul_pos
       · apply div_pos pi_pos; apply pow_pos; norm_num
       · apply pow_pos; norm_num
-    · rw [← le_div_iff (by norm_num)]
+    · rw [← le_div_iff₀ (by norm_num)]
       refine le_trans ((div_le_div_right ?_).mpr pi_le_four) ?_
       · apply pow_pos; norm_num
       · simp only [pow_succ', ← div_div, one_div]
@@ -74,7 +74,7 @@ theorem pi_lower_bound_start (n : ℕ) {a}
     (h : sqrtTwoAddSeries ((0 : ℕ) / (1 : ℕ)) n ≤ (2 : ℝ) - (a / (2 : ℝ) ^ (n + 1)) ^ 2) :
     a < π := by
   refine lt_of_le_of_lt ?_ (pi_gt_sqrtTwoAddSeries n); rw [mul_comm]
-  refine (div_le_iff (pow_pos (by norm_num) _ : (0 : ℝ) < _)).mp (le_sqrt_of_sq_le ?_)
+  refine (div_le_iff₀ (pow_pos (by norm_num) _ : (0 : ℝ) < _)).mp (le_sqrt_of_sq_le ?_)
   rwa [le_sub_comm, show (0 : ℝ) = (0 : ℕ) / (1 : ℕ) by rw [Nat.cast_zero, zero_div]]
 
 theorem sqrtTwoAddSeries_step_up (c d : ℕ) {a b n : ℕ} {z : ℝ} (hz : sqrtTwoAddSeries (c / d) n ≤ z)
@@ -124,7 +124,7 @@ theorem pi_upper_bound_start (n : ℕ) {a}
         sqrtTwoAddSeries ((0 : ℕ) / (1 : ℕ)) n)
     (h₂ : (1 : ℝ) / (4 : ℝ) ^ n ≤ a) : π < a := by
   refine lt_of_lt_of_le (pi_lt_sqrtTwoAddSeries n) ?_
-  rw [← le_sub_iff_add_le, ← le_div_iff', sqrt_le_left, sub_le_comm]
+  rw [← le_sub_iff_add_le, ← le_div_iff₀', sqrt_le_left, sub_le_comm]
   · rwa [Nat.cast_zero, zero_div] at h
   · exact div_nonneg (sub_nonneg.2 h₂) (pow_nonneg (le_of_lt zero_lt_two) _)
   · exact pow_pos zero_lt_two _

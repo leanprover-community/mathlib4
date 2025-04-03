@@ -839,11 +839,11 @@ lemma iteratedFDerivWithin_two_apply (f : E → F) {z : E} (hs : UniqueDiffOn �
 
 theorem Filter.EventuallyEq.iteratedFDerivWithin' (h : f₁ =ᶠ[𝓝[s] x] f) (ht : t ⊆ s) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f₁ t =ᶠ[𝓝[s] x] iteratedFDerivWithin 𝕜 n f t := by
-  induction' n with n ihn
-  · exact h.mono fun y hy => DFunLike.ext _ _ fun _ => hy
-  · have : fderivWithin 𝕜 _ t =ᶠ[𝓝[s] x] fderivWithin 𝕜 _ t := ihn.fderivWithin' ht
-    apply this.mono
-    intro y hy
+  induction n with
+  | zero => exact h.mono fun y hy => DFunLike.ext _ _ fun _ => hy
+  | succ n ihn =>
+    have : fderivWithin 𝕜 _ t =ᶠ[𝓝[s] x] fderivWithin 𝕜 _ t := ihn.fderivWithin' ht
+    refine this.mono fun y hy => ?_
     simp only [iteratedFDerivWithin_succ_eq_comp_left, hy, (· ∘ ·)]
 
 protected theorem Filter.EventuallyEq.iteratedFDerivWithin (h : f₁ =ᶠ[𝓝[s] x] f) (n : ℕ) :
@@ -873,9 +873,10 @@ protected theorem Set.EqOn.iteratedFDerivWithin (hs : EqOn f₁ f s) (n : ℕ) :
 
 theorem iteratedFDerivWithin_eventually_congr_set' (y : E) (h : s =ᶠ[𝓝[{y}ᶜ] x] t) (n : ℕ) :
     iteratedFDerivWithin 𝕜 n f s =ᶠ[𝓝 x] iteratedFDerivWithin 𝕜 n f t := by
-  induction' n with n ihn generalizing x
-  · rfl
-  · refine (eventually_nhds_nhdsWithin.2 h).mono fun y hy => ?_
+  induction n generalizing x with
+  | zero => rfl
+  | succ n ihn =>
+    refine (eventually_nhds_nhdsWithin.2 h).mono fun y hy => ?_
     simp only [iteratedFDerivWithin_succ_eq_comp_left, (· ∘ ·)]
     rw [(ihn hy).fderivWithin_eq_nhds, fderivWithin_congr_set' _ hy]
 
@@ -907,8 +908,7 @@ theorem iteratedFDerivWithin_inter_open {n : ℕ} (hu : IsOpen u) (hx : x ∈ u)
 
 @[simp]
 theorem contDiffOn_zero : ContDiffOn 𝕜 0 f s ↔ ContinuousOn f s := by
-  refine ⟨fun H => H.continuousOn, fun H => ?_⟩
-  intro x hx m hm
+  refine ⟨fun H => H.continuousOn, fun H => fun x hx m hm ↦ ?_⟩
   have : (m : ℕ∞) = 0 := le_antisymm hm bot_le
   rw [this]
   refine ⟨insert x s, self_mem_nhdsWithin, ftaylorSeriesWithin 𝕜 f s, ?_⟩
@@ -1448,11 +1448,13 @@ theorem fderiv_iteratedFDeriv {n : ℕ} :
   simp only [Function.comp_apply, LinearIsometryEquiv.symm_apply_apply]
 
 theorem tsupport_iteratedFDeriv_subset (n : ℕ) : tsupport (iteratedFDeriv 𝕜 n f) ⊆ tsupport f := by
-  induction' n with n IH
-  · rw [iteratedFDeriv_zero_eq_comp]
+  induction n with
+  | zero =>
+    rw [iteratedFDeriv_zero_eq_comp]
     exact closure_minimal ((support_comp_subset (LinearIsometryEquiv.map_zero _) _).trans
       subset_closure) isClosed_closure
-  · rw [iteratedFDeriv_succ_eq_comp_left]
+  | succ n IH =>
+    rw [iteratedFDeriv_succ_eq_comp_left]
     exact closure_minimal ((support_comp_subset (LinearIsometryEquiv.map_zero _) _).trans
       ((support_fderiv_subset 𝕜).trans IH)) isClosed_closure
 
@@ -1470,9 +1472,10 @@ theorem norm_fderiv_iteratedFDeriv {n : ℕ} :
 
 theorem iteratedFDerivWithin_univ {n : ℕ} :
     iteratedFDerivWithin 𝕜 n f univ = iteratedFDeriv 𝕜 n f := by
-  induction' n with n IH
-  · ext x; simp
-  · ext x m
+  induction n with
+  | zero => ext x; simp
+  | succ n IH =>
+    ext x m
     rw [iteratedFDeriv_succ_apply_left, iteratedFDerivWithin_succ_apply_left, IH, fderivWithin_univ]
 
 theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
@@ -1486,11 +1489,13 @@ theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
 derivative. -/
 theorem iteratedFDerivWithin_of_isOpen (n : ℕ) (hs : IsOpen s) :
     EqOn (iteratedFDerivWithin 𝕜 n f s) (iteratedFDeriv 𝕜 n f) s := by
-  induction' n with n IH
-  · intro x _
+  induction n with
+  | zero =>
+    intro x _
     ext1
-    simp only [Nat.zero_eq, iteratedFDerivWithin_zero_apply, iteratedFDeriv_zero_apply]
-  · intro x hx
+    simp only [iteratedFDerivWithin_zero_apply, iteratedFDeriv_zero_apply]
+  | succ n IH =>
+    intro x hx
     rw [iteratedFDeriv_succ_eq_comp_left, iteratedFDerivWithin_succ_eq_comp_left]
     dsimp
     congr 1
@@ -1593,3 +1598,5 @@ theorem ContDiff.continuous_fderiv_apply (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) 
   have B : Continuous fun p : E × E => (fderiv 𝕜 f p.1, p.2) :=
     ((h.continuous_fderiv hn).comp continuous_fst).prod_mk continuous_snd
   A.comp B
+
+set_option linter.style.longFile 1700

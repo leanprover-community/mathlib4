@@ -41,9 +41,9 @@ export WfDvdMonoid (wellFounded_dvdNotUnit)
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsNoetherianRing.wfDvdMonoid [CommRing α] [IsDomain α]
-    [IsNoetherianRing α] : WfDvdMonoid α :=
+    [h : IsNoetherianRing α] : WfDvdMonoid α :=
   ⟨by
-    convert InvImage.wf (fun a => Ideal.span ({a} : Set α)) (wellFounded_submodule_gt _ _)
+    convert InvImage.wf (fun a => Ideal.span ({a} : Set α)) h.wf
     ext
     exact Ideal.span_singleton_lt_span_singleton.symm⟩
 
@@ -293,6 +293,7 @@ section ExistsPrimeFactors
 
 variable [CancelCommMonoidWithZero α]
 variable (pf : ∀ a : α, a ≠ 0 → ∃ f : Multiset α, (∀ b ∈ f, Prime b) ∧ f.prod ~ᵤ a)
+include pf
 
 theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
   ⟨by
@@ -374,7 +375,7 @@ theorem MulEquiv.uniqueFactorizationMonoid (e : α ≃* β) (hα : UniqueFactori
         he ▸ e.prime_iff.1 (hp c hc),
         Units.map e.toMonoidHom u,
       by
-        erw [Multiset.prod_hom, ← e.map_mul, h]
+        erw [Multiset.prod_hom, ← map_mul e, h]
         simp⟩
 
 theorem MulEquiv.uniqueFactorizationMonoid_iff (e : α ≃* β) :
@@ -914,9 +915,11 @@ theorem pow_eq_pow_iff {a : R} (ha0 : a ≠ 0) (ha1 : ¬IsUnit a) {i j : ℕ} : 
 section multiplicity
 
 variable [NormalizationMonoid R]
-variable [DecidableRel (Dvd.dvd : R → R → Prop)]
 
 open multiplicity Multiset
+
+section
+variable [DecidableRel (Dvd.dvd : R → R → Prop)]
 
 theorem le_multiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} (ha : Irreducible a)
     (hb : b ≠ 0) :
@@ -951,6 +954,7 @@ theorem multiplicity_eq_count_normalizedFactors [DecidableEq R] {a b : R} (ha : 
     simp
   rw [le_multiplicity_iff_replicate_le_normalizedFactors ha hb, ← le_count_iff_replicate_le]
 
+end
 
 /-- The number of times an irreducible factor `p` appears in `normalizedFactors x` is defined by
 the number of times it divides `x`.
@@ -984,12 +988,12 @@ theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Ir
       exact absurd hle hlt
   · exact count_normalizedFactors_eq hp hnorm hle hlt
 
+end multiplicity
+
 /-- Deprecated. Use `WfDvdMonoid.max_power_factor` instead. -/
 @[deprecated WfDvdMonoid.max_power_factor (since := "2024-03-01")]
 theorem max_power_factor {a₀ x : R} (h : a₀ ≠ 0) (hx : Irreducible x) :
     ∃ n : ℕ, ∃ a : R, ¬x ∣ a ∧ a₀ = x ^ n * a := WfDvdMonoid.max_power_factor h hx
-
-end multiplicity
 
 section Multiplicative
 
@@ -1584,6 +1588,20 @@ theorem prime_pow_le_iff_le_bcount [DecidableEq (Associates α)] {m p : Associat
   rw [bcount, factors_mk, Multiset.le_count_iff_replicate_le, ← factors_le, factors_prime_pow,
     factors_mk, WithTop.coe_le_coe] <;> assumption
 
+@[simp]
+theorem factors_one [Nontrivial α] : factors (1 : Associates α) = 0 := by
+  apply eq_of_prod_eq_prod
+  rw [Associates.factors_prod]
+  exact Multiset.prod_zero
+
+@[simp]
+theorem pow_factors [Nontrivial α] {a : Associates α} {k : ℕ} :
+    (a ^ k).factors = k • a.factors := by
+  induction' k with n h
+  · rw [zero_nsmul, pow_zero]
+    exact factors_one
+  · rw [pow_succ, succ_nsmul, factors_mul, h]
+
 section count
 
 variable [DecidableEq (Associates α)] [∀ p : Associates α, Decidable (Irreducible p)]
@@ -1615,16 +1633,16 @@ theorem count_ne_zero_iff_dvd {a p : α} (ha0 : a ≠ 0) (hp : Irreducible p) :
       (Associates.irreducible_mk.mpr hp)] at h
   exact (zero_lt_one.trans_le h).ne'
 
-theorem count_self [Nontrivial α] [DecidableEq (Associates α)] {p : Associates α}
+theorem count_self [Nontrivial α] {p : Associates α}
     (hp : Irreducible p) : p.count p.factors = 1 := by
   simp [factors_self hp, Associates.count_some hp]
 
-theorem count_eq_zero_of_ne [DecidableEq (Associates α)] {p q : Associates α} (hp : Irreducible p)
+theorem count_eq_zero_of_ne {p q : Associates α} (hp : Irreducible p)
     (hq : Irreducible q) (h : p ≠ q) : p.count q.factors = 0 :=
   not_ne_iff.mp fun h' ↦ h <| associated_iff_eq.mp <| hp.associated_of_dvd hq <|
     le_of_count_ne_zero hq.ne_zero hp h'
 
-theorem count_mul [DecidableEq (Associates α)] {a : Associates α} (ha : a ≠ 0) {b : Associates α}
+theorem count_mul {a : Associates α} (ha : a ≠ 0) {b : Associates α}
     (hb : b ≠ 0) {p : Associates α} (hp : Irreducible p) :
     count p (factors (a * b)) = count p a.factors + count p b.factors := by
   obtain ⟨a0, nza, rfl⟩ := exists_non_zero_rep ha
@@ -1632,7 +1650,7 @@ theorem count_mul [DecidableEq (Associates α)] {a : Associates α} (ha : a ≠ 
   rw [factors_mul, factors_mk a0 nza, factors_mk b0 nzb, ← FactorSet.coe_add, count_some hp,
     Multiset.count_add, count_some hp, count_some hp]
 
-theorem count_of_coprime [DecidableEq (Associates α)] {a : Associates α} (ha : a ≠ 0)
+theorem count_of_coprime {a : Associates α} (ha : a ≠ 0)
     {b : Associates α} (hb : b ≠ 0) (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) {p : Associates α}
     (hp : Irreducible p) : count p a.factors = 0 ∨ count p b.factors = 0 := by
   rw [or_iff_not_imp_left, ← Ne]
@@ -1641,7 +1659,7 @@ theorem count_of_coprime [DecidableEq (Associates α)] {a : Associates α} (ha :
   exact ⟨p, le_of_count_ne_zero ha hp hca, le_of_count_ne_zero hb hp hcb,
     UniqueFactorizationMonoid.irreducible_iff_prime.mp hp⟩
 
-theorem count_mul_of_coprime [DecidableEq (Associates α)] {a : Associates α} {b : Associates α}
+theorem count_mul_of_coprime {a : Associates α} {b : Associates α}
     (hb : b ≠ 0) {p : Associates α} (hp : Irreducible p) (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) :
     count p a.factors = 0 ∨ count p a.factors = count p (a * b).factors := by
   by_cases ha : a = 0
@@ -1650,7 +1668,7 @@ theorem count_mul_of_coprime [DecidableEq (Associates α)] {a : Associates α} {
   apply Or.intro_right
   rw [count_mul ha hb hp, hb0, add_zero]
 
-theorem count_mul_of_coprime' [DecidableEq (Associates α)] {a b : Associates α} {p : Associates α}
+theorem count_mul_of_coprime' {a b : Associates α} {p : Associates α}
     (hp : Irreducible p) (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) :
     count p (a * b).factors = count p a.factors ∨ count p (a * b).factors = count p b.factors := by
   by_cases ha : a = 0
@@ -1664,7 +1682,7 @@ theorem count_mul_of_coprime' [DecidableEq (Associates α)] {a b : Associates α
   · apply Or.intro_left
     rw [hb0, add_zero]
 
-theorem dvd_count_of_dvd_count_mul [DecidableEq (Associates α)] {a b : Associates α} (hb : b ≠ 0)
+theorem dvd_count_of_dvd_count_mul {a b : Associates α} (hb : b ≠ 0)
     {p : Associates α} (hp : Irreducible p) (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) {k : ℕ}
     (habk : k ∣ count p (a * b).factors) : k ∣ count p a.factors := by
   by_cases ha : a = 0
@@ -1675,21 +1693,7 @@ theorem dvd_count_of_dvd_count_mul [DecidableEq (Associates α)] {a b : Associat
   · rw [count_mul ha hb hp, h] at habk
     exact habk
 
-@[simp]
-theorem factors_one [Nontrivial α] : factors (1 : Associates α) = 0 := by
-  apply eq_of_prod_eq_prod
-  rw [Associates.factors_prod]
-  exact Multiset.prod_zero
-
-@[simp]
-theorem pow_factors [Nontrivial α] {a : Associates α} {k : ℕ} :
-    (a ^ k).factors = k • a.factors := by
-  induction' k with n h
-  · rw [zero_nsmul, pow_zero]
-    exact factors_one
-  · rw [pow_succ, succ_nsmul, factors_mul, h]
-
-theorem count_pow [Nontrivial α] [DecidableEq (Associates α)] {a : Associates α} (ha : a ≠ 0)
+theorem count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0)
     {p : Associates α} (hp : Irreducible p) (k : ℕ) :
     count p (a ^ k).factors = k * count p a.factors := by
   induction' k with n h
@@ -1697,12 +1701,12 @@ theorem count_pow [Nontrivial α] [DecidableEq (Associates α)] {a : Associates 
   · rw [pow_succ', count_mul ha (pow_ne_zero _ ha) hp, h]
     ring
 
-theorem dvd_count_pow [Nontrivial α] [DecidableEq (Associates α)] {a : Associates α} (ha : a ≠ 0)
+theorem dvd_count_pow [Nontrivial α] {a : Associates α} (ha : a ≠ 0)
     {p : Associates α} (hp : Irreducible p) (k : ℕ) : k ∣ count p (a ^ k).factors := by
   rw [count_pow ha hp]
   apply dvd_mul_right
 
-theorem is_pow_of_dvd_count [DecidableEq (Associates α)] {a : Associates α}
+theorem is_pow_of_dvd_count {a : Associates α}
     (ha : a ≠ 0) {k : ℕ} (hk : ∀ p : Associates α, Irreducible p → k ∣ count p a.factors) :
     ∃ b : Associates α, a = b ^ k := by
   nontriviality α
@@ -1721,7 +1725,7 @@ theorem is_pow_of_dvd_count [DecidableEq (Associates α)] {a : Associates α}
 
 /-- The only divisors of prime powers are prime powers. See `eq_pow_find_of_dvd_irreducible_pow`
 for an explicit expression as a p-power (without using `count`). -/
-theorem eq_pow_count_factors_of_dvd_pow [DecidableEq (Associates α)] {p a : Associates α}
+theorem eq_pow_count_factors_of_dvd_pow {p a : Associates α}
     (hp : Irreducible p) {n : ℕ} (h : a ∣ p ^ n) : a = p ^ p.count a.factors := by
   nontriviality α
   have hph := pow_ne_zero n hp.ne_zero
@@ -1738,7 +1742,7 @@ theorem eq_pow_count_factors_of_dvd_pow [DecidableEq (Associates α)] {p a : Ass
   · rw [h, count_self hp, mul_one]
   · rw [count_eq_zero_of_ne hq hp h, mul_zero, eq_zero_of_ne q hq h]
 
-theorem count_factors_eq_find_of_dvd_pow [DecidableEq (Associates α)] {a p : Associates α}
+theorem count_factors_eq_find_of_dvd_pow {a p : Associates α}
     (hp : Irreducible p) [∀ n : ℕ, Decidable (a ∣ p ^ n)] {n : ℕ} (h : a ∣ p ^ n) :
     @Nat.find (fun n => a ∣ p ^ n) _ ⟨n, h⟩ = p.count a.factors := by
   apply le_antisymm
@@ -1762,7 +1766,7 @@ theorem eq_pow_of_mul_eq_pow {a b c : Associates α} (ha : a ≠ 0) (hb : b ≠ 
   by_cases hk0 : k = 0
   · use 1
     rw [hk0, pow_zero] at h ⊢
-    apply (mul_eq_one_iff.1 h).1
+    apply (mul_eq_one.1 h).1
   · refine is_pow_of_dvd_count ha fun p hp ↦ ?_
     apply dvd_count_of_dvd_count_mul hb hp hab
     rw [h]
@@ -1845,7 +1849,7 @@ noncomputable def fintypeSubtypeDvd {M : Type*} [CancelCommMonoidWithZero M]
   haveI : NormalizationMonoid M := UniqueFactorizationMonoid.normalizationMonoid
   haveI := Classical.decEq M
   haveI := Classical.decEq (Associates M)
-  -- We'll show `λ (u : Mˣ) (f ⊆ factors y) → u * Π f` is injective
+  -- We'll show `fun (u : Mˣ) (f ⊆ factors y) ↦ u * Π f` is injective
   -- and has image exactly the divisors of `y`.
   refine
     Fintype.ofFinset
@@ -1971,3 +1975,5 @@ lemma factors_multiset_prod_of_irreducible {s : Multiset ℕ} (h : ∀ x : ℕ, 
   exact fun con ↦ not_irreducible_zero (h 0 con)
 
 end Nat
+
+set_option linter.style.longFile 2100

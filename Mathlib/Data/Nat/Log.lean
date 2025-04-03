@@ -6,6 +6,7 @@ Authors: Simon Hudon, Yaël Dillies
 import Mathlib.Data.Nat.Defs
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
@@ -51,6 +52,7 @@ theorem log_of_left_le_one {b : ℕ} (hb : b ≤ 1) (n) : log b n = 0 :=
 theorem log_pos_iff {b n : ℕ} : 0 < log b n ↔ b ≤ n ∧ 1 < b := by
   rw [Nat.pos_iff_ne_zero, Ne, log_eq_zero_iff, not_or, not_lt, not_le]
 
+@[bound]
 theorem log_pos {b n : ℕ} (hb : 1 < b) (hbn : b ≤ n) : 0 < log b n :=
   log_pos_iff.2 ⟨hbn, hb⟩
 
@@ -58,7 +60,7 @@ theorem log_of_one_lt_of_le {b n : ℕ} (h : 1 < b) (hn : b ≤ n) : log b n = l
   rw [log]
   exact if_pos ⟨hn, h⟩
 
-@[simp] lemma log_zero_left : ∀ n, log 0 n = 0 := log_of_left_le_one $ Nat.zero_le _
+@[simp] lemma log_zero_left : ∀ n, log 0 n = 0 := log_of_left_le_one <| Nat.zero_le _
 
 @[simp]
 theorem log_zero_right (b : ℕ) : log b 0 = 0 :=
@@ -76,7 +78,7 @@ theorem log_one_right (b : ℕ) : log b 1 = 0 :=
 `Nat.le_log_of_pow_le` for individual implications under weaker assumptions. -/
 theorem pow_le_iff_le_log {b : ℕ} (hb : 1 < b) {x y : ℕ} (hy : y ≠ 0) :
     b ^ x ≤ y ↔ x ≤ log b y := by
-  induction' y using Nat.strong_induction_on with y ih generalizing x
+  induction y using Nat.strong_induction_on generalizing x with | h y ih => ?_
   cases x with
   | zero => dsimp; omega
   | succ x =>
@@ -179,7 +181,7 @@ theorem log_antitone_left {n : ℕ} : AntitoneOn (fun b => log b n) (Set.Ioi 1) 
 theorem log_div_base (b n : ℕ) : log b (n / b) = log b n - 1 := by
   rcases le_or_lt b 1 with hb | hb
   · rw [log_of_left_le_one hb, log_of_left_le_one hb, Nat.zero_sub]
-  cases' lt_or_le n b with h h
+  rcases lt_or_le n b with h | h
   · rw [div_eq_of_lt h, log_of_lt h, log_zero_right]
   rw [log_of_one_lt_of_le hb h, Nat.add_sub_cancel_right]
 
@@ -187,7 +189,7 @@ theorem log_div_base (b n : ℕ) : log b (n / b) = log b n - 1 := by
 theorem log_div_mul_self (b n : ℕ) : log b (n / b * b) = log b n := by
   rcases le_or_lt b 1 with hb | hb
   · rw [log_of_left_le_one hb, log_of_left_le_one hb]
-  cases' lt_or_le n b with h h
+  rcases lt_or_le n b with h | h
   · rw [div_eq_of_lt h, Nat.zero_mul, log_zero_right, log_of_lt h]
   rw [log_mul_base hb (Nat.div_pos h (by omega)).ne', log_div_base,
     Nat.sub_add_cancel (succ_le_iff.2 <| log_pos hb h)]
@@ -242,7 +244,7 @@ theorem clog_eq_one {b n : ℕ} (hn : 2 ≤ n) (h : n ≤ b) : clog b n = 1 := b
 
 /-- `clog b` and `pow b` form a Galois connection. -/
 theorem le_pow_iff_clog_le {b : ℕ} (hb : 1 < b) {x y : ℕ} : x ≤ b ^ y ↔ clog b x ≤ y := by
-  induction' x using Nat.strong_induction_on with x ih generalizing y
+  induction x using Nat.strong_induction_on generalizing y with | h x ih => ?_
   cases y
   · rw [Nat.pow_zero]
     refine ⟨fun h => (clog_of_right_le_one h b).le, ?_⟩

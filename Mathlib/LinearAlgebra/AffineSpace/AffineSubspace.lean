@@ -35,7 +35,8 @@ from `P`) in most cases. As for modules, `k` is an explicit argument rather than
 `V`.
 
 This file only provides purely algebraic definitions and results. Those depending on analysis or
-topology are defined elsewhere; see `Analysis.NormedSpace.AddTorsor` and `Topology.Algebra.Affine`.
+topology are defined elsewhere; see `Analysis.Normed.Affine.AddTorsor` and
+`Topology.Algebra.Affine`.
 
 ## References
 
@@ -305,11 +306,10 @@ theorem vsub_left_mem_direction_iff_mem {s : AffineSubspace k P} {p : P} (hp : p
 theorem coe_injective : Function.Injective ((↑) : AffineSubspace k P → Set P) :=
   SetLike.coe_injective
 
-@[ext]
+@[ext (iff := false)]
 theorem ext {p q : AffineSubspace k P} (h : ∀ x, x ∈ p ↔ x ∈ q) : p = q :=
   SetLike.ext h
 
--- Porting note: removed `simp`, proof is `simp only [SetLike.ext'_iff]`
 protected theorem ext_iff (s₁ s₂ : AffineSubspace k P) : s₁ = s₂ ↔ (s₁ : Set P) = s₂ :=
   SetLike.ext'_iff
 
@@ -1620,7 +1620,7 @@ scoped[Affine] infixl:50 " ∥ " => AffineSubspace.Parallel
 theorem Parallel.symm {s₁ s₂ : AffineSubspace k P} (h : s₁ ∥ s₂) : s₂ ∥ s₁ := by
   rcases h with ⟨v, rfl⟩
   refine ⟨-v, ?_⟩
-  rw [map_map, ← coe_trans_to_affineMap, ← constVAdd_add, neg_add_self, constVAdd_zero,
+  rw [map_map, ← coe_trans_to_affineMap, ← constVAdd_add, neg_add_cancel, constVAdd_zero,
     coe_refl_to_affineMap, map_id]
 
 theorem parallel_comm {s₁ s₂ : AffineSubspace k P} : s₁ ∥ s₂ ↔ s₂ ∥ s₁ :=
@@ -1691,3 +1691,5 @@ theorem affineSpan_pair_parallel_iff_vectorSpan_eq {p₁ p₂ p₃ p₄ : P} :
     not_nonempty_iff_eq_empty]
 
 end AffineSubspace
+
+set_option linter.style.longFile 1800

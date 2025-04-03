@@ -9,7 +9,7 @@ import Mathlib.RingTheory.DedekindDomain.Ideal
 /-!
 # Criteria under which a Dedekind domain is a PID
 
-This file contains some results that we can use to test wether all ideals in a Dedekind domain are
+This file contains some results that we can use to test whether all ideals in a Dedekind domain are
 principal.
 
 ## Main results
@@ -189,6 +189,7 @@ variable (p : Ideal R) (hp0 : p ≠ ⊥) [IsPrime p]
 variable {Sₚ : Type*} [CommRing Sₚ] [Algebra S Sₚ]
 variable [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
 variable [Algebra R Sₚ] [IsScalarTower R S Sₚ]
+include hp0
 
 /- The first hypothesis below follows from properties of the localization but is needed for the
 second, so we leave it to the user to provide (automatically). -/

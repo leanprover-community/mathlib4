@@ -105,7 +105,7 @@ def recOn {C : WSeq α → Sort v} (s : WSeq α) (h1 : C nil) (h2 : ∀ x s, C (
     (h3 : ∀ s, C (think s)) : C s :=
   Seq.recOn s h1 fun o => Option.recOn o h3 h2
 
-/-- membership for weak sequences-/
+/-- membership for weak sequences -/
 protected def Mem (a : α) (s : WSeq α) :=
   Seq.Mem (some a) s
 
@@ -406,7 +406,7 @@ theorem LiftRelO.imp_right (R : α → β → Prop) {C D : WSeq α → WSeq β �
     (H : ∀ s t, C s t → D s t) {o p} : LiftRelO R C o p → LiftRelO R D o p :=
   LiftRelO.imp (fun _ _ => id) H
 
-/-- Definition of bisimilarity for weak sequences-/
+/-- Definition of bisimilarity for weak sequences -/
 @[simp]
 def BisimO (R : WSeq α → WSeq α → Prop) : Option (α × WSeq α) → Option (α × WSeq α) → Prop :=
   LiftRelO (· = ·) R
@@ -684,7 +684,7 @@ theorem append_nil (s : WSeq α) : append s nil = s :=
 theorem append_assoc (s t u : WSeq α) : append (append s t) u = append s (append t u) :=
   Seq.append_assoc _ _ _
 
-/-- auxiliary definition of tail over weak sequences-/
+/-- auxiliary definition of tail over weak sequences -/
 @[simp]
 def tail.aux : Option (α × WSeq α) → Computation (Option (α × WSeq α))
   | none => Computation.pure none
@@ -694,7 +694,7 @@ theorem destruct_tail (s : WSeq α) : destruct (tail s) = destruct s >>= tail.au
   simp only [tail, destruct_flatten, tail.aux]; rw [← bind_pure_comp, LawfulMonad.bind_assoc]
   apply congr_arg; ext1 (_ | ⟨a, s⟩) <;> apply (@pure_bind Computation _ _ _ _ _ _).trans _ <;> simp
 
-/-- auxiliary definition of drop over weak sequences-/
+/-- auxiliary definition of drop over weak sequences -/
 @[simp]
 def drop.aux : ℕ → Option (α × WSeq α) → Computation (Option (α × WSeq α))
   | 0 => Computation.pure
@@ -1330,7 +1330,7 @@ theorem liftRel_map {δ} (R : α → β → Prop) (S : γ → δ → Prop) {s1 :
 theorem map_congr (f : α → β) {s t : WSeq α} (h : s ~ʷ t) : map f s ~ʷ map f t :=
   liftRel_map _ _ h fun {_ _} => congr_arg _
 
-/-- auxiliary definition of `destruct_append` over weak sequences-/
+/-- auxiliary definition of `destruct_append` over weak sequences -/
 @[simp]
 def destruct_append.aux (t : WSeq α) : Option (α × WSeq α) → Computation (Option (α × WSeq α))
   | none => destruct t
@@ -1349,7 +1349,7 @@ theorem destruct_append (s t : WSeq α) :
     · refine ⟨nil, t, ?_, ?_⟩ <;> simp
   · exact ⟨s, t, rfl, rfl⟩
 
-/-- auxiliary definition of `destruct_join` over weak sequences-/
+/-- auxiliary definition of `destruct_join` over weak sequences -/
 @[simp]
 def destruct_join.aux : Option (WSeq α × WSeq (WSeq α)) → Computation (Option (α × WSeq α))
   | none => Computation.pure none
@@ -1622,3 +1622,5 @@ instance lawfulMonad : LawfulMonad WSeq :=
 end WSeq
 
 end Stream'
+
+set_option linter.style.longFile 1800

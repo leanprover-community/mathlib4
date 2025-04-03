@@ -159,7 +159,7 @@ variable {I}
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {H' : Type*} [TopologicalSpace H']
   {N : Type*} [TopologicalSpace N] [ChartedSpace H' N]
-  (J : ModelWithCorners 𝕜 E' H') [SmoothManifoldWithCorners J N] {x : M} {y : N}
+  (J : ModelWithCorners 𝕜 E' H') {x : M} {y : N}
 
 /-- The interior of `M × N` is the product of the interiors of `M` and `N`. -/
 lemma ModelWithCorners.interior_prod :

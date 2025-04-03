@@ -213,10 +213,8 @@ noncomputable def maxGenEigenspaceIndex (f : End R M) (μ : R) :=
 /-- For an endomorphism of a Noetherian module, the maximal eigenspace is always of the form kernel
 `(f - μ • id) ^ k` for some `k`. -/
 theorem maxGenEigenspace_eq [h : IsNoetherian R M] (f : End R M) (μ : R) :
-    maxGenEigenspace f μ =
-      f.genEigenspace μ (maxGenEigenspaceIndex f μ) := by
-  rw [isNoetherian_iff_wellFounded] at h
-  exact (WellFounded.iSup_eq_monotonicSequenceLimit h (f.genEigenspace μ) : _)
+    maxGenEigenspace f μ = f.genEigenspace μ (maxGenEigenspaceIndex f μ) :=
+  h.wf.iSup_eq_monotonicSequenceLimit (f.genEigenspace μ)
 
 /-- A generalized eigenvalue for some exponent `k` is also
     a generalized eigenvalue for exponents larger than `k`. -/
@@ -391,16 +389,23 @@ theorem eigenspaces_independent [NoZeroSMulDivisors R M] (f : End R M) :
   f.independent_genEigenspace.mono fun μ ↦ le_iSup (genEigenspace f μ) 1
 
 /-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
+    independent. -/
+theorem eigenvectors_linearIndependent' {ι : Type*} [NoZeroSMulDivisors R M]
+    (f : End R M) (μ : ι → R) (hμ : Function.Injective μ) (v : ι → M)
+    (h_eigenvec : ∀ i, f.HasEigenvector (μ i) (v i)) : LinearIndependent R v :=
+  f.eigenspaces_independent.comp hμ |>.linearIndependent _
+    (fun i => h_eigenvec i |>.left) (fun i => h_eigenvec i |>.right)
+
+/-- Eigenvectors corresponding to distinct eigenvalues of a linear operator are linearly
     independent. (Lemma 5.10 of [axler2015])
 
     We use the eigenvalues as indexing set to ensure that there is only one eigenvector for each
-    eigenvalue in the image of `xs`. -/
+    eigenvalue in the image of `xs`.
+    See `Module.End.eigenvectors_linearIndependent'` for an indexed variant. -/
 theorem eigenvectors_linearIndependent [NoZeroSMulDivisors R M]
     (f : End R M) (μs : Set R) (xs : μs → M)
     (h_eigenvec : ∀ μ : μs, f.HasEigenvector μ (xs μ)) : LinearIndependent R xs :=
-  CompleteLattice.Independent.linearIndependent _
-    (f.eigenspaces_independent.comp Subtype.coe_injective) (fun μ => (h_eigenvec μ).1) fun μ =>
-    (h_eigenvec μ).2
+  f.eigenvectors_linearIndependent' (fun μ : μs => μ) Subtype.coe_injective _ h_eigenvec
 
 /-- If `f` maps a subspace `p` into itself, then the generalized eigenspace of the restriction
     of `f` to `p` is the part of the generalized eigenspace of `f` that lies in `p`. -/

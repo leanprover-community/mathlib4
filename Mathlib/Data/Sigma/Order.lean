@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.BoundedOrder
-import Mathlib.Mathport.Notation
+import Mathlib.Util.Notation3
 import Mathlib.Data.Sigma.Basic
 
 /-!
@@ -106,7 +106,7 @@ instance [∀ i, PartialOrder (α i)] : PartialOrder (Σi, α i) :=
   { Sigma.preorder with
     le_antisymm := by
       rintro _ _ ⟨i, a, b, hab⟩ ⟨_, _, _, hba⟩
-      exact ext rfl (heq_of_eq <| hab.antisymm hba) }
+      exact congr_arg (Sigma.mk _ ·) <| hab.antisymm hba }
 
 instance [∀ i, Preorder (α i)] [∀ i, DenselyOrdered (α i)] : DenselyOrdered (Σi, α i) where
   dense := by

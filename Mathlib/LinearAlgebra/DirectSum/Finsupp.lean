@@ -205,7 +205,7 @@ lemma finsuppScalarLeft_symm_apply_single (i : ι) (n : N) :
 
 variable (R M N ι)
 
-/-- The tensor product of `M` and `ι →₀ R` is linearly equivalent to `ι →₀ N` -/
+/-- The tensor product of `M` and `ι →₀ R` is linearly equivalent to `ι →₀ M` -/
 noncomputable def finsuppScalarRight :
     M ⊗[R] (ι →₀ R) ≃ₗ[R] ι →₀ M :=
   finsuppRight R M R ι ≪≫ₗ Finsupp.mapRange.linearEquiv (TensorProduct.rid R M)

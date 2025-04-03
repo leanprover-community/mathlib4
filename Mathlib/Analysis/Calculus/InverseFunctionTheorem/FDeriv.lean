@@ -40,7 +40,7 @@ derivative, strictly differentiable, continuously differentiable, smooth, invers
 
 open Function Set Filter Metric
 
-open scoped Topology Classical NNReal
+open scoped Topology NNReal
 
 noncomputable section
 
@@ -92,7 +92,7 @@ theorem map_nhds_eq_of_surj [CompleteSpace E] [CompleteSpace F] {f : E → F} {f
   apply hs.map_nhds_eq f'symm s_nhds (Or.inr (NNReal.half_lt_self _))
   simp [ne_of_gt f'symm_pos]
 
-variable [CompleteSpace E] {f : E → F} {f' : E ≃L[𝕜] F} {a : E}
+variable {f : E → F} {f' : E ≃L[𝕜] F} {a : E}
 
 theorem approximates_deriv_on_open_nhds (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
     ∃ s : Set E, a ∈ s ∧ IsOpen s ∧
@@ -104,6 +104,7 @@ theorem approximates_deriv_on_open_nhds (hf : HasStrictFDerivAt f (f' : E →L[�
       f'.subsingleton_or_nnnorm_symm_pos.imp id fun hf' => half_pos <| inv_pos.2 hf'
 
 variable (f)
+variable [CompleteSpace E]
 
 /-- Given a function with an invertible strict derivative at `a`, returns a `PartialHomeomorph`
 with `to_fun = f` and `a ∈ source`. This is a part of the inverse function theorem.
@@ -185,7 +186,7 @@ theorem to_localInverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) :
 and `g (f x) = x` in a neighborhood of `a`, then `g` has derivative `f'.symm` at `f a`.
 
 For a version assuming `f (g y) = y` and continuity of `g` at `f a` but not `[CompleteSpace E]`
-see `of_local_left_inverse`.  -/
+see `of_local_left_inverse`. -/
 theorem to_local_left_inverse (hf : HasStrictFDerivAt f (f' : E →L[𝕜] F) a) {g : F → E}
     (hg : ∀ᶠ x in 𝓝 a, g (f x) = x) : HasStrictFDerivAt g (f'.symm : F →L[𝕜] E) (f a) :=
   hf.to_localInverse.congr_of_eventuallyEq <| (hf.localInverse_unique hg).mono fun _ => Eq.symm

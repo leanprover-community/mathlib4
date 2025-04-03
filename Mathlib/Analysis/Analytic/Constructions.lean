@@ -19,10 +19,8 @@ We show that the following are analytic:
 
 noncomputable section
 
-open scoped Classical
-open Topology NNReal Filter ENNReal
-
-open Set Filter Asymptotics
+open scoped Classical Topology
+open Filter Asymptotics ENNReal NNReal
 
 variable {α : Type*}
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -183,7 +181,7 @@ lemma AnalyticAt.pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) 
     AnalyticAt 𝕜 (fun x ↦ f x ^ n) z := by
   induction n with
   | zero =>
-    simp only [Nat.zero_eq, pow_zero]
+    simp only [pow_zero]
     apply analyticAt_const
   | succ m hm =>
     simp only [pow_succ]
@@ -221,7 +219,7 @@ lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField �
     simp_rw [IsLittleO, IsBigOWith, not_forall, norm_one, mul_one,
       not_eventually]
     refine ⟨1, one_pos, ?_⟩
-    refine ((eventually_ne_atTop 0).mp (eventually_of_forall ?_)).frequently
+    refine ((eventually_ne_atTop 0).mp (Eventually.of_forall ?_)).frequently
     intro n hn
     push_neg
     rwa [norm_pow, one_lt_pow_iff_of_nonneg (norm_nonneg _) hn,

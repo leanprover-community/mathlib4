@@ -28,7 +28,7 @@ namespace `Complex`.
 |`reCLM`           |ℂ →L[ℝ] ℝ    |Real part function as a `ContinuousLinearMap`           |
 |`imCLM`           |ℂ →L[ℝ] ℝ    |Imaginary part function as a `ContinuousLinearMap`      |
 |`ofRealCLM`       |ℝ →L[ℝ] ℂ    |Embedding of the reals as a `ContinuousLinearMap`       |
-|`ofRealLI`        |ℝ →ₗᵢ[ℝ] ℂ   |Complex conjugation as a `LinearIsometry`               |
+|`ofRealLI`        |ℝ →ₗᵢ[ℝ] ℂ   |Embedding of the reals as a `LinearIsometry`            |
 |`conjCLE`         |ℂ ≃L[ℝ] ℂ    |Complex conjugation as a `ContinuousLinearEquiv`        |
 |`conjLIE`         |ℂ ≃ₗᵢ[ℝ] ℂ   |Complex conjugation as a `LinearIsometryEquiv`          |
 
@@ -138,23 +138,38 @@ theorem nndist_self_conj (z : ℂ) : nndist z (conj z) = 2 * Real.nnabs z.im := 
 theorem comap_abs_nhds_zero : comap abs (𝓝 0) = 𝓝 0 :=
   comap_norm_nhds_zero
 
-theorem norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ :=
-  abs_ofReal _
+@[simp 1100, norm_cast] lemma norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ := abs_ofReal _
+@[simp, norm_cast] lemma nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ := by ext; exact norm_real _
 
-@[simp 1100]
-theorem norm_rat (r : ℚ) : ‖(r : ℂ)‖ = |(r : ℝ)| := by
-  rw [← ofReal_ratCast]
-  exact norm_real _
+@[simp 1100, norm_cast] lemma norm_natCast (n : ℕ) : ‖(n : ℂ)‖ = n := abs_natCast _
+@[simp 1100, norm_cast] lemma norm_intCast (n : ℤ) : ‖(n : ℂ)‖ = |(n : ℝ)| := abs_intCast n
+@[simp 1100, norm_cast] lemma norm_ratCast (q : ℚ) : ‖(q : ℂ)‖ = |(q : ℝ)| := norm_real _
 
-@[simp 1100]
-theorem norm_nat (n : ℕ) : ‖(n : ℂ)‖ = n :=
-  abs_natCast _
+@[simp 1100, norm_cast] lemma nnnorm_natCast (n : ℕ) : ‖(n : ℂ)‖₊ = n := Subtype.ext <| by simp
+@[simp 1100, norm_cast] lemma nnnorm_intCast (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ := by
+  ext; exact norm_intCast n
+@[simp 1100, norm_cast] lemma nnnorm_ratCast (q : ℚ) : ‖(q : ℂ)‖₊ = ‖(q : ℝ)‖₊ := nnnorm_real q
 
-@[simp 1100]
-lemma norm_int {n : ℤ} : ‖(n : ℂ)‖ = |(n : ℝ)| := abs_intCast n
+@[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ‖(no_index (OfNat.ofNat n) : ℂ)‖ = OfNat.ofNat n := norm_natCast n
+
+@[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ‖(no_index (OfNat.ofNat n) : ℂ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
+
+@[deprecated (since := "2024-08-25")] alias norm_nat := norm_natCast
+@[deprecated (since := "2024-08-25")] alias norm_int := norm_intCast
+@[deprecated (since := "2024-08-25")] alias norm_rat := norm_ratCast
+@[deprecated (since := "2024-08-25")] alias nnnorm_nat := nnnorm_natCast
+@[deprecated (since := "2024-08-25")] alias nnnorm_int := nnnorm_intCast
+
+@[simp 1100, norm_cast]
+lemma norm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖ = q := abs_of_nonneg q.cast_nonneg
+
+@[simp 1100, norm_cast]
+lemma nnnorm_nnratCast (q : ℚ≥0) : ‖(q : ℂ)‖₊ = q := by simp [nnnorm, -norm_eq_abs]
 
 theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
-  rw [norm_int, ← Int.cast_abs, _root_.abs_of_nonneg hn]
+  rw [norm_intCast, ← Int.cast_abs, _root_.abs_of_nonneg hn]
 
 lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
   rw [normSq_eq_abs, norm_eq_abs]
@@ -167,17 +182,6 @@ theorem continuous_abs : Continuous abs :=
 theorem continuous_normSq : Continuous normSq := by
   simpa [← normSq_eq_abs] using continuous_abs.pow 2
 
-@[simp, norm_cast]
-theorem nnnorm_real (r : ℝ) : ‖(r : ℂ)‖₊ = ‖r‖₊ :=
-  Subtype.ext <| norm_real r
-
-@[simp, norm_cast]
-theorem nnnorm_nat (n : ℕ) : ‖(n : ℂ)‖₊ = n :=
-  Subtype.ext <| by simp
-
-@[simp, norm_cast]
-theorem nnnorm_int (n : ℤ) : ‖(n : ℂ)‖₊ = ‖n‖₊ :=
-  Subtype.ext norm_int
 
 theorem nnnorm_eq_one_of_pow_eq_one {ζ : ℂ} {n : ℕ} (h : ζ ^ n = 1) (hn : n ≠ 0) : ‖ζ‖₊ = 1 :=
   (pow_left_inj zero_le' zero_le' hn).1 <| by rw [← nnnorm_pow, h, nnnorm_one, one_pow]
@@ -241,6 +245,9 @@ def reCLM : ℂ →L[ℝ] ℝ :=
 theorem continuous_re : Continuous re :=
   reCLM.continuous
 
+lemma uniformlyContinous_re : UniformContinuous re :=
+  reCLM.uniformContinuous
+
 @[simp]
 theorem reCLM_coe : (reCLM : ℂ →ₗ[ℝ] ℝ) = reLm :=
   rfl
@@ -256,6 +263,9 @@ def imCLM : ℂ →L[ℝ] ℝ :=
 @[continuity, fun_prop]
 theorem continuous_im : Continuous im :=
   imCLM.continuous
+
+lemma uniformlyContinous_im : UniformContinuous im :=
+  imCLM.uniformContinuous
 
 @[simp]
 theorem imCLM_coe : (imCLM : ℂ →ₗ[ℝ] ℝ) = imLm :=

@@ -67,7 +67,7 @@ theorem integralClosure.mem_lifts_of_monic_of_dvd_map {f : R[X]} (hf : f.Monic) 
   refine Multiset.mem_of_le (roots.le_of_dvd ((hf.map _).map _).ne_zero ?_) ha
   exact map_dvd (algebraMap K g.SplittingField) hd
 
-variable [IsDomain R] [IsFractionRing R K]
+variable [IsFractionRing R K]
 
 /-- If `K = Frac(R)` and `g : K[X]` divides a monic polynomial with coefficients in `R`, then
     `g * (C g.leadingCoeff⁻¹)` has coefficients in `R` -/
@@ -78,7 +78,7 @@ theorem IsIntegrallyClosed.eq_map_mul_C_of_dvd [IsIntegrallyClosed R] {f : R[X]}
   suffices lem : ∃ g' : R[X], g'.map (algebraMap R K) = g * C g.leadingCoeff⁻¹ by
     obtain ⟨g', hg'⟩ := lem
     use g'
-    rw [hg', mul_assoc, ← C_mul, inv_mul_cancel (leadingCoeff_ne_zero.mpr g_ne_0), C_1, mul_one]
+    rw [hg', mul_assoc, ← C_mul, inv_mul_cancel₀ (leadingCoeff_ne_zero.mpr g_ne_0), C_1, mul_one]
   have g_mul_dvd : g * C g.leadingCoeff⁻¹ ∣ f.map (algebraMap R K) := by
     rwa [Associated.dvd_iff_dvd_left (show Associated (g * C g.leadingCoeff⁻¹) g from _)]
     rw [associated_mul_isUnit_left_iff]
@@ -106,6 +106,7 @@ section
 
 variable {S : Type*} [CommRing S] [IsDomain S]
 variable {φ : R →+* S} (hinj : Function.Injective φ) {f : R[X]} (hf : f.IsPrimitive)
+include hinj hf
 
 theorem IsPrimitive.isUnit_iff_isUnit_map_of_injective : IsUnit f ↔ IsUnit (map φ f) := by
   refine ⟨(mapRingHom φ).isUnit_map, fun h => ?_⟩
@@ -133,8 +134,6 @@ theorem IsPrimitive.isUnit_iff_isUnit_map {p : R[X]} (hp : p.IsPrimitive) :
     IsUnit p ↔ IsUnit (p.map (algebraMap R K)) :=
   hp.isUnit_iff_isUnit_map_of_injective (IsFractionRing.injective _ _)
 
-variable [IsDomain R]
-
 section IsIntegrallyClosed
 
 open IsIntegrallyClosed
@@ -144,7 +143,7 @@ open IsIntegrallyClosed
 theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R] {p : R[X]}
     (h : p.Monic) : Irreducible p ↔ Irreducible (p.map <| algebraMap R K) := by
   /- The ← direction follows from `IsPrimitive.irreducible_of_irreducible_map_of_injective`.
-       For the → direction, it is enought to show that if `(p.map <| algebraMap R K) = a * b` and
+       For the → direction, it is enough to show that if `(p.map <| algebraMap R K) = a * b` and
        `a` is not a unit then `b` is a unit -/
   refine
     ⟨fun hp =>
@@ -177,7 +176,7 @@ theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R
 
 /-- Integrally closed domains are precisely the domains for in which Gauss's lemma holds
     for monic polynomials -/
-theorem isIntegrallyClosed_iff' :
+theorem isIntegrallyClosed_iff' [IsDomain R] :
     IsIntegrallyClosed R ↔
       ∀ p : R[X], p.Monic → (Irreducible p ↔ Irreducible (p.map <| algebraMap R K)) := by
   constructor
@@ -212,7 +211,7 @@ open IsLocalization
 
 section NormalizedGCDMonoid
 
-variable [NormalizedGCDMonoid R]
+variable [IsDomain R] [NormalizedGCDMonoid R]
 
 theorem isUnit_or_eq_zero_of_isUnit_integerNormalization_primPart {p : K[X]} (h0 : p ≠ 0)
     (h : IsUnit (integerNormalization R⁰ p).primPart) : IsUnit p := by

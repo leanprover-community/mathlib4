@@ -70,7 +70,7 @@ theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
     Finite.of_injective (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.2⟩ : { x // x ∣ I })) ?_
   intro v w hvw
   simp? at hvw says simp only [Subtype.mk.injEq] at hvw
-  exact Subtype.coe_injective (HeightOneSpectrum.ext _ _ hvw)
+  exact Subtype.coe_injective (HeightOneSpectrum.ext hvw)
 
 /-- For every nonzero ideal `I` of `v`, there are finitely many maximal ideals `v` such that the
   multiplicity of `v` in the factorization of `I`, denoted `val_v(I)`, is nonzero. -/
@@ -133,7 +133,7 @@ theorem finprod_not_dvd (I : Ideal R) (hI : I ≠ 0) :
   have hw_prime : Prime w.asIdeal := Ideal.prime_of_isPrime w.ne_bot w.isPrime
   have hvw := Prime.dvd_of_dvd_pow hv_prime hvw'
   rw [Prime.dvd_prime_iff_associated hv_prime hw_prime, associated_iff_eq] at hvw
-  exact (Finset.mem_erase.mp hw).1 (HeightOneSpectrum.ext w v (Eq.symm hvw))
+  exact (Finset.mem_erase.mp hw).1 (HeightOneSpectrum.ext hvw.symm)
 
 end Ideal
 
@@ -403,10 +403,10 @@ theorem count_neg_zpow (n : ℤ) (I : FractionalIdeal R⁰ K) :
     · rw [hn, neg_zero, zpow_zero, count_one, neg_zero]
     · rw [hI, zero_zpow n hn, zero_zpow (-n) (neg_ne_zero.mpr hn), count_zero, neg_zero]
   · rw [eq_neg_iff_add_eq_zero, ← count_mul K v (zpow_ne_zero _ hI) (zpow_ne_zero _ hI),
-      ← zpow_add₀ hI, neg_add_self, zpow_zero]
+      ← zpow_add₀ hI, neg_add_cancel, zpow_zero]
     exact count_one K v
 
-theorem count_inv  (I : FractionalIdeal R⁰ K) :
+theorem count_inv (I : FractionalIdeal R⁰ K) :
     count K v (I⁻¹) = - count K v I := by
   rw [← zpow_neg_one, count_neg_zpow K v (1 : ℤ) I, zpow_one]
 
@@ -499,7 +499,7 @@ theorem count_mono {I J} (hI : I ≠ 0) (h : I ≤ J) : count K v J ≤ count K 
   by_cases hJ : J = 0
   · exact (hI (FractionalIdeal.le_zero_iff.mp (h.trans hJ.le))).elim
   have := FractionalIdeal.mul_le_mul_left h J⁻¹
-  rw [inv_mul_cancel hJ, FractionalIdeal.le_one_iff_exists_coeIdeal] at this
+  rw [inv_mul_cancel₀ hJ, FractionalIdeal.le_one_iff_exists_coeIdeal] at this
   obtain ⟨J', hJ'⟩ := this
   rw [← mul_inv_cancel_left₀ hJ I, ← hJ', count_mul K v hJ, le_add_iff_nonneg_right]
   · exact count_coe_nonneg K v J'

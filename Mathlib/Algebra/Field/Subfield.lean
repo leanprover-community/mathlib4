@@ -320,7 +320,7 @@ instance toDivisionRing (s : Subfield K) : DivisionRing s :=
 instance toField {K} [Field K] (s : Subfield K) : Field s :=
   Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (by intros; rfl)  (fun _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (by intros; rfl) (fun _ => rfl)
     (fun _ => rfl) (by intros; rfl) fun _ => rfl
 
 @[simp, norm_cast]
@@ -616,7 +616,7 @@ theorem closure_induction {s : Set K} {p : K → Prop} {x} (h : x ∈ closure s)
     (inv : ∀ x, p x → p x⁻¹) (mul : ∀ x y, p x → p y → p (x * y)) : p x := by
     letI : Subfield K :=
       ⟨⟨⟨⟨⟨p, by intro _ _; exact mul _ _⟩, one⟩,
-        by intro _ _; exact add _ _, @add_neg_self K _ 1 ▸ add _ _ one (neg _ one)⟩,
+        by intro _ _; exact add _ _, @add_neg_cancel K _ 1 ▸ add _ _ one (neg _ one)⟩,
           by intro _; exact neg _⟩, inv⟩
     exact (closure_le (t := this)).2 mem h
 

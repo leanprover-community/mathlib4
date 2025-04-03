@@ -5,7 +5,7 @@ Authors: Chris Hughes, Junyan Xu
 -/
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Data.Finsupp.Fintype
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Finsupp
 
 /-!
 # Cardinality of Multivariate Polynomial Ring

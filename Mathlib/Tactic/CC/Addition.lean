@@ -192,8 +192,8 @@ def mkCCHCongrTheorem (fn : Expr) (nargs : Nat) : CCM (Option CCCongrTheorem) :=
 
   -- Check if `{ fn, nargs }` is in the cache
   let key₁ : CCCongrTheoremKey := { fn, nargs }
-  if let some it₁ := cache.findEntry? key₁ then
-    return it₁.2
+  if let some it := cache[key₁]? then
+    return it
 
   -- Try automatically generated congruence lemma with support for heterogeneous equality.
   let lemm ← mkCCHCongrWithArity fn nargs
@@ -495,7 +495,7 @@ partial def mkProof (lhs rhs : Expr) (H : EntryExpr) (heqProofs : Bool) : CCM Ex
         getHEqProof a b >>= liftOption
       else
         -- TODO(Leo): the following code assumes R is homogeneous.
-        -- We should add support arbitrary heterogenous reflexive relations.
+        -- We should add support arbitrary heterogeneous reflexive relations.
         getEqProof a b >>= liftOption >>= fun aEqb => liftM (liftFromEq R aEqb)
     let aRbEqTrue ← mkEqTrue aRb
     if flip then
@@ -662,7 +662,7 @@ equality to the todo list. If not, add `e` to the congruence table. -/
 def addCongruenceTable (e : Expr) : CCM Unit := do
   guard e.isApp
   let k ← mkCongruencesKey e
-  if let some es := (← get).congruences.find? k then
+  if let some es := (← get).congruences[k]? then
     for oldE in es do
       if ← isCongruent e oldE then
         -- Found new equivalence: `e ~ oldE`
@@ -687,7 +687,7 @@ def addSymmCongruenceTable (e : Expr) : CCM Unit := do
   let some (rel, lhs, rhs) ← e.relSidesIfSymm? | failure
   let k ← mkSymmCongruencesKey lhs rhs
   let newP := (e, rel)
-  if let some ps := (← get).symmCongruences.find? k then
+  if let some ps := (← get).symmCongruences[k]? then
     for p in ps do
       if ← compareSymm newP p then
         -- Found new equivalence: `e ~ p.1`
@@ -1192,7 +1192,7 @@ is already processed by `internalizeAC`, this operation does nothing. -/
 def internalizeAC (e : Expr) (parent? : Option Expr) : CCM Unit := do
   let some op ← isAC e | return
   let parentOp? ← parent?.casesOn (pure none) isAC
-  if parentOp?.any (op == ·) then return
+  if parentOp?.any (· == op) then return
 
   unless (← internalizeACVar e) do return
 
@@ -1623,7 +1623,7 @@ def removeParents (e : Expr) (parentsToPropagate : Array Expr := #[]) : CCM (Arr
       if pocc.symmTable then
         let some (rel, lhs, rhs) ← p.relSidesIfSymm? | failure
         let k' ← mkSymmCongruencesKey lhs rhs
-        if let some lst := (← get).symmCongruences.find? k' then
+        if let some lst := (← get).symmCongruences[k']? then
           let k := (p, rel)
           let newLst ← lst.filterM fun k₂ => (!·) <$> compareSymm k k₂
           if !newLst.isEmpty then
@@ -1634,7 +1634,7 @@ def removeParents (e : Expr) (parentsToPropagate : Array Expr := #[]) : CCM (Arr
               { ccs with symmCongruences := ccs.symmCongruences.erase k' }
       else
         let k' ← mkCongruencesKey p
-        if let some es := (← get).congruences.find? k' then
+        if let some es := (← get).congruences[k']? then
           let newEs := es.erase p
           if !newEs.isEmpty then
             modify fun ccs =>
@@ -2099,3 +2099,5 @@ def add (type : Expr) (proof : Expr) : CCM Unit := do
 end CCM
 
 end Mathlib.Tactic.CC
+
+set_option linter.style.longFile 2300

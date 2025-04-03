@@ -12,7 +12,7 @@ import Mathlib.Order.OrderIsoNat
 /-!
 # The `n`th Number Satisfying a Predicate
 
-This file defines a function for "what is the `n`th number that satisifies a given predicate `p`",
+This file defines a function for "what is the `n`th number that satisfies a given predicate `p`",
 and provides lemmas that deal with this function and its connection to `Nat.count`.
 
 ## Main definitions
@@ -66,7 +66,7 @@ theorem nth_eq_getD_sort (h : (setOf p).Finite) (n : ℕ) :
 
 theorem nth_eq_orderEmbOfFin (hf : (setOf p).Finite) {n : ℕ} (hn : n < hf.toFinset.card) :
     nth p n = hf.toFinset.orderEmbOfFin rfl ⟨n, hn⟩ := by
-  rw [nth_eq_getD_sort hf, Finset.orderEmbOfFin_apply, List.getD_eq_get]
+  rw [nth_eq_getD_sort hf, Finset.orderEmbOfFin_apply, List.getD_eq_getElem, Fin.getElem_fin]
 
 theorem nth_strictMonoOn (hf : (setOf p).Finite) :
     StrictMonoOn (nth p) (Set.Iio hf.toFinset.card) := by
@@ -94,8 +94,8 @@ theorem nth_injOn (hf : (setOf p).Finite) : (Set.Iio hf.toFinset.card).InjOn (nt
   (nth_strictMonoOn hf).injOn
 
 theorem range_nth_of_finite (hf : (setOf p).Finite) : Set.range (nth p) = insert 0 (setOf p) := by
-  simpa only [← List.getD_eq_getElem?, ← nth_eq_getD_sort hf, mem_sort, Set.Finite.mem_toFinset]
-    using Set.range_list_getD (hf.toFinset.sort (· ≤ ·)) 0
+  simpa only [← List.getD_eq_getElem?_getD, ← nth_eq_getD_sort hf, mem_sort,
+    Set.Finite.mem_toFinset] using Set.range_list_getD (hf.toFinset.sort (· ≤ ·)) 0
 
 @[simp]
 theorem image_nth_Iio_card (hf : (setOf p).Finite) : nth p '' Set.Iio hf.toFinset.card = setOf p :=

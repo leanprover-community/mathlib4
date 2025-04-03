@@ -1,8 +1,9 @@
 /-
 Copyright (c) 2022 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: David Loeffler, Yaël Dillies
+Authors: David Loeffler, Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Analysis.Convex.SpecificFunctions.Deriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
 
 /-!
@@ -54,79 +55,94 @@ lemma sin_le (hx : 0 ≤ x) : sin x ≤ x := by
 lemma lt_sin (hx : x < 0) : x < sin x := by simpa using sin_lt <| neg_pos.2 hx
 lemma le_sin (hx : x ≤ 0) : x ≤ sin x := by simpa using sin_le <| neg_nonneg.2 hx
 
+theorem lt_sin_mul {x : ℝ} (hx : 0 < x) (hx' : x < 1) : x < sin (π / 2 * x) := by
+  simpa [mul_comm x] using
+    strictConcaveOn_sin_Icc.2 ⟨le_rfl, pi_pos.le⟩ ⟨pi_div_two_pos.le, half_le_self pi_pos.le⟩
+      pi_div_two_pos.ne (sub_pos.2 hx') hx
+
+theorem le_sin_mul {x : ℝ} (hx : 0 ≤ x) (hx' : x ≤ 1) : x ≤ sin (π / 2 * x) := by
+  simpa [mul_comm x] using
+    strictConcaveOn_sin_Icc.concaveOn.2 ⟨le_rfl, pi_pos.le⟩
+      ⟨pi_div_two_pos.le, half_le_self pi_pos.le⟩ (sub_nonneg.2 hx') hx
+
+theorem mul_lt_sin {x : ℝ} (hx : 0 < x) (hx' : x < π / 2) : 2 / π * x < sin x := by
+  rw [← inv_div]
+  simpa [-inv_div, mul_inv_cancel_left₀ pi_div_two_pos.ne'] using @lt_sin_mul ((π / 2)⁻¹ * x)
+    (mul_pos (inv_pos.2 pi_div_two_pos) hx) (by rwa [← div_eq_inv_mul, div_lt_one pi_div_two_pos])
+
+/-- One half of **Jordan's inequality**.
+
+In the range `[0, π / 2]`, we have a linear lower bound on `sin`. The other half is given by
+`Real.sin_le`.
+-/
+theorem mul_le_sin {x : ℝ} (hx : 0 ≤ x) (hx' : x ≤ π / 2) : 2 / π * x ≤ sin x := by
+  rw [← inv_div]
+  simpa [-inv_div, mul_inv_cancel_left₀ pi_div_two_pos.ne'] using @le_sin_mul ((π / 2)⁻¹ * x)
+    (mul_nonneg (inv_nonneg.2 pi_div_two_pos.le) hx)
+    (by rwa [← div_eq_inv_mul, div_le_one pi_div_two_pos])
+
+/-- Half of **Jordan's inequality** for negative values. -/
+lemma sin_le_mul (hx : -(π / 2) ≤ x) (hx₀ : x ≤ 0) : sin x ≤ 2 / π * x := by
+  simpa using mul_le_sin (neg_nonneg.2 hx₀) (neg_le.2 hx)
+
+/-- Half of **Jordan's inequality** for absolute values. -/
+lemma mul_abs_le_abs_sin (hx : |x| ≤ π / 2) : 2 / π * |x| ≤ |sin x| := by
+  wlog hx₀ : 0 ≤ x
+  case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_le hx₀
+  rw [abs_of_nonneg hx₀] at hx ⊢
+  exact (mul_le_sin hx₀ hx).trans (le_abs_self _)
+
+lemma sin_sq_lt_sq (hx : x ≠ 0) : sin x ^ 2 < x ^ 2 := by
+  wlog hx₀ : 0 < x
+  case inr =>
+    simpa using this (neg_ne_zero.2 hx) <| neg_pos_of_neg <| hx.lt_of_le <| le_of_not_lt hx₀
+  rcases le_or_lt x 1 with hxπ | hxπ
+  case inl =>
+    exact pow_lt_pow_left (sin_lt hx₀)
+      (sin_nonneg_of_nonneg_of_le_pi hx₀.le (by linarith [two_le_pi])) (by simp)
+  case inr =>
+    exact (sin_sq_le_one _).trans_lt (by rwa [one_lt_sq_iff hx₀.le])
+
+lemma sin_sq_le_sq : sin x ^ 2 ≤ x ^ 2 := by
+  rcases eq_or_ne x 0 with rfl | hx
+  case inl => simp
+  case inr => exact (sin_sq_lt_sq hx).le
+
+lemma abs_sin_lt_abs (hx : x ≠ 0) : |sin x| < |x| := sq_lt_sq.1 (sin_sq_lt_sq hx)
+lemma abs_sin_le_abs : |sin x| ≤ |x| := sq_le_sq.1 sin_sq_le_sq
+
+lemma one_sub_sq_div_two_lt_cos (hx : x ≠ 0) : 1 - x ^ 2 / 2 < cos x := by
+  have := (sin_sq_lt_sq (by positivity)).trans_eq' (sin_sq_eq_half_sub (x / 2)).symm
+  ring_nf at this
+  linarith
+
 lemma one_sub_sq_div_two_le_cos : 1 - x ^ 2 / 2 ≤ cos x := by
+  rcases eq_or_ne x 0 with rfl | hx
+  case inl => simp
+  case inr => exact (one_sub_sq_div_two_lt_cos hx).le
+
+/-- Half of **Jordan's inequality** for `cos`. -/
+lemma one_sub_mul_le_cos (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 1 - 2 / π * x ≤ cos x := by
+  simpa [sin_pi_div_two_sub, mul_sub, div_mul_div_comm, mul_comm π, pi_pos.ne']
+    using mul_le_sin (x := π / 2 - x) (by simpa) (by simpa)
+
+/-- Half of **Jordan's inequality** for `cos` and negative values. -/
+lemma one_add_mul_le_cos (hx₀ : -(π / 2) ≤ x) (hx : x ≤ 0) : 1 + 2 / π * x ≤ cos x := by
+  simpa using one_sub_mul_le_cos (x := -x) (by linarith) (by linarith)
+
+lemma cos_le_one_sub_mul_cos_sq (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x ^ 2 := by
   wlog hx₀ : 0 ≤ x
-  · simpa using this $ neg_nonneg.2 $ le_of_not_le hx₀
-  suffices MonotoneOn (fun x ↦ cos x + x ^ 2 / 2) (Ici 0) by
-    simpa using this left_mem_Ici hx₀ hx₀
-  refine monotoneOn_of_hasDerivWithinAt_nonneg
-    (convex_Ici _) (by fun_prop)
-    (fun x _ ↦ ((hasDerivAt_cos ..).add <| (hasDerivAt_pow ..).div_const _).hasDerivWithinAt)
-    fun x hx ↦ ?_
-  simpa [mul_div_cancel_left₀] using sin_le <| interior_subset hx
-
-/-- **Jordan's inequality**. -/
-lemma two_div_pi_mul_le_sin (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 2 / π * x ≤ sin x := by
-  rw [← sub_nonneg]
-  suffices ConcaveOn ℝ (Icc 0 (π / 2)) (fun x ↦ sin x - 2 / π * x) by
-    refine (le_min ?_ ?_).trans $ this.min_le_of_mem_Icc ⟨hx₀, hx⟩ <;> field_simp
-  exact concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc ..)
-    (Continuous.continuousOn $ by fun_prop)
-    (fun x _ ↦ ((hasDerivAt_sin ..).sub $ (hasDerivAt_id ..).const_mul (2 / π)).hasDerivWithinAt)
-    (fun x _ ↦ (hasDerivAt_cos ..).hasDerivWithinAt.sub_const _)
-    fun x hx ↦ neg_nonpos.2 $ sin_nonneg_of_mem_Icc $ Icc_subset_Icc_right (by linarith) $
-    interior_subset hx
-
-/-- **Jordan's inequality** for negative values. -/
-lemma sin_le_two_div_pi_mul (hx : -(π / 2) ≤ x) (hx₀ : x ≤ 0) : sin x ≤ 2 / π * x := by
-  simpa using two_div_pi_mul_le_sin (neg_nonneg.2 hx₀) (neg_le.2 hx)
-
-/-- **Jordan's inequality** for `cos`. -/
-lemma one_sub_two_div_pi_mul_le_cos (hx₀ : 0 ≤ x) (hx : x ≤ π / 2) : 1 - 2 / π * x ≤ cos x := by
-  simpa [sin_pi_div_two_sub, mul_sub, div_mul_div_comm, mul_comm π, div_self two_pi_pos.ne']
-    using two_div_pi_mul_le_sin (x := π / 2 - x) (by simpa) (by simpa)
-
-lemma cos_quadratic_upper_bound (hx : |x| ≤ π) : cos x ≤ 1 - 2 / π ^ 2 * x ^ 2 := by
-  wlog hx₀ : 0 ≤ x
-  · simpa using this (by rwa [abs_neg]) $ neg_nonneg.2 $ le_of_not_le hx₀
+  case inr => simpa using this (by rwa [abs_neg]) <| neg_nonneg.2 <| le_of_not_le hx₀
   rw [abs_of_nonneg hx₀] at hx
-  -- TODO: `compute_deriv` tactic?
-  have hderiv (x) : HasDerivAt (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) _ x :=
-    (((hasDerivAt_pow ..).const_mul _).const_sub _).sub $ hasDerivAt_cos _
-  simp only [Nat.cast_ofNat, Nat.succ_sub_succ_eq_sub, tsub_zero, pow_one, ← neg_sub', neg_sub,
-    ← mul_assoc] at hderiv
-  have hmono : MonotoneOn (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) (Icc 0 (π / 2)) := by
-    -- Compiles without this option, but somewhat slower.
-    set_option tactic.skipAssignedInstances false in
-    refine monotoneOn_of_hasDerivWithinAt_nonneg
-      (convex_Icc ..)
-      (Continuous.continuousOn $ by fun_prop)
-      (fun x _ ↦ (hderiv _).hasDerivWithinAt)
-      fun x hx ↦ sub_nonneg.2 ?_
-    have ⟨hx₀, hx⟩ := interior_subset hx
-    calc 2 / π ^ 2 * 2 * x
-        = 2 / π * (2 / π * x) := by ring
-      _ ≤ 1 * sin x := by
-          gcongr; exacts [div_le_one_of_le two_le_pi (by positivity), two_div_pi_mul_le_sin hx₀ hx]
-      _ = sin x := one_mul _
-  have hconc : ConcaveOn ℝ (Icc (π / 2) π) (fun x ↦ 1 - 2 / π ^ 2 * x ^ 2 - cos x) := by
-    -- Compiles without this option, but somewhat slower.
-    set_option tactic.skipAssignedInstances false in
-    refine concaveOn_of_hasDerivWithinAt2_nonpos (convex_Icc ..)
-      (Continuous.continuousOn $ by fun_prop) (fun x _ ↦ (hderiv _).hasDerivWithinAt)
-      (fun x _ ↦ ((hasDerivAt_sin ..).sub $ (hasDerivAt_id ..).const_mul _).hasDerivWithinAt)
-      fun x hx ↦ ?_
-    have ⟨hx, hx'⟩ := interior_subset hx
-    calc
-      _ ≤ (0 : ℝ) - 0 := by
-          gcongr
-          · exact cos_nonpos_of_pi_div_two_le_of_le hx $ hx'.trans $ by linarith
-          · positivity
-      _ = 0 := sub_zero _
-  rw [← sub_nonneg]
-  obtain hx' | hx' := le_total x (π / 2)
-  · simpa using hmono (left_mem_Icc.2 $ by positivity) ⟨hx₀, hx'⟩ hx₀
-  · refine (le_min ?_ ?_).trans $ hconc.min_le_of_mem_Icc ⟨hx', hx⟩ <;> field_simp <;> norm_num
+  have : x / π ≤ sin (x / 2) := by simpa using mul_le_sin (x := x / 2) (by positivity) (by linarith)
+  have := (pow_le_pow_left (by positivity) this 2).trans_eq (sin_sq_eq_half_sub _)
+  ring_nf at this ⊢
+  linarith
+
+@[deprecated (since := "2024-08-29")] alias two_div_pi_mul_le_sin := mul_le_sin
+@[deprecated (since := "2024-08-29")] alias sin_le_two_div_pi_mul := sin_le_mul
+@[deprecated (since := "2024-08-29")] alias one_sub_two_div_pi_mul_le_cos := one_sub_mul_le_cos
+@[deprecated (since := "2024-08-29")] alias cos_quadratic_upper_bound := cos_le_one_sub_mul_cos_sq
 
 /-- For 0 < x ≤ 1 we have x - x ^ 3 / 4 < sin x.
 

@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 In this file we formulate several versions of the Chebyshev-Markov inequality
 in terms of the `MeasureTheory.eLpNorm` seminorm.
 -/
-open scoped ENNReal
+open scoped NNReal ENNReal
 
 namespace MeasureTheory
 
@@ -66,5 +66,19 @@ theorem meas_ge_le_mul_pow_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞
 
 @[deprecated (since := "2024-07-27")]
 alias meas_ge_le_mul_pow_snorm := meas_ge_le_mul_pow_eLpNorm
+
+theorem Memℒp.meas_ge_lt_top' {μ : Measure α} (hℒp : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
+    (hp_ne_top : p ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
+    μ { x | ε ≤ ‖f x‖₊ } < ∞ := by
+  apply (meas_ge_le_mul_pow_eLpNorm μ hp_ne_zero hp_ne_top hℒp.aestronglyMeasurable hε).trans_lt
+    (ENNReal.mul_lt_top ?_ ?_)
+  · simp [hε, lt_top_iff_ne_top]
+  · simp [hℒp.eLpNorm_lt_top.ne, lt_top_iff_ne_top]
+
+theorem Memℒp.meas_ge_lt_top {μ : Measure α} (hℒp : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
+    (hp_ne_top : p ≠ ∞) {ε : ℝ≥0} (hε : ε ≠ 0) :
+    μ { x | ε ≤ ‖f x‖₊ } < ∞ := by
+  simp_rw [← ENNReal.coe_le_coe]
+  apply hℒp.meas_ge_lt_top' hp_ne_zero hp_ne_top (by simp [hε])
 
 end MeasureTheory

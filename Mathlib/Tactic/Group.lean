@@ -52,11 +52,11 @@ macro_rules
     [commutatorElement_def, mul_one, one_mul,
       ← zpow_neg_one, ← zpow_natCast, ← zpow_mul,
       Int.ofNat_add, Int.ofNat_mul,
-      Int.mul_neg_eq_neg_mul_symm, Int.neg_mul_eq_neg_mul_symm, neg_neg,
+      Int.mul_neg, Int.neg_mul, neg_neg,
       one_zpow, zpow_zero, zpow_one, mul_zpow_neg_one,
       ← mul_assoc,
       ← zpow_add, ← zpow_add_one, ← zpow_one_add, zpow_trick, zpow_trick_one, zpow_trick_one',
-      tsub_self, sub_self, add_neg_self, neg_add_self]
+      tsub_self, sub_self, add_neg_cancel, neg_add_cancel]
   $[at $location]?)
 
 /-- Auxiliary tactic for the `group` tactic. Calls `ring_nf` to normalize exponents. -/
@@ -86,8 +86,4 @@ macro_rules
 | `(tactic| group $[$loc]?) =>
   `(tactic| repeat (fail_if_no_progress (aux_group₁ $[$loc]? <;> aux_group₂ $[$loc]?)))
 
-end Group
-
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic.Group

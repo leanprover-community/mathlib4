@@ -20,7 +20,7 @@ Then we define two sorting algorithms:
 
 open List.Perm
 
-universe u
+universe u v
 
 namespace List
 
@@ -31,7 +31,7 @@ namespace List
 
 section Sorted
 
-variable {α : Type u} {r : α → α → Prop} {a : α} {l : List α}
+variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β → Prop} {a : α} {l : List α}
 
 /-- `Sorted r l` is the same as `List.Pairwise r l`, preferred in the case that `r`
   is a `<` or `≤`-like relation (transitive and antisymmetric or asymmetric) -/
@@ -123,21 +123,9 @@ theorem Sorted.rel_get_of_lt {l : List α} (h : l.Sorted r) {a b : Fin l.length}
     r (l.get a) (l.get b) :=
   List.pairwise_iff_get.1 h _ _ hab
 
-set_option linter.deprecated false in
-@[deprecated Sorted.rel_get_of_lt (since := "2024-05-08")]
-theorem Sorted.rel_nthLe_of_lt {l : List α} (h : l.Sorted r) {a b : ℕ} (ha : a < l.length)
-    (hb : b < l.length) (hab : a < b) : r (l.nthLe a ha) (l.nthLe b hb) :=
-  List.pairwise_iff_get.1 h ⟨a, ha⟩ ⟨b, hb⟩ hab
-
 theorem Sorted.rel_get_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : Fin l.length}
     (hab : a ≤ b) : r (l.get a) (l.get b) := by
   obtain rfl | hlt := Fin.eq_or_lt_of_le hab; exacts [refl _, h.rel_get_of_lt hlt]
-
-set_option linter.deprecated false in
-@[deprecated Sorted.rel_get_of_le (since := "2024-05-08")]
-theorem Sorted.rel_nthLe_of_le [IsRefl α r] {l : List α} (h : l.Sorted r) {a b : ℕ}
-    (ha : a < l.length) (hb : b < l.length) (hab : a ≤ b) : r (l.nthLe a ha) (l.nthLe b hb) :=
-  h.rel_get_of_le hab
 
 theorem Sorted.rel_of_mem_take_of_mem_drop {l : List α} (h : List.Sorted r l) {k : ℕ} {x y : α}
     (hx : x ∈ List.take k l) (hy : y ∈ List.drop k l) : r x y := by
@@ -167,10 +155,6 @@ strictly monotone. -/
 @[simp] theorem sorted_le_ofFn_iff : (ofFn f).Sorted (· ≤ ·) ↔ Monotone f :=
   sorted_ofFn_iff.trans monotone_iff_forall_lt.symm
 
-/-- A tuple is monotone if and only if the list obtained from it is sorted. -/
-@[deprecated sorted_le_ofFn_iff (since := "2023-01-10")]
-theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) := sorted_le_ofFn_iff.symm
-
 /-- The list obtained from a monotone tuple is sorted. -/
 alias ⟨_, _root_.Monotone.ofFn_sorted⟩ := sorted_le_ofFn_iff
 
@@ -178,9 +162,11 @@ end Monotone
 
 section sort
 
-variable {α : Type u} (r : α → α → Prop) [DecidableRel r]
+variable {α : Type u} {β : Type v} (r : α → α → Prop) (s : β → β → Prop)
+variable [DecidableRel r] [DecidableRel s]
 
 local infixl:50 " ≼ " => r
+local infixl:50 " ≼ " => s
 
 /-! ### Insertion sort -/
 
@@ -236,6 +222,18 @@ theorem mem_orderedInsert {a b : α} {l : List α} :
     · simp [orderedInsert]
     · rw [mem_cons, mem_cons, mem_orderedInsert, or_left_comm]
 
+theorem map_orderedInsert (f : α → β) (l : List α) (x : α)
+    (hl₁ : ∀ a ∈ l, a ≼ x ↔ f a ≼ f x) (hl₂ : ∀ a ∈ l, x ≼ a ↔ f x ≼ f a) :
+    (l.orderedInsert r x).map f = (l.map f).orderedInsert s (f x) := by
+  induction l with
+  | nil => simp
+  | cons x xs ih =>
+    rw [List.forall_mem_cons] at hl₁ hl₂
+    simp only [List.map, List.orderedInsert, ← hl₁.1, ← hl₂.1]
+    split_ifs
+    · rw [List.map, List.map]
+    · rw [List.map, ih (fun _ ha => hl₁.2 _ ha) (fun _ ha => hl₂.2 _ ha)]
+
 section Correctness
 
 open Perm
@@ -248,13 +246,33 @@ theorem perm_orderedInsert (a) : ∀ l : List α, orderedInsert r a l ~ a :: l
     · simpa [orderedInsert, h] using ((perm_orderedInsert a l).cons _).trans (Perm.swap _ _ _)
 
 theorem orderedInsert_count [DecidableEq α] (L : List α) (a b : α) :
-    count a (L.orderedInsert r b) = count a L + if a = b then 1 else 0 := by
+    count a (L.orderedInsert r b) = count a L + if b = a then 1 else 0 := by
   rw [(L.perm_orderedInsert r b).count_eq, count_cons]
+  simp
 
 theorem perm_insertionSort : ∀ l : List α, insertionSort r l ~ l
   | [] => Perm.nil
   | b :: l => by
     simpa [insertionSort] using (perm_orderedInsert _ _ _).trans ((perm_insertionSort l).cons b)
+
+@[simp]
+theorem mem_insertionSort {l : List α} {x : α} : x ∈ l.insertionSort r ↔ x ∈ l :=
+  (perm_insertionSort r l).mem_iff
+
+@[simp]
+theorem length_insertionSort (l : List α) : (insertionSort r l).length = l.length :=
+  (perm_insertionSort r _).length_eq
+
+theorem map_insertionSort (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
+    (l.insertionSort r).map f = (l.map f).insertionSort s := by
+  induction l with
+  | nil => simp
+  | cons x xs ih =>
+    simp_rw [List.forall_mem_cons, forall_and] at hl
+    simp_rw [List.map, List.insertionSort]
+    rw [List.map_orderedInsert _ s, ih hl.2.2]
+    · simpa only [mem_insertionSort] using hl.2.1
+    · simpa only [mem_insertionSort] using hl.1.2
 
 variable {r}
 
@@ -300,7 +318,7 @@ theorem orderedInsert_erase [DecidableEq α] [IsAntisymm α r] (x : α) (xs : Li
         rw [orderedInsert, if_pos (hxs.1 _ (.head zs))]
     · rw [mem_cons] at hx
       replace hx := hx.resolve_left hxy
-      rw [erase_cons_tail _ (not_beq_of_ne hxy.symm), orderedInsert, ih _ hx hxs.2, if_neg]
+      rw [erase_cons_tail (not_beq_of_ne hxy.symm), orderedInsert, ih _ hx hxs.2, if_neg]
       refine mt (fun hrxy => ?_) hxy
       exact antisymm hrxy (hxs.1 _ hx)
 
@@ -362,6 +380,17 @@ def split : List α → List α × List α
 theorem split_cons_of_eq (a : α) {l l₁ l₂ : List α} (h : split l = (l₁, l₂)) :
     split (a :: l) = (a :: l₂, l₁) := by rw [split, h]
 
+@[simp]
+theorem map_split (f : α → β) :
+    ∀ l : List α, (map f l).split = (l.split.1.map f, l.split.2.map f)
+  | [] => rfl
+  | a :: l => by simp [map_split]
+
+@[simp]
+theorem mem_split_iff {x : α} : ∀ {l : List α}, x ∈ l.split.1 ∨ x ∈ l.split.2 ↔ x ∈ l
+  | [] => by simp
+  | a :: l => by simp_rw [split, mem_cons, or_assoc, or_comm, mem_split_iff]
+
 theorem length_split_le :
     ∀ {l l₁ l₂ : List α}, split l = (l₁, l₂) → length l₁ ≤ length l ∧ length l₂ ≤ length l
   | [], _, _, rfl => ⟨Nat.le_refl 0, Nat.le_refl 0⟩
@@ -421,6 +450,10 @@ theorem perm_mergeSort : ∀ l : List α, mergeSort r l ~ l
     exact
       ((perm_mergeSort l₁).append (perm_mergeSort l₂)).trans (perm_split e).symm
   termination_by l => length l
+
+@[simp]
+theorem mem_mergeSort {l : List α} {x : α} : x ∈ l.mergeSort r ↔ x ∈ l :=
+  (perm_mergeSort r l).mem_iff
 
 @[simp]
 theorem length_mergeSort (l : List α) : (mergeSort r l).length = l.length :=
@@ -486,6 +519,45 @@ theorem mergeSort_nil : [].mergeSort r = [] := by rw [List.mergeSort]
 
 @[simp]
 theorem mergeSort_singleton (a : α) : [a].mergeSort r = [a] := by rw [List.mergeSort]
+
+theorem map_merge (f : α → β) (r : α → α → Bool) (s : β → β → Bool) (l l' : List α)
+    (hl : ∀ a ∈ l, ∀ b ∈ l', r a b = s (f a) (f b)) :
+    (l.merge r l').map f = (l.map f).merge s (l'.map f) := by
+  match l, l' with
+  | [], x' => simp
+  | x, [] => simp
+  | x :: xs, x' :: xs' =>
+    simp_rw [List.forall_mem_cons, forall_and] at hl
+    simp_rw [List.map, List.cons_merge_cons]
+    rw [← hl.1.1]
+    split
+    · rw [List.map, map_merge _ r s, List.map]
+      simp_rw [List.forall_mem_cons, forall_and]
+      exact ⟨hl.2.1, hl.2.2⟩
+    · rw [List.map, map_merge _ r s, List.map]
+      simp_rw [List.forall_mem_cons]
+      exact ⟨hl.1.2, hl.2.2⟩
+
+theorem map_mergeSort (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
+    (l.mergeSort r).map f = (l.map f).mergeSort s :=
+  match l with
+  | [] => by simp
+  | [x] => by simp
+  | a :: b :: l => by
+    simp_rw [← mem_split_iff (l := a :: b :: l), or_imp, forall_and] at hl
+    set l₁ := (split (a :: b :: l)).1
+    set l₂ := (split (a :: b :: l)).2
+    have e : split (a :: b :: l) = (l₁, l₂) := rfl
+    have fe : split (f a :: f b :: l.map f) = (l₁.map f, l₂.map f) := by
+      rw [← map, ← map, map_split, e]
+    have := length_split_fst_le l
+    have := length_split_snd_le l
+    simp_rw [List.map]
+    rw [List.mergeSort_cons_cons _ e, List.mergeSort_cons_cons _ fe,
+      map_merge _ (r · ·) (s · ·), map_mergeSort _ l₁ hl.1.1, map_mergeSort _ l₂ hl.2.2]
+    simp_rw [mem_mergeSort, decide_eq_decide]
+    exact hl.1.2
+  termination_by length l
 
 end MergeSort
 

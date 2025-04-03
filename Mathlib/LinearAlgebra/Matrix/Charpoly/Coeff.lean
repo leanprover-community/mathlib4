@@ -298,7 +298,6 @@ end Ideal
 
 section reverse
 
-open Polynomial
 open LaurentPolynomial hiding C
 
 /-- The reverse of the characteristic polynomial of a matrix.
@@ -315,7 +314,7 @@ lemma reverse_charpoly (M : Matrix n n R) :
   let t_inv : R[T;T⁻¹] := T (-1)
   let p : R[T;T⁻¹] := det (scalar n t - M.map LaurentPolynomial.C)
   let q : R[T;T⁻¹] := det (1 - scalar n t * M.map LaurentPolynomial.C)
-  have ht : t_inv * t = 1 := by rw [← T_add, add_left_neg, T_zero]
+  have ht : t_inv * t = 1 := by rw [← T_add, neg_add_cancel, T_zero]
   have hp : toLaurentAlg M.charpoly = p := by
     simp [p, charpoly, charmatrix, AlgHom.map_det, map_sub, map_smul']
   have hq : toLaurentAlg M.charpolyRev = q := by

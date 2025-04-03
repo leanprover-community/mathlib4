@@ -42,13 +42,10 @@ coincide on `s`, then `LiftPropWithinAt P g' s x` holds. We can't call it
 in the one for `LiftPropWithinAt`.
 -/
 
-
 noncomputable section
 
-open scoped Classical
-open Manifold Topology
-
 open Set Filter TopologicalSpace
+open scoped Manifold Topology
 
 variable {H M H' M' X : Type*}
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
@@ -73,6 +70,7 @@ structure LocalInvariantProp (P : (H → H') → Set H → H → Prop) : Prop wh
 
 variable {G G'} {P : (H → H') → Set H → H → Prop} {s t u : Set H} {x : H}
 variable (hG : G.LocalInvariantProp G' P)
+include hG
 
 namespace LocalInvariantProp
 
@@ -212,7 +210,9 @@ theorem liftPropWithinAt_self_target {f : M → H'} :
 
 namespace LocalInvariantProp
 
+section
 variable (hG : G.LocalInvariantProp G' P)
+include hG
 
 /-- `LiftPropWithinAt P f s x` is equivalent to a definition where we restrict the set we are
   considering to the domain of the charts at `x` and `f x`. -/
@@ -396,6 +396,8 @@ theorem liftPropOn_congr (h : LiftPropOn P g s) (h₁ : ∀ y ∈ s, g' y = g y)
 
 theorem liftPropOn_congr_iff (h₁ : ∀ y ∈ s, g' y = g y) : LiftPropOn P g' s ↔ LiftPropOn P g s :=
   ⟨fun h ↦ hG.liftPropOn_congr h fun y hy ↦ (h₁ y hy).symm, fun h ↦ hG.liftPropOn_congr h h₁⟩
+
+end
 
 theorem liftPropWithinAt_mono_of_mem
     (mono_of_mem : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, s ∈ 𝓝[t] x → P f s x → P f t x)

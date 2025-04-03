@@ -38,7 +38,7 @@ See note [reducible non-instances]. -/
 abbrev AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) :
     Module (ZMod n) G :=
   match n with
-  | 0 => AddCommGroup.intModule G
+  | 0 => AddCommGroup.toIntModule G
   | _ + 1 => AddCommMonoid.zmodModule h
 
 variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [FunLike F M M₁]
@@ -52,7 +52,7 @@ theorem map_smul (f : F) (c : ZMod n) (x : M) : f (c • x) = c • f x := by
   exact map_intCast_smul f _ _ (cast c) x
 
 theorem smul_mem (hx : x ∈ K) (c : ZMod n) : c • x ∈ K := by
-  rw [← ZMod.intCast_zmod_cast c, Int.cast_smul_eq_nsmul]
+  rw [← ZMod.intCast_zmod_cast c, Int.cast_smul_eq_zsmul]
   exact zsmul_mem hx (cast c)
 
 end ZMod

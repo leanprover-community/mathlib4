@@ -138,9 +138,9 @@ theorem commute_pow_left_of_commute
     [Semiring R₂] [AddCommMonoid M₂] [Module R₂ M₂] {σ₁₂ : R →+* R₂}
     {f : M →ₛₗ[σ₁₂] M₂} {g : Module.End R M} {g₂ : Module.End R₂ M₂}
     (h : g₂.comp f = f.comp g) (k : ℕ) : (g₂ ^ k).comp f = f.comp (g ^ k) := by
-  induction' k with k ih
-  · simp only [Nat.zero_eq, pow_zero, one_eq_id, id_comp, comp_id]
-  · rw [pow_succ', pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih,
+  induction k with
+  | zero => simp only [pow_zero, one_eq_id, id_comp, comp_id]
+  | succ k ih => rw [pow_succ', pow_succ', LinearMap.mul_eq_comp, LinearMap.comp_assoc, ih,
     ← LinearMap.comp_assoc, h, LinearMap.comp_assoc, LinearMap.mul_eq_comp]
 
 @[simp]
@@ -204,14 +204,16 @@ protected theorem smul_def (f : Module.End R M) (a : M) : f • a = f a :=
 instance apply_faithfulSMul : FaithfulSMul (Module.End R M) M :=
   ⟨LinearMap.ext⟩
 
-instance apply_smulCommClass : SMulCommClass R (Module.End R M) M where
-  smul_comm r e m := (e.map_smul r m).symm
+instance apply_smulCommClass [SMul S R] [SMul S M] [IsScalarTower S R M] :
+    SMulCommClass S (Module.End R M) M where
+  smul_comm r e m := (e.map_smul_of_tower r m).symm
 
-instance apply_smulCommClass' : SMulCommClass (Module.End R M) R M where
-  smul_comm := LinearMap.map_smul
+instance apply_smulCommClass' [SMul S R] [SMul S M] [IsScalarTower S R M] :
+    SMulCommClass (Module.End R M) S M :=
+  SMulCommClass.symm _ _ _
 
-instance apply_isScalarTower {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] :
-    IsScalarTower R (Module.End R M) M :=
+instance apply_isScalarTower [Monoid S] [DistribMulAction S M] [SMulCommClass R S M] :
+    IsScalarTower S (Module.End R M) M :=
   ⟨fun _ _ _ ↦ rfl⟩
 
 end Endomorphisms

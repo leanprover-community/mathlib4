@@ -63,7 +63,7 @@ variable {n : ℕ}
 theorem stream_eq_none_of_fr_eq_zero {ifp_n : IntFractPair K}
     (stream_nth_eq : IntFractPair.stream v n = some ifp_n) (nth_fr_eq_zero : ifp_n.fr = 0) :
     IntFractPair.stream v (n + 1) = none := by
-  cases' ifp_n with _ fr
+  obtain ⟨_, fr⟩ := ifp_n
   change fr = 0 at nth_fr_eq_zero
   simp [IntFractPair.stream, stream_nth_eq, nth_fr_eq_zero]
 
@@ -95,10 +95,11 @@ theorem stream_succ_of_some {p : IntFractPair K} (h : IntFractPair.stream v n = 
 /-- The stream of `IntFractPair`s of an integer stops after the first term.
 -/
 theorem stream_succ_of_int (a : ℤ) (n : ℕ) : IntFractPair.stream (a : K) (n + 1) = none := by
-  induction' n with n ih
-  · refine IntFractPair.stream_eq_none_of_fr_eq_zero (IntFractPair.stream_zero (a : K)) ?_
+  induction n with
+  | zero =>
+    refine IntFractPair.stream_eq_none_of_fr_eq_zero (IntFractPair.stream_zero (a : K)) ?_
     simp only [IntFractPair.of, Int.fract_intCast]
-  · exact IntFractPair.succ_nth_stream_eq_none_iff.mpr (Or.inl ih)
+  | succ n ih => exact IntFractPair.succ_nth_stream_eq_none_iff.mpr (Or.inl ih)
 
 theorem exists_succ_nth_stream_of_fr_zero {ifp_succ_n : IntFractPair K}
     (stream_succ_nth_eq : IntFractPair.stream v (n + 1) = some ifp_succ_n)
@@ -117,10 +118,12 @@ the inverse of the fractional part of `v`.
 -/
 theorem stream_succ (h : Int.fract v ≠ 0) (n : ℕ) :
     IntFractPair.stream v (n + 1) = IntFractPair.stream (Int.fract v)⁻¹ n := by
-  induction' n with n ih
-  · have H : (IntFractPair.of v).fr = Int.fract v := rfl
+  induction n with
+  | zero =>
+    have H : (IntFractPair.of v).fr = Int.fract v := rfl
     rw [stream_zero, stream_succ_of_some (stream_zero v) (ne_of_eq_of_ne H h), H]
-  · rcases eq_or_ne (IntFractPair.stream (Int.fract v)⁻¹ n) none with hnone | hsome
+  | succ n ih =>
+    rcases eq_or_ne (IntFractPair.stream (Int.fract v)⁻¹ n) none with hnone | hsome
     · rw [hnone] at ih
       rw [succ_nth_stream_eq_none_iff.mpr (Or.inl hnone),
         succ_nth_stream_eq_none_iff.mpr (Or.inl ih)]
@@ -263,9 +266,9 @@ variable (K)
 theorem of_s_of_int (a : ℤ) : (of (a : K)).s = Stream'.Seq.nil :=
   haveI h : ∀ n, (of (a : K)).s.get? n = none := by
     intro n
-    induction' n with n ih
-    · rw [of_s_head_aux, stream_succ_of_int, Option.bind]
-    · exact (of (a : K)).s.prop ih
+    induction n with
+    | zero => rw [of_s_head_aux, stream_succ_of_int, Option.bind]
+    | succ n ih => exact (of (a : K)).s.prop ih
   Stream'.Seq.ext fun n => (h n).trans (Stream'.Seq.get?_nil n).symm
 
 variable {K} (v)
@@ -300,9 +303,10 @@ variable (K) (n)
 are all equal to `a`.
 -/
 theorem convs'_of_int (a : ℤ) : (of (a : K)).convs' n = a := by
-  induction' n with n
-  · simp only [zeroth_conv'_eq_h, of_h_eq_floor, floor_intCast, Nat.zero_eq]
-  · rw [convs', of_h_eq_floor, floor_intCast, add_right_eq_self]
+  induction n with
+  | zero => simp only [zeroth_conv'_eq_h, of_h_eq_floor, floor_intCast]
+  | succ =>
+    rw [convs', of_h_eq_floor, floor_intCast, add_right_eq_self]
     exact convs'Aux_succ_none ((of_s_of_int K a).symm ▸ Stream'.Seq.get?_nil 0) _
 
 variable {K}

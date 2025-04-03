@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2014 Robert Lewis. All rights reserved.
+Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro, Yaël Dillies
+Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro, Yaël Dillies
 -/
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Rat.Init
@@ -43,11 +43,10 @@ a `GroupWithZero` lemma instead.
 field, division ring, skew field, skew-field, skewfield
 -/
 
+assert_not_imported Mathlib.Tactic.Common
+
 -- `NeZero` should not be needed in the basic algebraic hierarchy.
 assert_not_exists NeZero
-
--- Check that we have not imported `Mathlib.Tactic.Common` yet.
-assert_not_exists Mathlib.Tactic.LibrarySearch.librarySearch
 
 assert_not_exists MonoidHom
 

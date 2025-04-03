@@ -144,6 +144,8 @@ def id : (𝟭 C).FullyFaithful where
 section
 variable (hF : F.FullyFaithful)
 
+include hF
+
 /-- The equivalence `(X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y)` given by `h : F.FullyFaithful`. -/
 @[simps]
 def homEquiv {X Y : C} : (X ⟶ Y) ≃ (F.obj X ⟶ F.obj Y) where
@@ -169,6 +171,15 @@ lemma full : F.Full where
 lemma faithful : F.Faithful where
   map_injective := hF.map_injective
 
+instance : Subsingleton F.FullyFaithful where
+  allEq h₁ h₂ := by
+    have := h₁.faithful
+    cases h₁ with | mk f₁ hf₁ _ => cases h₂ with | mk f₂ hf₂ _ =>
+    simp only [Functor.FullyFaithful.mk.injEq]
+    ext
+    apply F.map_injective
+    rw [hf₁, hf₂]
+
 /-- The unique isomorphism `X ≅ Y` which induces an isomorphism `F.obj X ≅ F.obj Y`
 when `hF : F.FullyFaithful`. -/
 @[simps]
@@ -178,7 +189,7 @@ def preimageIso {X Y : C} (e : F.obj X ≅ F.obj Y) : X ≅ Y where
   hom_inv_id := hF.map_injective (by simp)
   inv_hom_id := hF.map_injective (by simp)
 
-lemma isIso_of_isIso_map (hF : F.FullyFaithful) {X Y : C} (f : X ⟶ Y) [IsIso (F.map f)] :
+lemma isIso_of_isIso_map {X Y : C} (f : X ⟶ Y) [IsIso (F.map f)] :
     IsIso f := by
   simpa using (hF.preimageIso (asIso (F.map f))).isIso_hom
 
@@ -238,7 +249,7 @@ variable {D : Type u₂} [Category.{v₂} D] {E : Type u₃} [Category.{v₃} E]
 variable (F F' : C ⥤ D) (G : D ⥤ E)
 
 instance Faithful.comp [F.Faithful] [G.Faithful] :
-    (F ⋙ G).Faithful  where map_injective p := F.map_injective (G.map_injective p)
+    (F ⋙ G).Faithful where map_injective p := F.map_injective (G.map_injective p)
 
 theorem Faithful.of_comp [(F ⋙ G).Faithful] : F.Faithful :=
   -- Porting note: (F ⋙ G).map_injective.of_comp has the incorrect type

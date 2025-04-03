@@ -299,7 +299,7 @@ then this action actually gives a module structure on submodules of `M` over sub
 section set_acting_on_submodules
 
 variable {S : Type*} [Monoid S]
-variable [AddCommMonoid M] [Module R M] [DistribMulAction S M]
+variable [DistribMulAction S M]
 
 /--
 Let `s ⊆ R` be a set and `N ≤ M` be a submodule, then `s • N` is the smallest submodule containing

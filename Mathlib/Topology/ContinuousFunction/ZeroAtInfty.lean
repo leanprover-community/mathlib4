@@ -16,7 +16,7 @@ compact space, this type has nice properties.
 
 ## TODO
 
-* Create more intances of algebraic structures (e.g., `NonUnitalSemiring`) once the necessary
+* Create more instances of algebraic structures (e.g., `NonUnitalSemiring`) once the necessary
   type classes (e.g., `TopologicalRing`) are sufficiently generalized.
 * Relate the unitization of `C₀(α, β)` to the Alexandroff compactification.
 -/
@@ -416,7 +416,7 @@ theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →�
     refine Metric.tendsto_nhds.mpr fun ε hε => ?_
     obtain ⟨_, hg, g, rfl⟩ := hf (ball f (ε / 2)) (ball_mem_nhds f <| half_pos hε)
     refine (Metric.tendsto_nhds.mp (zero_at_infty g) (ε / 2) (half_pos hε)).mp
-      (eventually_of_forall fun x hx => ?_)
+      (Eventually.of_forall fun x hx => ?_)
     calc
       dist (f x) 0 ≤ dist (g.toBCF x) (f x) + dist (g x) 0 := dist_triangle_left _ _ _
       _ < dist g.toBCF f + ε / 2 := add_lt_add_of_le_of_lt (dist_coe_le_dist x) hx
@@ -553,12 +553,12 @@ instance instStarRing : StarRing C₀(α, β) :=
 
 end StarRing
 
-section CstarRing
+section CStarRing
 
-instance instCstarRing [NonUnitalNormedRing β] [StarRing β] [CstarRing β] : CstarRing C₀(α, β) where
-  norm_mul_self_le f := CstarRing.norm_mul_self_le (x := f.toBCF)
+instance instCStarRing [NonUnitalNormedRing β] [StarRing β] [CStarRing β] : CStarRing C₀(α, β) where
+  norm_mul_self_le f := CStarRing.norm_mul_self_le (x := f.toBCF)
 
-end CstarRing
+end CStarRing
 
 /-! ### C₀ as a functor
 

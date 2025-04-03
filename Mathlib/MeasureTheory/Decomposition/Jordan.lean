@@ -73,7 +73,7 @@ instance instInhabited : Inhabited (JordanDecomposition α) where default := 0
 
 instance instInvolutiveNeg : InvolutiveNeg (JordanDecomposition α) where
   neg j := ⟨j.negPart, j.posPart, j.mutuallySingular.symm⟩
-  neg_neg _ := JordanDecomposition.ext _ _ rfl rfl
+  neg_neg _ := JordanDecomposition.ext rfl rfl
 
 instance instSMul : SMul ℝ≥0 (JordanDecomposition α) where
   smul r j :=
@@ -454,7 +454,7 @@ theorem totalVariation_neg (s : SignedMeasure α) : (-s).totalVariation = s.tota
 
 theorem null_of_totalVariation_zero (s : SignedMeasure α) {i : Set α}
     (hs : s.totalVariation i = 0) : s i = 0 := by
-  rw [totalVariation, Measure.coe_add, Pi.add_apply, add_eq_zero_iff] at hs
+  rw [totalVariation, Measure.coe_add, Pi.add_apply, add_eq_zero] at hs
   rw [← toSignedMeasure_toJordanDecomposition s, toSignedMeasure, VectorMeasure.coe_sub,
     Pi.sub_apply, Measure.toSignedMeasure_apply, Measure.toSignedMeasure_apply]
   by_cases hi : MeasurableSet i
@@ -484,7 +484,7 @@ theorem totalVariation_absolutelyContinuous_iff (s : SignedMeasure α) (μ : Mea
     all_goals
       refine Measure.AbsolutelyContinuous.mk fun S _ hS₂ => ?_
       have := h hS₂
-      rw [totalVariation, Measure.add_apply, add_eq_zero_iff] at this
+      rw [totalVariation, Measure.add_apply, add_eq_zero] at this
     exacts [this.1, this.2]
   · refine Measure.AbsolutelyContinuous.mk fun S _ hS₂ => ?_
     rw [totalVariation, Measure.add_apply, h.1 hS₂, h.2 hS₂, add_zero]

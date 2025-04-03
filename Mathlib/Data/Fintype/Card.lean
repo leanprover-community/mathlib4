@@ -77,7 +77,7 @@ See `Fintype.truncFinBijection` for a version without `[DecidableEq α]`.
 def truncEquivFin (α) [DecidableEq α] [Fintype α] : Trunc (α ≃ Fin (card α)) := by
   unfold card Finset.card
   exact
-    Quot.recOnSubsingleton'
+    Quot.recOnSubsingleton
       (motive := fun s : Multiset α =>
         (∀ x : α, x ∈ s) → s.Nodup → Trunc (α ≃ Fin (Multiset.card s)))
       univ.val
@@ -106,7 +106,7 @@ given `[DecidableEq α]`.
 def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bijective f } := by
   unfold card Finset.card
   refine
-    Quot.recOnSubsingleton'
+    Quot.recOnSubsingleton
       (motive := fun s : Multiset α =>
         (∀ x : α, x ∈ s) → s.Nodup → Trunc {f : Fin (Multiset.card s) → α // Bijective f})
       univ.val
@@ -909,6 +909,16 @@ theorem of_injective {α β} [Infinite β] (f : β → α) (hf : Injective f) : 
 
 theorem of_surjective {α β} [Infinite β] (f : α → β) (hf : Surjective f) : Infinite α :=
   ⟨fun _I => (Finite.of_surjective f hf).false⟩
+
+instance {β : α → Type*} [Infinite α] [∀ a, Nonempty (β a)] : Infinite ((a : α) × β a) :=
+  Infinite.of_surjective Sigma.fst Sigma.fst_surjective
+
+theorem sigma_of_right {β : α → Type*} {a : α} [Infinite (β a)] :
+    Infinite ((a : α) × β a) :=
+  Infinite.of_injective (f := fun x ↦ ⟨a,x⟩) fun _ _ ↦ by simp
+
+instance {β : α → Type*} [Nonempty α] [∀ a, Infinite (β a)] : Infinite ((a : α) × β a) :=
+  Infinite.sigma_of_right (a := Classical.arbitrary α)
 
 end Infinite
 

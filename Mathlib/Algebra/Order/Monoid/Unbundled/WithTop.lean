@@ -305,9 +305,9 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
 
 @[simp, norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithTop α) = n := rfl
 
-@[simp] lemma natCast_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
-
 @[simp] lemma top_ne_natCast (n : ℕ) : (⊤ : WithTop α) ≠ n := top_ne_coe
+@[simp] lemma natCast_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
+@[simp] lemma natCast_lt_top [LT α] (n : ℕ) : (n : WithTop α) < ⊤ := coe_lt_top _
 
 @[deprecated (since := "2024-04-05")] alias coe_nat := coe_natCast
 @[deprecated (since := "2024-04-05")] alias nat_ne_top := natCast_ne_top

@@ -402,8 +402,7 @@ theorem totalDegree_monomial_le (s : σ →₀ ℕ) (c : R) :
   if hc : c = 0 then
     simp only [hc, map_zero, totalDegree_zero, zero_le]
   else
-    rw [totalDegree_monomial _ hc]
-    exact le_rfl
+    rw [totalDegree_monomial _ hc, Function.id_def]
 
 @[simp]
 theorem totalDegree_X_pow [Nontrivial R] (s : σ) (n : ℕ) :
@@ -411,9 +410,9 @@ theorem totalDegree_X_pow [Nontrivial R] (s : σ) (n : ℕ) :
 
 theorem totalDegree_list_prod :
     ∀ s : List (MvPolynomial σ R), s.prod.totalDegree ≤ (s.map MvPolynomial.totalDegree).sum
-  | [] => by rw [@List.prod_nil (MvPolynomial σ R) _, totalDegree_one]; rfl
+  | [] => by rw [List.prod_nil, totalDegree_one, List.map_nil, List.sum_nil]
   | p::ps => by
-    rw [@List.prod_cons (MvPolynomial σ R) _, List.map, List.sum_cons]
+    rw [List.prod_cons, List.map, List.sum_cons]
     exact le_trans (totalDegree_mul _ _) (add_le_add_left (totalDegree_list_prod ps) _)
 
 theorem totalDegree_multiset_prod (s : Multiset (MvPolynomial σ R)) :
@@ -425,8 +424,7 @@ theorem totalDegree_multiset_prod (s : Multiset (MvPolynomial σ R)) :
 theorem totalDegree_finset_prod {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (s.prod f).totalDegree ≤ ∑ i ∈ s, (f i).totalDegree := by
   refine le_trans (totalDegree_multiset_prod _) ?_
-  rw [Multiset.map_map]
-  rfl
+  simp only [Multiset.map_map, comp_apply, Finset.sum_map_val, le_refl]
 
 theorem totalDegree_finset_sum {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (s.sum f).totalDegree ≤ Finset.sup s fun i => (f i).totalDegree := by
@@ -437,7 +435,7 @@ theorem totalDegree_finset_sum {ι : Type*} (s : Finset ι) (f : ι → MvPolyno
 
 lemma totalDegree_finsetSum_le {ι : Type*} {s : Finset ι} {f : ι → MvPolynomial σ R} {d : ℕ}
     (hf : ∀ i ∈ s, (f i).totalDegree ≤ d) : (s.sum f).totalDegree ≤ d :=
-  (totalDegree_finset_sum ..).trans $ Finset.sup_le hf
+  (totalDegree_finset_sum ..).trans <| Finset.sup_le hf
 
 lemma degreeOf_le_totalDegree (f : MvPolynomial σ R) (i : σ) : f.degreeOf i ≤ f.totalDegree :=
   degreeOf_le_iff.mpr fun d hd ↦ (eq_or_ne (d i) 0).elim (·.trans_le zero_le') fun h ↦

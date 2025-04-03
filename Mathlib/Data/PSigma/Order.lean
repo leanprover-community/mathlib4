@@ -5,7 +5,7 @@ Authors: Scott Morrison, Minchao Wu
 -/
 import Mathlib.Data.Sigma.Lex
 import Mathlib.Order.BoundedOrder
-import Mathlib.Mathport.Notation
+import Mathlib.Util.Notation3
 import Init.NotationExtra
 import Mathlib.Data.Sigma.Basic
 

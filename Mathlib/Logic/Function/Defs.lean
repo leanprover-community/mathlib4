@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Haitao Zhang
 -/
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Attr.Register
-import Mathlib.Tactic.Basic
+import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.TypeStar
 import Batteries.Logic
@@ -201,5 +201,8 @@ protected theorem LeftInverse.id {g : β → α} {f : α → β} (h : LeftInvers
 
 protected theorem RightInverse.id {g : β → α} {f : α → β} (h : RightInverse g f) : f ∘ g = id :=
   funext h
+
+/-- A point `x` is a fixed point of `f : α → α` if `f x = x`. -/
+def IsFixedPt (f : α → α) (x : α) := f x = x
 
 end Function

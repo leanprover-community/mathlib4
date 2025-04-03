@@ -48,10 +48,10 @@ section dual
   indep_aug := by
     rintro I X ⟨hIE, B, hB, hIB⟩ hI_not_max hX_max
     have hXE := hX_max.1.1
-    have hB' := (base_compl_iff_mem_maximals_disjoint_base hXE).mpr hX_max
+    have hB' := (base_compl_iff_maximal_disjoint_base hXE).mpr hX_max
 
     set B' := M.E \ X with hX
-    have hI := (not_iff_not.mpr (base_compl_iff_mem_maximals_disjoint_base)).mpr hI_not_max
+    have hI := (not_iff_not.mpr (base_compl_iff_maximal_disjoint_base)).mpr hI_not_max
     obtain ⟨B'', hB'', hB''₁, hB''₂⟩ := (hB'.indep.diff I).exists_base_subset_union_base hB
     rw [← compl_subset_compl, ← hIB.sdiff_eq_right, ← union_diff_distrib, diff_eq, compl_inter,
       compl_compl, union_subset_iff, compl_subset_compl] at hB''₂
@@ -67,47 +67,40 @@ section dual
     rw [← union_singleton, disjoint_union_left, disjoint_singleton_left, and_iff_left heB'']
     exact disjoint_of_subset_left hB''₂.2 disjoint_compl_left
   indep_maximal := by
-    rintro X - I'⟨hI'E, B, hB, hI'B⟩ hI'X
+    rintro X - I' ⟨hI'E, B, hB, hI'B⟩ hI'X
     obtain ⟨I, hI⟩ := M.exists_basis (M.E \ X)
     obtain ⟨B', hB', hIB', hB'IB⟩ := hI.indep.exists_base_subset_union_base hB
-    refine ⟨(X \ B') ∩ M.E,
-      ⟨?_, subset_inter (subset_diff.mpr ?_) hI'E, inter_subset_left.trans
-        diff_subset⟩, ?_⟩
-    · simp only [inter_subset_right, true_and]
-      exact ⟨B', hB', disjoint_of_subset_left inter_subset_left disjoint_sdiff_left⟩
-    · rw [and_iff_right hI'X]
-      refine disjoint_of_subset_right hB'IB ?_
-      rw [disjoint_union_right, and_iff_left hI'B]
-      exact disjoint_of_subset hI'X hI.subset disjoint_sdiff_right
-    simp only [mem_setOf_eq, subset_inter_iff, and_imp, forall_exists_index]
-    intros J hJE B'' hB'' hdj _ hJX hssJ
-    rw [and_iff_left hJE]
-    rw [diff_eq, inter_right_comm, ← diff_eq, diff_subset_iff] at hssJ
+
+    obtain rfl : I = B' \ X := hI.eq_of_subset_indep (hB'.indep.diff _)
+      (subset_diff.2 ⟨hIB', (subset_diff.1 hI.subset).2⟩)
+      (diff_subset_diff_left hB'.subset_ground)
+    simp_rw [maximal_subset_iff']
+    refine ⟨(X \ B') ∩ M.E, ?_, ⟨⟨inter_subset_right, ?_⟩, ?_⟩, ?_⟩
+    · rw [subset_inter_iff, and_iff_left hI'E, subset_diff, and_iff_right hI'X]
+      exact Disjoint.mono_right hB'IB <| disjoint_union_right.2
+        ⟨disjoint_sdiff_right.mono_left hI'X  , hI'B⟩
+    · exact ⟨B', hB', (disjoint_sdiff_left (t := X)).mono_left inter_subset_left⟩
+    · exact inter_subset_left.trans diff_subset
+    simp only [subset_inter_iff, subset_diff, and_imp, forall_exists_index]
+    refine fun J hJE B'' hB'' hdj hJX hXJ ↦ ⟨⟨hJX, ?_⟩, hJE⟩
 
     have hI' : (B'' ∩ X) ∪ (B' \ X) ⊆ B' := by
-      rw [union_subset_iff, and_iff_left diff_subset,
-        ← inter_eq_self_of_subset_left hB''.subset_ground, inter_right_comm, inter_assoc]
-
-      calc _ ⊆ _ := inter_subset_inter_right _ hssJ
-           _ ⊆ _ := by rw [inter_union_distrib_left, hdj.symm.inter_eq, union_empty]
-           _ ⊆ _ := inter_subset_right
+      rw [union_subset_iff, and_iff_left diff_subset, ← union_diff_cancel hJX,
+        inter_union_distrib_left, hdj.symm.inter_eq, empty_union, diff_eq, ← inter_assoc,
+        ← diff_eq, diff_subset_comm, diff_eq, inter_assoc, ← diff_eq, inter_comm]
+      exact subset_trans (inter_subset_inter_right _ hB''.subset_ground) hXJ
 
     obtain ⟨B₁,hB₁,hI'B₁,hB₁I⟩ := (hB'.indep.subset hI').exists_base_subset_union_base hB''
     rw [union_comm, ← union_assoc, union_eq_self_of_subset_right inter_subset_left] at hB₁I
 
-    have : B₁ = B' := by
+    obtain rfl : B₁ = B' := by
       refine hB₁.eq_of_subset_indep hB'.indep (fun e he ↦ ?_)
       refine (hB₁I he).elim (fun heB'' ↦ ?_) (fun h ↦ h.1)
       refine (em (e ∈ X)).elim (fun heX ↦ hI' (Or.inl ⟨heB'', heX⟩)) (fun heX ↦ hIB' ?_)
-      refine hI.mem_of_insert_indep ⟨hB₁.subset_ground he, heX⟩
-        (hB₁.indep.subset (insert_subset he ?_))
-      refine (subset_union_of_subset_right (subset_diff.mpr ⟨hIB',?_⟩) _).trans hI'B₁
-      exact disjoint_of_subset_left hI.subset disjoint_sdiff_left
-
-    subst this
-
-    refine subset_diff.mpr ⟨hJX, by_contra (fun hne ↦ ?_)⟩
-    obtain ⟨e, heJ, heB'⟩ := not_disjoint_iff.mp hne
+      refine hI.mem_of_insert_indep ⟨hB₁.subset_ground he, heX⟩ ?_
+      exact hB₁.indep.subset (insert_subset he (subset_union_right.trans hI'B₁))
+    by_contra hdj'
+    obtain ⟨e, heJ, heB'⟩ := not_disjoint_iff.mp hdj'
     obtain (heB'' | ⟨-,heX⟩ ) := hB₁I heB'
     · exact hdj.ne_of_mem heJ heB'' rfl
     exact heX (hJX heJ)
@@ -140,9 +133,9 @@ instance dual_nonempty [M.Nonempty] : M✶.Nonempty :=
   ⟨M.ground_nonempty⟩
 
 @[simp] theorem dual_base_iff (hB : B ⊆ M.E := by aesop_mat) : M✶.Base B ↔ M.Base (M.E \ B) := by
-  rw [base_compl_iff_mem_maximals_disjoint_base, base_iff_maximal_indep, dual_indep_iff_exists',
-    mem_maximals_setOf_iff]
-  simp [dual_indep_iff_exists']
+  rw [base_compl_iff_maximal_disjoint_base, base_iff_maximal_indep, maximal_subset_iff,
+    maximal_subset_iff]
+  simp [dual_indep_iff_exists', hB]
 
 theorem dual_base_iff' : M✶.Base B ↔ M.Base (M.E \ B) ∧ B ⊆ M.E :=
   (em (B ⊆ M.E)).elim (fun h ↦ by rw [dual_base_iff, and_iff_left h])

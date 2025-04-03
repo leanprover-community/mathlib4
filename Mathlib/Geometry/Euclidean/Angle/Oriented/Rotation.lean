@@ -161,13 +161,13 @@ theorem rotation_trans (θ₁ θ₂ : Real.Angle) :
 /-- Rotating the first of two vectors by `θ` scales their Kahler form by `cos θ - sin θ * I`. -/
 @[simp]
 theorem kahler_rotation_left (x y : V) (θ : Real.Angle) :
-    o.kahler (o.rotation θ x) y = conj (θ.expMapCircle : ℂ) * o.kahler x y := by
+    o.kahler (o.rotation θ x) y = conj (θ.toCircle : ℂ) * o.kahler x y := by
   -- Porting note: this needed the `Complex.conj_ofReal` instead of `RCLike.conj_ofReal`;
   -- I believe this is because the respective coercions are no longer defeq, and
-  -- `Real.Angle.coe_expMapCircle` uses the `Complex` version.
+  -- `Real.Angle.coe_toCircle` uses the `Complex` version.
   simp only [o.rotation_apply, map_add, map_mul, LinearMap.map_smulₛₗ, RingHom.id_apply,
     LinearMap.add_apply, LinearMap.smul_apply, real_smul, kahler_rightAngleRotation_left,
-    Real.Angle.coe_expMapCircle, Complex.conj_ofReal, conj_I]
+    Real.Angle.coe_toCircle, Complex.conj_ofReal, conj_I]
   ring
 
 /-- Negating a rotation is equivalent to rotation by π plus the angle. -/
@@ -187,15 +187,15 @@ theorem neg_rotation_pi_div_two (x : V) : -o.rotation (π / 2 : ℝ) x = o.rotat
 /-- Rotating the first of two vectors by `θ` scales their Kahler form by `cos (-θ) + sin (-θ) * I`.
 -/
 theorem kahler_rotation_left' (x y : V) (θ : Real.Angle) :
-    o.kahler (o.rotation θ x) y = (-θ).expMapCircle * o.kahler x y := by
-  simp only [Real.Angle.expMapCircle_neg, coe_inv_circle_eq_conj, kahler_rotation_left]
+    o.kahler (o.rotation θ x) y = (-θ).toCircle * o.kahler x y := by
+  simp only [Real.Angle.toCircle_neg, Circle.coe_inv_eq_conj, kahler_rotation_left]
 
 /-- Rotating the second of two vectors by `θ` scales their Kahler form by `cos θ + sin θ * I`. -/
 @[simp]
 theorem kahler_rotation_right (x y : V) (θ : Real.Angle) :
-    o.kahler x (o.rotation θ y) = θ.expMapCircle * o.kahler x y := by
+    o.kahler x (o.rotation θ y) = θ.toCircle * o.kahler x y := by
   simp only [o.rotation_apply, map_add, LinearMap.map_smulₛₗ, RingHom.id_apply, real_smul,
-    kahler_rightAngleRotation_right, Real.Angle.coe_expMapCircle]
+    kahler_rightAngleRotation_right, Real.Angle.coe_toCircle]
   ring
 
 /-- Rotating the first vector by `θ` subtracts `θ` from the angle between two vectors. -/
@@ -203,9 +203,9 @@ theorem kahler_rotation_right (x y : V) (θ : Real.Angle) :
 theorem oangle_rotation_left {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) (θ : Real.Angle) :
     o.oangle (o.rotation θ x) y = o.oangle x y - θ := by
   simp only [oangle, o.kahler_rotation_left']
-  rw [Complex.arg_mul_coe_angle, Real.Angle.arg_expMapCircle]
+  rw [Complex.arg_mul_coe_angle, Real.Angle.arg_toCircle]
   · abel
-  · exact ne_zero_of_mem_circle _
+  · exact Circle.coe_ne_zero _
   · exact o.kahler_ne_zero hx hy
 
 /-- Rotating the second vector by `θ` adds `θ` to the angle between two vectors. -/
@@ -213,9 +213,9 @@ theorem oangle_rotation_left {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) (θ : Real.
 theorem oangle_rotation_right {x y : V} (hx : x ≠ 0) (hy : y ≠ 0) (θ : Real.Angle) :
     o.oangle x (o.rotation θ y) = o.oangle x y + θ := by
   simp only [oangle, o.kahler_rotation_right]
-  rw [Complex.arg_mul_coe_angle, Real.Angle.arg_expMapCircle]
+  rw [Complex.arg_mul_coe_angle, Real.Angle.arg_toCircle]
   · abel
-  · exact ne_zero_of_mem_circle _
+  · exact Circle.coe_ne_zero _
   · exact o.kahler_ne_zero hx hy
 
 /-- The rotation of a vector by `θ` has an angle of `-θ` from that vector. -/
@@ -360,15 +360,15 @@ theorem rotation_map (θ : Real.Angle) (f : V ≃ₗᵢ[ℝ] V') (x : V') :
 
 @[simp]
 protected theorem _root_.Complex.rotation (θ : Real.Angle) (z : ℂ) :
-    Complex.orientation.rotation θ z = θ.expMapCircle * z := by
-  simp only [rotation_apply, Complex.rightAngleRotation, Real.Angle.coe_expMapCircle, real_smul]
+    Complex.orientation.rotation θ z = θ.toCircle * z := by
+  simp only [rotation_apply, Complex.rightAngleRotation, Real.Angle.coe_toCircle, real_smul]
   ring
 
 /-- Rotation in an oriented real inner product space of dimension 2 can be evaluated in terms of a
 complex-number representation of the space. -/
 theorem rotation_map_complex (θ : Real.Angle) (f : V ≃ₗᵢ[ℝ] ℂ)
     (hf : Orientation.map (Fin 2) f.toLinearEquiv o = Complex.orientation) (x : V) :
-    f (o.rotation θ x) = θ.expMapCircle * f x := by
+    f (o.rotation θ x) = θ.toCircle * f x := by
   rw [← Complex.rotation, ← hf, o.rotation_map, LinearIsometryEquiv.symm_apply_apply]
 
 /-- Negating the orientation negates the angle in `rotation`. -/

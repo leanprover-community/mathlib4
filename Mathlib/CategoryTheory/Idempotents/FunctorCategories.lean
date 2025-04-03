@@ -58,7 +58,7 @@ instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
   have hC := (isIdempotentComplete_iff_hasEqualizer_of_id_and_idempotent C).mp inferInstance
   haveI : ∀ j : J, HasEqualizer (𝟙 _) (p.app j) := fun j => hC _ _ (congr_app hp j)
   /- We construct the direct factor `Y` associated to `p : F ⟶ F` by computing
-      the equalizer of the identity and `p.app j` on each object `(j : J)`.  -/
+      the equalizer of the identity and `p.app j` on each object `(j : J)`. -/
   let Y : J ⥤ C :=
     { obj := fun j => Limits.equalizer (𝟙 _) (p.app j)
       map := fun {j j'} φ =>

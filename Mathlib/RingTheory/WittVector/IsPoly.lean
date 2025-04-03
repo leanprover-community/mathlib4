@@ -7,7 +7,7 @@ import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.RingTheory.WittVector.Basic
 /-!
-# The `is_poly` predicate
+# The `IsPoly` predicate
 
 `WittVector.IsPoly` is a (type-valued) predicate on functions `f : Π R, 𝕎 R → 𝕎 R`.
 It asserts that there is a family of polynomials `φ : ℕ → MvPolynomial ℕ ℤ`,
@@ -301,10 +301,8 @@ theorem bind₁_onePoly_wittPolynomial [hp : Fact p.Prime] (n : ℕ) :
 instance oneIsPoly [Fact p.Prime] : IsPoly p fun _ _ _ => 1 :=
   ⟨⟨onePoly, by
       intros; funext n; cases n
-      · -- Porting note: was `simp only [...]` but with slightly different `[...]`.
-        simp only [Nat.zero_eq, lt_self_iff_false, one_coeff_zero, onePoly, ite_true, map_one]
-      · -- Porting note: was `simp only [...]` but with slightly different `[...]`.
-        simp only [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false,
+      · simp only [lt_self_iff_false, one_coeff_zero, onePoly, ite_true, map_one]
+      · simp only [Nat.succ_pos', one_coeff_eq_of_pos, onePoly, Nat.succ_ne_zero, ite_false,
           map_zero]
   ⟩⟩
 

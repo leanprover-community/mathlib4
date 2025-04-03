@@ -46,8 +46,8 @@ variable [J.HasSheafCompose F] [J.HasSheafCompose G] [J.HasSheafCompose H]
 def sheafCompose : Sheaf J A ⥤ Sheaf J B where
   obj G := ⟨G.val ⋙ F, GrothendieckTopology.HasSheafCompose.isSheaf G.val G.2⟩
   map η := ⟨whiskerRight η.val _⟩
-  map_id _ := Sheaf.Hom.ext _ _ <| whiskerRight_id _
-  map_comp _ _ := Sheaf.Hom.ext _ _ <| whiskerRight_comp _ _ _
+  map_id _ := Sheaf.Hom.ext <| whiskerRight_id _
+  map_comp _ _ := Sheaf.Hom.ext <| whiskerRight_comp _ _ _
 
 instance [F.Faithful] : (sheafCompose J F ⋙ sheafToPresheaf _ _).Faithful :=
   show (sheafToPresheaf _ _ ⋙ (whiskeringRight Cᵒᵖ A B).obj F).Faithful from inferInstance
@@ -129,10 +129,10 @@ instance hasSheafCompose_of_preservesMulticospan (F : A ⥤ B)
     exact ⟨Limits.IsLimit.postcomposeHomEquiv (S.multicospanComp F P) _ h⟩
 
 /--
-Composing a sheaf with a functor preserving limits of the same size as the hom sets in `C` yields a
+Composing a sheaf with a functor preserving limits of the same size as the hom sets in `C` yields a
 functor between sheaf categories.
 
-Note: the size of the limit that `F` is required to preserve in
+Note: the size of the limit that `F` is required to preserve in
 `hasSheafCompose_of_preservesMulticospan` is in general larger than this.
 -/
 instance hasSheafCompose_of_preservesLimitsOfSize [PreservesLimitsOfSize.{v₁, max u₁ v₁} F] :

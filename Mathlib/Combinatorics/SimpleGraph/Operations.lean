@@ -26,12 +26,13 @@ open Finset
 
 namespace SimpleGraph
 
-variable {V : Type*} [DecidableEq V] (G : SimpleGraph V) (s t : V)
+variable {V : Type*} (G : SimpleGraph V) (s t : V)
 
 namespace Iso
 
 variable {G} {W : Type*} {G' : SimpleGraph W} (f : G ≃g G')
 
+include f in
 theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
     G.edgeFinset.card = G'.edgeFinset.card := by
   apply Finset.card_eq_of_equiv
@@ -41,6 +42,8 @@ theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
 end Iso
 
 section ReplaceVertex
+
+variable [DecidableEq V]
 
 /-- The graph formed by forgetting `t`'s neighbours and instead giving it those of `s`. The `s-t`
 edge is removed if present. -/
@@ -144,6 +147,7 @@ def edge : SimpleGraph V := fromEdgeSet {s(s, t)}
 lemma edge_adj (v w : V) : (edge s t).Adj v w ↔ (v = s ∧ w = t ∨ v = t ∧ w = s) ∧ v ≠ w := by
   rw [edge, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq_iff]
 
+variable [DecidableEq V] in
 instance : DecidableRel (edge s t).Adj := fun _ _ ↦ by
   rw [edge_adj]; infer_instance
 
@@ -166,6 +170,7 @@ lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by
 
 variable [Fintype V] [DecidableRel G.Adj]
 
+variable [DecidableEq V] in
 instance : Fintype (edge s t).edgeSet := by rw [edge]; infer_instance
 
 theorem edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s t) (h : s ≠ t) :

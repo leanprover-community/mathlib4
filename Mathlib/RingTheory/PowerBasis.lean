@@ -40,12 +40,10 @@ power basis, powerbasis
 -/
 
 
-open Polynomial
-
-open Polynomial
+open Polynomial Finsupp
 
 variable {R S T : Type*} [CommRing R] [Ring S] [Algebra R S]
-variable {A B : Type*} [CommRing A] [CommRing B] [IsDomain B] [Algebra A B]
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
 variable {K : Type*} [Field K]
 
 /-- `pb : PowerBasis R S` states that `1, pb.gen, ..., pb.gen ^ (pb.dim - 1)`
@@ -89,9 +87,9 @@ theorem mem_span_pow' {x y : S} {d : ℕ} :
     ext n
     simp_rw [Set.mem_range, Set.mem_image, Finset.mem_coe, Finset.mem_range]
     exact ⟨fun ⟨⟨i, hi⟩, hy⟩ => ⟨i, hi, hy⟩, fun ⟨i, hi, hy⟩ => ⟨⟨i, hi⟩, hy⟩⟩
-  simp only [this, Finsupp.mem_span_image_iff_total, degree_lt_iff_coeff_zero, support,
+  simp only [this, mem_span_image_iff_linearCombination, degree_lt_iff_coeff_zero, Finsupp.support,
     exists_iff_exists_finsupp, coeff, aeval_def, eval₂RingHom', eval₂_eq_sum, Polynomial.sum,
-    Finsupp.mem_supported', Finsupp.total, Finsupp.sum, Algebra.smul_def, eval₂_zero, exists_prop,
+    mem_supported', linearCombination, Finsupp.sum, Algebra.smul_def, eval₂_zero, exists_prop,
     LinearMap.id_coe, eval₂_one, id, not_lt, Finsupp.coe_lsum, LinearMap.coe_smulRight,
     Finset.mem_range, AlgHom.coe_mks, Finset.mem_coe]
   simp_rw [@eq_comm _ y]
@@ -164,8 +162,8 @@ noncomputable def minpolyGen (pb : PowerBasis A S) : A[X] :=
 
 theorem aeval_minpolyGen (pb : PowerBasis A S) : aeval pb.gen (minpolyGen pb) = 0 := by
   simp_rw [minpolyGen, map_sub, map_sum, map_mul, map_pow, aeval_C, ← Algebra.smul_def, aeval_X]
-  refine sub_eq_zero.mpr ((pb.basis.total_repr (pb.gen ^ pb.dim)).symm.trans ?_)
-  rw [Finsupp.total_apply, Finsupp.sum_fintype] <;>
+  refine sub_eq_zero.mpr ((pb.basis.linearCombination_repr (pb.gen ^ pb.dim)).symm.trans ?_)
+  rw [Finsupp.linearCombination_apply, Finsupp.sum_fintype] <;>
     simp only [pb.coe_basis, zero_smul, eq_self_iff_true, imp_true_iff]
 
 theorem minpolyGen_monic (pb : PowerBasis A S) : Monic (minpolyGen pb) := by
@@ -316,7 +314,7 @@ noncomputable def liftEquiv (pb : PowerBasis A S) :
 /-- `pb.liftEquiv'` states that elements of the root set of the minimal
 polynomial of `pb.gen` correspond to maps sending `pb.gen` to that root. -/
 @[simps! (config := .asFn)]
-noncomputable def liftEquiv' (pb : PowerBasis A S) :
+noncomputable def liftEquiv' [IsDomain B] (pb : PowerBasis A S) :
     (S →ₐ[A] B) ≃ { y : B // y ∈ (minpoly A pb.gen).aroots B } :=
   pb.liftEquiv.trans ((Equiv.refl _).subtypeEquiv fun x => by
     rw [Equiv.refl_apply, mem_roots_iff_aeval_eq_zero]
@@ -325,7 +323,7 @@ noncomputable def liftEquiv' (pb : PowerBasis A S) :
 
 /-- There are finitely many algebra homomorphisms `S →ₐ[A] B` if `S` is of the form `A[x]`
 and `B` is an integral domain. -/
-noncomputable def AlgHom.fintype (pb : PowerBasis A S) : Fintype (S →ₐ[A] B) :=
+noncomputable def AlgHom.fintype [IsDomain B] (pb : PowerBasis A S) : Fintype (S →ₐ[A] B) :=
   letI := Classical.decEq B
   Fintype.ofEquiv _ pb.liftEquiv'.symm
 

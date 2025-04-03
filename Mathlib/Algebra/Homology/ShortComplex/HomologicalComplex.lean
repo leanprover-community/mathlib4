@@ -54,8 +54,6 @@ noncomputable def natIsoSc' (i j k : ι) (hi : c.prev j = i) (hk : c.next j = k)
 
 variable {C c}
 
-section
-
 variable (K L M : HomologicalComplex C c) (φ : K ⟶ L) (ψ : L ⟶ M) (i j k : ι)
 
 /-- The short complex `K.X i ⟶ K.X j ⟶ K.X k` for arbitrary indices `i`, `j` and `k`. -/
@@ -72,7 +70,7 @@ noncomputable abbrev isoSc' (hi : c.prev j = i) (hk : c.next j = k) :
 short complex `K.sc i` has. -/
 abbrev HasHomology := (K.sc i).HasHomology
 
-variable [K.HasHomology i]
+section variable [K.HasHomology i]
 
 /-- The homology in degree `i` of a homological complex. -/
 noncomputable def homology := (K.sc i).homology
@@ -126,10 +124,15 @@ noncomputable def cyclesIsKernel (hj : c.next i = j) :
   obtain rfl := hj
   exact (K.sc i).cyclesIsKernel
 
+end
+
 @[reassoc (attr := simp)]
 lemma toCycles_i [K.HasHomology j] :
     K.toCycles i j ≫ K.iCycles j = K.d i j :=
   liftCycles_i _ _ _ _ _
+
+section
+variable [K.HasHomology i]
 
 instance : Mono (K.iCycles i) := by
   dsimp only [iCycles]
@@ -139,12 +142,17 @@ instance : Epi (K.homologyπ i) := by
   dsimp only [homologyπ]
   infer_instance
 
+end
+
 @[reassoc (attr := simp)]
 lemma d_toCycles [K.HasHomology k] :
     K.d i j ≫ K.toCycles j k = 0 := by
   simp only [← cancel_mono (K.iCycles k), assoc, toCycles_i, d_comp_d, zero_comp]
 
 variable {i}
+
+section
+variable [K.HasHomology i]
 
 @[reassoc]
 lemma comp_liftCycles {A' A : C} (k : A ⟶ K.X i) (j : ι) (hj : c.next i = j)
@@ -164,6 +172,8 @@ lemma liftCycles_homologyπ_eq_zero_of_boundary {A : C} (k : A ⟶ K.X i) (j : �
       rw [← cancel_mono (K.iCycles i), zero_comp, liftCycles_i, hx]
     rw [this, zero_comp]
 
+end
+
 variable (i)
 
 @[reassoc (attr := simp)]
@@ -177,6 +187,9 @@ noncomputable def homologyIsCokernel (hi : c.prev j = i) [K.HasHomology j] :
     IsColimit (CokernelCofork.ofπ (K.homologyπ j) (K.toCycles_comp_homologyπ i j)) := by
   subst hi
   exact (K.sc j).homologyIsCokernel
+
+section
+variable [K.HasHomology i]
 
 /-- The opcycles in degree `i` of a homological complex. -/
 noncomputable def opcycles := (K.sc i).opcycles
@@ -456,11 +469,10 @@ end
 
 end
 
-variable (K L : HomologicalComplex C c) (i j k : ι)
-
 section
 
 variable (hj : c.next i = j) (h : K.d i j = 0) [K.HasHomology i]
+include hj h
 
 lemma isIso_iCycles : IsIso (K.iCycles i) := by
   subst hj
@@ -507,6 +519,7 @@ end
 section
 
 variable (hi : c.prev j = i) (h : K.d i j = 0) [K.HasHomology j]
+include hi h
 
 lemma isIso_pOpcycles : IsIso (K.pOpcycles j) := by
   obtain rfl := hi

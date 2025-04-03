@@ -12,6 +12,8 @@ import Mathlib.CategoryTheory.FiberedCategory.HomLift
 This file defines cartesian resp. strongly cartesian morphisms with respect to a functor
 `p : 𝒳 ⥤ 𝒮`.
 
+This file has been adapted to `FiberedCategory/Cocartesian`, please try to change them in sync.
+
 ## Main definitions
 
 `IsCartesian p f φ` expresses that `φ` is a cartesian morphism lying over `f` with respect to `p` in
@@ -46,18 +48,26 @@ section
 
 variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
 
-/-- The proposition that a morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is a
-cartesian morphism.
+/-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is cartesian if for all
+morphisms `φ' : a' ⟶ b`, also lying over `f`, there exists a unique morphism `χ : a' ⟶ a` lifting
+`𝟙 R` such that `φ' = χ ≫ φ`.
 
 See SGA 1 VI 5.1. -/
 class IsCartesian extends IsHomLift p f φ : Prop where
   universal_property {a' : 𝒳} (φ' : a' ⟶ b) [IsHomLift p f φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p (𝟙 R) χ ∧ χ ≫ φ = φ'
 
-/-- The proposition that a morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is a
-strongly cartesian morphism.
+/-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is strongly cartesian if for
+all morphisms `φ' : a' ⟶ b` and all diagrams of the form
+```
+a'        a --φ--> b
+|         |        |
+v         v        v
+R' --g--> R --f--> S
+```
+such that `φ'` lifts `g ≫ f`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`.
 
-See <https://stacks.math.columbia.edu/tag/02XK> -/
+See <https://stacks.math.columbia.edu/tag/02XK>. -/
 class IsStronglyCartesian extends IsHomLift p f φ : Prop where
   universal_property' {a' : 𝒳} (g : p.obj a' ⟶ R) (φ' : a' ⟶ b) [IsHomLift p (g ≫ f) φ'] :
       ∃! χ : a' ⟶ a, IsHomLift p g χ ∧ χ ≫ φ = φ'
@@ -222,16 +232,31 @@ lemma map_self : map p f φ (id_comp f).symm φ = 𝟙 a := by
   apply map_uniq
   simp only [id_comp]
 
-/-- When its possible to compare the two, the composition of two `IsCocartesian.map` will also be
-given by a `IsCocartesian.map`. In other words, given diagrams
+/-- When its possible to compare the two, the composition of two `IsStronglyCartesian.map` will also
+be given by a `IsStronglyCartesian.map`. In other words, given diagrams
 ```
-a''         a'        a --φ--> b          a' --φ'--> b          a'' --φ''--> b
-|           |         |        |    and   |          |    and   |            |
-v           v         v        v          v          v          v            v
-R'' --g'--> R' --g--> R --f--> S          R' --f'--> S          R'' --f''--> S
+a''         a'        a --φ--> b
+|           |         |        |
+v           v         v        v
+R'' --g'--> R' --g--> R --f--> S
 ```
-such that `φ` and `φ'` are strongly cartesian morphisms. Then composing the induced map from
-`a'' ⟶ a'` with the induced map from `a' ⟶ a` gives the induced map from `a'' ⟶ a`. -/
+and
+```
+a' --φ'--> b
+|          |
+v          v
+R' --f'--> S
+```
+and
+```
+a'' --φ''--> b
+|            |
+v            v
+R'' --f''--> S
+```
+such that `φ` and `φ'` are strongly cartesian morphisms, and such that `f' = g ≫ f` and
+`f'' = g' ≫ f'`. Then composing the induced map from `a'' ⟶ a'` with the induced map from
+`a' ⟶ a` gives the induced map from `a'' ⟶ a`. -/
 @[reassoc (attr := simp)]
 lemma map_comp_map {R' R'' : 𝒮} {a' a'' : 𝒳} {f' : R' ⟶ S} {f'' : R'' ⟶ S} {g : R' ⟶ R}
     {g' : R'' ⟶ R'} (H : f' = g ≫ f) (H' : f'' = g' ≫ f') (φ' : a' ⟶ b) (φ'' : a'' ⟶ b)

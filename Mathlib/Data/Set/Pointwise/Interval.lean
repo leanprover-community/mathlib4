@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov, Patrick Massot
+Authors: Yury Kudryashov, Patrick Massot
 -/
 import Mathlib.Order.Interval.Set.UnorderedInterval
 import Mathlib.Algebra.Order.Interval.Set.Monoid
@@ -519,12 +519,12 @@ theorem preimage_mul_const_Ioi (a : α) {c : α} (h : 0 < c) :
 @[simp]
 theorem preimage_mul_const_Iic (a : α) {c : α} (h : 0 < c) :
     (fun x => x * c) ⁻¹' Iic a = Iic (a / c) :=
-  ext fun _x => (le_div_iff h).symm
+  ext fun _x => (le_div_iff₀ h).symm
 
 @[simp]
 theorem preimage_mul_const_Ici (a : α) {c : α} (h : 0 < c) :
     (fun x => x * c) ⁻¹' Ici a = Ici (a / c) :=
-  ext fun _x => (div_le_iff h).symm
+  ext fun _x => (div_le_iff₀ h).symm
 
 @[simp]
 theorem preimage_mul_const_Ioo (a b : α) {c : α} (h : 0 < c) :
@@ -590,11 +590,11 @@ theorem preimage_const_mul_Ioi (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' I
 
 @[simp]
 theorem preimage_const_mul_Iic (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' Iic a = Iic (a / c) :=
-  ext fun _x => (le_div_iff' h).symm
+  ext fun _x => (le_div_iff₀' h).symm
 
 @[simp]
 theorem preimage_const_mul_Ici (a : α) {c : α} (h : 0 < c) : (c * ·) ⁻¹' Ici a = Ici (a / c) :=
-  ext fun _x => (div_le_iff' h).symm
+  ext fun _x => (div_le_iff₀' h).symm
 
 @[simp]
 theorem preimage_const_mul_Ioo (a b : α) {c : α} (h : 0 < c) :
@@ -719,17 +719,17 @@ theorem inv_Ioo_0_left {a : α} (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
   ext x
   exact
     ⟨fun h => inv_inv x ▸ (inv_lt_inv ha h.1).2 h.2, fun h =>
-      ⟨inv_pos (α := α) |>.2 <| (inv_pos (α := α) |>.2 ha).trans h,
-        inv_inv a ▸ (inv_lt_inv ((inv_pos (α := α) |>.2 ha).trans h)
-          (inv_pos (α := α) |>.2 ha)).2 h⟩⟩
+      ⟨inv_pos.2 <| (inv_pos.2 ha).trans h,
+        inv_inv a ▸ (inv_lt_inv ((inv_pos.2 ha).trans h)
+          (inv_pos.2 ha)).2 h⟩⟩
 
 theorem inv_Ioi {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
-  rw [inv_eq_iff_eq_inv, inv_Ioo_0_left (inv_pos (α := α) |>.2 ha), inv_inv]
+  rw [inv_eq_iff_eq_inv, inv_Ioo_0_left (inv_pos.2 ha), inv_inv]
 
 theorem image_const_mul_Ioi_zero {k : Type*} [LinearOrderedField k] {x : k} (hx : 0 < x) :
     (fun y => x * y) '' Ioi (0 : k) = Ioi 0 := by
   erw [(Units.mk0 x hx.ne').mulLeft.image_eq_preimage,
-    preimage_const_mul_Ioi 0 (inv_pos (α := k) |>.mpr hx), zero_div]
+    preimage_const_mul_Ioi 0 (inv_pos.mpr hx), zero_div]
 
 /-!
 ### Images under `x ↦ a * x + b`

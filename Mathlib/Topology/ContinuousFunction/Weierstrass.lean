@@ -32,7 +32,7 @@ theorem polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topologica
   rintro f -
   refine Filter.Frequently.mem_closure ?_
   refine Filter.Tendsto.frequently (bernsteinApproximation_uniform f) ?_
-  apply frequently_of_forall
+  apply Frequently.of_forall
   intro n
   simp only [SetLike.mem_coe]
   apply Subalgebra.sum_mem

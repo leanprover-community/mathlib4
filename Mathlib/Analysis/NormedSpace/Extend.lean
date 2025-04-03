@@ -35,11 +35,10 @@ open RCLike
 
 open ComplexConjugate
 
-variable {𝕜 : Type*} [RCLike 𝕜] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
-
+variable {𝕜 : Type*} [RCLike 𝕜] {F : Type*}
 namespace LinearMap
 
-variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
+variable [AddCommGroup F] [Module ℝ F] [Module 𝕜 F] [IsScalarTower ℝ 𝕜 F]
 
 /-- Extend `fr : F →ₗ[ℝ] ℝ` to `F →ₗ[𝕜] 𝕜` in a way that will also be continuous and have its norm
 bounded by `‖fr‖` if `fr` is continuous. -/
@@ -95,6 +94,7 @@ theorem norm_extendTo𝕜'_apply_sq (fr : F →ₗ[ℝ] ℝ) (x : F) :
 
 end LinearMap
 
+variable [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 namespace ContinuousLinearMap
 
 variable [NormedSpace ℝ F] [IsScalarTower ℝ 𝕜 F]

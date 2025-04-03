@@ -90,7 +90,7 @@ instance estimator' :
     constructor
     · simp only [List.minimum_of_length_pos_le_iff]
       exact suffixLevenshtein_minimum_le_levenshtein_append _ _ _
-    · exact List.length_le_of_sublist (List.sublist_append_right _ _)
+    · exact (List.sublist_append_right _ _).length_le
   improve_spec e := by
     dsimp [EstimatorData.improve]
     match e.pre_rev, e.split, e.bound_eq, e.distances_eq with

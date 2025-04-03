@@ -47,7 +47,7 @@ class Encodable (α : Type*) where
   --explicitly in Lean4
   /-- Decoding from ℕ to Option α-/
   decode : ℕ → Option α
-  /-- Invariant relationship between encoding and decoding-/
+  /-- Invariant relationship between encoding and decoding -/
   encodek : ∀ a, decode (encode a) = some a
 
 attribute [simp] Encodable.encodek

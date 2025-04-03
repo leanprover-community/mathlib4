@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
 import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Basic
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Pointwise.Basic
-import Mathlib.GroupTheory.GroupAction.Group
 
 /-!
 # Pointwise operations of sets

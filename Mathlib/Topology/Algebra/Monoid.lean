@@ -18,14 +18,10 @@ applications the underlying type is a monoid (multiplicative or additive), we do
 the definitions.
 -/
 
-
 universe u v
 
-open scoped Classical
 open Set Filter TopologicalSpace
-
-open scoped Classical
-open Topology Pointwise
+open scoped Topology Pointwise
 
 variable {ι α M N X : Type*} [TopologicalSpace X]
 
@@ -148,6 +144,7 @@ section tendsto_nhds
 
 variable {𝕜 : Type*} [Preorder 𝕜] [Zero 𝕜] [Mul 𝕜] [TopologicalSpace 𝕜] [ContinuousMul 𝕜]
   {l : Filter α} {f : α → 𝕜} {b c : 𝕜} (hb : 0 < b)
+include hb
 
 theorem Filter.TendstoNhdsWithinIoi.const_mul [PosMulStrictMono 𝕜] [PosMulReflectLT 𝕜]
     (h : Tendsto f l (𝓝[>] c)) : Tendsto (fun a => b * f a) l (𝓝[>] (b * c)) :=
@@ -335,7 +332,7 @@ monoid homomorphisms"]
 def monoidHomOfTendsto (f : M₁ → M₂) (g : α → F) [l.NeBot]
     (h : Tendsto (fun a x => g a x) l (𝓝 f)) : M₁ →* M₂ :=
   monoidHomOfMemClosureRangeCoe f <|
-    mem_closure_of_tendsto h <| eventually_of_forall fun _ => mem_range_self _
+    mem_closure_of_tendsto h <| Eventually.of_forall fun _ => mem_range_self _
 
 variable (M₁ M₂)
 

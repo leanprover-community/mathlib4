@@ -2,6 +2,8 @@ import Lean.Elab.GuardMsgs
 import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Linter.HashCommandLinter
 
+set_option linter.hashCommand true
+
 section ignored_commands
 
 -- `#guard_msgs in` without a doc-string triggers the linter, but with the `doc-string does not
@@ -47,6 +49,7 @@ note: this linter can be disabled with `set_option linter.hashCommand false`
 #guard_msgs in
 #guard true
 
+set_option linter.unusedTactic false in
 /--
 warning: `#`-commands, such as '#check_tactic', are not allowed in 'Mathlib'
 note: this linter can be disabled with `set_option linter.hashCommand false`

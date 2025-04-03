@@ -50,7 +50,7 @@ theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
     { toFun := fun h =>
         ⟨g.unop⁻¹ * h * g.unop,
           hH.mem_comm ((congr_arg (· ∈ H) (mul_inv_cancel_left _ _)).mpr (SetLike.coe_mem _))⟩
-      map_one' := by rw [Subtype.ext_iff, coe_mk, coe_one, mul_one, inv_mul_self]
+      map_one' := by rw [Subtype.ext_iff, coe_mk, coe_one, mul_one, inv_mul_cancel]
       map_mul' := fun h₁ h₂ => by
         simp only [Subtype.ext_iff, coe_mk, coe_mul, mul_assoc, mul_inv_cancel_left] }
   refine (Fintype.prod_equiv (MulAction.toPerm g).symm _ _ fun x ↦ ?_).trans (map_prod ϕ _ _).symm
@@ -103,7 +103,7 @@ theorem exists_smul_eq (hH : Nat.Coprime (Nat.card H) H.index) (α β : H.Quotie
           (diff_inv _ _ _).symm.trans
             (inv_eq_one.mpr
               ((smul_diff' β α ((powCoprime hH).symm (diff (MonoidHom.id H) β α))⁻¹).trans
-                (by rw [inv_pow, ← powCoprime_apply hH, Equiv.apply_symm_apply, mul_inv_self])))⟩)
+                (by rw [inv_pow, ← powCoprime_apply hH, Equiv.apply_symm_apply, mul_inv_cancel])))⟩)
 
 theorem isComplement'_stabilizer_of_coprime {α : H.QuotientDiff}
     (hH : Nat.Coprime (Nat.card H) H.index) : IsComplement' H (stabilizer G α) :=
@@ -130,12 +130,13 @@ The proof is by contradiction. We assume that `G` is a minimal counterexample to
 -/
 
 
-variable {G : Type u} [Group G] [Finite G] {N : Subgroup G} [Normal N]
+variable {G : Type u} [Group G] {N : Subgroup G} [Normal N]
   (h1 : Nat.Coprime (Nat.card N) N.index)
   (h2 : ∀ (G' : Type u) [Group G'] [Finite G'],
     Nat.card G' < Nat.card G → ∀ {N' : Subgroup G'} [N'.Normal],
       Nat.Coprime (Nat.card N') N'.index → ∃ H' : Subgroup G', IsComplement' N' H')
   (h3 : ∀ H : Subgroup G, ¬IsComplement' N H)
+include h1 h3
 
 /-! We will arrive at a contradiction via the following steps:
  * step 0: `N` (the normal Hall subgroup) is nontrivial.
@@ -154,6 +155,9 @@ private theorem step0 : N ≠ ⊥ := by
   rintro rfl
   exact h3 ⊤ isComplement'_bot_top
 
+variable [Finite G]
+
+include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
   contrapose! h3
@@ -177,6 +181,7 @@ private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
     rwa [hH]
   exact ⟨H.map K.subtype, isComplement'_of_coprime h7 h8⟩
 
+include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K = N := by
   have : Function.Surjective (QuotientGroup.mk' K) := Quotient.surjective_Quotient_mk''
@@ -207,6 +212,7 @@ private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K
       QuotientGroup.ker_mk'] at hH
     exact h4.2 (le_antisymm hK hH)
 
+include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step3 (K : Subgroup N) [(K.map N.subtype).Normal] : K = ⊥ ∨ K = ⊤ := by
   have key := step2 h1 h2 h3 (K.map N.subtype) (map_subtype_le K)
@@ -228,6 +234,7 @@ private theorem step5 {P : Sylow (Nat.card N).minFac N} : P.1 ≠ ⊥ := by
   apply P.ne_bot_of_dvd_card
   exact (Nat.card N).minFac_dvd
 
+include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step6 : IsPGroup (Nat.card N).minFac N := by
   haveI : Fact (Nat.card N).minFac.Prime := ⟨step4 h1 h3⟩
@@ -237,6 +244,7 @@ private theorem step6 : IsPGroup (Nat.card N).minFac N := by
     normalizer_eq_top.mp (step1 h1 h2 h3 (P.1.map N.subtype).normalizer P.normalizer_sup_eq_top)
   exact (step3 h1 h2 h3 P.1).resolve_left (step5 h1 h3)
 
+include h2 in
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 theorem step7 : IsCommutative N := by
   haveI := N.bot_or_nontrivial.resolve_left (step0 h1 h3)

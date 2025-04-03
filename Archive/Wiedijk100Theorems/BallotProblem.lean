@@ -115,18 +115,19 @@ theorem counted_succ_succ (p q : ℕ) :
     obtain ⟨hl₀, hl₁, hl₂⟩ := hl
     obtain hlast | hlast := hl₂ (l.head hlnil) (List.head_mem hlnil)
     · refine Or.inl ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
-      · rw [List.count_tail l 1 hlnil, hl₀, hlast, if_pos rfl, Nat.add_sub_cancel]
+      · rw [List.count_tail l 1 hlnil, hl₀, hlast, beq_self_eq_true, if_pos rfl, Nat.add_sub_cancel]
       · rw [List.count_tail l (-1) hlnil, hl₁, hlast, if_neg (by decide), Nat.sub_zero]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.head_cons_tail]
     · refine Or.inr ⟨l.tail, ⟨?_, ?_, ?_⟩, ?_⟩
       · rw [List.count_tail l 1 hlnil, hl₀, hlast, if_neg (by decide), Nat.sub_zero]
-      · rw [List.count_tail l (-1) hlnil, hl₁, hlast, if_pos rfl, Nat.add_sub_cancel]
+      · rw [List.count_tail l (-1) hlnil, hl₁, hlast, beq_self_eq_true, if_pos rfl,
+          Nat.add_sub_cancel]
       · exact fun x hx => hl₂ x (List.mem_of_mem_tail hx)
       · rw [← hlast, List.head_cons_tail]
   · rintro (⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩ | ⟨t, ⟨ht₀, ht₁, ht₂⟩, rfl⟩)
     · refine ⟨?_, ?_, ?_⟩
-      · rw [List.count_cons, if_pos rfl, ht₀]
+      · rw [List.count_cons, beq_self_eq_true, if_pos rfl, ht₀]
       · rw [List.count_cons, if_neg, ht₁]
         norm_num
       · rintro x (_ | _)
@@ -134,7 +135,7 @@ theorem counted_succ_succ (p q : ℕ) :
     · refine ⟨?_, ?_, ?_⟩
       · rw [List.count_cons, if_neg, ht₀]
         norm_num
-      · rw [List.count_cons, if_pos rfl, ht₁]
+      · rw [List.count_cons, beq_self_eq_true, if_pos rfl, ht₁]
       · rintro x (_ | _)
         exacts [Or.inr rfl, ht₂ x (by tauto)]
 
@@ -344,10 +345,7 @@ theorem ballot_problem' :
         linarith
       field_simp [h₄, h₅, h₆] at *
       ring
-    all_goals
-      refine (ENNReal.mul_lt_top ?_ ?_).ne
-      · exact (measure_lt_top _ _).ne
-      · simp [Ne, ENNReal.div_eq_top]
+    all_goals exact ENNReal.mul_ne_top (measure_ne_top _ _) (by simp [Ne, ENNReal.div_eq_top])
 
 /-- The ballot problem. -/
 theorem ballot_problem :
@@ -364,7 +362,7 @@ theorem ballot_problem :
     exacts [Nat.cast_le.2 qp.le, ENNReal.natCast_ne_top _]
   rwa [ENNReal.toReal_eq_toReal (measure_lt_top _ _).ne] at this
   simp only [Ne, ENNReal.div_eq_top, tsub_eq_zero_iff_le, Nat.cast_le, not_le,
-    add_eq_zero_iff, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
+    add_eq_zero, Nat.cast_eq_zero, ENNReal.add_eq_top, ENNReal.natCast_ne_top, or_self_iff,
     not_false_iff, and_true_iff]
   push_neg
   exact ⟨fun _ _ => by linarith, (tsub_le_self.trans_lt (ENNReal.natCast_ne_top p).lt_top).ne⟩

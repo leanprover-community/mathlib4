@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Monotone.Basic
@@ -39,16 +39,18 @@ lemmas in this section formalize this fact for different inequalities made stric
 
 theorem seq_le_seq (hf : Monotone f) (n : ℕ) (h₀ : x 0 ≤ y 0) (hx : ∀ k < n, x (k + 1) ≤ f (x k))
     (hy : ∀ k < n, f (y k) ≤ y (k + 1)) : x n ≤ y n := by
-  induction' n with n ihn
-  · exact h₀
-  · refine (hx _ n.lt_succ_self).trans ((hf <| ihn ?_ ?_).trans (hy _ n.lt_succ_self))
+  induction n with
+  | zero => exact h₀
+  | succ n ihn =>
+    refine (hx _ n.lt_succ_self).trans ((hf <| ihn ?_ ?_).trans (hy _ n.lt_succ_self))
     · exact fun k hk => hx _ (hk.trans n.lt_succ_self)
     · exact fun k hk => hy _ (hk.trans n.lt_succ_self)
 
 theorem seq_pos_lt_seq_of_lt_of_le (hf : Monotone f) {n : ℕ} (hn : 0 < n) (h₀ : x 0 ≤ y 0)
     (hx : ∀ k < n, x (k + 1) < f (x k)) (hy : ∀ k < n, f (y k) ≤ y (k + 1)) : x n < y n := by
-  induction' n with n ihn
-  · exact hn.false.elim
+  induction n with
+  | zero => exact hn.false.elim
+  | succ n ihn =>
   suffices x n ≤ y n from (hx n n.lt_succ_self).trans_le ((hf this).trans <| hy n n.lt_succ_self)
   cases n with
   | zero => exact h₀

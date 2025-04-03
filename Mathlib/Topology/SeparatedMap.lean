@@ -105,7 +105,7 @@ theorem IsSeparatedMap.pullback {f : X → Y} (sep : IsSeparatedMap f) (g : A �
   refine sep.preimage (Continuous.mapPullback ?_ ?_) <;>
   apply_rules [continuous_fst, continuous_subtype_val, Continuous.comp]
 
-theorem IsSeparatedMap.comp_left {f : X → Y} (sep : IsSeparatedMap f) {g : Y → A}
+theorem IsSeparatedMap.comp_left {A} {f : X → Y} (sep : IsSeparatedMap f) {g : Y → A}
     (inj : g.Injective) : IsSeparatedMap (g ∘ f) := fun x₁ x₂ he ↦ sep x₁ x₂ (inj he)
 
 theorem IsSeparatedMap.comp_right {f : X → Y} (sep : IsSeparatedMap f) {g : A → X}
@@ -159,7 +159,7 @@ theorem discreteTopology_iff_locallyInjective (y : Y) :
   convert hU; ext x'; refine ⟨?_, fun h ↦ inj h (mem_of_mem_nhds hU) rfl⟩
   rintro rfl; exact mem_of_mem_nhds hU
 
-theorem IsLocallyInjective.comp_left {f : X → Y} (hf : IsLocallyInjective f) {g : Y → A}
+theorem IsLocallyInjective.comp_left {A} {f : X → Y} (hf : IsLocallyInjective f) {g : Y → A}
     (hg : g.Injective) : IsLocallyInjective (g ∘ f) :=
   fun x ↦ let ⟨U, hU, hx, inj⟩ := hf x; ⟨U, hU, hx, hg.comp_injOn inj⟩
 
@@ -171,34 +171,37 @@ theorem IsLocallyInjective.comp_right {f : X → Y} (hf : IsLocallyInjective f) 
 
 section eqLocus
 
-variable {f : X → Y} (sep : IsSeparatedMap f) (inj : IsLocallyInjective f)
-  {g₁ g₂ : A → X} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
+variable {f : X → Y} {g₁ g₂ : A → X} (h₁ : Continuous g₁) (h₂ : Continuous g₂)
+include h₁ h₂
 
-theorem IsSeparatedMap.isClosed_eqLocus (he : f ∘ g₁ = f ∘ g₂) : IsClosed {a | g₁ a = g₂ a} :=
+theorem IsSeparatedMap.isClosed_eqLocus (sep : IsSeparatedMap f) (he : f ∘ g₁ = f ∘ g₂) :
+    IsClosed {a | g₁ a = g₂ a} :=
   let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩
   (isSeparatedMap_iff_isClosed_diagonal.mp sep).preimage (by fun_prop : Continuous g)
 
-theorem IsLocallyInjective.isOpen_eqLocus (he : f ∘ g₁ = f ∘ g₂) : IsOpen {a | g₁ a = g₂ a} :=
+theorem IsLocallyInjective.isOpen_eqLocus (inj : IsLocallyInjective f) (he : f ∘ g₁ = f ∘ g₂) :
+    IsOpen {a | g₁ a = g₂ a} :=
   let g : A → f.Pullback f := fun a ↦ ⟨⟨g₁ a, g₂ a⟩, congr_fun he a⟩
   (isLocallyInjective_iff_isOpen_diagonal.mp inj).preimage (by fun_prop : Continuous g)
 
 end eqLocus
 
-variable {E A : Type*} [TopologicalSpace E] [TopologicalSpace A] {p : E → X}
+variable {X E A : Type*} [TopologicalSpace E] [TopologicalSpace A] {p : E → X}
 
 namespace IsSeparatedMap
 
-variable (sep : IsSeparatedMap p) (inj : IsLocallyInjective p) {s : Set A} (hs : IsPreconnected s)
-  {g g₁ g₂ : A → E}
+variable {s : Set A} {g g₁ g₂ : A → E} (sep : IsSeparatedMap p) (inj : IsLocallyInjective p)
+include sep inj
 
 /-- If `p` is a locally injective separated map, and `A` is a connected space,
   then two lifts `g₁, g₂ : A → E` of a map `f : A → X` are equal if they agree at one point. -/
-theorem eq_of_comp_eq [PreconnectedSpace A] (h₁ : Continuous g₁) (h₂ : Continuous g₂)
+theorem eq_of_comp_eq
+    [PreconnectedSpace A] (h₁ : Continuous g₁) (h₂ : Continuous g₂)
     (he : p ∘ g₁ = p ∘ g₂) (a : A) (ha : g₁ a = g₂ a) : g₁ = g₂ := funext fun a' ↦ by
   apply (IsClopen.eq_univ ⟨sep.isClosed_eqLocus h₁ h₂ he, inj.isOpen_eqLocus h₁ h₂ he⟩ ⟨a, ha⟩).symm
     ▸ Set.mem_univ a'
 
-theorem eqOn_of_comp_eqOn (h₁ : ContinuousOn g₁ s) (h₂ : ContinuousOn g₂ s)
+theorem eqOn_of_comp_eqOn (hs : IsPreconnected s) (h₁ : ContinuousOn g₁ s) (h₂ : ContinuousOn g₂ s)
     (he : s.EqOn (p ∘ g₁) (p ∘ g₂)) {a : A} (has : a ∈ s) (ha : g₁ a = g₂ a) : s.EqOn g₁ g₂ := by
   rw [← Set.restrict_eq_restrict_iff] at he ⊢
   rw [continuousOn_iff_continuous_restrict] at h₁ h₂
@@ -209,7 +212,7 @@ theorem const_of_comp [PreconnectedSpace A] (cont : Continuous g)
     (he : ∀ a a', p (g a) = p (g a')) (a a') : g a = g a' :=
   congr_fun (sep.eq_of_comp_eq inj cont continuous_const (funext fun a ↦ he a a') a' rfl) a
 
-theorem constOn_of_comp (cont : ContinuousOn g s)
+theorem constOn_of_comp (hs : IsPreconnected s) (cont : ContinuousOn g s)
     (he : ∀ a ∈ s, ∀ a' ∈ s, p (g a) = p (g a'))
     {a a'} (ha : a ∈ s) (ha' : a' ∈ s) : g a = g a' :=
   sep.eqOn_of_comp_eqOn inj hs cont continuous_const.continuousOn

@@ -79,11 +79,11 @@ theorem frequently_curry_prod_iff {α β : Type*} {l : Filter α} {m : Filter β
   refine ⟨fun h => ?_, fun ⟨hs, ht⟩ => ?_⟩
   · exact frequently_prod_and.mp (Frequently.filter_mono h curry_le_prod)
   rw [frequently_curry_iff]
-  exact Frequently.mono hs $ fun x hx => Frequently.mono ht (by simp[hx])
+  exact Frequently.mono hs <| fun x hx => Frequently.mono ht (by simp [hx])
 
 theorem prod_mem_curry {α β : Type*} {l : Filter α} {m : Filter β} {s : Set α} {t : Set β}
     (hs : s ∈ l) (ht : t ∈ m) : s ×ˢ t ∈ l.curry m :=
-  curry_le_prod $ prod_mem_prod hs ht
+  curry_le_prod <| prod_mem_prod hs ht
 
 theorem eventually_curry_prod_iff {α β : Type*} {l : Filter α} {m : Filter β}
     [NeBot l] [NeBot m] (s : Set α) (t : Set β) :

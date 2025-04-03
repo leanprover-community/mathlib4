@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.WithTop
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.ENNReal.Basic
 
 /-!
@@ -65,7 +66,7 @@ theorem mul_left_strictMono (h0 : a ≠ 0) (hinf : a ≠ ∞) : StrictMono (a * 
   rw [coe_ne_zero] at h0
   intro x y h
   contrapose! h
-  simpa only [← mul_assoc, ← coe_mul, inv_mul_cancel h0, coe_one, one_mul]
+  simpa only [← mul_assoc, ← coe_mul, inv_mul_cancel₀ h0, coe_one, one_mul]
     using mul_le_mul_left' h (↑a⁻¹)
 
 @[gcongr] protected theorem mul_lt_mul_left' (h0 : a ≠ 0) (hinf : a ≠ ⊤) (bc : b < c) :
@@ -186,9 +187,8 @@ theorem top_pow {n : ℕ} (n_pos : 0 < n) : (∞ : ℝ≥0∞) ^ n = ∞ := With
 theorem mul_eq_top : a * b = ∞ ↔ a ≠ 0 ∧ b = ∞ ∨ a = ∞ ∧ b ≠ 0 :=
   WithTop.mul_eq_top_iff
 
-theorem mul_lt_top : a ≠ ∞ → b ≠ ∞ → a * b < ∞ := WithTop.mul_lt_top
-
-theorem mul_ne_top : a ≠ ∞ → b ≠ ∞ → a * b ≠ ∞ := by simpa only [lt_top_iff_ne_top] using mul_lt_top
+theorem mul_lt_top : a < ∞ → b < ∞ → a * b < ∞ := WithTop.mul_lt_top
+theorem mul_ne_top : a ≠ ∞ → b ≠ ∞ → a * b ≠ ∞ := WithTop.mul_ne_top
 
 theorem lt_top_of_mul_ne_top_left (h : a * b ≠ ∞) (hb : b ≠ 0) : a < ∞ :=
   lt_top_iff_ne_top.2 fun ha => h <| mul_eq_top.2 (Or.inr ⟨ha, hb⟩)
@@ -202,7 +202,7 @@ theorem mul_lt_top_iff {a b : ℝ≥0∞} : a * b < ∞ ↔ a < ∞ ∧ b < ∞ 
     rw [← or_assoc, or_iff_not_imp_right, or_iff_not_imp_right]
     intro hb ha
     exact ⟨lt_top_of_mul_ne_top_left h.ne hb, lt_top_of_mul_ne_top_right h.ne ha⟩
-  · rintro (⟨ha, hb⟩ | rfl | rfl) <;> [exact mul_lt_top ha.ne hb.ne; simp; simp]
+  · rintro (⟨ha, hb⟩ | rfl | rfl) <;> [exact mul_lt_top ha hb; simp; simp]
 
 theorem mul_self_lt_top_iff {a : ℝ≥0∞} : a * a < ⊤ ↔ a < ⊤ := by
   rw [ENNReal.mul_lt_top_iff, and_self, or_self, or_iff_left_iff_imp]
@@ -334,6 +334,14 @@ protected theorem add_sub_cancel_left (ha : a ≠ ∞) : a + b - a = b :=
 protected theorem add_sub_cancel_right (hb : b ≠ ∞) : a + b - b = a :=
   (cancel_of_ne hb).add_tsub_cancel_right
 
+protected theorem sub_add_eq_add_sub (hab : b ≤ a) (b_ne_top : b ≠ ∞) :
+    a - b + c = a + c - b := by
+  by_cases c_top : c = ∞
+  · simpa [c_top] using ENNReal.eq_sub_of_add_eq b_ne_top rfl
+  refine (sub_eq_of_add_eq b_ne_top ?_).symm
+  simp only [add_assoc, add_comm c b]
+  simpa only [← add_assoc] using (add_left_inj c_top).mpr <| tsub_add_cancel_of_le hab
+
 protected theorem lt_add_of_sub_lt_left (h : a ≠ ∞ ∨ b ≠ ∞) : a - b < c → a < b + c := by
   obtain rfl | hb := eq_or_ne b ∞
   · rw [top_add, lt_top_iff_ne_top]
@@ -391,27 +399,28 @@ section Sum
 
 open Finset
 
-variable {α : Type*}
+variable {α : Type*} {s : Finset α} {f : α → ℝ≥0∞}
 
-/-- A product of finite numbers is still finite -/
-theorem prod_lt_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∀ a ∈ s, f a ≠ ∞) : ∏ a ∈ s, f a < ∞ :=
-  WithTop.prod_lt_top h
+/-- A product of finite numbers is still finite. -/
+lemma prod_ne_top (h : ∀ a ∈ s, f a ≠ ∞) : ∏ a ∈ s, f a ≠ ∞ := WithTop.prod_ne_top h
 
-/-- A sum of finite numbers is still finite -/
-theorem sum_lt_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∀ a ∈ s, f a ≠ ∞) : ∑ a ∈ s, f a < ∞ :=
-  WithTop.sum_lt_top h
+/-- A product of finite numbers is still finite. -/
+lemma prod_lt_top (h : ∀ a ∈ s, f a < ∞) : ∏ a ∈ s, f a < ∞ := WithTop.prod_lt_top h
 
-/-- A sum of finite numbers is still finite -/
-theorem sum_lt_top_iff {s : Finset α} {f : α → ℝ≥0∞} : ∑ a ∈ s, f a < ∞ ↔ ∀ a ∈ s, f a < ∞ :=
-  WithTop.sum_lt_top_iff
+/-- A sum is infinite iff one of the summands is infinite. -/
+@[simp] lemma sum_eq_top : ∑ x ∈ s, f x = ∞ ↔ ∃ a ∈ s, f a = ∞ := WithTop.sum_eq_top
 
-/-- A sum of numbers is infinite iff one of them is infinite -/
-theorem sum_eq_top_iff {s : Finset α} {f : α → ℝ≥0∞} : ∑ x ∈ s, f x = ∞ ↔ ∃ a ∈ s, f a = ∞ :=
-  WithTop.sum_eq_top_iff
+/-- A sum is finite iff all summands are finite. -/
+lemma sum_ne_top : ∑ a ∈ s, f a ≠ ∞ ↔ ∀ a ∈ s, f a ≠ ∞ := WithTop.sum_ne_top
+
+/-- A sum is finite iff all summands are finite. -/
+@[simp] lemma sum_lt_top : ∑ a ∈ s, f a < ∞ ↔ ∀ a ∈ s, f a < ∞ := WithTop.sum_lt_top
+
+@[deprecated (since := "2024-08-25")] alias sum_lt_top_iff := sum_lt_top
 
 theorem lt_top_of_sum_ne_top {s : Finset α} {f : α → ℝ≥0∞} (h : ∑ x ∈ s, f x ≠ ∞) {a : α}
     (ha : a ∈ s) : f a < ∞ :=
-  sum_lt_top_iff.1 h.lt_top a ha
+  sum_lt_top.1 h.lt_top a ha
 
 /-- Seeing `ℝ≥0∞` as `ℝ≥0` does not change their sum, unless one of the `ℝ≥0∞` is
 infinity -/
@@ -420,7 +429,7 @@ theorem toNNReal_sum {s : Finset α} {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, 
   rw [← coe_inj, coe_toNNReal, coe_finset_sum, sum_congr rfl]
   · intro x hx
     exact (coe_toNNReal (hf x hx)).symm
-  · exact (sum_lt_top hf).ne
+  · exact sum_ne_top.2 hf
 
 /-- seeing `ℝ≥0∞` as `Real` does not change their sum, unless one of the `ℝ≥0∞` is infinity -/
 theorem toReal_sum {s : Finset α} {f : α → ℝ≥0∞} (hf : ∀ a ∈ s, f a ≠ ∞) :
@@ -514,6 +523,15 @@ theorem smul_top {R} [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ�
   rw [← smul_one_mul, mul_top']
   -- Porting note: need the primed version of `one_ne_zero` now
   simp_rw [smul_eq_zero, or_iff_left (one_ne_zero' ℝ≥0∞)]
+
+lemma nnreal_smul_lt_top {x : ℝ≥0} {y : ℝ≥0∞} (hy : y < ⊤) : x • y < ⊤ := mul_lt_top (by simp) hy
+lemma nnreal_smul_ne_top {x : ℝ≥0} {y : ℝ≥0∞} (hy : y ≠ ⊤) : x • y ≠ ⊤ := mul_ne_top (by simp) hy
+
+lemma nnreal_smul_ne_top_iff {x : ℝ≥0} {y : ℝ≥0∞} (hx : x ≠ 0) : x • y ≠ ⊤ ↔ y ≠ ⊤ :=
+  ⟨by rintro h rfl; simp [smul_top, hx] at h, nnreal_smul_ne_top⟩
+
+lemma nnreal_smul_lt_top_iff {x : ℝ≥0} {y : ℝ≥0∞} (hx : x ≠ 0) : x • y < ⊤ ↔ y < ⊤ := by
+  rw [lt_top_iff_ne_top, lt_top_iff_ne_top, nnreal_smul_ne_top_iff hx]
 
 end Actions
 

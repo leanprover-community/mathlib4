@@ -210,7 +210,7 @@ theorem partialProd_left_inv {G : Type*} [Group G] (f : Fin (n + 1) → G) :
 @[to_additive]
 theorem partialProd_right_inv {G : Type*} [Group G] (f : Fin n → G) (i : Fin n) :
     (partialProd f (Fin.castSucc i))⁻¹ * partialProd f i.succ = f i := by
-  cases' i with i hn
+  obtain ⟨i, hn⟩ := i
   induction i with
   | zero => simp [-Fin.succ_mk, partialProd_succ]
   | succ i hi =>
@@ -220,7 +220,7 @@ theorem partialProd_right_inv {G : Type*} [Group G] (f : Fin n → G) (i : Fin n
     simp only [partialProd_succ, mul_inv_rev, Fin.castSucc_mk]
     -- Porting note: was
     -- assoc_rw [hi, inv_mul_cancel_left]
-    rw [← mul_assoc, mul_left_eq_self, mul_assoc, hi, mul_left_inv]
+    rw [← mul_assoc, mul_left_eq_self, mul_assoc, hi, inv_mul_cancel]
 
 /-- Let `(g₀, g₁, ..., gₙ)` be a tuple of elements in `Gⁿ⁺¹`.
 Then if `k < j`, this says `(g₀g₁...gₖ₋₁)⁻¹ * g₀g₁...gₖ = gₖ`.
@@ -264,32 +264,35 @@ end Fin
 def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
   Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_fun, Fintype.card_fin])
     (fun f => ⟨∑ i, f i * m ^ (i : ℕ), by
-      induction' n with n ih
-      · simp
-      cases m
-      · exact isEmptyElim (f <| Fin.last _)
-      simp_rw [Fin.sum_univ_castSucc, Fin.coe_castSucc, Fin.val_last]
-      refine (Nat.add_lt_add_of_lt_of_le (ih _) <| Nat.mul_le_mul_right _ (Fin.is_le _)).trans_eq ?_
-      rw [← one_add_mul (_ : ℕ), add_comm, pow_succ']⟩)
+      induction n with
+      | zero => simp
+      | succ n ih =>
+        cases m
+        · exact isEmptyElim (f <| Fin.last _)
+        simp_rw [Fin.sum_univ_castSucc, Fin.coe_castSucc, Fin.val_last]
+        refine (Nat.add_lt_add_of_lt_of_le (ih _) <| Nat.mul_le_mul_right _
+          (Fin.is_le _)).trans_eq ?_
+        rw [← one_add_mul (_ : ℕ), add_comm, pow_succ']⟩)
     (fun a b => ⟨a / m ^ (b : ℕ) % m, by
-      cases' n with n
+      rcases n with - | n
       · exact b.elim0
-      cases' m with m
+      rcases m with - | m
       · rw [zero_pow n.succ_ne_zero] at a
         exact a.elim0
       · exact Nat.mod_lt _ m.succ_pos⟩)
     fun a => by
       dsimp
-      induction' n with n ih
-      · subsingleton [(finCongr <| pow_zero _).subsingleton]
-      simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
-      ext
-      simp_rw [Fin.sum_univ_succ, Fin.val_zero, Fin.val_succ, pow_zero, Nat.div_one,
-        mul_one, pow_succ', ← Nat.div_div_eq_div_mul, mul_left_comm _ m, ← mul_sum]
-      rw [ih _ (Nat.div_lt_of_lt_mul ?_), Nat.mod_add_div]
-      -- Porting note: replaces `a.is_lt` in the wildcard above. Caused by a refactor of the `npow`
-      -- instance for `Fin`.
-      exact a.is_lt.trans_eq (pow_succ' _ _)
+      induction n with
+      | zero => subsingleton [(finCongr <| pow_zero _).subsingleton]
+      | succ n ih =>
+        simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
+        ext
+        simp_rw [Fin.sum_univ_succ, Fin.val_zero, Fin.val_succ, pow_zero, Nat.div_one,
+          mul_one, pow_succ', ← Nat.div_div_eq_div_mul, mul_left_comm _ m, ← mul_sum]
+        rw [ih _ (Nat.div_lt_of_lt_mul ?_), Nat.mod_add_div]
+        -- Porting note: replaces `a.is_lt` in the wildcard above.
+        -- Caused by a refactor of the `npow` instance for `Fin`.
+        exact a.is_lt.trans_eq (pow_succ' _ _)
 
 theorem finFunctionFinEquiv_apply {m n : ℕ} (f : Fin n → Fin m) :
     (finFunctionFinEquiv f : ℕ) = ∑ i : Fin n, ↑(f i) * m ^ (i : ℕ) :=
@@ -305,8 +308,9 @@ theorem finFunctionFinEquiv_single {m n : ℕ} [NeZero m] (i : Fin n) (j : Fin m
 def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃ Fin (∏ i : Fin m, n i) :=
   Equiv.ofRightInverseOfCardLE (le_of_eq <| by simp_rw [Fintype.card_pi, Fintype.card_fin])
     (fun f => ⟨∑ i, f i * ∏ j, n (Fin.castLE i.is_lt.le j), by
-      induction' m with m ih
-      · simp
+      induction m with
+      | zero => simp
+      | succ m ih =>
       rw [Fin.prod_univ_castSucc, Fin.sum_univ_castSucc]
       suffices
         ∀ (n : Fin m → ℕ) (nn : ℕ) (f : ∀ i : Fin m, Fin (n i)) (fn : Fin nn),
@@ -325,7 +329,7 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
     (fun a b => ⟨(a / ∏ j : Fin b, n (Fin.castLE b.is_lt.le j)) % n b, by
       cases m
       · exact b.elim0
-      cases' h : n b with nb
+      rcases h : n b with nb | nb
       · rw [prod_eq_zero (Finset.mem_univ _) h] at a
         exact isEmptyElim a
       exact Nat.mod_lt _ nb.succ_pos⟩)
@@ -406,7 +410,7 @@ theorem prod_take_ofFn {n : ℕ} (f : Fin n → α) (i : ℕ) :
     · have A : (ofFn f).take i = (ofFn f).take i.succ := by
         rw [← length_ofFn f] at h
         have : length (ofFn f) ≤ i := not_lt.mp h
-        rw [take_all_of_le this, take_all_of_le (le_trans this (Nat.le_succ _))]
+        rw [take_of_length_le this, take_of_length_le (le_trans this (Nat.le_succ _))]
       have B : ∀ j : Fin n, ((j : ℕ) < i.succ) = ((j : ℕ) < i) := by
         intro j
         have : (j : ℕ) < i := lt_of_lt_of_le j.2 (not_lt.mp h)
@@ -421,18 +425,18 @@ end CommMonoid
 
 @[to_additive]
 theorem alternatingProd_eq_finset_prod {G : Type*} [CommGroup G] :
-    ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L.get i ^ (-1 : ℤ) ^ (i : ℕ)
+    ∀ (L : List G), alternatingProd L = ∏ i : Fin L.length, L[i] ^ (-1 : ℤ) ^ (i : ℕ)
   | [] => by
     rw [alternatingProd, Finset.prod_eq_one]
     rintro ⟨i, ⟨⟩⟩
   | g::[] => by
-    show g = ∏ i : Fin 1, [g].get i ^ (-1 : ℤ) ^ (i : ℕ)
+    show g = ∏ i : Fin 1, [g][i] ^ (-1 : ℤ) ^ (i : ℕ)
     rw [Fin.prod_univ_succ]; simp
   | g::h::L =>
     calc g * h⁻¹ * L.alternatingProd
-      = g * h⁻¹ * ∏ i : Fin L.length, L.get i ^ (-1 : ℤ) ^ (i : ℕ) :=
+      = g * h⁻¹ * ∏ i : Fin L.length, L[i] ^ (-1 : ℤ) ^ (i : ℕ) :=
         congr_arg _ (alternatingProd_eq_finset_prod _)
-    _ = ∏ i : Fin (L.length + 2), List.get (g::h::L) i ^ (-1 : ℤ) ^ (i : ℕ) := by
+    _ = ∏ i : Fin (L.length + 2), (g::h::L)[i] ^ (-1 : ℤ) ^ (i : ℕ) := by
         { rw [Fin.prod_univ_succ, Fin.prod_univ_succ, mul_assoc]
           simp [pow_add]}
 

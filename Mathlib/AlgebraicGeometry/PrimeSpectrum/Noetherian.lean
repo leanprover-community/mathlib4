@@ -21,9 +21,7 @@ variable (R : Type u) [CommRing R] [IsNoetherianRing R]
 
 instance : NoetherianSpace (PrimeSpectrum R) := by
   apply ((noetherianSpace_TFAE <| PrimeSpectrum R).out 0 1).mpr
-  have H := ‹IsNoetherianRing R›
-  rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at H
-  exact (closedsEmbedding R).dual.wellFounded H
+  exact (closedsEmbedding R).dual.wellFounded IsWellFounded.wf
 
 lemma _root_.minimalPrimes.finite_of_isNoetherianRing : (minimalPrimes R).Finite :=
   minimalPrimes.equivIrreducibleComponents R

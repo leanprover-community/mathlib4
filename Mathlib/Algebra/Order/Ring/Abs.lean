@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
+import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Ring.Divisibility.Basic
@@ -110,13 +111,13 @@ lemma abs_lt_of_sq_lt_sq (h : a ^ 2 < b ^ 2) (hb : 0 ≤ b) : |a| < b := by
   rwa [← abs_of_nonneg hb, ← sq_lt_sq]
 
 lemma abs_lt_of_sq_lt_sq' (h : a ^ 2 < b ^ 2) (hb : 0 ≤ b) : -b < a ∧ a < b :=
-  abs_lt.1 $ abs_lt_of_sq_lt_sq h hb
+  abs_lt.1 <| abs_lt_of_sq_lt_sq h hb
 
 lemma abs_le_of_sq_le_sq (h : a ^ 2 ≤ b ^ 2) (hb : 0 ≤ b) : |a| ≤ b := by
   rwa [← abs_of_nonneg hb, ← sq_le_sq]
 
 lemma abs_le_of_sq_le_sq' (h : a ^ 2 ≤ b ^ 2) (hb : 0 ≤ b) : -b ≤ a ∧ a ≤ b :=
-  abs_le.1 $ abs_le_of_sq_le_sq h hb
+  abs_le.1 <| abs_le_of_sq_le_sq h hb
 
 lemma sq_eq_sq_iff_abs_eq_abs (a b : α) : a ^ 2 = b ^ 2 ↔ |a| = |b| := by
   simp only [le_antisymm_iff, sq_le_sq]
@@ -195,7 +196,7 @@ lemma pow_eq_one_iff_cases : a ^ n = 1 ↔ n = 0 ∨ a = 1 ∨ a = -1 ∧ Even n
 lemma pow_eq_neg_pow_iff (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd n :=
   match n.even_or_odd with
   | .inl he =>
-    suffices a ^ n > -b ^ n by simpa [he] using this.ne'
+    suffices a ^ n > -b ^ n by simpa [he, not_odd_iff_even.2 he] using this.ne'
     lt_of_lt_of_le (by simp [he.pow_pos hb]) (he.pow_nonneg _)
   | .inr ho => by
     simp only [ho, and_true, ← ho.neg_pow, (ho.strictMono_pow (R := R)).injective.eq_iff]
@@ -225,7 +226,7 @@ lemma Even.mod_even (hn : Even n) (ha : Even a) : Even (n % a) :=
   (Even.mod_even_iff ha).mpr hn
 
 lemma Odd.of_dvd_nat (hn : Odd n) (hm : m ∣ n) : Odd m :=
-  odd_iff_not_even.2 <| mt hm.even (odd_iff_not_even.1 hn)
+  not_even_iff_odd.1 <| mt hm.even (not_even_iff_odd.2 hn)
 
 /-- `2` is not a factor of an odd natural number. -/
 lemma Odd.ne_two_of_dvd_nat {m n : ℕ} (hn : Odd n) (hm : m ∣ n) : m ≠ 2 := by

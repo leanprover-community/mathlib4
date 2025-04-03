@@ -128,7 +128,7 @@ theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (
 section DeleteFar
 
 -- Porting note: added `Fintype (Sym2 V)` argument.
-variable {𝕜 : Type*} [OrderedRing 𝕜] [Fintype V] [Fintype (Sym2 V)]
+variable {𝕜 : Type*} [OrderedRing 𝕜]
   [Fintype G.edgeSet] {p : SimpleGraph V → Prop} {r r₁ r₂ : 𝕜}
 
 /-- A graph is `r`-*delete-far* from a property `p` if we must delete at least `r` edges from it to
@@ -138,7 +138,7 @@ def DeleteFar (p : SimpleGraph V → Prop) (r : 𝕜) : Prop :=
 
 variable {G}
 
-theorem deleteFar_iff :
+theorem deleteFar_iff [Fintype (Sym2 V)] :
     G.DeleteFar p r ↔ ∀ ⦃H : SimpleGraph _⦄ [DecidableRel H.Adj],
       H ≤ G → p H → r ≤ G.edgeFinset.card - H.edgeFinset.card := by
   classical

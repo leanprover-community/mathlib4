@@ -89,7 +89,7 @@ theorem mul_star_self (U : unitary R) : U * star U = 1 :=
 instance : Group (unitary R) :=
   { Submonoid.toMonoid _ with
     inv := star
-    mul_left_inv := star_mul_self }
+    inv_mul_cancel := star_mul_self }
 
 instance : InvolutiveStar (unitary R) :=
   ⟨by

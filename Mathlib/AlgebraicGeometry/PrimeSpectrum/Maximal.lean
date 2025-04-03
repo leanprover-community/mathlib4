@@ -26,8 +26,6 @@ natural inclusion into the prime spectrum to avoid API duplication for zero loci
 
 noncomputable section
 
-open scoped Classical
-
 universe u v
 
 variable (R : Type u) [CommRing R]

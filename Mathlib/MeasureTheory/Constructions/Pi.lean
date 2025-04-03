@@ -325,7 +325,7 @@ def FiniteSpanningSetsIn.pi {C : ∀ i, Set (Set (α i))}
       _ = ∏ i, μ i (toMeasurable (μ i) ((hμ i).set (e n i))) :=
         (pi_pi_aux μ _ fun i => measurableSet_toMeasurable _ _)
       _ = ∏ i, μ i ((hμ i).set (e n i)) := by simp only [measure_toMeasurable]
-      _ < ∞ := ENNReal.prod_lt_top fun i _ => ((hμ i).finite _).ne
+      _ < ∞ := ENNReal.prod_lt_top fun i _ => (hμ i).finite _
   · simp_rw [(surjective_decode_iget (ι → ℕ)).iUnion_comp fun x =>
         Set.pi univ fun i => (hμ i).set (x i),
       iUnion_univ_pi fun i => (hμ i).set, (hμ _).spanning, Set.pi_univ]
@@ -385,7 +385,7 @@ instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (v
 
 instance pi.instIsFiniteMeasure [∀ i, IsFiniteMeasure (μ i)] :
     IsFiniteMeasure (Measure.pi μ) :=
-  ⟨Measure.pi_univ μ ▸ ENNReal.prod_lt_top (fun i _ ↦ measure_ne_top (μ i) _)⟩
+  ⟨Measure.pi_univ μ ▸ ENNReal.prod_lt_top (fun i _ ↦ measure_lt_top (μ i) _)⟩
 
 instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, IsFiniteMeasure (volume : Measure (α i))] :
     IsFiniteMeasure (volume : Measure (∀ i, α i)) :=
@@ -570,7 +570,7 @@ instance pi.isLocallyFiniteMeasure
   choose s hxs ho hμ using fun i => (μ i).exists_isOpen_measure_lt_top (x i)
   refine ⟨pi univ s, set_pi_mem_nhds finite_univ fun i _ => IsOpen.mem_nhds (ho i) (hxs i), ?_⟩
   rw [pi_pi]
-  exact ENNReal.prod_lt_top fun i _ => (hμ i).ne
+  exact ENNReal.prod_lt_top fun i _ => hμ i
 
 instance {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, MeasureSpace (X i)]
     [∀ i, SigmaFinite (volume : Measure (X i))]
@@ -648,7 +648,7 @@ instance pi.isFiniteMeasureOnCompacts [∀ i, TopologicalSpace (α i)]
     exact lt_of_le_of_lt (measure_mono (univ.subset_pi_eval_image K)) this
   rw [Measure.pi_pi]
   refine WithTop.prod_lt_top ?_
-  exact fun i _ => ne_of_lt (IsCompact.measure_lt_top (IsCompact.image hK (continuous_apply i)))
+  exact fun i _ => IsCompact.measure_lt_top (IsCompact.image hK (continuous_apply i))
 
 instance {X : ι → Type*} [∀ i, MeasureSpace (X i)] [∀ i, TopologicalSpace (X i)]
     [∀ i, SigmaFinite (volume : Measure (X i))]
@@ -867,7 +867,8 @@ theorem volume_preserving_pi_empty {ι : Type u} (α : ι → Type v) [Fintype �
     MeasurePreserving (MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit) volume volume :=
   measurePreserving_pi_empty fun _ => volume
 
-theorem measurePreserving_piFinsetUnion [DecidableEq ι] {s t : Finset ι} (h : Disjoint s t)
+theorem measurePreserving_piFinsetUnion {ι : Type*} {α : ι → Type*}
+    {_ : ∀ i, MeasurableSpace (α i)} [DecidableEq ι] {s t : Finset ι} (h : Disjoint s t)
     (μ : ∀ i, Measure (α i)) [∀ i, SigmaFinite (μ i)] :
     MeasurePreserving (MeasurableEquiv.piFinsetUnion α h)
       ((Measure.pi fun i : s ↦ μ i).prod (Measure.pi fun i : t ↦ μ i))
@@ -876,13 +877,15 @@ theorem measurePreserving_piFinsetUnion [DecidableEq ι] {s t : Finset ι} (h : 
   measurePreserving_piCongrLeft (fun i : ↥(s ∪ t) ↦ μ i) e |>.comp <|
     measurePreserving_sumPiEquivProdPi_symm fun b ↦ μ (e b)
 
-theorem volume_preserving_piFinsetUnion (α : ι → Type*) [DecidableEq ι] {s t : Finset ι}
+theorem volume_preserving_piFinsetUnion {ι : Type*} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι}
     (h : Disjoint s t) [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (volume : Measure (α i))] :
     MeasurePreserving (MeasurableEquiv.piFinsetUnion α h) volume volume :=
   measurePreserving_piFinsetUnion h (fun _ ↦ volume)
 
-theorem measurePreserving_pi {β : ι → Type*} [∀ i, MeasurableSpace (β i)]
-    (ν : (i : ι) → Measure (β i)) {f : (i : ι) → (α i) → (β i)} [∀ i, SigmaFinite (ν i)]
+theorem measurePreserving_pi {ι : Type*} [Fintype ι] {α : ι → Type v} {β : ι → Type*}
+    [∀ i, MeasureSpace (α i)] [∀ i, MeasurableSpace (β i)]
+    (μ : (i : ι) → Measure (α i)) (ν : (i : ι) → Measure (β i))
+    {f : (i : ι) → (α i) → (β i)} [∀ i, SigmaFinite (ν i)]
     (hf : ∀ i, MeasurePreserving (f i) (μ i) (ν i)) :
     MeasurePreserving (fun a i ↦ f i (a i)) (Measure.pi μ) (Measure.pi ν) where
   measurable :=

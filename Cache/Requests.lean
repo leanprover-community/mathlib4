@@ -6,8 +6,6 @@ Authors: Arthur Paulino
 import Lean.Data.Json.Parser
 import Cache.Hashing
 
-set_option autoImplicit true
-
 namespace Cache.Requests
 
 -- FRO cache is flaky so disable until we work out the kinks: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/The.20cache.20doesn't.20work/near/411058849
@@ -255,7 +253,7 @@ def QueryType.prefix : QueryType → String
   | commits => "&prefix=c/"
   | all     => default
 
-def formatError : IO α :=
+def formatError {α : Type} : IO α :=
   throw <| IO.userError "Invalid format for curl return"
 
 def QueryType.desc : QueryType → String

@@ -104,9 +104,6 @@ theorem coe_inj_iff : f = g ↔ (f : V₁ → V₂) = g :=
 theorem ext (H : ∀ x, f x = g x) : f = g :=
   coe_inj <| funext H
 
-protected theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
-  ⟨by rintro rfl x; rfl, ext⟩
-
 variable (f g)
 
 @[simp]
@@ -211,8 +208,8 @@ theorem le_opNorm (x : V₁) : ‖f x‖ ≤ ‖f‖ * ‖x‖ := by
   · rwa [h, mul_zero] at hC ⊢
   have hlt : 0 < ‖x‖ := lt_of_le_of_ne (norm_nonneg x) (Ne.symm h)
   exact
-    (div_le_iff hlt).mp
-      (le_csInf bounds_nonempty fun c ⟨_, hc⟩ => (div_le_iff hlt).mpr <| by apply hc)
+    (div_le_iff₀ hlt).mp
+      (le_csInf bounds_nonempty fun c ⟨_, hc⟩ => (div_le_iff₀ hlt).mpr <| by apply hc)
 
 theorem le_opNorm_of_le {c : ℝ} {x} (h : ‖x‖ ≤ c) : ‖f x‖ ≤ ‖f‖ * c :=
   le_trans (f.le_opNorm x) (by gcongr; exact f.opNorm_nonneg)
@@ -535,7 +532,7 @@ instance toNormedAddCommGroup {V₁ V₂ : Type*} [NormedAddCommGroup V₁] [Nor
       add_le' := opNorm_add_le
       eq_zero_of_map_eq_zero' := fun _f => opNorm_zero_iff.1 }
 
-/-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`.  -/
+/-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
 @[simps]
 def coeAddHom : NormedAddGroupHom V₁ V₂ →+ V₁ → V₂ where
   toFun := DFunLike.coe

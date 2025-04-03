@@ -176,7 +176,7 @@ variable {a b : ℝ} {f : ι → Ω → ℝ} {N : ι} {n m : ℕ} {ω : Ω}
 
 theorem upperCrossingTime_le : upperCrossingTime a b f N n ω ≤ N := by
   cases n
-  · simp only [upperCrossingTime_zero, Pi.bot_apply, bot_le, Nat.zero_eq]
+  · simp only [upperCrossingTime_zero, Pi.bot_apply, bot_le]
   · simp only [upperCrossingTime_succ, hitting_le]
 
 @[simp]
@@ -448,7 +448,7 @@ theorem crossing_eq_crossing_of_lowerCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
   have h' : upperCrossingTime a b f N n ω < N :=
     lt_of_le_of_lt upperCrossingTime_le_lowerCrossingTime h
   induction' n with k ih
-  · simp only [Nat.zero_eq, upperCrossingTime_zero, bot_eq_zero', eq_self_iff_true,
+  · simp only [upperCrossingTime_zero, bot_eq_zero', eq_self_iff_true,
       lowerCrossingTime_zero, true_and_iff, eq_comm]
     refine hitting_eq_hitting_of_exists hNM ?_
     rw [lowerCrossingTime, hitting_lt_iff] at h
@@ -605,7 +605,7 @@ theorem integral_mul_upcrossingsBefore_le_integral [IsFiniteMeasure μ] (hf : Su
         μ[∑ k ∈ Finset.range N, upcrossingStrat a b f N k * (f (k + 1) - f k)] := by
       rw [← integral_mul_left]
       refine integral_mono_of_nonneg ?_ ((hf.sum_upcrossingStrat_mul a b N).integrable N) ?_
-      · exact eventually_of_forall fun ω => mul_nonneg (sub_nonneg.2 hab.le) (Nat.cast_nonneg _)
+      · exact Eventually.of_forall fun ω => mul_nonneg (sub_nonneg.2 hab.le) (Nat.cast_nonneg _)
       · filter_upwards with ω
         simpa using mul_upcrossingsBefore_le (hfN ω) hab
     _ ≤ μ[f N] - μ[f 0] := hf.sum_mul_upcrossingStrat_le
@@ -625,11 +625,8 @@ theorem crossing_pos_eq (hab : a < b) :
   have hf' (ω i) : (f i ω - a)⁺ ≤ 0 ↔ f i ω ≤ a := by rw [posPart_nonpos, sub_nonpos]
   induction' n with k ih
   · refine ⟨rfl, ?_⟩
-    #adaptation_note /-- nightly-2024-03-16: simp was
     simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting,
-      Set.mem_Icc, Set.mem_Iic, Nat.zero_eq] -/
-    simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting_def,
-      Set.mem_Icc, Set.mem_Iic, Nat.zero_eq]
+      Set.mem_Icc, Set.mem_Iic]
     ext ω
     split_ifs with h₁ h₂ h₂
     · simp_rw [hf']
@@ -794,7 +791,7 @@ theorem Submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part [IsFiniteM
       intro N
       rw [ofReal_integral_eq_lintegral_ofReal]
       · exact (hf.sub_martingale (martingale_const _ _ _)).pos.integrable _
-      · exact eventually_of_forall fun ω => posPart_nonneg _
+      · exact Eventually.of_forall fun ω => posPart_nonneg _
     rw [lintegral_iSup']
     · simp_rw [this, ENNReal.mul_iSup, iSup_le_iff]
       intro N

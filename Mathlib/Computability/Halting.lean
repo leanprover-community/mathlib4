@@ -16,7 +16,6 @@ A universal partial recursive function, Rice's theorem, and the halting problem.
 * [Mario Carneiro, *Formalizing computability theory via partial recursive functions*][carneiro2019]
 -/
 
-
 open Mathlib (Vector)
 open Encodable Denumerable
 

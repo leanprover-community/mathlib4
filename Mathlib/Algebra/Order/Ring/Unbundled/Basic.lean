@@ -113,7 +113,6 @@ TODO: the mixin assumptiosn can be relaxed in most cases
 
 -/
 
-
 assert_not_exists OrderedCommMonoid
 assert_not_exists MonoidHom
 
@@ -137,31 +136,6 @@ section OrderedSemiring
 
 variable [Semiring α] [Preorder α] {a b c d : α}
 
-@[simp]
-theorem pow_nonneg [ZeroLEOneClass α] [PosMulMono α]
-    (H : 0 ≤ a) : ∀ n : ℕ, 0 ≤ a ^ n
-  | 0 => by
-    rw [pow_zero]
-    exact zero_le_one
-  | n + 1 => by
-    rw [pow_succ]
-    exact mul_nonneg (pow_nonneg H _) H
-
-lemma pow_le_pow_of_le_one [ZeroLEOneClass α] [PosMulMono α] [MulPosMono α]
-    (ha₀ : 0 ≤ a) (ha₁ : a ≤ 1) : ∀ {m n : ℕ}, m ≤ n → a ^ n ≤ a ^ m
-  | _, _, Nat.le.refl => le_rfl
-  | _, _, Nat.le.step h => by
-    rw [pow_succ']
-    exact (mul_le_of_le_one_left (pow_nonneg ha₀ _) ha₁).trans $ pow_le_pow_of_le_one ha₀ ha₁ h
-
-lemma pow_le_of_le_one [ZeroLEOneClass α] [PosMulMono α] [MulPosMono α]
-    (h₀ : 0 ≤ a) (h₁ : a ≤ 1) {n : ℕ} (hn : n ≠ 0) : a ^ n ≤ a :=
-  (pow_one a).subst (pow_le_pow_of_le_one h₀ h₁ (Nat.pos_of_ne_zero hn))
-
-lemma sq_le [ZeroLEOneClass α] [PosMulMono α] [MulPosMono α]
-    (h₀ : 0 ≤ a) (h₁ : a ≤ 1) : a ^ 2 ≤ a :=
-  pow_le_of_le_one h₀ h₁ two_ne_zero
-
 -- Porting note: it's unfortunate we need to write `(@one_le_two α)` here.
 theorem add_le_mul_two_add [ZeroLEOneClass α] [MulPosMono α] [CovariantClass α α (· + ·) (· ≤ ·)]
     (a2 : 2 ≤ a) (b0 : 0 ≤ b) : a + (2 + b) ≤ a * (2 + b) :=
@@ -169,68 +143,6 @@ theorem add_le_mul_two_add [ZeroLEOneClass α] [MulPosMono α] [CovariantClass �
     a + (2 + b) ≤ a + (a + a * b) :=
       add_le_add_left (add_le_add a2 <| le_mul_of_one_le_left b0 <| (@one_le_two α).trans a2) a
     _ ≤ a * (2 + b) := by rw [mul_add, mul_two, add_assoc]
-
-theorem one_le_mul_of_one_le_of_one_le [ZeroLEOneClass α] [PosMulMono α]
-    (ha : 1 ≤ a) (hb : 1 ≤ b) : (1 : α) ≤ a * b :=
-  Left.one_le_mul_of_le_of_le ha hb <| zero_le_one.trans ha
-
-section Monotone
-
-variable [Preorder β] {f g : β → α}
-
-theorem monotone_mul_left_of_nonneg [PosMulMono α]
-    (ha : 0 ≤ a) : Monotone fun x => a * x := fun _ _ h =>
-  mul_le_mul_of_nonneg_left h ha
-
-theorem monotone_mul_right_of_nonneg [MulPosMono α]
-    (ha : 0 ≤ a) : Monotone fun x => x * a := fun _ _ h =>
-  mul_le_mul_of_nonneg_right h ha
-
-theorem Monotone.mul_const [MulPosMono α]
-    (hf : Monotone f) (ha : 0 ≤ a) : Monotone fun x => f x * a :=
-  (monotone_mul_right_of_nonneg ha).comp hf
-
-theorem Monotone.const_mul [PosMulMono α]
-    (hf : Monotone f) (ha : 0 ≤ a) : Monotone fun x => a * f x :=
-  (monotone_mul_left_of_nonneg ha).comp hf
-
-theorem Antitone.mul_const [MulPosMono α]
-    (hf : Antitone f) (ha : 0 ≤ a) : Antitone fun x => f x * a :=
-  (monotone_mul_right_of_nonneg ha).comp_antitone hf
-
-theorem Antitone.const_mul [PosMulMono α]
-    (hf : Antitone f) (ha : 0 ≤ a) : Antitone fun x => a * f x :=
-  (monotone_mul_left_of_nonneg ha).comp_antitone hf
-
-theorem Monotone.mul [PosMulMono α] [MulPosMono α]
-    (hf : Monotone f) (hg : Monotone g) (hf₀ : ∀ x, 0 ≤ f x) (hg₀ : ∀ x, 0 ≤ g x) :
-    Monotone (f * g) :=
-  fun _ _ h => mul_le_mul (hf h) (hg h) (hg₀ _) (hf₀ _)
-
-end Monotone
-
-theorem mul_le_one [ZeroLEOneClass α] [PosMulMono α] [MulPosMono α]
-    (ha : a ≤ 1) (hb' : 0 ≤ b) (hb : b ≤ 1) : a * b ≤ 1 :=
-  one_mul (1 : α) ▸ mul_le_mul ha hb hb' zero_le_one
-
-theorem one_lt_mul_of_le_of_lt [ZeroLEOneClass α] [MulPosMono α]
-    (ha : 1 ≤ a) (hb : 1 < b) : 1 < a * b :=
-  hb.trans_le <| le_mul_of_one_le_left (zero_le_one.trans hb.le) ha
-
-theorem one_lt_mul_of_lt_of_le [ZeroLEOneClass α] [PosMulMono α]
-    (ha : 1 < a) (hb : 1 ≤ b) : 1 < a * b :=
-  ha.trans_le <| le_mul_of_one_le_right (zero_le_one.trans ha.le) hb
-
-alias one_lt_mul := one_lt_mul_of_le_of_lt
-
-theorem mul_lt_one_of_nonneg_of_lt_one_left [PosMulMono α]
-    (ha₀ : 0 ≤ a) (ha : a < 1) (hb : b ≤ 1) : a * b < 1 :=
-  (mul_le_of_le_one_right ha₀ hb).trans_lt ha
-
-theorem mul_lt_one_of_nonneg_of_lt_one_right [MulPosMono α]
-    (ha : a ≤ 1) (hb₀ : 0 ≤ b) (hb : b < 1) : a * b < 1 :=
-  (mul_le_of_le_one_left hb₀ ha).trans_lt hb
-
 
 theorem mul_le_mul_of_nonpos_left [ExistsAddOfLE α] [PosMulMono α]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
@@ -287,7 +199,7 @@ theorem mul_le_mul_of_nonpos_of_nonpos' [ExistsAddOfLE α] [PosMulMono α] [MulP
     (hca : c ≤ a) (hdb : d ≤ b) (ha : a ≤ 0) (hd : d ≤ 0) : a * b ≤ c * d :=
   (mul_le_mul_of_nonpos_left hdb ha).trans <| mul_le_mul_of_nonpos_right hca hd
 
-/-- Variant of `mul_le_of_le_one_left` for `b` non-positive instead of non-negative.  -/
+/-- Variant of `mul_le_of_le_one_left` for `b` non-positive instead of non-negative. -/
 theorem le_mul_of_le_one_left [ExistsAddOfLE α] [MulPosMono α]
     [CovariantClass α α (swap (· + ·)) (· ≤ ·)] [ContravariantClass α α (swap (· + ·)) (· ≤ ·)]
     (hb : b ≤ 0) (h : a ≤ 1) : b ≤ a * b := by
@@ -363,16 +275,6 @@ theorem Antitone.mul [ExistsAddOfLE α] [PosMulMono α] [MulPosMono α]
     Monotone (f * g) := fun _ _ h => mul_le_mul_of_nonpos_of_nonpos (hf h) (hg h) (hf₀ _) (hg₀ _)
 
 end Monotone
-
-lemma le_iff_exists_nonneg_add
-    [ExistsAddOfLE α] [ContravariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· ≤ ·)]
-    (a b : α) : a ≤ b ↔ ∃ c ≥ 0, b = a + c := by
-  refine ⟨fun h ↦ ?_, ?_⟩
-  · obtain ⟨c, rfl⟩ := exists_add_of_le h
-    exact ⟨c, nonneg_of_le_add_right h, rfl⟩
-  · rintro ⟨c, hc, rfl⟩
-    exact le_add_of_nonneg_right hc
-
 end OrderedSemiring
 
 section OrderedCommRing
@@ -380,95 +282,6 @@ section OrderedCommRing
 section StrictOrderedSemiring
 
 variable [Semiring α] [PartialOrder α] {a b c d : α}
-
-@[simp]
-theorem pow_pos [ZeroLEOneClass α] [PosMulStrictMono α]
-    (H : 0 < a) : ∀ n : ℕ, 0 < a ^ n
-  | 0 => by
-    nontriviality
-    rw [pow_zero]
-    exact zero_lt_one
-  | n + 1 => by
-    rw [pow_succ]
-    exact mul_pos (pow_pos H _) H
-
-theorem mul_self_lt_mul_self [PosMulStrictMono α] [MulPosMono α]
-    (h1 : 0 ≤ a) (h2 : a < b) : a * a < b * b :=
-  mul_lt_mul' h2.le h2 h1 <| h1.trans_lt h2
-
--- In the next lemma, we used to write `Set.Ici 0` instead of `{x | 0 ≤ x}`.
--- As this lemma is not used outside this file,
--- and the import for `Set.Ici` is not otherwise needed until later,
--- we choose not to use it here.
-theorem strictMonoOn_mul_self [PosMulStrictMono α] [MulPosMono α] :
-    StrictMonoOn (fun x : α => x * x) { x | 0 ≤ x } :=
-  fun _ hx _ _ hxy => mul_self_lt_mul_self hx hxy
-
--- See Note [decidable namespace]
-protected theorem Decidable.mul_lt_mul'' [PosMulMono α] [PosMulStrictMono α] [MulPosStrictMono α]
-    [@DecidableRel α (· ≤ ·)] (h1 : a < c) (h2 : b < d)
-    (h3 : 0 ≤ a) (h4 : 0 ≤ b) : a * b < c * d :=
-  h4.lt_or_eq_dec.elim (fun b0 => mul_lt_mul h1 h2.le b0 <| h3.trans h1.le) fun b0 => by
-    rw [← b0, mul_zero]; exact mul_pos (h3.trans_lt h1) (h4.trans_lt h2)
-
-theorem lt_mul_left [MulPosStrictMono α]
-    (hn : 0 < a) (hm : 1 < b) : a < b * a := by
-  convert mul_lt_mul_of_pos_right hm hn
-  rw [one_mul]
-
-theorem lt_mul_right [PosMulStrictMono α]
-    (hn : 0 < a) (hm : 1 < b) : a < a * b := by
-  convert mul_lt_mul_of_pos_left hm hn
-  rw [mul_one]
-
-theorem lt_mul_self [ZeroLEOneClass α] [MulPosStrictMono α]
-    (hn : 1 < a) : a < a * a :=
-  lt_mul_left (hn.trans_le' zero_le_one) hn
-
-section Monotone
-
-variable [Preorder β] {f g : β → α}
-
-theorem strictMono_mul_left_of_pos [PosMulStrictMono α]
-    (ha : 0 < a) : StrictMono fun x => a * x := fun _ _ b_lt_c =>
-  mul_lt_mul_of_pos_left b_lt_c ha
-
-theorem strictMono_mul_right_of_pos [MulPosStrictMono α]
-    (ha : 0 < a) : StrictMono fun x => x * a := fun _ _ b_lt_c =>
-  mul_lt_mul_of_pos_right b_lt_c ha
-
-theorem StrictMono.mul_const [MulPosStrictMono α]
-    (hf : StrictMono f) (ha : 0 < a) : StrictMono fun x => f x * a :=
-  (strictMono_mul_right_of_pos ha).comp hf
-
-theorem StrictMono.const_mul [PosMulStrictMono α]
-    (hf : StrictMono f) (ha : 0 < a) : StrictMono fun x => a * f x :=
-  (strictMono_mul_left_of_pos ha).comp hf
-
-theorem StrictAnti.mul_const [MulPosStrictMono α]
-    (hf : StrictAnti f) (ha : 0 < a) : StrictAnti fun x => f x * a :=
-  (strictMono_mul_right_of_pos ha).comp_strictAnti hf
-
-theorem StrictAnti.const_mul [PosMulStrictMono α]
-    (hf : StrictAnti f) (ha : 0 < a) : StrictAnti fun x => a * f x :=
-  (strictMono_mul_left_of_pos ha).comp_strictAnti hf
-
-theorem StrictMono.mul_monotone [PosMulMono α] [MulPosStrictMono α]
-    (hf : StrictMono f) (hg : Monotone g) (hf₀ : ∀ x, 0 ≤ f x)
-    (hg₀ : ∀ x, 0 < g x) : StrictMono (f * g) := fun _ _ h =>
-  mul_lt_mul (hf h) (hg h.le) (hg₀ _) (hf₀ _)
-
-theorem Monotone.mul_strictMono [PosMulStrictMono α] [MulPosMono α]
-    (hf : Monotone f) (hg : StrictMono g) (hf₀ : ∀ x, 0 < f x)
-    (hg₀ : ∀ x, 0 ≤ g x) : StrictMono (f * g) := fun _ _ h =>
-  mul_lt_mul' (hf h.le) (hg h) (hg₀ _) (hf₀ _)
-
-theorem StrictMono.mul [PosMulStrictMono α] [MulPosStrictMono α]
-    (hf : StrictMono f) (hg : StrictMono g) (hf₀ : ∀ x, 0 ≤ f x)
-    (hg₀ : ∀ x, 0 ≤ g x) : StrictMono (f * g) := fun _ _ h =>
-  mul_lt_mul'' (hf h) (hg h) (hf₀ _) (hg₀ _)
-
-end Monotone
 
 theorem lt_two_mul_self [ZeroLEOneClass α] [MulPosStrictMono α] [NeZero (R := α) 1]
     [CovariantClass α α (· + ·) (· < ·)] (ha : 0 < a) : a < 2 * a :=
@@ -564,9 +377,9 @@ lemma mul_add_mul_le_mul_add_mul [ExistsAddOfLE α] [MulPosMono α]
     [CovariantClass α α (· + ·) (· ≤ ·)] [ContravariantClass α α (· + ·) (· ≤ ·)]
     (hab : a ≤ b) (hcd : c ≤ d) : a * d + b * c ≤ a * c + b * d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab
-  obtain ⟨d, rfl⟩ := exists_add_of_le hcd
+  obtain ⟨d, hd, rfl⟩ := exists_nonneg_add_of_le hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
-  exact add_le_add_left (mul_le_mul_of_nonneg_right hab <| (le_add_iff_nonneg_right _).1 hcd) _
+  exact add_le_add_left (mul_le_mul_of_nonneg_right hab hd) _
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_le_mul_add_mul' [ExistsAddOfLE α] [MulPosMono α]
@@ -578,16 +391,16 @@ variable [ContravariantClass α α (· + ·) (· < ·)]
 
 /-- Binary strict **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul [ExistsAddOfLE α] [MulPosStrictMono α]
-    [CovariantClass α α (· + ·) (· < ·)] [ContravariantClass α α (· + ·) (· < ·)]
+    [CovariantClass α α (· + ·) (· < ·)]
     (hab : a < b) (hcd : c < d) : a * d + b * c < a * c + b * d := by
   obtain ⟨b, rfl⟩ := exists_add_of_le hab.le
-  obtain ⟨d, rfl⟩ := exists_add_of_le hcd.le
+  obtain ⟨d, hd, rfl⟩ := exists_pos_add_of_lt' hcd
   rw [mul_add, add_right_comm, mul_add, ← add_assoc]
-  exact add_lt_add_left (mul_lt_mul_of_pos_right hab <| (lt_add_iff_pos_right _).1 hcd) _
+  exact add_lt_add_left (mul_lt_mul_of_pos_right hab hd) _
 
 /-- Binary **rearrangement inequality**. -/
 lemma mul_add_mul_lt_mul_add_mul' [ExistsAddOfLE α] [MulPosStrictMono α]
-    [CovariantClass α α (· + ·) (· < ·)] [ContravariantClass α α (· + ·) (· < ·)]
+    [CovariantClass α α (· + ·) (· < ·)]
     (hba : b < a) (hdc : d < c) : a * d + b * c < a * c + b * d := by
   rw [add_comm (a * d), add_comm (a * c)]
   exact mul_add_mul_lt_mul_add_mul hba hdc
@@ -857,7 +670,7 @@ theorem mul_self_pos [ExistsAddOfLE α] [PosMulStrictMono α] [MulPosStrictMono 
     rw [mul_zero] at h
     exact h.false
   · intro h
-    cases' h.lt_or_lt with h h
+    rcases h.lt_or_lt with h | h
     exacts [mul_pos_of_neg_of_neg h h, mul_pos h h]
 
 theorem nonneg_of_mul_nonpos_left [ExistsAddOfLE α] [MulPosStrictMono α]
@@ -915,7 +728,7 @@ lemma mul_self_add_mul_self_eq_zero [IsRightCancelAdd α] [NoZeroDivisors α]
     [ZeroLEOneClass α] [ExistsAddOfLE α] [PosMulMono α]
     [CovariantClass α α (· + ·) (· ≤ ·)] [CovariantClass α α (· + ·) (· < ·)] :
     a * a + b * b = 0 ↔ a = 0 ∧ b = 0 := by
-  rw [add_eq_zero_iff', mul_self_eq_zero (M₀ := α), mul_self_eq_zero (M₀ := α)] <;>
+  rw [add_eq_zero_iff_of_nonneg, mul_self_eq_zero (M₀ := α), mul_self_eq_zero (M₀ := α)] <;>
     apply mul_self_nonneg
 
 lemma eq_zero_of_mul_self_add_mul_self_eq_zero [IsRightCancelAdd α] [NoZeroDivisors α]
@@ -1005,3 +818,5 @@ end LinearOrderedRing
 @[deprecated (since := "2023-12-23")] alias zero_le_mul_right := mul_nonneg_iff_of_pos_right
 @[deprecated (since := "2023-12-23")] alias zero_lt_mul_left := mul_pos_iff_of_pos_left
 @[deprecated (since := "2023-12-23")] alias zero_lt_mul_right := mul_pos_iff_of_pos_right
+
+end OrderedCommRing

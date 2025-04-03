@@ -16,8 +16,6 @@ We define chain homotopies, and prove that homotopic chain maps induce the same 
 
 universe v u
 
-open scoped Classical
-
 noncomputable section
 
 open CategoryTheory Category Limits HomologicalComplex
@@ -159,7 +157,7 @@ def symm {f g : C ⟶ D} (h : Homotopy f g) : Homotopy g f where
   hom := -h.hom
   zero i j w := by rw [Pi.neg_apply, Pi.neg_apply, h.zero i j w, neg_zero]
   comm i := by
-    rw [AddMonoidHom.map_neg, AddMonoidHom.map_neg, h.comm, ← neg_add, ← add_assoc, neg_add_self,
+    rw [AddMonoidHom.map_neg, AddMonoidHom.map_neg, h.comm, ← neg_add, ← add_assoc, neg_add_cancel,
       zero_add]
 
 /-- homotopy is a transitive relation. -/
@@ -250,6 +248,7 @@ def nullHomotopicMap (hom : ∀ i j, C.X i ⟶ D.X j) : C ⟶ D where
     rw [dNext_eq hom hij, prevD_eq hom hij, Preadditive.comp_add, Preadditive.add_comp, eq1, eq2,
       add_zero, zero_add, assoc]
 
+open Classical in
 /-- Variant of `nullHomotopicMap` where the input consists only of the
 relevant maps `C_i ⟶ D_j` such that `c.Rel j i`. -/
 def nullHomotopicMap' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : C ⟶ D :=
@@ -329,6 +328,7 @@ def nullHomotopy (hom : ∀ i j, C.X i ⟶ D.X j) (zero : ∀ i j, ¬c.Rel j i �
       rw [HomologicalComplex.zero_f_apply, add_zero]
       rfl }
 
+open Classical in
 /-- Homotopy to zero for maps constructed with `nullHomotopicMap'` -/
 @[simps!]
 def nullHomotopy' (h : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) : Homotopy (nullHomotopicMap' h) 0 := by

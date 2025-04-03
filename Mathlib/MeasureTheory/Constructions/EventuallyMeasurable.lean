@@ -33,11 +33,11 @@ TODO: Implement the latter.
 
 open Filter Set MeasurableSpace
 
-variable {α : Type*} (m : MeasurableSpace α) (l : Filter α) [CountableInterFilter l] {s t : Set α}
+variable {α : Type*} (m : MeasurableSpace α) {s t : Set α}
 
 /-- The `MeasurableSpace` of sets which are measurable with respect to a given σ-algebra `m`
 on `α`, modulo a given σ-filter `l` on `α`. -/
-def EventuallyMeasurableSpace : MeasurableSpace α where
+def EventuallyMeasurableSpace (l : Filter α) [CountableInterFilter l] : MeasurableSpace α where
   MeasurableSet' s := ∃ t, MeasurableSet t ∧ s =ᶠ[l] t
   measurableSet_empty := ⟨∅, MeasurableSet.empty, EventuallyEq.refl _ _ ⟩
   measurableSet_compl := fun s ⟨t, ht, hts⟩ => ⟨tᶜ, ht.compl, hts.compl⟩
@@ -48,9 +48,11 @@ def EventuallyMeasurableSpace : MeasurableSpace α where
 /-- We say a set `s` is an `EventuallyMeasurableSet` with respect to a given
 σ-algebra `m` and σ-filter `l` if it differs from a set in `m` by a set in
 the dual ideal of `l`. -/
-def EventuallyMeasurableSet (s : Set α) : Prop := @MeasurableSet _ (EventuallyMeasurableSpace m l) s
+def EventuallyMeasurableSet (l : Filter α) [CountableInterFilter l]  (s : Set α) : Prop :=
+  @MeasurableSet _ (EventuallyMeasurableSpace m l) s
 
-variable {l m}
+variable {l : Filter α} [CountableInterFilter l]
+variable {m}
 
 theorem MeasurableSet.eventuallyMeasurableSet (hs : MeasurableSet s) :
     EventuallyMeasurableSet m l s :=
@@ -75,7 +77,7 @@ namespace EventuallyMeasurableSpace
 
 instance measurableSingleton [MeasurableSingletonClass α] :
     @MeasurableSingletonClass α (EventuallyMeasurableSpace m l) :=
-  @MeasurableSingletonClass.mk _ (_) $ fun x => (MeasurableSet.singleton x).eventuallyMeasurableSet
+  @MeasurableSingletonClass.mk _ (_) <| fun x => (MeasurableSet.singleton x).eventuallyMeasurableSet
 
 end EventuallyMeasurableSpace
 

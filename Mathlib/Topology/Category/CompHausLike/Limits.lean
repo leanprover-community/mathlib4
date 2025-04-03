@@ -13,10 +13,25 @@ import Mathlib.Topology.Category.CompHausLike.Basic
 This file collects some constructions of explicit limits and colimits in `CompHausLike P`,
 which may be useful due to their definitional properties.
 
-So far, we have the following:
-- Explicit pullbacks, defined in the "usual" way as a subset of the product.
-- Explicit finite coproducts, defined as a disjoint union.
+## Main definitions
 
+* `HasExplicitFiniteCoproducts`: A typeclass describing the property that forming all finite
+  disjoint unions is stable under the property `P`.
+  - Given this property, we deduce that `CompHausLike P` has finite coproducts and the inclusion
+    functors to other `CompHausLike P'` and to `TopCat` preserve them.
+
+* `HasExplicitPullbacks`: A typeclass describing the property that forming all "explicit pullbacks"
+  is stable under the property `P`. Here, explicit pullbacks are defined as a subset of the product.
+  - Given this property, we deduce that `CompHausLike P` has pullbacks and the inclusion
+    functors to other `CompHausLike P'` and to `TopCat` preserve them.
+  - We also define a variant `HasExplicitPullbacksOfInclusions` which is says that explicit
+    pullbacks along inclusion maps into finite disjoint unions exist. `Stonean` has this property
+    but not the stronger one.
+
+## Main results
+
+* Given `[HasExplicitPullbacksOfInclusions P]` (which is implied by `[HasExplicitPullbacks P]`),
+  we provide an instance `FinitaryExtensive (CompHausLike P)`.
 -/
 
 namespace CompHausLike
@@ -112,7 +127,7 @@ class HasExplicitFiniteCoproducts : Prop where
   hasProp {α : Type w} [Finite α] (X : α → CompHausLike.{max u w} P) : HasExplicitFiniteCoproduct X
 
 /-
-This linter complains that the universes `u` and `w` only occur together, but `w` appears by itself
+This linter complains that the universes `u` and `w` only occur together, but `w` appears by itself
 in the indexing type of the coproduct. In almost all cases, `w` will be either `0` or `u`, but we
 want to allow both possibilities.
 -/
@@ -149,7 +164,7 @@ lemma Sigma.openEmbedding_ι (a : α) :
   change (Sigma.ι X a ≫ _) x = _
   simp
 
-/-- The functor to `TopCat` preserves finite coproducts if they exist. -/
+/-- The functor to `TopCat` preserves finite coproducts if they exist. -/
 instance (P) [HasExplicitFiniteCoproducts.{0} P] :
     PreservesFiniteCoproducts (compHausLikeToTop P) := by
   refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
@@ -158,7 +173,7 @@ instance (P) [HasExplicitFiniteCoproducts.{0} P] :
   apply preservesColimitOfPreservesColimitCocone (CompHausLike.finiteCoproduct.isColimit _)
   exact TopCat.sigmaCofanIsColimit _
 
-/-- The functor to another `CompHausLike` preserves finite coproducts if they exist. -/
+/-- The functor to another `CompHausLike` preserves finite coproducts if they exist. -/
 noncomputable instance {P' : TopCat.{u} → Prop}
     (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     PreservesFiniteCoproducts (toCompHausLike h) := by
@@ -260,18 +275,18 @@ def pullback.isLimit : Limits.IsLimit (pullback.cone f g) :=
 instance : HasLimit (cospan f g) where
   exists_limit := ⟨⟨pullback.cone f g, pullback.isLimit f g⟩⟩
 
-/-- The functor to `TopCat` creates pullbacks if they exist. -/
+/-- The functor to `TopCat` creates pullbacks if they exist. -/
 noncomputable instance : CreatesLimit (cospan f g) (compHausLikeToTop P) := by
   refine createsLimitOfFullyFaithfulOfIso (pullback f g)
     (((TopCat.pullbackConeIsLimit f g).conePointUniqueUpToIso
         (limit.isLimit _)) ≪≫ Limits.lim.mapIso (?_ ≪≫ (diagramIsoCospan _).symm))
   exact Iso.refl _
 
-/-- The functor to `TopCat` preserves pullbacks. -/
+/-- The functor to `TopCat` preserves pullbacks. -/
 noncomputable instance : PreservesLimit (cospan f g) (compHausLikeToTop P) :=
   preservesLimitOfCreatesLimitAndHasLimit _ _
 
-/-- The functor to another `CompHausLike` preserves pullbacks. -/
+/-- The functor to another `CompHausLike` preserves pullbacks. -/
 noncomputable instance {P' : TopCat → Prop}
     (h : ∀ (X : CompHausLike P), P X.toTop → P' X.toTop) :
     PreservesLimit (cospan f g) (toCompHausLike h) := by

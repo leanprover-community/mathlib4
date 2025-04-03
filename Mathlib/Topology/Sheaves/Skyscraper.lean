@@ -231,8 +231,8 @@ sending every `f : a ⟶ b` to the natural transformation `α` defined as: `α(U
 def skyscraperSheafFunctor : C ⥤ Sheaf C X where
   obj c := skyscraperSheaf p₀ c
   map f := Sheaf.Hom.mk <| (skyscraperPresheafFunctor p₀).map f
-  map_id _ := Sheaf.Hom.ext _ _ <| (skyscraperPresheafFunctor p₀).map_id _
-  map_comp _ _ := Sheaf.Hom.ext _ _ <| (skyscraperPresheafFunctor p₀).map_comp _ _
+  map_id _ := Sheaf.Hom.ext <| (skyscraperPresheafFunctor p₀).map_id _
+  map_comp _ _ := Sheaf.Hom.ext <| (skyscraperPresheafFunctor p₀).map_comp _ _
 
 namespace StalkSkyscraperPresheafAdjunctionAuxs
 
@@ -374,13 +374,13 @@ def stalkSkyscraperSheafAdjunction [HasColimits C] :
   -- Porting note (#11041): `ext1` is changed to `Sheaf.Hom.ext`,
   homEquiv 𝓕 c :=
     ⟨fun f => ⟨toSkyscraperPresheaf p₀ f⟩, fun g => fromStalk p₀ g.1, fromStalk_to_skyscraper p₀,
-      fun g => Sheaf.Hom.ext _ _ <| to_skyscraper_fromStalk _ _⟩
+      fun g => Sheaf.Hom.ext <| to_skyscraper_fromStalk _ _⟩
   unit :=
     { app := fun 𝓕 => ⟨(StalkSkyscraperPresheafAdjunctionAuxs.unit p₀).app 𝓕.1⟩
-      naturality := fun 𝓐 𝓑 f => Sheaf.Hom.ext _ _ <| by
+      naturality := fun 𝓐 𝓑 f => Sheaf.Hom.ext <| by
         apply (StalkSkyscraperPresheafAdjunctionAuxs.unit p₀).naturality }
   counit := StalkSkyscraperPresheafAdjunctionAuxs.counit p₀
-  homEquiv_unit {𝓐} c f := Sheaf.Hom.ext _ _ (skyscraperPresheafStalkAdjunction p₀).homEquiv_unit
+  homEquiv_unit {𝓐} c f := Sheaf.Hom.ext (skyscraperPresheafStalkAdjunction p₀).homEquiv_unit
   homEquiv_counit {𝓐} c f := (skyscraperPresheafStalkAdjunction p₀).homEquiv_counit
 
 instance [HasColimits C] : (skyscraperSheafFunctor p₀ : C ⥤ Sheaf C X).IsRightAdjoint  :=

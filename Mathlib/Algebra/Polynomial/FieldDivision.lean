@@ -93,10 +93,12 @@ theorem lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors'
     n < p.rootMultiplicity t := by
   apply lt_rootMultiplicity_of_isRoot_iterate_derivative_of_mem_nonZeroDivisors h hroot
   clear hroot
-  induction' n with n ih
-  · simp only [Nat.zero_eq, Nat.factorial_zero, Nat.cast_one]
+  induction n with
+  | zero =>
+    simp only [Nat.factorial_zero, Nat.cast_one]
     exact Submonoid.one_mem _
-  · rw [Nat.factorial_succ, Nat.cast_mul, mul_mem_nonZeroDivisors]
+  | succ n ih =>
+    rw [Nat.factorial_succ, Nat.cast_mul, mul_mem_nonZeroDivisors]
     exact ⟨hnzd _ le_rfl n.succ_ne_zero, ih fun m h ↦ hnzd m (h.trans n.le_succ)⟩
 
 theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative_of_mem_nonZeroDivisors
@@ -265,7 +267,7 @@ theorem isUnit_iff_degree_eq_zero : IsUnit p ↔ degree p = 0 :=
     isUnit_iff_dvd_one.2
       ⟨C (coeff p 0)⁻¹, by
         conv in p => rw [eq_C_of_degree_le_zero this]
-        rw [← C_mul, _root_.mul_inv_cancel hc, C_1]⟩⟩
+        rw [← C_mul, mul_inv_cancel₀ hc, C_1]⟩⟩
 
 /-- Division of polynomials. See `Polynomial.divByMonic` for more details. -/
 def div (p q : R[X]) :=
@@ -464,7 +466,7 @@ theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = 
     coeff_C, coeff_C, inv_eq_one_div]
   split_ifs
   · rw [div_eq_iff_mul_eq (coeff_coe_units_zero_ne_zero u), coeff_zero_eq_eval_zero,
-        coeff_zero_eq_eval_zero, ← eval_mul, ← Units.val_mul, inv_mul_self]
+        coeff_zero_eq_eval_zero, ← eval_mul, ← Units.val_mul, inv_mul_cancel]
     simp
   · simp
 
@@ -487,18 +489,18 @@ theorem div_C_mul : p / (C a * q) = C a⁻¹ * (p / q) := by
   · simp [ha]
   simp only [div_def, leadingCoeff_mul, mul_inv, leadingCoeff_C, C.map_mul, mul_assoc]
   congr 3
-  rw [mul_left_comm q, ← mul_assoc, ← C.map_mul, mul_inv_cancel ha, C.map_one, one_mul]
+  rw [mul_left_comm q, ← mul_assoc, ← C.map_mul, mul_inv_cancel₀ ha, C.map_one, one_mul]
 
 theorem C_mul_dvd (ha : a ≠ 0) : C a * p ∣ q ↔ p ∣ q :=
   ⟨fun h => dvd_trans (dvd_mul_left _ _) h, fun ⟨r, hr⟩ =>
     ⟨C a⁻¹ * r, by
-      rw [mul_assoc, mul_left_comm p, ← mul_assoc, ← C.map_mul, _root_.mul_inv_cancel ha, C.map_one,
+      rw [mul_assoc, mul_left_comm p, ← mul_assoc, ← C.map_mul, mul_inv_cancel₀ ha, C.map_one,
         one_mul, hr]⟩⟩
 
 theorem dvd_C_mul (ha : a ≠ 0) : p ∣ Polynomial.C a * q ↔ p ∣ q :=
   ⟨fun ⟨r, hr⟩ =>
     ⟨C a⁻¹ * r, by
-      rw [mul_left_comm p, ← hr, ← mul_assoc, ← C.map_mul, _root_.inv_mul_cancel ha, C.map_one,
+      rw [mul_left_comm p, ← hr, ← mul_assoc, ← C.map_mul, inv_mul_cancel₀ ha, C.map_one,
         one_mul]⟩,
     fun h => dvd_trans h (dvd_mul_left _ _)⟩
 

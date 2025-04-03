@@ -7,7 +7,7 @@ import Mathlib.Topology.Sequences
 import Mathlib.Topology.MetricSpace.Bounded
 
 /-!
-# Sequencial compacts in metric spaces
+# Sequential compacts in metric spaces
 
 In this file we prove 2 versions of Bolzano-Weierstrass theorem for proper metric spaces.
 -/
@@ -39,4 +39,4 @@ theorem tendsto_subseq_of_frequently_bounded (hs : IsBounded s) {x : ℕ → X}
 every bounded sequence has a converging subsequence. -/
 theorem tendsto_subseq_of_bounded (hs : IsBounded s) {x : ℕ → X} (hx : ∀ n, x n ∈ s) :
     ∃ a ∈ closure s, ∃ φ : ℕ → ℕ, StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
-  tendsto_subseq_of_frequently_bounded hs <| frequently_of_forall hx
+  tendsto_subseq_of_frequently_bounded hs <| Frequently.of_forall hx

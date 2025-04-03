@@ -208,14 +208,14 @@ structure Splitting (X : SimplicialObject C) where
   /-- The "inclusion" `N n ⟶ X _[n]` for all `n : ℕ`. -/
   ι : ∀ n, N n ⟶ X _[n]
   /-- For each `Δ`, `X.obj Δ` identifies to the coproduct of the objects `N A.1.unop.len`
-  for all `A : IndexSet Δ`.  -/
+  for all `A : IndexSet Δ`. -/
   isColimit' : ∀ Δ : SimplexCategoryᵒᵖ, IsColimit (Splitting.cofan' N X ι Δ)
 
 namespace Splitting
 
 variable {X Y : SimplicialObject C} (s : Splitting X)
 
-/-- The cofan for `summand s.N Δ` induced by a splitting of a simplicial object.  -/
+/-- The cofan for `summand s.N Δ` induced by a splitting of a simplicial object. -/
 def cofan (Δ : SimplexCategoryᵒᵖ) : Cofan (summand s.N Δ) :=
   Cofan.mk (X.obj Δ) (fun A => s.ι A.1.unop.len ≫ X.map A.e.op)
 

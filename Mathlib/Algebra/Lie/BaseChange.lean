@@ -73,7 +73,7 @@ private theorem bracket_lie_self (x : A ⊗[R] L) : ⁅x, x⁆ = 0 := by
       · simp only [LinearMap.map_zero, add_zero, LinearMap.zero_apply]
       · intro a₂ l₂
         simp only [← lie_skew l₂ l₁, mul_comm a₁ a₂, TensorProduct.tmul_neg, bracket'_tmul,
-          add_right_neg]
+          add_neg_cancel]
       · intro y₁ y₂ hy₁ hy₂
         simp only [hy₁, hy₂, add_add_add_comm, add_zero, LinearMap.add_apply, LinearMap.map_add]
     · intro y₁ y₂ hy₁ hy₂
@@ -169,10 +169,10 @@ def baseChange : LieSubmodule A (A ⊗[R] L) (A ⊗[R] M) :=
       intro x m hm
       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
         Submodule.mem_toAddSubmonoid] at hm ⊢
-      obtain ⟨c, rfl⟩ := (Finsupp.mem_span_iff_total _ _ _).mp hm
+      obtain ⟨c, rfl⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp hm
       refine x.induction_on (by simp) (fun a y ↦ ?_) (fun y z hy hz ↦ ?_)
       · change toEnd A (A ⊗[R] L) (A ⊗[R] M) _ _ ∈ _
-        simp_rw [Finsupp.total_apply, Finsupp.sum, map_sum, map_smul, toEnd_apply_apply]
+        simp_rw [Finsupp.linearCombination_apply, Finsupp.sum, map_sum, map_smul, toEnd_apply_apply]
         suffices ∀ n : (N : Submodule R M).map (TensorProduct.mk R A M 1),
             ⁅a ⊗ₜ[R] y, (n : A ⊗[R] M)⁆ ∈ (N : Submodule R M).baseChange A by
           exact Submodule.sum_mem _ fun n _ ↦ Submodule.smul_mem _ _ (this n)

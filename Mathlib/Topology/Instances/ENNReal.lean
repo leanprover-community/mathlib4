@@ -9,6 +9,8 @@ import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Order.T5
+import Mathlib.Topology.MetricSpace.Pseudo.Real
+import Mathlib.Topology.Metrizable.Uniformity
 
 /-!
 # Topology on extended non-negative reals
@@ -17,7 +19,7 @@ import Mathlib.Topology.Order.T5
 noncomputable section
 
 open Set Filter Metric Function
-open scoped Classical Topology ENNReal NNReal Filter
+open scoped Topology ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
@@ -348,12 +350,13 @@ protected theorem Tendsto.mul_const {f : Filter α} {m : α → ℝ≥0∞} {a b
 theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞} {x : Filter α} {a : ι → ℝ≥0∞}
     (s : Finset ι) (h : ∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) (h' : ∀ i ∈ s, a i ≠ ∞) :
     Tendsto (fun b => ∏ c ∈ s, f c b) x (𝓝 (∏ c ∈ s, a c)) := by
+  classical
   induction' s using Finset.induction with a s has IH
   · simp [tendsto_const_nhds]
   simp only [Finset.prod_insert has]
   apply Tendsto.mul (h _ (Finset.mem_insert_self _ _))
   · right
-    exact (prod_lt_top fun i hi => h' _ (Finset.mem_insert_of_mem hi)).ne
+    exact prod_ne_top fun i hi => h' _ (Finset.mem_insert_of_mem hi)
   · exact IH (fun i hi => h _ (Finset.mem_insert_of_mem hi)) fun i hi =>
       h' _ (Finset.mem_insert_of_mem hi)
   · exact Or.inr (h' _ (Finset.mem_insert_self _ _))
@@ -366,20 +369,21 @@ protected theorem continuousAt_mul_const {a b : ℝ≥0∞} (h : a ≠ ∞ ∨ b
     ContinuousAt (fun x => x * a) b :=
   Tendsto.mul_const tendsto_id h.symm
 
+@[fun_prop]
 protected theorem continuous_const_mul {a : ℝ≥0∞} (ha : a ≠ ∞) : Continuous (a * ·) :=
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_const_mul (Or.inl ha)
 
+@[fun_prop]
 protected theorem continuous_mul_const {a : ℝ≥0∞} (ha : a ≠ ∞) : Continuous fun x => x * a :=
   continuous_iff_continuousAt.2 fun _ => ENNReal.continuousAt_mul_const (Or.inl ha)
 
+@[fun_prop]
 protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
-    Continuous fun x : ℝ≥0∞ => x / c := by
-  simp_rw [div_eq_mul_inv, continuous_iff_continuousAt]
-  intro x
-  exact ENNReal.continuousAt_mul_const (Or.intro_left _ (inv_ne_top.mpr c_ne_zero))
+    Continuous fun x : ℝ≥0∞ => x / c :=
+  ENNReal.continuous_mul_const <| ENNReal.inv_ne_top.2 c_ne_zero
 
-@[continuity]
-theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
+@[continuity, fun_prop]
+protected theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
   induction' n with n IH
   · simp [continuous_const]
   simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
@@ -422,13 +426,13 @@ theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ =>
 
 protected theorem Tendsto.pow {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} {n : ℕ}
     (hm : Tendsto m f (𝓝 a)) : Tendsto (fun x => m x ^ n) f (𝓝 (a ^ n)) :=
-  ((continuous_pow n).tendsto a).comp hm
+  ((ENNReal.continuous_pow n).tendsto a).comp hm
 
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0∞} (h : ∀ a < 1, a * x ≤ y) : x ≤ y := by
   have : Tendsto (· * x) (𝓝[<] 1) (𝓝 (1 * x)) :=
     (ENNReal.continuousAt_mul_const (Or.inr one_ne_zero)).mono_left inf_le_left
   rw [one_mul] at this
-  exact le_of_tendsto this (eventually_nhdsWithin_iff.2 <| eventually_of_forall h)
+  exact le_of_tendsto this (eventually_nhdsWithin_iff.2 <| Eventually.of_forall h)
 
 theorem iInf_mul_left' {ι} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} (h : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0)
     (h0 : a = 0 → Nonempty ι) : ⨅ i, a * f i = a * ⨅ i, f i := by
@@ -440,7 +444,7 @@ theorem iInf_mul_left' {ι} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} (h : a = �
     cases isEmpty_or_nonempty ι
     · rw [iInf_of_empty, iInf_of_empty, mul_top]
       exact mt h0 (not_nonempty_iff.2 ‹_›)
-    · exact (ENNReal.mul_left_mono.map_iInf_of_continuousAt'
+    · exact (ENNReal.mul_left_mono.map_ciInf_of_continuousAt
         (ENNReal.continuousAt_const_mul H)).symm
 
 theorem iInf_mul_left {ι} [Nonempty ι] {f : ι → ℝ≥0∞} {a : ℝ≥0∞}
@@ -471,6 +475,11 @@ theorem inv_liminf {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
 
 instance : ContinuousInv ℝ≥0∞ := ⟨OrderIso.invENNReal.continuous⟩
 
+@[fun_prop]
+protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞ → ℝ≥0∞)
+  | (n : ℕ) => mod_cast ENNReal.continuous_pow n
+  | .negSucc n => by simpa using (ENNReal.continuous_pow _).inv
+
 @[simp] -- Porting note (#11215): TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
 protected theorem tendsto_inv_iff {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun x => (m x)⁻¹) f (𝓝 a⁻¹) ↔ Tendsto m f (𝓝 a) :=
@@ -495,7 +504,7 @@ protected theorem tendsto_inv_nat_nhds_zero : Tendsto (fun n : ℕ => (n : ℝ�
   ENNReal.inv_top ▸ ENNReal.tendsto_inv_iff.2 tendsto_nat_nhds_top
 
 theorem iSup_add {ι : Sort*} {s : ι → ℝ≥0∞} [Nonempty ι] : iSup s + a = ⨆ b, s b + a :=
-  Monotone.map_iSup_of_continuousAt' (continuousAt_id.add continuousAt_const) <|
+  Monotone.map_ciSup_of_continuousAt (continuousAt_id.add continuousAt_const) <|
     monotone_id.add monotone_const
 
 theorem biSup_add' {ι : Sort*} {p : ι → Prop} (h : ∃ i, p i) {f : ι → ℝ≥0∞} :
@@ -601,7 +610,7 @@ protected theorem tendsto_coe_sub {b : ℝ≥0∞} :
 
 theorem sub_iSup {ι : Sort*} [Nonempty ι] {b : ι → ℝ≥0∞} (hr : a < ∞) :
     (a - ⨆ i, b i) = ⨅ i, a - b i :=
-  antitone_const_tsub.map_iSup_of_continuousAt' (continuous_sub_left hr.ne).continuousAt
+  antitone_const_tsub.map_ciSup_of_continuousAt (continuous_sub_left hr.ne).continuousAt
 
 theorem exists_countable_dense_no_zero_top :
     ∃ s : Set ℝ≥0∞, s.Countable ∧ Dense s ∧ 0 ∉ s ∧ ∞ ∉ s := by
@@ -914,6 +923,7 @@ theorem tsum_union_le (f : α → ℝ≥0∞) (s t : Set α) :
   calc ∑' x : ↑(s ∪ t), f x = ∑' x : ⋃ b, cond b s t, f x := tsum_congr_set_coe _ union_eq_iUnion
   _ ≤ _ := by simpa using tsum_iUnion_le f (cond · s t)
 
+open Classical in
 theorem tsum_eq_add_tsum_ite {f : β → ℝ≥0∞} (b : β) :
     ∑' x, f x = f b + ∑' x, ite (x = b) 0 (f x) :=
   tsum_eq_add_tsum_ite' b ENNReal.summable
@@ -1058,6 +1068,7 @@ theorem summable_sigma {β : α → Type*} {f : (Σ x, β x) → ℝ≥0} :
 
 theorem indicator_summable {f : α → ℝ≥0} (hf : Summable f) (s : Set α) :
     Summable (s.indicator f) := by
+  classical
   refine NNReal.summable_of_le (fun a => le_trans (le_of_eq (s.indicator_apply f a)) ?_) hf
   split_ifs
   · exact le_refl (f a)
@@ -1103,6 +1114,7 @@ theorem tsum_pos {g : α → ℝ≥0} (hg : Summable g) (i : α) (hi : 0 < g i) 
   rw [← tsum_zero]
   exact tsum_lt_tsum (fun a => zero_le _) hi hg
 
+open Classical in
 theorem tsum_eq_add_tsum_ite {f : α → ℝ≥0} (hf : Summable f) (i : α) :
     ∑' x, f x = f i + ∑' x, ite (x = i) 0 (f x) := by
   refine tsum_eq_add_tsum_ite' i (NNReal.summable_of_le (fun i' => ?_) hf)
@@ -1280,7 +1292,7 @@ theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : 
 
 /-- If the extended distance between consecutive points of a sequence is estimated
 by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/
-theorem cauchySeq_of_edist_le_of_summable [PseudoEMetricSpace α] {f : ℕ → α} (d : ℕ → ℝ≥0)
+theorem cauchySeq_of_edist_le_of_summable {f : ℕ → α} (d : ℕ → ℝ≥0)
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : Summable d) : CauchySeq f := by
   refine EMetric.cauchySeq_iff_NNReal.2 fun ε εpos ↦ ?_
   -- Actually we need partial sums of `d` to be a Cauchy sequence.
@@ -1487,7 +1499,7 @@ lemma liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
   have key := Monotone.map_liminf_of_continuousAt (F := F) (monotone_truncateToReal b_ne_top) xs
           (continuous_truncateToReal b_ne_top).continuousAt
           (IsBoundedUnder.isCoboundedUnder_ge ⟨b, by simpa only [eventually_map] using le_b⟩)
-          ⟨0, eventually_of_forall (by simp)⟩
+          ⟨0, Eventually.of_forall (by simp)⟩
   rw [key]
   rfl
 
@@ -1504,10 +1516,12 @@ lemma limsup_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (
   have key := Monotone.map_limsup_of_continuousAt (F := F) (monotone_truncateToReal b_ne_top) xs
           (continuous_truncateToReal b_ne_top).continuousAt
           ⟨b, by simpa only [eventually_map] using le_b⟩
-          (IsBoundedUnder.isCoboundedUnder_le ⟨0, eventually_of_forall (by simp)⟩)
+          (IsBoundedUnder.isCoboundedUnder_le ⟨0, Eventually.of_forall (by simp)⟩)
   rw [key]
   rfl
 
 end LimsupLiminf
 
 end ENNReal -- namespace
+
+set_option linter.style.longFile 1700

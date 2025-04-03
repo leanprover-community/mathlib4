@@ -191,7 +191,7 @@ lemma finrank_maxGenEigenspace (φ : Module.End K M) :
   generalize_proofs h'
   clear hx
   induction n with
-  | zero => simp only [Nat.zero_eq, pow_zero, one_apply]
+  | zero => simp only [pow_zero, one_apply]
   | succ n ih => simp only [pow_succ', LinearMap.mul_apply, ih, restrict_apply]
 
 end LinearMap

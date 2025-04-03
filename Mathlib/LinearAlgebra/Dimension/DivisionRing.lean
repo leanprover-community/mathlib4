@@ -155,7 +155,7 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
     calc
       (b i + (g i)⁻¹ • (s.erase i).sum fun j => g j • b j) =
           (g i)⁻¹ • (g i • b i + (s.erase i).sum fun j => g j • b j) := by
-        rw [smul_add, ← mul_smul, inv_mul_cancel gx_ne_zero, one_smul]
+        rw [smul_add, ← mul_smul, inv_mul_cancel₀ gx_ne_zero, one_smul]
       _ = (g i)⁻¹ • (0 : V) := congr_arg _ ?_
       _ = 0 := smul_zero _
     -- And then it's just a bit of manipulation with finite sums.
@@ -249,8 +249,8 @@ theorem max_aleph0_card_le_rank_fun_nat : max ℵ₀ #K ≤ Module.rank K (ℕ �
     contrapose! card_K
     exact (power_lt_aleph0 card_K <| nat_lt_aleph0 _).le
   obtain ⟨e⟩ := lift_mk_le'.mp (card_ιL.trans_eq (lift_uzero #ιL).symm)
-  have rep_e := bK.total_repr (bL ∘ e)
-  rw [Finsupp.total_apply, Finsupp.sum] at rep_e
+  have rep_e := bK.linearCombination_repr (bL ∘ e)
+  rw [Finsupp.linearCombination_apply, Finsupp.sum] at rep_e
   set c := bK.repr (bL ∘ e)
   set s := c.support
   let f i (j : s) : L := ⟨bK j i, Subfield.subset_closure ⟨(j, i), rfl⟩⟩

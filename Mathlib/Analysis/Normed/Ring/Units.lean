@@ -36,7 +36,7 @@ variable {R : Type*} [NormedRing R] [CompleteSpace R]
 namespace Units
 
 /-- In a complete normed ring, a perturbation of `1` by an element `t` of distance less than `1`
-from `1` is a unit.  Here we construct its `Units` structure.  -/
+from `1` is a unit.  Here we construct its `Units` structure. -/
 @[simps val]
 def oneSub (t : R) (h : ‖t‖ < 1) : Rˣ where
   val := 1 - t
@@ -56,7 +56,7 @@ def add (x : Rˣ) (t : R) (h : ‖t‖ < ‖(↑x⁻¹ : R)‖⁻¹) : Rˣ :=
         ‖-(↑x⁻¹ * t)‖ = ‖↑x⁻¹ * t‖ := by rw [norm_neg]
         _ ≤ ‖(↑x⁻¹ : R)‖ * ‖t‖ := norm_mul_le (x⁻¹).1 _
         _ < ‖(↑x⁻¹ : R)‖ * ‖(↑x⁻¹ : R)‖⁻¹ := by nlinarith only [h, hpos]
-        _ = 1 := mul_inv_cancel (ne_of_gt hpos)))
+        _ = 1 := mul_inv_cancel₀ (ne_of_gt hpos)))
     (x + t) (by simp [mul_add]) _ rfl
 
 /-- In a complete normed ring, an element `y` of distance less than `‖x⁻¹‖⁻¹` from `x` is a unit.

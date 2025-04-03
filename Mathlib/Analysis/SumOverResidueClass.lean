@@ -92,3 +92,14 @@ lemma summable_indicator_mod_iff {m : ℕ} [NeZero m] {f : ℕ → ℝ} (hf : An
   convert summable_sum (s := Finset.univ)
     fun a _ ↦ summable_indicator_mod_iff_summable_indicator_mod hf a H
   simp only [Finset.sum_apply]
+
+open ZMod
+
+/-- If `f` is a summable function on `ℕ`, and `0 < N`, then we may compute `∑' n : ℕ, f n` by
+summing each residue class mod `N` separately. -/
+lemma Nat.sumByResidueClasses {R : Type*} [AddCommGroup R] [UniformSpace R] [UniformAddGroup R]
+    [CompleteSpace R] [T0Space R] {f : ℕ → R} (hf : Summable f) (N : ℕ) [NeZero N] :
+    ∑' n, f n = ∑ j : ZMod N, ∑' m, f (j.val + N * m) := by
+  rw [← (residueClassesEquiv N).symm.tsum_eq f, tsum_prod, tsum_fintype, residueClassesEquiv,
+    Equiv.coe_fn_symm_mk]
+  exact hf.comp_injective (residueClassesEquiv N).symm.injective

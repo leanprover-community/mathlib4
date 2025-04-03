@@ -19,3 +19,7 @@ instance : TrivialStar ℝ≥0 where
 
 instance : StarModule ℝ≥0 ℝ where
   star_smul := by simp only [star_trivial, eq_self_iff_true, forall_const]
+
+instance {E : Type*} [AddCommMonoid E] [Star E] [Module ℝ E] [StarModule ℝ E] :
+    StarModule ℝ≥0 E where
+  star_smul _ := star_smul (_ : ℝ)

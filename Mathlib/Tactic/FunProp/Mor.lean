@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Tomas Skrivan. All rights reserved.
+Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tomas Skrivan
+Authors: Tomáš Skřivan
 -/
 import Lean
 import Mathlib.Data.FunLike.Basic
@@ -29,12 +29,12 @@ namespace Meta.FunProp
 
 namespace Mor
 
-/-- Is `name` a coerction from some function space to functiosn? -/
+/-- Is `name` a coerction from some function space to functions? -/
 def isCoeFunName (name : Name) : CoreM Bool := do
   let .some info ← getCoeFnInfo? name | return false
   return info.type == .coeFun
 
-/-- Is `e` a coerction from some function space to functiosn? -/
+/-- Is `e` a coerction from some function space to functions? -/
 def isCoeFun (e : Expr) : MetaM Bool := do
   let .some (name,_) := e.getAppFn.const? | return false
   let .some info ← getCoeFnInfo? name | return false
@@ -89,7 +89,7 @@ Weak normal head form of an expression involving morphism applications.
 
 For example calling this on `coe (f a) b` will put `f` in weak normal head form instead of `coe`.
  -/
-def whnf (e : Expr)  (cfg : WhnfCoreConfig := {}) : MetaM Expr :=
+def whnf (e : Expr) (cfg : WhnfCoreConfig := {}) : MetaM Expr :=
   whnfPred e (fun _ => return false) cfg
 
 
@@ -150,3 +150,9 @@ def mkAppN (f : Expr) (xs : Array Arg) : Expr :=
     match x with
     | ⟨x, .none⟩ => (f.app x)
     | ⟨x, .some coe⟩ => (coe.app f).app x)
+
+end Mor
+
+end Meta.FunProp
+
+end Mathlib

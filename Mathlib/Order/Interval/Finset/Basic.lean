@@ -39,7 +39,7 @@ open Function OrderDual
 
 open FinsetInterval
 
-variable {ι α : Type*}
+variable {ι α : Type*} {a a₁ a₂ b b₁ b₂ c x : α}
 
 namespace Finset
 
@@ -49,7 +49,7 @@ variable [Preorder α]
 
 section LocallyFiniteOrder
 
-variable [LocallyFiniteOrder α] {a a₁ a₂ b b₁ b₂ c x : α}
+variable [LocallyFiniteOrder α]
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b := by
@@ -323,6 +323,8 @@ theorem filter_le_le_eq_Icc [DecidablePred fun j => a ≤ j ∧ j ≤ b] :
 
 end Filter
 
+end LocallyFiniteOrder
+
 section LocallyFiniteOrderTop
 
 variable [LocallyFiniteOrderTop α]
@@ -331,6 +333,14 @@ variable [LocallyFiniteOrderTop α]
 lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Ioi : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [Finset.Nonempty]
+
+theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a := by
+  simpa [← coe_subset] using Set.Ici_subset_Ici
+
+theorem Ioi_subset_Ioi (h : a ≤ b) : Ioi b ⊆ Ioi a := by
+  simpa [← coe_subset] using Set.Ioi_subset_Ioi h
+
+variable [LocallyFiniteOrder α]
 
 theorem Icc_subset_Ici_self : Icc a b ⊆ Ici a := by
   simpa [← coe_subset] using Set.Icc_subset_Ici_self
@@ -359,6 +369,14 @@ variable [LocallyFiniteOrderBot α]
 @[simp] lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
 @[simp] lemma nonempty_Iio : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [Finset.Nonempty]
 
+theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b := by
+  simpa [← coe_subset] using Set.Iic_subset_Iic
+
+theorem Iio_subset_Iio (h : a ≤ b) : Iio a ⊆ Iio b := by
+  simpa [← coe_subset] using Set.Iio_subset_Iio h
+
+variable [LocallyFiniteOrder α]
+
 theorem Icc_subset_Iic_self : Icc a b ⊆ Iic b := by
   simpa [← coe_subset] using Set.Icc_subset_Iic_self
 
@@ -378,8 +396,6 @@ theorem Ioo_subset_Iic_self : Ioo a b ⊆ Iic b :=
   Ioo_subset_Ioc_self.trans Ioc_subset_Iic_self
 
 end LocallyFiniteOrderBot
-
-end LocallyFiniteOrder
 
 section LocallyFiniteOrderTop
 
@@ -840,7 +856,7 @@ theorem eq_of_mem_uIcc_of_mem_uIcc' : b ∈ [[a, c]] → c ∈ [[a, b]] → b = 
   exact Set.eq_of_mem_uIcc_of_mem_uIcc'
 
 theorem uIcc_injective_right (a : α) : Injective fun b => [[b, a]] := fun b c h => by
-  rw [ext_iff] at h
+  rw [Finset.ext_iff] at h
   exact eq_of_mem_uIcc_of_mem_uIcc ((h _).1 left_mem_uIcc) ((h _).2 left_mem_uIcc)
 
 theorem uIcc_injective_left (a : α) : Injective (uIcc a) := by

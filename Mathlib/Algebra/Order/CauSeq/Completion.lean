@@ -172,8 +172,6 @@ instance Cauchy.commRing : CommRing (Cauchy abv) :=
 
 end
 
-open scoped Classical
-
 section
 
 variable {α : Type*} [LinearOrderedField α]
@@ -185,6 +183,7 @@ instance instRatCast : RatCast (Cauchy abv) where ratCast q := ofRat q
 @[simp, norm_cast] lemma ofRat_nnratCast (q : ℚ≥0) : ofRat (q : β) = (q : Cauchy abv) := rfl
 @[simp, norm_cast] lemma ofRat_ratCast (q : ℚ) : ofRat (q : β) = (q : Cauchy abv) := rfl
 
+open Classical in
 noncomputable instance : Inv (Cauchy abv) :=
   ⟨fun x =>
     (Quotient.liftOn x fun f => mk <| if h : LimZero f then 0 else inv f h) fun f g fg => by

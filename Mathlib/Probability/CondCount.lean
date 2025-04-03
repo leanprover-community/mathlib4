@@ -52,6 +52,9 @@ This is a probability measure when `s` is finite and nonempty and is given by
 def condCount (s : Set Ω) : Measure Ω :=
   Measure.count[|s]
 
+instance {s : Set Ω} : IsZeroOrProbabilityMeasure (condCount s) := by
+  unfold condCount; infer_instance
+
 @[simp]
 theorem condCount_empty_meas : (condCount ∅ : Measure Ω) = 0 := by simp [condCount]
 
@@ -72,11 +75,10 @@ theorem condCount_univ [Fintype Ω] {s : Set Ω} :
 variable [MeasurableSingletonClass Ω]
 
 theorem condCount_isProbabilityMeasure {s : Set Ω} (hs : s.Finite) (hs' : s.Nonempty) :
-    IsProbabilityMeasure (condCount s) :=
-  { measure_univ := by
-      rw [condCount, cond_apply _ hs.measurableSet, Set.inter_univ, ENNReal.inv_mul_cancel]
-      · exact fun h => hs'.ne_empty <| Measure.empty_of_count_eq_zero h
-      · exact (Measure.count_apply_lt_top.2 hs).ne }
+    IsProbabilityMeasure (condCount s) := by
+  apply cond_isProbabilityMeasure_of_finite
+  · exact fun h => hs'.ne_empty <| Measure.empty_of_count_eq_zero h
+  · exact (Measure.count_apply_lt_top.2 hs).ne
 
 theorem condCount_singleton (ω : Ω) (t : Set Ω) [Decidable (ω ∈ t)] :
     condCount {ω} t = if ω ∈ t then 1 else 0 := by

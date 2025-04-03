@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
+import Mathlib.GroupTheory.GroupAction.IterateAct
 import Mathlib.Data.Rat.Init
 import Mathlib.Data.ZMod.Defs
 
@@ -32,8 +33,16 @@ instance Int.instMeasurableSpace : MeasurableSpace ℤ := ⊤
 
 instance Rat.instMeasurableSpace : MeasurableSpace ℚ := ⊤
 
-instance Subsingleton.measurableSingletonClass {α} [MeasurableSpace α] [Subsingleton α] :
-    MeasurableSingletonClass α := by
+@[to_additive]
+instance IterateMulAct.instMeasurableSpace {α : Type*} {f : α → α} :
+    MeasurableSpace (IterateMulAct f) := ⊤
+
+@[to_additive]
+instance IterateMulAct.instDiscreteMeasurableSpace {α : Type*} {f : α → α} :
+    DiscreteMeasurableSpace (IterateMulAct f) := inferInstance
+
+instance (priority := 100) Subsingleton.measurableSingletonClass
+    {α} [MeasurableSpace α] [Subsingleton α] : MeasurableSingletonClass α := by
   refine ⟨fun i => ?_⟩
   convert MeasurableSet.univ
   simp [Set.eq_univ_iff_forall, eq_iff_true_of_subsingleton]

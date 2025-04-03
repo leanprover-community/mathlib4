@@ -122,7 +122,7 @@ theorem eq_zero_of_hasseDeriv_eq_zero {R} [CommRing R] (f : R[X]) (r : R)
 /-- Taylor's formula. -/
 theorem sum_taylor_eq {R} [CommRing R] (f : R[X]) (r : R) :
     ((taylor r f).sum fun i a => C a * (X - C r) ^ i) = f := by
-  rw [← comp_eq_sum_left, sub_eq_add_neg, ← C_neg, ← taylor_apply, taylor_taylor, neg_add_self,
+  rw [← comp_eq_sum_left, sub_eq_add_neg, ← C_neg, ← taylor_apply, taylor_taylor, neg_add_cancel,
     taylor_zero]
 
 end Polynomial

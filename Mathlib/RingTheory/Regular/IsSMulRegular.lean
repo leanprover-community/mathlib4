@@ -52,6 +52,7 @@ open scoped TensorProduct
 variable (M) [CommRing R] [AddCommGroup M] [AddCommGroup M']
     [Module R M] [Module R M'] [Module.Flat R M] {r : R}
     (h : IsSMulRegular M' r)
+include h
 
 lemma IsSMulRegular.lTensor : IsSMulRegular (M ⊗[R] M') r :=
   have h1 := congrArg DFunLike.coe (LinearMap.lTensor_smul_action M M' r)

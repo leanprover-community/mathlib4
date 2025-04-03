@@ -362,7 +362,7 @@ theorem smul_closedBall (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
   · exact smul_closedBall' hc x r
 
 theorem smul_closedUnitBall (c : 𝕜) : c • closedBall (0 : E) (1 : ℝ) = closedBall (0 : E) ‖c‖ := by
-  rw [smul_closedBall _ _ zero_le_one, smul_zero, mul_one]
+  rw [_root_.smul_closedBall _ _ zero_le_one, smul_zero, mul_one]
 
 variable [NormedSpace ℝ E]
 
@@ -384,7 +384,7 @@ theorem NormedSpace.sphere_nonempty [Nontrivial E] {x : E} {r : ℝ} :
   simp only [mem_sphere_iff_norm, add_sub_cancel_right, norm_smul, Real.norm_eq_abs, norm_inv,
     norm_norm, ne_eq, norm_eq_zero]
   simp only [abs_norm, ne_eq, norm_eq_zero]
-  rw [inv_mul_cancel this, mul_one, abs_eq_self.mpr hr]
+  rw [inv_mul_cancel₀ this, mul_one, abs_eq_self.mpr hr]
 
 theorem smul_sphere [Nontrivial E] (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
     c • sphere x r = sphere (c • x) (‖c‖ * r) := by

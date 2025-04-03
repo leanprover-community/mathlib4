@@ -5,9 +5,9 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.MeasureCompProd
 import Mathlib.Probability.Kernel.Disintegration.Basic
-import Mathlib.Probability.Kernel.Disintegration.CondCdf
+import Mathlib.Probability.Kernel.Disintegration.CondCDF
 import Mathlib.Probability.Kernel.Disintegration.Density
-import Mathlib.Probability.Kernel.Disintegration.CdfToKernel
+import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
 import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 
 /-!
@@ -30,14 +30,14 @@ For `κ : Kernel α (β × ℝ)`, the construction of the conditional kernel pro
 * Extend that function to `(α × β) → StieltjesFunction`. See the file `MeasurableStieltjes.lean`.
 * Finally obtain from the measurable Stieltjes function a measure on `ℝ` for each element of `α × β`
   in a measurable way: we have obtained a `Kernel (α × β) ℝ`.
-  See the file `CdfToKernel.lean` for that step.
+  See the file `CDFToKernel.lean` for that step.
 
 The first step (building the measurable function on `ℚ`) is done differently depending on whether
 `α` is countable or not.
 * If `α` is countable, we can provide for each `a : α` a function `f : β → ℚ → ℝ` and proceed as
   above to obtain a `Kernel β ℝ`. Since `α` is countable, measurability is not an issue and we can
   put those together into a `Kernel (α × β) ℝ`. The construction of that `f` is done in
-  the `CondCdf.lean` file.
+  the `CondCDF.lean` file.
 * If `α` is not countable, we can't proceed separately for each `a : α` and have to build a function
   `f : α × β → ℚ → ℝ` which is measurable on the product. We are able to do so if `β` has a
   countably generated σ-algebra (this is the case in particular for standard Borel spaces).

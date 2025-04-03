@@ -478,7 +478,7 @@ theorem dvd_mul_gcd_iff_dvd_mul [GCDMonoid α] {m n k : α} : k ∣ m * gcd k n 
 
 Note: In general, this representation is highly non-unique.
 
-See `Nat.prodDvdAndDvdOfDvdProd` for a constructive version on `ℕ`.  -/
+See `Nat.prodDvdAndDvdOfDvdProd` for a constructive version on `ℕ`. -/
 instance [h : Nonempty (GCDMonoid α)] : DecompositionMonoid α where
   primal k m n H := by
     cases h
@@ -510,13 +510,13 @@ theorem gcd_pow_right_dvd_pow_gcd [GCDMonoid α] {a b : α} {k : ℕ} :
     exact
       (gcd_zero_left' (0 ^ k : α)).dvd.trans
         (pow_dvd_pow_of_dvd (gcd_zero_left' (0 : α)).symm.dvd _)
-  · induction' k with k hk
-    · rw [pow_zero, pow_zero]
-      exact (gcd_one_right' a).dvd
-    rw [pow_succ', pow_succ']
-    trans gcd a b * gcd a (b ^ k)
-    · exact gcd_mul_dvd_mul_gcd a b (b ^ k)
-    · exact (mul_dvd_mul_iff_left hg).mpr hk
+  · induction k with
+    | zero => rw [pow_zero, pow_zero]; exact (gcd_one_right' a).dvd
+    | succ k hk =>
+      rw [pow_succ', pow_succ']
+      trans gcd a b * gcd a (b ^ k)
+      · exact gcd_mul_dvd_mul_gcd a b (b ^ k)
+      · exact (mul_dvd_mul_iff_left hg).mpr hk
 
 theorem gcd_pow_left_dvd_pow_gcd [GCDMonoid α] {a b : α} {k : ℕ} : gcd (a ^ k) b ∣ gcd a b ^ k :=
   calc
@@ -855,8 +855,8 @@ instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
 instance subsingleton_normalizedGCDMonoid_of_unique_units : Subsingleton (NormalizedGCDMonoid α) :=
   ⟨by
     intro a b
-    cases' a with a_norm a_gcd
-    cases' b with b_norm b_gcd
+    cases a; rename_i a_norm a_gcd _ _
+    cases b; rename_i b_norm b_gcd _ _
     have := Subsingleton.elim a_gcd b_gcd
     subst this
     have := Subsingleton.elim a_norm b_norm

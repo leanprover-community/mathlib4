@@ -132,7 +132,7 @@ theorem not_fuzzy_zero_iff : ¬G ‖ 0 ↔ (G ≈ 0) :=
   ⟨(equiv_or_fuzzy_zero G).resolve_right, Equiv.not_fuzzy⟩
 
 theorem add_self : G + G ≈ 0 :=
-  Equiv.trans (add_congr_left (neg_equiv_self G)) (add_left_neg_equiv G)
+  Equiv.trans (add_congr_left (neg_equiv_self G)) (neg_add_cancel_equiv G)
 
 -- Porting note: Changed `⟦G⟧` to `(⟦G⟧ : Quotient setoid)`
 @[simp]
@@ -141,14 +141,14 @@ theorem mk'_add_self : (⟦G⟧ : Quotient setoid) + ⟦G⟧ = 0 :=
 
 /-- This lemma doesn't require `H` to be impartial. -/
 theorem equiv_iff_add_equiv_zero (H : PGame) : (H ≈ G) ↔ (H + G ≈ 0) := by
-  rw [Game.PGame.equiv_iff_game_eq, ← @add_right_cancel_iff _ _ _ ⟦G⟧, mk'_add_self, ← quot_add,
-    Game.PGame.equiv_iff_game_eq]
+  rw [equiv_iff_game_eq, ← @add_right_cancel_iff _ _ _ ⟦G⟧, mk'_add_self, ← quot_add,
+    equiv_iff_game_eq]
   rfl
 
 /-- This lemma doesn't require `H` to be impartial. -/
 theorem equiv_iff_add_equiv_zero' (H : PGame) : (G ≈ H) ↔ (G + H ≈ 0) := by
-  rw [Game.PGame.equiv_iff_game_eq, ← @add_left_cancel_iff _ _ _ ⟦G⟧, mk'_add_self, ← quot_add,
-    Game.PGame.equiv_iff_game_eq]
+  rw [equiv_iff_game_eq, ← @add_left_cancel_iff _ _ _ ⟦G⟧, mk'_add_self, ← quot_add,
+    equiv_iff_game_eq]
   exact ⟨Eq.symm, Eq.symm⟩
 
 theorem le_zero_iff {G : PGame} [G.Impartial] : G ≤ 0 ↔ 0 ≤ G := by

@@ -137,7 +137,7 @@ theorem gramSchmidt_mem_span (f : ι → E) :
     (Submodule.sum_mem _ fun k hk => ?_)
   let hkj : k < j := (Finset.mem_Iio.1 hk).trans_le hij
   exact smul_mem _ _
-    (span_mono (image_subset f <| Iic_subset_Iic.2 hkj.le) <| gramSchmidt_mem_span _ le_rfl)
+    (span_mono (image_subset f <| Set.Iic_subset_Iic.2 hkj.le) <| gramSchmidt_mem_span _ le_rfl)
 termination_by j => j
 
 theorem span_gramSchmidt_Iic (f : ι → E) (c : ι) :

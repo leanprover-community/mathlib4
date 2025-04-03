@@ -33,10 +33,11 @@ variable {C : Type*} [Category C] [Preadditive C] {X : SimplicialObject C}
 
 theorem P_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :
     ((P (q + 1)).f n : X _[n] ⟶ _) = (P q).f n := by
-  rcases n with (_|n)
-  · simp only [Nat.zero_eq, P_f_0_eq]
-  · simp only [P_succ, add_right_eq_self, comp_add, HomologicalComplex.comp_f,
-      HomologicalComplex.add_f_apply, comp_id]
+  cases n with
+  | zero => simp only [P_f_0_eq]
+  | succ n =>
+    simp only [P_succ, comp_add, comp_id, HomologicalComplex.add_f_apply, HomologicalComplex.comp_f,
+      add_right_eq_self]
     exact (HigherFacesVanish.of_P q n).comp_Hσ_eq_zero (Nat.succ_le_iff.mp hqn)
 
 theorem Q_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :

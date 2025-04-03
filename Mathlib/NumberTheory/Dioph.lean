@@ -175,7 +175,7 @@ instance : AddCommGroup (Poly α) where
   zero_add _ := by ext; simp_rw [add_apply, zero_apply, zero_add]
   add_comm _ _ := by ext; simp_rw [add_apply, add_comm]
   add_assoc _ _ _ := by ext; simp_rw [add_apply, ← add_assoc]
-  add_left_neg _ := by ext; simp_rw [add_apply, neg_apply, add_left_neg, zero_apply]
+  neg_add_cancel _ := by ext; simp_rw [add_apply, neg_apply, neg_add_cancel, zero_apply]
 
 instance : AddGroupWithOne (Poly α) :=
   { (inferInstance : AddCommGroup (Poly α)) with
@@ -521,7 +521,9 @@ theorem const_dioph (n : ℕ) : DiophFn (const (α → ℕ) n) :=
 
 scoped prefix:100 "D." => Dioph.const_dioph
 
+section
 variable {f g : (α → ℕ) → ℕ} (df : DiophFn f) (dg : DiophFn g)
+include df dg
 
 theorem dioph_comp2 {S : ℕ → ℕ → Prop} (d : Dioph fun v : Vector3 ℕ 2 => S (v &0) (v &1)) :
     Dioph fun v => S (f v) (g v) := dioph_comp d [f, g] ⟨df, dg⟩
@@ -592,7 +594,7 @@ theorem mod_dioph : DiophFn fun v => f v % g v :=
         (vectorAll_iff_forall _).1 fun z x y =>
           show ((y = 0 ∨ z < y) ∧ ∃ c, z + y * c = x) ↔ x % y = z from
             ⟨fun ⟨h, c, hc⟩ => by
-              rw [← hc]; simp; cases' h with x0 hl
+              rw [← hc]; simp only [add_mul_mod_self_left]; cases' h with x0 hl
               · rw [x0, mod_zero]
               exact mod_eq_of_lt hl, fun e => by
                 rw [← e]
@@ -626,6 +628,8 @@ theorem div_dioph : DiophFn fun v => f v / g v :=
                 Iff.trans ⟨fun o => o.resolve_left fun ⟨h1, _⟩ => Nat.ne_of_gt ypos h1, Or.inr⟩
                   (le_antisymm_iff.trans <| and_congr (Nat.le_div_iff_mul_le ypos) <|
                     Iff.trans ⟨lt_succ_of_le, le_of_lt_succ⟩ (div_lt_iff_lt_mul ypos)).symm
+
+end
 
 scoped infixl:80 " D/ " => Dioph.div_dioph
 
@@ -666,7 +670,8 @@ theorem xn_dioph : DiophPFun fun v : Vector3 ℕ 2 => ⟨1 < v &0, fun h => xn h
     Dioph.ext this fun _ => ⟨fun ⟨_, h, xe, _⟩ => ⟨h, xe⟩, fun ⟨h, xe⟩ => ⟨_, h, xe, rfl⟩⟩
 
 /-- A version of **Matiyasevic's theorem** -/
-theorem pow_dioph : DiophFn fun v => f v ^ g v := by
+theorem pow_dioph {f g : (α → ℕ) → ℕ} (df : DiophFn f) (dg : DiophFn g) :
+    DiophFn fun v => f v ^ g v := by
   have proof :=
     let D_pell := pell_dioph.reindex_dioph (Fin2 9) [&4, &8, &1, &0]
     (D&2 D= D.0 D∧ D&0 D= D.1) D∨ (D.0 D< D&2 D∧

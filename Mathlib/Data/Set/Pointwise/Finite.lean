@@ -62,7 +62,7 @@ instance decidableMemMul [Fintype α] [DecidableEq α] [DecidablePred (· ∈ s)
 instance decidableMemPow [Fintype α] [DecidableEq α] [DecidablePred (· ∈ s)] (n : ℕ) :
     DecidablePred (· ∈ s ^ n) := by
   induction' n with n ih
-  · simp only [Nat.zero_eq, pow_zero, mem_one]
+  · simp only [pow_zero, mem_one]
     infer_instance
   · letI := ih
     rw [pow_succ]

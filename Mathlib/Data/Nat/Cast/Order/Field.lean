@@ -22,13 +22,13 @@ variable {α : Type*} [LinearOrderedSemifield α]
 
 lemma cast_inv_le_one : ∀ n : ℕ, (n⁻¹ : α) ≤ 1
   | 0 => by simp
-  | n + 1 => inv_le_one $ by simp [Nat.cast_nonneg]
+  | n + 1 => inv_le_one <| by simp [Nat.cast_nonneg]
 
 /-- Natural division is always less than division in the field. -/
 theorem cast_div_le {m n : ℕ} : ((m / n : ℕ) : α) ≤ m / n := by
   cases n
   · rw [cast_zero, div_zero, Nat.div_zero, cast_zero]
-  rw [le_div_iff, ← Nat.cast_mul, @Nat.cast_le]
+  rw [le_div_iff₀, ← Nat.cast_mul, @Nat.cast_le]
   · exact Nat.div_mul_le_self m _
   · exact Nat.cast_pos.2 (Nat.succ_pos _)
 

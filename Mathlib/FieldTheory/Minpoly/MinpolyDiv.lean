@@ -37,24 +37,11 @@ lemma coeff_minpolyDiv (i) : coeff (minpolyDiv R x) i =
     algebraMap R S (coeff (minpoly R x) (i + 1)) + coeff (minpolyDiv R x) (i + 1) * x := by
   rw [← coeff_map, ← minpolyDiv_spec R x]; simp [mul_sub]
 
-variable (hx : IsIntegral R x) {R x}
-
-lemma minpolyDiv_ne_zero [Nontrivial S] : minpolyDiv R x ≠ 0 := by
-  intro e
-  have := minpolyDiv_spec R x
-  rw [e, zero_mul] at this
-  exact ((minpoly.monic hx).map (algebraMap R S)).ne_zero this.symm
+variable {R x}
 
 lemma minpolyDiv_eq_zero (hx : ¬IsIntegral R x) : minpolyDiv R x = 0 := by
   delta minpolyDiv minpoly
   rw [dif_neg hx, Polynomial.map_zero, zero_divByMonic]
-
-lemma minpolyDiv_monic : Monic (minpolyDiv R x) := by
-  nontriviality S
-  have := congr_arg leadingCoeff (minpolyDiv_spec R x)
-  rw [leadingCoeff_mul', ((minpoly.monic hx).map (algebraMap R S)).leadingCoeff] at this
-  · simpa using this
-  · simpa using minpolyDiv_ne_zero hx
 
 lemma eval_minpolyDiv_self : (minpolyDiv R x).eval x = aeval x (derivative <| minpoly R x) := by
   rw [aeval_def, ← eval_map, ← derivative_map, ← minpolyDiv_spec R x]; simp
@@ -89,23 +76,6 @@ lemma eval_minpolyDiv_of_aeval_eq_zero [IsDomain S] [DecidableEq S]
   rw [eval, eval₂_minpolyDiv_of_eval₂_eq_zero, RingHom.id_apply, RingHom.id_apply]
   simpa [aeval_def] using hy
 
-lemma natDegree_minpolyDiv_succ [Nontrivial S] :
-    natDegree (minpolyDiv R x) + 1 = natDegree (minpoly R x) := by
-  rw [← (minpoly.monic hx).natDegree_map (algebraMap R S), ← minpolyDiv_spec, natDegree_mul']
-  · simp
-  · simpa using minpolyDiv_ne_zero hx
-
-lemma natDegree_minpolyDiv :
-    natDegree (minpolyDiv R x) = natDegree (minpoly R x) - 1 := by
-  nontriviality S
-  by_cases hx : IsIntegral R x
-  · rw [← natDegree_minpolyDiv_succ hx]; rfl
-  · rw [minpolyDiv_eq_zero hx, minpoly.eq_zero hx]; rfl
-
-lemma natDegree_minpolyDiv_lt [Nontrivial S] :
-    natDegree (minpolyDiv R x) < natDegree (minpoly R x) := by
-  rw [← natDegree_minpolyDiv_succ hx]
-  exact Nat.lt_succ_self _
 
 lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
     coeff (minpolyDiv R x) i ∈ Algebra.adjoin R {x} := by
@@ -124,6 +94,34 @@ lemma coeff_minpolyDiv_mem_adjoin (x : S) (i) :
   · refine (Nat.le_add_left _ i).trans_lt ?_
     rw [← add_assoc]
     exact Nat.lt_succ_self _
+
+section IsIntegral
+variable (hx : IsIntegral R x)
+include hx
+
+lemma minpolyDiv_ne_zero [Nontrivial S] : minpolyDiv R x ≠ 0 := by
+  intro e
+  have := minpolyDiv_spec R x
+  rw [e, zero_mul] at this
+  exact ((minpoly.monic hx).map (algebraMap R S)).ne_zero this.symm
+
+lemma minpolyDiv_monic : Monic (minpolyDiv R x) := by
+  nontriviality S
+  have := congr_arg leadingCoeff (minpolyDiv_spec R x)
+  rw [leadingCoeff_mul', ((minpoly.monic hx).map (algebraMap R S)).leadingCoeff] at this
+  · simpa using this
+  · simpa using minpolyDiv_ne_zero hx
+
+lemma natDegree_minpolyDiv_succ [Nontrivial S] :
+    natDegree (minpolyDiv R x) + 1 = natDegree (minpoly R x) := by
+  rw [← (minpoly.monic hx).natDegree_map (algebraMap R S), ← minpolyDiv_spec, natDegree_mul']
+  · simp
+  · simpa using minpolyDiv_ne_zero hx
+
+lemma natDegree_minpolyDiv_lt [Nontrivial S] :
+    natDegree (minpolyDiv R x) < natDegree (minpoly R x) := by
+  rw [← natDegree_minpolyDiv_succ hx]
+  exact Nat.lt_succ_self _
 
 lemma minpolyDiv_eq_of_isIntegrallyClosed [IsDomain R] [IsIntegrallyClosed R] [IsDomain S]
     [Algebra R K] [Algebra K S] [IsScalarTower R K S] [IsFractionRing R K] :
@@ -177,6 +175,16 @@ lemma span_coeff_minpolyDiv :
       intro j (hj : j < i)
       exact hi j hj (lt_trans hj hi')
     · rwa [← natDegree_minpolyDiv_succ hx, Set.mem_Iio, Nat.lt_succ_iff] at hi'
+
+end IsIntegral
+
+lemma natDegree_minpolyDiv :
+    natDegree (minpolyDiv R x) = natDegree (minpoly R x) - 1 := by
+  nontriviality S
+  by_cases hx : IsIntegral R x
+  · rw [← natDegree_minpolyDiv_succ hx]; rfl
+  · rw [minpolyDiv_eq_zero hx, minpoly.eq_zero hx]; rfl
+
 
 section PowerBasis
 

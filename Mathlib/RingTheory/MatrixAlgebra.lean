@@ -95,7 +95,7 @@ theorem invFun_algebraMap (M : Matrix n n R) : invFun R A n (M.map (algebraMap R
   dsimp [invFun]
   simp only [Algebra.algebraMap_eq_smul_one, smul_tmul, ← tmul_sum, mul_boole]
   congr
-  conv_rhs => rw [matrix_eq_sum_std_basis M]
+  conv_rhs => rw [matrix_eq_sum_stdBasisMatrix M]
   convert Finset.sum_product (β := Matrix n n R); simp
 
 theorem right_inv (M : Matrix n n A) : (toFunAlgHom R A n) (invFun R A n M) = M := by
@@ -103,7 +103,7 @@ theorem right_inv (M : Matrix n n A) : (toFunAlgHom R A n) (invFun R A n M) = M 
     mul_boole, toFunAlgHom_apply, RingHom.map_zero, RingHom.map_one, Matrix.map_apply,
     Pi.smul_def]
   convert Finset.sum_product (β := Matrix n n A)
-  conv_lhs => rw [matrix_eq_sum_std_basis M]
+  conv_lhs => rw [matrix_eq_sum_stdBasisMatrix M]
   refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => Matrix.ext fun a b => ?_
   simp only [stdBasisMatrix, smul_apply, Matrix.map_apply]
   split_ifs <;> aesop
@@ -144,10 +144,13 @@ theorem matrixEquivTensor_apply (M : Matrix n n A) :
 
 -- Porting note: short circuiting simplifier from simplifying left hand side
 @[simp (high)]
-theorem matrixEquivTensor_apply_std_basis (i j : n) (x : A) :
+theorem matrixEquivTensor_apply_stdBasisMatrix (i j : n) (x : A) :
     matrixEquivTensor R A n (stdBasisMatrix i j x) = x ⊗ₜ stdBasisMatrix i j 1 := by
   have t : ∀ p : n × n, i = p.1 ∧ j = p.2 ↔ p = (i, j) := by aesop
   simp [ite_tmul, t, stdBasisMatrix]
+
+@[deprecated (since := "2024-08-11")] alias matrixEquivTensor_apply_std_basis :=
+  matrixEquivTensor_apply_stdBasisMatrix
 
 @[simp]
 theorem matrixEquivTensor_apply_symm (a : A) (M : Matrix n n R) :

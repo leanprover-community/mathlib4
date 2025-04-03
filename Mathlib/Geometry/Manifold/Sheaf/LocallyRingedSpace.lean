@@ -84,14 +84,14 @@ theorem smoothSheafCommRing.isUnit_stalk_iff {x : M}
         convert RingHom.map_one _
         apply Subtype.ext
         ext y
-        apply mul_inv_cancel
+        apply mul_inv_cancel₀
         exact hVf y
       · rw [← map_mul]
         -- Qualified the name to avoid Lean not finding a `OneHomClass` #8386
         convert RingHom.map_one _
         apply Subtype.ext
         ext y
-        apply inv_mul_cancel
+        apply inv_mul_cancel₀
         exact hVf y
     · intro y
       exact ((contDiffAt_inv _ (hVf y)).contMDiffAt).comp y

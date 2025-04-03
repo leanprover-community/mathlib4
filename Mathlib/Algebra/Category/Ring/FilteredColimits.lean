@@ -26,13 +26,9 @@ universe v u
 
 noncomputable section
 
-open scoped Classical
+open CategoryTheory Limits
 
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open CategoryTheory.IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
+open IsFiltered renaming max → max' -- avoid name collision with `_root_.max`.
 
 open AddMonCat.FilteredColimits (colimit_zero_eq colimit_add_mk_eq)
 
@@ -66,7 +62,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
       (F ⋙ forget₂ SemiRingCat AddCommMonCat.{max v u}) with
     mul_zero := fun x => by
       refine Quot.inductionOn x ?_; clear x; intro x
-      cases' x with j x
+      obtain ⟨j, x⟩ := x
       erw [colimit_zero_eq _ j, colimit_mul_mk_eq _ ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j)]
       rw [CategoryTheory.Functor.map_id]
       dsimp
@@ -74,7 +70,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
       rfl
     zero_mul := fun x => by
       refine Quot.inductionOn x ?_; clear x; intro x
-      cases' x with j x
+      obtain ⟨j, x⟩ := x
       erw [colimit_zero_eq _ j, colimit_mul_mk_eq _ ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j)]
       rw [CategoryTheory.Functor.map_id]
       dsimp
@@ -82,7 +78,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
       rfl
     left_distrib := fun x y z => by
       refine Quot.induction_on₃ x y z ?_; clear x y z; intro x y z
-      cases' x with j₁ x; cases' y with j₂ y; cases' z with j₃ z
+      obtain ⟨j₁, x⟩ := x; obtain ⟨j₂, y⟩ := y; obtain ⟨j₃, z⟩ := z
       let k := IsFiltered.max₃ j₁ j₂ j₃
       let f := IsFiltered.firstToMax₃ j₁ j₂ j₃
       let g := IsFiltered.secondToMax₃ j₁ j₂ j₃
@@ -95,7 +91,7 @@ instance colimitSemiring : Semiring.{max v u} <| R.{v, u} F :=
       rfl
     right_distrib := fun x y z => by
       refine Quot.induction_on₃ x y z ?_; clear x y z; intro x y z
-      cases' x with j₁ x; cases' y with j₂ y; cases' z with j₃ z
+      obtain ⟨j₁, x⟩ := x; obtain ⟨j₂, y⟩ := y; obtain ⟨j₃, z⟩ := z
       let k := IsFiltered.max₃ j₁ j₂ j₃
       let f := IsFiltered.firstToMax₃ j₁ j₂ j₃
       let g := IsFiltered.secondToMax₃ j₁ j₂ j₃

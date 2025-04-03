@@ -142,8 +142,8 @@ lemma dist_anti_right_pi : AntitoneOn (dist x) (Iic x) := by
 
 lemma dist_le_dist_of_le_pi (ha : a₂ ≤ a₁) (h₁ : a₁ ≤ b₁) (hb : b₁ ≤ b₂) :
     dist a₁ b₁ ≤ dist a₂ b₂ :=
-  (dist_mono_right_pi h₁ (h₁.trans hb) hb).trans $
-    dist_anti_left_pi (ha.trans $ h₁.trans hb) (h₁.trans hb) ha
+  (dist_mono_right_pi h₁ (h₁.trans hb) hb).trans <|
+    dist_anti_left_pi (ha.trans <| h₁.trans hb) (h₁.trans hb) ha
 
 theorem IsUpperSet.exists_subset_ball (hs : IsUpperSet s) (hx : x ∈ closure s) (hδ : 0 < δ) :
     ∃ y, closedBall y (δ / 4) ⊆ closedBall x δ ∧ closedBall y (δ / 4) ⊆ interior s := by
@@ -213,7 +213,7 @@ protected lemma IsClosed.lowerClosure_pi (hs : IsClosed s) (hs' : BddAbove s) :
   haveI : BoundedGENhdsClass ℝ := by infer_instance
   obtain ⟨a, ha⟩ := hx.bddBelow_range
   obtain ⟨b, hb, φ, hφ, hbf⟩ := tendsto_subseq_of_bounded (hs'.isBounded_inter bddBelow_Ici) fun n ↦
-    ⟨hg n, (ha $ mem_range_self _).trans $ hfg _⟩
+    ⟨hg n, (ha <| mem_range_self _).trans <| hfg _⟩
   exact ⟨b, closure_minimal inter_subset_left hs hb,
     le_of_tendsto_of_tendsto' (hx.comp hφ.tendsto_atTop) hbf fun _ ↦ hfg _⟩
 
@@ -225,14 +225,14 @@ protected lemma IsClopen.lowerClosure_pi (hs : IsClopen s) (hs' : BddAbove s) :
 
 lemma closure_upperClosure_comm_pi (hs : BddBelow s) :
     closure (upperClosure s : Set (ι → ℝ)) = upperClosure (closure s) :=
-  (closure_minimal (upperClosure_anti subset_closure) $
-      isClosed_closure.upperClosure_pi hs.closure).antisymm $
+  (closure_minimal (upperClosure_anti subset_closure) <|
+      isClosed_closure.upperClosure_pi hs.closure).antisymm <|
     upperClosure_min (closure_mono subset_upperClosure) (upperClosure s).upper.closure
 
 lemma closure_lowerClosure_comm_pi (hs : BddAbove s) :
     closure (lowerClosure s : Set (ι → ℝ)) = lowerClosure (closure s) :=
-  (closure_minimal (lowerClosure_mono subset_closure) $
-        isClosed_closure.lowerClosure_pi hs.closure).antisymm $
+  (closure_minimal (lowerClosure_mono subset_closure) <|
+        isClosed_closure.lowerClosure_pi hs.closure).antisymm <|
     lowerClosure_min (closure_mono subset_lowerClosure) (lowerClosure s).lower.closure
 
 end Finite

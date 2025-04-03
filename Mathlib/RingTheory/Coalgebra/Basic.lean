@@ -6,7 +6,7 @@ Authors: Ali Ramsey, Eric Wieser
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Prod
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 
 /-!
 # Coalgebras
@@ -37,6 +37,30 @@ class CoalgebraStruct (R : Type u) (A : Type v)
   comul : A →ₗ[R] A ⊗[R] A
   /-- The counit of the coalgebra -/
   counit : A →ₗ[R] R
+
+/--
+A representation of an element `a` of a coalgebra `A` is a finite sum of pure tensors `∑ xᵢ ⊗ yᵢ`
+that is equal to `comul a`.
+-/
+structure Coalgebra.Repr (R : Type u) {A : Type v}
+    [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) where
+  /-- the indexing type of a representation of `comul a` -/
+  {ι : Type*}
+  /-- the finite indexing set of a representation of `comul a` -/
+  (index : Finset ι)
+  /-- the first coordinate of a representation of `comul a` -/
+  (left : ι → A)
+  /-- the second coordinate of a representation of `comul a` -/
+  (right : ι → A)
+  /-- `comul a` is equal to a finite sum of some pure tensors -/
+  (eq : ∑ i ∈ index, left i ⊗ₜ[R] right i = CoalgebraStruct.comul a)
+
+/-- An arbitrarily chosen representation. -/
+def Coalgebra.Repr.arbitrary (R : Type u) {A : Type v}
+    [CommSemiring R] [AddCommMonoid A] [Module R A] [CoalgebraStruct R A] (a : A) :
+    Coalgebra.Repr R a where
+  index := TensorProduct.exists_finset (R := R) (CoalgebraStruct.comul a) |>.choose
+  eq := TensorProduct.exists_finset (R := R) (CoalgebraStruct.comul a) |>.choose_spec.symm
 
 namespace Coalgebra
 export CoalgebraStruct (comul counit)
@@ -81,7 +105,19 @@ theorem rTensor_counit_comul (a : A) : counit.rTensor A (comul a) = 1 ⊗ₜ[R] 
 theorem lTensor_counit_comul (a : A) : counit.lTensor A (comul a) = a ⊗ₜ[R] 1 :=
   LinearMap.congr_fun lTensor_counit_comp_comul a
 
+@[simp]
+lemma sum_counit_tmul_eq {a : A} (repr : Coalgebra.Repr R a) :
+    ∑ i ∈ repr.index, counit (R := R) (repr.left i) ⊗ₜ (repr.right i) = 1 ⊗ₜ[R] a := by
+  simpa [← repr.eq, map_sum] using congr($(rTensor_counit_comp_comul (R := R) (A := A)) a)
+
+@[simp]
+lemma sum_tmul_counit_eq {a : A} (repr : Coalgebra.Repr R a) :
+    ∑ i ∈ repr.index, (repr.left i) ⊗ₜ counit (R := R) (repr.right i) = a ⊗ₜ[R] 1 := by
+  simpa [← repr.eq, map_sum] using congr($(lTensor_counit_comp_comul (R := R) (A := A)) a)
+
+
 end Coalgebra
+
 section CommSemiring
 
 open Coalgebra

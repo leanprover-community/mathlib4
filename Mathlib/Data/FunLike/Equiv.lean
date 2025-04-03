@@ -149,7 +149,7 @@ class EquivLike (E : Sort*) (α β : outParam (Sort*)) where
 
 namespace EquivLike
 
-variable {E F α β γ : Sort*} [iE : EquivLike E α β] [iF : EquivLike F β γ]
+variable {E F α β γ : Sort*} [EquivLike E α β] [EquivLike F β γ]
 
 theorem inv_injective : Function.Injective (EquivLike.inv : E → β → α) := fun e g h ↦
   coe_injective' e g ((right_inv e).eq_rightInverse (h.symm ▸ left_inv g)) h
@@ -218,7 +218,7 @@ theorem comp_bijective (f : α → β) (e : F) : Function.Bijective (e ∘ f) �
   (EquivLike.bijective e).of_comp_iff' f
 
 /-- This is not an instance to avoid slowing down every single `Subsingleton` typeclass search. -/
-lemma subsingleton_dom [Subsingleton β] : Subsingleton F :=
+lemma subsingleton_dom [FunLike F β γ] [Subsingleton β] : Subsingleton F :=
   ⟨fun f g ↦ DFunLike.ext f g fun _ ↦ (right_inv f).injective <| Subsingleton.elim _ _⟩
 
 end EquivLike

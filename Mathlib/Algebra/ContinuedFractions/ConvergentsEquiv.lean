@@ -136,7 +136,7 @@ theorem squashSeq_succ_n_tail_eq_squashSeq_tail_n :
       s.ge_stable (n + 1).le_succ s_succ_succ_nth_eq
     -- apply extensionality with `m` and continue by cases `m = n`.
     ext1 m
-    cases' Decidable.em (m = n) with m_eq_n m_ne_n
+    rcases Decidable.em (m = n) with m_eq_n | m_ne_n
     · simp [*, squashSeq]
     · cases s_succ_mth_eq : s.get? (m + 1)
       · simp only [*, squashSeq, Stream'.Seq.get?_tail, Stream'.Seq.get?_zipWith,
@@ -227,12 +227,12 @@ theorem contsAux_eq_contsAux_squashGCF_of_le {m : ℕ} :
     (by
       clear m
       intro m IH m_le_n
-      cases' m with m'
+      rcases m with - | m'
       · rfl
-      · cases' n with n'
+      · rcases n with - | n'
         · exact (m'.not_succ_le_zero m_le_n).elim
         -- 1 ≰ 0
-        · cases' m' with m''
+        · rcases m' with - | m''
           · rfl
           · -- get some inequalities to instantiate the IH for m'' and m'' + 1
             have m'_lt_n : m'' + 1 < n' + 1 := m_le_n
@@ -250,7 +250,7 @@ at the squashed position is not zero. -/
 theorem succ_nth_conv_eq_squashGCF_nth_conv [Field K]
     (nth_partDen_ne_zero : ∀ {b : K}, g.partDens.get? n = some b → b ≠ 0) :
     g.convs (n + 1) = (squashGCF g n).convs n := by
-  cases' Decidable.em (g.TerminatedAt n) with terminatedAt_n not_terminatedAt_n
+  rcases Decidable.em (g.TerminatedAt n) with terminatedAt_n | not_terminatedAt_n
   · have : squashGCF g n = g := squashGCF_eq_self_of_terminated terminatedAt_n
     simp only [this, convs_stable_of_terminated n.le_succ terminatedAt_n]
   · obtain ⟨⟨a, b⟩, s_nth_eq⟩ : ∃ gp_n, g.s.get? n = some gp_n :=
@@ -335,7 +335,7 @@ theorem convs_eq_convs' [LinearOrderedField K]
     -- first replace the rhs with the squashed computation
     suffices g.convs (n + 1) = g'.convs' n by
       rwa [succ_nth_conv'_eq_squashGCF_nth_conv']
-    cases' Decidable.em (TerminatedAt g n) with terminatedAt_n not_terminatedAt_n
+    rcases Decidable.em (TerminatedAt g n) with terminatedAt_n | not_terminatedAt_n
     · have g'_eq_g : g' = g := squashGCF_eq_self_of_terminated terminatedAt_n
       rw [convs_stable_of_terminated n.le_succ terminatedAt_n, g'_eq_g, IH _]
       intro _ _ m_lt_n s_mth_eq
@@ -345,7 +345,7 @@ theorem convs_eq_convs' [LinearOrderedField K]
         rwa [← IH]
         intro gp' m m_lt_n s_mth_eq'
         -- case distinction on m + 1 = n or m + 1 < n
-        cases' m_lt_n with n succ_m_lt_n
+        rcases m_lt_n with n | succ_m_lt_n
         · -- the difficult case at the squashed position: we first obtain the values from
           -- the sequence
           obtain ⟨gp_succ_m, s_succ_mth_eq⟩ : ∃ gp_succ_m, g.s.get? (m + 1) = some gp_succ_m :=

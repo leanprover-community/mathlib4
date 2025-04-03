@@ -86,7 +86,7 @@ theorem Float.Zero.valid : ValidFinite emin 0 :=
       rw [mul_comm]
       assumption
     le_trans C.precMax (Nat.le_mul_of_pos_left _ two_pos),
-    by (rw [max_eq_right]; simp [sub_eq_add_neg])⟩
+    by (rw [max_eq_right]; simp [sub_eq_add_neg, Int.ofNat_zero_le])⟩
 
 @[nolint docBlame]
 def Float.zero (s : Bool) : Float :=

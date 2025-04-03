@@ -1,12 +1,13 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Module.OrderedSMul
-import Mathlib.Algebra.Order.Group.Instances
+import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.LinearAlgebra.AffineSpace.Slope
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.Tactic.FieldSimp

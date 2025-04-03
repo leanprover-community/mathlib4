@@ -3,6 +3,8 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
+import Mathlib.Init
+import Lean.Data.HashMap
 import Batteries.Data.Rat.Basic
 
 /-!

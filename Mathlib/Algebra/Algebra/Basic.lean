@@ -123,9 +123,10 @@ theorem mul_sub_algebraMap_commutes [Ring A] [Algebra R A] (x : A) (r : R) :
 
 theorem mul_sub_algebraMap_pow_commutes [Ring A] [Algebra R A] (x : A) (r : R) (n : ℕ) :
     x * (x - algebraMap R A r) ^ n = (x - algebraMap R A r) ^ n * x := by
-  induction' n with n ih
-  · simp
-  · rw [pow_succ', ← mul_assoc, mul_sub_algebraMap_commutes, mul_assoc, ih, ← mul_assoc]
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ', ← mul_assoc, mul_sub_algebraMap_commutes, mul_assoc, ih, ← mul_assoc]
 
 end CommSemiring
 
@@ -223,10 +224,10 @@ section Nat
 variable {R : Type*} [Semiring R]
 
 -- Lower the priority so that `Algebra.id` is picked most of the time when working with
--- `ℕ`-algebras. This is only an issue since `Algebra.id` and `algebraNat` are not yet defeq.
--- TODO: fix this by adding an `ofNat` field to semirings.
+-- `ℕ`-algebras.
+-- TODO: is this still needed?
 /-- Semiring ⥤ ℕ-Alg -/
-instance (priority := 99) algebraNat : Algebra ℕ R where
+instance (priority := 99) Semiring.toNatAlgebra : Algebra ℕ R where
   commutes' := Nat.cast_commute
   smul_def' _ _ := nsmul_eq_mul _ _
   toRingHom := Nat.castRingHom R
@@ -241,10 +242,10 @@ section Int
 variable (R : Type*) [Ring R]
 
 -- Lower the priority so that `Algebra.id` is picked most of the time when working with
--- `ℤ`-algebras. This is only an issue since `Algebra.id ℤ` and `algebraInt ℤ` are not yet defeq.
--- TODO: fix this by adding an `ofInt` field to rings.
+-- `ℤ`-algebras.
+-- TODO: is this still needed?
 /-- Ring ⥤ ℤ-Alg -/
-instance (priority := 99) algebraInt : Algebra ℤ R where
+instance (priority := 99) Ring.toIntAlgebra : Algebra ℤ R where
   commutes' := Int.cast_commute
   smul_def' _ _ := zsmul_eq_mul _ _
   toRingHom := Int.castRingHom R
@@ -335,7 +336,7 @@ theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain
     [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M := by
   refine ⟨fun {r m} h => ?_⟩
   rw [algebra_compatible_smul A r m] at h
-  cases' smul_eq_zero.1 h with H H
+  rcases smul_eq_zero.1 h with H | H
   · have : Function.Injective (algebraMap R A) :=
       NoZeroSMulDivisors.iff_algebraMap_injective.1 inferInstance
     left

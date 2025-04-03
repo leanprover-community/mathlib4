@@ -260,7 +260,7 @@ theorem eq_neg_one_at_prime_divisor_of_eq_neg_one {a : ℤ} {n : ℕ} (h : J(a |
     ∃ p : ℕ, p.Prime ∧ p ∣ n ∧ J(a | p) = -1 := by
   have hn₀ : n ≠ 0 := by
     rintro rfl
-    rw [zero_right, eq_neg_self_iff] at h
+    rw [zero_right, CharZero.eq_neg_self_iff] at h
     exact one_ne_zero h
   have hf₀ (p) (hp : p ∈ n.primeFactorsList) : p ≠ 0 := (Nat.pos_of_mem_primeFactorsList hp).ne.symm
   rw [← Nat.prod_primeFactorsList hn₀, list_prod_right hf₀] at h

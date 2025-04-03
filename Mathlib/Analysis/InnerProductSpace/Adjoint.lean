@@ -215,7 +215,7 @@ theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
         simp_rw [mul_assoc, Real.sqrt_mul (norm_nonneg _) (‖x‖ * ‖x‖),
           Real.sqrt_mul_self (norm_nonneg x)]
 
-instance : CstarRing (E →L[𝕜] E) where
+instance : CStarRing (E →L[𝕜] E) where
   norm_mul_self_le x := le_of_eq <| Eq.symm <| norm_adjoint_comp_self x
 
 theorem isAdjointPair_inner (A : E →L[𝕜] F) :
@@ -564,7 +564,7 @@ lemma Matrix.toLin_conjTranspose (A : Matrix m n 𝕜) :
     orthonormal_iff_ite.mp v₁.orthonormal, orthonormal_iff_ite.mp v₂.orthonormal]
 
 /-- The matrix associated to the adjoint of a linear map corresponding to two orthonormal bases
-is the conjugate tranpose of the matrix associated to the linear map. -/
+is the conjugate transpose of the matrix associated to the linear map. -/
 lemma LinearMap.toMatrix_adjoint (f : E →ₗ[𝕜] F) :
     toMatrix v₂.toBasis v₁.toBasis (adjoint f) = (toMatrix v₁.toBasis v₂.toBasis f)ᴴ :=
   toLin v₂.toBasis v₁.toBasis |>.injective <| by simp [toLin_conjTranspose]

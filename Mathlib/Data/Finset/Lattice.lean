@@ -18,8 +18,7 @@ import Mathlib.Order.Nat
 # Lattice operations on finsets
 -/
 
--- TODO:
--- assert_not_exists OrderedCommMonoid
+assert_not_exists OrderedCommMonoid
 assert_not_exists MonoidWithZero
 
 open Function Multiset OrderDual
@@ -812,8 +811,9 @@ theorem _root_.map_finset_sup' [SemilatticeSup β] [FunLike F α β] [SupHomClas
     f (s.sup' hs g) = s.sup' hs (f ∘ g) := by
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 
-lemma nsmul_sup' {α'} [LinearOrderedAddCommMonoid β] {s : Finset α'}
-    (hs : s.Nonempty) (f : α' → β) (n : ℕ) :
+lemma nsmul_sup' {α β : Type*} [AddMonoid β] [LinearOrder β]
+    [CovariantClass β β (· + ·) (· ≤ ·)] [CovariantClass β β (swap (· + ·)) (· ≤ ·)]
+    {s : Finset α} (hs : s.Nonempty) (f : α → β) (n : ℕ) :
     s.sup' hs (fun a => n • f a) = n • s.sup' hs f :=
   let ns : SupHom β β := { toFun := (n • ·), map_sup' := fun _ _ => (nsmul_right_mono n).map_max }
   (map_finset_sup' ns hs _).symm
@@ -844,18 +844,11 @@ lemma sup'_comp_eq_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : s.N
     s.sup' hs (g ∘ f) = (s.map f).sup' (map_nonempty.2 hs) g :=
   .symm <| sup'_map _ _
 
+
+@[gcongr]
 theorem sup'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
     s₁.sup' h₁ f ≤ s₂.sup' (h₁.mono h) f :=
   Finset.sup'_le h₁ _ (fun _ hb => le_sup' _ (h hb))
-
-/-- A version of `Finset.sup'_mono` acceptable for `@[gcongr]`.
-Instead of deducing `s₂.Nonempty` from `s₁.Nonempty` and `s₁ ⊆ s₂`,
-this version takes it as an argument. -/
-@[gcongr]
-lemma _root_.GCongr.finset_sup'_le {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂)
-    {h₁ : s₁.Nonempty} {h₂ : s₂.Nonempty} : s₁.sup' h₁ f ≤ s₂.sup' h₂ f :=
-  sup'_mono f h h₁
-
 end Sup'
 
 section Inf'
@@ -970,8 +963,9 @@ theorem _root_.map_finset_inf' [SemilatticeInf β] [FunLike F α β] [InfHomClas
     f (s.inf' hs g) = s.inf' hs (f ∘ g) := by
   refine hs.cons_induction ?_ ?_ <;> intros <;> simp [*]
 
-lemma nsmul_inf' {α'} [LinearOrderedAddCommMonoid β] {s : Finset α'}
-    (hs : s.Nonempty) (f : α' → β) (n : ℕ) :
+lemma nsmul_inf' {α β : Type*} [AddMonoid β] [LinearOrder β]
+    [CovariantClass β β (· + ·) (· ≤ ·)] [CovariantClass β β (swap (· + ·)) (· ≤ ·)]
+    {s : Finset α} (hs : s.Nonempty) (f : α → β) (n : ℕ) :
     s.inf' hs (fun a => n • f a) = n • s.inf' hs f :=
   let ns : InfHom β β := { toFun := (n • ·), map_inf' := fun _ _ => (nsmul_right_mono n).map_min }
   (map_finset_inf' ns hs _).symm
@@ -1001,17 +995,10 @@ lemma inf'_comp_eq_map {s : Finset γ} {f : γ ↪ β} (g : β → α) (hs : s.N
     s.inf' hs (g ∘ f) = (s.map f).inf' (map_nonempty.2 hs) g :=
   sup'_comp_eq_map (α := αᵒᵈ) g hs
 
+@[gcongr]
 theorem inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂) (h₁ : s₁.Nonempty) :
     s₂.inf' (h₁.mono h) f ≤ s₁.inf' h₁ f :=
   Finset.le_inf' h₁ _ (fun _ hb => inf'_le _ (h hb))
-
-/-- A version of `Finset.inf'_mono` acceptable for `@[gcongr]`.
-Instead of deducing `s₂.Nonempty` from `s₁.Nonempty` and `s₁ ⊆ s₂`,
-this version takes it as an argument. -/
-@[gcongr]
-lemma _root_.GCongr.finset_inf'_mono {s₁ s₂ : Finset β} (h : s₁ ⊆ s₂)
-    {h₁ : s₁.Nonempty} {h₂ : s₂.Nonempty} : s₂.inf' h₂ f ≤ s₁.inf' h₁ f :=
-  inf'_mono f h h₁
 
 end Inf'
 
@@ -1318,14 +1305,14 @@ protected theorem le_min_iff {m : WithTop α} {s : Finset α} : m ≤ s.min ↔ 
 protected theorem min_eq_bot [OrderBot α] {s : Finset α} : s.min = ⊥ ↔ ⊥ ∈ s :=
   Finset.max_eq_top (α := αᵒᵈ)
 
-/-- Given a nonempty finset `s` in a linear order `α`, then `s.min' h` is its minimum, as an
-element of `α`, where `h` is a proof of nonemptiness. Without this assumption, use instead `s.min`,
+/-- Given a nonempty finset `s` in a linear order `α`, then `s.min' H` is its minimum, as an
+element of `α`, where `H` is a proof of nonemptiness. Without this assumption, use instead `s.min`,
 taking values in `WithTop α`. -/
 def min' (s : Finset α) (H : s.Nonempty) : α :=
   inf' s H id
 
-/-- Given a nonempty finset `s` in a linear order `α`, then `s.max' h` is its maximum, as an
-element of `α`, where `h` is a proof of nonemptiness. Without this assumption, use instead `s.max`,
+/-- Given a nonempty finset `s` in a linear order `α`, then `s.max' H` is its maximum, as an
+element of `α`, where `H` is a proof of nonemptiness. Without this assumption, use instead `s.max`,
 taking values in `WithBot α`. -/
 def max' (s : Finset α) (H : s.Nonempty) : α :=
   sup' s H id
@@ -1814,19 +1801,17 @@ section minimal
 
 variable [DecidableEq α] {P : Finset α → Prop} {s : Finset α}
 
-theorem mem_maximals_iff_forall_insert (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) :
-    s ∈ maximals (· ⊆ ·) {t | P t} ↔ P s ∧ ∀ x ∉ s, ¬ P (insert x s) := by
-  simp only [mem_maximals_iff, and_congr_right_iff, Set.mem_setOf_eq]
-  refine fun _ ↦ ⟨fun h x hx hxs ↦ hx ?_, fun h t ht hst ↦ hst.antisymm fun x hxt ↦ ?_⟩
-  · rw [h hxs (subset_insert _ _)]; exact mem_insert_self x s
-  exact by_contra fun hxs ↦ h x hxs (hP ht (insert_subset hxt hst))
+theorem maximal_iff_forall_insert (hP : ∀ ⦃s t⦄, P t → s ⊆ t → P s) :
+    Maximal P s ↔ P s ∧ ∀ x ∉ s, ¬ P (insert x s) := by
+  simp only [Maximal, and_congr_right_iff]
+  exact fun _ ↦ ⟨fun h x hxs hx ↦ hxs <| h hx (subset_insert _ _) (mem_insert_self x s),
+    fun h t ht hst x hxt ↦ by_contra fun hxs ↦ h x hxs (hP ht (insert_subset hxt hst))⟩
 
-theorem mem_minimals_iff_forall_erase (hP : ∀ ⦃s t⦄, P s → s ⊆ t → P t) :
-    s ∈ minimals (· ⊆ ·) {t | P t} ↔ P s ∧ ∀ x ∈ s, ¬ P (s.erase x) := by
-  simp only [mem_minimals_iff, Set.mem_setOf_eq, and_congr_right_iff]
-  refine fun _ ↦ ⟨fun h x hx hxs ↦ ?_, fun h t ht hst ↦ Eq.symm <| hst.antisymm (fun x hxs ↦ ?_)⟩
-  · rw [(h hxs (erase_subset x s))] at hx; simp at hx
-  exact by_contra fun hxt ↦ h x hxs (hP ht <| subset_erase.2 ⟨hst, hxt⟩)
+theorem minimal_iff_forall_diff_singleton (hP : ∀ ⦃s t⦄, P t → t ⊆ s → P s) :
+    Minimal P s ↔ P s ∧ ∀ x ∈ s, ¬ P (s.erase x) where
+  mp h := ⟨h.prop, fun x hxs hx ↦ by simpa using h.le_of_le hx (erase_subset _ _) hxs⟩
+  mpr h := ⟨h.1, fun t ht hts x hxs ↦ by_contra fun hxt ↦
+    h.2 x hxs <| hP ht (subset_erase.2 ⟨hts, hxt⟩)⟩
 
 end minimal
 
@@ -1966,3 +1951,5 @@ theorem set_biInter_biUnion (s : Finset γ) (t : γ → Finset α) (f : α → S
   iInf_biUnion s t f
 
 end Finset
+
+set_option linter.style.longFile 2100

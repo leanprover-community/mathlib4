@@ -53,7 +53,7 @@ def toPrimeSpectrum (x : MaximalSpectrum R) : PrimeSpectrum R :=
   ⟨x.asIdeal, x.IsMaximal.isPrime⟩
 
 theorem toPrimeSpectrum_injective : (@toPrimeSpectrum R _).Injective := fun ⟨_, _⟩ ⟨_, _⟩ h => by
-  simpa only [MaximalSpectrum.mk.injEq] using (PrimeSpectrum.ext_iff _ _).mp h
+  simpa only [MaximalSpectrum.mk.injEq] using PrimeSpectrum.ext_iff.mp h
 
 open PrimeSpectrum Set
 

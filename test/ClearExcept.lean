@@ -1,5 +1,7 @@
 import Mathlib.Tactic.ClearExcept
 
+set_option linter.unusedTactic false
+
 -- Most basic test
 example (_delete_this : Nat) (dont_delete_this : Int) : Nat := by
   clear * - dont_delete_this
@@ -12,13 +14,16 @@ example [dont_delete_this : Inhabited Nat] (dont_delete_this2 : Prop) : Inhabite
   assumption
 
 -- Confirms that clearExcept can clear hypotheses even when they have dependencies
-example (delete_this : Nat) (_delete_this2 : delete_this = delete_this) (dont_delete_this : Int) : Nat := by
+example (delete_this : Nat) (_delete_this2 : delete_this = delete_this) (dont_delete_this : Int) :
+    Nat := by
   clear * - dont_delete_this
   fail_if_success assumption
   exact dont_delete_this.toNat
 
--- Confirms that clearExcept does not clear hypotheses when they have dependencies that should not be cleared
-example (dont_delete_this : Nat) (dont_delete_this2 : dont_delete_this = dont_delete_this) : Nat := by
+-- Confirms that clearExcept does not clear hypotheses
+-- when they have dependencies that should not be cleared
+example (dont_delete_this : Nat) (dont_delete_this2 : dont_delete_this = dont_delete_this) :
+    Nat := by
   clear * - dont_delete_this2
   exact dont_delete_this
 

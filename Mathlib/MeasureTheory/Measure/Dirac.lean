@@ -15,7 +15,7 @@ and prove some basic facts about it.
 -/
 
 open Function Set
-open scoped ENNReal Classical
+open scoped ENNReal
 
 noncomputable section
 
@@ -54,8 +54,12 @@ theorem dirac_apply [MeasurableSingletonClass α] (a : α) (s : Set α) :
     dirac a s ≤ dirac a {a}ᶜ := measure_mono (subset_compl_comm.1 <| singleton_subset_iff.2 h)
     _ = 0 := by simp [dirac_apply' _ (measurableSet_singleton _).compl]
 
-theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f = dirac (f a) :=
-  ext fun s hs => by simp [hs, map_apply hf hs, hf hs, indicator_apply]
+@[simp] lemma dirac_ne_zero : dirac a ≠ 0 :=
+  fun h ↦ by simpa [h] using dirac_apply_of_mem (mem_univ a)
+
+theorem map_dirac {f : α → β} (hf : Measurable f) (a : α) : (dirac a).map f = dirac (f a) := by
+  classical
+  exact ext fun s hs => by simp [hs, map_apply hf hs, hf hs, indicator_apply]
 
 lemma map_const (μ : Measure α) (c : β) : μ.map (fun _ ↦ c) = (μ Set.univ) • dirac c := by
   ext s hs
@@ -92,7 +96,8 @@ theorem sum_smul_dirac [Countable α] [MeasurableSingletonClass α] (μ : Measur
 /-- Given that `α` is a countable, measurable space with all singleton sets measurable,
 write the measure of a set `s` as the sum of the measure of `{x}` for all `x ∈ s`. -/
 theorem tsum_indicator_apply_singleton [Countable α] [MeasurableSingletonClass α] (μ : Measure α)
-    (s : Set α) (hs : MeasurableSet s) : (∑' x : α, s.indicator (fun x => μ {x}) x) = μ s :=
+    (s : Set α) (hs : MeasurableSet s) : (∑' x : α, s.indicator (fun x => μ {x}) x) = μ s := by
+  classical
   calc
     (∑' x : α, s.indicator (fun x => μ {x}) x) =
       Measure.sum (fun a => μ {a} • Measure.dirac a) s := by

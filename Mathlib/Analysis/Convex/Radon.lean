@@ -64,13 +64,13 @@ theorem radon_partition {f : ι → E} (h : ¬ AffineIndependent 𝕜 f) :
 
 open FiniteDimensional
 
-variable [FiniteDimensional 𝕜 E]
-
 /-- Corner case for `helly_theorem'`. -/
 private lemma helly_theorem_corner {F : ι → Set E} {s : Finset ι}
     (h_card_small : s.card ≤ finrank 𝕜 E + 1)
     (h_inter : ∀ I ⊆ s, I.card ≤ finrank 𝕜 E + 1 → (⋂ i ∈ I, F i).Nonempty) :
     (⋂ i ∈ s, F i).Nonempty := h_inter s (by simp) h_card_small
+
+variable [FiniteDimensional 𝕜 E]
 
 /-- **Helly's theorem** for finite families of convex sets.
 

@@ -77,13 +77,10 @@ variable {T : Submonoid P} (hy : M ≤ T.comap g) {Q : Type*} [CommRing Q]
 variable [Algebra P Q] [IsLocalization T Q]
 variable [IsLocalization M S]
 
-section
-
+include M in
 theorem isNoetherianRing (h : IsNoetherianRing R) : IsNoetherianRing S := by
-  rw [isNoetherianRing_iff, isNoetherian_iff_wellFounded] at h ⊢
+  rw [isNoetherianRing_iff, isNoetherian_iff] at h ⊢
   exact OrderEmbedding.wellFounded (IsLocalization.orderEmbedding M S).dual h
-
-end
 
 variable {S M}
 
@@ -125,8 +122,8 @@ theorem mem_span_iff {N : Type*} [AddCommGroup N] [Module R N] [Module S N] [IsS
   · intro h
     refine Submodule.span_induction h ?_ ?_ ?_ ?_
     · rintro x hx
-      exact ⟨x, Submodule.subset_span hx, 1, by rw [mk'_one, _root_.map_one, one_smul]⟩
-    · exact ⟨0, Submodule.zero_mem _, 1, by rw [mk'_one, _root_.map_one, one_smul]⟩
+      exact ⟨x, Submodule.subset_span hx, 1, by rw [mk'_one, map_one, one_smul]⟩
+    · exact ⟨0, Submodule.zero_mem _, 1, by rw [mk'_one, map_one, one_smul]⟩
     · rintro _ _ ⟨y, hy, z, rfl⟩ ⟨y', hy', z', rfl⟩
       refine
         ⟨(z' : R) • y + (z : R) • y',
@@ -134,8 +131,8 @@ theorem mem_span_iff {N : Type*} [AddCommGroup N] [Module R N] [Module S N] [IsS
       rw [smul_add, ← IsScalarTower.algebraMap_smul S (z : R), ←
         IsScalarTower.algebraMap_smul S (z' : R), smul_smul, smul_smul]
       congr 1
-      · rw [← mul_one (1 : R), mk'_mul, mul_assoc, mk'_spec, _root_.map_one, mul_one, mul_one]
-      · rw [← mul_one (1 : R), mk'_mul, mul_right_comm, mk'_spec, _root_.map_one, mul_one, one_mul]
+      · rw [← mul_one (1 : R), mk'_mul, mul_assoc, mk'_spec, map_one, mul_one, mul_one]
+      · rw [← mul_one (1 : R), mk'_mul, mul_right_comm, mk'_spec, map_one, mul_one, one_mul]
     · rintro a _ ⟨y, hy, z, rfl⟩
       obtain ⟨y', z', rfl⟩ := mk'_surjective M a
       refine ⟨y' • y, Submodule.smul_mem _ _ hy, z' * z, ?_⟩

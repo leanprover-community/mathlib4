@@ -192,11 +192,11 @@ attribute [simp] inv_zero
 section GroupWithZero
 variable [GroupWithZero G₀] {a : G₀}
 
-@[simp] lemma mul_inv_cancel (h : a ≠ 0) : a * a⁻¹ = 1 := GroupWithZero.mul_inv_cancel a h
+@[simp] lemma mul_inv_cancel₀ (h : a ≠ 0) : a * a⁻¹ = 1 := GroupWithZero.mul_inv_cancel a h
 
 -- See note [lower instance priority]
 instance (priority := 100) GroupWithZero.toMulDivCancelClass : MulDivCancelClass G₀ where
-  mul_div_cancel a b hb := by rw [div_eq_mul_inv, mul_assoc, mul_inv_cancel hb, mul_one]
+  mul_div_cancel a b hb := by rw [div_eq_mul_inv, mul_assoc, mul_inv_cancel₀ hb, mul_one]
 
 end GroupWithZero
 

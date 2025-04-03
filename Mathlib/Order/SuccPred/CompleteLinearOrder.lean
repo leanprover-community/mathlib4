@@ -59,6 +59,27 @@ lemma IsGLB.exists_of_nonempty_of_not_isPredLimit
     (hf : IsGLB (Set.range f) x) (hx : ¬ IsPredLimit x) :
     ∃ i, f i = x := hf.mem_of_nonempty_of_not_isPredLimit (Set.range_nonempty f) hx
 
+open Classical in
+/-- Every conditionally complete linear order with well-founded `<` is a successor order, by setting
+the successor of an element to be the infimum of all larger elements. -/
+noncomputable def ConditionallyCompleteLinearOrder.toSuccOrder [WellFoundedLT α] :
+    SuccOrder α where
+  succ a := if IsMax a then a else sInf {b | a < b}
+  le_succ a := by
+    by_cases h : IsMax a
+    · simp [h]
+    · simp only [h, ↓reduceIte]
+      rw [not_isMax_iff] at h
+      exact le_csInf h (fun b => le_of_lt)
+  max_of_succ_le hs := by
+    by_contra h
+    simp [h] at hs
+    rw [not_isMax_iff] at h
+    exact hs.not_lt (csInf_mem h)
+  succ_le_of_lt {a b} ha := by
+    simp [ha.not_isMax]
+    exact csInf_le ⟨a, fun _ hc => hc.le⟩ ha
+
 end ConditionallyCompleteLinearOrder
 
 section ConditionallyCompleteLinearOrderBot

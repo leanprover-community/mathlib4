@@ -270,16 +270,17 @@ instance hasNPowNat : Pow (CentroidHom α) ℕ :=
   ⟨fun f n ↦
     { toAddMonoidHom := (f.toEnd ^ n : AddMonoid.End α)
       map_mul_left' := fun a b ↦ by
-        induction' n with n ih
-        · exact rfl
-        · rw [pow_succ']
+        induction n with
+        | zero => rfl
+        | succ n ih =>
+          rw [pow_succ']
           exact (congr_arg f.toEnd ih).trans (f.map_mul_left' _ _)
       map_mul_right' := fun a b ↦ by
-        induction' n with n ih
-        · exact rfl
-        · rw [pow_succ']
-          exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _)
-        }⟩
+        induction n with
+        | zero => rfl
+        | succ n ih =>
+          rw [pow_succ']
+          exact (congr_arg f.toEnd ih).trans (f.map_mul_right' _ _)}⟩
 
 @[simp, norm_cast]
 theorem coe_zero : ⇑(0 : CentroidHom α) = 0 :=

@@ -42,7 +42,7 @@ open Function Set Filter Complex
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℂ F]
 variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℂ E H} [I.Boundaryless]
-variable {M : Type*} [TopologicalSpace M] [CompactSpace M] [ChartedSpace H M]
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [SmoothManifoldWithCorners I M]
 
 /-- **Maximum modulus principle**: if `f : M → F` is complex differentiable in a neighborhood of `c`
@@ -145,6 +145,8 @@ model so that it works, e.g., on a product of two manifolds without a boundary. 
 -/
 
 namespace MDifferentiable
+
+variable [CompactSpace M]
 
 /-- A holomorphic function on a compact complex manifold is locally constant. -/
 protected theorem isLocallyConstant {f : M → F} (hf : MDifferentiable I 𝓘(ℂ, F) f) :

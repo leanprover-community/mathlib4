@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
 import Mathlib.Data.Real.Pointwise
 import Mathlib.Order.ConditionallyCompleteLattice.Group
+import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Algebra.Ring.Regular
 
@@ -69,7 +70,8 @@ scoped notation "ℝ≥0" => NNReal
 noncomputable instance : FloorSemiring ℝ≥0 := Nonneg.floorSemiring
 instance instDenselyOrdered : DenselyOrdered ℝ≥0 := Nonneg.instDenselyOrdered
 instance : OrderBot ℝ≥0 := inferInstance
-instance : Archimedean ℝ≥0 := Nonneg.archimedean
+instance : Archimedean ℝ≥0 := Nonneg.instArchimedean
+instance : MulArchimedean ℝ≥0 := Nonneg.instMulArchimedean
 noncomputable instance : Sub ℝ≥0 := Nonneg.sub
 noncomputable instance : OrderedSub ℝ≥0 := Nonneg.orderedSub
 
@@ -92,11 +94,8 @@ instance canLift : CanLift ℝ ℝ≥0 toReal fun r => 0 ≤ r :=
 @[ext] protected theorem eq {n m : ℝ≥0} : (n : ℝ) = (m : ℝ) → n = m :=
   Subtype.eq
 
-protected theorem eq_iff {n m : ℝ≥0} : n = m ↔ (n : ℝ) = (m : ℝ) :=
-  Subtype.ext_iff
-
 theorem ne_iff {x y : ℝ≥0} : (x : ℝ) ≠ (y : ℝ) ↔ x ≠ y :=
-  NNReal.eq_iff.symm.not
+  not_congr <| NNReal.eq_iff.symm
 
 protected theorem «forall» {p : ℝ≥0 → Prop} :
     (∀ x : ℝ≥0, p x) ↔ ∀ (x : ℝ) (hx : 0 ≤ x), p ⟨x, hx⟩ :=
@@ -119,7 +118,7 @@ theorem _root_.Real.toNNReal_of_nonneg {r : ℝ} (hr : 0 ≤ r) : r.toNNReal = �
 theorem _root_.Real.le_coe_toNNReal (r : ℝ) : r ≤ Real.toNNReal r :=
   le_max_left r 0
 
-theorem coe_nonneg (r : ℝ≥0) : (0 : ℝ) ≤ r := r.2
+@[bound] theorem coe_nonneg (r : ℝ≥0) : (0 : ℝ) ≤ r := r.2
 
 @[simp, norm_cast] theorem coe_mk (a : ℝ) (ha) : toReal ⟨a, ha⟩ = a := rfl
 
@@ -155,6 +154,9 @@ protected theorem coe_injective : Injective ((↑) : ℝ≥0 → ℝ) := Subtype
 @[simp, norm_cast] lemma coe_zero : ((0 : ℝ≥0) : ℝ) = 0 := rfl
 
 @[simp, norm_cast] lemma coe_one : ((1 : ℝ≥0) : ℝ) = 1 := rfl
+
+@[simp] lemma mk_zero : (⟨0, le_rfl⟩ : ℝ≥0) = 0 := rfl
+@[simp] lemma mk_one : (⟨1, zero_le_one⟩ : ℝ≥0) = 1 := rfl
 
 @[simp, norm_cast]
 protected theorem coe_add (r₁ r₂ : ℝ≥0) : ((r₁ + r₂ : ℝ≥0) : ℝ) = r₁ + r₂ :=
@@ -276,7 +278,7 @@ theorem coe_multiset_sum (s : Multiset ℝ≥0) : ((s.sum : ℝ≥0) : ℝ) = (s
 theorem coe_multiset_prod (s : Multiset ℝ≥0) : ((s.prod : ℝ≥0) : ℝ) = (s.map (↑)).prod :=
   map_multiset_prod toRealHom s
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_sum {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a ∈ s, f a) = ∑ a ∈ s, (f a : ℝ) :=
   map_sum toRealHom _ _
 
@@ -286,7 +288,7 @@ theorem _root_.Real.toNNReal_sum_of_nonneg {α} {s : Finset α} {f : α → ℝ}
   rw [← coe_inj, NNReal.coe_sum, Real.coe_toNNReal _ (Finset.sum_nonneg hf)]
   exact Finset.sum_congr rfl fun x hxs => by rw [Real.coe_toNNReal _ (hf x hxs)]
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_prod {α} {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a ∈ s, f a) = ∏ a ∈ s, (f a : ℝ) :=
   map_prod toRealHom _ _
 
@@ -296,8 +298,8 @@ theorem _root_.Real.toNNReal_prod_of_nonneg {α} {s : Finset α} {f : α → ℝ
   rw [← coe_inj, NNReal.coe_prod, Real.coe_toNNReal _ (Finset.prod_nonneg hf)]
   exact Finset.prod_congr rfl fun x hxs => by rw [Real.coe_toNNReal _ (hf x hxs)]
 
--- Porting note (#11215): TODO: `simp`? `norm_cast`?
-theorem coe_nsmul (r : ℝ≥0) (n : ℕ) : ↑(n • r) = n • (r : ℝ) := rfl
+@[simp, norm_cast] lemma coe_nsmul (r : ℝ≥0) (n : ℕ) : ↑(n • r) = n • (r : ℝ) := rfl
+@[simp, norm_cast] lemma coe_nnqsmul (q : ℚ≥0) (x : ℝ≥0) : ↑(q • x) = (q • x : ℝ) := rfl
 
 @[simp, norm_cast]
 protected theorem coe_natCast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
@@ -326,7 +328,11 @@ noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
 @[simp, norm_cast] lemma coe_lt_coe : (r₁ : ℝ) < r₂ ↔ r₁ < r₂ := Iff.rfl
 
+@[bound] private alias ⟨_, Bound.coe_lt_coe_of_lt⟩ := coe_lt_coe
+
 @[simp, norm_cast] lemma coe_pos : (0 : ℝ) < r ↔ 0 < r := Iff.rfl
+
+@[bound] private alias ⟨_, Bound.coe_pos_of_pos⟩ := coe_pos
 
 @[simp, norm_cast] lemma one_le_coe : 1 ≤ (r : ℝ) ↔ 1 ≤ r := by rw [← coe_le_coe, coe_one]
 @[simp, norm_cast] lemma one_lt_coe : 1 < (r : ℝ) ↔ 1 < r := by rw [← coe_lt_coe, coe_one]
@@ -796,55 +802,59 @@ section Inv
 
 @[simp]
 theorem inv_le {r p : ℝ≥0} (h : r ≠ 0) : r⁻¹ ≤ p ↔ 1 ≤ r * p := by
-  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel h]
+  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h]
 
 theorem inv_le_of_le_mul {r p : ℝ≥0} (h : 1 ≤ r * p) : r⁻¹ ≤ p := by
   by_cases r = 0 <;> simp [*, inv_le]
 
 @[simp]
 theorem le_inv_iff_mul_le {r p : ℝ≥0} (h : p ≠ 0) : r ≤ p⁻¹ ↔ r * p ≤ 1 := by
-  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel h, mul_comm]
+  rw [← mul_le_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
 
 @[simp]
 theorem lt_inv_iff_mul_lt {r p : ℝ≥0} (h : p ≠ 0) : r < p⁻¹ ↔ r * p < 1 := by
-  rw [← mul_lt_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel h, mul_comm]
+  rw [← mul_lt_mul_left (pos_iff_ne_zero.2 h), mul_inv_cancel₀ h, mul_comm]
 
-theorem mul_le_iff_le_inv {a b r : ℝ≥0} (hr : r ≠ 0) : r * a ≤ b ↔ a ≤ r⁻¹ * b := by
-  have : 0 < r := lt_of_le_of_ne (zero_le r) hr.symm
-  rw [← mul_le_mul_left (inv_pos.mpr this), ← mul_assoc, inv_mul_cancel hr, one_mul]
+@[deprecated le_inv_mul_iff₀ (since := "2024-08-21")]
+theorem mul_le_iff_le_inv {a b r : ℝ≥0} (hr : r ≠ 0) : r * a ≤ b ↔ a ≤ r⁻¹ * b :=
+  (le_inv_mul_iff₀ (pos_iff_ne_zero.2 hr)).symm
 
+@[deprecated le_div_iff₀ (since := "2024-08-21")]
 theorem le_div_iff_mul_le {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ a * r ≤ b :=
-  le_div_iff₀ hr
+  le_div_iff₀ (pos_iff_ne_zero.2 hr)
 
-theorem div_le_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r ≤ b ↔ a ≤ b * r :=
-  div_le_iff₀ hr
+@[deprecated div_le_iff₀ (since := "2024-08-21")]
+protected lemma div_le_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r ≤ b ↔ a ≤ b * r :=
+  div_le_iff₀ (pos_iff_ne_zero.2 hr)
 
-nonrec theorem div_le_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a / r ≤ b ↔ a ≤ r * b :=
-  @div_le_iff' ℝ _ a r b <| pos_iff_ne_zero.2 hr
+@[deprecated div_le_iff₀' (since := "2024-08-21")]
+protected lemma div_le_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a / r ≤ b ↔ a ≤ r * b :=
+  div_le_iff₀' (pos_iff_ne_zero.2 hr)
 
 theorem div_le_of_le_mul {a b c : ℝ≥0} (h : a ≤ b * c) : a / c ≤ b :=
-  if h0 : c = 0 then by simp [h0] else (div_le_iff h0).2 h
+  if h0 : c = 0 then by simp [h0] else (div_le_iff₀ (pos_iff_ne_zero.2 h0)).2 h
 
 theorem div_le_of_le_mul' {a b c : ℝ≥0} (h : a ≤ b * c) : a / b ≤ c :=
   div_le_of_le_mul <| mul_comm b c ▸ h
 
-nonrec theorem le_div_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ a * r ≤ b :=
-  @le_div_iff ℝ _ a b r <| pos_iff_ne_zero.2 hr
+@[deprecated le_div_iff₀ (since := "2024-08-21")]
+protected lemma le_div_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ a * r ≤ b :=
+  le_div_iff₀ <| pos_iff_ne_zero.2 hr
 
 nonrec theorem le_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a ≤ b / r ↔ r * a ≤ b :=
-  @le_div_iff' ℝ _ a b r <| pos_iff_ne_zero.2 hr
+  le_div_iff₀' <| pos_iff_ne_zero.2 hr
 
 theorem div_lt_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a / r < b ↔ a < b * r :=
-  lt_iff_lt_of_le_iff_le (le_div_iff hr)
+  lt_iff_lt_of_le_iff_le (le_div_iff₀ (pos_iff_ne_zero.2 hr))
 
 theorem div_lt_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a / r < b ↔ a < r * b :=
-  lt_iff_lt_of_le_iff_le (le_div_iff' hr)
+  lt_iff_lt_of_le_iff_le (le_div_iff₀' (pos_iff_ne_zero.2 hr))
 
 theorem lt_div_iff {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ a * r < b :=
-  lt_iff_lt_of_le_iff_le (div_le_iff hr)
+  lt_iff_lt_of_le_iff_le (div_le_iff₀ (pos_iff_ne_zero.2 hr))
 
 theorem lt_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ r * a < b :=
-  lt_iff_lt_of_le_iff_le (div_le_iff' hr)
+  lt_iff_lt_of_le_iff_le (div_le_iff₀' (pos_iff_ne_zero.2 hr))
 
 theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
   (lt_div_iff fun hr => False.elim <| by simp [hr] at h).1 h
@@ -863,7 +873,7 @@ theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) 
     have hx' : x⁻¹ ≠ 0 := by rwa [Ne, inv_eq_zero]
     have : a * x⁻¹ < 1 := by rwa [← lt_inv_iff_mul_lt hx', inv_inv]
     have : a * x⁻¹ * x ≤ y := h _ this
-    rwa [mul_assoc, inv_mul_cancel hx, mul_one] at this
+    rwa [mul_assoc, inv_mul_cancel₀ hx, mul_one] at this
 
 nonrec theorem half_le_self (a : ℝ≥0) : a / 2 ≤ a :=
   half_le_self bot_le
@@ -925,6 +935,11 @@ theorem iSup_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨆ i, f i = 0 := ciSup_o
 
 theorem iInf_empty [IsEmpty ι] (f : ι → ℝ≥0) : ⨅ i, f i = 0 := by
   rw [_root_.iInf_of_isEmpty, sInf_empty]
+
+@[simp] lemma iSup_eq_zero (hf : BddAbove (range f)) : ⨆ i, f i = 0 ↔ ∀ i, f i = 0 := by
+  cases isEmpty_or_nonempty ι
+  · simp
+  · simp [← bot_eq_zero', ← le_bot_iff, ciSup_le_iff hf]
 
 @[simp]
 theorem iInf_const_zero {α : Sort*} : ⨅ _ : α, (0 : ℝ≥0) = 0 := by
@@ -1061,15 +1076,15 @@ theorem NNReal.exists_lt_of_strictMono [h : Nontrivial Γ₀ˣ] {f : Γ₀ →*�
   have hfu : f u < 1 := by
     rw [hu]
     split_ifs with hu1
-    · rw [← _root_.map_one f]; exact hf hu1
+    · rw [← map_one f]; exact hf hu1
     · have hfg0 : f g ≠ 0 :=
         fun h0 ↦ (Units.ne_zero g) ((map_eq_zero f).mp h0)
       have hg1' : 1 < g := lt_of_le_of_ne (not_lt.mp hu1) hg1.symm
-      rw [Units.val_inv_eq_inv_val, map_inv₀, inv_lt_one_iff hfg0, ← _root_.map_one f]
+      rw [Units.val_inv_eq_inv_val, map_inv₀, inv_lt_one_iff hfg0, ← map_one f]
       exact hf hg1'
   obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hr hfu
   use u ^ n
-  rwa [Units.val_pow_eq_pow_val, _root_.map_pow]
+  rwa [Units.val_pow_eq_pow_val, map_pow]
 
 /-- If `Γ₀ˣ` is nontrivial and `f : Γ₀ →*₀ ℝ≥0` is strictly monotone, then for any positive
   real `r`, there exists `d : Γ₀ˣ` with `f d < r`. -/

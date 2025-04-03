@@ -2,7 +2,7 @@
 Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata, Fabrizio Barroero, Laura Capuano, Nirvana Coppola,
-María Inés de Frutos Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Turchet,
+María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Turchet,
 Francesco Veneziano
 -/
 
@@ -84,6 +84,7 @@ def mulRingNorm_padic (p : ℕ) [Fact p.Prime] : MulRingNorm ℚ :=
 
 variable (hf_nontriv : f ≠ 1) (bdd : ∀ n : ℕ, f n ≤ 1)
 
+include hf_nontriv bdd in
 /-- There exists a minimal positive integer with absolute value smaller than 1. -/
 lemma exists_minimal_nat_zero_lt_mulRingNorm_lt_one : ∃ p : ℕ, (0 < f p ∧ f p < 1) ∧
     ∀ m : ℕ, 0 < f m ∧ f m < 1 → p ≤ m := by
@@ -104,6 +105,7 @@ lemma exists_minimal_nat_zero_lt_mulRingNorm_lt_one : ∃ p : ℕ, (0 < f p ∧ 
 
 variable {p : ℕ} (hp0 : 0 < f p) (hp1 : f p < 1) (hmin : ∀ m : ℕ, 0 < f m ∧ f m < 1 → p ≤ m)
 
+include hp0 hp1 hmin in
 /-- The minimal positive integer with absolute value smaller than 1 is a prime number.-/
 lemma is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one : p.Prime := by
   rw [← Nat.irreducible_iff_nat_prime]
@@ -131,6 +133,7 @@ lemma is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one : p.Prime := by
 
 open Real
 
+include hp0 hp1 hmin bdd in
 /-- A natural number not divible by `p` has absolute value 1. -/
 lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
   apply le_antisymm (bdd m)
@@ -173,6 +176,7 @@ lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
 
 -- ## Step 4: f p = p ^ (- t) for some positive real t
 
+include hp0 hp1 hmin in
 /-- The absolute value of `p` is `p ^ (-t)` for some positive real number `t`. -/
 lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
   have pprime := is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one hp0 hp1 hmin
@@ -183,6 +187,7 @@ lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) 
 
 -- ## Non-archimedean case: end goal
 
+include hf_nontriv bdd in
 /-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. -/
 theorem mulRingNorm_equiv_padic_of_bounded :
     ∃! p, ∃ (hp : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by

@@ -11,6 +11,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.Tactic.CategoryTheory.Elementwise
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Logic.Relation
 
 /-!
 # Special shapes for limits in `Type`.
@@ -552,7 +553,7 @@ theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ �
       (mono_iff_injective
             (h.coconePointUniqueUpToIso (coequalizerColimit f g).isColimit).inv).mp
         inferInstance e'
-    exact (eqv.eqvGen_iff.mp (EqvGen.mono lem (Quot.exact _ e'))).mp hy
+    exact (eqv.eqvGen_iff.mp (EqvGen.mono lem (Quot.eqvGen_exact _ e'))).mp hy
   · exact fun hx => ⟨_, hx, rfl⟩
 
 /-- The categorical coequalizer in `Type u` is the quotient by `f g ~ g x`. -/
@@ -584,8 +585,8 @@ instance : HasPullbacks.{u} (Type u) :=
 instance : HasPushouts.{u} (Type u) :=
   hasPushouts_of_hasWidePushouts.{u} (Type u)
 
-variable {X Y Z : Type u}
-variable (f : X ⟶ Z) (g : Y ⟶ Z)
+variable {X Y Z : Type u} {X' Y' Z' : Type v}
+variable (f : X ⟶ Z) (g : Y ⟶ Z) (f' : X' ⟶ Z') (g' : Y' ⟶ Z')
 
 -- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The usual explicit pullback in the category of types, as a subtype of the product.
@@ -657,6 +658,7 @@ lemma equivPullbackObj_symm_apply_snd (x : Types.PullbackObj f g) :
   obtain ⟨x, rfl⟩ := (equivPullbackObj hc).surjective x
   simp
 
+include hc in
 lemma type_ext {x y : c.pt} (h₁ : c.fst x = c.fst y) (h₂ : c.snd x = c.snd y) : x = y :=
   (equivPullbackObj hc).injective (by ext <;> assumption)
 

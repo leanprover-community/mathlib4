@@ -76,9 +76,9 @@ variable {S} {T : Type v} [Semiring T]
 @[simp]
 theorem ascPochhammer_map (f : S →+* T) (n : ℕ) :
     (ascPochhammer S n).map f = ascPochhammer T n := by
-  induction' n with n ih
-  · simp
-  · simp [ih, ascPochhammer_succ_left, map_comp]
+  induction n with
+  | zero => simp
+  | succ n ih => simp [ih, ascPochhammer_succ_left, map_comp]
 
 theorem ascPochhammer_eval₂ (f : S →+* T) (n : ℕ) (t : T) :
     (ascPochhammer T n).eval t = (ascPochhammer S n).eval₂ f t := by
@@ -116,9 +116,10 @@ theorem ascPochhammer_succ_right (n : ℕ) :
     apply_fun Polynomial.map (algebraMap ℕ S) at h
     simpa only [ascPochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
       Polynomial.map_natCast] using h
-  induction' n with n ih
-  · simp
-  · conv_lhs =>
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    conv_lhs =>
       rw [ascPochhammer_succ_left, ih, mul_comp, ← mul_assoc, ← ascPochhammer_succ_left, add_comp,
           X_comp, natCast_comp, add_assoc, add_comm (1 : ℕ[X]), ← Nat.cast_succ]
 
@@ -175,10 +176,12 @@ section StrictOrderedSemiring
 variable {S : Type*} [StrictOrderedSemiring S]
 
 theorem ascPochhammer_pos (n : ℕ) (s : S) (h : 0 < s) : 0 < (ascPochhammer S n).eval s := by
-  induction' n with n ih
-  · simp only [Nat.zero_eq, ascPochhammer_zero, eval_one]
+  induction n with
+  | zero =>
+    simp only [ascPochhammer_zero, eval_one]
     exact zero_lt_one
-  · rw [ascPochhammer_succ_right, mul_add, eval_add, ← Nat.cast_comm, eval_natCast_mul, eval_mul_X,
+  | succ n ih =>
+    rw [ascPochhammer_succ_right, mul_add, eval_add, ← Nat.cast_comm, eval_natCast_mul, eval_mul_X,
       Nat.cast_comm, ← mul_add]
     exact mul_pos ih (lt_of_lt_of_le h (le_add_of_nonneg_right (Nat.cast_nonneg n)))
 
@@ -252,9 +255,9 @@ variable {R} {T : Type v} [Ring T]
 @[simp]
 theorem descPochhammer_map (f : R →+* T) (n : ℕ) :
     (descPochhammer R n).map f = descPochhammer T n := by
-  induction' n with n ih
-  · simp
-  · simp [ih, descPochhammer_succ_left, map_comp]
+  induction n with
+  | zero => simp
+  | succ n ih => simp [ih, descPochhammer_succ_left, map_comp]
 end
 
 @[simp, norm_cast]
@@ -281,9 +284,10 @@ theorem descPochhammer_succ_right (n : ℕ) :
     apply_fun Polynomial.map (algebraMap ℤ R) at h
     simpa [descPochhammer_map, Polynomial.map_mul, Polynomial.map_add, map_X,
       Polynomial.map_intCast] using h
-  induction' n with n ih
-  · simp [descPochhammer]
-  · conv_lhs =>
+  induction n with
+  | zero => simp [descPochhammer]
+  | succ n ih =>
+    conv_lhs =>
       rw [descPochhammer_succ_left, ih, mul_comp, ← mul_assoc, ← descPochhammer_succ_left, sub_comp,
           X_comp, natCast_comp]
     rw [Nat.cast_add, Nat.cast_one, sub_add_eq_sub_sub_swap]

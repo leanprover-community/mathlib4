@@ -78,7 +78,7 @@ theorem exists_root_sum_quadratic [Fintype R] {f g : R[X]} (hf2 : degree f = 2) 
     simp only [disjoint_left, mem_image] at this
     push_neg at this
     rcases this with ⟨x, ⟨a, _, ha⟩, ⟨b, _, hb⟩⟩
-    exact ⟨a, b, by rw [ha, ← hb, eval_neg, neg_add_self]⟩
+    exact ⟨a, b, by rw [ha, ← hb, eval_neg, neg_add_cancel]⟩
   fun hd : Disjoint _ _ =>
   lt_irrefl (2 * ((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g)).card) <|
     calc 2 * ((univ.image fun x : R => eval x f) ∪ univ.image fun x : R => eval x (-g)).card
@@ -221,9 +221,9 @@ theorem pow_card (a : K) : a ^ q = a := by
     pow_card_sub_one_eq_one a h, one_mul]
 
 theorem pow_card_pow (n : ℕ) (a : K) : a ^ q ^ n = a := by
-  induction' n with n ih
-  · simp
-  · simp [pow_succ, pow_mul, ih, pow_card]
+  induction n with
+  | zero => simp
+  | succ n ih => simp [pow_succ, pow_mul, ih, pow_card]
 
 end
 
@@ -351,9 +351,10 @@ theorem frobenius_pow {p : ℕ} [Fact p.Prime] [CharP K p] {n : ℕ} (hcard : q 
     frobenius K p ^ n = 1 := by
   ext x; conv_rhs => rw [RingHom.one_def, RingHom.id_apply, ← pow_card x, hcard]
   clear hcard
-  induction' n with n hn
-  · simp
-  · rw [pow_succ', pow_succ, pow_mul, RingHom.mul_def, RingHom.comp_apply, frobenius_def, hn]
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    rw [pow_succ', pow_succ, pow_mul, RingHom.mul_def, RingHom.comp_apply, frobenius_def, hn]
 
 open Polynomial
 
@@ -471,9 +472,9 @@ theorem pow_card {p : ℕ} [Fact p.Prime] (x : ZMod p) : x ^ p = x := by
 
 @[simp]
 theorem pow_card_pow {n p : ℕ} [Fact p.Prime] (x : ZMod p) : x ^ p ^ n = x := by
-  induction' n with n ih
-  · simp
-  · simp [pow_succ, pow_mul, ih, pow_card]
+  induction n with
+  | zero => simp
+  | succ n ih => simp [pow_succ, pow_mul, ih, pow_card]
 
 @[simp]
 theorem frobenius_zmod (p : ℕ) [Fact p.Prime] : frobenius (ZMod p) p = RingHom.id _ := by

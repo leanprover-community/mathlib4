@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Floris van Doorn
 -/
 import Mathlib.Tactic.Lemma
-import Mathlib.Mathport.Attributes
 import Mathlib.Tactic.Relation.Trans
 import Mathlib.Tactic.ProjectionNotation
 import Batteries.Tactic.Alias
@@ -66,8 +65,6 @@ theorem heq_prop {P Q : Prop} (p : P) (q : Q) : HEq p q :=
 
 variable {a b c d : Prop}
 
-/- or -/
-
 /- xor -/
 
 def Xor' (a b : Prop) := (a ∧ ¬ b) ∨ (b ∧ ¬ a)
@@ -78,14 +75,7 @@ attribute [refl] Iff.refl
 attribute [trans] Iff.trans
 attribute [symm] Iff.symm
 
--- This is needed for `calc` to work with `iff`.
-instance : Trans Iff Iff Iff where
-  trans := fun p q ↦ p.trans q
-
 alias ⟨not_of_not_not_not, _⟩ := not_not_not
-
--- FIXME
--- attribute [congr] not_congr
 
 variable (p)
 
@@ -110,9 +100,6 @@ theorem iff_false_iff : (a ↔ False) ↔ ¬a := iff_of_eq (iff_false _)
 theorem false_iff_iff : (False ↔ a) ↔ ¬a := iff_of_eq (false_iff _)
 
 theorem iff_self_iff (a : Prop) : (a ↔ a) ↔ True := iff_of_eq (iff_self _)
-
--- TODO
--- attribute [intro] Exists.intro
 
 /- exists unique -/
 
@@ -219,7 +206,7 @@ def recOn_false [h : Decidable p] {h₁ : p → Sort u} {h₂ : ¬p → Sort u} 
 
 alias by_cases := byCases
 alias by_contradiction := byContradiction
-alias not_not_iff := not_not
+@[deprecated (since := "2024-07-27")] alias not_not_iff := not_not
 
 end Decidable
 
@@ -419,7 +406,7 @@ def RightCancelative  := ∀ a b c, a * b = c * b → a = c
 def LeftDistributive  := ∀ a b c, a * (b + c) = a * b + a * c
 def RightDistributive := ∀ a b c, (a + b) * c = a * c + b * c
 def RightCommutative (h : β → α → β) := ∀ b a₁ a₂, h (h b a₁) a₂ = h (h b a₂) a₁
-def LeftCommutative  (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
+def LeftCommutative (h : α → β → β) := ∀ a₁ a₂ b, h a₁ (h a₂ b) = h a₂ (h a₁ b)
 
 theorem left_comm : Commutative f → Associative f → LeftCommutative f :=
   fun hcomm hassoc a b c ↦
@@ -430,7 +417,7 @@ theorem left_comm : Commutative f → Associative f → LeftCommutative f :=
 
 theorem right_comm : Commutative f → Associative f → RightCommutative f :=
   fun hcomm hassoc a b c ↦
-    calc  (a*b)*c
+    calc (a*b)*c
       _ = a*(b*c) := hassoc a b c
       _ = a*(c*b) := hcomm b c ▸ rfl
       _ = (a*c)*b := Eq.symm (hassoc a c b)

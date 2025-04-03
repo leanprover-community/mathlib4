@@ -58,7 +58,7 @@ open Function
 def PFun (α β : Type*) :=
   α → Part β
 
-/-- `α →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`.  -/
+/-- `α →. β` is notation for the type `PFun α β` of partial functions from `α` to `β`. -/
 infixr:25 " →. " => PFun
 
 namespace PFun
@@ -410,16 +410,10 @@ theorem core_inter (s t : Set β) : f.core (s ∩ t) = f.core s ∩ f.core t :=
 theorem mem_core_res (f : α → β) (s : Set α) (t : Set β) (x : α) :
     x ∈ (res f s).core t ↔ x ∈ s → f x ∈ t := by simp [mem_core, mem_res]
 
-section
-
-open scoped Classical
-
 theorem core_res (f : α → β) (s : Set α) (t : Set β) : (res f s).core t = sᶜ ∪ f ⁻¹' t := by
   ext x
   rw [mem_core_res]
   by_cases h : x ∈ s <;> simp [h]
-
-end
 
 theorem core_restrict (f : α → β) (s : Set β) : (f : α →. β).core s = s.preimage f := by
   ext x; simp [core_def]

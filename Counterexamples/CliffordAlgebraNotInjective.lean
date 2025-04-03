@@ -132,7 +132,7 @@ theorem sq_zero_of_αβγ_mul {x : K} : α * β * γ * x = 0 → x * x = 0 := by
   rw [Ideal.Quotient.eq_zero_iff_mem, Ideal.Quotient.eq_zero_iff_mem]
   exact mul_self_mem_kIdeal_of_X0_X1_X2_mul_mem
 
-/-- Though `αβγ` is not itself zero-/
+/-- Though `αβγ` is not itself zero -/
 theorem αβγ_ne_zero : α * β * γ ≠ 0 := fun h =>
   X0_X1_X2_not_mem_kIdeal <| Ideal.Quotient.eq_zero_iff_mem.1 h
 

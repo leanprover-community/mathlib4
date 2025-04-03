@@ -5,7 +5,6 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Ring.Parity
-import Mathlib.Data.Nat.GCD.Basic
 
 /-!
 # Prime numbers
@@ -83,7 +82,7 @@ theorem prime_def_lt'' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m 
   simp only [Nat.isUnit_iff]
   apply Or.imp_right _ (h.2 a _)
   · rintro rfl
-    rw [← mul_right_inj' (zero_lt_of_lt h1).ne', ← hab, mul_one]
+    rw [← mul_right_inj' (not_eq_zero_of_lt h1), ← hab, mul_one]
   · rw [hab]
     exact dvd_mul_right _ _
 
@@ -104,7 +103,7 @@ theorem prime_def_lt' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m <
             revert p2
             decide
           · rfl
-          · exact (h (le_add_left _ _) l).elim d⟩
+          · exact (h (le_add_left 2 m) l).elim d⟩
 
 theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m → m ≤ sqrt p → ¬m ∣ p :=
   prime_def_lt'.trans <|
