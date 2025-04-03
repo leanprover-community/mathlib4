@@ -551,17 +551,15 @@ include 𝕂 in
 theorem exp_units_conj' (y : 𝔸ˣ) (x : 𝔸) : exp (↑y⁻¹ * x * y) = ↑y⁻¹ * exp x * y :=
   exp_units_conj 𝕂 _ _
 
--- @[simp]
 theorem _root_.Prod.fst_exp [NormedAlgebra 𝕂 𝔹] [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) :
     (exp x).fst = exp x.fst :=
   map_exp 𝕂 (RingHom.fst 𝔸 𝔹) continuous_fst x
 
--- @[simp]
+@[simp]
 theorem _root_.Prod.snd_exp [NormedAlgebra 𝕂 𝔹] [CompleteSpace 𝔹] (x : 𝔸 × 𝔹) :
     (exp x).snd = exp x.snd :=
   map_exp 𝕂 (RingHom.snd 𝔸 𝔹) continuous_snd x
 
--- @[simp]
 theorem _root_.Pi.coe_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
     [∀ i, Algebra ℚ (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
     (i : ι) :
