@@ -403,8 +403,7 @@ lemma LeftHomologyData.homologyIso_leftHomologyData [S.HasHomology] :
 lemma RightHomologyData.homologyIso_rightHomologyData [S.HasHomology] :
     S.rightHomologyData.homologyIso = S.rightHomologyIso.symm := by
   ext
-  dsimp [homologyIso, rightHomologyIso]
-  erw [rightHomologyMap'_id, comp_id]
+  simp [homologyIso, rightHomologyIso]
 
 variable {S}
 

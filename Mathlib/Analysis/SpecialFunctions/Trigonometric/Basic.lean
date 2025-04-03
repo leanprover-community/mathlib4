@@ -1190,6 +1190,15 @@ theorem exp_two_pi_mul_I : exp (2 * π * I) = 1 :=
   exp_periodic.eq.trans exp_zero
 
 @[simp]
+lemma exp_pi_div_two_mul_I : exp (π / 2 * I) = I := by
+  rw [← cos_add_sin_I, cos_pi_div_two, sin_pi_div_two, one_mul, zero_add]
+
+@[simp]
+lemma exp_neg_pi_div_two_mul_I : exp (-π / 2 * I) = -I := by
+  rw [← cos_add_sin_I, neg_div, cos_neg, cos_pi_div_two, sin_neg, sin_pi_div_two, zero_add, neg_mul,
+    one_mul]
+
+@[simp]
 theorem exp_nat_mul_two_pi_mul_I (n : ℕ) : exp (n * (2 * π * I)) = 1 :=
   (exp_periodic.nat_mul_eq n).trans exp_zero
 
@@ -1227,13 +1236,3 @@ theorem norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) 
   norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le
 
 end Complex
-
-section circleMap
-
-open Function Complex Real
-
-/-- `circleMap` is `2π`-periodic. -/
-theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * π) := fun θ => by
-  simp [circleMap, add_mul, exp_periodic _]
-
-end circleMap

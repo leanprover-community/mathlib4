@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Function.L1Space.Integrable
-import Mathlib.Analysis.NormedSpace.IndicatorFunction
+import Mathlib.MeasureTheory.Function.LpSpace.Indicator
 
 /-! # Functions integrable on a set and at a filter
 
@@ -175,8 +175,10 @@ theorem integrableOn_singleton_iff {x : α} [MeasurableSingletonClass α] :
 
 @[simp]
 theorem integrableOn_finite_biUnion {s : Set β} (hs : s.Finite) {t : β → Set α} :
-    IntegrableOn f (⋃ i ∈ s, t i) μ ↔ ∀ i ∈ s, IntegrableOn f (t i) μ :=
-  hs.induction_on _ (by simp) <| by intro a s _ _ hf; simp [hf, or_imp, forall_and]
+    IntegrableOn f (⋃ i ∈ s, t i) μ ↔ ∀ i ∈ s, IntegrableOn f (t i) μ := by
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp
+  | insert _ _ hf => simp [hf, or_imp, forall_and]
 
 @[simp]
 theorem integrableOn_finset_iUnion {s : Finset β} {t : β → Set α} :
