@@ -30,20 +30,25 @@ namespace Order
 /-- A normal function between well-orders is a strictly monotonic continuous function. -/
 structure IsNormal [LinearOrder α] [LinearOrder β] (f : α → β) : Prop where
   strictMono : StrictMono f
-  /-- Combined with strict monotonicity, this condition implies that `f a` is the *least* upper
-  bound for `f '' Iio a`. -/
-  mem_lowerBounds_upperBounds {a : α} (ha : IsSuccLimit a) :
-    f a ∈ lowerBounds (upperBounds (f '' Iio a))
+  isLUB_image_Iio_of_isSuccLimit {a : α} (ha : IsSuccLimit a) : IsLUB (f '' Iio a) (f a)
 
 namespace IsNormal
 
 section LinearOrder
 variable [LinearOrder α] [LinearOrder β] [LinearOrder γ]
 
+/-- This condition is the LHS of the `IsLUB (f '' Iio a) (f a)` predicate. -/
+theorem of_mem_lowerBounds_upperBounds {f : α → β} (hf : StrictMono f)
+    (H : ∀ a, IsSuccLimit a → f a ∈ lowerBounds (upperBounds (f '' Iio a))) : IsNormal f := by
+  refine ⟨hf, @fun a ha ↦ ⟨?_, H _ ha⟩⟩
+  rintro - ⟨b, hb, rfl⟩
+  exact (hf hb).le
+
 theorem of_succ_lt [SuccOrder α] [WellFoundedLT α]
     (hs : ∀ a, f a < f (succ a)) (hl : ∀ {a}, IsSuccLimit a → IsLUB (f '' Iio a) (f a)) :
     IsNormal f := by
-  refine ⟨fun a b ↦ SuccOrder.limitRecOn b ?_ ?_ ?_ , fun ha ↦ (hl ha).2⟩
+  refine .of_mem_lowerBounds_upperBounds (fun a b ↦ SuccOrder.limitRecOn b ?_ ?_ ?_) ?_
+  · exact fun a ha ↦ (hl ha).2
   · intro b hb hb'
     cases hb.not_lt hb'
   · intro b hb IH hab
@@ -54,12 +59,6 @@ theorem of_succ_lt [SuccOrder α] [WellFoundedLT α]
     have hab' := hb.succ_lt hab
     exact (IH _ hab' (lt_succ_of_not_isMax hab.not_isMax)).trans_le
       ((hl hb).1 (mem_image_of_mem _ hab'))
-
-theorem isLUB_image_Iio_of_isSuccLimit (hf : IsNormal f) {a : α} (ha : IsSuccLimit a) :
-    IsLUB (f '' Iio a) (f a) := by
-  refine ⟨?_, mem_lowerBounds_upperBounds hf ha⟩
-  rintro _ ⟨b, hb, rfl⟩
-  exact (hf.strictMono hb).le
 
 theorem le_iff_forall_le (hf : IsNormal f) (ha : IsSuccLimit a) {b : β} :
     f a ≤ b ↔ ∀ a' < a, f a' ≤ b := by
@@ -95,10 +94,10 @@ theorem map_isLUB (hf : IsNormal f) {s : Set α} (hs : IsLUB s a) (hs' : s.Nonem
 
 theorem _root_.InitialSeg.isNormal (f : α ≤i β) : IsNormal f where
   strictMono := f.strictMono
-  mem_lowerBounds_upperBounds := by
+  isLUB_image_Iio_of_isSuccLimit := by
     intro a ha
     rw [f.image_Iio]
-    exact (f.map_isSuccLimit ha).isLUB_Iio.2
+    exact (f.map_isSuccLimit ha).isLUB_Iio
 
 theorem _root_.PrincipalSeg.isNormal (f : α <i β) : IsNormal f :=
   (f : α ≤i β).isNormal
@@ -109,13 +108,11 @@ theorem _root_.OrderIso.isNormal (f : α ≃o β) : IsNormal f :=
 protected theorem id : IsNormal (@id α) :=
   (OrderIso.refl _).isNormal
 
-theorem comp (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) where
-  strictMono := hg.strictMono.comp hf.strictMono
-  mem_lowerBounds_upperBounds := by
-    intro a ha b hb
-    simp_rw [Function.comp_apply, mem_upperBounds, forall_mem_image] at hb
-    simpa [hg.le_iff_forall_le (hf.map_isSuccLimit ha), hf.lt_iff_exists_lt ha] using
-      fun c d hd hc ↦ (hg.strictMono hc).le.trans (hb hd)
+theorem comp (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) := by
+  refine .of_mem_lowerBounds_upperBounds (hg.strictMono.comp hf.strictMono) fun a ha b hb ↦ ?_
+  simp_rw [Function.comp_apply, mem_upperBounds, forall_mem_image] at hb
+  simpa [hg.le_iff_forall_le (hf.map_isSuccLimit ha), hf.lt_iff_exists_lt ha] using
+    fun c d hd hc ↦ (hg.strictMono hc).le.trans (hb hd)
 
 end LinearOrder
 
