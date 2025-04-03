@@ -50,7 +50,7 @@ instance subsingleton_hom {α : Type u} [Preorder α] (U V : α) :
   Subsingleton (U ⟶ V) := ⟨fun _ _ => ULift.ext _ _ (Subsingleton.elim _ _ )⟩
 
 instance instIsThin {α : Type u} [Preorder α] : Quiver.IsThin α where
-  subsingleton_hom _ _ := inferInstance
+  thin _ _ := inferInstance
 
 end Preorder
 

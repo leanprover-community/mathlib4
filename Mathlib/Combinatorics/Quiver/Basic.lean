@@ -79,7 +79,9 @@ theorem empty_arrow {V : Type u} (a b : Empty V) : (a ⟶ b) = PEmpty := rfl
 /-- A quiver is thin if it has no parallel arrows. -/
 class IsThin (V : Type u) [Quiver V] : Prop where
   /-- For any two vertices `a` and `b`, there is at most one arrow from `a` to `b`. -/
-  subsingleton_hom : ∀ a b : V, Subsingleton (a ⟶ b)
+  thin : ∀ a b : V, Subsingleton (a ⟶ b)
+
+attribute [instance 10] IsThin.thin
 
 section
 
