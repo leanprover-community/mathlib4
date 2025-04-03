@@ -50,7 +50,7 @@ theorem valuation_apply (x : K) : valuation x = ‖x‖₊ := rfl
 /-- The valued field structure on a nonarchimedean normed field `K`, determined by the norm. -/
 def toValued : Valued K ℝ≥0 :=
   { hK.toUniformSpace,
-    @NonUnitalNormedRing.toNormedAddCommGroup K _ with
+    inferInstanceAs (IsUniformAddGroup K) with
     v := valuation
     is_topological_valuation := fun U => by
       rw [Metric.mem_nhds_iff]
