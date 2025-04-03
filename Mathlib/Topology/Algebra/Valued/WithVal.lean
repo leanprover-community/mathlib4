@@ -123,10 +123,6 @@ theorem valuedCompletion_apply' {K : Type*} [Field K] {v : Valuation K Γ₀}
     (x : K) : v.valuedCompletion.v x = Valued.v (WithVal.equiv v |>.symm x) :=
   Valued.valuedCompletion_apply _
 
-theorem valuedCompletion_eq_valuation {K : Type*} [Field K] {v : Valuation K Γ₀}
-    (x : WithVal v) : Valued.v (x : v.Completion) = v x :=
-  valuedCompletion_apply (x : K)
-
 instance {K : Type*} [Field K] (v : Valuation K Γ₀) [CompletableTopField (WithVal v)]  :
     Field v.Completion := UniformSpace.Completion.instField
 
