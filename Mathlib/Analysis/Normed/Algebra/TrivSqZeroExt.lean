@@ -41,7 +41,7 @@ we could keep the collection of instances behind an `open scoped`.
 
 * Generalize more of these results to non-commutative `R`. In principle, under sufficient conditions
   we should expect
-  `(exp x).snd = ∫ t in 0..1, exp 𝕜 (t • x.fst) • op (exp 𝕜 ((1 - t) • x.fst)) • x.snd`
+  `(exp x).snd = ∫ t in 0..1, exp (t • x.fst) • op (exp ((1 - t) • x.fst)) • x.snd`
   ([Physics.SE](https://physics.stackexchange.com/a/41671/185147), and
   https://link.springer.com/chapter/10.1007/978-3-540-44953-9_2).
 

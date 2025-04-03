@@ -45,12 +45,13 @@ section general_exponential
 variable {𝕜 : Type*} {α : Type*} [RCLike 𝕜] [TopologicalSpace α] [CompactSpace α]
 
 lemma NormedSpace.exp_continuousMap_eq (f : C(α, 𝕜)) :
-    exp 𝕜 f = (⟨exp 𝕜 ∘ f, exp_continuous.comp f.continuous⟩ : C(α, 𝕜)) := by
+    exp f = (⟨exp ∘ f, (exp_continuous 𝕜).comp f.continuous⟩ : C(α, 𝕜)) := by
   ext a
-  simp only [Function.comp_apply, NormedSpace.exp, FormalMultilinearSeries.sum]
+  simp_rw [NormedSpace.exp,
+    ← expSeries_sum_eq_rat (𝕂 := 𝕜), FormalMultilinearSeries.sum]
   have h_sum := NormedSpace.expSeries_summable (𝕂 := 𝕜) f
   simp_rw [← ContinuousMap.tsum_apply h_sum a, NormedSpace.expSeries_apply_eq]
-  simp [NormedSpace.exp_eq_tsum]
+  simp [NormedSpace.exp_eq_tsum, inv_natCast_smul_eq 𝕜 ℚ]
 
 end general_exponential
 
@@ -59,14 +60,14 @@ section RCLikeNormed
 
 variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A]
   [StarRing A] [IsTopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus 𝕜 A p]
+  [ContinuousFunctionalCalculus 𝕜 A p] [Algebra ℚ A]
 
 lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
-    cfc (exp 𝕜 : 𝕜 → 𝕜) a = exp 𝕜 a := by
+    cfc (exp : 𝕜 → 𝕜) a = exp a := by
   conv_rhs => rw [← cfc_id 𝕜 a ha, cfc_apply id a ha]
   have h := (cfcHom_isClosedEmbedding (R := 𝕜) (show p a from ha)).continuous
-  have _ : ContinuousOn (exp 𝕜) (spectrum 𝕜 a) := exp_continuous.continuousOn
-  simp_rw [← map_exp 𝕜 _ h, cfc_apply (exp 𝕜) a ha]
+  have _ : ContinuousOn (exp) (spectrum 𝕜 a) := exp_continuous 𝕜 |>.continuousOn
+  simp_rw [← map_exp 𝕜 _ h, cfc_apply (exp) a ha]
   congr 1
   ext
   simp [exp_continuousMap_eq]
@@ -77,17 +78,17 @@ section RealNormed
 
 variable {A : Type*} [NormedRing A] [StarRing A]
   [IsTopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
+  [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint] [Algebra ℚ A]
 
 lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
-    cfc Real.exp a = exp ℝ a :=
+    cfc Real.exp a = exp a :=
   Real.exp_eq_exp_ℝ ▸ exp_eq_normedSpace_exp ha
 
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
 lemma _root_.IsSelfAdjoint.exp_nonneg {𝕜 : Type*} [Field 𝕜] [Algebra 𝕜 A]
     [PartialOrder A] [StarOrderedRing A] {a : A} (ha : IsSelfAdjoint a) :
-    0 ≤ exp 𝕜 a := by
-  rw [exp_eq_exp 𝕜 ℝ, ← real_exp_eq_normedSpace_exp]
+    0 ≤ exp a := by
+  rw [← real_exp_eq_normedSpace_exp]
   exact cfc_nonneg fun x _ => Real.exp_nonneg x
 
 end RealNormed
@@ -95,10 +96,10 @@ end RealNormed
 section ComplexNormed
 
 variable {A : Type*} {p : A → Prop} [NormedRing A] [StarRing A]
-  [NormedAlgebra ℂ A] [CompleteSpace A] [ContinuousFunctionalCalculus ℂ A p]
+  [NormedAlgebra ℂ A] [CompleteSpace A] [ContinuousFunctionalCalculus ℂ A p] [Algebra ℚ A]
 
 lemma complex_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
-    cfc Complex.exp a = exp ℂ a :=
+    cfc Complex.exp a = exp a :=
   Complex.exp_eq_exp_ℂ ▸ exp_eq_normedSpace_exp ha
 
 end ComplexNormed
@@ -147,16 +148,16 @@ lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x)
   rw [log, ← cfc_pow_id (R := ℝ) a n ha₁, ← cfc_comp' Real.log (· ^ n) a ha₂'', log]
   simp_rw [Real.log_pow, ← Nat.cast_smul_eq_nsmul ℝ n, cfc_const_mul (n : ℝ) Real.log a ha₂']
 
-variable [CompleteSpace A]
+variable [CompleteSpace A] [Algebra ℚ A]
 
-lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (NormedSpace.exp ℝ a) = a := by
+lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (NormedSpace.exp a) = a := by
   have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by fun_prop (disch := simp)
   rw [log, ← real_exp_eq_normedSpace_exp, ← cfc_comp' Real.log Real.exp a hcont]
   simp [cfc_id' (R := ℝ) a]
 
 -- TODO: Relate the hypothesis to a notion of strict positivity
 lemma exp_log (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (ha₁ : IsSelfAdjoint a := by cfc_tac) :
-    NormedSpace.exp ℝ (log a) = a := by
+    NormedSpace.exp (log a) = a := by
   have ha₃ : ContinuousOn Real.log (spectrum ℝ a) := by
     have : ∀ x ∈ spectrum ℝ a, x ≠ 0 := by peel ha₂ with x hx h; exact h.ne'
     fun_prop (disch := assumption)
