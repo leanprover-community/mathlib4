@@ -5,8 +5,8 @@ Authors: Andrew Yang
 -/
 import Mathlib.Order.Ideal
 import Mathlib.Topology.Sets.Compacts
+import Mathlib.Topology.Sets.OpenCover
 import Mathlib.Topology.Spectral.Hom
-import Mathlib.Topology.LocalAtTarget
 
 /-!
 
