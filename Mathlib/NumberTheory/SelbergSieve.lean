@@ -335,8 +335,7 @@ variable [s : BoundingSieve]
 
 /-- These are the terms that appear in the sum `S` in the main term of the fundamental theorem.
 
-$S = ∑_{l|P, l≤\sqrt{y}} g(l)$
--/
+$S = ∑_{l|P, l≤\sqrt{y}} g(l)$ -/
 def selbergTerms : ArithmeticFunction ℝ :=
   nu.pmul (.prodPrimeFactors fun p =>  1 / (1 - ν p))
 
@@ -350,9 +349,7 @@ theorem selbergTerms_apply (d : ℕ) :
   · rw [h]; simp
   rw [ArithmeticFunction.pmul_apply, ArithmeticFunction.prodPrimeFactors_apply h]
 
-/-!
-Now follow some important identities involving `g`
--/
+/-! Now follow some important identities involving `g` -/
 
 theorem selbergTerms_pos (l : ℕ) (hl : l ∣ P) : 0 < g l := by
   rw [selbergTerms_apply]
@@ -454,7 +451,7 @@ theorem lambdaSquared_mainSum_eq_quad_form (w : ℕ → ℝ) :
     · exact Nat.gcd_dvd_left d1 d2
     · exact dvd_of_mem_divisors hd1
 
-/-! The previous quadratic form can be diagonalised with eigenvalues given by `1/g`-/
+/-! The previous quadratic form can be diagonalised with eigenvalues given by `1/g` -/
 theorem lambdaSquared_mainSum_eq_diag_quad_form  (w : ℕ → ℝ) :
     mainSum (lambdaSquared w) =
       ∑ l ∈ divisors P,
