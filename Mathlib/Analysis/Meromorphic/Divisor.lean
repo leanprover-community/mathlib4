@@ -95,8 +95,8 @@ theorem divisor_congr_codiscreteWithin {f₁ f₂ : 𝕜 → E} (hf₁ : Meromor
 If `f₁` is meromorphic on an open set `U`, if `f₂` agrees with `f₁` on a codiscrete subset of `U`,
 then `f₁` and `f₂` induce the same divisors on`U`.
 -/
-theorem divisor_congr_codiscreteWithin_open {f₁ f₂ : 𝕜 → E}
-    (hf₁ : MeromorphicOn f₁ U) (h₁ : f₁ =ᶠ[Filter.codiscreteWithin U] f₂) (h₂ : IsOpen U) :
+theorem divisor_congr_codiscreteWithin_open {f₁ f₂ : 𝕜 → E} (hf₁ : MeromorphicOn f₁ U)
+    (h₁ : f₁ =ᶠ[Filter.codiscreteWithin U] f₂) (h₂ : IsOpen U) :
     divisor f₁ U = divisor f₂ U := by
   ext x
   by_cases hx : x ∈ U <;> simp [hf₁, hf₁.congr_codiscreteWithin_open h₁ h₂, hx]
