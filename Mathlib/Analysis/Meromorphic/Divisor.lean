@@ -132,19 +132,19 @@ theorem negPart_divisor_add_of_analyticNhdOn_right {f₁ f₂ : 𝕜 → E} (hf�
     (divisor (f₁ + f₂) U)⁻ = (divisor f₁ U)⁻ := by
   ext x
   by_cases hx : x ∈ U
-  · simp [negPart_def, hx, hf₁, hf₁.add hf₂.meromorphicOn]
+  · suffices -(hf₁.add (hf₂.meromorphicOn) x hx).order.untop₀ ⊔ 0 = -(hf₁ x hx).order.untop₀ ⊔ 0 by
+      simpa [negPart_def, hx, hf₁, hf₁.add hf₂.meromorphicOn]
     by_cases h : 0 ≤ (hf₁ x hx).order
-    · simp only [Int.neg_nonpos_iff_nonneg, WithTop.untop₀_nonneg, h, sup_of_le_right,
-        right_eq_sup, eq_comm]
+    · suffices 0 ≤ (add hf₁ (AnalyticOnNhd.meromorphicOn hf₂) x hx).order by simp_all
       calc 0
-      _ ≤ min (hf₁ x hx).order (hf₂.meromorphicOn x hx).order := by
-        exact le_inf h (hf₂ x hx).meromorphicAt_order_nonneg
-      _ ≤ ((hf₁.add hf₂.meromorphicOn) x hx).order := by
-        exact (hf₁ x hx).order_add (hf₂ x hx).meromorphicAt
-    · simp at h
-      rw [(hf₁ x hx).order_add_of_order_lt_order (hf₂.meromorphicOn x hx)]
+      _ ≤ min (hf₁ x hx).order (hf₂.meromorphicOn x hx).order :=
+        le_inf h (hf₂ x hx).meromorphicAt_order_nonneg
+      _ ≤ ((hf₁.add hf₂.meromorphicOn) x hx).order :=
+        (hf₁ x hx).order_add (hf₂ x hx).meromorphicAt
+    · suffices (hf₁ x hx).order < (AnalyticOnNhd.meromorphicOn hf₂ x hx).order by
+        rwa [(hf₁ x hx).order_add_of_order_lt_order (hf₂.meromorphicOn x hx)]
       calc (hf₁ x hx).order
-      _ < 0 := h
+      _ < 0 := by simpa using h
       _ ≤ (hf₂.meromorphicOn x hx).order := (hf₂ x hx).meromorphicAt_order_nonneg
   simp [hx]
 
