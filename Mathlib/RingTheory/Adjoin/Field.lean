@@ -86,7 +86,7 @@ section
 variable [Algebra R L]
 
 theorem IsIntegral.mem_range_algHom_of_minpoly_splits
-    (int : IsIntegral R x) (h : Splits (algebraMap R K) (minpoly R x))(f : K →ₐ[R] L) :
+    (int : IsIntegral R x) (h : Splits (algebraMap R K) (minpoly R x)) (f : K →ₐ[R] L) :
     x ∈ f.range :=
   show x ∈ Set.range f from Set.image_subset_range _ ((minpoly R x).rootSet K) <| by
     rw [image_rootSet h f, mem_rootSet']
@@ -128,7 +128,7 @@ end
 
 variable [Algebra K M] [IsScalarTower R K M] {x : M}
 
-/-- The `RingHom` version of `IsIntegral.minpoly_splits_tower_top`.  -/
+/-- The `RingHom` version of `IsIntegral.minpoly_splits_tower_top`. -/
 theorem IsIntegral.minpoly_splits_tower_top' (int : IsIntegral R x) {f : K →+* L}
     (h : Splits (f.comp <| algebraMap R K) (minpoly R x)) :
     Splits f (minpoly K x) :=

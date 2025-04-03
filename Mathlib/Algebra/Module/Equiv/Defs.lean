@@ -84,8 +84,8 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 class SemilinearEquivClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
   (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
-  [EquivLike F M M₂]
-  extends AddEquivClass F M M₂ : Prop where
+  [EquivLike F M M₂] : Prop
+  extends AddEquivClass F M M₂ where
   /-- Applying a semilinear equivalence `f` over `σ` to `r • x` equals `σ r • f x`. -/
   map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
 
@@ -161,6 +161,7 @@ theorem toLinearMap_inj {e₁ e₂ : M ≃ₛₗ[σ] M₂} : (↑e₁ : M →ₛ
   toLinearMap_injective.eq_iff
 
 instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
+  coe e := e.toFun
   inv := LinearEquiv.invFun
   coe_injective' _ _ h _ := toLinearMap_injective (DFunLike.coe_injective h)
   left_inv := LinearEquiv.left_inv
@@ -169,6 +170,9 @@ instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
   map_add := (·.map_add')
   map_smulₛₗ := (·.map_smul')
+
+theorem toLinearMap_eq_coe {e : M ≃ₛₗ[σ] M₂} : e.toLinearMap = SemilinearMapClass.semilinearMap e :=
+  rfl
 
 @[simp]
 theorem coe_mk {to_fun inv_fun map_add map_smul left_inv right_inv} :
@@ -241,7 +245,7 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
     e.toEquiv.symm with
     toFun := e.toLinearMap.inverse e.invFun e.left_inv e.right_inv
     invFun := e.toEquiv.symm.invFun
-    map_smul' := fun r x ↦ by dsimp only; rw [map_smulₛₗ] }
+    map_smul' := fun r x ↦ by rw [map_smulₛₗ] }
 
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type*} {S : Type*} [Semiring R] [Semiring S]

@@ -81,8 +81,9 @@ section Ring
 variable [Ring R] (S : Sequence R)
 
 /-- A polynomial sequence spans `R[X]` if all of its elements' leading coefficients are units. -/
-protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.range S) = ⊤ :=
-  eq_top_iff'.mpr fun P ↦ by
+protected lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : span R (Set.range S) = ⊤ := by
+  rw [eq_top_iff']
+  intro P
   -- we proceed via strong induction on the degree `n`, after getting the 0 polynomial done
   nontriviality R using Subsingleton.eq_zero P
   generalize hp : P.natDegree = n

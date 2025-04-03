@@ -59,11 +59,6 @@ structure ModuleCat where
 
 attribute [instance] ModuleCat.isAddCommGroup ModuleCat.isModule
 
-/-- An alias for `ModuleCat.{max u₁ u₂}`, to deal around unification issues.
-Since the universe the ring lives in can be inferred, we put that last. -/
-@[nolint checkUnivs]
-abbrev ModuleCatMax.{v₁, v₂, u₁} (R : Type u₁) [Ring R] := ModuleCat.{max v₁ v₂, u₁} R
-
 namespace ModuleCat
 
 instance : CoeSort (ModuleCat.{v} R) (Type v) :=
@@ -482,8 +477,8 @@ a morphism of rings from `R` to the endomorphisms of the underlying abelian grou
 def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrp).obj M) where
   toFun r := AddCommGrp.ofHom
     { toFun := fun (m : M) => r • m
-      map_zero' := by dsimp; rw [smul_zero]
-      map_add' := fun x y => by dsimp; rw [smul_add] }
+      map_zero' := by rw [smul_zero]
+      map_add' := fun x y => by rw [smul_add] }
   map_one' := AddCommGrp.ext (fun x => by simp)
   map_zero' := AddCommGrp.ext (fun x => by simp)
   map_mul' r s := AddCommGrp.ext (fun (x : M) => (smul_smul r s x).symm)
@@ -495,8 +490,7 @@ lemma smul_naturality {M N : ModuleCat.{v} R} (f : M ⟶ N) (r : R) :
   ext x
   exact (f.hom.map_smul r x).symm
 
-variable (R)
-
+variable (R) in
 /-- The scalar multiplication on `ModuleCat R` considered as a morphism of rings
 to the endomorphisms of the forgetful functor to `AddCommGrp)`. -/
 @[simps]
@@ -508,8 +502,6 @@ def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrp) where
   map_zero' := NatTrans.ext (by aesop_cat)
   map_mul' _ _ := NatTrans.ext (by aesop_cat)
   map_add' _ _ := NatTrans.ext (by aesop_cat)
-
-variable {R}
 
 /-- Given `A : AddCommGrp` and a ring morphism `R →+* End A`, this is a type synonym
 for `A`, on which we shall define a structure of `R`-module. -/
@@ -543,8 +535,6 @@ instance : Module R (mkOfSMul' φ) where
 given by `R`. -/
 abbrev mkOfSMul := ModuleCat.of R (mkOfSMul' φ)
 
--- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-@[simp, nolint simpNF]
 lemma mkOfSMul_smul (r : R) : (mkOfSMul φ).smul r = φ r := rfl
 
 end

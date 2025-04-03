@@ -27,15 +27,6 @@ attribute [local instance 10] Classical.propDecidable
 
 section Miscellany
 
--- Porting note: the following `inline` attributes have been omitted,
--- on the assumption that this issue has been dealt with properly in Lean 4.
--- /- We add the `inline` attribute to optimize VM computation using these declarations.
---    For example, `if p ∧ q then ... else ...` will not evaluate the decidability
---    of `q` if `p` is false. -/
--- attribute [inline]
---   And.decidable Or.decidable Decidable.false Xor.decidable Iff.decidable Decidable.true
---   Implies.decidable Not.decidable Ne.decidable Bool.decidableEq Decidable.toBool
-
 -- attribute [refl] HEq.refl -- FIXME This is still rejected after https://github.com/leanprover-community/mathlib4/pull/857
 attribute [trans] Iff.trans HEq.trans heq_of_eq_of_heq
 attribute [simp] cast_heq
@@ -108,17 +99,6 @@ instance {p : Prop} [Decidable p] : Decidable (Fact p) :=
 abbrev Function.swap₂ {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*}
     {φ : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Sort*} (f : ∀ i₁ j₁ i₂ j₂, φ i₁ j₁ i₂ j₂)
     (i₂ j₂ i₁ j₁) : φ i₁ j₁ i₂ j₂ := f i₁ j₁ i₂ j₂
-
--- Porting note: these don't work as intended any more
--- /-- If `x : α . tac_name` then `x.out : α`. These are definitionally equal, but this can
--- nevertheless be useful for various reasons, e.g. to apply further projection notation or in an
--- argument to `simp`. -/
--- def autoParam'.out {α : Sort*} {n : Name} (x : autoParam' α n) : α := x
-
--- /-- If `x : α := d` then `x.out : α`. These are definitionally equal, but this can
--- nevertheless be useful for various reasons, e.g. to apply further projection notation or in an
--- argument to `simp`. -/
--- def optParam.out {α : Sort*} {d : α} (x : α := d) : α := x
 
 end Miscellany
 
@@ -338,11 +318,11 @@ theorem not_and_not_right : ¬(a ∧ ¬b) ↔ a → b := Decidable.not_and_not_r
 
 /-- One of **de Morgan's laws**: the negation of a conjunction is logically equivalent to the
 disjunction of the negations. -/
-theorem not_and_or : ¬(a ∧ b) ↔ ¬a ∨ ¬b := Decidable.not_and_iff_or_not_not
+theorem not_and_or : ¬(a ∧ b) ↔ ¬a ∨ ¬b := Decidable.not_and_iff_not_or_not
 
-theorem or_iff_not_and_not : a ∨ b ↔ ¬(¬a ∧ ¬b) := Decidable.or_iff_not_and_not
+theorem or_iff_not_and_not : a ∨ b ↔ ¬(¬a ∧ ¬b) := Decidable.or_iff_not_not_and_not
 
-theorem and_iff_not_or_not : a ∧ b ↔ ¬(¬a ∨ ¬b) := Decidable.and_iff_not_or_not
+theorem and_iff_not_or_not : a ∧ b ↔ ¬(¬a ∨ ¬b) := Decidable.and_iff_not_not_or_not
 
 @[simp] theorem not_xor (P Q : Prop) : ¬Xor' P Q ↔ (P ↔ Q) := by
   simp only [not_and, Xor', not_or, not_not, ← iff_iff_implies_and_implies]
@@ -471,9 +451,6 @@ section Dependent
 
 variable {α : Sort*} {β : α → Sort*} {γ : ∀ a, β a → Sort*}
 
--- Porting note: some higher order lemmas such as `forall₂_congr` and `exists₂_congr`
--- were moved to `Batteries`
-
 theorem forall₂_imp {p q : ∀ a, β a → Prop} (h : ∀ a b, p a b → q a b) :
     (∀ a b, p a b) → ∀ a b, q a b :=
   forall_imp fun i ↦ forall_imp <| h i
@@ -580,7 +557,12 @@ lemma exists_apply_eq_apply3' {α β γ δ} {f : α → β → γ → δ} {a : �
     ∃ x y z, f a b c = f x y z :=
   ⟨a, b, c, rfl⟩
 
--- Porting note: an alternative workaround theorem:
+/--
+The constant function witnesses that
+there exists a function sending a given term to a given term.
+
+This is sometimes useful in `simp` to discharge side conditions.
+-/
 theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun _ ↦ b, rfl⟩
 
 @[simp] theorem exists_exists_and_eq_and {f : α → β} {p : α → Prop} {q : β → Prop} :
@@ -658,14 +640,10 @@ theorem exists_prop_of_false {p : Prop} {q : p → Prop} : ¬p → ¬∃ h' : p,
 
 /- See `IsEmpty.exists_iff` for the `False` version of `exists_true_left`. -/
 
--- Porting note: `@[congr]` commented out for now.
--- @[congr]
 theorem forall_prop_congr {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h ↔ q' h) (hp : p ↔ p') :
     (∀ h, q h) ↔ ∀ h : p', q' (hp.2 h) :=
   ⟨fun h1 h2 ↦ (hq _).1 (h1 (hp.2 h2)), fun h1 h2 ↦ (hq _).2 (h1 (hp.1 h2))⟩
 
--- Porting note: `@[congr]` commented out for now.
--- @[congr]
 theorem forall_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h ↔ q' h) (hp : p ↔ p') :
     (∀ h, q h) = ∀ h : p', q' (hp.2 h) :=
   propext (forall_prop_congr hq hp)

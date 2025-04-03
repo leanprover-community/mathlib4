@@ -88,7 +88,7 @@ def Simps.apply (f : C(X, Y)) : X → Y := f
 -- this must come after the coe_to_fun definition
 initialize_simps_projections ContinuousMap (toFun → apply)
 
-@[simp] -- Porting note: removed `norm_cast` attribute
+@[simp]
 protected theorem coe_coe {F : Type*} [FunLike F X Y] [ContinuousMapClass F X Y] (f : F) :
     ⇑(f : C(X, Y)) = f :=
   rfl
@@ -117,10 +117,6 @@ theorem copy_eq (f : C(X, Y)) (f' : X → Y) (h : f' = f) : f.copy f' h = f :=
 /-- Deprecated. Use `map_continuous` instead. -/
 protected theorem continuous (f : C(X, Y)) : Continuous f :=
   f.continuous_toFun
-
-@[deprecated map_continuous (since := "2024-09-29")]
-theorem continuous_set_coe (s : Set C(X, Y)) (f : s) : Continuous (f : X → Y) :=
-  map_continuous _
 
 /-- Deprecated. Use `DFunLike.congr_fun` instead. -/
 protected theorem congr_fun {f g : C(X, Y)} (H : f = g) (x : X) : f x = g x :=

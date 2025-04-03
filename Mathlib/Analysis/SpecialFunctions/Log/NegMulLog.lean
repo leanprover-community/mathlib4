@@ -35,8 +35,8 @@ lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   have : (Set.univ : Set ℝ) = Set.Iio 0 ∪ Set.Ioi 0 ∪ {0} := by ext; simp [em]
   rw [this, nhdsWithin_union, nhdsWithin_union]
   simp only [nhdsWithin_singleton, sup_le_iff, Filter.nonpos_iff, Filter.tendsto_sup]
-  refine ⟨⟨tendsto_log_mul_self_nhds_zero_left, ?_⟩, ?_⟩
-  · simpa only [rpow_one] using tendsto_log_mul_rpow_nhds_zero zero_lt_one
+  refine ⟨⟨tendsto_log_mul_self_nhdsLT_zero, ?_⟩, ?_⟩
+  · simpa only [rpow_one] using tendsto_log_mul_rpow_nhdsGT_zero zero_lt_one
   · convert tendsto_pure_nhds (fun x ↦ log x * x) 0
     simp
 
@@ -76,7 +76,7 @@ private lemma tendsto_deriv_mul_log_nhdsWithin_zero :
     intro x hx
     rw [Set.mem_Ioi] at hx
     exact deriv_mul_log hx.ne'
-  simp only [tendsto_congr' this, tendsto_atBot_add_const_right, tendsto_log_nhdsWithin_zero_right]
+  simp only [tendsto_congr' this, tendsto_atBot_add_const_right, tendsto_log_nhdsGT_zero]
 
 open Filter in
 lemma tendsto_deriv_mul_log_atTop :

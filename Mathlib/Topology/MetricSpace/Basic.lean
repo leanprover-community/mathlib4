@@ -124,7 +124,7 @@ instance Subtype.metricSpace {α : Type*} {p : α → Prop} [MetricSpace α] :
   .induced Subtype.val Subtype.coe_injective ‹_›
 
 @[to_additive]
-instance {α : Type*} [MetricSpace α] : MetricSpace αᵐᵒᵖ :=
+instance MulOpposite.instMetricSpace {α : Type*} [MetricSpace α] : MetricSpace αᵐᵒᵖ :=
   MetricSpace.induced MulOpposite.unop MulOpposite.unop_injective ‹_›
 
 section Real
@@ -168,7 +168,7 @@ section SecondCountable
 
 open TopologicalSpace
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `Countable` instead of `Encodable`
+-- TODO: use `Countable` instead of `Encodable`
 /-- A metric space is second countable if one can reconstruct up to any `ε>0` any element of the
 space from countably many data. -/
 theorem secondCountable_of_countable_discretization {α : Type u} [MetricSpace α]
@@ -205,27 +205,3 @@ instance SeparationQuotient.instMetricSpace {α : Type u} [PseudoMetricSpace α]
     surjective_mk.forall₂.2 dist_edist
 
 end EqRel
-
-/-!
-### `Additive`, `Multiplicative`
-
-The distance on those type synonyms is inherited without change.
--/
-
-open Additive Multiplicative
-
-instance [MetricSpace X] : MetricSpace (Additive X) := ‹MetricSpace X›
-instance [MetricSpace X] : MetricSpace (Multiplicative X) := ‹MetricSpace X›
-
-instance MulOpposite.instMetricSpace [MetricSpace X] : MetricSpace Xᵐᵒᵖ :=
-  MetricSpace.induced unop unop_injective ‹_›
-
-/-!
-### Order dual
-
-The distance on this type synonym is inherited without change.
--/
-
-open OrderDual
-
-instance [MetricSpace X] : MetricSpace Xᵒᵈ := ‹MetricSpace X›

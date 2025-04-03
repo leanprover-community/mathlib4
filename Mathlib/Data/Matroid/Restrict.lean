@@ -236,8 +236,8 @@ scoped infix:50  " ≤r " => IsRestriction
 /-- `N <r M` means that `N` is a `IsStrictRestriction` of `M`. -/
 scoped infix:50  " <r " => IsStrictRestriction
 
-/-- A type synonym for matroids with the restriction order.
-  (The `PartialOrder` on `Matroid α` is reserved for the minor order)  -/
+/-- A type synonym for matroids with the isRestriction order.
+(The `PartialOrder` on `Matroid α` is reserved for the minor order) -/
 @[ext] structure Matroidᵣ (α : Type*) where ofMatroid ::
   /-- The underlying `Matroid` -/
   toMatroid : Matroid α
@@ -254,7 +254,6 @@ instance {α : Type*} : PartialOrder (Matroidᵣ α) where
   le_refl M := ⟨(M : Matroid α).E, Subset.rfl, (M : Matroid α).restrict_ground_eq_self.symm⟩
   le_trans M₁ M₂ M₃ := by
     rintro ⟨R, hR, h₁⟩ ⟨R', hR', h₂⟩
-    change _ ≤r _
     rw [h₂] at h₁ hR
     rw [h₁, restrict_restrict_eq _ (show R ⊆ R' from hR)]
     exact ⟨R, hR.trans hR', rfl⟩

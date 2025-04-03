@@ -316,7 +316,7 @@ theorem norm_inv_eq {x : FreeGroup α} : norm x⁻¹ = norm x := by
 
 @[to_additive (attr := simp)]
 theorem norm_eq_zero {x : FreeGroup α} : norm x = 0 ↔ x = 1 := by
-  simp only [norm, List.length_eq_zero, toWord_eq_nil_iff]
+  simp only [norm, List.length_eq_zero_iff, toWord_eq_nil_iff]
 
 @[to_additive (attr := simp)]
 theorem norm_one : norm (1 : FreeGroup α) = 0 :=
@@ -335,7 +335,7 @@ theorem norm_mul_le (x y : FreeGroup α) : norm (x * y) ≤ norm x + norm y :=
   calc
     norm (x * y) = norm (mk (x.toWord ++ y.toWord)) := by rw [← mul_mk, mk_toWord, mk_toWord]
     _ ≤ (x.toWord ++ y.toWord).length := norm_mk_le
-    _ = norm x + norm y := List.length_append _ _
+    _ = norm x + norm y := List.length_append
 
 @[to_additive (attr := simp)]
 theorem norm_of_pow (a : α) (n : ℕ) : norm (of a ^ n) = n := by

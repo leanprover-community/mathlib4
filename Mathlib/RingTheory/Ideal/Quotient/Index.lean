@@ -10,8 +10,8 @@ import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.TensorProduct.Quotient
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.Finiteness.Cardinality
-import Mathlib.RingTheory.Finiteness.TensorProduct
 import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # Indices of ideals
