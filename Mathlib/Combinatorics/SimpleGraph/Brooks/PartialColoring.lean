@@ -23,13 +23,6 @@ variable {G}
 lemma degreeOn.mono {s t : Finset α} {a : α} (h : s ⊆ t) : G.degreeOn s a ≤ G.degreeOn t a :=
     card_le_card fun _ hv ↦ mem_inter.2 ⟨(mem_inter.1 hv).1, h (mem_inter.1 hv).2⟩
 
-lemma degreeOn_erase (s : Finset α) (a : α) : G.degreeOn (s.erase a) a = G.degreeOn s a := by
-  apply le_antisymm (degreeOn.mono <| erase_subset ..)
-  apply card_le_card
-  intro v hv
-  rw [mem_inter, mem_neighborFinset] at *
-  use hv.1, mem_erase_of_ne_of_mem (fun hf ↦ G.loopless _ (hf ▸ hv.1)) hv.2
-
 lemma degreeOn_le_degree (s : Finset α) (a : α) : G.degreeOn s a ≤ G.degree a := by
   rw [degreeOn, degree]
   apply card_le_card
@@ -161,7 +154,7 @@ lemma ofinsertNotAdj {a b v : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ s 
 lemma eq_ofinsertNotAdj  {a b : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ s → ¬ G.Adj b v) :
     (C.insertNotAdj h a) b = (C.insertNotAdj h a) a := by simp
 
-lemma lt_of_insertNotAdj_lt {b : α} {k : ℕ} (C : G.PartialColoring s) (h : ∀ v, v ∈ s → ¬ G.Adj b v)
+lemma insertNotAdj_isK {b : α} {k : ℕ} (C : G.PartialColoring s) (h : ∀ v, v ∈ s → ¬ G.Adj b v)
     (a : α) (h' : C.IsPartialKColoring k) : (C.insertNotAdj h a).IsPartialKColoring k := by
   intro v
   rw [ofinsertNotAdj]
@@ -193,7 +186,7 @@ lemma join_eq {v : α} (C₁ : G.PartialColoring s) (C₂ : G.PartialColoring t)
     (C₁.join C₂ h) v = ite (v ∈ s) (C₁ v) (C₂ v) := rfl
 
 @[simp]
-lemma join_isK_of_isK {k : ℕ} {C₁ : G.PartialColoring s} {C₂ : G.PartialColoring t}
+lemma join_isK {k : ℕ} {C₁ : G.PartialColoring s} {C₂ : G.PartialColoring t}
     {h : ∀ v, v ∈ s → ∀ w, w ∈ t → ¬ G.Adj v w} (h1 : C₁.IsPartialKColoring k)
     (h2 : C₂.IsPartialKColoring k) : (C₁.join C₂ h).IsPartialKColoring k := by
   intro v
@@ -255,7 +248,7 @@ lemma insert_eq (C : G.PartialColoring s) (a : α) :
 variable {k : ℕ} {a u v w x y : α} {C : G.PartialColoring s}
 
 /-- If `C` is a `k`-coloring of `s` and the greedy extend uses a color < k then -/
-lemma insert_of_lt (h : C.IsPartialKColoring k) (hg : C.extend a < k) :
+lemma insert_isK (h : C.IsPartialKColoring k) (hg : C.extend a < k) :
     (C.insert a).IsPartialKColoring k := by
   rw [IsPartialKColoring, insert_eq]
   intro w; dsimp
@@ -344,9 +337,9 @@ theorem Greedy_of_tail_path (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath)
       · exact disjoint_left.1 hdisj hf <| mem_toFinset.2 <| start_mem_support ..
       · exact ((cons_isPath_iff ..).1 hp).2 <| mem_of_mem_tail <| mem_toFinset.1 hf
     · rw [Greedy_tail _ _ _ hx]
-      apply ih hp.of_cons (disjoint_of_subset_right _ hdisj)
-      rw [support_cons]
-      exact fun _ hy ↦ mem_toFinset.2 <| mem_cons_of_mem _ <| mem_toFinset.1 hy
+      apply ih hp.of_cons <| disjoint_of_subset_right _ hdisj
+      rw [support_cons, List.toFinset_subset]
+      exact fun _ hy ↦ mem_cons_of_mem _ hy
 
 theorem Greedy_of_path_notInj (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath)
     (hlt : C.IsPartialKColoring k) (hxs : x ∈ s) (hys : y ∈ s)
@@ -369,21 +362,13 @@ theorem Greedy_of_path_notInj (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath)
   · rw [Greedy_not_mem ha]
     exact hlt a
 
-theorem Greedy_of_path_concat_notInj {h : G.Adj v w} (hbdd : ∀ v, G.degree v ≤ k)
-    (hp : (p.concat h).IsPath) (hlt : C.IsPartialKColoring k)
-    (hxs : x ∈ s) (hys : y ∈ s) (hux : G.Adj w x) (huy : G.Adj w y) (hne : x ≠ y)
-    (heq : C x = C y) (hdisj : Disjoint s (p.concat h).support.toFinset) :
-    (C.Greedy (p.concat h).reverse.support).IsPartialKColoring k := by
-  apply C.Greedy_of_path_notInj hbdd hp.reverse hlt hxs hys hux huy hne heq
-  rwa [support_reverse, toFinset_reverse]
-
 end PartialColoring
 open Walk Finset PartialColoring
 
 variable [DecidableEq α] {G} {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} {p : G.Walk xᵣ x₄}
 /-- Get the vertex set of the coloring we use in the 1st part of Brooks theorem into the appropriate
 form -/
-theorem Brooks1_copy_eq (hj : xⱼ ∈ p.support) (hj2 : G.Adj xⱼ x₂) :
+theorem Brooks1_aux (hj : xⱼ ∈ p.support) (hj2 : G.Adj xⱼ x₂) :
     {x₁, x₃} ∪ (p.dropUntil _ hj).support.tail.toFinset ∪
     ((p.takeUntil _ hj).concat hj2).reverse.support.toFinset =
     p.support.toFinset ∪ {x₃, x₂, x₁} := by
@@ -404,7 +389,7 @@ theorem Brooks1_exists {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} {p : G.Walk xᵣ x�
     (h1 : x₁ ∉ p.support) (h2 : x₂ ∉ p.support) (h3 : x₃ ∉ p.support) :
   ∃ (C : G.PartialColoring (p.support.toFinset ∪ {x₃, x₂, x₁} )), C.IsPartialKColoring k := by
   use (((G.partialColoringOfNotAdj h13).Greedy (p.dropUntil _ hj).support.tail).Greedy
-        ((p.takeUntil _ hj).concat hj2).reverse.support).copy (Brooks1_copy_eq hj hj2)
+        ((p.takeUntil _ hj).concat hj2).reverse.support).copy (Brooks1_aux hj hj2)
   have htp := (concat_isPath_iff _ hj2).2 ⟨hp.takeUntil hj,
       fun a ↦ h2 ((support_takeUntil_subset p hj) a)⟩
   let C₁ := (G.partialColoringOfNotAdj h13).Greedy (p.dropUntil _ hj).support.tail
@@ -422,8 +407,9 @@ theorem Brooks1_exists {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} {p : G.Walk xᵣ x�
     rw [Greedy_not_mem (fun hf ↦ h3 <| (support_dropUntil_subset _ hj) (List.mem_of_mem_tail hf)),
         Greedy_not_mem (fun hf ↦ h1 <| (support_dropUntil_subset _ hj) (List.mem_of_mem_tail hf))]
     rfl
-  apply C₁.Greedy_of_path_concat_notInj hbdd htp this (mem_union_left _ (mem_insert_self ..))
+  apply C₁.Greedy_of_path_notInj hbdd htp.reverse this (mem_union_left _ (mem_insert_self ..))
     (mem_union_left _ (mem_insert_of_mem <| mem_singleton.mpr rfl)) h21 h23 hne hj213
+  rw [support_reverse, List.toFinset_reverse]
   simpa using ⟨⟨fun h ↦ h1 <| (support_takeUntil_subset _ hj) h, fun h ↦ h3 <|
     (support_takeUntil_subset ..) h, (hp.support_takeUntil_disjoint_dropUntil_tail hj).symm⟩,
     ⟨h21.ne, h23.ne, fun h ↦ h2 <| (support_dropUntil_subset ..) (List.mem_of_mem_tail h)⟩⟩

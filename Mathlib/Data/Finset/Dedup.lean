@@ -149,6 +149,10 @@ theorem perm_of_nodup_nodup_toFinset_eq (hl : Nodup l) (hl' : Nodup l')
 theorem toFinset_reverse {l : List α} : toFinset l.reverse = l.toFinset :=
   toFinset_eq_of_perm _ _ (reverse_perm l)
 
+@[simp]
+theorem toFinset_subset {l l' : List α} : l.toFinset ⊆ l'.toFinset ↔ l ⊆ l' := by
+  simp_rw [List.toFinset, Multiset.toFinset_subset, Multiset.coe_subset]
+
 end List
 
 namespace Finset

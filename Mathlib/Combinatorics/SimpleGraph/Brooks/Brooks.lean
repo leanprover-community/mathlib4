@@ -99,13 +99,14 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
   | h n ih =>
   -- Case 0 : there is v ∈ s with d_s(v) < k, so we can extend a k-coloring of
   -- s.erase v greedily
-  by_cases hd : ∃ v ∈ s, G.degreeOn (s.erase v) v < k
+  by_cases hd : ∃ v ∈ s, G.degreeOn s v < k
   · obtain ⟨v, hv, hlt⟩ := hd
+    replace hlt := (degreeOn.mono <| erase_subset v s).trans_lt hlt
     obtain ⟨C, hC⟩ := ih _ ((card_erase_lt_of_mem hv).trans_le hn.le) _ rfl
-    use (C.insert v).copy (insert_erase hv), insert_of_lt hC ((C.extend_le_degreeOn _).trans_lt hlt)
+    use (C.insert v).copy (insert_erase hv), insert_isK hC ((C.extend_le_degreeOn _).trans_lt hlt)
   -- So all vertices in `s` have d_s(v) = k (and hence have no neighbors outside `s`)
   push_neg at hd
-  replace hd : ∀ v ∈ s, G.degreeOn (s.erase v) v = k := fun v hv ↦ le_antisymm
+  replace hd : ∀ v ∈ s, G.degreeOn s v = k := fun v hv ↦ le_antisymm
         ((degreeOn_le_degree ..).trans (hbdd v)) <| hd _ hv
   have hbdd' : ∀ v, v ∈ s → G.degree v = k := fun v hv ↦ le_antisymm (hbdd v)
         <| hd v hv ▸ degreeOn_le_degree ..
@@ -113,7 +114,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
     by_contra! hf
     obtain ⟨v, hv, w, ha, hns⟩ := hf
     have := degreeOn_lt_degree ⟨by rwa [← mem_neighborFinset] at ha, hns⟩
-    rw [← degreeOn_erase, hd _ hv] at this
+    rw [hd _ hv] at this
     exact this.not_le (hbdd v)
   -- `s` is either Nonempty (main case) or empty (easy)
   by_cases hem : s.Nonempty
@@ -127,7 +128,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         v₃ ∈ G.neighborFinset v₂ ∩ s ∧ v₁ ≠ v₃ ∧ ¬ G.Adj v₁ v₃ := by
       contrapose! nc
       apply IsNClique.insert
-        ⟨fun _ ha _ hb hne ↦ nc _ _ ha hb hne, by rw [← hd _ hv₂, degreeOn_erase]⟩
+        ⟨fun _ ha _ hb hne ↦ nc _ _ ha hb hne, by rw [← hd _ hv₂]⟩
       intro b hb; rw [mem_inter, mem_neighborFinset] at hb
       exact hb.1
     -- Since `v₃` has degree at least 3 so it has another neighbor `v₄ ≠ v₂`
@@ -160,7 +161,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
       obtain ⟨vᵣ, q, hq, hs, hnb⟩ := exists_maximal_path_subset s h41 v41s
       refine ⟨vᵣ, q, hq, hs,fun x hx ↦ ?_⟩
       have := (hbdd vᵣ).trans (hd vᵣ (hs _ (start_mem_support ..))).symm.le
-      rw [degreeOn_erase, degree_le_degreeOn_iff] at this
+      rw [degree_le_degreeOn_iff] at this
       exact hnb x hx <| this <| (mem_neighborFinset ..).2 hx
     have hdisj2 := (append_isPath_iff.1 hq).2.2
     -- either this path is the whole of `s` or it is a proper subset
@@ -225,7 +226,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         -- so there is a first dart `d = (d₁, d₂)` in `c` such that `d₁` is adjacent
         -- to something `s \ c` and `d₂` is not
         have rS : vᵣ ∉ {a | ∃ b ∈ s \ c.support.toFinset, G.Adj a b} :=
-          fun ⟨ _, hy , had⟩ ↦ (mem_sdiff.1 hy).2 <| mem_toFinset.2 <| hcym _ had
+          fun ⟨_, hy , had⟩ ↦ (mem_sdiff.1 hy).2 <| mem_toFinset.2 <| hcym _ had
         obtain ⟨d, hd, ⟨y, hy1, hd1⟩, hd2⟩ := exists_boundary_dart_of_closed c _
                       (Set.mem_setOf.2 ⟨_, hy, had⟩) rS hx (start_mem_support ..)
         have d2 : ∀ b ∈ s \ c.support.toFinset, ¬ G.Adj d.toProd.2 b := by
@@ -236,7 +237,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         -- the neighbor of `d₁` (so now `d₁` is a vertex on `c` that has two neigbors
         -- colored with the same color)
         let C₂ := C₁.insertNotAdj d2 y
-        have hC₂ := C₁.lt_of_insertNotAdj_lt d2 y hC₁
+        have hC₂ := C₁.insertNotAdj_isK d2 y hC₁
         let hr := (c.dart_fst_mem_support_of_mem_darts hd)
         -- we take the path given by removing `d₂` from `c` (we do this by rotating
         -- `c` to start at `d₁` and then removing its last two darts)
@@ -274,7 +275,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         obtain ⟨C₁, hC₁⟩ := ih _ ((card_lt_card hsub).trans_le hn.le)  _ rfl
         obtain ⟨C₂, hC₂⟩ := ih _ hsdcard _ rfl
         exact ⟨(C₁.join C₂ (by simpa using hnbc)).copy (union_sdiff_of_subset hsub.1),
-          copy_isK (C₁.join_isK_of_isK hC₁ hC₂)⟩
+          copy_isK (C₁.join_isK hC₁ hC₂)⟩
   · -- `s` is empty so easy to `k`-color
     exact ⟨G.partialColoringOfEmpty.copy (not_nonempty_iff_eq_empty.1 hem).symm,
       fun v ↦ by simpa using Nat.zero_lt_of_lt hk⟩
