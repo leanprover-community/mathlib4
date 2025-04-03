@@ -80,8 +80,6 @@ and `AdjoinRoot` which constructs a new type.
 
 This is not a typeclass because the choice of root given `S` and `f` is not unique.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure IsAdjoinRoot {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
     (f : R[X]) : Type max u v where
   map : R[X] →+* S
@@ -242,15 +240,13 @@ theorem eq_lift (h : IsAdjoinRoot S f) (g : S →+* T) (hmap : ∀ a, g (algebra
 end
 
 variable [Algebra R T] (hx' : aeval x f = 0)
-variable (x)
 
+variable (x) in
 -- To match `AdjoinRoot.liftHom`
 /-- Lift the algebra map `R → T` to `S →ₐ[R] T` by specifying a root `x` of `f` in `T`,
 where `S` is given by adjoining a root of `f` to `R`. -/
 def liftHom (h : IsAdjoinRoot S f) : S →ₐ[R] T :=
   { h.lift (algebraMap R T) x hx' with commutes' := fun a => h.lift_algebraMap hx' a }
-
-variable {x}
 
 @[simp]
 theorem coe_liftHom (h : IsAdjoinRoot S f) :

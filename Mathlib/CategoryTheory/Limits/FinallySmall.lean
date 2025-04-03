@@ -160,7 +160,7 @@ section WeaklyInitial
 
 variable (J : Type u) [Category.{v} J]
 
-/-- The converse is true if `J` is cofiltered, see `intiallySmall_of_small_weakly_initial_set`. -/
+/-- The converse is true if `J` is cofiltered, see `initiallySmall_of_small_weakly_initial_set`. -/
 theorem InitiallySmall.exists_small_weakly_initial_set [InitiallySmall.{w} J] :
     ∃ (s : Set J) (_ : Small.{w} s), ∀ i, ∃ j ∈ s, Nonempty (j ⟶ i) := by
   refine ⟨Set.range (fromInitialModel J).obj, inferInstance, fun i => ?_⟩

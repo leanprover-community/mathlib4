@@ -25,10 +25,9 @@ it. We generally put such theorems into the `SetTheory.Cardinal.Finite` module.
 
 -/
 
+assert_not_exists Field
 
 noncomputable section
-
-open scoped Classical
 
 variable {α β γ : Type*}
 
@@ -42,6 +41,7 @@ def Finite.equivFinOfCardEq [Finite α] {n : ℕ} (h : Nat.card α = n) : α ≃
   subst h
   apply Finite.equivFin
 
+open scoped Classical in
 theorem Nat.card_eq (α : Type*) :
     Nat.card α = if _ : Finite α then @Fintype.card α (Fintype.ofFinite α) else 0 := by
   cases finite_or_infinite α
@@ -58,8 +58,7 @@ theorem Finite.card_pos [Finite α] [h : Nonempty α] : 0 < Nat.card α :=
 
 namespace Finite
 
-theorem cast_card_eq_mk {α : Type*} [Finite α] : ↑(Nat.card α) = Cardinal.mk α :=
-  Cardinal.cast_toNat_of_lt_aleph0 (Cardinal.lt_aleph0_of_finite α)
+@[deprecated (since := "2025-02-21")] alias cast_card_eq_mk := Nat.cast_card
 
 theorem card_eq [Finite α] [Finite β] : Nat.card α = Nat.card β ↔ Nonempty (α ≃ β) := by
   haveI := Fintype.ofFinite α
@@ -93,6 +92,7 @@ theorem card_le_of_embedding [Finite β] (f : α ↪ β) : Nat.card α ≤ Nat.c
 
 theorem card_le_of_surjective [Finite α] (f : α → β) (hf : Function.Surjective f) :
     Nat.card β ≤ Nat.card α := by
+  classical
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofSurjective f hf
   simpa only [Nat.card_eq_fintype_card] using Fintype.card_le_of_surjective f hf
@@ -105,7 +105,7 @@ theorem card_eq_zero_iff [Finite α] : Nat.card α = 0 ↔ IsEmpty α := by
   `Nat.card β = 0 → Nat.card α = 0` since `Nat.card` is defined to be `0` for infinite types. -/
 theorem card_le_of_injective' {f : α → β} (hf : Function.Injective f)
     (h : Nat.card β = 0 → Nat.card α = 0) : Nat.card α ≤ Nat.card β :=
-  (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h zero_le') fun h =>
+  (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h (Nat.zero_le _)) fun h =>
     @card_le_of_injective α β (Nat.finite_of_card_ne_zero h) f hf
 
 /-- If `f` is an embedding, then `Nat.card α ≤ Nat.card β`. We must also assume
@@ -118,7 +118,7 @@ theorem card_le_of_embedding' (f : α ↪ β) (h : Nat.card β = 0 → Nat.card 
   `Nat.card α = 0 → Nat.card β = 0` since `Nat.card` is defined to be `0` for infinite types. -/
 theorem card_le_of_surjective' {f : α → β} (hf : Function.Surjective f)
     (h : Nat.card α = 0 → Nat.card β = 0) : Nat.card β ≤ Nat.card α :=
-  (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h zero_le') fun h =>
+  (or_not_of_imp h).casesOn (fun h => le_of_eq_of_le h (Nat.zero_le _)) fun h =>
     @card_le_of_surjective α β (Nat.finite_of_card_ne_zero h) f hf
 
 /-- NB: `Nat.card` is defined to be `0` for infinite types. -/
@@ -152,11 +152,13 @@ theorem card_range_le [Finite α] (f : α → β) : Nat.card (Set.range f) ≤ N
   card_le_of_surjective _ Set.surjective_onto_range
 
 theorem card_subtype_le [Finite α] (p : α → Prop) : Nat.card { x // p x } ≤ Nat.card α := by
+  classical
   haveI := Fintype.ofFinite α
   simpa only [Nat.card_eq_fintype_card] using Fintype.card_subtype_le p
 
 theorem card_subtype_lt [Finite α] {p : α → Prop} {x : α} (hx : ¬p x) :
     Nat.card { x // p x } < Nat.card α := by
+  classical
   haveI := Fintype.ofFinite α
   simpa only [Nat.card_eq_fintype_card, gt_iff_lt] using Fintype.card_subtype_lt hx
 
@@ -168,18 +170,17 @@ theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := 
   unfold ENat.card
   apply symm
   rw [Cardinal.natCast_eq_toENat_iff]
-  exact Finite.cast_card_eq_mk
+  exact Nat.cast_card
 
 end ENat
 
 namespace Set
 
 theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + Nat.card t := by
-  cases' _root_.finite_or_infinite (↥(s ∪ t)) with h h
+  rcases _root_.finite_or_infinite (↥(s ∪ t)) with h | h
   · rw [finite_coe_iff, finite_union, ← finite_coe_iff, ← finite_coe_iff] at h
     cases h
-    rw [← @Nat.cast_le Cardinal, Nat.cast_add, Finite.cast_card_eq_mk, Finite.cast_card_eq_mk,
-      Finite.cast_card_eq_mk]
+    rw [← @Nat.cast_le Cardinal, Nat.cast_add, Nat.cast_card, Nat.cast_card, Nat.cast_card]
     exact Cardinal.mk_union_le s t
   · exact Nat.card_eq_zero_of_infinite.trans_le (zero_le _)
 

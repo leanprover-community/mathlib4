@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Analysis.Convex.Between
-import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Normed.Group.AddTorsor
+import Mathlib.Analysis.Normed.Module.Convex
 
 /-!
 # Sides of affine subspaces

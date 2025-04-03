@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Category.Pairwise
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
@@ -68,7 +67,7 @@ A presheaf is a sheaf if `F` preserves the limit of `Pairwise.diagram U`.
 `U i ⊓ U j` mapping into the open sets `U i`. This diagram has limit `iSup U`.)
 -/
 def IsSheafPreservesLimitPairwiseIntersections (F : Presheaf C X) : Prop :=
-  ∀ ⦃ι : Type w⦄ (U : ι → Opens X), Nonempty (PreservesLimit (Pairwise.diagram U).op F)
+  ∀ ⦃ι : Type w⦄ (U : ι → Opens X), PreservesLimit (Pairwise.diagram U).op F
 
 end
 
@@ -218,7 +217,7 @@ after appropriate whiskering and postcomposition.
 -/
 def pairwiseCoconeIso :
     (Pairwise.cocone U).op ≅
-      (Cones.postcomposeEquivalence (NatIso.op (pairwiseDiagramIso U : _) : _)).functor.obj
+      (Cones.postcomposeEquivalence (NatIso.op (pairwiseDiagramIso U :) :)).functor.obj
         ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op) :=
   Cones.ext (Iso.refl _) (by aesop_cat)
 
@@ -255,7 +254,7 @@ theorem isSheafOpensLeCover_iff_isSheafPairwiseIntersections :
                   ((opensLeCoverCocone U).op.whisker (pairwiseToOpensLeCover U).op))) :=
           (IsLimit.equivIsoLimit (Functor.mapConePostcomposeEquivalenceFunctor _).symm)
         _ ≃ IsLimit (F.mapCone (Pairwise.cocone U).op) :=
-          IsLimit.equivIsoLimit ((Cones.functoriality _ _).mapIso (pairwiseCoconeIso U : _).symm)
+          IsLimit.equivIsoLimit ((Cones.functoriality _ _).mapIso (pairwiseCoconeIso U :).symm)
 
 /-- The sheaf condition in terms of an equalizer diagram is equivalent
 to the reformulation in terms of a limit diagram over `U i` and `U i ⊓ U j`.
@@ -273,9 +272,9 @@ theorem isSheaf_iff_isSheafPreservesLimitPairwiseIntersections :
   rw [isSheaf_iff_isSheafPairwiseIntersections]
   constructor
   · intro h ι U
-    exact ⟨preservesLimit_of_preserves_limit_cone (Pairwise.coconeIsColimit U).op (h U).some⟩
+    exact preservesLimit_of_preserves_limit_cone (Pairwise.coconeIsColimit U).op (h U).some
   · intro h ι U
-    haveI := (h U).some
+    haveI := h U
     exact ⟨isLimitOfPreserves _ (Pairwise.coconeIsColimit U).op⟩
 
 end TopCat.Presheaf

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Topology.Bases
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # Dense embeddings
@@ -31,14 +31,18 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 /-- `i : α → β` is "dense inducing" if it has dense range and the topology on `α`
   is the one induced by `i` from the topology on `β`. -/
-structure IsDenseInducing [TopologicalSpace α] [TopologicalSpace β] (i : α → β)
-    extends IsInducing i : Prop where
+structure IsDenseInducing [TopologicalSpace α] [TopologicalSpace β] (i : α → β) : Prop
+    extends IsInducing i where
   /-- The range of a dense inducing map is a dense set. -/
   protected dense : DenseRange i
 
 namespace IsDenseInducing
 
 variable [TopologicalSpace α] [TopologicalSpace β]
+
+theorem _root_.Dense.isDenseInducing_val {s : Set α} (hs : Dense s) :
+    IsDenseInducing (@Subtype.val α s) := ⟨IsInducing.subtypeVal, hs.denseRange_val⟩
+
 variable {i : α → β}
 
 lemma isInducing (di : IsDenseInducing i) : IsInducing i := di.toIsInducing
@@ -205,9 +209,54 @@ theorem mk' (i : α → β) (c : Continuous i) (dense : ∀ x, x ∈ closure (ra
 
 end IsDenseInducing
 
+namespace Dense
+
+variable [TopologicalSpace α] [TopologicalSpace β] {s : Set α}
+
+/-- This is a shortcut for `hs.isDenseInducing_val.extend f`. It is useful because if `s : Set α`
+is dense then the coercion `(↑) : s → α` automatically satisfies `IsUniformInducing` and
+`IsDenseInducing` so this gives access to the theorems satisfied by a uniform extension by simply
+mentioning the density hypothesis. -/
+noncomputable def extend (hs : Dense s) (f : s → β) : α → β :=
+    hs.isDenseInducing_val.extend f
+
+variable {f : s → β}
+
+theorem extend_eq_of_tendsto [T2Space β] (hs : Dense s) {a : α} {b : β}
+    (hf : Tendsto f (comap (↑) (𝓝 a)) (𝓝 b)) : hs.extend f a = b :=
+  hs.isDenseInducing_val.extend_eq_of_tendsto hf
+
+theorem extend_eq_at [T2Space β] (hs : Dense s) {f : s → β} {x : s}
+    (hf : ContinuousAt f x) : hs.extend f x = f x :=
+  hs.isDenseInducing_val.extend_eq_at hf
+
+theorem extend_eq [T2Space β] (hs : Dense s) (hf : Continuous f) (x : s) :
+    hs.extend f x = f x :=
+  hs.extend_eq_at hf.continuousAt
+
+theorem extend_unique_at [T2Space β] {a : α} {g : α → β} (hs : Dense s)
+    (hf : ∀ᶠ x : s in comap (↑) (𝓝 a), g x = f x) (hg : ContinuousAt g a) :
+    hs.extend f a = g a :=
+  hs.isDenseInducing_val.extend_unique_at hf hg
+
+theorem extend_unique [T2Space β] {g : α → β} (hs : Dense s)
+    (hf : ∀ x : s, g x = f x) (hg : Continuous g) : hs.extend f = g :=
+  hs.isDenseInducing_val.extend_unique hf hg
+
+theorem continuousAt_extend [T3Space β] {a : α} (hs : Dense s)
+    (hf : ∀ᶠ x in 𝓝 a, ∃ b, Tendsto f (comap (↑) <| 𝓝 x) (𝓝 b)) :
+    ContinuousAt (hs.extend f) a :=
+  hs.isDenseInducing_val.continuousAt_extend hf
+
+theorem continuous_extend [T3Space β] (hs : Dense s)
+    (hf : ∀ a : α, ∃ b, Tendsto f (comap (↑) (𝓝 a)) (𝓝 b)) : Continuous (hs.extend f) :=
+  hs.isDenseInducing_val.continuous_extend hf
+
+end Dense
+
 /-- A dense embedding is an embedding with dense image. -/
-structure IsDenseEmbedding [TopologicalSpace α] [TopologicalSpace β] (e : α → β) extends
-  IsDenseInducing e : Prop where
+structure IsDenseEmbedding [TopologicalSpace α] [TopologicalSpace β] (e : α → β) : Prop
+    extends IsDenseInducing e where
   /-- A dense embedding is injective. -/
   injective : Function.Injective e
 
@@ -215,9 +264,6 @@ lemma IsDenseEmbedding.mk' [TopologicalSpace α] [TopologicalSpace β] (e : α �
     (dense : DenseRange e) (injective : Function.Injective e)
     (H : ∀ (a : α), ∀ s ∈ 𝓝 a, ∃ t ∈ 𝓝 (e a), ∀ b, e b ∈ t → b ∈ s) : IsDenseEmbedding e :=
   { IsDenseInducing.mk' e c dense H with injective }
-
-@[deprecated (since := "2024-09-30")]
-alias DenseEmbedding.mk' := IsDenseEmbedding.mk'
 
 namespace IsDenseEmbedding
 
@@ -275,25 +321,18 @@ protected lemma id {α : Type*} [TopologicalSpace α] : IsDenseEmbedding (id : �
 
 end IsDenseEmbedding
 
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_id := IsDenseEmbedding.id
-
 theorem Dense.isDenseEmbedding_val [TopologicalSpace α] {s : Set α} (hs : Dense s) :
     IsDenseEmbedding ((↑) : s → α) :=
   { IsEmbedding.subtypeVal with dense := hs.denseRange_val }
 
-@[deprecated (since := "2024-09-30")]
-alias Dense.denseEmbedding_val := Dense.isDenseEmbedding_val
-
 theorem isClosed_property [TopologicalSpace β] {e : α → β} {p : β → Prop} (he : DenseRange e)
-    (hp : IsClosed { x | p x }) (h : ∀ a, p (e a)) : ∀ b, p b :=
+    (hp : IsClosed { x | p x }) (h : ∀ a, p (e a)) : ∀ b, p b := by
   have : univ ⊆ { b | p b } :=
     calc
       univ = closure (range e) := he.closure_range.symm
       _ ⊆ closure { b | p b } := closure_mono <| range_subset_iff.mpr h
       _ = _ := hp.closure_eq
-
-  fun _ => this trivial
+  simpa only [univ_subset_iff, eq_univ_iff_forall, mem_setOf]
 
 theorem isClosed_property2 [TopologicalSpace β] {e : α → β} {p : β → β → Prop} (he : DenseRange e)
     (hp : IsClosed { q : β × β | p q.1 q.2 }) (h : ∀ a₁ a₂, p (e a₁) (e a₂)) : ∀ b₁ b₂, p b₁ b₂ :=

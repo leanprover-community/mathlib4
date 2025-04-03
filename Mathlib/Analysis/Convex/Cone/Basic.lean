@@ -37,14 +37,9 @@ While `Convex 𝕜` is a predicate on sets, `ConvexCone 𝕜 E` is a bundled con
 -/
 
 
-assert_not_exists NormedSpace
-assert_not_exists Real
-assert_not_exists Cardinal
+assert_not_exists NormedSpace Real Cardinal
 
-open Set LinearMap
-
-open scoped Classical
-open Pointwise
+open Set LinearMap Pointwise
 
 variable {𝕜 E F G : Type*}
 
@@ -235,7 +230,7 @@ def comap (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 F) : ConvexCone 𝕜 E whe
 theorem coe_comap (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 F) : (S.comap f : Set E) = f ⁻¹' S :=
   rfl
 
-@[simp] -- Porting note: was not a `dsimp` lemma
+@[simp]
 theorem comap_id (S : ConvexCone 𝕜 E) : S.comap LinearMap.id = S :=
   rfl
 

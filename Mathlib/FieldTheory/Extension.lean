@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Junyan Xu
 -/
 import Mathlib.Data.Fintype.Order
-import Mathlib.FieldTheory.Adjoin
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 
 /-!
 # Extension of field embeddings
@@ -110,8 +110,10 @@ noncomputable def union : Lifts F E K :=
   have dir : Directed (· ≤ ·) t := hc.directedOn.directed_val.mono_comp _ fun _ _ h ↦ h.1
   ⟨iSup t, (Subalgebra.iSupLift (toSubalgebra <| t ·) dir (·.val.emb) (fun i j h ↦
     AlgHom.ext fun x ↦ (hc.total i.2 j.2).elim (fun hij ↦ (hij.snd x).symm) fun hji ↦ by
-      erw [AlgHom.comp_apply, ← hji.snd (Subalgebra.inclusion h x),
-        inclusion_inclusion, inclusion_self, AlgHom.id_apply x]) _ rfl).comp
+      rw [AlgHom.comp_apply, ← inclusion]
+      dsimp only [coe_type_toSubalgebra]
+      rw [← hji.snd (inclusion h x), inclusion_inclusion, inclusion_self, AlgHom.id_apply x])
+    _ rfl).comp
       (Subalgebra.equivOfEq _ _ <| toSubalgebra_iSup_of_directed dir)⟩
 
 theorem le_union ⦃σ : Lifts F E K⦄ (hσ : σ ∈ c) : σ ≤ union c hc :=

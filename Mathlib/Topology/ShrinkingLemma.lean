@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Reid Barton
 -/
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # The shrinking lemma
@@ -46,7 +46,6 @@ namespace ShrinkingLemma
 This type is equipped with the following partial order: `v ≤ v'` if `v.carrier ⊆ v'.carrier`
 and `v i = v' i` for `i ∈ v.carrier`. We will use Zorn's lemma to prove that this type has
 a maximal element, then show that the maximal element must have `carrier = univ`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 @[ext] structure PartialRefinement (u : ι → Set X) (s : Set X) (p : Set X → Prop) where
   /-- A family of sets that form a partial refinement of `u`. -/
   toFun : ι → Set X
@@ -181,21 +180,21 @@ theorem exists_gt [NormalSpace X] (v : PartialRefinement u s ⊤) (hs : IsClosed
   · refine fun x hx => mem_iUnion.2 ?_
     rcases em (∃ j ≠ i, x ∈ v j) with (⟨j, hji, hj⟩ | h)
     · use j
-      rwa [update_noteq hji]
+      rwa [update_of_ne hji]
     · push_neg at h
       use i
-      rw [update_same]
+      rw [update_self]
       exact hvi ⟨hx, mem_biInter h⟩
   · rintro j (rfl | hj)
-    · rwa [update_same, ← v.apply_eq hi]
-    · rw [update_noteq (ne_of_mem_of_not_mem hj hi)]
+    · rwa [update_self, ← v.apply_eq hi]
+    · rw [update_of_ne (ne_of_mem_of_not_mem hj hi)]
       exact v.closure_subset hj
   · exact fun _ => trivial
   · intro j hj
     rw [mem_insert_iff, not_or] at hj
-    rw [update_noteq hj.1, v.apply_eq hj.2]
+    rw [update_of_ne hj.1, v.apply_eq hj.2]
   · refine ⟨subset_insert _ _, fun j hj => ?_⟩
-    exact (update_noteq (ne_of_mem_of_not_mem hj hi) _ _).symm
+    exact (update_of_ne (ne_of_mem_of_not_mem hj hi) _ _).symm
   · exact fun hle => hi (hle.1 <| mem_insert _ _)
 
 end PartialRefinement
@@ -302,37 +301,37 @@ theorem exists_gt_t2space (v : PartialRefinement u s (fun w => IsCompact (closur
   · refine fun x hx => mem_iUnion.2 ?_
     rcases em (∃ j ≠ i, x ∈ v j) with (⟨j, hji, hj⟩ | h)
     · use j
-      rwa [update_noteq hji]
+      rwa [update_of_ne hji]
     · push_neg at h
       use i
-      rw [update_same]
+      rw [update_self]
       apply hvi.2.1
       rw [hsi]
       exact ⟨hx, mem_iInter₂_of_mem h⟩
   · rintro j (rfl | hj)
-    · rw [update_same]
+    · rw [update_self]
       exact subset_trans hvi.2.2.1 <| PartialRefinement.subset v j
-    · rw [update_noteq (ne_of_mem_of_not_mem hj hi)]
+    · rw [update_of_ne (ne_of_mem_of_not_mem hj hi)]
       exact v.closure_subset hj
   · intro j hj
     rw [mem_insert_iff] at hj
     by_cases h : j = i
     · rw [← h]
-      simp only [update_same]
+      simp only [update_self]
       exact hvi.2.2.2
     · apply hj.elim
       · intro hji
         exact False.elim (h hji)
       · intro hjmemv
-        rw [update_noteq h]
+        rw [update_of_ne h]
         exact v.pred_of_mem hjmemv
   · intro j hj
     rw [mem_insert_iff, not_or] at hj
-    rw [update_noteq hj.1, v.apply_eq hj.2]
+    rw [update_of_ne hj.1, v.apply_eq hj.2]
   · refine ⟨subset_insert _ _, fun j hj => ?_⟩
-    exact (update_noteq (ne_of_mem_of_not_mem hj hi) _ _).symm
+    exact (update_of_ne (ne_of_mem_of_not_mem hj hi) _ _).symm
   · exact fun hle => hi (hle.1 <| mem_insert _ _)
-  · simp only [update_same]
+  · simp only [update_self]
     exact hvi.2.2.2
 
 /-- **Shrinking lemma** . A point-finite open cover of a compact subset of a `T2Space`

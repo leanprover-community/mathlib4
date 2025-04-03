@@ -55,7 +55,6 @@ theorem opNorm_ext [RingHomIsometric σ₁₃] (f : E →SL[σ₁₂] F) (g : E 
       rw [← h z]
       exact h₂ z
 
-@[deprecated (since := "2024-02-02")] alias op_norm_ext := opNorm_ext
 
 variable [RingHomIsometric σ₂₃]
 
@@ -63,20 +62,17 @@ theorem opNorm_le_bound₂ (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {C : ℝ}
     (hC : ∀ x y, ‖f x y‖ ≤ C * ‖x‖ * ‖y‖) : ‖f‖ ≤ C :=
   f.opNorm_le_bound h0 fun x => (f x).opNorm_le_bound (mul_nonneg h0 (norm_nonneg _)) <| hC x
 
-@[deprecated (since := "2024-02-02")] alias op_norm_le_bound₂ := opNorm_le_bound₂
 
 theorem le_opNorm₂ [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) (x : E) (y : F) :
     ‖f x y‖ ≤ ‖f‖ * ‖x‖ * ‖y‖ :=
   (f x).le_of_opNorm_le (f.le_opNorm x) y
 
-@[deprecated (since := "2024-02-02")] alias le_op_norm₂ := le_opNorm₂
 
 theorem le_of_opNorm₂_le_of_le [RingHomIsometric σ₁₃] (f : E →SL[σ₁₃] F →SL[σ₂₃] G) {x : E} {y : F}
     {a b c : ℝ} (hf : ‖f‖ ≤ a) (hx : ‖x‖ ≤ b) (hy : ‖y‖ ≤ c) :
     ‖f x y‖ ≤ a * b * c :=
   (f x).le_of_opNorm_le_of_le (f.le_of_opNorm_le_of_le hf hx) hy
 
-@[deprecated (since := "2024-02-02")] alias le_of_op_norm₂_le_of_le := le_of_opNorm₂_le_of_le
 
 end OpNorm
 
@@ -142,19 +138,12 @@ For a version bundled as `LinearIsometryEquiv`, see
 `ContinuousLinearMap.flipL`. -/
 def flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : F →SL[σ₂₃] E →SL[σ₁₃] G :=
   LinearMap.mkContinuous₂
-    -- Porting note: the `simp only`s below used to be `rw`.
-    -- Now that doesn't work as we need to do some beta reduction along the way.
     (LinearMap.mk₂'ₛₗ σ₂₃ σ₁₃ (fun y x => f x y) (fun x y z => (f z).map_add x y)
       (fun c y x => (f x).map_smulₛₗ c y) (fun z x y => by simp only [f.map_add, add_apply])
         (fun c y x => by simp only [f.map_smulₛₗ, smul_apply]))
     ‖f‖ fun y x => (f.le_opNorm₂ x y).trans_eq <| by simp only [mul_right_comm]
 
 private theorem le_norm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f‖ ≤ ‖flip f‖ :=
-  #adaptation_note
-  /--
-  After https://github.com/leanprover/lean4/pull/4119 we either need
-  to specify the `f.flip` argument, or use `set_option maxSynthPendingDepth 2 in`.
-  -/
   f.opNorm_le_bound₂ (norm_nonneg f.flip) fun x y => by
     rw [mul_right_comm]
     exact (flip f).le_opNorm₂ y x
@@ -172,7 +161,6 @@ theorem flip_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : f.flip.flip = f 
 theorem opNorm_flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : ‖f.flip‖ = ‖f‖ :=
   le_antisymm (by simpa only [flip_flip] using le_norm_flip f.flip) (le_norm_flip f)
 
-@[deprecated (since := "2024-02-02")] alias op_norm_flip := opNorm_flip
 
 @[simp]
 theorem flip_add (f g : E →SL[σ₁₃] F →SL[σ₂₃] G) : (f + g).flip = f.flip + g.flip :=
@@ -273,15 +261,6 @@ def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ�
         Pi.smul_apply])
     1 fun f g => by simpa only [one_mul] using opNorm_comp_le f g
 
-#adaptation_note
-/--
-Before https://github.com/leanprover/lean4/pull/4119 we had to create a local instance:
-```
-letI : Norm ((F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) :=
-  hasOpNorm (𝕜₂ := 𝕜₃) (E := F →SL[σ₂₃] G) (F := (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G)
-```
--/
-set_option maxSynthPendingDepth 2 in
 theorem norm_compSL_le : ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 
@@ -309,15 +288,6 @@ variable (𝕜 σ₁₂ σ₂₃ E Fₗ Gₗ)
 def compL : (Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ :=
   compSL E Fₗ Gₗ (RingHom.id 𝕜) (RingHom.id 𝕜)
 
-#adaptation_note
-/--
-Before https://github.com/leanprover/lean4/pull/4119 we had to create a local instance:
-```
-letI : Norm ((Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ) :=
-  hasOpNorm (𝕜₂ := 𝕜) (E := Fₗ →L[𝕜] Gₗ) (F := (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ)
-```
--/
-set_option maxSynthPendingDepth 2 in
 theorem norm_compL_le : ‖compL 𝕜 E Fₗ Gₗ‖ ≤ 1 :=
   norm_compSL_le _ _ _ _ _
 
@@ -339,32 +309,12 @@ def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[
 @[simp] lemma precompL_apply (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (u : Eₗ →L[𝕜] E) (f : Fₗ) (g : Eₗ) :
     precompL Eₗ L u f g = L (u g) f := rfl
 
-#adaptation_note
-/--
-Before https://github.com/leanprover/lean4/pull/4119
-we had to create a local instance in the signature:
-```
-letI : SeminormedAddCommGroup ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance
-letI : NormedSpace 𝕜 ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance
-```
--/
-set_option maxSynthPendingDepth 2 in
 theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
     ‖precompR Eₗ L‖ ≤ ‖compL 𝕜 Eₗ Fₗ Gₗ‖ * ‖L‖ := opNorm_comp_le _ _
     _ ≤ 1 * ‖L‖ := mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg L)
     _ = ‖L‖ := by rw [one_mul]
 
-#adaptation_note
-/--
-Before https://github.com/leanprover/lean4/pull/4119
-we had to create a local instance in the signature:
-```
-letI : Norm ((Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) :=
-  hasOpNorm (𝕜₂ := 𝕜) (E := Eₗ →L[𝕜] E) (F := Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ)
-```
--/
-set_option maxSynthPendingDepth 2 in
 theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : ‖precompL Eₗ L‖ ≤ ‖L‖ := by
   rw [precompL, opNorm_flip, ← opNorm_flip L]
   exact norm_precompR_le _ L.flip

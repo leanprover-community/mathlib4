@@ -61,11 +61,11 @@ theorem star_sq : star * star ≈ star := by
   constructor
   case' right =>
     rw [← neg_le_neg_iff];
-    apply (negMulRelabelling _ _).symm.equiv.1.trans;
+    apply (neg_mul _ _).symm.equiv.1.trans;
     rw [neg_star]
   assumption'
 
-/-- `*'* ⧏ *` implies `*'* ≉ *`.-/
+/-- `*'* ⧏ *` implies `*'* ≉ *`. -/
 theorem star'_mul_star_lf : star' * star ⧏ star := by
   rw [lf_iff_exists_le]
   refine Or.inr ⟨toRightMovesMul (Sum.inr ⟨⟨1, Nat.one_lt_two⟩, default⟩), ?_⟩

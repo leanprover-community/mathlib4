@@ -6,7 +6,6 @@ Authors: Chris Hughes
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Data.List.Prime
-import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
@@ -77,7 +76,7 @@ theorem splits_of_degree_le_one {f : K[X]} (hf : degree f ≤ 1) : Splits i f :=
   if hif : degree (f.map i) ≤ 0 then splits_of_map_eq_C i (degree_le_zero_iff.mp hif)
   else by
     push_neg at hif
-    rw [← Order.succ_le_iff, ← WithBot.coe_zero, WithBot.succ_coe, Nat.succ_eq_succ] at hif
+    rw [← Order.succ_le_iff, ← WithBot.coe_zero, WithBot.orderSucc_coe, Nat.succ_eq_succ] at hif
     exact splits_of_map_degree_eq_one i ((degree_map_le.trans hf).antisymm hif)
 
 theorem splits_of_degree_eq_one {f : K[X]} (hf : degree f = 1) : Splits i f :=
@@ -242,7 +241,7 @@ theorem natDegree_eq_card_roots' {p : K[X]} {i : K →+* L} (hsplit : Splits i p
   rw [← splits_id_iff_splits, ← he] at hsplit
   rw [← he] at hp
   have hq : q ≠ 0 := fun h => hp (by rw [h, mul_zero])
-  rw [← hd, add_right_eq_self]
+  rw [← hd, add_eq_left]
   by_contra h
   have h' : (map (RingHom.id L) q).natDegree ≠ 0 := by simp [h]
   have := roots_ne_zero_of_splits' (RingHom.id L) (splits_of_splits_mul' _ ?_ hsplit).2 h'
@@ -263,7 +262,7 @@ variable (i : K →+* L)
 /-- This lemma is for polynomials over a field. -/
 theorem splits_iff (f : K[X]) :
     Splits i f ↔ f = 0 ∨ ∀ {g : L[X]}, Irreducible g → g ∣ f.map i → degree g = 1 := by
-  rw [Splits, map_eq_zero]
+  rw [Splits, Polynomial.map_eq_zero]
 
 /-- This lemma is for polynomials over a field. -/
 theorem Splits.def {i : K →+* L} {f : K[X]} (h : Splits i f) :
@@ -343,6 +342,13 @@ theorem roots_map {f : K[X]} (hf : f.Splits <| RingHom.id K) : (f.map i).roots =
   (roots_map_of_injective_of_card_eq_natDegree i.injective <| by
       convert (natDegree_eq_card_roots hf).symm
       rw [map_id]).symm
+
+theorem Splits.mem_subfield_of_isRoot (F : Subfield K) {f : F[X]} (hnz : f ≠ 0)
+    (hf : Splits (RingHom.id F) f) {x : K} (hx : (f.map F.subtype).IsRoot x) :
+    x ∈ F := by
+  obtain ⟨x, _, rfl⟩ := Multiset.mem_map.mp
+    (roots_map F.subtype hf ▸ mem_roots'.mpr ⟨Polynomial.map_ne_zero hnz, hx⟩)
+  exact x.2
 
 theorem image_rootSet [Algebra R K] [Algebra R L] {p : R[X]} (h : p.Splits (algebraMap R K))
     (f : K →ₐ[R] L) : f '' p.rootSet K = p.rootSet L := by

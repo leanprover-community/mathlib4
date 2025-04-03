@@ -50,7 +50,6 @@ namespace Localization
 
 namespace Construction
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- If `W : MorphismProperty C`, `LocQuiver W` is a quiver with the same objects
 as `C`, and whose morphisms are those in `C` and placeholders for formal
 inverses of the morphisms in `W`. -/
@@ -67,13 +66,12 @@ def ιPaths (X : C) : Paths (LocQuiver W) :=
 
 /-- The morphism in the path category associated to a morphism in the original category. -/
 @[simp]
-def ψ₁ {X Y : C} (f : X ⟶ Y) : ιPaths W X ⟶ ιPaths W Y :=
-  Paths.of.map (Sum.inl f)
+def ψ₁ {X Y : C} (f : X ⟶ Y) : ιPaths W X ⟶ ιPaths W Y := (Paths.of _).map (Sum.inl f)
 
 /-- The morphism in the path category corresponding to a formal inverse. -/
 @[simp]
 def ψ₂ {X Y : C} (w : X ⟶ Y) (hw : W w) : ιPaths W Y ⟶ ιPaths W X :=
-  Paths.of.map (Sum.inr ⟨w, hw⟩)
+  (Paths.of _).map (Sum.inr ⟨w, hw⟩)
 
 /-- The relations by which we take the quotient in order to get the localized category. -/
 inductive relations : HomRel (Paths (LocQuiver W))
@@ -90,7 +88,6 @@ namespace MorphismProperty
 
 open Localization.Construction
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The localized category obtained by formally inverting the morphisms
 in `W : MorphismProperty C` -/
 def Localization :=
@@ -102,7 +99,7 @@ instance : Category (Localization W) := by
 
 /-- The obvious functor `C ⥤ W.Localization` -/
 def Q : C ⥤ W.Localization where
-  obj X := (Quotient.functor _).obj (Paths.of.obj ⟨X⟩)
+  obj X := (Quotient.functor _).obj ((Paths.of _).obj ⟨X⟩)
   map f := (Quotient.functor _).map (ψ₁ W f)
   map_id X := Quotient.sound _ (relations.id X)
   map_comp f g := Quotient.sound _ (relations.comp f g)
@@ -117,7 +114,7 @@ variable {W}
 /-- The isomorphism in `W.Localization` associated to a morphism `w` in W -/
 def wIso {X Y : C} (w : X ⟶ Y) (hw : W w) : Iso (W.Q.obj X) (W.Q.obj Y) where
   hom := W.Q.map w
-  inv := (Quotient.functor _).map (by dsimp; exact Paths.of.map (Sum.inr ⟨w, hw⟩))
+  inv := (Quotient.functor _).map (by dsimp; exact (Paths.of _).map (Sum.inr ⟨w, hw⟩))
   hom_inv_id := Quotient.sound _ (relations.Winv₁ w hw)
   inv_hom_id := Quotient.sound _ (relations.Winv₂ w hw)
 
@@ -125,12 +122,10 @@ def wIso {X Y : C} (w : X ⟶ Y) (hw : W w) : Iso (W.Q.obj X) (W.Q.obj Y) where
 abbrev wInv {X Y : C} (w : X ⟶ Y) (hw : W w) :=
   (wIso w hw).inv
 
-variable (W)
-
+variable (W) in
 theorem _root_.CategoryTheory.MorphismProperty.Q_inverts : W.IsInvertedBy W.Q := fun _ _ w hw =>
   (Localization.Construction.wIso w hw).isIso_hom
 
-variable {W}
 variable (G : C ⥤ D) (hG : W.IsInvertedBy G)
 
 /-- The lifting of a functor to the path category of `LocQuiver W` -/
@@ -154,7 +149,7 @@ def lift : W.Localization ⥤ D :=
       -- Porting note: rest of proof was `rcases r with ⟨⟩; tidy`
       rcases r with (_|_|⟨f,hf⟩|⟨f,hf⟩)
       · aesop_cat
-      · aesop_cat
+      · simp
       all_goals
         dsimp
         haveI := hG f hf
@@ -189,8 +184,7 @@ theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂
       refine Functor.congr_inv_of_congr_hom _ _ _ ?_ ?_ hw'
       all_goals apply Functor.congr_obj h
 
-variable (W)
-
+variable (W) in
 /-- The canonical bijection between objects in a category and its
 localization with respect to a morphism_property `W` -/
 @[simps]
@@ -201,8 +195,6 @@ def objEquiv : C ≃ W.Localization where
   right_inv := by
     rintro ⟨⟨X⟩⟩
     rfl
-
-variable {W}
 
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all
 morphisms in the localized category if it contains the image of the

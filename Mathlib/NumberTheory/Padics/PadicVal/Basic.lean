@@ -62,9 +62,8 @@ p-adic, p adic, padic, norm, valuation
 
 universe u
 
-open Nat
-
-open Rat
+open Nat Rat
+open scoped Finset
 
 namespace padicValNat
 
@@ -346,13 +345,7 @@ lemma add_eq_min {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
   have h3 := min_le_padicValRat_add (p := p) (ne_of_eq_of_ne (add_neg_cancel_right r q) hr)
   rw [add_neg_cancel_right, padicValRat.neg] at h2 h3
   rw [add_comm] at h3
-  refine le_antisymm (le_min ?_ ?_) h1
-  · contrapose! h2
-    rw [min_eq_right h2.le] at h3
-    exact lt_min h2 (lt_of_le_of_ne h3 hval)
-  · contrapose! h3
-    rw [min_eq_right h3.le] at h2
-    exact lt_min h3 (lt_of_le_of_ne h2 hval.symm)
+  omega
 
 lemma add_eq_of_lt {q r : ℚ} (hqr : q + r ≠ 0)
     (hq : q ≠ 0) (hr : r ≠ 0) (hval : padicValRat p q < padicValRat p r) :
@@ -373,9 +366,10 @@ lemma self_pow_inv (r : ℕ) : padicValRat p ((p : ℚ) ^ r)⁻¹ = -r := by
 (if the sum is non-zero). -/
 theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < padicValRat p (F i))
     (hn0 : ∑ i ∈ Finset.range n, F i ≠ 0) : 0 < padicValRat p (∑ i ∈ Finset.range n, F i) := by
-  induction' n with d hd
-  · exact False.elim (hn0 rfl)
-  · rw [Finset.sum_range_succ] at hn0 ⊢
+  induction n with
+  | zero => exact False.elim (hn0 rfl)
+  | succ d hd =>
+    rw [Finset.sum_range_succ] at hn0 ⊢
     by_cases h : ∑ x ∈ Finset.range d, F x = 0
     · rw [h, zero_add]
       exact hF d (lt_add_one _)
@@ -388,10 +382,12 @@ number, then the p-adic valuation of their sum is also greater than the same rat
 theorem lt_sum_of_lt {p j : ℕ} [hp : Fact (Nat.Prime p)] {F : ℕ → ℚ} {S : Finset ℕ}
     (hS : S.Nonempty) (hF : ∀ i, i ∈ S → padicValRat p (F j) < padicValRat p (F i))
     (hn1 : ∀ i : ℕ, 0 < F i) : padicValRat p (F j) < padicValRat p (∑ i ∈ S, F i) := by
-  induction' hS using Finset.Nonempty.cons_induction with k s S' Hnot Hne Hind
-  · rw [Finset.sum_singleton]
+  induction hS using Finset.Nonempty.cons_induction with
+  | singleton k =>
+    rw [Finset.sum_singleton]
     exact hF k (by simp)
-  · rw [Finset.cons_eq_insert, Finset.sum_insert Hnot]
+  | cons s S' Hnot Hne Hind =>
+    rw [Finset.cons_eq_insert, Finset.sum_insert Hnot]
     exact padicValRat.lt_add_of_lt
       (ne_of_gt (add_pos (hn1 s) (Finset.sum_pos (fun i _ => hn1 i) Hne)))
       (hF _ (by simp [Finset.mem_insert, true_or]))
@@ -600,8 +596,7 @@ The `p`-adic valuation of `n.choose k` is the number of carries when `k` and `n 
 in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound greater than
 `log p n`. -/
 theorem padicValNat_choose {n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hnb : log p n < b) :
-    padicValNat p (choose n k) =
-    ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card := by
+    padicValNat p (choose n k) = #{i ∈ Finset.Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i} := by
   exact_mod_cast (padicValNat_eq_emultiplicity (p := p) <| choose_pos hkn) ▸
     Prime.emultiplicity_choose hp.out hkn hnb
 
@@ -611,8 +606,7 @@ The `p`-adic valuation of `(n + k).choose k` is the number of carries when `k` a
 in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bound greater than
 `log p (n + k)`. -/
 theorem padicValNat_choose' {n k b : ℕ} [hp : Fact p.Prime] (hnb : log p (n + k) < b) :
-    padicValNat p (choose (n + k) k) =
-    ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card := by
+    padicValNat p (choose (n + k) k) = #{i ∈ Finset.Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i} := by
   exact_mod_cast (padicValNat_eq_emultiplicity (p := p) <| choose_pos <|
     Nat.le_add_left k n)▸ Prime.emultiplicity_choose' hp.out hnb
 

@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.Basic
+import Mathlib.Algebra.Homology.Embedding.IsSupported
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Opposite
 
@@ -68,8 +68,7 @@ lemma d_none_eq_zero' (i j : Option ι) (hj : j = none) :
 lemma d_eq {i j : Option ι} {a b : ι} (hi : i = some a) (hj : j = some b) :
     d K i j = (XIso K hi).hom ≫ K.d a b ≫ (XIso K hj).inv := by
   subst hi hj
-  dsimp [XIso, d]
-  erw [id_comp, comp_id]
+  simp [XIso, X, d]
 
 @[reassoc]
 lemma XOpIso_hom_d_op (i j : Option ι) :
@@ -149,6 +148,9 @@ lemma isZero_extend_X (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
     · exact hi'
     · exfalso
       exact hi' _ (e.f_eq_of_r_eq_some hi))
+
+instance : (K.extend e).IsStrictlySupported e where
+  isZero i' hi' := K.isZero_extend_X e i' hi'
 
 lemma extend_d_eq {i' j' : ι'} {i j : ι} (hi : e.f i = i') (hj : e.f j = j') :
     (K.extend e).d i' j' = (K.extendXIso e hi).hom ≫ K.d i j ≫

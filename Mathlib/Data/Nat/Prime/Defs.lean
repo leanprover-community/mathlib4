@@ -43,11 +43,23 @@ def Prime (p : ℕ) :=
 theorem irreducible_iff_nat_prime (a : ℕ) : Irreducible a ↔ Nat.Prime a :=
   Iff.rfl
 
-@[aesop safe destruct] theorem not_prime_zero : ¬Prime 0
+theorem not_prime_zero : ¬ Prime 0
   | h => h.ne_zero rfl
 
-@[aesop safe destruct] theorem not_prime_one : ¬Prime 1
+/-- A copy of `not_prime_zero` stated in a way that works for `aesop`.
+
+See https://github.com/leanprover-community/aesop/issues/197 for an explanation. -/
+@[aesop safe destruct] theorem prime_zero_false : Prime 0 → False :=
+  not_prime_zero
+
+theorem not_prime_one : ¬ Prime 1
   | h => h.ne_one rfl
+
+/-- A copy of `not_prime_one` stated in a way that works for `aesop`.
+
+See https://github.com/leanprover-community/aesop/issues/197 for an explanation. -/
+@[aesop safe destruct] theorem prime_one_false : Prime 1 → False :=
+  not_prime_one
 
 theorem Prime.ne_zero {n : ℕ} (h : Prime n) : n ≠ 0 :=
   Irreducible.ne_zero h
@@ -88,7 +100,7 @@ theorem prime_def {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 �
   simp only [Nat.isUnit_iff]
   apply Or.imp_right _ (h.2 a _)
   · rintro rfl
-    rw [← mul_right_inj' (not_eq_zero_of_lt h1), ← hab, mul_one]
+    rw [← mul_right_inj' (Nat.ne_zero_of_lt h1), ← hab, mul_one]
   · rw [hab]
     exact dvd_mul_right _ _
 
@@ -135,17 +147,17 @@ theorem prime_of_coprime (n : ℕ) (h1 : 1 < n) (h : ∀ m < n, m ≠ 0 → n.Co
     exact mlt.ne' mdvd
   exact (h m mlt hm).symm.eq_one_of_dvd mdvd
 
-section
+/--
+This instance is set up to work in the kernel (`by decide`) for small values.
 
-/-- This instance is slower than the instance `decidablePrime` defined below,
-  but has the advantage that it works in the kernel for small values.
+Below (`decidablePrime'`) we will define a faster variant to be used by the compiler
+(e.g. in `#eval` or `by native_decide`).
 
-  If you need to prove that a particular number is prime, in any case
-  you should not use `by decide`, but rather `by norm_num`, which is
-  much faster.
-  -/
-@[local instance]
-def decidablePrime1 (p : ℕ) : Decidable (Prime p) :=
+If you need to prove that a particular number is prime, in any case
+you should not use `by decide`, but rather `by norm_num`, which is
+much faster.
+-/
+instance decidablePrime (p : ℕ) : Decidable (Prime p) :=
   decidable_of_iff' _ prime_def_lt'
 
 theorem prime_two : Prime 2 := by decide
@@ -154,7 +166,9 @@ theorem prime_three : Prime 3 := by decide
 
 theorem prime_five : Prime 5 := by decide
 
-end
+theorem prime_seven : Prime 7 := by decide
+
+theorem prime_eleven : Prime 11 := by decide
 
 theorem dvd_prime {p m : ℕ} (pp : Prime p) : m ∣ p ↔ m = 1 ∨ m = p :=
   ⟨fun d => pp.eq_one_or_self_of_dvd m d, fun h =>
@@ -305,15 +319,16 @@ theorem prime_def_minFac {p : ℕ} : Prime p ↔ 2 ≤ p ∧ minFac p = p :=
 theorem Prime.minFac_eq {p : ℕ} (hp : Prime p) : minFac p = p :=
   (prime_def_minFac.1 hp).2
 
-/-- This instance is faster in the virtual machine than `decidablePrime1`,
+/--
+This definition is faster in the virtual machine than `decidablePrime`,
 but slower in the kernel.
-
-If you need to prove that a particular number is prime, in any case
-you should not use `by decide`, but rather `by norm_num`, which is
-much faster.
 -/
-instance decidablePrime (p : ℕ) : Decidable (Prime p) :=
+def decidablePrime' (p : ℕ) : Decidable (Prime p) :=
   decidable_of_iff' _ prime_def_minFac
+
+@[csimp] theorem decidablePrime_csimp :
+    @decidablePrime = @decidablePrime' := by
+  funext; apply Subsingleton.elim
 
 theorem not_prime_iff_minFac_lt {n : ℕ} (n2 : 2 ≤ n) : ¬Prime n ↔ minFac n < n :=
   (not_congr <| prime_def_minFac.trans <| and_iff_right n2).trans <|
@@ -421,8 +436,7 @@ instance inhabitedPrimes : Inhabited Primes :=
 instance coeNat : Coe Nat.Primes ℕ :=
   ⟨Subtype.val⟩
 
--- Porting note: change in signature to match change in coercion
-theorem coe_nat_injective : Function.Injective (fun (a : Nat.Primes) ↦ (a : ℕ)) :=
+theorem coe_nat_injective : Function.Injective ((↑) : Nat.Primes → ℕ) :=
   Subtype.coe_injective
 
 theorem coe_nat_inj (p q : Nat.Primes) : (p : ℕ) = (q : ℕ) ↔ p = q :=

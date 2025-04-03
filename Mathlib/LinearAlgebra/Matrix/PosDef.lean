@@ -90,7 +90,7 @@ theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) :
 theorem transpose {M : Matrix n n R} (hM : M.PosSemidef) : Mᵀ.PosSemidef := by
   refine ⟨IsHermitian.transpose hM.1, fun x => ?_⟩
   convert hM.2 (star x) using 1
-  rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
+  rw [mulVec_transpose, dotProduct_mulVec, star_star, dotProduct_comm]
 
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosSemidef) : Mᴴ.PosSemidef := hM.1.symm ▸ hM
 
@@ -106,11 +106,10 @@ protected theorem natCast [StarOrderedRing R] [DecidableEq n] (d : ℕ) :
   ⟨isHermitian_natCast _, fun x => by
     simp only [natCast_mulVec, dotProduct_smul]
     rw [Nat.cast_smul_eq_nsmul]
-    refine nsmul_nonneg (dotProduct_star_self_nonneg _) _⟩
+    exact nsmul_nonneg (dotProduct_star_self_nonneg _) _⟩
 
--- See note [no_index around OfNat.ofNat]
 protected theorem ofNat [StarOrderedRing R] [DecidableEq n] (d : ℕ) [d.AtLeastTwo] :
-    PosSemidef (no_index (OfNat.ofNat d) : Matrix n n R) :=
+    PosSemidef (ofNat(d) : Matrix n n R) :=
   .natCast d
 
 protected theorem intCast [StarOrderedRing R] [DecidableEq n] (d : ℤ) (hd : 0 ≤ d) :
@@ -118,7 +117,7 @@ protected theorem intCast [StarOrderedRing R] [DecidableEq n] (d : ℤ) (hd : 0 
   ⟨isHermitian_intCast _, fun x => by
     simp only [intCast_mulVec, dotProduct_smul]
     rw [Int.cast_smul_eq_zsmul]
-    refine zsmul_nonneg (dotProduct_star_self_nonneg _) hd⟩
+    exact zsmul_nonneg (dotProduct_star_self_nonneg _) hd⟩
 
 @[simp]
 protected theorem _root_.Matrix.posSemidef_intCast_iff
@@ -172,7 +171,7 @@ noncomputable def sqrt : Matrix n n 𝕜 :=
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Custom elaborator to produce output like `(_ : PosSemidef A).sqrt` in the goal view. -/
-@[delab app.Matrix.PosSemidef.sqrt]
+@[app_delab Matrix.PosSemidef.sqrt]
 def delabSqrt : Delab :=
   whenPPOption getPPNotation <|
   whenNotPPOption getPPAnalysisSkip <|
@@ -243,7 +242,7 @@ lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B 
   have aux : star v ⬝ᵥ (A - B) *ᵥ v = 0 := by
     rw [sub_mulVec, dotProduct_sub, h_van.1, h_van.2, sub_zero]
   rw [hv', dotProduct_smul, RCLike.real_smul_eq_coe_mul, ← mul_zero ↑t] at aux
-  exact hv <| Matrix.dotProduct_star_self_eq_zero.mp <| mul_left_cancel₀
+  exact hv <| dotProduct_star_self_eq_zero.mp <| mul_left_cancel₀
     (RCLike.ofReal_ne_zero.mpr ht) aux
 
 lemma sqrt_sq : (hA.pow 2 : PosSemidef (A ^ 2)).sqrt = A :=
@@ -345,7 +344,7 @@ theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
 theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
   refine ⟨IsHermitian.transpose hM.1, fun x hx => ?_⟩
   convert hM.2 (star x) (star_ne_zero.2 hx) using 1
-  rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
+  rw [mulVec_transpose, dotProduct_mulVec, star_star, dotProduct_comm]
 
 protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     {d : n → R} (h : ∀ i, 0 < d i) :
@@ -364,8 +363,8 @@ theorem _root_.Matrix.posDef_diagonal_iff
     PosDef (diagonal d) ↔ ∀ i, 0 < d i := by
   refine ⟨fun h i => ?_, .diagonal⟩
   have := h.2 (Pi.single i 1)
-  simp only [mulVec_single, mul_one, dotProduct_diagonal', Pi.star_apply, Pi.single_eq_same,
-    star_one, one_mul, Function.ne_iff, Pi.zero_apply] at this
+  simp_rw [mulVec_single_one, ← Pi.single_star, star_one, single_dotProduct, one_mul,
+    transpose_apply, diagonal_apply_eq, Function.ne_iff] at this
   exact this ⟨i, by simp⟩
 
 protected theorem one [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R] :
@@ -378,7 +377,7 @@ protected theorem natCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
   ⟨isHermitian_natCast _, fun x hx => by
     simp only [natCast_mulVec, dotProduct_smul]
     rw [Nat.cast_smul_eq_nsmul]
-    refine nsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
+    exact nsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
 @[simp]
 theorem _root_.Matrix.posDef_natCast_iff [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
@@ -386,10 +385,9 @@ theorem _root_.Matrix.posDef_natCast_iff [StarOrderedRing R] [DecidableEq n] [No
     PosDef (d : Matrix n n R) ↔ 0 < d :=
   posDef_diagonal_iff.trans <| by simp
 
--- See note [no_index around OfNat.ofNat]
 protected theorem ofNat [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     (d : ℕ) [d.AtLeastTwo] :
-    PosDef (no_index (OfNat.ofNat d) : Matrix n n R) :=
+    PosDef (ofNat(d) : Matrix n n R) :=
   .natCast d (NeZero.ne _)
 
 protected theorem intCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
@@ -398,7 +396,7 @@ protected theorem intCast [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
   ⟨isHermitian_intCast _, fun x hx => by
     simp only [intCast_mulVec, dotProduct_smul]
     rw [Int.cast_smul_eq_zsmul]
-    refine zsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
+    exact zsmul_pos (dotProduct_star_self_pos_iff.mpr hx) hd⟩
 
 @[simp]
 theorem _root_.Matrix.posDef_intCast_iff [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
@@ -501,22 +499,22 @@ variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 noncomputable abbrev NormedAddCommGroup.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :
     NormedAddCommGroup (n → 𝕜) :=
   @InnerProductSpace.Core.toNormedAddCommGroup _ _ _ _ _
-    { inner := fun x y => dotProduct (star x) (M *ᵥ y)
+    { inner := fun x y => dotProduct (M *ᵥ y) (star x)
       conj_symm := fun x y => by
         dsimp only [Inner.inner]
-        rw [star_dotProduct, starRingEnd_apply, star_star, star_mulVec, dotProduct_mulVec,
-          hM.isHermitian.eq]
+        rw [dotProduct_comm, star_dotProduct, starRingEnd_apply, star_star,
+          star_mulVec, dotProduct_comm (M *ᵥ y), dotProduct_mulVec, hM.isHermitian.eq]
       nonneg_re := fun x => by
         by_cases h : x = 0
         · simp [h]
-        · exact le_of_lt (hM.re_dotProduct_pos h)
+        · exact (dotProduct_comm _ (M *ᵥ x) ▸ hM.re_dotProduct_pos h).le
       definite := fun x (hx : dotProduct _ _ = 0) => by
         by_contra! h
-        simpa [hx, lt_irrefl] using hM.re_dotProduct_pos h
-      add_left := by simp only [star_add, add_dotProduct, eq_self_iff_true, forall_const]
+        simpa [hx, lt_irrefl, dotProduct_comm] using hM.re_dotProduct_pos h
+      add_left := by simp only [star_add, dotProduct_add, eq_self_iff_true, forall_const]
       smul_left := fun x y r => by
         simp only
-        rw [← smul_eq_mul, ← smul_dotProduct, starRingEnd_apply, ← star_smul] }
+        rw [← smul_eq_mul, ← dotProduct_smul, starRingEnd_apply, ← star_smul] }
 
 /-- A positive definite matrix `M` induces an inner product `⟪x, y⟫ = xᴴMy`. -/
 def InnerProductSpace.ofMatrix {M : Matrix n n 𝕜} (hM : M.PosDef) :

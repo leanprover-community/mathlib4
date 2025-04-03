@@ -83,7 +83,7 @@ instance instRootCompTriple {φ : M →* N} {ψ : N  →* P} {χ : M →* P} [κ
 
 /-- `φ`, `ψ` and `ψ.comp φ` form a `MonoidHom.CompTriple`
 
-  (to be used with care, because no simplification is done)-/
+  (to be used with care, because no simplification is done) -/
 theorem comp {φ : M →* N} {ψ : N →* P} :
     CompTriple φ ψ (ψ.comp φ) where
   comp_eq := rfl
@@ -93,7 +93,6 @@ lemma comp_apply
     ψ (φ x) = χ x := by
   rw [← h.comp_eq, MonoidHom.comp_apply]
 
-@[simp]
 theorem comp_assoc {Q : Type*} [Monoid Q]
     {φ₁ : M →* N} {φ₂ : N →* P} {φ₁₂ : M →* P}
     (κ : CompTriple φ₁ φ₂ φ₁₂)

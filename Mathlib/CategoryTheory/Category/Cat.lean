@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 import Mathlib.CategoryTheory.Types
 import Mathlib.CategoryTheory.Bicategory.Strict
 
@@ -133,13 +133,35 @@ lemma associator_inv_app {B C D E : Cat} (F : B ⟶ C) (G : C ⟶ D) (H : D ⟶ 
     (α_ F G H).inv.app X = eqToHom (by simp) :=
   rfl
 
-/-- The identity in the category of categories equals the identity functor.-/
+/-- The identity in the category of categories equals the identity functor. -/
 theorem id_eq_id (X : Cat) : 𝟙 X = 𝟭 X := rfl
 
-/-- Composition in the category of categories equals functor composition.-/
+/-- Composition in the category of categories equals functor composition. -/
 theorem comp_eq_comp {X Y Z : Cat} (F : X ⟶ Y) (G : Y ⟶ Z) : F ≫ G = F ⋙ G := rfl
 
 @[simp] theorem of_α (C) [Category C] : (of C).α = C := rfl
+
+@[simp] theorem coe_of (C : Cat.{v, u}) : Cat.of C = C := rfl
+
+end Cat
+
+namespace Functor
+
+/-- Functors between categories of the same size define arrows in `Cat`. -/
+def toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) :
+    Cat.of C ⟶ Cat.of D := F
+
+/-- Arrows in `Cat` define functors. -/
+def ofCatHom {C D : Type} [Category C] [Category D] (F : Cat.of C ⟶ Cat.of D) : C ⥤ D := F
+
+@[simp] theorem to_ofCatHom {C D : Type} [Category C] [Category D] (F : Cat.of C ⟶ Cat.of D) :
+    (ofCatHom F).toCatHom = F := rfl
+
+@[simp] theorem of_toCatHom {C D : Type} [Category C] [Category D] (F : C ⥤ D) :
+    ofCatHom (F.toCatHom) = F := rfl
+
+end Functor
+namespace Cat
 
 /-- Functor that gets the set of objects of a category. It is not
 called `forget`, because it is not a faithful functor. -/
@@ -182,7 +204,7 @@ def typeToCat : Type u ⥤ Cat where
       simp only [id_eq, eqToHom_refl, Cat.id_map, Category.comp_id, Category.id_comp]
       apply ULift.ext
       aesop_cat
-    · aesop_cat
+    · simp
   map_comp f g := by apply Functor.ext; aesop_cat
 
 instance : Functor.Faithful typeToCat.{u} where

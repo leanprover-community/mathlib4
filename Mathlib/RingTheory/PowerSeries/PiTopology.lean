@@ -31,7 +31,7 @@ of `f` is nilpotent, or vanishes, then the powers of `f` converge to zero.
 converge to zero iff the constant coefficient of `f` is nilpotent.
 
 - `PowerSeries.WithPiTopology.hasSum_of_monomials_self` : viewed as an infinite sum, a power
-series coverges to itself.
+series converges to itself.
 
 TODO: add the similar result for the series of homogeneous components.
 
@@ -39,7 +39,7 @@ TODO: add the similar result for the series of homogeneous components.
 
 - If `R` is a topological (semi)ring, then so is `PowerSeries σ R`.
 - If the topology of `R` is T0 or T2, then so is that of `PowerSeries σ R`.
-- If `R` is a `UniformAddGroup`, then so is `PowerSeries σ R`.
+- If `R` is a `IsUniformAddGroup`, then so is `PowerSeries σ R`.
 - If `R` is complete, then so is `PowerSeries σ R`.
 
 -/
@@ -96,15 +96,15 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
 
 /-- The semiring topology on `PowerSeries` of a topological semiring -/
 @[scoped instance]
-theorem instTopologicalSemiring [Semiring R] [TopologicalSemiring R] :
-    TopologicalSemiring (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instTopologicalSemiring Unit R
+theorem instIsTopologicalSemiring [Semiring R] [IsTopologicalSemiring R] :
+    IsTopologicalSemiring (PowerSeries R) :=
+  MvPowerSeries.WithPiTopology.instIsTopologicalSemiring Unit R
 
 /-- The ring topology on `PowerSeries` of a topological ring -/
 @[scoped instance]
-theorem instTopologicalRing [Ring R] [TopologicalRing R] :
-    TopologicalRing (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instTopologicalRing Unit R
+theorem instIsTopologicalRing [Ring R] [IsTopologicalRing R] :
+    IsTopologicalRing (PowerSeries R) :=
+  MvPowerSeries.WithPiTopology.instIsTopologicalRing Unit R
 
 end WithPiTopology
 
@@ -131,11 +131,13 @@ theorem instCompleteSpace [CompleteSpace R] :
     CompleteSpace (PowerSeries R) :=
   MvPowerSeries.WithPiTopology.instCompleteSpace
 
-/-- The `UniformAddGroup` structure on `PowerSeries` of a `UniformAddGroup` -/
+/-- The `IsUniformAddGroup` structure on `PowerSeries` of a `IsUniformAddGroup` -/
 @[scoped instance]
-theorem instUniformAddGroup [AddGroup R] [UniformAddGroup R] :
-    UniformAddGroup (PowerSeries R) :=
-  MvPowerSeries.WithPiTopology.instUniformAddGroup
+theorem instIsUniformAddGroup [AddGroup R] [IsUniformAddGroup R] :
+    IsUniformAddGroup (PowerSeries R) :=
+  MvPowerSeries.WithPiTopology.instIsUniformAddGroup
+
+@[deprecated (since := "2025-03-27")] alias instUniformAddGroup := instIsUniformAddGroup
 
 end WithPiTopology
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
 import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.Order.Group.Finset
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
@@ -46,14 +47,13 @@ This is different from the radical of an ideal.
 
 noncomputable section
 
-open scoped Classical
-
 namespace UniqueFactorizationMonoid
 
 -- `CancelCommMonoidWithZero` is required by `UniqueFactorizationMonoid`
 variable {M : Type*} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
   [UniqueFactorizationMonoid M]
 
+open scoped Classical in
 /-- The finite set of prime factors of an element in a unique factorization monoid. -/
 def primeFactors (a : M) : Finset M :=
   (normalizedFactors a).toFinset
@@ -73,10 +73,12 @@ def radical (a : M) : M :=
 
 @[simp]
 theorem radical_zero_eq : radical (0 : M) = 1 := by
+  classical
   rw [radical, primeFactors, normalizedFactors_zero, Multiset.toFinset_zero, Finset.prod_empty]
 
 @[simp]
 theorem radical_one_eq : radical (1 : M) = 1 := by
+  classical
   rw [radical, primeFactors, normalizedFactors_one, Multiset.toFinset_zero, Finset.prod_empty]
 
 theorem radical_eq_of_associated {a b : M} (h : Associated a b) : radical a = radical b := by
@@ -93,19 +95,17 @@ theorem radical_mul_of_isUnit_right {a u : M} (h : IsUnit u) : radical (a * u) =
   radical_eq_of_associated (associated_mul_unit_left _ _ h)
 
 theorem primeFactors_pow (a : M) {n : ℕ} (hn : 0 < n) : primeFactors (a ^ n) = primeFactors a := by
-  simp_rw [primeFactors]
-  simp only [normalizedFactors_pow]
-  rw [Multiset.toFinset_nsmul]
-  exact ne_of_gt hn
+  simp_rw [primeFactors, normalizedFactors_pow, Multiset.toFinset_nsmul _ _ hn.ne']
 
 theorem radical_pow (a : M) {n : Nat} (hn : 0 < n) : radical (a ^ n) = radical a := by
   simp_rw [radical, primeFactors_pow a hn]
 
 theorem radical_dvd_self (a : M) : radical a ∣ a := by
+  classical
   by_cases ha : a = 0
   · rw [ha]
     apply dvd_zero
-  · rw [radical, ← Finset.prod_val, ← (normalizedFactors_prod ha).dvd_iff_dvd_right]
+  · rw [radical, ← Finset.prod_val, ← (prod_normalizedFactors ha).dvd_iff_dvd_right]
     apply Multiset.prod_dvd_prod_of_le
     rw [primeFactors, Multiset.toFinset_val]
     apply Multiset.dedup_le
@@ -149,13 +149,15 @@ theorem disjoint_normalizedFactors {a b : R} (hc : IsCoprime a b) :
 
 /-- Coprime elements have disjoint prime factors (as finsets). -/
 theorem disjoint_primeFactors {a b : R} (hc : IsCoprime a b) :
-    Disjoint (primeFactors a) (primeFactors b) :=
-  Multiset.disjoint_toFinset.mpr (disjoint_normalizedFactors hc)
+    Disjoint (primeFactors a) (primeFactors b) := by
+  classical
+  exact Multiset.disjoint_toFinset.mpr (disjoint_normalizedFactors hc)
 
 theorem mul_primeFactors_disjUnion {a b : R} (ha : a ≠ 0) (hb : b ≠ 0)
     (hc : IsCoprime a b) :
     primeFactors (a * b) =
     (primeFactors a).disjUnion (primeFactors b) (disjoint_primeFactors hc) := by
+  classical
   rw [Finset.disjUnion_eq_union]
   simp_rw [primeFactors]
   rw [normalizedFactors_mul ha hb, Multiset.toFinset_add]
@@ -191,10 +193,8 @@ variable {E : Type*} [EuclideanDomain E] [NormalizationMonoid E] [UniqueFactoriz
 def divRadical (a : E) : E := a / radical a
 
 theorem radical_mul_divRadical (a : E) : radical a * divRadical a = a := by
-  rw [divRadical]
-  rw [← EuclideanDomain.mul_div_assoc]
-  ·refine mul_div_cancel_left₀ _ (radical_ne_zero a)
-  exact radical_dvd_self a
+  rw [divRadical, ← EuclideanDomain.mul_div_assoc _ (radical_dvd_self a),
+    mul_div_cancel_left₀ _ (radical_ne_zero a)]
 
 theorem divRadical_mul_radical (a : E) : divRadical a * radical a = a := by
   rw [mul_comm]

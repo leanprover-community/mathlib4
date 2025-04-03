@@ -3,6 +3,7 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.ModuleCat.Limits
@@ -99,9 +100,6 @@ def limitCone : Cone F where
 def limitConeIsLimit : IsLimit (limitCone.{v, w} F) := by
   refine
     IsLimit.ofFaithful (forget (AlgebraCat R)) (Types.Small.limitConeIsLimit.{v, w} _)
-      -- Porting note: in mathlib3 the function term
-      -- `fun v => ⟨fun j => ((forget (AlgebraCat R)).mapCone s).π.app j v`
-      -- was provided by unification, and the last argument `(fun s => _)` was `(fun s => rfl)`.
       (fun s => ofHom
         { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_,
           commutes' := ?_ })
@@ -137,8 +135,6 @@ end HasLimits
 
 open HasLimits
 
--- Porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
--- is a `Prop`, declaring this as `irreducible` should presumably have no effect
 /-- The category of R-algebras has all limits. -/
 lemma hasLimitsOfSize [UnivLE.{v, w}] : HasLimitsOfSize.{t, v} (AlgebraCat.{w} R) :=
   { has_limits_of_shape := fun _ _ =>

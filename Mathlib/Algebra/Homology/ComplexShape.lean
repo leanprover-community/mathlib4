@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Logic.Relation
+import Mathlib.Logic.Function.Basic
 
 /-!
 # Shapes of homological complexes
@@ -167,7 +168,7 @@ lemma prev_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬ c.Rel (c.prev j) j) :
 (For example when `a = 1`, a cohomology theory indexed by `ℕ` or `ℤ`)
 -/
 @[simps]
-def up' {α : Type*} [AddRightCancelSemigroup α] (a : α) : ComplexShape α where
+def up' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α where
   Rel i j := i + a = j
   next_eq hi hj := hi.symm.trans hj
   prev_eq hi hj := add_right_cancel (hi.trans hj.symm)
@@ -176,27 +177,27 @@ def up' {α : Type*} [AddRightCancelSemigroup α] (a : α) : ComplexShape α whe
 (For example when `a = 1`, a homology theory indexed by `ℕ` or `ℤ`)
 -/
 @[simps]
-def down' {α : Type*} [AddRightCancelSemigroup α] (a : α) : ComplexShape α where
+def down' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α where
   Rel i j := j + a = i
   next_eq hi hj := add_right_cancel (hi.trans hj.symm)
   prev_eq hi hj := hi.symm.trans hj
 
-theorem down'_mk {α : Type*} [AddRightCancelSemigroup α] (a : α) (i j : α) (h : j + a = i) :
+theorem down'_mk {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) (i j : α) (h : j + a = i) :
     (down' a).Rel i j := h
 
 /-- The `ComplexShape` appropriate for cohomology, so `d : X i ⟶ X j` only when `j = i + 1`.
 -/
 @[simps!]
-def up (α : Type*) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
+def up (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α :=
   up' 1
 
 /-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
 -/
 @[simps!]
-def down (α : Type*) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
+def down (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α :=
   down' 1
 
-theorem down_mk {α : Type*} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
+theorem down_mk {α : Type*} [Add α] [IsRightCancelAdd α] [One α] (i j : α) (h : j + 1 = i) :
     (down α).Rel i j :=
   down'_mk (1 : α) i j h
 
