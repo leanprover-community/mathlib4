@@ -439,8 +439,8 @@ variable (K L : Type*) [Field K] [CharZero K]
 --  eq_top_of_invtSubmodule_reflection (q : Submodule R M) :
 --    (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤
 
-lemma invtSubmodule_reflection (q : Submodule K (Module.Dual K H)) :
-    (∀ (i : H.root), q ∈ Module.End.invtSubmodule
+lemma invtSubmodule_reflection:
+   ∀ (q : Submodule K (Module.Dual K H)), (∀ (i : H.root), q ∈ Module.End.invtSubmodule
       ((LieAlgebra.IsKilling.rootSystem H).reflection i)) → q ≠ ⊥ → q = ⊤ := by
   let S := (LieAlgebra.IsKilling.rootSystem H)
   by_contra!
@@ -474,8 +474,7 @@ instance : (LieAlgebra.IsKilling.rootSystem H).IsIrreducible where
     have := LieSubalgebra.ne_bot_of_isCartanSubalgebra H
     exact LieSubalgebra.instNontrivialSubtypeMemOfIsCartanSubalgebra H
   eq_top_of_invtSubmodule_reflection := by
-    intro q
-    exact invtSubmodule_reflection K L H q
+    exact invtSubmodule_reflection K L H
   eq_top_of_invtSubmodule_coreflection := sorry
 
 end jjj
