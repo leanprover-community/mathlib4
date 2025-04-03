@@ -128,7 +128,7 @@ def matricesOver (c : RingCon R) : RingCon (Matrix n n R) where
   iseqv.symm h := fun _ _ => c.symm <| h _ _
   iseqv.trans h₁ h₂ := fun _ _ => c.trans (h₁ _ _) (h₂ _ _)
   add' h₁ h₂ := fun _ _ => c.add (h₁ _ _) (h₂ _ _)
-  mul' h₁ h₂ := fun _ _ => c.toAddCon.finset_sum _ fun _ _ => c.mul (h₁ _ _) (h₂ _ _)
+  mul' h₁ h₂ := fun _ _ => c.finset_sum _ fun _ _ => c.mul (h₁ _ _) (h₂ _ _)
 
 @[simp]
 theorem matricesOver_apply (c : RingCon R) (M N : Matrix n n R) :
@@ -157,34 +157,30 @@ open Matrix
 variable {n}
 
 /-- The congruence relation induced by `c` on `stdBasisMatrix i j`. -/
-def ofMatricesOver (c : RingCon (Matrix n n R)) (i j : n) : RingCon R where
-  r x y := c (by classical exact stdBasisMatrix i j x) (by classical exact stdBasisMatrix i j y)
-  __ := c.toAddCon.comap
-    (by classical exact stdBasisMatrix i j) (by classical exact stdBasisMatrix_add _ _)
-  mul' {x₁ x₂ y₁ y₂} hx hy := by
-    classical
-    replace hx := c.mul hx (c.refl <| diagonal fun _ => y₁)
-    replace hy := c.mul (c.refl <| diagonal fun _ => x₂) hy
-    simp_rw [← op_smul_eq_mul_diagonal, smul_stdBasisMatrix, op_smul_eq_mul] at hx
-    simp_rw [← smul_eq_diagonal_mul, smul_stdBasisMatrix, smul_eq_mul] at hy
-    exact c.trans hx hy
+def ofMatricesOver [DecidableEq n] (c : RingCon (Matrix n n R)) : RingCon R where
+  r x y := ∀ i j, c (stdBasisMatrix i j x) (stdBasisMatrix i j y)
+  iseqv.refl _ := fun _ _ => c.refl _
+  iseqv.symm h := fun _ _ => c.symm <| h _ _
+  iseqv.trans h₁ h₂ := fun _ _ => c.trans (h₁ _ _) (h₂ _ _)
+  add' h₁ h₂ := fun _ _ => by simpa [stdBasisMatrix_add] using c.add (h₁ _ _) (h₂ _ _)
+  mul' h₁ h₂ := fun i j => by simpa using c.mul (h₁ i i) (h₂ i j)
 
 @[simp]
-theorem ofMatricesOver_rel [DecidableEq n] {c : RingCon (Matrix n n R)} {i j : n} {x y : R} :
-    ofMatricesOver c i j x y ↔ c (stdBasisMatrix i j x) (stdBasisMatrix i j y) := by
-  simp [ofMatricesOver]
-  congr!
+theorem ofMatricesOver_rel [DecidableEq n] {c : RingCon (Matrix n n R)} {x y : R} :
+    ofMatricesOver c x y ↔ ∀ i j, c (stdBasisMatrix i j x) (stdBasisMatrix i j y) :=
+  Iff.rfl
 
-@[simp] theorem ofMatricesOver_matricesOver (c : RingCon R) (i j : n) :
-    ofMatricesOver (matricesOver n c) i j = c := by
+@[simp] theorem ofMatricesOver_matricesOver [DecidableEq n] [Nonempty n] (c : RingCon R) :
+    ofMatricesOver (matricesOver n c) = c := by
   ext x y
   classical
   constructor
   · intro h
-    simpa using h i j
-  · intro h i' j'
+    inhabit n
+    simpa using h default default default default
+  · intro h i j i' j'
     obtain hi | rfl := ne_or_eq i i'
-    · simpa [hi] using c.refl _
+    · simpa [hi] using c.refl 0
     obtain hj | rfl := ne_or_eq j j'
     · simpa [hj] using c.refl _
     simpa using h
@@ -196,17 +192,15 @@ variable [NonAssocSemiring R] [Fintype n]
 open Matrix
 
 @[simp]
-theorem matricesOver_ofMatricesOver (c : RingCon (Matrix n n R)) (i j : n) :
-    matricesOver n (ofMatricesOver c i j) = c := by
+theorem matricesOver_ofMatricesOver [DecidableEq n] (c : RingCon (Matrix n n R)) :
+    matricesOver n (ofMatricesOver c) = c := by
   ext x y
   classical
   constructor
   · intro h
     rw [matrix_eq_sum_stdBasisMatrix x, matrix_eq_sum_stdBasisMatrix y]
-    refine c.finset_sum _ fun i' _ => c.finset_sum _ fun j' _ => ?_
-    simpa using
-      c.mul (c.mul (c.refl <| stdBasisMatrix i' i 1) (h i' j')) (c.refl <| stdBasisMatrix j j' 1)
-  · intro h i' j'
+    refine c.finset_sum _ fun i _ => c.finset_sum _ fun j _ => h i j i j
+  · intro h i' j' i j
     simpa using c.mul (c.mul (c.refl <| stdBasisMatrix i i' 1) h) (c.refl <| stdBasisMatrix j' j 1)
 
 end NonAssocSemiring
@@ -251,7 +245,7 @@ theorem matricesOver_top : (⊤ : TwoSidedIdeal R).matricesOver n = ⊤ :=
 end NonUnitalNonAssocRing
 
 section NonAssocRing
-variable [NonAssocRing R] [Fintype n]
+variable [NonAssocRing R] [Fintype n] [Nonempty n] [DecidableEq n]
 
 variable {n}
 
@@ -261,25 +255,25 @@ Given an ideal $I ≤ R$, we send it to $Mₙ(I)$.
 Given an ideal $J ≤ Mₙ(R)$, we send it to $\{Nᵢⱼ ∣ ∃ N ∈ J\}$.
 -/
 @[simps]
-def equivMatricesOver (i j : n) : TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n R) where
+def equivMatricesOver [Nonempty n] [DecidableEq n] :
+    TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n R) where
   toFun I := I.matricesOver n
-  invFun J := { ringCon := J.ringCon.ofMatricesOver i j}
-  right_inv _ := ringCon_injective <| RingCon.matricesOver_ofMatricesOver _ _ _
-  left_inv _ := ringCon_injective <| RingCon.ofMatricesOver_matricesOver _ _ _
+  invFun J := { ringCon := J.ringCon.ofMatricesOver}
+  right_inv _ := ringCon_injective <| RingCon.matricesOver_ofMatricesOver _
+  left_inv _ := ringCon_injective <| RingCon.ofMatricesOver_matricesOver _
 
 /--
 Two-sided ideals in $R$ are order-isomorphic with those in $Mₙ(R)$.
 See also `equivMatricesOver`.
 -/
 @[simps!]
-def orderIsoMatricesOver (i j : n) : TwoSidedIdeal R ≃o TwoSidedIdeal (Matrix n n R) where
-  __ := equivMatricesOver i j
+def orderIsoMatricesOver : TwoSidedIdeal R ≃o TwoSidedIdeal (Matrix n n R) where
+  __ := equivMatricesOver
   map_rel_iff' {I J} := by
     simp only [equivMatricesOver_apply]
     constructor
     · intro le x xI
       specialize @le (of fun _ _ => x) (by simp [xI])
-      letI : Inhabited n := ⟨i⟩
       simpa using le
     · intro IJ M MI i j
       exact IJ <| MI i j
