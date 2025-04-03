@@ -1,4 +1,4 @@
-import Mathlib
+import Mathlib.Init
 
 set_option autoImplicit false
 
@@ -17,9 +17,6 @@ structure AutoIndPrincipleConfig where
 
 instance : Repr AutoIndPrincipleConfig where
   reprPrec x := reprPrec x.dischargers.toList
-
-/-- Function elaborating `GradingTargetConfig` -/
-declare_command_config_elab elabAutoIndPrincipleConfig AutoIndPrincipleConfig
 
 structure AutoIndPrinciple extends AutoIndPrincipleConfig where
   name : Name
