@@ -36,7 +36,7 @@ section SuccOrder
 variable [SuccOrder α] {a b : α}
 
 /-!
-#### Not `NoMaxOrder`
+#### Orders possibly with maximal elements
 
 ##### Comparing different intervals
 -/
@@ -77,7 +77,7 @@ lemma insert_Ico_succ_left_eq_Ico (h : a < b) : insert a (Ico (succ a) b) = Ico 
   rw [Ico_succ_left_of_not_isMax h.not_isMax, ← Ioo_insert_left h]
 
 /-!
-#### `NoMaxOrder`
+#### Orders with no maximal elements
 
 ##### Comparing different intervals
 -/

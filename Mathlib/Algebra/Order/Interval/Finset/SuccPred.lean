@@ -40,7 +40,7 @@ section SuccAddOrder
 variable [Add α] [SuccAddOrder α] {a b : α}
 
 /-!
-#### Not `NoMaxOrder`
+#### Orders possibly with maximal elements
 
 ##### Comparing different intervals
 -/
@@ -78,7 +78,7 @@ lemma insert_Ico_add_one_left_eq_Ico (h : a < b) : insert a (Ico (a + 1) b) = Ic
   simpa [succ_eq_add_one] using insert_Ico_succ_left_eq_Ico h
 
 /-!
-#### `NoMaxOrder`
+#### Orders with no maximal elements
 
 ##### Comparing different intervals
 -/

@@ -39,7 +39,7 @@ section SuccOrder
 variable [SuccOrder α] {a b : α}
 
 /-!
-#### Not `NoMaxOrder`
+#### Orders possibly with maximal elements
 
 ##### Comparing different intervals
 -/
@@ -76,7 +76,7 @@ lemma insert_Ico_succ_left_eq_Ico (h : a < b) : insert a (Ico (succ a) b) = Ico 
   coe_injective <| by simpa using Set.insert_Ico_succ_left_eq_Ico h
 
 /-!
-#### `NoMaxOrder`
+#### Orders with no maximal elements
 
 ##### Comparing different intervals
 -/
