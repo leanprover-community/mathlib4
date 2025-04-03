@@ -47,12 +47,12 @@ This file contains the basic theory for the resolvent and spectrum of a Banach a
 
 open scoped ENNReal NNReal
 
-open NormedSpace -- For `exp`.
+open NormedSpace -- For `NormedSpace.exp`.
 
 /-- The *spectral radius* is the supremum of the `nnnorm` (`‖·‖₊`) of elements in the spectrum,
     coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 𝕜 a = ∅`. In this
     case, `spectralRadius a = 0`. It is also possible that `spectrum 𝕜 a` be unbounded (though
-    not for Banach algebras, see `spectrum.is_bounded`, below).  In this case,
+    not for Banach algebras, see `spectrum.isBounded`, below).  In this case,
     `spectralRadius a = ∞`. -/
 noncomputable def spectralRadius (𝕜 : Type*) {A : Type*} [NormedField 𝕜] [Ring A] [Algebra 𝕜 A]
     (a : A) : ℝ≥0∞ :=

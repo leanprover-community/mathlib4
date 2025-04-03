@@ -10,9 +10,9 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
 #align_import analysis.normed_space.quaternion_exponential from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
-# Lemmas about `exp` on `Quaternion`s
+# Lemmas about `NormedSpace.exp` on `Quaternion`s
 
-This file contains results about `exp` on `Quaternion ℝ`.
+This file contains results about `NormedSpace.exp` on `Quaternion ℝ`.
 
 ## Main results
 
@@ -137,7 +137,7 @@ theorem normSq_exp (q : ℍ[ℝ]) : normSq (exp q) = exp q.re ^ 2 :=
 #align quaternion.norm_sq_exp Quaternion.normSq_exp
 
 /-- Note that this implies that exponentials of pure imaginary quaternions are unit quaternions
-since in that case the RHS is `1` via `exp_zero` and `norm_one`. -/
+since in that case the RHS is `1` via `NormedSpace.exp_zero` and `norm_one`. -/
 @[simp]
 theorem norm_exp (q : ℍ[ℝ]) : ‖exp q‖ = ‖exp q.re‖ := by
   rw [norm_eq_sqrt_real_inner (exp q), inner_self, normSq_exp, Real.sqrt_sq_eq_abs,

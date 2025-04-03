@@ -39,9 +39,9 @@ summability of the norms, this implies the overall convergence.
 ## Main results
 
 * `q.comp p` is the formal composition of the formal multilinear series `q` and `p`.
-* `has_fpower_series_at.comp` states that if two functions `g` and `f` admit power series expansions
+* `HasFPowerSeriesAt.comp` states that if two functions `g` and `f` admit power series expansions
   `q` and `p`, then `g ∘ f` admits a power series expansion given by `q.comp p`.
-* `analytic_at.comp` states that the composition of analytic functions is analytic.
+* `AnalyticAt.comp` states that the composition of analytic functions is analytic.
 * `FormalMultilinearSeries.comp_assoc` states that composition is associative on formal
   multilinear series.
 
@@ -49,18 +49,18 @@ summability of the norms, this implies the overall convergence.
 
 The main technical difficulty is to write down things. In particular, we need to define precisely
 `q.comp_along_composition p c` and to show that it is indeed a continuous multilinear
-function. This requires a whole interface built on the class `composition`. Once this is set,
+function. This requires a whole interface built on the class `Composition`. Once this is set,
 the main difficulty is to reorder the sums, writing the composition of the partial sums as a sum
 over some subset of `Σ n, composition n`. We need to check that the reordering is a bijection,
 running over difficulties due to the dependent nature of the types under consideration, that are
-controlled thanks to the interface for `composition`.
+controlled thanks to the interface for `Composition`.
 
 The associativity of composition on formal multilinear series is a nontrivial result: it does not
 follow from the associativity of composition of analytic functions, as there is no uniqueness for
 the formal multilinear series representing a function (and also, it holds even when the radius of
 convergence of the series is `0`). Instead, we give a direct proof, which amounts to reordering
 double sums in a careful way. The change of variables is a canonical (combinatorial) bijection
-`composition.sigma_equiv_sigma_pi` between `(Σ (a : composition n), composition a.length)` and
+`Composition.sigmaEquivSigmaPi` between `(Σ (a : composition n), composition a.length)` and
 `(Σ (c : composition n), Π (i : fin c.length), composition (c.blocks_fun i))`, and is described
 in more details below in the paragraph on associativity.
 -/

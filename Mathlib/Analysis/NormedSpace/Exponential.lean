@@ -32,30 +32,30 @@ We prove most result for an arbitrary field `𝕂`, and then specialize to `𝕂
 
 ### General case
 
-- `exp_add_of_commute_of_mem_ball` : if `𝕂` has characteristic zero, then given two commuting
-  elements `x` and `y` in the disk of convergence, we have
+- `NormedSpace.exp_add_of_commute_of_mem_ball` : if `𝕂` has characteristic zero,
+  then given two commuting elements `x` and `y` in the disk of convergence, we have
   `exp (x+y) = (exp x) * (exp y)`
-- `exp_add_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is commutative, then given two
-  elements `x` and `y` in the disk of convergence, we have
+- `NormedSpace.exp_add_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is commutative,
+  then given two elements `x` and `y` in the disk of convergence, we have
   `exp (x+y) = (exp x) * (exp y)`
-- `exp_neg_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is a division ring, then given an
-  element `x` in the disk of convergence, we have `exp (-x) = (exp x)⁻¹`.
+- `NormedSpace.exp_neg_of_mem_ball` : if `𝕂` has characteristic zero and `𝔸` is a division ring,
+  then given an element `x` in the disk of convergence, we have `exp (-x) = (exp x)⁻¹`.
 
 ### `𝕂 = ℝ` or `𝕂 = ℂ`
 
 - `expSeries_radius_eq_top` : the `FormalMultilinearSeries` defining `exp` has infinite
   radius of convergence
-- `exp_add_of_commute` : given two commuting elements `x` and `y`, we have
+- `NormedSpace.exp_add_of_commute` : given two commuting elements `x` and `y`, we have
   `exp (x+y) = (exp x) * (exp y)`
-- `exp_add` : if `𝔸` is commutative, then we have `exp (x+y) = (exp x) * (exp y)`
+- `NormedSpace.exp_add` : if `𝔸` is commutative, then we have `exp (x+y) = (exp x) * (exp y)`
   for any `x` and `y`
-- `exp_neg` : if `𝔸` is a division ring, then we have `exp (-x) = (exp x)⁻¹`.
-- `exp_sum_of_commute` : the analogous result to `exp_add_of_commute` for `Finset.sum`.
-- `exp_sum` : the analogous result to `exp_add` for `Finset.sum`.
-- `exp_nsmul` : repeated addition in the domain corresponds to repeated multiplication in the
-  codomain.
-- `exp_zsmul` : repeated addition in the domain corresponds to repeated multiplication in the
-  codomain.
+- `NormedSpace.exp_neg` : if `𝔸` is a division ring, then we have `exp (-x) = (exp x)⁻¹`.
+- `exp_sum_of_commute` : the analogous result to `NormedSpace.exp_add_of_commute` for `Finset.sum`.
+- `exp_sum` : the analogous result to `NormedSpace.exp_add` for `Finset.sum`.
+- `NormedSpace.exp_nsmul` : repeated addition in the domain corresponds to
+  repeated multiplication in the codomain.
+- `NormedSpace.exp_zsmul` : repeated addition in the domain corresponds to
+  repeated multiplication in the codomain.
 
 ### Notes
 
@@ -71,7 +71,7 @@ open Real
 #time example (x : ℝ) : 0 < exp x      := exp_pos _ -- 250ms
 #time example (x : ℝ) : 0 < Real.exp x := exp_pos _ -- 2ms
 ```
-This is because `exp x` tries the `exp` function defined here,
+This is because `exp x` tries the `NormedSpace.exp` function defined here,
 and generates a slow coercion search from `Real` to `Type`, to fit the first argument here.
 We will resolve this slow coercion separately,
 but we want to move `exp` out of the root namespace in any case to avoid this ambiguity.
@@ -567,7 +567,7 @@ theorem exp_nsmul (n : ℕ) (x : 𝔸) : exp (n • x) = exp x ^ n := by
   · rw [succ_nsmul, pow_succ, exp_add_of_commute 𝕂 ((Commute.refl x).smul_left n), ih]
 #align exp_nsmul NormedSpace.exp_nsmul
 
-/-- Any continuous ring homomorphism commutes with `exp`. -/
+/-- Any continuous ring homomorphism commutes with `NormedSpace.exp`. -/
 theorem map_exp {F} [FunLike F 𝔸 𝔹] [RingHomClass F 𝔸 𝔹] (f : F) (hf : Continuous f) (x : 𝔸) :
     f (exp x) = exp (f x) :=
   map_exp_of_mem_ball 𝕂 f hf x <| (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
@@ -686,7 +686,7 @@ theorem exp_add {x y : 𝔸} : exp (x + y) = exp x * exp y :=
     ((expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _)
 #align exp_add NormedSpace.exp_add
 
-/-- A version of `exp_sum_of_commute` for a commutative Banach-algebra. -/
+/-- A version of `NormedSpace.exp_sum_of_commute` for a commutative Banach-algebra. -/
 theorem exp_sum {ι} (s : Finset ι) (f : ι → 𝔸) : exp (∑ i in s, f i) = ∏ i in s, exp (f i) := by
   rw [exp_sum_of_commute 𝕂, Finset.noncommProd_eq_prod]
   exact fun i _hi j _hj _ => Commute.all _ _
@@ -710,10 +710,7 @@ theorem expSeries_eq_expSeries (n : ℕ) (x : 𝔸) :
   rw [expSeries_apply_eq, expSeries_apply_eq, inv_nat_cast_smul_eq 𝕂 𝕂']
 #align exp_series_eq_exp_series NormedSpace.expSeries_eq_expSeries
 
-#noalign exp_eq_exp
-#noalign exp_ℝ_ℂ_eq_exp_ℂ_ℂ
-
-/-- A version of `Complex.ofReal_exp` for `exp` instead of `Complex.exp` -/
+/-- A version of `Complex.ofReal_exp` for `NormedSpace.exp` instead of `Complex.exp` -/
 @[simp, norm_cast]
 theorem of_real_exp_ℝ_ℝ (r : ℝ) : ↑(exp r) = exp (r : ℂ) :=
   map_exp ℝ (algebraMap ℝ ℂ) (continuous_algebraMap _ _) r
