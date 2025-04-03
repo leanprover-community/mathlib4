@@ -535,7 +535,7 @@ theorem CompleteLocalRing.weierstrass_preparation [m.IsMaximal] [comp : IsAdicCo
     exact sub_eq_zero.mp <| IsHausdorff.haus IsAdicComplete.toIsHausdorff
       (H.1.coeff R i - h.coeff R i) (fun n ↦ SModEq.zero.mpr (SModEq.sub_mem.mp (coeff_modeq' n)))
 
-lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m.IsMaximal]
+lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [m.IsMaximal]
     [IsAdicComplete m R] {π : R} (prin : Ideal.span {π} = m) {f : R⟦X⟧}
     (ne0 : f ≠ 0) (pi_ne0 : π ≠ 0): ∃! khg : ℕ × R⟦X⟧ˣ × R[X],
     khg.2.2.IsDistinguishedAt m ∧ f = (π ^ khg.1) • (khg.2.2 * khg.2.1) := by
@@ -577,13 +577,6 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
   refine ⟨⟨distinguish, by rw [← eq, f'_spec]⟩, ?_⟩
   intro (k', h', g') h_khg'
   rcases h_khg' with ⟨distinguish', eq'⟩
-  have mapg : g'.map (Ideal.Quotient.mk m) = Polynomial.X ^ g'.natDegree := by
-    ext i
-    by_cases ne : i = g'.natDegree
-    · simp [ne, distinguish'.monic]
-    · rcases lt_or_gt_of_ne ne with lt|gt
-      · simpa [ne] using eq_zero_iff_mem.mpr (distinguish'.mem lt)
-      · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
   have : Nat.find exist_nmem = k' + 1 := by
     apply (Nat.find_eq_iff exist_nmem).mpr
     constructor
@@ -591,8 +584,8 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
       simp only [eq', map_smul, smul_eq_mul]
       have nmem : (g' * h'.1).coeff R g'.natDegree ∉ m := by
         simpa [← eq_zero_iff_mem.not, ← coeff_map, map_mul, ← Polynomial.polynomial_map_coe,
-          mapg, Polynomial.coe_pow, Polynomial.coe_X, coeff_X_pow_mul'] using
-          ((Ideal.Quotient.mk m).isUnit_map (isUnit_constantCoeff h'.1 h'.isUnit)).ne_zero
+          map_eq_X_pow g' distinguish', Polynomial.coe_pow, Polynomial.coe_X, coeff_X_pow_mul']
+          using ((Ideal.Quotient.mk m).isUnit_map (isUnit_constantCoeff h'.1 h'.isUnit)).ne_zero
       by_contra h
       rw [← prin, Ideal.span_singleton_pow, Ideal.mem_span_singleton] at h
       absurd nmem
