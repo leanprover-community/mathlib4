@@ -3,12 +3,11 @@ Copyright (c) 2020 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
-import Mathlib.Order.Chain
 import Mathlib.Order.Cofinal
-import Mathlib.Order.UpperLower.Basic
-import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma
@@ -312,6 +311,13 @@ theorem sup_mem (hx : x ∈ s) (hy : y ∈ s) : x ⊔ y ∈ s :=
 @[simp]
 theorem sup_mem_iff : x ⊔ y ∈ I ↔ x ∈ I ∧ y ∈ I :=
   ⟨fun h ↦ ⟨I.lower le_sup_left h, I.lower le_sup_right h⟩, fun h ↦ sup_mem h.1 h.2⟩
+
+@[simp]
+lemma Order.Ideal.finsetSup_mem_iff {P : Type*} [SemilatticeSup P] [OrderBot P]
+    (t : Ideal P) {ι : Type*}
+    {f : ι → P} {s : Finset ι} : s.sup f ∈ t ↔ ∀ i ∈ s, f i ∈ t := by
+  classical
+  induction s using Finset.induction_on <;> simp [*]
 
 end SemilatticeSup
 

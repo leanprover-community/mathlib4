@@ -231,9 +231,10 @@ theorem nhds_of_Ici_Iic [LinearOrder α] {b : α}
     (inter_mem hL self_mem_nhdsWithin) (inter_mem hR self_mem_nhdsWithin)
 
 theorem nhdsWithin_biUnion {ι} {I : Set ι} (hI : I.Finite) (s : ι → Set α) (a : α) :
-    𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a :=
-  Set.Finite.induction_on _ hI (by simp) fun _ _ hT ↦ by
-    simp only [hT, nhdsWithin_union, iSup_insert, biUnion_insert]
+    𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a := by
+  induction I, hI using Set.Finite.induction_on with
+  | empty => simp
+  | insert _ _ hT => simp only [hT, nhdsWithin_union, iSup_insert, biUnion_insert]
 
 theorem nhdsWithin_sUnion {S : Set (Set α)} (hS : S.Finite) (a : α) :
     𝓝[⋃₀ S] a = ⨆ s ∈ S, 𝓝[s] a := by
@@ -1021,7 +1022,7 @@ theorem ContinuousAt.comp₂_continuousWithinAt {f : β × γ → δ} {g : α �
     {s : Set α} (hf : ContinuousAt f (g x, h x)) (hg : ContinuousWithinAt g s x)
     (hh : ContinuousWithinAt h s x) :
     ContinuousWithinAt (fun x ↦ f (g x, h x)) s x :=
-  ContinuousAt.comp_continuousWithinAt hf (hg.prod_mk_nhds hh)
+  ContinuousAt.comp_continuousWithinAt hf (hg.prodMk_nhds hh)
 
 theorem ContinuousAt.comp₂_continuousWithinAt_of_eq {f : β × γ → δ} {g : α → β}
     {h : α → γ} {x : α} {s : Set α} {y : β × γ} (hf : ContinuousAt f y)
@@ -1029,7 +1030,6 @@ theorem ContinuousAt.comp₂_continuousWithinAt_of_eq {f : β × γ → δ} {g :
     ContinuousWithinAt (fun x ↦ f (g x, h x)) s x := by
   rw [← e] at hf
   exact hf.comp₂_continuousWithinAt hg hh
-
 
 /-!
 ### Image
@@ -1064,12 +1064,72 @@ theorem ContinuousOn.image_closure (hf : ContinuousOn f (closure s)) :
 ### Product
 -/
 
-theorem ContinuousWithinAt.prod_map {f : α → γ} {g : β → δ} {s : Set α} {t : Set β} {x : α} {y : β}
+theorem ContinuousWithinAt.prodMk {f : α → β} {g : α → γ} {s : Set α} {x : α}
+    (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
+    ContinuousWithinAt (fun x => (f x, g x)) s x :=
+  hf.prodMk_nhds hg
+
+@[deprecated (since := "2025-03-10")]
+alias ContinuousWithinAt.prod := ContinuousWithinAt.prodMk
+
+@[fun_prop]
+theorem ContinuousOn.prodMk {f : α → β} {g : α → γ} {s : Set α} (hf : ContinuousOn f s)
+    (hg : ContinuousOn g s) : ContinuousOn (fun x => (f x, g x)) s := fun x hx =>
+  (hf x hx).prodMk (hg x hx)
+
+@[deprecated (since := "2025-03-10")]
+alias ContinuousOn.prod := ContinuousOn.prodMk
+
+theorem continuousOn_fst {s : Set (α × β)} : ContinuousOn Prod.fst s :=
+  continuous_fst.continuousOn
+
+theorem continuousWithinAt_fst {s : Set (α × β)} {p : α × β} : ContinuousWithinAt Prod.fst s p :=
+  continuous_fst.continuousWithinAt
+
+@[fun_prop]
+theorem ContinuousOn.fst {f : α → β × γ} {s : Set α} (hf : ContinuousOn f s) :
+    ContinuousOn (fun x => (f x).1) s :=
+  continuous_fst.comp_continuousOn hf
+
+theorem ContinuousWithinAt.fst {f : α → β × γ} {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
+    ContinuousWithinAt (fun x => (f x).fst) s a :=
+  continuousAt_fst.comp_continuousWithinAt h
+
+theorem continuousOn_snd {s : Set (α × β)} : ContinuousOn Prod.snd s :=
+  continuous_snd.continuousOn
+
+theorem continuousWithinAt_snd {s : Set (α × β)} {p : α × β} : ContinuousWithinAt Prod.snd s p :=
+  continuous_snd.continuousWithinAt
+
+@[fun_prop]
+theorem ContinuousOn.snd {f : α → β × γ} {s : Set α} (hf : ContinuousOn f s) :
+    ContinuousOn (fun x => (f x).2) s :=
+  continuous_snd.comp_continuousOn hf
+
+theorem ContinuousWithinAt.snd {f : α → β × γ} {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
+    ContinuousWithinAt (fun x => (f x).snd) s a :=
+  continuousAt_snd.comp_continuousWithinAt h
+
+theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} :
+    ContinuousWithinAt f s x ↔
+      ContinuousWithinAt (Prod.fst ∘ f) s x ∧ ContinuousWithinAt (Prod.snd ∘ f) s x :=
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prodMk h2⟩
+
+theorem ContinuousWithinAt.prodMap {f : α → γ} {g : β → δ} {s : Set α} {t : Set β} {x : α} {y : β}
     (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g t y) :
-    ContinuousWithinAt (Prod.map f g) (s ×ˢ t) (x, y) := by
-  unfold ContinuousWithinAt at *
-  rw [nhdsWithin_prod_eq, Prod.map, nhds_prod_eq]
-  exact hf.prod_map hg
+    ContinuousWithinAt (Prod.map f g) (s ×ˢ t) (x, y) :=
+  .prodMk (hf.comp continuousWithinAt_fst mapsTo_fst_prod)
+    (hg.comp continuousWithinAt_snd mapsTo_snd_prod)
+
+@[deprecated (since := "2025-03-10")]
+alias ContinuousWithinAt.prod_map := ContinuousWithinAt.prodMap
+
+theorem ContinuousOn.prodMap {f : α → γ} {g : β → δ} {s : Set α} {t : Set β} (hf : ContinuousOn f s)
+    (hg : ContinuousOn g t) : ContinuousOn (Prod.map f g) (s ×ˢ t) := fun ⟨x, y⟩ ⟨hx, hy⟩ =>
+  (hf x hx).prodMap (hg y hy)
+
+@[deprecated (since := "2025-03-10")]
+alias ContinuousOn.prod_map := ContinuousOn.prodMap
 
 theorem continuousWithinAt_prod_of_discrete_left [DiscreteTopology α]
     {f : α × β → γ} {s : Set (α × β)} {x : α × β} :
@@ -1118,55 +1178,6 @@ theorem isOpenMap_prod_of_discrete_right [DiscreteTopology β] {f : α × β →
     IsOpenMap f ↔ ∀ b, IsOpenMap (f ⟨·, b⟩) := by
   simp_rw [isOpenMap_iff_nhds_le, Prod.forall, forall_swap (α := α) (β := β), nhds_prod_eq,
     nhds_discrete, prod_pure, map_map]; rfl
-
-theorem ContinuousOn.prod_map {f : α → γ} {g : β → δ} {s : Set α} {t : Set β}
-    (hf : ContinuousOn f s) (hg : ContinuousOn g t) : ContinuousOn (Prod.map f g) (s ×ˢ t) :=
-  fun ⟨x, y⟩ ⟨hx, hy⟩ => ContinuousWithinAt.prod_map (hf x hx) (hg y hy)
-
-theorem ContinuousWithinAt.prod {f : α → β} {g : α → γ} {s : Set α} {x : α}
-    (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (fun x => (f x, g x)) s x :=
-  hf.prod_mk_nhds hg
-
-@[fun_prop]
-theorem ContinuousOn.prod {f : α → β} {g : α → γ} {s : Set α} (hf : ContinuousOn f s)
-    (hg : ContinuousOn g s) : ContinuousOn (fun x => (f x, g x)) s := fun x hx =>
-  ContinuousWithinAt.prod (hf x hx) (hg x hx)
-
-theorem continuousOn_fst {s : Set (α × β)} : ContinuousOn Prod.fst s :=
-  continuous_fst.continuousOn
-
-theorem continuousWithinAt_fst {s : Set (α × β)} {p : α × β} : ContinuousWithinAt Prod.fst s p :=
-  continuous_fst.continuousWithinAt
-
-@[fun_prop]
-theorem ContinuousOn.fst {f : α → β × γ} {s : Set α} (hf : ContinuousOn f s) :
-    ContinuousOn (fun x => (f x).1) s :=
-  continuous_fst.comp_continuousOn hf
-
-theorem ContinuousWithinAt.fst {f : α → β × γ} {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
-    ContinuousWithinAt (fun x => (f x).fst) s a :=
-  continuousAt_fst.comp_continuousWithinAt h
-
-theorem continuousOn_snd {s : Set (α × β)} : ContinuousOn Prod.snd s :=
-  continuous_snd.continuousOn
-
-theorem continuousWithinAt_snd {s : Set (α × β)} {p : α × β} : ContinuousWithinAt Prod.snd s p :=
-  continuous_snd.continuousWithinAt
-
-@[fun_prop]
-theorem ContinuousOn.snd {f : α → β × γ} {s : Set α} (hf : ContinuousOn f s) :
-    ContinuousOn (fun x => (f x).2) s :=
-  continuous_snd.comp_continuousOn hf
-
-theorem ContinuousWithinAt.snd {f : α → β × γ} {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
-    ContinuousWithinAt (fun x => (f x).snd) s a :=
-  continuousAt_snd.comp_continuousWithinAt h
-
-theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} :
-    ContinuousWithinAt f s x ↔
-      ContinuousWithinAt (Prod.fst ∘ f) s x ∧ ContinuousWithinAt (Prod.snd ∘ f) s x :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prod h2⟩
 
 /-!
 ### Pi
@@ -1349,159 +1360,6 @@ theorem IsOpenMap.continuousOn_range_of_leftInverse {f : α → β} (hf : IsOpen
   rw [← image_univ]
   exact (hf.restrict isOpen_univ).continuousOn_image_of_leftInvOn fun x _ => hleft x
 
-/-!
-### Continuity of piecewise defined functions
--/
-
-@[simp]
-theorem continuousWithinAt_update_same [DecidableEq α] {y : β} :
-    ContinuousWithinAt (update f x y) s x ↔ Tendsto f (𝓝[s \ {x}] x) (𝓝 y) :=
-  calc
-    ContinuousWithinAt (update f x y) s x ↔ Tendsto (update f x y) (𝓝[s \ {x}] x) (𝓝 y) := by
-    { rw [← continuousWithinAt_diff_self, ContinuousWithinAt, update_self] }
-    _ ↔ Tendsto f (𝓝[s \ {x}] x) (𝓝 y) :=
-      tendsto_congr' <| eventually_nhdsWithin_iff.2 <| Eventually.of_forall
-        fun _ hz => update_of_ne hz.2 ..
-
-@[simp]
-theorem continuousAt_update_same [DecidableEq α] {y : β} :
-    ContinuousAt (Function.update f x y) x ↔ Tendsto f (𝓝[≠] x) (𝓝 y) := by
-  rw [← continuousWithinAt_univ, continuousWithinAt_update_same, compl_eq_univ_diff]
-
-theorem ContinuousOn.if' {s : Set α} {p : α → Prop} {f g : α → β} [∀ a, Decidable (p a)]
-    (hpf : ∀ a ∈ s ∩ frontier { a | p a },
-      Tendsto f (𝓝[s ∩ { a | p a }] a) (𝓝 <| if p a then f a else g a))
-    (hpg :
-      ∀ a ∈ s ∩ frontier { a | p a },
-        Tendsto g (𝓝[s ∩ { a | ¬p a }] a) (𝓝 <| if p a then f a else g a))
-    (hf : ContinuousOn f <| s ∩ { a | p a }) (hg : ContinuousOn g <| s ∩ { a | ¬p a }) :
-    ContinuousOn (fun a => if p a then f a else g a) s := by
-  intro x hx
-  by_cases hx' : x ∈ frontier { a | p a }
-  · exact (hpf x ⟨hx, hx'⟩).piecewise_nhdsWithin (hpg x ⟨hx, hx'⟩)
-  · rw [← inter_univ s, ← union_compl_self { a | p a }, inter_union_distrib_left] at hx ⊢
-    rcases hx with hx | hx
-    · apply ContinuousWithinAt.union
-      · exact (hf x hx).congr (fun y hy => if_pos hy.2) (if_pos hx.2)
-      · have : x ∉ closure { a | p a }ᶜ := fun h => hx' ⟨subset_closure hx.2, by
-          rwa [closure_compl] at h⟩
-        exact continuousWithinAt_of_not_mem_closure fun h =>
-          this (closure_inter_subset_inter_closure _ _ h).2
-    · apply ContinuousWithinAt.union
-      · have : x ∉ closure { a | p a } := fun h =>
-          hx' ⟨h, fun h' : x ∈ interior { a | p a } => hx.2 (interior_subset h')⟩
-        exact continuousWithinAt_of_not_mem_closure fun h =>
-          this (closure_inter_subset_inter_closure _ _ h).2
-      · exact (hg x hx).congr (fun y hy => if_neg hy.2) (if_neg hx.2)
-
-theorem ContinuousOn.piecewise' [∀ a, Decidable (a ∈ t)]
-    (hpf : ∀ a ∈ s ∩ frontier t, Tendsto f (𝓝[s ∩ t] a) (𝓝 (piecewise t f g a)))
-    (hpg : ∀ a ∈ s ∩ frontier t, Tendsto g (𝓝[s ∩ tᶜ] a) (𝓝 (piecewise t f g a)))
-    (hf : ContinuousOn f <| s ∩ t) (hg : ContinuousOn g <| s ∩ tᶜ) :
-    ContinuousOn (piecewise t f g) s :=
-  hf.if' hpf hpg hg
-
-theorem ContinuousOn.if {p : α → Prop} [∀ a, Decidable (p a)]
-    (hp : ∀ a ∈ s ∩ frontier { a | p a }, f a = g a)
-    (hf : ContinuousOn f <| s ∩ closure { a | p a })
-    (hg : ContinuousOn g <| s ∩ closure { a | ¬p a }) :
-    ContinuousOn (fun a => if p a then f a else g a) s := by
-  apply ContinuousOn.if'
-  · rintro a ha
-    simp only [← hp a ha, ite_self]
-    apply tendsto_nhdsWithin_mono_left (inter_subset_inter_right s subset_closure)
-    exact hf a ⟨ha.1, ha.2.1⟩
-  · rintro a ha
-    simp only [hp a ha, ite_self]
-    apply tendsto_nhdsWithin_mono_left (inter_subset_inter_right s subset_closure)
-    rcases ha with ⟨has, ⟨_, ha⟩⟩
-    rw [← mem_compl_iff, ← closure_compl] at ha
-    apply hg a ⟨has, ha⟩
-  · exact hf.mono (inter_subset_inter_right s subset_closure)
-  · exact hg.mono (inter_subset_inter_right s subset_closure)
-
-theorem ContinuousOn.piecewise [∀ a, Decidable (a ∈ t)]
-    (ht : ∀ a ∈ s ∩ frontier t, f a = g a) (hf : ContinuousOn f <| s ∩ closure t)
-    (hg : ContinuousOn g <| s ∩ closure tᶜ) : ContinuousOn (piecewise t f g) s :=
-  hf.if ht hg
-
-theorem continuous_if' {p : α → Prop} [∀ a, Decidable (p a)]
-    (hpf : ∀ a ∈ frontier { x | p x }, Tendsto f (𝓝[{ x | p x }] a) (𝓝 <| ite (p a) (f a) (g a)))
-    (hpg : ∀ a ∈ frontier { x | p x }, Tendsto g (𝓝[{ x | ¬p x }] a) (𝓝 <| ite (p a) (f a) (g a)))
-    (hf : ContinuousOn f { x | p x }) (hg : ContinuousOn g { x | ¬p x }) :
-    Continuous fun a => ite (p a) (f a) (g a) := by
-  rw [continuous_iff_continuousOn_univ]
-  apply ContinuousOn.if' <;> simp [*] <;> assumption
-
-theorem continuous_if {p : α → Prop} [∀ a, Decidable (p a)]
-    (hp : ∀ a ∈ frontier { x | p x }, f a = g a) (hf : ContinuousOn f (closure { x | p x }))
-    (hg : ContinuousOn g (closure { x | ¬p x })) :
-    Continuous fun a => if p a then f a else g a := by
-  rw [continuous_iff_continuousOn_univ]
-  apply ContinuousOn.if <;> simpa
-
-theorem Continuous.if {p : α → Prop} [∀ a, Decidable (p a)]
-    (hp : ∀ a ∈ frontier { x | p x }, f a = g a) (hf : Continuous f) (hg : Continuous g) :
-    Continuous fun a => if p a then f a else g a :=
-  continuous_if hp hf.continuousOn hg.continuousOn
-
-theorem continuous_if_const (p : Prop) [Decidable p] (hf : p → Continuous f)
-    (hg : ¬p → Continuous g) : Continuous fun a => if p then f a else g a := by
-  split_ifs with h
-  exacts [hf h, hg h]
-
-theorem Continuous.if_const (p : Prop) [Decidable p] (hf : Continuous f)
-    (hg : Continuous g) : Continuous fun a => if p then f a else g a :=
-  continuous_if_const p (fun _ => hf) fun _ => hg
-
-theorem continuous_piecewise [∀ a, Decidable (a ∈ s)]
-    (hs : ∀ a ∈ frontier s, f a = g a) (hf : ContinuousOn f (closure s))
-    (hg : ContinuousOn g (closure sᶜ)) : Continuous (piecewise s f g) :=
-  continuous_if hs hf hg
-
-theorem Continuous.piecewise [∀ a, Decidable (a ∈ s)]
-    (hs : ∀ a ∈ frontier s, f a = g a) (hf : Continuous f) (hg : Continuous g) :
-    Continuous (piecewise s f g) :=
-  hf.if hs hg
-
-theorem IsOpen.ite' (hs : IsOpen s) (hs' : IsOpen s')
-    (ht : ∀ x ∈ frontier t, x ∈ s ↔ x ∈ s') : IsOpen (t.ite s s') := by
-  classical
-    simp only [isOpen_iff_continuous_mem, Set.ite] at *
-    convert
-      continuous_piecewise (fun x hx => propext (ht x hx)) hs.continuousOn hs'.continuousOn using 2
-    rename_i x
-    by_cases hx : x ∈ t <;> simp [hx]
-
-theorem IsOpen.ite (hs : IsOpen s) (hs' : IsOpen s')
-    (ht : s ∩ frontier t = s' ∩ frontier t) : IsOpen (t.ite s s') :=
-  hs.ite' hs' fun x hx => by simpa [hx] using Set.ext_iff.1 ht x
-
-theorem ite_inter_closure_eq_of_inter_frontier_eq
-    (ht : s ∩ frontier t = s' ∩ frontier t) : t.ite s s' ∩ closure t = s ∩ closure t := by
-  rw [closure_eq_self_union_frontier, inter_union_distrib_left, inter_union_distrib_left,
-    ite_inter_self, ite_inter_of_inter_eq _ ht]
-
-theorem ite_inter_closure_compl_eq_of_inter_frontier_eq
-    (ht : s ∩ frontier t = s' ∩ frontier t) : t.ite s s' ∩ closure tᶜ = s' ∩ closure tᶜ := by
-  rw [← ite_compl, ite_inter_closure_eq_of_inter_frontier_eq]
-  rwa [frontier_compl, eq_comm]
-
-theorem continuousOn_piecewise_ite' [∀ x, Decidable (x ∈ t)]
-    (h : ContinuousOn f (s ∩ closure t)) (h' : ContinuousOn g (s' ∩ closure tᶜ))
-    (H : s ∩ frontier t = s' ∩ frontier t) (Heq : EqOn f g (s ∩ frontier t)) :
-    ContinuousOn (t.piecewise f g) (t.ite s s') := by
-  apply ContinuousOn.piecewise
-  · rwa [ite_inter_of_inter_eq _ H]
-  · rwa [ite_inter_closure_eq_of_inter_frontier_eq H]
-  · rwa [ite_inter_closure_compl_eq_of_inter_frontier_eq H]
-
-theorem continuousOn_piecewise_ite [∀ x, Decidable (x ∈ t)]
-    (h : ContinuousOn f s) (h' : ContinuousOn g s') (H : s ∩ frontier t = s' ∩ frontier t)
-    (Heq : EqOn f g (s ∩ frontier t)) : ContinuousOn (t.piecewise f g) (t.ite s s') :=
-  continuousOn_piecewise_ite' (h.mono inter_subset_left) (h'.mono inter_subset_left) H Heq
-
-
 /-- If `f` is continuous on an open set `s` and continuous at each point of another
 set `t` then `f` is continuous on `s ∪ t`. -/
 lemma ContinuousOn.union_continuousAt {f : α → β} (s_op : IsOpen s)
@@ -1547,5 +1405,3 @@ lemma Continuous.tendsto_nhdsSet_nhds
     Tendsto f (𝓝ˢ s) (𝓝 b) := by
   rw [← nhdsSet_singleton]
   exact h.tendsto_nhdsSet h'
-
-set_option linter.style.longFile 1700

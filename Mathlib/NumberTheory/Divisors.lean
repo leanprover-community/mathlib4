@@ -634,9 +634,13 @@ lemma mem_divisorsAntidiag :
     norm_cast
     aesop
   | (n : ℕ), (negSucc x, (y : ℕ)) => by
-    simp [divisorsAntidiag]
+    suffices (∃ a, (n = a * y ∧ ¬n = 0) ∧ (a:ℤ) = -1 + -↑x) ↔ (n:ℤ) = (-1 + -↑x) * ↑y ∧ ¬n = 0 by
+      simpa [divisorsAntidiag, eq_comm, negSucc_eq]
+    simp only [← Int.neg_add, Int.add_comm 1, Int.neg_mul, Int.add_mul]
     norm_cast
-    aesop
+    match n with
+    | 0 => simp
+    | n + 1 => simp
   | .negSucc n, ((x : ℕ), (y : ℕ)) => by
     simp [divisorsAntidiag]
     norm_cast

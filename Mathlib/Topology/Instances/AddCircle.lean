@@ -440,6 +440,20 @@ theorem exists_gcd_eq_one_of_isOfFinAddOrder {u : AddCircle p} (h : IsOfFinAddOr
   let ⟨m, hl, hg, he⟩ := (addOrderOf_eq_pos_iff h.addOrderOf_pos).1 rfl
   ⟨m, hg, hl, he⟩
 
+theorem addOrderOf_coe_eq_zero_iff_forall_rat_ne_div {a : 𝕜} :
+    addOrderOf (a : AddCircle p) = 0 ↔ ∀ q : ℚ, (q : 𝕜) ≠ a / p := by
+  simp only [ne_eq, eq_div_iff (Fact.out : 0 < p).ne']
+  constructor
+  · rintro h q rfl
+    rw [addOrderOf_coe_rat] at h
+    exact q.den_ne_zero h
+  · rw [addOrderOf_eq_zero_iff']
+    intro h n hn han
+    simp only [← coe_nsmul, coe_eq_zero_iff, nsmul_eq_mul, zsmul_eq_mul] at han
+    rcases han with ⟨m, hm⟩
+    apply h (m / n)
+    field_simp [hm]
+
 variable (p)
 
 /-- The natural bijection between points of order `n` and natural numbers less than and coprime to
@@ -483,9 +497,12 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
       n.totient_eq_card_lt_and_coprime]
     simp only [Nat.gcd_comm]
 
-theorem finite_setOf_add_order_eq {n : ℕ} (hn : 0 < n) :
-    { u : AddCircle p | addOrderOf u = n }.Finite :=
+theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
+    {u : AddCircle p | addOrderOf u = n}.Finite :=
   finite_coe_iff.mp <| Nat.finite_of_card_ne_zero <| by simp [hn.ne']
+
+@[deprecated (since := "2025-03-26")]
+alias finite_setOf_add_order_eq := finite_setOf_addOrderOf_eq
 
 end FiniteOrderPoints
 
@@ -629,6 +646,9 @@ theorem liftIco_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (
 theorem liftIco_zero_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f 0 = f p)
     (hc : ContinuousOn f <| Icc 0 p) : Continuous (liftIco p 0 f) :=
   liftIco_continuous (by rwa [zero_add] : f 0 = f (0 + p)) (by rwa [zero_add])
+
+@[simp] lemma coe_fract (x : ℝ) : (↑(Int.fract x) : AddCircle (1 : ℝ)) = x := by
+  simp [← Int.self_sub_floor]
 
 end AddCircle
 

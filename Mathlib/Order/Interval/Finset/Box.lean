@@ -8,7 +8,6 @@ import Mathlib.Algebra.Order.Ring.Prod
 import Mathlib.Data.Int.Interval
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
-import Mathlib.Algebra.Order.Group.Prod
 
 /-!
 # Decomposing a locally finite ordered ring into boxes
@@ -65,7 +64,7 @@ open Finset
 
 namespace Prod
 variable {α β : Type*} [OrderedRing α] [OrderedRing β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [DecidableEq α] [DecidableEq β] [DecidableRel (α := α × β) (· ≤ ·)]
+  [DecidableEq α] [DecidableEq β] [DecidableLE (α × β)]
 
 @[simp] lemma card_box_succ (n : ℕ) :
     #(box (n + 1) : Finset (α × β)) =
