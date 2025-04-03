@@ -566,6 +566,7 @@ theorem _root_.Pi.coe_exp {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i,
     [∀ i, Algebra ℚ (𝔸 i)] [∀ i, NormedAlgebra 𝕂 (𝔸 i)] [∀ i, CompleteSpace (𝔸 i)] (x : ∀ i, 𝔸 i)
     (i : ι) :
     exp x i = exp (x i) :=
+  let ⟨_⟩ := nonempty_fintype ι
   map_exp 𝕂 (Pi.evalRingHom 𝔸 i) (continuous_apply _) x
 
 theorem _root_.Pi.exp_def {ι : Type*} {𝔸 : ι → Type*} [Finite ι] [∀ i, NormedRing (𝔸 i)]
