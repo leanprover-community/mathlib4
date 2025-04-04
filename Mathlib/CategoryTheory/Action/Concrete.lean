@@ -111,7 +111,7 @@ def toEndHom [N.Normal] : G →* End (G ⧸ₐ N) where
       ext (x : G ⧸ N)
       obtain ⟨x⟩ := x
       simp only [FintypeCat.comp_apply, Action.FintypeCat.ofMulAction_apply, Quotient.lift_mk]
-      show Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) _ (⟦g • _⟧) = _
+      show Quotient.lift (fun σ ↦ ⟦σ * v⁻¹⟧) _ (⟦g • x⟧) = _
       simp only [smul_eq_mul, Quotient.lift_mk, mul_assoc]
       rfl
   }
