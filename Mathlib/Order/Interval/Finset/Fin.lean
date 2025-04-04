@@ -3,6 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
+import Mathlib.Data.Finset.Fin
 import Mathlib.Order.Interval.Set.Fin
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -26,13 +27,13 @@ variable (n : ℕ)
 -/
 
 instance instLocallyFiniteOrder (n : ℕ) : LocallyFiniteOrder (Fin n) where
-  finsetIcc a b := attachFin (Icc a b) fun x hx ↦ mem_range.2 <| (mem_Icc.mp hx).2.trans_lt b.2
+  finsetIcc a b := attachFin (Icc a b) fun x hx ↦ (mem_Icc.mp hx).2.trans_lt b.2
   finset_mem_Icc a b := by simp
-  finsetIco a b := attachFin (Ico a b) fun x hx ↦ mem_range.2 <| (mem_Ico.mp hx).2.trans b.2
+  finsetIco a b := attachFin (Ico a b) fun x hx ↦ (mem_Ico.mp hx).2.trans b.2
   finset_mem_Ico a b := by simp
-  finsetIoc a b := attachFin (Ioc a b) fun x hx ↦ mem_range.2 <| (mem_Ioc.mp hx).2.trans_lt b.2
+  finsetIoc a b := attachFin (Ioc a b) fun x hx ↦ (mem_Ioc.mp hx).2.trans_lt b.2
   finset_mem_Ioc a b := by simp
-  finsetIoo a b := attachFin (Ioo a b) fun x hx ↦ mem_range.2 <| (mem_Ioo.mp hx).2.trans b.2
+  finsetIoo a b := attachFin (Ioo a b) fun x hx ↦ (mem_Ioo.mp hx).2.trans b.2
   finset_mem_Ioo a b := by simp
 
 instance instLocallyFiniteOrderBot : ∀ n, LocallyFiniteOrderBot (Fin n)
