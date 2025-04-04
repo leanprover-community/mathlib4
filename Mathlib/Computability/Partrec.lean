@@ -750,7 +750,7 @@ theorem fix {f : α →. σ ⊕ α} (hf : Partrec f) : Partrec (PFun.fix f) := b
   let p a n := @Part.map _ Bool (fun s => Sum.casesOn s (fun _ => true) fun _ => false) (F a n)
   have hp : Partrec₂ p :=
     hF.map ((sumCasesOn Computable.id (const true).to₂ (const false).to₂).comp snd).to₂
-  exact (hp.rfind.bind (hF.bind (sumCasesOn_right snd snd.to₂ none.to₂).to₂).to₂).of_eq fun a =>
-    ext fun b => by simpa [p] using fix_aux f _ _
+  exact ((Partrec.rfind hp).bind (hF.bind (sumCasesOn_right snd snd.to₂ none.to₂).to₂).to₂).of_eq
+    fun a => ext fun b => by simpa [p] using fix_aux f _ _
 
 end Partrec
