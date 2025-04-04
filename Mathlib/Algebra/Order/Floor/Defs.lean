@@ -8,12 +8,10 @@ import Mathlib.Tactic.Positivity.Core
 /-!
 # Floor and ceil
 
-## Summary
-
 We define the natural- and integer-valued floor and ceil functions on linearly ordered rings.
 We also provide `positivity` extensions to handle floor and ceil.
 
-## Main Definitions
+## Main definitions
 
 * `FloorSemiring`: An ordered semiring with natural-valued floor and ceil.
 * `Nat.floor a`: Greatest natural `n` such that `n ≤ a`. Equal to `0` if `a < 0`.
