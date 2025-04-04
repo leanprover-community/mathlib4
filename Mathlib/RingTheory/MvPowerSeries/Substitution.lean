@@ -492,8 +492,9 @@ noncomputable def rescale_MonoidHom :
   map_one' := rescale_one
   map_mul' a b := by ext; simp  [mul_comm, rescale_rescale]
 
-
 end CommSemiring
+
+section CommRing
 
 theorem rescale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
     rescale a f = subst (a • X) f := by
@@ -527,6 +528,8 @@ theorem rescaleAlgHom_one :
     rescaleAlgHom 1 = AlgHom.id R (MvPowerSeries σ R):= by
   ext1 f
   simp [rescaleAlgHom, subst_self]
+
+end CommRing
 
 end rescale
 
