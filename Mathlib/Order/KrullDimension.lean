@@ -847,10 +847,6 @@ lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top :
     · exact (fun h1 ↦ False.elim (h (LTSeries.nonempty_of_finiteDimensionalOrder α)))
     · exact (fun h1 ↦ False.elim (h1.1 (krullDim_eq_bot_iff.mpr (not_nonempty_iff.mp h))))
 
-lemma not_finiteDimensionalOrder_iff [Nonempty α] :
-    ¬ FiniteDimensionalOrder α ↔ InfiniteDimensionalOrder α := by
-  simp [finiteDimensionalOrder_iff_krullDim_ne_bot_and_top, krullDim_eq_top_iff]
-
 end finiteDimensional
 
 section typeclass

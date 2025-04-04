@@ -81,7 +81,7 @@ lemma Module.length_ne_top_iff_finiteDimensionalOrder :
     length R M ≠ ⊤ ↔ FiniteDimensionalOrder (Submodule R M) := by
   rw [Ne, length_eq_top_iff_infiniteDimensionalOrder, ← not_finiteDimensionalOrder_iff, not_not]
 
-lemma Module.length_ne_top_iff_isFiniteLength : Module.length R M ≠ ⊤ ↔ IsFiniteLength R M := by
+lemma Module.length_ne_top_iff : Module.length R M ≠ ⊤ ↔ IsFiniteLength R M := by
   refine ⟨fun h ↦ ?_, fun H ↦ ?_⟩
   · rw [length_ne_top_iff_finiteDimensionalOrder] at h
     rw [isFiniteLength_iff_isNoetherian_isArtinian, isNoetherian_iff, isArtinian_iff]
@@ -91,7 +91,7 @@ lemma Module.length_ne_top_iff_isFiniteLength : Module.length R M ≠ ⊤ ↔ Is
     simp
 
 lemma Module.length_ne_top [IsArtinian R M] [IsNoetherian R M] : Module.length R M ≠ ⊤ := by
-  rw [length_ne_top_iff_isFiniteLength, isFiniteLength_iff_isNoetherian_isArtinian]
+  rw [length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian]
   exact ⟨‹_›, ‹_›⟩
 
 variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R P]
@@ -120,8 +120,8 @@ lemma Module.length_eq_add_of_exact :
           (by simpa [r, s', hs₂, -Submodule.comap_top] using Submodule.comap_top g)]
       rfl
     · have := mt (IsFiniteLength.of_injective · hf) hN
-      rw [← Module.length_ne_top_iff_isFiniteLength, ne_eq, not_not] at hN this
+      rw [← Module.length_ne_top_iff, ne_eq, not_not] at hN this
       rw [hN, this, top_add]
   · have := mt (IsFiniteLength.of_surjective · hg) hP
-    rw [← Module.length_ne_top_iff_isFiniteLength, ne_eq, not_not] at hP this
+    rw [← Module.length_ne_top_iff, ne_eq, not_not] at hP this
     rw [hP, this, add_top]
