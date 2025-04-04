@@ -34,4 +34,3 @@ theorem smul_Ici : r • Ici a = Ici (r • a) := (OrderIso.mulLeft₀ r hr).ima
 theorem smul_Iic : r • Iic a = Iic (r • a) := (OrderIso.mulLeft₀ r hr).image_Iic a
 
 end LinearOrderedField
-#min_imports
