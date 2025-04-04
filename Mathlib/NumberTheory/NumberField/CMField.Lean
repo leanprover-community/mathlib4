@@ -105,7 +105,7 @@ def complexConj : K ≃ₐ[F] K :=
   (exists_isConj F (Classical.choice (inferInstance : Nonempty _))).choose
 
 /--
-The complex conjugation is the conjugation of any complex embedding.
+The complex conjugation is the conjugation of any complex embedding of a `CM`-extension.
 -/
 theorem isConj_complexConj (φ : K →+* ℂ) :
     IsConj φ (complexConj F) := by
