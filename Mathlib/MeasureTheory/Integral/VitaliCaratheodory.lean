@@ -93,7 +93,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     ∃ g : α → ℝ≥0, (∀ x, f x ≤ g x) ∧ LowerSemicontinuous g ∧
       (∫⁻ x, g x ∂μ) ≤ (∫⁻ x, f x ∂μ) + ε := by
   induction f using MeasureTheory.SimpleFunc.induction generalizing ε with
-  | @h_ind c s hs =>
+  | @const c s hs =>
     let f := SimpleFunc.piecewise s hs (SimpleFunc.const α c) (SimpleFunc.const α 0)
     by_cases h : ∫⁻ x, f x ∂μ = ⊤
     · refine
@@ -138,7 +138,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
           simp_rw [mul_add]
           rw [ENNReal.mul_div_cancel _ ENNReal.coe_ne_top]
           simpa using hc
-  | @h_add f₁ f₂ _ h₁ h₂ =>
+  | @add f₁ f₂ _ h₁ h₂ =>
     rcases h₁ (ENNReal.half_pos ε0).ne' with ⟨g₁, f₁_le_g₁, g₁cont, g₁int⟩
     rcases h₂ (ENNReal.half_pos ε0).ne' with ⟨g₂, f₂_le_g₂, g₂cont, g₂int⟩
     refine
@@ -311,7 +311,7 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
     ∃ g : α → ℝ≥0, (∀ x, g x ≤ f x) ∧ UpperSemicontinuous g ∧
       (∫⁻ x, f x ∂μ) ≤ (∫⁻ x, g x ∂μ) + ε := by
   induction f using MeasureTheory.SimpleFunc.induction generalizing ε with
-  | @h_ind c s hs =>
+  | @const c s hs =>
     by_cases hc : c = 0
     · refine ⟨fun _ => 0, ?_, upperSemicontinuous_const, ?_⟩
       · classical
@@ -351,7 +351,7 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
           simp_rw [mul_add]
           rw [ENNReal.mul_div_cancel _ ENNReal.coe_ne_top]
           simpa using hc
-  | @h_add f₁ f₂ _ h₁ h₂ =>
+  | @add f₁ f₂ _ h₁ h₂ =>
     have A : ((∫⁻ x : α, f₁ x ∂μ) + ∫⁻ x : α, f₂ x ∂μ) ≠ ⊤ := by
       rwa [← lintegral_add_left f₁.measurable.coe_nnreal_ennreal]
     rcases h₁ (ENNReal.add_ne_top.1 A).1 (ENNReal.half_pos ε0).ne' with
