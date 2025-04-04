@@ -39,7 +39,7 @@ assert_not_exists Finset
 
 open Set
 
-variable {F α β : Type*}
+variable {α : Type*}
 
 /-! ### Floor semiring -/
 
@@ -508,6 +508,27 @@ lemma ceil_le_two_mul (ha : 2⁻¹ ≤ a) : ⌈a⌉₊ ≤ 2 * a :=
   ceil_le_mul one_lt_two (by norm_num at ha ⊢; exact ha)
 
 end LinearOrderedField
+
+variable [LinearOrderedSemiring α] [FloorSemiring α] {a : α}
+variable {β : Type*} [LinearOrderedSemiring β] [FloorSemiring β] {b : β}
+
+theorem floor_congr (h : ∀ n : ℕ, (n : α) ≤ a ↔ (n : β) ≤ b) : ⌊a⌋₊ = ⌊b⌋₊ := by
+  have h₀ : 0 ≤ a ↔ 0 ≤ b := by simpa only [cast_zero] using h 0
+  obtain ha | ha := lt_or_le a 0
+  · rw [floor_of_nonpos ha.le, floor_of_nonpos (le_of_not_le <| h₀.not.mp ha.not_le)]
+  exact (le_floor <| (h _).1 <| floor_le ha).antisymm (le_floor <| (h _).2 <| floor_le <| h₀.1 ha)
+
+theorem ceil_congr (h : ∀ n : ℕ, a ≤ n ↔ b ≤ n) : ⌈a⌉₊ = ⌈b⌉₊ :=
+  (ceil_le.2 <| (h _).2 <| le_ceil _).antisymm <| ceil_le.2 <| (h _).1 <| le_ceil _
+
+variable {F : Type*} [FunLike F α β] [RingHomClass F α β]
+
+theorem map_floor (f : F) (hf : StrictMono f) (a : α) : ⌊f a⌋₊ = ⌊a⌋₊ :=
+  floor_congr fun n => by rw [← map_natCast f, hf.le_iff_le]
+
+theorem map_ceil (f : F) (hf : StrictMono f) (a : α) : ⌈f a⌉₊ = ⌈a⌉₊ :=
+  ceil_congr fun n => by rw [← map_natCast f, hf.le_iff_le]
+
 end Nat
 
 /-- There exists at most one `FloorSemiring` structure on a linear ordered semiring. -/
@@ -524,28 +545,6 @@ theorem subsingleton_floorSemiring {α} [LinearOrderedSemiring α] :
   cases H₁
   cases H₂
   congr
-
-namespace Nat
-
-variable [LinearOrderedSemiring α] [LinearOrderedSemiring β] [FloorSemiring α] [FloorSemiring β]
-variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
-
-theorem floor_congr (h : ∀ n : ℕ, (n : α) ≤ a ↔ (n : β) ≤ b) : ⌊a⌋₊ = ⌊b⌋₊ := by
-  have h₀ : 0 ≤ a ↔ 0 ≤ b := by simpa only [cast_zero] using h 0
-  obtain ha | ha := lt_or_le a 0
-  · rw [floor_of_nonpos ha.le, floor_of_nonpos (le_of_not_le <| h₀.not.mp ha.not_le)]
-  exact (le_floor <| (h _).1 <| floor_le ha).antisymm (le_floor <| (h _).2 <| floor_le <| h₀.1 ha)
-
-theorem ceil_congr (h : ∀ n : ℕ, a ≤ n ↔ b ≤ n) : ⌈a⌉₊ = ⌈b⌉₊ :=
-  (ceil_le.2 <| (h _).2 <| le_ceil _).antisymm <| ceil_le.2 <| (h _).1 <| le_ceil _
-
-theorem map_floor (f : F) (hf : StrictMono f) (a : α) : ⌊f a⌋₊ = ⌊a⌋₊ :=
-  floor_congr fun n => by rw [← map_natCast f, hf.le_iff_le]
-
-theorem map_ceil (f : F) (hf : StrictMono f) (a : α) : ⌈f a⌉₊ = ⌈a⌉₊ :=
-  ceil_congr fun n => by rw [← map_natCast f, hf.le_iff_le]
-
-end Nat
 
 namespace Mathlib.Meta.Positivity
 open Lean.Meta Qq

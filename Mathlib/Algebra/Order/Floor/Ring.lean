@@ -37,7 +37,7 @@ assert_not_exists Finset
 
 open Set
 
-variable {F α β : Type*}
+variable {α : Type*}
 
 /-! ### Floor rings -/
 
@@ -845,18 +845,15 @@ theorem preimage_Iic : ((↑) : ℤ → α) ⁻¹' Set.Iic a = Set.Iic ⌊a⌋ :
   ext
   simp [le_floor]
 
-end Int
-
-namespace Int
-
-variable [LinearOrderedRing α] [LinearOrderedRing β] [FloorRing α] [FloorRing β]
-variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
+variable {β : Type*} [LinearOrderedRing β] [FloorRing β] {b : β}
 
 theorem floor_congr (h : ∀ n : ℤ, (n : α) ≤ a ↔ (n : β) ≤ b) : ⌊a⌋ = ⌊b⌋ :=
   (le_floor.2 <| (h _).1 <| floor_le _).antisymm <| le_floor.2 <| (h _).2 <| floor_le _
 
 theorem ceil_congr (h : ∀ n : ℤ, a ≤ n ↔ b ≤ n) : ⌈a⌉ = ⌈b⌉ :=
   (ceil_le.2 <| (h _).2 <| le_ceil _).antisymm <| ceil_le.2 <| (h _).1 <| le_ceil _
+
+variable {F : Type*} [FunLike F α β] [RingHomClass F α β]
 
 theorem map_floor (f : F) (hf : StrictMono f) (a : α) : ⌊f a⌋ = ⌊a⌋ :=
   floor_congr fun n => by rw [← map_intCast f, hf.le_iff_le]
