@@ -16,6 +16,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 * `UniqueFactorizationMonoid.normalizationMonoid`: choose a way of normalizing the elements of a UFM
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 
@@ -126,7 +127,7 @@ theorem normalizedFactors_zero : normalizedFactors (0 : α) = 0 := by
 
 @[simp]
 theorem normalizedFactors_one : normalizedFactors (1 : α) = 0 := by
-  cases' subsingleton_or_nontrivial α with h h
+  rcases subsingleton_or_nontrivial α with h | h
   · dsimp [normalizedFactors, factors]
     simp [Subsingleton.elim (1 : α) 0]
   · rw [← Multiset.rel_zero_right]
@@ -300,12 +301,11 @@ end UniqueFactorizationMonoid
 
 namespace UniqueFactorizationMonoid
 
-open scoped Classical
-
 open Multiset Associates
 
 variable [CancelCommMonoidWithZero α] [UniqueFactorizationMonoid α]
 
+open scoped Classical in
 /-- Noncomputably defines a `normalizationMonoid` structure on a `UniqueFactorizationMonoid`. -/
 protected noncomputable def normalizationMonoid : NormalizationMonoid α :=
   normalizationMonoidOfMonoidHomRightInverse

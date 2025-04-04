@@ -3,8 +3,8 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Algebra.Order.AbsoluteValue
+import Mathlib.Algebra.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.BigOperators.Ring.Multiset
 import Mathlib.Tactic.Ring
@@ -224,8 +224,6 @@ lemma IsAbsoluteValue.abv_sum [Semiring R] [Semiring S] [PartialOrder S] [IsOrde
     (abv : R → S) [IsAbsoluteValue abv]
     (f : ι → R) (s : Finset ι) : abv (∑ i ∈ s, f i) ≤ ∑ i ∈ s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
-
-@[deprecated (since := "2024-02-14")] alias abv_sum_le_sum_abv := IsAbsoluteValue.abv_sum
 
 nonrec lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R]
     [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]

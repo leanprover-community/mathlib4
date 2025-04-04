@@ -78,4 +78,4 @@ structure NormedLinearOrderedField (α : Type*) extends LinearOrderedField α, N
   /-- The distance function is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = ‖x - y‖ := by aesop
   /-- The norm is multiplicative. -/
-  norm_mul' : ∀ x y : α, ‖x * y‖ = ‖x‖ * ‖y‖
+  norm_mul : ∀ x y : α, ‖x * y‖ = ‖x‖ * ‖y‖

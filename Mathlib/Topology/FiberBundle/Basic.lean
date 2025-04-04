@@ -285,7 +285,6 @@ theorem mem_trivializationAt_proj_source {x : TotalSpace F E} :
     x ∈ (trivializationAt F E x.proj).source :=
   (Trivialization.mem_source _).mpr <| mem_baseSet_trivializationAt F E x.proj
 
--- Porting note: removed `@[simp, mfld_simps]` because `simp` could already prove this
 theorem trivializationAt_proj_fst {x : TotalSpace F E} :
     ((trivializationAt F E x.proj) x).1 = x.proj :=
   Trivialization.coe_fst' _ <| mem_baseSet_trivializationAt F E x.proj
@@ -321,7 +320,7 @@ theorem FiberBundle.exists_trivialization_Icc_subset [ConditionallyCompleteLinea
   obtain ⟨ea, hea⟩ : ∃ ea : Trivialization F (π F E), a ∈ ea.baseSet :=
     ⟨trivializationAt F E a, mem_baseSet_trivializationAt F E a⟩
   -- If `a < b`, then `[a, b] = ∅`, and the statement is trivial
-  cases' lt_or_le b a with hab hab
+  rcases lt_or_le b a with _ | hab
   · exact ⟨ea, by simp [*]⟩
   /- Let `s` be the set of points `x ∈ [a, b]` such that `E` is trivializable over `[a, x]`.
     We need to show that `b ∈ s`. Let `c = Sup s`. We will show that `c ∈ s` and `c = b`. -/
@@ -392,7 +391,6 @@ Trivialization changes from `i` to `j` are given by continuous maps `coordChange
 `baseSet i ∩ baseSet j` to the set of homeomorphisms of `F`, but we express them as maps
 `B → F → F` and require continuity on `(baseSet i ∩ baseSet j) × F` to avoid the topology on the
 space of continuous maps on `F`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure FiberBundleCore (ι : Type*) (B : Type*) [TopologicalSpace B] (F : Type*)
     [TopologicalSpace F] where
   baseSet : ι → Set B
@@ -411,7 +409,7 @@ namespace FiberBundleCore
 variable [TopologicalSpace B] [TopologicalSpace F] (Z : FiberBundleCore ι B F)
 
 /-- The index set of a fiber bundle core, as a convenience function for dot notation -/
-@[nolint unusedArguments] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was has_nonempty_instance
+@[nolint unusedArguments]
 def Index (_Z : FiberBundleCore ι B F) := ι
 
 /-- The base space of a fiber bundle core, as a convenience function for dot notation -/
@@ -420,7 +418,7 @@ def Base (_Z : FiberBundleCore ι B F) := B
 
 /-- The fiber of a fiber bundle core, as a convenience function for dot notation and
 typeclass inference -/
-@[nolint unusedArguments] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was has_nonempty_instance
+@[nolint unusedArguments]
 def Fiber (_ : FiberBundleCore ι B F) (_x : B) := F
 
 instance topologicalSpaceFiber (x : B) : TopologicalSpace (Z.Fiber x) := ‹_›
@@ -444,27 +442,27 @@ def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) where
   map_target' p hp := by simpa using hp
   left_inv' := by
     rintro ⟨x, v⟩ hx
-    simp only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ] at hx
+    simp only [prodMk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ] at hx
     dsimp only
     rw [coordChange_comp, Z.coordChange_self]
     exacts [hx.1, ⟨⟨hx.1, hx.2⟩, hx.1⟩]
   right_inv' := by
     rintro ⟨x, v⟩ hx
-    simp only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ] at hx
+    simp only [prodMk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ] at hx
     dsimp only
     rw [Z.coordChange_comp, Z.coordChange_self]
     · exact hx.2
     · simp [hx]
   open_source := ((Z.isOpen_baseSet i).inter (Z.isOpen_baseSet j)).prod isOpen_univ
   open_target := ((Z.isOpen_baseSet i).inter (Z.isOpen_baseSet j)).prod isOpen_univ
-  continuousOn_toFun := continuous_fst.continuousOn.prod (Z.continuousOn_coordChange i j)
+  continuousOn_toFun := continuous_fst.continuousOn.prodMk (Z.continuousOn_coordChange i j)
   continuousOn_invFun := by
-    simpa [inter_comm] using continuous_fst.continuousOn.prod (Z.continuousOn_coordChange j i)
+    simpa [inter_comm] using continuous_fst.continuousOn.prodMk (Z.continuousOn_coordChange j i)
 
 @[simp, mfld_simps]
 theorem mem_trivChange_source (i j : ι) (p : B × F) :
     p ∈ (Z.trivChange i j).source ↔ p.1 ∈ Z.baseSet i ∩ Z.baseSet j := by
-  erw [mem_prod]
+  rw [trivChange, mem_prod]
   simp
 
 /-- Associate to a trivialization index `i : ι` the corresponding trivialization, i.e., a bijection
@@ -480,7 +478,7 @@ def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
   invFun p := ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩
   toFun p := ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩
   map_source' p hp := by
-    simpa only [Set.mem_preimage, and_true, Set.mem_univ, Set.prod_mk_mem_set_prod_eq] using hp
+    simpa only [Set.mem_preimage, and_true, Set.mem_univ, Set.prodMk_mem_set_prod_eq] using hp
   map_target' p hp := by
     simpa only [Set.mem_preimage, and_true, Set.mem_univ, Set.mem_prod] using hp
   left_inv' := by
@@ -490,7 +488,7 @@ def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
     rw [Z.coordChange_comp, Z.coordChange_self] <;> apply_rules [mem_baseSet_at, mem_inter]
   right_inv' := by
     rintro ⟨x, v⟩ hx
-    simp only [prod_mk_mem_set_prod_eq, and_true, mem_univ] at hx
+    simp only [prodMk_mem_set_prod_eq, and_true, mem_univ] at hx
     dsimp only
     rw [Z.coordChange_comp, Z.coordChange_self]
     exacts [hx, ⟨⟨hx, Z.mem_baseSet_at _⟩, hx⟩]
@@ -503,7 +501,7 @@ theorem mem_localTrivAsPartialEquiv_source (p : Z.TotalSpace) :
 
 theorem mem_localTrivAsPartialEquiv_target (p : B × F) :
     p ∈ (Z.localTrivAsPartialEquiv i).target ↔ p.1 ∈ Z.baseSet i := by
-  erw [mem_prod]
+  rw [localTrivAsPartialEquiv, mem_prod]
   simp only [and_true, mem_univ]
 
 theorem localTrivAsPartialEquiv_apply (p : Z.TotalSpace) :
@@ -520,7 +518,7 @@ theorem localTrivAsPartialEquiv_trans (i j : ι) :
     rfl
   · rintro ⟨x, v⟩ hx
     simp only [trivChange, localTrivAsPartialEquiv, PartialEquiv.symm,
-      Prod.mk.inj_iff, prod_mk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff,
+      Prod.mk_inj, prodMk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff,
       mem_preimage, proj, mem_univ, eq_self_iff_true, (· ∘ ·),
       PartialEquiv.coe_trans, TotalSpace.proj] at hx ⊢
     simp only [Z.coordChange_comp, hx, mem_inter_iff, and_self_iff, mem_baseSet_at]
@@ -538,7 +536,7 @@ theorem open_source' (i : ι) : IsOpen (Z.localTrivAsPartialEquiv i).source := b
   simp only [exists_prop, mem_iUnion, mem_singleton_iff]
   refine ⟨i, Z.baseSet i ×ˢ univ, (Z.isOpen_baseSet i).prod isOpen_univ, ?_⟩
   ext p
-  simp only [localTrivAsPartialEquiv_apply, prod_mk_mem_set_prod_eq, mem_inter_iff, and_self_iff,
+  simp only [localTrivAsPartialEquiv_apply, prodMk_mem_set_prod_eq, mem_inter_iff, and_self_iff,
     mem_localTrivAsPartialEquiv_source, and_true, mem_univ, mem_preimage]
 
 /-- Extended version of the local trivialization of a fiber bundle constructed from core,
@@ -603,7 +601,7 @@ theorem continuous_const_section (v : F)
     IsOpen.mem_nhds (Z.isOpen_baseSet (Z.indexAt x)) (Z.mem_baseSet_at x)
   refine ((Z.localTrivAt x).toPartialHomeomorph.continuousAt_iff_continuousAt_comp_left ?_).2 ?_
   · exact A
-  · apply continuousAt_id.prod
+  · apply continuousAt_id.prodMk
     simp only [(· ∘ ·), mfld_simps, localTrivAt_snd]
     have : ContinuousOn (fun _ : B => v) (Z.baseSet (Z.indexAt x)) := continuousOn_const
     refine (this.congr fun y hy ↦ ?_).continuousAt A
@@ -721,7 +719,6 @@ variable (E : B → Type*) [TopologicalSpace B] [TopologicalSpace F]
 equivalences but there is not yet a topology on the total space. The total space is hence given a
 topology in such a way that there is a fiber bundle structure for which the partial equivalences
 are also partial homeomorphisms and hence local trivializations. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure FiberPrebundle where
   pretrivializationAtlas : Set (Pretrivialization F (π F E))
   pretrivializationAt : B → Pretrivialization F (π F E)

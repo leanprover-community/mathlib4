@@ -39,10 +39,7 @@ Prove lemmas relating extreme sets and points to the intrinsic frontier.
 -/
 
 
-open Function Set
-
-open scoped Classical
-open Affine
+open Function Set Affine
 
 variable {𝕜 E F ι : Type*} {π : ι → Type*}
 
@@ -56,7 +53,10 @@ def IsExtreme (A B : Set E) : Prop :=
   B ⊆ A ∧ ∀ ⦃x₁⦄, x₁ ∈ A → ∀ ⦃x₂⦄, x₂ ∈ A → ∀ ⦃x⦄, x ∈ B → x ∈ openSegment 𝕜 x₁ x₂ → x₁ ∈ B ∧ x₂ ∈ B
 
 /-- A point `x` is an extreme point of a set `A` if `x` belongs to no open segment with ends in
-`A`, except for the obvious `openSegment x x`. -/
+`A`, except for the obvious `openSegment x x`.
+
+In order to prove that `x` is an extreme point of `A`,
+it is convenient to use `mem_extremePoints_iff_left` to avoid repeating arguments twice. -/
 def Set.extremePoints (A : Set E) : Set E :=
   { x ∈ A | ∀ ⦃x₁⦄, x₁ ∈ A → ∀ ⦃x₂⦄, x₂ ∈ A → x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x ∧ x₂ = x }
 
@@ -115,6 +115,19 @@ theorem isExtreme_sInter {F : Set (Set E)} (hF : F.Nonempty) (hAF : ∀ B ∈ F,
 theorem mem_extremePoints : x ∈ A.extremePoints 𝕜 ↔
     x ∈ A ∧ ∀ᵉ (x₁ ∈ A) (x₂ ∈ A), x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x ∧ x₂ = x :=
   Iff.rfl
+
+/-- In order to prove that a point `x` is an extreme point of a set `A`,
+it suffices to show that `x ∈ A`
+and for any `x₁`, `x₂` such that `x` belongs to the open segment `(x₁, x₂)`, we have `x₁ = x`.
+
+The definition of `extremePoints` also requires `x₂ = x`, but this condition is redundant. -/
+theorem mem_extremePoints_iff_left : x ∈ A.extremePoints 𝕜 ↔
+    x ∈ A ∧ ∀ x₁ ∈ A, ∀ x₂ ∈ A, x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x := by
+  refine ⟨fun h ↦ ⟨h.1, fun x₁ hx₁ x₂ hx₂ hx ↦ (h.2 hx₁ hx₂ hx).1⟩, ?_⟩
+  rintro ⟨hxA, Hx⟩
+  use hxA
+  refine fun x₁ hx₁ x₂ hx₂ hx ↦ ⟨Hx x₁ hx₁ x₂ hx₂ hx, Hx x₂ hx₂ x₁ hx₁ ?_⟩
+  rwa [openSegment_symm]
 
 /-- x is an extreme point to A iff {x} is an extreme set of A. -/
 @[simp] lemma isExtreme_singleton : IsExtreme 𝕜 A {x} ↔ x ∈ A.extremePoints 𝕜 := by
@@ -188,17 +201,18 @@ theorem extremePoints_prod (s : Set E) (t : Set F) :
 @[simp]
 theorem extremePoints_pi (s : ∀ i, Set (π i)) :
     (univ.pi s).extremePoints 𝕜 = univ.pi fun i ↦ (s i).extremePoints 𝕜 := by
+  classical
   ext x
   simp only [mem_extremePoints, mem_pi, mem_univ, true_imp_iff, @forall_and ι]
   refine and_congr_right fun hx ↦ ⟨fun h i ↦ ?_, fun h ↦ ?_⟩
   · rintro x₁ hx₁ x₂ hx₂ hi
-    refine (h (update x i x₁) ?_ (update x i x₂) ?_ ?_).imp (fun h₁ ↦ by rw [← h₁, update_same])
-        fun h₂ ↦ by rw [← h₂, update_same]
+    refine (h (update x i x₁) ?_ (update x i x₂) ?_ ?_).imp (fun h₁ ↦ by rw [← h₁, update_self])
+        fun h₂ ↦ by rw [← h₂, update_self]
     iterate 2
       rintro j
       obtain rfl | hji := eq_or_ne j i
-      · rwa [update_same]
-      · rw [update_noteq hji]
+      · rwa [update_self]
+      · rw [update_of_ne hji]
         exact hx _
     rw [← Pi.image_update_openSegment]
     exact ⟨_, hi, update_eq_self _ _⟩

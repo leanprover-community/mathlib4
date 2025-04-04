@@ -3,11 +3,10 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.InnerProductSpace.Defs
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+import Mathlib.GroupTheory.MonoidLocalization.Basic
 
 /-!
 # Properties of inner product spaces
@@ -20,8 +19,6 @@ This file proves many basic properties of inner product spaces (real or complex)
 - `norm_inner_eq_norm_iff`: the equality criteion in the Cauchy-Schwartz inequality (also in many
   variants).
 - `inner_eq_sum_norm_sq_div_four`: the polarization identity.
-- We show that the inner product is continuous, `continuous_inner`, and bundle it as the
-  continuous sesquilinear map `innerSL` (see also `innerₛₗ` for the non-continuous version).
 
 ## Tags
 
@@ -216,7 +213,6 @@ theorem inner_neg_right (x y : E) : ⟪x, -y⟫ = -⟪x, y⟫ := by
 
 theorem inner_neg_neg (x y : E) : ⟪-x, -y⟫ = ⟪x, y⟫ := by simp
 
--- Porting note: removed `simp` because it can prove it using `inner_conj_symm`
 theorem inner_self_conj (x : E) : ⟪x, x⟫† = ⟪x, x⟫ := inner_conj_symm _ _
 
 theorem inner_sub_left (x y z : E) : ⟪x - y, z⟫ = ⟪x, z⟫ - ⟪y, z⟫ := by
@@ -356,9 +352,6 @@ theorem real_inner_self_eq_norm_mul_norm (x : F) : ⟪x, x⟫_ℝ = ‖x‖ * �
 theorem real_inner_self_eq_norm_sq (x : F) : ⟪x, x⟫_ℝ = ‖x‖ ^ 2 := by
   rw [pow_two, real_inner_self_eq_norm_mul_norm]
 
--- Porting note: this was present in mathlib3 but seemingly didn't do anything.
--- variable (𝕜)
-
 /-- Expand the square -/
 theorem norm_add_sq (x y : E) : ‖x + y‖ ^ 2 = ‖x‖ ^ 2 + 2 * re ⟪x, y⟫ + ‖y‖ ^ 2 := by
   repeat' rw [sq (M := ℝ), ← @inner_self_eq_norm_mul_norm 𝕜]
@@ -489,19 +482,6 @@ theorem inner_eq_sum_norm_sq_div_four (x y : E) :
   push_cast
   simp only [sq, ← mul_div_right_comm, ← add_div]
 
--- See note [lower instance priority]
-instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConvexSpace F :=
-  ⟨fun ε hε => by
-    refine
-      ⟨2 - √(4 - ε ^ 2), sub_pos_of_lt <| (sqrt_lt' zero_lt_two).2 ?_, fun x hx y hy hxy => ?_⟩
-    · norm_num
-      exact pow_pos hε _
-    rw [sub_sub_cancel]
-    refine le_sqrt_of_sq_le ?_
-    rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm ℝ x y), ← sq ‖x - y‖, hx, hy]
-    ring_nf
-    gcongr⟩
-
 /-- Polarization identity: The real inner product, in terms of the norm. -/
 theorem real_inner_eq_norm_add_mul_self_sub_norm_mul_self_sub_norm_mul_self_div_two (x y : F) :
     ⟪x, y⟫_ℝ = (‖x + y‖ * ‖x + y‖ - ‖x‖ * ‖x‖ - ‖y‖ * ‖y‖) / 2 :=
@@ -517,7 +497,7 @@ theorem real_inner_eq_norm_mul_self_add_norm_mul_self_sub_norm_sub_mul_self_div_
 /-- Pythagorean theorem, if-and-only-if vector inner product form. -/
 theorem norm_add_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero (x y : F) :
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ ↔ ⟪x, y⟫_ℝ = 0 := by
-  rw [@norm_add_mul_self ℝ, add_right_cancel_iff, add_right_eq_self, mul_eq_zero]
+  rw [@norm_add_mul_self ℝ, add_right_cancel_iff, add_eq_left, mul_eq_zero]
   norm_num
 
 /-- Pythagorean theorem, if-and-if vector inner product form using square roots. -/
@@ -529,7 +509,7 @@ theorem norm_add_eq_sqrt_iff_real_inner_eq_zero {x y : F} :
 /-- Pythagorean theorem, vector inner product form. -/
 theorem norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero (x y : E) (h : ⟪x, y⟫ = 0) :
     ‖x + y‖ * ‖x + y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ := by
-  rw [@norm_add_mul_self 𝕜, add_right_cancel_iff, add_right_eq_self, mul_eq_zero]
+  rw [@norm_add_mul_self 𝕜, add_right_cancel_iff, add_eq_left, mul_eq_zero]
   apply Or.inr
   simp only [h, zero_re']
 
@@ -542,7 +522,7 @@ theorem norm_add_sq_eq_norm_sq_add_norm_sq_real {x y : F} (h : ⟪x, y⟫_ℝ = 
 inner product form. -/
 theorem norm_sub_sq_eq_norm_sq_add_norm_sq_iff_real_inner_eq_zero (x y : F) :
     ‖x - y‖ * ‖x - y‖ = ‖x‖ * ‖x‖ + ‖y‖ * ‖y‖ ↔ ⟪x, y⟫_ℝ = 0 := by
-  rw [@norm_sub_mul_self ℝ, add_right_cancel_iff, sub_eq_add_neg, add_right_eq_self, neg_eq_zero,
+  rw [@norm_sub_mul_self ℝ, add_right_cancel_iff, sub_eq_add_neg, add_eq_left, neg_eq_zero,
     mul_eq_zero]
   norm_num
 
@@ -593,27 +573,6 @@ theorem real_inner_smul_self_left (x : F) (r : ℝ) : ⟪r • x, x⟫_ℝ = r *
 theorem real_inner_smul_self_right (x : F) (r : ℝ) : ⟪x, r • x⟫_ℝ = r * (‖x‖ * ‖x‖) := by
   rw [inner_smul_right, ← real_inner_self_eq_norm_mul_norm]
 
-/-- When an inner product space `E` over `𝕜` is considered as a real normed space, its inner
-product satisfies `IsBoundedBilinearMap`.
-
-In order to state these results, we need a `NormedSpace ℝ E` instance. We will later establish
-such an instance by restriction-of-scalars, `InnerProductSpace.rclikeToReal 𝕜 E`, but this
-instance may be not definitionally equal to some other “natural” instance. So, we assume
-`[NormedSpace ℝ E]`.
--/
-theorem _root_.isBoundedBilinearMap_inner [NormedSpace ℝ E] [IsScalarTower ℝ 𝕜 E] :
-    IsBoundedBilinearMap ℝ fun p : E × E => ⟪p.1, p.2⟫ :=
-  { add_left := inner_add_left
-    smul_left := fun r x y => by
-      simp only [← algebraMap_smul 𝕜 r x, algebraMap_eq_ofReal, inner_smul_real_left]
-    add_right := inner_add_right
-    smul_right := fun r x y => by
-      simp only [← algebraMap_smul 𝕜 r y, algebraMap_eq_ofReal, inner_smul_real_right]
-    bound :=
-      ⟨1, zero_lt_one, fun x y => by
-        rw [one_mul]
-        exact norm_inner_le_norm x y⟩ }
-
 /-- The inner product of two weighted sums, where the weights in each
 sum add to 0, in terms of the norms of pairwise differences. -/
 theorem inner_sum_smul_sum_smul_of_sum_eq_zero {ι₁ : Type*} {s₁ : Finset ι₁} {w₁ : ι₁ → ℝ}
@@ -645,8 +604,6 @@ zero. See also `EuclideanGeometry.dist_inversion_inversion` for inversions aroun
 point. -/
 theorem dist_div_norm_sq_smul {x y : F} (hx : x ≠ 0) (hy : y ≠ 0) (R : ℝ) :
     dist ((R / ‖x‖) ^ 2 • x) ((R / ‖y‖) ^ 2 • y) = R ^ 2 / (‖x‖ * ‖y‖) * dist x y :=
-  have hx' : ‖x‖ ≠ 0 := norm_ne_zero_iff.2 hx
-  have hy' : ‖y‖ ≠ 0 := norm_ne_zero_iff.2 hy
   calc
     dist ((R / ‖x‖) ^ 2 • x) ((R / ‖y‖) ^ 2 • y) =
         √(‖(R / ‖x‖) ^ 2 • x - (R / ‖y‖) ^ 2 • y‖ ^ 2) := by
@@ -705,8 +662,8 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
       try positivity
     simp only [@norm_sq_eq_inner 𝕜] at h
     letI : InnerProductSpace.Core 𝕜 E := InnerProductSpace.toCore
-    erw [← InnerProductSpace.Core.cauchy_schwarz_aux, InnerProductSpace.Core.normSq_eq_zero,
-      sub_eq_zero] at h
+    erw [← InnerProductSpace.Core.cauchy_schwarz_aux (𝕜 := 𝕜) (F := E)] at h
+    rw [InnerProductSpace.Core.normSq_eq_zero, sub_eq_zero] at h
     rw [div_eq_inv_mul, mul_smul, h, inv_smul_smul₀]
     rwa [inner_self_ne_zero]
   tfae_have 2 → 3 := fun h => h.imp_right fun h' => ⟨_, h'⟩
@@ -839,15 +796,18 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 /-- A field `𝕜` satisfying `RCLike` is itself a `𝕜`-inner product space. -/
 instance RCLike.innerProductSpace : InnerProductSpace 𝕜 𝕜 where
-  inner x y := conj x * y
-  norm_sq_eq_inner x := by simp only [inner, conj_mul, ← ofReal_pow, ofReal_re]
+  inner x y := y * conj x
+  norm_sq_eq_inner x := by simp only [inner, mul_conj, ← ofReal_pow, ofReal_re]
   conj_symm x y := by simp only [mul_comm, map_mul, starRingEnd_self_apply]
-  add_left x y z := by simp only [add_mul, map_add]
-  smul_left x y z := by simp only [mul_assoc, smul_eq_mul, map_mul]
+  add_left x y z := by simp only [mul_add, map_add]
+  smul_left x y z := by simp only [mul_comm (conj z), mul_assoc, smul_eq_mul, map_mul]
 
 @[simp]
-theorem RCLike.inner_apply (x y : 𝕜) : ⟪x, y⟫ = conj x * y :=
+theorem RCLike.inner_apply (x y : 𝕜) : ⟪x, y⟫ = y * conj x :=
   rfl
+
+/-- A version of `RCLike.inner_apply` that swaps the order of multiplication. -/
+theorem RCLike.inner_apply' (x y : 𝕜) : ⟪x, y⟫ = conj x * y := mul_comm _ _
 
 end RCLike
 
@@ -862,14 +822,20 @@ variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 /-- A general inner product implies a real inner product. This is not registered as an instance
-since it creates problems with the case `𝕜 = ℝ`. -/
+since `𝕜` does not appear in the return type `Inner ℝ E`. -/
 def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 
-/-- A general inner product space structure implies a real inner product structure. This is not
-registered as an instance since it creates problems with the case `𝕜 = ℝ`, but in can be used in a
-proof to obtain a real inner product space structure from a given `𝕜`-inner product space
-structure. -/
-def InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
+/-- A general inner product space structure implies a real inner product structure.
+
+This is not registered as an instance since
+* `𝕜` does not appear in the return type `InnerProductSpace ℝ E`,
+* It is likely to create instance diamonds, as it builds upon the diamond-prone
+  `NormedSpace.restrictScalars`.
+
+However, it can be used in a proof to obtain a real inner product space structure from a given
+`𝕜`-inner product space structure. -/
+-- See note [reducible non instances]
+abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
   { Inner.rclikeToReal 𝕜 E,
     NormedSpace.restrictScalars ℝ 𝕜
       E with
@@ -902,47 +868,23 @@ def InnerProductSpace.complexToReal [SeminormedAddCommGroup G] [InnerProductSpac
 instance : InnerProductSpace ℝ ℂ := InnerProductSpace.complexToReal
 
 @[simp]
-protected theorem Complex.inner (w z : ℂ) : ⟪w, z⟫_ℝ = (conj w * z).re :=
+protected theorem Complex.inner (w z : ℂ) : ⟪w, z⟫_ℝ = (z * conj w).re :=
   rfl
 
 end RCLikeToReal
 
-section Continuous
+/-- An `RCLike` field is a real inner product space. -/
+noncomputable instance RCLike.toInnerProductSpaceReal : InnerProductSpace ℝ 𝕜 where
+  __ := Inner.rclikeToReal 𝕜 𝕜
+  norm_sq_eq_inner := norm_sq_eq_inner
+  conj_symm x y := inner_re_symm ..
+  add_left x y z :=
+    show re (_ * _) = re (_ * _) + re (_ * _) by simp only [map_add, mul_re, conj_re, conj_im]; ring
+  smul_left x y r :=
+    show re (_ * _) = _ * re (_ * _) by
+      simp only [mul_re, conj_re, conj_im, conj_trivial, smul_re, smul_im]; ring
 
-variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
-
-/-!
-### Continuity of the inner product
--/
-
-theorem continuous_inner : Continuous fun p : E × E => ⟪p.1, p.2⟫ :=
-  letI : InnerProductSpace ℝ E := InnerProductSpace.rclikeToReal 𝕜 E
-  letI : IsScalarTower ℝ 𝕜 E := RestrictScalars.isScalarTower _ _ _
-  isBoundedBilinearMap_inner.continuous
-
-variable {α : Type*}
-
-theorem Filter.Tendsto.inner {f g : α → E} {l : Filter α} {x y : E} (hf : Tendsto f l (𝓝 x))
-    (hg : Tendsto g l (𝓝 y)) : Tendsto (fun t => ⟪f t, g t⟫) l (𝓝 ⟪x, y⟫) :=
-  (continuous_inner.tendsto _).comp (hf.prod_mk_nhds hg)
-
-variable [TopologicalSpace α] {f g : α → E} {x : α} {s : Set α}
-
-theorem ContinuousWithinAt.inner (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (fun t => ⟪f t, g t⟫) s x :=
-  Filter.Tendsto.inner hf hg
-
-theorem ContinuousAt.inner (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
-    ContinuousAt (fun t => ⟪f t, g t⟫) x :=
-  Filter.Tendsto.inner hf hg
-
-theorem ContinuousOn.inner (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun t => ⟪f t, g t⟫) s := fun x hx => (hf x hx).inner (hg x hx)
-
-@[continuity]
-theorem Continuous.inner (hf : Continuous f) (hg : Continuous g) : Continuous fun t => ⟪f t, g t⟫ :=
-  continuous_iff_continuousAt.2 fun _x => hf.continuousAt.inner hg.continuousAt
-
-end Continuous
+-- The instance above does not create diamonds for concrete `𝕜`:
+example : (innerProductSpace : InnerProductSpace ℝ ℝ) = RCLike.toInnerProductSpaceReal := rfl
+example :
+  (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal := rfl

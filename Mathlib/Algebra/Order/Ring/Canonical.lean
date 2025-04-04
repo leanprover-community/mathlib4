@@ -19,6 +19,19 @@ universe u
 
 variable {α : Type u}
 
+set_option linter.deprecated false in
+/-- A canonically ordered commutative semiring is an ordered, commutative semiring in which `a ≤ b`
+iff there exists `c` with `b = a + c`. This is satisfied by the natural numbers, for example, but
+not the integers or other ordered groups. -/
+@[deprecated "Use `[OrderedCommSemiring α] [CanonicallyOrderedAdd α] [NoZeroDivisors α]` instead."
+  (since := "2025-01-13")]
+structure CanonicallyOrderedCommSemiring (α : Type*) extends CanonicallyOrderedAddCommMonoid α,
+    CommSemiring α where
+  /-- No zero divisors. -/
+  protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : α}, a * b = 0 → a = 0 ∨ b = 0
+
+attribute [nolint docBlame] CanonicallyOrderedCommSemiring.toCommSemiring
+
 -- see Note [lower instance priority]
 instance (priority := 10) CanonicallyOrderedAdd.toZeroLEOneClass
     [AddZeroClass α] [One α] [LE α] [CanonicallyOrderedAdd α] : ZeroLEOneClass α where

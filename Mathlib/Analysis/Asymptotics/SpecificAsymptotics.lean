@@ -3,8 +3,8 @@ Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # A collection of specific asymptotic results
@@ -143,3 +143,20 @@ theorem Filter.Tendsto.cesaro {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (
   h.cesaro_smul
 
 end Real
+
+section NormedLinearOrderedField
+
+variable {R : Type*} [NormedField R] [LinearOrder R] [IsStrictOrderedRing R]
+  [OrderTopology R] [FloorRing R]
+
+theorem Asymptotics.isEquivalent_nat_floor :
+    (fun (x : R) ↦ ↑⌊x⌋₊) ~[atTop] (fun x ↦ x) := by
+  refine isEquivalent_of_tendsto_one ?_ tendsto_nat_floor_div_atTop
+  filter_upwards with x hx using by rw [hx, Nat.floor_zero, Nat.cast_eq_zero]
+
+theorem Asymptotics.isEquivalent_nat_ceil :
+    (fun (x : R) ↦ ↑⌈x⌉₊) ~[atTop] (fun x ↦ x) := by
+  refine isEquivalent_of_tendsto_one ?_ tendsto_nat_ceil_div_atTop
+  filter_upwards with x hx using by rw [hx, Nat.ceil_zero, Nat.cast_eq_zero]
+
+end NormedLinearOrderedField

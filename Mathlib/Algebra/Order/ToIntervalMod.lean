@@ -4,13 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Algebra.ModEq
-import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Periodic
+import Mathlib.Algebra.Ring.Periodic
 import Mathlib.Data.Int.SuccPred
 import Mathlib.Order.Circular
-import Mathlib.Data.List.TFAE
-import Mathlib.Data.Set.Lattice
 
 /-!
 # Reducing to an interval modulo its length
@@ -29,6 +26,7 @@ interval.
 * `toIocMod hp a b` (where `hp : 0 < p`): Reduce `b` to the interval `Ioc a (a + p)`.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 noncomputable section
 
@@ -525,7 +523,7 @@ theorem tfae_modEq :
         ((toIocMod_eq_iff hp).2 ⟨Set.Ioo_subset_Ioc_self hi, i, (sub_add_cancel b _).symm⟩).symm
   tfae_have 4 → 3
   | h => by
-    rw [← h, Ne, eq_comm, add_right_eq_self]
+    rw [← h, Ne, eq_comm, add_eq_left]
     exact hp.ne'
   tfae_have 1 → 4
   | h => by
@@ -734,8 +732,7 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
   have h₃₂ : x₃' - p < x₂' := sub_lt_iff_lt_add.2 (toIcoMod_lt_right _ _ _)
   suffices hequiv : x₃' ≤ toIocMod hp x₂' x₁ by
     obtain ⟨z, hd⟩ : ∃ z : ℤ, x₂ = x₂' + z • p := ((toIcoMod_eq_iff hp).1 rfl).2
-    rw [hd, toIocMod_add_zsmul', toIcoMod_add_zsmul', add_le_add_iff_right]
-    assumption -- Porting note: was `simpa`
+    simpa [hd, toIocMod_add_zsmul', toIcoMod_add_zsmul', add_le_add_iff_right]
   rcases le_or_lt x₃' (x₁ + p) with h₃₁ | h₁₃
   · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p from hIoc₂₁.symm.trans_ge h₃₁
     apply (toIocMod_eq_iff hp).2
@@ -948,42 +945,24 @@ theorem iUnion_Ioc_add_intCast : ⋃ n : ℤ, Ioc (a + n) (a + n + 1) = Set.univ
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Ioc_add_zsmul zero_lt_one a
 
-@[deprecated (since := "2024-04-17")]
-alias iUnion_Ioc_add_int_cast := iUnion_Ioc_add_intCast
-
 theorem iUnion_Ico_add_intCast : ⋃ n : ℤ, Ico (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Ico_add_zsmul zero_lt_one a
 
-@[deprecated (since := "2024-04-17")]
-alias iUnion_Ico_add_int_cast := iUnion_Ico_add_intCast
-
 theorem iUnion_Icc_add_intCast : ⋃ n : ℤ, Icc (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Icc_add_zsmul zero_lt_one a
-
-@[deprecated (since := "2024-04-17")]
-alias iUnion_Icc_add_int_cast := iUnion_Icc_add_intCast
 
 variable (α)
 
 theorem iUnion_Ioc_intCast : ⋃ n : ℤ, Ioc (n : α) (n + 1) = Set.univ := by
   simpa only [zero_add] using iUnion_Ioc_add_intCast (0 : α)
 
-@[deprecated (since := "2024-04-17")]
-alias iUnion_Ioc_int_cast := iUnion_Ioc_intCast
-
 theorem iUnion_Ico_intCast : ⋃ n : ℤ, Ico (n : α) (n + 1) = Set.univ := by
   simpa only [zero_add] using iUnion_Ico_add_intCast (0 : α)
 
-@[deprecated (since := "2024-04-17")]
-alias iUnion_Ico_int_cast := iUnion_Ico_intCast
-
 theorem iUnion_Icc_intCast : ⋃ n : ℤ, Icc (n : α) (n + 1) = Set.univ := by
   simpa only [zero_add] using iUnion_Icc_add_intCast (0 : α)
-
-@[deprecated (since := "2024-04-17")]
-alias iUnion_Icc_int_cast := iUnion_Icc_intCast
 
 end LinearOrderedRing
 

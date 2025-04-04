@@ -3,8 +3,8 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Group.Submonoid.Defs
+import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Order.Interval.Set.Defs
 
 /-!
@@ -57,8 +57,8 @@ section Preorder
 variable (M)
 variable [Monoid M] [Preorder M] [MulLeftMono M] {a : M}
 
-/-- The submonoid of elements greater than `1`. -/
-@[to_additive (attr := simps) nonneg "The submonoid of nonnegative elements."]
+/-- The submonoid of elements that are at least `1`. -/
+@[to_additive (attr := simps) "The submonoid of nonnegative elements."]
 def oneLE : Submonoid M where
   carrier := Set.Ici 1
   mul_mem' := one_le_mul
@@ -66,7 +66,7 @@ def oneLE : Submonoid M where
 
 variable {M}
 
-@[to_additive (attr := simp) mem_nonneg] lemma mem_oneLE : a ∈ oneLE M ↔ 1 ≤ a := Iff.rfl
+@[to_additive (attr := simp)] lemma mem_oneLE : a ∈ oneLE M ↔ 1 ≤ a := Iff.rfl
 
 end Preorder
 end Submonoid

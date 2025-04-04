@@ -3,13 +3,13 @@ Copyright (c) 2021 Julian Kuelshammer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Julian Kuelshammer
 -/
+import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Data.ZMod.Basic
-import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Polynomial.Chebyshev
 import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Algebra.EuclideanDomain.Field
+import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.RingTheory.Polynomial.Chebyshev
 
 /-!
 # Dickson polynomials

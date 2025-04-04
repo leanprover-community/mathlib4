@@ -73,7 +73,7 @@ section Topological
 section Ring
 
 variable [Fintype m] [DecidableEq m] [Fintype n] [DecidableEq n] [∀ i, Fintype (n' i)]
-  [∀ i, DecidableEq (n' i)] [Field 𝕂] [Ring 𝔸] [TopologicalSpace 𝔸] [TopologicalRing 𝔸]
+  [∀ i, DecidableEq (n' i)] [Field 𝕂] [Ring 𝔸] [TopologicalSpace 𝔸] [IsTopologicalRing 𝔸]
   [Algebra 𝕂 𝔸] [T2Space 𝔸]
 
 theorem exp_diagonal (v : m → 𝔸) : exp 𝕂 (diagonal v) = diagonal (exp 𝕂 v) := by
@@ -99,8 +99,8 @@ end Ring
 
 section CommRing
 
-variable [Fintype m] [DecidableEq m] [Field 𝕂] [CommRing 𝔸] [TopologicalSpace 𝔸] [TopologicalRing 𝔸]
-  [Algebra 𝕂 𝔸] [T2Space 𝔸]
+variable [Fintype m] [DecidableEq m] [Field 𝕂] [CommRing 𝔸] [TopologicalSpace 𝔸]
+  [IsTopologicalRing 𝔸] [Algebra 𝕂 𝔸] [T2Space 𝔸]
 
 theorem exp_transpose (A : Matrix m m 𝔸) : exp 𝕂 Aᵀ = (exp 𝕂 A)ᵀ := by
   simp_rw [exp_eq_tsum, transpose_tsum, transpose_smul, transpose_pow]
@@ -124,6 +124,7 @@ nonrec theorem exp_add_of_commute (A B : Matrix m m 𝔸) (h : Commute A B) :
   letI : NormedAlgebra 𝕂 (Matrix m m 𝔸) := Matrix.linftyOpNormedAlgebra
   exact exp_add_of_commute h
 
+open scoped Function in -- required for scoped `on` notation
 nonrec theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → Matrix m m 𝔸)
     (h : (s : Set ι).Pairwise (Commute on f)) :
     exp 𝕂 (∑ i ∈ s, f i) =

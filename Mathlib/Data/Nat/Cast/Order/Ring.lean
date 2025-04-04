@@ -13,7 +13,7 @@ import Mathlib.Data.Nat.Cast.Order.Basic
 
 -/
 
-variable {α : Type*}
+variable {R α : Type*}
 
 namespace Nat
 
@@ -31,10 +31,9 @@ theorem cast_nonneg {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] (n :
   cast_nonneg' n
 
 /-- Specialisation of `Nat.ofNat_nonneg'`, which seems to be easier for Lean to use. -/
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_nonneg {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] (n : ℕ) [n.AtLeastTwo] :
-    0 ≤ (no_index (OfNat.ofNat n : α)) :=
+    0 ≤ (ofNat(n) : α) :=
   ofNat_nonneg' n
 
 @[simp, norm_cast]
@@ -57,17 +56,15 @@ theorem cast_pos {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontri
     (0 : α) < n ↔ 0 < n := cast_pos'
 
 /-- See also `Nat.ofNat_pos`, specialised for an `OrderedSemiring`. -/
--- See note [no_index around OfNat.ofNat]
 @[simp low]
-theorem ofNat_pos' {n : ℕ} [n.AtLeastTwo] : 0 < (no_index (OfNat.ofNat n : α)) :=
+theorem ofNat_pos' {n : ℕ} [n.AtLeastTwo] : 0 < (ofNat(n) : α) :=
   cast_pos'.mpr (NeZero.pos n)
 
 /-- Specialisation of `Nat.ofNat_pos'`, which seems to be easier for Lean to use. -/
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_pos {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
     {n : ℕ} [n.AtLeastTwo] :
-    0 < (no_index (OfNat.ofNat n : α)) :=
+    0 < (ofNat(n) : α) :=
   ofNat_pos'
 
 end Nontrivial
@@ -85,15 +82,22 @@ theorem cast_tsub [CommSemiring α] [PartialOrder α] [IsOrderedRing α] [Canoni
   · rcases le_iff_exists_add'.mp h with ⟨m, rfl⟩
     rw [add_tsub_cancel_right, cast_add, add_tsub_cancel_right]
 
-@[simp, norm_cast]
-theorem abs_cast [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (a : ℕ) : |(a : α)| = a :=
-  abs_of_nonneg (cast_nonneg a)
+section LinearOrderedRing
+variable [Ring R] [LinearOrder R] [IsStrictOrderedRing R] {m n : ℕ} {m n : ℕ}
 
--- See note [no_index around OfNat.ofNat]
+@[simp, norm_cast]
+theorem abs_cast (n : ℕ) : |(n : R)| = n := abs_of_nonneg n.cast_nonneg
+
 @[simp]
-theorem abs_ofNat [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (n : ℕ) [n.AtLeastTwo] :
-    |(no_index (OfNat.ofNat n : α))| = OfNat.ofNat n :=
-  abs_cast n
+theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] : |(ofNat(n) : R)| = ofNat(n) := abs_cast n
+
+@[simp, norm_cast] lemma neg_cast_eq_cast : (-m : R) = n ↔ m = 0 ∧ n = 0 := by
+  simp [neg_eq_iff_add_eq_zero, ← cast_add]
+
+@[simp, norm_cast] lemma cast_eq_neg_cast : (m : R) = -n ↔ m = 0 ∧ n = 0 := by
+  simp [eq_neg_iff_add_eq_zero, ← cast_add]
+
+end LinearOrderedRing
 
 lemma mul_le_pow {a : ℕ} (ha : a ≠ 1) (b : ℕ) :
     a * b ≤ a ^ b := by

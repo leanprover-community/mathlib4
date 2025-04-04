@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
 import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
+import Mathlib.Analysis.Asymptotics.Lemmas
 
 /-!
 # Super-Polynomial Function Decay
@@ -301,12 +300,9 @@ theorem superpolynomialDecay_iff_isBigO (hk : Tendsto k l atTop) :
     exact h (-z)
   · suffices (fun a : α => k a ^ z * f a) =O[l] fun a : α => (k a)⁻¹ from
       IsBigO.trans_tendsto this hk.inv_tendsto_atTop
-    refine
-      ((isBigO_refl (fun a => k a ^ z) l).mul (h (-(z + 1)))).trans
-        (IsBigO.of_bound 1 <| hk0.mono fun a ha0 => ?_)
-    simp only [one_mul, neg_add z 1, zpow_add₀ ha0, ← mul_assoc, zpow_neg,
-      mul_inv_cancel₀ (zpow_ne_zero z ha0), zpow_one]
-    rfl
+    refine ((isBigO_refl (fun a => k a ^ z) l).mul (h (-(z + 1)))).trans ?_
+    refine .of_bound' <| hk0.mono fun a ha0 => ?_
+    simp [← zpow_add₀ ha0]
 
 theorem superpolynomialDecay_iff_isLittleO (hk : Tendsto k l atTop) :
     SuperpolynomialDecay l k f ↔ ∀ z : ℤ, f =o[l] fun a : α => k a ^ z := by
@@ -317,8 +313,8 @@ theorem superpolynomialDecay_iff_isLittleO (hk : Tendsto k l atTop) :
       (by simpa using hk.inv_tendsto_atTop)
   have : f =o[l] fun x : α => k x * k x ^ (z - 1) := by
     simpa using this.mul_isBigO ((superpolynomialDecay_iff_isBigO f hk).1 h <| z - 1)
-  refine this.trans_isBigO (IsBigO.of_bound 1 (hk0.mono fun x hkx => le_of_eq ?_))
-  rw [one_mul, zpow_sub_one₀ hkx, mul_comm (k x), mul_assoc, inv_mul_cancel₀ hkx, mul_one]
+  refine this.trans_isBigO <| IsBigO.of_bound' <| hk0.mono fun x hkx => le_of_eq ?_
+  simp [← zpow_one_add₀ hkx]
 
 end NormedLinearOrderedField
 

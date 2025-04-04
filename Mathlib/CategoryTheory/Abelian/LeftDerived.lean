@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Riccardo Brasca, Adam Topaz, Jujian Zhang, Joël Riou
 -/
 import Mathlib.Algebra.Homology.Additive
-import Mathlib.CategoryTheory.Abelian.ProjectiveResolution
+import Mathlib.CategoryTheory.Abelian.Projective.Resolution
 
 /-!
 # Left-derived functors

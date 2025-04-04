@@ -85,25 +85,9 @@ theorem mem_subring_iff {x : ℚ_[p]} : x ∈ subring p ↔ ‖x‖ ≤ 1 := Iff
 
 variable {p}
 
-/-- Addition on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : Add ℤ_[p] := (by infer_instance : Add (subring p))
-
-/-- Multiplication on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : Mul ℤ_[p] := (by infer_instance : Mul (subring p))
-
-/-- Negation on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : Neg ℤ_[p] := (by infer_instance : Neg (subring p))
-
-/-- Subtraction on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : Sub ℤ_[p] := (by infer_instance : Sub (subring p))
-
-/-- Zero on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : Zero ℤ_[p] := (by infer_instance : Zero (subring p))
+instance instCommRing : CommRing ℤ_[p] := inferInstanceAs <| CommRing (subring p)
 
 instance : Inhabited ℤ_[p] := ⟨0⟩
-
-/-- One on `ℤ_[p]` is inherited from `ℚ_[p]`. -/
-instance : One ℤ_[p] := ⟨⟨1, by norm_num⟩⟩
 
 @[simp]
 theorem mk_zero {h} : (⟨0, h⟩ : ℤ_[p]) = (0 : ℤ_[p]) := rfl
@@ -130,21 +114,11 @@ theorem coe_zero : ((0 : ℤ_[p]) : ℚ_[p]) = 0 := rfl
 
 lemma coe_ne_zero : (x : ℚ_[p]) ≠ 0 ↔ x ≠ 0 := coe_eq_zero.not
 
-instance : AddCommGroup ℤ_[p] := (by infer_instance : AddCommGroup (subring p))
-
-instance instCommRing : CommRing ℤ_[p] := (by infer_instance : CommRing (subring p))
-
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : ℤ_[p]) : ℚ_[p]) = n := rfl
 
-@[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := coe_natCast
-
 @[simp, norm_cast]
 theorem coe_intCast (z : ℤ) : ((z : ℤ_[p]) : ℚ_[p]) = z := rfl
-
-@[deprecated (since := "2024-04-17")]
-alias coe_int_cast := coe_intCast
 
 /-- The coercion from `ℤ_[p]` to `ℚ_[p]` as a ring homomorphism. -/
 def Coe.ringHom : ℤ_[p] →+* ℚ_[p] := (subring p).subtype
@@ -165,8 +139,6 @@ instance : CharZero ℤ_[p] where
 
 @[norm_cast]
 theorem intCast_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by simp
-
-@[deprecated (since := "2024-04-05")] alias coe_int_eq := intCast_eq
 
 /-- A sequence of integers that is Cauchy with respect to the `p`-adic norm converges to a `p`-adic
 integer. -/
@@ -197,45 +169,26 @@ instance completeSpace : CompleteSpace ℤ_[p] :=
 
 instance : Norm ℤ_[p] := ⟨fun z => ‖(z : ℚ_[p])‖⟩
 
-variable {p}
-
+variable {p} in
 theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 
-variable (p)
-
-instance : NormedCommRing ℤ_[p] :=
-  { PadicInt.instCommRing with
-    dist_eq := fun ⟨_, _⟩ ⟨_, _⟩ => rfl
-    norm_mul := by simp [norm_def]
-    norm := norm }
+instance : NormedCommRing ℤ_[p] where
+  __ := instCommRing
+  dist_eq := fun ⟨_, _⟩ ⟨_, _⟩ ↦ rfl
+  norm_mul_le := by simp [norm_def]
 
 instance : NormOneClass ℤ_[p] :=
   ⟨norm_def.trans norm_one⟩
 
-instance isAbsoluteValue : IsAbsoluteValue fun z : ℤ_[p] => ‖z‖ where
-  abv_nonneg' := norm_nonneg
-  abv_eq_zero' := by simp [norm_eq_zero]
-  abv_add' := fun ⟨_, _⟩ ⟨_, _⟩ => norm_add_le _ _
-  abv_mul' _ _ := by simp only [norm_def, padicNormE.mul, PadicInt.coe_mul]
+instance : NormMulClass ℤ_[p] := ⟨fun x y ↦ by simp [norm_def]⟩
+
+instance : IsDomain ℤ_[p] := NoZeroDivisors.to_isDomain _
 
 variable {p}
-
-instance : IsDomain ℤ_[p] := Function.Injective.isDomain (subring p).subtype Subtype.coe_injective
 
 /-! ### Norm -/
 
 theorem norm_le_one (z : ℤ_[p]) : ‖z‖ ≤ 1 := z.2
-
-@[simp]
-theorem norm_mul (z1 z2 : ℤ_[p]) : ‖z1 * z2‖ = ‖z1‖ * ‖z2‖ := by simp [norm_def]
-
-@[simp]
-theorem norm_pow (z : ℤ_[p]) : ∀ n : ℕ, ‖z ^ n‖ = ‖z‖ ^ n
-  | 0 => by simp
-  | k + 1 => by
-    rw [pow_succ, pow_succ, norm_mul]
-    congr
-    apply norm_pow
 
 theorem nonarchimedean (q r : ℤ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := padicNormE.nonarchimedean _ _
 
@@ -254,9 +207,6 @@ theorem norm_eq_of_norm_add_lt_left {z1 z2 : ℤ_[p]} (h : ‖z1 + z2‖ < ‖z1
 theorem padic_norm_e_of_padicInt (z : ℤ_[p]) : ‖(z : ℚ_[p])‖ = ‖z‖ := by simp [norm_def]
 
 theorem norm_intCast_eq_padic_norm (z : ℤ) : ‖(z : ℤ_[p])‖ = ‖(z : ℚ_[p])‖ := by simp [norm_def]
-
-@[deprecated (since := "2024-04-17")]
-alias norm_int_cast_eq_padic_norm := norm_intCast_eq_padic_norm
 
 @[simp]
 theorem norm_eq_padic_norm {q : ℚ_[p]} (hq : ‖q‖ ≤ 1) : @norm ℤ_[p] _ ⟨q, hq⟩ = ‖q‖ := rfl
@@ -354,9 +304,6 @@ section Units
 
 /-! ### Units of `ℤ_[p]` -/
 
--- Porting note: `reducible` cannot be local and making it global breaks a lot of things
--- attribute [local reducible] PadicInt
-
 theorem mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
   | ⟨k, _⟩, h => by
     have hk : k ≠ 0 := fun h' => zero_ne_one' ℚ_[p] (by simp [h'] at h)
@@ -428,7 +375,6 @@ section NormLeIff
 
 /-! ### Various characterizations of open unit balls -/
 
-
 theorem norm_le_pow_iff_le_valuation (x : ℤ_[p]) (hx : x ≠ 0) (n : ℕ) :
     ‖x‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ n ≤ x.valuation := by
   rw [norm_eq_zpow_neg_valuation hx, zpow_le_zpow_iff_right₀, neg_le_neg_iff, Nat.cast_le]
@@ -479,7 +425,6 @@ end NormLeIff
 section Dvr
 
 /-! ### Discrete valuation ring -/
-
 
 instance : IsLocalRing ℤ_[p] :=
   IsLocalRing.of_nonunits_add <| by simp only [mem_nonunits]; exact fun x y => norm_lt_one_add

@@ -3,11 +3,11 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Ruben Van de Velde
 -/
-import Mathlib.Order.Atoms
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.Monoid.Basic
+import Mathlib.Order.Atoms
 
 /-!
 # Facts about ordered structures and ordered instances on subgroups
@@ -81,8 +81,7 @@ instance toIsOrderedMonoid [CommGroup G] [PartialOrder G] [IsOrderedMonoid G] (H
 end Subgroup
 
 @[to_additive]
-lemma Subsemigroup.strictMono_topEquiv {G : Type*}
-    [CommMonoid G] [PartialOrder G] :
+lemma Subsemigroup.strictMono_topEquiv {G : Type*} [CommMonoid G] [PartialOrder G] :
     StrictMono (topEquiv (M := G)) := fun _ _ ↦ id
 
 @[to_additive]
@@ -92,7 +91,6 @@ lemma MulEquiv.strictMono_subsemigroupCongr {G : Type*}
 
 @[to_additive]
 lemma MulEquiv.strictMono_symm {G G' : Type*} [CommMonoid G] [LinearOrder G]
-    [CommMonoid G'] [LinearOrder G'] {e : G ≃* G'} (he : StrictMono e) :
-    StrictMono e.symm := by
+    [CommMonoid G'] [PartialOrder G'] {e : G ≃* G'} (he : StrictMono e) : StrictMono e.symm := by
   intro
   simp [← he.lt_iff_lt]

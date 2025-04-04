@@ -3,10 +3,11 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Interval.Finset
-import Mathlib.Algebra.SMulWithZero
+import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Order.Interval.Finset.Basic
 import Mathlib.Combinatorics.Additive.FreimanHom
 import Mathlib.Order.Interval.Finset.Fin
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Sets without arithmetic progressions of length three and Roth numbers
@@ -42,6 +43,8 @@ the size of the biggest 3AP-free subset of `{0, ..., n - 1}`.
 
 3AP-free, Salem-Spencer, Roth, arithmetic progression, average, three-free
 -/
+
+assert_not_exists Field Ideal TwoSidedIdeal
 
 open Finset Function
 open scoped Pointwise

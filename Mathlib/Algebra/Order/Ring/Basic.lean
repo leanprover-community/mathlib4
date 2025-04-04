@@ -3,7 +3,6 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Parity
@@ -19,6 +18,12 @@ assert_not_exists Set.Subsingleton
 open Function Int
 
 variable {α M R : Type*}
+
+theorem IsSquare.nonneg [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
+    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
+    {x : R} (h : IsSquare x) : 0 ≤ x := by
+  rcases h with ⟨y, rfl⟩
+  exact mul_self_nonneg y
 
 namespace MonoidHom
 
@@ -59,14 +64,8 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
 
 attribute [bound] pow_le_one₀ one_le_pow₀
 
-@[deprecated (since := "2024-09-28")] alias mul_le_one := mul_le_one₀
-@[deprecated (since := "2024-09-28")] alias pow_le_one := pow_le_one₀
-@[deprecated (since := "2024-09-28")] alias pow_lt_one := pow_lt_one₀
-@[deprecated (since := "2024-09-28")] alias one_le_pow_of_one_le := one_le_pow₀
-@[deprecated (since := "2024-09-28")] alias one_lt_pow := one_lt_pow₀
 @[deprecated (since := "2024-10-04")] alias pow_right_mono := pow_right_mono₀
 @[deprecated (since := "2024-10-04")] alias pow_le_pow_right := pow_le_pow_right₀
-@[deprecated (since := "2024-10-04")] alias le_self_pow := le_self_pow₀
 
 @[deprecated pow_le_pow_left₀ (since := "2024-11-13")]
 theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^ n :=
@@ -181,6 +180,10 @@ theorem sq_eq_sq {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 = b ^ 2 ↔ a =
 @[deprecated lt_of_mul_self_lt_mul_self₀ (since := "2024-11-12")]
 theorem lt_of_mul_self_lt_mul_self (hb : 0 ≤ b) : a * a < b * b → a < b :=
   lt_of_mul_self_lt_mul_self₀ hb
+
+/-- A function `f : α → R` is nonarchimedean if it satisfies the ultrametric inequality
+  `f (a + b) ≤ max (f a) (f b)` for all `a b : α`. -/
+def IsNonarchimedean {α : Type*} [Add α] (f : α → R) : Prop := ∀ a b : α, f (a + b) ≤ f a ⊔ f b
 
 /-!
 ### Lemmas for canonically linear ordered semirings or linear ordered rings

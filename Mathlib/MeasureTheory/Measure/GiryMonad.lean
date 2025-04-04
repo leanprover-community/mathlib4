@@ -38,7 +38,7 @@ namespace MeasureTheory
 
 namespace Measure
 
-variable [MeasurableSpace α] [MeasurableSpace β]
+variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
 /-- Measurability structure on `Measure`: Measures are measurable w.r.t. all projections -/
 instance instMeasurableSpace : MeasurableSpace (Measure α) :=
@@ -85,17 +85,20 @@ theorem _root_.Measurable.measure_of_isPiSystem_of_isProbabilityMeasure {μ : α
     (h_basic : ∀ s ∈ S, Measurable fun a ↦ μ a s) : Measurable μ :=
   .measure_of_isPiSystem hgen hpi h_basic <| by simp
 
+@[fun_prop]
 theorem measurable_map (f : α → β) (hf : Measurable f) :
     Measurable fun μ : Measure α => map f μ := by
   refine measurable_of_measurable_coe _ fun s hs => ?_
   simp_rw [map_apply hf hs]
   exact measurable_coe (hf hs)
 
+@[fun_prop]
 theorem measurable_dirac : Measurable (Measure.dirac : α → Measure α) := by
   refine measurable_of_measurable_coe _ fun s hs => ?_
   simp_rw [dirac_apply' _ hs]
   exact measurable_one.indicator hs
 
+@[fun_prop]
 theorem measurable_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun μ : Measure α => ∫⁻ x, f x ∂μ := by
   simp only [lintegral_eq_iSup_eapprox_lintegral, hf, SimpleFunc.lintegral]
@@ -124,6 +127,7 @@ theorem join_zero : (0 : Measure (Measure α)).join = 0 := by
   ext1 s hs
   simp only [hs, join_apply, lintegral_zero_measure, coe_zero, Pi.zero_apply]
 
+@[fun_prop]
 theorem measurable_join : Measurable (join : Measure (Measure α) → Measure α) :=
   measurable_of_measurable_coe _ fun s hs => by
     simp only [join_apply hs]; exact measurable_lintegral (measurable_coe hs)
@@ -144,7 +148,7 @@ theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : 
   intro s f hf hm
   rw [lintegral_iSup _ hm]
   swap
-  · exact fun n => Finset.measurable_sum _ fun r _ => (hf _ _).const_mul _
+  · fun_prop
   congr
   funext n
   rw [lintegral_finset_sum (s n)]
@@ -157,7 +161,7 @@ def bind (m : Measure α) (f : α → Measure β) : Measure β :=
   join (map f m)
 
 @[simp]
-theorem bind_zero_left (f : α → Measure β) : bind 0 f = 0 := by simp [bind]
+theorem bind_zero_left (f : α → Measure β) : bind (0 : Measure α) f = 0 := by simp [bind]
 
 @[simp]
 theorem bind_zero_right (m : Measure α) : bind m (0 : α → Measure β) = 0 := by
@@ -180,7 +184,9 @@ lemma bind_const {m : Measure α} {ν : Measure β} : m.bind (fun _ ↦ ν) = m 
   ext s hs
   rw [bind_apply hs measurable_const, lintegral_const, smul_apply, smul_eq_mul, mul_comm]
 
-theorem measurable_bind' {g : α → Measure β} (hg : Measurable g) : Measurable fun m => bind m g :=
+@[fun_prop]
+theorem measurable_bind' {g : α → Measure β} (hg : Measurable g) :
+    Measurable fun m : Measure α => bind m g :=
   measurable_join.comp (measurable_map _ hg)
 
 theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ≥0∞} (hμ : Measurable μ)
@@ -190,7 +196,8 @@ theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ
 theorem bind_bind {γ} [MeasurableSpace γ] {m : Measure α} {f : α → Measure β} {g : β → Measure γ}
     (hf : Measurable f) (hg : Measurable g) : bind (bind m f) g = bind m fun a => bind (f a) g := by
   ext1 s hs
-  erw [bind_apply hs hg, bind_apply hs ((measurable_bind' hg).comp hf),
+  rw [bind_apply hs hg]
+  erw [bind_apply hs ((measurable_bind' hg).comp hf),
     lintegral_bind hf ((measurable_coe hs).comp hg)]
   conv_rhs => enter [2, a]; erw [bind_apply hs hg]
   rfl
@@ -211,7 +218,7 @@ lemma bind_dirac_eq_map (m : Measure α) {f : α → β} (hf : Measurable f) :
     m.bind (fun x ↦ Measure.dirac (f x)) = m.map f := by
   ext s hs
   rw [bind_apply hs]
-  swap; · exact measurable_dirac.comp hf
+  swap; · fun_prop
   simp_rw [dirac_apply' _ hs]
   rw [← lintegral_map _ hf, lintegral_indicator_one hs]
   exact measurable_const.indicator hs

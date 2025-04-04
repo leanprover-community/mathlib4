@@ -168,8 +168,8 @@ and `Lifting₂ L₁ L₂ W₁ W₂ F₂ F₂'` hold. -/
 noncomputable def lift₂NatIso (e : F₁ ≅ F₂) : F₁' ≅ F₂' where
   hom := lift₂NatTrans L₁ L₂ W₁ W₂ F₁ F₂ F₁' F₂' e.hom
   inv := lift₂NatTrans L₁ L₂ W₁ W₂ F₂ F₁ F₂' F₁' e.inv
-  hom_inv_id := natTrans₂_ext L₁ L₂ W₁ W₂ (by aesop_cat)
-  inv_hom_id := natTrans₂_ext L₁ L₂ W₁ W₂ (by aesop_cat)
+  hom_inv_id := natTrans₂_ext L₁ L₂ W₁ W₂ (by simp)
+  inv_hom_id := natTrans₂_ext L₁ L₂ W₁ W₂ (by simp)
 
 end
 

@@ -23,7 +23,7 @@ variable {ι κ α : Type*}
 
 section NonUnitalNonAssocSemiring
 
-variable [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiring α] {f : ι → α}
+variable [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [IsTopologicalSemiring α] {f : ι → α}
   {a₁ : α}
 
 theorem HasSum.mul_left (a₂) (h : HasSum f a₁) : HasSum (fun i ↦ a₂ * f i) (a₂ * a₁) := by
@@ -63,7 +63,8 @@ end NonUnitalNonAssocSemiring
 
 section DivisionSemiring
 
-variable [DivisionSemiring α] [TopologicalSpace α] [TopologicalSemiring α] {f : ι → α} {a a₁ a₂ : α}
+variable [DivisionSemiring α] [TopologicalSpace α] [IsTopologicalSemiring α]
+    {f : ι → α} {a a₁ a₂ : α}
 
 theorem HasSum.div_const (h : HasSum f a) (b : α) : HasSum (fun i ↦ f i / b) (a / b) := by
   simp only [div_eq_mul_inv, h.mul_right b⁻¹]
@@ -106,7 +107,7 @@ theorem tsum_mul_right [T2Space α] : ∑' x, f x * a = (∑' x, f x) * a := by
 theorem tsum_div_const [T2Space α] : ∑' x, f x / a = (∑' x, f x) / a := by
   simpa only [div_eq_mul_inv] using tsum_mul_right
 
-theorem HasSum.const_div (h :  HasSum (fun x ↦ 1 / f x) a) (b : α) :
+theorem HasSum.const_div (h : HasSum (fun x ↦ 1 / f x) a) (b : α) :
     HasSum (fun i ↦ b / f i) (b * a) := by
   have := h.mul_left b
   simpa only [div_eq_mul_inv, one_mul] using this
@@ -142,7 +143,7 @@ We first establish results about arbitrary index types, `ι` and `κ`, and then 
 
 section tsum_mul_tsum
 
-variable [TopologicalSpace α] [T3Space α] [NonUnitalNonAssocSemiring α] [TopologicalSemiring α]
+variable [TopologicalSpace α] [T3Space α] [NonUnitalNonAssocSemiring α] [IsTopologicalSemiring α]
   {f : ι → α} {g : κ → α} {s t u : α}
 
 theorem HasSum.mul_eq (hf : HasSum f s) (hg : HasSum g t)
@@ -193,7 +194,7 @@ theorem summable_mul_prod_iff_summable_mul_sigma_antidiagonal :
       Summable fun x : Σn : A, antidiagonal n ↦ f (x.2 : A × A).1 * g (x.2 : A × A).2 :=
   Finset.sigmaAntidiagonalEquivProd.summable_iff.symm
 
-variable [T3Space α] [TopologicalSemiring α]
+variable [T3Space α] [IsTopologicalSemiring α]
 
 theorem summable_sum_mul_antidiagonal_of_summable_mul
     (h : Summable fun x : A × A ↦ f x.1 * g x.2) :
@@ -221,7 +222,7 @@ end HasAntidiagonal
 section Nat
 
 variable [TopologicalSpace α] [NonUnitalNonAssocSemiring α] {f g : ℕ → α}
-variable [T3Space α] [TopologicalSemiring α]
+variable [T3Space α] [IsTopologicalSemiring α]
 
 theorem summable_sum_mul_range_of_summable_mul (h : Summable fun x : ℕ × ℕ ↦ f x.1 * g x.2) :
     Summable fun n ↦ ∑ k ∈ range (n + 1), f k * g (n - k) := by

@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!
 # Tensor product of an indexed family of modules over commutative semirings
@@ -270,8 +271,7 @@ instance : SMulCommClass R R (⨂[R] i, s i) :=
 instance : IsScalarTower R R (⨂[R] i, s i) :=
   PiTensorProduct.isScalarTower'
 
-variable (R)
-
+variable (R) in
 /-- The canonical `MultilinearMap R s (⨂[R] i, s i)`.
 
 `tprod R fun i => f i` has notation `⨂ₜ[R] i, f i`. -/
@@ -279,9 +279,7 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
   toFun := tprodCoeff R 1
   map_update_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
   map_update_smul' {_ f} i r x := by
-    rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_same]
-
-variable {R}
+    rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_self]
 
 unsuppress_compilation in
 @[inherit_doc tprod]
@@ -301,11 +299,14 @@ equal to the sum of `a • ⨂ₜ[R] i, m i` over all the entries `(a, m)` of `p
 -/
 lemma _root_.FreeAddMonoid.toPiTensorProduct (p : FreeAddMonoid (R × Π i, s i)) :
     AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p =
-    List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p) := by
+    List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p.toList) := by
+  -- TODO: this is defeq abuse: `p` is not a `List`.
   match p with
-  | [] => rw [List.map_nil, List.sum_nil]; rfl
-  | x :: ps => rw [List.map_cons, List.sum_cons, ← List.singleton_append, ← toPiTensorProduct ps,
-                 ← tprodCoeff_eq_smul_tprod]; rfl
+  | [] => rw [FreeAddMonoid.toList_nil, List.map_nil, List.sum_nil]; rfl
+  | x :: ps =>
+    rw [FreeAddMonoid.toList_cons, List.map_cons, List.sum_cons, ← List.singleton_append,
+      ← toPiTensorProduct ps, ← tprodCoeff_eq_smul_tprod]
+    rfl
 
 /-- The set of lifts of an element `x` of `⨂[R] i, s i` in `FreeAddMonoid (R × Π i, s i)`. -/
 def lifts (x : ⨂[R] i, s i) : Set (FreeAddMonoid (R × Π i, s i)) :=
@@ -316,7 +317,7 @@ if and only if `x` is equal to the sum of `a • ⨂ₜ[R] i, m i` over all the 
 `(a, m)` of `p`.
 -/
 lemma mem_lifts_iff (x : ⨂[R] i, s i) (p : FreeAddMonoid (R × Π i, s i)) :
-    p ∈ lifts x ↔ List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p) = x := by
+    p ∈ lifts x ↔ List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p.toList) = x := by
   simp only [lifts, Set.mem_setOf_eq, FreeAddMonoid.toPiTensorProduct]
 
 /-- Every element of `⨂[R] i, s i` has a lift in `FreeAddMonoid (R × Π i, s i)`.
@@ -345,12 +346,10 @@ and if `a` is an element of `R`, then the list obtained by multiplying the first
 element of `p` by `a` lifts `a • x`.
 -/
 lemma lifts_smul {x : ⨂[R] i, s i} {p : FreeAddMonoid (R × Π i, s i)} (h : p ∈ lifts x) (a : R) :
-    List.map (fun (y : R × Π i, s i) ↦ (a * y.1, y.2)) p ∈ lifts (a • x) := by
+    p.map (fun (y : R × Π i, s i) ↦ (a * y.1, y.2)) ∈ lifts (a • x) := by
   rw [mem_lifts_iff] at h ⊢
-  rw [← List.comp_map, ← h, List.smul_sum, ← List.comp_map]
-  congr 2
-  ext _
-  simp only [comp_apply, smul_smul]
+  rw [← h]
+  simp [Function.comp_def, mul_smul, List.smul_sum]
 
 /-- Induct using scaled versions of `PiTensorProduct.tprod`. -/
 @[elab_as_elim]
@@ -526,10 +525,10 @@ theorem map_id : map (fun i ↦ (LinearMap.id : s i →ₗ[R] s i)) = .id := by
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, LinearMap.id_coe, id_eq]
 
 @[simp]
-theorem map_one : map (fun (i : ι) ↦ (1 : s i →ₗ[R] s i)) = 1 :=
+protected theorem map_one : map (fun (i : ι) ↦ (1 : s i →ₗ[R] s i)) = 1 :=
   map_id
 
-theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
+protected theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
     map (fun i ↦ f₁ i * f₂ i) = map f₁ * map f₂ :=
   map_comp f₁ f₂
 
@@ -537,8 +536,8 @@ theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
 @[simps]
 def mapMonoidHom : (Π i, s i →ₗ[R] s i) →* ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, s i) where
   toFun := map
-  map_one' := map_one
-  map_mul' := map_mul
+  map_one' := PiTensorProduct.map_one
+  map_mul' := PiTensorProduct.map_mul
 
 @[simp]
 protected theorem map_pow (f : Π i, s i →ₗ[R] s i) (n : ℕ) :
@@ -831,7 +830,7 @@ def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[
     dsimp only
     have : ∀ (f : ι → M) (z : M), (fun _ : ι ↦ z) = update f i₀ z := fun f z ↦ by
       ext i
-      rw [Subsingleton.elim i i₀, Function.update_same]
+      rw [Subsingleton.elim i i₀, Function.update_self]
     refine x.induction_on ?_ ?_
     · intro r f
       simp only [LinearMap.map_smul, LinearMap.id_apply, lift.tprod, ofSubsingleton_apply_apply,

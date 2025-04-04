@@ -3,11 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Monoid.Units
-import Mathlib.Order.Hom.Basic
 
 /-!
 # Ordered monoid and group homomorphisms
@@ -752,7 +750,7 @@ variable (α)
 protected def id : α →*₀o α :=
   { MonoidWithZeroHom.id α, OrderHom.id with }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(OrderMonoidWithZeroHom.id α) = id :=
   rfl
 

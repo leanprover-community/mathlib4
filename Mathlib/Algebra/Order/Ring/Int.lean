@@ -44,12 +44,6 @@ lemma isCompl_even_odd : IsCompl { n : ℤ | Even n } { n | Odd n } := by
 lemma _root_.Nat.cast_natAbs {α : Type*} [AddGroupWithOne α] (n : ℤ) : (n.natAbs : α) = |n| := by
   rw [← natCast_natAbs, Int.cast_natCast]
 
-/-- Note this holds in marginally more generality than `Int.cast_mul` -/
-lemma cast_mul_eq_zsmul_cast {α : Type*} [AddCommGroupWithOne α] :
-    ∀ m n : ℤ, ↑(m * n) = m • (n : α) :=
-  fun m ↦ Int.induction_on m (by simp) (fun _ ih ↦ by simp [add_mul, add_zsmul, ih]) fun _ ih ↦ by
-    simp only [sub_mul, one_mul, cast_sub, ih, sub_zsmul, one_zsmul, ← sub_eq_add_neg, forall_const]
-
 lemma two_le_iff_pos_of_even {m : ℤ} (even : Even m) : 2 ≤ m ↔ 0 < m :=
   le_iff_pos_of_dvd (by decide) even.two_dvd
 

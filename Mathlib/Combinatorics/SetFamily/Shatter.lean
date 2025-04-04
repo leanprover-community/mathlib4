@@ -3,10 +3,10 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Combinatorics.SetFamily.Compression.Down
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Shattering families

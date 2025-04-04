@@ -114,7 +114,7 @@ theorem hasDerivAt_sqrt_mul_log {x : ℝ} (hx : x ≠ 0) :
 
 theorem deriv_sqrt_mul_log (x : ℝ) :
     deriv (fun x => √x * log x) x = (2 + log x) / (2 * √x) := by
-  cases' lt_or_le 0 x with hx hx
+  rcases lt_or_le 0 x with hx | hx
   · exact (hasDerivAt_sqrt_mul_log hx.ne').deriv
   · rw [sqrt_eq_zero_of_nonpos hx, mul_zero, div_zero]
     refine HasDerivWithinAt.deriv_eq_zero ?_ (uniqueDiffOn_Iic 0 x hx)

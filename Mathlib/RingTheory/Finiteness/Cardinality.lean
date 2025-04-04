@@ -20,7 +20,8 @@ open Finsupp
 
 section ModuleAndAlgebra
 
-variable (R A B M N : Type*)
+universe v u
+variable (R : Type u) (A B M N : Type*)
 
 namespace Module
 
@@ -30,17 +31,18 @@ namespace Finite
 
 open Submodule Set
 
-variable {R M N}
-
-variable (R M) in
+/-- A finite module admits a surjective linear map from a finite free module. -/
 lemma exists_fin' [Module.Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
   have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
   refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
   rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
 
-variable (R) in
+variable {M}
+
 lemma _root_.Module.finite_of_finite [Finite R] [Module.Finite R M] : Finite M := by
   obtain ⟨n, f, hf⟩ := exists_fin' R M; exact .of_surjective f hf
+
+variable {R}
 
 @[deprecated (since := "2024-10-13")]
 alias _root_.FiniteDimensional.finite_of_finite := finite_of_finite
