@@ -305,10 +305,35 @@ theorem IntegrableOn.swap [SFinite μ] {f : α × β → E} {s : Set α} {t : Se
 omit [SFinite ν] in
 theorem Integrable.comp_fst [IsFiniteMeasure ν] {f : α → E} (hf : Integrable f μ) :
     Integrable (f ·.1) (μ.prod ν) := by
-  refine (integrable_prod_iff hf.1.fst).2 ⟨.of_forall fun x ↦ integrable_const (f x), ?_⟩
-  simp only [integral_const, ← Pi.smul_def]
-  apply Integrable.smul
-  exact hf.norm
+  constructor
+  · exact hf.1.fst
+  · simp only [HasFiniteIntegral, lintegral_prod _ hf.1.fst.enorm, lintegral_const,
+      lintegral_mul_const' _ _ (measure_ne_top _ _)]
+    exact ENNReal.mul_lt_top hf.2 (measure_lt_top _ _)
+
+theorem Integrable.comp_snd [IsFiniteMeasure μ] {f : β → E} (hf : Integrable f ν) :
+    Integrable (f ·.2) (μ.prod ν) := by
+  constructor
+  · exact hf.1.snd
+  · simp only [HasFiniteIntegral, lintegral_prod _ hf.1.snd.enorm, lintegral_const,
+      lintegral_mul_const' _ _ (measure_ne_top _ _)]
+    exact ENNReal.mul_lt_top hf.2 (measure_lt_top _ _)
+
+theorem Integrable.of_comp_fst {f : α → E} (hf : Integrable (f ·.1) (μ.prod ν)) (hν : ν ≠ 0) :
+    Integrable f μ := by
+  have := hf.1.prodMk_left
+  sorry
+
+theorem Integrable.of_comp_snd {f : β → E} (hf : Integrable (f ·.2) (μ.prod ν)) (hμ : μ ≠ 0) :
+    Integrable f ν := by
+  rcases hf with ⟨hf_meas, hf_fin⟩
+  constructor
+  · have := NeZero.mk hμ
+    simpa using hf_meas.prodMk_left
+  · simp only [HasFiniteIntegral, lintegral_prod _ hf_meas.enorm, lintegral_const,
+      ENNReal.mul_lt_top_iff, measure_univ_eq_zero, hμ, or_false] at hf_fin ⊢
+
+  sorry
 
 end
 
