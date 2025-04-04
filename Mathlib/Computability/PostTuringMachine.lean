@@ -845,14 +845,14 @@ variable {Γ : Type*}
 
 theorem exists_enc_dec [Inhabited Γ] [Finite Γ] :
     ∃ (n : ℕ) (enc : Γ → List.Vector Bool n) (dec : List.Vector Bool n → Γ),
-      enc default = Vector.replicate n false ∧ ∀ a, dec (enc a) = a := by
+      enc default = List.Vector.replicate n false ∧ ∀ a, dec (enc a) = a := by
   rcases Finite.exists_equiv_fin Γ with ⟨n, ⟨e⟩⟩
   letI : DecidableEq Γ := e.decidableEq
   let G : Fin n ↪ Fin n → Bool :=
     ⟨fun a b ↦ a = b, fun a b h ↦
       Bool.of_decide_true <| (congr_fun h b).trans <| Bool.decide_true rfl⟩
   let H := (e.toEmbedding.trans G).trans (Equiv.vectorEquivFin _ _).symm.toEmbedding
-  let enc := H.setValue default (Vector.replicate n false)
+  let enc := H.setValue default (List.Vector.replicate n false)
   exact ⟨_, enc, Function.invFun enc, H.setValue_eq _ _, Function.leftInverse_invFun enc.2⟩
 
 variable (Γ)
@@ -935,7 +935,7 @@ theorem supportsStmt_read {S : Finset (Λ' Γ Λ σ)} :
 variable (M : Λ → TM1.Stmt Γ Λ σ)
 
 section
-variable [Inhabited Γ] (enc0 : enc default = Vector.replicate n false)
+variable [Inhabited Γ] (enc0 : enc default = List.Vector.replicate n false)
 
 section
 variable {enc}
@@ -945,7 +945,8 @@ def trTape' (L R : ListBlank Γ) : Tape Bool := by
   refine
       Tape.mk' (L.flatMap (fun x ↦ (enc x).toList.reverse) ⟨n, ?_⟩)
         (R.flatMap (fun x ↦ (enc x).toList) ⟨n, ?_⟩) <;>
-    simp only [enc0, Vector.replicate, List.reverse_replicate, Bool.default_bool, Vector.toList_mk]
+    simp only [enc0, List.Vector.replicate, List.reverse_replicate, Bool.default_bool,
+      Vector.toList_mk]
 
 /-- The low level tape corresponding to the given tape over alphabet `Γ`. -/
 def trTape (T : Tape Γ) : Tape Bool :=

@@ -93,7 +93,7 @@ theorem nextOr_mem {xs : List α} {x d : α} (hd : d ∈ xs) : nextOr xs x d ∈
   · exact hd
   rw [nextOr]
   split_ifs with h
-  · exact hxs' _ (mem_cons_of_mem _ (mem_cons_self _ _))
+  · exact hxs' _ (mem_cons_of_mem _ mem_cons_self)
   · exact ih fun _ h => hxs' _ (mem_cons_of_mem _ h)
 
 /-- Given an element `x : α` of `l : List α` such that `x ∈ l`, get the next
@@ -230,7 +230,7 @@ theorem prev_mem (h : x ∈ l) : l.prev x h ∈ l := by
       exact mem_cons_of_mem _ (getLast_mem _)
     · rw [prev, dif_neg hx]
       split_ifs with hm
-      · exact mem_cons_self _ _
+      · exact mem_cons_self
       · exact mem_cons_of_mem _ (hl _ _)
 
 theorem next_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
@@ -470,7 +470,7 @@ theorem mem_coe_iff {a : α} {l : List α} : a ∈ (↑l : Cycle α) ↔ a ∈ l
 
 @[simp]
 theorem not_mem_nil : ∀ a, a ∉ @nil α :=
-  List.not_mem_nil
+  fun _ => List.not_mem_nil
 
 instance [DecidableEq α] : DecidableEq (Cycle α) := fun s₁ s₂ =>
   Quotient.recOnSubsingleton₂' s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq''
@@ -512,7 +512,7 @@ theorem length_nil : length (@nil α) = 0 :=
 
 @[simp]
 theorem length_reverse (s : Cycle α) : s.reverse.length = s.length :=
-  Quot.inductionOn s List.length_reverse
+  Quot.inductionOn s fun _ => List.length_reverse
 
 /-- A `s : Cycle α` that is at most one element. -/
 def Subsingleton (s : Cycle α) : Prop :=
@@ -890,7 +890,7 @@ theorem chain_iff_pairwise [IsTrans α r] : Chain r s ↔ ∀ a ∈ s, ∀ b ∈
 theorem Chain.eq_nil_of_irrefl [IsTrans α r] [IsIrrefl α r] (h : Chain r s) : s = Cycle.nil := by
   induction' s with a l _ h
   · rfl
-  · have ha := mem_cons_self a l
+  · have ha : a ∈ a :: l := mem_cons_self
     exact (irrefl_of r a <| chain_iff_pairwise.1 h a ha a ha).elim
 
 theorem Chain.eq_nil_of_well_founded [IsWellFounded α r] (h : Chain r s) : s = Cycle.nil :=

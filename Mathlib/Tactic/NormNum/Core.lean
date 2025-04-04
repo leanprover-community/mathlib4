@@ -240,7 +240,7 @@ def normNumAt (g : MVarId) (ctx : Simp.Context) (fvarIdsToSimp : Array FVarId)
     let r ← deriveSimp ctx useSimp type
     match r.proof? with
     | some _ =>
-      let some (value, type) ← applySimpResultToProp g (mkFVar fvarId) type r
+      let some (value, type) ← applySimpResult g (mkFVar fvarId) type r
         | return none
       toAssert := toAssert.push { userName := localDecl.userName, type, value }
     | none =>

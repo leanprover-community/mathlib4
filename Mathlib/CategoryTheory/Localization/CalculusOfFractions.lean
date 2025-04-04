@@ -578,7 +578,6 @@ noncomputable def lift (F : C ⥤ E) (hF : W.IsInvertedBy F) :
   map {_ _ : C} f := f.map F hF
   map_id := by
     intro (X : C)
-    dsimp
     change (Hom.mk (ofHom W (𝟙 X))).map F hF = _
     rw [Hom.map_mk, map_ofHom, F.map_id]
   map_comp := by

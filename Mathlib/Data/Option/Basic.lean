@@ -89,14 +89,17 @@ theorem bind_eq_some' {x : Option α} {f : α → Option β} {b : β} :
     x.bind f = some b ↔ ∃ a, x = some a ∧ f a = some b := by
   cases x <;> simp
 
-theorem bind_congr {f g : α → Option β} {x : Option α}
-    (h : ∀ a ∈ x, f a = g a) : x.bind f = x.bind g := by
-  cases x <;> simp only [some_bind, none_bind, mem_def, h]
-
 @[congr]
 theorem bind_congr' {f g : α → Option β} {x y : Option α} (hx : x = y)
     (hf : ∀ a ∈ y, f a = g a) : x.bind f = y.bind g :=
   hx.symm ▸ bind_congr hf
+
+@[deprecated bind_congr (since := "2025-03-20")]
+-- This was renamed from `bind_congr` after https://github.com/leanprover/lean4/pull/7529
+-- upstreamed it with a slightly different statement.
+theorem bind_congr'' {f g : α → Option β} {x : Option α}
+    (h : ∀ a ∈ x, f a = g a) : x.bind f = x.bind g := by
+  cases x <;> simp only [some_bind, none_bind, mem_def, h]
 
 theorem joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl

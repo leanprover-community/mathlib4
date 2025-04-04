@@ -469,7 +469,6 @@ def liftMonoid : (α →* R) ≃ (FreeAbelianGroup α →+* R) where
     toFun := lift f
     map_one' := (lift.of f _).trans f.map_one
     map_mul' := fun x y ↦ by
-      simp only
       refine FreeAbelianGroup.induction_on y
           (by simp only [mul_zero, map_zero]) (fun L2 ↦ ?_) (fun L2 ih ↦ ?_) ?_
       · refine FreeAbelianGroup.induction_on x

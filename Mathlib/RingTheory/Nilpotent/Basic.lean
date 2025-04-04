@@ -11,6 +11,8 @@ import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Lattice
 import Mathlib.RingTheory.Nilpotent.Defs
 
+import Mathlib.Algebra.BigOperators.Finprod
+
 /-!
 # Nilpotent elements
 
@@ -161,6 +163,15 @@ protected lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
   · exact ih (fun i hi ↦ hnp i (by simp [hi]))
       (fun i j hi hj ↦ h_comm i j (by simp [hi]) (by simp [hj]))
 
+theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
+    (hf : ∀ b, IsNilpotent (f b)) (h_comm : ∀ i j, Commute (f i) (f j)) :
+    IsNilpotent (finsum f) := by
+  classical
+  by_cases h : Set.Finite f.support
+  · rw [finsum_def, dif_pos h]
+    exact Commute.isNilpotent_sum (fun b _ ↦ hf b) (fun _ _ _ _ ↦ h_comm _ _)
+  · simp only [finsum_def, dif_neg h, IsNilpotent.zero]
+
 protected lemma isNilpotent_mul_left_iff (h_comm : Commute x y) (hy : y ∈ nonZeroDivisorsLeft R) :
     IsNilpotent (x * y) ↔ IsNilpotent x := by
   refine ⟨?_, h_comm.isNilpotent_mul_left⟩
@@ -200,6 +211,11 @@ lemma isNilpotent_sum {ι : Type*} {s : Finset ι} {f : ι → R}
     (hnp : ∀ i ∈ s, IsNilpotent (f i)) :
     IsNilpotent (∑ i ∈ s, f i) :=
   Commute.isNilpotent_sum hnp fun _ _ _ _ ↦ Commute.all _ _
+
+theorem isNilpotent_finsum {ι : Type*} {f : ι → R}
+    (hf : ∀ b, IsNilpotent (f b)) :
+    IsNilpotent (finsum f) :=
+  Commute.isNilpotent_finsum hf fun _ _ ↦ Commute.all _ _
 
 end CommSemiring
 

@@ -346,7 +346,7 @@ theorem Blunt.salient {S : ConvexCone 𝕜 E} : S.Blunt → S.Salient := by
 /-- A pointed convex cone defines a preorder. -/
 def toPreorder (h₁ : S.Pointed) : Preorder E where
   le x y := y - x ∈ S
-  le_refl x := by change x - x ∈ S; rw [sub_self x]; exact h₁
+  le_refl x := by rw [sub_self x]; exact h₁
   le_trans x y z xy zy := by simpa using add_mem S zy xy
 
 /-- A pointed and salient cone defines a partial order. -/

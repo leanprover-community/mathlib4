@@ -196,8 +196,8 @@ theorem cardQuot_mul [IsDedekindDomain S] [Module.Free ℤ S] (I J : Ideal S) :
 noncomputable def Ideal.absNorm [Nontrivial S] [IsDedekindDomain S] [Module.Free ℤ S] :
     Ideal S →*₀ ℕ where
   toFun := Submodule.cardQuot
-  map_mul' I J := by dsimp only; rw [cardQuot_mul]
-  map_one' := by dsimp only; rw [Ideal.one_eq_top, cardQuot_top]
+  map_mul' I J := by rw [cardQuot_mul]
+  map_one' := by rw [Ideal.one_eq_top, cardQuot_top]
   map_zero' := by
     have : Infinite S := Module.Free.infinite ℤ S
     rw [Ideal.zero_eq_bot, cardQuot_bot]

@@ -93,7 +93,7 @@ noncomputable def bind.bindStruct {S : Presieve X} {R : ∀ ⦃Y⦄ ⦃f : Y ⟶
     {Z : C} {h : Z ⟶ X} (H : bind S R h) : BindStruct S R h :=
   Nonempty.some (by
     obtain ⟨Y, g, f, hf, hg, fac⟩ := H
-    exact ⟨{ hf := hf, hg := hg, fac := fac }⟩)
+    exact ⟨{ hf := hf, hg := hg, fac := fac, .. }⟩)
 
 lemma BindStruct.bind {S : Presieve X} {R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Presieve Y}
     {Z : C} {h : Z ⟶ X} (b : BindStruct S R h) : bind S R h :=

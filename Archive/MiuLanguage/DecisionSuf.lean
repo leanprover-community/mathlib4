@@ -249,15 +249,14 @@ theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count 
   · rfl
   · cases x
     · -- case `x = M` gives a contradiction.
-      exfalso; exact hm (mem_cons_self M xs)
+      exfalso; exact hm mem_cons_self
     · -- case `x = I`
       rw [count_cons, beq_self_eq_true, if_pos rfl, length, succ_inj']
       apply hxs
       · simpa only [count]
       · rw [mem_cons, not_or] at hm; exact hm.2
     · -- case `x = U` gives a contradiction.
-      exfalso
-      simp only [count, countP_cons_of_pos (· == U) _ (rfl : U == U), reduceCtorEq] at hu
+      simp_all
 
 /-- `base_case_suf` is the base case of the sufficiency result.
 -/

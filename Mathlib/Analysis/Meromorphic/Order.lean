@@ -176,11 +176,11 @@ The order of a sum is at least the minimum of the orders of the summands.
 theorem order_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x) :
     min hf₁.order hf₂.order ≤ (hf₁.add hf₂).order := by
   -- Handle the trivial cases where one of the orders equals ⊤
-  by_cases h₂f₁: hf₁.order = ⊤
+  by_cases h₂f₁ : hf₁.order = ⊤
   · rw [h₂f₁, min_top_left, (hf₁.add hf₂).order_congr]
     filter_upwards [hf₁.order_eq_top_iff.1 h₂f₁]
     simp
-  by_cases h₂f₂: hf₂.order = ⊤
+  by_cases h₂f₂ : hf₂.order = ⊤
   · simp only [h₂f₂, le_top, inf_of_le_left]
     rw [(hf₁.add hf₂).order_congr]
     filter_upwards [hf₂.order_eq_top_iff.1 h₂f₂]

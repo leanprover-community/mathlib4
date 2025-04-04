@@ -157,7 +157,7 @@ theorem length_eq_three {v : FreeMonoid α} : v.length = 3 ↔ ∃ (a b c : α),
 
 @[to_additive (attr := simp)]
 theorem length_mul (a b : FreeMonoid α) : (a * b).length = a.length + b.length :=
-  List.length_append _ _
+  List.length_append
 
 @[to_additive (attr := simp)]
 theorem of_ne_one (a : α) : of a ≠ 1 := by
@@ -181,7 +181,7 @@ def mem (a : FreeMonoid α) (m : α) := m ∈ toList a
 instance : Membership α (FreeMonoid α) := ⟨mem⟩
 
 @[to_additive]
-theorem not_mem_one : ¬ m ∈ (1 : FreeMonoid α) := List.not_mem_nil _
+theorem not_mem_one : ¬ m ∈ (1 : FreeMonoid α) := List.not_mem_nil
 
 @[to_additive (attr := simp)]
 theorem mem_of {n : α} : m ∈ of n ↔ m = n := List.mem_singleton
@@ -312,7 +312,7 @@ theorem hom_map_lift (g : M →* N) (f : α → M) (x : FreeMonoid α) : g (lift
 def mkMulAction (f : α → β → β) : MulAction (FreeMonoid α) β where
   smul l b := l.toList.foldr f b
   one_smul _ := rfl
-  mul_smul _ _ _ := List.foldr_append _ _ _ _
+  mul_smul _ _ _ := List.foldr_append
 
 @[to_additive]
 theorem smul_def (f : α → β → β) (l : FreeMonoid α) (b : β) :
@@ -340,7 +340,7 @@ that sends each `of x` to `of (f x)`."]
 def map (f : α → β) : FreeMonoid α →* FreeMonoid β where
   toFun l := ofList <| l.toList.map f
   map_one' := rfl
-  map_mul' _ _ := List.map_append _ _ _
+  map_mul' _ _ := List.map_append
 
 @[to_additive (attr := simp)]
 theorem map_of (f : α → β) (x : α) : map f (of x) = of (f x) := rfl
@@ -422,7 +422,7 @@ theorem reverse_of (a : α) : reverse (of a) = of a := rfl
 
 @[to_additive]
 theorem reverse_mul {a b : FreeMonoid α} : reverse (a * b) = reverse b * reverse a :=
-  List.reverse_append _ _
+  List.reverse_append
 
 @[to_additive (attr := simp)]
 theorem reverse_reverse {a : FreeMonoid α} : reverse (reverse a) = a := by
@@ -430,7 +430,7 @@ theorem reverse_reverse {a : FreeMonoid α} : reverse (reverse a) = a := by
 
 @[to_additive (attr := simp)]
 theorem length_reverse {a : FreeMonoid α} : a.reverse.length = a.length :=
-  List.length_reverse _
+  List.length_reverse
 
 end Reverse
 

@@ -65,7 +65,7 @@ private theorem nil_not_mem_splitByLoop {r : α → α → Bool} {l : List α} {
 
 theorem nil_not_mem_splitBy (r : α → α → Bool) (l : List α) : [] ∉ l.splitBy r :=
   match l with
-  | nil => not_mem_nil _
+  | nil => not_mem_nil
   | cons _ _ => nil_not_mem_splitByLoop
 
 theorem ne_nil_of_mem_splitBy (r : α → α → Bool) {l : List α} (h : m ∈ l.splitBy r) : m ≠ [] := by
@@ -79,7 +79,7 @@ private theorem chain'_of_mem_splitByLoop {r : α → α → Bool} {l : List α}
   | nil =>
     rw [splitBy.loop, reverse_cons, mem_append, mem_reverse, mem_singleton] at h
     obtain hm | rfl := h
-    · exact (not_mem_nil m hm).elim
+    · exact (not_mem_nil hm).elim
     · apply List.chain'_reverse.1
       rw [reverse_reverse]
       exact chain'_cons'.2 ⟨hga, hg⟩
@@ -136,7 +136,7 @@ theorem chain'_getLast_head_splitBy (r : α → α → Bool) (l : List α) :
   cases l with
   | nil => exact chain'_nil
   | cons _ _ =>
-    apply chain'_getLast_head_splitByLoop _ (not_mem_nil _) chain'_nil
+    apply chain'_getLast_head_splitByLoop _ not_mem_nil chain'_nil
     rintro _ ⟨⟩
 
 @[deprecated (since := "2024-10-30")] alias groupBy_nil := splitBy_nil

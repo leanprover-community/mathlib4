@@ -800,21 +800,21 @@ protected noncomputable def completeLattice : CompleteLattice α :=
     le_sSup := fun s x h => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · exact bot_le
-      · dsimp; rw [if_pos h]
+      · rw [if_pos h]
     sSup_le := fun s x h => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · dsimp; rw [if_neg]
+      · rw [if_neg]
         intro con
         exact bot_ne_top (eq_top_iff.2 (h ⊤ con))
       · exact le_top
     sInf_le := fun s x h => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
-      · dsimp; rw [if_pos h]
+      · rw [if_pos h]
       · exact le_top
     le_sInf := fun s x h => by
       rcases eq_bot_or_eq_top x with (rfl | rfl)
       · exact bot_le
-      · dsimp; rw [if_neg]
+      · rw [if_neg]
         intro con
         exact top_ne_bot (eq_bot_iff.2 (h ⊥ con)) }
 

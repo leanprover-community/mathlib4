@@ -52,7 +52,7 @@ noncomputable def restrictScalars : Presentation A M :=
       · intro r b w _ _ hw
         refine Submodule.add_mem _ ?_ hw
         obtain ⟨β, rfl⟩ := presB.surjective_π b
-        apply Finsupp.induction (p := fun β ↦ Finsupp.single r (presB.π β) ∈ _)
+        apply Finsupp.induction (motive := fun β ↦ Finsupp.single r (presB.π β) ∈ _)
         · simp
         · intro g a f _ _ hf
           rw [map_add, Finsupp.single_add]

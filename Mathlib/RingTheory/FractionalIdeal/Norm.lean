@@ -56,17 +56,14 @@ on (integral) ideals. -/
 noncomputable def absNorm : FractionalIdeal R⁰ K →*₀ ℚ where
   toFun I := (Ideal.absNorm I.num : ℚ) / |Algebra.norm ℤ (I.den : R)|
   map_zero' := by
-    dsimp only
     rw [num_zero_eq, Submodule.zero_eq_bot, Ideal.absNorm_bot, Nat.cast_zero, zero_div]
     exact IsFractionRing.injective R K
   map_one' := by
-    dsimp only
     rw [absNorm_div_norm_eq_absNorm_div_norm 1 ⊤ (by simp [Submodule.one_eq_range]),
       Ideal.absNorm_top, Nat.cast_one, OneMemClass.coe_one, map_one, abs_one,
       Int.cast_one,
       one_div_one]
   map_mul' I J := by
-    dsimp only
     rw [absNorm_div_norm_eq_absNorm_div_norm (I.den * J.den) (I.num * J.num) (by
         have : Algebra.linearMap R K = (IsScalarTower.toAlgHom R R K).toLinearMap := rfl
         rw [coe_mul, this, Submodule.map_mul, ← this, ← den_mul_self_eq_num, ← den_mul_self_eq_num]

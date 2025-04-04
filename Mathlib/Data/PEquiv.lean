@@ -186,7 +186,6 @@ def ofSet (s : Set α) [DecidablePred (· ∈ s)] :
   toFun a := if a ∈ s then some a else none
   invFun a := if a ∈ s then some a else none
   inv a b := by
-    dsimp only
     split_ifs with hb ha ha
     · simp [eq_comm]
     · simp [ne_of_mem_of_not_mem hb ha]
@@ -293,7 +292,6 @@ def single (a : α) (b : β) :
   toFun x := if x = a then some b else none
   invFun x := if x = b then some a else none
   inv x y := by
-    dsimp only
     split_ifs with h1 h2
     · simp [*]
     · simp only [mem_def, some.injEq, iff_false, reduceCtorEq] at *

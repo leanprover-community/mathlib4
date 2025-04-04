@@ -114,7 +114,11 @@ noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder 
     CompleteDistribLattice α := .ofMinimalAxioms (toCompleteDistribLatticeMinimalAxioms _)
 
 -- See note [reducible non-instances]
-/-- A finite bounded linear order is complete. -/
+/-- A finite bounded linear order is complete.
+
+If the `α` is already a `BiheytingAlgebra`, then prefer to construct this instance manually using
+`Fintype.toCompleteLattice` instead, to avoid creating a diamond with
+`LinearOrder.toBiheytingAlgebra`. -/
 noncomputable abbrev toCompleteLinearOrder
     [LinearOrder α] [BoundedOrder α] : CompleteLinearOrder α :=
   { toCompleteLattice α, ‹LinearOrder α›, LinearOrder.toBiheytingAlgebra with }
@@ -194,11 +198,13 @@ end PartialOrder
 noncomputable instance Fin.completeLinearOrder {n : ℕ} [NeZero n] : CompleteLinearOrder (Fin n) :=
   Fintype.toCompleteLinearOrder _
 
-noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool :=
-  Fintype.toCompleteLinearOrder _
-
 noncomputable instance Bool.completeBooleanAlgebra : CompleteBooleanAlgebra Bool :=
   Fintype.toCompleteBooleanAlgebra _
+
+noncomputable instance Bool.completeLinearOrder : CompleteLinearOrder Bool where
+  __ := Fintype.toCompleteLattice _
+  __ : BiheytingAlgebra Bool := inferInstance
+  __ : LinearOrder Bool := inferInstance
 
 noncomputable instance Bool.completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra Bool :=
   Fintype.toCompleteAtomicBooleanAlgebra _

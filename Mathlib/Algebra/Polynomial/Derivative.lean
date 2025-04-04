@@ -42,7 +42,6 @@ variable [Semiring R]
 def derivative : R[X] →ₗ[R] R[X] where
   toFun p := p.sum fun n a => C (a * n) * X ^ (n - 1)
   map_add' p q := by
-    dsimp only
     rw [sum_add_index] <;>
       simp only [add_mul, forall_const, RingHom.map_add, eq_self_iff_true, zero_mul,
         RingHom.map_zero]

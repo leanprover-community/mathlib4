@@ -225,7 +225,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
         ext1
         rw [← pow_two] at h
         simp only [Set.toFinset_setOf, h, mem_filter, mem_univ, true_and, List.toFinset_cons,
-          List.toFinset_nil, insert_emptyc_eq, mem_insert, mem_singleton, s]
+          List.toFinset_nil, insert_empty_eq, mem_insert, mem_singleton, s]
         exact sq_eq_sq_iff_eq_or_eq_neg
       norm_cast
       rw [h₁, List.toFinset_cons, List.toFinset_cons, List.toFinset_nil]

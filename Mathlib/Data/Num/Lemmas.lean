@@ -1083,11 +1083,11 @@ theorem mem_ofZNum' : ∀ {m : Num} {n : ZNum}, m ∈ ofZNum' n ↔ n = toZNum m
     Option.some_inj.trans <| by cases m <;> constructor <;> intro h <;> try cases h <;> rfl
   | m, ZNum.neg p => ⟨nofun, fun h => by cases m <;> cases h⟩
 
-theorem ofZNum'_toNat : ∀ n : ZNum, (↑) <$> ofZNum' n = Int.toNat' n
+theorem ofZNum'_toNat : ∀ n : ZNum, (↑) <$> ofZNum' n = Int.toNat? n
   | 0 => rfl
-  | ZNum.pos p => show _ = Int.toNat' p by rw [← PosNum.to_nat_to_int p]; rfl
+  | ZNum.pos p => show _ = Int.toNat? p by rw [← PosNum.to_nat_to_int p]; rfl
   | ZNum.neg p =>
-    (congr_arg fun x => Int.toNat' (-x)) <|
+    (congr_arg fun x => Int.toNat? (-x)) <|
       show ((p.pred' + 1 : ℕ) : ℤ) = p by rw [← succ'_to_nat]; simp
 
 theorem ofZNum_toNat : ∀ n : ZNum, (ofZNum n : ℕ) = Int.toNat n

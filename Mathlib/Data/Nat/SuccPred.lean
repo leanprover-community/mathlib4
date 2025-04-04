@@ -5,11 +5,13 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Data.Fin.Basic
 import Mathlib.Order.Nat
 import Mathlib.Order.SuccPred.Archimedean
+import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Successors and predecessors of naturals
@@ -80,3 +82,9 @@ theorem Fin.coe_covBy_iff {n : ℕ} {a b : Fin n} : (a : ℕ) ⋖ b ↔ a ⋖ b 
   and_congr_right' ⟨fun h _c hc => h hc, fun h c ha hb => @h ⟨c, hb.trans b.prop⟩ ha hb⟩
 
 alias ⟨_, CovBy.coe_fin⟩ := Fin.coe_covBy_iff
+
+@[simp]
+theorem withBotSucc_zero : WithBot.succ 0 = 1 := rfl
+
+@[simp]
+theorem withBotSucc_one : WithBot.succ 1 = 2 := rfl

@@ -344,7 +344,7 @@ theorem xy_coprime (n) : (xn a1 n).Coprime (yn a1 n) :=
   Nat.coprime_of_dvd' fun k _ kx ky => by
     let p := pell_eq a1 n
     rw [← p]
-    exact Nat.dvd_sub (le_of_lt <| Nat.lt_of_sub_eq_succ p) (kx.mul_left _) (ky.mul_left _)
+    exact Nat.dvd_sub (kx.mul_left _) (ky.mul_left _)
 
 theorem strictMono_y : StrictMono (yn a1)
   | _, 0, h => absurd h <| Nat.not_lt_zero _

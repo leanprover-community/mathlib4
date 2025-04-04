@@ -456,7 +456,7 @@ instance {n : ℕ} : Inhabited (Composition n) :=
 
 @[simp]
 theorem ones_length (n : ℕ) : (ones n).length = n :=
-  List.length_replicate n 1
+  List.length_replicate
 
 @[simp]
 theorem ones_blocks (n : ℕ) : (ones n).blocks = replicate n (1 : ℕ) :=
@@ -740,7 +740,7 @@ theorem map_length_splitWrtComposition (l : List α) (c : Composition l.length) 
 theorem length_pos_of_mem_splitWrtComposition {l l' : List α} {c : Composition l.length}
     (h : l' ∈ l.splitWrtComposition c) : 0 < length l' := by
   have : l'.length ∈ (l.splitWrtComposition c).map List.length :=
-    List.mem_map_of_mem List.length h
+    List.mem_map_of_mem h
   rw [map_length_splitWrtComposition] at this
   exact c.blocks_pos this
 
@@ -942,7 +942,7 @@ def blocks (c : CompositionAsSet n) : List ℕ :=
 
 @[simp]
 theorem blocks_length : c.blocks.length = c.length :=
-  length_ofFn _
+  length_ofFn
 
 theorem blocks_partial_sum {i : ℕ} (h : i < c.boundaries.card) :
     (c.blocks.take i).sum = c.boundary ⟨i, h⟩ := by

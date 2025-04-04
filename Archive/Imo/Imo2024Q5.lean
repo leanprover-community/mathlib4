@@ -287,7 +287,7 @@ def Path.tail (p : Path N) : Path N where
     · exact p.head_first_row
   last_last_row := by
     split_ifs
-    · rw [← p.last_last_row, List.getLast_tail _ _]
+    · rw [← p.last_last_row, List.getLast_tail]
     · exact p.last_last_row
   valid_move_seq := by
     split_ifs
@@ -384,12 +384,12 @@ lemma Path.findFstEq_fst_sub_one_mem (p : Path N) {r : Fin (N + 2)} (hr : r ≠ 
     replace h := h (by omega)
     simp [List.getElem_zero, head_first_row, hr] at h
   simp_rw [cells.find?_eq_head_dropWhile_not hd, Option.get_some]
-  rw [← cells.takeWhile_append_dropWhile (fun c ↦ ! decide (r ≤ c.1)),
+  rw [← cells.takeWhile_append_dropWhile (p := fun c ↦ ! decide (r ≤ c.1)),
     List.chain'_append] at valid_move_seq
   have ha := valid_move_seq.2.2
-  simp only [List.head?_eq_head hd', List.getLast?_eq_getLast _ ht, Option.mem_def,
+  simp only [List.head?_eq_head hd', List.getLast?_eq_getLast ht, Option.mem_def,
     Option.some.injEq, forall_eq'] at ha
-  nth_rw 1 [← cells.takeWhile_append_dropWhile (fun c ↦ ! decide (r ≤ c.1))]
+  nth_rw 1 [← cells.takeWhile_append_dropWhile (p := fun c ↦ ! decide (r ≤ c.1))]
   refine List.mem_append_left _ ?_
   convert List.getLast_mem ht using 1
   have htr : ((List.takeWhile (fun c ↦ !decide (r ≤ c.1)) cells).getLast ht).1 < r := by

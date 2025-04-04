@@ -301,8 +301,8 @@ namespace Real
 Denoted as `𝐞` within the `Real.FourierTransform` namespace. -/
 def fourierChar : AddChar ℝ 𝕊 where
   toFun z := .exp (2 * π * z)
-  map_zero_eq_one' := by simp only; rw [mul_zero, Circle.exp_zero]
-  map_add_eq_mul' x y := by simp only; rw [mul_add, Circle.exp_add]
+  map_zero_eq_one' := by rw [mul_zero, Circle.exp_zero]
+  map_add_eq_mul' x y := by rw [mul_add, Circle.exp_add]
 
 @[inherit_doc] scoped[FourierTransform] notation "𝐞" => Real.fourierChar
 

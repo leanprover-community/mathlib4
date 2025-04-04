@@ -238,7 +238,7 @@ instance [Nontrivial R] [IsDomain S] : MulRingNormClass (AbsoluteValue R S) R S 
 
 open Int in
 lemma apply_natAbs_eq (x : ℤ) : abv (natAbs x) = abv x := by
-  obtain ⟨_, rfl | rfl⟩ := eq_nat_or_neg x <;> simp
+  obtain ⟨_, rfl | rfl⟩ := Int.eq_nat_or_neg x <;> simp
 
 open Int in
 /-- Values of an absolute value coincide on the image of `ℕ` in `R`
@@ -246,7 +246,7 @@ if and only if they coincide on the image of `ℤ` in `R`. -/
 lemma eq_on_nat_iff_eq_on_int {f g : AbsoluteValue R S} :
     (∀ n : ℕ , f n = g n) ↔ ∀ n : ℤ , f n = g n := by
   refine ⟨fun h z ↦ ?_, fun a n ↦ mod_cast a n⟩
-  obtain ⟨n , rfl | rfl⟩ := eq_nat_or_neg z <;> simp [h n]
+  obtain ⟨n , rfl | rfl⟩ := Int.eq_nat_or_neg z <;> simp [h n]
 
 end OrderedCommRing
 

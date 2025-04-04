@@ -174,6 +174,7 @@ noncomputable
 def ofFromSpecStalk [IrreducibleSpace X] [LocallyOfFiniteType sY] {x : X} [X.IsGermInjectiveAt x]
     (φ : Spec (X.presheaf.stalk x) ⟶ Y) (h : φ ≫ sY = X.fromSpecStalk x ≫ sX) : X.PartialMap Y where
   hom := (spread_out_of_isGermInjective' sX sY φ h).choose_spec.choose_spec.choose
+  domain := (spread_out_of_isGermInjective' sX sY φ h).choose
   dense_domain := (spread_out_of_isGermInjective' sX sY φ h).choose.2.dense
     ⟨_, (spread_out_of_isGermInjective' sX sY φ h).choose_spec.choose⟩
 

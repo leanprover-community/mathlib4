@@ -111,7 +111,6 @@ noncomputable def extend : HomologicalComplex C c' where
   X i' := extend.X K (e.r i')
   d i' j' := extend.d K (e.r i') (e.r j')
   shape i' j' h := by
-    dsimp
     obtain hi'|⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
     · rw [extend.d_none_eq_zero K _ _ hi']
     · obtain hj'|⟨j, hj⟩ := (e.r j').eq_none_or_eq_some
@@ -122,7 +121,6 @@ noncomputable def extend : HomologicalComplex C c' where
         intro hij
         exact h (e.rel hij)
   d_comp_d' i' j' k' _ _ := by
-    dsimp
     obtain hi'|⟨i, hi⟩ := (e.r i').eq_none_or_eq_some
     · rw [extend.d_none_eq_zero K _ _ hi', zero_comp]
     · obtain hj'|⟨j, hj⟩ := (e.r j').eq_none_or_eq_some
@@ -183,7 +181,6 @@ morphism `K.extend e ⟶ L.extend e` induced by a morphism `K ⟶ L` in
 noncomputable def extendMap : K.extend e ⟶ L.extend e where
   f _ := extend.mapX φ _
   comm' i' j' _ := by
-    dsimp
     by_cases hi : ∃ i, e.f i = i'
     · obtain ⟨i, hi⟩ := hi
       by_cases hj : ∃ j, e.f j = j'

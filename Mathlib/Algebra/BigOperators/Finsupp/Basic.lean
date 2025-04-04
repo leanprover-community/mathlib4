@@ -266,8 +266,8 @@ theorem support_finset_sum [DecidableEq β] [AddCommMonoid M] {s : Finset α} {f
     (Finset.sum s f).support ⊆ s.biUnion fun x => (f x).support := by
   rw [← Finset.sup_eq_biUnion]
   induction s using Finset.cons_induction_on with
-  | h₁ => rfl
-  | h₂ _ ih =>
+  | empty => rfl
+  | cons _ ih =>
     rw [Finset.sum_cons, Finset.sup_cons]
     exact support_add.trans (Finset.union_subset_union (Finset.Subset.refl _) ih)
 
@@ -543,7 +543,7 @@ theorem Finset.sum_apply' : (∑ k ∈ s, f k) i = ∑ k ∈ s, f k i :=
 theorem Finsupp.sum_apply' : g.sum k x = g.sum fun i b => k i b x :=
   Finset.sum_apply _ _ _
 
-/-- Version of `Finsupp.apply'` that applies in large generality to linear combinations
+/-- Version of `Finsupp.sum_apply'` that applies in large generality to linear combinations
 of functions in any `FunLike` type on which addition is defined pointwise.
 
 At the time of writing Mathlib does not have a typeclass to express the condition
@@ -554,8 +554,8 @@ theorem Finsupp.sum_apply'' {A F : Type*} [AddZeroClass A] [AddCommMonoid F] [Fu
     (h0 : (0 : F) x = 0) (hadd : ∀ (f g : F), (f + g : F) x = f x + g x) :
     g.sum k x = g.sum (fun i a ↦ k i a x) := by
   induction g using Finsupp.induction with
-  | h0 => simp [h0]
-  | ha i a f hf ha ih =>
+  | zero => simp [h0]
+  | single_add i a f hf ha ih =>
     rw [Finsupp.sum_add_index' hg0 hgadd, Finsupp.sum_add_index', hadd, ih]
     · congr 1
       rw [Finsupp.sum_single_index (hg0 i), Finsupp.sum_single_index]

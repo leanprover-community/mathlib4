@@ -129,7 +129,7 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieRing.IsNilp
     ⁅x, y⁆ ∈ genWeightSpaceChain M α χ p q := by
   rw [genWeightSpaceChain, iSup_subtype'] at hy
   induction hy using LieSubmodule.iSup_induction' with
-  | hN k z hz =>
+  | mem k z hz =>
     obtain ⟨k, hk⟩ := k
     suffices genWeightSpace M ((k + 1) • α + χ) ≤ genWeightSpaceChain M α χ p q by
       apply this
@@ -142,8 +142,8 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieRing.IsNilp
     rcases eq_or_ne (k + 1) q with rfl | hk'; · simp only [hq, bot_le]
     replace hk' : k + 1 ∈ Ioo p q := ⟨by linarith [hk.1], lt_of_le_of_ne hk.2 hk'⟩
     exact le_biSup (fun k ↦ genWeightSpace M (k • α + χ)) hk'
-  | h0 => simp
-  | hadd _ _ _ _ hz₁ hz₂ => rw [lie_add]; exact add_mem hz₁ hz₂
+  | zero => simp
+  | add _ _ _ _ hz₁ hz₂ => rw [lie_add]; exact add_mem hz₁ hz₂
 
 lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_left [LieRing.IsNilpotent H]
     (hp : genWeightSpace M (p • α + χ) = ⊥)
@@ -383,13 +383,13 @@ lemma LieModule.isNilpotent_toEnd_of_mem_rootSpace
   have hm : m ∈ ⨆ χ : LieModule.Weight K H M, genWeightSpace M χ := by
     simp [iSup_genWeightSpace_eq_top' K H M]
   induction hm using LieSubmodule.iSup_induction' with
-  | h0 => exact ⟨0, map_zero _⟩
-  | hN χ₂ m₂ hm₂ =>
+  | zero => exact ⟨0, map_zero _⟩
+  | mem χ₂ m₂ hm₂ =>
     obtain ⟨n, -, hn⟩ := exists_genWeightSpace_smul_add_eq_bot M χ χ₂ hχ
     use n
     have := toEnd_pow_apply_mem hx hm₂ n
     rwa [hn, LieSubmodule.mem_bot] at this
-  | hadd m₁ m₂ hm₁ hm₂ hm₁' hm₂' =>
+  | add m₁ m₂ hm₁ hm₂ hm₁' hm₂' =>
     obtain ⟨n₁, hn₁⟩ := hm₁'
     obtain ⟨n₂, hn₂⟩ := hm₂'
     refine ⟨max n₁ n₂, ?_⟩

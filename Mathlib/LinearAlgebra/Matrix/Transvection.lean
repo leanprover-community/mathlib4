@@ -440,7 +440,7 @@ theorem mul_listTransvecRow_last_col_take (i : Fin r ⊕ Unit) {k : ℕ} (hk : k
 theorem mul_listTransvecRow_last_col (i : Fin r ⊕ Unit) :
     (M * (listTransvecRow M).prod) i (inr unit) = M i (inr unit) := by
   have A : (listTransvecRow M).length = r := by simp [listTransvecRow]
-  rw [← List.take_length (listTransvecRow M), A]
+  rw [← List.take_length (l := listTransvecRow M), A]
   simpa using mul_listTransvecRow_last_col_take M i le_rfl
 
 /-- Multiplying by all the matrices in `listTransvecRow M` kills all the coefficients in the
@@ -453,7 +453,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         (M * ((listTransvecRow M).take k).prod) (inr unit) (inl i) =
           if k ≤ i then M (inr unit) (inl i) else 0 by
     have A : (listTransvecRow M).length = r := by simp [listTransvecRow]
-    rw [← List.take_length (listTransvecRow M), A]
+    rw [← List.take_length (l := listTransvecRow M), A]
     have : ¬r ≤ i := by simp
     simpa only [this, ite_eq_right_iff] using H r le_rfl
   intro k hk

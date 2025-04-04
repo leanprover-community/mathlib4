@@ -41,7 +41,7 @@ Prove lemmas relating extreme sets and points to the intrinsic frontier.
 
 open Function Set Affine
 
-variable {𝕜 E F ι : Type*} {π : ι → Type*}
+variable {𝕜 E F ι : Type*} {M : ι → Type*}
 
 section SMul
 
@@ -168,8 +168,8 @@ end SMul
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜] [AddCommGroup E] [AddCommGroup F] [∀ i, AddCommGroup (π i)]
-  [Module 𝕜 E] [Module 𝕜 F] [∀ i, Module 𝕜 (π i)] {A B : Set E}
+variable [OrderedSemiring 𝕜] [AddCommGroup E] [AddCommGroup F] [∀ i, AddCommGroup (M i)]
+  [Module 𝕜 E] [Module 𝕜 F] [∀ i, Module 𝕜 (M i)] {A B : Set E}
 
 theorem IsExtreme.convex_diff (hA : Convex 𝕜 A) (hAB : IsExtreme 𝕜 A B) : Convex 𝕜 (A \ B) :=
   convex_iff_openSegment_subset.2 fun _ ⟨hx₁A, hx₁B⟩ _ ⟨hx₂A, _⟩ _ hx ↦
@@ -198,7 +198,7 @@ theorem extremePoints_prod (s : Set E) (t : Set F) :
           h.2 hx₁.2 hx₂.2 ⟨a, b, ha, hb, hab, congr_arg Prod.snd hx'⟩⟩
 
 @[simp]
-theorem extremePoints_pi (s : ∀ i, Set (π i)) :
+theorem extremePoints_pi (s : ∀ i, Set (M i)) :
     (univ.pi s).extremePoints 𝕜 = univ.pi fun i ↦ (s i).extremePoints 𝕜 := by
   classical
   ext x

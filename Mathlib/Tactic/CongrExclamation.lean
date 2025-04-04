@@ -371,7 +371,7 @@ where
         let cinfo ← getConstInfo congrTheorem.theoremName
         let us ← cinfo.levelParams.mapM fun _ => mkFreshLevelMVar
         let proof := mkConst congrTheorem.theoremName us
-        let ptype ← instantiateTypeLevelParams cinfo us
+        let ptype ← instantiateTypeLevelParams cinfo.toConstantVal us
         applyCongrThm? config mvarId ptype proof
       if let some mvars := res then
         return mvars

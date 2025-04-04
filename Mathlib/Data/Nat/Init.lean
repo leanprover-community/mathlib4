@@ -288,18 +288,12 @@ lemma mul_right_eq_self_iff (ha : 0 < a) : a * b = a ↔ b = 1 := mul_eq_left <|
 
 lemma mul_left_eq_self_iff (hb : 0 < b) : a * b = b ↔ a = 1 := mul_eq_right <| ne_of_gt hb
 
-protected lemma le_of_mul_le_mul_right (h : a * c ≤ b * c) (hc : 0 < c) : a ≤ b :=
-  Nat.le_of_mul_le_mul_left (by simpa [Nat.mul_comm]) hc
-
-protected alias mul_sub := Nat.mul_sub_left_distrib
-protected alias sub_mul := Nat.mul_sub_right_distrib
-
 /-- The product of two natural numbers is greater than 1 if and only if
   at least one of them is greater than 1 and both are positive. -/
 lemma one_lt_mul_iff : 1 < m * n ↔ 0 < m ∧ 0 < n ∧ (1 < m ∨ 1 < n) := by
   constructor <;> intro h
   · by_contra h'
-    simp only [Nat.le_zero, Decidable.not_and_iff_or_not_not, not_or, Nat.not_lt] at h'
+    simp only [Nat.le_zero, Decidable.not_and_iff_not_or_not, not_or, Nat.not_lt] at h'
     obtain rfl | rfl | h' := h'
     · simp at h
     · simp at h
@@ -581,16 +575,7 @@ theorem lt_div_iff_mul_lt_of_dvd (hc : c ≠ 0) (hcb : c ∣ b) : a < b / c ↔ 
 /-!
 ### `pow`
 
-#### TODO
-
-* Add `protected` to `Nat.pow_le_pow_left`
-* Add `protected` to `Nat.pow_le_pow_right`
 -/
-
-protected lemma pow_lt_pow_left (h : a < b) : ∀ {n : ℕ}, n ≠ 0 → a ^ n < b ^ n
-  | 1, _ => by simpa
-  | n + 2, _ => Nat.mul_lt_mul_of_lt_of_le (Nat.pow_lt_pow_left h n.succ_ne_zero) (Nat.le_of_lt h)
-    (zero_lt_of_lt h)
 
 protected lemma pow_lt_pow_right (ha : 1 < a) (h : m < n) : a ^ m < a ^ n :=
   (Nat.pow_lt_pow_iff_right ha).2 h
@@ -952,9 +937,6 @@ lemma le_iff_ne_zero_of_dvd (ha : a ≠ 0) (hab : a ∣ b) : a ≤ b ↔ b ≠ 0
 lemma div_ne_zero_iff_of_dvd (hba : b ∣ a) : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠ 0 := by
   obtain rfl | hb := Decidable.em (b = 0) <;>
     simp [Nat.div_ne_zero_iff, Nat.le_iff_ne_zero_of_dvd, *]
-
-@[simp] lemma mul_mod_mod (a b c : ℕ) : (a * (b % c)) % c = a * b % c := by
-  rw [mul_mod, mod_mod, ← mul_mod]
 
 lemma pow_mod (a b n : ℕ) : a ^ b % n = (a % n) ^ b % n := by
   induction b with

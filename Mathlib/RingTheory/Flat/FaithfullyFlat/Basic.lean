@@ -269,7 +269,7 @@ lemma range_le_ker_of_exact_rTensor [fl : FaithfullyFlat R M]
     ext x
     simp only [Submodule.mem_top, Submodule.mem_bot, true_iff]
     have mem : x ∈ (⊤ : Submodule R _) := ⟨⟩
-    rw [← TensorProduct.span_tmul_eq_top, mem_span_set] at mem
+    rw [← TensorProduct.span_tmul_eq_top, Submodule.mem_span_set] at mem
     obtain ⟨c, hc, rfl⟩ := mem
     choose b a hy using hc
     let r :  ⦃a : E ⊗[R] M⦄ → a ∈ ↑c.support → R := fun a ha =>

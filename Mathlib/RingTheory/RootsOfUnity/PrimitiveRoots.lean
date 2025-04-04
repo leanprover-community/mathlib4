@@ -705,7 +705,6 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
   MonoidHom.toHomUnits
     { toFun := fun σ ↦ (map_rootsOfUnity_eq_pow_self σ.toAlgHom μ').choose
       map_one' := by
-        dsimp only
         generalize_proofs h1
         have h := h1.choose_spec
         replace h : μ' = μ' ^ h1.choose :=
@@ -715,7 +714,6 @@ noncomputable def autToPow [NeZero n] : (S ≃ₐ[R] S) →* (ZMod n)ˣ :=
         exact Nat.cast_one.symm
       map_mul' := by
         intro x y
-        dsimp only
         generalize_proofs hxy' hx' hy'
         have hxy := hxy'.choose_spec
         replace hxy : x (((μ' : Sˣ) : S) ^ hy'.choose) = ((μ' : Sˣ) : S) ^ hxy'.choose :=

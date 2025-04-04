@@ -5,7 +5,7 @@ Authors: Justus Springer
 -/
 import Mathlib.Topology.Sheaves.Forget
 import Mathlib.Topology.Sheaves.SheafCondition.PairwiseIntersections
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 
 /-!
 # The sheaf condition in terms of unique gluings

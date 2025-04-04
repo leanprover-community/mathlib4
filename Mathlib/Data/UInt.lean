@@ -31,9 +31,6 @@ run_cmd
   Lean.Elab.Command.elabCommand (← `(
     namespace $typeName
 
-      instance : Neg $typeName where
-        neg a := ofBitVec ⟨-a.toFin⟩
-
       instance : Pow $typeName ℕ where
         pow a n := ofBitVec ⟨a.toFin ^ n⟩
 
@@ -94,9 +91,9 @@ run_cmd
   let docString :=
     s!"To use this instance, use `open scoped {typeName'}.CommRing`.\n\n" ++
     "See the module docstring for an explanation"
-  Lean.addDocString (typeName'.mkStr "instCommRing") docString
-  Lean.addDocString (typeName'.mkStr "instNatCast") docString
-  Lean.addDocString (typeName'.mkStr "instIntCast") docString
+  Lean.addDocStringCore (typeName'.mkStr "instCommRing") docString
+  Lean.addDocStringCore (typeName'.mkStr "instNatCast") docString
+  Lean.addDocStringCore (typeName'.mkStr "instIntCast") docString
 
 namespace UInt8
 

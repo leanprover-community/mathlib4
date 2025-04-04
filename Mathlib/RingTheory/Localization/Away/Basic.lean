@@ -440,7 +440,7 @@ theorem existsUnique_algebraMap_eq_of_span_eq_top (s : Set R) (span_eq : Ideal.s
   have eq2 a b : r a * b ^ N = r b * a ^ N := by
     rw [pow_add, mul_mul_mul_comm, ← mul_pow, eq2,
       mul_comm a.1, mul_pow, mul_mul_mul_comm, ← pow_add]
-  have ⟨c, eq1⟩ := (mem_span_range_iff_exists_fun _).mp <|
+  have ⟨c, eq1⟩ := (Submodule.mem_span_range_iff_exists_fun _).mp <|
     (Ideal.eq_top_iff_one _).mp <| (Set.image_eq_range _ _ ▸ Ideal.span_pow_eq_top _ span_eq N)
   refine ⟨∑ b, c b * r b, fun a ↦ ((Away.algebraMap_isUnit a.1).pow N).mul_left_inj.mp ?_⟩
   simp_rw [← map_pow, eq, ← map_mul, Finset.sum_mul, mul_assoc, eq2 _ a, mul_left_comm (c _),

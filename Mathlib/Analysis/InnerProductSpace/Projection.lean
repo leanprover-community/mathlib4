@@ -636,7 +636,6 @@ def reflection : E ≃ₗᵢ[𝕜] E :=
   { reflectionLinearEquiv K with
     norm_map' := by
       intro x
-      dsimp only
       let w : K := orthogonalProjection K x
       let v := x - w
       have : ⟪v, w⟫ = 0 := orthogonalProjection_inner_eq_zero x w w.2

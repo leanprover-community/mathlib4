@@ -97,6 +97,7 @@ variable {R : Type u} [EuclideanDomain R]
 local infixl:50 " ≺ " => EuclideanDomain.r
 
 local instance wellFoundedRelation : WellFoundedRelation R where
+  rel := EuclideanDomain.r
   wf := r_wellFounded
 
 instance isWellFounded : IsWellFounded R (· ≺ ·) where

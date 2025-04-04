@@ -32,7 +32,7 @@ The definition of the field structure on `ℚ` will be done in `Mathlib.Data.Rat
 
 -- TODO: If `Inv` was defined earlier than `Algebra.Group.Defs`, we could have
 -- assert_not_exists Monoid
-assert_not_exists MonoidWithZero Lattice PNat Nat.dvd_mul
+assert_not_exists MonoidWithZero Lattice PNat Nat.gcd_greatest
 
 open Function
 
@@ -322,7 +322,6 @@ instance commMonoid : CommMonoid ℚ where
   npow n q := q ^ n
   npow_zero := by intros; apply Rat.ext <;> simp [Int.pow_zero]
   npow_succ n q := by
-    dsimp
     rw [← q.mk'_num_den, mk'_pow, mk'_mul_mk']
     · congr
     · rw [mk'_pow, Int.natAbs_pow]

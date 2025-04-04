@@ -152,7 +152,6 @@ def domCoprod (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] 
   { ∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ with
     toFun := fun v => (⇑(∑ σ : Perm.ModSumCongr ιa ιb, domCoprod.summand a b σ)) v
     map_eq_zero_of_eq' := fun v i j hv hij => by
-      dsimp only
       rw [MultilinearMap.sum_apply]
       exact
         Finset.sum_involution (fun σ _ => Equiv.swap i j • σ)

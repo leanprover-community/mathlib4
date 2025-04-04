@@ -222,7 +222,7 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
       · intro h
         rw [List.getLast_cons h] at w₂
         convert w₂
-    · exact w₁ d (List.mem_cons_self _ _)
+    · exact w₁ d List.mem_cons_self
     · by_cases h' : L = []
       · rcases h' with rfl
         left
@@ -351,8 +351,8 @@ lemma ofDigits_inj_of_len_eq {b : ℕ} (hb : 1 < b) {L1 L2 : List ℕ}
   simp only [ofDigits_cons] at h
   have eqd : D = d := by
     have H : (D + b * ofDigits b L) % b = (d + b * ofDigits b l) % b := by rw [h]
-    simpa [mod_eq_of_lt (w2 d <| List.mem_cons_self d l),
-      mod_eq_of_lt (w1 D <| List.mem_cons_self D L)] using H
+    simpa [mod_eq_of_lt (w2 d List.mem_cons_self),
+      mod_eq_of_lt (w1 D List.mem_cons_self)] using H
   simp only [eqd, add_right_inj, mul_left_cancel_iff_of_pos (zero_lt_of_lt hb)] at h
   have := ih len (fun a ha ↦ w1 a <| List.mem_cons_of_mem D ha)
     (fun a ha ↦ w2 a <| List.mem_cons_of_mem d ha) h
@@ -403,7 +403,7 @@ theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l,
       mul_le_mul (IH fun x hx => hl _ (List.mem_cons_of_mem _ hx)) (by rfl) (by simp only [zero_le])
         (Nat.zero_le _)
     suffices ↑hd < b + 2 by linarith
-    exact hl hd (List.mem_cons_self _ _)
+    exact hl hd List.mem_cons_self
 
 /-- an n-digit number in base b is less than b^n if b > 1 -/
 theorem ofDigits_lt_base_pow_length {b : ℕ} {l : List ℕ} (hb : 1 < b) (hl : ∀ x ∈ l, x < b) :
@@ -525,7 +525,7 @@ lemma ofDigits_div_eq_ofDigits_tail {p : ℕ} (hpos : 0 < p) (digits : List ℕ)
   induction' digits with hd tl
   · simp [ofDigits]
   · refine Eq.trans (add_mul_div_left hd _ hpos) ?_
-    rw [Nat.div_eq_of_lt <| w₁ _ <| List.mem_cons_self _ _, zero_add]
+    rw [Nat.div_eq_of_lt <| w₁ _ List.mem_cons_self, zero_add]
     rfl
 
 /-- Interpreting as a base `p` number and dividing by `p^i` is the same as dropping `i`.

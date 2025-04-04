@@ -73,14 +73,11 @@ namespace Filter
 
 open Ultrafilter
 
-lemma atTop_eq_pure_of_isTop [LinearOrder α] {x : α} (hx : IsTop x) :
-    (atTop : Filter α) = pure x := by
-  have : Nonempty α := ⟨x⟩
-  apply atTop_neBot.eq_pure_iff.2
-  convert Ici_mem_atTop x using 1
-  exact (Ici_eq_singleton_iff_isTop.2 hx).symm
+lemma atTop_eq_pure_of_isTop [PartialOrder α] {x : α} (hx : IsTop x) :
+    (atTop : Filter α) = pure x :=
+  {top := x, le_top := hx : OrderTop α}.atTop_eq
 
-lemma atBot_eq_pure_of_isBot [LinearOrder α] {x : α} (hx : IsBot x) :
+lemma atBot_eq_pure_of_isBot [PartialOrder α] {x : α} (hx : IsBot x) :
     (atBot : Filter α) = pure x :=
   @atTop_eq_pure_of_isTop αᵒᵈ _ _ hx
 

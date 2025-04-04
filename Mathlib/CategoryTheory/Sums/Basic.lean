@@ -125,10 +125,10 @@ lemma homInduction_right {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
 
 end Sum
 
+namespace Functor
+
 variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B] {C : Type u₃}
   [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D]
-
-namespace Functor
 
 section Sum'
 
@@ -255,6 +255,28 @@ end
 end Functor
 
 namespace NatTrans
+
+variable {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{v₂} B] {C : Type u₃}
+  [Category.{v₃} C] {D : Type u₄} [Category.{v₄} D]
+
+/-- The sum of two natural transformations, where all functors have the same target category. -/
+def sum' {F G : A ⥤ C} {H I : B ⥤ C} (α : F ⟶ G) (β : H ⟶ I) : F.sum' H ⟶ G.sum' I where
+  app X :=
+    match X with
+    | inl X => α.app X
+    | inr X => β.app X
+  naturality X Y f := by
+    cases f <;> simp
+
+@[simp]
+theorem sum'_app_inl {F G : A ⥤ C} {H I : B ⥤ C} (α : F ⟶ G) (β : H ⟶ I) (a : A) :
+    (sum' α β).app (inl a) = α.app a :=
+  rfl
+
+@[simp]
+theorem sum'_app_inr {F G : A ⥤ C} {H I : B ⥤ C} (α : F ⟶ G) (β : H ⟶ I) (b : B) :
+    (sum' α β).app (inr b) = β.app b :=
+  rfl
 
 /-- The sum of two natural transformations. -/
 def sum {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.sum H ⟶ G.sum I where

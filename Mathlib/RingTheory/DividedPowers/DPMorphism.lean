@@ -148,7 +148,6 @@ def _root_.DividedPowers.ideal_from_ringHom {f : A →+* B} (hf : I.map f ≤ J)
     | zero => rw [hI.dpow_zero I.zero_mem, hJ.dpow_zero J.zero_mem, map_one]
     | succ n => rw [hI.dpow_eval_zero n.succ_ne_zero, hJ.dpow_eval_zero n.succ_ne_zero, map_zero]
   smul_mem' := fun r x hx ↦ by
-    simp only [mem_sep_iff, mem_coe] at hx ⊢
     refine ⟨I.smul_mem r hx.1, (fun n ↦ ?_)⟩
     rw [smul_eq_mul, hI.dpow_mul hx.1, map_mul, map_mul, map_pow,
       hJ.dpow_mul (hf (mem_map_of_mem f hx.1)), hx.2 n]

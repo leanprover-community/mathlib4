@@ -468,7 +468,7 @@ open Int
 @[deprecated "Use AbsoluteValue.apply_natAbs_eq instead" (since := "2025-01-07")]
 lemma MulRingNorm.apply_natAbs_eq {R : Type*} [Ring R] (x : ℤ) (f : MulRingNorm R) : f (natAbs x) =
     f x := by
-  obtain ⟨n, rfl | rfl⟩ := eq_nat_or_neg x <;>
+  obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg x <;>
   simp only [natAbs_neg, natAbs_ofNat, cast_neg, cast_natCast, map_neg_eq_map]
 
 /-- The seminorm on a `SeminormedRing`, as a `RingSeminorm`. -/

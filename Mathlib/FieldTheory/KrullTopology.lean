@@ -257,13 +257,11 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 end KrullT2
 
-section TotallyDisconnected
+section TotallySeparated
 
-/-- If `L/K` is an algebraic field extension, then the Krull topology on `L ≃ₐ[K] L` is
-  totally disconnected. -/
-theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [Algebra.IsIntegral K L] : IsTotallyDisconnected (Set.univ : Set (L ≃ₐ[K] L)) := by
-  apply isTotallyDisconnected_of_isClopen_set
+instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L] :
+    TotallySeparatedSpace (L ≃ₐ[K] L) := by
+  rw [totallySeparatedSpace_iff_exists_isClopen]
   intro σ τ h_diff
   have hστ : σ⁻¹ * τ ≠ 1 := by rwa [Ne, inv_mul_eq_one]
   rcases DFunLike.exists_ne hστ with ⟨x, hx : (σ⁻¹ * τ) x ≠ x⟩
@@ -273,15 +271,20 @@ theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Alg
   refine ⟨σ • E.fixingSubgroup,
     ⟨E.fixingSubgroup_isClosed.leftCoset σ, E.fixingSubgroup_isOpen.leftCoset σ⟩,
     ⟨1, E.fixingSubgroup.one_mem', mul_one σ⟩, ?_⟩
-  simp only [mem_leftCoset_iff, SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff,
-    not_forall]
+  simp only [Set.mem_compl_iff, mem_leftCoset_iff, SetLike.mem_coe,
+    IntermediateField.mem_fixingSubgroup_iff, not_forall]
   exact ⟨x, IntermediateField.mem_adjoin_simple_self K x, hx⟩
 
-instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L] :
-    TotallyDisconnectedSpace (L ≃ₐ[K] L) where
-  isTotallyDisconnected_univ := krullTopology_totallyDisconnected
+/-- If `L/K` is an algebraic field extension, then the Krull topology on `L ≃ₐ[K] L` is
+  totally disconnected. -/
+theorem krullTopology_isTotallySeparated {K L : Type*} [Field K] [Field L] [Algebra K L]
+    [Algebra.IsIntegral K L] : IsTotallySeparated (Set.univ : Set (L ≃ₐ[K] L)) :=
+  (totallySeparatedSpace_iff _).mp inferInstance
 
-end TotallyDisconnected
+@[deprecated (since := "2025-04-03")]
+alias krullTopology_totallyDisconnected := krullTopology_isTotallySeparated
+
+end TotallySeparated
 
 @[simp] lemma IntermediateField.fixingSubgroup_top (K L : Type*) [Field K] [Field L] [Algebra K L] :
     IntermediateField.fixingSubgroup (⊤ : IntermediateField K L) = ⊥ := by

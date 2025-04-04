@@ -216,7 +216,6 @@ theorem neg_apply (f : BoundedAdditiveMeasure α) (s : Set α) : (-f) s = -f s :
 def restrict (f : BoundedAdditiveMeasure α) (t : Set α) : BoundedAdditiveMeasure α where
   toFun s := f (t ∩ s)
   additive' s s' h := by
-    dsimp only
     rw [← f.additive (t ∩ s) (t ∩ s'), inter_union_distrib_left]
     exact h.mono inter_subset_right inter_subset_right
   exists_bound := ⟨f.C, fun s => f.abs_le_bound _⟩
@@ -393,7 +392,6 @@ def _root_.ContinuousLinearMap.toBoundedAdditiveMeasure [TopologicalSpace α] [D
     (f : (α →ᵇ ℝ) →L[ℝ] ℝ) : BoundedAdditiveMeasure α where
   toFun s := f (ofNormedAddCommGroupDiscrete (indicator s 1) 1 (norm_indicator_le_one s))
   additive' s t hst := by
-    dsimp only
     have :
       ofNormedAddCommGroupDiscrete (indicator (s ∪ t) 1) 1 (norm_indicator_le_one _) =
         ofNormedAddCommGroupDiscrete (indicator s 1) 1 (norm_indicator_le_one s) +

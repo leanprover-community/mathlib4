@@ -454,6 +454,11 @@ theorem constantCoeff_one : constantCoeff σ R 1 = 1 :=
 theorem constantCoeff_X (s : σ) : constantCoeff σ R (X s) = 0 :=
   coeff_zero_X s
 
+@[simp]
+theorem constantCoeff_smul {S : Type*} [Semiring S] [Module R S]
+    (φ : MvPowerSeries σ S) (a : R) :
+    constantCoeff σ S (a • φ) = a • constantCoeff σ S φ := rfl
+
 /-- If a multivariate formal power series is invertible,
  then so is its constant coefficient. -/
 theorem isUnit_constantCoeff (φ : MvPowerSeries σ R) (h : IsUnit φ) :
@@ -673,9 +678,9 @@ theorem coeff_pow [DecidableEq σ] (f : MvPowerSeries σ R) {n : ℕ} (d : σ �
 /-- Vanishing of coefficients of powers of multivariate power series
 when the constant coefficient is nilpotent
 [N. Bourbaki, *Algebra {II}*, Chapter 4, §4, n°2, proposition 3][bourbaki1981] -/
-theorem coeff_eq_zero_of_constantCoeff_nilpotent
-    {f : MvPowerSeries σ R} {m : ℕ} (hf : constantCoeff σ R f ^ m = 0)
-    {d : σ →₀ ℕ} {n : ℕ} (hn : m + degree d ≤ n) : coeff R d (f ^ n) = 0 := by
+theorem coeff_eq_zero_of_constantCoeff_nilpotent {f : MvPowerSeries σ R} {m : ℕ}
+    (hf : constantCoeff σ R f ^ m = 0) {d : σ →₀ ℕ} {n : ℕ} (hn : m + degree d ≤ n) :
+    coeff R d (f ^ n) = 0 := by
   classical
   rw [coeff_pow]
   apply sum_eq_zero

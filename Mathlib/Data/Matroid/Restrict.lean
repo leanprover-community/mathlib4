@@ -254,7 +254,6 @@ instance {α : Type*} : PartialOrder (Matroidᵣ α) where
   le_refl M := ⟨(M : Matroid α).E, Subset.rfl, (M : Matroid α).restrict_ground_eq_self.symm⟩
   le_trans M₁ M₂ M₃ := by
     rintro ⟨R, hR, h₁⟩ ⟨R', hR', h₂⟩
-    change _ ≤r _
     rw [h₂] at h₁ hR
     rw [h₁, restrict_restrict_eq _ (show R ⊆ R' from hR)]
     exact ⟨R, hR.trans hR', rfl⟩

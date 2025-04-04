@@ -399,6 +399,7 @@ instance : (forget X).IsRightAdjoint :=
   ⟨_, ⟨imageForgetAdj⟩⟩
 
 instance reflective : Reflective (forget X) where
+  L := image
   adj := imageForgetAdj
 
 /-- Forgetting that a monomorphism over `X` is a monomorphism, then taking its image,

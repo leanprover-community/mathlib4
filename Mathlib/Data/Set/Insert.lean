@@ -167,7 +167,7 @@ instance : LawfulSingleton α (Set α) :=
     exact Iff.rfl⟩
 
 theorem singleton_def (a : α) : ({a} : Set α) = insert a ∅ :=
-  (insert_emptyc_eq a).symm
+  (insert_empty_eq a).symm
 
 @[simp]
 theorem mem_singleton_iff {a b : α} : a ∈ ({b} : Set α) ↔ a = b :=

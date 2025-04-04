@@ -26,8 +26,8 @@ theorem range_list_map (f : α → β) : range (map f) = { l | ∀ x ∈ l, x �
   | nil => exact ⟨[], rfl⟩
   | cons a l ihl =>
     rcases ihl fun x hx => hl x <| subset_cons_self _ _ hx with ⟨l, rfl⟩
-    rcases hl a (mem_cons_self _ _) with ⟨a, rfl⟩
-    exact ⟨a :: l, map_cons _ _ _⟩
+    rcases hl a mem_cons_self with ⟨a, rfl⟩
+    exact ⟨a :: l, map_cons⟩
 
 theorem range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l | ∀ x ∈ l, x ∈ s } := by
   rw [range_list_map, Subtype.range_coe]

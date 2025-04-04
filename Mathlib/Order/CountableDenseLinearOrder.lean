@@ -67,8 +67,8 @@ lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrd
     [nonem : Nonempty β]  (S : Finset α) (f : S ↪o β) (a : α) :
     ∃ (g : (insert a S : Finset α) ↪o β),
       g ∘ (Set.inclusion ((S.subset_insert a) : ↑S ⊆ ↑(insert a S))) = f := by
-  let Slt := (S.attach.filter (fun (x : S) => x < a)).image f
-  let Sgt := (S.attach.filter (fun (x : S) => a < x)).image f
+  let Slt := {x ∈ S.attach | x.val < a}.image f
+  let Sgt := {x ∈ S.attach | a < x.val}.image f
   obtain ⟨b, hb, hb'⟩ := Order.exists_between_finsets Slt Sgt (fun x hx y hy => by
     simp only [Finset.mem_image, Finset.mem_filter, Finset.mem_attach, true_and, Subtype.exists,
       exists_and_left, Slt, Sgt] at hx hy
@@ -127,8 +127,8 @@ theorem exists_across [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonem
   · obtain ⟨b, hb⟩ := h
     exact ⟨b, fun p hp ↦ f.prop _ hp _ hb⟩
   have :
-    ∀ x ∈ (f.val.filter fun p : α × β ↦ p.fst < a).image Prod.snd,
-      ∀ y ∈ (f.val.filter fun p : α × β ↦ a < p.fst).image Prod.snd, x < y := by
+    ∀ x ∈ {p ∈ f.val | p.fst < a}.image Prod.snd,
+      ∀ y ∈ {p ∈ f.val | a < p.fst}.image Prod.snd, x < y := by
     intro x hx y hy
     rw [Finset.mem_image] at hx hy
     rcases hx with ⟨p, hp1, rfl⟩

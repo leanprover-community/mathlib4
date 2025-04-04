@@ -1191,9 +1191,12 @@ theorem Finsupp.mem_ideal_span_range_iff_exists_finsupp {x : R} {v : α → R} :
 
 /-- An element `x` lies in the span of `v` iff it can be written as sum `∑ cᵢ • vᵢ = x`.
 -/
-theorem mem_ideal_span_range_iff_exists_fun [Fintype α] {x : R} {v : α → R} :
+theorem Ideal.mem_span_range_iff_exists_fun [Fintype α] {x : R} {v : α → R} :
     x ∈ Ideal.span (Set.range v) ↔ ∃ c : α → R, ∑ i, c i * v i = x :=
-  mem_span_range_iff_exists_fun _
+  Submodule.mem_span_range_iff_exists_fun _
+
+@[deprecated (since := "2025-04-02")] alias mem_ideal_span_range_iff_exists_fun :=
+  Ideal.mem_span_range_iff_exists_fun
 
 end span_range
 

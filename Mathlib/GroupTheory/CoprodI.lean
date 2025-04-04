@@ -396,7 +396,7 @@ def consRecOn {motive : Word M → Sort*} (w : Word M) (empty : motive empty)
         Sigma.exists, exists_and_right, exists_eq_right, not_exists]
       intro m' hm'
       exact h2.1 _ hm' rfl
-    · exact h1 _ (List.mem_cons_self _ _)
+    · exact h1 _ List.mem_cons_self
 
 @[simp]
 theorem consRecOn_empty {motive : Word M → Sort*} (h_empty : motive empty)

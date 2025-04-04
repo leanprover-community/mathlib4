@@ -151,6 +151,12 @@ theorem compactSpace_iff_quasiCompact (X : Scheme) :
     CompactSpace X ↔ QuasiCompact (terminal.from X) := by
   rw [HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)]
 
+lemma QuasiCompact.compactSpace_of_compactSpace {X Y : Scheme.{u}} (f : X ⟶ Y) [QuasiCompact f]
+    [CompactSpace Y] : CompactSpace X := by
+  constructor
+  rw [← Set.preimage_univ (f := f.base)]
+  exact QuasiCompact.isCompact_preimage _ isOpen_univ CompactSpace.isCompact_univ
+
 instance quasiCompact_isStableUnderComposition :
     MorphismProperty.IsStableUnderComposition @QuasiCompact where
   comp_mem _ _ _ _ := inferInstance

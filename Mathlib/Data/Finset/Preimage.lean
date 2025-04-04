@@ -94,7 +94,7 @@ lemma card_preimage (s : Finset β) (f : α → β) (hf) [DecidablePred (· ∈ 
   card_nbij f (by simp) (by simpa) (fun b hb ↦ by aesop)
 
 theorem image_preimage [DecidableEq β] (f : α → β) (s : Finset β) [∀ x, Decidable (x ∈ Set.range f)]
-    (hf : Set.InjOn f (f ⁻¹' ↑s)) : image f (preimage s f hf) = s.filter fun x => x ∈ Set.range f :=
+    (hf : Set.InjOn f (f ⁻¹' ↑s)) : image f (preimage s f hf) = {x ∈ s | x ∈ Set.range f} :=
   Finset.coe_inj.1 <| by
     simp only [coe_image, coe_preimage, coe_filter, Set.image_preimage_eq_inter_range,
       ← Set.sep_mem_eq]; rfl
@@ -116,8 +116,7 @@ theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
   simp_rw [map_eq_image, subset_image_iff, eq_comm]
 
 theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σ a, β a)) (t : Finset α) :
-    (t.sigma fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) =
-      s.filter fun a => a.1 ∈ t := by
+    t.sigma (fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) = {a ∈ s | a.1 ∈ t} := by
   ext x
   simp [and_comm]
 

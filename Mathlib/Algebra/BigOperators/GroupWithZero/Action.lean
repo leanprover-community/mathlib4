@@ -129,7 +129,7 @@ theorem prod_smul
     (s : Finset β) (b : β → α) (f : β → β) :
     ∏ i ∈ s, b i • f i = (∏ i ∈ s, b i) • ∏ i ∈ s, f i := by
   induction s using Finset.cons_induction_on with
-  | h₁ =>  simp
-  | h₂ hj ih => rw [prod_cons, ih, smul_mul_smul_comm, ← prod_cons hj, ← prod_cons hj]
+  | empty =>  simp
+  | cons hj ih => rw [prod_cons, ih, smul_mul_smul_comm, ← prod_cons hj, ← prod_cons hj]
 
 end Finset
