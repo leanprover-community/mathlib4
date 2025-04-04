@@ -266,6 +266,7 @@ import Mathlib.Algebra.Field.Subfield.Defs
 import Mathlib.Algebra.Field.ULift
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Free
+import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.Algebra.FreeAlgebra.Cardinality
 import Mathlib.Algebra.FreeMonoid.Basic
@@ -1120,6 +1121,7 @@ import Mathlib.AlgebraicGeometry.Morphisms.SurjectiveOnStalks
 import Mathlib.AlgebraicGeometry.Morphisms.UnderlyingMap
 import Mathlib.AlgebraicGeometry.Morphisms.UniversallyClosed
 import Mathlib.AlgebraicGeometry.Morphisms.UniversallyInjective
+import Mathlib.AlgebraicGeometry.Morphisms.UniversallyOpen
 import Mathlib.AlgebraicGeometry.Noetherian
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.Over
@@ -3554,8 +3556,8 @@ import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.FixedPointFree
 import Mathlib.GroupTheory.Frattini
 import Mathlib.GroupTheory.FreeAbelianGroup
-import Mathlib.GroupTheory.FreeAbelianGroupFinsupp
 import Mathlib.GroupTheory.FreeGroup.Basic
+import Mathlib.GroupTheory.FreeGroup.GeneratorEquiv
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.GroupTheory.FreeGroup.NielsenSchreier
 import Mathlib.GroupTheory.FreeGroup.Reduce
@@ -4147,12 +4149,14 @@ import Mathlib.MeasureTheory.Integral.TorusIntegral
 import Mathlib.MeasureTheory.Integral.VitaliCaratheodory
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.MeasurableSpace.Card
+import Mathlib.MeasureTheory.MeasurableSpace.Constructions
 import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
 import Mathlib.MeasureTheory.MeasurableSpace.Embedding
 import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.MeasureTheory.MeasurableSpace.Invariants
+import Mathlib.MeasureTheory.MeasurableSpace.MeasurablyGenerated
 import Mathlib.MeasureTheory.MeasurableSpace.NCard
 import Mathlib.MeasureTheory.MeasurableSpace.Pi
 import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
@@ -4608,6 +4612,7 @@ import Mathlib.Order.Interval.Set.SurjOn
 import Mathlib.Order.Interval.Set.UnorderedInterval
 import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Order.Irreducible
+import Mathlib.Order.IsNormal
 import Mathlib.Order.Iterate
 import Mathlib.Order.JordanHolder
 import Mathlib.Order.KonigLemma
@@ -5717,6 +5722,7 @@ import Mathlib.Topology.Algebra.Ring.Ideal
 import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.Algebra.Semigroup
 import Mathlib.Topology.Algebra.SeparationQuotient.Basic
+import Mathlib.Topology.Algebra.SeparationQuotient.FiniteDimensional
 import Mathlib.Topology.Algebra.SeparationQuotient.Hom
 import Mathlib.Topology.Algebra.SeparationQuotient.Section
 import Mathlib.Topology.Algebra.Star
@@ -6087,6 +6093,7 @@ import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.Sober
 import Mathlib.Topology.Specialization
 import Mathlib.Topology.Spectral.Hom
+import Mathlib.Topology.Spectral.Prespectral
 import Mathlib.Topology.StoneCech
 import Mathlib.Topology.TietzeExtension
 import Mathlib.Topology.Ultrafilter

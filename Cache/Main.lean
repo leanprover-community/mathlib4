@@ -48,17 +48,6 @@ Valid arguments are:
   'Mathlib/**/Order/*.lean'.
 "
 
-open Lean System in
-/-- Note that this normalizes the path strings, which is needed when running from a unix shell
-(which uses `/` in paths) on windows (which uses `\` in paths) as otherwise our filename keys won't
-match. -/
-def toPaths (args : List String) : List FilePath :=
-  args.map fun arg =>
-    if arg.endsWith ".lean" then
-      FilePath.mk arg |>.normalize
-    else
-      mkFilePath (arg.toName.components.map Name.toString) |>.withExtension "lean"
-
 /-- Commands which (potentially) call `curl` for downloading files -/
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "put-unpacked", "commit", "commit!"]
@@ -87,17 +76,12 @@ def main (args : List String) : IO Unit := do
     let sourceFile ← Lean.findLean sp mod
     roots := roots.insert mod sourceFile
 
-  -- We pass any following arguments to `getHashMemo`,
-  -- so we can use the cache on `Archive` or `Counterexamples`.
-  let extraRoots : Array FilePath :=
-    roots.keys.toArray.map (·.components.map toString |> mkFilePath |>.withExtension "lean")
-
-  let hashMemo ← getHashMemo extraRoots
+  let hashMemo ← getHashMemo roots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (args : List String) (force := false) (decompress := true) := do
-    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByFilePaths (toPaths args)
+    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByRootModules roots.keys
     getFiles hashMap force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
@@ -125,5 +109,5 @@ def main (args : List String) : IO Unit := do
     if !(← isGitStatusClean) then IO.println "Please commit your changes first" return else
     commit hashMap true (← getToken)
   | ["collect"] => IO.println "TODO"
-  | "lookup" :: args => lookup hashMap (toPaths args)
+  | "lookup" :: _ => lookup hashMap roots.keys
   | _ => println help
