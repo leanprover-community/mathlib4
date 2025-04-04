@@ -111,6 +111,14 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystallographic_of_isReduced
   have aux₂ : P.pairingIn ℤ i j * P.pairingIn ℤ j i ≠ 4 := P.coxeterWeightIn_ne_four ℤ h₁ h₂
   aesop
 
+lemma pairingIn_pairingIn_mem_set_of_isCrystallographic_of_isReduced'
+    [P.IsReduced] [NoZeroSMulDivisors R M] (hij : i ≠ j) (hij' : P.root i ≠ - P.root j):
+    (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
+      ({(0, 0), (1, 1), (-1, -1), (1, 2), (2, 1), (-1, -2), (-2, -1), (1, 3), (3, 1), (-1, -3),
+        (-3, -1)} : Set (ℤ × ℤ)) := by
+  have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic_of_isReduced i j
+  aesop
+
 variable {i j} in
 lemma pairingIn_pairingIn_mem_set_of_length_eq {B : P.InvariantForm}
     (len_eq : B.form (P.root i) (P.root i) = B.form (P.root j) (P.root j)) :
