@@ -915,14 +915,9 @@ lemma exists_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
 @[deprecated (since := "2024-11-11")]
 alias exists_idempotent_basicOpen_eq_of_is_clopen := exists_idempotent_basicOpen_eq_of_isClopen
 
--- TODO: Abstract out this lemma to spectral spaces
-lemma isRetrocompact_iff {U : Set (PrimeSpectrum R)} (hU : IsOpen U) :
-    IsRetrocompact U ↔ IsCompact U :=
-  isTopologicalBasis_basic_opens.isRetrocompact_iff_isCompact isCompact_basicOpen hU
-
 lemma isRetrocompact_zeroLocus_compl {s : Set R} (hs : s.Finite) :
     IsRetrocompact (zeroLocus s)ᶜ :=
-  (isRetrocompact_iff (isClosed_zeroLocus _).isOpen_compl).mpr
+  (QuasiSeparatedSpace.isRetrocompact_iff_isCompact (isClosed_zeroLocus _).isOpen_compl).mpr
     (isCompact_isOpen_iff.mpr ⟨hs.toFinset, by simp⟩).1
 
 lemma isRetrocompact_zeroLocus_compl_of_fg {I : Ideal R} (hI : I.FG) :
