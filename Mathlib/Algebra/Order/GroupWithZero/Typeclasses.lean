@@ -10,58 +10,49 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Util.Notation3
 
 /-!
-# Monotonicity of multiplication by positive elements
+# (Strict) monotonicity of multiplication by nonnegative (positive) elements
 
-This file defines typeclasses to reason about monotonicity of the operations
-* `b ↦ a * b`, "left multiplication"
-* `a ↦ a * b`, "right multiplication"
+This file first defines eight typeclasses expressing monotonicity (strict monotonicity)
+of multiplication on the left or right by nonnegative (positive) elements in a preorder.
 
-We use eight typeclasses to encode the various properties we care about for those two operations.
-These typeclasses are meant to be mostly internal to this file, to set up each lemma in the
-appropriate generality.
+For left multiplication (`a ↦ b * a`) we define the following typeclasses:
+* `PosMulMono`: If `b ≥ 0`, then `a₁ ≤ a₂ → b * a₁ ≤ b * a₂`.
+* `PosMulStrictMono`: If `b > 0`, then `a₁ < a₂ → b * a₁ < b * a₂`.
+* `PosMulReflectLT`: If `b ≥ 0`, then `b * a₁ < b * a₂ → a₁ < a₂`.
+* `PosMulReflectLE`: If `b > 0`, then `b * a₁ ≤ b * a₂ → a₁ ≤ a₂`.
 
-Less granular typeclasses like `OrderedAddCommMonoid`, `LinearOrderedField` should be enough for
-most purposes, and the system is set up so that they imply the correct granular typeclasses here.
-If those are enough for you, you may stop reading here! Else, beware that what follows is a bit
-technical.
-
-## Definitions
-
-In all that follows, `α` is an orders which has a `0` and a multiplication. Note however that we do
-not use lawfulness of this action in most of the file. Hence `*` should be considered here as a
-mostly arbitrary function `α → α → α`.
-
-We use the following four typeclasses to reason about left multiplication (`b ↦ a * b`):
-* `PosMulMono`: If `a ≥ 0`, then `b₁ ≤ b₂ → a * b₁ ≤ a * b₂`.
-* `PosMulStrictMono`: If `a > 0`, then `b₁ < b₂ → a * b₁ < a * b₂`.
-* `PosMulReflectLT`: If `a ≥ 0`, then `a * b₁ < a * b₂ → b₁ < b₂`.
-* `PosMulReflectLE`: If `a > 0`, then `a * b₁ ≤ a * b₂ → b₁ ≤ b₂`.
-
-We use the following four typeclasses to reason about right multiplication (`a ↦ a * b`):
+For right multiplication (`a ↦ a * b`) we define the following typeclasses:
 * `MulPosMono`: If `b ≥ 0`, then `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b`.
 * `MulPosStrictMono`: If `b > 0`, then `a₁ < a₂ → a₁ * b < a₂ * b`.
 * `MulPosReflectLT`: If `b ≥ 0`, then `a₁ * b < a₂ * b → a₁ < a₂`.
 * `MulPosReflectLE`: If `b > 0`, then `a₁ * b ≤ a₂ * b → a₁ ≤ a₂`.
 
+We then prove lemmas immediately following from these definitions and implications/equivalences
+between the typeclasses in special cases (see below). Lemmas requiring more complicated proofs
+can be found in `Mathlib.Algebra.Order.GroupWithZero.Unbundled`.
+
+Less granular typeclasses like `OrderedAddCommMonoid` and `LinearOrderedField` should be enough for
+most purposes, and the system is set up so that they imply the correct granular typeclasses here.
+
 ## Implications
 
-As `α` gets more and more structure, those typeclasses end up being equivalent. The commonly used
-implications are:
+As the underlying type `α` gets more structured, some of the above typeclasses become equivalent.
+The commonly used implications are:
 *  When `α` is a partial order:
-  * `PosMulStrictMono → PosMulMono`
-  * `MulPosStrictMono → MulPosMono`
-  * `PosMulReflectLE → PosMulReflectLT`
-  * `MulPosReflectLE → MulPosReflectLT`
+  * `PosMulStrictMono.toPosMulMono`
+  * `MulPosStrictMono.toMulPosMono`
+  * `PosMulReflectLE.toPosMulReflectLT`
+  * `MulPosReflectLE.toMulPosReflectLT`
 * When `α` is a linear order:
-  * `PosMulStrictMono → PosMulReflectLE`
-  * `MulPosStrictMono → MulPosReflectLE` .
-* When the multiplication of `α` is commutative:
-  * `PosMulMono → MulPosMono`
-  * `PosMulStrictMono → MulPosStrictMono`
-  * `PosMulReflectLE → MulPosReflectLE`
-  * `PosMulReflectLT → MulPosReflectLT`
+  * `PosMulStrictMono.toPosMulReflectLE`
+  * `MulPosStrictMono.toMulPosReflectLE`
+* When multiplication on `α` is commutative:
+  * `posMulMono_iff_mulPosMono`
+  * `posMulStrictMono_iff_mulPosStrictMono`
+  * `posMulReflectLE_iff_mulPosReflectLE`
+  * `posMulReflectLT_iff_mulPosReflectLT`
 
-Further, the bundled non-granular typeclasses imply the granular ones like so:
+Furthermore, the bundled non-granular typeclasses imply the granular ones like so:
 * `OrderedSemiring → PosMulMono`
 * `OrderedSemiring → MulPosMono`
 * `StrictOrderedSemiring → PosMulStrictMono`
@@ -97,11 +88,32 @@ section Abbreviations
 variable [Mul α] [Zero α] [Preorder α]
 
 /-- Typeclass for monotonicity of multiplication by nonnegative elements on the left,
-namely `b₁ ≤ b₂ → a * b₁ ≤ a * b₂` if `0 ≤ a`.
+namely `a₁ ≤ a₂ → b * a₁ ≤ b * a₂` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `OrderedSemiring`. -/
 @[mk_iff] class PosMulMono : Prop extends CovariantClass α≥0 α (fun x y => x * y) (· ≤ ·)
+
+/-- Typeclass for strict monotonicity of multiplication by positive elements on the left,
+namely `a₁ < a₂ → b * a₁ < b * a₂` if `0 < b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`StrictOrderedSemiring`. -/
+@[mk_iff] class PosMulStrictMono : Prop extends CovariantClass α>0 α (fun x y => x * y) (· < ·)
+
+/-- Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
+the left, namely `b * a₁ < b * a₂ → a₁ < a₂` if `0 ≤ b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`LinearOrderedSemiring`. -/
+@[mk_iff] class PosMulReflectLT : Prop extends ContravariantClass α≥0 α (fun x y => x * y) (· < ·)
+
+/-- Typeclass for reverse monotonicity of multiplication by positive elements on the left,
+namely `b * a₁ ≤ b * a₂ → a₁ ≤ a₂` if `0 < b`.
+
+You should usually not use this very granular typeclass directly, but rather a typeclass like
+`LinearOrderedSemiring`. -/
+@[mk_iff] class PosMulReflectLE : Prop extends ContravariantClass α>0 α (fun x y => x * y) (· ≤ ·)
 
 /-- Typeclass for monotonicity of multiplication by nonnegative elements on the right,
 namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b` if `0 ≤ b`.
@@ -109,13 +121,6 @@ namely `a₁ ≤ a₂ → a₁ * b ≤ a₂ * b` if `0 ≤ b`.
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `OrderedSemiring`. -/
 @[mk_iff] class MulPosMono : Prop extends CovariantClass α≥0 α (fun x y => y * x) (· ≤ ·)
-
-/-- Typeclass for strict monotonicity of multiplication by positive elements on the left,
-namely `b₁ < b₂ → a * b₁ < a * b₂` if `0 < a`.
-
-You should usually not use this very granular typeclass directly, but rather a typeclass like
-`StrictOrderedSemiring`. -/
-@[mk_iff] class PosMulStrictMono : Prop extends CovariantClass α>0 α (fun x y => x * y) (· < ·)
 
 /-- Typeclass for strict monotonicity of multiplication by positive elements on the right,
 namely `a₁ < a₂ → a₁ * b < a₂ * b` if `0 < b`.
@@ -125,25 +130,11 @@ You should usually not use this very granular typeclass directly, but rather a t
 @[mk_iff] class MulPosStrictMono : Prop extends CovariantClass α>0 α (fun x y => y * x) (· < ·)
 
 /-- Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
-the left, namely `a * b₁ < a * b₂ → b₁ < b₂` if `0 ≤ a`.
-
-You should usually not use this very granular typeclass directly, but rather a typeclass like
-`LinearOrderedSemiring`. -/
-@[mk_iff] class PosMulReflectLT : Prop extends ContravariantClass α≥0 α (fun x y => x * y) (· < ·)
-
-/-- Typeclass for strict reverse monotonicity of multiplication by nonnegative elements on
 the right, namely `a₁ * b < a₂ * b → a₁ < a₂` if `0 ≤ b`.
 
 You should usually not use this very granular typeclass directly, but rather a typeclass like
 `LinearOrderedSemiring`. -/
 @[mk_iff] class MulPosReflectLT : Prop extends ContravariantClass α≥0 α (fun x y => y * x) (· < ·)
-
-/-- Typeclass for reverse monotonicity of multiplication by positive elements on the left,
-namely `a * b₁ ≤ a * b₂ → b₁ ≤ b₂` if `0 < a`.
-
-You should usually not use this very granular typeclass directly, but rather a typeclass like
-`LinearOrderedSemiring`. -/
-@[mk_iff] class PosMulReflectLE : Prop extends ContravariantClass α>0 α (fun x y => x * y) (· ≤ ·)
 
 /-- Typeclass for reverse monotonicity of multiplication by positive elements on the right,
 namely `a₁ * b ≤ a₂ * b → a₁ ≤ a₂` if `0 < b`.
@@ -154,7 +145,7 @@ You should usually not use this very granular typeclass directly, but rather a t
 
 end Abbreviations
 
-variable {α} {a b c d : α}
+variable {α}
 
 section MulZero
 
@@ -162,7 +153,7 @@ variable [Mul α] [Zero α]
 
 section Preorder
 
-variable [Preorder α]
+variable [Preorder α] {a b c d : α}
 
 instance PosMulMono.to_covariantClass_pos_mul_le [PosMulMono α] :
     CovariantClass α>0 α (fun x y => x * y) (· ≤ ·) :=
@@ -339,6 +330,20 @@ theorem lt_mul_of_lt_mul_of_nonneg_right [MulPosMono α] (h : a < b * c) (hle : 
     a < d * c :=
   h.trans_le (mul_le_mul_of_nonneg_right hle c0)
 
+variable [@Std.Commutative α (· * ·)]
+
+theorem posMulMono_iff_mulPosMono : PosMulMono α ↔ MulPosMono α := by
+  simp only [posMulMono_iff, mulPosMono_iff, Std.Commutative.comm]
+
+theorem posMulStrictMono_iff_mulPosStrictMono : PosMulStrictMono α ↔ MulPosStrictMono α := by
+  simp only [posMulStrictMono_iff, mulPosStrictMono_iff, Std.Commutative.comm]
+
+theorem posMulReflectLE_iff_mulPosReflectLE : PosMulReflectLE α ↔ MulPosReflectLE α := by
+  simp only [posMulReflectLE_iff, mulPosReflectLE_iff, Std.Commutative.comm]
+
+theorem posMulReflectLT_iff_mulPosReflectLT : PosMulReflectLT α ↔ MulPosReflectLT α := by
+  simp only [posMulReflectLT_iff, mulPosReflectLT_iff, Std.Commutative.comm]
+
 end Preorder
 
 section LinearOrder
@@ -393,88 +398,9 @@ end LinearOrder
 
 end MulZero
 
-section MulZeroClass
+section MulZeroClassPartialOrder
 
-variable [MulZeroClass α]
-
-section Preorder
-
-variable [Preorder α]
-
-/-- Assumes left covariance. -/
-theorem Left.mul_pos [PosMulStrictMono α] (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
-  simpa only [mul_zero] using mul_lt_mul_of_pos_left hb ha
-
-alias mul_pos := Left.mul_pos
-
-theorem mul_neg_of_pos_of_neg [PosMulStrictMono α] (ha : 0 < a) (hb : b < 0) : a * b < 0 := by
-  simpa only [mul_zero] using mul_lt_mul_of_pos_left hb ha
-
-@[simp]
-theorem mul_pos_iff_of_pos_left [PosMulStrictMono α] [PosMulReflectLT α] (h : 0 < a) :
-    0 < a * b ↔ 0 < b := by simpa using mul_lt_mul_left (b := 0) h
-
-/-- Assumes right covariance. -/
-theorem Right.mul_pos [MulPosStrictMono α] (ha : 0 < a) (hb : 0 < b) : 0 < a * b := by
-  simpa only [zero_mul] using mul_lt_mul_of_pos_right ha hb
-
-theorem mul_neg_of_neg_of_pos [MulPosStrictMono α] (ha : a < 0) (hb : 0 < b) : a * b < 0 := by
-  simpa only [zero_mul] using mul_lt_mul_of_pos_right ha hb
-
-@[simp]
-theorem mul_pos_iff_of_pos_right [MulPosStrictMono α] [MulPosReflectLT α] (h : 0 < b) :
-    0 < a * b ↔ 0 < a := by simpa using mul_lt_mul_right (b := 0) h
-
-/-- Assumes left covariance. -/
-theorem Left.mul_nonneg [PosMulMono α] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by
-  simpa only [mul_zero] using mul_le_mul_of_nonneg_left hb ha
-
-alias mul_nonneg := Left.mul_nonneg
-
-theorem mul_nonpos_of_nonneg_of_nonpos [PosMulMono α] (ha : 0 ≤ a) (hb : b ≤ 0) : a * b ≤ 0 := by
-  simpa only [mul_zero] using mul_le_mul_of_nonneg_left hb ha
-
-/-- Assumes right covariance. -/
-theorem Right.mul_nonneg [MulPosMono α] (ha : 0 ≤ a) (hb : 0 ≤ b) : 0 ≤ a * b := by
-  simpa only [zero_mul] using mul_le_mul_of_nonneg_right ha hb
-
-theorem mul_nonpos_of_nonpos_of_nonneg [MulPosMono α] (ha : a ≤ 0) (hb : 0 ≤ b) : a * b ≤ 0 := by
-  simpa only [zero_mul] using mul_le_mul_of_nonneg_right ha hb
-
-theorem pos_of_mul_pos_right [PosMulReflectLT α] (h : 0 < a * b) (ha : 0 ≤ a) : 0 < b :=
-  lt_of_mul_lt_mul_left ((mul_zero a).symm ▸ h : a * 0 < a * b) ha
-
-theorem pos_of_mul_pos_left [MulPosReflectLT α] (h : 0 < a * b) (hb : 0 ≤ b) : 0 < a :=
-  lt_of_mul_lt_mul_right ((zero_mul b).symm ▸ h : 0 * b < a * b) hb
-
-theorem pos_iff_pos_of_mul_pos [PosMulReflectLT α] [MulPosReflectLT α] (hab : 0 < a * b) :
-    0 < a ↔ 0 < b :=
-  ⟨pos_of_mul_pos_right hab ∘ le_of_lt, pos_of_mul_pos_left hab ∘ le_of_lt⟩
-
-/-- Assumes left strict covariance. -/
-theorem Left.mul_lt_mul_of_nonneg [PosMulStrictMono α] [MulPosMono α]
-    (h₁ : a < b) (h₂ : c < d) (a0 : 0 ≤ a) (c0 : 0 ≤ c) : a * c < b * d :=
-  mul_lt_mul_of_le_of_lt_of_nonneg_of_pos h₁.le h₂ c0 (a0.trans_lt h₁)
-
-/-- Assumes right strict covariance. -/
-theorem Right.mul_lt_mul_of_nonneg [PosMulMono α] [MulPosStrictMono α]
-    (h₁ : a < b) (h₂ : c < d) (a0 : 0 ≤ a) (c0 : 0 ≤ c) : a * c < b * d :=
-  mul_lt_mul_of_lt_of_le_of_nonneg_of_pos h₁ h₂.le a0 (c0.trans_lt h₂)
-
-alias mul_lt_mul_of_nonneg := Left.mul_lt_mul_of_nonneg
-
-alias mul_lt_mul'' := Left.mul_lt_mul_of_nonneg
-attribute [gcongr] mul_lt_mul''
-
-theorem mul_self_le_mul_self [PosMulMono α] [MulPosMono α] (ha : 0 ≤ a) (hab : a ≤ b) :
-    a * a ≤ b * b :=
-  mul_le_mul hab hab ha <| ha.trans hab
-
-end Preorder
-
-section PartialOrder
-
-variable [PartialOrder α]
+variable [MulZeroClass α] [PartialOrder α]
 
 theorem posMulMono_iff_covariant_pos :
     PosMulMono α ↔ CovariantClass α>0 α (fun x y => x * y) (· ≤ ·) :=
@@ -534,185 +460,39 @@ instance (priority := 100) MulPosReflectLE.toMulPosReflectLT [MulPosReflectLE α
         rintro rfl
         simp at h⟩
 
-theorem mul_left_cancel_iff_of_pos [PosMulReflectLE α] (a0 : 0 < a) : a * b = a * c ↔ b = c :=
-  ⟨fun h => (le_of_mul_le_mul_of_pos_left h.le a0).antisymm <|
-    le_of_mul_le_mul_of_pos_left h.ge a0, congr_arg _⟩
+end MulZeroClassPartialOrder
 
-theorem mul_right_cancel_iff_of_pos [MulPosReflectLE α] (b0 : 0 < b) : a * b = c * b ↔ a = c :=
-  ⟨fun h => (le_of_mul_le_mul_of_pos_right h.le b0).antisymm <|
-    le_of_mul_le_mul_of_pos_right h.ge b0, congr_arg (· * b)⟩
+section CancelMonoidWithZeroPartialOrder
 
-theorem mul_eq_mul_iff_eq_and_eq_of_pos [PosMulStrictMono α] [MulPosStrictMono α]
-    (hab : a ≤ b) (hcd : c ≤ d) (a0 : 0 < a) (d0 : 0 < d) :
-    a * c = b * d ↔ a = b ∧ c = d := by
-  refine ⟨fun h ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
-  simp only [eq_iff_le_not_lt, hab, hcd, true_and]
-  refine ⟨fun hab ↦ h.not_lt ?_, fun hcd ↦ h.not_lt ?_⟩
-  · exact (mul_le_mul_of_nonneg_left hcd a0.le).trans_lt (mul_lt_mul_of_pos_right hab d0)
-  · exact (mul_lt_mul_of_pos_left hcd a0).trans_le (mul_le_mul_of_nonneg_right hab d0.le)
+variable [CancelMonoidWithZero α] [PartialOrder α]
 
-theorem mul_eq_mul_iff_eq_and_eq_of_pos' [PosMulStrictMono α] [MulPosStrictMono α]
-    (hab : a ≤ b) (hcd : c ≤ d) (b0 : 0 < b) (c0 : 0 < c) :
-    a * c = b * d ↔ a = b ∧ c = d := by
-  refine ⟨fun h ↦ ?_, by rintro ⟨rfl, rfl⟩; rfl⟩
-  simp only [eq_iff_le_not_lt, hab, hcd, true_and]
-  refine ⟨fun hab ↦ h.not_lt ?_, fun hcd ↦ h.not_lt ?_⟩
-  · exact (mul_lt_mul_of_pos_right hab c0).trans_le (mul_le_mul_of_nonneg_left hcd b0.le)
-  · exact (mul_le_mul_of_nonneg_right hab c0.le).trans_lt (mul_lt_mul_of_pos_left hcd b0)
+theorem PosMulMono.toPosMulStrictMono [PosMulMono α] : PosMulStrictMono α where
+  elim := fun x _ _ h => (mul_le_mul_of_nonneg_left h.le x.2.le).lt_of_ne
+    (h.ne ∘ mul_left_cancel₀ x.2.ne')
 
-end PartialOrder
+theorem posMulMono_iff_posMulStrictMono : PosMulMono α ↔ PosMulStrictMono α :=
+  ⟨@PosMulMono.toPosMulStrictMono α _ _, @PosMulStrictMono.toPosMulMono α _ _⟩
 
-section LinearOrder
+theorem MulPosMono.toMulPosStrictMono [MulPosMono α] : MulPosStrictMono α where
+  elim := fun x _ _ h => (mul_le_mul_of_nonneg_right h.le x.2.le).lt_of_ne
+    (h.ne ∘ mul_right_cancel₀ x.2.ne')
 
-variable [LinearOrder α]
+theorem mulPosMono_iff_mulPosStrictMono : MulPosMono α ↔ MulPosStrictMono α :=
+  ⟨@MulPosMono.toMulPosStrictMono α _ _, @MulPosStrictMono.toMulPosMono α _ _⟩
 
-theorem pos_and_pos_or_neg_and_neg_of_mul_pos [PosMulMono α] [MulPosMono α] (hab : 0 < a * b) :
-    0 < a ∧ 0 < b ∨ a < 0 ∧ b < 0 := by
-  rcases lt_trichotomy a 0 with (ha | rfl | ha)
-  · refine Or.inr ⟨ha, lt_imp_lt_of_le_imp_le (fun hb => ?_) hab⟩
-    exact mul_nonpos_of_nonpos_of_nonneg ha.le hb
-  · rw [zero_mul] at hab
-    exact hab.false.elim
-  · refine Or.inl ⟨ha, lt_imp_lt_of_le_imp_le (fun hb => ?_) hab⟩
-    exact mul_nonpos_of_nonneg_of_nonpos ha.le hb
+theorem PosMulReflectLT.toPosMulReflectLE [PosMulReflectLT α] : PosMulReflectLE α where
+  elim := fun x _ _ h =>
+    h.eq_or_lt.elim (le_of_eq ∘ mul_left_cancel₀ x.2.ne.symm) fun h' =>
+      (lt_of_mul_lt_mul_left h' x.2.le).le
 
-theorem neg_of_mul_pos_right [PosMulMono α] [MulPosMono α] (h : 0 < a * b) (ha : a ≤ 0) : b < 0 :=
-  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h => h.1.not_le ha).2
+theorem posMulReflectLE_iff_posMulReflectLT : PosMulReflectLE α ↔ PosMulReflectLT α :=
+  ⟨@PosMulReflectLE.toPosMulReflectLT α _ _, @PosMulReflectLT.toPosMulReflectLE α _ _⟩
 
-theorem neg_of_mul_pos_left [PosMulMono α] [MulPosMono α] (h : 0 < a * b) (ha : b ≤ 0) : a < 0 :=
-  ((pos_and_pos_or_neg_and_neg_of_mul_pos h).resolve_left fun h => h.2.not_le ha).1
+theorem MulPosReflectLT.toMulPosReflectLE [MulPosReflectLT α] : MulPosReflectLE α where
+  elim := fun x _ _ h => h.eq_or_lt.elim (le_of_eq ∘ mul_right_cancel₀ x.2.ne.symm) fun h' =>
+    (lt_of_mul_lt_mul_right h' x.2.le).le
 
-theorem neg_iff_neg_of_mul_pos [PosMulMono α] [MulPosMono α] (hab : 0 < a * b) : a < 0 ↔ b < 0 :=
-  ⟨neg_of_mul_pos_right hab ∘ le_of_lt, neg_of_mul_pos_left hab ∘ le_of_lt⟩
+theorem mulPosReflectLE_iff_mulPosReflectLT : MulPosReflectLE α ↔ MulPosReflectLT α :=
+  ⟨@MulPosReflectLE.toMulPosReflectLT α _ _, @MulPosReflectLT.toMulPosReflectLE α _ _⟩
 
-theorem Left.neg_of_mul_neg_right [PosMulMono α] (h : a * b < 0) (a0 : 0 ≤ a) : b < 0 :=
-  lt_of_not_ge fun b0 : b ≥ 0 => (Left.mul_nonneg a0 b0).not_lt h
-
-alias neg_of_mul_neg_right := Left.neg_of_mul_neg_right
-
-theorem Right.neg_of_mul_neg_right [MulPosMono α] (h : a * b < 0) (a0 : 0 ≤ a) : b < 0 :=
-  lt_of_not_ge fun b0 : b ≥ 0 => (Right.mul_nonneg a0 b0).not_lt h
-
-theorem Left.neg_of_mul_neg_left [PosMulMono α] (h : a * b < 0) (b0 : 0 ≤ b) : a < 0 :=
-  lt_of_not_ge fun a0 : a ≥ 0 => (Left.mul_nonneg a0 b0).not_lt h
-
-alias neg_of_mul_neg_left := Left.neg_of_mul_neg_left
-
-theorem Right.neg_of_mul_neg_left [MulPosMono α] (h : a * b < 0) (b0 : 0 ≤ b) : a < 0 :=
-  lt_of_not_ge fun a0 : a ≥ 0 => (Right.mul_nonneg a0 b0).not_lt h
-
-end LinearOrder
-
-end MulZeroClass
-
-section MulOneClass
-
-variable [MulOneClass α] [Zero α]
-
-section Preorder
-
-variable [Preorder α]
-
-/-! Lemmas of the form `a ≤ a * b ↔ 1 ≤ b` and `a * b ≤ a ↔ b ≤ 1`,
-which assume left covariance. -/
-
-lemma one_lt_of_lt_mul_left₀ [PosMulReflectLT α] (ha : 0 ≤ a) (h : a < a * b) : 1 < b :=
-  lt_of_mul_lt_mul_left (by simpa) ha
-
-lemma one_lt_of_lt_mul_right₀ [MulPosReflectLT α] (hb : 0 ≤ b) (h : b < a * b) : 1 < a :=
-  lt_of_mul_lt_mul_right (by simpa) hb
-
-lemma one_le_of_le_mul_left₀ [PosMulReflectLE α] (ha : 0 < a) (h : a ≤ a * b) : 1 ≤ b :=
-  le_of_mul_le_mul_left (by simpa) ha
-
-lemma one_le_of_le_mul_right₀ [MulPosReflectLE α] (hb : 0 < b) (h : b ≤ a * b) : 1 ≤ a :=
-  le_of_mul_le_mul_right (by simpa) hb
-
-@[simp]
-lemma le_mul_iff_one_le_right [PosMulMono α] [PosMulReflectLE α] (a0 : 0 < a) : a ≤ a * b ↔ 1 ≤ b :=
-  Iff.trans (by rw [mul_one]) (mul_le_mul_left a0)
-
-@[simp]
-theorem lt_mul_iff_one_lt_right [PosMulStrictMono α] [PosMulReflectLT α] (a0 : 0 < a) :
-    a < a * b ↔ 1 < b :=
-  Iff.trans (by rw [mul_one]) (mul_lt_mul_left a0)
-
-@[simp]
-lemma mul_le_iff_le_one_right [PosMulMono α] [PosMulReflectLE α] (a0 : 0 < a) : a * b ≤ a ↔ b ≤ 1 :=
-  Iff.trans (by rw [mul_one]) (mul_le_mul_left a0)
-
-@[simp]
-theorem mul_lt_iff_lt_one_right [PosMulStrictMono α] [PosMulReflectLT α] (a0 : 0 < a) :
-    a * b < a ↔ b < 1 :=
-  Iff.trans (by rw [mul_one]) (mul_lt_mul_left a0)
-
-/-! Lemmas of the form `a ≤ b * a ↔ 1 ≤ b` and `a * b ≤ b ↔ a ≤ 1`,
-which assume right covariance. -/
-
-
-@[simp]
-lemma le_mul_iff_one_le_left [MulPosMono α] [MulPosReflectLE α] (a0 : 0 < a) : a ≤ b * a ↔ 1 ≤ b :=
-  Iff.trans (by rw [one_mul]) (mul_le_mul_right a0)
-
-@[simp]
-theorem lt_mul_iff_one_lt_left [MulPosStrictMono α] [MulPosReflectLT α] (a0 : 0 < a) :
-    a < b * a ↔ 1 < b :=
-  Iff.trans (by rw [one_mul]) (mul_lt_mul_right a0)
-
-@[simp]
-lemma mul_le_iff_le_one_left [MulPosMono α] [MulPosReflectLE α] (b0 : 0 < b) : a * b ≤ b ↔ a ≤ 1 :=
-  Iff.trans (by rw [one_mul]) (mul_le_mul_right b0)
-
-@[simp]
-theorem mul_lt_iff_lt_one_left [MulPosStrictMono α] [MulPosReflectLT α] (b0 : 0 < b) :
-    a * b < b ↔ a < 1 :=
-  Iff.trans (by rw [one_mul]) (mul_lt_mul_right b0)
-
-/-! Lemmas of the form `1 ≤ b → a ≤ a * b`.
-
-Variants with `< 0` and `≤ 0` instead of `0 <` and `0 ≤` appear in `Mathlib/Algebra/Order/Ring/Defs`
-(which imports this file) as they need additional results which are not yet available here. -/
-
-
-theorem mul_le_of_le_one_left [MulPosMono α] (hb : 0 ≤ b) (h : a ≤ 1) : a * b ≤ b := by
-  simpa only [one_mul] using mul_le_mul_of_nonneg_right h hb
-
-theorem le_mul_of_one_le_left [MulPosMono α] (hb : 0 ≤ b) (h : 1 ≤ a) : b ≤ a * b := by
-  simpa only [one_mul] using mul_le_mul_of_nonneg_right h hb
-
-theorem mul_le_of_le_one_right [PosMulMono α] (ha : 0 ≤ a) (h : b ≤ 1) : a * b ≤ a := by
-  simpa only [mul_one] using mul_le_mul_of_nonneg_left h ha
-
-theorem le_mul_of_one_le_right [PosMulMono α] (ha : 0 ≤ a) (h : 1 ≤ b) : a ≤ a * b := by
-  simpa only [mul_one] using mul_le_mul_of_nonneg_left h ha
-
-theorem mul_lt_of_lt_one_left [MulPosStrictMono α] (hb : 0 < b) (h : a < 1) : a * b < b := by
-  simpa only [one_mul] using mul_lt_mul_of_pos_right h hb
-
-theorem lt_mul_of_one_lt_left [MulPosStrictMono α] (hb : 0 < b) (h : 1 < a) : b < a * b := by
-  simpa only [one_mul] using mul_lt_mul_of_pos_right h hb
-
-theorem mul_lt_of_lt_one_right [PosMulStrictMono α] (ha : 0 < a) (h : b < 1) : a * b < a := by
-  simpa only [mul_one] using mul_lt_mul_of_pos_left h ha
-
-theorem lt_mul_of_one_lt_right [PosMulStrictMono α] (ha : 0 < a) (h : 1 < b) : a < a * b := by
-  simpa only [mul_one] using mul_lt_mul_of_pos_left h ha
-
-end Preorder
-
-end MulOneClass
-
-section MulZero
-
-variable {M₀ : Type*} [Mul M₀] [Zero M₀] [Preorder M₀] [Preorder α] {f g : α → M₀}
-
-lemma Monotone.mul [PosMulMono M₀] [MulPosMono M₀] (hf : Monotone f) (hg : Monotone g)
-    (hf₀ : ∀ x, 0 ≤ f x) (hg₀ : ∀ x, 0 ≤ g x) : Monotone (f * g) :=
-  fun _ _ h ↦ mul_le_mul (hf h) (hg h) (hg₀ _) (hf₀ _)
-
-lemma MonotoneOn.mul [PosMulMono M₀] [MulPosMono M₀] {s : Set α} (hf : MonotoneOn f s)
-    (hg : MonotoneOn g s) (hf₀ : ∀ x ∈ s, 0 ≤ f x) (hg₀ : ∀ x ∈ s, 0 ≤ g x) :
-    MonotoneOn (f * g) s :=
-  fun _ ha _ hb h ↦ mul_le_mul (hf ha hb h) (hg ha hb h) (hg₀ _ ha) (hf₀ _ hb)
-
-end MulZero
+end CancelMonoidWithZeroPartialOrder
