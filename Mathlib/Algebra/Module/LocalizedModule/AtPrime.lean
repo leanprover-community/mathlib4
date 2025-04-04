@@ -13,7 +13,7 @@ import Mathlib.RingTheory.Ideal.Prime
 /-- Given a prime ideal `P` and `f : M →ₗ[R] M'`, `IsLocalizedModule.AtPrime P f` states that `M'`
   is isomorphic to the localization of `M` at the complement of `P`. -/
 protected abbrev IsLocalizedModule.AtPrime {R M M': Type*} [CommSemiring R] (P : Ideal R)
-    [P.IsPrime] [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R M'] (f : M →ₗ[R] M'):=
+    [P.IsPrime] [AddCommMonoid M] [AddCommMonoid M'] [Module R M] [Module R M'] (f : M →ₗ[R] M') :=
   IsLocalizedModule P.primeCompl f
 
 /-- Given a prime ideal `P`, `LocalizedModule.AtPrime P M` is a localization of `M`
