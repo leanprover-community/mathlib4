@@ -20,7 +20,7 @@ the presheaf is valued in a category with products, and thereby equivalent to th
 condition.
 -/
 
-attribute [induction_eliminator] Opposite.rec
+
 universe v' v u
 
 noncomputable section
