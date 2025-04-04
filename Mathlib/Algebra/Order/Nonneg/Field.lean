@@ -6,6 +6,7 @@ Authors: Floris van Doorn
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Order.Nonneg.Basic
 import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Semifield structure on the type of nonnegative elements
