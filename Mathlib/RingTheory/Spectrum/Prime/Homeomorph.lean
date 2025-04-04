@@ -74,56 +74,10 @@ lemma PrimeSpectrum.isHomeomorph_comap_of_bijective {f : R →+* S} (hf : Functi
   convert bot_le
   exact (RingHom.injective_iff_ker_eq_bot _).mp hf.1
 
-open Algebra
-
-variable {k R K} in
-lemma IsPurelyInseparable.exists_pow_mem_range_tensorProduct [IsPurelyInseparable k K]
-    (x : R ⊗[k] K) : ∃ n > 0, x ^ n ∈ (algebraMap R (R ⊗[k] K)).range := by
-  wlog hR : Nontrivial R
-  · rw [not_nontrivial_iff_subsingleton] at hR
-    refine ⟨1, Nat.one_pos, 1, Subsingleton.elim _ _⟩
-  let q := ringExpChar k
-  obtain (hq|hq) := expChar_is_prime_or_one k q
-  · obtain ⟨n, hn, hr⟩ : ∃ n > 0, x ^ q ^ n ∈ (algebraMap R (R ⊗[k] K)).range := by
-      induction x with
-      | zero => exact ⟨1, Nat.zero_lt_one, 0, by simp [zero_pow_eq, hq.ne_zero]⟩
-      | add x y hx hy =>
-        obtain ⟨n, hn, hx⟩ := hx
-        obtain ⟨m, hm, hy⟩ := hy
-        refine ⟨n + m, by simp [hn], ?_⟩
-        have : ExpChar (R ⊗[k] K) q := by
-          refine expChar_of_injective_ringHom
-            (f := TensorProduct.includeRight.toRingHom.comp (algebraMap k K)) ?_ q
-          exact (Algebra.TensorProduct.includeRight_injective (algebraMap k R).injective).comp
-            (algebraMap k K).injective
-        rw [add_pow_expChar_pow, pow_add]
-        nth_rw 2 [mul_comm]
-        rw [pow_mul, pow_mul]
-        exact Subring.add_mem _ (Subring.pow_mem _ hx _) (Subring.pow_mem _ hy _)
-      | tmul x y =>
-        obtain ⟨n, a, ha⟩ := IsPurelyInseparable.pow_mem k q y
-        refine ⟨n + 1, by simp, ?_⟩
-        have : (x ^ q ^ (n + 1)) ⊗ₜ[k] (y ^ q ^ (n + 1)) =
-            (x ^ q ^ (n + 1)) ⊗ₜ[k] (1 : K) * (1 : R) ⊗ₜ[k] (y ^ q ^ (n + 1)) := by
-          rw [TensorProduct.tmul_mul_tmul, mul_one, one_mul]
-        rw [TensorProduct.tmul_pow, this]
-        refine Subring.mul_mem _ ⟨x ^ q ^ (n + 1), rfl⟩ ⟨algebraMap k R (a ^ q), ?_⟩
-        rw [pow_add, pow_mul, ← IsScalarTower.algebraMap_apply, TensorProduct.algebraMap_apply,
-          TensorProduct.tmul_one_eq_one_tmul, map_pow, ha, pow_one]
-    exact ⟨q ^ n, Nat.pow_pos hq.pos, hr⟩
-  · have : ExpChar k 1 := ringExpChar.of_eq hq
-    have : CharZero k := charZero_of_expChar_one' k
-    exact ⟨1, Nat.one_pos, (Algebra.TensorProduct.includeLeft_surjective (S := R) <|
-      IsPurelyInseparable.surjective_algebraMap_of_isSeparable k K) _⟩
-
 /-- Purely inseparable field extensions are universal homeomorphisms. -/
 @[stacks 0BRA "Special case for purely inseparable field extensions"]
 lemma PrimeSpectrum.isHomeomorph_comap_of_isPurelyInseparable [IsPurelyInseparable k K] :
     IsHomeomorph (PrimeSpectrum.comap <| algebraMap R (R ⊗[k] K)) := by
-  wlog hR : Nontrivial R
-  · rw [not_nontrivial_iff_subsingleton] at hR
-    exact PrimeSpectrum.isHomeomorph_comap_of_bijective
-      ⟨Function.injective_of_subsingleton _, Function.surjective_to_subsingleton _⟩
   let q := ringExpChar k
   refine PrimeSpectrum.isHomeomorph_comap _
       (IsPurelyInseparable.exists_pow_mem_range_tensorProduct) ?_

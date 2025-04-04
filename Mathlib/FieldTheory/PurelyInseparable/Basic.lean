@@ -591,3 +591,57 @@ theorem adjoin_eq_of_isAlgebraic [Algebra.IsAlgebraic F E] :
   simp only [S, coe_map, IsScalarTower.coe_toAlgHom', IntermediateField.algebraMap_apply]
 
 end separableClosure
+
+section
+
+open TensorProduct
+
+variable {k K R : Type*} [Field k] [Field K] [Algebra k K] [CommRing R] [Algebra k R]
+
+lemma IsPurelyInseparable.exists_pow_pow_mem_range_tensorProduct_of_expChar
+      [IsPurelyInseparable k K] (q : ℕ) [ExpChar k q] (x : R ⊗[k] K) :
+    ∃ n > 0, x ^ q ^ n ∈ (algebraMap R (R ⊗[k] K)).range := by
+  wlog hR : Nontrivial R
+  · rw [not_nontrivial_iff_subsingleton] at hR
+    refine ⟨1, Nat.one_pos, 1, Subsingleton.elim _ _⟩
+  wlog h : Nontrivial (R ⊗[k] K)
+  · rw [not_nontrivial_iff_subsingleton] at h
+    refine ⟨1, Nat.one_pos, 1, Subsingleton.elim _ _⟩
+  obtain (hq|hq) := expChar_is_prime_or_one k q
+  induction x with
+  | zero => exact ⟨1, Nat.zero_lt_one, 0, by simp [zero_pow_eq, hq.ne_zero]⟩
+  | add x y hx hy =>
+    obtain ⟨n, hn, hx⟩ := hx
+    obtain ⟨m, hm, hy⟩ := hy
+    refine ⟨n + m, by simp [hn], ?_⟩
+    have : ExpChar (R ⊗[k] K) q := by
+      refine expChar_of_injective_ringHom
+        (f := Algebra.TensorProduct.includeRight.toRingHom.comp (algebraMap k K)) ?_ q
+      apply RingHom.injective
+    rw [add_pow_expChar_pow, pow_add]
+    nth_rw 2 [mul_comm]
+    rw [pow_mul, pow_mul]
+    exact Subring.add_mem _ (Subring.pow_mem _ hx _) (Subring.pow_mem _ hy _)
+  | tmul x y =>
+    obtain ⟨n, a, ha⟩ := IsPurelyInseparable.pow_mem k q y
+    refine ⟨n + 1, by simp, ?_⟩
+    have : (x ^ q ^ (n + 1)) ⊗ₜ[k] (y ^ q ^ (n + 1)) =
+        (x ^ q ^ (n + 1)) ⊗ₜ[k] (1 : K) * (1 : R) ⊗ₜ[k] (y ^ q ^ (n + 1)) := by
+      rw [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
+    rw [Algebra.TensorProduct.tmul_pow, this]
+    refine Subring.mul_mem _ ⟨x ^ q ^ (n + 1), rfl⟩ ⟨algebraMap k R (a ^ q), ?_⟩
+    rw [pow_add, pow_mul, ← IsScalarTower.algebraMap_apply, Algebra.TensorProduct.algebraMap_apply,
+      Algebra.TensorProduct.tmul_one_eq_one_tmul, map_pow, ha, pow_one]
+  · subst hq
+    have : CharZero k := charZero_of_expChar_one' k
+    exact ⟨1, Nat.one_pos, (Algebra.TensorProduct.includeLeft_surjective R _ <|
+      IsPurelyInseparable.surjective_algebraMap_of_isSeparable k K) _⟩
+
+lemma IsPurelyInseparable.exists_pow_mem_range_tensorProduct [IsPurelyInseparable k K]
+    (x : R ⊗[k] K) : ∃ n > 0, x ^ n ∈ (algebraMap R (R ⊗[k] K)).range := by
+  let q := ringExpChar k
+  obtain ⟨n, hn, hr⟩ := exists_pow_pow_mem_range_tensorProduct_of_expChar q x
+  refine ⟨q ^ n, pow_pos ?_ _, hr⟩
+  obtain (hq|hq) := expChar_is_prime_or_one k q <;> simp [hq, Nat.Prime.pos]
+
+end

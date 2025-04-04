@@ -1459,3 +1459,39 @@ lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMon
   rintro _ ⟨t, rfl⟩
   exact t.induction_on (by simp) (by simp +contextual [Submodule.smul_mem_smul])
     (by simp +contextual [add_mem])
+
+section
+
+variable {R S T : Type*} [CommSemiring R] [Semiring S] [Algebra R S] [Ring T] [Algebra R T]
+
+variable (R) in
+theorem TensorProduct.mk_surjective (M) [AddCommMonoid M] [Module R M]
+    (h : Function.Surjective (algebraMap R S)) :
+    Function.Surjective (TensorProduct.mk R S M 1) := by
+  rw [← LinearMap.range_eq_top, ← top_le_iff, ← span_tmul_eq_top, Submodule.span_le]
+  rintro _ ⟨x, y, rfl⟩
+  obtain ⟨x, rfl⟩ := h x
+  rw [Algebra.algebraMap_eq_smul_one, smul_tmul]
+  exact ⟨x • y, rfl⟩
+
+variable (S) in
+lemma TensorProduct.flip_mk_surjective (h : Function.Surjective (algebraMap R T)) :
+    Function.Surjective ((TensorProduct.mk R S T).flip 1) := by
+  rw [← LinearMap.range_eq_top, ← top_le_iff, ← span_tmul_eq_top, Submodule.span_le]
+  rintro _ ⟨s, t, rfl⟩
+  obtain ⟨r, rfl⟩ := h t
+  rw [Algebra.algebraMap_eq_smul_one, ← smul_tmul]
+  exact ⟨r • s, rfl⟩
+
+variable (T) in
+lemma Algebra.TensorProduct.includeRight_surjective (h : Function.Surjective (algebraMap R S)) :
+    Function.Surjective (includeRight : T →ₐ[R] S ⊗[R] T) :=
+  TensorProduct.mk_surjective _ _ h
+
+lemma Algebra.TensorProduct.includeLeft_surjective
+    (S A : Type*) [CommSemiring S] [Semiring A] [Algebra S A] [Algebra R A]
+    [Algebra S A] [SMulCommClass R S A] (h : Function.Surjective (algebraMap R T)) :
+    Function.Surjective (includeLeft : A →ₐ[S] A ⊗[R] T) :=
+  TensorProduct.flip_mk_surjective _ h
+
+end
