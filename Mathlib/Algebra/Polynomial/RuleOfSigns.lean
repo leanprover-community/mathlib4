@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Alex Meiburg. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alex Meiburg
+-/
 import Mathlib.Algebra.Polynomial.CoeffList
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Algebra.Polynomial.Roots
