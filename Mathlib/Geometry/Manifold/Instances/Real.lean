@@ -168,25 +168,24 @@ open ENNReal in
 theorem interior_quadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
     interior { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | ∀ i : Fin n, a < y i } := by
-  let f : (Fin n) → (Π _ : Fin n, ℝ) →L[ℝ] ℝ := fun i ↦ ContinuousLinearMap.proj i
-  have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i )⁻¹' Ici a := by
-    ext; simp; rfl
-  have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i )⁻¹' Ioi a := by
-    ext; simp; rfl
+  let f : Fin n → (Π _ : Fin n, ℝ) →L[ℝ] ℝ := fun i ↦ ContinuousLinearMap.proj i
+  have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i)⁻¹' Ici a := by
+    ext; simp [f]
+  have h' : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a < y i } = ⋂ i, (f i)⁻¹' Ioi a := by
+    ext; simp [f]
   rw [h, h', interior_iInter_of_finite]
   apply iInter_congr fun i ↦ ?_
   rw [(f i).interior_preimage, interior_Ici]
-  apply Function.surjective_eval
+  exact Function.surjective_eval _
 
 open ENNReal in
 theorem closure_quadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
     closure { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } =
       { y | ∀ i : Fin n, a ≤ y i } := by
-  let f : (Fin n) → (Π _ : Fin n, ℝ) →L[ℝ] ℝ := fun i ↦ ContinuousLinearMap.proj i
-  have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i )⁻¹' Ici a := by
-    ext; simp; rfl
-  rw [h]
-  exact (isClosed_iInter fun i ↦ isClosed_Ici.preimage (f i).continuous).closure_eq
+  let f : Fin n → (Π _ : Fin n, ℝ) →L[ℝ] ℝ := fun i ↦ ContinuousLinearMap.proj i
+  have h : { y : PiLp p (fun _ : Fin n ↦ ℝ) | ∀ i : Fin n, a ≤ y i } = ⋂ i, (f i)⁻¹' Ici a := by
+    ext; simp [f]
+  exact h ▸ (isClosed_iInter fun i ↦ isClosed_Ici.preimage (f i).continuous).closure_eq
 
 open ENNReal in
 theorem frontier_quadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
@@ -195,7 +194,7 @@ theorem frontier_quadrant (n : ℕ) (p : ℝ≥0∞) (a : ℝ) :
   rw [frontier, closure_quadrant, interior_quadrant]
   ext y
   simp only [mem_diff, mem_setOf_eq, not_forall, not_lt, and_congr_right_iff]
-  exact fun aux ↦ exists_congr fun i ↦ ⟨fun h ↦ by linarith [aux i], fun h ↦ by linarith⟩
+  exact fun h ↦ exists_congr fun i ↦ ⟨fun _ ↦ by linarith [h i], fun h ↦ by linarith⟩
 
 theorem EuclideanHalfSpace.convex_interior [NeZero n] :
     Convex ℝ (interior { x : EuclideanSpace ℝ (Fin n) | 0 ≤ x 0 }) := by
