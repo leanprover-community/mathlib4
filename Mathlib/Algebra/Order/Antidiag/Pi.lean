@@ -189,7 +189,7 @@ lemma piAntidiag_insert [DecidableEq (ι → μ)] (hi : i ∉ s) (n : μ) :
 end AddCancelCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
-variable [DecidableEq ι] [AddCommMonoid μ] [PartialOrder μ] [IsOrderedAddMonoid μ]
+variable [DecidableEq ι] [AddCommMonoid μ] [PartialOrder μ]
   [CanonicallyOrderedAdd μ] [HasAntidiagonal μ] [DecidableEq μ]
 
 @[simp] lemma piAntidiag_zero (s : Finset ι) : piAntidiag s (0 : μ) = {0} := by
