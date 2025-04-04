@@ -147,8 +147,6 @@ def equivalenceFunctorEquivFunctorIso :
 
 end Swap
 
-end Sum
-
 section CompatibilityWithProductAssociator
 
 variable (T : Type*) [Category T]
@@ -171,5 +169,7 @@ def associativityFunctorEquivNaturalityFunctorIso :
         isoWhiskerRight (sum.inrCompInrCompInverseAssociator A A' T) E)))
 
 end CompatibilityWithProductAssociator
+
+end Sum
 
 end CategoryTheory
