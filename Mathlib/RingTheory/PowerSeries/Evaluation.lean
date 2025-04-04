@@ -59,7 +59,7 @@ theorem hasEval {a : S} (ha : IsTopologicallyNilpotent a) :
 
 theorem isTopologicallyNilpotent_X :
     IsTopologicallyNilpotent (PowerSeries.X : PowerSeries R) :=
-  tendsto_pow_zero_of_constantCoeff_zero PowerSeries.constantCoeff_X
+  isTopologicallyNilpotent_of_constantCoeff_zero PowerSeries.constantCoeff_X
 
 end
 

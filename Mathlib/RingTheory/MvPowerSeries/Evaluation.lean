@@ -90,7 +90,7 @@ theorem HasEval.map (hφ : Continuous φ) {a : σ → R} (ha : HasEval a) :
 
 protected theorem HasEval.X:
     HasEval (fun s ↦ (MvPowerSeries.X s : MvPowerSeries σ R)) where
-  hpow s := tendsto_pow_zero_of_constantCoeff_zero (constantCoeff_X s)
+  hpow s := isTopologicallyNilpotent_of_constantCoeff_zero (constantCoeff_X s)
   tendsto_zero := variables_tendsto_zero
 
 /-- The domain of evaluation of `MvPowerSeries`, as an ideal -/

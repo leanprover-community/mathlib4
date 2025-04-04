@@ -140,19 +140,19 @@ theorem variables_tendsto_zero [Semiring R] :
   · simpa only [ite_eq_right_iff] using
       Eventually.of_forall fun x h' ↦ (not_exists.mp h x h').elim
 
-theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
+theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
     {f} (hf : IsNilpotent (constantCoeff σ R f)) :
-    Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) := by
+    IsTopologicallyNilpotent f := by
   classical
   obtain ⟨m, hm⟩ := hf
-  simp_rw [tendsto_iff_coeff_tendsto, coeff_zero]
+  simp_rw [IsTopologicallyNilpotent, tendsto_iff_coeff_tendsto, coeff_zero]
   exact fun d ↦ tendsto_atTop_of_eventually_const fun n hn ↦
     coeff_eq_zero_of_constantCoeff_nilpotent hm hn
 
-theorem tendsto_pow_zero_of_constantCoeff_zero [CommSemiring R]
+theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
     {f} (hf : constantCoeff σ R f = 0) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) := by
-  apply tendsto_pow_zero_of_constantCoeff_nilpotent
+  apply isTopologicallyNilpotent_of_constantCoeff_isNilpotent
   rw [hf]
   exact IsNilpotent.zero
 
@@ -160,14 +160,13 @@ theorem tendsto_pow_zero_of_constantCoeff_zero [CommSemiring R]
 iff its constant coefficient is nilpotent.
 N. Bourbaki, *Algebra II*, [bourbaki1981] (chap. 4, §4, n°2, corollaire de la prop. 3)
 
-See also `MvPowerSeries.LinearTopology.tendsto_pow_iff_constantCoeff_topologicallyNilpotent`. -/
-theorem tendsto_pow_iff_constantCoeff_nilpotent [CommRing R] [DiscreteTopology R] (f) :
-    Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
-      IsNilpotent (constantCoeff σ R f) := by
-  refine ⟨fun H ↦ ?_, tendsto_pow_zero_of_constantCoeff_nilpotent⟩
-  replace H : Tendsto (fun n ↦ constantCoeff σ R (f ^ n)) atTop (nhds 0) :=
-    continuous_constantCoeff R |>.tendsto' 0 0 constantCoeff_zero |>.comp H
-  simp_rw [nhds_discrete, tendsto_pure, map_pow] at H
+See also `MvPowerSeries.LinearTopology.isTopologicallyNilpotent_iff_constantCoeff`. -/
+theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
+    [CommRing R] [DiscreteTopology R] (f) :
+    IsTopologicallyNilpotent f ↔ IsNilpotent (constantCoeff σ R f) := by
+  refine ⟨fun H ↦ ?_, isTopologicallyNilpotent_of_constantCoeff_isNilpotent⟩
+  replace H := H.map (continuous_constantCoeff R)
+  simp_rw [IsTopologicallyNilpotent, nhds_discrete, tendsto_pure] at H
   exact H.exists
 
 variable [Semiring R]

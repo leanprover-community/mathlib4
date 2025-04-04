@@ -6,6 +6,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 import Mathlib.Data.Finsupp.Interval
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.MvPowerSeries.PiTopology
+import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Topology.Algebra.LinearTopology
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
@@ -136,11 +137,11 @@ instance [IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R] :
     IsLinearTopology (MvPowerSeries σ R)ᵐᵒᵖ (MvPowerSeries σ R) :=
   IsLinearTopology.mk_of_hasBasis'  _ hasBasis_nhds_zero (fun J _ _ hg ↦ J.mul_mem_right _ _ hg)
 
-theorem tendsto_pow_zero_of_constantCoeff_topologicallyNilpotent
+theorem isTopologicallyNilpotent_of_constantCoeff
     {R : Type*} [CommRing R] [TopologicalSpace R] [IsLinearTopology R R]
     {f} (hf : IsTopologicallyNilpotent (constantCoeff σ R f)) :
-    Tendsto (fun n : ℕ => f ^ n) atTop (𝓝 0) := by
-  simp_rw [tendsto_iff_coeff_tendsto, coeff_zero,
+    IsTopologicallyNilpotent f := by
+  simp_rw [IsTopologicallyNilpotent, tendsto_iff_coeff_tendsto, coeff_zero,
     IsLinearTopology.hasBasis_ideal.tendsto_right_iff]
   intro d I hI
   replace hf := hf.eventually_mem hI
@@ -154,12 +155,12 @@ theorem tendsto_pow_zero_of_constantCoeff_topologicallyNilpotent
 /-- Assuming the base ring has a linear topology, the powers of a `MvPowerSeries` converge to 0
 iff its constant coefficient is topologically nilpotent.
 
-See also `MvPowerSeries.WithPiTopology.tendsto_pow_iff_constantCoeff_nilpotent`. -/
-theorem tendsto_pow_iff_constantCoeff_topologicallyNilpotent
+See also `MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent`. -/
+theorem isTopologicallyNilpotent_iff_constantCoeff
     {R : Type*} [CommRing R] [TopologicalSpace R] [IsLinearTopology R R] (f) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
       IsTopologicallyNilpotent (constantCoeff σ R f) := by
-  refine ⟨fun H ↦ ?_, tendsto_pow_zero_of_constantCoeff_topologicallyNilpotent⟩
+  refine ⟨fun H ↦ ?_, isTopologicallyNilpotent_of_constantCoeff⟩
   replace H : Tendsto (fun n ↦ constantCoeff σ R (f ^ n)) atTop (nhds 0) :=
     continuous_constantCoeff R |>.tendsto' 0 0 constantCoeff_zero |>.comp H
   simpa only [map_pow] using H
