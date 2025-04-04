@@ -5,7 +5,7 @@ import Mathlib.Tactic.Ring
 private axiom test_sorry : ∀ {α}, α
 universe u
 section
-variable {α : Type u} [Field α] [LinearOrder α] [IsStrictOrderedRing α] (a b c d : α)
+variable {α : Type u} [LinearOrderedField α] (a b c d : α)
 
 -- prior to https://github.com/leanprover-community/mathlib4/pull/12083, `cancel_denoms` would not make progress on this
 example : ¬ (4 / 2 : ℚ) = 3 := by cancel_denoms
@@ -51,7 +51,7 @@ end
 
 -- Some tests with a concrete type universe.
 section
-variable {α : Type} [Field α] [LinearOrder α] [IsStrictOrderedRing α] (a b c d : α)
+variable {α : Type} [LinearOrderedField α] (a b c d : α)
 
 example (h : a / 5 + b / 4 < c) : 4*a + 5*b < 20*c := by
   cancel_denoms at h
