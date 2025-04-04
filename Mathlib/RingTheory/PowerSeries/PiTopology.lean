@@ -104,7 +104,7 @@ theorem trunc_tendsto [CommSemiring R] (f : R⟦X⟧) :
   exact tendsto_atTop_of_eventually_const fun n (hdn : d < n) ↦ (by simp [coeff_trunc, hdn])
 
 /-- The inclusion of polynomials into power series has dense image -/
-theorem toMvPowerSeries_denseRange [CommSemiring R] :
+theorem toPowerSeries_denseRange [CommSemiring R] :
     DenseRange (Polynomial.toPowerSeries (R := R)) := fun f =>
   mem_closure_of_tendsto (trunc_tendsto R f) <| .of_forall fun _ ↦ Set.mem_range_self _
 
