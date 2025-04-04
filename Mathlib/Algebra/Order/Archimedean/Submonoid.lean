@@ -5,7 +5,7 @@ Authors: Yakov Pechersky
 -/
 
 import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Monoid.Submonoid
+import Mathlib.Algebra.Group.Submonoid.Defs
 
 /-!
 # Submonoids of archimedean monoids

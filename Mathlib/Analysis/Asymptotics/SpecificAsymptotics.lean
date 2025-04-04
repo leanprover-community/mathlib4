@@ -146,7 +146,8 @@ end Real
 
 section NormedLinearOrderedField
 
-variable {R : Type*} [NormedLinearOrderedField R] [OrderTopology R] [FloorRing R]
+variable {R : Type*} [NormedField R] [LinearOrder R] [IsStrictOrderedRing R]
+  [OrderTopology R] [FloorRing R]
 
 theorem Asymptotics.isEquivalent_nat_floor :
     (fun (x : R) ↦ ↑⌊x⌋₊) ~[atTop] (fun x ↦ x) := by

@@ -5,9 +5,8 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Field.Pi
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Algebra.Order.UpperLower
+import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Pointwise
-import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Topology.Algebra.Order.UpperLower
 import Mathlib.Topology.MetricSpace.Sequences
 

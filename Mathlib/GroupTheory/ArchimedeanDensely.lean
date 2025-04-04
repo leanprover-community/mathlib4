@@ -3,10 +3,9 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Module.NatInt
-import Mathlib.Algebra.Order.Group.TypeTags
+import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Data.Int.Interval
 import Mathlib.GroupTheory.Archimedean

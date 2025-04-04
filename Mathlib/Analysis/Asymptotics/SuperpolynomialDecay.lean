@@ -5,8 +5,6 @@ Authors: Devon Tuma
 -/
 import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Analysis.Normed.Order.Basic
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # Super-Polynomial Function Decay
