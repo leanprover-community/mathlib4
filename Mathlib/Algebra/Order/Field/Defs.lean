@@ -37,13 +37,15 @@ instance (priority := 100) LinearOrderedField.toLinearOrderedSemifield [LinearOr
     LinearOrderedSemifield α :=
   { LinearOrderedRing.toLinearOrderedSemiring, ‹LinearOrderedField α› with }
 
-variable [LinearOrderedSemifield α] {a b c : α}
+variable [Semifield α] [LinearOrder α] {a b c : α}
 
 /-- Equality holds when `a ≠ 0`. See `mul_inv_cancel`. -/
-lemma mul_inv_le_one : a * a⁻¹ ≤ 1 := by obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
+lemma mul_inv_le_one [ZeroLEOneClass α] : a * a⁻¹ ≤ 1 := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
 
 /-- Equality holds when `a ≠ 0`. See `inv_mul_cancel`. -/
-lemma inv_mul_le_one : a⁻¹ * a ≤ 1 := by obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
+lemma inv_mul_le_one [ZeroLEOneClass α] : a⁻¹ * a ≤ 1 := by
+  obtain rfl | ha := eq_or_ne a 0 <;> simp [*]
 
 /-- Equality holds when `a ≠ 0`. See `mul_inv_cancel_left`. -/
 lemma mul_inv_left_le (hb : 0 ≤ b) : a * (a⁻¹ * b) ≤ b := by
