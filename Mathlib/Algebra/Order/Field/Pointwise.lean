@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Lemmas
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Order.Interval.Set.OrderIso
 
 /-!
@@ -34,3 +34,4 @@ theorem smul_Ici : r • Ici a = Ici (r • a) := (OrderIso.mulLeft₀ r hr).ima
 theorem smul_Iic : r • Iic a = Iic (r • a) := (OrderIso.mulLeft₀ r hr).image_Iic a
 
 end LinearOrderedField
+#min_imports

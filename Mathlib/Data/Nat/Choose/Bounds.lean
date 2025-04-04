@@ -51,4 +51,21 @@ theorem pow_le_choose (r n : ℕ) : ((n + 1 - r : ℕ) ^ r : α) / r ! ≤ n.cho
     exact n.pow_sub_le_descFactorial r
   exact mod_cast r.factorial_pos
 
+theorem choose_succ_le_two_pow (n k : ℕ) : (n + 1).choose k ≤ 2 ^ n := by
+  by_cases lt : n + 1 < k
+  · simp [choose_eq_zero_of_lt lt]
+  · cases n with
+    | zero => cases k <;> simp_all
+    | succ n =>
+      rcases k with - | k
+      · rw [choose_zero_right]
+        exact Nat.one_le_two_pow
+      · rw [choose_succ_succ', two_pow_succ]
+        exact Nat.add_le_add (choose_succ_le_two_pow n k) (choose_succ_le_two_pow n (k + 1))
+
+theorem choose_le_two_pow (n k : ℕ) (p : 0 < n) : n.choose k < 2 ^ n := by
+  refine lt_of_le_of_lt ?_ (Nat.two_pow_pred_lt_two_pow p)
+  rw [← Nat.sub_add_cancel p]
+  exact choose_succ_le_two_pow (n - 1) k
+
 end Nat

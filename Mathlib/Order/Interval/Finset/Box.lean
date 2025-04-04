@@ -3,10 +3,9 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Order.Disjointed
 import Mathlib.Algebra.Order.Ring.Prod
 import Mathlib.Data.Int.Interval
-import Mathlib.Order.Disjointed
-import Mathlib.Tactic.AdaptationNote
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
 
@@ -38,13 +37,16 @@ omit [IsOrderedRing α] in
 @[simp] lemma box_zero : (box 0 : Finset α) = {0} := by simp [box]
 
 lemma box_succ_eq_sdiff (n : ℕ) :
-    box (n + 1) = Icc (-n.succ : α) n.succ \ Icc (-n) n := Icc_neg_mono.disjointed_succ _
+    box (n + 1) = Icc (-n.succ : α) n.succ \ Icc (-n) n := by
+  rw [box, Icc_neg_mono.disjointed_add_one]
+  simp only [Nat.cast_add_one, Nat.succ_eq_add_one]
 
 lemma disjoint_box_succ_prod (n : ℕ) : Disjoint (box (n + 1)) (Icc (-n : α) n) := by
   rw [box_succ_eq_sdiff]; exact disjoint_sdiff_self_left
 
 @[simp] lemma box_succ_union_prod (n : ℕ) :
-    box (n + 1) ∪ Icc (-n : α) n = Icc (-n.succ : α) n.succ := Icc_neg_mono.disjointed_succ_sup _
+    box (n + 1) ∪ Icc (-n : α) n = Icc (-n.succ : α) n.succ :=
+  Icc_neg_mono.disjointed_add_one_sup _
 
 lemma box_succ_disjUnion (n : ℕ) :
     (box (n + 1)).disjUnion (Icc (-n : α) n) (disjoint_box_succ_prod _) =
@@ -64,7 +66,7 @@ open Finset
 namespace Prod
 variable {α β : Type*} [Ring α] [PartialOrder α] [IsOrderedRing α]
   [Ring β] [PartialOrder β] [IsOrderedRing β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [DecidableEq α] [DecidableEq β] [DecidableRel (α := α × β) (· ≤ ·)]
+  [DecidableEq α] [DecidableEq β] [DecidableLE (α × β)]
 
 @[simp] lemma card_box_succ (n : ℕ) :
     #(box (n + 1) : Finset (α × β)) =

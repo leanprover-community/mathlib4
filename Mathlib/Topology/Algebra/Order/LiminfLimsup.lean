@@ -3,15 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.Group.DenselyOrdered
-import Mathlib.Algebra.Order.Group.Indicator
 import Mathlib.Data.Real.Archimedean
-import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.LiminfLimsup
-import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Order.Monotone
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Lemmas about liminf and limsup in an order topology.
@@ -409,78 +405,6 @@ theorem Monotone.map_liminf_of_continuousAt {f : R → S} (f_incr : Monotone f) 
 
 end Monotone
 
-section Indicator
-
-theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
-    limsup s atTop = { ω | Tendsto
-      (fun n ↦ ∑ k ∈ Finset.range n, (s (k + 1)).indicator (1 : α → ℕ) ω) atTop atTop } := by
-  ext ω
-  simp only [limsup_eq_iInf_iSup_of_nat, Set.iSup_eq_iUnion, Set.iInf_eq_iInter,
-    Set.mem_iInter, Set.mem_iUnion, exists_prop]
-  constructor
-  · intro hω
-    refine tendsto_atTop_atTop_of_monotone' (fun n m hnm ↦ Finset.sum_mono_set_of_nonneg
-      (fun i ↦ Set.indicator_nonneg (fun _ _ ↦ zero_le_one) _) (Finset.range_mono hnm)) ?_
-    rintro ⟨i, h⟩
-    simp only [mem_upperBounds, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] at h
-    induction' i with k hk
-    · obtain ⟨j, hj₁, hj₂⟩ := hω 1
-      refine not_lt.2 (h <| j + 1)
-        (lt_of_le_of_lt (Finset.sum_const_zero.symm : 0 = ∑ k ∈ Finset.range (j + 1), 0).le ?_)
-      refine Finset.sum_lt_sum (fun m _ ↦ Set.indicator_nonneg (fun _ _ ↦ zero_le_one) _)
-        ⟨j - 1, Finset.mem_range.2 (lt_of_le_of_lt (Nat.sub_le _ _) j.lt_succ_self), ?_⟩
-      rw [Nat.sub_add_cancel hj₁, Set.indicator_of_mem hj₂]
-      exact zero_lt_one
-    · rw [imp_false] at hk
-      push_neg at hk
-      obtain ⟨i, hi⟩ := hk
-      obtain ⟨j, hj₁, hj₂⟩ := hω (i + 1)
-      replace hi : (∑ k ∈ Finset.range i, (s (k + 1)).indicator 1 ω) = k + 1 :=
-        le_antisymm (h i) hi
-      refine not_lt.2 (h <| j + 1) ?_
-      rw [← Finset.sum_range_add_sum_Ico _ (i.le_succ.trans (hj₁.trans j.le_succ)), hi]
-      refine lt_add_of_pos_right _ ?_
-      rw [(Finset.sum_const_zero.symm : 0 = ∑ k ∈ Finset.Ico i (j + 1), 0)]
-      refine Finset.sum_lt_sum (fun m _ ↦ Set.indicator_nonneg (fun _ _ ↦ zero_le_one) _)
-        ⟨j - 1, Finset.mem_Ico.2 ⟨(Nat.le_sub_iff_add_le (le_trans ((le_add_iff_nonneg_left _).2
-          zero_le') hj₁)).2 hj₁, lt_of_le_of_lt (Nat.sub_le _ _) j.lt_succ_self⟩, ?_⟩
-      rw [Nat.sub_add_cancel (le_trans ((le_add_iff_nonneg_left _).2 zero_le') hj₁),
-        Set.indicator_of_mem hj₂]
-      exact zero_lt_one
-  · rintro hω i
-    rw [Set.mem_setOf_eq, tendsto_atTop_atTop] at hω
-    by_contra! hcon
-    obtain ⟨j, h⟩ := hω (i + 1)
-    have : (∑ k ∈ Finset.range j, (s (k + 1)).indicator 1 ω) ≤ i := by
-      have hle : ∀ j ≤ i, (∑ k ∈ Finset.range j, (s (k + 1)).indicator 1 ω) ≤ i := by
-        refine fun j hij ↦
-          (Finset.sum_le_card_nsmul _ _ _ ?_ : _ ≤ (Finset.range j).card • 1).trans ?_
-        · exact fun m _ ↦ Set.indicator_apply_le' (fun _ ↦ le_rfl) fun _ ↦ zero_le_one
-        · simpa only [Finset.card_range, smul_eq_mul, mul_one]
-      by_cases hij : j < i
-      · exact hle _ hij.le
-      · rw [← Finset.sum_range_add_sum_Ico _ (not_lt.1 hij)]
-        suffices (∑ k ∈ Finset.Ico i j, (s (k + 1)).indicator 1 ω) = 0 by
-          rw [this, add_zero]
-          exact hle _ le_rfl
-        refine Finset.sum_eq_zero fun m hm ↦ ?_
-        exact Set.indicator_of_not_mem (hcon _ <| (Finset.mem_Ico.1 hm).1.trans m.le_succ) _
-    exact not_le.2 (lt_of_lt_of_le i.lt_succ_self <| h _ le_rfl) this
-
-theorem limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring R] [Archimedean R]
-    (s : ℕ → Set α) : limsup s atTop = { ω | Tendsto
-      (fun n ↦ ∑ k ∈ Finset.range n, (s (k + 1)).indicator (1 : α → R) ω) atTop atTop } := by
-  rw [limsup_eq_tendsto_sum_indicator_nat_atTop s]
-  ext ω
-  simp only [Set.mem_setOf_eq]
-  rw [(_ : (fun n ↦ ∑ k ∈ Finset.range n, (s (k + 1)).indicator (1 : α → R) ω) = fun n ↦
-    ↑(∑ k ∈ Finset.range n, (s (k + 1)).indicator (1 : α → ℕ) ω))]
-  · exact tendsto_natCast_atTop_iff.symm
-  · ext n
-    simp only [Set.indicator, Pi.one_apply, Finset.sum_boole, Nat.cast_id]
-
-end Indicator
-
 section LiminfLimsupAdd
 
 variable [AddCommGroup α] [ConditionallyCompleteLinearOrder α] [DenselyOrdered α]
@@ -544,37 +468,41 @@ section LiminfLimsupMul
 
 open Filter Real
 
-variable {f : Filter ι} [f.NeBot] {u v : ι → ℝ}
+variable {f : Filter ι} {u v : ι → ℝ}
 
-lemma le_limsup_mul (h₁ : 0 ≤ᶠ[f] u) (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
+lemma le_limsup_mul (h₁ : ∃ᶠ x in f, 0 ≤ u x) (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
     (h₃ : 0 ≤ᶠ[f] v) (h₄ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f v) :
     (limsup u f) * liminf v f ≤ limsup (u * v) f := by
-  have h := (isBoundedUnder_of_eventually_ge (a := 0)
-    <| (h₁.and h₃).mono fun x ⟨u_0, v_0⟩ ↦ mul_nonneg u_0 v_0).isCoboundedUnder_le
+  have h := IsCoboundedUnder.of_frequently_ge (a := 0)
+    <| (h₁.and_eventually h₃).mono fun x ⟨ux_0, vx_0⟩ ↦ mul_nonneg ux_0 vx_0
   have h' := isBoundedUnder_le_mul_of_nonneg h₁ h₂ h₃ h₄
-  have u0 : 0 ≤ limsup u f := le_limsup_of_frequently_le h₁.frequently h₂
+  have u0 : 0 ≤ limsup u f := le_limsup_of_frequently_le h₁ h₂
   have uv : 0 ≤ limsup (u * v) f :=
-    le_limsup_of_frequently_le ((h₁.and h₃).mono fun _ ⟨hu, hv⟩ ↦ mul_nonneg hu hv).frequently h'
-  refine mul_le_of_forall_lt_of_nonneg u0 uv fun a _ au b b0 bv ↦ (le_limsup_iff h h').2
-    fun c c_ab ↦ ?_
-  refine ((frequently_lt_of_lt_limsup
-    (isBoundedUnder_of_eventually_ge h₁).isCoboundedUnder_le au).and_eventually
-    ((eventually_lt_of_lt_liminf bv (isBoundedUnder_of_eventually_ge h₃)).and
-    (h₁.and h₃))).mono fun x ⟨xa, ⟨xb, u0, _⟩⟩ ↦ ?_
-  exact c_ab.trans_le (mul_le_mul xa.le xb.le b0 u0)
+    le_limsup_of_frequently_le ((h₁.and_eventually h₃).mono fun _ ⟨hu, hv⟩ ↦ mul_nonneg hu hv) h'
+  refine mul_le_of_forall_lt_of_nonneg u0 uv fun a a0 au b b0 bv ↦ ?_
+  refine (le_limsup_iff h h').2 fun c c_ab ↦ ?_
+  replace h₁ := IsCoboundedUnder.of_frequently_ge h₁ -- Pre-compute it to gain 4 s.
+  have h₅ := frequently_lt_of_lt_limsup h₁ au
+  have h₆ := eventually_lt_of_lt_liminf bv (isBoundedUnder_of_eventually_ge h₃)
+  apply (h₅.and_eventually (h₆.and h₃)).mono
+  exact fun x ⟨xa, ⟨xb, _⟩⟩ ↦ c_ab.trans_le <| mul_le_mul xa.le xb.le b0 (a0.trans xa.le)
 
-lemma limsup_mul_le (h₁ : 0 ≤ᶠ[f] u) (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
+lemma limsup_mul_le (h₁ : ∃ᶠ x in f, 0 ≤ u x) (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
     (h₃ : 0 ≤ᶠ[f] v) (h₄ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f v) :
     limsup (u * v) f ≤ (limsup u f) * limsup v f := by
-  have h := (isBoundedUnder_of_eventually_ge (a := 0)
-    <| (h₁.and h₃).mono fun x ⟨u_0, v_0⟩ ↦ mul_nonneg u_0 v_0).isCoboundedUnder_le
+  have h := IsCoboundedUnder.of_frequently_ge (a := 0)
+    <| (h₁.and_eventually h₃).mono fun x ⟨ux_0, vx_0⟩ ↦ mul_nonneg ux_0 vx_0
   have h' := isBoundedUnder_le_mul_of_nonneg h₁ h₂ h₃ h₄
   refine le_mul_of_forall_lt₀ fun a a_u b b_v ↦ (limsup_le_iff h h').2 fun c c_ab ↦ ?_
-  filter_upwards [eventually_lt_of_limsup_lt a_u, eventually_lt_of_limsup_lt b_v, h₁, h₃]
-    with x x_a x_b u_0 v_0
-  exact (mul_le_mul x_a.le x_b.le v_0 (u_0.trans x_a.le)).trans_lt c_ab
+  filter_upwards [eventually_lt_of_limsup_lt a_u, eventually_lt_of_limsup_lt b_v, h₃]
+    with x x_a x_b v_0
+  apply lt_of_le_of_lt _ c_ab
+  rcases lt_or_ge (u x) 0 with u_0 | u_0
+  · apply (mul_nonpos_of_nonpos_of_nonneg u_0.le v_0).trans
+    exact mul_nonneg ((le_limsup_of_frequently_le h₁ h₂).trans a_u.le) (v_0.trans x_b.le)
+  · exact mul_le_mul x_a.le x_b.le v_0 (u_0.trans x_a.le)
 
-lemma le_liminf_mul (h₁ : 0 ≤ᶠ[f] u) (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
+lemma le_liminf_mul [f.NeBot] (h₁ : 0 ≤ᶠ[f] u) (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
     (h₃ : 0 ≤ᶠ[f] v) (h₄ : IsCoboundedUnder (fun x1 x2 ↦ x1 ≥ x2) f v) :
     (liminf u f) * liminf v f ≤ liminf (u * v) f := by
   have h := isCoboundedUnder_ge_mul_of_nonneg h₁ h₂ h₃ h₄
@@ -588,7 +516,7 @@ lemma le_liminf_mul (h₁ : 0 ≤ᶠ[f] u) (h₂ : IsBoundedUnder (fun x1 x2 ↦
     eventually_lt_of_lt_liminf bv (isBoundedUnder_of_eventually_ge h₃)] with x xa xb
   exact c_ab.trans_le (mul_le_mul xa.le xb.le b0 (a0.trans xa.le))
 
-lemma liminf_mul_le (h₁ : 0 ≤ᶠ[f] u) (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
+lemma liminf_mul_le [f.NeBot] (h₁ : 0 ≤ᶠ[f] u) (h₂ : IsBoundedUnder (fun x1 x2 ↦ x1 ≤ x2) f u)
     (h₃ : 0 ≤ᶠ[f] v) (h₄ : IsCoboundedUnder (fun x1 x2 ↦ x1 ≥ x2) f v) :
     liminf (u * v) f ≤ (limsup u f) * liminf v f := by
   have h := isCoboundedUnder_ge_mul_of_nonneg h₁ h₂ h₃ h₄
@@ -619,7 +547,7 @@ lemma limsup_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
   (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x + c)
     (fun _ _ h ↦ add_le_add_right h c) (continuous_add_right c).continuousAt bdd_above cobdd).symm
 
-/-- `liminf (c + xᵢ) = c + limsup xᵢ`. -/
+/-- `liminf (c + xᵢ) = c + liminf xᵢ`. -/
 lemma liminf_const_add (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
     [AddLeftMono R] (f : ι → R) (c : R)
     (cobdd : F.IsCoboundedUnder (· ≥ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :

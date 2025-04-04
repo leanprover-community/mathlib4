@@ -9,6 +9,7 @@ import Mathlib.Data.Finset.Erase
 import Mathlib.Data.Finset.Filter
 import Mathlib.Data.Finset.Range
 import Mathlib.Data.Finset.SDiff
+import Mathlib.Data.Multiset.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.Directed
 import Mathlib.Order.Interval.Set.Defs
@@ -56,6 +57,16 @@ namespace Finset
 -- TODO: these should be global attributes, but this will require fixing other files
 attribute [local trans] Subset.trans Superset.trans
 
+set_option linter.deprecated false in
+@[deprecated "Deprecated without replacement." (since := "2025-02-07")]
+theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Finset α} (hx : x ∈ s) :
+    SizeOf.sizeOf x < SizeOf.sizeOf s := by
+  cases s
+  dsimp [SizeOf.sizeOf, SizeOf.sizeOf, Multiset.sizeOf]
+  rw [Nat.add_comm]
+  refine lt_trans ?_ (Nat.lt_succ_self _)
+  exact Multiset.sizeOf_lt_sizeOf_of_mem hx
+
 /-! ### Lattice structure -/
 
 section Lattice
@@ -91,6 +102,11 @@ omit [DecidableEq α] in
 theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
     Disjoint s t ↔ s = ∅ :=
   disjoint_of_le_iff_left_eq_bot h
+
+lemma pairwiseDisjoint_iff {ι : Type*} {s : Set ι} {f : ι → Finset α} :
+    s.PairwiseDisjoint f ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → (f i ∩ f j).Nonempty → i = j := by
+  simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, not_imp_comm (a := _ = _),
+    not_disjoint_iff_nonempty_inter]
 
 end Lattice
 
@@ -431,24 +447,6 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
       intro hx hx₂
       exact ⟨Or.resolve_left (h hx) hx₂, hx₂⟩
 
-section Classical
-
--- Porting note: The notation `{ x ∈ s | p x }` in Lean 4 is hardcoded to be about `Set`.
--- So at the moment the whole `Sep`-class is useless, as it doesn't have notation.
--- /-- The following instance allows us to write `{x ∈ s | p x}` for `Finset.filter p s`.
---   We don't want to redo all lemmas of `Finset.filter` for `Sep.sep`, so we make sure that `simp`
---   unfolds the notation `{x ∈ s | p x}` to `Finset.filter p s`.
--- -/
--- noncomputable instance {α : Type*} : Sep α (Finset α) :=
---   ⟨fun p x => x.filter p⟩
-
--- -- @[simp] -- Porting note: not a simp-lemma until `Sep`-notation is fixed.
--- theorem sep_def {α : Type*} (s : Finset α) (p : α → Prop) : { x ∈ s | p x } = s.filter p := by
---   ext
---   simp
-
-end Classical
-
 -- This is not a good simp lemma, as it would prevent `Finset.mem_filter` from firing
 -- on, e.g. `x ∈ s.filter (Eq b)`.
 /-- After filtering out everything that does not equal a given value, at most that value remains.
@@ -638,7 +636,7 @@ open Finset
 /-- The disjoint union of finsets is a sum -/
 def Finset.union (s t : Finset α) (h : Disjoint s t) :
     s ⊕ t ≃ (s ∪ t : Finset α) :=
-  Equiv.Set.ofEq (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
+  Equiv.setCongr (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
 
 @[simp]
 theorem Finset.union_symm_inl (h : Disjoint s t) (x : s) :
@@ -656,6 +654,13 @@ def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h
     ((∀ i : s, α i) × ∀ i : t, α i) ≃ ∀ i : (s ∪ t : Finset ι), α i :=
   let e := Equiv.Finset.union s t h
   sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
+
+/-- A finset is equivalent to its coercion as a set. -/
+def _root_.Finset.equivToSet (s : Finset α) : s ≃ s.toSet where
+  toFun a := ⟨a.1, mem_coe.2 a.2⟩
+  invFun a := ⟨a.1, mem_coe.1 a.2⟩
+  left_inv := fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
 
 end Equiv
 

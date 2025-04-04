@@ -3,8 +3,10 @@ Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
 -/
-import Mathlib.Order.UpperLower.Basic
 import Mathlib.Data.Finset.Preimage
+import Mathlib.Data.Finset.Prod
+import Mathlib.Data.SetLike.Basic
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Young diagrams
@@ -398,12 +400,9 @@ protected def cellsOfRowLens : List ℕ → Finset (ℕ × ℕ)
 
 protected theorem mem_cellsOfRowLens {w : List ℕ} {c : ℕ × ℕ} :
     c ∈ YoungDiagram.cellsOfRowLens w ↔ ∃ h : c.fst < w.length, c.snd < w[c.fst] := by
-  induction' w with w_hd w_tl w_ih generalizing c <;> rw [YoungDiagram.cellsOfRowLens]
+  induction w generalizing c <;> rw [YoungDiagram.cellsOfRowLens]
   · simp [YoungDiagram.cellsOfRowLens]
-  · rcases c with ⟨⟨_, _⟩, _⟩
-    · simp
-    -- Porting note: was `simpa`
-    · simp [w_ih, -Finset.singleton_product, Nat.succ_lt_succ_iff]
+  · rcases c with ⟨⟨_, _⟩, _⟩ <;> simp_all
 
 /-- Young diagram from a sorted list -/
 def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram where

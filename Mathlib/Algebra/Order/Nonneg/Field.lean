@@ -100,7 +100,7 @@ instance semifield : Semifield { x : α // 0 ≤ x } :=
     Nonneg.coe_zpow Nonneg.coe_natCast coe_nnratCast
 
 instance linearOrderedSemifield {α} [LinearOrderedSemifield α] :
-    LinearOrderedSemifield { x : α // 0 ≤ x } :=
+    LinearOrderedSemifield { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.linearOrderedSemifield _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
     Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ => rfl) coe_nnqsmul Nonneg.coe_pow
     Nonneg.coe_zpow Nonneg.coe_natCast coe_nnratCast (fun _ _ => rfl) fun _ _ => rfl

@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.Order.Interval.Set.Basic
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Algebraic instances for unit intervals
@@ -34,6 +35,7 @@ The strongest typeclass provided on each interval is:
   some arbitrary ordered semiring
 -/
 
+assert_not_exists RelIso
 
 open Set
 
@@ -120,7 +122,7 @@ theorem mul_le_left {x y : Icc (0 : α) 1} : x * y ≤ x :=
 theorem mul_le_right {x y : Icc (0 : α) 1} : x * y ≤ y :=
   (mul_le_mul_of_nonneg_right x.2.2 y.2.1).trans_eq (one_mul _)
 
-instance monoidWithZero : MonoidWithZero (Icc (0 : α) 1) :=
+instance monoidWithZero : MonoidWithZero (Icc (0 : α) 1) := fast_instance%
   Subtype.coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
 instance commMonoidWithZero {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α] :
@@ -197,7 +199,7 @@ instance mul : Mul (Ico (0 : α) 1) where
 theorem coe_mul (x y : Ico (0 : α) 1) : ↑(x * y) = (x * y : α) :=
   rfl
 
-instance semigroup : Semigroup (Ico (0 : α) 1) :=
+instance semigroup : Semigroup (Ico (0 : α) 1) := fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 
 instance commSemigroup {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α] :
@@ -259,10 +261,10 @@ theorem coe_mul (x y : Ioc (0 : α) 1) : ↑(x * y) = (x * y : α) :=
 theorem coe_pow (x : Ioc (0 : α) 1) (n : ℕ) : ↑(x ^ n) = ((x : α) ^ n) :=
   rfl
 
-instance semigroup : Semigroup (Ioc (0 : α) 1) :=
+instance semigroup : Semigroup (Ioc (0 : α) 1) := fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 
-instance monoid : Monoid (Ioc (0 : α) 1) :=
+instance monoid : Monoid (Ioc (0 : α) 1) := fast_instance%
   Subtype.coe_injective.monoid _ coe_one coe_mul coe_pow
 
 instance commSemigroup {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α] :
@@ -309,7 +311,7 @@ instance mul : Mul (Ioo (0 : α) 1) where
 theorem coe_mul (x y : Ioo (0 : α) 1) : ↑(x * y) = (x * y : α) :=
   rfl
 
-instance semigroup : Semigroup (Ioo (0 : α) 1) :=
+instance semigroup : Semigroup (Ioo (0 : α) 1) := fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 
 instance commSemigroup {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α] :

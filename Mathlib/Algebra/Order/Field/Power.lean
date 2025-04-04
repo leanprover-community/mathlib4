@@ -1,12 +1,12 @@
 /-
 Copyright (c) 2014 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn
+Authors: Robert Y. Lewis, Leonardo de Moura, Mario Carneiro, Floris van Doorn, Sabbir Rahman
 -/
-import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Ring.Pow
+import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Algebra.Ring.Int.Parity
 
 /-!
@@ -86,7 +86,7 @@ end LinearOrderedSemifield
 
 section LinearOrderedField
 
-variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] {a : α} {n : ℤ}
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] {a b : α} {n : ℤ}
 
 protected theorem Even.zpow_nonneg (hn : Even n) (a : α) : 0 ≤ a ^ n := by
   obtain ⟨k, rfl⟩ := hn; rw [zpow_add' (by simp [em'])]; exact mul_self_nonneg _
@@ -116,7 +116,7 @@ protected lemma Odd.zpow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
 theorem Odd.zpow_nonpos_iff (hn : Odd n) : a ^ n ≤ 0 ↔ a ≤ 0 := by
   rw [le_iff_lt_or_eq, le_iff_lt_or_eq, hn.zpow_neg_iff, zpow_eq_zero_iff]
   rintro rfl
-  exact Int.not_even_iff_odd.2 hn even_zero
+  exact Int.not_even_iff_odd.2 hn .zero
 
 lemma Odd.zpow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a := lt_iff_lt_of_le_iff_le hn.zpow_nonpos_iff
 
@@ -126,7 +126,38 @@ alias ⟨_, Odd.zpow_nonpos⟩ := Odd.zpow_nonpos_iff
 
 omit [IsStrictOrderedRing α] in
 theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
-  cases' abs_choice a with h h <;> simp only [h, hp.neg_zpow _]
+  rcases abs_choice a with h | h <;> simp only [h, hp.neg_zpow _]
+
+lemma zpow_eq_zpow_iff_of_ne_zero₀ (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b ∨ a = -b ∧ Even n :=
+  match n with
+  | Int.ofNat m => by
+    simp only [Int.ofNat_eq_coe, ne_eq, Nat.cast_eq_zero, zpow_natCast, Int.even_coe_nat] at *
+    exact pow_eq_pow_iff_of_ne_zero hn
+  | Int.negSucc m => by
+    rw [show Int.negSucc m = -↑(m + 1) by rfl] at *
+    simp only [ne_eq, neg_eq_zero, Nat.cast_eq_zero, zpow_neg, zpow_natCast, inv_inj, even_neg,
+      Int.even_coe_nat] at *
+    exact pow_eq_pow_iff_of_ne_zero hn
+
+lemma zpow_eq_zpow_iff_cases₀ : a ^ n = b ^ n ↔ n = 0 ∨ a = b ∨ a = -b ∧ Even n := by
+  rcases eq_or_ne n 0 with rfl | hn <;> simp [zpow_eq_zpow_iff_of_ne_zero₀, *]
+
+lemma zpow_eq_one_iff_of_ne_zero₀ (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 ∨ a = -1 ∧ Even n := by
+  simp [← zpow_eq_zpow_iff_of_ne_zero₀ hn]
+
+lemma zpow_eq_one_iff_cases₀ : a ^ n = 1 ↔ n = 0 ∨ a = 1 ∨ a = -1 ∧ Even n := by
+  simp [← zpow_eq_zpow_iff_cases₀]
+
+lemma zpow_eq_neg_zpow_iff₀ (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd n :=
+  match n with
+  | Int.ofNat m => by
+    simp [pow_eq_neg_pow_iff, hb]
+  | Int.negSucc m => by
+    rw [show Int.negSucc m = -↑(m + 1) by rfl]
+    simp [-Nat.cast_add, -natCast_add, neg_inv, pow_eq_neg_pow_iff, hb]
+
+lemma zpow_eq_neg_one_iff₀ : a ^ n = -1 ↔ a = -1 ∧ Odd n := by
+  simpa using zpow_eq_neg_zpow_iff₀ (α := α) one_ne_zero
 
 /-! ### Bernoulli's inequality -/
 

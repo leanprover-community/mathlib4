@@ -3,12 +3,16 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Mitchell Lee, Johan Commelin
 -/
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.Module.Submodule.Invariant
+import Mathlib.Algebra.Module.Torsion
+import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.LinearAlgebra.FiniteSpan
 import Mathlib.RingTheory.Polynomial.Chebyshev
-import Mathlib.Algebra.Module.Torsion
 
 /-!
 # Reflections in linear algebra
@@ -121,6 +125,20 @@ lemma invOn_reflection_of_mapsTo {Φ : Set M} (h : f x = 2) :
 lemma bijOn_reflection_of_mapsTo {Φ : Set M} (h : f x = 2) (h' : MapsTo (reflection h) Φ Φ) :
     BijOn (reflection h) Φ Φ :=
   (invOn_reflection_of_mapsTo h).bijOn h' h'
+
+-- If `reflection` instead demanded a linear form `f` such that `f x = 1` rather than `f x = 2`,
+-- (and was thus defined as `y ↦ y - (2 * f y) • x`) then we could avoid `Invertible (2 : R)` here.
+lemma _root_.Submodule.mem_invtSubmodule_reflection_of_mem [Invertible (2 : R)] (h : f x = 2)
+    (p : Submodule R M) (hx : x ∈ p) :
+    p ∈ End.invtSubmodule (reflection h) := by
+  suffices ∀ y ∈ p, reflection h y ∈ p from
+    (End.mem_invtSubmodule _).mpr fun y hy ↦ by simpa using this y hy
+  intro y hy
+  set z := (2 : R) • y - f y • x with hz₀
+  have hz₁ : z ∈ p := sub_mem (p.smul_mem _ hy) (p.smul_mem _ hx)
+  have hz₂ : (2 : R) • reflection h y = z - f y • x := by simp only [reflection_apply, hz₀]; module
+  rw [← p.smul_mem_iff'' (r := (2 : R)), hz₂]
+  exact sub_mem hz₁ <| p.smul_mem _ hx
 
 /-! ### Powers of the product of two reflections
 
@@ -252,7 +270,7 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
   have S_eval_t_sub_two (k : ℤ) :
       (S R (k - 2)).eval t = (f y * g x - 2) * (S R (k - 1)).eval t - (S R k).eval t := by
     simp [S_sub_two, ht]
-  induction m using Int.induction_on with
+  induction m with
   | hz => simp
   | hp m ih =>
     -- Apply the inductive hypothesis.

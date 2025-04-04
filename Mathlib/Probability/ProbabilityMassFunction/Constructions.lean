@@ -32,7 +32,6 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open scoped Classical
 open NNReal ENNReal Finset MeasureTheory
 
 section Map
@@ -45,6 +44,7 @@ variable (f : α → β) (p : PMF α) (b : β)
 
 theorem monad_map_eq_map {α β : Type u} (f : α → β) (p : PMF α) : f <$> p = p.map f := rfl
 
+open scoped Classical in
 @[simp]
 theorem map_apply : (map f p) b = ∑' a, if b = f a then p a else 0 := by simp [map]
 
@@ -82,6 +82,7 @@ variable (s : Set β)
 @[simp]
 theorem toOuterMeasure_map_apply : (p.map f).toOuterMeasure s = p.toOuterMeasure (f ⁻¹' s) := by
   simp [map, Set.indicator, toOuterMeasure_apply p (f ⁻¹' s)]
+  rfl
 
 variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
@@ -110,6 +111,7 @@ variable (q : PMF (α → β)) (p : PMF α) (b : β)
 
 theorem monad_seq_eq_seq {α β : Type u} (q : PMF (α → β)) (p : PMF α) : q <*> p = q.seq p := rfl
 
+open scoped Classical in
 @[simp]
 theorem seq_apply : (seq q p) b = ∑' (f : α → β) (a : α), if b = f a then q f * p a else 0 := by
   simp only [seq, mul_boole, bind_apply, pure_apply]
@@ -207,6 +209,7 @@ theorem support_ofFintype : (ofFintype f h).support = Function.support f := rfl
 
 theorem mem_support_ofFintype_iff (a : α) : a ∈ (ofFintype f h).support ↔ f a ≠ 0 := Iff.rfl
 
+open scoped Classical in
 @[simp]
 lemma map_ofFintype [Fintype β] (f : α → ℝ≥0∞) (h : ∑ a, f a = 1) (g : α → β) :
     (ofFintype f h).map g = ofFintype (fun b ↦ ∑ a with g a = b, f a)

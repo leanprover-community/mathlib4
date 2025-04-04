@@ -111,7 +111,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
       -- We find the other root of the equation, and Vieta's formulas.
       rcases vieta_formula_quadratic hH with ⟨c, h_root, hV₁, hV₂⟩
       -- By substitutions we find that b = 0 or b = a.
-      simp only [hB, add_right_eq_self, add_right_inj] at hV₁
+      simp only [hB, add_eq_left, add_right_inj] at hV₁
       subst hV₁
       rw [← Int.ofNat_zero] at *
       rw [← H_quad] at h_root
@@ -158,7 +158,7 @@ theorem constant_descent_vieta_jumping (x y : ℕ) {claim : Prop} {H : ℕ → �
   rw [mul_comm] at hV₂
   have Hc := H_desc hmx mx_lt_my h_base hHm c h_root hV₁ hV₂
   -- This means that we may assume that c ≥ 0 and c ≤ m_x.
-  cases' Hc with c_nonneg c_lt
+  obtain ⟨c_nonneg, c_lt⟩ := Hc
   -- In other words, c is a natural number.
   lift c to ℕ using c_nonneg
   -- Recall that we are trying find a point (a,b) such that b ∈ S and b < m.

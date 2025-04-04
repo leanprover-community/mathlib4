@@ -35,7 +35,6 @@ instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid αᵒᵈ :
 instance OrderedCancelCommMonoid.to_mulLeftReflectLE [OrderedCancelCommMonoid α] :
     MulLeftReflectLE αᵒᵈ where
     elim a b c := OrderedCancelCommMonoid.le_of_mul_le_mul_left (α := α) a c b
--- Porting note: Lean 3 to_additive name omits first namespace part
 
 @[to_additive]
 instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] : OrderedCancelCommMonoid αᵒᵈ :=

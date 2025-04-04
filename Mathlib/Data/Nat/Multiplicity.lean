@@ -70,7 +70,7 @@ theorem emultiplicity_eq_card_pow_dvd {m n b : ℕ} (hm : m ≠ 1) (hn : 0 < n) 
               and_assoc, and_congr_right_iff, iff_and_self]
             intro hi h
             rw [← fin.pow_dvd_iff_le_multiplicity] at h
-            cases' m with m
+            rcases m with - | m
             · rw [zero_pow, zero_dvd_iff] at h
               exacts [(hn.ne' h).elim, one_le_iff_ne_zero.1 hi]
             refine LE.le.trans_lt ?_ hb
@@ -114,7 +114,7 @@ theorem emultiplicity_factorial {p : ℕ} (hp : p.Prime) :
         rw [sum_add_distrib, sum_boole]
         simp
       _ = (∑ i ∈ Ico 1 b, (n + 1) / p ^ i : ℕ) :=
-        congr_arg _ <| Finset.sum_congr rfl fun _ _ => (succ_div _ _).symm
+        congr_arg _ <| Finset.sum_congr rfl fun _ _ => succ_div.symm
 
 /-- For a prime number `p`, taking `(p - 1)` times the multiplicity of `p` in `n!` equals `n` minus
 the sum of base `p` digits of `n`. -/
@@ -147,8 +147,8 @@ theorem emultiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   simp_rw [← prod_Ico_id_eq_factorial, Finset.emultiplicity_prod hp', ← sum_Ico_consecutive _ h1 h3,
     add_assoc]
   intro h
-  rw [WithTop.add_left_cancel_iff h, sum_Ico_succ_top h2, hp.emultiplicity_mul,
-    hp.emultiplicity_self, sum_congr rfl h4, sum_const_zero, zero_add, add_comm 1]
+  rw [WithTop.add_left_inj h, sum_Ico_succ_top h2, hp.emultiplicity_mul, hp.emultiplicity_self,
+    sum_congr rfl h4, sum_const_zero, zero_add, add_comm 1]
 
 /-- The multiplicity of `p` in `(p * n)!` is `n` more than that of `n!`. -/
 theorem emultiplicity_factorial_mul {n p : ℕ} (hp : p.Prime) :
@@ -200,7 +200,7 @@ theorem emultiplicity_choose' {p n k b : ℕ} (hp : p.Prime) (hnb : log p (n + k
       hp.emultiplicity_factorial ((log_mono_right (le_add_left n k)).trans_lt
       (add_comm n k ▸ hnb)), multiplicity_choose_aux hp (le_add_left k n)]
     simp [add_comm]
-  refine (WithTop.add_right_cancel_iff ?_).1 h₁
+  refine WithTop.add_right_cancel ?_ h₁
   apply finiteMultiplicity_iff_emultiplicity_ne_top.1
   exact Nat.finiteMultiplicity_iff.2 ⟨hp.ne_one, mul_pos (factorial_pos k) (factorial_pos n)⟩
 

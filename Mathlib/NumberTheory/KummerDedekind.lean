@@ -100,7 +100,7 @@ lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
       obtain ⟨y, _, e⟩ := H 1
       rw [map_one, mul_one] at e
       subst e
-      simp only [← _root_.map_mul, (NoZeroSMulDivisors.algebraMap_injective S L).eq_iff,
+      simp only [← map_mul, (FaithfulSMul.algebraMap_injective S L).eq_iff,
         exists_eq_right] at H
       exact ⟨_, H, rfl⟩
   · rw [AlgHom.map_adjoin, Set.image_singleton]; rfl
@@ -161,7 +161,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
           (show z ∈ I.map (algebraMap R S) by rwa [Ideal.mem_comap] at hy))
       use a + algebraMap R R<x> q * ⟨z, hz⟩
       refine ⟨Ideal.add_mem (I.map (algebraMap R R<x>)) ha.left ?_, by
-          simp only [ha.right, map_add, _root_.map_mul, add_right_inj]; rfl⟩
+          simp only [ha.right, map_add, map_mul, add_right_inj]; rfl⟩
       rw [mul_comm]
       exact Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ hq)
     refine ⟨fun h => ?_,
@@ -233,7 +233,7 @@ attribute [local instance] Ideal.Quotient.field
 private noncomputable def f (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (hx' : IsIntegral R x) :
     S ⧸ I.map (algebraMap R S) ≃+* (R ⧸ I)[X] ⧸ span {(minpoly R x).map (Ideal.Quotient.mk I)} :=
-  (quotAdjoinEquivQuotMap hx (NoZeroSMulDivisors.algebraMap_injective
+  (quotAdjoinEquivQuotMap hx (FaithfulSMul.algebraMap_injective
     (Algebra.adjoin R {x}) S)).symm.trans <|
     ((Algebra.adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap I).toRingEquiv.trans <|
     quotEquivOfEq (by rw [Algebra.adjoin.powerBasis'_minpoly_gen hx'])
@@ -248,7 +248,7 @@ private lemma f_symm_aux (hx : (conductor R x).comap (algebraMap R S) ⊔ I = �
   congr
   convert (adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap_symm_apply_mk I Q
   apply (quotAdjoinEquivQuotMap hx
-    (NoZeroSMulDivisors.algebraMap_injective ((adjoin R {x})) S)).injective
+    (FaithfulSMul.algebraMap_injective ((adjoin R {x})) S)).injective
   simp only [RingEquiv.apply_symm_apply, adjoin.powerBasis'_gen, quotAdjoinEquivQuotMap_apply_mk,
     coe_aeval_mk_apply]
 
@@ -262,7 +262,7 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
       {d : (R ⧸ I)[X] |
         d ∈ normalizedFactors (Polynomial.map (Ideal.Quotient.mk I) (minpoly R x))} := by
   refine (normalizedFactorsEquivOfQuotEquiv (f hx hx') ?_ ?_).trans ?_
-  · rwa [Ne, map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S), ← Ne]
+  · rwa [Ne, map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S), ← Ne]
   · by_contra h
     exact (show Polynomial.map (Ideal.Quotient.mk I) (minpoly R x) ≠ 0 from
       Polynomial.map_monic_ne_zero (minpoly.monic hx')) (span_singleton_eq_bot.mp h)
@@ -326,7 +326,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
   · exact Polynomial.map_monic_ne_zero (minpoly.monic hx')
   · exact irreducible_of_normalized_factor _ hJ
   · rwa [← bot_eq_zero, Ne,
-      map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S)]
+      map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S)]
 
 theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I ≠ ⊥)
     (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x)
@@ -340,7 +340,7 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
     obtain ⟨y, hy⟩ := this
     have h := prod_normalizedFactors (show I.map (algebraMap R S) ≠ 0 by
           rwa [← bot_eq_zero, Ne,
-            map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S)])
+            map_eq_bot_iff_of_injective (FaithfulSMul.algebraMap_injective R S)])
     rw [associated_iff_eq, hy, Multiset.prod_singleton] at h
     rw [← h]
     exact
@@ -361,7 +361,7 @@ open Set Classical in
 /-- Let `Q` be a lift of factor of the minimal polynomial of `x`, a generator of `S` over `R`, taken
 `mod I`. Then (the reduction of) `Q` corresponds via
 `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` to
-`span (I.map (algebraMap R S) ∪ {Q.aeval x})`.  -/
+`span (I.map (algebraMap R S) ∪ {Q.aeval x})`. -/
 theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
     (hI : I.IsMaximal) {Q : R[X]}
     (hQ : Q.map (Ideal.Quotient.mk I) ∈ normalizedFactors ((minpoly R x).map (Ideal.Quotient.mk I)))
@@ -378,7 +378,7 @@ theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
   rw [mem_comap, Ideal.mem_span_singleton] at ha
   obtain ⟨a', ha'⟩ := ha
   obtain ⟨b, hb⟩ := Ideal.Quotient.mk_surjective a'
-  rw [← hb, ← _root_.map_mul, Quotient.mk_eq_mk_iff_sub_mem] at ha'
+  rw [← hb, ← map_mul, Quotient.mk_eq_mk_iff_sub_mem] at ha'
   rw [union_comm, span_union, span_eq, mem_span_singleton_sup]
   exact ⟨b, a - Q.aeval x * b, ha', by ring⟩
 
