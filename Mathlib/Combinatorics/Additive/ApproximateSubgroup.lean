@@ -186,7 +186,7 @@ lemma isApproximateSubgroup_one {A : Set G} :
       let H : Subgroup G :=
         { carrier := A
           one_mem' := hA.one_mem
-          inv_mem' hx := by dsimp; rwa [← hA.inv_eq_self, inv_mem_inv]
+          inv_mem' hx := by rwa [← hA.inv_eq_self, inv_mem_inv]
           mul_mem' hx hy := this (mul_mem_mul hx hy) }
       ⟨H, rfl⟩
     obtain ⟨x, hx⟩ : ∃ x : G, A * A ⊆ x • A := by

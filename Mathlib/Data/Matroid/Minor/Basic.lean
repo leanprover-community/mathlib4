@@ -240,6 +240,10 @@ lemma delete_closure_eq (M : Matroid α) (D X : Set α) :
     ← inter_assoc, ← diff_eq, inter_eq_left]
   exact diff_subset.trans (M.closure_subset_ground _)
 
+lemma delete_closure_eq_of_disjoint (M : Matroid α) {D X : Set α} (hXD : Disjoint X D) :
+    (M ＼ D).closure X = M.closure X \ D := by
+  rw [delete_closure_eq, hXD.sdiff_eq_left]
+
 @[simp]
 lemma delete_loops_eq (M : Matroid α) (D : Set α) : (M ＼ D).loops = M.loops \ D := by
   simp [loops]
