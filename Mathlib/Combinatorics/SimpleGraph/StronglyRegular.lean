@@ -69,8 +69,8 @@ theorem IsSRGWith.top :
     (⊤ : SimpleGraph V).IsSRGWith (Fintype.card V) (Fintype.card V - 1) (Fintype.card V - 2) μ where
   card := rfl
   regular := IsRegularOfDegree.top
-  of_adj := fun _ _ ↦ card_commonNeighbors_top
-  of_not_adj := fun v w h h' ↦ (h' ((top_adj v w).2 h)).elim
+  of_adj _ _ := card_commonNeighbors_top
+  of_not_adj v w h h' := (h' ((top_adj v w).2 h)).elim
 
 theorem IsSRGWith.card_neighborFinset_union_eq {v w : V} (h : G.IsSRGWith n k ℓ μ) :
     #(G.neighborFinset v ∪ G.neighborFinset w) =
@@ -148,8 +148,8 @@ theorem IsSRGWith.compl (h : G.IsSRGWith n k ℓ μ) :
     Gᶜ.IsSRGWith n (n - k - 1) (n - (2 * k - μ) - 2) (n - (2 * k - ℓ)) where
   card := h.card
   regular := h.compl_is_regular
-  of_adj := fun _ _ ↦ h.card_commonNeighbors_eq_of_adj_compl
-  of_not_adj := fun _ _ ↦ h.card_commonNeighbors_eq_of_not_adj_compl
+  of_adj _ _ := h.card_commonNeighbors_eq_of_adj_compl
+  of_not_adj _ _ := h.card_commonNeighbors_eq_of_not_adj_compl
 
 /-- The parameters of a strongly regular graph with at least one vertex satisfy
 `k * (k - ℓ - 1) = (n - k - 1) * μ`. -/
