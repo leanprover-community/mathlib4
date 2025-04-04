@@ -355,9 +355,8 @@ private lemma jacobiMatrix_comp_₂₂_det :
       ← Presentation.toGenerators_comp, ← toPresentation_comp]
   | add p q hp hq => simp [hp, hq]
   | mul_X p i hp =>
-    simp only [map_mul, rename_X, eval₂_mul, hp, eval₂_X]
-    erw [Generators.comp_val]
-    simp
+    simp only [map_mul, eval₂_mul, hp]
+    simp [Presentation.toGenerators_comp, toPresentation_comp]
 
 end P
 
