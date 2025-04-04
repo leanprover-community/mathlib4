@@ -64,6 +64,12 @@ structure HasEval (a : σ → S) : Prop where
   hpow : ∀ s, IsTopologicallyNilpotent (a s)
   tendsto_zero : Tendsto a cofinite (𝓝 0)
 
+theorem HasEval.mono {S : Type*} [CommRing S] {a : σ → S}
+    {t u : TopologicalSpace S} (h : t ≤ u) (ha : @HasEval _ _ _ t a) :
+    @HasEval _ _ _ u a :=
+  ⟨fun s ↦ Filter.Tendsto.mono_right (@HasEval.hpow _ _ _ t a ha s) (nhds_mono h),
+   Filter.Tendsto.mono_right (@HasEval.tendsto_zero σ _ _ t a ha) (nhds_mono h)⟩
+
 theorem HasEval.zero : HasEval (0 : σ → S) where
   hpow _ := .zero
   tendsto_zero := tendsto_const_nhds
@@ -93,15 +99,17 @@ protected theorem HasEval.X:
   hpow s := tendsto_pow_zero_of_constantCoeff_zero (constantCoeff_X s)
   tendsto_zero := variables_tendsto_zero
 
+variable [IsTopologicalRing S] [IsLinearTopology S S]
+
 /-- The domain of evaluation of `MvPowerSeries`, as an ideal -/
 @[simps]
-def hasEvalIdeal [IsTopologicalRing S] [IsLinearTopology S S] : Ideal (σ → S) where
+def hasEvalIdeal : Ideal (σ → S) where
   carrier := {a | HasEval a}
   add_mem' := HasEval.add
   zero_mem' := HasEval.zero
   smul_mem' := HasEval.mul_left
 
-theorem mem_hasEvalIdeal_iff [IsTopologicalRing S] [IsLinearTopology S S] {a : σ → S} :
+theorem mem_hasEvalIdeal_iff {a : σ → S} :
     a ∈ hasEvalIdeal ↔ HasEval a := by
   simp [hasEvalIdeal]
 

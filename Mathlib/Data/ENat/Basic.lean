@@ -263,26 +263,14 @@ lemma toNat_le_toNat {m n : ℕ∞} (h : m ≤ n) (hn : n ≠ ⊤) : toNat m ≤
 theorem succ_def (m : ℕ∞) : Order.succ m = m + 1 :=
   Order.succ_eq_add_one m
 
-@[deprecated Order.add_one_le_of_lt (since := "2024-09-04")]
-theorem add_one_le_of_lt (h : m < n) : m + 1 ≤ n :=
-  Order.add_one_le_of_lt h
-
 theorem add_one_le_iff (hm : m ≠ ⊤) : m + 1 ≤ n ↔ m < n :=
   Order.add_one_le_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)
-
-@[deprecated Order.one_le_iff_pos (since := "2024-09-04")]
-theorem one_le_iff_pos : 1 ≤ n ↔ 0 < n :=
-  Order.one_le_iff_pos
 
 theorem one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 :=
   Order.one_le_iff_pos.trans pos_iff_ne_zero
 
 lemma lt_one_iff_eq_zero : n < 1 ↔ n = 0 :=
   not_le.symm.trans one_le_iff_ne_zero.not_left
-
-@[deprecated Order.le_of_lt_add_one (since := "2024-09-04")]
-theorem le_of_lt_add_one (h : m < n + 1) : m ≤ n :=
-  Order.le_of_lt_add_one h
 
 theorem lt_add_one_iff (hm : n ≠ ⊤) : m < n + 1 ↔ m ≤ n :=
   Order.lt_add_one_iff_of_not_isMax (not_isMax_iff_ne_top.mpr hm)

@@ -434,7 +434,7 @@ theorem count_zpow (n : ℤ) (I : FractionalIdeal R⁰ K) :
   obtain n | n := n
   · rw [ofNat_eq_coe, zpow_natCast]
     exact count_pow K v n I
-  · rw [negSucc_coe, count_neg_zpow, zpow_natCast, count_pow]
+  · rw [negSucc_eq, count_neg_zpow, ← Int.natCast_succ, zpow_natCast, count_pow]
     ring
 
 /-- `val_v(v^n) = n` for every `n ∈ ℤ`. -/
