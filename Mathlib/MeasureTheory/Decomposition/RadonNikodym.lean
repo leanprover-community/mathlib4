@@ -486,12 +486,10 @@ theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [Sigm
       erw [VectorMeasure.sub_apply]
       rw [toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi]
     all_goals
-      rw [← integrableOn_univ]
-      refine IntegrableOn.restrict ?_
+      refine Integrable.integrableOn ?_
       refine ⟨?_, hasFiniteIntegral_toReal_of_lintegral_ne_top ?_⟩
       · apply Measurable.aestronglyMeasurable (by fun_prop)
-      · rw [setLIntegral_univ]
-        exact (lintegral_rnDeriv_lt_top _ _).ne
+      · exact (lintegral_rnDeriv_lt_top _ _).ne
   · exact equivMeasure.right_inv μ
 
 /-- The Radon-Nikodym theorem for signed measures. -/

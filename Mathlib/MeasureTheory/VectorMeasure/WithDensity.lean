@@ -82,9 +82,9 @@ theorem withDensityᵥ_add (hf : Integrable f μ) (hg : Integrable g μ) :
   rw [withDensityᵥ_apply (hf.add hg) hi, VectorMeasure.add_apply, withDensityᵥ_apply hf hi,
     withDensityᵥ_apply hg hi]
   simp_rw [Pi.add_apply]
-  rw [integral_add] <;> rw [← integrableOn_univ]
-  · exact hf.integrableOn.restrict
-  · exact hg.integrableOn.restrict
+  rw [integral_add]
+  · exact hf.integrableOn
+  · exact hg.integrableOn
 
 theorem withDensityᵥ_add' (hf : Integrable f μ) (hg : Integrable g μ) :
     (μ.withDensityᵥ fun x => f x + g x) = μ.withDensityᵥ f + μ.withDensityᵥ g :=
