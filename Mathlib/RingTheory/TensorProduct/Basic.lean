@@ -1462,11 +1462,11 @@ lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMon
 
 section
 
-variable {R S T : Type*} [CommSemiring R] [Semiring S] [Algebra R S] [Ring T] [Algebra R T]
+variable {R M S T : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
+  [Semiring S] [Algebra R S] [Ring T] [Algebra R T]
 
-variable (R S) in
-theorem TensorProduct.mk_surjective (M) [AddCommMonoid M] [Module R M]
-    (h : Function.Surjective (algebraMap R S)) :
+variable (R S M) in
+theorem TensorProduct.mk_surjective (h : Function.Surjective (algebraMap R S)) :
     Function.Surjective (TensorProduct.mk R S M 1) := by
   rw [← LinearMap.range_eq_top, ← top_le_iff, ← span_tmul_eq_top, Submodule.span_le]
   rintro _ ⟨x, y, rfl⟩
