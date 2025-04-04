@@ -28,6 +28,8 @@ inductive IsFiniteLength : ∀ (M : Type*) [AddCommGroup M] [Module R M], Prop
   | of_simple_quotient {M} [AddCommGroup M] [Module R M] {N : Submodule R M}
       [IsSimpleModule R (M ⧸ N)] : IsFiniteLength N → IsFiniteLength M
 
+attribute [nontriviality] IsFiniteLength.of_subsingleton
+
 variable {R} {M N : Type*} [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 theorem LinearEquiv.isFiniteLength (e : M ≃ₗ[R] N)
