@@ -5,7 +5,6 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Products
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
 /-!
 # (Co)products in functor categories
@@ -45,15 +44,6 @@ theorem piObjIso_inv_comp_π (f : α → D ⥤ C) (d : D) (s : α) :
 alias piObjIso_inv_comp_pi := piObjIso_inv_comp_π
 
 end Product
-
-section Terminal
-
-/-- Evaluating the terminal functor yields the terminal object. -/
-noncomputable def terminalObjIso [HasTerminal C] (d : D) : (⊤_ (D ⥤ C)).obj d ≅ ⊤_ C :=
-  limitObjIsoLimitCompEvaluation _ d ≪≫ HasLimit.isoOfNatIso
-    ((Discrete.compNatIsoDiscrete _ _).trans <| eqToIso <| congrArg _ <| funext fun x ↦ nomatch x)
-
-end Terminal
 
 section Coproduct
 
