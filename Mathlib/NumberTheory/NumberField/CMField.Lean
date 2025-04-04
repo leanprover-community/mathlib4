@@ -41,9 +41,9 @@ theorem isTotallyReal [IsCM F K] :
 theorem finrank_eq_two [IsCM F K] :
     Module.finrank F K = 2 := finrank_eq_two'
 
-variable [IsCM F K]
-
 section first_results
+
+variable [IsCM F K]
 
 instance : IsGalois F K :=
 { to_isSeparable := Algebra.IsSeparable.of_integral _ _
