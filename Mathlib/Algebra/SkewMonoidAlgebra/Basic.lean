@@ -554,11 +554,13 @@ end AddCommGroup
 
 section Mul
 
+/- Interaction of `sum` and `•` assuming some multiplication stucture. -/
 theorem sum_smul_index {N : Type*} [AddCommMonoid N] [NonUnitalNonAssocSemiring k]
     {g : SkewMonoidAlgebra k G} {b : k} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
     (b • g).sum h = g.sum (h · <| b * ·) := by
   simp only [sum_def, toFinsupp_smul, Finsupp.sum_smul_index' h0, smul_eq_mul]
 
+/- Variant of the interaction of `sum` and `•` assuming some scalar multiplication structure. -/
 theorem sum_smul_index' {N R : Type*} [AddCommMonoid k]
     [DistribSMul R k] [AddCommMonoid N]
     {g : SkewMonoidAlgebra k G} {b : R} {h : G → k → N} (h0 : ∀ i, h i 0 = 0) :
