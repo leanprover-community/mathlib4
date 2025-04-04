@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Nonneg.Basic
-import Mathlib.Algebra.Order.Nonneg.Lattice
 import Mathlib.Algebra.Order.Ring.InjSurj
 import Mathlib.Tactic.FastInstance
 

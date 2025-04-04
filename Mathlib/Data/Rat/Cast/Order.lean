@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Data.Rat.Cast.CharZero
+import Mathlib.Order.Interval.Set.OrderEmbedding
 import Mathlib.Tactic.Positivity.Core
 
 /-!

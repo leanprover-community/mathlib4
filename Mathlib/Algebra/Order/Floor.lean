@@ -3,13 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.Group.Int.Even
-import Mathlib.Algebra.Group.Int.Units
 import Mathlib.Data.Nat.Cast.Order.Field
-import Mathlib.Data.Set.Function
-import Mathlib.Data.Set.Monotone
-import Mathlib.Data.Set.Subsingleton
-import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
