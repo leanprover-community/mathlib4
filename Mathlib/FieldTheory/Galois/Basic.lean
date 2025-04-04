@@ -275,6 +275,14 @@ def intermediateFieldEquivSubgroup [FiniteDimensional F E] [IsGalois F E] :
     rw [← fixedField_fixingSubgroup L, IntermediateField.le_iff_le, fixedField_fixingSubgroup L]
     rfl
 
+theorem IntermediateField.fixedField_top [FiniteDimensional F E] [IsGalois F E] :
+    fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥ :=
+  IsGalois.intermediateFieldEquivSubgroup.symm.map_bot
+
+theorem IntermediateField.fixedField_bot [FiniteDimensional F E] [IsGalois F E] :
+    fixedField (⊥ : Subgroup (E ≃ₐ[F] E)) = ⊤ :=
+  IsGalois.intermediateFieldEquivSubgroup.symm.map_top
+
 /-- The Galois correspondence as a `GaloisInsertion` -/
 def galoisInsertionIntermediateFieldSubgroup [FiniteDimensional F E] :
     GaloisInsertion (OrderDual.toDual ∘
