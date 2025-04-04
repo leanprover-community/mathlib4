@@ -10,7 +10,7 @@ import Mathlib.MeasureTheory.Integral.Periodic
 /-!
 # Ergodicity of an irrational rotation
 
-In this filie we prove that rotation of `AddCircle p` by `a` is ergodic
+In this file we prove that rotation of `AddCircle p` by `a` is ergodic
 if and only if `a` has infinite order (in other words, if `a / p` is irrational).
 -/
 
