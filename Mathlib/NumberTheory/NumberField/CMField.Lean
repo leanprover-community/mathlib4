@@ -73,7 +73,7 @@ theorem isConj_ne_one [IsTotallyComplex K] {φ : K →+* ℂ} {σ : K ≃ₐ[F] 
     σ ≠ 1 := by
   by_contra h
   rw [h, isConj_one_iff, ← isReal_mk_iff] at hφ
-  exact not_isComplex_iff_isReal.mpr hφ  (IsTotallyComplex.isComplex _)
+  exact not_isComplex_iff_isReal.mpr hφ (IsTotallyComplex.isComplex _)
 
 variable [NumberField F]
 
