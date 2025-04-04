@@ -742,14 +742,14 @@ theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ 
     (h_add : ∀ o m₁ m₂, b o (m₁ + m₂) = b o m₁ * b o m₂) :
     f.prod b = b none (f none) * f.some.prod fun a => b (Option.some a) := by
   classical
-    apply induction_linear f
-    · simp [some_zero, h_zero]
-    · intro f₁ f₂ h₁ h₂
+    induction f using induction_linear with
+    | zero => simp [some_zero, h_zero]
+    | add f₁ f₂ h₁ h₂ =>
       rw [Finsupp.prod_add_index, h₁, h₂, some_add, Finsupp.prod_add_index]
       · simp only [h_add, Pi.add_apply, Finsupp.coe_add]
         rw [mul_mul_mul_comm]
       all_goals simp [h_zero, h_add]
-    · rintro (_ | a) m <;> simp [h_zero, h_add]
+    | single a m => cases a <;> simp [h_zero, h_add]
 
 theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : Option α →₀ R)
     (b : Option α → M) :
@@ -774,7 +774,6 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
   toFun a := if p a then f a else 0
   support := f.support.filter p
   mem_support_toFun a := by
-    beta_reduce -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed to activate `split_ifs`
     split_ifs with h <;>
       · simp only [h, mem_filter, mem_support_iff]
         tauto

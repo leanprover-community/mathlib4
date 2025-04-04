@@ -273,11 +273,11 @@ theorem inv_intCast_den (a : ℤ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a.
     simp at lt
     rw [if_neg (by omega)]
     simp only [Int.cast_neg, Rat.inv_neg, neg_den, inv_intCast_den_of_pos lt, Int.natAbs_neg]
-    exact Int.eq_natAbs_of_zero_le (by omega)
+    exact Int.eq_natAbs_of_nonneg (by omega)
   · simp
   · rw [if_neg (by omega)]
     simp only [inv_intCast_den_of_pos gt]
-    exact Int.eq_natAbs_of_zero_le (by omega)
+    exact Int.eq_natAbs_of_nonneg (by omega)
 
 @[simp]
 theorem inv_natCast_den (a : ℕ) : (a : ℚ)⁻¹.den = if a = 0 then 1 else a := by

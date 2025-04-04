@@ -90,6 +90,13 @@ alias OrderedCommGroup.lt_of_mul_lt_mul_left := lt_of_mul_lt_mul_left'
 
 attribute [to_additive] OrderedCommGroup.lt_of_mul_lt_mul_left
 
+-- See note [lower instance priority]
+@[to_additive IsOrderedAddMonoid.toIsOrderedCancelAddMonoid]
+instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid
+    [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] : IsOrderedCancelMonoid α where
+  le_of_mul_le_mul_left a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
+  le_of_mul_le_mul_right a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
+
 
 /-!
 ### Linearly ordered commutative groups

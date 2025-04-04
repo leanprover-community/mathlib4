@@ -62,8 +62,11 @@ variable {T' : Type u₆} [Category.{v₆} T']
 /-- The objects of the comma category are triples of an object `left : A`, an object
    `right : B` and a morphism `hom : L.obj left ⟶ R.obj right`. -/
 structure Comma (L : A ⥤ T) (R : B ⥤ T) : Type max u₁ u₂ v₃ where
+  /-- The left subobject -/
   left : A
+  /-- The right subobject -/
   right : B
+  /-- A morphism from `L.obj left` to `R.obj right` -/
   hom : L.obj left ⟶ R.obj right
 
 -- Satisfying the inhabited linter
@@ -80,7 +83,9 @@ variable {L : A ⥤ T} {R : B ⥤ T}
 -/
 @[ext]
 structure CommaMorphism (X Y : Comma L R) where
+  /-- Morphism on left objects -/
   left : X.left ⟶ Y.left
+  /-- Morphism on right objects -/
   right : X.right ⟶ Y.right
   w : L.map left ≫ Y.hom = X.hom ≫ R.map right := by aesop_cat
 
