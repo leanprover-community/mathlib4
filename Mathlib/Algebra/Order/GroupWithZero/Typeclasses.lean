@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Yuyang Zhao
 -/
 import Mathlib.Algebra.GroupWithZero.Defs
-import Mathlib.Algebra.Notation.Pi
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Tactic.MkIffOfInductiveProp
 import Mathlib.Util.Notation3
