@@ -208,6 +208,7 @@ theorem M.bisim_lemma {α : TypeVec n} {a₁ : (mp P).A} {f₁ : (mp P).B a₁ �
   rw [M.dest_eq_dest' _ e₁'] at e₁
   cases e₁; exact ⟨_, e₁', splitFun_inj ef⟩
 
+set_option linter.style.multiGoal false in
 theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
     (h :
       ∀ x y,
@@ -231,9 +232,7 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
     exact ⟨_, _, _, rfl, rfl, fun b => ⟨_, _, h' b, rfl, rfl⟩⟩
   subst this
   congr with (i p)
-  induction p
-  on_goal 1 => rename_i x a f h' i c
-  on_goal 2 => rename_i x a f h' i c p IH
+  induction p with | root x a f h' i c => ?_ | child x a f h' i c p IH => ?_
   all_goals
     obtain ⟨a', f', f₁', f₂', e₁, e₂, h''⟩ := h _ _ r
     obtain ⟨g₁', e₁', rfl, rfl⟩ := M.bisim_lemma P e₁

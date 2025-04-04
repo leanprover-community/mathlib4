@@ -70,10 +70,10 @@ theorem listDecode_encode_list (l : List (L.Term α)) :
     induction' l with t l lih
     · rfl
     · rw [flatMap_cons, h t (l.flatMap listEncode), lih]
-  intro t
-  induction t <;> intro l
-  case var => rw [listEncode, singleton_append, listDecode]
-  case func a n f ts ih =>
+  intro t l
+  induction t generalizing l with
+  | var => rw [listEncode, singleton_append, listDecode]
+  | @func n f ts ih =>
     rw [listEncode, cons_append, listDecode]
     have h : listDecode (((finRange n).flatMap fun i : Fin n => (ts i).listEncode) ++ l) =
         (finRange n).map ts ++ listDecode l := by
