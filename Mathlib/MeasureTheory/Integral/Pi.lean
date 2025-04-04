@@ -5,7 +5,6 @@ Authors: Xavier Roblot, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Integral.Prod
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
 
 /-!
 # Integrals of functions defined on indexed product types
@@ -24,8 +23,6 @@ integral over `α` to an integral over `ι → α`.
 
 ## TODO
 
-- Add a section about `Fin 2 → α`.
-- Add a section about `Fin.insertNth`.
 - Relate integrals over `ι → α` and `ι' → α` given an equivalence `ι ≃ ι'`.
 - Add a version of Fubini theorem: integrating over `ι → α` is the same as integrating over `s → α`,
   then over `sᶜ → α`, where `s : Set ι`. Can we reformulate it for two embeddings `ι₁ → ι` and
@@ -40,7 +37,7 @@ open Function Set MeasureTheory.Measure
 
 namespace MeasureTheory
 
-variable {ι E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {ι E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
 
 section IsEmpty
 
@@ -107,21 +104,36 @@ rewriting between these two kinds of integrals in both directions.
 
 section Measure
 
-variable [Unique ι] {α : Type*} [MeasurableSpace α]
+variable [Unique ι] {α : Type*} {m : MeasurableSpace α}
 
 theorem integral_pi_unique (f : (ι → α) → E) (μ : Measure α) :
     ∫ x, f x ∂(.pi fun _ ↦ μ) = ∫ x, f (const ι x) ∂μ :=
-  Eq.symm <| ((measurePreserving_funUnique _ _).symm _).integral_comp
+  .symm <| ((measurePreserving_funUnique _ _).symm _).integral_comp
     (MeasurableEquiv.measurableEmbedding _) _
+
+theorem integrable_pi_unique {f : (ι → α) → F} {μ : Measure α} :
+    Integrable f (.pi fun _ ↦ μ) ↔ Integrable (f <| const ι ·) μ :=
+  .symm <| ((measurePreserving_funUnique _ _).symm _).integrable_comp_emb
+    (MeasurableEquiv.measurableEmbedding _)
 
 theorem setIntegral_pi_unique (f : (ι → α) → E) (μ : Measure α) (s : Set (ι → α)) :
     ∫ x in s, f x ∂(.pi fun _ ↦ μ) = ∫ x in const ι ⁻¹' s, f (const ι x) ∂μ :=
-  Eq.symm <| ((measurePreserving_funUnique _ _).symm _).setIntegral_preimage_emb
+  .symm <| ((measurePreserving_funUnique _ _).symm _).setIntegral_preimage_emb
     (MeasurableEquiv.measurableEmbedding _) _ _
+
+theorem integrableOn_pi_unique {f : (ι → α) → F} {μ : Measure α} {s : Set (ι → α)} :
+    IntegrableOn f s (.pi fun _ ↦ μ) ↔ IntegrableOn (f <| const ι ·) (const ι ⁻¹' s) μ :=
+  .symm <| ((measurePreserving_funUnique _ _).symm _).integrableOn_comp_preimage
+    (MeasurableEquiv.measurableEmbedding _)
 
 theorem setIntegral_pi_unique_pi (f : (ι → α) → E) (μ : Measure α) (s : ι → Set α) :
     ∫ x in Set.pi univ s, f x ∂(.pi fun _ ↦ μ) = ∫ x in s default, f (const ι x) ∂μ := by
   simp only [setIntegral_pi_unique, Set.preimage, Set.mem_univ_pi, Unique.forall_iff]
+  rfl
+
+theorem integrableOn_pi_unique_pi {f : (ι → α) → F} {μ : Measure α} {s : ι → Set α} :
+    IntegrableOn f (univ.pi s) (.pi fun _ ↦ μ) ↔ IntegrableOn (f <| const ι ·) (s default) μ := by
+  simp only [integrableOn_pi_unique, Set.preimage, Set.mem_univ_pi, Unique.forall_iff]
   rfl
 
 theorem setIntegral_pi_unique_Icc [Preorder α] (f : (ι → α) → E) (μ : Measure α) (a b : ι → α) :
@@ -129,11 +141,10 @@ theorem setIntegral_pi_unique_Icc [Preorder α] (f : (ι → α) → E) (μ : Me
       ∫ x in Icc (a default) (b default), f (const ι x) ∂μ := by
   rw [← pi_univ_Icc, setIntegral_pi_unique_pi]
 
-theorem setIntegral_pi_unique_Icc_eq_intervalIntegral (f : (ι → ℝ) → E) (μ : Measure ℝ)
-    [NoAtoms μ] {a b : ι → ℝ} (h : a default ≤ b default) :
-    ∫ x in Icc a b, f x ∂(.pi fun _ ↦ μ) = ∫ x in (a default)..(b default), f (const ι x) ∂μ := by
-  rw [setIntegral_pi_unique_Icc, intervalIntegral.integral_of_le h,
-    restrict_congr_set Ioc_ae_eq_Icc.symm]
+theorem integrableOn_pi_unique_Icc [Preorder α] {f : (ι → α) → E} {μ : Measure α} {a b : ι → α} :
+    IntegrableOn f (Icc a b) (.pi fun _ ↦ μ) ↔
+      IntegrableOn (f <| const ι ·) (Icc (a default) (b default)) := by
+  rw [← pi_univ_Icc, integrableOn_pi_unique_pi]
 
 variable (ι)
 
@@ -148,11 +159,6 @@ theorem setIntegral_eq_pi_unique (f : α → E) (μ : Measure α) (s : Set α) :
 theorem setIntegral_Icc_eq_pi_unique [Preorder α] (f : α → E) (μ : Measure α) (a b : α) :
     ∫ x in Icc a b, f x ∂μ = ∫ x in Icc (const ι a) (const ι b), f (x default) ∂(.pi fun _ ↦ μ) :=
   Eq.symm <| setIntegral_pi_unique_Icc _ _ _ _
-
-theorem intervalIntegral_eq_pi_unique (f : ℝ → E) (μ : Measure ℝ) [NoAtoms μ]
-    {a b : ℝ} (h : a ≤ b) :
-    ∫ x in a..b, f x ∂μ = ∫ x in Icc (const ι a) (const ι b), f (x default) ∂(.pi fun _ ↦ μ) :=
-  Eq.symm <| setIntegral_pi_unique_Icc_eq_intervalIntegral _ _ h
 
 end Measure
 
