@@ -100,7 +100,6 @@ lemma Module.length_quotient {N : Submodule R M} :
   apply WithBot.coe_injective
   rw [Order.coheight_eq_krullDim_Ici, coe_length,
     Order.krullDim_eq_of_orderIso (Submodule.comapMkQRelIso N)]
-  rfl
 
 lemma LinearEquiv.length_eq {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) :
     Module.length R M = Module.length R N := by
