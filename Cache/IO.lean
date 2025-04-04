@@ -487,7 +487,7 @@ where
 
   In order to figure out the module name corresponding
   to the found files, we use `mod` and the search path `sp` to figure out how much of
-  the absolute path needs to be trimmed.
+  the relative path needs to be trimmed.
 
   This assumes the `folder` exists.
   -/
