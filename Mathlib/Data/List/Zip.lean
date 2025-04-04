@@ -93,7 +93,7 @@ theorem zipWith3_same_right (f : α → β → β → γ) :
   | _ :: as, _ :: bs => congr_arg (cons _) <| zipWith3_same_right f as bs
 
 instance (f : α → α → β) [IsSymmOp f] : IsSymmOp (zipWith f) :=
-  ⟨zipWith_comm_of_comm f IsSymmOp.symm_op⟩
+  ⟨fun _ _ => zipWith_comm_of_comm IsSymmOp.symm_op⟩
 
 @[simp]
 theorem length_revzip (l : List α) : length (revzip l) = length l := by
@@ -101,7 +101,7 @@ theorem length_revzip (l : List α) : length (revzip l) = length l := by
 
 @[simp]
 theorem unzip_revzip (l : List α) : (revzip l).unzip = (l, l.reverse) :=
-  unzip_zip (length_reverse l).symm
+  unzip_zip length_reverse.symm
 
 @[simp]
 theorem revzip_map_fst (l : List α) : (revzip l).map Prod.fst = l := by

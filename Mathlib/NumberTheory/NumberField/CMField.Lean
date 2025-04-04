@@ -20,7 +20,6 @@ a totally real number field.
 open NumberField InfinitePlace ComplexEmbedding
 
 /--
-An extension `K/F` of number field is a `CM`-extension of `K` is totally complex, `F` is totally
 real and the extension `K/F` is of degree `2`.
 -/
 class IsCM (F K : Type*) [Field F] [NumberField F] [Field K] [NumberField K]
@@ -29,6 +28,8 @@ class IsCM (F K : Type*) [Field F] [NumberField F] [Field K] [NumberField K]
   finrank_eq_two' : Module.finrank F K = 2
 
 namespace IsCM
+
+section first_results
 
 variable (F K : Type*) [Field F] [NumberField F] [Field K] [NumberField K] [Algebra F K]
 
@@ -42,8 +43,6 @@ theorem finrank_eq_two [IsCM F K] :
     Module.finrank F K = 2 := finrank_eq_two'
 
 variable [IsCM F K]
-
-section first_results
 
 instance : IsGalois F K :=
 { to_isSeparable := Algebra.IsSeparable.of_integral _ _
@@ -65,24 +64,29 @@ end first_results
 
 noncomputable section complexConj
 
+variable (F : Type*) {K : Type*} [Field F] [Field K] [NumberField K] [Algebra F K]
+
 open scoped ComplexConjugate
 
-variable {K}
-
-/--
-All complex embeddings of a `CM`-extension admit a conjugation.
--/
-theorem exists_isConj (φ : K →+* ℂ) :
-    ∃ σ : K ≃ₐ[F] K, IsConj φ σ :=
-  exists_isConj_of_not_isUnramified <|
-    not_isUnramified_iff.mpr ⟨(isTotallyComplex F K).isComplex _, (isTotallyReal F K).isReal _⟩
-
 variable {F} in
-theorem isConj_ne_one {φ : K →+* ℂ} {σ : K ≃ₐ[F] K} (hφ : IsConj φ σ) :
+theorem isConj_ne_one [IsTotallyComplex K] {φ : K →+* ℂ} {σ : K ≃ₐ[F] K} (hφ : IsConj φ σ) :
     σ ≠ 1 := by
   by_contra h
   rw [h, isConj_one_iff, ← isReal_mk_iff] at hφ
-  exact not_isComplex_iff_isReal.mpr hφ  ((isTotallyComplex F K).isComplex _)
+  exact not_isComplex_iff_isReal.mpr hφ  (IsTotallyComplex.isComplex _)
+
+variable [NumberField F]
+
+/--
+All complex embeddings of a Galois extension of a totally complex field over a totally real field
+admit a conjugation.
+-/
+theorem exists_isConj [IsTotallyReal F] [IsTotallyComplex K] [IsGalois F K] (φ : K →+* ℂ) :
+    ∃ σ : K ≃ₐ[F] K, IsConj φ σ :=
+  exists_isConj_of_not_isUnramified <|
+    not_isUnramified_iff.mpr ⟨IsTotallyComplex.isComplex _, IsTotallyReal.isReal _⟩
+
+variable [IsCM F K]
 
 variable {F} in
 /--

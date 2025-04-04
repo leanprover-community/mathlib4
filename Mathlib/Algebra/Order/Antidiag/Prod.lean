@@ -148,7 +148,7 @@ variable [AddLeftReflectLE A]
 variable [HasAntidiagonal A]
 
 theorem filter_fst_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable (m ≤ n)] :
-    filter (fun x : A × A ↦ x.fst = m) (antidiagonal n) = if m ≤ n then {(m, n - m)} else ∅ := by
+    {x ∈ antidiagonal n | x.fst = m} = if m ≤ n then {(m, n - m)} else ∅ := by
   ext ⟨a, b⟩
   suffices a = m → (a + b = n ↔ m ≤ n ∧ b = n - m) by
     rw [mem_filter, mem_antidiagonal, apply_ite (fun n ↦ (a, b) ∈ n), mem_singleton,
@@ -162,7 +162,7 @@ theorem filter_fst_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable
     exact add_tsub_cancel_of_le h
 
 theorem filter_snd_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable (m ≤ n)] :
-    filter (fun x : A × A ↦ x.snd = m) (antidiagonal n) = if m ≤ n then {(n - m, m)} else ∅ := by
+    {x ∈ antidiagonal n | x.snd = m} = if m ≤ n then {(n - m, m)} else ∅ := by
   have : (fun x : A × A ↦ (x.snd = m)) ∘ Prod.swap = fun x : A × A ↦ x.fst = m := by
     ext; simp
   rw [← map_swap_antidiagonal, filter_map]
@@ -191,7 +191,7 @@ variable {A : Type*}
 
 Note that this is not an instance, as for some times a more efficient algorithm is available. -/
 abbrev antidiagonalOfLocallyFinite : HasAntidiagonal A where
-  antidiagonal n := Finset.filter (fun uv => uv.fst + uv.snd = n) (Finset.product (Iic n) (Iic n))
+  antidiagonal n := {uv ∈ Iic n ×ˢ Iic n | uv.fst + uv.snd = n}
   mem_antidiagonal {n} {a} := by
     simp only [mem_filter, and_iff_right_iff_imp]
     intro h
