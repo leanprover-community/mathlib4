@@ -569,6 +569,8 @@ theorem exists_boundary_dart_of_closed {u x y : V} (c : G.Walk u u) (S : Set V) 
 
 end WalkDecomp
 
+/-! Darts in paths and cycles -/
+
 lemma IsPath.not_end_eq_fst_of_mem_darts {u v : V} {p : G.Walk u v} {d : G.Dart} (hp : p.IsPath)
     (hd : d ∈ p.darts) : v ≠ d.toProd.1 :=
   fun hf ↦ List.disjoint_of_nodup_append (p.map_fst_darts_append ▸ hp.support_nodup)
@@ -594,6 +596,18 @@ lemma IsCycle.snd_eq_snd_of_rotate_fst_dart [DecidableEq V] {c : G.Walk u u} {d 
   rw [(hc.rotate (c.dart_fst_mem_support_of_mem_darts hd)).snd_eq_snd_of_start_eq_fst
         ((c.rotate_darts (c.dart_fst_mem_support_of_mem_darts hd)).mem_iff.2 hd)]
   rfl
+
+/-! Support of tail of closed walks -/
+lemma IsCycle.snd_not_mem_tail_tail_support {u} {c : G.Walk u u} (hc : c.IsCycle) :
+    c.snd ∉ c.tail.tail.support :=
+  hc.isPath_tail.not_start_mem_tail_support_of_not_nil hc.tail_not_nil
+
+lemma IsCycle.mem_tail_tail_support_iff {u v} {c : G.Walk u u} (hc : c.IsCycle) :
+    v ∈ c.tail.tail.support ↔ v ≠ c.snd ∧ v ∈ c.support := by
+  rw [← cons_support_tail _ hc.not_nil, ← cons_support_tail _ hc.tail_not_nil]
+  constructor <;> intro h
+  · exact ⟨fun hf ↦ hc.snd_not_mem_tail_tail_support (hf ▸ h), by simp [h]⟩
+  · cases h.2 <;> aesop
 
 end Walk
 
@@ -914,24 +928,6 @@ theorem toDeleteEdges_copy {v u u' v' : V} (s : Set (Sym2 V))
       (p.toDeleteEdges s (by subst_vars; exact h)).copy hu hv := by
   subst_vars
   rfl
-
-variable {G}
-lemma IsCycle.snd_not_mem_tail_tail_support {u} {c : G.Walk u u} (hc : c.IsCycle) :
-    c.snd ∉ c.tail.tail.support :=
-  hc.isPath_tail.not_start_mem_tail_support_of_not_nil hc.tail_not_nil
-
-lemma mem_tail_support_iff_not_nil {u v} {c : G.Walk u u} (hc : ¬ c.Nil) :
-    v ∈ c.tail.support ↔ v ∈ c.support := by
-  rw [← cons_support_tail _ hc, List.mem_cons, iff_or_self]
-  intro h
-  exact h ▸ end_mem_support c.tail
-
-lemma IsCycle.mem_tail_tail_support_iff {u v} {c : G.Walk u u} (hc : c.IsCycle) :
-    v ∈ c.tail.tail.support ↔ v ≠ c.snd ∧ v ∈ c.support := by
-  rw [← cons_support_tail _ hc.not_nil, ← cons_support_tail _ hc.tail_not_nil]
-  constructor <;> intro h
-  · exact ⟨fun hf ↦ hc.snd_not_mem_tail_tail_support (hf ▸ h), by simp [h]⟩
-  · cases h.2 <;> aesop
 
 end Walk
 
