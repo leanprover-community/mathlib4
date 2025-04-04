@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Order.Group.Instances
 
 /-!
 # Maps (semi)conjugating a shift to a shift
