@@ -91,7 +91,7 @@ namespace globalAttributeInLinter
 
 /-- Gets the value of the `linter.globalAttributeIn` option. -/
 def getLinterGlobalAttributeIn (o : Options) : Bool :=
-  Linter.getLinterValue linter.globalAttributeIn o
+  Mathlib.getLinterValue linter.globalAttributeIn o
 
 /--
 `getGlobalAttributesIn? cmd` assumes that `cmd` represents a `attribute [...] id in ...` command.

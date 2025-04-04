@@ -115,7 +115,7 @@ namespace PPRoundtrip
 
 @[inherit_doc Mathlib.Linter.linter.ppRoundtrip]
 def ppRoundtrip : Linter where run := withSetOptionIn fun stx ↦ do
-    unless Linter.getLinterValue linter.ppRoundtrip (← getOptions) do
+    unless Mathlib.getLinterValue linter.ppRoundtrip (← getOptions) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
