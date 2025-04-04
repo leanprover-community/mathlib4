@@ -459,17 +459,33 @@ lemma invtSubmodule_reflection:
       LieAlgebra.IsKilling.rootSystem_root_apply, LieAlgebra.IsKilling.rootSystem_pairing_apply,
       LieAlgebra.IsKilling.rootSystem_coroot_apply, LieModule.Weight.toLinear_apply, S]
 
+  have rr' (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) : S.root j (S.coroot i) = 0 := by
+    --obtain ⟨i1, i2⟩ := i
+    --obtain ⟨j1, j2⟩ := j
+    have t1 := hhh2 j h2
+    have t2 := hhh1 i h1
+    have : S.root i ∈ LinearMap.ker (S.coroot' j) := by
+      exact t1 t2
+    simp at this
+    have rrr := S.janos (ι := H.root) (R := K) (M := Module.Dual K H) (N := H) j i this
+    simp_all only [Subtype.forall, Finset.mem_filter, Finset.mem_univ, true_and, ne_eq,
+      LieAlgebra.IsKilling.rootSystem_root_apply, LieAlgebra.IsKilling.rootSystem_coroot_apply,
+      LieModule.Weight.toLinear_apply, LieAlgebra.IsKilling.rootSystem_pairing_apply,
+      LieAlgebra.IsKilling.rootSystem_toPerfectPairing_apply, S]
+
+
   have rr2 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) : i.1 (LieAlgebra.IsKilling.coroot j) = 0 := by
     apply rr
     apply h1
     apply h2
 
-  have aux (i j : H.root) : i.1 (LieAlgebra.IsKilling.coroot j) = j.1 (LieAlgebra.IsKilling.coroot i) := by
-    dsimp [LieAlgebra.IsKilling.coroot]
-    simp
-    --search_proof
+  have rr2' (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) : j.1 (LieAlgebra.IsKilling.coroot i) = 0 := by
+    apply rr'
+    apply h1
+    apply h2
 
-  have rr3 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) : LieModule.genWeightSpace L (i.1.1 + j.1.1) = ⊥ := by
+  have rr3 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) :
+      LieModule.genWeightSpace L (i.1.1 + j.1.1) = ⊥ := by
     by_contra!
     have i_n : i.1.IsNonZero := by
       obtain ⟨val_1, property_1⟩ := i
@@ -532,25 +548,20 @@ lemma invtSubmodule_reflection:
         exact LieAlgebra.IsKilling.root_apply_coroot (K := K) (H := H) (L := L) jn
       rw [z3, z4] at z1
       field_simp at z1
-    have r32 := rr2 i ⟨r, r43⟩ h1 h1111
+    have r32 := rr2' i ⟨r, r43⟩ h1 h1111
     simp at r32
-    have z1 : i.1.1 (LieAlgebra.IsKilling.coroot r) = 0 := by
+    have z1 : (i.1.1 + j.1.1) (LieAlgebra.IsKilling.coroot i) = 0 := by
       exact r32
-    have zzzz : r = i.1.1 + j.1.1 := by
-      sorry
-    have z2 : (LieAlgebra.IsKilling.coroot r) = (LieAlgebra.IsKilling.coroot i) + (LieAlgebra.IsKilling.coroot j) := by
-      erw [zzzz]
-      sorry--search_proof
-    /-
+    have z2 : (i.1.1 + j.1.1) (LieAlgebra.IsKilling.coroot i) =
+      i.1.1 (LieAlgebra.IsKilling.coroot i) + j.1.1 (LieAlgebra.IsKilling.coroot i) := by
+      exact rfl
     rw [z2] at z1
-    have z3 : i.1.1 (LieAlgebra.IsKilling.coroot j) = 0 := by
-      exact rr2 i j h1 h2
-    have z4 : j.1.1 (LieAlgebra.IsKilling.coroot j) = 2 := by
-      exact LieAlgebra.IsKilling.root_apply_coroot (K := K) (H := H) (L := L) jn
+    have z3 : j.1.1 (LieAlgebra.IsKilling.coroot i) = 0 := by
+      exact rr2' i j h1 h2
+    have z4 : i.1.1 (LieAlgebra.IsKilling.coroot i) = 2 := by
+      exact LieAlgebra.IsKilling.root_apply_coroot (K := K) (H := H) (L := L) i_n
     rw [z3, z4] at z1
     field_simp at z1
-    -/
-    sorry
 
 
 
