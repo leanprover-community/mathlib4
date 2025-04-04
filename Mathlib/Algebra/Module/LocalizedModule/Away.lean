@@ -6,7 +6,7 @@ Authors: Yongle Hu
 import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
-# Localizations of modules away from an alement
+# Localizations of modules away from an element
 -/
 
 /-- Given `x : R` and `f : M →ₗ[R] M'`, IsLocalization.Away x f` states that `M'`
