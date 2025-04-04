@@ -575,6 +575,7 @@ lemma invtSubmodule_reflection:
   let gg := ⋃ i ∈ Φ, (LieAlgebra.rootSpace H i : Set L)
   let I := LieSubalgebra.lieSpan K L gg
   have rr5 : I ≠ ⊤ := by
+    have := LieAlgebra.center_eq_bot (R := K) (L := L)
     sorry
   have rr6 : I ≠ ⊥ := by
     have : ∃ (rrrr : H.root), rrrr ∈ Φ := by
