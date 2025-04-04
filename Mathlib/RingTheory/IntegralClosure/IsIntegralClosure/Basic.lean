@@ -602,28 +602,35 @@ theorem isIntegral_quotientMap_iff {I : Ideal S} :
   refine this ▸ RingHom.IsIntegral.trans g (Ideal.quotientMap I f le_rfl) ?_ h
   exact g.isIntegral_of_surjective Ideal.Quotient.mk_surjective
 
-/-- If the integral extension `R → S` is injective, and `S` is a field, then `R` is also a field. -/
-theorem isField_of_isIntegral_of_isField {R S : Type*} [CommRing R] [CommRing S]
-    [Algebra R S] [Algebra.IsIntegral R S]
-    (hRS : Function.Injective (algebraMap R S)) (hS : IsField S) : IsField R := by
-  have := hS.nontrivial; have := Module.nontrivial R S
-  refine ⟨⟨0, 1, zero_ne_one⟩, mul_comm, fun {a} ha ↦ ?_⟩
-  -- Let `a_inv` be the inverse of `algebraMap R S a`,
-  -- then we need to show that `a_inv` is of the form `algebraMap R S b`.
-  obtain ⟨a_inv, ha_inv⟩ := hS.mul_inv_cancel fun h ↦ ha (hRS (h.trans (RingHom.map_zero _).symm))
-  letI : Invertible a_inv := (Units.mkOfMulEqOne a_inv _ <| mul_comm _ a_inv ▸ ha_inv).invertible
-  -- Let `p : R[X]` be monic with root `a_inv`,
-  obtain ⟨p, p_monic, hp⟩ := Algebra.IsIntegral.isIntegral (R := R) a_inv
-  -- and `q` be `p` with coefficients reversed (so `q(a) = q'(a) * a + 1`).
-  -- We have `q(a) = 0`, so `-q'(a)` is the inverse of `a`.
-  use -p.reverse.divX.eval a -- -q'(a)
-  nth_rewrite 1 [mul_neg, ← eval_X (x := a), ← eval_mul, ← p_monic, ← coeff_zero_reverse,
-    ← add_eq_zero_iff_neg_eq, ← eval_C (a := p.reverse.coeff 0), ← eval_add, X_mul_divX_add,
-    ← (injective_iff_map_eq_zero' _).mp hRS, ← aeval_algebraMap_apply_eq_algebraMap_eval]
-  rwa [← eval₂_reverse_eq_zero_iff] at hp
+variable {R S : Type*} [CommRing R] [CommRing S]
 
-theorem Algebra.IsIntegral.isField_iff_isField {R S : Type*} [CommRing R]
-    [CommRing S] [IsDomain S] [Algebra R S] [Algebra.IsIntegral R S]
+theorem RingHom.IsIntegral.isLocalHom {f : R →+* S} (hf : f.IsIntegral)
+    (inj : Function.Injective f) : IsLocalHom f where
+  map_nonunit a ha := by
+    -- `f a` is invertible in `S`, and we need to show that `(f a)⁻¹` is of the form `f b`.
+    -- Let `p : R[X]` be monic with root `a_inv`,
+    obtain ⟨p, p_monic, hp⟩ := hf (ha.unit⁻¹ : _)
+    -- and `q` be `p` with coefficients reversed (so `q(a) = q'(a) * a + 1`).
+    -- We have `q(a) = 0`, so `-q'(a)` is the inverse of `a`.
+    refine isUnit_of_mul_eq_one _ (-p.reverse.divX.eval a) ?_
+    nth_rewrite 1 [mul_neg, ← eval_X (x := a), ← eval_mul, ← p_monic, ← coeff_zero_reverse,
+      ← add_eq_zero_iff_neg_eq, ← eval_C (a := p.reverse.coeff 0), ← eval_add, X_mul_divX_add,
+      ← (injective_iff_map_eq_zero' _).mp inj, ← eval₂_hom]
+    rwa [← eval₂_reverse_eq_zero_iff] at hp
+
+variable [Algebra R S] [Algebra.IsIntegral R S]
+
+variable (R S) in
+theorem Algebra.IsIntegral.isLocalHom [FaithfulSMul R S] : IsLocalHom (algebraMap R S) :=
+  (algebraMap_isIntegral_iff.mpr ‹_›).isLocalHom (FaithfulSMul.algebraMap_injective R S)
+
+/-- If the integral extension `R → S` is injective, and `S` is a field, then `R` is also a field. -/
+theorem isField_of_isIntegral_of_isField (hRS : Function.Injective (algebraMap R S))
+    (hS : IsField S) : IsField R :=
+  have := (faithfulSMul_iff_algebraMap_injective R S).mpr hRS
+  (Algebra.IsIntegral.isLocalHom R S).isField hRS hS
+
+theorem Algebra.IsIntegral.isField_iff_isField [IsDomain S]
     (hRS : Function.Injective (algebraMap R S)) : IsField R ↔ IsField S :=
   ⟨isField_of_isIntegral_of_isField', isField_of_isIntegral_of_isField hRS⟩
 

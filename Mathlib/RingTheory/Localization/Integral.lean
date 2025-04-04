@@ -358,28 +358,9 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
     obtain ⟨a : S, b, ha, rfl⟩ := div_surjective (A := S) x
     obtain ⟨f, hf₁, hf₂⟩ := h b
     rw [div_eq_mul_inv]
-    refine IsIntegral.mul ?_ ?_
-    · rw [← isAlgebraic_iff_isIntegral]
-      refine .extendScalars
-        (FaithfulSMul.algebraMap_injective R (FractionRing R)) ?_
-      exact .algebraMap (h a)
-    · rw [← isAlgebraic_iff_isIntegral]
-      use (f.map (algebraMap R (FractionRing R))).reverse
-      constructor
-      · rwa [Ne, Polynomial.reverse_eq_zero, ← Polynomial.degree_eq_bot,
-          Polynomial.degree_map_eq_of_injective
-            (FaithfulSMul.algebraMap_injective R (FractionRing R)),
-          Polynomial.degree_eq_bot]
-      · have : Invertible (algebraMap S K b) :=
-          IsUnit.invertible
-            (isUnit_of_mem_nonZeroDivisors
-              (mem_nonZeroDivisors_iff_ne_zero.2 fun h =>
-                nonZeroDivisors.ne_zero ha
-                  ((injective_iff_map_eq_zero (algebraMap S K)).1
-                    (FaithfulSMul.algebraMap_injective _ _) b h)))
-        rw [Polynomial.aeval_def, ← invOf_eq_inv, Polynomial.eval₂_reverse_eq_zero_iff,
-          Polynomial.eval₂_map, ← IsScalarTower.algebraMap_eq, ← Polynomial.aeval_def,
-          Polynomial.aeval_algebraMap_apply, hf₂, RingHom.map_zero]
+    refine .mul ?_ (.inv ?_) <;>
+      rw [← isAlgebraic_iff_isIntegral] <;>
+      exact .extendScalars ((FaithfulSMul.algebraMap_injective R _)) (.algebraMap (h _))
   · intro h x
     obtain ⟨f, hf₁, hf₂⟩ := h (algebraMap S K x)
     use f, hf₁
