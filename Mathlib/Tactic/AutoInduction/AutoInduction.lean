@@ -67,8 +67,9 @@ TODO:
 - look into using Aesop.CtorNames
 -/
 def AutoIndPrinciple.generateMatchBranches {m} [Monad m] [MonadControlT MetaM m]
-    [MonadLiftT MetaM m] [MonadRef m] [MonadQuotation m] (_a : AutoIndPrinciple) :
-    m (TSyntax ``inductionAlts) := do
+    [MonadLiftT MetaM m] [MonadRef m] [MonadQuotation m] (_a : AutoIndPrinciple)
+    (blacklist : NameSet):
+    m (Array (TSyntax ``inductionAlt)) := do
   forallTelescope _a.target (fun ctors _ => do
     let mut alts : Array (TSyntax ``inductionAlt) := #[]
     for ctorFVar in ctors do
@@ -76,14 +77,25 @@ def AutoIndPrinciple.generateMatchBranches {m} [Monad m] [MonadControlT MetaM m]
       let ctorName : Name ← ctorId.getUserName
       let ctorType : Expr ← ctorId.getType
       if let .some discharger := _a.dischargers.find? ctorName then
-        let dischargerSeq ← discharger.asTacticSeq
-        let argnames ← forallTelescope ctorType (fun args _ => do
-          args.mapM (fun e => Lean.mkIdent <$> e.fvarId!.getUserName))
-        let alt ← `( inductionAlt| | @$(Lean.mkIdent ctorName) $[$argnames]* =>
-          first | try $dischargerSeq | exact ?$(Lean.mkIdent ctorName))
-          -- make sure the tactic has gracious failures
-        alts := alts.push alt
-    `(inductionAlts| with $[$alts]*))
+        if !(blacklist.contains ctorName) then
+          let dischargerSeq ← discharger.asTacticSeq
+          let argnames ← forallTelescope ctorType (fun args _ => do
+            args.mapM (fun e => Lean.mkIdent <$> e.fvarId!.getUserName))
+          let alt ← `( inductionAlt| | @$(Lean.mkIdent ctorName) $[$argnames]* => $dischargerSeq)
+            -- try to make this fail graciously?
+          alts := alts.push alt
+    return alts)
+
+def getBranchNames (alts: Array (TSyntax ``inductionAlt)) : TacticM (NameSet) :=
+  alts.foldlM (fun s => fun
+  | `(inductionAlt| $[$lhss]* => $_) =>
+    lhss.foldlM (fun s' => fun
+    | `(inductionAltLHS| | $[@]?$ctor $[$args]*) =>
+      return s'.insert ctor.getId
+    | `(inductionAltLHS| | _ $[$_]*) => return s'
+    -- pattern match should be exhaustive, assuming the syntax is well-kinded
+    | _ => throwUnsupportedSyntax) s
+  | _ => throwUnsupportedSyntax) NameSet.empty
 
 
 def AutoIndPrinciple.matches (_a : AutoIndPrinciple) (_e : Expr) : MetaM Bool :=
@@ -92,7 +104,7 @@ def AutoIndPrinciple.matches (_a : AutoIndPrinciple) (_e : Expr) : MetaM Bool :=
 
 @[tactic autoinductiontac]
 def autoInductOn : Tactic
-| `(tactic|autoinduction $t $[generalizing $[$g]*]? $[$alts]?) => withMainContext do
+| `(tactic|autoinduction $t $[generalizing $[$g]*]? $[with $[$alts?]*]?) => withMainContext do
   let e ← elabTerm t none
   let ty ← inferType e
   logInfo s!"Found expression {e} with inferred type {ty}."
@@ -107,12 +119,32 @@ def autoInductOn : Tactic
 
   if let .some principle := principle? then
     logInfo s!"applying {principle.name}"
+    if let .some alts := alts? then do
+      let blacklist ← getBranchNames alts
+      let autoAlts ← principle.generateMatchBranches blacklist
+      let inductiontac ←
+        `(tactic| induction $t:term $[generalizing $g*]?
+          with $[$(alts.append autoAlts)]*)
+      -- now, run the tactic
+      sorry
+    else do
+      let inductiontac ← `(tactic| induction $t:term $[generalizing $g*]?)
+      -- run the tactic
+      -- try running dischargers on the appropriate new goals
+      sorry
+
+
+
   else
     logInfo s!"no induction principle found"
 | _ => throwUnsupportedSyntax
 
 example : True := by
-  autoinduction 3
-  trivial
+  induction 3 with
+  | zero => ?zero'
+  | succ n => ?succ'
+  · trivial
+  · trivial
+  -- trivial
 
 --syntax (name := autoinductiontac) "autoinduction"
