@@ -15,7 +15,7 @@ defining maps between proper cones. The current API is basic and should be exten
 
 namespace ConvexCone
 
-variable {𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
+variable {𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [ContinuousAdd E] [SMul 𝕜 E]
   [ContinuousConstSMul 𝕜 E]
 

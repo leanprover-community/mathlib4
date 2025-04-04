@@ -495,7 +495,7 @@ end AddCommMonoid
 
 section OrderedAddCommMonoid
 
-variable [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+variable [AddCommMonoid M] [PartialOrder M]
   {w : σ → M} (φ : MvPolynomial σ R)
 
 /-- If `M` is a canonically `OrderedAddCommMonoid`, then the `weightedHomogeneousComponent`
@@ -520,7 +520,7 @@ theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [NoZeroSMulD
 def NonTorsionWeight (w : σ → M) :=
   ∀ n x, n • w x = (0 : M) → n = 0
 
-omit [PartialOrder M] [IsOrderedAddMonoid M] in
+omit [PartialOrder M] in
 theorem nonTorsionWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
     NonTorsionWeight w :=
   fun _ x hnx => (smul_eq_zero_iff_left (hw x)).mp hnx
@@ -547,10 +547,9 @@ end OrderedAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [AddCommMonoid M] [LinearOrder M] [IsOrderedAddMonoid M] [CanonicallyOrderedAdd M]
+variable [AddCommMonoid M] [LinearOrder M] [CanonicallyOrderedAdd M]
   {w : σ → M} (φ : MvPolynomial σ R)
 
-omit [IsOrderedAddMonoid M] in
 /-- A multivatiate polynomial is weighted homogeneous of weighted degree zero if and only if
   its weighted total degree is equal to zero. -/
 theorem isWeightedHomogeneous_zero_iff_weightedTotalDegree_eq_zero {p : MvPolynomial σ R} :
