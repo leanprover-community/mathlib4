@@ -273,20 +273,20 @@ theorem ack_pair_lt (m n k : ℕ) : ack m (pair n k) < ack (m + 4) (max n k) :=
 theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
     ∃ m, ∀ n, f n < ack m n := by
   induction hf with
-  | zero => exact ⟨0, ack_pos 0⟩ -- Zero function
-  | succ => -- Successor function
+  | zero => exact ⟨0, ack_pos 0⟩
+  | succ =>
     refine ⟨1, fun n => ?_⟩
     rw [succ_eq_one_add]
     apply add_lt_ack
-  | left => -- Left projection
+  | left =>
     refine ⟨0, fun n => ?_⟩
     rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_left_le n
-  | right => -- Right projection
+  | right =>
     refine ⟨0, fun n => ?_⟩
     rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_right_le n
-  | pair hf hg IHf IHg => -- Pairing
+  | pair hf hg IHf IHg =>
     obtain ⟨a, ha⟩ := IHf; obtain ⟨b, hb⟩ := IHg
     refine
       ⟨max a b + 3, fun n =>
@@ -295,12 +295,12 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
             ack_add_one_sq_lt_ack_add_three _ _⟩
     rw [max_ack_left]
     exact max_le_max (ha n).le (hb n).le
-  | comp hf hg IHf IHg => -- Composition
+  | comp hf hg IHf IHg =>
     obtain ⟨a, ha⟩ := IHf; obtain ⟨b, hb⟩ := IHg
     exact
       ⟨max a b + 2, fun n =>
         (ha _).trans <| (ack_strictMono_right a <| hb n).trans <| ack_ack_lt_ack_max_add_two a b n⟩
-  | @prec f g hf hg IHf IHg => -- Primitive recursion operator
+  | @prec f g hf hg IHf IHg =>
     obtain ⟨a, ha⟩ := IHf; obtain ⟨b, hb⟩ := IHg
     -- We prove this simpler inequality first.
     have :

@@ -313,7 +313,7 @@ theorem sup_mem_iff : x ⊔ y ∈ I ↔ x ∈ I ∧ y ∈ I :=
   ⟨fun h ↦ ⟨I.lower le_sup_left h, I.lower le_sup_right h⟩, fun h ↦ sup_mem h.1 h.2⟩
 
 @[simp]
-lemma Order.Ideal.finsetSup_mem_iff {P : Type*} [SemilatticeSup P] [OrderBot P]
+lemma finsetSup_mem_iff {P : Type*} [SemilatticeSup P] [OrderBot P]
     (t : Ideal P) {ι : Type*}
     {f : ι → P} {s : Finset ι} : s.sup f ∈ t ↔ ∀ i ∈ s, f i ∈ t := by
   classical

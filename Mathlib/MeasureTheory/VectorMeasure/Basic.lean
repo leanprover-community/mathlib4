@@ -3,7 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses
+import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
