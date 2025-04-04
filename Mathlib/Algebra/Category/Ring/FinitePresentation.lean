@@ -89,7 +89,7 @@ lemma RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit (hf : f.hom.Finit
     obtain ⟨i, ⟨hi⟩⟩ : ∃ i, Nonempty (∀ a, (j a ⟶ i)) := by
       have : ∃ i, ∀ a, Nonempty (j a ⟶ i) := by
         simpa using IsFiltered.sup_objs_exists (Finset.univ.image j)
-      simpa [← exists_true_iff_nonempty, Classical.skolem] using this
+      simpa [← exists_true_iff_nonempty, Classical.skolem, -exists_const_iff] using this
     refine ⟨i, CommRingCat.ofHom (MvPolynomial.eval₂Hom
       (α.app i).hom (F.map (hi _) <| x ·)), ?_, ?_⟩
     · ext1
