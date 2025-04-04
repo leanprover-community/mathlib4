@@ -30,7 +30,8 @@ fractions of a Dedekind domain with respect to a height-one prime ideal of the d
 
 noncomputable section
 
-variable {R Γ₀ : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
+variable {R Γ₀ : Type*} [Ring R]
+  [CommGroupWithZero Γ₀] [LinearOrder Γ₀] [IsOrderedMonoidWithZero Γ₀]
 
 /-- Type synonym for a ring equipped with the topology coming from a valuation. -/
 @[nolint unusedArguments]

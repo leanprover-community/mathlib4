@@ -317,10 +317,8 @@ instance noZeroDivisors : NoZeroDivisors Cardinal.{u} where
     inductionOn₂ a b fun α β => by
       simpa only [mul_def, mk_eq_zero_iff, isEmpty_prod] using id
 
-instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
-  { Cardinal.commSemiring,
-    Cardinal.linearOrder with
-    mul_le_mul_left := @mul_le_mul_left' _ _ _ _
+instance : IsOrderedMonoidWithZero Cardinal.{u} :=
+  { mul_le_mul_left := @mul_le_mul_left' _ _ _ _
     zero_le_one := zero_le _ }
 
 -- Computable instance to prevent a non-computable one being found via the one above
