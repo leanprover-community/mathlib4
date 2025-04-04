@@ -3,6 +3,7 @@ import Mathlib.Tactic.Linter.DirectoryDependency
 import Mathlib.Tactic.Linter.DocPrime
 import Mathlib.Tactic.Linter.DocString
 import Mathlib.Tactic.Linter.GlobalAttributeIn
+import Mathlib.Tactic.Linter.FlexibleLinter
 import Mathlib.Tactic.Linter.HashCommandLinter
 import Mathlib.Tactic.Linter.Header
 -- This file imports Batteries.Tactic.Lint, where the `env_linter` attribute is defined.

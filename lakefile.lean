@@ -30,6 +30,7 @@ require "leanprover-community" / "plausible" @ git "nightly-testing"
 abbrev mathlibOnlyLinters : Array LeanOption := #[
   -- The `docPrime` linter is disabled: https://github.com/leanprover-community/mathlib4/issues/20560
   ⟨`linter.docPrime, false⟩,
+  ⟨`linter.flexible, true⟩,
   ⟨`linter.hashCommand, true⟩,
   ⟨`linter.oldObtain, true⟩,
   ⟨`linter.style.cases, true⟩,
