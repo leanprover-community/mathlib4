@@ -294,11 +294,6 @@ lemma natAbs_add_of_nonpos {a b : Int} (ha : a ≤ 0) (hb : b ≤ 0) :
     natAbs (a + b) = natAbs a + natAbs b := by
   omega
 
-lemma natAbs_pow (n : ℤ) (k : ℕ) : Int.natAbs (n ^ k) = Int.natAbs n ^ k := by
-  induction k with
-  | zero => rfl
-  | succ k ih => rw [Int.pow_succ, natAbs_mul, Nat.pow_succ, ih, Nat.mul_comm]
-
 lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by
   simp [Int.pow_succ, Int.pow_zero, Int.natAbs_mul_self']
 
@@ -336,9 +331,6 @@ lemma emod_two_eq_zero_or_one (n : ℤ) : n % 2 = 0 ∨ n % 2 = 1 := by omega
 /-! ### dvd -/
 
 attribute [simp] Int.dvd_zero Int.dvd_mul_left Int.dvd_mul_right
-
-protected lemma mul_dvd_mul : a ∣ b → c ∣ d → a * c ∣ b * d
-  | ⟨e, he⟩, ⟨f, hf⟩ => ⟨e * f, by simp [he, hf, Int.mul_assoc, Int.mul_left_comm, Nat.mul_comm]⟩
 
 protected lemma mul_dvd_mul_left (a : ℤ) (h : b ∣ c) : a * b ∣ a * c := Int.mul_dvd_mul a.dvd_refl h
 
@@ -393,12 +385,6 @@ lemma exists_lt_and_lt_iff_not_dvd (m : ℤ) (hn : 0 < n) :
       omega
     · rw [Int.add_comm _ (1 : ℤ), Int.mul_add, Int.mul_one]
       exact Int.add_lt_add_right (emod_lt_of_pos _ hn) _
-
-lemma natAbs_ediv_of_dvd (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a / natAbs b := by
-  if h : b = 0 then
-    simp_all
-  else
-    simp [natAbs_ediv, H, h]
 
 lemma dvd_of_mul_dvd_mul_left (ha : a ≠ 0) (h : a * m ∣ a * n) : m ∣ n := by
   obtain ⟨b, hb⟩ := h
