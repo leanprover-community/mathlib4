@@ -179,7 +179,7 @@ theorem gcd_eq_gcd_ab : ∀ x y : ℤ, (gcd x y : ℤ) = x * gcdA x y + y * gcdB
 theorem lcm_def (i j : ℤ) : lcm i j = Nat.lcm (natAbs i) (natAbs j) :=
   rfl
 
-@[deprecated (since := "2025-04-04")] alias coe_nat_lcm := lcm_natCast_natCast
+@[deprecated (since := "2025-04-04")] alias coe_nat_lcm := Int.lcm_natCast_natCast
 
 alias gcd_div := gcd_ediv
 alias gcd_div_gcd_div_gcd := gcd_ediv_gcd_ediv_gcd
