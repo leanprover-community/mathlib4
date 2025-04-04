@@ -231,14 +231,16 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
     exact ⟨_, _, _, rfl, rfl, fun b => ⟨_, _, h' b, rfl, rfl⟩⟩
   subst this
   congr with (i p)
-  induction' p with x a f h' i c x a f h' i c p IH <;>
-    try
-      rcases h _ _ r with ⟨a', f', f₁', f₂', e₁, e₂, h''⟩
-      rcases M.bisim_lemma P e₁ with ⟨g₁', e₁', rfl, rfl⟩
-      rcases M.bisim_lemma P e₂ with ⟨g₂', e₂', e₃, rfl⟩
-      cases h'.symm.trans e₁'
-      cases h'.symm.trans e₂'
-  · exact (congr_fun (congr_fun e₃ i) c :)
+  induction p
+  on_goal 1 => rename_i x a f h' i c
+  on_goal 2 => rename_i x a f h' i c p IH
+  all_goals
+    obtain ⟨a', f', f₁', f₂', e₁, e₂, h''⟩ := h _ _ r
+    obtain ⟨g₁', e₁', rfl, rfl⟩ := M.bisim_lemma P e₁
+    obtain ⟨g₂', e₂', e₃, rfl⟩ := M.bisim_lemma P e₂
+    cases h'.symm.trans e₁'
+    cases h'.symm.trans e₂'
+  · exact congr_fun (congr_fun e₃ i) c
   · exact IH _ _ (h'' _)
 
 theorem M.bisim₀ {α : TypeVec n} (R : P.M α → P.M α → Prop) (h₀ : Equivalence R)
