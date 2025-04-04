@@ -130,7 +130,7 @@ lemma RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit (hf : f.hom.Finit
     rw [c.w, hg']
     rfl
 
-/-- If `S` is finitely presented `R`-algebra, then `Hom_R(S, -)` preserves filtered colimits. -/
+/-- If `S` is a finitely presented `R`-algebra, then `Hom_R(S, -)` preserves filtered colimits. -/
 lemma preservesColimit_coyoneda_of_finitePresentation
     (S : Under R) (hS : S.hom.hom.FinitePresentation) (F : J ⥤ Under R)
     [PreservesColimit (F ⋙ Under.forget R) (forget CommRingCat)] :
