@@ -115,13 +115,8 @@ lemma mem_codiscreteWithin_accPt {S T : Set X} :
 /-- If a set is codiscrete within `U`, then it is codiscrete within any subset of `U`. -/
 lemma Filter.codiscreteWithin.mono {U₁ U : Set X} (hU : U₁ ⊆ U) :
    codiscreteWithin U₁ ≤ codiscreteWithin U := by
-  intro s hs
-  simp_rw [mem_codiscreteWithin, disjoint_principal_right] at hs ⊢
-  intro x hx
-  specialize hs x (hU hx)
-  apply mem_of_superset hs
-  rw [Set.compl_subset_compl]
-  exact diff_subset_diff_left hU
+  refine (biSup_mono hU).trans <| iSup₂_mono fun _ _ ↦ ?_
+  gcongr
 
 /-- If `s` is codiscrete within `U`, then `sᶜ ∩ U` has discrete topology. -/
 theorem discreteTopology_of_codiscreteWithin {U s : Set X} (h : s ∈ Filter.codiscreteWithin U) :
@@ -133,7 +128,7 @@ theorem discreteTopology_of_codiscreteWithin {U s : Set X} (h : s ∈ Filter.cod
   simp_all only [h x, Set.compl_union, compl_compl, Set.mem_inter_iff, Set.mem_compl_iff]
 
 /-- Helper lemma for `codiscreteWithin_iff_locallyFiniteComplementWithin`: A set `s` is
-codiscreteWithin `U` iff every point `z ∈ U` has a punctured neighborhood that does not intersect
+`codiscreteWithin U` iff every point `z ∈ U` has a punctured neighborhood that does not intersect
 `U \ s`. -/
 lemma codiscreteWithin_iff_locallyEmptyComplementWithin {s U : Set X} :
     s ∈ codiscreteWithin U ↔ ∀ z ∈ U, ∃ t ∈ 𝓝[≠] z, t ∩ (U \ s) = ∅ := by

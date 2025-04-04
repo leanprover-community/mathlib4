@@ -3,9 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.ENat.Basic
-import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Order.SuccPred.CompleteLinearOrder
 
 /-!
 # Extended natural numbers form a complete linear order
@@ -30,7 +31,7 @@ open Set
 -- The `CompleteLinearOrder` instance should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
+-- `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
 noncomputable instance : CompleteLinearOrder ENat :=
   inferInstanceAs (CompleteLinearOrder (WithTop ℕ))
 
@@ -67,12 +68,8 @@ lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   · simp
   · norm_cast
 
-lemma iInf_eq_zero : ⨅ i, (f i : ℕ∞) = 0 ↔ ∃ i, f i = 0 := by
-  cases isEmpty_or_nonempty ι
-  · simp
-  · norm_cast
-    rw [iInf, Nat.sInf_eq_zero]
-    exact ⟨fun h ↦ by simp_all, .inl⟩
+@[simp] lemma iInf_eq_zero {f : ι → ℕ∞} : ⨅ i, f i = 0 ↔ ∃ i, f i = 0 := by
+  simpa [lt_one_iff_eq_zero] using iInf_lt_iff (α := ℕ∞) (a := 1)
 
 variable {f : ι → ℕ∞} {s : Set ℕ∞}
 
@@ -88,6 +85,16 @@ lemma sSup_eq_zero' : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
 
 @[simp] lemma iSup_eq_zero : iSup f = 0 ↔ ∀ i, f i = 0 := iSup_eq_bot
 @[simp] lemma iSup_zero : ⨆ _ : ι, (0 : ℕ∞) = 0 := by simp
+
+lemma exists_eq_iInf [Nonempty ι] (f : ι → ℕ∞) : ∃ a, f a = ⨅ x, f x := by
+  obtain htop | hlt := eq_top_or_lt_top (⨅ x, f x)
+  · rw [htop]
+    exact ⟨Classical.arbitrary _, iInf_eq_top.1 htop _⟩
+  apply exists_eq_iInf_of_not_isPredPrelimit
+  simp only [Order.IsPredPrelimit, not_forall, not_not]
+  refine ⟨Order.succ (⨅ x, f x), Order.covBy_succ_of_not_isMax fun hmax ↦ ?_⟩
+  simp only [isMax_iff_eq_top, iInf_eq_top] at hmax
+  simp [hmax] at hlt
 
 lemma sSup_eq_top_of_infinite (h : s.Infinite) : sSup s = ⊤ := by
   apply (sSup_eq_top ..).mpr
@@ -126,26 +133,61 @@ variable {ι κ : Sort*} {f g : ι → ℕ∞} {s : Set ℕ∞} {a : ℕ∞}
 lemma iSup_natCast : ⨆ n : ℕ, (n : ℕ∞) = ⊤ :=
   (iSup_eq_top _).2 fun _b hb ↦ ENat.exists_nat_gt (lt_top_iff_ne_top.1 hb)
 
-proof_wanted mul_iSup (a : ℕ∞) (f : ι → ℕ∞) : a * ⨆ i, f i = ⨆ i, a * f i
-proof_wanted iSup_mul (f : ι → ℕ∞) (a : ℕ∞) : (⨆ i, f i) * a = ⨆ i, f i * a
-proof_wanted mul_sSup : a * sSup s = ⨆ b ∈ s, a * b
-proof_wanted sSup_mul : sSup s * a = ⨆ b ∈ s, b * a
+lemma mul_iSup (a : ℕ∞) (f : ι → ℕ∞) : a * ⨆ i, f i = ⨆ i, a * f i := by
+  refine (iSup_le fun i ↦ mul_le_mul' rfl.le <| le_iSup_iff.2 fun _ a ↦ a i).antisymm' <|
+    le_iSup_iff.2 fun d h ↦ ?_
+  obtain rfl | hne := eq_or_ne a 0
+  · simp
+  obtain hι | hι := isEmpty_or_nonempty ι
+  · simp
+  cases d with
+  | top => simp
+  | coe d =>
+  obtain htop | hlt := (le_top (a := ⨆ i, f i)).eq_or_lt
+  · obtain ⟨i, hi : d < f i⟩ := (iSup_eq_top ..).1 htop d (by simp)
+    exact False.elim <| (((h i).trans_lt hi).trans_le (ENat.self_le_mul_left _ hne)).ne rfl
+  obtain ⟨j, hj⟩ := exists_eq_iSup_of_lt_top hlt
+  rw [← hj]
+  apply h
 
-proof_wanted mul_iInf' (_h₀ : a = 0 → Nonempty ι) :
-    a * ⨅ i, f i = ⨅ i, a * f i
+lemma iSup_mul (f : ι → ℕ∞) (a : ℕ∞) : (⨆ i, f i) * a = ⨆ i, f i * a := by
+  simp_rw [mul_comm, ENat.mul_iSup]
 
-proof_wanted iInf_mul' (_h₀ : a = 0 → Nonempty ι) : (⨅ i, f i) * a = ⨅ i, f i * a
+lemma mul_sSup : a * sSup s = ⨆ b ∈ s, a * b := by
+  simp_rw [sSup_eq_iSup, mul_iSup]
 
-/-- If `a ≠ 0` and `a ≠ ⊤`, then right multiplication by `a` maps infimum to infimum.
-See also `ENNReal.iInf_mul` that assumes `[Nonempty ι]` but does not require `a ≠ 0`. -/
-proof_wanted mul_iInf_of_ne (_ha₀ : a ≠ 0) (_ha : a ≠ ⊤) : a * ⨅ i, f i = ⨅ i, a * f i
+lemma sSup_mul : sSup s * a = ⨆ b ∈ s, b * a := by
+  simp_rw [mul_comm, mul_sSup]
 
-/-- If `a ≠ 0` and `a ≠ ⊤`, then right multiplication by `a` maps infimum to infimum.
-See also `ENNReal.iInf_mul` that assumes `[Nonempty ι]` but does not require `a ≠ 0`. -/
-proof_wanted iInf_mul_of_ne (_ha₀ : a ≠ 0) (_ha : a ≠ ⊤) : (⨅ i, f i) * a = ⨅ i, f i * a
+lemma mul_iInf [Nonempty ι] : a * ⨅ i, f i = ⨅ i, a * f i := by
+  refine (le_iInf fun x ↦ (mul_le_mul_left' (iInf_le ..) a)).antisymm ?_
+  obtain ⟨b, hb⟩ := ENat.exists_eq_iInf f
+  rw [← hb, iInf_le_iff]
+  exact fun x h ↦ h _
 
-proof_wanted mul_iInf [Nonempty ι] : a * ⨅ i, f i = ⨅ i, a * f i
-proof_wanted iInf_mul [Nonempty ι] : (⨅ i, f i) * a = ⨅ i, f i * a
+lemma iInf_mul [Nonempty ι] : (⨅ i, f i) * a = ⨅ i, f i * a := by
+  simp_rw [mul_comm, mul_iInf]
+
+/-- A version of `mul_iInf` with a slightly more general hypothesis. -/
+lemma mul_iInf' (h₀ : a = 0 → Nonempty ι) : a * ⨅ i, f i = ⨅ i, a * f i := by
+  obtain hι | hι := isEmpty_or_nonempty ι
+  · suffices a ≠ 0 by simpa [iInf_of_empty, ite_eq_right_iff, mul_top']
+    aesop
+  rw [mul_iInf]
+
+/-- A version of `iInf_mul` with a slightly more general hypothesis. -/
+lemma iInf_mul' (h₀ : a = 0 → Nonempty ι) : (⨅ i, f i) * a = ⨅ i, f i * a := by
+  simp_rw [mul_comm, mul_iInf' h₀]
+
+/-- If `a ≠ 0`, then right multiplication by `a` maps infimum to infimum.
+See also `ENat.iInf_mul` that assumes `[Nonempty ι]` but does not require `a ≠ 0`. -/
+lemma mul_iInf_of_ne (ha₀ : a ≠ 0) : a * ⨅ i, f i = ⨅ i, a * f i :=
+  mul_iInf' <| by simp [ha₀]
+
+/-- If `a ≠ 0`, then right multiplication by `a` maps infimum to infimum.
+See also `ENat.iInf_mul` that assumes `[Nonempty ι]` but does not require `a ≠ 0`. -/
+lemma iInf_mul_of_ne (ha₀ : a ≠ 0) : (⨅ i, f i) * a = ⨅ i, f i * a :=
+  iInf_mul' <| by simp [ha₀]
 
 lemma add_iSup [Nonempty ι] (f : ι → ℕ∞) : a + ⨆ i, f i = ⨆ i, a + f i := by
   obtain rfl | ha := eq_or_ne a ⊤

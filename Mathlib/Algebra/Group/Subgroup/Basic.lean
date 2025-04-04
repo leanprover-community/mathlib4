@@ -339,10 +339,6 @@ section Normalizer
 variable {H}
 
 @[to_additive]
-instance (priority := 100) normal_in_normalizer : (H.subgroupOf H.normalizer).Normal :=
-  ⟨fun x xH g => by simpa only [mem_subgroupOf] using (g.2 x.1).1 xH⟩
-
-@[to_additive]
 theorem normalizer_eq_top_iff : H.normalizer = ⊤ ↔ H.Normal :=
   eq_top_iff.trans
     ⟨fun h => ⟨fun a ha b => (h (mem_top b) a).mp ha⟩, fun h a _ha b =>
@@ -352,13 +348,6 @@ variable (H) in
 @[to_additive]
 theorem normalizer_eq_top [h : H.Normal] : H.normalizer = ⊤ :=
   normalizer_eq_top_iff.mpr h
-
-@[to_additive]
-theorem le_normalizer_of_normal [hK : (H.subgroupOf K).Normal] (HK : H ≤ K) : K ≤ H.normalizer :=
-  fun x hx y =>
-  ⟨fun yH => hK.conj_mem ⟨y, HK yH⟩ yH ⟨x, hx⟩, fun yH => by
-    simpa [mem_subgroupOf, mul_assoc] using
-      hK.conj_mem ⟨x * y * x⁻¹, HK yH⟩ yH ⟨x⁻¹, K.inv_mem hx⟩⟩
 
 variable {N : Type*} [Group N]
 
@@ -383,6 +372,49 @@ theorem le_normalizer_map (f : G →* N) : H.normalizer.map f ≤ (H.map f).norm
     use x⁻¹ * y * x
     rw [hx]
     simp [hy, hyH, mul_assoc]
+
+@[to_additive]
+theorem comap_normalizer_eq_of_le_range {f : N →* G} (h : H ≤ f.range) :
+    comap f H.normalizer = (comap f H).normalizer := by
+  apply le_antisymm (le_normalizer_comap f)
+  rw [← map_le_iff_le_comap]
+  apply (le_normalizer_map f).trans
+  rw [map_comap_eq_self h]
+
+@[to_additive]
+theorem subgroupOf_normalizer_eq {H N : Subgroup G} (h : H ≤ N) :
+    H.normalizer.subgroupOf N = (H.subgroupOf N).normalizer :=
+  comap_normalizer_eq_of_le_range (h.trans_eq N.range_subtype.symm)
+
+@[to_additive]
+theorem normal_subgroupOf_iff_le_normalizer (h : H ≤ K) :
+    (H.subgroupOf K).Normal ↔ K ≤ H.normalizer := by
+  rw [← subgroupOf_eq_top, subgroupOf_normalizer_eq h, normalizer_eq_top_iff]
+
+@[to_additive]
+theorem normal_subgroupOf_iff_le_normalizer_inf :
+    (H.subgroupOf K).Normal ↔ K ≤ (H ⊓ K).normalizer :=
+  inf_subgroupOf_right H K ▸ normal_subgroupOf_iff_le_normalizer inf_le_right
+
+@[to_additive]
+instance (priority := 100) normal_in_normalizer : (H.subgroupOf H.normalizer).Normal :=
+  (normal_subgroupOf_iff_le_normalizer H.le_normalizer).mpr le_rfl
+
+@[to_additive]
+theorem le_normalizer_of_normal_subgroupOf [hK : (H.subgroupOf K).Normal] (HK : H ≤ K) :
+    K ≤ H.normalizer :=
+  (normal_subgroupOf_iff_le_normalizer HK).mp hK
+
+@[to_additive]
+theorem subset_normalizer_of_normal {S : Set G} [hH : H.Normal] : S ⊆ H.normalizer :=
+  (@normalizer_eq_top _ _ H hH) ▸ le_top
+
+@[to_additive]
+theorem le_normalizer_of_normal [H.Normal] : K ≤ H.normalizer := subset_normalizer_of_normal
+
+@[to_additive]
+theorem inf_normalizer_le_normalizer_inf : H.normalizer ⊓ K.normalizer ≤ (H ⊓ K).normalizer :=
+  fun _ h g ↦ and_congr (h.1 g) (h.2 g)
 
 variable (G) in
 /-- Every proper subgroup `H` of `G` is a proper normal subgroup of the normalizer of `H` in `G`. -/
@@ -611,32 +643,14 @@ variable {N : Type*} [Group N] (f : G →* N)
       a surjective function."]
 theorem comap_normalizer_eq_of_surjective (H : Subgroup G) {f : N →* G}
     (hf : Function.Surjective f) : H.normalizer.comap f = (H.comap f).normalizer :=
-  le_antisymm (le_normalizer_comap f)
-    (by
-      intro x hx
-      simp only [mem_comap, mem_normalizer_iff] at *
-      intro n
-      rcases hf n with ⟨y, rfl⟩
-      simp [hx y])
+  comap_normalizer_eq_of_le_range fun x _ ↦ hf x
 
-@[to_additive]
-theorem comap_normalizer_eq_of_injective_of_le_range {N : Type*} [Group N] (H : Subgroup G)
-    {f : N →* G} (hf : Function.Injective f) (h : H.normalizer ≤ f.range) :
-    comap f H.normalizer = (comap f H).normalizer := by
-  apply Subgroup.map_injective hf
-  rw [map_comap_eq_self h]
-  apply le_antisymm
-  · refine le_trans (le_of_eq ?_) (map_mono (le_normalizer_comap _))
-    rw [map_comap_eq_self h]
-  · refine le_trans (le_normalizer_map f) (le_of_eq ?_)
-    rw [map_comap_eq_self (le_trans le_normalizer h)]
+@[deprecated (since := "2025-03-13")]
+alias comap_normalizer_eq_of_injective_of_le_range := comap_normalizer_eq_of_le_range
 
-@[to_additive]
-theorem subgroupOf_normalizer_eq {H N : Subgroup G} (h : H.normalizer ≤ N) :
-    H.normalizer.subgroupOf N = (H.subgroupOf N).normalizer := by
-  apply comap_normalizer_eq_of_injective_of_le_range
-  · exact Subtype.coe_injective
-  simpa
+@[deprecated (since := "2025-03-13")]
+alias _root_.AddSubgroup.comap_normalizer_eq_of_injective_of_le_range :=
+  AddSubgroup.comap_normalizer_eq_of_le_range
 
 /-- The image of the normalizer is equal to the normalizer of the image of an isomorphism. -/
 @[to_additive
@@ -843,20 +857,18 @@ instance prod_normal (H : Subgroup G) (K : Subgroup N) [hH : H.Normal] [hK : K.N
 alias _root_.AddSubgroup.sum_normal := AddSubgroup.prod_normal
 
 @[to_additive]
-theorem inf_subgroupOf_inf_normal_of_right (A B' B : Subgroup G) (hB : B' ≤ B)
-    [hN : (B'.subgroupOf B).Normal] : ((A ⊓ B').subgroupOf (A ⊓ B)).Normal :=
-  { conj_mem := fun {n} hn g =>
-      ⟨mul_mem (mul_mem (mem_inf.1 g.2).1 (mem_inf.1 n.2).1) <|
-        show ↑g⁻¹ ∈ A from (inv_mem (mem_inf.1 g.2).1),
-        (normal_subgroupOf_iff hB).mp hN n g hn.2 (mem_inf.mp g.2).2⟩ }
+theorem inf_subgroupOf_inf_normal_of_right (A B' B : Subgroup G)
+    [hN : (B'.subgroupOf B).Normal] : ((A ⊓ B').subgroupOf (A ⊓ B)).Normal := by
+  rw [normal_subgroupOf_iff_le_normalizer_inf] at hN ⊢
+  rw [inf_inf_inf_comm, inf_idem]
+  exact le_trans (inf_le_inf A.le_normalizer hN) (inf_normalizer_le_normalizer_inf)
 
 @[to_additive]
-theorem inf_subgroupOf_inf_normal_of_left {A' A : Subgroup G} (B : Subgroup G) (hA : A' ≤ A)
-    [hN : (A'.subgroupOf A).Normal] : ((A' ⊓ B).subgroupOf (A ⊓ B)).Normal :=
-  { conj_mem := fun n hn g =>
-      ⟨(normal_subgroupOf_iff hA).mp hN n g hn.1 (mem_inf.mp g.2).1,
-        mul_mem (mul_mem (mem_inf.1 g.2).2 (mem_inf.1 n.2).2) <|
-        show ↑g⁻¹ ∈ B from (inv_mem (mem_inf.1 g.2).2)⟩ }
+theorem inf_subgroupOf_inf_normal_of_left {A' A : Subgroup G} (B : Subgroup G)
+    [hN : (A'.subgroupOf A).Normal] : ((A' ⊓ B).subgroupOf (A ⊓ B)).Normal := by
+  rw [normal_subgroupOf_iff_le_normalizer_inf] at hN ⊢
+  rw [inf_inf_inf_comm, inf_idem]
+  exact le_trans (inf_le_inf hN B.le_normalizer) (inf_normalizer_le_normalizer_inf)
 
 @[to_additive]
 instance normal_inf_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊓ K).Normal :=
@@ -892,6 +904,18 @@ theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Nor
   · show x * y * x⁻¹ * y⁻¹ ∈ H₂
     apply H₂.mul_mem _ (H₂.inv_mem hy)
     apply hH₂.conj_mem _ hy
+
+@[to_additive]
+theorem normal_subgroupOf_of_le_normalizer {H N : Subgroup G}
+    (hLE : H ≤ N.normalizer) : (N.subgroupOf H).Normal := by
+  rw [normal_subgroupOf_iff_le_normalizer_inf]
+  exact (le_inf hLE H.le_normalizer).trans inf_normalizer_le_normalizer_inf
+
+@[to_additive]
+theorem normal_subgroupOf_sup_of_le_normalizer {H N : Subgroup G}
+    (hLE : H ≤ N.normalizer) : (N.subgroupOf (H ⊔ N)).Normal := by
+  rw [normal_subgroupOf_iff_le_normalizer le_sup_right]
+  exact sup_le hLE le_normalizer
 
 end SubgroupNormal
 

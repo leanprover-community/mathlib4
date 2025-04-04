@@ -16,7 +16,6 @@ less than `n`.
 This could be unified with `Data.List.Intervals`. See the TODOs there.
 -/
 
--- Porting note: Many unfolds about `Lean.Internal.coeM`
 namespace Int
 
 /-- List enumerating `[m, n)`. This is the ℤ variant of `List.Ico`. -/
