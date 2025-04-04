@@ -1056,7 +1056,7 @@ def powCardSubgroup {G : Type*} [Group G] [Fintype G] (S : Set G) (hS : S.Nonemp
 end PowIsSubgroup
 
 section LinearOrderedSemiring
-variable [LinearOrderedSemiring G] {a : G}
+variable [Semiring G] [LinearOrder G] [IsStrictOrderedRing G] {a : G}
 
 protected lemma IsOfFinOrder.eq_one (ha₀ : 0 ≤ a) (ha : IsOfFinOrder a) : a = 1 := by
   obtain ⟨n, hn, ha⟩ := ha.exists_pow_eq_one
@@ -1066,7 +1066,7 @@ end LinearOrderedSemiring
 
 section LinearOrderedRing
 
-variable [LinearOrderedRing G] {a x : G}
+variable [Ring G] [LinearOrder G] [IsStrictOrderedRing G] {a x : G}
 
 protected lemma IsOfFinOrder.eq_neg_one (ha₀ : a ≤ 0) (ha : IsOfFinOrder a) : a = -1 :=
   (sq_eq_one_iff.1 <| ha.pow.eq_one <| sq_nonneg a).resolve_left <| by
