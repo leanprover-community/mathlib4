@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Topology.Algebra.Indicator
-import Mathlib.Topology.Separation.DisjointCover
-import Mathlib.Order.Disjointed
 import Mathlib.Topology.ContinuousMap.Algebra
-import Mathlib.Topology.UniformSpace.OfCompactT2
+import Mathlib.Topology.Separation.DisjointCover
 
 /-!
 # Uniform approximation by products
