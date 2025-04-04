@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Int.GCD
+import Mathlib.Data.Nat.GCD.Basic
 
 /-!
 # Congruences modulo a natural number
