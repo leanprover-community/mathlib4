@@ -477,8 +477,8 @@ a morphism of rings from `R` to the endomorphisms of the underlying abelian grou
 def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrp).obj M) where
   toFun r := AddCommGrp.ofHom
     { toFun := fun (m : M) => r • m
-      map_zero' := by dsimp; rw [smul_zero]
-      map_add' := fun x y => by dsimp; rw [smul_add] }
+      map_zero' := by rw [smul_zero]
+      map_add' := fun x y => by rw [smul_add] }
   map_one' := AddCommGrp.ext (fun x => by simp)
   map_zero' := AddCommGrp.ext (fun x => by simp)
   map_mul' r s := AddCommGrp.ext (fun (x : M) => (smul_smul r s x).symm)

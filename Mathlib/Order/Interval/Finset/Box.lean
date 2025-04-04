@@ -8,7 +8,6 @@ import Mathlib.Algebra.Order.Ring.Prod
 import Mathlib.Data.Int.Interval
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
-import Mathlib.Algebra.Order.Group.Prod
 
 /-!
 # Decomposing a locally finite ordered ring into boxes

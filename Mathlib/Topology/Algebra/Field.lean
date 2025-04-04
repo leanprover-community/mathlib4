@@ -58,7 +58,6 @@ def Subfield.topologicalClosure (K : Subfield α) : Subfield α :=
   { K.toSubring.topologicalClosure with
     carrier := _root_.closure (K : Set α)
     inv_mem' := fun x hx => by
-      dsimp only at hx ⊢
       rcases eq_or_ne x 0 with (rfl | h)
       · rwa [inv_zero]
       · rw [← inv_coe_set, ← Set.image_inv_eq_inv]
