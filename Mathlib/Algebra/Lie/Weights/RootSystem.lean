@@ -438,6 +438,25 @@ variable (K L : Type*) [Field K] [CharZero K]
 --  eq_top_of_invtSubmodule_reflection (q : Submodule R M) :
 --    (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤
 
+
+lemma rr7:
+   ∀ (q : Submodule K (Module.Dual K H)), (∀ (i : H.root), q ∈ Module.End.invtSubmodule
+      ((LieAlgebra.IsKilling.rootSystem H).reflection i)) → q ≠ ⊥ → q = ⊤ := by
+  have _i := LieModule.nontrivial_of_isIrreducible K L L
+  let S := (LieAlgebra.IsKilling.rootSystem H)
+  by_contra!
+  obtain ⟨q, hq1, hq2, hq3⟩ := this
+  have := RootPairing.l3 (LieAlgebra.IsKilling.rootSystem H) q hq1 hq2 hq3
+  obtain ⟨Φ, hhh1, hhh2, hhh3, hhh4⟩ := this
+  let gg := ⋃ i ∈ Φ, (LieAlgebra.rootSpace H i : Set L)
+  let I := LieSubalgebra.lieSpan K L gg
+  have rr4 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : LieAlgebra.rootSpace H i.1.1)
+      (lj : LieAlgebra.rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
+    sorry
+  have rr7 : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
+    sorry
+  sorry
+
 lemma invtSubmodule_reflection:
    ∀ (q : Submodule K (Module.Dual K H)), (∀ (i : H.root), q ∈ Module.End.invtSubmodule
       ((LieAlgebra.IsKilling.rootSystem H).reflection i)) → q ≠ ⊥ → q = ⊤ := by
