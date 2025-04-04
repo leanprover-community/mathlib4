@@ -21,7 +21,7 @@ open Pointwise
 variable {α : Type*} {s t : Set α}
 
 @[to_additive]
-theorem IsPWO.mul [OrderedCancelCommMonoid α] (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s * t) := by
+theorem IsPWO.mul [OrderedCommMonoid α] (hs : s.IsPWO) (ht : t.IsPWO) : IsPWO (s * t) := by
   rw [← image_mul_prod]
   exact (hs.prod ht).image_of_monotone (monotone_fst.mul' monotone_snd)
 
