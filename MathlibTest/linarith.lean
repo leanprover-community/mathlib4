@@ -612,12 +612,12 @@ example (q : Prop) (p : ∀ (x : ℤ), q → 1 = 2) : 1 = 2 := by
 error: don't know how to synthesize placeholder for argument 'x'
 context:
 q : Prop
-p : ℤ → 1 = 2
+p : ∀ (x : ℤ), 1 = 2
 ⊢ ℤ
 ---
 error: unsolved goals
 q : Prop
-p : ℤ → 1 = 2
+p : ∀ (x : ℤ), 1 = 2
 ⊢ 1 = 2
 -/
 #guard_msgs in
