@@ -626,6 +626,8 @@ import Mathlib.Algebra.Module.LinearMap.Polynomial
 import Mathlib.Algebra.Module.LinearMap.Prod
 import Mathlib.Algebra.Module.LinearMap.Rat
 import Mathlib.Algebra.Module.LinearMap.Star
+import Mathlib.Algebra.Module.LocalizedModule.AtPrime
+import Mathlib.Algebra.Module.LocalizedModule.Away
 import Mathlib.Algebra.Module.LocalizedModule.Basic
 import Mathlib.Algebra.Module.LocalizedModule.Exact
 import Mathlib.Algebra.Module.LocalizedModule.Int
