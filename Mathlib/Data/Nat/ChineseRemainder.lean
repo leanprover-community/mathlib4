@@ -146,7 +146,7 @@ def chineseRemainderOfMultiset {m : Multiset ι} :
 theorem chineseRemainderOfMultiset_lt_prod {m : Multiset ι}
     (nod : m.Nodup) (hs : ∀ i ∈ m, s i ≠ 0) (pp : Set.Pairwise {x | x ∈ m} (Coprime on s)) :
     chineseRemainderOfMultiset a s nod hs pp < (m.map s).prod := by
-  induction' m using Quot.ind with l
+  obtain ⟨l⟩ := m
   unfold chineseRemainderOfMultiset
   simpa using chineseRemainderOfList_lt_prod a s l
     (List.Nodup.pairwise_of_forall_ne nod pp) (by simpa using hs)

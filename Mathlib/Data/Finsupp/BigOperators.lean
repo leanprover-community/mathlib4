@@ -92,7 +92,7 @@ theorem List.support_sum_eq [AddZeroClass M] (l : List (ι →₀ M))
 theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
     (hs : s.Pairwise (_root_.Disjoint on Finsupp.support)) :
     s.sum.support = (s.map Finsupp.support).sup := by
-  induction' s using Quot.inductionOn with a
+  induction s using Quot.inductionOn with | _ a => ?_
   obtain ⟨l, hl, hd⟩ := hs
   suffices a.Pairwise (_root_.Disjoint on Finsupp.support) by
     convert List.support_sum_eq a this
