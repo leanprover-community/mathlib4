@@ -13,7 +13,7 @@ import Cli.Basic
 # Text-based style linters
 
 This file defines the `lint-style` executable which runs all text-based style linters.
-The linters themselves are defined in `Mathlib.Tactic.Linter.TextBased`.
+The linters themselves are defined in `MathlibLinters.TextBased`.
 
 In addition, this checks that
 - `Mathlib.Init` is (transitively) imported in all of mathlib, and
@@ -64,7 +64,7 @@ def checkInitImports : IO Bool := do
   let mismatch := importsHeaderLinter.filter (fun mod ↦
     ![`Mathlib, `Mathlib.Tactic, `Mathlib.Init].contains mod && !initImports.contains mod)
     -- This file is transitively imported by `Mathlib.Init`.
-    |>.erase `Mathlib.Tactic.DeclarationNames
+    |>.erase `MathlibLinter.DeclarationNames
   if mismatch.size > 0 then
     IO.eprintln s!"error: the following {mismatch.size} module(s) import the `header` linter \
       directly, but should import Mathlib.Init instead: {mismatch}\n\

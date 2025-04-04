@@ -22,6 +22,7 @@ import LeanSearchClient
 -- Import Mathlib-specific linters.
 import MathlibLinters.Lint
 import MathlibLinters
+import Mathlib.Tactic.Linter
 
 -- Now import all tactics defined in Mathlib that do not require theory files.
 import Mathlib.Tactic.ApplyCongr
