@@ -7,34 +7,34 @@ import Mathlib.Topology.Algebra.Indicator
 import Mathlib.Topology.Separation.DisjointCover
 import Mathlib.Order.Disjointed
 import Mathlib.Topology.ContinuousMap.Algebra
+import Mathlib.Topology.UniformSpace.OfCompactT2
 
 /-!
-# Uniform approximation by locally constant functions
+# Approximation by locally constant functions
 
-We show that if `X` is a profinite space, and `V` is a uniform space, then any continuous function
-`X → V` can be uniformly approximated by locally constant functions.
+We show that if `X` is a profinite space, then any continuous function from `X` to a T2 space
+can be uniformly approximated by locally constant functions.
 -/
 
-open UniformSpace Set
+open Set
 
 open TopologicalSpace (Opens Clopens IsOpenCover)
 
-open scoped Uniformity Function
+open scoped Function Uniformity
 
 namespace ContinuousMap
 
 variable {X V : Type*}
   [TopologicalSpace X] [TotallyDisconnectedSpace X] [T2Space X] [CompactSpace X]
-  [UniformSpace V] (f : C(X, V)) {S : Set (V × V)}
+  [TopologicalSpace V] [T2Space V] (f : C(X, V)) {S : Set (V × V)}
 
-/--
-For any continuous function on `X` and `S ∈ 𝓤 V`, there exists a finite cover of `X` by
-pairwise-disjoint nonempty clopens, on each of which `f` varies within `S`.
--/
-lemma exists_disjoint_nonempty_clopen_cover_of_mem_uniformity (hS : S ∈ 𝓤 V) :
+-- this lemma is private since it is immediately superseded by the next lemma
+private lemma exists_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal_of_compact [CompactSpace V]
+    (hS : S ∈ nhdsSet (.diagonal V)) :
     ∃ (n : ℕ) (D : Fin n → Clopens X), (∀ i, D i ≠ ⊥) ∧
     (∀ i, ∀ y ∈ D i, ∀ z ∈ D i, (f y, f z) ∈ S) ∧ (univ : Set X) ⊆ ⋃ i, ↑(D i) ∧
     Pairwise (Disjoint on D) := by
+  letI : UniformSpace V := uniformSpaceOfCompactT2
   -- Find a neighbourhood of each point on which `f` varies within `S`
   have step1 (x) : ∃ U : Opens X, x ∈ U ∧ ∀ y ∈ U, ∀ z ∈ U, (f y, f z) ∈ S := by
     obtain ⟨R, hR, hR', hRS⟩ := comp_symm_of_uniformity hS
@@ -49,14 +49,33 @@ lemma exists_disjoint_nonempty_clopen_cover_of_mem_uniformity (hS : S ∈ 𝓤 V
   exact match (hW₁ j).2 with | ⟨i, hi⟩ => hUS i y (hi hy) z (hi hz)
 
 /--
-Any continuous function from a profinite space to a uniform space can be uniformly approximated
-by a function factoring through `Fin n`, for some `n`.
+For any continuous function `X → V`, with `X` profinite and `V` Hausdorff, and `S` a
+neighbourhood of the diagonal in `V × V`, there exists a finite cover of `X` by pairwise-disjoint
+nonempty clopens, on each of which `f` varies within `S`.
 -/
-lemma exists_fin_comp_of_mem_uniformity (hS : S ∈ 𝓤 V) :
+lemma exists_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (.diagonal V)) :
+    ∃ (n : ℕ) (D : Fin n → Clopens X), (∀ i, D i ≠ ⊥) ∧
+    (∀ i, ∀ y ∈ D i, ∀ z ∈ D i, (f y, f z) ∈ S) ∧ (univ : Set X) ⊆ ⋃ i, ↑(D i) ∧
+    Pairwise (Disjoint on D) := by
+  -- reduce to compact case by considering range of `f`
+  let V' := Set.range f
+  haveI : CompactSpace V' := isCompact_iff_compactSpace.mp <| isCompact_range (map_continuous f)
+  let g : C(X, V') :=
+  { toFun := V'.codRestrict f Set.mem_range_self, continuous_toFun := by fun_prop }
+  suffices S.preimage (Prod.map (↑) (↑)) ∈ nhdsSet (.diagonal V') from
+    exists_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal_of_compact g this
+  rw [mem_nhdsSet_iff_forall] at hS ⊢
+  refine fun ⟨x, y⟩ hxy ↦ ContinuousAt.preimage_mem_nhds ?_ (hS ⟨x, y⟩ (Subtype.val_inj.mpr hxy))
+  exact continuousAt_subtype_val.prodMap continuousAt_subtype_val
+
+/--
+Any continuous function from a profinite space to T2 space can be approximated by a function
+factoring through `Fin n`, for some `n`.
+-/
+lemma exists_finite_approximation_of_mem_nhds_diagonal (hS : S ∈ nhdsSet (.diagonal V)) :
     ∃ (n : ℕ) (g : X → Fin n) (h : Fin n → V), Continuous g ∧ ∀ x, (f x, h (g x)) ∈ S := by
-  classical
   obtain ⟨n, E, hEne, hES, hEuniv, hEdis⟩ :=
-    exists_disjoint_nonempty_clopen_cover_of_mem_uniformity f hS
+    exists_disjoint_nonempty_clopen_cover_of_mem_nhds_diagonal f hS
   have h_uniq (x) : ∃! i, x ∈ E i := by
     refine match Set.mem_iUnion.mp (hEuniv <| mem_univ x) with
       | ⟨i, hi⟩ => ⟨i, hi, fun j hj ↦ hEdis.eq ?_⟩
@@ -72,14 +91,19 @@ lemma exists_fin_comp_of_mem_uniformity (hS : S ∈ 𝓤 V) :
 /--
 If `f` is a continuous map from a profinite space to a uniform space with a group structure, then
 we can uniformly approximate `f` by finite products of indicator functions of clopen sets.
+
+(Note no compatibility is assumed between the group structure on `V` and the uniform structure.)
 -/
 @[to_additive "If `f` is a continuous map from a profinite space to a uniform space with an
 additive group structure, then we can uniformly approximate `f` by finite sums of indicator
-functions of clopen sets."]
-lemma exists_sum_const_mulIndicator_approx [CommMonoid V] (hS : S ∈ 𝓤 V) :
+functions of clopen sets.
+
+(Note no compatibility is assumed between the group structure on `V` and the uniform structure.)"]
+lemma exists_finite_sum_const_mulIndicator_approximation_of_mem_nhds_diagonal [CommMonoid V]
+    (hS : S ∈ nhdsSet (.diagonal V)) :
     ∃ (n : ℕ) (U : Fin n → Clopens X) (v : Fin n → V),
     ∀ x, (f x, ∏ n, mulIndicator (U n) (fun _ ↦ v n) x) ∈ S := by
-  obtain ⟨n, g, h, hg, hgh⟩ := exists_fin_comp_of_mem_uniformity f hS
+  obtain ⟨n, g, h, hg, hgh⟩ := exists_finite_approximation_of_mem_nhds_diagonal f hS
   refine ⟨n, fun i ↦ ⟨_, (isClopen_discrete {i}).preimage hg⟩, h, fun x ↦ ?_⟩
   convert hgh x
   exact (Fintype.prod_eq_single _ fun i hi ↦ mulIndicator_of_not_mem hi.symm _).trans
@@ -89,19 +113,20 @@ lemma exists_sum_const_mulIndicator_approx [CommMonoid V] (hS : S ∈ 𝓤 V) :
 ## Functions on product spaces
 -/
 section product
-variable {R Y : Type*} [TopologicalSpace Y] [CompactSpace Y]
-  [AddCommGroup V] [IsUniformAddGroup V]
+variable {R Y V : Type*} [TopologicalSpace Y] [CompactSpace Y]
+  [AddCommGroup V] [UniformSpace V] [IsUniformAddGroup V] [T2Space V] {S : Set (V × V)}
 
 /-- A continuous function on `X × Y` can be uniformly approximated by sums of functions of the
 form `f x • g y`. -/
-lemma exists_sum_smul_approx [TopologicalSpace R] [MonoidWithZero R] [MulActionWithZero R V]
-    (f : C(X × Y, V)) (hS : S ∈ 𝓤 V) :
+lemma exists_finite_sum_smul_approximation_of_mem_uniformity [TopologicalSpace R]
+    [MonoidWithZero R] [MulActionWithZero R V] (f : C(X × Y, V)) (hS : S ∈ 𝓤 V) :
     ∃ (n : ℕ) (g : Fin n → C(X, R)) (h : Fin n → C(Y, V)),
     ∀ x y, (f (x, y), ∑ i, g i x • h i y) ∈ S := by
   have hS' : {(f, g) | ∀ y, (f y, g y) ∈ S} ∈ 𝓤 C(Y, V) :=
     (mem_compactConvergence_entourage_iff _).mpr
       ⟨_, _, isCompact_univ, hS, by simp only [Set.mem_univ, true_implies, subset_refl]⟩
-  obtain ⟨n, U, v, hv⟩ := exists_sum_const_indicator_approx f.curry hS'
+  obtain ⟨n, U, v, hv⟩ := exists_finite_sum_const_indicator_approximation_of_mem_nhds_diagonal
+    f.curry (nhdsSet_diagonal_le_uniformity hS')
   refine ⟨n, fun i ↦ ⟨_, (U i).isClopen.continuous_indicator <| continuous_const (y := 1)⟩,
     v, fun x y ↦ ?_⟩
   convert hv x y using 2
@@ -111,11 +136,11 @@ lemma exists_sum_smul_approx [TopologicalSpace R] [MonoidWithZero R] [MulActionW
 
 /-- A continuous function on `X × Y` can be uniformly approximated by sums of functions of the form
 `f x * g y`. -/
-lemma exists_sum_mul_approx [Ring R] [UniformSpace R] [IsUniformAddGroup R]
-    (f : C(X × Y, R)) {S : Set (R × R)} (hS : S ∈ 𝓤 R) :
+lemma exists_finite_sum_mul_approximation_of_mem_uniformity [Ring R] [UniformSpace R]
+    [IsUniformAddGroup R] [T2Space R] (f : C(X × Y, R)) {S : Set (R × R)} (hS : S ∈ 𝓤 R) :
     ∃ (n : ℕ) (g : Fin n → C(X, R)) (h : Fin n → C(Y, R)),
     ∀ x y, (f (x, y), ∑ i, g i x * h i y) ∈ S :=
-  exists_sum_smul_approx f hS
+  exists_finite_sum_smul_approximation_of_mem_uniformity f hS
 
 end product
 
