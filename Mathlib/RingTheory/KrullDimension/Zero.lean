@@ -104,6 +104,12 @@ theorem Ring.KrullDimLE.eq_maximalIdeal_of_isPrime [IsLocalRing R] (J : Ideal R)
   (((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 1 rfl rfl).mp ⟨‹_›, ‹_›⟩).unique
     ‹_› inferInstance
 
+variable (R) in
+theorem Ring.KrullDimLE.subsingleton_primeSpectrum [IsLocalRing R] :
+    Subsingleton (PrimeSpectrum R) :=
+  ⟨fun x y ↦ PrimeSpectrum.ext <|
+    (eq_maximalIdeal_of_isPrime x.1).trans (eq_maximalIdeal_of_isPrime y.1).symm⟩
+
 theorem Ring.KrullDimLE.isNilpotent_iff_mem_maximalIdeal [IsLocalRing R] {x} :
     IsNilpotent x ↔ x ∈ IsLocalRing.maximalIdeal R :=
   ((Ring.krullDimLE_zero_and_isLocalRing_tfae R).out 0 2 rfl rfl).mp ⟨‹_›, ‹_›⟩ x
