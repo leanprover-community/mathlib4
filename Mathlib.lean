@@ -476,6 +476,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
+import Mathlib.Algebra.Homology.DerivedCategory.Fractions
 import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
@@ -4215,7 +4216,10 @@ import Mathlib.MeasureTheory.Measure.Tight
 import Mathlib.MeasureTheory.Measure.TightNormed
 import Mathlib.MeasureTheory.Measure.Tilted
 import Mathlib.MeasureTheory.Measure.Trim
-import Mathlib.MeasureTheory.Measure.Typeclasses
+import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.MeasureTheory.Measure.WithDensityFinite
 import Mathlib.MeasureTheory.Order.Group.Lattice
