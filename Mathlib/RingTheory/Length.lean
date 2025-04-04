@@ -14,7 +14,7 @@ import Mathlib.RingTheory.FiniteLength
 ## Main results
 - `Module.length`: `Module.length R M` is the length of `M` as an `R`-module.
 - `Module.length_pos`: The length of a nontrivial module is positive
-- `Module.length_ne_top`: The length of a artinian and noetherian module is finite.
+- `Module.length_ne_top`: The length of an artinian and noetherian module is finite.
 - `Module.length_eq_add_of_exact`: Length is additive in exact sequences.
 
 -/
@@ -47,8 +47,11 @@ lemma Module.length_eq_zero_iff : Module.length R M = 0 ↔ Subsingleton M := by
 lemma Module.length_eq_zero [Subsingleton M] : Module.length R M = 0 :=
   Module.length_eq_zero_iff.mpr ‹_›
 
-lemma Module.length_pos [Nontrivial M] : 0 < Module.length R M := by
-  rwa [pos_iff_ne_zero, ne_eq, Module.length_eq_zero_iff, not_subsingleton_iff_nontrivial]
+lemma Module.length_pos_iff : 0 < Module.length R M ↔ Nontrivial M := by
+  rw [pos_iff_ne_zero, ne_eq, Module.length_eq_zero_iff, not_subsingleton_iff_nontrivial]
+
+lemma Module.length_pos [Nontrivial M] : 0 < Module.length R M :=
+  Module.length_pos_iff.mpr ‹_›
 
 lemma Module.length_compositionSeries (s : CompositionSeries (Submodule R M)) (h₁ : s.head = ⊥)
     (h₂ : s.last = ⊤) : s.length = Module.length R M := by
