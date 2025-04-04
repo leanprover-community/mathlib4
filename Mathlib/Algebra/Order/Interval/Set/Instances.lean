@@ -203,7 +203,7 @@ instance semigroup : Semigroup (Ico (0 : α) 1) := fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 
 instance commSemigroup {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α] :
-    CommSemigroup (Ico (0 : α) 1) :=
+    CommSemigroup (Ico (0 : α) 1) := fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 
 end Set.Ico
@@ -268,11 +268,11 @@ instance monoid : Monoid (Ioc (0 : α) 1) := fast_instance%
   Subtype.coe_injective.monoid _ coe_one coe_mul coe_pow
 
 instance commSemigroup {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α] :
-    CommSemigroup (Ioc (0 : α) 1) :=
+    CommSemigroup (Ioc (0 : α) 1) := fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 
 instance commMonoid {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α] :
-    CommMonoid (Ioc (0 : α) 1) :=
+    CommMonoid (Ioc (0 : α) 1) := fast_instance%
   Subtype.coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
 instance cancelMonoid {α : Type*} [Ring α] [PartialOrder α] [IsStrictOrderedRing α] [IsDomain α] :
@@ -315,7 +315,7 @@ instance semigroup : Semigroup (Ioo (0 : α) 1) := fast_instance%
   Subtype.coe_injective.semigroup _ coe_mul
 
 instance commSemigroup {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α] :
-    CommSemigroup (Ioo (0 : α) 1) :=
+    CommSemigroup (Ioo (0 : α) 1) := fast_instance%
   Subtype.coe_injective.commSemigroup _ coe_mul
 
 variable {β : Type*} [Ring β] [PartialOrder β] [IsOrderedRing β]
