@@ -3151,6 +3151,7 @@ import Mathlib.Data.Option.Defs
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Data.Ordering.Lemmas
+import Mathlib.Data.Ordmap.Invariants
 import Mathlib.Data.Ordmap.Ordnode
 import Mathlib.Data.Ordmap.Ordset
 import Mathlib.Data.PEquiv
@@ -4215,7 +4216,10 @@ import Mathlib.MeasureTheory.Measure.Tight
 import Mathlib.MeasureTheory.Measure.TightNormed
 import Mathlib.MeasureTheory.Measure.Tilted
 import Mathlib.MeasureTheory.Measure.Trim
-import Mathlib.MeasureTheory.Measure.Typeclasses
+import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.MeasureTheory.Measure.WithDensityFinite
 import Mathlib.MeasureTheory.Order.Group.Lattice
@@ -5834,7 +5838,9 @@ import Mathlib.Topology.Constructions
 import Mathlib.Topology.Constructions.SumProd
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.ContinuousMap.Basic
+import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
 import Mathlib.Topology.ContinuousMap.Bounded.Basic
+import Mathlib.Topology.ContinuousMap.Bounded.Normed
 import Mathlib.Topology.ContinuousMap.Bounded.Star
 import Mathlib.Topology.ContinuousMap.BoundedCompactlySupported
 import Mathlib.Topology.ContinuousMap.CocompactMap
