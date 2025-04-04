@@ -435,7 +435,7 @@ variable (K L : Type*) [Field K] [CharZero K]
   [Nontrivial L]
 
 #check (LieAlgebra.IsKilling.rootSystem H)
-set_option maxHeartbeats 10000000
+--set_option maxHeartbeats 10000000
 --  eq_top_of_invtSubmodule_reflection (q : Submodule R M) :
 --    (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤
 
@@ -577,7 +577,24 @@ lemma invtSubmodule_reflection:
   have rr5 : I ≠ ⊤ := by
     sorry
   have rr6 : I ≠ ⊥ := by
-    sorry
+    have : ∃ (rrrr : H.root), rrrr ∈ Φ := by
+      refine Set.nonempty_def.mp ?_
+      exact Set.nonempty_iff_ne_empty.mpr hhh4
+    obtain ⟨rrrr, rrrr1⟩ := this
+    obtain ⟨x, hx1, hx2⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) rrrr
+    have : x ∈ gg := by
+      apply Set.mem_iUnion_of_mem rrrr
+      simp only [LieModule.Weight.coe_coe, Set.mem_iUnion, SetLike.mem_coe, exists_prop]
+      constructor
+      exact rrrr1
+      exact hx1
+    have cc : x ∈ I := by
+      exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a this
+    by_contra!
+    have dddd := LieSubalgebra.eq_bot_iff I
+    have dddd2 := dddd.1 this
+    have dddd3 := dddd2 x cc
+    exact hx2 dddd3
   have rr7 : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
     sorry
   have rr8 := (LieSubalgebra.exists_lieIdeal_coe_eq_iff (R := K) (L := L) (K := I)).2 rr7
