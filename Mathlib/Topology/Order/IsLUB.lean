@@ -142,6 +142,27 @@ theorem IsGLB.mem_of_isClosed {a : α} {s : Set α} (ha : IsGLB s a) (hs : s.Non
 
 alias IsClosed.isGLB_mem := IsGLB.mem_of_isClosed
 
+protected theorem Set.Subset.isLUB_congr {α : Type*} [TopologicalSpace α] [Preorder α]
+    [ClosedIicTopology α] {s t : Set α} (hst : s ⊆ t) (hts : t ⊆ closure s) {x : α} :
+    IsLUB s x ↔ IsLUB t x :=
+  isLUB_congr <| (upperBounds_closure (s := s) ▸ upperBounds_mono_set hts).antisymm <|
+    upperBounds_mono_set hst
+
+protected theorem Set.Subset.isGLB_congr {α : Type*} [TopologicalSpace α] [Preorder α]
+    [ClosedIciTopology α] {s t : Set α} (hst : s ⊆ t) (hts : t ⊆ closure s) {x : α} :
+    IsGLB s x ↔ IsGLB t x :=
+  Set.Subset.isLUB_congr (α := αᵒᵈ) hst hts
+
+theorem Dense.isLUB_inter_iff {α : Type*} [TopologicalSpace α] [Preorder α] [ClosedIicTopology α]
+    {s t : Set α} (hs : Dense s) (ht : IsOpen t) {x : α} :
+    IsLUB (t ∩ s) x ↔ IsLUB t x :=
+  Set.Subset.isLUB_congr (by simp) <| hs.open_subset_closure_inter ht
+
+theorem Dense.isGLB_inter_iff {α : Type*} [TopologicalSpace α] [Preorder α] [ClosedIciTopology α]
+    {s t : Set α} (hs : Dense s) (ht : IsOpen t) {x : α} :
+    IsGLB (t ∩ s) x ↔ IsGLB t x :=
+  Dense.isLUB_inter_iff (α := αᵒᵈ) hs ht
+
 /-!
 ### Existence of sequences tending to `sInf` or `sSup` of a given set
 -/
@@ -193,6 +214,25 @@ theorem exists_seq_tendsto_sSup {α : Type*} [ConditionallyCompleteLinearOrder �
   rcases (isLUB_csSup hS hS').exists_seq_monotone_tendsto hS with ⟨u, hu⟩
   exact ⟨u, hu.1, hu.2.2⟩
 
+theorem Dense.exists_seq_strictMono_tendsto' [DenselyOrdered α] [FirstCountableTopology α]
+    {s : Set α} (hs : Dense s) {x y : α} (hy : y < x) :
+    ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n ∈ (Ioo y x ∩ s)) ∧ Tendsto u atTop (𝓝 x) := by
+  have hnonempty : (Ioo y x ∩ s).Nonempty := by
+    obtain ⟨z, hyz, hzx⟩ := hs.exists_between hy
+    exact ⟨z, mem_inter hzx hyz⟩
+  have hx : IsLUB (Ioo y x ∩ s) x := hs.isLUB_inter_iff isOpen_Ioo |>.mpr <| isLUB_Ioo hy
+  obtain ⟨u, hu⟩ := hx.exists_seq_strictMono_tendsto_of_not_mem (by simp) hnonempty
+  exact ⟨u, hu.1, hu.2.2.symm⟩
+
+theorem Dense.exists_seq_strictMono_tendsto [DenselyOrdered α] [NoMinOrder α]
+    [FirstCountableTopology α] {s : Set α} (hs : Dense s) (x : α) :
+    ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n ∈ (Iio x ∩ s)) ∧ Tendsto u atTop (𝓝 x) := by
+  obtain ⟨y, hy⟩ : ∃ y, y < x := exists_lt x
+  obtain ⟨u, hu_mono, hu_mem, hux⟩ := hs.exists_seq_strictMono_tendsto' hy
+  have hu_mem' (n) : u n ∈ Iio x ∩ s :=
+    Set.mem_of_mem_of_subset (hu_mem n) <| inter_subset_inter_left _ Ioo_subset_Iio_self
+  exact ⟨u, hu_mono, hu_mem', hux⟩
+
 theorem IsGLB.exists_seq_strictAnti_tendsto_of_not_mem {t : Set α} {x : α}
     [IsCountablyGenerated (𝓝 x)] (htx : IsGLB t x) (not_mem : x ∉ t) (ht : t.Nonempty) :
     ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, x < u n) ∧ Tendsto u atTop (𝓝 x) ∧ ∀ n, u n ∈ t :=
@@ -230,5 +270,15 @@ theorem exists_seq_tendsto_sInf {α : Type*} [ConditionallyCompleteLinearOrder �
     [TopologicalSpace α] [OrderTopology α] [FirstCountableTopology α] {S : Set α} (hS : S.Nonempty)
     (hS' : BddBelow S) : ∃ u : ℕ → α, Antitone u ∧ Tendsto u atTop (𝓝 (sInf S)) ∧ ∀ n, u n ∈ S :=
   exists_seq_tendsto_sSup (α := αᵒᵈ) hS hS'
+
+theorem Dense.exists_seq_strictAnti_tendsto' [DenselyOrdered α] [FirstCountableTopology α]
+    {s : Set α} (hs : Dense s) {x y : α} (hy : x < y) :
+    ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, u n ∈ (Ioo x y ∩ s)) ∧ Tendsto u atTop (𝓝 x) := by
+  simpa using hs.exists_seq_strictMono_tendsto' (α := αᵒᵈ) (OrderDual.toDual_lt_toDual.2 hy)
+
+theorem Dense.exists_seq_strictAnti_tendsto [DenselyOrdered α] [NoMaxOrder α]
+    [FirstCountableTopology α] {s : Set α} (hs : Dense s) (x : α) :
+    ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, u n ∈ (Ioi x ∩ s)) ∧ Tendsto u atTop (𝓝 x) :=
+  hs.exists_seq_strictMono_tendsto (α := αᵒᵈ) x
 
 end OrderTopology
