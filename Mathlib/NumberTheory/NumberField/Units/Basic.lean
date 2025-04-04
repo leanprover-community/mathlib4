@@ -56,13 +56,6 @@ theorem NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
   convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
 
-instance [NumberField K] {L : Type*} [Field L] [NumberField L] [Algebra K L] :
-    IsLocalHom (algebraMap (𝓞 K) (𝓞 L)) := ⟨fun u hu ↦ by
-  rwa [isUnit_iff_norm, RingOfIntegers.coe_norm, ← Algebra.norm_norm (S := K),
-    show algebraMap (𝓞 K) (𝓞 L) u = algebraMap K L (u : K) by rfl, Algebra.norm_algebraMap,
-    map_pow, abs_pow_eq_one _ Module.finrank_pos.ne', ← @RingOfIntegers.coe_norm,
-    ← isUnit_iff_norm] at hu⟩
-
 end IsUnit
 
 namespace NumberField.Units

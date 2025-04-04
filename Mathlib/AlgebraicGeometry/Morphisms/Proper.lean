@@ -143,7 +143,7 @@ theorem finite_appTop_of_universallyClosed (f : X ⟶ Spec (.of K))
   obtain ⟨_, ⟨U, hU, rfl⟩, hxU, -⟩ :=
     (isBasis_affine_open X).exists_subset_of_mem_open (Set.mem_univ x) isOpen_univ
   letI := ((Scheme.ΓSpecIso (.of K)).commRingCatIsoToRingEquiv.toMulEquiv.isField
-    _ (Field.toIsField K)).toField
+    (Field.toIsField K)).toField
   letI := (isField_of_universallyClosed K f).toField
   have : Nonempty U := ⟨⟨x, hxU⟩⟩
   apply RingHom.finite_of_algHom_finiteType_of_isJacobsonRing (A := Γ(X, U))
