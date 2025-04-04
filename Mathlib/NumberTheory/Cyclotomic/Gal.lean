@@ -150,11 +150,10 @@ theorem fromZetaAut_spec : fromZetaAut hμ h (zeta n K L) = μ := by
 variable (n K) in
 /-- Cyclotomic extensions are abelian. -/
 theorem isAbelianGalois (L : Type*) [Field L] [Algebra K L] [IsCyclotomicExtension {n} K L] :
-    IsAbelianGalois K L where
-  toIsGalois := isGalois n K L
-  comm x y :=
-    letI := Aut.commGroup (n := n) K (L := L)
-    mul_comm x y
+    IsAbelianGalois K L :=
+  letI := isGalois n K L
+  letI := Aut.commGroup (n := n) K (L := L)
+  ⟨⟩
 
 end IsCyclotomicExtension
 

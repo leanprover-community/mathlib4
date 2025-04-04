@@ -57,3 +57,8 @@ instance [IsAbelianGalois K L] (K' : IntermediateField K L) : IsAbelianGalois K 
 instance (K L : Type*) [Field K] [Field L] [Algebra K L] [IsAbelianGalois K L]
     (K' : IntermediateField K L) : IsAbelianGalois K' L :=
   .tower_top K _ L
+
+lemma IsAbelianGalois.of_isCyclic [IsGalois K L] [IsCyclic (L ≃ₐ[K] L)] :
+    IsAbelianGalois K L :=
+  letI := IsCyclic.commGroup (α := L ≃ₐ[K] L)
+  ⟨⟩
