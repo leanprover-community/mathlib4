@@ -134,8 +134,7 @@ theorem log_one_left (r : R) : log 1 r = 0 := by
   · simp_all only [log, ↓reduceIte, Nat.log_one_left, Nat.cast_zero]
   · simp only [log, Nat.log_one_left, Nat.cast_zero, Nat.clog_one_left, neg_zero, ite_self]
 
--- Porting note: needed to replace b ^ z with (b : R) ^ z in the below
-theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b ((b : R) ^ z : R) = z := by
+theorem log_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : log b (b ^ z : R) = z := by
   obtain ⟨n, rfl | rfl⟩ := Int.eq_nat_or_neg z
   · rw [log_of_one_le_right _ (one_le_zpow₀ (mod_cast hb.le) <| Int.natCast_nonneg _), zpow_natCast,
       ← Nat.cast_pow, Nat.floor_natCast, Nat.log_pow hb]
@@ -155,8 +154,7 @@ theorem log_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ ≤
   · rw [log_of_one_le_right _ h₁, log_of_one_le_right _ h₂, Int.ofNat_le]
     exact Nat.log_mono_right (Nat.floor_mono h)
 
-variable (R)
-
+variable (R) in
 /-- Over suitable subtypes, `zpow` and `Int.log` form a galois coinsertion -/
 def zpowLogGi {b : ℕ} (hb : 1 < b) :
     GaloisCoinsertion
@@ -166,8 +164,6 @@ def zpowLogGi {b : ℕ} (hb : 1 < b) :
   GaloisCoinsertion.monotoneIntro (fun r₁ _ => log_mono_right r₁.2)
     (fun _ _ hz => Subtype.coe_le_coe.mp <| (zpow_right_strictMono₀ <| mod_cast hb).monotone hz)
     (fun r => Subtype.coe_le_coe.mp <| zpow_log_le_self hb r.2) fun _ => log_zpow (R := R) hb _
-
-variable {R}
 
 /-- `zpow b` and `Int.log b` (almost) form a Galois connection. -/
 theorem lt_zpow_iff_log_lt {b : ℕ} (hb : 1 < b) {x : ℤ} {r : R} (hr : 0 < r) :
@@ -203,7 +199,7 @@ theorem clog_of_right_le_zero (b : ℕ) {r : R} (hr : r ≤ 0) : clog b r = 0 :=
 
 @[simp]
 theorem clog_inv (b : ℕ) (r : R) : clog b r⁻¹ = -log b r := by
-  cases' lt_or_le 0 r with hrp hrp
+  rcases lt_or_le 0 r with hrp | hrp
   · obtain hr | hr := le_total 1 r
     · rw [clog_of_right_le_one _ (inv_le_one_of_one_le₀ hr), log_of_one_le_right _ hr, inv_inv]
     · rw [clog_of_one_le_right _ ((one_le_inv₀ hrp).2 hr), log_of_right_le_one _ hr, neg_neg]
@@ -220,7 +216,7 @@ theorem neg_clog_inv_eq_log (b : ℕ) (r : R) : -clog b r⁻¹ = log b r := by r
 
 @[simp, norm_cast]
 theorem clog_natCast (b : ℕ) (n : ℕ) : clog b (n : R) = Nat.clog b n := by
-  cases' n with n
+  rcases n with - | n
   · simp [clog_of_right_le_one]
   · rw [clog_of_one_le_right, (Nat.ceil_eq_iff (Nat.succ_ne_zero n)).mpr] <;> simp
 
@@ -266,8 +262,7 @@ omit [IsStrictOrderedRing R] in
 theorem clog_one_left (r : R) : clog 1 r = 0 := by
   simp only [clog, Nat.log_one_left, Nat.cast_zero, Nat.clog_one_left, neg_zero, ite_self]
 
--- Porting note: needed to replace b ^ z with (b : R) ^ z in the below
-theorem clog_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : clog b ((b : R) ^ z : R) = z := by
+theorem clog_zpow {b : ℕ} (hb : 1 < b) (z : ℤ) : clog b (b ^ z : R) = z := by
   rw [← neg_log_inv_eq_clog, ← zpow_neg, log_zpow hb, neg_neg]
 
 @[mono]
@@ -276,8 +271,7 @@ theorem clog_mono_right {b : ℕ} {r₁ r₂ : R} (h₀ : 0 < r₁) (h : r₁ �
   rw [← neg_log_inv_eq_clog, ← neg_log_inv_eq_clog, neg_le_neg_iff]
   exact log_mono_right (inv_pos.mpr <| h₀.trans_le h) (inv_anti₀ h₀ h)
 
-variable (R)
-
+variable (R) in
 /-- Over suitable subtypes, `Int.clog` and `zpow` form a galois insertion -/
 def clogZPowGi {b : ℕ} (hb : 1 < b) :
     GaloisInsertion (fun r : Set.Ioi (0 : R) => Int.clog b (r : R)) fun z : ℤ =>
@@ -286,8 +280,6 @@ def clogZPowGi {b : ℕ} (hb : 1 < b) :
     (fun _ _ hz => Subtype.coe_le_coe.mp <| (zpow_right_strictMono₀ <| mod_cast hb).monotone hz)
     (fun r₁ _ => clog_mono_right r₁.2)
     (fun _ => Subtype.coe_le_coe.mp <| self_le_zpow_clog hb _) fun _ => clog_zpow (R := R) hb _
-
-variable {R}
 
 /-- `Int.clog b` and `zpow b` (almost) form a Galois connection. -/
 theorem zpow_lt_iff_lt_clog {b : ℕ} (hb : 1 < b) {x : ℤ} {r : R} (hr : 0 < r) :

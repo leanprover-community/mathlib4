@@ -79,7 +79,7 @@ universe u v w x
 
 variable {α : Type u} {β : Type v} {γ : Type w} {δ : Type x}
 
-open Set Filter
+open Set Filter Relator
 
 open Filter
 

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
 import Batteries.Data.RBMap.Alter
-import Mathlib.Logic.Basic
 import Mathlib.Tactic.CC.Datatypes
 import Mathlib.Tactic.CC.Lemmas
 import Mathlib.Tactic.Relation.Rfl
@@ -282,7 +281,7 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
   guard (← isEqv lhsFn rhsFn <||> pureIsDefEq lhsFn rhsFn)
   guard (← pureIsDefEq (← inferType lhsFn) (← inferType rhsFn))
   /- Create `r`, a proof for
-        `lhsFn lhsArgs[0] ... lhsArgs[n-1] = lhsFn rhsArgs[0] ... rhsArgs[n-1]`
+  `lhsFn lhsArgs[0] ... lhsArgs[n-1] = lhsFn rhsArgs[0] ... rhsArgs[n-1]`
      where `n := lhsArgs.size` -/
   let some specLemma ← mkCCHCongrTheorem lhsFn lhsArgs.size | failure
   let mut kindsIt := specLemma.argKinds
@@ -474,9 +473,9 @@ partial def getEqProofCore (e₁ e₂ : Expr) (asHEq : Bool) : CCM (Option Expr)
   -- 4. Build transitivity proof
   let mut pr? : Option Expr := none
   let mut lhs := e₁
-  for i in [:path₁.size] do
-    pr? ← some <$> mkTransOpt pr? (← mkProof lhs path₁[i]! Hs₁[i]! heqProofs) heqProofs
-    lhs := path₁[i]!
+  for h : i in [:path₁.size] do
+    pr? ← some <$> mkTransOpt pr? (← mkProof lhs path₁[i] Hs₁[i]! heqProofs) heqProofs
+    lhs := path₁[i]
   let mut i := Hs₂.size
   while i > 0 do
     i := i - 1

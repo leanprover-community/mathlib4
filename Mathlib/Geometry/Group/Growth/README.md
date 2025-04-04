@@ -7,4 +7,5 @@ If $G$ is a finitely generated group, say $G = \langle S\rangle$ for some finite
 ## Topics
 
 The results on growth of groups currently covered are:
+* The growth of a group is at least linear
 * The growth of a group $G$ is roughly the growth of a normal subgroup $H \le G$ times the growth of $G / H$.

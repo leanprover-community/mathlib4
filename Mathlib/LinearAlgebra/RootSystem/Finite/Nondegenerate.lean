@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 import Mathlib.LinearAlgebra.Dimension.Localization
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.LinearAlgebra.RootSystem.BaseChange
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 
 /-!
@@ -41,8 +42,7 @@ Weyl group.
 ## Todo
  * Weyl-invariance of `RootForm` and `CorootForm`
  * Faithfulness of Weyl group perm action, and finiteness of Weyl group, over ordered rings.
- * Relation to Coxeter weight.  In particular, positivity constraints for finite root pairings mean
-  we restrict to weights between 0 and 4.
+ * Relation to Coxeter weight.
 -/
 
 noncomputable section
@@ -73,23 +73,28 @@ instance [P.IsAnisotropic] : P.flip.IsAnisotropic where
   rootForm_root_ne_zero := IsAnisotropic.corootForm_coroot_ne_zero
   corootForm_coroot_ne_zero := IsAnisotropic.rootForm_root_ne_zero
 
-/-- An auxiliary lemma en route to `RootPairing.instIsAnisotropicOfIsCrystallographic`. -/
-private lemma rootForm_root_ne_zero_aux [CharZero R] [P.IsCrystallographic] (i : ι) :
-    P.RootForm (P.root i) (P.root i) ≠ 0 := by
-  choose z hz using P.exists_int i
-  simp only [rootForm_apply_apply, PerfectPairing.flip_apply_apply, root_coroot_eq_pairing, ← hz]
-  suffices 0 < ∑ i, z i * z i by norm_cast; exact this.ne'
-  refine Finset.sum_pos' (fun i _ ↦ mul_self_nonneg (z i)) ⟨i, Finset.mem_univ i, ?_⟩
-  have hzi : z i = 2 := by
-    specialize hz i
-    rw [pairing_same] at hz
-    norm_cast at hz
-  simp [hzi]
+lemma isAnisotropic_of_isValuedIn (S : Type*)
+    [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S] :
+    IsAnisotropic P where
+  rootForm_root_ne_zero i := (P.posRootForm S).form_apply_root_ne_zero i
+  corootForm_coroot_ne_zero i := (P.flip.posRootForm S).form_apply_root_ne_zero i
 
 instance instIsAnisotropicOfIsCrystallographic [CharZero R] [P.IsCrystallographic] :
-    IsAnisotropic P where
-  rootForm_root_ne_zero := P.rootForm_root_ne_zero_aux
-  corootForm_coroot_ne_zero := P.flip.rootForm_root_ne_zero_aux
+    IsAnisotropic P :=
+  P.isAnisotropic_of_isValuedIn ℤ
+
+/-- The root form of an anisotropic pairing as an invariant form. -/
+@[simps] def toInvariantForm [P.IsAnisotropic] : P.InvariantForm where
+  form := P.RootForm
+  symm := P.rootForm_symmetric
+  ne_zero := IsAnisotropic.rootForm_root_ne_zero
+  isOrthogonal_reflection := P.rootForm_reflection_reflection_apply
+
+lemma pairingIn_zero_iff {S : Type*} [CommRing S] [Algebra S R] [FaithfulSMul S R]
+    [P.IsValuedIn S] [P.IsAnisotropic] [NoZeroDivisors R] [NeZero (2 : R)] {i j : ι} :
+    P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
+  simp only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn,
+    P.toInvariantForm.pairing_zero_iff i j]
 
 end CommRing
 
@@ -159,6 +164,30 @@ lemma isCompl_corootSpan_ker_corootForm :
     IsCompl P.corootSpan (LinearMap.ker P.CorootForm) :=
   P.flip.isCompl_rootSpan_ker_rootForm
 
+lemma ker_rootForm_eq_dualAnnihilator :
+    LinearMap.ker P.RootForm = P.corootSpan.dualAnnihilator.map P.toDualLeft.symm := by
+  have _iM : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
+  have _iN : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
+  suffices finrank R (LinearMap.ker P.RootForm) = finrank R P.corootSpan.dualAnnihilator by
+    refine (Submodule.eq_of_le_of_finrank_eq P.corootSpan_dualAnnihilator_le_ker_rootForm ?_).symm
+    rw [this]
+    apply LinearEquiv.finrank_map_eq
+  have aux0 := Subspace.finrank_add_finrank_dualAnnihilator_eq P.corootSpan
+  have aux1 := Submodule.finrank_add_eq_of_isCompl P.isCompl_rootSpan_ker_rootForm
+  rw [← P.finrank_corootSpan_eq, P.toPerfectPairing.finrank_eq] at aux1
+  omega
+
+lemma ker_corootForm_eq_dualAnnihilator :
+    LinearMap.ker P.CorootForm = P.rootSpan.dualAnnihilator.map P.toDualRight.symm :=
+  P.flip.ker_rootForm_eq_dualAnnihilator
+
+instance : P.IsBalanced where
+    isPerfectCompl :=
+  { isCompl_left := by
+      simpa only [ker_rootForm_eq_dualAnnihilator] using P.isCompl_rootSpan_ker_rootForm
+    isCompl_right := by
+      simpa only [ker_corootForm_eq_dualAnnihilator] using P.isCompl_corootSpan_ker_corootForm }
+
 /-- See also `RootPairing.rootForm_restrict_nondegenerate_of_ordered`.
 
 Note that this applies to crystallographic root systems in characteristic zero via
@@ -199,15 +228,22 @@ section LinearOrderedCommRing
 variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
   [Module R M] [Module R N] (P : RootPairing ι R M N)
 
-instance instIsAnisotropicOfLinearOrderedCommRing : IsAnisotropic P where
-  rootForm_root_ne_zero i := (P.rootForm_root_self_pos i).ne'
-  corootForm_coroot_ne_zero i := (P.flip.rootForm_root_self_pos i).ne'
+instance instIsAnisotropicOfLinearOrderedCommRing : IsAnisotropic P :=
+  P.isAnisotropic_of_isValuedIn R
+
+lemma zero_le_rootForm (x : M) :
+    0 ≤ P.RootForm x x :=
+  (P.rootForm_self_sum_of_squares x).nonneg
 
 /-- See also `RootPairing.rootForm_restrict_nondegenerate_of_isAnisotropic`. -/
 lemma rootForm_restrict_nondegenerate_of_ordered :
     LinearMap.Nondegenerate (P.RootForm.restrict P.rootSpan) :=
-  (P.RootForm.nondegenerate_restrict_iff_disjoint_ker (rootForm_self_non_neg P)
+  (P.RootForm.nondegenerate_restrict_iff_disjoint_ker P.zero_le_rootForm
     P.rootForm_symmetric).mpr P.disjoint_rootSpan_ker_rootForm
+
+lemma rootForm_self_eq_zero_iff {x : M} :
+    P.RootForm x x = 0 ↔ x ∈ LinearMap.ker P.RootForm :=
+  P.RootForm.apply_apply_same_eq_zero_iff P.zero_le_rootForm P.rootForm_symmetric
 
 lemma eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero {x : M}
     (hx : x ∈ P.rootSpan) (hx' : P.RootForm x x = 0) :
@@ -217,7 +253,7 @@ lemma eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero {x : M}
 
 lemma rootForm_pos_of_ne_zero {x : M} (hx : x ∈ P.rootSpan) (h : x ≠ 0) :
     0 < P.RootForm x x := by
-  apply (P.rootForm_self_non_neg x).lt_of_ne
+  apply (P.zero_le_rootForm x).lt_of_ne
   contrapose! h
   exact P.eq_zero_of_mem_rootSpan_of_rootForm_self_eq_zero hx h.symm
 

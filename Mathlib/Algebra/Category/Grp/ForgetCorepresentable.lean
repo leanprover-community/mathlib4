@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.Grp.Basic
+import Mathlib.CategoryTheory.Yoneda
 
 /-!
 # The forget functor is corepresentable
@@ -56,22 +57,26 @@ end AddMonoidHom
 /-- The forget functor `Grp.{u} ⥤ Type u` is corepresentable. -/
 def Grp.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget Grp.{u} :=
-  (NatIso.ofComponents (fun M => (MonoidHom.fromULiftMultiplicativeIntEquiv M.α).toIso))
+  (NatIso.ofComponents (fun M => (ConcreteCategory.homEquiv.trans
+    (MonoidHom.fromULiftMultiplicativeIntEquiv M.carrier)).toIso))
 
 /-- The forget functor `CommGrp.{u} ⥤ Type u` is corepresentable. -/
 def CommGrp.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} (Multiplicative ℤ)))) ≅ forget CommGrp.{u} :=
-  (NatIso.ofComponents (fun M => (MonoidHom.fromULiftMultiplicativeIntEquiv M.α).toIso))
+  (NatIso.ofComponents (fun M => (ConcreteCategory.homEquiv.trans
+    (MonoidHom.fromULiftMultiplicativeIntEquiv M.carrier)).toIso))
 
 /-- The forget functor `AddGrp.{u} ⥤ Type u` is corepresentable. -/
 def AddGrp.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} ℤ))) ≅ forget AddGrp.{u} :=
-  (NatIso.ofComponents (fun M => (AddMonoidHom.fromULiftIntEquiv M.α).toIso))
+  (NatIso.ofComponents (fun M => (ConcreteCategory.homEquiv.trans
+    (AddMonoidHom.fromULiftIntEquiv M.carrier)).toIso))
 
 /-- The forget functor `AddCommGrp.{u} ⥤ Type u` is corepresentable. -/
 def AddCommGrp.coyonedaObjIsoForget :
     coyoneda.obj (op (of (ULift.{u} ℤ))) ≅ forget AddCommGrp.{u} :=
-  (NatIso.ofComponents (fun M => (AddMonoidHom.fromULiftIntEquiv M.α).toIso))
+  (NatIso.ofComponents (fun M => (ConcreteCategory.homEquiv.trans
+    (AddMonoidHom.fromULiftIntEquiv M.carrier)).toIso))
 
 instance Grp.forget_isCorepresentable :
     (forget Grp.{u}).IsCorepresentable :=

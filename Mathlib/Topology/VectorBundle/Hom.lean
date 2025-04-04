@@ -52,7 +52,7 @@ variable {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜₂ F₂] (E�
 /-- A reducible type synonym for the bundle of continuous (semi)linear maps. For some reason, it
 helps with instance search.
 
-Porting note: after the port is done, we may want to remove this definition.
+TODO: we may want to remove this definition?
 -/
 protected abbrev Bundle.ContinuousLinearMap [∀ x, TopologicalSpace (E₁ x)]
     [∀ x, TopologicalSpace (E₂ x)] : B → Type _ := fun x => E₁ x →SL[σ] E₂ x
@@ -117,7 +117,7 @@ def continuousLinearMap :
     rw [Trivialization.symmL_continuousLinearMapAt, Trivialization.symmL_continuousLinearMapAt]
     exacts [h₁, h₂]
   right_inv' := fun ⟨x, f⟩ ⟨⟨h₁, h₂⟩, _⟩ => by
-    simp only [Prod.mk_inj_left]
+    simp only [Prod.mk_right_inj]
     ext v
     dsimp only [comp_apply]
     rw [Trivialization.continuousLinearMapAt_symmL, Trivialization.continuousLinearMapAt_symmL]
@@ -181,7 +181,7 @@ open Pretrivialization
 variable (F₁ E₁ F₂ E₂)
 variable [∀ x : B, TopologicalSpace (E₁ x)] [FiberBundle F₁ E₁] [VectorBundle 𝕜₁ F₁ E₁]
 variable [∀ x : B, TopologicalSpace (E₂ x)] [FiberBundle F₂ E₂] [VectorBundle 𝕜₂ F₂ E₂]
-variable [∀ x, TopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)]
+variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜₂ (E₂ x)]
 variable [RingHomIsometric σ]
 
 /-- The continuous `σ`-semilinear maps between two topological vector bundles form a

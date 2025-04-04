@@ -61,38 +61,38 @@ namespace Lex
 instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [MulLeftStrictMono α]
     [CommMonoid β] [PartialOrder β] [IsOrderedMonoid β] :
     IsOrderedMonoid (α ×ₗ β) where
-  mul_le_mul_left _ _ hxy z := ((le_iff _ _).1 hxy).elim
+  mul_le_mul_left _ _ hxy z := (le_iff.1 hxy).elim
     (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)
     -- Note: the `congr_arg` used to be `rw [hxy.1]` before https://github.com/leanprover-community/mathlib4/pull/8386
     -- but the definition of `Mul.mul` got unfolded differently.
-    (fun hxy => (le_iff _ _).2 <| Or.inr ⟨congr_arg (z.1 * ·) hxy.1, mul_le_mul_left' hxy.2 _⟩)
+    (fun hxy => le_iff.2 <| Or.inr ⟨congr_arg (z.1 * ·) hxy.1, mul_le_mul_left' hxy.2 _⟩)
 
 @[to_additive]
 instance isOrderedCancelMonoid [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
     [CommMonoid β] [PartialOrder β] [IsOrderedCancelMonoid β] :
     IsOrderedCancelMonoid (α ×ₗ β) where
   mul_le_mul_left _ _ := mul_le_mul_left'
-  le_of_mul_le_mul_left _ _ _ hxyz := ((le_iff _ _).1 hxyz).elim
+  le_of_mul_le_mul_left _ _ _ hxyz := (le_iff.1 hxyz).elim
     (fun hxy => left _ _ <| lt_of_mul_lt_mul_left' hxy)
-    (fun hxy => (le_iff _ _).2 <| Or.inr ⟨mul_left_cancel hxy.1, le_of_mul_le_mul_left' hxy.2⟩)
+    (fun hxy => le_iff.2 <| Or.inr ⟨mul_left_cancel hxy.1, le_of_mul_le_mul_left' hxy.2⟩)
 
 @[to_additive]
 instance orderedCommMonoid [OrderedCommMonoid α]
     [MulLeftStrictMono α] [OrderedCommMonoid β] :
     OrderedCommMonoid (α ×ₗ β) where
-  mul_le_mul_left _ _ hxy z := ((le_iff _ _).1 hxy).elim
+  mul_le_mul_left _ _ hxy z := (le_iff.1 hxy).elim
     (fun hxy => left _ _ <| mul_lt_mul_left' hxy _)
     -- Note: the `congr_arg` used to be `rw [hxy.1]` before https://github.com/leanprover-community/mathlib4/pull/8386
     -- but the definition of `Mul.mul` got unfolded differently.
-    (fun hxy => (le_iff _ _).2 <| Or.inr ⟨congr_arg (z.1 * ·) hxy.1, mul_le_mul_left' hxy.2 _⟩)
+    (fun hxy => le_iff.2 <| Or.inr ⟨congr_arg (z.1 * ·) hxy.1, mul_le_mul_left' hxy.2 _⟩)
 
 @[to_additive]
 instance orderedCancelCommMonoid [OrderedCancelCommMonoid α] [OrderedCancelCommMonoid β] :
     OrderedCancelCommMonoid (α ×ₗ β) where
   mul_le_mul_left _ _ := mul_le_mul_left'
-  le_of_mul_le_mul_left _ _ _ hxyz := ((le_iff _ _).1 hxyz).elim
+  le_of_mul_le_mul_left _ _ _ hxyz := (le_iff.1 hxyz).elim
     (fun hxy => left _ _ <| lt_of_mul_lt_mul_left' hxy)
-    (fun hxy => (le_iff _ _).2 <| Or.inr ⟨mul_left_cancel hxy.1, le_of_mul_le_mul_left' hxy.2⟩)
+    (fun hxy => le_iff.2 <| Or.inr ⟨mul_left_cancel hxy.1, le_of_mul_le_mul_left' hxy.2⟩)
 
 @[to_additive]
 instance linearOrderedCancelCommMonoid [LinearOrderedCancelCommMonoid α]

@@ -3,7 +3,6 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.NeZero
 import Mathlib.Algebra.Order.Group.Unbundled.Basic
@@ -135,12 +134,11 @@ section OrderedSemiring
 
 variable [Semiring α] [Preorder α] {a b c d : α}
 
--- Porting note: it's unfortunate we need to write `(@one_le_two α)` here.
 theorem add_le_mul_two_add [ZeroLEOneClass α] [MulPosMono α] [AddLeftMono α]
     (a2 : 2 ≤ a) (b0 : 0 ≤ b) : a + (2 + b) ≤ a * (2 + b) :=
   calc
     a + (2 + b) ≤ a + (a + a * b) :=
-      add_le_add_left (add_le_add a2 <| le_mul_of_one_le_left b0 <| (@one_le_two α).trans a2) a
+      add_le_add_left (add_le_add a2 <| le_mul_of_one_le_left b0 <| one_le_two.trans a2) a
     _ ≤ a * (2 + b) := by rw [mul_add, mul_two, add_assoc]
 
 theorem mul_le_mul_of_nonpos_left [ExistsAddOfLE α] [PosMulMono α]
@@ -460,12 +458,11 @@ theorem add_le_mul_of_left_le_right [ZeroLEOneClass α] [NeZero (R := α) 1]
     _ = 2 * b := (two_mul b).symm
     _ ≤ a * b := (mul_le_mul_right this).mpr a2
 
--- Porting note: we used to not need the type annotation on `(0 : α)` at the start of the `calc`.
 theorem add_le_mul_of_right_le_left [ZeroLEOneClass α] [NeZero (R := α) 1]
     [AddLeftMono α] [PosMulStrictMono α]
     (b2 : 2 ≤ b) (ba : b ≤ a) : a + b ≤ a * b :=
   have : 0 < a :=
-    calc (0 : α)
+    calc 0
       _ < 2 := zero_lt_two
       _ ≤ b := b2
       _ ≤ a := ba
@@ -698,6 +695,14 @@ lemma sq_nonneg [IsRightCancelAdd α]
     b ^ 2 + a * b = (a + b) * b := by rw [add_comm, sq, add_mul]
     _ = a * (a + b) := by simp [← hab]
     _ = a ^ 2 + a * b := by rw [sq, mul_add]
+
+@[simp]
+lemma sq_nonpos_iff [IsRightCancelAdd α] [ZeroLEOneClass α] [ExistsAddOfLE α]
+    [PosMulMono α] [AddLeftStrictMono α] [NoZeroDivisors α] (r : α) :
+    r ^ 2 ≤ 0 ↔ r = 0 := by
+  trans r ^ 2 = 0
+  · rw [le_antisymm_iff, and_iff_left (sq_nonneg r)]
+  · exact sq_eq_zero_iff
 
 alias pow_two_nonneg := sq_nonneg
 

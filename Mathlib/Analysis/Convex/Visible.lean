@@ -3,6 +3,7 @@ Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Algebra.Group.Pointwise.Set.Card
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.Combination
@@ -108,7 +109,7 @@ lemma IsVisible.of_convexHull_of_pos {ι : Type*} {t : Finset ι} {a : ι → V}
     · exact fun j hj ↦ subset_convexHull _ _ <| ha _ <| erase_subset _ _ hj
   · exact lt_add_of_pos_left _ <| by positivity
 
-variable [TopologicalSpace 𝕜] [OrderTopology 𝕜] [TopologicalSpace V] [TopologicalAddGroup V]
+variable [TopologicalSpace 𝕜] [OrderTopology 𝕜] [TopologicalSpace V] [IsTopologicalAddGroup V]
   [ContinuousSMul 𝕜 V]
 
 /-- One cannot see any point in the interior of a set. -/
@@ -146,7 +147,7 @@ lemma IsVisible.mem_convexHull_isVisible (hx : x ∉ convexHull ℝ s) (hy : y �
     fun i hi ↦ subset_convexHull _ _ ⟨ha _, IsVisible.of_convexHull_of_pos (fun _ _ ↦ hw₀ _) hw₁
       (by simpa) hx hxy (mem_univ _) <| (hw₀ _).lt_of_ne' (mem_filter.1 hi).2⟩
 
-variable [TopologicalSpace V] [TopologicalAddGroup V] [ContinuousSMul ℝ V]
+variable [TopologicalSpace V] [IsTopologicalAddGroup V] [ContinuousSMul ℝ V]
 
 /-- If `s` is a closed set, then any point `x` sees some point of `s` in any direction where there
 is something to see. -/

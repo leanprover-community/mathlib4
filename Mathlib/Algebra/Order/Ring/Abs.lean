@@ -31,7 +31,7 @@ variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
 end LinearOrderedAddCommGroup
 
 lemma odd_abs [LinearOrder α] [Ring α] {a : α} : Odd (abs a) ↔ Odd a := by
-  cases' abs_choice a with h h <;> simp only [h, odd_neg]
+  rcases abs_choice a with h | h <;> simp only [h, odd_neg]
 
 section LinearOrderedRing
 
@@ -90,7 +90,6 @@ lemma abs_le_iff_mul_self_le : |a| ≤ |b| ↔ a * a ≤ b * b := by
 lemma abs_le_one_iff_mul_self_le_one : |a| ≤ 1 ↔ a * a ≤ 1 := by
   simpa only [abs_one, one_mul] using abs_le_iff_mul_self_le (a := a) (b := 1)
 
--- Porting note: added `simp` to replace `pow_bit0_abs`
 omit [IsStrictOrderedRing α] in
 @[simp] lemma sq_abs (a : α) : |a| ^ 2 = a ^ 2 := by simpa only [sq] using abs_mul_abs_self a
 
@@ -162,7 +161,7 @@ private def geomSum : ℕ → α
   | n + 1 => a * geomSum n + b ^ (n + 1)
 
 private theorem abs_geomSum_le : |geomSum a b n| ≤ (n + 1) * max |a| |b| ^ n := by
-  induction' n with n ih; · simp [geomSum]
+  induction n with | zero => simp [geomSum] | succ n ih => ?_
   refine (abs_add_le ..).trans ?_
   rw [abs_mul, abs_pow, Nat.cast_succ, add_one_mul]
   refine add_le_add ?_ (pow_le_pow_left₀ (abs_nonneg _) le_sup_right _)
@@ -173,7 +172,7 @@ private theorem abs_geomSum_le : |geomSum a b n| ≤ (n + 1) * max |a| |b| ^ n :
 omit [LinearOrder α] [IsStrictOrderedRing α] in
 private theorem pow_sub_pow_eq_sub_mul_geomSum :
     a ^ (n + 1) - b ^ (n + 1) = (a - b) * geomSum a b n := by
-  induction' n with n ih; · simp [geomSum]
+  induction n with | zero => simp [geomSum] | succ n ih => ?_
   rw [geomSum, mul_add, mul_comm a, ← mul_assoc, ← ih,
     sub_mul, sub_mul, ← pow_succ, ← pow_succ', mul_comm, sub_add_sub_cancel]
 
@@ -190,14 +189,14 @@ variable [Ring α] [LinearOrder α]
 
 @[simp]
 theorem abs_dvd (a b : α) : |a| ∣ b ↔ a ∣ b := by
-  cases' abs_choice a with h h <;> simp only [h, neg_dvd]
+  rcases abs_choice a with h | h <;> simp only [h, neg_dvd]
 
 theorem abs_dvd_self (a : α) : |a| ∣ a :=
   (abs_dvd a a).mpr (dvd_refl a)
 
 @[simp]
 theorem dvd_abs (a b : α) : a ∣ |b| ↔ a ∣ b := by
-  cases' abs_choice b with h h <;> simp only [h, dvd_neg]
+  rcases abs_choice b with h | h <;> simp only [h, dvd_neg]
 
 theorem self_dvd_abs (a : α) : a ∣ |a| :=
   (dvd_abs a a).mpr (dvd_refl a)

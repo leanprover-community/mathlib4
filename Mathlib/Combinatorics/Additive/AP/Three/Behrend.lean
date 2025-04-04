@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.Combinatorics.Additive.AP.Three.Defs
 import Mathlib.Combinatorics.Pigeonhole
@@ -70,7 +71,7 @@ lemma threeAPFree_sphere {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   obtain rfl | hr := eq_or_ne r 0
   · rw [sphere_zero]
     exact threeAPFree_singleton _
-  · convert threeAPFree_frontier isClosed_ball (strictConvex_closedBall ℝ x r)
+  · convert threeAPFree_frontier isClosed_closedBall (strictConvex_closedBall ℝ x r)
     exact (frontier_closedBall _ hr).symm
 
 namespace Behrend
@@ -155,13 +156,12 @@ theorem map_eq_iff {x₁ x₂ : Fin n.succ → ℕ} (hx₁ : ∀ i, x₁ i < d) 
 
 theorem map_injOn : {x : Fin n → ℕ | ∀ i, x i < d}.InjOn (map d) := by
   intro x₁ hx₁ x₂ hx₂ h
-  induction' n with n ih
-  · simp [eq_iff_true_of_subsingleton]
-  ext i
-  have x := (map_eq_iff hx₁ hx₂).1 h
-  refine Fin.cases x.1 (congr_fun <| ih (fun _ => ?_) (fun _ => ?_) x.2) i
-  · exact hx₁ _
-  · exact hx₂ _
+  induction n with
+  | zero => simp [eq_iff_true_of_subsingleton]
+  | succ n ih =>
+    ext i
+    have x := (map_eq_iff hx₁ hx₂).1 h
+    exact Fin.cases x.1 (congr_fun <| ih (fun _ => hx₁ _) (fun _ => hx₂ _) x.2) i
 
 theorem map_le_of_mem_box (hx : x ∈ box n d) :
     map (2 * d - 1) x ≤ ∑ i : Fin n, (d - 1) * (2 * d - 1) ^ (i : ℕ) :=

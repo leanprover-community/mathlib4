@@ -8,7 +8,6 @@ import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Logic.Pairwise
-import Mathlib.Tactic.Cases
 
 /-! ### Lemmas about arithmetic operations and intervals. -/
 
@@ -48,22 +47,19 @@ variable [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] {a b c d : 
 
 /-! `add_mem_Ixx_iff_left` -/
 
-
--- Porting note: instance search needs help `(α := α)`
 theorem add_mem_Icc_iff_left : a + b ∈ Set.Icc c d ↔ a ∈ Set.Icc (c - b) (d - b) :=
-  (and_congr (sub_le_iff_le_add (α := α)) (le_sub_iff_add_le (α := α))).symm
+  (and_congr sub_le_iff_le_add le_sub_iff_add_le).symm
 
 theorem add_mem_Ico_iff_left : a + b ∈ Set.Ico c d ↔ a ∈ Set.Ico (c - b) (d - b) :=
-  (and_congr (sub_le_iff_le_add (α := α)) (lt_sub_iff_add_lt (α := α))).symm
+  (and_congr sub_le_iff_le_add lt_sub_iff_add_lt).symm
 
 theorem add_mem_Ioc_iff_left : a + b ∈ Set.Ioc c d ↔ a ∈ Set.Ioc (c - b) (d - b) :=
-  (and_congr (sub_lt_iff_lt_add (α := α)) (le_sub_iff_add_le (α := α))).symm
+  (and_congr sub_lt_iff_lt_add le_sub_iff_add_le).symm
 
 theorem add_mem_Ioo_iff_left : a + b ∈ Set.Ioo c d ↔ a ∈ Set.Ioo (c - b) (d - b) :=
-  (and_congr (sub_lt_iff_lt_add (α := α)) (lt_sub_iff_add_lt (α := α))).symm
+  (and_congr sub_lt_iff_lt_add lt_sub_iff_add_lt).symm
 
 /-! `add_mem_Ixx_iff_right` -/
-
 
 theorem add_mem_Icc_iff_right : a + b ∈ Set.Icc c d ↔ b ∈ Set.Icc (c - a) (d - a) :=
   (and_congr sub_le_iff_le_add' le_sub_iff_add_le').symm
@@ -79,7 +75,6 @@ theorem add_mem_Ioo_iff_right : a + b ∈ Set.Ioo c d ↔ b ∈ Set.Ioo (c - a) 
 
 /-! `sub_mem_Ixx_iff_left` -/
 
-
 theorem sub_mem_Icc_iff_left : a - b ∈ Set.Icc c d ↔ a ∈ Set.Icc (c + b) (d + b) :=
   and_congr le_sub_iff_add_le sub_le_iff_le_add
 
@@ -93,7 +88,6 @@ theorem sub_mem_Ioo_iff_left : a - b ∈ Set.Ioo c d ↔ a ∈ Set.Ioo (c + b) (
   and_congr lt_sub_iff_add_lt sub_lt_iff_lt_add
 
 /-! `sub_mem_Ixx_iff_right` -/
-
 
 theorem sub_mem_Icc_iff_right : a - b ∈ Set.Icc c d ↔ b ∈ Set.Icc (a - d) (a - c) :=
   and_comm.trans <| and_congr sub_le_comm le_sub_comm
@@ -138,7 +132,7 @@ variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
 /-- If we remove a smaller interval from a larger, the result is nonempty -/
 theorem nonempty_Ico_sdiff {x dx y dy : α} (h : dy < dx) (hx : 0 < dx) :
     Nonempty ↑(Ico x (x + dx) \ Ico y (y + dy)) := by
-  cases' lt_or_le x y with h' h'
+  rcases lt_or_le x y with h' | h'
   · use x
     simp [*, not_le.2 h']
   · use max x (x + dy)
@@ -216,24 +210,15 @@ theorem pairwise_disjoint_Ioc_add_intCast :
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     pairwise_disjoint_Ioc_add_zsmul a (1 : α)
 
-@[deprecated (since := "2024-04-17")]
-alias pairwise_disjoint_Ioc_add_int_cast := pairwise_disjoint_Ioc_add_intCast
-
 theorem pairwise_disjoint_Ico_add_intCast :
     Pairwise (Disjoint on fun n : ℤ => Ico (a + n) (a + n + 1)) := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     pairwise_disjoint_Ico_add_zsmul a (1 : α)
 
-@[deprecated (since := "2024-04-17")]
-alias pairwise_disjoint_Ico_add_int_cast := pairwise_disjoint_Ico_add_intCast
-
 theorem pairwise_disjoint_Ioo_add_intCast :
     Pairwise (Disjoint on fun n : ℤ => Ioo (a + n) (a + n + 1)) := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     pairwise_disjoint_Ioo_add_zsmul a (1 : α)
-
-@[deprecated (since := "2024-04-17")]
-alias pairwise_disjoint_Ioo_add_int_cast := pairwise_disjoint_Ioo_add_intCast
 
 variable (α)
 
@@ -241,20 +226,11 @@ theorem pairwise_disjoint_Ico_intCast :
     Pairwise (Disjoint on fun n : ℤ => Ico (n : α) (n + 1)) := by
   simpa only [zero_add] using pairwise_disjoint_Ico_add_intCast (0 : α)
 
-@[deprecated (since := "2024-04-17")]
-alias pairwise_disjoint_Ico_int_cast := pairwise_disjoint_Ico_intCast
-
 theorem pairwise_disjoint_Ioo_intCast : Pairwise (Disjoint on fun n : ℤ => Ioo (n : α) (n + 1)) :=
   by simpa only [zero_add] using pairwise_disjoint_Ioo_add_intCast (0 : α)
 
-@[deprecated (since := "2024-04-17")]
-alias pairwise_disjoint_Ioo_int_cast := pairwise_disjoint_Ioo_intCast
-
 theorem pairwise_disjoint_Ioc_intCast : Pairwise (Disjoint on fun n : ℤ => Ioc (n : α) (n + 1)) :=
   by simpa only [zero_add] using pairwise_disjoint_Ioc_add_intCast (0 : α)
-
-@[deprecated (since := "2024-04-17")]
-alias pairwise_disjoint_Ioc_int_cast := pairwise_disjoint_Ioc_intCast
 
 end OrderedRing
 

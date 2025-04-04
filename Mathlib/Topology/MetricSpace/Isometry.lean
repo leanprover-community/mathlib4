@@ -3,8 +3,9 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.MetricSpace.Antilipschitz
 import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Fintype.Sum
+import Mathlib.Topology.MetricSpace.Antilipschitz
 
 /-!
 # Isometries
@@ -272,7 +273,6 @@ theorem MetricSpace.isometry_induced (f : α → β) (hf : f.Injective) [m : Met
 
 -- such a bijection need not exist
 /-- `α` and `β` are isometric if there is an isometric bijection between them. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure IsometryEquiv (α : Type u) (β : Type v) [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     extends α ≃ β where
   isometry_toFun : Isometry toFun
@@ -286,7 +286,7 @@ section PseudoEMetricSpace
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add `IsometryEquivClass`
+-- TODO: add `IsometryEquivClass`
 
 theorem toEquiv_injective : Injective (toEquiv : (α ≃ᵢ β) → (α ≃ β))
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
@@ -403,9 +403,7 @@ theorem symm_comp_self (h : α ≃ᵢ β) : (h.symm : β → α) ∘ h = id := f
 
 theorem self_comp_symm (h : α ≃ᵢ β) : (h : α → β) ∘ h.symm = id := funext h.right_inv
 
-@[simp]
-theorem range_eq_univ (h : α ≃ᵢ β) : range h = univ :=
-  h.toEquiv.range_eq_univ
+theorem range_eq_univ (h : α ≃ᵢ β) : range h = univ := by simp
 
 theorem image_symm (h : α ≃ᵢ β) : image h.symm = preimage h :=
   image_eq_preimage_of_inverse h.symm.toEquiv.left_inv h.symm.toEquiv.right_inv
@@ -503,7 +501,7 @@ protected theorem completeSpace [CompleteSpace β] (e : α ≃ᵢ β) : Complete
   e.completeSpace_iff.2 ‹_›
 
 /-- The natural isometry `∀ i, Y i ≃ᵢ ∀ j, Y (e.symm j)` obtained from a bijection `ι ≃ ι'` of
-fintypes. `Equiv.piCongrLeft'` as an `IsometryEquiv`.-/
+fintypes. `Equiv.piCongrLeft'` as an `IsometryEquiv`. -/
 @[simps!]
 def piCongrLeft' {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι → Type*}
     [∀ j, PseudoEMetricSpace (Y j)] (e : ι ≃ ι') : (∀ i, Y i) ≃ᵢ ∀ j, Y (e.symm j) where
@@ -521,7 +519,7 @@ def piCongrLeft {ι' : Type*} [Fintype ι] [Fintype ι'] {Y : ι' → Type*}
 
 /-- The natural isometry `(α ⊕ β → γ) ≃ᵢ (α → γ) × (β → γ)` between the type of maps on a sum of
 fintypes `α ⊕ β` and the pairs of functions on the types `α` and `β`.
-`Equiv.sumArrowEquivProdArrow` as an `IsometryEquiv`.-/
+`Equiv.sumArrowEquivProdArrow` as an `IsometryEquiv`. -/
 @[simps!]
 def sumArrowIsometryEquivProdArrow [Fintype α] [Fintype β] : (α ⊕ β → γ) ≃ᵢ (α → γ) × (β → γ) where
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
@@ -539,7 +537,7 @@ theorem _root_.Fin.edist_append_eq_max_edist (m n : ℕ) {x x2 : Fin m → α} {
     Prod.edist_eq, iSup_sum]
 
 /-- The natural `IsometryEquiv` between `(Fin m → α) × (Fin n → α)` and `Fin (m + n) → α`.
-`Fin.appendEquiv` as an `IsometryEquiv`.-/
+`Fin.appendEquiv` as an `IsometryEquiv`. -/
 @[simps!]
 def _root_.Fin.appendIsometry (m n : ℕ) : (Fin m → α) × (Fin n → α) ≃ᵢ (Fin (m + n) → α) where
   toEquiv := Fin.appendEquiv _ _

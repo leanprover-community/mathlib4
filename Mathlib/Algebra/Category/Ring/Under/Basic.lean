@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Constructions
-import Mathlib.CategoryTheory.Adjunction.Over
+import Mathlib.CategoryTheory.Comma.Over.Pullback
 
 /-!
 # Under `CommRingCat`
@@ -51,7 +51,7 @@ lemma toAlgHom_apply {A B : Under R} (f : A ⟶ B) (a : A) :
 
 variable (R) in
 /-- Make an object of `Under R` from an `R`-algebra. -/
-@[simps! hom, simps! (config := .lemmasOnly) right]
+@[simps! hom, simps! -isSimp right]
 def mkUnder (A : Type u) [CommRing A] [Algebra R A] : Under R :=
   Under.mk (CommRingCat.ofHom <| algebraMap R A)
 
