@@ -83,8 +83,8 @@ theorem withDensityᵥ_add (hf : Integrable f μ) (hg : Integrable g μ) :
     withDensityᵥ_apply hg hi]
   simp_rw [Pi.add_apply]
   rw [integral_add] <;> rw [← integrableOn_univ]
-  · exact hf.integrableOn.restrict MeasurableSet.univ
-  · exact hg.integrableOn.restrict MeasurableSet.univ
+  · exact hf.integrableOn.restrict
+  · exact hg.integrableOn.restrict
 
 theorem withDensityᵥ_add' (hf : Integrable f μ) (hg : Integrable g μ) :
     (μ.withDensityᵥ fun x => f x + g x) = μ.withDensityᵥ f + μ.withDensityᵥ g :=

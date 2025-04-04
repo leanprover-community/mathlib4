@@ -131,24 +131,34 @@ end Measure
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   [Nontrivial E] (μ : Measure E) [FiniteDimensional ℝ E] [BorelSpace E] [μ.IsAddHaarMeasure]
 
+lemma integrable_fun_norm_addHaar {f : ℝ → F} :
+    Integrable (f ‖·‖) μ ↔ IntegrableOn (fun y : ℝ ↦ y ^ (dim E - 1) * ‖f y‖) (Ioi 0) := by
+  have := μ.measurePreserving_homeomorphUnitSphereProd.integrable_comp_emb (g := f ∘ (↑) ∘ Prod.snd)
+    (Homeomorph.measurableEmbedding _)
+  simp only [comp_def, homeomorphUnitSphereProd_apply_snd_coe] at this
+  rw [← restrict_compl_singleton (μ := μ) 0, ← IntegrableOn,
+    integrableOn_iff_comap_subtypeVal (by measurability), comp_def, this]
+  sorry
+    -- μ.measurePreserving_homeomorphUnitSphereProd.integrable_comp_emb]
+
+
 lemma integral_fun_norm_addHaar (f : ℝ → F) :
-    ∫ x, f (‖x‖) ∂μ = dim E • (μ (ball 0 1)).toReal • ∫ y in Ioi (0 : ℝ), y ^ (dim E - 1) • f y :=
-  calc
-    ∫ x, f (‖x‖) ∂μ = ∫ x : ({(0)}ᶜ : Set E), f (‖x.1‖) ∂(μ.comap (↑)) := by
-      rw [integral_subtype_comap (measurableSet_singleton _).compl fun x ↦ f (‖x‖),
-        restrict_compl_singleton]
-    _ = ∫ x : sphere (0 : E) 1 × Ioi (0 : ℝ), f x.2 ∂μ.toSphere.prod (.volumeIoiPow (dim E - 1)) :=
-      μ.measurePreserving_homeomorphUnitSphereProd.integral_comp (Homeomorph.measurableEmbedding _)
-        (f ∘ Subtype.val ∘ Prod.snd)
-    _ = (μ.toSphere univ).toReal • ∫ x : Ioi (0 : ℝ), f x ∂.volumeIoiPow (dim E - 1) :=
-      integral_fun_snd (f ∘ Subtype.val)
-    _ = _ := by
-      simp only [Measure.volumeIoiPow, ENNReal.ofReal]
-      rw [integral_withDensity_eq_integral_smul, μ.toSphere_apply_univ,
-        ENNReal.toReal_mul, ENNReal.toReal_natCast, ← nsmul_eq_mul, smul_assoc,
-        integral_subtype_comap measurableSet_Ioi fun a ↦ Real.toNNReal (a ^ (dim E - 1)) • f a,
-        setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ ?_]
-      · rw [NNReal.smul_def, Real.coe_toNNReal _ (pow_nonneg hx.out.le _)]
-      · exact (measurable_subtype_coe.pow_const _).real_toNNReal
+    ∫ x, f (‖x‖) ∂μ = dim E • (μ (ball 0 1)).toReal • ∫ y in Ioi 0, y ^ (dim E - 1) • f y := calc
+  ∫ x, f (‖x‖) ∂μ = ∫ x : ({0}ᶜ : Set E), f (‖x.1‖) ∂(μ.comap (↑)) := by
+    rw [integral_subtype_comap (measurableSet_singleton _).compl fun x ↦ f (‖x‖),
+      restrict_compl_singleton]
+  _ = ∫ x : sphere (0 : E) 1 × Ioi (0 : ℝ), f x.2 ∂μ.toSphere.prod (.volumeIoiPow (dim E - 1)) :=
+    μ.measurePreserving_homeomorphUnitSphereProd.integral_comp (Homeomorph.measurableEmbedding _)
+      (f ∘ Subtype.val ∘ Prod.snd)
+  _ = (μ.toSphere univ).toReal • ∫ x : Ioi (0 : ℝ), f x ∂.volumeIoiPow (dim E - 1) :=
+    integral_fun_snd (f ∘ Subtype.val)
+  _ = dim E • (μ (ball 0 1)).toReal • ∫ y in Ioi (0 : ℝ), y ^ (dim E - 1) • f y := by
+    simp only [Measure.volumeIoiPow, ENNReal.ofReal]
+    rw [integral_withDensity_eq_integral_smul, μ.toSphere_apply_univ,
+      ENNReal.toReal_mul, ENNReal.toReal_natCast, ← nsmul_eq_mul, smul_assoc,
+      integral_subtype_comap measurableSet_Ioi fun a ↦ Real.toNNReal (a ^ (dim E - 1)) • f a,
+      setIntegral_congr_fun measurableSet_Ioi fun x hx ↦ ?_]
+    · rw [NNReal.smul_def, Real.coe_toNNReal _ (pow_nonneg hx.out.le _)]
+    · exact (measurable_subtype_coe.pow_const _).real_toNNReal
 
 end MeasureTheory

@@ -302,6 +302,14 @@ theorem IntegrableOn.swap [SFinite μ] {f : α × β → E} {s : Set α} {t : Se
   rw [IntegrableOn, ← Measure.prod_restrict] at hf ⊢
   exact hf.swap
 
+omit [SFinite ν] in
+theorem Integrable.comp_fst [IsFiniteMeasure ν] {f : α → E} (hf : Integrable f μ) :
+    Integrable (f ·.1) (μ.prod ν) := by
+  refine (integrable_prod_iff hf.1.fst).2 ⟨.of_forall fun x ↦ integrable_const (f x), ?_⟩
+  simp only [integral_const, ← Pi.smul_def]
+  apply Integrable.smul
+  exact hf.norm
+
 end
 
 variable [NormedSpace ℝ E]
