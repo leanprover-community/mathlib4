@@ -359,16 +359,11 @@ theorem weightedHomogeneousComponent_eq_zero [SemilatticeSup M] [OrderBot M]
 
 theorem weightedHomogeneousComponent_finsupp :
     (Function.support fun m => weightedHomogeneousComponent w m φ).Finite := by
-  suffices
-    (Function.support fun m => weightedHomogeneousComponent w m φ) ⊆
-      (fun d => weight w d) '' φ.support by
-    exact Finite.subset ((fun d : σ →₀ ℕ => (weight w) d) '' ↑(support φ)).toFinite this
+  apply ((fun d : σ →₀ ℕ => (weight w) d) '' (φ.support : Set (σ →₀ ℕ))).toFinite.subset
   intro m hm
   by_contra hm'
-  apply hm
-  simp only [mem_support, Ne] at hm
-  simp only [Set.mem_image, not_exists, not_and] at hm'
-  exact weightedHomogeneousComponent_eq_zero' m φ hm'
+  apply hm (weightedHomogeneousComponent_eq_zero' m φ _)
+  simpa only [Set.mem_image, not_exists, not_and] using hm'
 
 variable (w)
 
@@ -500,7 +495,7 @@ end AddCommMonoid
 
 section OrderedAddCommMonoid
 
-variable [AddCommMonoid M] [PartialOrder M] [IsOrderedAddMonoid M]
+variable [AddCommMonoid M] [PartialOrder M]
   {w : σ → M} (φ : MvPolynomial σ R)
 
 /-- If `M` is a canonically `OrderedAddCommMonoid`, then the `weightedHomogeneousComponent`
@@ -525,7 +520,7 @@ theorem weightedHomogeneousComponent_zero [CanonicallyOrderedAdd M] [NoZeroSMulD
 def NonTorsionWeight (w : σ → M) :=
   ∀ n x, n • w x = (0 : M) → n = 0
 
-omit [PartialOrder M] [IsOrderedAddMonoid M] in
+omit [PartialOrder M] in
 theorem nonTorsionWeight_of [NoZeroSMulDivisors ℕ M] (hw : ∀ i : σ, w i ≠ 0) :
     NonTorsionWeight w :=
   fun _ x hnx => (smul_eq_zero_iff_left (hw x)).mp hnx
@@ -552,10 +547,9 @@ end OrderedAddCommMonoid
 
 section LinearOrderedAddCommMonoid
 
-variable [AddCommMonoid M] [LinearOrder M] [IsOrderedAddMonoid M] [CanonicallyOrderedAdd M]
+variable [AddCommMonoid M] [LinearOrder M] [CanonicallyOrderedAdd M]
   {w : σ → M} (φ : MvPolynomial σ R)
 
-omit [IsOrderedAddMonoid M] in
 /-- A multivatiate polynomial is weighted homogeneous of weighted degree zero if and only if
   its weighted total degree is equal to zero. -/
 theorem isWeightedHomogeneous_zero_iff_weightedTotalDegree_eq_zero {p : MvPolynomial σ R} :

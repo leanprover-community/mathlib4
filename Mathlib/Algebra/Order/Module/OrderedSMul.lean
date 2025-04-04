@@ -17,7 +17,7 @@ In this file we define
 * `OrderedSMul R M` : an ordered additive commutative monoid `M` is an `OrderedSMul`
   over an `OrderedSemiring` `R` if the scalar product respects the order relation on the
   monoid and on the ring. There is a correspondence between this structure and convex cones,
-  which is proven in `Analysis/Convex/Cone.lean`.
+  which is proven in `Mathlib/Analysis/Convex/Cone.lean`.
 
 ## Implementation notes
 * We choose to define `OrderedSMul` as a `Prop`-valued mixin, so that it can be

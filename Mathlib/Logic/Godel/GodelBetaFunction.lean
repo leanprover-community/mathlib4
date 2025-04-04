@@ -8,6 +8,10 @@ import Mathlib.Data.Nat.ModEq
 import Mathlib.Data.Nat.ChineseRemainder
 import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.Data.Nat.Pairing
+import Mathlib.Order.Fin.Basic
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Nat.Factorial.Basic
 
 /-!
 # Gödel's Beta Function Lemma
@@ -68,6 +72,7 @@ lemma coprimes_lt (a : Fin m → ℕ) (i) : a i < coprimes a i := by
       (le_add_right _ _))
   simpa only [coprimes] using lt_of_lt_of_le h₁ h₂
 
+open scoped Function in -- required for scoped `on` notation
 private lemma pairwise_coprime_coprimes (a : Fin m → ℕ) : Pairwise (Coprime on coprimes a) := by
   intro i j hij
   wlog ltij : i < j

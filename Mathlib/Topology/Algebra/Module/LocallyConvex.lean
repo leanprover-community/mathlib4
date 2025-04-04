@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.Convex.Topology
+import Mathlib.Topology.Connected.LocPathConnected
 
 /-!
 # Locally convex topological modules
@@ -30,6 +31,7 @@ In a module, this is equivalent to `0` satisfying such properties.
 
 -/
 
+assert_not_exists NormedSpace
 
 open TopologicalSpace Filter Set
 
@@ -72,7 +74,8 @@ end Semimodule
 section Module
 
 variable (𝕜 E : Type*) [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
-  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] [TopologicalAddGroup E]
+  [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+  [IsTopologicalAddGroup E]
 
 theorem LocallyConvexSpace.ofBasisZero {ι : Type*} (b : ι → Set E) (p : ι → Prop)
     (hbasis : (𝓝 0).HasBasis p b) (hconvex : ∀ i, p i → Convex 𝕜 (b i)) :
@@ -114,7 +117,7 @@ section LinearOrderedField
 
 variable (𝕜 E : Type*) [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
   [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
-  [TopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
+  [IsTopologicalAddGroup E] [ContinuousConstSMul 𝕜 E]
 
 theorem LocallyConvexSpace.convex_open_basis_zero [LocallyConvexSpace 𝕜 E] :
     (𝓝 0 : Filter E).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ Convex 𝕜 s) id :=
@@ -131,8 +134,8 @@ closed, then we can find open disjoint convex sets containing them. -/
 theorem Disjoint.exists_open_convexes [LocallyConvexSpace 𝕜 E] {s t : Set E} (disj : Disjoint s t)
     (hs₁ : Convex 𝕜 s) (hs₂ : IsCompact s) (ht₁ : Convex 𝕜 t) (ht₂ : IsClosed t) :
     ∃ u v, IsOpen u ∧ IsOpen v ∧ Convex 𝕜 u ∧ Convex 𝕜 v ∧ s ⊆ u ∧ t ⊆ v ∧ Disjoint u v := by
-  letI : UniformSpace E := TopologicalAddGroup.toUniformSpace E
-  haveI : UniformAddGroup E := comm_topologicalAddGroup_is_uniform
+  letI : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
+  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   have := (LocallyConvexSpace.convex_open_basis_zero 𝕜 E).comap fun x : E × E => x.2 - x.1
   rw [← uniformity_eq_comap_nhds_zero] at this
   rcases disj.exists_uniform_thickening_of_basis this hs₂ ht₂ with ⟨V, ⟨hV0, hVopen, hVconvex⟩, hV⟩
@@ -191,9 +194,39 @@ instance Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddCommMo
 
 instance Prod.locallyConvexSpace [TopologicalSpace E] [TopologicalSpace F] [LocallyConvexSpace 𝕜 E]
     [LocallyConvexSpace 𝕜 F] : LocallyConvexSpace 𝕜 (E × F) :=
--- Porting note: had to specify `t₁` and `t₂`
-  locallyConvexSpace_inf (t₁ := induced Prod.fst _) (t₂ := induced Prod.snd _)
+  locallyConvexSpace_inf
     (locallyConvexSpace_induced (LinearMap.fst _ _ _))
     (locallyConvexSpace_induced (LinearMap.snd _ _ _))
 
 end LatticeOps
+
+section LinearOrderedSemiring
+
+instance LinearOrderedSemiring.toLocallyConvexSpace {R : Type*} [TopologicalSpace R]
+    [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] [OrderTopology R] :
+    LocallyConvexSpace R R where
+  convex_basis x := by
+    obtain hl | hl := isBot_or_exists_lt x
+    · refine hl.rec ?_ _
+      intro
+      refine nhds_bot_basis.to_hasBasis' ?_ ?_
+      · intros
+        refine ⟨Set.Iio _, ?_, .rfl⟩
+        simp_all [Iio_mem_nhds, convex_Iio]
+      · simp +contextual
+    obtain hu | hu := isTop_or_exists_gt x
+    · refine hu.rec ?_ _
+      intro
+      refine nhds_top_basis.to_hasBasis' ?_ ?_
+      · intros
+        refine ⟨Set.Ioi _, ?_, subset_refl _⟩
+        simp_all [Ioi_mem_nhds, convex_Ioi]
+      · simp +contextual
+    refine (nhds_basis_Ioo' hl hu).to_hasBasis' ?_ ?_
+    · simp only [id_eq, and_imp, Prod.forall]
+      intros
+      refine ⟨_, ?_, subset_refl _⟩
+      simp_all [Ioo_mem_nhds, convex_Ioo]
+    · simp +contextual
+
+end LinearOrderedSemiring

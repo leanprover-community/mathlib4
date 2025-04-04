@@ -3,7 +3,7 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 import Mathlib.Data.PNat.Prime
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Multiset.OrderedMonoid
@@ -21,14 +21,15 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
 * `FactorMultiset n`: Multiset of prime factors of `n`.
 -/
 
--- Porting note: `deriving` contained Inhabited, CanonicallyOrderedAddCommMonoid, DistribLattice,
--- SemilatticeSup, OrderBot, Sub, OrderedSub
 /-- The type of multisets of prime numbers.  Unique factorization
  gives an equivalence between this set and ℕ+, as we will formalize
  below. -/
 def PrimeMultiset :=
   Multiset Nat.Primes deriving Inhabited, AddCommMonoid, DistribLattice,
   SemilatticeSup, Sub
+-- The `CanonicallyOrderedAdd, OrderBot, OrderedSub` instances should be constructed by a deriving
+-- handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 instance : IsOrderedCancelAddMonoid PrimeMultiset :=
   inferInstanceAs (IsOrderedCancelAddMonoid (Multiset Nat.Primes))

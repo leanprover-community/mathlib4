@@ -3,12 +3,16 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Mitchell Lee, Johan Commelin
 -/
+import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.Module.Submodule.Invariant
+import Mathlib.Algebra.Module.Torsion
+import Mathlib.GroupTheory.MonoidLocalization.Basic
 import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Defs
 import Mathlib.LinearAlgebra.FiniteSpan
 import Mathlib.RingTheory.Polynomial.Chebyshev
-import Mathlib.Algebra.Module.Torsion
 
 /-!
 # Reflections in linear algebra
@@ -121,6 +125,20 @@ lemma invOn_reflection_of_mapsTo {Φ : Set M} (h : f x = 2) :
 lemma bijOn_reflection_of_mapsTo {Φ : Set M} (h : f x = 2) (h' : MapsTo (reflection h) Φ Φ) :
     BijOn (reflection h) Φ Φ :=
   (invOn_reflection_of_mapsTo h).bijOn h' h'
+
+-- If `reflection` instead demanded a linear form `f` such that `f x = 1` rather than `f x = 2`,
+-- (and was thus defined as `y ↦ y - (2 * f y) • x`) then we could avoid `Invertible (2 : R)` here.
+lemma _root_.Submodule.mem_invtSubmodule_reflection_of_mem [Invertible (2 : R)] (h : f x = 2)
+    (p : Submodule R M) (hx : x ∈ p) :
+    p ∈ End.invtSubmodule (reflection h) := by
+  suffices ∀ y ∈ p, reflection h y ∈ p from
+    (End.mem_invtSubmodule _).mpr fun y hy ↦ by simpa using this y hy
+  intro y hy
+  set z := (2 : R) • y - f y • x with hz₀
+  have hz₁ : z ∈ p := sub_mem (p.smul_mem _ hy) (p.smul_mem _ hx)
+  have hz₂ : (2 : R) • reflection h y = z - f y • x := by simp only [reflection_apply, hz₀]; module
+  rw [← p.smul_mem_iff'' (r := (2 : R)), hz₂]
+  exact sub_mem hz₁ <| p.smul_mem _ hx
 
 /-! ### Powers of the product of two reflections
 
@@ -252,7 +270,7 @@ lemma reflection_mul_reflection_zpow_apply_self (m : ℤ)
   have S_eval_t_sub_two (k : ℤ) :
       (S R (k - 2)).eval t = (f y * g x - 2) * (S R (k - 1)).eval t - (S R k).eval t := by
     simp [S_sub_two, ht]
-  induction m using Int.induction_on with
+  induction m with
   | hz => simp
   | hp m ih =>
     -- Apply the inductive hypothesis.
@@ -311,10 +329,11 @@ This rather technical-looking lemma exists because it is exactly what is needed 
 uniqueness results for root data / systems. One might regard this lemma as lying at the boundary of
 linear algebra and combinatorics since the finiteness assumption is the key. -/
 lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
-    {x : M} (hx : x ≠ 0) {Φ : Set M} (hΦ₁ : Φ.Finite) (hΦ₂ : span R Φ = ⊤) {f g : Dual R M}
+    {x : M} {Φ : Set M} (hΦ₁ : Φ.Finite) (hΦ₂ : span R Φ = ⊤) {f g : Dual R M}
     (hf₁ : f x = 2) (hf₂ : MapsTo (preReflection x f) Φ Φ)
     (hg₁ : g x = 2) (hg₂ : MapsTo (preReflection x g) Φ Φ) :
     f = g := by
+  have hx : x ≠ 0 := by rintro rfl; simp at hf₁
   let u := reflection hg₁ * reflection hf₁
   have hu : u = LinearMap.id (R := R) (M := M) + (f - g).smulRight x := by
     ext y
@@ -344,7 +363,7 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
 uniqueness result for root data. See the doc string of `Module.Dual.eq_of_preReflection_mapsTo` for
 further remarks. -/
 lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
-    {x : M} (hx : x ≠ 0) {Φ : Set M} (hΦ₁ : Φ.Finite) (hx' : x ∈ span R Φ) {f g : Dual R M}
+    {x : M} {Φ : Set M} (hΦ₁ : Φ.Finite) (hx : x ∈ span R Φ) {f g : Dual R M}
     (hf₁ : f x = 2) (hf₂ : MapsTo (preReflection x f) Φ Φ)
     (hg₁ : g x = 2) (hg₂ : MapsTo (preReflection x g) Φ Φ) :
     (span R Φ).subtype.dualMap f = (span R Φ).subtype.dualMap g := by
@@ -355,8 +374,7 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
     simp only [Φ']
     rw [range_inclusion]
     simp
-  let x' : span R Φ := ⟨x, hx'⟩
-  have hx' : x' ≠ 0 := Subtype.coe_ne_coe.1 hx
+  let x' : span R Φ := ⟨x, hx⟩
   have this : ∀ {F : Dual R M}, MapsTo (preReflection x F) Φ Φ →
       MapsTo (preReflection x' ((span R Φ).subtype.dualMap F)) Φ' Φ' := by
     intro F hF ⟨y, hy⟩ hy'
@@ -365,7 +383,7 @@ lemma Dual.eq_of_preReflection_mapsTo' [CharZero R] [NoZeroSMulDivisors R M]
     simp only [SetLike.coe_sort_coe, mem_setOf_eq] at hy' ⊢
     rw [range_inclusion]
     exact hF hy'
-  exact eq_of_preReflection_mapsTo hx' hΦ'₁ hΦ'₂ hf₁ (this hf₂) hg₁ (this hg₂)
+  exact eq_of_preReflection_mapsTo hΦ'₁ hΦ'₂ hf₁ (this hf₂) hg₁ (this hg₂)
 
 variable {y}
 variable {g : Dual R M}

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.BigOperators.Associated
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.ENat.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
@@ -26,6 +25,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
   to get relatively prime elements.
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 
@@ -48,10 +48,6 @@ instance wfDvdMonoid_associates : WfDvdMonoid (Associates α) :=
 theorem wellFoundedLT_associates : WellFoundedLT (Associates α) :=
   ⟨Subrelation.wf dvdNotUnit_of_lt wellFounded_dvdNotUnit⟩
 
-@[deprecated wellFoundedLT_associates (since := "2024-09-02")]
-theorem wellFounded_associates : WellFounded ((· < ·) : Associates α → Associates α → Prop) :=
-  Subrelation.wf dvdNotUnit_of_lt wellFounded_dvdNotUnit
-
 end WfDvdMonoid
 
 theorem WfDvdMonoid.of_wellFoundedLT_associates [CancelCommMonoidWithZero α]
@@ -59,15 +55,6 @@ theorem WfDvdMonoid.of_wellFoundedLT_associates [CancelCommMonoidWithZero α]
   WfDvdMonoid.of_wfDvdMonoid_associates
     ⟨by
       convert h.wf
-      ext
-      exact Associates.dvdNotUnit_iff_lt⟩
-
-@[deprecated WfDvdMonoid.of_wellFoundedLT_associates (since := "2024-09-02")]
-theorem WfDvdMonoid.of_wellFounded_associates [CancelCommMonoidWithZero α]
-    (h : WellFounded ((· < ·) : Associates α → Associates α → Prop)) : WfDvdMonoid α :=
-  WfDvdMonoid.of_wfDvdMonoid_associates
-    ⟨by
-      convert h
       ext
       exact Associates.dvdNotUnit_iff_lt⟩
 
@@ -159,9 +146,9 @@ theorem irreducible_iff_prime_of_existsUnique_irreducible_factors [CancelCommMon
         have hx0 : x ≠ 0 := fun hx0 => by simp_all
         have ha0 : a ≠ 0 := left_ne_zero_of_mul hab0
         have hb0 : b ≠ 0 := right_ne_zero_of_mul hab0
-        cases' eif x hx0 with fx hfx
-        cases' eif a ha0 with fa hfa
-        cases' eif b hb0 with fb hfb
+        obtain ⟨fx, hfx⟩ := eif x hx0
+        obtain ⟨fa, hfa⟩ := eif a ha0
+        obtain ⟨fb, hfb⟩ := eif b hb0
         have h : Multiset.Rel Associated (p ::ₘ fx) (fa + fb) := by
           apply uif
           · exact fun i hi => (Multiset.mem_cons.1 hi).elim (fun hip => hip.symm ▸ hpi) (hfx.1 _)
@@ -233,10 +220,10 @@ theorem factors_mul {x y : α} (hx : x ≠ 0) (hy : y ≠ 0) :
 theorem factors_pow {x : α} (n : ℕ) :
     Multiset.Rel Associated (factors (x ^ n)) (n • factors x) := by
   match n with
-  | 0 => rw [zero_smul, pow_zero, factors_one, Multiset.rel_zero_right]
+  | 0 => rw [zero_nsmul, pow_zero, factors_one, Multiset.rel_zero_right]
   | n+1 =>
     by_cases h0 : x = 0
-    · simp [h0, zero_pow n.succ_ne_zero, smul_zero]
+    · simp [h0, zero_pow n.succ_ne_zero, nsmul_zero]
     · rw [pow_succ', succ_nsmul']
       refine Multiset.Rel.trans _ (factors_mul h0 (pow_ne_zero n h0)) ?_
       refine Multiset.Rel.add ?_ <| factors_pow n
@@ -345,7 +332,7 @@ theorem WfDvdMonoid.of_exists_prime_factors : WfDvdMonoid α :=
           rw [con, Multiset.prod_zero]
         · intro x hadd
           rw [Multiset.mem_add] at hadd
-          cases' hadd with h h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
+          rcases hadd with h | h <;> apply (Classical.choose_spec (pf _ _)).1 _ h <;> assumption
         · rw [Multiset.prod_add]
           trans a * c
           · apply Associated.mul_mul <;> apply (Classical.choose_spec (pf _ _)).2 <;> assumption
@@ -462,7 +449,7 @@ theorem exists_reduced_factors :
     · obtain ⟨a', b', c', coprime, rfl, rfl⟩ := ih_a a_ne_zero b
       refine ⟨p * a', b', c', ?_, mul_left_comm _ _ _, rfl⟩
       intro q q_dvd_pa' q_dvd_b'
-      cases' p_prime.left_dvd_or_dvd_right_of_dvd_mul q_dvd_pa' with p_dvd_q q_dvd_a'
+      rcases p_prime.left_dvd_or_dvd_right_of_dvd_mul q_dvd_pa' with p_dvd_q | q_dvd_a'
       · have : p ∣ c' * b' := dvd_mul_of_dvd_right (p_dvd_q.trans q_dvd_b') _
         contradiction
       exact coprime q_dvd_a' q_dvd_b'
@@ -471,8 +458,5 @@ theorem exists_reduced_factors' (a b : R) (hb : b ≠ 0) :
     ∃ a' b' c', IsRelPrime a' b' ∧ c' * a' = a ∧ c' * b' = b :=
   let ⟨b', a', c', no_factor, hb, ha⟩ := exists_reduced_factors b hb a
   ⟨a', b', c', fun _ hpb hpa => no_factor hpa hpb, ha, hb⟩
-
-@[deprecated (since := "2024-09-21")] alias pow_right_injective := pow_injective_of_not_isUnit
-@[deprecated (since := "2024-09-21")] alias pow_eq_pow_iff := pow_inj_of_not_isUnit
 
 end UniqueFactorizationMonoid

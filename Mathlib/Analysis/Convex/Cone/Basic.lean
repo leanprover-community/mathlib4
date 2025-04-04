@@ -37,14 +37,9 @@ While `Convex 𝕜` is a predicate on sets, `ConvexCone 𝕜 E` is a bundled con
 -/
 
 
-assert_not_exists NormedSpace
-assert_not_exists Real
-assert_not_exists Cardinal
+assert_not_exists NormedSpace Real Cardinal
 
-open Set LinearMap
-
-open scoped Classical
-open Pointwise
+open Set LinearMap Pointwise
 
 variable {𝕜 E F G : Type*}
 
@@ -53,11 +48,12 @@ variable {𝕜 E F G : Type*}
 section Definitions
 
 variable (𝕜 E)
-variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 /-- A convex cone is a subset `s` of a `𝕜`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
 and `x, y ∈ s`. -/
-structure ConvexCone [AddCommMonoid E] [SMul 𝕜 E] where
+@[nolint unusedArguments]
+structure ConvexCone [IsOrderedRing 𝕜] [AddCommMonoid E] [SMul 𝕜 E] where
   /-- The **carrier set** underlying this cone: the set of points contained in it -/
   carrier : Set E
   smul_mem' : ∀ ⦃c : 𝕜⦄, 0 < c → ∀ ⦃x : E⦄, x ∈ carrier → c • x ∈ carrier
@@ -69,7 +65,7 @@ namespace ConvexCone
 
 section OrderedSemiring
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E]
 
 section SMul
 
@@ -185,7 +181,7 @@ end SMul
 
 section Module
 
-variable [IsOrderedRing 𝕜] [Module 𝕜 E] (S : ConvexCone 𝕜 E)
+variable [Module 𝕜 E] (S : ConvexCone 𝕜 E)
 
 protected theorem convex : Convex 𝕜 (S : Set E) :=
   convex_iff_forall_pos.2 fun _ hx _ hy _ _ ha hb _ =>
@@ -235,7 +231,7 @@ def comap (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 F) : ConvexCone 𝕜 E whe
 theorem coe_comap (f : E →ₗ[𝕜] F) (S : ConvexCone 𝕜 F) : (S.comap f : Set E) = f ⁻¹' S :=
   rfl
 
-@[simp] -- Porting note: was not a `dsimp` lemma
+@[simp]
 theorem comap_id (S : ConvexCone 𝕜 E) : S.comap LinearMap.id = S :=
   rfl
 
@@ -288,7 +284,7 @@ end LinearOrderedField
 
 section OrderedSemiring
 
-variable [Semiring 𝕜] [PartialOrder 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 
 section AddCommMonoid
 
@@ -434,7 +430,7 @@ namespace Submodule
 
 section OrderedSemiring
 
-variable [Semiring 𝕜] [PartialOrder 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 
 section AddCommMonoid
 
@@ -488,7 +484,7 @@ namespace ConvexCone
 
 section PositiveCone
 
-variable (𝕜 E) [Semiring 𝕜] [PartialOrder 𝕜]
+variable (𝕜 E) [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
   [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
 
 /-- The positive cone is the convex cone formed by the set of nonnegative elements in an ordered

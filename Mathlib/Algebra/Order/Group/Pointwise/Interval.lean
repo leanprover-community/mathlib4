@@ -3,11 +3,13 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Interval.Set.Monoid
 import Mathlib.Order.Interval.Set.UnorderedInterval
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # (Pre)images of intervals
@@ -520,12 +522,12 @@ theorem abs_sub_le_of_uIcc_subset_uIcc (h : [[c, d]] ⊆ [[a, b]]) : |d - c| ≤
   exact sub_le_sub h.2 h.1
 
 /-- If `c ∈ [a, b]`, then the distance between `a` and `c` is less than or equal to
-that of `a` and `b`  -/
+that of `a` and `b` -/
 theorem abs_sub_left_of_mem_uIcc (h : c ∈ [[a, b]]) : |c - a| ≤ |b - a| :=
   abs_sub_le_of_uIcc_subset_uIcc <| uIcc_subset_uIcc_left h
 
 /-- If `x ∈ [a, b]`, then the distance between `c` and `b` is less than or equal to
-that of `a` and `b`  -/
+that of `a` and `b` -/
 theorem abs_sub_right_of_mem_uIcc (h : c ∈ [[a, b]]) : |b - c| ≤ |b - a| :=
   abs_sub_le_of_uIcc_subset_uIcc <| uIcc_subset_uIcc_right h
 
@@ -779,20 +781,28 @@ theorem image_mul_left_Ioc {a : α} (h : 0 < a) (b c : α) :
 /-- The (pre)image under `inv` of `Ioo 0 a` is `Ioi a⁻¹`. -/
 theorem inv_Ioo_0_left {a : α} (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
   ext x
-  exact
-    ⟨fun h => inv_inv x ▸ (inv_lt_inv₀ ha h.1).2 h.2, fun h =>
-      ⟨inv_pos.2 <| (inv_pos.2 ha).trans h,
-        inv_inv a ▸ (inv_lt_inv₀ ((inv_pos.2 ha).trans h)
-          (inv_pos.2 ha)).2 h⟩⟩
+  exact ⟨fun h ↦ inv_lt_of_inv_lt₀ (inv_pos.1 h.1) h.2,
+         fun h ↦ ⟨inv_pos.2 <| (inv_pos.2 ha).trans h, inv_lt_of_inv_lt₀ ha h⟩⟩
+
+/-- The (pre)image under `inv` of `Ioo a 0` is `Iio a⁻¹`. -/
+theorem inv_Ioo_0_right {a : α} (ha : a < 0) : (Ioo a 0)⁻¹ = Iio a⁻¹ := by
+  ext x
+  refine ⟨fun h ↦ (lt_inv_of_neg (inv_neg''.1 h.2) ha).2 h.1, fun h ↦ ?_⟩
+  have h' := (h.trans (inv_neg''.2 ha))
+  exact ⟨(lt_inv_of_neg ha h').2 h, inv_neg''.2 h'⟩
 
 theorem inv_Ioi₀ {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
   rw [inv_eq_iff_eq_inv, inv_Ioo_0_left (inv_pos.2 ha), inv_inv]
 
+theorem inv_Iio₀ {a : α} (ha : a < 0) : (Iio a)⁻¹ = Ioo a⁻¹ 0 := by
+  rw [inv_eq_iff_eq_inv, inv_Ioo_0_right (inv_neg''.2 ha), inv_inv]
+
 theorem image_const_mul_Ioi_zero {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k]
     {x : k} (hx : 0 < x) :
     (fun y => x * y) '' Ioi (0 : k) = Ioi 0 := by
-  erw [(Units.mk0 x hx.ne').mulLeft.image_eq_preimage,
-    preimage_const_mul_Ioi 0 (inv_pos.mpr hx), zero_div]
+  have := (Units.mk0 x hx.ne').mulLeft.image_eq_preimage (Ioi 0)
+  simp at this
+  simp_all
 
 /-!
 ### Images under `x ↦ a * x + b`

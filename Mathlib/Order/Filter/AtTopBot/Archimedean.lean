@@ -32,24 +32,15 @@ theorem tendsto_natCast_atTop_iff [Semiring R] [PartialOrder R] [IsStrictOrdered
     {l : Filter α} : Tendsto (fun n => (f n : R)) l atTop ↔ Tendsto f l atTop :=
   tendsto_atTop_embedding (fun _ _ => Nat.cast_le) exists_nat_ge
 
-@[deprecated (since := "2024-04-17")]
-alias tendsto_nat_cast_atTop_iff := tendsto_natCast_atTop_iff
-
 theorem tendsto_natCast_atTop_atTop [Semiring R] [PartialOrder R] [IsOrderedRing R]
     [Archimedean R] :
     Tendsto ((↑) : ℕ → R) atTop atTop :=
   Nat.mono_cast.tendsto_atTop_atTop exists_nat_ge
 
-@[deprecated (since := "2024-04-17")]
-alias tendsto_nat_cast_atTop_atTop := tendsto_natCast_atTop_atTop
-
 theorem Filter.Eventually.natCast_atTop [Semiring R] [PartialOrder R] [IsOrderedRing R]
     [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x : R) in atTop, p x) : ∀ᶠ (n : ℕ) in atTop, p n :=
   tendsto_natCast_atTop_atTop.eventually h
-
-@[deprecated (since := "2024-04-17")]
-alias Filter.Eventually.nat_cast_atTop := Filter.Eventually.natCast_atTop
 
 @[simp] theorem Int.comap_cast_atTop [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
     [Archimedean R] :
@@ -69,40 +60,25 @@ theorem tendsto_intCast_atTop_iff [Ring R] [PartialOrder R] [IsStrictOrderedRing
     {l : Filter α} : Tendsto (fun n => (f n : R)) l atTop ↔ Tendsto f l atTop := by
   rw [← @Int.comap_cast_atTop R, tendsto_comap_iff]; rfl
 
-@[deprecated (since := "2024-04-17")]
-alias tendsto_int_cast_atTop_iff := tendsto_intCast_atTop_iff
-
-theorem tendsto_intCast_atBot_iff [Ring R] [PartialOrder R] [IsStrictOrderedRing R] [Archimedean R]
-    {f : α → ℤ}
+theorem tendsto_intCast_atBot_iff [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
+    [Archimedean R] {f : α → ℤ}
     {l : Filter α} : Tendsto (fun n => (f n : R)) l atBot ↔ Tendsto f l atBot := by
   rw [← @Int.comap_cast_atBot R, tendsto_comap_iff]; rfl
-
-@[deprecated (since := "2024-04-17")]
-alias tendsto_int_cast_atBot_iff := tendsto_intCast_atBot_iff
 
 theorem tendsto_intCast_atTop_atTop [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
     [Archimedean R] :
     Tendsto ((↑) : ℤ → R) atTop atTop :=
   tendsto_intCast_atTop_iff.2 tendsto_id
 
-@[deprecated (since := "2024-04-17")]
-alias tendsto_int_cast_atTop_atTop := tendsto_intCast_atTop_atTop
-
 theorem Filter.Eventually.intCast_atTop [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
     [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x : R) in atTop, p x) : ∀ᶠ (n : ℤ) in atTop, p n := by
   rw [← Int.comap_cast_atTop (R := R)]; exact h.comap _
 
-@[deprecated (since := "2024-04-17")]
-alias Filter.Eventually.int_cast_atTop := Filter.Eventually.intCast_atTop
-
 theorem Filter.Eventually.intCast_atBot [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
     [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x : R) in atBot, p x) : ∀ᶠ (n : ℤ) in atBot, p n := by
   rw [← Int.comap_cast_atBot (R := R)]; exact h.comap _
-
-@[deprecated (since := "2024-04-17")]
-alias Filter.Eventually.int_cast_atBot := Filter.Eventually.intCast_atBot
 
 @[simp]
 theorem Rat.comap_cast_atTop [Field R] [LinearOrder R] [IsStrictOrderedRing R] [Archimedean R] :
@@ -122,32 +98,20 @@ theorem tendsto_ratCast_atTop_iff [Field R] [LinearOrder R] [IsStrictOrderedRing
     {l : Filter α} : Tendsto (fun n => (f n : R)) l atTop ↔ Tendsto f l atTop := by
   rw [← @Rat.comap_cast_atTop R, tendsto_comap_iff]; rfl
 
-@[deprecated (since := "2024-04-17")]
-alias tendsto_rat_cast_atTop_iff := tendsto_ratCast_atTop_iff
-
-theorem tendsto_ratCast_atBot_iff [Field R] [LinearOrder R] [IsStrictOrderedRing R] [Archimedean R]
-    {f : α → ℚ}
+theorem tendsto_ratCast_atBot_iff [Field R] [LinearOrder R] [IsStrictOrderedRing R]
+    [Archimedean R] {f : α → ℚ}
     {l : Filter α} : Tendsto (fun n => (f n : R)) l atBot ↔ Tendsto f l atBot := by
   rw [← @Rat.comap_cast_atBot R, tendsto_comap_iff]; rfl
-
-@[deprecated (since := "2024-04-17")]
-alias tendsto_rat_cast_atBot_iff := tendsto_ratCast_atBot_iff
 
 theorem Filter.Eventually.ratCast_atTop [Field R] [LinearOrder R] [IsStrictOrderedRing R]
     [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x : R) in atTop, p x) : ∀ᶠ (n : ℚ) in atTop, p n := by
   rw [← Rat.comap_cast_atTop (R := R)]; exact h.comap _
 
-@[deprecated (since := "2024-04-17")]
-alias Filter.Eventually.rat_cast_atTop := Filter.Eventually.ratCast_atTop
-
 theorem Filter.Eventually.ratCast_atBot [Field R] [LinearOrder R] [IsStrictOrderedRing R]
     [Archimedean R] {p : R → Prop}
     (h : ∀ᶠ (x : R) in atBot, p x) : ∀ᶠ (n : ℚ) in atBot, p n := by
   rw [← Rat.comap_cast_atBot (R := R)]; exact h.comap _
-
-@[deprecated (since := "2024-04-17")]
-alias Filter.Eventually.rat_cast_atBot := Filter.Eventually.ratCast_atBot
 
 theorem atTop_hasAntitoneBasis_of_archimedean [Semiring R] [PartialOrder R] [IsOrderedRing R]
     [Archimedean R] :
@@ -246,12 +210,6 @@ theorem Tendsto.atBot_mul_const' (hr : 0 < r) (hf : Tendsto f l atBot) :
 theorem Tendsto.atBot_mul_const_of_neg' (hr : r < 0) (hf : Tendsto f l atBot) :
     Tendsto (fun x => f x * r) l atTop := by
   simpa only [mul_neg, tendsto_neg_atBot_iff] using hf.atBot_mul_const' (neg_pos.2 hr)
-
-@[deprecated (since := "2024-05-06")]
-alias Tendsto.atTop_mul_neg_const' := Tendsto.atTop_mul_const_of_neg'
-
-@[deprecated (since := "2024-05-06")]
-alias Tendsto.atBot_mul_neg_const' := Tendsto.atBot_mul_const_of_neg'
 
 end LinearOrderedRing
 

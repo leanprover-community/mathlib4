@@ -33,8 +33,7 @@ The group structure on automorphisms, `LinearEquiv.automorphismGroup`, is provid
 linear equiv, linear equivalences, linear isomorphism, linear isomorphic
 -/
 
-assert_not_exists Field
-assert_not_exists Pi.module
+assert_not_exists Field Pi.module
 
 open Function
 
@@ -45,7 +44,6 @@ variable {N₁ : Type*} {N₂ : Type*}
 section
 
 /-- A linear equivalence is an invertible linear map. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO @[nolint has_nonempty_instance]
 structure LinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
   {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
   [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
@@ -67,11 +65,11 @@ add_decl_doc LinearEquiv.right_inv
 /-- `LinearEquiv.invFun` is a left inverse to the linear equivalence's underlying function. -/
 add_decl_doc LinearEquiv.left_inv
 
-/-- The notation `M ≃ₛₗ[σ] M₂` denotes the type of linear equivalences between `M` and `M₂` over a
+/-- `M ≃ₛₗ[σ] M₂` denotes the type of linear equivalences between `M` and `M₂` over a
 ring homomorphism `σ`. -/
 notation:50 M " ≃ₛₗ[" σ "] " M₂ => LinearEquiv σ M M₂
 
-/-- The notation `M ≃ₗ [R] M₂` denotes the type of linear equivalences between `M` and `M₂` over
+/-- `M ≃ₗ [R] M₂` denotes the type of linear equivalences between `M` and `M₂` over
 a plain linear map `M →ₗ M₂`. -/
 notation:50 M " ≃ₗ[" R "] " M₂ => LinearEquiv (RingHom.id R) M M₂
 
@@ -86,8 +84,8 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 class SemilinearEquivClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
   (σ : outParam <| R →+* S) {σ' : outParam <| S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂]
-  [EquivLike F M M₂]
-  extends AddEquivClass F M M₂ : Prop where
+  [EquivLike F M M₂] : Prop
+  extends AddEquivClass F M M₂ where
   /-- Applying a semilinear equivalence `f` over `σ` to `r • x` equals `σ r • f x`. -/
   map_smulₛₗ : ∀ (f : F) (r : R) (x : M), f (r • x) = σ r • f x
 
@@ -169,10 +167,12 @@ instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
   right_inv := LinearEquiv.right_inv
 
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
-  map_add := (·.map_add') --map_add' Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO why did I need to change this?
-  map_smulₛₗ := (·.map_smul') --map_smul' Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO why did I need to change this?
+  map_add := (·.map_add')
+  map_smulₛₗ := (·.map_smul')
 
--- Porting note: moved to a lower line since there is no shortcut `CoeFun` instance any more
+theorem toLinearMap_eq_coe {e : M ≃ₛₗ[σ] M₂} : e.toLinearMap = SemilinearMapClass.semilinearMap e :=
+  rfl
+
 @[simp]
 theorem coe_mk {to_fun inv_fun map_add map_smul left_inv right_inv} :
     (⟨⟨⟨to_fun, map_add⟩, map_smul⟩, inv_fun, left_inv, right_inv⟩ : M ≃ₛₗ[σ] M₂) = to_fun := rfl
@@ -204,8 +204,7 @@ theorem coe_toEquiv : ⇑(e.toEquiv) = e :=
 theorem coe_toLinearMap : ⇑e.toLinearMap = e :=
   rfl
 
--- Porting note: no longer a `simp`
-theorem toFun_eq_coe : e.toFun = e := rfl
+theorem toFun_eq_coe : e.toFun = e := by dsimp
 
 section
 
@@ -247,7 +246,6 @@ def symm (e : M ≃ₛₗ[σ] M₂) : M₂ ≃ₛₗ[σ'] M :=
     invFun := e.toEquiv.symm.invFun
     map_smul' := fun r x ↦ by dsimp only; rw [map_smulₛₗ] }
 
--- Porting note: this is new
 /-- See Note [custom simps projection] -/
 def Simps.apply {R : Type*} {S : Type*} [Semiring R] [Semiring S]
     {σ : R →+* S} {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
@@ -283,8 +281,6 @@ variable [RingHomInvPair σ₁₃ σ₃₁] {re₂₁ : RingHomInvPair σ₂₁ 
 variable {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomInvPair σ₃₁ σ₁₃]
 variable (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃)
 
--- Porting note: Lean 4 aggressively removes unused variables declared using `variable`, so
--- we have to list all the variables explicitly here in order to match the Lean 3 signature.
 set_option linter.unusedVariables false in
 /-- Linear equivalences are transitive. -/
 -- Note: the `RingHomCompTriple σ₃₂ σ₂₁ σ₃₁` is unused, but is convenient to carry around
@@ -298,7 +294,7 @@ def trans
     (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃) : M₁ ≃ₛₗ[σ₁₃] M₃ :=
   { e₂₃.toLinearMap.comp e₁₂.toLinearMap, e₁₂.toEquiv.trans e₂₃.toEquiv with }
 
-/-- The notation `e₁ ≪≫ₗ e₂` denotes the composition of the linear equivalences `e₁` and `e₂`. -/
+/-- `e₁ ≪≫ₗ e₂` denotes the composition of the linear equivalences `e₁` and `e₂`. -/
 notation3:80 (name := transNotation) e₁:80 " ≪≫ₗ " e₂:81 =>
   @LinearEquiv.trans _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ (RingHom.id _) (RingHom.id _) (RingHom.id _)
     (RingHom.id _) (RingHom.id _) (RingHom.id _) RingHomCompTriple.ids RingHomCompTriple.ids
@@ -309,6 +305,10 @@ variable {e₁₂} {e₂₃}
 
 @[simp]
 theorem coe_toAddEquiv : e.toAddEquiv = e :=
+  rfl
+
+@[simp]
+lemma coe_addEquiv_apply (x : M) : (e : M ≃+ M₂) x = e x := by
   rfl
 
 /-- The two paths coercion can take to an `AddMonoidHom` are equivalent -/
@@ -420,11 +420,11 @@ theorem symm_trans_self (f : M₁ ≃ₛₗ[σ₁₂] M₂) : f.symm.trans f = L
   ext x
   simp
 
-@[simp]  -- Porting note: norm_cast
+@[simp]
 theorem refl_toLinearMap [Module R M] : (LinearEquiv.refl R M : M →ₗ[R] M) = LinearMap.id :=
   rfl
 
-@[simp]  -- Porting note: norm_cast
+@[simp]
 theorem comp_coe [Module R M] [Module R M₂] [Module R M₃] (f : M ≃ₗ[R] M₂) (f' : M₂ ≃ₗ[R] M₃) :
     (f' : M₂ →ₗ[R] M₃).comp (f : M →ₗ[R] M₂) = (f.trans f' : M ≃ₗ[R] M₃) :=
   rfl

@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 
 /-!
-An example of a `LinearOrderedCommMonoidWithZero` in which the product of two positive
+An example of a linear ordered commutative monoid with zero in which the product of two positive
 elements vanishes.
 
 This is the monoid with 3 elements `0, ε, 1` where `ε ^ 2 = 0` and everything else is forced.

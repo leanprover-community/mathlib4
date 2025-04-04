@@ -8,7 +8,7 @@ import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.CategoryTheory.Abelian.Opposite
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Preadditive.Injective
+import Mathlib.CategoryTheory.Preadditive.Injective.Basic
 
 /-!
 # Exact short complexes
@@ -908,15 +908,6 @@ lemma Exact.liftFromProjective_comp
   dsimp [liftFromProjective]
   rw [← toCycles_i, Projective.factorThru_comp_assoc, liftCycles_i]
 
-
-@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Exact.lift :=
-  Exact.liftFromProjective
-@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Exact.lift_comp :=
-  Exact.liftFromProjective_comp
-@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Injective.Exact.desc :=
-  Exact.descToInjective
-@[deprecated (since := "2024-07-09")] alias _root_.CategoryTheory.Injective.Exact.comp_desc :=
-  Exact.comp_descToInjective
 
 end Abelian
 

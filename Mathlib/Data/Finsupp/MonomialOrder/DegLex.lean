@@ -24,21 +24,19 @@ and `MonomialOrder.degLex_lt_iff` rewrite the ordering as comparisons in the typ
 
 -/
 
-section degLex
-
 /-- A type synonym to equip a type with its lexicographic order sorted by degrees. -/
 def DegLex (α : Type*) := α
 
 variable {α : Type*}
 
-/-- `toDegLex` is the identity function to the `DegLex` of a type.  -/
+/-- `toDegLex` is the identity function to the `DegLex` of a type. -/
 @[match_pattern] def toDegLex : α ≃ DegLex α := Equiv.refl _
 
 theorem toDegLex_injective : Function.Injective (toDegLex (α := α)) := fun _ _ ↦ _root_.id
 
 theorem toDegLex_inj {a b : α} : toDegLex a = toDegLex b ↔ a = b := Iff.rfl
 
-/-- `ofDegLex` is the identity function from the `DegLex` of a type.  -/
+/-- `ofDegLex` is the identity function from the `DegLex` of a type. -/
 @[match_pattern] def ofDegLex : DegLex α ≃ α := Equiv.refl _
 
 theorem ofDegLex_injective : Function.Injective (ofDegLex (α := α)) := fun _ _ ↦ _root_.id
@@ -72,6 +70,7 @@ theorem ofDegLex_add [AddCommMonoid α] (a b : DegLex α) :
 
 namespace Finsupp
 
+open scoped Function in -- required for scoped `on` notation
 /-- `Finsupp.DegLex r s` is the homogeneous lexicographic order on `α →₀ M`,
 where `α` is ordered by `r` and `M` is ordered by `s`.
 The type synonym `DegLex (α →₀ M)` has an order given by `Finsupp.DegLex (· < ·) (· < ·)`. -/
@@ -106,7 +105,7 @@ theorem lt_def [LT α] {a b : DegLex (α →₀ ℕ)} :
 theorem lt_iff [LT α] {a b : DegLex (α →₀ ℕ)} :
     a < b ↔ (ofDegLex a).degree < (ofDegLex b).degree ∨
     (((ofDegLex a).degree = (ofDegLex b).degree) ∧ toLex (ofDegLex a) < toLex (ofDegLex b)) := by
-  simp only [lt_def, Prod.Lex.lt_iff]
+  simp [lt_def, Prod.Lex.toLex_lt_toLex]
 
 variable [LinearOrder α]
 
@@ -253,5 +252,3 @@ example : single (0 : Fin 2) 1 ≺[degLex] single 1 2 := by
   simp [degLex_lt_iff, lt_iff]
 
 end Examples
-
-end degLex

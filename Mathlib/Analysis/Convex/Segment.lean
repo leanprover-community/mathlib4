@@ -6,6 +6,7 @@ Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.Tactic.GCongr
 
@@ -48,11 +49,12 @@ def segment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ a • x + b • y = z }
 
 /-- Open segment in a vector space. Note that `openSegment 𝕜 x x = {x}` instead of being `∅` when
-the base semiring has some element between `0` and `1`. -/
+the base semiring has some element between `0` and `1`.
+Denoted as `[x -[𝕜] y]` within the `Convex` namespace. -/
 def openSegment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 < a ∧ 0 < b ∧ a + b = 1 ∧ a • x + b • y = z }
 
-@[inherit_doc] scoped[Convex] notation (priority := high) "[" x "-[" 𝕜 "]" y "]" => segment 𝕜 x y
+@[inherit_doc] scoped[Convex] notation (priority := high) "[" x " -[" 𝕜 "] " y "]" => segment 𝕜 x y
 
 theorem segment_eq_image₂ (x y : E) :
     [x -[𝕜] y] =
@@ -499,7 +501,7 @@ theorem segment_eq_Icc' (x y : 𝕜) : [x -[𝕜] y] = Icc (min x y) (max x y) :
   · rw [segment_symm, segment_eq_Icc h, max_eq_left h, min_eq_right h]
 
 theorem openSegment_eq_Ioo' (hxy : x ≠ y) : openSegment 𝕜 x y = Ioo (min x y) (max x y) := by
-  cases' hxy.lt_or_lt with h h
+  rcases hxy.lt_or_lt with h | h
   · rw [openSegment_eq_Ioo h, max_eq_right h.le, min_eq_left h.le]
   · rw [openSegment_symm, openSegment_eq_Ioo h, max_eq_left h.le, min_eq_right h.le]
 

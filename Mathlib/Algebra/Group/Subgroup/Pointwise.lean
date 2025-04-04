@@ -3,6 +3,8 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 import Mathlib.Algebra.Group.Subgroup.MulOppositeLemmas
 import Mathlib.Algebra.Group.Submonoid.Pointwise
 import Mathlib.GroupTheory.GroupAction.ConjAct
@@ -142,7 +144,7 @@ theorem closure_induction_right {p : (x : G) → x ∈ closure s → Prop} (one 
 
 @[to_additive (attr := simp)]
 theorem closure_inv (s : Set G) : closure s⁻¹ = closure s := by
-  simp only [← toSubmonoid_eq, closure_toSubmonoid, inv_inv, union_comm]
+  simp only [← toSubmonoid_inj, closure_toSubmonoid, inv_inv, union_comm]
 
 @[to_additive (attr := simp)]
 lemma closure_singleton_inv (x : G) : closure {x⁻¹} = closure {x} := by
@@ -225,15 +227,23 @@ theorem sup_eq_closure_mul (H K : Subgroup G) : H ⊔ K = closure ((H : Set G) *
     ((closure_mul_le _ _).trans <| by rw [closure_eq, closure_eq])
 
 @[to_additive]
-theorem set_mul_normal_comm (s : Set G) (N : Subgroup G) [hN : N.Normal] :
-    s * (N : Set G) = (N : Set G) * s := by
+theorem set_mul_normalizer_comm (S : Set G) (N : Subgroup G) (hLE : S ⊆ N.normalizer) :
+    S * N = N * S := by
   rw [← iUnion_mul_left_image, ← iUnion_mul_right_image]
-  simp only [image_mul_left, image_mul_right, Set.preimage, SetLike.mem_coe, hN.mem_comm_iff]
+  simp only [image_mul_left, image_mul_right, Set.preimage]
+  congr! 5 with s hs x
+  exact (mem_normalizer_iff'.mp (inv_mem (hLE hs)) x).symm
 
-/-- The carrier of `H ⊔ N` is just `↑H * ↑N` (pointwise set product) when `N` is normal. -/
+@[to_additive]
+theorem set_mul_normal_comm (S : Set G) (N : Subgroup G) [hN : N.Normal] :
+    S * (N : Set G) = (N : Set G) * S := set_mul_normalizer_comm S N subset_normalizer_of_normal
+
+/-- The carrier of `H ⊔ N` is just `↑H * ↑N` (pointwise set product)
+when `H` is a subgroup of the normalizer of `N` in `G`. -/
 @[to_additive "The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)
-when `N` is normal."]
-theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) = H * N := by
+when `H` is a subgroup of the normalizer of `N` in `G`."]
+theorem coe_mul_of_left_le_normalizer_right (H N : Subgroup G) (hLE : H ≤ N.normalizer) :
+    (↑(H ⊔ N) : Set G) = H * N := by
   rw [sup_eq_closure_mul]
   refine Set.Subset.antisymm (fun x hx => ?_) subset_closure
   induction hx using closure_induction'' with
@@ -242,19 +252,33 @@ theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) =
   | inv_mem x hx =>
     obtain ⟨x, hx, y, hy, rfl⟩ := hx
     simpa only [mul_inv_rev, mul_assoc, inv_inv, inv_mul_cancel_left]
-      using mul_mem_mul (inv_mem hx) (hN.conj_mem _ (inv_mem hy) x)
+      using mul_mem_mul (inv_mem hx) ((mem_normalizer_iff.mp (hLE hx) y⁻¹).mp (inv_mem hy))
   | mul x' x' _ _ hx hx' =>
     obtain ⟨x, hx, y, hy, rfl⟩ := hx
     obtain ⟨x', hx', y', hy', rfl⟩ := hx'
     refine ⟨x * x', mul_mem hx hx', x'⁻¹ * y * x' * y', mul_mem ?_ hy', ?_⟩
-    · simpa using hN.conj_mem _ hy x'⁻¹
+    · exact (mem_normalizer_iff''.mp (hLE hx') y).mp hy
     · simp only [mul_assoc, mul_inv_cancel_left]
+
+/-- The carrier of `N ⊔ H` is just `↑N * ↑H` (pointwise set product) when
+`H` is a subgroup of the normalizer of `N` in `G`. -/
+@[to_additive "The carrier of `N ⊔ H` is just `↑N + ↑H` (pointwise set addition)
+when `H` is a subgroup of the normalizer of `N` in `G`."]
+theorem coe_mul_of_right_le_normalizer_left (N H : Subgroup G) (hLE : H ≤ N.normalizer) :
+    (↑(N ⊔ H) : Set G) = N * H := by
+  rw [← set_mul_normalizer_comm _ _ hLE, sup_comm, coe_mul_of_left_le_normalizer_right _ _ hLE]
+
+/-- The carrier of `H ⊔ N` is just `↑H * ↑N` (pointwise set product) when `N` is normal. -/
+@[to_additive "The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)
+when `N` is normal."]
+theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) = H * N :=
+  coe_mul_of_left_le_normalizer_right H N le_normalizer_of_normal
 
 /-- The carrier of `N ⊔ H` is just `↑N * ↑H` (pointwise set product) when `N` is normal. -/
 @[to_additive "The carrier of `N ⊔ H` is just `↑N + ↑H` (pointwise set addition)
 when `N` is normal."]
-theorem normal_mul (N H : Subgroup G) [N.Normal] : (↑(N ⊔ H) : Set G) = N * H := by
-  rw [← set_mul_normal_comm, sup_comm, mul_normal]
+theorem normal_mul (N H : Subgroup G) [N.Normal] : (↑(N ⊔ H) : Set G) = N * H :=
+  coe_mul_of_right_le_normalizer_left N H le_normalizer_of_normal
 
 @[to_additive]
 theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :
@@ -307,7 +331,7 @@ theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
     (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) := by
   simp [preimage_preimage, mul_assoc]
 
--- Porting note: deprecate?
+-- TODO: deprecate?
 @[to_additive]
 theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : H.op) (s : Set G) :
     (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) :=
@@ -403,13 +427,13 @@ theorem mem_inv_pointwise_smul_iff {a : α} {S : Subgroup G} {x : G} : x ∈ a�
 
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff {a : α} {S T : Subgroup G} : a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff
+  smul_set_subset_smul_set_iff
 
 theorem pointwise_smul_subset_iff {a : α} {S T : Subgroup G} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff
+  smul_set_subset_iff_subset_inv_smul_set
 
 theorem subset_pointwise_smul_iff {a : α} {S T : Subgroup G} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff
+  subset_smul_set_iff
 
 @[simp]
 theorem smul_inf (a : α) (S T : Subgroup G) : a • (S ⊓ T) = a • S ⊓ a • T := by
@@ -432,8 +456,10 @@ theorem Normal.conjAct {H : Subgroup G} (hH : H.Normal) (g : ConjAct G) : g • 
   (this g).antisymm <| (smul_inv_smul g H).symm.trans_le (map_mono <| this _)
 
 @[simp]
-theorem smul_normal (g : G) (H : Subgroup G) [h : Normal H] : MulAut.conj g • H = H :=
+theorem Normal.conj_smul_eq_self (g : G) (H : Subgroup G) [h : Normal H] : MulAut.conj g • H = H :=
   h.conjAct g
+
+@[deprecated (since := "2025-03-01")] alias smul_normal := Normal.conj_smul_eq_self
 
 theorem Normal.of_conjugate_fixed {H : Subgroup G} (h : ∀ g : G, (MulAut.conj g) • H = H) :
     H.Normal := by
@@ -473,13 +499,13 @@ theorem mem_inv_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) (S : Subgroup G) (
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : Subgroup G} :
     a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff₀ ha
+  smul_set_subset_smul_set_iff₀ ha
 
 theorem pointwise_smul_le_iff₀ {a : α} (ha : a ≠ 0) {S T : Subgroup G} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff₀ ha
+  smul_set_subset_iff₀ ha
 
 theorem le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : Subgroup G} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff₀ ha
+  subset_smul_set_iff₀ ha
 
 end GroupWithZero
 
@@ -551,13 +577,13 @@ theorem mem_inv_pointwise_smul_iff {a : α} {S : AddSubgroup A} {x : A} : x ∈ 
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff {a : α} {S T : AddSubgroup A} :
     a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff
+  smul_set_subset_smul_set_iff
 
 theorem pointwise_smul_le_iff {a : α} {S T : AddSubgroup A} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff
+  smul_set_subset_iff_subset_inv_smul_set
 
 theorem le_pointwise_smul_iff {a : α} {S T : AddSubgroup A} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff
+  subset_smul_set_iff
 
 end Group
 
@@ -583,15 +609,15 @@ theorem mem_inv_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) (S : AddSubgroup A
 @[simp]
 theorem pointwise_smul_le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubgroup A} :
     a • S ≤ a • T ↔ S ≤ T :=
-  set_smul_subset_set_smul_iff₀ ha
+  smul_set_subset_smul_set_iff₀ ha
 
 theorem pointwise_smul_le_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubgroup A} :
     a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  set_smul_subset_iff₀ ha
+  smul_set_subset_iff₀ ha
 
 theorem le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubgroup A} :
     S ≤ a • T ↔ a⁻¹ • S ≤ T :=
-  subset_set_smul_iff₀ ha
+  subset_smul_set_iff₀ ha
 
 end GroupWithZero
 

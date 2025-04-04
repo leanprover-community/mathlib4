@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Robert Y. Lewis
 -/
 import Mathlib.Algebra.Order.CauSeq.Basic
-import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Algebra.Ring.Action.Rat
+import Mathlib.Tactic.FastInstance
 
 /-!
 # Cauchy completion
@@ -139,7 +140,7 @@ private theorem zero_def : 0 = mk (abv := abv) 0 :=
 private theorem one_def : 1 = mk (abv := abv) 1 :=
   rfl
 
-instance Cauchy.ring : Ring (Cauchy abv) :=
+instance Cauchy.ring : Ring (Cauchy abv) := fast_instance%
   Function.Surjective.ring mk Quotient.mk'_surjective zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)
@@ -164,7 +165,7 @@ section
 variable {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
 variable {β : Type*} [CommRing β] {abv : β → α} [IsAbsoluteValue abv]
 
-instance Cauchy.commRing : CommRing (Cauchy abv) :=
+instance Cauchy.commRing : CommRing (Cauchy abv) := fast_instance%
   Function.Surjective.commRing mk Quotient.mk'_surjective zero_def.symm one_def.symm
     (fun _ _ => (mk_add _ _).symm) (fun _ _ => (mk_mul _ _).symm) (fun _ => (mk_neg _).symm)
     (fun _ _ => (mk_sub _ _).symm) (fun _ _ => (mk_smul _ _).symm) (fun _ _ => (mk_smul _ _).symm)

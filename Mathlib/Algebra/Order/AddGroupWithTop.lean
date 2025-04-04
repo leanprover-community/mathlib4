@@ -6,7 +6,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 
 /-!
@@ -197,5 +196,39 @@ instance (priority := 100) toSubtractionMonoid : SubtractionMonoid α where
     · exact oh.symm
     intro v
     simp [v] at h
+
+lemma injective_add_left_of_ne_top (b : α) (h : b ≠ ⊤) : Function.Injective (fun x ↦ x + b) := by
+  intro x y h2
+  replace h2 : x + (b + -b) = y + (b + -b) := by simp [← add_assoc, h2]
+  simpa only [LinearOrderedAddCommGroupWithTop.add_neg_cancel _ h, add_zero] using h2
+
+lemma injective_add_right_of_ne_top (b : α) (h : b ≠ ⊤) : Function.Injective (fun x ↦ b + x) := by
+  simpa [add_comm] using injective_add_left_of_ne_top b h
+
+lemma strictMono_add_left_of_ne_top (b : α) (h : b ≠ ⊤) : StrictMono (fun x ↦ x + b) := by
+  apply Monotone.strictMono_of_injective
+  · apply Monotone.add_const monotone_id
+  · apply injective_add_left_of_ne_top _ h
+
+lemma strictMono_add_right_of_ne_top (b : α) (h : b ≠ ⊤) : StrictMono (fun x ↦ b + x) := by
+  simpa [add_comm] using strictMono_add_left_of_ne_top b h
+
+lemma sub_pos (a b : α) : 0 < a - b ↔ b < a ∨ b = ⊤ where
+  mp h := by
+    refine or_iff_not_imp_right.mpr fun h2 ↦ ?_
+    replace h := strictMono_add_left_of_ne_top _ h2 h
+    simp only [zero_add] at h
+    rw [sub_eq_add_neg, add_assoc, add_comm (-b),
+      add_neg_cancel_of_ne_top h2, add_zero] at h
+    exact h
+  mpr h := by
+    rcases h with h | h
+    · convert strictMono_add_left_of_ne_top (-b) (by simp [h.ne_top]) h using 1
+      · simp [add_neg_cancel_of_ne_top h.ne_top]
+      · simp [sub_eq_add_neg]
+    · rw [h]
+      simp only [sub_eq_add_neg, LinearOrderedAddCommGroupWithTop.neg_top, add_top]
+      apply lt_of_le_of_ne le_top
+      exact Ne.symm top_ne_zero
 
 end LinearOrderedAddCommGroupWithTop

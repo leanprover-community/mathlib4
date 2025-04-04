@@ -3,8 +3,9 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow
 -/
-import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # Sesquilinear maps
@@ -65,6 +66,7 @@ theorem isOrtho_zero_right (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) (x)
 theorem isOrtho_flip {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {x y} : B.IsOrtho x y ↔ B.flip.IsOrtho y x := by
   simp_rw [isOrtho_def, flip_apply]
 
+open scoped Function in -- required for scoped `on` notation
 /-- A set of vectors `v` is orthogonal with respect to some bilinear map `B` if and only
 if for all `i ≠ j`, `B (v i) (v j) = 0`. For orthogonality between two elements, use
 `BilinForm.isOrtho` -/
@@ -78,11 +80,7 @@ theorem isOrthoᵢ_def {B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M} {v : n
 theorem isOrthoᵢ_flip (B : M₁ →ₛₗ[I₁] M₁ →ₛₗ[I₁'] M) {v : n → M₁} :
     B.IsOrthoᵢ v ↔ B.flip.IsOrthoᵢ v := by
   simp_rw [isOrthoᵢ_def]
-  constructor <;> intro h i j hij
-  · rw [flip_apply]
-    exact h j i (Ne.symm hij)
-  simp_rw [flip_apply] at h
-  exact h j i (Ne.symm hij)
+  constructor <;> exact fun h i j hij ↦ h j i hij.symm
 
 end CommRing
 
@@ -99,7 +97,7 @@ theorem ortho_smul_left {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y} 
   constructor <;> intro H
   · rw [map_smulₛₗ₂, H, smul_zero]
   · rw [map_smulₛₗ₂, smul_eq_zero] at H
-    cases' H with H H
+    rcases H with H | H
     · rw [map_eq_zero I₁] at H
       trivial
     · exact H
@@ -111,7 +109,7 @@ theorem ortho_smul_right {B : V₁ →ₛₗ[I₁] V₂ →ₛₗ[I₂] V} {x y}
   constructor <;> intro H
   · rw [map_smulₛₗ, H, smul_zero]
   · rw [map_smulₛₗ, smul_eq_zero] at H
-    cases' H with H H
+    rcases H with H | H
     · simp only [map_eq_zero] at H
       exfalso
       exact ha H
@@ -216,13 +214,12 @@ end IsSymm
 @[simp]
 theorem isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := fun _ _ => map_zero _
 
-theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip := by
-  constructor <;> intro h
-  · ext
-    rw [← h, flip_apply, RingHom.id_apply]
-  intro x y
-  conv_lhs => rw [h]
-  rfl
+theorem BilinMap.isSymm_iff_eq_flip {N : Type*} [AddCommMonoid N] [Module R N]
+    {B : LinearMap.BilinMap R M N} : (∀ x y, B x y = B y x) ↔ B = B.flip := by
+  simp [LinearMap.ext_iff₂]
+
+theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip :=
+  BilinMap.isSymm_iff_eq_flip
 
 end Symmetric
 

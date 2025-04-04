@@ -3,8 +3,8 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
+import Mathlib.Algebra.Group.PUnit
 import Mathlib.Algebra.Group.ULift
-import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
@@ -229,6 +229,8 @@ instance Prod.toNorm : Norm (E × F) where norm x := ‖x.1‖ ⊔ ‖x.2‖
 
 lemma Prod.norm_def (x : E × F) : ‖x‖ = max ‖x.1‖ ‖x.2‖ := rfl
 
+@[simp] lemma Prod.norm_mk (x : E) (y : F) : ‖(x, y)‖ = max ‖x‖ ‖y‖ := rfl
+
 lemma norm_fst_le (x : E × F) : ‖x.1‖ ≤ ‖x‖ := le_max_left _ _
 
 lemma norm_snd_le (x : E × F) : ‖x.2‖ ≤ ‖x‖ := le_max_right _ _
@@ -246,8 +248,16 @@ instance Prod.seminormedGroup : SeminormedGroup (E × F) where
   dist_eq x y := by
     simp only [Prod.norm_def, Prod.dist_eq, dist_eq_norm_div, Prod.fst_div, Prod.snd_div]
 
-@[to_additive Prod.nnnorm_def']
-lemma Prod.nnorm_def (x : E × F) : ‖x‖₊ = max ‖x.1‖₊ ‖x.2‖₊ := rfl
+/-- Multiplicative version of `Prod.nnnorm_def`.
+Earlier, this names was used for the additive version. -/
+@[to_additive Prod.nnnorm_def]
+lemma Prod.nnnorm_def' (x : E × F) : ‖x‖₊ = max ‖x.1‖₊ ‖x.2‖₊ := rfl
+
+@[deprecated (since := "2025-01-02")] alias Prod.nnorm_def := Prod.nnnorm_def'
+
+/-- Multiplicative version of `Prod.nnnorm_mk`. -/
+@[to_additive (attr := simp) Prod.nnnorm_mk]
+lemma Prod.nnnorm_mk' (x : E) (y : F) : ‖(x, y)‖₊ = max ‖x‖₊ ‖y‖₊ := rfl
 
 end SeminormedGroup
 
@@ -392,6 +402,9 @@ theorem Pi.nnnorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (π i)] {i 
     refine Pi.apply_single (fun i (x : π i) ↦ ‖x‖₊) ?_ i y b
     simp
   simp [Pi.nnnorm_def, H, Pi.single_apply, Finset.sup_ite, Finset.filter_eq']
+
+lemma Pi.enorm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (π i)] {i : ι} (y : π i) :
+    ‖Pi.single i y‖ₑ = ‖y‖ₑ := by simp [enorm, Pi.nnnorm_single]
 
 theorem Pi.norm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (π i)] {i : ι} (y : π i) :
     ‖Pi.single i y‖ = ‖y‖ :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.Normed.Order.Lattice
-import Mathlib.MeasureTheory.Function.LpSpace
+import Mathlib.MeasureTheory.Function.LpSpace.Basic
 
 /-!
 # Order related properties of Lp spaces
@@ -45,39 +45,48 @@ theorem coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
   · rwa [h2]
   · rwa [← h2]
 
-instance instAddLeftMono [IsOrderedAddMonoid E] : AddLeftMono (Lp E p μ) := by
+variable [HasSolidNorm E] [IsOrderedAddMonoid E]
+
+instance instAddLeftMono : AddLeftMono (Lp E p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
   rw [← coeFn_le] at hg₁₂ ⊢
   filter_upwards [coeFn_add f g₁, coeFn_add f g₂, hg₁₂] with _ h1 h2 h3
   rw [h1, h2, Pi.add_apply, Pi.add_apply]
   exact add_le_add le_rfl h3
 
-instance instIsOrderedAddMonoid [IsOrderedAddMonoid E] : IsOrderedAddMonoid (Lp E p μ) :=
+instance instIsOrderedAddMonoid : IsOrderedAddMonoid (Lp E p μ) :=
   { add_le_add_left := fun _ _ => add_le_add_left }
 
-variable [HasSolidNorm E] [IsOrderedAddMonoid E]
-
-theorem _root_.MeasureTheory.Memℒp.sup {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
-    Memℒp (f ⊔ g) p μ :=
-  Memℒp.mono' (hf.norm.add hg.norm) (hf.1.sup hg.1)
+theorem _root_.MeasureTheory.MemLp.sup {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) :
+    MemLp (f ⊔ g) p μ :=
+  MemLp.mono' (hf.norm.add hg.norm) (hf.1.sup hg.1)
     (Filter.Eventually.of_forall fun x => norm_sup_le_add (f x) (g x))
 
-theorem _root_.MeasureTheory.Memℒp.inf {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
-    Memℒp (f ⊓ g) p μ :=
-  Memℒp.mono' (hf.norm.add hg.norm) (hf.1.inf hg.1)
+@[deprecated (since := "2025-02-21")]
+alias _root_.MeasureTheory.Memℒp.sup := _root_.MeasureTheory.MemLp.sup
+
+theorem _root_.MeasureTheory.MemLp.inf {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) :
+    MemLp (f ⊓ g) p μ :=
+  MemLp.mono' (hf.norm.add hg.norm) (hf.1.inf hg.1)
     (Filter.Eventually.of_forall fun x => norm_inf_le_add (f x) (g x))
 
-theorem _root_.MeasureTheory.Memℒp.abs {f : α → E} (hf : Memℒp f p μ) : Memℒp |f| p μ :=
+@[deprecated (since := "2025-02-21")]
+alias _root_.MeasureTheory.Memℒp.inf := _root_.MeasureTheory.MemLp.inf
+
+theorem _root_.MeasureTheory.MemLp.abs {f : α → E} (hf : MemLp f p μ) : MemLp |f| p μ :=
   hf.sup hf.neg
+
+@[deprecated (since := "2025-02-21")]
+alias _root_.MeasureTheory.Memℒp.abs := _root_.MeasureTheory.MemLp.abs
 
 instance instLattice : Lattice (Lp E p μ) :=
   Subtype.lattice
     (fun f g hf hg => by
-      rw [mem_Lp_iff_memℒp] at *
-      exact (memℒp_congr_ae (AEEqFun.coeFn_sup _ _)).mpr (hf.sup hg))
+      rw [mem_Lp_iff_memLp] at *
+      exact (memLp_congr_ae (AEEqFun.coeFn_sup _ _)).mpr (hf.sup hg))
     fun f g hf hg => by
-    rw [mem_Lp_iff_memℒp] at *
-    exact (memℒp_congr_ae (AEEqFun.coeFn_inf _ _)).mpr (hf.inf hg)
+    rw [mem_Lp_iff_memLp] at *
+    exact (memLp_congr_ae (AEEqFun.coeFn_inf _ _)).mpr (hf.inf hg)
 
 theorem coeFn_sup (f g : Lp E p μ) : ⇑(f ⊔ g) =ᵐ[μ] ⇑f ⊔ ⇑g :=
   AEEqFun.coeFn_sup _ _

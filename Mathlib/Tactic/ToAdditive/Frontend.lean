@@ -599,9 +599,9 @@ where /-- Implementation of `applyReplacementFun`. -/
           /- Test if the head should not be replaced. -/
           let relevantArgId := relevantArg nm
           let gfAdditive :=
-            if relevantArgId < gAllArgs.size && gf.isConst then
+            if h : relevantArgId < gAllArgs.size ∧ gf.isConst then
               if let some fxd :=
-                additiveTest env gAllArgs[relevantArgId]! then
+                additiveTest env gAllArgs[relevantArgId] then
                 Id.run <| do
                   if trace then
                     dbg_trace s!"The application of {nm} contains the fixed type \
@@ -977,6 +977,7 @@ def nameDict : String → List String
   | "multipliable"=> ["summable"]
   | "gpfree"      => ["apfree"]
   | "quantale"    => ["add", "Quantale"]
+  | "square"      => ["even"]
   | x             => [x]
 
 /--
@@ -1007,8 +1008,10 @@ def fixAbbreviation : List String → List String
   | "Comm" :: "Add" :: s              => "AddComm" :: fixAbbreviation s
   | "Zero" :: "LE" :: s               => "Nonneg" :: fixAbbreviation s
   | "zero" :: "_" :: "le" :: s        => "nonneg" :: fixAbbreviation s
+  | "zero" :: "LE" :: s               => "nonneg" :: fixAbbreviation s
   | "Zero" :: "LT" :: s               => "Pos" :: fixAbbreviation s
   | "zero" :: "_" :: "lt" :: s        => "pos" :: fixAbbreviation s
+  | "zero" :: "LT" :: s               => "pos" :: fixAbbreviation s
   | "LE" :: "Zero" :: s               => "Nonpos" :: fixAbbreviation s
   | "le" :: "_" :: "zero" :: s        => "nonpos" :: fixAbbreviation s
   | "LT" :: "Zero" :: s               => "Neg" :: fixAbbreviation s
@@ -1025,8 +1028,8 @@ def fixAbbreviation : List String → List String
   | "Add" :: "Indicator" :: s         => "Indicator" :: fixAbbreviation s
   | "add" :: "Indicator" :: s         => "indicator" :: fixAbbreviation s
   | "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
-  | "is" :: "Square" :: s             => "even" :: fixAbbreviation s
-  | "Is" :: "Square" :: s             => "Even" :: fixAbbreviation s
+  | "is" :: "Even" :: s             => "even" :: fixAbbreviation s
+  | "Is" :: "Even" :: s             => "Even" :: fixAbbreviation s
   -- "Regular" is well-used in mathlib with various meanings (e.g. in
   -- measure theory) and a direct translation
   -- "regular" --> ["add", "Regular"] in `nameDict` above seems error-prone.
@@ -1067,6 +1070,8 @@ def fixAbbreviation : List String → List String
   | "division" :: "Add" :: "Monoid" :: s => "subtractionMonoid" :: fixAbbreviation s
   | "Sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "SubNegZeroMonoid" :: fixAbbreviation s
   | "sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "subNegZeroMonoid" :: fixAbbreviation s
+  | "modular" :: "Character" :: s => "addModularCharacter" :: fixAbbreviation s
+  | "Modular" :: "Character" :: s => "AddModularCharacter" :: fixAbbreviation s
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 
@@ -1100,7 +1105,11 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
   let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
   -- we allow translating to itself if `tgt == src`, which is occasionally useful for `additiveTest`
   if res == src && cfg.tgt != src then
-    throwError "to_additive: can't transport {src} to itself."
+    throwError "to_additive: the generated additivised name equals the original name '{src}', \
+    meaning that no part of the name was additivised.\n\
+    Check that your declaration name is correct \
+    (if your declaration is an instance, try naming it)\n\
+    or provide an additivised name using the '@[to_additive my_add_name]' syntax."
   if cfg.tgt != .anonymous then
     trace[to_additive_detail] "The automatically generated name would be {pre.str tgt_auto}"
   return res
@@ -1183,10 +1192,12 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   if linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
     if appliedAttrs.size > 0 then
+      let appliedAttrs := ", ".intercalate (appliedAttrs.toList.map toString)
+      -- Note: we're not bothering to print the correct attribute arguments.
       Linter.logLintIf linter.existingAttributeWarning stx m!"\
         The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before \
-        calling @[{thisAttr}]. The preferred method is to use \
-        `@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both \
+        calling @[{thisAttr}].\nThe preferred method is to use something like \
+        `@[{thisAttr} (attr := {appliedAttrs})]`\nto apply the attribute to both \
         {src} and the target declaration {tgt}."
     warnAttr stx Lean.Elab.Tactic.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt

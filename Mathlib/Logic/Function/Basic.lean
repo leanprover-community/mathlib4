@@ -7,8 +7,8 @@ import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
 import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Nonempty
+import Mathlib.Logic.Nontrivial.Defs
 import Batteries.Tactic.Init
-import Mathlib.Order.Defs.PartialOrder
 import Mathlib.Order.Defs.Unbundled
 
 /-!
@@ -43,8 +43,6 @@ theorem const_injective [Nonempty α] : Injective (const α : β → α → β) 
 theorem const_inj [Nonempty α] {y₁ y₂ : β} : const α y₁ = const α y₂ ↔ y₁ = y₂ :=
   ⟨fun h ↦ const_injective h, fun h ↦ h ▸ rfl⟩
 
--- Porting note: `Function.onFun` is now reducible
--- @[simp]
 theorem onFun_apply (f : β → β → γ) (g : α → β) (a b : α) : onFun f g a b = f (g a) (g b) :=
   rfl
 
@@ -67,32 +65,13 @@ lemma funext_iff_of_subsingleton [Subsingleton α] {g : α → β} (x y : α) :
   · rwa [Subsingleton.elim x z, Subsingleton.elim y z] at h
   · rw [h, Subsingleton.elim x y]
 
-theorem swap_lt {α} [Preorder α] : swap (· < · : α → α → _) = (· > ·) := rfl
-theorem swap_le {α} [Preorder α] : swap (· ≤ · : α → α → _) = (· ≥ ·) := rfl
-theorem swap_gt {α} [Preorder α] : swap (· > · : α → α → _) = (· < ·) := rfl
-theorem swap_ge {α} [Preorder α] : swap (· ≥ · : α → α → _) = (· ≤ ·) := rfl
+theorem swap_lt {α} [LT α] : swap (· < · : α → α → _) = (· > ·) := rfl
+theorem swap_le {α} [LE α] : swap (· ≤ · : α → α → _) = (· ≥ ·) := rfl
+theorem swap_gt {α} [LT α] : swap (· > · : α → α → _) = (· < ·) := rfl
+theorem swap_ge {α} [LE α] : swap (· ≥ · : α → α → _) = (· ≤ ·) := rfl
 
 protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injective f := hf.1
 protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surjective f := hf.2
-
-theorem Injective.eq_iff (I : Injective f) {a b : α} : f a = f b ↔ a = b :=
-  ⟨@I _ _, congr_arg f⟩
-
-theorem Injective.beq_eq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {f : α → β}
-    (I : Injective f) {a b : α} : (f a == f b) = (a == b) := by
-  by_cases h : a == b <;> simp [h] <;> simpa [I.eq_iff] using h
-
-theorem Injective.eq_iff' (I : Injective f) {a b : α} {c : β} (h : f b = c) : f a = c ↔ a = b :=
-  h ▸ I.eq_iff
-
-theorem Injective.ne (hf : Injective f) {a₁ a₂ : α} : a₁ ≠ a₂ → f a₁ ≠ f a₂ :=
-  mt fun h ↦ hf h
-
-theorem Injective.ne_iff (hf : Injective f) {x y : α} : f x ≠ f y ↔ x ≠ y :=
-  ⟨mt <| congr_arg f, hf.ne⟩
-
-theorem Injective.ne_iff' (hf : Injective f) {x y : α} {z : β} (h : f y = z) : f x ≠ z ↔ x ≠ y :=
-  h ▸ hf.ne_iff
 
 theorem not_injective_iff : ¬ Injective f ↔ ∃ a b, f a = f b ∧ a ≠ b := by
   simp only [Injective, not_forall, exists_prop]
@@ -135,8 +114,16 @@ theorem Injective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i →
 theorem Injective.comp_left {g : β → γ} (hg : Injective g) : Injective (g ∘ · : (α → β) → α → γ) :=
   .piMap fun _ ↦ hg
 
-theorem injective_of_subsingleton [Subsingleton α] (f : α → β) : Injective f :=
+theorem injective_comp_left_iff [Nonempty α] {g : β → γ} :
+    Injective (g ∘ · : (α → β) → α → γ) ↔ Injective g :=
+  ⟨fun h b₁ b₂ eq ↦ Nonempty.elim ‹_›
+    (congr_fun <| h (a₁ := fun _ ↦ b₁) (a₂ := fun _ ↦ b₂) <| funext fun _ ↦ eq), (·.comp_left)⟩
+
+@[nontriviality] theorem injective_of_subsingleton [Subsingleton α] (f : α → β) : Injective f :=
   fun _ _ _ ↦ Subsingleton.elim _ _
+
+@[nontriviality] theorem bijective_of_subsingleton [Subsingleton α] (f : α → α) : Bijective f :=
+  ⟨injective_of_subsingleton f, fun a ↦ ⟨a, Subsingleton.elim ..⟩⟩
 
 lemma Injective.dite (p : α → Prop) [DecidablePred p]
     {f : {a : α // p a} → β} {f' : {a : α // ¬ p a} → β}
@@ -207,14 +194,22 @@ protected theorem Surjective.exists₃ (hf : Surjective f) {p : β → β → β
 theorem Surjective.injective_comp_right (hf : Surjective f) : Injective fun g : β → γ ↦ g ∘ f :=
   fun _ _ h ↦ funext <| hf.forall.2 <| congr_fun h
 
+theorem injective_comp_right_iff_surjective {γ : Type*} [Nontrivial γ] :
+    Injective (fun g : β → γ ↦ g ∘ f) ↔ Surjective f := by
+  refine ⟨not_imp_not.mp fun not_surj inj ↦ not_subsingleton γ ⟨fun c c' ↦ ?_⟩,
+    (·.injective_comp_right)⟩
+  have ⟨b₀, hb⟩ := not_forall.mp not_surj
+  classical have := inj (a₁ := fun _ ↦ c) (a₂ := (if · = b₀ then c' else c)) ?_
+  · simpa using congr_fun this b₀
+  ext a; simp only [comp_apply, if_neg fun h ↦ hb ⟨a, h⟩]
+
 protected theorem Surjective.right_cancellable (hf : Surjective f) {g₁ g₂ : β → γ} :
     g₁ ∘ f = g₂ ∘ f ↔ g₁ = g₂ :=
   hf.injective_comp_right.eq_iff
 
 theorem surjective_of_right_cancellable_Prop (h : ∀ g₁ g₂ : β → Prop, g₁ ∘ f = g₂ ∘ f → g₁ = g₂) :
-    Surjective f := by
-  specialize h (fun y ↦ ∃ x, f x = y) (fun _ ↦ True) (funext fun x ↦ eq_true ⟨_, rfl⟩)
-  intro y; rw [congr_fun h y]; trivial
+    Surjective f :=
+  injective_comp_right_iff_surjective.mp h
 
 theorem bijective_iff_existsUnique (f : α → β) : Bijective f ↔ ∀ b : β, ∃! a : α, f a = b :=
   ⟨fun hf b ↦
@@ -465,6 +460,12 @@ theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) :
     Surjective (g ∘ · : (α → β) → α → γ) :=
   .piMap fun _ ↦ hg
 
+theorem surjective_comp_left_iff [Nonempty α] {g : β → γ} :
+    Surjective (g ∘ · : (α → β) → α → γ) ↔ Surjective g := by
+  refine ⟨fun h c ↦ Nonempty.elim ‹_› fun a ↦ ?_, (·.comp_left)⟩
+  have ⟨f, hf⟩ := h fun _ ↦ c
+  exact ⟨f a, congr_fun hf _⟩
+
 theorem Bijective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
     (hf : ∀ i, Bijective (f i)) : Bijective (Pi.map f) :=
   ⟨.piMap fun i ↦ (hf i).1, .piMap fun i ↦ (hf i).2⟩
@@ -489,12 +490,16 @@ def update (f : ∀ a, β a) (a' : α) (v : β a') (a : α) : β a :=
   if h : a = a' then Eq.ndrec v h.symm else f a
 
 @[simp]
-theorem update_same (a : α) (v : β a) (f : ∀ a, β a) : update f a v a = v :=
+theorem update_self (a : α) (v : β a) (f : ∀ a, β a) : update f a v a = v :=
   dif_pos rfl
 
+@[deprecated (since := "2024-12-28")] alias update_same := update_self
+
 @[simp]
-theorem update_noteq {a a' : α} (h : a ≠ a') (v : β a') (f : ∀ a, β a) : update f a' v a = f a :=
+theorem update_of_ne {a a' : α} (h : a ≠ a') (v : β a') (f : ∀ a, β a) : update f a' v a = f a :=
   dif_neg h
+
+@[deprecated (since := "2024-12-28")] alias update_noteq := update_of_ne
 
 /-- On non-dependent functions, `Function.update` can be expressed as an `ite` -/
 theorem update_apply {β : Sort*} (f : α → β) (a' : α) (b : β) (a : α) :
@@ -504,20 +509,20 @@ theorem update_apply {β : Sort*} (f : α → β) (a' : α) (b : β) (a : α) :
 @[nontriviality]
 theorem update_eq_const_of_subsingleton [Subsingleton α] (a : α) (v : α') (f : α → α') :
     update f a v = const α v :=
-  funext fun a' ↦ Subsingleton.elim a a' ▸ update_same _ _ _
+  funext fun a' ↦ Subsingleton.elim a a' ▸ update_self ..
 
 theorem surjective_eval {α : Sort u} {β : α → Sort v} [h : ∀ a, Nonempty (β a)] (a : α) :
     Surjective (eval a : (∀ a, β a) → β a) := fun b ↦
   ⟨@update _ _ (Classical.decEq α) (fun a ↦ (h a).some) a b,
-   @update_same _ _ (Classical.decEq α) _ _ _⟩
+   @update_self _ _ (Classical.decEq α) _ _ _⟩
 
 theorem update_injective (f : ∀ a, β a) (a' : α) : Injective (update f a') := fun v v' h ↦ by
   have := congr_fun h a'
-  rwa [update_same, update_same] at this
+  rwa [update_self, update_self] at this
 
 lemma forall_update_iff (f : ∀a, β a) {a : α} {b : β a} (p : ∀a, β a → Prop) :
     (∀ x, p x (update f a b x)) ↔ p a b ∧ ∀ x, x ≠ a → p x (f x) := by
-  rw [← and_forall_ne a, update_same]
+  rw [← and_forall_ne a, update_self]
   simp +contextual
 
 theorem exists_update_iff (f : ∀ a, β a) {a : α} {b : β a} (p : ∀ a, β a → Prop) :
@@ -547,7 +552,7 @@ theorem update_eq_self (a : α) (f : ∀ a, β a) : update f a (f a) = f :=
 
 theorem update_comp_eq_of_forall_ne' {α'} (g : ∀ a, β a) {f : α' → α} {i : α} (a : β i)
     (h : ∀ x, f x ≠ i) : (fun j ↦ (update g i a) (f j)) = fun j ↦ g (f j) :=
-  funext fun _ ↦ update_noteq (h _) _ _
+  funext fun _ ↦ update_of_ne (h _) _ _
 
 variable [DecidableEq α']
 
@@ -558,7 +563,7 @@ theorem update_comp_eq_of_forall_ne {α β : Sort*} (g : α' → β) {f : α →
 
 theorem update_comp_eq_of_injective' (g : ∀ a, β a) {f : α' → α} (hf : Function.Injective f)
     (i : α') (a : β (f i)) : (fun j ↦ update g (f i) a (f j)) = update (fun i ↦ g (f i)) i a :=
-  eq_update_iff.2 ⟨update_same _ _ _, fun _ hj ↦ update_noteq (hf.ne hj) _ _⟩
+  eq_update_iff.2 ⟨update_self .., fun _ hj ↦ update_of_ne (hf.ne hj) _ _⟩
 
 /-- Non-dependent version of `Function.update_comp_eq_of_injective'` -/
 theorem update_comp_eq_of_injective {β : Sort*} (g : α' → β) {f : α → α'}
@@ -658,7 +663,7 @@ theorem extend_apply' (g : α → γ) (e' : β → γ) (b : β) (hb : ¬∃ a, f
   simp [Function.extend_def, hb]
 
 lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ ∃ (e : β → γ), g = e ∘ f :=
-⟨fun hf => ⟨extend f g (const β (Classical.arbitrary γ)),
+  ⟨fun hf => ⟨extend f g (const β (Classical.arbitrary γ)),
       funext (fun x => by simp only [comp_apply, hf.extend_apply])⟩,
   fun h _ _ hf => by rw [Classical.choose_spec h, comp_apply, comp_apply, hf]⟩
 
@@ -692,6 +697,18 @@ theorem Injective.surjective_comp_right' (hf : Injective f) (g₀ : β → γ) :
 theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) :
     Surjective fun g : β → γ ↦ g ∘ f :=
   hf.surjective_comp_right' fun _ ↦ Classical.choice ‹_›
+
+theorem surjective_comp_right_iff_injective {γ : Type*} [Nontrivial γ] :
+    Surjective (fun g : β → γ ↦ g ∘ f) ↔ Injective f := by
+  refine ⟨not_imp_not.mp fun not_inj surj ↦ not_subsingleton γ ⟨fun c c' ↦ ?_⟩,
+    (·.surjective_comp_right)⟩
+  simp only [Injective, not_forall] at not_inj
+  have ⟨a₁, a₂, eq, ne⟩ := not_inj
+  have ⟨f, hf⟩ := surj (if · = a₂ then c else c')
+  have h₁ := congr_fun hf a₁
+  have h₂ := congr_fun hf a₂
+  simp only [comp_apply, if_neg ne, reduceIte] at h₁ h₂
+  rw [← h₁, eq, h₂]
 
 theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ ↦ g ∘ f :=
   ⟨hf.surjective.injective_comp_right, fun g ↦
@@ -840,13 +857,13 @@ protected theorem uncurry {α β γ : Type*} {f : α → β → γ} (hf : Inject
 /-- As a map from the left argument to a unary function, `f` is injective. -/
 theorem left' (hf : Injective2 f) [Nonempty β] : Function.Injective f := fun _ _ h ↦
   let ⟨b⟩ := ‹Nonempty β›
-  hf.left b <| (congr_fun h b : _)
+  hf.left b <| (congr_fun h b :)
 
 /-- As a map from the right argument to a unary function, `f` is injective. -/
 theorem right' (hf : Injective2 f) [Nonempty α] : Function.Injective fun b a ↦ f a b :=
   fun _ _ h ↦
     let ⟨a⟩ := ‹Nonempty α›
-    hf.right a <| (congr_fun h a : _)
+    hf.right a <| (congr_fun h a :)
 
 theorem eq_iff (hf : Injective2 f) {a₁ a₂ b₁ b₂} : f a₁ b₁ = f a₂ b₂ ↔ a₁ = a₂ ∧ b₁ = b₂ :=
   ⟨fun h ↦ hf h, fun ⟨h1, h2⟩ ↦ congr_arg₂ f h1 h2⟩

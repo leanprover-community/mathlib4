@@ -7,7 +7,6 @@ import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.AddGroupWithTop
-import Mathlib.Algebra.Order.GroupWithZero.Synonym
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Lemmas
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
@@ -33,7 +32,7 @@ variable {α : Type*}
 @[deprecated "Use `[CommMonoidWithZero α] [LinearOrder α] [IsOrderedMonoidWithZero α]` instead."
   (since := "2025-04-03")]
 structure LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoid α, LinearOrder α,
-    IsOrderedMonoid α, CommMonoidWithZero α where
+    IsOrderedMonoid α, CommMonoidWithZero α, OrderBot α where
   /-- `0 ≤ 1` in any linearly ordered commutative monoid. -/
   zero_le_one : (0 : α) ≤ 1
 
@@ -96,15 +95,22 @@ theorem zero_lt_iff : 0 < a ↔ a ≠ 0 :=
 
 theorem ne_zero_of_lt (h : b < a) : a ≠ 0 := fun h1 ↦ not_lt_zero' <| show b < 0 from h1 ▸ h
 
+instance (priority := 10) IsOrderedMonoidWithZero.toOrderBot : OrderBot α where
+  bot := 0
+  bot_le _ := zero_le'
+
+/-- See also `bot_eq_zero` and `bot_eq_zero'` for canonically ordered monoids. -/
+lemma bot_eq_zero'' : (⊥ : α) = 0 := rfl
+
 instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
     LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) where
-  top := (0 : α)
-  top_add' := fun a ↦ zero_mul a.toMul
-  le_top := fun _ ↦ zero_le'
+  top := .ofMul <| .toDual 0
+  top_add' a := zero_mul a.toMul.ofDual
+  le_top _ := zero_le'
 
 instance instLinearOrderedAddCommMonoidWithTopOrderDualAdditive :
     LinearOrderedAddCommMonoidWithTop (Additive α)ᵒᵈ where
-  top := OrderDual.toDual (Additive.ofMul 0)
+  top := .toDual <| .ofMul _
   top_add' := fun a ↦ zero_mul (Additive.toMul (OrderDual.ofDual a))
   le_top := fun a ↦ zero_le' (a := Additive.toMul (OrderDual.ofDual a))
 

@@ -23,7 +23,7 @@ variable {α β : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α] [R
 lemma of_abv_le (n : ℕ) (hm : ∀ m, n ≤ m → abv (f m) ≤ a m) :
     IsCauSeq abs (fun n ↦ ∑ i ∈ range n, a i) → IsCauSeq abv fun n ↦ ∑ i ∈ range n, f i := by
   intro hg ε ε0
-  cases' hg (ε / 2) (div_pos ε0 (by norm_num)) with i hi
+  obtain ⟨i, hi⟩ := hg (ε / 2) (div_pos ε0 (by norm_num))
   exists max n i
   intro j ji
   have hi₁ := hi j (le_trans (le_max_right n i) ji)
@@ -157,7 +157,7 @@ lemma of_decreasing_bounded (f : ℕ → α) {a : α} {m : ℕ} (ham : ∀ n ≥
   have hl0 : l ≠ 0 := fun hl0 ↦
     not_lt_of_ge (ham m le_rfl)
       (lt_of_lt_of_le (by have := hl m (le_refl m); simpa [hl0] using this) (le_abs_self (f m)))
-  cases' not_forall.1 (Nat.find_min h (Nat.pred_lt hl0)) with i hi
+  obtain ⟨i, hi⟩ := not_forall.1 (Nat.find_min h (Nat.pred_lt hl0))
   rw [Classical.not_imp, not_lt] at hi
   exists i
   intro j hj

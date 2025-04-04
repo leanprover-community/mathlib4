@@ -3,9 +3,9 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Big operators on a list in ordered groups
@@ -189,7 +189,7 @@ variable [CommMonoid M] [PartialOrder M] [CanonicallyOrderedMul M] {l : List M}
 
 @[to_additive] lemma monotone_prod_take (L : List M) : Monotone fun i => (L.take i).prod := by
   refine monotone_nat_of_le_succ fun n => ?_
-  cases' lt_or_le n L.length with h h
+  rcases lt_or_le n L.length with h | h
   · rw [prod_take_succ _ _ h]
     exact le_self_mul
   · simp [take_of_length_le h, take_of_length_le (le_trans h (Nat.le_succ _))]

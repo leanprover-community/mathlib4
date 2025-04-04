@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
+Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl, Yuyang Zhao
 -/
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
 
@@ -17,15 +17,15 @@ open Function
 
 variable {α : Type*}
 
--- TODO: use weaker typeclasses
+-- TODO: assume weaker typeclasses
 
-/-- An ordered (additive) monoid is a monoid with a order such that addition is monotone. -/
+/-- An ordered (additive) monoid is a monoid with a partial order such that addition is monotone. -/
 class IsOrderedAddMonoid (α : Type*) [AddCommMonoid α] [PartialOrder α] where
   protected add_le_add_left : ∀ a b : α, a ≤ b → ∀ c, c + a ≤ c + b
   protected add_le_add_right : ∀ a b : α, a ≤ b → ∀ c, a + c ≤ b + c := fun a b h c ↦ by
     rw [add_comm _ c, add_comm _ c]; exact add_le_add_left a b h c
 
-/-- An ordered monoid is a monoid with a order such that multiplication is monotone. -/
+/-- An ordered monoid is a monoid with a partial order such that multiplication is monotone. -/
 @[to_additive]
 class IsOrderedMonoid (α : Type*) [CommMonoid α] [PartialOrder α] where
   protected mul_le_mul_left : ∀ a b : α, a ≤ b → ∀ c, c * a ≤ c * b
@@ -36,16 +36,16 @@ section IsOrderedMonoid
 variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
 
 @[to_additive]
-instance IsOrderedMonoid.toMulLeftMono : MulLeftMono α where
+instance (priority := 900) IsOrderedMonoid.toMulLeftMono : MulLeftMono α where
   elim := fun a _ _ bc ↦ IsOrderedMonoid.mul_le_mul_left _ _ bc a
 
 @[to_additive]
-instance IsOrderedMonoid.toMulRightMono : MulRightMono α where
+instance (priority := 900) IsOrderedMonoid.toMulRightMono : MulRightMono α where
   elim := fun a _ _ bc ↦ IsOrderedMonoid.mul_le_mul_right _ _ bc a
 
 end IsOrderedMonoid
 
-/-- An ordered cancellative additive monoid is a ordered additive
+/-- An ordered cancellative additive monoid is an ordered additive
 monoid in which addition is cancellative and monotone. -/
 class IsOrderedCancelAddMonoid (α : Type*) [AddCommMonoid α] [PartialOrder α] extends
     IsOrderedAddMonoid α where
@@ -53,7 +53,7 @@ class IsOrderedCancelAddMonoid (α : Type*) [AddCommMonoid α] [PartialOrder α]
   protected le_of_add_le_add_right : ∀ a b c : α, b + a ≤ c + a → b ≤ c := fun a b c h ↦ by
     rw [add_comm _ a, add_comm _ a] at h; exact le_of_add_le_add_left a b c h
 
-/-- An ordered cancellative monoid is a ordered monoid in which
+/-- An ordered cancellative monoid is an ordered monoid in which
 multiplication is cancellative and monotone. -/
 @[to_additive IsOrderedCancelAddMonoid]
 class IsOrderedCancelMonoid (α : Type*) [CommMonoid α] [PartialOrder α] extends
@@ -72,7 +72,7 @@ instance (priority := 200) IsOrderedCancelMonoid.toMulLeftReflectLE :
   ⟨IsOrderedCancelMonoid.le_of_mul_le_mul_left⟩
 
 @[to_additive]
-instance IsOrderedCancelMonoid.toMulLeftReflectLT :
+instance (priority := 900) IsOrderedCancelMonoid.toMulLeftReflectLT :
     MulLeftReflectLT α where
   elim := contravariant_lt_of_contravariant_le α α _ ContravariantClass.elim
 

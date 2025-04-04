@@ -69,7 +69,7 @@ with constant `c` on some neighborhood of `a`. -/
 theorem approximates_deriv_on_nhds {f : E → F} {f' : E →L[𝕜] F} {a : E}
     (hf : HasStrictFDerivAt f f' a) {c : ℝ≥0} (hc : Subsingleton E ∨ 0 < c) :
     ∃ s ∈ 𝓝 a, ApproximatesLinearOn f f' s c := by
-  cases' hc with hE hc
+  rcases hc with hE | hc
   · refine ⟨univ, IsOpen.mem_nhds isOpen_univ trivial, fun x _ y _ => ?_⟩
     simp [@Subsingleton.elim E hE x y]
   have := hf.isLittleO.def hc
@@ -194,5 +194,3 @@ end HasStrictFDerivAt
 theorem isOpenMap_of_hasStrictFDerivAt_equiv [CompleteSpace E] {f : E → F} {f' : E → E ≃L[𝕜] F}
     (hf : ∀ x, HasStrictFDerivAt f (f' x : E →L[𝕜] F) x) : IsOpenMap f :=
   isOpenMap_iff_nhds_le.2 fun x => (hf x).map_nhds_eq_of_equiv.ge
-@[deprecated (since := "2024-03-23")]
-alias open_map_of_strict_fderiv_equiv := isOpenMap_of_hasStrictFDerivAt_equiv

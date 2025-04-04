@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies
+Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Yaël Dillies, Yuyang Zhao
 -/
 import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 import Mathlib.Algebra.CharZero.Defs
@@ -109,9 +109,9 @@ universe u
 
 variable {α : Type u}
 
--- TODO: use weaker typeclasses
+-- TODO: assume weaker typeclasses
 
-/-- An ordered semiring is a semiring with a order such that addition is monotone and
+/-- An ordered semiring is a semiring with a partial order such that addition is monotone and
 multiplication by a nonnegative number is monotone. -/
 class IsOrderedRing (α : Type*) [Semiring α] [PartialOrder α] extends
     IsOrderedAddMonoid α, ZeroLEOneClass α where
@@ -124,13 +124,15 @@ class IsOrderedRing (α : Type*) [Semiring α] [PartialOrder α] extends
 
 attribute [instance 100] IsOrderedRing.toZeroLEOneClass
 
-/-- A strict ordered semiring is a nontrivial semiring with a order such that addition is
+/-- A strict ordered semiring is a nontrivial semiring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
 class IsStrictOrderedRing (α : Type*) [Semiring α] [PartialOrder α] extends
     IsOrderedCancelAddMonoid α, ZeroLEOneClass α, Nontrivial α where
-  /-- Left multiplication by a positive element is strictly monotone. -/
+  /-- In a strict ordered semiring, we can multiply an inequality `a < b` on the left
+  by a positive element `0 < c` to obtain `c * a < c * b`. -/
   protected mul_lt_mul_of_pos_left : ∀ a b c : α, a < b → 0 < c → c * a < c * b
-  /-- Right multiplication by a positive element is strictly monotone. -/
+  /-- In a strict ordered semiring, we can multiply an inequality `a < b` on the right
+  by a positive element `0 < c` to obtain `a * c < b * c`. -/
   protected mul_lt_mul_of_pos_right : ∀ a b c : α, a < b → 0 < c → a * c < b * c
 
 attribute [instance 100] IsStrictOrderedRing.toZeroLEOneClass
@@ -156,16 +158,12 @@ section IsOrderedRing
 variable [Semiring α] [PartialOrder α] [IsOrderedRing α]
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsOrderedRing.zeroLEOneClass : ZeroLEOneClass α :=
-  { ‹IsOrderedRing α› with }
+instance (priority := 200) IsOrderedRing.toPosMulMono : PosMulMono α where
+  elim x _ _ h := IsOrderedRing.mul_le_mul_of_nonneg_left _ _ _ h x.2
 
 -- see Note [lower instance priority]
-instance (priority := 200) IsOrderedRing.toPosMulMono : PosMulMono α :=
-  ⟨fun x _ _ h => IsOrderedRing.mul_le_mul_of_nonneg_left _ _ _ h x.2⟩
-
--- see Note [lower instance priority]
-instance (priority := 200) IsOrderedRing.toMulPosMono : MulPosMono α :=
-  ⟨fun x _ _ h => IsOrderedRing.mul_le_mul_of_nonneg_right _ _ _ h x.2⟩
+instance (priority := 200) IsOrderedRing.toMulPosMono : MulPosMono α where
+  elim x _ _ h := IsOrderedRing.mul_le_mul_of_nonneg_right _ _ _ h x.2
 
 end IsOrderedRing
 
@@ -179,12 +177,12 @@ section IsStrictOrderedRing
 variable [Semiring α] [PartialOrder α] [IsStrictOrderedRing α]
 
 -- see Note [lower instance priority]
-instance (priority := 200) IsStrictOrderedRing.toPosMulStrictMono : PosMulStrictMono α :=
-  ⟨fun x _ _ h => IsStrictOrderedRing.mul_lt_mul_of_pos_left _ _ _ h x.prop⟩
+instance (priority := 200) IsStrictOrderedRing.toPosMulStrictMono : PosMulStrictMono α where
+  elim x _ _ h := IsStrictOrderedRing.mul_lt_mul_of_pos_left _ _ _ h x.prop
 
 -- see Note [lower instance priority]
-instance (priority := 200) IsStrictOrderedRing.toMulPosStrictMono : MulPosStrictMono α :=
-  ⟨fun x _ _ h => IsStrictOrderedRing.mul_lt_mul_of_pos_right _ _ _ h x.prop⟩
+instance (priority := 200) IsStrictOrderedRing.toMulPosStrictMono : MulPosStrictMono α where
+  elim x _ _ h := IsStrictOrderedRing.mul_lt_mul_of_pos_right _ _ _ h x.prop
 
 -- see Note [lower instance priority]
 instance (priority := 100) IsStrictOrderedRing.toIsOrderedRing : IsOrderedRing α where

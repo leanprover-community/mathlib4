@@ -19,26 +19,23 @@ Another application is to the faithfulness of the Weyl group action on roots, an
 Weyl group.
 
 ## Main definitions:
- * `Polarization`: A distinguished linear map from the weight space to the coweight space.
- * `RootForm` : The bilinear form on weight space corresponding to `Polarization`.
+ * `RootPairing.Polarization`: A distinguished linear map from the weight space to the coweight
+   space.
+ * `RootPairing.RootForm` : The bilinear form on weight space corresponding to `Polarization`.
 
 ## Main results:
- * `polarization_self_sum_of_squares` : The inner product of any weight vector is a sum of squares.
- * `rootForm_reflection_reflection_apply` : `RootForm` is invariant with respect
+ * `RootPairing.rootForm_self_sum_of_squares` : The inner product of any
+   weight vector is a sum of squares.
+ * `RootPairing.rootForm_reflection_reflection_apply` : `RootForm` is invariant with respect
    to reflections.
- * `rootForm_self_smul_coroot`: The inner product of a root with itself times the
-   corresponding coroot is equal to two times Polarization applied to the root.
- * `rootForm_self_non_neg`: `RootForm` is positive semidefinite.
+ * `RootPairing.rootForm_self_smul_coroot`: The inner product of a root with itself
+   times the corresponding coroot is equal to two times Polarization applied to the root.
+ * `RootPairing.exists_ge_zero_eq_rootForm`: `RootForm` is positive semidefinite.
 
 ## References:
  * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
  * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
-## TODO (possibly in other files)
- * Weyl-invariance
- * Faithfulness of Weyl group action, and finiteness of Weyl group, for finite root systems.
- * Relation to Coxeter weight.  In particular, positivity constraints for finite root pairings mean
-  we restrict to weights between 0 and 4.
 -/
 
 open Set Function
@@ -51,14 +48,16 @@ variable {ι R M N : Type*}
 
 namespace RootPairing
 
-section CommRing
-
-variable [Fintype ι] [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
   (P : RootPairing ι R M N)
 
-instance : Module.Finite R P.rootSpan := Finite.span_of_finite R <| finite_range P.root
+section Fintype
 
-instance : Module.Finite R P.corootSpan := Finite.span_of_finite R <| finite_range P.coroot
+instance [Finite ι] : Module.Finite R P.rootSpan := .span_of_finite R <| finite_range P.root
+
+instance [Finite ι] : Module.Finite R P.corootSpan := .span_of_finite R <| finite_range P.coroot
+
+variable [Fintype ι]
 
 /-- An invariant linear map from weight space to coweight space. -/
 def Polarization : M →ₗ[R] N :=
@@ -166,6 +165,16 @@ lemma rootForm_self_smul_coroot (i : ι) :
   rw [Finset.sum_smul, add_neg_eq_zero.mpr rfl]
   exact sub_eq_zero_of_eq rfl
 
+lemma corootForm_self_smul_root (i : ι) :
+    (P.CorootForm (P.coroot i) (P.coroot i)) • P.root i = 2 • P.CoPolarization (P.coroot i) :=
+  rootForm_self_smul_coroot (P.flip) i
+
+lemma four_nsmul_coPolarization_compl_polarization_apply_root (i : ι) :
+    (4 • P.CoPolarization ∘ₗ P.Polarization) (P.root i) =
+    (P.RootForm (P.root i) (P.root i) * P.CorootForm (P.coroot i) (P.coroot i)) • P.root i := by
+  rw [LinearMap.smul_apply, LinearMap.comp_apply, show 4 = 2 * 2 from rfl, mul_smul, ← map_nsmul,
+    ← rootForm_self_smul_coroot, map_smul, smul_comm, ← corootForm_self_smul_root, smul_smul]
+
 lemma four_smul_rootForm_sq_eq_coxeterWeight_smul (i j : ι) :
     4 • (P.RootForm (P.root i) (P.root j)) ^ 2 = P.coxeterWeight i j •
       (P.RootForm (P.root i) (P.root i) * P.RootForm (P.root j) (P.root j)) := by
@@ -183,13 +192,9 @@ lemma four_smul_rootForm_sq_eq_coxeterWeight_smul (i j : ι) :
     map_smul, ← pairing, smul_eq_mul, smul_eq_mul, smul_eq_mul, coxeterWeight]
   ring
 
-lemma corootForm_self_smul_root (i : ι) :
-    (P.CorootForm (P.coroot i) (P.coroot i)) • P.root i = 2 • P.CoPolarization (P.coroot i) :=
-  rootForm_self_smul_coroot (P.flip) i
-
 lemma rootForm_self_sum_of_squares (x : M) :
     IsSumSq (P.RootForm x x) :=
-  P.rootForm_apply_apply x x ▸ isSumSq_sum_mul_self Finset.univ _
+  P.rootForm_apply_apply x x ▸ IsSumSq.sum_mul_self Finset.univ _
 
 lemma rootForm_root_self (j : ι) :
     P.RootForm (P.root j) (P.root j) = ∑ (i : ι), (P.pairing j i) * (P.pairing j i) := by
@@ -226,58 +231,40 @@ lemma prod_rootForm_smul_coroot_mem_range_domRestrict (i : ι) :
   use ⟨(c • 2 • P.root i), by aesop⟩
   simp
 
-end CommRing
+end Fintype
 
-section LinearOrderedCommRing
+section IsValuedInOrdered
 
-variable [Fintype ι] [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
-  [AddCommGroup M] [Module R M] [AddCommGroup N]
-  [Module R N] (P : RootPairing ι R M N)
+variable (S : Type*) [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+  [Algebra S R] [FaithfulSMul S R]
+  [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] {i j : ι}
 
-theorem rootForm_self_non_neg (x : M) : 0 ≤ P.RootForm x x :=
-  IsSumSq.nonneg (P.rootForm_self_sum_of_squares x)
-
-lemma rootForm_self_eq_zero_iff {x : M} :
-    P.RootForm x x = 0 ↔ x ∈ LinearMap.ker P.RootForm :=
-  P.RootForm.apply_apply_same_eq_zero_iff P.rootForm_self_non_neg P.rootForm_symmetric
-
-lemma rootForm_root_self_pos (i : ι) :
-    0 < P.RootForm (P.root i) (P.root i) := by
-  simp only [rootForm_apply_apply]
-  exact Finset.sum_pos' (fun j _ ↦ mul_self_nonneg _) ⟨i, by simp⟩
-
-/-- SGA3 XXI Prop. 2.3.1 -/
-lemma coxeterWeight_le_four (i j : ι) : P.coxeterWeight i j ≤ 4 := by
-  set li := P.RootForm (P.root i) (P.root i)
-  set lj := P.RootForm (P.root j) (P.root j)
-  set lij := P.RootForm (P.root i) (P.root j)
-  have hi := P.rootForm_root_self_pos i
-  have hj := P.rootForm_root_self_pos j
-  have cs : 4 * lij ^ 2 ≤ 4 * (li * lj) := by
-    rw [mul_le_mul_left four_pos]
-    exact LinearMap.BilinForm.apply_sq_le_of_symm P.RootForm P.rootForm_self_non_neg
-      P.rootForm_symmetric (P.root i) (P.root j)
-  have key : 4 • lij ^ 2 = _ • (li * lj) := P.four_smul_rootForm_sq_eq_coxeterWeight_smul i j
-  simp only [nsmul_eq_mul, smul_eq_mul, Nat.cast_ofNat] at key
-  rwa [key, mul_le_mul_right (by positivity)] at cs
-
-instance instIsRootPositiveRootForm : IsRootPositive P P.RootForm where
-  zero_lt_apply_root i := P.rootForm_root_self_pos i
+/-- The bilinear form of a finite root pairing taking values in a linearly-ordered ring, as a
+root-positive form. -/
+def posRootForm [Fintype ι] : P.RootPositiveForm S where
+  form := P.RootForm
   symm := P.rootForm_symmetric
-  apply_reflection_eq := P.rootForm_reflection_reflection_apply
+  isOrthogonal_reflection := P.rootForm_reflection_reflection_apply
+  exists_eq i j := ⟨∑ k, P.pairingIn S i k * P.pairingIn S j k, by simp [rootForm_apply_apply]⟩
+  exists_pos_eq i := by
+    refine ⟨∑ k, P.pairingIn S i k ^ 2, ?_, by simp [sq, rootForm_apply_apply]⟩
+    exact Finset.sum_pos' (fun j _ ↦ sq_nonneg _) ⟨i, by simp⟩
 
-lemma coxeterWeight_mem_set_of_isCrystallographic (i j : ι) [P.IsCrystallographic] :
-    P.coxeterWeight i j ∈ ({0, 1, 2, 3, 4} : Set R) := by
-  obtain ⟨n, hcn⟩ : ∃ n : ℕ, P.coxeterWeight i j = n := by
-    obtain ⟨z, hz⟩ := P.exists_int_eq_coxeterWeight i j
-    have hz₀ : 0 ≤ z := by simpa [hz] using P.coxeterWeight_non_neg P.RootForm i j
-    obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le hz₀
-    exact ⟨n, by simp [hz]⟩
-  have : P.coxeterWeight i j ≤ 4 := P.coxeterWeight_le_four i j
-  simp only [hcn, mem_insert_iff, mem_singleton_iff] at this ⊢
-  norm_cast at this ⊢
-  omega
+theorem exists_ge_zero_eq_rootForm [Fintype ι] (x : M) (hx : x ∈ span S (range P.root)) :
+    ∃ s ≥ 0, algebraMap S R s = P.RootForm x x := by
+  refine ⟨(P.posRootForm S).posForm ⟨x, hx⟩ ⟨x, hx⟩, IsSumSq.nonneg ?_, by simp [posRootForm]⟩
+  choose s hs using P.coroot'_apply_apply_mem_of_mem_span S hx
+  suffices (P.posRootForm S).posForm ⟨x, hx⟩ ⟨x, hx⟩ = ∑ i, s i * s i from
+    this ▸ IsSumSq.sum_mul_self Finset.univ s
+  apply FaithfulSMul.algebraMap_injective S R
+  simp only [posRootForm, RootPositiveForm.algebraMap_posForm, map_sum, map_mul]
+  simp [← Algebra.linearMap_apply, hs, rootForm_apply_apply]
 
-end LinearOrderedCommRing
+lemma zero_lt_pairingIn_iff' [Finite ι] :
+    0 < P.pairingIn S i j ↔ 0 < P.pairingIn S j i :=
+  let _i : Fintype ι := Fintype.ofFinite ι
+  zero_lt_pairingIn_iff (P.posRootForm S) i j
+
+end IsValuedInOrdered
 
 end RootPairing

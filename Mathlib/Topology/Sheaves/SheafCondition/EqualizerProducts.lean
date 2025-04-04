@@ -379,10 +379,6 @@ def coneEquiv :
   unitIso := coneEquivUnitIso F U
   counitIso := coneEquivCounitIso F U
 
--- Porting note: not supported in Lean 4
--- attribute [local reducible]
---   SheafConditionEqualizerProducts.res SheafConditionEqualizerProducts.leftRes
-
 /-- If `SheafConditionEqualizerProducts.fork` is an equalizer,
 then `F.mapCone (cone U)` is a limit cone.
 -/
