@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Integral.SetToL1
 The Bochner integral extends the definition of the Lebesgue integral to functions that map from a
 measure space into a Banach space (complete normed vector space). It is constructed here
 for L1 functions by extending the integral on simple functions. See the file
-`Mathlib.MeasureTheory.Integral.Bochner` for the integral of functions and corresponding API.
+`Mathlib.MeasureTheory.Integral.Bochner.Basic` for the integral of functions and corresponding API.
 
 ## Main definitions
 
