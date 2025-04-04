@@ -15,11 +15,14 @@ a totally real number field.
 
 * `IsCM`: a predicate on two number fields `F` and `K` stating that `K/F` is a CM-extension.
 
+* `IsCM.complexConj`: the complex conjugation of a `CM`-extension.
+
 -/
 
 open NumberField InfinitePlace ComplexEmbedding
 
 /--
+An extension `K/F` of number fields is a `CM`-extension if `K` is totally complex, `F` is totally
 real and the extension `K/F` is of degree `2`.
 -/
 class IsCM (F K : Type*) [Field F] [NumberField F] [Field K] [NumberField K]
