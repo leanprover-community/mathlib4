@@ -363,10 +363,6 @@ lemma _root_.CanonicallyOrderedCommMonoid.single_le_prod {i : ι} (hi : i ∈ s)
     f i ≤ ∏ j ∈ s, f j :=
   single_le_prod' (fun _ _ ↦ one_le _) hi
 
-@[to_additive (attr := simp) sum_eq_zero_iff]
-theorem prod_eq_one_iff' : ∏ x ∈ s, f x = 1 ↔ ∀ x ∈ s, f x = 1 :=
-  prod_eq_one_iff_of_one_le' fun x _ ↦ one_le (f x)
-
 @[to_additive sum_le_sum_of_subset]
 theorem prod_le_prod_of_subset' (h : s ⊆ t) : ∏ x ∈ s, f x ≤ ∏ x ∈ t, f x :=
   prod_le_prod_of_subset_of_one_le' h fun _ _ _ ↦ one_le _

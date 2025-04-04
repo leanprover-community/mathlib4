@@ -134,9 +134,9 @@ variable {N : Type*} [Monoid N]
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
     FreeMonoid.hom_eq fun ⟨i, x⟩ => by
-      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-      erw [MonoidHom.comp_apply, MonoidHom.comp_apply, ← of_apply, ← MonoidHom.comp_apply, ←
-        MonoidHom.comp_apply, h]; rfl
+      rw [MonoidHom.comp_apply, MonoidHom.comp_apply, ← of_apply]
+      unfold CoprodI
+      rw [← MonoidHom.comp_apply, ← MonoidHom.comp_apply, h]
 
 /-- A map out of the free product corresponds to a family of maps out of the summands. This is the
 universal property of the free product, characterizing it as a categorical coproduct. -/
@@ -151,8 +151,7 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
   left_inv := by
     intro fi
     ext i x
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [MonoidHom.comp_apply, of_apply, Con.lift_mk', FreeMonoid.lift_eval_of]
+    rfl
   right_inv := by
     intro f
     ext i x
@@ -397,7 +396,7 @@ def consRecOn {motive : Word M → Sort*} (w : Word M) (empty : motive empty)
         Sigma.exists, exists_and_right, exists_eq_right, not_exists]
       intro m' hm'
       exact h2.1 _ hm' rfl
-    · exact h1 _ (List.mem_cons_self _ _)
+    · exact h1 _ List.mem_cons_self
 
 @[simp]
 theorem consRecOn_empty {motive : Word M → Sort*} (h_empty : motive empty)
