@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Kevin Kappelmann
 -/
 import Mathlib.Algebra.Group.Int.Even
 import Mathlib.Algebra.Group.Int.Units
-import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.Data.Set.Function
 import Mathlib.Data.Set.Monotone
