@@ -860,7 +860,8 @@ lemma KrullDimLE.mono {n m : ℕ} (e : n ≤ m) (α : Type*) [Preorder α] [Krul
     KrullDimLE m α :=
   ⟨KrullDimLE.krullDim_le (n := n).trans (Nat.cast_le.mpr e)⟩
 
-instance {α} [Preorder α] [Subsingleton α] : KrullDimLE 0 α := ⟨krullDim_nonpos_of_subsingleton⟩
+instance (n α) [Preorder α] [Subsingleton α] : KrullDimLE n α :=
+  ⟨krullDim_nonpos_of_subsingleton.trans n.zero_le⟩
 
 end typeclass
 
