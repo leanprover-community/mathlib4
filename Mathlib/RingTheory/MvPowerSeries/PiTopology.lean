@@ -205,6 +205,13 @@ theorem as_tsum [T2Space R] (f : MvPowerSeries σ R) :
     f = tsum fun d : σ →₀ ℕ => monomial R d (coeff R d f) :=
   (HasSum.tsum_eq (hasSum_of_monomials_self _)).symm
 
+variable (σ) in
+@[fun_prop]
+lemma continuous_map {S : Type*} [TopologicalSpace S] [Semiring S] {φ : R →+* S}
+    (hφ : Continuous φ) : Continuous (map σ φ) := by
+  dsimp [map]
+  fun_prop
+
 end Topology
 
 section Uniformity
