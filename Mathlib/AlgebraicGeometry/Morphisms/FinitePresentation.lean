@@ -3,9 +3,9 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
-import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
 import Mathlib.AlgebraicGeometry.Morphisms.Affine
+import Mathlib.AlgebraicGeometry.Morphisms.QuasiSeparated
+import Mathlib.AlgebraicGeometry.Morphisms.RingHomProperties
 import Mathlib.RingTheory.RingHom.FinitePresentation
 import Mathlib.RingTheory.Spectrum.Prime.Chevalley
 
@@ -73,27 +73,6 @@ instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [LocallyOfFinitePresen
 instance {X Y Z : Scheme.{u}} (f : X ⟶ Z) (g : Y ⟶ Z) [LocallyOfFinitePresentation f] :
     LocallyOfFinitePresentation (Limits.pullback.snd f g) :=
   MorphismProperty.pullback_snd _ _ inferInstance
-
-instance {R : Type*} [CommRing R] : PrespectralSpace (PrimeSpectrum R) :=
-  .of_isTopologicalBasis PrimeSpectrum.isBasis_basic_opens
-    (by simpa using PrimeSpectrum.isCompact_basicOpen)
-
-instance {X : Scheme.{u}} : PrespectralSpace X :=
-  have (Y : Scheme.{u}) (_ : IsAffine Y) : PrespectralSpace Y :=
-    .of_isInducing (Y := PrimeSpectrum _) (Y.isoSpec.hom.base)
-      Y.isoSpec.hom.homeomorph.isInducing ((quasiCompact_iff_spectral _).mp inferInstance)
-  have (i) : PrespectralSpace (X.affineCover.map i).opensRange.1 :=
-    this (X.affineCover.map i).opensRange (isAffineOpen_opensRange (X.affineCover.map i))
-  .of_isOpenCover X.affineCover.isOpenCover_opensRange
-
-def Scheme.Hom.isoOpensRange {X Y : Scheme} (f : X.Hom Y) [IsOpenImmersion f] :
-    X ≅ f.opensRange :=
-  IsOpenImmersion.isoOfRangeEq f f.opensRange.ι (by simp)
-
-@[reassoc (attr := simp)]
-lemma Scheme.Hom.isoOpensRange_hom_ι {X Y : Scheme} (f : X.Hom Y) [IsOpenImmersion f] :
-    f.isoOpensRange.hom ≫ f.opensRange.ι = f := by
-  simp [isoOpensRange]
 
 /-- **Chevalley's Theorem**: The image of a locally constructible set under a
 morphism of finite presentation is locally constructible. -/
