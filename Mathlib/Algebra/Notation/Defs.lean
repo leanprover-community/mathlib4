@@ -214,12 +214,6 @@ lemma ite_div_ite (a b c d : α) :
 end Div
 end ite
 
-attribute [to_additive] One
-attribute [to_additive existing Zero.toOfNat0] One.toOfNat1
-attribute [to_additive existing Zero.ofOfNat0, to_additive_change_numeral 2] One.ofOfNat1
-
-attribute [to_additive_change_numeral 2] OfNat OfNat.ofNat
-
 variable {α : Type u}
 
 instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α := ⟨0⟩

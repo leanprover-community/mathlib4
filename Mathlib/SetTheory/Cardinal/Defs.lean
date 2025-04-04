@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Data.ULift
 import Mathlib.Util.Delaborators
+import Mathlib.Util.AssertExists
 
 /-!
 # Cardinal Numbers

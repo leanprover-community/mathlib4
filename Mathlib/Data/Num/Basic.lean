@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Lean.Linter.Deprecated
+import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Tactic.TypeStar
