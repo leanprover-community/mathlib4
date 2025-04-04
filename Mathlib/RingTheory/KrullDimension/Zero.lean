@@ -68,17 +68,12 @@ lemma Ring.krullDimLE_zero_and_isLocalRing_tfae :
     rw [nilradical, Ideal.radical_eq_sInf]
     simp [← Ideal.isMaximal_iff_isPrime, IsLocalRing.isMaximal_iff]
   tfae_have 3 → 4 := by
-    intro H
-    refine ⟨?_, ?_⟩
-    · intro e
-      obtain ⟨n, hn⟩ := (Ideal.eq_top_iff_one _).mp e
+    refine fun H ↦ ⟨fun e ↦ ?_, fun I hI ↦ ?_⟩
+    · obtain ⟨n, hn⟩ := (Ideal.eq_top_iff_one _).mp e
       exact (H 0).mp .zero ((show (1 : R) = 0 by simpa using hn) ▸ isUnit_one)
-    · intro I hI
-      obtain ⟨x, hx, hx'⟩ := (SetLike.lt_iff_le_and_exists.mp hI).2
+    · obtain ⟨x, hx, hx'⟩ := (SetLike.lt_iff_le_and_exists.mp hI).2
       exact Ideal.eq_top_of_isUnit_mem _ hx (not_not.mp ((H x).not.mp hx'))
-  tfae_have 4 → 2 := by
-    intro H
-    exact ⟨_, H.isPrime, fun p (hp : p.IsPrime) ↦
+  tfae_have 4 → 2 := fun H ↦ ⟨_, H.isPrime, fun p (hp : p.IsPrime) ↦
       (H.eq_of_le hp.ne_top (nilradical_le_prime p)).symm⟩
   tfae_have 2 → 1 := by
     rintro ⟨P, hP₁, hP₂⟩
