@@ -154,7 +154,7 @@ lemma zpow_eq_neg_zpow_iff₀ (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd
     simp [pow_eq_neg_pow_iff, hb]
   | Int.negSucc m => by
     rw [show Int.negSucc m = -↑(m + 1) by rfl]
-    simp [-Nat.cast_add, -natCast_add, neg_inv, pow_eq_neg_pow_iff, hb]
+    simp [-Nat.cast_add, -Int.natCast_add, neg_inv, pow_eq_neg_pow_iff, hb]
 
 lemma zpow_eq_neg_one_iff₀ : a ^ n = -1 ↔ a = -1 ∧ Odd n := by
   simpa using zpow_eq_neg_zpow_iff₀ (α := α) one_ne_zero

@@ -87,7 +87,7 @@ theorem continuous_coeff [Semiring R] (d : σ →₀ ℕ) :
   continuous_pi_iff.mp continuous_id d
 
 variable (R) in
-/-- `MvPolynomial.constantCoeff` is continuous -/
+/-- `MvPowerSeries.constantCoeff` is continuous -/
 theorem continuous_constantCoeff [Semiring R] : Continuous (constantCoeff σ R) :=
   continuous_coeff R 0
 
