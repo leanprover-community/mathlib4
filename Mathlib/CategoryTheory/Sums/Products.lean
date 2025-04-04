@@ -133,6 +133,20 @@ lemma natIsoOfWhiskerLeftInlInr_eq {F G : A ⊕ A' ⥤ B}
       (Sum.functorEquiv A A' B).unitIso.symm.app _ := by
   aesop_cat
 
+namespace Swap
+
+/-- `functorEquiv A A' B` transforms `Swap.equivalence` into `Prod.braiding`. -/
+@[simps! hom_app_fst hom_app_snd inv_app_fst inv_app_snd]
+def equivalenceFunctorEquivFunctorIso :
+    ((equivalence A A').congrLeft.trans <| functorEquiv A' A B).functor ≅
+      ((functorEquiv A A' B).trans <| Prod.braiding (A ⥤ B) (A' ⥤ B)).functor :=
+  NatIso.ofComponents (fun E ↦
+    Iso.prod
+      ((Functor.associator _ _ E).symm ≪≫ isoWhiskerRight (Sum.swapCompInl A' A) _)
+      ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (Sum.swapCompInr A' A) _))
+
+end Swap
+
 end Sum
 
 section CompatibilityWithProductAssociator
