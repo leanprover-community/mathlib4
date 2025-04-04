@@ -30,6 +30,7 @@ variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{v'} A FA]
 
 variable {X Y : Condensed.{u} A} (f : X ⟶ Y)
 
+set_option Elab.async false in  -- TODO: universe levels from type are unified in proof
 variable
   [(coherentTopology CompHaus).WEqualsLocallyBijective A]
   [HasSheafify (coherentTopology CompHaus) A]
@@ -44,6 +45,7 @@ lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
     regularTopology.isLocallySurjective_iff]
   simp_rw [((CompHaus.effectiveEpi_tfae _).out 0 2 :)]
 
+set_option Elab.async false in  -- TODO: universe levels from type are unified in proof
 variable
   [PreservesFiniteProducts (CategoryTheory.forget A)]
   [∀ (X : CompHausᵒᵖ), HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A]
@@ -92,8 +94,8 @@ lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma epi_iff_surjective_on_stonean : Epi f ↔
     ∀ (S : Stonean), Function.Surjective (f.val.app (op S.compHaus)) :=
-  have : HasLimitsOfSize.{u, u + 1} (ModuleCat R)
-    := hasLimitsOfSizeShrink.{u, u + 1, u + 1, u + 1} _
+  have : HasLimitsOfSize.{u, u + 1} (ModuleCat R) :=
+    hasLimitsOfSizeShrink.{u, u + 1, u + 1, u + 1} _
   Condensed.epi_iff_surjective_on_stonean _ f
 
 end CondensedMod
