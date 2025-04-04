@@ -347,7 +347,7 @@ lemma IsNonloop.isNonloop_of_mem_closure (he : M.IsNonloop e) (hef : e ∈ M.clo
   rw [isLoop_iff] at *; convert hef using 1
   obtain (hf | hf) := em (f ∈ M.E)
   · rw [← closure_loops, ← insert_eq_of_mem (h hf), closure_insert_congr_right M.closure_loops,
-      insert_emptyc_eq]
+      insert_empty_eq]
   rw [eq_comm, ← closure_inter_ground, inter_comm, inter_singleton_eq_empty.mpr hf, loops]
 
 lemma IsNonloop.closure_eq_of_mem_closure (he : M.IsNonloop e) (hef : e ∈ M.closure {f}) :
@@ -700,6 +700,14 @@ lemma diff_coloops_indep_iff : M.Indep (I \ M.coloops) ↔ M.Indep I :=
 lemma coloops_indep (M : Matroid α) : M.Indep M.coloops := by
   rw [← empty_union M.coloops, union_coloops_indep_iff]
   exact M.empty_indep
+
+lemma restrict_isColoop_iff {R : Set α} (hRE : R ⊆ M.E) :
+    (M ↾ R).IsColoop e ↔ e ∉ M.closure (R \ {e}) ∧ e ∈ R := by
+  wlog heR : e ∈ R
+  · exact iff_of_false (fun h ↦ heR h.mem_ground) fun h ↦ heR h.2
+  rw [isColoop_iff_forall_not_mem_isCircuit heR, mem_closure_iff_exists_isCircuit (by simp)]
+  simp only [restrict_isCircuit_iff hRE, insert_diff_singleton]
+  aesop
 
 /-- If two matroids agree on loops and coloops, and have the same independent sets after
   loops/coloops are removed, they are equal. -/
