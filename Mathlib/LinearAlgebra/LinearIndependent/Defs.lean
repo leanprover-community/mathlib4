@@ -125,6 +125,10 @@ alias linearIndependent_iff_injective_linearCombination :=
 alias ⟨LinearIndependent.finsuppLinearCombination_injective, _⟩ :=
   linearIndependent_iff_injective_finsuppLinearCombination
 
+@[deprecated (since := "2025-03-18")]
+alias LinearIndependent.lnearCombination_injective :=
+  LinearIndependent.finsuppLinearCombination_injective
+
 theorem linearIndependent_iff_injective_fintypeLinearCombination [Fintype ι] :
     LinearIndependent R v ↔ Injective (Fintype.linearCombination R v) := by
   simp [← Finsupp.linearCombination_eq_fintype_linearCombination, LinearIndependent]
