@@ -746,10 +746,7 @@ theorem sum_centroidWeights_eq_one_of_cast_card_ne_zero (h : (#s : k) ≠ 0) :
 to 1 if the number of points is not zero. -/
 theorem sum_centroidWeights_eq_one_of_card_ne_zero [CharZero k] (h : #s ≠ 0) :
     ∑ i ∈ s, s.centroidWeights k i = 1 := by
-  -- Porting note: `simp` cannot find `mul_inv_cancel` and does not use `norm_cast`
-  simp only [centroidWeights_apply, sum_const, nsmul_eq_mul, ne_eq, Nat.cast_eq_zero, card_eq_zero]
-  refine mul_inv_cancel₀ ?_
-  norm_cast
+  simp_all
 
 /-- In the characteristic zero case, the weights in the centroid sum
 to 1 if the set is nonempty. -/
@@ -1144,9 +1141,7 @@ def weightedVSubOfPoint (w : ι → k) : (ι → P) × P →ᵃ[k] V where
   linear := ∑ i ∈ s, w i • ((LinearMap.proj i).comp (LinearMap.fst _ _ _) - LinearMap.snd _ _ _)
   map_vadd' := by
     rintro ⟨p, b⟩ ⟨v, b'⟩
-    -- Porting note: needed to give `Prod.mk_vadd_mk` a hint
     simp [LinearMap.sum_apply, Finset.weightedVSubOfPoint, vsub_vadd_eq_vsub_sub,
-     vadd_vsub_assoc,
-     add_sub, ← sub_add_eq_add_sub, smul_add, Finset.sum_add_distrib, Prod.mk_vadd_mk v]
+     vadd_vsub_assoc, add_sub, ← sub_add_eq_add_sub, smul_add, Finset.sum_add_distrib]
 
 end AffineMap

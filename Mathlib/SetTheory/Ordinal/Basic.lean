@@ -538,11 +538,13 @@ instance small_Ioc (a b : Ordinal.{u}) : Small.{u} (Ioc a b) := small_subset Ioc
 
 /-- `o.toType` is an `OrderBot` whenever `o ≠ 0`. -/
 def toTypeOrderBot {o : Ordinal} (ho : o ≠ 0) : OrderBot o.toType where
+  bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' (by rwa [Ordinal.pos_iff_ne_zero])
 
 /-- `o.toType` is an `OrderBot` whenever `0 < o`. -/
 @[deprecated "use toTypeOrderBot" (since := "2025-02-13")]
 def toTypeOrderBotOfPos {o : Ordinal} (ho : 0 < o) : OrderBot o.toType where
+  bot := (enum (· < ·)) ⟨0, _⟩
   bot_le := enum_zero_le' ho
 
 theorem enum_zero_eq_bot {o : Ordinal} (ho : 0 < o) :
@@ -928,7 +930,6 @@ theorem Iio_one_default_eq : (default : Iio (1 : Ordinal)) = ⟨0, zero_lt_one' 
 instance uniqueToTypeOne : Unique (toType 1) where
   default := enum (α := toType 1) (· < ·) ⟨0, by simp⟩
   uniq a := by
-    unfold default
     rw [← enum_typein (α := toType 1) (· < ·) a]
     congr
     rw [← lt_one_iff_zero]
@@ -1396,7 +1397,7 @@ theorem List.Sorted.lt_ord_of_lt [LinearOrder α] [WellFoundedLT α] {l m : List
     | nil => intro i hi; simp at hi
     | cons b bs =>
       intro i hi
-      suffices h : i ≤ a by refine lt_of_le_of_lt ?_ (hlt a (mem_cons_self a as)); simpa
+      suffices h : i ≤ a by refine lt_of_le_of_lt ?_ (hlt a mem_cons_self); simpa
       cases hi with
       | head as => exact List.head_le_of_lt hmltl
       | tail b hi => exact le_of_lt (lt_of_lt_of_le (List.rel_of_sorted_cons hm _ hi)

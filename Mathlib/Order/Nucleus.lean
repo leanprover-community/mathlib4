@@ -186,6 +186,7 @@ instance : HImp (Nucleus X) where
 @[simp] theorem himp_apply (m n : Nucleus X) (x : X) : (m ⇨ n) x = ⨅ y ≥ x, m y ⇨ n y := rfl
 
 instance : HeytingAlgebra (Nucleus X) where
+  compl m := m ⇨ ⊥
   le_himp_iff _ n _ := by
     simpa [← coe_le_coe, Pi.le_def]
       using ⟨fun h i ↦ h i i le_rfl, fun h i j _ ↦ (h j).trans' <| by gcongr⟩
