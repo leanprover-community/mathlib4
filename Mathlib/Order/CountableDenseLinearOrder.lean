@@ -239,7 +239,8 @@ theorem embedding_from_countable_to_dense [Countable α] [DenselyOrdered β] [No
   rcases our_ideal.directed _ hf _ hg with ⟨m, _hm, fm, gm⟩
   exact (lt_iff_lt_of_cmp_eq_cmp <| m.prop (a₁, _) (fm ha₁) (a₂, _) (gm ha₂)).mp
 
-/-- Any two countable dense, nonempty linear orders without endpoints are order isomorphic. -/
+/-- Any two countable dense, nonempty linear orders without endpoints are order isomorphic. This is
+also known as Cantor's isomorphism theorem. -/
 theorem iso_of_countable_dense [Countable α] [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α]
     [Nonempty α] [Countable β] [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] :
     Nonempty (α ≃o β) := by
