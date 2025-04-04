@@ -231,8 +231,8 @@ theorem _root_.Real.list_prod_map_rpow' {ι} (l : List ι) (f : ι → ℝ)
 theorem _root_.Real.multiset_prod_map_rpow {ι} (s : Multiset ι) (f : ι → ℝ)
     (hs : ∀ i ∈ s, (0 : ℝ) ≤ f i) (r : ℝ) :
     (s.map (f · ^ r)).prod = (s.map f).prod ^ r := by
-  induction s using Quotient.inductionOn
-  simpa using Real.list_prod_map_rpow' _ f hs r
+  obtain ⟨l⟩ := s
+  simpa using Real.list_prod_map_rpow' l f hs r
 
 /-- `rpow` version of `Finset.prod_pow`. -/
 theorem _root_.Real.finset_prod_rpow

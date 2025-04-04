@@ -529,7 +529,7 @@ theorem subsingleton_reverse_iff {s : Cycle α} : s.reverse.Subsingleton ↔ s.S
 
 theorem Subsingleton.congr {s : Cycle α} (h : Subsingleton s) :
     ∀ ⦃x⦄ (_hx : x ∈ s) ⦃y⦄ (_hy : y ∈ s), x = y := by
-  induction s using Quot.inductionOn
+  obtain ⟨l⟩ := s
   simp only [length_subsingleton_iff, length_coe, mk_eq_coe, le_iff_lt_or_eq, Nat.lt_add_one_iff,
     length_eq_zero_iff, length_eq_one_iff, Nat.not_lt_zero, false_or] at h
   rcases h with (rfl | ⟨z, rfl⟩) <;> simp
@@ -557,7 +557,7 @@ theorem nontrivial_reverse_iff {s : Cycle α} : s.reverse.Nontrivial ↔ s.Nontr
 
 theorem length_nontrivial {s : Cycle α} (h : Nontrivial s) : 2 ≤ length s := by
   obtain ⟨x, y, hxy, hx, hy⟩ := h
-  induction s using Quot.inductionOn with | _ l => ?_
+  obtain ⟨l⟩ := s
   rcases l with (_ | ⟨hd, _ | ⟨hd', tl⟩⟩)
   · simp at hx
   · simp only [mem_coe_iff, mk_eq_coe, mem_singleton] at hx hy
@@ -581,7 +581,7 @@ theorem nodup_reverse_iff {s : Cycle α} : s.reverse.Nodup ↔ s.Nodup :=
   Quot.inductionOn s fun _ => nodup_reverse
 
 theorem Subsingleton.nodup {s : Cycle α} (h : Subsingleton s) : Nodup s := by
-  induction s using Quot.inductionOn with | _ l => ?_
+  obtain ⟨l⟩ := s
   obtain - | ⟨hd, tl⟩ := l
   · simp
   · have : tl = [] := by simpa [Subsingleton, length_eq_zero_iff, Nat.succ_le_succ_iff] using h
@@ -677,8 +677,7 @@ instance {s : Cycle α} : Decidable (Nodup s) :=
 
 instance fintypeNodupCycle [Fintype α] : Fintype { s : Cycle α // s.Nodup } :=
   Fintype.ofSurjective (fun l : { l : List α // l.Nodup } => ⟨l.val, by simpa using l.prop⟩)
-    fun ⟨s, hs⟩ => by
-      induction s using Quotient.inductionOn' with | _ hs => exact ⟨⟨_, hs⟩, by simp⟩
+    fun ⟨s, hs⟩ => by obtain ⟨hs⟩ := s; exact ⟨⟨_, hs⟩, by simp⟩
 
 instance fintypeNodupNontrivialCycle [Fintype α] :
     Fintype { s : Cycle α // s.Nodup ∧ s.Nontrivial } :=

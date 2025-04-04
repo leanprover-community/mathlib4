@@ -371,7 +371,7 @@ variable (G) [CommGroup G]
 "Quotienting a group by its additive torsion subgroup yields an additive torsion free group."]
 theorem IsTorsionFree.quotient_torsion : IsTorsionFree <| G ⧸ torsion G := fun g hne hfin =>
   hne <| by
-    induction g using QuotientGroup.induction_on with | _ g => ?_
+    obtain ⟨g⟩ := g
     obtain ⟨m, mpos, hm⟩ := hfin.exists_pow_eq_one
     obtain ⟨n, npos, hn⟩ := ((QuotientGroup.eq_one_iff _).mp hm).exists_pow_eq_one
     exact
