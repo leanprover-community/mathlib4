@@ -563,13 +563,13 @@ lemma invtSubmodule_reflection:
     rw [z3, z4] at z1
     field_simp at z1
 
+  have rr4 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : LieAlgebra.rootSpace H i.1.1)
+      (lj : LieAlgebra.rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
+    have ttt := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace li.2 lj.2
+    have := rr3 i j h1 h2
+    rw [this] at ttt
+    exact ttt
 
-
-  have rr4 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : LieAlgebra.rootSpace H i.1.1) (lj : LieAlgebra.rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
-    --lie_mem_genWeightSpace_of_mem_genWeightSpace
-    sorry
-  --lieSpan_induction
-  --iSup_genWeightSpace_eq_top'
   have help : ⨆ χ : LieModule.Weight K H L, LieModule.genWeightSpace L χ = ⊤ := by
     exact LieModule.iSup_genWeightSpace_eq_top' K H L
   let gg := ⋃ i ∈ Φ, (LieAlgebra.rootSpace H i : Set L)
