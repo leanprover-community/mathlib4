@@ -156,39 +156,6 @@ variable (J A)
 attribute [local instance] CategoryTheory.Types.instConcreteCategory
 attribute [local instance] CategoryTheory.Types.instFunLike
 
-/-- Sections of a functor correspond to morphisms from a terminal functor to it. We use the constant
-functor on a given singleton type here as a specific choice of terminal functor. -/
-@[simps apply_app]
-def Functor.sectionsEquivHom (F : C ⥤ Type w) (X : Type w) [Unique X] :
-    F.sections ≃ ((Functor.const _).obj X ⟶ F) where
-  toFun s :=
-    { app j x := s.1 j
-      naturality _ _ _ := by ext x; simp }
-  invFun τ := ⟨fun j ↦ τ.app _ (default : X), fun φ ↦ (congr_fun (τ.naturality φ) _).symm⟩
-  left_inv s := rfl
-  right_inv τ := by
-    ext _ (x : X)
-    rw [Unique.eq_default x]
-
-lemma Functor.sectionsEquivHom_naturality {F G : C ⥤ Type w} (f : F ⟶ G) (X : Type w) [Unique X]
-    (x : F.sections) :
-    (G.sectionsEquivHom X) ((sectionsFunctor C).map f x) = (F.sectionsEquivHom X) x ≫ f := by
-  rfl
-
-lemma Functor.sectionsEquivHom_naturality_symm {F G : C ⥤ Type w} (f : F ⟶ G) (X : Type w)
-    [Unique X] (τ : (Functor.const C).obj X ⟶ F) : (G.sectionsEquivHom X).symm (τ ≫ f) =
-    (sectionsFunctor C).map f ((F.sectionsEquivHom X).symm τ) := by
-  rfl
-
-/-- For functors `F : C ⥤ Type _`, `F.sections` is naturally isomorphic to the type `⊤_ _ ⟶ F`
-of natural transformations from the terminal functor to `F`. -/
-@[simps!]
-noncomputable def sectionsFunctorNatIsoCoyoneda (X : Type max u w) [Unique X] :
-    Functor.sectionsFunctor.{v,max u w} C ≅ coyoneda.obj (op ((Functor.const C).obj X)) :=
-  NatIso.ofComponents fun F ↦ (F.sectionsEquivHom X).toIso
-
-#find_home! sectionsFunctorNatIsoCoyoneda
-
 /-- Global sections of a sheaf of types correspond to sections of the underlying presheaf. -/
 noncomputable def Sheaf.ΓObjEquivSections [HasWeakSheafify J (Type w)]
     [HasGlobalSectionsFunctor J (Type w)] (F : Sheaf J (Type w)) :
