@@ -199,7 +199,6 @@ theorem coe_substAlgHom (ha : HasSubst a) : ⇑(substAlgHom ha) = subst (R := R)
 
 theorem subst_self : subst (MvPowerSeries.X : σ → MvPowerSeries σ R) = id := by
   rw [← coe_substAlgHom HasSubst.X]
-  simp
   letI : UniformSpace R := ⊥
   ext1 f
   simp only [← coe_substAlgHom HasSubst.X, substAlgHom_eq_aeval]
@@ -397,19 +396,18 @@ noncomputable def rescale (a : σ → R) : MvPowerSeries σ R →+* MvPowerSerie
   toFun f := fun n ↦ (n.prod fun s m ↦ a s ^ m) * f.coeff R n
   map_zero' := by
     ext
-    simp only [LinearMap.map_zero, mul_zero, coeff_apply]
+    simp [map_zero, coeff_apply]
   map_one' := by
     ext1 n
     classical
     simp only [coeff_one, mul_ite, mul_one, mul_zero]
     split_ifs with h
     · simp [h, coeff_apply]
-    · simp [coeff_apply]
+    · simp only [coeff_apply, ite_eq_right_iff]
       exact fun a_1 ↦ False.elim (h a_1)
   map_add' := by
     intros
     ext
-    dsimp only
     exact mul_add _ _ _
   map_mul' f g := by
     ext n
@@ -430,9 +428,7 @@ noncomputable def rescale (a : σ → R) : MvPowerSeries σ R →+* MvPowerSerie
       rw [← Finset.prod_mul_distrib]
       apply Finset.prod_congr rfl
       simp [pow_add]
-    · simp [pow_zero]
-    · simp [pow_zero]
-    · simp [pow_zero]
+    all_goals {simp}
 
 @[simp]
 theorem coeff_rescale (f : MvPowerSeries σ R) (a : σ → R) (n : σ →₀ ℕ) :
@@ -445,7 +441,7 @@ theorem rescale_zero :
   classical
   ext x n
   simp [Function.comp_apply, RingHom.coe_comp, rescale, RingHom.coe_mk, coeff_C]
-  split_ifs with h -- <;> simp [h]
+  split_ifs with h
   · simp [h, coeff_apply, ← @coeff_zero_eq_constantCoeff_apply, coeff_apply]
   · simp only [coeff_apply]
     convert zero_mul _
@@ -453,7 +449,7 @@ theorem rescale_zero :
     obtain ⟨s, h⟩ := h
     simp only [Finsupp.prod]
     apply Finset.prod_eq_zero (i := s) _ (zero_pow h)
-    simpa only [Finsupp.mem_support_iff, ne_eq] using h
+    simpa using h
 
 theorem rescale_zero_apply (f : MvPowerSeries σ R) :
     rescale 0 f = C σ R (constantCoeff σ R f) := by simp
@@ -466,8 +462,7 @@ theorem rescale_one : rescale 1 = RingHom.id (MvPowerSeries σ R) := by
 theorem rescale_rescale (f : MvPowerSeries σ R) (a b : σ → R) :
     rescale b (rescale a f) = rescale (a * b) f := by
   ext n
-  simp [coeff_rescale, ← mul_assoc, Finsupp.prod, ← Finset.prod_mul_distrib, Pi.mul_apply,
-    mul_pow, mul_comm]
+  simp [← mul_assoc, mul_pow, mul_comm]
 
 theorem rescale_mul (a b : σ → R) : rescale (a * b) = (rescale b).comp (rescale a) := by
   ext
@@ -508,7 +503,7 @@ theorem rescale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
   · intro b hb hbn
     rw [← monomial_eq, coeff_monomial, if_neg (Ne.symm hbn), mul_zero]
   · intro hn
-    simpa only [Set.Finite.mem_toFinset, Function.mem_support, ne_eq, Decidable.not_not] using hn
+    simpa using hn
 
 noncomputable def rescaleAlgHom (a : σ → R) :
     MvPowerSeries σ R →ₐ[R] MvPowerSeries σ R :=
@@ -516,12 +511,12 @@ noncomputable def rescaleAlgHom (a : σ → R) :
 
 theorem rescaleAlgHom_apply (a : σ → R) (f : MvPowerSeries σ R) :
     rescaleAlgHom a f = rescale a f := by
-  simp only [rescaleAlgHom, substAlgHom_apply, rescale_eq_subst]
+  simp [rescaleAlgHom, rescale_eq_subst]
 
 theorem rescaleAlgHom_mul (a b : σ → R) :
     rescaleAlgHom (a * b) = (rescaleAlgHom b).comp (rescaleAlgHom a) := by
   ext1 f
-  simp only [AlgHom.coe_comp, Function.comp_apply, rescaleAlgHom_apply, rescale_rescale]
+  simp [rescaleAlgHom_apply, rescale_rescale]
 
 theorem rescaleAlgHom_one :
     rescaleAlgHom 1 = AlgHom.id R (MvPowerSeries σ R):= by
