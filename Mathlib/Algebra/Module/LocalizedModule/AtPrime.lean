@@ -19,5 +19,5 @@ protected abbrev IsLocalizedModule.AtPrime {R M M': Type*} [CommSemiring R] (P :
 /-- Given a prime ideal `P`, `LocalizedModule.AtPrime P M` is a localization of `M`
   at the complement of `P`. -/
 protected abbrev LocalizedModule.AtPrime {R : Type*} [CommSemiring R] (P : Ideal R) [P.IsPrime]
-    (M : Type*) [AddCommMonoid M] [Module R M]:=
+    (M : Type*) [AddCommMonoid M] [Module R M] :=
   LocalizedModule P.primeCompl M
