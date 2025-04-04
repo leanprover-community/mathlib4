@@ -8,9 +8,9 @@ import Mathlib.Tactic.Abel
 import Mathlib.Tactic.FieldSimp
 
 /-!
-# Integer-valued floor, ceiling and fractional part functions
+# Integer-valued floor and ceiling functions
 
-We define the integer-valued floor, ceiling and fractional part functions on linearly ordered rings.
+We define the integer-valued floor and ceiling functions on linearly ordered rings.
 
 ## Main definitions
 
@@ -49,7 +49,7 @@ class FloorRing (α) [LinearOrderedRing α] where
   floor : α → ℤ
   /-- `FloorRing.ceil a` computes the least integer `z` such that `a ≤ (z : α)`. -/
   ceil : α → ℤ
-  /-- `FloorRing.ceil` is the upper adjoint of the coercion `↑ : ℤ → α`. -/
+  /-- `FloorRing.floor` is the upper adjoint of the coercion `↑ : ℤ → α`. -/
   gc_coe_floor : GaloisConnection (↑) floor
   /-- `FloorRing.ceil` is the lower adjoint of the coercion `↑ : ℤ → α`. -/
   gc_ceil_coe : GaloisConnection ceil (↑)
