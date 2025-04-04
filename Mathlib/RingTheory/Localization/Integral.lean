@@ -358,9 +358,8 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
     obtain ⟨a : S, b, ha, rfl⟩ := div_surjective (A := S) x
     obtain ⟨f, hf₁, hf₂⟩ := h b
     rw [div_eq_mul_inv]
-    refine .mul ?_ (.inv ?_) <;>
-      rw [← isAlgebraic_iff_isIntegral] <;>
-      exact .extendScalars ((FaithfulSMul.algebraMap_injective R _)) (.algebraMap (h _))
+    refine .mul ?_ (.inv ?_) <;> exact isAlgebraic_iff_isIntegral.mp <|
+      (h _).algebraMap.extendScalars (FaithfulSMul.algebraMap_injective R _)
   · intro h x
     obtain ⟨f, hf₁, hf₂⟩ := h (algebraMap S K x)
     use f, hf₁
