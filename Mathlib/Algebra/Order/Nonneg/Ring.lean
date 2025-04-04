@@ -111,6 +111,7 @@ instance linearOrderedSemiring [LinearOrderedSemiring α] :
 instance linearOrderedCommMonoidWithZero [LinearOrderedCommSemiring α] :
     LinearOrderedCommMonoidWithZero { x : α // 0 ≤ x } :=
   { Nonneg.linearOrderedSemiring, Nonneg.orderedCommSemiring with
+    bot_le _ := bot_le
     mul_le_mul_left := fun _ _ h c ↦ mul_le_mul_of_nonneg_left h c.prop }
 
 instance canonicallyOrderedAdd [OrderedRing α] :

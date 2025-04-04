@@ -202,9 +202,9 @@ def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (γ ⊕ α) :=
         · simp [constantsToVars, varsToConstants, ih]
         · exact isEmptyElim f, by
     intro t
-    induction' t with x n f _ ih
-    · cases x <;> rfl
-    · cases n <;> · simp [varsToConstants, constantsToVars, ih]⟩
+    induction t with
+    | var x => cases x <;> rfl
+    | @func n f _ ih => cases n <;> · simp [varsToConstants, constantsToVars, ih]⟩
 
 /-- A bijection between terms with constants and terms with extra variables. -/
 def constantsVarsEquivLeft : L[[γ]].Term (α ⊕ β) ≃ L.Term ((γ ⊕ α) ⊕ β) :=
@@ -269,13 +269,16 @@ end LHom
 
 /-- Maps a term's symbols along a language equivalence. -/
 @[simps]
-def Lequiv.onTerm (φ : L ≃ᴸ L') : L.Term α ≃ L'.Term α where
+def LEquiv.onTerm (φ : L ≃ᴸ L') : L.Term α ≃ L'.Term α where
   toFun := φ.toLHom.onTerm
   invFun := φ.invLHom.onTerm
   left_inv := by
     rw [Function.leftInverse_iff_comp, ← LHom.comp_onTerm, φ.left_inv, LHom.id_onTerm]
   right_inv := by
     rw [Function.rightInverse_iff_comp, ← LHom.comp_onTerm, φ.right_inv, LHom.id_onTerm]
+
+/-- Maps a term's symbols along a language equivalence. Deprecated in favor of `LEquiv.onTerm`. -/
+@[deprecated LEquiv.onTerm (since := "2025-03-31")] alias Lequiv.onTerm := LEquiv.onTerm
 
 variable (L) (α)
 
