@@ -450,7 +450,6 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
   if arg.components.length > 1 || arg.extension == "lean" then
     -- provided file name of a Lean file
     let mod : Name := arg.withExtension "" |>.components.foldl .str .anonymous
-    let srcDir ← getSrcDir sp mod
     if !(← arg.pathExists) then
       -- TODO: (5.) We could use `getSrcDir` to allow arguments like `Aesop/Builder.lean` which
       -- refer to a file located under `.lake/packages/...`
@@ -461,12 +460,11 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
     else
       -- (4.) provided existing directory: walk it
       IO.println s!"Searching directory {arg} for .lean files"
-      let leanModulesInFolder ← walkDir arg srcDir
+      let leanModulesInFolder ← walkDir sp arg mod
       return .ok leanModulesInFolder
   else
     -- provided a module
     let mod := argₛ.toName
-    let srcDir ← getSrcDir sp mod
     let sourceFile ← Lean.findLean sp mod
     if ← sourceFile.pathExists then
       -- (1.) provided valid module
@@ -479,17 +477,25 @@ def leanModulesFromSpec (sp : SearchPath) (argₛ : String) :
       if ← folder.pathExists then
         -- (2.) provided "module name" of an existing folder: walk it
         IO.println s!"Searching directory {folder} for .lean files"
-        let leanModulesInFolder ← walkDir folder srcDir
+        let leanModulesInFolder ← walkDir sp folder mod
         return .ok leanModulesInFolder
       else
         return .error "Invalid argument: non-existing module {mod}"
 where
-  /-- assumes the folder exists -/
-  walkDir (folder : FilePath) (srcDir : FilePath) : IO <| Array (Name × FilePath) := do
-    -- find all Lean files in the folder, skipping hidden folders/files
-    let files ← folder.walkDir fun p => match p.fileName with
-      | some s => pure <| !(s.startsWith ".")
-      | none => pure false
+  /--
+  Search all `.lean` files inside `folder`.
+
+  In order to figure out the module name corresponding
+  to the found files, we use `mod` and the search path `sp` to figure out how much of
+  the absolute path needs to be trimmed.
+
+  This assumes the `folder` exists.
+  -/
+  walkDir (sp : SearchPath) (folder : FilePath) (mod : Name) : IO <| Array (Name × FilePath) := do
+    -- The source direcory where `mod` is located
+    let srcDir ← getSrcDir sp mod
+    -- find all Lean files in the folder only skipping special entries such as `.` and `..`
+    let files ← folder.walkDir (pure ·.fileName.isSome)
     let leanFiles := files.filter (·.extension == some "lean")
     let mut leanModulesInFolder : Array (Name × FilePath) := #[]
     for file in leanFiles do
