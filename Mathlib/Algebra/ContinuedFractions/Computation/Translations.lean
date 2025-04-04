@@ -5,6 +5,7 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.Basic
 import Mathlib.Algebra.ContinuedFractions.Translations
+import Mathlib.Algebra.Order.Floor.Basic
 
 /-!
 # Basic Translation Lemmas Between Structures Defined for Computing Continued Fractions
