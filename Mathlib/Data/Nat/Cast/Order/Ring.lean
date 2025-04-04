@@ -92,10 +92,10 @@ theorem abs_cast (n : ℕ) : |(n : R)| = n := abs_of_nonneg n.cast_nonneg
 theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] : |(ofNat(n) : R)| = ofNat(n) := abs_cast n
 
 @[simp, norm_cast] lemma neg_cast_eq_cast : (-m : R) = n ↔ m = 0 ∧ n = 0 := by
-  simp only [neg_eq_iff_add_eq_zero, ← cast_add, cast_eq_zero, Nat.add_eq_zero]
+  simp [neg_eq_iff_add_eq_zero, ← cast_add]
 
 @[simp, norm_cast] lemma cast_eq_neg_cast : (m : R) = -n ↔ m = 0 ∧ n = 0 := by
-  simp only [eq_neg_iff_add_eq_zero, ← cast_add, cast_eq_zero, Nat.add_eq_zero]
+  simp [eq_neg_iff_add_eq_zero, ← cast_add]
 
 end LinearOrderedRing
 
