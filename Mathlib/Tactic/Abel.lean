@@ -48,7 +48,7 @@ example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by
 
 ## Future work
 
-* In mathlib 3, `abel` accepted addtional optional arguments:
+* In mathlib 3, `abel` accepted additional optional arguments:
   ```
   syntax "abel" (&" raw" <|> &" term")? (location)? : tactic
   ```
@@ -459,17 +459,18 @@ The core of `abel_nf`, which rewrites the expression `e` into `abel` normal form
 -/
 partial def abelNFCore
     (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := do
-  let ctx ← Simp.mkContext
-    (config := { zetaDelta := cfg.zetaDelta })
-    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
-    (congrTheorems := ← getSimpCongrTheorems)
   let simp ← match cfg.mode with
   | .raw => pure pure
   | .term =>
     let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``zsmul_zero]
-    let ctx' := ctx.setSimpTheorems #[← thms.foldlM (·.addConst ·) {:_}]
+    let ctx ← Simp.mkContext (config := { zetaDelta := cfg.zetaDelta })
+      (simpTheorems := #[← thms.foldlM (·.addConst ·) {}])
+      (congrTheorems := ← getSimpCongrTheorems)
     pure fun r' : Simp.Result ↦ do
-      r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
+      r'.mkEqTrans (← Simp.main r'.expr ctx (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
+  let ctx ← Simp.mkContext (config := { zetaDelta := cfg.zetaDelta, singlePass := true })
+    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
+    (congrTheorems := ← getSimpCongrTheorems)
   let rec
     /-- The recursive case of `abelNF`.
     * `root`: true when the function is called directly from `abelNFCore`
@@ -486,7 +487,7 @@ partial def abelNFCore
           guard e.isApp -- all interesting group expressions are applications
           let (a, pa) ← eval e (← mkContext e) { red := cfg.red, evalAtom } s
           guard !a.isAtom
-          let r ← simp { expr := a, proof? := pa }
+          let r ← liftMetaM <| simp { expr := a, proof? := pa }
           if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
           pure (.done r)
         catch _ => pure <| .continue

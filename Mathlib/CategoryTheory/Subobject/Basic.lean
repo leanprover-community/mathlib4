@@ -96,9 +96,8 @@ with morphisms becoming inequalities, and isomorphisms becoming equations.
 def Subobject (X : C) :=
   ThinSkeleton (MonoOver X)
 
-instance (X : C) : PartialOrder (Subobject X) := by
-  dsimp only [Subobject]
-  infer_instance
+instance (X : C) : PartialOrder (Subobject X) :=
+  inferInstanceAs <| PartialOrder (ThinSkeleton (MonoOver X))
 
 namespace Subobject
 
@@ -153,6 +152,9 @@ noncomputable def equivMonoOver (X : C) : Subobject X ≌ MonoOver X :=
 -/
 noncomputable def representative {X : C} : Subobject X ⥤ MonoOver X :=
   (equivMonoOver X).functor
+
+instance : (representative (X := X)).IsEquivalence :=
+  (equivMonoOver X).isEquivalence_functor
 
 /-- Starting with `A : MonoOver X`, we can take its equivalence class in `Subobject X`
 then pick an arbitrary representative using `representative.obj`.
@@ -453,9 +455,26 @@ lemma mk_lt_mk_iff_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ �
 
 end Subobject
 
-lemma MonoOver.subobjectMk_le_mk_of_hom {P Q : MonoOver X} (f : P ⟶ Q) :
+namespace MonoOver
+
+variable {P Q : MonoOver X} (f : P ⟶ Q)
+
+include f in
+lemma subobjectMk_le_mk_of_hom :
     Subobject.mk P.obj.hom ≤ Subobject.mk Q.obj.hom :=
   Subobject.mk_le_mk_of_comm f.left (by simp)
+
+lemma isIso_left_iff_subobjectMk_eq :
+    IsIso f.left ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom :=
+  ⟨fun _ ↦ Subobject.mk_eq_mk_of_comm _ _ (asIso f.left) (by simp),
+    fun h ↦ ⟨Subobject.ofMkLEMk _ _ h.symm.le, by simp [← cancel_mono P.1.hom],
+      by simp [← cancel_mono Q.1.hom]⟩⟩
+
+lemma isIso_iff_subobjectMk_eq :
+    IsIso f ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom := by
+  rw [isIso_iff_isIso_left, isIso_left_iff_subobjectMk_eq]
+
+end MonoOver
 
 open CategoryTheory.Limits
 

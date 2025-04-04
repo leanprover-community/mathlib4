@@ -117,7 +117,7 @@ protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
       dsimp only
       refine ⟨(Int.ediv_nonneg · (Int.natCast_nonneg _)), fun H ↦ ?_⟩
       contrapose! H
-      apply Int.ediv_neg' H
+      apply Int.ediv_neg_of_neg_of_pos H
       simp only [Int.natCast_pos, Nat.pos_iff_ne_zero]
       exact Nat.gcd_ne_zero_right (Nat.mul_ne_zero hb ha)
 

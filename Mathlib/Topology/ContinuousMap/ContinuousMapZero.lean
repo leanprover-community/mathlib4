@@ -244,6 +244,9 @@ def coeFnAddMonoidHom : C(X, R)₀ →+ X → R where
   map_zero' := coe_zero
   map_add' f g := by simp
 
+@[simp]
+lemma coeFnAddMonoidHom_apply (f : C(X, R)₀) : coeFnAddMonoidHom f = f := rfl
+
 @[simp] lemma coe_sum {ι : Type*} (s : Finset ι)
     (f : ι → C(X, R)₀) : ⇑(s.sum f) = s.sum (fun i => ⇑(f i)) :=
   map_sum coeFnAddMonoidHom f s

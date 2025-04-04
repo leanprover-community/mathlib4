@@ -3,7 +3,8 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Nailin Guan
 -/
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 
@@ -23,7 +24,6 @@ assert_not_exists ContinuousLinearEquiv
 section
 
 open Function Topology
-open scoped Pointwise
 
 variable (F A B C D E : Type*)
 variable [Monoid A] [Monoid B] [Monoid C] [Monoid D]
@@ -181,7 +181,7 @@ lemma coe_comp (g : ContinuousMonoidHom B C) (f : ContinuousMonoidHom A B) :
 /-- Product of two continuous homomorphisms on the same space. -/
 @[to_additive (attr := simps!) prod "Product of two continuous homomorphisms on the same space."]
 def prod (f : A →ₜ* B) (g : A →ₜ* C) : A →ₜ* (B × C) :=
-  ⟨f.toMonoidHom.prod g.toMonoidHom, f.continuous_toFun.prod_mk g.continuous_toFun⟩
+  ⟨f.toMonoidHom.prod g.toMonoidHom, f.continuous_toFun.prodMk g.continuous_toFun⟩
 
 /-- Product of two continuous homomorphisms on different spaces. -/
 @[to_additive (attr := simps!) prodMap
