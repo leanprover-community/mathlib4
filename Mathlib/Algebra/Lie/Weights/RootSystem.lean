@@ -432,7 +432,6 @@ variable (K L : Type*) [Field K] [CharZero K]
   [LieRing L] [LieAlgebra K L] [LieAlgebra.IsSimple K L] [FiniteDimensional K L]
   [LieAlgebra.IsKilling K L] -- Follows from simplicity; will be redundant after #10068 done
   (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [LieModule.IsTriangularizable K H L]
-  [Nontrivial L]
 
 #check (LieAlgebra.IsKilling.rootSystem H)
 --set_option maxHeartbeats 10000000
@@ -442,6 +441,7 @@ variable (K L : Type*) [Field K] [CharZero K]
 lemma invtSubmodule_reflection:
    ∀ (q : Submodule K (Module.Dual K H)), (∀ (i : H.root), q ∈ Module.End.invtSubmodule
       ((LieAlgebra.IsKilling.rootSystem H).reflection i)) → q ≠ ⊥ → q = ⊤ := by
+  have _i := LieModule.nontrivial_of_isIrreducible K L L
   let S := (LieAlgebra.IsKilling.rootSystem H)
   by_contra!
   obtain ⟨q, hq1, hq2, hq3⟩ := this
@@ -614,7 +614,9 @@ lemma invtSubmodule_reflection:
   · contradiction
   contradiction
 
-instance : (LieAlgebra.IsKilling.rootSystem H).IsIrreducible := RootPairing.IsIrreducible.mk'
-  (LieAlgebra.IsKilling.rootSystem H).toRootPairing (invtSubmodule_reflection K L H)
+instance : (LieAlgebra.IsKilling.rootSystem H).IsIrreducible := by
+  have _i := LieModule.nontrivial_of_isIrreducible K L L
+  exact RootPairing.IsIrreducible.mk' (LieAlgebra.IsKilling.rootSystem H).toRootPairing
+    (invtSubmodule_reflection K L H)
 
 end jjj
