@@ -100,7 +100,7 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
   have : Fintype ι := Fintype.ofFinite ι
   simpa [← P.algebraMap_pairingIn ℤ] using (P.posRootForm ℤ).toInvariantForm.pairing_zero_iff i j
 
-lemma pairingIn_pairingIn_mem_set_of_isCrystallographic_of_isReduced
+lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed
     [P.IsReduced] [NoZeroSMulDivisors R M] :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
       ({(0, 0), (1, 1), (-1, -1), (1, 2), (2, 1), (-1, -2), (-2, -1), (1, 3), (3, 1), (-1, -3),
@@ -111,12 +111,13 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystallographic_of_isReduced
   have aux₂ : P.pairingIn ℤ i j * P.pairingIn ℤ j i ≠ 4 := P.coxeterWeightIn_ne_four ℤ h₁ h₂
   aesop
 
-lemma pairingIn_pairingIn_mem_set_of_isCrystallographic_of_isReduced'
-    [P.IsReduced] [NoZeroSMulDivisors R M] (hij : i ≠ j) (hij' : P.root i ≠ - P.root j):
+lemma pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed'
+    [P.IsReduced] [NoZeroSMulDivisors R M]
+    (hij : P.root i ≠ P.root j) (hij' : P.root i ≠ - P.root j) :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈
       ({(0, 0), (1, 1), (-1, -1), (1, 2), (2, 1), (-1, -2), (-2, -1), (1, 3), (3, 1), (-1, -3),
         (-3, -1)} : Set (ℤ × ℤ)) := by
-  have := P.pairingIn_pairingIn_mem_set_of_isCrystallographic_of_isReduced i j
+  have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
   aesop
 
 variable {i j} in
@@ -205,7 +206,7 @@ lemma apply_eq_or_aux (i j : ι) (h : P.pairingIn ℤ i j ≠ 0) :
     B.form (P.root i) (P.root i) = 3 * B.form (P.root j) (P.root j) ∨
     B.form (P.root j) (P.root j) = 2 * B.form (P.root i) (P.root i) ∨
     B.form (P.root j) (P.root j) = 3 * B.form (P.root i) (P.root i) := by
-  have h₁ := P.pairingIn_pairingIn_mem_set_of_isCrystallographic_of_isReduced i j
+  have h₁ := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed i j
   have h₂ : algebraMap ℤ R (P.pairingIn ℤ j i) * B.form (P.root i) (P.root i) =
             algebraMap ℤ R (P.pairingIn ℤ i j) * B.form (P.root j) (P.root j) := by
     simpa only [algebraMap_pairingIn] using B.pairing_mul_eq_pairing_mul_swap i j
