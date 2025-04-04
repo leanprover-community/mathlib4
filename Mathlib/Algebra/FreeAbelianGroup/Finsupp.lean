@@ -3,10 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Equiv.TypeTags
+import Mathlib.Algebra.BigOperators.Finsupp.Basic
+import Mathlib.Algebra.Module.End
 import Mathlib.GroupTheory.FreeAbelianGroup
-import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
-import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 
 /-!
 # Isomorphism between `FreeAbelianGroup X` and `X →₀ ℤ`
@@ -19,9 +18,9 @@ We use this to transport the notion of `support` from `Finsupp` to `FreeAbelianG
 - `FreeAbelianGroup.equivFinsupp`: group isomorphism between `FreeAbelianGroup X` and `X →₀ ℤ`
 - `FreeAbelianGroup.coeff`: the multiplicity of `x : X` in `a : FreeAbelianGroup X`
 - `FreeAbelianGroup.support`: the finset of `x : X` that occur in `a : FreeAbelianGroup X`
-
 -/
 
+assert_not_exists Basis
 
 noncomputable section
 
@@ -89,32 +88,6 @@ def equivFinsupp : FreeAbelianGroup X ≃+ (X →₀ ℤ) where
   left_inv := toFreeAbelianGroup_toFinsupp
   right_inv := toFinsupp_toFreeAbelianGroup
   map_add' := toFinsupp.map_add
-
-/-- `A` is a basis of the ℤ-module `FreeAbelianGroup A`. -/
-noncomputable def basis (α : Type*) : Basis α ℤ (FreeAbelianGroup α) :=
-  ⟨(FreeAbelianGroup.equivFinsupp α).toIntLinearEquiv⟩
-
-/-- Isomorphic free abelian groups (as modules) have equivalent bases. -/
-def Equiv.ofFreeAbelianGroupLinearEquiv {α β : Type*}
-    (e : FreeAbelianGroup α ≃ₗ[ℤ] FreeAbelianGroup β) : α ≃ β :=
-  let t : Basis α ℤ (FreeAbelianGroup β) := (FreeAbelianGroup.basis α).map e
-  t.indexEquiv <| FreeAbelianGroup.basis _
-
-/-- Isomorphic free abelian groups (as additive groups) have equivalent bases. -/
-def Equiv.ofFreeAbelianGroupEquiv {α β : Type*} (e : FreeAbelianGroup α ≃+ FreeAbelianGroup β) :
-    α ≃ β :=
-  Equiv.ofFreeAbelianGroupLinearEquiv e.toIntLinearEquiv
-
-/-- Isomorphic free groups have equivalent bases. -/
-def Equiv.ofFreeGroupEquiv {α β : Type*} (e : FreeGroup α ≃* FreeGroup β) : α ≃ β :=
-  Equiv.ofFreeAbelianGroupEquiv (MulEquiv.toAdditive e.abelianizationCongr)
-
-open IsFreeGroup
-
-/-- Isomorphic free groups have equivalent bases (`IsFreeGroup` variant). -/
-def Equiv.ofIsFreeGroupEquiv {G H : Type*} [Group G] [Group H] [IsFreeGroup G] [IsFreeGroup H]
-    (e : G ≃* H) : Generators G ≃ Generators H :=
-  Equiv.ofFreeGroupEquiv <| MulEquiv.trans (toFreeGroup G).symm <| MulEquiv.trans e <| toFreeGroup H
 
 variable {X}
 
