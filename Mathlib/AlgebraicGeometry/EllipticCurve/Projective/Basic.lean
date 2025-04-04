@@ -110,9 +110,8 @@ abbrev toProjective (W : WeierstrassCurve R) : Projective R :=
 
 namespace Projective
 
-variable (W') in
 /-- The conversion from a Weierstrass curve in projective coordinates to affine coordinates. -/
-abbrev toAffine : Affine R :=
+abbrev toAffine (W' : Projective R) : Affine R :=
   W'
 
 lemma fin3_def (P : Fin 3 → R) : ![P x, P y, P z] = P := by
@@ -233,7 +232,7 @@ lemma eval_polynomial (P : Fin 3 → R) : eval P W'.polynomial =
   eval_simp
 
 lemma eval_polynomial_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : eval P W.polynomial / P z ^ 3 =
-    (toAffine W).polynomial.evalEval (P x / P z) (P y / P z) := by
+    W.toAffine.polynomial.evalEval (P x / P z) (P y / P z) := by
   linear_combination (norm := (rw [eval_polynomial, Affine.evalEval_polynomial]; ring1))
     P y ^ 2 / P z ^ 2 * div_self hPz + W.a₁ * P x * P y / P z ^ 2 * div_self hPz
       + W.a₃ * P y / P z * div_self (pow_ne_zero 2 hPz) - W.a₂ * P x ^ 2 / P z ^ 2 * div_self hPz
@@ -269,11 +268,11 @@ lemma equation_of_Z_eq_zero {P : Fin 3 → R} (hPz : P z = 0) : W'.Equation P �
 lemma equation_zero : W'.Equation ![0, 1, 0] := by
   simp only [equation_of_Z_eq_zero, fin3_def_ext, zero_pow three_ne_zero]
 
-lemma equation_some (X Y : R) : W'.Equation ![X, Y, 1] ↔ (toAffine W').Equation X Y := by
+lemma equation_some (X Y : R) : W'.Equation ![X, Y, 1] ↔ W'.toAffine.Equation X Y := by
   simp only [equation_iff, Affine.equation_iff', fin3_def_ext, one_pow, mul_one]
 
 lemma equation_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    W.Equation P ↔ (toAffine W).Equation (P x / P z) (P y / P z) :=
+    W.Equation P ↔ W.toAffine.Equation (P x / P z) (P y / P z) :=
   (equation_of_equiv <| equiv_some_of_Z_ne_zero hPz).trans <| equation_some ..
 
 lemma X_eq_zero_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Equation P)
@@ -300,7 +299,7 @@ lemma eval_polynomialX (P : Fin 3 → R) : eval P W'.polynomialX =
   eval_simp
 
 lemma eval_polynomialX_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    eval P W.polynomialX / P z ^ 2 = (toAffine W).polynomialX.evalEval (P x / P z) (P y / P z) := by
+    eval P W.polynomialX / P z ^ 2 = W.toAffine.polynomialX.evalEval (P x / P z) (P y / P z) := by
   linear_combination (norm := (rw [eval_polynomialX, Affine.evalEval_polynomialX]; ring1))
     W.a₁ * P y / P z * div_self hPz - 2 * W.a₂ * P x / P z * div_self hPz
       - W.a₄ * div_self (pow_ne_zero 2 hPz)
@@ -323,7 +322,7 @@ lemma eval_polynomialY (P : Fin 3 → R) :
   eval_simp
 
 lemma eval_polynomialY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    eval P W.polynomialY / P z ^ 2 = (toAffine W).polynomialY.evalEval (P x / P z) (P y / P z) := by
+    eval P W.polynomialY / P z ^ 2 = W.toAffine.polynomialY.evalEval (P x / P z) (P y / P z) := by
   linear_combination (norm := (rw [eval_polynomialY, Affine.evalEval_polynomialY]; ring1))
     2 * P y / P z * div_self hPz + W.a₁ * P x / P z * div_self hPz
       + W.a₃ * div_self (pow_ne_zero 2 hPz)
@@ -399,7 +398,7 @@ lemma nonsingular_zero [Nontrivial R] : W'.Nonsingular ![0, 1, 0] := by
   simp only [nonsingular_of_Z_eq_zero, equation_zero, true_and, fin3_def_ext, ← not_and_or]
   exact fun h => one_ne_zero <| by linear_combination (norm := ring1) h.right
 
-lemma nonsingular_some (X Y : R) : W'.Nonsingular ![X, Y, 1] ↔ (toAffine W').Nonsingular X Y := by
+lemma nonsingular_some (X Y : R) : W'.Nonsingular ![X, Y, 1] ↔ W'.toAffine.Nonsingular X Y := by
   simp_rw [nonsingular_iff, equation_some, fin3_def_ext, Affine.nonsingular_iff',
     Affine.equation_iff', and_congr_right_iff, ← not_and_or, not_iff_not, one_pow, mul_one,
     and_congr_right_iff, Iff.comm, iff_self_and]
@@ -407,7 +406,7 @@ lemma nonsingular_some (X Y : R) : W'.Nonsingular ![X, Y, 1] ↔ (toAffine W').N
   linear_combination (norm := ring1) 3 * h - X * hX - Y * hY
 
 lemma nonsingular_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
-    W.Nonsingular P ↔ (toAffine W).Nonsingular (P x / P z) (P y / P z) :=
+    W.Nonsingular P ↔ W.toAffine.Nonsingular (P x / P z) (P y / P z) :=
   (nonsingular_of_equiv <| equiv_some_of_Z_ne_zero hPz).trans <| nonsingular_some ..
 
 lemma nonsingular_iff_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
@@ -466,7 +465,7 @@ lemma nonsingularLift_zero [Nontrivial R] : W'.NonsingularLift ⟦![0, 1, 0]⟧ 
   nonsingular_zero
 
 lemma nonsingularLift_some (X Y : R) :
-    W'.NonsingularLift ⟦![X, Y, 1]⟧ ↔ (toAffine W').Nonsingular X Y :=
+    W'.NonsingularLift ⟦![X, Y, 1]⟧ ↔ W'.toAffine.Nonsingular X Y :=
   nonsingular_some X Y
 
 /-! ## Maps and base changes -/

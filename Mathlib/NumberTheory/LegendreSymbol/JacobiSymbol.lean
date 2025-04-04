@@ -130,7 +130,7 @@ theorem mul_right (a : ℤ) (b₁ b₂ : ℕ) [NeZero b₁] [NeZero b₂] :
 
 /-- The Jacobi symbol takes only the values `0`, `1` and `-1`. -/
 theorem trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a | b) = -1 :=
-  ((@SignType.castHom ℤ _ _).toMonoidHom.mrange.copy {0, 1, -1} <| by
+  ((MonoidHom.mrange (@SignType.castHom ℤ _ _).toMonoidHom).copy {0, 1, -1} <| by
     rw [Set.pair_comm]
     exact (SignType.range_eq SignType.castHom).symm).list_prod_mem
       (by
