@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
+Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson, Sabbir Rahman
 -/
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Algebra.EuclideanDomain.Int
@@ -10,10 +10,10 @@ import Mathlib.Data.Nat.Prime.Int
 import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
-# Divisibility over ℤ
+# Divisibility over ℤ and ℕ
 
 This file collects results for the integers that use ring theory in their proofs or
-cases of ℤ being examples of structures in ring theory.
+cases of ℤ or ℕ being examples of structures in ring theory.
 
 ## Main statements
 
@@ -131,3 +131,20 @@ theorem eq_pow_of_mul_eq_pow_odd {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ} (
   ⟨eq_pow_of_mul_eq_pow_odd_left hab hk h, eq_pow_of_mul_eq_pow_odd_right hab hk h⟩
 
 end Int
+
+namespace Nat
+
+theorem eq_pow_of_mul_eq_pow_left {a b c k : ℕ} (hab : Coprime a b) (h : a * b = c ^ k) :
+  ∃ d, a = d ^ k := by
+  obtain ⟨d, hd⟩ := exists_associated_pow_of_mul_eq_pow (isUnit_iff_eq_one.mpr hab) h
+  use d
+  rw [associated_iff_eq.mp hd]
+
+theorem eq_pow_of_mul_eq_pow_right {a b c k : ℕ} (hab : Coprime a b) (h : a * b = c ^ k) :
+  ∃ d, b = d ^ k := by
+  obtain ⟨d, hd⟩ := exists_associated_pow_of_mul_eq_pow (isUnit_iff_eq_one.mpr hab.symm)
+    (by rwa [mul_comm] at h)
+  use d
+  rw [associated_iff_eq.mp hd]
+
+end Nat
