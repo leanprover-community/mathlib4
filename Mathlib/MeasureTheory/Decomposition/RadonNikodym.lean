@@ -487,7 +487,7 @@ theorem withDensityᵥ_rnDeriv_eq (s : SignedMeasure α) (μ : Measure α) [Sigm
       rw [toSignedMeasure_apply_measurable hi, toSignedMeasure_apply_measurable hi]
     all_goals
       rw [← integrableOn_univ]
-      refine IntegrableOn.restrict ?_ MeasurableSet.univ
+      refine IntegrableOn.restrict ?_
       refine ⟨?_, hasFiniteIntegral_toReal_of_lintegral_ne_top ?_⟩
       · apply Measurable.aestronglyMeasurable (by fun_prop)
       · rw [setLIntegral_univ]
