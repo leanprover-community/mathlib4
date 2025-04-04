@@ -39,6 +39,11 @@ instance instCommRing : CommRing ℤ where
   intCast_ofNat _ := rfl
   intCast_negSucc _ := rfl
 
+-- Verify that the built-in `Lean.Grind.CommRing` instance is definitionally equal to the one
+-- constructed from Mathlib's `CommRing ℤ` instance.
+example : CommRing.toGrindCommRing (α := Int) = Lean.Grind.instCommRingInt := by
+  with_reducible_and_instances rfl
+
 instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero ℤ where
   mul_left_cancel_of_ne_zero {_a _b _c} ha := (mul_eq_mul_left_iff ha).1
 

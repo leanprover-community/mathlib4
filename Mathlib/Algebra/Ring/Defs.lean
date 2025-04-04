@@ -390,6 +390,20 @@ instance (priority := 100) CommRing.toAddCommGroupWithOne [s : CommRing α] :
     AddCommGroupWithOne α :=
   { s with }
 
+instance CommRing.toGrindCommRing [s : CommRing α] : Lean.Grind.CommRing α :=
+  { s with }
+
+-- Verify that we can construct a `CommRing` from a `Lean.Grind.CommRing`.
+-- This is not an instance (or even a `def`) because this direction should never be used.
+example [s : Lean.Grind.CommRing α] : CommRing α :=
+  { s with
+    zero_add := Lean.Grind.CommRing.zero_add
+    right_distrib := Lean.Grind.CommRing.right_distrib
+    mul_zero := Lean.Grind.CommRing.mul_zero
+    one_mul := Lean.Grind.CommRing.one_mul
+    nsmul := nsmulRec
+    zsmul := zsmulRec }
+
 /-- A domain is a nontrivial semiring such that multiplication by a non zero element
 is cancellative on both sides. In other words, a nontrivial semiring `R` satisfying
 `∀ {a b c : R}, a ≠ 0 → a * b = a * c → b = c` and

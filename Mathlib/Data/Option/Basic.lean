@@ -136,15 +136,8 @@ section pmap
 
 variable {p : α → Prop} (f : ∀ a : α, p a → β) (x : Option α)
 
-@[simp]
-theorem pbind_eq_bind (f : α → Option β) (x : Option α) : (x.pbind fun a _ ↦ f a) = x.bind f := by
-  cases x <;> simp only [pbind, none_bind', some_bind']
-
 theorem map_bind' (f : β → γ) (x : Option α) (g : α → Option β) :
     Option.map f (x.bind g) = x.bind fun a ↦ Option.map f (g a) := by cases x <;> simp
-
-theorem pbind_map (f : α → β) (x : Option α) (g : ∀ b : β, b ∈ x.map f → Option γ) :
-    pbind (Option.map f x) g = x.pbind fun a h ↦ g (f a) (mem_map_of_mem _ h) := by cases x <;> rfl
 
 theorem mem_pmem {a : α} (h : ∀ a ∈ x, p a) (ha : a ∈ x) : f a (h a ha) ∈ pmap f x h := by
   rw [mem_def] at ha ⊢
