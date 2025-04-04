@@ -588,6 +588,13 @@ instance finiteIndex_normalCore [H.FiniteIndex] : H.normalCore.FiniteIndex := by
   rw [normalCore_eq_ker]
   infer_instance
 
+@[to_additive]
+theorem index_range {G : Type*} [Group G] {f : G →* G} [hf : f.ker.FiniteIndex] :
+    f.range.index = Nat.card f.ker := by
+  suffices f.range.index * f.ker.index = Nat.card f.ker * f.ker.index by
+    simpa [mul_eq_mul_right_iff, hf.finiteIndex, or_false] using this
+  rw [card_mul_index f.ker, index_ker, mul_comm, card_mul_index]
+
 end FiniteIndex
 
 end Subgroup
