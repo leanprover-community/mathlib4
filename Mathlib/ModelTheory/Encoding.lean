@@ -279,7 +279,6 @@ protected def encoding : Encoding (Σ n, L.BoundedFormula α n) where
   decode_encode φ := by
     have h := listDecode_encode_list [φ]
     rw [flatMap_singleton] at h
-    simp only
     rw [h]
     rfl
 

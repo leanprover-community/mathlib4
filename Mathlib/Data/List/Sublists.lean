@@ -43,8 +43,8 @@ theorem sublists'Aux_eq_array_foldl (a : α) : ∀ (r₁ r₂ : List (List α)),
       (fun r l => r.push (a :: l))).toList := by
   intro r₁ r₂
   rw [sublists'Aux, Array.foldl_toList]
-  have := List.foldl_hom Array.toList (fun r l => r.push (a :: l))
-    (fun r l => r ++ [a :: l]) r₁ r₂.toArray (by simp)
+  have := List.foldl_hom Array.toList (g₁ := fun r l => r.push (a :: l))
+    (g₂ := fun r l => r ++ [a :: l]) (l := r₁) (init := r₂.toArray) (by simp)
   simpa using this
 
 theorem sublists'_eq_sublists'Aux (l : List α) :
@@ -103,9 +103,8 @@ theorem sublistsAux_eq_array_foldl :
         fun r l => (r.push l).push (a :: l)).toList := by
   funext a r
   simp only [sublistsAux, Array.foldl_toList, Array.mkEmpty]
-  have := foldl_hom Array.toList (fun r l => (r.push l).push (a :: l))
-    (fun (r : List (List α)) l => r ++ [l, a :: l]) r #[]
-    (by simp)
+  have := foldl_hom Array.toList (g₁ := fun r l => (r.push l).push (a :: l))
+    (g₂ := fun r l => r ++ [l, a :: l]) (l := r) (init := #[]) (by simp)
   simpa using this
 
 theorem sublistsAux_eq_flatMap :
@@ -309,7 +308,7 @@ theorem Pairwise.sublists' {R} :
     refine ⟨H₂.sublists', H₂.sublists'.imp fun l₁ => Lex.cons l₁, ?_⟩
     rintro l₁ sl₁ x l₂ _ rfl
     rcases l₁ with - | ⟨b, l₁⟩; · constructor
-    exact Lex.rel (H₁ _ <| sl₁.subset <| mem_cons_self _ _)
+    exact Lex.rel (H₁ _ <| sl₁.subset mem_cons_self)
 
 theorem pairwise_sublists {R} {l : List α} (H : Pairwise R l) :
     Pairwise (Lex R on reverse) (sublists l) := by
@@ -406,7 +405,7 @@ theorem range_bind_sublistsLen_perm (l : List α) :
     rw [List.range_succ, flatMap_append, flatMap_singleton,
       sublistsLen_of_length_lt (Nat.lt_succ_self _), append_nil,
       ← List.flatMap_map Nat.succ fun n => sublistsLen n tl,
-      ← flatMap_cons 0 _ fun n => sublistsLen n tl, ← range_succ_eq_map]
+      ← flatMap_cons (f := fun n => sublistsLen n tl), ← range_succ_eq_map]
     exact l_ih
 
 end List

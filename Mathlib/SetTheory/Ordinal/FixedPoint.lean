@@ -440,7 +440,7 @@ theorem iSup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) 
   apply le_antisymm
   · rw [Ordinal.iSup_le_iff]
     intro n
-    rw [← List.length_replicate n Unit.unit, ← List.foldr_const f a]
+    rw [← List.length_replicate (n := n) (a := Unit.unit), ← List.foldr_const f a]
     exact Ordinal.le_iSup _ _
   · apply Ordinal.iSup_le
     intro l
@@ -590,9 +590,6 @@ theorem nfp_add_eq_mul_omega0 {a b} (hba : b ≤ a * ω) : nfp (a + ·) b = a * 
     exact nfp_monotone (isNormal_add_right a).monotone (Ordinal.zero_le b)
   · dsimp; rw [← mul_one_add, one_add_omega0]
 
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias nfp_add_eq_mul_omega := nfp_add_eq_mul_omega0
-
 theorem add_eq_right_iff_mul_omega0_le {a b : Ordinal} : a + b = b ↔ a * ω ≤ b := by
   refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [← nfp_add_zero a, ← deriv_zero_right]
@@ -603,15 +600,9 @@ theorem add_eq_right_iff_mul_omega0_le {a b : Ordinal} : a + b = b ↔ a * ω �
     nth_rw 1 [← this]
     rwa [← add_assoc, ← mul_one_add, one_add_omega0]
 
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias add_eq_right_iff_mul_omega_le := add_eq_right_iff_mul_omega0_le
-
 theorem add_le_right_iff_mul_omega0_le {a b : Ordinal} : a + b ≤ b ↔ a * ω ≤ b := by
   rw [← add_eq_right_iff_mul_omega0_le]
   exact (isNormal_add_right a).le_iff_eq
-
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias add_le_right_iff_mul_omega_le := add_le_right_iff_mul_omega0_le
 
 theorem deriv_add_eq_mul_omega0_add (a b : Ordinal.{u}) : deriv (a + ·) b = a * ω + b := by
   revert b
@@ -621,9 +612,6 @@ theorem deriv_add_eq_mul_omega0_add (a b : Ordinal.{u}) : deriv (a + ·) b = a *
     exact nfp_add_zero a
   · rw [deriv_succ, h, add_succ]
     exact nfp_eq_self (add_eq_right_iff_mul_omega0_le.2 ((le_add_right _ _).trans (le_succ _)))
-
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias deriv_add_eq_mul_omega_add := deriv_add_eq_mul_omega0_add
 
 /-! ### Fixed points of multiplication -/
 
@@ -655,9 +643,6 @@ theorem nfp_mul_eq_opow_omega0 {a b : Ordinal} (hb : 0 < b) (hba : b ≤ a ^ ω)
   rw [← nfp_mul_one ha]
   exact nfp_monotone (isNormal_mul_right ha).monotone (one_le_iff_pos.2 hb)
 
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias nfp_mul_eq_opow_omega := nfp_mul_eq_opow_omega0
-
 theorem eq_zero_or_opow_omega0_le_of_mul_eq_right {a b : Ordinal} (hab : a * b = b) :
     b = 0 ∨ a ^ ω ≤ b := by
   rcases eq_zero_or_pos a with ha | ha
@@ -668,9 +653,6 @@ theorem eq_zero_or_opow_omega0_le_of_mul_eq_right {a b : Ordinal} (hab : a * b =
   rw [← nfp_mul_one ha]
   rw [← Ne, ← one_le_iff_ne_zero] at hb
   exact nfp_le_fp (isNormal_mul_right ha).monotone hb (le_of_eq hab)
-
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias eq_zero_or_opow_omega_le_of_mul_eq_right := eq_zero_or_opow_omega0_le_of_mul_eq_right
 
 theorem mul_eq_right_iff_opow_omega0_dvd {a b : Ordinal} : a * b = b ↔ a ^ ω ∣ b := by
   rcases eq_zero_or_pos a with ha | ha
@@ -687,16 +669,10 @@ theorem mul_eq_right_iff_opow_omega0_dvd {a b : Ordinal} : a * b = b ↔ a ^ ω 
   obtain ⟨c, hc⟩ := h
   rw [hc, ← mul_assoc, ← opow_one_add, one_add_omega0]
 
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias mul_eq_right_iff_opow_omega_dvd := mul_eq_right_iff_opow_omega0_dvd
-
 theorem mul_le_right_iff_opow_omega0_dvd {a b : Ordinal} (ha : 0 < a) :
     a * b ≤ b ↔ (a ^ ω) ∣ b := by
   rw [← mul_eq_right_iff_opow_omega0_dvd]
   exact (isNormal_mul_right ha).le_iff_eq
-
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias mul_le_right_iff_opow_omega_dvd := mul_le_right_iff_opow_omega0_dvd
 
 theorem nfp_mul_opow_omega0_add {a c : Ordinal} (b) (ha : 0 < a) (hc : 0 < c)
     (hca : c ≤ a ^ ω) : nfp (a * ·) (a ^ ω * b + c) = a ^ ω * succ b := by
@@ -715,9 +691,6 @@ theorem nfp_mul_opow_omega0_add {a c : Ordinal} (b) (ha : 0 < a) (hc : 0 < c)
     rw [add_zero, mul_lt_mul_iff_left (opow_pos ω ha)] at this
     rwa [succ_le_iff]
 
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias nfp_mul_opow_omega_add := nfp_mul_opow_omega0_add
-
 theorem deriv_mul_eq_opow_omega0_mul {a : Ordinal.{u}} (ha : 0 < a) (b) :
     deriv (a * ·) b = a ^ ω * b := by
   revert b
@@ -727,8 +700,5 @@ theorem deriv_mul_eq_opow_omega0_mul {a : Ordinal.{u}} (ha : 0 < a) (b) :
   · dsimp only; rw [deriv_zero_right, nfp_mul_zero, mul_zero]
   · rw [deriv_succ, h]
     exact nfp_mul_opow_omega0_add c ha zero_lt_one (one_le_iff_pos.2 (opow_pos _ ha))
-
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias deriv_mul_eq_opow_omega_mul := deriv_mul_eq_opow_omega0_mul
 
 end Ordinal

@@ -55,7 +55,7 @@ abbrev _root_.Quiver.Hom.toNegPath {X Y : V} (f : X ⟶ Y) :
 /-- The "reduction" relation -/
 inductive redStep : HomRel (Paths (Quiver.Symmetrify V))
   | step (X Z : Quiver.Symmetrify V) (f : X ⟶ Z) :
-    redStep (𝟙 (Paths.of.obj X)) (f.toPath ≫ (Quiver.reverse f).toPath)
+    redStep (𝟙 ((Paths.of (Quiver.Symmetrify V)).obj X)) (f.toPath ≫ (Quiver.reverse f).toPath)
 
 /-- The underlying vertices of the free groupoid -/
 def _root_.CategoryTheory.FreeGroupoid (V) [Q : Quiver V] :=
@@ -128,7 +128,7 @@ def of (V) [Quiver V] : V ⥤q FreeGroupoid V where
   map f := Quot.mk _ f.toPosPath
 
 theorem of_eq :
-    of V = (Quiver.Symmetrify.of ⋙q Paths.of).comp
+    of V = (Quiver.Symmetrify.of ⋙q (Paths.of (Quiver.Symmetrify V))).comp
       (Quotient.functor <| @redStep V _).toPrefunctor := rfl
 
 section UniversalProperty
