@@ -171,7 +171,7 @@ theorem nhdNE_of_nhdNE_sdiff_finite {X : Type*} [TopologicalSpace X] [T1Space X]
   use t \ (s \ {x})
   constructor
   · rw [← isClosed_compl_iff, compl_diff]
-    exact hs.diff.isClosed.union (isClosed_compl_iff.2 ht)
+    exact s.toFinite.diff.isClosed.union (isClosed_compl_iff.2 ht)
   · tauto_set
 
 /-- In a T1Space, a set `s` is codiscreteWithin `U` iff it has locally finite complement within `U`.
