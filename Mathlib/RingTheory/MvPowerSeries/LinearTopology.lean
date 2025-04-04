@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 import Mathlib.Data.Finsupp.Interval
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.MvPowerSeries.PiTopology
-import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Topology.Algebra.LinearTopology
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
