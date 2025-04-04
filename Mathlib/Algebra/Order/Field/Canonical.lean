@@ -25,9 +25,9 @@ variable {α : Type*} [Semifield α] [LinearOrder α] [CanonicallyOrderedAdd α]
 
 /-- Construct a `IsOrderedMonoidWithZero` from a canonically linear ordered semifield. -/
 lemma CanonicallyOrderedAdd.toIsOrderedMonoidWithZero :
-    IsOrderedMonoidWithZero α :=
-  { zero_le_one := zero_le_one
-    mul_le_mul_left := fun _ _ h _ ↦ mul_le_mul_of_nonneg_left h <| zero_le _ }
+    IsOrderedMonoidWithZero α where
+  zero_le_one := zero_le_one
+  mul_le_mul_left := fun _ _ h _ ↦ mul_le_mul_of_nonneg_left h <| zero_le _
 
 variable [IsStrictOrderedRing α] [Sub α] [OrderedSub α]
 
