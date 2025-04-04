@@ -5,7 +5,6 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.Order.Nonneg.Basic
-import Mathlib.Algebra.Order.Nonneg.Lattice
 
 /-!
 # Nonnegative elements are archimedean
