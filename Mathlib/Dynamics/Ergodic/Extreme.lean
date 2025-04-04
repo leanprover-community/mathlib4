@@ -19,7 +19,7 @@ We also specialize this result to probability measures.
 open Filter Set Function MeasureTheory Measure ProbabilityTheory
 open scoped NNReal ENNReal Topology
 
-variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α} {f : α → α}
+variable {X : Type*} {m : MeasurableSpace X} {μ ν : Measure X} {f : X → X}
 
 namespace Ergodic
 
@@ -30,9 +30,9 @@ theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
   have hf : MeasurePreserving f μ μ := h.1.1
   rcases eq_or_ne c 0 with rfl | hc₀
   · convert Ergodic.zero_measure hf.measurable
-    rw [← Measure.measure_univ_eq_zero, h.1.2]
+    rw [← measure_univ_eq_zero, h.1.2]
   · refine ⟨hf, ⟨?_⟩⟩
-    have hfin : IsFiniteMeasure μ := by
+    have : IsFiniteMeasure μ := by
       constructor
       rwa [h.1.2, lt_top_iff_ne_top]
     set S := {ν | MeasurePreserving f ν ν ∧ ν univ = c}
