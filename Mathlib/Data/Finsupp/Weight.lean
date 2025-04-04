@@ -219,7 +219,7 @@ theorem degree_single (a : σ) (r : R) : (Finsupp.single a r).degree = r :=
 theorem degree_zero : degree (0 : σ →₀ R) = 0 := by simp [degree]
 
 lemma degree_eq_zero_iff {R : Type*}
-    [AddCommMonoid R] [PartialOrder R] [IsOrderedAddMonoid R] [CanonicallyOrderedAdd R]
+    [AddCommMonoid R] [PartialOrder R] [CanonicallyOrderedAdd R]
     (d : σ →₀ R) :
     degree d = 0 ↔ d = 0 := by
   simp only [degree, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
