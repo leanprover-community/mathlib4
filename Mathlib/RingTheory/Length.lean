@@ -44,6 +44,7 @@ lemma Module.length_eq_zero_iff : Module.length R M = 0 ↔ Subsingleton M := by
   rw [← WithBot.coe_inj, Module.coe_length, WithBot.coe_zero,
     Order.krullDim_eq_zero_iff_of_orderTop, Submodule.subsingleton_iff]
 
+@[nontriviality]
 lemma Module.length_eq_zero [Subsingleton M] : Module.length R M = 0 :=
   Module.length_eq_zero_iff.mpr ‹_›
 
@@ -73,9 +74,7 @@ lemma Module.length_compositionSeries (s : CompositionSeries (Submodule R M)) (h
 
 lemma Module.length_ne_top_iff : Module.length R M ≠ ⊤ ↔ IsFiniteLength R M := by
   constructor
-  · cases subsingleton_or_nontrivial M
-    · simp only [length_eq_zero, ne_eq, ENat.zero_ne_top, not_false_eq_true, forall_const]
-      exact .of_subsingleton
+  · nontriviality M
     cases finiteDimensionalOrder_or_infiniteDimensionalOrder (Submodule R M)
     · intro _
       rw [isFiniteLength_iff_isNoetherian_isArtinian, isNoetherian_iff, isArtinian_iff]
