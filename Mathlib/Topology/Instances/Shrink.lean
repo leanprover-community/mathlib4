@@ -5,7 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.Logic.Small.Defs
 import Mathlib.Topology.Defs.Induced
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Defs
 
 /-!
 # Topological space structure on `Shrink X`

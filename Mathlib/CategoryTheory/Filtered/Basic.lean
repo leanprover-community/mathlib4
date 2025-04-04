@@ -117,15 +117,6 @@ section AllowEmpty
 variable {C}
 variable [IsFilteredOrEmpty C]
 
--- Porting note: the following definitions were removed because the names are invalid,
--- direct references to `IsFilteredOrEmpty` have been added instead
---
--- theorem cocone_objs : ∀ X Y : C, ∃ (Z : _) (f : X ⟶ Z) (g : Y ⟶ Z), True :=
---  IsFilteredOrEmpty.cocone_objs
---
---theorem cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z : _) (h : Y ⟶ Z), f ≫ h = g ≫ h :=
---  IsFilteredOrEmpty.cocone_maps
-
 /-- `max j j'` is an arbitrary choice of object to the right of both `j` and `j'`,
 whose existence is ensured by `IsFiltered`.
 -/
@@ -549,15 +540,6 @@ section AllowEmpty
 
 variable {C}
 variable [IsCofilteredOrEmpty C]
-
--- Porting note: the following definitions were removed because the names are invalid,
--- direct references to `IsCofilteredOrEmpty` have been added instead
---
---theorem cone_objs : ∀ X Y : C, ∃ (W : _) (f : W ⟶ X) (g : W ⟶ Y), True :=
---  IsCofilteredOrEmpty.cone_objs
---
---theorem cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W : _) (h : W ⟶ X), h ≫ f = h ≫ g :=
---  IsCofilteredOrEmpty.cone_maps
 
 /-- `min j j'` is an arbitrary choice of object to the left of both `j` and `j'`,
 whose existence is ensured by `IsCofiltered`.

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Group.Pi.Notation
+import Mathlib.Algebra.Notation.Pi
 import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Spread
@@ -166,6 +166,15 @@ theorem mulSingle_eq_of_ne' {i i' : I} (h : i ≠ i') (x : f i) : mulSingle i x 
 @[to_additive (attr := simp)]
 theorem mulSingle_one (i : I) : mulSingle i (1 : f i) = 1 :=
   Function.update_eq_self _ _
+
+@[to_additive (attr := simp)]
+theorem mulSingle_eq_one_iff {i : I} {x : f i} : mulSingle i x = 1 ↔ x = 1 := by
+  refine ⟨fun h => ?_, fun h => h.symm ▸ mulSingle_one i⟩
+  rw [← mulSingle_eq_same i x, h, one_apply]
+
+@[to_additive]
+theorem mulSingle_ne_one_iff {i : I} {x : f i} : mulSingle i x ≠ 1 ↔ x ≠ 1 :=
+  mulSingle_eq_one_iff.ne
 
 -- Porting note:
 -- 1) Why do I have to specify the type of `mulSingle i x` explicitly?

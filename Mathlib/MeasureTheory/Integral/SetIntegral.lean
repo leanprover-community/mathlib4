@@ -127,9 +127,10 @@ theorem integral_finset_biUnion {ι : Type*} (t : Finset ι) {s : ι → Set X}
     (hf : ∀ i ∈ t, IntegrableOn f (s i) μ) :
     ∫ x in ⋃ i ∈ t, s i, f x ∂μ = ∑ i ∈ t, ∫ x in s i, f x ∂μ := by
   classical
-  induction' t using Finset.induction_on with a t hat IH hs h's
-  · simp
-  · simp only [Finset.coe_insert, Finset.forall_mem_insert, Set.pairwise_insert,
+  induction t using Finset.induction_on with
+  | empty => simp
+  | insert hat IH =>
+    simp only [Finset.coe_insert, Finset.forall_mem_insert, Set.pairwise_insert,
       Finset.set_biUnion_insert] at hs hf h's ⊢
     rw [setIntegral_union _ _ hf.1 (integrableOn_finset_iUnion.2 hf.2)]
     · rw [Finset.sum_insert hat, IH hs.2 h's.1 hf.2]
@@ -551,8 +552,7 @@ theorem norm_integral_sub_setIntegral_le [IsFiniteMeasure μ] {C : ℝ}
   have h0 : ∫ (x : X), f x ∂μ - ∫ x in s, f x ∂μ = ∫ x in sᶜ, f x ∂μ := by
     rw [sub_eq_iff_eq_add, add_comm, integral_add_compl hs hf1]
   have h1 : ∫ x in sᶜ, ‖f x‖ ∂μ ≤ ∫ _ in sᶜ, C ∂μ :=
-    integral_mono_ae (Integrable.restrict (Integrable.norm hf1))
-      (integrable_const C) (ae_restrict_of_ae hf)
+    integral_mono_ae hf1.norm.restrict (integrable_const C) (ae_restrict_of_ae hf)
   have h2 : ∫ _ in sᶜ, C ∂μ = (μ sᶜ).toReal * C := by
     rw [setIntegral_const C, smul_eq_mul]
   rw [h0, ← h2]
@@ -1226,12 +1226,12 @@ theorem fst_integral [CompleteSpace F] {f : X → E × F} (hf : Integrable f μ)
 theorem snd_integral [CompleteSpace E] {f : X → E × F} (hf : Integrable f μ) :
     (∫ x, f x ∂μ).2 = ∫ x, (f x).2 ∂μ := by
   rw [← Prod.fst_swap, swap_integral]
-  exact fst_integral <| hf.snd.prod_mk hf.fst
+  exact fst_integral <| hf.snd.prodMk hf.fst
 
 theorem integral_pair [CompleteSpace E] [CompleteSpace F] {f : X → E} {g : X → F}
     (hf : Integrable f μ) (hg : Integrable g μ) :
     ∫ x, (f x, g x) ∂μ = (∫ x, f x ∂μ, ∫ x, g x ∂μ) :=
-  have := hf.prod_mk hg
+  have := hf.prodMk hg
   Prod.ext (fst_integral this) (snd_integral this)
 
 theorem integral_smul_const {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [CompleteSpace E]
@@ -1304,20 +1304,53 @@ theorem integral_withDensity_eq_integral_smul₀ {f : X → ℝ≥0} (hf : AEMea
       filter_upwards [hf.ae_eq_mk] with x hx
       rw [hx]
 
-theorem setIntegral_withDensity_eq_setIntegral_smul {f : X → ℝ≥0} (f_meas : Measurable f)
-    (g : X → E) {s : Set X} (hs : MeasurableSet s) :
-    ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, f x • g x ∂μ := by
-  rw [restrict_withDensity hs, integral_withDensity_eq_integral_smul f_meas]
+theorem integral_withDensity_eq_integral_toReal_smul₀ {f : X → ℝ≥0∞} (f_meas : AEMeasurable f μ)
+    (hf_lt_top : ∀ᵐ x ∂μ, f x < ∞) (g : X → E) :
+    ∫ x, g x ∂μ.withDensity f = ∫ x, (f x).toReal • g x ∂μ := by
+  dsimp only [ENNReal.toReal, ← NNReal.smul_def]
+  rw [← integral_withDensity_eq_integral_smul₀ f_meas.ennreal_toNNReal,
+    withDensity_congr_ae (coe_toNNReal_ae_eq hf_lt_top)]
+
+theorem integral_withDensity_eq_integral_toReal_smul {f : X → ℝ≥0∞} (f_meas : Measurable f)
+    (hf_lt_top : ∀ᵐ x ∂μ, f x < ∞) (g : X → E) :
+    ∫ x, g x ∂μ.withDensity f = ∫ x, (f x).toReal • g x ∂μ :=
+  integral_withDensity_eq_integral_toReal_smul₀ f_meas.aemeasurable hf_lt_top g
 
 theorem setIntegral_withDensity_eq_setIntegral_smul₀ {f : X → ℝ≥0} {s : Set X}
     (hf : AEMeasurable f (μ.restrict s)) (g : X → E) (hs : MeasurableSet s) :
     ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, f x • g x ∂μ := by
   rw [restrict_withDensity hs, integral_withDensity_eq_integral_smul₀ hf]
 
+theorem setIntegral_withDensity_eq_setIntegral_toReal_smul₀ {f : X → ℝ≥0∞} {s : Set X}
+    (hf : AEMeasurable f (μ.restrict s)) (hf_top : ∀ᵐ x ∂μ.restrict s, f x < ∞) (g : X → E)
+    (hs : MeasurableSet s) :
+    ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, (f x).toReal • g x ∂μ := by
+  rw [restrict_withDensity hs, integral_withDensity_eq_integral_toReal_smul₀ hf hf_top]
+
+theorem setIntegral_withDensity_eq_setIntegral_smul {f : X → ℝ≥0} (f_meas : Measurable f)
+    (g : X → E) {s : Set X} (hs : MeasurableSet s) :
+    ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, f x • g x ∂μ :=
+  setIntegral_withDensity_eq_setIntegral_smul₀ f_meas.aemeasurable _ hs
+
+theorem setIntegral_withDensity_eq_setIntegral_toReal_smul {f : X → ℝ≥0∞} {s : Set X}
+    (hf : Measurable f) (hf_top : ∀ᵐ x ∂μ.restrict s, f x < ∞) (g : X → E) (hs : MeasurableSet s) :
+    ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, (f x).toReal • g x ∂μ :=
+  setIntegral_withDensity_eq_setIntegral_toReal_smul₀ hf.aemeasurable hf_top g hs
+
 theorem setIntegral_withDensity_eq_setIntegral_smul₀' [SFinite μ] {f : X → ℝ≥0} (s : Set X)
-    (hf : AEMeasurable f (μ.restrict s)) (g : X → E)  :
+    (hf : AEMeasurable f (μ.restrict s)) (g : X → E) :
     ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, f x • g x ∂μ := by
   rw [restrict_withDensity' s, integral_withDensity_eq_integral_smul₀ hf]
+
+theorem setIntegral_withDensity_eq_setIntegral_toReal_smul₀' [SFinite μ] {f : X → ℝ≥0∞} (s : Set X)
+    (hf : AEMeasurable f (μ.restrict s)) (hf_top : ∀ᵐ x ∂μ.restrict s, f x < ∞) (g : X → E) :
+    ∫ x in s, g x ∂μ.withDensity f = ∫ x in s, (f x).toReal • g x ∂μ := by
+  rw [restrict_withDensity' s, integral_withDensity_eq_integral_toReal_smul₀ hf hf_top]
+
+theorem setIntegral_withDensity_eq_setIntegral_toReal_smul' [SFinite μ] {f : X → ℝ≥0∞} (s : Set X)
+    (hf : Measurable f) (hf_top : ∀ᵐ x ∂μ.restrict s, f x < ∞) (g : X → E) :
+    ∫ x in s, g x ∂μ.withDensity f = ∫ x in s, (f x).toReal • g x ∂μ :=
+  setIntegral_withDensity_eq_setIntegral_toReal_smul₀' s hf.aemeasurable hf_top g
 
 end
 
@@ -1417,7 +1450,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) (hg : IntegrableOn g k μ) :
     ContinuousOn (fun x ↦ ∫ y, L (g y) (f x y) ∂μ) s := by
   have A : ∀ p ∈ s, Continuous (f p) := fun p hp ↦ by
-    refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun y => ?_
+    refine hf.comp_continuous (.prodMk_right _) fun y => ?_
     simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hp
   intro q hq
   apply Metric.continuousWithinAt_iff'.2 (fun ε εpos ↦ ?_)
@@ -1487,3 +1520,5 @@ lemma continuousOn_integral_of_compact_support
     hk hf hfs (integrableOn_const.2 (Or.inr hk.measure_lt_top)) (μ := μ) (g := fun _ ↦ 1)
 
 end ParametricIntegral
+
+set_option linter.style.longFile 1700
