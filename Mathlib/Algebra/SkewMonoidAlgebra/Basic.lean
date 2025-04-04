@@ -399,7 +399,7 @@ theorem sum_sum_index {α β M N P : Type*} [AddCommMonoid M] [AddCommMonoid N] 
     (h_zero : ∀ (a : β), h a 0 = 0)
     (h_add : ∀ (a : β) (b₁ b₂ : N), h a (b₁ + b₂) = h a b₁ + h a b₂) :
     sum (sum f g) h = sum f fun a b ↦ sum (g a b) h := by
-  rw [sum_def, toFinsupp_sum' f g, Finsupp.sum_sum_index h_zero h_add]; rfl
+  rw [sum_def, toFinsupp_sum' f g, Finsupp.sum_sum_index h_zero h_add]; simp [sum_def]
 
 @[simp]
 theorem coeff_sum {k' G' : Type*} [AddCommMonoid k'] {f : SkewMonoidAlgebra k G}
@@ -647,7 +647,7 @@ instance : NonUnitalSemiring (SkewMonoidAlgebra k G) where
 instance : NonAssocSemiring (SkewMonoidAlgebra k G) where
   natCast n := single 1 n
   natCast_zero := by simp only [Nat.cast_zero, single_zero]
-  natCast_succ _ := by simp only [Nat.cast_add, Nat.cast_one, single_add]; rfl
+  natCast_succ _ := by simp [Nat.cast_add, Nat.cast_one, single_add]
   one_mul f := by
     induction f using induction_on' with
     | hM g a => rw [one_def, mul_def, sum_single_index] <;> simp
