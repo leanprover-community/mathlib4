@@ -5,12 +5,14 @@ Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
 import Mathlib.Order.Bounds.Defs
 import Mathlib.Algebra.Group.Int.Defs
 import Mathlib.Data.Int.Basic
+import Batteries.Data.Nat.Gcd
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Extended GCD and divisibility over ℤ
