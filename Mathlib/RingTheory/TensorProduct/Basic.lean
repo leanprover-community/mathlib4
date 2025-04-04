@@ -1464,7 +1464,7 @@ section
 
 variable {R S T : Type*} [CommSemiring R] [Semiring S] [Algebra R S] [Ring T] [Algebra R T]
 
-variable (R) in
+variable (R S) in
 theorem TensorProduct.mk_surjective (M) [AddCommMonoid M] [Module R M]
     (h : Function.Surjective (algebraMap R S)) :
     Function.Surjective (TensorProduct.mk R S M 1) := by
@@ -1486,7 +1486,7 @@ lemma TensorProduct.flip_mk_surjective (h : Function.Surjective (algebraMap R T)
 variable (T) in
 lemma Algebra.TensorProduct.includeRight_surjective (h : Function.Surjective (algebraMap R S)) :
     Function.Surjective (includeRight : T →ₐ[R] S ⊗[R] T) :=
-  TensorProduct.mk_surjective _ _ h
+  TensorProduct.mk_surjective _ _ _ h
 
 lemma Algebra.TensorProduct.includeLeft_surjective
     (S A : Type*) [CommSemiring S] [Semiring A] [Algebra S A] [Algebra R A]
