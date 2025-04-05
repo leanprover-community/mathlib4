@@ -116,4 +116,44 @@ abbrev bidirectionalRecOn {C : List α → Sort*} (l : List α) (H0 : C []) (H1 
     (Hn : ∀ (a : α) (l : List α) (b : α), C l → C (a :: (l ++ [b]))) : C l :=
   bidirectionalRec H0 H1 Hn l
 
+/--
+A dependent recursion principle for nonempty lists. Useful for dealing with
+operations like `List.head` which are not defined on the empty list.
+-/
+@[elab_as_elim]
+def recNeNil {motive : (l : List α) → l ≠ [] → Sort*}
+    (singleton : ∀ x, motive [x] (cons_ne_nil x []))
+    (cons : ∀ x xs h, motive xs h → motive (x :: xs) (cons_ne_nil x xs))
+    (l : List α) (h : l ≠ []) : motive l h :=
+  match l with
+  | [x] => singleton x
+  | x :: y :: xs =>
+    cons x (y :: xs) (cons_ne_nil y xs) (recNeNil singleton cons (y :: xs) (cons_ne_nil y xs))
+
+@[simp]
+theorem recNeNil_singleton {motive : (l : List α) → l ≠ [] → Sort*} (x : α)
+    (singleton : ∀ x, motive [x] (cons_ne_nil x []))
+    (cons : ∀ x xs h, motive xs h → motive (x :: xs) (cons_ne_nil x xs)) :
+    recNeNil singleton cons [x] (cons_ne_nil x []) = singleton x := rfl
+
+@[simp]
+theorem recNeNil_cons {motive : (l : List α) → l ≠ [] → Sort*} (x : α) (xs : List α) (h : xs ≠ [])
+    (singleton : ∀ x, motive [x] (cons_ne_nil x []))
+    (cons : ∀ x xs h, motive xs h → motive (x :: xs) (cons_ne_nil x xs)) :
+    recNeNil singleton cons (x :: xs) (cons_ne_nil x xs) =
+      cons x xs h (recNeNil singleton cons xs h) :=
+  match xs with
+  | _ :: _ => rfl
+
+/--
+A dependent recursion principle for nonempty lists. Useful for dealing with
+operations like `List.head` which are not defined on the empty list.
+Same as `List.recNeNil`, with a more convenient argument order.
+-/
+@[elab_as_elim, simp]
+abbrev recOnNeNil {motive : (l : List α) → l ≠ [] → Sort*} (l : List α) (h : l ≠ [])
+    (singleton : ∀ x, motive [x] (cons_ne_nil x []))
+    (cons : ∀ x xs h, motive xs h → motive (x :: xs) (cons_ne_nil x xs)) :
+    motive l h := recNeNil singleton cons l h
+
 end List
