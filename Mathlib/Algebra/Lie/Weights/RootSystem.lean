@@ -435,9 +435,24 @@ variable (K L : Type*) [Field K] [CharZero K]
   (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [LieModule.IsTriangularizable K H L]
 
 #check (LieAlgebra.IsKilling.rootSystem H)
---set_option maxHeartbeats 10000000
+set_option maxHeartbeats 10000000
 --  eq_top_of_invtSubmodule_reflection (q : Submodule R M) :
 --    (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤
+
+lemma rr78:
+   ∀ (q : Submodule K (Module.Dual K H)), (∀ (i : H.root), q ∈ Module.End.invtSubmodule
+      ((LieAlgebra.IsKilling.rootSystem H).reflection i)) → q ≠ ⊥ → q = ⊤ := by
+  have _i := LieModule.nontrivial_of_isIrreducible K L L
+  let S := (LieAlgebra.IsKilling.rootSystem H)
+  by_contra!
+  obtain ⟨q, hq1, hq2, hq3⟩ := this
+  have := RootPairing.l3 (LieAlgebra.IsKilling.rootSystem H) q hq1 hq2 hq3
+  obtain ⟨Φ, hhh1, hhh2, hhh3, hhh4⟩ := this
+  let gg := ⋃ i ∈ Φ, (LieAlgebra.rootSpace H i : Set L)
+  let I := LieSubalgebra.lieSpan K L gg
+  have rr (a b : L) (h1 : a ∈ I) (h2 : b ∈ I) : ⁅a, b⁆ ∈ I := by
+    exact LieSubalgebra.lie_mem I h1 h2
+
 
 
 lemma rr7:
@@ -479,8 +494,16 @@ lemma rr7:
       intro zzz_2
       intro hx_1
       intro hxzzz
-      have : x_1 ∈ I := x_2
-
+      have x1n : x_1 ∈ I := x_2
+      have z1n : zzz ∈ I := zzz_2
+      have : ⁅x, ⁅x_1, zzz⁆⁆ = ⁅⁅x, x_1⁆, zzz⁆ + ⁅x_1, ⁅x, zzz⁆⁆ := by
+        simp
+      rw [this]
+      have p1 : ⁅⁅x, x_1⁆, zzz⁆ ∈ I := by
+        exact LieSubalgebra.lie_mem I hx_1 z1n
+      have p2 : ⁅x_1, ⁅x, zzz⁆⁆ ∈ I := by
+        exact LieSubalgebra.lie_mem I x1n hxzzz
+      exact LieSubalgebra.add_mem I p1 p2
     | zero =>
       simp only [zero_lie, LieSubalgebra.zero_mem]
     | add x1 y1 _ _ hx hy =>
