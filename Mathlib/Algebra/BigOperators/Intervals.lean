@@ -113,13 +113,13 @@ theorem prod_Ico_add_right_sub_eq [AddCommMonoid α] [PartialOrder α] [IsOrdere
 @[to_additive]
 theorem prod_Ico_succ_top {a b : ℕ} (hab : a ≤ b) (f : ℕ → M) :
     (∏ k ∈ Ico a (b + 1), f k) = (∏ k ∈ Ico a b, f k) * f b := by
-  rw [Nat.Ico_succ_right_eq_insert_Ico hab, prod_insert right_not_mem_Ico, mul_comm]
+  rw [← Finset.insert_Ico_right_eq_Ico_add_one_right hab, prod_insert right_not_mem_Ico, mul_comm]
 
 @[to_additive]
 theorem prod_eq_prod_Ico_succ_bot {a b : ℕ} (hab : a < b) (f : ℕ → M) :
     ∏ k ∈ Ico a b, f k = f a * ∏ k ∈ Ico (a + 1) b, f k := by
   have ha : a ∉ Ico (a + 1) b := by simp
-  rw [← prod_insert ha, Nat.Ico_insert_succ_left hab]
+  rw [← prod_insert ha, ← Finset.insert_Ico_add_one_left_eq_Ico  hab]
 
 @[to_additive]
 theorem prod_Ico_consecutive (f : ℕ → M) {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k) :
