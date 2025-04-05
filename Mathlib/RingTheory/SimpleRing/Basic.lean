@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang
+Authors: Jujian Zhang, Yunzhou Xie
 -/
 
 import Mathlib.RingTheory.SimpleRing.Defs
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.RingTheory.TwoSidedIdeal.Kernel
 
 /-! # Basic Properties of Simple rings
@@ -85,5 +86,7 @@ lemma iff_injective_ringHom (R : Type u) [NonAssocRing R] [Nontrivial R] :
   iff_injective_ringHom_or_subsingleton_codomain R |>.trans <|
     ⟨fun H _ _ _ f => H f |>.resolve_right (by simpa [not_subsingleton_iff_nontrivial]),
       fun H S _ f => subsingleton_or_nontrivial S |>.recOn Or.inr fun _ => Or.inl <| H f⟩
+
+instance [IsSimpleRing R] : IsSimpleRing Rᵐᵒᵖ := ⟨TwoSidedIdeal.opOrderIso.symm.isSimpleOrder⟩
 
 end IsSimpleRing

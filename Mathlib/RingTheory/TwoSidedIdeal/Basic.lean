@@ -5,8 +5,9 @@ Authors: Jujian Zhang
 -/
 
 import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.RingTheory.Congruence.Basic
+import Mathlib.RingTheory.Congruence.Opposite
 
 /-!
 # Two Sided Ideals
@@ -82,6 +83,7 @@ def coeOrderEmbedding : TwoSidedIdeal R ↪o Set R where
 lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) := Iff.rfl
 
 /-- Two-sided-ideals corresponds to congruence relations on a ring. -/
+@[simps]
 def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
   toFun := TwoSidedIdeal.ringCon
   invFun := .mk
@@ -89,6 +91,12 @@ def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
   right_inv _ := rfl
   map_rel_iff' {I J} := Iff.symm <| le_iff.trans ⟨fun h x y r => by rw [rel_iff] at r ⊢; exact h r,
     fun h x hx => by rw [SetLike.mem_coe, mem_iff] at hx ⊢; exact h hx⟩
+
+-- @[simp]
+-- lemma opOrderIso_apply (I : TwoSidedIdeal R): opOrderIso I = ⟨I.1.op⟩ := rfl
+
+-- @[simp]
+-- lemma opOrderIso_symm_apply (I : TwoSidedIdeal Rᵐᵒᵖ) : opOrderIso.symm I = ⟨I.1.unop⟩ := rfl
 
 lemma ringCon_injective : Function.Injective (TwoSidedIdeal.ringCon (R := R)) := by
   rintro ⟨x⟩ ⟨y⟩ rfl; rfl
@@ -197,6 +205,33 @@ def coeAddMonoidHom : I →+ R where
   toFun := (↑)
   map_zero' := rfl
   map_add' _ _ := rfl
+
+/-- If `I` is a two-sided ideal of `R`, then `{op x | x ∈ I}` is a two-sided ideal in `Rᵐᵒᵖ`. -/
+@[simps]
+def op (I : TwoSidedIdeal R) : TwoSidedIdeal Rᵐᵒᵖ where
+  ringCon := I.ringCon.op
+
+lemma op_mem (I : TwoSidedIdeal R) (x : Rᵐᵒᵖ) : x ∈ I.op ↔ x.unop ∈ I := by
+  constructor <;> simpa [mem_iff, I.ringCon.op_iff] using I.ringCon.symm
+
+/-- If `I` is a two-sided ideal of `Rᵐᵒᵖ`, then `{x.unop | x ∈ I}` is a two-sided ideal in `R`. -/
+@[simps]
+def unop (I : TwoSidedIdeal Rᵐᵒᵖ) : TwoSidedIdeal R where
+  ringCon := I.ringCon.unop
+
+lemma unop_mem (I : TwoSidedIdeal Rᵐᵒᵖ) (x : R) : x ∈ I.unop ↔ MulOpposite.op x ∈ I := by
+  constructor <;> simpa [mem_iff, I.ringCon.unop_iff] using I.ringCon.symm
+
+/--
+Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each other.
+-/
+@[simps]
+def opOrderIso : TwoSidedIdeal R ≃o TwoSidedIdeal Rᵐᵒᵖ where
+  toFun := op
+  invFun := unop
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' {I' J'} := by simpa [ringCon_le_iff] using RingCon.opOrderIso.map_rel_iff
 
 end NonUnitalNonAssocRing
 
