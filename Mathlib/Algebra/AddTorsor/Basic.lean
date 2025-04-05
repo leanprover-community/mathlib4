@@ -6,7 +6,7 @@ Authors: Joseph Myers, Yury Kudryashov
 import Mathlib.Algebra.AddTorsor.Defs
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.End
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Torsors of additive group actions

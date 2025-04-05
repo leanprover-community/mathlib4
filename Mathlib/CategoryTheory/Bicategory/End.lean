@@ -17,10 +17,10 @@ variable {C : Type*} [Bicategory C]
 
 /-- The endomorphisms of an object in a bicategory can be considered as a monoidal category. -/
 def EndMonoidal (X : C) :=
-  X ⟶ X -- deriving Category
+  X ⟶ X
+-- The `Category` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: Deriving this fails in the definition above.
--- Adding category instance manually.
 instance (X : C) : Category (EndMonoidal X) :=
   show Category (X ⟶ X) from inferInstance
 
