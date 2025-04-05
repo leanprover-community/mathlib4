@@ -187,7 +187,7 @@ theorem iff_exists_smul_integral [IsReduced R] :
   ⟨(exists_integral_multiple ·), fun ⟨_, hy, int⟩ ↦
     of_smul_isIntegral (by rwa [isNilpotent_iff_eq_zero]) int⟩
 
-section trans
+section restrictScalars
 
 variable (R) [NoZeroDivisors S]
 
@@ -247,7 +247,7 @@ theorem _root_.IsIntegral.trans_isAlgebraic [alg : Algebra.IsAlgebraic R S]
   · have := Module.nontrivial S A
     exact h.isAlgebraic.restrictScalars _
 
-end trans
+end restrictScalars
 
 variable [nzd : NoZeroDivisors R] {a b : S} (ha : IsAlgebraic R a) (hb : IsAlgebraic R b)
 include ha
@@ -323,6 +323,9 @@ def Subalgebra.algebraicClosure [IsDomain R] : Subalgebra R S where
   add_mem' ha hb := ha.add hb
   algebraMap_mem' := isAlgebraic_algebraMap
 
+theorem Subalgebra.mem_algebraicClosure [IsDomain R] {x : S} :
+    x ∈ algebraicClosure R S ↔ IsAlgebraic R x := Iff.rfl
+
 theorem integralClosure_le_algebraicClosure [IsDomain R] :
     integralClosure R S ≤ Subalgebra.algebraicClosure R S :=
   fun _ ↦ IsIntegral.isAlgebraic
@@ -360,6 +363,29 @@ theorem IsAlgebraic.of_mul [NoZeroDivisors R] {y z : S} (hy : y ∈ nonZeroDivis
   have := alg_yz.mul (Algebra.isAlgebraic_adjoin_singleton_iff.mpr alg_y _ ht)
   rw [mul_right_comm, eq, ← Algebra.smul_def] at this
   exact this.of_smul (mem_nonZeroDivisors_of_ne_zero hr)
+
+open Algebra in
+omit [Algebra R A] [IsScalarTower R S A] in
+theorem IsAlgebraic.adjoin_of_forall_isAlgebraic [NoZeroDivisors S] {s t : Set S}
+    (alg : ∀ x ∈ s \ t, IsAlgebraic (adjoin R t) x) {a : A}
+    (ha : IsAlgebraic (adjoin R s) a) : IsAlgebraic (adjoin R t) a := by
+  set Rs := adjoin R s
+  set Rt := adjoin R t
+  let Rts := adjoin Rt s
+  let _ : Algebra Rs Rts := (Subalgebra.inclusion
+    (T := Rts.restrictScalars R) <| adjoin_le <| by apply subset_adjoin).toAlgebra
+  have : IsScalarTower Rs Rts A := .of_algebraMap_eq fun ⟨a, _⟩ ↦ rfl
+  have : Algebra.IsAlgebraic Rt Rts := by
+    have := ha.nontrivial
+    have := Subtype.val_injective (p := (· ∈ Rs)).nontrivial
+    have := (isDomain_iff_noZeroDivisors_and_nontrivial Rt).mpr ⟨inferInstance, inferInstance⟩
+    rw [← Subalgebra.isAlgebraic_iff, isAlgebraic_adjoin_iff]
+    intro x hs
+    by_cases ht : x ∈ t
+    · exact isAlgebraic_algebraMap (⟨x, subset_adjoin ht⟩ : Rt)
+    exact alg _ ⟨hs, ht⟩
+  have : IsAlgebraic Rts a := ha.extendScalars (by apply Subalgebra.inclusion_injective)
+  exact this.restrictScalars Rt
 
 namespace Transcendental
 
