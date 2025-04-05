@@ -1103,7 +1103,7 @@ theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul {f : α → F} {g : α →
   exact h
 
 -- XXX: should the nnnorm version be deleted or primed instead?
-theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' {f : α → ε} {g : α → G} {c : ℝ≥0}
+theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) {p : ℝ} (hp : 0 < p) :
     eLpNorm' f p μ ≤ c • eLpNorm' g p μ := by
   simp_rw [eLpNorm'_eq_lintegral_enorm]
@@ -1112,7 +1112,9 @@ theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' {f : α → ε} {g : α �
   simp_rw [← ENNReal.rpow_mul, one_div, inv_mul_cancel₀ hp.ne.symm, ENNReal.rpow_one,
     ← ENNReal.coe_rpow_of_nonneg _ hp.le, ← lintegral_const_mul' _ _ ENNReal.coe_ne_top]
   apply lintegral_mono_ae
-  have aux (x) : (↑c) ^ p * ‖g x‖ₑ ^ p = (↑c * ‖g x‖ₑ) ^ p := by simp [ENNReal.mul_rpow_eq_ite]
+  have aux (x) : (↑c) ^ p * ‖g x‖ₑ ^ p = (↑c * ‖g x‖ₑ) ^ p := by
+    have : ¬(p < 0) := by linarith
+    simp [ENNReal.mul_rpow_eq_ite, enorm_eq_zero, this]
   simpa [ENNReal.coe_rpow_of_nonneg _ hp.le, aux, ENNReal.rpow_le_rpow_iff hp]
 
 theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
@@ -1124,12 +1126,10 @@ theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul {f : α → F} {
     _ = c • essSup (‖g ·‖ₑ) μ := ENNReal.essSup_const_mul
 
 -- XXX: should the nnnorm version be deleted or primed instead?
-theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul' {f : α → ε} {g : α → G} {c : ℝ≥0}
+theorem eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : eLpNormEssSup f μ ≤ c • eLpNormEssSup g μ :=
   calc
-    essSup (‖f ·‖ₑ) μ ≤ essSup (fun x => (↑(c * ‖g x‖₊) : ℝ≥0∞)) μ :=
-      essSup_mono_ae <| h
-    _ = essSup (c * ‖g ·‖ₑ) μ := by simp_rw [ENNReal.coe_mul, enorm]
+    essSup (‖f ·‖ₑ) μ ≤ essSup (c * ‖g ·‖ₑ) μ := essSup_mono_ae <| h
     _ = c • essSup (‖g ·‖ₑ) μ := ENNReal.essSup_const_mul
 
 theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G} {c : ℝ≥0}
@@ -1143,7 +1143,7 @@ theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G
   exact eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul h (ENNReal.toReal_pos h0 h_top)
 
 -- XXX: should the nnnorm version be deleted or primed instead?
-theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' {f : α → ε} {g : α → G} {c : ℝ≥0}
+theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) (p : ℝ≥0∞) : eLpNorm f p μ ≤ c • eLpNorm g p μ := by
   by_cases h0 : p = 0
   · simp [h0]
@@ -1181,10 +1181,10 @@ theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G} {c : �
     (h.mono fun _x hx => hx.trans <| mul_le_mul_of_nonneg_right c.le_coe_toNNReal (norm_nonneg _)) _
 
 -- XXX: should the nnnorm version be deleted or primed instead?
-theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul' {f : α → ε} {g : α → G} {c : ℝ≥0}
+theorem eLpNorm_le_mul_eLpNorm_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) (p : ℝ≥0∞) :
     eLpNorm f p μ ≤ ENNReal.ofReal c * eLpNorm g p μ := by
-  apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' (h.mono fun _x hx => hx.trans ?_)
+  apply eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' (h.mono fun _x hx ↦ hx.trans ?_)
   gcongr
   exact NNReal.le_toNNReal_of_coe_le (le_refl _)
 
@@ -1193,7 +1193,8 @@ theorem MemLp.of_nnnorm_le_mul {f : α → E} {g : α → F} {c : ℝ≥0} (hg :
   ⟨hf, (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul hfg p).trans_lt <|
       ENNReal.mul_lt_top ENNReal.coe_lt_top hg.eLpNorm_lt_top⟩
 
-theorem MemLp.of_enorm_le_mul {f : α → ε} {g : α → F} {c : ℝ≥0} (hg : MemLp g p μ)
+theorem MemLp.of_enorm_le_mul [TopologicalSpace ε']
+    {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : MemLp f p μ :=
   ⟨hf, (eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul' hfg p).trans_lt <|
       ENNReal.mul_lt_top ENNReal.coe_lt_top hg.eLpNorm_lt_top⟩
@@ -1208,7 +1209,7 @@ theorem MemLp.of_le_mul {f : α → E} {g : α → F} {c : ℝ} (hg : MemLp g p 
       ENNReal.mul_lt_top ENNReal.ofReal_lt_top hg.eLpNorm_lt_top⟩
 
 -- XXX: should the nnnorm version be deleted or primed instead?
-theorem MemLp.of_le_mul' {f : α → ε} {g : α → F} {c : ℝ≥0} (hg : MemLp g p μ)
+theorem MemLp.of_le_mul' [TopologicalSpace ε'] {f : α → ε} {g : α → ε'} {c : ℝ≥0} (hg : MemLp g p μ)
     (hf : AEStronglyMeasurable f μ) (hfg : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) : MemLp f p μ :=
   ⟨hf, (eLpNorm_le_mul_eLpNorm_of_ae_le_mul' hfg p).trans_lt <|
       ENNReal.mul_lt_top ENNReal.ofReal_lt_top hg.eLpNorm_lt_top⟩
@@ -1217,8 +1218,6 @@ theorem MemLp.of_le_mul' {f : α → ε} {g : α → F} {c : ℝ≥0} (hg : MemL
 alias Memℒp.of_le_mul := MemLp.of_le_mul
 
 end Monotonicity
-
-#exit
 
 /-!
 ### Bounded actions by normed rings
