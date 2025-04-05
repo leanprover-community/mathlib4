@@ -468,7 +468,24 @@ lemma rr5:
           exact trivial
         simp [I] at qq
         refine LieSubalgebra.lieSpan_induction2 (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ qq
-
+        intro x hx
+        obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx
+        have := rr4 i j hi hj
+        simp at this
+        have ssss2 := this x hx1_mem
+        have ssss3 := ssss2 z hz1
+        exact ssss3
+        exact zero_lie z
+        intro a b c d e f
+        simp only [add_lie]
+        rw [e, f, add_zero]
+        intro a b c d
+        simp only [smul_lie, smul_eq_zero]
+        right
+        exact d
+        intro a b c d e f
+        simp only [lie_lie]
+        rw [e, f, lie_zero, lie_zero, sub_self]
       exact rrr
     have cent := LieAlgebra.center_eq_bot (R := K) (L := L)
     rw [cent] at lll
