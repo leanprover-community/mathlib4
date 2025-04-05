@@ -30,7 +30,7 @@ namespace AlgebraicGeometry
 namespace Scheme
 
 /-- An open cover of a scheme `X` is a cover where all component maps are open immersions. -/
-abbrev OpenCover (X : Scheme.{u}) : Type _ := Cover.{v} @IsOpenImmersion X
+abbrev OpenCover (X : Scheme.{u}) : Type max (u + 1) (v + 1) := Cover.{v} @IsOpenImmersion X
 
 @[deprecated (since := "2024-11-06")] alias OpenCover.IsOpen := Cover.map_prop
 
@@ -112,7 +112,7 @@ theorem OpenCover.compactSpace {X : Scheme.{u}} (ùí∞ : X.OpenCover) [Finite ùí
 An affine open cover of `X` consists of a family of open immersions into `X` from
 spectra of rings.
 -/
-abbrev AffineOpenCover (X : Scheme.{u}) : Type _ :=
+abbrev AffineOpenCover (X : Scheme.{u}) : Type max (u + 1) (v + 1) :=
   AffineCover.{v} @IsOpenImmersion X
 
 namespace AffineOpenCover
