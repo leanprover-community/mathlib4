@@ -69,25 +69,29 @@ lemma Module.length_compositionSeries (s : CompositionSeries (Submodule R M)) (h
     obtain ⟨t', i, hi, ht₁, ht₂⟩ := t.exists_relSeries_covBy_and_head_eq_bot_and_last_eq_bot
     have := (s.jordan_holder t' (h₁.trans ht₁.symm) (h₂.trans ht₂.symm)).choose
     have h : t.length ≤ t'.length := by simpa using Fintype.card_le_of_embedding i
-    have h' : t'.length = s.length := by simpa using (Fintype.card_congr this.symm)
+    have h' : t'.length = s.length := by simpa using Fintype.card_congr this.symm
     simpa using h.trans h'.le
 
+lemma Module.length_eq_top_iff_infiniteDimensionalOrder :
+    length R M = ⊤ ↔ InfiniteDimensionalOrder (Submodule R M) := by
+  rw [← WithBot.coe_inj, WithBot.coe_top, coe_length, Order.krullDim_eq_top_iff,
+      ← not_finiteDimensionalOrder_iff]
+
+lemma Module.length_ne_top_iff_finiteDimensionalOrder :
+    length R M ≠ ⊤ ↔ FiniteDimensionalOrder (Submodule R M) := by
+  rw [Ne, length_eq_top_iff_infiniteDimensionalOrder, ← not_finiteDimensionalOrder_iff, not_not]
+
 lemma Module.length_ne_top_iff : Module.length R M ≠ ⊤ ↔ IsFiniteLength R M := by
-  constructor
-  · nontriviality M
-    cases finiteDimensionalOrder_or_infiniteDimensionalOrder (Submodule R M)
-    · intro _
-      rw [isFiniteLength_iff_isNoetherian_isArtinian, isNoetherian_iff, isArtinian_iff]
-      exact ⟨Rel.wellFounded_swap_of_finiteDimensional _, Rel.wellFounded_of_finiteDimensional _⟩
-    · rw [ne_eq, ← WithBot.coe_inj, Module.coe_length, WithBot.coe_top, Order.krullDim_eq_top]
-      simp only [not_true_eq_false, IsEmpty.forall_iff]
-  · intro H
-    obtain ⟨s, hs₁, hs₂⟩ := isFiniteLength_iff_exists_compositionSeries.mp H
+  refine ⟨fun h ↦ ?_, fun H ↦ ?_⟩
+  · rw [length_ne_top_iff_finiteDimensionalOrder] at h
+    rw [isFiniteLength_iff_isNoetherian_isArtinian, isNoetherian_iff, isArtinian_iff]
+    exact ⟨Rel.wellFounded_swap_of_finiteDimensional _, Rel.wellFounded_of_finiteDimensional _⟩
+  · obtain ⟨s, hs₁, hs₂⟩ := isFiniteLength_iff_exists_compositionSeries.mp H
     rw [← length_compositionSeries s hs₁ hs₂]
     simp
 
 lemma Module.length_ne_top [IsArtinian R M] [IsNoetherian R M] : Module.length R M ≠ ⊤ := by
-  rw [Module.length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian]
+  rw [length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian]
   exact ⟨‹_›, ‹_›⟩
 
 lemma Module.length_submodule {N : Submodule R M} :
