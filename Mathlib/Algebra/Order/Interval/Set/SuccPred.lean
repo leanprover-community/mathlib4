@@ -39,7 +39,7 @@ variable [Add α] [SuccAddOrder α] {a b : α}
 /-!
 #### Orders possibly with maximal elements
 
-##### Comparing different intervals
+##### Equalities of intervals
 -/
 
 lemma Ico_add_one_left_eq_Ioo (a b : α) : Ico (a + 1) b = Ioo a b := by
@@ -58,7 +58,7 @@ lemma Ico_add_one_add_one_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
     Ico (a + 1) (b + 1) = Ioc a b := by
   simpa [succ_eq_add_one] using Ico_succ_succ_eq_Ioc_of_not_isMax hb a
 
-/-! ##### Comparing the same intervals -/
+/-! ##### Inserting into intervals -/
 
 lemma insert_Icc_add_one_left_eq_Icc (h : a ≤ b) : insert a (Icc (a + 1) b) = Icc a b := by
   simpa [succ_eq_add_one] using insert_Icc_succ_left_eq_Icc h
@@ -77,7 +77,7 @@ lemma insert_Ico_add_one_left_eq_Ico (h : a < b) : insert a (Ico (a + 1) b) = Ic
 /-!
 #### Orders with no maximal elements
 
-##### Comparing different intervals
+##### Equalities of intervals
 -/
 
 variable [NoMaxOrder α]
@@ -94,7 +94,7 @@ lemma Ioo_add_one_right_eq_Ioc (a b : α) : Ioo a (b + 1) = Ioc a b := by
 lemma Ico_add_one_add_one_eq_Ioc (a b : α) : Ico (a + 1) (b + 1) = Ioc a b := by
   simpa [succ_eq_add_one] using Ico_succ_succ_eq_Ioc a b
 
-/-! ##### Comparing the same intervals -/
+/-! ##### Inserting into intervals -/
 
 lemma insert_Ico_right_eq_Ico_add_one_right (h : a ≤ b) : insert b (Ico a b) = Ico a (b + 1) := by
   simpa [succ_eq_add_one] using insert_Ico_right_eq_Ico_succ_right h
@@ -107,7 +107,7 @@ variable [Sub α] [PredSubOrder α] {a b : α}
 /-!
 #### Not `NoMinOrder`
 
-##### Comparing different intervals
+##### Equalities of intervals
 -/
 
 lemma Ioc_sub_one_right_eq_Ioo (a b : α) : Ioc a (b - 1) = Ioo a b := by
@@ -126,7 +126,7 @@ lemma Ioc_sub_one_sub_one_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) :
     Ioc (a - 1) (b - 1) = Ico a b := by
   simpa [pred_eq_sub_one] using Ioc_pred_pred_eq_Ico_of_not_isMin ha b
 
-/-! ##### Comparing the same intervals -/
+/-! ##### Inserting into intervals -/
 
 lemma insert_Icc_sub_one_right_eq_Icc (h : a ≤ b) : insert b (Icc a (b - 1)) = Icc a b := by
   simpa [pred_eq_sub_one] using insert_Icc_pred_right_eq_Icc h
@@ -145,7 +145,7 @@ lemma insert_Ioc_sub_one_right_eq_Ioc (h : a < b) : insert b (Ioc a (b - 1)) = I
 /-!
 #### `NoMinOrder`
 
-##### Comparing different intervals
+##### Equalities of intervals
 -/
 
 variable [NoMinOrder α]
@@ -162,7 +162,7 @@ lemma Ioo_sub_one_left_eq_Ioc (a b : α) : Ioo (a - 1) b = Ico a b := by
 lemma Ioc_sub_one_sub_one_eq_Ico (a b : α) : Ioc (a - 1) (b - 1) = Ico a b := by
   simpa [pred_eq_sub_one] using Ioc_pred_pred_eq_Ico a b
 
-/-! ##### Comparing the same intervals -/
+/-! ##### Inserting into intervals -/
 
 lemma insert_Ioc_left_eq_Ioc_sub_one_left (h : a ≤ b) : insert a (Ioc a b) = Ioc (a - 1) b := by
   simpa [pred_eq_sub_one] using insert_Ioc_left_eq_Ioc_pred_left h

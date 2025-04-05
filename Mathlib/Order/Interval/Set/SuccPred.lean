@@ -38,7 +38,7 @@ variable [SuccOrder α] {a b : α}
 /-!
 #### Orders possibly with maximal elements
 
-##### Comparing different intervals
+##### Equalities of intervals
 -/
 
 lemma Ico_succ_left_eq_Ioo (a b : α) : Ico (succ a) b = Ioo a b := by
@@ -60,7 +60,7 @@ lemma Ico_succ_succ_eq_Ioc_of_not_isMax (hb : ¬ IsMax b) (a : α) :
     Ico (succ a) (succ b) = Ioc a b := by
   rw [Ico_succ_left_eq_Ioo, Ioo_succ_right_eq_Ioc_of_not_isMax hb]
 
-/-! ##### Comparing the same intervals -/
+/-! ##### Inserting into intervals -/
 
 lemma insert_Icc_succ_left_eq_Icc (h : a ≤ b) : insert a (Icc (succ a) b) = Icc a b := by
   ext x; simp [or_and_left, eq_comm, ← le_iff_eq_or_succ_le]; aesop
@@ -79,7 +79,7 @@ lemma insert_Ico_succ_left_eq_Ico (h : a < b) : insert a (Ico (succ a) b) = Ico 
 /-!
 #### Orders with no maximal elements
 
-##### Comparing different intervals
+##### Equalities of intervals
 -/
 
 variable [NoMaxOrder α]
@@ -96,7 +96,7 @@ lemma Ioo_succ_right_eq_Ioc (a b : α) : Ioo a (succ b) = Ioc a b :=
 lemma Ico_succ_succ_eq_Ioc (a b : α) : Ico (succ a) (succ b) = Ioc a b :=
   Ico_succ_succ_eq_Ioc_of_not_isMax (not_isMax _) _
 
-/-! ##### Comparing the same intervals -/
+/-! ##### Inserting into intervals -/
 
 lemma insert_Ico_right_eq_Ico_succ_right (h : a ≤ b) : insert b (Ico a b) = Ico a (succ b) :=
   insert_Ico_right_eq_Ico_succ_right_of_not_isMax h (not_isMax _)
@@ -109,7 +109,7 @@ variable [PredOrder α] {a b : α}
 /-!
 #### Not `NoMinOrder`
 
-##### Comparing different intervals
+##### Equalities of intervals
 -/
 
 lemma Ioc_pred_right_eq_Ioo (a b : α) : Ioc a (pred b) = Ioo a b := by
@@ -131,7 +131,7 @@ lemma Ioc_pred_pred_eq_Ico_of_not_isMin (ha : ¬ IsMin a) (b : α) :
     Ioc (pred a) (pred b) = Ico a b := by
   rw [Ioc_pred_right_eq_Ioo, Ioo_pred_left_eq_Ioc_of_not_isMin ha]
 
-/-! ##### Comparing the same intervals -/
+/-! ##### Inserting into intervals -/
 
 lemma insert_Icc_pred_right_eq_Icc (h : a ≤ b) : insert b (Icc a (pred b)) = Icc a b := by
   ext x; simp [or_and_left, eq_comm (a := b), ← le_iff_eq_or_le_pred]; aesop
@@ -150,7 +150,7 @@ lemma insert_Ioc_pred_right_eq_Ioc (h : a < b) : insert b (Ioc a (pred b)) = Ioc
 /-!
 #### `NoMinOrder`
 
-##### Comparing different intervals
+##### Equalities of intervals
 -/
 
 variable [NoMinOrder α]
@@ -167,7 +167,7 @@ lemma Ioo_pred_left_eq_Ioc (a b : α) : Ioo (pred a) b = Ico a b :=
 lemma Ioc_pred_pred_eq_Ico (a b : α) : Ioc (pred a) (pred b) = Ico a b :=
   Ioc_pred_pred_eq_Ico_of_not_isMin (not_isMin _) _
 
-/-! ##### Comparing the same intervals -/
+/-! ##### Inserting into intervals -/
 
 lemma insert_Ioc_left_eq_Ioc_pred_left (h : a ≤ b) : insert a (Ioc a b) = Ioc (pred a) b :=
   insert_Ioc_left_eq_Ioc_pred_left_of_not_isMin h (not_isMin _)
