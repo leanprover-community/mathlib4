@@ -8,7 +8,6 @@ import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.Data.List.Destutter
 import Mathlib.Data.Sign
-import Mathlib.Tactic.Bound
 
 /-!
 
