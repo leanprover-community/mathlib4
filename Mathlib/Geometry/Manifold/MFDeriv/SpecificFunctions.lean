@@ -458,7 +458,7 @@ theorem MDifferentiableAt.mfderiv_prod {f : M → M'} {g : M → M''} {x : M}
       (mfderiv I I' f x).prod (mfderiv I I'' g x) := by
   classical
   simp_rw [mfderiv, if_pos (hf.prodMk hg), if_pos hf, if_pos hg]
-  exact hf.differentiableWithinAt_writtenInExtChartAt.fderivWithin_prod
+  exact hf.differentiableWithinAt_writtenInExtChartAt.fderivWithin_prodMk
     hg.differentiableWithinAt_writtenInExtChartAt (I.uniqueDiffOn _ (mem_range_self _))
 
 theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :

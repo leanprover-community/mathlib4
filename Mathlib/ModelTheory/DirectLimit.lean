@@ -269,7 +269,6 @@ def of (i : ι) : G i ↪[L] DirectLimit G f where
     obtain ⟨j, h1, _, h3⟩ := h
     exact (f i j h1).injective h3
   map_fun' F x := by
-    simp only
     rw [← funMap_quotient_mk'_sigma_mk']
     rfl
   map_rel' := by

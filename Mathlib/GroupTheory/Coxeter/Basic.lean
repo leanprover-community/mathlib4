@@ -295,7 +295,7 @@ def _root_.CoxeterMatrix.IsLiftable {G : Type*} [Monoid G] (M : CoxeterMatrix B)
 private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f)
     (r : FreeGroup B) (hr : r ∈ M.relationsSet) : (FreeGroup.lift f) r = 1 := by
   rcases hr with ⟨⟨i, i'⟩, rfl⟩
-  rw [uncurry, relation, map_pow, _root_.map_mul, FreeGroup.lift.of, FreeGroup.lift.of]
+  rw [uncurry, relation, map_pow, map_mul, FreeGroup.lift.of, FreeGroup.lift.of]
   exact hf i i'
 
 private def groupLift {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
@@ -465,13 +465,13 @@ lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
       by_cases h_even : Even k
       · simp only [h_even, ↓reduceIte] at hk
         simp only [Nat.not_even_iff_odd.mpr (Even.add_one h_even), ↓reduceIte]
-        rw [← List.take_concat_get _ _ (by simp [h]; omega), alternatingWord_succ, ← hk]
+        rw [← List.take_concat_get (by simp [h]; omega), alternatingWord_succ, ← hk]
         apply congr_arg
         rw [getElem_alternatingWord i j (2*p) k (by omega)]
         simp [(by apply Nat.even_add.mpr; simp [h_even] : Even (2 * p + k))]
       · simp only [h_even, ↓reduceIte] at hk
         simp only [(by simp at h_even; exact Odd.add_one h_even : Even (k + 1)), ↓reduceIte]
-        rw [← List.take_concat_get _ _ (by simp [h]; omega), alternatingWord_succ, hk]
+        rw [← List.take_concat_get (by simp [h]; omega), alternatingWord_succ, hk]
         apply congr_arg
         rw [getElem_alternatingWord i j (2*p) k (by omega)]
         simp [(by apply Nat.odd_add.mpr; simp [h_even] : Odd (2 * p + k))]

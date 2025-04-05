@@ -5,10 +5,11 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Action.Prod
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 import Mathlib.Algebra.Group.Units.Equiv
+import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise actions on sets
@@ -35,10 +36,13 @@ namespace Set
 
 /-! ### Translation/scaling of sets -/
 
-@[to_additive]
+@[to_additive vadd_set_prod]
 lemma smul_set_prod {M α : Type*} [SMul M α] [SMul M β] (c : M) (s : Set α) (t : Set β) :
     c • (s ×ˢ t) = (c • s) ×ˢ (c • t) :=
   prodMap_image_prod (c • ·) (c • ·) s t
+
+@[deprecated (since := "2025-03-11")]
+alias vadd_set_sum := vadd_set_prod
 
 @[to_additive]
 lemma smul_set_pi {G ι : Type*} {α : ι → Type*} [Group G] [∀ i, MulAction G (α i)]
@@ -89,14 +93,14 @@ open scoped RightActions
 end Mul
 
 @[to_additive]
-lemma image_smul_distrib [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
+lemma image_smul_distrib [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β]
     (f : F) (a : α) (s : Set α) :
     f '' (a • s) = f a • f '' s :=
   image_comm <| map_mul _ _
 
 open scoped RightActions in
 @[to_additive]
-lemma image_op_smul_distrib [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
+lemma image_op_smul_distrib [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β]
     (f : F) (a : α) (s : Set α) : f '' (s <• a) = f '' s <• f a := image_comm fun _ ↦ map_mul ..
 
 section Semigroup

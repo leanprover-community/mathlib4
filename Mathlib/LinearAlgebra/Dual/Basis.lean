@@ -16,7 +16,7 @@ This file concerns bases on dual vector spaces.
 
 * Bases:
   * `Basis.toDual` produces the map `M →ₗ[R] Dual R M` associated to a basis for an `R`-module `M`.
-  * `Basis.toDual_equiv` is the equivalence `M ≃ₗ[R] Dual R M` associated to a finite basis.
+  * `Basis.toDualEquiv` is the equivalence `M ≃ₗ[R] Dual R M` associated to a finite basis.
   * `Basis.dualBasis` is a basis for `Dual R M` given a finite basis for `M`.
   * `Module.DualBases e ε` is the proposition that the families `e` of vectors and `ε` of dual
     vectors have the characteristic properties of a basis and a dual.
@@ -203,6 +203,14 @@ theorem eval_range {ι : Type*} [Finite ι] (b : Basis ι R M) :
     cases nonempty_fintype ι
     rw [← b.toDual_toDual, range_comp, b.toDual_range, Submodule.map_top, toDual_range _]
 
+lemma dualBasis_coord_toDualEquiv_apply [Finite ι] (i : ι) (f : M) :
+    b.dualBasis.coord i (b.toDualEquiv f) = b.coord i f := by
+  simp [-toDualEquiv_apply, Basis.dualBasis]
+
+lemma coord_toDualEquiv_symm_apply [Finite ι] (i : ι) (f : Module.Dual R M) :
+    b.coord i (b.toDualEquiv.symm f) = b.dualBasis.coord i f := by
+  simp [Basis.dualBasis]
+
 end CommRing
 
 /-- `simp` normal form version of `linearCombination_dualBasis` -/
@@ -287,7 +295,7 @@ theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := by
   simp [LinearMap.map_sub, h.dual_lc, sub_eq_zero]
 
 /-- `(h : DualBases e ε).basis` shows the family of vectors `e` forms a basis. -/
-@[simps repr_apply, simps (config := .lemmasOnly) repr_symm_apply]
+@[simps repr_apply, simps -isSimp repr_symm_apply]
 def basis : Basis ι R M :=
   Basis.ofRepr
     { toFun := coeffs h

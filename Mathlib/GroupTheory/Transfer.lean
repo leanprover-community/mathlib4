@@ -58,7 +58,7 @@ theorem diff_mul_diff : diff ϕ R S * diff ϕ S T = diff ϕ R T :=
 
 @[to_additive]
 theorem diff_self : diff ϕ T T = 1 :=
-  mul_right_eq_self.mp (diff_mul_diff ϕ T T T)
+  mul_eq_left.mp (diff_mul_diff ϕ T T T)
 
 @[to_additive]
 theorem diff_inv : (diff ϕ S T)⁻¹ = diff ϕ T S :=
@@ -143,8 +143,8 @@ the transfer homomorphism is `transfer ϕ : G →+ A`."]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
   let T : H.LeftTransversal := default
   { toFun := fun g => diff ϕ T (g • T)
-    map_one' := by beta_reduce; rw [one_smul, diff_self]
-    map_mul' := fun g h => by dsimp only; rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
+    map_one' := by rw [one_smul, diff_self]
+    map_mul' := fun g h => by rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
 
 variable (T : H.LeftTransversal)
 

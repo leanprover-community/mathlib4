@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Tactic.GCongr
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.EMetricSpace.Basic
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # (Extended) metric spaces are paracompact
@@ -159,7 +159,6 @@ instance (priority := 100) instParacompactSpace [PseudoEMetricSpace α] : Paraco
     refine ⟨I.1, ?_, I.2, hI, rfl⟩
     exact not_lt.1 fun hlt => (Hgt I.1 hlt I.2).le_bot hI.choose_spec
 
--- Porting note: no longer an instance because `inferInstance` can find it
 theorem t4Space [EMetricSpace α] : T4Space α := inferInstance
 
 end EMetric

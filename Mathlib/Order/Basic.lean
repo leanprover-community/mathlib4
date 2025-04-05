@@ -80,7 +80,7 @@ theorem lt_of_lt_of_le' : b < c → a ≤ b → a < c :=
   flip lt_of_le_of_lt
 
 theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
-  rw [lt_iff_le_not_le, Classical.not_and_iff_or_not_not, Classical.not_not]
+  rw [lt_iff_le_not_le, Classical.not_and_iff_not_or_not, Classical.not_not]
 
 end Preorder
 
@@ -143,9 +143,6 @@ alias LT.lt.not_lt := lt_asymm
 
 alias Eq.le := le_of_eq
 
--- Porting note: no `decidable_classical` linter
--- attribute [nolint decidable_classical] LE.le.lt_or_eq_dec
-
 section
 
 variable [Preorder α] {a b c : α}
@@ -206,15 +203,13 @@ variable [Preorder α] {a b : α}
 
 @[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
 
--- Making this a @[simp] lemma causes confluences problems downstream.
+-- Making this a @[simp] lemma causes confluence problems downstream.
 lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
 
 end
 
 namespace LE.le
 
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
 protected theorem ge [LE α] {x y : α} (h : x ≤ y) : y ≥ x :=
   h
 
@@ -255,8 +250,6 @@ end LE.le
 
 namespace LT.lt
 
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
 protected theorem gt [LT α] {x y : α} (h : x < y) : y > x :=
   h
 
@@ -271,18 +264,12 @@ theorem lt_or_lt [LinearOrder α] {x y : α} (h : x < y) (z : α) : x < z ∨ z 
 
 end LT.lt
 
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
 protected theorem GE.ge.le [LE α] {x y : α} (h : x ≥ y) : y ≤ x :=
   h
 
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
 protected theorem GT.gt.lt [LT α] {x y : α} (h : x > y) : y < x :=
   h
 
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
 theorem ge_of_eq [Preorder α] {a b : α} (h : a = b) : a ≥ b :=
   h.ge
 
@@ -292,8 +279,7 @@ section PartialOrder
 variable [PartialOrder α] {a b : α}
 
 -- See Note [decidable namespace]
-protected theorem Decidable.le_iff_eq_or_lt [DecidableRel (α := α) (· ≤ ·)] :
-    a ≤ b ↔ a = b ∨ a < b :=
+protected theorem Decidable.le_iff_eq_or_lt [DecidableLE α] : a ≤ b ↔ a = b ∨ a < b :=
   Decidable.le_iff_lt_or_eq.trans or_comm
 
 theorem le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := le_iff_lt_or_eq.trans or_comm
@@ -306,8 +292,7 @@ lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := by simp [hab, 
 alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 
 -- See Note [decidable namespace]
-protected theorem Decidable.eq_iff_le_not_lt [DecidableRel (α := α) (· ≤ ·)] :
-    a = b ↔ a ≤ b ∧ ¬a < b :=
+protected theorem Decidable.eq_iff_le_not_lt [DecidableLE α] : a = b ↔ a ≤ b ∧ ¬a < b :=
   ⟨fun h ↦ ⟨h.le, h ▸ lt_irrefl _⟩, fun ⟨h₁, h₂⟩ ↦
     h₁.antisymm <| Decidable.byContradiction fun h₃ ↦ h₂ (h₁.lt_of_not_le h₃)⟩
 
@@ -323,9 +308,6 @@ alias LE.le.eq_or_lt_dec := Decidable.eq_or_lt_of_le
 alias LE.le.eq_or_lt := eq_or_lt_of_le
 alias LE.le.eq_or_gt := eq_or_gt_of_le
 alias LE.le.gt_or_eq := gt_or_eq_of_le
-
--- Porting note: no `decidable_classical` linter
--- attribute [nolint decidable_classical] LE.le.eq_or_lt_dec
 
 theorem eq_of_le_of_not_lt (hab : a ≤ b) (hba : ¬a < b) : a = b := hab.eq_or_lt.resolve_right hba
 theorem eq_of_ge_of_not_gt (hab : a ≤ b) (hba : ¬a < b) : b = a := (eq_of_le_of_not_lt hab hba).symm
@@ -489,7 +471,6 @@ theorem Preorder.toLE_injective : Function.Injective (@Preorder.toLE α) :=
     cases h
     have : A_lt = B_lt := by
       funext a b
-      show (LT.mk A_lt).lt a b = (LT.mk B_lt).lt a b
       rw [A_iff, B_iff]
     cases this
     congr
@@ -1121,11 +1102,11 @@ instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
 instance partialOrder [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) :=
   PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
 
-instance decidableLE [Preorder α] [h : DecidableRel (α := α) (· ≤ ·)] {p : α → Prop} :
-    DecidableRel (α := Subtype p) (· ≤ ·) := fun a b ↦ h a b
+instance decidableLE [Preorder α] [h : DecidableLE α] {p : α → Prop} :
+    DecidableLE (Subtype p) := fun a b ↦ h a b
 
-instance decidableLT [Preorder α] [h : DecidableRel (α := α) (· < ·)] {p : α → Prop} :
-    DecidableRel (α := Subtype p) (· < ·) := fun a b ↦ h a b
+instance decidableLT [Preorder α] [h : DecidableLT α] {p : α → Prop} :
+    DecidableLT (Subtype p) := fun a b ↦ h a b
 
 /-- A subtype of a linear order is a linear order. We explicitly give the proofs of decidable
 equality and decidable order in order to ensure the decidability instances are all definitionally
@@ -1151,7 +1132,6 @@ namespace Prod
 instance (α β : Type*) [LE α] [LE β] : LE (α × β) :=
   ⟨fun p q ↦ p.1 ≤ q.1 ∧ p.2 ≤ q.2⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance instDecidableLE (α β : Type*) [LE α] [LE β] (x y : α × β)
     [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) :=
   inferInstanceAs (Decidable (x.1 ≤ y.1 ∧ x.2 ≤ y.2))
