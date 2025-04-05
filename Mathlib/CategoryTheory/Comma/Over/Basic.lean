@@ -398,6 +398,7 @@ def postEquiv (F : T ≌ D) : Over X ≌ Over (F.functor.obj X) where
 
 open Limits
 
+variable {X} in
 /-- If `X : T` is terminal, then the over category of `X` is equivalent to `T`. -/
 @[simps]
 def equivalenceOfIsTerminal (hX : IsTerminal X) : Over X ≌ T where
@@ -749,6 +750,7 @@ def postEquiv (F : T ≌ D) : Under X ≌ Under (F.functor.obj X) where
 
 open Limits
 
+variable {X} in
 /-- If `X : T` is initial, then the under category of `X` is equivalent to `T`. -/
 @[simps]
 def equivalenceOfIsInitial (hX : IsInitial X) : Under X ≌ T where
