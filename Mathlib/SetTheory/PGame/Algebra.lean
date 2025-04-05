@@ -173,11 +173,11 @@ theorem exists_rightMoves_neg {x : PGame} {p : (-x).RightMoves → Prop} :
     (∃ i : (-x).RightMoves, p i) ↔ (∃ i : x.LeftMoves, p (toRightMovesNeg i)) :=
   toRightMovesNeg.exists_congr_right.symm
 
-theorem leftMoves_neg_cases {x : PGame} (k) {P : (-x).LeftMoves → Prop}
-    (h : ∀ i, P <| toLeftMovesNeg i) :
-    P k := by
-  rw [← toLeftMovesNeg.apply_symm_apply k]
-  exact h _
+theorem leftMoves_neg_cases {x : PGame} (k) {motive : (-x).LeftMoves → Prop}
+    (toLeftMovesNeg : ∀ i, motive <| PGame.toLeftMovesNeg i) :
+    motive k := by
+  rw [← PGame.toLeftMovesNeg.apply_symm_apply k]
+  exact toLeftMovesNeg _
 
 theorem rightMoves_neg_cases {x : PGame} (k) {P : (-x).RightMoves → Prop}
     (h : ∀ i, P <| toRightMovesNeg i) :
