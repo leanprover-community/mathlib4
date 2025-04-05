@@ -21,25 +21,5 @@ variable (α : Type*) [TopologicalSpace α]
 A topological space is spectral if it is T0, compact, sober, quasi-separated, and its compact open
 subsets form an open basis.
 -/
-class SpectralSpace : Prop where
-  t0_space : T0Space α
-  compact_space : CompactSpace α
-  quasi_sober : QuasiSober α
-  quasi_separated_space : QuasiSeparatedSpace α
-  prespectral_space : PrespectralSpace α
-
-namespace SpectralSpace
-
-variable [SpectralSpace α]
-
-instance t0Space : T0Space α := t0_space
-
-instance compactSpace : CompactSpace α := compact_space
-
-instance quasiSober : QuasiSober α := quasi_sober
-
-instance quasiSeparatedSpace : QuasiSeparatedSpace α := quasi_separated_space
-
-instance prespectralSpace : PrespectralSpace α := prespectral_space
-
-end SpectralSpace
+class SpectralSpace : Prop extends
+  T0Space α, CompactSpace α, QuasiSober α, QuasiSeparatedSpace α, PrespectralSpace α
