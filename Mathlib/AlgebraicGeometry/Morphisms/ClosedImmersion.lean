@@ -340,8 +340,8 @@ lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
     rwa [nilradical_eq_zero, Submodule.zero_eq_bot, le_bot_iff,
       ← RingHom.injective_iff_ker_eq_bot] at this
   refine (PrimeSpectrum.zeroLocus_eq_univ_iff _).mp ?_
-  rw [← range_specComap_of_surjective _ _ hf, Set.top_eq_univ, Set.range_eq_univ]
-  have : Surjective (Spec.map (f.appTop)) :=
+  rw [← range_specComap_of_surjective _ _ hf, Set.range_eq_univ]
+  have : Surjective (Spec.map f.appTop) :=
     (MorphismProperty.arrow_mk_iso_iff @Surjective (arrowIsoSpecΓOfIsAffine f)).mp
     (inferInstanceAs (Surjective f))
   exact this.1
