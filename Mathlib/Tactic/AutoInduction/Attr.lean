@@ -37,6 +37,9 @@ structure AutoIndPrinciples where
   map : SMap (Array Name) (Name × AutoIndPrincipleConfig) := {}
 deriving Inhabited, Repr
 
+instance : ToString AutoIndPrinciples where
+  toString := toString ∘ repr
+
 
 initialize autoIndPrincipleExt :
     SimpleScopedEnvExtension AutoIndPrinciple AutoIndPrinciples ←
@@ -117,5 +120,6 @@ def getAutoIndPrinciple? (targets : Array Expr) :
   -- let mut key : Array _:= #[]
 
   -- sorry
--- elab "#autoindprinciples" : command => do
---   logInfo s!"{← getAutoIndPrinciples}"
+
+elab "#autoindprinciples" : command => do
+  logInfo s!"{← liftCoreM getAutoIndPrinciples}"

@@ -71,7 +71,6 @@ def generateMatchBranches {m} [Monad m] [MonadControlT MetaM m]
     [MonadLiftT MetaM m] [MonadRef m] [MonadQuotation m] (elimName : Name) (elimInfo : ElimInfo)
     (cfg : AutoIndPrincipleConfig) (userAlts : NameSet):
     m (Array (TSyntax ``inductionAlt)) := do
-  let elimInfo ← getElimInfo elimName
   let info ← liftMetaM <| getConstInfo elimName
   let val ← info.getConstantVal?.getDM <| liftMetaM <|
     throwError "Unsupported declaration type."
@@ -135,6 +134,7 @@ def autoInductOn : Tactic
       let inductiontac ←
         `(tactic| induction $[$t],* using $(Lean.mkIdent principleName)
           $[generalizing $g*]? with $[$(alts.append autoAlts)]*)
+      logInfo s!" constructed induction tactic {Syntax.prettyPrint inductiontac}"
       evalInduction inductiontac
     else do
       let mainGoal ← getMainGoal
@@ -144,7 +144,7 @@ def autoInductOn : Tactic
 
       let fullNameCfg : NameMap Term :=
         RBMap.fold (fun m n t => m.insert (mainGoalName ++ n) t) {} cfg.dischargers
-
+      logInfo s!" constructed induction tactic {Syntax.prettyPrint inductiontac}"
       evalInduction inductiontac
       let goals ← getGoals
       for goal in goals do
@@ -154,10 +154,3 @@ def autoInductOn : Tactic
   else
     logInfo s!"no induction principle found"
 | _ => throwUnsupportedSyntax
-
-example : True := by
-
-  · trivial
-  -- trivial
-
---syntax (name := autoinductiontac) "autoinduction"
