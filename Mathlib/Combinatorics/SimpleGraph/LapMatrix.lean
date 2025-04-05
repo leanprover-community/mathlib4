@@ -170,7 +170,7 @@ lemma linearIndependent_lapMatrix_ker_basis_aux :
 lemma top_le_span_range_lapMatrix_ker_basis_aux :
     ⊤ ≤ Submodule.span ℝ (Set.range (lapMatrix_ker_basis_aux G)) := by
   intro x _
-  rw [mem_span_range_iff_exists_fun]
+  rw [Submodule.mem_span_range_iff_exists_fun]
   use Quot.lift x.val (by rw [← lapMatrix_toLin'_apply_eq_zero_iff_forall_reachable G x,
     LinearMap.map_coe_ker])
   ext j

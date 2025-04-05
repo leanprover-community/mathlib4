@@ -300,7 +300,7 @@ def consRecOn {motive : NormalWord d → Sort*} (w : NormalWord d)
         toList := l
         mem_set := fun _ _ h => mem_set _ _ (List.mem_cons_of_mem _ h),
         chain := (List.chain'_cons'.1 chain).2 }
-      (mem_set a.1 a.2 (List.mem_cons_self _ _))
+      (mem_set a.1 a.2 List.mem_cons_self)
       (by simpa using (List.chain'_cons'.1 chain).1)
       (ih _ _ _)
 

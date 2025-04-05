@@ -137,7 +137,9 @@ instance (C : Levenshtein.Cost α β δ) (xs : List α) (ys : List β) :
     Bot (LevenshteinEstimator C xs ys) where
   bot :=
   { inner :=
-    { pre_rev := ys.reverse
+    { distances := suffixLevenshtein C xs []
+      bound := _
+      pre_rev := ys.reverse
       suff := []
       split := by simp
       distances_eq := rfl

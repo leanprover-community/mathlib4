@@ -30,7 +30,7 @@ Should we rename `segment` and `openSegment` to `convex.Icc` and `convex.Ioo`? S
 define `clopenSegment`/`convex.Ico`/`convex.Ioc`?
 -/
 
-variable {𝕜 E F G ι : Type*} {π : ι → Type*}
+variable {𝕜 E F G ι : Type*} {M : ι → Type*}
 
 open Function Set
 
@@ -597,26 +597,26 @@ end Prod
 
 namespace Pi
 
-variable [Semiring 𝕜] [PartialOrder 𝕜] [∀ i, AddCommMonoid (π i)] [∀ i, Module 𝕜 (π i)] {s : Set ι}
+variable [Semiring 𝕜] [PartialOrder 𝕜] [∀ i, AddCommMonoid (M i)] [∀ i, Module 𝕜 (M i)] {s : Set ι}
 
-theorem segment_subset (x y : ∀ i, π i) : segment 𝕜 x y ⊆ s.pi fun i => segment 𝕜 (x i) (y i) := by
+theorem segment_subset (x y : ∀ i, M i) : segment 𝕜 x y ⊆ s.pi fun i => segment 𝕜 (x i) (y i) := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩ i -
   exact ⟨a, b, ha, hb, hab, congr_fun hz i⟩
 
-theorem openSegment_subset (x y : ∀ i, π i) :
+theorem openSegment_subset (x y : ∀ i, M i) :
     openSegment 𝕜 x y ⊆ s.pi fun i => openSegment 𝕜 (x i) (y i) := by
   rintro z ⟨a, b, ha, hb, hab, hz⟩ i -
   exact ⟨a, b, ha, hb, hab, congr_fun hz i⟩
 
 variable [DecidableEq ι]
 
-theorem image_update_segment (i : ι) (x₁ x₂ : π i) (y : ∀ i, π i) :
+theorem image_update_segment (i : ι) (x₁ x₂ : M i) (y : ∀ i, M i) :
     update y i '' [x₁ -[𝕜] x₂] = [update y i x₁ -[𝕜] update y i x₂] := by
   rw [segment_eq_image₂, segment_eq_image₂, image_image]
   refine EqOn.image_eq fun a ha ↦ ?_
   simp only [← update_smul, ← update_add, Convex.combo_self ha.2.2]
 
-theorem image_update_openSegment (i : ι) (x₁ x₂ : π i) (y : ∀ i, π i) :
+theorem image_update_openSegment (i : ι) (x₁ x₂ : M i) (y : ∀ i, M i) :
     update y i '' openSegment 𝕜 x₁ x₂ = openSegment 𝕜 (update y i x₁) (update y i x₂) := by
   rw [openSegment_eq_image₂, openSegment_eq_image₂, image_image]
   refine EqOn.image_eq fun a ha ↦ ?_
