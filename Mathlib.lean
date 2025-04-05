@@ -266,6 +266,7 @@ import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Field.Subfield.Defs
 import Mathlib.Algebra.Field.ULift
 import Mathlib.Algebra.Field.ZMod
+import Mathlib.Algebra.FiveLemma
 import Mathlib.Algebra.Free
 import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 import Mathlib.Algebra.FreeAlgebra
