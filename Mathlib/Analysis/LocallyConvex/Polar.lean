@@ -177,30 +177,6 @@ def polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) : S
 
 end NontriviallyNormedField
 
-section RCLike
-
-variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
-variable [Module 𝕜 E] [Module 𝕜 F]
-
-variable {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} (s : Set E)
-
-variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F]
-
-theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
-  rw [polar_preimage]
-  apply AbsConvex.iInter₂
-  intro i hi
-  constructor
-  · have e0 : Metric.closedBall (0 : 𝕜) 1 = Seminorm.closedBall (normSeminorm 𝕜 𝕜) (0 : 𝕜) 1 := by
-      aesop
-    have e1 : Balanced 𝕜 (Metric.closedBall (0 : 𝕜) 1) := by
-      rw [e0]
-      exact Seminorm.balanced_closedBall_zero _ _
-    exact Balanced.mulActionHom_preimage (E := F) e1 (B i)
-  · exact Convex.linear_preimage (convex_closedBall _ _) (B i)
-
-end RCLike
-
 section Bipolar
 
 variable [RCLike 𝕜] [AddCommGroup E] [AddCommGroup F]
@@ -226,18 +202,19 @@ lemma absConvexHull_zero_mem (s : Set E) [Nonempty s] : 0 ∈ absConvexHull 𝕜
 variable  [IsScalarTower ℝ 𝕜 E]
 
 -- See Bourbaki TVS II.43 or Rudin Theorem 3.10
-lemma dualEmbedding_isSurjective : Function.Surjective B.dualEmbedding := by
+lemma dualEmbedding_isSurjective : Function.Surjective (WeakBilin.eval B) := by
   rw [Function.Surjective]
   intro f₁
   sorry
 
-
+/-
 def dualEquiv : F ≃ₗ[𝕜] (WeakBilin B) →L[𝕜] 𝕜 where
-  toLinearMap := B.dualEmbedding
+  toLinearMap := WeakBilin.eval B
 
 
 def strictEquiv2 : E ≃ₗ[𝕜] (WeakBilin B.flip) →L[𝕜] 𝕜 where
   toLinearMap := B
+-/
 
 open scoped ComplexOrder
 theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s] (h : B.Nondegenerate):
@@ -267,7 +244,8 @@ theorem Bipolar {B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜} {s : Set E} [Nonempty s
     --have hg₃ : g ∈ B.polar (E := WeakBilin B) s := sorry
     sorry
 
-  · exact closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_closed B.flip _)
+  · sorry
+    --exact closedAbsConvexHull_min (subset_bipolar B s) (polar_AbsConvex _) (polar_closed B.flip _)
 
 end Bipolar
 
