@@ -55,28 +55,28 @@ esac
 computeDiff () {
   gawk -F'|' 'BEGIN{
         con=1
-        initial["porting notes"]=5000
-        goal["porting notes"]=2000
+        initial["porting notes"]=1798
+        goal["porting notes"]=1500
         weight["porting notes"]=20
 
         initial["adaptation notes"]=200
         goal["adaptation notes"]=150
-        weight["adaptation notes"]=15
+        weight["adaptation notes"]=0
 
         initial["disabled simpNF lints"]=200
         goal["disabled simpNF lints"]=0
-        weight["disabled simpNF lints"]=10
+        weight["disabled simpNF lints"]=0
 
         initial["erw"]=1500
         goal["erw"]=1000
-        weight["erw"]=20
+        weight["erw"]=0
 
         initial["maxHeartBeats modifications"]=16
         goal["maxHeartBeats modifications"]=10
-        weight["maxHeartBeats modifications"]=15
+        weight["maxHeartBeats modifications"]=0
 
-        initial["large files"]=60
-        goal["large files"]=20
+        initial["large files"]=12
+        goal["large files"]=0
         weight["large files"]=10
       }{
       # order keeps track of maintaining the final order of the counters the same as the input one
