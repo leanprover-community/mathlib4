@@ -4639,6 +4639,7 @@ import Mathlib.Order.Monotone.MonovaryOrder
 import Mathlib.Order.Monotone.Odd
 import Mathlib.Order.Monotone.Union
 import Mathlib.Order.Nat
+import Mathlib.Order.Nest
 import Mathlib.Order.Notation
 import Mathlib.Order.Nucleus
 import Mathlib.Order.OmegaCompletePartialOrder
