@@ -169,7 +169,7 @@ theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
 
 /-- Assuming the base ring has a discrete topology, the powers of a `MvPowerSeries` converge to 0
 iff its constant coefficient is nilpotent.
-N. Bourbaki, *Algebra II*, [bourbaki1981] (chap. 4, §4, n°2, corollaire de la prop. 3)
+N. Bourbaki, *Algebra II*, [bourbaki1981] (chap. 4, §4, n°2, corollary of prop. 3)
 
 See also `MvPowerSeries.LinearTopology.isTopologicallyNilpotent_iff_constantCoeff`. -/
 theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
