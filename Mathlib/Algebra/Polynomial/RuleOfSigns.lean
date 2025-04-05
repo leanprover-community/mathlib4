@@ -411,25 +411,19 @@ theorem succ_sign_lin_mul (hη : 0 < η) (hq : P ≠ 0) :
   induction' d using Nat.strong_induction_on with d ih generalizing P
   rw [eq_comm] at hd
   -- can assume it starts positive, otherwise negate P
-  wlog hqpos : 0 < leadingCoeff P generalizing P
-  · have hsqn0 : leadingCoeff P ≠ 0 := mt leadingCoeff_eq_zero.mp hq
-    have nsqneg : leadingCoeff P < 0 := by
-      push_neg at hqpos
-      exact lt_of_le_of_ne hqpos hsqn0
-    have hnq0 : (-P)≠0 := by simp_all only [ne_eq, not_false_eq_true, neg_eq_zero, hd]
-    have hndQ : d = (-P).natDegree := by simpa only [natDegree_neg]
-    have h2 : leadingCoeff (-P) > 0 := by simpa only [leadingCoeff_neg, Left.neg_pos_iff]
-    simpa [mul_neg, signvar_neg] using this hnq0 hndQ h2
+  wlog hqpos : 0 < leadingCoeff P generalizing P with H
+  · have h : leadingCoeff P < 0 :=
+      lt_of_le_of_ne (le_of_not_lt hqpos) (mt leadingCoeff_eq_zero.mp hq)
+    simpa using H (P := -P) (by simpa) (by simpa) (by simpa)
   --the new polynomial isn't zero
-  have hnzηQ : (X - C η) * P ≠ 0 := mul_ne_zero (X_sub_C_ne_zero η) hq
+  have hm : (X - C η) * P ≠ 0 :=
+    mul_ne_zero (X_sub_C_ne_zero η) hq
   --LHS is one degree higher than RHS
   have hdQ : natDegree ((X - C η) * P) = natDegree P + 1 := by
     rw [natDegree_mul (X_sub_C_ne_zero η) hq, natDegree_X_sub_C, add_comm]
   by_cases hd0 : d = 0
   case pos => --zero degree
-    simp only [hd0] at *
-    have hQ : P = C (coeff P 0) := by
-      exact eq_C_of_degree_le_zero (natDegree_eq_zero_iff_degree_le_zero.mp hd.symm)
+    subst hd0
     have hcQ : 0 < coeff P 0 := by
       rwa [leadingCoeff, ← hd] at hqpos
     have hxcQ : coeff ((X - C η) * P) 1 = coeff P 0 := by
@@ -437,10 +431,8 @@ theorem succ_sign_lin_mul (hη : 0 < η) (hq : P ≠ 0) :
         coeff_eq_zero_of_natDegree_lt (hd ▸ zero_lt_one)
       rw [coeff_X_sub_C_mul, sub_eq_self, h, mul_zero]
     dsimp [SignVariations, coeffList]
-    rw [withBotSucc_degree_eq_natDegree_add_one hq,
-      withBotSucc_degree_eq_natDegree_add_one hnzηQ,
-      hdQ, ← hd]
-    simp [List.range_succ, hcQ, hxcQ, List.filter, List.destutter, Left.mul_pos hη hcQ]
+    rw [withBotSucc_degree_eq_natDegree_add_one hq, withBotSucc_degree_eq_natDegree_add_one hm]
+    simp [hdQ, hcQ, hxcQ, hη, hcQ, ← hd,  List.range_succ]
   case neg => --positive degree
     obtain ⟨d,rfl⟩ : ∃ d0, d = d0 + 1 := by
       cases d
@@ -482,7 +474,7 @@ theorem succ_sign_lin_mul (hη : 0 < η) (hq : P ≠ 0) :
 
       have h_e3LQ : SignVariations ((X - C η) * P).eraseLead + 1 =
           SignVariations ((X - C η) * P) := by
-        rw [signvar_eq_eraseLead_add_ite hnzηQ, leadingCoeff_eraseLead_eq_nextCoeff h_nc_nz,
+        rw [signvar_eq_eraseLead_add_ite hm, leadingCoeff_eraseLead_eq_nextCoeff h_nc_nz,
           ← hsηq1, ← hsηq0, hcsηq1, ← h_sq0_sηq0, h_sq0_pos]
         simp
 
@@ -492,8 +484,7 @@ theorem succ_sign_lin_mul (hη : 0 < η) (hq : P ≠ 0) :
       --true as written for P ≠ 0.) So we need to do a case-split and handle this separately.
       by_cases h_eQ_nz : eraseLead P = 0
       · --this is the edge case where eraseLead P = 0. Therefore, P is a monomial.
-        have h := eraseLead_add_monomial_natDegree_leadingCoeff P
-        rw [← h, h_eQ_nz, zero_add]
+        rw [← eraseLead_add_monomial_natDegree_leadingCoeff P, h_eQ_nz, zero_add]
         exact succ_sign_lin_mul_monomial hqpos.ne' hη
       · --Dropping the lead of Q exactly drops the first two of LQ. This decreases the sign
         --variations of LQ by at least one, and Q by at most one, so we can induct.
@@ -534,7 +525,7 @@ theorem succ_sign_lin_mul (hη : 0 < η) (hq : P ≠ 0) :
         simp [h, hsηq1] at hηq1
 
       have hLQ : ((X - C η) * P).SignVariations = ((X - C η) * P).eraseLead.SignVariations + 1 := by
-        rw [signvar_eq_eraseLead_add_ite hnzηQ, ← hsηq0, ← h_sq0_sηq0, h₂]
+        rw [signvar_eq_eraseLead_add_ite hm, ← hsηq0, ← h_sq0_sηq0, h₂]
         simp [← hsηq1, hηq1, h_sq0_pos]
 
       have hLQ2 : ((X - C η) * P).eraseLead.SignVariations =
