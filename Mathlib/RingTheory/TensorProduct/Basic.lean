@@ -99,6 +99,11 @@ lemma baseChange_comp (g : N →ₗ[R] P) :
     (g ∘ₗ f).baseChange A = g.baseChange A ∘ₗ f.baseChange A := by
   ext; simp
 
+theorem rTensor_comp_baseChange_comm_apply
+    (φ : A →ₗ[R] B) (t : A ⊗[R] M) (f : M →ₗ[R] N) :
+    (φ.rTensor N) (f.baseChange A t)  = (f.baseChange B) (φ.rTensor M t) := by
+  simp [LinearMap.baseChange_eq_ltensor, ← LinearMap.comp_apply, ← TensorProduct.map_comp]
+
 variable (R M) in
 @[simp]
 lemma baseChange_one : (1 : Module.End R M).baseChange A = 1 := baseChange_id
