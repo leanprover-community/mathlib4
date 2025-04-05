@@ -389,7 +389,7 @@ lemma isTorsionFree_iff_noZeroSMulDivisors_nat {M : Type*} [AddMonoid M] :
     pos_iff_ne_zero, noZeroSMulDivisors_iff, forall_swap (β := ℕ)]
   exact forall₂_congr fun _ _ ↦ by tauto
 
-lemma isTorsionFree_iff_noZeroSMulDivisors_int [AddGroup G] :
+lemma isTorsionFree_iff_noZeroSMulDivisors_int [SubtractionMonoid G] :
     IsTorsionFree G ↔ NoZeroSMulDivisors ℤ G := by
   simp_rw [AddMonoid.IsTorsionFree, isOfFinAddOrder_iff_zsmul_eq_zero, not_exists, not_and,
     noZeroSMulDivisors_iff, forall_swap (β := ℤ)]

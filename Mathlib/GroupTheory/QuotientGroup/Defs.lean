@@ -110,7 +110,7 @@ theorem range_mk' : (QuotientGroup.mk' N).range = ⊤ :=
   MonoidHom.range_eq_top.mpr (mk'_surjective N)
 
 @[to_additive]
-theorem ker_le_range_iff {I : Type w} [Group I] (f : G →* H) [f.range.Normal] (g : H →* I) :
+theorem ker_le_range_iff {I : Type w} [MulOneClass I] (f : G →* H) [f.range.Normal] (g : H →* I) :
     g.ker ≤ f.range ↔ (mk' f.range).comp g.ker.subtype = 1 :=
   ⟨fun h => MonoidHom.ext fun ⟨_, hx⟩ => (eq_one_iff _).mpr <| h hx,
     fun h x hx => (eq_one_iff _).mp <| by exact DFunLike.congr_fun h ⟨x, hx⟩⟩
