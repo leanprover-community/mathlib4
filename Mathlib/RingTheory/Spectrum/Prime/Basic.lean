@@ -209,6 +209,9 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal R) :
 theorem nilradical_eq_iInf : nilradical R = iInf asIdeal := by
   apply range_asIdeal R ▸ nilradical_eq_sInf R
 
+theorem vanishingIdeal_univ : vanishingIdeal Set.univ = nilradical R := by
+  rw [vanishingIdeal, iInf_univ, nilradical_eq_iInf]
+
 @[simp]
 theorem zeroLocus_radical (I : Ideal R) : zeroLocus (I.radical : Set R) = zeroLocus I :=
   vanishingIdeal_zeroLocus_eq_radical I ▸ (gc R).l_u_l_eq_l I
@@ -284,18 +287,11 @@ theorem vanishingIdeal_eq_top_iff {s : Set (PrimeSpectrum R)} : vanishingIdeal s
   rw [← top_le_iff, ← subset_zeroLocus_iff_le_vanishingIdeal, Submodule.top_coe, zeroLocus_univ,
     Set.subset_empty_iff]
 
-theorem zeroLocus_eq_top_iff (s : Set R) :
-    zeroLocus s = ⊤ ↔ s ⊆ nilradical R := by
-  constructor
-  · intro h x hx
-    refine nilpotent_iff_mem_prime.mpr (fun J hJ ↦ ?_)
-    have hJz : ⟨J, hJ⟩ ∈ zeroLocus s := by
-      rw [h]
-      trivial
-    exact (mem_zeroLocus _ _).mpr hJz hx
-  · rw [eq_top_iff]
-    intro h p _
-    apply Set.Subset.trans h (nilradical_le_prime p.asIdeal)
+theorem zeroLocus_eq_univ_iff (s : Set R) :
+    zeroLocus s = Set.univ ↔ s ⊆ nilradical R := by
+  rw [← Set.univ_subset_iff, subset_zeroLocus_iff_subset_vanishingIdeal, vanishingIdeal_univ]
+
+@[deprecated (since := "2025-04-05")] alias zeroLocus_eq_top_iff := zeroLocus_eq_univ_iff
 
 theorem zeroLocus_sup (I J : Ideal R) :
     zeroLocus ((I ⊔ J : Ideal R) : Set R) = zeroLocus I ∩ zeroLocus J :=

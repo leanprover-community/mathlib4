@@ -162,7 +162,7 @@ lemma surjective_of_isClosed_range_of_injective [CompactSpace X]
   let 𝒰 : X.OpenCover := X.affineCover.finiteSubcover
   haveI (i : 𝒰.J) : IsAffine (𝒰.obj i) := Scheme.isAffine_affineCover X _
   apply Set.range_eq_univ.mp
-  apply hI ▸ (Scheme.zeroLocus_eq_top_iff_subset_nilradical _).mpr
+  apply hI ▸ (Scheme.zeroLocus_eq_univ_iff_subset_nilradical _).mpr
   intro s hs
   simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
     Submodule.mem_toAddSubmonoid, SetLike.mem_coe, mem_nilradical, ← IsNilpotent.map_iff hfinj]
@@ -339,7 +339,7 @@ lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
   suffices RingHom.ker φ.hom ≤ nilradical _ by
     rwa [nilradical_eq_zero, Submodule.zero_eq_bot, le_bot_iff,
       ← RingHom.injective_iff_ker_eq_bot] at this
-  refine (PrimeSpectrum.zeroLocus_eq_top_iff _).mp ?_
+  refine (PrimeSpectrum.zeroLocus_eq_univ_iff _).mp ?_
   rw [← range_specComap_of_surjective _ _ hf, Set.top_eq_univ, Set.range_eq_univ]
   have : Surjective (Spec.map (f.appTop)) :=
     (MorphismProperty.arrow_mk_iso_iff @Surjective (arrowIsoSpecΓOfIsAffine f)).mp
