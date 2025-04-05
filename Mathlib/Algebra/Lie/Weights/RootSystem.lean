@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.Irreducible
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.Algebra.Algebra.Rat
+import LeanCopilot
 
 /-!
 # The root system associated with a Lie algebra
@@ -434,7 +435,7 @@ variable (K L : Type*) [Field K] [CharZero K]
   (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [LieModule.IsTriangularizable K H L]
 
 #check (LieAlgebra.IsKilling.rootSystem H)
---set_option maxHeartbeats 10000000
+set_option maxHeartbeats 10000000
 --  eq_top_of_invtSubmodule_reflection (q : Submodule R M) :
 --    (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤
 
@@ -454,7 +455,21 @@ lemma rr7:
       (lj : LieAlgebra.rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
     sorry
   have rr7 : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
-    sorry
+    have help : ⨆ χ : LieModule.Weight K H L, (LieModule.genWeightSpace L χ).toSubmodule = ⊤ := by
+      exact LieModule.iSup_genWeightSpace_as_module_eq_top' K H L
+    intro x y
+    intro hy
+    have hx : x ∈ ⨆ χ : LieModule.Weight K H L, (LieModule.genWeightSpace L χ).toSubmodule := by
+      sorry
+    induction hx using Submodule.iSup_induction' with
+    | mem i x hx =>
+      sorry
+    | zero =>
+      simp only [zero_lie, LieSubalgebra.zero_mem]
+    | add x1 y1 _ _ hx hy =>
+      simp only [add_lie]
+      exact LieSubalgebra.add_mem I hx hy
+
   sorry
 
 lemma invtSubmodule_reflection:
