@@ -14,3 +14,8 @@ note: this linter can be disabled with `set_option linter.hashCommand false`
 -/
 #guard_msgs in
 #guard true
+
+-- Explicitly overriding a linter should silence it
+set_option linter.hashCommand false in
+#guard_msgs in
+#guard true

@@ -46,15 +46,22 @@ def Mathlib.standardLintersEnabled (o : Options) : Bool :=
 
 /-- Return whether a linter should be enabled.
 
-This function returns true in three cases:
-* the option `opt` is explicitly enabled, or
+If the value of `opt` has been set using the `set_option` command, return that setting.
+Otherwise this function returns true if:
+* the linter is enabled by default, or
 * all linters are enabled (by `set_option linter.all true`), or
 * Mathlib-standard linters are enabled and `opt` is a Mathlib-standard linter.
 -/
 def Mathlib.getLinterValue (opt : Lean.Option Bool) (o : Options) : Bool :=
-  (Mathlib.standardLintersEnabled o &&
-    mathlibStandardLinters.find? opt.name == some (.ofBool true)) ||
-  Lean.Linter.getLinterValue opt o
+  -- Always return the value that the option is explicitly set to, if any.
+  if let some val := opt.get? o then
+    val
+  else
+    -- Otherwise it could be a standard linter...
+    (Mathlib.standardLintersEnabled o &&
+      mathlibStandardLinters.find? opt.name == some (.ofBool true)) ||
+    -- ... or it is enabled in the regular way.
+    Lean.Linter.getLinterValue opt o
 
 /-- Return a numeric value for this linter, or `0` if it is unset.
 
