@@ -162,15 +162,27 @@ noncomputable def Sheaf.ΓObjEquivSections [HasWeakSheafify J (Type w)]
   (Equiv.trans (by exact (Equiv.funUnique PUnit _).symm) ΓHomEquiv.symm).trans
     (F.val.sectionsEquivHom PUnit).symm
 
+lemma Sheaf.ΓObjEquivSections_naturality [HasWeakSheafify J (Type w)]
+    [HasGlobalSectionsFunctor J (Type w)] {F G : Sheaf J (Type w)} (f : F ⟶ G) (x : (Γ J _).obj F) :
+    (ΓObjEquivSections J G) ((Γ J _).map f x) =
+      (Functor.sectionsFunctor _).map f.val ((ΓObjEquivSections J F) x) := by
+  dsimp [ΓObjEquivSections]
+  exact (congr_arg _ (ΓHomEquiv_naturality_right_symm _ _)).trans
+    (Functor.sectionsEquivHom_naturality_symm _ _ _)
+
+lemma Sheaf.ΓObjEquivSections_naturality_symm [HasWeakSheafify J (Type w)]
+    [HasGlobalSectionsFunctor J (Type w)] {F G : Sheaf J (Type w)} (f : F ⟶ G)
+    (x : F.val.sections) : (ΓObjEquivSections J G).symm ((Functor.sectionsFunctor _).map f.val x) =
+      (Γ J _).map f ((ΓObjEquivSections J F).symm x) :=
+  (congr_fun (ΓHomEquiv_naturality_right (F.val.sectionsEquivHom _ x) f) _)
+
 /-- For sheaves of types, the global sections functor is isomorphic to the sections functor
 on presheaves. -/
 noncomputable def Sheaf.ΓNatIsoSectionsFunctor :
     Γ J (Type max u v) ≅ sheafToPresheaf J _ ⋙ Functor.sectionsFunctor _ :=
-  NatIso.ofComponents (fun F ↦ (ΓObjEquivSections J F).toIso) fun _ ↦ by
+  NatIso.ofComponents (fun F ↦ (ΓObjEquivSections J F).toIso) fun f ↦ by
     ext x
-    dsimp [ΓObjEquivSections]
-    exact (congr_arg _ (ΓHomEquiv_naturality_right_symm _ _)).trans
-      (Functor.sectionsEquivHom_naturality_symm _ _ _)
+    exact ΓObjEquivSections_naturality J f x
 
 /-- Global sections of a sheaf of types `F` correspond to morphisms from a terminal sheaf to `F`.
 We use the constant sheaf on a singleton type as a specific choice of terminal sheaf here. -/
@@ -179,13 +191,24 @@ noncomputable def Sheaf.ΓObjEquivHom [HasWeakSheafify J (Type w)]
       (Γ J (Type w)).obj F ≃ ((constantSheaf J (Type w)).obj X ⟶ F) :=
   (Equiv.funUnique X _).symm.trans ((constantSheafΓAdj J (Type w)).homEquiv _ _).symm
 
+lemma Sheaf.ΓObjEquivHom_naturality [HasWeakSheafify J (Type w)]
+    [HasGlobalSectionsFunctor J (Type w)] (X : Type w) [Unique X] {F G : Sheaf J (Type w)}
+    (f : F ⟶ G) (x : (Γ J _).obj F) :
+    (ΓObjEquivHom J G X) ((Γ J _).map f x) = (ΓObjEquivHom J F X) x ≫ f :=
+  (constantSheafΓAdj J _).homEquiv_naturality_right_symm _ _
+
+lemma Sheaf.ΓObjEquivHom_naturality_symm [HasWeakSheafify J (Type w)]
+    [HasGlobalSectionsFunctor J (Type w)] {X : Type w} [Unique X] {F G : Sheaf J (Type w)}
+    (f : F ⟶ G) (x : (constantSheaf J _).obj X ⟶ F) :
+    (ΓObjEquivHom J G X).symm (x ≫ f) = (Γ J _).map f ((ΓObjEquivHom J F X).symm x) :=
+  congr_fun ((constantSheafΓAdj J _).homEquiv_naturality_right x f) default
+
 /-- For sheaves of types, the global sections functor is isomorphic to the covariant hom
 functor of the terminal sheaf. -/
 noncomputable def Sheaf.ΓNatIsoCoyoneda (X : Type max u v) [Unique X] :
     Γ J (Type max u v) ≅ coyoneda.obj (op ((constantSheaf J _).obj X)) := by
-  exact NatIso.ofComponents (fun F ↦ (F.ΓObjEquivHom J X).toIso) fun _ ↦ by
+  exact NatIso.ofComponents (fun F ↦ (F.ΓObjEquivHom J X).toIso) fun f ↦ by
     ext x
-    dsimp
-    exact (constantSheafΓAdj J _).homEquiv_naturality_right_symm _ _
+    exact ΓObjEquivHom_naturality J X f x
 
 end CategoryTheory
