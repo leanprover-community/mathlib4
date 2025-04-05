@@ -259,14 +259,14 @@ def ACApps.toExpr : ACApps → Option Expr
 
 /-- Red-black maps whose keys are `ACApps`es.
 
-TODO: the choice between `RBMap` and `HashMap` is not obvious:
+TODO: the choice between `TreeMap` and `HashMap` is not obvious:
 once the `cc` tactic is used a lot in Mathlib, we should profile and see
 if `HashMap` could be more optimal. -/
 abbrev ACAppsMap (α : Type u) := Std.TreeMap ACApps α compare
 
 /-- Red-black sets of `ACApps`es.
 
-TODO: the choice between `RBSet` and `HashSet` is not obvious:
+TODO: the choice between `TreeSet` and `HashSet` is not obvious:
 once the `cc` tactic is used a lot in Mathlib, we should profile and see
 if `HashSet` could be more optimal. -/
 abbrev ACAppsSet := Std.TreeSet ACApps compare
