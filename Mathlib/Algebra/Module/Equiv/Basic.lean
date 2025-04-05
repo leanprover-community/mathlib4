@@ -58,13 +58,13 @@ theorem restrictScalars_inj (f g : M ≃ₗ[S] M₂) :
 
 end RestrictScalars
 
-theorem _root_.Module.End_isUnit_iff [Module R M] (f : Module.End R M) :
+theorem _root_.Module.End.isUnit_iff [Module R M] (f : Module.End R M) :
     IsUnit f ↔ Function.Bijective f :=
   ⟨fun h ↦
     Function.bijective_iff_has_inverse.mpr <|
       ⟨h.unit.inv,
-        ⟨Module.End_isUnit_inv_apply_apply_of_isUnit h,
-        Module.End_isUnit_apply_inv_apply_of_isUnit h⟩⟩,
+        ⟨Module.End.isUnit_inv_apply_apply_of_isUnit h,
+        Module.End.isUnit_apply_inv_apply_of_isUnit h⟩⟩,
     fun H ↦
     let e : M ≃ₗ[R] M := { f, Equiv.ofBijective f H with }
     ⟨⟨_, e.symm, LinearMap.ext e.right_inv, LinearMap.ext e.left_inv⟩, rfl⟩⟩
@@ -314,7 +314,7 @@ def ringLmapEquivSelf [Module S M] [SMulCommClass R S M] : (R →ₗ[R] M) ≃�
     invFun := smulRight (1 : R →ₗ[R] R)
     left_inv := fun f ↦ by
       ext
-      simp only [coe_smulRight, one_apply, smul_eq_mul, ← map_smul f, mul_one]
+      simp only [coe_smulRight, Module.End.one_apply, smul_eq_mul, ← map_smul f, mul_one]
     right_inv := fun x ↦ by simp }
 
 end LinearMap
