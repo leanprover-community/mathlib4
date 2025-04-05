@@ -5396,6 +5396,7 @@ import Mathlib.Tactic.CategoryTheory.Slice
 import Mathlib.Tactic.CategoryTheory.ToApp
 import Mathlib.Tactic.Change
 import Mathlib.Tactic.Check
+import Mathlib.Tactic.CheckEqualities
 import Mathlib.Tactic.Choose
 import Mathlib.Tactic.Clean
 import Mathlib.Tactic.ClearExcept
