@@ -8,7 +8,13 @@ import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 /-!
 # Properties of the `𝔤₂` root system.
 
-Foo bar
+The `𝔤₂` root pairing is special enough to deserve its own API. We provide one in this file.
+
+As an application we prove that it is the only (finite, crystallographic, reduced, irreducible) root
+pairing containing two roots of Coxeter weight three. This result is usually proved only for pairs
+of roots belonging to a base (by arguing that the Coxeter-Dynkin diagram is loopless and has no
+nodes of degree greater than three) and moreover usually requires stronger assumptions on the
+coefficients than here.
 
 ## Main results:
  * `RootPairing.EmbeddedG2`: a data-bearing typeclass which distinguishes a pair of roots whose
@@ -37,7 +43,9 @@ namespace RootPairing
 /-- A data-bearing typeclass which distinguishes a pair of roots whose pairing is `-3`. This is a
 sufficient condition for the span of this pair of roots to be a `𝔤₂` root system. -/
 class EmbeddedG2 extends P.IsCrystallographic, P.IsReduced where
+  /-- The distinguished long root of an embedded `𝔤₂` root pairing. -/
   long : ι
+  /-- The distinguished short root of an embedded `𝔤₂` root pairing. -/
   short : ι
   pairingIn_long_short : P.pairingIn ℤ long short = - 3
 
