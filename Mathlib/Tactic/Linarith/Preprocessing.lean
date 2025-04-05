@@ -6,7 +6,6 @@ Authors: Robert Y. Lewis
 import Mathlib.Tactic.Linarith.Datatypes
 import Mathlib.Tactic.Zify
 import Mathlib.Tactic.CancelDenoms.Core
-import Batteries.Data.RBMap.Basic
 import Mathlib.Control.Basic
 import Mathlib.Util.AtomM
 
@@ -35,7 +34,7 @@ open Elab Tactic Meta
 open Qq
 open Mathlib
 open Mathlib.Tactic (AtomM)
-open Batteries (RBSet)
+open Std (TreeSet)
 
 /-- Processor that recursively replaces `P ∧ Q` hypotheses with the pair `P` and `Q`. -/
 partial def splitConjunctions : Preprocessor where
@@ -164,7 +163,7 @@ def natToInt : GlobalBranchingPreprocessor where
           pure h
       else
         pure h
-    let nonnegs ← l.foldlM (init := ∅) fun (es : RBSet (Expr × Expr) lexOrd.compare) h => do
+    let nonnegs ← l.foldlM (init := ∅) fun (es : TreeSet (Expr × Expr) lexOrd.compare) h => do
       try
         let (_, _, a, b) ← (← inferType h).ineq?
         pure <| (es.insertMany (getNatComparisons a)).insertMany (getNatComparisons b)
@@ -262,8 +261,8 @@ section nlinarith
 and adds them to the set `s`.
 A pair `(i, true)` is added to `s` when `atoms[i]^2` appears in `e`,
 and `(i, false)` is added to `s` when `atoms[i]*atoms[i]` appears in `e`. -/
-partial def findSquares (s : RBSet (Nat × Bool) lexOrd.compare) (e : Expr) :
-    AtomM (RBSet (Nat × Bool) lexOrd.compare) :=
+partial def findSquares (s : TreeSet (Nat × Bool) lexOrd.compare) (e : Expr) :
+    AtomM (TreeSet (Nat × Bool) lexOrd.compare) :=
   -- Completely traversing the expression is non-ideal,
   -- as we can descend into expressions that could not possibly be seen by `linarith`.
   -- As a result we visit expressions with bvars, which then cause panics.
@@ -292,8 +291,7 @@ private def nlinarithGetSquareProofs (ls : List Expr) : MetaM (List Expr) :=
   withTraceNode `linarith (return m!"{exceptEmoji ·} finding squares") do
   -- find the squares in `AtomM` to ensure deterministic behavior
   let s ← AtomM.run .reducible do
-    let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
-      RBSet.empty
+    let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h))) ∅
     si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
   let new_es ← s.filterMapM fun (e, is_sq) =>
     observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]

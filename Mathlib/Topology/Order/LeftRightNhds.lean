@@ -152,8 +152,7 @@ theorem TFAE_mem_nhdsLT {a b : α} (h : a < b) (s : Set α) :
         s ∈ 𝓝[Ioo a b] b,-- 2 : `s` is a neighborhood of `b` within `(a, b)`
         ∃ l ∈ Ico a b, Ioo l b ⊆ s,-- 3 : `s` includes `(l, b)` for some `l ∈ [a, b)`
         ∃ l ∈ Iio b, Ioo l b ⊆ s] := by-- 4 : `s` includes `(l, b)` for some `l < b`
-  simpa only [exists_prop, OrderDual.exists, dual_Ioi, dual_Ioc, dual_Ioo] using
-    TFAE_mem_nhdsGT h.dual (ofDual ⁻¹' s)
+  simpa using TFAE_mem_nhdsGT h.dual (ofDual ⁻¹' s)
 
 @[deprecated (since := "2024-12-22")]
 alias TFAE_mem_nhdsWithin_Iio := TFAE_mem_nhdsLT
@@ -189,7 +188,7 @@ with `l < a`. -/
 theorem mem_nhdsLT_iff_exists_Ico_subset [NoMinOrder α] [DenselyOrdered α] {a : α} {s : Set α} :
     s ∈ 𝓝[<] a ↔ ∃ l ∈ Iio a, Ico l a ⊆ s := by
   have : ofDual ⁻¹' s ∈ 𝓝[>] toDual a ↔ _ := mem_nhdsGT_iff_exists_Ioc_subset
-  simpa only [OrderDual.exists, exists_prop, dual_Ioc] using this
+  simpa using this
 
 @[deprecated (since := "2024-12-22")]
 alias mem_nhdsWithin_Iio_iff_exists_Ico_subset := mem_nhdsLT_iff_exists_Ico_subset
@@ -309,8 +308,7 @@ theorem TFAE_mem_nhdsLE {a b : α} (h : a < b) (s : Set α) :
       s ∈ 𝓝[Ioc a b] b,-- 2 : `s` is a neighborhood of `b` within `(a, b]`
       ∃ l ∈ Ico a b, Ioc l b ⊆ s,-- 3 : `s` includes `(l, b]` for some `l ∈ [a, b)`
       ∃ l ∈ Iio b, Ioc l b ⊆ s] := by-- 4 : `s` includes `(l, b]` for some `l < b`
-  simpa only [exists_prop, OrderDual.exists, dual_Ici, dual_Ioc, dual_Icc, dual_Ico] using
-    TFAE_mem_nhdsGE h.dual (ofDual ⁻¹' s)
+  simpa using TFAE_mem_nhdsGE h.dual (ofDual ⁻¹' s)
 
 @[deprecated (since := "2024-12-22")]
 alias TFAE_mem_nhdsWithin_Iic := TFAE_mem_nhdsLE
@@ -348,7 +346,7 @@ theorem mem_nhdsLE_iff_exists_Icc_subset [NoMinOrder α] [DenselyOrdered α] {a 
   calc s ∈ 𝓝[≤] a ↔ ofDual ⁻¹' s ∈ 𝓝[≥] (toDual a) := Iff.rfl
   _ ↔ ∃ u : α, toDual a < toDual u ∧ Icc (toDual a) (toDual u) ⊆ ofDual ⁻¹' s :=
     mem_nhdsGE_iff_exists_Icc_subset
-  _ ↔ ∃ l, l < a ∧ Icc l a ⊆ s := by simp only [dual_Icc]; rfl
+  _ ↔ ∃ l, l < a ∧ Icc l a ⊆ s := by simp
 
 @[deprecated (since := "2024-12-22")]
 alias mem_nhdsWithin_Iic_iff_exists_Icc_subset := mem_nhdsLE_iff_exists_Icc_subset
@@ -367,7 +365,8 @@ end LinearOrder
 
 section LinearOrderedCommGroup
 
-variable [TopologicalSpace α] [LinearOrderedCommGroup α] [OrderTopology α]
+variable [TopologicalSpace α] [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
+  [OrderTopology α]
 variable {l : Filter β} {f g : β → α}
 
 @[to_additive]
@@ -378,7 +377,8 @@ theorem nhds_eq_iInf_mabs_div (a : α) : 𝓝 a = ⨅ r > 1, 𝓟 { b | |a / b|�
   · refine (Equiv.divRight a).iInf_congr fun x => ?_; simp [Iio]
 
 @[to_additive]
-theorem orderTopology_of_nhds_mabs {α : Type*} [TopologicalSpace α] [LinearOrderedCommGroup α]
+theorem orderTopology_of_nhds_mabs {α : Type*} [TopologicalSpace α] [CommGroup α] [LinearOrder α]
+    [IsOrderedMonoid α]
     (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 1, 𝓟 { b | |a / b|ₘ < r }) : OrderTopology α := by
   refine ⟨TopologicalSpace.ext_nhds fun a => ?_⟩
   rw [h_nhds]
