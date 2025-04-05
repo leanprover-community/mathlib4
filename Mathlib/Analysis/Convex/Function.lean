@@ -201,32 +201,27 @@ end DistribMulAction
 
 section Module
 
-variable [IsOrderedAddMonoid β] [SMul 𝕜 E] [Module 𝕜 β] {s : Set E} {f : E → β}
+variable [SMul 𝕜 E] [Module 𝕜 β] {s : Set E} {f : E → β}
 
-omit [IsOrderedAddMonoid β] in
 theorem convexOn_const (c : β) (hs : Convex 𝕜 s) : ConvexOn 𝕜 s fun _ : E => c :=
   ⟨hs, fun _ _ _ _ _ _ _ _ hab => (Convex.combo_self hab c).ge⟩
 
-omit [IsOrderedAddMonoid β] in
 theorem concaveOn_const (c : β) (hs : Convex 𝕜 s) : ConcaveOn 𝕜 s fun _ => c :=
   convexOn_const (β := βᵒᵈ) _ hs
 
-theorem ConvexOn.add_const (hf : ConvexOn 𝕜 s f) (b : β) :
+theorem ConvexOn.add_const [IsOrderedAddMonoid β] (hf : ConvexOn 𝕜 s f) (b : β) :
     ConvexOn 𝕜 s (f + fun _ => b) :=
   hf.add (convexOn_const _ hf.1)
 
-omit [IsOrderedAddMonoid β] in
 theorem ConcaveOn.add_const [IsOrderedAddMonoid β] (hf : ConcaveOn 𝕜 s f) (b : β) :
     ConcaveOn 𝕜 s (f + fun _ => b) :=
   hf.add (concaveOn_const _ hf.1)
 
-omit [IsOrderedAddMonoid β] in
 theorem convexOn_of_convex_epigraph (h : Convex 𝕜 { p : E × β | p.1 ∈ s ∧ f p.1 ≤ p.2 }) :
     ConvexOn 𝕜 s f :=
   ⟨fun x hx y hy a b ha hb hab => (@h (x, f x) ⟨hx, le_rfl⟩ (y, f y) ⟨hy, le_rfl⟩ a b ha hb hab).1,
     fun x hx y hy a b ha hb hab => (@h (x, f x) ⟨hx, le_rfl⟩ (y, f y) ⟨hy, le_rfl⟩ a b ha hb hab).2⟩
 
-omit [IsOrderedAddMonoid β] in
 theorem concaveOn_of_convex_hypograph (h : Convex 𝕜 { p : E × β | p.1 ∈ s ∧ p.2 ≤ f p.1 }) :
     ConcaveOn 𝕜 s f :=
   convexOn_of_convex_epigraph (β := βᵒᵈ) h
