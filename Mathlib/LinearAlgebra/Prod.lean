@@ -319,8 +319,9 @@ theorem prodMap_zero : (0 : M →ₗ[R] M₂).prodMap (0 : M₃ →ₗ[R] M₄) 
   rfl
 
 @[simp]
-theorem prodMap_smul [Module S M₃] [Module S M₄] [SMulCommClass R S M₃] [SMulCommClass R S M₄]
-    (s : S) (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₄) : prodMap (s • f) (s • g) = s • prodMap f g :=
+theorem prodMap_smul [DistribMulAction S M₃] [DistribMulAction S M₄] [SMulCommClass R S M₃]
+    [SMulCommClass R S M₄] (s : S) (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₄) :
+    prodMap (s • f) (s • g) = s • prodMap f g :=
   rfl
 
 variable (R M M₂ M₃ M₄)
