@@ -8,6 +8,8 @@ import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Subgroup.Simple
+import Mathlib.GroupTheory.Perm.Cycle.Concrete
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.Logic.Equiv.Fin.Rotate
 import Mathlib.Tactic.IntervalCases
 
@@ -47,9 +49,6 @@ consisting of the even permutations.
 ## Tags
 alternating group permutation simple characteristic index
 
-
-## TODO
-* Show that `alternatingGroup α` is simple if and only if `Fintype.card α ≠ 4`.
 
 -/
 
@@ -107,6 +106,36 @@ theorem alternatingGroup.index_eq_two [Nontrivial α] :
 @[nontriviality]
 theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
   rw [Subgroup.index_eq_one]; apply Subsingleton.elim
+
+open MulAction in
+lemma alternatingGroup.map_extendDomainHom_finSuccAboveEquiv {n} (i : Fin (n + 1)) :
+    (alternatingGroup (Fin n)).map (extendDomainHom (finSuccAboveEquiv i)) =
+      alternatingGroup (Fin (n + 1)) ⊓ stabilizer (Perm (Fin (n + 1))) i := by
+  ext1 p
+  suffices (∃ q, sign q = 1 ∧ q.extendDomain (finSuccAboveEquiv i) = p) ↔
+      sign p = 1 ∧ p i = i by simpa
+  constructor
+  case mp =>
+    rintro ⟨q, hq, rfl⟩; simp [hq, Equiv.Perm.extendDomain_apply_not_subtype]
+  case mpr =>
+    rintro ⟨esp, epi⟩
+    have hp₁ : ∀ j, j ≠ i ↔ p j ≠ i := by
+      simpa [not_iff_not, p.apply_eq_iff_eq_symm_apply] using epi
+    use (finSuccAboveEquiv i).permCongr.symm (subtypePerm (p := fun j => j ≠ i) p hp₁)
+    constructor
+    · have hp₂ : ∀ j, p j ≠ j → j ≠ i := by simp [not_imp_not, epi]
+      simp [sign_subtypePerm p hp₁ hp₂, esp]
+    ext1 j
+    by_cases hj : j = i
+    case pos => subst hj; simp [extendDomain_apply_not_subtype, epi]
+    case neg => simp [extendDomain_apply_subtype, hj]
+
+open MulAction in
+lemma alternatingGroup.map_extendDomainHom_finSuccAboveEquiv_le_alternatingGroup
+    {n} (i : Fin (n + 1)) :
+    (alternatingGroup (Fin n)).map (extendDomainHom (finSuccAboveEquiv i))
+      ≤ alternatingGroup (Fin (n + 1)) := by
+  rw [alternatingGroup.map_extendDomainHom_finSuccAboveEquiv]; apply inf_le_left
 
 theorem two_mul_card_alternatingGroup [Nontrivial α] :
     2 * card (alternatingGroup α) = card (Perm α) := by
@@ -242,6 +271,32 @@ instance {n : ℕ} : Nontrivial (alternatingGroup (Fin (n + 3))) :=
       rw [card_fin]
       exact le_add_left (le_refl 3))
 
+lemma isCyclic_of_card_eq_three (h3 : card α = 3) : IsCyclic ↥(alternatingGroup α) := by
+  haveI : Nontrivial α := Fintype.one_lt_card_iff_nontrivial.1 (by rw [h3]; omega)
+  haveI : Fact (Nat.Prime 3) := ⟨by decide⟩
+  apply isCyclic_of_prime_card (p := 3)
+  have := two_mul_card_alternatingGroup (α := α)
+  rw [card_perm, h3, show Nat.factorial 3 = 6 from rfl] at this
+  rw [Nat.card_eq_fintype_card]; omega
+
+def kleinFour : Subgroup (Perm (Fin 4)) where
+  carrier := {1, swap 0 1 * swap 2 3, swap 0 2 * swap 1 3, swap 0 3 * swap 1 2}
+  mul_mem' := by simp_rw [← forall_cond_comm, SetCoe.forall']; decide
+  one_mem' := by dsimp only; decide
+  inv_mem' := by simp_rw [SetCoe.forall']; decide
+
+lemma mem_kleinFour {p : Perm (Fin 4)} :
+    p ∈ kleinFour ↔ p.cycleType ∈ ({0, {2, 2}} : Set (Multiset ℕ)) := by
+  revert p; simp_rw [kleinFour, mem_mk, iff_def, forall_and, SetCoe.forall']; decide
+
+instance : kleinFour.Normal where
+  conj_mem := by simp [mem_kleinFour]
+
+lemma kleinFour_le_alternatingGroup : kleinFour ≤ alternatingGroup (Fin 4) := by
+  simp_rw [SetLike.le_def, mem_kleinFour, mem_alternatingGroup, sign_of_cycleType,
+    Set.mem_insert_iff, Set.mem_singleton_iff]
+  rintro p (hp | hp) <;> simp (disch := decide) [hp]
+
 /-- The normal closure of the 5-cycle `finRotate 5` within $A_5$ is the whole group. This will be
   used to show that the normal closure of any 5-cycle within $A_5$ is the whole group. -/
 theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
@@ -312,9 +367,44 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
       decide
   · contradiction
 
+lemma isSimpleGroup_of_card_eq_three (h3 : card α = 3) : IsSimpleGroup ↥(alternatingGroup α) := by
+  haveI : Nontrivial α := Fintype.one_lt_card_iff_nontrivial.1 (by rw [h3]; omega)
+  haveI : Fact (Nat.Prime 3) := ⟨by decide⟩
+  apply isSimpleGroup_of_prime_card (p := 3)
+  have := two_mul_card_alternatingGroup (α := α)
+  rw [card_perm, h3, show Nat.factorial 3 = 6 from rfl] at this
+  rw [Nat.card_eq_fintype_card]; omega
+
+instance isSimpleGroup_three : IsSimpleGroup ↥(alternatingGroup (Fin 3)) := by
+  apply isSimpleGroup_of_card_eq_three; simp
+
+set_option push_neg.use_distrib true in
+theorem not_isSimpleGroup_four : ¬IsSimpleGroup ↥(alternatingGroup (Fin 4)) := by
+  simp_rw [Subgroup.isSimpleGroup_iff, le_antisymm_iff]; push_neg; right
+  use kleinFour, kleinFour_le_alternatingGroup, inferInstance
+  constructor
+  case left =>
+    left; simp_rw [SetLike.not_le_iff_exists, mem_bot, ← mem_carrier, kleinFour]
+    use swap 0 1 * swap 2 3; decide
+  case right =>
+    right; simp_rw [SetLike.not_le_iff_exists, mem_alternatingGroup, ← mem_carrier, kleinFour]
+    use Fin.cycleRange 2; decide
+
+theorem not_isSimpleGroup_of_card_eq_four (h4 : card α = 4) :
+    ¬IsSimpleGroup ↥(alternatingGroup α) := by
+  intro hsa
+  obtain ⟨e⟩ := Fintype.truncEquivFin α
+  have me : ↥(alternatingGroup α) ≃* ↥(alternatingGroup (Fin (card α))) :=
+    e.permCongrMulEquiv.subgroupMap (alternatingGroup α) |>.trans <|
+      MulEquiv.subgroupCongr <| by
+        ext1 p
+        simp [e.permCongr.symm.surjective.exists,
+          show sign (e.permCongr.symm p) = sign p by simp, - permCongr_symm]
+  rw [h4] at me; exact absurd me.symm.isSimpleGroup not_isSimpleGroup_four
+
 /-- Shows that $A_5$ is simple by taking an arbitrary non-identity element and showing by casework
   on its cycle type that its normal closure is all of $A_5$. -/
-instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
+theorem isSimpleGroup_five : IsSimpleGroup ↥(alternatingGroup (Fin 5)) :=
   ⟨fun H => by
     intro Hn
     refine or_not.imp id fun Hb => ?_
@@ -361,6 +451,146 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
     · -- If `n = 5`, then `g` is itself a 5-cycle, conjugate to `finRotate 5`.
       refine (isConj_iff_cycleType_eq.2 ?_).normalClosure_eq_top_of normalClosure_finRotate_five
       rw [cycleType_of_card_le_mem_cycleType_add_two (by decide) ng, cycleType_finRotate]⟩
+
+open Fin MulAction in
+theorem isSimpleGroup_of_five_le {n} (h5 : 5 ≤ n) :
+    IsSimpleGroup ↥(alternatingGroup (Fin n)) := by
+  induction n, h5 using Nat.le_induction with
+  | base => exact isSimpleGroup_five
+  | succ m hmn hm =>
+    rw [Subgroup.isSimpleGroup_iff]; constructor
+    · rw [← nontrivial_iff_ne_bot]; apply nontrivial_of_three_le_card
+      rw [card_fin]; omega
+    intro H hHa hHn; rw [Classical.or_iff_not_imp_left, ← ne_eq]; intro hHb
+    suffices hH : H ⊓ stabilizer (Perm (Fin (m + 1))) (last m) ≠ ⊥ by
+      rw [← inf_of_le_left hHa, inf_assoc,
+        ← alternatingGroup.map_extendDomainHom_finSuccAboveEquiv] at hH
+      replace hm :=
+        (alternatingGroup (Fin m)).equivMapOfInjective
+          (extendDomainHom (finSuccAboveEquiv (last m))) (extendDomainHom_injective _)
+          |>.symm.isSimpleGroup
+      rw [Subgroup.isSimpleGroup_iff] at hm
+      replace hm :=
+        @hm.2 (H ⊓ (alternatingGroup (Fin m)).map (extendDomainHom (finSuccAboveEquiv (last m))))
+          inf_le_right (by
+            have := inf_subgroupOf_inf_normal_of_left
+              (A' := H) (A := alternatingGroup (Fin (m + 1)))
+              ((alternatingGroup (Fin m)).map (extendDomainHom (finSuccAboveEquiv (last m))))
+            rwa [inf_of_le_right
+              (alternatingGroup.map_extendDomainHom_finSuccAboveEquiv_le_alternatingGroup (last m))]
+              at this)
+      simp_rw [hH, false_or, inf_eq_right] at hm
+      replace hm : ∃ p ∈ H, p.IsThreeCycle := by
+        use Fin.cycleRange (⟨2, by omega⟩ : Fin m) |>.extendDomain (finSuccAboveEquiv (last m))
+        constructor
+        case left =>
+          refine hm (mem_map_of_mem _ (IsThreeCycle.mem_alternatingGroup ?_))
+          simp [IsThreeCycle, show NeZero m by constructor; omega]
+        case right => simp [IsThreeCycle, show NeZero m by constructor; omega]
+      obtain ⟨p, hpH, hp⟩ := hm
+      rw [← hHa.ge_iff_eq, ← subgroupOf_eq_top, eq_top_iff]
+      refine eq_top_iff.mp (hp.alternating_normalClosure (by rw [card_fin]; omega)) |>.trans ?_
+      rwa [← normalClosure_subset_iff, Set.singleton_subset_iff, SetLike.mem_coe, mem_subgroupOf]
+    rw [← nontrivial_iff_ne_bot, nontrivial_iff_exists_ne_one] at hHb ⊢
+    simp_rw [mem_inf, mem_stabilizer_iff, Perm.smul_def, and_assoc]
+    obtain ⟨σ, hσH, hσ⟩ := hHb
+    by_cases hσl : σ (last m) = last m
+    case pos => tauto
+    rw [← ne_eq] at hσl
+    suffices ∃ τ ∈ H, τ (last m) = σ (last m) ∧ τ ≠ σ by
+      obtain ⟨τ, hτH, hτσ, hnτσ⟩ := this
+      rw [eq_comm, apply_eq_iff_eq_symm_apply, ← Perm.inv_def, eq_comm, ← mul_apply] at hτσ
+      rw [ne_eq, eq_comm, ← inv_mul_eq_one, ← ne_eq] at hnτσ
+      use σ⁻¹ * τ, mul_mem (inv_mem hσH) hτH
+    have hσs : ¬σ.support ⊆ ({last m, σ (last m)} : Finset (Fin (m + 1))) := by
+      by_contra! hσs
+      replace hσs := congr_arg Finset.card <| subset_antisymm hσs
+        (by rwa [Finset.insert_subset_iff, Finset.singleton_subset_iff, apply_mem_support,
+          and_self, mem_support])
+      rw [Finset.card_pair hσl.symm, card_support_eq_two] at hσs
+      replace hσH := hHa hσH; rw [mem_alternatingGroup, hσs.sign_eq] at hσH
+      contradiction
+    simp_rw [Finset.not_subset, mem_support] at hσs; obtain ⟨j, hjσ, hjl⟩ := hσs
+    have hxy := calc (2 : ℕ)
+      _ = 6 - Multiset.card {last m, σ (last m), j, σ j} := rfl
+      _ ≤ card (Fin (m + 1)) - Multiset.card {last m, σ (last m), j, σ j} := by
+        rw [card_fin]; apply Nat.sub_le_sub_right; omega
+      _ ≤ card (Fin (m + 1)) - Finset.card {last m, σ (last m), j, σ j} := by
+        apply Nat.sub_le_sub_left
+        convert Multiset.toFinset_card_le {last m, σ (last m), j, σ j} using 2
+        simp
+      _ ≤ ({last m, σ (last m), j, σ j}ᶜ : Finset (Fin (m + 1))).card := by
+        rw [Finset.card_compl]
+    simp_rw [Finset.le_card_iff_exists_subset_card, Finset.card_eq_two] at hxy
+    obtain ⟨_, hxys, x, y, hnxy, rfl⟩ := hxy
+    have hcnd : (↑[j, x, y] : Cycle (Fin (m + 1))).Nodup := by
+      rw [Finset.subset_compl_comm, Finset.subset_iff] at hxys; simp at hxys ⊢; tauto
+    have hcnt : (↑[j, x, y] : Cycle (Fin (m + 1))).Nontrivial := by
+      rw [Cycle.nontrivial_coe_nodup_iff hcnd]; simp
+    let c := Cycle.formPerm (↑[j, x, y] : Cycle (Fin (m + 1))) hcnd
+    have ecs : c.support = {j, x, y} := by
+      rw [Cycle.support_formPerm _ hcnd hcnt, Cycle.coe_toFinset]; simp
+    have hcma : c ∈ alternatingGroup (Fin (m + 1)) := by
+      rw [mem_alternatingGroup, Cycle.isCycle_formPerm _ hcnd hcnt |>.sign,
+        Cycle.support_formPerm _ hcnd hcnt, Cycle.coe_toFinset, ← List.toFinset_eq hcnd]; rfl
+    use c * σ * c⁻¹
+    use by
+      simp_rw [normal_subgroupOf_iff_le_normalizer hHa, SetLike.le_def,
+        mem_alternatingGroup, mem_normalizer_iff] at hHn
+      specialize @hHn c hcma σ
+      exact hHn.mp hσH
+    use by
+      have hlnmcs : last m ∉ (c⁻¹).support := by
+        simp_rw [support_inv, ecs]
+        simp [Finset.subset_iff] at hjl hxys ⊢; tauto
+      have hσlnmcs : σ (last m) ∉ c.support := by
+        simp [ecs, Finset.subset_iff] at hjl hxys ⊢; tauto
+      simp [not_mem_support.mp hlnmcs, not_mem_support.mp hσlnmcs]
+    rw [DFunLike.ne_iff]
+    use j
+    have ecij : c⁻¹ j = y := by
+      simp_rw [c, ← Cycle.formPerm_reverse, Cycle.reverse_coe,
+        show [j, x, y].reverse = [y, x, j] from rfl,
+        Cycle.formPerm_apply_mem_eq_next (↑[y, x, j])
+          (Cycle.nodup_reverse_iff.mpr hcnd) j (by simp)]
+      simp only [Cycle.next, Cycle.ofList, Quot.hrecOn, Quot.recOn, Quot.rec]
+      apply List.next_getLast_cons <;> [simp; skip; rfl; skip] <;>
+        simp [Finset.subset_iff] at hxys ⊢ <;> tauto
+    simp_rw [Perm.mul_apply, ecij]
+    by_cases hσy : σ y ∈ c.support
+    case neg =>
+      rw [not_mem_support.mp hσy, σ.injective.ne_iff]
+      simp [Finset.subset_iff] at hxys; tauto
+    case pos =>
+      intro ecσy; rw [← apply_mem_support, ecσy, ecs] at hσy
+      revert hσy; simp [Finset.subset_iff] at hxys ⊢; tauto
+
+theorem isSimpleGroup_of_five_le_card (h5 : 5 ≤ card α) : IsSimpleGroup ↥(alternatingGroup α) := by
+  haveI : IsSimpleGroup ↥(alternatingGroup (Fin (card α))) := isSimpleGroup_of_five_le h5
+  obtain ⟨e⟩ := Fintype.truncEquivFin α
+  have me : ↥(alternatingGroup α) ≃* ↥(alternatingGroup (Fin (card α))) :=
+    e.permCongrMulEquiv.subgroupMap (alternatingGroup α) |>.trans <|
+      MulEquiv.subgroupCongr <| by
+        ext1 p
+        simp [e.permCongr.symm.surjective.exists,
+          show sign (e.permCongr.symm p) = sign p by simp, - permCongr_symm]
+  exact me.isSimpleGroup
+
+instance isSimpleGroup_add_five (n : ℕ) : IsSimpleGroup ↥(alternatingGroup (Fin (n + 5))) :=
+  isSimpleGroup_of_five_le (Nat.le_add_left 5 n)
+
+theorem isSimpleGroup_iff_card_eq_three_or_card_ge_five :
+    IsSimpleGroup ↥(alternatingGroup α) ↔ card α = 3 ∨ 5 ≤ card α := by
+  by_cases h5 : 5 ≤ card α
+  case pos =>
+    simp [isSimpleGroup_of_five_le_card h5, h5]
+  by_cases h2 : card α ≤ 2
+  case pos =>
+    simp [Subgroup.isSimpleGroup_iff, eq_bot_of_card_le_two h2,
+      show card α ≠ 3 ∧ card α < 5 by omega]
+  obtain (h3 | h4) : card α = 3 ∨ card α = 4 := by omega
+  · simp [isSimpleGroup_of_card_eq_three h3, h3]
+  · simp [not_isSimpleGroup_of_card_eq_four h4, show card α ≠ 3 ∧ card α < 5 by omega]
 
 end alternatingGroup
 
