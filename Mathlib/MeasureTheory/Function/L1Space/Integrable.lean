@@ -178,9 +178,26 @@ theorem integrable_add_measure {f : α → β} :
   ⟨fun h => ⟨h.left_of_add_measure, h.right_of_add_measure⟩, fun h => h.1.add_measure h.2⟩
 
 @[simp]
-theorem integrable_zero_measure {_ : MeasurableSpace α} {f : α → β} :
+theorem integrable_zero_measure {f : α → β} :
     Integrable f (0 : Measure α) :=
   ⟨aestronglyMeasurable_zero_measure f, hasFiniteIntegral_zero_measure f⟩
+
+/-- In a measurable space with measurable singletons, every function is integrable with respect to
+a Dirac measure.
+See `integrable_dirac'` for a version which requires `f` to be strongly measurable but does not
+need singletons to be measurable. -/
+@[fun_prop]
+lemma integrable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} :
+    Integrable f (Measure.dirac a) :=
+  ⟨aestronglyMeasurable_dirac, by simp [HasFiniteIntegral]⟩
+
+/-- Every strongly measurable function is integrable with respect to a Dirac measure.
+See `integrable_dirac` for a version which requires that singletons are measurable sets but has no
+hypothesis on `f`. -/
+@[fun_prop]
+lemma integrable_dirac' {a : α} {f : α → β} (hf : StronglyMeasurable f) :
+    Integrable f (Measure.dirac a) :=
+  ⟨hf.aestronglyMeasurable, by simp [HasFiniteIntegral, lintegral_dirac' _ hf.enorm]⟩
 
 theorem integrable_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → β} {μ : ι → Measure α}
     {s : Finset ι} : Integrable f (∑ i ∈ s, μ i) ↔ ∀ i ∈ s, Integrable f (μ i) := by
@@ -516,9 +533,9 @@ theorem Integrable.measure_norm_ge_lt_top {f : α → β} (hf : Integrable f μ)
   refine (meas_ge_le_mul_pow_eLpNorm μ one_ne_zero ENNReal.one_ne_top hf.1 ?_).trans_lt ?_
   · simpa only [Ne, ENNReal.ofReal_eq_zero, not_le] using hε
   apply ENNReal.mul_lt_top
-  · simpa only [ENNReal.one_toReal, ENNReal.rpow_one, ENNReal.inv_lt_top, ENNReal.ofReal_pos]
+  · simpa only [ENNReal.toReal_one, ENNReal.rpow_one, ENNReal.inv_lt_top, ENNReal.ofReal_pos]
       using hε
-  · simpa only [ENNReal.one_toReal, ENNReal.rpow_one] using
+  · simpa only [ENNReal.toReal_one, ENNReal.rpow_one] using
       (memLp_one_iff_integrable.2 hf).eLpNorm_lt_top
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
@@ -731,7 +748,7 @@ noncomputable def withDensitySMulLI {f : α → ℝ≥0} (f_meas : Measurable f)
   norm_map' := by
     intro u
     simp only [eLpNorm, LinearMap.coe_mk, AddHom.coe_mk, Lp.norm_toLp,
-      one_ne_zero, ENNReal.one_ne_top, ENNReal.one_toReal, if_false, eLpNorm', ENNReal.rpow_one,
+      one_ne_zero, ENNReal.one_ne_top, ENNReal.toReal_one, if_false, eLpNorm', ENNReal.rpow_one,
       _root_.div_one, Lp.norm_def]
     rw [lintegral_withDensity_eq_lintegral_mul_non_measurable _ f_meas.coe_nnreal_ennreal
         (Filter.Eventually.of_forall fun x => ENNReal.coe_lt_top)]
@@ -984,7 +1001,7 @@ section restrict
 
 variable {E : Type*} [NormedAddCommGroup E] {f : α → E}
 
-/-- One should usually use `MeasureTheory.Integrable.IntegrableOn` instead. -/
+/-- One should usually use `MeasureTheory.Integrable.integrableOn` instead. -/
 lemma Integrable.restrict (hf : Integrable f μ) {s : Set α} : Integrable f (μ.restrict s) :=
   hf.mono_measure Measure.restrict_le_self
 

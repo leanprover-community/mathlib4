@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison, Chris Hughes, Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Lattice
+import Mathlib.LinearAlgebra.Basis.Prod
 import Mathlib.LinearAlgebra.Dimension.Free
+import Mathlib.LinearAlgebra.TensorProduct.Basis
 
 /-!
 # Rank of various constructions
@@ -420,9 +422,6 @@ theorem Submodule.finrank_map_le
 theorem Submodule.finrank_mono {s t : Submodule R M} [Module.Finite R t] (hst : s ≤ t) :
     finrank R s ≤ finrank R t :=
   Cardinal.toNat_le_toNat (Submodule.rank_mono hst) (rank_lt_aleph0 R ↥t)
-
-@[deprecated (since := "2024-09-30")]
-alias Submodule.finrank_le_finrank_of_le := Submodule.finrank_mono
 
 end
 

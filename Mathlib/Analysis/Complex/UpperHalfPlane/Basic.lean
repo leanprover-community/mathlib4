@@ -385,7 +385,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 
       (g • · : ℍ → ℍ) =
         (w +ᵥ ·) ∘ (ModularGroup.S • · : ℍ → ℍ) ∘ (v +ᵥ · : ℍ → ℍ) ∘ (u • · : ℍ → ℍ) := by
   have h_denom := denom_ne_zero g
-  induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h
+  induction g using Matrix.SpecialLinearGroup.fin_two_induction with | _ a b c d h => ?_
   replace hc : c ≠ 0 := by simpa using hc
   refine ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, ?_⟩
   ext1 ⟨z, hz⟩; ext1
@@ -430,7 +430,7 @@ theorem det_coe {g : SL(2, ℤ)} : det (Units.val <| Subtype.val <| coe g) = 1 :
 @[deprecated (since := "2024-11-19")] alias det_coe' := det_coe
 
 lemma coe_one : coe 1 = 1 := by
-  simp only [coe, _root_.map_one]
+  simp only [coe, map_one]
 
 instance SLOnGLPos : SMul SL(2, ℤ) GL(2, ℝ)⁺ :=
   ⟨fun s g => s * g⟩

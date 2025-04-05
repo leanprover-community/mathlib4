@@ -5,7 +5,6 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.Algebra.Regular.Basic
 import Mathlib.Data.Nat.Choose.Sum
 
 /-!
@@ -69,7 +68,6 @@ def lsum {R A M : Type*} [Semiring R] [Semiring A] [AddCommMonoid M] [Module R A
   toFun p := p.sum (f · ·)
   map_add' p q := sum_add_index p q _ (fun n => (f n).map_zero) fun n _ _ => (f n).map_add _ _
   map_smul' c p := by
-    dsimp only
     rw [sum_eq_of_subset (f · ·) (fun n => (f n).map_zero) (support_smul c p)]
     simp only [sum_def, Finset.smul_sum, coeff_smul, LinearMap.map_smul, RingHom.id_apply]
 
