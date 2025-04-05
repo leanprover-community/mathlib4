@@ -151,9 +151,9 @@ theorem Submodule.exists_smul_not_mem_of_rank_lt {N : Submodule R M}
     intro e
     rw [← rank_quotient_add_rank N, e, zero_add] at h
     exact h.ne rfl
-  rw [ne_eq, rank_eq_zero_iff, (Submodule.Quotient.mk_surjective N).forall] at this
+  rw [ne_eq, rank_eq_zero_iff, (Submodule.mkQ_surjective N).forall] at this
   push_neg at this
-  simp_rw [← N.mkQ_apply, ← map_smul, N.mkQ_apply, ne_eq, Submodule.Quotient.mk_eq_zero] at this
+  simp_rw [← map_smul, ne_eq, Submodule.mkQ_eq_zero] at this
   exact this
 
 open Cardinal Basis Submodule Function Set LinearMap
@@ -244,6 +244,6 @@ lemma Submodule.exists_of_finrank_lt (N : Submodule R M) (h : finrank R N < finr
   refine ⟨v, fun r hr ↦ mt ?_ hr⟩
   have := linearIndependent_iff.mp hs' (Finsupp.single ⟨_, hv⟩ r)
   rwa [Finsupp.linearCombination_single, Finsupp.single_eq_zero, ← LinearMap.map_smul,
-    Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero] at this
+    Submodule.mkQ_eq_zero] at this
 
 end
