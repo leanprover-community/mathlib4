@@ -10,10 +10,8 @@ import Mathlib.Topology.Spectral.Prespectral
 # Spectral spaces
 
 A topological space is spectral if it is T0, compact, sober, quasi-separated, and its compact open
-subsets form an open basis. Prime spectrums of commutative semirings are spectral spaces.
+subsets form an open basis. Prime spectra of commutative semirings are spectral spaces.
 -/
-
-open TopologicalSpace Topology
 
 variable (α : Type*) [TopologicalSpace α]
 

@@ -16,7 +16,7 @@ import Mathlib.RingTheory.Spectrum.Maximal.Localization
 import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.Constructible
 import Mathlib.Topology.KrullDimension
-import Mathlib.Topology.Spectral.SpectralSpace
+import Mathlib.Topology.Spectral.Spectral
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring
