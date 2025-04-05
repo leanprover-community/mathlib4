@@ -12,7 +12,5 @@ import Mathlib.Algebra.Group.UniqueProds.Basic
 
 assert_not_exists StarModule
 
-open Finset
-
 instance {σ : Type*} : TwoUniqueSums (FreeAbelianGroup σ) :=
   (FreeAbelianGroup.equivFinsupp σ).twoUniqueSums_iff.mpr inferInstance
