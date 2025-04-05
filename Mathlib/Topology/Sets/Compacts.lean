@@ -450,6 +450,12 @@ instance : Bot (CompactOpens α) where bot := ⟨⊥, isOpen_empty⟩
 instance : SemilatticeSup (CompactOpens α) := SetLike.coe_injective.semilatticeSup _ coe_sup
 instance : OrderBot (CompactOpens α) := OrderBot.lift ((↑) : _ → Set α) (fun _ _ => id) coe_bot
 
+@[simp]
+lemma coe_finsetSup {ι : Type*} {f : ι → CompactOpens α} {s : Finset ι} :
+    (↑(s.sup f) : Set α) = ⋃ i ∈ s, f i := by
+  classical
+  induction s using Finset.induction_on <;> simp [*]
+
 instance : Inhabited (CompactOpens α) :=
   ⟨⊥⟩
 

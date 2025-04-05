@@ -626,10 +626,6 @@ theorem mono {r p : α → α → Prop} (hrp : ∀ a b, r a b → p a b) (h : Eq
   | symm a b _ ih => exact EqvGen.symm _ _ ih
   | trans a b c _ _ hab hbc => exact EqvGen.trans _ _ _ hab hbc
 
-@[deprecated (since := "2024-09-01")] alias _root_.EqvGen.is_equivalence := is_equivalence
-@[deprecated (since := "2024-09-01")] alias _root_.EqvGen.Setoid := setoid
-@[deprecated (since := "2024-09-01")] alias _root_.EqvGen.mono := mono
-
 end EqvGen
 
 /-- The join of a relation on a single type is a new relation for which

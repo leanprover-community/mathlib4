@@ -72,7 +72,7 @@ lemma piecewise_cases {i} (p : π i → Prop) (hf : p (f i)) (hg : p (g i)) :
   by_cases hi : i ∈ s <;> simpa [hi]
 
 lemma piecewise_singleton [DecidableEq ι] (i : ι) : piecewise {i} f g = update g i (f i) := by
-  rw [← insert_emptyc_eq, piecewise_insert, piecewise_empty]
+  rw [← insert_empty_eq, piecewise_insert, piecewise_empty]
 
 lemma piecewise_piecewise_of_subset_left {s t : Finset ι} [∀ i, Decidable (i ∈ s)]
     [∀ i, Decidable (i ∈ t)] (h : s ⊆ t) (f₁ f₂ g : ∀ a, π a) :

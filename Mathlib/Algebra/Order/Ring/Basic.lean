@@ -3,7 +3,6 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
-import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Parity
@@ -42,7 +41,7 @@ end MonoidHom
 
 section OrderedSemiring
 
-variable [OrderedSemiring R] {a b x y : R} {n : ℕ}
+variable [Semiring R] [PartialOrder R] [IsOrderedRing R] {a b x y : R} {n : ℕ}
 
 theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y ^ n ≤ (x + y) ^ n := by
   rcases Nat.exists_eq_add_one_of_ne_zero hn with ⟨k, rfl⟩
@@ -65,11 +64,6 @@ theorem pow_add_pow_le (hx : 0 ≤ x) (hy : 0 ≤ y) (hn : n ≠ 0) : x ^ n + y 
 
 attribute [bound] pow_le_one₀ one_le_pow₀
 
-@[deprecated (since := "2024-09-28")] alias mul_le_one := mul_le_one₀
-@[deprecated (since := "2024-09-28")] alias pow_le_one := pow_le_one₀
-@[deprecated (since := "2024-09-28")] alias pow_lt_one := pow_lt_one₀
-@[deprecated (since := "2024-09-28")] alias one_le_pow_of_one_le := one_le_pow₀
-@[deprecated (since := "2024-09-28")] alias one_lt_pow := one_lt_pow₀
 @[deprecated (since := "2024-10-04")] alias pow_right_mono := pow_right_mono₀
 @[deprecated (since := "2024-10-04")] alias pow_le_pow_right := pow_le_pow_right₀
 
@@ -94,7 +88,7 @@ abbrev OrderedRing.toStrictOrderedRing (α : Type*)
 
 section StrictOrderedSemiring
 
-variable [StrictOrderedSemiring R] {a x y : R} {n m : ℕ}
+variable [Semiring R] [PartialOrder R] [IsStrictOrderedRing R] {a x y : R} {n m : ℕ}
 
 @[deprecated pow_lt_pow_left₀ (since := "2024-11-13")]
 theorem pow_lt_pow_left (h : x < y) (hx : 0 ≤ x) : ∀ {n : ℕ}, n ≠ 0 → x ^ n < y ^ n :=
@@ -140,14 +134,14 @@ theorem pow_lt_self_of_lt_one (h₀ : 0 < a) (h₁ : a < 1) (hn : 1 < n) : a ^ n
 end StrictOrderedSemiring
 
 section StrictOrderedRing
-variable [StrictOrderedRing R] {a : R}
+variable [Ring R] [PartialOrder R] [IsStrictOrderedRing R] {a : R}
 
 lemma sq_pos_of_neg (ha : a < 0) : 0 < a ^ 2 := by rw [sq]; exact mul_pos_of_neg_of_neg ha ha
 
 end StrictOrderedRing
 
 section LinearOrderedSemiring
-variable [LinearOrderedSemiring R] {a b : R} {m n : ℕ}
+variable [Semiring R] [LinearOrder R] [IsStrictOrderedRing R] {a b : R} {m n : ℕ}
 
 @[deprecated pow_le_pow_iff_left₀ (since := "2024-11-12")]
 lemma pow_le_pow_iff_left (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n ≤ b ^ n ↔ a ≤ b :=

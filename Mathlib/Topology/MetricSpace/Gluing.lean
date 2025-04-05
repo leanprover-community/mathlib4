@@ -557,7 +557,6 @@ def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σn, X n
     let m := max x.1 y.1
     have hx : x.1 ≤ m := le_max_left _ _
     have hy : y.1 ≤ m := le_max_right _ _
-    unfold dist; simp only
     rw [inductiveLimitDist_eq_dist I x y m hx hy, inductiveLimitDist_eq_dist I y x m hy hx,
       dist_comm]
   dist_triangle x y z := by

@@ -3,7 +3,7 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.WSeq.Basic
+import Mathlib.Data.WSeq.Relation
 
 /-!
 # Parallel computation
@@ -179,7 +179,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
     ∀ C, a ∈ C → ∀ (l : List (Computation α)) (S),
       corec parallel.aux1 (l, S) = C → ∃ c, (c ∈ l ∨ c ∈ S) ∧ a ∈ c from
     let ⟨c, h1, h2⟩ := this _ h [] S rfl
-    ⟨c, h1.resolve_left <| List.not_mem_nil _, h2⟩
+    ⟨c, h1.resolve_left <| List.not_mem_nil, h2⟩
   let F : List (Computation α) → α ⊕ (List (Computation α)) → Prop := by
     intro l a
     rcases a with a | l'
@@ -190,7 +190,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
     induction' l with c l IH <;> simp only [parallel.aux2, List.foldr]
     · intro a h
       rcases h with ⟨c, hn, _⟩
-      exact False.elim <| List.not_mem_nil _ hn
+      exact False.elim <| List.not_mem_nil hn
     · simp only [parallel.aux2] at IH
       -- Porting note: `revert IH` & `intro IH` are required.
       revert IH
@@ -202,7 +202,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
       · rcases IH with ⟨c', cl, ac⟩
         exact ⟨c', List.Mem.tail _ cl, ac⟩
       · induction' h : destruct c with a c' <;> simp only [rmap]
-        · refine ⟨c, List.mem_cons_self _ _, ?_⟩
+        · refine ⟨c, List.mem_cons_self, ?_⟩
           rw [destruct_eq_pure h]
           apply ret_mem
         · intro a' h
@@ -210,7 +210,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
           simp? at dm says simp only [List.mem_cons] at dm
           rcases dm with e | dl
           · rw [e] at ad
-            refine ⟨c, List.mem_cons_self _ _, ?_⟩
+            refine ⟨c, List.mem_cons_self, ?_⟩
             rw [destruct_eq_think h]
             exact think_mem ad
           · obtain ⟨d, dm⟩ := IH a' ⟨d, dl, ad⟩

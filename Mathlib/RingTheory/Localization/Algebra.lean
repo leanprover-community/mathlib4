@@ -98,7 +98,8 @@ namespace IsLocalization
 
 instance isLocalization_algebraMapSubmonoid_map_algHom (f : A →ₐ[R] B) :
     IsLocalization ((algebraMapSubmonoid A M).map f.toRingHom) Bₚ := by
-  erw [algebraMapSubmonoid_map_eq M f]
+  rw [AlgHom.toRingHom_eq_coe, ← Submonoid.map_coe_toMonoidHom, AlgHom.toRingHom_toMonoidHom,
+    Submonoid.map_coe_toMonoidHom, algebraMapSubmonoid_map_eq M f]
   infer_instance
 
 /-- An algebra map `A →ₐ[R] B` induces an algebra map on localizations `Aₚ →ₐ[Rₚ] Bₚ`. -/
