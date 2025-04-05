@@ -150,25 +150,10 @@ A dependent recursion principle for nonempty lists. Useful for dealing with
 operations like `List.head` which are not defined on the empty list.
 Same as `List.recNeNil`, with a more convenient argument order.
 -/
-@[elab_as_elim]
+@[elab_as_elim, simp]
 abbrev recOnNeNil {motive : (l : List α) → l ≠ [] → Sort*} (l : List α) (h : l ≠ [])
     (singleton : ∀ x, motive [x] (cons_ne_nil x []))
     (cons : ∀ x xs h, motive xs h → motive (x :: xs) (cons_ne_nil x xs)) :
     motive l h := recNeNil singleton cons l h
-
-@[simp]
-theorem recOnNeNil_singleton {motive : (l : List α) → l ≠ [] → Sort*} (x : α)
-    (singleton : ∀ x, motive [x] (cons_ne_nil x []))
-    (cons : ∀ x xs h, motive xs h → motive (x :: xs) (cons_ne_nil x xs)) :
-    recOnNeNil [x] (cons_ne_nil x []) singleton cons = singleton x := rfl
-
-@[simp]
-theorem recOnNeNil_cons {motive : (l : List α) → l ≠ [] → Sort*} (x : α) (xs : List α) (h : xs ≠ [])
-    (singleton : ∀ x, motive [x] (cons_ne_nil x []))
-    (cons : ∀ x xs h, motive xs h → motive (x :: xs) (cons_ne_nil x xs)) :
-    recOnNeNil (x :: xs) (cons_ne_nil x xs) singleton cons =
-      cons x xs h (recOnNeNil xs h singleton cons) :=
-  match xs with
-  | _ :: _ => rfl
 
 end List
