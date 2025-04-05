@@ -49,7 +49,7 @@ open Lean Elab Parser Tactic Meta
 `@[autoinduction]` attribute. In addition, it uses the arguments specified at that point to
 try to provide a value for the respective argument.
 -/
-syntax (name := autoinductiontac) "autoinduction" term
+syntax (name := autoinductiontac) "autoinduction" elimTarget+
   (" generalizing" (ppSpace colGt term:max)+)? (inductionAlts)? : tactic
 
 
@@ -61,30 +61,52 @@ def _root_.Lean.Syntax.Term.asTacticSeq {m} [Monad m] [MonadRef m] [MonadQuotati
   | `(by $tseq) => return tseq
   | `(term|$t) => `(tacticSeq|exact $t)
 
+
 /--
 TODO:
 - write doc
 - look into using Aesop.CtorNames
 -/
-def AutoIndPrinciple.generateMatchBranches {m} [Monad m] [MonadControlT MetaM m]
-    [MonadLiftT MetaM m] [MonadRef m] [MonadQuotation m] (_a : AutoIndPrinciple)
-    (blacklist : NameSet):
+def generateMatchBranches {m} [Monad m] [MonadControlT MetaM m]
+    [MonadLiftT MetaM m] [MonadRef m] [MonadQuotation m] (elimName : Name) (elimInfo : ElimInfo)
+    (cfg : AutoIndPrincipleConfig) (userAlts : NameSet):
     m (Array (TSyntax ``inductionAlt)) := do
-  forallTelescope _a.target (fun ctors _ => do
-    let mut alts : Array (TSyntax ``inductionAlt) := #[]
+  let elimInfo ← getElimInfo elimName
+  let info ← liftMetaM <| getConstInfo elimName
+  let val ← info.getConstantVal?.getDM <| liftMetaM <|
+    throwError "Unsupported declaration type."
+  forallTelescope val.type (fun ctors _ => do
+    let mut altSyntax : Array (TSyntax ``inductionAlt) := #[]
+    let validAlts : NameSet := elimInfo.altsInfo.foldl (fun s altInfo =>
+      if altInfo.provesMotive then s.insert altInfo.name else s) {}
     for ctorFVar in ctors do
       let ctorId : FVarId := ctorFVar.fvarId!
       let ctorName : Name ← ctorId.getUserName
+      if (userAlts.contains ctorName) then
+        -- makes sure we're not doubling a user-provided alternative
+        continue
+      unless validAlts.contains ctorName do
+        -- checks the argument is not
+        -- - the motive argument
+        -- - a target argument
+        -- and is
+        -- - an explicit argument
+        -- - an argument eliminating into motive
+        continue
       let ctorType : Expr ← ctorId.getType
-      if let .some discharger := _a.dischargers.find? ctorName then
-        if !(blacklist.contains ctorName) then
-          let dischargerSeq ← discharger.asTacticSeq
-          let argnames ← forallTelescope ctorType (fun args _ => do
-            args.mapM (fun e => Lean.mkIdent <$> e.fvarId!.getUserName))
-          let alt ← `( inductionAlt| | @$(Lean.mkIdent ctorName) $[$argnames]* => $dischargerSeq)
-            -- try to make this fail graciously?
-          alts := alts.push alt
-    return alts)
+      if let .some discharger := cfg.dischargers.find? ctorName then
+        let dischargerSeq ← discharger.asTacticSeq
+        let argnames ← forallTelescope ctorType (fun args _ => do
+          args.filterMapM (fun e => do
+            let decl ← e.fvarId!.getDecl
+            if decl.binderInfo.isExplicit then -- discard alll implicit arguments
+              return Option.some <| Lean.mkIdent (decl.userName)
+            else
+              return .none))
+        let alt ← `( inductionAlt| | @$(Lean.mkIdent ctorName) $[$argnames]* => $dischargerSeq)
+          -- try to make this fail graciously?
+        altSyntax := altSyntax.push alt
+    return altSyntax)
 
 def getBranchNames (alts: Array (TSyntax ``inductionAlt)) : TacticM (NameSet) :=
   alts.foldlM (fun s => fun
@@ -98,52 +120,43 @@ def getBranchNames (alts: Array (TSyntax ``inductionAlt)) : TacticM (NameSet) :=
   | _ => throwUnsupportedSyntax) NameSet.empty
 
 
-def AutoIndPrinciple.matches (_a : AutoIndPrinciple) (_e : Expr) : MetaM Bool :=
-  pure true
-
-
 @[tactic autoinductiontac]
 def autoInductOn : Tactic
-| `(tactic|autoinduction $t $[generalizing $[$g]*]? $[with $[$alts?]*]?) => withMainContext do
-  let e ← elabTerm t none
-  let ty ← inferType e
-  logInfo s!"Found expression {e} with inferred type {ty}."
-  let ps ← getAutoIndPrinciples
-  let mut principle? : Option AutoIndPrinciple := .none
-
-  -- find an induction principle
-  for principle' in ps do
-    if (← principle'.matches ty) then
-      principle? := .some principle'
-      break
-
-  if let .some principle := principle? then
-    logInfo s!"applying {principle.name}"
+| `(tactic|autoinduction $[$t]* $[generalizing $[$g]*]? $[with $[$alts?]*]?) => withMainContext do
+  let (targets, _toTag) ← elabElimTargets t
+  -- let principle? ← getAutoIndPrinciple? targets
+  -- unless principle?.isSome do
+  if let .some (principleName,cfg) ← getAutoIndPrinciple? targets then
+    let elimInfo ← withMainContext <| getElimInfo principleName
+    logInfo s!"applying {principleName}"
     if let .some alts := alts? then do
       let blacklist ← getBranchNames alts
-      let autoAlts ← principle.generateMatchBranches blacklist
+      let autoAlts ← generateMatchBranches principleName elimInfo cfg blacklist
       let inductiontac ←
-        `(tactic| induction $t:term $[generalizing $g*]?
-          with $[$(alts.append autoAlts)]*)
-      -- now, run the tactic
-      sorry
+        `(tactic| induction $[$t],* using $(Lean.mkIdent principleName)
+          $[generalizing $g*]? with $[$(alts.append autoAlts)]*)
+      evalInduction inductiontac
     else do
-      let inductiontac ← `(tactic| induction $t:term $[generalizing $g*]?)
-      -- run the tactic
-      -- try running dischargers on the appropriate new goals
-      sorry
+      let mainGoal ← getMainGoal
+      let mainGoalName ← mainGoal.getTag
+      let inductiontac ← `(tactic| induction $[$t],* using $(Lean.mkIdent principleName)
+        $[generalizing $g*]?)
 
+      let fullNameCfg : NameMap Term :=
+        RBMap.fold (fun m n t => m.insert (mainGoalName ++ n) t) {} cfg.dischargers
 
-
+      evalInduction inductiontac
+      let goals ← getGoals
+      for goal in goals do
+        if let .some t := fullNameCfg.find? (← goal.getTag) then
+          goal.withContext do
+            focus <| evalTacticSeq (← `(tacticSeq| try $(← t.asTacticSeq)))
   else
     logInfo s!"no induction principle found"
 | _ => throwUnsupportedSyntax
 
 example : True := by
-  induction 3 with
-  | zero => ?zero'
-  | succ n => ?succ'
-  · trivial
+
   · trivial
   -- trivial
 

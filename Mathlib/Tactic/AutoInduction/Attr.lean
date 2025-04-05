@@ -1,6 +1,8 @@
 import Mathlib.Init
+import Lean.Meta.Tactic.ElimInfo
 
 set_option autoImplicit false
+set_option linter.unusedVariables false -- TODO : remove
 
 open Lean Elab
 
@@ -14,60 +16,106 @@ def Lean.ConstantInfo.getConstantVal? (info : ConstantInfo) : Option ConstantVal
 
 structure AutoIndPrincipleConfig where
   dischargers : NameMap Term := default
+deriving Inhabited
 
 instance : Repr AutoIndPrincipleConfig where
   reprPrec x := reprPrec x.dischargers.toList
 
-structure AutoIndPrinciple extends AutoIndPrincipleConfig where
-  name : Name
-  target : Expr
-  deriving Repr
+-- no need to store the type, we can ask that from the environment when we need it
+structure AutoIndPrinciple extends AutoIndPrincipleConfig, Meta.CustomEliminator where
+  induction := true
+  hinduction : induction = true := by rfl -- for sanity
+deriving Repr
+
+instance : Inhabited AutoIndPrinciple where
+  default := {(default : Meta.CustomEliminator) with induction := true}
 
 instance : ToString AutoIndPrinciple where
   toString := toString ∘ repr
 
+structure AutoIndPrinciples where
+  map : SMap (Array Name) (Name × AutoIndPrincipleConfig) := {}
+deriving Inhabited, Repr
+
+
 initialize autoIndPrincipleExt :
-    SimplePersistentEnvExtension AutoIndPrinciple (Array AutoIndPrinciple) ←
-  registerSimplePersistentEnvExtension {
-    addImportedFn := Array.flatten
-    addEntryFn := Array.push
+    SimpleScopedEnvExtension AutoIndPrinciple AutoIndPrinciples ←
+  registerSimpleScopedEnvExtension {
+    name := `autoIndPrincipleExt
+    initial := {}
+    addEntry principles principle := {
+      map := principles.map.insert
+        principle.typeNames ⟨principle.elimName, principle.toAutoIndPrincipleConfig⟩}
+    finalizeImport := fun { map := map } => { map := map.switch }
   }
 
 def addAutoIndPrinciple {m : Type → Type} [MonadEnv m] (a : AutoIndPrinciple) : m Unit :=
   modifyEnv (autoIndPrincipleExt.addEntry · a)
 
-def getAutoIndPrinciples {m : Type → Type} [MonadEnv m] [Monad m] : m (Array AutoIndPrinciple) := do
-  let env ← getEnv
-  return autoIndPrincipleExt.getState env
+open Parser Meta
 
-open Parser
-
---syntax autoIndPrinciplesRest := (ppSpace "(" ident " := " term ")")*
 syntax autoIndPrinciplesRest := (ppSpace "(" ident " := " term ")" )*
 
 syntax (name := autoinduction) "autoinduction" autoIndPrinciplesRest : attr
 
 open Command
 
-def elabAutoIndPrinciplesRest : Syntax → CommandElabM AutoIndPrincipleConfig
-  | `(autoIndPrinciplesRest| $[($ids := $ts)]*) =>
-      pure ⟨.fromArray (Array.zip (ids.map fun t ↦ t.getId) ts) _⟩
+def elabAutoIndPrinciplesRest (elimInfo : ElimInfo) : Syntax → CommandElabM AutoIndPrincipleConfig
+  | `(autoIndPrinciplesRest| $[($ids := $ts)]*) => do
+
+    -- let allowedAlts : NameSet := .fromArray
+    --   (elimInfo.altsInfo.filter (·.provesMotive) |>.map (·.name)) _
+    let mut allowedAlts : NameSet := {}
+    for alt in elimInfo.altsInfo do
+      if alt.provesMotive then do
+        allowedAlts := allowedAlts.insert alt.name
+        -- if let .some fullname := alt.declName? then
+        --   allowedAlts := allowedAlts.insert fullname
+
+    let mut userArgs : NameMap Term := {}
+    for (name, t) in (ids.map (·.getId)).zip ts do
+      unless allowedAlts.contains name do
+        throwError s!"{name} is not the name of an induction alternative"
+      userArgs := userArgs.insert name t
+
+    return ⟨userArgs⟩
+  | _ => throwUnsupportedSyntax
+
+def elabAutoIndPrincipleAttr (elimName : Name) (stx: Syntax) (_kind : AttributeKind) : MetaM Unit:=
+  match stx with
+  | `(attr | autoinduction $cfgStx) => do
+    let elimInfo ← getElimInfo elimName
+    let info ← getConstInfo elimName
+    let customElim ← mkCustomEliminator elimName (induction := true)
+    unless info.getConstantVal?.isSome do
+      throwError "Unsupported declaration type."
+    -- TODO : Check the right names are used
+    let cfg ← liftCommandElabM <| elabAutoIndPrinciplesRest elimInfo cfgStx
+    modifyEnv (autoIndPrincipleExt.addEntry · {customElim, cfg with induction := true})
+    -- sorry
   | _ => throwUnsupportedSyntax
 
 initialize Lean.registerBuiltinAttribute {
   name := `autoinduction
   descr := "Add autoinduction principle."
-  add := fun decl stx _attrKind => do
-    match stx with
-    | `(attr| autoinduction $c:autoIndPrinciplesRest) =>
-      let cfg ← liftCommandElabM <| elabAutoIndPrinciplesRest c
-      let info ← getConstInfo decl
-      let val ← info.getConstantVal?.getDM <| throwError "Unsupported declaration type."
-      let indPrinciple : AutoIndPrinciple :=
-        { cfg with name := decl, target := val.type }
-      addAutoIndPrinciple indPrinciple
-    | _ => throwUnsupportedSyntax
-}
+  add declName stx _attrKind := do
+    -- inspired by how the `induction_eliminator` attribute is defined
+    discard <| elabAutoIndPrincipleAttr declName stx _attrKind |>.run {} {}
+  }
 
-elab "#autoindprinciples" : command => do
-  logInfo s!"{← getAutoIndPrinciples}"
+def getAutoIndPrinciples : CoreM AutoIndPrinciples := do
+  return autoIndPrincipleExt.getState (← getEnv)
+
+def getAutoIndPrinciple? (targets : Array Expr) :
+    MetaM (Option (Name × AutoIndPrincipleConfig)) := do
+  let mut key := #[]
+  for target in targets do
+    let targetType := (← instantiateMVars (← inferType target)).headBeta
+    let .const declName .. := targetType.getAppFn | return none
+    key := key.push declName
+  return (← getAutoIndPrinciples).map.find? key
+  -- let mut key : Array _:= #[]
+
+  -- sorry
+-- elab "#autoindprinciples" : command => do
+--   logInfo s!"{← getAutoIndPrinciples}"
