@@ -73,7 +73,7 @@ instance : OverClass X X := ⟨𝟙 _⟩
 instance : IsIso (S ↘ S) := inferInstanceAs (IsIso (𝟙 S))
 
 -- This cannot be a simp lemma be cause it loops with `comp_over`.
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 instance (priority := 900) [CanonicallyOverClass X Y] [OverClass Y S] : OverClass X S :=
   ⟨X ↘ Y ≫ Y ↘ S⟩
 

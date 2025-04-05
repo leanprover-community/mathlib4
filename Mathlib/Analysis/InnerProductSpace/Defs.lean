@@ -141,7 +141,6 @@ attribute [class] PreInnerProductSpace.Core
 
 /-- A structure requiring that a scalar product is positive definite. Some theorems that
 require this assumptions are put under section `InnerProductSpace.Core`. -/
--- @[nolint HasNonemptyInstance] porting note: I don't think we have this linter anymore
 structure InnerProductSpace.Core (𝕜 : Type*) (F : Type*) [RCLike 𝕜] [AddCommGroup F]
   [Module 𝕜 F] extends PreInnerProductSpace.Core 𝕜 F where
   /-- The inner product is positive definite. -/

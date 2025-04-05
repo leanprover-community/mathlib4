@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
 import Mathlib.Data.Sum.Order
-import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.WellFounded
@@ -55,9 +54,8 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
   /-- The order embedding is an initial segment -/
   mem_range_of_rel' : ∀ a b, s b (toRelEmbedding a) → b ∈ Set.range toRelEmbedding
 
--- Porting note: Deleted `scoped[InitialSeg]`
 @[inherit_doc]
-infixl:25 " ≼i " => InitialSeg
+scoped[InitialSeg] infixl:25 " ≼i " => InitialSeg
 
 /-- An `InitialSeg` between the `<` relations of two types. -/
 notation:25 α:24 " ≤i " β:25 => @InitialSeg α β (· < ·) (· < ·)
@@ -108,9 +106,6 @@ theorem coe_coe_fn (f : r ≼i s) : ((f : r ↪r s) : α → β) = f :=
 theorem mem_range_of_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) → b ∈ Set.range f :=
   f.mem_range_of_rel' _ _
 
-@[deprecated mem_range_of_rel (since := "2024-09-21")]
-alias init := mem_range_of_rel
-
 theorem map_rel_iff {a b : α} (f : r ≼i s) : s (f a) (f b) ↔ r a b :=
   f.map_rel_iff'
 
@@ -122,9 +117,6 @@ theorem exists_eq_iff_rel (f : r ≼i s) {a : α} {b : β} : s b (f a) ↔ ∃ a
     rcases f.mem_range_of_rel h with ⟨a', rfl⟩
     exact ⟨a', rfl, f.map_rel_iff.1 h⟩,
     fun ⟨_, e, h⟩ => e ▸ f.map_rel_iff.2 h⟩
-
-@[deprecated exists_eq_iff_rel (since := "2024-09-21")]
-alias init_iff := exists_eq_iff_rel
 
 /-- A relation isomorphism is an initial segment embedding -/
 @[simps!]
@@ -258,12 +250,13 @@ structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β �
   /-- The range of the order embedding is the set of elements `b` such that `s b top` -/
   mem_range_iff_rel' : ∀ b, b ∈ Set.range toRelEmbedding ↔ s b top
 
--- Porting note: deleted `scoped[InitialSeg]`
 @[inherit_doc]
-infixl:25 " ≺i " => PrincipalSeg
+scoped[InitialSeg] infixl:25 " ≺i " => PrincipalSeg
 
 /-- A `PrincipalSeg` between the `<` relations of two types. -/
 notation:25 α:24 " <i " β:25 => @PrincipalSeg α β (· < ·) (· < ·)
+
+open scoped InitialSeg
 
 namespace PrincipalSeg
 
@@ -312,9 +305,6 @@ theorem mem_range_of_rel [IsTrans β s] (f : r ≺i s) {a : α} {b : β} (h : s 
     b ∈ Set.range f :=
   f.mem_range_of_rel_top <| _root_.trans h <| f.lt_top _
 
-@[deprecated mem_range_of_rel (since := "2024-09-21")]
-alias init := mem_range_of_rel
-
 theorem surjOn (f : r ≺i s) : Set.SurjOn f Set.univ { b | s b f.top } := by
   intro b h
   simpa using mem_range_of_rel_top _ h
@@ -336,9 +326,6 @@ alias _root_.InitialSeg.ltOrEq_apply_left := InitialSeg.eq_principalSeg
 theorem exists_eq_iff_rel [IsTrans β s] (f : r ≺i s) {a : α} {b : β} :
     s b (f a) ↔ ∃ a', f a' = b ∧ r a' a :=
   @InitialSeg.exists_eq_iff_rel α β r s f a b
-
-@[deprecated exists_eq_iff_rel (since := "2024-09-21")]
-alias init_iff := exists_eq_iff_rel
 
 /-- A principal segment is the same as a non-surjective initial segment. -/
 noncomputable def _root_.InitialSeg.toPrincipalSeg [IsWellOrder β s] (f : r ≼i s)

@@ -3,7 +3,7 @@ Copyright (c) 2024 Jz Pan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
-import Mathlib.Algebra.CharP.ExpChar
+import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Algebra.CharP.IntermediateField
 import Mathlib.FieldTheory.PurelyInseparable.Basic
 
@@ -315,10 +315,14 @@ of elements of `E` which `F`-linearly spans `E`, then `{ u_i ^ (q ^ n) }` also `
 theorem Field.span_map_pow_expChar_pow_eq_top_of_isSeparable [Algebra.IsSeparable F E]
     (h : Submodule.span F (Set.range v) = ⊤) :
     Submodule.span F (Set.range (v · ^ q ^ n)) = ⊤ := by
-  erw [← Algebra.top_toSubmodule, ← top_toSubalgebra, ← adjoin_univ,
+  rw [← Algebra.top_toSubmodule, ← top_toSubalgebra, ← adjoin_univ,
     adjoin_eq_adjoin_pow_expChar_pow_of_isSeparable' F E _ q n,
     adjoin_algebraic_toSubalgebra fun x _ ↦ Algebra.IsAlgebraic.isAlgebraic x,
-    Set.image_univ, Algebra.adjoin_eq_span, (powMonoidHom _).mrange.closure_eq]
+    Set.image_univ, Algebra.adjoin_eq_span]
+  have := (powMonoidHom (α := E) (q ^ n)).mrange.closure_eq
+  simp only [MonoidHom.mrange, powMonoidHom, MonoidHom.coe_mk, OneHom.coe_mk,
+    Submonoid.coe_copy] at this
+  rw [this]
   refine (Submodule.span_mono <| Set.range_comp_subset_range _ _).antisymm (Submodule.span_le.2 ?_)
   rw [Set.range_comp, ← Set.image_univ]
   haveI := expChar_of_injective_algebraMap (algebraMap F E).injective q
@@ -394,7 +398,8 @@ theorem perfectField_of_perfectClosure_eq_bot [h : PerfectField E] (eq : perfect
     obtain ⟨y, h⟩ := surjective_frobenius E p (algebraMap F E x)
     have : y ∈ perfectClosure F E := ⟨1, x, by rw [← h, pow_one, frobenius_def, ringExpChar.eq F p]⟩
     obtain ⟨z, rfl⟩ := eq ▸ this
-    exact ⟨z, (algebraMap F E).injective (by erw [RingHom.map_frobenius, h])⟩
+    simp only [Algebra.ofId, AlgHom.coe_ringHom_mk] at h
+    exact ⟨z, (algebraMap F E).injective (by rw [RingHom.map_frobenius]; rw [h])⟩
   exact PerfectRing.toPerfectField F p
 
 /-- If `E / F` is a separable extension, `E` is perfect, then `F` is also prefect. -/

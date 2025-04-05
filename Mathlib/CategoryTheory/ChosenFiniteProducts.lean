@@ -193,25 +193,29 @@ lemma associator_hom_fst (X Y Z : C) :
 @[reassoc (attr := simp)]
 lemma associator_hom_snd_fst (X Y Z : C) :
     (α_ X Y Z).hom ≫ snd _ _ ≫ fst _ _ = fst _ _ ≫ snd _ _  := by
-  erw [lift_snd_assoc, lift_fst]
+  erw [lift_snd_assoc]
+  erw [lift_fst]
   rfl
 
 @[reassoc (attr := simp)]
 lemma associator_hom_snd_snd (X Y Z : C) :
     (α_ X Y Z).hom ≫ snd _ _ ≫ snd _ _ = snd _ _  := by
-  erw [lift_snd_assoc, lift_snd]
+  erw [lift_snd_assoc]
+  erw [lift_snd]
   rfl
 
 @[reassoc (attr := simp)]
 lemma associator_inv_fst (X Y Z : C) :
     (α_ X Y Z).inv ≫ fst _ _ ≫ fst _ _ = fst _ _ := by
-  erw [lift_fst_assoc, lift_fst]
+  erw [lift_fst_assoc]
+  erw [lift_fst]
   rfl
 
 @[reassoc (attr := simp)]
 lemma associator_inv_fst_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ fst _ _ ≫ snd _ _ = snd _ _ ≫ fst _ _ := by
-  erw [lift_fst_assoc, lift_snd]
+  erw [lift_fst_assoc]
+  erw [lift_snd]
   rfl
 
 @[reassoc (attr := simp)]

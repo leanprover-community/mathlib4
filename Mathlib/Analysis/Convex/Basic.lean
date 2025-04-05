@@ -599,11 +599,9 @@ theorem stdSimplex_eq_inter : stdSimplex 𝕜 ι = (⋂ x, { f | 0 ≤ f x }) �
 theorem convex_stdSimplex : Convex 𝕜 (stdSimplex 𝕜 ι) := by
   refine fun f hf g hg a b ha hb hab => ⟨fun x => ?_, ?_⟩
   · apply_rules [add_nonneg, mul_nonneg, hf.1, hg.1]
-  · erw [Finset.sum_add_distrib]
-    simp only [Pi.smul_apply] -- Porting note: `erw` failed to rewrite with `← Finset.smul_sum`
-    rw [← Finset.smul_sum, ← Finset.smul_sum, hf.2, hg.2, smul_eq_mul,
+  · simp_rw [Pi.add_apply, Pi.smul_apply]
+    rwa [Finset.sum_add_distrib, ← Finset.smul_sum, ← Finset.smul_sum, hf.2, hg.2, smul_eq_mul,
       smul_eq_mul, mul_one, mul_one]
-    exact hab
 
 @[nontriviality] lemma stdSimplex_of_subsingleton [Subsingleton 𝕜] : stdSimplex 𝕜 ι = univ :=
   eq_univ_of_forall fun _ ↦ ⟨fun _ ↦ (Subsingleton.elim _ _).le, Subsingleton.elim _ _⟩
@@ -650,7 +648,7 @@ section OrderedRing
 variable (𝕜) [OrderedRing 𝕜]
 
 /-- The standard one-dimensional simplex in `Fin 2 → 𝕜` is equivalent to the unit interval. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
   toFun f := ⟨f.1 0, f.2.1 _, f.2.2 ▸
     Finset.single_le_sum (fun i _ ↦ f.2.1 i) (Finset.mem_univ _)⟩
