@@ -390,7 +390,9 @@ lemma isOrthogonal_short_and_long {i : ι} (hi : P.root i ∉ allRoots P) :
   · apply isOrthogonal_short_and_long_aux rfl ha hb hc hd he hf <;> simp
   all_goals assumption
 
-@[simp] lemma span_eq_top [Invertible (2 : R)] [P.IsIrreducible] :
+variable [Invertible (2 : R)] [P.IsIrreducible]
+
+@[simp] lemma span_eq_top :
     span R {longRoot P, shortRoot P} = ⊤ := by
   have := P.span_root_image_eq_top_of_forall_orthogonal {long P, short P} (by simp)
   rw [show P.root '' {long P, short P} = {longRoot P, shortRoot P} from by aesop] at this
@@ -398,6 +400,35 @@ lemma isOrthogonal_short_and_long {i : ι} (hi : P.root i ∉ allRoots P) :
   replace hk : P.root k ∉ allRoots P := fun contra ↦ hk <| allRoots_subset_span P contra
   have aux := isOrthogonal_short_and_long P hk
   rcases hij with rfl | rfl <;> tauto
+
+lemma mem_allRoots (i : ι) :
+    P.root i ∈ allRoots P := by
+  by_contra hi
+  obtain ⟨h₁, h₂⟩ := isOrthogonal_short_and_long P hi
+  have : Fintype ι := Fintype.ofFinite ι
+  have B := (P.posRootForm ℤ).toInvariantForm
+  rw [B.isOrthogonal_iff_pairingIn_eq_zero, ← B.apply_root_root_zero_iff] at h₁ h₂
+  have key : B.form (P.root i) = 0 := by
+    ext x
+    have hx : x ∈ span R {longRoot P, shortRoot P} := by simp
+    simp only [LinearMap.zero_apply]
+    induction hx using Submodule.span_induction with
+    | zero => simp
+    | mem => aesop
+    | add => aesop
+    | smul => aesop
+  simpa using LinearMap.congr_fun key (P.root i)
+
+lemma setOf_long_short_eq_univ :
+    letI _i := P.indexNeg
+    { long P, -long P,
+      short P, -short P,
+      shortAddLong P, -shortAddLong P,
+      twoShortAddLong P, -twoShortAddLong P,
+      threeShortAddLong P, -threeShortAddLong P,
+      threeShortAddTwoLong P, -threeShortAddTwoLong P } = univ :=
+  eq_univ_iff_forall.mpr fun i ↦ by simpa only [mem_insert_iff, mem_singleton_iff,
+    EmbeddingLike.apply_eq_iff_eq, root_eq_neg_iff'] using mem_allRoots P i
 
 end EmbeddedG2
 
