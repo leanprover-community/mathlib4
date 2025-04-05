@@ -88,8 +88,6 @@ proof_wanted MvPolynomial.fin_ringKrullDim_eq_add_of_isNoetherianRing
 
 section Zero
 
-instance [Subsingleton R] : Ring.KrullDimLE 0 R := ⟨krullDim_eq_bot.trans_le bot_le⟩
-
 lemma Ring.krullDimLE_zero_iff : Ring.KrullDimLE 0 R ↔ ∀ I : Ideal R, I.IsPrime → I.IsMaximal := by
   simp_rw [Ring.KrullDimLE, Order.krullDimLE_iff, Nat.cast_zero,
     Order.krullDim_nonpos_iff_forall_isMax,

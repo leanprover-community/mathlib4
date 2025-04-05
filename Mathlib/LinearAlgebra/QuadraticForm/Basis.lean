@@ -40,7 +40,7 @@ theorem toQuadraticMap_toBilin (Q : QuadraticMap R M N) (bm : Basis ι R M) :
   ext x
   rw [← bm.linearCombination_repr x, LinearMap.BilinMap.toQuadraticMap_apply,
       Finsupp.linearCombination_apply, Finsupp.sum]
-  simp_rw [LinearMap.map_sum₂, map_sum, LinearMap.map_smul₂, _root_.map_smul, toBilin_apply,
+  simp_rw [LinearMap.map_sum₂, map_sum, LinearMap.map_smul₂, map_smul, toBilin_apply,
     smul_ite, smul_zero, ← Finset.sum_product', ← Finset.diag_union_offDiag,
     Finset.sum_union (Finset.disjoint_diag_offDiag _), Finset.sum_diag, if_true]
   rw [Finset.sum_ite_of_false, QuadraticMap.map_sum, ← Finset.sum_filter]

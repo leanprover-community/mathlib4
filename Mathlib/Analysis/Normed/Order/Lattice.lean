@@ -106,7 +106,7 @@ normed lattice ordered group.
 -/
 instance (priority := 100) OrderDual.instNormedLatticeAddCommGroup :
     NormedLatticeAddCommGroup αᵒᵈ :=
-  { OrderDual.orderedAddCommGroup, OrderDual.normedAddCommGroup, OrderDual.instLattice α with
+  { OrderDual.isOrderedAddMonoid, OrderDual.normedAddCommGroup, OrderDual.instLattice α with
     solid := dual_solid (α := α) }
 
 theorem norm_abs_eq_norm (a : α) : ‖|a|‖ = ‖a‖ :=

@@ -5,12 +5,12 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Ring.NonZeroDivisors
 import Mathlib.Data.Set.Semiring
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Multiplication and division of submodules of an algebra.
@@ -183,7 +183,7 @@ theorem smul_iSup {ι : Sort*} {I : Submodule R A} {t : ι → Submodule R M} :
 
 theorem iSup_smul {ι : Sort*} {t : ι → Submodule R A} {N : Submodule R M} :
     (⨆ i, t i) • N = ⨆ i, t i • N :=
-  le_antisymm (smul_le.mpr fun t ht s hs ↦ iSup_induction _ (C := (· • s ∈ _)) ht
+  le_antisymm (smul_le.mpr fun t ht s hs ↦ iSup_induction _ (motive := (· • s ∈ _)) ht
     (fun i t ht ↦ mem_iSup_of_mem i <| smul_mem_smul ht hs)
     (by simp_rw [zero_smul]; apply zero_mem) fun x y ↦ by simp_rw [add_smul]; apply add_mem)
     (iSup_le fun i ↦ Submodule.smul_mono_left <| le_iSup _ i)
