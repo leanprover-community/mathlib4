@@ -206,6 +206,7 @@ def coeAddMonoidHom : I →+ R where
   map_zero' := rfl
   map_add' _ _ := rfl
 
+/-- If `I` is a two-sided ideal of `R`, then `{op x | x ∈ I}` is a two-sided ideal in `Rᵐᵒᵖ`. -/
 @[simps]
 def op (I : TwoSidedIdeal R) : TwoSidedIdeal Rᵐᵒᵖ where
   ringCon := I.ringCon.op
@@ -213,6 +214,7 @@ def op (I : TwoSidedIdeal R) : TwoSidedIdeal Rᵐᵒᵖ where
 lemma op_mem (I : TwoSidedIdeal R) (x : Rᵐᵒᵖ) : x ∈ I.op ↔ x.unop ∈ I := by
   constructor <;> simpa [mem_iff, I.ringCon.op_iff] using I.ringCon.symm
 
+/-- If `I` is a two-sided ideal of `Rᵐᵒᵖ`, then `{x.unop | x ∈ I}` is a two-sided ideal in `R`. -/
 @[simps]
 def unop (I : TwoSidedIdeal Rᵐᵒᵖ) : TwoSidedIdeal R where
   ringCon := I.ringCon.unop
