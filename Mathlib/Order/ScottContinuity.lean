@@ -183,23 +183,12 @@ section SemilatticeSup
 
 section
 
-
 variable [Preorder α] [Preorder β]
 
 lemma prod_all_dom2 {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
-    (Prod.fst '' d) ×ˢ (Prod.snd '' d) ⊆ lowerClosure d := by
-  intro p hp
-  rw [lowerClosure]
-  rw [LowerSet.coe_mk]
-  rw [mem_setOf_eq]
+    (Prod.fst '' d) ×ˢ (Prod.snd '' d) ⊆ lowerClosure d :=
+  fun p hp => DirectedOn.prod_all_dominated hd p hp
 
-  obtain ⟨b,⟨hb1,hb2⟩⟩ := DirectedOn.prod_all_dominated hd p hp
-  use b
-  constructor
-  · exact hb1
-  ·  constructor
-     · exact hb2.1
-     · exact hb2.2
 end
 
 variable (β : Type*)
