@@ -726,6 +726,7 @@ lemma IsSeparable.of_equiv_equiv {x : B₁} (h : IsSeparable A₁ x) : IsSeparab
   letI := e₁.toRingHom.toAlgebra
   letI : Algebra A₂ B₁ :=
     { (algebraMap A₁ B₁).comp e₁.symm.toRingHom with
+        algebraMap := (algebraMap A₁ B₁).comp e₁.symm.toRingHom
         smul := fun a b ↦ ((algebraMap A₁ B₁).comp e₁.symm.toRingHom a) * b
         commutes' := fun r x ↦ (Algebra.commutes) (e₁.symm.toRingHom r) x
         smul_def' := fun _ _ ↦ rfl }

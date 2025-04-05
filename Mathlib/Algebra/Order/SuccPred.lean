@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Order.SuccPred.Limit
+import Mathlib.Order.SuccPred.WithBot
 
 /-!
 # Interaction between successors and arithmetic
@@ -186,6 +187,16 @@ theorem IsSuccLimit.natCast_lt [AddMonoidWithOne α] [SuccAddOrder α] [Canonica
 theorem not_isSuccLimit_natCast [AddMonoidWithOne α] [SuccAddOrder α] [CanonicallyOrderedAdd α]
     (n : ℕ) : ¬ IsSuccLimit (n : α) :=
   fun h ↦ (h.natCast_lt n).false
+
+@[simp]
+theorem succ_eq_zero [AddZeroClass α] [CanonicallyOrderedAdd α] [One α] [NoMaxOrder α]
+    [SuccAddOrder α] {a : WithBot α} : WithBot.succ a = 0 ↔ a = ⊥ := by
+  cases a
+  · simp [bot_eq_zero]
+  · rename_i a
+    simp only [WithBot.succ_coe, WithBot.coe_ne_bot, iff_false]
+    by_contra h
+    simpa [h] using max_of_succ_le (a := a)
 
 end PartialOrder
 

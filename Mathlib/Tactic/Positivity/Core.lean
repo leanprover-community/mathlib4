@@ -63,7 +63,7 @@ def Strictness.toNonzero {e} : Strictness zα pα e → Option Q($e ≠ 0)
 /-- An extension for `positivity`. -/
 structure PositivityExt where
   /-- Attempts to prove an expression `e : α` is `>0`, `≥0`, or `≠0`. -/
-  eval {u} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α)) (e : Q($α)) :
+  eval {u : Level} {α : Q(Type u)} (zα : Q(Zero $α)) (pα : Q(PartialOrder $α)) (e : Q($α)) :
     MetaM (Strictness zα pα e)
 
 /-- Read a `positivity` extension from a declaration of the right type. -/
@@ -120,25 +120,25 @@ variable {A : Type*} {e : A}
 lemma lt_of_le_of_ne' {a b : A} [PartialOrder A] :
     (a : A) ≤ b → b ≠ a → a < b := fun h₁ h₂ => lt_of_le_of_ne h₁ h₂.symm
 
-lemma pos_of_isNat {n : ℕ} [OrderedSemiring A] [Nontrivial A]
+lemma pos_of_isNat {n : ℕ} [Semiring A] [PartialOrder A] [IsOrderedRing A] [Nontrivial A]
     (h : NormNum.IsNat e n) (w : Nat.ble 1 n = true) : 0 < (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
   apply Nat.cast_pos.2
   simpa using w
 
-lemma nonneg_of_isNat {n : ℕ} [OrderedSemiring A]
+lemma nonneg_of_isNat {n : ℕ} [Semiring A] [PartialOrder A] [IsOrderedRing A]
     (h : NormNum.IsNat e n) : 0 ≤ (e : A) := by
   rw [NormNum.IsNat.to_eq h rfl]
   exact Nat.cast_nonneg n
 
-lemma nz_of_isNegNat {n : ℕ} [StrictOrderedRing A]
+lemma nz_of_isNegNat {n : ℕ} [Ring A] [PartialOrder A] [IsStrictOrderedRing A]
     (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.ble 1 n = true) : (e : A) ≠ 0 := by
   rw [NormNum.IsInt.neg_to_eq h rfl]
   simp only [ne_eq, neg_eq_zero]
   apply ne_of_gt
   simpa using w
 
-lemma pos_of_isRat {n : ℤ} {d : ℕ} [LinearOrderedRing A] :
+lemma pos_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] [IsStrictOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (0 < n)) → ((0 : A) < (e : A))
   | ⟨inv, eq⟩, h => by
     have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
@@ -146,11 +146,11 @@ lemma pos_of_isRat {n : ℤ} {d : ℕ} [LinearOrderedRing A] :
     rw [eq]
     exact mul_pos pos_n pos_invOf_d
 
-lemma nonneg_of_isRat {n : ℤ} {d : ℕ} [LinearOrderedRing A] :
+lemma nonneg_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] :
     (NormNum.IsRat e n d) → (decide (n = 0)) → (0 ≤ (e : A))
   | ⟨inv, eq⟩, h => by rw [eq, of_decide_eq_true h]; simp
 
-lemma nz_of_isRat {n : ℤ} {d : ℕ} [LinearOrderedRing A] :
+lemma nz_of_isRat {n : ℤ} {d : ℕ} [Ring A] [LinearOrder A] [IsStrictOrderedRing A] :
     (NormNum.IsRat e n d) → (decide (n < 0)) → ((e : A) ≠ 0)
   | ⟨inv, eq⟩, h => by
     have pos_invOf_d : (0 < ⅟ (d : A)) := pos_invOf_of_invertible_cast d
@@ -182,25 +182,33 @@ def normNumPositivity (e : Q($α)) : MetaM (Strictness zα pα e) := catchNone d
   | .isBool .. => failure
   | .isNat _ lit p =>
     if 0 < lit.natLit! then
-      let _a ← synthInstanceQ q(OrderedSemiring $α)
+      let _a ← synthInstanceQ q(Semiring $α)
+      let _a ← synthInstanceQ q(PartialOrder $α)
+      let _a ← synthInstanceQ q(IsOrderedRing $α)
       let _a ← synthInstanceQ q(Nontrivial $α)
       assumeInstancesCommute
       have p : Q(NormNum.IsNat $e $lit) := p
       haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
-      pure (.positive q(@pos_of_isNat $α _ _ _ _ $p $p'))
+      pure (.positive q(pos_of_isNat (A := $α) $p $p'))
     else
-      let _a ← synthInstanceQ q(OrderedSemiring $α)
+      let _a ← synthInstanceQ q(Semiring $α)
+      let _a ← synthInstanceQ q(PartialOrder $α)
+      let _a ← synthInstanceQ q(IsOrderedRing $α)
       assumeInstancesCommute
       have p : Q(NormNum.IsNat $e $lit) := p
       pure (.nonnegative q(nonneg_of_isNat $p))
   | .isNegNat _ lit p =>
-    let _a ← synthInstanceQ q(StrictOrderedRing $α)
+    let _a ← synthInstanceQ q(Ring $α)
+    let _a ← synthInstanceQ q(PartialOrder $α)
+    let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
     assumeInstancesCommute
     have p : Q(NormNum.IsInt $e (Int.negOfNat $lit)) := p
     haveI' p' : Nat.ble 1 $lit =Q true := ⟨⟩
     pure (.nonzero q(nz_of_isNegNat $p $p'))
   | .isRat _i q n d p =>
-    let _a ← synthInstanceQ q(LinearOrderedRing $α)
+    let _a ← synthInstanceQ q(Ring $α)
+    let _a ← synthInstanceQ q(LinearOrder $α)
+    let _a ← synthInstanceQ q(IsStrictOrderedRing $α)
     assumeInstancesCommute
     have p : Q(NormNum.IsRat $e $n $d) := p
     if 0 < q then

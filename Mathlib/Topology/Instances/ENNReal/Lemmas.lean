@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Data.ENNReal.Operations
+import Mathlib.Data.ENNReal.BigOperators
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Instances.NNReal.Lemmas
@@ -466,31 +466,6 @@ theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0∞} (h : ∀ a < 1, a * x ≤ 
   rw [one_mul] at this
   exact le_of_tendsto this (eventually_nhdsWithin_iff.2 <| Eventually.of_forall h)
 
-@[deprecated mul_iInf' (since := "2024-09-12")]
-theorem iInf_mul_left' {ι} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} (h : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0)
-    (h0 : a = 0 → Nonempty ι) : ⨅ i, a * f i = a * ⨅ i, f i := .symm <| mul_iInf' h h0
-
-@[deprecated mul_iInf (since := "2024-09-12")]
-theorem iInf_mul_left {ι} [Nonempty ι] {f : ι → ℝ≥0∞} {a : ℝ≥0∞}
-    (h : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) : ⨅ i, a * f i = a * ⨅ i, f i :=
-  .symm <| mul_iInf h
-
-@[deprecated iInf_mul' (since := "2024-09-12")]
-theorem iInf_mul_right' {ι} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} (h : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0)
-    (h0 : a = 0 → Nonempty ι) : ⨅ i, f i * a = (⨅ i, f i) * a := .symm <| iInf_mul' h h0
-
-@[deprecated iInf_mul (since := "2024-09-12")]
-theorem iInf_mul_right {ι} [Nonempty ι] {f : ι → ℝ≥0∞} {a : ℝ≥0∞}
-    (h : a = ∞ → ⨅ i, f i = 0 → ∃ i, f i = 0) : ⨅ i, f i * a = (⨅ i, f i) * a := .symm <| iInf_mul h
-
-@[deprecated inv_iInf (since := "2024-09-12")]
-theorem inv_map_iInf {ι : Sort*} {x : ι → ℝ≥0∞} : (iInf x)⁻¹ = ⨆ i, (x i)⁻¹ :=
-  OrderIso.invENNReal.map_iInf x
-
-@[deprecated inv_iSup (since := "2024-09-12")]
-theorem inv_map_iSup {ι : Sort*} {x : ι → ℝ≥0∞} : (iSup x)⁻¹ = ⨅ i, (x i)⁻¹ :=
-  OrderIso.invENNReal.map_iSup x
-
 theorem inv_limsup {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
     (limsup x l)⁻¹ = liminf (fun i => (x i)⁻¹) l :=
   OrderIso.invENNReal.limsup_apply
@@ -537,20 +512,6 @@ theorem exists_countable_dense_no_zero_top :
     ∃ s : Set ℝ≥0∞, s.Countable ∧ Dense s ∧ (∀ x, IsBot x → x ∉ s) ∧ ∀ x, IsTop x → x ∉ s :=
     exists_countable_dense_no_bot_top ℝ≥0∞
   exact ⟨s, s_count, s_dense, fun h => hs.1 0 (by simp) h, fun h => hs.2 ∞ (by simp) h⟩
-
-@[deprecated ofReal_iInf (since := "2024-09-12")]
-theorem ofReal_cinfi (f : α → ℝ) [Nonempty α] :
-    ENNReal.ofReal (⨅ i, f i) = ⨅ i, ENNReal.ofReal (f i) := by
-  by_cases hf : BddBelow (range f)
-  · exact
-      Monotone.map_ciInf_of_continuousAt ENNReal.continuous_ofReal.continuousAt
-        (fun i j hij => ENNReal.ofReal_le_ofReal hij) hf
-  · symm
-    rw [Real.iInf_of_not_bddBelow hf, ENNReal.ofReal_zero, ← ENNReal.bot_eq_zero, iInf_eq_bot]
-    obtain ⟨y, hy_mem, hy_neg⟩ := not_bddBelow_iff.mp hf 0
-    obtain ⟨i, rfl⟩ := mem_range.mpr hy_mem
-    refine fun x hx => ⟨i, ?_⟩
-    rwa [ENNReal.ofReal_of_nonpos hy_neg.le]
 
 end TopologicalSpace
 
@@ -905,7 +866,7 @@ theorem tsum_eq_toNNReal_tsum {f : β → ℝ≥0} : ∑' b, f b = (∑' b, (f b
   · rw [← ENNReal.coe_tsum h, ENNReal.toNNReal_coe]
   · have A := tsum_eq_zero_of_not_summable h
     simp only [← ENNReal.tsum_coe_ne_top_iff_summable, Classical.not_not] at h
-    simp only [h, ENNReal.top_toNNReal, A]
+    simp only [h, ENNReal.toNNReal_top, A]
 
 /-- Comparison test of convergence of `ℝ≥0`-valued series. -/
 theorem exists_le_hasSum_of_le {f g : β → ℝ≥0} {r : ℝ≥0} (hgf : ∀ b, g b ≤ f b) (hfr : HasSum f r) :

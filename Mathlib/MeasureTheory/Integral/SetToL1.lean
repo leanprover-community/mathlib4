@@ -191,7 +191,7 @@ theorem eq_zero_of_measure_zero {β : Type*} [NormedAddCommGroup β] {T : Set α
     T s = 0 := by
   refine norm_eq_zero.mp ?_
   refine ((hT.2 s hs (by simp [hs_zero])).trans (le_of_eq ?_)).antisymm (norm_nonneg _)
-  rw [hs_zero, ENNReal.zero_toReal, mul_zero]
+  rw [hs_zero, ENNReal.toReal_zero, mul_zero]
 
 theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {_ : MeasurableSpace α}
     (hT : DominatedFinMeasAdditive (0 : Measure α) T C) {s : Set α} (hs : MeasurableSet s) :
@@ -1043,13 +1043,13 @@ theorem setToL1_mono_left' {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hTT' : ∀ s, MeasurableSet s → μ s < ∞ → ∀ x, T s x ≤ T' s x) (f : α →₁[μ] E) :
     setToL1 hT f ≤ setToL1 hT' f := by
   induction f using Lp.induction (hp_ne_top := one_ne_top) with
-  | @h_ind c s hs hμs =>
+  | @indicatorConst c s hs hμs =>
     rw [setToL1_simpleFunc_indicatorConst hT hs hμs, setToL1_simpleFunc_indicatorConst hT' hs hμs]
     exact hTT' s hs hμs c
-  | @h_add f g hf hg _ hf_le hg_le =>
+  | @add f g hf hg _ hf_le hg_le =>
     rw [(setToL1 hT).map_add, (setToL1 hT').map_add]
     exact add_le_add hf_le hg_le
-  | h_closed => exact isClosed_le (setToL1 hT).continuous (setToL1 hT').continuous
+  | isClosed => exact isClosed_le (setToL1 hT).continuous (setToL1 hT').continuous
 
 theorem setToL1_mono_left {T T' : Set α → E →L[ℝ] G''} {C C' : ℝ}
     (hT : DominatedFinMeasAdditive μ T C) (hT' : DominatedFinMeasAdditive μ T' C')

@@ -15,6 +15,12 @@ import Mathlib.Data.Nat.Choose.Sum
 
 This file contains the definitions of the real and complex exponential function.
 
+## Main definitions
+
+* `Complex.exp`: The complex exponential function, defined via its Taylor series
+
+* `Real.exp`: The real exponential function, defined as the real part of the complex exponential
+
 -/
 
 open CauSeq Finset IsAbsoluteValue
