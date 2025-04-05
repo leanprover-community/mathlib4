@@ -133,9 +133,7 @@ theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : 
 
 @[simp]
 lemma zeroLocus_nilradical : zeroLocus (nilradical R : Set R) = Set.univ := by
-  rw [Set.eq_univ_iff_forall]
-  intro x
-  simpa using nilradical_le_prime x.asIdeal
+  rw [nilradical, zeroLocus_radical, Ideal.zero_eq_bot, zeroLocus_bot]
 
 lemma zeroLocus_eq_univ_iff (s : Set R) :
     zeroLocus s = Set.univ ↔ s ⊆ nilradical R := by

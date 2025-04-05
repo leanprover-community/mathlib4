@@ -56,15 +56,15 @@ lemma PrimeSpectrum.isHomeomorph_comap (f : R →+* S) (H : ∀ (x : S), ∃ n >
     ⟨h1, (PrimeSpectrum.comap_quotientMk_bijective_of_le_nilradical _ hker).2.comp <|
       hint.specComap_surjective f.kerLift_injective⟩
   refine ⟨(PrimeSpectrum.comap f).continuous, ?_, h1, hbij.2⟩
-  · rw [PrimeSpectrum.isTopologicalBasis_basic_opens.isOpenMap_iff]
-    rintro - ⟨s, rfl⟩
-    obtain ⟨n, hn, r, hr⟩ := H s
-    have : (PrimeSpectrum.comap f) '' (PrimeSpectrum.basicOpen s) = PrimeSpectrum.basicOpen r := by
-      refine Set.preimage_injective.mpr hbij.2 ?_
-      rw [Set.preimage_image_eq _ hbij.1, ← PrimeSpectrum.basicOpen_pow _ n hn, ← hr]
-      rfl
-    rw [this]
-    exact PrimeSpectrum.isOpen_basicOpen
+  rw [PrimeSpectrum.isTopologicalBasis_basic_opens.isOpenMap_iff]
+  rintro - ⟨s, rfl⟩
+  obtain ⟨n, hn, r, hr⟩ := H s
+  have : (PrimeSpectrum.comap f) '' (PrimeSpectrum.basicOpen s) = PrimeSpectrum.basicOpen r := by
+    refine Set.preimage_injective.mpr hbij.2 ?_
+    rw [Set.preimage_image_eq _ hbij.1, ← PrimeSpectrum.basicOpen_pow _ n hn, ← hr]
+    rfl
+  rw [this]
+  exact PrimeSpectrum.isOpen_basicOpen
 
 variable {R S} in
 lemma PrimeSpectrum.isHomeomorph_comap_of_bijective {f : R →+* S} (hf : Function.Bijective f) :

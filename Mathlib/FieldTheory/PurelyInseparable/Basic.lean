@@ -599,7 +599,7 @@ open TensorProduct
 variable {k K R : Type*} [Field k] [Field K] [Algebra k K] [CommRing R] [Algebra k R]
 
 lemma IsPurelyInseparable.exists_pow_pow_mem_range_tensorProduct_of_expChar
-      [IsPurelyInseparable k K] (q : ℕ) [ExpChar k q] (x : R ⊗[k] K) :
+    [IsPurelyInseparable k K] (q : ℕ) [ExpChar k q] (x : R ⊗[k] K) :
     ∃ n > 0, x ^ q ^ n ∈ (algebraMap R (R ⊗[k] K)).range := by
   wlog hR : Nontrivial R
   · rw [not_nontrivial_iff_subsingleton] at hR
