@@ -29,7 +29,7 @@ theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
     (h : μ ∈ extremePoints ℝ≥0∞ {ν | MeasurePreserving f ν ν ∧ ν univ = c}) : Ergodic f μ := by
   have hf : MeasurePreserving f μ μ := h.1.1
   rcases eq_or_ne c 0 with rfl | hc₀
-  · convert Ergodic.zero_measure hf.measurable
+  · convert zero_measure hf.measurable
     rw [← measure_univ_eq_zero, h.1.2]
   · refine ⟨hf, ⟨?_⟩⟩
     have : IsFiniteMeasure μ := by
