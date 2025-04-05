@@ -464,8 +464,8 @@ protected theorem preimage_symm_preimage (e : M₁ ≃SL[σ₁₂] M₂) (s : Se
   e.symm.symm_preimage_preimage s
 
 lemma isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E₂]
-    [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [UniformAddGroup E₁]
-    [UniformAddGroup E₂] (e : E₁ ≃SL[σ₁₂] E₂) : IsUniformEmbedding e :=
+    [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂] [IsUniformAddGroup E₁]
+    [IsUniformAddGroup E₂] (e : E₁ ≃SL[σ₁₂] E₂) : IsUniformEmbedding e :=
   e.toLinearEquiv.toEquiv.isUniformEmbedding e.toContinuousLinearMap.uniformContinuous
     e.symm.toContinuousLinearMap.uniformContinuous
 
@@ -473,7 +473,7 @@ lemma isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁] [UniformSpace E
 
 protected theorem _root_.LinearEquiv.isUniformEmbedding {E₁ E₂ : Type*} [UniformSpace E₁]
     [UniformSpace E₂] [AddCommGroup E₁] [AddCommGroup E₂] [Module R₁ E₁] [Module R₂ E₂]
-    [UniformAddGroup E₁] [UniformAddGroup E₂] (e : E₁ ≃ₛₗ[σ₁₂] E₂)
+    [IsUniformAddGroup E₁] [IsUniformAddGroup E₂] (e : E₁ ≃ₛₗ[σ₁₂] E₂)
     (h₁ : Continuous e) (h₂ : Continuous e.symm) : IsUniformEmbedding e :=
   ContinuousLinearEquiv.isUniformEmbedding
     ({ e with
@@ -651,10 +651,10 @@ def skewProd (e : M ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) (f : M →L[R] M₄) 
     e.toLinearEquiv.skewProd e'.toLinearEquiv
       ↑f with
     continuous_toFun :=
-      (e.continuous_toFun.comp continuous_fst).prod_mk
+      (e.continuous_toFun.comp continuous_fst).prodMk
         ((e'.continuous_toFun.comp continuous_snd).add <| f.continuous.comp continuous_fst)
     continuous_invFun :=
-      (e.continuous_invFun.comp continuous_fst).prod_mk
+      (e.continuous_invFun.comp continuous_fst).prodMk
         (e'.continuous_invFun.comp <|
           continuous_snd.sub <| f.continuous.comp <| e.continuous_invFun.comp continuous_fst) }
 
@@ -866,7 +866,7 @@ variable (R M) in
 def _root_.Fin.consEquivL : (M 0 × Π i, M (Fin.succ i)) ≃L[R] (Π i, M i) where
   __ := Fin.consLinearEquiv R M
   continuous_toFun := continuous_id.fst.finCons continuous_id.snd
-  continuous_invFun := .prod_mk (continuous_apply 0) (by continuity)
+  continuous_invFun := .prodMk (continuous_apply 0) (by continuity)
 
 /-- `Fin.cons` in the codomain of continuous linear maps. -/
 abbrev _root_.ContinuousLinearMap.finCons

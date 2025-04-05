@@ -301,7 +301,7 @@ theorem sdiff_erase (h : a ∈ s) : s \ t.erase a = insert a (s \ t) := by
     union_comm]
 
 theorem sdiff_erase_self (ha : a ∈ s) : s \ s.erase a = {a} := by
-  rw [sdiff_erase ha, Finset.sdiff_self, insert_emptyc_eq]
+  rw [sdiff_erase ha, Finset.sdiff_self, insert_empty_eq]
 
 theorem erase_eq_empty_iff (s : Finset α) (a : α) : s.erase a = ∅ ↔ s = ∅ ∨ s = {a} := by
   rw [← sdiff_singleton_eq_erase, sdiff_eq_empty_iff_subset, subset_singleton_iff]
@@ -636,7 +636,7 @@ open Finset
 /-- The disjoint union of finsets is a sum -/
 def Finset.union (s t : Finset α) (h : Disjoint s t) :
     s ⊕ t ≃ (s ∪ t : Finset α) :=
-  Equiv.Set.ofEq (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
+  Equiv.setCongr (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
 
 @[simp]
 theorem Finset.union_symm_inl (h : Disjoint s t) (x : s) :

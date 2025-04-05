@@ -99,26 +99,6 @@ lemma size_positive' [Nonempty (Fin n)] : 0 < n :=
 protected theorem prop (a : Fin n) : a.val < n :=
   a.2
 
-section Order
-variable {a b c : Fin n}
-
-protected lemma lt_of_le_of_lt : a ≤ b → b < c → a < c := Nat.lt_of_le_of_lt
-protected lemma lt_of_lt_of_le : a < b → b ≤ c → a < c := Nat.lt_of_lt_of_le
-protected lemma le_rfl : a ≤ a := Nat.le_refl _
-protected lemma lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b := by
-  rw [← val_ne_iff]; exact Nat.lt_iff_le_and_ne
-protected lemma lt_or_lt_of_ne (h : a ≠ b) : a < b ∨ b < a := Nat.lt_or_lt_of_ne <| val_ne_iff.2 h
-protected lemma lt_or_le (a b : Fin n) : a < b ∨ b ≤ a := Nat.lt_or_ge _ _
-protected lemma le_or_lt (a b : Fin n) : a ≤ b ∨ b < a := (b.lt_or_le a).symm
-protected lemma le_of_eq (hab : a = b) : a ≤ b := Nat.le_of_eq <| congr_arg val hab
-protected lemma ge_of_eq (hab : a = b) : b ≤ a := Fin.le_of_eq hab.symm
-protected lemma eq_or_lt_of_le : a ≤ b → a = b ∨ a < b := by
-  rw [Fin.ext_iff]; exact Nat.eq_or_lt_of_le
-protected lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := by
-  rw [Fin.ext_iff]; exact Nat.lt_or_eq_of_le
-
-end Order
-
 lemma lt_last_iff_ne_last {a : Fin (n + 1)} : a < last n ↔ a ≠ last n := by
   simp [Fin.lt_iff_le_and_ne, le_last]
 
@@ -148,7 +128,6 @@ theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
 theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
   Fin.ext_iff.not
 
-@[simp, nolint simpNF]
 theorem mk_eq_mk {a h a' h'} : @mk n a h = @mk n a' h' ↔ a = a' :=
   Fin.ext_iff
 
@@ -742,6 +721,18 @@ def natAddEmb (n) {m} : Fin m ↪ Fin (n + m) where
   toFun := natAdd n
   inj' a b := by simp [Fin.ext_iff]
 
+theorem castSucc_castAdd (i : Fin n) : castSucc (castAdd m i) = castAdd (m + 1) i := rfl
+
+theorem castSucc_natAdd (i : Fin m) : castSucc (natAdd n i) = natAdd n (castSucc i) := rfl
+
+theorem succ_castAdd (i : Fin n) : succ (castAdd m i) =
+    if h : i.succ = last _ then natAdd n (0 : Fin (m + 1))
+      else castAdd (m + 1) ⟨i.1 + 1, lt_of_le_of_ne i.2 (Fin.val_ne_iff.mpr h)⟩ := by
+  split_ifs with h
+  exacts [Fin.ext (congr_arg Fin.val h :), rfl]
+
+theorem succ_natAdd (i : Fin m) : succ (natAdd n i) = natAdd n (succ i) := rfl
+
 end Succ
 
 section Pred
@@ -879,6 +870,11 @@ theorem castPred_zero' [NeZero n] (h := Fin.ext_iff.not.2 last_pos'.ne) :
 
 theorem castPred_zero (h := Fin.ext_iff.not.2 last_pos.ne) :
     castPred (0 : Fin (n + 2)) h = 0 := rfl
+
+@[simp]
+theorem castPred_eq_zero [NeZero n] {i : Fin (n + 1)} (h : i ≠ last n) :
+    Fin.castPred i h = 0 ↔ i = 0 := by
+  rw [← castPred_zero', castPred_inj]
 
 @[simp]
 theorem castPred_one [NeZero n] (h := Fin.ext_iff.not.2 one_lt_last.ne) :
@@ -1400,9 +1396,6 @@ protected theorem coe_neg (a : Fin n) : ((-a : Fin n) : ℕ) = (n - a) % n :=
   rfl
 
 theorem eq_zero (n : Fin 1) : n = 0 := Subsingleton.elim _ _
-
-@[deprecated val_eq_zero (since := "2024-09-18")]
-theorem coe_fin_one (a : Fin 1) : (a : ℕ) = 0 := by simp [Subsingleton.elim a 0]
 
 lemma eq_one_of_neq_zero (i : Fin 2) (hi : i ≠ 0) : i = 1 := by
   fin_omega

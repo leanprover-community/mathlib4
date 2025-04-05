@@ -3,9 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
+import Batteries.WF
 import Mathlib.Data.Part
 import Mathlib.Data.Rel
-import Batteries.WF
+import Mathlib.Tactic.GeneralizeProofs
 
 /-!
 # Partial functions
@@ -584,7 +585,10 @@ theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ := by
 
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
-    (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) := by
-  aesop
+    (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) :=
+  -- `aesop` can prove this but takes over a second, so we do it manually
+  ext <| fun ⟨_, _⟩ ⟨_, _⟩ ↦
+  ⟨fun ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩ ↦ ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩,
+   fun ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩ ↦ ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩⟩
 
 end PFun

@@ -227,8 +227,8 @@ end Polynomial
 section Subtype
 
 -- this diamond is the reason that `Fintype.toLocallyFiniteOrder` is not an instance
-example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [DecidableRel (α := α) (· < ·)]
-    [DecidableRel (α := α) (· ≤ ·)] (p : α → Prop) [DecidablePred p] :
+example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [DecidableLT α]
+    [DecidableLE α] (p : α → Prop) [DecidablePred p] :
     Subtype.instLocallyFiniteOrder p = Fintype.toLocallyFiniteOrder := by
   fail_if_success rfl
   exact Subsingleton.elim _ _

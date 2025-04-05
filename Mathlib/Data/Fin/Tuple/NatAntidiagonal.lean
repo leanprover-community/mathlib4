@@ -108,7 +108,7 @@ theorem nodup_antidiagonalTuple (k n : ℕ) : List.Nodup (antidiagonalTuple k n)
       rw [Fin.cons_inj, Nat.succ_inj'] at h₁₂
       obtain ⟨h₁₂, rfl⟩ := h₁₂
       rw [Function.onFun, h₁₂] at h
-      exact h (List.mem_map_of_mem _ hx₁) (List.mem_map_of_mem _ hx₂)
+      exact h (List.mem_map_of_mem hx₁) (List.mem_map_of_mem hx₂)
 
 theorem antidiagonalTuple_zero_right : ∀ k, antidiagonalTuple k 0 = [0]
   | 0 => (congr_arg fun x => [x]) <| Subsingleton.elim _ _

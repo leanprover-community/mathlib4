@@ -3,7 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.Typeclasses
+import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
@@ -130,12 +130,6 @@ variable [T2Space M]
 theorem of_disjoint_iUnion (hm : ∀ i, MeasurableSet (f i)) (hd : Pairwise (Disjoint on f)) :
     v (⋃ i, f i) = ∑' i, v (f i) :=
   (hasSum_of_disjoint_iUnion hm hd).tsum_eq.symm
-
-@[deprecated of_disjoint_iUnion (since := "2024-09-15")]
-theorem of_disjoint_iUnion_nat (v : VectorMeasure α M) {f : ℕ → Set α}
-    (hf₁ : ∀ i, MeasurableSet (f i)) (hf₂ : Pairwise (Disjoint on f)) :
-    v (⋃ i, f i) = ∑' i, v (f i) :=
-  of_disjoint_iUnion hf₁ hf₂
 
 theorem of_union {A B : Set α} (h : Disjoint A B) (hA : MeasurableSet A) (hB : MeasurableSet B) :
     v (A ∪ B) = v A + v B := by
@@ -385,7 +379,6 @@ def toENNRealVectorMeasure (μ : Measure α) : VectorMeasure α ℝ≥0∞ where
   empty' := by simp [μ.empty]
   not_measurable' _ hi := if_neg hi
   m_iUnion' _ hf₁ hf₂ := by
-    simp only
     rw [Summable.hasSum_iff ENNReal.summable, if_pos (MeasurableSet.iUnion hf₁),
       MeasureTheory.measure_iUnion hf₂ hf₁]
     exact tsum_congr fun n => if_pos (hf₁ n)
@@ -466,7 +459,6 @@ def map (v : VectorMeasure α M) (f : α → β) : VectorMeasure β M :=
       not_measurable' := fun _ hi => if_neg hi
       m_iUnion' := by
         intro g hg₁ hg₂
-        simp only
         convert v.m_iUnion (fun i => hf (hg₁ i)) fun i j hij => (hg₂ hij).preimage _
         · rw [if_pos (hg₁ _)]
         · rw [Set.preimage_iUnion, if_pos (MeasurableSet.iUnion hg₁)] }
@@ -499,8 +491,8 @@ variable {N : Type*} [AddCommMonoid N] [TopologicalSpace N]
 vector measure on `N`. -/
 def mapRange (v : VectorMeasure α M) (f : M →+ N) (hf : Continuous f) : VectorMeasure α N where
   measureOf' s := f (v s)
-  empty' := by simp only; rw [empty, AddMonoidHom.map_zero]
-  not_measurable' i hi := by simp only; rw [not_measurable v hi, AddMonoidHom.map_zero]
+  empty' := by rw [empty, AddMonoidHom.map_zero]
+  not_measurable' i hi := by rw [not_measurable v hi, AddMonoidHom.map_zero]
   m_iUnion' _ hg₁ hg₂ := HasSum.map (v.m_iUnion hg₁ hg₂) f hf
 
 @[simp]
@@ -565,7 +557,6 @@ def restrict (v : VectorMeasure α M) (i : Set α) : VectorMeasure α M :=
       not_measurable' := fun _ hi => if_neg hi
       m_iUnion' := by
         intro f hf₁ hf₂
-        simp only
         convert v.m_iUnion (fun n => (hf₁ n).inter hi)
             (hf₂.mono fun i j => Disjoint.mono inf_le_left inf_le_left)
         · rw [if_pos (hf₁ _)]
