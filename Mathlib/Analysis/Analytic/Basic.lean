@@ -7,6 +7,7 @@ import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Tactic.Bound.Attribute
+import Mathlib.Tactic.MoveAdd
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 
 /-!
@@ -70,6 +71,8 @@ For a power series in finitely many dimensions, there is a finer (directional, c
 notion, describing the polydisk of convergence. This notion is more specific, and not necessary to
 build the general theory. We do not define it here.
 -/
+
+set_option linter.style.longFile 1700
 
 noncomputable section
 
@@ -336,6 +339,98 @@ theorem radius_smul_eq (p : FormalMultilinearSeries 𝕜 E F) {c : 𝕜} (hc : c
     (c • p).radius = p.radius := by
   apply eq_of_le_of_le _ radius_le_smul
   exact radius_le_smul.trans_eq (congr_arg _ <| inv_smul_smul₀ hc p)
+
+theorem radius_compContinuousLinearMap_ge (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) :
+    p.radius / ‖u‖₊ ≤ (p.compContinuousLinearMap u).radius := by
+  by_cases h_zero : ‖u‖₊ = 0
+  · simp only [nnnorm_eq_zero] at h_zero
+    simp only [h_zero, nnnorm_zero, ENNReal.coe_zero]
+    by_cases hr : p.radius = 0
+    · rw [hr]
+      simp
+    · rw [ENNReal.div_zero hr, top_le_iff]
+      apply FormalMultilinearSeries.radius_eq_top_of_forall_image_add_eq_zero _ 1
+      intro m
+      ext v
+      simp only [compContinuousLinearMap_apply, ContinuousMultilinearMap.zero_apply]
+      change (p (m + 1)) 0 = 0
+      simp
+  simp only [radius, ENNReal.iSup_div]
+  -- Maybe it should be separate lemma?
+  have h : ∀ n, ‖p.compContinuousLinearMap u n‖ ≤ ‖p n‖ * ‖u‖^n := by
+    intro
+    simp only [compContinuousLinearMap]
+    apply le_trans (ContinuousMultilinearMap.norm_compContinuousLinearMap_le _ _)
+    simp
+  apply iSup_mono'
+  intro r
+  use r / ‖u‖₊
+  apply iSup_mono'
+  intro C
+  use C
+  apply iSup_mono'
+  simp only [NNReal.coe_div, coe_nnnorm, exists_prop]
+  intro h1
+  constructor
+  · intro n
+    calc
+      _ ≤ (‖p n‖ * ‖u‖ ^ n) * (↑r / ‖u‖) ^ n := by
+        gcongr
+        exact h n
+      _ ≤ _ := by
+        ring_nf
+        move_mul [← ‖u‖⁻¹ ^ n, ← ‖u‖ ^ n]
+        rw [← mul_pow, inv_mul_cancel₀]
+        · simpa using h1 n
+        · simpa using h_zero
+  · rw [ENNReal.coe_div h_zero]
+
+theorem radius_compContinuousLinearMap_le [Nontrivial F]
+    (p : FormalMultilinearSeries 𝕜 F G) (u : E ≃L[𝕜] F) :
+    (p.compContinuousLinearMap u.toContinuousLinearMap).radius ≤
+    ‖u.symm.toContinuousLinearMap‖₊ * p.radius := by
+  suffices (p.compContinuousLinearMap u.toContinuousLinearMap).radius /
+      ‖(u.symm : F →L[𝕜] E)‖₊ ≤ p.radius by
+    rw [div_eq_mul_inv] at this
+    rw [ENNReal.mul_inv_le_iff] at this
+    · convert this using 1
+      ring
+    · simpa using ContinuousLinearEquiv.norm_pos u.symm
+    · simp
+  have : p =
+      (p.compContinuousLinearMap u.toContinuousLinearMap).compContinuousLinearMap u.symm := by
+    simp [compContinuousLinearMap_comp]
+  conv => rhs; rw [this]
+  apply radius_compContinuousLinearMap_ge
+
+@[simp]
+theorem radius_compContinuousLinearMap_eq [Nontrivial E] [Nontrivial F]
+    (p : FormalMultilinearSeries 𝕜 F G) (u : E ≃ₛₗᵢ[.id _] F) :
+    (p.compContinuousLinearMap u.toLinearIsometry.toContinuousLinearMap).radius = p.radius := by
+  apply eq_of_le_of_le
+  · trans ‖(1 : 𝕜)‖₊ * p.radius
+    · conv => lhs; arg 1; arg 2; change u.toContinuousLinearEquiv
+      convert FormalMultilinearSeries.radius_compContinuousLinearMap_le _ _
+      · have : u.toContinuousLinearEquiv.symm = u.symm.toContinuousLinearEquiv := rfl
+        symm
+        simp only [this, nnnorm_one, ← NNReal.coe_eq_one, coe_nnnorm]
+        conv => lhs; arg 1; change u.symm.toLinearIsometry.toContinuousLinearMap
+        simp only [LinearIsometry.norm_toContinuousLinearMap]
+      · assumption
+    · simp
+  · trans p.radius / ‖(1 : 𝕜)‖₊
+    · simp
+    convert FormalMultilinearSeries.radius_compContinuousLinearMap_ge _ _
+    symm
+    simp [← NNReal.coe_eq_one]
+
+@[simp]
+theorem radius_compNeg [Nontrivial E] (p : FormalMultilinearSeries 𝕜 E F) :
+    (p.compContinuousLinearMap (-(.id _ _))).radius = p.radius := by
+  conv =>
+    lhs; arg 1; arg 2
+    change (LinearIsometryEquiv.neg 𝕜).toLinearIsometry.toContinuousLinearMap
+  apply radius_compContinuousLinearMap_eq
 
 @[simp]
 theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p.radius := by
