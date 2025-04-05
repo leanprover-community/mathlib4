@@ -3,11 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
-import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Data.Finsupp.SMul
 import Mathlib.LinearAlgebra.Finsupp.LSum
-import Mathlib.Algebra.Module.Submodule.Basic
 
 /-!
 # Monoid algebras
@@ -119,6 +118,8 @@ theorem single_apply {a a' : G} {b : k} [Decidable (a = a')] :
 
 @[simp]
 theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := Finsupp.single_eq_zero
+
+theorem single_ne_zero {a : G} {b : k} : single a b ≠ 0 ↔ b ≠ 0 := Finsupp.single_ne_zero
 
 /-- A non-commutative version of `MonoidAlgebra.lift`: given an additive homomorphism `f : k →+ R`
 and a homomorphism `g : G → R`, returns the additive homomorphism from
@@ -866,6 +867,8 @@ theorem single_apply {a a' : G} {b : k} [Decidable (a = a')] :
 
 @[simp]
 theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := Finsupp.single_eq_zero
+
+theorem single_ne_zero {a : G} {b : k} : single a b ≠ 0 ↔ b ≠ 0 := Finsupp.single_ne_zero
 
 /-- A non-commutative version of `AddMonoidAlgebra.lift`: given an additive homomorphism
 `f : k →+ R` and a map `g : Multiplicative G → R`, returns the additive

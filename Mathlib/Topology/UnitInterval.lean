@@ -107,10 +107,9 @@ theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
 
--- Porting note: Proof used to be `by continuity!`
 @[continuity, fun_prop]
-theorem continuous_symm : Continuous σ := by
-  apply Continuous.subtype_mk (by fun_prop)
+theorem continuous_symm : Continuous σ :=
+  Continuous.subtype_mk (by fun_prop) _
 
 /-- `unitInterval.symm` as a `Homeomorph`. -/
 @[simps]
@@ -229,7 +228,6 @@ instance : LinearOrderedCommMonoidWithZero I where
     simp only [← Subtype.coe_le_coe, coe_mul]
     apply mul_le_mul le_rfl ?_ (nonneg i) (nonneg k)
     simp [h_ij]
-  __ := inferInstanceAs (LinearOrder I)
 
 end unitInterval
 
@@ -244,7 +242,8 @@ variable {α} [LinearOrderedAddCommGroup α] {a b c d : α} (h : a ≤ b) {δ : 
 lemma _root_.Set.abs_projIcc_sub_projIcc : (|projIcc a b h c - projIcc a b h d| : α) ≤ |c - d| := by
   wlog hdc : d ≤ c generalizing c d
   · rw [abs_sub_comm, abs_sub_comm c]; exact this (le_of_not_le hdc)
-  rw [abs_eq_self.2 (sub_nonneg.2 hdc), abs_eq_self.2 (sub_nonneg.2 <| monotone_projIcc h hdc)]
+  rw [abs_eq_self.2 (sub_nonneg.2 hdc),
+    abs_eq_self.2 (sub_nonneg.2 <| mod_cast monotone_projIcc h hdc)]
   rw [← sub_nonneg] at hdc
   refine (max_sub_max_le_max _ _ _ _).trans (max_le (by rwa [sub_self]) ?_)
   refine ((le_abs_self _).trans <| abs_min_sub_min_le_max _ _ _ _).trans (max_le ?_ ?_)

@@ -450,11 +450,11 @@ is a linear order. -/
 theorem exists_lt_of_csInf_lt (hs : s.Nonempty) (hb : sInf s < b) : ∃ a ∈ s, a < b :=
   exists_lt_of_lt_csSup (α := αᵒᵈ) hs hb
 
-theorem lt_csSup_iff (hb : BddAbove s) (hs : s.Nonempty) : a < sSup s ↔ ∃ b ∈ s, a < b := by
-  simpa only [not_le, not_forall₂, exists_prop] using (csSup_le_iff hb hs (a := a)).not
+theorem lt_csSup_iff (hb : BddAbove s) (hs : s.Nonempty) : a < sSup s ↔ ∃ b ∈ s, a < b :=
+  lt_isLUB_iff <| isLUB_csSup hs hb
 
-theorem csInf_lt_iff (hb : BddBelow s) (hs : s.Nonempty) : sInf s < a ↔ ∃ b ∈ s, b < a := by
-  simpa only [not_le, not_forall₂, exists_prop] using (le_csInf_iff hb hs).not
+theorem csInf_lt_iff (hb : BddBelow s) (hs : s.Nonempty) : sInf s < a ↔ ∃ b ∈ s, b < a :=
+  isGLB_lt_iff <| isGLB_csInf hs hb
 
 theorem csSup_of_not_bddAbove {s : Set α} (hs : ¬BddAbove s) : sSup s = sSup ∅ :=
   ConditionallyCompleteLinearOrder.csSup_of_not_bddAbove s hs
@@ -563,7 +563,7 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 section ConditionallyCompleteLinearOrderBot
 
 @[simp]
-theorem csInf_univ [ConditionallyCompleteLinearOrder α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
+theorem csInf_univ [ConditionallyCompleteLattice α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
   isLeast_univ.csInf_eq
 
 variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {a : α}
@@ -902,7 +902,6 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type*}
     le_csInf := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).csSup_le }
 
 open Classical in
--- Porting note: `convert @bot_le (WithTop (WithBot α)) _ _ a` was `convert bot_le`
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) :=
   { instInfSet, instSupSet, boundedOrder, lattice with
@@ -913,7 +912,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
         split_ifs with h₁ h₂
         · rw [h] at h₁
           cases h₁
-        · convert bot_le (a := a)
+        · convert bot_le
           -- Porting note: previous proof relied on convert unfolding
           -- the definition of ⊥
           apply congr_arg

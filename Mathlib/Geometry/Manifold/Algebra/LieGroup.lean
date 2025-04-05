@@ -199,7 +199,7 @@ section Product
 
 -- Instance of product group
 @[to_additive]
-instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+instance Prod.instLieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
     {H : Type*} [TopologicalSpace H] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
     [TopologicalSpace G] [ChartedSpace H G] [Group G] [LieGroup I n G] {E' : Type*}

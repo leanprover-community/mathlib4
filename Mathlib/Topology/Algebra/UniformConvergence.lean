@@ -207,12 +207,12 @@ end AlgebraicInstances
 
 section Group
 
-variable {α G ι : Type*} [Group G] {𝔖 : Set <| Set α} [UniformSpace G] [UniformGroup G]
+variable {α G ι : Type*} [Group G] {𝔖 : Set <| Set α} [UniformSpace G] [IsUniformGroup G]
 
 /-- If `G` is a uniform group, then `α →ᵤ G` is a uniform group as well. -/
 @[to_additive "If `G` is a uniform additive group,
 then `α →ᵤ G` is a uniform additive group as well."]
-instance : UniformGroup (α →ᵤ G) :=
+instance : IsUniformGroup (α →ᵤ G) :=
   ⟨(-- Since `(/) : G × G → G` is uniformly continuous,
     -- `UniformFun.postcomp_uniformContinuous` tells us that
     -- `((/) ∘ —) : (α →ᵤ G × G) → (α →ᵤ G)` is uniformly continuous too. By precomposing with
@@ -238,7 +238,7 @@ protected theorem UniformFun.hasBasis_nhds_one :
 well. -/
 @[to_additive "Let `𝔖 : Set (Set α)`. If `G` is a uniform additive group,
 then `α →ᵤ[𝔖] G` is a uniform additive group as well."]
-instance : UniformGroup (α →ᵤ[𝔖] G) :=
+instance : IsUniformGroup (α →ᵤ[𝔖] G) :=
   ⟨(-- Since `(/) : G × G → G` is uniformly continuous,
     -- `UniformOnFun.postcomp_uniformContinuous` tells us that
     -- `((/) ∘ —) : (α →ᵤ[𝔖] G × G) → (α →ᵤ[𝔖] G)` is uniformly continuous too. By precomposing with

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang, Yury Kudryashov
 -/
 import Mathlib.Data.Fintype.Option
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Sets.Opens
 
 /-!
@@ -462,9 +463,6 @@ theorem denseRange_coe [NoncompactSpace X] : DenseRange ((↑) : X → OnePoint 
 
 theorem isDenseEmbedding_coe [NoncompactSpace X] : IsDenseEmbedding ((↑) : X → OnePoint X) :=
   { isOpenEmbedding_coe with dense := denseRange_coe }
-
-@[deprecated (since := "2024-09-30")]
-alias denseEmbedding_coe := isDenseEmbedding_coe
 
 @[simp, norm_cast]
 theorem specializes_coe {x y : X} : (x : OnePoint X) ⤳ y ↔ x ⤳ y :=

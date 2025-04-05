@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Apurva Nakade, Yuyang Zhao
 -/
 import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.SetTheory.Game.PGame
+import Mathlib.SetTheory.PGame.Algebra
 import Mathlib.Tactic.Abel
 
 /-!

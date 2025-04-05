@@ -172,12 +172,12 @@ theorem exists_compl_positive_negative :
   refine ⟨S, hS₁, ?_, ?_, hS₂, hS₃⟩
   · refine restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => ?_
     rw [toSignedMeasure, toSignedMeasure_sub_apply hA,
-      show j.posPart A = 0 from nonpos_iff_eq_zero.1 (hS₂ ▸ measure_mono hA₁), ENNReal.zero_toReal,
+      show j.posPart A = 0 from nonpos_iff_eq_zero.1 (hS₂ ▸ measure_mono hA₁), ENNReal.toReal_zero,
       zero_sub, neg_le, zero_apply, neg_zero]
     exact ENNReal.toReal_nonneg
   · refine restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => ?_
     rw [toSignedMeasure, toSignedMeasure_sub_apply hA,
-      show j.negPart A = 0 from nonpos_iff_eq_zero.1 (hS₃ ▸ measure_mono hA₁), ENNReal.zero_toReal,
+      show j.negPart A = 0 from nonpos_iff_eq_zero.1 (hS₃ ▸ measure_mono hA₁), ENNReal.toReal_zero,
       sub_zero]
     exact ENNReal.toReal_nonneg
 
@@ -270,7 +270,8 @@ theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv 
   on_goal 1 =>
     have a := hsu (hu.diff hv) diff_subset
     have b := hsv (hv.diff hu) diff_subset
-    erw [of_union (Set.disjoint_of_subset_left diff_subset disjoint_sdiff_self_right)
+    rw [Set.symmDiff_def,
+      of_union (v := s) (Set.disjoint_of_subset_left diff_subset disjoint_sdiff_self_right)
         (hu.diff hv) (hv.diff hu)] at hs
     rw [zero_apply] at a b
     constructor
@@ -352,7 +353,7 @@ theorem toSignedMeasure_injective : Injective <| @JordanDecomposition.toSignedMe
     rw [toSignedMeasure, toSignedMeasure_sub_apply (hi.inter hS₁.compl),
       show j₁.negPart (i ∩ Sᶜ) = 0 from
         nonpos_iff_eq_zero.1 (hS₅ ▸ measure_mono Set.inter_subset_right),
-      ENNReal.zero_toReal, sub_zero]
+      ENNReal.toReal_zero, sub_zero]
     conv_lhs => rw [← Set.inter_union_compl i S]
     rw [measure_union,
       show j₁.posPart (i ∩ S) = 0 from
@@ -366,7 +367,7 @@ theorem toSignedMeasure_injective : Injective <| @JordanDecomposition.toSignedMe
     rw [toSignedMeasure, toSignedMeasure_sub_apply (hi.inter hT₁.compl),
       show j₂.negPart (i ∩ Tᶜ) = 0 from
         nonpos_iff_eq_zero.1 (hT₅ ▸ measure_mono Set.inter_subset_right),
-      ENNReal.zero_toReal, sub_zero]
+      ENNReal.toReal_zero, sub_zero]
     conv_lhs => rw [← Set.inter_union_compl i T]
     rw [measure_union,
       show j₂.posPart (i ∩ T) = 0 from

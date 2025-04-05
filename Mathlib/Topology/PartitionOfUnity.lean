@@ -200,7 +200,7 @@ theorem sum_finsupport' (hx₀ : x₀ ∈ s) {I : Finset ι} (hI : ρ.finsupport
   classical
   rw [← Finset.sum_sdiff hI, ρ.sum_finsupport hx₀]
   suffices ∑ i ∈ I \ ρ.finsupport x₀, (ρ i) x₀ = ∑ i ∈ I \ ρ.finsupport x₀, 0 by
-    rw [this, add_left_eq_self, Finset.sum_const_zero]
+    rw [this, add_eq_right, Finset.sum_const_zero]
   apply Finset.sum_congr rfl
   rintro x hx
   simp only [Finset.mem_sdiff, ρ.mem_finsupport, mem_support, Classical.not_not] at hx
@@ -503,7 +503,7 @@ theorem support_toPOUFun_subset (i : ι) : support (f.toPOUFun i) ⊆ support (f
 open Classical in
 theorem toPOUFun_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → f j x ≠ 0 → j ∈ t) :
-    f.toPOUFun i x = f i x * ∏ j ∈ t.filter fun j => WellOrderingRel j i, (1 - f j x) := by
+    f.toPOUFun i x = f i x * ∏ j ∈ t with WellOrderingRel j i, (1 - f j x) := by
   refine congr_arg _ (finprod_cond_eq_prod_of_cond_iff _ fun {j} hj => ?_)
   rw [Ne, sub_eq_self] at hj
   rw [Finset.mem_filter, Iff.comm, and_iff_right_iff_imp]
@@ -528,7 +528,7 @@ theorem sum_toPOUFun_eq (x : X) : ∑ᶠ i, f.toPOUFun i x = 1 - ∏ᶠ i, (1 - 
 
 open Classical in
 theorem exists_finset_toPOUFun_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι,
-    f.toPOUFun i =ᶠ[𝓝 x] f i * ∏ j ∈ t.filter fun j => WellOrderingRel j i, (1 - f j) := by
+    f.toPOUFun i =ᶠ[𝓝 x] f i * ∏ j ∈ t with WellOrderingRel j i, (1 - f j) := by
   rcases f.locallyFinite x with ⟨U, hU, hf⟩
   use hf.toFinset
   filter_upwards [hU] with y hyU
@@ -572,12 +572,12 @@ theorem toPartitionOfUnity_apply (i : ι) (x : X) :
 open Classical in
 theorem toPartitionOfUnity_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → f j x ≠ 0 → j ∈ t) :
-    f.toPartitionOfUnity i x = f i x * ∏ j ∈ t.filter fun j => WellOrderingRel j i, (1 - f j x) :=
+    f.toPartitionOfUnity i x = f i x * ∏ j ∈ t with WellOrderingRel j i, (1 - f j x) :=
   f.toPOUFun_eq_mul_prod i x t ht
 
 open Classical in
 theorem exists_finset_toPartitionOfUnity_eventuallyEq (i : ι) (x : X) : ∃ t : Finset ι,
-    f.toPartitionOfUnity i =ᶠ[𝓝 x] f i * ∏ j ∈ t.filter fun j => WellOrderingRel j i, (1 - f j) :=
+    f.toPartitionOfUnity i =ᶠ[𝓝 x] f i * ∏ j ∈ t with WellOrderingRel j i, (1 - f j) :=
   f.exists_finset_toPOUFun_eventuallyEq i x
 
 theorem toPartitionOfUnity_zero_of_zero {i : ι} {x : X} (h : f i x = 0) :
@@ -657,12 +657,6 @@ theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompac
     simp at h
     rw [finsum_eq_sum (fun i => (f.toFun i) x)
       (Finite.subset finite_univ (subset_univ (support fun i ↦ (f.toFun i) x)))] at h
-    simp only [Finite.toFinset_setOf, ne_eq] at h
-    rw [← h, ← Finset.sum_subset
-      (Finset.subset_univ (Finset.filter (fun (j : Fin n) ↦ ¬(f.toFun j) x = 0) Finset.univ))
-      (by intro j hju hj
-          simp only [Finset.mem_filter, Finset.mem_univ, true_and, Decidable.not_not] at hj
-          exact hj)]
-    rfl
+    rwa [Fintype.sum_subset (by simp)] at h
   intro i x
   exact ⟨f.nonneg i x, PartitionOfUnity.le_one f i x⟩
