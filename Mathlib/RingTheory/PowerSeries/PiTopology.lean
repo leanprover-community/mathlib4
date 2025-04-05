@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.RingTheory.MvPowerSeries.PiTopology
 import Mathlib.RingTheory.PowerSeries.Basic
+import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-! # Product topology on power series
@@ -57,6 +58,8 @@ variable [TopologicalSpace R]
 
 namespace WithPiTopology
 
+open scoped Topology
+
 /-- The pointwise topology on `PowerSeries` -/
 scoped instance : TopologicalSpace (PowerSeries R) :=
   Pi.topologicalSpace
@@ -93,6 +96,17 @@ theorem tendsto_iff_coeff_tendsto [Semiring R] {ι : Type*}
   congr
   · ext _; congr; ext; simp
   · ext; simp
+
+theorem trunc_tendsto [CommSemiring R] (f : R⟦X⟧) :
+    Tendsto (fun d ↦ (trunc d f : R⟦X⟧)) atTop (𝓝 f) := by
+  rw [tendsto_iff_coeff_tendsto]
+  intro d
+  exact tendsto_atTop_of_eventually_const fun n (hdn : d < n) ↦ (by simp [coeff_trunc, hdn])
+
+/-- The inclusion of polynomials into power series has dense image -/
+theorem toPowerSeries_denseRange [CommSemiring R] :
+    DenseRange (Polynomial.toPowerSeries (R := R)) := fun f =>
+  mem_closure_of_tendsto (trunc_tendsto R f) <| .of_forall fun _ ↦ Set.mem_range_self _
 
 /-- The semiring topology on `PowerSeries` of a topological semiring -/
 @[scoped instance]
