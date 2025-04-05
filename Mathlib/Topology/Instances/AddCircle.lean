@@ -343,6 +343,14 @@ theorem homeomorphAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : �
   rfl
 end
 
+lemma natCast_div_mul_eq_nsmul (r : 𝕜) (m : ℕ) :
+    (↑(↑m / q * r) : AddCircle p) = m • (r / q : AddCircle p) := by
+  rw [mul_comm_div, ← nsmul_eq_mul, coe_nsmul]
+
+lemma intCast_div_mul_eq_zsmul (r : 𝕜) (m : ℤ) :
+    (↑(↑m / q * r) : AddCircle p) = m • (r / q : AddCircle p) := by
+  rw [mul_comm_div, ← zsmul_eq_mul, coe_zsmul]
+
 variable [hp : Fact (0 < p)]
 
 section FloorRing
@@ -384,7 +392,7 @@ theorem addOrderOf_period_div {n : ℕ} (h : 0 < n) : addOrderOf ((p / n : 𝕜)
 variable (p) in
 theorem gcd_mul_addOrderOf_div_eq {n : ℕ} (m : ℕ) (hn : 0 < n) :
     m.gcd n * addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
-  rw [mul_comm_div, ← nsmul_eq_mul, coe_nsmul, IsOfFinAddOrder.addOrderOf_nsmul]
+  rw [natCast_div_mul_eq_nsmul, IsOfFinAddOrder.addOrderOf_nsmul]
   · rw [addOrderOf_period_div hn, Nat.gcd_comm, Nat.mul_div_cancel']
     exact n.gcd_dvd_left m
   · rwa [← addOrderOf_pos_iff, addOrderOf_period_div hn]
@@ -409,31 +417,35 @@ theorem addOrderOf_coe_rat {q : ℚ} : addOrderOf (↑(↑q * p) : AddCircle p) 
   rw [← q.num_divInt_den, Rat.cast_divInt_of_ne_zero _ this, Int.cast_natCast, Rat.num_divInt_den,
     addOrderOf_div_of_gcd_eq_one' q.pos q.reduced]
 
-theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
-    addOrderOf u = n ↔ ∃ m < n, m.gcd n = 1 ∧ ↑(↑m / ↑n * p) = u := by
-  refine ⟨QuotientAddGroup.induction_on u fun k hk => ?_, ?_⟩
-  · rintro ⟨m, _, h₁, rfl⟩
-    exact addOrderOf_div_of_gcd_eq_one h h₁
-  have h0 := addOrderOf_nsmul_eq_zero (k : AddCircle p)
-  rw [hk, ← coe_nsmul, coe_eq_zero_iff] at h0
-  obtain ⟨a, ha⟩ := h0
-  have h0 : (_ : 𝕜) ≠ 0 := Nat.cast_ne_zero.2 h.ne'
+theorem nsmul_eq_zero_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
+    n • u = 0 ↔ ∃ m < n, ↑(↑m / ↑n * p) = u := by
+  refine ⟨QuotientAddGroup.induction_on u fun k hk ↦ ?_, ?_⟩
+  · rw [← addOrderOf_dvd_iff_nsmul_eq_zero]
+    rintro ⟨m, -, rfl⟩
+    constructor; rw [mul_comm, eq_comm]
+    exact gcd_mul_addOrderOf_div_eq p m h
+  rw [← coe_nsmul, coe_eq_zero_iff] at hk
+  obtain ⟨a, ha⟩ := hk
+  refine ⟨a.natMod n, Int.natMod_lt h.ne', ?_⟩
+  have h0 : (n : 𝕜) ≠ 0 := Nat.cast_ne_zero.2 h.ne'
   rw [nsmul_eq_mul, mul_comm, ← div_eq_iff h0, ← a.ediv_add_emod' n, add_smul, add_div,
     zsmul_eq_mul, Int.cast_mul, Int.cast_natCast, mul_assoc, ← mul_div, mul_comm _ p,
     mul_div_cancel_right₀ p h0] at ha
-  have han : _ = a % n := Int.toNat_of_nonneg (Int.emod_nonneg _ <| mod_cast h.ne')
-  have he : (↑(↑((a % n).toNat) / ↑n * p) : AddCircle p) = k := by
-    convert congr_arg (QuotientAddGroup.mk : 𝕜 → (AddCircle p)) ha using 1
-    rw [coe_add, ← Int.cast_natCast, han, zsmul_eq_mul, mul_div_right_comm, eq_comm,
-      add_eq_right, ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
-  refine ⟨(a % n).toNat, ?_, ?_, he⟩
-  · rw [← Int.ofNat_lt, han]
-    exact Int.emod_lt_of_pos _ (Int.ofNat_lt.2 h)
-  · have := (gcd_mul_addOrderOf_div_eq p (Int.toNat (a % ↑n)) h).trans
-      ((congr_arg addOrderOf he).trans hk).symm
-    rw [he, Nat.mul_left_eq_self_iff] at this
-    · exact this
-    · rwa [hk]
+  rw [← ha, coe_add, ← Int.cast_natCast, Int.natMod, Int.toNat_of_nonneg, zsmul_eq_mul,
+    mul_div_right_comm, eq_comm, add_eq_right, ←zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
+  exact Int.emod_nonneg _ (by exact_mod_cast h.ne')
+
+theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
+    addOrderOf u = n ↔ ∃ m < n, m.gcd n = 1 ∧ ↑(↑m / ↑n * p) = u := by
+  refine ⟨QuotientAddGroup.induction_on u ?_, ?_⟩
+  · rintro ⟨m, -, h₁, rfl⟩
+    exact addOrderOf_div_of_gcd_eq_one h h₁
+  rintro k rfl
+  obtain ⟨m, hm, hk⟩ := (nsmul_eq_zero_iff h).mp (addOrderOf_nsmul_eq_zero (k : AddCircle p))
+  refine ⟨m, hm, mul_right_cancel₀ h.ne' ?_, hk⟩
+  convert gcd_mul_addOrderOf_div_eq p m h using 1
+  · rw [hk]
+  · apply one_mul
 
 theorem exists_gcd_eq_one_of_isOfFinAddOrder {u : AddCircle p} (h : IsOfFinAddOrder u) :
     ∃ m : ℕ, m.gcd (addOrderOf u) = 1 ∧ m < addOrderOf u ∧ ↑((m : 𝕜) / addOrderOf u * p) = u :=
@@ -465,21 +477,11 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
     Equiv.ofBijective (fun m => ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.prop.2⟩)
       (by
         refine ⟨fun m₁ m₂ h => Subtype.ext ?_, fun u => ?_⟩
-        · simp_rw [Subtype.ext_iff] at h
-          rw [← sub_eq_zero, ← coe_sub, ← sub_mul, ← sub_div, ← Int.cast_natCast m₁,
-            ← Int.cast_natCast m₂, ← Int.cast_sub, coe_eq_zero_iff] at h
-          obtain ⟨m, hm⟩ := h
-          rw [← mul_div_right_comm, eq_div_iff, mul_comm, ← zsmul_eq_mul, mul_smul_comm, ←
-            nsmul_eq_mul, ← natCast_zsmul, smul_smul,
-            zsmul_left_inj hp.out, mul_comm] at hm
-          swap
-          · exact Nat.cast_ne_zero.2 hn.ne'
-          rw [← @Nat.cast_inj ℤ, ← sub_eq_zero]
-          refine Int.eq_zero_of_abs_lt_dvd ⟨_, hm.symm⟩ (abs_sub_lt_iff.2 ⟨?_, ?_⟩) <;>
-            apply (Int.sub_le_self _ <| Nat.cast_nonneg _).trans_lt (Nat.cast_lt.2 _)
+        · simp_rw [Subtype.mk_eq_mk, natCast_div_mul_eq_nsmul] at h
+          refine nsmul_injOn_Iio_addOrderOf ?_ ?_ h <;> rw [addOrderOf_period_div hn]
           exacts [m₁.2.1, m₂.2.1]
-        obtain ⟨m, hmn, hg, he⟩ := (addOrderOf_eq_pos_iff hn).mp u.2
-        exact ⟨⟨m, hmn, hg⟩, Subtype.ext he⟩)
+        · obtain ⟨m, hmn, hg, he⟩ := (addOrderOf_eq_pos_iff hn).mp u.2
+          exact ⟨⟨m, hmn, hg⟩, Subtype.ext he⟩)
 
 @[simp]
 theorem card_addOrderOf_eq_totient {n : ℕ} :
@@ -503,6 +505,11 @@ theorem finite_setOf_addOrderOf_eq {n : ℕ} (hn : 0 < n) :
 
 @[deprecated (since := "2025-03-26")]
 alias finite_setOf_add_order_eq := finite_setOf_addOrderOf_eq
+
+theorem finite_torsion {n : ℕ} (hn : 0 < n) :
+    { u : AddCircle p | n • u = 0 }.Finite := by
+  convert Set.finite_range (fun m : Fin n ↦ (↑(↑m / ↑n * p) : AddCircle p))
+  simp_rw [nsmul_eq_zero_iff hn, range, Fin.exists_iff, exists_prop]
 
 end FiniteOrderPoints
 
