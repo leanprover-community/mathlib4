@@ -177,7 +177,6 @@ def polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) : S
 
 end NontriviallyNormedField
 
-
 section RCLike
 
 variable [RCLike 𝕜] [AddCommMonoid E] [AddCommMonoid F]
