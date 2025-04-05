@@ -130,7 +130,7 @@ composition with the `germ` morphisms.
 theorem stalk_hom_ext (F : X.Presheaf C) {x} {Y : C} {f₁ f₂ : F.stalk x ⟶ Y}
     (ih : ∀ (U : Opens X) (hxU : x ∈ U), F.germ U x hxU ≫ f₁ = F.germ U x hxU ≫ f₂) : f₁ = f₂ :=
   colimit.hom_ext fun U => by
-    induction U using Opposite.rec with | op U => obtain ⟨U, hxU⟩ := U; exact ih U hxU
+    induction U with | op U => obtain ⟨U, hxU⟩ := U; exact ih U hxU
 
 @[reassoc (attr := simp)]
 theorem stalkFunctor_map_germ {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x ∈ U) (f : F ⟶ G) :
@@ -411,7 +411,7 @@ theorem germ_exist (F : X.Presheaf C) (x : X) (t : ToType (stalk.{v, u} F x)) :
   obtain ⟨U, s, e⟩ :=
     Types.jointly_surjective.{v, v} _ (isColimitOfPreserves (forget C) (colimit.isColimit _)) t
   revert s e
-  induction U with | h U => ?_
+  induction U with | op U => ?_
   obtain ⟨V, m⟩ := U
   intro s e
   exact ⟨V, m, s, e⟩

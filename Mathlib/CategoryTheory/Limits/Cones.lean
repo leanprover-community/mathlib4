@@ -869,10 +869,7 @@ def coconeEquivalenceOpConeOp : Cocone F ≌ (Cone F.op)ᵒᵖ where
   unitIso := NatIso.ofComponents (fun c => Cocones.ext (Iso.refl _))
   counitIso :=
     NatIso.ofComponents
-      (fun c => by
-        induction c
-        apply Iso.op
-        exact Cones.ext (Iso.refl _))
+      (fun c => (Cones.ext (Iso.refl c.unop.pt)).op)
       fun {X} {Y} f =>
       Quiver.Hom.unop_inj (ConeMorphism.ext _ _ (by simp))
   functor_unitIso_comp c := by
