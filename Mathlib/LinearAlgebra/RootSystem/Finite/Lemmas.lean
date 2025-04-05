@@ -7,7 +7,6 @@ import Mathlib.LinearAlgebra.RootSystem.Base
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.Irreducible
-import Mathlib.NumberTheory.Divisors
 
 /-!
 # Structural lemmas about finite crystallographic root pairings
