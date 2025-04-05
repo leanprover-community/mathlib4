@@ -526,9 +526,10 @@ theorem supSpanSingleton_apply_mk (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x �
     f.supSpanSingleton x y hx
         ⟨x' + c • x, mem_sup.2 ⟨x', hx', _, mem_span_singleton.2 ⟨c, rfl⟩, rfl⟩⟩ =
       f ⟨x', hx'⟩ + c • y := by
-  simp only [supSpanSingleton]
-  rw [sup_apply, mkSpanSingleton'_apply] <;> simp [mem_span_singleton]
-
+  unfold supSpanSingleton
+  rw [sup_apply _ ⟨x', hx'⟩ ⟨c • x, _⟩, mkSpanSingleton'_apply]
+  · exact mem_span_singleton.2 ⟨c, rfl⟩
+  · rfl
 @[simp]
 theorem supSpanSingleton_apply_smul_self (f : E →ₗ.[K] F) {x : E} (y : F) (hx : x ∉ f.domain)
     (c : K) :
