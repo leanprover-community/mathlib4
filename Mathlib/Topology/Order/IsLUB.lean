@@ -161,7 +161,7 @@ theorem Dense.isLUB_inter_iff {α : Type*} [TopologicalSpace α] [Preorder α] [
 theorem Dense.isGLB_inter_iff {α : Type*} [TopologicalSpace α] [Preorder α] [ClosedIciTopology α]
     {s t : Set α} (hs : Dense s) (ht : IsOpen t) {x : α} :
     IsGLB (t ∩ s) x ↔ IsGLB t x :=
-  Dense.isLUB_inter_iff (α := αᵒᵈ) hs ht
+  hs.isLUB_inter_iff (α := αᵒᵈ) ht
 
 /-!
 ### Existence of sequences tending to `sInf` or `sSup` of a given set
@@ -221,17 +221,15 @@ theorem Dense.exists_seq_strictMono_tendsto' [DenselyOrdered α] [FirstCountable
     obtain ⟨z, hyz, hzx⟩ := hs.exists_between hy
     exact ⟨z, mem_inter hzx hyz⟩
   have hx : IsLUB (Ioo y x ∩ s) x := hs.isLUB_inter_iff isOpen_Ioo |>.mpr <| isLUB_Ioo hy
-  obtain ⟨u, hu⟩ := hx.exists_seq_strictMono_tendsto_of_not_mem (by simp) hnonempty
-  exact ⟨u, hu.1, hu.2.2.symm⟩
+  apply hx.exists_seq_strictMono_tendsto_of_not_mem (by aesop) hnonempty |>.imp
+  aesop
 
 theorem Dense.exists_seq_strictMono_tendsto [DenselyOrdered α] [NoMinOrder α]
     [FirstCountableTopology α] {s : Set α} (hs : Dense s) (x : α) :
     ∃ u : ℕ → α, StrictMono u ∧ (∀ n, u n ∈ (Iio x ∩ s)) ∧ Tendsto u atTop (𝓝 x) := by
-  obtain ⟨y, hy⟩ : ∃ y, y < x := exists_lt x
-  obtain ⟨u, hu_mono, hu_mem, hux⟩ := hs.exists_seq_strictMono_tendsto' hy
-  have hu_mem' (n) : u n ∈ Iio x ∩ s :=
-    Set.mem_of_mem_of_subset (hu_mem n) <| inter_subset_inter_left _ Ioo_subset_Iio_self
-  exact ⟨u, hu_mono, hu_mem', hux⟩
+  obtain ⟨y, hy⟩ := exists_lt x
+  apply hs.exists_seq_strictMono_tendsto' (exists_lt x).choose_spec |>.imp
+  aesop
 
 theorem IsGLB.exists_seq_strictAnti_tendsto_of_not_mem {t : Set α} {x : α}
     [IsCountablyGenerated (𝓝 x)] (htx : IsGLB t x) (not_mem : x ∉ t) (ht : t.Nonempty) :
