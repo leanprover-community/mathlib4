@@ -1132,35 +1132,43 @@ section UniformComposition
 variable {α β γ ι : Type*} [UniformSpace β] [UniformSpace γ] {p : Filter ι}
 
 /-- Composing on the left by a uniformly continuous function preserves uniform convergence -/
-theorem UniformContinuousOn.comp_tendstoUniformly (s : Set β) (F : ι → α → β) (f : α → β)
-    (hF : ∀ i x, F i x ∈ s) (hf : ∀ x, f x ∈ s)
-    {g : β → γ} (hg : UniformContinuousOn g s) (h : TendstoUniformly F f p) :
+theorem UniformContinuousOn.comp_tendstoUniformly {s : Set β} {F : ι → α → β} {f : α → β}
+    (hF : ∀ i x, F i x ∈ s) (hf : ∀ x, f x ∈ s) {g : β → γ} (hg : UniformContinuousOn g s)
+    (h : TendstoUniformly F f p) :
     TendstoUniformly (fun i x => g (F i x)) (fun x => g (f x)) p := by
   rw [uniformContinuousOn_iff_restrict] at hg
   lift F to ι → α → s using hF with F' hF'
   lift f to α → s using hf with f' hf'
   rw [tendstoUniformly_iff_tendsto] at h
-  have : Tendsto (fun q : ι × α ↦ (f' q.2, (F' q.1 q.2))) (p ×ˢ ⊤) (𝓤 s) :=
+  have : Tendsto (fun q ↦ (f' q.2, (F' q.1 q.2))) (p ×ˢ ⊤) (𝓤 s) :=
     h.of_tendsto_comp isUniformEmbedding_subtype_val.comap_uniformity.le
   apply UniformContinuous.comp_tendstoUniformly hg ?_
   rwa [← tendstoUniformly_iff_tendsto] at this
 
-theorem UniformContinuousOn.comp_tendstoUniformly_eventually (s : Set β) (F : ι → α → β) (f : α → β)
-    (hF : ∀ᶠ i in p, ∀ x, F i x ∈ s) (hf : ∀ x, f x ∈ s)
-    {g : β → γ} (hg : UniformContinuousOn g s) (h : TendstoUniformly F f p) :
+theorem UniformContinuousOn.comp_tendstoUniformly_eventually {s : Set β} {F : ι → α → β} {f : α → β}
+    (hF : ∀ᶠ i in p, ∀ x, F i x ∈ s) (hf : ∀ x, f x ∈ s) {g : β → γ} (hg : UniformContinuousOn g s)
+    (h : TendstoUniformly F f p) :
     TendstoUniformly (fun i => fun x => g (F i x)) (fun x => g (f x)) p := by
   classical
   rw [eventually_iff_exists_mem] at hF
   obtain ⟨s', hs', hs⟩ := hF
-  let F' : ι → α → β := fun (i : ι) x => if i ∈ s' then F i x else f x
+  let F' : ι → α → β := fun i x => if i ∈ s' then F i x else f x
   have hF : F =ᶠ[p] F' :=  by
     rw [eventuallyEq_iff_exists_mem]
     refine ⟨s', hs', fun y hy => by aesop⟩
   have h' : TendstoUniformly F' f p := by
     rwa [tendstoUniformly_congr hF] at h
   apply (tendstoUniformly_congr _).mpr
-    (UniformContinuousOn.comp_tendstoUniformly s F' f (by aesop) hf hg h')
+    (UniformContinuousOn.comp_tendstoUniformly (by aesop) hf hg h')
   rw [eventuallyEq_iff_exists_mem]
   refine ⟨s', hs', fun i hi => by aesop⟩
+
+theorem UniformContinuousOn.comp_tendstoUniformlyOn_eventually {s : Set β} {F : ι → α → β}
+    {f : α → β} {t : Set α} (hF : ∀ᶠ i in p, ∀ x ∈ t, F i x ∈ s) (hf : ∀ x ∈ t, f x ∈ s)
+    {g : β → γ} (hg : UniformContinuousOn g s) (h : TendstoUniformlyOn F f p t) :
+    TendstoUniformlyOn (fun i => fun x => g (F i x)) (fun x => g (f x)) p t := by
+  rw [tendstouniformlyOn_iff_restrict]
+  apply UniformContinuousOn.comp_tendstoUniformly_eventually (by simpa using hF )
+    (by simpa using hf) hg (by rw [tendstouniformlyOn_iff_restrict] at h; exact h)
 
 end UniformComposition
