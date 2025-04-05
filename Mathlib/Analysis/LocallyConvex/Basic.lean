@@ -42,7 +42,7 @@ open Set
 
 open Pointwise Topology
 
-variable {𝕜 𝕝 E : Type*} {ι : Sort*} {κ : ι → Sort*}
+variable {𝕜 𝕝 E F : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 section SeminormedRing
 
@@ -102,6 +102,11 @@ theorem balanced_iInter {f : ι → Set E} (h : ∀ i, Balanced 𝕜 (f i)) : Ba
 theorem balanced_iInter₂ {f : ∀ i, κ i → Set E} (h : ∀ i j, Balanced 𝕜 (f i j)) :
     Balanced 𝕜 (⋂ (i) (j), f i j) :=
   balanced_iInter fun _ => balanced_iInter <| h _
+
+theorem Balanced.mulActionHom_preimage [SMul 𝕜 F] {s : Set F} (hs : Balanced 𝕜 s)
+    (f : E →[𝕜] F) : Balanced 𝕜 (f ⁻¹' s) := fun a ha x ⟨y,⟨hy₁,hy₂⟩⟩ => by
+  rw [mem_preimage, ← hy₂, map_smul]
+  exact hs a ha (smul_mem_smul_set hy₁)
 
 variable [SMul 𝕝 E] [SMulCommClass 𝕜 𝕝 E]
 
