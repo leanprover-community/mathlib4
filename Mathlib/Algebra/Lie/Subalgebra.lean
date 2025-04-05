@@ -689,6 +689,40 @@ theorem lieSpan_induction {p : L → Prop} {x : L} (h : x ∈ lieSpan R L s) (me
       lie_mem' := lie _ _ }
   lieSpan_le.mpr (show s ≤ S from mem) h
 
+/-
+@[elab_as_elim]
+theorem span_induction {p : (x : M) → x ∈ span R s → Prop}
+    (mem : ∀ (x) (h : x ∈ s), p x (subset_span h))
+    (zero : p 0 (Submodule.zero_mem _))
+    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
+    (smul : ∀ (a : R) (x hx), p x hx → p (a • x) (Submodule.smul_mem _ _ ‹_›)) {x}
+    (hx : x ∈ span R s) : p x hx := by
+  let p : Submodule R M :=
+    { carrier := { x | ∃ hx, p x hx }
+      add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
+      zero_mem' := ⟨_, zero⟩
+      smul_mem' := fun r ↦ fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩ }
+  exact span_le (p := p) |>.mpr (fun y hy ↦ ⟨subset_span hy, mem y hy⟩) hx |>.elim fun _ ↦ id
+-/
+
+
+@[elab_as_elim]
+theorem lieSpan_induction2 {p : (x : L) → x ∈ lieSpan R L s → Prop}
+    (mem : ∀ (x) (h : x ∈ s), p x (subset_lieSpan h))
+    (zero : p 0 (LieSubalgebra.zero_mem _))
+    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (LieSubalgebra.add_mem _ ‹_› ‹_›))
+    (smul : ∀ (a : R) (x hx), p x hx → p (a • x) (LieSubalgebra.smul_mem _ _ ‹_›)) {x}
+    (lie : ∀ x y hx hy, p x hx → p y hy → p (⁅x, y⁆) (LieSubalgebra.lie_mem _ ‹_› ‹_›))
+    (hx : x ∈ lieSpan R L s) : p x hx := by
+  let p : LieSubalgebra R L :=
+    { carrier := { x | ∃ hx, p x hx }
+      add_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, add _ _ _ _ hpx hpy⟩
+      zero_mem' := ⟨_, zero⟩
+      smul_mem' := fun r ↦ fun ⟨_, hpx⟩ ↦ ⟨_, smul r _ _ hpx⟩
+      lie_mem' := fun ⟨_, hpx⟩ ⟨_, hpy⟩ ↦ ⟨_, lie _ _ _ _ hpx hpy⟩ }
+  exact lieSpan_le (K := p) |>.mpr (fun y hy ↦ ⟨subset_lieSpan hy, mem y hy⟩) hx |>.elim fun _ ↦ id
+
+
 end LieSpan
 
 end LieSubalgebra

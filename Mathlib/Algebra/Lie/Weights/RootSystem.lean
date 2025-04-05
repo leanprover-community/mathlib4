@@ -435,7 +435,7 @@ variable (K L : Type*) [Field K] [CharZero K]
   (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [LieModule.IsTriangularizable K H L]
 
 #check (LieAlgebra.IsKilling.rootSystem H)
-set_option maxHeartbeats 10000000
+--set_option maxHeartbeats 10000000
 --  eq_top_of_invtSubmodule_reflection (q : Submodule R M) :
 --    (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤
 
@@ -464,7 +464,23 @@ lemma rr7:
       simp only [Submodule.mem_top]
     induction hx using Submodule.iSup_induction' with
     | mem i x hx =>
+      simp_all
+      --(p := (y : L) → y ∈ LieSubalgebra.lieSpan K L gg → ⁅x, y⁆ ∈ LieSubalgebra.lieSpan K L gg)
+      simp [I] at hy
+      refine LieSubalgebra.lieSpan_induction2 (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ hy
+      --intro a x_1
       sorry
+      sorry
+      sorry
+      sorry
+      intro x_1
+      intro zzz
+      intro x_2
+      intro zzz_2
+      intro hx_1
+      intro hxzzz
+      have : x_1 ∈ I := x_2
+
     | zero =>
       simp only [zero_lie, LieSubalgebra.zero_mem]
     | add x1 y1 _ _ hx hy =>
