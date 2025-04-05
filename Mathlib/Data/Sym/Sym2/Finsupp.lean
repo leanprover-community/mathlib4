@@ -17,7 +17,7 @@ open Sym2
 
 variable {α M₀ : Type*} [CommMonoidWithZero M₀] {f : α →₀ M₀}
 
-namespace Sym2
+namespace Finsupp
 
 lemma sym2_support_eq_preimage_support_mul [NoZeroDivisors M₀] (f : α →₀ M₀) :
     f.support.sym2 = map f ⁻¹' mul.support := by ext ⟨a, b⟩; simp
@@ -27,10 +27,6 @@ lemma mem_sym2_support_of_mul_ne_zero (p : Sym2 α) (hp : mul (p.map f) ≠ 0) :
   obtain ⟨a, b⟩ := p
   simp only [map_pair_eq, mul_mk, ne_eq] at hp
   simpa using .intro (left_ne_zero_of_mul hp) (right_ne_zero_of_mul hp)
-
-end Sym2
-
-namespace Finsupp
 
 /-- The composition of a `Finsupp` with `Sym2.mul` as a `Finsupp`. -/
 noncomputable def sym2Mul (f : α →₀ M₀) : Sym2 α →₀ M₀ :=
