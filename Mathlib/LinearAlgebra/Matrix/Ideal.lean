@@ -259,7 +259,7 @@ Given an ideal $J ≤ Mₙ(R)$, we send it to $\{Nᵢⱼ ∣ ∃ N ∈ J\}$.
 def equivMatricesOver [Nonempty n] [DecidableEq n] :
     TwoSidedIdeal R ≃ TwoSidedIdeal (Matrix n n R) where
   toFun I := I.matricesOver n
-  invFun J := { ringCon := J.ringCon.ofMatricesOver}
+  invFun J := { ringCon := J.ringCon.ofMatricesOver }
   right_inv _ := ringCon_injective <| RingCon.matricesOver_ofMatricesOver _
   left_inv _ := ringCon_injective <| RingCon.ofMatricesOver_matricesOver _
 
