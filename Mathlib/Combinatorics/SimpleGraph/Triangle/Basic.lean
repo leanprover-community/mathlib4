@@ -268,12 +268,12 @@ lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ 
   calc
     _ ≤ 2 * (⊤ : SimpleGraph α).edgeFinset.card := by gcongr; exact le_top
     _ < card α ^ 2 := ?_
-  rw [edgeFinset_top, filter_not, card_sdiff (subset_univ _), card_univ, Sym2.card]
+  rw [edgeFinset_top, filter_not, card_sdiff (subset_univ _), Finset.card_univ, Sym2.card]
   simp_rw [choose_two_right, Nat.add_sub_cancel, Nat.mul_comm _ (card α),
     funext (propext <| Sym2.isDiag_iff_mem_range_diag ·), univ_filter_mem_range, mul_tsub,
     Nat.mul_div_cancel' (card α).even_mul_succ_self.two_dvd]
-  rw [card_image_of_injective _ Sym2.diag_injective, card_univ, mul_add_one (α := ℕ), two_mul, sq,
-    add_tsub_add_eq_tsub_right]
+  rw [card_image_of_injective _ Sym2.diag_injective, Finset.card_univ, mul_add_one (α := ℕ),
+    two_mul, sq, add_tsub_add_eq_tsub_right]
   apply tsub_lt_self <;> positivity
 
 lemma FarFromTriangleFree.lt_one (hG : G.FarFromTriangleFree ε) : ε < 1 :=
