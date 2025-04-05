@@ -436,6 +436,24 @@ protected theorem sum_inner_mul_inner (b : OrthonormalBasis ι 𝕜 E) (x y : E)
   rw [map_smul, b.repr_apply_apply, mul_comm]
   simp
 
+lemma norm_le_card_mul_iSup_abs_inner {ι E : Type*} [Fintype ι] [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] (b : OrthonormalBasis ι ℝ E) (x : E) :
+    ‖x‖ ≤ √(Fintype.card ι) * ⨆ i, |inner (b i) x| := by
+  calc ‖x‖
+  _ = √(∑ i, |inner (b i) x| ^ 2) := by
+    simp [norm_eq_sqrt_real_inner, ← OrthonormalBasis.sum_inner_mul_inner b x x,
+      real_inner_comm _ x, ← pow_two]
+  _ ≤ √(∑ _ : ι, (⨆ j, |inner (b j) x|) ^ 2) := by
+    gcongr with i
+    exact le_ciSup (f := fun j ↦ |inner (b j) x|) (by simp) i
+  _ = √(Fintype.card ι) * ⨆ i, |inner (b i) x| := by
+    simp only [Finset.sum_const, Finset.card_univ, nsmul_eq_mul, Nat.cast_nonneg, Real.sqrt_mul]
+    congr
+    rw [Real.sqrt_sq]
+    cases isEmpty_or_nonempty ι
+    · simp
+    · exact le_ciSup_of_le (by simp) (Nonempty.some inferInstance) (by positivity)
+
 protected theorem orthogonalProjection_eq_sum {U : Submodule 𝕜 E} [CompleteSpace U]
     (b : OrthonormalBasis ι 𝕜 U) (x : E) :
     orthogonalProjection U x = ∑ i, ⟪(b i : E), x⟫ • b i := by

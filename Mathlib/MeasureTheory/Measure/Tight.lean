@@ -3,7 +3,7 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Josha Dekker
 -/
-import Mathlib.MeasureTheory.Measure.Regular
+import Mathlib.MeasureTheory.Measure.RegularityCompacts
 
 /-!
 # Tight sets of measures
@@ -82,6 +82,14 @@ lemma isTightMeasureSet_singleton_of_innerRegular [T2Space α] [OpensMeasurableS
   intro s hs r hr
   obtain ⟨K, hKs, hK_compact, hμK⟩ := h.innerRegular hs r hr
   exact ⟨K, hKs, ⟨hK_compact, hK_compact.isClosed⟩, hμK⟩
+
+/-- In a complete second-countable pseudo-metric space, finite measures are tight. -/
+theorem isTightMeasureSet_singleton {α : Type*} {mα : MeasurableSpace α}
+    [PseudoEMetricSpace α] [CompleteSpace α] [SecondCountableTopology α] [BorelSpace α]
+    {μ : Measure α} [IsFiniteMeasure μ] :
+    IsTightMeasureSet {μ} :=
+  isTightMeasureSet_singleton_of_innerRegularWRT
+    (innerRegular_isCompact_isClosed_measurableSet_of_finite _)
 
 namespace IsTightMeasureSet
 
