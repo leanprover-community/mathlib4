@@ -3,6 +3,7 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Logic.Encodable.Pi
 import Mathlib.MeasureTheory.Group.Measure
 import Mathlib.MeasureTheory.MeasurableSpace.Pi
@@ -158,8 +159,8 @@ theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (X i)) [∀ i, SigmaFinit
   | nil => simp
   | cons a l ih =>
     rw [tprod_cons, Set.tprod]
-    erw [prod_prod] -- TODO: why `rw` fails?
-    rw [map_cons, prod_cons, ih]
+    dsimp only [foldr_cons, map_cons, prod_cons]
+    rw [prod_prod, ih]
 
 end Tprod
 

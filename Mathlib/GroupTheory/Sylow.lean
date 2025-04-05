@@ -750,11 +750,9 @@ theorem normal_of_normalizer_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)
 theorem normalizer_normalizer {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
     P.normalizer.normalizer = P.normalizer := by
   have := normal_of_normalizer_normal (P.subtype (le_normalizer.trans le_normalizer))
-  simp_rw [← normalizer_eq_top_iff, coe_subtype, ← subgroupOf_normalizer_eq le_normalizer, ←
-    subgroupOf_normalizer_eq le_rfl, subgroupOf_self] at this
-  rw [← range_subtype P.normalizer.normalizer, MonoidHom.range_eq_map,
-    ← this trivial]
-  exact map_comap_eq_self (le_normalizer.trans (ge_of_eq (range_subtype _)))
+  rw [coe_subtype, normal_subgroupOf_iff_le_normalizer (le_normalizer.trans le_normalizer),
+    ← subgroupOf_normalizer_eq (le_normalizer.trans le_normalizer)] at this
+  exact le_antisymm (this normal_in_normalizer) le_normalizer
 
 theorem normal_of_all_max_subgroups_normal [Finite G]
     (hnc : ∀ H : Subgroup G, IsCoatom H → H.Normal) {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]

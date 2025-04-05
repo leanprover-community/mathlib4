@@ -75,6 +75,7 @@ initialize_simps_projections Hom (toLRSHom' → toLRSHom)
 /-- Schemes are a full subcategory of locally ringed spaces.
 -/
 instance : Category Scheme where
+  Hom := Hom
   id X := Hom.mk (𝟙 X.toLocallyRingedSpace)
   comp f g := Hom.mk (f.toLRSHom ≫ g.toLRSHom)
 

@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
-import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.BigOperators.Finsupp.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.Rat.BigOperators
@@ -78,7 +78,7 @@ theorem mk_mem_graph (f : α →₀ M) {a : α} (ha : a ∈ f.support) : (a, f a
 theorem apply_eq_of_mem_graph {a : α} {m : M} {f : α →₀ M} (h : (a, m) ∈ f.graph) : f a = m :=
   (mem_graph_iff.1 h).1
 
-@[simp 1100] -- Porting note: change priority to appease `simpNF`
+@[simp 1100] -- Higher priority shortcut instance for `mem_graph_iff`.
 theorem not_mem_graph_snd_zero (a : α) (f : α →₀ M) : (a, (0 : M)) ∉ f.graph := fun h =>
   (mem_graph_iff.1 h).2.irrefl
 
@@ -185,7 +185,9 @@ variable {F : Type*} [FunLike F M N] [AddMonoidHomClass F M N]
 def mapRange.addMonoidHom (f : M →+ N) : (α →₀ M) →+ α →₀ N where
   toFun := (mapRange f f.map_zero : (α →₀ M) → α →₀ N)
   map_zero' := mapRange_zero
-  map_add' a b := by dsimp only; exact mapRange_add f.map_add _ _; -- Porting note: `dsimp` needed
+  -- Porting note: need either `dsimp only` or to specify `hf`:
+  -- see also: https://github.com/leanprover-community/mathlib4/issues/12129
+  map_add' := mapRange_add (hf := f.map_zero) f.map_add
 
 @[simp]
 theorem mapRange.addMonoidHom_id :
@@ -344,7 +346,7 @@ theorem cast_finsupp_prod [CommSemiring R] (g : α → M → ℕ) :
   Nat.cast_prod _ _
 
 @[simp, norm_cast]
-theorem cast_finsupp_sum [CommSemiring R] (g : α → M → ℕ) :
+theorem cast_finsupp_sum [AddCommMonoidWithOne R] (g : α → M → ℕ) :
     (↑(f.sum g) : R) = f.sum fun a b => ↑(g a b) :=
   Nat.cast_sum _ _
 
@@ -358,7 +360,7 @@ theorem cast_finsupp_prod [CommRing R] (g : α → M → ℤ) :
   Int.cast_prod _ _
 
 @[simp, norm_cast]
-theorem cast_finsupp_sum [CommRing R] (g : α → M → ℤ) :
+theorem cast_finsupp_sum [AddCommGroupWithOne R] (g : α → M → ℤ) :
     (↑(f.sum g) : R) = f.sum fun a b => ↑(g a b) :=
   Int.cast_sum _ _
 
@@ -562,7 +564,7 @@ theorem mapDomain_mapRange [AddCommMonoid N] (f : α → β) (v : α →₀ M) (
       map_add' := hadd }
   DFunLike.congr_fun (mapDomain.addMonoidHom_comp_mapRange f g') v
 
-theorem sum_update_add [AddCommMonoid α] [AddCommMonoid β] (f : ι →₀ α) (i : ι) (a : α)
+theorem sum_update_add [AddZeroClass α] [AddCommMonoid β] (f : ι →₀ α) (i : ι) (a : α)
     (g : ι → α → β) (hg : ∀ i, g i 0 = 0)
     (hgg : ∀ (j : ι) (a₁ a₂ : α), g j (a₁ + a₂) = g j a₁ + g j a₂) :
     (f.update i a).sum g + g i (f i) = f.sum g + g i a := by
@@ -618,7 +620,7 @@ theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →�
   simp only [sum, comapDomain_apply, (· ∘ ·), comapDomain]
   exact Finset.sum_preimage_of_bij f _ hf fun x => g x (l x)
 
-theorem eq_zero_of_comapDomain_eq_zero [AddCommMonoid M] (f : α → β) (l : β →₀ M)
+theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) : comapDomain f l hf.injOn = 0 → l = 0 := by
   rw [← support_eq_empty, ← support_eq_empty, comapDomain]
   simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false, mem_preimage]
@@ -718,7 +720,7 @@ theorem some_zero [Zero M] : (0 : Option α →₀ M).some = 0 := by
   simp
 
 @[simp]
-theorem some_add [AddCommMonoid M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
+theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
   ext
   simp
 
@@ -735,19 +737,19 @@ theorem some_single_some [Zero M] (a : α) (m : M) :
     simp [single_apply]
 
 @[to_additive]
-theorem prod_option_index [AddCommMonoid M] [CommMonoid N] (f : Option α →₀ M)
+theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
     (b : Option α → M → N) (h_zero : ∀ o, b o 0 = 1)
     (h_add : ∀ o m₁ m₂, b o (m₁ + m₂) = b o m₁ * b o m₂) :
     f.prod b = b none (f none) * f.some.prod fun a => b (Option.some a) := by
   classical
-    apply induction_linear f
-    · simp [some_zero, h_zero]
-    · intro f₁ f₂ h₁ h₂
+    induction f using induction_linear with
+    | zero => simp [some_zero, h_zero]
+    | add f₁ f₂ h₁ h₂ =>
       rw [Finsupp.prod_add_index, h₁, h₂, some_add, Finsupp.prod_add_index]
       · simp only [h_add, Pi.add_apply, Finsupp.coe_add]
         rw [mul_mul_mul_comm]
       all_goals simp [h_zero, h_add]
-    · rintro (_ | a) m <;> simp [h_zero, h_add]
+    | single a m => cases a <;> simp [h_zero, h_add]
 
 theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : Option α →₀ R)
     (b : Option α → M) :
@@ -772,7 +774,6 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
   toFun a := if p a then f a else 0
   support := f.support.filter p
   mem_support_toFun a := by
-    beta_reduce -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed to activate `split_ifs`
     split_ifs with h <;>
       · simp only [h, mem_filter, mem_support_iff]
         tauto
@@ -1069,22 +1070,30 @@ finitely supported functions from `β` to `M`,
 protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M :=
   f.sum fun a g => g.sum fun b c => single (a, b) c
 
+@[simp]
+protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (x : α) (y : β) :
+    f.uncurry (x, y) = f x y := by
+  rw [← curry_apply (f.uncurry) x y]
+  simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, single_zero, single_add,
+    forall_true_iff, sum_single_index, single_zero, ← single_sum, sum_single]
+
+@[simp]
+theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
+  ext a b
+  rw [curry_apply, Finsupp.uncurry_apply_pair]
+
+@[simp]
+theorem uncurry_curry (f : α × β →₀ M) : f.curry.uncurry = f := by
+  ext ⟨a, b⟩
+  rw [Finsupp.uncurry_apply_pair, curry_apply]
+
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
 def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   toFun := Finsupp.curry
   invFun := Finsupp.uncurry
-  left_inv f := by
-    rw [Finsupp.uncurry, sum_curry_index]
-    · simp_rw [Prod.mk.eta, sum_single]
-    · intros
-      apply single_zero
-    · intros
-      apply single_add
-  right_inv f := by
-    simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, sum_zero_index, sum_add_index,
-      sum_single_index, single_zero, single_add, eq_self_iff_true, forall_true_iff,
-      forall₃_true_iff, (single_sum _ _ _).symm, sum_single]
+  left_inv := uncurry_curry
+  right_inv := curry_uncurry
 
 theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p] :
     (f.filter fun a : α × β => p a.1).curry = f.curry.filter p := by
@@ -1350,7 +1359,7 @@ namespace Finsupp
 
 section Sigma
 
-variable {αs : ι → Type*} [Zero M] (l : (Σi, αs i) →₀ M)
+variable {αs : ι → Type*} [Zero M] (l : (Σ i, αs i) →₀ M)
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ (i : ι), αs i` to `M` and
 an index element `i : ι`, `split l i` is the `i`th component of `l`,
@@ -1359,8 +1368,7 @@ a finitely supported function from `as i` to `M`.
 This is the `Finsupp` version of `Sigma.curry`.
 -/
 def split (i : ι) : αs i →₀ M :=
-  l.comapDomain (Sigma.mk i) fun _ _ _ _ hx => heq_iff_eq.1 (Sigma.mk.inj_iff.mp hx).2
-  -- Porting note: it seems like Lean 4 never generated the `Sigma.mk.inj` lemma?
+  l.comapDomain (Sigma.mk i) fun _ _ _ _ hx => heq_iff_eq.1 (Sigma.mk.inj hx).2
 
 theorem split_apply (i : ι) (x : αs i) : split l i x = l ⟨i, x⟩ := by
   dsimp only [split]
@@ -1373,9 +1381,8 @@ def splitSupport (l : (Σi, αs i) →₀ M) : Finset ι :=
   l.support.image Sigma.fst
 
 theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
-  rw [splitSupport, @mem_image _ _ (Classical.decEq _), Ne, ← support_eq_empty, ← Ne, ←
-    Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): had to add the `Classical.decEq` instance manually
+  classical rw [splitSupport, mem_image, Ne, ← support_eq_empty, ← Ne,
+    ← Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
   simp only [exists_prop, Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
     Sigma.exists, Ne]
 
@@ -1391,12 +1398,11 @@ def splitComp [Zero N] (g : ∀ i, (αs i →₀ M) → N) (hg : ∀ i x, x = 0 
     rw [mem_splitSupport_iff_nonzero, not_iff_not, hg]
 
 theorem sigma_support : l.support = l.splitSupport.sigma fun i => (l.split i).support := by
-  simp only [Finset.ext_iff, splitSupport, split, comapDomain, @mem_image _ _ (Classical.decEq _),
-    mem_preimage, Sigma.forall, mem_sigma]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): had to add the `Classical.decEq` instance manually
+  simp only [Finset.ext_iff, splitSupport, split, comapDomain, mem_image, mem_preimage,
+    Sigma.forall, mem_sigma]
   tauto
 
-theorem sigma_sum [AddCommMonoid N] (f : (Σi : ι, αs i) → M → N) :
+theorem sigma_sum [AddCommMonoid N] (f : (Σ i : ι, αs i) → M → N) :
     l.sum f = ∑ i ∈ splitSupport l, (split l i).sum fun (a : αs i) b => f ⟨i, a⟩ b := by
   simp only [sum, sigma_support, sum_sigma, split_apply]
 
@@ -1406,7 +1412,7 @@ variable {η : Type*} [Fintype η] {ιs : η → Type*} [Zero α]
 and `Π j, (ιs j →₀ α)`.
 
 This is the `Finsupp` version of `Equiv.Pi_curry`. -/
-noncomputable def sigmaFinsuppEquivPiFinsupp : ((Σj, ιs j) →₀ α) ≃ ∀ j, ιs j →₀ α where
+noncomputable def sigmaFinsuppEquivPiFinsupp : ((Σ j, ιs j) →₀ α) ≃ ∀ j, ιs j →₀ α where
   toFun := split
   invFun f :=
     onFinset (Finset.univ.sigma fun j => (f j).support) (fun ji => f ji.1 ji.2) fun _ hg =>
@@ -1419,7 +1425,7 @@ noncomputable def sigmaFinsuppEquivPiFinsupp : ((Σj, ιs j) →₀ α) ≃ ∀ 
     simp [split]
 
 @[simp]
-theorem sigmaFinsuppEquivPiFinsupp_apply (f : (Σj, ιs j) →₀ α) (j i) :
+theorem sigmaFinsuppEquivPiFinsupp_apply (f : (Σ j, ιs j) →₀ α) (j i) :
     sigmaFinsuppEquivPiFinsupp f j i = f ⟨j, i⟩ :=
   rfl
 
@@ -1429,7 +1435,7 @@ theorem sigmaFinsuppEquivPiFinsupp_apply (f : (Σj, ιs j) →₀ α) (j i) :
 This is the `AddEquiv` version of `Finsupp.sigmaFinsuppEquivPiFinsupp`.
 -/
 noncomputable def sigmaFinsuppAddEquivPiFinsupp {α : Type*} {ιs : η → Type*} [AddMonoid α] :
-    ((Σj, ιs j) →₀ α) ≃+ ∀ j, ιs j →₀ α :=
+    ((Σ j, ιs j) →₀ α) ≃+ ∀ j, ιs j →₀ α :=
   { sigmaFinsuppEquivPiFinsupp with
     map_add' := fun f g => by
       ext
@@ -1437,7 +1443,7 @@ noncomputable def sigmaFinsuppAddEquivPiFinsupp {α : Type*} {ιs : η → Type*
 
 @[simp]
 theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [AddMonoid α]
-    (f : (Σj, ιs j) →₀ α) (j i) : sigmaFinsuppAddEquivPiFinsupp f j i = f ⟨j, i⟩ :=
+    (f : (Σ j, ιs j) →₀ α) (j i) : sigmaFinsuppAddEquivPiFinsupp f j i = f ⟨j, i⟩ :=
   rfl
 
 end Sigma

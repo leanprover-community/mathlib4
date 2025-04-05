@@ -306,12 +306,11 @@ protected theorem StrictMono.ite (hf : StrictMono f) (hg : StrictMono g) {p : α
     StrictMono fun x ↦ if p x then f x else g x :=
   (hf.ite' hg hp) fun _ y _ _ h ↦ (hf h).trans_le (hfg y)
 
--- Porting note: `Strict*.dual_right` dot notation is not working here for some reason
 protected theorem StrictAnti.ite' (hf : StrictAnti f) (hg : StrictAnti g) {p : α → Prop}
     [DecidablePred p]
     (hp : ∀ ⦃x y⦄, x < y → p y → p x) (hfg : ∀ ⦃x y⦄, p x → ¬p y → x < y → g y < f x) :
     StrictAnti fun x ↦ if p x then f x else g x :=
-  StrictMono.ite' (StrictAnti.dual_right hf) (StrictAnti.dual_right hg) hp hfg
+  StrictMono.ite' hf.dual_right hg.dual_right hp hfg
 
 protected theorem StrictAnti.ite (hf : StrictAnti f) (hg : StrictAnti g) {p : α → Prop}
     [DecidablePred p] (hp : ∀ ⦃x y⦄, x < y → p y → p x) (hfg : ∀ x, g x ≤ f x) :
