@@ -212,7 +212,7 @@ theorem substAlgHom_apply (ha : HasSubst a) (f : MvPowerSeries σ R) :
     substAlgHom ha f = subst a f := by
   rw [coe_substalghom]
 
-theorem subst_add (ha : hassubst a) (f g : mvpowerseries σ r) :
+theorem subst_add (ha : HasSubst a) (f g : MvPowerSeries σ r) :
     subst a (f + g) = subst a f + subst a g := by
   simp only [← substAlgHom_apply ha, map_add]
 
