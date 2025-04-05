@@ -26,7 +26,7 @@ private def lbp (m n : { n : ℕ // k ≤ n}) : Prop :=
 
 private def wf_lbp : WellFounded (@lbp k p) :=
   ⟨let ⟨n, h, pn⟩ := H
-    suffices ∀ m k, n ≤ k.1 + m → Acc lbp k from fun _ => this _ _ (Nat.le_add_left _ _)
+    suffices ∀ m k, n ≤ k.1 + m → Acc lbp k from fun _ => this _ _ (le_add_left _ _)
     fun m =>
     Nat.recOn m
       (fun _ kn =>
@@ -46,10 +46,10 @@ protected def findFromX : { n // ∃ h, p n h ∧ ∀ m h, m < n → ¬p m h } :
       if pm : p m.1 m.2 then ⟨m.1, m.2, pm, al⟩
       else
         have : ∀ n h, n ≤ m.1 → ¬p n h := fun n hn h =>
-          Or.elim (Nat.lt_or_eq_of_le h) (al n hn) fun e => e ▸ pm
-        IH ⟨m.1 + 1, Nat.le_trans m.2 (Nat.le_succ m.1)⟩ ⟨rfl, this⟩
-          fun n hn h => this n hn (Nat.le_of_lt_succ h))
-    ⟨k, Nat.le_refl k⟩ fun _ hn h => Nat.not_le_of_lt h hn |>.elim
+          Or.elim (lt_or_eq_of_le h) (al n hn) fun e => e ▸ pm
+        IH ⟨m.1 + 1, le_trans m.2 (le_succ m.1)⟩ ⟨rfl, this⟩
+          fun n hn h => this n hn (le_of_lt_succ h))
+    ⟨k, le_rfl⟩ fun _ hn h => not_le_of_lt h hn |>.elim
 
 /-- If `p` is a (decidable) predicate on `ℕ` that depends on `h : k ≤ n` and
 `hp : ∃ (n : ℕ) (h : k ≤ n), p n h` is a proof that there exists
@@ -93,7 +93,7 @@ lemma findFrom_eq_iff (h : ∃ n h, p n h) :
 @[simp] lemma findFrom_lt_iff (h : ∃ n h, p n h) (n : ℕ) :
     Nat.findFrom h < n ↔ ∃ m h, m < n ∧ p m h :=
   ⟨fun h2 ↦ ⟨Nat.findFrom h, Nat.le_findFrom h, h2, Nat.findFrom_spec h⟩,
-    fun ⟨_, hkn, hmn, hm⟩ ↦ Nat.lt_of_le_of_lt (Nat.findFrom_min' h hkn hm) hmn⟩
+    fun ⟨_, hkn, hmn, hm⟩ ↦ lt_of_le_of_lt (Nat.findFrom_min' h hkn hm) hmn⟩
 
 @[simp] lemma findFrom_le_iff (h : ∃ n h, p n h) (n : ℕ) :
     Nat.findFrom h ≤ n ↔ ∃ m h, m ≤ n ∧ p m h := by
@@ -145,7 +145,7 @@ lemma findFrom_congr' [∀ n h, Decidable (q n h)] {hp : ∃ n h, p n h} {hq : �
   let ⟨_, _, hp⟩ := hp; findFrom_congr _ hp fun _ _ _ ↦ hpq _
 
 lemma findFrom_le {h : ∃ n h, p n h} (hn : k ≤ n) (hn : p n hn) : Nat.findFrom h ≤ n :=
-  (Nat.findFrom_le_iff _ _).2 ⟨n, _, le_rfl, hn⟩
+  (findFrom_le_iff _ _).2 ⟨n, _, le_rfl, hn⟩
 
 lemma findFrom_comp_succ (h₁ : ∃ n h, p n h)
     (h₂ : ∃ n h, p (n + 1) (Nat.le_trans h (Nat.le_succ n)))
@@ -154,23 +154,23 @@ lemma findFrom_comp_succ (h₁ : ∃ n h, p n h)
   refine (findFrom_eq_iff _).2 ⟨_, Nat.findFrom_spec h₂, fun n h hn ↦ ?_⟩
   obtain ⟨d, rfl⟩ := Nat.exists_eq_add_of_le h
   cases d
-  exacts [hk, Nat.findFrom_min h₂ (Nat.le_add_right k _) (Nat.succ_lt_succ_iff.1 hn)]
+  exacts [hk, Nat.findFrom_min h₂ (le_add_right k _) (succ_lt_succ_iff.1 hn)]
 
 lemma start_lt_findFrom (h : ∃ n h, p n h) : k < Nat.findFrom h ↔ ¬p k (Nat.le_refl k) :=
   calc k < Nat.findFrom h
     _ ↔ k ≤ Nat.findFrom h ∧ k ≠ Nat.findFrom h := Nat.lt_iff_le_and_ne
     _ ↔ k ≠ Nat.findFrom h := and_iff_right (Nat.le_findFrom h)
     _ ↔ Nat.findFrom h ≠ k := ne_comm
-    _ ↔ ¬p k (Nat.le_refl k) := (Nat.findFrom_eq_start _).not
+    _ ↔ ¬p k le_rfl := (findFrom_eq_start _).not
 
 lemma findFrom_add {hₘ : ∃ m h, p (m + n) (Nat.le_add_right_of_le h)} {hₙ : ∃ n h, p n h}
     (hn : n + k ≤ Nat.findFrom hₙ) : Nat.findFrom hₘ + n = Nat.findFrom hₙ := by
-  refine le_antisymm ((le_findFrom_iff _ _).2 fun m h hm hpm => Nat.not_le.2 hm ?_) ?_
+  refine le_antisymm ((le_findFrom_iff _ _).2 fun m h hm hpm => not_le.2 hm ?_) ?_
   · have hnm : n ≤ m := calc
-      _ ≤ n + k := Nat.le_add_right n k
+      _ ≤ n + k := le_add_right n k
       _ ≤ Nat.findFrom hₙ := hn
       _ ≤ m := findFrom_le h hpm
-    refine Nat.add_le_of_le_sub hnm (findFrom_le ?_ ?_)
+    refine add_le_of_le_sub hnm (findFrom_le ?_ ?_)
     · rw [Nat.le_sub_iff_add_le' hnm]
       exact le_trans hn (Nat.findFrom_min' hₙ h hpm)
     · conv =>
@@ -178,7 +178,7 @@ lemma findFrom_add {hₘ : ∃ m h, p (m + n) (Nat.le_add_right_of_le h)} {hₙ 
         rw [Nat.sub_add_cancel hnm]
       exact hpm
   · rw [← Nat.sub_le_iff_le_add]
-    refine (le_findFrom_iff _ _).2 fun m h hm hpm => Nat.not_le.2 hm ?_
+    refine (le_findFrom_iff _ _).2 fun m h hm hpm => not_le.2 hm ?_
     rw [Nat.sub_le_iff_le_add]
     exact findFrom_le _ hpm
 
@@ -190,7 +190,7 @@ variable {p q : ℕ → Prop} [DecidablePred p] (H : ∃ n, p n)
 
 /-! ### `Nat.find` -/
 
-private def H' : ∃ (n : ℕ) (_ : 0 ≤ n), p n := H.imp fun n hn => ⟨Nat.zero_le n, hn⟩
+private def H' : ∃ (n : ℕ) (_ : 0 ≤ n), p n := H.imp fun n hn => ⟨zero_le n, hn⟩
 
 /-- If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
 there exists some natural number satisfying `p`, then `Nat.find hp` is the
@@ -212,13 +212,13 @@ protected theorem find_spec : p (Nat.find H) :=
   Nat.findFrom_spec (H' H)
 
 protected theorem find_min {m : ℕ} : m < Nat.find H → ¬p m :=
-  Nat.findFrom_min (H' H) (Nat.zero_le m)
+  Nat.findFrom_min (H' H) (zero_le m)
 
 protected theorem find_min' {m : ℕ} : p m → Nat.find H ≤ m :=
-  Nat.findFrom_min' (H' H) (Nat.zero_le m)
+  Nat.findFrom_min' (H' H) (zero_le m)
 
 lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m, ¬p n := by
-  simpa using Nat.findFrom_eq_iff (H' h)
+  simpa using findFrom_eq_iff (H' h)
 
 @[simp] lemma find_lt_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h < n ↔ ∃ m < n, p m := by
   simp [Nat.find]
@@ -269,14 +269,14 @@ lemma find_le {h : ∃ n, p n} (hn : p n) : Nat.find h ≤ n :=
 
 lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬ p 0) :
     Nat.find h₁ = Nat.find h₂ + 1 :=
-  Nat.findFrom_comp_succ (H' h₁) (H' h₂) h0
+  findFrom_comp_succ (H' h₁) (H' h₂) h0
 
 lemma find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 :=
-  Nat.start_lt_findFrom (H' h)
+  start_lt_findFrom (H' h)
 
 lemma find_add {hₘ : ∃ m, p (m + n)} {hₙ : ∃ n, p n} (hn : n ≤ Nat.find hₙ) :
     Nat.find hₘ + n = Nat.find hₙ :=
-  Nat.findFrom_add (hₘ := H' hₘ) (hₙ := H' hₙ) hn
+  findFrom_add (hₘ := H' hₘ) (hₙ := H' hₙ) hn
 
 end Find
 
