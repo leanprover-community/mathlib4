@@ -7,6 +7,7 @@ import Mathlib.Data.Fin.Tuple.Reflection
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.LinearIndependent.Basic
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.Logic.Equiv.Fin.Rotate
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Module
@@ -233,16 +234,26 @@ theorem Fintype.linearIndependent_iff' [Fintype ι] [DecidableEq ι] :
       LinearMap.ker (LinearMap.lsum R (fun _ ↦ R) ℕ fun i ↦ LinearMap.id.smulRight (v i)) = ⊥ := by
   simp [Fintype.linearIndependent_iff, LinearMap.ker_eq_bot', funext_iff]
 
+/-- `linearIndepOn_pair_iff` is a simpler version over fields. -/
+lemma LinearIndepOn.pair_iff {i j : ι} (f : ι → M) (hij : i ≠ j) :
+    LinearIndepOn R f {i,j} ↔ ∀ c d : R, c • f i + d • f j = 0 → c = 0 ∧ d = 0 := by
+  classical
+  rw [linearIndepOn_iff'']
+  refine ⟨fun h c d hcd ↦ ?_, fun h t g ht hg0 h0 ↦ ?_⟩
+  · specialize h {i, j} (Pi.single i c + Pi.single j d)
+    simpa +contextual [Finset.sum_pair, Pi.single_apply, hij, hij.symm, hcd] using h
+  have ht' : t ⊆ {i, j} := by simpa [← Finset.coe_subset]
+  rw [Finset.sum_subset ht', Finset.sum_pair hij] at h0
+  · obtain ⟨hi0, hj0⟩ := h _ _ h0
+    exact fun k hkt ↦ Or.elim (ht hkt) (fun h ↦ h ▸ hi0) (fun h ↦ h ▸ hj0)
+  simp +contextual [hg0]
+
 /-- Also see `LinearIndependent.pair_iff'` for a simpler version over fields. -/
 lemma LinearIndependent.pair_iff {x y : M} :
     LinearIndependent R ![x, y] ↔ ∀ (s t : R), s • x + t • y = 0 → s = 0 ∧ t = 0 := by
-  refine ⟨fun h s t hst ↦ h.eq_zero_of_pair hst, fun h ↦ ?_⟩
-  apply Fintype.linearIndependent_iff.2
-  intro g hg
-  simp only [Fin.sum_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons] at hg
-  intro i
-  fin_cases i
-  exacts [(h _ _ hg).1, (h _ _ hg).2]
+  rw [← linearIndepOn_univ, ← Finset.coe_univ, show @Finset.univ (Fin 2) _ = {0,1} from rfl,
+    Finset.coe_insert, Finset.coe_singleton, LinearIndepOn.pair_iff _ (by trivial)]
+  simp
 
 lemma LinearIndependent.pair_symm_iff {x y : M} :
     LinearIndependent R ![x, y] ↔ LinearIndependent R ![y, x] := by
@@ -415,7 +426,7 @@ protected theorem LinearIndepOn.insert (hs : LinearIndepOn K id s) (hx : x ∉ s
     LinearIndepOn K id (insert x s) := by
   rw [← union_singleton]
   have x0 : x ≠ 0 := mt (by rintro rfl; apply zero_mem (span K s)) hx
-  apply hs.id_union (LinearIndepOn.singleton x0)
+  apply hs.id_union (LinearIndepOn.id_singleton _ x0)
   rwa [disjoint_span_singleton' x0]
 
 @[deprecated (since := "2025-02-15")] alias LinearIndependent.insert := LinearIndepOn.insert
@@ -458,6 +469,35 @@ theorem linearIndepOn_id_insert (hxs : x ∉ s) :
 
 @[deprecated (since := "2025-02-15")] alias linearIndependent_insert := linearIndepOn_insert
 
+theorem linearIndepOn_insert_iff {s : Set ι} {a : ι} {f : ι → V} :
+    LinearIndepOn K f (insert a s) ↔ LinearIndepOn K f s ∧ (f a ∈ span K (f '' s) → a ∈ s) := by
+  by_cases has : a ∈ s
+  · simp [insert_eq_of_mem has, has]
+  simp [linearIndepOn_insert has, has]
+
+theorem linearIndepOn_id_insert_iff {a : V} {s : Set V} :
+    LinearIndepOn K id (insert a s) ↔ LinearIndepOn K id s ∧ (a ∈ span K s → a ∈ s) := by
+  simpa using linearIndepOn_insert_iff (a := a) (f := id)
+
+theorem LinearIndepOn.mem_span_iff {s : Set ι} {a : ι} {f : ι → V} (h : LinearIndepOn K f s) :
+    f a ∈ Submodule.span K (f '' s) ↔ (LinearIndepOn K f (insert a s) → a ∈ s) := by
+  by_cases has : a ∈ s
+  · exact iff_of_true (subset_span <| mem_image_of_mem f has) fun _ ↦ has
+  simp [linearIndepOn_insert_iff, h, has]
+
+/-- A shortcut to a convenient form for the negation in `LinearIndepOn.mem_span_iff`. -/
+theorem LinearIndepOn.not_mem_span_iff {s : Set ι} {a : ι} {f : ι → V} (h : LinearIndepOn K f s) :
+    f a ∉ Submodule.span K (f '' s) ↔ LinearIndepOn K f (insert a s) ∧ a ∉ s := by
+  rw [h.mem_span_iff, _root_.not_imp]
+
+theorem LinearIndepOn.mem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K id s) :
+    a ∈ Submodule.span K s ↔ (LinearIndepOn K id (insert a s) → a ∈ s) := by
+  simpa using h.mem_span_iff (a := a)
+
+theorem LinearIndepOn.not_mem_span_iff_id {s : Set V} {a : V} (h : LinearIndepOn K id s) :
+    a ∉ Submodule.span K s ↔ LinearIndepOn K id (insert a s) ∧ a ∉ s := by
+  rw [h.mem_span_iff_id, _root_.not_imp]
+
 theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x ≠ y) :
     LinearIndepOn K id {x, y} :=
   pair_comm y x ▸ (LinearIndepOn.id_singleton K hx).insert (x := y) <|
@@ -465,20 +505,19 @@ theorem linearIndepOn_id_pair {x y : V} (hx : x ≠ 0) (hy : ∀ a : K, a • x 
 
 @[deprecated (since := "2025-02-15")] alias linearIndependent_pair := linearIndepOn_id_pair
 
+/-- `LinearIndepOn.pair_iff` is a version that works over arbitrary rings. -/
+theorem linearIndepOn_pair_iff {i j : ι} (v : ι → V) (hij : i ≠ j) (hi : v i ≠ 0):
+    LinearIndepOn K v {i, j} ↔ ∀ (c : K), c • v i ≠ v j := by
+  rw [pair_comm]
+  convert linearIndepOn_insert (s := {i}) (a := j) hij.symm
+  simp [hi, mem_span_singleton, linearIndependent_unique_iff]
+
 /-- Also see `LinearIndependent.pair_iff` for the version over arbitrary rings. -/
 theorem LinearIndependent.pair_iff' {x y : V} (hx : x ≠ 0) :
     LinearIndependent K ![x, y] ↔ ∀ a : K, a • x ≠ y := by
-  rw [LinearIndependent.pair_iff]
-  constructor
-  · intro H a ha
-    have := (H a (-1) (by simpa [← sub_eq_add_neg, sub_eq_zero])).2
-    simp only [neg_eq_zero, one_ne_zero] at this
-  · intro H s t hst
-    by_cases ht : t = 0
-    · exact ⟨by simpa [ht, hx] using hst, ht⟩
-    apply_fun (t⁻¹ • ·) at hst
-    simp only [smul_add, smul_smul, inv_mul_cancel₀ ht] at hst
-    cases H (-(t⁻¹ * s)) <| by linear_combination (norm := match_scalars <;> noncomm_ring) -hst
+  rw [← linearIndepOn_univ, ← Finset.coe_univ, show @Finset.univ (Fin 2) _ = {0,1} from rfl,
+    Finset.coe_insert, Finset.coe_singleton, linearIndepOn_pair_iff _ (by simp) (by simpa)]
+  simp
 
 theorem linearIndependent_fin_cons {n} {v : Fin n → V} :
     LinearIndependent K (Fin.cons x v : Fin (n + 1) → V) ↔

@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov, Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-import Mathlib.Topology.Order.LeftRightLim
+import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
 import Mathlib.Topology.Algebra.UniformMulAction
+import Mathlib.Topology.Order.LeftRightLim
 
 /-!
 # Stieltjes measures on the real line

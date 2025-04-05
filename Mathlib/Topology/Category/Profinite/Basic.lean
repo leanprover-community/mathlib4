@@ -68,8 +68,8 @@ end Profinite
 /-- The fully faithful embedding of `Profinite` in `CompHaus`. -/
 abbrev profiniteToCompHaus : Profinite ⥤ CompHaus :=
   compHausLikeToCompHaus _
--- Porting note: deriving fails, adding manually.
--- deriving Full, Faithful
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) :=
   X.prop
@@ -78,8 +78,8 @@ instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) 
 This is definitionally the same as the obvious composite. -/
 abbrev Profinite.toTopCat : Profinite ⥤ TopCat :=
   CompHausLike.compHausLikeToTop _
--- Porting note: deriving fails, adding manually.
--- deriving Full, Faithful
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 section Profinite
 
@@ -186,6 +186,7 @@ def toProfiniteAdjToCompHaus : CompHaus.toProfinite ⊣ profiniteToCompHaus :=
 
 /-- The category of profinite sets is reflective in the category of compact Hausdorff spaces -/
 instance toCompHaus.reflective : Reflective profiniteToCompHaus where
+  L := CompHaus.toProfinite
   adj := Profinite.toProfiniteAdjToCompHaus
 
 noncomputable instance toCompHaus.createsLimits : CreatesLimits profiniteToCompHaus :=

@@ -98,10 +98,14 @@ theorem associatesEquivIsPrincipal_map_one :
 variable (R) in
 /-- The `MulEquiv` version of `Ideal.associatesEquivIsPrincipal`. -/
 noncomputable def associatesMulEquivIsPrincipal :
-    Associates R ≃* (isPrincipalSubmonoid R) where
+    Associates R ≃* isPrincipalSubmonoid R where
   __ := associatesEquivIsPrincipal R
   map_mul' _ _ := by
-    erw [Subtype.ext_iff, associatesEquivIsPrincipal_mul]
+    rw [Subtype.ext_iff]
+    -- This `erw` is needed to see through `{I // IsPrincipal I} = ↑(isPrincipalSubmonoid R)`:
+    -- we can redefine `associatesEquivIsPrincipal` to get rid of this `erw` but then we'd need
+    -- to add one in `associatesNonZeroDivisorsEquivIsPrincipal`.
+    erw [associatesEquivIsPrincipal_mul]
     rfl
 
 variable (R) in
@@ -130,7 +134,7 @@ theorem associatesNonZeroDivisorsEquivIsPrincipal_mul (x y : Associates R⁰) :
     (associatesNonZeroDivisorsEquivIsPrincipal R (x * y) : Ideal R) =
       (associatesNonZeroDivisorsEquivIsPrincipal R x) *
         (associatesNonZeroDivisorsEquivIsPrincipal R y) := by
-  simp_rw [associatesNonZeroDivisorsEquivIsPrincipal_coe, _root_.map_mul, Submonoid.coe_mul,
+  simp_rw [associatesNonZeroDivisorsEquivIsPrincipal_coe, map_mul, Submonoid.coe_mul,
     associatesEquivIsPrincipal_mul]
 
 @[simp]
@@ -145,7 +149,8 @@ noncomputable def associatesNonZeroDivisorsMulEquivIsPrincipal :
     Associates R⁰ ≃* (isPrincipalNonZeroDivisorsSubmonoid R) where
   __ := associatesNonZeroDivisorsEquivIsPrincipal R
   map_mul' _ _ := by
-    erw [Subtype.ext_iff, Subtype.ext_iff, associatesNonZeroDivisorsEquivIsPrincipal_mul]
+    rw [Subtype.ext_iff, Subtype.ext_iff]
+    erw [associatesNonZeroDivisorsEquivIsPrincipal_mul]
     rfl
 
 end Ideal

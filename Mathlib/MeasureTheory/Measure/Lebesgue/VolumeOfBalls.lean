@@ -68,7 +68,7 @@ theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : �
 variable {E : Type*} [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E] [mE : MeasurableSpace E]
   [tE : TopologicalSpace E] [IsTopologicalAddGroup E] [BorelSpace E] [T2Space E]
   [ContinuousSMul ℝ E] (μ : Measure E) [IsAddHaarMeasure μ] {g : E → ℝ} (h1 : g 0 = 0)
-  (h2 : ∀ x, g (- x) = g x) (h3 : ∀ x y, g (x + y) ≤ g x + g y) (h4 : ∀ {x}, g x = 0 → x = 0)
+  (h2 : ∀ x, g (-x) = g x) (h3 : ∀ x y, g (x + y) ≤ g x + g y) (h4 : ∀ {x}, g x = 0 → x = 0)
   (h5 : ∀ r x, g (r • x) ≤ |r| * (g x))
 include h1 h2 h3 h4 h5
 
@@ -81,7 +81,7 @@ theorem MeasureTheory.measure_lt_one_eq_integral_div_gamma {p : ℝ} (hp : 0 < p
   { norm := g
     dist := fun x y => g (x - y)
     dist_self := by simp only [_root_.sub_self, h1, forall_const]
-    dist_comm := fun _ _ => by dsimp [dist]; rw [← h2, neg_sub]
+    dist_comm := fun _ _ => by rw [← h2, neg_sub]
     dist_triangle := fun x y z => by convert h3 (x - y) (y - z) using 1; simp [F]
     edist := fun x y => .ofReal (g (x - y))
     edist_dist := fun _ _ => rfl
@@ -124,7 +124,7 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
   { norm := g
     dist := fun x y => g (x - y)
     dist_self := by simp only [_root_.sub_self, h1, forall_const]
-    dist_comm := fun _ _ => by dsimp [dist]; rw [← h2, neg_sub]
+    dist_comm := fun _ _ => by rw [← h2, neg_sub]
     dist_triangle := fun x y z => by convert h3 (x - y) (y - z) using 1; simp [F]
     edist := fun x y => .ofReal (g (x - y))
     edist_dist := fun _ _ => rfl
