@@ -60,7 +60,8 @@ instance hasOne : One I :=
 
 instance : ZeroLEOneClass I := ⟨zero_le_one (α := ℝ)⟩
 
-instance : BoundedOrder I := have : Fact ((0 : ℝ) ≤ 1) := ⟨zero_le_one⟩; inferInstance
+-- Necessary to generate instances of `BoundedOrder`, `CompleteLattice`, and other classes.
+instance : Fact ((0 : ℝ) ≤ 1) := ⟨zero_le_one⟩
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
