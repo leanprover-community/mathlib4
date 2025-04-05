@@ -5,7 +5,7 @@ Authors: Moritz Doll
 -/
 import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Analysis.Calculus.Deriv.Pow
-import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 import Mathlib.Analysis.Calculus.MeanValue
 
 /-!
@@ -351,3 +351,78 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
   rw [div_mul_eq_mul_div₀]
   refine taylor_mean_remainder_bound hab hf hx fun y => ?_
   exact (hf.continuousOn_iteratedDerivWithin rfl.le <| uniqueDiffOn_Icc h).norm.le_sSup_image_Icc
+
+/-! ### Extension of Taylor's Theorem to `x < x₀` -/
+
+
+theorem taylorCoeffWithin_neg {f : ℝ → ℝ} {x₀ : ℝ} (d : ℕ) :
+    taylorCoeffWithin (fun x => f (-x)) d Set.univ (-x₀)
+      = (-1)^d * taylorCoeffWithin f d Set.univ x₀ := by
+  field_simp [taylorCoeffWithin, iteratedDerivWithin_univ, iteratedDeriv_comp_neg, ←mul_assoc]
+
+theorem taylorWithinEval_neg {f : ℝ → ℝ} (x₀ x : ℝ) {n : ℕ} :
+    taylorWithinEval (fun x => f (-x)) n Set.univ (-x₀) (-x)
+      = taylorWithinEval f n Set.univ x₀ x := by
+  simp only [taylorWithinEval, taylorWithin, PolynomialModule.comp_apply,
+    PolynomialModule.map_single, PolynomialModule.eval_single, map_sum, map_neg, sub_neg_eq_add]
+  apply Finset.sum_congr rfl (fun d _ ↦ ?_)
+  simp [taylorCoeffWithin_neg d, ← mul_pow, ← mul_assoc, PolynomialModule.eval_smul,
+    Polynomial.eval_pow, Polynomial.eval_X, sub_eq_neg_add x x₀]
+
+theorem taylorCoeffWithin_eq {f : ℝ → ℝ} {x₀ : ℝ} {d : ℕ}
+    (s : Set ℝ) (hx : x₀ ∈ s) (hs : UniqueDiffOn ℝ s) (hf : ContDiff ℝ d f) :
+    taylorCoeffWithin f d s x₀ = taylorCoeffWithin f d Set.univ x₀ := by
+  simp only [taylorCoeffWithin, iteratedDerivWithin_eq_iteratedDeriv hf hs hx,
+    iteratedDerivWithin_univ]
+
+theorem taylorWithin_eq {f : ℝ → ℝ} {x₀ : ℝ} {d : ℕ}
+    {s : Set ℝ} (hx : x₀ ∈ s) (hs : UniqueDiffOn ℝ s) (hf : ContDiff ℝ d f) :
+    taylorWithin f d s x₀ = taylorWithin f d Set.univ x₀ := by
+  rw [taylorWithin, taylorWithin, Finset.sum_congr rfl (fun k hk => ?_)]
+  rw [taylorCoeffWithin_eq s hx hs (ContDiff.of_le hf ?_)]
+  rwa [Nat.cast_le, Nat.le_iff_lt_add_one, ←Finset.mem_range]
+
+theorem taylorWithinEval_eq {f : Real → Real} {x₀ : Real} {d : Nat}
+    {s : Set ℝ} (hx : x₀ ∈ s) (hs : UniqueDiffOn ℝ s) (hf : ContDiff ℝ d f) :
+    taylorWithinEval f d s x₀ = taylorWithinEval f d Set.univ x₀ := by
+  ext x
+  rw [taylorWithinEval, taylorWithinEval, taylorWithin_eq hx hs hf]
+
+/-- **Taylor's theorem** with the Lagrange form of the remainder for `x < x₀`.
+
+We assume that `f` is `n+1`-times continuously differentiable on the reals.
+Then there exists an `x' ∈ Ioo x x₀` such
+that $$f(x) - (P_n f)(x₀, x) = \frac{f^{(n+1)}(x') (x - x₀)^{n+1}}{(n+1)!},$$
+where $P_n f$ denotes the Taylor polynomial of degree $n$ and $f^{(n+1)}$ is the $n+1$-th iterated
+derivative. -/
+theorem taylor_mean_remainder_lagrange' {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ} (hx : x < x₀)
+    (hf : ContDiff ℝ (n + 1) f) :
+    ∃ x' ∈ Ioo x x₀, f x - taylorWithinEval f n (Icc x x₀) x₀ x =
+      iteratedDerivWithin (n + 1) f (Icc x x₀) x' * (x - x₀) ^ (n + 1) / (n + 1)! := by
+  have H1 : ContDiff ℝ (n + 1) fun p => f (-p) :=
+    (show (f ∘ (fun x => -x)) = (fun p => f (-p)) by rfl) ▸ ContDiff.comp hf contDiff_neg
+  have H2 : DifferentiableOn ℝ (iteratedDerivWithin n (fun x => f (-x)) (Icc (-x₀) (-x)))
+                                (Ioo (-x₀) (-x)) := by
+    apply DifferentiableOn.mono _ Set.Ioo_subset_Icc_self
+    apply ContDiffOn.differentiableOn_iteratedDerivWithin (n := n + 1) _ (by norm_cast; simp)
+                                                          (uniqueDiffOn_Icc (neg_lt_neg hx))
+    apply ContDiff.contDiffOn H1
+  have ⟨x' , hx', H⟩:= taylor_mean_remainder_lagrange
+                        (f := fun x => f (-x)) (n := n) (neg_lt_neg hx)
+                        (ContDiff.contDiffOn (ContDiff.of_le H1 (by norm_cast; simp))) H2
+  have hx'' : -x' ∈ Ioo x x₀ := by
+    simp at *; apply And.intro <;> apply neg_lt_neg_iff.mp <;> simp [hx']
+  use -x'; use hx''
+  rw [neg_neg, taylorWithinEval_eq _ (by simp [le_of_lt hx])
+                (uniqueDiffOn_Icc (by simp [hx])) H1] at H
+  rw [taylorWithinEval_neg, ←taylorWithinEval_eq (Icc x x₀)
+                                (by simp [le_of_lt hx]) (uniqueDiffOn_Icc hx) (by simp [hf])] at H
+  simp only [neg_neg, sub_neg_eq_add] at H
+  rw [← Nat.cast_add_one] at hf H1
+  rw [H, iteratedDerivWithin_eq_iteratedDeriv hf (uniqueDiffOn_Icc (by simp [hx]))
+          (Set.Ioo_subset_Icc_self hx''),
+          iteratedDerivWithin_eq_iteratedDeriv H1 (uniqueDiffOn_Icc (by simp [hx]))
+            (Set.Ioo_subset_Icc_self hx')]
+  rw [show (fun x => f (-x)) = (fun x => f (-1 * x)) by simp]
+  rw [iteratedDeriv_comp_const_mul hf, mul_rotate, mul_assoc, ←mul_pow, add_comm (-x) x₀]
+  simp [sub_eq_add_neg]
