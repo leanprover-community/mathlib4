@@ -114,6 +114,28 @@ lemma equivHom_inj [Nontrivial k] [DecidableEq G] : Function.Injective (equivHom
   apply_fun (fun x ↦ (x.hom.hom.app rightFDRep).hom (single t 1) 1) at h
   simp_all [single_apply]
 
+/-- Let `k` be an integral domain and `G` an arbitrary finite set.
+Then any algebra morphism `φ : (G → k) →ₐ[k] k` is an evaluation map. -/
+lemma eval_of_algHom {k G : Type*} [CommRing k] [IsDomain k] [DecidableEq G] [Fintype G]
+    (φ : (G → k) →ₐ[k] k) : ∃ (s : G), φ = Pi.evalAlgHom _ _ s := by
+  have h1 := map_one φ
+  simp only [← Finset.univ_sum_single (1 : G → k), Pi.one_apply, map_sum] at h1
+  obtain ⟨s, hs⟩ : ∃ (s : G), φ (Pi.single s 1) ≠ 0 := by
+    by_contra
+    simp_all
+  have h2 : ∀ t ≠ s, φ (Pi.single t 1) = 0 := by
+    intros
+    apply eq_zero_of_ne_zero_of_mul_right_eq_zero hs
+    rw [← map_mul]
+    convert map_zero φ
+    ext u
+    by_cases u = s <;> simp_all
+  have h3 : φ (Pi.single s 1) = 1 := by
+    rwa [Fintype.sum_eq_single s h2] at h1
+  use s
+  refine AlgHom.toLinearMap_injective (Basis.ext (Pi.basisFun k G) (fun t ↦ ?_))
+  by_cases t = s <;> simp_all
+
 /-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
 def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
   hom := ofHom (LinearMap.mul' k (G → k))
@@ -146,6 +168,103 @@ def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → 
   have := η.inv_hom_id
   apply_fun (fun x ↦ (x.hom.app rightFDRep).hom (1 : G → k)) at this
   exact this
+
+variable [DecidableEq G]
+
+/-- `leftRegular` as a morphism `rightFDRep k G ⟶ rightFDRep k G` in `FDRep k G`. -/
+def leftRegularFDRepHom (s : G) : End (rightFDRep : FDRep k G) where
+  hom := ofHom (leftRegular s)
+  comm _ := by
+    ext f
+    funext _
+    apply congrArg f
+    exact mul_assoc ..
+
+lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
+    ∃ (s : G), (η.hom.hom.app rightFDRep).hom = rightRegular s := by
+  obtain ⟨s, hs⟩ := eval_of_algHom ((evalAlgHom _ _ 1).comp (algHomOfRightFDRepComp η))
+  use s
+  apply Basis.ext (basisFun k G)
+  intro u
+  simp only [rightFDRep, forget_obj]
+  ext t
+  have nat := η.hom.hom.naturality (leftRegularFDRepHom t⁻¹)
+  apply_fun Hom.hom at nat
+  calc
+    _ = leftRegular t⁻¹ ((η.hom.hom.app rightFDRep).hom (single u 1)) 1 := by simp
+    _ = (η.hom.hom.app rightFDRep).hom (leftRegular t⁻¹ (single u 1)) 1 :=
+      congrFun (congrFun (congrArg DFunLike.coe nat) (single u 1)).symm 1
+    _ = evalAlgHom _ _ s (leftRegular t⁻¹ (single u 1)) :=
+      congrFun (congrArg DFunLike.coe hs) ((leftRegular t⁻¹) (single u 1))
+    _ = _ := by
+      by_cases u = t * s <;> simp_all [single_apply]
+
+/-- Auxiliary map for the proof of `toRightFDRepComp_inj`. -/
+@[simps]
+def auxLinearMap {X : FDRep k G} (v : X) : (G → k) →ₗ[k] X where
+  toFun f := ∑ s : G, (f s) • (X.ρ s⁻¹ v)
+  map_add' _ _ := by
+    simp only [add_apply, add_smul]
+    exact sum_add_distrib
+  map_smul' _ _ := by
+    simp only [smul_apply, smul_eq_mul, RingHom.id_apply, smul_sum, smul_smul]
+
+@[simp]
+lemma auxLinearMap_single_id {X : FDRep k G} (v : X) :
+    ∑ s : G, (single 1 1 : G → k) s • (X.ρ s⁻¹) v = v := by
+  calc
+    _ = ∑ s ∈ {1}ᶜ, single 1 1 s • (X.ρ s⁻¹) v + single 1 1 1 • (X.ρ 1⁻¹) v :=
+      Fintype.sum_eq_sum_compl_add 1 _
+    _ = (single 1 1 : G → k) 1 • (X.ρ 1⁻¹) v := by
+      apply add_eq_right.mpr
+      apply sum_eq_zero
+      simp_all
+    _ = _ := by
+      simp
+
+/-- Auxiliary representation morphism for the proof of `toRightFDRepComp_inj`. -/
+@[simps]
+def auxFDRepHom (X : FDRep k G) (v : X) : rightFDRep ⟶ X where
+  hom := ofHom (auxLinearMap v)
+  comm := by
+    intro t
+    ext f
+    set φ_term := fun (X : FDRep k G) (f : G → k) v s ↦ (f s) • (X.ρ s⁻¹ v)
+    have := sum_map univ (mulRightEmbedding t⁻¹) (φ_term X (rightRegular t f) v)
+    simp [φ_term] at this
+    simp
+    rw [← this]
+    apply sum_congr rfl
+    exact fun _ _ ↦ rfl
+
+lemma toRightFDRepComp_inj (η₁ η₂ : Aut (forget k G))
+    (h : η₁.hom.hom.app rightFDRep = η₂.hom.hom.app rightFDRep) : η₁ = η₂ := by
+  ext X v
+  have h1 := η₁.hom.hom.naturality (auxFDRepHom X v)
+  have h2 := η₂.hom.hom.naturality (auxFDRepHom X v)
+  rw [h, ← h2] at h1
+  apply_fun (Hom.hom · (single 1 1)) at h1
+  simp at h1
+  exact h1
+
+lemma equivHom_surj [IsDomain k] : Function.Surjective (equivHom k G) := by
+  intro η
+  obtain ⟨s, h⟩ := toRightFDRepComp_in_rightRegular η
+  use s
+  apply toRightFDRepComp_inj
+  apply hom_ext
+  exact h.symm
+
+theorem tannaka_duality [IsDomain k] : Function.Bijective (equivHom k G) :=
+  ⟨equivHom_inj, equivHom_surj⟩
+
+variable (k G) in
+/-- Tannaka duality for finite groups:
+
+A group `G` is isomorphic to `Aut (forget k G)`, where `k` is any integral domain,
+and `forget k G` is the monoidal forgetful functor `FDRep k G ⥤ FGModuleCat k G`. -/
+def equiv [IsDomain k] : G ≃* Aut (forget k G) :=
+  MulEquiv.ofBijective (equivHom k G) tannaka_duality
 
 end FiniteGroup
 
