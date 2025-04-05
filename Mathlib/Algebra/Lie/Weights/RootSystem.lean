@@ -463,7 +463,8 @@ lemma invtSubmodule_reflection:
     have : S.root i ∈ LinearMap.ker (S.coroot' j) := by
       exact t1 t2
     simp at this
-    have rrr := S.janos (ι := H.root) (R := K) (M := Module.Dual K H) (N := H) j i this
+    have rrr :=
+      S.root_coroot_zero_comm (ι := H.root) (R := K) (M := Module.Dual K H) (N := H) j i this
     simp_all only [Subtype.forall, Finset.mem_filter, Finset.mem_univ, true_and, ne_eq,
       LieAlgebra.IsKilling.rootSystem_root_apply, LieAlgebra.IsKilling.rootSystem_coroot_apply,
       LieModule.Weight.toLinear_apply, LieAlgebra.IsKilling.rootSystem_pairing_apply,
