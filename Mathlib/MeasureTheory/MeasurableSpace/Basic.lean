@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Data.Int.Cast.Pi
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Group
 import Mathlib.MeasureTheory.MeasurableSpace.Defs
 
 /-!

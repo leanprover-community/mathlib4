@@ -3070,6 +3070,7 @@ import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Nat.Cast.Field
+import Mathlib.Data.Nat.Cast.Group
 import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Nat.Cast.Order.Field

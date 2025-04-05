@@ -5,7 +5,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 -/
 import Mathlib.Data.Int.Cast.Pi
 import Mathlib.Data.Matrix.Defs
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Group
 
 /-!
 # Diagonal matrices
