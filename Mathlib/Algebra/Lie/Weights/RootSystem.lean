@@ -467,6 +467,8 @@ lemma rr79 (j : LieModule.Weight K H L) : j = 0 ∨ j ∈ H.root := by
   · exact Finset.mem_univ j
   exact LieModule.Weight.isNonZero_iff_ne_zero.mpr h
 
+lemma rr80 (gg : Set L) (I : LieSubalgebra.lieSpan K L gg) (x : L) (h : x ∈ gg) : x ∈ (LieSubalgebra.lieSpan K L gg) := by
+  exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a h
 
 
 lemma rr7:
@@ -502,7 +504,27 @@ lemma rr7:
       obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx1
       have step1 := rr79 K L H j
       rcases step1 with h | h
-      sorry
+      have ttt := LieAlgebra.lie_mem_genWeightSpace_of_mem_genWeightSpace hx hx1_mem
+      simp at ttt
+      rw [h] at ttt
+      simp at ttt
+      have rrrr : ⁅x, x1⁆ ∈ gg := by
+        exact Set.mem_biUnion hi ttt
+      exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a rrrr
+      --obtain ⟨j1, j2⟩ := j
+      let jj : H.root := ⟨j, h⟩
+      --simp only [Finset.mem_filter, Finset.mem_univ, true_and, I] at jj
+      rcases (Classical.em (jj ∈ Φ)) with h | h
+      --simp at jj
+      have hx2 : x ∈ LieModule.genWeightSpace L jj.1 := hx
+      have rrrr : x ∈ gg := by
+        exact Set.mem_biUnion h hx2
+      have rrrr2 : x ∈ I := by
+        exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a rrrr
+      have rrrr3 : x1 ∈ I := by
+         exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a hx1
+      exact LieSubalgebra.lie_mem I rrrr2 rrrr3
+      --have := rr4 i jj hi h
       sorry
       · simp only [lie_zero, LieSubalgebra.zero_mem, I]
       · intro a b c d e f
