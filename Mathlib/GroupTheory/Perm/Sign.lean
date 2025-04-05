@@ -353,7 +353,7 @@ theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs 
 theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : Perm α) (e : α ≃ β)
     {s : Multiset α} {t : Multiset β} (hs : ∀ x, x ∈ s) (ht : ∀ x, x ∈ t) :
     signAux3 ((e.symm.trans f).trans e) ht = signAux3 f hs := by
-  induction' t, s using Quotient.inductionOn₂ with t s ht hs
+  induction t, s using Quotient.inductionOn₂ with | _ ht hs => ?_
   show signAux2 _ _ = signAux2 _ _
   rcases Finite.exists_equiv_fin β with ⟨n, ⟨e'⟩⟩
   rw [← signAux_eq_signAux2 _ _ e' fun _ _ => ht _,

@@ -129,7 +129,7 @@ theorem noncommProd_cons (s : Multiset α) (a : α) (comm) :
 @[to_additive]
 theorem noncommProd_cons' (s : Multiset α) (a : α) (comm) :
     noncommProd (a ::ₘ s) comm = noncommProd s (comm.mono fun _ => mem_cons_of_mem) * a := by
-  induction' s using Quotient.inductionOn with s
+  induction s using Quotient.inductionOn with | _ s => ?_
   simp only [quot_mk_to_coe, cons_coe, noncommProd_coe, List.prod_cons]
   induction' s with hd tl IH
   · simp
@@ -155,7 +155,7 @@ theorem noncommProd_add (s t : Multiset α) (comm) :
 lemma noncommProd_induction (s : Multiset α) (comm)
     (p : α → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ s, p x) :
     p (s.noncommProd comm) := by
-  induction' s using Quotient.inductionOn with l
+  induction s using Quotient.inductionOn with | _ l => ?_
   simp only [quot_mk_to_coe, noncommProd_coe, mem_coe] at base ⊢
   exact l.prod_induction p hom unit base
 
@@ -197,7 +197,7 @@ theorem noncommProd_commute (s : Multiset α) (comm) (y : α) (h : ∀ x ∈ s, 
 theorem mul_noncommProd_erase [DecidableEq α] (s : Multiset α) {a : α} (h : a ∈ s) (comm)
     (comm' := fun _ hx _ hy hxy ↦ comm (s.mem_of_mem_erase hx) (s.mem_of_mem_erase hy) hxy) :
     a * (s.erase a).noncommProd comm' = s.noncommProd comm := by
-  induction' s using Quotient.inductionOn with l
+  induction s using Quotient.inductionOn with | _ l => ?_
   simp only [quot_mk_to_coe, mem_coe, coe_erase, noncommProd_coe] at comm h ⊢
   suffices ∀ x ∈ l, ∀ y ∈ l, x * y = y * x by rw [List.prod_erase_of_comm h this]
   intro x hx y hy

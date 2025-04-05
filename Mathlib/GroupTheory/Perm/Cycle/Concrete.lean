@@ -134,7 +134,7 @@ theorem formPerm_coe (l : List α) (hl : l.Nodup) : formPerm (l : Cycle α) hl =
   rfl
 
 theorem formPerm_subsingleton (s : Cycle α) (h : Subsingleton s) : formPerm s h.nodup = 1 := by
-  induction' s using Quot.inductionOn with s
+  obtain ⟨s⟩ := s
   simp only [formPerm_coe, mk_eq_coe]
   simp only [length_subsingleton_iff, length_coe, mk_eq_coe] at h
   obtain - | ⟨hd, tl⟩ := s
@@ -149,7 +149,7 @@ theorem isCycle_formPerm (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
 
 theorem support_formPerm [Fintype α] (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
     support (formPerm s h) = s.toFinset := by
-  induction' s using Quot.inductionOn with s
+  obtain ⟨s⟩ := s
   refine support_formPerm_of_nodup s h ?_
   rintro _ rfl
   simpa [Nat.succ_le_succ_iff] using length_nontrivial hn
