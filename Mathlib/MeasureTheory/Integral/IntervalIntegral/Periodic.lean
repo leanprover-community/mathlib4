@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Alex Kontorovich, Heather Macbeth
 -/
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 import Mathlib.MeasureTheory.Measure.Haar.Quotient
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 import Mathlib.Topology.Algebra.Order.Floor
 
 /-!

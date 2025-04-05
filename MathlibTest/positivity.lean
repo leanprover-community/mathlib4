@@ -4,7 +4,7 @@ import Mathlib.Data.Real.Sqrt
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.Log.Basic
-import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 
 /-! # Tests for the `positivity` tactic

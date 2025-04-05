@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.Topology.Semicontinuous
-import Mathlib.MeasureTheory.Integral.Bochner
+import Mathlib.MeasureTheory.Integral.Bochner.Basic
 import Mathlib.Topology.Instances.EReal.Lemmas
 
 /-!

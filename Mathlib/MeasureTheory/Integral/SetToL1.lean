@@ -16,10 +16,11 @@ This file constructs an extension of `T` to integrable simple functions, which a
 indicators of measurable sets with finite measure, then to integrable functions, which are limits of
 integrable simple functions.
 
-The main result is a continuous linear map `(α →₁[μ] E) →L[ℝ] F`. This extension process is used to
-define the Bochner integral in the `Mathlib.MeasureTheory.Integral.Bochner` file and the conditional
-expectation of an integrable function in
-`Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1`.
+The main result is a continuous linear map `(α →₁[μ] E) →L[ℝ] F`.
+This extension process is used to define the Bochner integral
+in the `Mathlib.MeasureTheory.Integral.Bochner.Basic` file
+and the conditional expectation of an integrable function
+in `Mathlib.MeasureTheory.Function.ConditionalExpectation.CondexpL1`.
 
 ## Main Definitions
 
