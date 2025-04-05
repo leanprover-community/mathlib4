@@ -16,8 +16,7 @@ import Mathlib.RingTheory.Spectrum.Maximal.Localization
 import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.Constructible
 import Mathlib.Topology.KrullDimension
-import Mathlib.Topology.QuasiSeparated
-import Mathlib.Topology.Sober
+import Mathlib.Topology.Spectral.SpectralSpace
 
 /-!
 # The Zariski topology on the prime spectrum of a commutative (semi)ring
@@ -691,6 +690,27 @@ def nhdsOrderEmbedding : PrimeSpectrum R ↪o Filter (PrimeSpectrum R) :=
 
 instance : T0Space (PrimeSpectrum R) :=
   ⟨nhdsOrderEmbedding.inj'⟩
+
+instance : PrespectralSpace (PrimeSpectrum R) := by
+  constructor
+  refine TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds ?_ ?_
+  · intro U hU
+    exact hU.1
+  · intro p U hpU hU
+    obtain ⟨V, ⟨r, hr⟩, h1, h2⟩ := (@TopologicalSpace.IsTopologicalBasis.mem_nhds_iff _ _ p U _
+      (@isTopologicalBasis_basic_opens R _)).1 (IsOpen.mem_nhds hU hpU)
+    use V
+    constructor
+    · rw [← hr]
+      exact ⟨isOpen_basicOpen, isCompact_basicOpen r⟩
+    · exact ⟨h1, h2⟩
+
+instance : SpectralSpace (PrimeSpectrum R) where
+  t0_space := instT0Space
+  compact_space := compactSpace
+  quasi_sober := quasiSober
+  quasi_separated_space := instQuasiSeparatedSpace
+  prespectral_space := instPrespectralSpace
 
 end Order
 
