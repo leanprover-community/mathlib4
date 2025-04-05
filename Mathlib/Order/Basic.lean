@@ -63,6 +63,12 @@ open Function
 
 variable {ι α β : Type*} {π : ι → Type*}
 
+/-! ### Bare relations -/
+
+attribute [ext] LE
+
+/-! ### Preorders -/
+
 section Preorder
 
 variable [Preorder α] {a b c : α}
@@ -82,7 +88,36 @@ theorem lt_of_lt_of_le' : b < c → a ≤ b → a < c :=
 theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
   rw [lt_iff_le_not_le, Classical.not_and_iff_not_or_not, Classical.not_not]
 
+lemma not_lt_iff_le_imp_le : ¬ a < b ↔ a ≤ b → b ≤ a := by
+  simp [not_lt_iff_not_le_or_ge, or_iff_not_imp_left]
+
+/-- If `x = y` then `y ≤ x`. Note: this lemma uses `y ≤ x` instead of `x ≥ y`, because `le` is used
+almost exclusively in mathlib. -/
+lemma ge_of_eq (h : a = b) : b ≤ a := le_of_eq h.symm
+
+alias LE.le.trans := le_trans
+alias LE.le.trans' := le_trans'
+alias LE.le.trans_lt := lt_of_le_of_lt
+alias LE.le.trans_lt' := lt_of_le_of_lt'
+alias LE.le.lt_of_not_le := lt_of_le_not_le
+alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
+alias LT.lt.le := le_of_lt
+alias LT.lt.trans := lt_trans
+alias LT.lt.trans' := lt_trans'
+alias LT.lt.trans_le := lt_of_lt_of_le
+alias LT.lt.trans_le' := lt_of_lt_of_le'
+alias LT.lt.ne := ne_of_lt
+alias LT.lt.asymm := lt_asymm
+alias LT.lt.not_lt := lt_asymm
+alias Eq.le := le_of_eq
+@[inherit_doc ge_of_eq] protected alias Eq.ge := ge_of_eq
+
+protected lemma Eq.not_lt (hab : a = b) : ¬a < b := fun h' ↦ h'.ne hab
+protected lemma Eq.not_gt (hab : a = b) : ¬b < a := hab.symm.not_lt
+
 end Preorder
+
+/-! ### Partial order -/
 
 section PartialOrder
 
@@ -99,49 +134,23 @@ theorem Ne.lt_of_le : a ≠ b → a ≤ b → a < b :=
 theorem Ne.lt_of_le' : b ≠ a → a ≤ b → a < b :=
   flip lt_of_le_of_ne'
 
-end PartialOrder
-
-attribute [ext] LE
-
-alias LE.le.trans := le_trans
-
-alias LE.le.trans' := le_trans'
-
-alias LE.le.trans_lt := lt_of_le_of_lt
-
-alias LE.le.trans_lt' := lt_of_le_of_lt'
-
 alias LE.le.antisymm := le_antisymm
-
 alias LE.le.antisymm' := ge_antisymm
-
 alias LE.le.lt_of_ne := lt_of_le_of_ne
-
 alias LE.le.lt_of_ne' := lt_of_le_of_ne'
-
-alias LE.le.lt_of_not_le := lt_of_le_not_le
-
 alias LE.le.lt_or_eq := lt_or_eq_of_le
 
-alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
+lemma le_imp_eq_iff_le_imp_le : a ≤ b → b = a ↔ a ≤ b → b ≤ a where
+  mp h hab := (h hab).le
+  mpr h hab := (h hab).antisymm hab
 
-alias LT.lt.le := le_of_lt
+lemma ge_imp_eq_iff_le_imp_le : a ≤ b → a = b ↔ a ≤ b → b ≤ a where
+  mp h hab := (h hab).ge
+  mpr h hab := hab.antisymm (h hab)
 
-alias LT.lt.trans := lt_trans
+end PartialOrder
 
-alias LT.lt.trans' := lt_trans'
-
-alias LT.lt.trans_le := lt_of_lt_of_le
-
-alias LT.lt.trans_le' := lt_of_lt_of_le'
-
-alias LT.lt.ne := ne_of_lt
-
-alias LT.lt.asymm := lt_asymm
-
-alias LT.lt.not_lt := lt_asymm
-
-alias Eq.le := le_of_eq
+/-! ### Currently unsorted -/
 
 section
 
@@ -180,22 +189,6 @@ alias Eq.trans_lt := lt_of_eq_of_lt
 alias Eq.trans_gt := lt_of_eq_of_lt'
 
 end
-
-namespace Eq
-
-variable [Preorder α] {x y : α}
-
-/-- If `x = y` then `y ≤ x`. Note: this lemma uses `y ≤ x` instead of `x ≥ y`, because `le` is used
-almost exclusively in mathlib. -/
-protected theorem ge (h : x = y) : y ≤ x :=
-  h.symm.le
-
-theorem not_lt (h : x = y) : ¬x < y := fun h' ↦ h'.ne h
-
-theorem not_gt (h : x = y) : ¬y < x :=
-  h.symm.not_lt
-
-end Eq
 
 section
 
@@ -269,9 +262,6 @@ protected theorem GE.ge.le [LE α] {x y : α} (h : x ≥ y) : y ≤ x :=
 
 protected theorem GT.gt.lt [LT α] {x y : α} (h : x > y) : y < x :=
   h
-
-theorem ge_of_eq [Preorder α] {a b : α} (h : a = b) : a ≥ b :=
-  h.ge
 
 theorem ne_of_not_le [Preorder α] {a b : α} (h : ¬a ≤ b) : a ≠ b := fun hab ↦ h (le_of_eq hab)
 
