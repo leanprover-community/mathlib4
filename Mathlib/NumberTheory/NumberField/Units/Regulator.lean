@@ -309,7 +309,7 @@ theorem regOfFamily_div_regOfFamily {u v : Fin (rank K) → (𝓞 K)ˣ} (hv : is
       ← Subgroup.not_finiteIndex_iff, ← finiteIndex_iff_sup_torsion_finiteIndex,
       ← isMaxRank_iff_closure_finiteIndex.not]
 
-theorem regOfFamily_div_regulator {u : Fin (rank K) → (𝓞 K)ˣ} :
+theorem regOfFamily_div_regulator (u : Fin (rank K) → (𝓞 K)ˣ) :
     regOfFamily u / regulator K = (Subgroup.closure (Set.range u) ⊔ (torsion K)).index := by
   rw [regulator_eq_regOfFamily_fundSystem, regOfFamily_div_regOfFamily (isMaxRank_fundSystem K)
     (by simp only [closure_fundSystem_sup_torsion_eq_top, le_top]),
