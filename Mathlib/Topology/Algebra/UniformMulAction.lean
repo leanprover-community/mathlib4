@@ -162,7 +162,7 @@ section SMul
 variable [SMul M X]
 
 @[to_additive]
-noncomputable instance : SMul M (Completion X) :=
+noncomputable instance (priority := 100) : SMul M (Completion X) :=
   ⟨fun c => Completion.map (c • ·)⟩
 
 @[to_additive]
