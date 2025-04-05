@@ -17,7 +17,7 @@ require "leanprover-community" / "proofwidgets" @ git "v0.0.56" -- ProofWidgets 
     If this does not work, report your issue on the Lean Zulip."
 require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
-require "leanprover-community" / "plausible" @ git "nightly-testing"
+require "leanprover-community" / "plausible" @ git "main"
 
 /-!
 ## Options for building mathlib
