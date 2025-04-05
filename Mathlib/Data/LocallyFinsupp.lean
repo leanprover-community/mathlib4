@@ -119,6 +119,20 @@ theorem discreteSupport [Zero Y] [T1Space X] (D : locallyFinsuppWithin U Y) :
   exact D.supportLocallyFiniteWithinDomain
 
 /--
+If `X` is a `T1Space`, then functions with locally finite support within `U` have discrete support
+within `U`.
+-/
+theorem supportDiscreteWithinDomain [T1Space X] [Zero Y] (D : locallyFinsuppWithin U Y) :
+    D =ᶠ[codiscreteWithin U] 0 := by
+  apply codiscreteWithin_iff_locallyFiniteComplementWithin.2
+  have : D.support = (U \ {x | D x = (0 : X → Y) x}) := by
+    ext x
+    simp only [mem_support, ne_eq, Pi.zero_apply, Set.mem_diff, Set.mem_setOf_eq, iff_and_self]
+    exact (support_subset_iff.1 D.supportWithinDomain) x
+  rw [← this]
+  exact D.supportLocallyFiniteWithinDomain
+
+/--
 If `X` is T1 and if `U` is closed, then the support of support of a function with locally finite
 support within `U` is also closed.
 -/

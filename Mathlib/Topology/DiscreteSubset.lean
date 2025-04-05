@@ -108,6 +108,12 @@ lemma mem_codiscreteWithin {S T : Set X} :
   congr! 7 with x - u y
   tauto
 
+/--
+Any set is codiscrete within itself.
+-/
+@[simp] theorem Filter.mem_codiscreteWithin_self {X : Type*} [TopologicalSpace X] (U : Set X) :
+    U ∈ Filter.codiscreteWithin U := by simp [mem_codiscreteWithin]
+
 lemma mem_codiscreteWithin_accPt {S T : Set X} :
     S ∈ codiscreteWithin T ↔ ∀ x ∈ T, ¬AccPt x (𝓟 (T \ S)) := by
   simp only [mem_codiscreteWithin, disjoint_iff, AccPt, not_neBot]
