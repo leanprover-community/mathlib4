@@ -80,6 +80,20 @@ theorem Real.subfield_eq_of_closed {K : Subfield ℝ} (hc : IsClosed (K : Set �
   rintro - ⟨_, rfl⟩
   exact SubfieldClass.ratCast_mem K _
 
+theorem Real.exists_seq_rat_strictMono_tendsto (x : ℝ) :
+    ∃ u : ℕ → ℚ, StrictMono u ∧ (∀ n, u n < x) ∧ Tendsto (u · : ℕ → ℝ) atTop (𝓝 x) := by
+  obtain ⟨u, hu_mono, hu_mem, hux⟩ := Rat.denseRange_cast.exists_seq_strictMono_tendsto x
+  refine ⟨fun n ↦ (hu_mem n).2.choose, ?_, ?_⟩
+  · simpa [StrictMono, ← (Rat.cast_strictMono (K := ℝ)).lt_iff_lt, fun n ↦ (hu_mem n).2.choose_spec]
+  · aesop (add simp (fun n ↦ (hu_mem n).2.choose_spec))
+
+theorem Real.exists_seq_rat_strictAnti_tendsto (x : ℝ) :
+    ∃ u : ℕ → ℚ, StrictAnti u ∧ (∀ n, x < u n) ∧ Tendsto (u · : ℕ → ℝ) atTop (𝓝 x) := by
+  obtain ⟨u, hu_anti, hu_mem, hux⟩ := Rat.denseRange_cast.exists_seq_strictAnti_tendsto x
+  refine ⟨fun n ↦ (hu_mem n).2.choose, ?_, ?_⟩
+  · simpa [StrictAnti, ← (Rat.cast_strictMono (K := ℝ)).lt_iff_lt, fun n ↦ (hu_mem n).2.choose_spec]
+  · aesop (add simp (fun n ↦ (hu_mem n).2.choose_spec))
+
 section
 
 theorem closure_of_rat_image_lt {q : ℚ} :
