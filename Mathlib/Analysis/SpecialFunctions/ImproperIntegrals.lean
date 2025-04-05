@@ -15,6 +15,9 @@ import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 This file contains some integrability results, and evaluations of integrals, over `ℝ` or over
 half-infinite intervals in `ℝ`.
 
+These lemmas are stated in terms of either `Iic` or `Ioi` (neglecting `Iio` and `Ici`) to match
+mathlib's conventions for integrals over finite intervals (see `intervalIntegral`).
+
 ## See also
 
 - `Mathlib.Analysis.SpecialFunctions.Integrals` -- integrals over finite intervals
@@ -35,6 +38,9 @@ theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
   simp_rw [norm_of_nonneg (exp_pos _).le, integral_exp, sub_le_self_iff]
   exact (exp_pos _).le
 
+theorem integrableOn_exp_neg_Ioi (c : ℝ) : IntegrableOn (fun (x : ℝ) => exp (-x)) (Ioi c) :=
+  (integrableOn_exp_Iic (-c)).comp_neg_Ioi
+
 theorem integral_exp_Iic (c : ℝ) : ∫ x : ℝ in Iic c, exp x = exp c := by
   refine
     tendsto_nhds_unique
@@ -50,6 +56,49 @@ theorem integral_exp_neg_Ioi (c : ℝ) : (∫ x : ℝ in Ioi c, exp (-x)) = exp 
 
 theorem integral_exp_neg_Ioi_zero : (∫ x : ℝ in Ioi 0, exp (-x)) = 1 := by
   simpa only [neg_zero, exp_zero] using integral_exp_neg_Ioi 0
+
+theorem integrableOn_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
+    IntegrableOn (fun x : ℝ => Complex.exp (a * x)) (Ioi c) := by
+  refine (integrable_norm_iff ?_).mp ?_
+  · apply Continuous.aestronglyMeasurable
+    fun_prop
+  · conv in (fun x => _) =>
+      ext x
+      rw [(by simp [Complex.norm_exp] : ‖Complex.exp (a * x)‖ = exp (-(-a.re * x)))]
+    have a_neg : 0 < -a.re := by simp [ha]
+    apply (integrableOn_Ioi_comp_mul_left_iff (fun x => exp (-x)) c a_neg).mpr
+    apply integrableOn_exp_neg_Ioi
+
+theorem integrableOn_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
+    IntegrableOn (fun x : ℝ => Complex.exp (a * x)) (Iic c) := by
+  conv in (fun x => _) =>
+    ext x
+    rw [(by simp : a * x = -a * (-x : ℝ))]
+  have a_neg : (-a).re < 0 := by simp [ha]
+  exact (integrableOn_exp_mul_complex_Ioi a_neg (-c)).comp_neg_Iic
+
+theorem integral_exp_mul_complex_Ioi {a : ℂ} (ha : a.re < 0) (c : ℝ) :
+    ∫ x : ℝ in Set.Ioi c, Complex.exp (a * x) = - Complex.exp (a * c) / a := by
+  refine
+    tendsto_nhds_unique (intervalIntegral_tendsto_integral_Ioi c
+      (integrableOn_exp_mul_complex_Ioi ha c) tendsto_id) ?_
+  have nonzero : a ≠ 0 := fun h => (Complex.zero_re ▸ h ▸ ha).false
+  simp_rw [integral_exp_mul_complex nonzero, id_eq]
+  rw [(by simp : - Complex.exp (a * c) / a = (0 - Complex.exp (a * c)) / a)]
+  refine Tendsto.div_const (Tendsto.sub_const ?_ _) _
+  apply Complex.tendsto_exp_nhds_zero_iff.mpr
+  simp only [Complex.mul_re, Complex.ofReal_re, Complex.ofReal_im, mul_zero, sub_zero]
+  exact Tendsto.neg_mul_atTop ha tendsto_const_nhds tendsto_id
+
+theorem integral_exp_mul_complex_Iic {a : ℂ} (ha : 0 < a.re) (c : ℝ) :
+    ∫ x : ℝ in Set.Iic c, Complex.exp (a * x) = Complex.exp (a * c) / a := by
+  conv in (fun x => _) =>
+    ext x
+    rw [(by simp : a * x = -a * (-x : ℝ))]
+  rw [integral_comp_neg_Iic c (fun x => Complex.exp (-a * x))]
+  have a_neg : (-a).re < 0 := by simp [ha]
+  rw [integral_exp_mul_complex_Ioi a_neg]
+  simp
 
 /-- If `0 < c`, then `(fun t : ℝ ↦ t ^ a)` is integrable on `(c, ∞)` for all `a < -1`. -/
 theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < c) :
