@@ -107,7 +107,7 @@ section PredOrder
 variable [PredOrder α] {a b : α}
 
 /-!
-#### Not `NoMinOrder`
+#### Orders possibly with minimal elements
 
 ##### Equalities of intervals
 -/
@@ -148,7 +148,7 @@ lemma insert_Ioc_pred_right_eq_Ioc (h : a < b) : insert b (Ioc a (pred b)) = Ioc
   rw [Ioc_pred_right_of_not_isMin h.not_isMin, Ioo_insert_right h]
 
 /-!
-#### `NoMinOrder`
+#### Orders with no minimal elements
 
 ##### Equalities of intervals
 -/

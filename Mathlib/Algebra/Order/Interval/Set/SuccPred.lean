@@ -105,7 +105,7 @@ section PredSubOrder
 variable [Sub α] [PredSubOrder α] {a b : α}
 
 /-!
-#### Not `NoMinOrder`
+#### Orders possibly with minimal elements
 
 ##### Equalities of intervals
 -/
@@ -143,7 +143,7 @@ lemma insert_Ioc_sub_one_right_eq_Ioc (h : a < b) : insert b (Ioc a (b - 1)) = I
   simpa [pred_eq_sub_one] using insert_Ioc_pred_right_eq_Ioc h
 
 /-!
-#### `NoMinOrder`
+#### Orders with no minimal elements
 
 ##### Equalities of intervals
 -/
