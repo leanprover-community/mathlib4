@@ -208,7 +208,7 @@ lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPr
   · rw [eq_top_iff, ← hsgone, Ideal.span_le]
     intro t ht
     have : 1 ∈ Ideal.span (Set.range <| fun a : sf ↦ a.val) := by simp [hsfone]
-    simp only [mem_ideal_span_range_iff_exists_fun, SetLike.mem_coe] at this ⊢
+    simp only [Ideal.mem_span_range_iff_exists_fun, SetLike.mem_coe] at this ⊢
     obtain ⟨cf, hcf⟩ := this
     let cg : sg → T := Pi.single ⟨t, ht⟩ 1
     use fun (a, b) ↦ g (cf a) * cg b
@@ -290,7 +290,7 @@ lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnder
     simp [RingHom.algebraMap_toAlgebra]
   haveI (a : s) : Algebra.IsPushout T (Localization.Away a.val) (S ⊗[R] T)
       (S ⊗[R] Localization.Away a.val) := by
-    rw [← Algebra.IsPushout.comp_iff (R := R) (R' := S)]
+    rw [← Algebra.IsPushout.comp_iff R _ S]
     infer_instance
   refine ⟨s, fun a ↦ Algebra.TensorProduct.includeRight a.val, ?_,
       fun a ↦ (S ⊗[R] Localization.Away a.val), inferInstance, inferInstance, ?_, ?_⟩
