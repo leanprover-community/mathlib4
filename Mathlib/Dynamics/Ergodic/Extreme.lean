@@ -36,8 +36,8 @@ theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
       constructor
       rwa [h.1.2, lt_top_iff_ne_top]
     set S := {ν | MeasurePreserving f ν ν ∧ ν univ = c}
-    have : ∀ s, MeasurableSet s → f ⁻¹' s = s → μ s ≠ 0 → c • μ[|s] ∈ S := by
-      intro s hsm hfs hμs
+    have {s : Set X} (hsm : MeasurableSet s) (hfs : f ⁻¹' s = s) (hμs : μ s ≠ 0) :
+        c • μ[|s] ∈ S := by
       refine ⟨.smul_measure (.smul_measure ?_ _) c, ?_⟩
       · convert hf.restrict_preimage hsm
         exact hfs.symm
@@ -47,7 +47,7 @@ theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
     obtain ⟨hs, hs'⟩ : μ s ≠ 0 ∧ μ sᶜ ≠ 0 := by
       simpa [eventuallyConst_set, ae_iff, and_comm] using H
     obtain ⟨hcond, -⟩ : c • μ[|s] = μ ∧ c • μ[|sᶜ] = μ := by
-      apply h.2 (this s hsm hfs hs) (this sᶜ hsm.compl (by rw [preimage_compl, hfs]) hs')
+      apply h.2 (this hsm hfs hs) (this hsm.compl (by rw [preimage_compl, hfs]) hs')
       refine ⟨μ s / c, μ sᶜ / c, ENNReal.div_pos hs hc, ENNReal.div_pos hs' hc, ?_, ?_⟩
       · rw [← ENNReal.add_div, measure_add_measure_compl hsm, h.1.2, ENNReal.div_self hc₀ hc]
       · simp [ProbabilityTheory.cond, smul_smul, ← mul_assoc, ENNReal.div_mul_cancel,
