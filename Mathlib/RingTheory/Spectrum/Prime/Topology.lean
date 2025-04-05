@@ -135,15 +135,6 @@ theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : 
 lemma zeroLocus_nilradical : zeroLocus (nilradical R : Set R) = Set.univ := by
   rw [nilradical, zeroLocus_radical, Ideal.zero_eq_bot, zeroLocus_bot]
 
-lemma zeroLocus_eq_univ_iff (s : Set R) :
-    zeroLocus s = Set.univ ↔ s ⊆ nilradical R := by
-  refine ⟨fun hs ↦ ?_, fun hs ↦ ?_⟩
-  · simp_rw [nilradical_eq_sInf, Submodule.sInf_coe, Set.mem_setOf_eq, Set.subset_iInter_iff]
-    intro I hI
-    exact (Set.eq_univ_iff_forall.mp hs) ⟨I, hI⟩
-  · rw [← Set.univ_subset_iff, ← zeroLocus_nilradical]
-    exact zeroLocus_anti_mono hs
-
 /-- The antitone order embedding of closed subsets of `Spec R` into ideals of `R`. -/
 def closedsEmbedding (R : Type*) [CommSemiring R] :
     (TopologicalSpace.Closeds <| PrimeSpectrum R)ᵒᵈ ↪o Ideal R :=
