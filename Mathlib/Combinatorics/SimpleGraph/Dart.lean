@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Data.Fintype.Sigma
 
 /-!
 # Darts in graphs
@@ -35,9 +36,6 @@ theorem Dart.ext_iff (d₁ d₂ : G.Dart) : d₁ = d₂ ↔ d₁.toProd = d₂.t
 @[ext]
 theorem Dart.ext (d₁ d₂ : G.Dart) (h : d₁.toProd = d₂.toProd) : d₁ = d₂ :=
   (Dart.ext_iff d₁ d₂).mpr h
-
--- Porting note: deleted `Dart.fst` and `Dart.snd` since they are now invalid declaration names,
--- even though there is not actually a `SimpleGraph.Dart.fst` or `SimpleGraph.Dart.snd`.
 
 @[simp]
 theorem Dart.fst_ne_snd (d : G.Dart) : d.fst ≠ d.snd :=

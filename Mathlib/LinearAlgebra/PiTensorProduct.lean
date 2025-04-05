@@ -3,9 +3,9 @@ Copyright (c) 2020 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Eric Wieser
 -/
-import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.LinearAlgebra.Multilinear.Curry
 
 /-!
 # Tensor product of an indexed family of modules over commutative semirings
@@ -226,14 +226,14 @@ protected theorem smul_add (r : R₁) (x y : ⨂[R] i, s i) : r • (x + y) = r 
 
 instance distribMulAction' : DistribMulAction R₁ (⨂[R] i, s i) where
   smul := (· • ·)
-  smul_add r x y := AddMonoidHom.map_add _ _ _
+  smul_add _ _ _ := AddMonoidHom.map_add _ _ _
   mul_smul r r' x :=
     PiTensorProduct.induction_on' x (fun {r'' f} ↦ by simp [smul_tprodCoeff', smul_smul])
       fun {x y} ihx ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihx, ihy]
   one_smul x :=
     PiTensorProduct.induction_on' x (fun {r f} ↦ by rw [smul_tprodCoeff', one_smul])
       fun {z y} ihz ihy ↦ by simp_rw [PiTensorProduct.smul_add, ihz, ihy]
-  smul_zero r := AddMonoidHom.map_zero _
+  smul_zero _ := AddMonoidHom.map_zero _
 
 instance smulCommClass' [SMulCommClass R₁ R₂ R] : SMulCommClass R₁ R₂ (⨂[R] i, s i) :=
   ⟨fun {r' r''} x ↦
@@ -271,18 +271,15 @@ instance : SMulCommClass R R (⨂[R] i, s i) :=
 instance : IsScalarTower R R (⨂[R] i, s i) :=
   PiTensorProduct.isScalarTower'
 
-variable (R)
-
+variable (R) in
 /-- The canonical `MultilinearMap R s (⨂[R] i, s i)`.
 
 `tprod R fun i => f i` has notation `⨂ₜ[R] i, f i`. -/
 def tprod : MultilinearMap R s (⨂[R] i, s i) where
   toFun := tprodCoeff R 1
-  map_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
-  map_smul' {_ f} i r x := by
-    rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_same]
-
-variable {R}
+  map_update_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
+  map_update_smul' {_ f} i r x := by
+    rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_self]
 
 unsuppress_compilation in
 @[inherit_doc tprod]
@@ -302,11 +299,14 @@ equal to the sum of `a • ⨂ₜ[R] i, m i` over all the entries `(a, m)` of `p
 -/
 lemma _root_.FreeAddMonoid.toPiTensorProduct (p : FreeAddMonoid (R × Π i, s i)) :
     AddCon.toQuotient (c := addConGen (PiTensorProduct.Eqv R s)) p =
-    List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p) := by
+    List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p.toList) := by
+  -- TODO: this is defeq abuse: `p` is not a `List`.
   match p with
-  | [] => rw [List.map_nil, List.sum_nil]; rfl
-  | x :: ps => rw [List.map_cons, List.sum_cons, ← List.singleton_append, ← toPiTensorProduct ps,
-                 ← tprodCoeff_eq_smul_tprod]; rfl
+  | [] => rw [FreeAddMonoid.toList_nil, List.map_nil, List.sum_nil]; rfl
+  | x :: ps =>
+    rw [FreeAddMonoid.toList_cons, List.map_cons, List.sum_cons, ← List.singleton_append,
+      ← toPiTensorProduct ps, ← tprodCoeff_eq_smul_tprod]
+    rfl
 
 /-- The set of lifts of an element `x` of `⨂[R] i, s i` in `FreeAddMonoid (R × Π i, s i)`. -/
 def lifts (x : ⨂[R] i, s i) : Set (FreeAddMonoid (R × Π i, s i)) :=
@@ -317,7 +317,7 @@ if and only if `x` is equal to the sum of `a • ⨂ₜ[R] i, m i` over all the 
 `(a, m)` of `p`.
 -/
 lemma mem_lifts_iff (x : ⨂[R] i, s i) (p : FreeAddMonoid (R × Π i, s i)) :
-    p ∈ lifts x ↔ List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p) = x := by
+    p ∈ lifts x ↔ List.sum (List.map (fun x ↦ x.1 • ⨂ₜ[R] i, x.2 i) p.toList) = x := by
   simp only [lifts, Set.mem_setOf_eq, FreeAddMonoid.toPiTensorProduct]
 
 /-- Every element of `⨂[R] i, s i` has a lift in `FreeAddMonoid (R × Π i, s i)`.
@@ -346,12 +346,10 @@ and if `a` is an element of `R`, then the list obtained by multiplying the first
 element of `p` by `a` lifts `a • x`.
 -/
 lemma lifts_smul {x : ⨂[R] i, s i} {p : FreeAddMonoid (R × Π i, s i)} (h : p ∈ lifts x) (a : R) :
-    List.map (fun (y : R × Π i, s i) ↦ (a * y.1, y.2)) p ∈ lifts (a • x) := by
+    p.map (fun (y : R × Π i, s i) ↦ (a * y.1, y.2)) ∈ lifts (a • x) := by
   rw [mem_lifts_iff] at h ⊢
-  rw [← List.comp_map, ← h, List.smul_sum, ← List.comp_map]
-  congr 2
-  ext _
-  simp only [comp_apply, smul_smul]
+  rw [← h]
+  simp [Function.comp_def, mul_smul, List.smul_sum]
 
 /-- Induct using scaled versions of `PiTensorProduct.tprod`. -/
 @[elab_as_elim]
@@ -399,19 +397,19 @@ def liftAux (φ : MultilinearMap R s E) : (⨂[R] i, s i) →+ E :=
   liftAddHom (fun p : R × Π i, s i ↦ p.1 • φ p.2)
     (fun z f i hf ↦ by simp_rw [map_coord_zero φ i hf, smul_zero])
     (fun f ↦ by simp_rw [zero_smul])
-    (fun z f i m₁ m₂ ↦ by simp_rw [← smul_add, φ.map_add])
+    (fun z f i m₁ m₂ ↦ by simp_rw [← smul_add, φ.map_update_add])
     (fun z₁ z₂ f ↦ by rw [← add_smul])
-    fun z f i r ↦ by simp [φ.map_smul, smul_smul, mul_comm]
+    fun z f i r ↦ by simp [φ.map_update_smul, smul_smul, mul_comm]
 
 theorem liftAux_tprod (φ : MultilinearMap R s E) (f : Π i, s i) : liftAux φ (tprod R f) = φ f := by
   simp only [liftAux, liftAddHom, tprod_eq_tprodCoeff_one, tprodCoeff, AddCon.coe_mk']
-  -- The end of this proof was very different before leanprover/lean4#2644:
+  -- The end of this proof was very different before https://github.com/leanprover/lean4/pull/2644:
   -- rw [FreeAddMonoid.of, FreeAddMonoid.ofList, Equiv.refl_apply, AddCon.lift_coe]
   -- dsimp [FreeAddMonoid.lift, FreeAddMonoid.sumAux]
   -- show _ • _ = _
   -- rw [one_smul]
   erw [AddCon.lift_coe]
-  erw [FreeAddMonoid.of]
+  rw [FreeAddMonoid.of]
   dsimp [FreeAddMonoid.ofList]
   rw [← one_smul R (φ f)]
   erw [Equiv.refl_apply]
@@ -527,10 +525,10 @@ theorem map_id : map (fun i ↦ (LinearMap.id : s i →ₗ[R] s i)) = .id := by
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, LinearMap.id_coe, id_eq]
 
 @[simp]
-theorem map_one : map (fun (i : ι) ↦ (1 : s i →ₗ[R] s i)) = 1 :=
+protected theorem map_one : map (fun (i : ι) ↦ (1 : s i →ₗ[R] s i)) = 1 :=
   map_id
 
-theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
+protected theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
     map (fun i ↦ f₁ i * f₂ i) = map f₁ * map f₂ :=
   map_comp f₁ f₂
 
@@ -538,8 +536,8 @@ theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
 @[simps]
 def mapMonoidHom : (Π i, s i →ₗ[R] s i) →* ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, s i) where
   toFun := map
-  map_one' := map_one
-  map_mul' := map_mul
+  map_one' := PiTensorProduct.map_one
+  map_mul' := PiTensorProduct.map_mul
 
 @[simp]
 protected theorem map_pow (f : Π i, s i →ₗ[R] s i) (n : ℕ) :
@@ -552,18 +550,22 @@ private theorem map_add_smul_aux [DecidableEq ι] (i : ι) (x : Π i, s i) (u : 
   exact apply_update (fun i F => F (x i)) f i u j
 
 open Function in
-protected theorem map_add [DecidableEq ι] (i : ι) (u v : s i →ₗ[R] t i) :
+protected theorem map_update_add [DecidableEq ι] (i : ι) (u v : s i →ₗ[R] t i) :
     map (update f i (u + v)) = map (update f i u) + map (update f i v) := by
   ext x
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.add_apply,
-    MultilinearMap.map_add]
+    MultilinearMap.map_update_add]
+
+@[deprecated (since := "2024-11-03")] protected alias map_add := PiTensorProduct.map_update_add
 
 open Function in
-protected theorem map_smul [DecidableEq ι] (i : ι) (c : R) (u : s i →ₗ[R] t i) :
+protected theorem map_update_smul [DecidableEq ι] (i : ι) (c : R) (u : s i →ₗ[R] t i) :
     map (update f i (c • u)) = c • map (update f i u) := by
   ext x
   simp only [LinearMap.compMultilinearMap_apply, map_tprod, map_add_smul_aux, LinearMap.smul_apply,
-    MultilinearMap.map_smul]
+    MultilinearMap.map_update_smul]
+
+@[deprecated (since := "2024-11-03")] protected alias map_smul := PiTensorProduct.map_update_smul
 
 variable (R s t)
 
@@ -574,8 +576,8 @@ the family.
 noncomputable def mapMultilinear :
     MultilinearMap R (fun (i : ι) ↦ s i →ₗ[R] t i) ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, t i) where
   toFun := map
-  map_smul' _ _ _ _ := PiTensorProduct.map_smul _ _ _ _
-  map_add' _ _ _ _ := PiTensorProduct.map_add _ _ _ _
+  map_update_smul' _ _ _ _ := PiTensorProduct.map_update_smul _ _ _ _
+  map_update_add' _ _ _ _ := PiTensorProduct.map_update_add _ _ _ _
 
 variable {R s t}
 
@@ -796,7 +798,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
   left_inv x := by
     refine x.induction_on ?_ ?_
     · intro x y
-      -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+      -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
       simp only [map_smulₛₗ _, RingHom.id_apply, lift.tprod, constOfIsEmpty_apply, const_apply,
         smul_eq_mul, mul_one]
       congr
@@ -807,7 +809,6 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
   right_inv t := by simp
   map_add' := LinearMap.map_add _
   map_smul' := fun r x => by
-    simp only
     exact LinearMap.map_smul _ r x
 
 @[simp]
@@ -828,18 +829,17 @@ def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[
     dsimp only
     have : ∀ (f : ι → M) (z : M), (fun _ : ι ↦ z) = update f i₀ z := fun f z ↦ by
       ext i
-      rw [Subsingleton.elim i i₀, Function.update_same]
+      rw [Subsingleton.elim i i₀, Function.update_self]
     refine x.induction_on ?_ ?_
     · intro r f
       simp only [LinearMap.map_smul, LinearMap.id_apply, lift.tprod, ofSubsingleton_apply_apply,
-        this f, MultilinearMap.map_smul, update_eq_self]
+        this f, MultilinearMap.map_update_smul, update_eq_self]
     · intro x y hx hy
-      rw [LinearMap.map_add, this 0 (_ + _), MultilinearMap.map_add, ← this 0 (lift _ _), hx,
+      rw [LinearMap.map_add, this 0 (_ + _), MultilinearMap.map_update_add, ← this 0 (lift _ _), hx,
         ← this 0 (lift _ _), hy]
   right_inv t := by simp only [ofSubsingleton_apply_apply, LinearMap.id_apply, lift.tprod]
   map_add' := LinearMap.map_add _
   map_smul' := fun r x => by
-    simp only
     exact LinearMap.map_smul _ r x
 
 @[simp]
@@ -886,14 +886,11 @@ def tmulEquiv : ((⨂[R] _ : ι, M) ⊗[R] ⨂[R] _ : ι₂, M) ≃ₗ[R] ⨂[R]
   LinearEquiv.ofLinear tmul tmulSymm
     (by
       ext x
-      show tmul (tmulSymm (tprod R x)) = tprod R x -- Speed up the call to `simp`.
-      simp only [tmulSymm_apply, tmul_apply]
-      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5026):
-      -- was part of `simp only` above
-      erw [Sum.elim_comp_inl_inr])
+      dsimp
+      simp only [tmulSymm_apply, tmul_apply, ← Function.comp_def x, Sum.elim_comp_inl_inr])
     (by
       ext x y
-      show tmulSymm (tmul (tprod R x ⊗ₜ[R] tprod R y)) = tprod R x ⊗ₜ[R] tprod R y
+      dsimp
       simp only [tmul_apply, tmulSymm_apply, Sum.elim_inl, Sum.elim_inr])
 
 @[simp]

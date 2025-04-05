@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2018 Scott Morrison. All rights reserved.
+Copyright (c) 2018 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.Functor.Category
@@ -47,8 +47,13 @@ def whiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) :
   app X := α.app (F.obj X)
   naturality X Y f := by rw [Functor.comp_map, Functor.comp_map, α.naturality]
 
+@[simp]
+lemma NatTrans.id_hcomp (F : C ⥤ D) {G H : D ⥤ E} (α : G ⟶ H) : 𝟙 F ◫ α = whiskerLeft F α := by
+  ext
+  simp
+
 /-- If `α : G ⟶ H` then
-`whisker_right α F : (G ⋙ F) ⟶ (G ⋙ F)` has components `F.map (α.app X)`.
+`whiskerRight α F : (G ⋙ F) ⟶ (G ⋙ F)` has components `F.map (α.app X)`.
 -/
 @[simps]
 def whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) :
@@ -56,6 +61,11 @@ def whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) :
   app X := F.map (α.app X)
   naturality X Y f := by
     rw [Functor.comp_map, Functor.comp_map, ← F.map_comp, ← F.map_comp, α.naturality]
+
+@[simp]
+lemma NatTrans.hcomp_id {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) : α ◫ 𝟙 F = whiskerRight α F := by
+  ext
+  simp
 
 variable (C D E)
 
@@ -113,6 +123,48 @@ def Functor.FullyFaithful.whiskeringRight {F : D ⥤ E} (hF : F.FullyFaithful)
         simp only [map_comp, map_preimage]
         apply f.naturality }
 
+theorem whiskeringLeft_obj_id : (whiskeringLeft C C E).obj (𝟭 _) = 𝟭 _ :=
+  rfl
+
+/-- The isomorphism between left-whiskering on the identity functor and the identity of the functor
+between the resulting functor categories. -/
+def whiskeringLeftObjIdIso : (whiskeringLeft C C E).obj (𝟭 _) ≅ 𝟭 _ :=
+  Iso.refl _
+
+theorem whiskeringLeft_obj_comp {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
+    (whiskeringLeft C D' E).obj (F ⋙ G) =
+    (whiskeringLeft D D' E).obj G ⋙ (whiskeringLeft C D E).obj F :=
+  rfl
+
+/-- The isomorphism between left-whiskering on the composition of functors and the composition
+of two left-whiskering applications. -/
+def whiskeringLeftObjCompIso {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
+    (whiskeringLeft C D' E).obj (F ⋙ G) ≅
+    (whiskeringLeft D D' E).obj G ⋙ (whiskeringLeft C D E).obj F :=
+  Iso.refl _
+
+theorem whiskeringRight_obj_id : (whiskeringRight E C C).obj (𝟭 _) = 𝟭 _ :=
+  rfl
+
+/-- The isomorphism between right-whiskering on the identity functor and the identity of the functor
+between the resulting functor categories. -/
+def whiskeringRightObjIdIso : (whiskeringRight E C C).obj (𝟭 _) ≅ 𝟭 _ :=
+  Iso.refl _
+
+@[deprecated (since := "2025-04-04")] alias wiskeringRightObjIdIso := whiskeringRightObjIdIso
+
+theorem whiskeringRight_obj_comp {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
+    (whiskeringRight E C D).obj F ⋙ (whiskeringRight E D D').obj G =
+    (whiskeringRight E C D').obj (F ⋙ G) :=
+  rfl
+
+/-- The isomorphism between right-whiskering on the composition of functors and the composition
+of two right-whiskering applications. -/
+def whiskeringRightObjCompIso {D' : Type u₄} [Category.{v₄} D'] (F : C ⥤ D) (G : D ⥤ D') :
+    (whiskeringRight E C D).obj F ⋙ (whiskeringRight E D D').obj G ≅
+    (whiskeringRight E C D').obj (F ⋙ G) :=
+  Iso.refl _
+
 instance full_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] [F.Full] :
     ((whiskeringRight C D E).obj F).Full :=
   ((Functor.FullyFaithful.ofFullyFaithful F).whiskeringRight C).full
@@ -145,8 +197,19 @@ theorem whiskerRight_comp {G H K : C ⥤ D} (α : G ⟶ H) (β : H ⟶ K) (F : D
     whiskerRight (α ≫ β) F = whiskerRight α F ≫ whiskerRight β F :=
   ((whiskeringRight C D E).obj F).map_comp α β
 
+@[reassoc]
+theorem whiskerLeft_comp_whiskerRight {F G : C ⥤ D} {H K : D ⥤ E} (α : F ⟶ G) (β : H ⟶ K) :
+    whiskerLeft F β ≫ whiskerRight α K = whiskerRight α H ≫ whiskerLeft G β := by
+  ext
+  simp
+
+lemma NatTrans.hcomp_eq_whiskerLeft_comp_whiskerRight {F G : C ⥤ D} {H K : D ⥤ E}
+    (α : F ⟶ G) (β : H ⟶ K) : α ◫ β = whiskerLeft F β ≫ whiskerRight α K := by
+  ext
+  simp
+
 /-- If `α : G ≅ H` is a natural isomorphism then
-`iso_whisker_left F α : (F ⋙ G) ≅ (F ⋙ H)` has components `α.app (F.obj X)`.
+`isoWhiskerLeft F α : (F ⋙ G) ≅ (F ⋙ H)` has components `α.app (F.obj X)`.
 -/
 def isoWhiskerLeft (F : C ⥤ D) {G H : D ⥤ E} (α : G ≅ H) : F ⋙ G ≅ F ⋙ H :=
   ((whiskeringLeft C D E).obj F).mapIso α
@@ -162,7 +225,7 @@ theorem isoWhiskerLeft_inv (F : C ⥤ D) {G H : D ⥤ E} (α : G ≅ H) :
   rfl
 
 /-- If `α : G ≅ H` then
-`iso_whisker_right α F : (G ⋙ F) ≅ (H ⋙ F)` has components `F.map_iso (α.app X)`.
+`isoWhiskerRight α F : (G ⋙ F) ≅ (H ⋙ F)` has components `F.map_iso (α.app X)`.
 -/
 def isoWhiskerRight {G H : C ⥤ D} (α : G ≅ H) (F : D ⥤ E) : G ⋙ F ≅ H ⋙ F :=
   ((whiskeringRight C D E).obj F).mapIso α
@@ -186,10 +249,6 @@ instance isIso_whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) [IsIso 
   (isoWhiskerRight (asIso α) F).isIso_hom
 
 variable {B : Type u₄} [Category.{v₄} B]
-
--- Porting note: it was `attribute [local elab_without_expected_type]`,
--- but now `elab_without_expected-type` must be global
-attribute [elab_without_expected_type] whiskerLeft whiskerRight
 
 @[simp]
 theorem whiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H ⟶ K) :
@@ -261,5 +320,89 @@ theorem pentagon :
       (associator (F ⋙ G) H K).hom ≫ (associator F G (H ⋙ K)).hom := by aesop_cat
 
 end Functor
+
+variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
+  [Category D₁] [Category D₂] [Category D₃] (E : Type*) [Category E]
+
+/-- The obvious functor `(C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (D₁ ⥤ D₂ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ E)`. -/
+@[simps!]
+def whiskeringLeft₂ :
+    (C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (D₁ ⥤ D₂ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ E) where
+  obj F₁ :=
+    { obj := fun F₂ ↦
+        (whiskeringRight D₁ (D₂ ⥤ E) (C₂ ⥤ E)).obj ((whiskeringLeft C₂ D₂ E).obj F₂) ⋙
+          (whiskeringLeft C₁ D₁ (C₂ ⥤ E)).obj F₁
+      map := fun φ ↦ whiskerRight
+        ((whiskeringRight D₁ (D₂ ⥤ E) (C₂ ⥤ E)).map ((whiskeringLeft C₂ D₂ E).map φ)) _ }
+  map ψ :=
+    { app := fun F₂ ↦ whiskerLeft _ ((whiskeringLeft C₁ D₁ (C₂ ⥤ E)).map ψ) }
+
+/-- Auxiliary definition for `whiskeringLeft₃`. -/
+@[simps!]
+def whiskeringLeft₃ObjObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F₃ : C₃ ⥤ D₃) :
+    (D₁ ⥤ D₂ ⥤ D₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E :=
+  (whiskeringRight _ _ _).obj (((whiskeringLeft₂ E).obj F₂).obj F₃) ⋙
+    (whiskeringLeft C₁ D₁ _).obj F₁
+
+/-- Auxiliary definition for `whiskeringLeft₃`. -/
+@[simps]
+def whiskeringLeft₃ObjObjMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) {F₃ F₃' : C₃ ⥤ D₃} (τ₃ : F₃ ⟶ F₃') :
+    whiskeringLeft₃ObjObjObj E F₁ F₂ F₃ ⟶
+      whiskeringLeft₃ObjObjObj E F₁ F₂ F₃' where
+  app F := whiskerLeft _ (whiskerLeft _ (((whiskeringLeft₂ E).obj F₂).map τ₃))
+
+variable (C₃ D₃) in
+/-- Auxiliary definition for `whiskeringLeft₃`. -/
+@[simps]
+def whiskeringLeft₃ObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) :
+    (C₃ ⥤ D₃) ⥤ (D₁ ⥤ D₂ ⥤ D₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) where
+  obj F₃ := whiskeringLeft₃ObjObjObj E F₁ F₂ F₃
+  map τ₃ := whiskeringLeft₃ObjObjMap E F₁ F₂ τ₃
+
+variable (C₃ D₃) in
+/-- Auxiliary definition for `whiskeringLeft₃`. -/
+@[simps]
+def whiskeringLeft₃ObjMap (F₁ : C₁ ⥤ D₁) {F₂ F₂' : C₂ ⥤ D₂} (τ₂ : F₂ ⟶ F₂') :
+    whiskeringLeft₃ObjObj C₃ D₃ E F₁ F₂ ⟶ whiskeringLeft₃ObjObj C₃ D₃ E F₁ F₂' where
+  app F₃ := whiskerRight ((whiskeringRight _ _ _).map (((whiskeringLeft₂ E).map τ₂).app F₃)) _
+
+variable (C₂ C₃ D₂ D₃) in
+/-- Auxiliary definition for `whiskeringLeft₃`. -/
+@[simps]
+def whiskeringLeft₃Obj (F₁ : C₁ ⥤ D₁) :
+    (C₂ ⥤ D₂) ⥤ (C₃ ⥤ D₃) ⥤ (D₁ ⥤ D₂ ⥤ D₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) where
+  obj F₂ := whiskeringLeft₃ObjObj C₃ D₃ E F₁ F₂
+  map τ₂ := whiskeringLeft₃ObjMap C₃ D₃ E F₁ τ₂
+
+variable (C₂ C₃ D₂ D₃) in
+/-- Auxiliary definition for `whiskeringLeft₃`. -/
+@[simps]
+def whiskeringLeft₃Map {F₁ F₁' : C₁ ⥤ D₁} (τ₁ : F₁ ⟶ F₁') :
+    whiskeringLeft₃Obj C₂ C₃ D₂ D₃ E F₁ ⟶ whiskeringLeft₃Obj C₂ C₃ D₂ D₃ E F₁' where
+  app F₂ := { app F₃ := whiskerLeft _ ((whiskeringLeft _ _ _).map τ₁) }
+
+/-- The obvious functor
+`(C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (C₃ ⥤ D₃) ⥤ (D₁ ⥤ D₂ ⥤ D₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E)`. -/
+@[simps!]
+def whiskeringLeft₃ :
+    (C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (C₃ ⥤ D₃) ⥤ (D₁ ⥤ D₂ ⥤ D₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) where
+  obj F₁ := whiskeringLeft₃Obj C₂ C₃ D₂ D₃ E F₁
+  map τ₁ := whiskeringLeft₃Map C₂ C₃ D₂ D₃ E τ₁
+
+variable {E}
+
+/-- The "postcomposition" with a functor `E ⥤ E'` gives a functor
+`(E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ E'`. -/
+@[simps!]
+def Functor.postcompose₂ {E' : Type*} [Category E'] :
+    (E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ E' :=
+  whiskeringRight C₂ _ _ ⋙ whiskeringRight C₁ _ _
+
+/-- The "postcomposition" with a functor `E ⥤ E'` gives a functor
+`(E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E'`. -/
+@[simps!]
+def Functor.postcompose₃ {E' : Type*} [Category E'] :
+    (E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E' :=
+  whiskeringRight C₃ _ _ ⋙ whiskeringRight C₂ _ _ ⋙ whiskeringRight C₁ _ _
 
 end CategoryTheory

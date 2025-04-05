@@ -1,14 +1,15 @@
 /-
 Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Newell Jensen, Mitchell Lee
+Authors: Newell Jensen, Mitchell Lee, Óscar Álvarez
 -/
-import Mathlib.Algebra.Ring.Int
-import Mathlib.GroupTheory.PresentedGroup
+import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.Ring.Int.Parity
 import Mathlib.GroupTheory.Coxeter.Matrix
+import Mathlib.GroupTheory.PresentedGroup
+import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Use
-import Mathlib.Tactic.NormNum.DivMod
 
 /-!
 # Coxeter groups and Coxeter systems
@@ -198,10 +199,11 @@ local prefix:100 "s" => cs.simple
 @[simp]
 theorem simple_mul_simple_self (i : B) : s i * s i = 1 := by
   have : (FreeGroup.of i) * (FreeGroup.of i) ∈ M.relationsSet := ⟨(i, i), by simp [relation]⟩
-  have : (QuotientGroup.mk (FreeGroup.of i * FreeGroup.of i) : M.Group) = 1 :=
+  have : (PresentedGroup.mk _ (FreeGroup.of i * FreeGroup.of i) : M.Group) = 1 :=
     (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
   unfold simple
-  rw [← map_mul, PresentedGroup.of, ← QuotientGroup.mk_mul, this, map_one]
+  rw [← map_mul, PresentedGroup.of, map_mul]
+  exact map_mul_eq_one cs.mulEquiv.symm this
 
 @[simp]
 theorem simple_mul_simple_cancel_right {w : W} (i : B) : w * s i * s i = w := by
@@ -220,11 +222,11 @@ theorem inv_simple (i : B) : (s i)⁻¹ = s i :=
 @[simp]
 theorem simple_mul_simple_pow (i i' : B) : (s i * s i') ^ M i i' = 1 := by
   have : (FreeGroup.of i * FreeGroup.of i') ^ M i i' ∈ M.relationsSet := ⟨(i, i'), rfl⟩
-  have : (QuotientGroup.mk ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : M.Group) = 1 :=
+  have : (PresentedGroup.mk _ ((FreeGroup.of i * FreeGroup.of i') ^ M i i') : M.Group) = 1 :=
     (QuotientGroup.eq_one_iff _).mpr (Subgroup.subset_normalClosure this)
   unfold simple
-  rw [← map_mul, ← map_pow, PresentedGroup.of, PresentedGroup.of,
-      ← QuotientGroup.mk_mul, ← QuotientGroup.mk_pow, this, map_one]
+  rw [← map_mul, ← map_pow]
+  exact (MulEquiv.map_eq_one_iff cs.mulEquiv.symm).mpr this
 
 @[simp] theorem simple_mul_simple_pow' (i i' : B) : (s i' * s i) ^ M i i' = 1 :=
   M.symmetric i' i ▸ cs.simple_mul_simple_pow i' i
@@ -234,7 +236,7 @@ theorem subgroup_closure_range_simple : Subgroup.closure (range cs.simple) = ⊤
   have : cs.simple = cs.mulEquiv.symm ∘ PresentedGroup.of := rfl
   rw [this, Set.range_comp, ← MulEquiv.coe_toMonoidHom, ← MonoidHom.map_closure,
     PresentedGroup.closure_range_of, ← MonoidHom.range_eq_map]
-  exact MonoidHom.range_top_of_surjective _ (MulEquiv.surjective _)
+  exact MonoidHom.range_eq_top.2 (MulEquiv.surjective _)
 
 /-- The simple reflections of `W` generate `W` as a monoid. -/
 theorem submonoid_closure_range_simple : Submonoid.closure (range cs.simple) = ⊤ := by
@@ -249,7 +251,8 @@ preserved under multiplication, then it holds for all elements of `W`. -/
 theorem simple_induction {p : W → Prop} (w : W) (simple : ∀ i : B, p (s i)) (one : p 1)
     (mul : ∀ w w' : W, p w → p w' → p (w * w')) : p w := by
   have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
-  exact Submonoid.closure_induction this (fun x ⟨i, hi⟩ ↦ hi ▸ simple i) one mul
+  exact Submonoid.closure_induction (fun x ⟨i, hi⟩ ↦ hi ▸ simple i) one (fun _ _ _ _ ↦ mul _ _)
+    this
 
 /-- If `p : W → Prop` holds for the identity and it is preserved under multiplying on the left
 by a simple reflection, then it holds for all elements of `W`. -/
@@ -292,7 +295,7 @@ def _root_.CoxeterMatrix.IsLiftable {G : Type*} [Monoid G] (M : CoxeterMatrix B)
 private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f)
     (r : FreeGroup B) (hr : r ∈ M.relationsSet) : (FreeGroup.lift f) r = 1 := by
   rcases hr with ⟨⟨i, i'⟩, rfl⟩
-  rw [uncurry, relation, map_pow, _root_.map_mul, FreeGroup.lift.of, FreeGroup.lift.of]
+  rw [uncurry, relation, map_pow, map_mul, FreeGroup.lift.of, FreeGroup.lift.of]
   exact hf i i'
 
 private def groupLift {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
@@ -407,6 +410,81 @@ theorem length_alternatingWord (i i' : B) (m : ℕ) :
   induction' m with m ih generalizing i i'
   · dsimp [alternatingWord]
   · simpa [alternatingWord] using ih i' i
+
+lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
+    (alternatingWord i j p)[k]'(by simp [hk]) = (if Even (p + k) then i else j) := by
+  revert k
+  induction p with
+  | zero =>
+    intro k hk
+    simp only [not_lt_zero'] at hk
+  | succ n h =>
+    intro k hk
+    simp_rw [alternatingWord_succ' i j n]
+    match k with
+    | 0 =>
+      by_cases h2 : Even n
+      · simp only [h2, ↓reduceIte, getElem_cons_zero, add_zero,
+          (by simp [Even.add_one, h2] : ¬Even (n + 1))]
+      · simp only [h2, ↓reduceIte, getElem_cons_zero, add_zero,
+          Odd.add_one (Nat.not_even_iff_odd.mp h2)]
+    | k + 1 =>
+      simp only [add_lt_add_iff_right] at hk h
+      simp only [getElem_cons_succ, h k hk]
+      ring_nf
+      have even_add_two (m : ℕ) : Even (2 + m) ↔ Even m := by
+        simp only [add_tsub_cancel_right, even_two, (Nat.even_sub (by omega : m ≤ 2 + m)).mp]
+      by_cases h_even : Even (n + k)
+      · rw [if_pos h_even]
+        rw [← even_add_two (n+k), ← Nat.add_assoc 2 n k] at h_even
+        rw [if_pos h_even]
+      · rw [if_neg h_even]
+        rw [← even_add_two (n+k), ← Nat.add_assoc 2 n k] at h_even
+        rw [if_neg h_even]
+
+lemma getElem_alternatingWord_swapIndices (i j : B) (p k : ℕ) (h : k + 1 < p) :
+   (alternatingWord i j p)[k+1]'(by simp; exact h) =
+   (alternatingWord j i p)[k]'(by simp [h]; omega) := by
+  rw [getElem_alternatingWord i j p (k+1) (by omega), getElem_alternatingWord j i p k (by omega)]
+  by_cases h_even : Even (p + k)
+  · rw [if_pos h_even, ← add_assoc]
+    simp only [ite_eq_right_iff, isEmpty_Prop, Nat.not_even_iff_odd, Even.add_one h_even,
+      IsEmpty.forall_iff]
+  · rw [if_neg h_even, ← add_assoc]
+    simp [Odd.add_one (Nat.not_even_iff_odd.mp h_even)]
+
+lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
+    List.take k (alternatingWord i j (2 * p)) =
+    if Even k then alternatingWord i j k else alternatingWord j i k := by
+  induction k with
+    | zero =>
+      simp only [take_zero, Even.zero, ↓reduceIte, alternatingWord]
+    | succ k h' =>
+      have hk : k < 2 * p := by omega
+      apply h' at hk
+      by_cases h_even : Even k
+      · simp only [h_even, ↓reduceIte] at hk
+        simp only [Nat.not_even_iff_odd.mpr (Even.add_one h_even), ↓reduceIte]
+        rw [← List.take_concat_get (by simp [h]; omega), alternatingWord_succ, ← hk]
+        apply congr_arg
+        rw [getElem_alternatingWord i j (2*p) k (by omega)]
+        simp [(by apply Nat.even_add.mpr; simp [h_even] : Even (2 * p + k))]
+      · simp only [h_even, ↓reduceIte] at hk
+        simp only [(by simp at h_even; exact Odd.add_one h_even : Even (k + 1)), ↓reduceIte]
+        rw [← List.take_concat_get (by simp [h]; omega), alternatingWord_succ, hk]
+        apply congr_arg
+        rw [getElem_alternatingWord i j (2*p) k (by omega)]
+        simp [(by apply Nat.odd_add.mpr; simp [h_even] : Odd (2 * p + k))]
+
+lemma listTake_succ_alternatingWord (i j : B) (p : ℕ) (k : ℕ) (h : k + 1 < 2 * p) :
+    List.take (k + 1) (alternatingWord i j (2 * p)) =
+    i :: (List.take k (alternatingWord j i (2 * p))) := by
+  rw [listTake_alternatingWord j i p k (by omega), listTake_alternatingWord i j p (k+1) h]
+
+  by_cases h_even : Even k
+  · simp [h_even, Nat.not_even_iff_odd.mpr (Even.add_one h_even), alternatingWord_succ', h_even]
+  · simp [h_even, (by rw [Nat.not_even_iff_odd] at h_even; exact Odd.add_one h_even : Even (k + 1)),
+      alternatingWord_succ', h_even]
 
 theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
     π (alternatingWord i i' m) = (if Even m then 1 else s i') * (s i * s i') ^ (m / 2) := by

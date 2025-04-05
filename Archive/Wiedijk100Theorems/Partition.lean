@@ -64,8 +64,6 @@ variable {α : Type*}
 
 open Finset
 
-open scoped Classical
-
 /-- The partial product for the generating function for odd partitions.
 TODO: As `m` tends to infinity, this converges (in the `X`-adic topology).
 
@@ -87,15 +85,17 @@ or `ℝ`.
 def partialDistinctGF (m : ℕ) [CommSemiring α] :=
   ∏ i ∈ range m, (1 + (X : PowerSeries α) ^ (i + 1))
 
-open Finset.HasAntidiagonal Finset
+open Finset.HasAntidiagonal
 
 universe u
 variable {ι : Type u}
 
+open scoped Classical in
 /-- A convenience constructor for the power series whose coefficients indicate a subset. -/
 def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α :=
   PowerSeries.mk fun n => if n ∈ s then 1 else 0
 
+open scoped Classical in
 theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) :
     coeff α n (indicatorSeries _ s) = if n ∈ s then 1 else 0 :=
   coeff_mk _ _
@@ -106,6 +106,7 @@ theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) 
 theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) :
     coeff α n (indicatorSeries _ s) = 0 := by rw [coeff_indicator, if_neg h]
 
+open scoped Classical in
 theorem constantCoeff_indicator (s : Set ℕ) [Semiring α] :
     constantCoeff α (indicatorSeries _ s) = if 0 ∈ s then 1 else 0 :=
   rfl
@@ -115,7 +116,7 @@ theorem two_series (i : ℕ) [Semiring α] :
   ext n
   simp only [coeff_indicator, coeff_one, coeff_X_pow, Set.mem_insert_iff, Set.mem_singleton_iff,
     map_add]
-  cases' n with d
+  rcases n with - | d
   · simp [(Nat.succ_ne_zero i).symm]
   · simp [Nat.succ_ne_zero d]
 
@@ -129,20 +130,18 @@ theorem num_series' [Field α] (i : ℕ) :
       simp only [coeff_one, if_false, mul_sub, mul_one, coeff_indicator,
         LinearMap.map_sub, reduceCtorEq]
       simp_rw [coeff_mul, coeff_X_pow, coeff_indicator, @boole_mul _ _ _ _]
-      erw [sum_ite, sum_ite]
+      rw [sum_ite (hp := fun _ ↦ Classical.propDecidable _), sum_ite]
       simp_rw [@filter_filter _ _ _ _ _, sum_const_zero, add_zero, sum_const, nsmul_eq_mul, mul_one,
         sub_eq_iff_eq_add, zero_add]
       symm
       split_ifs with h
-      · suffices
-          ((antidiagonal (n+1)).filter fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1).card =
-            1 by
+      · suffices #{a ∈ antidiagonal (n + 1) | i + 1 ∣ a.fst ∧ a.snd = i + 1} = 1 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_one]
-        cases' h with p hp
+        obtain ⟨p, hp⟩ := h
         refine ⟨((i + 1) * (p - 1), i + 1), ?_⟩
         ext ⟨a₁, a₂⟩
-        simp only [mem_filter, Prod.mk.inj_iff, mem_antidiagonal, mem_singleton]
+        simp only [mem_filter, Prod.mk_inj, mem_antidiagonal, mem_singleton]
         constructor
         · rintro ⟨a_left, ⟨a, rfl⟩, rfl⟩
           refine ⟨?_, rfl⟩
@@ -151,9 +150,7 @@ theorem num_series' [Field α] (i : ℕ) :
           match p with
           | 0 => rw [mul_zero] at hp; cases hp
           | p + 1 => rw [hp]; simp [mul_add]
-      · suffices
-          (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (antidiagonal (n+1))).card =
-            0 by
+      · suffices #{a ∈ antidiagonal (n + 1) | i + 1 ∣ a.fst ∧ a.snd = i + 1} = 0 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_zero]
         apply eq_empty_of_forall_not_mem
@@ -166,14 +163,12 @@ theorem num_series' [Field α] (i : ℕ) :
 def mkOdd : ℕ ↪ ℕ :=
   ⟨fun i => 2 * i + 1, fun x y h => by linarith⟩
 
+open scoped Classical in
 -- The main workhorse of the partition theorem proof.
 theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ) (hs : ∀ i ∈ s, 0 < i)
     (c : ℕ → Set ℕ) (hc : ∀ i, i ∉ s → 0 ∈ c i) :
-    (Finset.card
-          ((univ : Finset (Nat.Partition n)).filter fun p =>
-            (∀ j, p.parts.count j ∈ c j) ∧ ∀ j ∈ p.parts, j ∈ s) :
-        α) =
-      (coeff α n) (∏ i ∈ s, indicatorSeries α ((· * i) '' c i)) := by
+    #{p : n.Partition | (∀ j, p.parts.count j ∈ c j) ∧ ∀ j ∈ p.parts, j ∈ s} =
+      coeff α n (∏ i ∈ s, indicatorSeries α ((· * i) '' c i)) := by
   simp_rw [coeff_prod, coeff_indicator, prod_boole, sum_boole]
   apply congr_arg
   simp only [mem_univ, forall_true_left, not_and, not_forall, exists_prop,
@@ -216,7 +211,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₂.2 0 a))
       intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₁.2 0 a))
     · rw [← mul_left_inj' hi]
-      rw [Function.funext_iff] at h
+      rw [funext_iff] at h
       exact h.2 i
   · simp only [φ, mem_filter, mem_finsuppAntidiag, mem_univ, exists_prop, true_and, and_assoc]
     rintro f ⟨hf, hf₃, hf₄⟩
@@ -257,11 +252,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         exact not_mem_mono hf'.2 h
 
 theorem partialOddGF_prop [Field α] (n m : ℕ) :
-    (Finset.card
-          ((univ : Finset (Nat.Partition n)).filter fun p =>
-            ∀ j ∈ p.parts, j ∈ (range m).map mkOdd) :
-        α) =
-      coeff α n (partialOddGF m) := by
+    #{p : n.Partition | ∀ j ∈ p.parts, j ∈ (range m).map mkOdd} = coeff α n (partialOddGF m) := by
   rw [partialOddGF]
   convert partialGF_prop α n
     ((range m).map mkOdd) _ (fun _ => Set.univ) (fun _ _ => trivial) using 2
@@ -284,7 +275,7 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
 
 /-- If m is big enough, the partial product's coefficient counts the number of odd partitions -/
 theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
-    (Finset.card (Nat.Partition.odds n) : α) = coeff α n (partialOddGF m) := by
+    #(Nat.Partition.odds n) = coeff α n (partialOddGF m) := by
   rw [← partialOddGF_prop, Nat.Partition.odds]
   congr with p
   apply forall₂_congr
@@ -305,10 +296,8 @@ theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
     apply Nat.two_not_dvd_two_mul_add_one
 
 theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
-    (Finset.card
-          ((univ : Finset (Nat.Partition n)).filter fun p =>
-            p.parts.Nodup ∧ ∀ j ∈ p.parts, j ∈ (range m).map ⟨Nat.succ, Nat.succ_injective⟩) :
-        α) =
+    #{p : n.Partition |
+        p.parts.Nodup ∧ ∀ j ∈ p.parts, j ∈ (range m).map ⟨Nat.succ, Nat.succ_injective⟩} =
       coeff α n (partialDistinctGF m) := by
   rw [partialDistinctGF]
   convert partialGF_prop α n
@@ -328,8 +317,8 @@ theorem partialDistinctGF_prop [CommSemiring α] (n m : ℕ) :
 /-- If m is big enough, the partial product's coefficient counts the number of distinct partitions
 -/
 theorem distinctGF_prop [CommSemiring α] (n m : ℕ) (h : n < m + 1) :
-    ((Nat.Partition.distincts n).card : α) = coeff α n (partialDistinctGF m) := by
-  erw [← partialDistinctGF_prop, Nat.Partition.distincts]
+    #(Nat.Partition.distincts n) = coeff α n (partialDistinctGF m) := by
+  rw [← partialDistinctGF_prop, Nat.Partition.distincts]
   congr with p
   apply (and_iff_left _).symm
   intro i hi
@@ -388,10 +377,9 @@ theorem same_coeffs [Field α] (m n : ℕ) (h : n ≤ m) :
   rw [order_X_pow]
   exact mod_cast Nat.lt_succ_of_le (le_add_right h)
 
-theorem partition_theorem (n : ℕ) :
-    (Nat.Partition.odds n).card = (Nat.Partition.distincts n).card := by
+theorem partition_theorem (n : ℕ) : #(Nat.Partition.odds n) = #(Nat.Partition.distincts n) := by
   -- We need the counts to live in some field (which contains ℕ), so let's just use ℚ
-  suffices ((Nat.Partition.odds n).card : ℚ) = (Nat.Partition.distincts n).card from
+  suffices (#(Nat.Partition.odds n) : ℚ) = #(Nat.Partition.distincts n) from
     mod_cast this
   rw [distinctGF_prop n (n + 1) (by linarith)]
   rw [oddGF_prop n (n + 1) (by linarith)]

@@ -3,10 +3,8 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Data.Set.Subsingleton
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Algebra.Group.Nat
-import Mathlib.Data.Set.Basic
+import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
 # Equitable functions
@@ -68,7 +66,7 @@ end LinearOrder
 
 section OrderedSemiring
 
-variable [OrderedSemiring β]
+variable [Semiring β] [PartialOrder β] [IsOrderedRing β]
 
 theorem Subsingleton.equitableOn {s : Set α} (hs : s.Subsingleton) (f : α → β) : s.EquitableOn f :=
   fun i j hi hj => by

@@ -3,9 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
+import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity.Core
 
 /-!
@@ -522,7 +522,7 @@ section PartialOrder
 variable [PartialOrder α] [Preorder β]
 
 /-- A constructor for `PosSMulMono` requiring you to prove `b₁ ≤ b₂ → a • b₁ ≤ a • b₂` only when
-`0 < a`-/
+`0 < a` -/
 lemma PosSMulMono.of_pos (h₀ : ∀ a : α, 0 < a → ∀ b₁ b₂ : β, b₁ ≤ b₂ → a • b₁ ≤ a • b₂) :
     PosSMulMono α β where
   elim a ha b₁ b₂ h := by
@@ -531,7 +531,7 @@ lemma PosSMulMono.of_pos (h₀ : ∀ a : α, 0 < a → ∀ b₁ b₂ : β, b₁ 
     · exact h₀ _ ha _ _ h
 
 /-- A constructor for `PosSMulReflectLT` requiring you to prove `a • b₁ < a • b₂ → b₁ < b₂` only
-when `0 < a`-/
+when `0 < a` -/
 lemma PosSMulReflectLT.of_pos (h₀ : ∀ a : α, 0 < a → ∀ b₁ b₂ : β, a • b₁ < a • b₂ → b₁ < b₂) :
     PosSMulReflectLT α β where
   elim a ha b₁ b₂ h := by
@@ -545,7 +545,7 @@ section PartialOrder
 variable [Preorder α] [PartialOrder β]
 
 /-- A constructor for `SMulPosMono` requiring you to prove `a₁ ≤ a₂ → a₁ • b ≤ a₂ • b` only when
-`0 < b`-/
+`0 < b` -/
 lemma SMulPosMono.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ ≤ a₂ → a₁ • b ≤ a₂ • b) :
     SMulPosMono α β where
   elim b hb a₁ a₂ h := by
@@ -554,7 +554,7 @@ lemma SMulPosMono.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ 
     · exact h₀ _ hb _ _ h
 
 /-- A constructor for `SMulPosReflectLT` requiring you to prove `a₁ • b < a₂ • b → a₁ < a₂` only
-when `0 < b`-/
+when `0 < b` -/
 lemma SMulPosReflectLT.of_pos (h₀ : ∀ b : β, 0 < b → ∀ a₁ a₂ : α, a₁ • b < a₂ • b → a₁ < a₂) :
     SMulPosReflectLT α β where
   elim b hb a₁ a₂ h := by
@@ -769,7 +769,8 @@ instance instPosSMulReflectLE [PosSMulReflectLE α β] : PosSMulReflectLE α β�
 end Left
 
 section Right
-variable [Preorder α] [Ring α] [OrderedAddCommGroup β] [Module α β]
+variable [Preorder α] [Monoid α] [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β]
+  [DistribMulAction α β]
 
 instance instSMulPosMono [SMulPosMono α β] : SMulPosMono α βᵒᵈ where
   elim _b hb a₁ a₂ ha := by
@@ -794,11 +795,50 @@ instance instSMulPosReflectLE [SMulPosReflectLE α β] : SMulPosReflectLE α β�
 end Right
 end OrderDual
 
+section OrderedAddCommMonoid
+variable [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
+  [AddCommMonoid β] [PartialOrder β] [IsOrderedCancelAddMonoid β] [Module α β]
+
+section PosSMulMono
+variable [PosSMulMono α β] {a₁ a₂ : α} {b₁ b₂ : β}
+
+/-- Binary **rearrangement inequality**. -/
+lemma smul_add_smul_le_smul_add_smul (ha : a₁ ≤ a₂) (hb : b₁ ≤ b₂) :
+    a₁ • b₂ + a₂ • b₁ ≤ a₁ • b₁ + a₂ • b₂ := by
+  obtain ⟨a, ha₀, rfl⟩ := exists_nonneg_add_of_le ha
+  rw [add_smul, add_smul, add_left_comm]
+  gcongr
+
+/-- Binary **rearrangement inequality**. -/
+lemma smul_add_smul_le_smul_add_smul' (ha : a₂ ≤ a₁) (hb : b₂ ≤ b₁) :
+    a₁ • b₂ + a₂ • b₁ ≤ a₁ • b₁ + a₂ • b₂ := by
+  simp_rw [add_comm (a₁ • _)]; exact smul_add_smul_le_smul_add_smul ha hb
+
+end PosSMulMono
+
+section PosSMulStrictMono
+variable [PosSMulStrictMono α β] {a₁ a₂ : α} {b₁ b₂ : β}
+
+/-- Binary strict **rearrangement inequality**. -/
+lemma smul_add_smul_lt_smul_add_smul (ha : a₁ < a₂) (hb : b₁ < b₂) :
+    a₁ • b₂ + a₂ • b₁ < a₁ • b₁ + a₂ • b₂ := by
+  obtain ⟨a, ha₀, rfl⟩ := lt_iff_exists_pos_add.1 ha
+  rw [add_smul, add_smul, add_left_comm]
+  gcongr
+
+/-- Binary strict **rearrangement inequality**. -/
+lemma smul_add_smul_lt_smul_add_smul' (ha : a₂ < a₁) (hb : b₂ < b₁) :
+    a₁ • b₂ + a₂ • b₁ < a₁ • b₁ + a₂ • b₂ := by
+  simp_rw [add_comm (a₁ • _)]; exact smul_add_smul_lt_smul_add_smul ha hb
+
+end PosSMulStrictMono
+end OrderedAddCommMonoid
+
 section OrderedRing
-variable [OrderedRing α]
+variable [Ring α] [PartialOrder α] [IsOrderedRing α]
 
 section OrderedAddCommGroup
-variable [OrderedAddCommGroup β] [Module α β]
+variable [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [Module α β]
 
 section PosSMulMono
 variable [PosSMulMono α β]
@@ -840,6 +880,7 @@ lemma lt_of_smul_lt_smul_of_nonpos [PosSMulReflectLT α β] (h : a • b₁ < a 
   rw [← neg_neg a, neg_smul, neg_smul (-a), neg_lt_neg_iff] at h
   exact lt_of_smul_lt_smul_of_nonneg_left h (neg_nonneg_of_nonpos ha)
 
+omit [IsOrderedRing α] in
 lemma smul_nonneg_of_nonpos_of_nonpos [SMulPosMono α β] (ha : a ≤ 0) (hb : b ≤ 0) : 0 ≤ a • b :=
   smul_nonpos_of_nonpos_of_nonneg (β := βᵒᵈ) ha hb
 
@@ -864,43 +905,11 @@ lemma smul_neg_iff_of_neg_left (ha : a < 0) : a • b < 0 ↔ 0 < b := by
   simpa only [smul_zero] using smul_lt_smul_iff_of_neg_left ha (b₂ := (0 : β))
 
 end PosSMulStrictMono
-
-/-- Binary **rearrangement inequality**. -/
-lemma smul_add_smul_le_smul_add_smul [PosSMulMono α β]
-    {b₁ b₂ : α} {a d : β} (hab : b₁ ≤ b₂) (hcd : a ≤ d) : b₁ • d + b₂ • a ≤ b₁ • a + b₂ • d := by
-  obtain ⟨b₂, rfl⟩ := exists_add_of_le hab
-  obtain ⟨d, rfl⟩ := exists_add_of_le hcd
-  rw [smul_add, add_right_comm, smul_add, ← add_assoc, add_smul _ _ d]
-  rw [le_add_iff_nonneg_right] at hab hcd
-  exact add_le_add_left (le_add_of_nonneg_right <| smul_nonneg hab hcd) _
-
-/-- Binary **rearrangement inequality**. -/
-lemma smul_add_smul_le_smul_add_smul' [PosSMulMono α β]
-    {b₁ b₂ : α} {a d : β} (hba : b₂ ≤ b₁) (hdc : d ≤ a) : b₁ • d + b₂ • a ≤ b₁ • a + b₂ • d := by
-  rw [add_comm (b₁ • d), add_comm (b₁ • a)]
-  exact smul_add_smul_le_smul_add_smul hba hdc
-
-/-- Binary strict **rearrangement inequality**. -/
-lemma smul_add_smul_lt_smul_add_smul [PosSMulStrictMono α β]
-    {b₁ b₂ : α} {a d : β} (hab : b₁ < b₂) (hcd : a < d) :
-    b₁ • d + b₂ • a < b₁ • a + b₂ • d := by
-  obtain ⟨b₂, rfl⟩ := exists_add_of_le hab.le
-  obtain ⟨d, rfl⟩ := exists_add_of_le hcd.le
-  rw [smul_add, add_right_comm, smul_add, ← add_assoc, add_smul _ _ d]
-  rw [lt_add_iff_pos_right] at hab hcd
-  exact add_lt_add_left (lt_add_of_pos_right _ <| smul_pos hab hcd) _
-
-/-- Binary strict **rearrangement inequality**. -/
-lemma smul_add_smul_lt_smul_add_smul' [PosSMulStrictMono α β]
-    {b₁ b₂ : α} {a d : β} (hba : b₂ < b₁) (hdc : d < a) :
-    b₁ • d + b₂ • a < b₁ • a + b₂ • d := by
-  rw [add_comm (b₁ • d), add_comm (b₁ • a)]
-  exact smul_add_smul_lt_smul_add_smul hba hdc
-
 end OrderedAddCommGroup
 
 section LinearOrderedAddCommGroup
-variable [LinearOrderedAddCommGroup β] [Module α β] [PosSMulMono α β] {a : α} {b b₁ b₂ : β}
+variable [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module α β] [PosSMulMono α β]
+  {a : α} {b b₁ b₂ : β}
 
 lemma smul_max_of_nonpos (ha : a ≤ 0) (b₁ b₂ : β) : a • max b₁ b₂ = min (a • b₁) (a • b₂) :=
   (antitone_smul_left ha : Antitone (_ : β → β)).map_max
@@ -912,12 +921,13 @@ end LinearOrderedAddCommGroup
 end OrderedRing
 
 section LinearOrderedRing
-variable [LinearOrderedRing α] [LinearOrderedAddCommGroup β] [Module α β] [PosSMulStrictMono α β]
+variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
+  [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] [Module α β] [PosSMulStrictMono α β]
   {a : α} {b : β}
 
 lemma nonneg_and_nonneg_or_nonpos_and_nonpos_of_smul_nonneg (hab : 0 ≤ a • b) :
     0 ≤ a ∧ 0 ≤ b ∨ a ≤ 0 ∧ b ≤ 0 := by
-  simp only [Decidable.or_iff_not_and_not, not_and, not_le]
+  simp only [Decidable.or_iff_not_not_and_not, not_and, not_le]
   refine fun ab nab ↦ hab.not_lt ?_
   obtain ha | rfl | ha := lt_trichotomy 0 a
   exacts [smul_neg_of_pos_of_neg ha (ab ha.le), ((ab le_rfl).asymm (nab le_rfl)).elim,
@@ -946,7 +956,7 @@ lemma smul_nonpos_iff_neg_imp_nonneg : a • b ≤ 0 ↔ (a < 0 → 0 ≤ b) ∧
 end LinearOrderedRing
 
 section LinearOrderedSemifield
-variable [LinearOrderedSemifield α] [AddCommGroup β] [PartialOrder β]
+variable [Semifield α] [LinearOrder α] [IsStrictOrderedRing α] [AddCommGroup β] [PartialOrder β]
 
 -- See note [lower instance priority]
 instance (priority := 100) PosSMulMono.toPosSMulReflectLE [MulAction α β] [PosSMulMono α β] :
@@ -963,7 +973,8 @@ instance (priority := 100) PosSMulStrictMono.toPosSMulReflectLT [MulActionWithZe
 end LinearOrderedSemifield
 
 section Field
-variable [LinearOrderedField α] [OrderedAddCommGroup β] [Module α β] {a : α} {b₁ b₂ : β}
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+  [AddCommGroup β] [PartialOrder β] [IsOrderedAddMonoid β] [Module α β] {a : α} {b₁ b₂ : β}
 
 section PosSMulMono
 variable [PosSMulMono α β]
@@ -1119,17 +1130,21 @@ end Lift
 
 section Nat
 
-instance OrderedSemiring.toPosSMulMonoNat [OrderedSemiring α] : PosSMulMono ℕ α where
+instance OrderedSemiring.toPosSMulMonoNat [Semiring α] [PartialOrder α] [IsOrderedRing α] :
+    PosSMulMono ℕ α where
   elim _n _ _a _b hab := nsmul_le_nsmul_right hab _
 
-instance OrderedSemiring.toSMulPosMonoNat [OrderedSemiring α] : SMulPosMono ℕ α where
+instance OrderedSemiring.toSMulPosMonoNat [Semiring α] [PartialOrder α] [IsOrderedRing α] :
+    SMulPosMono ℕ α where
   elim _a ha _m _n hmn := nsmul_le_nsmul_left ha hmn
 
-instance StrictOrderedSemiring.toPosSMulStrictMonoNat [StrictOrderedSemiring α] :
+instance StrictOrderedSemiring.toPosSMulStrictMonoNat
+    [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] :
     PosSMulStrictMono ℕ α where
   elim _n hn _a _b hab := nsmul_right_strictMono hn.ne' hab
 
-instance StrictOrderedSemiring.toSMulPosStrictMonoNat [StrictOrderedSemiring α] :
+instance StrictOrderedSemiring.toSMulPosStrictMonoNat
+    [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] :
     SMulPosStrictMono ℕ α where
   elim _a ha _m _n hmn := nsmul_lt_nsmul_left ha hmn
 
@@ -1191,46 +1206,3 @@ def evalHSMul : PositivityExt where eval {_u α} zα pα (e : Q($α)) := do
   | _, _ => pure .none
 
 end Mathlib.Meta.Positivity
-
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on 2023-12-23.
--/
-
-@[deprecated (since := "2023-12-23")] alias monotone_smul_left := monotone_smul_left_of_nonneg
-@[deprecated (since := "2023-12-23")] alias strict_mono_smul_left := strictMono_smul_left_of_pos
-@[deprecated (since := "2023-12-23")] alias smul_le_smul_of_nonneg := smul_le_smul_of_nonneg_left
-@[deprecated (since := "2023-12-23")] alias smul_lt_smul_of_pos := smul_lt_smul_of_pos_left
-
-@[deprecated (since := "2023-12-23")]
-alias lt_of_smul_lt_smul_of_nonneg := lt_of_smul_lt_smul_of_nonneg_left
-
-@[deprecated (since := "2023-12-23")] alias smul_le_smul_iff_of_pos := smul_le_smul_iff_of_pos_left
-@[deprecated (since := "2023-12-23")] alias smul_lt_smul_iff_of_pos := smul_lt_smul_iff_of_pos_left
-@[deprecated (since := "2023-12-23")] alias smul_max := smul_max_of_nonneg
-@[deprecated (since := "2023-12-23")] alias smul_min := smul_min_of_nonneg
-@[deprecated (since := "2023-12-23")] alias smul_pos_iff_of_pos := smul_pos_iff_of_pos_left
-@[deprecated (since := "2023-12-23")] alias inv_smul_le_iff := inv_smul_le_iff_of_pos
-@[deprecated (since := "2023-12-23")] alias le_inv_smul_iff := le_inv_smul_iff_of_pos
-@[deprecated (since := "2023-12-23")] alias inv_smul_lt_iff := inv_smul_lt_iff_of_pos
-@[deprecated (since := "2023-12-23")] alias lt_inv_smul_iff := lt_inv_smul_iff_of_pos
-@[deprecated (since := "2023-12-23")] alias OrderIso.smulLeft := OrderIso.smulRight
-
-@[deprecated (since := "2023-12-23")]
-alias OrderIso.smulLeft_symm_apply := OrderIso.smulRight_symm_apply
-
-@[deprecated (since := "2023-12-23")] alias OrderIso.smulLeft_apply := OrderIso.smulRight_apply
-@[deprecated (since := "2023-12-23")] alias smul_neg_iff_of_pos := smul_neg_iff_of_pos_left
-
-/-!
-Those lemmas have been deprecated on 2023-12-27.
--/
-
-@[deprecated (since := "2023-12-27")] alias strict_anti_smul_left := strictAnti_smul_left
-@[deprecated (since := "2023-12-27")] alias smul_le_smul_of_nonpos := smul_le_smul_of_nonpos_left
-@[deprecated (since := "2023-12-27")] alias smul_lt_smul_of_neg := smul_lt_smul_of_neg_left
-@[deprecated (since := "2023-12-27")] alias smul_pos_iff_of_neg := smul_pos_iff_of_neg_left
-@[deprecated (since := "2023-12-27")] alias smul_neg_iff_of_neg := smul_neg_iff_of_neg_left
-@[deprecated (since := "2023-12-27")] alias smul_le_smul_iff_of_neg := smul_le_smul_iff_of_neg_left
-@[deprecated (since := "2023-12-27")] alias smul_lt_smul_iff_of_neg := smul_lt_smul_iff_of_neg_left

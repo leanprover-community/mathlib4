@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Localization.AtPrime
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
@@ -175,15 +174,18 @@ lemma SurjectiveOnStalks.baseChange
       one_mul, mul_one, id_apply, ← e]
     rw [Algebra.algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc]
 
-lemma surjectiveOnStalks_iff_of_isLocalRingHom [LocalRing S] [IsLocalRingHom f] :
+lemma surjectiveOnStalks_iff_of_isLocalHom [IsLocalRing S] [IsLocalHom f] :
     f.SurjectiveOnStalks ↔ Function.Surjective f := by
   refine ⟨fun H x ↦ ?_, fun h ↦ surjectiveOnStalks_of_surjective h⟩
   obtain ⟨y, r, c, hc, hr, e⟩ :=
-    (surjective_localRingHom_iff _).mp (H (LocalRing.maximalIdeal _) inferInstance) x
-  simp only [LocalRing.mem_maximalIdeal, mem_nonunits_iff, not_not] at hc hr
+    (surjective_localRingHom_iff _).mp (H (IsLocalRing.maximalIdeal _) inferInstance) x
+  simp only [IsLocalRing.mem_maximalIdeal, mem_nonunits_iff, not_not] at hc hr
   refine ⟨(isUnit_of_map_unit f r hr).unit⁻¹ * y, ?_⟩
   apply hr.mul_right_injective
   apply hc.mul_right_injective
-  simp only [← _root_.map_mul, ← mul_assoc, IsUnit.mul_val_inv, one_mul, e]
+  simp only [← map_mul, ← mul_assoc, IsUnit.mul_val_inv, one_mul, e]
+
+@[deprecated (since := "2024-10-10")]
+alias surjectiveOnStalks_iff_of_isLocalRingHom := surjectiveOnStalks_iff_of_isLocalHom
 
 end RingHom

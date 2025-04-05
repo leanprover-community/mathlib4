@@ -3,7 +3,7 @@ Copyright (c) 2021 Sara Díaz Real. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sara Díaz Real
 -/
-import Mathlib.Algebra.Associated.Basic
+import Mathlib.Algebra.Ring.Associated
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
 
@@ -22,9 +22,9 @@ variable {a b c d : ℤ}
 theorem imo2001_q6 (hd : 0 < d) (hdc : d < c) (hcb : c < b) (hba : b < a)
     (h : a * c + b * d = (a + b - c + d) * (-a + b + c + d)) : ¬Prime (a * b + c * d) := by
   intro (h0 : Prime (a * b + c * d))
-  have ha : 0 < a := by linarith
-  have hb : 0 < b := by linarith
-  have hc : 0 < c := by linarith
+  have ha : 0 < a := by omega
+  have hb : 0 < b := by omega
+  have hc : 0 < c := by omega
   -- the key step is to show that `a*c + b*d` divides the product `(a*b + c*d) * (a*d + b*c)`
   have dvd_mul : a * c + b * d ∣ (a * b + c * d) * (a * d + b * c) := by
     use b ^ 2 + b * d + d ^ 2

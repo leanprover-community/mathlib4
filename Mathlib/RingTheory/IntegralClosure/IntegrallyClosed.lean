@@ -3,8 +3,8 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.IntegralClosure.Algebra.Basic
 import Mathlib.RingTheory.Localization.Integral
+import Mathlib.RingTheory.Localization.LocalizationLocalization
 
 /-!
 # Integrally closed rings
@@ -30,7 +30,7 @@ A *normal domain* is a domain that is integrally closed in its field of fraction
 [Stacks: normal domain](https://stacks.math.columbia.edu/tag/037B#0309)
 Normal domains are the major use case of `IsIntegrallyClosed` at the time of writing, and we have
 quite a few results that can be moved wholesale to a new `NormalDomain` definition.
-In fact, before PR #6126 `IsIntegrallyClosed` was exactly defined to be a normal domain.
+In fact, before PR https://github.com/leanprover-community/mathlib4/pull/6126 `IsIntegrallyClosed` was exactly defined to be a normal domain.
 (So you might want to copy some of its API when you define normal domains.)
 
 A normal ring means that localizations at all prime ideals are normal domains.
@@ -165,7 +165,7 @@ variable (R)
 @[simp]
 theorem integralClosure_eq_bot [IsIntegrallyClosedIn R A] [NoZeroSMulDivisors R A] [Nontrivial A] :
     integralClosure R A = ⊥ :=
-  (integralClosure_eq_bot_iff A (NoZeroSMulDivisors.algebraMap_injective _ _)).mpr ‹_›
+  (integralClosure_eq_bot_iff A (FaithfulSMul.algebraMap_injective _ _)).mpr ‹_›
 
 variable {A} {B : Type*} [CommRing B]
 
@@ -275,3 +275,31 @@ theorem isIntegrallyClosedOfFiniteExtension [IsDomain R] [FiniteDimensional K L]
   (integralClosure_eq_bot_iff L).mp integralClosure_idem
 
 end integralClosure
+
+section localization
+
+variable {R : Type*} (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
+
+lemma isIntegrallyClosed_of_isLocalization [IsIntegrallyClosed R] [IsDomain R] (M : Submonoid R)
+    (hM : M ≤ R⁰) [IsLocalization M S] : IsIntegrallyClosed S := by
+  let K := FractionRing R
+  let g : S →+* K := IsLocalization.map _ (T := R⁰) (RingHom.id R) hM
+  letI := g.toAlgebra
+  have : IsScalarTower R S K := IsScalarTower.of_algebraMap_eq'
+    (by rw [RingHom.algebraMap_toAlgebra, IsLocalization.map_comp, RingHomCompTriple.comp_eq])
+  have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization M S K
+  refine (isIntegrallyClosed_iff_isIntegralClosure (K := K)).mpr
+    ⟨IsFractionRing.injective _ _, fun {x} ↦ ⟨?_, fun e ↦ e.choose_spec ▸ isIntegral_algebraMap⟩⟩
+  intro hx
+  obtain ⟨⟨y, y_mem⟩, hy⟩ := hx.exists_multiple_integral_of_isLocalization M _
+  obtain ⟨z, hz⟩ := (isIntegrallyClosed_iff _).mp ‹_› hy
+  refine ⟨IsLocalization.mk' S z ⟨y, y_mem⟩, (IsLocalization.lift_mk'_spec _ _ _ _).mpr ?_⟩
+  rw [RingHom.comp_id, hz, ← Algebra.smul_def, Submonoid.mk_smul]
+
+end localization
+/-- Any field is integral closed. -/
+/- Although `infer_instance` can find this if you import Mathlib, in this file they have not been
+  proven yet. However, it is used to prove a fundamental property of `IsIntegrallyClosed`,
+  and it is not desirable to involve more content from other files. -/
+instance Field.instIsIntegrallyClosed (K : Type*) [Field K] : IsIntegrallyClosed K :=
+  (isIntegrallyClosed_iff K).mpr fun {x} _ ↦ ⟨x, rfl⟩

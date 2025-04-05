@@ -80,7 +80,7 @@ nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
         · use pred_conts
           have : g.contsAux (n + 2) = g.contsAux (n + 1) :=
             contsAux_stable_of_terminated (n + 1).le_succ s_ppred_nth_eq
-          simp only [this, pred_conts_eq]
+          simp only [g, this, pred_conts_eq]
         -- option.some
         · -- invoke the IH a second time
           obtain ⟨ppred_conts, ppred_conts_eq⟩ :=
@@ -88,7 +88,7 @@ nonrec theorem exists_gcf_pair_rat_eq_of_nth_contsAux :
           obtain ⟨a_eq_one, z, b_eq_z⟩ : gp_n.a = 1 ∧ ∃ z : ℤ, gp_n.b = (z : K) :=
             of_partNum_eq_one_and_exists_int_partDen_eq s_ppred_nth_eq
           -- finally, unfold the recurrence to obtain the required rational value.
-          simp only [a_eq_one, b_eq_z,
+          simp only [g, a_eq_one, b_eq_z,
             contsAux_recurrence s_ppred_nth_eq ppred_conts_eq pred_conts_eq]
           use nextConts 1 (z : ℚ) ppred_conts pred_conts
           cases ppred_conts; cases pred_conts
@@ -163,8 +163,6 @@ theorem coe_stream_nth_rat_eq (v_eq_q : v = (↑q : K)) (n : ℕ) :
       IntFractPair.stream v n := by
   induction n with
   | zero =>
-    -- Porting note: was
-    -- simp [IntFractPair.stream, coe_of_rat_eq v_eq_q]
     simp only [IntFractPair.stream, Option.map_some', coe_of_rat_eq v_eq_q]
   | succ n IH =>
     rw [v_eq_q] at IH
@@ -211,19 +209,15 @@ theorem coe_of_s_rat_eq (v_eq_q : v = (↑q : K)) :
 theorem coe_of_rat_eq (v_eq_q : v = (↑q : K)) :
     (⟨(of q).h, (of q).s.map (Pair.map (↑))⟩ : GenContFract K) = of v := by
   rcases gcf_v_eq : of v with ⟨h, s⟩; subst v
-  -- Porting note: made coercion target explicit
   obtain rfl : ↑⌊(q : K)⌋ = h := by injection gcf_v_eq
-  -- Porting note: was
-  -- simp [coe_of_h_rat_eq rfl, coe_of_s_rat_eq rfl, gcf_v_eq]
-  simp only [gcf_v_eq, Int.cast_inj, Rat.floor_cast, of_h_eq_floor, eq_self_iff_true,
-    Rat.cast_intCast, and_self, coe_of_h_rat_eq rfl, coe_of_s_rat_eq rfl]
+  simp [coe_of_h_rat_eq rfl, coe_of_s_rat_eq rfl, gcf_v_eq]
 
 theorem of_terminates_iff_of_rat_terminates {v : K} {q : ℚ} (v_eq_q : v = (q : K)) :
     (of v).Terminates ↔ (of q).Terminates := by
   constructor <;> intro h <;> obtain ⟨n, h⟩ := h <;> use n <;>
     simp only [Stream'.Seq.TerminatedAt, (coe_of_s_get?_rat_eq v_eq_q n).symm] at h ⊢ <;>
     cases h' : (of q).s.get? n <;>
-    simp only [h'] at h <;> -- Porting note: added
+    simp only [h'] at h <;>
     trivial
 
 end RatTranslation
@@ -300,8 +294,6 @@ theorem exists_nth_stream_eq_none_of_rat (q : ℚ) : ∃ n : ℕ, IntFractPair.s
       stream_nth_fr_num_le_fr_num_sub_n_rat stream_nth_eq
     have : fract_q_num - n = -1 := by
       have : 0 ≤ fract_q_num := Rat.num_nonneg.mpr (Int.fract_nonneg q)
-      -- Porting note: was
-      -- simp [Int.natAbs_of_nonneg this, sub_add_eq_sub_sub_swap, sub_right_comm]
       simp only [n, Nat.cast_add, Int.natAbs_of_nonneg this, Nat.cast_one,
         sub_add_eq_sub_sub_swap, sub_right_comm, sub_self, zero_sub]
     have : 0 ≤ ifp.fr := (nth_stream_fr_nonneg_lt_one stream_nth_eq).left

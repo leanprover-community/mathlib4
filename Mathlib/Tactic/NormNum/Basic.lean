@@ -3,13 +3,13 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Thomas Murrills
 -/
+import Mathlib.Algebra.GroupWithZero.Invertible
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.HaveI
-import Mathlib.Data.Nat.Cast.Commute
-import Mathlib.Algebra.Ring.Int
-import Mathlib.Algebra.GroupWithZero.Invertible
 import Mathlib.Tactic.ClearExclamation
-import Mathlib.Data.Nat.Cast.Basic
 
 /-!
 ## `norm_num` basic plugins
@@ -26,7 +26,7 @@ See other files in this directory for many more plugins.
 universe u
 
 namespace Mathlib
-open Lean hiding Rat mkRat
+open Lean
 open Meta
 
 namespace Meta.NormNum
@@ -104,9 +104,6 @@ theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) →
 theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
-@[deprecated (since := "2024-04-17")]
-alias isNat_cast := isNat_natCast
-
 /-- The `norm_num` extension which identifies an expression `Nat.cast n`, returning `n`. -/
 @[norm_num Nat.cast _, NatCast.natCast _] def evalNatCast : NormNumExt where eval {u α} e := do
   let sα ← inferAddMonoidWithOne α
@@ -119,14 +116,8 @@ alias isNat_cast := isNat_natCast
 theorem isNat_intCast {R} [Ring R] (n : ℤ) (m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩
 
-@[deprecated (since := "2024-04-17")]
-alias isNat_int_cast := isNat_intCast
-
 theorem isintCast {R} [Ring R] (n m : ℤ) :
     IsInt n m → IsInt (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
-
-@[deprecated (since := "2024-04-17")]
-alias isInt_cast := isintCast
 
 /-- The `norm_num` extension which identifies an expression `Int.cast n`, returning `n`. -/
 @[norm_num Int.cast _, IntCast.intCast _] def evalIntCast : NormNumExt where eval {u α} e := do
@@ -153,7 +144,7 @@ below. The reason for this is that when this is applied, to prove e.g. `100 + 20
 by the `AddMonoidWithOne` instance, and rather than attempting to prove the instances equal lean
 will sometimes decide to evaluate `100 + 200` directly (into whatever `+` is defined to do in this
 ring), which is definitely not what we want; if the subterms are expensive to kernel-reduce then
-this could cause a `(kernel) deep recursion detected` error (see lean4#2171, mathlib4#4048).
+this could cause a `(kernel) deep recursion detected` error (see https://github.com/leanprover/lean4/issues/2171, https://github.com/leanprover-community/mathlib4/pull/4048).
 
 By using an equality for the unapplied `+` function and proving it by `rfl` we take away the
 opportunity for lean to unfold the numerals (and the instance defeq problem is usually comparatively
@@ -204,11 +195,13 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
-instance : MonadLift Option MetaM where
+/-- Consider an `Option` as an object in the `MetaM` monad, by throwing an error on `none`. -/
+def _root_.Mathlib.Meta.monadLiftOptionMetaM : MonadLift Option MetaM where
   monadLift
   | none => failure
   | some e => pure e
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a + b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ + _] def evalAdd : NormNumExt where eval {u α} e := do
@@ -270,6 +263,7 @@ theorem isRat_neg {α} [Ring α] : ∀ {f : α → α} {a : α} {n n' : ℤ} {d 
     f = Neg.neg → IsRat a n d → Int.neg n = n' → IsRat (-a) n' d
   | _, _, _, _, _, rfl, ⟨h, rfl⟩, rfl => ⟨h, by rw [← neg_mul, ← Int.cast_neg]; rfl⟩
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `-a`,
 such that `norm_num` successfully recognises `a`. -/
 @[norm_num -_] def evalNeg : NormNumExt where eval {u α} e := do
@@ -317,6 +311,7 @@ theorem isRat_sub {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
   refine isRat_add rfl ra (isRat_neg (n' := -nb) rfl rb rfl) (k := k) (nc := nc) ?_ h₂
   rw [show Int.mul (-nb) _ = _ from neg_mul ..]; exact h₁
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a - b` in a ring,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ - _] def evalSub : NormNumExt where eval {u α} e := do
@@ -387,6 +382,7 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     (Nat.cast_commute (α := α) da dc).invOf_left.invOf_right.right_comm,
     (Nat.cast_commute (α := α) db dc).invOf_left.invOf_right.right_comm]
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a * b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ * _] def evalMul : NormNumExt where eval {u α} e := do
@@ -440,6 +436,7 @@ theorem isRat_div {α : Type u} [DivisionRing α] : {a b : α} → {cn : ℤ} �
 def inferDivisionRing {u : Level} (α : Q(Type u)) : MetaM Q(DivisionRing $α) :=
   return ← synthInstanceQ (q(DivisionRing $α) : Q(Type u)) <|> throwError "not a division ring"
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a / b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ / _] def evalDiv : NormNumExt where eval {u α} e := do

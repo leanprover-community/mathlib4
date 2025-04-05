@@ -3,9 +3,10 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
 -/
+import Mathlib.Order.Antisymmetrization
+import Mathlib.Order.Hom.WithTopBot
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.WithBotTop
-import Mathlib.Order.Antisymmetrization
 
 /-!
 # The covering relation
@@ -223,9 +224,6 @@ theorem denselyOrdered_iff_forall_not_covBy : DenselyOrdered α ↔ ∀ a b : α
   ⟨fun h _ _ => @not_covBy _ _ _ _ h, fun h =>
     ⟨fun _ _ hab => exists_lt_lt_of_not_covBy hab <| h _ _⟩⟩
 
-@[deprecated (since := "2024-04-04")]
-alias densely_ordered_iff_forall_not_covBy := denselyOrdered_iff_forall_not_covBy
-
 @[simp]
 theorem toDual_covBy_toDual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=
   and_congr_right' <| forall_congr' fun _ => forall_swap
@@ -412,6 +410,26 @@ theorem CovBy.eq_of_between {x : α} (hab : a ⋖ b) (hbc : b ⋖ c) (hax : a < 
     x = b :=
   le_antisymm (le_of_not_lt fun h => hbc.2 h hxc) (le_of_not_lt <| hab.2 hax)
 
+theorem covBy_iff_lt_iff_le_left {x y : α} : x ⋖ y ↔ ∀ {z}, z < y ↔ z ≤ x where
+  mp := fun hx _z ↦ ⟨hx.le_of_lt, fun hz ↦ hz.trans_lt hx.lt⟩
+  mpr := fun H ↦ ⟨H.2 le_rfl, fun _z hx hz ↦ (H.1 hz).not_lt hx⟩
+
+theorem covBy_iff_le_iff_lt_left {x y : α} : x ⋖ y ↔ ∀ {z}, z ≤ x ↔ z < y := by
+  simp_rw [covBy_iff_lt_iff_le_left, iff_comm]
+
+theorem covBy_iff_lt_iff_le_right {x y : α} : x ⋖ y ↔ ∀ {z}, x < z ↔ y ≤ z := by
+  trans ∀ {z}, ¬ z ≤ x ↔ ¬ z < y
+  · simp_rw [covBy_iff_le_iff_lt_left, not_iff_not]
+  · simp
+
+theorem covBy_iff_le_iff_lt_right {x y : α} : x ⋖ y ↔ ∀ {z}, y ≤ z ↔ x < z := by
+  simp_rw [covBy_iff_lt_iff_le_right, iff_comm]
+
+alias ⟨CovBy.lt_iff_le_left, _⟩ := covBy_iff_lt_iff_le_left
+alias ⟨CovBy.le_iff_lt_left, _⟩ := covBy_iff_le_iff_lt_left
+alias ⟨CovBy.lt_iff_le_right, _⟩ := covBy_iff_lt_iff_le_right
+alias ⟨CovBy.le_iff_lt_right, _⟩ := covBy_iff_le_iff_lt_right
+
 /-- If `a < b` then there exist `a' > a` and `b' < b` such that `Set.Iio a'` is strictly to the left
 of `Set.Ioi b'`. -/
 lemma LT.lt.exists_disjoint_Iio_Ioi (h : a < b) :
@@ -591,3 +609,19 @@ variable [Preorder α] {a b : α}
   simp only [wcovBy_iff_Ioo_eq, ← image_coe_Iio, bot_le, image_eq_empty, true_and, Iio_eq_empty_iff]
 
 end WithBot
+
+section WellFounded
+
+variable [Preorder α]
+
+lemma exists_covBy_of_wellFoundedLT [wf : WellFoundedLT α] ⦃a : α⦄ (h : ¬ IsMax a) :
+    ∃ a', a ⋖ a' := by
+  rw [not_isMax_iff] at h
+  exact ⟨_, wellFounded_lt.min_mem _ h, fun a' ↦ wf.wf.not_lt_min _ h⟩
+
+lemma exists_covBy_of_wellFoundedGT [wf : WellFoundedGT α] ⦃a : α⦄ (h : ¬ IsMin a) :
+    ∃ a', a' ⋖ a := by
+  rw [not_isMin_iff] at h
+  exact ⟨_, wf.wf.min_mem _ h, fun a' h₁ h₂ ↦ wf.wf.not_lt_min _ h h₂ h₁⟩
+
+end WellFounded

@@ -3,7 +3,7 @@ Copyright (c) 2022 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Junyan Xu
 -/
-import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Data.DFinsupp.Defs
 
 /-!
 # Locus of unequal values of finitely supported dependent functions

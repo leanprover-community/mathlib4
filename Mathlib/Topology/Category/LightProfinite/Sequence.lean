@@ -13,7 +13,7 @@ This files defines the light profinite set `ℕ∪{∞}`, defined as the one poi
 `ℕ`.
 -/
 
-open CategoryTheory TopologicalSpace OnePoint
+open CategoryTheory OnePoint TopologicalSpace Topology
 
 namespace LightProfinite
 
@@ -29,8 +29,8 @@ noncomputable def natUnionInftyEmbedding : C(OnePoint ℕ, ℝ) where
 The continuous map from `ℕ∪{∞}` to `ℝ` sending `n` to `1/(n+1)` and `∞` to `0` is a closed
 embedding.
 -/
-lemma closedEmbedding_natUnionInftyEmbedding : ClosedEmbedding natUnionInftyEmbedding := by
-  refine closedEmbedding_of_continuous_injective_closed
+lemma isClosedEmbedding_natUnionInftyEmbedding : IsClosedEmbedding natUnionInftyEmbedding := by
+  refine .of_continuous_injective_isClosedMap
     natUnionInftyEmbedding.continuous ?_ ?_
   · rintro (_|n) (_|m) h
     · rfl
@@ -45,7 +45,10 @@ lemma closedEmbedding_natUnionInftyEmbedding : ClosedEmbedding natUnionInftyEmbe
       rw [h]
   · exact fun _ hC => (hC.isCompact.image natUnionInftyEmbedding.continuous).isClosed
 
-instance : MetrizableSpace (OnePoint ℕ) := closedEmbedding_natUnionInftyEmbedding.metrizableSpace
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_natUnionInftyEmbedding := isClosedEmbedding_natUnionInftyEmbedding
+
+instance : MetrizableSpace (OnePoint ℕ) := isClosedEmbedding_natUnionInftyEmbedding.metrizableSpace
 
 /-- The one point compactification of the natural numbers as a light profinite set. -/
 abbrev NatUnionInfty : LightProfinite := of (OnePoint ℕ)

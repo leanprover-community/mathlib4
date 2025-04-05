@@ -81,8 +81,8 @@ theorem dedup_eq_self {l : List α} : dedup l = l ↔ Nodup l :=
 theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
     l.dedup = a :: l' ↔ a ∈ l ∧ a ∉ l' ∧ l.dedup.tail = l' := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · refine ⟨mem_dedup.1 (h.symm ▸ mem_cons_self _ _), fun ha => ?_, by rw [h, tail_cons]⟩
-    have := count_pos_iff_mem.2 ha
+  · refine ⟨mem_dedup.1 (h.symm ▸ mem_cons_self), fun ha => ?_, by rw [h, tail_cons]⟩
+    have := count_pos_iff.2 ha
     have : count a l.dedup ≤ 1 := nodup_iff_count_le_one.1 (nodup_dedup l) a
     rw [h, count_cons_self] at this
     omega
@@ -93,9 +93,10 @@ theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
 
 @[simp]
 theorem dedup_eq_nil (l : List α) : l.dedup = [] ↔ l = [] := by
-  induction' l with a l hl
-  · exact Iff.rfl
-  · by_cases h : a ∈ l
+  induction l with
+  | nil => exact Iff.rfl
+  | cons a l hl =>
+    by_cases h : a ∈ l
     · simp only [List.dedup_cons_of_mem h, hl, List.ne_nil_of_mem h, reduceCtorEq]
     · simp only [List.dedup_cons_of_not_mem h, List.cons_ne_nil]
 
@@ -107,7 +108,7 @@ theorem dedup_idem {l : List α} : dedup (dedup l) = dedup l :=
   pwFilter_idem
 
 theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ dedup l₂ := by
-  induction' l₁ with a l₁ IH; · rfl
+  induction l₁ with | nil => rfl | cons a l₁ IH => ?_
   simp only [cons_union] at *
   rw [← IH, cons_append]
   by_cases h : a ∈ dedup (l₁ ++ l₂)
@@ -122,14 +123,14 @@ theorem dedup_map_of_injective [DecidableEq β] {f : α → β} (hf : Function.I
   | cons x xs ih =>
     rw [map_cons]
     by_cases h : x ∈ xs
-    · rw [dedup_cons_of_mem h, dedup_cons_of_mem (mem_map_of_mem f h), ih]
+    · rw [dedup_cons_of_mem h, dedup_cons_of_mem (mem_map_of_mem h), ih]
     · rw [dedup_cons_of_not_mem h, dedup_cons_of_not_mem <| (mem_map_of_injective hf).not.mpr h, ih,
         map_cons]
 
 /-- Note that the weaker `List.Subset.dedup_append_left` is proved later. -/
 theorem Subset.dedup_append_right {xs ys : List α} (h : xs ⊆ ys) :
     dedup (xs ++ ys) = dedup ys := by
-  rw [List.dedup_append, Subset.union_eq_right (h.trans <| subset_dedup _)]
+  rw [List.dedup_append, Subset.union_eq_right (List.Subset.trans h <| subset_dedup _)]
 
 theorem Disjoint.union_eq {xs ys : List α} (h : Disjoint xs ys) :
     xs ∪ ys = xs.dedup ++ ys := by
@@ -159,5 +160,12 @@ theorem replicate_dedup {x : α} : ∀ {k}, k ≠ 0 → (replicate k x).dedup = 
 
 theorem count_dedup (l : List α) (a : α) : l.dedup.count a = if a ∈ l then 1 else 0 := by
   simp_rw [count_eq_of_nodup <| nodup_dedup l, mem_dedup]
+
+theorem Perm.dedup {l₁ l₂ : List α} (p : l₁ ~ l₂) : dedup l₁ ~ dedup l₂ :=
+  perm_iff_count.2 fun a =>
+    if h : a ∈ l₁ then by
+      simp [h, nodup_dedup, p.subset h]
+    else by
+      simp [h, count_eq_zero_of_not_mem, mt p.mem_iff.2]
 
 end List

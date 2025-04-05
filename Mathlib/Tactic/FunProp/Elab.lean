@@ -3,7 +3,6 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Lean
 import Mathlib.Tactic.FunProp.Core
 
 /-!
@@ -22,7 +21,7 @@ declare_config_elab elabFunPropConfig FunProp.Config
 
 /-- Tactic to prove function properties -/
 syntax (name := funPropTacStx)
-  "fun_prop" (config)? (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
+  "fun_prop" optConfig (discharger)? (" [" withoutPosition(ident,*,?) "]")? : tactic
 
 private def emptyDischarge : Expr → MetaM (Option Expr) :=
   fun e =>
@@ -33,7 +32,7 @@ private def emptyDischarge : Expr → MetaM (Option Expr) :=
 /-- Tactic to prove function properties -/
 @[tactic funPropTacStx]
 def funPropTac : Tactic
-  | `(tactic| fun_prop $[$cfg]? $[$d]? $[[$names,*]]?) => do
+  | `(tactic| fun_prop $cfg:optConfig $[$d]? $[[$names,*]]?) => do
 
     let goal ← getMainGoal
     goal.withContext do
@@ -50,7 +49,6 @@ def funPropTac : Tactic
             else ""
           throwError "`{← ppExpr type}` is not a `fun_prop` goal!{hint}"
 
-      let cfg := cfg.map (fun c => mkNullNode #[c.raw]) |>.getD (mkNullNode #[])
       let cfg ← elabFunPropConfig cfg
 
       let disch ← show MetaM (Expr → MetaM (Option Expr)) from do
@@ -84,6 +82,59 @@ def funPropTac : Tactic
         throwError msg
 
   | _ => throwUnsupportedSyntax
+
+
+
+/-- Command that printins all function properties attached to a function.
+
+For example
+```
+#print_fun_prop_theorems HAdd.hAdd
+```
+might print out
+```
+Continuous
+  continuous_add, args: [4,5], priority: 1000
+  continuous_add_left, args: [5], priority: 1000
+  continuous_add_right, args [4], priority: 1000
+  ...
+Diferentiable
+  Differentiable.add, args: [4,5], priority: 1000
+  Differentiable.add_const, args: [4], priority: 1000
+  Differentiable.const_add, args: [5], priority: 1000
+  ...
+```
+
+You can also see only theorems about a concrete function property
+```
+#print_fun_prop_theorems HAdd.hAdd Continuous
+```
+-/
+elab "#print_fun_prop_theorems " funIdent:ident funProp:(ident)? : command => do
+
+  let funName ← ensureNonAmbiguous funIdent (← resolveGlobalConst funIdent)
+  let funProp? ← funProp.mapM (fun stx => do
+    ensureNonAmbiguous stx (← resolveGlobalConst stx))
+
+  let theorems := (functionTheoremsExt.getState (← getEnv)).theorems.getD funName {}
+
+  let logTheorems (funProp : Name) (thms : Array FunctionTheorem) : Command.CommandElabM Unit := do
+    let mut msg : MessageData := ""
+    msg := msg ++ m!"{← Meta.ppOrigin (.decl funProp)}"
+    for thm in thms do
+      msg := msg ++ m!"\n  {← Meta.ppOrigin (.decl thm.thmOrigin.name)}, \
+                 args: {thm.mainArgs}, form: {thm.form}"
+      pure ()
+    logInfo msg
+
+
+  match funProp? with
+  | none =>
+    for (funProp,thms) in theorems do
+      logTheorems funProp thms
+  | some funProp =>
+    logTheorems funProp (theorems.getD funProp #[])
+
 
 end Meta.FunProp
 

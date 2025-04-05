@@ -84,6 +84,7 @@ and the circular order of months. Is `α →c β` a good notation?
 circular order, cyclic order, circularly ordered set, cyclically ordered set
 -/
 
+assert_not_exists RelIso
 
 /-- Syntax typeclass for a betweenness relation. -/
 class Btw (α : Type*) where
@@ -346,9 +347,8 @@ See note [reducible non-instances]. -/
 abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder α where
   btw a b c := a ≤ b ∧ b ≤ c ∨ b ≤ c ∧ c ≤ a ∨ c ≤ a ∧ a ≤ b
   sbtw a b c := a < b ∧ b < c ∨ b < c ∧ c < a ∨ c < a ∧ a < b
-  btw_refl a := Or.inl ⟨le_rfl, le_rfl⟩
+  btw_refl _ := Or.inl ⟨le_rfl, le_rfl⟩
   btw_cyclic_left {a b c} h := by
-    dsimp
     rwa [← or_assoc, or_comm]
   sbtw_trans_left {a b c d} := by
     rintro (⟨hab, hbc⟩ | ⟨hbc, hca⟩ | ⟨hca, hab⟩) (⟨hbd, hdc⟩ | ⟨hdc, hcb⟩ | ⟨hcb, hbd⟩)
@@ -366,7 +366,7 @@ abbrev Preorder.toCircularPreorder (α : Type*) [Preorder α] : CircularPreorder
     have h1 := le_trans a b c
     have h2 := le_trans b c a
     have h3 := le_trans c a b
-    -- Porting note: was `tauto`, but this is a much faster tactic proof
+    -- `tauto` closes the goal from here, but is quite slow (`grind` is fast).
     revert h1 h2 h3
     generalize (a ≤ b) = p1
     generalize (b ≤ a) = p2

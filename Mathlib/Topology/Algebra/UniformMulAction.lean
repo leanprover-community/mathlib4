@@ -3,8 +3,9 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.UniformGroup
+import Mathlib.Algebra.Module.Opposite
 import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
 /-!
 # Multiplicative action on the completion of a uniform space
@@ -43,11 +44,11 @@ export UniformContinuousConstVAdd (uniformContinuous_const_vadd)
 
 export UniformContinuousConstSMul (uniformContinuous_const_smul)
 
-instance AddMonoid.uniformContinuousConstSMul_nat [AddGroup X] [UniformAddGroup X] :
+instance AddMonoid.uniformContinuousConstSMul_nat [AddGroup X] [IsUniformAddGroup X] :
     UniformContinuousConstSMul ℕ X :=
   ⟨uniformContinuous_const_nsmul⟩
 
-instance AddGroup.uniformContinuousConstSMul_int [AddGroup X] [UniformAddGroup X] :
+instance AddGroup.uniformContinuousConstSMul_int [AddGroup X] [IsUniformAddGroup X] :
     UniformContinuousConstSMul ℤ X :=
   ⟨uniformContinuous_const_zsmul⟩
 
@@ -55,19 +56,19 @@ instance AddGroup.uniformContinuousConstSMul_int [AddGroup X] [UniformAddGroup X
 This can't be an instance due to it forming a loop with
 `UniformContinuousConstSMul.to_continuousConstSMul` -/
 theorem uniformContinuousConstSMul_of_continuousConstSMul [Monoid R] [AddCommGroup M]
-    [DistribMulAction R M] [UniformSpace M] [UniformAddGroup M] [ContinuousConstSMul R M] :
+    [DistribMulAction R M] [UniformSpace M] [IsUniformAddGroup M] [ContinuousConstSMul R M] :
     UniformContinuousConstSMul R M :=
   ⟨fun r =>
     uniformContinuous_of_continuousAt_zero (DistribMulAction.toAddMonoidHom M r)
       (Continuous.continuousAt (continuous_const_smul r))⟩
 
 /-- The action of `Semiring.toModule` is uniformly continuous. -/
-instance Ring.uniformContinuousConstSMul [Ring R] [UniformSpace R] [UniformAddGroup R]
+instance Ring.uniformContinuousConstSMul [Ring R] [UniformSpace R] [IsUniformAddGroup R]
     [ContinuousMul R] : UniformContinuousConstSMul R R :=
   uniformContinuousConstSMul_of_continuousConstSMul _ _
 
 /-- The action of `Semiring.toOppositeModule` is uniformly continuous. -/
-instance Ring.uniformContinuousConstSMul_op [Ring R] [UniformSpace R] [UniformAddGroup R]
+instance Ring.uniformContinuousConstSMul_op [Ring R] [UniformSpace R] [IsUniformAddGroup R]
     [ContinuousMul R] : UniformContinuousConstSMul Rᵐᵒᵖ R :=
   uniformContinuousConstSMul_of_continuousConstSMul _ _
 
@@ -88,12 +89,15 @@ theorem UniformContinuous.const_smul [UniformContinuousConstSMul M X] {f : Y →
   (uniformContinuous_const_smul c).comp hf
 
 @[to_additive]
-lemma UniformInducing.uniformContinuousConstSMul [SMul M Y] [UniformContinuousConstSMul M Y]
-    {f : X → Y} (hf : UniformInducing f) (hsmul : ∀ (c : M) x, f (c • x) = c • f x) :
+lemma IsUniformInducing.uniformContinuousConstSMul [SMul M Y] [UniformContinuousConstSMul M Y]
+    {f : X → Y} (hf : IsUniformInducing f) (hsmul : ∀ (c : M) x, f (c • x) = c • f x) :
     UniformContinuousConstSMul M X where
   uniformContinuous_const_smul c := by
     simpa only [hf.uniformContinuous_iff, Function.comp_def, hsmul]
       using hf.uniformContinuous.const_smul c
+
+@[deprecated (since := "2024-10-05")]
+alias UniformInducing.uniformContinuousConstSMul := IsUniformInducing.uniformContinuousConstSMul
 
 /-- If a scalar action is central, then its right action is uniform continuous when its left action
 is. -/
@@ -112,9 +116,42 @@ instance MulOpposite.uniformContinuousConstSMul [UniformContinuousConstSMul M X]
 end SMul
 
 @[to_additive]
-instance UniformGroup.to_uniformContinuousConstSMul {G : Type u} [Group G] [UniformSpace G]
-    [UniformGroup G] : UniformContinuousConstSMul G G :=
+instance IsUniformGroup.to_uniformContinuousConstSMul {G : Type u} [Group G] [UniformSpace G]
+    [IsUniformGroup G] : UniformContinuousConstSMul G G :=
   ⟨fun _ => uniformContinuous_const.mul uniformContinuous_id⟩
+
+section Ring
+
+variable {R β : Type*} [Ring R] [UniformSpace R] [UniformSpace β]
+
+theorem UniformContinuous.const_mul' [UniformContinuousConstSMul R R] {f : β → R}
+    (hf : UniformContinuous f) (a : R) : UniformContinuous fun x ↦ a * f x :=
+  hf.const_smul a
+
+theorem UniformContinuous.mul_const' [UniformContinuousConstSMul Rᵐᵒᵖ R] {f : β → R}
+    (hf : UniformContinuous f) (a : R) : UniformContinuous fun x ↦ f x * a :=
+  hf.const_smul (MulOpposite.op a)
+
+theorem uniformContinuous_mul_left' [UniformContinuousConstSMul R R] (a : R) :
+    UniformContinuous fun b : R => a * b :=
+  uniformContinuous_id.const_mul' _
+
+theorem uniformContinuous_mul_right' [UniformContinuousConstSMul Rᵐᵒᵖ R] (a : R) :
+    UniformContinuous fun b : R => b * a :=
+  uniformContinuous_id.mul_const' _
+
+theorem UniformContinuous.div_const' {R β : Type*} [DivisionRing R] [UniformSpace R]
+    [UniformContinuousConstSMul Rᵐᵒᵖ R] [UniformSpace β] {f : β → R}
+    (hf : UniformContinuous f) (a : R) :
+    UniformContinuous fun x ↦ f x / a := by
+  simpa [div_eq_mul_inv] using hf.mul_const' a⁻¹
+
+theorem uniformContinuous_div_const' {R : Type*} [DivisionRing R] [UniformSpace R]
+    [UniformContinuousConstSMul Rᵐᵒᵖ R] (a : R) :
+    UniformContinuous fun b : R => b / a :=
+  uniformContinuous_id.div_const' _
+
+end Ring
 
 namespace UniformSpace
 

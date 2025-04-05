@@ -14,9 +14,8 @@ The algorithm's entry point is the function `Linarith.SimplexAlgorithm.findPosit
 See the file `PositiveVector.lean` for details of how the procedure works.
 -/
 
-open Batteries
-
 namespace Linarith.SimplexAlgorithm
+open Mathlib
 
 /-- Preprocess the goal to pass it to `Linarith.SimplexAlgorithm.findPositiveVector`. -/
 def preprocess (matType : ℕ → ℕ → Type) [UsableInSimplexAlgorithm matType] (hyps : List Comp)
@@ -30,11 +29,11 @@ def preprocess (matType : ℕ → ℕ → Type) [UsableInSimplexAlgorithm matTyp
 /--
 Extract the certificate from the `vec` found by `Linarith.SimplexAlgorithm.findPositiveVector`.
 -/
-def postprocess (vec : Array ℚ) : HashMap ℕ ℕ :=
+def postprocess (vec : Array ℚ) : Std.HashMap ℕ ℕ :=
   let common_den : ℕ := vec.foldl (fun acc item => acc.lcm item.den) 1
   let vecNat : Array ℕ := vec.map (fun x : ℚ => (x * common_den).floor.toNat)
-  HashMap.ofList <| vecNat.toList.enum.filter (fun ⟨_, item⟩ => item != 0)
-
+  (∅ : Std.HashMap Nat Nat).insertMany <| vecNat.zipIdx.filterMap
+    fun ⟨item, idx⟩ => if item != 0 then some (idx, item) else none
 
 end SimplexAlgorithm
 

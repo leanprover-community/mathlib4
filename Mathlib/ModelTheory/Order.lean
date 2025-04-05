@@ -3,7 +3,9 @@ Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
-import Mathlib.Data.Rat.Denumerable
+import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Data.Rat.Encodable
+import Mathlib.Data.Finset.Sort
 import Mathlib.ModelTheory.Complexity
 import Mathlib.ModelTheory.Fraisse
 import Mathlib.Order.CountableDenseLinearOrder
@@ -43,6 +45,8 @@ This file defines ordered first-order languages and structures, as well as their
   theory of linear orders.
 - `FirstOrder.Language.isFraisse_finite_linear_order` shows that the class of finite models of the
   theory of linear orders is Fraïssé.
+- `FirstOrder.Language.aleph0_categorical_dlo` shows that the theory of dense linear orders is
+  `ℵ₀`-categorical, and thus complete.
 
 -/
 
@@ -79,6 +83,19 @@ instance instSubsingleton : Subsingleton (Language.order.Relations n) :=
   ⟨by rintro ⟨⟩ ⟨⟩; rfl⟩
 
 instance : IsEmpty (Language.order.Relations 0) := ⟨fun x => by cases x⟩
+
+instance : Unique (Σ n, Language.order.Relations n) :=
+  ⟨⟨⟨2, .le⟩⟩, fun ⟨n, R⟩ =>
+      match n, R with
+      | 2, .le => rfl⟩
+
+instance : Unique Language.order.Symbols := ⟨⟨Sum.inr default⟩, by
+  have : IsEmpty (Σ n, Language.order.Functions n) := isEmpty_sigma.2 inferInstance
+  simp only [Symbols, Sum.forall, reduceCtorEq, Sum.inr.injEq, IsEmpty.forall_iff, true_and]
+  exact Unique.eq_default⟩
+
+@[simp]
+lemma card_eq_one : Language.order.card = 1 := by simp [card]
 
 end order
 
@@ -149,7 +166,7 @@ example [L.Structure M] [M ⊨ L.linearOrderTheory] (S : L.Substructure M) :
     S ⊨ L.linearOrderTheory := inferInstance
 
 /-- A sentence indicating that an order has no top element:
-$\forall x, \exists y, \neg y \le x$.   -/
+$\forall x, \exists y, \neg y \le x$. -/
 def noTopOrderSentence : L.Sentence :=
   ∀'∃'∼((&1).le &0)
 
@@ -297,7 +314,7 @@ theorem realize_denselyOrdered [h : DenselyOrdered M] :
 
 variable (L) (M)
 
-theorem denselyOrdered_of_dlo [h: M ⊨ L.dlo] : DenselyOrdered M :=
+theorem denselyOrdered_of_dlo [M ⊨ L.dlo] : DenselyOrdered M :=
   realize_denselyOrdered_iff.1 (L.dlo.realize_sentence_of_mem (by
     simp only [dlo, Set.union_insert, Set.union_singleton, Set.mem_insert_iff, true_or, or_true]))
 
@@ -343,10 +360,14 @@ instance : @OrderedStructure L M _ (L.leOfStructure M) _ := by
   intros
   rfl
 
-instance [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
-    DecidableRel (@LE.le M (L.leOfStructure M)) := by
-  letI := L.leOfStructure M
-  exact h
+/-- The order structure on an ordered language is decidable. -/
+-- This should not be a global instance,
+-- because it will match with any `LE` typeclass search
+@[local instance]
+def decidableLEOfStructure
+    [h : DecidableRel (fun (a b : M) => Structure.RelMap (leSymb : L.Relations 2) ![a,b])] :
+    letI := L.leOfStructure M
+    DecidableLE M := h
 
 /-- Any model of a theory of preorders is a preorder. -/
 def preorderOfModels [h : M ⊨ L.preorderTheory] : Preorder M where
@@ -418,8 +439,8 @@ lemma strictMono [EmbeddingLike F M N] [PartialOrder M] [L.OrderedStructure M]
 end HomClass
 
 /-- This is not an instance because it would form a loop with
-  `FirstOrder.Language.order.instStrongHomClassOfOrderIsoClass`.
-  As both types are `Prop`s, it would only cause a slowdown.  -/
+`FirstOrder.Language.order.instStrongHomClassOfOrderIsoClass`.
+As both types are `Prop`s, it would only cause a slowdown. -/
 lemma StrongHomClass.toOrderIsoClass
     (L : Language) [L.IsOrdered] (M : Type*) [L.Structure M] [LE M] [L.OrderedStructure M]
     (N : Type*) [L.Structure N] [LE N] [L.OrderedStructure N]
@@ -463,8 +484,8 @@ lemma dlo_isExtensionPair
         Substructure.closure_eq])).toOrderEmbedding.trans g)
   use StrongHomClass.toEmbedding g'
   ext ⟨x, xS⟩
-  refine ((funext_iff.1 hg) ⟨x, ?_⟩).symm
-  simp only [Set.Finite.coe_toFinset, SetLike.mem_coe, xS]
+  refine congr_fun hg.symm ⟨x, (?_ : x ∈ hS.toFinset)⟩
+  simp only [Set.Finite.mem_toFinset, SetLike.mem_coe, xS]
 
 instance (M : Type w) [Language.order.Structure M] [M ⊨ Language.order.dlo] [Nonempty M] :
     Infinite M := by
@@ -486,7 +507,7 @@ lemma dlo_age [Language.order.Structure M] [Mdlo : M ⊨ Language.order.dlo] [No
 
 /-- Any countable nonempty model of the theory of dense linear orders is a Fraïssé limit of the
 class of finite models of the theory of linear orders. -/
-lemma isFraisseLimit_of_countable_nonempty_dlo (M : Type w)
+theorem isFraisseLimit_of_countable_nonempty_dlo (M : Type w)
     [Language.order.Structure M] [Countable M] [Nonempty M] [M ⊨ Language.order.dlo] :
     IsFraisseLimit {M : CategoryTheory.Bundled.{w} Language.order.Structure |
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} M :=
@@ -498,6 +519,23 @@ theorem isFraisse_finite_linear_order :
       Finite M ∧ M ⊨ Language.order.linearOrderTheory} := by
   letI : Language.order.Structure ℚ := orderStructure _
   exact (isFraisseLimit_of_countable_nonempty_dlo ℚ).isFraisse
+
+open Cardinal
+
+/-- The theory of dense linear orders is `ℵ₀`-categorical. -/
+theorem aleph0_categorical_dlo : (ℵ₀).Categorical Language.order.dlo := fun M₁ M₂ h₁ h₂ => by
+  obtain ⟨_⟩ := denumerable_iff.2 h₁
+  obtain ⟨_⟩ := denumerable_iff.2 h₂
+  exact (isFraisseLimit_of_countable_nonempty_dlo M₁).nonempty_equiv
+    (isFraisseLimit_of_countable_nonempty_dlo M₂)
+
+/-- The theory of dense linear orders is `ℵ₀`-complete. -/
+theorem dlo_isComplete : Language.order.dlo.IsComplete :=
+  aleph0_categorical_dlo.{0}.isComplete ℵ₀ _ le_rfl (by simp [one_le_aleph0])
+    ⟨by
+      letI : Language.order.Structure ℚ := orderStructure ℚ
+      exact Theory.ModelType.of _ ℚ⟩
+    fun _ => inferInstance
 
 end Fraisse
 

@@ -6,7 +6,7 @@ Authors: Aaron Anderson
 import Mathlib.Computability.Encoding
 import Mathlib.Logic.Small.List
 import Mathlib.ModelTheory.Syntax
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Encodings and Cardinality of First-Order Syntax
@@ -33,15 +33,14 @@ import Mathlib.SetTheory.Cardinal.Ordinal
 -/
 
 
-universe u v w u' v'
+universe u v w u'
 
 namespace FirstOrder
 
 namespace Language
 
 variable {L : Language.{u, v}}
-variable {M : Type w} {N P : Type*} [L.Structure M] [L.Structure N] [L.Structure P]
-variable {α : Type u'} {β : Type v'}
+variable {α : Type u'}
 
 open FirstOrder Cardinal
 
@@ -50,13 +49,13 @@ open Computability List Structure Cardinal Fin
 namespace Term
 
 /-- Encodes a term as a list of variables and function symbols. -/
-def listEncode : L.Term α → List (α ⊕ (Σi, L.Functions i))
+def listEncode : L.Term α → List (α ⊕ (Σ i, L.Functions i))
   | var i => [Sum.inl i]
   | func f ts =>
-    Sum.inr (⟨_, f⟩ : Σi, L.Functions i)::(List.finRange _).bind fun i => (ts i).listEncode
+    Sum.inr (⟨_, f⟩ : Σ i, L.Functions i)::(List.finRange _).flatMap fun i => (ts i).listEncode
 
 /-- Decodes a list of variables and function symbols as a list of terms. -/
-def listDecode : List (α ⊕ (Σi, L.Functions i)) → List (L.Term α)
+def listDecode : List (α ⊕ (Σ i, L.Functions i)) → List (L.Term α)
   | [] => []
   | Sum.inl a::l => (var a)::listDecode l
   | Sum.inr ⟨n, f⟩::l =>
@@ -65,48 +64,49 @@ def listDecode : List (α ⊕ (Σi, L.Functions i)) → List (L.Term α)
     else []
 
 theorem listDecode_encode_list (l : List (L.Term α)) :
-    listDecode (l.bind listEncode) = l := by
-  suffices h : ∀ (t : L.Term α) (l : List (α ⊕ (Σi, L.Functions i))),
+    listDecode (l.flatMap listEncode) = l := by
+  suffices h : ∀ (t : L.Term α) (l : List (α ⊕ (Σ i, L.Functions i))),
       listDecode (t.listEncode ++ l) = t::listDecode l by
     induction' l with t l lih
     · rfl
-    · rw [bind_cons, h t (l.bind listEncode), lih]
-  intro t
-  induction' t with a n f ts ih <;> intro l
-  · rw [listEncode, singleton_append, listDecode]
-  · rw [listEncode, cons_append, listDecode]
-    have h : listDecode (((finRange n).bind fun i : Fin n => (ts i).listEncode) ++ l) =
+    · rw [flatMap_cons, h t (l.flatMap listEncode), lih]
+  intro t l
+  induction t generalizing l with
+  | var => rw [listEncode, singleton_append, listDecode]
+  | @func n f ts ih =>
+    rw [listEncode, cons_append, listDecode]
+    have h : listDecode (((finRange n).flatMap fun i : Fin n => (ts i).listEncode) ++ l) =
         (finRange n).map ts ++ listDecode l := by
       induction' finRange n with i l' l'ih
       · rfl
-      · rw [bind_cons, List.append_assoc, ih, map_cons, l'ih, cons_append]
+      · rw [flatMap_cons, List.append_assoc, ih, map_cons, l'ih, cons_append]
     simp only [h, length_append, length_map, length_finRange, le_add_iff_nonneg_right,
       _root_.zero_le, ↓reduceDIte, getElem_fin, cons.injEq, func.injEq, heq_eq_eq, true_and]
     refine ⟨funext (fun i => ?_), ?_⟩
-    · rw [List.getElem_append, List.getElem_map, List.getElem_finRange]
-      simp only [length_map, length_finRange, i.2]
+    · simp only [length_map, length_finRange, is_lt, getElem_append_left, getElem_map,
+      getElem_finRange, cast_mk, Fin.eta]
     · simp only [length_map, length_finRange, drop_left']
 
 /-- An encoding of terms as lists. -/
 @[simps]
 protected def encoding : Encoding (L.Term α) where
-  Γ := α ⊕ (Σi, L.Functions i)
+  Γ := α ⊕ (Σ i, L.Functions i)
   encode := listEncode
   decode l := (listDecode l).head?.join
   decode_encode t := by
     have h := listDecode_encode_list [t]
-    rw [bind_singleton] at h
+    rw [flatMap_singleton] at h
     simp only [Option.join, h, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.some_bind,
       id_eq]
 
 theorem listEncode_injective :
-    Function.Injective (listEncode : L.Term α → List (α ⊕ (Σi, L.Functions i))) :=
+    Function.Injective (listEncode : L.Term α → List (α ⊕ (Σ i, L.Functions i))) :=
   Term.encoding.encode_injective
 
-theorem card_le : #(L.Term α) ≤ max ℵ₀ #(α ⊕ (Σi, L.Functions i)) :=
+theorem card_le : #(L.Term α) ≤ max ℵ₀ #(α ⊕ (Σ i, L.Functions i)) :=
   lift_le.1 (_root_.trans Term.encoding.card_le_card_list (lift_le.2 (mk_list_le_max _)))
 
-theorem card_sigma : #(Σn, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σi, L.Functions i)) := by
+theorem card_sigma : #(Σ n, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σ i, L.Functions i)) := by
   refine le_antisymm ?_ ?_
   · rw [mk_sigma]
     refine (sum_le_iSup_lift _).trans ?_
@@ -137,14 +137,14 @@ theorem card_sigma : #(Σn, L.Term (α ⊕ (Fin n))) = max ℵ₀ #(α ⊕ (Σi,
       · simp only [Sum.elim_inr, Sigma.mk.inj_iff, heq_eq_eq, func.injEq, true_and] at h
         rw [Sigma.ext_iff.2 ⟨h.1, h.2.1⟩]
 
-instance [Encodable α] [Encodable (Σi, L.Functions i)] : Encodable (L.Term α) :=
+instance [Encodable α] [Encodable (Σ i, L.Functions i)] : Encodable (L.Term α) :=
   Encodable.ofLeftInjection listEncode (fun l => (listDecode l).head?.join) fun t => by
     simp only
-    rw [← bind_singleton listEncode, listDecode_encode_list]
+    rw [← flatMap_singleton listEncode, listDecode_encode_list]
     simp only [Option.join, head?_cons, Option.pure_def, Option.bind_eq_bind, Option.some_bind,
       id_eq]
 
-instance [h1 : Countable α] [h2 : Countable (Σl, L.Functions l)] : Countable (L.Term α) := by
+instance [h1 : Countable α] [h2 : Countable (Σ l, L.Functions l)] : Countable (L.Term α) := by
   refine mk_le_aleph0_iff.1 (card_le.trans (max_le_iff.2 ?_))
   simp only [le_refl, mk_sum, add_le_aleph0, lift_le_aleph0, true_and]
   exact ⟨Cardinal.mk_le_aleph0, Cardinal.mk_le_aleph0⟩
@@ -158,7 +158,7 @@ namespace BoundedFormula
 
 /-- Encodes a bounded formula as a list of symbols. -/
 def listEncode : ∀ {n : ℕ},
-    L.BoundedFormula α n → List ((Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σn, L.Relations n) ⊕ ℕ))
+    L.BoundedFormula α n → List ((Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ))
   | n, falsum => [Sum.inr (Sum.inr (n + 2))]
   | _, equal t₁ t₂ => [Sum.inl ⟨_, t₁⟩, Sum.inl ⟨_, t₂⟩]
   | n, rel R ts => [Sum.inr (Sum.inl ⟨_, R⟩), Sum.inr (Sum.inr n)] ++
@@ -168,7 +168,7 @@ def listEncode : ∀ {n : ℕ},
 
 /-- Applies the `forall` quantifier to an element of `(Σ n, L.BoundedFormula α n)`,
 or returns `default` if not possible. -/
-def sigmaAll : (Σn, L.BoundedFormula α n) → Σn, L.BoundedFormula α n
+def sigmaAll : (Σ n, L.BoundedFormula α n) → Σ n, L.BoundedFormula α n
   | ⟨n + 1, φ⟩ => ⟨n, φ.all⟩
   | _ => default
 
@@ -179,16 +179,9 @@ lemma sigmaAll_apply {n} {φ : L.BoundedFormula α (n + 1)} :
 
 /-- Applies `imp` to two elements of `(Σ n, L.BoundedFormula α n)`,
 or returns `default` if not possible. -/
-def sigmaImp : (Σn, L.BoundedFormula α n) → (Σn, L.BoundedFormula α n) → Σn, L.BoundedFormula α n
+def sigmaImp : (Σ n, L.BoundedFormula α n) → (Σ n, L.BoundedFormula α n) → Σ n, L.BoundedFormula α n
   | ⟨m, φ⟩, ⟨n, ψ⟩ => if h : m = n then ⟨m, φ.imp (Eq.mp (by rw [h]) ψ)⟩ else default
 
-#adaptation_note
-/--
-`List.drop_sizeOf_le` is deprecated.
-See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Why.20is.20.60Mathlib.2EModelTheory.2EEncoding.60.20using.20.60SizeOf.2EsizeOf.60.3F
-for discussion about adapting this code.
--/
-set_option linter.deprecated false in
 /-- Decodes a list of symbols as a list of formulas. -/
 @[simp]
 lemma sigmaImp_apply {n} {φ ψ : L.BoundedFormula α n} :
@@ -197,12 +190,12 @@ lemma sigmaImp_apply {n} {φ ψ : L.BoundedFormula α n} :
 
 /-- Decodes a list of symbols as a list of formulas. -/
 def listDecode :
-    List ((Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σn, L.Relations n) ⊕ ℕ)) → List (Σn, L.BoundedFormula α n)
+    List ((Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ)) → List (Σ n, L.BoundedFormula α n)
   | Sum.inr (Sum.inr (n + 2))::l => ⟨n, falsum⟩::(listDecode l)
   | Sum.inl ⟨n₁, t₁⟩::Sum.inl ⟨n₂, t₂⟩::l =>
     (if h : n₁ = n₂ then ⟨n₁, equal t₁ (Eq.mp (by rw [h]) t₂)⟩ else default)::(listDecode l)
   | Sum.inr (Sum.inl ⟨n, R⟩)::Sum.inr (Sum.inr k)::l => (
-    if h : ∀ i : Fin n, ((l.map Sum.getLeft?).get? i).join.isSome then
+    if h : ∀ i : Fin n, (l.map Sum.getLeft?)[i]?.join.isSome then
         if h' : ∀ i, (Option.get _ (h i)).1 = k then
           ⟨k, BoundedFormula.rel R fun i => Eq.mp (by rw [h' i]) (Option.get _ (h i)).2⟩
         else default
@@ -217,15 +210,15 @@ def listDecode :
   termination_by l => l.length
 
 @[simp]
-theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
-    listDecode (l.bind (fun φ => φ.2.listEncode)) = l := by
-  suffices h : ∀ (φ : Σn, L.BoundedFormula α n)
-      (l' : List ((Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σn, L.Relations n) ⊕ ℕ))),
+theorem listDecode_encode_list (l : List (Σ n, L.BoundedFormula α n)) :
+    listDecode (l.flatMap (fun φ => φ.2.listEncode)) = l := by
+  suffices h : ∀ (φ : Σ n, L.BoundedFormula α n)
+      (l' : List ((Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ))),
       (listDecode (listEncode φ.2 ++ l')) = φ::(listDecode l') by
     induction' l with φ l ih
-    · rw [List.bind_nil]
+    · rw [List.flatMap_nil]
       simp [listDecode]
-    · rw [bind_cons, h φ _, ih]
+    · rw [flatMap_cons, h φ _, ih]
   rintro ⟨n, φ⟩
   induction φ with
   | falsum => intro l; rw [listEncode, singleton_append, listDecode]
@@ -238,14 +231,14 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
     intro l
     rw [listEncode, cons_append, cons_append, singleton_append, cons_append, listDecode]
     have h : ∀ i : Fin φ_l, ((List.map Sum.getLeft? (List.map (fun i : Fin φ_l =>
-      Sum.inl (⟨(⟨φ_n, rel φ_R ts⟩ : Σn, L.BoundedFormula α n).fst, ts i⟩ :
-        Σn, L.Term (α ⊕ (Fin n)))) (finRange φ_l) ++ l)).get? ↑i).join = some ⟨_, ts i⟩ := by
+      Sum.inl (⟨(⟨φ_n, rel φ_R ts⟩ : Σ n, L.BoundedFormula α n).fst, ts i⟩ :
+        Σ n, L.Term (α ⊕ (Fin n)))) (finRange φ_l) ++ l))[↑i]?).join = some ⟨_, ts i⟩ := by
       intro i
-      simp only [Option.join, map_append, map_map, Option.bind_eq_some, id, exists_eq_right,
-        get?_eq_some, length_append, length_map, length_finRange]
+      simp only [Option.join, map_append, map_map, getElem?_fin, id, Option.bind_eq_some,
+        getElem?_eq_some_iff, length_append, length_map, length_finRange, exists_eq_right]
       refine ⟨lt_of_lt_of_le i.2 le_self_add, ?_⟩
-      rw [get_eq_getElem, getElem_append, getElem_map]
-      · simp only [getElem_finRange, Fin.eta, Function.comp_apply, Sum.getLeft?]
+      rw [getElem_append_left, getElem_map]
+      · simp only [getElem_finRange, cast_mk, Fin.eta, Function.comp_apply, Sum.getLeft?_inl]
       · simp only [length_map, length_finRange, is_lt]
     rw [dif_pos]
     swap
@@ -279,22 +272,21 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
 
 /-- An encoding of bounded formulas as lists. -/
 @[simps]
-protected def encoding : Encoding (Σn, L.BoundedFormula α n) where
-  Γ := (Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σn, L.Relations n) ⊕ ℕ)
+protected def encoding : Encoding (Σ n, L.BoundedFormula α n) where
+  Γ := (Σk, L.Term (α ⊕ Fin k)) ⊕ ((Σ n, L.Relations n) ⊕ ℕ)
   encode φ := φ.2.listEncode
   decode l := (listDecode l)[0]?
   decode_encode φ := by
     have h := listDecode_encode_list [φ]
-    rw [bind_singleton] at h
-    simp only
+    rw [flatMap_singleton] at h
     rw [h]
     rfl
 
 theorem listEncode_sigma_injective :
-    Function.Injective fun φ : Σn, L.BoundedFormula α n => φ.2.listEncode :=
+    Function.Injective fun φ : Σ n, L.BoundedFormula α n => φ.2.listEncode :=
   BoundedFormula.encoding.encode_injective
 
-theorem card_le : #(Σn, L.BoundedFormula α n) ≤
+theorem card_le : #(Σ n, L.BoundedFormula α n) ≤
     max ℵ₀ (Cardinal.lift.{max u v} #α + Cardinal.lift.{u'} L.card) := by
   refine lift_le.1 (BoundedFormula.encoding.card_le_card_list.trans ?_)
   rw [encoding_Γ, mk_list_eq_max_mk_aleph0, lift_max, lift_aleph0, lift_max, lift_aleph0,

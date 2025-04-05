@@ -30,16 +30,16 @@ on `Set.PairwiseDisjoint`, even though the latter unfolds to something nicer.
 
 open Function Order Set
 
-variable {α β γ ι ι' : Type*} {r p q : α → α → Prop}
+variable {α β γ ι ι' : Type*} {r p : α → α → Prop}
 
 section Pairwise
 
-variable {f g : ι → α} {s t u : Set α} {a b : α}
+variable {f g : ι → α} {s t : Set α} {a b : α}
 
 theorem pairwise_on_bool (hr : Symmetric r) {a b : α} :
     Pairwise (r on fun c => cond c a b) ↔ r a b := by simpa [Pairwise, Function.onFun] using @hr a b
 
-theorem pairwise_disjoint_on_bool [SemilatticeInf α] [OrderBot α] {a b : α} :
+theorem pairwise_disjoint_on_bool [PartialOrder α] [OrderBot α] {a b : α} :
     Pairwise (Disjoint on fun c => cond c a b) ↔ Disjoint a b :=
   pairwise_on_bool Disjoint.symm
 
@@ -47,13 +47,23 @@ theorem Symmetric.pairwise_on [LinearOrder ι] (hr : Symmetric r) (f : ι → α
     Pairwise (r on f) ↔ ∀ ⦃m n⦄, m < n → r (f m) (f n) :=
   ⟨fun h _m _n hmn => h hmn.ne, fun h _m _n hmn => hmn.lt_or_lt.elim (@h _ _) fun h' => hr (h h')⟩
 
-theorem pairwise_disjoint_on [SemilatticeInf α] [OrderBot α] [LinearOrder ι] (f : ι → α) :
+theorem pairwise_disjoint_on [PartialOrder α] [OrderBot α] [LinearOrder ι] (f : ι → α) :
     Pairwise (Disjoint on f) ↔ ∀ ⦃m n⦄, m < n → Disjoint (f m) (f n) :=
   Symmetric.pairwise_on Disjoint.symm f
 
-theorem pairwise_disjoint_mono [SemilatticeInf α] [OrderBot α] (hs : Pairwise (Disjoint on f))
+theorem pairwise_disjoint_mono [PartialOrder α] [OrderBot α] (hs : Pairwise (Disjoint on f))
     (h : g ≤ f) : Pairwise (Disjoint on g) :=
   hs.mono fun i j hij => Disjoint.mono (h i) (h j) hij
+
+theorem Pairwise.disjoint_extend_bot [PartialOrder γ] [OrderBot γ]
+    {e : α → β} {f : α → γ} (hf : Pairwise (Disjoint on f)) (he : FactorsThrough f e) :
+    Pairwise (Disjoint on extend e f ⊥) := by
+  intro b₁ b₂ hne
+  rcases em (∃ a₁, e a₁ = b₁) with ⟨a₁, rfl⟩ | hb₁
+  · rcases em (∃ a₂, e a₂ = b₂) with ⟨a₂, rfl⟩ | hb₂
+    · simpa only [onFun, he.extend_apply] using hf (ne_of_apply_ne e hne)
+    · simpa only [onFun, extend_apply' _ _ _ hb₂] using disjoint_bot_right
+  · simpa only [onFun, extend_apply' _ _ _ hb₁] using disjoint_bot_left
 
 namespace Set
 
@@ -119,9 +129,7 @@ theorem pairwise_union :
     (s ∪ t).Pairwise r ↔
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by
   simp only [Set.Pairwise, mem_union, or_imp, forall_and]
-  exact
-    ⟨fun H => ⟨H.1.1, H.2.2, H.1.2, fun x hx y hy hne => H.2.1 y hy x hx hne.symm⟩,
-     fun H => ⟨⟨H.1, H.2.2.1⟩, fun x hx y hy hne => H.2.2.2 y hy x hx hne.symm, H.2.1⟩⟩
+  aesop
 
 theorem pairwise_union_of_symmetric (hr : Symmetric r) :
     (s ∪ t).Pairwise r ↔ s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b :=
@@ -156,6 +164,7 @@ theorem Pairwise.insert_of_symmetric (hs : s.Pairwise r) (hr : Symmetric r)
     (h : ∀ b ∈ s, a ≠ b → r a b) : (insert a s).Pairwise r :=
   (pairwise_insert_of_symmetric hr).2 ⟨hs, h⟩
 
+@[deprecated Pairwise.insert_of_symmetric (since := "2025-03-19")]
 theorem Pairwise.insert_of_symmetric_of_not_mem (hs : s.Pairwise r) (hr : Symmetric r) (ha : a ∉ s)
     (h : ∀ b ∈ s, r a b) : (insert a s).Pairwise r :=
   (pairwise_insert_of_symmetric_of_not_mem hr ha).2 ⟨hs, h⟩
@@ -186,7 +195,7 @@ protected theorem Pairwise.image {s : Set ι} (h : s.Pairwise (r on f)) : (f '' 
 /-- See also `Set.Pairwise.image`. -/
 theorem InjOn.pairwise_image {s : Set ι} (h : s.InjOn f) :
     (f '' s).Pairwise r ↔ s.Pairwise (r on f) := by
-  simp (config := { contextual := true }) [h.eq_iff, Set.Pairwise]
+  simp +contextual [h.eq_iff, Set.Pairwise]
 
 lemma _root_.Pairwise.range_pairwise (hr : Pairwise (r on f)) : (Set.range f).Pairwise r :=
   image_univ ▸ (pairwise_univ.mpr hr).image
@@ -286,12 +295,8 @@ lemma PairwiseDisjoint.eq_or_disjoint
   exact h.elim hi hj
 
 lemma pairwiseDisjoint_range_iff {α β : Type*} {f : α → (Set β)} :
-    (Set.range f).PairwiseDisjoint id ↔ ∀ x y, f x = f y ∨ Disjoint (f x) (f y) := by
-  constructor
-  · intro h x y
-    apply h.eq_or_disjoint (Set.mem_range_self x) (Set.mem_range_self y)
-  · rintro h _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ hxy
-    exact (h x y).resolve_left hxy
+    (range f).PairwiseDisjoint id ↔ ∀ x y, f x ≠ f y → Disjoint (f x) (f y) := by
+  aesop (add simp [PairwiseDisjoint, Set.Pairwise])
 
 /-- If the range of `f` is pairwise disjoint, then the image of any set `s` under `f` is as well. -/
 lemma _root_.Pairwise.pairwiseDisjoint (h : Pairwise (Disjoint on f)) (s : Set ι) :
@@ -301,7 +306,7 @@ end PartialOrderBot
 
 section SemilatticeInfBot
 
-variable [SemilatticeInf α] [OrderBot α] {s t : Set ι} {f g : ι → α}
+variable [SemilatticeInf α] [OrderBot α] {s : Set ι} {f : ι → α}
 
 -- classical
 theorem PairwiseDisjoint.elim' (hs : s.PairwiseDisjoint f) {i j : ι} (hi : i ∈ s) (hj : j ∈ s)
@@ -389,7 +394,7 @@ lemma exists_lt_mem_inter_of_not_pairwiseDisjoint [LinearOrder ι]
     {f : ι → Set α} (h : ¬ s.PairwiseDisjoint f) :
     ∃ i ∈ s, ∃ j ∈ s, i < j ∧ ∃ x, x ∈ f i ∩ f j := by
   obtain ⟨i, hi, j, hj, hne, x, hx₁, hx₂⟩ := exists_ne_mem_inter_of_not_pairwiseDisjoint h
-  cases' lt_or_lt_iff_ne.mpr hne with h_lt h_lt
+  rcases lt_or_lt_iff_ne.mpr hne with h_lt | h_lt
   · exact ⟨i, hi, j, hj, h_lt, x, hx₁, hx₂⟩
   · exact ⟨j, hj, i, hi, h_lt, x, hx₂, hx₁⟩
 

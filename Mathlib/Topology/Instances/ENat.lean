@@ -4,16 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
 import Mathlib.Data.ENat.Basic
-import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Instances.Discrete
 import Mathlib.Order.Interval.Set.WithBotTop
+import Mathlib.Order.Filter.Pointwise
+import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Topology on extended natural numbers
 -/
 
-open Set Filter
-open scoped Topology
+open Filter Set Topology
 
 namespace ENat
 
@@ -30,14 +30,20 @@ instance : OrderTopology ℕ∞ := ⟨rfl⟩
 @[simp] theorem range_natCast : range ((↑) : ℕ → ℕ∞) = Iio ⊤ :=
   WithTop.range_coe
 
-theorem embedding_natCast : Embedding ((↑) : ℕ → ℕ∞) :=
-  Nat.strictMono_cast.embedding_of_ordConnected <| range_natCast ▸ ordConnected_Iio
+theorem isEmbedding_natCast : IsEmbedding ((↑) : ℕ → ℕ∞) :=
+  Nat.strictMono_cast.isEmbedding_of_ordConnected <| range_natCast ▸ ordConnected_Iio
 
-theorem openEmbedding_natCast : OpenEmbedding ((↑) : ℕ → ℕ∞) :=
-  ⟨embedding_natCast, range_natCast ▸ isOpen_Iio⟩
+@[deprecated (since := "2024-10-26")]
+alias embedding_natCast := isEmbedding_natCast
+
+theorem isOpenEmbedding_natCast : IsOpenEmbedding ((↑) : ℕ → ℕ∞) :=
+  ⟨isEmbedding_natCast, range_natCast ▸ isOpen_Iio⟩
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_natCast := isOpenEmbedding_natCast
 
 theorem nhds_natCast (n : ℕ) : 𝓝 (n : ℕ∞) = pure (n : ℕ∞) := by
-  simp [← openEmbedding_natCast.map_nhds_eq]
+  simp [← isOpenEmbedding_natCast.map_nhds_eq]
 
 @[simp]
 protected theorem nhds_eq_pure {n : ℕ∞} (h : n ≠ ⊤) : 𝓝 n = pure n := by
@@ -85,11 +91,10 @@ instance : ContinuousMul ℕ∞ where
 protected theorem continuousAt_sub {a b : ℕ∞} (h : a ≠ ⊤ ∨ b ≠ ⊤) :
     ContinuousAt (· - ·).uncurry (a, b) := by
   match a, b, h with
-  | (a : ℕ), (b : ℕ), _ =>
-    simpa [ContinuousAt, nhds_prod_eq] using tendsto_pure_nhds _ _
+  | (a : ℕ), (b : ℕ), _ => simp [ContinuousAt, nhds_prod_eq]
   | (a : ℕ), ⊤, _ =>
     suffices ∀ᶠ b in 𝓝 ⊤, (a - b : ℕ∞) = 0 by
-      simpa [ContinuousAt, nhds_prod_eq]
+      simpa [ContinuousAt, nhds_prod_eq, tsub_eq_zero_of_le]
     filter_upwards [le_mem_nhds (WithTop.coe_lt_top a)] with b using tsub_eq_zero_of_le
   | ⊤, (b : ℕ), _ =>
     suffices ∀ n : ℕ, ∀ᶠ a : ℕ∞ in 𝓝 ⊤, b + n < a by
@@ -101,7 +106,7 @@ end ENat
 theorem Filter.Tendsto.enatSub {α : Type*} {l : Filter α} {f g : α → ℕ∞} {a b : ℕ∞}
     (hf : Tendsto f l (𝓝 a)) (hg : Tendsto g l (𝓝 b)) (h : a ≠ ⊤ ∨ b ≠ ⊤) :
     Tendsto (fun x ↦ f x - g x) l (𝓝 (a - b)) :=
-  (ENat.continuousAt_sub h).tendsto.comp (hf.prod_mk_nhds hg)
+  (ENat.continuousAt_sub h).tendsto.comp (hf.prodMk_nhds hg)
 
 variable {X : Type*} [TopologicalSpace X] {f g : X → ℕ∞} {s : Set X} {x : X}
 

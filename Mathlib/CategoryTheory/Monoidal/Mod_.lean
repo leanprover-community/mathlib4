@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Mon_
 
@@ -19,7 +19,9 @@ variable {C}
 
 /-- A module object for a monoid object, all internal to some monoidal category. -/
 structure Mod_ (A : Mon_ C) where
+  /-- The underlying object in the ambient monoidal category -/
   X : C
+  /-- The action morphism of the module object -/
   act : A.X ⊗ X ⟶ X
   one_act : (A.one ▷ X) ≫ act = (λ_ X).hom := by aesop_cat
   assoc : (A.mul ▷ X) ≫ act = (α_ A.X A.X X).hom ≫ (A.X ◁ act) ≫ act := by aesop_cat
@@ -36,6 +38,7 @@ theorem assoc_flip :
 /-- A morphism of module objects. -/
 @[ext]
 structure Hom (M N : Mod_ A) where
+  /-- The underlying morphism -/
   hom : M.X ⟶ N.X
   act_hom : M.act ≫ hom = (A.X ◁ hom) ≫ N.act := by aesop_cat
 
@@ -57,7 +60,6 @@ instance : Category (Mod_ A) where
   id := id
   comp f g := comp f g
 
--- Porting note (#5229): added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {M N : Mod_ A} (f₁ f₂ : M ⟶ N) (h : f₁.hom = f₂.hom) : f₁ = f₂ :=
   Hom.ext h
@@ -89,6 +91,11 @@ def forget : Mod_ A ⥤ C where
 
 open CategoryTheory.MonoidalCategory
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6053
+we needed to increase the `maxHeartbeats` limit if we didn't write an explicit proof for
+`map_id` and `map_comp`.
+
+This may indicate a configuration problem in Aesop. -/
 /-- A morphism of monoid objects induces a "restriction" or "comap" functor
 between the categories of module objects.
 -/

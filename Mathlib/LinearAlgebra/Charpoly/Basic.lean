@@ -51,7 +51,7 @@ section Coeff
 theorem charpoly_monic : f.charpoly.Monic :=
   Matrix.charpoly_monic _
 
-open FiniteDimensional in
+open Module in
 lemma charpoly_natDegree [Nontrivial R] [StrongRankCondition R] :
     natDegree (charpoly f) = finrank R M := by
   rw [charpoly, Matrix.charpoly_natDegree_eq_dim, finrank_eq_card_chooseBasisIndex]
@@ -104,7 +104,7 @@ theorem minpoly_coeff_zero_of_injective [Nontrivial R] (hf : Function.Injective 
     exact minpoly.monic (isIntegral f)
   have hzero : aeval f (minpoly R f) = 0 := minpoly.aeval _ _
   simp only [hP, mul_eq_comp, LinearMap.ext_iff, hf, aeval_X, map_eq_zero_iff, coe_comp,
-    _root_.map_mul, zero_apply, Function.comp_apply] at hzero
+    map_mul, zero_apply, Function.comp_apply] at hzero
   exact not_le.2 hdegP (minpoly.min _ _ hPmonic (LinearMap.ext hzero))
 
 end CayleyHamilton

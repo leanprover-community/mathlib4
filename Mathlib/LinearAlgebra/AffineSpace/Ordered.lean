@@ -104,7 +104,7 @@ end LinearOrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField k] [OrderedAddCommGroup E]
+variable [Field k] [LinearOrder k] [IsStrictOrderedRing k] [OrderedAddCommGroup E]
 variable [Module k E] [OrderedSMul k E]
 
 section
@@ -134,15 +134,13 @@ theorem lineMap_le_right_iff_le (h : r < 1) : lineMap a b r ≤ b ↔ a ≤ b :=
   Iff.trans (by rw [lineMap_apply_one]) (lineMap_le_lineMap_iff_of_lt h)
 
 @[simp]
-theorem midpoint_le_right : midpoint k a b ≤ b ↔ a ≤ b :=
-  lineMap_le_right_iff_le <| inv_lt_one one_lt_two
+theorem midpoint_le_right : midpoint k a b ≤ b ↔ a ≤ b := lineMap_le_right_iff_le two_inv_lt_one
 
 theorem right_le_lineMap_iff_le (h : r < 1) : b ≤ lineMap a b r ↔ b ≤ a :=
   lineMap_le_right_iff_le (E := Eᵒᵈ) h
 
 @[simp]
-theorem right_le_midpoint : b ≤ midpoint k a b ↔ b ≤ a :=
-  right_le_lineMap_iff_le <| inv_lt_one one_lt_two
+theorem right_le_midpoint : b ≤ midpoint k a b ↔ b ≤ a := right_le_lineMap_iff_le two_inv_lt_one
 
 end
 
@@ -178,6 +176,9 @@ These inequalities can be used to restate `convexOn` in terms of monotonicity of
 variable {f : k → E} {a b r : k}
 
 local notation "c" => lineMap a b r
+
+section
+omit [IsStrictOrderedRing k]
 
 /-- Given `c = lineMap a b r`, `a < c`, the point `(c, f c)` is non-strictly below the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a c ≤ slope f a b`. -/
@@ -239,6 +240,8 @@ segment `[(a, f a), (b, f b)]` if and only if `slope f c b < slope f a b`. -/
 theorem lineMap_lt_map_iff_slope_lt_slope_right (h : 0 < (1 - r) * (b - a)) :
     lineMap (f a) (f b) r < f c ↔ slope f c b < slope f a b :=
   map_lt_lineMap_iff_slope_lt_slope_right (E := Eᵒᵈ) (f := f) (a := a) (b := b) (r := r) h
+
+end
 
 /-- Given `c = lineMap a b r`, `a < c < b`, the point `(c, f c)` is non-strictly below the
 segment `[(a, f a), (b, f b)]` if and only if `slope f a c ≤ slope f c b`. -/

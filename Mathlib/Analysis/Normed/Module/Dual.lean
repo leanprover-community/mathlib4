@@ -3,10 +3,10 @@ Copyright (c) 2020 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
+import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.NormedSpace.RCLike
-import Mathlib.Analysis.LocallyConvex.Polar
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lemmas
 
 /-!
 # The topological dual of a normed space
@@ -41,7 +41,6 @@ dual, polar
 
 noncomputable section
 
-open scoped Classical
 open Topology Bornology
 
 universe u v
@@ -56,14 +55,6 @@ variable (F : Type*) [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- The topological dual of a seminormed space `E`. -/
 abbrev Dual : Type _ := E →L[𝕜] 𝕜
-
--- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_eq until
--- leanprover/lean4#2522 is resolved; remove once fixed
-instance : NormedSpace 𝕜 (Dual 𝕜 E) := inferInstance
-
--- TODO: helper instance for elaboration of inclusionInDoubleDual_norm_le until
--- leanprover/lean4#2522 is resolved; remove once fixed
-instance : SeminormedAddCommGroup (Dual 𝕜 E) := inferInstance
 
 /-- The inclusion of a normed space in its double (topological) dual, considered
    as a bounded linear map. -/
@@ -153,11 +144,38 @@ def polar (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedA
     [NormedSpace 𝕜 E] : Set E → Set (Dual 𝕜 E) :=
   (dualPairing 𝕜 E).flip.polar
 
+/-- Given a subset `s` in a normed space `E` (over a field `𝕜`) closed under scalar multiplication,
+ the polar `polarSubmodule 𝕜 s` is the submodule of `Dual 𝕜 E` consisting of those functionals which
+evaluate to zero at all points `z ∈ s`. -/
+def polarSubmodule (𝕜 : Type*) [NontriviallyNormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E]
+    [NormedSpace 𝕜 E] {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
+    Submodule 𝕜 (Dual 𝕜 E) := (dualPairing 𝕜 E).flip.polarSubmodule m
+
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
 variable {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]
 
+lemma polarSubmodule_eq_polar (m : SubMulAction 𝕜 E) :
+    (polarSubmodule 𝕜 m : Set (Dual 𝕜 E)) = polar 𝕜 m := rfl
+
 theorem mem_polar_iff {x' : Dual 𝕜 E} (s : Set E) : x' ∈ polar 𝕜 s ↔ ∀ z ∈ s, ‖x' z‖ ≤ 1 :=
   Iff.rfl
+
+lemma polarSubmodule_eq_setOf {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) :
+    polarSubmodule 𝕜 m = { y : Dual 𝕜 E | ∀ x ∈ m, y x = 0 } :=
+  (dualPairing 𝕜 E).flip.polar_subMulAction _
+
+lemma mem_polarSubmodule {S : Type*} [SetLike S E] [SMulMemClass S 𝕜 E] (m : S) (y : Dual 𝕜 E) :
+    y ∈ polarSubmodule 𝕜 m ↔ ∀ x ∈ m, y x = 0 := by
+  have := polarSubmodule_eq_setOf 𝕜 m
+  apply_fun (y ∈ ·) at this
+  rwa [propext_iff] at this
+
+@[simp]
+theorem zero_mem_polar (s : Set E) : (0 : Dual 𝕜 E) ∈ polar 𝕜 s :=
+  LinearMap.zero_mem_polar _ s
+
+theorem polar_nonempty (s : Set E) : Set.Nonempty (polar 𝕜 s) :=
+  LinearMap.polar_nonempty _ _
 
 @[simp]
 theorem polar_univ : polar 𝕜 (univ : Set E) = {(0 : Dual 𝕜 E)} :=
@@ -205,7 +223,7 @@ theorem polar_ball_subset_closedBall_div {c : 𝕜} (hc : 1 < ‖c‖) {r : ℝ}
   refine ContinuousLinearMap.opNorm_le_of_shell hr hcr.le hc fun x h₁ h₂ => ?_
   calc
     ‖x' x‖ ≤ 1 := hx' _ h₂
-    _ ≤ ‖c‖ / r * ‖x‖ := (inv_pos_le_iff_one_le_mul' hcr).1 (by rwa [inv_div])
+    _ ≤ ‖c‖ / r * ‖x‖ := (inv_le_iff_one_le_mul₀' hcr).1 (by rwa [inv_div])
 
 variable (𝕜)
 
@@ -234,15 +252,15 @@ theorem polar_ball {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [Normed
   apply le_antisymm
   · intro x hx
     rw [mem_closedBall_zero_iff]
-    apply le_of_forall_le_of_dense
+    apply le_of_forall_gt_imp_ge_of_dense
     intro a ha
     rw [← mem_closedBall_zero_iff, ← (mul_div_cancel_left₀ a (Ne.symm (ne_of_lt hr)))]
     rw [← RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
-      (le_of_lt ((inv_pos_lt_iff_one_lt_mul' hr).mp ha)))]
+      (le_of_lt ((inv_lt_iff_one_lt_mul₀' hr).mp ha)))]
     apply polar_ball_subset_closedBall_div _ hr hx
     rw [RCLike.norm_of_nonneg (K := 𝕜) (le_trans zero_le_one
-      (le_of_lt ((inv_pos_lt_iff_one_lt_mul' hr).mp ha)))]
-    exact (inv_pos_lt_iff_one_lt_mul' hr).mp ha
+      (le_of_lt ((inv_lt_iff_one_lt_mul₀' hr).mp ha)))]
+    exact (inv_lt_iff_one_lt_mul₀' hr).mp ha
   · rw [← polar_closedBall hr]
     exact LinearMap.polar_antitone _ ball_subset_closedBall
 
@@ -257,11 +275,18 @@ theorem isBounded_polar_of_mem_nhds_zero {s : Set E} (s_nhd : s ∈ 𝓝 (0 : E)
       polar_ball_subset_closedBall_div ha r_pos)
 
 @[simp]
+theorem polar_empty : polar 𝕜 (∅ : Set E) = Set.univ :=
+  LinearMap.polar_empty _
+
+@[simp]
 theorem polar_singleton {a : E} : polar 𝕜 {a} = { x | ‖x a‖ ≤ 1 } := by
   simp only [polar, LinearMap.polar_singleton, LinearMap.flip_apply, dualPairing_apply]
 
 theorem mem_polar_singleton {a : E} (y : Dual 𝕜 E) : y ∈ polar 𝕜 {a} ↔ ‖y a‖ ≤ 1 := by
   simp only [polar_singleton, mem_setOf_eq]
+
+theorem polar_zero : polar 𝕜 ({0} : Set E) = Set.univ :=
+  LinearMap.polar_zero _
 
 theorem sInter_polar_eq_closedBall {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {r : ℝ} (hr : 0 < r) :

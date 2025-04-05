@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Topology.CompactOpen
+import Mathlib.Topology.Separation.Profinite
 import Mathlib.Topology.Sets.Closeds
 
 /-!
@@ -33,9 +34,11 @@ open scoped Topology
 
 variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [CompactSpace Y]
 
-theorem TopologicalSpace.Clopens.exists_prod_subset (W : Clopens (X × Y)) {a : X × Y} (h : a ∈ W) :
+namespace TopologicalSpace.Clopens
+
+theorem exists_prod_subset (W : Clopens (X × Y)) {a : X × Y} (h : a ∈ W) :
     ∃ U : Clopens X, a.1 ∈ U ∧ ∃ V : Clopens Y, a.2 ∈ V ∧ U ×ˢ V ≤ W := by
-  have hp : Continuous (fun y : Y ↦ (a.1, y)) := Continuous.Prod.mk _
+  have hp : Continuous (fun y : Y ↦ (a.1, y)) := .prodMk_right _
   let V : Set Y := {y | (a.1, y) ∈ W}
   have hV : IsCompact V := (W.2.1.preimage hp).isCompact
   let U : Set X := {x | MapsTo (Prod.mk x) V W}
@@ -47,7 +50,7 @@ variable [CompactSpace X]
 
 /-- Every clopen set in a product of two compact spaces
 is a union of finitely many clopen boxes. -/
-theorem TopologicalSpace.Clopens.exists_finset_eq_sup_prod (W : Clopens (X × Y)) :
+theorem exists_finset_eq_sup_prod (W : Clopens (X × Y)) :
     ∃ (I : Finset (Clopens X × Clopens Y)), W = I.sup fun i ↦ i.1 ×ˢ i.2 := by
   choose! U hxU V hxV hUV using fun x ↦ W.exists_prod_subset (a := x)
   rcases W.2.1.isCompact.elim_nhds_subcover (fun x ↦ U x ×ˢ V x) (fun x hx ↦
@@ -60,21 +63,21 @@ theorem TopologicalSpace.Clopens.exists_finset_eq_sup_prod (W : Clopens (X × Y)
     exact SetLike.le_def.1 (Finset.le_sup hi) hxi
   · exact hUV _ <| hIW _ hx
 
-lemma TopologicalSpace.Clopens.surjective_finset_sup_prod :
+lemma surjective_finset_sup_prod :
     Surjective fun I : Finset (Clopens X × Clopens Y) ↦ I.sup fun i ↦ i.1 ×ˢ i.2 := fun W ↦
   let ⟨I, hI⟩ := W.exists_finset_eq_sup_prod; ⟨I, hI.symm⟩
 
-instance TopologicalSpace.Clopens.countable_prod [Countable (Clopens X)]
+instance countable_prod [Countable (Clopens X)]
     [Countable (Clopens Y)] : Countable (Clopens (X × Y)) :=
   surjective_finset_sup_prod.countable
 
-instance TopologicalSpace.Clopens.finite_prod [Finite (Clopens X)] [Finite (Clopens Y)] :
+instance finite_prod [Finite (Clopens X)] [Finite (Clopens Y)] :
     Finite (Clopens (X × Y)) := by
   cases nonempty_fintype (Clopens X)
   cases nonempty_fintype (Clopens Y)
   exact .of_surjective _ surjective_finset_sup_prod
 
-lemma TopologicalSpace.Clopens.countable_iff_second_countable [T2Space X]
+lemma countable_iff_secondCountable [T2Space X]
     [TotallyDisconnectedSpace X] : Countable (Clopens X) ↔ SecondCountableTopology X := by
   refine ⟨fun h ↦ ⟨{s : Set X | IsClopen s}, ?_, ?_⟩, fun h ↦ ?_⟩
   · let f : {s : Set X | IsClopen s} → Clopens X := fun s ↦ ⟨s.1, s.2⟩
@@ -90,3 +93,8 @@ lemma TopologicalSpace.Clopens.countable_iff_second_countable [T2Space X]
       ext1; change s.carrier = t.carrier
       rw [(this s).choose_spec, (this t).choose_spec, h]
     exact hf.countable
+
+@[deprecated (since := "2024-11-12")]
+alias countable_iff_second_countable := countable_iff_secondCountable
+
+end TopologicalSpace.Clopens

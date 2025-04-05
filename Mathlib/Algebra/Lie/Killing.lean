@@ -38,7 +38,7 @@ This file contains basic definitions and results for such Lie algebras.
 
 -/
 
-variable (R K L M : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [LieAlgebra K L]
+variable (R K L : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [LieAlgebra K L]
 
 namespace LieAlgebra
 
@@ -46,7 +46,7 @@ namespace LieAlgebra
 
 NB: This is not standard terminology (the literature does not seem to name Lie algebras with this
 property). -/
-class IsKilling : Prop :=
+class IsKilling : Prop where
   /-- We say a Lie algebra is Killing if its Killing form is non-singular. -/
   killingCompl_top_eq_bot : LieIdeal.killingCompl R L ⊤ = ⊥
 

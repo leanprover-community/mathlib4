@@ -3,14 +3,16 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.GroupTheory.Archimedean
 import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.Algebra.Order.Hom.Monoid
+import Mathlib.Data.Int.Interval
+import Mathlib.GroupTheory.Archimedean
 
 /-!
-# Archimedean groups are either discrete or densely ordere
+# Archimedean groups are either discrete or densely ordered
 
 This file proves a few additional facts about linearly ordered additive groups which satisfy the
   `Archimedean` property --
@@ -21,7 +23,7 @@ They are placed here in a separate file (rather than incorporated as a continuat
 `GroupTheory.Archimedean`) because they rely on some imports from pointwise lemmas.
 -/
 
-open Set
+open Multiplicative Set
 
 -- no earlier file imports the necessary requirements for the next two
 
@@ -34,25 +36,15 @@ This is the stronger version of `AddSubgroup.mem_closure_singleton`."]
 lemma Subgroup.mem_closure_singleton_iff_existsUnique_zpow {G : Type*}
     [LinearOrderedCommGroup G] {a b : G} (ha : a ≠ 1) :
     b ∈ closure {a} ↔ ∃! k : ℤ, a ^ k = b := by
-  constructor <;> intro h
-  · wlog ha : 1 < a generalizing a b
-    · simp only [not_lt] at ha
-      rcases ha.eq_or_lt with rfl|ha
-      · contradiction
-      specialize @this a⁻¹ b (by simpa) (by simpa) (by simpa)
-      simp only [inv_zpow'] at this
-      obtain ⟨k, rfl, hk'⟩ := this
-      refine ⟨-k, rfl, ?_⟩
-      intro y hy
-      rw [← neg_eq_iff_eq_neg]
-      exact hk' _ (by simpa using hy)
-    · rw [mem_closure_singleton] at h
-      obtain ⟨k, hk⟩ := h
-      refine ⟨k, hk, ?_⟩
-      rintro l rfl
-      rwa [← zpow_right_inj ha, eq_comm]
-  · rw [mem_closure_singleton]
-    exact h.exists
+  rw [mem_closure_singleton]
+  constructor
+  · suffices Function.Injective (a ^ · : ℤ → G) by
+      rintro ⟨m, rfl⟩
+      exact ⟨m, rfl, fun k hk ↦ this hk⟩
+    rcases ha.lt_or_lt with ha | ha
+    · exact (zpow_right_strictAnti ha).injective
+    · exact (zpow_right_strictMono ha).injective
+  · exact fun h ↦ h.exists
 
 open Subgroup in
 /-- In two linearly ordered groups, the closure of an element of one group
@@ -114,7 +106,8 @@ noncomputable def LinearOrderedCommGroup.closure_equiv_closure {G G' : Type*}
     · intro a b
       simp only [MulEquiv.coe_mk, Equiv.coe_fn_mk, Subtype.mk_le_mk]
       generalize_proofs A B C D
-      simp [zpow_le_zpow_iff ypos, ← zpow_le_zpow_iff xpos, A.choose_spec, B.choose_spec]
+      simp [zpow_le_zpow_iff_right ypos, ← zpow_le_zpow_iff_right xpos, A.choose_spec,
+        B.choose_spec]
 
 variable {G : Type*} [LinearOrderedCommGroup G] [MulArchimedean G]
 
@@ -147,7 +140,7 @@ lemma Subgroup.isLeast_of_closure_iff_eq_mabs {a b : G} :
     · intro x
       simp only [mem_closure_singleton, mem_setOf_eq, and_imp, forall_exists_index]
       rintro k rfl hk
-      rw [← zpow_one b, ← zpow_mul, one_mul, zpow_le_zpow_iff h, ← zero_add 1,
+      rw [← zpow_one b, ← zpow_mul, one_mul, zpow_le_zpow_iff_right h, ← zero_add 1,
           ← Int.lt_iff_add_one_le]
       contrapose! hk
       rw [← Left.one_le_inv_iff, ← zpow_neg]
@@ -201,6 +194,21 @@ lemma LinearOrderedAddCommGroup.discrete_or_denselyOrdered (G : Type*)
     · simp [hz.left]
     · simpa [lt_sub_iff_add_lt'] using hz.right
 
+/-- Any linearly ordered archimedean additive group is either isomorphic (and order-isomorphic)
+to the integers, or is densely ordered, exclusively. -/
+lemma LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (G : Type*)
+    [LinearOrderedAddCommGroup G] [Archimedean G] :
+    Nonempty (G ≃+o ℤ) ↔ ¬ DenselyOrdered G := by
+  suffices ∀ (_ : G ≃+o ℤ), ¬ DenselyOrdered G by
+    rcases LinearOrderedAddCommGroup.discrete_or_denselyOrdered G with ⟨⟨h⟩⟩|h
+    · simpa [this h] using ⟨h⟩
+    · simp only [h, not_true_eq_false, iff_false, not_nonempty_iff]
+      exact ⟨fun H ↦ (this H) h⟩
+  intro e H
+  rw [denselyOrdered_iff_of_orderIsoClass e] at H
+  obtain ⟨_, _⟩ := exists_between (one_pos (α := ℤ))
+  omega
+
 variable (G) in
 /-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
 to the multiplicative integers, or is densely ordered. -/
@@ -210,3 +218,231 @@ lemma LinearOrderedCommGroup.discrete_or_denselyOrdered :
   refine (LinearOrderedAddCommGroup.discrete_or_denselyOrdered (Additive G)).imp ?_ id
   rintro ⟨f, hf⟩
   exact ⟨AddEquiv.toMultiplicative' f, hf⟩
+
+variable (G) in
+/-- Any linearly ordered mul-archimedean group is either isomorphic (and order-isomorphic)
+to the multiplicative integers, or is densely ordered, exclusively. -/
+@[to_additive existing]
+lemma LinearOrderedCommGroup.discrete_iff_not_denselyOrdered :
+    Nonempty (G ≃*o Multiplicative ℤ) ↔ ¬ DenselyOrdered G := by
+  let e : G ≃o Additive G := OrderIso.refl G
+  rw [denselyOrdered_iff_of_orderIsoClass e,
+    ← LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered (Additive G)]
+  refine Nonempty.congr ?_ ?_ <;> intro f
+  · exact ⟨MulEquiv.toAdditive' f, by simp⟩
+  · exact ⟨MulEquiv.toAdditive'.symm f, by simp⟩
+
+lemma denselyOrdered_units_iff {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] :
+    DenselyOrdered G₀ˣ ↔ DenselyOrdered G₀ := by
+  constructor
+  · intro H
+    refine ⟨fun x y h ↦ ?_⟩
+    rcases (zero_le' (a := x)).eq_or_lt with rfl|hx
+    · lift y to G₀ˣ using h.ne'.isUnit
+      obtain ⟨z, hz⟩ := exists_ne (1 : G₀ˣ)
+      refine ⟨(y * |z|ₘ⁻¹ : G₀ˣ), ?_, ?_⟩
+      · simp [zero_lt_iff]
+      · rw [Units.val_lt_val]
+        simp [hz]
+    · obtain ⟨z, hz, hz'⟩ := H.dense (Units.mk0 x hx.ne') (Units.mk0 y (hx.trans h).ne')
+        (by simp [← Units.val_lt_val, h])
+      refine ⟨z, ?_, ?_⟩ <;>
+      simpa [← Units.val_lt_val]
+  · intro H
+    refine ⟨fun x y h ↦ ?_⟩
+    obtain ⟨z, hz⟩ := exists_between (Units.val_lt_val.mpr h)
+    rcases (zero_le' (a := z)).eq_or_lt with rfl|hz'
+    · simp at hz
+    refine ⟨Units.mk0 z hz'.ne', ?_⟩
+    simp [← Units.val_lt_val, hz]
+
+/-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
+either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered. -/
+lemma LinearOrderedCommGroupWithZero.discrete_or_denselyOrdered (G : Type*)
+    [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
+    Nonempty (G ≃*o ℤₘ₀) ∨ DenselyOrdered G := by
+  classical
+  rw [← denselyOrdered_units_iff]
+  refine (LinearOrderedCommGroup.discrete_or_denselyOrdered Gˣ).imp_left ?_
+  intro ⟨f⟩
+  refine ⟨OrderMonoidIso.trans
+    ⟨WithZero.withZeroUnitsEquiv.symm, ?_⟩ ⟨f.withZero, ?_⟩⟩
+  · intro
+    simp only [WithZero.withZeroUnitsEquiv, MulEquiv.symm_mk,
+      MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe, MulEquiv.coe_mk,
+      Equiv.coe_fn_symm_mk ]
+    split_ifs <;>
+    simp_all [← Units.val_le_val]
+  · intro a b
+    induction a <;> induction b <;>
+    simp [MulEquiv.withZero]
+
+open WithZero in
+/-- Any nontrivial (has other than 0 and 1) linearly ordered mul-archimedean group with zero is
+either isomorphic (and order-isomorphic) to `ℤₘ₀`, or is densely ordered, exclusively -/
+lemma LinearOrderedCommGroupWithZero.discrete_iff_not_denselyOrdered (G : Type*)
+    [LinearOrderedCommGroupWithZero G] [Nontrivial Gˣ] [MulArchimedean G] :
+    Nonempty (G ≃*o ℤₘ₀) ↔ ¬ DenselyOrdered G := by
+  rw [← denselyOrdered_units_iff,
+      ← LinearOrderedCommGroup.discrete_iff_not_denselyOrdered]
+  refine Nonempty.congr ?_ ?_ <;> intro f
+  · refine ⟨MulEquiv.unzero (withZeroUnitsEquiv.trans f), ?_⟩
+    intros
+    simp only [MulEquiv.unzero, withZeroUnitsEquiv, MulEquiv.trans_apply,
+      MulEquiv.coe_mk, Equiv.coe_fn_mk, recZeroCoe_coe, OrderMonoidIso.coe_mulEquiv,
+      MulEquiv.symm_trans_apply, MulEquiv.symm_mk, Equiv.coe_fn_symm_mk, map_eq_zero, coe_ne_zero,
+      ↓reduceDIte, unzero_coe, MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe]
+    rw [← Units.val_le_val, ← map_le_map_iff f, ← coe_le_coe, coe_unzero, coe_unzero]
+  · refine ⟨withZeroUnitsEquiv.symm.trans (MulEquiv.withZero f), ?_⟩
+    intros
+    simp only [withZeroUnitsEquiv, MulEquiv.symm_mk, MulEquiv.withZero,
+      MulEquiv.toMonoidHom_eq_coe, MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+      MulEquiv.trans_apply, MulEquiv.coe_mk, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk]
+    split_ifs <;>
+    simp_all [← Units.val_le_val]
+
+section WellFounded
+
+lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
+    {G : Type*} [LinearOrderedAddCommGroup G] [Nontrivial G] {g : G} :
+    Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Nonempty (G ≃+o ℤ) := by
+  suffices Set.WellFoundedOn {x : G | 0 ≤ x} (· < ·) ↔ Nonempty (G ≃+o ℤ) by
+    rw [← this]
+    refine ⟨fun h ↦ (h.mapsTo (· + g) ?_).mono' ?_, fun h ↦ (h.mapsTo (· - g) ?_).mono' ?_⟩ <;>
+    · try intro
+      simp [Function.onFun]
+  constructor
+  · intro h
+    replace h : WellFounded (α := {x : G | 0 ≤ x}) (· < ·) := h
+    rw [WellFounded.wellFounded_iff_has_min] at h
+    by_cases H : ∀ (x : G) {y}, 0 < y → ∃ n : ℕ, x ≤ n • y -- Archimedean
+    · replace H : Archimedean G := ⟨H⟩
+      rw [LinearOrderedAddCommGroup.discrete_iff_not_denselyOrdered]
+      intro hd
+      obtain ⟨y, hy⟩ := exists_ne (0 : G)
+      wlog hy' : 0 < y generalizing y
+      · refine this (-y) ?_ ?_
+        · simp [hy]
+        · simp only [not_lt] at hy'
+          simp [lt_of_le_of_ne hy' hy]
+      obtain ⟨⟨z, hz⟩, hz', hz''⟩ := h ({x | ⟨0, le_rfl⟩ < x}) ⟨⟨y, hy'.le⟩, hy'⟩
+      obtain ⟨w, hw, hw'⟩ := exists_between hz'
+      exact hz'' ⟨w, hw.le⟩ hw hw'
+    · push_neg at H
+      exfalso
+      obtain ⟨x, y, hy0, H⟩ := H
+      obtain ⟨_, ⟨n, rfl⟩, hz⟩ :=
+        h (Set.range (fun n : ℕ ↦ ⟨x - n • y, sub_nonneg.mpr (H _).le⟩)) (range_nonempty _)
+      refine hz ⟨x - (n + 1) • y, sub_nonneg.mpr (H _).le⟩ ⟨_, rfl⟩ ?_
+      simp [add_smul, hy0]
+  · rintro ⟨f⟩
+    have : LocallyFiniteOrder G := LocallyFiniteOrder.ofOrderIsoClass f
+    exact BddBelow.wellFoundedOn_lt ⟨0, by simp [mem_lowerBounds]⟩
+
+lemma LinearOrderedAddCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete
+    {G : Type*} [LinearOrderedAddCommGroup G] [Nontrivial G] (g : G) :
+    Set.WellFoundedOn {x : G | x ≤ g} (· > ·) ↔ Nonempty (G ≃+o ℤ) := by
+  rw [← wellFoundedOn_setOf_le_lt_iff_nonempty_discrete (g := -g)]
+  refine ⟨fun h ↦ (h.mapsTo (- ·) ?_).mono' ?_, fun h ↦ (h.mapsTo (- ·) ?_).mono' ?_⟩ <;>
+  · intro
+    simp [Function.onFun, neg_le]
+
+@[to_additive existing]
+lemma LinearOrderedCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete
+    {G : Type*} [LinearOrderedCommGroup G] [Nontrivial G] {g : G} :
+    Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
+  let e : G ≃o Additive G := OrderIso.refl G
+  suffices Set.WellFoundedOn {x : G | g ≤ x} (· < ·) ↔ Set.WellFoundedOn {x | e g ≤ x} (· < ·) by
+    rw [this, LinearOrderedAddCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete]
+    refine Nonempty.congr (fun f ↦ ?_) (fun f ↦ ?_)
+    · exact ⟨AddEquiv.toMultiplicative' f, by simp⟩
+    · exact ⟨MulEquiv.toAdditive' f, by simp⟩
+  refine ⟨fun h ↦ (h.mapsTo e.symm fun _ ↦ e.le_symm_apply.mpr).mono' ?_,
+    fun h ↦ (h.mapsTo e fun _ ↦ ?_).mono' ?_⟩ <;>
+  simp [Function.onFun]
+
+@[to_additive existing]
+lemma LinearOrderedCommGroup.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete
+    {G : Type*} [LinearOrderedCommGroup G] [Nontrivial G] (g : G) :
+    Set.WellFoundedOn {x : G | x ≤ g} (· > ·) ↔ Nonempty (G ≃*o Multiplicative ℤ) := by
+  rw [← wellFoundedOn_setOf_le_lt_iff_nonempty_discrete (g := g⁻¹)]
+  refine ⟨fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_, fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_⟩ <;>
+  · intro
+    simp [Function.onFun, inv_le']
+
+lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete_of_ne_zero
+    {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] {g : G₀} (hg : g ≠ 0) :
+    Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔ Nonempty (G₀ ≃*o ℤₘ₀) := by
+  suffices Set.WellFoundedOn {x : G₀ | g ≤ x} (· < ·) ↔
+    Set.WellFoundedOn {x : G₀ˣ | Units.mk0 g hg ≤ x} (· < ·) by
+    rw [this, LinearOrderedCommGroup.wellFoundedOn_setOf_le_lt_iff_nonempty_discrete]
+    refine Nonempty.congr (fun f ↦ ⟨?_, ?_⟩) (fun f ↦ ⟨?_, ?_⟩)
+    · exact WithZero.withZeroUnitsEquiv.symm.trans f.withZero
+    · intro a b
+      rcases eq_or_ne a 0 with rfl|ha
+      · simp [WithZero.withZeroUnitsEquiv, MulEquiv.withZero]
+      rcases eq_or_ne b 0 with rfl|hb
+      · simp [WithZero.withZeroUnitsEquiv, MulEquiv.withZero]
+      simp [WithZero.withZeroUnitsEquiv, MulEquiv.withZero, ha, hb, ← Units.val_le_val]
+    · exact MulEquiv.unzero (WithZero.withZeroUnitsEquiv.trans f)
+    · intros
+      rw [← WithZero.coe_le_coe]
+      simp [WithZero.withZeroUnitsEquiv, MulEquiv.unzero]
+  rw [← Set.wellFoundedOn_sdiff_singleton (a := 0)]
+  refine ⟨fun h ↦ (h.mapsTo Units.val ?_).mono' ?_,
+    fun h ↦ (h.mapsTo ?_ ?_).mono' ?_⟩
+  · intro
+    simp [← Units.val_le_val]
+  · simp [Function.onFun]
+  · exact fun x ↦ if h : x = 0 then 1 else Units.mk0 x h
+  · simp +contextual [← Units.val_le_val, MapsTo]
+  · simp only [mem_diff, mem_setOf_eq, mem_singleton_iff, Function.onFun, and_imp]
+    intro _ _ ha0 _ _ hb0 h
+    simp [ha0, hb0, ← Units.val_lt_val, h]
+
+lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
+    {G₀ : Type*} [LinearOrderedCommGroupWithZero G₀] [Nontrivial G₀ˣ] {g : G₀} (hg : g ≠ 0) :
+    Set.WellFoundedOn {x : G₀ | x ≤ g} (· > ·) ↔ Nonempty (G₀ ≃*o ℤₘ₀) := by
+  have hg' : g⁻¹ ≠ 0 := by simp [hg]
+  rw [← wellFoundedOn_setOf_le_lt_iff_nonempty_discrete_of_ne_zero hg',
+    ← Set.wellFoundedOn_sdiff_singleton (a := 0)]
+  refine ⟨fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_, fun h ↦ (h.mapsTo (·⁻¹) ?_).mono' ?_⟩
+  · intro x
+    rcases eq_or_ne x 0 with rfl|hx
+    · simp [hg]
+    simp only [mem_setOf_eq, mem_diff, mem_singleton_iff, inv_eq_zero, hx, not_false_eq_true,
+      and_true]
+    refine (inv_le_comm₀ ?_ ?_).mp <;>
+    simp [zero_lt_iff, hg, hx]
+  · simp only [mem_setOf_eq, Function.onFun, gt_iff_lt]
+    intro a ha b _
+    refine inv_strictAnti₀ ?_
+    contrapose! ha
+    simp only [le_zero_iff] at ha
+    simp [zero_lt_iff, ha, hg]
+  · intro x
+    simp only [mem_diff, mem_setOf_eq, mem_singleton_iff, and_imp]
+    intro hxg hx
+    refine inv_anti₀ ?_ hxg
+    simp [zero_lt_iff, hx]
+  · simp only [mem_diff, mem_setOf_eq, mem_singleton_iff, gt_iff_lt, Function.onFun, and_imp]
+    intro a _ _ b _ hb0
+    refine inv_strictAnti₀ ?_
+    simp [zero_lt_iff, hb0]
+
+end WellFounded
+
+@[to_additive]
+lemma OrderMonoidIso.mulArchimedean {α β} [OrderedCommMonoid α] [OrderedCommMonoid β]
+    (e : α ≃*o β) [MulArchimedean α] : MulArchimedean β := by
+  constructor
+  intro x y hxy
+  replace hxy : 1 < e.symm y := by simp [← map_lt_map_iff e, hxy]
+  refine (MulArchimedean.arch (e.symm x) hxy).imp ?_
+  simp [← map_pow, ← map_le_map_iff e]
+
+lemma WithZero.mulArchimedean_iff {α} [OrderedCommGroup α] :
+    MulArchimedean (WithZero α) ↔ MulArchimedean α := by
+  constructor <;> intro _
+  · exact OrderMonoidIso.unitsWithZero.mulArchimedean
+  · infer_instance

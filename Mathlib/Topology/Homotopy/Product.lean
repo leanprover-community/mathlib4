@@ -56,14 +56,6 @@ section Pi
 variable {I A : Type*} {X : I → Type*} [∀ i, TopologicalSpace (X i)] [TopologicalSpace A]
   {f g : ∀ i, C(A, X i)} {S : Set A}
 
--- Porting note: this definition is already in `Topology.Homotopy.Basic`
--- /-- The product homotopy of `homotopies` between functions `f` and `g` -/
--- @[simps]
--- def Homotopy.pi (homotopies : ∀ i, Homotopy (f i) (g i)) : Homotopy (pi f) (pi g) where
---   toFun t i := homotopies i t
---   map_zero_left t := by ext i; simp only [pi_eval, Homotopy.apply_zero]
---   map_one_left t := by ext i; simp only [pi_eval, Homotopy.apply_one]
-
 /-- The relative product homotopy of `homotopies` between functions `f` and `g` -/
 @[simps!]
 def HomotopyRel.pi (homotopies : ∀ i : I, HomotopyRel (f i) (g i) S) :
@@ -72,7 +64,7 @@ def HomotopyRel.pi (homotopies : ∀ i : I, HomotopyRel (f i) (g i) S) :
     prop' := by
       intro t x hx
       dsimp only [coe_mk, pi_eval, toFun_eq_coe, HomotopyWith.coe_toContinuousMap]
-      simp only [Function.funext_iff, ← forall_and]
+      simp only [funext_iff, ← forall_and]
       intro i
       exact (homotopies i).prop' t x hx }
 

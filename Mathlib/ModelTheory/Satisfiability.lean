@@ -6,6 +6,7 @@ Authors: Aaron Anderson
 import Mathlib.ModelTheory.Ultraproducts
 import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Skolem
+import Mathlib.Order.Filter.AtTopBot.Basic
 
 /-!
 # First-Order Satisfiability
@@ -20,8 +21,6 @@ This file deals with the satisfiability of first-order theories, as well as equi
   every finite subset of `T` is satisfiable.
 - `FirstOrder.Language.Theory.IsComplete`: `T.IsComplete` indicates that `T` is satisfiable and
   models each sentence or its negation.
-- `FirstOrder.Language.Theory.SemanticallyEquivalent`: `T.SemanticallyEquivalent φ ψ` indicates
-  that `φ` and `ψ` are equivalent formulas or sentences in models of `T`.
 - `Cardinal.Categorical`: A theory is `κ`-categorical if all models of size `κ` are isomorphic.
 
 ## Main Results
@@ -194,7 +193,7 @@ variable (L)
 /-- A version of The Downward Löwenheim–Skolem theorem where the structure `N` elementarily embeds
 into `M`, but is not by type a substructure of `M`, and thus can be chosen to belong to the universe
 of the cardinal `κ`.
- -/
+-/
 theorem exists_elementaryEmbedding_card_eq_of_le (M : Type w') [L.Structure M] [Nonempty M]
     (κ : Cardinal.{w}) (h1 : ℵ₀ ≤ κ) (h2 : lift.{w} L.card ≤ Cardinal.lift.{max u v} κ)
     (h3 : lift.{w'} κ ≤ Cardinal.lift.{w} #M) :
@@ -210,8 +209,6 @@ theorem exists_elementaryEmbedding_card_eq_of_le (M : Type w') [L.Structure M] [
   simp only [Equiv.bundledInduced_α, lift_mk_shrink']
 
 section
--- Porting note: This instance interrupts synthesizing instances.
-attribute [-instance] FirstOrder.Language.withConstants_expansion
 
 /-- The **Upward Löwenheim–Skolem Theorem**: If `κ` is a cardinal greater than the cardinalities of
 `L` and an infinite `L`-structure `M`, then `M` has an elementary extension of cardinality `κ`. -/
@@ -229,7 +226,7 @@ theorem exists_elementaryEmbedding_card_eq_of_ge (M : Type w') [L.Structure M] [
         rw [add_comm, add_eq_max (aleph0_le_lift.2 (infinite_iff.1 iM)), max_le_iff]
         rw [← lift_le.{w'}, lift_lift, lift_lift] at h1
         exact ⟨h2, h1⟩)
-      (hN0.trans (by rw [← lift_umax', lift_id]))
+      (hN0.trans (by rw [← lift_umax, lift_id]))
   letI := (lhomWithConstants L M).reduct N
   haveI h : N ⊨ L.elementaryDiagram M :=
     (NN0.theory_model_iff (L.elementaryDiagram M)).2 inferInstance
@@ -283,7 +280,6 @@ variable (T)
 def ModelsBoundedFormula (φ : L.BoundedFormula α n) : Prop :=
   ∀ (M : ModelType.{u, v, max u v w} T) (v : α → M) (xs : Fin n → M), φ.Realize v xs
 
--- Porting note: In Lean3 it was `⊨` but ambiguous.
 @[inherit_doc FirstOrder.Language.Theory.ModelsBoundedFormula]
 infixl:51 " ⊨ᵇ " => ModelsBoundedFormula -- input using \|= or \vDash, but not using \models
 
@@ -396,7 +392,7 @@ def IsComplete (T : L.Theory) : Prop :=
 namespace IsComplete
 
 theorem models_not_iff (h : T.IsComplete) (φ : L.Sentence) : T ⊨ᵇ φ.not ↔ ¬T ⊨ᵇ φ := by
-  cases' h.2 φ with hφ hφn
+  rcases h.2 φ with hφ | hφn
   · simp only [hφ, not_true, iff_false]
     rw [models_sentence_iff, not_forall]
     refine ⟨h.1.some, ?_⟩
@@ -409,7 +405,7 @@ theorem models_not_iff (h : T.IsComplete) (φ : L.Sentence) : T ⊨ᵇ φ.not �
 
 theorem realize_sentence_iff (h : T.IsComplete) (φ : L.Sentence) (M : Type*) [L.Structure M]
     [M ⊨ T] [Nonempty M] : M ⊨ φ ↔ T ⊨ᵇ φ := by
-  cases' h.2 φ with hφ hφn
+  rcases h.2 φ with hφ | hφn
   · exact iff_of_true (hφ.realize_sentence M) hφ
   · exact
       iff_of_false ((Sentence.realize_not M).1 (hφn.realize_sentence M))
@@ -436,79 +432,6 @@ theorem IsMaximal.mem_of_models (h : T.IsMaximal) {φ : L.Sentence} (hφ : T ⊨
 theorem IsMaximal.mem_iff_models (h : T.IsMaximal) (φ : L.Sentence) : φ ∈ T ↔ T ⊨ᵇ φ :=
   ⟨models_sentence_of_mem, h.mem_of_models⟩
 
-/-- Two (bounded) formulas are semantically equivalent over a theory `T` when they have the same
-interpretation in every model of `T`. (This is also known as logical equivalence, which also has a
-proof-theoretic definition.) -/
-def SemanticallyEquivalent (T : L.Theory) (φ ψ : L.BoundedFormula α n) : Prop :=
-  T ⊨ᵇ φ.iff ψ
-
-@[refl]
-theorem SemanticallyEquivalent.refl (φ : L.BoundedFormula α n) : T.SemanticallyEquivalent φ φ :=
-  fun M v xs => by rw [BoundedFormula.realize_iff]
-
-instance : IsRefl (L.BoundedFormula α n) T.SemanticallyEquivalent :=
-  ⟨SemanticallyEquivalent.refl⟩
-
-@[symm]
-theorem SemanticallyEquivalent.symm {φ ψ : L.BoundedFormula α n}
-    (h : T.SemanticallyEquivalent φ ψ) : T.SemanticallyEquivalent ψ φ := fun M v xs => by
-  rw [BoundedFormula.realize_iff, Iff.comm, ← BoundedFormula.realize_iff]
-  exact h M v xs
-
-@[trans]
-theorem SemanticallyEquivalent.trans {φ ψ θ : L.BoundedFormula α n}
-    (h1 : T.SemanticallyEquivalent φ ψ) (h2 : T.SemanticallyEquivalent ψ θ) :
-    T.SemanticallyEquivalent φ θ := fun M v xs => by
-  have h1' := h1 M v xs
-  have h2' := h2 M v xs
-  rw [BoundedFormula.realize_iff] at *
-  exact ⟨h2'.1 ∘ h1'.1, h1'.2 ∘ h2'.2⟩
-
-theorem SemanticallyEquivalent.realize_bd_iff {φ ψ : L.BoundedFormula α n} {M : Type*}
-    [Nonempty M] [L.Structure M] [M ⊨ T] (h : T.SemanticallyEquivalent φ ψ)
-    {v : α → M} {xs : Fin n → M} : φ.Realize v xs ↔ ψ.Realize v xs :=
-  BoundedFormula.realize_iff.1 (h.realize_boundedFormula M)
-
-theorem SemanticallyEquivalent.realize_iff {φ ψ : L.Formula α} {M : Type*} [Nonempty M]
-    [L.Structure M] [M ⊨ T] (h : T.SemanticallyEquivalent φ ψ) {v : α → M} :
-    φ.Realize v ↔ ψ.Realize v :=
-  h.realize_bd_iff
-
-theorem SemanticallyEquivalent.models_sentence_iff {φ ψ : L.Sentence} {M : Type*} [Nonempty M]
-    [L.Structure M] [M ⊨ T] (h : T.SemanticallyEquivalent φ ψ) :
-    M ⊨ φ ↔ M ⊨ ψ :=
-  h.realize_iff
-
-/-- Semantic equivalence forms an equivalence relation on formulas. -/
-def semanticallyEquivalentSetoid (T : L.Theory) : Setoid (L.BoundedFormula α n) where
-  r := SemanticallyEquivalent T
-  iseqv := ⟨fun _ => refl _, fun {_ _} h => h.symm, fun {_ _ _} h1 h2 => h1.trans h2⟩
-
-protected theorem SemanticallyEquivalent.all {φ ψ : L.BoundedFormula α (n + 1)}
-    (h : T.SemanticallyEquivalent φ ψ) : T.SemanticallyEquivalent φ.all ψ.all := by
-  simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
-    BoundedFormula.realize_all]
-  exact fun M v xs => forall_congr' fun a => h.realize_bd_iff
-
-protected theorem SemanticallyEquivalent.ex {φ ψ : L.BoundedFormula α (n + 1)}
-    (h : T.SemanticallyEquivalent φ ψ) : T.SemanticallyEquivalent φ.ex ψ.ex := by
-  simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
-    BoundedFormula.realize_ex]
-  exact fun M v xs => exists_congr fun a => h.realize_bd_iff
-
-protected theorem SemanticallyEquivalent.not {φ ψ : L.BoundedFormula α n}
-    (h : T.SemanticallyEquivalent φ ψ) : T.SemanticallyEquivalent φ.not ψ.not := by
-  simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
-    BoundedFormula.realize_not]
-  exact fun M v xs => not_congr h.realize_bd_iff
-
-protected theorem SemanticallyEquivalent.imp {φ ψ φ' ψ' : L.BoundedFormula α n}
-    (h : T.SemanticallyEquivalent φ ψ) (h' : T.SemanticallyEquivalent φ' ψ') :
-    T.SemanticallyEquivalent (φ.imp φ') (ψ.imp ψ') := by
-  simp_rw [SemanticallyEquivalent, ModelsBoundedFormula, BoundedFormula.realize_iff,
-    BoundedFormula.realize_imp]
-  exact fun M v xs => imp_congr h.realize_bd_iff h'.realize_bd_iff
-
 end Theory
 
 namespace completeTheory
@@ -529,55 +452,6 @@ theorem isComplete [Nonempty M] : (L.completeTheory M).IsComplete :=
   (completeTheory.isMaximal L M).isComplete
 
 end completeTheory
-
-namespace BoundedFormula
-
-variable (φ ψ : L.BoundedFormula α n)
-
-theorem semanticallyEquivalent_not_not : T.SemanticallyEquivalent φ φ.not.not := fun M v xs => by
-  simp
-
-theorem imp_semanticallyEquivalent_not_sup : T.SemanticallyEquivalent (φ.imp ψ) (φ.not ⊔ ψ) :=
-  fun M v xs => by simp [imp_iff_not_or]
-
-theorem sup_semanticallyEquivalent_not_inf_not :
-    T.SemanticallyEquivalent (φ ⊔ ψ) (φ.not ⊓ ψ.not).not := fun M v xs => by simp [imp_iff_not_or]
-
-theorem inf_semanticallyEquivalent_not_sup_not :
-    T.SemanticallyEquivalent (φ ⊓ ψ) (φ.not ⊔ ψ.not).not := fun M v xs => by
-  simp
-
-theorem all_semanticallyEquivalent_not_ex_not (φ : L.BoundedFormula α (n + 1)) :
-    T.SemanticallyEquivalent φ.all φ.not.ex.not := fun M v xs => by simp
-
-theorem ex_semanticallyEquivalent_not_all_not (φ : L.BoundedFormula α (n + 1)) :
-    T.SemanticallyEquivalent φ.ex φ.not.all.not := fun M v xs => by simp
-
-theorem semanticallyEquivalent_all_liftAt : T.SemanticallyEquivalent φ (φ.liftAt 1 n).all :=
-  fun M v xs => by
-  rw [realize_iff, realize_all_liftAt_one_self]
-
-end BoundedFormula
-
-namespace Formula
-
-variable (φ ψ : L.Formula α)
-
-theorem semanticallyEquivalent_not_not : T.SemanticallyEquivalent φ φ.not.not :=
-  BoundedFormula.semanticallyEquivalent_not_not φ
-
-theorem imp_semanticallyEquivalent_not_sup : T.SemanticallyEquivalent (φ.imp ψ) (φ.not ⊔ ψ) :=
-  BoundedFormula.imp_semanticallyEquivalent_not_sup φ ψ
-
-theorem sup_semanticallyEquivalent_not_inf_not :
-    T.SemanticallyEquivalent (φ ⊔ ψ) (φ.not ⊓ ψ.not).not :=
-  BoundedFormula.sup_semanticallyEquivalent_not_inf_not φ ψ
-
-theorem inf_semanticallyEquivalent_not_sup_not :
-    T.SemanticallyEquivalent (φ ⊓ ψ) (φ.not ⊔ ψ.not).not :=
-  BoundedFormula.inf_semanticallyEquivalent_not_sup_not φ ψ
-
-end Formula
 
 end Language
 

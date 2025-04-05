@@ -41,7 +41,6 @@ instance [Countable ι] [∀ i, IsCountablyGenerated (𝓤 (α i))] :
 
 theorem uniformContinuous_pi {β : Type*} [UniformSpace β] {f : β → ∀ i, α i} :
     UniformContinuous f ↔ ∀ i, UniformContinuous fun x => f x i := by
-  -- Porting note: required `Function.comp` to close
   simp only [UniformContinuous, Pi.uniformity, tendsto_iInf, tendsto_comap_iff, Function.comp_def]
 
 variable (α)
@@ -122,8 +121,8 @@ protected theorem CompleteSpace.iInf {ι X : Type*} {u : ι → UniformSpace X}
   nontriviality X
   rcases ht with ⟨t, ht, hut⟩
   -- The diagonal map `(X, ⨅ i, u i) → ∀ i, (X, u i)` is a uniform embedding.
-  have : @UniformInducing X (ι → X) (⨅ i, u i) (Pi.uniformSpace (U := u)) (const ι) := by
-    simp_rw [uniformInducing_iff, iInf_uniformity, Pi.uniformity, Filter.comap_iInf,
+  have : @IsUniformInducing X (ι → X) (⨅ i, u i) (Pi.uniformSpace (U := u)) (const ι) := by
+    simp_rw [isUniformInducing_iff, iInf_uniformity, Pi.uniformity, Filter.comap_iInf,
       Filter.comap_comap, comp_def, const, Prod.eta, comap_id']
   -- Hence, it suffices to show that its range, the diagonal, is closed in `Π i, (X, u i)`.
   simp_rw [@completeSpace_iff_isComplete_range _ _ (_) (_) _ this, range_const_eq_diagonal,

@@ -4,14 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Batteries.WF
 
 /-!
 # `Nat.find` and `Nat.findGreatest`
 -/
 
-variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
+variable {m n k : ℕ} {p q : ℕ → Prop}
 
 namespace Nat
 
@@ -26,10 +26,10 @@ variable [DecidablePred p] (H : ∃ n, p n)
 
 private def wf_lbp : WellFounded (@lbp p) :=
   ⟨let ⟨n, pn⟩ := H
-    suffices ∀ m k, n ≤ k + m → Acc lbp k from fun a => this _ _ (Nat.le_add_left _ _)
+    suffices ∀ m k, n ≤ k + m → Acc lbp k from fun _ => this _ _ (Nat.le_add_left _ _)
     fun m =>
     Nat.recOn m
-      (fun k kn =>
+      (fun _ kn =>
         ⟨_, fun y r =>
           match y, r with
           | _, ⟨rfl, a⟩ => absurd pn (a _ kn)⟩)
@@ -46,7 +46,7 @@ protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
         have : ∀ n ≤ m, ¬p n := fun n h =>
           Or.elim (Nat.lt_or_eq_of_le h) (al n) fun e => by rw [e]; exact pm
         IH _ ⟨rfl, this⟩ fun n h => this n <| Nat.le_of_succ_le_succ h)
-    0 fun n h => absurd h (Nat.not_lt_zero _)
+    0 fun _ h => absurd h (Nat.not_lt_zero _)
 
 /-- If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
 there exists some natural number satisfying `p`, then `Nat.find hp` is the
@@ -93,9 +93,35 @@ lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m,
 
 @[simp] lemma find_eq_zero (h : ∃ n : ℕ, p n) : Nat.find h = 0 ↔ p 0 := by simp [find_eq_iff]
 
-variable [DecidablePred q] in
-lemma find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} : Nat.find hp ≤ Nat.find hq :=
-  Nat.find_min' _ (h _ (Nat.find_spec hq))
+/-- If a predicate `q` holds at some `x` and implies `p` up to that `x`, then
+the earliest `xq` such that `q xq` is at least the smallest `xp` where `p xp`.
+The stronger version of `Nat.find_mono`, since this one needs
+implication only up to `Nat.find _` while the other requires `q` implying `p` everywhere. -/
+lemma find_mono_of_le [DecidablePred q] {x : ℕ} (hx : q x) (hpq : ∀ n ≤ x, q n → p n) :
+    Nat.find ⟨x, show p x from hpq _ le_rfl hx⟩ ≤ Nat.find ⟨x, hx⟩ :=
+  Nat.find_min' _ (hpq _ (Nat.find_min' _ hx) (Nat.find_spec ⟨x, hx⟩))
+
+/-- A weak version of `Nat.find_mono_of_le`, requiring `q` implies `p` everywhere.
+-/
+lemma find_mono [DecidablePred q] (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} :
+    Nat.find hp ≤ Nat.find hq :=
+  let ⟨_, hq⟩ := hq; find_mono_of_le hq fun _ _ ↦ h _
+
+/-- If a predicate `p` holds at some `x` and agrees with `q` up to that `x`, then
+their `Nat.find` agree. The stronger version of `Nat.find_congr'`, since this one needs
+agreement only up to `Nat.find _` while the other requires `p = q`.
+Usage of this lemma will likely be via `obtain ⟨x, hx⟩ := hp; apply Nat.find_congr hx` to unify `q`,
+or provide it explicitly with `rw [Nat.find_congr (q := q) hx]`.
+-/
+lemma find_congr [DecidablePred q] {x : ℕ} (hx : p x) (hpq : ∀ n ≤ x, p n ↔ q n) :
+    Nat.find ⟨x, hx⟩ = Nat.find ⟨x, show q x from hpq _ le_rfl |>.1 hx⟩ :=
+  le_antisymm (find_mono_of_le (hpq _ le_rfl |>.1 hx) fun _ h ↦ (hpq _ h).mpr)
+    (find_mono_of_le hx fun _ h ↦ (hpq _ h).mp)
+
+/-- A weak version of `Nat.find_congr`, requiring `p = q` everywhere. -/
+lemma find_congr' [DecidablePred q] {hp : ∃ n, p n} {hq : ∃ n, q n} (hpq : ∀ {n}, p n ↔ q n) :
+    Nat.find hp = Nat.find hq :=
+  let ⟨_, hp⟩ := hp; find_congr hp fun _ _ ↦ hpq
 
 lemma find_le {h : ∃ n, p n} (hn : p n) : Nat.find h ≤ n :=
   (Nat.find_le_iff _ _).2 ⟨n, le_refl _, hn⟩
@@ -106,7 +132,6 @@ lemma find_comp_succ (h₁ : ∃ n, p n) (h₂ : ∃ n, p (n + 1)) (h0 : ¬ p 0)
   cases n
   exacts [h0, @Nat.find_min (fun n ↦ p (n + 1)) _ h₂ _ (succ_lt_succ_iff.1 hn)]
 
--- Porting note (#10618): removing `simp` attribute as `simp` can prove it
 lemma find_pos (h : ∃ n : ℕ, p n) : 0 < Nat.find h ↔ ¬p 0 :=
   Nat.pos_iff_ne_zero.trans (Nat.find_eq_zero _).not
 

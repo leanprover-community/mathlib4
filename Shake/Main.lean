@@ -35,6 +35,9 @@ Arguments:
     provided module(s) will be checked.
 
 Options:
+  --force
+    Skips the `lake build --no-build` sanity check
+
   --fix
     Apply the suggested fixes directly. Make sure you have a clean checkout
     before running this, so you can review the changes.
@@ -198,7 +201,7 @@ partial def loadModules (imports : Array Import) : StateT State IO (Array USize 
 * If `j ∈ added` then we want to add module index `j` to the imports of `i`.
   We keep this as a bitset because we will do transitive reduction before applying it
 -/
-def Edits := Std.HashMap Name (NameSet × Bitset)
+abbrev Edits := Std.HashMap Name (NameSet × Bitset)
 
 /-- Register that we want to remove `tgt` from the imports of `src`. -/
 def Edits.remove (ed : Edits) (src tgt : Name) : Edits :=
@@ -380,6 +383,8 @@ def toBitset (s : State) (ns : List Name) : Bitset :=
 structure Args where
   /-- `--help`: shows the help -/
   help : Bool := false
+  /-- `--force`: skips the `lake build --no-build` sanity check -/
+  force : Bool := false
   /-- `--no-downstream`: disables downstream mode -/
   downstream : Bool := true
   /-- `--gh-style`: output messages that can be parsed by `gh-problem-matcher-wrap` -/
@@ -422,6 +427,7 @@ def main (args : List String) : IO UInt32 := do
   let rec parseArgs (args : Args) : List String → Args
     | [] => args
     | "--help" :: rest => parseArgs { args with help := true } rest
+    | "--force" :: rest => parseArgs { args with force := true } rest
     | "--no-downstream" :: rest => parseArgs { args with downstream := false } rest
     | "--fix" :: rest => parseArgs { args with fix := true } rest
     | "--explain" :: rest => parseArgs { args with explain := true } rest
@@ -438,9 +444,10 @@ def main (args : List String) : IO UInt32 := do
     IO.println help
     IO.Process.exit 0
 
-  if (← IO.Process.output { cmd := "lake", args := #["build", "--no-build"] }).exitCode != 0 then
-    IO.println "There are out of date oleans. Run `lake build` or `lake exe cache get` first"
-    IO.Process.exit 1
+  if !args.force then
+    if (← IO.Process.output { cmd := "lake", args := #["build", "--no-build"] }).exitCode != 0 then
+      IO.println "There are out of date oleans. Run `lake build` or `lake exe cache get` first"
+      IO.Process.exit 1
 
   -- Parse the `--cfg` argument
   let srcSearchPath ← initSrcSearchPath
@@ -451,14 +458,19 @@ def main (args : List String) : IO UInt32 := do
   else pure none
 
   -- Read the config file
-  let cfg ← if let some file := cfgFile then
+  -- `isValidCfgFile` is `false` if and only if the config file is present and invalid.
+  let (cfg, isValidCfgFile) ← if let some file := cfgFile then
     try
-      IO.ofExcept (Json.parse (← IO.FS.readFile file) >>= fromJson? (α := ShakeCfg))
+      pure (← IO.ofExcept (Json.parse (← IO.FS.readFile file) >>= fromJson? (α := ShakeCfg)), true)
     catch e =>
+      -- The `cfgFile` is invalid, so we print the error and return `isValidCfgFile = false`.
       println! "{e.toString}"
-      pure {}
-  else pure {}
-
+      pure ({}, false)
+    else pure ({}, true)
+  if !isValidCfgFile then
+    IO.println s!"Invalid config file '{cfgFile.get!}'"
+    IO.Process.exit 1
+  else
   -- the list of root modules
   let mods := if args.mods.isEmpty then #[`Mathlib] else args.mods
   -- Only submodules of `pkg` will be edited or have info reported on them
@@ -470,7 +482,7 @@ def main (args : List String) : IO UInt32 := do
   -- Parse the config file
   let ignoreMods := toBitset s (cfg.ignoreAll?.getD [])
   let ignoreImps := toBitset s (cfg.ignoreImport?.getD [])
-  let ignore := (cfg.ignore?.getD {}).fold (init := Std.HashMap.empty) fun m a v =>
+  let ignore := (cfg.ignore?.getD {}).fold (init := (∅ : Std.HashMap _ _)) fun m a v =>
     m.insert a (toBitset s v.toList)
 
   let noIgnore (i : Nat) :=
@@ -483,7 +495,7 @@ def main (args : List String) : IO UInt32 := do
     if args.downstream || noIgnore i then
       some <| Task.spawn fun _ =>
         -- remove the module from its own `needs`
-        (calcNeeds s.constToIdx mod ||| (1 <<< i.1)) ^^^ (1 <<< i.1)
+        (calcNeeds s.constToIdx mod ||| (1 <<< i)) ^^^ (1 <<< i)
     else
       none
   if args.downstream then
@@ -493,7 +505,7 @@ def main (args : List String) : IO UInt32 := do
     println! "The following changes will be made automatically:"
 
   -- Check all selected modules
-  let mut edits : Edits := Std.HashMap.empty
+  let mut edits : Edits := ∅
   for i in [0:s.mods.size], t in needs do
     if let some t := t then
       if noIgnore i then

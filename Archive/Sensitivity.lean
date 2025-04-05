@@ -5,12 +5,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y. Lewis,
   Patrick Massot
 -/
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.ApplyFun
-import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.Dual
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Real.Sqrt
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.FinCases
 
 /-!
 # Huang's sensitivity theorem
@@ -41,7 +41,7 @@ noncomputable section
 
 local notation "√" => Real.sqrt
 
-open Function Bool LinearMap Fintype FiniteDimensional Module.DualBases
+open Bool Finset Fintype Function LinearMap Module Module.DualBases
 
 /-!
 ### The hypercube
@@ -154,7 +154,13 @@ end Q
 /-- The free vector space on vertices of a hypercube, defined inductively. -/
 def V : ℕ → Type
   | 0 => ℝ
-  | Nat.succ n => V n × V n
+  | n + 1 => V n × V n
+
+@[simp]
+theorem V_zero : V 0 = ℝ := rfl
+
+@[simp]
+theorem V_succ {n : ℕ} : V (n + 1) = (V n × V n) := rfl
 
 namespace V
 
@@ -197,7 +203,6 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
   · rw [show p = q from Subsingleton.elim (α := Q 0) p q]
     dsimp [ε, e]
     simp
-    rfl
   · dsimp [ε, e]
     cases hp : p 0 <;> cases hq : q 0
     all_goals
@@ -210,7 +215,7 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
 theorem epsilon_total {v : V n} (h : ∀ p : Q n, (ε p) v = 0) : v = 0 := by
   induction' n with n ih
   · dsimp [ε] at h; exact h fun _ => true
-  · cases' v with v₁ v₂
+  · obtain ⟨v₁, v₂⟩ := v
     ext <;> change _ = (0 : V n) <;> simp only <;> apply ih <;> intro p <;>
       [let q : Q n.succ := fun i => if h : i = 0 then true else p (i.pred h);
       let q : Q n.succ := fun i => if h : i = 0 then false else p (i.pred h)]
@@ -256,7 +261,7 @@ theorem finrank_V : finrank ℝ (V n) = 2 ^ n := by
 defined inductively as a ℝ-linear map from `V n` to `V n`. -/
 noncomputable def f : ∀ n, V n →ₗ[ℝ] V n
   | 0 => 0
-  | Nat.succ n =>
+  | n + 1 =>
     LinearMap.prod (LinearMap.coprod (f n) LinearMap.id) (LinearMap.coprod LinearMap.id (-f n))
 
 /-! The preceding definition uses linear map constructions to automatically
@@ -294,6 +299,7 @@ theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 
   · intro p q
     dsimp [f]
     simp [Q.not_adjacent_zero]
+    rfl
   · intro p q
     have ite_nonneg : ite (π q = π p) (1 : ℝ) 0 ≥ 0 := by split_ifs <;> norm_num
     dsimp only [e, ε, f, V]; rw [LinearMap.prod_apply]; dsimp; cases hp : p 0 <;> cases hq : q 0
@@ -316,12 +322,12 @@ variable {m : ℕ}
 
 
 theorem g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by
-  delta g; intro v; erw [LinearMap.prod_apply]; simp
+  delta g; intro v; simp [V]
 
 theorem g_injective : Injective (g m) := by
   rw [g]
   intro x₁ x₂ h
-  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk.inj_iff, Pi.prod] at h
+  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk_inj, Pi.prod] at h
   exact h.right
 
 theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
@@ -357,7 +363,7 @@ local notation "Span" => Submodule.span ℝ
 natural number. -/
 
 
-local notation "Card " X:70 => Finset.card (Set.toFinset X)
+local notation "Card " X:70 => #(Set.toFinset X)
 
 /-! In the following, `⊓` and `⊔` will denote intersection and sums of ℝ-subspaces,
 equipped with their subspace structures. The notations come from the general
@@ -368,13 +374,13 @@ open Classical in
 subspace of `V (m+1)` spanned by the corresponding basis vectors non-trivially
 intersects the range of `g m`. -/
 theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
-    ∃ y ∈ Span (e '' H) ⊓ range (g m), y ≠ (0 : _) := by
+    ∃ y ∈ Span (e '' H) ⊓ range (g m), y ≠ 0 := by
   let W := Span (e '' H)
   let img := range (g m)
   suffices 0 < dim (W ⊓ img) by
     exact mod_cast exists_mem_ne_zero_of_rank_pos this
   have dim_le : dim (W ⊔ img) ≤ 2 ^ (m + 1 : Cardinal) := by
-    convert ← rank_submodule_le (W ⊔ img)
+    convert ← Submodule.rank_le (W ⊔ img)
     rw [← Nat.cast_succ]
     apply dim_V
   have dim_add : dim (W ⊔ img) + dim (W ⊓ img) = dim W + 2 ^ m := by
@@ -408,7 +414,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     rw [Finsupp.mem_support_iff] at p_in
     rw [Set.mem_toFinset]
     exact (dualBases_e_ε _).mem_of_mem_span y_mem_H p p_in
-  obtain ⟨q, H_max⟩ : ∃ q : Q m.succ, ∀ q' : Q m.succ, |(ε q' : _) y| ≤ |ε q y| :=
+  obtain ⟨q, H_max⟩ : ∃ q : Q m.succ, ∀ q' : Q m.succ, |(ε q' :) y| ≤ |ε q y| :=
     Finite.exists_max _
   have H_q_pos : 0 < |ε q y| := by
     contrapose! y_ne
@@ -425,26 +431,25 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     _ =
         |(coeffs y).sum fun (i : Q m.succ) (a : ℝ) =>
             a • (ε q ∘ f m.succ ∘ fun i : Q m.succ => e i) i| := by
-      erw [(f m.succ).map_finsupp_linearCombination, (ε q).map_finsupp_linearCombination,
+      rw [lc_def, (f m.succ).map_finsupp_linearCombination, (ε q).map_finsupp_linearCombination,
            Finsupp.linearCombination_apply]
     _ ≤ ∑ p ∈ (coeffs y).support, |coeffs y p * (ε q <| f m.succ <| e p)| :=
       (norm_sum_le _ fun p => coeffs y p * _)
     _ = ∑ p ∈ (coeffs y).support, |coeffs y p| * ite (p ∈ q.adjacent) 1 0 := by
       simp only [abs_mul, f_matrix]
-    _ = ∑ p ∈ (coeffs y).support.filter q.adjacent, |coeffs y p| := by
-      simp [Finset.sum_filter]; rfl
-    _ ≤ ∑ _p ∈ (coeffs y).support.filter q.adjacent, |coeffs y q| :=
-      (Finset.sum_le_sum fun p _ => H_max p)
-    _ = (((coeffs y).support.filter q.adjacent).card : ℝ) * |coeffs y q| := by
-      rw [Finset.sum_const, nsmul_eq_mul]
-    _ = (((coeffs y).support ∩ q.adjacent.toFinset).card : ℝ) * |coeffs y q| := by
+    _ = ∑ p ∈ (coeffs y).support with q.adjacent p, |coeffs y p| := by
+      simp [sum_filter]; rfl
+    _ ≤ ∑ p ∈ (coeffs y).support with q.adjacent p, |coeffs y q| := sum_le_sum fun p _ ↦ H_max p
+    _ = #{p ∈ (coeffs y).support | q.adjacent p} * |coeffs y q| := by
+      rw [sum_const, nsmul_eq_mul]
+    _ = #((coeffs y).support ∩ q.adjacent.toFinset) * |coeffs y q| := by
       congr with x; simp; rfl
-    _ ≤ Finset.card (H ∩ q.adjacent).toFinset * |ε q y| := by
+    _ ≤ #(H ∩ q.adjacent).toFinset * |ε q y| := by
       refine (mul_le_mul_right H_q_pos).2 ?_
       norm_cast
-      apply Finset.card_le_card
+      apply card_le_card
       rw [Set.toFinset_inter]
-      convert Finset.inter_subset_inter_right coeffs_support
+      convert inter_subset_inter_right coeffs_support
 
 end
 

@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Galois.Action
 
 Any (fiber) functor `F : C ⥤ FintypeCat` factors via the forgetful functor
 from finite `Aut F`-sets to finite sets. The induced functor
-`H : C ⥤ Action FintypeCat (MonCat.of (Aut F))` is faithfully full. The faithfulness
+`H : C ⥤ Action FintypeCat (Aut F)` is faithfully full. The faithfulness
 follows easily from the faithfulness of `F`. In this file we show that `H` is also full.
 
 ## Main results
@@ -20,7 +20,7 @@ follows easily from the faithfulness of `F`. In this file we show that `H` is al
   a sub-object `Z` of `X` such that `F.obj Z ≅ Y` as `Aut F`-sets.
 - `PreGaloisCategory.functorToAction_full`: The induced functor `H` from above is full.
 
-The main input for this is that the induced functor `H : C ⥤ Action FintypeCat (MonCat.of (Aut F))`
+The main input for this is that the induced functor `H : C ⥤ Action FintypeCat (Aut F)`
 preserves connectedness, which translates to the fact that `Aut F` acts transitively on
 the fibers of connected objects.
 
@@ -42,7 +42,7 @@ namespace PreGaloisCategory
 
 open Limits Functor
 
-variable {C : Type u} [Category.{u} C] (F : C ⥤ FintypeCat.{u}) [GaloisCategory C] [FiberFunctor F]
+variable {C : Type u} [Category.{v} C] (F : C ⥤ FintypeCat.{u}) [GaloisCategory C] [FiberFunctor F]
 
 /--
 Let `X` be an object of a Galois category with fiber functor `F` and `Y` a sub-`Aut F`-set
@@ -52,7 +52,7 @@ of finite `Aut F`-sets). Then there exists a connected sub-object `Z` of `X` and
 
 For a version without the connectedness assumption, see `exists_lift_of_mono`.
 -/
-lemma exists_lift_of_mono_of_isConnected (X : C) (Y : Action FintypeCat.{u} (MonCat.of (Aut F)))
+lemma exists_lift_of_mono_of_isConnected (X : C) (Y : Action FintypeCat.{u} (Aut F))
     (i : Y ⟶ (functorToAction F).obj X) [Mono i] [IsConnected Y] : ∃ (Z : C) (f : Z ⟶ X)
     (u : Y ≅ (functorToAction F).obj Z),
     IsConnected Z ∧ Mono f ∧ i = u.hom ≫ (functorToAction F).map f := by
@@ -60,11 +60,11 @@ lemma exists_lift_of_mono_of_isConnected (X : C) (Y : Action FintypeCat.{u} (Mon
   obtain ⟨Z, f, z, hz, hc, hm⟩ := fiber_in_connected_component F X (i.hom y)
   have : IsConnected ((functorToAction F).obj Z) := PreservesIsConnected.preserves
   obtain ⟨u, hu⟩ := connected_component_unique
-    (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat) (B := (functorToAction F).obj Z)
+    (forget₂ (Action FintypeCat (Aut F)) FintypeCat) (B := (functorToAction F).obj Z)
     y z i ((functorToAction F).map f) hz.symm
   refine ⟨Z, f, u, hc, hm, ?_⟩
   apply evaluation_injective_of_isConnected
-    (forget₂ (Action FintypeCat (MonCat.of (Aut F))) FintypeCat) Y ((functorToAction F).obj X) y
+    (forget₂ (Action FintypeCat (Aut F)) FintypeCat) Y ((functorToAction F).obj X) y
   suffices h : i.hom y = F.map f z by simpa [hu]
   exact hz.symm
 
@@ -73,7 +73,7 @@ Let `X` be an object of a Galois category with fiber functor `F` and `Y` a sub-`
 of `F.obj X`. Then there exists a sub-object `Z` of `X` and an isomorphism
 `Y ≅ F.obj X` as `Aut F`-sets such that the obvious triangle commutes.
 -/
-lemma exists_lift_of_mono (X : C) (Y : Action FintypeCat.{u} (MonCat.of (Aut F)))
+lemma exists_lift_of_mono (X : C) (Y : Action FintypeCat.{u} (Aut F))
     (i : Y ⟶ (functorToAction F).obj X) [Mono i] : ∃ (Z : C) (f : Z ⟶ X)
     (u : Y ≅ (functorToAction F).obj Z), Mono f ∧ u.hom ≫ (functorToAction F).map f = i := by
   obtain ⟨ι, hf, f, t, hc⟩ := has_decomp_connected_components' Y

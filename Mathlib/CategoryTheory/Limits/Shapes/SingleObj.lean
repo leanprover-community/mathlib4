@@ -3,9 +3,11 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.CategoryTheory.Limits.Types.Limits
 import Mathlib.CategoryTheory.SingleObj
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Data.Setoid.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
 # (Co)limits of functors out of `SingleObj M`
@@ -21,6 +23,8 @@ We characterise (co)limits of shape `SingleObj M`. Currently only in the categor
   quotient of `J.obj (SingleObj.star G)` by the induced action.
 
 -/
+
+assert_not_exists MonoidWithZero
 
 universe u v
 
@@ -75,7 +79,7 @@ variable {G : Type v} [Group G] (J : SingleObj G ⥤ Type u)
 equivalent to the `MulAction.orbitRel` equivalence relation on `J.obj (SingleObj.star G)`. -/
 lemma Types.Quot.Rel.iff_orbitRel (x y : J.obj (SingleObj.star G)) :
     Types.Quot.Rel J ⟨SingleObj.star G, x⟩ ⟨SingleObj.star G, y⟩
-    ↔ Setoid.Rel (MulAction.orbitRel G (J.obj (SingleObj.star G))) x y := by
+    ↔ MulAction.orbitRel G (J.obj (SingleObj.star G)) x y := by
   have h (g : G) : y = g • x ↔ g • x = y := ⟨symm, symm⟩
   conv => rhs; rw [Setoid.comm']
   show (∃ g : G, y = g • x) ↔ (∃ g : G, g • x = y)

@@ -3,8 +3,8 @@ Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.Group.UniqueProds.Basic
+import Mathlib.Algebra.MonoidAlgebra.Defs
 
 /-!
 # Variations on non-zero divisors in `AddMonoidAlgebra`s
@@ -57,7 +57,10 @@ asserts that `A` being torsion-free may be enough.
 
 open Finsupp
 
-variable {R A : Type*} [Semiring R]
+variable {R A : Type*}
+
+section Semiring
+variable [Semiring R]
 
 namespace MonoidAlgebra
 
@@ -97,7 +100,26 @@ theorem mul_apply_add_eq_mul_of_uniqueAdd [Add A] {f g : R[A]} {a0 b0 : A}
     (f * g) (a0 + b0) = f a0 * g b0 :=
   MonoidAlgebra.mul_apply_mul_eq_mul_of_uniqueMul (A := Multiplicative A) h
 
-instance [NoZeroDivisors R] [Add A] [UniqueSums A] : NoZeroDivisors R[A] :=
-  MonoidAlgebra.instNoZeroDivisorsOfUniqueProds (A := Multiplicative A)
+instance instNoZeroDivisorsOfUniqueSums [NoZeroDivisors R] [Add A] [UniqueSums A] :
+    NoZeroDivisors R[A] := MonoidAlgebra.instNoZeroDivisorsOfUniqueProds (A := Multiplicative A)
 
 end AddMonoidAlgebra
+end Semiring
+
+section Ring
+variable [Ring R] [IsDomain R]
+
+namespace MonoidAlgebra
+
+instance instIsDomainOfUniqueProds [Monoid A] [UniqueProds A] : IsDomain (MonoidAlgebra R A) :=
+  NoZeroDivisors.to_isDomain _
+
+end MonoidAlgebra
+
+namespace AddMonoidAlgebra
+
+instance instIsDomainOfUniqueSums [AddMonoid A] [UniqueSums A] : IsDomain R[A] :=
+  NoZeroDivisors.to_isDomain _
+
+end AddMonoidAlgebra
+end Ring

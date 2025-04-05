@@ -5,10 +5,12 @@ Authors: Apurva Nakade
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.Algebra.Ring.Regular
+import Mathlib.GroupTheory.MonoidLocalization.Away
+import Mathlib.RingTheory.Localization.Defs
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Surreal.Multiplication
+import Mathlib.Tactic.Linarith
 
 /-!
 # Dyadic numbers
@@ -61,13 +63,13 @@ theorem powHalf_succ_moveRight (n i) : (powHalf (n + 1)).moveRight i = powHalf n
   rfl
 
 instance uniquePowHalfLeftMoves (n) : Unique (powHalf n).LeftMoves := by
-  cases n <;> exact PUnit.unique
+  cases n <;> exact PUnit.instUnique
 
 instance isEmpty_powHalf_zero_rightMoves : IsEmpty (powHalf 0).RightMoves :=
   inferInstanceAs (IsEmpty PEmpty)
 
 instance uniquePowHalfSuccRightMoves (n) : Unique (powHalf (n + 1)).RightMoves :=
-  PUnit.unique
+  PUnit.instUnique
 
 @[simp]
 theorem birthday_half : birthday (powHalf 1) = 2 := by
@@ -112,7 +114,7 @@ theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1)
     · calc
         powHalf n.succ + 0 ≈ powHalf n.succ := add_zero_equiv _
         _ < powHalf n := powHalf_succ_lt_powHalf n
-  · cases' n with n
+  · rcases n with - | n
     · rintro ⟨⟩
     rintro ⟨⟩
     apply lf_of_moveRight_le
@@ -190,7 +192,7 @@ theorem dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ =
   intro m₁ m₂ h₂
   obtain ⟨c, rfl⟩ := le_iff_exists_add.mp h
   rw [add_comm, pow_add, ← mul_assoc, mul_eq_mul_right_iff] at h₂
-  cases' h₂ with h₂ h₂
+  rcases h₂ with h₂ | h₂
   · rw [h₂, add_comm]
     simp_rw [Int.cast_mul, Int.cast_pow, Int.cast_ofNat, zsmul_pow_two_powHalf m₂ c y₁]
   · have := Nat.one_le_pow y₁ 2 Nat.succ_pos'
@@ -238,7 +240,6 @@ theorem dyadicMap_apply (m : ℤ) (p : Submonoid.powers (2 : ℤ)) :
       m * powHalf (Submonoid.log p) := by
   rw [← Localization.mk_eq_mk']; rfl
 
--- @[simp] -- Porting note: simp normal form is `dyadicMap_apply_pow'`
 theorem dyadicMap_apply_pow (m : ℤ) (n : ℕ) :
     dyadicMap (IsLocalization.mk' (Localization (Submonoid.powers 2)) m (Submonoid.pow 2 n)) =
       m • powHalf n := by

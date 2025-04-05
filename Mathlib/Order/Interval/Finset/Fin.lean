@@ -14,25 +14,7 @@ intervals as Finsets and Fintypes.
 
 assert_not_exists MonoidWithZero
 
-namespace Fin
-
-variable {n : ℕ} (a b : Fin n)
-
-@[simp, norm_cast]
-theorem coe_sup : ↑(a ⊔ b) = (a ⊔ b : ℕ) := rfl
-
-@[simp, norm_cast]
-theorem coe_inf : ↑(a ⊓ b) = (a ⊓ b : ℕ) := rfl
-
-@[simp, norm_cast]
-theorem coe_max : ↑(max a b) = (max a b : ℕ) := rfl
-
-@[simp, norm_cast]
-theorem coe_min : ↑(min a b) = (min a b : ℕ) := rfl
-
-end Fin
-
-open Finset Fin Function
+open Finset Function
 
 namespace Fin
 
@@ -41,8 +23,9 @@ variable (n : ℕ)
 instance instLocallyFiniteOrder : LocallyFiniteOrder (Fin n) :=
   OrderIso.locallyFiniteOrder Fin.orderIsoSubtype
 
-instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (Fin n) :=
-  OrderIso.locallyFiniteOrderBot Fin.orderIsoSubtype
+instance instLocallyFiniteOrderBot : ∀ n, LocallyFiniteOrderBot (Fin n)
+  | 0 => IsEmpty.toLocallyFiniteOrderBot
+  | _ + 1 => inferInstance
 
 instance instLocallyFiniteOrderTop : ∀ n, LocallyFiniteOrderTop (Fin n)
   | 0 => IsEmpty.toLocallyFiniteOrderTop
@@ -85,47 +68,20 @@ theorem map_subtype_embedding_uIcc : (uIcc a b).map valEmbedding = uIcc ↑a ↑
   map_valEmbedding_Icc _ _
 
 @[simp]
-theorem card_Icc : (Icc a b).card = b + 1 - a := by
-  rw [← Nat.card_Icc, ← map_valEmbedding_Icc, card_map]
+lemma card_Icc : #(Icc a b) = b + 1 - a := by rw [← Nat.card_Icc, ← map_valEmbedding_Icc, card_map]
 
 @[simp]
-theorem card_Ico : (Ico a b).card = b - a := by
-  rw [← Nat.card_Ico, ← map_valEmbedding_Ico, card_map]
+lemma card_Ico : #(Ico a b) = b - a := by rw [← Nat.card_Ico, ← map_valEmbedding_Ico, card_map]
 
 @[simp]
-theorem card_Ioc : (Ioc a b).card = b - a := by
-  rw [← Nat.card_Ioc, ← map_valEmbedding_Ioc, card_map]
+lemma card_Ioc : #(Ioc a b) = b - a := by rw [← Nat.card_Ioc, ← map_valEmbedding_Ioc, card_map]
 
 @[simp]
-theorem card_Ioo : (Ioo a b).card = b - a - 1 := by
-  rw [← Nat.card_Ioo, ← map_valEmbedding_Ioo, card_map]
+lemma card_Ioo : #(Ioo a b) = b - a - 1 := by rw [← Nat.card_Ioo, ← map_valEmbedding_Ioo, card_map]
 
 @[simp]
-theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
+theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 := by
   rw [← Nat.card_uIcc, ← map_subtype_embedding_uIcc, card_map]
-
--- Porting note (#10618): simp can prove this
--- @[simp]
-theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by
-  rw [← card_Icc, Fintype.card_ofFinset]
-
--- Porting note (#10618): simp can prove this
--- @[simp]
-theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by
-  rw [← card_Ico, Fintype.card_ofFinset]
-
--- Porting note (#10618): simp can prove this
--- @[simp]
-theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by
-  rw [← card_Ioc, Fintype.card_ofFinset]
-
--- Porting note (#10618): simp can prove this
--- @[simp]
-theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
-  rw [← card_Ioo, Fintype.card_ofFinset]
-
-theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a : ℤ).natAbs + 1 := by
-  rw [← card_uIcc, Fintype.card_ofFinset]
 
 theorem Ici_eq_finset_subtype : Ici a = (Icc (a : ℕ) n).fin n := by
   ext
@@ -135,11 +91,14 @@ theorem Ioi_eq_finset_subtype : Ioi a = (Ioc (a : ℕ) n).fin n := by
   ext
   simp
 
-theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n :=
-  rfl
+theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n := by
+  ext
+  simp
 
-theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n :=
-  rfl
+
+theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n := by
+  ext
+  simp
 
 @[simp]
 theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Icc ↑a (n - 1) := by
@@ -172,42 +131,46 @@ theorem map_valEmbedding_Iio : (Iio b).map Fin.valEmbedding = Iio ↑b := by
   simp [Iio_eq_finset_subtype, Finset.fin, Finset.map_map]
 
 @[simp]
-theorem card_Ici : (Ici a).card = n - a := by
+theorem card_Ici : #(Ici a) = n - a := by
   cases n with
   | zero => exact Fin.elim0 a
   | succ =>
     rw [← card_map, map_valEmbedding_Ici, Nat.card_Icc, Nat.add_one_sub_one]
 
 @[simp]
-theorem card_Ioi : (Ioi a).card = n - 1 - a := by
-  rw [← card_map, map_valEmbedding_Ioi, Nat.card_Ioc]
+theorem card_Ioi : #(Ioi a) = n - 1 - a := by rw [← card_map, map_valEmbedding_Ioi, Nat.card_Ioc]
 
 @[simp]
-theorem card_Iic : (Iic b).card = b + 1 := by
-  rw [← Nat.card_Iic b, ← map_valEmbedding_Iic, card_map]
+theorem card_Iic : #(Iic b) = b + 1 := by rw [← Nat.card_Iic b, ← map_valEmbedding_Iic, card_map]
 
 @[simp]
-theorem card_Iio : (Iio b).card = b := by
-  rw [← Nat.card_Iio b, ← map_valEmbedding_Iio, card_map]
+theorem card_Iio : #(Iio b) = b := by rw [← Nat.card_Iio b, ← map_valEmbedding_Iio, card_map]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
-theorem card_fintypeIci : Fintype.card (Set.Ici a) = n - a := by
-  rw [Fintype.card_ofFinset, card_Ici]
+@[deprecated Fintype.card_Icc (since := "2025-03-28")]
+theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by simp
 
--- Porting note (#10618): simp can prove this
--- @[simp]
-theorem card_fintypeIoi : Fintype.card (Set.Ioi a) = n - 1 - a := by
-  rw [Fintype.card_ofFinset, card_Ioi]
+@[deprecated Fintype.card_Ico (since := "2025-03-28")]
+theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by simp
 
--- Porting note (#10618): simp can prove this
--- @[simp]
-theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
-  rw [Fintype.card_ofFinset, card_Iic]
+@[deprecated Fintype.card_Ioc (since := "2025-03-28")]
+theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by simp
 
--- Porting note (#10618): simp can prove this
--- @[simp]
-theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by
-  rw [Fintype.card_ofFinset, card_Iio]
+@[deprecated Fintype.card_Ioo (since := "2025-03-28")]
+theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by simp
+
+@[deprecated Fintype.card_uIcc (since := "2025-03-28")]
+theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a : ℤ).natAbs + 1 := by simp
+
+@[deprecated Fintype.card_Ici (since := "2025-03-28")]
+theorem card_fintypeIci : Fintype.card (Set.Ici a) = n - a := by simp
+
+@[deprecated Fintype.card_Ioi (since := "2025-03-28")]
+theorem card_fintypeIoi : Fintype.card (Set.Ioi a) = n - 1 - a := by simp
+
+@[deprecated Fintype.card_Iic (since := "2025-03-28")]
+theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by simp
+
+@[deprecated Fintype.card_Iio (since := "2025-03-28")]
+theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by simp
 
 end Fin

@@ -57,7 +57,7 @@ rather than more literally with `affineSegment`.
 -/
 
 
-open Affine Affine.Simplex EuclideanGeometry FiniteDimensional
+open Affine Affine.Simplex EuclideanGeometry Module
 
 open scoped Affine EuclideanGeometry Real
 
@@ -479,12 +479,12 @@ theorem symm_ω : cfg.symm.ω = cfg.ω := by
   rw [symm_ω_eq_trianglePQB₂_circumsphere, ω]
   refine circumsphere_eq_of_cospherical hd2.out cfg.cospherical_QPB₂A₂ ?_ ?_
   · simp only [trianglePQB₂, Matrix.range_cons, Matrix.range_empty, Set.singleton_union,
-      insert_emptyc_eq]
+      insert_empty_eq]
     rw [Set.insert_comm]
     refine Set.insert_subset_insert (Set.insert_subset_insert ?_)
     simp
   · simp only [triangleQPA₂, Matrix.range_cons, Matrix.range_empty, Set.singleton_union,
-      insert_emptyc_eq]
+      insert_empty_eq]
     refine Set.insert_subset_insert (Set.insert_subset_insert ?_)
     simp
 

@@ -3,7 +3,7 @@ Copyright (c) 2024 Paul Reichert. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Paul Reichert
 -/
-import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Limits.Types.Colimits
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.HomCongr
@@ -39,7 +39,9 @@ unit-valued, singleton, colimit
 
 universe w v u
 
-namespace CategoryTheory.Limits.Types
+namespace CategoryTheory
+
+namespace Limits.Types
 
 variable (C : Type u) [Category.{v} C]
 
@@ -50,7 +52,7 @@ def constPUnitFunctor : C ⥤ Type w := (Functor.const C).obj PUnit.{w + 1}
 @[simps]
 def pUnitCocone : Cocone (constPUnitFunctor.{w} C) where
   pt := PUnit
-  ι := { app := fun X => id }
+  ι := { app := fun _ => id }
 
 /-- If `C` is connected, the cocone on `constPUnitFunctor` with cone point `PUnit` is a colimit
     cocone. -/
@@ -111,15 +113,61 @@ theorem isConnected_iff_isColimit_pUnitCocone :
   simp only [isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{w} C]
   exact ⟨colimit.isoColimitCocone colimitCocone⟩
 
+end Limits.Types
+
+namespace Functor
+
+open Limits.Types
+
 universe v₂ u₂
-variable {C : Type u} {D : Type u₂} [Category.{v} C] [Category.{v₂} D]
+
+variable {C : Type u} [Category.{v} C] {D : Type u₂} [Category.{v₂} D]
 
 /-- The domain of a final functor is connected if and only if its codomain is connected. -/
-theorem isConnected_iff_of_final (F : C ⥤ D) [CategoryTheory.Functor.Final F] :
-    IsConnected C ↔ IsConnected D := by
+theorem isConnected_iff_of_final (F : C ⥤ D) [F.Final] : IsConnected C ↔ IsConnected D := by
   rw [isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{max v u v₂ u₂} C,
     isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{max v u v₂ u₂} D]
   exact Equiv.nonempty_congr <| Iso.isoCongrLeft <|
     CategoryTheory.Functor.Final.colimitIso F <| constPUnitFunctor.{max u v u₂ v₂} D
 
-end CategoryTheory.Limits.Types
+/-- The domain of an initial functor is connected if and only if its codomain is connected. -/
+theorem isConnected_iff_of_initial (F : C ⥤ D) [F.Initial] : IsConnected C ↔ IsConnected D := by
+  rw [← isConnected_op_iff_isConnected C, ← isConnected_op_iff_isConnected D]
+  exact isConnected_iff_of_final F.op
+
+end Functor
+
+section
+
+variable (C : Type*) [Category C]
+
+/-- Prove that a category is connected by supplying an explicit initial object. -/
+lemma isConnected_of_isInitial {x : C} (h : Limits.IsInitial x) : IsConnected C := by
+  letI : Nonempty C := ⟨x⟩
+  apply isConnected_of_zigzag
+  intro j₁ j₂
+  use [x, j₂]
+  simp only [List.chain_cons, List.Chain.nil, and_true, ne_eq, reduceCtorEq, not_false_eq_true,
+    List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
+  exact ⟨Zag.symm <| Zag.of_hom <| h.to _, Zag.of_hom <| h.to _⟩
+
+/-- Prove that a category is connected by supplying an explicit terminal object. -/
+lemma isConnected_of_isTerminal {x : C} (h : Limits.IsTerminal x) : IsConnected C := by
+  letI : Nonempty C := ⟨x⟩
+  apply isConnected_of_zigzag
+  intro j₁ j₂
+  use [x, j₂]
+  simp only [List.chain_cons, List.Chain.nil, and_true, ne_eq, reduceCtorEq, not_false_eq_true,
+    List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
+  exact ⟨Zag.of_hom <| h.from _, Zag.symm <| Zag.of_hom <| h.from _⟩
+
+-- note : it seems making the following two as instances breaks things, so these are lemmas.
+lemma isConnected_of_hasInitial [Limits.HasInitial C] : IsConnected C :=
+  isConnected_of_isInitial C Limits.initialIsInitial
+
+lemma isConnected_of_hasTerminal [Limits.HasTerminal C] : IsConnected C :=
+  isConnected_of_isTerminal C Limits.terminalIsTerminal
+
+end
+
+end CategoryTheory

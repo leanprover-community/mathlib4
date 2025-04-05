@@ -3,7 +3,8 @@ Copyright (c) 2020 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton
 -/
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Order.Interval.Set.Basic
 
 /-!
 # Infinitude of intervals
@@ -16,15 +17,13 @@ preorder is an infinite type.
 
 variable {α : Type*} [Preorder α]
 
-/-- A nonempty preorder with no maximal element is infinite. This is not an instance to avoid
-a cycle with `Infinite α → Nontrivial α → Nonempty α`. -/
-theorem NoMaxOrder.infinite [Nonempty α] [NoMaxOrder α] : Infinite α :=
+/-- A nonempty preorder with no maximal element is infinite. -/
+instance NoMaxOrder.infinite [Nonempty α] [NoMaxOrder α] : Infinite α :=
   let ⟨f, hf⟩ := Nat.exists_strictMono α
   Infinite.of_injective f hf.injective
 
-/-- A nonempty preorder with no minimal element is infinite. This is not an instance to avoid
-a cycle with `Infinite α → Nontrivial α → Nonempty α`. -/
-theorem NoMinOrder.infinite [Nonempty α] [NoMinOrder α] : Infinite α :=
+/-- A nonempty preorder with no minimal element is infinite. -/
+instance NoMinOrder.infinite [Nonempty α] [NoMinOrder α] : Infinite α :=
   @NoMaxOrder.infinite αᵒᵈ _ _ _
 
 namespace Set

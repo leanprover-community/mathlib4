@@ -47,6 +47,9 @@ General algebra:
     nilpotent group: 'Group.IsNilpotent'
     permutation group of a type: 'Equiv.Perm'
     structure of finitely generated abelian groups: 'AddCommGroup.equiv_free_prod_directSum_zmod'
+    first Sylow theorem: Sylow.exists_subgroup_card_pow_prime
+    second Sylow theorem: Sylow.isPretransitive_of_finite
+    third Sylow theorem: card_sylow_modEq_one
 
   Rings:
     ring: 'Ring'
@@ -54,13 +57,13 @@ General algebra:
     the category of rings: 'RingCat'
     subring: 'Subring'
     localization: 'Localization'
-    local ring: 'LocalRing'
+    local ring: 'IsLocalRing'
     noetherian ring: 'IsNoetherianRing'
     ordered ring: 'OrderedRing'
 
   Ideals and quotients:
     ideal of a commutative ring: 'Ideal'
-    quotient ring: 'Ideal.instHasQuotient'
+    quotient ring: 'Ideal.Quotient.ring'
     prime ideal: 'Ideal.IsPrime'
     maximal ideal: 'Ideal.IsMaximal'
     Chinese remainder theorem: 'Ideal.quotientInfRingEquivPiQuotient'
@@ -209,7 +212,7 @@ Topology:
     cluster point: 'ClusterPt'
     Hausdorff space: 'T2Space'
     sequential space: 'SequentialSpace'
-    extension by continuity: 'DenseInducing.extend'
+    extension by continuity: 'IsDenseInducing.extend'
     compactness in terms of filters: 'IsCompact'
     compactness in terms of open covers (Borel-Lebesgue): 'isCompact_iff_finite_subcover'
     connectedness: 'ConnectedSpace'
@@ -233,10 +236,10 @@ Topology:
     intermediate value theorem: 'intermediate_value_Icc'
     extreme value theorem: 'IsCompact.exists_isMinOn'
     limit infimum and supremum: 'order/liminf_limsup.html'
-    topological group: 'TopologicalGroup'
+    topological group: 'IsTopologicalGroup'
     completion of an abelian topological group: 'UniformSpace.Completion.instAddCommGroup'
     infinite sum: 'HasSum'
-    topological ring: 'TopologicalRing'
+    topological ring: 'IsTopologicalRing'
     completion of a topological ring: 'UniformSpace.Completion.ring'
     topological module: 'ContinuousSMul'
     continuous linear map: 'ContinuousLinearMap'
@@ -262,7 +265,7 @@ Analysis:
 
   Normed vector spaces/Banach spaces:
     normed vector space over a normed field: 'NormedSpace'
-    topology on a normed vector space: 'NormedSpace.boundedSMul'
+    topology on a normed vector space: 'NormedSpace.isBoundedSMul'
     equivalence of norms in finite dimension: 'LinearEquiv.toContinuousLinearEquiv'
     finite dimensional normed spaces over complete normed fields are complete: 'Submodule.complete_of_finiteDimensional'
     Heine-Borel theorem (finite dimensional normed spaces are proper): 'FiniteDimensional.proper'
@@ -352,7 +355,7 @@ Analysis:
     Liouville theorem: 'Differentiable.apply_eq_apply_of_bounded'
     maximum modulus principle: 'Complex.eventually_eq_of_isLocalMax_norm'
     principle of isolated zeros: 'AnalyticAt.eventually_eq_zero_or_eventually_ne_zero'
-    principle of analytic continuation: 'AnalyticOn.eqOn_of_preconnected_of_frequently_eq'
+    principle of analytic continuation: 'AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq'
     analyticity of holomorphic functions: 'DifferentiableOn.analyticAt'
     Schwarz lemma: 'Complex.abs_le_abs_of_mapsTo_ball_self'
     removable singularity: 'Complex.differentiableOn_update_limUnder_insert_of_isLittleO'
@@ -374,7 +377,7 @@ Probability Theory:
     independent events: 'ProbabilityTheory.iIndepSet'
     independent sigma-algebras: 'ProbabilityTheory.iIndep'
     conditional probability: 'ProbabilityTheory.cond'
-    conditional expectation: 'MeasureTheory.condexp'
+    conditional expectation: 'MeasureTheory.condExp'
   Random variables and their laws:
     discrete law: 'PMF'
     probability density function: 'MeasureTheory.HasPDF'
@@ -409,12 +412,12 @@ Geometry:
     angle: 'InnerProductGeometry.angle'
 
   Differentiable manifolds:
-    smooth manifold (with boundary and corners): 'SmoothManifoldWithCorners'
-    smooth map between manifolds: 'MDifferentiableAt'
+    smooth or analytic manifold (with boundary and corners): 'IsManifold'
+    smooth map between manifolds: 'ContMDiff'
     tangent bundle: 'TangentBundle'
     tangent map: 'tangentMap'
     Lie group: 'LieGroup'
-    sphere: 'EuclideanSpace.instSmoothManifoldWithCornersSphere'
+    sphere: 'EuclideanSpace.instIsManifoldSphere'
 
   Algebraic geometry:
     prime spectrum: 'PrimeSpectrum'
@@ -424,17 +427,63 @@ Geometry:
     Nullstellensatz : 'MvPolynomial.vanishingIdeal_zeroLocus_eq_radical'
 
 Combinatorics:
-  Graph theory:
-    simple graph: 'SimpleGraph'
-    degree-sum formula: 'SimpleGraph.sum_degrees_eq_twice_card_edges'
-    matching: 'SimpleGraph.Subgraph.IsMatching'
-    adjacency matrix: 'SimpleGraph.adjMatrix'
   Pigeonhole principles:
     finite: 'Fintype.exists_ne_map_eq_of_card_lt'
     infinite: 'Finite.exists_infinite_fiber'
     strong pigeonhole principle: 'Fintype.exists_lt_card_fiber_of_mul_lt_card'
   Transversals:
     Hall's marriage theorem: 'Finset.all_card_le_biUnion_card_iff_exists_injective'
+  Enumerative combinatorics:
+    Catalan numbers: 'catalan'
+    Bell numbers: 'Multiset.bell'
+    Dyck words: 'DyckWord'
+  Set families:
+    # Correlation inequalities:
+    Four functions theorem: 'four_functions_theorem'
+    Harris-Kleitman inequality: 'IsLowerSet.le_card_inter_finset'
+    # Antichains:
+    Ahlswede-Zhang identity: 'AhlswedeZhang.infSum_eq_one'
+    LYM inequality: 'Finset.lubell_yamamoto_meshalkin_inequality_sum_card_div_choose'
+    Sperner's theorem: 'IsAntichain.sperner'
+    # Intersecting families:
+    Maximum size of an intersecting family: 'Set.Intersecting.is_max_iff_card_eq'
+    Kleitman's theorem: 'Finset.card_biUnion_le_of_intersecting'
+    # VC dimension:
+    VC dimension: 'Finset.vcDim'
+    Sauer-Shelah lemma: 'Finset.card_shatterer_le_sum_vcDim'
+    Kruskal-Katona theorem: 'Finset.kruskal_katona'
+  Graph theory:
+    simple graph: 'SimpleGraph'
+    degree-sum formula: 'SimpleGraph.sum_degrees_eq_twice_card_edges'
+    matching: 'SimpleGraph.Subgraph.IsMatching'
+    adjacency matrix: 'SimpleGraph.adjMatrix'
+    Strongly regular graphs: 'SimpleGraph.IsSRGWith'
+    # Extremal graph theory:
+    Turán's theorem: 'SimpleGraph.isTuranMaximal_iff_nonempty_iso_turanGraph'
+    Regularity lemma: 'szemeredi_regularity'
+    Triangle counting lemma: 'SimpleGraph.triangle_counting'
+    Triangle removal lemma: 'SimpleGraph.triangle_removal'
+  Ramsey theory:
+    van der Waerden theorem: 'Combinatorics.exists_mono_homothetic_copy'
+    Hales-Jewett theorem: 'Combinatorics.Line.exists_mono_in_high_dimension'
+    Hindman's theorem: 'Hindman.FS_partition_regular'
+  Additive combinatorics:
+    # Avoiding patterns:
+    sets without arithmetic progressions: 'ThreeAPFree'
+    Roth's theorem: 'roth_3ap_theorem_nat'
+    Corners theorem: corners_theorem_nat
+    Behrend's construction: 'Behrend.roth_lower_bound'
+    # Growth:
+    doubling constant: 'Finset.addConst'
+    Ruzsa covering lemma: 'Finset.exists_subset_add_sub'
+    Ruzsa triangle inequality: 'Finset.ruzsa_triangle_inequality_sub_sub_sub'
+    Plünnecke-Petridis inequality: 'Finset.pluennecke_petridis_inequality_add'
+    Small tripling implies small powers: 'Finset.small_pow_of_small_tripling'
+    Dyson transform: 'Finset.addDysonETransform'
+    Cauchy-Davenport theorem: 'ZMod.cauchy_davenport'
+    Erdős–Ginzburg–Ziv theorem: 'ZMod.erdos_ginzburg_ziv'
+    Additive energy: 'Finset.addEnergy'
+    Freiman homomorphisms: 'IsAddFreimanHom'
 
 Dynamics:
   Circle dynamics:
@@ -454,7 +503,7 @@ Data structures:
     array: 'Array'
     # buffer: 'buffer'
     difference list: 'Batteries.DList'
-    lazy list: 'LazyList'
+    lazy list: 'MLList'
     stream: 'Stream'''
     sequence: 'Stream''.Seq'
     weak sequence: 'Stream''.WSeq'
@@ -468,7 +517,7 @@ Data structures:
   Maps:
     key-value map: 'AList'
     red-black map: 'Batteries.RBMap'
-    hash map: 'Batteries.HashMap'
+    hash map: 'Std.HashMap'
     finitely supported function: 'Finsupp'
     finite map: 'Finmap'
 

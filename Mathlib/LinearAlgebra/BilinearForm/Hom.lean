@@ -3,10 +3,10 @@ Copyright (c) 2018 Andreas Swerdlow. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kexing Ying
 -/
-import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.BilinearForm.Basic
+import Mathlib.LinearAlgebra.BilinearMap
 
 /-!
 # Bilinear form and linear maps
@@ -39,6 +39,7 @@ Bilinear form,
 -/
 
 open LinearMap (BilinForm)
+open LinearMap (BilinMap)
 
 universe u v w
 
@@ -55,20 +56,6 @@ section ToLin'
 
 /-- Auxiliary definition to define `toLinHom`; see below. -/
 def toLinHomAux₁ (A : BilinForm R M) (x : M) : M →ₗ[R] R := A x
-
-/-- Auxiliary definition to define `toLinHom`; see below. -/
-@[deprecated (since := "2024-04-26")]
-def toLinHomAux₂ (A : BilinForm R M) : M →ₗ[R] M →ₗ[R] R := A
-
-/-- The linear map obtained from a `BilinForm` by fixing the left co-ordinate and evaluating in
-the right. -/
-@[deprecated (since := "2024-04-26")]
-def toLinHom : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R := LinearMap.id
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-04-26")]
-theorem toLin'_apply (A : BilinForm R M) (x : M) : toLinHom (M := M) A x = A x :=
-  rfl
 
 variable (B)
 
@@ -100,59 +87,6 @@ end ToLin'
 end BilinForm
 
 end LinearMap
-
-section EquivLin
-
-/-- A map with two arguments that is linear in both is a bilinear form.
-
-This is an auxiliary definition for the full linear equivalence `LinearMap.toBilin`.
--/
-def LinearMap.toBilinAux (f : M →ₗ[R] M →ₗ[R] R) : BilinForm R M := f
-
-set_option linter.deprecated false in
-/-- Bilinear forms are linearly equivalent to maps with two arguments that are linear in both. -/
-@[deprecated (since := "2024-04-26")]
-def LinearMap.BilinForm.toLin : BilinForm R M ≃ₗ[R] M →ₗ[R] M →ₗ[R] R :=
-  { BilinForm.toLinHom with
-    invFun := LinearMap.toBilinAux
-    left_inv := fun _ => rfl
-    right_inv := fun _ => rfl }
-
-set_option linter.deprecated false in
-/-- A map with two arguments that is linear in both is linearly equivalent to bilinear form. -/
-@[deprecated (since := "2024-04-26")]
-def LinearMap.toBilin : (M →ₗ[R] M →ₗ[R] R) ≃ₗ[R] BilinForm R M :=
-  BilinForm.toLin.symm
-
-@[deprecated (since := "2024-04-26")]
-theorem LinearMap.toBilinAux_eq (f : M →ₗ[R] M →ₗ[R] R) :
-    LinearMap.toBilinAux f = f :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-04-26")]
-theorem LinearMap.toBilin_symm :
-    (LinearMap.toBilin.symm : BilinForm R M ≃ₗ[R] _) = BilinForm.toLin :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-04-26")]
-theorem BilinForm.toLin_symm :
-    (BilinForm.toLin.symm : _ ≃ₗ[R] BilinForm R M) = LinearMap.toBilin :=
-  LinearMap.toBilin.symm_symm
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-04-26")]
-theorem LinearMap.toBilin_apply (f : M →ₗ[R] M →ₗ[R] R) (x y : M) :
-    toBilin f x y = f x y :=
-  rfl
-
-set_option linter.deprecated false in
-@[deprecated (since := "2024-04-26")]
-theorem BilinForm.toLin_apply (x : M) : BilinForm.toLin B x = B x :=
-  rfl
-
-end EquivLin
 
 namespace LinearMap
 
@@ -245,9 +179,9 @@ theorem comp_inj (B₁ B₂ : BilinForm R M') {l r : M →ₗ[R] M'} (hₗ : Fun
   constructor <;> intro h
   · -- B₁.comp l r = B₂.comp l r → B₁ = B₂
     ext x y
-    cases' hₗ x with x' hx
+    obtain ⟨x', hx⟩ := hₗ x
     subst hx
-    cases' hᵣ y with y' hy
+    obtain ⟨y', hy⟩ := hᵣ y
     subst hy
     rw [← comp_apply, ← comp_apply, h]
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
@@ -261,15 +195,8 @@ variable [AddCommMonoid M'] [AddCommMonoid M''] [Module R M'] [Module R M'']
 section congr
 
 /-- Apply a linear equivalence on the arguments of a bilinear form. -/
-def congr (e : M ≃ₗ[R] M') : BilinForm R M ≃ₗ[R] BilinForm R M' where
-  toFun B := B.comp e.symm e.symm
-  invFun B := B.comp e e
-  left_inv B := ext₂ fun x => by
-    simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply, forall_const]
-  right_inv B := ext₂ fun x => by
-    simp only [comp_apply, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply, forall_const]
-  map_add' B B' := ext₂ fun x y => rfl
-  map_smul' B B' := ext₂ fun x y => rfl
+def congr (e : M ≃ₗ[R] M') : BilinForm R M ≃ₗ[R] BilinForm R M' :=
+  LinearEquiv.congrRight (LinearEquiv.congrLeft _ _ e) ≪≫ₗ LinearEquiv.congrLeft _ _ e
 
 @[simp]
 theorem congr_apply (e : M ≃ₗ[R] M') (B : BilinForm R M) (x y : M') :
@@ -306,6 +233,37 @@ theorem comp_congr (e : M' ≃ₗ[R] M'') (B : BilinForm R M) (l r : M' →ₗ[R
   rfl
 
 end congr
+
+section congrRight₂
+
+variable {N₁ N₂ N₃ : Type*}
+variable [AddCommMonoid N₁] [AddCommMonoid N₂] [AddCommMonoid N₃]
+variable [Module R N₁] [Module R N₂] [Module R N₃]
+
+/-- When `N₁` and `N₂` are equivalent, bilinear maps on `M` into `N₁` are equivalent to bilinear
+maps into `N₂`. -/
+def _root_.LinearEquiv.congrRight₂ (e : N₁ ≃ₗ[R] N₂) : BilinMap R M N₁ ≃ₗ[R] BilinMap R M N₂ :=
+  LinearEquiv.congrRight (LinearEquiv.congrRight e)
+
+@[simp]
+theorem _root_.LinearEquiv.congrRight₂_apply (e : N₁ ≃ₗ[R] N₂) (B : BilinMap R M N₁) :
+    LinearEquiv.congrRight₂ e B = compr₂ B e := rfl
+
+@[simp]
+theorem _root_.LinearEquiv.congrRight₂_refl :
+    LinearEquiv.congrRight₂ (.refl R N₁) = .refl R (BilinMap R M N₁) := rfl
+
+@[simp]
+theorem _root_.LinearEquiv.congrRight_symm (e : N₁ ≃ₗ[R] N₂) :
+    (LinearEquiv.congrRight₂ e (M := M)).symm = LinearEquiv.congrRight₂ e.symm :=
+  rfl
+
+theorem _root_.LinearEquiv.congrRight₂_trans (e₁₂ : N₁ ≃ₗ[R] N₂) (e₂₃ : N₂ ≃ₗ[R] N₃) :
+    LinearEquiv.congrRight₂ (M := M) (e₁₂ ≪≫ₗ e₂₃) =
+    LinearEquiv.congrRight₂ e₁₂ ≪≫ₗ LinearEquiv.congrRight₂ e₂₃ :=
+  rfl
+
+end congrRight₂
 
 section LinMulLin
 

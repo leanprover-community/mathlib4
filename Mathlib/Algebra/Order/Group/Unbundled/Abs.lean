@@ -28,8 +28,9 @@ variable [Lattice α]
 section Group
 variable [Group α] {a b : α}
 
-/-- `mabs a` is the absolute value of `a`. -/
-@[to_additive "`abs a` is the absolute value of `a`"] def mabs (a : α) : α := a ⊔ a⁻¹
+/-- `mabs a`, denoted `|a|ₘ`, is the absolute value of `a`. -/
+@[to_additive "`abs a`, denoted `|a|`, is the absolute value of `a`"]
+def mabs (a : α) : α := a ⊔ a⁻¹
 
 @[inherit_doc mabs]
 macro:max atomic("|" noWs) a:term noWs "|ₘ" : term => `(mabs $a)
@@ -38,7 +39,7 @@ macro:max atomic("|" noWs) a:term noWs "|ₘ" : term => `(mabs $a)
 macro:max atomic("|" noWs) a:term noWs "|" : term => `(abs $a)
 
 /-- Unexpander for the notation `|a|ₘ` for `mabs a`.
-Tries to add discretionary parentheses in unparseable cases. -/
+Tries to add discretionary parentheses in unparsable cases. -/
 @[app_unexpander abs]
 def mabs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
@@ -48,7 +49,7 @@ def mabs.unexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 /-- Unexpander for the notation `|a|` for `abs a`.
-Tries to add discretionary parentheses in unparseable cases. -/
+Tries to add discretionary parentheses in unparsable cases. -/
 @[app_unexpander abs]
 def abs.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ $a) =>
@@ -70,7 +71,7 @@ def abs.unexpander : Lean.PrettyPrinter.Unexpander
 
 @[to_additive] lemma mabs_div_comm (a b : α) : |a / b|ₘ = |b / a|ₘ := by rw [← mabs_inv, inv_div]
 
-variable [CovariantClass α α (· * ·) (· ≤ ·)]
+variable [MulLeftMono α]
 
 @[to_additive] lemma mabs_of_one_le (h : 1 ≤ a) : |a|ₘ = a :=
   sup_eq_left.2 <| (inv_le_one'.2 h).trans h
@@ -89,7 +90,7 @@ attribute [gcongr] abs_le_abs_of_nonneg
 
 @[to_additive (attr := simp)] lemma mabs_one : |(1 : α)|ₘ = 1 := mabs_of_one_le le_rfl
 
-variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [MulRightMono α]
 
 @[to_additive (attr := simp) abs_nonneg] lemma one_le_mabs (a : α) : 1 ≤ |a|ₘ := by
   apply pow_two_semiclosed _
@@ -102,7 +103,7 @@ variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
 end Group
 
 section CommGroup
-variable [CommGroup α] [CovariantClass α α (· * ·) (· ≤ ·)] {a b : α}
+variable [CommGroup α] [MulLeftMono α]
 
 -- Banasiak Proposition 2.12, Zaanen 2nd lecture
 /-- The absolute value satisfies the triangle inequality. -/
@@ -204,7 +205,7 @@ variable [Group α] [LinearOrder α] {a b : α}
 
 @[to_additive] lemma lt_of_mabs_lt : |a|ₘ < b → a < b := (le_mabs_self _).trans_lt
 
-variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
+variable [MulLeftMono α] {a b : α}
 
 @[to_additive (attr := simp) abs_pos] lemma one_lt_mabs : 1 < |a|ₘ ↔ a ≠ 1 := by
   obtain ha | rfl | ha := lt_trichotomy a 1
@@ -228,7 +229,7 @@ variable [CovariantClass α α (· * ·) (· ≤ ·)] {a b c : α}
 
 @[to_additive] lemma inv_mabs_le_inv (a : α) : |a|ₘ⁻¹ ≤ a⁻¹ := by simpa using inv_mabs_le a⁻¹
 
-variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)]
+variable [MulRightMono α]
 
 @[to_additive] lemma mabs_ne_one : |a|ₘ ≠ 1 ↔ a ≠ 1 :=
   (one_le_mabs a).gt_iff_ne.symm.trans one_lt_mabs
@@ -284,6 +285,3 @@ variable {ι : Type*} {α : ι → Type*} [∀ i, AddGroup (α i)] [∀ i, Latti
 lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
 
 end Pi
-
-@[deprecated (since := "2024-01-13")] alias neg_le_abs_self := neg_le_abs
-@[deprecated (since := "2024-01-13")] alias neg_abs_le_self := neg_abs_le

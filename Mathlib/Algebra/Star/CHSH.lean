@@ -1,11 +1,13 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Data.Real.Star
 import Mathlib.Tactic.Polyrith
 
 /-!
@@ -81,7 +83,6 @@ the `Aᵢ` commute with the `Bⱼ`.
 The physical interpretation is that `A₀` and `A₁` are a pair of boolean observables which
 are spacelike separated from another pair `B₀` and `B₁` of boolean observables.
 -/
---@[nolint has_nonempty_instance] Porting note(#5171): linter not ported yet
 structure IsCHSHTuple {R} [Monoid R] [StarMul R] (A₀ A₁ B₀ B₁ : R) : Prop where
   A₀_inv : A₀ ^ 2 = 1
   A₁_inv : A₁ ^ 2 = 1

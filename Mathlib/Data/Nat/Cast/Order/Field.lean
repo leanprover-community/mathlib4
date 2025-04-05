@@ -18,11 +18,11 @@ This file concerns the canonical homomorphism `ℕ → F`, where `F` is a `Linea
 
 namespace Nat
 
-variable {α : Type*} [LinearOrderedSemifield α]
+variable {α : Type*} [Semifield α] [LinearOrder α] [IsStrictOrderedRing α]
 
 lemma cast_inv_le_one : ∀ n : ℕ, (n⁻¹ : α) ≤ 1
   | 0 => by simp
-  | n + 1 => inv_le_one <| by simp [Nat.cast_nonneg]
+  | n + 1 => inv_le_one_of_one_le₀ <| by simp [Nat.cast_nonneg]
 
 /-- Natural division is always less than division in the field. -/
 theorem cast_div_le {m n : ℕ} : ((m / n : ℕ) : α) ≤ m / n := by
@@ -48,5 +48,13 @@ theorem one_div_lt_one_div {n m : ℕ} (h : n < m) : 1 / ((m : α) + 1) < 1 / ((
   refine one_div_lt_one_div_of_lt ?_ ?_
   · exact Nat.cast_add_one_pos _
   · simpa
+
+theorem one_div_cast_pos {n : ℕ} (hn : n ≠ 0) : 0 < 1 / (n : α) :=
+  one_div_pos.mpr (cast_pos.mpr (Nat.pos_of_ne_zero hn))
+
+theorem one_div_cast_nonneg (n : ℕ) : 0 ≤ 1 / (n : α) := one_div_nonneg.mpr (cast_nonneg' n)
+
+theorem one_div_cast_ne_zero {n : ℕ} (hn : n ≠ 0) : 1 / (n : α) ≠ 0 :=
+  _root_.ne_of_gt (one_div_cast_pos hn)
 
 end Nat

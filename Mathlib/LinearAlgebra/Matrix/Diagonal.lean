@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Dimension.LinearMap
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 /-!
 # Diagonal matrices
@@ -25,7 +26,7 @@ universe u v w
 
 namespace Matrix
 
-section CommSemiring -- Porting note: generalized from `CommRing`
+section CommSemiring
 
 variable {n : Type*} [Fintype n] [DecidableEq n] {R : Type v} [CommSemiring R]
 
@@ -37,13 +38,6 @@ theorem diagonal_comp_single (w : n → R) (i : n) :
       w i • LinearMap.single R (fun _ : n => R) i :=
   LinearMap.ext fun x => (diagonal_mulVec_single w _ _).trans (Pi.single_smul' i (w i) x)
 
-set_option linter.deprecated false in
-@[deprecated diagonal_comp_single (since := "2024-08-09")]
-theorem diagonal_comp_stdBasis (w : n → R) (i : n) :
-    (diagonal w).toLin'.comp (LinearMap.stdBasis R (fun _ : n => R) i) =
-      w i • LinearMap.stdBasis R (fun _ : n => R) i :=
-  LinearMap.ext fun x => (diagonal_mulVec_single w _ _).trans (Pi.single_smul' i (w i) x)
-
 theorem diagonal_toLin' (w : n → R) :
     toLin' (diagonal w) = LinearMap.pi fun i => w i • LinearMap.proj i :=
   LinearMap.ext fun _ => funext fun _ => mulVec_diagonal _ _ _
@@ -52,7 +46,7 @@ end CommSemiring
 
 section Semifield
 
-variable {m n : Type*} [Fintype m] [Fintype n] {K : Type u} [Semifield K]
+variable {m : Type*} [Fintype m] {K : Type u} [Semifield K]
 
 -- maybe try to relax the universe constraint
 theorem ker_diagonal_toLin' [DecidableEq m] (w : m → K) :
@@ -81,7 +75,7 @@ namespace LinearMap
 
 section Field
 
-variable {m n : Type*} [Fintype m] [Fintype n] {K : Type u} [Field K]
+variable {m : Type*} [Fintype m] {K : Type u} [Field K]
 
 theorem rank_diagonal [DecidableEq m] [DecidableEq K] (w : m → K) :
     LinearMap.rank (toLin' (diagonal w)) = Fintype.card { i // w i ≠ 0 } := by

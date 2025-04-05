@@ -136,7 +136,7 @@ open Submodule Pointwise
 
 variable (M) [CommRing R] [AddCommGroup M] [Module R M]
     [AddCommGroup M'] [Module R M'] [AddCommGroup M''] [Module R M'']
-    (I : Ideal R) (N : Submodule R M) (r : R)
+    (N : Submodule R M) (r : R)
 
 variable (R) in
 lemma biUnion_associatedPrimes_eq_compl_regular [IsNoetherianRing R] :

@@ -48,7 +48,7 @@ variable {R S : 𝒮} {a b : 𝒳} (f : R ⟶ S) (φ : a ⟶ b)
 /-- A morphism `φ : a ⟶ b` in `𝒳` lying over `f : R ⟶ S` in `𝒮` is cocartesian if for all
 morphisms `φ' : a ⟶ b'`, also lying over `f`, there exists a unique morphism `χ : b ⟶ b'` lifting
 `𝟙 S` such that `φ' = φ ≫ χ`. -/
-class IsCocartesian extends IsHomLift p f φ : Prop where
+class IsCocartesian : Prop extends IsHomLift p f φ where
   universal_property {b' : 𝒳} (φ' : a ⟶ b') [IsHomLift p f φ'] :
       ∃! χ : b ⟶ b', IsHomLift p (𝟙 S) χ ∧ φ ≫ χ = φ'
 
@@ -60,10 +60,9 @@ a --φ--> b        b'
 v        v        v
 R --f--> S --g--> S'
 ```
-such that `φ'` lifts `f ≫ g`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`.
-
-See <https://stacks.math.columbia.edu/tag/02XK>. -/
-class IsStronglyCocartesian extends IsHomLift p f φ : Prop where
+such that `φ'` lifts `f ≫ g`, there exists a lift `χ` of `g` such that `φ' = χ ≫ φ`. -/
+@[stacks 02XK]
+class IsStronglyCocartesian : Prop extends IsHomLift p f φ where
   universal_property' {b' : 𝒳} (g : S ⟶ p.obj b') (φ' : a ⟶ b') [IsHomLift p (f ≫ g) φ'] :
       ∃! χ : b ⟶ b', IsHomLift p g χ ∧ φ ≫ χ = φ'
 

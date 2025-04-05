@@ -22,7 +22,7 @@ where `w` runs through the infinite places distinct from `w'`.
 
 ## Tags
 number field, units, regulator
- -/
+-/
 
 open scoped NumberField
 
@@ -32,40 +32,35 @@ namespace NumberField.Units
 
 variable (K : Type*) [Field K]
 
-open MeasureTheory Classical BigOperators NumberField.InfinitePlace
+open MeasureTheory NumberField.InfinitePlace Module
   NumberField NumberField.Units.dirichletUnitTheorem
 
 variable [NumberField K]
 
+open scoped Classical in
 /-- The regulator of a number field `K`. -/
 def regulator : ℝ := ZLattice.covolume (unitLattice K)
 
+open scoped Classical in
 theorem regulator_ne_zero : regulator K ≠ 0 := ZLattice.covolume_ne_zero (unitLattice K) volume
 
+open scoped Classical in
 theorem regulator_pos : 0 < regulator K := ZLattice.covolume_pos (unitLattice K) volume
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4119
-the `Module ℤ (Additive ((𝓞 K)ˣ ⧸ NumberField.Units.torsion K))` instance required below isn't found
-unless we use `set_option maxSynthPendingDepth 2`, or add
-explicit instances:
-```
-local instance : CommGroup (𝓞 K)ˣ := inferInstance
-```
--/
-set_option maxSynthPendingDepth 2 -- Note this is active for the remainder of the file.
-
+open scoped Classical in
 theorem regulator_eq_det' (e : {w : InfinitePlace K // w ≠ w₀} ≃ Fin (rank K)) :
-    regulator K = |(Matrix.of fun i ↦ (logEmbedding K) (fundSystem K (e i))).det| := by
+    regulator K = |(Matrix.of fun i ↦
+      logEmbedding K (Additive.ofMul (fundSystem K (e i)))).det| := by
   simp_rw [regulator, ZLattice.covolume_eq_det _
     (((basisModTorsion K).map (logEmbeddingEquiv K)).reindex e.symm), Basis.coe_reindex,
-    Function.comp_def, Basis.map_apply, ← fundSystem_mk, Equiv.symm_symm]
-  rfl
+    Function.comp_def, Basis.map_apply, ← fundSystem_mk, Equiv.symm_symm, logEmbeddingEquiv_apply]
 
-/-- Let `u : Fin (rank K) → (𝓞 K)ˣ` be a family of units and let `w₁` and `w₂` be two infinite
-places. Then, the two square matrices with entries `(mult w * log w (u i))_i, {w ≠ w_i}`, `i = 1,2`,
-have the same determinant in absolute value. -/
+open scoped Classical in
+/--
+Let `u : Fin (rank K) → (𝓞 K)ˣ` be a family of units and let `w₁` and `w₂` be two infinite
+places. Then, the two square matrices with entries `(mult w * log w (u i))_i` where `w ≠ w_j` for
+`j = 1, 2` have the same determinant in absolute value.
+-/
 theorem abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
     {w₁ w₂ : InfinitePlace K} (e₁ : {w // w ≠ w₁} ≃ Fin (rank K))
     (e₂ : {w // w ≠ w₂} ≃ Fin (rank K)) :
@@ -98,8 +93,11 @@ theorem abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
       Units.norm, Rat.cast_one, Real.log_one]
     exact fun _ _ ↦ pow_ne_zero _ <| (map_ne_zero _).mpr (coe_ne_zero _)
 
-/-- For any infinite place `w'`, the regulator is equal to the absolute value of the determinant
-of the matrix `(mult w * log w (fundSystem K i)))_i, {w ≠ w'}`. -/
+open scoped Classical in
+/--
+For any infinite place `w'`, the regulator is equal to the absolute value of the determinant
+of the matrix with entries `(mult w * log w (fundSystem K i))_i` for `w ≠ w'`.
+-/
 theorem regulator_eq_det (w' : InfinitePlace K) (e : {w // w ≠ w'} ≃ Fin (rank K)) :
     regulator K =
       |(Matrix.of fun i w : {w // w ≠ w'} ↦ (mult w.val : ℝ) *
@@ -108,6 +106,35 @@ theorem regulator_eq_det (w' : InfinitePlace K) (e : {w // w ≠ w'} ≃ Fin (ra
     rw [Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, Fintype.card_fin, rank])
   simp_rw [regulator_eq_det' K e', logEmbedding, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
   exact abs_det_eq_abs_det K (fun i ↦ fundSystem K i) e' e
+
+open scoped Classical in
+/--
+The degree of `K` times the regulator of `K` is equal to the absolute value of the determinant of
+the matrix whose columns are `(mult w * log w (fundSystem K i))_i, w` and the column `(mult w)_w`.
+-/
+theorem finrank_mul_regulator_eq_det (w' : InfinitePlace K) (e : {w // w ≠ w'} ≃ Fin (rank K)) :
+    finrank ℚ K * regulator K =
+      |(Matrix.of (fun i w : InfinitePlace K ↦
+        if h : i = w' then (w.mult : ℝ) else w.mult * (w (fundSystem K (e ⟨i, h⟩))).log)).det| := by
+  let f : Fin (rank K + 1) ≃ InfinitePlace K :=
+    (finSuccEquiv _).trans ((Equiv.optionSubtype _).symm e.symm).val
+  let g : {w // w ≠ w'} ≃ Fin (rank K) :=
+    (Equiv.subtypeEquiv f.symm (fun _ ↦ by simp [f])).trans (finSuccAboveEquiv (f.symm w')).symm
+  rw [← Matrix.det_reindex_self f.symm, Matrix.det_eq_sum_row_mul_submatrix_succAbove_succAbove_det
+    _ (f.symm w') (f.symm w'), abs_mul, abs_mul, abs_neg_one_pow, one_mul]
+  · simp_rw [Matrix.reindex_apply, Matrix.submatrix_submatrix, ← f.symm.sum_comp, f.symm_symm,
+      Matrix.submatrix_apply, Function.comp_def, Equiv.apply_symm_apply, Matrix.of_apply,
+      dif_pos, ← Nat.cast_sum, sum_mult_eq, Nat.abs_cast]
+    rw [regulator_eq_det _ w' e, ← Matrix.det_reindex_self g]
+    congr with i j
+    rw [Matrix.reindex_apply, Matrix.submatrix_apply, Matrix.submatrix_apply, Matrix.of_apply,
+      Matrix.of_apply, dif_neg]
+    rfl
+  · simp_rw [Equiv.forall_congr_left f, ← f.symm.sum_comp, Matrix.reindex_apply,
+      Matrix.submatrix_apply, Matrix.of_apply, f.symm_symm, f.apply_symm_apply,
+      Finset.sum_dite_irrel, ne_eq, EmbeddingLike.apply_eq_iff_eq]
+    intro _ h
+    rw [dif_neg h, sum_mult_mul_log]
 
 end Units
 

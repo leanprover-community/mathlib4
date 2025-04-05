@@ -1,15 +1,14 @@
 /-
 Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Jendrusch, Scott Morrison
+Authors: Michael Jendrusch, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.ChosenFiniteProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Types
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 
 /-!
-# The category of types is a monoidal category
+# The category of types is a (symmetric) monoidal category
 -/
 
 
@@ -94,13 +93,28 @@ theorem associator_inv_apply {X Y Z : Type u} {x : X} {y : Y} {z : Z} :
     (((α_ X Y Z).inv : X ⊗ Y ⊗ Z → (X ⊗ Y) ⊗ Z) x).2 = x.2.2 :=
   rfl
 
+@[simp]
+theorem braiding_hom_apply {X Y : Type u} {x : X} {y : Y} :
+    ((β_ X Y).hom : X ⊗ Y → Y ⊗ X) (x, y) = (y, x) :=
+  rfl
+
+@[simp]
+theorem braiding_inv_apply {X Y : Type u} {x : X} {y : Y} :
+    ((β_ X Y).inv : Y ⊗ X → X ⊗ Y) (y, x) = (x, y) :=
+  rfl
+
+@[simp]
+theorem ChosenFiniteProducts.lift_apply {X Y Z : Type u} {f : X ⟶ Y} {g : X ⟶ Z} {x : X} :
+    lift f g x = (f x, g x) :=
+  rfl
+
 -- We don't yet have an API for tensor products indexed by finite ordered types,
 -- but it would be nice to state how monoidal functors preserve these.
 /-- If `F` is a monoidal functor out of `Type`, it takes the (n+1)st cartesian power
 of a type to the image of that type, tensored with the image of the nth cartesian power. -/
 noncomputable def MonoidalFunctor.mapPi {C : Type*} [Category C] [MonoidalCategory C]
-    (F : MonoidalFunctor (Type _) C) (n : ℕ) (β : Type*) :
+    (F : Type _ ⥤ C) [F.Monoidal] (n : ℕ) (β : Type*) :
     F.obj (Fin (n + 1) → β) ≅ F.obj β ⊗ F.obj (Fin n → β) :=
-  Functor.mapIso _ (Fin.consEquiv _).symm.toIso ≪≫ (asIso (F.μ β (Fin n → β))).symm
+  Functor.mapIso _ (Fin.consEquiv _).symm.toIso ≪≫ (Functor.Monoidal.μIso F β (Fin n → β)).symm
 
 end CategoryTheory

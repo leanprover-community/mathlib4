@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.LinearAlgebra.Quotient
+import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.LinearAlgebra.Prod
 
 /-!
@@ -40,7 +40,7 @@ theorem ker_id_sub_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) :
     ker (id - p.subtype.comp f) = p := by
   ext x
   simp only [comp_apply, mem_ker, subtype_apply, sub_apply, id_apply, sub_eq_zero]
-  exact ⟨fun h => h.symm ▸ Submodule.coe_mem _, fun hx => by erw [hf ⟨x, hx⟩, Subtype.coe_mk]⟩
+  exact ⟨fun h => h.symm ▸ Submodule.coe_mem _, fun hx => by rw [hf ⟨x, hx⟩, Subtype.coe_mk]⟩
 
 theorem range_eq_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : range f = ⊤ :=
   range_eq_top.2 fun x => ⟨x, hf x⟩
@@ -49,7 +49,7 @@ theorem isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl 
   constructor
   · rw [disjoint_iff_inf_le]
     rintro x ⟨hpx, hfx⟩
-    erw [SetLike.mem_coe, mem_ker, hf ⟨x, hpx⟩, mk_eq_zero] at hfx
+    rw [SetLike.mem_coe, mem_ker, hf ⟨x, hpx⟩, mk_eq_zero] at hfx
     simp only [hfx, SetLike.mem_coe, zero_mem]
   · rw [codisjoint_iff_le_sup]
     intro x _
@@ -73,7 +73,7 @@ def quotientEquivOfIsCompl (h : IsCompl p q) : (E ⧸ p) ≃ₗ[R] q :=
 @[simp]
 theorem quotientEquivOfIsCompl_symm_apply (h : IsCompl p q) (x : q) :
     -- Porting note: type ascriptions needed on the RHS
-    (quotientEquivOfIsCompl p q h).symm x = (Quotient.mk (x : E) : E ⧸ p) := rfl
+    (quotientEquivOfIsCompl p q h).symm x = (Quotient.mk x : E ⧸ p) := rfl
 
 @[simp]
 theorem quotientEquivOfIsCompl_apply_mk_coe (h : IsCompl p q) (x : q) :
@@ -132,7 +132,9 @@ theorem prodComm_trans_prodEquivOfIsCompl (h : IsCompl p q) :
     LinearEquiv.prodComm R q p ≪≫ₗ prodEquivOfIsCompl p q h = prodEquivOfIsCompl q p h.symm :=
   LinearEquiv.ext fun _ => add_comm _ _
 
-/-- Projection to a submodule along its complement. -/
+/-- Projection to a submodule along a complement.
+
+See also `LinearMap.linearProjOfIsCompl`. -/
 def linearProjOfIsCompl (h : IsCompl p q) : E →ₗ[R] p :=
   LinearMap.fst R p q ∘ₗ ↑(prodEquivOfIsCompl p q h).symm
 
@@ -192,6 +194,26 @@ namespace LinearMap
 
 open Submodule
 
+/-- Projection to the image of an injection along a complement.
+
+This has an advantage over `Submodule.linearProjOfIsCompl` in that it allows the user better
+definitional control over the type. -/
+def linearProjOfIsCompl {F : Type*} [AddCommGroup F] [Module R F]
+    (i : F →ₗ[R] E) (hi : Function.Injective i)
+    (h : IsCompl (LinearMap.range i) q) : E →ₗ[R] F :=
+  (LinearEquiv.ofInjective i hi).symm ∘ₗ (LinearMap.range i).linearProjOfIsCompl q h
+
+@[simp]
+theorem linearProjOfIsCompl_apply_left {F : Type*} [AddCommGroup F] [Module R F]
+    (i : F →ₗ[R] E) (hi : Function.Injective i)
+    (h : IsCompl (LinearMap.range i) q) (x : F) :
+    linearProjOfIsCompl q i hi h (i x) = x := by
+  let ix : LinearMap.range i := ⟨i x, mem_range_self i x⟩
+  change linearProjOfIsCompl q i hi h ix = x
+  rw [linearProjOfIsCompl, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    LinearEquiv.symm_apply_eq, Submodule.linearProjOfIsCompl_apply_left, Subtype.ext_iff,
+    LinearEquiv.ofInjective_apply]
+
 /-- Given linear maps `φ` and `ψ` from complement submodules, `LinearMap.ofIsCompl` is
 the induced linear map over the entire module. -/
 def ofIsCompl {p q : Submodule R E} (h : IsCompl p q) (φ : p →ₗ[R] F) (ψ : q →ₗ[R] F) : E →ₗ[R] F :=
@@ -240,7 +262,7 @@ variable {R₁ : Type*} [CommRing R₁] [Module R₁ E] [Module R₁ F]
 def ofIsComplProd {p q : Submodule R₁ E} (h : IsCompl p q) :
     (p →ₗ[R₁] F) × (q →ₗ[R₁] F) →ₗ[R₁] E →ₗ[R₁] F where
   toFun φ := ofIsCompl h φ.1 φ.2
-  map_add' := by intro φ ψ; dsimp only; rw [Prod.snd_add, Prod.fst_add, ofIsCompl_add]
+  map_add' := by intro φ ψ; rw [Prod.snd_add, Prod.fst_add, ofIsCompl_add]
   map_smul' := by intro c φ; simp [Prod.smul_snd, Prod.smul_fst, ofIsCompl_smul]
 
 @[simp]
@@ -265,6 +287,7 @@ def ofIsComplProdEquiv {p q : Submodule R₁ E} (h : IsCompl p q) :
 end
 
 @[simp, nolint simpNF] -- Porting note: linter claims that LHS doesn't simplify, but it does
+-- It seems the side condition `hf` is not applied by `simpNF`.
 theorem linearProjOfIsCompl_of_proj (f : E →ₗ[R] p) (hf : ∀ x : p, f x = x) :
     p.linearProjOfIsCompl (ker f) (isCompl_of_proj hf) = f := by
   ext x
@@ -345,12 +368,11 @@ structure IsProj {F : Type*} [FunLike F M M] (f : F) : Prop where
   map_mem : ∀ x, f x ∈ m
   map_id : ∀ x ∈ m, f x = x
 
-theorem isProj_iff_idempotent (f : M →ₗ[S] M) : (∃ p : Submodule S M, IsProj p f) ↔ f ∘ₗ f = f := by
+theorem isProj_iff_isIdempotentElem (f : M →ₗ[S] M) :
+    (∃ p : Submodule S M, IsProj p f) ↔ IsIdempotentElem f := by
   constructor
-  · intro h
-    obtain ⟨p, hp⟩ := h
+  · intro ⟨p, hp⟩
     ext x
-    rw [comp_apply]
     exact hp.map_id (f x) (hp.map_mem x)
   · intro h
     use range f
@@ -359,7 +381,9 @@ theorem isProj_iff_idempotent (f : M →ₗ[S] M) : (∃ p : Submodule S M, IsPr
       exact mem_range_self f x
     · intro x hx
       obtain ⟨y, hy⟩ := mem_range.1 hx
-      rw [← hy, ← comp_apply, h]
+      rw [← hy, ← mul_apply, h]
+
+@[deprecated (since := "2025-01-12")] alias isProj_iff_idempotent := isProj_iff_isIdempotentElem
 
 namespace IsProj
 
@@ -393,10 +417,10 @@ theorem eq_conj_prod_map' {f : E →ₗ[R] E} (h : IsProj p f) :
         prodMap id 0 ∘ₗ (p.prodEquivOfIsCompl (ker f) h.isCompl).symm.toLinearMap := by
   rw [← LinearMap.comp_assoc, LinearEquiv.eq_comp_toLinearMap_symm]
   ext x
-  · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inl, coprod_apply, coeSubtype,
-      _root_.map_zero, add_zero, h.map_id x x.2, prodMap_apply, id_apply]
-  · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, _root_.map_zero,
-      coeSubtype, zero_add, map_coe_ker, prodMap_apply, zero_apply, add_zero]
+  · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inl, coprod_apply, coe_subtype,
+      map_zero, add_zero, h.map_id x x.2, prodMap_apply, id_apply]
+  · simp only [coe_prodEquivOfIsCompl, comp_apply, coe_inr, coprod_apply, map_zero,
+      coe_subtype, zero_add, map_coe_ker, prodMap_apply, zero_apply, add_zero]
 
 end IsProj
 

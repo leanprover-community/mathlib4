@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.MeasureTheory.MeasurableSpace.Prod
+import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Borel (measurable) spaces ℝ, ℝ≥0, ℝ≥0∞
@@ -115,7 +118,7 @@ def finiteSpanningSetsInIooRat (μ : Measure ℝ) [IsLocallyFiniteMeasure μ] :
     -- TODO: norm_cast fails here?
     push_cast
     exact neg_lt_self n.cast_add_one_pos
-  finite n := measure_Ioo_lt_top
+  finite _ := measure_Ioo_lt_top
   spanning :=
     iUnion_eq_univ_iff.2 fun x =>
       ⟨⌊|x|⌋₊, neg_lt.1 ((neg_le_abs x).trans_lt (Nat.lt_floor_add_one _)),
@@ -130,7 +133,7 @@ theorem measure_ext_Ioo_rat {μ ν : Measure ℝ} [IsLocallyFiniteMeasure μ]
 
 end Real
 
-variable [MeasurableSpace α]
+variable {mα : MeasurableSpace α}
 
 @[measurability, fun_prop]
 theorem measurable_real_toNNReal : Measurable Real.toNNReal :=
@@ -194,9 +197,6 @@ theorem aemeasurable_coe_nnreal_real_iff {f : α → ℝ≥0} {μ : Measure α} 
     AEMeasurable (fun x => f x : α → ℝ) μ ↔ AEMeasurable f μ :=
   ⟨fun h ↦ by simpa only [Real.toNNReal_coe] using h.real_toNNReal, AEMeasurable.coe_nnreal_real⟩
 
-@[deprecated (since := "2024-03-02")]
-alias aEMeasurable_coe_nnreal_real_iff := aemeasurable_coe_nnreal_real_iff
-
 /-- The set of finite `ℝ≥0∞` numbers is `MeasurableEquiv` to `ℝ≥0`. -/
 def MeasurableEquiv.ennrealEquivNNReal : { r : ℝ≥0∞ | r ≠ ∞ } ≃ᵐ ℝ≥0 :=
   ENNReal.neTopHomeomorphNNReal.toMeasurableEquiv
@@ -217,7 +217,7 @@ def ennrealEquivSum : ℝ≥0∞ ≃ᵐ ℝ≥0 ⊕ Unit :=
 
 open Function (uncurry)
 
-theorem measurable_of_measurable_nnreal_prod [MeasurableSpace β] [MeasurableSpace γ]
+theorem measurable_of_measurable_nnreal_prod {_ : MeasurableSpace β} {_ : MeasurableSpace γ}
     {f : ℝ≥0∞ × β → γ} (H₁ : Measurable fun p : ℝ≥0 × β => f (p.1, p.2))
     (H₂ : Measurable fun x => f (∞, x)) : Measurable f :=
   let e : ℝ≥0∞ × β ≃ᵐ (ℝ≥0 × β) ⊕ (Unit × β) :=
@@ -225,7 +225,7 @@ theorem measurable_of_measurable_nnreal_prod [MeasurableSpace β] [MeasurableSpa
       (MeasurableEquiv.sumProdDistrib _ _ _)
   e.symm.measurable_comp_iff.1 <| measurable_sum H₁ (H₂.comp measurable_id.snd)
 
-theorem measurable_of_measurable_nnreal_nnreal [MeasurableSpace β] {f : ℝ≥0∞ × ℝ≥0∞ → β}
+theorem measurable_of_measurable_nnreal_nnreal {_ : MeasurableSpace β} {f : ℝ≥0∞ × ℝ≥0∞ → β}
     (h₁ : Measurable fun p : ℝ≥0 × ℝ≥0 => f (p.1, p.2)) (h₂ : Measurable fun r : ℝ≥0 => f (∞, r))
     (h₃ : Measurable fun r : ℝ≥0 => f (r, ∞)) : Measurable f :=
   measurable_of_measurable_nnreal_prod
@@ -255,7 +255,8 @@ instance instMeasurableMul₂ : MeasurableMul₂ ℝ≥0∞ := by
 instance instMeasurableSub₂ : MeasurableSub₂ ℝ≥0∞ :=
   ⟨by
     apply measurable_of_measurable_nnreal_nnreal <;>
-      simp [← WithTop.coe_sub]; exact continuous_sub.measurable.coe_nnreal_ennreal⟩
+      simp [← WithTop.coe_sub, tsub_eq_zero_of_le];
+        exact continuous_sub.measurable.coe_nnreal_ennreal⟩
 
 instance instMeasurableInv : MeasurableInv ℝ≥0∞ :=
   ⟨continuous_inv.measurable⟩
@@ -279,18 +280,12 @@ theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
     exact ((lim y).comp hx).liminf_eq
   rw [← this]
   show Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
-  exact measurable_liminf fun n => hf (x n)
-
-@[deprecated (since := "2024-03-09")] alias
-_root_.measurable_of_tendsto_ennreal' := ENNReal.measurable_of_tendsto'
+  exact .liminf fun n => hf (x n)
 
 /-- A sequential limit of measurable `ℝ≥0∞` valued functions is measurable. -/
 theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0∞} (hf : ∀ i, Measurable (f i))
     (lim : Tendsto f atTop (𝓝 g)) : Measurable g :=
   measurable_of_tendsto' atTop hf lim
-
-@[deprecated (since := "2024-03-09")] alias
-_root_.measurable_of_tendsto_ennreal := ENNReal.measurable_of_tendsto
 
 /-- A limit (over a general filter) of a.e.-measurable `ℝ≥0∞` valued functions is
 a.e.-measurable. -/
@@ -307,7 +302,7 @@ lemma aemeasurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
   set aeSeqLim := fun x ↦ ite (x ∈ aeSeqSet h'f p) (g x) (⟨f (v 0) x⟩ : Nonempty ℝ≥0∞).some
   refine ⟨aeSeqLim, measurable_of_tendsto' atTop (aeSeq.measurable h'f p)
     (tendsto_pi_nhds.mpr fun x ↦ ?_), ?_⟩
-  · unfold_let aeSeqLim
+  · unfold aeSeqLim
     simp_rw [aeSeq]
     split_ifs with hx
     · simp_rw [aeSeq.mk_eq_fun_of_mem_aeSeqSet h'f hx]
@@ -359,8 +354,7 @@ theorem AEMeasurable.ennreal_toReal {f : α → ℝ≥0∞} {μ : Measure α} (h
 theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable fun x => ∑' i, f i x := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
-  apply measurable_iSup
-  exact fun s => s.measurable_sum fun i _ => h i
+  exact .iSup fun s ↦ s.measurable_sum fun i _ => h i
 
 @[measurability, fun_prop]
 theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
@@ -378,12 +372,11 @@ theorem Measurable.nnreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (
 theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} {μ : Measure α}
     (h : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∑' i, f i x) μ := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
-  apply aemeasurable_iSup
-  exact fun s => Finset.aemeasurable_sum s fun i _ => h i
+  exact .iSup fun s ↦ Finset.aemeasurable_sum s fun i _ => h i
 
 @[measurability, fun_prop]
-theorem AEMeasurable.nnreal_tsum {α : Type*} [MeasurableSpace α] {ι : Type*} [Countable ι]
-    {f : ι → α → NNReal} {μ : MeasureTheory.Measure α} (h : ∀ i : ι, AEMeasurable (f i) μ) :
+theorem AEMeasurable.nnreal_tsum {α : Type*} {_ : MeasurableSpace α} {ι : Type*} [Countable ι]
+    {f : ι → α → NNReal} {μ : Measure α} (h : ∀ i : ι, AEMeasurable (f i) μ) :
     AEMeasurable (fun x : α => ∑' i : ι, f i x) μ := by
   simp_rw [NNReal.tsum_eq_toNNReal_tsum]
   exact (AEMeasurable.ennreal_tsum fun i => (h i).coe_nnreal_ennreal).ennreal_toNNReal
@@ -439,6 +432,20 @@ theorem AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α}
     AEMeasurable (fun x => (f x : EReal)) μ :=
   measurable_coe_ennreal_ereal.comp_aemeasurable hf
 
+@[measurability]
+theorem measurable_ereal_toENNReal : Measurable EReal.toENNReal :=
+  EReal.measurable_of_measurable_real (by simpa using ENNReal.measurable_ofReal)
+
+@[measurability, fun_prop]
+theorem Measurable.ereal_toENNReal {f : α → EReal} (hf : Measurable f) :
+    Measurable fun x => (f x).toENNReal :=
+  measurable_ereal_toENNReal.comp hf
+
+@[measurability, fun_prop]
+theorem AEMeasurable.ereal_toENNReal {f : α → EReal} {μ : Measure α} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun x => (f x).toENNReal) μ :=
+  measurable_ereal_toENNReal.comp_aemeasurable hf
+
 namespace NNReal
 
 instance : MeasurableSMul₂ ℝ≥0 ℝ≥0∞ where
@@ -453,26 +460,85 @@ theorem measurable_of_tendsto' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ�
   rw [tendsto_pi_nhds] at lim ⊢
   exact fun x => (ENNReal.continuous_coe.tendsto (g x)).comp (lim x)
 
-@[deprecated (since := "2024-03-09")] alias
-_root_.measurable_of_tendsto_nnreal' := NNReal.measurable_of_tendsto'
-
 /-- A sequential limit of measurable `ℝ≥0` valued functions is measurable. -/
 theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0} {g : α → ℝ≥0} (hf : ∀ i, Measurable (f i))
     (lim : Tendsto f atTop (𝓝 g)) : Measurable g :=
   measurable_of_tendsto' atTop hf lim
 
-@[deprecated (since := "2024-03-09")] alias
-_root_.measurable_of_tendsto_nnreal := NNReal.measurable_of_tendsto
-
 end NNReal
+
+namespace EReal
+
+lemma measurableEmbedding_coe : MeasurableEmbedding Real.toEReal :=
+  isOpenEmbedding_coe.measurableEmbedding
+
+instance : MeasurableAdd₂ EReal := ⟨EReal.lowerSemicontinuous_add.measurable⟩
+
+section MeasurableMul
+
+variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+
+lemma measurable_of_real_prod {f : EReal × β → γ}
+    (h_real : Measurable fun p : ℝ × β ↦ f (p.1, p.2))
+    (h_bot : Measurable fun x ↦ f (⊥, x)) (h_top : Measurable fun x ↦ f (⊤, x)) : Measurable f :=
+  .of_union₃_range_cover (measurableEmbedding_prodMk_left _) (measurableEmbedding_prodMk_left _)
+    (measurableEmbedding_coe.prodMap .id) (by simp [-univ_subset_iff, subset_def, EReal.forall])
+    h_bot h_top h_real
+
+lemma measurable_of_real_real {f : EReal × EReal → β}
+    (h_real : Measurable fun p : ℝ × ℝ ↦ f (p.1, p.2))
+    (h_bot_left : Measurable fun r : ℝ ↦ f (⊥, r))
+    (h_top_left : Measurable fun r : ℝ ↦ f (⊤, r))
+    (h_bot_right : Measurable fun r : ℝ ↦ f (r, ⊥))
+    (h_top_right : Measurable fun r : ℝ ↦ f (r, ⊤)) :
+    Measurable f := by
+  refine measurable_of_real_prod ?_ ?_ ?_
+  · refine measurable_swap_iff.mp <| measurable_of_real_prod ?_ h_bot_right h_top_right
+    exact h_real.comp measurable_swap
+  · exact measurable_of_measurable_real h_bot_left
+  · exact measurable_of_measurable_real h_top_left
+
+private lemma measurable_const_mul (c : EReal) : Measurable fun (x : EReal) ↦ c * x := by
+  refine measurable_of_measurable_real ?_
+  have h1 : (fun (p : ℝ) ↦ (⊥ : EReal) * p)
+      = fun p ↦ if p = 0 then (0 : EReal) else (if p < 0 then ⊤ else ⊥) := by
+    ext p
+    split_ifs with h1 h2
+    · simp [h1]
+    · rw [bot_mul_coe_of_neg h2]
+    · rw [bot_mul_coe_of_pos]
+      exact lt_of_le_of_ne (not_lt.mp h2) (Ne.symm h1)
+  have h2 : Measurable fun (p : ℝ) ↦ if p = 0 then (0 : EReal) else if p < 0 then ⊤ else ⊥ := by
+    refine Measurable.piecewise (measurableSet_singleton _) measurable_const ?_
+    exact Measurable.piecewise measurableSet_Iio measurable_const measurable_const
+  induction c with
+  | bot => rwa [h1]
+  | coe c => exact (measurable_id.const_mul _).coe_real_ereal
+  | top =>
+    simp_rw [← neg_bot, neg_mul]
+    apply Measurable.neg
+    rwa [h1]
+
+instance : MeasurableMul₂ EReal := by
+  refine ⟨measurable_of_real_real ?_ ?_ ?_ ?_ ?_⟩
+  · exact (measurable_fst.mul measurable_snd).coe_real_ereal
+  · exact (measurable_const_mul _).comp measurable_coe_real_ereal
+  · exact (measurable_const_mul _).comp measurable_coe_real_ereal
+  · simp_rw [mul_comm _ ⊥]
+    exact (measurable_const_mul _).comp measurable_coe_real_ereal
+  · simp_rw [mul_comm _ ⊤]
+    exact (measurable_const_mul _).comp measurable_coe_real_ereal
+
+end MeasurableMul
+
+end EReal
 
 /-- If a function `f : α → ℝ≥0` is measurable and the measure is σ-finite, then there exists
 spanning measurable sets with finite measure on which `f` is bounded.
 See also `StronglyMeasurable.exists_spanning_measurableSet_norm_le` for functions into normed
 groups. -/
--- We redeclare `α` to temporarily avoid the `[MeasurableSpace α]` instance.
-theorem exists_spanning_measurableSet_le {α : Type*} {m : MeasurableSpace α} {f : α → ℝ≥0}
-    (hf : Measurable f) (μ : Measure α) [SigmaFinite μ] :
+theorem exists_spanning_measurableSet_le {f : α → ℝ≥0} (hf : Measurable f) (μ : Measure α)
+    [SigmaFinite μ] :
     ∃ s : ℕ → Set α,
       (∀ n, MeasurableSet (s n) ∧ μ (s n) < ∞ ∧ ∀ x ∈ s n, f x ≤ n) ∧
       ⋃ i, s i = Set.univ := by
@@ -485,7 +551,7 @@ theorem exists_spanning_measurableSet_le {α : Type*} {m : MeasurableSpace α} {
   let sets n := sigma_finite_sets n ∩ norm_sets n
   have h_meas : ∀ n, MeasurableSet (sets n) := by
     refine fun n => MeasurableSet.inter ?_ ?_
-    · exact measurable_spanningSets μ n
+    · exact measurableSet_spanningSets μ n
     · exact hf measurableSet_Iic
   have h_finite : ∀ n, μ (sets n) < ∞ := by
     refine fun n => (measure_mono Set.inter_subset_left).trans_lt ?_
@@ -505,7 +571,7 @@ variable (μ : Measure ℝ) [IsFiniteMeasureOnCompacts μ]
 lemma tendsto_measure_Icc_nhdsWithin_right' (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝[>] (0 : ℝ)) (𝓝 (μ {b})) := by
   rw [Real.singleton_eq_inter_Icc]
-  apply tendsto_measure_biInter_gt (fun r hr ↦ measurableSet_Icc.nullMeasurableSet)
+  apply tendsto_measure_biInter_gt (fun r hr ↦ nullMeasurableSet_Icc)
   · intro r s _rpos hrs
     exact Icc_subset_Icc (by linarith) (by linarith)
   · exact ⟨1, zero_lt_one, isCompact_Icc.measure_ne_top⟩
@@ -519,7 +585,7 @@ lemma tendsto_measure_Icc_nhdsWithin_right (b : ℝ) :
 
 lemma tendsto_measure_Icc [NoAtoms μ] (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝 (0 : ℝ)) (𝓝 0) := by
-  rw [← nhds_left'_sup_nhds_right, tendsto_sup]
+  rw [← nhdsLT_sup_nhdsGE, tendsto_sup]
   constructor
   · apply tendsto_const_nhds.congr'
     filter_upwards [self_mem_nhdsWithin] with r (hr : r < 0)

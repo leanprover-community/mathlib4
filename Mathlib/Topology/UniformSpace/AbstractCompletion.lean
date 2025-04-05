@@ -66,7 +66,7 @@ structure AbstractCompletion (α : Type u) [UniformSpace α] where
   /-- The completion is a T₀ space. -/
   separation : T0Space space
   /-- The map into the completion is uniform-inducing. -/
-  uniformInducing : UniformInducing coe
+  isUniformInducing : IsUniformInducing coe
   /-- The map into the completion has dense range. -/
   dense : DenseRange coe
 
@@ -81,18 +81,20 @@ local notation "hatα" => pkg.space
 
 local notation "ι" => pkg.coe
 
+@[deprecated (since := "2024-10-08")] alias uniformInducing := isUniformInducing
+
 /-- If `α` is complete, then it is an abstract completion of itself. -/
 def ofComplete [T0Space α] [CompleteSpace α] : AbstractCompletion α :=
-  mk α id inferInstance inferInstance inferInstance uniformInducing_id denseRange_id
+  mk α id inferInstance inferInstance inferInstance .id denseRange_id
 
 theorem closure_range : closure (range ι) = univ :=
   pkg.dense.closure_range
 
-theorem denseInducing : DenseInducing ι :=
-  ⟨pkg.uniformInducing.inducing, pkg.dense⟩
+theorem isDenseInducing : IsDenseInducing ι :=
+  ⟨pkg.isUniformInducing.isInducing, pkg.dense⟩
 
 theorem uniformContinuous_coe : UniformContinuous ι :=
-  UniformInducing.uniformContinuous pkg.uniformInducing
+  IsUniformInducing.uniformContinuous pkg.isUniformInducing
 
 theorem continuous_coe : Continuous ι :=
   pkg.uniformContinuous_coe.continuous
@@ -114,23 +116,23 @@ section Extend
 
 /-- Extension of maps to completions -/
 protected def extend (f : α → β) : hatα → β :=
-  if UniformContinuous f then pkg.denseInducing.extend f else fun x => f (pkg.dense.some x)
+  if UniformContinuous f then pkg.isDenseInducing.extend f else fun x => f (pkg.dense.some x)
 
 variable {f : α → β}
 
-theorem extend_def (hf : UniformContinuous f) : pkg.extend f = pkg.denseInducing.extend f :=
+theorem extend_def (hf : UniformContinuous f) : pkg.extend f = pkg.isDenseInducing.extend f :=
   if_pos hf
 
 theorem extend_coe [T2Space β] (hf : UniformContinuous f) (a : α) : (pkg.extend f) (ι a) = f a := by
   rw [pkg.extend_def hf]
-  exact pkg.denseInducing.extend_eq hf.continuous a
+  exact pkg.isDenseInducing.extend_eq hf.continuous a
 
 variable [CompleteSpace β]
 
 theorem uniformContinuous_extend : UniformContinuous (pkg.extend f) := by
   by_cases hf : UniformContinuous f
   · rw [pkg.extend_def hf]
-    exact uniformContinuous_uniformly_extend pkg.uniformInducing pkg.dense hf
+    exact uniformContinuous_uniformly_extend pkg.isUniformInducing pkg.dense hf
   · change UniformContinuous (ite _ _ _)
     rw [if_neg hf]
     exact uniformContinuous_of_const fun a b => by congr 1
@@ -276,17 +278,17 @@ theorem compare_comp_eq_compare (γ : Type*) [TopologicalSpace γ]
     letI := pkg.uniformStruct.toTopologicalSpace
     letI := pkg'.uniformStruct.toTopologicalSpace
     (∀ a : pkg.space,
-      Filter.Tendsto f (Filter.comap pkg.coe (𝓝 a)) (𝓝 ((pkg.denseInducing.extend f) a))) →
-      pkg.denseInducing.extend f ∘ pkg'.compare pkg = pkg'.denseInducing.extend f := by
+      Filter.Tendsto f (Filter.comap pkg.coe (𝓝 a)) (𝓝 ((pkg.isDenseInducing.extend f) a))) →
+      pkg.isDenseInducing.extend f ∘ pkg'.compare pkg = pkg'.isDenseInducing.extend f := by
   let _ := pkg'.uniformStruct
   let _ := pkg.uniformStruct
   intro h
-  have (x : α) : (pkg.denseInducing.extend f ∘ pkg'.compare pkg) (pkg'.coe x) = f x := by
-    simp only [Function.comp_apply, compare_coe, DenseInducing.extend_eq _ cont_f, implies_true]
-  apply (DenseInducing.extend_unique (AbstractCompletion.denseInducing _) this
+  have (x : α) : (pkg.isDenseInducing.extend f ∘ pkg'.compare pkg) (pkg'.coe x) = f x := by
+    simp only [Function.comp_apply, compare_coe, IsDenseInducing.extend_eq _ cont_f, implies_true]
+  apply (IsDenseInducing.extend_unique (AbstractCompletion.isDenseInducing _) this
     (Continuous.comp _ (uniformContinuous_compare pkg' pkg).continuous )).symm
-  apply DenseInducing.continuous_extend
-  exact fun a ↦ ⟨(pkg.denseInducing.extend f) a, h a⟩
+  apply IsDenseInducing.continuous_extend
+  exact fun a ↦ ⟨(pkg.isDenseInducing.extend f) a, h a⟩
 
 end Compare
 
@@ -305,8 +307,8 @@ protected def prod : AbstractCompletion (α × β) where
   uniformStruct := inferInstance
   complete := inferInstance
   separation := inferInstance
-  uniformInducing := UniformInducing.prod pkg.uniformInducing pkg'.uniformInducing
-  dense := DenseRange.prod_map pkg.dense pkg'.dense
+  isUniformInducing := IsUniformInducing.prod pkg.isUniformInducing pkg'.isUniformInducing
+  dense := pkg.dense.prodMap pkg'.dense
 
 end Prod
 
@@ -372,7 +374,7 @@ theorem uniformContinuous_map₂ (f : α → β → γ) : UniformContinuous₂ (
 theorem continuous_map₂ {δ} [TopologicalSpace δ] {f : α → β → γ} {a : δ → hatα} {b : δ → hatβ}
     (ha : Continuous a) (hb : Continuous b) :
     Continuous fun d : δ => pkg.map₂ pkg' pkg'' f (a d) (b d) :=
-  ((pkg.uniformContinuous_map₂ pkg' pkg'' f).continuous.comp (Continuous.prod_mk ha hb) : _)
+  (pkg.uniformContinuous_map₂ pkg' pkg'' f).continuous.comp₂ ha hb
 
 theorem map₂_coe_coe (a : α) (b : β) (f : α → β → γ) (hf : UniformContinuous₂ f) :
     pkg.map₂ pkg' pkg'' f (ι a) (ι' b) = ι'' (f a b) :=

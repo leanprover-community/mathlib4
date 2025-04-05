@@ -1,15 +1,16 @@
 /-
 Copyright (c) 2023 Emily Witt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Emily Witt, Scott Morrison, Jake Levinson, Sam van Gool
+Authors: Emily Witt, Kim Morrison, Jake Levinson, Sam van Gool
 -/
-import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.CategoryTheory.Abelian.Ext
-import Mathlib.RingTheory.Finiteness
 import Mathlib.CategoryTheory.Limits.Final
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Finiteness.Ideal
+import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.Quotient.Defs
+import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Local cohomology.
@@ -63,14 +64,12 @@ section
 variable {R : Type u} [CommRing R] {D : Type v} [SmallCategory D]
 
 /-- The directed system of `R`-modules of the form `R/J`, where `J` is an ideal of `R`,
-determined by the functor `I`  -/
+determined by the functor `I` -/
 def ringModIdeals (I : D ⥤ Ideal R) : D ⥤ ModuleCat.{u} R where
   obj t := ModuleCat.of R <| R ⧸ I.obj t
-  map w := Submodule.mapQ _ _ LinearMap.id (I.map w).down.down
-  -- Porting note: was 'obviously'
-  map_comp f g := by apply Submodule.linearMap_qext; rfl
+  map w := ModuleCat.ofHom <| Submodule.mapQ _ _ LinearMap.id (I.map w).down.down
 
--- Porting note (#11215): TODO:  Once this file is ported, move this instance to the right location.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO:  Once this file is ported, move this instance to the right location.
 instance moduleCat_enoughProjectives' : EnoughProjectives (ModuleCat.{u} R) :=
   ModuleCat.moduleCat_enoughProjectives.{u}
 
@@ -88,9 +87,7 @@ section
 variable {R : Type max u v} [CommRing R] {D : Type v} [SmallCategory D]
 
 lemma hasColimitDiagram (I : D ⥤ Ideal R) (i : ℕ) :
-    HasColimit (diagram I i) := by
-  have : HasColimitsOfShape Dᵒᵖ (AddCommGrpMax.{u, v}) := inferInstance
-  infer_instance
+    HasColimit (diagram I i) := inferInstance
 
 /-
 In this definition we do not assume any special property of the diagram `I`, but the relevant case
@@ -98,11 +95,11 @@ will be where `I` is (cofinal with) the diagram of powers of a single given idea
 
 Below, we give two equivalent definitions of the usual local cohomology with support
 in an ideal `J`, `localCohomology` and `localCohomology.ofSelfLERadical`.
- -/
+-/
 /-- `localCohomology.ofDiagram I i` is the functor sending a module `M` over a commutative
 ring `R` to the direct limit of `Ext^i(R/J, M)`, where `J` ranges over a collection of ideals
 of `R`, represented as a functor `I`. -/
-def ofDiagram (I : D ⥤ Ideal R) (i : ℕ) : ModuleCatMax.{u, v} R ⥤ ModuleCatMax.{u, v} R :=
+def ofDiagram (I : D ⥤ Ideal R) (i : ℕ) : ModuleCat.{max u v} R ⥤ ModuleCat.{max u v} R :=
   have := hasColimitDiagram.{u, v} I i
   colimit (diagram I i)
 
@@ -140,8 +137,8 @@ def idealPowersDiagram (J : Ideal R) : ℕᵒᵖ ⥤ Ideal R where
 def SelfLERadical (J : Ideal R) : Type u :=
   FullSubcategory fun J' : Ideal R => J ≤ J'.radical
 
--- Porting note: `deriving Category` is not able to derive this instance
--- https://github.com/leanprover-community/mathlib4/issues/5020
+-- The `Category` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance (J : Ideal R) : Category (SelfLERadical J) :=
   (FullSubcategory.category _)
 
@@ -200,24 +197,11 @@ valued in `SelfLERadical J`. -/
 def idealPowersToSelfLERadical (J : Ideal R) : ℕᵒᵖ ⥤ SelfLERadical J :=
   FullSubcategory.lift _ (idealPowersDiagram J) fun k => by
     change _ ≤ (J ^ unop k).radical
-    cases' unop k with n
+    rcases unop k with - | n
     · simp [Ideal.radical_top, pow_zero, Ideal.one_eq_top, le_top]
     · simp only [J.radical_pow n.succ_ne_zero, Ideal.le_radical]
 
 variable {I J K : Ideal R}
-
-/-- The lemma below essentially says that `idealPowersToSelfLERadical I` is initial in
-`selfLERadicalDiagram I`.
-
-Porting note: This lemma should probably be moved to `Mathlib/RingTheory/Finiteness`
-to be near `Ideal.exists_radical_pow_le_of_fg`, which it generalizes. -/
-theorem Ideal.exists_pow_le_of_le_radical_of_fG (hIJ : I ≤ J.radical) (hJ : J.radical.FG) :
-    ∃ k : ℕ, I ^ k ≤ J := by
-  obtain ⟨k, hk⟩ := J.exists_radical_pow_le_of_fg hJ
-  use k
-  calc
-    I ^ k ≤ J.radical ^ k := Ideal.pow_right_mono hIJ _
-    _ ≤ J := hk
 
 /-- The diagram of powers of `J` is initial in the diagram of all ideals with
 radical containing `J`. This uses noetherianness. -/
@@ -225,7 +209,7 @@ instance ideal_powers_initial [hR : IsNoetherian R R] :
     Functor.Initial (idealPowersToSelfLERadical J) where
   out J' := by
     apply (config := {allowSynthFailures := true }) zigzag_isConnected
-    · obtain ⟨k, hk⟩ := Ideal.exists_pow_le_of_le_radical_of_fG J'.2 (isNoetherian_def.mp hR _)
+    · obtain ⟨k, hk⟩ := Ideal.exists_pow_le_of_le_radical_of_fg J'.2 (isNoetherian_def.mp hR _)
       exact ⟨CostructuredArrow.mk (⟨⟨hk⟩⟩ : (idealPowersToSelfLERadical J).obj (op k) ⟶ J')⟩
     · intro j1 j2
       apply Relation.ReflTransGen.single

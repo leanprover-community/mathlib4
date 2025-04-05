@@ -5,7 +5,7 @@ Authors: Jz Pan
 -/
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
 /-!
 
@@ -62,6 +62,17 @@ def mulMap : M ⊗[R] N →ₗ[R] S := TensorProduct.lift ((LinearMap.mul R S).d
 @[simp]
 theorem mulMap_tmul (m : M) (n : N) : mulMap M N (m ⊗ₜ[R] n) = m.1 * n.1 := rfl
 
+theorem mulMap_map_comp_eq {T : Type w} [Semiring T] [Algebra R T]
+    {F : Type*} [FunLike F S T] [AlgHomClass F R S T] (f : F) :
+    mulMap (M.map f) (N.map f) ∘ₗ
+      TensorProduct.map ((f : S →ₗ[R] T).submoduleMap M) ((f : S →ₗ[R] T).submoduleMap N)
+        = f ∘ₗ mulMap M N := by
+  ext
+  simp only [TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_comp,
+    TensorProduct.curry_apply, LinearMap.coe_comp, LinearMap.coe_restrictScalars,
+    Function.comp_apply, TensorProduct.map_tmul, mulMap_tmul, LinearMap.coe_coe, map_mul]
+  rfl
+
 theorem mulMap_op :
     mulMap (equivOpposite.symm (MulOpposite.op M)) (equivOpposite.symm (MulOpposite.op N)) =
     (MulOpposite.opLinearEquiv R).toLinearMap ∘ₗ mulMap N M ∘ₗ
@@ -99,9 +110,9 @@ theorem mulMap_range : LinearMap.range (mulMap M N) = M * N := by
   refine le_antisymm ?_ (mul_le.2 fun m hm n hn ↦ ⟨⟨m, hm⟩ ⊗ₜ[R] ⟨n, hn⟩, rfl⟩)
   rintro _ ⟨x, rfl⟩
   induction x with
-  | zero => rw [_root_.map_zero]; exact zero_mem _
+  | zero => rw [map_zero]; exact zero_mem _
   | tmul a b => exact mul_mem_mul a.2 b.2
-  | add a b ha hb => rw [_root_.map_add]; exact add_mem ha hb
+  | add a b ha hb => rw [map_add]; exact add_mem ha hb
 
 /-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural `R`-linear map
 `M ⊗[R] N →ₗ[R] M * N` induced by multiplication in `S`,
@@ -121,8 +132,9 @@ theorem mulMap'_surjective : Function.Surjective (mulMap' M N) := by
 `i(R) ⊗[R] N →ₗ[R] N` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This is promoted to an isomorphism of `R`-modules as `Submodule.lTensorOne`. Use that instead. -/
 def lTensorOne' : (⊥ : Subalgebra R S) ⊗[R] N →ₗ[R] N :=
-  show (1 : Submodule R S) ⊗[R] N →ₗ[R] N from
-    (LinearEquiv.ofEq _ _ (by rw [mulMap_range, one_mul])).toLinearMap ∘ₗ (mulMap _ N).rangeRestrict
+  show Subalgebra.toSubmodule ⊥ ⊗[R] N →ₗ[R] N from
+    (LinearEquiv.ofEq _ _ (by rw [Algebra.toSubmodule_bot, mulMap_range, one_mul])).toLinearMap ∘ₗ
+      (mulMap _ N).rangeRestrict
 
 variable {N} in
 @[simp]
@@ -130,7 +142,7 @@ theorem lTensorOne'_tmul (y : R) (n : N) :
     N.lTensorOne' (algebraMap R _ y ⊗ₜ[R] n) = y • n := Subtype.val_injective <| by
   simp_rw [lTensorOne', LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.coe_ofEq_apply, LinearMap.codRestrict_apply, SetLike.val_smul, Algebra.smul_def]
-  exact mulMap_tmul 1 N _ _
+  exact mulMap_tmul _ N _ _
 
 variable {N} in
 @[simp]
@@ -163,15 +175,17 @@ variable {N} in
 @[simp]
 theorem lTensorOne_symm_apply (n : N) : N.lTensorOne.symm n = 1 ⊗ₜ[R] n := rfl
 
-theorem mulMap_one_left_eq : mulMap 1 N = N.subtype ∘ₗ N.lTensorOne.toLinearMap :=
+theorem mulMap_one_left_eq :
+    mulMap (Subalgebra.toSubmodule ⊥) N = N.subtype ∘ₗ N.lTensorOne.toLinearMap :=
   TensorProduct.ext' fun _ _ ↦ rfl
 
 /-- If `M` is a submodule in an algebra `S` over `R`, there is the natural `R`-linear map
 `M ⊗[R] i(R) →ₗ[R] M` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This is promoted to an isomorphism of `R`-modules as `Submodule.rTensorOne`. Use that instead. -/
 def rTensorOne' : M ⊗[R] (⊥ : Subalgebra R S) →ₗ[R] M :=
-  show M ⊗[R] (1 : Submodule R S) →ₗ[R] M from
-    (LinearEquiv.ofEq _ _ (by rw [mulMap_range, mul_one])).toLinearMap ∘ₗ (mulMap M _).rangeRestrict
+  show M ⊗[R] Subalgebra.toSubmodule ⊥ →ₗ[R] M from
+    (LinearEquiv.ofEq _ _ (by rw [Algebra.toSubmodule_bot, mulMap_range, mul_one])).toLinearMap ∘ₗ
+      (mulMap M _).rangeRestrict
 
 variable {M} in
 @[simp]
@@ -180,7 +194,7 @@ theorem rTensorOne'_tmul (y : R) (m : M) :
   simp_rw [rTensorOne', LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
     LinearEquiv.coe_ofEq_apply, LinearMap.codRestrict_apply, SetLike.val_smul]
   rw [Algebra.smul_def, Algebra.commutes]
-  exact mulMap_tmul M 1 _ _
+  exact mulMap_tmul M _ _ _
 
 variable {M} in
 @[simp]
@@ -213,7 +227,8 @@ variable {M} in
 @[simp]
 theorem rTensorOne_symm_apply (m : M) : M.rTensorOne.symm m = m ⊗ₜ[R] 1 := rfl
 
-theorem mulMap_one_right_eq : mulMap M 1 = M.subtype ∘ₗ M.rTensorOne.toLinearMap :=
+theorem mulMap_one_right_eq :
+    mulMap M (Subalgebra.toSubmodule ⊥) = M.subtype ∘ₗ M.rTensorOne.toLinearMap :=
   TensorProduct.ext' fun _ _ ↦ rfl
 
 @[simp]

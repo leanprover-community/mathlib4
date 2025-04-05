@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Yaël Dillies, Jineon Baek
 import Mathlib.Algebra.EuclideanDomain.Int
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Nat
+import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.RingTheory.PrincipalIdealDomain
 
 /-!
@@ -83,7 +84,7 @@ lemma FermatLastTheoremFor.mono (hmn : m ∣ n) (hm : FermatLastTheoremFor m) :
 lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
     TFAE [FermatLastTheoremWith ℕ n, FermatLastTheoremWith ℤ n, FermatLastTheoremWith ℚ n] := by
   tfae_have 1 → 2
-  · rintro h a b c ha hb hc habc
+  | h, a, b, c, ha, hb, hc, habc => by
     obtain hn | hn := n.even_or_odd
     · refine h a.natAbs b.natAbs c.natAbs (by positivity) (by positivity) (by positivity)
         (Int.natCast_inj.1 ?_)
@@ -123,7 +124,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
       push_cast
       simp only [abs_of_pos, habc, *]
   tfae_have 2 → 3
-  · rintro h a b c ha hb hc habc
+  | h, a, b, c, ha, hb, hc, habc => by
     rw [← Rat.num_ne_zero] at ha hb hc
     refine h (a.num * b.den * c.den) (a.den * b.num * c.den) (a.den * b.den * c.num)
       (by positivity) (by positivity) (by positivity) ?_
@@ -134,8 +135,7 @@ lemma fermatLastTheoremWith_nat_int_rat_tfae (n : ℕ) :
       div_self (by positivity : (b.den : ℚ) ≠ 0), div_self (by positivity : (c.den : ℚ) ≠ 0),
       one_mul, mul_one, Rat.num_div_den, habc]
   tfae_have 3 → 1
-  · rintro h a b c
-    exact mod_cast h a b c
+  | h, a, b, c => mod_cast h a b c
   tfae_finish
 
 lemma fermatLastTheoremFor_iff_nat {n : ℕ} : FermatLastTheoremFor n ↔ FermatLastTheoremWith ℕ n :=
@@ -189,14 +189,14 @@ lemma fermatLastTheoremWith'_iff_fermatLastTheoremWith {α : Type*} [CommSemirin
 
 lemma fermatLastTheoremWith'_nat_int_tfae (n : ℕ) :
     TFAE [FermatLastTheoremFor n, FermatLastTheoremWith' ℕ n, FermatLastTheoremWith' ℤ n] := by
-  tfae_have 2 ↔ 1
-  · apply fermatLastTheoremWith'_iff_fermatLastTheoremWith
+  tfae_have 2 ↔ 1 := by
+    apply fermatLastTheoremWith'_iff_fermatLastTheoremWith
     simp only [Nat.isUnit_iff]
     intro _ _ _ ha hb hc
     rw [ha, hb, hc]
     simp only [one_pow, Nat.reduceAdd, ne_eq, OfNat.ofNat_ne_one, not_false_eq_true]
-  tfae_have 3 ↔ 1
-  · rw [fermatLastTheoremFor_iff_int]
+  tfae_have 3 ↔ 1 := by
+    rw [fermatLastTheoremFor_iff_int]
     apply fermatLastTheoremWith'_iff_fermatLastTheoremWith
     intro a b c ha hb hc
     by_cases hn : n = 0

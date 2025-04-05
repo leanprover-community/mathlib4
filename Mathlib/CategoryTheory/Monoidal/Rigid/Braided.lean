@@ -25,7 +25,7 @@ private theorem coevaluation_evaluation_braided' [inst : ExactPairing X Y] :
   /- Whitney trick transcribed: https://mathoverflow.net/a/162729/493261 -/
   calc
     _ = 𝟙 X ⊗≫ X ◁ η_ X Y ⊗≫ (X ◁ (β_ Y X).inv ⊗≫ (β_ X Y).hom ▷ X) ⊗≫ ε_ X Y ▷ X ⊗≫ 𝟙 X := by
-      coherence
+      monoidal
     _ = 𝟙 X ⊗≫ X ◁ η_ X Y ⊗≫ (𝟙 (X ⊗ X ⊗ Y) ⊗≫ (β_ X X).hom ▷ Y ⊗≫ X ◁ (β_ X Y).hom
           ⊗≫ (β_ Y X).inv ▷ X ⊗≫ Y ◁ (β_ X X).inv ⊗≫ 𝟙 ((Y ⊗ X) ⊗ X)) ⊗≫ ε_ X Y ▷ X ⊗≫ 𝟙 X := by
       congr 3
@@ -49,7 +49,7 @@ private theorem evaluation_coevaluation_braided' [inst : ExactPairing X Y] :
   rw [Iso.eq_comp_inv, ← Iso.inv_comp_eq_id]
   calc
     _ = 𝟙 Y ⊗≫ η_ X Y ▷ Y ⊗≫ ((β_ Y X).inv ▷ Y ⊗≫ Y ◁ (β_ X Y).hom) ≫ Y ◁ ε_ X Y ⊗≫ 𝟙 Y := by
-      coherence
+      monoidal
     _ = 𝟙 Y ⊗≫ η_ X Y ▷ Y ⊗≫ (𝟙 ((X ⊗ Y) ⊗ Y) ⊗≫ X ◁ (β_ Y Y).hom ⊗≫ (β_ X Y).hom ▷ Y
         ⊗≫ Y ◁ (β_ Y X).inv ⊗≫ (β_ Y Y).inv ▷ X ⊗≫ 𝟙 (Y ⊗ Y ⊗ X)) ⊗≫ Y ◁ ε_ X Y ⊗≫ 𝟙 Y := by
       congr 3
@@ -88,12 +88,12 @@ instance leftRigidCategoryOfRightRigidCategory [RightRigidCategory C] : LeftRigi
 instance rightRigidCategoryOfLeftRigidCategory [LeftRigidCategory C] : RightRigidCategory C where
   rightDual X := hasRightDualOfHasLeftDual (X := X)
 
-/-- If `C` is a braided and right rigid category, then it is a rigid category. --/
+/-- If `C` is a braided and right rigid category, then it is a rigid category. -/
 instance rigidCategoryOfRightRigidCategory [RightRigidCategory C] : RigidCategory C where
   rightDual := inferInstance
   leftDual := inferInstance
 
-/-- If `C` is a braided and left rigid category, then it is a rigid category. --/
+/-- If `C` is a braided and left rigid category, then it is a rigid category. -/
 instance rigidCategoryOfLeftRigidCategory [LeftRigidCategory C] : RigidCategory C where
   rightDual := inferInstance
   leftDual := inferInstance

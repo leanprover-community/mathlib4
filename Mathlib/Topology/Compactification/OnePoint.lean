@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang, Yury Kudryashov
 -/
 import Mathlib.Data.Fintype.Option
-import Mathlib.Topology.Separation
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Sets.Opens
 
 /-!
@@ -44,7 +44,7 @@ In this section we define `OnePoint X` to be the disjoint union of `X` and `∞`
 -/
 
 
-variable {X : Type*}
+variable {X Y : Type*}
 
 /-- The OnePoint extension of an arbitrary topological space `X` -/
 def OnePoint (X : Type*) :=
@@ -67,6 +67,11 @@ scoped notation "∞" => OnePoint.infty
 
 /-- Coercion from `X` to `OnePoint X`. -/
 @[coe, match_pattern] def some : X → OnePoint X := Option.some
+
+@[simp]
+lemma some_eq_iff (x₁ x₂ : X) : (some x₁ = some x₂) ↔ (x₁ = x₂) := by
+  rw [iff_eq_eq]
+  exact Option.some.injEq x₁ x₂
 
 instance : CoeTC X (OnePoint X) := ⟨some⟩
 
@@ -102,16 +107,22 @@ theorem infty_ne_coe (x : X) : ∞ ≠ (x : OnePoint X) :=
   nofun
 
 /-- Recursor for `OnePoint` using the preferred forms `∞` and `↑x`. -/
-@[elab_as_elim]
-protected def rec {C : OnePoint X → Sort*} (h₁ : C ∞) (h₂ : ∀ x : X, C x) :
+@[elab_as_elim, induction_eliminator, cases_eliminator]
+protected def rec {C : OnePoint X → Sort*} (infty : C ∞) (coe : ∀ x : X, C x) :
     ∀ z : OnePoint X, C z
-  | ∞ => h₁
-  | (x : X) => h₂ x
+  | ∞ => infty
+  | (x : X) => coe x
+
+/-- An elimination principle for `OnePoint`. -/
+@[inline] protected def elim : OnePoint X → Y → (X → Y) → Y := Option.elim
+
+@[simp] theorem elim_infty (y : Y) (f : X → Y) : ∞.elim y f = y := rfl
+
+@[simp] theorem elim_some (y : Y) (f : X → Y) (x : X) : (some x).elim y f = f x := rfl
 
 theorem isCompl_range_coe_infty : IsCompl (range ((↑) : X → OnePoint X)) {∞} :=
   isCompl_range_some_none X
 
--- Porting note: moved @[simp] to a new lemma
 theorem range_coe_union_infty : range ((↑) : X → OnePoint X) ∪ {∞} = univ :=
   range_some_union_none X
 
@@ -153,6 +164,19 @@ theorem coe_preimage_infty : ((↑) : X → OnePoint X) ⁻¹' {∞} = ∅ := by
   ext
   simp
 
+/-- Extend a map `f : X → Y` to a map `OnePoint X → OnePoint Y`
+by sending infinity to infinity. -/
+protected def map (f : X → Y) : OnePoint X → OnePoint Y :=
+  Option.map f
+
+@[simp] theorem map_infty (f : X → Y) : OnePoint.map f ∞ = ∞ := rfl
+@[simp] theorem map_some (f : X → Y) (x : X) : (x : OnePoint X).map f = f x := rfl
+@[simp] theorem map_id : OnePoint.map (id : X → X) = id := Option.map_id
+
+theorem map_comp {Z : Type*} (f : Y → Z) (g : X → Y) :
+    OnePoint.map (f ∘ g) = OnePoint.map f ∘ OnePoint.map g :=
+  (Option.map_comp_map _ _).symm
+
 /-!
 ### Topological space structure on `OnePoint X`
 
@@ -187,7 +211,7 @@ instance : TopologicalSpace (OnePoint X) where
     rw [preimage_sUnion]
     exact isOpen_biUnion fun s hs => (ho s hs).2
 
-variable {s : Set (OnePoint X)} {t : Set X}
+variable {s : Set (OnePoint X)}
 
 theorem isOpen_def :
     IsOpen s ↔ (∞ ∈ s → IsCompact ((↑) ⁻¹' s : Set X)ᶜ) ∧ IsOpen ((↑) ⁻¹' s : Set X) :=
@@ -241,36 +265,41 @@ theorem continuous_coe : Continuous ((↑) : X → OnePoint X) :=
 
 theorem isOpenMap_coe : IsOpenMap ((↑) : X → OnePoint X) := fun _ => isOpen_image_coe.2
 
-theorem openEmbedding_coe : OpenEmbedding ((↑) : X → OnePoint X) :=
-  openEmbedding_of_continuous_injective_open continuous_coe coe_injective isOpenMap_coe
+theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : X → OnePoint X) :=
+  .of_continuous_injective_isOpenMap continuous_coe coe_injective isOpenMap_coe
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_coe := isOpenEmbedding_coe
 
 theorem isOpen_range_coe : IsOpen (range ((↑) : X → OnePoint X)) :=
-  openEmbedding_coe.isOpen_range
+  isOpenEmbedding_coe.isOpen_range
 
 theorem isClosed_infty : IsClosed ({∞} : Set (OnePoint X)) := by
   rw [← compl_range_coe, isClosed_compl_iff]
   exact isOpen_range_coe
 
 theorem nhds_coe_eq (x : X) : 𝓝 ↑x = map ((↑) : X → OnePoint X) (𝓝 x) :=
-  (openEmbedding_coe.map_nhds_eq x).symm
+  (isOpenEmbedding_coe.map_nhds_eq x).symm
 
 theorem nhdsWithin_coe_image (s : Set X) (x : X) :
     𝓝[(↑) '' s] (x : OnePoint X) = map (↑) (𝓝[s] x) :=
-  (openEmbedding_coe.toEmbedding.map_nhdsWithin_eq _ _).symm
+  (isOpenEmbedding_coe.isEmbedding.map_nhdsWithin_eq _ _).symm
 
 theorem nhdsWithin_coe (s : Set (OnePoint X)) (x : X) : 𝓝[s] ↑x = map (↑) (𝓝[(↑) ⁻¹' s] x) :=
-  (openEmbedding_coe.map_nhdsWithin_preimage_eq _ _).symm
+  (isOpenEmbedding_coe.map_nhdsWithin_preimage_eq _ _).symm
 
 theorem comap_coe_nhds (x : X) : comap ((↑) : X → OnePoint X) (𝓝 x) = 𝓝 x :=
-  (openEmbedding_coe.toInducing.nhds_eq_comap x).symm
+  (isOpenEmbedding_coe.isInducing.nhds_eq_comap x).symm
 
 /-- If `x` is not an isolated point of `X`, then `x : OnePoint X` is not an isolated point
 of `OnePoint X`. -/
-instance nhdsWithin_compl_coe_neBot (x : X) [h : NeBot (𝓝[≠] x)] :
-    NeBot (𝓝[≠] (x : OnePoint X)) := by
+instance nhdsNE_coe_neBot (x : X) [h : NeBot (𝓝[≠] x)] : NeBot (𝓝[≠] (x : OnePoint X)) := by
   simpa [nhdsWithin_coe, preimage, coe_eq_coe] using h.map some
 
-theorem nhdsWithin_compl_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedCompact X) := by
+@[deprecated (since := "2025-03-02")]
+alias nhdsWithin_compl_coe_neBot := nhdsNE_coe_neBot
+
+theorem nhdsNE_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (coclosedCompact X) := by
   refine (nhdsWithin_basis_open ∞ _).ext (hasBasis_coclosedCompact.map _) ?_ ?_
   · rintro s ⟨hs, hso⟩
     refine ⟨_, (isOpen_iff_of_mem hs).mp hso, ?_⟩
@@ -279,18 +308,26 @@ theorem nhdsWithin_compl_infty_eq : 𝓝[≠] (∞ : OnePoint X) = map (↑) (co
     refine ⟨_, ⟨mem_compl infty_not_mem_image_coe, isOpen_compl_image_coe.2 ⟨h₁, h₂⟩⟩, ?_⟩
     simp [compl_image_coe, ← diff_eq, subset_preimage_image]
 
+@[deprecated (since := "2025-03-02")]
+alias nhdsWithin_compl_infty_eq := nhdsNE_infty_eq
+
 /-- If `X` is a non-compact space, then `∞` is not an isolated point of `OnePoint X`. -/
-instance nhdsWithin_compl_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (∞ : OnePoint X)) := by
-  rw [nhdsWithin_compl_infty_eq]
+instance nhdsNE_infty_neBot [NoncompactSpace X] : NeBot (𝓝[≠] (∞ : OnePoint X)) := by
+  rw [nhdsNE_infty_eq]
   infer_instance
 
-instance (priority := 900) nhdsWithin_compl_neBot [∀ x : X, NeBot (𝓝[≠] x)] [NoncompactSpace X]
+@[deprecated (since := "2025-03-02")]
+alias nhdsWithin_compl_infty_neBot := nhdsNE_infty_neBot
+
+instance (priority := 900) nhdsNE_neBot [∀ x : X, NeBot (𝓝[≠] x)] [NoncompactSpace X]
     (x : OnePoint X) : NeBot (𝓝[≠] x) :=
-  OnePoint.rec OnePoint.nhdsWithin_compl_infty_neBot
-    (fun y => OnePoint.nhdsWithin_compl_coe_neBot y) x
+  OnePoint.rec OnePoint.nhdsNE_infty_neBot (fun y => OnePoint.nhdsNE_coe_neBot y) x
+
+@[deprecated (since := "2025-03-02")]
+alias nhdsWithin_compl_neBot := nhdsNE_neBot
 
 theorem nhds_infty_eq : 𝓝 (∞ : OnePoint X) = map (↑) (coclosedCompact X) ⊔ pure ∞ := by
-  rw [← nhdsWithin_compl_infty_eq, nhdsWithin_compl_singleton_sup_pure]
+  rw [← nhdsNE_infty_eq, nhdsNE_sup_pure]
 
 theorem tendsto_coe_infty : Tendsto (↑) (coclosedCompact X) (𝓝 (∞ : OnePoint X)) := by
   rw [nhds_infty_eq]
@@ -350,9 +387,7 @@ the underlying space and a limit value at infinity.
 -/
 def continuousMapMk {Y : Type*} [TopologicalSpace Y] (f : C(X, Y)) (y : Y)
     (h : Tendsto f (coclosedCompact X) (𝓝 y)) : C(OnePoint X, Y) where
-  toFun
-    | ∞ => y
-    | some x => f x
+  toFun x := x.elim y f
   continuous_toFun := by
     rw [continuous_iff]
     refine ⟨h, f.continuous⟩
@@ -393,7 +428,7 @@ noncomputable def continuousMapDiscreteEquiv (Y : Type*) [DiscreteTopology X] [T
         ⟨fun x ↦ f x, ⟨f ∞, continuous_iff_from_discrete f |>.mp <| map_continuous f⟩⟩
       exact Classical.choose_spec f'.property
     · simp
-  right_inv f := rfl
+  right_inv _ := rfl
 
 lemma continuous_iff_from_nat {Y : Type*} [TopologicalSpace Y] (f : OnePoint ℕ → Y) :
     Continuous f ↔ Tendsto (fun x : ℕ ↦ f x) atTop (𝓝 (f ∞)) := by
@@ -426,16 +461,16 @@ theorem denseRange_coe [NoncompactSpace X] : DenseRange ((↑) : X → OnePoint 
   rw [DenseRange, ← compl_infty]
   exact dense_compl_singleton _
 
-theorem denseEmbedding_coe [NoncompactSpace X] : DenseEmbedding ((↑) : X → OnePoint X) :=
-  { openEmbedding_coe with dense := denseRange_coe }
+theorem isDenseEmbedding_coe [NoncompactSpace X] : IsDenseEmbedding ((↑) : X → OnePoint X) :=
+  { isOpenEmbedding_coe with dense := denseRange_coe }
 
 @[simp, norm_cast]
 theorem specializes_coe {x y : X} : (x : OnePoint X) ⤳ y ↔ x ⤳ y :=
-  openEmbedding_coe.toInducing.specializes_iff
+  isOpenEmbedding_coe.isInducing.specializes_iff
 
 @[simp, norm_cast]
 theorem inseparable_coe {x y : X} : Inseparable (x : OnePoint X) y ↔ Inseparable x y :=
-  openEmbedding_coe.toInducing.inseparable_iff
+  isOpenEmbedding_coe.isInducing.inseparable_iff
 
 theorem not_specializes_infty_coe {x : X} : ¬Specializes ∞ (x : OnePoint X) :=
   isClosed_infty.not_specializes rfl (coe_ne_infty x)
@@ -451,6 +486,18 @@ theorem inseparable_iff {x y : OnePoint X} :
   induction x using OnePoint.rec <;> induction y using OnePoint.rec <;>
     simp [not_inseparable_infty_coe, not_inseparable_coe_infty, coe_eq_coe, Inseparable.refl]
 
+theorem continuous_map_iff [TopologicalSpace Y] {f : X → Y} :
+    Continuous (OnePoint.map f) ↔
+      Continuous f ∧ Tendsto f (coclosedCompact X) (coclosedCompact Y) := by
+  simp_rw [continuous_iff, map_some, ← comap_coe_nhds_infty, tendsto_comap_iff, map_infty,
+    isOpenEmbedding_coe.isInducing.continuous_iff (Y := Y)]
+  exact and_comm
+
+theorem continuous_map [TopologicalSpace Y] {f : X → Y} (hc : Continuous f)
+    (h : Tendsto f (coclosedCompact X) (coclosedCompact Y)) :
+    Continuous (OnePoint.map f) :=
+  continuous_map_iff.mpr ⟨hc, h⟩
+
 /-!
 ### Compactness and separation properties
 
@@ -461,7 +508,6 @@ Hausdorff space, then `OnePoint X` is a normal (hence, T₃ and Hausdorff) space
 Finally, if the original space `X` is *not* compact and is a preconnected space, then
 `OnePoint X` is a connected space.
 -/
-
 
 /-- For any topological space `X`, its one point compactification is a compact space. -/
 instance : CompactSpace (OnePoint X) where
@@ -486,8 +532,9 @@ instance [T1Space X] : T1Space (OnePoint X) where
     · rw [← image_singleton, isClosed_image_coe]
       exact ⟨isClosed_singleton, isCompact_singleton⟩
 
-/-- The one point compactification of a locally compact R₁ space is a normal topological space. -/
-instance [LocallyCompactSpace X] [R1Space X] : NormalSpace (OnePoint X) := by
+/-- The one point compactification of a weakly locally compact R₁ space
+is a normal topological space. -/
+instance [WeaklyLocallyCompactSpace X] [R1Space X] : NormalSpace (OnePoint X) := by
   suffices R1Space (OnePoint X) by infer_instance
   have key : ∀ z : X, Disjoint (𝓝 (some z)) (𝓝 ∞) := fun z ↦ by
     rw [nhds_infty_eq, disjoint_sup_right, nhds_coe_eq, coclosedCompact_eq_cocompact,
@@ -507,7 +554,7 @@ example [WeaklyLocallyCompactSpace X] [T2Space X] : T4Space (OnePoint X) := infe
 
 /-- If `X` is not a compact space, then `OnePoint X` is a connected space. -/
 instance [PreconnectedSpace X] [NoncompactSpace X] : ConnectedSpace (OnePoint X) where
-  toPreconnectedSpace := denseEmbedding_coe.toDenseInducing.preconnectedSpace
+  toPreconnectedSpace := isDenseEmbedding_coe.isDenseInducing.preconnectedSpace
   toNonempty := inferInstance
 
 /-- If `X` is an infinite type with discrete topology (e.g., `ℕ`), then the identity map from
@@ -524,18 +571,82 @@ instance (X : Type*) [TopologicalSpace X] [DiscreteTopology X] :
     TotallySeparatedSpace (OnePoint X) where
   isTotallySeparated_univ x _ y _ hxy := by
     cases x with
-    | none =>
+    | infty =>
       refine ⟨{y}ᶜ, {y}, isOpen_compl_singleton, ?_, hxy, rfl, (compl_union_self _).symm.subset,
         disjoint_compl_left⟩
       rw [OnePoint.isOpen_iff_of_not_mem]
       exacts [isOpen_discrete _, hxy]
-    | some val =>
+    | coe val =>
       refine ⟨{some val}, {some val}ᶜ, ?_, isOpen_compl_singleton, rfl, hxy.symm, by simp,
         disjoint_compl_right⟩
       rw [OnePoint.isOpen_iff_of_not_mem]
       exacts [isOpen_discrete _, (Option.some_ne_none val).symm]
 
+section Uniqueness
+
+variable [TopologicalSpace Y] [T2Space Y] [CompactSpace Y]
+  (y : Y) (f : X → Y) (hf : IsEmbedding f) (hy : range f = {y}ᶜ)
+
+open scoped Classical in
+/-- If `f` embeds `X` into a compact Hausdorff space `Y`, and has exactly one point outside its
+range, then `(Y, f)` is the one-point compactification of `X`. -/
+noncomputable def equivOfIsEmbeddingOfRangeEq :
+    OnePoint X ≃ₜ Y :=
+  have _i := hf.t2Space
+  have : Tendsto f (coclosedCompact X) (𝓝 y) := by
+    rw [coclosedCompact_eq_cocompact, hasBasis_cocompact.tendsto_left_iff]
+    intro N hN
+    obtain ⟨U, hU₁, hU₂, hU₃⟩ := mem_nhds_iff.mp hN
+    refine ⟨f⁻¹' Uᶜ, ?_, by simpa using (mapsTo_preimage f U).mono_right hU₁⟩
+    rw [hf.isCompact_iff, image_preimage_eq_iff.mpr (by simpa [hy])]
+    exact (isClosed_compl_iff.mpr hU₂).isCompact
+  let e : OnePoint X ≃ Y :=
+    { toFun := fun p ↦ p.elim y f
+      invFun := fun q ↦ if hq : q = y then ∞ else ↑(show q ∈ range f from by simpa [hy]).choose
+      left_inv := fun p ↦ by
+        induction p using OnePoint.rec with
+        | infty => simp
+        | coe p =>
+          have hp : f p ≠ y := by simpa [hy] using mem_range_self (f := f) p
+          simpa [hp] using hf.injective (mem_range_self p).choose_spec
+      right_inv := fun q ↦ by
+        rcases eq_or_ne q y with rfl | hq
+        · simp
+        · have hq' : q ∈ range f := by simpa [hy]
+          simpa [hq] using hq'.choose_spec }
+  Continuous.homeoOfEquivCompactToT2 <| (continuous_iff e).mpr ⟨this, hf.continuous⟩
+
+@[simp]
+lemma equivOfIsEmbeddingOfRangeEq_apply_coe (x : X) :
+    equivOfIsEmbeddingOfRangeEq y f hf hy x = f x :=
+  rfl
+
+@[simp]
+lemma equivOfIsEmbeddingOfRangeEq_apply_infty :
+    equivOfIsEmbeddingOfRangeEq y f hf hy ∞ = y :=
+  rfl
+
+end Uniqueness
+
 end OnePoint
+
+namespace Homeomorph
+
+variable [TopologicalSpace X] [TopologicalSpace Y]
+
+open OnePoint
+
+/-- Extend a homeomorphism of topological spaces
+to the homeomorphism of their one point compactifications. -/
+@[simps]
+def onePointCongr (h : X ≃ₜ Y) : OnePoint X ≃ₜ OnePoint Y where
+  __ := h.toEquiv.optionCongr
+  toFun := OnePoint.map h
+  invFun := OnePoint.map h.symm
+  continuous_toFun := continuous_map (map_continuous h) h.map_coclosedCompact.le
+  continuous_invFun := continuous_map (map_continuous h.symm) h.symm.map_coclosedCompact.le
+
+end Homeomorph
 
 /-- A concrete counterexample shows that `Continuous.homeoOfEquivCompactToT2`
 cannot be generalized from `T2Space` to `T1Space`.

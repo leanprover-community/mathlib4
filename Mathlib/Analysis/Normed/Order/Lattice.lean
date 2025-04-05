@@ -35,10 +35,6 @@ normed, lattice, ordered, group
 Motivated by the theory of Banach Lattices, this section introduces normed lattice ordered groups.
 -/
 
-
--- Porting note: this now exists as a global notation
--- local notation "|" a "|" => abs a
-
 section SolidNorm
 
 /-- Let `α` be an `AddCommGroup` with a `Lattice` structure. A norm on `α` is *solid* if, for `a`
@@ -73,6 +69,14 @@ class NormedLatticeAddCommGroup (α : Type*) extends
     NormedAddCommGroup α, Lattice α, HasSolidNorm α where
   add_le_add_left : ∀ a b : α, a ≤ b → ∀ c : α, c + a ≤ c + b
 
+instance Int.normedLatticeAddCommGroup : NormedLatticeAddCommGroup ℤ where
+  solid x y h := by simpa [← Int.norm_cast_real, ← Int.cast_abs] using h
+  add_le_add_left _ _ := add_le_add_left
+
+instance Rat.normedLatticeAddCommGroup : NormedLatticeAddCommGroup ℚ where
+  solid x y h := by simpa [← Rat.norm_cast_real, ← Rat.cast_abs] using h
+  add_le_add_left _ _ := add_le_add_left
+
 instance Real.normedLatticeAddCommGroup : NormedLatticeAddCommGroup ℝ where
   add_le_add_left _ _ h _ := add_le_add le_rfl h
 
@@ -102,7 +106,7 @@ normed lattice ordered group.
 -/
 instance (priority := 100) OrderDual.instNormedLatticeAddCommGroup :
     NormedLatticeAddCommGroup αᵒᵈ :=
-  { OrderDual.orderedAddCommGroup, OrderDual.normedAddCommGroup, OrderDual.instLattice α with
+  { OrderDual.isOrderedAddMonoid, OrderDual.normedAddCommGroup, OrderDual.instLattice α with
     solid := dual_solid (α := α) }
 
 theorem norm_abs_eq_norm (a : α) : ‖|a|‖ = ‖a‖ :=
@@ -185,8 +189,10 @@ lemma lipschitzWith_posPart : LipschitzWith 1 (posPart : α → α) :=
 lemma lipschitzWith_negPart : LipschitzWith 1 (negPart : α → α) := by
   simpa [Function.comp] using lipschitzWith_posPart.comp LipschitzWith.id.neg
 
+@[fun_prop]
 lemma continuous_posPart : Continuous (posPart : α → α) := lipschitzWith_posPart.continuous
 
+@[fun_prop]
 lemma continuous_negPart : Continuous (negPart : α → α) := lipschitzWith_negPart.continuous
 
 lemma isClosed_nonneg : IsClosed {x : α | 0 ≤ x} := by

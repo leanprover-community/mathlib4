@@ -60,9 +60,9 @@ section accumulate
 
 /-- The `j`th entry of `accumulate n m t` is the sum of `t i` over all `i ≥ j`. -/
 @[simps] def accumulate (n m : ℕ) : (Fin n → ℕ) →+ (Fin m → ℕ) where
-  toFun t j := ∑ i in univ.filter (fun i : Fin n ↦ (j : ℕ) ≤ i), t i
-  map_zero' := funext <| fun j ↦ sum_eq_zero <| fun h _ ↦ rfl
-  map_add' t₁ t₂ := funext <| fun j ↦ by dsimp only; exact sum_add_distrib
+  toFun t j := ∑ i : Fin n with j.val ≤ i.val, t i
+  map_zero' := funext <| fun _ ↦ sum_eq_zero <| fun _ _ ↦ rfl
+  map_add' _ _ := funext <| fun _ ↦ sum_add_distrib
 
 /-- The `i`th entry of `invAccumulate n m s` is `s i - s (i+1)`, where `s j = 0` if `j ≥ m`. -/
 def invAccumulate (n m : ℕ) (s : Fin m → ℕ) (i : Fin n) : ℕ :=
@@ -106,7 +106,7 @@ lemma accumulate_invAccumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : A
     rw [accumulate_rec (him.trans_le hmn) hi, ih hi, invAccumulate, dif_pos him, dif_pos hi]
     simp only
     exact Nat.sub_add_cancel (hs i.le_succ)
-  · have := (Nat.sub_one_add_one <| Nat.not_eq_zero_of_lt hm).symm
+  · have := (Nat.sub_one_add_one <| Nat.ne_zero_of_lt hm).symm
     rw [accumulate_last (hm.trans_le hmn) this, invAccumulate, dif_pos hm, dif_neg this.not_gt,
       Nat.sub_zero]
     intro j hj
@@ -146,7 +146,7 @@ variable (σ) in
 noncomputable def esymmAlgHomMonomial (t : Fin n →₀ ℕ) (r : R) :
     MvPolynomial σ R := (esymmAlgHom σ R n <| monomial t r).val
 
-variable {i : Fin n} {j : Fin m} {r : R}
+variable {i : Fin n} {r : R}
 
 lemma isSymmetric_esymmAlgHomMonomial (t : Fin n →₀ ℕ) (r : R) :
     (esymmAlgHomMonomial σ t r).IsSymmetric := (esymmAlgHom _ _ _ _).2
@@ -173,12 +173,12 @@ private lemma supDegree_monic_esymm [Nontrivial R] {i : ℕ} (him : i < m) :
       toLex (Finsupp.indicator (Iic ⟨i, him⟩) fun _ _ ↦ 1) ∧
     Monic toLex (esymm (Fin m) R (i + 1)) := by
   have := supDegree_leadingCoeff_sum_eq (D := toLex) (s := univ.powersetCard (i + 1))
-    (i := Iic (⟨i, him⟩ : Fin m)) ?_ (f := fun s ↦ monomial (∑ j in s, fun₀ | j => 1) (1 : R)) ?_
+    (i := Iic (⟨i, him⟩ : Fin m)) ?_ (f := fun s ↦ monomial (∑ j ∈ s, fun₀ | j => 1) (1 : R)) ?_
   · rwa [← esymm_eq_sum_monomial, ← Finsupp.indicator_eq_sum_single, ← single_eq_monomial,
       supDegree_single_ne_zero _ one_ne_zero, leadingCoeff_single toLex.injective] at this
   · exact mem_powersetCard.2 ⟨subset_univ _, Fin.card_Iic _⟩
   intro t ht hne
-  have ht' : t.card = (Iic (⟨i, him⟩ : Fin m)).card := by
+  have ht' : #t = #(Iic (⟨i, him⟩ : Fin m)) := by
     rw [(mem_powersetCard.1 ht).2, Fin.card_Iic]
   simp_rw [← single_eq_monomial, supDegree_single_ne_zero _ one_ne_zero,
     ← Finsupp.indicator_eq_sum_single]
@@ -212,8 +212,8 @@ lemma monic_esymm {i : ℕ} (him : i ≤ m) : Monic toLex (esymm (Fin m) R i) :=
 lemma leadingCoeff_esymmAlgHomMonomial (t : Fin n →₀ ℕ) (hnm : n ≤ m) :
     leadingCoeff toLex (esymmAlgHomMonomial (Fin m) t r) = r := by
   induction t using Finsupp.induction₂ with
-  | h0 => rw [esymmAlgHom_zero, leadingCoeff_toLex_C]
-  | ha i _ _ _ _ ih =>
+  | zero => rw [esymmAlgHom_zero, leadingCoeff_toLex_C]
+  | add_single i _ _ _ _ ih =>
     rw [esymmAlgHomMonomial_add, esymmAlgHomMonomial_single_one,
         ((monic_esymm <| i.2.trans_le hnm).pow toLex_add toLex.injective).leadingCoeff_mul_eq_left,
         ih]
@@ -223,8 +223,8 @@ lemma supDegree_esymmAlgHomMonomial (hr : r ≠ 0) (t : Fin n →₀ ℕ) (hnm :
     ofLex (supDegree toLex <| esymmAlgHomMonomial (Fin m) t r) = accumulate n m t := by
   nontriviality R
   induction t using Finsupp.induction₂ with
-  | h0 => simp_rw [esymmAlgHom_zero, supDegree_toLex_C, ofLex_zero, Finsupp.coe_zero, map_zero]
-  | ha  i _ _ _ _ ih =>
+  | zero => simp_rw [esymmAlgHom_zero, supDegree_toLex_C, ofLex_zero, Finsupp.coe_zero, map_zero]
+  | add_single i _ _ _ _ ih =>
     have := i.2.trans_le hnm
     rw [esymmAlgHomMonomial_add, esymmAlgHomMonomial_single_one,
         Monic.supDegree_mul_of_ne_zero_left toLex.injective toLex_add, ofLex_add, Finsupp.coe_add,
@@ -235,6 +235,7 @@ lemma supDegree_esymmAlgHomMonomial (hr : r ≠ 0) (t : Fin n →₀ ℕ) (hnm :
     · exact (monic_esymm this).pow toLex_add toLex.injective
     · rwa [Ne, ← leadingCoeff_eq_zero toLex.injective, leadingCoeff_esymmAlgHomMonomial _ hnm]
 
+omit [Fintype σ] in
 lemma IsSymmetric.antitone_supDegree [LinearOrder σ] {p : MvPolynomial σ R} (hp : p.IsSymmetric) :
     Antitone ↑(ofLex <| p.supDegree toLex) := by
   obtain rfl | h0 := eq_or_ne p 0
@@ -315,9 +316,9 @@ lemma esymmAlgHom_fin_surjective (h : m ≤ n) :
   obtain ⟨q, rfl⟩ := (esymmAlgHom_fin_bijective R m).2 p
   rw [← AlgHom.mem_range]
   induction q using MvPolynomial.induction_on with
-  | h_C r => rw [← algebraMap_eq, AlgHom.commutes]; apply Subalgebra.algebraMap_mem
-  | h_add p q hp hq => rw [map_add]; exact Subalgebra.add_mem _ hp hq
-  | h_X p i hp =>
+  | C r => rw [← algebraMap_eq, AlgHom.commutes]; apply Subalgebra.algebraMap_mem
+  | add p q hp hq => rw [map_add]; exact Subalgebra.add_mem _ hp hq
+  | mul_X p i hp =>
     rw [map_mul]
     apply Subalgebra.mul_mem _ hp
     rw [AlgHom.mem_range]

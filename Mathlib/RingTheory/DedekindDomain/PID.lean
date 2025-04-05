@@ -42,7 +42,6 @@ theorem Ideal.eq_span_singleton_of_mem_of_not_mem_sq_of_not_mem_prime_ne {P : Id
     exact hxP2 (zero_mem _)
   by_cases hP0 : P = ⊥
   · subst hP0
-    -- Porting note: was `simpa using hxP2` but that hypothesis didn't even seem relevant in Lean 3
     rwa [eq_comm, span_singleton_eq_bot, ← mem_bot]
   have hspan0 : span ({x} : Set R) ≠ ⊥ := mt Ideal.span_singleton_eq_bot.mp hx0
   have span_le := (Ideal.span_singleton_le_iff_mem _).mpr x_mem
@@ -111,7 +110,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
   let s := hf.toFinset
   haveI := Classical.decEq (Ideal R)
   have coprime : ∀ M ∈ s, ∀ M' ∈ s.erase M, M ⊔ M' = ⊤ := by
-    simp_rw [Finset.mem_erase, hf.mem_toFinset]
+    simp_rw [s, Finset.mem_erase, hf.mem_toFinset]
     rintro M hM M' ⟨hne, hM'⟩
     exact Ideal.IsMaximal.coprime_of_ne hM hM' hne.symm
   have nle : ∀ M ∈ s, ¬⨅ M' ∈ s.erase M, M' ≤ M := fun M hM =>
@@ -123,7 +122,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
       SetLike.exists_of_lt
         ((IsLocalization.coeSubmodule_strictMono hS (hf.mem_toFinset.1 hM).ne_top.lt_top).trans_eq
           hinv.symm)
-    exact hxM (Submodule.map₂_le.2 h hx)
+    exact hxM (Submodule.mul_le.2 h hx)
   choose! a ha b hb hm using this
   choose! u hu hum using fun M hM => SetLike.not_le_iff_exists.1 (nle M hM)
   let v := ∑ M ∈ s, u M • b M
@@ -147,19 +146,19 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
   · refine hm M hM ?_
     obtain ⟨c, hc : algebraMap R A c = a M * b M⟩ := this _ (ha M hM) _ (hb M hM)
     rw [← hc] at hmem ⊢
-    rw [Algebra.smul_def, ← _root_.map_mul] at hmem
+    rw [Algebra.smul_def, ← map_mul] at hmem
     obtain ⟨d, hdM, he⟩ := hmem
     rw [IsLocalization.injective _ hS he] at hdM
-    -- Note: #8386 had to specify the value of `f`
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify the value of `f`
     exact Submodule.mem_map_of_mem (f := Algebra.linearMap _ _)
         (((hf.mem_toFinset.1 hM).isPrime.mem_or_mem hdM).resolve_left <| hum M hM)
   · refine Submodule.sum_mem _ fun M' hM' => ?_
     rw [Finset.mem_erase] at hM'
     obtain ⟨c, hc⟩ := this _ (ha M hM) _ (hb M' hM'.2)
-    rw [← hc, Algebra.smul_def, ← _root_.map_mul]
+    rw [← hc, Algebra.smul_def, ← map_mul]
     specialize hu M' hM'.2
     simp_rw [Ideal.mem_iInf, Finset.mem_erase] at hu
-    -- Note: #8386 had to specify the value of `f`
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify the value of `f`
     exact Submodule.mem_map_of_mem (f := Algebra.linearMap _ _)
       (M.mul_mem_right _ <| hu M ⟨hM'.1.symm, hM⟩)
 
@@ -184,7 +183,7 @@ theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
 
 variable [IsDedekindDomain R]
 variable (S : Type*) [CommRing S]
-variable [Algebra R S] [Module.Free R S] [Module.Finite R S]
+variable [Algebra R S] [NoZeroSMulDivisors R S] [Module.Finite R S]
 variable (p : Ideal R) (hp0 : p ≠ ⊥) [IsPrime p]
 variable {Sₚ : Type*} [CommRing Sₚ] [Algebra S Sₚ]
 variable [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
@@ -201,19 +200,18 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
     {P : Ideal Sₚ} (hP : IsPrime P) (hP0 : P ≠ ⊥) :
     P ∈ normalizedFactors (Ideal.map (algebraMap R Sₚ) p) := by
   have non_zero_div : Algebra.algebraMapSubmonoid S p.primeCompl ≤ S⁰ :=
-    map_le_nonZeroDivisors_of_injective _ (NoZeroSMulDivisors.algebraMap_injective _ _)
+    map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
       p.primeCompl_le_nonZeroDivisors
   letI : Algebra (Localization.AtPrime p) Sₚ := localizationAlgebra p.primeCompl S
   haveI : IsScalarTower R (Localization.AtPrime p) Sₚ :=
     IsScalarTower.of_algebraMap_eq fun x => by
-      -- Porting note: replaced `erw` with a `rw` followed by `exact` to help infer implicits
       rw [IsScalarTower.algebraMap_apply R S]
       exact (IsLocalization.map_eq (T := Algebra.algebraMapSubmonoid S (primeCompl p))
         (Submonoid.le_comap_map _) x).symm
   obtain ⟨pid, p', ⟨hp'0, hp'p⟩, hpu⟩ :=
-    (DiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime p)).mp
-      (IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain R hp0 _)
-  have : LocalRing.maximalIdeal (Localization.AtPrime p) ≠ ⊥ := by
+    (IsDiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime p)).mp
+      (IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain R hp0 _)
+  have : IsLocalRing.maximalIdeal (Localization.AtPrime p) ≠ ⊥ := by
     rw [Submodule.ne_bot_iff] at hp0 ⊢
     obtain ⟨x, x_mem, x_ne⟩ := hp0
     exact
@@ -225,16 +223,16 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
     dvd_iff_normalizedFactors_le_normalizedFactors hP0, dvd_iff_le,
     IsScalarTower.algebraMap_eq R (Localization.AtPrime p) Sₚ, ← Ideal.map_map,
     Localization.AtPrime.map_eq_maximalIdeal, Ideal.map_le_iff_le_comap,
-    hpu (LocalRing.maximalIdeal _) ⟨this, _⟩, hpu (comap _ _) ⟨_, _⟩]
+    hpu (IsLocalRing.maximalIdeal _) ⟨this, _⟩, hpu (comap _ _) ⟨_, _⟩]
   · have : Algebra.IsIntegral (Localization.AtPrime p) Sₚ := ⟨isIntegral_localization⟩
     exact mt (Ideal.eq_bot_of_comap_eq_bot ) hP0
   · exact Ideal.comap_isPrime (algebraMap (Localization.AtPrime p) Sₚ) P
-  · exact (LocalRing.maximalIdeal.isMaximal _).isPrime
+  · exact (IsLocalRing.maximalIdeal.isMaximal _).isPrime
   · rw [Ne, zero_eq_bot, Ideal.map_eq_bot_iff_of_injective]
     · assumption
     rw [IsScalarTower.algebraMap_eq R S Sₚ]
     exact
-      (IsLocalization.injective Sₚ non_zero_div).comp (NoZeroSMulDivisors.algebraMap_injective _ _)
+      (IsLocalization.injective Sₚ non_zero_div).comp (FaithfulSMul.algebraMap_injective _ _)
 
 /-- Let `p` be a prime in the Dedekind domain `R` and `S` be an integral extension of `R`,
 then the localization `Sₚ` of `S` at `p` is a PID. -/
@@ -245,8 +243,7 @@ theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime [IsDomain 
   refine
     IsPrincipalIdealRing.of_finite_primes
       (Set.Finite.ofFinset
-        (Finset.filter (fun P => P.IsPrime)
-          ({⊥} ∪ (normalizedFactors (Ideal.map (algebraMap R Sₚ) p)).toFinset))
+        {P ∈ {⊥} ∪ (normalizedFactors (Ideal.map (algebraMap R Sₚ) p)).toFinset | P.IsPrime}
         fun P => ?_)
   rw [Finset.mem_filter, Finset.mem_union, Finset.mem_singleton, Set.mem_setOf,
     Multiset.mem_toFinset]
