@@ -107,6 +107,10 @@ lemma coxeterWeight_zero_iff_isOrthogonal :
     P.coxeterWeight i j = 0 ↔ P.IsOrthogonal i j := by
   simp [coxeterWeight, IsOrthogonal, B.pairing_zero_iff i j]
 
+lemma isOrthogonal_iff_pairingIn_eq_zero :
+    P.IsOrthogonal i j ↔ P.pairing i j = 0 := by
+  simp [← B.coxeterWeight_zero_iff_isOrthogonal, coxeterWeight, B.pairing_zero_iff j i]
+
 end InvariantForm
 
 variable (S) in

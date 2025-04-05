@@ -419,11 +419,19 @@ lemma root_eq_neg_iff :
   refine ⟨fun h ↦ P.root.injective ?_, fun h ↦ by simp [h]⟩
   rw [root_reflection_perm, reflection_apply_self, h, neg_neg]
 
+lemma root_eq_neg_iff' :
+    P.root i = - P.root j ↔ i = P.reflection_perm j j := by
+  rw [← neg_eq_iff_eq_neg, eq_comm, root_eq_neg_iff]
+
 variable {i j} in
 @[simp]
 lemma coroot_eq_neg_iff :
     P.coroot i = - P.coroot j ↔ j = P.reflection_perm i i :=
   P.flip.root_eq_neg_iff
+
+lemma coroot_eq_neg_iff' :
+    P.coroot i = - P.coroot j ↔ i = P.reflection_perm j j :=
+  P.flip.root_eq_neg_iff' i j
 
 lemma neg_mem_range_root_iff {x : M} :
     -x ∈ range P.root ↔ x ∈ range P.root := by

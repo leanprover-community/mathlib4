@@ -226,6 +226,7 @@ lemma pairingIn_two_two_iff :
   simp only [← P.pairing_two_two_iff, ← P.algebraMap_pairingIn S, ← map_ofNat (algebraMap S R),
     (algebraMap_injective S R).eq_iff]
 
+@[simp]
 lemma pairingIn_neg_two_neg_two_iff :
     P.pairingIn S i j = -2 ∧ P.pairingIn S j i = -2 ↔ P.root i = -P.root j := by
   simp only [← P.pairing_neg_two_neg_two_iff, ← P.algebraMap_pairingIn S,
