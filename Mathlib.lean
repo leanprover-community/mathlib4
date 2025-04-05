@@ -4658,6 +4658,9 @@ import Mathlib.Order.Partition.Finpartition
 import Mathlib.Order.PiLex
 import Mathlib.Order.PrimeIdeal
 import Mathlib.Order.PrimeSeparator
+import Mathlib.Order.Prod.Lex.GroupWithZero
+import Mathlib.Order.Prod.Lex.Hom
+import Mathlib.Order.Prod.Lex.Monoid
 import Mathlib.Order.PropInstances
 import Mathlib.Order.Radical
 import Mathlib.Order.Rel.GaloisConnection
