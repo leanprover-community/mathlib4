@@ -1322,4 +1322,13 @@ lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
 
 end lookup
 
+section range'
+
+lemma left_le_of_mem_range' {a b s x : ℕ}
+    (hx : x ∈ List.range' a b s) : a ≤ x := by
+  obtain ⟨i, _, rfl⟩ := List.mem_range'.mp hx
+  exact le_add_right a (s * i)
+
+end range'
+
 end List
