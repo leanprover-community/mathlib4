@@ -5970,6 +5970,7 @@ import Mathlib.Topology.MetricSpace.Closeds
 import Mathlib.Topology.MetricSpace.Completion
 import Mathlib.Topology.MetricSpace.Congruence
 import Mathlib.Topology.MetricSpace.Contracting
+import Mathlib.Topology.MetricSpace.Cover
 import Mathlib.Topology.MetricSpace.Defs
 import Mathlib.Topology.MetricSpace.Dilation
 import Mathlib.Topology.MetricSpace.DilationEquiv
@@ -6122,9 +6123,11 @@ import Mathlib.Topology.UniformSpace.CompactConvergence
 import Mathlib.Topology.UniformSpace.CompareReals
 import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.UniformSpace.Cover
 import Mathlib.Topology.UniformSpace.Defs
 import Mathlib.Topology.UniformSpace.Dini
 import Mathlib.Topology.UniformSpace.DiscreteUniformity
+import Mathlib.Topology.UniformSpace.Entourage
 import Mathlib.Topology.UniformSpace.Equicontinuity
 import Mathlib.Topology.UniformSpace.Equiv
 import Mathlib.Topology.UniformSpace.HeineCantor
@@ -6133,6 +6136,7 @@ import Mathlib.Topology.UniformSpace.OfCompactT2
 import Mathlib.Topology.UniformSpace.OfFun
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Real
+import Mathlib.Topology.UniformSpace.Separated
 import Mathlib.Topology.UniformSpace.Separation
 import Mathlib.Topology.UniformSpace.Ultra.Basic
 import Mathlib.Topology.UniformSpace.Ultra.Constructions
