@@ -220,9 +220,13 @@ theorem exists_path_lifts : ∃ Γ : C(I,E), p ∘ Γ = γ ∧ Γ 0 = e := by
     exact ⟨⟨Γ, continuous_iff_continuousOn_univ.mpr
       (by convert cont; rw [eq_comm, Set.eq_univ_iff_forall]; exact fun t ↦ ⟨bot_le, le_top⟩)⟩,
       funext fun _ ↦ eqOn ⟨bot_le, le_top⟩, Γ_0⟩
-  refine Nat.rec ⟨fun _ ↦ e, continuous_const.continuousOn, fun t ht ↦ ?_, rfl⟩
-    fun n ⟨Γ, cont, eqOn, Γ_0⟩ ↦ ?_
-  · rw [t_0, Set.Icc_self] at ht; cases ht; exact γ_0.symm
+  intro n
+  induction n with
+  | zero =>
+    refine ⟨fun _ ↦ e, continuous_const.continuousOn, fun t ht ↦ ?_, rfl⟩
+    rw [t_0, Set.Icc_self, Set.mem_singleton_iff] at ht; subst ht; exact γ_0.symm
+  | succ n ih => ?_
+  obtain ⟨Γ, cont, eqOn, Γ_0⟩ := ih
   obtain ⟨x, t_sub⟩ := t_sub n
   refine ⟨fun s ↦ if s ≤ t n then Γ s else (q x).invFun (γ s, (q x (Γ (t n))).2),
     .if (fun s hs ↦ ?_) (cont.mono fun _ h ↦ ?_) ?_, fun s hs ↦ ?_, ?_⟩

@@ -164,8 +164,7 @@ lemma isLoop_iff_closure_eq_loops_and_mem_ground :
   mp h := ⟨h.closure, h.mem_ground⟩
   mpr h := by
     rw [isLoop_iff, ← closure_empty, ← singleton_subset_iff,
-      ← closure_subset_closure_iff_subset_closure, h.1]
-    rfl
+      ← closure_subset_closure_iff_subset_closure, h.1, loops]
 
 lemma isLoop_iff_closure_eq_loops (he : e ∈ M.E := by aesop_mat) :
     M.IsLoop e ↔ M.closure {e} = M.loops := by
