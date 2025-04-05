@@ -234,6 +234,16 @@ lemma exists_ne_zero (χ : Weight R L M) :
     ∃ x ∈ genWeightSpace M χ, x ≠ 0 := by
   simpa [LieSubmodule.eq_bot_iff] using χ.genWeightSpace_ne_bot
 
+lemma genWeightSpace_ne_bot_mod (χ : Weight R L M) :
+    (genWeightSpace M χ).toSubmodule ≠ ⊥ := by
+  have := exists_ne_zero χ
+  obtain ⟨x1, x2, x3⟩ := this
+  exact ne_of_mem_of_not_mem' x2 x3
+
+lemma genWeightSpace_ne_bot_modd (χ : {χ : L → R | (genWeightSpace M χ).toSubmodule ≠ ⊥}) :
+    genWeightSpace M χ.1 ≠ ⊥ := by
+  simpa [LieSubmodule.eq_bot_iff] using χ.2
+
 instance [Subsingleton M] : IsEmpty (Weight R L M) :=
   ⟨fun h ↦ h.2 (Subsingleton.elim _ _)⟩
 
@@ -273,6 +283,13 @@ variable (R L M) in
 def equivSetOf : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
   toFun w := ⟨w.1, w.2⟩
   invFun w := ⟨w.1, w.2⟩
+  left_inv w := by simp
+  right_inv w := by simp
+
+variable (R L M) in
+def equivSetOff : Weight R L M ≃ {χ : L → R | (genWeightSpace M χ).toSubmodule ≠ ⊥} where
+  toFun w := ⟨w.1, w.genWeightSpace_ne_bot_mod⟩
+  invFun w := ⟨w, genWeightSpace_ne_bot_modd w⟩
   left_inv w := by simp
   right_inv w := by simp
 
@@ -775,6 +792,20 @@ lemma iSup_genWeightSpace_eq_top' [IsTriangularizable K L M] :
     ⨆ χ : Weight K L M, genWeightSpace M χ = ⊤ := by
   have := iSup_genWeightSpace_eq_top K L M
   erw [← iSup_ne_bot_subtype, ← (Weight.equivSetOf K L M).iSup_comp] at this
+  exact this
+
+lemma iSup_genWeightSpace_as_module_eq_top [IsTriangularizable K L M] :
+    ⨆ χ : L → K, (genWeightSpace M χ).toSubmodule = ⊤ := by
+  simp only [← LieSubmodule.toSubmodule_inj, LieSubmodule.iSup_toSubmodule,
+    LieSubmodule.iInf_toSubmodule, LieSubmodule.top_toSubmodule, genWeightSpace]
+  refine Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo (toEnd K L M)
+    (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem) ?_
+  apply IsTriangularizable.maxGenEigenspace_eq_top
+
+lemma iSup_genWeightSpace_as_module_eq_top' [IsTriangularizable K L M] :
+    ⨆ χ : Weight K L M, (genWeightSpace M χ).toSubmodule = ⊤ := by
+  have := iSup_genWeightSpace_as_module_eq_top K L M
+  erw [← iSup_ne_bot_subtype, ← (Weight.equivSetOff K L M).iSup_comp] at this
   exact this
 
 end field

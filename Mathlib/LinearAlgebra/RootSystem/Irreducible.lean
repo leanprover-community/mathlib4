@@ -138,4 +138,202 @@ lemma span_root_image_eq_top_of_forall_orthogonal [Invertible (2 : R)] (s : Set 
   apply IsIrreducible.eq_top_of_invtSubmodule_reflection _ hq
   simpa using ⟨hne.choose, hne.choose_spec, P.ne_zero _⟩
 
+lemma l1 {K : Type*} [Field K] [Module K M] [Module K N]
+    (P : RootPairing ι K M N) (q : Submodule K M) (i : ι)
+      (hq : q ∈ invtSubmodule (P.reflection i)) :
+        P.root i ∈ q ∨ q ≤ LinearMap.ker (P.coroot' i) := by
+  by_cases h₀ : P.root i ∈ q
+  · simp_all only [PerfectPairing.flip_apply_apply, Subtype.forall, true_or]
+  right
+  intro v
+  intro v1
+  by_cases h₁ : v = 0
+  · subst h₁
+    simp_all only [Submodule.zero_mem]
+  simp_all
+  have ttt : ((P.reflection i) v) ∈ q := by
+    have xxx := (Module.End.mem_invtSubmodule (R := K) (M := M) (P.reflection i) (p := q)).1 hq
+    simp at xxx
+    exact xxx v1
+  have x := (P.reflection_apply i) v
+  rw [x] at ttt
+  simp_all
+  have rrr : (P.coroot' i) v • P.root i ∈ q := by
+    have h3 : - (v - (P.coroot' i) v • P.root i) ∈ q := Submodule.neg_mem q ttt
+    have h4 : (P.coroot' i) v • P.root i - v ∈ q := by rwa [neg_sub] at h3
+    have h5 : ((P.coroot' i) v • P.root i - v) + v ∈ q := Submodule.add_mem q h4 v1
+    simp at h5
+    simp
+    exact h5
+  simp at rrr
+  by_contra h_ne_zero
+  have : IsUnit ((P.coroot' i) v) := by
+    simp_all only [ne_eq, PerfectPairing.flip_apply_apply, isUnit_iff_ne_zero, not_false_eq_true]
+  have a_inv : ((P.coroot' i) v)⁻¹ * ((P.coroot' i) v) = 1 := by
+    simp_all only [ne_eq, PerfectPairing.flip_apply_apply,
+      isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel]
+  have : P.root i ∈ q := by
+    have := Submodule.smul_mem (M := M) q (((P.coroot' i) v)⁻¹) rrr
+    simp at this
+    simp_all only [ne_eq, PerfectPairing.flip_apply_apply,
+      isUnit_iff_ne_zero, not_false_eq_true, IsUnit.inv_mul_cancel,
+      inv_smul_smul₀]
+  contradiction
+
+lemma l2 {K : Type*} [Field K] [Module K M] [Module K N]
+    (P : RootPairing ι K M N) (q : Submodule K M) (ha : ∀ i, q ∈ invtSubmodule (P.reflection i)):
+      ∃ (Φ : Set ι), (∀ i ∈ Φ, P.root i ∈ q) ∧ (∀ i ∉ Φ, q ≤ LinearMap.ker (P.coroot' i)) := by
+  let Φ := {i | P.root i ∈ q}
+  use Φ
+  constructor
+  · intro i hi
+    exact hi
+  · intro i hi
+    cases l1 P q i (ha i) with
+    | inl h_root_in_q =>
+      contradiction
+    | inr h_kernel =>
+      exact h_kernel
+
+lemma l21 {K : Type*} [Field K] [Module K M] [Module K M] [Module K N]
+    (P : RootSystem ι K M N) : span K (range P.coroot') = ⊤ := by
+  --simp
+  have h0 := P.span_root_eq_top
+  have h1 := P.span_coroot_eq_top
+  unfold RootPairing.coroot'
+  let Q := P.flip
+  have h2 := Q.span_root_eq_top
+  have h3 := Q.span_coroot_eq_top
+  --simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top, Q]
+  have (i : ι) : P.toPerfectPairing.flip (P.coroot i) = Q.toDualLeft (Q.root i) := by
+    simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top,
+        PerfectPairing.toDualLeft_apply, Q]
+    rfl
+  have h2 := Q.span_root_eq_top
+  have rrrr : span K (range fun i ↦ P.toPerfectPairing.flip (P.coroot i)) =
+      span K (range fun i ↦ Q.toDualLeft (Q.root i)) := by
+    simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top,
+      PerfectPairing.toDualLeft_apply, Q]
+  rw [rrrr]
+  let s := (range fun i ↦ (Q.root i))
+  let g := Q.toDualLeft '' s
+  let r := Q.toDualLeft
+  have needed : span K s = ⊤ := by
+    simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top,
+      PerfectPairing.toDualLeft_apply, Q, s]
+  have needed2 : (range fun i ↦ Q.toDualLeft (Q.root i)) = Q.toDualLeft '' s := by
+    simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top,
+      PerfectPairing.toDualLeft_apply, Q, s]
+    ext x : 1
+    simp_all only [mem_range, mem_image, exists_exists_eq_and, Q, s]
+
+  have key (d : Module.Dual K M) : d ∈ span K (range fun i ↦ Q.toDualLeft (Q.root i)) := by
+    have rrrr5 := Submodule.apply_mem_span_image_iff_mem_span (s := s)
+      (x := (Q.toDualLeft.invFun d)) Q.toDualLeft.injective
+    --simp at rrrr5
+    --simp at rrrr5
+    have mmm : Q.toDualLeft.symm d ∈ span K s := by
+      rw [needed]
+      simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top,
+        PerfectPairing.toDualLeft_apply, Submodule.mem_top, iff_true, Q, s]
+    have := rrrr5.2 mmm
+    --simp [s] at this
+    have helpme11 : Q.toDualLeft (Q.toDualLeft.invFun d) = d := by
+      simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top,
+        PerfectPairing.toDualLeft_apply, LinearEquiv.invFun_eq_symm, LinearEquiv.apply_symm_apply,
+          Submodule.mem_top, iff_true, Q, s]
+    rw [helpme11] at this
+    rw [needed2]
+    exact this
+  simp_all only [RootSystem.span_root_eq_top, RootSystem.span_coroot_eq_top,
+    PerfectPairing.toDualLeft_apply, Q]
+  ext x : 1
+  simp_all only [Submodule.mem_top, Q]
+
+
+lemma l25 {K : Type*} [Field K] [Module K M] [Module K M] [Module K N]
+    (P : RootSystem ι K M N) (v : M) (hx : ∀ (i : ι), v ∈ ker (P.coroot' i))
+      (hy : span K (range P.coroot') = ⊤) (d : Module.Dual K M) : d v = 0 := by
+  have : d ∈ span K (range P.coroot') := by
+    simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top]
+  refine Submodule.span_induction ?_ ?_ ?_ ?_ this
+  · intro x h
+    simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top, mem_range]
+    obtain ⟨w, h⟩ := h
+    subst h
+    simp_all only [PerfectPairing.flip_apply_apply]
+  · simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top,
+      LinearMap.zero_apply]
+  · intro x y hx_1 hy_1 a a_1
+    simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top,
+      LinearMap.add_apply, add_zero]
+  · intro a x hx_1 a_1
+    simp_all only [LinearMap.mem_ker, PerfectPairing.flip_apply_apply, Submodule.mem_top,
+      LinearMap.smul_apply, smul_eq_mul, mul_zero]
+
+lemma l3 {K : Type*} [Field K] [Module K M] [Module K N]
+    (P : RootSystem ι K M N) (q : Submodule K M) (ha : ∀ i, q ∈ invtSubmodule (P.reflection i))
+      (h_bot: q ≠ ⊥) (h_top: q ≠ ⊤):
+        ∃ (Φ : Set ι), (∀ i ∈ Φ, P.root i ∈ q) ∧ (∀ i ∉ Φ, q ≤ LinearMap.ker (P.coroot' i)) ∧
+          Φ ≠ univ ∧ Φ ≠ ∅ := by
+  obtain ⟨Φ, b, c⟩ := l2 P.toRootPairing q ha
+  use Φ
+  constructor
+  · exact b
+  constructor
+  · exact c
+  constructor
+  · by_contra hu
+    have lll (i : ι) : P.root i ∈ q := by
+      subst hu
+      simp_all only [ne_eq, mem_univ, forall_const, not_true_eq_false, IsEmpty.forall_iff,
+        implies_true]
+    have : span K (P.root '' univ) ≤ q := by
+      subst hu
+      simp_all only [ne_eq, mem_univ, implies_true, forall_const, not_true_eq_false,
+        IsEmpty.forall_iff, image_univ]
+      rw [span_le]
+      exact range_subset_iff.mpr b
+    have : span K (P.root '' univ) = ⊤ := by
+      subst hu
+      simp_all only [ne_eq, mem_univ, implies_true, image_univ, RootSystem.span_root_eq_top,
+        top_le_iff]
+    have : q = ⊤ := by
+      subst hu
+      simp_all only [ne_eq, mem_univ, implies_true, image_univ, RootSystem.span_root_eq_top,
+        top_le_iff]
+    · contradiction
+  by_contra hn
+  have lll (i : ι) : q ≤ ker (P.coroot' i) := by
+    subst hn
+    simp_all only [ne_eq, mem_empty_iff_false, IsEmpty.forall_iff, implies_true, not_false_eq_true,
+      forall_const]
+  have : ∃ v ∈ q, v ≠ 0 := by
+    exact (Submodule.ne_bot_iff q).1 h_bot
+  obtain ⟨v1, ⟨v21, v22⟩⟩ := this
+  --have : ∃ d : Module.Dual K M, d v1 ≠ 0 := by
+    --search_proof
+  have xxx (i : ι) : v1 ∈ ker (P.coroot' i) := by
+    subst hn
+    simp_all only [ne_eq, mem_empty_iff_false, not_false_eq_true, implies_true, IsEmpty.forall_iff,
+      forall_const, LinearMap.mem_ker, PerfectPairing.flip_apply_apply]
+    apply c
+    simp_all only
+  have yyy : span K (range  P.coroot') = ⊤ := by
+    exact l21 P
+    --search_proof
+  have help (d : Module.Dual K M) : d v1 = 0 := by
+    exact l25 P v1 xxx yyy d
+  have : q.dualAnnihilator ≠ ⊤ := by
+    subst hn
+    simp_all only [ne_eq, mem_empty_iff_false, not_false_eq_true, implies_true, LinearMap.mem_ker,
+      image_univ, RootSystem.span_coroot_eq_top, IsEmpty.forall_iff, forall_const,
+        Submodule.dualAnnihilator_eq_top_iff]
+  have := (Module.forall_dual_apply_eq_zero_iff K v1).1 help
+  contradiction
+
+
+
+
+
 end RootPairing
