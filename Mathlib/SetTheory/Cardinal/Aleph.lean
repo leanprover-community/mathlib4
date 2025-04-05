@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.Order.Bounded
 import Mathlib.SetTheory.Cardinal.ToNat
 import Mathlib.SetTheory.Cardinal.ENat
 import Mathlib.SetTheory.Ordinal.Enum
@@ -560,9 +559,6 @@ set_option linter.deprecated false in
 theorem aleph'_omega0 : aleph' ω = ℵ₀ :=
   preAleph_omega0
 
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
-alias aleph'_omega := aleph'_omega0
-
 @[deprecated aleph_eq_preAleph (since := "2024-10-22")]
 theorem aleph_eq_aleph' (o : Ordinal) : ℵ_ o = preAleph (ω + o) :=
   rfl
@@ -581,35 +577,6 @@ set_option linter.deprecated false in
 @[deprecated preAleph_isNormal (since := "2024-10-22")]
 theorem aleph'_isNormal : IsNormal (ord ∘ aleph') :=
   preAleph_isNormal
-
-/-- Ordinals that are cardinals are unbounded. -/
-@[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
-theorem ord_card_unbounded : Unbounded (· < ·) { b : Ordinal | b.card.ord = b } :=
-  unbounded_lt_iff.2 fun a =>
-    ⟨_,
-      ⟨by
-        dsimp
-        rw [card_ord], (lt_ord_succ_card a).le⟩⟩
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
-theorem eq_aleph'_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) : ∃ a, (aleph' a).ord = o :=
-  ⟨aleph'.symm o.card, by simpa using ho⟩
-
-set_option linter.deprecated false in
-/-- Infinite ordinals that are cardinals are unbounded. -/
-@[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
-theorem ord_card_unbounded' : Unbounded (· < ·) { b : Ordinal | b.card.ord = b ∧ ω ≤ b } :=
-  (unbounded_lt_inter_le ω).2 ord_card_unbounded
-
-set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
-theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω ≤ o) :
-    ∃ a, (ℵ_ a).ord = o := by
-  obtain ⟨a, ha⟩ := eq_aleph'_of_eq_card_ord ho
-  use a - ω
-  rwa [aleph_eq_aleph', Ordinal.add_sub_cancel_of_le]
-  rwa [← aleph0_le_aleph', ← ord_le_ord, ha, ord_aleph0]
 
 end deprecated
 

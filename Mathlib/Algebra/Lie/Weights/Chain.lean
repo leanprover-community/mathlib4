@@ -7,6 +7,7 @@ import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Data.Int.Interval
 import Mathlib.LinearAlgebra.Trace
+import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
 # Chains of roots and weights
@@ -128,7 +129,7 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieRing.IsNilp
     ⁅x, y⁆ ∈ genWeightSpaceChain M α χ p q := by
   rw [genWeightSpaceChain, iSup_subtype'] at hy
   induction hy using LieSubmodule.iSup_induction' with
-  | hN k z hz =>
+  | mem k z hz =>
     obtain ⟨k, hk⟩ := k
     suffices genWeightSpace M ((k + 1) • α + χ) ≤ genWeightSpaceChain M α χ p q by
       apply this
@@ -141,8 +142,8 @@ lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_right [LieRing.IsNilp
     rcases eq_or_ne (k + 1) q with rfl | hk'; · simp only [hq, bot_le]
     replace hk' : k + 1 ∈ Ioo p q := ⟨by linarith [hk.1], lt_of_le_of_ne hk.2 hk'⟩
     exact le_biSup (fun k ↦ genWeightSpace M (k • α + χ)) hk'
-  | h0 => simp
-  | hadd _ _ _ _ hz₁ hz₂ => rw [lie_add]; exact add_mem hz₁ hz₂
+  | zero => simp
+  | add _ _ _ _ hz₁ hz₂ => rw [lie_add]; exact add_mem hz₁ hz₂
 
 lemma lie_mem_genWeightSpaceChain_of_genWeightSpace_eq_bot_left [LieRing.IsNilpotent H]
     (hp : genWeightSpace M (p • α + χ) = ⊥)
@@ -365,3 +366,40 @@ lemma chainTop_isNonZero (α β : Weight R L M) (hα : α.IsNonZero) :
 end
 
 end LieModule
+
+section Field
+
+open LieAlgebra LieModule
+
+variable {K : Type*} [Field K] [CharZero K] [LieAlgebra K L]
+  (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
+  [Module K M] [LieModule K L M]
+  [IsTriangularizable K H M] [FiniteDimensional K M]
+
+lemma LieModule.isNilpotent_toEnd_of_mem_rootSpace
+    {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
+    _root_.IsNilpotent (toEnd K L M x) := by
+  refine Module.Finite.Module.End.isNilpotent_iff_of_finite.mpr fun m ↦ ?_
+  have hm : m ∈ ⨆ χ : LieModule.Weight K H M, genWeightSpace M χ := by
+    simp [iSup_genWeightSpace_eq_top' K H M]
+  induction hm using LieSubmodule.iSup_induction' with
+  | zero => exact ⟨0, map_zero _⟩
+  | mem χ₂ m₂ hm₂ =>
+    obtain ⟨n, -, hn⟩ := exists_genWeightSpace_smul_add_eq_bot M χ χ₂ hχ
+    use n
+    have := toEnd_pow_apply_mem hx hm₂ n
+    rwa [hn, LieSubmodule.mem_bot] at this
+  | add m₁ m₂ hm₁ hm₂ hm₁' hm₂' =>
+    obtain ⟨n₁, hn₁⟩ := hm₁'
+    obtain ⟨n₂, hn₂⟩ := hm₂'
+    refine ⟨max n₁ n₂, ?_⟩
+    rw [map_add, LinearMap.pow_map_zero_of_le le_sup_left hn₁,
+      LinearMap.pow_map_zero_of_le le_sup_right hn₂, add_zero]
+
+lemma LieAlgebra.isNilpotent_ad_of_mem_rootSpace
+    [IsTriangularizable K H L] [FiniteDimensional K L]
+    {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
+    _root_.IsNilpotent (ad K L x) :=
+  isNilpotent_toEnd_of_mem_rootSpace (M := L) H hχ hx
+
+end Field

@@ -218,7 +218,7 @@ protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToE
       have et : Q(Fin $n → $eα) := toExpr (vecTail v)
       q(vecCons $eh $et) }
 
--- Porting note: the next decl is commented out. TODO(eric-wieser)
+-- TODO(eric-wieser): the next decl is commented out.
 
 -- /-- Convert a vector of pexprs to the pexpr constructing that vector. -/
 -- unsafe def _root_.pi_fin.to_pexpr : ∀ {n}, (Fin n → pexpr) → pexpr
@@ -254,9 +254,6 @@ theorem vecAppend_eq_ite {α : Type*} {o : ℕ} (ho : o = m + n) (u : Fin m → 
   simp only [eq_rec_constant]
   rfl
 
--- Porting note: proof was `rfl`, so this is no longer a `dsimp`-lemma
--- Could become one again with change to `Nat.ble`:
--- https://github.com/leanprover-community/mathlib4/pull/1741/files/#r1083902351
 @[simp]
 theorem vecAppend_apply_zero {α : Type*} {o : ℕ} (ho : o + 1 = m + 1 + n) (u : Fin (m + 1) → α)
     (v : Fin n → α) : vecAppend ho u v 0 = u 0 :=
