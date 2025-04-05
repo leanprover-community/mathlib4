@@ -142,4 +142,17 @@ theorem injOn_circleMap_of_abs_sub_le' {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (
   rw [abs_lt]
   constructor <;> linarith
 
+theorem exp_mul_I_injOn : Set.InjOn (circleMap 1) (Set.Ioc (-π) π) := by
+  intro x hx y hy he
+  apply injOn_circleMap_of_abs_sub_le (a := -π) (b := π) (ne_zero_of_eq_one rfl)
+  · rw [← abs_neg]
+    rw [neg_sub, sub_neg_eq_add]
+    rw [← two_mul]
+    rw [abs_le]
+    constructor
+    · apply neg_le
+
+
+
+
 end circleMap
