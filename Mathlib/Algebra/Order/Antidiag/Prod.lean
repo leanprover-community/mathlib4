@@ -183,6 +183,8 @@ def sigmaAntidiagonalEquivProd [AddMonoid A] [HasAntidiagonal A] :
     exact Sigma.subtype_ext h rfl
   right_inv _ := rfl
 
+section CanonicallyOrdered
+
 variable {A : Type*}
   [AddCommMonoid A] [PartialOrder A] [CanonicallyOrderedAdd A]
   [LocallyFiniteOrder A] [DecidableEq A]
@@ -196,5 +198,7 @@ abbrev antidiagonalOfLocallyFinite : HasAntidiagonal A where
     simp only [mem_filter, and_iff_right_iff_imp]
     intro h
     simp [← h]
+
+end CanonicallyOrdered
 
 end Finset
