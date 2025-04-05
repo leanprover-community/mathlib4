@@ -139,6 +139,27 @@ instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+/-- The actual `Subsemiring` obtained from an element of a `SubsemiringClass`. -/
+@[simps]
+def ofClass {S R : Type*} [NonAssocSemiring R] [SetLike S R] [SubsemiringClass S R]
+    (s : S) : Subsemiring R where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+  one_mem' := one_mem _
+
+instance : CanLift (Set R) (Subsemiring R) (↑)
+    (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ 1 ∈ s ∧
+      ∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := h.1
+        add_mem' := h.2.1
+        one_mem' := h.2.2.1
+        mul_mem' := h.2.2.2 },
+      rfl ⟩
+
 instance : SubsemiringClass (Subsemiring R) R where
   zero_mem := zero_mem'
   add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup

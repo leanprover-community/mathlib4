@@ -40,7 +40,33 @@ instance : SetLike (Subalgebra R A) A where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
-instance SubsemiringClass : SubsemiringClass (Subalgebra R A) A where
+/-- The actual `Subalgebra` obtained from an element of a type satisfying `SubsemiringClass` and
+`SMulMemClass`. -/
+@[simps]
+def ofClass {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    [SetLike S A] [SubsemiringClass S A] [SMulMemClass S R A] (s : S) :
+    Subalgebra R A where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+  one_mem' := one_mem _
+  algebraMap_mem' r :=
+    Algebra.algebraMap_eq_smul_one (A := A) r ▸ SMulMemClass.smul_mem r (one_mem s)
+
+instance : CanLift (Set A) (Subalgebra R A) (↑)
+    (fun s ↦ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧
+      (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧ ∀ (r : R), algebraMap R A r ∈ s) where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := by simpa using h.2.2 0
+        add_mem' := h.1
+        one_mem' := by simpa using h.2.2 1
+        mul_mem' := h.2.1
+        algebraMap_mem' := h.2.2 },
+      rfl ⟩
+
+instance : SubsemiringClass (Subalgebra R A) A where
   add_mem {s} := add_mem (s := s.toSubsemiring)
   mul_mem {s} := mul_mem (s := s.toSubsemiring)
   one_mem {s} := one_mem s.toSubsemiring

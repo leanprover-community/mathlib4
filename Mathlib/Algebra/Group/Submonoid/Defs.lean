@@ -123,7 +123,8 @@ theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x :
 namespace Submonoid
 
 /-- The actual `Submonoid` obtained from an element of a `SubmonoidClass` -/
-@[to_additive "The actual `AddSubmonoid` obtained from an element of a `AddSubmonoidClass`"]
+@[to_additive (attr := simps) "The actual `AddSubmonoid` obtained from an element of a
+`AddSubmonoidClass`"]
 def ofClass {S M : Type*} [Monoid M] [SetLike S M] [SubmonoidClass S M] (s : S) : Submonoid M :=
   ⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩
 

@@ -287,7 +287,8 @@ add_decl_doc AddSubgroup.toAddSubmonoid
 namespace Subgroup
 
 /-- The actual `Subgroup` obtained from an element of a `SubgroupClass` -/
-@[to_additive "The actual `AddSubgroup` obtained from an element of a `AddSubgroupClass`"]
+@[to_additive (attr := simps) "The actual `AddSubgroup` obtained from an element of a
+`AddSubgroupClass`"]
 def ofClass {S G : Type*} [Group G] [SetLike S G] [SubgroupClass S G]
     (s : S) : Subgroup G :=
   ⟨⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩, InvMemClass.inv_mem⟩

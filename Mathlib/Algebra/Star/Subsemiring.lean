@@ -34,6 +34,29 @@ instance setLike : SetLike (StarSubsemiring R) R where
   coe {s} := s.carrier
   coe_injective' p q h := by obtain ⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
 
+/-- The actual `StarSubsemiring` obtained from an element of a `StarSubsemiringClass`. -/
+@[simps]
+def ofClass {S R : Type*} [NonAssocSemiring R] [SetLike S R] [StarRing R] [SubsemiringClass S R]
+    [StarMemClass S R] (s : S) : StarSubsemiring R where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+  one_mem' := one_mem _
+  star_mem' := star_mem
+
+instance : CanLift (Set R) (StarSubsemiring R) (↑)
+    (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ 1 ∈ s ∧
+      (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧ (∀ {x}, x ∈ s → star x ∈ s)) where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := h.1
+        add_mem' := h.2.1
+        one_mem' := h.2.2.1
+        mul_mem' := h.2.2.2.1
+        star_mem' := h.2.2.2.2 },
+      rfl ⟩
+
 instance starMemClass : StarMemClass (StarSubsemiring R) R where
   star_mem {s} := s.star_mem'
 

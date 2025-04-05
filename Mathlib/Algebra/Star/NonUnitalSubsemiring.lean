@@ -52,6 +52,29 @@ instance instSetLike : SetLike (NonUnitalStarSubsemiring R) R where
   coe {s} := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
+/-- The actual `NonUnitalStarSubsemiring` obtained from an element of a type satisfying
+`NonUnitalSubsemiringClass` and `StarMemClass`. -/
+@[simps]
+def ofClass {S R : Type*} [NonUnitalNonAssocSemiring R] [StarRing R] [SetLike S R]
+    [NonUnitalSubsemiringClass S R] [StarMemClass S R] (s : S) : NonUnitalStarSubsemiring R where
+  carrier := s
+  add_mem' := add_mem
+  zero_mem' := zero_mem _
+  mul_mem' := mul_mem
+  star_mem' := star_mem
+
+instance : CanLift (Set R) (NonUnitalStarSubsemiring R) (↑)
+    (fun s ↦ 0 ∈ s ∧ (∀ {x y}, x ∈ s → y ∈ s → x + y ∈ s) ∧ (∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) ∧
+      ∀ {x}, x ∈ s → star x ∈ s)
+    where
+  prf s h :=
+    ⟨ { carrier := s
+        zero_mem' := h.1
+        add_mem' := h.2.1
+        mul_mem' := h.2.2.1
+        star_mem' := h.2.2.2 },
+      rfl ⟩
+
 instance instNonUnitalSubsemiringClass :
     NonUnitalSubsemiringClass (NonUnitalStarSubsemiring R) R where
   add_mem {s} := s.add_mem'
