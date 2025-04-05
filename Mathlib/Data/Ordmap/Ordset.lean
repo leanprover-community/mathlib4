@@ -376,13 +376,14 @@ theorem Valid'.eraseMax_aux {s l x r o₁ o₂} (H : Valid' o₁ (.node s l x r)
     Valid' o₁ (@eraseMax α (.node' l x r)) ↑(findMax' x r) ∧
       size (.node' l x r) = size (eraseMax (.node' l x r)) + 1 := by
   have := H.2.eq_node'; rw [this] at H; clear this
-  induction' r with rs rl rx rr _ IHrr generalizing l x o₁
-  · exact ⟨H.left, rfl⟩
-  have := H.2.2.2.eq_node'; rw [this] at H ⊢
-  rcases IHrr H.right with ⟨h, e⟩
-  refine ⟨Valid'.balanceL H.left h (Or.inr ⟨_, Or.inr e, H.3.1⟩), ?_⟩
-  rw [eraseMax, size_balanceL H.3.2.1 h.3 H.2.2.1 h.2 (Or.inr ⟨_, Or.inr e, H.3.1⟩)]
-  rw [size_node, e]; rfl
+  induction r generalizing l x o₁ with
+  | nil => exact ⟨H.left, rfl⟩
+  | node rs rl rx rr _ IHrr =>
+    have := H.2.2.2.eq_node'; rw [this] at H ⊢
+    rcases IHrr H.right with ⟨h, e⟩
+    refine ⟨Valid'.balanceL H.left h (Or.inr ⟨_, Or.inr e, H.3.1⟩), ?_⟩
+    rw [eraseMax, size_balanceL H.3.2.1 h.3 H.2.2.1 h.2 (Or.inr ⟨_, Or.inr e, H.3.1⟩)]
+    rw [size_node, e]; rfl
 
 theorem Valid'.eraseMin_aux {s l} {x : α} {r o₁ o₂} (H : Valid' o₁ (.node s l x r) o₂) :
     Valid' ↑(findMin' l x) (@eraseMin α (.node' l x r)) o₂ ∧
@@ -458,10 +459,12 @@ theorem Valid'.merge_aux₁ {o₁ o₂ ls ll lx lr rs rl rx rr t}
 theorem Valid'.merge_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o₁ r o₂)
     (sep : l.All fun x => r.All fun y => x < y) :
     Valid' o₁ (@merge α l r) o₂ ∧ size (merge l r) = size l + size r := by
-  induction' l with ls ll lx lr _ IHlr generalizing o₁ o₂ r
-  · exact ⟨hr, (zero_add _).symm⟩
-  induction' r with rs rl rx rr IHrl _ generalizing o₁ o₂
-  · exact ⟨hl, rfl⟩
+  induction l generalizing o₁ o₂ r with
+  | nil => exact ⟨hr, (zero_add _).symm⟩
+  | node ls ll lx lr _ IHlr => ?_
+  induction r generalizing o₁ o₂ with
+  | nil => exact ⟨hl, rfl⟩
+  | node rs rl rx rr IHrl _ => ?_
   rw [merge_node]; split_ifs with h h_1
   · obtain ⟨v, e⟩ := IHrl (hl.of_lt hr.1.1.to_nil <| sep.imp fun x h => h.2.1) hr.left
       (sep.imp fun x h => h.1)
