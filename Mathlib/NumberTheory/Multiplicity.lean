@@ -41,7 +41,7 @@ theorem dvd_geom_sum₂_iff_of_dvd_sub {x y p : R} (h : p ∣ x - y) :
     (p ∣ ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) ↔ p ∣ n * y ^ (n - 1) := by
   rw [← mem_span_singleton, ← Ideal.Quotient.eq] at h
   simp only [← mem_span_singleton, ← eq_zero_iff_mem, RingHom.map_geom_sum₂, h, geom_sum₂_self,
-    _root_.map_mul, map_pow, map_natCast]
+    map_mul, map_pow, map_natCast]
 
 theorem dvd_geom_sum₂_iff_of_dvd_sub' {x y p : R} (h : p ∣ x - y) :
     (p ∣ ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i)) ↔ p ∣ n * x ^ (n - 1) := by
@@ -90,15 +90,13 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
     (Ideal.Quotient.mk (span {s})) (∑ i ∈ range p, (a + (p : R) * b) ^ i * a ^ (p - 1 - i)) =
         ∑ i ∈ Finset.range p,
         mk (span {s}) ((a ^ (i - 1) * (↑p * b) * ↑i + a ^ i) * a ^ (p - 1 - i)) := by
-      simp_rw [s, RingHom.map_geom_sum₂, ← map_pow, h1, ← _root_.map_mul]
+      simp_rw [s, RingHom.map_geom_sum₂, ← map_pow, h1, ← map_mul]
     _ =
         mk (span {s})
             (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
           mk (span {s}) (∑ x ∈ Finset.range p, a ^ (x + (p - 1 - x))) := by
       ring_nf
-      simp only [← pow_add, map_add, Finset.sum_add_distrib, ← map_sum]
-      congr
-      simp [pow_add a, mul_assoc]
+      simp_rw [← map_sum, sum_add_distrib, map_add]
     _ =
         mk (span {s})
             (∑ x ∈ Finset.range p, a ^ (x - 1) * (a ^ (p - 1 - x) * (↑p * (b * ↑x)))) +
@@ -133,7 +131,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
       norm_cast
       simp only [Finset.sum_range_id]
       norm_cast
-      simp only [Nat.cast_mul, _root_.map_mul,
+      simp only [Nat.cast_mul, map_mul,
           Nat.mul_div_assoc p (even_iff_two_dvd.mp (Nat.Odd.sub_odd hp odd_one))]
       ring_nf
       rw [mul_assoc, mul_assoc]
