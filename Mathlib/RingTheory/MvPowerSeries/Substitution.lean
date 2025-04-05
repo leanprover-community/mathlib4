@@ -210,9 +210,9 @@ theorem subst_self : subst (MvPowerSeries.X : σ → MvPowerSeries σ R) = id :=
 @[simp]
 theorem substAlgHom_apply (ha : HasSubst a) (f : MvPowerSeries σ R) :
     substAlgHom ha f = subst a f := by
-  rw [coe_substalghom]
+  rw [coe_substAlgHom]
 
-theorem subst_add (ha : HasSubst a) (f g : MvPowerSeries σ r) :
+theorem subst_add (ha : HasSubst a) (f g : MvPowerSeries σ R) :
     subst a (f + g) = subst a f + subst a g := by
   simp only [← substAlgHom_apply ha, map_add]
 
