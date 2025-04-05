@@ -192,6 +192,10 @@ variable {p q : ℕ → Prop} [DecidablePred p] (H : ∃ n, p n)
 
 private def H' : ∃ (n : ℕ) (_ : 0 ≤ n), p n := H.imp fun n hn => ⟨zero_le n, hn⟩
 
+protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
+  ⟨(Nat.findFromX (H' H)).1, (Nat.findFromX (H' H)).2.2.1,
+    fun m => (Nat.findFromX (H' H)).2.2.2 m (zero_le m)⟩
+
 /-- If `p` is a (decidable) predicate on `ℕ` and `hp : ∃ (n : ℕ), p n` is a proof that
 there exists some natural number satisfying `p`, then `Nat.find hp` is the
 smallest natural number satisfying `p`. Note that `Nat.find` is protected,
