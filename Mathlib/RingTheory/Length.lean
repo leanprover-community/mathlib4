@@ -90,6 +90,31 @@ lemma Module.length_ne_top [IsArtinian R M] [IsNoetherian R M] : Module.length R
   rw [Module.length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian]
   exact ⟨‹_›, ‹_›⟩
 
+lemma Module.length_submodule {N : Submodule R M} :
+    Module.length R N = Order.height N := by
+  apply WithBot.coe_injective
+  rw [Order.height_eq_krullDim_Iic, coe_length, Order.krullDim_eq_of_orderIso (Submodule.mapIic _)]
+
+lemma Module.length_quotient {N : Submodule R M} :
+    Module.length R (M ⧸ N) = Order.coheight N := by
+  apply WithBot.coe_injective
+  rw [Order.coheight_eq_krullDim_Ici, coe_length,
+    Order.krullDim_eq_of_orderIso (Submodule.comapMkQRelIso N)]
+
+lemma LinearEquiv.length_eq {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) :
+    Module.length R M = Module.length R N := by
+  apply WithBot.coe_injective
+  rw [Module.coe_length, Module.coe_length,
+    Order.krullDim_eq_of_orderIso (Submodule.orderIsoMapComap e)]
+
+@[simp] lemma Module.length_bot :
+    Module.length R (⊥ : Submodule R M) = 0 :=
+  Module.length_eq_zero
+
+@[simp] lemma Module.length_top :
+    Module.length R (⊤ : Submodule R M) = Module.length R M := by
+  rw [Module.length_submodule, Module.length_eq_height]
+
 variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R P]
 variable (f : N →ₗ[R] M) (g : M →ₗ[R] P) (hf : Function.Injective f) (hg : Function.Surjective g)
 variable (H : Function.Exact f g)
@@ -121,3 +146,15 @@ lemma Module.length_eq_add_of_exact :
   · have := mt (IsFiniteLength.of_surjective · hg) hP
     rw [← Module.length_ne_top_iff, ne_eq, not_not] at hP this
     rw [hP, this, add_top]
+
+include hf in
+lemma Module.length_le_of_injective : Module.length R N ≤ Module.length R M := by
+  rw [Module.length_eq_add_of_exact f (LinearMap.range f).mkQ hf
+    (Submodule.mkQ_surjective _) (LinearMap.exact_map_mkQ_range f)]
+  exact le_self_add
+
+include hg in
+lemma Module.length_le_of_surjective : Module.length R P ≤ Module.length R M := by
+  rw [Module.length_eq_add_of_exact (LinearMap.ker g).subtype g (Submodule.subtype_injective _) hg
+    (LinearMap.exact_subtype_ker_map g)]
+  exact le_add_self
