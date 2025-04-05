@@ -28,6 +28,14 @@ open Convex
 
 section OrderedSemiring
 
+/-- A set is strictly convex if the open segment between any two distinct points lies is in its
+interior. This basically means "convex and not flat on the boundary". -/
+@[nolint unusedArguments]
+def StrictConvex (𝕜 : Type*) {E : Type*}
+    [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [TopologicalSpace E]
+    [AddCommMonoid E] [SMul 𝕜 E] (s : Set E) : Prop :=
+  s.Pairwise fun x y => ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ interior s
+
 variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [TopologicalSpace E] [TopologicalSpace F]
 
 section AddCommMonoid
@@ -37,14 +45,6 @@ variable [AddCommMonoid E] [AddCommMonoid F]
 section SMul
 
 variable [SMul 𝕜 E] [SMul 𝕜 F] (s : Set E)
-
-/-- A set is strictly convex if the open segment between any two distinct points lies is in its
-interior. This basically means "convex and not flat on the boundary". -/
-@[nolint unusedArguments]
-def StrictConvex (𝕜 : Type*) {E : Type*}
-    [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [TopologicalSpace E]
-    [AddCommMonoid E] [SMul 𝕜 E] (s : Set E) : Prop :=
-  s.Pairwise fun x y => ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ interior s
 
 variable {s}
 variable {x y : E} {a b : 𝕜}
