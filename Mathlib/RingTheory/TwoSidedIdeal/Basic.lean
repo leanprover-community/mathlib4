@@ -92,17 +92,11 @@ def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
   map_rel_iff' {I J} := Iff.symm <| le_iff.trans ⟨fun h x y r => by rw [rel_iff] at r ⊢; exact h r,
     fun h x hx => by rw [SetLike.mem_coe, mem_iff] at hx ⊢; exact h hx⟩
 
-/--
-Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each other.
--/
-def opOrderIso : TwoSidedIdeal R ≃o TwoSidedIdeal Rᵐᵒᵖ :=
-  orderIsoRingCon.trans <| RingCon.opOrderIso.trans orderIsoRingCon.symm
+-- @[simp]
+-- lemma opOrderIso_apply (I : TwoSidedIdeal R): opOrderIso I = ⟨I.1.op⟩ := rfl
 
-@[simp]
-lemma opOrderIso_apply (I : TwoSidedIdeal R): opOrderIso I = ⟨I.1.op⟩ := rfl
-
-@[simp]
-lemma opOrderIso_symm_apply (I : TwoSidedIdeal Rᵐᵒᵖ) : opOrderIso.symm I = ⟨I.1.unop⟩ := rfl
+-- @[simp]
+-- lemma opOrderIso_symm_apply (I : TwoSidedIdeal Rᵐᵒᵖ) : opOrderIso.symm I = ⟨I.1.unop⟩ := rfl
 
 lemma ringCon_injective : Function.Injective (TwoSidedIdeal.ringCon (R := R)) := by
   rintro ⟨x⟩ ⟨y⟩ rfl; rfl
@@ -211,6 +205,31 @@ def coeAddMonoidHom : I →+ R where
   toFun := (↑)
   map_zero' := rfl
   map_add' _ _ := rfl
+
+@[simps]
+def op (I : TwoSidedIdeal R) : TwoSidedIdeal Rᵐᵒᵖ where
+  ringCon := I.ringCon.op
+
+lemma op_mem (I : TwoSidedIdeal R) (x : Rᵐᵒᵖ) : x ∈ I.op ↔ x.unop ∈ I := by
+  constructor <;> simpa [mem_iff, I.ringCon.op_iff] using I.ringCon.symm
+
+@[simps]
+def unop (I : TwoSidedIdeal Rᵐᵒᵖ) : TwoSidedIdeal R where
+  ringCon := I.ringCon.unop
+
+lemma unop_mem (I : TwoSidedIdeal Rᵐᵒᵖ) (x : R) : x ∈ I.unop ↔ MulOpposite.op x ∈ I := by
+  constructor <;> simpa [mem_iff, I.ringCon.unop_iff] using I.ringCon.symm
+
+/--
+Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each other.
+-/
+@[simps]
+def opOrderIso : TwoSidedIdeal R ≃o TwoSidedIdeal Rᵐᵒᵖ where
+  toFun := op
+  invFun := unop
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' {I' J'} := by simpa [ringCon_le_iff] using RingCon.opOrderIso.map_rel_iff
 
 end NonUnitalNonAssocRing
 
