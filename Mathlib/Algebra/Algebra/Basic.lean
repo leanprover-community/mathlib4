@@ -181,8 +181,8 @@ theorem algebraMap_end_apply (a : R) (m : M) : algebraMap R (End S M) a m = a �
   rfl
 
 @[simp]
-theorem ker_algebraMap_end (K : Type u) (V : Type v) [Field K] [AddCommGroup V] [Module K V] (a : K)
-    (ha : a ≠ 0) : LinearMap.ker ((algebraMap K (End K V)) a) = ⊥ :=
+theorem ker_algebraMap_end (K : Type u) (V : Type v) [Semifield K] [AddCommMonoid V] [Module K V]
+    (a : K) (ha : a ≠ 0) : LinearMap.ker ((algebraMap K (End K V)) a) = ⊥ :=
   LinearMap.ker_smul _ _ ha
 
 section
@@ -390,9 +390,9 @@ theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
   (algebra_compatible_smul A r m).symm
 
 /-- If `M` is `A`-torsion free and `algebraMap R A` is injective, `M` is also `R`-torsion free. -/
-theorem NoZeroSMulDivisors.trans_faithfulSMul (R A M : Type*) [CommRing R] [Ring A] [Algebra R A]
-    [FaithfulSMul R A] [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M]
-    [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M where
+theorem NoZeroSMulDivisors.trans_faithfulSMul (R A M : Type*) [CommSemiring R] [Semiring A]
+    [Algebra R A] [FaithfulSMul R A] [AddCommMonoid M] [Module R M] [Module A M]
+    [IsScalarTower R A M] [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M where
   eq_zero_or_eq_zero_of_smul_eq_zero hx := by
     rw [← algebraMap_smul (A := A)] at hx
     simpa only [map_eq_zero_iff _ <| FaithfulSMul.algebraMap_injective R A] using
