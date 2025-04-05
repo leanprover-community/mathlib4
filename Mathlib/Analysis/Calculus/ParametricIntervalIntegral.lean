@@ -23,6 +23,22 @@ variable {𝕜 : Type*} [RCLike 𝕜] {μ : Measure ℝ} {E : Type*} [NormedAddC
 
 namespace intervalIntegral
 
+nonrec theorem hasFDerivAt_integral_of_dominated_loc_of_lip'
+    {F : H → ℝ → E} {F' : ℝ → H →L[𝕜] E} {x₀ : H} (ε_pos : 0 < ε)
+    (hF_meas : ∀ x ∈ ball x₀ ε, AEStronglyMeasurable (F x) (μ.restrict (Ι a b)))
+    (hF_int : IntervalIntegrable (F x₀) μ a b)
+    (hF'_meas : AEStronglyMeasurable F' (μ.restrict (Ι a b)))
+    (h_lipsch : ∀ᵐ t ∂μ, t ∈ Ι a b → ∀ x ∈ ball x₀ ε, ‖F x t - F x₀ t‖ ≤ bound t * ‖x - x₀‖)
+    (bound_integrable : IntervalIntegrable bound μ a b)
+    (h_diff : ∀ᵐ t ∂μ, t ∈ Ι a b → HasFDerivAt (F · t) (F' t) x₀) :
+    IntervalIntegrable F' μ a b ∧
+      HasFDerivAt (fun x ↦ ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' t ∂μ) x₀ := by
+  rw [← ae_restrict_iff' measurableSet_uIoc] at h_lipsch h_diff
+  simp only [intervalIntegrable_iff, intervalIntegral_eq_integral_uIoc] at *
+  have := hasFDerivAt_integral_of_dominated_loc_of_lip' ε_pos hF_meas hF_int hF'_meas
+    h_lipsch bound_integrable h_diff
+  exact ⟨this.1, this.2.const_smul _⟩
+
 /-- Differentiation under integral of `x ↦ ∫ t in a..b, F x t` at a given point `x₀`, assuming
 `F x₀` is integrable, `x ↦ F x a` is locally Lipschitz on a ball around `x₀` for ae `a`
 (with a ball radius independent of `a`) with integrable Lipschitz bound, and `F x` is ae-measurable
@@ -39,7 +55,8 @@ nonrec theorem hasFDerivAt_integral_of_dominated_loc_of_lip
     IntervalIntegrable F' μ a b ∧
       HasFDerivAt (fun x => ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' t ∂μ) x₀ := by
   rw [← ae_restrict_iff' measurableSet_uIoc] at h_lip h_diff
-  apply hasFDerivAt_integral_of_dominated_loc_of_lip_interval <;> assumption
+  exact hasFDerivAt_integral_of_dominated_loc_of_lip_interval ε_pos hF_meas hF_int hF'_meas
+    h_lip bound_integrable h_diff
 
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming
 `F x₀` is integrable, `x ↦ F x a` is differentiable on a ball around `x₀` for ae `a` with

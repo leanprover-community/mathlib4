@@ -65,6 +65,7 @@ variable {α : Type*} [MeasurableSpace α] {μ : Measure α} {𝕜 : Type*} [RCL
 
 variable {F : H → α → E} {x₀ : H} {bound : α → ℝ} {ε : ℝ}
 
+/-
 theorem hasFDerivWithinAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] E} {s : Set H}
     (ε_pos : 0 < ε) (hF_meas : ∀ x ∈ ball x₀ ε, x ∈ s → AEStronglyMeasurable (F x) μ)
     (hF_int : Integrable (F x₀) μ) (hF'_meas : AEStronglyMeasurable F' μ)
@@ -149,7 +150,7 @@ theorem hasFDerivWithinAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[
       ext x
       rw [norm_smul_of_nonneg (nneg _)]
     rwa [hasFDerivWithinAt_iff_tendsto, this] at ha
-
+-/
 
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming `F x₀` is
 integrable, `‖F x a - F x₀ a‖ ≤ bound a * ‖x - x₀‖` for `x` in a ball around `x₀` for ae `a` with
