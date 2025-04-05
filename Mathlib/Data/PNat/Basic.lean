@@ -110,8 +110,9 @@ theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
   rfl
 
 /-- `coe` promoted to an `AddHom`, that is, a morphism which preserves addition. -/
+@[simps]
 def coeAddHom : AddHom ℕ+ ℕ where
-  toFun := Coe.coe
+  toFun := (↑)
   map_add' := add_coe
 
 instance addLeftMono : AddLeftMono ℕ+ :=
@@ -127,7 +128,7 @@ instance addLeftReflectLT : AddLeftReflectLT ℕ+ :=
   Positive.addLeftReflectLT
 
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
   toEquiv := Equiv.pnatEquivNat
   map_rel_iff' := natPred_le_natPred
@@ -164,9 +165,10 @@ not only to `Prop`. -/
 @[elab_as_elim, induction_eliminator]
 def recOn (n : ℕ+) {p : ℕ+ → Sort*} (one : p 1) (succ : ∀ n, p n → p (n + 1)) : p n := by
   rcases n with ⟨n, h⟩
-  induction' n with n IH
-  · exact absurd h (by decide)
-  · rcases n with - | n
+  induction n with
+  | zero => exact absurd h (by decide)
+  | succ n IH =>
+    rcases n with - | n
     · exact one
     · exact succ _ (IH n.succ_pos)
 
@@ -313,8 +315,6 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
     · rw [h₁, mul_zero] at hm
       exact (lt_irrefl _ hm).elim
     · let h₂ : (k : ℕ) * 1 ≤ k * (m / k) :=
-        -- Porting note: Specified type of `h₂` explicitly because `rw` could not unify
-        -- `succ 0` with `1`.
         Nat.mul_le_mul_left (k : ℕ) (Nat.succ_le_of_lt (Nat.pos_of_ne_zero h₁))
       rw [mul_one] at h₂
       exact ⟨h₂, le_refl (k : ℕ)⟩

@@ -69,7 +69,7 @@ def modPart : ℤ :=
 variable {p}
 
 theorem modPart_lt_p : modPart p r < p := by
-  convert Int.emod_lt _ _
+  convert Int.emod_lt_abs _ _
   · simp
   · exact mod_cast hp_prime.1.ne_zero
 
@@ -218,18 +218,15 @@ def toZModHom (v : ℕ) (f : ℤ_[p] → ℕ) (f_spec : ∀ x, x - f x ∈ (Idea
     ℤ_[p] →+* ZMod v where
   toFun x := f x
   map_zero' := by
-    dsimp only
     rw [f_congr (0 : ℤ_[p]) _ 0, cast_zero]
     · exact f_spec _
     · simp only [sub_zero, cast_zero, Submodule.zero_mem]
   map_one' := by
-    dsimp only
     rw [f_congr (1 : ℤ_[p]) _ 1, cast_one]
     · exact f_spec _
     · simp only [sub_self, cast_one, Submodule.zero_mem]
   map_add' := by
     intro x y
-    dsimp only
     rw [f_congr (x + y) _ (f x + f y), cast_add]
     · exact f_spec _
     · convert Ideal.add_mem _ (f_spec x) (f_spec y) using 1
@@ -237,7 +234,6 @@ def toZModHom (v : ℕ) (f : ℤ_[p] → ℕ) (f_spec : ∀ x, x - f x ∈ (Idea
       ring
   map_mul' := by
     intro x y
-    dsimp only
     rw [f_congr (x * y) _ (f x * f y), cast_mul]
     · exact f_spec _
     · let I : Ideal ℤ_[p] := Ideal.span {↑v}
@@ -296,7 +292,6 @@ def residueField : IsLocalRing.ResidueField ℤ_[p] ≃+* ZMod p :=
 open scoped Classical in
 /-- `appr n x` gives a value `v : ℕ` such that `x` and `↑v : ℤ_p` are congruent mod `p^n`.
 See `appr_spec`. -/
--- Porting note: removing irreducible solves a lot of problems
 noncomputable def appr : ℤ_[p] → ℕ → ℕ
   | _x, 0 => 0
   | x, n + 1 =>
