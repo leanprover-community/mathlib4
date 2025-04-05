@@ -370,7 +370,7 @@ def reallyPersist
 
 /-- The main implementation of the flexible linter. -/
 def flexibleLinter : Linter where run := withSetOptionIn fun _stx => do
-  unless Linter.getLinterValue linter.flexible (← getOptions) && (← getInfoState).enabled do
+  unless Mathlib.getLinterValue linter.flexible (← getOptions) && (← getInfoState).enabled do
     return
   if (← MonadState.get).messages.hasErrors then
     return

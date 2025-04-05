@@ -91,9 +91,9 @@ replacement syntax. For each individual case, linting can be turned on or off se
 * `admit`, superseded by `sorry` (controlled by `linter.style.admit`)
 -/
 def deprecatedSyntaxLinter : Linter where run := withSetOptionIn fun stx => do
-  unless Linter.getLinterValue linter.style.refine (← getOptions) ||
-      Linter.getLinterValue linter.style.cases (← getOptions) ||
-      Linter.getLinterValue linter.style.admit (← getOptions) do
+  unless Mathlib.getLinterValue linter.style.refine (← getOptions) ||
+      Mathlib.getLinterValue linter.style.cases (← getOptions) ||
+      Mathlib.getLinterValue linter.style.admit (← getOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return

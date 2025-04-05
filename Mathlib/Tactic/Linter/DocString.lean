@@ -28,7 +28,7 @@ namespace Style
 
 @[inherit_doc Mathlib.Linter.linter.style.docString]
 def docStringLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.style.docString (← getOptions) do
+  unless Mathlib.getLinterValue linter.style.docString (← getOptions) do
     return
   if (← get).messages.hasErrors then
     return

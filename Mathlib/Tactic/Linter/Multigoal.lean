@@ -156,7 +156,7 @@ def getManyGoals : InfoTree → Array (Syntax × Nat × Nat × Nat)
 
 @[inherit_doc Mathlib.Linter.linter.style.multiGoal]
 def multiGoalLinter : Linter where run := withSetOptionIn fun _stx ↦ do
-    unless Linter.getLinterValue linter.style.multiGoal (← getOptions) do
+    unless Mathlib.getLinterValue linter.style.multiGoal (← getOptions) do
       return
     if (← get).messages.hasErrors then
       return

@@ -38,7 +38,7 @@ namespace DocPrime
 
 @[inherit_doc Mathlib.Linter.linter.docPrime]
 def docPrimeLinter : Linter where run := withSetOptionIn fun stx ↦ do
-  unless Linter.getLinterValue linter.docPrime (← getOptions) do
+  unless Mathlib.getLinterValue linter.docPrime (← getOptions) do
     return
   if (← get).messages.hasErrors then
     return

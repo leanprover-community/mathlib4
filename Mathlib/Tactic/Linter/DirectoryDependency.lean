@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Lean.Elab.Command
+import Mathlib.Tactic.Linter.Attr
 
 /-! # The `directoryDependency` linter
 
@@ -474,7 +475,7 @@ open DirectoryDependency
 
 @[inherit_doc Mathlib.Linter.linter.directoryDependency]
 def directoryDependencyCheck (mainModule : Name) : CommandElabM (Option MessageData) := do
-  unless Linter.getLinterValue linter.directoryDependency (← getOptions) do
+  unless Mathlib.getLinterValue linter.directoryDependency (← getOptions) do
     return none
   let env ← getEnv
   let imports := env.allImportedModuleNames
