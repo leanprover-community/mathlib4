@@ -439,7 +439,7 @@ a.e. measurability, **not** a.e. strong measurability. This is an intentional de
 for functions taking values in ℝ≥0∞, a.e. measurability is much more useful than
 a.e. strong measurability. -/
 @[fun_prop, measurability]
-protected theorem enorm {β : Type*} [TopologicalSpace β] [ENormedAddMonoid β] {f : α → β}
+protected theorem enorm {β : Type*} [TopologicalSpace β] [ContinuousENorm β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
   (continuous_enorm.comp_aestronglyMeasurable hf).aemeasurable
 
