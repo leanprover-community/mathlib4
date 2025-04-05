@@ -1103,7 +1103,6 @@ theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul {f : α → F} {g : α →
   exact h
 
 -- XXX: should the nnnorm version be deleted or primed instead?
--- XXX: allow c=∞ as well?
 theorem eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' {f : α → ε} {g : α → ε'} {c : ℝ≥0}
     (h : ∀ᵐ x ∂μ, ‖f x‖ₑ ≤ c * ‖g x‖ₑ) {p : ℝ} (hp : 0 < p) :
     eLpNorm' f p μ ≤ c • eLpNorm' g p μ := by
@@ -1227,22 +1226,12 @@ In this section we show inequalities on the norm.
 
 section IsBoundedSMul
 
-variable {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZero 𝕜 E] [MulActionWithZero 𝕜 F] [MulActionWithZero 𝕜 ε]
+variable {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZero 𝕜 E] [MulActionWithZero 𝕜 F]
 variable [IsBoundedSMul 𝕜 E] [IsBoundedSMul 𝕜 F] {c : 𝕜} {f : α → F}
 
 theorem eLpNorm'_const_smul_le (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ :=
   eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul (Eventually.of_forall fun _ => nnnorm_smul_le ..) hq
 
--- XXX: can this replace the unprimed version?
--- TODO: needs an ENormedSpace...
-theorem eLpNorm'_const_smul_le' {f : α → ε} (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ := by
-  apply eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul' _ hq--(Eventually.of_forall fun _ => nnnorm_smul_le ..) hq
-  filter_upwards with x --using by simp [ENNReal.smul_def]
-  rw [← enorm_eq_nnnorm]
-  simp only [Pi.smul_apply]
-  simp [ENNReal.smul_def]
-
-#exit
 theorem eLpNormEssSup_const_smul_le : eLpNormEssSup (c • f) μ ≤ ‖c‖ₑ * eLpNormEssSup f μ :=
   eLpNormEssSup_le_nnreal_smul_eLpNormEssSup_of_ae_le_mul
     (Eventually.of_forall fun _ => by simp [nnnorm_smul_le])
