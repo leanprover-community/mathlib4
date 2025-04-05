@@ -3,16 +3,12 @@ Copyright (c) 2024 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Rat
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Data.Nat.Cast.Order.Ring
-import Mathlib.Order.CompleteLattice.Chain
-import Mathlib.Order.WellFoundedSet
-import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Data.Setoid.Partition
-import Mathlib.Topology.Filter
+import Mathlib.Order.Filter.AtTopBot.Basic
+import Mathlib.Order.Interval.Set.Infinite
+import Mathlib.Order.WellFoundedSet
 
 /-!
 # Disproof of the Aharoni–Korman conjecture
