@@ -86,7 +86,7 @@ theorem chineseRemainderOfList_lt_prod (l : List ι)
       intro j hj
       exact (List.pairwise_cons.mp co).1 j hj
     refine chineseRemainder_lt_mul this (a i) (chineseRemainderOfList a s l co.of_cons)
-      (hs i (List.mem_cons_self _ l)) ?_
+      (hs i List.mem_cons_self) ?_
     simp only [ne_eq, List.prod_eq_zero_iff, List.mem_map, not_exists, not_and]
     intro j hj
     exact hs j (List.mem_cons_of_mem _ hj)
@@ -103,7 +103,7 @@ theorem chineseRemainderOfList_modEq_unique (l : List ι)
       intro j hj
       exact (List.pairwise_cons.mp co).1 j hj
     exact chineseRemainder_modEq_unique this
-      (hz i (List.mem_cons_self _ _)) (ih co.of_cons (fun j hj => hz j (List.mem_cons_of_mem _ hj)))
+      (hz i List.mem_cons_self) (ih co.of_cons (fun j hj => hz j (List.mem_cons_of_mem _ hj)))
 
 theorem chineseRemainderOfList_perm {l l' : List ι} (hl : l.Perm l')
     (hs : ∀ i ∈ l, s i ≠ 0) (co : l.Pairwise (Coprime on s)) :

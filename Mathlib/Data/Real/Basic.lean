@@ -281,6 +281,8 @@ theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
   rw [← mk_zero, mk_lt]
   exact iff_of_eq (congr_arg Pos (sub_zero f))
 
+lemma mk_const {x : ℚ} : mk (const abs x) = x := rfl
+
 private irreducible_def le (x y : ℝ) : Prop :=
   x < y ∨ x = y
 
@@ -330,7 +332,7 @@ instance partialOrder : PartialOrder ℝ where
 instance : Preorder ℝ := by infer_instance
 
 theorem ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
-  erw [mk_lt]
+  rw [← mk_const, ← mk_const, mk_lt]
   exact const_lt
 
 protected theorem zero_lt_one : (0 : ℝ) < 1 := by
@@ -491,8 +493,7 @@ noncomputable instance : LinearOrderedRing ℝ := by infer_instance
 
 noncomputable instance : LinearOrderedSemiring ℝ := by infer_instance
 
-instance : IsDomain ℝ :=
-  { Real.nontrivial, Real.commRing, LinearOrderedRing.isDomain with }
+instance : IsDomain ℝ := IsStrictOrderedRing.isDomain
 
 noncomputable instance instDivInvMonoid : DivInvMonoid ℝ where
 
@@ -546,7 +547,7 @@ theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j
   rintro ⟨K, K0, hK⟩
   obtain ⟨i, H⟩ := exists_forall_ge_and h (exists_forall_ge_and hK (f.cauchy₃ <| half_pos K0))
   apply not_lt_of_le (H _ le_rfl).1
-  erw [mk_lt]
+  rw [← mk_const, mk_lt]
   refine ⟨_, half_pos K0, i, fun j ij => ?_⟩
   have := add_le_add (H _ ij).2.1 (le_of_lt (abs_lt.1 <| (H _ le_rfl).2.2 _ ij).1)
   rwa [← sub_eq_add_neg, sub_self_div_two, sub_apply, sub_add_sub_cancel] at this
@@ -583,11 +584,6 @@ lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 
       _ = (a + 1) ^ (b + 1) := by simp [pow_succ, mul_add]
 
 end Real
-
-/-- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
-  `f (r + s) ≤ max (f r) (f s)` for all `r s : R`. -/
-def IsNonarchimedean {A : Type*} [Add A] (f : A → ℝ) : Prop :=
-  ∀ r s, f (r + s) ≤ max (f r) (f s)
 
 /-- A function `f : R → ℝ` is power-multiplicative if for all `r ∈ R` and all positive `n ∈ ℕ`,
 `f (r ^ n) = (f r) ^ n`. -/

@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Topology.Constructions
-import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Order.Filter.ListTraverse
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Topology on lists and vectors
@@ -115,7 +115,7 @@ theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l := by
 /-- Continuity of `insertIdx` in terms of `Tendsto`. -/
 theorem tendsto_insertIdx' {a : α} :
     ∀ {n : ℕ} {l : List α},
-      Tendsto (fun p : α × List α => insertIdx n p.1 p.2) (𝓝 a ×ˢ 𝓝 l) (𝓝 (insertIdx n a l))
+      Tendsto (fun p : α × List α => p.2.insertIdx n p.1) (𝓝 a ×ˢ 𝓝 l) (𝓝 (l.insertIdx n a))
   | 0, _ => tendsto_cons
   | n + 1, [] => by simp
   | n + 1, a'::l => by
@@ -132,12 +132,12 @@ theorem tendsto_insertIdx' {a : α} :
 
 theorem tendsto_insertIdx {β} {n : ℕ} {a : α} {l : List α} {f : β → α} {g : β → List α}
     {b : Filter β} (hf : Tendsto f b (𝓝 a)) (hg : Tendsto g b (𝓝 l)) :
-    Tendsto (fun b : β => insertIdx n (f b) (g b)) b (𝓝 (insertIdx n a l)) :=
+    Tendsto (fun b : β => (g b).insertIdx n (f b)) b (𝓝 (l.insertIdx n a)) :=
   tendsto_insertIdx'.comp (hf.prodMk hg)
 
 @[deprecated (since := "2024-10-21")] alias tendsto_insertNth := tendsto_insertIdx'
 
-theorem continuous_insertIdx {n : ℕ} : Continuous fun p : α × List α => insertIdx n p.1 p.2 :=
+theorem continuous_insertIdx {n : ℕ} : Continuous fun p : α × List α => p.2.insertIdx n p.1 :=
   continuous_iff_continuousAt.mpr fun ⟨a, l⟩ => by
     rw [ContinuousAt, nhds_prod_eq]; exact tendsto_insertIdx'
 
