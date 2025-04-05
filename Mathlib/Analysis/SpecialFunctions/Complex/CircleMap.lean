@@ -142,17 +142,15 @@ theorem injOn_circleMap_of_abs_sub_le' {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (
   rw [abs_lt]
   constructor <;> linarith
 
-theorem exp_mul_I_injOn : Set.InjOn (circleMap 1) (Set.Ioc (-π) π) := by
-  intro x hx y hy he
-  apply injOn_circleMap_of_abs_sub_le (a := -π) (b := π) (ne_zero_of_eq_one rfl)
-  · rw [← abs_neg]
-    rw [neg_sub, sub_neg_eq_add]
-    rw [← two_mul]
-    rw [abs_le]
-    constructor
-    · apply neg_le
+/-- `circleMap` is injective on `Ioc a b` if the distance between `a` and `b` is at most `2π`. -/
+theorem injOn_circleMap_of_abs_sub_le'' {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (_ : b - a ≤ 2 * π) :
+    (Set.Ioc a b).InjOn (circleMap c R) := by
+  rintro _ ⟨_, _⟩ _ ⟨_, _⟩ h
+  apply eq_of_circleMap_eq h_R _ h
+  rw [abs_lt]
+  constructor <;> linarith
 
-
-
+theorem exp_mul_I_injOn : Set.InjOn (circleMap 0 1) (Set.Ioc (-π) π) := fun x hx y hy he =>
+  injOn_circleMap_of_abs_sub_le'' (ne_zero_of_eq_one rfl) (by rw [sub_neg_eq_add, two_mul]) hx hy he
 
 end circleMap
