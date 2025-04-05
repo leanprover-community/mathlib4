@@ -39,11 +39,7 @@ nonrec theorem hasFDerivAt_integral_of_dominated_loc_of_lip
     IntervalIntegrable F' μ a b ∧
       HasFDerivAt (fun x => ∫ t in a..b, F x t ∂μ) (∫ t in a..b, F' t ∂μ) x₀ := by
   rw [← ae_restrict_iff' measurableSet_uIoc] at h_lip h_diff
-  simp only [intervalIntegrable_iff] at hF_int bound_integrable ⊢
-  simp only [intervalIntegral_eq_integral_uIoc]
-  have := hasFDerivAt_integral_of_dominated_loc_of_lip ε_pos hF_meas hF_int hF'_meas h_lip
-    bound_integrable h_diff
-  exact ⟨this.1, this.2.const_smul _⟩
+  apply hasFDerivAt_integral_of_dominated_loc_of_lip_interval <;> assumption
 
 /-- Differentiation under integral of `x ↦ ∫ F x a` at a given point `x₀`, assuming
 `F x₀` is integrable, `x ↦ F x a` is differentiable on a ball around `x₀` for ae `a` with
