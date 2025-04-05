@@ -163,10 +163,12 @@ theorem trace_mul_cycle' [NonUnitalCommSemiring R] (A : Matrix m n R) (B : Matri
   rw [← Matrix.mul_assoc, trace_mul_comm]
 
 @[simp]
-theorem trace_col_mul_row {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R] (a b : n → R) :
-    trace (col ι a * row ι b) = dotProduct a b := by
+theorem trace_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] [NonUnitalNonAssocSemiring R]
+    (a b : n → R) : trace (replicateCol ι a * replicateRow ι b) = dotProduct a b := by
   apply Finset.sum_congr rfl
   simp [mul_apply]
+
+@[deprecated (since := "2025-03-20")] alias trace_col_mul_row := trace_replicateCol_mul_replicateRow
 
 end Mul
 

@@ -330,7 +330,7 @@ theorem IndepFun.variance_sum [IsProbabilityMeasure μ] {ι : Type*} {X : ι →
         variance_def' (memLp_finset_sum' _ fun i hi => hs _ (mem_insert_of_mem hi))]
       ring
     _ = variance (X k) μ + variance (∑ i ∈ s, X i) μ := by
-      simp_rw [Pi.mul_apply, Pi.ofNat_apply, Nat.cast_ofNat, sum_apply, mul_sum, mul_assoc,
+      simp_rw [Pi.mul_apply, Pi.ofNat_apply, sum_apply, mul_sum, mul_assoc,
         add_eq_left]
       rw [integral_finset_sum s fun i hi => ?_]; swap
       · apply Integrable.const_mul _ (2 : ℝ)

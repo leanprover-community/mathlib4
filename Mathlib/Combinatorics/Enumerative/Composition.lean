@@ -101,6 +101,9 @@ structure Composition (n : ℕ) where
   blocks_pos : ∀ {i}, i ∈ blocks → 0 < i
   /-- Proof that `blocks` sums to `n` -/
   blocks_sum : blocks.sum = n
+  deriving DecidableEq
+
+attribute [simp] Composition.blocks_sum
 
 /-- Combinatorial viewpoint on a composition of `n`, by seeing it as non-empty blocks of
 consecutive integers in `{0, ..., n-1}`. We register every block by its left end-point, yielding
@@ -115,9 +118,12 @@ structure CompositionAsSet (n : ℕ) where
   zero_mem : (0 : Fin n.succ) ∈ boundaries
   /-- Last element of the composition -/
   getLast_mem : Fin.last n ∈ boundaries
+  deriving DecidableEq
 
 instance {n : ℕ} : Inhabited (CompositionAsSet n) :=
   ⟨⟨Finset.univ, Finset.mem_univ _, Finset.mem_univ _⟩⟩
+
+attribute [simp] CompositionAsSet.zero_mem CompositionAsSet.getLast_mem
 
 /-!
 ### Compositions
@@ -125,7 +131,6 @@ instance {n : ℕ} : Inhabited (CompositionAsSet n) :=
 A composition of an integer `n` is a decomposition `n = i₀ + ... + i_{k-1}` of `n` into a sum of
 positive integers.
 -/
-
 
 namespace Composition
 
@@ -145,18 +150,24 @@ theorem blocks_length : c.blocks.length = c.length :=
 functions using compositions, this is the main player. -/
 def blocksFun : Fin c.length → ℕ := c.blocks.get
 
+@[simp]
 theorem ofFn_blocksFun : ofFn c.blocksFun = c.blocks :=
   ofFn_get _
 
+@[simp]
 theorem sum_blocksFun : ∑ i, c.blocksFun i = n := by
   conv_rhs => rw [← c.blocks_sum, ← ofFn_blocksFun, sum_ofFn]
 
+@[simp]
 theorem blocksFun_mem_blocks (i : Fin c.length) : c.blocksFun i ∈ c.blocks :=
   get_mem _ _
 
-@[simp]
 theorem one_le_blocks {i : ℕ} (h : i ∈ c.blocks) : 1 ≤ i :=
   c.blocks_pos h
+
+theorem blocks_le {i : ℕ} (h : i ∈ c.blocks) : i ≤ n := by
+  rw [← c.blocks_sum]
+  exact List.le_sum_of_mem h
 
 @[simp]
 theorem one_le_blocks' {i : ℕ} (h : i < c.length) : 1 ≤ c.blocks[i] :=
@@ -166,23 +177,37 @@ theorem one_le_blocks' {i : ℕ} (h : i < c.length) : 1 ≤ c.blocks[i] :=
 theorem blocks_pos' (i : ℕ) (h : i < c.length) : 0 < c.blocks[i] :=
   c.one_le_blocks' h
 
+@[simp]
 theorem one_le_blocksFun (i : Fin c.length) : 1 ≤ c.blocksFun i :=
   c.one_le_blocks (c.blocksFun_mem_blocks i)
 
+@[simp]
 theorem blocksFun_le {n} (c : Composition n) (i : Fin c.length) :
-    c.blocksFun i ≤ n := by
-  have := c.blocks_sum
-  have := List.le_sum_of_mem (c.blocksFun_mem_blocks i)
-  simp_all
+    c.blocksFun i ≤ n :=
+  c.blocks_le <| getElem_mem _
 
+@[simp]
 theorem length_le : c.length ≤ n := by
   conv_rhs => rw [← c.blocks_sum]
   exact length_le_sum_of_one_le _ fun i hi => c.one_le_blocks hi
 
-theorem length_pos_of_pos (h : 0 < n) : 0 < c.length := by
-  apply length_pos_of_sum_pos
-  convert h
-  exact c.blocks_sum
+@[simp]
+theorem blocks_eq_nil : c.blocks = [] ↔ n = 0 := by
+  constructor
+  · intro h
+    simpa using congr(List.sum $h)
+  · rintro rfl
+    rw [← length_eq_zero_iff, ← nonpos_iff_eq_zero]
+    exact c.length_le
+
+protected theorem length_eq_zero : c.length = 0 ↔ n = 0 := by
+  simp
+
+@[simp]
+theorem length_pos_iff : 0 < c.length ↔ 0 < n := by
+  simp [pos_iff_ne_zero]
+
+alias ⟨_, length_pos_of_pos⟩ := length_pos_iff
 
 /-- The sum of the sizes of the blocks in a composition up to `i`. -/
 def sizeUpTo (i : ℕ) : ℕ :=
@@ -431,7 +456,7 @@ instance {n : ℕ} : Inhabited (Composition n) :=
 
 @[simp]
 theorem ones_length (n : ℕ) : (ones n).length = n :=
-  List.length_replicate n 1
+  List.length_replicate
 
 @[simp]
 theorem ones_blocks (n : ℕ) : (ones n).blocks = replicate n (1 : ℕ) :=
@@ -548,6 +573,105 @@ theorem ne_single_iff {n : ℕ} (hn : 0 < n) {c : Composition n} :
 
     simpa using Fintype.card_eq_one_of_forall_eq this
 
+variable {m : ℕ}
+
+/-- Change `n` in `(c : Composition n)` to a propositionally equal value. -/
+@[simps]
+protected def cast (c : Composition m) (hmn : m = n) : Composition n where
+  __ := c
+  blocks_sum := c.blocks_sum.trans hmn
+
+@[simp]
+theorem cast_rfl (c : Composition n) : c.cast rfl = c := rfl
+
+theorem cast_heq (c : Composition m) (hmn : m = n) : HEq (c.cast hmn) c := by subst m; rfl
+
+theorem cast_eq_cast (c : Composition m) (hmn : m = n) :
+    c.cast hmn = cast (hmn ▸ rfl) c := by
+  subst m
+  rfl
+
+/-- Append two compositions to get a composition of the sum of numbers. -/
+@[simps]
+def append (c₁ : Composition m) (c₂ : Composition n) : Composition (m + n) where
+  blocks := c₁.blocks ++ c₂.blocks
+  blocks_pos := by
+    intro i hi
+    rw [mem_append] at hi
+    exact hi.elim c₁.blocks_pos c₂.blocks_pos
+  blocks_sum := by simp
+
+/-- Reverse the order of blocks in a composition. -/
+@[simps]
+def reverse (c : Composition n) : Composition n where
+  blocks := c.blocks.reverse
+  blocks_pos hi := c.blocks_pos (mem_reverse.mp hi)
+  blocks_sum := by simp [List.sum_reverse]
+
+@[simp]
+lemma reverse_reverse (c : Composition n) : c.reverse.reverse = c :=
+  Composition.ext <| List.reverse_reverse _
+
+lemma reverse_involutive : Function.Involutive (@reverse n) := reverse_reverse
+lemma reverse_bijective : Function.Bijective (@reverse n) := reverse_involutive.bijective
+lemma reverse_injective : Function.Injective (@reverse n) := reverse_involutive.injective
+lemma reverse_surjective : Function.Surjective (@reverse n) := reverse_involutive.surjective
+
+@[simp]
+lemma reverse_inj {c₁ c₂ : Composition n} : c₁.reverse = c₂.reverse ↔ c₁ = c₂ :=
+  reverse_injective.eq_iff
+
+@[simp]
+lemma reverse_ones : (ones n).reverse = ones n := by ext1; simp
+
+@[simp]
+lemma reverse_single (hn : 0 < n) : (single n hn).reverse = single n hn := by ext1; simp
+
+@[simp]
+lemma reverse_eq_ones {c : Composition n} : c.reverse = ones n ↔ c = ones n :=
+  reverse_injective.eq_iff' reverse_ones
+
+@[simp]
+lemma reverse_eq_single {hn : 0 < n} {c : Composition n} :
+    c.reverse = single n hn ↔ c = single n hn :=
+  reverse_injective.eq_iff' <| reverse_single _
+
+lemma reverse_append (c₁ : Composition m) (c₂ : Composition n) :
+    reverse (append c₁ c₂) = (append c₂.reverse c₁.reverse).cast (add_comm _ _) :=
+  Composition.ext <| by simp
+
+/-- Induction (recursion) principle on `c : Composition _`
+that corresponds to the usual induction on the list of blocks of `c`. -/
+@[elab_as_elim]
+def recOnSingleAppend {motive : ∀ n, Composition n → Sort*} {n : ℕ} (c : Composition n)
+    (zero : motive 0 (ones 0))
+    (single_append : ∀ k n c, motive n c →
+      motive (k + 1 + n) (append (single (k + 1) k.succ_pos) c)) :
+    motive n c :=
+  match n, c with
+  | _, ⟨blocks, blocks_pos, rfl⟩ =>
+    match blocks with
+    | [] => zero
+    | 0 :: _ => by simp at blocks_pos
+    | (k + 1) :: l =>
+      single_append k l.sum ⟨l, fun hi ↦ blocks_pos <| mem_cons_of_mem _ hi, rfl⟩ <|
+        recOnSingleAppend _ zero single_append
+  decreasing_by simp
+
+/-- Induction (recursion) principle on `c : Composition _`
+that corresponds to the reverse induction on the list of blocks of `c`. -/
+@[elab_as_elim]
+def recOnAppendSingle {motive : ∀ n, Composition n → Sort*} {n : ℕ} (c : Composition n)
+    (zero : motive 0 (ones 0))
+    (append_single : ∀ k n c, motive n c →
+      motive (n + (k + 1)) (append c (single (k + 1) k.succ_pos))) :
+    motive n c :=
+  reverse_reverse c ▸ c.reverse.recOnSingleAppend zero fun k n c ih ↦ by
+    convert append_single k n c.reverse ih using 1
+    · apply add_comm
+    · rw [reverse_append, reverse_single]
+      apply cast_heq
+
 end Composition
 
 /-!
@@ -616,7 +740,7 @@ theorem map_length_splitWrtComposition (l : List α) (c : Composition l.length) 
 theorem length_pos_of_mem_splitWrtComposition {l l' : List α} {c : Composition l.length}
     (h : l' ∈ l.splitWrtComposition c) : 0 < length l' := by
   have : l'.length ∈ (l.splitWrtComposition c).map List.length :=
-    List.mem_map_of_mem List.length h
+    List.mem_map_of_mem h
   rw [map_length_splitWrtComposition] at this
   exact c.blocks_pos this
 
@@ -742,8 +866,6 @@ def compositionAsSetEquiv (n : ℕ) : CompositionAsSet n ≃ Finset (Fin (n - 1)
     simp only [add_comm, Fin.ext_iff, Fin.val_zero, Fin.val_last, exists_prop, Set.toFinset_setOf,
       Finset.mem_univ, forall_true_left, Finset.mem_filter, add_eq_zero, and_false,
       add_left_inj, false_or, true_and, reduceCtorEq]
-    erw [Set.mem_setOf_eq]
-    simp only [Finset.mem_val]
     constructor
     · intro h
       rcases h with n | h
@@ -820,7 +942,7 @@ def blocks (c : CompositionAsSet n) : List ℕ :=
 
 @[simp]
 theorem blocks_length : c.blocks.length = c.length :=
-  length_ofFn _
+  length_ofFn
 
 theorem blocks_partial_sum {i : ℕ} (h : i < c.boundaries.card) :
     (c.blocks.take i).sum = c.boundary ⟨i, h⟩ := by
