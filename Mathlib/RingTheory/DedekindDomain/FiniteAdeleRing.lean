@@ -121,6 +121,7 @@ protected def algebraMap : K →+* FiniteAdeleRing R K where
     UniformSpace.Completion.coe_add ((WithVal.equiv (valuation K v)).symm x) y)
 
 instance : Algebra K (FiniteAdeleRing R K) where
+  smul x y := ((FiniteAdeleRing.algebraMap R K) x) * y
   algebraMap := DedekindDomain.FiniteAdeleRing.algebraMap R K
   commutes' _ _ := mul_comm _ _
   smul_def' _ _ := rfl
