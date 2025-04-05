@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Filter.Prod
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Order.Filter.Finite
 import Mathlib.Order.Filter.Bases.Basic
 
 /-!
