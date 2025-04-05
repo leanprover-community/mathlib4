@@ -462,7 +462,9 @@ lemma rr5:
     obtain ⟨z, hz1, hz2⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) j
     by_contra!
     have : z ∈ LieAlgebra.center K L := by
-      sorry
+      have rrr (x : L) : ⁅x, z⁆ = (0 : L) := by
+        sorry
+      exact rrr
     have cent := LieAlgebra.center_eq_bot (R := K) (L := L)
     rw [cent] at this
     exact hz2 this
