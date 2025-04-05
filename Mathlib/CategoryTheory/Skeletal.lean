@@ -189,10 +189,10 @@ some of the statements can be shown without this assumption.
 namespace ThinSkeleton
 
 /-- The thin skeleton is thin. -/
-instance thin : Quiver.IsThin (ThinSkeleton C) := fun _ _ =>
+instance thin : Quiver.IsThin (ThinSkeleton C) := ⟨fun _ _ =>
   ⟨by
     rintro ⟨⟨f₁⟩⟩ ⟨⟨_⟩⟩
-    rfl⟩
+    rfl⟩⟩
 
 variable {C} {D}
 
