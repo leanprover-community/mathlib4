@@ -427,6 +427,23 @@ theorem mem_lift_of_splits_of_roots_mem_range [Algebra R K] {f : K[X]}
   obtain ⟨b, hb, rfl⟩ := Multiset.mem_map.1 hP
   exact Subring.sub_mem _ (X_mem_lifts _) (C'_mem_lifts (hr _ hb))
 
+/--
+A polynomial of degree `2` with a root splits.
+-/
+theorem splits_of_natDegree_eq_two {f : Polynomial K} {x : L} (h₁ : f.natDegree = 2)
+    (h₂ : eval₂ i x f = 0) : Splits i f := by
+  have hf₀ : f ≠ 0 := ne_zero_of_natDegree_gt (h₁ ▸ zero_lt_two)
+  have h : (map i f /ₘ (X - C x)).natDegree = 1 := by
+    rw [natDegree_divByMonic _ (monic_X_sub_C x), natDegree_map, h₁, natDegree_X_sub_C]
+  replace h₂ := (mem_roots'.mp <| (mem_roots_map_of_injective i.injective hf₀).mpr h₂).2
+  rw [← splits_id_iff_splits, ← mul_divByMonic_eq_iff_isRoot.mpr h₂]
+  exact (splits_mul_iff _ (X_sub_C_ne_zero x) (by simp [ne_zero_of_natDegree_gt, h])).mpr
+    ⟨splits_X_sub_C  _, splits_of_natDegree_le_one (RingHom.id L) (by rw [h])⟩
+
+theorem splits_of_degree_eq_two {f : Polynomial K} {x : L} (h₁ : f.degree = 2)
+    (h₂ : eval₂ i x f = 0) : Splits i f :=
+  splits_of_natDegree_eq_two i (natDegree_eq_of_degree_eq_some h₁) h₂
+
 section UFD
 
 attribute [local instance] PrincipalIdealRing.to_uniqueFactorizationMonoid
