@@ -711,6 +711,16 @@ lemma AnalyticOnNhd.fun_pow {f : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f
   fun _ m ↦ (hf _ m).pow n
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
+@[fun_prop]
+lemma AnalyticAt.hpow {f : E → A} {z₀ : E} (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) :
+    AnalyticAt 𝕜 (HPow.hPow f n) z₀ := by apply hf.pow
+
+/-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
+@[fun_prop]
+lemma AnalyticAt.fun_hpow  {f : E → A} {z₀ : E} (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) :
+    AnalyticAt 𝕜 (fun z ↦ HPow.hPow (f z) n) z₀ := by apply hf.pow
+
+/-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticOnNhd.pow {f : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) (n : ℕ) :
     AnalyticOnNhd 𝕜 (f ^ n) s :=
   AnalyticOnNhd.fun_pow hf n
