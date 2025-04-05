@@ -319,7 +319,7 @@ theorem isCompact_closedAbsConvexHull_of_totallyBounded [CompleteSpace E] {s : S
 
 -- TVS IV.3 Example
 open RingHom in
-omit [UniformAddGroup E] lcs [ContinuousSMul ℝ E] in
+omit [IsUniformAddGroup E] lcs [ContinuousSMul ℝ E] in
 lemma easy_direction :
     (UniformConvergenceCLM.instTopologicalSpace (id _) ℝ {(C : Set E) | IsCompact C }) ≤
     (UniformConvergenceCLM.instTopologicalSpace (id ℝ) ℝ {(C : Set E) | IsCompact C ∧ Convex ℝ C })

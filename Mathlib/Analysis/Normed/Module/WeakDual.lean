@@ -267,7 +267,7 @@ instance (n : ℕ) : Nonempty (U (E := E) n) := by
 
 lemma polarUcompact [ProperSpace 𝕜] (n : ℕ) : IsCompact (polar 𝕜 (U (E := E) n)) := by
   apply isCompact_polar
-  cases' n with m
+  rcases n with _|m
   · simp only [U, univ_mem]
   · simp only [U, Nat.cast_add, Nat.cast_one]
     rw [Metric.mem_nhds_iff]
@@ -289,7 +289,7 @@ variable (s : Set E₁)
 /- Placeholder for inductive step -/
 variable (n : ℕ)
 
-/-- For all x, let K x be the intersection of 4 sets-/
+/-- For all x, let K x be the intersection of 4 sets -/
 def K : E₁ → Set (WeakDual 𝕜₁ E₁) :=
   fun x => polar 𝕜₁ s ∩ polar 𝕜₁ {x} ∩ C ∩ polar 𝕜₁ (U (n+2))
 
