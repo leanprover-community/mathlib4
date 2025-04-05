@@ -156,23 +156,24 @@ open MvPowerSeries.WithPiTopology
 theorem continuous_C [Semiring R] : Continuous (C R) :=
   MvPowerSeries.WithPiTopology.continuous_C
 
-theorem tendsto_pow_zero_of_constantCoeff_nilpotent [CommSemiring R]
+theorem isTopologicallyNilpotent_of_constantCoeff_isNilpotent [CommSemiring R]
     {f : PowerSeries R} (hf : IsNilpotent (constantCoeff R f)) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) :=
-  MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_nilpotent hf
+  MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_isNilpotent hf
 
-theorem tendsto_pow_zero_of_constantCoeff_zero [CommSemiring R]
+theorem isTopologicallyNilpotent_of_constantCoeff_zero [CommSemiring R]
     {f : PowerSeries R} (hf : constantCoeff R f = 0) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) :=
-  MvPowerSeries.WithPiTopology.tendsto_pow_zero_of_constantCoeff_zero hf
+  MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_of_constantCoeff_zero hf
 
-/-- The powers of a `PowerSeries` converge to 0 iff its constant coefficient is nilpotent.
-N. Bourbaki, *Algebra II*, [bourbaki1981] (chap. 4, §4, n°2, corollaire de la prop. 3) -/
-theorem tendsto_pow_zero_of_constantCoeff_nilpotent_iff
+/-- Assuming the base ring has a discrete topology, the powers of a `PowerSeries` converge to 0
+iff its constant coefficient is nilpotent.
+N. Bourbaki, *Algebra II*, [bourbaki1981] (chap. 4, §4, n°2, corollaire de la prop. 3). -/
+theorem isTopologicallyNilpotent_iff_constantCoeff_isNilpotent
     [CommRing R] [DiscreteTopology R] (f : PowerSeries R) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
       IsNilpotent (constantCoeff R f) :=
-  MvPowerSeries.WithPiTopology.tendsto_pow_of_constantCoeff_nilpotent_iff f
+  MvPowerSeries.WithPiTopology.isTopologicallyNilpotent_iff_constantCoeff_isNilpotent f
 
 end WithPiTopology
 
