@@ -23,7 +23,7 @@ open Stream'
 
 variable {α : Type u} {β : Type v}
 
-def parallel.aux2 : List (Computation α) → α ⊕ (List (Computation α)) :=
+private def parallel.aux2 : List (Computation α) → α ⊕ (List (Computation α)) :=
   List.foldr
     (fun c o =>
       match o with
@@ -31,7 +31,7 @@ def parallel.aux2 : List (Computation α) → α ⊕ (List (Computation α)) :=
       | Sum.inr ls => rmap (fun c' => c' :: ls) (destruct c))
     (Sum.inr [])
 
-def parallel.aux1 :
+private def parallel.aux1 :
     List (Computation α) × WSeq (Computation α) →
       α ⊕ (List (Computation α) × WSeq (Computation α))
   | (l, S) =>
@@ -284,7 +284,7 @@ theorem parallel_empty (S : WSeq (Computation α)) (h : S.head ~> none) : parall
     let ⟨c', h'⟩ := WSeq.head_some_of_get?_some nm
     injection h h'
 
--- The reason this isn't trivial from exists_of_mem_parallel is because it eliminates to Sort
+/-- Induction principle for parallel computations -/
 def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S, ∀ a ∈ s, C a) {a}
     (h : a ∈ parallel S) : C a := by
   let T : WSeq (Computation (α × Computation α)) := S.map fun c => c.map fun a => (a, c)
