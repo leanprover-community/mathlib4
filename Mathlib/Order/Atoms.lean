@@ -1128,36 +1128,11 @@ universe u
 variable {ι : Type*} {π : ι → Type u}
 
 protected theorem eq_bot_iff [∀ i, Bot (π i)] {f : ∀ i, π i} : f = ⊥ ↔ ∀ i, f i = ⊥ :=
-  ⟨(· ▸ by simp), fun h => funext fun i => by simp [h]⟩
+  funext_iff
 
 theorem isAtom_iff {f : ∀ i, π i} [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)] :
     IsAtom f ↔ ∃ i, IsAtom (f i) ∧ ∀ j, j ≠ i → f j = ⊥ := by
-  classical
-  constructor
-  case mpr =>
-    rintro ⟨i, ⟨hfi, hlt⟩, hbot⟩
-    refine ⟨fun h => hfi ((Pi.eq_bot_iff.1 h) _), fun g hgf => Pi.eq_bot_iff.2 fun j => ?_⟩
-    have ⟨hgf, k, hgfk⟩ := Pi.lt_def.1 hgf
-    obtain rfl : i = k := of_not_not fun hki => by rw [hbot _ (Ne.symm hki)] at hgfk; simp at hgfk
-    if hij : j = i then subst hij; refine hlt _ hgfk else
-    exact eq_bot_iff.2 <| le_trans (hgf _) (eq_bot_iff.1 (hbot _ hij))
-  case mp =>
-    rintro ⟨hbot, h⟩
-    have ⟨i, hbot⟩ : ∃ i, f i ≠ ⊥ := by rw [ne_eq, Pi.eq_bot_iff, not_forall] at hbot; exact hbot
-    refine ⟨i, ⟨hbot, ?c⟩, ?d⟩
-    case c =>
-      intro b hb
-      have := h (Function.update ⊥ i b)
-      simp only [lt_def, le_def, Pi.eq_bot_iff, and_imp, forall_exists_index] at this
-      simpa using this
-        (fun j => by by_cases h : j = i; { subst h; simpa using le_of_lt hb }; simp [h])
-        i (by simpa using hb) i
-    case d =>
-      intro j hj
-      have := h (Function.update ⊥ j (f j))
-      simp only [lt_def, le_def, Pi.eq_bot_iff, and_imp, forall_exists_index] at this
-      simpa using this (fun k => by by_cases h : k = j; { subst h; simp }; simp [h]) i
-        (by rwa [Function.update_of_ne (Ne.symm hj), bot_apply, bot_lt_iff_ne_bot]) j
+  simp only [← bot_covBy_iff, Pi.covBy_iff, bot_apply, eq_comm]
 
 theorem isAtom_single {i : ι} [DecidableEq ι] [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)]
     {a : π i} (h : IsAtom a) : IsAtom (Function.update (⊥ : ∀ i, π i) i a) :=
@@ -1166,23 +1141,14 @@ theorem isAtom_single {i : ι} [DecidableEq ι] [∀ i, PartialOrder (π i)] [�
 theorem isAtom_iff_eq_single [DecidableEq ι] [∀ i, PartialOrder (π i)]
     [∀ i, OrderBot (π i)] {f : ∀ i, π i} :
     IsAtom f ↔ ∃ i a, IsAtom a ∧ f = Function.update ⊥ i a := by
-  constructor
-  case mp =>
-    intro h
-    have ⟨i, h, hbot⟩ := isAtom_iff.1 h
-    refine ⟨_, _, h, funext fun j => if hij : j = i then hij ▸ by simp else ?_⟩
-    rw [Function.update_of_ne hij, hbot _ hij, bot_apply]
-  case mpr =>
-    rintro ⟨i, a, h, rfl⟩
-    exact isAtom_single h
+  simp [← bot_covBy_iff, covBy_iff_exists_right_eq]
 
 instance isAtomic [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)] [∀ i, IsAtomic (π i)] :
     IsAtomic (∀ i, π i) where
   eq_bot_or_exists_atom_le b := or_iff_not_imp_left.2 fun h =>
     have ⟨i, hi⟩ : ∃ i, b i ≠ ⊥ := not_forall.1 (h.imp Pi.eq_bot_iff.2)
     have ⟨a, ha, hab⟩ := (eq_bot_or_exists_atom_le (b i)).resolve_left hi
-    have : DecidableEq ι := open scoped Classical in inferInstance
-    ⟨Function.update ⊥ i a, isAtom_single ha, update_le_iff.2 ⟨hab, by simp⟩⟩
+    by classical exact ⟨Function.update ⊥ i a, isAtom_single ha, update_le_iff.2 ⟨hab, by simp⟩⟩
 
 instance isCoatomic [∀ i, PartialOrder (π i)] [∀ i, OrderTop (π i)] [∀ i, IsCoatomic (π i)] :
     IsCoatomic (∀ i, π i) :=
@@ -1201,8 +1167,7 @@ instance isAtomistic [∀ i, PartialOrder (π i)] [∀ i, OrderBot (π i)] [∀ 
     · rintro _ ⟨_, ⟨⟨_, _, _, rfl⟩, hs⟩, rfl⟩
       exact hs i
     · refine fun j hj ↦ (isLUB_atoms_le (s i)).2 fun x ⟨hx₁, hx₂⟩ ↦ ?_
-      refine hj ⟨Function.update ⊥ i x, ⟨⟨_, x, hx₁, rfl⟩, fun j ↦ ?_⟩, by simp⟩
-      obtain rfl | hij := eq_or_ne j i <;> simp [*]
+      exact hj ⟨Function.update ⊥ i x, ⟨⟨_, x, hx₁, rfl⟩, by simp [update_le_iff, hx₂]⟩, by simp⟩
 
 instance isCoatomistic [∀ i, CompleteLattice (π i)] [∀ i, IsCoatomistic (π i)] :
     IsCoatomistic (∀ i, π i) :=
