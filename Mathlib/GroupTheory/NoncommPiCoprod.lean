@@ -106,7 +106,6 @@ def noncommPiCoprod : (∀ i : ι, N i) →* M where
     simp
   map_mul' f g := by
     classical
-    simp only
     convert @Finset.noncommProd_mul_distrib _ _ _ _ (fun i => ϕ i (f i)) (fun i => ϕ i (g i)) _ _ _
     · exact map_mul _ _ _
     · rintro i - j - h

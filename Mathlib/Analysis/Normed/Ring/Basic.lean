@@ -879,6 +879,7 @@ namespace AbsoluteValue
 /-- A real absolute value on a ring determines a `NormedRing` structure. -/
 noncomputable def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing R where
   norm := v
+  dist x y := v (x - y)
   dist_eq _ _ := rfl
   dist_self x := by simp only [sub_self, MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom, map_zero]
   dist_comm := v.map_sub

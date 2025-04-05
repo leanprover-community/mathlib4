@@ -247,6 +247,23 @@ def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators 
     use (a + b)
     rw [map_add, ha, hb]
 
+/-- Given generators `P` and an equivalence `ι ≃ P.vars`, these
+are the induced generators indexed by `ι`. -/
+@[simps -isSimp vars]
+noncomputable def reindex (P : Generators.{w} R S) {ι : Type*} (e : ι ≃ P.vars) :
+    Generators R S where
+  vars := ι
+  val := P.val ∘ e
+  σ' := rename e.symm ∘ P.σ
+  aeval_val_σ' s := by
+    conv_rhs => rw [← P.aeval_val_σ s]
+    rw [← MvPolynomial.aeval_rename]
+    simp
+
+lemma reindex_val (P : Generators.{w} R S) {ι : Type*} (e : ι ≃ P.vars) :
+    (P.reindex e).val = P.val ∘ e :=
+  rfl
+
 end Construction
 
 variable {R' S'} [CommRing R'] [CommRing S'] [Algebra R' S'] (P' : Generators R' S')
@@ -340,7 +357,6 @@ noncomputable def Hom.comp [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
     [IsScalarTower S S' S''] (f : Hom P' P'') (g : Hom P P') : Hom P P'' where
   val x := aeval f.val (g.val x)
   aeval_val x := by
-    simp only
     rw [IsScalarTower.algebraMap_apply S S' S'', ← g.aeval_val]
     induction g.val x using MvPolynomial.induction_on with
     | C r => simp [← IsScalarTower.algebraMap_apply]

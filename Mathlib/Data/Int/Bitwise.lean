@@ -142,7 +142,7 @@ theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
   rcases m with m | m <;> rcases n with n | n <;>
   simp only [ofNat_eq_coe, ofNat_mul_negSucc, negSucc_mul_ofNat, ofNat_mul_ofNat,
              negSucc_mul_negSucc] <;>
-  simp only [negSucc_coe, bodd_neg, bodd_coe, Nat.bodd_mul]
+  simp only [negSucc_eq, ← Int.natCast_succ, bodd_neg, bodd_coe, Nat.bodd_mul]
 
 theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
   | (n : ℕ) => by

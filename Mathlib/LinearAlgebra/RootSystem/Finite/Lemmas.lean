@@ -239,13 +239,24 @@ lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
     have := exists_apply_eq_or_aux hij hik hjk
     aesop
 
+lemma apply_eq_or_of_apply_ne
+    (h : B.form (P.root i) (P.root i) ≠ B.form (P.root j) (P.root j)) (k : ι) :
+    B.form (P.root k) (P.root k) = B.form (P.root i) (P.root i) ∨
+    B.form (P.root k) (P.root k) = B.form (P.root j) (P.root j) := by
+  have : Nonempty ι := ⟨i⟩
+  obtain ⟨i', j', h'⟩ := B.exists_apply_eq_or
+  rcases h' i with hi | hi <;>
+  rcases h' j with hj | hj <;>
+  specialize h' k <;>
+  aesop
+
 end InvariantForm
 
 namespace Base
 
 variable {P}
 variable (b : P.Base) (i j k : ι) (hij : i ≠ j) (hi : i ∈ b.support) (hj : j ∈ b.support)
-include b hij hi hj
+include hij hi hj
 
 variable {i j} in
 lemma pairingIn_le_zero_of_ne :
