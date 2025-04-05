@@ -131,6 +131,10 @@ theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : 
   rw [Set.ssubset_def, vanishingIdeal_anti_mono_iff hs, vanishingIdeal_anti_mono_iff ht,
     lt_iff_le_not_le]
 
+@[simp]
+lemma zeroLocus_nilradical : zeroLocus (nilradical R : Set R) = Set.univ := by
+  rw [nilradical, zeroLocus_radical, Ideal.zero_eq_bot, zeroLocus_bot]
+
 /-- The antitone order embedding of closed subsets of `Spec R` into ideals of `R`. -/
 def closedsEmbedding (R : Type*) [CommSemiring R] :
     (TopologicalSpace.Closeds <| PrimeSpectrum R)ᵒᵈ ↪o Ideal R :=
@@ -394,6 +398,12 @@ theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal 
 theorem range_comap_of_surjective (hf : Surjective f) :
     Set.range (comap f) = zeroLocus (ker f) :=
   range_specComap_of_surjective _ f hf
+
+lemma comap_quotientMk_bijective_of_le_nilradical (I : Ideal R) (hle : I ≤ nilradical R) :
+    Function.Bijective (comap <| Ideal.Quotient.mk I) := by
+  refine ⟨comap_injective_of_surjective _ Ideal.Quotient.mk_surjective, ?_⟩
+  simpa [← Set.range_eq_univ, range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
+    zeroLocus_eq_univ_iff]
 
 theorem isClosed_range_comap_of_surjective (hf : Surjective f) :
     IsClosed (Set.range (comap f)) := by
@@ -794,7 +804,7 @@ lemma closure_range_comap :
 
 lemma denseRange_comap_iff_ker_le_nilRadical :
     DenseRange (comap f) ↔ RingHom.ker f ≤ nilradical R := by
-  rw [denseRange_iff_closure_range, closure_range_comap, ← Set.top_eq_univ, zeroLocus_eq_top_iff,
+  rw [denseRange_iff_closure_range, closure_range_comap, zeroLocus_eq_univ_iff,
     SetLike.coe_subset_coe]
 
 @[stacks 00FL]
@@ -999,6 +1009,14 @@ lemma isIntegral_of_isClosedMap_comap_mapRingHom (h : IsClosedMap (comap (mapRin
       ← add_assoc, reflect_mul _ _ (this.trans (by simp)) le_rfl,
       eval_mul, reflect_sub, reflect_mul _ _ (by simp) (by simp)]
     simp [← pow_succ']
+
+lemma _root_.RingHom.IsIntegral.specComap_surjective {f : R →+* S} (hf : f.IsIntegral)
+    (hinj : Function.Injective f) : Function.Surjective f.specComap := by
+  algebraize [f]
+  intro ⟨p, hp⟩
+  obtain ⟨Q, _, hQ, rfl⟩ := Ideal.exists_ideal_over_prime_of_isIntegral p (⊥ : Ideal S)
+    (by simp [Ideal.comap_bot_of_injective (algebraMap R S) hinj])
+  exact ⟨⟨Q, hQ⟩, rfl⟩
 
 end IsIntegral
 
