@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.SuccPred
+import Mathlib.Data.Nat.SuccPred
+import Mathlib.Order.Interval.Finset.Nat
 import Mathlib.Order.Interval.Finset.SuccPred
 
 /-!
@@ -245,3 +247,20 @@ lemma Ioi_sub_one_eq_Ici (a : α) : Ioi (a - 1) = Ici a := by
 end PredSubOrder
 end LocallyFiniteOrderTop
 end Finset
+
+/-! ### Deprecated lemmas -/
+
+open Finset
+
+namespace Nat
+variable {m n : ℕ}
+
+@[deprecated insert_Icc_add_one_left_eq_Icc (since := "2025-03-04")]
+lemma Icc_insert_succ_left (h : m ≤ n) : insert m (Icc (m + 1) n) = Icc m n :=
+  insert_Icc_add_one_left_eq_Icc h
+
+@[deprecated insert_Icc_eq_Icc_add_one_right (since := "2025-03-04")]
+lemma Icc_insert_succ_right (h : m ≤ n + 1) : insert (n + 1) (Icc m n) = Icc m (n + 1) :=
+  insert_Icc_eq_Icc_add_one_right h
+
+end Nat
