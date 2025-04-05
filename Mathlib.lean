@@ -3355,6 +3355,7 @@ import Mathlib.Dynamics.Ergodic.Action.Regular
 import Mathlib.Dynamics.Ergodic.AddCircle
 import Mathlib.Dynamics.Ergodic.AddCircleAdd
 import Mathlib.Dynamics.Ergodic.Conservative
+import Mathlib.Dynamics.Ergodic.Dissipative
 import Mathlib.Dynamics.Ergodic.Ergodic
 import Mathlib.Dynamics.Ergodic.Function
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
