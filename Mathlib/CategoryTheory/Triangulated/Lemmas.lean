@@ -127,7 +127,7 @@ noncomputable def iso_limit_of_map [HasLimit F] [IsCofiltered J] {X X' : J} (u :
     Limits.limit (Over.forget X' ⋙ F) ≅ Limits.limit (Over.forget X ⋙ F) := by
   set ι : Over.map u ⋙ Over.forget X' ≅ Over.forget X :=
     NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun _ ↦ by aesop)
-  have := Limits.hasLimitOfIso ((isoWhiskerRight ι F).symm ≪≫ Functor.associator _ _ _)
+  have := Limits.hasLimit_of_iso ((isoWhiskerRight ι F).symm ≪≫ Functor.associator _ _ _)
   set α := Limits.limit.pre (Over.forget X' ⋙ F) (Over.map u) ≫ (Limits.HasLimit.isoOfNatIso
     ((Functor.associator _ _ _).symm ≪≫ isoWhiskerRight ι F)).hom
   have : IsIso α := by
@@ -706,7 +706,8 @@ abbrev IsTriangleMorphism (T T' : Triangle C) (u : T.obj₁ ⟶ T'.obj₁) (v : 
   (T.mor₁ ≫ v = u ≫ T'.mor₁) ∧ (T.mor₂ ≫ w = v ≫ T'.mor₂) ∧
   (T.mor₃ ≫ (shiftFunctor C 1).map u = w ≫ T'.mor₃)
 
-/-- Doc string, why the "'"?-/
+/-- Doc string, why the "'"?
+-/
 lemma NineGrid' {T_X T_Y : Triangle C} (dT_X : T_X ∈ distinguishedTriangles)
     (dT_Y : T_Y ∈ distinguishedTriangles) (u₁ : T_X.obj₁ ⟶ T_Y.obj₁) (u₂ : T_X.obj₂ ⟶ T_Y.obj₂)
     (comm : T_X.mor₁ ≫ u₂ = u₁ ≫ T_Y.mor₁) {Z₂ : C} (v₂ : T_Y.obj₂ ⟶ Z₂) (w₂ : Z₂ ⟶ T_X.obj₂⟦1⟧)

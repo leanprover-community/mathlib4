@@ -453,8 +453,13 @@ instance  :
       hom₂ := n • f.hom₂
       hom₃ := n • f.hom₃ }
 
+omit [∀ (n : ℤ), (shiftFunctor C n).Additive] in
 @[simp] lemma Triangle.smul_hom₁ (n : R) (f : T₁ ⟶ T₂) : (n • f).hom₁ = n • f.hom₁ := rfl
+
+omit [∀ (n : ℤ), (shiftFunctor C n).Additive] in
 @[simp] lemma Triangle.smul_hom₂ (n : R) (f : T₁ ⟶ T₂) : (n • f).hom₂ = n • f.hom₂ := rfl
+
+omit [∀ (n : ℤ), (shiftFunctor C n).Additive] in
 @[simp] lemma Triangle.smul_hom₃ (n : R) (f : T₁ ⟶ T₂) : (n • f).hom₃ = n • f.hom₃ := rfl
 
 end
