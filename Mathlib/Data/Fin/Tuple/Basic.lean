@@ -1092,7 +1092,7 @@ theorem nat_find_mem_find {p : Fin n → Prop} [DecidablePred p]
     exact (hf ⟨i, hin⟩ hi).elim
   · refine Option.some_inj.2 (Fin.le_antisymm ?_ ?_)
     · exact find_min' hf (Nat.find_spec h).snd
-    · exact Nat.find_min' _ ⟨f.2, by convert find_spec p hf⟩
+    · exact Nat.find_min' ⟨i, hin, hi⟩ ⟨f.2, by convert find_spec p hf⟩
 
 theorem mem_find_iff {p : Fin n → Prop} [DecidablePred p] {i : Fin n} :
     i ∈ Fin.find p ↔ p i ∧ ∀ j, p j → i ≤ j :=
