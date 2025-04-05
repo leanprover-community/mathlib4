@@ -460,7 +460,8 @@ lemma rr7:
     intro x y
     intro hy
     have hx : x ∈ ⨆ χ : LieModule.Weight K H L, (LieModule.genWeightSpace L χ).toSubmodule := by
-      sorry
+      rw [help]
+      simp only [Submodule.mem_top]
     induction hx using Submodule.iSup_induction' with
     | mem i x hx =>
       sorry
@@ -469,7 +470,6 @@ lemma rr7:
     | add x1 y1 _ _ hx hy =>
       simp only [add_lie]
       exact LieSubalgebra.add_mem I hx hy
-
   sorry
 
 lemma invtSubmodule_reflection:
