@@ -9,8 +9,6 @@ import Mathlib.Topology.Algebra.Module.WeakBilin
 import Mathlib.Analysis.LocallyConvex.AbsConvex
 import Mathlib.Analysis.NormedSpace.HahnBanach.Separation
 import Mathlib.Analysis.LocallyConvex.WeakDual
-import Mathlib.Analysis.Convex.Normed
-
 
 /-!
 # Polar set
