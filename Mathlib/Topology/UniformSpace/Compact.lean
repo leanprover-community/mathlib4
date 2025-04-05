@@ -41,6 +41,28 @@ theorem lebesgue_number_lemma {ι : Sort*} {U : ι → Set α} (hK : IsCompact K
   rcases mem_iUnion₂.1 (ht hx) with ⟨y, hyt, hxy⟩
   exact ⟨ind y y.2, fun z hz ↦ hWU _ _ ⟨x, hxy, mem_iInter₂.1 hz _ hyt⟩⟩
 
+theorem lebesgue_number_lemma_nhds' {U : (x : α) → x ∈ K → Set α} (hK : IsCompact K)
+    (hU : ∀ x hx, U x hx ∈ 𝓝 x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y : K, ball x V ⊆ U y y.2 := by
+  rcases lebesgue_number_lemma (U := fun x : K => interior (U x x.2)) hK (fun _ => isOpen_interior)
+    (fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 (hU x hx)⟩) with ⟨V, V_uni, hV⟩
+  exact ⟨V, V_uni, fun x hx => (hV x hx).imp fun _ hy => hy.trans interior_subset⟩
+
+theorem lebesgue_number_lemma_nhds {U : α → Set α} (hK : IsCompact K) (hU : ∀ x ∈ K, U x ∈ 𝓝 x) :
+    ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y, ball x V ⊆ U y := by
+  rcases lebesgue_number_lemma (U := fun x => interior (U x)) hK (fun _ => isOpen_interior)
+    (fun x hx => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x hx)⟩) with ⟨V, V_uni, hV⟩
+  exact ⟨V, V_uni, fun x hx => (hV x hx).imp fun _ hy => hy.trans interior_subset⟩
+
+theorem lebesgue_number_lemma_nhdsWithin' {U : (x : α) → x ∈ K → Set α} (hK : IsCompact K)
+    (hU : ∀ x hx, U x hx ∈ 𝓝[K] x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y : K, ball x V ∩ K ⊆ U y y.2 :=
+  (lebesgue_number_lemma_nhds' hK (fun x hx => Filter.mem_inf_principal'.1 (hU x hx))).imp
+    fun _ ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => (inter_subset _ _ _).2 hy⟩
+
+theorem lebesgue_number_lemma_nhdsWithin {U : α → Set α} (hK : IsCompact K)
+    (hU : ∀ x ∈ K, U x ∈ 𝓝[K] x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y, ball x V ∩ K ⊆ U y :=
+  (lebesgue_number_lemma_nhds hK (fun x hx => Filter.mem_inf_principal'.1 (hU x hx))).imp
+    fun _ ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => (inter_subset _ _ _).2 hy⟩
+
 /-- Let `U : ι → Set α` be an open cover of a compact set `K`.
 Then there exists an entourage `V`
 such that for each `x ∈ K` its `V`-neighborhood is included in some `U i`.
@@ -52,6 +74,34 @@ protected theorem Filter.HasBasis.lebesgue_number_lemma {ι' ι : Sort*} {p : ι
     ∃ i, p i ∧ ∀ x ∈ K, ∃ j, ball x (V i) ⊆ U j := by
   refine (hbasis.exists_iff ?_).1 (lebesgue_number_lemma hK hopen hcover)
   exact fun s t hst ht x hx ↦ (ht x hx).imp fun i hi ↦ Subset.trans (ball_mono hst _) hi
+
+protected theorem Filter.HasBasis.lebesgue_number_lemma_nhds' {ι' : Sort*} {p : ι' → Prop}
+    {V : ι' → Set (α × α)} {U : (x : α) → x ∈ K → Set α} (hbasis : (𝓤 α).HasBasis p V)
+    (hK : IsCompact K) (hU : ∀ x hx, U x hx ∈ 𝓝 x) :
+    ∃ i, p i ∧ ∀ x ∈ K, ∃ y : K, ball x (V i) ⊆ U y y.2 := by
+  refine (hbasis.exists_iff ?_).1 (lebesgue_number_lemma_nhds' hK hU)
+  exact fun s t hst ht x hx ↦ (ht x hx).imp fun y hy ↦ Subset.trans (ball_mono hst _) hy
+
+protected theorem Filter.HasBasis.lebesgue_number_lemma_nhds {ι' : Sort*} {p : ι' → Prop}
+    {V : ι' → Set (α × α)} {U : α → Set α} (hbasis : (𝓤 α).HasBasis p V) (hK : IsCompact K)
+    (hU : ∀ x ∈ K, U x ∈ 𝓝 x) : ∃ i, p i ∧ ∀ x ∈ K, ∃ y, ball x (V i) ⊆ U y := by
+  refine (hbasis.exists_iff ?_).1 (lebesgue_number_lemma_nhds hK hU)
+  exact fun s t hst ht x hx ↦ (ht x hx).imp fun y hy ↦ Subset.trans (ball_mono hst _) hy
+
+protected theorem Filter.HasBasis.lebesgue_number_lemma_nhdsWithin' {ι' : Sort*} {p : ι' → Prop}
+    {V : ι' → Set (α × α)} {U : (x : α) → x ∈ K → Set α} (hbasis : (𝓤 α).HasBasis p V)
+    (hK : IsCompact K) (hU : ∀ x hx, U x hx ∈ 𝓝[K] x) :
+    ∃ i, p i ∧ ∀ x ∈ K, ∃ y : K, ball x (V i) ∩ K ⊆ U y y.2 := by
+  refine (hbasis.exists_iff ?_).1 (lebesgue_number_lemma_nhdsWithin' hK hU)
+  exact fun s t hst ht x hx ↦ (ht x hx).imp
+    fun y hy ↦ Subset.trans (Set.inter_subset_inter_left K (ball_mono hst _)) hy
+
+protected theorem Filter.HasBasis.lebesgue_number_lemma_nhdsWithin {ι' : Sort*} {p : ι' → Prop}
+    {V : ι' → Set (α × α)} {U : α → Set α} (hbasis : (𝓤 α).HasBasis p V) (hK : IsCompact K)
+    (hU : ∀ x ∈ K, U x ∈ 𝓝[K] x) : ∃ i, p i ∧ ∀ x ∈ K, ∃ y, ball x (V i) ∩ K ⊆ U y := by
+  refine (hbasis.exists_iff ?_).1 (lebesgue_number_lemma_nhdsWithin hK hU)
+  exact fun s t hst ht x hx ↦ (ht x hx).imp
+    fun y hy ↦ Subset.trans (Set.inter_subset_inter_left K (ball_mono hst _)) hy
 
 /-- Let `c : Set (Set α)` be an open cover of a compact set `s`. Then there exists an entourage
 `n` such that for each `x ∈ s` its `n`-neighborhood is contained in some `t ∈ c`. -/
