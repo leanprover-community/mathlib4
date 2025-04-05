@@ -351,7 +351,7 @@
   "Mathlib.RepresentationTheory.FDRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
   "Mathlib.Probability.Notation":
-  ["Mathlib.MeasureTheory.Decomposition.Lebesgue",
+  ["Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue",
    "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
   "Mathlib.Probability.Kernel.Proper":
   ["Mathlib.Probability.Kernel.Composition.CompNotation"],
@@ -416,6 +416,7 @@
   "Mathlib.Data.Nat.Init": ["Batteries.Tactic.Init"],
   "Mathlib.Data.Nat.Find": ["Batteries.WF"],
   "Mathlib.Data.Multiset.Bind": ["Mathlib.Algebra.GroupWithZero.Action.Defs"],
+  "Mathlib.Data.Matroid.Minor.Basic": ["Mathlib.Tactic.TautoSet"],
   "Mathlib.Data.List.Sigma": ["Batteries.Tactic.Congr"],
   "Mathlib.Data.List.Rotate": ["Mathlib.Data.Quot"],
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],

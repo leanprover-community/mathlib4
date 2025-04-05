@@ -210,13 +210,13 @@ theorem cons_cons_iff (p) : Red (p :: L₁) (p :: L₂) ↔ Red L₁ L₂ :=
       generalize eq₁ : (p :: L₁ : List _) = LL₁
       generalize eq₂ : (p :: L₂ : List _) = LL₂
       intro h
-      induction' h using Relation.ReflTransGen.head_induction_on
-        with L₁ L₂ h₁₂ h ih
-        generalizing L₁ L₂
-      · subst_vars
+      induction h using Relation.ReflTransGen.head_induction_on generalizing L₁ L₂ with
+      | refl =>
+        subst_vars
         cases eq₂
         constructor
-      · subst_vars
+      | head h₁₂ h ih =>
+        subst_vars
         obtain ⟨a, b⟩ := p
         rw [Step.cons_left_iff] at h₁₂
         rcases h₁₂ with (⟨L, h₁₂, rfl⟩ | rfl)
@@ -239,9 +239,10 @@ theorem to_append_iff : Red L (L₁ ++ L₂) ↔ ∃ L₃ L₄, L = L₃ ++ L₄
     (by
       generalize eq : L₁ ++ L₂ = L₁₂
       intro h
-      induction' h with L' L₁₂ hLL' h ih generalizing L₁ L₂
-      · exact ⟨_, _, eq.symm, by rfl, by rfl⟩
-      · obtain @⟨s, e, a, b⟩ := h
+      induction h generalizing L₁ L₂ with
+      | refl => exact ⟨_, _, eq.symm, by rfl, by rfl⟩
+      | tail hLL' h ih =>
+        obtain @⟨s, e, a, b⟩ := h
         rcases List.append_eq_append_iff.1 eq with (⟨s', rfl, rfl⟩ | ⟨e', rfl, rfl⟩)
         · have : L₁ ++ (s' ++ (a, b) :: (a, not b) :: e) = L₁ ++ s' ++ (a, b) :: (a, not b) :: e :=
             by simp
@@ -344,9 +345,10 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
 
 @[to_additive]
 theorem length (h : Red L₁ L₂) : ∃ n, L₁.length = L₂.length + 2 * n := by
-  induction' h with L₂ L₃ _h₁₂ h₂₃ ih
-  · exact ⟨0, rfl⟩
-  · rcases ih with ⟨n, eq⟩
+  induction h with
+  | refl => exact ⟨0, rfl⟩
+  | tail _h₁₂ h₂₃ ih =>
+    rcases ih with ⟨n, eq⟩
     exists 1 + n
     simp [Nat.mul_add, eq, (Step.length h₂₃).symm, add_assoc]
 
@@ -691,9 +693,7 @@ theorem map_eq_lift : map f x = lift (of ∘ f) x :=
 
 /-- Equivalent types give rise to multiplicatively equivalent free groups.
 
-The converse can be found in `GroupTheory.FreeAbelianGroupFinsupp`,
-as `Equiv.of_freeGroupEquiv`
--/
+The converse can be found in `GroupTheory.FreeGroup.GeneratorEquiv`, as `Equiv.ofFreeGroupEquiv`. -/
 @[to_additive (attr := simps apply)
   "Equivalent types give rise to additively equivalent additive free groups."]
 def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β where

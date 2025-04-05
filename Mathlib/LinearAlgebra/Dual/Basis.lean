@@ -203,6 +203,14 @@ theorem eval_range {ι : Type*} [Finite ι] (b : Basis ι R M) :
     cases nonempty_fintype ι
     rw [← b.toDual_toDual, range_comp, b.toDual_range, Submodule.map_top, toDual_range _]
 
+lemma dualBasis_coord_toDualEquiv_apply [Finite ι] (i : ι) (f : M) :
+    b.dualBasis.coord i (b.toDualEquiv f) = b.coord i f := by
+  simp [-toDualEquiv_apply, Basis.dualBasis]
+
+lemma coord_toDualEquiv_symm_apply [Finite ι] (i : ι) (f : Module.Dual R M) :
+    b.coord i (b.toDualEquiv.symm f) = b.dualBasis.coord i f := by
+  simp [Basis.dualBasis]
+
 end CommRing
 
 /-- `simp` normal form version of `linearCombination_dualBasis` -/

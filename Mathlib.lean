@@ -266,6 +266,7 @@ import Mathlib.Algebra.Field.Subfield.Defs
 import Mathlib.Algebra.Field.ULift
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Algebra.Free
+import Mathlib.Algebra.FreeAbelianGroup.Finsupp
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.Algebra.FreeAlgebra.Cardinality
 import Mathlib.Algebra.FreeMonoid.Basic
@@ -475,6 +476,7 @@ import Mathlib.Algebra.Homology.DerivedCategory.ExactFunctor
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.Basic
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExactSequences
 import Mathlib.Algebra.Homology.DerivedCategory.Ext.ExtClass
+import Mathlib.Algebra.Homology.DerivedCategory.Fractions
 import Mathlib.Algebra.Homology.DerivedCategory.HomologySequence
 import Mathlib.Algebra.Homology.DerivedCategory.ShortExact
 import Mathlib.Algebra.Homology.DerivedCategory.SingleTriangle
@@ -3149,6 +3151,7 @@ import Mathlib.Data.Option.Defs
 import Mathlib.Data.Option.NAry
 import Mathlib.Data.Ordering.Basic
 import Mathlib.Data.Ordering.Lemmas
+import Mathlib.Data.Ordmap.Invariants
 import Mathlib.Data.Ordmap.Ordnode
 import Mathlib.Data.Ordmap.Ordset
 import Mathlib.Data.PEquiv
@@ -3344,6 +3347,7 @@ import Mathlib.Dynamics.Ergodic.Action.Basic
 import Mathlib.Dynamics.Ergodic.Action.OfMinimal
 import Mathlib.Dynamics.Ergodic.Action.Regular
 import Mathlib.Dynamics.Ergodic.AddCircle
+import Mathlib.Dynamics.Ergodic.AddCircleAdd
 import Mathlib.Dynamics.Ergodic.Conservative
 import Mathlib.Dynamics.Ergodic.Ergodic
 import Mathlib.Dynamics.Ergodic.Function
@@ -3555,8 +3559,8 @@ import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.FixedPointFree
 import Mathlib.GroupTheory.Frattini
 import Mathlib.GroupTheory.FreeAbelianGroup
-import Mathlib.GroupTheory.FreeAbelianGroupFinsupp
 import Mathlib.GroupTheory.FreeGroup.Basic
+import Mathlib.GroupTheory.FreeGroup.GeneratorEquiv
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.GroupTheory.FreeGroup.NielsenSchreier
 import Mathlib.GroupTheory.FreeGroup.Reduce
@@ -4035,14 +4039,6 @@ import Mathlib.MeasureTheory.Covering.LiminfLimsup
 import Mathlib.MeasureTheory.Covering.OneDim
 import Mathlib.MeasureTheory.Covering.Vitali
 import Mathlib.MeasureTheory.Covering.VitaliFamily
-import Mathlib.MeasureTheory.Decomposition.Exhaustion
-import Mathlib.MeasureTheory.Decomposition.IntegralRNDeriv
-import Mathlib.MeasureTheory.Decomposition.Jordan
-import Mathlib.MeasureTheory.Decomposition.Lebesgue
-import Mathlib.MeasureTheory.Decomposition.RadonNikodym
-import Mathlib.MeasureTheory.Decomposition.SignedHahn
-import Mathlib.MeasureTheory.Decomposition.SignedLebesgue
-import Mathlib.MeasureTheory.Decomposition.UnsignedHahn
 import Mathlib.MeasureTheory.Function.AEEqFun
 import Mathlib.MeasureTheory.Function.AEEqFun.DomAct
 import Mathlib.MeasureTheory.Function.AEEqOfIntegral
@@ -4169,6 +4165,11 @@ import Mathlib.MeasureTheory.Measure.Complex
 import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 import Mathlib.MeasureTheory.Measure.Count
+import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
+import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
+import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
+import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 import Mathlib.MeasureTheory.Measure.Dirac
 import Mathlib.MeasureTheory.Measure.DiracProba
 import Mathlib.MeasureTheory.Measure.Doubling
@@ -4213,7 +4214,10 @@ import Mathlib.MeasureTheory.Measure.Tight
 import Mathlib.MeasureTheory.Measure.TightNormed
 import Mathlib.MeasureTheory.Measure.Tilted
 import Mathlib.MeasureTheory.Measure.Trim
-import Mathlib.MeasureTheory.Measure.Typeclasses
+import Mathlib.MeasureTheory.Measure.Typeclasses.Finite
+import Mathlib.MeasureTheory.Measure.Typeclasses.NoAtoms
+import Mathlib.MeasureTheory.Measure.Typeclasses.Probability
+import Mathlib.MeasureTheory.Measure.Typeclasses.SFinite
 import Mathlib.MeasureTheory.Measure.WithDensity
 import Mathlib.MeasureTheory.Measure.WithDensityFinite
 import Mathlib.MeasureTheory.Order.Group.Lattice
@@ -4233,6 +4237,9 @@ import Mathlib.MeasureTheory.SetAlgebra
 import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.MeasureTheory.Topology
 import Mathlib.MeasureTheory.VectorMeasure.Basic
+import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
+import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
+import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
 import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 import Mathlib.ModelTheory.Algebra.Field.Basic
 import Mathlib.ModelTheory.Algebra.Field.CharP
@@ -4996,6 +5003,7 @@ import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.KrullDimension.Field
 import Mathlib.RingTheory.Lasker
 import Mathlib.RingTheory.LaurentSeries
+import Mathlib.RingTheory.Length
 import Mathlib.RingTheory.LinearDisjoint
 import Mathlib.RingTheory.LittleWedderburn
 import Mathlib.RingTheory.LocalProperties.Basic
@@ -5833,7 +5841,9 @@ import Mathlib.Topology.Constructions
 import Mathlib.Topology.Constructions.SumProd
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.ContinuousMap.Basic
+import Mathlib.Topology.ContinuousMap.Bounded.ArzelaAscoli
 import Mathlib.Topology.ContinuousMap.Bounded.Basic
+import Mathlib.Topology.ContinuousMap.Bounded.Normed
 import Mathlib.Topology.ContinuousMap.Bounded.Star
 import Mathlib.Topology.ContinuousMap.BoundedCompactlySupported
 import Mathlib.Topology.ContinuousMap.CocompactMap
