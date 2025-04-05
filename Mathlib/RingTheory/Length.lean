@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Exact
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+import Mathlib.LinearAlgebra.Dimension.Free
+import Mathlib.LinearAlgebra.Finsupp.Pi
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Order.KrullDimension
 import Mathlib.RingTheory.FiniteLength
 
@@ -48,6 +52,11 @@ lemma Module.length_eq_zero_iff : Module.length R M = 0 ↔ Subsingleton M := by
 lemma Module.length_eq_zero [Subsingleton M] : Module.length R M = 0 :=
   Module.length_eq_zero_iff.mpr ‹_›
 
+@[nontriviality]
+lemma Module.length_eq_zero_of_subsingleton_ring [Subsingleton R] : Module.length R M = 0 :=
+  have := Module.subsingleton R M
+  Module.length_eq_zero
+
 lemma Module.length_pos_iff : 0 < Module.length R M ↔ Nontrivial M := by
   rw [pos_iff_ne_zero, ne_eq, Module.length_eq_zero_iff, not_subsingleton_iff_nontrivial]
 
@@ -90,6 +99,32 @@ lemma Module.length_ne_top [IsArtinian R M] [IsNoetherian R M] : Module.length R
   rw [Module.length_ne_top_iff, isFiniteLength_iff_isNoetherian_isArtinian]
   exact ⟨‹_›, ‹_›⟩
 
+lemma Module.length_submodule {N : Submodule R M} :
+    Module.length R N = Order.height N := by
+  apply WithBot.coe_injective
+  rw [Order.height_eq_krullDim_Iic, coe_length, Order.krullDim_eq_of_orderIso (Submodule.mapIic _)]
+
+lemma Module.length_quotient {N : Submodule R M} :
+    Module.length R (M ⧸ N) = Order.coheight N := by
+  apply WithBot.coe_injective
+  rw [Order.coheight_eq_krullDim_Ici, coe_length,
+    Order.krullDim_eq_of_orderIso (Submodule.comapMkQRelIso N)]
+  rfl
+
+lemma LinearEquiv.length_eq {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) :
+    Module.length R M = Module.length R N := by
+  apply WithBot.coe_injective
+  rw [Module.coe_length, Module.coe_length,
+    Order.krullDim_eq_of_orderIso (Submodule.orderIsoMapComap e)]
+
+@[simp] lemma Module.length_bot :
+    Module.length R (⊥ : Submodule R M) = 0 :=
+  Module.length_eq_zero
+
+@[simp] lemma Module.length_top :
+    Module.length R (⊤ : Submodule R M) = Module.length R M := by
+  rw [Module.length_submodule, Module.length_eq_height]
+
 variable {N P : Type*} [AddCommGroup N] [AddCommGroup P] [Module R N] [Module R P]
 variable (f : N →ₗ[R] M) (g : M →ₗ[R] P) (hf : Function.Injective f) (hg : Function.Surjective g)
 variable (H : Function.Exact f g)
@@ -121,3 +156,96 @@ lemma Module.length_eq_add_of_exact :
   · have := mt (IsFiniteLength.of_surjective · hg) hP
     rw [← Module.length_ne_top_iff, ne_eq, not_not] at hP this
     rw [hP, this, add_top]
+
+include hf in
+lemma Module.length_le_of_injective : Module.length R N ≤ Module.length R M := by
+  rw [Module.length_eq_add_of_exact f (LinearMap.range f).mkQ hf
+    (Submodule.mkQ_surjective _) (LinearMap.exact_map_mkQ_range f)]
+  exact le_self_add
+
+include hg in
+lemma Module.length_le_of_surjective : Module.length R P ≤ Module.length R M := by
+  rw [Module.length_eq_add_of_exact (LinearMap.ker g).subtype g (Submodule.subtype_injective _) hg
+    (LinearMap.exact_subtype_ker_map g)]
+  exact le_add_self
+
+variable (R M N) in
+@[simp]
+lemma Module.length_prod :
+    Module.length R (M × N) = Module.length R M + Module.length R N :=
+  Module.length_eq_add_of_exact _ _ LinearMap.inl_injective LinearMap.snd_surjective .inl_snd
+
+variable (R) in
+@[simp]
+lemma Module.length_pi_of_fintype {ι : Type*} [Fintype ι]
+    (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] :
+    Module.length R (Π i, M i) = ∑ i, Module.length R (M i) := by
+  refine Fintype.induction_empty_option (P := fun ι (_ : Fintype ι) ↦
+    ∀ (M : ι → Type _) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)],
+      Module.length R (Π i, M i) = ∑ i, Module.length R (M i)) ?_ ?_ ?_ ι M
+  · intro α β _ e IH M _ _
+    let _ : Fintype α := .ofEquiv β e.symm
+    rw [← (LinearEquiv.piCongrLeft R M e).length_eq, IH, e.sum_comp (length R <| M ·)]
+  · intro M _ _
+    simp [Module.length_eq_zero]
+  · intro ι _ IH M _ _
+    rw [(LinearEquiv.piOptionEquivProd _).length_eq, Module.length_prod, IH, add_comm,
+      Fintype.sum_option, add_comm]
+
+@[simp]
+lemma Module.length_finsupp {ι : Type*} :
+    Module.length R (ι →₀ M) = ENat.card ι * Module.length R M := by
+  cases finite_or_infinite ι
+  · cases nonempty_fintype ι
+    simp [(Finsupp.linearEquivFunOnFinite R M ι).length_eq]
+  nontriviality M
+  rw [ENat.card_eq_top_of_infinite, ENat.top_mul length_pos.ne', ENat.eq_top_iff_forall_ge]
+  intro m
+  obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq ι m
+  have : length R (s →₀ M) = ↑m * length R M := by
+    simp [(Finsupp.linearEquivFunOnFinite R M _).length_eq, hs]
+  refine le_trans ?_ (Module.length_le_of_injective (Finsupp.lmapDomain M R ((↑) : s → ι))
+    (Finsupp.mapDomain_injective Subtype.val_injective))
+  rw [this]
+  exact ENat.self_le_mul_right _ length_pos.ne'
+
+@[simp]
+lemma Module.length_pi {ι : Type*} [Finite ι] :
+    Module.length R (ι → M) = ENat.card ι * Module.length R M := by
+  cases finite_or_infinite ι
+  · cases nonempty_fintype ι
+    simp
+  nontriviality M
+  rw [ENat.card_eq_top_of_infinite, ENat.top_mul length_pos.ne', ← top_le_iff]
+  refine le_trans ?_ (Module.length_le_of_injective Finsupp.lcoeFun DFunLike.coe_injective)
+  simp [ENat.top_mul length_pos.ne']
+
+variable (R M) in
+lemma Module.length_of_free [Module.Free R M] :
+    Module.length R M = (Module.rank R M).toENat * Module.length R R := by
+  nontriviality R
+  let b := Module.Free.chooseBasis R M
+  rw [b.repr.length_eq, Module.length_finsupp, Free.rank_eq_card_chooseBasisIndex, ENat.card]
+
+variable (R M) in
+lemma Module.length_of_free_of_finite [Module.Free R M] [Module.Finite R M] :
+    Module.length R M = Module.finrank R M * Module.length R R := by
+  nontriviality R
+  rw [Module.length_of_free, Cardinal.toENat_eq_nat.mpr (Module.finrank_eq_rank _ _).symm]
+
+@[simp]
+lemma Module.length_self_of_field (K : Type*) [Field K] :
+    Module.length K K = 1 := by
+  rw [← WithBot.coe_inj, Module.coe_length, WithBot.coe_one,
+    Order.krullDim_eq_one_iff_of_boundedOrder]
+  infer_instance
+
+lemma Module.length_eq_rank
+    (K M : Type*) [Field K] [AddCommGroup M] [Module K M] :
+    Module.length K M = (Module.rank K M).toENat := by
+  simp [Module.length_of_free]
+
+lemma Module.length_eq_finrank
+    (K M : Type*) [Field K] [AddCommGroup M] [Module K M] [Module.Finite K M] :
+    Module.length K M = Module.finrank K M := by
+  simp [Module.length_of_free]
