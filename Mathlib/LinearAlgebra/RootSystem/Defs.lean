@@ -6,7 +6,6 @@ Authors: Oliver Nash, Deepro Choudhury, Scott Carnahan
 import Mathlib.Algebra.Module.Submodule.Invariant
 import Mathlib.LinearAlgebra.PerfectPairing.Basic
 import Mathlib.LinearAlgebra.Reflection
-import LeanCopilot
 
 /-!
 # Root data and root systems
