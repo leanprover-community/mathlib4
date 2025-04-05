@@ -6,6 +6,7 @@ Authors: Christopher Hoskin
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.Lattice
+import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Scott continuity
@@ -180,7 +181,34 @@ end Products
 
 section SemilatticeSup
 
-variable [Preorder α]
+section
+
+
+variable [Preorder α] [Preorder β]
+
+lemma prod_all_dom2 {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
+    (Prod.fst '' d) ×ˢ (Prod.snd '' d) ⊆ lowerClosure d := by
+  intro p hp
+  rw [lowerClosure]
+  rw [LowerSet.coe_mk]
+  rw [mem_setOf_eq]
+
+  obtain ⟨b,⟨hb1,hb2⟩⟩ := DirectedOn.prod_all_dominated hd p hp
+  use b
+  constructor
+  · exact hb1
+  ·  constructor
+     · exact hb2.1
+     · exact hb2.2
+end
+
+variable (β : Type*)
+
+
+
+
+
+
 
 lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
     ScottContinuousOn D fun (a, b) => (a ⊔ b : β) := by
