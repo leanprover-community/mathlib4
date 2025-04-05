@@ -426,7 +426,6 @@ It is used as the default induction principle for the `induction` tactic.
 @[elab_as_elim, induction_eliminator]
 def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (nil : C nil) (cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v := by
-  -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     exact nil
@@ -454,7 +453,6 @@ def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort*}
     (v : Vector α n) (w : Vector β n)
     (nil : C nil nil) (cons : ∀ {n a b} {x : Vector α n} {y}, C x y → C (a ::ᵥ x) (b ::ᵥ y)) :
     C v w := by
-  -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases w with ⟨_ | ⟨-, -⟩, - | -⟩
@@ -473,7 +471,6 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
     (u : Vector α n) (v : Vector β n) (w : Vector γ n) (nil : C nil nil nil)
     (cons : ∀ {n a b c} {x : Vector α n} {y z}, C x y z → C (a ::ᵥ x) (b ::ᵥ y) (c ::ᵥ z)) :
     C u v w := by
-  -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases u with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
@@ -544,7 +541,7 @@ theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v
 @[deprecated (since := "2024-10-21")] alias eraseNth_val := eraseIdx_val
 theorem eraseIdx_insertIdx {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
-  Subtype.eq <| List.eraseIdx_insertIdx i.1 v.1
+  Subtype.eq (List.eraseIdx_insertIdx ..)
 
 /-- Erasing an element after inserting an element, at different indices. -/
 theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
@@ -562,7 +559,7 @@ theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
       · simpa
       · simpa [Nat.lt_succ_iff] using hij
     · dsimp
-      rw [← List.insertIdx_eraseIdx_of_le i j _ _ _]
+      rw [← List.insertIdx_eraseIdx_of_le]
       · rfl
       · simpa
       · simpa [not_lt] using hij
@@ -582,7 +579,6 @@ theorem insertIdx_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
 
 end InsertIdx
 
--- Porting note: renamed to `set` from `updateNth` to align with `List`
 section Set
 
 /-- `set v n a` replaces the `n`th element of `v` with `a`. -/

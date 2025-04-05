@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Tactic.FinCases
+import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.Sets.Closeds
 
 /-!
@@ -106,14 +107,17 @@ protected theorem comp {f : X → Y} (hf : IsLocallyConstant f) (g : Y → Z) :
   rw [Set.preimage_comp]
   exact hf _
 
-theorem prod_mk {Y'} {f : X → Y} {f' : X → Y'} (hf : IsLocallyConstant f)
+theorem prodMk {Y'} {f : X → Y} {f' : X → Y'} (hf : IsLocallyConstant f)
     (hf' : IsLocallyConstant f') : IsLocallyConstant fun x => (f x, f' x) :=
   (iff_eventually_eq _).2 fun x =>
     (hf.eventually_eq x).mp <| (hf'.eventually_eq x).mono fun _ hf' hf => Prod.ext hf hf'
 
+@[deprecated (since := "2025-03-10")]
+alias prod_mk := prodMk
+
 theorem comp₂ {Y₁ Y₂ Z : Type*} {f : X → Y₁} {g : X → Y₂} (hf : IsLocallyConstant f)
     (hg : IsLocallyConstant g) (h : Y₁ → Y₂ → Z) : IsLocallyConstant fun x => h (f x) (g x) :=
-  (hf.prod_mk hg).comp fun x : Y₁ × Y₂ => h x.1 x.2
+  (hf.prodMk hg).comp fun x : Y₁ × Y₂ => h x.1 x.2
 
 theorem comp_continuous [TopologicalSpace Y] {g : Y → Z} {f : X → Y} (hg : IsLocallyConstant g)
     (hf : Continuous f) : IsLocallyConstant (g ∘ f) := fun s => by
@@ -272,6 +276,14 @@ def const (X : Type*) {Y : Type*} [TopologicalSpace X] (y : Y) : LocallyConstant
 @[simp]
 theorem coe_const (y : Y) : (const X y : X → Y) = Function.const X y :=
   rfl
+
+/-- Evaluation/projection as a locally constant function. -/
+@[simps]
+def eval {ι : Type*} {X : ι → Type*}
+    [∀ i, TopologicalSpace (X i)] (i : ι) [DiscreteTopology (X i)] :
+    LocallyConstant (Π i, X i) (X i) where
+  toFun := fun f ↦ f i
+  isLocallyConstant := (IsLocallyConstant.iff_continuous _).mpr <| continuous_apply i
 
 /-- The locally constant function to `Fin 2` associated to a clopen set. -/
 def ofIsClopen {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]

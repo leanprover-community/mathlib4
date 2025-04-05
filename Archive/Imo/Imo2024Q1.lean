@@ -50,7 +50,7 @@ lemma condition_sub_two_mul_int_iff {α : ℝ} (m : ℤ) : Condition (α - 2 * m
   apply dvd_iff_dvd_of_dvd_sub
   simp_rw [← Finset.sum_sub_distrib, mul_sub]
   norm_cast
-  simp_rw [Int.floor_sub_int, sub_sub_cancel_left]
+  simp_rw [Int.floor_sub_intCast, sub_sub_cancel_left]
   convert condition_two_mul_int (-m) n hn
   norm_cast
   rw [Int.floor_intCast]

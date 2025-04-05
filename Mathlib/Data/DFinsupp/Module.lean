@@ -3,9 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Action.Pi
 import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Algebra.Module.Pi
 import Mathlib.Data.DFinsupp.Defs
 
 /-!
@@ -68,6 +68,19 @@ instance module [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (�
     add_smul := fun c x y => ext fun i => by simp only [add_apply, smul_apply, add_smul] }
 
 end Algebra
+
+variable (γ) in
+/-- Coercion from a `DFinsupp` to a pi type is a `LinearMap`. -/
+def coeFnLinearMap [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)] :
+    (Π₀ i, β i) →ₗ[γ] ∀ i, β i where
+  toFun := (⇑)
+  map_add' := coe_add
+  map_smul' := coe_smul
+
+@[simp]
+lemma coeFnLinearMap_apply [Semiring γ] [∀ i, AddCommMonoid (β i)] [∀ i, Module γ (β i)]
+    (v : Π₀ i, β i) : coeFnLinearMap γ v = v :=
+  rfl
 
 section FilterAndSubtypeDomain
 

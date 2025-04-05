@@ -21,7 +21,7 @@ This file does not define composition but only introduces notation for
 -/
 
 /- This file is only for lemmas that are direct specializations of `Measure.bind` to kernels,
-anything more involved shoud go elsewhere (for example the `MeasureComp` file). -/
+anything more involved should go elsewhere (for example the `MeasureComp` file). -/
 assert_not_exists ProbabilityTheory.Kernel.compProd
 
 open ProbabilityTheory
@@ -34,7 +34,7 @@ variable {α β : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 /-- Composition of a measure and a kernel.
 
 Notation for `MeasureTheory.Measure.bind` -/
-scoped[ProbabilityTheory] notation3 κ " ∘ₘ " μ:100 => MeasureTheory.Measure.bind μ κ
+scoped[ProbabilityTheory] notation:100 κ:101 " ∘ₘ " μ:100 => MeasureTheory.Measure.bind μ κ
 
 @[simp]
 lemma comp_apply_univ [IsMarkovKernel κ] : (κ ∘ₘ μ) Set.univ = μ Set.univ := by
