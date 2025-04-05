@@ -1163,19 +1163,15 @@ section TotallyRealField
 /-- A number field `K` is totally real if all of its infinite places
 are real. In other words, the image of every ring homomorphism `K → ℂ`
 is a subset of `ℝ`. -/
-class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
+@[mk_iff] class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
   isReal : ∀ v : InfinitePlace K, v.IsReal
 
 variable {K : Type*} [Field K] [NumberField K]
 
-theorem IsTotallyReal_iff :
-    IsTotallyReal K ↔ ∀ v : InfinitePlace K, v.IsReal :=
-  ⟨fun _ v ↦ IsTotallyReal.isReal v, fun h ↦ ⟨h⟩⟩
-
 theorem nrComplexPlaces_eq_zero_iff :
     nrComplexPlaces K = 0 ↔ IsTotallyReal K := by
   classical
-  simp [Fintype.card_eq_zero_iff, isEmpty_subtype, IsTotallyReal_iff]
+  simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyReal_iff]
 
 variable (K)
 
@@ -1203,19 +1199,15 @@ open InfinitePlace
 /--
 A number field `K` is totally complex if all of its infinite places are complex.
 -/
-class IsTotallyComplex (K : Type*) [Field K] [NumberField K] where
+@[mk_iff] class IsTotallyComplex (K : Type*) [Field K] [NumberField K] where
   isComplex : ∀ v : InfinitePlace K, v.IsComplex
 
 variable {K : Type*} [Field K] [NumberField K]
 
-theorem IsTotallyComplex_iff :
-    IsTotallyComplex K ↔ ∀ v : InfinitePlace K, v.IsComplex :=
-  ⟨fun _ v ↦ IsTotallyComplex.isComplex v, fun h ↦ ⟨h⟩⟩
-
 theorem nrRealPlaces_eq_zero_iff :
     nrRealPlaces K = 0 ↔ IsTotallyComplex K := by
   classical
-  simp [Fintype.card_eq_zero_iff, isEmpty_subtype, IsTotallyComplex_iff]
+  simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyComplex_iff]
 
 variable (K)
 
