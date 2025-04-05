@@ -258,6 +258,15 @@ theorem monic_prod_of_monic (s : Finset ι) (f : ι → R[X]) (hs : ∀ i ∈ s,
     Monic (∏ i ∈ s, f i) :=
   monic_multiset_prod_of_monic s.1 f hs
 
+theorem monic_finprod_of_monic (α : Type*) (f : α → R[X])
+    (hf : ∀ i ∈ Function.mulSupport f, Monic (f i)) :
+    Monic (finprod f) := by
+  classical
+  rw [finprod_def]
+  split_ifs
+  · exact monic_prod_of_monic _ _ fun a ha => hf a ((Set.Finite.mem_toFinset _).mp ha)
+  · exact monic_one
+
 theorem Monic.nextCoeff_multiset_prod (t : Multiset ι) (f : ι → R[X]) (h : ∀ i ∈ t, Monic (f i)) :
     nextCoeff (t.map f).prod = (t.map fun i => nextCoeff (f i)).sum := by
   revert h
