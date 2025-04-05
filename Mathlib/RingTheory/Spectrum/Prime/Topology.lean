@@ -794,7 +794,7 @@ lemma closure_range_comap :
 
 lemma denseRange_comap_iff_ker_le_nilRadical :
     DenseRange (comap f) ↔ RingHom.ker f ≤ nilradical R := by
-  rw [denseRange_iff_closure_range, closure_range_comap, ← Set.top_eq_univ, zeroLocus_eq_top_iff,
+  rw [denseRange_iff_closure_range, closure_range_comap, zeroLocus_eq_univ_iff,
     SetLike.coe_subset_coe]
 
 @[stacks 00FL]
