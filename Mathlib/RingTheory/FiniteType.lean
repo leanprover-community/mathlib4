@@ -456,7 +456,7 @@ variable (R M)
 type. -/
 instance finiteType_of_fg [CommRing R] [h : AddMonoid.FG M] :
     FiniteType R R[M] := by
-  obtain ⟨S, hS⟩ := h.out
+  obtain ⟨S, hS⟩ := h.fg_top
   exact (FiniteType.freeAlgebra R (S : Set M)).of_surjective
       (FreeAlgebra.lift R fun s : (S : Set M) => of' R M ↑s)
       (freeAlgebra_lift_of_surjective_of_closure hS)
