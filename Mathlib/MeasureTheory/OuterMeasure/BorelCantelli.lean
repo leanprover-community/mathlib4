@@ -59,9 +59,6 @@ theorem measure_limsup_atTop_eq_zero {s : ℕ → Set α} (hs : ∑' i, μ (s i)
     μ (limsup s atTop) = 0 := by
   rw [← Nat.cofinite_eq_atTop, measure_limsup_cofinite_eq_zero hs]
 
-@[deprecated (since := "2024-09-01")]
-alias measure_limsup_eq_zero := measure_limsup_atTop_eq_zero
-
 /-- One direction of the **Borel-Cantelli lemma**
 (sometimes called the "*first* Borel-Cantelli lemma"):
 if `(s i)` is a countable family of sets such that `∑' i, μ (s i)` is finite,

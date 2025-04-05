@@ -231,6 +231,10 @@ def coeFnAddMonoidHom [∀ i, AddZeroClass (β i)] : (Π₀ i, β i) →+ ∀ i,
   map_zero' := coe_zero
   map_add' := coe_add
 
+@[simp]
+lemma coeFnAddMonoidHom_apply [∀ i, AddZeroClass (β i)] (v : Π₀ i, β i) : coeFnAddMonoidHom v = v :=
+  rfl
+
 instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
@@ -499,6 +503,9 @@ theorem single_left_injective {b : ∀ i : ι, β i} (h : ∀ i, b i ≠ 0) :
 theorem single_eq_zero {i : ι} {xi : β i} : single i xi = 0 ↔ xi = 0 := by
   rw [← single_zero i, single_eq_single_iff]
   simp
+
+theorem single_ne_zero {i : ι} {xi : β i} : single i xi ≠ 0 ↔ xi ≠ 0 :=
+  single_eq_zero.not
 
 theorem filter_single (p : ι → Prop) [DecidablePred p] (i : ι) (x : β i) :
     (single i x).filter p = if p i then single i x else 0 := by

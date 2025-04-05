@@ -226,6 +226,11 @@ theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
     [Module S M] [SMulCommClass R S M] (f : (i : ι) → φ i →ₗ[R] M) :
     lsum R φ S f = ∑ i : ι, (f i).comp (proj i) := rfl
 
+theorem lsum_piSingle (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
+    [Module S M] [SMulCommClass R S M] (f : (i : ι) → φ i →ₗ[R] M) (i : ι) (x : φ i) :
+    lsum R φ S f (Pi.single i x) = f i x := by
+  simp_rw [lsum_apply, sum_apply, comp_apply, proj_apply, apply_single, Fintype.sum_pi_single']
+
 @[simp high]
 theorem lsum_single {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommSemiring R] {M : ι → Type*}
     [(i : ι) → AddCommMonoid (M i)] [(i : ι) → Module R (M i)] :

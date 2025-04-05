@@ -30,7 +30,7 @@ We introduce the following notation for the lower Lebesgue integral of a functio
 
 -/
 
-assert_not_exists NormedSpace
+assert_not_exists Basis NormedSpace
 
 noncomputable section
 
@@ -800,6 +800,18 @@ theorem lintegral_indicator_one {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ a, s.indicator 1 a ∂μ = μ s :=
   (lintegral_indicator_const hs _).trans <| one_mul _
 
+theorem Measure.ext_iff_lintegral (ν : Measure α) :
+    μ = ν ↔ ∀ f : α → ℝ≥0∞, Measurable f → ∫⁻ a, f a ∂μ = ∫⁻ a, f a ∂ν := by
+  refine ⟨fun h _ _ ↦ by rw [h], ?_⟩
+  intro h
+  ext s hs
+  simp only [← lintegral_indicator_one hs]
+  exact h (s.indicator 1) ((measurable_indicator_const_iff 1).mpr hs)
+
+theorem Measure.ext_of_lintegral (ν : Measure α)
+    (hμν : ∀ f : α → ℝ≥0∞, Measurable f → ∫⁻ a, f a ∂μ = ∫⁻ a, f a ∂ν) : μ = ν :=
+  (μ.ext_iff_lintegral ν).mpr hμν
+
 /-- A version of **Markov's inequality** for two functions. It doesn't follow from the standard
 Markov's inequality because we only assume measurability of `g`, not `f`. -/
 theorem lintegral_add_mul_meas_add_le_le_lintegral {f g : α → ℝ≥0∞} (hle : f ≤ᵐ[μ] g)
@@ -1356,7 +1368,9 @@ theorem setLIntegral_max {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Mea
 
 theorem lintegral_map {mβ : MeasurableSpace β} {f : β → ℝ≥0∞} {g : α → β} (hf : Measurable f)
     (hg : Measurable g) : ∫⁻ a, f a ∂map g μ = ∫⁻ a, f (g a) ∂μ := by
-  erw [lintegral_eq_iSup_eapprox_lintegral hf, lintegral_eq_iSup_eapprox_lintegral (hf.comp hg)]
+  rw [lintegral_eq_iSup_eapprox_lintegral hf]
+  simp only [← Function.comp_apply (f := f) (g := g)]
+  rw [lintegral_eq_iSup_eapprox_lintegral (hf.comp hg)]
   congr with n : 1
   convert SimpleFunc.lintegral_map _ hg
   ext1 x; simp only [eapprox_comp hf hg, coe_comp]
@@ -1393,8 +1407,8 @@ theorem setLIntegral_map [MeasurableSpace β] {f : β → ℝ≥0∞} {g : α �
 theorem lintegral_indicator_const_comp {mβ : MeasurableSpace β} {f : α → β} {s : Set β}
     (hf : Measurable f) (hs : MeasurableSet s) (c : ℝ≥0∞) :
     ∫⁻ a, s.indicator (fun _ => c) (f a) ∂μ = c * μ (f ⁻¹' s) := by
-  erw [lintegral_comp (measurable_const.indicator hs) hf, lintegral_indicator_const hs,
-    Measure.map_apply hf hs]
+  erw [lintegral_comp (measurable_const.indicator hs) hf]
+  rw [lintegral_indicator_const hs, Measure.map_apply hf hs]
 
 /-- If `g : α → β` is a measurable embedding and `f : β → ℝ≥0∞` is any function (not necessarily
 measurable), then `∫⁻ a, f a ∂(map g μ) = ∫⁻ a, f (g a) ∂μ`. Compare with `lintegral_map` which
@@ -1922,8 +1936,9 @@ theorem lintegral_le_of_forall_fin_meas_le [MeasurableSpace α] {μ : Measure α
 theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : MeasurableSpace α}
     {μ : Measure α} [SigmaFinite μ] {f : α →ₛ ℝ≥0} {L : ℝ≥0∞} (hL : L < ∫⁻ x, f x ∂μ) :
     ∃ g : α →ₛ ℝ≥0, (∀ x, g x ≤ f x) ∧ ∫⁻ x, g x ∂μ < ∞ ∧ L < ∫⁻ x, g x ∂μ := by
-  induction' f using MeasureTheory.SimpleFunc.induction with c s hs f₁ f₂ _ h₁ h₂ generalizing L
-  · simp only [hs, const_zero, coe_piecewise, coe_const, SimpleFunc.coe_zero, univ_inter,
+  induction f using MeasureTheory.SimpleFunc.induction generalizing L with
+  | @const c s hs =>
+    simp only [hs, const_zero, coe_piecewise, coe_const, SimpleFunc.coe_zero, univ_inter,
       piecewise_eq_indicator, lintegral_indicator, lintegral_const, Measure.restrict_apply',
       ENNReal.coe_indicator, Function.const_apply] at hL
     have c_ne_zero : c ≠ 0 := by
@@ -1948,7 +1963,8 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
       rwa [mul_comm, ← ENNReal.div_lt_iff]
       · simp only [c_ne_zero, Ne, ENNReal.coe_eq_zero, not_false_iff, true_or]
       · simp only [Ne, coe_ne_top, not_false_iff, true_or]
-  · replace hL : L < ∫⁻ x, f₁ x ∂μ + ∫⁻ x, f₂ x ∂μ := by
+  | @add f₁ f₂ _ h₁ h₂ =>
+    replace hL : L < ∫⁻ x, f₁ x ∂μ + ∫⁻ x, f₂ x ∂μ := by
       rwa [← lintegral_add_left f₁.measurable.coe_nnreal_ennreal]
     by_cases hf₁ : ∫⁻ x, f₁ x ∂μ = 0
     · simp only [hf₁, zero_add] at hL

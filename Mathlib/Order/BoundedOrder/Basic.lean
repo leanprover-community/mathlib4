@@ -64,6 +64,15 @@ theorem isTop_top : IsTop (⊤ : α) := fun _ => le_top
 
 end LE
 
+/-- A top element can be replaced with `⊤`.
+
+Prefer `IsTop.eq_top` if `α` already has a top element. -/
+@[elab_as_elim]
+protected def IsTop.rec [LE α] {P : (x : α) → IsTop x → Sort*}
+    (h : ∀ [OrderTop α], P ⊤ isTop_top) (x : α) (hx : IsTop x) : P x hx := by
+  letI : OrderTop α := { top := x, le_top := hx }
+  apply h
+
 section Preorder
 
 variable [Preorder α] [OrderTop α] {a b : α}
@@ -192,6 +201,15 @@ theorem bot_le : ⊥ ≤ a :=
 theorem isBot_bot : IsBot (⊥ : α) := fun _ => bot_le
 
 end LE
+
+/-- A bottom element can be replaced with `⊥`.
+
+Prefer `IsBot.eq_bot` if `α` already has a bottom element. -/
+@[elab_as_elim]
+protected def IsBot.rec [LE α] {P : (x : α) → IsBot x → Sort*}
+    (h : ∀ [OrderBot α], P ⊥ isBot_bot) (x : α) (hx : IsBot x) : P x hx := by
+  letI : OrderBot α := { bot := x, bot_le := hx }
+  apply h
 
 namespace OrderDual
 

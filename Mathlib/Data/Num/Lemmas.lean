@@ -581,15 +581,15 @@ theorem cast_inj [AddMonoidWithOne α] [CharZero α] {m n : PosNum} : (m : α) =
   rw [← cast_to_nat m, ← cast_to_nat n, Nat.cast_inj, to_nat_inj]
 
 @[simp]
-theorem one_le_cast [LinearOrderedSemiring α] (n : PosNum) : (1 : α) ≤ n := by
+theorem one_le_cast [StrictOrderedSemiring α] (n : PosNum) : (1 : α) ≤ n := by
   rw [← cast_to_nat, ← Nat.cast_one, Nat.cast_le (α := α)]; apply to_nat_pos
 
 @[simp]
-theorem cast_pos [LinearOrderedSemiring α] (n : PosNum) : 0 < (n : α) :=
+theorem cast_pos [StrictOrderedSemiring α] (n : PosNum) : 0 < (n : α) :=
   lt_of_lt_of_le zero_lt_one (one_le_cast n)
 
 @[simp, norm_cast]
-theorem cast_mul [Semiring α] (m n) : ((m * n : PosNum) : α) = m * n := by
+theorem cast_mul [NonAssocSemiring α] (m n) : ((m * n : PosNum) : α) = m * n := by
   rw [← cast_to_nat, mul_to_nat, Nat.cast_mul, cast_to_nat, cast_to_nat]
 
 @[simp]
@@ -600,7 +600,7 @@ theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
     simp [show m ≠ n from fun e => by rw [e] at this;exact lt_irrefl _ this]
 
 @[simp, norm_cast]
-theorem cast_lt [LinearOrderedSemiring α] {m n : PosNum} : (m : α) < n ↔ m < n := by
+theorem cast_lt [StrictOrderedSemiring α] {m n : PosNum} : (m : α) < n ↔ m < n := by
   rw [← cast_to_nat m, ← cast_to_nat n, Nat.cast_lt (α := α), lt_to_nat]
 
 @[simp, norm_cast]
@@ -625,19 +625,19 @@ theorem cast_succ [AddMonoidWithOne α] (n) : (succ n : α) = n + 1 :=
   cast_succ' n
 
 @[simp, norm_cast]
-theorem cast_add [Semiring α] (m n) : ((m + n : Num) : α) = m + n := by
+theorem cast_add [AddMonoidWithOne α] (m n) : ((m + n : Num) : α) = m + n := by
   rw [← cast_to_nat, add_to_nat, Nat.cast_add, cast_to_nat, cast_to_nat]
 
 @[simp, norm_cast]
-theorem cast_bit0 [Semiring α] (n : Num) : (n.bit0 : α) = 2 * (n : α) := by
+theorem cast_bit0 [NonAssocSemiring α] (n : Num) : (n.bit0 : α) = 2 * (n : α) := by
   rw [← bit0_of_bit0, two_mul, cast_add]
 
 @[simp, norm_cast]
-theorem cast_bit1 [Semiring α] (n : Num) : (n.bit1 : α) = 2 * (n : α) + 1 := by
+theorem cast_bit1 [NonAssocSemiring α] (n : Num) : (n.bit1 : α) = 2 * (n : α) + 1 := by
   rw [← bit1_of_bit1, bit0_of_bit0, cast_add, cast_bit0]; rfl
 
 @[simp, norm_cast]
-theorem cast_mul [Semiring α] : ∀ m n, ((m * n : Num) : α) = m * n
+theorem cast_mul [NonAssocSemiring α] : ∀ m n, ((m * n : Num) : α) = m * n
   | 0, 0 => (zero_mul _).symm
   | 0, pos _q => (zero_mul _).symm
   | pos _p, 0 => (mul_zero _).symm
@@ -671,7 +671,7 @@ theorem cast_toZNum [Zero α] [One α] [Add α] [Neg α] : ∀ n : Num, (n.toZNu
   | Num.pos _p => rfl
 
 @[simp]
-theorem cast_toZNumNeg [AddGroup α] [One α] : ∀ n : Num, (n.toZNumNeg : α) = -n
+theorem cast_toZNumNeg [SubtractionMonoid α] [One α] : ∀ n : Num, (n.toZNumNeg : α) = -n
   | 0 => neg_zero.symm
   | Num.pos _p => rfl
 
@@ -733,7 +733,7 @@ theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
     simp [show m ≠ n from fun e => by rw [e] at this; exact lt_irrefl _ this]
 
 @[simp, norm_cast]
-theorem cast_lt [LinearOrderedSemiring α] {m n : Num} : (m : α) < n ↔ m < n := by
+theorem cast_lt [StrictOrderedSemiring α] {m n : Num} : (m : α) < n ↔ m < n := by
   rw [← cast_to_nat m, ← cast_to_nat n, Nat.cast_lt (α := α), lt_to_nat]
 
 @[simp, norm_cast]
@@ -741,7 +741,7 @@ theorem cast_le [LinearOrderedSemiring α] {m n : Num} : (m : α) ≤ n ↔ m �
   rw [← not_lt]; exact not_congr cast_lt
 
 @[simp, norm_cast]
-theorem cast_inj [LinearOrderedSemiring α] {m n : Num} : (m : α) = n ↔ m = n := by
+theorem cast_inj [StrictOrderedSemiring α] {m n : Num} : (m : α) = n ↔ m = n := by
   rw [← cast_to_nat m, ← cast_to_nat n, Nat.cast_inj, to_nat_inj]
 
 theorem lt_iff_cmp {m n} : m < n ↔ cmp m n = Ordering.lt :=
@@ -886,7 +886,7 @@ theorem cast_neg [Zero α] [One α] [Add α] [Neg α] (n : PosNum) : (neg n : α
   rfl
 
 @[simp, norm_cast]
-theorem cast_zneg [AddGroup α] [One α] : ∀ n, ((-n : ZNum) : α) = -n
+theorem cast_zneg [SubtractionMonoid α] [One α] : ∀ n, ((-n : ZNum) : α) = -n
   | 0 => neg_zero.symm
   | pos _p => rfl
   | neg _p => (neg_neg _).symm
@@ -1083,14 +1083,13 @@ theorem mem_ofZNum' : ∀ {m : Num} {n : ZNum}, m ∈ ofZNum' n ↔ n = toZNum m
     Option.some_inj.trans <| by cases m <;> constructor <;> intro h <;> try cases h <;> rfl
   | m, ZNum.neg p => ⟨nofun, fun h => by cases m <;> cases h⟩
 
-theorem ofZNum'_toNat : ∀ n : ZNum, (↑) <$> ofZNum' n = Int.toNat' n
+theorem ofZNum'_toNat : ∀ n : ZNum, (↑) <$> ofZNum' n = Int.toNat? n
   | 0 => rfl
-  | ZNum.pos p => show _ = Int.toNat' p by rw [← PosNum.to_nat_to_int p]; rfl
+  | ZNum.pos p => show _ = Int.toNat? p by rw [← PosNum.to_nat_to_int p]; rfl
   | ZNum.neg p =>
-    (congr_arg fun x => Int.toNat' (-x)) <|
+    (congr_arg fun x => Int.toNat? (-x)) <|
       show ((p.pred' + 1 : ℕ) : ℤ) = p by rw [← succ'_to_nat]; simp
 
-@[simp]
 theorem ofZNum_toNat : ∀ n : ZNum, (ofZNum n : ℕ) = Int.toNat n
   | 0 => rfl
   | ZNum.pos p => show _ = Int.toNat p by rw [← PosNum.to_nat_to_int p]; rfl
@@ -1099,7 +1098,7 @@ theorem ofZNum_toNat : ∀ n : ZNum, (ofZNum n : ℕ) = Int.toNat n
       show ((p.pred' + 1 : ℕ) : ℤ) = p by rw [← succ'_to_nat]; simp
 
 @[simp]
-theorem cast_ofZNum [AddGroupWithOne α] (n : ZNum) : (ofZNum n : α) = Int.toNat n := by
+theorem cast_ofZNum [AddMonoidWithOne α] (n : ZNum) : (ofZNum n : α) = Int.toNat n := by
   rw [← cast_to_nat, ofZNum_toNat]
 
 @[simp, norm_cast]
@@ -1142,7 +1141,7 @@ theorem mul_to_int : ∀ m n, ((m * n : ZNum) : ℤ) = m * n
   | neg a, pos b => show -↑(a * b) = -↑a * ↑b by rw [PosNum.cast_mul, neg_mul_eq_neg_mul]
   | neg a, neg b => show ↑(a * b) = -↑a * -↑b by rw [PosNum.cast_mul, neg_mul_neg]
 
-theorem cast_mul [Ring α] (m n) : ((m * n : ZNum) : α) = m * n := by
+theorem cast_mul [NonAssocRing α] (m n) : ((m * n : ZNum) : α) = m * n := by
   rw [← cast_to_int, mul_to_int, Int.cast_mul, cast_to_int, cast_to_int]
 
 theorem ofInt'_neg : ∀ n : ℤ, ofInt' (-n) = -ofInt' n
@@ -1186,7 +1185,7 @@ theorem le_to_int {m n : ZNum} : (m : ℤ) ≤ n ↔ m ≤ n := by
   rw [← not_lt]; exact not_congr lt_to_int
 
 @[simp, norm_cast]
-theorem cast_lt [LinearOrderedRing α] {m n : ZNum} : (m : α) < n ↔ m < n := by
+theorem cast_lt [StrictOrderedRing α] {m n : ZNum} : (m : α) < n ↔ m < n := by
   rw [← cast_to_int m, ← cast_to_int n, Int.cast_lt, lt_to_int]
 
 @[simp, norm_cast]
@@ -1194,7 +1193,7 @@ theorem cast_le [LinearOrderedRing α] {m n : ZNum} : (m : α) ≤ n ↔ m ≤ n
   rw [← not_lt]; exact not_congr cast_lt
 
 @[simp, norm_cast]
-theorem cast_inj [LinearOrderedRing α] {m n : ZNum} : (m : α) = n ↔ m = n := by
+theorem cast_inj [StrictOrderedRing α] {m n : ZNum} : (m : α) = n ↔ m = n := by
   rw [← cast_to_int m, ← cast_to_int n, Int.cast_inj (α := α), to_int_inj]
 
 /-- This tactic tries to turn an (in)equality about `ZNum`s to one about `Int`s by rewriting.
@@ -1304,7 +1303,8 @@ instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
     zero_le_one := by decide }
 
 @[simp, norm_cast]
-theorem cast_sub [Ring α] (m n) : ((m - n : ZNum) : α) = m - n := by simp [sub_eq_neg_add]
+theorem cast_sub [AddCommGroupWithOne α] (m n) : ((m - n : ZNum) : α) = m - n := by
+  simp [sub_eq_neg_add]
 
 @[norm_cast]
 theorem neg_of_int : ∀ n, ((-n : ℤ) : ZNum) = -n

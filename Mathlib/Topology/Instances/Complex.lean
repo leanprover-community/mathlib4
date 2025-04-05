@@ -5,10 +5,10 @@ Authors: Xavier Roblot
 -/
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Data.Complex.FiniteDimensional
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.FieldTheory.IntermediateField.Basic
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.UniformRing
-import Mathlib.FieldTheory.IntermediateField.Basic
 
 /-!
 # Some results about the topology of ℂ
@@ -48,7 +48,7 @@ continuous, then `ψ` is either the inclusion map or the composition of the incl
 complex conjugation. -/
 theorem Complex.uniformContinuous_ringHom_eq_id_or_conj (K : Subfield ℂ) {ψ : K →+* ℂ}
     (hc : UniformContinuous ψ) : ψ.toFun = K.subtype ∨ ψ.toFun = conj ∘ K.subtype := by
-  letI : TopologicalDivisionRing ℂ := TopologicalDivisionRing.mk
+  letI : IsTopologicalDivisionRing ℂ := IsTopologicalDivisionRing.mk
   letI : IsTopologicalRing K.topologicalClosure :=
     Subring.instIsTopologicalRing K.topologicalClosure.toSubring
   set ι : K → K.topologicalClosure := ⇑(Subfield.inclusion K.le_topologicalClosure)
