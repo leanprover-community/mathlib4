@@ -316,8 +316,8 @@ variable [Module ℝ F] [IsScalarTower ℝ 𝕜 F] [IsScalarTower ℝ 𝕜 𝕜]
 theorem polar_AbsConvex : AbsConvex 𝕜 (B.polar s) := by
   rw [polar_eq_biInter_preimage]
   exact AbsConvex.iInter₂ fun i hi =>
-    ⟨(balanced_closedBall_zero (E := 𝕜) (r := (1 : ℝ))).mulActionHom_preimage (E := F)
-      (𝕜 := 𝕜) (B i), (convex_closedBall _ _).linear_preimage (B i)⟩
+    ⟨balanced_closedBall_zero.mulActionHom_preimage (f := (B i : (F →ₑ[(RingHom.id 𝕜)] 𝕜))),
+      (convex_closedBall _ _).linear_preimage (B i)⟩
 
 end NormedField
 
