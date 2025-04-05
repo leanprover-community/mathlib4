@@ -367,6 +367,9 @@ theorem comap_isInducing_of_surjective (hf : Surjective f) : IsInducing (comap f
 @[deprecated (since := "2024-10-28")]
 alias comap_inducing_of_surjective := comap_isInducing_of_surjective
 
+theorem comap_isEmbedding_of_surjective (hf : Surjective f) : IsEmbedding (comap f) :=
+  (isEmbedding_iff _).2 ⟨comap_isInducing_of_surjective _ _ hf, comap_injective_of_surjective f hf⟩
+
 end Comap
 end CommSemiring
 
@@ -412,7 +415,7 @@ end SpecOfSurjective
 
 section SpecProd
 
-variable {R S} [CommRing R] [CommRing S]
+variable {R S} [CommSemiring R] [CommSemiring S]
 
 lemma primeSpectrumProd_symm_inl (x) :
     (primeSpectrumProd R S).symm (.inl x) = comap (RingHom.fst R S) x := by
@@ -421,6 +424,30 @@ lemma primeSpectrumProd_symm_inl (x) :
 lemma primeSpectrumProd_symm_inr (x) :
     (primeSpectrumProd R S).symm (.inr x) = comap (RingHom.snd R S) x := by
   ext; simp [Ideal.prod]
+
+lemma range_comap_fst : letI f := RingHom.fst R S
+    Set.range (comap f) = zeroLocus (RingHom.ker f) := by
+  refine Set.ext fun p ↦ ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨I, hI, rfl⟩; exact Ideal.comap_mono bot_le
+  obtain ⟨p, hp, eq⟩ | ⟨p, hp, eq⟩ := p.1.ideal_prod_prime.mp p.2
+  · exact ⟨⟨p, hp⟩, PrimeSpectrum.ext <| by simpa [Ideal.prod] using eq.symm⟩
+  · exact (hp.ne_top <| (Ideal.eq_top_iff_one _).mpr (eq ▸ h (show (0, 1) ∈ _ from rfl)).2).elim
+
+lemma range_comap_snd : letI f := RingHom.snd R S
+    Set.range (comap f) = zeroLocus (RingHom.ker f) := by
+  refine Set.ext fun p ↦ ⟨?_, fun h ↦ ?_⟩
+  · rintro ⟨I, hI, rfl⟩; exact Ideal.comap_mono bot_le
+  obtain ⟨p, hp, eq⟩ | ⟨p, hp, eq⟩ := p.1.ideal_prod_prime.mp p.2
+  · exact (hp.ne_top <| (Ideal.eq_top_iff_one _).mpr (eq ▸ h (show (1, 0) ∈ _ from rfl)).1).elim
+  · exact ⟨⟨p, hp⟩, PrimeSpectrum.ext <| by simpa [Ideal.prod] using eq.symm⟩
+
+lemma isClosedEmbedding_comap_fst : IsClosedEmbedding (comap (RingHom.fst R S)) :=
+  (isClosedEmbedding_iff _).mpr ⟨comap_isEmbedding_of_surjective _ _ Prod.fst_surjective, by
+    simp_rw [range_comap_fst, isClosed_zeroLocus]⟩
+
+lemma isClosedEmbedding_comap_snd : IsClosedEmbedding (comap (RingHom.snd R S)) :=
+  (isClosedEmbedding_iff _).mpr ⟨comap_isEmbedding_of_surjective _ _ Prod.snd_surjective, by
+    simp_rw [range_comap_snd, isClosed_zeroLocus]⟩
 
 /-- The prime spectrum of `R × S` is homeomorphic
 to the disjoint union of `PrimeSpectrum R` and `PrimeSpectrum S`. -/
@@ -433,14 +460,8 @@ def primeSpectrumProdHomeo :
   · rw [continuous_sum_dom]
     simp only [Function.comp_def, primeSpectrumProd_symm_inl, primeSpectrumProd_symm_inr]
     exact ⟨(comap _).2, (comap _).2⟩
-  · rw [isClosedMap_sum]
-    constructor
-    · simp_rw [primeSpectrumProd_symm_inl]
-      refine (isClosedEmbedding_comap_of_surjective _ _ ?_).isClosedMap
-      exact Prod.fst_surjective
-    · simp_rw [primeSpectrumProd_symm_inr]
-      refine (isClosedEmbedding_comap_of_surjective _ _ ?_).isClosedMap
-      exact Prod.snd_surjective
+  · simp_rw [isClosedMap_sum, primeSpectrumProd_symm_inl, primeSpectrumProd_symm_inr]
+    exact ⟨isClosedEmbedding_comap_fst.isClosedMap, isClosedEmbedding_comap_snd.isClosedMap⟩
 
 end SpecProd
 
