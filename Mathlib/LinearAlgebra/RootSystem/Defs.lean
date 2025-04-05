@@ -756,7 +756,7 @@ variable (ι R M N : Type*) [Field R] [NeZero (2 : R)] [AddCommGroup M] [Module 
 
 variable (P : RootPairing ι R M N) (i j : ι)
 
-lemma janos (h : P.toPerfectPairing (P.root j) (P.coroot i) = 0) :
+lemma root_coroot_zero_comm (h : P.toPerfectPairing (P.root j) (P.coroot i) = 0) :
     P.toPerfectPairing (P.root i) (P.coroot j) = 0 := by
   have ttt := P.reflection_perm_root i j
   rw [h] at ttt
