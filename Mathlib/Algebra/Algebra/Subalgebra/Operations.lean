@@ -5,6 +5,7 @@ Authors: Andrew Yang, Antoine Chambert-Loir
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.Algebra.Ring.Action.Submonoid
 
 /-!
 # More operations on subalgebras
@@ -71,3 +72,21 @@ theorem mem_of_span_eq_top_of_smul_pow_mem
   mem_of_finset_sum_eq_one_of_pow_smul_mem S' l.support (↑) l hs (fun x => hs' x.2) hl x H
 
 end Subalgebra
+
+section MulSemiringAction
+
+variable (A B : Type*) [CommRing A] [CommRing B] [Algebra A B]
+variable (G : Type*) [Monoid G] [MulSemiringAction G B] [SMulCommClass G A B]
+
+/-- The set of fixed points under a group action, as a subring. -/
+def FixedPoints.subring : Subring B where
+  __ := FixedPoints.addSubgroup G B
+  __ := FixedPoints.submonoid G B
+
+/-- The set of fixed points under a group action, as a subalgebra. -/
+def FixedPoints.subalgebra : Subalgebra A B where
+  __ := FixedPoints.addSubgroup G B
+  __ := FixedPoints.submonoid G B
+  algebraMap_mem' r := by simp
+
+end MulSemiringAction
