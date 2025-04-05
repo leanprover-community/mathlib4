@@ -131,10 +131,6 @@ theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : 
   rw [Set.ssubset_def, vanishingIdeal_anti_mono_iff hs, vanishingIdeal_anti_mono_iff ht,
     lt_iff_le_not_le]
 
-@[simp]
-lemma zeroLocus_nilradical : zeroLocus (nilradical R : Set R) = Set.univ := by
-  rw [nilradical, zeroLocus_radical, Ideal.zero_eq_bot, zeroLocus_bot]
-
 /-- The antitone order embedding of closed subsets of `Spec R` into ideals of `R`. -/
 def closedsEmbedding (R : Type*) [CommSemiring R] :
     (TopologicalSpace.Closeds <| PrimeSpectrum R)ᵒᵈ ↪o Ideal R :=
@@ -372,6 +368,17 @@ theorem comap_isInducing_of_surjective (hf : Surjective f) : IsInducing (comap f
 alias comap_inducing_of_surjective := comap_isInducing_of_surjective
 
 end Comap
+
+/-- Homeomorphism between prime spectra induced by an isomorphism of semirings. -/
+def homeomorphOfRingEquiv (e : R ≃+* S) : PrimeSpectrum R ≃ₜ PrimeSpectrum S where
+  toFun := comap (e.symm : S →+* R)
+  invFun := comap (e : R →+* S)
+  left_inv _ := (comap_comp_apply ..).symm.trans (by simp)
+  right_inv _ := (comap_comp_apply ..).symm.trans (by simp)
+
+lemma isHomeomorph_comap_of_bijective (f : R →+* S) (hf : Function.Bijective f) :
+    IsHomeomorph (comap f) := (homeomorphOfRingEquiv (.ofBijective f hf)).symm.isHomeomorph
+
 end CommSemiring
 
 section SpecOfSurjective
