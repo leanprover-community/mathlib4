@@ -442,3 +442,9 @@ elab (name := positivity) "positivity" : tactic => do
 end Positivity
 
 end Mathlib.Tactic
+
+/-!
+We register `positivity` with the `hint` tactic.
+-/
+
+register_hint positivity
