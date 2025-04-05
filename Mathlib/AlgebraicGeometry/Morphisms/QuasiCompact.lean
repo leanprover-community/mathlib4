@@ -352,9 +352,10 @@ lemma Scheme.zeroLocus_eq_univ_iff_subset_nilradical {X : Scheme.{u}}
 
 @[deprecated (since := "2025-04-05")]
 alias Scheme.zeroLocus_eq_top_iff_subset_nilradical_of_isCompact :=
-  zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact
+  Scheme.zeroLocus_eq_univ_iff_subset_nilradical_of_isCompact
 
 @[deprecated (since := "2025-04-05")]
-alias Scheme.zeroLocus_eq_top_iff_subset_nilradical := zeroLocus_eq_univ_iff_subset_nilradical
+alias Scheme.zeroLocus_eq_top_iff_subset_nilradical := 
+  Scheme.zeroLocus_eq_univ_iff_subset_nilradical
 
 end AlgebraicGeometry
