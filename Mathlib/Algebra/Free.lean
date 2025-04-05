@@ -39,8 +39,8 @@ the following universal property: if `M` is any magma, and `f : α → M` is any
 then this function is the composite of `FreeAddMagma.of` and a unique additive homomorphism
 `FreeAddMagma.lift f : FreeAddMagma α →ₙ+ M`.
 
-A typical element of `FreeAddMagma α` is a formal sum of elements of `α`.
-For example if `x` and `y` are terms of type `α` then `x + ((y + y) + x)` is a
+A typical element of `FreeAddMagma α` is a formal non-associative sum of
+elements of `α`. For example if `x` and `y` are terms of type `α` then `x + ((y + y) + x)` is a
 "typical" element of `FreeAddMagma α`.
 One can think of `FreeAddMagma α` as the type of binary trees with leaves labelled by `α`.
 In general, no pair of distinct elements in `FreeAddMagma α` will commute.
@@ -62,8 +62,8 @@ the following universal property: if `M` is any magma, and `f : α → M` is any
 then this function is the composite of `FreeMagma.of` and a unique multiplicative homomorphism
 `FreeMagma.lift f : FreeMagma α →ₙ* M`.
 
-A typical element of `FreeMagma α` is a formal product of elements of `α`.
-For example if `x` and `y` are terms of type `α` then `x * ((y * y) * x)` is a
+A typical element of `FreeMagma α` is a formal non-associative product of
+elements of `α`. For example if `x` and `y` are terms of type `α` then `x * ((y * y) * x)` is a
 "typical" element of `FreeMagma α`.
 One can think of `FreeMagma α` as the type of binary trees with leaves labelled by `α`.
 In general, no pair of distinct elements in `FreeMagma α` will commute.

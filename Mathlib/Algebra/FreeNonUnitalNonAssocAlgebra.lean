@@ -53,7 +53,7 @@ and a unique non-unital `R`-algebra homomorphism
 `FreeNonUnitalNonAssocAlgebra.lift R f : FreeNonUnitalNonAssocAlgebra R α →ₙₐ[R] A`.
 
 A typical element of `FreeNonUnitalNonAssocAlgebra R α` is an `R`-linear combination of
-nonempty formal products of elements of `α`.
+nonempty formal (non-commutative, non-associative) products of elements of `α`.
 For example if `x` and `y` are terms of type `α` and
 `a`, `b` are terms of type `R` then `(3 * a * a) • (x * (y * x)) + (2 * b + 1) • (y * x)` is a
 "typical" element of `FreeNonUnitalNonAssocAlgebra R α`.
