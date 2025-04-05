@@ -73,10 +73,10 @@ lemma hasColimitsOfShape_of_initialSeg
   · let s := f.toPrincipalSeg hf
     obtain ⟨i, hi₀⟩ : ∃ i, i = s.top := ⟨_, rfl⟩
     induction i using SuccOrder.limitRecOn with
-    | hm i hi =>
+    | isMin i hi =>
       subst hi₀
       exact (hi.not_lt (s.lt_top (Classical.arbitrary _))).elim
-    | hs i hi _ =>
+    | succ i hi _ =>
       obtain ⟨a, rfl⟩ := (s.mem_range_iff_rel (b := i)).2 (by
         simpa only [← hi₀] using Order.lt_succ_of_not_isMax hi)
       have : OrderTop α :=
@@ -85,7 +85,7 @@ lemma hasColimitsOfShape_of_initialSeg
             rw [← s.le_iff_le]
             exact Order.le_of_lt_succ (by simpa only [hi₀] using s.lt_top b) }
       infer_instance
-    | hl i hi =>
+    | isSuccLimit i hi =>
       subst hi₀
       exact hasColimitsOfShape_of_isSuccLimit' C s hi
 
