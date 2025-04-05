@@ -452,7 +452,7 @@ lemma rr78:
   let I := LieSubalgebra.lieSpan K L gg
   have rr (a b : L) (h1 : a ∈ I) (h2 : b ∈ I) : ⁅a, b⁆ ∈ I := by
     exact LieSubalgebra.lie_mem I h1 h2
-
+  sorry
 
 
 lemma rr7:
@@ -484,26 +484,32 @@ lemma rr7:
       simp [I] at hy
       refine LieSubalgebra.lieSpan_induction2 (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ hy
       --intro a x_1
+      intro x1 hx1
+
       sorry
-      sorry
-      sorry
-      sorry
-      intro x_1
-      intro zzz
-      intro x_2
-      intro zzz_2
-      intro hx_1
-      intro hxzzz
-      have x1n : x_1 ∈ I := x_2
-      have z1n : zzz ∈ I := zzz_2
-      have : ⁅x, ⁅x_1, zzz⁆⁆ = ⁅⁅x, x_1⁆, zzz⁆ + ⁅x_1, ⁅x, zzz⁆⁆ := by
-        simp
-      rw [this]
-      have p1 : ⁅⁅x, x_1⁆, zzz⁆ ∈ I := by
-        exact LieSubalgebra.lie_mem I hx_1 z1n
-      have p2 : ⁅x_1, ⁅x, zzz⁆⁆ ∈ I := by
-        exact LieSubalgebra.lie_mem I x1n hxzzz
-      exact LieSubalgebra.add_mem I p1 p2
+      · simp only [lie_zero, LieSubalgebra.zero_mem, I]
+      · intro a b c d e f
+        simp only [lie_add, I]
+        exact LieSubalgebra.add_mem I e f
+      · intro a b c d
+        simp only [lie_smul, I]
+        exact LieSubalgebra.smul_mem I a d
+      · intro x_1
+        intro zzz
+        intro x_2
+        intro zzz_2
+        intro hx_1
+        intro hxzzz
+        have x1n : x_1 ∈ I := x_2
+        have z1n : zzz ∈ I := zzz_2
+        have : ⁅x, ⁅x_1, zzz⁆⁆ = ⁅⁅x, x_1⁆, zzz⁆ + ⁅x_1, ⁅x, zzz⁆⁆ := by
+          simp
+        rw [this]
+        have p1 : ⁅⁅x, x_1⁆, zzz⁆ ∈ I := by
+          exact LieSubalgebra.lie_mem I hx_1 z1n
+        have p2 : ⁅x_1, ⁅x, zzz⁆⁆ ∈ I := by
+          exact LieSubalgebra.lie_mem I x1n hxzzz
+        exact LieSubalgebra.add_mem I p1 p2
     | zero =>
       simp only [zero_lie, LieSubalgebra.zero_mem]
     | add x1 y1 _ _ hx hy =>
