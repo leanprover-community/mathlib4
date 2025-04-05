@@ -20,7 +20,6 @@ variable [Semiring α] [PartialOrder α]
   [Zero β] [One β] [Add β] [Mul β] [SMul ℕ β] [Pow β ℕ] [NatCast β] (f : β → α) (hf : Injective f)
 
 /-- Pullback an `IsOrderedRing` under an injective map. -/
--- See note [reducible non-instances]
 protected lemma isOrderedRing [IsOrderedRing α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
@@ -38,7 +37,6 @@ protected lemma isOrderedRing [IsOrderedRing α] (zero : f 0 = 0) (one : f 1 = 1
       rw [mul, mul]; refine mul_le_mul_of_nonneg_right h ?_; rwa [← zero] }
 
 /-- Pullback a `IsStrictOrderedRing` under an injective map. -/
--- See note [reducible non-instances]
 protected lemma isStrictOrderedRing [IsStrictOrderedRing α] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
