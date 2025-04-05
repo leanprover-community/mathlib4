@@ -708,7 +708,7 @@ section isSuccLimitRecOn
 section PartialOrder
 
 variable [PartialOrder α] [SuccOrder α]
-  (hm : ∀ a, IsMin a → motive a) (hs : ∀ a, ¬IsMax a → motive (succ a))
+  (isMin : ∀ a, IsMin a → motive a) (hs : ∀ a, ¬IsMax a → motive (succ a))
   (hl : ∀ a, IsSuccLimit a → motive a)
 
 variable (b) in
@@ -717,11 +717,11 @@ open Classical in
 @[elab_as_elim]
 noncomputable def isSuccLimitRecOn : motive b :=
   isSuccPrelimitRecOn b hs fun a ha ↦
-    if h : IsMin a then hm a h else hl a (ha.isSuccLimit_of_not_isMin h)
+    if h : IsMin a then isMin a h else hl a (ha.isSuccLimit_of_not_isMin h)
 
 @[simp]
 theorem isSuccLimitRecOn_of_isSuccLimit (hb : IsSuccLimit b) :
-    isSuccLimitRecOn b hm hs hl = hl b hb := by
+    isSuccLimitRecOn b isMin hs hl = hl b hb := by
   rw [isSuccLimitRecOn, isSuccPrelimitRecOn_of_isSuccPrelimit _ _ hb.isSuccPrelimit,
     dif_neg hb.not_isMin]
 
@@ -730,19 +730,19 @@ end PartialOrder
 section LinearOrder
 
 variable [LinearOrder α] [SuccOrder α]
-  (hm : ∀ a, IsMin a → motive a) (hs : ∀ a, ¬IsMax a → motive (succ a))
+  (isMin : ∀ a, IsMin a → motive a) (hs : ∀ a, ¬IsMax a → motive (succ a))
   (hl : ∀ a, IsSuccLimit a → motive a)
 
 theorem isSuccLimitRecOn_succ_of_not_isMax (hb : ¬IsMax b) :
-    isSuccLimitRecOn (succ b) hm hs hl = hs b hb := by
+    isSuccLimitRecOn (succ b) isMin hs hl = hs b hb := by
   rw [isSuccLimitRecOn, isSuccPrelimitRecOn_succ_of_not_isMax]
 
 @[simp]
 theorem isSuccLimitRecOn_succ [NoMaxOrder α] (b : α) :
-    isSuccLimitRecOn (succ b) hm hs hl = hs b (not_isMax b) :=
-  isSuccLimitRecOn_succ_of_not_isMax hm hs hl _
+    isSuccLimitRecOn (succ b) isMin hs hl = hs b (not_isMax b) :=
+  isSuccLimitRecOn_succ_of_not_isMax isMin hs hl _
 
-theorem isSuccLimitRecOn_of_isMin (hb : IsMin b) : isSuccLimitRecOn b hm hs hl = hm b hb := by
+theorem isSuccLimitRecOn_of_isMin (hb : IsMin b) : isSuccLimitRecOn b isMin hs hl = isMin b hb := by
   rw [isSuccLimitRecOn, isSuccPrelimitRecOn_of_isSuccPrelimit _ _ hb.isSuccPrelimit, dif_pos hb]
 
 end LinearOrder
@@ -754,7 +754,7 @@ section isPredLimitRecOn
 section PartialOrder
 
 variable [PartialOrder α] [PredOrder α]
-  (hm : ∀ a, IsMax a → motive a) (hs : ∀ a, ¬IsMin a → motive (pred a))
+  (isMax : ∀ a, IsMax a → motive a) (hs : ∀ a, ¬IsMin a → motive (pred a))
   (hl : ∀ a, IsPredLimit a → motive a)
 
 variable (b) in
@@ -762,32 +762,32 @@ variable (b) in
 and predecessor limits. -/
 @[elab_as_elim]
 noncomputable def isPredLimitRecOn : motive b :=
-  isSuccLimitRecOn (α := αᵒᵈ) b hm hs (fun a ha => hl a ha.dual)
+  isSuccLimitRecOn (α := αᵒᵈ) b isMax hs (fun a ha => hl a ha.dual)
 
 @[simp]
 theorem isPredLimitRecOn_of_isPredLimit (hb : IsPredLimit b) :
-    isPredLimitRecOn b hm hs hl = hl b hb :=
-  isSuccLimitRecOn_of_isSuccLimit (α := αᵒᵈ) hm hs _ hb.dual
+    isPredLimitRecOn b isMax hs hl = hl b hb :=
+  isSuccLimitRecOn_of_isSuccLimit (α := αᵒᵈ) isMax hs _ hb.dual
 
 end PartialOrder
 
 section LinearOrder
 
 variable [LinearOrder α] [PredOrder α]
-  (hm : ∀ a, IsMax a → motive a) (hs : ∀ a, ¬IsMin a → motive (pred a))
+  (isMax : ∀ a, IsMax a → motive a) (hs : ∀ a, ¬IsMin a → motive (pred a))
   (hl : ∀ a, IsPredLimit a → motive a)
 
 theorem isPredLimitRecOn_pred_of_not_isMin (hb : ¬IsMin b) :
-    isPredLimitRecOn (pred b) hm hs hl = hs b hb :=
-  isSuccLimitRecOn_succ_of_not_isMax (α := αᵒᵈ) hm hs _ hb
+    isPredLimitRecOn (pred b) isMax hs hl = hs b hb :=
+  isSuccLimitRecOn_succ_of_not_isMax (α := αᵒᵈ) isMax hs _ hb
 
 @[simp]
 theorem isPredLimitRecOn_pred [NoMinOrder α] :
-    isPredLimitRecOn (pred b) hm hs hl = hs b (not_isMin b) :=
-  isSuccLimitRecOn_succ (α := αᵒᵈ) hm hs _ b
+    isPredLimitRecOn (pred b) isMax hs hl = hs b (not_isMin b) :=
+  isSuccLimitRecOn_succ (α := αᵒᵈ) isMax hs _ b
 
-theorem isPredLimitRecOn_of_isMax (hb : IsMax b) : isPredLimitRecOn b hm hs hl = hm b hb :=
-  isSuccLimitRecOn_of_isMin (α := αᵒᵈ) hm hs _ hb
+theorem isPredLimitRecOn_of_isMax (hb : IsMax b) : isPredLimitRecOn b isMax hs hl = isMax b hb :=
+  isSuccLimitRecOn_of_isMin (α := αᵒᵈ) isMax hs _ hb
 
 end LinearOrder
 
@@ -852,7 +852,7 @@ section limitRecOn
 
 section PartialOrder
 
-variable [PartialOrder α] [SuccOrder α] [WellFoundedLT α] (hm : ∀ a, IsMin a → motive a)
+variable [PartialOrder α] [SuccOrder α] [WellFoundedLT α] (isMin : ∀ a, IsMin a → motive a)
   (hs : ∀ a, ¬IsMax a → motive a → motive (Order.succ a))
   (hl : ∀ a, IsSuccLimit a → (∀ b < a, motive b) → motive a)
 
@@ -862,33 +862,33 @@ open Classical in
 minimal element. -/
 @[elab_as_elim] noncomputable def limitRecOn : motive b :=
   prelimitRecOn b hs fun a ha IH ↦
-    if h : IsMin a then hm a h else hl a (ha.isSuccLimit_of_not_isMin h) IH
+    if h : IsMin a then isMin a h else hl a (ha.isSuccLimit_of_not_isMin h) IH
 
 @[simp]
-theorem limitRecOn_isMin (hb : IsMin b) : limitRecOn b hm hs hl = hm b hb := by
+theorem limitRecOn_isMin (hb : IsMin b) : limitRecOn b isMin hs hl = isMin b hb := by
   rw [limitRecOn, prelimitRecOn_of_isSuccPrelimit _ _ hb.isSuccPrelimit, dif_pos hb]
 
 @[simp]
 theorem limitRecOn_of_isSuccLimit (hb : IsSuccLimit b) :
-    limitRecOn b hm hs hl = hl b hb fun x _ ↦ limitRecOn x hm hs hl := by
+    limitRecOn b isMin hs hl = hl b hb fun x _ ↦ limitRecOn x isMin hs hl := by
   rw [limitRecOn, prelimitRecOn_of_isSuccPrelimit _ _ hb.isSuccPrelimit, dif_neg hb.not_isMin]; rfl
 
 end PartialOrder
 
 section LinearOrder
 
-variable [LinearOrder α] [SuccOrder α] [WellFoundedLT α] (hm : ∀ a, IsMin a → motive a)
+variable [LinearOrder α] [SuccOrder α] [WellFoundedLT α] (isMin : ∀ a, IsMin a → motive a)
   (hs : ∀ a, ¬IsMax a → motive a → motive (Order.succ a))
   (hl : ∀ a, IsSuccLimit a → (∀ b < a, motive b) → motive a)
 
 theorem limitRecOn_succ_of_not_isMax (hb : ¬IsMax b) :
-    limitRecOn (Order.succ b) hm hs hl = hs b hb (limitRecOn b hm hs hl) := by
+    limitRecOn (Order.succ b) isMin hs hl = hs b hb (limitRecOn b isMin hs hl) := by
   rw [limitRecOn, prelimitRecOn_succ_of_not_isMax]; rfl
 
 @[simp]
 theorem limitRecOn_succ [NoMaxOrder α] (b : α) :
-    limitRecOn (Order.succ b) hm hs hl = hs b (not_isMax b) (limitRecOn b hm hs hl) :=
-  limitRecOn_succ_of_not_isMax hm hs hl _
+    limitRecOn (Order.succ b) isMin hs hl = hs b (not_isMax b) (limitRecOn b isMin hs hl) :=
+  limitRecOn_succ_of_not_isMax isMin hs hl _
 
 end LinearOrder
 
@@ -941,7 +941,7 @@ section limitRecOn
 
 section PartialOrder
 
-variable [PartialOrder α] [PredOrder α] [WellFoundedGT α] (hm : ∀ a, IsMax a → motive a)
+variable [PartialOrder α] [PredOrder α] [WellFoundedGT α] (isMax : ∀ a, IsMax a → motive a)
   (hs : ∀ a, ¬IsMin a → motive a → motive (Order.pred a))
   (hl : ∀ a, IsPredLimit a → (∀ b > a, motive b) → motive a)
 
@@ -950,33 +950,33 @@ open Classical in
 /-- Recursion principle on a well-founded partial `PredOrder`, separating out the case of a
 maximal element. -/
 @[elab_as_elim] noncomputable def limitRecOn : motive b :=
-  SuccOrder.limitRecOn (α := αᵒᵈ) b hm hs (fun a ha => hl a ha.dual)
+  SuccOrder.limitRecOn (α := αᵒᵈ) b isMax hs (fun a ha => hl a ha.dual)
 
 @[simp]
-theorem limitRecOn_isMax (hb : IsMax b) : limitRecOn b hm hs hl = hm b hb :=
-  SuccOrder.limitRecOn_isMin (α := αᵒᵈ) hm hs _ hb
+theorem limitRecOn_isMax (hb : IsMax b) : limitRecOn b isMax hs hl = isMax b hb :=
+  SuccOrder.limitRecOn_isMin (α := αᵒᵈ) isMax hs _ hb
 
 @[simp]
 theorem limitRecOn_of_isPredLimit (hb : IsPredLimit b) :
-    limitRecOn b hm hs hl = hl b hb fun x _ ↦ limitRecOn x hm hs hl :=
-  SuccOrder.limitRecOn_of_isSuccLimit (α := αᵒᵈ) hm hs _ hb.dual
+    limitRecOn b isMax hs hl = hl b hb fun x _ ↦ limitRecOn x isMax hs hl :=
+  SuccOrder.limitRecOn_of_isSuccLimit (α := αᵒᵈ) isMax hs _ hb.dual
 
 end PartialOrder
 
 section LinearOrder
 
-variable [LinearOrder α] [PredOrder α] [WellFoundedGT α] (hm : ∀ a, IsMax a → motive a)
+variable [LinearOrder α] [PredOrder α] [WellFoundedGT α] (isMax : ∀ a, IsMax a → motive a)
   (hs : ∀ a, ¬IsMin a → motive a → motive (Order.pred a))
   (hl : ∀ a, IsPredLimit a → (∀ b > a, motive b) → motive a)
 
 theorem limitRecOn_pred_of_not_isMin (hb : ¬IsMin b) :
-    limitRecOn (Order.pred b) hm hs hl = hs b hb (limitRecOn b hm hs hl) :=
-  SuccOrder.limitRecOn_succ_of_not_isMax (α := αᵒᵈ) hm hs _ hb
+    limitRecOn (Order.pred b) isMax hs hl = hs b hb (limitRecOn b isMax hs hl) :=
+  SuccOrder.limitRecOn_succ_of_not_isMax (α := αᵒᵈ) isMax hs _ hb
 
 @[simp]
 theorem limitRecOn_pred [NoMinOrder α] (b : α) :
-    limitRecOn (Order.pred b) hm hs hl = hs b (not_isMin b) (limitRecOn b hm hs hl) :=
-  SuccOrder.limitRecOn_succ (α := αᵒᵈ) hm hs _ b
+    limitRecOn (Order.pred b) isMax hs hl = hs b (not_isMin b) (limitRecOn b isMax hs hl) :=
+  SuccOrder.limitRecOn_succ (α := αᵒᵈ) isMax hs _ b
 
 end LinearOrder
 
