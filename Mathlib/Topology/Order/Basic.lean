@@ -139,6 +139,8 @@ theorem tendsto_of_tendsto_of_tendsto_of_le_of_le' [OrderTopology α] {f g h : �
     (hfh : ∀ᶠ b in b, f b ≤ h b) : Tendsto f b (𝓝 a) :=
   (hg.Icc hh).of_smallSets <| hgf.and hfh
 
+alias Filter.Tendsto.squeeze' := tendsto_of_tendsto_of_tendsto_of_le_of_le'
+
 /-- **Squeeze theorem** (also known as **sandwich theorem**). This version assumes that inequalities
 hold everywhere. -/
 theorem tendsto_of_tendsto_of_tendsto_of_le_of_le [OrderTopology α] {f g h : β → α} {b : Filter β}
@@ -146,6 +148,8 @@ theorem tendsto_of_tendsto_of_tendsto_of_le_of_le [OrderTopology α] {f g h : β
     Tendsto f b (𝓝 a) :=
   tendsto_of_tendsto_of_tendsto_of_le_of_le' hg hh (Eventually.of_forall hgf)
     (Eventually.of_forall hfh)
+
+alias Filter.Tendsto.squeeze := tendsto_of_tendsto_of_tendsto_of_le_of_le
 
 theorem nhds_order_unbounded [OrderTopology α] {a : α} (hu : ∃ u, a < u) (hl : ∃ l, l < a) :
     𝓝 a = ⨅ (l) (_ : l < a) (u) (_ : a < u), 𝓟 (Ioo l u) := by
