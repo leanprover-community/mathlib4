@@ -23,7 +23,7 @@ namespace Nat
 
 instance Subtype.orderBot (s : Set ℕ) [DecidablePred (· ∈ s)] [h : Nonempty s] : OrderBot s where
   bot := ⟨Nat.find (nonempty_subtype.1 h), Nat.find_spec (nonempty_subtype.1 h)⟩
-  bot_le x := Nat.find_min' _ x.2
+  bot_le x := Nat.find_min' (nonempty_subtype.1 h) x.2
 
 instance Subtype.semilatticeSup (s : Set ℕ) : SemilatticeSup s :=
   { Subtype.instLinearOrder s, LinearOrder.toLattice with }
