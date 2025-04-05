@@ -83,6 +83,7 @@ def coeOrderEmbedding : TwoSidedIdeal R ↪o Set R where
 lemma le_iff {I J : TwoSidedIdeal R} : I ≤ J ↔ (I : Set R) ⊆ (J : Set R) := Iff.rfl
 
 /-- Two-sided-ideals corresponds to congruence relations on a ring. -/
+@[simps]
 def orderIsoRingCon : TwoSidedIdeal R ≃o RingCon R where
   toFun := TwoSidedIdeal.ringCon
   invFun := .mk
@@ -96,6 +97,12 @@ Two-sided-ideals of `A` and that of `Aᵒᵖ` corresponds bijectively to each ot
 -/
 def opOrderIso : TwoSidedIdeal R ≃o TwoSidedIdeal Rᵐᵒᵖ :=
   orderIsoRingCon.trans <| RingCon.opOrderIso.trans orderIsoRingCon.symm
+
+@[simp]
+lemma opOrderIso_apply (I : TwoSidedIdeal R): opOrderIso I = ⟨I.1.op⟩ := rfl
+
+@[simp]
+lemma opOrderIso_symm_apply (I : TwoSidedIdeal Rᵐᵒᵖ) : opOrderIso.symm I = ⟨I.1.unop⟩ := rfl
 
 lemma ringCon_injective : Function.Injective (TwoSidedIdeal.ringCon (R := R)) := by
   rintro ⟨x⟩ ⟨y⟩ rfl; rfl

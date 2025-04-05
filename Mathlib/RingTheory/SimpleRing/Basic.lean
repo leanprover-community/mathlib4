@@ -87,6 +87,6 @@ lemma iff_injective_ringHom (R : Type u) [NonAssocRing R] [Nontrivial R] :
     ⟨fun H _ _ _ f => H f |>.resolve_right (by simpa [not_subsingleton_iff_nontrivial]),
       fun H S _ f => subsingleton_or_nontrivial S |>.recOn Or.inr fun _ => Or.inl <| H f⟩
 
-instance [IsSimpleRing R] : IsSimpleRing Rᵐᵒᵖ := ⟨TwoSidedIdeal.toMopOrderIso.symm.isSimpleOrder⟩
+instance [IsSimpleRing R] : IsSimpleRing Rᵐᵒᵖ := ⟨TwoSidedIdeal.opOrderIso.symm.isSimpleOrder⟩
 
 end IsSimpleRing
