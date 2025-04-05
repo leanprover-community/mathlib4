@@ -434,64 +434,6 @@ variable (K L : Type*) [Field K] [CharZero K]
   [LieAlgebra.IsKilling K L] -- Follows from simplicity; will be redundant after #10068 done
   (H : LieSubalgebra K L) [H.IsCartanSubalgebra] [LieModule.IsTriangularizable K H L]
 
-#check (LieAlgebra.IsKilling.rootSystem H)
-set_option maxHeartbeats 10000000
---  eq_top_of_invtSubmodule_reflection (q : Submodule R M) :
---    (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤
-
-lemma rr5:
-   ∀ (q : Submodule K (Module.Dual K H)), (∀ (i : H.root), q ∈ Module.End.invtSubmodule
-      ((LieAlgebra.IsKilling.rootSystem H).reflection i)) → q ≠ ⊥ → q = ⊤ := by
-  have _i := LieModule.nontrivial_of_isIrreducible K L L
-  let S := (LieAlgebra.IsKilling.rootSystem H)
-  by_contra!
-  obtain ⟨q, hq1, hq2, hq3⟩ := this
-  have := RootPairing.l3 (LieAlgebra.IsKilling.rootSystem H) q hq1 hq2 hq3
-  obtain ⟨Φ, hhh1, hhh2, hhh3, hhh4⟩ := this
-  let gg := ⋃ i ∈ Φ, (LieAlgebra.rootSpace H i : Set L)
-  let I := LieSubalgebra.lieSpan K L gg
-  have rr4 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : LieAlgebra.rootSpace H i.1.1)
-      (lj : LieAlgebra.rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
-    sorry
-  --simp at rr4
-  have rr5 : I ≠ ⊤ := by
-    have : ∃ (j : H.root), j ∉ Φ := by
-      exact (Set.ne_univ_iff_exists_not_mem Φ).mp hhh3
-    obtain ⟨j, hj⟩ := this
-    --rrrr : { x // x ∈ LieSubalgebra.root }
-    obtain ⟨z, hz1, hz2⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) j
-    by_contra!
-    have lll : z ∈ LieAlgebra.center K L := by
-      have rrr (x : L) : ⁅x, z⁆ = 0 := by
-        have qq : x ∈ I := by
-          rw [this]
-          exact trivial
-        simp [I] at qq
-        refine LieSubalgebra.lieSpan_induction2 (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ qq
-        intro x hx
-        obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx
-        have := rr4 i j hi hj
-        simp at this
-        have ssss2 := this x hx1_mem
-        have ssss3 := ssss2 z hz1
-        exact ssss3
-        exact zero_lie z
-        intro a b c d e f
-        simp only [add_lie]
-        rw [e, f, add_zero]
-        intro a b c d
-        simp only [smul_lie, smul_eq_zero]
-        right
-        exact d
-        intro a b c d e f
-        simp only [lie_lie]
-        rw [e, f, lie_zero, lie_zero, sub_self]
-      exact rrr
-    have cent := LieAlgebra.center_eq_bot (R := K) (L := L)
-    rw [cent] at lll
-    exact hz2 lll
-  sorry
-
 lemma invtSubmodule_reflection:
    ∀ (q : Submodule K (Module.Dual K H)), (∀ (i : H.root), q ∈ Module.End.invtSubmodule
       ((LieAlgebra.IsKilling.rootSystem H).reflection i)) → q ≠ ⊥ → q = ⊤ := by
@@ -629,8 +571,41 @@ lemma invtSubmodule_reflection:
   let gg := ⋃ i ∈ Φ, (LieAlgebra.rootSpace H i : Set L)
   let I := LieSubalgebra.lieSpan K L gg
   have rr5 : I ≠ ⊤ := by
-    have := LieAlgebra.center_eq_bot (R := K) (L := L)
-    sorry
+    have : ∃ (j : H.root), j ∉ Φ := by
+      exact (Set.ne_univ_iff_exists_not_mem Φ).mp hhh3
+    obtain ⟨j, hj⟩ := this
+    --rrrr : { x // x ∈ LieSubalgebra.root }
+    obtain ⟨z, hz1, hz2⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) j
+    by_contra!
+    have lll : z ∈ LieAlgebra.center K L := by
+      have rrr (x : L) : ⁅x, z⁆ = 0 := by
+        have qq : x ∈ I := by
+          rw [this]
+          exact trivial
+        simp [I] at qq
+        refine LieSubalgebra.lieSpan_induction2 (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ qq
+        intro x hx
+        obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx
+        have := rr4 i j hi hj
+        simp at this
+        have ssss2 := this x hx1_mem
+        have ssss3 := ssss2 z hz1
+        exact ssss3
+        exact zero_lie z
+        intro a b c d e f
+        simp only [add_lie]
+        rw [e, f, add_zero]
+        intro a b c d
+        simp only [smul_lie, smul_eq_zero]
+        right
+        exact d
+        intro a b c d e f
+        simp only [lie_lie]
+        rw [e, f, lie_zero, lie_zero, sub_self]
+      exact rrr
+    have cent := LieAlgebra.center_eq_bot (R := K) (L := L)
+    rw [cent] at lll
+    exact hz2 lll
   have rr6 : I ≠ ⊥ := by
     have : ∃ (rrrr : H.root), rrrr ∈ Φ := by
       refine Set.nonempty_def.mp ?_
