@@ -272,6 +272,34 @@ structure LowerSet (α : Type*) [LE α] where
 
 extend_docs LowerSet before "The type of lower sets of an order."
 
+/-- An upper set relative to an element `c` is a set such that all elements are at most `c` and
+any element greater than one of its members and less than `c` is also a member. -/
+def IsRelUpperSet {α : Type*} [LE α] (s : Set α) (c : α) : Prop :=
+  ∀ ⦃a : α⦄, a ∈ s → a ≤ c ∧ ∀ ⦃b : α⦄, a ≤ b → b ≤ c → b ∈ s
+
+/-- A lower set relative to an element `c` is a set such that all elements are at least `c` and
+any element less than one of its members and greater than `c` is also a member. -/
+def IsRelLowerSet {α : Type*} [LE α] (s : Set α) (c : α) : Prop :=
+  ∀ ⦃a : α⦄, a ∈ s → c ≤ a ∧ ∀ ⦃b : α⦄, b ≤ a → c ≤ b → b ∈ s
+
+@[inherit_doc IsRelUpperSet]
+structure RelUpperSet {α : Type*} [LE α] (c : α) where
+  /-- The carrier of a `RelUpperSet`. -/
+  carrier : Set α
+  /-- The carrier of a `RelUpperSet` is an upper set relative to `c`. -/
+  relUpper : IsRelUpperSet carrier c
+
+extend_docs RelUpperSet before "The type of upper sets of an order relative to `c`."
+
+@[inherit_doc IsRelLowerSet]
+structure RelLowerSet {α : Type*} [LE α] (c : α) where
+  /-- The carrier of a `RelLowerSet`. -/
+  carrier : Set α
+  /-- The carrier of a `RelLowerSet` is a lower set relative to `c`. -/
+  relLower : IsRelLowerSet carrier c
+
+extend_docs RelLowerSet before "The type of lower sets of an order relative to `c`."
+
 variable {α β : Type*} {r : α → α → Prop} {s : β → β → Prop}
 
 theorem of_eq [IsRefl α r] : ∀ {a b}, a = b → r a b

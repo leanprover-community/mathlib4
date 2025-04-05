@@ -4692,6 +4692,7 @@ import Mathlib.Order.UpperLower.Hom
 import Mathlib.Order.UpperLower.LocallyFinite
 import Mathlib.Order.UpperLower.Principal
 import Mathlib.Order.UpperLower.Prod
+import Mathlib.Order.UpperLower.Relative
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WellQuasiOrder
