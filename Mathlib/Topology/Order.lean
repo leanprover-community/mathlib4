@@ -498,6 +498,7 @@ instance {n} : DiscreteTopology (Fin n) := ⟨rfl⟩
 instance sierpinskiSpace : TopologicalSpace Prop :=
   generateFrom {{True}}
 
+/-- See also `continuous_of_discreteTopology`, which works for `IsEmpty α`. -/
 theorem continuous_empty_function [TopologicalSpace α] [TopologicalSpace β] [IsEmpty β]
     (f : α → β) : Continuous f :=
   letI := Function.isEmpty f
