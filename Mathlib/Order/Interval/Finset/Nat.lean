@@ -148,10 +148,14 @@ lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by omega)⟩ 
   Subtype.val_inj.1 (mem_Ioc_succ.1 a.2)
 
 set_option linter.deprecated false in
+@[deprecated "Deprecated. Use `Finset.insert_Ico_right_eq_Ico_add_one_right` instead."
+  (since := "2025-04-05")]
 theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a (b + 1) = insert b (Ico a b) := by
   rw [Ico_succ_right, ← Ico_insert_right h]
 
 set_option linter.deprecated false in
+@[deprecated "Deprecated. Use `Finset.insert_Ico_add_one_left_eq_Ico ` instead."
+  (since := "2025-04-05")]
 theorem Ico_insert_succ_left (h : a < b) : insert a (Ico a.succ b) = Ico a b := by
   rw [Ico_succ_left, ← Ioo_insert_left h]
 
@@ -177,6 +181,7 @@ theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
   rw [Ico_succ_left, mem_erase, mem_Ico, mem_Ioo, ← and_assoc, ne_comm,
     and_comm (a := a ≠ x), lt_iff_le_and_ne]
 
+set_option linter.deprecated false in
 theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) := by
   induction' n with n ih
   · simp only [zero_add, Ico_zero_eq_range]
