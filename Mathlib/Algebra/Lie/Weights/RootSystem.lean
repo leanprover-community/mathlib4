@@ -478,13 +478,14 @@ lemma rr7:
       rw [help]
       simp only [Submodule.mem_top]
     induction hx using Submodule.iSup_induction' with
-    | mem i x hx =>
+    | mem j x hx =>
       simp_all
       --(p := (y : L) → y ∈ LieSubalgebra.lieSpan K L gg → ⁅x, y⁆ ∈ LieSubalgebra.lieSpan K L gg)
       simp [I] at hy
       refine LieSubalgebra.lieSpan_induction2 (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ hy
       --intro a x_1
       intro x1 hx1
+      obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx1
 
       sorry
       · simp only [lie_zero, LieSubalgebra.zero_mem, I]
