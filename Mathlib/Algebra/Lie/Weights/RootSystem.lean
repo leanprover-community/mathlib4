@@ -461,13 +461,18 @@ lemma rr5:
     --rrrr : { x // x ∈ LieSubalgebra.root }
     obtain ⟨z, hz1, hz2⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) j
     by_contra!
-    have : z ∈ LieAlgebra.center K L := by
-      have rrr (x : L) : ⁅x, z⁆ = (0 : L) := by
-        sorry
+    have lll : z ∈ LieAlgebra.center K L := by
+      have rrr (x : L) : ⁅x, z⁆ = 0 := by
+        have qq : x ∈ I := by
+          rw [this]
+          exact trivial
+        simp [I] at qq
+        refine LieSubalgebra.lieSpan_induction2 (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ qq
+
       exact rrr
     have cent := LieAlgebra.center_eq_bot (R := K) (L := L)
-    rw [cent] at this
-    exact hz2 this
+    rw [cent] at lll
+    exact hz2 lll
   sorry
 
 lemma invtSubmodule_reflection:
