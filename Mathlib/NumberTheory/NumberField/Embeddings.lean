@@ -1190,6 +1190,11 @@ theorem nrComplexPlaces_eq_zero_iff :
   classical
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, IsTotallyReal_iff]
 
+@[simp]
+theorem IsTotallyReal.mult_eq_one [h : IsTotallyReal K] (w : InfinitePlace K) :
+    w.mult = 1 := by
+  rw [mult, if_pos (h.isReal w)]
+
 variable (K)
 
 protected theorem IsTotallyReal.finrank [h : IsTotallyReal K] :
@@ -1229,6 +1234,11 @@ theorem nrRealPlaces_eq_zero_iff :
     nrRealPlaces K = 0 ↔ IsTotallyComplex K := by
   classical
   simp [Fintype.card_eq_zero_iff, isEmpty_subtype, IsTotallyComplex_iff]
+
+@[simp]
+theorem IsTotallyComplex.mult_eq_two [h : IsTotallyComplex K] (w : InfinitePlace K) :
+    w.mult = 2 := by
+  rw [mult, if_neg (not_isReal_iff_isComplex.mpr (h.isComplex w))]
 
 variable (K)
 
