@@ -21,7 +21,9 @@ open Nat Finset
 -- We deliberately mock `ℝ` here so that we don't have to import the dependencies
 axiom Real : Type
 notation "ℝ" => Real
-@[instance] axiom Real.linearOrderedRing : LinearOrderedField ℝ
+@[instance] axiom Real.field : Field ℝ
+@[instance] axiom Real.linearOrder : LinearOrder ℝ
+@[instance] axiom Real.isStrictOrderedRing : IsStrictOrderedRing ℝ
 
 /-! ## Examples as a finishing tactic -/
 

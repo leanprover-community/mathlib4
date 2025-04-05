@@ -490,7 +490,8 @@ end NormedAlgebra
 
 section NormedLatticeOrderedGroup
 
-variable [TopologicalSpace α] [NormedLatticeAddCommGroup β]
+variable [TopologicalSpace α]
+  [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
 
 instance instPartialOrder : PartialOrder (α →ᵇ β) :=
   PartialOrder.lift (fun f => f.toFun) (by simp [Injective])

@@ -869,7 +869,7 @@ section Order
 
 section Semiring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [StarRing R] [MetricSpace R]
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [PartialOrder R] [StarRing R] [MetricSpace R]
 variable [IsTopologicalSemiring R] [ContinuousStar R] [ContinuousSqrt R] [StarOrderedRing R]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R A p]
@@ -974,7 +974,7 @@ end NNReal
 
 section Ring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [StarRing R] [MetricSpace R]
+variable {R A : Type*} {p : A → Prop} [CommRing R] [PartialOrder R] [StarRing R] [MetricSpace R]
 variable [IsTopologicalRing R] [ContinuousStar R] [ContinuousSqrt R] [StarOrderedRing R]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R A p]

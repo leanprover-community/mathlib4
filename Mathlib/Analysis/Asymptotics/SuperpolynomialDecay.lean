@@ -5,8 +5,6 @@ Authors: Devon Tuma
 -/
 import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Analysis.Asymptotics.Lemmas
-import Mathlib.Analysis.Normed.Order.Basic
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!
 # Super-Polynomial Function Decay
@@ -126,7 +124,7 @@ end CommSemiring
 
 section OrderedCommSemiring
 
-variable [TopologicalSpace β] [OrderedCommSemiring β] [OrderTopology β]
+variable [TopologicalSpace β] [CommSemiring β] [PartialOrder β] [IsOrderedRing β] [OrderTopology β]
 
 theorem SuperpolynomialDecay.trans_eventuallyLE (hk : 0 ≤ᶠ[l] k) (hg : SuperpolynomialDecay l k g)
     (hg' : SuperpolynomialDecay l k g') (hfg : g ≤ᶠ[l] f) (hfg' : f ≤ᶠ[l] g') :
@@ -139,7 +137,7 @@ end OrderedCommSemiring
 
 section LinearOrderedCommRing
 
-variable [TopologicalSpace β] [LinearOrderedCommRing β] [OrderTopology β]
+variable [TopologicalSpace β] [CommRing β] [LinearOrder β] [IsStrictOrderedRing β] [OrderTopology β]
 variable (l k f)
 
 theorem superpolynomialDecay_iff_abs_tendsto_zero :
@@ -191,7 +189,7 @@ end Field
 
 section LinearOrderedField
 
-variable [TopologicalSpace β] [LinearOrderedField β] [OrderTopology β]
+variable [TopologicalSpace β] [Field β] [LinearOrder β] [IsStrictOrderedRing β] [OrderTopology β]
 variable (f)
 
 theorem superpolynomialDecay_iff_abs_isBoundedUnder (hk : Tendsto k l atTop) :
@@ -276,7 +274,7 @@ end LinearOrderedField
 
 section NormedLinearOrderedField
 
-variable [NormedLinearOrderedField β]
+variable [NormedField β]
 variable (l k f)
 
 theorem superpolynomialDecay_iff_norm_tendsto_zero :
@@ -289,7 +287,7 @@ theorem superpolynomialDecay_iff_superpolynomialDecay_norm :
   (superpolynomialDecay_iff_norm_tendsto_zero l k f).trans (by simp [SuperpolynomialDecay])
 
 variable {l k}
-variable [OrderTopology β]
+variable [LinearOrder β] [IsStrictOrderedRing β] [OrderTopology β]
 
 theorem superpolynomialDecay_iff_isBigO (hk : Tendsto k l atTop) :
     SuperpolynomialDecay l k f ↔ ∀ z : ℤ, f =O[l] fun a : α => k a ^ z := by

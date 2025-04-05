@@ -534,7 +534,7 @@ end IsCancelMulZero
 
 section LinearOrderedSemifield
 
-variable {S : Type*} [LinearOrderedSemifield S]
+variable {S : Type*} [Semifield S] [LinearOrder S]
 
 section DivisionSemiring
 

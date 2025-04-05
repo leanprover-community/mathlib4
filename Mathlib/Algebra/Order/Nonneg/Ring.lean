@@ -44,6 +44,26 @@ variable {α : Type*}
 
 namespace Nonneg
 
+instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
+    IsOrderedAddMonoid { x : α // 0 ≤ x } :=
+  Subtype.coe_injective.isOrderedAddMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
+
+instance isOrderedCancelAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedCancelAddMonoid α] :
+    IsOrderedCancelAddMonoid { x : α // 0 ≤ x } :=
+  Subtype.coe_injective.isOrderedCancelAddMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
+
+instance isOrderedRing [Semiring α] [PartialOrder α] [IsOrderedRing α] :
+    IsOrderedRing { x : α // 0 ≤ x } :=
+  Subtype.coe_injective.isOrderedRing _ Nonneg.coe_zero Nonneg.coe_one
+    (fun _ _ => rfl) (fun _ _=> rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) fun _ => rfl
+
+instance isStrictOrderedRing [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] :
+    IsStrictOrderedRing { x : α // 0 ≤ x } :=
+  Subtype.coe_injective.isStrictOrderedRing _ Nonneg.coe_zero Nonneg.coe_one
+    (fun _ _ => rfl) (fun _ _ => rfl)
+    (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
+
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] :
     OrderedAddCommMonoid { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.orderedAddCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
@@ -90,7 +110,7 @@ instance strictOrderedCommSemiring [StrictOrderedCommSemiring α] :
     (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
-instance existsAddOfLE [StrictOrderedCommSemiring α] [ExistsAddOfLE α] :
+instance existsAddOfLE [Semiring α] [PartialOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α] :
     ExistsAddOfLE { x : α // 0 ≤ x } :=
   ⟨fun {a b} h ↦ by
     rw [← Subtype.coe_le_coe] at h

@@ -55,6 +55,17 @@ instance (priority := 100) toMulLeftMono [NonUnitalNonAssocSemiring α]
 
 variable [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
 
+-- TODO: make it an instance
+lemma toIsOrderedMonoid : IsOrderedMonoid α where
+  mul_le_mul_left _ _ := mul_le_mul_left'
+
+-- TODO: make it an instance
+lemma toIsOrderedRing : IsOrderedRing α where
+  zero_le_one := zero_le _
+  add_le_add_left _ _ := add_le_add_left
+  mul_le_mul_of_nonneg_left _ _ _ h _ := mul_le_mul_left' h _
+  mul_le_mul_of_nonneg_right _ _ _ h _ := mul_le_mul_right' h _
+
 -- See note [reducible non-instances]
 /-- Construct an `OrderedCommMonoid` from a canonically ordered `CommSemiring`. -/
 abbrev toOrderedCommMonoid : OrderedCommMonoid α where

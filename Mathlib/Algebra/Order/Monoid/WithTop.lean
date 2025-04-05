@@ -17,6 +17,10 @@ open Function
 
 namespace WithTop
 
+instance isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α] :
+    IsOrderedAddMonoid (WithTop α) where
+  add_le_add_left _ _ := add_le_add_left
+
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (WithTop α) where
   add_le_add_left _ _ := add_le_add_left
 

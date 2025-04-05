@@ -114,15 +114,16 @@ instance toLinearOrderedCommGroup [LinearOrderedCommGroup G] (H : Subgroup G) :
 end Subgroup
 
 @[to_additive]
-lemma Subsemigroup.strictMono_topEquiv {G : Type*} [OrderedCommMonoid G] :
+lemma Subsemigroup.strictMono_topEquiv {G : Type*} [CommMonoid G] [PartialOrder G] :
     StrictMono (topEquiv (M := G)) := fun _ _ ↦ id
 
 @[to_additive]
-lemma MulEquiv.strictMono_subsemigroupCongr {G : Type*} [OrderedCommMonoid G] {S T : Subsemigroup G}
+lemma MulEquiv.strictMono_subsemigroupCongr {G : Type*}
+    [CommMonoid G] [PartialOrder G] {S T : Subsemigroup G}
     (h : S = T) : StrictMono (subsemigroupCongr h) := fun _ _ ↦ id
 
 @[to_additive]
-lemma MulEquiv.strictMono_symm {G G' : Type*} [LinearOrderedCommMonoid G]
-    [OrderedCommMonoid G'] {e : G ≃* G'} (he : StrictMono e) : StrictMono e.symm := by
+lemma MulEquiv.strictMono_symm {G G' : Type*} [CommMonoid G] [LinearOrder G]
+    [CommMonoid G'] [PartialOrder G'] {e : G ≃* G'} (he : StrictMono e) : StrictMono e.symm := by
   intro
   simp [← he.lt_iff_lt]

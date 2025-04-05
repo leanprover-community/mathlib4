@@ -729,7 +729,8 @@ end
 
 section
 
-variable {E : Type*} [OrderedRing E] [TopologicalSpace E] [OrderClosedTopology E]
+variable {E : Type*} [Ring E] [PartialOrder E] [IsOrderedRing E]
+  [TopologicalSpace E] [OrderClosedTopology E]
   {l : E} {f : ℕ → E}
 
 /-- Partial sums of an alternating monotone series with an even number of terms provide

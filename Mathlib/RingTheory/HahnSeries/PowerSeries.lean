@@ -79,7 +79,7 @@ theorem coeff_toPowerSeries_symm {f : PowerSeries R} {n : ℕ} :
     (HahnSeries.toPowerSeries.symm f).coeff n = PowerSeries.coeff R n f :=
   rfl
 
-variable (Γ R) [StrictOrderedSemiring Γ]
+variable (Γ R) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
 /-- Casts a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`. -/
 def ofPowerSeries : PowerSeries R →+* HahnSeries Γ R :=
@@ -200,7 +200,7 @@ def toPowerSeriesAlg : HahnSeries ℕ A ≃ₐ[R] PowerSeries A :=
       ext n
       cases n <;> simp [algebraMap_apply, PowerSeries.algebraMap_apply] }
 
-variable (Γ) [StrictOrderedSemiring Γ]
+variable (Γ) [Semiring Γ] [PartialOrder Γ] [IsStrictOrderedRing Γ]
 
 /-- Casting a power series as a Hahn series with coefficients from a `StrictOrderedSemiring`
   is an algebra homomorphism. -/

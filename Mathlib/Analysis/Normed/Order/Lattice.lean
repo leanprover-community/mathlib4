@@ -87,7 +87,7 @@ instance (priority := 100) NormedLatticeAddCommGroup.toOrderedAddCommGroup {α :
     [h : NormedLatticeAddCommGroup α] : OrderedAddCommGroup α :=
   { h with }
 
-variable {α : Type*} [NormedLatticeAddCommGroup α]
+variable {α : Type*} [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α]
 
 open HasSolidNorm
 
@@ -149,7 +149,7 @@ theorem norm_sup_le_add (x y : α) : ‖x ⊔ y‖ ≤ ‖x‖ + ‖y‖ := by
 -- see Note [lower instance priority]
 /-- Let `α` be a normed lattice ordered group. Then the infimum is jointly continuous.
 -/
-instance (priority := 100) NormedLatticeAddCommGroup.continuousInf : ContinuousInf α := by
+instance (priority := 100) HasSolidNorm.continuousInf : ContinuousInf α := by
   refine ⟨continuous_iff_continuousAt.2 fun q => tendsto_iff_norm_sub_tendsto_zero.2 <| ?_⟩
   have : ∀ p : α × α, ‖p.1 ⊓ p.2 - q.1 ⊓ q.2‖ ≤ ‖p.1 - q.1‖ + ‖p.2 - q.2‖ := fun _ =>
     norm_inf_sub_inf_le_add_norm _ _ _ _
@@ -159,8 +159,8 @@ instance (priority := 100) NormedLatticeAddCommGroup.continuousInf : ContinuousI
   simp
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedLatticeAddCommGroup.continuousSup {α : Type*}
-    [NormedLatticeAddCommGroup α] : ContinuousSup α :=
+instance (priority := 100) HasSolidNorm.continuousSup {α : Type*}
+    [NormedAddCommGroup α] [Lattice α] [HasSolidNorm α] [IsOrderedAddMonoid α] : ContinuousSup α :=
   OrderDual.continuousSup αᵒᵈ
 
 -- see Note [lower instance priority]
@@ -200,7 +200,8 @@ lemma isClosed_nonneg : IsClosed {x : α | 0 ≤ x} := by
   rw [this]
   exact isClosed_singleton.preimage continuous_negPart
 
-theorem isClosed_le_of_isClosed_nonneg {G} [OrderedAddCommGroup G] [TopologicalSpace G]
+theorem isClosed_le_of_isClosed_nonneg {G}
+    [AddCommGroup G] [PartialOrder G] [IsOrderedAddMonoid G] [TopologicalSpace G]
     [ContinuousSub G] (h : IsClosed { x : G | 0 ≤ x }) :
     IsClosed { p : G × G | p.fst ≤ p.snd } := by
   have : { p : G × G | p.fst ≤ p.snd } = (fun p : G × G => p.snd - p.fst) ⁻¹' { x : G | 0 ≤ x } :=
@@ -209,6 +210,7 @@ theorem isClosed_le_of_isClosed_nonneg {G} [OrderedAddCommGroup G] [TopologicalS
   exact IsClosed.preimage (continuous_snd.sub continuous_fst) h
 
 -- See note [lower instance priority]
-instance (priority := 100) NormedLatticeAddCommGroup.orderClosedTopology {E}
-    [NormedLatticeAddCommGroup E] : OrderClosedTopology E :=
+instance (priority := 100) HasSolidNorm.orderClosedTopology {E}
+    [NormedAddCommGroup E] [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E] :
+    OrderClosedTopology E :=
   ⟨isClosed_le_of_isClosed_nonneg isClosed_nonneg⟩

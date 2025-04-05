@@ -339,7 +339,8 @@ end Real
 
 namespace Complex
 
-theorem sum_div_factorial_le {α : Type*} [LinearOrderedField α] (n j : ℕ) (hn : 0 < n) :
+theorem sum_div_factorial_le {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    (n j : ℕ) (hn : 0 < n) :
     (∑ m ∈ range j with n ≤ m, (1 / m.factorial : α)) ≤ n.succ / (n.factorial * n) :=
   calc
     (∑ m ∈ range j with n ≤ m, (1 / m.factorial : α)) =

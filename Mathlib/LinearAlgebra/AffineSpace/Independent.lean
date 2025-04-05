@@ -712,7 +712,8 @@ end DivisionRing
 
 section Ordered
 
-variable {k : Type*} {V : Type*} {P : Type*} [LinearOrderedRing k] [AddCommGroup V]
+variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [LinearOrder k] [IsStrictOrderedRing k]
+  [AddCommGroup V]
 variable [Module k V] [AffineSpace V P] {ι : Type*}
 
 attribute [local instance] LinearOrderedRing.decidableLT

@@ -561,7 +561,8 @@ theorem condExpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
 
 @[deprecated (since := "2025-01-21")] alias condexpL2_indicator_nonneg := condExpL2_indicator_nonneg
 
-theorem condExpIndSMul_nonneg {E} [NormedLatticeAddCommGroup E] [NormedSpace ℝ E] [OrderedSMul ℝ E]
+theorem condExpIndSMul_nonneg {E}
+    [NormedAddCommGroup E] [Lattice E] [NormedSpace ℝ E] [OrderedSMul ℝ E]
     [SigmaFinite (μ.trim hm)] (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : E) (hx : 0 ≤ x) :
     (0 : α → E) ≤ᵐ[μ] condExpIndSMul hm hs hμs x := by
   refine EventuallyLE.trans_eq ?_ (condExpIndSMul_ae_eq_smul hm hs hμs x).symm
