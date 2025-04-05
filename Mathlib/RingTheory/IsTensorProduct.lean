@@ -102,19 +102,21 @@ theorem IsTensorProduct.map_eq (hf : IsTensorProduct f) (hg : IsTensorProduct g)
   delta IsTensorProduct.map
   simp
 
-theorem IsTensorProduct.inductionOn (h : IsTensorProduct f) {C : M → Prop} (m : M) (h0 : C 0)
-    (htmul : ∀ x y, C (f x y)) (hadd : ∀ x y, C x → C y → C (x + y)) : C m := by
+@[elab_as_elim]
+theorem IsTensorProduct.inductionOn (h : IsTensorProduct f) {motive : M → Prop} (m : M)
+    (zero : motive 0) (tmul : ∀ x y, motive (f x y))
+    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive m := by
   rw [← h.equiv.right_inv m]
   generalize h.equiv.invFun m = y
-  change C (TensorProduct.lift f y)
+  change motive (TensorProduct.lift f y)
   induction y with
   | zero => rwa [map_zero]
   | tmul _ _ =>
     rw [TensorProduct.lift.tmul]
-    apply htmul
+    apply tmul
   | add _ _ _ _ =>
     rw [map_add]
-    apply hadd <;> assumption
+    apply add <;> assumption
 
 lemma IsTensorProduct.of_equiv (e : M₁ ⊗[R] M₂ ≃ₗ[R] M) (he : ∀ x y, e (x ⊗ₜ y) = f x y) :
     IsTensorProduct f := by
@@ -158,13 +160,12 @@ noncomputable nonrec def IsBaseChange.lift (g : M →ₗ[R] Q) : N →ₗ[S] Q :
       let F := ((Algebra.linearMap S <| Module.End S (M →ₗ[R] Q)).flip g).restrictScalars R
       have hF : ∀ (s : S) (m : M), h.lift F (s • f m) = s • g m := h.lift_eq F
       change h.lift F (r • x) = r • h.lift F x
-      apply h.inductionOn x
-      · rw [smul_zero, map_zero, smul_zero]
-      · intro s m
+      induction x using h.inductionOn with
+      | zero => rw [smul_zero, map_zero, smul_zero]
+      | tmul s m =>
         change h.lift F (r • s • f m) = r • h.lift F (s • f m)
         rw [← mul_smul, hF, hF, mul_smul]
-      · intro x₁ x₂ e₁ e₂
-        rw [map_add, smul_add, map_add, smul_add, e₁, e₂] }
+      | add x₁ x₂ e₁ e₂ => rw [map_add, smul_add, map_add, smul_add, e₁, e₂] }
 
 nonrec theorem IsBaseChange.lift_eq (g : M →ₗ[R] Q) (x : M) : h.lift g (f x) = g x := by
   have hF : ∀ (s : S) (m : M), h.lift g (s • f m) = s • g m := h.lift_eq _
@@ -179,9 +180,10 @@ section
 include h
 
 @[elab_as_elim]
-nonrec theorem IsBaseChange.inductionOn (x : N) (P : N → Prop) (h₁ : P 0) (h₂ : ∀ m : M, P (f m))
-    (h₃ : ∀ (s : S) (n), P n → P (s • n)) (h₄ : ∀ n₁ n₂, P n₁ → P n₂ → P (n₁ + n₂)) : P x :=
-  h.inductionOn x h₁ (fun _ _ => h₃ _ _ (h₂ _)) h₄
+nonrec theorem IsBaseChange.inductionOn (x : N) (motive : N → Prop) (zero : motive 0)
+    (tmul : ∀ m : M, motive (f m)) (smul : ∀ (s : S) (n), motive n → motive (s • n))
+    (add : ∀ n₁ n₂, motive n₁ → motive n₂ → motive (n₁ + n₂)) : motive x :=
+  h.inductionOn x zero (fun _ _ => smul _ _ (tmul _)) add
 
 theorem IsBaseChange.algHom_ext (g₁ g₂ : N →ₗ[S] Q) (e : ∀ x, g₁ (f x) = g₂ (f x)) : g₁ = g₂ := by
   ext x
