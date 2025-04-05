@@ -192,6 +192,7 @@ variable {p q : ℕ → Prop} [DecidablePred p] (H : ∃ n, p n)
 
 private def H' : ∃ (n : ℕ) (_ : 0 ≤ n), p n := H.imp fun n hn => ⟨zero_le n, hn⟩
 
+@[irreducible]
 protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
   ⟨(Nat.findFromX (H' H)).1, (Nat.findFromX (H' H)).2.2.1,
     fun m => (Nat.findFromX (H' H)).2.2.2 m (zero_le m)⟩
@@ -210,13 +211,19 @@ The API for `Nat.find` is:
 See also `Nat.findFrom`.
 -/
 protected def find : ℕ :=
-  Nat.findFrom (H' H)
+  (Nat.findX H).1
+
 
 protected theorem find_spec : p (Nat.find H) :=
-  Nat.findFrom_spec (H' H)
+  (Nat.findX H).2.1
 
-protected theorem find_min {m : ℕ} : m < Nat.find H → ¬p m :=
-  Nat.findFrom_min (H' H) (zero_le m)
+protected theorem find_min : ∀ {m : ℕ}, m < Nat.find H → ¬p m :=
+  @(Nat.findX H).2.2
+
+unseal Nat.findX
+
+@[simp]
+theorem findFrom_zero (h : ∃ (n : ℕ) (_ : 0 ≤ n), p n) : Nat.findFrom h = Nat.find H := rfl
 
 protected theorem find_min' {m : ℕ} : p m → Nat.find H ≤ m :=
   Nat.findFrom_min' (H' H) (zero_le m)
@@ -225,7 +232,7 @@ lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m,
   simpa using findFrom_eq_iff (H' h)
 
 @[simp] lemma find_lt_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h < n ↔ ∃ m < n, p m := by
-  simp [Nat.find]
+  simp [← findFrom_zero h (H' h)]
 
 @[simp] lemma find_le_iff (h : ∃ n : ℕ, p n) (n : ℕ) : Nat.find h ≤ n ↔ ∃ m ≤ n, p m := by
   simp only [exists_prop, ← Nat.lt_succ_iff, find_lt_iff]
