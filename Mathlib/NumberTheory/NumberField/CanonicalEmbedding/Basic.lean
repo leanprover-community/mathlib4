@@ -379,6 +379,11 @@ theorem exists_normAtPlace_ne_zero_iff {x : mixedSpace K} :
     (∃ w, normAtPlace w x ≠ 0) ↔ x ≠ 0 := by
   rw [ne_eq, ← forall_normAtPlace_eq_zero_iff, not_forall]
 
+theorem continuous_normAtPlace (w : InfinitePlace K) :
+    Continuous (normAtPlace w) := by
+  simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
+  split_ifs <;> fun_prop
+
 variable [NumberField K]
 
 open scoped Classical in
@@ -458,6 +463,12 @@ theorem norm_eq_zero_iff' {x : mixedSpace K} (hx : x ∈ Set.range (mixedEmbeddi
   obtain ⟨a, rfl⟩ := hx
   rw [norm_eq_norm, Rat.cast_abs, abs_eq_zero, Rat.cast_eq_zero, Algebra.norm_eq_zero_iff,
     map_eq_zero]
+
+variable (K) in
+protected theorem continuous_norm : Continuous (mixedEmbedding.norm : (mixedSpace K) → ℝ) := by
+  refine continuous_finset_prod Finset.univ fun _ _ ↦ ?_
+  simp_rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, dite_pow]
+  split_ifs <;> fun_prop
 
 end norm
 
@@ -1227,6 +1238,14 @@ theorem normAtAllPlaces_eq_of_normAtComplexPlaces_eq {x y : mixedSpace K}
       normAtComplexPlaces_apply_isReal ⟨w, hw⟩] using congr_arg (|·|) (congr_fun h w)
   · simpa [normAtAllPlaces_apply, normAtPlace_apply_of_isComplex hw,
       normAtComplexPlaces_apply_isComplex ⟨w, hw⟩] using congr_fun h w
+
+theorem normAtAllPlaces_image_preimage_of_nonneg {s : Set (realSpace K)}
+    (hs : ∀ x ∈ s, ∀ w, 0 ≤ x w) :
+    normAtAllPlaces '' (normAtAllPlaces ⁻¹' s) = s := by
+  rw [Set.image_preimage_eq_iff]
+  rintro x hx
+  refine ⟨mixedSpaceOfRealSpace x, funext fun w ↦ ?_⟩
+  rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (hs x hx w)]
 
 end realSpace
 
