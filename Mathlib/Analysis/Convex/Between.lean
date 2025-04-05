@@ -30,9 +30,6 @@ open AffineEquiv AffineMap
 
 section OrderedRing
 
-variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
-
 /-- The segment of points weakly between `x` and `y`. When convexity is refactored to support
 abstract affine combination spaces, this will no longer need to be a separate definition from
 `segment`. However, lemmas involving `+ᵥ` or `-ᵥ` will still be relevant after such a
@@ -41,6 +38,9 @@ refactoring, as distinct from versions involving `+` or `-` in a module. -/
 def affineSegment [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup V] [Module R V]
     [AddTorsor V P] (x y : P) :=
   lineMap x y '' Set.Icc (0 : R) 1
+
+variable [Ring R] [PartialOrder R] [IsOrderedRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
+variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 theorem affineSegment_eq_segment (x y : V) : affineSegment R x y = segment R x y := by
   rw [segment_eq_image_lineMap, affineSegment]

@@ -78,18 +78,16 @@ theorem smul {c : K} (hc : c ≠ 0) :
   congr!
   rw [Basis.isUnitSMul_apply]
 
-variable [LinearOrder K] [IsStrictOrderedRing K]
+variable [LinearOrder K]
 
 /-- The fundamental domain of the ℤ-lattice spanned by `b`. See `ZSpan.isAddFundamentalDomain`
 for the proof that it is a fundamental domain. -/
 def fundamentalDomain : Set E := {m | ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1}
 
-omit [IsStrictOrderedRing K] in
 @[simp]
 theorem mem_fundamentalDomain {m : E} :
     m ∈ fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1 := Iff.rfl
 
-omit [IsStrictOrderedRing K] in
 theorem map_fundamentalDomain {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K] F) :
     f '' (fundamentalDomain b) = fundamentalDomain (b.map f) := by
   ext x
@@ -97,7 +95,6 @@ theorem map_fundamentalDomain {F : Type*} [NormedAddCommGroup F] [NormedSpace K 
     show f.symm x = f.toEquiv.symm x by rfl, ← Set.mem_image_equiv]
   rfl
 
-omit [IsStrictOrderedRing K] in
 @[simp]
 theorem fundamentalDomain_reindex {ι' : Type*} (e : ι ≃ ι') :
     fundamentalDomain (b.reindex e) = fundamentalDomain b := by
@@ -105,6 +102,8 @@ theorem fundamentalDomain_reindex {ι' : Type*} (e : ι ≃ ι') :
   simp_rw [mem_fundamentalDomain, Basis.repr_reindex_apply]
   rw [Equiv.forall_congr' e]
   simp_rw [implies_true]
+
+variable [IsStrictOrderedRing K]
 
 lemma fundamentalDomain_pi_basisFun [Fintype ι] :
     fundamentalDomain (Pi.basisFun ℝ ι) = Set.pi Set.univ fun _ : ι ↦ Set.Ico (0 : ℝ) 1 := by
