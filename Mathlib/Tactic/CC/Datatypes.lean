@@ -70,15 +70,14 @@ scoped instance : Ord Expr where
 /-- Red-black maps whose keys are `Expr`s.
 
 TODO: the choice between `TreeMap` and `HashMap` is not obvious:
-Once the `cc` tactic is used a lot in Mathlib, we should profile and see
+once the `cc` tactic is used a lot in Mathlib, we should profile and see
 if `HashMap` could be more optimal. -/
 abbrev ExprMap (α : Type u) := Std.TreeMap Expr α compare
 
 /-- Red-black sets of `Expr`s.
 
 TODO: the choice between `TreeSet` and `HashSet` is not obvious:
-the current version follows the Lean 3 C++ implementation.
-Once the `cc` tactic is used a lot in Mathlib, we should profile and see
+once the `cc` tactic is used a lot in Mathlib, we should profile and see
 if `HashSet` could be more optimal. -/
 abbrev ExprSet := Std.TreeSet Expr compare
 
@@ -261,16 +260,14 @@ def ACApps.toExpr : ACApps → Option Expr
 /-- Red-black maps whose keys are `ACApps`es.
 
 TODO: the choice between `RBMap` and `HashMap` is not obvious:
-the current version follows the Lean 3 C++ implementation.
-Once the `cc` tactic is used a lot in Mathlib, we should profile and see
+once the `cc` tactic is used a lot in Mathlib, we should profile and see
 if `HashMap` could be more optimal. -/
 abbrev ACAppsMap (α : Type u) := Std.TreeMap ACApps α compare
 
 /-- Red-black sets of `ACApps`es.
 
 TODO: the choice between `RBSet` and `HashSet` is not obvious:
-the current version follows the Lean 3 C++ implementation.
-Once the `cc` tactic is used a lot in Mathlib, we should profile and see
+once the `cc` tactic is used a lot in Mathlib, we should profile and see
 if `HashSet` could be more optimal. -/
 abbrev ACAppsSet := Std.TreeSet ACApps compare
 
