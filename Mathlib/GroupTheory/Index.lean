@@ -257,6 +257,13 @@ theorem index_map_of_injective {f : G →* G'} (hf : Function.Injective f) :
     (H.map f).index = H.index * f.range.index := by
   rw [H.index_map, f.ker_eq_bot_iff.mpr hf, sup_bot_eq]
 
+@[to_additive (attr := simp)]
+theorem index_map_equiv (e : G ≃* G') :
+    (map (e : G →* G') H).index = H.index := by
+  refine index_map_eq H e.surjective ?_
+  rw [(MonoidHom.ker_eq_bot_iff _).mpr e.injective]
+  exact bot_le
+
 @[to_additive]
 theorem index_map_subtype {H : Subgroup G} (K : Subgroup H) :
     (K.map H.subtype).index = K.index * H.index := by
@@ -397,6 +404,10 @@ noncomputable def fintypeOfIndexNeZero (hH : H.index ≠ 0) : Fintype (G ⧸ H) 
 lemma index_eq_zero_iff_infinite : H.index = 0 ↔ Infinite (G ⧸ H) := by
   simp [index_eq_card, Nat.card_eq_zero]
 
+@[to_additive]
+lemma index_ne_zero_iff_finite : H.index ≠ 0 ↔ Finite (G ⧸ H) := by
+  simp [index_eq_zero_iff_infinite]
+
 @[to_additive one_lt_index_of_ne_top]
 theorem one_lt_index_of_ne_top [Finite (G ⧸ H)] (hH : H ≠ ⊤) : 1 < H.index :=
   Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨index_ne_zero_of_finite, mt index_eq_one.mp hH⟩
@@ -515,6 +526,11 @@ class FiniteIndex : Prop where
 class _root_.AddSubgroup.FiniteIndex {G : Type*} [AddGroup G] (H : AddSubgroup G) : Prop where
   /-- The additive subgroup has finite index -/
   finiteIndex : H.index ≠ 0
+
+@[to_additive]
+theorem finiteIndex_iff {G : Type*} [Group G] {H : Subgroup G} :
+    H.FiniteIndex ↔ H.index ≠ 0 :=
+  ⟨fun h ↦ h.finiteIndex, fun h ↦ ⟨h⟩⟩
 
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive "A finite index subgroup has finite quotient"]
