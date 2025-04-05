@@ -454,6 +454,20 @@ lemma rr78:
     exact LieSubalgebra.lie_mem I h1 h2
   sorry
 
+variable [Nontrivial L]
+lemma rr79 (j : LieModule.Weight K H L) : j = 0 ∨ j ∈ H.root := by
+  have : j = 0 ∨ j ≠ 0 := by
+    exact eq_or_ne j 0
+  rcases this with h | h
+  · left
+    exact h
+  right
+  refine Finset.mem_filter.mpr ?_
+  constructor
+  · exact Finset.mem_univ j
+  exact LieModule.Weight.isNonZero_iff_ne_zero.mpr h
+
+
 
 lemma rr7:
    ∀ (q : Submodule K (Module.Dual K H)), (∀ (i : H.root), q ∈ Module.End.invtSubmodule
@@ -486,7 +500,9 @@ lemma rr7:
       --intro a x_1
       intro x1 hx1
       obtain ⟨i, hi, hx1_mem⟩ := Set.mem_iUnion₂.mp hx1
-
+      have step1 := rr79 K L H j
+      rcases step1 with h | h
+      sorry
       sorry
       · simp only [lie_zero, LieSubalgebra.zero_mem, I]
       · intro a b c d e f
