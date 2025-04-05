@@ -125,7 +125,7 @@ theorem Ico_succ_succ : Ico a.succ b.succ = Ioc a b := by
   ext x
   rw [mem_Ico, mem_Ioc, succ_le_iff, Nat.lt_succ_iff]
 
--- TODO: Decide whether to generalise the following series of lemmas, or delete.
+-- TODO: Generalise the following series of lemmas.
 
 set_option linter.deprecated false in
 @[simp]
