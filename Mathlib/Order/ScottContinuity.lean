@@ -6,7 +6,6 @@ Authors: Christopher Hoskin
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.Bounds.Lattice
-import Mathlib.Order.CompleteLattice
 
 /-!
 # Scott continuity
