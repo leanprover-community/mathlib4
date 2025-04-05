@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.ContinuousMap.Basic
+import Mathlib.Topology.Maps.Proper.Basic
 
 /-!
 # Spectral maps
@@ -55,6 +56,9 @@ theorem IsSpectralMap.comp {f : β → γ} {g : α → β} (hf : IsSpectralMap f
     IsSpectralMap (f ∘ g) :=
   ⟨hf.continuous.comp hg.continuous, fun _s hs₀ hs₁ =>
     ((hs₁.preimage_of_isOpen hf hs₀).preimage_of_isOpen hg) (hs₀.preimage hf.continuous)⟩
+
+theorem IsProperMap.isSpectralMap {f : α → β} (hf : IsProperMap f) : IsSpectralMap f :=
+  ⟨hf.toContinuous, fun _ _ ↦ hf.isCompact_preimage⟩
 
 end Unbundled
 
