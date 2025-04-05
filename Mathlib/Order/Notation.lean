@@ -108,9 +108,9 @@ private def hasLinearOrder (u : Level) (α : Q(Type u)) (cls : Q(Type u → Type
 
 /-- Annotate the syntax `stx` with the go-to-def information of `target`. -/
 def withGoToDef (stx : Term) (target : Name) : DelabM Term := do
-  let stx ← annotateCurPos stx
   let module := (← findModuleOf? target).getD (← getEnv).mainModule
-  let some range ← findDeclarationRanges? target | failure
+  let some range ← findDeclarationRanges? target | return stx
+  let stx ← annotateCurPos stx
   let location := { module, range := range.selectionRange }
   addDelabTermInfo (← getPos) stx (← getExpr) (location? := some location)
   return stx
