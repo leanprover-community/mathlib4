@@ -1369,16 +1369,43 @@ lemma ContinuousOn.union_continuousAt {f : α → β} (s_op : IsOpen s)
   (fun h => ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
   (ht _)
 
+/-- If `f` is continuous on `s ∪ t`, it is continuous on `s`. -/
+theorem continuousOn_of_union_left {f : α → β} (h : ContinuousOn f (s ∪ t)) : ContinuousOn f s :=
+  fun x hx ↦ continuousWithinAt_union.mp (h x (mem_union_left t hx)) |>.1
+
+/-- If `f` is continuous on `s ∪ t`, it is continuous on `t`. -/
+theorem continuousOn_of_union_right {f : α → β} (h : ContinuousOn f (s ∪ t)) : ContinuousOn f t :=
+  fun x hx ↦ continuousWithinAt_union.mp (h x (mem_union_right s hx)) |>.2
+
 open Classical in
 /-- If a function is continuous on two closed sets, it is also continuous on their union. -/
-theorem ContinuousOn.union_isClosed (hs : IsClosed s)
-    (ht : IsClosed t) {f : α → β} (hfs : ContinuousOn f s)
-    (hft : ContinuousOn f t) : ContinuousOn f (s ∪ t) := by
+theorem ContinuousOn.union_of_isClosed (hs : IsClosed s) (ht : IsClosed t) {f : α → β}
+    (hfs : ContinuousOn f s) (hft : ContinuousOn f t) : ContinuousOn f (s ∪ t) := by
   refine fun x hx ↦ .union ?_ ?_
   · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_not_mem_closure ?_
     rwa [hs.closure_eq]
   · refine if hx : x ∈ t then hft x hx else continuousWithinAt_of_not_mem_closure ?_
     rwa [ht.closure_eq]
+
+@[deprecated ContinuousOn.union_of_isClosed (since := "2025-03-09")]
+alias ContinuousOn.union_isClosed := ContinuousOn.union_of_isClosed
+
+/-- A function is continuous on two closed sets iff it is also continuous on their union. -/
+theorem continouousOn_union_isClosed (hs : IsClosed s) (ht : IsClosed t) {f : α → β} :
+    ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
+  ⟨fun h ↦ ⟨continuousOn_of_union_left h, continuousOn_of_union_right h⟩,
+   fun h ↦ ContinuousOn.union_of_isClosed hs ht h.1 h.2⟩
+
+/-- If a function is continuous on two open sets, it is also continuous on their union. -/
+theorem ContinuousOn.union_of_isOpen (hs : IsOpen s) (ht : IsOpen t) {f : α → β}
+    (hfs : ContinuousOn f s) (hft : ContinuousOn f t) : ContinuousOn f (s ∪ t) :=
+  union_continuousAt hs hfs fun _ hx ↦ IsOpen.continuousOn_iff ht |>.mp hft hx
+
+/-- A function is continuous on two open sets iff it is also continuous on their union. -/
+theorem continouousOn_union_isOpen (hs : IsOpen s) (ht : IsOpen t) {f : α → β} :
+    ContinuousOn f (s ∪ t) ↔ ContinuousOn f s ∧ ContinuousOn f t :=
+  ⟨fun h ↦ ⟨continuousOn_of_union_left h, continuousOn_of_union_right h⟩,
+   fun h ↦ ContinuousOn.union_of_isOpen hs ht h.1 h.2⟩
 
 /-- If `f` is continuous on some neighbourhood `s'` of `s` and `f` maps `s` to `t`,
 the preimage of a set neighbourhood of `t` is a set neighbourhood of `s`. -/
