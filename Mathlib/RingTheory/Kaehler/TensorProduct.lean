@@ -131,7 +131,6 @@ def derivationTensorProduct [h : Algebra.IsPushout R S A B] :
     dsimp
     rw [Derivation.map_one_eq_zero, TensorProduct.tmul_zero]
   leibniz' a b := by
-    dsimp
     induction a using h.out.inductionOn with
     | h₁ => rw [map_zero, zero_smul, smul_zero, zero_add, zero_mul, map_zero]
     | h₃ x y e =>

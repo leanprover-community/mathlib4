@@ -62,7 +62,7 @@ jobs:
 
       - name: install Python
         if: ${{ 'bors' == 'ubuntu-latest' }}
-        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+        uses: actions/setup-python@8d9ed9ac5c53483de85588cdf95a591a75ab9f55 # v5.5.0
         with:
           python-version: 3.8
 
@@ -106,7 +106,7 @@ jobs:
 
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
-        uses: dcarbone/install-jq-action@e397bd87438d72198f81efd21f876461183d383a # v3.0.1
+        uses: dcarbone/install-jq-action@f0e10f46ff84f4d32178b4b76e1ef180b16f82c3 # v3.1.1
 
       - name: install elan
         run: |
@@ -340,7 +340,7 @@ jobs:
           scripts/lean-pr-testing-comments.sh lean
           scripts/lean-pr-testing-comments.sh batteries
 
-      - name: build lean4checker, but don't run it
+      - name: build lean4checker, but only run it on itself
         if: ${{ (always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
         run: |
           git clone https://github.com/leanprover/lean4checker
@@ -356,6 +356,7 @@ jobs:
           # Build lean4checker using the same toolchain
           cp ../lean-toolchain .
           lake build
+          lake -q exe lean4checker Lean4Checker
 
   final:
     name: Post-CI job

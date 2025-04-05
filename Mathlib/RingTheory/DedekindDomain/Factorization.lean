@@ -264,8 +264,7 @@ theorem finprod_heightOneSpectrum_factorization_principal {I : FractionalIdeal R
   have hnd : mk' K n d = k := choose_spec (choose_spec (mk'_surjective R⁰ k))
   have hn0 : n ≠ 0 := by
     by_contra h
-    rw [← hnd, h, IsFractionRing.mk'_eq_div, _root_.map_zero,
-      zero_div, spanSingleton_zero] at hk
+    rw [← hnd, h, IsFractionRing.mk'_eq_div, map_zero, zero_div, spanSingleton_zero] at hk
     exact hI hk
   rw [finprod_heightOneSpectrum_factorization_principal_fraction hn0 d, hk, hnd]
 
@@ -435,7 +434,7 @@ theorem count_zpow (n : ℤ) (I : FractionalIdeal R⁰ K) :
   obtain n | n := n
   · rw [ofNat_eq_coe, zpow_natCast]
     exact count_pow K v n I
-  · rw [negSucc_coe, count_neg_zpow, zpow_natCast, count_pow]
+  · rw [negSucc_eq, count_neg_zpow, ← Int.natCast_succ, zpow_natCast, count_pow]
     ring
 
 /-- `val_v(v^n) = n` for every `n ∈ ℤ`. -/

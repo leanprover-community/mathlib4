@@ -678,7 +678,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
         · exact h2.left x
         · exact h2.right x
       · intro σ hσ
-        erw [Set.mem_toFinset, MonoidHom.mem_range] at hσ
+        rw [mem_coe, Set.mem_toFinset] at hσ
         obtain ⟨σ₁₂, hσ₁₂⟩ := hσ
         use σ₁₂
         rw [← hσ₁₂]
@@ -694,7 +694,6 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
     · rintro σ - hσn
       have h1 : ¬∀ x, ∃ y, Sum.inl y = σ (Sum.inl x) := by
         rw [Set.mem_toFinset] at hσn
-        -- Porting note: golfed
         simpa only [Set.MapsTo, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff] using
           mt mem_sumCongrHom_range_of_perm_mapsTo_inl hσn
       obtain ⟨a, ha⟩ := not_forall.mp h1

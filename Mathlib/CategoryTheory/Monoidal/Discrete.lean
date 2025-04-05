@@ -27,9 +27,9 @@ namespace CategoryTheory
 instance Discrete.monoidal : MonoidalCategory (Discrete M) where
   tensorUnit := Discrete.mk 1
   tensorObj X Y := Discrete.mk (X.as * Y.as)
-  whiskerLeft X _ _ f := eqToHom (by dsimp; rw [eq_of_hom f])
-  whiskerRight f X := eqToHom (by dsimp; rw [eq_of_hom f])
-  tensorHom f g := eqToHom (by dsimp; rw [eq_of_hom f, eq_of_hom g])
+  whiskerLeft X _ _ f := eqToHom (by rw [eq_of_hom f])
+  whiskerRight f X := eqToHom (by rw [eq_of_hom f])
+  tensorHom f g := eqToHom (by rw [eq_of_hom f, eq_of_hom g])
   leftUnitor X := Discrete.eqToIso (one_mul X.as)
   rightUnitor X := Discrete.eqToIso (mul_one X.as)
   associator _ _ _ := Discrete.eqToIso (mul_assoc _ _ _)

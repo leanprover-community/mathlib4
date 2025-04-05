@@ -15,7 +15,7 @@ for the `Unit` type of indeterminates.
 This file provides a simpler syntax.
 
 Let `R`, `S` be types, with `CommRing R`, `CommRing S`.
-One assumes that `IsTopologicalRing R` and `UniformAddGroup R`,
+One assumes that `IsTopologicalRing R` and `IsUniformAddGroup R`,
 and that `S` is a complete and separated topological `R`-algebra,
 with `IsLinearTopology S S`, which means there is a basis of neighborhoods of 0
 consisting of ideals.
@@ -45,21 +45,71 @@ open WithPiTopology
 
 variable {R : Type*} [CommRing R]
 variable {S : Type*} [CommRing S]
+variable {φ : R →+* S}
 
 section
 
 variable [TopologicalSpace R] [TopologicalSpace S]
 
+/-- Points at which evaluation of power series is well behaved -/
+abbrev HasEval (a : S) := IsTopologicallyNilpotent a
+
 theorem hasEval_iff {a : S} :
-    MvPowerSeries.HasEval (fun (_ : Unit) ↦ a) ↔ IsTopologicallyNilpotent a :=
-  ⟨fun ha ↦ ha.hpow default, fun ha ↦ ⟨fun _ ↦ ha, by simp⟩⟩
+    HasEval a ↔ MvPowerSeries.HasEval (fun (_ : Unit) ↦ a) :=
+  ⟨fun ha ↦ ⟨fun _ ↦ ha, by simp⟩, fun ha ↦ ha.hpow default⟩
 
-theorem hasEval {a : S} (ha : IsTopologicallyNilpotent a) :
-    MvPowerSeries.HasEval (fun (_ : Unit) ↦ a) := hasEval_iff.mpr ha
+theorem hasEval {a : S} (ha : HasEval a) :
+    MvPowerSeries.HasEval (fun (_ : Unit) ↦ a) := hasEval_iff.mp ha
 
-theorem isTopologicallyNilpotent_X :
-    IsTopologicallyNilpotent (PowerSeries.X : PowerSeries R) :=
-  tendsto_pow_zero_of_constantCoeff_zero PowerSeries.constantCoeff_X
+theorem HasEval.mono {S : Type*} [CommRing S] {a : S}
+    {t u : TopologicalSpace S} (h : t ≤ u) (ha : @HasEval _ _ t a) :
+    @HasEval _ _ u a := by
+  simp only [hasEval_iff] at ha ⊢
+  exact ha.mono h
+
+theorem HasEval.zero : HasEval (0 : S) := by
+    rw [hasEval_iff]; exact MvPowerSeries.HasEval.zero
+
+theorem HasEval.add [ContinuousAdd S] [IsLinearTopology S S]
+    {a b : S} (ha : HasEval a) (hb : HasEval b) : HasEval (a + b) := by
+  simp only [hasEval_iff] at ha hb ⊢
+  exact ha.add hb
+
+theorem HasEval.mul_left [IsLinearTopology S S]
+    (c : S) {x : S} (hx : HasEval x) : HasEval (c * x) := by
+  simp only [hasEval_iff] at hx ⊢
+  exact hx.mul_left _
+
+theorem HasEval.mul_right [IsLinearTopology S S]
+    (c : S) {x : S} (hx : HasEval x) : HasEval (x * c) := by
+  simp only [hasEval_iff] at hx ⊢
+  exact hx.mul_right _
+
+/-- [Bourbaki, *Algebra*, chap. 4, §4, n°3, Prop. 4 (i) (a & b)][bourbaki1981]. -/
+theorem HasEval.map (hφ : Continuous φ) {a : R} (ha : HasEval a) :
+    HasEval (φ a) := by
+  simp only [hasEval_iff] at ha ⊢
+  exact ha.map hφ
+
+protected theorem HasEval.X:
+    HasEval (X : R⟦X⟧) := by
+  rw [hasEval_iff]
+  exact MvPowerSeries.HasEval.X
+
+
+variable [IsTopologicalRing S] [IsLinearTopology S S]
+
+/-- The domain of evaluation of `MvPowerSeries`, as an ideal -/
+@[simps]
+def hasEvalIdeal : Ideal S where
+  carrier := {a | HasEval a}
+  add_mem' := HasEval.add
+  zero_mem' := HasEval.zero
+  smul_mem' := HasEval.mul_left
+
+theorem mem_hasEvalIdeal_iff {a : S} :
+    a ∈ hasEvalIdeal ↔ HasEval a := by
+  simp [hasEvalIdeal]
 
 end
 
@@ -94,8 +144,8 @@ theorem eval₂_X :
 
 variable {φ a}
 
-variable [UniformAddGroup R] [IsTopologicalSemiring R]
-    [UniformAddGroup S] [T2Space S] [CompleteSpace S]
+variable [IsUniformAddGroup R] [IsTopologicalSemiring R]
+    [IsUniformAddGroup S] [T2Space S] [CompleteSpace S]
     [IsTopologicalRing S] [IsLinearTopology S S]
 
 /-- The evaluation homomorphism at `a` on `PowerSeries`, as a `RingHom`. -/
@@ -142,7 +192,7 @@ theorem eval₂_unique (hφ : Continuous φ) (ha : IsTopologicallyNilpotent a)
 
 theorem comp_eval₂ (hφ : Continuous φ) (ha : IsTopologicallyNilpotent a)
     {T : Type*} [UniformSpace T] [CompleteSpace T] [T2Space T]
-    [CommRing T] [IsTopologicalRing T] [IsLinearTopology T T] [UniformAddGroup T]
+    [CommRing T] [IsTopologicalRing T] [IsLinearTopology T T] [IsUniformAddGroup T]
     {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε a) := by
   apply eval₂_unique _ (ha.map hε)
@@ -174,7 +224,7 @@ theorem aeval_coe (ha : IsTopologicallyNilpotent a) (p : Polynomial R) :
   rw [coe_aeval, Polynomial.aeval_def, eval₂_coe]
 
 theorem aeval_unique {ε : PowerSeries R →ₐ[R] S} (hε : Continuous ε) :
-    aeval (isTopologicallyNilpotent_X.map hε) = ε :=
+    aeval (HasEval.X.map hε) = ε :=
   MvPowerSeries.aeval_unique hε
 
 theorem hasSum_aeval (ha : IsTopologicallyNilpotent a) (f : PowerSeries R) :
@@ -187,7 +237,7 @@ theorem aeval_eq_sum (ha : IsTopologicallyNilpotent a) (f : PowerSeries R) :
   (hasSum_aeval ha f).tsum_eq.symm
 
 theorem comp_aeval (ha : IsTopologicallyNilpotent a)
-    {T : Type*} [CommRing T] [UniformSpace T] [UniformAddGroup T]
+    {T : Type*} [CommRing T] [UniformSpace T] [IsUniformAddGroup T]
     [IsTopologicalRing T] [IsLinearTopology T T]
     [T2Space T] [Algebra R T] [ContinuousSMul R T] [CompleteSpace T]
     {ε : S →ₐ[R] T} (hε : Continuous ε) :
