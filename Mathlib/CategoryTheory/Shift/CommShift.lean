@@ -331,8 +331,8 @@ instance comp [NatTrans.CommShift τ A] [NatTrans.CommShift τ' A] :
 instance whiskerRight [NatTrans.CommShift τ A] :
     NatTrans.CommShift (whiskerRight τ G) A := ⟨fun a => by
   ext X
-  simp only [whiskerRight_twice, comp_app,
-    whiskerRight_app, Functor.comp_map, whiskerLeft_app,
+  simp only [whiskerRight_twice, Functor.associator_hom_app, Functor.associator_inv_app, id_comp,
+    comp_id, comp_app, whiskerRight_app, Functor.comp_map, whiskerLeft_app,
     Functor.commShiftIso_comp_hom_app, Category.assoc,
     ← Functor.commShiftIso_hom_naturality,
     ← G.map_comp_assoc, shift_app_comm]⟩
