@@ -628,3 +628,31 @@ theorem reflection_vadd_smul_vsub_orthogonalProjection {s : AffineSubspace ℝ P
     (Submodule.smul_mem _ _ (vsub_orthogonalProjection_mem_direction_orthogonal s _))
 
 end EuclideanGeometry
+
+namespace Affine
+
+namespace Simplex
+
+open EuclideanGeometry
+
+variable {V : Type*} {P : Type*}
+variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable [NormedAddTorsor V P]
+
+variable {n : ℕ} [NeZero n] (s : Simplex ℝ P n)
+
+@[simp] lemma ne_orthogonalProjection_faceOpposite (i : Fin (n + 1)) : s.points i ≠
+    orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i) := by
+  intro h
+  rw [eq_comm, EuclideanGeometry.orthogonalProjection_eq_self_iff,
+    mem_affineSpan_range_faceOpposite_points_iff] at h
+  simp at h
+
+lemma dist_orthogonalProjection_faceOpposite_pos (i : Fin (n + 1)) :
+    0 < dist (s.points i)
+      (orthogonalProjection (affineSpan ℝ (Set.range (s.faceOpposite i).points)) (s.points i)) := by
+  simp
+
+end Simplex
+
+end Affine
