@@ -51,6 +51,21 @@ protected def findFromX : { n // ∃ h, p n h ∧ ∀ m h, m < n → ¬p m h } :
           fun n hn h => this n hn (Nat.le_of_lt_succ h))
     ⟨k, Nat.le_refl k⟩ fun _ hn h => Nat.not_le_of_lt h hn |>.elim
 
+/-- If `p` is a (decidable) predicate on `ℕ` that depends on `h : k ≤ n` and
+`hp : ∃ (n : ℕ) (h : k ≤ n), p n h` is a proof that there exists
+some natural number at least `k` satisfying `p`, then `Nat.findFrom hp` is the
+smallest natural number at least `k` satisfying `p`. Note that `Nat.findFrom` is protected,
+meaning that you can't just write `findFrom`, even if the `Nat` namespace is open.
+
+The API for `Nat.findFrom` is:
+
+* `Nat.findFrom_spec` is the proof that `Nat.findFrom hp` satisfies `p`.
+* `Nat.le_findFrom` is a proof that `Nat.findFrom hp` is at least `k`.
+* `Nat.findFrom_min` is the proof that if `m < Nat.findFrom hp` then `m` does not satisfy `p`.
+* `Nat.findFrom_min'` is the proof that if `m` does satisfy `p` then `Nat.findFrom hp ≤ m`.
+
+See also `Nat.find`.
+-/
 protected def findFrom : ℕ :=
   (Nat.findFromX H).1
 
@@ -187,6 +202,8 @@ The API for `Nat.find` is:
 * `Nat.find_spec` is the proof that `Nat.find hp` satisfies `p`.
 * `Nat.find_min` is the proof that if `m < Nat.find hp` then `m` does not satisfy `p`.
 * `Nat.find_min'` is the proof that if `m` does satisfy `p` then `Nat.find hp ≤ m`.
+
+See also `Nat.findFrom`.
 -/
 protected def find : ℕ :=
   Nat.findFrom (H' H)
