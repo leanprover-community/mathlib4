@@ -1490,7 +1490,7 @@ lemma Algebra.TensorProduct.includeRight_surjective (h : Function.Surjective (al
 
 lemma Algebra.TensorProduct.includeLeft_surjective
     (S A : Type*) [CommSemiring S] [Semiring A] [Algebra S A] [Algebra R A]
-    [Algebra S A] [SMulCommClass R S A] (h : Function.Surjective (algebraMap R T)) :
+    [SMulCommClass R S A] (h : Function.Surjective (algebraMap R T)) :
     Function.Surjective (includeLeft : A →ₐ[S] A ⊗[R] T) :=
   TensorProduct.flip_mk_surjective _ h
 
