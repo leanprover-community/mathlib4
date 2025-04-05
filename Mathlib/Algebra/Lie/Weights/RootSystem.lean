@@ -439,6 +439,35 @@ set_option maxHeartbeats 10000000
 --  eq_top_of_invtSubmodule_reflection (q : Submodule R M) :
 --    (∀ i, q ∈ invtSubmodule (P.reflection i)) → q ≠ ⊥ → q = ⊤
 
+lemma rr5:
+   ∀ (q : Submodule K (Module.Dual K H)), (∀ (i : H.root), q ∈ Module.End.invtSubmodule
+      ((LieAlgebra.IsKilling.rootSystem H).reflection i)) → q ≠ ⊥ → q = ⊤ := by
+  have _i := LieModule.nontrivial_of_isIrreducible K L L
+  let S := (LieAlgebra.IsKilling.rootSystem H)
+  by_contra!
+  obtain ⟨q, hq1, hq2, hq3⟩ := this
+  have := RootPairing.l3 (LieAlgebra.IsKilling.rootSystem H) q hq1 hq2 hq3
+  obtain ⟨Φ, hhh1, hhh2, hhh3, hhh4⟩ := this
+  let gg := ⋃ i ∈ Φ, (LieAlgebra.rootSpace H i : Set L)
+  let I := LieSubalgebra.lieSpan K L gg
+  have rr4 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : LieAlgebra.rootSpace H i.1.1)
+      (lj : LieAlgebra.rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
+    sorry
+  --simp at rr4
+  have rr5 : I ≠ ⊤ := by
+    have : ∃ (j : H.root), j ∉ Φ := by
+      exact (Set.ne_univ_iff_exists_not_mem Φ).mp hhh3
+    obtain ⟨j, hj⟩ := this
+    --rrrr : { x // x ∈ LieSubalgebra.root }
+    obtain ⟨z, hz1, hz2⟩ := LieModule.Weight.exists_ne_zero (R := K) (L := H) (M := L) j
+    by_contra!
+    have : z ∈ LieAlgebra.center K L := by
+      sorry
+    have cent := LieAlgebra.center_eq_bot (R := K) (L := L)
+    rw [cent] at this
+    exact hz2 this
+  sorry
+
 lemma invtSubmodule_reflection:
    ∀ (q : Submodule K (Module.Dual K H)), (∀ (i : H.root), q ∈ Module.End.invtSubmodule
       ((LieAlgebra.IsKilling.rootSystem H).reflection i)) → q ≠ ⊥ → q = ⊤ := by
