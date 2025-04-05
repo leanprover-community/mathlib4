@@ -180,6 +180,15 @@ theorem mabs_div_le (a b c : G) : |a / c|ₘ ≤ |a / b|ₘ * |b / c|ₘ :=
     _ ≤ |a / b|ₘ * |b / c|ₘ := mabs_mul _ _
 
 @[to_additive]
+theorem mabs_div_le_max_div {a b c : G} (hac : a ≤ b) (hcd : b ≤ c) (d : G) :
+    |b / d|ₘ ≤ max (c / d) (d / a) := by
+  rcases le_total d b with h | h
+  · rw [mabs_of_one_le <| one_le_div'.mpr h]
+    exact le_max_of_le_left <| div_le_div_right' hcd _
+  · rw [mabs_of_le_one <| div_le_one'.mpr h, inv_div]
+    exact le_max_of_le_right <| div_le_div_left' hac _
+
+@[to_additive]
 theorem mabs_mul_three (a b c : G) : |a * b * c|ₘ ≤ |a|ₘ * |b|ₘ * |c|ₘ :=
   (mabs_mul _ _).trans (mul_le_mul_right' (mabs_mul _ _) _)
 
