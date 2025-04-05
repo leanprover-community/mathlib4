@@ -97,6 +97,7 @@ theorem domCoprod.summand_eq_zero_of_smul_invariant (a : Mᵢ [⋀^ιa]→ₗ[R'
   obtain ⟨⟨sl, sr⟩, hσ⟩ := QuotientGroup.leftRel_apply.mp (Quotient.exact' hσ)
   rcases hi : σ⁻¹ i with i' | i' <;> rcases hj : σ⁻¹ j with j' | j' <;>
     rw [Perm.inv_eq_iff_eq] at hi hj <;> substs hi hj
+  -- the term pairs with and cancels another term
   case inl.inr => simpa using Equiv.congr_fun hσ (Sum.inl i')
   case inr.inl => simpa using Equiv.congr_fun hσ (Sum.inr i')
   -- the term does not pair but is zero
