@@ -123,8 +123,8 @@ theorem Finset.centerMass_subset {t' : Finset ι} (ht : t ⊆ t') (h : ∀ i ∈
   intro i hit' hit
   rw [h i hit' hit, zero_smul, smul_zero]
 
-open scoped Classical in
-theorem Finset.centerMass_filter_ne_zero : {i ∈ t | w i ≠ 0}.centerMass w z = t.centerMass w z :=
+theorem Finset.centerMass_filter_ne_zero [∀ i, Decidable (w i ≠ 0)] :
+    {i ∈ t | w i ≠ 0}.centerMass w z = t.centerMass w z :=
   Finset.centerMass_subset z (filter_subset _ _) fun i hit hit' => by
     simpa only [hit, mem_filter, true_and, Ne, Classical.not_not] using hit'
 
