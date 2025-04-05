@@ -258,7 +258,7 @@ theorem hasSum_mFourier_series_of_summable (h : Summable (mFourierCoeff f)) :
 converges everywhere pointwise to `f`. -/
 theorem hasSum_mFourier_series_apply_of_summable (h : Summable (mFourierCoeff f))
     (x : UnitAddTorus d) : HasSum (fun i ↦ mFourierCoeff f i • mFourier i x) (f x) := by
-  simpa only [_root_.map_smul] using (ContinuousMap.evalCLM ℂ x).hasSum
+  simpa only [map_smul] using (ContinuousMap.evalCLM ℂ x).hasSum
     (hasSum_mFourier_series_of_summable h)
 
 end Convergence
