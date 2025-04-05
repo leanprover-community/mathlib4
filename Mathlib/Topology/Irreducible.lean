@@ -6,6 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 import Mathlib.Order.Minimal
 import Mathlib.Order.Zorn
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Tactic.StacksAttribute
+
 /-!
 # Irreducibility in topological spaces
 
@@ -310,5 +312,81 @@ theorem IsPreirreducible.preimage (ht : IsPreirreducible t) {f : Y → X}
       ⟨f y, hy, Set.mem_image_of_mem f hy'⟩
   cases hf.injective h₄
   exact ⟨y, h₁, h₂, h₃⟩
+
+section
+
+open Set.Notation
+
+@[stacks 004Z]
+lemma IsPreirreducible.preimage_of_dense_isPreirreducible_fiber
+    {V : Set Y} (hV : IsPreirreducible V)
+    (f : X → Y) (hf' : IsOpenMap f) (hf'' : Dense (V ↓∩ { x | IsPreirreducible (f ⁻¹' {x}) })) :
+    IsPreirreducible (f ⁻¹' V) := by
+  rintro U₁ U₂ hU₁ hU₂ ⟨x, hxV, hxU₁⟩ ⟨y, hyV, hyU₂⟩
+  obtain ⟨z, hzV, hz₁, hz₂⟩ :=
+    hV _ _ (hf' _ hU₁) (hf' _ hU₂) ⟨f x, hxV, x, hxU₁, rfl⟩ ⟨f y, hyV, y, hyU₂, rfl⟩
+  obtain ⟨z, ⟨⟨z₁, hz₁, e₁⟩, ⟨z₂, hz₂, e₂⟩⟩, hz⟩ :=
+    hf''.inter_open_nonempty (V ↓∩ (f '' U₁ ∩ f '' U₂)) ⟨_, (hf' _ hU₁).inter (hf' _ hU₂), rfl⟩
+      ⟨⟨z, hzV⟩, hz₁, hz₂⟩
+  obtain ⟨z₃, hz₃, hz₃'⟩ := hz _ _ hU₁ hU₂ ⟨z₁, e₁, hz₁⟩ ⟨z₂, e₂, hz₂⟩
+  refine ⟨z₃, show f z₃ ∈ _ from (show f z₃ = z from hz₃) ▸ z.2, hz₃'⟩
+
+lemma IsPreirreducible.preimage_of_isPreirreducible_fiber
+    {V : Set Y} (hV : IsPreirreducible V)
+    (f : X → Y) (hf' : IsOpenMap f) (hf'' : ∀ x, IsPreirreducible (f ⁻¹' {x})) :
+    IsPreirreducible (f ⁻¹' V) := by
+  refine hV.preimage_of_dense_isPreirreducible_fiber f hf' ?_
+  simp [hf'']
+
+variable (f : X → Y) (hf₁ : Continuous f) (hf₂ : IsOpenMap f)
+variable (hf₃ : ∀ x, IsPreirreducible (f ⁻¹' {x})) (hf₄ : Function.Surjective f)
+
+include hf₁ hf₂ hf₃ hf₄
+
+lemma preimage_mem_irreducibleComponents_of_isPreirreducible_fiber
+    {V : Set Y} (hV : V ∈ irreducibleComponents Y) :
+    f ⁻¹' V ∈ irreducibleComponents X := by
+  obtain ⟨Z, hZ, hWZ, H⟩ :=
+    exists_preirreducible _ (hV.1.2.preimage_of_isPreirreducible_fiber f hf₂ hf₃)
+  have hZ' : IsIrreducible Z := by
+    obtain ⟨x, hx⟩ := hV.1.1
+    obtain ⟨x, rfl⟩ := hf₄ x
+    exact ⟨⟨_, hWZ hx⟩, hZ⟩
+  have hWZ' : f ⁻¹' V = Z := by
+    refine hWZ.antisymm (Set.image_subset_iff.mp ?_)
+    exact hV.2 (IsIrreducible.image hZ' f hf₁.continuousOn)
+      ((Set.image_preimage_eq V hf₄).symm.trans_le (Set.image_mono hWZ))
+  rw [hWZ']
+  exact ⟨hZ', fun s hs hs' ↦ (H s hs.2 hs').le⟩
+
+lemma image_mem_irreducibleComponents_of_isPreirreducible_fiber
+    {V : Set X} (hV : V ∈ irreducibleComponents X) :
+    f '' V ∈ irreducibleComponents Y :=
+  ⟨hV.1.image _ hf₁.continuousOn, fun Z hZ hWZ ↦ by
+    have := hV.2 ⟨(by obtain ⟨x, hx⟩ := hV.1.1; exact ⟨x, hWZ ⟨x, hx, rfl⟩⟩),
+      hZ.2.preimage_of_isPreirreducible_fiber f hf₂ hf₃⟩ (Set.image_subset_iff.mp hWZ)
+    rw [← Set.image_preimage_eq Z hf₄]
+    exact Set.image_mono this⟩
+
+/-- If `f : X → Y` is continuous, open, and has irreducible fibers, then it induces an
+bijection between irreducible components -/
+@[stacks 037A]
+def irreducibleComponentsEquivOfIsPreirreducibleFiber :
+    irreducibleComponents Y ≃o irreducibleComponents X where
+  invFun W := ⟨f '' W.1,
+    image_mem_irreducibleComponents_of_isPreirreducible_fiber f hf₁ hf₂ hf₃ hf₄ W.2⟩
+  toFun W := ⟨f ⁻¹' W.1,
+    preimage_mem_irreducibleComponents_of_isPreirreducible_fiber f hf₁ hf₂ hf₃ hf₄ W.2⟩
+  right_inv W := Subtype.ext <| by
+    refine (Set.subset_preimage_image _ _).antisymm' (W.2.2 ?_ (Set.subset_preimage_image _ _))
+    refine ⟨?_, (W.2.1.image _ hf₁.continuousOn).2.preimage_of_isPreirreducible_fiber _ hf₂ hf₃⟩
+    obtain ⟨x, hx⟩ := W.2.1.1
+    exact ⟨_, x, hx, rfl⟩
+  left_inv _ := Subtype.ext <| Set.image_preimage_eq _ hf₄
+  map_rel_iff' {W Z} := by
+    refine ⟨fun H ↦ ?_, Set.preimage_mono⟩
+    simpa only [Equiv.coe_fn_mk, Set.image_preimage_eq _ hf₄] using Set.image_mono (f := f) H
+
+end
 
 end Preirreducible
