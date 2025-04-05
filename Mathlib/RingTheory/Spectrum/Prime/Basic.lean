@@ -209,7 +209,7 @@ theorem vanishingIdeal_zeroLocus_eq_radical (I : Ideal R) :
 theorem nilradical_eq_iInf : nilradical R = iInf asIdeal := by
   apply range_asIdeal R ▸ nilradical_eq_sInf R
 
-theorem vanishingIdeal_univ : vanishingIdeal Set.univ = nilradical R := by
+@[simp] theorem vanishingIdeal_univ : vanishingIdeal Set.univ = nilradical R := by
   rw [vanishingIdeal, iInf_univ, nilradical_eq_iInf]
 
 @[simp]
