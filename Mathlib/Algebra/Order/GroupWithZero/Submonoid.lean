@@ -5,6 +5,7 @@ Authors: Chris Birkbeck
 -/
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Order.Interval.Set.Defs
 
 /-!
