@@ -608,7 +608,7 @@ theorem RingHom.IsIntegral.isLocalHom {f : R →+* S} (hf : f.IsIntegral)
     (inj : Function.Injective f) : IsLocalHom f where
   map_nonunit a ha := by
     -- `f a` is invertible in `S`, and we need to show that `(f a)⁻¹` is of the form `f b`.
-    -- Let `p : R[X]` be monic with root `a_inv`,
+    -- Let `p : R[X]` be monic with root `(f a)⁻¹`,
     obtain ⟨p, p_monic, hp⟩ := hf (ha.unit⁻¹ : _)
     -- and `q` be `p` with coefficients reversed (so `q(a) = q'(a) * a + 1`).
     -- We have `q(a) = 0`, so `-q'(a)` is the inverse of `a`.
@@ -621,14 +621,14 @@ theorem RingHom.IsIntegral.isLocalHom {f : R →+* S} (hf : f.IsIntegral)
 variable [Algebra R S] [Algebra.IsIntegral R S]
 
 variable (R S) in
-theorem Algebra.IsIntegral.isLocalHom [FaithfulSMul R S] : IsLocalHom (algebraMap R S) :=
+instance Algebra.IsIntegral.isLocalHom [FaithfulSMul R S] : IsLocalHom (algebraMap R S) :=
   (algebraMap_isIntegral_iff.mpr ‹_›).isLocalHom (FaithfulSMul.algebraMap_injective R S)
 
 /-- If the integral extension `R → S` is injective, and `S` is a field, then `R` is also a field. -/
 theorem isField_of_isIntegral_of_isField (hRS : Function.Injective (algebraMap R S))
     (hS : IsField S) : IsField R :=
   have := (faithfulSMul_iff_algebraMap_injective R S).mpr hRS
-  (Algebra.IsIntegral.isLocalHom R S).isField hRS hS
+  IsLocalHom.isField hRS hS
 
 theorem Algebra.IsIntegral.isField_iff_isField [IsDomain S]
     (hRS : Function.Injective (algebraMap R S)) : IsField R ↔ IsField S :=
