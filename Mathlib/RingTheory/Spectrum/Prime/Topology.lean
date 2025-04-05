@@ -446,7 +446,7 @@ def homeomorphOfRingEquiv (e : R ≃+* S) : PrimeSpectrum R ≃ₜ PrimeSpectrum
   left_inv _ := (comap_comp_apply ..).symm.trans (by simp)
   right_inv _ := (comap_comp_apply ..).symm.trans (by simp)
 
-lemma isHomeomorph_comap_of_bijective (f : R →+* S) (hf : Function.Bijective f) :
+lemma isHomeomorph_comap_of_bijective {f : R →+* S} (hf : Function.Bijective f) :
     IsHomeomorph (comap f) := (homeomorphOfRingEquiv (.ofBijective f hf)).symm.isHomeomorph
 
 end CommSemiring
