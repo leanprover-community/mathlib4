@@ -30,6 +30,7 @@ protected theorem disjoint_iff : Disjoint s t ↔ s ∩ t ⊆ ∅ :=
 theorem disjoint_iff_inter_eq_empty : Disjoint s t ↔ s ∩ t = ∅ :=
   disjoint_iff
 
+@[simp]
 theorem _root_.Disjoint.inter_eq : Disjoint s t → s ∩ t = ∅ :=
   Disjoint.eq_bot
 
