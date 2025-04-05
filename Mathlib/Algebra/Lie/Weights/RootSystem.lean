@@ -470,6 +470,8 @@ lemma rr79 (j : LieModule.Weight K H L) : j = 0 ∨ j ∈ H.root := by
 lemma rr80 (gg : Set L) (I : LieSubalgebra.lieSpan K L gg) (x : L) (h : x ∈ gg) : x ∈ (LieSubalgebra.lieSpan K L gg) := by
   exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a h
 
+lemma rr90 (x x1 : L) (key : ⁅x1, x⁆ = 0) : ⁅x, x1⁆ = 0 := by
+  rw [← neg_eq_zero, lie_skew x1 x, key]
 
 lemma rr7:
    ∀ (q : Submodule K (Module.Dual K H)), (∀ (i : H.root), q ∈ Module.End.invtSubmodule
@@ -485,6 +487,7 @@ lemma rr7:
   have rr4 (i j : H.root) (h1 : i ∈ Φ) (h2 : j ∉ Φ) (li : LieAlgebra.rootSpace H i.1.1)
       (lj : LieAlgebra.rootSpace H j.1.1) : ⁅li.1, lj.1⁆ = 0 := by
     sorry
+  --simp at rr4
   have rr7 : ∀ x y : L, y ∈ I → ⁅x, y⁆ ∈ I := by
     have help : ⨆ χ : LieModule.Weight K H L, (LieModule.genWeightSpace L χ).toSubmodule = ⊤ := by
       exact LieModule.iSup_genWeightSpace_as_module_eq_top' K H L
@@ -495,7 +498,7 @@ lemma rr7:
       simp only [Submodule.mem_top]
     induction hx using Submodule.iSup_induction' with
     | mem j x hx =>
-      simp_all
+      --simp_all
       --(p := (y : L) → y ∈ LieSubalgebra.lieSpan K L gg → ⁅x, y⁆ ∈ LieSubalgebra.lieSpan K L gg)
       simp [I] at hy
       refine LieSubalgebra.lieSpan_induction2 (R := K) (L := L) ?_ ?_ ?_ ?_ ?_ hy
@@ -524,8 +527,16 @@ lemma rr7:
       have rrrr3 : x1 ∈ I := by
          exact LieSubalgebra.mem_lieSpan.mpr fun K_1 a ↦ a hx1
       exact LieSubalgebra.lie_mem I rrrr2 rrrr3
-      --have := rr4 i jj hi h
-      sorry
+      have key : ⁅x1, x⁆ = 0 := by
+        have := rr4 i jj hi h
+        simp at this
+        have ssss2 := this x1 hx1_mem
+        have ssss3 := ssss2 x hx
+        exact ssss3
+      have : ⁅x, x1⁆ = 0 := by
+        rw [← neg_eq_zero, lie_skew x1 x, key]
+      rw [this]
+      exact LieSubalgebra.zero_mem I
       · simp only [lie_zero, LieSubalgebra.zero_mem, I]
       · intro a b c d e f
         simp only [lie_add, I]
