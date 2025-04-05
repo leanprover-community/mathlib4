@@ -642,11 +642,4 @@ theorem linearIndependent_subsingleton_index_iff [Subsingleton ι] (f : ι → M
   rw [linearIndependent_unique_iff]
   exact ⟨fun h i ↦ by rwa [Unique.eq_default i], fun h ↦ h _⟩
 
-@[simp]
-theorem linearIndependent_subsingleton_iff [Subsingleton M] (f : ι → M) :
-    LinearIndependent R f ↔ IsEmpty ι := by
-  obtain h | i := isEmpty_or_nonempty ι
-  · simpa
-  exact iff_of_false (fun hli ↦ hli.ne_zero i.some (Subsingleton.eq_zero (f i.some))) (by simp)
-
 end Nontrivial

@@ -23,7 +23,7 @@ import Mathlib.RingTheory.FiniteLength
 
 -/
 
-variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
+variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M]
 
 /-- The length of a module, defined as the krull dimension of its submodule lattice. -/
 noncomputable
@@ -48,11 +48,11 @@ lemma Module.length_eq_zero_iff : Module.length R M = 0 ↔ Subsingleton M := by
   rw [← WithBot.coe_inj, Module.coe_length, WithBot.coe_zero,
     Order.krullDim_eq_zero_iff_of_orderTop, Submodule.subsingleton_iff]
 
-@[nontriviality]
+@[simp, nontriviality]
 lemma Module.length_eq_zero [Subsingleton M] : Module.length R M = 0 :=
   Module.length_eq_zero_iff.mpr ‹_›
 
-@[nontriviality]
+@[simp, nontriviality]
 lemma Module.length_eq_zero_of_subsingleton_ring [Subsingleton R] : Module.length R M = 0 :=
   have := Module.subsingleton R M
   Module.length_eq_zero
@@ -109,7 +109,6 @@ lemma Module.length_quotient {N : Submodule R M} :
   apply WithBot.coe_injective
   rw [Order.coheight_eq_krullDim_Ici, coe_length,
     Order.krullDim_eq_of_orderIso (Submodule.comapMkQRelIso N)]
-  rfl
 
 lemma LinearEquiv.length_eq {N : Type*} [AddCommGroup N] [Module R N] (e : M ≃ₗ[R] N) :
     Module.length R M = Module.length R N := by
@@ -180,9 +179,8 @@ variable (R) in
 lemma Module.length_pi_of_fintype {ι : Type*} [Fintype ι]
     (M : ι → Type*) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] :
     Module.length R (Π i, M i) = ∑ i, Module.length R (M i) := by
-  refine Fintype.induction_empty_option (P := fun ι (_ : Fintype ι) ↦
-    ∀ (M : ι → Type _) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)],
-      Module.length R (Π i, M i) = ∑ i, Module.length R (M i)) ?_ ?_ ?_ ι M
+  revert ι
+  apply Fintype.induction_empty_option
   · intro α β _ e IH M _ _
     let _ : Fintype α := .ofEquiv β e.symm
     rw [← (LinearEquiv.piCongrLeft R M e).length_eq, IH, e.sum_comp (length R <| M ·)]
@@ -202,7 +200,7 @@ lemma Module.length_finsupp {ι : Type*} :
   rw [ENat.card_eq_top_of_infinite, ENat.top_mul length_pos.ne', ENat.eq_top_iff_forall_ge]
   intro m
   obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq ι m
-  have : length R (s →₀ M) = ↑m * length R M := by
+  have : length R (s →₀ M) = m * length R M := by
     simp [(Finsupp.linearEquivFunOnFinite R M _).length_eq, hs]
   refine le_trans ?_ (Module.length_le_of_injective (Finsupp.lmapDomain M R ((↑) : s → ι))
     (Finsupp.mapDomain_injective Subtype.val_injective))
@@ -210,7 +208,7 @@ lemma Module.length_finsupp {ι : Type*} :
   exact ENat.self_le_mul_right _ length_pos.ne'
 
 @[simp]
-lemma Module.length_pi {ι : Type*} [Finite ι] :
+lemma Module.length_pi {ι : Type*} :
     Module.length R (ι → M) = ENat.card ι * Module.length R M := by
   cases finite_or_infinite ι
   · cases nonempty_fintype ι
@@ -220,18 +218,29 @@ lemma Module.length_pi {ι : Type*} [Finite ι] :
   refine le_trans ?_ (Module.length_le_of_injective Finsupp.lcoeFun DFunLike.coe_injective)
   simp [ENat.top_mul length_pos.ne']
 
-variable (R M) in
-lemma Module.length_of_free [Module.Free R M] :
-    Module.length R M = (Module.rank R M).toENat * Module.length R R := by
-  nontriviality R
-  let b := Module.Free.chooseBasis R M
-  rw [b.repr.length_eq, Module.length_finsupp, Free.rank_eq_card_chooseBasisIndex, ENat.card]
+lemma Module.strongRankCondition_of_length_ne_top [Nontrivial R] (h : length R R ≠ ⊤) :
+    StrongRankCondition R where
+  le_of_fin_injective f hf := by
+    simpa [(ENat.mul_right_strictMono length_pos.ne' h).le_iff_le] using length_le_of_injective f hf
 
 variable (R M) in
-lemma Module.length_of_free_of_finite [Module.Free R M] [Module.Finite R M] :
-    Module.length R M = Module.finrank R M * Module.length R R := by
+lemma Module.length_of_free [Module.Free R M] :
+    length R M = (Module.rank R M).toENat * length R R := by
   nontriviality R
-  rw [Module.length_of_free, Cardinal.toENat_eq_nat.mpr (Module.finrank_eq_rank _ _).symm]
+  nontriviality M
+  let b := Free.chooseBasis R M
+  rw [b.repr.length_eq, length_finsupp]
+  by_cases h : length R R = ⊤
+  · have := Cardinal.toENat_eq_zero.not.mpr <|
+      ((pos_of_ne_zero <| Cardinal.mk_ne_zero _).trans_le b.linearIndependent.cardinal_le_rank).ne'
+    rw [h, ENat.mul_top ((ENat.card_ne_zero_iff_nonempty _).mpr inferInstance), ENat.mul_top this]
+  · have := strongRankCondition_of_length_ne_top h
+    rw [Free.rank_eq_card_chooseBasisIndex, ENat.card]
+
+variable (R M) in
+lemma Module.length_of_free_of_finite [StrongRankCondition R] [Free R M] [Module.Finite R M] :
+    length R M = finrank R M * length R R := by
+  rw [length_of_free, Cardinal.toENat_eq_nat.mpr (finrank_eq_rank _ _).symm]
 
 @[simp]
 lemma Module.length_self_of_field (K : Type*) [Field K] :
