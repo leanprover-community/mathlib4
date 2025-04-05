@@ -12,6 +12,7 @@ import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Data.Fintype.Option
 
 /-!
 # Pi types of modules
@@ -639,6 +640,39 @@ theorem LinearMap.vecCons_apply {n} (f : M →ₗ[R] M₂) (g : M →ₗ[R] Fin 
     f.vecCons g m = Matrix.vecCons (f m) (g m) :=
   rfl
 
+variable (R) in
+/--
+To show a property `motive` of modules holds for arbitrary finite products of modules, it suffices
+to show
+1. `motive` is stable under isomorphism.
+2. `motive` holds for the zero module.
+3. `motive` holds for `M × N` if it holds for both `M` and `N`.
+
+Since we need to apply `motive` to modules in `Type u` and in `Type (max u v)`, there is a second
+`motive'` argument which is required to be equivalent to `motive` up to universe lifting by `equiv`.
+
+See `Module.pi_induction'` for a version where `motive` assumes `AddCommGroup` instead.
+-/
+@[elab_as_elim]
+lemma Module.pi_induction {ι : Type v} [Finite ι]
+    (motive : ∀ (N : Type u) [AddCommMonoid N] [Module R N], Prop)
+    (motive' : ∀ (N : Type (max u v)) [AddCommMonoid N] [Module R N], Prop)
+    (equiv : ∀ {N : Type u} {N' : Type (max u v)} [AddCommMonoid N] [AddCommMonoid N']
+      [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive N → motive' N')
+    (equiv' : ∀ {N N' : Type (max u v)} [AddCommMonoid N] [AddCommMonoid N']
+      [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive' N → motive' N')
+    (unit : motive PUnit) (prod : ∀ {N : Type u} {N' : Type (max u v)} [AddCommMonoid N]
+      [AddCommMonoid N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
+    (M : ι → Type u) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+    (h : ∀ i, motive (M i)) : motive' (∀ i, M i) := by
+  classical
+  cases nonempty_fintype ι
+  revert M
+  refine Fintype.induction_empty_option
+    (fun α β _ e h M _ _ hM ↦ equiv' (LinearEquiv.piCongrLeft R M e) <| h _ fun i ↦ hM _)
+    (fun M _ _ _ ↦ equiv default unit) (fun α _ h M _ _ hn ↦ ?_) ι
+  exact equiv' (LinearEquiv.piOptionEquivProd R).symm <| prod (hn _) (h _ fun i ↦ hn i)
+
 end Semiring
 
 section CommSemiring
@@ -666,5 +700,26 @@ def LinearMap.vecCons₂ {n} (f : M →ₗ[R] M₂ →ₗ[R] M₃) (g : M →ₗ
   map_smul' r x := LinearMap.ext fun z => by simp [Matrix.smul_cons r (f x z)]
 
 end CommSemiring
+
+/-- A variant of `Module.pi_induction` that assumes `AddCommGroup` instead of `AddCommMonoid`. -/
+@[elab_as_elim]
+lemma Module.pi_induction' {ι : Type v} [Finite ι] (R : Type*) [Ring R]
+    (motive : ∀ (N : Type u) [AddCommGroup N] [Module R N], Prop)
+    (motive' : ∀ (N : Type (max u v)) [AddCommGroup N] [Module R N], Prop)
+    (equiv : ∀ {N : Type u} {N' : Type (max u v)} [AddCommGroup N] [AddCommGroup N']
+      [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive N → motive' N')
+    (equiv' : ∀ {N N' : Type (max u v)} [AddCommGroup N] [AddCommGroup N']
+      [Module R N] [Module R N'], (N ≃ₗ[R] N') → motive' N → motive' N')
+    (unit : motive PUnit) (prod : ∀ {N : Type u} {N' : Type (max u v)} [AddCommGroup N]
+      [AddCommGroup N'] [Module R N] [Module R N'], motive N → motive' N' → motive' (N × N'))
+    (M : ι → Type u) [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
+    (h : ∀ i, motive (M i)) : motive' (∀ i, M i) := by
+  classical
+  cases nonempty_fintype ι
+  revert M
+  refine Fintype.induction_empty_option
+    (fun α β _ e h M _ _ hM ↦ equiv' (LinearEquiv.piCongrLeft R M e) <| h _ fun i ↦ hM _)
+    (fun M _ _ _ ↦ equiv default unit) (fun α _ h M _ _ hn ↦ ?_) ι
+  exact equiv' (LinearEquiv.piOptionEquivProd R).symm <| prod (hn _) (h _ fun i ↦ hn i)
 
 end Fin
