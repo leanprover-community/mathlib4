@@ -122,6 +122,10 @@ theorem join_apply {m : Measure (Measure α)} {s : Set α} (hs : MeasurableSet s
     join m s = ∫⁻ μ, μ s ∂m :=
   Measure.ofMeasurable_apply s hs
 
+theorem le_join_apply (m : Measure (Measure α)) (s : Set α) : ∫⁻ μ, μ s ∂m ≤ join m s := by
+  rw [measure_eq_iInf]
+  exact le_iInf₂ fun t hst ↦ le_iInf fun htm ↦ join_apply htm ▸ by gcongr
+
 @[simp]
 theorem join_zero : (0 : Measure (Measure α)).join = 0 := by
   ext1 s hs
@@ -178,6 +182,11 @@ theorem bind_zero_right' (m : Measure α) : bind m (fun _ => 0 : α → Measure 
 theorem bind_apply {m : Measure α} {f : α → Measure β} {s : Set β} (hs : MeasurableSet s)
     (hf : Measurable f) : bind m f s = ∫⁻ a, f a s ∂m := by
   rw [bind, join_apply hs, lintegral_map (measurable_coe hs) hf]
+
+theorem bind_apply_le {m : Measure α} (f : α → Measure β) {s : Set β} (hs : MeasurableSet s) :
+    bind m f s ≤ ∫⁻ a, f a s ∂m := by
+  rw [bind, join_apply hs]
+  apply lintegral_map_le
 
 @[simp]
 lemma bind_const {m : Measure α} {ν : Measure β} : m.bind (fun _ ↦ ν) = m Set.univ • ν := by
