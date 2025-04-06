@@ -904,7 +904,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top_of_pos {f : A} {d : ℕ} (hf : f ∈ 𝒜
     · simp only [SubmonoidClass.mk_pow, SubmonoidClass.coe_finset_prod, ← pow_add, ← pow_mul,
         Finset.prod_pow_eq_pow_sum, SubmonoidClass.coe_pow]
       rw [tsub_add_cancel_of_le]
-      cases' d.eq_zero_or_pos with hd hd
+      rcases d.eq_zero_or_pos with hd | hd
       · simp [hd]
       rw [← mul_le_mul_iff_of_pos_right hd, ← smul_eq_mul (a := a), ← hai, Finset.sum_mul]
       simp_rw [smul_eq_mul, mul_comm (ai _), mul_assoc]
@@ -914,7 +914,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top_of_pos {f : A} {d : ℕ} (hf : f ∈ 𝒜
   apply (Algebra.adjoin (𝒜 0) _).mul_mem
   · apply Algebra.subset_adjoin
     refine ⟨a - ∑ i : ι', dv i * (ai i / d), (ai · % d), H₀.symm, ?_, rfl⟩
-    cases' d.eq_zero_or_pos with hd hd
+    rcases d.eq_zero_or_pos with hd | hd
     · have : ∀ (x : ι'), ai x = 0 := by simpa [hd, fun i ↦ (hxd' i).ne'] using hai
       simp [this]
     exact fun i ↦ (Nat.mod_lt _ hd).le
@@ -949,7 +949,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top {f : A} {d : ℕ} (hf : f ∈ 𝒜 d)
   swap
   · rw [← top_le_iff, ← hx, Algebra.adjoin_le_iff, Set.range_subset_iff]
     intro i
-    cases' (dv i).eq_zero_or_pos with hi hi
+    rcases (dv i).eq_zero_or_pos with hi | hi
     · exact algebraMap_mem (R := 𝒜 0) _ ⟨v i, hi ▸ hxd i⟩
     exact Algebra.subset_adjoin ⟨⟨i, by simpa [s] using hi⟩, rfl⟩
   rw [← top_le_iff, ← this]
@@ -970,7 +970,7 @@ lemma Away.finiteType (f : A) (d : ℕ) (hf : f ∈ 𝒜 d) :
   choose dx hdx hxd using Subtype.forall'.mp hs'
   simp_rw [Subalgebra.fg_def, ← top_le_iff,
     ← Away.adjoin_mk_prod_pow_eq_top hf (ι' := s) Subtype.val (by simpa) dx hxd]
-  cases' d.eq_zero_or_pos with hd hd
+  rcases d.eq_zero_or_pos with hd | hd
   · let f' := Away.mk 𝒜 hf 1 1 (by simp [hd, GradedOne.one_mem])
     refine ⟨{f'}, Set.finite_singleton f', ?_⟩
     rw [Algebra.adjoin_le_iff]
