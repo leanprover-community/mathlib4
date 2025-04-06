@@ -526,4 +526,40 @@ instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
 
 end FractionRing
 
+/-! ### Openness of ideals -/
+
+theorem ideal_isOpen_of_ne_bot {s : Ideal ℤ_[p]} (hs : s ≠ ⊥) : IsOpen (s : Set ℤ_[p]) := by
+  obtain ⟨n, rfl⟩ := ideal_eq_span_pow_p hs
+  have : (p ^ (-n : ℤ) : ℝ) ≠ 0 := by simp [hp.out.ne_zero]
+  convert IsUltrametricDist.isOpen_closedBall (0 : ℤ_[p]) this
+  ext
+  rw [SetLike.mem_coe, Metric.mem_closedBall, dist_zero_right,
+    norm_le_pow_iff_mem_span_pow]
+
+theorem ideal_isOpen_iff {s : Ideal ℤ_[p]} : IsOpen (s : Set ℤ_[p]) ↔ s ≠ ⊥ := by
+  refine ⟨?_, ideal_isOpen_of_ne_bot⟩
+  rintro h rfl
+  have := hp.out.two_le
+  have := Metric.nhds_basis_ball_pow (x := (0 : ℤ_[p])) (r := (1 / p : ℝ))
+    (by positivity) (by rw [one_div]; apply inv_lt_one_of_one_lt₀; norm_cast)
+  simp only [Submodule.bot_coe, isOpen_iff_mem_nhds, Set.mem_singleton_iff, forall_eq,
+    this.mem_iff] at h
+  obtain ⟨n, -, h⟩ := h
+  replace h := @h (p ^ (n + 1)) <| by
+    rw [show (1 / p : ℝ) ^ n = (p : ℝ) ^ (-n : ℤ) by simp,
+      mem_ball, dist_zero_right, norm_lt_pow_iff_norm_le_pow_sub_one,
+      show (-n - 1 : ℤ) = -(n + 1 : ℕ) by zify; ring,
+      norm_le_pow_iff_mem_span_pow]
+    exact Ideal.mem_span_singleton_self _
+  simp [hp.out.ne_zero] at h
+
+theorem ideal_isClosed (s : Ideal ℤ_[p]) : IsClosed (s : Set ℤ_[p]) := by
+  rcases eq_or_ne s ⊥ with rfl | hs
+  · simp
+  obtain ⟨n, rfl⟩ := ideal_eq_span_pow_p hs
+  convert Metric.isClosed_closedBall (x := (0 : ℤ_[p])) (ε := (p ^ (-n : ℤ) : ℝ))
+  ext
+  rw [SetLike.mem_coe, Metric.mem_closedBall, dist_zero_right,
+    norm_le_pow_iff_mem_span_pow]
+
 end PadicInt
