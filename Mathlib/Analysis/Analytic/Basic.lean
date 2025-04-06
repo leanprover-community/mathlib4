@@ -493,6 +493,58 @@ theorem HasFPowerSeriesOnBall.comp_sub (hf : HasFPowerSeriesOnBall f p x r) (y :
       convert hf.hasSum hz using 2
       abel }
 
+theorem HasFPowerSeriesWithinOnBall.comp_sub (hf : HasFPowerSeriesWithinOnBall f p s x r) (y : E) :
+    HasFPowerSeriesWithinOnBall (fun (z : E) ↦ f (z - y)) p ((fun x ↦ x + y) '' s) (x + y) r where
+  r_le := hf.r_le
+  r_pos := hf.r_pos
+  hasSum := fun {z} hz1 hz2 => by
+    have : x + z ∈ insert x s := by
+      simp only [image_add_right, mem_insert_iff, add_eq_left, mem_preimage] at hz1
+      abel_nf at hz1
+      rcases hz1 with (hz1 | hz1) <;> simp [hz1]
+    convert hf.hasSum (y := z) this hz2 using 2
+    abel
+
+theorem HasFPowerSeriesAt.comp_sub (hf : HasFPowerSeriesAt f p x) (y : E) :
+    HasFPowerSeriesAt (fun (z : E) ↦ f (z - y)) p (x + y) := by
+  obtain ⟨r, hf⟩ := hf
+  use r
+  apply HasFPowerSeriesOnBall.comp_sub hf
+
+theorem HasFPowerSeriesWithinAt.comp_sub (hf : HasFPowerSeriesWithinAt f p s x) (y : E) :
+    HasFPowerSeriesWithinAt (fun (z : E) ↦ f (z - y)) p ((fun x ↦ x + y) '' s) (x + y) := by
+  obtain ⟨r, hf⟩ := hf
+  use r
+  apply HasFPowerSeriesWithinOnBall.comp_sub hf
+
+theorem AnalyticAt.comp_sub (hf : AnalyticAt 𝕜 f x) (y : E) :
+    AnalyticAt 𝕜 (fun (z : E) ↦ f (z - y)) (x + y) := by
+  obtain ⟨p, hf⟩ := hf
+  use p
+  apply hf.comp_sub
+
+theorem AnalyticOnNhd.comp_sub (hf : AnalyticOnNhd 𝕜 f s) (y : E) :
+    AnalyticOnNhd 𝕜 (fun (z : E) ↦ f (z - y)) ((fun x ↦ x + y) '' s) := by
+  intro x hx
+  simp at hx
+  specialize hf (x - y) (by convert hx using 1; abel)
+  rw [show x = (x - y) + y by abel]
+  apply hf.comp_sub
+
+theorem AnalyticWithinAt.comp_sub (hf : AnalyticWithinAt 𝕜 f s x) (y : E) :
+    AnalyticWithinAt 𝕜 (fun (z : E) ↦ f (z - y)) ((fun x ↦ x + y) '' s) (x + y) := by
+  obtain ⟨p, hf⟩ := hf
+  use p
+  apply hf.comp_sub
+
+theorem AnalyticOn.comp_sub (hf : AnalyticOn 𝕜 f s) (y : E) :
+    AnalyticOn 𝕜 (fun (z : E) ↦ f (z - y)) ((fun x ↦ x + y) '' s) := by
+  intro x hx
+  simp at hx
+  specialize hf (x - y) (by convert hx using 1; abel)
+  rw [show x = (x - y) + y by abel]
+  apply hf.comp_sub
+
 theorem HasFPowerSeriesWithinOnBall.hasSum_sub (hf : HasFPowerSeriesWithinOnBall f p s x r) {y : E}
     (hy : y ∈ (insert x s) ∩ EMetric.ball x r) :
     HasSum (fun n : ℕ => p n fun _ => y - x) (f y) := by
