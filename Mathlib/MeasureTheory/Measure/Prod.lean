@@ -190,6 +190,46 @@ theorem volume_eq_prod (α β) [MeasureSpace α] [MeasureSpace β] :
     (volume : Measure (α × β)) = (volume : Measure α).prod (volume : Measure β) :=
   rfl
 
+/-- For an s-finite measure `ν`, see `prod_apply` below. -/
+theorem prod_apply_le {s : Set (α × β)} (hs : MeasurableSet s) :
+    μ.prod ν s ≤ ∫⁻ x, ν (Prod.mk x ⁻¹' s) ∂μ := by
+  simp only [Measure.prod, ← map_apply measurable_prodMk_left hs]
+  exact bind_apply_le _ hs
+
+/-- For any measures `μ` and `ν` and any sets `s` and `t`,
+we have `μ.prod ν (s ×ˢ t) ≤ μ s * ν t`.
+
+If `ν` is an s-finite measure (which is usually true),
+then this inequality becomes an equality, see `prod_prod` below. -/
+theorem prod_prod_le (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) ≤ μ s * ν t := by
+  set S := toMeasurable μ s
+  set T := toMeasurable ν t
+  calc
+    μ.prod ν (s ×ˢ t) ≤ μ.prod ν (S ×ˢ T) := by gcongr <;> apply subset_toMeasurable
+    _ ≤ ∫⁻ x, ν (Prod.mk x ⁻¹' (S ×ˢ T)) ∂μ := prod_apply_le (by measurability)
+    _ = μ S * ν T := by
+      classical
+      simp_rw [S, mk_preimage_prod_right_eq_if, measure_if,
+        lintegral_indicator (measurableSet_toMeasurable _ _), lintegral_const,
+        restrict_apply_univ, mul_comm]
+    _ = μ s * ν t := by rw [measure_toMeasurable, measure_toMeasurable]
+
+instance prod.instNoAtoms_fst [NoAtoms μ] :
+    NoAtoms (Measure.prod μ ν) where
+  measure_singleton
+  | (x, y) => nonpos_iff_eq_zero.mp <| calc
+    μ.prod ν {(x, y)} = μ.prod ν ({x} ×ˢ {y}) := by rw [singleton_prod_singleton]
+    _ ≤ μ {x} * ν {y} := prod_prod_le _ _
+    _ = 0 := by simp
+
+instance prod.instNoAtoms_snd [NoAtoms ν] :
+    NoAtoms (Measure.prod μ ν) where
+  measure_singleton
+  | (x, y) => nonpos_iff_eq_zero.mp <| calc
+    μ.prod ν {(x, y)} = μ.prod ν ({x} ×ˢ {y}) := by rw [singleton_prod_singleton]
+    _ ≤ μ {x} * ν {y} := prod_prod_le _ _
+    _ = 0 := by simp
+
 variable [SFinite ν]
 
 theorem prod_apply {s : Set (α × β)} (hs : MeasurableSet s) :
@@ -201,35 +241,22 @@ theorem prod_apply {s : Set (α × β)} (hs : MeasurableSet s) :
 do not need the sets to be measurable. -/
 @[simp]
 theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν t := by
-  classical
-  apply le_antisymm
-  · set S := toMeasurable μ s
-    set T := toMeasurable ν t
-    have hSTm : MeasurableSet (S ×ˢ T) :=
-      (measurableSet_toMeasurable _ _).prod (measurableSet_toMeasurable _ _)
-    calc
-      μ.prod ν (s ×ˢ t) ≤ μ.prod ν (S ×ˢ T) := by gcongr <;> apply subset_toMeasurable
-      _ = μ S * ν T := by
-        rw [prod_apply hSTm]
-        simp_rw [S, mk_preimage_prod_right_eq_if, measure_if,
-          lintegral_indicator (measurableSet_toMeasurable _ _), lintegral_const,
-          restrict_apply_univ, mul_comm]
-      _ = μ s * ν t := by rw [measure_toMeasurable, measure_toMeasurable]
-  · -- Formalization is based on https://mathoverflow.net/a/254134/136589
-    set ST := toMeasurable (μ.prod ν) (s ×ˢ t)
-    have hSTm : MeasurableSet ST := measurableSet_toMeasurable _ _
-    have hST : s ×ˢ t ⊆ ST := subset_toMeasurable _ _
-    set f : α → ℝ≥0∞ := fun x => ν (Prod.mk x ⁻¹' ST)
-    have hfm : Measurable f := measurable_measure_prodMk_left hSTm
-    set s' : Set α := { x | ν t ≤ f x }
-    have hss' : s ⊆ s' := fun x hx => measure_mono fun y hy => hST <| mk_mem_prod hx hy
-    calc
-      μ s * ν t ≤ μ s' * ν t := by gcongr
-      _ = ∫⁻ _ in s', ν t ∂μ := by rw [setLIntegral_const, mul_comm]
-      _ ≤ ∫⁻ x in s', f x ∂μ := setLIntegral_mono hfm fun x => id
-      _ ≤ ∫⁻ x, f x ∂μ := lintegral_mono' restrict_le_self le_rfl
-      _ = μ.prod ν ST := (prod_apply hSTm).symm
-      _ = μ.prod ν (s ×ˢ t) := measure_toMeasurable _
+  apply (prod_prod_le s t).antisymm
+  -- Formalization is based on https://mathoverflow.net/a/254134/136589
+  set ST := toMeasurable (μ.prod ν) (s ×ˢ t)
+  have hSTm : MeasurableSet ST := measurableSet_toMeasurable _ _
+  have hST : s ×ˢ t ⊆ ST := subset_toMeasurable _ _
+  set f : α → ℝ≥0∞ := fun x => ν (Prod.mk x ⁻¹' ST)
+  have hfm : Measurable f := measurable_measure_prodMk_left hSTm
+  set s' : Set α := { x | ν t ≤ f x }
+  have hss' : s ⊆ s' := fun x hx => measure_mono fun y hy => hST <| mk_mem_prod hx hy
+  calc
+    μ s * ν t ≤ μ s' * ν t := by gcongr
+    _ = ∫⁻ _ in s', ν t ∂μ := by rw [setLIntegral_const, mul_comm]
+    _ ≤ ∫⁻ x in s', f x ∂μ := setLIntegral_mono hfm fun x => id
+    _ ≤ ∫⁻ x, f x ∂μ := lintegral_mono' restrict_le_self le_rfl
+    _ = μ.prod ν ST := (prod_apply hSTm).symm
+    _ = μ.prod ν (s ×ˢ t) := measure_toMeasurable _
 
 @[simp] lemma map_fst_prod : Measure.map Prod.fst (μ.prod ν) = (ν univ) • μ := by
   ext s hs
@@ -280,34 +307,19 @@ instance {α β : Type*} [MeasureSpace α] [MeasureSpace β]
 
 instance prod.instIsFiniteMeasureOnCompacts {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
     {mα : MeasurableSpace α} {mβ : MeasurableSpace β} (μ : Measure α) (ν : Measure β)
-    [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts ν] [SFinite ν] :
-    IsFiniteMeasureOnCompacts (μ.prod ν) := by
-  refine ⟨fun K hK => ?_⟩
-  set L := (Prod.fst '' K) ×ˢ (Prod.snd '' K) with hL
-  have : K ⊆ L := by
-    rintro ⟨x, y⟩ hxy
-    simp only [L, prodMk_mem_set_prod_eq, mem_image, Prod.exists, exists_and_right,
-      exists_eq_right]
-    exact ⟨⟨y, hxy⟩, ⟨x, hxy⟩⟩
-  apply lt_of_le_of_lt (measure_mono this)
-  rw [hL, prod_prod]
-  exact mul_lt_top (hK.image continuous_fst).measure_lt_top (hK.image continuous_snd).measure_lt_top
+    [IsFiniteMeasureOnCompacts μ] [IsFiniteMeasureOnCompacts ν] :
+    IsFiniteMeasureOnCompacts (μ.prod ν) where
+  lt_top_of_isCompact K hK := calc
+    μ.prod ν K ≤ μ.prod ν ((Prod.fst '' K) ×ˢ (Prod.snd '' K)) := measure_mono subset_prod
+    _ ≤ μ (Prod.fst '' K) * ν (Prod.snd '' K) := prod_prod_le _ _
+    _ < ∞ :=
+      mul_lt_top (hK.image continuous_fst).measure_lt_top (hK.image continuous_snd).measure_lt_top
 
 instance {X Y : Type*}
     [TopologicalSpace X] [MeasureSpace X] [IsFiniteMeasureOnCompacts (volume : Measure X)]
-    [TopologicalSpace Y] [MeasureSpace Y] [IsFiniteMeasureOnCompacts (volume : Measure Y)]
-    [SFinite (volume : Measure Y)] : IsFiniteMeasureOnCompacts (volume : Measure (X × Y)) :=
+    [TopologicalSpace Y] [MeasureSpace Y] [IsFiniteMeasureOnCompacts (volume : Measure Y)] :
+    IsFiniteMeasureOnCompacts (volume : Measure (X × Y)) :=
   prod.instIsFiniteMeasureOnCompacts _ _
-
-instance prod.instNoAtoms_fst [NoAtoms μ] :
-    NoAtoms (Measure.prod μ ν) := by
-  refine NoAtoms.mk (fun x => ?_)
-  rw [← Set.singleton_prod_singleton, Measure.prod_prod, measure_singleton, zero_mul]
-
-instance prod.instNoAtoms_snd [NoAtoms ν] :
-    NoAtoms (Measure.prod μ ν) := by
-  refine NoAtoms.mk (fun x => ?_)
-  rw [← Set.singleton_prod_singleton, Measure.prod_prod, measure_singleton (μ := ν), mul_zero]
 
 theorem ae_measure_lt_top {s : Set (α × β)} (hs : MeasurableSet s) (h2s : (μ.prod ν) s ≠ ∞) :
     ∀ᵐ x ∂μ, ν (Prod.mk x ⁻¹' s) < ∞ := by
