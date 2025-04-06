@@ -179,6 +179,7 @@ import Mathlib.Algebra.Category.Ring.Colimits
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.Algebra.Category.Ring.Epi
 import Mathlib.Algebra.Category.Ring.FilteredColimits
+import Mathlib.Algebra.Category.Ring.FinitePresentation
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.Algebra.Category.Ring.LinearAlgebra
@@ -752,8 +753,10 @@ import Mathlib.Algebra.Order.Field.Pointwise
 import Mathlib.Algebra.Order.Field.Power
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Algebra.Order.Field.Subfield
-import Mathlib.Algebra.Order.Floor
+import Mathlib.Algebra.Order.Floor.Defs
 import Mathlib.Algebra.Order.Floor.Div
+import Mathlib.Algebra.Order.Floor.Ring
+import Mathlib.Algebra.Order.Floor.Semiring
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Group.Action
 import Mathlib.Algebra.Order.Group.Action.End
@@ -2105,6 +2108,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.Limits.Preserves.Grothendieck
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Opposites
+import Mathlib.CategoryTheory.Limits.Preserves.Over
 import Mathlib.CategoryTheory.Limits.Preserves.Presheaf
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.AbelianImages
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
@@ -2135,6 +2139,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.End
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.Equivalence
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.Limits.Shapes.FiniteMultiequalizer
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.FunctorToTypes
 import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
@@ -2295,6 +2300,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Representable
 import Mathlib.CategoryTheory.MorphismProperty.Retract
 import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
 import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+import Mathlib.CategoryTheory.MorphismProperty.WeakFactorizationSystem
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Noetherian
@@ -2340,6 +2346,7 @@ import Mathlib.CategoryTheory.Preadditive.Yoneda.Injective
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Projective
 import Mathlib.CategoryTheory.Presentable.Basic
+import Mathlib.CategoryTheory.Presentable.Finite
 import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 import Mathlib.CategoryTheory.Presentable.Limits
 import Mathlib.CategoryTheory.Products.Associator
@@ -4039,14 +4046,6 @@ import Mathlib.MeasureTheory.Covering.LiminfLimsup
 import Mathlib.MeasureTheory.Covering.OneDim
 import Mathlib.MeasureTheory.Covering.Vitali
 import Mathlib.MeasureTheory.Covering.VitaliFamily
-import Mathlib.MeasureTheory.Decomposition.Exhaustion
-import Mathlib.MeasureTheory.Decomposition.IntegralRNDeriv
-import Mathlib.MeasureTheory.Decomposition.Jordan
-import Mathlib.MeasureTheory.Decomposition.Lebesgue
-import Mathlib.MeasureTheory.Decomposition.RadonNikodym
-import Mathlib.MeasureTheory.Decomposition.SignedHahn
-import Mathlib.MeasureTheory.Decomposition.SignedLebesgue
-import Mathlib.MeasureTheory.Decomposition.UnsignedHahn
 import Mathlib.MeasureTheory.Function.AEEqFun
 import Mathlib.MeasureTheory.Function.AEEqFun.DomAct
 import Mathlib.MeasureTheory.Function.AEEqOfIntegral
@@ -4173,6 +4172,11 @@ import Mathlib.MeasureTheory.Measure.Complex
 import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.MeasureTheory.Measure.ContinuousPreimage
 import Mathlib.MeasureTheory.Measure.Count
+import Mathlib.MeasureTheory.Measure.Decomposition.Exhaustion
+import Mathlib.MeasureTheory.Measure.Decomposition.Hahn
+import Mathlib.MeasureTheory.Measure.Decomposition.IntegralRNDeriv
+import Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue
+import Mathlib.MeasureTheory.Measure.Decomposition.RadonNikodym
 import Mathlib.MeasureTheory.Measure.Dirac
 import Mathlib.MeasureTheory.Measure.DiracProba
 import Mathlib.MeasureTheory.Measure.Doubling
@@ -4240,6 +4244,9 @@ import Mathlib.MeasureTheory.SetAlgebra
 import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.MeasureTheory.Topology
 import Mathlib.MeasureTheory.VectorMeasure.Basic
+import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Hahn
+import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Jordan
+import Mathlib.MeasureTheory.VectorMeasure.Decomposition.Lebesgue
 import Mathlib.MeasureTheory.VectorMeasure.WithDensity
 import Mathlib.ModelTheory.Algebra.Field.Basic
 import Mathlib.ModelTheory.Algebra.Field.CharP
@@ -4471,7 +4478,6 @@ import Mathlib.Order.Category.OmegaCompletePartialOrder
 import Mathlib.Order.Category.PartOrd
 import Mathlib.Order.Category.Preord
 import Mathlib.Order.Category.Semilat
-import Mathlib.Order.Chain
 import Mathlib.Order.Circular
 import Mathlib.Order.Closure
 import Mathlib.Order.Cofinal
@@ -4481,6 +4487,7 @@ import Mathlib.Order.Comparable
 import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice.Basic
+import Mathlib.Order.CompleteLattice.Chain
 import Mathlib.Order.CompleteLattice.Defs
 import Mathlib.Order.CompleteLattice.Finset
 import Mathlib.Order.CompleteLattice.Lemmas
@@ -4650,6 +4657,7 @@ import Mathlib.Order.Partition.Basic
 import Mathlib.Order.Partition.Equipartition
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Order.PiLex
+import Mathlib.Order.Preorder.Chain
 import Mathlib.Order.PrimeIdeal
 import Mathlib.Order.PrimeSeparator
 import Mathlib.Order.PropInstances
