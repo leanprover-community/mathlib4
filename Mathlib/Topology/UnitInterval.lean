@@ -60,7 +60,9 @@ instance hasOne : One I :=
 
 instance : ZeroLEOneClass I := ⟨zero_le_one (α := ℝ)⟩
 
-instance : BoundedOrder I := have : Fact ((0 : ℝ) ≤ 1) := ⟨zero_le_one⟩; inferInstance
+instance instCompleteLattice : CompleteLattice I :=
+  have : Fact ((0 : ℝ) ≤ 1) := ⟨zero_le_one⟩
+  inferInstance
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
@@ -71,6 +73,7 @@ lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
 instance : Nonempty I :=
   ⟨0⟩
+
 
 instance : Mul I :=
   ⟨fun x y => ⟨x * y, mul_mem x.2 y.2⟩⟩
