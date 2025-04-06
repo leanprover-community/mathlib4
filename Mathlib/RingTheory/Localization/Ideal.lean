@@ -167,7 +167,7 @@ theorem isPrime_of_isPrime_disjoint (I : Ideal R) (hp : I.IsPrime) (hd : Disjoin
   rw [isPrime_iff_isPrime_disjoint M S, comap_map_of_isPrime_disjoint M S I hp hd]
   exact ⟨hp, hd⟩
 
-theorem disjoint_comap_iff (S : Submonoid R) {A : Type*} [CommRing A]
+theorem disjoint_comap_iff (S : Submonoid R) {A : Type*} [CommSemiring A]
     [Algebra R A] [IsLocalization S A] (J : Ideal A) :
     Disjoint (S : Set R) (J.comap (algebraMap R A)) ↔ J ≠ ⊤ := by
   rw [← iff_not_comm]
@@ -209,6 +209,25 @@ lemma map_radical (I : Ideal R) :
     Submonoid.mem_powers_iff, exists_exists_eq_and] at hn ⊢
   obtain ⟨s, hs, h⟩ := hn
   refine ⟨s, hs, n + 1, by convert I.mul_mem_left (s ^ n * x) h; ring⟩
+
+theorem ideal_eq_iInf_comap_map_away {S : Finset R} (hS : Ideal.span (α := R) S = ⊤) (I : Ideal R) :
+    I = ⨅ f ∈ S, (I.map (algebraMap R (Localization.Away f))).comap
+    (algebraMap R (Localization.Away f)) := by
+  apply le_antisymm
+  · simp only [le_iInf₂_iff, ← Ideal.map_le_iff_le_comap, le_refl, implies_true]
+  · intro x hx
+    apply Submodule.mem_of_span_eq_top_of_smul_pow_mem _ _ hS
+    rintro ⟨s, hs⟩
+    simp only [Ideal.mem_iInf, Ideal.mem_comap] at hx
+    obtain ⟨⟨y, ⟨_, n, rfl⟩⟩, e⟩ :=
+      (IsLocalization.mem_map_algebraMap_iff (.powers s) _).mp (hx s hs)
+    dsimp only at e
+    rw [← map_mul, IsLocalization.eq_iff_exists (.powers s)] at e
+    obtain ⟨⟨_, m, rfl⟩, e⟩ := e
+    use m + n
+    dsimp at e ⊢
+    rw [pow_add, mul_assoc, ← mul_comm x, e]
+    exact I.mul_mem_left _ y.2
 
 end CommSemiring
 
@@ -262,25 +281,6 @@ theorem bot_lt_comap_prime [IsDomain R] (hM : M ≤ R⁰) (p : Ideal S) [hpp : p
   rw [← Ideal.comap_bot_of_injective (algebraMap R S) (IsLocalization.injective _ hM)]
   convert (orderIsoOfPrime M S).lt_iff_lt.mpr (show (⟨⊥, Ideal.bot_prime⟩ :
     { p : Ideal S // p.IsPrime }) < ⟨p, hpp⟩ from hp0.bot_lt)
-
-theorem ideal_eq_iInf_comap_map_away {S : Finset R} (hS : Ideal.span (α := R) S = ⊤) (I : Ideal R) :
-    I = ⨅ f ∈ S, (I.map (algebraMap R (Localization.Away f))).comap
-    (algebraMap R (Localization.Away f)) := by
-  apply le_antisymm
-  · simp only [le_iInf₂_iff, ← Ideal.map_le_iff_le_comap, le_refl, implies_true]
-  · intro x hx
-    apply Submodule.mem_of_span_eq_top_of_smul_pow_mem _ _ hS
-    rintro ⟨s, hs⟩
-    simp only [Ideal.mem_iInf, Ideal.mem_comap] at hx
-    obtain ⟨⟨y, ⟨_, n, rfl⟩⟩, e⟩ :=
-      (IsLocalization.mem_map_algebraMap_iff (.powers s) _).mp (hx s hs)
-    dsimp only at e
-    rw [← map_mul, IsLocalization.eq_iff_exists (.powers s)] at e
-    obtain ⟨⟨_, m, rfl⟩, e⟩ := e
-    use m + n
-    dsimp at e ⊢
-    rw [pow_add, mul_assoc, ← mul_comm x, e]
-    exact I.mul_mem_left _ y.2
 
 variable (R) in
 lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing Rₚ] [CommRing Sₚ]
