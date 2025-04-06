@@ -87,7 +87,6 @@ lemma isQuasiregular_prod_iff (a : A) (b : B) :
     case fst => exact Classical.choose_spec h.1
     case snd => exact Classical.choose_spec h.2
 
--- MOVE to `Mathlib.Algebra.Algebra.Quasispectrum`
 lemma quasispectrum.mem_iff_of_isUnit {A R : Type*} [CommSemiring R] [NonUnitalRing A]
     [Module R A] {a : A} {r : R} (hr : IsUnit r) :
     r ∈ quasispectrum R a ↔ ¬ IsQuasiregular (-(hr.unit⁻¹ • a)) :=
@@ -134,7 +133,6 @@ lemma Prod.spectrum_eq {A B : Type*} [CommSemiring R] [Ring A] [Ring B] [Algebra
     rw [Set.mem_union] at hr
     exact hr
 
--- MOVE to `Mathlib.Algebra.Algebra.Quasispectrum`
 lemma Pi.quasispectrum_eq [Nonempty ι] [CommSemiring R] [∀ i, NonUnitalRing (κ i)]
     [∀ i, Module R (κ i)] (a : ∀ i, κ i) :
     quasispectrum R a = ⋃ i, quasispectrum R (a i) := by
