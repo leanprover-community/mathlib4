@@ -38,6 +38,7 @@ private def wf_lbp : WellFounded (@lbp k p) :=
         match y, r with
         | _, ⟨h, _⟩ => IH _ (by rw [h, Nat.add_right_comm]; exact kn)⟩⟩
 
+/-- Find the smallest `n` at least `k` satisfying `p n h`. Returns a subtype. -/
 protected def findFromX : { n // ∃ h, p n h ∧ ∀ m h, m < n → ¬p m h } :=
   @WellFounded.fix { n : ℕ // k ≤ n}
     (fun k => (∀ n h, n < k.1 → ¬p n h) → { n // ∃ h, p n h ∧ ∀ m h, m < n → ¬p m h })
@@ -193,6 +194,7 @@ variable {p q : ℕ → Prop} [DecidablePred p] (H : ∃ n, p n)
 private def H' : ∃ (n : ℕ) (_ : 0 ≤ n), p n := H.imp fun n hn => ⟨zero_le n, hn⟩
 
 @[irreducible]
+/-- Find the smallest `n` satisfying `p n`. Returns a subtype. -/
 protected def findX : { n // p n ∧ ∀ m < n, ¬p m } :=
   ⟨(Nat.findFromX (H' H)).1, (Nat.findFromX (H' H)).2.2.1,
     fun m => (Nat.findFromX (H' H)).2.2.2 m (zero_le m)⟩

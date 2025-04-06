@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Sara Rousta
 -/
 import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Order.Minimal
 import Mathlib.Order.UpperLower.Principal
 
 /-!
@@ -23,8 +24,7 @@ open OrderDual Set
 
 variable {α β : Type*} {ι : Sort*}
 
-section closure
-
+section Preorder
 variable [Preorder α] [Preorder β] {s t : Set α} {x : α}
 
 /-- The greatest upper set containing a given set. -/
@@ -261,7 +261,24 @@ protected alias ⟨BddBelow.of_upperClosure, BddBelow.upperClosure⟩ := bddBelo
     ↑(lowerClosure s) = s ↔ IsLowerSet s :=
   @upperClosure_eq αᵒᵈ _ _
 
-end closure
+end Preorder
+
+section PartialOrder
+variable [PartialOrder α] {s : Set α} {x : α}
+
+lemma IsAntichain.minimal_mem_upperClosure_iff_mem (hs : IsAntichain (· ≤ ·) s) :
+    Minimal (· ∈ upperClosure s) x ↔ x ∈ s := by
+  simp only [upperClosure, UpperSet.mem_mk, mem_setOf_eq]
+  refine ⟨fun h ↦ ?_, fun h ↦ ⟨⟨x, h, rfl.le⟩, fun b ⟨a, has, hab⟩ hbx ↦ ?_⟩⟩
+  · obtain ⟨a, has, hax⟩ := h.prop
+    rwa [h.eq_of_ge ⟨a, has, rfl.le⟩ hax]
+  rwa [← hs.eq has h (hab.trans hbx)]
+
+lemma IsAntichain.maximal_mem_lowerClosure_iff_mem (hs : IsAntichain (· ≤ ·) s) :
+    Maximal (· ∈ lowerClosure s) x ↔ x ∈ s :=
+  hs.to_dual.minimal_mem_upperClosure_iff_mem
+
+end PartialOrder
 
 /-! ### Set Difference -/
 
