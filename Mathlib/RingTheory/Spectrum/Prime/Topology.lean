@@ -85,7 +85,7 @@ and Chris Hughes (on an earlier repository).
 * `PrimeSpectrum.isClosedMap_comap_of_isIntegral`: `comap f` is a closed map if `f` is integral.
 
 * `PrimeSpectrum.isIntegral_of_isClosedMap_comap_mapRingHom`: `f : R →+* S` is integral if
-  `comap (Polynomial.mapRingHom f)` is a closed map.
+  `comap (Polynomial.mapRingHom f : R[X] →+* S[X])` is a closed map.
 
 In the prime spectrum of a commutative semiring:
 
