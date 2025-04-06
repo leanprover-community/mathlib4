@@ -213,7 +213,6 @@ See also `Nat.findFrom`.
 protected def find : ℕ :=
   (Nat.findX H).1
 
-
 protected theorem find_spec : p (Nat.find H) :=
   (Nat.findX H).2.1
 
