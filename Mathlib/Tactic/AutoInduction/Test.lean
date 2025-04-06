@@ -14,8 +14,6 @@ import Mathlib.Algebra.Polynomial.Eval.Coeff
 set_option autoImplicit false
 set_option linter.unusedTactic false
 
-#check Polynomial.induction_on
-
 /--
 warning: declaration uses 'sorry'
 ---
@@ -27,17 +25,16 @@ error: unexpected eliminator resulting type
 theorem foobar (foo bla : Nat) : foo = bla :=
   sorry
 
-
-attribute [autoinduction (C := by simp)] Polynomial.induction_on
-
+attribute [autoinduction (C := by simp) (add := by simp)] Polynomial.induction_on
 
 example {R : Type*} [Ring R] : ∀ p : Polynomial R, p.eval 0 = p.coeff 0 := fun p => by
-  autoinduction p with
-  | add l r hl hr => sorry
+  autoinduction h:p with
+  -- | add l r hl hr => sorry
   | monomial n r hi =>
-    rw [pow_succ,← mul_assoc,Polynomial.eval_mul_X,hi]
-    simp only [Polynomial.mul_coeff_zero, Polynomial.coeff_C_zero, Polynomial.coeff_X_pow, mul_ite,
-      mul_one, mul_zero, Polynomial.coeff_X_zero]
+    rw [pow_succ,← mul_assoc,Polynomial.eval_mul_X,hi _]
+    · simp only [Polynomial.mul_coeff_zero, Polynomial.coeff_C_zero, Polynomial.coeff_X_pow,
+      mul_ite, mul_one, mul_zero, Polynomial.coeff_X_zero]
+    sorry
 
 
 

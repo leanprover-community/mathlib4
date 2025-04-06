@@ -14,12 +14,14 @@ def Lean.ConstantInfo.getConstantVal? (info : ConstantInfo) : Option ConstantVal
   | .defnInfo val => val.toConstantVal
   | _ => none
 
+open Parser Tactic in
 structure AutoIndPrincipleConfig where
-  dischargers : NameMap Term := default
+  dischargers : NameMap (TSyntax ``tacticSeq) := default
 deriving Inhabited
 
 instance : Repr AutoIndPrincipleConfig where
-  reprPrec x := reprPrec x.dischargers.toList
+  reprPrec x := reprPrec <| x.dischargers.toList.map (fun z => (z.fst,
+    toString (Syntax.prettyPrint z.snd)))
 
 -- no need to store the type, we can ask that from the environment when we need it
 structure AutoIndPrinciple extends AutoIndPrincipleConfig, Meta.CustomEliminator where
@@ -55,17 +57,16 @@ initialize autoIndPrincipleExt :
 def addAutoIndPrinciple {m : Type → Type} [MonadEnv m] (a : AutoIndPrinciple) : m Unit :=
   modifyEnv (autoIndPrincipleExt.addEntry · a)
 
-open Parser Meta
+open Parser Meta Tactic
 
-syntax autoIndPrinciplesRest := (ppSpace "(" ident " := " term ")" )*
+syntax autoIndPrinciplesRest := (ppSpace "(" ident " := ""by " tacticSeq ")" )*
 
 syntax (name := autoinduction) "autoinduction" autoIndPrinciplesRest : attr
 
 open Command
 
 def elabAutoIndPrinciplesRest (elimInfo : ElimInfo) : Syntax → CommandElabM AutoIndPrincipleConfig
-  | `(autoIndPrinciplesRest| $[($ids := $ts)]*) => do
-
+  | `(autoIndPrinciplesRest| $[($ids := by $ts)]*) => do
     -- let allowedAlts : NameSet := .fromArray
     --   (elimInfo.altsInfo.filter (·.provesMotive) |>.map (·.name)) _
     let mut allowedAlts : NameSet := {}
@@ -75,12 +76,12 @@ def elabAutoIndPrinciplesRest (elimInfo : ElimInfo) : Syntax → CommandElabM Au
         -- if let .some fullname := alt.declName? then
         --   allowedAlts := allowedAlts.insert fullname
 
-    let mut userArgs : NameMap Term := {}
-    for (name, t) in (ids.map (·.getId)).zip ts do
+    let mut userArgs : NameMap (TSyntax ``tacticSeq) := {}
+    let ts' : Array (TSyntax ``tacticSeq) := ts.map (.mk ·.raw.mkSynthetic)
+    for (name, t) in (ids.map (·.getId)).zip ts' do
       unless allowedAlts.contains name do
         throwError s!"{name} is not the name of an induction alternative"
       userArgs := userArgs.insert name t
-
     return ⟨userArgs⟩
   | _ => throwUnsupportedSyntax
 
@@ -116,6 +117,7 @@ def getAutoIndPrinciple? (targets : Array Expr) :
     let targetType := (← instantiateMVars (← inferType target)).headBeta
     let .const declName .. := targetType.getAppFn | return none
     key := key.push declName
+  logInfo s!"found key{key}"
   return (← getAutoIndPrinciples).map.find? key
   -- let mut key : Array _:= #[]
 

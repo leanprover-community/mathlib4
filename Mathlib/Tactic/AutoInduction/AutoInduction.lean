@@ -52,16 +52,6 @@ try to provide a value for the respective argument.
 syntax (name := autoinductiontac) "autoinduction" elimTarget+
   (" generalizing" (ppSpace colGt term:max)+)? (inductionAlts)? : tactic
 
-
-/--
-TODO: write doc
--/
-def _root_.Lean.Syntax.Term.asTacticSeq {m} [Monad m] [MonadRef m] [MonadQuotation m] :
-    Term → m (TSyntax ``tacticSeq)
-  | `(by $tseq) => return tseq
-  | `(term|$t) => `(tacticSeq|exact $t)
-
-
 /--
 TODO:
 - write doc
@@ -94,7 +84,6 @@ def generateMatchBranches {m} [Monad m] [MonadControlT MetaM m]
         continue
       let ctorType : Expr ← ctorId.getType
       if let .some discharger := cfg.dischargers.find? ctorName then
-        let dischargerSeq ← discharger.asTacticSeq
         let argnames ← forallTelescope ctorType (fun args _ => do
           args.filterMapM (fun e => do
             let decl ← e.fvarId!.getDecl
@@ -102,7 +91,7 @@ def generateMatchBranches {m} [Monad m] [MonadControlT MetaM m]
               return Option.some <| Lean.mkIdent (decl.userName)
             else
               return .none))
-        let alt ← `( inductionAlt| | @$(Lean.mkIdent ctorName) $[$argnames]* => $dischargerSeq)
+        let alt ← `( inductionAlt| | @$(Lean.mkIdent ctorName) $[$argnames]* => $discharger)
           -- try to make this fail graciously?
         altSyntax := altSyntax.push alt
     return altSyntax)
@@ -121,36 +110,37 @@ def getBranchNames (alts: Array (TSyntax ``inductionAlt)) : TacticM (NameSet) :=
 
 @[tactic autoinductiontac]
 def autoInductOn : Tactic
-| `(tactic|autoinduction $[$t]* $[generalizing $[$g]*]? $[with $[$alts?]*]?) => withMainContext do
+| `(tactic|autoinduction $[$t]* $[generalizing $[$g]*]? $[with $[$alts?]*]?) => focus <| do
+  let state ← saveState
   let (targets, _toTag) ← elabElimTargets t
-  -- let principle? ← getAutoIndPrinciple? targets
-  -- unless principle?.isSome do
-  if let .some (principleName,cfg) ← getAutoIndPrinciple? targets then
-    let elimInfo ← withMainContext <| getElimInfo principleName
-    logInfo s!"applying {principleName}"
-    if let .some alts := alts? then do
-      let blacklist ← getBranchNames alts
-      let autoAlts ← generateMatchBranches principleName elimInfo cfg blacklist
-      let inductiontac ←
-        `(tactic| induction $[$t],* using $(Lean.mkIdent principleName)
-          $[generalizing $g*]? with $[$(alts.append autoAlts)]*)
-      logInfo s!" constructed induction tactic {Syntax.prettyPrint inductiontac}"
-      evalInduction inductiontac
-    else do
-      let mainGoal ← getMainGoal
-      let mainGoalName ← mainGoal.getTag
-      let inductiontac ← `(tactic| induction $[$t],* using $(Lean.mkIdent principleName)
-        $[generalizing $g*]?)
 
-      let fullNameCfg : NameMap Term :=
-        RBMap.fold (fun m n t => m.insert (mainGoalName ++ n) t) {} cfg.dischargers
-      logInfo s!" constructed induction tactic {Syntax.prettyPrint inductiontac}"
-      evalInduction inductiontac
-      let goals ← getGoals
-      for goal in goals do
-        if let .some t := fullNameCfg.find? (← goal.getTag) then
-          goal.withContext do
-            focus <| evalTacticSeq (← `(tacticSeq| try $(← t.asTacticSeq)))
-  else
-    logInfo s!"no induction principle found"
+  let principle? ← withMainContext <| getAutoIndPrinciple? targets
+  state.restore
+  let .some (principleName,cfg) := principle? | logInfo s!"no induction principle found"
+  let elimInfo ← withMainContext <| getElimInfo principleName
+
+  logInfo s!"applying {principleName}"
+  if let .some alts := alts? then do
+    let blacklist ← getBranchNames alts
+    let autoAlts ← generateMatchBranches principleName elimInfo cfg blacklist
+    let inductiontac ←
+      `(tactic| induction $[$t],* using $(Lean.mkIdent principleName)
+        $[generalizing $g*]? with $[$(alts.append autoAlts)]*)
+    logInfo s!" constructed induction tactic {Syntax.prettyPrint inductiontac}"
+    evalInduction inductiontac
+  else do
+    let mainGoal ← getMainGoal
+    let mainGoalName ← mainGoal.getTag
+    let inductiontac ← `(tactic| induction $[$t],* using $(Lean.mkIdent principleName)
+      $[generalizing $g*]?)
+
+    let fullNameCfg : NameMap (TSyntax ``tacticSeq) :=
+      RBMap.fold (fun m n t => m.insert (mainGoalName ++ n) t) {} cfg.dischargers
+    logInfo s!" constructed induction tactic {Syntax.prettyPrint inductiontac}"
+    evalInduction inductiontac
+    let goals ← getGoals
+    for goal in goals do
+      if let .some t := fullNameCfg.find? (← goal.getTag) then
+        goal.withContext do
+          focus <| evalTacticSeq (← `(tacticSeq| try $t))
 | _ => throwUnsupportedSyntax
