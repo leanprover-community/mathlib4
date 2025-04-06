@@ -183,7 +183,7 @@ namespace Real
 /-- The additive character from `ℝ` onto the circle, given by `fun x ↦ exp (2 * π * x * I)`.
 Denoted as `𝐞` within the `Real.FourierTransform` namespace. This uses the analyst convention that
 there is a `2 * π` in the exponent. -/
-def fourierChar : AddChar ℝ 𝕊 where
+def fourierChar : AddChar ℝ Circle where
   toFun z := .exp (2 * π * z)
   map_zero_eq_one' := by rw [mul_zero, Circle.exp_zero]
   map_add_eq_mul' x y := by rw [mul_add, Circle.exp_add]
