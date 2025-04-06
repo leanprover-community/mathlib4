@@ -370,7 +370,7 @@ alias comap_inducing_of_surjective := comap_isInducing_of_surjective
 /-- The embedding has closed range if the domain (and therefore the codomain) is a ring,
   see `PrimeSpectrum.isClosedEmbedding_comap_of_surjective`.
   On the other hand, `comap (Nat.castRingHom (ZMod 2))` does not have closed range. -/
-theorem comap_isEmbedding_of_surjective (hf : Surjective f) : IsEmbedding (comap f) :=
+theorem isEmbedding_comap_of_surjective (hf : Surjective f) : IsEmbedding (comap f) :=
   (isEmbedding_iff _).2 ⟨comap_isInducing_of_surjective _ _ hf, comap_injective_of_surjective f hf⟩
 
 end Comap
@@ -445,11 +445,11 @@ lemma range_comap_snd : letI f := RingHom.snd R S
   · exact ⟨⟨p, hp⟩, PrimeSpectrum.ext <| by simpa [Ideal.prod] using eq.symm⟩
 
 lemma isClosedEmbedding_comap_fst : IsClosedEmbedding (comap (RingHom.fst R S)) :=
-  (isClosedEmbedding_iff _).mpr ⟨comap_isEmbedding_of_surjective _ _ Prod.fst_surjective, by
+  (isClosedEmbedding_iff _).mpr ⟨isEmbedding_comap_of_surjective _ _ Prod.fst_surjective, by
     simp_rw [range_comap_fst, isClosed_zeroLocus]⟩
 
 lemma isClosedEmbedding_comap_snd : IsClosedEmbedding (comap (RingHom.snd R S)) :=
-  (isClosedEmbedding_iff _).mpr ⟨comap_isEmbedding_of_surjective _ _ Prod.snd_surjective, by
+  (isClosedEmbedding_iff _).mpr ⟨isEmbedding_comap_of_surjective _ _ Prod.snd_surjective, by
     simp_rw [range_comap_snd, isClosed_zeroLocus]⟩
 
 /-- The prime spectrum of `R × S` is homeomorphic
