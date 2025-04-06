@@ -48,6 +48,10 @@ properties of the mgf from those of the characteristic function).
   `μ.map X = μ'.map Y`. In other words, complex moment generating functions separate the
   distributions of random variables.
 
+## TODO
+
+* Prove that if two random variables have the same `mgf`, then the have the same `complexMGF`.
+
 -/
 
 
@@ -297,11 +301,9 @@ section ext
 
 variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
 
-/--
-If the complex moment generating functions of two random variables `X` and `Y` with respect to the
-finite measures `μ`, `μ'`, respectively, coincide, then `μ.map X = μ'.map Y`. In other words,
-complex moment generating functions separate the distributions of random variables.
--/
+/-- If the complex moment generating functions of two random variables `X` and `Y` with respect to
+the finite measures `μ`, `μ'`, respectively, coincide, then `μ.map X = μ'.map Y`. In other words,
+complex moment generating functions separate the distributions of random variables. -/
 theorem _root_.MeasureTheory.Measure.ext_of_complexMGF_eq [IsFiniteMeasure μ]
     [IsFiniteMeasure μ'] (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ')
     (h : complexMGF X μ = complexMGF Y μ') :
