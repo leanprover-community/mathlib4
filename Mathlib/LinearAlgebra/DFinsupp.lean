@@ -503,10 +503,7 @@ theorem iSupIndep_of_dfinsuppSumAddHom_injective (p : ι → AddSubmonoid N)
 alias iSupIndep_of_dfinsupp_sumAddHom_injective := iSupIndep_of_dfinsuppSumAddHom_injective
 
 @[deprecated (since := "2024-11-24")]
-alias independent_of_dfinsuppSumAddHom_injective := iSupIndep_of_dfinsuppSumAddHom_injective
-
-@[deprecated (since := "2025-04-06")]
-alias independent_of_dfinsupp_sumAddHom_injective := independent_of_dfinsuppSumAddHom_injective
+alias independent_of_dfinsupp_sumAddHom_injective := iSupIndep_of_dfinsuppSumAddHom_injective
 
 /-- Combining `DFinsupp.lsum` with `LinearMap.toSpanSingleton` is the same as
 `Finsupp.linearCombination` -/
@@ -537,10 +534,7 @@ theorem iSupIndep_of_dfinsuppSumAddHom_injective' (p : ι → AddSubgroup N)
 alias iSupIndep_of_dfinsupp_sumAddHom_injective' := iSupIndep_of_dfinsuppSumAddHom_injective'
 
 @[deprecated (since := "2024-11-24")]
-alias independent_of_dfinsuppSumAddHom_injective' := iSupIndep_of_dfinsuppSumAddHom_injective'
-
-@[deprecated (since := "2025-04-06")]
-alias independent_of_dfinsupp_sumAddHom_injective' := independent_of_dfinsuppSumAddHom_injective'
+alias independent_of_dfinsupp_sumAddHom_injective' := iSupIndep_of_dfinsuppSumAddHom_injective'
 
 /-- The canonical map out of a direct sum of a family of submodules is injective when the submodules
 are `iSupIndep`.
@@ -581,10 +575,7 @@ theorem iSupIndep.dfinsuppSumAddHom_injective {p : ι → AddSubgroup N} (h : iS
 alias iSupIndep.dfinsupp_sumAddHom_injective := iSupIndep.dfinsuppSumAddHom_injective
 
 @[deprecated (since := "2024-11-24")]
-alias Independent.dfinsuppSumAddHom_injective := iSupIndep.dfinsuppSumAddHom_injective
-
-@[deprecated (since := "2025-04-06")]
-alias Independent.dfinsupp_sumAddHom_injective := Independent.dfinsuppSumAddHom_injective
+alias Independent.dfinsupp_sumAddHom_injective := iSupIndep.dfinsuppSumAddHom_injective
 
 /-- A family of submodules over an additive group are independent if and only iff `DFinsupp.lsum`
 applied with `Submodule.subtype` is injective.
@@ -608,10 +599,7 @@ theorem iSupIndep_iff_dfinsuppSumAddHom_injective (p : ι → AddSubgroup N) :
 alias iSupIndep_iff_dfinsupp_sumAddHom_injective := iSupIndep_iff_dfinsuppSumAddHom_injective
 
 @[deprecated (since := "2024-11-24")]
-alias independent_iff_dfinsuppSumAddHom_injective := iSupIndep_iff_dfinsuppSumAddHom_injective
-
-@[deprecated (since := "2025-04-06")]
-alias independent_iff_dfinsupp_sumAddHom_injective := independent_iff_dfinsuppSumAddHom_injective
+alias independent_iff_dfinsupp_sumAddHom_injective := iSupIndep_iff_dfinsuppSumAddHom_injective
 
 /-- If a family of submodules is independent, then a choice of nonzero vector from each submodule
 forms a linearly independent family.
