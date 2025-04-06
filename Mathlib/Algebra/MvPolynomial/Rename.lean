@@ -319,7 +319,7 @@ theorem support_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} [Dec
     (h : Function.Injective f) :
     (rename f p).support = Finset.image (Finsupp.mapDomain f) p.support := by
   rw [rename_eq]
-  exact Finsupp.mapDomain_support_of_injective (mapDomain_injective h) _
+  exact Finsupp.mapDomain_support_of_injective (Finsupp.mapDomain_injective h) _
 
 end Support
 

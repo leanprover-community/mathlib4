@@ -117,7 +117,8 @@ theorem Ici_mul_Ioi_subset' (a b : α) : Ici a * Ioi b ⊆ Ioi (a * b) := by
 end ContravariantLT
 
 section LinearOrderedCommMonoid
-variable [LinearOrderedCommMonoid α] [MulLeftReflectLE α] [ExistsMulOfLE α] {a b c d : α}
+variable [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α] [MulLeftReflectLE α] [ExistsMulOfLE α]
+  {a b c d : α}
 
 -- TODO: Generalise to arbitrary actions using a `smul` version of `MulLeftMono`
 @[to_additive (attr := simp)]
@@ -145,7 +146,7 @@ lemma Icc_mul_Icc (hab : a ≤ b) (hcd : c ≤ d) : Icc a b * Icc c d = Icc (a *
 end LinearOrderedCommMonoid
 
 section OrderedCommGroup
-variable [OrderedCommGroup α]
+variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
 
 @[to_additive (attr := simp)] lemma inv_Ici (a : α) : (Ici a)⁻¹ = Iic a⁻¹ := ext fun _x ↦ le_inv'
 @[to_additive (attr := simp)] lemma inv_Iic (a : α) : (Iic a)⁻¹ = Ici a⁻¹ := ext fun _x ↦ inv_le'
@@ -179,7 +180,7 @@ end OrderedCommGroup
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup α] (a b c : α)
+variable [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] (a b c : α)
 
 /-!
 ### Preimages under `x ↦ a + x`
@@ -462,7 +463,7 @@ theorem Iio_add_bij : BijOn (· + a) (Iio b) (Iio (b + a)) :=
 end OrderedAddCommGroup
 
 section LinearOrderedCommGroup
-variable [LinearOrderedCommGroup α]
+variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α]
 
 @[to_additive (attr := simp)]
 lemma inv_uIcc (a b : α) : [[a, b]]⁻¹ = [[a⁻¹, b⁻¹]] := by
@@ -472,7 +473,7 @@ end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α] (a b c d : α)
+variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] (a b c d : α)
 
 @[simp]
 theorem preimage_const_add_uIcc : (fun x => a + x) ⁻¹' [[b, c]] = [[b - a, c - a]] := by
@@ -539,7 +540,7 @@ end LinearOrderedAddCommGroup
 
 section LinearOrderedField
 
-variable [LinearOrderedField α] {a : α}
+variable [Field α] [LinearOrder α] [IsStrictOrderedRing α] {a : α}
 
 @[simp]
 theorem preimage_mul_const_Iio (a : α) {c : α} (h : 0 < c) :
@@ -796,7 +797,8 @@ theorem inv_Ioi₀ {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
 theorem inv_Iio₀ {a : α} (ha : a < 0) : (Iio a)⁻¹ = Ioo a⁻¹ 0 := by
   rw [inv_eq_iff_eq_inv, inv_Ioo_0_right (inv_neg''.2 ha), inv_inv]
 
-theorem image_const_mul_Ioi_zero {k : Type*} [LinearOrderedField k] {x : k} (hx : 0 < x) :
+theorem image_const_mul_Ioi_zero {k : Type*} [Field k] [LinearOrder k] [IsStrictOrderedRing k]
+    {x : k} (hx : 0 < x) :
     (fun y => x * y) '' Ioi (0 : k) = Ioi 0 := by
   have := (Units.mk0 x hx.ne').mulLeft.image_eq_preimage (Ioi 0)
   simp at this
