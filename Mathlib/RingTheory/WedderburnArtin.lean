@@ -80,68 +80,6 @@ end TwoSidedIdeal
 
 instance op_simple : IsSimpleRing Aᵐᵒᵖ := ⟨TwoSidedIdeal.toMopOrderIso.symm.isSimpleOrder⟩
 
-/--
-The canonical map from `Aᵒᵖ` to `Hom(A, A)`
--/
-@[simps]
-def mopToEnd : Aᵐᵒᵖ →+* Module.End A A where
-  toFun a :=
-    { toFun := fun x ↦ x * a.unop
-      map_add' := by simp [add_mul]
-      map_smul' := by simp [mul_assoc] }
-  map_zero' := by aesop
-  map_one' := by aesop
-  map_add' := by aesop
-  map_mul' := by aesop
-
-
-/--
-The canonical map from `A` to `Hom(A, A)ᵒᵖ`
--/
-@[simps]
-def toEndMop : A →+* (Module.End A A)ᵐᵒᵖ where
-  toFun a := op
-    { toFun := fun x ↦ x * a
-      map_add' := by simp [add_mul]
-      map_smul' := by intros; simp [mul_assoc] }
-  map_zero' := by aesop
-  map_one' := by aesop
-  map_add' := by intros; apply_fun MulOpposite.unop using unop_injective; ext; simp
-  map_mul' := by intros; apply_fun MulOpposite.unop using unop_injective; ext; simp
-
-/--
-the map `Aᵒᵖ → Hom(A, A)` is bijective
--/
-noncomputable def mopEquivEnd : Aᵐᵒᵖ ≃+* Module.End A A :=
-  RingEquiv.ofBijective (mopToEnd A) ⟨RingHom.injective_iff_ker_eq_bot _ |>.mpr <|
-    SetLike.ext fun α => ⟨by rintro (ha : mopToEnd A α = 0); simpa using (DFunLike.ext_iff.mp ha) 1,
-      by rintro rfl; ext; simp⟩, fun φ => ⟨op (φ 1), by ext; simp⟩⟩
-
-/--
-the map `Aᵒᵖ → Hom(A, A)` is bijective
--/
-@[simps!]
-noncomputable def equivEndMop : A ≃+* (Module.End A A)ᵐᵒᵖ :=
-  RingEquiv.ofBijective (toEndMop A) ⟨RingHom.injective_iff_ker_eq_bot _ |>.mpr <| SetLike.ext
-    fun α => ⟨fun ha => by
-      simp only [RingHom.mem_ker, toEndMop_apply, op_eq_zero_iff, DFunLike.ext_iff,
-        LinearMap.coe_mk, AddHom.coe_mk, LinearMap.zero_apply] at ha
-      simpa using ha 1, fun (ha : α = 0) => by simp [ha]⟩,
-      fun φ => ⟨φ.unop 1, unop_injective <| by ext; simp⟩⟩
-
-/--
-For any ring `D`, `Mₙ(D) ≅ Mₙ(D)ᵒᵖ`.
--/
-@[simps]
-def matrixEquivMatrixMop (n : ℕ) (D : Type*) [Ring D] :
-    Matrix (Fin n) (Fin n) Dᵐᵒᵖ ≃+* (Matrix (Fin n) (Fin n) D)ᵐᵒᵖ where
-  toFun := fun M => MulOpposite.op (M.transpose.map (fun d => MulOpposite.unop d))
-  invFun := fun M => (MulOpposite.unop M).transpose.map (fun d => MulOpposite.op d)
-  left_inv a := by aesop
-  right_inv a := by aesop
-  map_mul' x y := unop_injective <| by ext; simp [transpose_map, transpose_apply, mul_apply]
-  map_add' x y := by aesop
-
 universe u
 
 lemma Ideal.eq_of_le_of_isSimpleModule {A : Type u} [Ring A]
@@ -383,8 +321,9 @@ theorem Wedderburn_Artin
     right_inv := by intro f; ext; simp
     map_add' := by intros f g; ext; simp
     map_mul' := by intros f g; ext; simp }
-  refine ⟨n, hn, I, inferInstance, ⟨(equivEndMop A).trans <| endEquiv.op.trans <|
-    (endPowEquivMatrix A I n).op.trans <| (matrixEquivMatrixMop n (Module.End A I)).symm⟩⟩
+  refine ⟨n, hn, I, inferInstance, ⟨((RingEquiv.opOp A).trans (Module.moduleEndSelf A).op).trans
+    <| endEquiv.op.trans <|
+    (endPowEquivMatrix A I n).op.trans <| RingEquiv.mopMatrix.symm⟩⟩
 
 theorem Wedderburn_Artin'
     (A : Type u) [Ring A] [IsArtinianRing A] [simple : IsSimpleRing A] :
@@ -432,35 +371,6 @@ theorem RingEquiv.mem_center_iff {R1 R2 : Type*} [Ring R1] [Ring R2] (e : R1 ≃
   simpa only [Subring.mem_center_iff] using
     ⟨fun h r => e.symm.injective <| by simp [h], fun h r => e.injective <| by simpa using h (e r)⟩
 
-variable {B} in
-/--
-For a `K`-algebra B, there is a map from `I : Ideal B` to `End(I)ᵒᵖ` defined by `k ↦ x ↦ k • x`.
--/
-@[simps]
-def algebraMapEndIdealMop (I : Ideal B) : K →+* (Module.End B I)ᵐᵒᵖ where
-  toFun k := .op <|
-  { toFun := fun x => k • x
-    map_add' := fun x y => by simp
-    map_smul' := fun k' x => by ext; simp }
-  map_one' := unop_injective <| by ext; simp
-  map_mul' _ _ := unop_injective <| by ext; simp [MulAction.mul_smul]
-  map_zero' := unop_injective <| by ext; simp
-  map_add' _ _ := unop_injective <| by ext; simp [add_smul]
-
-instance (I : Ideal B) : Algebra K (Module.End B I)ᵐᵒᵖ where
-  algebraMap := algebraMapEndIdealMop K I
-  commutes' := fun r ⟨x⟩ => MulOpposite.unop_injective <| DFunLike.ext _ _ fun ⟨i, hi⟩ =>
-    Subtype.ext <| show (x (r • ⟨i, hi⟩)).1 = r • (x ⟨i, hi⟩).1 by
-      convert Subtype.ext_iff.mp (x.map_smul (algebraMap K B r) ⟨i, hi⟩) using 1 <;> aesop
-  smul k x := .op <| (algebraMapEndIdealMop K I k).unop * x.unop
-  smul_def' := fun r ⟨x⟩ => MulOpposite.unop_injective <| DFunLike.ext _ _ fun ⟨i, hi⟩ =>
-    Subtype.ext <| by
-      convert Subtype.ext_iff.mp (x.map_smul (algebraMap K B r) ⟨i, hi⟩) |>.symm using 1 <;> aesop
-
-omit [FiniteDimensional K B] in
-lemma algebraEndIdealMop.algebraMap_eq (I : Ideal B) :
-    algebraMap K (Module.End B I)ᵐᵒᵖ = algebraMapEndIdealMop K I := rfl
-
 lemma Wedderburn_Artin_algebra_version' (R : Type u) (A : Type v) [CommRing R] [Ring A]
   [sim : IsSimpleRing A] [Algebra R A] [hA : IsArtinianRing A] :
     ∃ (n : ℕ) (_ : NeZero n) (S : Type v) (_ : DivisionRing S) (_ : Algebra R S),
@@ -477,36 +387,36 @@ lemma Wedderburn_Artin_algebra_version' (R : Type u) (A : Type v) [CommRing R] [
     map_mul' := by intros f g; ext; simp }
 
   refine ⟨n, hn, (Module.End A I)ᵐᵒᵖ, inferInstance, inferInstance, ⟨AlgEquiv.ofRingEquiv
-    (f := equivEndMop A |>.trans <| endEquiv.op.trans <| (endPowEquivMatrix A I n).op.trans
-    (matrixEquivMatrixMop n (Module.End A I)).symm) ?_⟩⟩
+    (f := (RingEquiv.opOp A).trans (Module.moduleEndSelf A).op |>.trans <| endEquiv.op.trans <|
+    (endPowEquivMatrix A I n).op.trans RingEquiv.mopMatrix.symm) ?_⟩⟩
   intro r
   rw [Matrix.algebraMap_eq_diagonal]
   ext i j
   apply MulOpposite.unop_injective
-  simp only [endPowEquivMatrix, RingEquiv.coe_trans, Function.comp_apply, equivEndMop_apply,
-    RingEquiv.op_apply_apply, unop_op, RingEquiv.coe_mk, Equiv.coe_fn_mk, AlgEquiv.coe_ringEquiv,
-    matrixEquivMatrixMop_symm_apply, map_apply, transpose_apply, diagonal, Pi.algebraMap_apply,
-    MulOpposite.algebraMap_apply, of_apply, endEquiv]
+  simp only [endPowEquivMatrix, RingEquiv.coe_trans, Function.comp_apply, RingEquiv.opOp_apply,
+    RingEquiv.op_apply_apply, unop_op, Module.moduleEndSelf_apply, RingEquiv.coe_mk,
+    Equiv.coe_fn_mk, AlgEquiv.coe_ringEquiv, RingEquiv.mopMatrix_symm_apply, map_apply,
+    transpose_apply, diagonal, Pi.algebraMap_apply, algebraMap_apply, of_apply, endEquiv]
   split_ifs with h
   · subst h
     ext x : 1
     simp only [endVecAlgEquivMatrixEnd_apply_apply, LinearMap.coe_comp, LinearEquiv.coe_coe,
-      LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, unop_op, Module.algebraMap_end_apply,
-      endEquiv]
+      Function.comp_apply, DistribMulAction.toLinearMap_apply, smul_eq_mul_unop, unop_op,
+      Module.algebraMap_end_apply, endEquiv]
     rw [show r • x = Function.update (0 : Fin n → I) i (r • x) i by simp]
     refine congr_fun (e.injective ?_) i
     simp only [LinearEquiv.apply_symm_apply, endEquiv]
-    rw [show Function.update (0 : Fin n → I) i (r • x) = r • Function.update (0 : Fin n → I) i x
-      by ext : 1; simp [Function.update]]
-    rw [← Algebra.commutes, ← smul_eq_mul, ← e.map_smul]
+    rw [← smul_zero r, Function.update_smul, ← Algebra.commutes, ← smul_eq_mul, ← e.map_smul]
     exact congr_arg e <| by ext; simp [Pi.single]
+
   · ext x : 1
     simp only [LinearMap.coe_mk, AddHom.coe_mk, MulOpposite.unop_zero, LinearMap.zero_apply]
     rw [show (0 : I) = Function.update (0 : Fin n → I) i (r • x) j
       by simp [Function.update, if_neg (Ne.symm h)]]
     refine congr_fun (e.injective ?_) j
-    simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, LinearMap.coe_mk, AddHom.coe_mk,
-      Function.comp_apply, LinearEquiv.apply_symm_apply]
+    simp only [LinearEquiv.invFun_eq_symm, RingEquiv.opOp_apply, unop_op,
+      Module.moduleEndSelf_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+      DistribMulAction.toLinearMap_apply, smul_eq_mul_unop, LinearEquiv.apply_symm_apply, endEquiv]
     rw [show Function.update (0 : Fin n → I) i (r • x) = r • Function.update (0 : Fin n → I) i x
       by ext : 1; simp [Function.update]]
     rw [← Algebra.commutes, ← smul_eq_mul, ← e.map_smul]
