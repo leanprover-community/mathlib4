@@ -23,7 +23,7 @@ universe u
 namespace Nat
 
 /-- `bit b` appends the digit `b` to the little end of the binary representation of
-  its natural number input. -/
+its natural number input. -/
 def bit (b : Bool) (n : Nat) : Nat :=
   cond b (2 * n + 1) (2 * n)
 
