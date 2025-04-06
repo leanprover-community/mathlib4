@@ -120,7 +120,7 @@ section CompleteSpace
 variable [∀ i, ContinuousSMul 𝕜 (E i)] [ContinuousConstSMul 𝕜 F] [CompleteSpace F]
 
 open UniformOnFun in
-theorem completeSpace (h : IsRestrictGen {s : Set (Π i, E i) | IsVonNBounded 𝕜 s}) :
+theorem completeSpace (h : IsCoherentWith {s : Set (Π i, E i) | IsVonNBounded 𝕜 s}) :
     CompleteSpace (ContinuousMultilinearMap 𝕜 E F) := by
   classical
   wlog hF : T2Space F generalizing F

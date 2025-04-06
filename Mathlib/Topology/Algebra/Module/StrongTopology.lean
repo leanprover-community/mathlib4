@@ -301,7 +301,7 @@ theorem isUniformInducing_postcomp
   exact (UniformOnFun.postcomp_isUniformInducing hg).comp (isUniformInducing_coeFn _ _ _)
 
 theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F]
-    {𝔖 : Set (Set E)} (h𝔖 : IsRestrictGen 𝔖) (h𝔖U : ⋃₀ 𝔖 = univ) :
+    {𝔖 : Set (Set E)} (h𝔖 : IsCoherentWith 𝔖) (h𝔖U : ⋃₀ 𝔖 = univ) :
     CompleteSpace (UniformConvergenceCLM σ F 𝔖) := by
   wlog hF : T2Space F generalizing F
   · rw [(isUniformInducing_postcomp σ (SeparationQuotient.mkCLM 𝕜₂ F)
@@ -452,7 +452,7 @@ theorem isVonNBounded_iff {R : Type*} [NormedDivisionRing R]
   UniformConvergenceCLM.isVonNBounded_iff
 
 theorem completeSpace [UniformSpace F] [IsUniformAddGroup F] [ContinuousSMul 𝕜₂ F] [CompleteSpace F]
-    [ContinuousSMul 𝕜₁ E] (h : IsRestrictGen {s : Set E | IsVonNBounded 𝕜₁ s}) :
+    [ContinuousSMul 𝕜₁ E] (h : IsCoherentWith {s : Set E | IsVonNBounded 𝕜₁ s}) :
     CompleteSpace (E →SL[σ] F) :=
   UniformConvergenceCLM.completeSpace _ _ h isVonNBounded_covers
 
