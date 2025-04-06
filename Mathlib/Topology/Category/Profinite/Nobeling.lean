@@ -607,9 +607,6 @@ theorem GoodProducts.finsuppSum_mem_span_eval {a : I} {as : List I}
 @[deprecated (since := "2025-04-06")]
 alias GoodProducts.finsupp_sum_mem_span_eval := GoodProducts.finsuppSum_mem_span_eval
 
-@[deprecated (since := "2025-04-06")]
-alias GoodProducts.finsupp_sum_mem_span_eval := GoodProducts.finsuppSum_mem_span_eval
-
 /-- If `s` is a finite subset of `I`, then the good products span. -/
 theorem GoodProducts.spanFin [WellFoundedLT I] :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (· ∈ s)))) := by
