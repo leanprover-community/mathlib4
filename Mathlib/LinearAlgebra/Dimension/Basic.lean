@@ -66,19 +66,6 @@ theorem rank_le_card : Module.rank R M ≤ #M :=
 instance nonempty_linearIndependent_set : Nonempty {s : Set M // LinearIndepOn R id s } :=
   ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
 
-variable [Nontrivial R]
-
-/-- See `rank_subsingleton` that assumes `Subsingleton R` instead. -/
-@[simp, nontriviality] theorem rank_subsingleton' [Subsingleton M] : Module.rank R M = 0 := by
-  rw [Module.rank, ← bot_eq_zero, eq_bot_iff]
-  exact ciSup_le fun s ↦ by simp [(linearIndependent_subsingleton_iff _).mp s.2]
-
-@[simp]
-theorem rank_punit : Module.rank R PUnit = 0 := rank_subsingleton' _ _
-
-@[simp]
-theorem rank_bot : Module.rank R (⊥ : Submodule R M) = 0 := rank_subsingleton' _ _
-
 end
 
 namespace LinearIndependent
@@ -379,17 +366,6 @@ theorem LinearMap.rank_le_of_surjective (f : M →ₗ[R] M₁) (h : Surjective f
     Module.rank R M₁ ≤ Module.rank R M := by
   rw [← rank_range_of_surjective f h]
   apply rank_range_le
-
-@[nontriviality, simp]
-theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
-  haveI := Module.subsingleton R M
-  have : Nonempty { s : Set M // LinearIndepOn R id s} := ⟨⟨∅, linearIndepOn_empty _ _⟩⟩
-  rw [Module.rank_def, ciSup_eq_of_forall_le_of_forall_lt_exists_gt]
-  · rintro ⟨s, hs⟩
-    rw [Cardinal.mk_le_one_iff_set_subsingleton]
-    apply subsingleton_of_subsingleton
-  intro w hw
-  exact ⟨⟨{0}, LinearIndepOn.of_subsingleton⟩, hw.trans_eq (Cardinal.mk_singleton _).symm⟩
 
 lemma rank_le_of_isSMulRegular {S : Type*} [CommSemiring S] [Algebra S R] [Module S M]
     [IsScalarTower S R M] (L L' : Submodule R M) {s : S} (hr : IsSMulRegular M s)
