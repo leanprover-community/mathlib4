@@ -21,10 +21,12 @@ on a terminal object and `Functor.sectionsFunctor`.
   is isomorphic to the functor evaluating sheaves at `T`.
 * `Sheaf.ΓNatIsoLim J A`: when `A` has limits of shape `Cᵒᵖ`, `Sheaf.Γ J A` exists and is isomorphic
   to the functor taking each sheaf to the limit of its underlying presheaf.
+* `Sheaf.isLimitConeΓ F`: global sections are limits even when not all limits of shape `Cᵒᵖ` exist.
+* `Sheaf.Γres F U`: the restriction morphism from global sections of `F` to sections of `F` on `U`.
 * `Sheaf.ΓNatIsoSectionsFunctor J`: for sheaves of types, `Sheaf.Γ J A` is isomorphic to the
   functor taking each sheaf to the type of sections of its underlying presheaf in the sense of
   `Functor.sections`.
-* `Sheaf.ΓNatIsoCoyonedaObj J`: for sheaves of types, `Sheaf.Γ J A` is isomorphic to the
+* `Sheaf.ΓNatIsoCoyoneda J`: for sheaves of types, `Sheaf.Γ J A` is isomorphic to the
   coyoneda embedding of the terminal sheaf, i.e. the functor sending each sheaf `F` to the type
   of morphisms from the terminal sheaf to `F`.
 -/
