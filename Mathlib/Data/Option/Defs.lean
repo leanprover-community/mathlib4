@@ -91,13 +91,13 @@ instance zipWith_isId (f : α → α → α) : Std.LawfulIdentity (zipWith f) no
   left_id a := by cases a <;> simp [zipWith]
   right_id a := by cases a <;> simp [zipWith]
 
-@[deprecated zipWith_isCommutative (since := "2025-04-04")] abbrev liftOrGet_isCommutative :=
-  @zipWith_isCommutative
-@[deprecated zipWith_isAssociative (since := "2025-04-04")] abbrev liftOrGet_isAssociative :=
-  @zipWith_isAssociative
-@[deprecated zipWith_isIdempotent (since := "2025-04-04")] abbrev liftOrGet_isIdempotent :=
-  @zipWith_isIdempotent
-@[deprecated zipWith_isId (since := "2025-04-04")] abbrev liftOrGet_isId := @zipWith_isId
+@[deprecated (since := "2025-04-04")] alias liftOrGet_isCommutative :=
+  zipWith_isCommutative
+@[deprecated (since := "2025-04-04")] alias liftOrGet_isAssociative :=
+  zipWith_isAssociative
+@[deprecated (since := "2025-04-04")] abaliasbrev liftOrGet_isIdempotent :=
+  zipWith_isIdempotent
+@[deprecated (since := "2025-04-04")] alias liftOrGet_isId := zipWith_isId
 
 /-- Convert `undef` to `none` to make an `LOption` into an `Option`. -/
 def _root_.Lean.LOption.toOption {α} : Lean.LOption α → Option α
