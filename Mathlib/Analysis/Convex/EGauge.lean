@@ -240,14 +240,11 @@ theorem egauge_pi' {I : Set ι} (hI : I.Finite)
   obtain ⟨c₀, hc₀, hc₀I, hc₀r⟩ :
       ∃ c₀ : 𝕜, (c₀ ≠ 0 ∨ I = univ) ∧ (∀ i ∈ I, ‖c i‖ ≤ ‖c₀‖) ∧ ‖c₀‖ₑ < r := by
     have hr₀ : 0 < r := hr.bot_lt
-    have Hpos [hbot : (𝓝[≠] (0 : 𝕜)).NeBot] : ∃ c₀ ≠ (0 : 𝕜), ‖c₀‖ₑ < r :=
-      frequently_iff_neBot.mpr hbot |>.and_eventually
-        ((continuous_enorm.tendsto' 0 0 (by simp)).eventually_lt_const hr₀) |>.exists
     rcases I.eq_empty_or_nonempty with rfl | hIne
     · obtain hι | hbot : IsEmpty ι ∨ (𝓝[≠] (0 : 𝕜)).NeBot := by simpa [@eq_comm _ ∅] using hI₀
       · use 0
         simp [@eq_comm _ ∅, hι, hr₀]
-      · rcases Hpos with ⟨c₀, hc₀, hc₀r⟩
+      · rcases ENormedAddMonoid.exists_enorm_lt 𝕜 hr₀.ne' with ⟨c₀, hc₀, hc₀r⟩
         exact ⟨c₀, .inl hc₀, by simp, hc₀r⟩
     · obtain ⟨i₀, hi₀I, hc_max⟩ : ∃ i₀ ∈ I, IsMaxOn (‖c ·‖ₑ) I i₀ :=
         exists_max_image _ (‖c ·‖ₑ) hI hIne
@@ -258,15 +255,11 @@ theorem egauge_pi' {I : Set ι} (hI : I.Finite)
         have heg0 (i : ι) (hi : i ∈ I) : x i = 0 :=
           zero_smul_set_subset (α := 𝕜) (U i) (hc0 i hi ▸ hc i hi)
         have : (𝓝[≠] (0 : 𝕜)).NeBot := (hI₀.resolve_left H.2).resolve_left (by simpa)
-        rcases Hpos with ⟨c₁, hc₁, hc₁r⟩
+        rcases ENormedAddMonoid.exists_enorm_lt 𝕜 hr₀.ne' with ⟨c₁, hc₁, hc₁r⟩
         refine ⟨c₁, .inl hc₁, fun i hi ↦ ?_, hc₁r⟩
         simp [hc0 i hi]
   refine egauge_lt_iff.2 ⟨c₀, ?_, hc₀r⟩
-  have smul_pi : c₀ • I.pi U = I.pi (c₀ • U) := by
-    rcases hc₀ with hc₀ | rfl
-    · rw [smul_set_pi₀ hc₀]
-    · rw [smul_set_univ_pi]
-  rw [smul_pi]
+  rw [smul_set_pi₀' hc₀]
   intro i hi
   exact (hU i hi).smul_mono (hc₀I i hi) (hc i hi)
 
