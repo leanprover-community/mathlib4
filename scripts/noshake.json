@@ -331,6 +331,9 @@
   ["Mathlib.RingTheory.PowerSeries.PiTopology"],
   "Mathlib.RingTheory.PowerSeries.Basic":
   ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
+  "Mathlib.RingTheory.Polynomial.Eisenstein.Generalized":
+  ["Mathlib.Algebra.Polynomial.SpecificDegree",
+   "Mathlib.Data.ZMod.QuotientRing"],
   "Mathlib.RingTheory.MvPowerSeries.Basic":
   ["Mathlib.Algebra.MvPolynomial.Eval"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
@@ -349,8 +352,8 @@
   "Mathlib.RepresentationTheory.FDRep":
   ["Mathlib.CategoryTheory.Monoidal.Rigid.Braided"],
   "Mathlib.Probability.Notation":
-  ["Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue",
-   "Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic"],
+  ["Mathlib.MeasureTheory.Function.ConditionalExpectation.Basic",
+   "Mathlib.MeasureTheory.Measure.Decomposition.Lebesgue"],
   "Mathlib.Probability.Kernel.Proper":
   ["Mathlib.Probability.Kernel.Composition.CompNotation"],
   "Mathlib.Order.RelClasses": ["Batteries.WF"],
