@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
+import Batteries.Tactic.Alias
 
 /-!
 # Extra definitions on `Option`
@@ -95,7 +96,7 @@ instance zipWith_isId (f : α → α → α) : Std.LawfulIdentity (zipWith f) no
   zipWith_isCommutative
 @[deprecated (since := "2025-04-04")] alias liftOrGet_isAssociative :=
   zipWith_isAssociative
-@[deprecated (since := "2025-04-04")] abaliasbrev liftOrGet_isIdempotent :=
+@[deprecated (since := "2025-04-04")] alias liftOrGet_isIdempotent :=
   zipWith_isIdempotent
 @[deprecated (since := "2025-04-04")] alias liftOrGet_isId := zipWith_isId
 
