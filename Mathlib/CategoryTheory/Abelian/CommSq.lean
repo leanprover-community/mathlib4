@@ -59,6 +59,39 @@ lemma hom_eq_add_up_to_refinements (h : IsPushout t l r b) {T : C} (x₄ : T ⟶
   congr
   aesop_cat
 
+/--
+Given a commutative diagram in an abelian category
+```
+X₁ ⟶ X₂
+|    |  \
+v    v   \
+X₃ ⟶ X₄   \
+ \     \   v
+  \     \> X₅
+   \_____>
+```
+where the top/left square is a pushout square,
+the outer square involving `X₁`, `X₂`, `X₃` and `X₅`
+is a pullback square, and `X₂ ⟶ X₅` is mono,
+then `X₄ ⟶ X₅` is a mono.
+-/
+lemma mono_of_isPullback_of_mono
+    (h₁ : IsPushout t l r b) {X₅ : C} {r' : X₂ ⟶ X₅} {b' : X₃ ⟶ X₅}
+    (h₂ : IsPullback t l r' b') (k : X₄ ⟶ X₅)
+    (fac₁ : r ≫ k = r') (fac₂ : b ≫ k = b') [Mono r'] : Mono k :=
+  Preadditive.mono_of_cancel_zero _ (fun {T₀} x₄ hx₄ ↦ by
+    obtain ⟨T₁, π, _, x₂, x₃, eq⟩ := hom_eq_add_up_to_refinements h₁ x₄
+    have fac₃ : (-x₂) ≫ r' = x₃ ≫ b' := by
+      rw [Preadditive.neg_comp, neg_eq_iff_add_eq_zero, ← fac₂, ← fac₁,
+        ← assoc, ← assoc, ← Preadditive.add_comp, ← eq, assoc, hx₄, comp_zero]
+    obtain ⟨x₂', hx₂'⟩ : ∃ x₂', π ≫ x₄ = x₂' ≫ r := by
+      refine ⟨x₂ + h₂.lift (-x₂) x₃ fac₃ ≫ t, ?_⟩
+      rw [eq, Preadditive.add_comp, assoc, h₁.w, IsPullback.lift_snd_assoc, add_comm]
+    rw [← cancel_epi π, comp_zero, reassoc_of% hx₂', fac₁] at hx₄
+    obtain rfl := zero_of_comp_mono _ hx₄
+    rw [zero_comp] at hx₂'
+    rw [← cancel_epi π, hx₂', comp_zero])
+
 end IsPushout
 
 namespace IsPullback

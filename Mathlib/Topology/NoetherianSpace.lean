@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Sets.Closeds
 
 /-!
@@ -74,8 +75,7 @@ alias _root_.Inducing.noetherianSpace := IsInducing.noetherianSpace
 instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace s :=
   IsInducing.subtypeVal.noetherianSpace
 
-variable (α)
-
+variable (α) in
 open List in
 theorem noetherianSpace_TFAE :
     TFAE [NoetherianSpace α,
@@ -89,8 +89,6 @@ theorem noetherianSpace_TFAE :
   tfae_have 1 → 3 := @NoetherianSpace.isCompact α _
   tfae_have 3 → 4 := fun h s => h s
   tfae_finish
-
-variable {α}
 
 theorem noetherianSpace_iff_isCompact : NoetherianSpace α ↔ ∀ s : Set α, IsCompact s :=
   (noetherianSpace_TFAE α).out 0 2
@@ -233,7 +231,7 @@ theorem NoetherianSpace.exists_open_ne_empty_le_irreducibleComponent [Noetherian
     rintro a -
     by_cases h : a ∈ U
     · exact ⟨U, Set.mem_insert _ _, h⟩
-    · rw [Set.mem_diff, Decidable.not_and_iff_or_not_not, not_not, Set.mem_iUnion] at h
+    · rw [Set.mem_diff, Decidable.not_and_iff_not_or_not, not_not, Set.mem_iUnion] at h
       rcases h with (h|⟨i, hi⟩)
       · refine ⟨irreducibleComponent a, Or.inr ?_, mem_irreducibleComponent⟩
         simp only [ι, Set.mem_diff, Set.mem_singleton_iff]

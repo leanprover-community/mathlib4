@@ -90,7 +90,7 @@ theorem disjoint_singleton_left : Disjoint (singleton a) s ↔ a ∉ s := by
 theorem disjoint_singleton_right : Disjoint s (singleton a) ↔ a ∉ s :=
   disjoint_comm.trans disjoint_singleton_left
 
--- Porting note: Left-hand side simplifies @[simp]
+-- Not `simp` since `disjoint_singleton_{left,right}` prove it.
 theorem disjoint_singleton : Disjoint ({a} : Finset α) {b} ↔ a ≠ b := by
   rw [disjoint_singleton_left, mem_singleton]
 

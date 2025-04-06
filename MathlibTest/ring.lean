@@ -203,3 +203,25 @@ example (x : ℤ) (R : ℤ → ℤ → Prop) : True := by
   trivial
 
 end
+
+-- Test that `ring_nf` doesn't unfold local let expressions, and `ring_nf!` does
+set_option linter.unusedTactic false in
+example (x : ℝ) (f : ℝ → ℝ) : True := by
+  let y := x
+  have : x = y := by
+    ring_nf
+    ring_nf!
+  have : x - y = 0 := by
+    ring_nf
+    ring_nf!
+  have : f x = f y := by
+    ring_nf
+    ring_nf!
+  have : f x - f y = 0 := by
+    ring_nf
+    ring_nf!
+  trivial
+
+-- Test that `ring_nf` doesn't get confused about bound variables
+example : (fun x : ℝ => x * x^2) = (fun y => y^2 * y) := by
+  ring_nf

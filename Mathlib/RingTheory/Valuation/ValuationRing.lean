@@ -55,7 +55,7 @@ lemma PreValuationRing.cond {A : Type u} [Mul A] [PreValuationRing A] (a b : A) 
 
 /-- An integral domain is called a `ValuationRing` provided that for any pair
 of elements `a b : A`, either `a` divides `b` or vice versa. -/
-class ValuationRing (A : Type u) [CommRing A] [IsDomain A] extends PreValuationRing A : Prop
+class ValuationRing (A : Type u) [CommRing A] [IsDomain A] : Prop extends PreValuationRing A
 
 -- Porting note: this lemma is needed since infer kinds are unsupported in Lean 4
 lemma ValuationRing.cond {A : Type u} [CommRing A] [IsDomain A] [ValuationRing A] (a b : A) :
@@ -199,8 +199,7 @@ def valuation : Valuation K (ValueGroup A K) where
     have : (algebraMap A K) ya ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hya
     have : (algebraMap A K) yb ≠ 0 := IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hyb
     obtain ⟨c, h | h⟩ := ValuationRing.cond (xa * yb) (xb * ya)
-    · dsimp
-      apply le_trans _ (le_max_left _ _)
+    · apply le_trans _ (le_max_left _ _)
       use c + 1
       rw [Algebra.smul_def]
       field_simp
@@ -267,7 +266,7 @@ instance (priority := 100) isLocalRing : IsLocalRing A :=
 instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   constructor; intro α β
   by_cases h : α ≤ β; · exact Or.inl h
-  erw [not_forall] at h
+  rw [SetLike.le_def, not_forall] at h
   push_neg at h
   obtain ⟨a, h₁, h₂⟩ := h
   right
@@ -278,7 +277,7 @@ instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   · exfalso; apply h₂; rw [← h]
     apply Ideal.mul_mem_right _ _ hb
 
-instance [DecidableRel ((· ≤ ·) : Ideal A → Ideal A → Prop)] : LinearOrder (Ideal A) :=
+instance [DecidableLE (Ideal A)] : LinearOrder (Ideal A) :=
   have := decidableEqOfDecidableLE (α := Ideal A)
   have := decidableLTOfDecidableLE (α := Ideal A)
   Lattice.toLinearOrder (Ideal A)

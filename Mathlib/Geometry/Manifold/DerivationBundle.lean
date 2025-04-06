@@ -101,7 +101,7 @@ open scoped Derivation
 variable (X : Derivation 𝕜 C^∞⟮I, M; 𝕜⟯ C^∞⟮I, M; 𝕜⟯) (f : C^∞⟮I, M; 𝕜⟯)
 
 /-- Evaluation at a point gives rise to a `C^∞⟮I, M; 𝕜⟯`-linear map between `C^∞⟮I, M; 𝕜⟯` and `𝕜`.
- -/
+-/
 def ContMDiffFunction.evalAt (x : M) : C^∞⟮I, M; 𝕜⟯ →ₗ[C^∞⟮I, M; 𝕜⟯⟨x⟩] 𝕜 :=
   (PointedContMDiffMap.eval x).toLinearMap
 
@@ -133,7 +133,7 @@ def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) 
   toFun v :=
     Derivation.mk'
       { toFun := fun g => v (g.comp f)
-        map_add' := fun g g' => by dsimp; rw [ContMDiffMap.add_comp, Derivation.map_add]
+        map_add' := fun g g' => by rw [ContMDiffMap.add_comp, Derivation.map_add]
         map_smul' := fun k g => by
           dsimp; rw [ContMDiffMap.smul_comp, Derivation.map_smul, smul_eq_mul] }
       fun g g' => by

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Nat.Init
-import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Tactic.Contrapose
@@ -83,7 +82,6 @@ lemma pow_left_injective (hn : n ≠ 0) : Injective (fun a : ℕ ↦ a ^ n) := b
 protected lemma pow_right_injective (ha : 2 ≤ a) : Injective (a ^ ·) := by
   simp [Injective, le_antisymm_iff, Nat.pow_le_pow_iff_right ha]
 
-protected lemma pow_left_inj (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b := (pow_left_injective hn).eq_iff
 protected lemma pow_right_inj (ha : 2 ≤ a) : a ^ m = a ^ n ↔ m = n :=
   (Nat.pow_right_injective ha).eq_iff
 
@@ -144,14 +142,7 @@ lemma set_induction {S : Set ℕ} (hb : 0 ∈ S) (h_ind : ∀ k : ℕ, k ∈ S �
 
 /-! ### `mod`, `dvd` -/
 
-attribute [simp] Nat.dvd_zero
-
--- TODO: update `Nat.dvd_sub` in core
-lemma dvd_sub' (h₁ : k ∣ m) (h₂ : k ∣ n) : k ∣ m - n := by
-  rcases le_total n m with H | H
-  · exact dvd_sub H h₁ h₂
-  · rw [Nat.sub_eq_zero_iff_le.mpr H]
-    exact Nat.dvd_zero k
+@[deprecated (since := "2025-04-01")] alias dvd_sub' := dvd_sub
 
 /-- `dvd` is injective in the left argument -/
 lemma dvd_left_injective : Function.Injective ((· ∣ ·) : ℕ → ℕ → Prop) := fun _ _ h =>

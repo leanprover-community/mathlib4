@@ -32,7 +32,7 @@ section Ring
 namespace Submodule
 
 variable {R M : Type*} {r : R} {x y : M} [Ring R] [AddCommGroup M] [Module R M]
-variable (p p' : Submodule R M)
+variable (p p' p'' : Submodule R M)
 
 open LinearMap QuotientAddGroup
 
@@ -243,9 +243,50 @@ theorem ker_liftQ_eq_bot' (f : M →ₛₗ[τ₁₂] M₂) (h : p = ker f) :
     ker (p.liftQ f (le_of_eq h)) = ⊥ :=
   ker_liftQ_eq_bot p f h.le h.ge
 
+section
+
+variable {p p' p''}
+
+/-- The linear map from the quotient by a smaller submodule to the quotient by a larger submodule.
+
+This is the `Submodule.Quotient` version of `Quot.Factor`
+
+When the two submodules are of the form `I ^ m • ⊤` and `I ^ n • ⊤` and `n ≤ m`,
+please refer to the dedicated version `Submodule.factorPow`. -/
+abbrev factor (H : p ≤ p') : M ⧸ p →ₗ[R] M ⧸ p' :=
+  mapQ _ _ LinearMap.id H
+
+@[simp]
+theorem factor_mk (H : p ≤ p') (x : M) : factor H (mkQ p x) = mkQ p' x :=
+  rfl
+
+@[simp]
+theorem factor_comp_mk (H : p ≤ p') : (factor H).comp (mkQ p) = mkQ p' := by
+  ext x
+  rw [LinearMap.comp_apply, factor_mk]
+
+@[simp]
+theorem factor_comp (H1 : p ≤ p') (H2 : p' ≤ p'') :
+    (factor H2).comp (factor H1) = factor (H1.trans H2) := by
+  ext
+  simp
+
+@[simp]
+theorem factor_comp_apply (H1 : p ≤ p') (H2 : p' ≤ p'') (x : M ⧸ p) :
+    factor H2 (factor H1 x) = factor (H1.trans H2) x := by
+  rw [← comp_apply]
+  simp
+
+lemma factor_surjective (H : p ≤ p') : Function.Surjective (factor H) := by
+  intro x
+  use Quotient.mk x.out
+  exact Quotient.out_eq x
+
+end
+
 /-- The correspondence theorem for modules: there is an order isomorphism between submodules of the
 quotient of `M` by `p`, and submodules of `M` larger than `p`. -/
-def comapMkQRelIso : Submodule R (M ⧸ p) ≃o { p' : Submodule R M // p ≤ p' } where
+def comapMkQRelIso : Submodule R (M ⧸ p) ≃o Set.Ici p where
   toFun p' := ⟨comap p.mkQ p', le_comap_mkQ p _⟩
   invFun q := map p.mkQ q
   left_inv p' := map_comap_eq_self <| by simp
@@ -293,7 +334,7 @@ def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
     right_inv := fun x => Submodule.Quotient.induction_on _ x (by simp) }
 
 @[simp]
-theorem Quotient.equiv_symm {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+theorem Quotient.equiv_symm {R M N : Type*} [Ring R] [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] (P : Submodule R M) (Q : Submodule R N) (f : M ≃ₗ[R] N)
     (hf : P.map f = Q) :
     (Quotient.equiv P Q f hf).symm =

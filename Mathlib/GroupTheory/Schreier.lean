@@ -3,10 +3,10 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Commutator.Finite
 import Mathlib.GroupTheory.Transfer
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Schreier's Lemma
@@ -25,7 +25,7 @@ In this file we prove Schreier's lemma.
 -/
 
 
-open scoped Pointwise
+open scoped Finset Pointwise
 
 section CommGroup
 
@@ -127,7 +127,7 @@ theorem closure_mul_image_eq_top' [DecidableEq G] {R S : Finset G}
 variable (H)
 
 theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (S : Set G) = ⊤) :
-    ∃ T : Finset H, T.card ≤ H.index * S.card ∧ closure (T : Set H) = ⊤ := by
+    ∃ T : Finset H, #T ≤ H.index * #S ∧ closure (T : Set H) = ⊤ := by
   letI := H.fintypeQuotientOfFiniteIndex
   haveI : DecidableEq G := Classical.decEq G
   obtain ⟨R₀, hR, hR1⟩ := H.exists_isComplement_right 1
@@ -137,12 +137,11 @@ theorem exists_finset_card_le_mul [FiniteIndex H] {S : Finset G} (hS : closure (
   replace hR1 : (1 : G) ∈ R := by rwa [Set.mem_toFinset]
   refine ⟨_, ?_, closure_mul_image_eq_top' hR hR1 hS⟩
   calc
-    _ ≤ (R * S).card := Finset.card_image_le
-    _ ≤ (R ×ˢ S).card := Finset.card_image_le
-    _ = R.card * S.card := R.card_product S
+    _ ≤ #(R * S) := Finset.card_image_le
+    _ ≤ #R * #S := Finset.card_mul_le
     _ = H.index * S.card := congr_arg (· * S.card) ?_
   calc
-    R.card = Fintype.card R := (Fintype.card_coe R).symm
+    #R = Fintype.card R := (Fintype.card_coe R).symm
     _ = _ := (Fintype.card_congr hR.rightQuotientEquiv).symm
     _ = Fintype.card (G ⧸ H) := QuotientGroup.card_quotient_rightRel H
     _ = H.index := by rw [index_eq_card, Nat.card_eq_fintype_card]
@@ -160,8 +159,8 @@ theorem rank_le_index_mul_rank [hG : Group.FG G] [FiniteIndex H] :
   obtain ⟨S, hS₀, hS⟩ := Group.rank_spec G
   obtain ⟨T, hT₀, hT⟩ := exists_finset_card_le_mul H hS
   calc
-    Group.rank H ≤ T.card := Group.rank_le H hT
-    _ ≤ H.index * S.card := hT₀
+    Group.rank H ≤ #T := Group.rank_le H hT
+    _ ≤ H.index * #S := hT₀
     _ = H.index * Group.rank G := congr_arg (H.index * ·) hS₀
 
 variable (G)
@@ -212,7 +211,7 @@ theorem card_commutator_le_of_finite_commutatorSet [Finite (commutatorSet G)] :
   rw [card_commutator_closureCommutatorRepresentatives] at h2
   replace h1 :=
     h1.trans
-      (Nat.pow_le_pow_of_le_right Finite.card_pos (rank_closureCommutatorRepresentatives_le G))
+      (Nat.pow_le_pow_right Finite.card_pos (rank_closureCommutatorRepresentatives_le G))
   replace h2 := h2.trans (pow_dvd_pow _ (add_le_add_right (mul_le_mul_right' h1 _) 1))
   rw [← pow_succ] at h2
   refine (Nat.le_of_dvd ?_ h2).trans (Nat.pow_le_pow_left h1 _)

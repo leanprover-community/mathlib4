@@ -6,6 +6,8 @@ Authors: Kalle Kytölä
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
+import Mathlib.MeasureTheory.Measure.GiryMonad
+import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Finite measures
@@ -154,6 +156,14 @@ theorem null_iff_toMeasure_null (ν : FiniteMeasure Ω) (s : Set Ω) :
 theorem apply_mono (μ : FiniteMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ ⊆ s₂) : μ s₁ ≤ μ s₂ :=
   ENNReal.toNNReal_mono (measure_ne_top _ s₂) ((μ : Measure Ω).mono h)
 
+/-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
+sets is the limit of the measures of the partial unions. -/
+protected lemma tendsto_measure_iUnion_accumulate {ι : Type*} [Preorder ι]
+    [IsCountablyGenerated (atTop : Filter ι)] {μ : FiniteMeasure Ω} {f : ι → Set Ω} :
+    Tendsto (fun i ↦ μ (Accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
+  simpa [← ennreal_coeFn_eq_coeFn_toMeasure]
+    using tendsto_measure_iUnion_accumulate (μ := μ.toMeasure) (ι := ι)
+
 /-- The (total) mass of a finite measure `μ` is `μ univ`, i.e., the cast to `NNReal` of
 `(μ : measure Ω) univ`. -/
 def mass (μ : FiniteMeasure Ω) : ℝ≥0 := μ univ
@@ -270,6 +280,35 @@ theorem restrict_eq_zero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict 
 theorem restrict_nonzero_iff (μ : FiniteMeasure Ω) (A : Set Ω) : μ.restrict A ≠ 0 ↔ μ A ≠ 0 := by
   rw [← mass_nonzero_iff, restrict_mass]
 
+/-- The type of finite measures is a measurable space when equipped with the Giry monad. -/
+instance : MeasurableSpace (FiniteMeasure Ω) := Subtype.instMeasurableSpace
+
+/-- The set of all finite measures is a measurable set in the Giry monad. -/
+lemma measurableSet_isFiniteMeasure : MeasurableSet { μ : Measure Ω | IsFiniteMeasure μ } := by
+  suffices { μ : Measure Ω | IsFiniteMeasure μ } = (fun μ => μ univ) ⁻¹' (Set.Ico 0 ∞) by
+    rw [this]
+    exact Measure.measurable_coe MeasurableSet.univ measurableSet_Ico
+  ext μ
+  simp only [mem_setOf_eq, mem_iUnion, mem_preimage, mem_Ico, zero_le, true_and, exists_const]
+  exact isFiniteMeasure_iff μ
+
+/-- The monoidal product is a measurabule function from the product of finite measures over
+`α` and `β` into the type of finite measures over `α × β`. -/
+theorem measurable_prod {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] :
+    Measurable (fun (μ : FiniteMeasure α × FiniteMeasure β)
+      ↦ μ.1.toMeasure.prod μ.2.toMeasure) := by
+  have Heval {u v} (Hu : MeasurableSet u) (Hv : MeasurableSet v):
+      Measurable fun a : (FiniteMeasure α × FiniteMeasure β) ↦
+      a.1.toMeasure u * a.2.toMeasure v :=
+    Measurable.mul
+      ((Measure.measurable_coe Hu).comp (measurable_subtype_coe.comp measurable_fst))
+      ((Measure.measurable_coe Hv).comp (measurable_subtype_coe.comp measurable_snd))
+  apply Measurable.measure_of_isPiSystem generateFrom_prod.symm isPiSystem_prod _
+  · simp_rw [← Set.univ_prod_univ, Measure.prod_prod, Heval MeasurableSet.univ MeasurableSet.univ]
+  simp only [mem_image2, mem_setOf_eq, forall_exists_index, and_imp]
+  intros _ _ Hu _ Hv Heq
+  simp_rw [← Heq, Measure.prod_prod, Heval Hu Hv]
+
 variable [TopologicalSpace Ω]
 
 /-- Two finite Borel measures are equal if the integrals of all non-negative bounded continuous
@@ -326,7 +365,7 @@ theorem testAgainstNN_one (μ : FiniteMeasure Ω) : μ.testAgainstNN 1 = μ.mass
 
 @[simp]
 theorem zero_testAgainstNN_apply (f : Ω →ᵇ ℝ≥0) : (0 : FiniteMeasure Ω).testAgainstNN f = 0 := by
-  simp only [testAgainstNN, toMeasure_zero, lintegral_zero_measure, ENNReal.zero_toNNReal]
+  simp only [testAgainstNN, toMeasure_zero, lintegral_zero_measure, ENNReal.toNNReal_zero]
 
 theorem zero_testAgainstNN : (0 : FiniteMeasure Ω).testAgainstNN = 0 := by
   funext
@@ -349,7 +388,7 @@ theorem testAgainstNN_add (μ : FiniteMeasure Ω) (f₁ f₂ : Ω →ᵇ ℝ≥0
   exact lintegral_add_left (BoundedContinuousFunction.measurable_coe_ennreal_comp _) _
 
 theorem testAgainstNN_smul [IsScalarTower R ℝ≥0 ℝ≥0] [PseudoMetricSpace R] [Zero R]
-    [BoundedSMul R ℝ≥0] (μ : FiniteMeasure Ω) (c : R) (f : Ω →ᵇ ℝ≥0) :
+    [IsBoundedSMul R ℝ≥0] (μ : FiniteMeasure Ω) (c : R) (f : Ω →ᵇ ℝ≥0) :
     μ.testAgainstNN (c • f) = c • μ.testAgainstNN f := by
   simp only [← ENNReal.coe_inj, BoundedContinuousFunction.coe_smul, testAgainstNN_coe_eq,
     ENNReal.coe_smul]

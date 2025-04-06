@@ -55,7 +55,7 @@ open Lean Elab Meta
 initialize registerTraceClass `Elab.congr
 
 /--
-`congr(expr)` generates an congruence from an expression containing
+`congr(expr)` generates a congruence from an expression containing
 congruence holes of the form `$h` or `$(h)`.
 In these congruence holes, `h : a = b` indicates that, in the generated congruence,
 on the left-hand side `a` is substituted for `$h`

@@ -46,7 +46,7 @@ If `C` is a set ring (`MeasureTheory.IsSetRing C`), we have
 disjoint sets defines an additive content
 * `addContent_iUnion_eq_sum_of_tendsto_zero`: if an additive content is continuous at `∅`, then
 its value on a countable disjoint union is the sum of the values
-* `MeasureTheory.addContent_iUnion_le_of_addContent_iUnion_eq_tsum`: if an `AddContent` is
+* `MeasureTheory.isSigmaSubadditive_of_addContent_iUnion_eq_tsum`: if an `AddContent` is
   σ-additive on a set ring, then it is σ-subadditive.
 
 -/
@@ -397,6 +397,41 @@ theorem addContent_iUnion_eq_sum_of_tendsto_zero (hC : IsSetRing C) (m : AddCont
   rw [← addContent_accumulate m hC h_disj hf]
   exact addContent_mono hC.isSetSemiring (hC.accumulate_mem hf n) hUf
     (Set.accumulate_subset_iUnion _)
+
+/-- If an additive content is σ-additive on a set ring, then the content of a monotone sequence of
+sets tends to the content of the union. -/
+theorem tendsto_atTop_addContent_iUnion_of_addContent_iUnion_eq_tsum (hC : IsSetRing C)
+    (m_iUnion : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : (⋃ i, f i) ∈ C)
+      (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) = ∑' i, m (f i))
+    ⦃f : ℕ → Set α⦄ (hf_mono : Monotone f) (hf : ∀ i, f i ∈ C) (hf_Union : ⋃ i, f i ∈ C) :
+    Tendsto (fun n ↦ m (f n)) atTop (𝓝 (m (⋃ i, f i))) := by
+  rw [← iUnion_disjointed, m_iUnion _ (hC.disjointed_mem hf) (by rwa [iUnion_disjointed])
+      (disjoint_disjointed f)]
+  have h n : m (f n) = ∑ i ∈ range (n + 1), m (disjointed f i) := by
+    nth_rw 1 [← addContent_accumulate _ hC (disjoint_disjointed f) (hC.disjointed_mem hf),
+    ← hf_mono.partialSups_eq, ← partialSups_disjointed, partialSups_eq_biSup, Accumulate]
+    rfl
+  simp_rw [h]
+  refine (tendsto_add_atTop_iff_nat (f := (fun k ↦ ∑ i ∈ range k, m (disjointed f i))) 1).2 ?_
+  exact ENNReal.tendsto_nat_tsum _
+
+/-- If an additive content is σ-additive on a set ring, then it is σ-subadditive. -/
+theorem isSigmaSubadditive_of_addContent_iUnion_eq_tsum (hC : IsSetRing C)
+    (m_iUnion : ∀ (f : ℕ → Set α) (_ : ∀ i, f i ∈ C) (_ : (⋃ i, f i) ∈ C)
+      (_hf_disj : Pairwise (Disjoint on f)), m (⋃ i, f i) = ∑' i, m (f i)) :
+    m.IsSigmaSubadditive := by
+  intro f hf hf_Union
+  have h_tendsto : Tendsto (fun n ↦ m (partialSups f n)) atTop (𝓝 (m (⋃ i, f i))) := by
+    rw [← iSup_eq_iUnion, ← iSup_partialSups_eq]
+    refine tendsto_atTop_addContent_iUnion_of_addContent_iUnion_eq_tsum hC m_iUnion
+      (partialSups_monotone f) (hC.partialSups_mem hf) ?_
+    rwa [← iSup_eq_iUnion, iSup_partialSups_eq]
+  have h_tendsto' : Tendsto (fun n ↦ ∑ i ∈ range (n + 1), m (f i)) atTop (𝓝 (∑' i, m (f i))) := by
+    rw [tendsto_add_atTop_iff_nat (f := (fun k ↦ ∑ i ∈ range k, m (f i))) 1]
+    exact ENNReal.tendsto_nat_tsum _
+  refine le_of_tendsto_of_tendsto' h_tendsto h_tendsto' fun _ ↦ ?_
+  rw [partialSups_eq_biUnion_range]
+  exact addContent_biUnion_le hC (fun _ _ ↦ hf _)
 
 end IsSetRing
 
