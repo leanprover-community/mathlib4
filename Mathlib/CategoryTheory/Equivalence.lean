@@ -132,18 +132,22 @@ theorem Equivalence_mk'_counitInv (functor inverse unit_iso counit_iso f) :
     (⟨functor, inverse, unit_iso, counit_iso, f⟩ : C ≌ D).counitInv = counit_iso.inv :=
   rfl
 
+@[reassoc]
 theorem counit_naturality (e : C ≌ D) {X Y : D} (f : X ⟶ Y) :
     e.functor.map (e.inverse.map f) ≫ e.counit.app Y = e.counit.app X ≫ f :=
   e.counit.naturality f
 
+@[reassoc]
 theorem unit_naturality (e : C ≌ D) {X Y : C} (f : X ⟶ Y) :
     e.unit.app X ≫ e.inverse.map (e.functor.map f) = f ≫ e.unit.app Y :=
   (e.unit.naturality f).symm
 
+@[reassoc]
 theorem counitInv_naturality (e : C ≌ D) {X Y : D} (f : X ⟶ Y) :
     e.counitInv.app X ≫ e.functor.map (e.inverse.map f) = f ≫ e.counitInv.app Y :=
   (e.counitInv.naturality f).symm
 
+@[reassoc]
 theorem unitInv_naturality (e : C ≌ D) {X Y : C} (f : X ⟶ Y) :
     e.inverse.map (e.functor.map f) ≫ e.unitInv.app Y = e.unitInv.app X ≫ f :=
   e.unitInv.naturality f
