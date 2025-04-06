@@ -8,6 +8,9 @@ import Mathlib.Data.Set.Accumulate
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.Ultrafilter
 import Mathlib.Topology.Defs.Ultrafilter
+
+import Mathlib.Topology.Bases -- TODO shake
+
 /-!
 # Compact sets and compact spaces
 
