@@ -236,6 +236,8 @@ protected theorem Submodule.finsuppSum_mem {ι β : Type*} [Zero β] (S : Submod
 
 @[deprecated (since := "2025-04-06")] alias Submodule.finsupp_sum_mem := Submodule.finsuppSum_mem
 
+@[deprecated (since := "2025-04-06")] alias Submodule.finsupp_sum_mem := Submodule.finsuppSum_mem
+
 end
 
 namespace LinearMap

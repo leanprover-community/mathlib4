@@ -339,10 +339,14 @@ theorem dfinsuppSum_mem {β : ι → Type*} [∀ i, Zero (β i)] [∀ (i) (x : �
 
 @[deprecated (since := "2025-04-06")] alias dfinsupp_sum_mem := dfinsuppSum_mem
 
+@[deprecated (since := "2025-04-06")] alias dfinsupp_sum_mem := dfinsuppSum_mem
+
 theorem dfinsuppSumAddHom_mem {β : ι → Type*} [∀ i, AddZeroClass (β i)] (S : Submodule R N)
     (f : Π₀ i, β i) (g : ∀ i, β i →+ N) (h : ∀ c, f c ≠ 0 → g c (f c) ∈ S) :
     DFinsupp.sumAddHom g f ∈ S :=
   _root_.dfinsuppSumAddHom_mem S f g h
+
+@[deprecated (since := "2025-04-06")] alias dfinsupp_sumAddHom_mem := dfinsuppSumAddHom_mem
 
 @[deprecated (since := "2025-04-06")] alias dfinsupp_sumAddHom_mem := dfinsuppSumAddHom_mem
 
@@ -502,8 +506,14 @@ theorem iSupIndep_of_dfinsuppSumAddHom_injective (p : ι → AddSubmonoid N)
 @[deprecated (since := "2025-04-06")]
 alias iSupIndep_of_dfinsupp_sumAddHom_injective := iSupIndep_of_dfinsuppSumAddHom_injective
 
+@[deprecated (since := "2025-04-06")]
+alias iSupIndep_of_dfinsupp_sumAddHom_injective := iSupIndep_of_dfinsuppSumAddHom_injective
+
 @[deprecated (since := "2024-11-24")]
 alias independent_of_dfinsuppSumAddHom_injective := iSupIndep_of_dfinsuppSumAddHom_injective
+
+@[deprecated (since := "2025-04-06")]
+alias independent_of_dfinsupp_sumAddHom_injective := independent_of_dfinsuppSumAddHom_injective
 
 @[deprecated (since := "2025-04-06")]
 alias independent_of_dfinsupp_sumAddHom_injective := independent_of_dfinsuppSumAddHom_injective
@@ -536,8 +546,14 @@ theorem iSupIndep_of_dfinsuppSumAddHom_injective' (p : ι → AddSubgroup N)
 @[deprecated (since := "2025-04-06")]
 alias iSupIndep_of_dfinsupp_sumAddHom_injective' := iSupIndep_of_dfinsuppSumAddHom_injective'
 
+@[deprecated (since := "2025-04-06")]
+alias iSupIndep_of_dfinsupp_sumAddHom_injective' := iSupIndep_of_dfinsuppSumAddHom_injective'
+
 @[deprecated (since := "2024-11-24")]
 alias independent_of_dfinsuppSumAddHom_injective' := iSupIndep_of_dfinsuppSumAddHom_injective'
+
+@[deprecated (since := "2025-04-06")]
+alias independent_of_dfinsupp_sumAddHom_injective' := independent_of_dfinsuppSumAddHom_injective'
 
 @[deprecated (since := "2025-04-06")]
 alias independent_of_dfinsupp_sumAddHom_injective' := independent_of_dfinsuppSumAddHom_injective'
@@ -580,8 +596,14 @@ theorem iSupIndep.dfinsuppSumAddHom_injective {p : ι → AddSubgroup N} (h : iS
 @[deprecated (since := "2025-04-06")]
 alias iSupIndep.dfinsupp_sumAddHom_injective := iSupIndep.dfinsuppSumAddHom_injective
 
+@[deprecated (since := "2025-04-06")]
+alias iSupIndep.dfinsupp_sumAddHom_injective := iSupIndep.dfinsuppSumAddHom_injective
+
 @[deprecated (since := "2024-11-24")]
 alias Independent.dfinsuppSumAddHom_injective := iSupIndep.dfinsuppSumAddHom_injective
+
+@[deprecated (since := "2025-04-06")]
+alias Independent.dfinsupp_sumAddHom_injective := Independent.dfinsuppSumAddHom_injective
 
 @[deprecated (since := "2025-04-06")]
 alias Independent.dfinsupp_sumAddHom_injective := Independent.dfinsuppSumAddHom_injective
@@ -607,8 +629,14 @@ theorem iSupIndep_iff_dfinsuppSumAddHom_injective (p : ι → AddSubgroup N) :
 @[deprecated (since := "2025-04-06")]
 alias iSupIndep_iff_dfinsupp_sumAddHom_injective := iSupIndep_iff_dfinsuppSumAddHom_injective
 
+@[deprecated (since := "2025-04-06")]
+alias iSupIndep_iff_dfinsupp_sumAddHom_injective := iSupIndep_iff_dfinsuppSumAddHom_injective
+
 @[deprecated (since := "2024-11-24")]
 alias independent_iff_dfinsuppSumAddHom_injective := iSupIndep_iff_dfinsuppSumAddHom_injective
+
+@[deprecated (since := "2025-04-06")]
+alias independent_iff_dfinsupp_sumAddHom_injective := independent_iff_dfinsuppSumAddHom_injective
 
 @[deprecated (since := "2025-04-06")]
 alias independent_iff_dfinsupp_sumAddHom_injective := independent_iff_dfinsuppSumAddHom_injective
@@ -695,6 +723,8 @@ theorem map_dfinsuppSumAddHom (f : M →ₛₗ[σ₁₂] M₂) {t : Π₀ i, γ 
 
 @[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
 
+@[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
+
 end SumAddHom
 
 end DFinsupp
@@ -723,6 +753,8 @@ theorem map_dfinsuppSumAddHom [∀ i, AddZeroClass (γ i)] (f : M ≃ₛₗ[τ�
     (g : ∀ i, γ i →+ M) :
     f (sumAddHom g t) = sumAddHom (fun i => f.toAddEquiv.toAddMonoidHom.comp (g i)) t :=
   f.toAddEquiv.map_dfinsuppSumAddHom _ _
+
+@[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
 
 @[deprecated (since := "2025-04-06")] alias map_dfinsupp_sumAddHom := map_dfinsuppSumAddHom
 
