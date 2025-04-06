@@ -131,9 +131,19 @@ def matrix (c : RingCon R) : RingCon (Matrix n n R) where
   mul' h₁ h₂ := fun _ _ ↦ c.finset_sum _ fun _ _ => c.mul (h₁ _ _) (h₂ _ _)
 
 @[simp]
-theorem matrix_apply (c : RingCon R) (M N : Matrix n n R) :
+theorem matrix_apply {c : RingCon R} {M N : Matrix n n R} :
     c.matrix n M N ↔ ∀ i j, c (M i j) (N i j) :=
   Iff.rfl
+
+@[simp]
+theorem matrix_apply_stdBasisMatrix [DecidableEq n] {c : RingCon R} {i j : n} {x y : R} :
+    c.matrix n (Matrix.stdBasisMatrix i j x) (Matrix.stdBasisMatrix i j y) ↔ c x y := by
+  refine ⟨fun h ↦ by simpa using h i j, fun h i' j' ↦ ?_⟩
+  obtain hi | rfl := ne_or_eq i i'
+  · simpa [hi] using c.refl 0
+  obtain hj | rfl := ne_or_eq j j'
+  · simpa [hj] using c.refl _
+  simpa using h
 
 theorem matrix_monotone : Monotone (matrix (R := R) n) :=
   fun _ _ hc _ _ h _ _ ↦ hc (h _ _)
@@ -181,12 +191,8 @@ theorem ofMatrix_rel [DecidableEq n] {c : RingCon (Matrix n n R)} {x y : R} :
   · intro h
     inhabit n
     simpa using h default default default default
-  · intro h i j i' j'
-    obtain hi | rfl := ne_or_eq i i'
-    · simpa [hi] using c.refl 0
-    obtain hj | rfl := ne_or_eq j j'
-    · simpa [hj] using c.refl _
-    simpa using h
+  · intro h i j
+    rwa [matrix_apply_stdBasisMatrix]
 
 end NonUnitalNonAssocSemiring
 
