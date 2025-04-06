@@ -40,7 +40,6 @@ theorem IsSymm.ext_iff {A : Matrix n n α} : A.IsSymm ↔ ∀ i j, A j i = A i j
   Matrix.ext_iff.symm
 
 /-- A version of `Matrix.ext` that unfolds the `Matrix.transpose`. -/
--- @[ext] -- Porting note: removed attribute
 theorem IsSymm.ext {A : Matrix n n α} : (∀ i j, A j i = A i j) → A.IsSymm :=
   Matrix.ext
 
