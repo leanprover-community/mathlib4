@@ -10,11 +10,11 @@ import Mathlib.LinearAlgebra.RootSystem.Finite.Lemmas
 
 The `𝔤₂` root pairing is special enough to deserve its own API. We provide one in this file.
 
-As an application we prove that it is the only (finite, crystallographic, reduced, irreducible) root
-pairing containing two roots of Coxeter weight three. This result is usually proved only for pairs
-of roots belonging to a base (by arguing that the Coxeter-Dynkin diagram is loopless and has no
-nodes of degree greater than three) and moreover usually requires stronger assumptions on the
-coefficients than here.
+As an application we prove the key result that a finite, crystallographic, reduced, irreducible root
+pairing containing two roots of Coxeter weight three is spanned by this pair of roots (and thus
+is two-dimensional). This result is usually proved only for pairs of roots belonging to a base (as a
+corollary of the fact that no node can have degree greater than three) and moreover usually requires
+stronger assumptions on the coefficients than here.
 
 ## Main results:
  * `RootPairing.EmbeddedG2`: a data-bearing typeclass which distinguishes a pair of roots whose
@@ -28,12 +28,14 @@ coefficients than here.
  * `RootPairing.EmbeddedG2.threeShortAddTwoLong`: the long root `3α + 2β`
  * `RootPairing.EmbeddedG2.span_eq_top`: a finite crystallographic reduced irreducible root pairing
    containing two roots with pairing `-3` is spanned by this pair (thus two-dimensional).
+ * `RootPairing.EmbeddedG2.card_index_eq_twelve`: the `𝔤₂`root pairing has twelve roots.
 
 -/
 
-open Function Set
-open Submodule (span subset_span smul_mem)
-open FaithfulSMul (algebraMap_injective)
+noncomputable section
+
+open FaithfulSMul Function Set Submodule
+open List hiding mem_toFinset
 
 variable {ι R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
   (P : RootPairing ι R M N)
@@ -67,21 +69,6 @@ lemma pairing_long_short : P.pairing (long P) (short P) = - 3 := by
   rw [← P.algebraMap_pairingIn ℤ, pairingIn_long_short]
   simp
 
-variable [Finite ι] [CharZero R] [IsDomain R] [NoZeroSMulDivisors R M]
-
-@[simp]
-lemma pairingIn_short_long :
-    P.pairingIn ℤ (short P) (long P) = - 1 := by
-  have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed (long P) (short P)
-  have := pairingIn_long_short (P := P)
-  aesop
-
-@[simp]
-lemma pairing_short_long :
-    P.pairing (short P) (long P) = - 1 := by
-  rw [← P.algebraMap_pairingIn ℤ, pairingIn_short_long]
-  simp
-
 /-- The index of the root `α + β` where `α` is the short root and `β` is the long root. -/
 def shortAddLong : ι := P.reflection_perm (long P) (short P)
 
@@ -112,14 +99,48 @@ abbrev threeShortAddLongRoot : M := P.root (threeShortAddLong P)
 /-- The short root `3α + 2β`. -/
 abbrev threeShortAddTwoLongRoot : M := P.root (threeShortAddTwoLong P)
 
-/-- The collection of all 12 roots belonging to the embedded `𝔤₂`. -/
-abbrev allRoots : Set M :=
-  { longRoot P, -longRoot P,
+/-- The list of all 12 roots belonging to the embedded `𝔤₂`. -/
+abbrev allRoots : List M :=
+  [ longRoot P, -longRoot P,
     shortRoot P, -shortRoot P,
     shortAddLongRoot P, -shortAddLongRoot P,
     twoShortAddLongRoot P, -twoShortAddLongRoot P,
     threeShortAddLongRoot P, -threeShortAddLongRoot P,
-    threeShortAddTwoLongRoot P, -threeShortAddTwoLongRoot P}
+    threeShortAddTwoLongRoot P, -threeShortAddTwoLongRoot P ]
+
+lemma allRoots_subset_range_root [DecidableEq M] :
+    ↑(allRoots P).toFinset ⊆ range P.root := by
+  intro x hx
+  simp only [toFinset_cons, toFinset_nil, insert_empty_eq, Finset.coe_insert,
+    Finset.coe_singleton, mem_insert_iff, mem_singleton_iff] at hx
+  rcases hx with h | h | h | h | h | h | h | h | h | h | h | h
+  · exact ⟨long P, by simp [h]⟩
+  · exact ⟨P.reflection_perm (long P) (long P), by simp [h]⟩
+  · exact ⟨short P, by simp [h]⟩
+  · exact ⟨P.reflection_perm (short P) (short P), by simp [h]⟩
+  · exact ⟨shortAddLong P, by simp [h]⟩
+  · exact ⟨P.reflection_perm (shortAddLong P) (shortAddLong P), by simp [h]⟩
+  · exact ⟨twoShortAddLong P, by simp [h]⟩
+  · exact ⟨P.reflection_perm (twoShortAddLong P) (twoShortAddLong P), by simp [h]⟩
+  · exact ⟨threeShortAddLong P, by simp [h]⟩
+  · exact ⟨P.reflection_perm (threeShortAddLong P) (threeShortAddLong P), by simp [h]⟩
+  · exact ⟨threeShortAddTwoLong P, by simp [h]⟩
+  · exact ⟨P.reflection_perm (threeShortAddTwoLong P) (threeShortAddTwoLong P), by simp [h]⟩
+
+variable [Finite ι] [CharZero R] [IsDomain R] [NoZeroSMulDivisors R M]
+
+@[simp]
+lemma pairingIn_short_long :
+    P.pairingIn ℤ (short P) (long P) = - 1 := by
+  have := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed (long P) (short P)
+  have := pairingIn_long_short (P := P)
+  aesop
+
+@[simp]
+lemma pairing_short_long :
+    P.pairing (short P) (long P) = - 1 := by
+  rw [← P.algebraMap_pairingIn ℤ, pairingIn_short_long]
+  simp
 
 lemma shortAddLongRoot_eq :
     shortAddLongRoot P = shortRoot P + longRoot P := by
@@ -141,39 +162,34 @@ lemma threeShortAddTwoLongRoot_eq :
   simp [threeShortAddTwoLongRoot, threeShortAddTwoLong, reflection_apply_root]
   module
 
-lemma allRoots_subset_span :
-    allRoots P ⊆ span R {longRoot P, shortRoot P} := by
-  intro x hx
-  simp only [mem_insert_iff, mem_singleton_iff] at hx
-  simp only [SetLike.mem_coe]
-  -- A tactic to handle submodule spans would be handy here.
-  rcases hx with rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl | rfl
-  · exact subset_span (by simp)
-  · apply neg_mem
-    exact subset_span (by simp)
-  · exact subset_span (by simp)
-  · apply neg_mem
-    exact subset_span (by simp)
-  · rw [shortAddLongRoot_eq]
-    exact add_mem (subset_span <| by simp) (subset_span <| by simp)
-  · apply neg_mem
-    rw [shortAddLongRoot_eq]
-    exact add_mem (subset_span <| by simp) (subset_span <| by simp)
-  · rw [twoShortAddLongRoot_eq]
-    exact add_mem (smul_mem _ _ <| subset_span <| by simp) (subset_span <| by simp)
-  · apply neg_mem
-    rw [twoShortAddLongRoot_eq]
-    exact add_mem (smul_mem _ _ <| subset_span <| by simp) (subset_span <| by simp)
-  · rw [threeShortAddLongRoot_eq]
-    exact add_mem (smul_mem _ _ <| subset_span <| by simp) (subset_span <| by simp)
-  · apply neg_mem
-    rw [threeShortAddLongRoot_eq]
-    exact add_mem (smul_mem _ _ <| subset_span <| by simp) (subset_span <| by simp)
-  · rw [threeShortAddTwoLongRoot_eq]
-    exact add_mem (smul_mem _ _ <| subset_span <| by simp) (smul_mem _ _ <| subset_span <| by simp)
-  · apply neg_mem
-    rw [threeShortAddTwoLongRoot_eq]
-    exact add_mem (smul_mem _ _ <| subset_span <| by simp) (smul_mem _ _ <| subset_span <| by simp)
+lemma linearIndependent_short_long :
+    LinearIndependent R ![shortRoot P, longRoot P] := by
+  simp [P.linearIndependent_iff_coxeterWeightIn_ne_four ℤ, coxeterWeightIn]
+
+/-- The coefficients of each root in the `𝔤₂` root pairing, relative to the base. -/
+abbrev allCoeffs : List (Fin 2 → ℤ) :=
+  [![0, 1], ![0, -1], ![1, 0], ![-1, 0], ![1, 1], ![-1, -1],
+    ![2, 1], ![-2, -1], ![3, 1], ![-3, -1], ![3, 2], ![-3, -2]]
+
+lemma allRoots_eq_map_allCoeffs :
+    allRoots P = allCoeffs.map (Fintype.linearCombination ℤ ![shortRoot P, longRoot P]) := by
+  simp [Fintype.linearCombination_apply, neg_add, -neg_add_rev, shortAddLongRoot_eq,
+    twoShortAddLongRoot_eq, threeShortAddLongRoot_eq, threeShortAddTwoLongRoot_eq,
+    ← Int.cast_smul_eq_zsmul R]
+
+lemma allRoots_nodup : (allRoots P).Nodup := by
+  have hli : Injective (Fintype.linearCombination ℤ ![shortRoot P, longRoot P]) := by
+    rw [← Fintype.linearIndependent_iff_injective]
+    exact (linearIndependent_short_long P).restrict_scalars' ℤ
+  rw [allRoots_eq_map_allCoeffs, nodup_map_iff hli]
+  decide
+
+lemma mem_span_of_mem_allRoots {x : M} (hx : x ∈ allRoots P) :
+    x ∈ span ℤ {longRoot P, shortRoot P} := by
+  have : {longRoot P, shortRoot P} = range ![shortRoot P, longRoot P] := by simp
+  simp_rw [this, Submodule.mem_span_range_iff_exists_fun, ← Fintype.linearCombination_apply]
+  simp [allRoots_eq_map_allCoeffs] at hx
+  tauto
 
 section InvariantForm
 
@@ -379,7 +395,7 @@ lemma isOrthogonal_short_and_long {i : ι} (hi : P.root i ∉ allRoots P) :
     have : Fintype ι := Fintype.ofFinite ι
     have B := (P.posRootForm ℤ).toInvariantForm
     simpa [B.isOrthogonal_iff_pairingIn_eq_zero, ← P.algebraMap_pairingIn ℤ]
-  simp only [mem_insert_iff, mem_singleton_iff, not_or] at hi
+  simp only [mem_cons, not_mem_nil, or_false, not_or] at hi
   obtain ⟨h₁, h₂, h₃, h₄, h₅, h₆, h₇, h₈, h₉, h₁₀, h₁₁, h₁₂⟩ := hi
   have ha := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (short P) ?_ ?_
   have hb := P.pairingIn_pairingIn_mem_set_of_isCrystal_of_isRed' i (long P) ?_ ?_
@@ -390,6 +406,8 @@ lemma isOrthogonal_short_and_long {i : ι} (hi : P.root i ∉ allRoots P) :
   · apply isOrthogonal_short_and_long_aux rfl ha hb hc hd he hf <;> simp
   all_goals assumption
 
+section IsIrreducible
+
 variable [Invertible (2 : R)] [P.IsIrreducible]
 
 @[simp] lemma span_eq_top :
@@ -397,7 +415,8 @@ variable [Invertible (2 : R)] [P.IsIrreducible]
   have := P.span_root_image_eq_top_of_forall_orthogonal {long P, short P} (by simp)
   rw [show P.root '' {long P, short P} = {longRoot P, shortRoot P} from by aesop] at this
   refine this fun k hk ij hij ↦ ?_
-  replace hk : P.root k ∉ allRoots P := fun contra ↦ hk <| allRoots_subset_span P contra
+  replace hk : P.root k ∉ allRoots P :=
+    fun contra ↦ hk <| span_subset_span ℤ _ _ <| mem_span_of_mem_allRoots P contra
   have aux := isOrthogonal_short_and_long P hk
   rcases hij with rfl | rfl <;> tauto
 
@@ -419,7 +438,28 @@ lemma mem_allRoots (i : ι) :
     | smul => aesop
   simpa using LinearMap.congr_fun key (P.root i)
 
-lemma setOf_long_short_eq_univ :
+open scoped Classical in
+/-- The natural labelling of `RootPairing.EmbeddedG2.allRoots`. -/
+@[simps] def indexEquivAllRoots : ι ≃ (allRoots P).toFinset :=
+  { toFun i := ⟨P.root i, List.mem_toFinset.mpr <| mem_allRoots P i⟩
+    invFun x := (allRoots_subset_range_root P x.property).choose
+    left_inv i := by simp
+    right_inv := by
+      rintro ⟨x, hx⟩
+      simp only [Subtype.mk.injEq]
+      exact (allRoots_subset_range_root P hx).choose_spec }
+
+include P in
+lemma card_index_eq_twelve :
+    Nat.card ι = 12 := by
+  classical
+  have this : Nat.card (allRoots P).toFinset = 12 := by
+    rw [Nat.card_eq_fintype_card, Fintype.card_coe, toFinset_card_of_nodup (allRoots_nodup P)]
+    simp
+  rw [← this]
+  exact Nat.card_congr <| indexEquivAllRoots P
+
+lemma setOf_index_eq_univ :
     letI _i := P.indexNeg
     { long P, -long P,
       short P, -short P,
@@ -427,8 +467,10 @@ lemma setOf_long_short_eq_univ :
       twoShortAddLong P, -twoShortAddLong P,
       threeShortAddLong P, -threeShortAddLong P,
       threeShortAddTwoLong P, -threeShortAddTwoLong P } = univ :=
-  eq_univ_iff_forall.mpr fun i ↦ by simpa only [mem_insert_iff, mem_singleton_iff,
-    EmbeddingLike.apply_eq_iff_eq, root_eq_neg_iff'] using mem_allRoots P i
+  eq_univ_iff_forall.mpr fun i ↦ by simpa only [mem_insert_iff, mem_singleton_iff, mem_cons,
+    not_mem_nil, or_false, EmbeddingLike.apply_eq_iff_eq, root_eq_neg_iff'] using mem_allRoots P i
+
+end IsIrreducible
 
 end EmbeddedG2
 
